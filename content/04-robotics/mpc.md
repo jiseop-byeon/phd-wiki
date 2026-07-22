@@ -1,11 +1,15 @@
 ---
-title: "5. MPC"
+title: "7. MPC"
 tags: [robotics, control, resource]
 ---
 
 **Key reference** — Mayne, Rawlings, Rao & Scokaert, *Constrained model predictive control: Stability and optimality*, Automatica 2000 · [DOI](https://doi.org/10.1016/S0005-1098(99)00214-9)
 
 ## English
+
+> [!info] Depth target · 깊이 목표
+> Read an MPC formulation (cost, horizon, constraints), identify what is solved online at each step, and judge feasibility/stability claims. Solver internals are optional.
+> MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단할 수 있으면 된다. 솔버 내부는 선택이다.
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves

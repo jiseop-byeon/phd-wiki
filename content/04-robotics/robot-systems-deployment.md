@@ -125,14 +125,147 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 
 ## 한국어
 
-논문 속 알고리즘은 센서, clock, 좌표계, 컴퓨터, 네트워크, controller, actuator, safety logic과 logging이 함께 작동할 때 로봇이 된다. Systems literacy는 실제로 무엇이 배포됐고 성능 차이가 어느 subsystem에서 생겼는지를 읽게 한다.
+논문의 알고리즘은 센서, 클럭, 좌표계, 컴퓨터, 네트워크, 제어기, 액추에이터, 안전 로직,
+로깅이 함께 작동할 때에만 로봇이 된다. 시스템 문해력은 실제로 무엇이 배포됐고, 보고된
+개선이 어느 하위 시스템에서 비롯됐을 수 있는지를 읽게 해 준다.
 
-로봇 stack은 Sense → Estimate → Plan/Policy → Control → Actuate의 닫힌 loop다. 각 블록의 주기는 다를 수 있으므로 frequency뿐 아니라 data age, end-to-end latency, jitter와 deadline을 확인해야 한다. 예제의 70 ms 지연은 1 m/s 이동체에서 7 cm의 움직임에 해당한다.
+> [!info] 깊이 목표
+> 로봇을 런타임 파이프라인으로 분해한다; 행동 인터페이스, 타이밍, 좌표계, 미들웨어,
+> 신뢰성, 시뮬레이션, 로깅을 해석한다; 하위 시스템 경계에서 실패를 진단한다. ROS 설치법이나
+> 전자공학 튜토리얼이 아니다.
 
-논문의 “action”이 joint position, velocity, torque, current, end-effector pose, impedance target 또는 skill 중 무엇인지 확인하라. Embodiment의 actuator, transmission, backlash, saturation, payload와 bandwidth가 같은 AI 모델의 행동을 바꾼다.
+> [!note] 선수 지식
+> [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/state-estimation-slam|상태 추정]] · [[04-robotics/planning-decision-making|계획]] · [[04-robotics/control-theory-ce397|제어 이론]]
 
-TF tree에서는 world/map/odom/base/sensor/tool/object frame의 방향과 timestamp가 중요하다. ROS node/topic/service/action/TF/bag/QoS는 시스템을 읽는 기본 어휘지만 “ROS에서 동작한다”는 말은 실시간성·신뢰성·안전을 보장하지 않는다.
+### 1. 닫힌 로봇 스택
 
-실험 재현에는 seed뿐 아니라 calibration, controller gain, units, configuration, software commit, firmware와 hardware revision이 필요하다. 실패는 sensor·estimation·planning·control·communication·mechanical·operator 원인으로 분해하고 최종 증상과 최초 원인을 구분해야 한다.
+```mermaid
+flowchart LR
+    S["센서"] --> PRE["전처리"] --> EST["추정"] --> PP["계획 / 정책"] --> C["제어기"] --> A["액추에이터"] --> W["물리 세계"]
+    W --> S
+    LOG["클럭 · 좌표계 · 로그 · 안전"] -.-> EST
+    LOG -.-> PP
+    LOG -.-> C
+```
 
-위 영어 절의 After reading과 Self-check로 timing, frame, action interface, deployment와 failure diagnosis를 점검하라.
+블록들은 서로 다른 주기로 돌 수 있다. 30 Hz 카메라, 10 Hz 정책, 1 kHz 모터 제어기는
+모순이 아니다 — 하지만 데이터의 나이(age)와 인터페이스는 명시적으로 설계해야 한다.
+
+### 2. Embodiment와 행동 인터페이스
+
+Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언스, 페이로드, 한계, 환경
+결합을 포함한다. 모터·유압·기어비·백래시·포화·부족구동·대역폭이 어떤 행동이 의미
+있는지를 결정한다.
+
+논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·임피던스
+타깃·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
+바뀌면 다르게 행동할 수 있다.
+
+### 3. 타이밍과 지연 예산
+
+| 구성요소 | 예시 지연 |
+|---|---:|
+| 카메라 노출/판독 | 15 ms |
+| 네트워크 추론 | 40 ms |
+| 통신 | 10 ms |
+| 명령 처리 | 5 ms |
+| **관측→행동** | **70 ms** |
+
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. **주파수는 지연이
+아니다**: 30 Hz 시스템도 옛 프레임 위에서 행동할 수 있다. 샘플링 주기, 추론 주기, 지터,
+데드라인 미스, 큐잉, 타임스탬프 정책, 그리고 지연이 끝-끝으로 측정됐는지 확인하라.
+
+### 4. 좌표계와 TF 트리
+
+흔한 프레임: world, map, odom, base, sensor, end-effector, tool, object. 모든 변환에는
+방향과 타임스탬프가 필요하다. 그럴듯한 숫자 행렬이라도 관례가 틀리면 학습이 안정적으로
+고칠 수 없는 계통적 실패를 만든다.
+
+map 프레임은 전역 보정 후 점프할 수 있고 odom은 국소적으로 매끄럽다; base→sensor
+변환은 보정 대상이고, 움직이는 물체의 변환은 시간 정렬이 필요하다.
+[[02-foundations/se3-geometry|SE(3)]]가 수학을 주고, TF 트리가 런타임 장부를 준다.
+
+### 5. 미들웨어 문해력
+
+| 개념 | 역할 |
+|---|---|
+| node | 실행 중인 구성요소 |
+| topic/message | 비동기 데이터 스트림과 스키마 |
+| service | 요청/응답 연산 |
+| action | 피드백·취소가 있는 긴 연산 |
+| TF | 시간 인덱스된 프레임 변환 |
+| bag/log | 재생·분석용 기록 스트림 |
+| QoS | 전달·보존·신뢰성·큐 정책 |
+
+ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다. "ROS에서 돈다"는 지연,
+결정론, 안전, 배포 품질에 대해 거의 말해 주지 않는다.
+
+### 6. 신뢰성과 안전 장치
+
+- Watchdog: 누락되거나 비정상인 갱신을 감지.
+- Heartbeat: 주기적 생존 신호.
+- Timeout: 데이터·명령의 만료 선언.
+- Graceful degradation: 축소된 능력으로 지속.
+- Fail-safe state: 위험을 낮추도록 의도된 상태로 이동.
+- 비상 정지: 위험한 운동을 멈추는 독립 수단.
+
+평균이 좋은 best-effort 타이밍과 결정론적 데드라인 거동은 다르다. 안전 주장은 안정된
+정책 출력만이 아니라 시스템 수준의 증거를 요구한다.
+
+### 7. 보정, 설정, 재현성
+
+내부/외부 보정, 영점, 단위, 프레임 관례, 제어기 이득, 펌웨어, 모델 가중치, 소프트웨어
+커밋, 하드웨어 리비전, 런타임 설정을 기록하라. 보정과 물리적 하드웨어가 다르면 랜덤
+시드는 실험을 재현하지 못한다.
+
+### 8. 시뮬레이션과 단계적 배포
+
+| 단계 | 목적 |
+|---|---|
+| 시뮬레이션 | 빠르고 통제된 개발 |
+| software-in-the-loop | 시뮬레이션된 플랜트/센서 주위로 소프트웨어 인터페이스 시험 |
+| hardware-in-the-loop | 실제 컴퓨트/제어기·하드웨어 인터페이스 포함 |
+| shadow mode | 로봇에 명령하지 않고 라이브 입력 관찰 |
+| 단계적 배포 | 속도·자율성·환경 난이도를 점진적으로 상승 |
+
+디지털 트윈이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
+물어라. Domain randomization은 무작위화한 요인과 범위만 커버한다.
+
+### 9. 실패 분류
+
+센서, 추정, 계획, 정책, 제어, 통신, 컴퓨트, 기계, 운용자, 환경 실패를 분리하라. 눈에
+보이는 최종 사건은 하류일 수 있다: 충돌은 오래된 센싱, 잘못된 위치 추정, 실행 불가능한
+계획, 나쁜 추종, 액추에이터 포화 어디서든 비롯될 수 있다.
+
+### 10. 자원 제약
+
+온보드/오프보드 컴퓨트는 지연, 네트워크 의존, 전력, 열 한계, 프라이버시, 실패 모드를
+바꾼다. 모델 파라미터 수만이 아니라 컴퓨트, 메모리, 대역폭, 배터리/전력, 열 스로틀링,
+페이로드, 실시간 부하를 보고하라.
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- sense–estimate–plan–control–act 파이프라인을 그릴 수 있다
+- "action"이 나타내는 물리적 명령을 짚을 수 있다
+- 주기·지연·지터·데드라인을 구분할 수 있다
+- 방향·타임스탬프가 맞는 변환을 추적할 수 있다
+- ROS 사용이나 시뮬레이션 성공이 배포 증거가 아닌 이유를 설명할 수 있다
+- 실패를 최종 증상이 아니라 유력한 발원 하위 시스템에 배정할 수 있다
+
+### 스스로 점검
+
+1. 50 Hz 정책이 여전히 200 ms 지연을 가질 수 있는 이유는?
+2. 현장 실패를 재생하려면 어떤 기록이 필요한가?
+3. 모델 정확도가 그대로인데 오프보드 VLA가 실패할 수 있는 이유는?
+4. hardware-in-the-loop가 입증하는 것과 입증하지 못하는 것은?
+
+> [!tip]- 정답 · Answers
+> 1. 큐, 배칭, 오래된 타임스탬프, 전송, 비동기 단계들이 높은 처리율을 유지하면서 데이터 나이를 키울 수 있다.
+> 2. 동기화된 원시 센서, 변환, 명령, 피드백, 클럭, 설정, 소프트웨어/하드웨어 버전, 운용자 이벤트.
+> 3. 네트워크 지연/손실, 오래된 관측, 데드라인 미스, 안전 폴백.
+> 4. 선택된 하드웨어/소프트웨어 인터페이스와 타이밍은 검증하지만, 실세계 인식·접촉·과제 안전을 그 자체로 검증하지는 않는다.
+
+### 출처
+
+- [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
+- [MIT Manipulation](https://manipulation.csail.mit.edu/)

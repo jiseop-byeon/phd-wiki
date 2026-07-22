@@ -1,11 +1,15 @@
 ---
-title: "3. Control Theory"
+title: "5. Control Theory"
 tags: [robotics, control, resource]
 ---
 
 **Bartos, UT Austin CE397** — [Course packet PDF (public)](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) · [Teaching page](https://future-water.org/teaching/)
 
 ## English
+
+> [!info] Depth target · 깊이 목표
+> Read state-space models, stability, and controllability/observability claims in robotics papers accurately. Designing controllers beyond the LQR/MPC formulations here is a working/mastery topic.
+> 로보틱스 논문의 상태공간 모델·안정성·가제어성/가관측성 주장을 정확히 읽는 것이 목표다. 이 트랙의 LQR/MPC 정식화를 넘는 제어기 설계는 실무/숙달 단계의 주제다.
 
 **What it is**: an introduction to control theory written *for civil engineers* — the same
 mathematical core as any controls course (modeling → state space → feedback), but with

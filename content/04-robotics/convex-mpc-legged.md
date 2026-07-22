@@ -1,11 +1,15 @@
 ---
-title: "6. Convex MPC (Legged Robots)"
+title: "8. Convex MPC (Legged Robots)"
 tags: [robotics, control, resource]
 ---
 
 **Key references** — Di Carlo et al., *Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control*, IROS 2018 · [IEEE](https://ieeexplore.ieee.org/document/8594448) · Kim et al., *Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and MPC* (open access) · [arXiv](https://arxiv.org/abs/1909.06586) · [PDF](https://arxiv.org/pdf/1909.06586)
 
 ## English
+
+> [!info] Depth target · 깊이 목표
+> Understand why the problem is convexified and what the simplification costs. This is a representative-application read, not a controller-design guide.
+> 왜 문제를 볼록화했고 그 단순화의 대가가 무엇인지 이해하는 것이 목표다. 대표 응용 읽기이지 제어기 설계 가이드가 아니다.
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*: approximate the robot as a single rigid body (ignore leg

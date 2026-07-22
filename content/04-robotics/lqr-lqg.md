@@ -1,11 +1,15 @@
 ---
-title: "4. LQR / LQG"
+title: "6. LQR / LQG"
 tags: [robotics, control, resource]
 ---
 
 **Study links** — [Underactuated Robotics, LQR chapter (Tedrake, MIT)](https://underactuated.csail.mit.edu/lqr.html) · [Stanford EE363 lecture notes (Boyd)](https://web.stanford.edu/class/ee363/)
 
 ## English
+
+> [!info] Depth target · 깊이 목표
+> State the LQR problem, the role of the Riccati equation, and LQG's estimator–controller separation. Deriving or implementing Riccati solvers is optional.
+> LQR 문제와 리카티 방정식의 역할, LQG의 추정기–제어기 분리를 말할 수 있으면 된다. 리카티 해법의 유도·구현은 선택이다.
 
 **What it is**: the **Linear Quadratic Regulator** is the exactly-solvable heart of optimal
 control. For linear dynamics $\dot x = Ax + Bu$ and quadratic cost

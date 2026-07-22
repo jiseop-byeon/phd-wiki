@@ -7,6 +7,10 @@ tags: [robotics, resource]
 
 ## English
 
+> [!info] Depth target · 깊이 목표
+> Track-level ★: read the summarized chapters alongside the book until screw-theory notation (twists, wrenches, PoE, Jacobians) reads fluently. Full exercise sets are optional.
+> 트랙 수준 ★: 스크류 이론 표기(twist·wrench·PoE·야코비안)가 술술 읽힐 때까지 요약과 원서를 함께 본다. 연습문제 전체 풀이는 선택이다.
+
 **What it is**: the standard modern textbook for robot kinematics, dynamics, planning, and
 control — built on the screw-theory/exponential-coordinates formulation (rather than
 classical D-H parameters), which is exactly the formulation modern manipulation research

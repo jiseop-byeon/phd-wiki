@@ -107,6 +107,11 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[04-robotics/lqr-lqg|LQR/LQG]] — study guide (Underactuated Robotics, Stanford EE363)
 - [x] ◐ [[04-robotics/mpc|MPC]] — study guide + Mayne et al., *Constrained MPC* (Automatica 2000)
 - [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
+- [x] ◐ [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — study guide (Probabilistic Robotics 기반)
+- [x] ◐ [[04-robotics/planning-decision-making|Planning & Decision-Making]] — study guide (search·sampling·trajectory optimization·TAMP)
+- [x] ◐ [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — study guide (MR 12장 연장)
+- [x] ◐ [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — study guide (timing·frames·middleware·failure)
+- [x] ◐ [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — study guide (autonomy levels·human studies·hazard/risk)
 
 ## 8. Construction Robotics
 
