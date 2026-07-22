@@ -1,5 +1,5 @@
 ---
-title: 5. Construction Robotics
+title: 5. Construction
 ---
 
 ## English

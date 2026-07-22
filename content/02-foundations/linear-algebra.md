@@ -1,7 +1,9 @@
 ---
-title: Linear Algebra
+title: 1. Linear Algebra
 tags: [foundations]
 ---
+
+> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
 
 ## English
 

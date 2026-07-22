@@ -1,7 +1,9 @@
 ---
-title: Optimization
+title: 4. Optimization
 tags: [foundations]
 ---
+
+> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
 
 ## English
 
@@ -85,8 +87,7 @@ formulations of the same engineering problem differ wildly in solvability.
 **MPC as a QP, written out** ([[04-robotics/index|control track]]): linear dynamics
 $x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$:
 
-$$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N
-\quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
+$$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
 Substituting the dynamics (condensing) leaves a convex QP in the $u$'s — solved in
 milliseconds by interior-point/active-set solvers, re-solved every control step with the
@@ -185,8 +186,7 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 **MPC를 QP로 완전히 써보기** ([[04-robotics/index|제어 트랙]]): 선형 동역학
 $x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$:
 
-$$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N
-\quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
+$$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
 동역학을 대입(응축)하면 $u$들에 대한 볼록 QP만 남는다 — 내부점/active-set 솔버가 수
 밀리초에 풀고, 매 제어 주기 첫 입력만 적용하며 다시 푼다. *MPC = 위의 투영 예제를

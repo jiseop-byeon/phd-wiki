@@ -1,4 +1,4 @@
-# DL · Robotics · Construction Wiki
+# Physical AI Notes
 
 Personal research wiki covering deep learning, robotics, control, and construction robotics.
 Maintained as an Obsidian vault (`content/`); published online via Quartz + GitHub Pages.

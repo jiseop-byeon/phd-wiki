@@ -22,14 +22,14 @@ Recent-trend papers get appended over time via the tracking workflow.
 시간순 정렬 — 2012년 ImageNet에서 시작해 CNN 계열과 RNN 계열이 2017년 Transformer에서 합류하는 흐름. [[03-deep-learning/lineage|계보도]] 참고.
 
 - [x] [[notes/lstm|LSTM]] — *Long Short-Term Memory* (Hochreiter & Schmidhuber, Neural Computation 1997)
-- [x] [[notes/alexnet|**AlexNet**]] — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
+- [x] [[notes/alexnet|AlexNet]] — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
 - [x] [[notes/seq2seq|seq2seq]] — *Sequence to Sequence Learning* (Sutskever et al., NeurIPS 2014)
 - [x] [[notes/bahdanau-attention|Bahdanau Attention]] — *NMT by Jointly Learning to Align and Translate* (ICLR 2015)
 - [x] [[notes/vgg|VGG]] — *Very Deep Convolutional Networks* (Simonyan & Zisserman, ICLR 2015)
 - [x] [[notes/adam|Adam]] — *A Method for Stochastic Optimization* (Kingma & Ba, ICLR 2015)
 - [x] [[notes/batch-norm|Batch Normalization]] (Ioffe & Szegedy, ICML 2015)
-- [x] [[notes/resnet|**ResNet**]] — *Deep Residual Learning* (He et al., CVPR 2016)
-- [x] [[notes/attention-is-all-you-need|**Attention Is All You Need**]] (Vaswani et al., NeurIPS 2017)
+- [x] [[notes/resnet|ResNet]] — *Deep Residual Learning* (He et al., CVPR 2016)
+- [x] [[notes/attention-is-all-you-need|Attention Is All You Need]] (Vaswani et al., NeurIPS 2017)
 - [x] [[notes/bert|BERT]] (Devlin et al., NAACL 2019)
 - [x] [[notes/gpt-3|GPT-3]] — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
 - [x] [[notes/scaling-laws|Scaling Laws]] (Kaplan et al., 2020) + Chinchilla (Hoffmann et al., 2022)
@@ -99,10 +99,10 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 7. Robotics & Control (textbook + key references)
 
-- [ ] Modern Robotics (Lynch & Park) — chapter notes, not a paper
-- [ ] LQR/LQG — classic references via textbook treatment
-- [ ] MPC survey — e.g., Mayne et al., *Constrained MPC: Stability and Optimality* (Automatica 2000)
-- [ ] MPC in legged robotics — representative paper (e.g., MIT Cheetah convex MPC, IROS 2018)
+- [x] [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — study guide with free official PDF & course links
+- [x] [[04-robotics/lqr-lqg|LQR/LQG]] — study guide (Underactuated Robotics, Stanford EE363)
+- [x] [[04-robotics/mpc|MPC]] — study guide + Mayne et al., *Constrained MPC* (Automatica 2000)
+- [x] [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
 
 ## 8. Construction Robotics
 

@@ -1,7 +1,9 @@
 ---
-title: Reinforcement Learning Basics
+title: 7. Reinforcement Learning Basics
 tags: [foundations]
 ---
+
+> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
 
 ## English
 
@@ -51,9 +53,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 ### 4. Policy gradients — differentiate the objective itself
 
 - **The log-derivative trick** (the whole derivation in three steps):
-  $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau
-  = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau
-  = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
+  $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
   (dynamics terms vanish from $\nabla\log p_\theta(\tau)$ because they don't depend on
   $\theta$). Interpretation: *raise the log-probability of actions in proportion to the
   return that followed*.
@@ -149,9 +149,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/instructgpt|RLHF]]도,
 ### 4. 정책 그래디언트 — 목적함수 자체를 미분하기
 
 - **로그 미분 트릭** (유도 전체가 세 단계):
-  $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau
-  = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau
-  = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
+  $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
   (동역학 항은 $\theta$에 의존하지 않아 $\nabla\log p_\theta(\tau)$에서 사라진다.)
   해석: *뒤따른 리턴에 비례해 행동의 로그 확률을 올려라*.
 - **REINFORCE**가 정확히 이것 — 불편이지만 분산이 파국적으로 크다. 분산 감소책, 중요한

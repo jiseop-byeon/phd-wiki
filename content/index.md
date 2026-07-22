@@ -47,3 +47,23 @@ Welcome. This wiki is my long-term knowledge base for PhD research at the inters
 - [[02-foundations/index|기초 과목]] — 수학·시스템 기초, 우선순위 지도 포함
 - [[glossary|용어집]] — 용어 빠르게 찾아보기
 - [[study-log|학습 일지]] — 언제 무엇을 읽었는지 기록
+
+---
+
+> [!info]- Sources · 이 위키가 참고한 출처들
+> **Primary sources (1차 자료)** — 모든 논문 노트는 해당 논문의 arXiv/공식 PDF·프로젝트 페이지·공식 코드 저장소를 직접 참조하며, 각 노트 첫 줄에 링크되어 있다.
+>
+> **Curricula & study-note exemplars (커리큘럼·정리 방식 참고)**
+> - [Stanford CS231n](https://cs231n.stanford.edu/schedule.html) — 딥러닝 파트의 흐름·정확성 교차 검증
+> - [sudoremove](https://sudoremove.com/) — physical AI 최신 동향 큐레이션 벤치마크; 생태계 페이지의 착안점
+> - [Lil'Log (Lilian Weng)](https://lilianweng.github.io/) — 주제 서베이형 글쓰기의 모범; RL 개관
+> - [Sutton & Barto, *Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) — RL 기초의 표준 교과서 (무료 공개)
+> - [Holderrieth & Erives, *An Introduction to Flow Matching and Diffusion Models*](https://arxiv.org/abs/2506.02070) — 디퓨전/flow matching 수학의 참고 튜토리얼
+> - [Modern Robotics (Lynch & Park)](http://modernrobotics.org) — 로보틱스 트랙의 교과서 (공식 무료 PDF)
+> - [Underactuated Robotics (Tedrake)](https://underactuated.csail.mit.edu/) · [Stanford EE363](https://web.stanford.edu/class/ee363/) — 제어 학습 자료
+>
+> **Wiki structure (위키 구조 참고)**
+> - [Quartz](https://quartz.jzhao.xyz/) — 이 사이트를 만드는 정적 사이트 생성기
+> - [Maggie Appleton — digital gardeners](https://github.com/MaggieAppleton/digital-gardeners) · [Andy Matuschak — evergreen notes](https://notes.andymatuschak.org/) — digital garden/노트 설계 패턴
+>
+> **공식 발표 자료** — Google DeepMind·Meta AI·NVIDIA·OpenAI·Physical Intelligence의 공식 블로그와 기술 보고서 (해당 노트에 개별 링크). 입문 보조로는 [3Blue1Brown](https://www.3blue1brown.com/)과 Khan Academy를 권장한다.
