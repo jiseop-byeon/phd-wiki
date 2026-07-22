@@ -38,7 +38,7 @@ paper in this wiki** (individual papers may require deeper references): math cor
 - [[02-foundations/engineering-math|0.5 Engineering Math]] — the assumed undergraduate math, self-contained: derivatives to Euler's formula, plus a notation dictionary
 - [[02-foundations/linear-algebra|1. Linear Algebra]] — matrices as maps, rank/SVD, the geometry behind attention and LoRA
 - [[02-foundations/calculus-backprop|2. Calculus & Backpropagation]] — chain rule to backprop, vanishing/exploding gradients as architecture history
-- [[02-foundations/probability|3. Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of every loss function
+- [[02-foundations/probability|3. Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of many standard losses
 - [[02-foundations/optimization|4. Optimization]] — problem anatomy, convexity, KKT, LP/QP/NLP/MIP, and where each shows up in robotics
 - [[02-foundations/information-theory|5. Information Theory]] — entropy, cross-entropy, KL divergence, mutual information, the ELBO
 - [[02-foundations/signal-processing|6. Signal Processing]] — sampling, FFT, filtering, sensor-pipeline habits
@@ -80,7 +80,7 @@ paper in this wiki** (individual papers may require deeper references): math cor
 - [[02-foundations/engineering-math|0.5 공업수학]] — 전제되는 학부 수학을 자체 완결로: 미분부터 오일러 공식까지 + 표기법 사전
 - [[02-foundations/linear-algebra|1. 선형대수]] — 사상으로서의 행렬, 랭크/SVD, 어텐션과 LoRA 뒤의 기하
 - [[02-foundations/calculus-backprop|2. 미적분과 역전파]] — 연쇄 법칙에서 역전파까지, 구조 설계사(史)로서의 그래디언트 소실/폭발
-- [[02-foundations/probability|3. 확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 모든 손실함수의 기원으로서의 MLE
+- [[02-foundations/probability|3. 확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 많은 표준 손실함수의 기원으로서의 MLE
 - [[02-foundations/optimization|4. 최적화]] — 문제의 구조, 볼록성, KKT, LP/QP/NLP/MIP와 로보틱스에서의 등장 지점
 - [[02-foundations/information-theory|5. 정보이론]] — 엔트로피, 교차 엔트로피, KL divergence, 상호 정보량, ELBO
 - [[02-foundations/signal-processing|6. 신호처리]] — 샘플링, FFT, 필터링, 센서 파이프라인 습관

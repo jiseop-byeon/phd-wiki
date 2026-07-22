@@ -13,7 +13,7 @@ tags: [reference]
 - **Entropy vs Cross-entropy vs KL** — $H(p)$는 자기 자신의 불확실성; $H(p,q)$는 $p$를 $q$의 부호로 인코딩하는 비용; KL = 그 차이 = $H(p,q) - H(p)$. → [[02-foundations/information-theory|정보이론]]
 - **Logits vs Probabilities** — softmax 이전의 실수 점수 vs 이후의 확률. 손실은 보통 logits에서 직접 계산한다(수치 안정성).
 - **State vs Observation** — 상태는 과거를 요약하는 마르코프 변수(숨겨져 있을 수 있음); 관측은 센서가 실제로 주는 것. 둘이 다르면 POMDP다. → [[02-foundations/rl-basics|RL 기초 §1]]
-- **Policy vs Controller** — 같은 역할(상태→행동)의 두 커뮤니티 용어. 정책은 학습 문맥, 제어기는 모델 기반 설계·안정성 보장 문맥에서 쓰인다. → [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]
+- **Policy vs Controller** — 둘 다 가용 정보를 행동으로 사상하지만, 서로 다른 정식화에서 나와 다른 가정을 담는다: 제어기는 내부 상태·추정기·기준 추종·동역학 모델을 포함할 수 있고(모델 기반 설계·안정성 보장 문맥), 정책은 확률적이거나 이력 조건부일 수 있다(학습 문맥). → [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]
 - **World model vs Model-based RL** — 월드모델은 학습된 동역학 모델 그 자체; model-based RL은 그것을 계획/학습에 쓰는 방법론. → [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]
 - **VLM vs VLA** — VLM은 이미지-언어 관계를 모델링한다(임베딩·유사도·분류·텍스트 생성 — CLIP처럼 텍스트를 생성하지 않는 VLM도 있다); VLA의 구별점은 출력이 로봇 행동이라는 것(대개 VLM 백본 + 행동 헤드). → [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]
 - **Behavior cloning vs Imitation learning vs Offline RL** — BC는 IL의 부분집합(시연의 지도학습); IL은 시연 활용 전반(DAgger, IRL 포함); offline RL은 보상 신호로 시연자 초과 성능을 노린다.
@@ -23,7 +23,7 @@ tags: [reference]
 - **LQR vs MPC** — 무한 지평 LQR은 리카티 방정식을 (오프라인에서) 풀어 고정 선형 이득 $u = -Kx$를 얻고, MPC는 유한 지평·제약 있는 최적화를 매 스텝 다시 푼다. → [[04-robotics/mpc|MPC]]
 - **Open-loop vs Closed-loop** — 계획을 실행하는 동안 새 관측을 반영하는가; receding horizon은 closed-loop을 만드는 장치다.
 - **Objective vs Metric** — 학습이 최소화하는 것 vs 평가에 쓰는 것. 둘은 자주 다르고(교차 엔트로피로 학습, mAP로 평가), 그 간극 자체가 논문의 논점일 때가 있다. → [[02-foundations/ml-practice|ML 실무 §3]]
-- **Feature vs Representation vs Embedding vs Latent** — 거의 같은 뜻의 방언들: 모두 "네트워크가 만든 벡터". 뉘앙스만 다르다 — feature는 층의 출력, representation은 그 품질을 논할 때, embedding은 이산 입력의 벡터화, latent는 생성 모델의 숨은 변수.
+- **Feature vs Representation vs Embedding vs Latent** — 논문에서 겹쳐 쓰이지만 완전히 호환되지는 않는다: feature = 관측·중간 계산에서 추출한 변수, representation = 정보를 담는 방식 전반(품질을 논할 때), embedding = 대상을 연속 벡터 공간으로 사상한 것, latent = 관측되지 않은 생성적·확률적 변수.
 - **Inference vs Prediction vs Generation** — 셋 다 "학습된 모델을 돌리기"지만: inference는 실행 일반, prediction은 정답이 있는 출력, generation은 분포에서의 샘플링. 통계학의 inference(모수 추정)와 딥러닝의 inference(forward pass)는 다른 말이니 주의.
 - **Conditioning vs Prompting** — 조건화는 입력으로 정보를 주는 구조적 개념; 프롬프팅은 그 조건을 텍스트로 주는 인터페이스. 모든 프롬프팅은 조건화지만 역은 아니다(이미지·자세 조건 등).
 - **Pretraining vs Fine-tuning vs Post-training** — 대규모 일반 데이터 → 과제 데이터로 조정 → (최근 용법) SFT·RLHF 등 정렬 단계 전체를 묶어 부르는 말. π0의 "post-training"은 고품질 과제 데이터 단계다. → [[01-canonical-papers/notes/4-vla/pi0\|π0]]

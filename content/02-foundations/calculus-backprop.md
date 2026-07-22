@@ -65,8 +65,9 @@ bug detector in existence.
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it beat sigmoid
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). Dead units = permanently zero mask.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every saturating layer multiplies the
-  backward signal by ≤ 0.25 — stack ten and gradients shrink a million-fold. This single
-  inequality explains a decade of architecture history.
+  backward signal by ≤ 0.25 — from the sigmoid derivatives alone, ten saturated layers
+  attenuate gradients roughly a million-fold (the full gradient also carries weight
+  Jacobians). This single inequality explains a decade of architecture history.
 
 ### 5. The pathologies that shaped architectures
 
@@ -85,12 +86,14 @@ bug detector in existence.
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]]) moves sampling *outside* the differentiated path;
   EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]) and RL target networks receive no
-  gradient by design. When a paper draws a dashed arrow, it means this.
+  gradient by design. A dashed arrow in a paper figure *often* denotes stop-gradient —
+  but it can also mean an auxiliary or inference-only path, so always check the legend.
 
 ### 6. Reading equations like an implementer
 
-- Every $E[\cdot]$ in a loss becomes a minibatch mean. Every expectation you cannot sample
-  through becomes a bound ([[02-foundations/information-theory|ELBO]]) or a trick
+- Every $E[\cdot]$ in a loss becomes a minibatch mean. In deep learning, expectations you
+  cannot differentiate through are typically handled with a bound ([[02-foundations/information-theory|ELBO]]),
+  a Monte Carlo estimator, or a trick
   (reparameterization; likelihood-ratio/policy gradients — [[02-foundations/rl-basics|RL basics]]).
 - $\arg\max$ is not differentiable; softmax is its smooth stand-in (temperature controls
   the sharpness). Sampling is not differentiable; Gumbel-softmax / straight-through
@@ -164,7 +167,8 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 시그모이드를 이긴 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). 죽은 유닛 = 영원히 0인 마스크.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 포화 층 하나가 역방향 신호에 0.25
-  이하를 곱한다 — 열 개를 쌓으면 그래디언트가 백만 배 준다. 이 부등식 하나가 구조
+  이하를 곱한다 — 시그모이드 도함수만 따져도 포화 층 열 개면 그래디언트가 대략 백만 배
+  준다(실제 그래디언트에는 가중치 야코비안도 함께 곱해진다). 이 부등식 하나가 구조
   설계사(史) 10년을 설명한다.
 
 ### 5. 구조를 만든 병리들
@@ -185,12 +189,14 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
   교사([[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
-  않는다. 논문의 점선 화살표가 이것이다.
+  않는다. 논문 그림의 점선 화살표는 *대개* stop-gradient지만, 보조 경로나 추론 전용
+  경로를 뜻하기도 하므로 반드시 범례를 확인하라.
 
 ### 6. 구현자의 눈으로 수식 읽기
 
-- 손실의 모든 $E[\cdot]$는 미니배치 평균이 된다. 통과해서 샘플링할 수 없는 기댓값은
-  하한([[02-foundations/information-theory|ELBO]])이나 트릭(reparameterization;
+- 손실의 모든 $E[\cdot]$는 미니배치 평균이 된다. 딥러닝에서는 통과해 미분할 수 없는
+  기댓값을 대개 하한([[02-foundations/information-theory|ELBO]]), 몬테카를로 추정, 또는
+  트릭(reparameterization;
   우도비/정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])이 된다.
 - $\arg\max$는 미분 불가능하다; softmax가 그 매끄러운 대역이다(온도가 날카로움을 조절).
   샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다.

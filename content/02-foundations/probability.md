@@ -7,7 +7,7 @@ tags: [foundations]
 
 ## English
 
-Probability is the substrate under estimation, filtering, and every loss function in deep
+Probability is the substrate under estimation, filtering, and many standard objectives in deep
 learning. Course-depth treatment: derivations, the Gaussian toolbox, a worked MLE example,
 and the Kalman filter assembled from parts you'll have proven along the way.
 
@@ -39,8 +39,8 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   $\Sigma = E[(x-\mu)(x-\mu)^\top]$ is PSD ([[02-foundations/linear-algebra|linear algebra]]).
 - **Conditional expectation** $E[X|Y]$ is the best mean-square predictor of $X$ given $Y$ —
   the reason estimation theory keeps computing it, and what regression approximates.
-- Distributions that carry this wiki: **Bernoulli/categorical** (classification losses),
-  **Gaussian** (below), exponential/Poisson (arrivals, dropout).
+- Distributions that carry this wiki: **Bernoulli/categorical** (classification losses,
+  dropout masks), **Gaussian** (below), Poisson (event counts), exponential (waiting times).
 
 ### 3. The Gaussian toolbox (why Gaussians run robotics)
 
@@ -103,7 +103,7 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
 
 ## 한국어
 
-확률은 추정, 필터링, 그리고 딥러닝의 모든 손실함수 아래에 깔린 토대다. 교재 수준의 서술:
+확률은 추정, 필터링, 그리고 딥러닝의 많은 표준 목적함수 아래에 깔린 토대다. 교재 수준의 서술:
 유도, 가우시안 도구 상자, MLE 계산 예제, 그리고 이 페이지에서 증명한 부품들로 조립하는
 칼만 필터까지.
 
@@ -133,8 +133,8 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   ([[02-foundations/linear-algebra|선형대수]]).
 - **조건부 기댓값** $E[X|Y]$는 $Y$가 주어졌을 때 $X$의 평균제곱 최적 예측기 — 추정 이론이
   끊임없이 이것을 계산하는 이유이자, 회귀가 근사하는 대상.
-- 이 위키를 떠받치는 분포들: **베르누이/카테고리**(분류 손실), **가우시안**(아래),
-  지수/포아송(도착, 드롭아웃).
+- 이 위키를 떠받치는 분포들: **베르누이/카테고리**(분류 손실, 드롭아웃 마스크),
+  **가우시안**(아래), 포아송(사건 횟수), 지수(대기 시간).
 
 ### 3. 가우시안 도구 상자 (가우시안이 로보틱스를 굴리는 이유)
 

@@ -91,8 +91,11 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 
 - **Imitation** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): supervised on demos —
-  stable, no reward design, but capped by data coverage and cannot discover recoveries.
-- **RL** exceeds the demonstrator given a reward and many trials — practical mostly in
+  stable, no reward design, but plain offline BC is capped by data coverage and cannot
+  learn recoveries *outside the support of its demos* (demos with recoveries, or DAgger-style
+  data collection, change this).
+- **RL** *can* exceed the demonstrator — when an informative reward and enough exploration
+  are available — practical mostly in
   simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
   the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
 - Decoder ring for papers: "BC baseline" = behavior cloning; "advantage-weighted" =
@@ -191,8 +194,11 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 
 - **모방** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): 시연에 대한 지도학습 —
-  안정적이고 보상 설계가 없지만, 데이터 커버리지가 상한이고 회복 동작을 발견할 수 없다.
-- **RL**은 보상과 많은 시도가 있으면 시연자를 넘어선다 — 주로 시뮬레이션(sim-to-real)
+  안정적이고 보상 설계가 없지만, 순수 오프라인 BC는 데이터 커버리지가 상한이고 *시연
+  분포 밖의* 회복 동작은 학습할 수 없다(회복이 담긴 시연이나 DAgger식 데이터 수집은
+  이를 바꾼다).
+- **RL**은 유익한 보상과 충분한 탐색이 있으면 시연자를 넘어설 *수 있다* — 주로
+  시뮬레이션(sim-to-real)
   에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
   [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
 - 논문 해독기: "BC baseline" = 행동 복제; "advantage-weighted" = $e^{A/\beta}$로 재가중된

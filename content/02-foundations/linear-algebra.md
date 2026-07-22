@@ -63,13 +63,14 @@ where each concept appears in the papers of this wiki.
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
     **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD Hessian; for a
     general matrix the 2-norm condition number is the singular-value ratio
-    $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — the fact [[01-canonical-papers/notes/1-foundations/adam|Adam]] and
-    [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]] exist to fight.
+    $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
+    adaptive optimization ([[01-canonical-papers/notes/1-foundations/adam|Adam]]) and normalization
+    ([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]) help.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
 
-### 4. SVD — the one factorization that always exists
+### 4. SVD — a universal factorization, available for every matrix
 
 - **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with orthogonal $U, V$ and
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$. Reading: rotate (input
@@ -78,10 +79,12 @@ where each concept appears in the papers of this wiki.
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: the best rank-$k$ approximation (in $\|\cdot\|_F$ or $\|\cdot\|_2$) is
   truncated SVD $\sum_{i\le k}\sigma_i u_i v_i^\top$. This is the mathematical license for
-  [[01-canonical-papers/notes/1-foundations/lora|LoRA]], model compression, and PCA.
+  model compression and PCA. ([[01-canonical-papers/notes/1-foundations/lora|LoRA]] is related but
+  different: it does not SVD-approximate a finished update — it *parameterizes* the update
+  as low-rank from the start, an empirical design choice.)
 - **PCA in four lines**: center data $X$; covariance $C = \frac1n X^\top X$; its top
   eigenvectors = directions of maximal variance = right singular vectors of $X$; project.
-  Classical ancestor of every learned representation.
+  A classical ancestor of learned representations.
 
 ### 5. The control-theory connection
 
@@ -170,13 +173,14 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
     $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD 헤시안 기준; 일반 행렬의 2-노름 조건수는
     특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$)가 문제의 난이도 *그 자체*다 —
-    [[01-canonical-papers/notes/1-foundations/adam|Adam]]과 [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]이
-    존재하는 이유가 이것과의 싸움이다.
+    나쁜 조건수는 적응형 최적화([[01-canonical-papers/notes/1-foundations/adam|Adam]])와
+    정규화([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]])가 왜 돕는지 이해하는
+    유용한 관점 중 하나다.
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
   논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻.
 
-### 4. SVD — 언제나 존재하는 유일한 분해
+### 4. SVD — 모든 행렬에 존재하는 보편적 분해
 
 - **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 직교,
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$.
@@ -184,10 +188,11 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 연결: $\sigma_i^2$ = $A^\top A$의 고유값; 랭크 = 0이 아닌 $\sigma_i$의 수;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: 최적 랭크-$k$ 근사($\|\cdot\|_F$·$\|\cdot\|_2$ 기준)는 절단 SVD
-  $\sum_{i\le k}\sigma_i u_i v_i^\top$이다. [[01-canonical-papers/notes/1-foundations/lora|LoRA]], 모델 압축,
-  PCA의 수학적 면허장.
+  $\sum_{i\le k}\sigma_i u_i v_i^\top$이다. 모델 압축과 PCA의 수학적 면허장.
+  ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 관련되지만 다르다: 완성된 업데이트를
+  SVD로 근사하는 게 아니라 업데이트 자체를 처음부터 저랭크로 *매개화*하는 경험적 설계다.)
 - **PCA 네 줄 요약**: 데이터 $X$를 중심화; 공분산 $C = \frac1n X^\top X$; 그 상위
-  고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 모든 학습된 표현의 고전적
+  고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 학습된 표현의 고전적
   조상이다.
 
 ### 5. 제어이론과의 연결

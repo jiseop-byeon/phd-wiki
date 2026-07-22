@@ -87,7 +87,8 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — cross-entropy where "the classes" are the other samples in the batch; it satisfies
   $I(X;Y) \ge \log N - \mathcal{L}$, so bigger batches permit tighter bounds (why CLIP
-  used batch size 32k).
+  used batch size 32k). Caveat: how tight this MI bound is depends on the negative-sampling
+  scheme and distributional assumptions — treat it as guiding intuition, not a guarantee.
 - Representation learning framings (information bottleneck): keep what predicts the label,
   discard the rest — compression as a theory of generalization.
 
@@ -100,7 +101,9 @@ $$\log p_\theta(x) = \log \int p_\theta(x|z)p(z)\,dz \ge E_{q}[\log p_\theta(x|z
 
 The gap between the two sides is exactly $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$ — so maximizing
 the ELBO simultaneously (1) raises the likelihood bound and (2) pulls $q$ toward the true
-posterior. Every VAE, diffusion, and world-model paper writes some version of this line.
+posterior. Many foundational VAE, diffusion, and latent world-model papers use this ELBO
+or a closely related variational objective (though not all — flow matching and
+non-variational world models take different routes).
 
 ### 6. Quick reference table
 
@@ -192,6 +195,8 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — "클래스"가 배치 안의 다른 샘플들인 교차 엔트로피다; $I(X;Y) \ge \log N - \mathcal{L}$을
   만족하므로 배치가 클수록 더 빡빡한 하한이 가능하다 (CLIP이 배치 32k를 쓴 이유).
+  단서: 이 상호 정보량 하한이 얼마나 빡빡한지는 음성 샘플링 방식과 분포 가정에 의존한다 —
+  보장이 아니라 안내하는 직관으로 읽어라.
 - 표현 학습의 틀(information bottleneck): 라벨을 예측하는 것만 남기고 버려라 —
   압축을 일반화의 이론으로 보는 관점.
 
@@ -203,8 +208,9 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 $$\log p_\theta(x) = \log \int p_\theta(x|z)p(z)\,dz \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
 
 양변의 간극이 정확히 $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$다 — 그래서 ELBO 최대화는 동시에
-(1) 우도 하한을 올리고 (2) $q$를 진짜 사후분포로 끌어당긴다. 모든 VAE·디퓨전·월드모델
-논문이 이 한 줄의 어떤 버전을 쓰고 있다.
+(1) 우도 하한을 올리고 (2) $q$를 진짜 사후분포로 끌어당긴다. 기초적인 VAE·디퓨전·잠재
+월드모델 논문 다수가 이 ELBO 또는 밀접한 변분 목적함수를 쓴다 (전부는 아니다 — flow
+matching이나 비변분 월드모델은 다른 길을 간다).
 
 ### 6. 빠른 참조 표
 

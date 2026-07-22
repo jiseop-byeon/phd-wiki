@@ -93,7 +93,7 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
   (use atan2, not $\arctan(b/a)$ — the latter loses the quadrant and fails at $a = 0$).
 - **Euler's formula**: $e^{j\theta} = \cos\theta + j\sin\theta$ — the unit-circle point at
   angle $\theta$. Consequence: multiplying by $e^{j\theta}$ **rotates** by $\theta$.
-- That is the whole reason Fourier analysis works: a sinusoid is the real part of a
+- That is the core reason Fourier analysis works: a sinusoid is the real part of a
   rotating $e^{j\omega t}$, so "decompose into sinusoids" = "project onto rotations" — the
   DFT formula in [[02-foundations/signal-processing|6. Signal Processing]] is exactly this
   projection.
@@ -246,7 +246,7 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   ($\arctan(b/a)$가 아니라 atan2를 써라 — 전자는 사분면을 잃고 $a = 0$에서 정의되지 않는다).
 - **오일러 공식**: $e^{j\theta} = \cos\theta + j\sin\theta$ — 각도 $\theta$의 단위원 위의 점.
   따름정리: $e^{j\theta}$를 곱하는 것 = $\theta$만큼 **회전**.
-- 푸리에 분석이 작동하는 이유의 전부가 이것이다: 사인파는 회전하는 $e^{j\omega t}$의
+- 푸리에 분석이 작동하는 핵심 이유가 이것이다: 사인파는 회전하는 $e^{j\omega t}$의
   실수부이므로, "사인파로 분해" = "회전들에 투영" —
   [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식이 정확히 이 투영이다.
 

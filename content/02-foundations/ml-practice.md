@@ -29,8 +29,8 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 - **Overfitting**: train loss ↓ while validation loss ↑ — memorizing instead of
   generalizing. **Underfitting**: both stay high. Diagnose with **learning curves** before
   anything else.
-- Everything called "regularization" is one idea — *restrict or perturb the model so it
-  can't just memorize*: weight decay (a Gaussian prior — [[02-foundations/probability|3. Probability §4]]),
+- Regularization methods share one broad goal — *reduce harmful overfit* — but work through
+  different mechanisms: weight decay (a Gaussian prior — [[02-foundations/probability|3. Probability §4]]),
   dropout ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), data augmentation
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] onward), early stopping, and — the modern twist —
   *more data instead of more constraints* ([[01-canonical-papers/notes/1-foundations/scaling-laws|scaling laws]]).
@@ -50,7 +50,8 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 | Retrieval | recall@k | truth within top-k results |
 
 - Read metrics adversarially: success rate on *what* distribution, of *how many* trials,
-  with *what* variance? A 90% on 10 trials is a coin with extra steps.
+  with *what* variance? 9 successes in 10 trials has a wide confidence interval — report
+  the counts and the uncertainty, not just "90%".
 
 ### 4. The grammar of experiments
 
@@ -60,8 +61,9 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   fragile — benchmark-specific and often compute-confounded.
 - Fair comparison checklist when reading: same data? same compute/params? same evaluation
   protocol? tuned baselines? If a table doesn't answer these, the numbers are decoration.
-- Seeds and variance: deep learning results wobble across random seeds; serious papers
-  report mean ± std over several seeds — robotics papers over several *rollouts and scenes*.
+- Seeds and variance: deep learning results wobble across random seeds; serious reporting
+  states the number of runs and an uncertainty measure fit to the experiment (std, standard
+  error, CI, or paired tests) — robotics papers report over several *rollouts and scenes*.
 
 ### 5. Evaluation pitfalls to watch for in papers
 
@@ -104,8 +106,8 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 
 - **과적합**: train 손실은 ↓인데 validation 손실이 ↑ — 일반화 대신 암기. **과소적합**:
   둘 다 높음. 무엇보다 먼저 **학습 곡선**으로 진단하라.
-- "정규화"라 불리는 모든 것은 하나의 아이디어다 — *모델이 그냥 암기할 수 없도록 제약하거나
-  교란하라*: weight decay(가우시안 사전 — [[02-foundations/probability|3. 확률 §4]]),
+- "정규화"라 불리는 방법들은 *해로운 과적합을 줄인다*는 넓은 목표를 공유하지만, 작동
+  기제는 서로 다르다: weight decay(가우시안 사전 — [[02-foundations/probability|3. 확률 §4]]),
   dropout([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), 데이터 증강
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] 이후), early stopping, 그리고 현대적 반전 —
   *제약 대신 더 많은 데이터*([[01-canonical-papers/notes/1-foundations/scaling-laws|스케일링 법칙]]).
@@ -125,7 +127,8 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 | 검색 | recall@k | 정답이 상위 k개 안 |
 
 - 지표는 적대적으로 읽어라: *어떤* 분포에서, *몇 번의* 시행으로, *분산은* 얼마인 success
-  rate인가? 10회 시행의 90%는 절차를 거친 동전 던지기다.
+  rate인가? 10회 중 9회 성공은 신뢰구간이 넓다 — "90%"만이 아니라 횟수와 불확실성을
+  함께 봐야 한다.
 
 ### 4. 실험의 문법
 
@@ -135,8 +138,9 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   특정적이고 연산량과 교락되기 일쑤.
 - 읽을 때의 공정 비교 체크리스트: 같은 데이터? 같은 연산/파라미터? 같은 평가 프로토콜?
   튜닝된 베이스라인? 표가 이에 답하지 않으면 그 숫자는 장식이다.
-- 시드와 분산: 딥러닝 결과는 랜덤 시드에 따라 흔들린다; 진지한 논문은 여러 시드의 평균 ±
-  표준편차를, 로보틱스 논문은 여러 *롤아웃과 장면*에 걸쳐 보고한다.
+- 시드와 분산: 딥러닝 결과는 랜덤 시드에 따라 흔들린다; 진지한 보고는 실행 횟수와 실험에
+  맞는 불확실성 지표(표준편차·표준오차·신뢰구간·짝지은 검정)를 명시한다 — 로보틱스
+  논문은 여러 *롤아웃과 장면*에 걸쳐 보고한다.
 
 ### 5. 논문에서 경계할 평가 함정
 
