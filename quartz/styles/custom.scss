@@ -20,6 +20,9 @@
 
 .explorer-content ul li > a {
   font-size: 1rem;
+  // reserve the chevron slot (12px icon + 5px gap) so file text aligns
+  // with folder text at the same level
+  padding-left: 17px;
 }
 
 // Hide created/modified dates in folder & tag listings (publish dates are
