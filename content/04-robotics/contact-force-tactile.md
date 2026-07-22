@@ -29,7 +29,7 @@ Coulomb friction is commonly approximated by
 
 $$\lVert f_t\rVert\le \mu f_n$$
 
-where $f_n$ is normal force, $f_t$ tangential force, and $\mu$ the friction coefficient. Forces inside the friction cone can be consistent with sticking; boundary or exceeded conditions indicate impending or actual slip under the model. Real friction depends on material, speed, pressure, wear, and surface state.
+where $f_n$ is normal force, $f_t$ tangential force, and $\mu$ the friction coefficient. Forces inside the friction cone can be consistent with sticking; boundary or exceeded conditions indicate impending or actual slip under the model. The cone is a *force-feasibility bound* — whether the contact actually sticks or slides also depends on relative motion and the contact law. Real friction depends on material, speed, pressure, wear, and surface state.
 
 ### 3. Rigid and compliant models
 
@@ -140,6 +140,8 @@ $$\lVert f_t\rVert\le \mu f_n$$
 
 로 근사한다. $f_n$은 법선력, $f_t$는 접선력, $\mu$는 마찰 계수다. 마찰 원뿔 안의 힘은
 고착과 양립할 수 있고, 경계·초과 조건은 이 모델 아래 임박한·실제의 미끄럼을 나타낸다.
+원뿔은 *힘의 실행 가능성 경계*다 — 실제로 고착하는지 미끄러지는지는 상대 운동과 접촉
+법칙에도 의존한다.
 실제 마찰은 재료, 속도, 압력, 마모, 표면 상태에 의존한다.
 
 ### 3. 강체 모델과 유연 모델

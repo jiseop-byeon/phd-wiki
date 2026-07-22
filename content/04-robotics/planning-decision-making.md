@@ -49,7 +49,7 @@ Dijkstra uses no informative heuristic. A* is optimal on a graph under the appro
 
 ### 4. Worked example: what a heuristic changes
 
-Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities are $9$ and $10$, so the first is expanded even though it has a larger cost-to-come. The heuristic directs effort toward states estimated to be closer to the goal. An overoptimistic heuristic may be slow but admissible; an overestimating heuristic can lose the usual optimality guarantee.
+Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities are $9$ and $10$, so the first is expanded even though it has a larger cost-to-come. The heuristic directs effort toward states estimated to be closer to the goal. An *underestimating* heuristic remains admissible — though if it is too weak, A* gains little speed over Dijkstra; an *overestimating* heuristic can lose the usual optimality guarantee.
 
 ### 5. Major method families
 
@@ -179,8 +179,8 @@ Dijkstra는 정보성 휴리스틱이 없는 경우다. A*는 적절한 admissib
 
 프런티어의 두 노드가 $(g,h)=(6,3)$과 $(4,6)$이라 하자. A* 우선순위는 $9$와 $10$이므로,
 cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은 목표에 가깝다고 추정되는
-상태 쪽으로 노력을 돌린다. 과소평가(낙관적) 휴리스틱은 느려도 admissible하고,
-과대평가 휴리스틱은 통상적 최적성 보장을 잃을 수 있다.
+상태 쪽으로 노력을 돌린다. *과소평가* 휴리스틱은 admissible을 유지한다 — 너무 약하면 A*가 Dijkstra보다 빨라지는
+이득이 거의 없을 뿐이다; *과대평가* 휴리스틱은 통상적 최적성 보장을 잃을 수 있다.
 
 ### 5. 주요 방법 계열
 
