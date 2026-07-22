@@ -1,5 +1,5 @@
 ---
-title: "1. Modern Robotics (Book)"
+title: "1. Modern Robotics"
 tags: [robotics, resource]
 ---
 

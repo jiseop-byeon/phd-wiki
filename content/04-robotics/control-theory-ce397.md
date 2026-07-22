@@ -1,5 +1,5 @@
 ---
-title: "3. Control Theory (CE397)"
+title: "3. Control Theory"
 tags: [robotics, control, resource]
 ---
 
