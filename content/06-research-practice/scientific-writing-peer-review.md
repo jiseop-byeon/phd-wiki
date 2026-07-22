@@ -80,6 +80,11 @@ Paper, appendix, code, data, model, configuration, logs, and video should refer 
 > [!tip]- Answers
 > 1. Method, comparator, operational definition of robustness/real world, conditions, trials, metrics, uncertainty, and failures. 2. It distinguishes observations from causal or generalizing interpretation. 3. Quote/decompose the concern, answer directly, describe evidence/revision, and give exact locations. 4. Selection bias, omitted failures/resets, unknown exposure, and missing matched baselines.
 
+### Sources
+
+- [Simon Peyton Jones — *How to Write a Great Research Paper* (Microsoft Research)](https://www.microsoft.com/en-us/research/academic-program/write-great-research-paper/) — the classic talk on claim-first writing
+- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/information-for-reviewers) — what reviewers at a flagship robotics journal are asked to check
+
 ## 한국어
 
 과학적 글쓰기는 주장을 증거와 정렬하고 그 경계를 검사 가능하게 만든다. 명료함은 장식이
@@ -172,3 +177,8 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 > 2. 관찰과 인과적·일반화 해석을 구분하기 위해.
 > 3. 우려를 인용·분해하고, 직접 답하고, 증거/수정을 기술하고, 정확한 위치를 준다.
 > 4. 선택 편향, 생략된 실패/리셋, 알 수 없는 노출, 짝지은 베이스라인 부재.
+
+### 출처
+
+- [Simon Peyton Jones — *How to Write a Great Research Paper* (Microsoft Research)](https://www.microsoft.com/en-us/research/academic-program/write-great-research-paper/) — 주장 우선 글쓰기의 고전 강연
+- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/information-for-reviewers) — 대표 로보틱스 저널의 리뷰어 점검 항목

@@ -102,7 +102,8 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 ### Sources
 
 - [Modern Robotics, Chapter 12](http://modernrobotics.org)
-- [MIT Manipulation](https://manipulation.csail.mit.edu/)
+- [MIT Manipulation (Tedrake) — force control & contact chapters](https://manipulation.csail.mit.edu/)
+- [Modern Robotics course wiki — ch. 12 videos & software](http://hades.mech.northwestern.edu/index.php/Modern_Robotics)
 
 ## 한국어
 
@@ -233,4 +234,5 @@ $$\lVert f_t\rVert\le \mu f_n$$
 ### 출처
 
 - [Modern Robotics, Chapter 12](http://modernrobotics.org)
-- [MIT Manipulation](https://manipulation.csail.mit.edu/)
+- [MIT Manipulation (Tedrake) — 힘 제어·접촉 관련 장](https://manipulation.csail.mit.edu/)
+- [Modern Robotics 코스 위키 — 12장 영상·소프트웨어](http://hades.mech.northwestern.edu/index.php/Modern_Robotics)

@@ -101,17 +101,22 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/6-diffusion/dit|DiT]] — *Scalable Diffusion Models with Transformers* (Peebles & Xie, ICCV 2023)
 - [x] ★ [[notes/6-diffusion/flow-matching|Flow Matching]] (Lipman et al., ICLR 2023)
 
-## 7. Robotics & Control (textbook + key references)
+## 7. Robotics & Physical Systems
 
-- [x] ★ [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — study guide with free official PDF & course links
-- [x] ◐ [[04-robotics/lqr-lqg|LQR/LQG]] — study guide (Underactuated Robotics, Stanford EE363)
-- [x] ◐ [[04-robotics/mpc|MPC]] — study guide + Mayne et al., *Constrained MPC* (Automatica 2000)
+**Core textbook and papers** (★◐○ = 읽기 분량)
+
+- [x] ★ [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — textbook with free official PDF & course links
+- [x] ◐ [[04-robotics/mpc|MPC]] — Mayne et al., *Constrained MPC* (Automatica 2000) + study guide
 - [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
-- [x] ◐ [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — study guide (Probabilistic Robotics 기반)
-- [x] ◐ [[04-robotics/planning-decision-making|Planning & Decision-Making]] — study guide (search·sampling·trajectory optimization·TAMP)
-- [x] ◐ [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — study guide (MR 12장 연장)
-- [x] ◐ [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — study guide (timing·frames·middleware·failure)
-- [x] ◐ [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — study guide (autonomy levels·human studies·hazard/risk)
+
+**Study guides** (논문이 아닌 개념 가이드 — 읽기 기호 대신 트랙 순서로 읽는다)
+
+- [[04-robotics/lqr-lqg|LQR/LQG]] — Underactuated Robotics, Stanford EE363 기반
+- [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — Probabilistic Robotics 기반
+- [[04-robotics/planning-decision-making|Planning & Decision-Making]] — search·sampling·trajectory optimization·TAMP
+- [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — MR 12장의 연장
+- [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — timing·frames·middleware·failure
+- [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — autonomy levels·human studies·hazard/risk
 
 ## 8. Construction Robotics
 

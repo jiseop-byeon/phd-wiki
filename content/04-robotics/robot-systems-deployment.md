@@ -121,7 +121,8 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 ### Sources
 
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
-- [MIT Manipulation](https://manipulation.csail.mit.edu/)
+- [MIT Manipulation (Tedrake) — systems chapters](https://manipulation.csail.mit.edu/)
+- [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)
 
 ## 한국어
 
@@ -268,4 +269,5 @@ ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다
 ### 출처
 
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
-- [MIT Manipulation](https://manipulation.csail.mit.edu/)
+- [MIT Manipulation (Tedrake) — 시스템 관련 장](https://manipulation.csail.mit.edu/)
+- [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)

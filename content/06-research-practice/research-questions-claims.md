@@ -89,6 +89,11 @@ Before experiments, make this table:
 > [!tip]- Answers
 > 1. Specify task/distribution, diffusion intervention, matched comparator, data budgets, metric, and closed-loop conditions. 2. Several components or data changes may differ; score alone does not isolate cause. 3. No advantage across predeclared low-data budgets under matched compute/model/evaluation, or an advantage explained by unequal data or tuning.
 
+### Sources
+
+- [DARPA — the Heilmeier Catechism](https://www.darpa.mil/work-with-us/heilmeier-catechism) — the classic checklist for stating what you are trying to do, what is new, and why it matters
+- [NeurIPS Paper Checklist](https://neurips.cc/public/guides/PaperChecklist) — how a major venue operationalizes claim–evidence alignment
+
 ## 한국어
 
 Topic은 영역의 이름이고, research question은 증거가 해소할 수 있는 불확실한 관계를
@@ -186,3 +191,8 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 > 1. 과제/분포, 디퓨전 개입, 짝지은 비교 대상, 데이터 예산, 지표, 폐루프 조건을 명시한다.
 > 2. 여러 구성요소나 데이터가 함께 달라졌을 수 있다 — 점수만으로는 원인을 분리하지 못한다.
 > 3. 미리 선언한 저데이터 예산들에서 대등한 컴퓨트/모델/평가 아래 이점이 없거나, 이점이 불평등한 데이터·튜닝으로 설명되는 것.
+
+### 출처
+
+- [DARPA — Heilmeier Catechism](https://www.darpa.mil/work-with-us/heilmeier-catechism) — 무엇을 하려는지, 무엇이 새로운지, 왜 중요한지를 묻는 고전적 체크리스트
+- [NeurIPS Paper Checklist](https://neurips.cc/public/guides/PaperChecklist) — 주요 학회가 주장–증거 정렬을 어떻게 운영화하는지

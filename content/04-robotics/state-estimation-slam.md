@@ -137,7 +137,7 @@ You should be able to:
 
 ### Sources
 
-- [Probabilistic Robotics — Thrun, Burgard & Fox](https://docs.ufpr.br/~danielsantos/ProbabilisticRobotics.pdf)
+- [Probabilistic Robotics — Thrun, Burgard & Fox (MIT Press)](https://mitpress.mit.edu/9780262201629/probabilistic-robotics/)
 - [GTSAM concepts](https://gtsam.org/tutorials/intro.html)
 - [KITTI odometry evaluation](https://www.cvlibs.net/datasets/kitti/eval_odometry.php)
 
@@ -296,6 +296,6 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 
 ### 출처
 
-- [Probabilistic Robotics — Thrun, Burgard & Fox](https://docs.ufpr.br/~danielsantos/ProbabilisticRobotics.pdf)
+- [Probabilistic Robotics — Thrun, Burgard & Fox (MIT Press)](https://mitpress.mit.edu/9780262201629/probabilistic-robotics/)
 - [GTSAM concepts](https://gtsam.org/tutorials/intro.html)
 - [KITTI odometry evaluation](https://www.cvlibs.net/datasets/kitti/eval_odometry.php)

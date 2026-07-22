@@ -73,6 +73,12 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 > [!tip]- Answers
 > 1. Frames share the same scene, state trajectory, calibration, and failure event. 2. When both methods can face the same task/scene/participant, reducing nuisance variation. 3. The comparison confounds architecture with data and pretraining. 4. Hardware, calibration, timing, control, materials, configuration, and procedures also determine outcomes.
 
+### Sources
+
+- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — the report that anchors the reproducibility vocabulary
+- [Artifact Evaluation (artifact-eval.org)](https://www.artifact-eval.org/) — what independent artifact reviewers actually check
+- [Sandve et al., *Ten Simple Rules for Reproducible Computational Research* (PLOS Comp Biol 2013)](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285)
+
 ## 한국어
 
 실험은 제안한 설명을 그럴듯한 대안들과 구분해야 한다. 로보틱스에서는 모델·데이터셋만이
@@ -162,3 +168,9 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 > 2. 두 방법이 같은 과제/장면/참가자를 마주할 수 있어 방해 변동이 줄어들 때.
 > 3. 구조와 데이터·사전학습이 교란(confound)된다.
 > 4. 하드웨어, 보정, 타이밍, 제어, 재료, 설정, 절차도 결과를 결정한다.
+
+### 출처
+
+- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — 재현성 어휘의 기준이 되는 보고서
+- [Artifact Evaluation (artifact-eval.org)](https://www.artifact-eval.org/) — 독립 artifact 리뷰어가 실제로 확인하는 것
+- [Sandve et al., *Ten Simple Rules for Reproducible Computational Research* (PLOS Comp Biol 2013)](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285)

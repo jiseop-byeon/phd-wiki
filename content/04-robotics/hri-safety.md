@@ -103,6 +103,7 @@ An automated excavator receives a goal from an operator, plans and executes a di
 
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
+- [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — the field's flagship venue; its papers set the de facto standard for human-study design
 
 ## 한국어
 
@@ -231,3 +232,4 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
+- [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — 분야 대표 학회; 인간 대상 연구 설계의 실제 기준을 보여주는 논문들

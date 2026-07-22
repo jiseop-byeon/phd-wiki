@@ -12,9 +12,9 @@ own study notes distilled from them.
 ### Priority map (for physical-AI construction robotics research)
 
 **Tier 1 — study fully (pillars)**
-- Modern Robotics + kinematics/dynamics lectures → notes go to [[04-robotics/index|Robotics & Control]]
+- Modern Robotics + kinematics/dynamics lectures → notes go to [[04-robotics/index|Robotics & Physical Systems]]
 - Deep learning course slides → complements the [[01-canonical-papers/canonical-list|canonical papers]]
-- Control theory (CE397 packet) → the MPC track in [[04-robotics/index|Robotics & Control]]
+- Control theory (CE397 packet) → the MPC track in [[04-robotics/index|Robotics & Physical Systems]]
 - Optimization (LP → NLP → MIP) — the language of MPC, trajectory optimization, and task allocation
 
 **Tier 2 — study the useful half, reference the rest**
@@ -55,9 +55,9 @@ paper in this wiki** (individual papers may require deeper references): math cor
 ### 우선순위 지도 (physical AI 건설로봇 연구 기준)
 
 **1순위 — 전체를 공부 (기둥 과목)**
-- Modern Robotics + 기구학/동역학 강의 → 노트는 [[04-robotics/index|로보틱스 & 제어]]에
+- Modern Robotics + 기구학/동역학 강의 → 노트는 [[04-robotics/index|로보틱스 & Physical Systems]]에
 - 딥러닝 강의 슬라이드 → [[01-canonical-papers/canonical-list|핵심 논문 리스트]]와 상호 보완
-- 제어 이론 (CE397 교재) → [[04-robotics/index|로보틱스 & 제어]]의 MPC 트랙
+- 제어 이론 (CE397 교재) → [[04-robotics/index|로보틱스 & Physical Systems]]의 MPC 트랙
 - 최적화 (LP → NLP → MIP) — MPC·궤적 최적화·작업 할당의 공용 언어
 
 **2순위 — 필요한 절반만 공부, 나머지는 참조**
