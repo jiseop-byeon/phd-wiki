@@ -30,11 +30,19 @@ point. (For companies see [[03-deep-learning/physical-ai-ecosystem|the ecosystem
 | [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/), ETH Zurich | Fabio Gramazio, Matthias Kohler | robotic fabrication in architecture; the world's first architectural robotics lab; NCCR Digital Fabrication |
 | TU Munich (legacy) | Thomas Bock | the STCR taxonomy and the field's standard reference books/surveys |
 
-**The Lee (DPM) academic tree** — SangHyun Lee's PhD alumni now run their own labs:
-Houtan Jebelli (UIUC, above), Meiyin Liu (Rutgers), JoonOh Seo (HK PolyU), Byungjoo Choi
-(Ajou), among others — one of the densest advisor networks in construction
-automation/worker-sensing research. Further placements (VT, GT, Texas A&M lines) to be
-added as verified.
+**The Michigan academic tree** — the UMich construction-automation cluster (Kamat,
+Menassa, Lee) has seeded a generation of faculty across the US:
+
+| New faculty | Where | Focus |
+|---|---|---|
+| [Houtan Jebelli](https://cee.illinois.edu/directory/profile/hjebelli) | UIUC | construction robotics, physiological computing (Lee's PhD alumnus) |
+| [Hongrui Yu](https://scholar.google.com/citations?user=8GMGKXMAAAAJ&hl=en) | Virginia Tech | imitation learning for construction skills, human-robot handover, digital-twin HRC workflows |
+| [Francis Baek](https://scholar.google.com/citations?user=7B_RBSAAAAAJ&hl=en) | Georgia Tech | vision-based localization, GAN data augmentation, worker safety/ergonomics, human-robot team dynamics |
+| [Xi Wang](https://scholar.google.com/citations?user=nZeO0zEAAAAJ&hl=en) | Texas A&M | human-robot collaboration in construction (field-defining survey), process-level digital twins |
+
+Plus Meiyin Liu (Rutgers), JoonOh Seo (HK PolyU), Byungjoo Choi (Ajou) — one of the
+densest advisor networks in construction automation research. Watching this tree's output
+≈ watching where US construction robotics is heading.
 
 ### How to use this map
 
@@ -76,10 +84,19 @@ added as verified.
 | [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/), ETH 취리히 | Fabio Gramazio, Matthias Kohler | 건축의 로봇 패브리케이션; 세계 최초의 건축 로보틱스 랩; NCCR Digital Fabrication |
 | TU 뮌헨 (유산) | Thomas Bock | STCR 분류 체계와 이 분야의 표준 참고서·서베이 |
 
-**Lee (DPM) 학문 계보** — SangHyun Lee의 박사 제자들이 각자의 랩을 운영 중이다:
-Houtan Jebelli(UIUC, 위), Meiyin Liu(Rutgers), JoonOh Seo(홍콩 PolyU), Byungjoo Choi(아주대)
-등 — 건설 자동화/작업자 센싱 연구에서 가장 밀도 높은 지도교수 네트워크 중 하나.
-추가 배출(VT, GT, Texas A&M 라인)은 확인되는 대로 추가한다.
+**미시간 학문 계보** — 미시간대 건설 자동화 클러스터(Kamat, Menassa, Lee)가 미국 전역에
+신진 교수 세대를 배출했다:
+
+| 신진 교수 | 소속 | 초점 |
+|---|---|---|
+| [Houtan Jebelli](https://cee.illinois.edu/directory/profile/hjebelli) | UIUC | 건설로봇, 생리 신호 컴퓨팅 (Lee의 박사 제자) |
+| [Hongrui Yu](https://scholar.google.com/citations?user=8GMGKXMAAAAJ&hl=en) | Virginia Tech | 건설 기술의 모방학습, 인간-로봇 물체 전달, 디지털 트윈 HRC 워크플로 |
+| [Francis Baek](https://scholar.google.com/citations?user=7B_RBSAAAAAJ&hl=en) | Georgia Tech | 비전 기반 위치 추정, GAN 데이터 증강, 작업자 안전/인간공학, 인간-로봇 팀 역학 |
+| [Xi Wang](https://scholar.google.com/citations?user=nZeO0zEAAAAJ&hl=en) | Texas A&M | 건설 HRC(분야를 정의한 서베이), 공정 수준 디지털 트윈 |
+
+여기에 Meiyin Liu(Rutgers), JoonOh Seo(홍콩 PolyU), Byungjoo Choi(아주대)까지 — 건설
+자동화 연구에서 가장 밀도 높은 지도교수 네트워크 중 하나다. 이 계보의 산출물을 지켜보는
+것 ≈ 미국 건설로봇의 방향을 지켜보는 것.
 
 ### 이 지도를 쓰는 법
 
