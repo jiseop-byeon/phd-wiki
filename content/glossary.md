@@ -29,6 +29,9 @@ tags: [reference]
 - **Pretraining vs Fine-tuning vs Post-training** — 대규모 일반 데이터 → 과제 데이터로 조정 → (최근 용법) SFT·RLHF 등 정렬 단계 전체를 묶어 부르는 말. π0의 "post-training"은 고품질 과제 데이터 단계다. → [[01-canonical-papers/notes/4-vla/pi0\|π0]]
 - **Generalization vs Robustness vs Transfer** — 같은 분포의 새 샘플 / 교란·이동된 분포 / 다른 과제·도메인으로의 이전. 논문이 셋 중 무엇을 재는지 확인하고 읽어라.
 - **Zero-shot vs Few-shot vs OOD** — 과제 예시 0개 / 소수 예시 / 학습 분포 밖 평가. zero-shot이라도 사전학습에 유사 데이터가 있었는지가 실제 쟁점이다. → [[02-foundations/ml-practice|ML 실무 §1]]
+- **Intrinsics vs Extrinsics** — 카메라 자체의 성질(초점 거리·주점·왜곡; 렌즈를 건드리기 전까지 고정) / 다른 프레임에 대한 카메라의 SE(3) pose(장착이 바뀌면 재보정). → [[04-robotics/geometric-perception-calibration|Geometric Perception]]
+- **Geometric vs Deep perception** — 기하 인식은 pose·형상·프레임 관계(어디에·어떤 스케일로)를, 딥 인식은 의미(무엇인지)를 준다. 현대 파이프라인은 둘을 섞으며, 논문을 읽을 때 어느 단계가 어느 쪽인지 구분해야 한다.
+- **State machine vs Behavior tree** — 둘 다 실행 계층: FSM은 상태와 전이의 그래프(단순하나 커지면 얽힘), behavior tree는 sequence/fallback 노드의 모듈적 합성(필드 시스템에서 흔함). → [[04-robotics/robot-systems-deployment|Robot Systems §6]]
 - **State vs Observation vs Estimate vs Belief** — state는 모델에 필요한 숨은 변수, observation은 센서값, estimate는 추론한 점 요약, belief는 가능한 state의 분포. → [[04-robotics/state-estimation-slam|State Estimation]]
 - **Covariance vs Confidence** — covariance는 가정한 모델 아래 추정 오차의 분산·상관 구조다. 모델이 틀리면 작아도 과신할 수 있으며, 일반적인 confidence와 동의어가 아니다.
 - **Odometry vs Localization vs Mapping vs SLAM** — 상대 이동 / 알려진 지도에서 pose / pose가 주어진 지도 / pose와 지도의 공동 추정. → [[04-robotics/state-estimation-slam|State Estimation & SLAM]]
@@ -48,6 +51,7 @@ tags: [reference]
 - **Attention (어텐션)** — 쿼리(Q)와 키(K)의 유사도로 값(V)을 가중합하는 연산. 시퀀스 안의 임의의 두 위치를 한 번에 연결한다. → [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]
 - **Autoregressive (자기회귀)** — 이전 출력들을 조건으로 다음 토큰을 하나씩 생성. GPT 계열, 다수의 VLA가 이 방식. → [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]
 - **Bellman equation (벨만 방정식)** — 오늘의 가치 = 보상 + 할인된 내일의 가치라는 고정점 방정식. 모든 RL의 뿌리. → [[02-foundations/rl-basics|RL 기초]]
+- **Behavior tree** — sequence·fallback·decorator 노드로 로봇 행동을 모듈적으로 합성하는 실행 계층. 실패 처리(retry·fallback·안전 정지)가 구조에 내장된다. → [[04-robotics/robot-systems-deployment|Robot Systems §6]]
 - **BLEU** — 기계번역 품질 지표. 생성문과 참조 번역의 n-gram 겹침을 측정.
 - **CFG (Classifier-Free Guidance)** — 조건부/무조건부 예측의 차이 방향으로 외삽해 조건 충실도를 높이는 샘플링 기법. → [[01-canonical-papers/notes/6-diffusion/classifier-free-guidance|CFG]]
 - **Condition number (조건수)** — 일반 행렬의 2-노름에서는 $\kappa_2(A) = \sigma_{max}/\sigma_{min}$(특이값 비); 대칭 양정부호(헤시안 등)에서는 고유값 비와 같다. 선형계의 민감도와 최적화 난이도의 지표. → [[02-foundations/linear-algebra|선형대수]]
@@ -67,6 +71,7 @@ tags: [reference]
 - **Fine-tuning (파인튜닝)** — 사전학습 모델을 특정 작업 데이터로 추가 학습. → [[01-canonical-papers/notes/1-foundations/bert|BERT]], [[01-canonical-papers/notes/1-foundations/lora|LoRA]]
 - **Flow matching** — 노이즈→데이터 확률 경로의 속도장을 직접 회귀하는 생성 학습법. π0의 행동 생성 엔진. → [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow Matching]]
 - **Gaussian splatting** — 장면을 수백만 개의 3D 가우시안으로 표현하고 래스터라이즈하는 실시간 3D 표현. → [[01-canonical-papers/notes/2-computer-vision/3d-gaussian-splatting|3DGS]]
+- **ICP (Iterative Closest Point)** — 두 포인트 클라우드를 정렬하는 국소 반복법: 최근접점 짝짓기 → 최소제곱 SE(3) → 반복. 초기 추정이 필요하고 복도·평면 같은 퇴화 장면에서 미끄러진다. → [[04-robotics/geometric-perception-calibration|Geometric Perception]]
 - **Imitation learning (모방 학습)** — 전문가 시연을 활용해 정책을 학습하는 방법 전반(BC·DAgger·IRL 포함); 좁은 의미로는 BC(시연의 지도학습)를 가리키기도 한다. 로봇 매니퓰레이션의 주류. → [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]
 - **InfoNCE** — 배치 안의 다른 샘플들을 "클래스"로 쓰는 대조 손실. 상호 정보량의 하한. → [[02-foundations/information-theory|정보이론 §4]]
 
@@ -90,6 +95,7 @@ tags: [reference]
 
 - **Q-Former** — 학습된 쿼리로 이미지를 소수 토큰으로 증류하는 연결 모듈. → [[01-canonical-papers/notes/3-vlm/blip-2|BLIP-2]]
 - **Receding horizon** — 지평을 앞으로 밀며 계획을 반복 갱신하는 MPC/정책의 실행 구조. → [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]
+- **Reprojection error** — 추정한 3D 점을 추정한 카메라 모델로 투영해 검출 위치와 잰 픽셀 거리. 보정·재구성의 표준 품질 지표지만, 보정된 부피 밖의 정확도를 보장하지 않는다. → [[04-robotics/geometric-perception-calibration|Geometric Perception]]
 - **RLHF** — 인간 선호로 보상 모델을 배우고 RL로 정책을 정렬하는 3단계 레시피. → [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]
 - **RSSM** — 결정론적+확률적 상태를 함께 갖는 순환 상태공간 모델. 월드모델의 표준 백본. → [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]
 - **Scaling law (스케일링 법칙)** — 손실이 파라미터·데이터·연산의 거듭제곱 법칙을 따른다는 경험 법칙. → [[01-canonical-papers/notes/1-foundations/scaling-laws|Scaling Laws]]

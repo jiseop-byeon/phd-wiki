@@ -98,6 +98,42 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   are available — practical mostly in
   simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
   the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
+**The imitation-learning toolbox** (the vocabulary of every VLA paper):
+
+- **The BC objective**: maximize $\log \pi_\theta(a|o)$ over demo pairs — supervised
+  learning wearing a policy costume ([[01-canonical-papers/how-to-read|how-to-read §3]]
+  walks through this exact equation).
+- **Covariate shift and compounding error**: the policy is trained on *expert* states but
+  executed on *its own* — small errors drift the state off-distribution, where errors grow.
+  This is the single most-cited failure mode of BC, and the reason **DAgger** exists
+  (execute the learner, have the expert label the visited states, retrain).
+- **Where demos come from**: teleoperation ([[01-canonical-papers/notes/4-vla/act|ALOHA]]-style
+  rigs, VR, kinesthetic teaching), scripted policies, or cross-embodiment pooling
+  ([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]). Reading a dataset section means
+  checking: who collected, at what rate, how actions were labeled, and how observation-action
+  pairs were *time-synchronized* (a mislabeled 100 ms offset silently corrupts everything).
+- **Action representation choices** you will meet: absolute vs delta actions; joint vs
+  end-effector space; **action chunking** (predict $k$ future actions at once —
+  [[01-canonical-papers/notes/4-vla/act|ACT]]) which fights compounding error at the cost of
+  reactivity; and expressive output heads
+  ([[01-canonical-papers/notes/4-vla/diffusion-policy|diffusion]],
+  [[01-canonical-papers/notes/4-vla/pi0|flow matching]]) because demonstrations are
+  **multimodal** — two demonstrators avoid an obstacle on different sides, and a
+  mean-regression policy would drive through the middle.
+- **Data curation beats raw count**: success filtering, deduplication, and *trajectory
+  diversity* (scenes, objects, initial conditions) usually matter more than the number of
+  episodes — the claim to audit whenever a paper reports "N thousand demos."
+- **Offline RL vs imitation**: offline RL also learns from a fixed dataset but uses
+  rewards and value estimation to *stitch* better behavior than any single demonstrator —
+  at the price of value-extrapolation instability that pure BC never has.
+
+Entry chain into the papers: this section →
+[[01-canonical-papers/notes/4-vla/act|ACT]] →
+[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] →
+[[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]] →
+[[01-canonical-papers/notes/4-vla/rt-1|RT-1]]/[[01-canonical-papers/notes/4-vla/rt-2|RT-2]] →
+[[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]/[[01-canonical-papers/notes/4-vla/pi0|π0]].
+
 - Decoder ring for papers: "BC baseline" = behavior cloning; "advantage-weighted" =
   policy improvement re-weighted by $e^{A/\beta}$; "KL-regularized policy" = stay near a
   reference policy while improving.
@@ -110,6 +146,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
    (Show $E_{a\sim\pi}[\nabla\log\pi(a|s)] = 0$.)
 3. In PPO's objective, what does the $\min$ do when $A_t > 0$ vs $A_t < 0$? Why clip at all?
 4. Give two reasons Dreamer-style imagination training keeps horizons short (~15 steps).
+5. Why does action chunking reduce compounding error, and what does it trade away?
 
 ### Robotics bridge
 
@@ -205,6 +242,40 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   시뮬레이션(sim-to-real)
   에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
   [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
+**모방 학습 도구 상자** (모든 VLA 논문의 어휘):
+
+- **BC 목적함수**: 시연 쌍에 대해 $\log \pi_\theta(a|o)$를 최대화 — 정책의 옷을 입은
+  지도학습이다 ([[01-canonical-papers/how-to-read|how-to-read §3]]이 정확히 이 식을
+  해부한다).
+- **Covariate shift와 오차 누적**: 정책은 *전문가의* 상태에서 학습되지만 *자신의*
+  상태에서 실행된다 — 작은 오차가 상태를 분포 밖으로 밀고, 거기서 오차가 더 자란다.
+  BC의 가장 많이 인용되는 실패 모드이고, **DAgger**가 존재하는 이유다(학습자를
+  실행시키고, 방문한 상태를 전문가가 라벨하고, 재학습).
+- **시연의 출처**: 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]]식 장비, VR,
+  직접 교시), 스크립트 정책, 또는 교차-embodiment 풀링
+  ([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]). 데이터셋 절을 읽는다는 것은:
+  누가, 어떤 주기로 수집했고, 행동을 어떻게 라벨했고, 관측-행동 쌍이 어떻게 *시간
+  동기화*됐는지 확인하는 일이다(100 ms 어긋난 라벨은 조용히 전부를 오염시킨다).
+- **만나게 될 행동 표현의 선택지**: 절대 vs 델타 행동; 관절 vs 말단 공간; 오차 누적과
+  싸우는 대신 반응성을 지불하는 **행동 청킹**(미래 행동 $k$개를 한 번에 예측 —
+  [[01-canonical-papers/notes/4-vla/act|ACT]]); 그리고 표현력 있는 출력 헤드
+  ([[01-canonical-papers/notes/4-vla/diffusion-policy|디퓨전]],
+  [[01-canonical-papers/notes/4-vla/pi0|flow matching]]) — 시연이 **다봉**이기 때문이다:
+  두 시연자가 장애물을 서로 다른 쪽으로 피하면, 평균 회귀 정책은 한가운데로 돌진한다.
+- **큐레이션이 개수를 이긴다**: 성공 필터링, 중복 제거, *궤적 다양성*(장면·물체·초기
+  조건)이 에피소드 수보다 대개 더 중요하다 — 논문이 "시연 N천 개"를 보고할 때마다
+  검사할 주장.
+- **오프라인 RL vs 모방**: 오프라인 RL도 고정 데이터셋에서 배우지만 보상과 가치 추정으로
+  어느 단일 시연자보다 나은 행동을 *꿰맨다* — 순수 BC에는 없는 가치 외삽 불안정을
+  대가로.
+
+논문으로 들어가는 진입 사슬: 이 절 →
+[[01-canonical-papers/notes/4-vla/act|ACT]] →
+[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] →
+[[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]] →
+[[01-canonical-papers/notes/4-vla/rt-1|RT-1]]/[[01-canonical-papers/notes/4-vla/rt-2|RT-2]] →
+[[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]/[[01-canonical-papers/notes/4-vla/pi0|π0]].
+
 - 논문 해독기: "BC baseline" = 행동 복제; "advantage-weighted" = $e^{A/\beta}$로 재가중된
   정책 개선; "KL-regularized policy" = 기준 정책 근처에 머물며 개선하기.
 
@@ -216,9 +287,11 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 3. PPO 목적함수의 $\min$은 $A_t > 0$일 때와 $A_t < 0$일 때 각각 무슨 일을 하는가?
    애초에 왜 클리핑하는가?
 4. Dreamer식 상상 학습이 지평을 짧게(~15 스텝) 유지하는 이유 두 가지를 들어라.
+5. 행동 청킹이 오차 누적을 줄이는 이유는? 그 대가로 잃는 것은?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $V^\pi(s) = E[r_t + \gamma G_{t+1} \mid s]$에서 안쪽 기댓값을 마르코프 성질로 $V^\pi(s')$로 접으면 $E[r + \gamma V^\pi(s')]$.
 > 2. $E_{a\sim\pi}[\nabla\log\pi(a|s)]\,b(s) = b(s)\,\nabla E_{a\sim\pi}[1] = b(s)\,\nabla 1 = 0$ — 스코어 함수의 기댓값이 0이라 베이스라인 항이 사라진다.
 > 3. $A_t > 0$: 비율이 $1+\epsilon$을 넘으면 이득이 잘려 과도한 확률 *증가* 유인이 사라진다. $A_t < 0$: 비율이 $1-\epsilon$ 아래로 내려가는 과도한 확률 *감소*가 클리핑으로 제한되고, min이 잘리지 않은(더 나쁜) 항을 고르므로 정책이 나쁜 방향으로 움직이는 동안에는 페널티가 계속 작용한다. 클리핑의 목적 = 데이터를 모은 정책 근처에 머무는 신뢰 영역.
 > 4. ① 모델 오차가 상상 지평을 따라 지수적으로 누적된다(복합 오차) ② 가치 부트스트랩이 짧은 지평 너머를 대신 평가하므로 길 필요가 없다.
+> 5. 정책이 자기 오차 위에서 다시 예측하는 횟수가 $k$분의 1로 줄어 분포 이탈이 느려진다; 대가는 반응성 — 청크 실행 중에 들어온 새 관측을 (부분적으로만) 반영한다.

@@ -25,6 +25,7 @@ flowchart LR
 ### B. State, perception & belief
 
 - [[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]] — state versus observation, Bayes/Kalman filtering, sensor fusion, factor graphs, drift and loop closure
+- [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] — camera models, depth, point clouds, registration/ICP, intrinsic/extrinsic/hand–eye calibration, reprojection error
 - Learned visual perception lives in [[03-deep-learning/index|Deep Learning]]; this page explains how sensor evidence becomes a time-indexed robot belief.
 
 ### C. Planning & decision-making
@@ -113,5 +114,5 @@ flowchart LR
 [[05-construction-robotics/index|건설로봇]]의 현장 제약과 만난다. 새 연구를 읽는 것을 넘어
 설계·평가할 때는 [[06-research-practice/index|Research Practice]]를 쓰라.
 
-참고: 페이지 번호는 권장 학습 순서다 — 추정(3) → 계획(4) → 제어(5–8) → 접촉(9) →
-시스템(10) → 사람·안전(11).
+참고: 페이지 번호는 권장 학습 순서다 — 추정(3) → 기하 인식(3.5) → 계획(4) → 제어(5–8) →
+접촉(9) → 시스템(10) → 사람·안전(11).

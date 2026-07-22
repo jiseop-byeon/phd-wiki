@@ -64,7 +64,36 @@ A map frame can jump after global correction while odom remains locally smooth; 
 
 ROS is one implementation ecosystem, not the system architecture itself. “Runs on ROS” says little about latency, determinism, safety, or deployment quality.
 
-### 6. Reliability and safety mechanisms
+### 6. Behavior orchestration and task execution
+
+Between the task command and the planner/controller usually sits an **execution layer**
+— a finite-state machine (FSM), behavior tree, or task executive — that decides *which*
+planner, policy, or controller runs now, and what happens when it fails.
+
+```mermaid
+flowchart TD
+    T["Task command"] --> X["State machine / behavior tree / executive"]
+    X --> PL["Planner or learned policy"] --> CT["Controller"]
+    CT --> X
+```
+
+Core vocabulary: **states/behaviors** with **transitions** fired by **guards**
+(conditions); **preconditions** checked before an action and **postconditions** verified
+after; **timeouts** and **retries**; **fallbacks** and **recovery behaviors** when a
+step fails; **action servers** with feedback and **cancellation**. A worked skeleton:
+
+```
+Idle → Detect object → Plan grasp → Execute → Verify
+                                        ├─ success → Place
+                                        └─ failure → Replan / Request help / Safe stop
+```
+
+Behavior trees compose these modularly (sequence, fallback, decorator nodes) and are
+common in field systems; FSMs are simpler but tangle as states multiply. When a paper
+says the robot "recovered" or "retried," this layer — not the policy — often did it:
+check who detects failure, who chooses the response, and what counts as terminal.
+
+### 7. Reliability and safety mechanisms
 
 - Watchdog: detects missing or unhealthy updates.
 - Heartbeat: periodic liveness signal.
@@ -75,11 +104,11 @@ ROS is one implementation ecosystem, not the system architecture itself. “Runs
 
 Best-effort average timing is different from deterministic deadline behavior. Safety claims require system-level evidence, not merely a stable policy output.
 
-### 7. Calibration, configuration, and reproducibility
+### 8. Calibration, configuration, and reproducibility
 
 Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, controller gains, firmware, model weights, software commit, hardware revision, and runtime configuration. A random seed does not reproduce an experiment when calibration and physical hardware differ.
 
-### 8. Simulation and staged deployment
+### 9. Simulation and staged deployment
 
 | Stage | Purpose |
 |---|---|
@@ -91,11 +120,11 @@ Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, 
 
 A digital twin is not automatically a validated predictor. Ask what is synchronized, calibrated, and experimentally checked. Domain randomization covers only the factors and ranges that were randomized.
 
-### 9. Failure taxonomy
+### 10. Failure taxonomy
 
 Separate sensor, estimation, planning, policy, control, communication, compute, mechanical, operator, and environment failures. The visible final event may be downstream: a collision can originate from stale sensing, wrong localization, infeasible planning, poor tracking, or actuator saturation.
 
-### 10. Resource constraints
+### 11. Resource constraints
 
 Onboard/offboard compute changes latency, network dependence, power, thermal limits, privacy, and failure modes. Report compute, memory, bandwidth, battery/power, thermal throttling, payload, and real-time load—not model parameter count alone.
 
@@ -106,6 +135,7 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 - Distinguish rate, latency, jitter, and deadline.
 - Trace a transform with correct direction and timestamp.
 - Explain why ROS use or simulation success is not deployment evidence.
+- Locate the execution layer (FSM/behavior tree) and what it does on failure.
 - Assign a failure to its likely originating subsystem rather than its final symptom.
 
 ### Self-check
@@ -201,7 +231,36 @@ map 프레임은 전역 보정 후 점프할 수 있고 odom은 국소적으로 
 ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다. "ROS에서 돈다"는 지연,
 결정론, 안전, 배포 품질에 대해 거의 말해 주지 않는다.
 
-### 6. 신뢰성과 안전 장치
+### 6. 행동 오케스트레이션과 과제 실행
+
+과제 명령과 플래너/제어기 사이에는 보통 **실행 계층**이 있다 — 유한상태기계(FSM),
+behavior tree, 또는 task executive — 지금 *어느* 플래너·정책·제어기를 돌릴지, 실패하면
+무엇을 할지를 결정한다.
+
+```mermaid
+flowchart TD
+    T["과제 명령"] --> X["상태기계 / behavior tree / executive"]
+    X --> PL["플래너 또는 학습 정책"] --> CT["제어기"]
+    CT --> X
+```
+
+핵심 어휘: **가드**(조건)로 발화되는 **전이**를 가진 **상태/행동**; 행동 전에 검사하는
+**precondition**과 후에 검증하는 **postcondition**; **timeout**과 **retry**; 단계가
+실패했을 때의 **fallback**과 **recovery behavior**; 피드백과 **취소**가 있는 **action
+server**. 뼈대 예제:
+
+```
+Idle → 물체 감지 → 파지 계획 → 실행 → 검증
+                                  ├─ 성공 → 놓기
+                                  └─ 실패 → 재계획 / 도움 요청 / 안전 정지
+```
+
+Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorator 노드) 필드
+시스템에서 흔하다; FSM은 단순하지만 상태가 늘면 얽힌다. 논문이 로봇이 "회복했다",
+"재시도했다"고 하면 — 정책이 아니라 이 계층이 한 일인 경우가 많다: 누가 실패를
+감지하고, 누가 대응을 고르고, 무엇이 종료 조건인지 확인하라.
+
+### 7. 신뢰성과 안전 장치
 
 - Watchdog: 누락되거나 비정상인 갱신을 감지.
 - Heartbeat: 주기적 생존 신호.
@@ -213,13 +272,13 @@ ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다
 평균이 좋은 best-effort 타이밍과 결정론적 데드라인 거동은 다르다. 안전 주장은 안정된
 정책 출력만이 아니라 시스템 수준의 증거를 요구한다.
 
-### 7. 보정, 설정, 재현성
+### 8. 보정, 설정, 재현성
 
 내부/외부 보정, 영점, 단위, 프레임 관례, 제어기 이득, 펌웨어, 모델 가중치, 소프트웨어
 커밋, 하드웨어 리비전, 런타임 설정을 기록하라. 보정과 물리적 하드웨어가 다르면 랜덤
 시드는 실험을 재현하지 못한다.
 
-### 8. 시뮬레이션과 단계적 배포
+### 9. 시뮬레이션과 단계적 배포
 
 | 단계 | 목적 |
 |---|---|
@@ -232,13 +291,13 @@ ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다
 디지털 트윈이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
 물어라. Domain randomization은 무작위화한 요인과 범위만 커버한다.
 
-### 9. 실패 분류
+### 10. 실패 분류
 
 센서, 추정, 계획, 정책, 제어, 통신, 컴퓨트, 기계, 운용자, 환경 실패를 분리하라. 눈에
 보이는 최종 사건은 하류일 수 있다: 충돌은 오래된 센싱, 잘못된 위치 추정, 실행 불가능한
 계획, 나쁜 추종, 액추에이터 포화 어디서든 비롯될 수 있다.
 
-### 10. 자원 제약
+### 11. 자원 제약
 
 온보드/오프보드 컴퓨트는 지연, 네트워크 의존, 전력, 열 한계, 프라이버시, 실패 모드를
 바꾼다. 모델 파라미터 수만이 아니라 컴퓨트, 메모리, 대역폭, 배터리/전력, 열 스로틀링,
@@ -251,6 +310,7 @@ ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다
 - 주기·지연·지터·데드라인을 구분할 수 있다
 - 방향·타임스탬프가 맞는 변환을 추적할 수 있다
 - ROS 사용이나 시뮬레이션 성공이 배포 증거가 아닌 이유를 설명할 수 있다
+- 실행 계층(FSM/behavior tree)의 위치와 실패 시 역할을 짚을 수 있다
 - 실패를 최종 증상이 아니라 유력한 발원 하위 시스템에 배정할 수 있다
 
 ### 스스로 점검

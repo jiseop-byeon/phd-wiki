@@ -113,6 +113,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 - [[04-robotics/lqr-lqg|LQR/LQG]] — Underactuated Robotics, Stanford EE363 기반
 - [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — Probabilistic Robotics 기반
+- [[04-robotics/geometric-perception-calibration|Geometric Perception & Calibration]] — 카메라 모델·registration·보정
 - [[04-robotics/planning-decision-making|Planning & Decision-Making]] — search·sampling·trajectory optimization·TAMP
 - [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — MR 12장의 연장
 - [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — timing·frames·middleware·failure
