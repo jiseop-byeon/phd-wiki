@@ -22,6 +22,9 @@ Before 2017, sequence transduction (machine translation, etc.) was dominated by 
 
 ### Method
 
+> [!tip] Key intuition
+> An RNN passes information through time step by step; attention lets every token *look up* every other token directly, like a differentiable key-value database. Order is then re-injected separately (positional encoding).
+
 The Transformer is an encoder-decoder built from stacked identical blocks (6 each in the original), with no recurrence:
 
 - **Scaled dot-product attention** — the core operation:
@@ -64,6 +67,9 @@ Arguably the most influential DL paper of the decade. Direct descendants: BERT (
 2017년 이전의 기계번역 등 시퀀스 변환은 LSTM/GRU 기반 인코더-디코더가 표준이었다. 고질적인 문제 두 가지: (1) **순차 계산** — RNN은 토큰을 하나씩 처리해야 해서 시퀀스 방향으로 학습을 병렬화할 수 없다. (2) **장거리 의존성** — 멀리 떨어진 토큰을 연결하려면 정보가 수많은 순환 스텝을 통과해야 한다. 어텐션 자체는 이미 있었지만(Bahdanau 2015) RNN에 붙이는 *보조 장치*였다. 이 논문의 질문: 어텐션*만* 쓰면 어떻게 될까?
 
 ### 방법
+
+> [!tip] 핵심 직관
+> RNN은 정보를 시간 순서대로 한 칸씩 전달하지만, 어텐션은 모든 토큰이 다른 모든 토큰을 직접 *조회*하게 만든다 — 미분 가능한 key-value 데이터베이스에 가깝다. 순서 정보는 위치 인코딩으로 따로 주입한다.
 
 Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-디코더이며, 순환이 전혀 없다:
 

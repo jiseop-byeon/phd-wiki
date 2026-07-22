@@ -22,6 +22,9 @@ status: to-read   # to-read | reading | done
 
 ### Method
 
+> [!tip] Key intuition
+> <!-- one-paragraph intuition before the details -->
+
 <!-- The core idea and how it works — in my own words, with the key figure/equation if needed -->
 
 ### Results
