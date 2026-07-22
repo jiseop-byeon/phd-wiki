@@ -92,7 +92,8 @@ above exists.
 
 ### Where to go next
 
-After the foundations: follow the [[01-canonical-papers/canonical-list|canonical list]] in
+After the foundations: read [[01-canonical-papers/how-to-read|0. How to Read Papers]] once,
+then follow the [[01-canonical-papers/canonical-list|canonical list]] in
 order (its section 1 mirrors this page's logic), with the
 [[03-deep-learning/lineage|paper lineage]] open in a second tab.
 
@@ -136,6 +137,7 @@ order (its section 1 mirrors this page's logic), with the
 
 ### 다음으로 갈 곳
 
-기초를 마치면: [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로
+기초를 마치면: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 한 번 읽은 뒤,
+[[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로
 (1번 섹션이 이 페이지의 논리를 그대로 반영한다), [[03-deep-learning/lineage|논문 계보도]]를
 두 번째 탭에 열어두고.

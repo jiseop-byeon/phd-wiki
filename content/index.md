@@ -7,11 +7,11 @@ title: Home
 Welcome. This wiki is my long-term knowledge base for PhD research at the intersection of
 **deep learning** and **construction robotics**.
 
-### Start here
+### Start here — pick the path that matches you
 
-1. [[01-canonical-papers/canonical-list|Canonical Paper List]] — the curated reading list this wiki is built around
-2. [[03-deep-learning/lineage|Paper Lineage]] — how the key papers connect, at a glance
-3. One note per paper in `01-canonical-papers/notes/`, written to be absorbed quickly: context → method → results → limitations → impact
+1. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 2.
+2. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then the [[01-canonical-papers/canonical-list|Canonical Paper List]] in order — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside.
+3. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 
 ### Maps of Content
 
@@ -29,12 +29,11 @@ Welcome. This wiki is my long-term knowledge base for PhD research at the inters
 
 박사 과정에서 공부하는 딥러닝과 건설로봇 관련 지식을 정리해 두는 공간입니다.
 
-### 처음이라면 여기서부터
+### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 
-1. [[01-canonical-papers/canonical-list|핵심 논문 리스트]] — 이 위키의 중심이 되는 읽기 목록
-2. [[03-deep-learning/lineage|논문 계보도]] — 주요 논문들이 어떻게 이어지는지 한눈에
-3. 논문 하나당 노트 하나(`01-canonical-papers/notes/`) — 배경 → 방법 → 결과 → 한계 → 영향 순서로,
-   노트만 읽어도 핵심을 흡수할 수 있게 쓴다
+1. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → 그다음 2번 경로로.
+2. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어두고.
+3. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 
 ### 콘텐츠 지도
 

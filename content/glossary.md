@@ -5,6 +5,25 @@ tags: [reference]
 
 빠르게 찾아보는 용어 사전. 새 용어를 만날 때마다 추가한다. (English term — 한국어 설명, 관련 노트 링크)
 
+## 혼동하기 쉬운 쌍 · Confusable pairs
+
+논문 독해에서 실제로 막히는 지점은 낯선 용어보다 비슷한 용어의 구분이다.
+
+- **Probability vs Likelihood** — 확률은 파라미터를 고정하고 데이터를 변수로 본다; 우도는 데이터를 고정하고 파라미터의 함수로 본다. MLE의 "L"이 후자. → [[02-foundations/probability|확률 §4]]
+- **Entropy vs Cross-entropy vs KL** — $H(p)$는 자기 자신의 불확실성; $H(p,q)$는 $p$를 $q$의 부호로 인코딩하는 비용; KL = 그 차이 = $H(p,q) - H(p)$. → [[02-foundations/information-theory|정보이론]]
+- **Logits vs Probabilities** — softmax 이전의 실수 점수 vs 이후의 확률. 손실은 보통 logits에서 직접 계산한다(수치 안정성).
+- **State vs Observation** — 상태는 과거를 요약하는 마르코프 변수(숨겨져 있을 수 있음); 관측은 센서가 실제로 주는 것. 둘이 다르면 POMDP다. → [[02-foundations/rl-basics|RL 기초 §1]]
+- **Policy vs Controller** — 같은 역할(상태→행동)의 두 커뮤니티 용어. 정책은 학습 문맥, 제어기는 모델 기반 설계·안정성 보장 문맥에서 쓰인다. → [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]
+- **World model vs Model-based RL** — 월드모델은 학습된 동역학 모델 그 자체; model-based RL은 그것을 계획/학습에 쓰는 방법론. → [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]
+- **VLM vs VLA** — VLM은 텍스트를 출력하고, VLA는 로봇 행동을 출력한다(대개 VLM 백본 + 행동 헤드). → [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]
+- **Behavior cloning vs Imitation learning vs Offline RL** — BC는 IL의 부분집합(시연의 지도학습); IL은 시연 활용 전반(DAgger, IRL 포함); offline RL은 보상 신호로 시연자 초과 성능을 노린다.
+- **Diffusion vs Flow matching** — 같은 수송(노이즈→데이터)의 두 학습법: 디퓨전은 확률적 노이즈 제거 체인을, FM은 결정론적 속도장을 직접 회귀 — 경로가 곧아 추론 스텝이 적다. → [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow Matching]]
+- **Pose vs Configuration** — pose는 강체 하나의 SE(3) 위치·자세; configuration은 로봇 전체의 자유도(모든 관절각 포함). → [[02-foundations/se3-geometry|SE(3)]], [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]
+- **Space vs Body (Jacobian/twist)** — 같은 양을 어느 프레임에서 표현했는가의 차이; $[\text{Ad}_T]$로 변환된다. MR에서 가장 흔한 실수 지점. → [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]
+- **LQR vs MPC** — LQR은 무제약·무한 지평의 닫힌형 해; MPC는 제약 처리·유한 지평·매 스텝 재풀이. → [[04-robotics/mpc|MPC]]
+- **Open-loop vs Closed-loop** — 계획을 실행하는 동안 새 관측을 반영하는가; receding horizon은 closed-loop을 만드는 장치다.
+- **Objective vs Metric** — 학습이 최소화하는 것 vs 평가에 쓰는 것. 둘은 자주 다르고(교차 엔트로피로 학습, mAP로 평가), 그 간극 자체가 논문의 논점일 때가 있다. → [[02-foundations/ml-practice|ML 실무 §3]]
+
 ## A–C
 
 - **Action chunking (행동 청킹)** — 행동을 하나씩이 아니라 수십 스텝 덩어리로 예측해 복합 오차를 줄이는 기법. → [[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]
