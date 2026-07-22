@@ -1,0 +1,120 @@
+---
+title: "VGGT — Visual Geometry Grounded Transformer"
+authors: Jianyuan Wang, Minghao Chen, Nikita Karaev, Andrea Vedaldi, Christian Rupprecht, David Novotny
+affiliation: University of Oxford (VGG), Meta AI
+venue: CVPR
+year: 2025
+arxiv: https://arxiv.org/abs/2503.11651
+pdf: https://arxiv.org/pdf/2503.11651
+code: https://github.com/facebookresearch/vggt
+tags: [paper, computer-vision, 3d]
+status: to-read
+---
+
+**Wang et al., CVPR 2025** — [arXiv](https://arxiv.org/abs/2503.11651) · [PDF](https://arxiv.org/pdf/2503.11651) · [Code](https://github.com/facebookresearch/vggt)
+
+## English
+
+**One-line summary**: One feed-forward transformer ingests 1 to hundreds of images and directly outputs cameras, depth maps, point maps, and 3D tracks in a single pass — replacing the classical SfM/MVS optimization pipeline with inference measured in seconds.
+
+### Context
+
+3D reconstruction was a *pipeline*: feature matching → SfM camera solving (bundle
+adjustment) → MVS densification — iterative optimization, minutes-to-hours, brittle on
+textureless scenes. DUSt3R (2024) had shown two-view pointmap regression works; the open
+question was whether a *single network* could swallow the entire multi-view problem.
+
+### Method
+
+> [!tip] Key intuition
+> Geometry is a prediction problem, not an optimization problem — if you've seen enough
+> scenes. Let frames talk to each other through alternating attention, and let the network
+> emit all geometric quantities at once; consistency between them emerges from joint
+> training rather than being enforced by solvers.
+
+- Backbone: [[dino|DINOv2]]-initialized ViT per frame + **alternating frame-wise and global
+  attention** layers fusing information across all input views.
+- Multi-task heads predict, per image: **camera parameters** (pose+intrinsics), **depth
+  map**, **point map** (per-pixel 3D in a common frame), and **3D point tracks**; one first
+  frame anchors the coordinate system.
+- Trained on a large mix of real+synthetic 3D-annotated datasets; purely feed-forward at
+  inference (~seconds for hundreds of frames).
+
+### Results
+
+- State of the art on camera pose estimation, multi-view depth, dense reconstruction, and
+  point tracking — *without* per-scene optimization; optional bundle-adjustment refinement
+  pushes accuracy further.
+- Serves as a 3D backbone: features transfer to downstream tasks (tracking, view synthesis).
+
+### Limitations & critique
+
+- Global attention over hundreds of frames is memory-intensive; very large scenes need
+  chunking/streaming variants (SwiftVGGT-style follow-ups).
+- Feed-forward accuracy still trails fully optimized pipelines on some high-precision
+  benchmarks; coordinate anchoring to frame 1 can be awkward for incremental/online use
+  (SLAM-style adaptations address this).
+
+### Impact & follow-ups
+
+Marks the "foundation-model moment" of 3D vision: geometry as amortized inference. A fast
+ecosystem followed (VGGT-SLAM, LiDAR fusion, VLA integrations feeding 3D tokens to robot
+policies). For construction: near-real-time as-built reconstruction and progress capture
+from ordinary photos — the classical photogrammetry pipeline compressed into one forward
+pass.
+
+### Connections
+
+- Previous: [[nerf|NeRF]]/[[3d-gaussian-splatting|3DGS]] (per-scene optimization era), [[dino|DINOv2]], DUSt3R
+- Domain: [[30-construction-robotics/index|as-built capture & progress monitoring]]
+- Lineage: [[10-deep-learning/lineage|논문 계보도]]
+
+## 한국어
+
+**한 줄 요약**: 트랜스포머 하나가 1장~수백 장의 이미지를 받아 forward pass 한 번에 카메라, 깊이맵, 포인트맵, 3D 트랙을 직접 출력 — 고전 SfM/MVS 최적화 파이프라인을 수 초 단위의 추론으로 대체했다.
+
+### 배경
+
+3D 재구성은 *파이프라인*이었다: 특징 매칭 → SfM 카메라 풀이(번들 조정) → MVS 조밀화 —
+반복 최적화에 수 분~수 시간, 무늬 없는 장면에는 취약. DUSt3R(2024)가 2뷰 포인트맵 회귀가
+통함을 보였고, 남은 질문은 *단일 네트워크*가 다시점 문제 전체를 삼킬 수 있는가였다.
+
+### 방법
+
+> [!tip] 핵심 직관
+> 충분히 많은 장면을 봤다면, 기하는 최적화 문제가 아니라 예측 문제다. 프레임들이 교대
+> 어텐션으로 서로 대화하게 하고, 네트워크가 모든 기하량을 한 번에 뱉게 하라 — 그들 사이의
+> 일관성은 솔버가 강제하는 것이 아니라 공동 학습에서 창발한다.
+
+- 백본: 프레임별 [[dino|DINOv2]] 초기화 ViT + 모든 입력 뷰에 걸쳐 정보를 섞는
+  **프레임별/전역 교대 어텐션** 층.
+- 멀티태스크 헤드가 이미지마다 예측: **카메라 파라미터**(자세+내부), **깊이맵**,
+  **포인트맵**(공통 좌표계의 픽셀별 3D), **3D 포인트 트랙**; 첫 프레임이 좌표계의 닻.
+- 실제+합성 3D 주석 데이터셋의 대규모 혼합으로 학습; 추론은 순수 feed-forward
+  (수백 프레임에 약 수 초).
+
+### 결과
+
+- 카메라 자세 추정, 다시점 깊이, 조밀 재구성, 포인트 트래킹에서 SOTA — *장면별 최적화
+  없이*; 선택적 번들 조정 정제로 정확도를 더 끌어올릴 수 있다.
+- 3D 백본으로도 기능: 특징이 다운스트림 과제(트래킹, 시점 합성)로 전이된다.
+
+### 한계와 비판
+
+- 수백 프레임에 대한 전역 어텐션은 메모리 집약적; 아주 큰 장면은 청킹/스트리밍 변형이
+  필요(SwiftVGGT류 후속).
+- 일부 고정밀 벤치마크에서는 feed-forward 정확도가 완전 최적화 파이프라인에 아직 뒤진다;
+  1번 프레임 좌표 고정은 증분/온라인 사용에 어색할 수 있다(SLAM식 개조가 대응).
+
+### 영향과 후속 연구
+
+3D 비전의 "파운데이션 모델 모먼트": 기하의 상각된 추론화. 빠르게 생태계가
+형성됐다(VGGT-SLAM, LiDAR 융합, 3D 토큰을 로봇 정책에 공급하는 VLA 통합). 건설에서는:
+일반 사진만으로 준실시간 준공(as-built) 재구성과 공정 캡처 — 고전 사진측량 파이프라인이
+forward pass 하나로 압축된 것이다.
+
+### 연결
+
+- 이전: [[nerf|NeRF]]/[[3d-gaussian-splatting|3DGS]] (장면별 최적화 시대), [[dino|DINOv2]], DUSt3R
+- 도메인: [[30-construction-robotics/index|준공 캡처와 공정 모니터링]]
+- 계보: [[10-deep-learning/lineage|논문 계보도]]

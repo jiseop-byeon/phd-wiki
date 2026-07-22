@@ -40,18 +40,18 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 2. Computer Vision
 
-- [ ] U-Net (Ronneberger et al., MICCAI 2015)
-- [ ] Faster R-CNN (Ren et al., NeurIPS 2015)
-- [ ] YOLO (Redmon et al., CVPR 2016)
-- [ ] DETR — *End-to-End Object Detection with Transformers* (Carion et al., ECCV 2020)
-- [ ] NeRF (Mildenhall et al., ECCV 2020)
-- [ ] Swin Transformer (Liu et al., ICCV 2021)
-- [ ] DINO (Caron et al., ICCV 2021) → DINOv2 (Oquab et al., 2023)
-- [ ] SAM — *Segment Anything* (Kirillov et al., ICCV 2023)
-- [ ] 3D Gaussian Splatting (Kerbl et al., SIGGRAPH 2023)
-- [ ] Video understanding — I3D / SlowFast (2017–2019) — 시간적 인식, 로봇 비디오 이해의 기초
-- [ ] Depth Anything (Yang et al., CVPR 2024)
-- [ ] VGGT — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
+- [x] [[notes/u-net|U-Net]] (Ronneberger et al., MICCAI 2015)
+- [x] [[notes/faster-r-cnn|Faster R-CNN]] (Ren et al., NeurIPS 2015)
+- [x] [[notes/yolo|YOLO]] (Redmon et al., CVPR 2016)
+- [x] [[notes/video-understanding|Video Understanding — I3D / SlowFast]] (2017–2019)
+- [x] [[notes/detr|DETR]] — *End-to-End Object Detection with Transformers* (Carion et al., ECCV 2020)
+- [x] [[notes/nerf|NeRF]] (Mildenhall et al., ECCV 2020)
+- [x] [[notes/swin|Swin Transformer]] (Liu et al., ICCV 2021)
+- [x] [[notes/dino|DINO → DINOv2]] (Caron et al., ICCV 2021 · Oquab et al., 2023)
+- [x] [[notes/sam|SAM]] — *Segment Anything* (Kirillov et al., ICCV 2023)
+- [x] [[notes/3d-gaussian-splatting|3D Gaussian Splatting]] (Kerbl et al., SIGGRAPH 2023)
+- [x] [[notes/depth-anything|Depth Anything]] (Yang et al., CVPR 2024)
+- [x] [[notes/vggt|VGGT]] — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
 
 ## 3. Vision-Language Models (VLM)
 
@@ -90,12 +90,12 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] [[notes/gan|GAN]] (Goodfellow et al., NeurIPS 2014)
 - [x] [[notes/ddpm|DDPM]] — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
 - [x] [[notes/score-sde|Score SDE]] — *Score-Based Generative Modeling through SDEs* (Song et al., ICLR 2021)
-- [ ] DDIM (Song et al., ICLR 2021)
-- [ ] Classifier-Free Guidance (Ho & Salimans, 2022)
-- [ ] Latent Diffusion / Stable Diffusion (Rombach et al., CVPR 2022)
-- [ ] ControlNet (Zhang et al., ICCV 2023)
-- [ ] DiT — *Scalable Diffusion Models with Transformers* (Peebles & Xie, ICCV 2023)
-- [ ] Flow Matching (Lipman et al., ICLR 2023)
+- [x] [[notes/ddim|DDIM]] (Song et al., ICLR 2021)
+- [x] [[notes/classifier-free-guidance|Classifier-Free Guidance]] (Ho & Salimans, 2022)
+- [x] [[notes/latent-diffusion|Latent Diffusion / Stable Diffusion]] (Rombach et al., CVPR 2022)
+- [x] [[notes/controlnet|ControlNet]] (Zhang et al., ICCV 2023)
+- [x] [[notes/dit|DiT]] — *Scalable Diffusion Models with Transformers* (Peebles & Xie, ICCV 2023)
+- [x] [[notes/flow-matching|Flow Matching]] (Lipman et al., ICLR 2023)
 
 ## 7. Robotics & Control (textbook + key references)
 
