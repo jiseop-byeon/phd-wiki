@@ -1,5 +1,27 @@
 @use "./variables.scss" as *;
 
+// Explorer: folders and files at the same level should look identical —
+// hierarchy is already conveyed by indentation and chevrons. Without this,
+// folder labels render in the bold header font while files are muted gray.
+.explorer-content .folder-container div > a,
+.explorer-content .folder-container div > button span {
+  color: var(--dark);
+  opacity: 0.75;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600; // match the global semibold anchor weight of file links
+}
+
+.explorer-content .folder-container div > a:hover,
+.explorer-content .folder-container div > button:hover span {
+  color: var(--tertiary);
+  opacity: 1;
+}
+
+.explorer-content ul li > a {
+  font-size: 1rem;
+}
+
 // Hide created/modified dates in folder & tag listings (publish dates are
 // meaningless here — paper years live in each note's citation line)
 .section-li .section > .meta,
