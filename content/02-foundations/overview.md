@@ -16,10 +16,10 @@ with the listed quick source — a few hours each, not a semester.
 
 | Prerequisite | Needed by | Quick source |
 |---|---|---|
-| Single/multivariable calculus — derivatives, partial derivatives, integrals, Taylor series | [[02-foundations/calculus-backprop\|2. Calculus]], [[02-foundations/optimization\|4. Optimization]], [[02-foundations/probability\|3. Probability]] | 3Blue1Brown *Essence of Calculus*; Khan Academy |
-| Matrix/vector arithmetic — systems of equations, matrix multiplication | [[02-foundations/linear-algebra\|1. Linear Algebra]] (start here) | 3Blue1Brown *Essence of Linear Algebra* |
+| Single/multivariable calculus — derivatives, partial derivatives, integrals, Taylor series | [[02-foundations/calculus-backprop\|2. Calculus]], [[02-foundations/optimization\|4. Optimization]], [[02-foundations/probability\|3. Probability]] | [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) · [Khan Academy](https://www.khanacademy.org/math) |
+| Matrix/vector arithmetic — systems of equations, matrix multiplication | [[02-foundations/linear-algebra\|1. Linear Algebra]] (start here) | [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
 | Series & convergence basics | [[02-foundations/probability\|3. Probability]] (expectations), [[02-foundations/rl-basics\|7. RL]] (discounted sums) | any calculus text, ch. on series |
-| Complex numbers & Euler's formula $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. Signal Processing]] (Fourier) | Khan Academy complex numbers |
+| Complex numbers & Euler's formula $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. Signal Processing]] (Fourier) | [Khan Academy](https://www.khanacademy.org/math) |
 | Exponentials & logarithms (incl. $\log$ rules) | [[02-foundations/information-theory\|5. Information Theory]] | high-school review |
 | Basic set notation & logic | [[02-foundations/probability\|3. Probability]] (axioms) | any discrete math intro |
 
@@ -32,7 +32,7 @@ $\log$, you can start.
 **1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]]** (domain bridges — order between these two is free).
 
 Each page ends with self-check questions; do them. If a page feels too dense on first
-contact, pair it with a first-pass source (CS231n lectures for 1–4, Sutton & Barto ch.1–6
+contact, pair it with a first-pass source ([CS231n](https://cs231n.stanford.edu/schedule.html) lectures for 1–4, [Sutton & Barto](http://incompleteideas.net/book/the-book.html) ch.1–6
 for 7) and return to the page as a structured summary.
 
 ### Connection map — math → foundations → papers
@@ -46,13 +46,13 @@ graph LR
     LOG["Exp · Log"]
     end
     subgraph F["Foundations"]
-    LA["1. Linear Algebra"]
-    CB["2. Calculus & Backprop"]
-    PR["3. Probability"]
-    OPT["4. Optimization"]
-    IT["5. Information Theory"]
-    SP["6. Signal Processing"]
-    RL["7. RL Basics"]
+    LA["Linear Algebra"]
+    CB["Calculus & Backprop"]
+    PR["Probability"]
+    OPT["Optimization"]
+    IT["Information Theory"]
+    SP["Signal Processing"]
+    RL["RL Basics"]
     end
     subgraph D["Deep learning (papers)"]
     TF["Transformers · ViT · CLIP"]
@@ -109,10 +109,10 @@ order (its section 1 mirrors this page's logic), with the
 
 | 사전 지식 | 필요한 페이지 | 빠른 자료 |
 |---|---|---|
-| 단변수/다변수 미적분 — 미분, 편미분, 적분, 테일러 급수 | [[02-foundations/calculus-backprop\|2. 미적분·역전파]], [[02-foundations/optimization\|4. 최적화]], [[02-foundations/probability\|3. 확률]] | 3Blue1Brown *Essence of Calculus*; Khan Academy |
-| 행렬/벡터 연산 — 연립방정식, 행렬곱 | [[02-foundations/linear-algebra\|1. 선형대수]] (여기서 시작) | 3Blue1Brown *Essence of Linear Algebra* |
+| 단변수/다변수 미적분 — 미분, 편미분, 적분, 테일러 급수 | [[02-foundations/calculus-backprop\|2. 미적분·역전파]], [[02-foundations/optimization\|4. 최적화]], [[02-foundations/probability\|3. 확률]] | [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) · [Khan Academy](https://www.khanacademy.org/math) |
+| 행렬/벡터 연산 — 연립방정식, 행렬곱 | [[02-foundations/linear-algebra\|1. 선형대수]] (여기서 시작) | [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
 | 급수와 수렴 기초 | [[02-foundations/probability\|3. 확률]] (기댓값), [[02-foundations/rl-basics\|7. RL]] (할인 합) | 미적분 교재의 급수 챕터 |
-| 복소수와 오일러 공식 $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. 신호처리]] (푸리에) | Khan Academy 복소수 |
+| 복소수와 오일러 공식 $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. 신호처리]] (푸리에) | [Khan Academy](https://www.khanacademy.org/math) |
 | 지수·로그 (로그 법칙 포함) | [[02-foundations/information-theory\|5. 정보이론]] | 고교 수준 복습 |
 | 기초 집합 표기와 논리 | [[02-foundations/probability\|3. 확률]] (공리) | 이산수학 입문 아무거나 |
 
@@ -124,7 +124,7 @@ order (its section 1 mirrors this page's logic), with the
 **1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]]** (도메인 다리 — 이 둘의 순서는 자유).
 
 각 페이지 끝의 스스로 점검 문제를 꼭 풀어라. 처음 접했을 때 너무 압축적으로 느껴지는
-페이지는 1차 통과용 자료(1~4번은 CS231n 강의, 7번은 Sutton & Barto 1~6장)와 병행하고,
+페이지는 1차 통과용 자료(1~4번은 [CS231n](https://cs231n.stanford.edu/schedule.html) 강의, 7번은 [Sutton & Barto](http://incompleteideas.net/book/the-book.html) 1~6장)와 병행하고,
 이 위키의 페이지는 구조화된 요약본으로 되돌아와 쓰면 된다.
 
 ### 연결 지도 — 수학 → 기초 → 논문
