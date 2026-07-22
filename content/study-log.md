@@ -26,3 +26,5 @@ tags: [log]
 - 기초 정리 페이지 3편 (reference 자료를 내 언어로 재구성): [[50-foundations/optimization|최적화]], [[50-foundations/probability|확률과 랜덤 프로세스]], [[50-foundations/signal-processing|신호처리]]
 - 디퓨전 기초 배치: [[canonical-papers/notes/vae|VAE]], [[canonical-papers/notes/gan|GAN]], [[canonical-papers/notes/ddpm|DDPM]], [[canonical-papers/notes/score-sde|Score SDE]] — VAE(안정·흐릿) vs GAN(선명·불안정)의 긴장을 DDPM이 해소하고 Score SDE가 이론으로 통합
 - 다음: VLA 진입 (RT-1, RT-2, Diffusion Policy, ACT) — 디퓨전 수학 준비 완료
+- VLA 1차 배치: [[canonical-papers/notes/rt-1|RT-1]], [[canonical-papers/notes/rt-2|RT-2]], [[canonical-papers/notes/diffusion-policy|Diffusion Policy]], [[canonical-papers/notes/act|ACT/ALOHA]] — 로봇 데이터 스케일링(RT-1) → 웹 지식 전이(RT-2) → 다봉 행동 분포(DP) → 행동 청킹(ACT)
+- 다음: VLA 2차 (Open X-Embodiment, Octo, OpenVLA, π0, GR00T N1)로 VLA 섹션 완주

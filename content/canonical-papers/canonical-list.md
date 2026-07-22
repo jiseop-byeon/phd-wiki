@@ -64,10 +64,10 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 4. Vision-Language-Action (VLA) / Robot Learning
 
-- [ ] BC-Z / RT-1 — *Robotics Transformer* (Brohan et al., RSS 2023)
-- [ ] RT-2 — *Vision-Language-Action Models* (Brohan et al., CoRL 2023)
-- [ ] Diffusion Policy (Chi et al., RSS 2023)
-- [ ] ACT / ALOHA — *Learning Fine-Grained Bimanual Manipulation* (Zhao et al., RSS 2023)
+- [x] [[notes/rt-1|RT-1]] — *Robotics Transformer* (Brohan et al., RSS 2023)
+- [x] [[notes/rt-2|RT-2]] — *Vision-Language-Action Models* (Brohan et al., CoRL 2023)
+- [x] [[notes/diffusion-policy|Diffusion Policy]] (Chi et al., RSS 2023)
+- [x] [[notes/act|ACT / ALOHA]] — *Learning Fine-Grained Bimanual Manipulation* (Zhao et al., RSS 2023)
 - [ ] Octo — open generalist robot policy (2024)
 - [ ] OpenVLA (Kim et al., CoRL 2024)
 - [ ] π0 — *A Vision-Language-Action Flow Model* (Physical Intelligence, 2024)
