@@ -10,7 +10,7 @@ tags: [paper, foundations, nlp]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/1409.0473) · [PDF](https://arxiv.org/pdf/1409.0473)
+**Bahdanau et al., ICLR 2015** — [arXiv](https://arxiv.org/abs/1409.0473) · [PDF](https://arxiv.org/pdf/1409.0473)
 
 ## English
 
@@ -38,17 +38,17 @@ seq2seq (Sutskever et al., 2014) translated by compressing the entire source sen
 
 ### Limitations & critique
 
-- Still fundamentally an RNN: sequential computation, limited parallelism — the constraint the [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]] later removed.
+- Still fundamentally an RNN: sequential computation, limited parallelism — the constraint the [[canonical-papers/notes/attention-is-all-you-need|Transformer]] later removed.
 - Additive attention scoring was later simplified to (scaled) dot products.
 
 ### Impact & follow-ups
 
-The conceptual birth of attention in deep learning. Two years later, [[40-canonical-papers/notes/attention-is-all-you-need|Attention Is All You Need]] asked "what if we keep only this part?" — and the rest of the wiki follows from the answer.
+The conceptual birth of attention in deep learning. Two years later, [[canonical-papers/notes/attention-is-all-you-need|Attention Is All You Need]] asked "what if we keep only this part?" — and the rest of the wiki follows from the answer.
 
 ### Connections
 
 - Previous: seq2seq (Sutskever 2014), LSTM (1997)
-- Next: [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]
+- Next: [[canonical-papers/notes/attention-is-all-you-need|Transformer]]
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -77,15 +77,15 @@ seq2seq(Sutskever et al., 2014)는 원문 문장 전체를 고정 길이 벡터 
 
 ### 한계와 비판
 
-- 여전히 본질은 RNN: 순차 계산, 제한된 병렬성 — 이 제약을 걷어낸 것이 [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]].
+- 여전히 본질은 RNN: 순차 계산, 제한된 병렬성 — 이 제약을 걷어낸 것이 [[canonical-papers/notes/attention-is-all-you-need|Transformer]].
 - 가산형 점수 함수는 이후 (스케일된) 내적으로 단순화된다.
 
 ### 영향과 후속 연구
 
-딥러닝에서 어텐션이라는 개념이 태어난 지점. 2년 뒤 [[40-canonical-papers/notes/attention-is-all-you-need|Attention Is All You Need]]가 "이 부분만 남기면 어떻게 될까"를 물었고, 이 위키의 나머지 전부가 그 답에서 나온다.
+딥러닝에서 어텐션이라는 개념이 태어난 지점. 2년 뒤 [[canonical-papers/notes/attention-is-all-you-need|Attention Is All You Need]]가 "이 부분만 남기면 어떻게 될까"를 물었고, 이 위키의 나머지 전부가 그 답에서 나온다.
 
 ### 연결
 
 - 이전: seq2seq (Sutskever 2014), LSTM (1997)
-- 다음: [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]
+- 다음: [[canonical-papers/notes/attention-is-all-you-need|Transformer]]
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

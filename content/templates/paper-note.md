@@ -12,7 +12,7 @@ tags: [paper]
 status: to-read   # to-read | reading | done
 ---
 
-**📄 원문**: [arXiv]() · [PDF]() · [Code]()
+**{Author et al., VENUE YEAR}** — [arXiv]() · [PDF]() · [Code]()
 
 ## English
 

@@ -11,7 +11,7 @@ tags: [paper, foundations, efficiency]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)
+**Hu et al., ICLR 2022** — [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)
 
 ## English
 
@@ -19,7 +19,7 @@ status: to-read
 
 ### Context
 
-By 2021, the pretrain-finetune paradigm ([[40-canonical-papers/notes/bert|BERT]]) collided with model scale ([[40-canonical-papers/notes/gpt-3|GPT-3]] 175B): full fine-tuning means storing and serving a complete model copy *per task*. Existing parameter-efficient methods had costs — adapters add inference latency; prefix-tuning eats context length and optimizes poorly.
+By 2021, the pretrain-finetune paradigm ([[canonical-papers/notes/bert|BERT]]) collided with model scale ([[canonical-papers/notes/gpt-3|GPT-3]] 175B): full fine-tuning means storing and serving a complete model copy *per task*. Existing parameter-efficient methods had costs — adapters add inference latency; prefix-tuning eats context length and optimizes poorly.
 
 ### Method
 
@@ -45,11 +45,11 @@ By 2021, the pretrain-finetune paradigm ([[40-canonical-papers/notes/bert|BERT]]
 
 ### Impact & follow-ups
 
-Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way individuals adapt LLMs, diffusion models (style LoRAs), and robot policies — fine-tuning [[40-canonical-papers/notes/gpt-3|GPT-3]]-scale VLAs like OpenVLA on a single GPU. Huge ecosystem: QLoRA, DoRA, AdaLoRA, and merged-LoRA model sharing.
+Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way individuals adapt LLMs, diffusion models (style LoRAs), and robot policies — fine-tuning [[canonical-papers/notes/gpt-3|GPT-3]]-scale VLAs like OpenVLA on a single GPU. Huge ecosystem: QLoRA, DoRA, AdaLoRA, and merged-LoRA model sharing.
 
 ### Connections
 
-- Enables cheap adaptation of: [[40-canonical-papers/notes/gpt-3|GPT-3]]-class models, VLAs (OpenVLA fine-tuning)
+- Enables cheap adaptation of: [[canonical-papers/notes/gpt-3|GPT-3]]-class models, VLAs (OpenVLA fine-tuning)
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -58,7 +58,7 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 
 ### 배경
 
-2021년, 사전학습-파인튜닝 패러다임([[40-canonical-papers/notes/bert|BERT]])이 모델 규모([[40-canonical-papers/notes/gpt-3|GPT-3]] 175B)와 충돌했다: 전체 파인튜닝은 *과제마다* 완전한 모델 복사본을 저장·서빙해야 한다는 뜻이다. 기존의 파라미터 효율 기법들은 대가가 있었다 — 어댑터는 추론 지연을 더하고, prefix-tuning은 문맥 길이를 잡아먹으며 최적화도 불안정했다.
+2021년, 사전학습-파인튜닝 패러다임([[canonical-papers/notes/bert|BERT]])이 모델 규모([[canonical-papers/notes/gpt-3|GPT-3]] 175B)와 충돌했다: 전체 파인튜닝은 *과제마다* 완전한 모델 복사본을 저장·서빙해야 한다는 뜻이다. 기존의 파라미터 효율 기법들은 대가가 있었다 — 어댑터는 추론 지연을 더하고, prefix-tuning은 문맥 길이를 잡아먹으며 최적화도 불안정했다.
 
 ### 방법
 
@@ -88,5 +88,5 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 
 ### 연결
 
-- 저렴한 적응을 가능하게 함: [[40-canonical-papers/notes/gpt-3|GPT-3]]급 모델, VLA(OpenVLA 파인튜닝)
+- 저렴한 적응을 가능하게 함: [[canonical-papers/notes/gpt-3|GPT-3]]급 모델, VLA(OpenVLA 파인튜닝)
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

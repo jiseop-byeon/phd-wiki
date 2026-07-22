@@ -13,7 +13,7 @@ own study notes distilled from them.
 
 **Tier 1 — study fully (pillars)**
 - Modern Robotics + kinematics/dynamics lectures → notes go to [[20-robotics/index|Robotics & Control]]
-- Deep learning course slides → complements the [[40-canonical-papers/canonical-list|canonical papers]]
+- Deep learning course slides → complements the [[canonical-papers/canonical-list|canonical papers]]
 - Control theory (CE397 packet) → the MPC track in [[20-robotics/index|Robotics & Control]]
 - Optimization (LP → NLP → MIP) — the language of MPC, trajectory optimization, and task allocation
 
@@ -41,7 +41,7 @@ own study notes distilled from them.
 
 **1순위 — 전체를 공부 (기둥 과목)**
 - Modern Robotics + 기구학/동역학 강의 → 노트는 [[20-robotics/index|로보틱스 & 제어]]에
-- 딥러닝 강의 슬라이드 → [[40-canonical-papers/canonical-list|핵심 논문 리스트]]와 상호 보완
+- 딥러닝 강의 슬라이드 → [[canonical-papers/canonical-list|핵심 논문 리스트]]와 상호 보완
 - 제어 이론 (CE397 교재) → [[20-robotics/index|로보틱스 & 제어]]의 MPC 트랙
 - 최적화 (LP → NLP → MIP) — MPC·궤적 최적화·작업 할당의 공용 언어
 

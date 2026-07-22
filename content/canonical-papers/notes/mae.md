@@ -11,7 +11,7 @@ tags: [paper, foundations, computer-vision, self-supervised]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/2111.06377) · [PDF](https://arxiv.org/pdf/2111.06377) · [Code](https://github.com/facebookresearch/mae)
+**He et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2111.06377) · [PDF](https://arxiv.org/pdf/2111.06377) · [Code](https://github.com/facebookresearch/mae)
 
 ## English
 
@@ -19,7 +19,7 @@ status: to-read
 
 ### Context
 
-[[40-canonical-papers/notes/bert|BERT]]'s masked-prediction pretraining transformed NLP, but naive ports to vision underperformed contrastive methods (MoCo, SimCLR, DINO). Why the gap? Images are spatially redundant — masking 15% is trivially solvable by interpolation — and pixel reconstruction seemed too low-level a target. [[40-canonical-papers/notes/vit|ViT]] provided the missing substrate: images as patch tokens.
+[[canonical-papers/notes/bert|BERT]]'s masked-prediction pretraining transformed NLP, but naive ports to vision underperformed contrastive methods (MoCo, SimCLR, DINO). Why the gap? Images are spatially redundant — masking 15% is trivially solvable by interpolation — and pixel reconstruction seemed too low-level a target. [[canonical-papers/notes/vit|ViT]] provided the missing substrate: images as patch tokens.
 
 ### Method
 
@@ -47,7 +47,7 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 
 ### Connections
 
-- Previous: [[40-canonical-papers/notes/bert|BERT]] (the idea), [[40-canonical-papers/notes/vit|ViT]] (the substrate)
+- Previous: [[canonical-papers/notes/bert|BERT]] (the idea), [[canonical-papers/notes/vit|ViT]] (the substrate)
 - Next: DINOv2, I-JEPA → world models
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
@@ -57,7 +57,7 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 
 ### 배경
 
-[[40-canonical-papers/notes/bert|BERT]]의 마스크 예측 사전학습이 NLP를 바꿨지만, 비전으로의 단순 이식은 대조학습(MoCo, SimCLR, DINO)에 밀렸다. 왜? 이미지는 공간적으로 중복이 많아 15% 마스킹은 주변 보간만으로 풀리고, 픽셀 복원은 목표로서 너무 저수준으로 보였다. [[40-canonical-papers/notes/vit|ViT]]가 빠져 있던 토대 — 이미지의 패치 토큰화 — 를 제공했다.
+[[canonical-papers/notes/bert|BERT]]의 마스크 예측 사전학습이 NLP를 바꿨지만, 비전으로의 단순 이식은 대조학습(MoCo, SimCLR, DINO)에 밀렸다. 왜? 이미지는 공간적으로 중복이 많아 15% 마스킹은 주변 보간만으로 풀리고, 픽셀 복원은 목표로서 너무 저수준으로 보였다. [[canonical-papers/notes/vit|ViT]]가 빠져 있던 토대 — 이미지의 패치 토큰화 — 를 제공했다.
 
 ### 방법
 
@@ -85,6 +85,6 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 
 ### 연결
 
-- 이전: [[40-canonical-papers/notes/bert|BERT]] (아이디어), [[40-canonical-papers/notes/vit|ViT]] (토대)
+- 이전: [[canonical-papers/notes/bert|BERT]] (아이디어), [[canonical-papers/notes/vit|ViT]] (토대)
 - 다음: DINOv2, I-JEPA → 월드모델
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

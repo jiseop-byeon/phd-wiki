@@ -10,7 +10,7 @@ tags: [paper, foundations, nlp]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/1409.3215) · [PDF](https://arxiv.org/pdf/1409.3215)
+**Sutskever et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1409.3215) · [PDF](https://arxiv.org/pdf/1409.3215)
 
 ## English
 
@@ -18,7 +18,7 @@ status: to-read
 
 ### Context
 
-By 2014, [[40-canonical-papers/notes/lstm|LSTMs]] handled sequence *labeling* well, but general sequence-to-sequence mapping (translation: variable-length input → different variable-length output) had no clean end-to-end neural solution. Machine translation was ruled by phrase-based statistical systems.
+By 2014, [[canonical-papers/notes/lstm|LSTMs]] handled sequence *labeling* well, but general sequence-to-sequence mapping (translation: variable-length input → different variable-length output) had no clean end-to-end neural solution. Machine translation was ruled by phrase-based statistical systems.
 
 ### Method
 
@@ -37,17 +37,17 @@ By 2014, [[40-canonical-papers/notes/lstm|LSTMs]] handled sequence *labeling* we
 
 ### Limitations & critique
 
-- The **fixed-vector bottleneck**: the whole sentence must fit in one vector; quality degrades on long sentences. Directly motivated [[40-canonical-papers/notes/bahdanau-attention|Bahdanau attention]] (published within months).
+- The **fixed-vector bottleneck**: the whole sentence must fit in one vector; quality degrades on long sentences. Directly motivated [[canonical-papers/notes/bahdanau-attention|Bahdanau attention]] (published within months).
 - The reversal trick is a hack that only exists because of that bottleneck.
 - Enormous (for the time) compute: 8 GPUs for 10 days.
 
 ### Impact & follow-ups
 
-Established the encoder-decoder framing that still structures the field: the [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]] is an encoder-decoder, and "sequence in, sequence out" now covers translation, captioning, speech, and even robot action generation in VLAs.
+Established the encoder-decoder framing that still structures the field: the [[canonical-papers/notes/attention-is-all-you-need|Transformer]] is an encoder-decoder, and "sequence in, sequence out" now covers translation, captioning, speech, and even robot action generation in VLAs.
 
 ### Connections
 
-- Previous: [[40-canonical-papers/notes/lstm|LSTM]] · Next: [[40-canonical-papers/notes/bahdanau-attention|Bahdanau Attention]]
+- Previous: [[canonical-papers/notes/lstm|LSTM]] · Next: [[canonical-papers/notes/bahdanau-attention|Bahdanau Attention]]
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -56,7 +56,7 @@ Established the encoder-decoder framing that still structures the field: the [[4
 
 ### 배경
 
-2014년 시점에 [[40-canonical-papers/notes/lstm|LSTM]]은 시퀀스 *라벨링*은 잘했지만, 일반적인 시퀀스→시퀀스 사상(번역: 가변 길이 입력 → 다른 가변 길이 출력)에는 깔끔한 end-to-end 신경망 해법이 없었다. 기계번역은 구문 기반 통계 시스템(SMT)의 영역이었다.
+2014년 시점에 [[canonical-papers/notes/lstm|LSTM]]은 시퀀스 *라벨링*은 잘했지만, 일반적인 시퀀스→시퀀스 사상(번역: 가변 길이 입력 → 다른 가변 길이 출력)에는 깔끔한 end-to-end 신경망 해법이 없었다. 기계번역은 구문 기반 통계 시스템(SMT)의 영역이었다.
 
 ### 방법
 
@@ -75,15 +75,15 @@ Established the encoder-decoder framing that still structures the field: the [[4
 
 ### 한계와 비판
 
-- **고정 벡터 병목**: 문장 전체가 벡터 하나에 들어가야 해서 긴 문장에서 품질 저하. 몇 달 뒤 나온 [[40-canonical-papers/notes/bahdanau-attention|Bahdanau 어텐션]]의 직접적 동기가 됐다.
+- **고정 벡터 병목**: 문장 전체가 벡터 하나에 들어가야 해서 긴 문장에서 품질 저하. 몇 달 뒤 나온 [[canonical-papers/notes/bahdanau-attention|Bahdanau 어텐션]]의 직접적 동기가 됐다.
 - 문장 뒤집기는 이 병목 때문에 존재하는 임시방편이다.
 - 당시 기준으로 막대한 연산: GPU 8장 × 10일.
 
 ### 영향과 후속 연구
 
-지금도 분야를 구조 짓는 인코더-디코더 틀을 확립했다. [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]도 인코더-디코더이며, "시퀀스 입력, 시퀀스 출력"이라는 틀은 번역·캡셔닝·음성은 물론 VLA의 로봇 행동 생성까지 포괄한다.
+지금도 분야를 구조 짓는 인코더-디코더 틀을 확립했다. [[canonical-papers/notes/attention-is-all-you-need|Transformer]]도 인코더-디코더이며, "시퀀스 입력, 시퀀스 출력"이라는 틀은 번역·캡셔닝·음성은 물론 VLA의 로봇 행동 생성까지 포괄한다.
 
 ### 연결
 
-- 이전: [[40-canonical-papers/notes/lstm|LSTM]] · 다음: [[40-canonical-papers/notes/bahdanau-attention|Bahdanau Attention]]
+- 이전: [[canonical-papers/notes/lstm|LSTM]] · 다음: [[canonical-papers/notes/bahdanau-attention|Bahdanau Attention]]
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

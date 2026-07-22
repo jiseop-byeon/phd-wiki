@@ -51,14 +51,14 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [ ] 3D Gaussian Splatting (Kerbl et al., SIGGRAPH 2023)
 - [ ] Video understanding — I3D / SlowFast (2017–2019) — 시간적 인식, 로봇 비디오 이해의 기초
 - [ ] Depth Anything (Yang et al., CVPR 2024)
-- [ ] VGGT — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025, **Best Paper Award**)
+- [ ] VGGT — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
 
 ## 3. Vision-Language Models (VLM)
 
 - [x] [[notes/clip|CLIP]] — *Learning Transferable Visual Models From Natural Language Supervision* (Radford et al., ICML 2021)
-- [ ] Flamingo (Alayrac et al., NeurIPS 2022)
-- [ ] BLIP-2 (Li et al., ICML 2023)
-- [ ] LLaVA — *Visual Instruction Tuning* (Liu et al., NeurIPS 2023)
+- [x] [[notes/flamingo|Flamingo]] (Alayrac et al., NeurIPS 2022)
+- [x] [[notes/blip-2|BLIP-2]] (Li et al., ICML 2023)
+- [x] [[notes/llava|LLaVA]] — *Visual Instruction Tuning* (Liu et al., NeurIPS 2023)
 - [ ] Qwen-VL series (2023–) — representative open VLM line
 - [ ] PaliGemma (2024) — representative small open VLM
 

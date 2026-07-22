@@ -11,7 +11,7 @@ tags: [paper, foundations, scaling]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/2001.08361) · [PDF](https://arxiv.org/pdf/2001.08361) · [Official](https://arxiv.org/abs/2203.15556)
+**Kaplan et al., 2020 · Hoffmann et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2001.08361) · [PDF](https://arxiv.org/pdf/2001.08361) · [Official](https://arxiv.org/abs/2203.15556)
 
 ## English
 
@@ -38,7 +38,7 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 
 ### Limitations & critique
 
-- Power laws describe pretraining loss, not downstream abilities; emergent capabilities ([[40-canonical-papers/notes/gpt-3|GPT-3]]) are not directly predicted.
+- Power laws describe pretraining loss, not downstream abilities; emergent capabilities ([[canonical-papers/notes/gpt-3|GPT-3]]) are not directly predicted.
 - Laws are fitted to one architecture family and data distribution; data quality, repetition, and inference-cost considerations (over-training small models, à la LLaMA) shift the practical optimum.
 - "Scale is all you need" readings ignore that data may run out — the very concern Chinchilla sharpened.
 
@@ -48,7 +48,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 ### Connections
 
-- Motivated: [[40-canonical-papers/notes/gpt-3|GPT-3]] · Applied everywhere from LLMs to VLAs
+- Motivated: [[canonical-papers/notes/gpt-3|GPT-3]] · Applied everywhere from LLMs to VLAs
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -76,7 +76,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 ### 한계와 비판
 
-- 거듭제곱 법칙은 사전학습 손실을 기술할 뿐, 다운스트림 능력은 아니다; [[40-canonical-papers/notes/gpt-3|GPT-3]]의 창발적 능력은 직접 예측되지 않는다.
+- 거듭제곱 법칙은 사전학습 손실을 기술할 뿐, 다운스트림 능력은 아니다; [[canonical-papers/notes/gpt-3|GPT-3]]의 창발적 능력은 직접 예측되지 않는다.
 - 하나의 구조 계열·데이터 분포에 맞춘 적합이다; 데이터 품질, 반복, 추론 비용 고려(LLaMA처럼 작은 모델을 오래 학습)가 실전 최적점을 이동시킨다.
 - "규모면 다 된다"는 독해는 데이터가 고갈될 수 있다는 점을 놓친다 — Chinchilla가 날카롭게 만든 바로 그 문제.
 
@@ -86,5 +86,5 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 ### 연결
 
-- 동기가 된 것: [[40-canonical-papers/notes/gpt-3|GPT-3]] · LLM부터 VLA까지 어디에나 적용
+- 동기가 된 것: [[canonical-papers/notes/gpt-3|GPT-3]] · LLM부터 VLA까지 어디에나 적용
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

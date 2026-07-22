@@ -7,7 +7,7 @@ tags: [reference]
 
 ## A–D
 
-- **Attention** — 쿼리(Q)와 키(K)의 유사도로 값(V)을 가중합하는 연산. 시퀀스 안의 임의의 두 위치를 한 번에 연결한다. → [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]
+- **Attention** — 쿼리(Q)와 키(K)의 유사도로 값(V)을 가중합하는 연산. 시퀀스 안의 임의의 두 위치를 한 번에 연결한다. → [[canonical-papers/notes/attention-is-all-you-need|Transformer]]
 - **Autoregressive (자기회귀)** — 이전 출력들을 조건으로 다음 토큰을 하나씩 생성하는 방식. GPT 계열, 대부분의 VLA가 이 방식.
 - **BLEU** — 기계번역 품질 지표. 생성문과 참조 번역의 n-gram 겹침을 측정.
 - **Diffusion model (디퓨전 모델)** — 데이터에 노이즈를 점진적으로 섞는 과정을 학습으로 되돌려서 생성하는 모델.

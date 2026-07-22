@@ -10,7 +10,7 @@ tags: [paper, foundations, optimization]
 status: to-read
 ---
 
-**📄 원문**: [arXiv](https://arxiv.org/abs/1502.03167) · [PDF](https://arxiv.org/pdf/1502.03167)
+**Ioffe & Szegedy, ICML 2015** — [arXiv](https://arxiv.org/abs/1502.03167) · [PDF](https://arxiv.org/pdf/1502.03167)
 
 ## English
 
@@ -44,11 +44,11 @@ Training deep nets in 2014 was fragile: it demanded small learning rates and car
 
 ### Impact & follow-ups
 
-Made deep networks routinely trainable — [[40-canonical-papers/notes/resnet|ResNet]] uses BN after every convolution and wouldn't train without it. Spawned a normalization family (LayerNorm, InstanceNorm, GroupNorm, RMSNorm); LayerNorm/RMSNorm are structural components of every [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]].
+Made deep networks routinely trainable — [[canonical-papers/notes/resnet|ResNet]] uses BN after every convolution and wouldn't train without it. Spawned a normalization family (LayerNorm, InstanceNorm, GroupNorm, RMSNorm); LayerNorm/RMSNorm are structural components of every [[canonical-papers/notes/attention-is-all-you-need|Transformer]].
 
 ### Connections
 
-- Enables: [[40-canonical-papers/notes/resnet|ResNet]] · Successor in Transformers: LayerNorm
+- Enables: [[canonical-papers/notes/resnet|ResNet]] · Successor in Transformers: LayerNorm
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -83,9 +83,9 @@ Made deep networks routinely trainable — [[40-canonical-papers/notes/resnet|Re
 
 ### 영향과 후속 연구
 
-깊은 네트워크 학습을 일상으로 만들었다 — [[40-canonical-papers/notes/resnet|ResNet]]은 모든 합성곱 뒤에 BN을 쓰며, BN 없이는 학습되지 않는다. 정규화 계열(LayerNorm, InstanceNorm, GroupNorm, RMSNorm)을 낳았고, LayerNorm/RMSNorm은 모든 [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]의 구조적 구성 요소다.
+깊은 네트워크 학습을 일상으로 만들었다 — [[canonical-papers/notes/resnet|ResNet]]은 모든 합성곱 뒤에 BN을 쓰며, BN 없이는 학습되지 않는다. 정규화 계열(LayerNorm, InstanceNorm, GroupNorm, RMSNorm)을 낳았고, LayerNorm/RMSNorm은 모든 [[canonical-papers/notes/attention-is-all-you-need|Transformer]]의 구조적 구성 요소다.
 
 ### 연결
 
-- 가능하게 한 것: [[40-canonical-papers/notes/resnet|ResNet]] · Transformer에서의 후계자: LayerNorm
+- 가능하게 한 것: [[canonical-papers/notes/resnet|ResNet]] · Transformer에서의 후계자: LayerNorm
 - 계보: [[10-deep-learning/lineage|논문 계보도]]
