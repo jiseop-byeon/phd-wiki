@@ -151,7 +151,10 @@ construction tasks) and its intersection with stream 5 are where the open territ
    파운데이션 모델 물결과 합류 중; 데이터 빈곤은
    [[01-canonical-papers/notes/gr00t-n1|GR00T]]의 합성 데이터 피라미드와 같은 방향을 가리킨다.
 5. **중장비 자율화** — ETH RSL(HEAP)과 산업계 개조: 굴착기의 학습/최적 제어 —
-   [[04-robotics/mpc|MPC]]와 학습이 만나는 흐름.
+   [[04-robotics/mpc|MPC]]와 학습이 만나는 흐름. 2024~25년에 1번과 합류하기 시작했다:
+   ExACT(굴착기에 [[01-canonical-papers/notes/act|ACT]] 이식, ICRA 2024 워크숍)와
+   [ExT](https://arxiv.org/abs/2509.14992)(ETH RSL — 굴착의 대규모 사전학습→파인튜닝
+   레시피)가 그 신호탄이다.
 
 **신진 연구자를 위한 이 지도의 독해**: 2~4번 흐름은 성숙했고 붐빈다;
 1번([[01-canonical-papers/notes/pi0|π0]]급 조작을 실제 건설 과제에 올리는 것)과 그것이
