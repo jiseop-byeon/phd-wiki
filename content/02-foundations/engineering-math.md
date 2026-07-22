@@ -98,7 +98,47 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
   DFT formula in [[02-foundations/signal-processing|6. Signal Processing]] is exactly this
   projection.
 
-### 8. Notation dictionary (all pages)
+### 8. Linear differential equations (→ control: [[04-robotics/control-theory-ce397|CE397]], [[04-robotics/lqr-lqg|LQR]])
+
+Physical systems are described by ODEs — this is the modeling language of all of control.
+
+- **First order**: $\dot x = ax$ has solution $x(t) = x(0)\,e^{at}$. Everything follows from
+  this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). A robot joint,
+  a heating room, a draining tank — all locally this equation.
+- **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
+  input"; this is the scalar version of the state-space model
+  $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$ ([[02-foundations/linear-algebra|linear algebra §5]]),
+  and $e^{at}$ becomes the matrix exponential $e^{At}$ with eigenvalues playing the role of $a$.
+- **Second order**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — the
+  mass-spring-damper. Two numbers describe every response: natural frequency $\omega_n$
+  (how fast it oscillates) and damping ratio $\zeta$ (whether it rings: $\zeta<1$
+  oscillates, $\zeta \ge 1$ doesn't). Robot arms and suspension systems are tuned in this
+  vocabulary.
+- Discrete time (what code runs): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — stable iff
+  $|a| < 1$. The continuous/discrete stability conditions ($\text{Re} < 0$ vs $|\cdot|<1$)
+  are the two halves of one story.
+
+### 9. Laplace transform and the s-plane (→ control, [[02-foundations/signal-processing|6. Signal Processing §5]])
+
+The Laplace transform turns ODEs into algebra:
+
+- Definition: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; the one property that matters:
+  **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
+- Consequence: an ODE becomes a polynomial equation, and a system becomes a
+  **transfer function** $G(s) = \frac{\text{output}(s)}{\text{input}(s)}$ — e.g.,
+  $\dot x = ax + u$ gives $G(s) = \frac{1}{s - a}$.
+- **Poles** = roots of the denominator = the $a$'s of section 8 = eigenvalues of the
+  state-space $A$. Plotted in the complex **s-plane**:
+  - left half-plane (negative real part) → decaying → **stable**
+  - right half-plane → growing → **unstable**
+  - imaginary part → oscillation frequency; distance from axis → decay speed
+- This is why [[02-foundations/engineering-math|§7]]'s complex plane matters for control:
+  *a system's entire qualitative behavior is a picture — where its poles sit.* Frequency
+  response is $G(j\omega)$ — evaluate on the imaginary axis, and you recover
+  [[02-foundations/signal-processing|signal processing]]'s filters. (Discrete-time twin:
+  the Z-transform, unit circle instead of left half-plane.)
+
+### 10. Notation dictionary (all pages)
 
 | Symbol | Read as |
 |---|---|
@@ -209,7 +249,43 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   실수부이므로, "사인파로 분해" = "회전들에 투영" —
   [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식이 정확히 이 투영이다.
 
-### 8. 표기법 사전 (전 페이지 공용)
+### 8. 선형 미분방정식 (→ 제어: [[04-robotics/control-theory-ce397|CE397]], [[04-robotics/lqr-lqg|LQR]])
+
+물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어다.
+
+- **1차**: $\dot x = ax$의 해는 $x(t) = x(0)\,e^{at}$. 모든 것이 이 한 사실에서 나온다:
+  $a < 0$이면 감쇠(안정), $a > 0$이면 폭발(불안정). 로봇 관절, 데워지는 방, 빠지는 물탱크
+  — 전부 국소적으로 이 방정식이다.
+- **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
+  상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
+  ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수
+  $e^{At}$가 되며 고유값이 $a$의 역할을 한다.
+- **2차**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — 질량-스프링-댐퍼.
+  모든 응답을 두 숫자가 기술한다: 고유 진동수 $\omega_n$(얼마나 빨리 진동하나)과 감쇠비
+  $\zeta$(울리는가: $\zeta<1$이면 진동, $\zeta \ge 1$이면 안 함). 로봇 팔과 서스펜션이
+  이 어휘로 튜닝된다.
+- 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
+  때만 안정. 연속/이산의 안정 조건($\text{Re} < 0$ vs $|\cdot|<1$)은 한 이야기의 두 반쪽이다.
+
+### 9. 라플라스 변환과 s-평면 (→ 제어, [[02-foundations/signal-processing|6. 신호처리 §5]])
+
+라플라스 변환은 미분방정식을 대수로 바꾼다:
+
+- 정의: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; 중요한 성질은 하나:
+  **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
+- 따름정리: 미분방정식이 다항 방정식이 되고, 시스템이 **전달함수**
+  $G(s) = \frac{\text{출력}(s)}{\text{입력}(s)}$가 된다 — 예: $\dot x = ax + u$이면
+  $G(s) = \frac{1}{s - a}$.
+- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값. 복소 **s-평면**에 그리면:
+  - 좌반평면(실수부 음수) → 감쇠 → **안정**
+  - 우반평면 → 성장 → **불안정**
+  - 허수부 → 진동 주파수; 축에서의 거리 → 감쇠 속도
+- [[02-foundations/engineering-math|§7]]의 복소평면이 제어에서 중요한 이유가 이것이다:
+  *시스템의 정성적 거동 전체가 그림 하나 — 극점이 어디에 앉아 있는가 — 다.* 주파수 응답은
+  $G(j\omega)$ — 허수축 위에서 평가하면 [[02-foundations/signal-processing|신호처리]]의
+  필터가 복원된다. (이산 시간의 쌍둥이: Z-변환, 좌반평면 대신 단위원.)
+
+### 10. 표기법 사전 (전 페이지 공용)
 
 | 기호 | 읽는 법 |
 |---|---|

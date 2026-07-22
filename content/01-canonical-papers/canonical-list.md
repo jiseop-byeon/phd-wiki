@@ -108,10 +108,9 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]
 
-- [ ] Bock — *The future of construction automation* ([Automation in Construction, 2015](https://doi.org/10.1016/j.autcon.2015.07.022)) — 분야 조감의 표준 서베이
-- [ ] Davila Delgado et al. — *Robotics and automated systems in construction* ([J. Building Engineering, 2019](https://doi.org/10.1016/j.jobe.2019.100868)) — 도입 장벽 분석
-- [ ] Jud et al. — *HEAP: the autonomous walking excavator* ([ETH RSL](https://rsl.ethz.ch/robots-media/heap.html)) — 학습 시대 중장비 자율성의 기준 시스템
-- [ ] ETH — autonomous dry-stone wall construction ([project](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)) — 비정형 재료 조작의 이정표
-- [ ] Zhai, Terenzi et al. (ETH RSL) — *ExT: Scalable Autonomous Excavation via Large-Scale Multi-Task Pretraining and Fine-Tuning* ([arXiv 2025](https://arxiv.org/abs/2509.14992)) — 굴착의 파운데이션 모델 레시피(사전학습→SFT/RLFT); physical AI가 건설 기계에 진입한 현재의 최전선
-- [ ] ICRA Construction Robotics Workshop ([2024](https://construction-robots.github.io/index2024.html)) — ExACT(굴착기 ACT) 등; 이 교차점의 커뮤니티가 형성되는 장소
+- [x] [[notes/bock-2015|Bock — *The future of construction automation*]] (Automation in Construction, 2015) — 분야 조감의 표준 서베이
+- [x] [[notes/davila-delgado-2019|Davila Delgado et al. — 도입 장벽 분석]] (J. Building Engineering, 2019)
+- [x] [[notes/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 중장비 자율성의 기준 시스템 (돌담 프로젝트 포함)
+- [x] [[notes/ext|ExT — 굴착의 사전학습→파인튜닝]] (Zhai, Terenzi et al., ETH RSL 2025) — physical AI가 건설 기계에 진입한 최전선
+- [ ] ICRA Construction Robotics Workshop ([2024](https://construction-robots.github.io/index2024.html)) — ExACT(굴착기 ACT) 등; 이 교차점의 커뮤니티
 - [ ] (심화 서베이·개별 논문은 읽으며 추가)

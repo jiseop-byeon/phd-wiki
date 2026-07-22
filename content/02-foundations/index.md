@@ -30,7 +30,7 @@ own study notes distilled from them.
 Start with [[02-foundations/overview|0. Overview]] — the prerequisite engineering-math
 checklist and the map of how these pages connect to each other and to the papers.
 
-The seven pages below are designed to be **sufficient background for every paper in this
+The pages below are designed to be **sufficient background for every paper in this
 wiki**: math core (linear algebra, calculus, probability), the two applied pillars
 (optimization, information theory), and two domain bridges (signal processing, RL).
 
@@ -43,6 +43,8 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 - [[02-foundations/information-theory|5. Information Theory]] — entropy, cross-entropy, KL divergence, mutual information, the ELBO
 - [[02-foundations/signal-processing|6. Signal Processing]] — sampling, FFT, filtering, sensor-pipeline habits
 - [[02-foundations/rl-basics|7. Reinforcement Learning Basics]] — MDPs, value functions, policy gradients/PPO, model-based RL → world models
+- [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] — rotations, quaternions, homogeneous transforms — the language of robot actions and camera poses
+- [[02-foundations/ml-practice|9. ML Practice & Evaluation]] — data splits, overfitting, and the metrics dictionary for reading results tables
 
 ## 한국어
 
@@ -71,7 +73,7 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 [[02-foundations/overview|0. Overview]]에서 시작하라 — 사전 공업수학 체크리스트와,
 이 페이지들이 서로·논문들과 어떻게 연결되는지의 지도가 있다.
 
-아래 일곱 페이지는 **이 위키의 모든 논문을 읽는 데 충분한 배경**이 되도록 설계했다:
+아래 페이지들은 **이 위키의 모든 논문을 읽는 데 충분한 배경**이 되도록 설계했다:
 수학 핵심(선형대수, 미적분, 확률), 응용 기둥 둘(최적화, 정보이론), 도메인 다리 둘(신호처리, RL).
 
 - [[02-foundations/overview|0. Overview]] — 사전 지식, 학습 순서, 연결 지도
@@ -83,3 +85,5 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 - [[02-foundations/information-theory|5. 정보이론]] — 엔트로피, 교차 엔트로피, KL divergence, 상호 정보량, ELBO
 - [[02-foundations/signal-processing|6. 신호처리]] — 샘플링, FFT, 필터링, 센서 파이프라인 습관
 - [[02-foundations/rl-basics|7. 강화학습 기초]] — MDP, 가치 함수, 정책 그래디언트/PPO, 모델 기반 RL → 월드모델
+- [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]] — 회전, 쿼터니언, 동차 변환 — 로봇 행동과 카메라 자세의 언어
+- [[02-foundations/ml-practice|9. ML 실무와 평가]] — 데이터 분할, 과적합, 결과 표를 읽는 지표 사전

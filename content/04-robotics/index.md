@@ -33,6 +33,8 @@ and representative applications" (enough to read modern robotics papers).
   configuration space, 강체 운동, 정기구학/역기구학, 속도 기구학과 정역학, 동역학,
   궤적 생성, 모션 플래닝, 로봇 제어, 파지, 이동 로봇
 
+교재·가이드: [[04-robotics/modern-robotics-book|Modern Robotics]] · [[04-robotics/control-theory-ce397|제어 이론 (CE397, 공개 교재)]] · [[04-robotics/lqr-lqg|LQR/LQG]] · [[04-robotics/mpc|MPC]] · [[04-robotics/convex-mpc-legged|보행 convex MPC]]
+
 ### 제어 공부 순서
 
 목표 수준: 고전 제어는 확실하게, MPC는 문제 정식화와 대표적인 응용 사례를
