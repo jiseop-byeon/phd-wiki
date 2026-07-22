@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2402.15391
 pdf: https://arxiv.org/pdf/2402.15391
 project: https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/
 tags: [paper, world-models, generative]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Bruce et al., ICML 2024** — [arXiv](https://arxiv.org/abs/2402.15391) · [PDF](https://arxiv.org/pdf/2402.15391) · [Genie 2 (Official)](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/)

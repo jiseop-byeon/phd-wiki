@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2204.14198
 pdf: https://arxiv.org/pdf/2204.14198
 code: https://github.com/mlfoundations/open_flamingo
 tags: [paper, vlm]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Alayrac et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2204.14198) · [PDF](https://arxiv.org/pdf/2204.14198) · [Code (open repro)](https://github.com/mlfoundations/open_flamingo)

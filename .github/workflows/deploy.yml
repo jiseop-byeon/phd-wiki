@@ -38,6 +38,8 @@ jobs:
           key: ${{ runner.os }}-plugins-${{ hashFiles('quartz.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-plugins-
+      - name: Content QA gate
+        run: python3 scripts/verify_content.py
       - name: Install Dependencies
         run: npm ci
       - name: Install Quartz plugins

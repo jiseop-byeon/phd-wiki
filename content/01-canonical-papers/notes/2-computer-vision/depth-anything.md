@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2401.10891
 pdf: https://arxiv.org/pdf/2401.10891
 code: https://github.com/LiheYoung/Depth-Anything
 tags: [paper, computer-vision, 3d]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Yang et al., CVPR 2024** — [arXiv](https://arxiv.org/abs/2401.10891) · [PDF](https://arxiv.org/pdf/2401.10891) · [Code](https://github.com/LiheYoung/Depth-Anything)

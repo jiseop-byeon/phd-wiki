@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2502.13923
 code: https://github.com/QwenLM/Qwen2.5-VL
 project: https://arxiv.org/abs/2409.12191
 tags: [paper, vlm]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Qwen Team (Alibaba), 2023–2025** — [Qwen-VL arXiv](https://arxiv.org/abs/2308.12966) · [Qwen2-VL arXiv](https://arxiv.org/abs/2409.12191) · [Qwen2.5-VL arXiv/PDF](https://arxiv.org/pdf/2502.13923) · [Code](https://github.com/QwenLM/Qwen2.5-VL)

@@ -7,7 +7,8 @@ year: 2022
 arxiv: https://arxiv.org/abs/2203.02155
 pdf: https://arxiv.org/pdf/2203.02155
 tags: [paper, foundations, alignment]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ouyang et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2203.02155) · [PDF](https://arxiv.org/pdf/2203.02155)

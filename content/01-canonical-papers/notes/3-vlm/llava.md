@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2304.08485
 code: https://github.com/haotian-liu/LLaVA
 project: https://llava-vl.github.io
 tags: [paper, vlm]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Liu et al., NeurIPS 2023** — [arXiv](https://arxiv.org/abs/2304.08485) · [PDF](https://arxiv.org/pdf/2304.08485) · [Code](https://github.com/haotian-liu/LLaVA) · [Official](https://llava-vl.github.io)

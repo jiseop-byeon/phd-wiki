@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1506.01497
 pdf: https://arxiv.org/pdf/1506.01497
 tags: [paper, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ren et al., NeurIPS 2015** — [arXiv](https://arxiv.org/abs/1506.01497) · [PDF](https://arxiv.org/pdf/1506.01497)

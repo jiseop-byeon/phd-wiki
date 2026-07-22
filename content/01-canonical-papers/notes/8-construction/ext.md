@@ -7,7 +7,8 @@ year: 2025
 arxiv: https://arxiv.org/abs/2509.14992
 pdf: https://arxiv.org/pdf/2509.14992
 tags: [paper, construction, robotics, vla]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Zhai, Terenzi et al. (ETH RSL), 2025** — [arXiv](https://arxiv.org/abs/2509.14992) · [PDF](https://arxiv.org/pdf/2509.14992)

@@ -7,7 +7,8 @@ year: 2016
 arxiv: https://arxiv.org/abs/1512.03385
 pdf: https://arxiv.org/pdf/1512.03385
 tags: [paper, foundations, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **He et al., CVPR 2016** — [arXiv](https://arxiv.org/abs/1512.03385) · [PDF](https://arxiv.org/pdf/1512.03385)

@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2503.11651
 pdf: https://arxiv.org/pdf/2503.11651
 code: https://github.com/facebookresearch/vggt
 tags: [paper, computer-vision, 3d]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Wang et al., CVPR 2025** — [arXiv](https://arxiv.org/abs/2503.11651) · [PDF](https://arxiv.org/pdf/2503.11651) · [Code](https://github.com/facebookresearch/vggt)

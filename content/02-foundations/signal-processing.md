@@ -20,7 +20,9 @@ functions.
 - Worked example: $x = [1, 2, 3]$, $h = [1, 1]$ (a running sum):
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — flip, slide, multiply, accumulate.
   Length: $N_x + N_h - 1$.
-- A CNN layer is exactly a *learned bank* of such $h$'s in 2D (plus nonlinearity) —
+- A CNN layer is a *learned bank* of such $h$'s in 2D (plus nonlinearity; frameworks
+  actually compute cross-correlation — convolution without the kernel flip — but since the
+  kernel is learned the distinction is immaterial, and papers say "convolution" by convention) —
   [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] onward; "padding/stride" are the boundary and
   sampling choices of this same operation.
 - Key properties: commutative, associative (cascaded LTI systems = one convolved $h$),
@@ -109,7 +111,9 @@ functions.
 - 계산 예제: $x = [1, 2, 3]$, $h = [1, 1]$(연속 합):
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — 뒤집고, 밀고, 곱하고, 누적한다.
   길이: $N_x + N_h - 1$.
-- CNN 층은 정확히 이런 $h$들의 *학습된 2D 묶음*(+ 비선형성)이다 —
+- CNN 층은 이런 $h$들의 *학습된 2D 묶음*(+ 비선형성)이다 — 실제 프레임워크는 커널을
+  뒤집지 않는 교차상관(cross-correlation)을 계산하지만, 커널이 학습되므로 기능상 차이가
+  없어 관례적으로 convolution이라 부른다 —
   [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] 이후 전부; "패딩/스트라이드"는 같은 연산의
   경계·샘플링 선택지다.
 - 핵심 성질: 교환·결합 법칙(직렬 LTI = 합성곱된 $h$ 하나), $\delta[n]$이 항등원.

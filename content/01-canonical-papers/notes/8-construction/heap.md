@@ -7,7 +7,8 @@ year: 2021
 pdf: https://doi.org/10.1016/j.autcon.2021.103783
 project: https://rsl.ethz.ch/robots-media/heap.html
 tags: [paper, construction, robotics]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Jud et al., Automation in Construction 2021** — [DOI](https://doi.org/10.1016/j.autcon.2021.103783) · [Official](https://rsl.ethz.ch/robots-media/heap.html)

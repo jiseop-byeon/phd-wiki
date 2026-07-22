@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1409.1556
 pdf: https://arxiv.org/pdf/1409.1556
 tags: [paper, foundations, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Simonyan & Zisserman, ICLR 2015** — [arXiv](https://arxiv.org/abs/1409.1556) · [PDF](https://arxiv.org/pdf/1409.1556)

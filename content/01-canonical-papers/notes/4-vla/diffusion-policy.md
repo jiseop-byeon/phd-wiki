@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2303.04137
 code: https://github.com/real-stanford/diffusion_policy
 project: https://diffusion-policy.cs.columbia.edu
 tags: [paper, vla, robot-learning, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Chi et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2303.04137) · [PDF](https://arxiv.org/pdf/2303.04137) · [Code](https://github.com/real-stanford/diffusion_policy) · [Official](https://diffusion-policy.cs.columbia.edu)

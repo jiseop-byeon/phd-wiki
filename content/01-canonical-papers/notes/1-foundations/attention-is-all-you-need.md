@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/1706.03762
 code: https://github.com/tensorflow/tensor2tensor
 project: https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html
 tags: [paper, foundations, transformer]
-status: to-read   # to-read | reading | done
+status: note-complete
+last_verified: 2026-07-22   # to-read | reading | done
 ---
 
 **Vaswani et al., NeurIPS 2017** — [arXiv](https://arxiv.org/abs/1706.03762) · [PDF](https://arxiv.org/pdf/1706.03762) · [Code](https://github.com/tensorflow/tensor2tensor) · [Official](https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)

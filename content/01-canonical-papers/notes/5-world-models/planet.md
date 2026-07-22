@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/1811.04551
 pdf: https://arxiv.org/pdf/1811.04551
 code: https://github.com/google-research/planet
 tags: [paper, world-models, rl]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Hafner et al., ICML 2019** — [arXiv](https://arxiv.org/abs/1811.04551) · [PDF](https://arxiv.org/pdf/1811.04551) · [Code](https://github.com/google-research/planet)

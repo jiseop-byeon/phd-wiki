@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2308.04079
 pdf: https://arxiv.org/pdf/2308.04079
 code: https://github.com/graphdeco-inria/gaussian-splatting
 tags: [paper, computer-vision, 3d]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kerbl et al., SIGGRAPH 2023** — [arXiv](https://arxiv.org/abs/2308.04079) · [PDF](https://arxiv.org/pdf/2308.04079) · [Code](https://github.com/graphdeco-inria/gaussian-splatting)

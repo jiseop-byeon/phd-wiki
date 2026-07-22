@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/1810.04805
 pdf: https://arxiv.org/pdf/1810.04805
 code: https://github.com/google-research/bert
 tags: [paper, foundations, nlp]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Devlin et al., NAACL 2019** — [arXiv](https://arxiv.org/abs/1810.04805) · [PDF](https://arxiv.org/pdf/1810.04805) · [Code](https://github.com/google-research/bert)

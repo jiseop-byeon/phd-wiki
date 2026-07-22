@@ -6,7 +6,8 @@ venue: Journal of Building Engineering
 year: 2019
 pdf: https://doi.org/10.1016/j.jobe.2019.100868
 tags: [paper, construction]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Davila Delgado et al., J. Building Engineering 2019** — [DOI](https://doi.org/10.1016/j.jobe.2019.100868)

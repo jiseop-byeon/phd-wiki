@@ -103,10 +103,10 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 7. Robotics & Control (textbook + key references)
 
-- [x] [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — study guide with free official PDF & course links
-- [x] [[04-robotics/lqr-lqg|LQR/LQG]] — study guide (Underactuated Robotics, Stanford EE363)
-- [x] [[04-robotics/mpc|MPC]] — study guide + Mayne et al., *Constrained MPC* (Automatica 2000)
-- [x] [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
+- [x] ★ [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — study guide with free official PDF & course links
+- [x] ◐ [[04-robotics/lqr-lqg|LQR/LQG]] — study guide (Underactuated Robotics, Stanford EE363)
+- [x] ◐ [[04-robotics/mpc|MPC]] — study guide + Mayne et al., *Constrained MPC* (Automatica 2000)
+- [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
 
 ## 8. Construction Robotics
 
@@ -116,5 +116,5 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/8-construction/davila-delgado-2019|Davila Delgado et al. — 도입 장벽 분석]] (J. Building Engineering, 2019)
 - [x] ★ [[notes/8-construction/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 중장비 자율성의 기준 시스템 (돌담 프로젝트 포함)
 - [x] ★ [[notes/8-construction/ext|ExT — 굴착의 사전학습→파인튜닝]] (Zhai, Terenzi et al., ETH RSL 2025) — physical AI가 건설 기계에 진입한 최전선
-- [ ] ICRA Construction Robotics Workshop ([2024](https://construction-robots.github.io/index2024.html)) — ExACT(굴착기 ACT) 등; 이 교차점의 커뮤니티
+- [ ] ○ ICRA Construction Robotics Workshop ([2024](https://construction-robots.github.io/index2024.html)) — ExACT(굴착기 ACT) 등; 이 교차점의 커뮤니티
 - [ ] (심화 서베이·개별 논문은 읽으며 추가)

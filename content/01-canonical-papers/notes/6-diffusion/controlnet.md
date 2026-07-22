@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2302.05543
 pdf: https://arxiv.org/pdf/2302.05543
 code: https://github.com/lllyasviel/ControlNet
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Zhang et al., ICCV 2023** — [arXiv](https://arxiv.org/abs/2302.05543) · [PDF](https://arxiv.org/pdf/2302.05543) · [Code](https://github.com/lllyasviel/ControlNet)

@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2005.12872
 pdf: https://arxiv.org/pdf/2005.12872
 code: https://github.com/facebookresearch/detr
 tags: [paper, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Carion et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2005.12872) · [PDF](https://arxiv.org/pdf/2005.12872) · [Code](https://github.com/facebookresearch/detr)

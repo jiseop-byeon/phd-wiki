@@ -75,7 +75,8 @@ bug detector in existence.
   - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: a self-connection of weight exactly 1.0 — the
     error carousel where the product stops shrinking.
   - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: renormalize activations so Jacobians
-    stay well-scaled (better conditioning).
+    stay well-scaled (better conditioning) — one of several proposed explanations; *why*
+    BatchNorm works is still debated (see the note).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
     — the identity term gives the gradient a direct, unattenuated path — it *mitigates*
     vanishing (a path exists) rather than guaranteeing the total gradient never decays.
@@ -173,7 +174,8 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
   - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: 가중치가 정확히 1.0인 자기 연결 — 곱이 더는
     줄지 않는 오차 회전목마.
   - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: 활성값을 재정규화해 야코비안의
-    스케일을 유지 (조건수 개선).
+    스케일을 유지 (조건수 개선) — 여러 제안된 설명 중 하나로, BatchNorm이 *왜* 통하는지는
+    아직 논쟁 중이다 (노트 참고).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]:
     $\partial(x + F(x))/\partial x = I + \partial F/\partial x$ — 항등 항이 감쇠 없는
     직접 경로를 제공한다 — 소실을 *완화*하는 것이지(경로가 존재한다), 전체 그래디언트가

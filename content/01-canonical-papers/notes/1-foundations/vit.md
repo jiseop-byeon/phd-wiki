@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2010.11929
 pdf: https://arxiv.org/pdf/2010.11929
 code: https://github.com/google-research/vision_transformer
 tags: [paper, foundations, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Dosovitskiy et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2010.11929) · [PDF](https://arxiv.org/pdf/2010.11929) · [Code](https://github.com/google-research/vision_transformer)

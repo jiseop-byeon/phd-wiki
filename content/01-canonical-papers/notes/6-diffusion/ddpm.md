@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2006.11239
 pdf: https://arxiv.org/pdf/2006.11239
 code: https://github.com/hojonathanho/diffusion
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ho et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2006.11239) · [PDF](https://arxiv.org/pdf/2006.11239) · [Code](https://github.com/hojonathanho/diffusion)

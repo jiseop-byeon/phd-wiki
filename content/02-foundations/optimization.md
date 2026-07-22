@@ -97,8 +97,8 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 
 - Network training = stochastic non-convex optimization
   ([[01-canonical-papers/notes/1-foundations/adam|Adam]]; [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]
-  reshapes the landscape's conditioning).
-- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = constraining the search to a low-rank manifold.
+  reshapes the landscape's conditioning — one proposed mechanism among several).
+- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = restricting the update to a low-rank parameterization.
 - [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]'s KL penalty = a soft trust-region constraint.
 - Diffusion training = minimizing a variational bound; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]'s
   CEM planning = derivative-free optimization in latent space.
@@ -195,8 +195,8 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 ### 6. 최적화의 눈으로 이 위키 읽기
 
 - 네트워크 학습 = 확률적 비볼록 최적화 ([[01-canonical-papers/notes/1-foundations/adam|Adam]];
-  [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]은 지형의 조건수를 다듬는다).
-- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = 탐색을 저랭크 다양체로 제약.
+  [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]은 지형의 조건수를 다듬는다 — 여러 제안된 기제 중 하나).
+- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = 업데이트를 저랭크 매개화로 제약.
 - [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]의 KL 페널티 = 부드러운 신뢰 영역 제약.
 - 디퓨전 학습 = 변분 하한 최소화; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]의 CEM 플래닝 =
   잠재 공간의 미분 불요 최적화.

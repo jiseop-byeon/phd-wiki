@@ -66,7 +66,7 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 ### 5. Evaluation pitfalls to watch for in papers
 
 - **Cherry-picking**: qualitative figures show the best runs — ask what the *median* rollout looks like.
-- **Statistical vs practical significance**: +0.3%p with overlapping error bars is noise; +0.3%p on a saturated benchmark can still matter, and +5%p from one seed can be luck. Ask for variance first.
+- **Statistical vs practical significance**: error-bar overlap alone does not settle significance — check what the bars represent (std? standard error? CI?), the number of runs, and pairedness. A +0.3%p gain may be noise or may matter (on a saturated benchmark); +5%p from one seed can be luck. Ask for variance first.
 - **Oracle information**: does the method quietly use ground-truth state, perfect calibration, or human resets that deployment won't have?
 - **Open-loop vs closed-loop evaluation**: predicting a good trajectory offline (open-loop) is far easier than executing under feedback with compounding errors (closed-loop) — robotics numbers are only comparable within the same regime.
 - **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things.
@@ -141,7 +141,7 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 ### 5. 논문에서 경계할 평가 함정
 
 - **체리피킹**: 정성적 그림은 최고 실행을 보여준다 — *중앙값* 롤아웃은 어떤지 물어라.
-- **통계적 vs 실질적 유의성**: 오차 막대가 겹치는 +0.3%p는 노이즈다; 포화된 벤치마크의 +0.3%p는 의미 있을 수 있고, 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라.
+- **통계적 vs 실질적 유의성**: 오차 막대 겹침만으로 유의성을 판정할 수 없다 — 막대가 무엇인지(표준편차? 표준오차? 신뢰구간?), 실행 횟수, 짝지음 여부를 확인하라. +0.3%p는 노이즈일 수도, (포화된 벤치마크에서는) 의미 있을 수도 있다; 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라.
 - **오라클 정보**: 배포 환경에는 없을 실측 상태, 완벽한 캘리브레이션, 사람의 리셋을 조용히 쓰고 있지 않은가?
 - **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다.
 - **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다.

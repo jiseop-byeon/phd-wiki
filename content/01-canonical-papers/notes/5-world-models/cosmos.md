@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2501.03575
 pdf: https://arxiv.org/pdf/2501.03575
 code: https://github.com/nvidia-cosmos/cosmos-predict1
 tags: [paper, world-models, generative]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **NVIDIA, 2025** — [arXiv](https://arxiv.org/abs/2501.03575) · [PDF](https://arxiv.org/pdf/2501.03575) · [Code](https://github.com/nvidia-cosmos/cosmos-predict1)

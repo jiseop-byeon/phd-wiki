@@ -6,7 +6,8 @@ venue: Technical report
 year: 2024
 pdf: https://openai.com/index/video-generation-models-as-world-simulators/
 tags: [paper, world-models, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **OpenAI, 2024 (technical report)** — [Report](https://openai.com/index/video-generation-models-as-world-simulators/)

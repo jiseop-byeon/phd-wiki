@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2304.13705
 code: https://github.com/tonyzhaozh/act
 project: https://tonyzhaozh.github.io/aloha/
 tags: [paper, vla, robot-learning]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Zhao et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2304.13705) · [PDF](https://arxiv.org/pdf/2304.13705) · [Code](https://github.com/tonyzhaozh/act) · [Official](https://tonyzhaozh.github.io/aloha/)

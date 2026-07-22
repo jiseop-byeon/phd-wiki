@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/1803.10122
 pdf: https://arxiv.org/pdf/1803.10122
 project: https://worldmodels.github.io
 tags: [paper, world-models, rl]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ha & Schmidhuber, NeurIPS 2018** — [arXiv](https://arxiv.org/abs/1803.10122) · [PDF](https://arxiv.org/pdf/1803.10122) · [Official](https://worldmodels.github.io)

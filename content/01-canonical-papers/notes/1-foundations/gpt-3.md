@@ -7,7 +7,8 @@ year: 2020
 arxiv: https://arxiv.org/abs/2005.14165
 pdf: https://arxiv.org/pdf/2005.14165
 tags: [paper, foundations, nlp, scaling]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Brown et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2005.14165) · [PDF](https://arxiv.org/pdf/2005.14165)

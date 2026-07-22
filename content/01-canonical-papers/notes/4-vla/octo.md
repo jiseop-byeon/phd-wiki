@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2405.12213
 code: https://github.com/octo-models/octo
 project: https://octo-models.github.io
 tags: [paper, vla, robot-learning]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Octo Model Team, RSS 2024** — [arXiv](https://arxiv.org/abs/2405.12213) · [PDF](https://arxiv.org/pdf/2405.12213) · [Code](https://github.com/octo-models/octo) · [Official](https://octo-models.github.io)

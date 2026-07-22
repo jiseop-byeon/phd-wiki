@@ -7,7 +7,8 @@ year: 2014
 arxiv: https://arxiv.org/abs/1409.3215
 pdf: https://arxiv.org/pdf/1409.3215
 tags: [paper, foundations, nlp]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Sutskever et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1409.3215) · [PDF](https://arxiv.org/pdf/1409.3215)

@@ -8,7 +8,8 @@ pdf: https://openreview.net/forum?id=BZ5a1r-kVsf
 arxiv: https://arxiv.org/abs/2301.08243
 project: https://arxiv.org/abs/2506.09985
 tags: [paper, world-models, self-supervised]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **LeCun, 2022 · Assran et al., CVPR 2023 · Meta AI, 2024–25** — [Position paper](https://openreview.net/forum?id=BZ5a1r-kVsf) · [I-JEPA arXiv](https://arxiv.org/abs/2301.08243) · [V-JEPA 2 arXiv](https://arxiv.org/abs/2506.09985)

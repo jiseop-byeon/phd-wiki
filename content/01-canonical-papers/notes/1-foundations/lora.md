@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2106.09685
 pdf: https://arxiv.org/pdf/2106.09685
 code: https://github.com/microsoft/LoRA
 tags: [paper, foundations, efficiency]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Hu et al., ICLR 2022** — [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)

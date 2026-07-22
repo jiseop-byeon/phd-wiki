@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2212.09748
 pdf: https://arxiv.org/pdf/2212.09748
 code: https://github.com/facebookresearch/DiT
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Peebles & Xie, ICCV 2023** — [arXiv](https://arxiv.org/abs/2212.09748) · [PDF](https://arxiv.org/pdf/2212.09748) · [Code](https://github.com/facebookresearch/DiT)

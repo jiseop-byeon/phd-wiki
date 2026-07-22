@@ -13,14 +13,14 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 
 | Player | What they do | In this wiki |
 |---|---|---|
-| Google DeepMind | RT series, Genie, ALOHA lineage research | [[01-canonical-papers/notes/rt-2\|RT-2]], [[01-canonical-papers/notes/genie\|Genie]] |
-| Physical Intelligence | robot foundation models (π series) | [[01-canonical-papers/notes/pi0\|π0]] |
-| NVIDIA | GR00T humanoid models, Cosmos world models, Isaac sim | [[01-canonical-papers/notes/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/cosmos\|Cosmos]] |
-| Meta AI (FAIR) | JEPA line, open VLM components (DINOv2, SigLIP usage) | [[01-canonical-papers/notes/jepa\|JEPA]] |
+| Google DeepMind | RT series, Genie, ALOHA lineage research | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
+| Physical Intelligence | robot foundation models (π series) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| NVIDIA | GR00T humanoid models, Cosmos world models, Isaac sim | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
+| Meta AI (FAIR) | JEPA line, open VLM components (DINOv2, SigLIP usage) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | Tesla / Figure / 1X / Agility | humanoid hardware + in-house VLA stacks | context for humanoid papers |
 | Unitree | affordable humanoids/quadrupeds — academia's default hardware | — |
 | Hugging Face | LeRobot: open-source robot learning framework | practical entry point |
-| Stanford/Berkeley/CMU labs | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/act\|ACT]], [[01-canonical-papers/notes/octo\|Octo]], [[01-canonical-papers/notes/openvla\|OpenVLA]], [[01-canonical-papers/notes/diffusion-policy\|Diffusion Policy]] |
+| Stanford/Berkeley/CMU labs | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
 ### Standard hardware in papers
 
@@ -40,14 +40,14 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 
 | 플레이어 | 하는 일 | 이 위키에서 |
 |---|---|---|
-| Google DeepMind | RT 시리즈, Genie, ALOHA 계열 연구 | [[01-canonical-papers/notes/rt-2\|RT-2]], [[01-canonical-papers/notes/genie\|Genie]] |
-| Physical Intelligence | 로봇 파운데이션 모델 (π 시리즈) | [[01-canonical-papers/notes/pi0\|π0]] |
-| NVIDIA | GR00T 휴머노이드 모델, Cosmos 월드모델, Isaac 시뮬레이션 | [[01-canonical-papers/notes/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/cosmos\|Cosmos]] |
-| Meta AI (FAIR) | JEPA 계열, 오픈 VLM 구성 요소 (DINOv2 등) | [[01-canonical-papers/notes/jepa\|JEPA]] |
+| Google DeepMind | RT 시리즈, Genie, ALOHA 계열 연구 | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
+| Physical Intelligence | 로봇 파운데이션 모델 (π 시리즈) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| NVIDIA | GR00T 휴머노이드 모델, Cosmos 월드모델, Isaac 시뮬레이션 | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
+| Meta AI (FAIR) | JEPA 계열, 오픈 VLM 구성 요소 (DINOv2 등) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | Tesla / Figure / 1X / Agility | 휴머노이드 하드웨어 + 자체 VLA 스택 | 휴머노이드 논문의 맥락 |
 | Unitree | 저가 휴머노이드/사족보행 — 학계의 기본 하드웨어 | — |
 | Hugging Face | LeRobot: 오픈소스 로봇 학습 프레임워크 | 실습 진입점 |
-| Stanford/Berkeley/CMU 랩들 | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/act\|ACT]], [[01-canonical-papers/notes/octo\|Octo]], [[01-canonical-papers/notes/openvla\|OpenVLA]], [[01-canonical-papers/notes/diffusion-policy\|Diffusion Policy]] |
+| Stanford/Berkeley/CMU 랩들 | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
 ### 논문에 등장하는 표준 하드웨어
 

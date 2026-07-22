@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2503.14734
 pdf: https://arxiv.org/pdf/2503.14734
 code: https://github.com/NVIDIA/Isaac-GR00T
 tags: [paper, vla, robot-learning, humanoid]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **NVIDIA, 2025** — [arXiv](https://arxiv.org/abs/2503.14734) · [PDF](https://arxiv.org/pdf/2503.14734) · [Code](https://github.com/NVIDIA/Isaac-GR00T)

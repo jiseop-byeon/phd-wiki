@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2301.12597
 pdf: https://arxiv.org/pdf/2301.12597
 code: https://github.com/salesforce/LAVIS
 tags: [paper, vlm]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Li et al., ICML 2023** — [arXiv](https://arxiv.org/abs/2301.12597) · [PDF](https://arxiv.org/pdf/2301.12597) · [Code](https://github.com/salesforce/LAVIS)

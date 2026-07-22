@@ -65,7 +65,9 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
   - Reverse KL (used in variational inference): mode-**seeking** — $q$ locks onto one mode.
-  This asymmetry explains VAE blurriness and why RL-style objectives collapse to narrow behaviors.
+  This asymmetry contributes to VAEs' limited posterior coverage and to RL-style objectives
+  collapsing to narrow behaviors — though classical VAE blur is *primarily* the Gaussian
+  pixel likelihood averaging plausible outputs (see the self-check answer below).
 - Where you've seen it:
   - [[01-canonical-papers/notes/6-diffusion/vae|VAE]]: the ELBO's regularizer $D_{KL}(q_\phi(z|x)\,\|\,p(z))$.
   - [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT/RLHF]]: per-token KL penalty keeping the
@@ -169,7 +171,9 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
   - Reverse KL (변분 추론에서 사용): 모드 **시킹** — $q$가 한 모드에 들러붙는다.
-  이 비대칭이 VAE의 흐릿함과, RL식 목적함수가 좁은 행동으로 붕괴하는 이유를 설명한다.
+  이 비대칭은 VAE의 제한적 사후분포 커버리지와 RL식 목적함수가 좁은 행동으로 붕괴하는
+  현상에 기여한다 — 단 고전적 VAE 흐릿함의 *주원인*은 가우시안 픽셀 우도의 평균화다
+  (아래 스스로 점검 정답 참고).
 - 이미 만난 곳들:
   - [[01-canonical-papers/notes/6-diffusion/vae|VAE]]: ELBO의 정규화 항 $D_{KL}(q_\phi(z|x)\,\|\,p(z))$
   - [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT/RLHF]]: 정책을 SFT 모델 근처에 붙잡는

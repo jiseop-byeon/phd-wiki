@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2112.10752
 pdf: https://arxiv.org/pdf/2112.10752
 code: https://github.com/CompVis/latent-diffusion
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Rombach et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2112.10752) · [PDF](https://arxiv.org/pdf/2112.10752) · [Code](https://github.com/CompVis/latent-diffusion)

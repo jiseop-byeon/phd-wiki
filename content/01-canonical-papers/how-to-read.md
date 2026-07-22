@@ -31,13 +31,13 @@ What common phrases imply — and what they do **not** guarantee:
 | Phrase | Implies | Does not guarantee |
 |---|---|---|
 | "we formulate X as Y" | X is being translated into framework Y | that Y's assumptions hold for X |
-| "conditioned on Z" | Z is given as input at inference | that the model actually uses Z well |
+| "conditioned on Z" | Z shapes the model's output distribution | when Z is provided (train only? inference? dropped for CFG?) — check per paper; or that the model uses Z well |
 | "end-to-end" | trainable components are jointly optimized under one task objective | that nothing is frozen — frozen modules can sit inside the pipeline |
 | "frozen" | weights fixed, no gradient | that the module is unimportant |
 | "outperforms baselines" | better on the reported setup | that baselines were tuned, or the comparison is compute-matched |
 | "state-of-the-art" | best on a specific benchmark at a specific time | general superiority |
-| "ablation" | a component was removed to show it matters | that interactions between components were tested |
-| "zero-shot / few-shot" | 0 / a few task examples (at inference in LLM/VLM usage; some fields mean a few *training* examples) | that the task never appeared in pretraining data |
+| "ablation" | one factor (component, objective, data, hyperparameter) was changed to show it matters | that interactions between factors were tested |
+| "zero-shot / few-shot" | no / few examples of the target task, class, or domain (inference-time demos in LLM/VLM usage; training examples in other fields) | that the task never appeared in pretraining data |
 | "emergent" | absent at small scale, present at large | an agreed definition — read the evaluation closely |
 | "real-world / in the wild" | outside a controlled lab setup | the operating range you care about |
 | "orthogonal to" | combinable, independent improvement | that combining was actually tried |
@@ -116,13 +116,13 @@ If any of the five fails, reread that section — not the whole note.
 | 표현 | 암시하는 것 | 보장하지 않는 것 |
 |---|---|---|
 | "we formulate X as Y" | X를 틀 Y로 번역하고 있다 | Y의 가정이 X에서 성립한다는 것 |
-| "conditioned on Z" | 추론 시 Z가 입력으로 주어진다 | 모델이 Z를 실제로 잘 쓴다는 것 |
+| "conditioned on Z" | Z가 모델의 출력 분포를 규정한다 | Z가 언제 주어지는지(학습만? 추론? CFG처럼 제거되기도?) — 논문별 확인; 모델이 Z를 잘 쓴다는 것 |
 | "end-to-end" | 학습 가능한 구성요소들이 하나의 과제 목적함수로 공동 최적화된다 | 아무것도 얼리지 않았다는 것 — frozen 모듈이 파이프라인 안에 있을 수 있다 |
 | "frozen" | 가중치 고정, 그래디언트 없음 | 그 모듈이 안 중요하다는 것 |
 | "outperforms baselines" | 보고된 설정에서 더 좋다 | 베이스라인이 튜닝됐다는 것, 연산량이 같다는 것 |
 | "state-of-the-art" | 특정 벤치마크·특정 시점의 1위 | 일반적 우월성 |
-| "ablation" | 구성 요소를 빼서 중요함을 보였다 | 요소 간 상호작용까지 검증했다는 것 |
-| "zero-shot / few-shot" | 과제 예시 0개/소수 (LLM/VLM에서는 추론 시 예시; 분야에 따라 소수 *학습* 예시를 뜻하기도 한다) | 사전학습 데이터에 그 과제가 없었다는 것 |
+| "ablation" | 한 요인(구성요소·목적함수·데이터·하이퍼파라미터)을 바꿔 중요함을 보였다 | 요인 간 상호작용까지 검증했다는 것 |
+| "zero-shot / few-shot" | 대상 과제·클래스·도메인의 예시가 없음/소수 (LLM/VLM에서는 추론 시 데모, 다른 분야에서는 학습 예시) | 사전학습 데이터에 그 과제가 없었다는 것 |
 | "emergent" | 작은 규모에 없다가 큰 규모에 나타남 | 합의된 정의 — 평가 방식을 꼼꼼히 봐야 한다 |
 | "real-world / in the wild" | 통제된 실험실 밖 | 당신이 신경 쓰는 운용 범위 |
 | "orthogonal to" | 결합 가능한 독립적 개선 | 실제로 결합해 봤다는 것 |

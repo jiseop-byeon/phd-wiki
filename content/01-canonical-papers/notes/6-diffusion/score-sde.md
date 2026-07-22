@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2011.13456
 pdf: https://arxiv.org/pdf/2011.13456
 code: https://github.com/yang-song/score_sde
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Song et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2011.13456) · [PDF](https://arxiv.org/pdf/2011.13456) · [Code](https://github.com/yang-song/score_sde)

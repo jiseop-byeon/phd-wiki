@@ -7,7 +7,8 @@ year: 2014
 arxiv: https://arxiv.org/abs/1312.6114
 pdf: https://arxiv.org/pdf/1312.6114
 tags: [paper, generative]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kingma & Welling, ICLR 2014** — [arXiv](https://arxiv.org/abs/1312.6114) · [PDF](https://arxiv.org/pdf/1312.6114)

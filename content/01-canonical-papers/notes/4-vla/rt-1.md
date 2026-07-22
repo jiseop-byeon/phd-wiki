@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2212.06817
 code: https://github.com/google-research/robotics_transformer
 project: https://robotics-transformer1.github.io
 tags: [paper, vla, robot-learning]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Brohan et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2212.06817) · [PDF](https://arxiv.org/pdf/2212.06817) · [Code](https://github.com/google-research/robotics_transformer) · [Official](https://robotics-transformer1.github.io)

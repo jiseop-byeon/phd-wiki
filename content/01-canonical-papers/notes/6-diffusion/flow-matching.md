@@ -7,7 +7,8 @@ year: 2023
 arxiv: https://arxiv.org/abs/2210.02747
 pdf: https://arxiv.org/pdf/2210.02747
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Lipman et al., ICLR 2023** — [arXiv](https://arxiv.org/abs/2210.02747) · [PDF](https://arxiv.org/pdf/2210.02747)

@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/1705.07750
 pdf: https://arxiv.org/pdf/1705.07750
 project: https://arxiv.org/abs/1812.03982
 tags: [paper, computer-vision, video]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Carreira & Zisserman, CVPR 2017 · Feichtenhofer et al., ICCV 2019** — [I3D arXiv](https://arxiv.org/abs/1705.07750) · [PDF](https://arxiv.org/pdf/1705.07750) · [SlowFast arXiv](https://arxiv.org/abs/1812.03982)

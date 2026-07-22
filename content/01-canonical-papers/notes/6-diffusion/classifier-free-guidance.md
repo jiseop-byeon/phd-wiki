@@ -7,7 +7,8 @@ year: 2022
 arxiv: https://arxiv.org/abs/2207.12598
 pdf: https://arxiv.org/pdf/2207.12598
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ho & Salimans, 2022** — [arXiv](https://arxiv.org/abs/2207.12598) · [PDF](https://arxiv.org/pdf/2207.12598)

@@ -7,7 +7,8 @@ year: 2016
 arxiv: https://arxiv.org/abs/1506.02640
 pdf: https://arxiv.org/pdf/1506.02640
 tags: [paper, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Redmon et al., CVPR 2016** — [arXiv](https://arxiv.org/abs/1506.02640) · [PDF](https://arxiv.org/pdf/1506.02640)

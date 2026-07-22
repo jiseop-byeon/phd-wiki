@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2406.09246
 code: https://github.com/openvla/openvla
 project: https://openvla.github.io
 tags: [paper, vla, robot-learning]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kim et al., CoRL 2024** — [arXiv](https://arxiv.org/abs/2406.09246) · [PDF](https://arxiv.org/pdf/2406.09246) · [Code](https://github.com/openvla/openvla) · [Official](https://openvla.github.io)

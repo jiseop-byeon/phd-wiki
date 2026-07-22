@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2304.02643
 pdf: https://arxiv.org/pdf/2304.02643
 code: https://github.com/facebookresearch/segment-anything
 tags: [paper, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kirillov et al., ICCV 2023** — [arXiv](https://arxiv.org/abs/2304.02643) · [PDF](https://arxiv.org/pdf/2304.02643) · [Code](https://github.com/facebookresearch/segment-anything)

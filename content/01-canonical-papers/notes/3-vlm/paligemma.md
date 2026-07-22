@@ -7,7 +7,8 @@ year: 2024
 arxiv: https://arxiv.org/abs/2407.07726
 pdf: https://arxiv.org/pdf/2407.07726
 tags: [paper, vlm]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Beyer, Steiner et al. (Google), 2024** — [arXiv](https://arxiv.org/abs/2407.07726) · [PDF](https://arxiv.org/pdf/2407.07726)
@@ -43,3 +44,9 @@ PaliGemma가 무엇을 제공하는지(로봇 행동 전문가를 붙일 수 있
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/3-vlm/clip|CLIP]] (SigLIP은 그 후속), [[01-canonical-papers/notes/3-vlm/llava|LLaVA]] · 다음: [[01-canonical-papers/notes/4-vla/pi0|π0]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
+
+- [ ] 구성 두 조각(SigLIP + Gemma-2B)과 "전이 베이스" 설계 철학을 말할 수 있다
+- [ ] π0가 왜 프런티어급 VLM이 아니라 이 3B 모델을 백본으로 골랐는지 설명할 수 있다
+- [ ] "versatile"이 zero-shot 성능이 아니라 파인튜닝 전이 범위 주장임을 안다

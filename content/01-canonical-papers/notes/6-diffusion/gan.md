@@ -7,7 +7,8 @@ year: 2014
 arxiv: https://arxiv.org/abs/1406.2661
 pdf: https://arxiv.org/pdf/1406.2661
 tags: [paper, generative]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Goodfellow et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1406.2661) · [PDF](https://arxiv.org/pdf/1406.2661)

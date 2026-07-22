@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1502.03167
 pdf: https://arxiv.org/pdf/1502.03167
 tags: [paper, foundations, optimization]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ioffe & Szegedy, ICML 2015** — [arXiv](https://arxiv.org/abs/1502.03167) · [PDF](https://arxiv.org/pdf/1502.03167)

@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2307.15818
 pdf: https://arxiv.org/pdf/2307.15818
 project: https://robotics-transformer2.github.io
 tags: [paper, vla, robot-learning]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Brohan et al., CoRL 2023** — [arXiv](https://arxiv.org/abs/2307.15818) · [PDF](https://arxiv.org/pdf/2307.15818) · [Official](https://robotics-transformer2.github.io)

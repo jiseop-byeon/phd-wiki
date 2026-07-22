@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1409.0473
 pdf: https://arxiv.org/pdf/1409.0473
 tags: [paper, foundations, nlp]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Bahdanau et al., ICLR 2015** — [arXiv](https://arxiv.org/abs/1409.0473) · [PDF](https://arxiv.org/pdf/1409.0473)

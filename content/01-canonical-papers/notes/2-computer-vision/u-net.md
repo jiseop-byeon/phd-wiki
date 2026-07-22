@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1505.04597
 pdf: https://arxiv.org/pdf/1505.04597
 tags: [paper, computer-vision]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Ronneberger et al., MICCAI 2015** — [arXiv](https://arxiv.org/abs/1505.04597) · [PDF](https://arxiv.org/pdf/1505.04597)

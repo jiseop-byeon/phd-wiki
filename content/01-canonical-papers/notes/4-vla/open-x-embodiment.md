@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2310.08864
 pdf: https://arxiv.org/pdf/2310.08864
 project: https://robotics-transformer-x.github.io
 tags: [paper, vla, robot-learning, dataset]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Open X-Embodiment Collaboration, ICRA 2024** — [arXiv](https://arxiv.org/abs/2310.08864) · [PDF](https://arxiv.org/pdf/2310.08864) · [Official](https://robotics-transformer-x.github.io)

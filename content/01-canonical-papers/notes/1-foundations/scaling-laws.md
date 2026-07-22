@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2001.08361
 pdf: https://arxiv.org/pdf/2001.08361
 project: https://arxiv.org/abs/2203.15556
 tags: [paper, foundations, scaling]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kaplan et al., 2020 · Hoffmann et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2001.08361) · [PDF](https://arxiv.org/pdf/2001.08361) · [Official](https://arxiv.org/abs/2203.15556)

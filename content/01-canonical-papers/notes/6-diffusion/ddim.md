@@ -7,7 +7,8 @@ year: 2021
 arxiv: https://arxiv.org/abs/2010.02502
 pdf: https://arxiv.org/pdf/2010.02502
 tags: [paper, generative, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Song et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2010.02502) · [PDF](https://arxiv.org/pdf/2010.02502)

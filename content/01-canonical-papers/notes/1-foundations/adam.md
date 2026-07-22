@@ -7,7 +7,8 @@ year: 2015
 arxiv: https://arxiv.org/abs/1412.6980
 pdf: https://arxiv.org/pdf/1412.6980
 tags: [paper, foundations, optimization]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Kingma & Ba, ICLR 2015** — [arXiv](https://arxiv.org/abs/1412.6980) · [PDF](https://arxiv.org/pdf/1412.6980)
@@ -33,7 +34,8 @@ SGD needs careful learning-rate tuning, and one global rate fits all parameters 
 ### Results
 
 - Faster, more robust convergence than SGD/AdaGrad/RMSProp across logistic regression, MLPs, and CNNs — with minimal tuning.
-- Step size is effectively bounded by $\alpha$, making it scale-invariant to gradient magnitude.
+- Normalizing by the running second moment makes the effective step much less sensitive to raw
+  gradient scale (roughly $\alpha$-sized in typical regimes — the exact bound depends on $\beta_1, \beta_2, \epsilon$ and moment history).
 
 ### Limitations & critique
 
@@ -71,7 +73,8 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 ### 결과
 
 - 로지스틱 회귀, MLP, CNN 전반에서 SGD/AdaGrad/RMSProp보다 빠르고 안정적인 수렴 — 튜닝은 거의 불필요.
-- 스텝 크기가 사실상 $\alpha$로 상한이 잡혀 그래디언트 크기에 무관(scale-invariant)하다.
+- 이동 2차 모멘트로 정규화하므로 유효 스텝이 그래디언트의 원래 스케일에 훨씬 덜 민감하다
+  (통상적으로 대략 $\alpha$ 크기 — 정확한 상한은 $\beta_1, \beta_2, \epsilon$과 모멘트 이력에 따라 달라진다).
 
 ### 한계와 비판
 
@@ -92,5 +95,5 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 
 - [ ] 1차 모멘트(방향)와 2차 모멘트(스케일)가 각각 무엇을 제공하는지 말할 수 있다
 - [ ] 0 초기화된 모멘트에 편향 보정이 필요한 이유를 설명할 수 있다
-- [ ] 유효 스텝이 $\alpha$로 상한되는 것(스케일 불변)의 실용적 의미를 말할 수 있다
+- [ ] 2차 모멘트 정규화가 유효 스텝을 그래디언트 스케일에 덜 민감하게 만드는 이유와 실용적 의미를 말할 수 있다
 - [ ] AdamW가 원래 Adam의 무엇을 분리해서 고쳤는지 말할 수 있다

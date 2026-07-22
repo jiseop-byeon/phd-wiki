@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2301.04104
 pdf: https://arxiv.org/pdf/2301.04104
 code: https://github.com/danijar/dreamerv3
 tags: [paper, world-models, rl]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Hafner et al., ICLR 2020 → Nature 2025 (v3)** — [arXiv (v3)](https://arxiv.org/abs/2301.04104) · [PDF](https://arxiv.org/pdf/2301.04104) · [Code](https://github.com/danijar/dreamerv3) · v1: [1912.01603](https://arxiv.org/abs/1912.01603) · v2: [2010.02193](https://arxiv.org/abs/2010.02193)

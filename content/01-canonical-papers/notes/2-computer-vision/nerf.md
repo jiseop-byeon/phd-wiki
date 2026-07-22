@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2003.08934
 pdf: https://arxiv.org/pdf/2003.08934
 project: https://www.matthewtancik.com/nerf
 tags: [paper, computer-vision, 3d]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Mildenhall et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2003.08934) · [PDF](https://arxiv.org/pdf/2003.08934) · [Official](https://www.matthewtancik.com/nerf)

@@ -8,7 +8,8 @@ arxiv: https://arxiv.org/abs/2111.06377
 pdf: https://arxiv.org/pdf/2111.06377
 code: https://github.com/facebookresearch/mae
 tags: [paper, foundations, computer-vision, self-supervised]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **He et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2111.06377) · [PDF](https://arxiv.org/pdf/2111.06377) · [Code](https://github.com/facebookresearch/mae)

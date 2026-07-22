@@ -9,7 +9,8 @@ pdf: https://arxiv.org/pdf/2410.24164
 code: https://github.com/Physical-Intelligence/openpi
 project: https://www.physicalintelligence.company/blog/pi0
 tags: [paper, vla, robot-learning, diffusion]
-status: to-read
+status: note-complete
+last_verified: 2026-07-22
 ---
 
 **Black et al. (Physical Intelligence), 2024** — [arXiv](https://arxiv.org/abs/2410.24164) · [PDF](https://arxiv.org/pdf/2410.24164) · [Code](https://github.com/Physical-Intelligence/openpi) · [Official](https://www.physicalintelligence.company/blog/pi0)
