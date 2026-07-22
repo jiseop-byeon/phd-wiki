@@ -15,7 +15,7 @@ no prior background assumed.
 ### 0. Prerequisite: the three log rules
 
 Everything on this page runs on logarithms. If these three lines are not second nature,
-read [[02-foundations/engineering-math|0.1 Engineering Math §6]] first (5 minutes):
+read [[02-foundations/engineering-math|0.5 Engineering Math §6]] first (5 minutes):
 $\log(ab) = \log a + \log b$ (products of probabilities become sums — why losses are sums);
 $\log(a^n) = n \log a$; and base 2 vs base $e$ only changes units (**bits** vs **nats**) by
 a constant factor. Also remember: probabilities live in $[0,1]$, so log-probabilities are
@@ -40,7 +40,7 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   cross-entropy loss $= -\log q(\text{correct class})$. **Minimizing cross-entropy = MLE**
   (see [[02-foundations/probability|probability]]).
 - Language models: per-token cross-entropy is *the* pretraining objective
-  ([[01-canonical-papers/notes/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "the model is as
+  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "the model is as
   confused as if choosing among perplexity-many options."
 
 ### 3. KL divergence — the distance-that-isn't
@@ -54,16 +54,16 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$:
   $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
   Against a standard normal prior ($\mu_2=0, \sigma_2=1$) this is the exact regularizer
-  term coded in [[01-canonical-papers/notes/vae|VAE]] losses.
+  term coded in [[01-canonical-papers/notes/6-diffusion/vae|VAE]] losses.
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
   - Reverse KL (used in variational inference): mode-**seeking** — $q$ locks onto one mode.
   This asymmetry explains VAE blurriness and why RL-style objectives collapse to narrow behaviors.
 - Where you've seen it:
-  - [[01-canonical-papers/notes/vae|VAE]]: the ELBO's regularizer $D_{KL}(q_\phi(z|x)\,\|\,p(z))$.
-  - [[01-canonical-papers/notes/instructgpt|InstructGPT/RLHF]]: per-token KL penalty keeping the
+  - [[01-canonical-papers/notes/6-diffusion/vae|VAE]]: the ELBO's regularizer $D_{KL}(q_\phi(z|x)\,\|\,p(z))$.
+  - [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT/RLHF]]: per-token KL penalty keeping the
     policy near the SFT model — literally "don't drift too many bits from the reference."
-  - [[01-canonical-papers/notes/ddpm|DDPM]]: the variational bound is a sum of KL terms between
+  - [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]: the variational bound is a sum of KL terms between
     Gaussians (which is why it collapses to MSE).
   - Knowledge distillation: student minimizes KL to teacher's soft labels.
 
@@ -71,7 +71,7 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 - $I(X;Y) = D_{KL}(p(x,y)\,\|\,p(x)p(y)) = H(X) - H(X|Y)$
   — how many bits knowing $Y$ tells you about $X$; zero iff independent.
-- **InfoNCE / contrastive learning** ([[01-canonical-papers/notes/clip|CLIP]]'s objective) is a
+- **InfoNCE / contrastive learning** ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]'s objective) is a
   lower bound on mutual information between views/modalities — "maximize what the image
   embedding tells you about the text embedding." Written out for a batch of $N$ pairs with
   similarity $s(\cdot,\cdot)$ and temperature $\tau$:
@@ -113,7 +113,7 @@ posterior. Every VAE, diffusion, and world-model paper writes some version of th
 ### 0. 사전 준비: 로그의 세 규칙
 
 이 페이지 전체가 로그로 굴러간다. 아래 세 줄이 자동으로 나오지 않으면
-[[02-foundations/engineering-math|0.1 공업수학 §6]]을 먼저 읽어라 (5분이면 된다):
+[[02-foundations/engineering-math|0.5 공업수학 §6]]을 먼저 읽어라 (5분이면 된다):
 $\log(ab) = \log a + \log b$ (확률의 곱이 합이 된다 — 손실이 합인 이유);
 $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나트**)만 상수배 바꾼다.
 하나 더: 확률은 $[0,1]$에 살므로 로그 확률은 $\le 0$이다 — "교차 엔트로피가 작다" =
@@ -138,7 +138,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   $= -\log q(\text{정답 클래스})$. **교차 엔트로피 최소화 = MLE**
   ([[02-foundations/probability|확률]] 참고).
 - 언어모델: 토큰별 교차 엔트로피가 사전학습 목적함수 *그 자체*다
-  ([[01-canonical-papers/notes/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "모델이
+  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "모델이
   perplexity개의 선택지 사이에서 고민하는 것만큼 헷갈려 한다."
 
 ### 3. KL divergence — 거리 같지만 거리가 아닌 것
@@ -151,17 +151,17 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 - **가우시안 KL의 닫힌 형태** (모든 VAE 구현 속의 그 공식):
   $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$에 대해:
   $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
-  표준 정규 사전($\mu_2=0, \sigma_2=1$)에 대한 이 식이 [[01-canonical-papers/notes/vae|VAE]]
+  표준 정규 사전($\mu_2=0, \sigma_2=1$)에 대한 이 식이 [[01-canonical-papers/notes/6-diffusion/vae|VAE]]
   손실에 코딩되는 정규화 항 그 자체다.
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
   - Reverse KL (변분 추론에서 사용): 모드 **시킹** — $q$가 한 모드에 들러붙는다.
   이 비대칭이 VAE의 흐릿함과, RL식 목적함수가 좁은 행동으로 붕괴하는 이유를 설명한다.
 - 이미 만난 곳들:
-  - [[01-canonical-papers/notes/vae|VAE]]: ELBO의 정규화 항 $D_{KL}(q_\phi(z|x)\,\|\,p(z))$
-  - [[01-canonical-papers/notes/instructgpt|InstructGPT/RLHF]]: 정책을 SFT 모델 근처에 붙잡는
+  - [[01-canonical-papers/notes/6-diffusion/vae|VAE]]: ELBO의 정규화 항 $D_{KL}(q_\phi(z|x)\,\|\,p(z))$
+  - [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT/RLHF]]: 정책을 SFT 모델 근처에 붙잡는
     토큰별 KL 페널티 — 말 그대로 "기준에서 너무 많은 비트만큼 벗어나지 마라".
-  - [[01-canonical-papers/notes/ddpm|DDPM]]: 변분 하한이 가우시안 사이 KL 항들의 합이다
+  - [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]: 변분 하한이 가우시안 사이 KL 항들의 합이다
     (그래서 MSE로 접힌다).
   - 지식 증류: 학생이 교사의 소프트 라벨에 대한 KL을 최소화.
 
@@ -169,7 +169,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $I(X;Y) = D_{KL}(p(x,y)\,\|\,p(x)p(y)) = H(X) - H(X|Y)$
   — $Y$를 알면 $X$에 대해 몇 비트를 알게 되는가; 독립일 때만 0.
-- **InfoNCE / 대조학습** ([[01-canonical-papers/notes/clip|CLIP]]의 목적함수)은 뷰/모달리티 간
+- **InfoNCE / 대조학습** ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 목적함수)은 뷰/모달리티 간
   상호 정보량의 하한이다 — "이미지 임베딩이 텍스트 임베딩에 대해 알려주는 양을 최대화하라."
   유사도 $s(\cdot,\cdot)$와 온도 $\tau$, $N$쌍 배치에 대해 써보면:
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$

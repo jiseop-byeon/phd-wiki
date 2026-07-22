@@ -21,7 +21,7 @@ functions.
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — flip, slide, multiply, accumulate.
   Length: $N_x + N_h - 1$.
 - A CNN layer is exactly a *learned bank* of such $h$'s in 2D (plus nonlinearity) —
-  [[01-canonical-papers/notes/alexnet|AlexNet]] onward; "padding/stride" are the boundary and
+  [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] onward; "padding/stride" are the boundary and
   sampling choices of this same operation.
 - Key properties: commutative, associative (cascaded LTI systems = one convolved $h$),
   and the delta $\delta[n]$ is the identity.
@@ -110,7 +110,7 @@ functions.
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — 뒤집고, 밀고, 곱하고, 누적한다.
   길이: $N_x + N_h - 1$.
 - CNN 층은 정확히 이런 $h$들의 *학습된 2D 묶음*(+ 비선형성)이다 —
-  [[01-canonical-papers/notes/alexnet|AlexNet]] 이후 전부; "패딩/스트라이드"는 같은 연산의
+  [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] 이후 전부; "패딩/스트라이드"는 같은 연산의
   경계·샘플링 선택지다.
 - 핵심 성질: 교환·결합 법칙(직렬 LTI = 합성곱된 $h$ 하나), $\delta[n]$이 항등원.
 

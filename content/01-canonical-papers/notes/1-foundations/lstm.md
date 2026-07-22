@@ -36,17 +36,17 @@ Plain RNNs in the early 1990s could not learn dependencies more than ~10 steps a
 
 ### Limitations & critique
 
-- Still sequential: computation cannot be parallelized across time — the flaw that eventually made room for the [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]].
+- Still sequential: computation cannot be parallelized across time — the flaw that eventually made room for the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]].
 - The original paper lacks the forget gate and uses dated notation/tasks; in practice everyone uses the 1999+ variant.
-- Memory capacity is finite: everything must squeeze through a fixed-size hidden state — the same bottleneck [[01-canonical-papers/notes/bahdanau-attention|attention]] later bypassed.
+- Memory capacity is finite: everything must squeeze through a fixed-size hidden state — the same bottleneck [[01-canonical-papers/notes/1-foundations/bahdanau-attention|attention]] later bypassed.
 
 ### Impact & follow-ups
 
-Dominant sequence architecture for two decades: speech recognition, handwriting, translation ([[01-canonical-papers/notes/seq2seq|seq2seq]] is two LSTMs), and early robot learning. GRU (2014) is its popular simplification. Conceptually, gating and additive information flow survive in modern architectures (residual connections, state-space models like Mamba).
+Dominant sequence architecture for two decades: speech recognition, handwriting, translation ([[01-canonical-papers/notes/1-foundations/seq2seq|seq2seq]] is two LSTMs), and early robot learning. GRU (2014) is its popular simplification. Conceptually, gating and additive information flow survive in modern architectures (residual connections, state-space models like Mamba).
 
 ### Connections
 
-- Next: [[01-canonical-papers/notes/seq2seq|seq2seq]] → [[01-canonical-papers/notes/bahdanau-attention|Bahdanau Attention]] → [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]]
+- Next: [[01-canonical-papers/notes/1-foundations/seq2seq|seq2seq]] → [[01-canonical-papers/notes/1-foundations/bahdanau-attention|Bahdanau Attention]] → [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -73,15 +73,15 @@ Dominant sequence architecture for two decades: speech recognition, handwriting,
 
 ### 한계와 비판
 
-- 여전히 순차 계산: 시간 방향 병렬화가 불가능 — 결국 [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]]에게 자리를 내주게 된 약점.
+- 여전히 순차 계산: 시간 방향 병렬화가 불가능 — 결국 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]에게 자리를 내주게 된 약점.
 - 원 논문에는 forget 게이트가 없고 표기·과제도 오래됨; 실제로 쓰이는 건 1999년 이후 변형이다.
-- 기억 용량이 유한하다: 모든 정보가 고정 크기 은닉 상태를 통과해야 함 — [[01-canonical-papers/notes/bahdanau-attention|어텐션]]이 나중에 우회한 바로 그 병목.
+- 기억 용량이 유한하다: 모든 정보가 고정 크기 은닉 상태를 통과해야 함 — [[01-canonical-papers/notes/1-foundations/bahdanau-attention|어텐션]]이 나중에 우회한 바로 그 병목.
 
 ### 영향과 후속 연구
 
-20년간 시퀀스 구조의 지배자: 음성 인식, 필기 인식, 번역([[01-canonical-papers/notes/seq2seq|seq2seq]]가 LSTM 두 개다), 초기 로봇 학습까지. GRU(2014)는 대중적인 단순화 버전. 게이트와 덧셈형 정보 흐름이라는 개념은 residual 연결, Mamba 같은 state-space 모델에 지금도 살아 있다.
+20년간 시퀀스 구조의 지배자: 음성 인식, 필기 인식, 번역([[01-canonical-papers/notes/1-foundations/seq2seq|seq2seq]]가 LSTM 두 개다), 초기 로봇 학습까지. GRU(2014)는 대중적인 단순화 버전. 게이트와 덧셈형 정보 흐름이라는 개념은 residual 연결, Mamba 같은 state-space 모델에 지금도 살아 있다.
 
 ### 연결
 
-- 다음: [[01-canonical-papers/notes/seq2seq|seq2seq]] → [[01-canonical-papers/notes/bahdanau-attention|Bahdanau Attention]] → [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]]
+- 다음: [[01-canonical-papers/notes/1-foundations/seq2seq|seq2seq]] → [[01-canonical-papers/notes/1-foundations/bahdanau-attention|Bahdanau Attention]] → [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]

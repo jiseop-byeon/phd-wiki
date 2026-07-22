@@ -18,7 +18,7 @@ status: to-read
 
 ### Context
 
-After [[01-canonical-papers/notes/alexnet|AlexNet]], everyone knew CNNs worked, but architectures were ad-hoc: mixed filter sizes (11×11, 5×5), arbitrary layer counts. The open question was *which* design dimension actually mattered. VGG's answer: keep everything minimal and uniform, and push depth.
+After [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], everyone knew CNNs worked, but architectures were ad-hoc: mixed filter sizes (11×11, 5×5), arbitrary layer counts. The open question was *which* design dimension actually mattered. VGG's answer: keep everything minimal and uniform, and push depth.
 
 ### Method
 
@@ -38,15 +38,15 @@ After [[01-canonical-papers/notes/alexnet|AlexNet]], everyone knew CNNs worked, 
 ### Limitations & critique
 
 - Parameter count is enormous for its accuracy; the FC layers are wasteful (later replaced by global average pooling in successors).
-- Naively stacking further (>19 layers) stopped helping — the degradation problem that [[01-canonical-papers/notes/resnet|ResNet]] later diagnosed and solved.
+- Naively stacking further (>19 layers) stopped helping — the degradation problem that [[01-canonical-papers/notes/1-foundations/resnet|ResNet]] later diagnosed and solved.
 
 ### Impact & follow-ups
 
-Established the "small uniform filters, double width after downsampling" template that virtually all later CNNs follow. VGG features powered perceptual loss and style transfer research. Superseded as a backbone by [[01-canonical-papers/notes/resnet|ResNet]].
+Established the "small uniform filters, double width after downsampling" template that virtually all later CNNs follow. VGG features powered perceptual loss and style transfer research. Superseded as a backbone by [[01-canonical-papers/notes/1-foundations/resnet|ResNet]].
 
 ### Connections
 
-- Previous: [[01-canonical-papers/notes/alexnet|AlexNet]] · Next: [[01-canonical-papers/notes/resnet|ResNet]]
+- Previous: [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] · Next: [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -55,7 +55,7 @@ Established the "small uniform filters, double width after downsampling" templat
 
 ### 배경
 
-[[01-canonical-papers/notes/alexnet|AlexNet]] 이후 CNN이 통한다는 건 모두 알았지만, 구조 설계는 임기응변이었다(11×11, 5×5 등 뒤섞인 필터, 근거 없는 층수). 어떤 설계 변수가 실제로 중요한가가 열린 질문이었고, VGG의 답은: 모든 걸 최소한으로 통일하고 깊이만 밀어붙여 보자.
+[[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] 이후 CNN이 통한다는 건 모두 알았지만, 구조 설계는 임기응변이었다(11×11, 5×5 등 뒤섞인 필터, 근거 없는 층수). 어떤 설계 변수가 실제로 중요한가가 열린 질문이었고, VGG의 답은: 모든 걸 최소한으로 통일하고 깊이만 밀어붙여 보자.
 
 ### 방법
 
@@ -75,13 +75,13 @@ Established the "small uniform filters, double width after downsampling" templat
 ### 한계와 비판
 
 - 정확도 대비 파라미터가 지나치게 많다; 완전연결층이 특히 낭비 (후속 모델들은 global average pooling으로 대체).
-- 19층 이상 그냥 쌓으면 성능이 더 늘지 않았다 — 이후 [[01-canonical-papers/notes/resnet|ResNet]]이 진단하고 해결한 "열화(degradation) 문제".
+- 19층 이상 그냥 쌓으면 성능이 더 늘지 않았다 — 이후 [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]이 진단하고 해결한 "열화(degradation) 문제".
 
 ### 영향과 후속 연구
 
-"작고 균일한 필터, 다운샘플링마다 채널 2배"라는 템플릿을 확립 — 이후 거의 모든 CNN이 이를 따른다. VGG 특징은 perceptual loss와 스타일 전이 연구의 기반이 됐다. 백본 자리는 [[01-canonical-papers/notes/resnet|ResNet]]에게 넘어간다.
+"작고 균일한 필터, 다운샘플링마다 채널 2배"라는 템플릿을 확립 — 이후 거의 모든 CNN이 이를 따른다. VGG 특징은 perceptual loss와 스타일 전이 연구의 기반이 됐다. 백본 자리는 [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]에게 넘어간다.
 
 ### 연결
 
-- 이전: [[01-canonical-papers/notes/alexnet|AlexNet]] · 다음: [[01-canonical-papers/notes/resnet|ResNet]]
+- 이전: [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] · 다음: [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]

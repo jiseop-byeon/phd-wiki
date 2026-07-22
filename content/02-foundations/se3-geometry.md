@@ -56,10 +56,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 ### 5. Where this appears in the wiki
 
-- **VLA action spaces**: [[01-canonical-papers/notes/rt-1|RT-1]]'s 7-DoF action = end-effector
-  position (3) + rotation (3) + gripper (1); [[01-canonical-papers/notes/pi0|π0]] outputs
+- **VLA action spaces**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]'s 7-DoF action = end-effector
+  position (3) + rotation (3) + gripper (1); [[01-canonical-papers/notes/4-vla/pi0|π0]] outputs
   joint-space chunks — reading these requires exactly this page.
-- **3D vision**: camera pose in [[01-canonical-papers/notes/nerf|NeRF]]/[[01-canonical-papers/notes/vggt|VGGT]]
+- **3D vision**: camera pose in [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]
   is $T \in SE(3)$; "pose estimation" = regressing this matrix.
 - **Sim & digital twins**: every simulator state and BIM-robot registration is a stack of
   $T$'s ([[05-construction-robotics/index|construction]]).
@@ -121,10 +121,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 ### 5. 이 위키에서 등장하는 곳
 
-- **VLA 행동 공간**: [[01-canonical-papers/notes/rt-1|RT-1]]의 7자유도 행동 = 말단 위치(3) +
-  회전(3) + 그리퍼(1); [[01-canonical-papers/notes/pi0|π0]]는 관절 공간 청크를 출력 —
+- **VLA 행동 공간**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]의 7자유도 행동 = 말단 위치(3) +
+  회전(3) + 그리퍼(1); [[01-canonical-papers/notes/4-vla/pi0|π0]]는 관절 공간 청크를 출력 —
   이들을 읽는 데 정확히 이 페이지가 필요하다.
-- **3D 비전**: [[01-canonical-papers/notes/nerf|NeRF]]/[[01-canonical-papers/notes/vggt|VGGT]]의
+- **3D 비전**: [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]의
   카메라 자세가 $T \in SE(3)$; "자세 추정" = 이 행렬의 회귀.
 - **시뮬레이션과 디지털 트윈**: 모든 시뮬레이터 상태와 BIM-로봇 정합이 $T$들의 스택이다
   ([[05-construction-robotics/index|건설]]).

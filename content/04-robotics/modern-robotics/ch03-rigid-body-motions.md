@@ -26,7 +26,7 @@ tags: [robotics, modern-robotics]
 
 **Why learning people should care**: exponential/log maps are how you interpolate poses,
 average rotations, and define losses on SE(3) correctly — and diffusion/flow policies on
-SE(3) ([[01-canonical-papers/notes/pi0|π0]]-style heads for end-effector actions) are built
+SE(3) ([[01-canonical-papers/notes/4-vla/pi0|π0]]-style heads for end-effector actions) are built
 on exactly this Lie-group machinery.
 
 ## 한국어
@@ -49,4 +49,4 @@ on exactly this Lie-group machinery.
 
 **학습 쪽에서 중요한 이유**: 지수/로그 사상이 자세 보간, 회전 평균, SE(3) 위의 올바른 손실
 정의의 방법이고 — 말단 행동에 대한 SE(3) 디퓨전/flow 정책
-([[01-canonical-papers/notes/pi0|π0]]류 헤드)이 정확히 이 리 군 기계장치 위에 세워진다.
+([[01-canonical-papers/notes/4-vla/pi0|π0]]류 헤드)이 정확히 이 리 군 기계장치 위에 세워진다.

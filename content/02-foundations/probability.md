@@ -65,7 +65,7 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   maximizing likelihood ≡ minimizing squared error; $\hat\mu = \bar{x}$.
   **MSE regression is MLE under Gaussian noise; cross-entropy is MLE for categorical
   outputs.** Every pretraining objective in [[01-canonical-papers/canonical-list|the paper list]]
-  is an MLE (or a bound on one — [[01-canonical-papers/notes/vae|ELBO]]).
+  is an MLE (or a bound on one — [[01-canonical-papers/notes/6-diffusion/vae|ELBO]]).
 - **MAP**: add $\log p(\theta)$. A Gaussian prior on weights ⇒ $+\lambda\|\theta\|^2$ —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: bias, variance, and the tradeoff between them — the vocabulary behind
@@ -78,7 +78,7 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   autocorrelation. **Stationarity/WSS**: statistics don't drift (assumption behind spectral
   analysis, [[02-foundations/signal-processing|signal processing]]).
   **White noise**: uncorrelated samples, flat spectrum — the default disturbance model and
-  the $\epsilon$ of [[01-canonical-papers/notes/ddpm|diffusion]].
+  the $\epsilon$ of [[01-canonical-papers/notes/6-diffusion/ddpm|diffusion]].
 - **Markov property**: future ⟂ past | present. The modeling assumption of MDPs
   ([[02-foundations/rl-basics|RL]]), world models, and diffusion chains.
 - **Kalman filter, assembled from this page**: model
@@ -96,7 +96,7 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
    happens to $P(c|+)$ and what does that say about deploying detectors in high-risk zones?
 2. Derive "MSE = Gaussian MLE" and "cross-entropy = categorical MLE" from the definitions.
 3. Using affine closure, show why $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
-   ([[01-canonical-papers/notes/ddpm|DDPM]]) has the claimed distribution.
+   ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]) has the claimed distribution.
 4. In the Kalman gain, what happens as sensor noise $R \to 0$? As $R \to \infty$? Interpret.
 
 ## 한국어
@@ -157,7 +157,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   우도 최대화 ≡ 제곱 오차 최소화; $\hat\mu = \bar{x}$.
   **MSE 회귀는 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
   [[01-canonical-papers/canonical-list|논문 리스트]]의 모든 사전학습 목적함수가 MLE(또는 그
-  하한 — [[01-canonical-papers/notes/vae|ELBO]])다.
+  하한 — [[01-canonical-papers/notes/6-diffusion/vae|ELBO]])다.
 - **MAP**: $\log p(\theta)$를 더한다. 가중치의 가우시안 사전 ⇒ $+\lambda\|\theta\|^2$ —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: 편향, 분산, 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
@@ -170,7 +170,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   **정상성/WSS**: 통계량이 표류하지 않는다(스펙트럼 분석의 전제,
   [[02-foundations/signal-processing|신호처리]]).
   **백색 잡음**: 무상관 샘플, 평평한 스펙트럼 — 기본 외란 모델이자
-  [[01-canonical-papers/notes/ddpm|디퓨전]]의 $\epsilon$.
+  [[01-canonical-papers/notes/6-diffusion/ddpm|디퓨전]]의 $\epsilon$.
 - **마르코프 성질**: 미래 ⟂ 과거 | 현재. MDP([[02-foundations/rl-basics|RL]]), 월드모델,
   디퓨전 체인의 모델링 가정.
 - **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
@@ -188,5 +188,5 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
    고위험 구역에 감지기를 배치하는 것에 대해 무엇을 말해주는가?
 2. "MSE = 가우시안 MLE"와 "교차 엔트로피 = 카테고리 MLE"를 정의에서 유도하라.
 3. 아핀 닫힘을 써서 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
-   ([[01-canonical-papers/notes/ddpm|DDPM]])이 주장된 분포를 갖는 이유를 보여라.
+   ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]])이 주장된 분포를 갖는 이유를 보여라.
 4. 칼만 이득에서 센서 노이즈 $R \to 0$이면? $R \to \infty$면? 해석하라.

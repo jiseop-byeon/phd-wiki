@@ -17,11 +17,11 @@ status: to-read
 **One-line summary**: The foundation-model recipe arrives at excavation — a unified open-source framework for large-scale demonstration collection, **multi-task pretraining**, and **SFT/RLFT fine-tuning** of excavation policies, executing full digging cycles with centimeter-level accuracy.
 
 **Why it is a signal**: this is the
-[[01-canonical-papers/notes/pi0|pretrain → post-train]] paradigm — the exact structure of
+[[01-canonical-papers/notes/4-vla/pi0|pretrain → post-train]] paradigm — the exact structure of
 LLM/VLA training — applied to a 20-ton machine class. Demonstrations come from a *mix of
-experts* (the [[01-canonical-papers/notes/open-x-embodiment|OXE]] lesson: heterogeneous
+experts* (the [[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]] lesson: heterogeneous
 sources beat purity), and fine-tuning offers both supervised and RL variants (the
-[[01-canonical-papers/notes/instructgpt|RLHF]]-shaped choice). Transfer across sim/real
+[[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]-shaped choice). Transfer across sim/real
 and machine configurations is a design goal, not an afterthought.
 
 **Placed in the map**: the merge point of the
@@ -34,11 +34,11 @@ conditioning; and the safety story for learned policies on real sites is unwritt
 
 **한 줄 요약**: 파운데이션 모델 레시피가 굴착에 도착했다 — 대규모 시연 수집, **멀티태스크 사전학습**, **SFT/RLFT 파인튜닝**을 하나로 묶은 오픈소스 프레임워크로, 완전한 굴착 사이클을 센티미터급 정확도로 수행한다.
 
-**왜 신호탄인가**: 이것은 [[01-canonical-papers/notes/pi0|사전학습 → 사후학습]] 패러다임 —
+**왜 신호탄인가**: 이것은 [[01-canonical-papers/notes/4-vla/pi0|사전학습 → 사후학습]] 패러다임 —
 LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이다. 시연은 *전문가들의
-혼합*에서 온다([[01-canonical-papers/notes/open-x-embodiment|OXE]]의 교훈: 이질적 소스가
+혼합*에서 온다([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]의 교훈: 이질적 소스가
 순수함을 이긴다), 파인튜닝은 지도·RL 두 변형을 제공한다
-([[01-canonical-papers/notes/instructgpt|RLHF]] 모양의 선택지). 시뮬레이션/실기계와 기계
+([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]] 모양의 선택지). 시뮬레이션/실기계와 기계
 구성 간 전이가 사후 고려가 아니라 설계 목표다.
 
 **지도에서의 위치**: [[05-construction-robotics/lineage|계보]]의 1번 흐름(모방학습)과 5번
@@ -48,5 +48,5 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 
 ### 연결
 
-- 이전: [[01-canonical-papers/notes/heap|HEAP]] (플랫폼), [[01-canonical-papers/notes/act|ACT]]/[[01-canonical-papers/notes/pi0|π0]] (방법론)
+- 이전: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (플랫폼), [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/pi0|π0]] (방법론)
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] 1+5 합류점

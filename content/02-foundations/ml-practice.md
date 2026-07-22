@@ -18,10 +18,10 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   inflate.
 - **Distribution shift**: test data from a different distribution than train (new site,
   new robot, new lighting) — the *actual* condition of robotics. This is why papers report
-  "seen/unseen" splits ([[01-canonical-papers/notes/rt-1|RT-1]]) and OOD evaluations, and
-  why [[01-canonical-papers/notes/clip|CLIP]]'s robustness results mattered so much.
+  "seen/unseen" splits ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]]) and OOD evaluations, and
+  why [[01-canonical-papers/notes/3-vlm/clip|CLIP]]'s robustness results mattered so much.
 - Data leakage: test information sneaking into training (duplicates, temporal overlap,
-  pretraining contamination — the [[01-canonical-papers/notes/gpt-3|GPT-3]] paper's own
+  pretraining contamination — the [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] paper's own
   headache). First thing to suspect when numbers look too good.
 
 ### 2. Overfitting and the regularization umbrella
@@ -31,9 +31,9 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   anything else.
 - Everything called "regularization" is one idea — *restrict or perturb the model so it
   can't just memorize*: weight decay (a Gaussian prior — [[02-foundations/probability|3. Probability §4]]),
-  dropout ([[01-canonical-papers/notes/alexnet|AlexNet]]), data augmentation
-  ([[01-canonical-papers/notes/vgg|VGG]] onward), early stopping, and — the modern twist —
-  *more data instead of more constraints* ([[01-canonical-papers/notes/scaling-laws|scaling laws]]).
+  dropout ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), data augmentation
+  ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] onward), early stopping, and — the modern twist —
+  *more data instead of more constraints* ([[01-canonical-papers/notes/1-foundations/scaling-laws|scaling laws]]).
 
 ### 3. The metrics dictionary (read any Results table)
 
@@ -84,11 +84,11 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   체크포인트 선택을 하고, test는 맨 끝에 **한 번만** 만진다. 결정이 test 성능의 영향을
   받는 순간 test는 조용히 validation이 되고 — 보고 수치는 부풀려진다.
 - **분포 이동**: train과 다른 분포의 test(새 현장, 새 로봇, 새 조명) — 로보틱스의 *실제*
-  조건이다. 논문들이 "seen/unseen" 분할([[01-canonical-papers/notes/rt-1|RT-1]])과 OOD
-  평가를 보고하는 이유이고, [[01-canonical-papers/notes/clip|CLIP]]의 강건성 결과가 그토록
+  조건이다. 논문들이 "seen/unseen" 분할([[01-canonical-papers/notes/4-vla/rt-1|RT-1]])과 OOD
+  평가를 보고하는 이유이고, [[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 강건성 결과가 그토록
   중요했던 이유다.
 - 데이터 누수: test 정보가 학습에 스며드는 것(중복, 시간적 겹침, 사전학습 오염 —
-  [[01-canonical-papers/notes/gpt-3|GPT-3]] 논문 스스로의 골칫거리). 숫자가 너무 좋아 보일
+  [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] 논문 스스로의 골칫거리). 숫자가 너무 좋아 보일
   때 첫 번째로 의심할 것.
 
 ### 2. 과적합과 정규화라는 우산
@@ -97,9 +97,9 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   둘 다 높음. 무엇보다 먼저 **학습 곡선**으로 진단하라.
 - "정규화"라 불리는 모든 것은 하나의 아이디어다 — *모델이 그냥 암기할 수 없도록 제약하거나
   교란하라*: weight decay(가우시안 사전 — [[02-foundations/probability|3. 확률 §4]]),
-  dropout([[01-canonical-papers/notes/alexnet|AlexNet]]), 데이터 증강
-  ([[01-canonical-papers/notes/vgg|VGG]] 이후), early stopping, 그리고 현대적 반전 —
-  *제약 대신 더 많은 데이터*([[01-canonical-papers/notes/scaling-laws|스케일링 법칙]]).
+  dropout([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), 데이터 증강
+  ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] 이후), early stopping, 그리고 현대적 반전 —
+  *제약 대신 더 많은 데이터*([[01-canonical-papers/notes/1-foundations/scaling-laws|스케일링 법칙]]).
 
 ### 3. 지표 사전 (어떤 Results 표든 읽기)
 

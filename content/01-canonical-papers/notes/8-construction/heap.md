@@ -20,12 +20,12 @@ status: to-read
 legged chassis; and, in follow-up work, the
 [6m dry-stone wall](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)
 from irregular local stones (perception + planning + force control in one loop) and
-eventually [[01-canonical-papers/notes/ext|ExT]]'s learned excavation policies.
+eventually [[01-canonical-papers/notes/8-construction/ext|ExT]]'s learned excavation policies.
 
 **Why it matters for this wiki**: HEAP is what a *platform* investment buys — one
 well-instrumented machine has carried a decade of research from classical control to
 learning-based digging. The construction analogue of what ALOHA
-([[01-canonical-papers/notes/act|ACT]]) did for bimanual manipulation research.
+([[01-canonical-papers/notes/4-vla/act|ACT]]) did for bimanual manipulation research.
 
 ## 한국어
 
@@ -33,14 +33,14 @@ learning-based digging. The construction analogue of what ALOHA
 
 **보여준 것**: 자율 제방 굴착과 정지 작업; 지형 적응형 다리 섀시; 그리고 후속 연구에서
 불규칙한 현지 돌로 쌓은 [6m 돌담](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)
-(인식 + 계획 + 힘 제어가 한 루프에), 그리고 결국 [[01-canonical-papers/notes/ext|ExT]]의
+(인식 + 계획 + 힘 제어가 한 루프에), 그리고 결국 [[01-canonical-papers/notes/8-construction/ext|ExT]]의
 학습된 굴착 정책까지.
 
 **이 위키에서 중요한 이유**: HEAP은 *플랫폼* 투자가 무엇을 사는지 보여준다 — 계측이 잘 된
 기계 한 대가 고전 제어에서 학습 기반 굴착까지 10년의 연구를 실어 날랐다. ALOHA
-([[01-canonical-papers/notes/act|ACT]])가 양팔 조작 연구에 한 일의 건설판이다.
+([[01-canonical-papers/notes/4-vla/act|ACT]])가 양팔 조작 연구에 한 일의 건설판이다.
 
 ### 연결
 
-- 기초: [[04-robotics/mpc|MPC]], [[02-foundations/rl-basics|RL]] · 다음: [[01-canonical-papers/notes/ext|ExT]]
+- 기초: [[04-robotics/mpc|MPC]], [[02-foundations/rl-basics|RL]] · 다음: [[01-canonical-papers/notes/8-construction/ext|ExT]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (4시대의 기준 시스템)

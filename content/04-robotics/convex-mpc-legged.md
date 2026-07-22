@@ -15,7 +15,7 @@ becomes a **convex QP** solved at hundreds of Hz, exactly the machinery of
 [[02-foundations/optimization|4. Optimization §5]]. Cheetah 3 galloped on this; the
 follow-up (Kim et al., open access) pairs the MPC with whole-body impulse control — the
 standard two-level stack (slow MPC plans forces, fast WBC tracks them) that echoes
-[[01-canonical-papers/notes/gr00t-n1|GR00T]]'s System 2/System 1 split.
+[[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s System 2/System 1 split.
 
 **Why read it here**: it is the cleanest case study of the modeling craft this wiki's
 optimization page teaches — *choose the approximation that makes the problem convex, and
@@ -33,7 +33,7 @@ locomotion policies (RL) are compared against.
 풀리는 **볼록 QP**가 된다. 정확히 [[02-foundations/optimization|4. 최적화 §5]]의
 기계장치다. Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를 전신 임펄스
 제어와 결합한다 — 느린 MPC가 힘을 계획하고 빠른 WBC가 추종하는 표준 2단 스택으로,
-[[01-canonical-papers/notes/gr00t-n1|GR00T]]의 System 2/System 1 분할과 공명한다.
+[[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 System 2/System 1 분할과 공명한다.
 
 **여기서 읽는 이유**: 이 위키 최적화 페이지가 가르치는 모델링 기술 — *문제를 볼록하게
 만드는 근사를 고르고, 정확도는 재풀이 속도로 되산다* — 의 가장 깔끔한 사례 연구다.
@@ -45,4 +45,4 @@ locomotion policies (RL) are compared against.
 ### 연결
 
 - 기초: [[02-foundations/optimization|최적화]] · 이전: [[04-robotics/mpc|MPC]]
-- 반향: [[01-canonical-papers/notes/gr00t-n1|GR00T N1]] (이중 시스템)
+- 반향: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (이중 시스템)

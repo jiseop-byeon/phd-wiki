@@ -63,7 +63,7 @@ bug detector in existence.
   (Derivation: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   Numerically stabilized via log-sum-exp.
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it beat sigmoid
-  ([[01-canonical-papers/notes/alexnet|AlexNet]]). Dead units = permanently zero mask.
+  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). Dead units = permanently zero mask.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every saturating layer multiplies the
   backward signal by ≤ 0.25 — stack ten and gradients shrink a million-fold. This single
   inequality explains a decade of architecture history.
@@ -72,17 +72,17 @@ bug detector in existence.
 
 - **Vanishing gradients**: products of Jacobians with norms < 1 decay exponentially with
   depth/time. Treatments, in historical order:
-  - [[01-canonical-papers/notes/lstm|LSTM]]: a self-connection of weight exactly 1.0 — the
+  - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: a self-connection of weight exactly 1.0 — the
     error carousel where the product stops shrinking.
-  - [[01-canonical-papers/notes/batch-norm|BatchNorm]]: renormalize activations so Jacobians
+  - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: renormalize activations so Jacobians
     stay well-scaled (better conditioning).
-  - [[01-canonical-papers/notes/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
+  - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
     — the identity term guarantees the gradient always has an un-attenuated path home.
 - **Exploding gradients**: norms > 1 — treated with gradient clipping (rescale $\|g\|$ to a
   ceiling), standard in RNN/LLM training.
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
-  ([[01-canonical-papers/notes/vae|VAE]]) moves sampling *outside* the differentiated path;
-  EMA teachers ([[01-canonical-papers/notes/dino|DINO]]) and RL target networks receive no
+  ([[01-canonical-papers/notes/6-diffusion/vae|VAE]]) moves sampling *outside* the differentiated path;
+  EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]) and RL target networks receive no
   gradient by design. When a paper draws a dashed arrow, it means this.
 
 ### 6. Reading equations like an implementer
@@ -102,7 +102,7 @@ bug detector in existence.
 2. Show $\partial(x + F(x))/\partial x = I + J_F$ and explain why depth stops hurting.
 3. Why does forward-mode autodiff cost one pass *per input parameter*, and why is that
    fatal for a 7B-parameter model?
-4. In the [[01-canonical-papers/notes/vae|VAE]], why can't you backprop through
+4. In the [[01-canonical-papers/notes/6-diffusion/vae|VAE]], why can't you backprop through
    $z \sim \mathcal{N}(\mu, \sigma^2)$ directly, and how does $z = \mu + \sigma\epsilon$ fix it?
 
 ## 한국어
@@ -160,7 +160,7 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
   (유도: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   log-sum-exp로 수치 안정화.
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 시그모이드를 이긴 이유다
-  ([[01-canonical-papers/notes/alexnet|AlexNet]]). 죽은 유닛 = 영원히 0인 마스크.
+  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). 죽은 유닛 = 영원히 0인 마스크.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 포화 층 하나가 역방향 신호에 0.25
   이하를 곱한다 — 열 개를 쌓으면 그래디언트가 백만 배 준다. 이 부등식 하나가 구조
   설계사(史) 10년을 설명한다.
@@ -169,18 +169,18 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 
 - **그래디언트 소실**: 노름 < 1인 야코비안들의 곱은 깊이/시간에 지수적으로 붕괴.
   역사 순서의 처방:
-  - [[01-canonical-papers/notes/lstm|LSTM]]: 가중치가 정확히 1.0인 자기 연결 — 곱이 더는
+  - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: 가중치가 정확히 1.0인 자기 연결 — 곱이 더는
     줄지 않는 오차 회전목마.
-  - [[01-canonical-papers/notes/batch-norm|BatchNorm]]: 활성값을 재정규화해 야코비안의
+  - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: 활성값을 재정규화해 야코비안의
     스케일을 유지 (조건수 개선).
-  - [[01-canonical-papers/notes/resnet|ResNet]]:
+  - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]:
     $\partial(x + F(x))/\partial x = I + \partial F/\partial x$ — 항등 항이 감쇠 없는
     귀갓길을 보장한다.
 - **그래디언트 폭발**: 노름 > 1 — gradient clipping($\|g\|$를 상한으로 재스케일)으로
   처치, RNN/LLM 학습의 표준.
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization
-  ([[01-canonical-papers/notes/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
-  교사([[01-canonical-papers/notes/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
+  ([[01-canonical-papers/notes/6-diffusion/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
+  교사([[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
   않는다. 논문의 점선 화살표가 이것이다.
 
 ### 6. 구현자의 눈으로 수식 읽기
@@ -200,5 +200,5 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
    설명하라.
 3. 순방향 모드 자동 미분은 왜 *입력 파라미터마다* 한 패스가 들고, 그것이 7B 모델에 왜
    치명적인가?
-4. [[01-canonical-papers/notes/vae|VAE]]에서 $z \sim \mathcal{N}(\mu, \sigma^2)$를 직접
+4. [[01-canonical-papers/notes/6-diffusion/vae|VAE]]에서 $z \sim \mathcal{N}(\mu, \sigma^2)$를 직접
    역전파할 수 없는 이유는, 그리고 $z = \mu + \sigma\epsilon$이 이를 고치는 방식은?

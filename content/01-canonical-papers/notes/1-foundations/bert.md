@@ -19,7 +19,7 @@ status: to-read
 
 ### Context
 
-After the [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]], language model pre-training was emerging (ELMo's contextual embeddings, GPT-1's left-to-right Transformer). But left-to-right models can't let a word see its *right* context, and shallow bidirectional features (ELMo) only concatenate two one-directional views. The question: how to pre-train *deeply bidirectional* representations without the model trivially seeing itself?
+After the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]], language model pre-training was emerging (ELMo's contextual embeddings, GPT-1's left-to-right Transformer). But left-to-right models can't let a word see its *right* context, and shallow bidirectional features (ELMo) only concatenate two one-directional views. The question: how to pre-train *deeply bidirectional* representations without the model trivially seeing itself?
 
 ### Method
 
@@ -40,15 +40,15 @@ After the [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]], l
 
 - Encoder-only: cannot generate text — the paradigm that scaled (GPT) eventually dominated for that reason.
 - MLM wastes computation (predicts only 15% of positions per pass); NSP proved nearly useless (RoBERTa dropped it and improved).
-- Fixed 512-token context; fine-tuning per task means one specialized model per task, unlike the in-context learning of [[01-canonical-papers/notes/gpt-3|GPT-3]].
+- Fixed 512-token context; fine-tuning per task means one specialized model per task, unlike the in-context learning of [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]].
 
 ### Impact & follow-ups
 
-Made "download pretrained weights, fine-tune on your data" the default workflow of applied NLP — the same paradigm later inherited by vision ([[01-canonical-papers/notes/mae|MAE]]) and robotics (VLA fine-tuning). Descendants: RoBERTa, ALBERT, ELECTRA, DistilBERT; MLM itself reappears as masked-patch pretraining in [[01-canonical-papers/notes/mae|MAE]].
+Made "download pretrained weights, fine-tune on your data" the default workflow of applied NLP — the same paradigm later inherited by vision ([[01-canonical-papers/notes/1-foundations/mae|MAE]]) and robotics (VLA fine-tuning). Descendants: RoBERTa, ALBERT, ELECTRA, DistilBERT; MLM itself reappears as masked-patch pretraining in [[01-canonical-papers/notes/1-foundations/mae|MAE]].
 
 ### Connections
 
-- Previous: [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]] · Contrast: [[01-canonical-papers/notes/gpt-3|GPT-3]] (decoder, in-context learning)
+- Previous: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] · Contrast: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] (decoder, in-context learning)
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -57,7 +57,7 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 
 ### 배경
 
-[[01-canonical-papers/notes/attention-is-all-you-need|Transformer]] 이후 언어모델 사전학습이 떠오르고 있었다(ELMo의 문맥 임베딩, GPT-1의 좌→우 Transformer). 하지만 좌→우 모델은 단어가 자신의 *오른쪽* 문맥을 볼 수 없고, ELMo의 얕은 양방향은 한 방향짜리 표현 둘을 이어붙인 것에 불과했다. 질문: 모델이 답을 미리 보는 문제 없이 *깊게 양방향인* 표현을 어떻게 사전학습할까?
+[[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 이후 언어모델 사전학습이 떠오르고 있었다(ELMo의 문맥 임베딩, GPT-1의 좌→우 Transformer). 하지만 좌→우 모델은 단어가 자신의 *오른쪽* 문맥을 볼 수 없고, ELMo의 얕은 양방향은 한 방향짜리 표현 둘을 이어붙인 것에 불과했다. 질문: 모델이 답을 미리 보는 문제 없이 *깊게 양방향인* 표현을 어떻게 사전학습할까?
 
 ### 방법
 
@@ -78,13 +78,13 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 
 - 인코더 전용이라 텍스트 생성 불가 — 결국 생성이 되는 GPT 계열이 스케일 경쟁에서 승리한 이유.
 - MLM은 연산 낭비가 있다(한 번에 15% 위치만 예측); NSP는 거의 무용지물로 판명(RoBERTa는 빼고 더 좋아짐).
-- 512 토큰 고정 문맥; 과제마다 파인튜닝 = 과제마다 전용 모델 — [[01-canonical-papers/notes/gpt-3|GPT-3]]의 in-context learning과 대비된다.
+- 512 토큰 고정 문맥; 과제마다 파인튜닝 = 과제마다 전용 모델 — [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]의 in-context learning과 대비된다.
 
 ### 영향과 후속 연구
 
-"사전학습 가중치를 받아 내 데이터로 파인튜닝"을 응용 NLP의 기본 워크플로로 만들었다 — 이 패러다임은 비전([[01-canonical-papers/notes/mae|MAE]])과 로보틱스(VLA 파인튜닝)로 그대로 계승된다. 후손: RoBERTa, ALBERT, ELECTRA, DistilBERT; MLM 아이디어는 [[01-canonical-papers/notes/mae|MAE]]의 마스크된 패치 사전학습으로 재등장한다.
+"사전학습 가중치를 받아 내 데이터로 파인튜닝"을 응용 NLP의 기본 워크플로로 만들었다 — 이 패러다임은 비전([[01-canonical-papers/notes/1-foundations/mae|MAE]])과 로보틱스(VLA 파인튜닝)로 그대로 계승된다. 후손: RoBERTa, ALBERT, ELECTRA, DistilBERT; MLM 아이디어는 [[01-canonical-papers/notes/1-foundations/mae|MAE]]의 마스크된 패치 사전학습으로 재등장한다.
 
 ### 연결
 
-- 이전: [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]] · 대비: [[01-canonical-papers/notes/gpt-3|GPT-3]] (디코더, in-context learning)
+- 이전: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] · 대비: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] (디코더, in-context learning)
 - 계보: [[03-deep-learning/lineage|논문 계보도]]

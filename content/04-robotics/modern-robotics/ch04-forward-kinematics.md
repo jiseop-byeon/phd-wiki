@@ -24,7 +24,7 @@ tags: [robotics, modern-robotics]
 
 **Wiki connections**: FK is the deterministic core inside every simulator and every
 digital-twin update ([[05-construction-robotics/index|construction]]); VLA policies that
-output joint chunks ([[01-canonical-papers/notes/pi0|π0]]) rely on FK to interpret them in
+output joint chunks ([[01-canonical-papers/notes/4-vla/pi0|π0]]) rely on FK to interpret them in
 task space.
 
 ## 한국어
@@ -45,5 +45,5 @@ task space.
   $\theta_{i+1..n}$을 얼려 보면 공식이 *곧* 기구임이 보인다.
 
 **위키 연결**: FK는 모든 시뮬레이터와 디지털 트윈 갱신([[05-construction-robotics/index|건설]])
-안의 결정론적 핵심이고, 관절 청크를 출력하는 VLA 정책([[01-canonical-papers/notes/pi0|π0]])을
+안의 결정론적 핵심이고, 관절 청크를 출력하는 VLA 정책([[01-canonical-papers/notes/4-vla/pi0|π0]])을
 작업 공간에서 해석하는 데 FK가 쓰인다.

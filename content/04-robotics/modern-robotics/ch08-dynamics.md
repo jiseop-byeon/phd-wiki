@@ -26,7 +26,7 @@ tags: [robotics, modern-robotics]
   operational-space and impedance control.
 
 **Wiki connections**: sim-to-real gaps live in the mismatch of this equation's parameters;
-[[01-canonical-papers/notes/dreamer|world models]] *learn* an implicit version of it;
+[[01-canonical-papers/notes/5-world-models/dreamer|world models]] *learn* an implicit version of it;
 [[04-robotics/convex-mpc-legged|convex MPC]] deliberately simplifies it (single rigid body)
 to buy solvability.
 
@@ -48,6 +48,6 @@ to buy solvability.
 - 작업 공간 버전: 같은 구조를 말단에서 표현 — operational-space·임피던스 제어로 가는 다리.
 
 **위키 연결**: sim-to-real 격차는 이 방정식의 파라미터 불일치에 살고,
-[[01-canonical-papers/notes/dreamer|월드모델]]은 이것의 암시적 버전을 *학습*하며,
+[[01-canonical-papers/notes/5-world-models/dreamer|월드모델]]은 이것의 암시적 버전을 *학습*하며,
 [[04-robotics/convex-mpc-legged|convex MPC]]는 풀림성을 사려고 이를 의도적으로
 단순화(단일 강체)한다.

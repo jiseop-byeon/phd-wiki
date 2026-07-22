@@ -8,7 +8,7 @@ tags: [foundations]
 ## English
 
 Optimization is the shared language of this wiki: training a network
-([[01-canonical-papers/notes/adam|Adam]]), solving MPC, planning a trajectory, and allocating
+([[01-canonical-papers/notes/1-foundations/adam|Adam]]), solving MPC, planning a trajectory, and allocating
 construction tasks are all "minimize an objective subject to constraints." Course-depth
 treatment: conditions, derivations, and a fully written MPC-as-QP example.
 
@@ -48,7 +48,7 @@ formulations of the same engineering problem differ wildly in solvability.
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum, $O(n^3)$ per
   step; quasi-Newton (BFGS/L-BFGS) builds $H^{-1}$ estimates from gradient differences.
 - Stochastic gradients: unbiased but noisy estimates from minibatches; noise ~ helps escape
-  saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/adam|Adam]] ≈
+  saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
   momentum + per-coordinate curvature proxy.
 
 ### 4. Constrained optimization — Lagrange, KKT, duality
@@ -96,11 +96,11 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 ### 6. Reading this wiki through optimization
 
 - Network training = stochastic non-convex optimization
-  ([[01-canonical-papers/notes/adam|Adam]]; [[01-canonical-papers/notes/batch-norm|BatchNorm]]
+  ([[01-canonical-papers/notes/1-foundations/adam|Adam]]; [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]
   reshapes the landscape's conditioning).
-- [[01-canonical-papers/notes/lora|LoRA]] = constraining the search to a low-rank manifold.
-- [[01-canonical-papers/notes/instructgpt|RLHF]]'s KL penalty = a soft trust-region constraint.
-- Diffusion training = minimizing a variational bound; [[01-canonical-papers/notes/planet|PlaNet]]'s
+- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = constraining the search to a low-rank manifold.
+- [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]'s KL penalty = a soft trust-region constraint.
+- Diffusion training = minimizing a variational bound; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]'s
   CEM planning = derivative-free optimization in latent space.
 
 ### Self-check
@@ -114,7 +114,7 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 
 ## 한국어
 
-최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/adam|Adam]]),
+최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/1-foundations/adam|Adam]]),
 MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적함수 최소화"다. 교재 수준의
 서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제.
 
@@ -150,7 +150,7 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
-  스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/adam|Adam]] ≈ 모멘텀 +
+  스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
   좌표별 곡률 대리.
 
 ### 4. 제약 최적화 — 라그랑주, KKT, 쌍대성
@@ -194,11 +194,11 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 
 ### 6. 최적화의 눈으로 이 위키 읽기
 
-- 네트워크 학습 = 확률적 비볼록 최적화 ([[01-canonical-papers/notes/adam|Adam]];
-  [[01-canonical-papers/notes/batch-norm|BatchNorm]]은 지형의 조건수를 다듬는다).
-- [[01-canonical-papers/notes/lora|LoRA]] = 탐색을 저랭크 다양체로 제약.
-- [[01-canonical-papers/notes/instructgpt|RLHF]]의 KL 페널티 = 부드러운 신뢰 영역 제약.
-- 디퓨전 학습 = 변분 하한 최소화; [[01-canonical-papers/notes/planet|PlaNet]]의 CEM 플래닝 =
+- 네트워크 학습 = 확률적 비볼록 최적화 ([[01-canonical-papers/notes/1-foundations/adam|Adam]];
+  [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]은 지형의 조건수를 다듬는다).
+- [[01-canonical-papers/notes/1-foundations/lora|LoRA]] = 탐색을 저랭크 다양체로 제약.
+- [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]의 KL 페널티 = 부드러운 신뢰 영역 제약.
+- 디퓨전 학습 = 변분 하한 최소화; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]의 CEM 플래닝 =
   잠재 공간의 미분 불요 최적화.
 
 ### 스스로 점검

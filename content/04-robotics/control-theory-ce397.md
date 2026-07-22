@@ -16,9 +16,9 @@ which makes it this wiki's primary control-theory text.
 **Contents map** (and where each part connects in this wiki):
 
 1. **Mathematical modeling of infrastructure systems** — writing ODEs for physical systems
-   → [[02-foundations/engineering-math|0.1 Engineering Math §8]] is the on-ramp
+   → [[02-foundations/engineering-math|0.5 Engineering Math §8]] is the on-ramp
 2. **Time & frequency domain representations** — Laplace, transfer functions, poles
-   → [[02-foundations/engineering-math|0.1 §9]] and [[02-foundations/signal-processing|6. Signal Processing §5]]
+   → [[02-foundations/engineering-math|0.5 §9]] and [[02-foundations/signal-processing|6. Signal Processing §5]]
 3. **Linear spaces and operators; state-space models & modal analysis** — the
    [[02-foundations/linear-algebra|1. Linear Algebra §5]] control connection, done properly:
    eigenvalues = modes = stability
@@ -29,9 +29,9 @@ which makes it this wiki's primary control-theory text.
 6. **State estimation & system identification** — the
    [[02-foundations/probability|Kalman filter]] in its native habitat, plus learning models
    from data (the classical ancestor of learned dynamics in
-   [[01-canonical-papers/notes/dreamer|world models]])
+   [[01-canonical-papers/notes/5-world-models/dreamer|world models]])
 
-**Suggested path**: read alongside foundations pages 0.1(§8–9) → 1 → 4; then this packet
+**Suggested path**: read alongside foundations pages 0.5(§8–9) → 1 → 4; then this packet
 front to back; then [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]. For a
 construction-robotics researcher this packet has a bonus: its examples *are* your domain.
 
@@ -45,23 +45,23 @@ HVAC, 상수도. 교수자 사이트에서 코스 패킷 전체가 공개되어 
 **내용 지도** (각 부분이 이 위키의 어디와 연결되는가):
 
 1. **인프라 시스템의 수학적 모델링** — 물리 시스템의 미분방정식 세우기
-   → [[02-foundations/engineering-math|0.1 공업수학 §8]]이 진입로
+   → [[02-foundations/engineering-math|0.5 공업수학 §8]]이 진입로
 2. **시간·주파수 영역 표현** — 라플라스, 전달함수, 극점
-   → [[02-foundations/engineering-math|0.1 §9]]와 [[02-foundations/signal-processing|6. 신호처리 §5]]
+   → [[02-foundations/engineering-math|0.5 §9]]와 [[02-foundations/signal-processing|6. 신호처리 §5]]
 3. **선형 공간과 연산자; 상태공간 모델과 모드 해석** —
    [[02-foundations/linear-algebra|1. 선형대수 §5]]의 제어 연결을 제대로: 고유값 = 모드 = 안정성
 4. **가제어성과 가관측성** — 랭크 조건
 5. **피드백 제어** — 루프 닫기; 여기서 [[04-robotics/lqr-lqg|LQR]]은 한 걸음(최적 피드백),
    [[04-robotics/mpc|MPC]]는 두 걸음(최적 + 제약, 온라인 재풀이)
 6. **상태 추정과 시스템 식별** — [[02-foundations/probability|칼만 필터]]의 본고장, 그리고
-   데이터에서 모델 배우기 ([[01-canonical-papers/notes/dreamer|월드모델]]의 학습 동역학의
+   데이터에서 모델 배우기 ([[01-canonical-papers/notes/5-world-models/dreamer|월드모델]]의 학습 동역학의
    고전적 조상)
 
-**권장 경로**: 기초 0.1(§8~9) → 1 → 4와 병행해 이 패킷을 처음부터 끝까지; 그다음
+**권장 경로**: 기초 0.5(§8~9) → 1 → 4와 병행해 이 패킷을 처음부터 끝까지; 그다음
 [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]. 건설로봇 연구자에게 이 패킷의 보너스:
 예제가 *곧 당신의 도메인*이다.
 
 ### 연결
 
-- 기초: [[02-foundations/engineering-math|0.1 공업수학 §8–9]], [[02-foundations/linear-algebra|1. 선형대수]], [[02-foundations/probability|3. 확률]]
+- 기초: [[02-foundations/engineering-math|0.5 공업수학 §8–9]], [[02-foundations/linear-algebra|1. 선형대수]], [[02-foundations/probability|3. 확률]]
 - 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|보행 convex MPC]]

@@ -25,7 +25,7 @@ tags: [robotics, modern-robotics]
   shape (singular values, [[02-foundations/linear-algebra|linear algebra §4]]) tells you
   in which directions the arm moves easily. Force ellipsoid is its inverse-shaped twin.
 
-**Wiki connections**: teleoperation rigs ([[01-canonical-papers/notes/act|ALOHA]]) and
+**Wiki connections**: teleoperation rigs ([[01-canonical-papers/notes/4-vla/act|ALOHA]]) and
 compliant control live on $\tau = J^\top \mathcal{F}$; singularity-aware motion is why raw
 VLA outputs get safety-filtered on real arms.
 
@@ -47,6 +47,6 @@ VLA outputs get safety-filtered on real arms.
   [[02-foundations/linear-algebra|선형대수 §4]])이 팔이 어느 방향으로 쉽게 움직이는지
   알려준다. 힘 타원체는 그 역 모양의 쌍둥이다.
 
-**위키 연결**: 원격조작 장비([[01-canonical-papers/notes/act|ALOHA]])와 유연 제어가
+**위키 연결**: 원격조작 장비([[01-canonical-papers/notes/4-vla/act|ALOHA]])와 유연 제어가
 $\tau = J^\top \mathcal{F}$ 위에 살고, 특이점 인지 운동은 실제 팔에서 VLA 원출력에 안전
 필터를 거는 이유다.

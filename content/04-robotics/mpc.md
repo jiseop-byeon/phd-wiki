@@ -20,8 +20,8 @@ turning a practical heuristic into a theory. Read it after the optimization page
 skim §2–3 for the formulation and stability conditions rather than every proof.
 
 **Where it meets learning** (this wiki's angle):
-[[01-canonical-papers/notes/planet|PlaNet]] is MPC with a *learned* model and CEM solver;
-[[01-canonical-papers/notes/diffusion-policy|Diffusion Policy]]'s receding-horizon action
+[[01-canonical-papers/notes/5-world-models/planet|PlaNet]] is MPC with a *learned* model and CEM solver;
+[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]'s receding-horizon action
 chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/index|section 5]]).
 
@@ -39,8 +39,8 @@ construction-robotics direction ([[05-construction-robotics/index|section 5]]).
 훑는 것을 권한다.
 
 **학습과 만나는 지점** (이 위키의 관심사):
-[[01-canonical-papers/notes/planet|PlaNet]]은 *학습된* 모델과 CEM 솔버의 MPC이고,
-[[01-canonical-papers/notes/diffusion-policy|Diffusion Policy]]의 receding-horizon 행동
+[[01-canonical-papers/notes/5-world-models/planet|PlaNet]]은 *학습된* 모델과 CEM 솔버의 MPC이고,
+[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]의 receding-horizon 행동
 청크는 MPC의 구조를 빌린 것이며, 굴착기의 학습 동역학 MPC는 건설로봇의 활발한 연구
 방향이다 ([[05-construction-robotics/index|5번 섹션]]).
 

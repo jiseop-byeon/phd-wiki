@@ -24,8 +24,8 @@ tags: [robotics, modern-robotics]
   velocity constraints bind (cars, [[04-robotics/convex-mpc-legged|legged machines]]).
 
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —
-a [[01-canonical-papers/notes/pi0|VLA]] implicitly plans in its forward pass, and
-[[01-canonical-papers/notes/planet|latent-space CEM]] is planning with a learned model;
+a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pass, and
+[[01-canonical-papers/notes/5-world-models/planet|latent-space CEM]] is planning with a learned model;
 on real sites, sampling planners still provide the safety-checkable backbone that learned
 proposals get filtered through.
 
@@ -48,7 +48,7 @@ proposals get filtered through.
   샘플링한다(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
 
 **위키 연결**: 학습된 정책이 점점 *흡수*하는 고전 계층 —
-[[01-canonical-papers/notes/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,
-[[01-canonical-papers/notes/planet|잠재 공간 CEM]]은 학습된 모델로 하는 계획이다;
+[[01-canonical-papers/notes/4-vla/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,
+[[01-canonical-papers/notes/5-world-models/planet|잠재 공간 CEM]]은 학습된 모델로 하는 계획이다;
 실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.

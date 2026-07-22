@@ -25,8 +25,8 @@ tags: [robotics, modern-robotics]
 - Smoothness matters physically: discontinuous acceleration = torque spikes = vibration
   ([[02-foundations/signal-processing|signal processing]]'s frequency lens applies).
 
-**Wiki connections**: [[01-canonical-papers/notes/act|action chunks]] and
-[[01-canonical-papers/notes/diffusion-policy|denoised trajectories]] are *learned*
+**Wiki connections**: [[01-canonical-papers/notes/4-vla/act|action chunks]] and
+[[01-canonical-papers/notes/4-vla/diffusion-policy|denoised trajectories]] are *learned*
 replacements for exactly this chapter; classical time scaling still wraps learned outputs
 on real hardware for safety/limits.
 
@@ -46,7 +46,7 @@ on real hardware for safety/limits.
 - 매끄러움은 물리적으로 중요하다: 불연속 가속도 = 토크 스파이크 = 진동
   ([[02-foundations/signal-processing|신호처리]]의 주파수 렌즈가 적용된다).
 
-**위키 연결**: [[01-canonical-papers/notes/act|행동 청크]]와
-[[01-canonical-papers/notes/diffusion-policy|노이즈 제거된 궤적]]은 정확히 이 장의 *학습된*
+**위키 연결**: [[01-canonical-papers/notes/4-vla/act|행동 청크]]와
+[[01-canonical-papers/notes/4-vla/diffusion-policy|노이즈 제거된 궤적]]은 정확히 이 장의 *학습된*
 대체물이고, 실제 하드웨어에서는 안전/한계를 위해 고전적 시간 스케일링이 학습 출력을 여전히
 감싼다.

@@ -16,7 +16,7 @@ status: to-read
 **One-line summary**: Surveys industry stakeholders to answer why construction robots aren't adopted — ranking barriers (high capital cost first) across four technology categories: off-site prefabrication robots, on-site automation, drones/autonomous vehicles, and exoskeletons.
 
 **Why read it**: the demand-side reality check for everything technical in this wiki.
-Whatever a [[01-canonical-papers/notes/pi0|π0]]-class method can do, adoption runs through
+Whatever a [[01-canonical-papers/notes/4-vla/pi0|π0]]-class method can do, adoption runs through
 cost, fragmented supply chains, unstructured sites, and workforce dynamics — the paper
 gives the vocabulary and ranking for those constraints.
 
@@ -30,7 +30,7 @@ climb," not a verdict.
 **한 줄 요약**: 업계 이해관계자 설문으로 건설 로봇이 왜 도입되지 않는가에 답한다 — 네 가지 기술 범주(오프사이트 프리팹 로봇, 현장 자동화, 드론/자율주행, 외골격)에 걸쳐 장벽의 순위를 매겼고, 높은 초기 자본 비용이 1위다.
 
 **읽는 이유**: 이 위키의 모든 기술적 내용에 대한 수요 측 현실 점검.
-[[01-canonical-papers/notes/pi0|π0]]급 방법이 무엇을 할 수 있든, 도입은 비용·파편화된 공급망·
+[[01-canonical-papers/notes/4-vla/pi0|π0]]급 방법이 무엇을 할 수 있든, 도입은 비용·파편화된 공급망·
 비구조화 현장·인력 역학을 통과해야 한다 — 이 논문이 그 제약들의 어휘와 순위를 준다.
 
 **비판**: 파운데이션 모델 이전(2019)의 스냅숏이다; 범용 로봇이 비용을 여러 작업에 상각하게
@@ -39,4 +39,4 @@ climb," not a verdict.
 
 ### 연결
 
-- 이전: [[01-canonical-papers/notes/bock-2015|Bock 2015]] · 다음: [[01-canonical-papers/notes/heap|HEAP]] (기술 쪽의 응답)
+- 이전: [[01-canonical-papers/notes/8-construction/bock-2015|Bock 2015]] · 다음: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (기술 쪽의 응답)

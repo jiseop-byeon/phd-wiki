@@ -7,8 +7,8 @@ tags: [foundations]
 
 ## English
 
-You cannot read [[01-canonical-papers/notes/instructgpt|RLHF]], the
-[[01-canonical-papers/notes/dreamer|Dreamer]] line, or half of modern robot learning without
+You cannot read [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]], the
+[[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] line, or half of modern robot learning without
 the MDP vocabulary. Course-depth treatment: the Bellman machinery, both algorithm families
 with their update rules, the policy gradient theorem, and PPO's actual objective.
 
@@ -22,7 +22,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   $1/(1-\gamma)$ is the effective horizon (γ=0.99 ⇒ ~100 steps).
 - Robotics reality: the state is *unobserved* (POMDP) — you see images and proprioception.
   Practical dodge: condition on observation histories / recurrent state (what
-  [[01-canonical-papers/notes/dreamer|RSSM]]s formalize).
+  [[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]s formalize).
 
 ### 2. Value functions and the Bellman equations
 
@@ -63,7 +63,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   use reward-to-go; **actor-critic**: learn $V_\phi$ with TD and use
   $\delta = r + \gamma V(s') - V(s)$ as a one-sample advantage estimate. **GAE** interpolates
   between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ.
-- **PPO** — the workhorse ([[01-canonical-papers/notes/instructgpt|the one inside RLHF]]):
+- **PPO** — the workhorse ([[01-canonical-papers/notes/1-foundations/instructgpt|the one inside RLHF]]):
   with ratio $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$,
   $$\mathcal{L} = E_t\big[\min\big(\rho_t A_t,\ \text{clip}(\rho_t, 1{-}\epsilon, 1{+}\epsilon)\, A_t\big)\big]$$
   — take policy-gradient steps but *clip away the incentive* to move far from the data-
@@ -74,21 +74,21 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 
 - Model-free RL asks the *real world* for every gradient — untenable for robots (time,
   wear, safety). Model-based RL learns $\hat p(s'|s,a)$ and trains the policy on
-  *imagined* rollouts: [[01-canonical-papers/notes/world-models|World Models]] →
-  [[01-canonical-papers/notes/planet|PlaNet]] (plan through the model) →
-  [[01-canonical-papers/notes/dreamer|Dreamer]] (backprop through the model).
+  *imagined* rollouts: [[01-canonical-papers/notes/5-world-models/world-models|World Models]] →
+  [[01-canonical-papers/notes/5-world-models/planet|PlaNet]] (plan through the model) →
+  [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] (backprop through the model).
 - The tradeoff: sample efficiency vs **model bias** — errors compound over imagined
-  horizons (the same compounding-error logic as [[01-canonical-papers/notes/act|ACT]]'s
+  horizons (the same compounding-error logic as [[01-canonical-papers/notes/4-vla/act|ACT]]'s
   motivation), managed by short horizons and value bootstrapping.
 
 ### 6. RL vs imitation in robot learning (orientation map)
 
-- **Imitation** ([[01-canonical-papers/notes/rt-1|RT-1]],
-  [[01-canonical-papers/notes/diffusion-policy|Diffusion Policy]]): supervised on demos —
+- **Imitation** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
+  [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): supervised on demos —
   stable, no reward design, but capped by data coverage and cannot discover recoveries.
 - **RL** exceeds the demonstrator given a reward and many trials — practical mostly in
   simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
-  the [[01-canonical-papers/notes/instructgpt|pretrain → RLHF]] recipe.
+  the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
 - Decoder ring for papers: "BC baseline" = behavior cloning; "advantage-weighted" =
   policy improvement re-weighted by $e^{A/\beta}$; "KL-regularized policy" = stay near a
   reference policy while improving.
@@ -104,8 +104,8 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 
 ## 한국어
 
-MDP 어휘 없이는 [[01-canonical-papers/notes/instructgpt|RLHF]]도,
-[[01-canonical-papers/notes/dreamer|Dreamer]] 계열도, 현대 로봇 학습의 절반도 읽을 수 없다.
+MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]도,
+[[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] 계열도, 현대 로봇 학습의 절반도 읽을 수 없다.
 교재 수준의 서술: 벨만 기계장치, 갱신 규칙까지 포함한 두 알고리즘 계열, 정책 그래디언트
 정리, 그리고 PPO의 실제 목적함수.
 
@@ -118,7 +118,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/instructgpt|RLHF]]도,
   $J(\pi) = E_\pi[G_0]$. 할인은 무한 합을 유한하게 만들고 조급함을 인코딩한다;
   $1/(1-\gamma)$이 유효 지평이다 (γ=0.99 ⇒ 약 100 스텝).
 - 로보틱스의 현실: 상태는 *관측되지 않는다*(POMDP) — 보이는 건 이미지와 고유수용감각.
-  실전적 우회: 관측 이력/순환 상태를 조건으로 ([[01-canonical-papers/notes/dreamer|RSSM]]이
+  실전적 우회: 관측 이력/순환 상태를 조건으로 ([[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]이
   이를 정식화한 것).
 
 ### 2. 가치 함수와 벨만 방정식
@@ -157,7 +157,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/instructgpt|RLHF]]도,
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를
   TD로 배우고 $\delta = r + \gamma V(s') - V(s)$를 1-샘플 어드밴티지로. **GAE**는
   λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다.
-- **PPO** — 주력 알고리즘 ([[01-canonical-papers/notes/instructgpt|RLHF 속의 그것]]):
+- **PPO** — 주력 알고리즘 ([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF 속의 그것]]):
   비율 $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$에 대해
   $$\mathcal{L} = E_t\big[\min\big(\rho_t A_t,\ \text{clip}(\rho_t, 1{-}\epsilon, 1{+}\epsilon)\, A_t\big)\big]$$
   — 정책 그래디언트 스텝을 밟되, 데이터를 모은 정책에서 멀어질 *유인을 클리핑으로
@@ -168,21 +168,21 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/instructgpt|RLHF]]도,
 
 - 모델 프리 RL은 그래디언트 하나하나를 *실제 세계*에 묻는다 — 로봇에게는 지속 불가능
   (시간, 마모, 안전). 모델 기반 RL은 $\hat p(s'|s,a)$를 배우고 *상상된* 롤아웃으로 정책을
-  학습한다: [[01-canonical-papers/notes/world-models|World Models]] →
-  [[01-canonical-papers/notes/planet|PlaNet]](모델을 통해 계획) →
-  [[01-canonical-papers/notes/dreamer|Dreamer]](모델을 통해 역전파).
+  학습한다: [[01-canonical-papers/notes/5-world-models/world-models|World Models]] →
+  [[01-canonical-papers/notes/5-world-models/planet|PlaNet]](모델을 통해 계획) →
+  [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]](모델을 통해 역전파).
 - 트레이드오프: 샘플 효율 vs **모델 편향** — 상상 지평에서 오차가 누적된다
-  ([[01-canonical-papers/notes/act|ACT]]의 동기였던 복합 오차와 같은 논리); 짧은 지평과 가치
+  ([[01-canonical-papers/notes/4-vla/act|ACT]]의 동기였던 복합 오차와 같은 논리); 짧은 지평과 가치
   부트스트래핑으로 관리한다.
 
 ### 6. 로봇 학습에서 RL vs 모방 (지도)
 
-- **모방** ([[01-canonical-papers/notes/rt-1|RT-1]],
-  [[01-canonical-papers/notes/diffusion-policy|Diffusion Policy]]): 시연에 대한 지도학습 —
+- **모방** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
+  [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): 시연에 대한 지도학습 —
   안정적이고 보상 설계가 없지만, 데이터 커버리지가 상한이고 회복 동작을 발견할 수 없다.
 - **RL**은 보상과 많은 시도가 있으면 시연자를 넘어선다 — 주로 시뮬레이션(sim-to-real)
   에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
-  [[01-canonical-papers/notes/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
+  [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
 - 논문 해독기: "BC baseline" = 행동 복제; "advantage-weighted" = $e^{A/\beta}$로 재가중된
   정책 개선; "KL-regularized policy" = 기준 정책 근처에 머물며 개선하기.
 

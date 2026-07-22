@@ -25,10 +25,10 @@ where each concept appears in the papers of this wiki.
   architectures. Worked example — one attention head with $d_{model}=512$, $d_k=64$:
   $Q = XW_Q$ is $(T\times 512)(512\times 64) = T\times 64$; scores $QK^\top$ are $T\times T$;
   output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$. The whole
-  [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]] type-checks in one line.
+  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line.
 - **Dot product and angle**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. Cosine similarity
   $= \langle a,b\rangle / (\|a\|\|b\|)$ — the retrieval metric of
-  [[01-canonical-papers/notes/clip|CLIP]].
+  [[01-canonical-papers/notes/3-vlm/clip|CLIP]].
 - Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
   (sparsity-inducing — its "corners" touch axes first), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
@@ -46,7 +46,7 @@ where each concept appears in the papers of this wiki.
   (the **normal equations**). Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. Linear regression,
   calibration, and the Kalman filter's update all live here.
-- Low-rank structure recurs everywhere: [[01-canonical-papers/notes/lora|LoRA]] assumes weight
+- Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
 
 ### 3. Eigendecomposition — directions a map only stretches
@@ -62,8 +62,8 @@ where each concept appears in the papers of this wiki.
     converges per-eigendirection at rate $(1 - \alpha\lambda_i)$; the usable step size is
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
     **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ *is* the difficulty of the
-    problem — the fact [[01-canonical-papers/notes/adam|Adam]] and
-    [[01-canonical-papers/notes/batch-norm|BatchNorm]] exist to fight.
+    problem — the fact [[01-canonical-papers/notes/1-foundations/adam|Adam]] and
+    [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]] exist to fight.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
@@ -77,7 +77,7 @@ where each concept appears in the papers of this wiki.
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: the best rank-$k$ approximation (in $\|\cdot\|_F$ or $\|\cdot\|_2$) is
   truncated SVD $\sum_{i\le k}\sigma_i u_i v_i^\top$. This is the mathematical license for
-  [[01-canonical-papers/notes/lora|LoRA]], model compression, and PCA.
+  [[01-canonical-papers/notes/1-foundations/lora|LoRA]], model compression, and PCA.
 - **PCA in four lines**: center data $X$; covariance $C = \frac1n X^\top X$; its top
   eigenvectors = directions of maximal variance = right singular vectors of $X$; project.
   Classical ancestor of every learned representation.
@@ -103,8 +103,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - Distances concentrate: nearest and farthest neighbors differ by little — why cosine
   similarity and *learned* metrics replace raw Euclidean distance.
 - Manifold hypothesis: real data occupies a low-dimensional surface inside pixel space —
-  the implicit justification for latent spaces ([[01-canonical-papers/notes/vae|VAE]],
-  [[01-canonical-papers/notes/latent-diffusion|latent diffusion]]).
+  the implicit justification for latent spaces ([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
+  [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]).
 
 ### Self-check
 
@@ -113,7 +113,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 2. Derive the normal equations and explain why the residual is orthogonal to $\text{col}(A)$.
 3. A discrete system $x_{t+1} = Ax_t$ has eigenvalues $0.9, 1.02$. What happens, and along
    which direction?
-4. Why does [[01-canonical-papers/notes/lora|LoRA]] initialize $B = 0$? (What map does
+4. Why does [[01-canonical-papers/notes/1-foundations/lora|LoRA]] initialize $B = 0$? (What map does
    $W_0 + BA$ equal at step 0?)
 
 ## 한국어
@@ -135,10 +135,10 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   계산 예시 — $d_{model}=512$, $d_k=64$인 어텐션 헤드 하나:
   $Q = XW_Q$는 $(T\times 512)(512\times 64) = T\times 64$; 점수 $QK^\top$는 $T\times T$;
   출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$.
-  [[01-canonical-papers/notes/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
+  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
   검사된다.
 - **내적과 각도**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. 코사인 유사도
-  $= \langle a,b\rangle / (\|a\|\|b\|)$ — [[01-canonical-papers/notes/clip|CLIP]]의 검색 지표.
+  $= \langle a,b\rangle / (\|a\|\|b\|)$ — [[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 검색 지표.
 - 노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
   "모서리"가 축에 먼저 닿는다), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
@@ -153,7 +153,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (**정규방정식**). 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
-- 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/lora|LoRA]]는 가중치
+- 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 가중치
   *업데이트*의 내재 랭크가 낮다고 가정한다($r \ll d$인 $\Delta W = BA$).
 
 ### 3. 고유분해 — 사상이 늘이기만 하는 방향
@@ -168,7 +168,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
     $\kappa = \lambda_{max}/\lambda_{min}$가 문제의 난이도 *그 자체*다 —
-    [[01-canonical-papers/notes/adam|Adam]]과 [[01-canonical-papers/notes/batch-norm|BatchNorm]]이
+    [[01-canonical-papers/notes/1-foundations/adam|Adam]]과 [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]이
     존재하는 이유가 이것과의 싸움이다.
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
@@ -182,7 +182,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 연결: $\sigma_i^2$ = $A^\top A$의 고유값; 랭크 = 0이 아닌 $\sigma_i$의 수;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: 최적 랭크-$k$ 근사($\|\cdot\|_F$·$\|\cdot\|_2$ 기준)는 절단 SVD
-  $\sum_{i\le k}\sigma_i u_i v_i^\top$이다. [[01-canonical-papers/notes/lora|LoRA]], 모델 압축,
+  $\sum_{i\le k}\sigma_i u_i v_i^\top$이다. [[01-canonical-papers/notes/1-foundations/lora|LoRA]], 모델 압축,
   PCA의 수학적 면허장.
 - **PCA 네 줄 요약**: 데이터 $X$를 중심화; 공분산 $C = \frac1n X^\top X$; 그 상위
   고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 모든 학습된 표현의 고전적
@@ -208,8 +208,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다 — 코사인 유사도와
   *학습된* 거리가 유클리드 거리를 대체하는 이유.
 - 다양체 가설: 실제 데이터는 픽셀 공간 속 저차원 곡면 위에 산다 —
-  잠재 공간([[01-canonical-papers/notes/vae|VAE]],
-  [[01-canonical-papers/notes/latent-diffusion|latent diffusion]])의 암묵적 정당화.
+  잠재 공간([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
+  [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]])의 암묵적 정당화.
 
 ### 스스로 점검
 
@@ -217,5 +217,5 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 2. 정규방정식을 유도하고, 잔차가 $\text{col}(A)$에 직교하는 이유를 설명하라.
 3. 이산 시스템 $x_{t+1} = Ax_t$의 고유값이 $0.9, 1.02$다. 무슨 일이, 어느 방향으로
    일어나는가?
-4. [[01-canonical-papers/notes/lora|LoRA]]는 왜 $B = 0$으로 초기화하는가? (0스텝에서
+4. [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 왜 $B = 0$으로 초기화하는가? (0스텝에서
    $W_0 + BA$는 어떤 사상과 같은가?)
