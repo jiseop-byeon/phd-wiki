@@ -8,6 +8,16 @@ tags: [log]
 
 ## 2026-07
 
+### 2026-07-23 (7종 전수 감사 + 프로필 기준 티어 조정)
+
+- 건설로봇 제외 전 콘텐츠를 7개 영역으로 병렬 전수 감사 (탐색 계층 / foundations / 논문 노트 2조 / 로보틱스 / research practice / 커리큘럼 적합성)
+- BLOCKING 2건 수정: softmax를 [[02-foundations/engineering-math|0.5 §10]]에 정의(12곳에서 정의 없이 사용되던 것), 로보틱스 한국어 인덱스에 3.5 기하 인식 추가
+- 사실 교정: ViT 88.55%는 H/14(L/16은 87.8), Bahdanau는 미지단어 제외 부분집합에서만 SMT 대등, I3D 원 논문은 71–75%, Qwen2-VL은 2B/7B/72B, Genie 학습 데이터는 ~24.4만 시간 크롤 중 ~3만 시간 필터
+- 탐색 수리: 섹션 인덱스 2곳이 자기 하위 페이지 링크, canonical list 영어 범례 추가·study guide를 트랙 순서로 재배열, π0→Flow Matching 직결(Score SDE 우회 제거), 전방 참조 선수지식 2건 완화
+- 교육 보강: ELBO의 곱하고-나누기 단계 명시, 시행 수 가늠 도구(±1/√n, rule of three), 리뷰어 응답 예문, PaliGemma 기구·한계 보강, VGGT에 기하 인식 on-ramp
+- **프로필 기준 티어 조정** (미국 상위 공대 건설 physical AI 대학원생 기준): BERT·GPT-3·InstructGPT·I3D·PlaNet·Score-SDE·LDM ◐→○, Cosmos ★→◐ — 로봇 논문에서 한 줄 조상 인용 수준인 항목들의 읽기 부담 축소
+- 예정: PPO(◐)·SAC(○)·PointNet/++(○)·SayCan(○) 노트와 sim-to-real 학습 가이드를 건설로봇 확충과 함께 추가 (ExT 계열 읽기의 선행 재료)
+
 ### 2026-07-23 (공통 커리큘럼 공백 보완)
 
 - 외부 점검(달성도 ~92%)이 지목한 세 공백을 보완:

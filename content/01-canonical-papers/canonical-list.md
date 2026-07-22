@@ -21,6 +21,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 ★ 원문 정독 (방법·실험까지) · ◐ 노트 후 원문 훑기 · ○ 노트로 충분 (계보 이해)
 — 이 기호는 **권장 읽기 분량**이지 숙련 수준이 아니다: ★를 정독해도 mastery(가정 비판·변형 설계)에 도달한 것은 아니다.
 (EN: ★ read the original in full · ◐ read the note, then skim the original · ○ the note is enough. These marks are the *recommended reading amount*, not a mastery level.)
+— 깊이 배정은 **건설 physical AI 프로필** 기준으로 조정했다(2026-07): NLP 조상 계열(BERT·GPT-3·InstructGPT)과 생성 이미지 심화(Score-SDE·LDM)는 이 분야 논문에서 한 줄 인용 수준이라 ○, 시각 인식·VLA·디퓨전 정책 수학은 유지.
 
 ## 1. Deep Learning Foundations
 
@@ -35,20 +36,20 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/1-foundations/batch-norm|Batch Normalization]] (Ioffe & Szegedy, ICML 2015)
 - [x] ◐ [[notes/1-foundations/resnet|ResNet]] — *Deep Residual Learning* (He et al., CVPR 2016)
 - [x] ★ [[notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]] (Vaswani et al., NeurIPS 2017)
-- [x] ◐ [[notes/1-foundations/bert|BERT]] (Devlin et al., NAACL 2019)
-- [x] ◐ [[notes/1-foundations/gpt-3|GPT-3]] — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
+- [x] ○ [[notes/1-foundations/bert|BERT]] (Devlin et al., NAACL 2019)
+- [x] ○ [[notes/1-foundations/gpt-3|GPT-3]] — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
 - [x] ◐ [[notes/1-foundations/scaling-laws|Scaling Laws]] (Kaplan et al., 2020) + Chinchilla (Hoffmann et al., 2022)
 - [x] ◐ [[notes/1-foundations/vit|ViT]] — *An Image is Worth 16x16 Words* (Dosovitskiy et al., ICLR 2021)
 - [x] ◐ [[notes/1-foundations/mae|MAE]] — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
 - [x] ◐ [[notes/1-foundations/lora|LoRA]] — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
-- [x] ◐ [[notes/1-foundations/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
+- [x] ○ [[notes/1-foundations/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
 
 ## 2. Computer Vision
 
 - [x] ◐ [[notes/2-computer-vision/u-net|U-Net]] (Ronneberger et al., MICCAI 2015)
 - [x] ○ [[notes/2-computer-vision/faster-r-cnn|Faster R-CNN]] (Ren et al., NeurIPS 2015)
 - [x] ◐ [[notes/2-computer-vision/yolo|YOLO]] (Redmon et al., CVPR 2016)
-- [x] ◐ [[notes/2-computer-vision/video-understanding|Video Understanding — I3D / SlowFast]] (2017–2019)
+- [x] ○ [[notes/2-computer-vision/video-understanding|Video Understanding — I3D / SlowFast]] (2017–2019)
 - [x] ◐ [[notes/2-computer-vision/detr|DETR]] — *End-to-End Object Detection with Transformers* (Carion et al., ECCV 2020)
 - [x] ◐ [[notes/2-computer-vision/nerf|NeRF]] (Mildenhall et al., ECCV 2020)
 - [x] ○ [[notes/2-computer-vision/swin|Swin Transformer]] (Liu et al., ICCV 2021)
@@ -82,22 +83,22 @@ Recent-trend papers get appended over time via the tracking workflow.
 ## 5. World Models
 
 - [x] ◐ [[notes/5-world-models/world-models|World Models]] (Ha & Schmidhuber, NeurIPS 2018)
-- [x] ◐ [[notes/5-world-models/planet|PlaNet]] (Hafner et al., ICML 2019)
+- [x] ○ [[notes/5-world-models/planet|PlaNet]] (Hafner et al., ICML 2019)
 - [x] ★ [[notes/5-world-models/dreamer|Dreamer → DreamerV2 → DreamerV3]] (Hafner et al., 2020–2023, Nature 2025)
 - [x] ◐ [[notes/5-world-models/jepa|JEPA line]] — LeCun 2022 position paper → I-JEPA (CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025)
 - [x] ◐ [[notes/5-world-models/genie|Genie]] (Bruce et al., ICML 2024) → Genie 2 (2024)
 - [x] ○ [[notes/5-world-models/sora|Sora]] — *Video Generation Models as World Simulators* (OpenAI, 2024)
-- [x] ★ [[notes/5-world-models/cosmos|Cosmos]] — world foundation models for physical AI (NVIDIA, 2025)
+- [x] ◐ [[notes/5-world-models/cosmos|Cosmos]] — world foundation models for physical AI (NVIDIA, 2025)
 
 ## 6. Diffusion & Generative Models
 
 - [x] ◐ [[notes/6-diffusion/vae|VAE]] — *Auto-Encoding Variational Bayes* (Kingma & Welling, ICLR 2014)
 - [x] ○ [[notes/6-diffusion/gan|GAN]] (Goodfellow et al., NeurIPS 2014)
 - [x] ★ [[notes/6-diffusion/ddpm|DDPM]] — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
-- [x] ◐ [[notes/6-diffusion/score-sde|Score SDE]] — *Score-Based Generative Modeling through SDEs* (Song et al., ICLR 2021)
+- [x] ○ [[notes/6-diffusion/score-sde|Score SDE]] — *Score-Based Generative Modeling through SDEs* (Song et al., ICLR 2021)
 - [x] ◐ [[notes/6-diffusion/ddim|DDIM]] (Song et al., ICLR 2021)
 - [x] ◐ [[notes/6-diffusion/classifier-free-guidance|Classifier-Free Guidance]] (Ho & Salimans, 2022)
-- [x] ◐ [[notes/6-diffusion/latent-diffusion|Latent Diffusion / Stable Diffusion]] (Rombach et al., CVPR 2022)
+- [x] ○ [[notes/6-diffusion/latent-diffusion|Latent Diffusion / Stable Diffusion]] (Rombach et al., CVPR 2022)
 - [x] ○ [[notes/6-diffusion/controlnet|ControlNet]] (Zhang et al., ICCV 2023)
 - [x] ◐ [[notes/6-diffusion/dit|DiT]] — *Scalable Diffusion Models with Transformers* (Peebles & Xie, ICCV 2023)
 - [x] ★ [[notes/6-diffusion/flow-matching|Flow Matching]] (Lipman et al., ICLR 2023)
