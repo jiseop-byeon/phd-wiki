@@ -1,15 +1,15 @@
-# PhD Knowledge Wiki
+# DL · Robotics · Construction Wiki
 
 Personal research wiki covering deep learning, robotics, control, and construction robotics.
-Maintained as an Obsidian vault; published online via Quartz + GitHub Pages.
+Maintained as an Obsidian vault (`content/`); published online via Quartz + GitHub Pages.
 
-## Structure
+## Structure (under `content/`)
 
-- `00-index/` — home page and maps of content (MOC)
-- `10-deep-learning/` — foundations, computer vision, VLM, VLA, world models, diffusion
-- `20-robotics/` — Modern Robotics (Lynch & Park) notes, control theory (state-space → LQR → MPC)
-- `30-construction-robotics/` — construction/manufacturing robotics literature (CEE, CS, ME, EE venues)
-- `40-papers/` — canonical paper list and individual paper notes
+- `01-canonical-papers/` — the curated paper list and one study note per paper
+- `02-foundations/` — course-depth math & systems foundations (linear algebra → RL basics)
+- `03-deep-learning/` — maps of content: CV, VLM, VLA, world models, diffusion; paper lineage diagrams
+- `04-robotics/` — Modern Robotics (Lynch & Park) notes, control theory (state-space → LQR → MPC)
+- `05-construction-robotics/` — construction/manufacturing robotics literature (CEE, CS, ME, EE venues)
 - `templates/` — note templates (paper note, concept note)
 
 ## Conventions

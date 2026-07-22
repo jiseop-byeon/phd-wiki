@@ -1,3 +1,65 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// Floating "save as PDF" button (uses the browser's print-to-PDF)
+#pdf-btn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 999;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  color: var(--darkgray);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+}
+
+// Clean print layout: article only, full width
+@media print {
+  .sidebar,
+  .left,
+  .right,
+  .explorer,
+  .toc,
+  .graph,
+  .backlinks,
+  .search,
+  .darkmode,
+  .breadcrumb-container,
+  .page-header,
+  footer,
+  #pdf-btn {
+    display: none !important;
+  }
+
+  .page,
+  .center {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  pre,
+  blockquote,
+  table {
+    break-inside: avoid;
+  }
+}

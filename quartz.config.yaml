@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: "PhD Knowledge Wiki"
+  pageTitle: "DL · Robotics · Construction Wiki"
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true

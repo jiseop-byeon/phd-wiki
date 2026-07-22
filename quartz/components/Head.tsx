@@ -106,6 +106,23 @@ export default (() => {
             return resource
           }
         })}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              function __addPdfBtn() {
+                if (document.getElementById("pdf-btn")) return;
+                var btn = document.createElement("button");
+                btn.id = "pdf-btn";
+                btn.title = "Save this page as PDF";
+                btn.textContent = "PDF \\u2913";
+                btn.addEventListener("click", function () { window.print(); });
+                document.body.appendChild(btn);
+              }
+              window.addEventListener("DOMContentLoaded", __addPdfBtn);
+              document.addEventListener("nav", __addPdfBtn);
+            `,
+          }}
+        />
       </head>
     )
   }
