@@ -21,22 +21,22 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 시간순 정렬 — 2012년 ImageNet에서 시작해 CNN 계열과 RNN 계열이 2017년 Transformer에서 합류하는 흐름. [[10-deep-learning/lineage|계보도]] 참고.
 
-- [ ] LSTM — *Long Short-Term Memory* (Hochreiter & Schmidhuber, Neural Computation 1997)
+- [x] [[notes/lstm|LSTM]] — *Long Short-Term Memory* (Hochreiter & Schmidhuber, Neural Computation 1997)
 - [x] [[notes/alexnet|**AlexNet**]] — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
-- [ ] seq2seq — *Sequence to Sequence Learning* (Sutskever et al., NeurIPS 2014)
+- [x] [[notes/seq2seq|seq2seq]] — *Sequence to Sequence Learning* (Sutskever et al., NeurIPS 2014)
 - [x] [[notes/bahdanau-attention|Bahdanau Attention]] — *NMT by Jointly Learning to Align and Translate* (ICLR 2015)
 - [x] [[notes/vgg|VGG]] — *Very Deep Convolutional Networks* (Simonyan & Zisserman, ICLR 2015)
-- [ ] Adam — *A Method for Stochastic Optimization* (Kingma & Ba, ICLR 2015)
-- [ ] Batch Normalization (Ioffe & Szegedy, ICML 2015)
+- [x] [[notes/adam|Adam]] — *A Method for Stochastic Optimization* (Kingma & Ba, ICLR 2015)
+- [x] [[notes/batch-norm|Batch Normalization]] (Ioffe & Szegedy, ICML 2015)
 - [x] [[notes/resnet|**ResNet**]] — *Deep Residual Learning* (He et al., CVPR 2016)
 - [x] [[notes/attention-is-all-you-need|**Attention Is All You Need**]] (Vaswani et al., NeurIPS 2017)
-- [ ] BERT (Devlin et al., NAACL 2019)
-- [ ] GPT-3 — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
-- [ ] Scaling Laws for Neural Language Models (Kaplan et al., 2020) + Chinchilla (Hoffmann et al., 2022)
-- [ ] ViT — *An Image is Worth 16x16 Words* (Dosovitskiy et al., ICLR 2021)
-- [ ] MAE — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
-- [ ] LoRA — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
-- [ ] RLHF — *Training LMs to Follow Instructions* (InstructGPT, Ouyang et al., 2022)
+- [x] [[notes/bert|BERT]] (Devlin et al., NAACL 2019)
+- [x] [[notes/gpt-3|GPT-3]] — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
+- [x] [[notes/scaling-laws|Scaling Laws]] (Kaplan et al., 2020) + Chinchilla (Hoffmann et al., 2022)
+- [x] [[notes/vit|ViT]] — *An Image is Worth 16x16 Words* (Dosovitskiy et al., ICLR 2021)
+- [x] [[notes/mae|MAE]] — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
+- [x] [[notes/lora|LoRA]] — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
+- [x] [[notes/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
 
 ## 2. Computer Vision
 
@@ -50,10 +50,11 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [ ] SAM — *Segment Anything* (Kirillov et al., ICCV 2023)
 - [ ] 3D Gaussian Splatting (Kerbl et al., SIGGRAPH 2023)
 - [ ] Depth Anything (Yang et al., CVPR 2024)
+- [ ] VGGT — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025, **Best Paper Award**)
 
 ## 3. Vision-Language Models (VLM)
 
-- [ ] CLIP — *Learning Transferable Visual Models From Natural Language Supervision* (Radford et al., ICML 2021)
+- [x] [[notes/clip|CLIP]] — *Learning Transferable Visual Models From Natural Language Supervision* (Radford et al., ICML 2021)
 - [ ] Flamingo (Alayrac et al., NeurIPS 2022)
 - [ ] BLIP-2 (Li et al., ICML 2023)
 - [ ] LLaVA — *Visual Instruction Tuning* (Liu et al., NeurIPS 2023)

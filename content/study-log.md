@@ -15,3 +15,8 @@ tags: [log]
 - 기초 1차 배치 (2012→2016 연대순): [[40-papers/notes/alexnet|AlexNet]], [[40-papers/notes/vgg|VGG]], [[40-papers/notes/bahdanau-attention|Bahdanau Attention]], [[40-papers/notes/resnet|ResNet]]
 - 계보도에 2012–2017 구간 추가 (CNN 갈래 + RNN 갈래 → Transformer 합류)
 - 다음 읽을 것: Adam, BatchNorm, seq2seq, LSTM 또는 바로 ViT/CLIP
+- 기초 섹션 완주 + Transformer 이후 진출 (총 12편 추가):
+  기초 마무리 — [[40-papers/notes/lstm|LSTM]], [[40-papers/notes/seq2seq|seq2seq]], [[40-papers/notes/adam|Adam]], [[40-papers/notes/batch-norm|BatchNorm]]
+  Transformer 이후 — [[40-papers/notes/bert|BERT]], [[40-papers/notes/gpt-3|GPT-3]], [[40-papers/notes/scaling-laws|Scaling Laws+Chinchilla]], [[40-papers/notes/vit|ViT]], [[40-papers/notes/mae|MAE]], [[40-papers/notes/lora|LoRA]], [[40-papers/notes/instructgpt|InstructGPT]], [[40-papers/notes/clip|CLIP]]
+- VGGT(CVPR 2025 Best Paper) 확인 후 CV 섹션에 추가
+- 다음: VLM 계열 (Flamingo, BLIP-2, LLaVA) 또는 디퓨전 계열 (VAE, GAN, DDPM)
