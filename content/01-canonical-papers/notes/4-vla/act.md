@@ -123,3 +123,10 @@ defined how modern policies output actions.
 - 병행: [[diffusion-policy|Diffusion Policy]] (생성형 청킹) · 이전: [[vae|VAE]] (CVAE 기계장치)
 - 다음: Mobile ALOHA, Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 복합 오차가 왜 생기고, 100-스텝 청킹이 그것을 어떻게 줄이는지 설명할 수 있다
+- [ ] CVAE 잠재변수 $z$가 시연의 무엇(스타일 변동)을 흡수하는지 말할 수 있다
+- [ ] temporal ensembling이 무엇을 평균하고, 어떤 부작용(다봉 선택지의 뭉개짐)이 있는지 말할 수 있다
+- [ ] ALOHA 하드웨어가 방법론만큼 중요한 기여인 이유를 말할 수 있다

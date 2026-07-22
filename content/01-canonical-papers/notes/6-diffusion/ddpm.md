@@ -13,6 +13,9 @@ status: to-read
 
 **Ho et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2006.11239) · [PDF](https://arxiv.org/pdf/2006.11239) · [Code](https://github.com/hojonathanho/diffusion)
 
+> [!note] 수학 준비물 · Math on-ramp
+> 필요한 전부: [[02-foundations/probability|확률 §3]]의 가우시안 닫힘 성질, [[02-foundations/information-theory|정보이론 §5]]의 ELBO, [[02-foundations/engineering-math|0.5 §6]]의 로그. 폐쇄형의 유도 감각은 두 스텝이면 잡힌다: $x_2 = \sqrt{1-\beta_2}\,x_1 + \sqrt{\beta_2}\,\epsilon_2$에 $x_1 = \sqrt{1-\beta_1}\,x_0 + \sqrt{\beta_1}\,\epsilon_1$을 대입하면, $x_0$의 계수는 $\sqrt{(1-\beta_1)(1-\beta_2)} = \sqrt{\bar\alpha_2}$가 되고 두 개의 독립 가우시안 노이즈는 분산이 더해져 하나의 $\epsilon$으로 합쳐진다(분산 $1-\bar\alpha_2$). $t$스텝이어도 같은 논리다.
+
 ## English
 
 **One-line summary**: Destroy data with a fixed Gaussian noising chain, train a network to reverse it one step at a time — the variational objective collapses to simple noise-prediction regression, and generation quality jumps past GANs' stability problems.
@@ -119,3 +122,10 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 - 이전: [[vae|VAE]] (변분 기계장치), [[gan|GAN]] (밀어낸 경쟁자)
 - 다음: [[score-sde|Score SDE]] (통합 관점), DDIM, Latent Diffusion → Diffusion Policy
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 순방향 폐쇄형 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$을 가우시안 닫힘 성질로 유도할 수 있다
+- [ ] 네트워크가 무엇을 입력받아 무엇을 예측하도록 학습되는지(노이즈 예측) 말할 수 있다
+- [ ] 학습(임의의 $t$ 한 스텝)과 샘플링(전 스텝 역방향)의 비대칭을 설명할 수 있다
+- [ ] VAE·GAN 대비 디퓨전이 무엇을 얻고 무엇을 지불했는지(학습 안정성 vs 샘플링 비용) 말할 수 있다

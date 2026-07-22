@@ -13,6 +13,9 @@ status: to-read
 
 **Song et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2011.13456) · [PDF](https://arxiv.org/pdf/2011.13456) · [Code](https://github.com/yang-song/score_sde)
 
+> [!note] 수학 준비물 · SDE 한 입 크기
+> 이 논문에 필요한 SDE 지식의 전부: $dx = f\,dt + g\,dW$는 이산화하면 $x_{t+\Delta} = x_t + f\Delta + g\sqrt{\Delta}\,\epsilon$ — 결정론적 흐름(drift) + 랜덤 워크 증분이다. $\sqrt{\Delta}$가 붙는 이유는 랜덤 워크의 분산이 시간에 비례하기 때문([[02-foundations/probability|확률 §5]]의 백색 잡음). 나머지는 전부 이 한 줄의 변주다.
+
 ## English
 
 **One-line summary**: Noising is a continuous-time SDE, generation is the reverse SDE driven by the score $\nabla_x \log p_t(x)$ — one framework that unifies DDPM and score matching, and yields ODE sampling, exact likelihoods, and controllable generation.

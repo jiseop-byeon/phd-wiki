@@ -124,3 +124,10 @@ sibling]]); together with [[act|ACT]] it established **action chunking** as stan
 - 이전: [[ddpm|DDPM]] (생성 엔진), [[rt-1|RT-1]] (토큰화 대안)
 - 다음: [[act|ACT]] (병행하는 청킹 접근), Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 시연의 다봉성이 평균 회귀를 실패시키는 이유를 장애물 예시로 설명할 수 있다
+- [ ] 노이즈 제거의 조건(관측)과 생성 대상(행동 청크)을 구분할 수 있다
+- [ ] receding-horizon 실행이 [[04-robotics/mpc|MPC]]의 구조를 어떻게 빌렸는지 말할 수 있다
+- [ ] 추론 스텝 수가 정밀도·지연과 맺는 트레이드오프를 말할 수 있다

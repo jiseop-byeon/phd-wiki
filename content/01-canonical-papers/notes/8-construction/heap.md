@@ -44,3 +44,10 @@ learning-based digging. The construction analogue of what ALOHA
 
 - 기초: [[04-robotics/mpc|MPC]], [[02-foundations/rl-basics|RL]] · 다음: [[01-canonical-papers/notes/8-construction/ext|ExT]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (4시대의 기준 시스템)
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] HEAP의 가치가 개별 결과보다 "계측된 플랫폼"에 있다는 것을 설명할 수 있다
+- [ ] 힘 제어 가능한 유압이 자율 굴착의 전제인 이유를 말할 수 있다
+- [ ] 돌담 프로젝트의 폐루프(스캔·돌 파악 → 배치 계획 → 힘 제어 조작)를 단계별로 말할 수 있다
+- [ ] ALOHA와의 유비 — 플랫폼 하나가 연구 생태계를 만든다 — 를 말할 수 있다

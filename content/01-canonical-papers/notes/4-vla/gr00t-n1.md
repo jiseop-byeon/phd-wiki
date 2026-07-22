@@ -127,3 +127,10 @@ to data-scarce domains like construction robotics.
 - 이전: [[pi0|π0]] (행동 전문가), [[open-x-embodiment|OXE]] (데이터 풀링), 월드모델 (데이터 엔진)
 - 다음: GR00T N1.5+, Cosmos 월드모델 파이프라인 · 도메인 연결: [[05-construction-robotics/index|건설로봇]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] System 2와 System 1의 역할·주기 차이(~10 Hz 추론 vs 최대 120 Hz 행동)를 설명할 수 있다
+- [ ] 데이터 피라미드의 세 층과 각 층이 채우는 공백을 말할 수 있다
+- [ ] 신경 궤적(생성 비디오 데이터)의 이점과 위험을 말할 수 있다
+- [ ] 이 데이터 전략이 건설로봇의 데이터 빈곤에 시사하는 바를 말할 수 있다

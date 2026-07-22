@@ -13,6 +13,9 @@ status: to-read
 
 **Hafner et al., ICLR 2020 → Nature 2025 (v3)** — [arXiv (v3)](https://arxiv.org/abs/2301.04104) · [PDF](https://arxiv.org/pdf/2301.04104) · [Code](https://github.com/danijar/dreamerv3) · v1: [1912.01603](https://arxiv.org/abs/1912.01603) · v2: [2010.02193](https://arxiv.org/abs/2010.02193)
 
+> [!note] 수학 준비물 · Math on-ramp
+> RSSM = [[01-canonical-papers/notes/6-diffusion/vae|VAE]]의 ELBO 기계장치 + RNN의 순환. 준비물: [[02-foundations/information-theory|정보이론 §5]] ELBO, [[02-foundations/rl-basics|RL 기초 §2·§5]]의 가치 함수와 모델 기반 RL. 이 셋이 있으면 논문의 모든 식이 조합으로 읽힌다.
+
 ## English
 
 **One-line summary**: Train an actor-critic entirely inside the RSSM's imagination, backpropagating through the learned dynamics — refined over three versions into one agent that masters 150+ domains with a single configuration, up to collecting Minecraft diamonds from scratch.
@@ -122,3 +125,10 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 - 이전: [[planet|PlaNet]] (RSSM) · 병행 비판: [[jepa|JEPA 계열]]
 - 다음: [[genie|Genie]], [[cosmos|Cosmos]] · 기초: [[02-foundations/rl-basics|RL 기초]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] "상상 속 actor-critic"에서 실제 환경 스텝이 어디에만 쓰이는지(모델 갱신) 말할 수 있다
+- [ ] RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 설명할 수 있다
+- [ ] 가치 부트스트래핑이 짧은(~15 스텝) 상상 지평을 어떻게 보완하는지 말할 수 있다
+- [ ] v1→v3의 변화가 새 아이디어가 아니라 강건성 공학이라는 점과 그 구체 장치를 말할 수 있다

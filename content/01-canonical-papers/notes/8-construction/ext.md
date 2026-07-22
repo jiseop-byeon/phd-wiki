@@ -50,3 +50,10 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 
 - 이전: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (플랫폼), [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/pi0|π0]] (방법론)
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] 1+5 합류점
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔는지 말할 수 있다
+- [ ] "전문가 혼합 시연"이 OXE의 어떤 교훈(이질적 소스 > 순수함)을 반복하는지 말할 수 있다
+- [ ] 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
+- [ ] 이 논문이 계보의 1번(모방학습)·5번(중장비) 흐름의 합류점인 이유를 설명할 수 있다

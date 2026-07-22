@@ -129,3 +129,10 @@ models.
 - 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[score-sde|Score SDE]] (수학)
 - 다음: [[gr00t-n1|GR00T N1]], π0.5
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] VLM 백본과 행동 전문가가 각각 무엇을 처리하는지(의미론 vs 고주파 연속 제어) 설명할 수 있다
+- [ ] flow matching 헤드가 이산 토큰 대비 무엇을 사는지 말할 수 있다
+- [ ] 사전학습→사후학습 레시피가 LLM 관행의 무엇을 미러링하는지 말할 수 있다
+- [ ] 평가의 한계(자체 프로토콜, 데이터 해자)를 지적할 수 있다

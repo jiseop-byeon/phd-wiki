@@ -12,6 +12,9 @@ status: to-read
 
 **Lipman et al., ICLR 2023** — [arXiv](https://arxiv.org/abs/2210.02747) · [PDF](https://arxiv.org/pdf/2210.02747)
 
+> [!note] 수학 준비물 · ODE 적분 한 입 크기
+> 샘플링 = 오일러 적분: $x \leftarrow x + v_\theta(x, t)\,\Delta t$를 노이즈($t{=}0$)에서 데이터($t{=}1$)까지 반복하는 것이 전부다([[02-foundations/engineering-math|0.5 §8]]의 미분방정식 감각). 경로가 직선에 가까울수록 큰 $\Delta t$로 건너뛰어도 안전하다 — "스텝 수가 적다"의 수학적 이유.
+
 ## English
 
 **One-line summary**: Skip the SDE — directly regress the velocity field of a probability path from noise to data (per-sample conditional targets make it trivial), yielding straighter paths, simpler training, and the action-generation engine of π0.
@@ -115,3 +118,10 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 - 이전: [[ddpm|DDPM]], [[score-sde|Score SDE]], [[ddim|DDIM]] (ODE 계보)
 - 다음: [[pi0|π0]], [[gr00t-n1|GR00T N1]] 행동 헤드, SD3/Flux
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 속도장 $v_\theta(x, t)$가 무엇을 하는 함수이고, 샘플링이 왜 ODE 적분인지 말할 수 있다
+- [ ] 조건부 타깃(샘플별 직선 경로의 상수 속도)으로 학습해도 옳은 이유를 개념 수준에서 설명할 수 있다
+- [ ] 경로가 곧을수록 추론 스텝이 줄어드는 이유를 말할 수 있다
+- [ ] π0가 행동 생성에 이 방식을 채택한 이유(소수 스텝 → 실시간 제어)를 연결할 수 있다

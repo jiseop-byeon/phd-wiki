@@ -14,6 +14,9 @@ status: to-read   # to-read | reading | done
 
 **Vaswani et al., NeurIPS 2017** — [arXiv](https://arxiv.org/abs/1706.03762) · [PDF](https://arxiv.org/pdf/1706.03762) · [Code](https://github.com/tensorflow/tensor2tensor) · [Official](https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)
 
+> [!note] 수학 준비물 · Math on-ramp
+> [[02-foundations/linear-algebra|선형대수 §1]]의 어텐션 차원 따라가기($Q = XW_Q$가 $T\times 64$가 되는 계산)를 먼저 한 번 손으로 해 보라 — 이 논문의 모든 수식이 그 한 줄의 반복이다. softmax의 수치 안정화는 [[02-foundations/engineering-math|0.5 §6]]의 log-sum-exp.
+
 ## English
 
 **One-line summary**: Replaces recurrence and convolution entirely with attention, giving a fully parallelizable sequence model — the Transformer — that became the backbone of essentially all modern deep learning.
@@ -105,3 +108,10 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 
 - 이전: seq2seq + attention (Bahdanau 2015)
 - 다음으로 읽을 것: BERT, GPT-3, ViT
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] $\text{softmax}(QK^\top/\sqrt{d_k})V$에서 Q·K·V가 각각 무엇이고, $\sqrt{d_k}$로 나누는 이유를 설명할 수 있다
+- [ ] self-attention / masked self-attention / cross-attention이 각각 무엇을 참조하는지 구분할 수 있다
+- [ ] RNN 대비 병렬화가 가능한 이유(임의 두 토큰 사이 경로 길이 $O(1)$)를 설명할 수 있다
+- [ ] $O(n^2)$ 비용이 정확히 어느 연산에서 나오고, 왜 후속 연구의 표적이 됐는지 말할 수 있다

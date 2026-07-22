@@ -131,3 +131,10 @@ VLA를 위한 합성 데이터, 폐루프 정책 평가, Cosmos-Reason/Transfer 
 - 이전: [[sora|Sora]] (명제), [[genie|Genie]] (상호작용성), [[ddpm|DDPM]]/[[gpt-3|GPT]] (두 생성기 계보)
 - 다음: GR00T 데이터 파이프라인, Cosmos-Reason/Transfer · 도메인 연결: [[05-construction-robotics/index|건설로봇]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] "월드모델을 인프라로"의 의미 — 사전학습된 WFM을 사후학습해 무엇들로 만드는가 — 를 말할 수 있다
+- [ ] 디퓨전 계열과 자기회귀 계열 WFM의 차이를 말할 수 있다
+- [ ] 합성 데이터를 쓸 때 sim-to-real 문제가 어디로 이동하는지 설명할 수 있다
+- [ ] GR00T 생태계에서 Cosmos가 맡는 층을 말할 수 있다
