@@ -66,6 +66,36 @@ graph TD
    [[01-canonical-papers/notes/cosmos|world-model data engines]] are the candidate answers
    to the data problem).
 
+### Current research streams (from the labs' actual publication records)
+
+Analyzing the publication records of the [[05-construction-robotics/labs|mapped labs]]
+(2019–2025) yields five active streams, each importing a different part of this wiki's
+physical-AI stack:
+
+1. **Imitation learning / skill transfer** — Yu (VT): *cloud-based hierarchical imitation
+   learning for transferring construction skills from workers to robots* (2024) — the
+   construction port of the [[01-canonical-papers/notes/act|ACT]]/[[01-canonical-papers/notes/diffusion-policy|Diffusion
+   Policy]] wave. The newest and thinnest stream — VLA-class methods have barely entered.
+2. **HRC + digital twins** — Wang (TAMU) & Yu: *BIM-driven collaborative workflows with
+   closed-loop digital twins* (2021–24); Shah (MIT) supplies the manufacturing HRC
+   playbook. Construction's home-grown analogue of the
+   [[01-canonical-papers/notes/cosmos|world-model-as-coordination-medium]] idea.
+3. **Worker-state sensing (human-centered)** — Lee (UMich) & Jebelli (UIUC): wearable
+   biosensors, EEG workload; Wang's EEG-thermal studies; Baek's ergonomics; Yu's
+   robot-acceptance factor studies. **A first-class topic here that mainstream physical AI
+   barely touches** — construction's distinctive contribution.
+4. **Site perception & the data problem** — Baek (GT): localization + GAN augmentation;
+   Golparvar-Fard (UIUC): progress monitoring. Converging with the
+   [[01-canonical-papers/notes/sam|SAM]]/[[01-canonical-papers/notes/vggt|VGGT]] foundation-model
+   wave; data scarcity points the same direction as
+   [[01-canonical-papers/notes/gr00t-n1|GR00T]]'s synthetic-data pyramid.
+5. **Heavy-machine autonomy** — ETH RSL (HEAP) and industry retrofits: learned/optimal
+   control on excavators — the [[04-robotics/mpc|MPC]]-meets-learning stream.
+
+**The reading of this map for a new researcher**: streams 2–4 are mature and crowded;
+stream 1 (bringing [[01-canonical-papers/notes/pi0|π0]]-class manipulation onto real
+construction tasks) and its intersection with stream 5 are where the open territory lies.
+
 ### Reading list (section 8 of the [[01-canonical-papers/canonical-list|canonical list]])
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) — the
@@ -101,6 +131,31 @@ graph TD
    ([[01-canonical-papers/notes/gr00t-n1|GR00T]]의 데이터 피라미드와
    [[01-canonical-papers/notes/cosmos|월드모델 데이터 엔진]]이 데이터 문제에 대한 후보
    답안들이다).
+
+### 현재 연구 흐름 (랩들의 실제 논문 기록 분석)
+
+[[05-construction-robotics/labs|지도에 실린 랩들]]의 논문 기록(2019~2025)을 분석하면
+다섯 개의 활성 흐름이 나오고, 각각 이 위키 physical AI 스택의 다른 부분을 수입하고 있다:
+
+1. **모방학습 / 스킬 전이** — Yu(VT): *작업자의 건설 기술을 로봇에 전이하는 클라우드 기반
+   계층적 모방학습* (2024) — [[01-canonical-papers/notes/act|ACT]]/[[01-canonical-papers/notes/diffusion-policy|Diffusion
+   Policy]] 물결의 건설 이식. 가장 새롭고 가장 얇은 흐름 — VLA급 기법은 이제 막 진입했다.
+2. **HRC + 디지털 트윈** — Wang(TAMU)과 Yu: *폐루프 디지털 트윈의 BIM 연동 협업 워크플로*
+   (2021~24); Shah(MIT)가 제조 HRC 플레이북을 공급.
+   [[01-canonical-papers/notes/cosmos|조율 매체로서의 월드모델]] 아이디어의 건설 자생판.
+3. **작업자 상태 센싱 (인간 중심)** — Lee(미시간)와 Jebelli(UIUC): 웨어러블 바이오센서,
+   EEG 작업부하; Wang의 EEG-온열 연구; Baek의 인간공학; Yu의 로봇 수용성 연구.
+   **주류 physical AI가 거의 다루지 않는데 여기서는 1급 주제** — 건설 분야의 고유한 기여.
+4. **현장 인식과 데이터 문제** — Baek(GT): 위치 추정 + GAN 증강; Golparvar-Fard(UIUC):
+   공정 모니터링. [[01-canonical-papers/notes/sam|SAM]]/[[01-canonical-papers/notes/vggt|VGGT]]
+   파운데이션 모델 물결과 합류 중; 데이터 빈곤은
+   [[01-canonical-papers/notes/gr00t-n1|GR00T]]의 합성 데이터 피라미드와 같은 방향을 가리킨다.
+5. **중장비 자율화** — ETH RSL(HEAP)과 산업계 개조: 굴착기의 학습/최적 제어 —
+   [[04-robotics/mpc|MPC]]와 학습이 만나는 흐름.
+
+**신진 연구자를 위한 이 지도의 독해**: 2~4번 흐름은 성숙했고 붐빈다;
+1번([[01-canonical-papers/notes/pi0|π0]]급 조작을 실제 건설 과제에 올리는 것)과 그것이
+5번과 만나는 교차점이 열린 영토다.
 
 ### 읽기 목록 ([[01-canonical-papers/canonical-list|핵심 논문 리스트]] 8번 섹션)
 
