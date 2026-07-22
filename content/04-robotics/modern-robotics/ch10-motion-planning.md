@@ -5,6 +5,9 @@ tags: [robotics, modern-robotics]
 
 **Modern Robotics ch.10** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
+> [!note] 시작 전 점검 · Before you start
+> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념과 그래프 탐색(BFS/다익스트라)의 기초가 필요하다.
+
 ## English
 
 **Core question**: how do we find a collision-free path through C-space?
@@ -52,3 +55,14 @@ proposals get filtered through.
 [[01-canonical-papers/notes/5-world-models/planet|잠재 공간 CEM]]은 학습된 모델로 하는 계획이다;
 실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.
+
+### 스스로 점검 · Self-check
+
+1. 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 크기는? 이것이 샘플링 기반 계획의 존재 이유를 어떻게 설명하는가?
+2. RRT의 "확률적 완전성"이 보장하는 것과 보장하지 않는 것은?
+3. 자동차에 일반 RRT를 그대로 쓰면 안 되는 이유는?
+
+> [!tip]- 정답 · Answers
+> 1. $100^7 = 10^{14}$칸 — 격자 탐색은 자유도에 지수적으로 폭발하므로, 고차원에서는 샘플링만이 실용적이다.
+> 2. 보장: 해가 존재하면 확률 1로 언젠가 찾는다. 비보장: 언제 찾는지(시간), 경로의 품질(최적성 — RRT*가 필요).
+> 3. 비홀로노믹 제약(옆 미끄럼 불가) 때문에 두 컨피규레이션 사이를 직선으로 잇는 확장이 실행 불가능한 운동일 수 있다 — 제어 샘플링(키노다이나믹)이 필요.

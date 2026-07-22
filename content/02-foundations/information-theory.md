@@ -31,6 +31,13 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   Uniform distribution = maximum entropy; deterministic = zero.
 - Intuition anchor: entropy is the average number of yes/no questions needed to identify
   an outcome — the *compression limit* of the source (Shannon).
+- **Worked numbers** — a coin with $P(\text{H}) = 0.9$:
+  $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ bits —
+  less than half the fair coin's 1 bit, because the outcome is mostly predictable.
+  And the KL from this coin to a fair coin:
+  $D_{KL} = 0.9\log_2\frac{0.9}{0.5} + 0.1\log_2\frac{0.1}{0.5} \approx 0.763 - 0.232 = 0.53$
+  bits — the *extra* cost per toss of encoding the biased coin with the fair-coin code.
+  Run these two computations by hand once; every formula on this page becomes concrete.
 
 ### 2. Cross-entropy — the loss function you already use
 
@@ -129,6 +136,12 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   균등 분포 = 최대 엔트로피; 결정론적 = 0.
 - 직관의 닻: 엔트로피는 결과 하나를 알아내는 데 필요한 예/아니오 질문의 평균 개수 —
   그 소스의 *압축 한계*다 (섀넌).
+- **숫자로 한 번** — $P(\text{앞}) = 0.9$인 동전:
+  $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 \approx 0.47$ 비트 — 공정 동전(1비트)의 절반 이하다.
+  결과가 대부분 예측 가능하기 때문. 이 동전과 공정 동전 사이의 KL:
+  $D_{KL} = 0.9\log_2\frac{0.9}{0.5} + 0.1\log_2\frac{0.1}{0.5} \approx 0.53$ 비트 —
+  편향 동전을 공정 동전용 부호로 인코딩할 때 토스당 내는 *추가* 비용이다.
+  이 두 계산을 손으로 한 번 해 보라 — 이 페이지의 모든 공식이 구체화된다.
 
 ### 2. 교차 엔트로피 — 이미 쓰고 있는 그 손실함수
 
@@ -199,3 +212,16 @@ $$\log p_\theta(x) = \log \int p_\theta(x|z)p(z)\,dz \ge E_{q}[\log p_\theta(x|z
 | 상호 정보량 $I(X;Y)$ | $H(X)-H(X|Y)$ | 대조학습(CLIP), 정보 병목 |
 | Perplexity | $e^{H(p,q)}$ | 언어모델 평가 |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/디퓨전/월드모델 학습 |
+
+### 스스로 점검 · Self-check
+
+1. $P(\text{H}) = 0.99$인 동전의 엔트로피를 계산하고, 0.9 동전보다 작은 이유를 말하라.
+2. 분류기가 정답 클래스에 확률 0.25를 줬다. 이 샘플의 교차 엔트로피 손실(나트)은?
+3. VAE에서 forward KL 대신 reverse KL을 쓰는 것이 흐릿한 샘플과 어떻게 연결되는가?
+4. CLIP의 InfoNCE에서 배치를 2배로 키우면 상호 정보량 하한은 얼마나 좋아질 수 있는가?
+
+> [!tip]- 정답 · Answers
+> 1. $H = -0.99\log_2 0.99 - 0.01\log_2 0.01 \approx 0.08$ 비트 — 더 예측 가능할수록 놀라움의 평균이 작다.
+> 2. $-\ln 0.25 = \ln 4 \approx 1.39$ 나트.
+> 3. reverse KL은 모드 시킹 — $q$가 한 모드에 들러붙는다. VAE의 흐릿함은 주로 가우시안 우도(픽셀 평균화) 때문이고, KL의 비대칭은 잠재 분포가 사후분포의 일부만 덮는 쪽으로 작동한다 — 둘이 합쳐져 보수적(평균적) 샘플이 나온다.
+> 4. $I \ge \log N - \mathcal{L}$이므로 하한의 천장이 $\log 2 \approx 0.69$ 나트(= 1비트)만큼 올라간다.

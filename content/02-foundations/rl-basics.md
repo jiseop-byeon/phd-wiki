@@ -49,6 +49,12 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   [[02-foundations/calculus-backprop|stop-gradient]] copy for stable targets).
 - Value-based methods are sample-efficient but awkward for continuous actions
   (the $\max_{a'}$ needs an inner optimization) — hence robotics leans policy-side.
+- **Worked example — value iteration you can do on paper.** Two states, fixed policy,
+  $\gamma = 0.9$: state $A$ gives reward 1 and moves to $B$; state $B$ gives 0 and moves
+  back to $A$. Bellman: $V(A) = 1 + 0.9V(B)$, $V(B) = 0.9V(A)$. Iterate from $V_0 = (0,0)$:
+  $V_1 = (1, 0)$, $V_2 = (1, 0.9)$, $V_3 = (1.81, 0.9)$, … converging to the fixed point
+  $V(A) = 1/(1 - 0.81) \approx 5.26$, $V(B) \approx 4.74$. Watch what happened: each
+  sweep pushes reward information one step further back — that is all "bootstrapping" means.
 
 ### 4. Policy gradients — differentiate the objective itself
 
@@ -145,6 +151,12 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   [[02-foundations/calculus-backprop|stop-gradient]] 복사본).
 - 가치 기반은 샘플 효율이 좋지만 연속 행동에 어색하다($\max_{a'}$가 내부 최적화를
   요구) — 로보틱스가 정책 쪽으로 기우는 이유.
+- **계산 예제 — 종이로 하는 가치 반복.** 상태 둘, 고정 정책, $\gamma = 0.9$:
+  상태 $A$는 보상 1을 주고 $B$로, $B$는 0을 주고 $A$로 간다. 벨만:
+  $V(A) = 1 + 0.9V(B)$, $V(B) = 0.9V(A)$. $V_0 = (0,0)$에서 반복하면
+  $V_1 = (1, 0)$, $V_2 = (1, 0.9)$, $V_3 = (1.81, 0.9)$, … 고정점
+  $V(A) = 1/(1-0.81) \approx 5.26$, $V(B) \approx 4.74$로 수렴한다. 무슨 일이 일어났는지
+  보라: 스윕마다 보상 정보가 한 스텝씩 뒤로 전파된다 — "부트스트래핑"의 의미가 이것의 전부다.
 
 ### 4. 정책 그래디언트 — 목적함수 자체를 미분하기
 
@@ -194,3 +206,9 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 3. PPO 목적함수의 $\min$은 $A_t > 0$일 때와 $A_t < 0$일 때 각각 무슨 일을 하는가?
    애초에 왜 클리핑하는가?
 4. Dreamer식 상상 학습이 지평을 짧게(~15 스텝) 유지하는 이유 두 가지를 들어라.
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. $V^\pi(s) = E[r_t + \gamma G_{t+1} \mid s]$에서 안쪽 기댓값을 마르코프 성질로 $V^\pi(s')$로 접으면 $E[r + \gamma V^\pi(s')]$.
+> 2. $E_{a\sim\pi}[\nabla\log\pi(a|s)]\,b(s) = b(s)\,\nabla E_{a\sim\pi}[1] = b(s)\,\nabla 1 = 0$ — 스코어 함수의 기댓값이 0이라 베이스라인 항이 사라진다.
+> 3. $A_t > 0$: 비율이 $1+\epsilon$을 넘으면 이득이 잘려 과도한 강화 유인이 사라진다. $A_t < 0$: min이 잘리지 않은 항을 고르므로 나쁜 행동의 페널티는 그대로 유지된다. 클리핑의 목적 = 데이터를 모은 정책 근처에 머무는 신뢰 영역.
+> 4. ① 모델 오차가 상상 지평을 따라 지수적으로 누적된다(복합 오차) ② 가치 부트스트랩이 짧은 지평 너머를 대신 평가하므로 길 필요가 없다.

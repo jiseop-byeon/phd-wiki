@@ -5,6 +5,9 @@ tags: [robotics, modern-robotics]
 
 **Modern Robotics ch.11** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · continues into [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]
 
+> [!note] 시작 전 점검 · Before you start
+> [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식과 [[02-foundations/engineering-math|0.5 §8]]의 오차 미분방정식($\zeta, \omega_n$)이 필요하다.
+
 ## English
 
 **Core question**: how do we make the robot actually follow the trajectory?
@@ -53,3 +56,14 @@ tracked by exactly these low-level loops; impedance control is why
 **위키 연결**: 모든 VLA 데모가 몰래 이 장 위에 올라타 있다 — 정책 출력은 정확히 이 저수준
 루프들이 추종한다; 임피던스 제어는 [[01-canonical-papers/notes/4-vla/act|ALOHA]]급 접촉 과제가
 하드웨어를 부수지 않는 이유다.
+
+### 스스로 점검 · Self-check
+
+1. $\ddot e + K_d \dot e + K_p e = 0$에서 임계 감쇠가 되는 $K_d$와 $K_p$의 관계는?
+2. 계산 토크 제어가 "모델만큼만 좋다"는 말의 구체적 의미는 — $M, c, g$ 추정이 틀리면 무엇이 남는가?
+3. 위치 제어 대신 임피던스 제어를 쓰는 대표적 상황 두 가지를 들어라.
+
+> [!tip]- 정답 · Answers
+> 1. $\omega_n^2 = K_p$, $2\zeta\omega_n = K_d$이므로 $\zeta = 1 \Leftrightarrow K_d = 2\sqrt{K_p}$.
+> 2. 상쇄가 불완전해져 오차 동역학에 잔차 비선형 항이 남는다 — 남은 오차는 피드백 이득이 눌러야 하고, 모델 오차가 클수록 성능·안정 여유가 준다.
+> 3. 접촉 작업(연마, 조립 — 힘 폭주 방지)과 인간 협업(부딪혀도 안전한 유연성) — 힘-운동 관계가 위치 정확도보다 중요한 경우다.

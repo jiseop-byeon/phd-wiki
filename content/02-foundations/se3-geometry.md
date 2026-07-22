@@ -138,3 +138,9 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 3. $T_{base \leftarrow cam}$과 점 $p_{cam}$이 주어졌을 때, 베이스 프레임의 점을 써라.
 4. "그리퍼 *자신의* z축 방향으로 5cm 이동" 명령은 현재 자세에 왼쪽 곱인가 오른쪽 곱인가?
    왜인가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 곱을 전개하면 $\cos^2\theta + \sin^2\theta = 1$ 항등으로 $I$가 나온다. 일반적으로는 $R$의 열들이 정규직교라 $R^\top R = I \Rightarrow R^{-1} = R^\top$.
+> 2. $\pm 180°$ 경계에서 각도 값이 점프한다($179° \to -181°$가 아니라 $-179°$) — 이웃한 회전이 먼 타깃이 되어 MSE가 폭발. 쿼터니언은 $q$와 $-q$가 같은 회전이라, 타깃과 부호가 반대면 옳은 답에 큰 손실을 주는 잘못된 그래디언트가 생긴다.
+> 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (동차 좌표로 확장해 곱한다).
+> 4. 오른쪽 곱 $T \cdot \Delta T$ — 자기(그리퍼) 프레임 기준 운동은 오른쪽에, 월드 프레임 기준 운동은 왼쪽에 곱한다.

@@ -202,3 +202,9 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
    치명적인가?
 4. [[01-canonical-papers/notes/6-diffusion/vae|VAE]]에서 $z \sim \mathcal{N}(\mu, \sigma^2)$를 직접
    역전파할 수 없는 이유는, 그리고 $z = \mu + \sigma\epsilon$이 이를 고치는 방식은?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 1단계가 $\delta_2 = p - y$(softmax+CE의 결과)로 바뀌고 나머지 패턴은 동일하다.
+> 2. 합의 미분 = 미분의 합: $I + \partial F/\partial x$ — 항등 항 덕분에 역방향 신호가 아무리 깊어도 감쇠 없는 경로를 하나 갖는다.
+> 3. 순방향 모드는 입력 방향 하나당 전체 패스 한 번 — 7B 파라미터면 패스 7B번이 필요해 불가능; 역방향은 스칼라 손실(출력 1개) 기준 한 번이면 된다.
+> 4. 샘플링은 미분 불가능한 확률적 분기다; $z = \mu + \sigma\epsilon$으로 쓰면 무작위성이 외부 입력 $\epsilon$으로 밀려나 $\mu, \sigma$에 그래디언트가 흐른다.

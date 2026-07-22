@@ -5,6 +5,9 @@ tags: [robotics, modern-robotics]
 
 **Modern Robotics ch.2** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
+> [!note] 시작 전 점검 · Before you start
+> 자유도(DoF)의 직관과 [[02-foundations/se3-geometry|SE(3)]]의 회전 표현(§2)을 알고 있으면 충분하다 — 이 장이 로보틱스 트랙의 실질적 출발점이다.
+
 ## English
 
 **Core question**: what is the space of all possible "positions" of a robot, and what shape is it?
@@ -52,3 +55,14 @@ tags: [robotics, modern-robotics]
 
 **위키 연결**: C-space는 로봇 [[02-foundations/rl-basics|MDP]]의 "상태" 절반이고, VLA 행동
 공간은 그 위의 좌표다.
+
+### 스스로 점검 · Self-check
+
+1. 평면에서 구동되는 차동 구동(differential-drive) 로봇의 컨피규레이션은 몇 개의 숫자로 기술되고, 제약은 무엇인가?
+2. 그뤼블러 공식으로 평면 슬라이더-크랭크(링크 4, 회전관절 3 + 직동관절 1)의 자유도를 계산하라.
+3. 2R 팔의 C-space가 평면 $\mathbb{R}^2$가 아니라 원환면 $T^2$라는 사실이 학습(각도 회귀)에서 왜 문제가 되는가?
+
+> [!tip]- 정답 · Answers
+> 1. $(x, y, \theta)$ 세 개; 비홀로노믹 제약(옆 미끄럼 불가)이 속도를 제한하지만 도달 가능한 자세는 제한하지 않는다.
+> 2. $3(4-1-4) + 4 = 1$ 자유도.
+> 3. $359°$와 $1°$는 실제로 이웃인데 유클리드 거리로는 멀다 — 순진한 MSE 회귀가 감긴 지점에서 깨진다 ([[02-foundations/se3-geometry|SE(3) §2]]).

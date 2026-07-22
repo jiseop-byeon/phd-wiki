@@ -5,48 +5,133 @@ tags: [robotics, modern-robotics]
 
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
+> [!note] 시작 전 점검 · Before you start
+> [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK와 [[02-foundations/calculus-backprop|편미분·야코비안]], 그리고 행렬 랭크의 의미([[02-foundations/linear-algebra|선형대수 §2]])를 알고 있어야 한다.
+
 ## English
 
 **Core question**: how do joint velocities map to end-effector velocity — and forces back?
 
-- **The Jacobian**: $\mathcal{V} = J(\theta)\,\dot\theta$ — column $i$ = the end-effector
-  twist produced by unit velocity of joint $i$ (all others frozen). Same object as
-  [[02-foundations/calculus-backprop|calculus §1]]'s Jacobian; here its columns are
-  transformed screw axes.
-- **Statics duality** — the chapter's most elegant result: from power conservation
-  ($\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$):
-  $$\tau = J^\top(\theta)\,\mathcal{F}$$
-  The *same* matrix maps velocities out and wrenches (forces/torques) back in. Gravity
-  compensation, force control, and contact reasoning all run on this line.
-- **Singularities**: configurations where $J$ loses rank — the arm loses a direction of
-  motion (fully stretched arm can't extend further). Near-singularity ⇒ huge joint
-  velocities for small task motions.
-- **Manipulability ellipsoid**: the image of a unit joint-velocity ball under $J$ — its
-  shape (singular values, [[02-foundations/linear-algebra|linear algebra §4]]) tells you
-  in which directions the arm moves easily. Force ellipsoid is its inverse-shaped twin.
+### 1. The Jacobian — with its frame written down
 
-**Wiki connections**: teleoperation rigs ([[01-canonical-papers/notes/4-vla/act|ALOHA]]) and
-compliant control live on $\tau = J^\top \mathcal{F}$; singularity-aware motion is why raw
-VLA outputs get safety-filtered on real arms.
+$$\mathcal{V}_s = J_s(\theta)\,\dot\theta \qquad \text{or} \qquad \mathcal{V}_b = J_b(\theta)\,\dot\theta$$
+
+Column $i$ = the end-effector twist produced by unit velocity of joint $i$ alone. The
+subscript is part of the object: $J_s$ gives space-frame twists, $J_b$ body-frame twists,
+related by $J_s = [\text{Ad}_{T}]\,J_b$ ([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §4]]).
+This is the same Jacobian as in [[02-foundations/calculus-backprop|calculus]] — here its
+columns happen to be transformed screw axes.
+
+### 2. Worked example — the planar 2R arm's tip Jacobian
+
+For the tip position (planar case, so a 2×2 suffices), differentiate the FK:
+$$x = L_1\cos\theta_1 + L_2\cos(\theta_1{+}\theta_2), \qquad y = L_1\sin\theta_1 + L_2\sin(\theta_1{+}\theta_2)$$
+$$J(\theta) = \begin{pmatrix} -L_1 s_1 - L_2 s_{12} & -L_2 s_{12} \\ L_1 c_1 + L_2 c_{12} & L_2 c_{12} \end{pmatrix}$$
+with $s_{12} = \sin(\theta_1{+}\theta_2)$ etc. At $L_1 = L_2 = 1$, $\theta = (0°, 90°)$:
+$s_1 = 0, c_1 = 1, s_{12} = 1, c_{12} = 0$, so
+$$J = \begin{pmatrix} -1 & -1 \\ 1 & 0 \end{pmatrix}, \qquad \det J = 1.$$
+Full rank — every tip velocity is reachable. In general
+$\det J = L_1 L_2 \sin\theta_2$: **the arm is singular exactly when straight or folded**
+($\theta_2 = 0°$ or $180°$) — geometrically obvious once the math says where to look.
+
+### 3. Statics duality — derived in three lines
+
+Power must match at both ends of a lossless mechanism. Joint-side power is
+$\dot\theta^\top \tau$; end-effector-side power is $\mathcal{V}^\top \mathcal{F}$
+(wrench $\mathcal{F}$ = moment + force). Substitute $\mathcal{V} = J\dot\theta$:
+$$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
+The *same* matrix maps velocities out and wrenches back in — gravity compensation, force
+control, and contact reasoning all run on this one line. (Frames must match: $J_b$ pairs
+with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.)
+
+### 4. Singularities and the manipulability ellipsoid
+
+- Near a singularity, small task-space motions demand huge joint velocities —
+  $J^{-1}$ blows up. The 2R example: as $\theta_2 \to 0$, $\det J \to 0$.
+- The **manipulability ellipsoid** is the image of the unit ball of joint velocities under
+  $J$; its axes are the singular values ([[02-foundations/linear-algebra|SVD]]). Long axis
+  = easy direction, short axis = hard; at a singularity one axis collapses to zero.
+  The force ellipsoid is its reciprocal twin — directions that are hard to move are easy
+  to hold force against, and vice versa.
+
+**Wiki connections**: teleoperation ([[01-canonical-papers/notes/4-vla/act|ALOHA]]) and
+compliant control live on $\tau = J^\top \mathcal{F}$; singularity awareness is why raw
+VLA outputs pass through safety filters on real arms.
+
+### Self-check
+
+1. Compute $J$ at $\theta = (90°, 90°)$ and its determinant.
+2. Derive $\tau = J^\top \mathcal{F}$ again from power conservation without looking.
+3. The 2R arm is at $\theta_2 = 5°$. Qualitatively, what happens if the task demands tip
+   motion along the arm's axis? Perpendicular to it?
+4. Why do the manipulability and force ellipsoids have reciprocal axes?
+
+> [!tip]- 정답 · Answers
+> 1. $s_1 = 1, c_1 = 0, s_{12} = 0, c_{12} = -1$ → $J = \begin{pmatrix} -1 & 0 \\ -1 & -1 \end{pmatrix}$, $\det J = 1$ (여전히 정칙 — $\theta_2 = 90°$이므로).
+> 2. $\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$, $\mathcal{V} = J\dot\theta$ 대입, 모든 $\dot\theta$에 대해 성립 ⇒ $\tau = J^\top \mathcal{F}$.
+> 3. 축 방향(거의 특이 방향)은 거대한 관절 속도가 필요하고, 수직 방향은 정상적으로 움직인다.
+> 4. $J$의 특이값 $\sigma$ 방향으로 속도는 $\sigma$배 증폭되고, $\tau = J^\top \mathcal{F}$에 의해 같은 방향의 힘 저항은 $1/\sigma$로 스케일되기 때문.
 
 ## 한국어
 
 **핵심 질문**: 관절 속도는 말단 속도로, 힘은 그 반대로 어떻게 사상되는가?
 
-- **야코비안**: $\mathcal{V} = J(\theta)\,\dot\theta$ — $i$번째 열 = 관절 $i$만 단위 속도로
-  움직일 때의 말단 twist. [[02-foundations/calculus-backprop|미적분 §1]]의 야코비안과 같은
-  대상이고, 여기서는 그 열들이 변환된 스크류 축이다.
-- **정역학 쌍대성** — 이 장의 가장 우아한 결과: 일률 보존
-  ($\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$)에서:
-  $$\tau = J^\top(\theta)\,\mathcal{F}$$
-  *같은* 행렬이 속도를 내보내고 렌치(힘/토크)를 되받는다. 중력 보상, 힘 제어, 접촉 추론이
-  전부 이 한 줄 위에서 돈다.
-- **특이점**: $J$가 랭크를 잃는 자세 — 팔이 운동 방향 하나를 잃는다(완전히 뻗은 팔은 더
-  뻗을 수 없다). 특이점 근처 ⇒ 작은 작업 운동에 거대한 관절 속도.
-- **가조작성 타원체**: 단위 관절 속도 공이 $J$를 통과한 상 — 그 모양(특이값,
-  [[02-foundations/linear-algebra|선형대수 §4]])이 팔이 어느 방향으로 쉽게 움직이는지
-  알려준다. 힘 타원체는 그 역 모양의 쌍둥이다.
+### 1. 야코비안 — 프레임을 명시해서
 
-**위키 연결**: 원격조작 장비([[01-canonical-papers/notes/4-vla/act|ALOHA]])와 유연 제어가
-$\tau = J^\top \mathcal{F}$ 위에 살고, 특이점 인지 운동은 실제 팔에서 VLA 원출력에 안전
+$$\mathcal{V}_s = J_s(\theta)\,\dot\theta \qquad \text{또는} \qquad \mathcal{V}_b = J_b(\theta)\,\dot\theta$$
+
+$i$번째 열 = 관절 $i$만 단위 속도로 움직일 때의 말단 twist. 아래 첨자는 대상의 일부다:
+$J_s$는 space 프레임 twist를, $J_b$는 body 프레임 twist를 주고, 둘은
+$J_s = [\text{Ad}_{T}]\,J_b$로 연결된다
+([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §4]]).
+[[02-foundations/calculus-backprop|미적분]]의 야코비안과 같은 대상이며 — 여기서는 그
+열들이 변환된 스크류 축일 뿐이다.
+
+### 2. 계산 예제 — 평면 2R 팔의 끝점 야코비안
+
+끝점 위치(평면이므로 2×2면 충분)에 대해 FK를 미분하면:
+$$x = L_1\cos\theta_1 + L_2\cos(\theta_1{+}\theta_2), \qquad y = L_1\sin\theta_1 + L_2\sin(\theta_1{+}\theta_2)$$
+$$J(\theta) = \begin{pmatrix} -L_1 s_1 - L_2 s_{12} & -L_2 s_{12} \\ L_1 c_1 + L_2 c_{12} & L_2 c_{12} \end{pmatrix}$$
+($s_{12} = \sin(\theta_1{+}\theta_2)$ 등). $L_1 = L_2 = 1$, $\theta = (0°, 90°)$에서:
+$s_1 = 0, c_1 = 1, s_{12} = 1, c_{12} = 0$이므로
+$$J = \begin{pmatrix} -1 & -1 \\ 1 & 0 \end{pmatrix}, \qquad \det J = 1.$$
+풀랭크 — 모든 끝점 속도가 도달 가능하다. 일반적으로
+$\det J = L_1 L_2 \sin\theta_2$: **팔이 완전히 뻗거나 접힐 때가 정확히 특이점이다**
+($\theta_2 = 0°$ 또는 $180°$) — 수학이 어디를 보라고 알려주면 기하적으로도 자명해진다.
+
+### 3. 정역학 쌍대성 — 세 줄 유도
+
+손실 없는 기구의 양 끝에서 일률은 같아야 한다. 관절 쪽 일률은 $\dot\theta^\top \tau$,
+말단 쪽 일률은 $\mathcal{V}^\top \mathcal{F}$(렌치 $\mathcal{F}$ = 모멘트 + 힘).
+$\mathcal{V} = J\dot\theta$를 대입하면:
+$$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
+*같은* 행렬이 속도를 내보내고 렌치를 되받는다 — 중력 보상, 힘 제어, 접촉 추론이 전부 이
+한 줄 위에서 돈다. (프레임은 맞춰야 한다: $J_b$는 body 렌치 $\mathcal{F}_b$와, $J_s$는
+$\mathcal{F}_s$와 짝이다.)
+
+### 4. 특이점과 가조작성 타원체
+
+- 특이점 근처에서는 작은 작업 공간 운동이 거대한 관절 속도를 요구한다 — $J^{-1}$이
+  폭발한다. 2R 예제에서 $\theta_2 \to 0$이면 $\det J \to 0$.
+- **가조작성 타원체**는 관절 속도 단위 공이 $J$를 통과한 상이고, 그 축들이
+  특이값([[02-foundations/linear-algebra|SVD]])이다. 긴 축 = 쉬운 방향, 짧은 축 = 어려운
+  방향; 특이점에서는 한 축이 0으로 붕괴한다. 힘 타원체는 그 역수 쌍둥이다 — 움직이기
+  어려운 방향일수록 힘을 버티기는 쉽고, 그 반대도 성립한다.
+
+**위키 연결**: 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]])과 유연 제어가
+$\tau = J^\top \mathcal{F}$ 위에 살고, 특이점 인지가 실제 팔에서 VLA 원출력에 안전
 필터를 거는 이유다.
+
+### 스스로 점검
+
+1. $\theta = (90°, 90°)$에서 $J$와 행렬식을 계산하라.
+2. 일률 보존에서 $\tau = J^\top \mathcal{F}$를 안 보고 다시 유도하라.
+3. 2R 팔이 $\theta_2 = 5°$에 있다. 팔의 축 방향으로 끝점을 움직이라는 과제가 오면
+   정성적으로 무슨 일이 일어나는가? 수직 방향이면?
+4. 가조작성 타원체와 힘 타원체의 축이 서로 역수인 이유는?
+
+> [!tip]- 정답 · Answers
+> 1. $s_1 = 1, c_1 = 0, s_{12} = 0, c_{12} = -1$ → $J = \begin{pmatrix} -1 & 0 \\ -1 & -1 \end{pmatrix}$, $\det J = 1$.
+> 2. $\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$에 $\mathcal{V} = J\dot\theta$ 대입, 모든 $\dot\theta$에 대해 성립 ⇒ $\tau = J^\top \mathcal{F}$.
+> 3. 축 방향은 거의 특이 방향이라 거대한 관절 속도가 필요; 수직 방향은 정상 동작.
+> 4. 속도는 특이값 $\sigma$배로 증폭되고, 같은 방향의 힘은 $\tau = J^\top \mathcal{F}$에 의해 $1/\sigma$로 스케일되기 때문.

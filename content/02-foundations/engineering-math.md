@@ -305,3 +305,9 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
    이유를 설명하라.
 3. 곱 규칙에서 $\log \frac{a}{b} = \log a - \log b$를 유도하라.
 4. 오일러 공식으로 $e^{j\pi}$를 계산하고, 그 결과를 회전으로 해석하라.
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. $f'(x) = \frac{e^x}{1+e^x} = \frac{1}{1+e^{-x}} = \sigma(x)$ — softplus의 미분이 시그모이드.
+> 2. 200스텝 뒤 보상의 가중치는 $\gamma^{200} = 0.99^{200} \approx 0.13$ — 유효 지평(100스텝)의 두 배 거리라 이미 $1/e^2$ 수준으로 희미하고, 400스텝이면 사실상 0이다.
+> 3. $\log\frac{a}{b} = \log(a \cdot b^{-1}) = \log a + \log b^{-1} = \log a - \log b$.
+> 4. $e^{j\pi} = \cos\pi + j\sin\pi = -1$ — 180° 회전이 1을 $-1$로 보낸다.
