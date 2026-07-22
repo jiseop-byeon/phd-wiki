@@ -140,6 +140,16 @@ The Laplace transform turns ODEs into algebra:
 
 ### 10. Notation dictionary (all pages)
 
+Two definitions used everywhere before they are formally introduced:
+
+- **Softmax** turns any score vector into a probability distribution:
+  $\text{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$ — positive, sums to 1, and the largest
+  score gets the largest probability (a smooth $\arg\max$). It appears in attention,
+  classification losses, and policies alike.
+- **Set notation**: $x \in A$ ("$x$ is in $A$"), $A \cap B$ (both), $A \cup B$ (either),
+  $\Omega$ (the set of all outcomes), disjoint = no overlap. Probability pages use these
+  from the first line.
+
 | Symbol | Read as |
 |---|---|
 | $\sum_i$, $\prod_i$ | sum / product over index $i$ |
@@ -287,6 +297,14 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   필터가 복원된다. (이산 시간의 쌍둥이: Z-변환, 좌반평면 대신 단위원.)
 
 ### 10. 표기법 사전 (전 페이지 공용)
+
+정식 도입 전에 어디서나 쓰이는 정의 둘:
+
+- **Softmax**는 임의의 점수 벡터를 확률분포로 바꾼다:
+  $\text{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$ — 양수이고 합이 1이며, 가장 큰 점수가
+  가장 큰 확률을 받는다(매끄러운 $\arg\max$). 어텐션, 분류 손실, 정책 어디에나 나온다.
+- **집합 표기**: $x \in A$("$x$가 $A$에 속함"), $A \cap B$(둘 다), $A \cup B$(어느 쪽이든),
+  $\Omega$(모든 결과의 집합), disjoint = 겹침 없음. 확률 페이지가 첫 줄부터 쓴다.
 
 | 기호 | 읽는 법 |
 |---|---|

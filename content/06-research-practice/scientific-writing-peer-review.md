@@ -57,7 +57,22 @@ Decompose each comment into factual correction, clarity request, missing evidenc
 
 State exactly where the manuscript changed. Do not claim a new experiment proves more than it measures.
 
-### 8. Artifact alignment
+### 8. Worked example: one review comment, one compliant response
+
+**Reviewer**: "The 85% success rate is unconvincing — only one scene was tested, and the
+baseline appears untuned."
+
+**Response (Revise + Clarify)**: "We agree the single-scene evaluation limited the claim.
+We added two held-out scenes with randomized object layouts (§5.2, Table 3): success is
+85%, 79%, 81% (20 trials each, ±1 std over 3 seeds). On tuning: the BC baseline used the
+same demonstrations, encoder, and a 12-configuration hyperparameter sweep identical to
+ours (App. C); we now state this in §5.1. We have narrowed the abstract's claim from
+'robust manipulation' to 'consistent success across three tabletop scenes.'"
+
+Every element is traceable: the concern is restated, the evidence is located, the
+comparison protocol is specified, and the claim is renegotiated to match the data.
+
+### 9. Artifact alignment
 
 Paper, appendix, code, data, model, configuration, logs, and video should refer to compatible versions and identifiers. Videos illustrate behavior but do not replace trial distributions and failure counts.
 
@@ -83,7 +98,7 @@ Paper, appendix, code, data, model, configuration, logs, and video should refer 
 ### Sources
 
 - [Simon Peyton Jones — *How to Write a Great Research Paper* (Microsoft Research)](https://www.microsoft.com/en-us/research/academic-program/write-great-research-paper/) — the classic talk on claim-first writing
-- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/information-for-reviewers) — what reviewers at a flagship robotics journal are asked to check
+- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/t-ro-information-for-reviewers/) — what reviewers at a flagship robotics journal are asked to check
 
 ## 한국어
 
@@ -151,7 +166,22 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 원고의 어디가 바뀌었는지 정확히 밝혀라. 새 실험이 측정한 것 이상을 증명한다고 주장하지
 말라.
 
-### 8. 산출물 정렬
+### 8. 예제: 리뷰 코멘트 하나, 규범적 응답 하나
+
+**리뷰어**: "85% 성공률은 설득력이 없다 — 장면 하나에서만 시험됐고 베이스라인이 튜닝되지
+않은 것으로 보인다."
+
+**응답 (Revise + Clarify)**: "단일 장면 평가가 주장을 제한한다는 데 동의합니다. 물체
+배치를 무작위화한 held-out 장면 2개를 추가했습니다(§5.2, 표 3): 성공률 85%, 79%, 81%
+(각 20회, 시드 3개 ±1 std). 튜닝에 대해: BC 베이스라인은 같은 시연·인코더와, 저희와
+동일한 12개 구성 하이퍼파라미터 탐색을 사용했습니다(부록 C); §5.1에 명시했습니다.
+초록의 주장을 'robust manipulation'에서 '세 탁상 장면에 걸친 일관된 성공'으로
+좁혔습니다."
+
+모든 요소가 추적 가능하다: 우려를 재진술하고, 증거의 위치를 밝히고, 비교 프로토콜을
+명시하고, 주장을 데이터에 맞게 재협상했다.
+
+### 9. 산출물 정렬
 
 논문, 부록, 코드, 데이터, 모델, 설정, 로그, 비디오는 호환되는 버전과 식별자를 참조해야
 한다. 비디오는 행동을 보여 주지만 시행 분포와 실패 횟수를 대신하지 못한다.
@@ -181,4 +211,4 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 ### 출처
 
 - [Simon Peyton Jones — *How to Write a Great Research Paper* (Microsoft Research)](https://www.microsoft.com/en-us/research/academic-program/write-great-research-paper/) — 주장 우선 글쓰기의 고전 강연
-- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/information-for-reviewers) — 대표 로보틱스 저널의 리뷰어 점검 항목
+- [IEEE T-RO — Information for Reviewers](https://www.ieee-ras.org/publications/t-ro/t-ro-information-for-reviewers/) — 대표 로보틱스 저널의 리뷰어 점검 항목

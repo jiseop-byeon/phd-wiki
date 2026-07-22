@@ -41,7 +41,7 @@ site monitoring are all video*.
 
 ### Results
 
-- I3D: ~80% on Kinetics; transferred to then-SOTA 97.9%/80.9% on UCF-101/HMDB-51 —
+- I3D: ~71–75% on Kinetics in the original paper (the ~80% figures are later longer-trained reproductions); transferred to then-SOTA 97.9%/80.9% on UCF-101/HMDB-51 —
   established Kinetics pretraining as the video ImageNet moment.
 - SlowFast: SOTA on Kinetics and AVA action detection with a better compute trade-off,
   no optical flow needed.
@@ -89,7 +89,7 @@ the two-rate idea re-echoes in [[gr00t-n1|GR00T]]'s slow/fast dual system.
 
 ### 결과
 
-- I3D: Kinetics 약 80%; UCF-101/HMDB-51로 전이해 당시 SOTA 97.9%/80.9% — Kinetics
+- I3D: 원 논문 기준 Kinetics 약 71–75%(약 80%는 이후 더 길게 학습한 재현 수치); UCF-101/HMDB-51로 전이해 당시 SOTA 97.9%/80.9% — Kinetics
   사전학습을 비디오의 ImageNet 모먼트로 확립.
 - SlowFast: Kinetics·AVA 행동 검출 SOTA를 더 나은 연산 균형으로, 광류 없이.
 

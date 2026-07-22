@@ -59,7 +59,7 @@ signal for generation, replacing the likelihood entirely?
 Dominated image generation until ~2021 (StyleGAN2's faces, pix2pix/CycleGAN translation),
 then ceded the frontier to [[ddpm|diffusion]] — which trades the adversarial game for a
 stable regression loss. The adversarial *idea* survives everywhere: GAN losses sharpen VAE
-decoders (VQGAN — inside [[01-canonical-papers/canonical-list|Latent Diffusion]]), and
+decoders (VQGAN — inside [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]), and
 adversarial training frames robustness research.
 
 ### Connections
@@ -109,7 +109,7 @@ adversarial training frames robustness research.
 ~2021년까지 이미지 생성을 지배했고(StyleGAN2의 얼굴, pix2pix/CycleGAN 변환), 이후
 최전선을 [[ddpm|디퓨전]]에 내줬다 — 적대적 게임을 안정적인 회귀 손실로 맞바꾼 것이
 디퓨전이다. 적대적 *아이디어* 자체는 도처에 살아 있다: GAN 손실이 VAE 디코더를 선명하게
-만들고(VQGAN — [[01-canonical-papers/canonical-list|Latent Diffusion]] 내부), 적대적 학습은
+만들고(VQGAN — [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] 내부), 적대적 학습은
 강건성 연구의 틀이다.
 
 ### 연결

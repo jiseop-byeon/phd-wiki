@@ -16,7 +16,7 @@ last_verified: 2026-07-22
 
 ## English
 
-**One-line summary**: From 200k hours of *unlabeled* gameplay video, learn a latent action space and an action-controllable video model — turning any image into a playable world, no action labels ever provided.
+**One-line summary**: From ~30k hours of *unlabeled* gameplay video (filtered from a ~244k-hour crawl), learn a latent action space and an action-controllable video model — turning any image into a playable world, no action labels ever provided.
 
 ### Context
 
@@ -36,7 +36,7 @@ video, making the whole internet a training ground for interactive environments?
   **video tokenizer** (VQ) → **latent action model** (infers the discrete action between
   frames, 8-code codebook) → **dynamics model** (MaskGIT-style, predicts next frame tokens
   given history + latent action).
-- Trained on 200k hours of filtered 2D-platformer internet video, *no labels of any kind*.
+- Trained on ~30k hours of 2D-platformer internet video (filtered down from ~244k crawled hours), *no labels of any kind*.
 - At inference: prompt with any image (photo, sketch), then *play* it frame by frame by
   choosing latent actions.
 

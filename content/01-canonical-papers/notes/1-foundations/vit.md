@@ -33,7 +33,7 @@ CNNs owned vision because their inductive biases (locality, translation equivari
 
 ### Results
 
-- Pretrained on JFT-300M, **ViT-L/16 beats ResNet-based SOTA (BiT) on ImageNet (~88.5% top-1)** with substantially less pretraining compute.
+- Pretrained on JFT-300M, **ViT beats ResNet-based SOTA (BiT) on ImageNet — ViT-L/16 87.8%, ViT-H/14 88.55% top-1** with substantially less pretraining compute.
 - On small data (ImageNet-1k only), ViT *loses* to comparable CNNs — cleanly demonstrating the data-vs-inductive-bias tradeoff.
 - Attention maps show the model learns local-to-global attention patterns by itself.
 
@@ -72,7 +72,7 @@ CNN이 비전을 지배한 것은 그 귀납 편향(지역성, 평행이동 등�
 
 ### 결과
 
-- JFT-300M 사전학습 시 **ViT-L/16이 ResNet 계열 SOTA(BiT)를 ImageNet에서 추월(top-1 약 88.5%)**, 사전학습 연산은 오히려 훨씬 적다.
+- JFT-300M 사전학습 시 **ViT가 ResNet 계열 SOTA(BiT)를 ImageNet에서 추월 — ViT-L/16 87.8%, ViT-H/14 88.55% top-1**, 사전학습 연산은 오히려 훨씬 적다.
 - 작은 데이터(ImageNet-1k만)에서는 동급 CNN에 *진다* — 데이터 vs 귀납 편향의 트레이드오프를 깔끔하게 실증.
 - 어텐션 맵을 보면 지역→전역 어텐션 패턴을 스스로 학습한다.
 
@@ -97,4 +97,4 @@ CNN 독점을 끝내고 모달리티를 통일했다: 텍스트와 이미지가 
 - [ ] 이미지→패치→토큰 절차와 위치 임베딩의 역할을 말할 수 있다
 - [ ] 데이터 규모 vs 귀납 편향 트레이드오프를 보여준 실험 구조를 말할 수 있다
 - [ ] 작은 데이터에서 CNN에 지는 이유를 설명할 수 있다
-- [ ] 순정 ViT가 밀집 예측에서 겪는 한계와 그 해법 계보(Swin, ViTDet)를 말할 수 있다
+- [ ] 순정 ViT가 밀집 예측(검출·분할)에서 겪는 한계와 Swin이 그것을 어떻게 풀었는지 말할 수 있다

@@ -84,6 +84,12 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 4. In a VLA paper, "76% success on unseen instructions" — list three questions you'd ask
    before believing it matters.
 
+> [!tip]- Answers
+> 1. The test set was used as a validation set — the reported number is biased upward (optimistic); true generalization is lower.
+> 2. It misses 70% of real cracks (recall 0.3). Acceptable as a first-pass screen where false positives are costly and a detailed inspection follows; unacceptable if this detector alone drives safety decisions.
+> 3. Pixel distance ignores perceptual quality (a one-pixel shift is punished heavily) — Inception feature space reflects semantic similarity, so distribution distance is measured there.
+> 4. ① How many trials, with what variance? ② What does "unseen" mean (new objects? new instructions? new scenes?) ③ Against which baseline, and is there failure analysis?
+
 ### From reading experiments to designing them
 
 Continue with [[06-research-practice/index|Research Practice]] for research questions, controlled robot experiments, failure diagnosis, reproducibility, and peer review.
@@ -169,3 +175,7 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 > 2. 진짜 균열의 70%를 놓친다(재현율 0.3). 오탐 처리 비용이 크고 뒤에 정밀 점검이 따로 있는 1차 스크리닝이면 용인 가능; 이 감지기 하나로 안전 결정을 내린다면 불가.
 > 3. 픽셀 거리는 지각 품질과 무관하다(한 픽셀 평행이동에도 크게 벌점) — Inception 특징 공간이 의미적 유사성을 반영하기 때문에 특징 분포 거리로 잰다.
 > 4. ① 몇 회 시행이고 분산은 얼마인가 ② "unseen"의 정의는(새 물체? 새 지시문? 새 장면?) ③ 어떤 베이스라인 대비이며 실패 사례 분석이 있는가.
+
+### 실험을 읽는 것에서 설계하는 것으로
+
+연구 질문·통제된 로봇 실험·실패 진단·재현성·peer review는 [[06-research-practice/index|Research Practice]]로 이어진다.

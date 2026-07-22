@@ -56,7 +56,7 @@ years. DDPM found the parameterization that makes them work.
   distillation later to 1–4).
 - Log-likelihoods lag autoregressive models despite great samples.
 - Pixel-space diffusion at high resolution is compute-hungry — solved by moving to latent
-  space ([[01-canonical-papers/canonical-list|Latent Diffusion]]).
+  space ([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]).
 
 ### Impact & follow-ups
 
@@ -109,7 +109,7 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 - **샘플링 비용**: 샘플당 네트워크 평가 약 1000회 (곧 DDIM이 ~50회로, 이후 증류가 1~4회로 단축).
 - 샘플 품질에 비해 로그 우도는 자기회귀 모델에 뒤진다.
 - 고해상도 픽셀 공간 디퓨전은 연산 대식가 — 잠재 공간으로 옮겨 해결된다
-  ([[01-canonical-papers/canonical-list|Latent Diffusion]]).
+  ([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]).
 
 ### 영향과 후속 연구
 

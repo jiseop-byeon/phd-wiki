@@ -191,3 +191,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 > 2. $|170 - 200| = 30$ Hz로 위장해 나타난다. 샘플링 전에 아날로그 안티에일리어스 필터(차단 <100 Hz)를 넣거나 $f_s > 340$ Hz로 올렸어야 한다.
 > 3. $|H(f)| = |\cos(\pi f)|$ ($f$: cycles/sample) — 나이퀴스트 주파수 $f = 1/2$에서 완전히 소거된다.
 > 4. 지연: 칼만은 모델 예측이 위상 지연을 상쇄한다(예측+보정 구조). 모델: 프로세스/측정 노이즈 비를 명시적으로 써서 시변 최적 이득을 계산한다 — 손튜닝 저역통과에는 둘 다 없다.
+
+### 로보틱스 다리
+
+샘플링·필터링·지연은 [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]의 타이밍 예산과 [[04-robotics/state-estimation-slam|3. 상태 추정]]의 센서 융합으로 이어진다.

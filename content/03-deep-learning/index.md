@@ -8,6 +8,11 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 (physical AI, world models, diffusion) through papers from prestigious venues
 (NeurIPS, ICML, ICLR, CVPR, ICCV, ECCV, CoRL, RSS, ICRA).
 
+### Maps
+
+- [[03-deep-learning/lineage|1. Paper Lineage]] — the one-page big picture + per-era diagrams
+- [[03-deep-learning/physical-ai-ecosystem|2. Physical AI Ecosystem]] — who builds what, mapped to the papers
+
 ### Subareas
 
 - **Foundations** — backprop, optimization, CNNs, transformers, scaling laws
@@ -17,12 +22,17 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 - **World Models** — Dreamer line, Genie, JEPA, video generation as simulation
 - **Diffusion & Generative** — DDPM → latent diffusion → flow matching, DiT
 
-Start from the [[01-canonical-papers/canonical-list|canonical paper list]] and create one note per paper.
+All subareas are covered by notes in the [[01-canonical-papers/canonical-list|canonical paper list]] — start there, with the lineage map open alongside.
 
 ## 한국어
 
 딥러닝 공부의 전체 지도. 먼저 기초를 다진 뒤, physical AI·월드모델·디퓨전 같은 최신 흐름을
 주요 학회(NeurIPS, ICML, ICLR, CVPR, ICCV, ECCV, CoRL, RSS, ICRA) 논문으로 따라간다.
+
+### 지도
+
+- [[03-deep-learning/lineage|1. Paper Lineage]] — 한 페이지 큰 그림 + 시대별 계보도
+- [[03-deep-learning/physical-ai-ecosystem|2. Physical AI Ecosystem]] — 누가 무엇을 만드는지, 논문과 연결
 
 ### 세부 분야
 
@@ -33,4 +43,4 @@ Start from the [[01-canonical-papers/canonical-list|canonical paper list]] and c
 - **월드모델** — Dreamer 계열, Genie, JEPA, 시뮬레이터 역할을 하는 비디오 생성 모델
 - **디퓨전 & 생성모델** — DDPM → latent diffusion → flow matching, DiT
 
-[[01-canonical-papers/canonical-list|핵심 논문 리스트]]에서 시작해 논문 하나당 노트를 하나씩 만든다.
+모든 세부 분야는 [[01-canonical-papers/canonical-list|핵심 논문 리스트]]의 노트로 덮여 있다 — 계보도를 옆에 열어 두고 리스트에서 시작하라.

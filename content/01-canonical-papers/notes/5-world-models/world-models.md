@@ -12,7 +12,7 @@ status: note-complete
 last_verified: 2026-07-22
 ---
 
-**Ha & Schmidhuber, NeurIPS 2018** — [arXiv](https://arxiv.org/abs/1803.10122) · [PDF](https://arxiv.org/pdf/1803.10122) · [Official](https://worldmodels.github.io)
+**Ha & Schmidhuber, NeurIPS 2018** (proceedings title: "Recurrent World Models Facilitate Policy Evolution") — [arXiv](https://arxiv.org/abs/1803.10122) · [PDF](https://arxiv.org/pdf/1803.10122) · [Official](https://worldmodels.github.io)
 
 ## English
 

@@ -16,7 +16,7 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Google DeepMind | RT series, Genie, ALOHA lineage research | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
 | Physical Intelligence | robot foundation models (π series) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
 | NVIDIA | GR00T humanoid models, Cosmos world models, Isaac sim | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
-| Meta AI (FAIR) | JEPA line, open VLM components (DINOv2, SigLIP usage) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
+| Meta AI (FAIR) | JEPA line, open vision backbones (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | Tesla / Figure / 1X / Agility | humanoid hardware + in-house VLA stacks | context for humanoid papers |
 | Unitree | affordable humanoids/quadrupeds — academia's default hardware | — |
 | Hugging Face | LeRobot: open-source robot learning framework | practical entry point |

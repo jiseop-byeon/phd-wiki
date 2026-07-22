@@ -41,7 +41,7 @@ A project can contribute a system without inventing a new algorithm, but must id
 
 | Claim | Required caution |
 |---|---|
-| Descriptive | what was observed in the studied sample |
+| Descriptive | claims must stay within the studied sample |
 | Comparative | performance relative to a defined baseline and setting |
 | Causal | alternative explanations must be controlled or modeled |
 | Generalization | target distribution and shift must be defined |
@@ -91,7 +91,7 @@ Before experiments, make this table:
 
 ### Sources
 
-- [DARPA — the Heilmeier Catechism](https://www.darpa.mil/work-with-us/heilmeier-catechism) — the classic checklist for stating what you are trying to do, what is new, and why it matters
+- [DARPA — the Heilmeier Catechism](https://www.darpa.mil/about/heilmeier-catechism) — the classic checklist for stating what you are trying to do, what is new, and why it matters
 - [NeurIPS Paper Checklist](https://neurips.cc/public/guides/PaperChecklist) — how a major venue operationalizes claim–evidence alignment
 
 ## 한국어
@@ -139,7 +139,7 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 
 | 주장 | 요구되는 주의 |
 |---|---|
-| 기술적(descriptive) | 연구된 표본에서 관찰된 것 |
+| 기술적(descriptive) | 관찰된 표본을 넘어 일반화하지 말 것 |
 | 비교적 | 정의된 베이스라인·설정 대비 성능 |
 | 인과적 | 대안 설명이 통제·모델링돼야 함 |
 | 일반화 | 대상 분포와 이동(shift)이 정의돼야 함 |
@@ -194,5 +194,5 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 
 ### 출처
 
-- [DARPA — Heilmeier Catechism](https://www.darpa.mil/work-with-us/heilmeier-catechism) — 무엇을 하려는지, 무엇이 새로운지, 왜 중요한지를 묻는 고전적 체크리스트
+- [DARPA — Heilmeier Catechism](https://www.darpa.mil/about/heilmeier-catechism) — 무엇을 하려는지, 무엇이 새로운지, 왜 중요한지를 묻는 고전적 체크리스트
 - [NeurIPS Paper Checklist](https://neurips.cc/public/guides/PaperChecklist) — 주요 학회가 주장–증거 정렬을 어떻게 운영화하는지

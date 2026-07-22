@@ -94,10 +94,12 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 ### 5. The ELBO, derived honestly
 
-Goal: maximize $\log p_\theta(x)$, intractable because of the latent $z$. Introduce any
-distribution $q(z|x)$ and use Jensen's inequality:
+Goal: maximize $\log p_\theta(x)$, intractable because of the latent $z$. The trick that
+makes $q$ appear: multiply and divide the integrand by any distribution $q(z|x)$, which
+turns the integral into an expectation over $q$ — then Jensen's inequality ($\log$ is
+concave, so $\log E \ge E \log$) drops the log inside:
 
-$$\log p_\theta(x) = \log \int p_\theta(x|z)p(z)\,dz \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+$$\log p_\theta(x) = \log \int q(z|x)\,\frac{p_\theta(x|z)p(z)}{q(z|x)}\,dz = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
 
 The gap between the two sides is exactly $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$ — so maximizing
 the ELBO simultaneously (1) raises the likelihood bound and (2) pulls $q$ toward the true
@@ -115,6 +117,19 @@ non-variational world models take different routes).
 | Mutual info $I(X;Y)$ | $H(X)-H(X|Y)$ | contrastive learning (CLIP), info bottleneck |
 | Perplexity | $e^{H(p,q)}$ | LM evaluation |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/diffusion/world-model training |
+
+### Self-check
+
+1. Compute the entropy of a coin with $P(\text{H}) = 0.99$, and say why it is smaller than the 0.9 coin's.
+2. A classifier assigns probability 0.25 to the correct class. What is this sample's cross-entropy loss in nats?
+3. How does using reverse KL (instead of forward KL) in a VAE connect to blurry samples?
+4. In CLIP's InfoNCE, how much can doubling the batch size improve the mutual-information bound?
+
+> [!tip]- Answers
+> 1. $H = -0.99\log_2 0.99 - 0.01\log_2 0.01 \approx 0.08$ bits — the more predictable, the smaller the average surprise.
+> 2. $-\ln 0.25 = \ln 4 \approx 1.39$ nats.
+> 3. Reverse KL is mode-seeking — $q$ latches onto one mode. VAE blur is *primarily* the Gaussian likelihood (pixel averaging); the KL asymmetry pushes the latent toward covering only part of the posterior — together they yield conservative (average-like) samples.
+> 4. $I \ge \log N - \mathcal{L}$, so the bound's ceiling rises by $\log 2 \approx 0.69$ nats (= 1 bit).
 
 ## 한국어
 
@@ -202,10 +217,11 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 ### 5. ELBO, 정직하게 유도하기
 
-목표: $\log p_\theta(x)$ 최대화 — 잠재변수 $z$ 때문에 계산 불가. 아무 분포 $q(z|x)$나
-도입하고 옌센 부등식을 쓰면:
+목표: $\log p_\theta(x)$ 최대화 — 잠재변수 $z$ 때문에 계산 불가. $q$가 등장하는 트릭:
+적분 안을 아무 분포 $q(z|x)$로 곱하고 나눠 $q$에 대한 기댓값으로 바꾼 뒤, 옌센
+부등식($\log$은 오목이므로 $\log E \ge E \log$)으로 로그를 안으로 떨어뜨린다:
 
-$$\log p_\theta(x) = \log \int p_\theta(x|z)p(z)\,dz \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+$$\log p_\theta(x) = \log \int q(z|x)\,\frac{p_\theta(x|z)p(z)}{q(z|x)}\,dz = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
 
 양변의 간극이 정확히 $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$다 — 그래서 ELBO 최대화는 동시에
 (1) 우도 하한을 올리고 (2) $q$를 진짜 사후분포로 끌어당긴다. 기초적인 VAE·디퓨전·잠재

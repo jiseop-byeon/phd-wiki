@@ -56,7 +56,7 @@ A contact force produces a force and moment—a **wrench**—on the object. The 
 
 Impedance does not simply “control both position and force.” It shapes interaction behavior, often as a virtual mass–spring–damper. Admittance is useful when a stiff, accurate position-controlled robot can convert measured force into a compliant motion command.
 
-### 6. Worked example: cleaning a wall
+### 6. Scenario: cleaning a wall
 
 A pure position controller commands the tool 2 cm beyond an estimated wall. A 1 cm wall-location error can cause very different force because contact stiffness is high. An impedance controller instead permits pose error while shaping the restoring force; a force controller regulates normal force directly but still needs tangential motion and stability handling. The best architecture depends on actuator bandwidth, sensing, surface variation, and safety limits.
 
@@ -173,7 +173,7 @@ $$\lVert f_t\rVert\le \mu f_n$$
 가상 질량-스프링-댐퍼로 — *형성*한다. 어드미턴스는 강성 높고 정확한 위치 제어 로봇이
 측정 힘을 유연한 운동 명령으로 바꿀 때 유용하다.
 
-### 6. 계산 예제: 벽 닦기
+### 6. 시나리오: 벽 닦기
 
 순수 위치 제어기가 도구를 추정 벽면보다 2 cm 안쪽으로 명령한다. 접촉 강성이 높아 벽
 위치의 1 cm 오차가 완전히 다른 힘을 만들 수 있다. 임피던스 제어기는 pose 오차를

@@ -4,10 +4,9 @@ authors: Jinze Bai, Shuai Bai, et al. (Qwen Team)
 affiliation: Alibaba Group
 venue: arXiv
 year: 2023
-arxiv: https://arxiv.org/abs/2308.12966
-pdf: https://arxiv.org/pdf/2502.13923
+arxiv: https://arxiv.org/abs/2308.12966  # Qwen-VL (2023); Qwen2-VL 2409.12191; Qwen2.5-VL 2502.13923
+pdf: https://arxiv.org/pdf/2308.12966
 code: https://github.com/QwenLM/Qwen2.5-VL
-project: https://arxiv.org/abs/2409.12191
 tags: [paper, vlm]
 status: note-complete
 last_verified: 2026-07-22
@@ -37,7 +36,7 @@ wiki tracks as the exemplar (peers: InternVL, PaliGemma).
   (boxes as text) and OCR built into pretraining — an early open VLM that could point.
 - **Qwen2-VL (2024)**: **naive dynamic resolution** (images become however many tokens
   they need — no fixed square resize) + **M-RoPE** (multimodal rotary positions across
-  text/image/video axes); handles 20min+ video; 2B/8B/72B open weights.
+  text/image/video axes); handles 20min+ video; 2B/7B/72B open weights.
 - **Qwen2.5-VL (2025)**: native-resolution ViT trained with window attention, absolute-time
   video alignment for hour-long video with second-level event localization, document
   parsing (tables, formulas), and **agentic UI operation** (computer/phone use).
@@ -90,7 +89,7 @@ production VLMs can do.
   텍스트로)과 OCR을 사전학습에 내장 — 가리킬 줄 아는 이른 오픈 VLM.
 - **Qwen2-VL (2024)**: **naive dynamic resolution**(이미지가 필요한 만큼의 토큰이 된다 —
   고정 정사각 리사이즈 없음) + **M-RoPE**(텍스트/이미지/비디오 축의 멀티모달 회전 위치);
-  20분+ 비디오 처리; 2B/8B/72B 오픈 가중치.
+  20분+ 비디오 처리; 2B/7B/72B 오픈 가중치.
 - **Qwen2.5-VL (2025)**: window attention으로 학습한 네이티브 해상도 ViT, 초 단위 이벤트
   위치 추정이 되는 절대 시간 비디오 정렬(시간 단위 비디오), 문서 파싱(표, 수식), 그리고
   **에이전트형 UI 조작**(컴퓨터/폰 사용).

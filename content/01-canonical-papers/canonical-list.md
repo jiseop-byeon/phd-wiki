@@ -20,6 +20,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 **읽기 깊이 표시** ([[01-canonical-papers/how-to-read|0. How to Read Papers]] 참고):
 ★ 원문 정독 (방법·실험까지) · ◐ 노트 후 원문 훑기 · ○ 노트로 충분 (계보 이해)
 — 이 기호는 **권장 읽기 분량**이지 숙련 수준이 아니다: ★를 정독해도 mastery(가정 비판·변형 설계)에 도달한 것은 아니다.
+(EN: ★ read the original in full · ◐ read the note, then skim the original · ○ the note is enough. These marks are the *recommended reading amount*, not a mastery level.)
 
 ## 1. Deep Learning Foundations
 
@@ -111,13 +112,15 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 **Study guides** (논문이 아닌 개념 가이드 — 읽기 기호 대신 트랙 순서로 읽는다)
 
-- [[04-robotics/lqr-lqg|LQR/LQG]] — Underactuated Robotics, Stanford EE363 기반
-- [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — Probabilistic Robotics 기반
-- [[04-robotics/geometric-perception-calibration|Geometric Perception & Calibration]] — 카메라 모델·registration·보정
-- [[04-robotics/planning-decision-making|Planning & Decision-Making]] — search·sampling·trajectory optimization·TAMP
-- [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — MR 12장의 연장
-- [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — timing·frames·middleware·failure
-- [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — autonomy levels·human studies·hazard/risk
+- [[04-robotics/modern-robotics/index|Modern Robotics Summary]] — 2–6장·8–13장 챕터 요약 (트랙 2번)
+- [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — Probabilistic Robotics 기반 (3)
+- [[04-robotics/geometric-perception-calibration|Geometric Perception & Calibration]] — 카메라 모델·registration·보정 (3.5)
+- [[04-robotics/planning-decision-making|Planning & Decision-Making]] — search·sampling·trajectory optimization·TAMP (4)
+- [[04-robotics/control-theory-ce397|Control Theory]] — 상태공간·안정성·가제어성 (5)
+- [[04-robotics/lqr-lqg|LQR/LQG]] — Underactuated Robotics, Stanford EE363 기반 (6)
+- [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — MR 12장의 연장 (9)
+- [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — timing·frames·middleware·failure (10)
+- [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — autonomy levels·human studies·hazard/risk (11)
 
 ## 8. Construction Robotics
 

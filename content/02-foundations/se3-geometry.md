@@ -73,6 +73,12 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 4. A gripper command is "move 5cm along the *gripper's own* z-axis." Is that a left- or
    right-multiplication of the current pose? Why?
 
+> [!tip]- Answers
+> 1. Expanding the product gives $\cos^2\theta + \sin^2\theta = 1$ terms → $I$. In general $R$'s columns are orthonormal, so $R^\top R = I \Rightarrow R^{-1} = R^\top$.
+> 2. Angle values jump at the $\pm180°$ boundary ($179° \to -179$, not $-181°$) — neighboring rotations become distant targets and MSE explodes. Quaternions' double cover means $q$ and $-q$ are the same rotation, so a sign-flipped target gives a large loss (wrong gradient) for a correct answer.
+> 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (append 1 for homogeneous coordinates, then multiply).
+> 4. Right-multiplication $T \cdot \Delta T$ — motion in the body (gripper) frame multiplies on the right; world-frame motion on the left.
+
 ### Robotics bridge
 
 SE(3) becomes operational in [[04-robotics/state-estimation-slam|SLAM and localization]] and in the time-indexed TF trees of [[04-robotics/robot-systems-deployment|Robot Systems]].
@@ -148,3 +154,7 @@ SE(3) becomes operational in [[04-robotics/state-estimation-slam|SLAM and locali
 > 2. $\pm 180°$ 경계에서 각도 값이 점프한다($179° \to -181°$가 아니라 $-179°$) — 이웃한 회전이 먼 타깃이 되어 MSE가 폭발. 쿼터니언은 $q$와 $-q$가 같은 회전이라, 타깃과 부호가 반대면 옳은 답에 큰 손실을 주는 잘못된 그래디언트가 생긴다.
 > 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (동차 좌표로 확장해 곱한다).
 > 4. 오른쪽 곱 $T \cdot \Delta T$ — 자기(그리퍼) 프레임 기준 운동은 오른쪽에, 월드 프레임 기준 운동은 왼쪽에 곱한다.
+
+### 로보틱스 다리
+
+여기서의 회전·변환 표기는 [[04-robotics/modern-robotics/index|Modern Robotics 요약]] 전체와 [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]의 extrinsics가 그대로 사용한다.

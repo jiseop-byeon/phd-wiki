@@ -33,7 +33,7 @@ seq2seq (Sutskever et al., 2014) translated by compressing the entire source sen
 
 ### Results
 
-- Matched or beat the state-of-the-art phrase-based SMT system on English→French (WMT14).
+- Approached the phrase-based SMT system (Moses) on English→French (WMT14) — matching it only on the no-unknown-words subset (36.15 vs 35.63 BLEU); on all sentences Moses still led (33.3 vs 28.45).
 - Crucially, performance no longer collapsed with sentence length — the fixed-vector bottleneck was gone.
 - Attention heatmaps showed linguistically sensible alignments, learned without supervision.
 
@@ -72,7 +72,7 @@ seq2seq(Sutskever et al., 2014)는 원문 문장 전체를 고정 길이 벡터 
 
 ### 결과
 
-- WMT14 영→불에서 당시 최고 성능이던 구문 기반 통계 번역(SMT)과 대등하거나 상회.
+- WMT14 영→불에서 구문 기반 SMT(Moses)에 근접 — 미지 단어 제외 부분집합에서만 대등(36.15 vs 35.63 BLEU); 전체 문장에서는 여전히 Moses 우세(33.3 vs 28.45).
 - 결정적으로, 문장이 길어져도 성능이 무너지지 않았다 — 고정 벡터 병목의 해소.
 - 어텐션 히트맵이 언어학적으로 타당한 정렬을 보여줌 — 별도 감독 없이 학습된 결과.
 

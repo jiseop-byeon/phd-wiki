@@ -52,7 +52,7 @@ entry ticket to manipulation research.
 시뮬레이터의 동역학이 이 내용을 전제한다; SE(3)에 능숙해지는 것이 매니퓰레이션 연구의
 입장권이다.
 
-### 연결
+### Connections · 연결
 
-- [[02-foundations/linear-algebra|1. 선형대수]] (회전 행렬, 고유값) · [[02-foundations/calculus-backprop|2. 미적분]] (야코비안)
-- 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]]
+- Prereqs · 선수: [[02-foundations/linear-algebra|1. 선형대수]] (회전 행렬, 고유값) · [[02-foundations/calculus-backprop|2. 미적분]] (야코비안)
+- Next · 다음: [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] → [[04-robotics/state-estimation-slam|3. State Estimation]] (트랙 순서를 따른다)

@@ -33,7 +33,7 @@ Separate training/tuning/test data and document the unit of split. Random frames
 
 Report trial count, independent runs, failures, exclusions, aggregation, and an uncertainty measure appropriate to the design. A seed captures only software randomness; physical trials vary through calibration, wear, temperature, material, timing, and people.
 
-Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different.
+Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a CI of roughly $\pm 1/\sqrt{n}$ (10 trials → ±30%p; 100 → ±10%p), and if zero failures are observed in $n$ trials, the rule of three says the true failure rate may still be as high as $\approx 3/n$.
 
 ### 5. Ablations and budgets
 
@@ -75,7 +75,7 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 
 ### Sources
 
-- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — the report that anchors the reproducibility vocabulary
+- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — the landmark report; note it splits the terms differently (reproducibility = same data + same computation, replicability = new data) than the ACM-style convention presented above
 - [Artifact Evaluation (artifact-eval.org)](https://www.artifact-eval.org/) — what independent artifact reviewers actually check
 - [Sandve et al., *Ten Simple Rules for Reproducible Computational Research* (PLOS Comp Biol 2013)](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285)
 
@@ -119,7 +119,10 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 변한다.
 
 지표와 조건이 많아 체리피킹이 쉬울 때는 주요 결과(primary outcome)를 미리 선언하라.
-통계적 유의성과 실질적 중요성은 다르다.
+통계적 유의성과 실질적 중요성은 다르다([[02-foundations/ml-practice|ML 실무 §5]]).
+시행 수를 가늠하는 문해력 수준의 도구 둘: $n$회 시행의 성공률 신뢰구간은 대략
+$\pm 1/\sqrt{n}$ (10회 → ±30%p; 100회 → ±10%p), 그리고 $n$회에서 실패 0이면 3의
+법칙(rule of three)상 진짜 실패율은 여전히 $\approx 3/n$까지 가능하다.
 
 ### 5. 절제와 예산
 
@@ -171,6 +174,6 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 
 ### 출처
 
-- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — 재현성 어휘의 기준이 되는 보고서
+- [National Academies — *Reproducibility and Replicability in Science* (2019)](https://nap.nationalacademies.org/catalog/25303/reproducibility-and-replicability-in-science) — 기념비적 보고서; 단 본문에 제시한 ACM식 관례와 용어 구분이 다르다(reproducibility = 같은 데이터·같은 계산, replicability = 새 데이터)
 - [Artifact Evaluation (artifact-eval.org)](https://www.artifact-eval.org/) — 독립 artifact 리뷰어가 실제로 확인하는 것
 - [Sandve et al., *Ten Simple Rules for Reproducible Computational Research* (PLOS Comp Biol 2013)](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285)

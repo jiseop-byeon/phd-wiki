@@ -14,7 +14,7 @@ When people operate, supervise, share space with, or depend on a robot, task suc
 > This page is a literacy guide for reading research, not a certification or legal-compliance guide. Applicable laws and standards must be checked from current official sources for the specific machine, workplace, and jurisdiction.
 
 > [!note] Prerequisites
-> [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]] · [[05-construction-robotics/index|Construction Robotics]]
+> [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]] — §9 connects onward to [[05-construction-robotics/index|Construction Robotics]] (the next track, not a prerequisite).
 
 ### 1. Autonomy is a spectrum
 
@@ -121,7 +121,7 @@ An automated excavator receives a goal from an operator, plans and executes a di
 > 기계·작업장·관할권에 적용되는 법과 표준은 최신 공식 출처에서 확인해야 한다.
 
 > [!note] 선수 지식
-> [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[05-construction-robotics/index|건설로봇]]
+> [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]] — §9는 [[05-construction-robotics/index|건설로봇]](다음 트랙, 선수 지식 아님)으로 이어진다.
 
 ### 1. 자율성은 스펙트럼이다
 

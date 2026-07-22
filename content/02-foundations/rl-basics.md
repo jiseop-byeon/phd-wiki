@@ -98,6 +98,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   are available — practical mostly in
   simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
   the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
+
 **The imitation-learning toolbox** (the vocabulary of every VLA paper):
 
 - **The BC objective**: maximize $\log \pi_\theta(a|o)$ over demo pairs — supervised
@@ -242,6 +243,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   시뮬레이션(sim-to-real)
   에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
   [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
+
 **모방 학습 도구 상자** (모든 VLA 논문의 어휘):
 
 - **BC 목적함수**: 시연 쌍에 대해 $\log \pi_\theta(a|o)$를 최대화 — 정책의 옷을 입은
@@ -295,3 +297,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 > 3. $A_t > 0$: 비율이 $1+\epsilon$을 넘으면 이득이 잘려 과도한 확률 *증가* 유인이 사라진다. $A_t < 0$: 비율이 $1-\epsilon$ 아래로 내려가는 과도한 확률 *감소*가 클리핑으로 제한되고, min이 잘리지 않은(더 나쁜) 항을 고르므로 정책이 나쁜 방향으로 움직이는 동안에는 페널티가 계속 작용한다. 클리핑의 목적 = 데이터를 모은 정책 근처에 머무는 신뢰 영역.
 > 4. ① 모델 오차가 상상 지평을 따라 지수적으로 누적된다(복합 오차) ② 가치 부트스트랩이 짧은 지평 너머를 대신 평가하므로 길 필요가 없다.
 > 5. 정책이 자기 오차 위에서 다시 예측하는 횟수가 $k$분의 1로 줄어 분포 이탈이 느려진다; 대가는 반응성 — 청크 실행 중에 들어온 새 관측을 (부분적으로만) 반영한다.
+
+### 로보틱스 다리
+
+MDP·정책·불확실성은 [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]의 그래프/궤적 방법과 belief-space 추론으로 연결된다.

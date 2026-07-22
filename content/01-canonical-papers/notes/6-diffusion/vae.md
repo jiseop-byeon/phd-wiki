@@ -59,7 +59,7 @@ at once, trained jointly with the generator?
 
 The ELBO + reparameterization toolkit became load-bearing infrastructure: [[ddpm|DDPM]]'s
 training objective *is* a VAE-style variational bound over a fixed noising chain; VQ-VAE
-tokenizers feed autoregressive and diffusion models ([[01-canonical-papers/canonical-list|Latent Diffusion]]
+tokenizers feed autoregressive and diffusion models ([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]
 runs diffusion inside a VAE's latent space); world models (Dreamer line) learn latent
 dynamics with exactly these tools.
 
@@ -110,7 +110,7 @@ dynamics with exactly these tools.
 
 ELBO + reparameterization 도구 상자는 하중을 받치는 인프라가 됐다: [[ddpm|DDPM]]의 학습
 목적함수는 고정된 노이즈 체인 위의 VAE식 변분 하한*이고*, VQ-VAE 토크나이저는 자기회귀·
-디퓨전 모델에 공급되며([[01-canonical-papers/canonical-list|Latent Diffusion]]은 VAE의 잠재 공간
+디퓨전 모델에 공급되며([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]은 VAE의 잠재 공간
 안에서 디퓨전을 돌린다), 월드모델(Dreamer 계열)은 정확히 이 도구들로 잠재 동역학을 학습한다.
 
 ### 연결

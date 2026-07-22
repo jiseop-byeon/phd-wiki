@@ -24,7 +24,8 @@ where each concept appears in the papers of this wiki.
 - Shape discipline: $(m\times n)(n\times 1) = (m \times 1)$. Reading shapes is how you read
   architectures. Worked example — one attention head with $d_{model}=512$, $d_k=64$:
   $Q = XW_Q$ is $(T\times 512)(512\times 64) = T\times 64$; scores $QK^\top$ are $T\times T$;
-  output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$. The whole
+  output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$ (softmax turns scores
+  into probabilities — defined in [[02-foundations/engineering-math|0.5 §10]]). The whole
   [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line.
 - **Dot product and angle**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. Cosine similarity
   $= \langle a,b\rangle / (\|a\|\|b\|)$ — the retrieval metric of
@@ -138,7 +139,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 모양의 규율: $(m\times n)(n\times 1) = (m \times 1)$. 모양 읽기가 구조 읽기다.
   계산 예시 — $d_{model}=512$, $d_k=64$인 어텐션 헤드 하나:
   $Q = XW_Q$는 $(T\times 512)(512\times 64) = T\times 64$; 점수 $QK^\top$는 $T\times T$;
-  출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$.
+  출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$ (softmax는 점수를 확률로
+  바꾼다 — [[02-foundations/engineering-math|0.5 §10]]에 정의).
   [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
   검사된다.
 - **내적과 각도**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. 코사인 유사도

@@ -30,7 +30,7 @@ both — semantics to decide, high-rate continuous control to execute.
 
 > [!tip] Key intuition
 > Give the VLM a second brain for motor control: a separate "action expert" module —
-> trained with **flow matching** ([[score-sde|the ODE view of diffusion]]) — reads the VLM's
+> trained with **flow matching** ([[flow-matching|its own note]] — a generalization that contains diffusion's probability-flow ODE as a special case) — reads the VLM's
 > representations and generates smooth 50-step action chunks. Semantics and dexterity
 > specialize, inside one network.
 
@@ -72,7 +72,7 @@ models.
 
 ### Connections
 
-- Previous: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (semantics), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (control), [[score-sde|Score SDE]] (the math)
+- Previous: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (semantics), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (control), [[flow-matching|Flow Matching]] (the math)
 - Next: [[gr00t-n1|GR00T N1]], π0.5
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
@@ -90,7 +90,7 @@ models.
 ### 방법
 
 > [!tip] 핵심 직관
-> VLM에게 운동 제어용 두 번째 뇌를 달아줘라: **flow matching**([[score-sde|디퓨전의 ODE 관점]])으로 학습되는 별도의 "행동 전문가" 모듈이 VLM의 표현을 읽고 매끄러운 50스텝 행동
+> VLM에게 운동 제어용 두 번째 뇌를 달아줘라: **flow matching**([[flow-matching|전용 노트]] — 디퓨전의 확률 흐름 ODE를 특수 사례로 포함하는 일반화)으로 학습되는 별도의 "행동 전문가" 모듈이 VLM의 표현을 읽고 매끄러운 50스텝 행동
 > 청크를 생성한다. 의미론과 손재주가 한 네트워크 안에서 분업한다.
 
 - 백본: **PaliGemma(3B)** VLM; 약 3억 파라미터 **행동 전문가**가 mixture-of-experts식
@@ -126,7 +126,7 @@ models.
 
 ### 연결
 
-- 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[score-sde|Score SDE]] (수학)
+- 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[flow-matching|Flow Matching]] (수학)
 - 다음: [[gr00t-n1|GR00T N1]], π0.5
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 

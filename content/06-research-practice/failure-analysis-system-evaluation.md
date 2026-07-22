@@ -7,6 +7,9 @@ tags: [research, failures, systems, evaluation]
 
 Aggregate success rate says how often a pipeline reached an endpoint; it rarely explains why. Physical-AI research needs failure analysis that finds the earliest causal subsystem, distinguishes recovery from reset, and reports consequential rare events.
 
+> [!note] Prerequisites
+> [[06-research-practice/experimental-design-reproducibility|Experimental Design]] (oracle, exposure, trials) · [[04-robotics/robot-systems-deployment|Robot Systems]] (failure taxonomy, logging)
+
 ### 1. First failure and downstream symptom
 
 ```mermaid
@@ -74,13 +77,16 @@ A negative result is useful when the question, implementation quality, operating
 ### Sources
 
 - [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/) — the systems view of fault propagation, verification, and staged testing
-- [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program) — standardized performance and failure evaluation for robot systems
+- [NIST Robotic Systems for Smart Manufacturing program](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program) — NIST's robot performance/failure measurement program (its standardized test-method pages branch from here)
 
 ## 한국어
 
 합산 성공률은 파이프라인이 끝점에 얼마나 자주 도달했는지 말할 뿐, 왜인지는 거의 설명하지
 않는다. Physical-AI 연구에는 최초의 인과적 하위 시스템을 찾고, 회복과 리셋을 구분하고,
 결과가 무거운 희귀 사건을 보고하는 실패 분석이 필요하다.
+
+> [!note] 선수 지식
+> [[06-research-practice/experimental-design-reproducibility|실험 설계]] (oracle·노출·시행) · [[04-robotics/robot-systems-deployment|로봇 시스템]] (실패 분류·로깅)
 
 ### 1. 최초 실패와 하류 증상
 
@@ -167,4 +173,4 @@ flowchart LR
 ### 출처
 
 - [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/) — 결함 전파·검증·단계적 시험의 시스템 관점
-- [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program) — 로봇 시스템의 표준화된 성능·실패 평가
+- [NIST Robotic Systems for Smart Manufacturing program](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program) — NIST의 로봇 성능·실패 측정 프로그램(표준 시험법 페이지들이 여기서 갈라진다)

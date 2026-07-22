@@ -88,6 +88,10 @@ Every note in this wiki supports the same exit test. Without looking back, say:
 
 If any of the five fails, reread that section — not the whole note.
 
+### Connections
+
+- Confusable-pair comparisons in the [[glossary|glossary]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (reading results tables) · [[01-canonical-papers/canonical-list|Canonical Paper List]]
+
 ## 한국어
 
 이 위키의 노트들은 하나의 목적을 위해 존재한다: 논문의 어휘, 문장 패턴, 수식을 충분히

@@ -65,7 +65,7 @@ Prediction moves the previous belief through the dynamics and normally increases
 | EKF | Linearizes nonlinear models with Jacobians | Linearization and inconsistency |
 | UKF | Propagates selected sigma points | Still assumes a compact unimodal belief |
 | Particle filter | Weighted samples; useful for multimodality | Particle depletion and computation |
-| Factor/pose graph | Batch or incremental optimization over constraints | Association errors and gauge freedom |
+| Factor/pose graph | Batch or incremental optimization over constraints | Association errors and gauge freedom (the whole map's global pose is unobservable without an anchor) |
 
 For a linear Kalman measurement update,
 
@@ -213,7 +213,7 @@ $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 | EKF | 야코비안으로 비선형 모델을 선형화 | 선형화 오차와 비일관성 |
 | UKF | 선택된 시그마 포인트를 전파 | 여전히 조밀한 단봉 belief 가정 |
 | 파티클 필터 | 가중 표본; 다봉성에 유용 | 파티클 고갈과 계산량 |
-| Factor/pose graph | 제약들 위의 일괄·증분 최적화 | association 오류와 게이지 자유도 |
+| Factor/pose graph | 제약들 위의 일괄·증분 최적화 | association 오류와 게이지 자유도(앵커 없이는 지도 전체의 전역 pose가 관측 불가) |
 
 선형 칼만 측정 갱신은
 

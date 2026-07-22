@@ -23,6 +23,18 @@ and it is **the backbone of [[01-canonical-papers/notes/4-vla/pi0|π0]]** — re
 architecture requires knowing what PaliGemma provides (a compact, transfer-friendly
 vision-language trunk that a robotics action expert can attach to).
 
+**How it works (literacy level)**: SigLIP-So400m encodes the image into tokens; Gemma-2B
+consumes image tokens + text prompt with **prefix-LM attention** (full bidirectional
+attention over the image+prompt prefix, causal only over the generated answer) — so the
+"question" can see the whole image, unlike a purely causal LM. Pretraining runs in stages
+of increasing image resolution (224→448→896) on broad multimodal mixtures; the released
+checkpoint is deliberately *not* instruction-tuned — you fine-tune it per task with a
+provided recipe.
+
+**Limitations**: no zero-shot chat ability out of the box (by design); performance is
+claimed *after* per-task fine-tuning, so comparisons against instruction-tuned VLMs'
+zero-shot numbers are apples-to-oranges in both directions.
+
 **Reading the claim**: "versatile" means *transfers well to many tasks after fine-tuning*
 — it is not claiming zero-shot parity with frontier VLMs; the 3B size is the point, not a
 limitation to apologize for.
@@ -36,6 +48,17 @@ limitation to apologize for.
 **[[01-canonical-papers/notes/4-vla/pi0|π0]]의 백본**이다 — π0의 구조를 읽으려면
 PaliGemma가 무엇을 제공하는지(로봇 행동 전문가를 붙일 수 있는 작고 전이 친화적인
 시각-언어 몸통)를 알아야 한다.
+
+**작동 방식 (문해력 수준)**: SigLIP-So400m이 이미지를 토큰으로 인코딩하고, Gemma-2B가
+이미지 토큰 + 텍스트 프롬프트를 **prefix-LM 어텐션**으로 소비한다(이미지+프롬프트
+접두부에는 완전 양방향 어텐션, 생성되는 답변에만 인과 어텐션) — 순수 인과 LM과 달리
+"질문"이 이미지 전체를 볼 수 있다. 사전학습은 해상도를 키워 가는 단계(224→448→896)로
+넓은 멀티모달 혼합에서 진행되며, 공개 체크포인트는 의도적으로 지시 튜닝을 *하지 않은*
+상태다 — 제공된 레시피로 과제마다 파인튜닝한다.
+
+**한계**: 즉시 쓰는 zero-shot 대화 능력은 없다(설계상); 성능 주장은 과제별 파인튜닝
+*후*의 것이므로, 지시 튜닝된 VLM의 zero-shot 수치와의 비교는 양방향 모두
+사과-오렌지 비교다.
 
 **주장 읽는 법**: "versatile"은 *파인튜닝 후 여러 과제로 잘 전이된다*는 뜻이다 —
 프런티어 VLM과의 zero-shot 동급을 주장하는 것이 아니며, 3B라는 크기는 변명할 한계가

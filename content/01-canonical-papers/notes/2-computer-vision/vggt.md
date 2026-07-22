@@ -14,6 +14,15 @@ last_verified: 2026-07-22
 
 **Wang et al., CVPR 2025** — [arXiv](https://arxiv.org/abs/2503.11651) · [PDF](https://arxiv.org/pdf/2503.11651) · [Code](https://github.com/facebookresearch/vggt)
 
+> [!note] 수학 준비물 · Math on-ramp
+> Reading VGGT accurately needs the geometric-perception vocabulary: camera
+> intrinsics/extrinsics, projection, depth/pointmaps, and what bundle adjustment
+> optimizes — all covered in [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]. Read that page (or at least §1, §5) before the original.
+> VGGT를 정확히 읽으려면 기하 인식 어휘가 필요하다: intrinsics/extrinsics, 투영,
+> 깊이/pointmap, bundle adjustment가 무엇을 최적화하는지 —
+> [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정]]에 있다. 원문 전에
+> 그 페이지(최소한 §1·§5)를 읽어라.
+
 ## English
 
 **One-line summary**: One feed-forward transformer ingests 1 to hundreds of images and directly outputs cameras, depth maps, point maps, and 3D tracks in a single pass — replacing the classical SfM/MVS optimization pipeline with inference measured in seconds.
