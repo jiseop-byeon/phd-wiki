@@ -1,5 +1,5 @@
 ---
-title: Signal Processing · 신호처리
+title: Signal Processing
 tags: [foundations]
 ---
 

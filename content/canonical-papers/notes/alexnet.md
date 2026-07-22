@@ -4,12 +4,13 @@ authors: Alex Krizhevsky, Ilya Sutskever, Geoffrey Hinton
 affiliation: University of Toronto
 venue: NeurIPS
 year: 2012
-pdf: https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html
+pdf: https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
+project: https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html
 tags: [paper, foundations, computer-vision]
 status: to-read
 ---
 
-**Krizhevsky et al., NeurIPS 2012** — [PDF](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)
+**Krizhevsky et al., NeurIPS 2012** — [PDF](https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf) · [Official](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)
 
 ## English
 

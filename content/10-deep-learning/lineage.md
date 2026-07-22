@@ -1,5 +1,5 @@
 ---
-title: Paper Lineage · 논문 계보도
+title: Paper Lineage
 tags: [moc, reference]
 ---
 

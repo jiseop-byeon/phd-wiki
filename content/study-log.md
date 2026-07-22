@@ -1,5 +1,5 @@
 ---
-title: Study Log · 학습 일지
+title: Study Log
 tags: [log]
 ---
 
@@ -28,3 +28,6 @@ tags: [log]
 - 다음: VLA 진입 (RT-1, RT-2, Diffusion Policy, ACT) — 디퓨전 수학 준비 완료
 - VLA 1차 배치: [[canonical-papers/notes/rt-1|RT-1]], [[canonical-papers/notes/rt-2|RT-2]], [[canonical-papers/notes/diffusion-policy|Diffusion Policy]], [[canonical-papers/notes/act|ACT/ALOHA]] — 로봇 데이터 스케일링(RT-1) → 웹 지식 전이(RT-2) → 다봉 행동 분포(DP) → 행동 청킹(ACT)
 - 다음: VLA 2차 (Open X-Embodiment, Octo, OpenVLA, π0, GR00T N1)로 VLA 섹션 완주
+- 기초 섹션 확장 (4편 추가, 총 7편 체계 완성): [[50-foundations/linear-algebra|선형대수]], [[50-foundations/calculus-backprop|미적분과 역전파]], [[50-foundations/information-theory|정보이론]], [[50-foundations/rl-basics|강화학습 기초]] — 위키의 모든 논문을 읽기에 충분한 배경 세트
+- VLA 섹션 완주 (5편): [[canonical-papers/notes/open-x-embodiment|OXE]], [[canonical-papers/notes/octo|Octo]], [[canonical-papers/notes/openvla|OpenVLA]], [[canonical-papers/notes/pi0|π0]], [[canonical-papers/notes/gr00t-n1|GR00T N1]] — 데이터 풀링 → 오픈 모듈식 정책 → 오픈 VLA → flow matching 융합 → 휴머노이드 데이터 피라미드
+- 다음: 월드모델 섹션 (World Models, PlaNet, Dreamer, JEPA, Genie, Sora, Cosmos)

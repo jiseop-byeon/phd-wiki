@@ -1,5 +1,5 @@
 ---
-title: Foundations · 기초 과목
+title: Foundations
 ---
 
 ## English
@@ -27,9 +27,17 @@ own study notes distilled from them.
 
 ### Study notes
 
-- [[50-foundations/optimization|Optimization]] — problem anatomy, convexity, KKT, LP/QP/NLP/MIP, and where each shows up in robotics
+The seven pages below are designed to be **sufficient background for every paper in this
+wiki**: math core (linear algebra, calculus, probability), the two applied pillars
+(optimization, information theory), and two domain bridges (signal processing, RL).
+
+- [[50-foundations/linear-algebra|Linear Algebra]] — matrices as maps, rank/SVD, the geometry behind attention and LoRA
+- [[50-foundations/calculus-backprop|Calculus & Backpropagation]] — chain rule to backprop, vanishing/exploding gradients as architecture history
 - [[50-foundations/probability|Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of every loss function
+- [[50-foundations/optimization|Optimization]] — problem anatomy, convexity, KKT, LP/QP/NLP/MIP, and where each shows up in robotics
+- [[50-foundations/information-theory|Information Theory]] — entropy, cross-entropy, KL divergence, mutual information, the ELBO
 - [[50-foundations/signal-processing|Signal Processing]] — sampling, FFT, filtering, sensor-pipeline habits
+- [[50-foundations/rl-basics|Reinforcement Learning Basics]] — MDPs, value functions, policy gradients/PPO, model-based RL → world models
 
 ## 한국어
 
@@ -55,6 +63,13 @@ own study notes distilled from them.
 
 ### 공부 노트
 
-- [[50-foundations/optimization|최적화]] — 문제의 구조, 볼록성, KKT, LP/QP/NLP/MIP와 로보틱스에서의 등장 지점
+아래 일곱 페이지는 **이 위키의 모든 논문을 읽는 데 충분한 배경**이 되도록 설계했다:
+수학 핵심(선형대수, 미적분, 확률), 응용 기둥 둘(최적화, 정보이론), 도메인 다리 둘(신호처리, RL).
+
+- [[50-foundations/linear-algebra|선형대수]] — 사상으로서의 행렬, 랭크/SVD, 어텐션과 LoRA 뒤의 기하
+- [[50-foundations/calculus-backprop|미적분과 역전파]] — 연쇄 법칙에서 역전파까지, 구조 설계사(史)로서의 그래디언트 소실/폭발
 - [[50-foundations/probability|확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 모든 손실함수의 기원으로서의 MLE
+- [[50-foundations/optimization|최적화]] — 문제의 구조, 볼록성, KKT, LP/QP/NLP/MIP와 로보틱스에서의 등장 지점
+- [[50-foundations/information-theory|정보이론]] — 엔트로피, 교차 엔트로피, KL divergence, 상호 정보량, ELBO
 - [[50-foundations/signal-processing|신호처리]] — 샘플링, FFT, 필터링, 센서 파이프라인 습관
+- [[50-foundations/rl-basics|강화학습 기초]] — MDP, 가치 함수, 정책 그래디언트/PPO, 모델 기반 RL → 월드모델

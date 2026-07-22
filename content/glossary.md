@@ -1,5 +1,5 @@
 ---
-title: Glossary · 용어집
+title: Glossary
 tags: [reference]
 ---
 

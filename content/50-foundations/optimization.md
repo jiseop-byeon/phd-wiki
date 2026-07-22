@@ -1,5 +1,5 @@
 ---
-title: Optimization · 최적화
+title: Optimization
 tags: [foundations]
 ---
 

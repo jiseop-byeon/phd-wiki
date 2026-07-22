@@ -1,5 +1,5 @@
 ---
-title: Probability & Random Processes · 확률과 랜덤 프로세스
+title: Probability & Random Processes
 tags: [foundations]
 ---
 

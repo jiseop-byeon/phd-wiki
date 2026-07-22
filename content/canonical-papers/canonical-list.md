@@ -68,11 +68,11 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] [[notes/rt-2|RT-2]] — *Vision-Language-Action Models* (Brohan et al., CoRL 2023)
 - [x] [[notes/diffusion-policy|Diffusion Policy]] (Chi et al., RSS 2023)
 - [x] [[notes/act|ACT / ALOHA]] — *Learning Fine-Grained Bimanual Manipulation* (Zhao et al., RSS 2023)
-- [ ] Octo — open generalist robot policy (2024)
-- [ ] OpenVLA (Kim et al., CoRL 2024)
-- [ ] π0 — *A Vision-Language-Action Flow Model* (Physical Intelligence, 2024)
-- [ ] **GR00T N1** — NVIDIA humanoid foundation model (2025)
-- [ ] Open X-Embodiment (2023) — the cross-embodiment dataset effort
+- [x] [[notes/open-x-embodiment|Open X-Embodiment]] — the cross-embodiment dataset effort (ICRA 2024)
+- [x] [[notes/octo|Octo]] — open generalist robot policy (RSS 2024)
+- [x] [[notes/openvla|OpenVLA]] (Kim et al., CoRL 2024)
+- [x] [[notes/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, 2024)
+- [x] [[notes/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
 
 ## 5. World Models
 
