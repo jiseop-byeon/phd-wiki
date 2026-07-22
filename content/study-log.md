@@ -31,3 +31,7 @@ tags: [log]
 - 기초 섹션 확장 (4편 추가, 총 7편 체계 완성): [[50-foundations/linear-algebra|선형대수]], [[50-foundations/calculus-backprop|미적분과 역전파]], [[50-foundations/information-theory|정보이론]], [[50-foundations/rl-basics|강화학습 기초]] — 위키의 모든 논문을 읽기에 충분한 배경 세트
 - VLA 섹션 완주 (5편): [[canonical-papers/notes/open-x-embodiment|OXE]], [[canonical-papers/notes/octo|Octo]], [[canonical-papers/notes/openvla|OpenVLA]], [[canonical-papers/notes/pi0|π0]], [[canonical-papers/notes/gr00t-n1|GR00T N1]] — 데이터 풀링 → 오픈 모듈식 정책 → 오픈 VLA → flow matching 융합 → 휴머노이드 데이터 피라미드
 - 다음: 월드모델 섹션 (World Models, PlaNet, Dreamer, JEPA, Genie, Sora, Cosmos)
+- sudoremove.com 점검: 내용 상충 없음 확인; 배울 점으로 생태계 카탈로그 채택 → [[10-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]] 페이지 신설
+- 선형대수 페이지에 제어이론 연결 섹션 추가 (상태공간, 고유값=안정성, 가제어성 랭크 조건)
+- 월드모델 섹션 완주 (7편): [[canonical-papers/notes/world-models|World Models]], [[canonical-papers/notes/planet|PlaNet]], [[canonical-papers/notes/dreamer|Dreamer v1–3]], [[canonical-papers/notes/jepa|JEPA 계열]], [[canonical-papers/notes/genie|Genie]], [[canonical-papers/notes/sora|Sora]], [[canonical-papers/notes/cosmos|Cosmos]] — 꿈속 훈련 → RSSM → 상상 속 actor-critic → 표현 공간 예측(반대 진영) → 인터넷 비디오에서 행동 발견 → 시뮬레이터 가설 → 인프라화
+- 다음 후보: CV 나머지 (U-Net~VGGT) 또는 디퓨전 나머지 (DDIM, CFG, LDM, ControlNet, DiT, Flow Matching) 또는 건설로봇 서베이 수집

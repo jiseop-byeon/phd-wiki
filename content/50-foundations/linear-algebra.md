@@ -49,7 +49,21 @@ shows up in a model.
 - Softmax$(QK^\top/\sqrt{d_k})V$ is three matrix multiplies and one normalization —
   the [[canonical-papers/notes/attention-is-all-you-need|Transformer]] in one line.
 
-### 5. Geometry of high dimensions (paper-reading intuition)
+### 5. The control-theory connection
+
+Linear algebra *is* the language of control ([[20-robotics/index|control track]]):
+
+- **State-space model** $\dot{x} = Ax + Bu$, $y = Cx$: the system is a matrix; simulation is
+  repeated matrix multiplication.
+- **Stability = eigenvalues of $A$**: continuous-time stable iff all eigenvalues have
+  negative real part (discrete-time: inside the unit circle). "Poles" in control are
+  eigenvalues wearing a different hat.
+- **Controllability**: $\text{rank}[B, AB, \ldots, A^{n-1}B] = n$ — a rank condition decides
+  whether any state is reachable; observability is its transpose twin.
+- LQR gains, Kalman filters, and MPC condensing all reduce to solving structured linear
+  systems — the reason numerical linear algebra is the control engineer's daily tool.
+
+### 6. Geometry of high dimensions (paper-reading intuition)
 
 - Random high-dim vectors are nearly orthogonal — why dot-product retrieval works at scale.
 - Distances concentrate: "nearest" neighbors are barely nearer — why cosine similarity and

@@ -76,14 +76,13 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 5. World Models
 
-- [ ] World Models (Ha & Schmidhuber, NeurIPS 2018)
-- [ ] PlaNet (Hafner et al., ICML 2019)
-- [ ] Dreamer → DreamerV2 → **DreamerV3** (Hafner et al., 2020–2023)
-- [ ] JEPA position paper — *A Path Towards Autonomous Machine Intelligence* (LeCun, 2022)
-- [ ] I-JEPA (Assran et al., CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025)
-- [ ] Genie (Bruce et al., ICML 2024) → Genie 2 (2024)
-- [ ] Sora technical report — *Video Generation Models as World Simulators* (OpenAI, 2024)
-- [ ] NVIDIA Cosmos — world foundation models for physical AI (2025)
+- [x] [[notes/world-models|World Models]] (Ha & Schmidhuber, NeurIPS 2018)
+- [x] [[notes/planet|PlaNet]] (Hafner et al., ICML 2019)
+- [x] [[notes/dreamer|Dreamer → DreamerV2 → DreamerV3]] (Hafner et al., 2020–2023, Nature 2025)
+- [x] [[notes/jepa|JEPA line]] — LeCun 2022 position paper → I-JEPA (CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025)
+- [x] [[notes/genie|Genie]] (Bruce et al., ICML 2024) → Genie 2 (2024)
+- [x] [[notes/sora|Sora]] — *Video Generation Models as World Simulators* (OpenAI, 2024)
+- [x] [[notes/cosmos|Cosmos]] — world foundation models for physical AI (NVIDIA, 2025)
 
 ## 6. Diffusion & Generative Models
 
