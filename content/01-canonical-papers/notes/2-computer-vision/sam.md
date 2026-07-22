@@ -109,6 +109,9 @@ useful for site monitoring.
 - 이전: [[mae|MAE]] (인코더), [[detr|DETR]] 시대의 마스크 디코더, [[clip|CLIP]] (조합)
 - 도메인: [[05-construction-robotics/index|현장 인식]] · 계보: [[03-deep-learning/lineage|논문 계보도]]
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "segment anything"은 "무엇이든 경계를 찾는다"이지 "무엇인지 안다"가 아니다 — 클래스 불가지가 설계의 일부다. 그리고 promptable이라는 단서가 주장의 절반이다: 프롬프트 없이 모든 것을 알아서 분할한다는 주장이 아니다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] "프롬프트 가능한 분할"이라는 과제 정의가 왜 사전학습에 적합한지 설명할 수 있다

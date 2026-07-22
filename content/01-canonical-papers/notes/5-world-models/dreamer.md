@@ -126,6 +126,9 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 - 다음: [[genie|Genie]], [[cosmos|Cosmos]] · 기초: [[02-foundations/rl-basics|RL 기초]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> v3의 "mastering diverse domains"는 "단일 설정으로 150+ 과제"라는 강건성 주장이지, 각 과제에서 특화 모델을 모두 이긴다는 주장이 아니다. 그리고 검증은 시뮬레이션 중심이다 — 실로봇 일반화는 별도의 질문으로 남아 있다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] "상상 속 actor-critic"에서 실제 환경 스텝이 어디에만 쓰이는지(모델 갱신) 말할 수 있다

@@ -74,8 +74,7 @@ physical-AI stack:
 
 1. **Imitation learning / skill transfer** — Yu (VT): *cloud-based hierarchical imitation
    learning for transferring construction skills from workers to robots* (2024) — the
-   construction port of the [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion
-   Policy]] wave. The newest and thinnest stream — VLA-class methods have barely entered.
+   construction port of the [[01-canonical-papers/notes/4-vla/act|ACT]] / [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] wave. The newest and thinnest stream — VLA-class methods have barely entered.
 2. **HRC + digital twins** — Wang (TAMU) & Yu: *BIM-driven collaborative workflows with
    closed-loop digital twins* (2021–24); Shah (MIT) supplies the manufacturing HRC
    playbook. Construction's home-grown analogue of the
@@ -96,7 +95,7 @@ physical-AI stack:
 stream 1 (bringing [[01-canonical-papers/notes/4-vla/pi0|π0]]-class manipulation onto real
 construction tasks) and its intersection with stream 5 are where the open territory lies.
 
-### Reading list (section 8 of the [[01-canonical-papers/canonical-list|canonical list]])
+### Reading list — section 8 of the canonical list
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) — the
   era-1-to-3 overview from the field's veteran
@@ -138,8 +137,7 @@ construction tasks) and its intersection with stream 5 are where the open territ
 다섯 개의 활성 흐름이 나오고, 각각 이 위키 physical AI 스택의 다른 부분을 수입하고 있다:
 
 1. **모방학습 / 스킬 전이** — Yu(VT): *작업자의 건설 기술을 로봇에 전이하는 클라우드 기반
-   계층적 모방학습* (2024) — [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion
-   Policy]] 물결의 건설 이식. 가장 새롭고 가장 얇은 흐름 — VLA급 기법은 이제 막 진입했다.
+   계층적 모방학습* (2024) — [[01-canonical-papers/notes/4-vla/act|ACT]] / [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] 물결의 건설 이식. 가장 새롭고 가장 얇은 흐름 — VLA급 기법은 이제 막 진입했다.
 2. **HRC + 디지털 트윈** — Wang(TAMU)과 Yu: *폐루프 디지털 트윈의 BIM 연동 협업 워크플로*
    (2021~24); Shah(MIT)가 제조 HRC 플레이북을 공급.
    [[01-canonical-papers/notes/5-world-models/cosmos|조율 매체로서의 월드모델]] 아이디어의 건설 자생판.
@@ -160,7 +158,7 @@ construction tasks) and its intersection with stream 5 are where the open territ
 1번([[01-canonical-papers/notes/4-vla/pi0|π0]]급 조작을 실제 건설 과제에 올리는 것)과 그것이
 5번과 만나는 교차점이 열린 영토다.
 
-### 읽기 목록 ([[01-canonical-papers/canonical-list|핵심 논문 리스트]] 8번 섹션)
+### 읽기 목록 — 핵심 논문 리스트 8번 섹션
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) —
   이 분야 원로가 쓴 1~3시대 조감

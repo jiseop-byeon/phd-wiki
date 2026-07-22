@@ -107,8 +107,7 @@ defined how modern policies output actions.
 
 - 언어 조건 없는 과제별 정책 — 범용이 아닌 전문가 (이후 VLA에 흡수: 청크 행동 헤드는
   이제 π0/GR00T급 모델의 표준이다).
-- 고정 청크 크기는 반응성을 안정성과 맞바꾼다; ensembling은 [[diffusion-policy|Diffusion
-  Policy]]가 명시적으로 표현하는 진짜 다봉적 선택지를 뭉갤 수 있다.
+- 고정 청크 크기는 반응성을 안정성과 맞바꾼다; ensembling은 [[diffusion-policy|Diffusion Policy]]가 명시적으로 표현하는 진짜 다봉적 선택지를 뭉갤 수 있다.
 - 관절 공간 복제는 정책을 특정 로봇 형태에 묶는다.
 
 ### 영향과 후속 연구
@@ -123,6 +122,9 @@ defined how modern policies output actions.
 - 병행: [[diffusion-policy|Diffusion Policy]] (생성형 청킹) · 이전: [[vae|VAE]] (CVAE 기계장치)
 - 다음: Mobile ALOHA, Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "fine manipulation with low-cost hardware"의 범위는 과제별 전문 정책(과제당 시연 ~50개)이다 — 범용성 주장이 아니다. 그리고 이 논문은 사실 두 개의 기여(ALOHA 하드웨어, ACT 알고리즘)를 담고 있다 — 성공의 몇 %가 어느 쪽 덕인지 분리해 생각하며 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

@@ -91,6 +91,9 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 - 이전: [[01-canonical-papers/notes/1-foundations/vit|ViT]], [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] (웹 규모 감독) · 다음: Flamingo, LLaVA → RT-2
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "transferable visual models from natural language supervision" — 주장의 핵심은 zero-shot 전이와 분포 이동 강건성이지, 모든 시각 과제의 최고 성능이 아니다(세밀 분류·카운팅에선 약하다). 그리고 "4억 쌍"이라는 데이터 조건이 주장에 내장되어 있다 — 방법만이 아니라 데이터 규모가 결과의 절반이다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] 대조 목적함수가 "정확한 캡션 예측"과 어떻게 다르고 왜 웹 노이즈에 강한지 설명할 수 있다

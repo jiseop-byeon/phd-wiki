@@ -61,8 +61,7 @@ complex multimodal distributions with a stable regression loss. The transfer was
 ### Impact & follow-ups
 
 Made diffusion the default action head of robot learning. Successors: 3D Diffusion Policy,
-diffusion heads in Octo, and π0's flow-matching head ([[score-sde|the continuous-time
-sibling]]); together with [[act|ACT]] it established **action chunking** as standard practice.
+diffusion heads in Octo, and π0's flow-matching head ([[score-sde|the continuous-time sibling]]); together with [[act|ACT]] it established **action chunking** as standard practice.
 
 ### Connections
 
@@ -124,6 +123,9 @@ sibling]]); together with [[act|ACT]] it established **action chunking** as stan
 - 이전: [[ddpm|DDPM]] (생성 엔진), [[rt-1|RT-1]] (토큰화 대안)
 - 다음: [[act|ACT]] (병행하는 청킹 접근), Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "+46.9%"는 15개 과제의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

@@ -89,8 +89,7 @@ models.
 ### 방법
 
 > [!tip] 핵심 직관
-> VLM에게 운동 제어용 두 번째 뇌를 달아줘라: **flow matching**([[score-sde|디퓨전의 ODE
-> 관점]])으로 학습되는 별도의 "행동 전문가" 모듈이 VLM의 표현을 읽고 매끄러운 50스텝 행동
+> VLM에게 운동 제어용 두 번째 뇌를 달아줘라: **flow matching**([[score-sde|디퓨전의 ODE > 관점]])으로 학습되는 별도의 "행동 전문가" 모듈이 VLM의 표현을 읽고 매끄러운 50스텝 행동
 > 청크를 생성한다. 의미론과 손재주가 한 네트워크 안에서 분업한다.
 
 - 백본: **PaliGemma(3B)** VLM; 약 3억 파라미터 **행동 전문가**가 mixture-of-experts식
@@ -129,6 +128,9 @@ models.
 - 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[score-sde|Score SDE]] (수학)
 - 다음: [[gr00t-n1|GR00T N1]], π0.5
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

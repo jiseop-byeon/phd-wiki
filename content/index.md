@@ -7,6 +7,11 @@ title: Home
 Welcome. This wiki is my long-term knowledge base for PhD research at the intersection of
 **deep learning** and **construction robotics**.
 
+**What this wiki is for**: research *literacy*, not uniform technical mastery — making the
+vocabulary, equations, claims, and experimental language of physical-AI papers readable on
+first contact. Derivations, implementation, and reproduction are pursued selectively, in
+one's own research area.
+
 ### Start here — pick the path that matches you
 
 1. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 2.
@@ -28,6 +33,10 @@ Welcome. This wiki is my long-term knowledge base for PhD research at the inters
 ## 한국어
 
 박사 과정에서 공부하는 딥러닝과 건설로봇 관련 지식을 정리해 두는 공간입니다.
+
+**이 위키의 목표**: 모든 분야의 균일한 기술적 숙달이 아니라 연구 *문해력* — physical AI
+논문의 용어·수식·주장·실험 표현을 처음 보더라도 읽을 수 있게 만드는 것. 유도·구현·재현은
+자신의 연구 분야를 중심으로 선택적으로 깊게 한다.
 
 ### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 

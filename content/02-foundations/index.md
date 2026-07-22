@@ -30,8 +30,8 @@ own study notes distilled from them.
 Start with [[02-foundations/overview|0. Overview]] — the prerequisite engineering-math
 checklist and the map of how these pages connect to each other and to the papers.
 
-The pages below are designed to be **sufficient background for every paper in this
-wiki**: math core (linear algebra, calculus, probability), the two applied pillars
+The pages below provide the **minimum conceptual background needed to begin reading every
+paper in this wiki** (individual papers may require deeper references): math core (linear algebra, calculus, probability), the two applied pillars
 (optimization, information theory), and two domain bridges (signal processing, RL).
 
 - [[02-foundations/overview|0. Overview]] — prerequisites, study order, connection map
@@ -73,8 +73,8 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 [[02-foundations/overview|0. Overview]]에서 시작하라 — 사전 공업수학 체크리스트와,
 이 페이지들이 서로·논문들과 어떻게 연결되는지의 지도가 있다.
 
-아래 페이지들은 **이 위키의 모든 논문을 읽는 데 충분한 배경**이 되도록 설계했다:
-수학 핵심(선형대수, 미적분, 확률), 응용 기둥 둘(최적화, 정보이론), 도메인 다리 둘(신호처리, RL).
+아래 페이지들은 **이 위키의 모든 논문을 읽기 시작하는 데 필요한 최소 개념 배경**을
+제공한다(개별 논문을 깊게 이해하려면 추가 자료가 필요할 수 있다): 수학 핵심(선형대수, 미적분, 확률), 응용 기둥 둘(최적화, 정보이론), 도메인 다리 둘(신호처리, RL).
 
 - [[02-foundations/overview|0. Overview]] — 사전 지식, 학습 순서, 연결 지도
 - [[02-foundations/engineering-math|0.5 공업수학]] — 전제되는 학부 수학을 자체 완결로: 미분부터 오일러 공식까지 + 표기법 사전

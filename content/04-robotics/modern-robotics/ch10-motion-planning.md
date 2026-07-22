@@ -13,8 +13,7 @@ tags: [robotics, modern-robotics]
 **Core question**: how do we find a collision-free path through C-space?
 
 - **The framing**: obstacles in the workspace become **C-space obstacles** — planning is
-  navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration
-  space]], where the robot is a point.
+  navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration space]], where the robot is a point.
 - **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic)
   — complete and optimal on the grid, but the grid explodes exponentially with dof.
 - **Sampling-based planning** — the high-dof workhorses:

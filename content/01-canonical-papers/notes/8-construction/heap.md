@@ -45,6 +45,9 @@ learning-based digging. The construction analogue of what ALOHA
 - 기초: [[04-robotics/mpc|MPC]], [[02-foundations/rl-basics|RL]] · 다음: [[01-canonical-papers/notes/8-construction/ext|ExT]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (4시대의 기준 시스템)
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 이 논문의 주장은 "자율 보행 굴착기 시스템의 실증"이다 — 새로운 학습 방법론의 기여가 아니다. 시스템/플랫폼 논문의 기준(통합 완성도, 재사용성, 후속 연구를 가능하게 했는가)으로 평가해야 공정하고, 그 기준으로는 이 분야 최고 수준이다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] HEAP의 가치가 개별 결과보다 "계측된 플랫폼"에 있다는 것을 설명할 수 있다

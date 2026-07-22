@@ -23,9 +23,9 @@ with the listed quick source — a few hours each, not a semester.
 | Exponentials & logarithms (incl. $\log$ rules) | [[02-foundations/information-theory\|5. Information Theory]] | [[02-foundations/engineering-math\|0.5 공업수학 §6]] + [[02-foundations/information-theory\|정보이론 §0]] |
 | Basic set notation & logic | [[02-foundations/probability\|3. Probability]] (axioms) | [[02-foundations/engineering-math\|0.5 공업수학 §8 표기법 사전]] |
 
-That's the *entire* prerequisite list — no measure theory, no functional analysis, no
+That is the minimum needed to *begin* — no measure theory, no functional analysis, no
 advanced statistics. If you can differentiate, multiply matrices, and read $\sum$ and
-$\log$, you can start.
+$\log$, you can start; individual papers may call for deeper references as you go.
 
 ### Recommended study order
 
@@ -117,8 +117,9 @@ order (its section 1 mirrors this page's logic), with the
 | 지수·로그 (로그 법칙 포함) | [[02-foundations/information-theory\|5. 정보이론]] | [[02-foundations/engineering-math\|0.5 공업수학 §6]] + [[02-foundations/information-theory\|정보이론 §0]] |
 | 기초 집합 표기와 논리 | [[02-foundations/probability\|3. 확률]] (공리) | [[02-foundations/engineering-math\|0.5 공업수학 §8 표기법 사전]] |
 
-이것이 사전 지식의 *전부*다 — 측도론도, 함수해석도, 고급 통계도 없다. 미분할 수 있고,
-행렬을 곱할 수 있고, $\sum$과 $\log$를 읽을 수 있으면 시작할 수 있다.
+이것이 *시작에* 필요한 최소한이다 — 측도론도, 함수해석도, 고급 통계도 없다. 미분할 수
+있고, 행렬을 곱할 수 있고, $\sum$과 $\log$를 읽을 수 있으면 시작할 수 있다; 개별 논문을
+깊게 팔 때는 추가 자료가 필요할 수 있다.
 
 ### 권장 학습 순서
 

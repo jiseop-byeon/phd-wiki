@@ -48,7 +48,7 @@ These groups publish the manipulation/HRC methods construction researchers impor
 |---|---|---|
 | [Manufacturing Futures Institute](https://engineering.cmu.edu/mfi/) + Robotics Institute, CMU | (multi-PI) | AI for advanced manufacturing; the robotics muscle behind CMU's construction-AI push |
 | [AUTOLab](https://autolab.berkeley.edu), UC Berkeley (IEOR/EECS) | Ken Goldberg | robust grasping & manipulation for warehouses/industrial automation |
-| [BAIR](https://bair.berkeley.edu), UC Berkeley | Levine, Abbeel, et al. | the robot-learning engine room — [[01-canonical-papers/notes/4-vla/octo|Octo]], much of the VLA lineage in this wiki |
+| [BAIR](https://bair.berkeley.edu), UC Berkeley | Levine, Abbeel, et al. | the robot-learning engine room — [[01-canonical-papers/notes/4-vla/octo\|Octo]], much of the VLA lineage in this wiki |
 | [Interactive Robotics Group](https://interactive.mit.edu), MIT | Julie Shah | human-robot teaming for manufacturing assembly (from Boeing aerospace lines) — the HRC playbook construction borrows |
 
 ### How to use this map
@@ -108,7 +108,7 @@ CMU 토목의 강점은 건설 *센싱/AI*(Tang, Akinci)이고, 버클리의 phy
 |---|---|---|
 | [Manufacturing Futures Institute](https://engineering.cmu.edu/mfi/) + Robotics Institute, CMU | (복수 PI) | 첨단 제조를 위한 AI; CMU 건설 AI 추진의 로보틱스 근육 |
 | [AUTOLab](https://autolab.berkeley.edu), UC 버클리 (IEOR/EECS) | Ken Goldberg | 창고/산업 자동화를 위한 강건한 파지와 조작 |
-| [BAIR](https://bair.berkeley.edu), UC 버클리 | Levine, Abbeel 등 | 로봇 학습의 엔진룸 — [[01-canonical-papers/notes/4-vla/octo|Octo]] 등 이 위키 VLA 계보의 산실 |
+| [BAIR](https://bair.berkeley.edu), UC 버클리 | Levine, Abbeel 등 | 로봇 학습의 엔진룸 — [[01-canonical-papers/notes/4-vla/octo\|Octo]] 등 이 위키 VLA 계보의 산실 |
 | [Interactive Robotics Group](https://interactive.mit.edu), MIT | Julie Shah | 제조 조립의 인간-로봇 팀워크(보잉 항공 라인 출신) — 건설이 빌려 쓰는 HRC 플레이북 |
 
 ### 이 지도를 쓰는 법

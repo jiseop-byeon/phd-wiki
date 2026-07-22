@@ -51,6 +51,9 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 - 이전: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (플랫폼), [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/pi0|π0]] (방법론)
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] 1+5 합류점
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "scalable autonomous excavation"의 scalable은 프레임워크(수집→사전학습→파인튜닝)의 확장 가능성 주장이지, 실제 현장 배치의 검증이 아니다 — 안전 체계와 과제 다양성은 열린 문제로 남아 있다. "굴착의 파운데이션 모델 시대가 열렸다"는 신호로 읽되, "도착했다"로 읽지 마라.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔는지 말할 수 있다

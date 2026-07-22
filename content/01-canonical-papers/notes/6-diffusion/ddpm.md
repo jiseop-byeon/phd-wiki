@@ -123,6 +123,9 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 - 다음: [[score-sde|Score SDE]] (통합 관점), DDIM, Latent Diffusion → Diffusion Policy
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "high quality image synthesis"는 FID(샘플 품질) 기준의 주장이다 — 로그 우도로는 자기회귀 모델에 뒤진다는 것을 논문 스스로 보고한다. 또 "probabilistic models"는 변분 하한으로 학습한다는 뜻이지 샘플링이 실용적이라는 뜻이 아니다(1000 스텝) — 그 격차는 DDIM이 메운다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] 순방향 폐쇄형 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$을 가우시안 닫힘 성질로 유도할 수 있다

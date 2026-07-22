@@ -97,7 +97,7 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
   DFT formula in [[02-foundations/signal-processing|6. Signal Processing]] is exactly this
   projection.
 
-### 8. Linear differential equations (→ control: [[04-robotics/control-theory-ce397|CE397]], [[04-robotics/lqr-lqg|LQR]])
+### 8. Linear differential equations (→ control: CE397, LQR)
 
 Physical systems are described by ODEs — this is the modeling language of all of control.
 
@@ -117,7 +117,7 @@ Physical systems are described by ODEs — this is the modeling language of all 
   $|a| < 1$. The continuous/discrete stability conditions ($\text{Re} < 0$ vs $|\cdot|<1$)
   are the two halves of one story.
 
-### 9. Laplace transform and the s-plane (→ control, [[02-foundations/signal-processing|6. Signal Processing §5]])
+### 9. Laplace transform and the s-plane (→ control, 6. Signal Processing §5)
 
 The Laplace transform turns ODEs into algebra:
 
@@ -248,7 +248,7 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   실수부이므로, "사인파로 분해" = "회전들에 투영" —
   [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식이 정확히 이 투영이다.
 
-### 8. 선형 미분방정식 (→ 제어: [[04-robotics/control-theory-ce397|CE397]], [[04-robotics/lqr-lqg|LQR]])
+### 8. 선형 미분방정식 (→ 제어: CE397, LQR)
 
 물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어다.
 
@@ -266,7 +266,7 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
   때만 안정. 연속/이산의 안정 조건($\text{Re} < 0$ vs $|\cdot|<1$)은 한 이야기의 두 반쪽이다.
 
-### 9. 라플라스 변환과 s-평면 (→ 제어, [[02-foundations/signal-processing|6. 신호처리 §5]])
+### 9. 라플라스 변환과 s-평면 (→ 제어, 6. 신호처리 §5)
 
 라플라스 변환은 미분방정식을 대수로 바꾼다:
 

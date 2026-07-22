@@ -118,8 +118,7 @@ to data-scarce domains like construction robotics.
 ### 영향과 후속 연구
 
 기준 오픈 휴머노이드 스택이자 **"physical AI" 데이터 전략**의 가장 큰 선언: 실데이터는
-희소한 꼭짓점이므로 시뮬레이션과 생성형 월드모델([[01-canonical-papers/canonical-list|5번
-섹션]])이 바닥을 채워야 한다. 후속(GR00T N1.5+, Cosmos 통합 파이프라인)이 정확히 그
+희소한 꼭짓점이므로 시뮬레이션과 생성형 월드모델([[01-canonical-papers/canonical-list|5번 섹션]])이 바닥을 채워야 한다. 후속(GR00T N1.5+, Cosmos 통합 파이프라인)이 정확히 그
 결합을 반복 개선 중 — 건설로봇처럼 데이터가 귀한 도메인에 가장 직결되는 방향이다.
 
 ### 연결
@@ -127,6 +126,9 @@ to data-scarce domains like construction robotics.
 - 이전: [[pi0|π0]] (행동 전문가), [[open-x-embodiment|OXE]] (데이터 풀링), 월드모델 (데이터 엔진)
 - 다음: GR00T N1.5+, Cosmos 월드모델 파이프라인 · 도메인 연결: [[05-construction-robotics/index|건설로봇]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "open foundation model"의 open은 가중치·코드이지 데이터 전체가 아니고, "generalist humanoid"의 검증 범위는 짧은 지평의 탁상 인접 과제다. 이 논문의 가장 강한 기여는 모델 자체보다 데이터 피라미드라는 전략 선언으로 읽는 것이 정확하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

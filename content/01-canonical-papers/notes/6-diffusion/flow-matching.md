@@ -119,6 +119,9 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 - 다음: [[pi0|π0]], [[gr00t-n1|GR00T N1]] 행동 헤드, SD3/Flux
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 두 주장을 분리해서 읽어라: ① 이론적 주장 — 디퓨전 경로를 특수 사례로 포함하는 일반 프레임이다(증명됨), ② 경험적 주장 — OT 직선 경로가 실용적으로 낫다(벤치마크 의존). ①이 ②를 자동으로 보장하지 않는다 — 채택의 실제 이유는 ②가 로봇 실시간 제어와 맞아떨어졌기 때문이다.
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] 속도장 $v_\theta(x, t)$가 무엇을 하는 함수이고, 샘플링이 왜 ODE 적분인지 말할 수 있다

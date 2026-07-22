@@ -23,6 +23,12 @@ tags: [reference]
 - **LQR vs MPC** — LQR은 무제약·무한 지평의 닫힌형 해; MPC는 제약 처리·유한 지평·매 스텝 재풀이. → [[04-robotics/mpc|MPC]]
 - **Open-loop vs Closed-loop** — 계획을 실행하는 동안 새 관측을 반영하는가; receding horizon은 closed-loop을 만드는 장치다.
 - **Objective vs Metric** — 학습이 최소화하는 것 vs 평가에 쓰는 것. 둘은 자주 다르고(교차 엔트로피로 학습, mAP로 평가), 그 간극 자체가 논문의 논점일 때가 있다. → [[02-foundations/ml-practice|ML 실무 §3]]
+- **Feature vs Representation vs Embedding vs Latent** — 거의 같은 뜻의 방언들: 모두 "네트워크가 만든 벡터". 뉘앙스만 다르다 — feature는 층의 출력, representation은 그 품질을 논할 때, embedding은 이산 입력의 벡터화, latent는 생성 모델의 숨은 변수.
+- **Inference vs Prediction vs Generation** — 셋 다 "학습된 모델을 돌리기"지만: inference는 실행 일반, prediction은 정답이 있는 출력, generation은 분포에서의 샘플링. 통계학의 inference(모수 추정)와 딥러닝의 inference(forward pass)는 다른 말이니 주의.
+- **Conditioning vs Prompting** — 조건화는 입력으로 정보를 주는 구조적 개념; 프롬프팅은 그 조건을 텍스트로 주는 인터페이스. 모든 프롬프팅은 조건화지만 역은 아니다(이미지·자세 조건 등).
+- **Pretraining vs Fine-tuning vs Post-training** — 대규모 일반 데이터 → 과제 데이터로 조정 → (최근 용법) SFT·RLHF 등 정렬 단계 전체를 묶어 부르는 말. π0의 "post-training"은 고품질 과제 데이터 단계다. → [[01-canonical-papers/notes/4-vla/pi0\|π0]]
+- **Generalization vs Robustness vs Transfer** — 같은 분포의 새 샘플 / 교란·이동된 분포 / 다른 과제·도메인으로의 이전. 논문이 셋 중 무엇을 재는지 확인하고 읽어라.
+- **Zero-shot vs Few-shot vs OOD** — 과제 예시 0개 / 소수 예시 / 학습 분포 밖 평가. zero-shot이라도 사전학습에 유사 데이터가 있었는지가 실제 쟁점이다. → [[02-foundations/ml-practice|ML 실무 §1]]
 
 ## A–C
 

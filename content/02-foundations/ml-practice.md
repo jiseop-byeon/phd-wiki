@@ -44,7 +44,7 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 | Detection | **IoU**, **mAP** | box overlap ratio; mean average precision over classes & IoU thresholds |
 | Segmentation | mIoU | IoU averaged over classes |
 | Generation (image) | **FID** | distribution distance between generated and real features — lower is better |
-| Language modeling | perplexity | $e^{\text{cross-entropy}}$ ([[02-foundations/information-theory|5. Info Theory §2]]) |
+| Language modeling | perplexity | $e^{\text{cross-entropy}}$ ([[02-foundations/information-theory\|5. Info Theory §2]]) |
 | Translation/captioning | BLEU | n-gram overlap with references |
 | Robotics | **success rate** | fraction of trials achieving the goal — plus *which* trials (seen/unseen) matters more than the number |
 | Retrieval | recall@k | truth within top-k results |
@@ -62,6 +62,15 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   protocol? tuned baselines? If a table doesn't answer these, the numbers are decoration.
 - Seeds and variance: deep learning results wobble across random seeds; serious papers
   report mean ± std over several seeds — robotics papers over several *rollouts and scenes*.
+
+### 5. Evaluation pitfalls to watch for in papers
+
+- **Cherry-picking**: qualitative figures show the best runs — ask what the *median* rollout looks like.
+- **Statistical vs practical significance**: +0.3%p with overlapping error bars is noise; +0.3%p on a saturated benchmark can still matter, and +5%p from one seed can be luck. Ask for variance first.
+- **Oracle information**: does the method quietly use ground-truth state, perfect calibration, or human resets that deployment won't have?
+- **Open-loop vs closed-loop evaluation**: predicting a good trajectory offline (open-loop) is far easier than executing under feedback with compounding errors (closed-loop) — robotics numbers are only comparable within the same regime.
+- **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things.
+- **Benchmark saturation**: near-ceiling benchmarks reward overfitting to quirks; gains there generalize least.
 
 ### Self-check
 
@@ -110,7 +119,7 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 | 검출 | **IoU**, **mAP** | 박스 겹침 비율; 클래스·IoU 문턱에 걸친 평균 정밀도 |
 | 분할 | mIoU | 클래스 평균 IoU |
 | 생성 (이미지) | **FID** | 생성/실제 특징 분포 사이 거리 — 낮을수록 좋다 |
-| 언어모델 | perplexity | $e^{\text{교차 엔트로피}}$ ([[02-foundations/information-theory|5. 정보이론 §2]]) |
+| 언어모델 | perplexity | $e^{\text{교차 엔트로피}}$ ([[02-foundations/information-theory\|5. 정보이론 §2]]) |
 | 번역/캡셔닝 | BLEU | 참조문과의 n-gram 겹침 |
 | 로보틱스 | **success rate** | 목표 달성 시행 비율 — 숫자보다 *어떤* 시행(seen/unseen)인지가 더 중요 |
 | 검색 | recall@k | 정답이 상위 k개 안 |
@@ -128,6 +137,15 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   튜닝된 베이스라인? 표가 이에 답하지 않으면 그 숫자는 장식이다.
 - 시드와 분산: 딥러닝 결과는 랜덤 시드에 따라 흔들린다; 진지한 논문은 여러 시드의 평균 ±
   표준편차를, 로보틱스 논문은 여러 *롤아웃과 장면*에 걸쳐 보고한다.
+
+### 5. 논문에서 경계할 평가 함정
+
+- **체리피킹**: 정성적 그림은 최고 실행을 보여준다 — *중앙값* 롤아웃은 어떤지 물어라.
+- **통계적 vs 실질적 유의성**: 오차 막대가 겹치는 +0.3%p는 노이즈다; 포화된 벤치마크의 +0.3%p는 의미 있을 수 있고, 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라.
+- **오라클 정보**: 배포 환경에는 없을 실측 상태, 완벽한 캘리브레이션, 사람의 리셋을 조용히 쓰고 있지 않은가?
+- **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다.
+- **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다.
+- **벤치마크 포화**: 천장 근처의 벤치마크는 그 벤치마크의 버릇에 과적합하는 것을 보상한다 — 거기서의 이득이 가장 일반화되지 않는다.
 
 ### 스스로 점검
 

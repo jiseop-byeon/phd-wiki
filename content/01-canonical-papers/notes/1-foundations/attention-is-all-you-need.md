@@ -35,6 +35,10 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
 - **Scaled dot-product attention** — the core operation:
   $\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
   Every token directly attends to every other token in one step; the $\sqrt{d_k}$ scaling prevents softmax saturation for large key dimensions.
+  **Reading the equation, axis by axis**: $QK^\top$ = a $T{\times}T$ table of "who should
+  look at whom" scores; softmax turns each row into weights summing to 1; multiplying by
+  $V$ mixes the value vectors with those weights; $\sqrt{d_k}$ keeps scores from growing
+  with dimension. Output shape: (number of queries) × (value dimension).
 - **Multi-head attention** — run $h=8$ attention operations in parallel on different learned projections, then concatenate. Different heads learn different relation types (syntax, coreference, …).
 - **Three uses of attention**: encoder self-attention, decoder *masked* self-attention (causal mask preserves autoregression), and encoder-decoder cross-attention.
 - **Position-wise feed-forward** networks, **residual connections + LayerNorm** around every sublayer.
@@ -81,6 +85,9 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 - **Scaled dot-product attention** — 핵심 연산:
   $\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
   모든 토큰이 다른 모든 토큰을 한 번에 참조한다. $\sqrt{d_k}$로 나누는 것은 차원이 클 때 softmax가 포화되는 것을 막기 위함.
+  **수식을 축 단위로 읽기**: $QK^\top$ = "누가 누구를 볼지"의 $T{\times}T$ 점수표;
+  softmax가 각 행을 합 1의 가중치로 바꾸고; $V$를 곱해 그 가중치로 값 벡터들을 섞는다;
+  $\sqrt{d_k}$는 점수가 차원과 함께 자라는 것을 막는다. 출력 모양: (쿼리 수) × (값 차원).
 - **Multi-head attention** — 서로 다른 학습된 투영 위에서 어텐션을 $h=8$개 병렬로 수행한 뒤 이어붙인다. 헤드마다 다른 종류의 관계(문법 구조, 지시 관계 등)를 학습한다.
 - **어텐션의 세 가지 쓰임**: 인코더 self-attention, 디코더의 *마스킹된* self-attention(인과 마스크로 자기회귀 유지), 인코더-디코더 cross-attention.
 - 위치별 feed-forward 네트워크, 모든 서브레이어에 **residual 연결 + LayerNorm**.
@@ -108,6 +115,9 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 
 - 이전: seq2seq + attention (Bahdanau 2015)
 - 다음으로 읽을 것: BERT, GPT-3, ViT
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 제목 "Attention Is All You Need"는 "모든 과제에 어텐션이면 충분"이 아니라 "시퀀스 변환에서 순환·합성곱 없이 어텐션만으로 SOTA가 가능"이라는 주장이다. 검증 범위는 번역(+구문 분석)뿐 — 비전·로봇으로의 일반화는 수년 뒤 다른 논문들이 증명했다. 제목의 야심과 실험의 범위를 분리해서 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
