@@ -23,7 +23,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [ ] Adam — *A Method for Stochastic Optimization* (Kingma & Ba, ICLR 2015)
 - [ ] Batch Normalization (Ioffe & Szegedy, ICML 2015)
 - [ ] ResNet — *Deep Residual Learning* (He et al., CVPR 2016)
-- [ ] **Attention Is All You Need** (Vaswani et al., NeurIPS 2017)
+- [x] [[notes/attention-is-all-you-need|**Attention Is All You Need**]] (Vaswani et al., NeurIPS 2017)
 - [ ] BERT (Devlin et al., NAACL 2019)
 - [ ] GPT-3 — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)
 - [ ] Scaling Laws for Neural Language Models (Kaplan et al., 2020) + Chinchilla (Hoffmann et al., 2022)
