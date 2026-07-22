@@ -19,10 +19,16 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 1. Deep Learning Foundations
 
-- [ ] AlexNet — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
+시간순 정렬 — 2012년 ImageNet에서 시작해 CNN 계열과 RNN 계열이 2017년 Transformer에서 합류하는 흐름. [[10-deep-learning/lineage|계보도]] 참고.
+
+- [ ] LSTM — *Long Short-Term Memory* (Hochreiter & Schmidhuber, Neural Computation 1997)
+- [x] [[notes/alexnet|**AlexNet**]] — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
+- [ ] seq2seq — *Sequence to Sequence Learning* (Sutskever et al., NeurIPS 2014)
+- [x] [[notes/bahdanau-attention|Bahdanau Attention]] — *NMT by Jointly Learning to Align and Translate* (ICLR 2015)
+- [x] [[notes/vgg|VGG]] — *Very Deep Convolutional Networks* (Simonyan & Zisserman, ICLR 2015)
 - [ ] Adam — *A Method for Stochastic Optimization* (Kingma & Ba, ICLR 2015)
 - [ ] Batch Normalization (Ioffe & Szegedy, ICML 2015)
-- [ ] ResNet — *Deep Residual Learning* (He et al., CVPR 2016)
+- [x] [[notes/resnet|**ResNet**]] — *Deep Residual Learning* (He et al., CVPR 2016)
 - [x] [[notes/attention-is-all-you-need|**Attention Is All You Need**]] (Vaswani et al., NeurIPS 2017)
 - [ ] BERT (Devlin et al., NAACL 2019)
 - [ ] GPT-3 — *Language Models are Few-Shot Learners* (Brown et al., NeurIPS 2020)

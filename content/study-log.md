@@ -12,4 +12,6 @@ tags: [log]
 
 - 위키 개설: Obsidian + Quartz + GitHub Pages 구축
 - 첫 논문 노트 작성: [[40-papers/notes/attention-is-all-you-need|Attention Is All You Need]]
-- 다음 읽을 것: ResNet, ViT, CLIP
+- 기초 1차 배치 (2012→2016 연대순): [[40-papers/notes/alexnet|AlexNet]], [[40-papers/notes/vgg|VGG]], [[40-papers/notes/bahdanau-attention|Bahdanau Attention]], [[40-papers/notes/resnet|ResNet]]
+- 계보도에 2012–2017 구간 추가 (CNN 갈래 + RNN 갈래 → Transformer 합류)
+- 다음 읽을 것: Adam, BatchNorm, seq2seq, LSTM 또는 바로 ViT/CLIP

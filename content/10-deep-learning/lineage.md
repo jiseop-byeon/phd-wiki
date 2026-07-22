@@ -7,6 +7,23 @@ tags: [moc, reference]
 각 분야가 어떤 논문에서 갈라져 나왔는지 한눈에 보기 위한 지도.
 노트를 작성할 때마다 여기에 연결한다.
 
+## 2012–2017: 딥러닝의 부상 — 두 갈래가 Transformer에서 만나다
+
+```mermaid
+graph TD
+    subgraph CNN["CNN 계열 (비전)"]
+    AlexNet["AlexNet (2012)<br/>규모가 설계를 이긴다"] --> VGG["VGG (2015)<br/>깊이 + 작은 필터"]
+    VGG --> ResNet["ResNet (2016)<br/>residual 연결"]
+    end
+    subgraph RNN["RNN 계열 (언어)"]
+    LSTM["LSTM (1997)"] --> S2S["seq2seq (2014)<br/>인코더-디코더"]
+    S2S --> Bahdanau["Bahdanau Attention (2015)<br/>어텐션의 탄생"]
+    end
+    Bahdanau --> T["Attention Is All You Need (2017)"]
+    ResNet -."residual 연결은 모든<br/>Transformer 블록에".-> T
+    ResNet --> ViT2["ViT (2021)"]
+```
+
 ## Backbone: Transformer 이후의 큰 흐름
 
 ```mermaid
