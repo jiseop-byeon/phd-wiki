@@ -36,6 +36,14 @@ no prior background assumed.
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — the *extra* bits paid for using $q$ when the truth is $p$.
+- **Non-negativity, proved in two lines** (Jensen's inequality — $\log$ is concave):
+  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
+  Equality iff $p = q$. This tiny proof powers the ELBO's validity and half of learning theory.
+- **Gaussian KL, closed form** (the formula inside every VAE implementation): for
+  $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$:
+  $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
+  Against a standard normal prior ($\mu_2=0, \sigma_2=1$) this is the exact regularizer
+  term coded in [[canonical-papers/notes/vae|VAE]] losses.
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
   - Reverse KL (used in variational inference): mode-**seeking** — $q$ locks onto one mode.
@@ -54,7 +62,12 @@ no prior background assumed.
   — how many bits knowing $Y$ tells you about $X$; zero iff independent.
 - **InfoNCE / contrastive learning** ([[canonical-papers/notes/clip|CLIP]]'s objective) is a
   lower bound on mutual information between views/modalities — "maximize what the image
-  embedding tells you about the text embedding."
+  embedding tells you about the text embedding." Written out for a batch of $N$ pairs with
+  similarity $s(\cdot,\cdot)$ and temperature $\tau$:
+  $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
+  — cross-entropy where "the classes" are the other samples in the batch; it satisfies
+  $I(X;Y) \ge \log N - \mathcal{L}$, so bigger batches permit tighter bounds (why CLIP
+  used batch size 32k).
 - Representation learning framings (information bottleneck): keep what predicts the label,
   discard the rest — compression as a theory of generalization.
 
@@ -112,6 +125,14 @@ posterior. Every VAE, diffusion, and world-model paper writes some version of th
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — 진실이 $p$인데 $q$를 썼을 때 *추가로* 내는 비트.
+- **비음수성, 두 줄 증명** (옌센 부등식 — $\log$는 오목):
+  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
+  등호는 $p = q$일 때만. 이 작은 증명이 ELBO의 유효성과 학습 이론의 절반을 떠받친다.
+- **가우시안 KL의 닫힌 형태** (모든 VAE 구현 속의 그 공식):
+  $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$에 대해:
+  $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
+  표준 정규 사전($\mu_2=0, \sigma_2=1$)에 대한 이 식이 [[canonical-papers/notes/vae|VAE]]
+  손실에 코딩되는 정규화 항 그 자체다.
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
   - Reverse KL (변분 추론에서 사용): 모드 **시킹** — $q$가 한 모드에 들러붙는다.
@@ -130,6 +151,10 @@ posterior. Every VAE, diffusion, and world-model paper writes some version of th
   — $Y$를 알면 $X$에 대해 몇 비트를 알게 되는가; 독립일 때만 0.
 - **InfoNCE / 대조학습** ([[canonical-papers/notes/clip|CLIP]]의 목적함수)은 뷰/모달리티 간
   상호 정보량의 하한이다 — "이미지 임베딩이 텍스트 임베딩에 대해 알려주는 양을 최대화하라."
+  유사도 $s(\cdot,\cdot)$와 온도 $\tau$, $N$쌍 배치에 대해 써보면:
+  $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
+  — "클래스"가 배치 안의 다른 샘플들인 교차 엔트로피다; $I(X;Y) \ge \log N - \mathcal{L}$을
+  만족하므로 배치가 클수록 더 빡빡한 하한이 가능하다 (CLIP이 배치 32k를 쓴 이유).
 - 표현 학습의 틀(information bottleneck): 라벨을 예측하는 것만 남기고 버려라 —
   압축을 일반화의 이론으로 보는 관점.
 
