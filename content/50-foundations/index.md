@@ -27,9 +27,9 @@ own study notes distilled from them.
 
 ### Study notes
 
-- [[50-foundations/optimization|Optimization]] (to be written as studied)
-- [[50-foundations/probability|Probability & Random Processes]] (to be written)
-- [[50-foundations/signal-processing|Signal Processing]] (to be written)
+- [[50-foundations/optimization|Optimization]] — problem anatomy, convexity, KKT, LP/QP/NLP/MIP, and where each shows up in robotics
+- [[50-foundations/probability|Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of every loss function
+- [[50-foundations/signal-processing|Signal Processing]] — sampling, FFT, filtering, sensor-pipeline habits
 
 ## 한국어
 
@@ -55,6 +55,6 @@ own study notes distilled from them.
 
 ### 공부 노트
 
-- [[50-foundations/optimization|최적화]] (공부하며 작성 예정)
-- [[50-foundations/probability|확률과 랜덤 프로세스]] (작성 예정)
-- [[50-foundations/signal-processing|신호처리]] (작성 예정)
+- [[50-foundations/optimization|최적화]] — 문제의 구조, 볼록성, KKT, LP/QP/NLP/MIP와 로보틱스에서의 등장 지점
+- [[50-foundations/probability|확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 모든 손실함수의 기원으로서의 MLE
+- [[50-foundations/signal-processing|신호처리]] — 샘플링, FFT, 필터링, 센서 파이프라인 습관

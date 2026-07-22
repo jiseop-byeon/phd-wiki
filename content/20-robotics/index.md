@@ -33,9 +33,6 @@ and representative applications" (enough to read modern robotics papers).
   configuration space, 강체 운동, 정기구학/역기구학, 속도 기구학과 정역학, 동역학,
   궤적 생성, 모션 플래닝, 로봇 제어, 파지, 이동 로봇
 
-> [!note] 로컬 자료
-> 교재 PDF(MR.pdf), 기구학/동역학 강의(ENAS 772), 제어 교재(CE397)가 로컬 `reference/` 폴더에 있다 (저작권상 미게시).
-
 ### 제어 공부 순서
 
 목표 수준: 고전 제어는 확실하게, MPC는 문제 정식화와 대표적인 응용 사례를

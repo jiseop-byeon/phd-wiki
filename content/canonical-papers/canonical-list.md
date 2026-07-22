@@ -87,10 +87,10 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 6. Diffusion & Generative Models
 
-- [ ] VAE — *Auto-Encoding Variational Bayes* (Kingma & Welling, ICLR 2014)
-- [ ] GAN (Goodfellow et al., NeurIPS 2014)
-- [ ] **DDPM** — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
-- [ ] Score-Based Generative Modeling through SDEs (Song et al., ICLR 2021)
+- [x] [[notes/vae|VAE]] — *Auto-Encoding Variational Bayes* (Kingma & Welling, ICLR 2014)
+- [x] [[notes/gan|GAN]] (Goodfellow et al., NeurIPS 2014)
+- [x] [[notes/ddpm|DDPM]] — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
+- [x] [[notes/score-sde|Score SDE]] — *Score-Based Generative Modeling through SDEs* (Song et al., ICLR 2021)
 - [ ] DDIM (Song et al., ICLR 2021)
 - [ ] Classifier-Free Guidance (Ho & Salimans, 2022)
 - [ ] Latent Diffusion / Stable Diffusion (Rombach et al., CVPR 2022)

@@ -23,3 +23,6 @@ tags: [log]
 - 노트 형식 개선: 모든 노트 첫 줄에 "저자, 학회 연도 — arXiv·PDF·Code" 표기; 폴더명 `canonical-papers`로 변경
 - VLM 배치 완료: [[canonical-papers/notes/flamingo|Flamingo]], [[canonical-papers/notes/blip-2|BLIP-2]], [[canonical-papers/notes/llava|LLaVA]] — CLIP→연결자 설계 경쟁→지시 튜닝의 흐름; 다음은 VLA로 가는 관문 통과
 - 다음: 디퓨전 계열 (VAE, GAN, DDPM, Score SDE) 또는 바로 VLA (RT-1, RT-2, Diffusion Policy)
+- 기초 정리 페이지 3편 (reference 자료를 내 언어로 재구성): [[50-foundations/optimization|최적화]], [[50-foundations/probability|확률과 랜덤 프로세스]], [[50-foundations/signal-processing|신호처리]]
+- 디퓨전 기초 배치: [[canonical-papers/notes/vae|VAE]], [[canonical-papers/notes/gan|GAN]], [[canonical-papers/notes/ddpm|DDPM]], [[canonical-papers/notes/score-sde|Score SDE]] — VAE(안정·흐릿) vs GAN(선명·불안정)의 긴장을 DDPM이 해소하고 Score SDE가 이론으로 통합
+- 다음: VLA 진입 (RT-1, RT-2, Diffusion Policy, ACT) — 디퓨전 수학 준비 완료
