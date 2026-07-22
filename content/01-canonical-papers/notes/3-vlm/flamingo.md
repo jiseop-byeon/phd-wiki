@@ -90,3 +90,9 @@ Defined the frozen-backbone + connector recipe every subsequent VLM refines — 
 - 이전: [[clip|CLIP]] (시각 축), [[gpt-3|GPT-3]] (few-shot 패러다임)
 - 다음: [[blip-2|BLIP-2]] → [[llava|LLaVA]] → RT-2
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 얼린 두 거인 + 게이트 cross-attention 연결이라는 설계를 말할 수 있다
+- [ ] 혼재 데이터가 멀티모달 few-shot을 가능하게 한 이유를 말할 수 있다
+- [ ] 이후 연결자 경쟁(Q-Former→선형)에서 이 논문의 위치를 말할 수 있다

@@ -116,3 +116,10 @@ states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 - 기초: [[vae|VAE]], [[lstm|LSTM]], [[02-foundations/rl-basics|RL 기초]]
 - 다음: [[planet|PlaNet]] → [[dreamer|Dreamer]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] V/M/C 분해와 각 모듈의 학습 신호를 말할 수 있다
+- [ ] 꿈속 훈련이 가능했던 조건과 온도의 역할을 설명할 수 있다
+- [ ] 모델 악용 문제가 왜 모든 모델 기반 RL의 질병인지 말할 수 있다
+- [ ] 이 뼈대가 PlaNet/Dreamer에서 어떻게 정교화됐는지 말할 수 있다

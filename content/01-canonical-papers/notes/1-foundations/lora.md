@@ -13,6 +13,9 @@ status: to-read
 
 **Hu et al., ICLR 2022** — [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)
 
+> [!note] 수학 준비물 · Math on-ramp
+> [[02-foundations/linear-algebra|선형대수 §2·§4]]의 랭크와 SVD(Eckart–Young)가 이 논문의 수학 전부다: "업데이트가 저랭크"라는 가설은 $\Delta W$를 얇은 행렬 둘의 곱으로 근사해도 된다는 뜻이다.
+
 ## English
 
 **One-line summary**: Freeze the pretrained weights and learn only a low-rank update ΔW = BA per weight matrix — fine-tune giant models by training ~0.01–1% of parameters, with zero added inference latency.
@@ -90,3 +93,10 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 
 - 저렴한 적응을 가능하게 함: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]급 모델, VLA(OpenVLA 파인튜닝)
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] $\Delta W = BA$의 학습 파라미터 수를 $d, k, r$로 계산할 수 있다
+- [ ] $B = 0$ 초기화가 보장하는 것을 말할 수 있다
+- [ ] 배포 시 병합으로 추론 지연이 0인 이유(어댑터와의 차이)를 설명할 수 있다
+- [ ] 내재적 저랭크 가설이 실증이지 설명이 아니라는 점을 말할 수 있다

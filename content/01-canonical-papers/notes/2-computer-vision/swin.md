@@ -102,3 +102,9 @@ bridge showing attention and convolutional inductive biases can be mixed freely
 
 - 이전: [[vit|ViT]], [[resnet|ResNet]] (백본 역할의 인수인계)
 - 다음: [[sam|SAM]] 시대의 밀집 모델, ViTDet · 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 창 어텐션 + 이동 창의 요지(선형 비용 + 경계 통신)를 말할 수 있다
+- [ ] 계층 백본이 밀집 예측에 필요한 이유를 말할 수 있다
+- [ ] 순정 ViT + 강한 사전학습이 다시 이긴 흐름을 말할 수 있다

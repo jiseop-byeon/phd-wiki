@@ -12,6 +12,9 @@ status: to-read
 
 **Goodfellow et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1406.2661) · [PDF](https://arxiv.org/pdf/1406.2661)
 
+> [!note] 수학 준비물 · Math on-ramp
+> $\min_G \max_D$ 읽는 법: 안쪽 $\max_D$를 먼저 고정된 $G$에 대한 "최선의 판별자"로 읽고, 바깥 $\min_G$는 그 최선의 판별자를 상대로 한 생성자 최적화로 읽어라 — 두 플레이어가 번갈아 움직이는 [[02-foundations/optimization|최적화]] 문제다. 기댓값 표기는 [[02-foundations/probability|확률 §2]].
+
 ## English
 
 **One-line summary**: Train a generator against a discriminator in a minimax game — no likelihood, no Markov chain, just an adversary as the loss function; a decade of sharp-but-unstable generative modeling followed.
@@ -112,3 +115,9 @@ adversarial training frames robustness research.
 
 - 대비: [[vae|VAE]] (안정, 흐릿) vs GAN (선명, 불안정) — 이 긴장을 [[ddpm|DDPM]]이 해소한다
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] minimax 게임에서 손실함수가 함께 진화한다는 것의 의미를 말할 수 있다
+- [ ] 불안정과 모드 붕괴가 구조적인 이유를 말할 수 있다
+- [ ] 디퓨전이 무엇을 맞바꿔 GAN을 대체했는지 말할 수 있다

@@ -122,3 +122,10 @@ simulator that generates embodied training data at scale — the base of
 - 이전: [[dreamer|Dreamer]] (에이전트 경험 월드모델), [[vae|VQ-VAE 기계장치]]
 - 병행: [[sora|Sora]] (행동 없는, 시뮬레이션으로서의 비디오 생성) · 다음: [[cosmos|Cosmos]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 잠재 행동이 발견되는 메커니즘(8-코드 병목)을 설명할 수 있다
+- [ ] 세 구성요소(토크나이저/잠재 행동 모델/동역학 모델)를 말할 수 있다
+- [ ] 행동 라벨 없는 인터넷 비디오가 훈련장이 된다는 주장의 의미를 말할 수 있다
+- [ ] 그럴듯함 ≠ 물리적 정확함 문제를 말할 수 있다

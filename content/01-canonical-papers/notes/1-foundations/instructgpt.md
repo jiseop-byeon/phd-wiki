@@ -12,6 +12,9 @@ status: to-read
 
 **Ouyang et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2203.02155) · [PDF](https://arxiv.org/pdf/2203.02155)
 
+> [!note] 수학 준비물 · Math on-ramp
+> [[02-foundations/rl-basics|RL 기초 §4]]의 정책 그래디언트→PPO 구간을 먼저 읽어라 — 이 논문의 3단계 중 마지막이 정확히 그 PPO이고, KL 페널티는 [[02-foundations/information-theory|정보이론 §3]]의 언어로 쓰여 있다.
+
 ## English
 
 **One-line summary**: The three-stage RLHF recipe — supervised fine-tuning, reward model from human preferences, PPO — turns a raw language model into an assistant; a 1.3B aligned model was preferred over 175B GPT-3.
@@ -87,3 +90,10 @@ ChatGPT의 직접적 설계도이자 모든 현대 어시스턴트 정렬의 템
 
 - 이전: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] · 후속: DPO, Constitutional AI
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 3단계(SFT→보상 모델→PPO) 각각의 입력과 출력을 말할 수 있다
+- [ ] 보상을 절대 점수가 아니라 비교로 학습하는 이유를 설명할 수 있다
+- [ ] KL 페널티가 무엇을 막는지(보상 과최적화)와 그 정보이론적 독해를 말할 수 있다
+- [ ] 1.3B가 175B를 이긴 결과가 무엇을 증명하는지 말할 수 있다

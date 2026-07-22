@@ -89,3 +89,10 @@ Made "scale + prompting" the dominant paradigm and prompting a first-class inter
 
 - 이전: [[01-canonical-papers/notes/1-foundations/bert|BERT]] (대비), [[01-canonical-papers/notes/1-foundations/scaling-laws|Scaling Laws]] · 다음: [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] in-context learning의 정의 — 가중치 갱신 없이 프롬프트로 학습 — 를 말할 수 있다
+- [ ] zero/few-shot 격차가 규모와 함께 커지는 관찰이 왜 중요한지 설명할 수 있다
+- [ ] 창발 능력의 예와 그 평가상 주의점을 말할 수 있다
+- [ ] 날것 LM의 비정렬 문제와 InstructGPT로의 다리를 말할 수 있다

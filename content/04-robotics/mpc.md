@@ -48,3 +48,10 @@ construction-robotics direction ([[05-construction-robotics/index|section 5]]).
 
 - 기초: [[02-foundations/optimization|최적화]] (QP, KKT), [[02-foundations/linear-algebra|선형대수]]
 - 이전: [[04-robotics/lqr-lqg|LQR/LQG]] · 다음: [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] receding horizon 절차(풀고→첫 입력→재풀이)를 말할 수 있다
+- [ ] LQR 대비 MPC의 존재 이유(제약의 태생적 처리)를 말할 수 있다
+- [ ] Mayne 2000이 정리한 안정성 재료(종단 비용·종단 제약·지평)를 개요 수준에서 말할 수 있다
+- [ ] PlaNet·Diffusion Policy가 MPC의 구조를 빌린 지점을 말할 수 있다

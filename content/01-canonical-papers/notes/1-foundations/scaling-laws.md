@@ -13,6 +13,9 @@ status: to-read
 
 **Kaplan et al., 2020 · Hoffmann et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2001.08361) · [PDF](https://arxiv.org/pdf/2001.08361) · [Official](https://arxiv.org/abs/2203.15556)
 
+> [!note] 수학 준비물 · Math on-ramp
+> 거듭제곱 법칙 $L \propto N^{-\alpha}$은 log-log 축에서 직선이다([[02-foundations/engineering-math|0.5 §6]]의 로그 규칙) — 논문의 모든 그림이 그 직선 위의 데이터다. 기울기 $\alpha$가 "규모의 수익률".
+
 ## English
 
 **One-line summary**: LM loss follows precise power laws in parameters, data, and compute — turning "how big should we train?" from folklore into arithmetic; Chinchilla later corrected the recipe (params and tokens should scale equally).
@@ -88,3 +91,10 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 - 동기가 된 것: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] · LLM부터 VLA까지 어디에나 적용
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 세 거듭제곱 법칙의 변수(N, D, C)와 각 법칙이 성립하는 조건을 말할 수 있다
+- [ ] Kaplan과 Chinchilla의 배분 결론 차이(파라미터당 ~20토큰)를 말할 수 있다
+- [ ] 작은 파일럿에서 거대 학습을 설계할 수 있게 된 것의 공학적 의미를 말할 수 있다
+- [ ] 사전학습 손실 예측과 다운스트림 능력 예측의 간극을 말할 수 있다

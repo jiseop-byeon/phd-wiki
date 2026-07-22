@@ -93,3 +93,10 @@ Set off the open-VLM explosion: the "encoder + projection + open LLM + synthetic
 - 이전: [[clip|CLIP]] + [[instructgpt|InstructGPT]] (두 재료), [[blip-2|BLIP-2]]
 - 다음: RT-2, OpenVLA (VLM → VLA)
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] GPT-4 데이터 합성의 두 베팅(LLM이 학습 데이터를 쓴다 / 연결자는 사소해도 된다)을 말할 수 있다
+- [ ] 선형 프로젝터 하나로 충분해지는 조건(좋은 지시 데이터)을 말할 수 있다
+- [ ] GPT-4 심판 평가의 순환성 문제를 지적할 수 있다
+- [ ] OpenVLA류 VLA가 구조적으로 LLaVA인 이유를 말할 수 있다

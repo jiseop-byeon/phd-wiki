@@ -40,3 +40,9 @@ climb," not a verdict.
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/8-construction/bock-2015|Bock 2015]] · 다음: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (기술 쪽의 응답)
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 네 가지 기술 범주와 최상위 도입 장벽을 말할 수 있다
+- [ ] 기술이 아니라 수요 측 제약이라는 프레임의 의미를 설명할 수 있다
+- [ ] 범용 로봇이 비용 구조를 바꿀 수 있다는 반론을 구성할 수 있다

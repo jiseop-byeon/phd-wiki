@@ -101,3 +101,10 @@ descendants; DDIM inversion underpins image/trajectory editing methods.
 
 - 이전: [[ddpm|DDPM]] · 이론: [[score-sde|Score SDE]] (ODE 관점) · 다음: DPM-Solver, [[flow-matching|Flow Matching]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 학습은 주변 분포만 쓴다는 관찰이 왜 재해석을 허용하는지 설명할 수 있다
+- [ ] 결정론적 샘플링이 만드는 일관된 잠재 공간의 용도(보간·역변환)를 말할 수 있다
+- [ ] 재학습 없이 스텝을 줄이는 원리를 말할 수 있다
+- [ ] 확률 흐름 ODE의 이산화라는 사후적 이해를 말할 수 있다

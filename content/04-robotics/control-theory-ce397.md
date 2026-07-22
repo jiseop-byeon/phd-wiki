@@ -65,3 +65,10 @@ HVAC, 상수도. 교수자 사이트에서 코스 패킷 전체가 공개되어 
 
 - 기초: [[02-foundations/engineering-math|0.5 공업수학 §8–9]], [[02-foundations/linear-algebra|1. 선형대수]], [[02-foundations/probability|3. 확률]]
 - 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|보행 convex MPC]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 상태공간 모델 $\dot x = Ax + Bu$의 각 기호가 물리계의 무엇에 대응하는지 말할 수 있다
+- [ ] 안정성 = $A$의 고유값이라는 판정과 s-평면 그림을 연결할 수 있다
+- [ ] 가제어성 랭크 조건이 실용적으로 묻는 질문을 말할 수 있다
+- [ ] 피드백이 개루프 대비 무엇을 사는지(외란·모델 오차 억제)를 말할 수 있다

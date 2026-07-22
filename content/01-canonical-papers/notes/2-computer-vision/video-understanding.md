@@ -108,3 +108,10 @@ SlowFast급 모델을 흔히 돌린다. 개념적으로 두-속도 아이디어�
 
 - 이전: [[alexnet|CNN 시대]], two-stream 네트워크 · 다음: 비디오 트랜스포머, [[jepa|V-JEPA]], [[sora|비디오 생성]]
 - 도메인: [[05-construction-robotics/index|현장 활동 모니터링]] · 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] I3D 팽창(2D 필터→3D)의 요지와 ImageNet 상속의 이점을 말할 수 있다
+- [ ] SlowFast 두 경로의 분업(의미 vs 운동)을 설명할 수 있다
+- [ ] Kinetics 사전학습이 비디오의 ImageNet 모먼트인 이유를 말할 수 있다
+- [ ] 클립 수준 분류의 한계와 현장 모니터링 응용의 간극을 말할 수 있다

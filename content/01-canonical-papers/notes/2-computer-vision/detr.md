@@ -13,6 +13,9 @@ status: to-read
 
 **Carion et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2005.12872) · [PDF](https://arxiv.org/pdf/2005.12872) · [Code](https://github.com/facebookresearch/detr)
 
+> [!note] 수학 준비물 · Math on-ramp
+> 헝가리안 매칭 = 예측과 정답의 최적 1:1 짝짓기(할당 문제, [[02-foundations/optimization|최적화]]의 조합 버전). 여기서는 "이 손실이 유일 대응 위에서 계산된다"는 것만 알면 논문이 읽힌다 — 알고리즘 내부는 블랙박스로 둬도 된다.
+
 ## English
 
 **One-line summary**: Detection as direct *set prediction* — a Transformer decodes N object queries against image features, and Hungarian matching replaces anchors, NMS, and all hand-designed detection machinery.
@@ -107,3 +110,10 @@ readout 토큰은 새 옷을 입은 DETR 쿼리다.
 - 이전: [[faster-r-cnn|Faster R-CNN]], [[yolo|YOLO]], [[attention-is-all-you-need|Transformer]]
 - 다음: Deformable DETR, [[sam|SAM]] 시대의 분할, [[blip-2|BLIP-2]] (쿼리)
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 검출을 집합 예측으로 보는 관점과 헝가리안 매칭의 역할을 설명할 수 있다
+- [ ] NMS가 불필요해지는 구조적 이유를 말할 수 있다
+- [ ] 물체 쿼리가 무엇을 배우는지, 고정 N의 한계는 무엇인지 말할 수 있다
+- [ ] 학습된 쿼리 아이디어가 어디로 수출됐는지(Q-Former, readout) 말할 수 있다

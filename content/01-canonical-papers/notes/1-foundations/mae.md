@@ -88,3 +88,10 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 - 이전: [[01-canonical-papers/notes/1-foundations/bert|BERT]] (아이디어), [[01-canonical-papers/notes/1-foundations/vit|ViT]] (토대)
 - 다음: DINOv2, I-JEPA → 월드모델
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 이미지에서 75% 마스킹이 필요한 이유(언어 대비 중복성)를 설명할 수 있다
+- [ ] 비대칭 인코더/디코더가 계산 효율을 어떻게 사는지 말할 수 있다
+- [ ] 픽셀 복원 목표의 한계와 잠재 예측(I-JEPA)으로의 이동을 말할 수 있다
+- [ ] 파인튜닝엔 강하고 linear probe엔 약한 특성이 백본 선택에 주는 함의를 말할 수 있다

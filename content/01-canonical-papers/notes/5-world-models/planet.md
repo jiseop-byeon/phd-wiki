@@ -13,6 +13,9 @@ status: to-read
 
 **Hafner et al., ICML 2019** — [arXiv](https://arxiv.org/abs/1811.04551) · [PDF](https://arxiv.org/pdf/1811.04551) · [Code](https://github.com/google-research/planet)
 
+> [!note] 수학 준비물 · Math on-ramp
+> RSSM 학습은 [[01-canonical-papers/notes/6-diffusion/vae|VAE]]의 ELBO를 시퀀스로 편 것이다(준비물: [[02-foundations/information-theory|정보이론 §5]]). CEM은 미분 없는 최적화 — 샘플→상위 k 선택→분포 재적합의 반복일 뿐이다.
+
 ## English
 
 **One-line summary**: The RSSM — a latent dynamics model with both deterministic and stochastic paths — makes *planning* in latent space work from pixels, at ~200× the sample efficiency of model-free RL.
@@ -115,3 +118,10 @@ RSSM은 월드모델의 표준 백본이 됐다: [[dreamer|Dreamer v1–v3]]가 
 - 이전: [[world-models|World Models]] · 다음: [[dreamer|Dreamer]]
 - 기초: [[vae|VAE/ELBO]], [[02-foundations/rl-basics|RL 기초]], MPC ([[04-robotics/index|제어 트랙]])
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 말할 수 있다
+- [ ] CEM 플래닝의 절차(샘플→평가→상위 선택→재샘플)를 말할 수 있다
+- [ ] ~200× 샘플 효율이 어디서 오는지 설명할 수 있다
+- [ ] 온라인 플래닝의 비용과 Dreamer의 대체(정책 상각)를 말할 수 있다

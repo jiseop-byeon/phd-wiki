@@ -109,3 +109,10 @@ with full multi-view geometry.
 - 이전: MiDaS 계열, [[dino|DINOv2]] (의미론 앵커), [[sam|SAM]] (데이터 엔진 정신)
 - 다음: [[vggt|VGGT]] · 도메인: [[05-construction-robotics/index|저비용 현장 센싱]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 교사 의사 라벨 + 학생만의 강한 증강 조합이 왜 작동하는지 설명할 수 있다
+- [ ] 상대 깊이와 절대 깊이의 차이, 단안의 스케일 모호성을 말할 수 있다
+- [ ] DINOv2 특징 정렬이 더하는 것을 말할 수 있다
+- [ ] 현장 저비용 센싱에서의 쓰임과 한계를 말할 수 있다

@@ -87,3 +87,9 @@ Established the encoder-decoder framing that still structures the field: the [[0
 
 - 이전: [[01-canonical-papers/notes/1-foundations/lstm|LSTM]] · 다음: [[01-canonical-papers/notes/1-foundations/bahdanau-attention|Bahdanau Attention]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 고정 벡터 병목이 긴 문장에서 실패를 만드는 이유를 말할 수 있다
+- [ ] 문장 뒤집기 트릭이 병목의 증상 완화였다는 것을 설명할 수 있다
+- [ ] 인코더-디코더 프레임이 이후 어디까지 확장됐는지 말할 수 있다

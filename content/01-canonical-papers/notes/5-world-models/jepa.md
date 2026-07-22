@@ -132,3 +132,10 @@ questions of physical AI.
 - 이전: [[mae|MAE]] (비판 대상인 생성형 사촌), [[dreamer|Dreamer]] (잠재 공간의 친척)
 - 다음: VLA를 위한 잠재 월드모델 · 대비: [[sora|Sora]], [[cosmos|Cosmos]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 픽셀 예측 대신 표현 예측이라는 논거를 설명할 수 있다
+- [ ] I-JEPA의 세 부품(문맥 인코더/타깃 인코더/예측기)과 EMA의 역할을 말할 수 있다
+- [ ] V-JEPA 2의 zero-shot 로봇 플래닝 절차를 개요 수준에서 말할 수 있다
+- [ ] 렌더링 불가라는 트레이드오프(생성 진영과의 대비)를 말할 수 있다

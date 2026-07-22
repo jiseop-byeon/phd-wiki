@@ -106,3 +106,9 @@ generation for training data.
 
 - 이전: [[latent-diffusion|Stable Diffusion]], [[u-net|U-Net]] · 형제 관용구: [[lora|LoRA]]
 - 활용: [[depth-anything|Depth Anything]] 깊이맵을 조건으로 · 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 얼린 베이스 + zero-conv 곁가지 패턴의 안전장치를 말할 수 있다
+- [ ] 조건별 브랜치 방식의 비용을 말할 수 있다
+- [ ] LoRA와 함께 범용 적응 관용구가 된 이유를 말할 수 있다

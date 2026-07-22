@@ -13,6 +13,9 @@ status: to-read
 
 **Mildenhall et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2003.08934) · [PDF](https://arxiv.org/pdf/2003.08934) · [Official](https://www.matthewtancik.com/nerf)
 
+> [!note] 수학 준비물 · Math on-ramp
+> 볼륨 렌더링 적분은 "광선 위의 가중 평균"으로 읽으면 된다: 색 $c$를 밀도 기반 가중치로 평균하는 $E[c]$ 꼴([[02-foundations/probability|확률 §2]]의 기댓값 감각). 구현에서는 광선을 유한 샘플로 이산화한 가중합이다. 위치 인코딩의 사인파는 [[02-foundations/engineering-math|0.5 §7]]의 푸리에 감각.
+
 ## English
 
 **One-line summary**: Represent a scene as an MLP mapping (position, view direction) → (color, density), trained only by re-rendering the input photos — photorealistic novel views from an implicit neural 3D representation.
@@ -107,3 +110,10 @@ data generation ([[cosmos|world-model data engines]]).
 - 다음: [[3d-gaussian-splatting|3D Gaussian Splatting]] (명시적 반격), [[vggt|VGGT]] (feed-forward 3D)
 - 도메인: [[05-construction-robotics/index|현장 디지털 트윈]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] $(x, d) \to (c, \sigma)$ MLP와 광선 볼륨 렌더링의 관계를 설명할 수 있다
+- [ ] 위치 인코딩 없이는 고주파를 못 그리는 이유를 말할 수 있다
+- [ ] 장면별 최적화라는 한계와 그 비용을 말할 수 있다
+- [ ] 3DGS가 무엇을 바꿔 실시간을 얻었는지 말할 수 있다

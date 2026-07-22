@@ -44,3 +44,10 @@ $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대�
 
 - 기초: [[02-foundations/linear-algebra|선형대수]] (리카티, 고유값), [[02-foundations/probability|확률]] (칼만), [[02-foundations/optimization|최적화]]
 - 다음: [[04-robotics/mpc|MPC]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] LQR 문제 설정(선형 동역학 + 이차 비용)과 해의 형태($u = -Kx$)를 말할 수 있다
+- [ ] $Q$와 $R$의 비율이 제어기 성격을 어떻게 바꾸는지 말할 수 있다
+- [ ] 분리 원리 — 최적 추정(칼만) + 최적 제어(LQR)의 결합이 전체 최적 — 를 말할 수 있다
+- [ ] LQR이 MPC·RL의 기준점으로 쓰이는 이유를 말할 수 있다

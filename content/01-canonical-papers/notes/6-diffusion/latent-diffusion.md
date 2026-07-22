@@ -111,3 +111,10 @@ latent world models).
 
 - 이전: [[ddpm|DDPM]], [[vae|VAE]]/VQGAN, [[u-net|U-Net]] · 함께: [[classifier-free-guidance|CFG]], [[controlnet|ControlNet]] · 다음: [[dit|DiT]], [[sora|Sora]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 압축과 생성의 2단계 분리 논리(지각적 중복 제거)를 설명할 수 있다
+- [ ] cross-attention 조건화가 범용 인터페이스인 이유를 말할 수 있다
+- [ ] 오토인코더가 디테일의 상한이 되는 지점을 말할 수 있다
+- [ ] 공개 릴리스가 만든 생태계 효과(LoRA·ControlNet)를 말할 수 있다

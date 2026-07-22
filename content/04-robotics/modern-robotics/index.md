@@ -2,8 +2,8 @@
 title: 2. Modern Robotics Summary
 ---
 
-Chapter summaries of *Modern Robotics* (Lynch & Park), covering ch. 2–6 and 8–11 —
+Chapter summaries of *Modern Robotics* (Lynch & Park), covering ch. 2–6 and 8–13 —
 read alongside the [[04-robotics/modern-robotics-book|book guide]].
 
-*Modern Robotics* (Lynch & Park)의 챕터 요약 (2–6장, 8–11장) —
+*Modern Robotics* (Lynch & Park)의 챕터 요약 (2–6장, 8–13장) —
 [[04-robotics/modern-robotics-book|책 가이드]]와 함께 읽는다.

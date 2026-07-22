@@ -120,3 +120,9 @@ video world models ([[cosmos|Cosmos]]) that add what Sora lacks — control.
 - 이전: [[ddpm|DDPM]] + DiT, [[vit|ViT]] (패치 논리), [[scaling-laws|Scaling Laws]]
 - 병행: [[genie|Genie]] (상호작용형), [[jepa|JEPA]] (반대 진영) · 다음: [[cosmos|Cosmos]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 시공간 패치 = ViT 논리의 시간 확장이라는 것을 말할 수 있다
+- [ ] "창발한 시뮬레이션 성질" 주장과 그 반례(물리 실패)를 말할 수 있다
+- [ ] 행동이 없다는 한계와 Genie/Cosmos와의 차이를 말할 수 있다

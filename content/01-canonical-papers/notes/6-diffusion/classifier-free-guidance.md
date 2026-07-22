@@ -104,3 +104,10 @@ CFG를 쓴다). 후속: 증류된 가이던스, 구간 가이던스, autoguidanc
 
 - 이전: [[score-sde|분류기 가이던스]], [[ddpm|DDPM]] · 쓰는 곳: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]급 모델
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 학습 중 조건 드롭이 만드는 두 예측기(조건부/무조건부)를 말할 수 있다
+- [ ] 외삽 공식의 방향이 가리키는 것을 설명할 수 있다
+- [ ] $w$가 맞바꾸는 것(충실도 vs 다양성)과 전형적 값 범위를 말할 수 있다
+- [ ] 추론 비용 2배의 이유를 말할 수 있다

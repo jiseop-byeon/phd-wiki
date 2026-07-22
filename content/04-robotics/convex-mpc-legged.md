@@ -46,3 +46,10 @@ locomotion policies (RL) are compared against.
 
 - 기초: [[02-foundations/optimization|최적화]] · 이전: [[04-robotics/mpc|MPC]]
 - 반향: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (이중 시스템)
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
+- [ ] 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
+- [ ] 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
+- [ ] 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다

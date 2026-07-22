@@ -90,3 +90,9 @@ Q-Former는 그 시대의 표준 연결자가 됐다 — InstructBLIP, MiniGPT-4
 
 - 이전: [[clip|CLIP]], [[flamingo|Flamingo]] · 다음: [[llava|LLaVA]], InstructBLIP
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] Q-Former 병목(32 토큰)의 역할과 비용 절감을 말할 수 있다
+- [ ] 2단계 사전학습이 각각 가르치는 것을 말할 수 있다
+- [ ] LLaVA가 이 복잡성을 어떻게 우회했는지 말할 수 있다

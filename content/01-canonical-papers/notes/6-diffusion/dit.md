@@ -106,3 +106,10 @@ Flux(MM-DiT), 그리고 이 위키에 중요한 — 로봇 행동 전문가: [[p
 
 - 이전: [[vit|ViT]], [[u-net|U-Net]] (밀려남), [[latent-diffusion|LDM]] · 다음: [[sora|Sora]], [[pi0|π0]]/[[gr00t-n1|GR00T]] 행동 헤드
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] U-Net 대체의 논거(스케일링 플레이북 통합)를 말할 수 있다
+- [ ] adaLN-Zero의 역할과 no-op 초기화 패턴을 말할 수 있다
+- [ ] Gflops-FID 상관이 보여주는 것을 말할 수 있다
+- [ ] π0·GR00T 행동 헤드가 DiT인 이유를 말할 수 있다

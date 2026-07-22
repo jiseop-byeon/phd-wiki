@@ -122,3 +122,10 @@ against which [[openvla|OpenVLA]] and later open VLAs measure themselves.
 - 이전: [[open-x-embodiment|Open X-Embodiment]], [[diffusion-policy|Diffusion Policy]]
 - 다음: [[openvla|OpenVLA]], [[pi0|π0]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] 토큰-모듈 설계(모든 입력은 토큰, 모든 출력은 readout)를 설명할 수 있다
+- [ ] 디퓨전 행동 헤드 채택의 이유(다봉성)를 말할 수 있다
+- [ ] 새 로봇 적응 레시피(토큰 추가 + 소량 시연)를 말할 수 있다
+- [ ] 웹 사전학습 부재가 만드는 의미적 한계를 말할 수 있다

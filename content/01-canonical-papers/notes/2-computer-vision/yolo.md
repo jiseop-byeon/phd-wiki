@@ -102,3 +102,10 @@ embedded robot detectors run YOLO descendants.
 - 대비: [[faster-r-cnn|Faster R-CNN]] (정확도 우선) · 다음: [[detr|DETR]] (NMS/앵커 제거)
 - 도메인: [[05-construction-robotics/index|건설로봇]] 현장 인식
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading
+
+- [ ] S×S 그리드 출력 텐서의 구성(박스·신뢰도·클래스)을 말할 수 있다
+- [ ] 속도가 구조에서 나온다는 것(단일 forward)의 의미를 설명할 수 있다
+- [ ] 작고 몰린 물체에 약한 구조적 이유를 말할 수 있다
+- [ ] v1에서 살아남은 것(프레이밍)과 버려진 것(세부 설계)을 구분할 수 있다
