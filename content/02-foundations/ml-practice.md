@@ -84,6 +84,10 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 4. In a VLA paper, "76% success on unseen instructions" — list three questions you'd ask
    before believing it matters.
 
+### From reading experiments to designing them
+
+Continue with [[06-research-practice/index|Research Practice]] for research questions, controlled robot experiments, failure diagnosis, reproducibility, and peer review.
+
 ## 한국어
 
 모든 논문이 전제하는 장인적 지식: 모델을 어떻게 학습·검증하고, 무엇보다 어떻게 *재는가*.

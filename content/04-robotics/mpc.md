@@ -25,6 +25,10 @@ skim §2–3 for the formulation and stability conditions rather than every proo
 chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/index|section 5]]).
 
+### Continue beyond this guide
+
+See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for trajectory optimization, replanning, task planning, and planning under uncertainty.
+
 ## 한국어
 
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어

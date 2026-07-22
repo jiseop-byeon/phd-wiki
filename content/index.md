@@ -21,12 +21,14 @@ one's own research area.
 ### Maps of Content
 
 - [[03-deep-learning/index|Deep Learning]] — foundations, computer vision, VLM, VLA, world models, diffusion
-- [[04-robotics/index|Robotics & Control]] — Modern Robotics (Lynch & Park), state-space control, LQR, MPC
+- [[04-robotics/index|Robotics & Physical Systems]] — geometry, estimation, planning, control, contact, embodiment, deployment, HRI and safety
 - [[05-construction-robotics/index|Construction Robotics]] — construction & manufacturing robotics literature
 
 ### Reference
 
 - [[02-foundations/index|Foundations]] — course-level math & systems basics, with priority map
+- [[01-canonical-papers/how-to-read|How to Read Papers]] — paper vocabulary, equations, claims and evidence
+- [[06-research-practice/index|Research Practice]] — questions, experiments, failure analysis, writing and peer review
 - [[glossary|Glossary]] — quick term lookup
 - [[study-log|Study Log]] — what I read and when
 
@@ -47,12 +49,14 @@ one's own research area.
 ### 콘텐츠 지도
 
 - [[03-deep-learning/index|딥러닝]] — 기초 이론, 컴퓨터비전, VLM, VLA, 월드모델, 디퓨전
-- [[04-robotics/index|로보틱스 & 제어]] — Modern Robotics 교재 정리, 상태공간 제어, LQR, MPC
+- [[04-robotics/index|로보틱스 & Physical Systems]] — 기하, 추정, 계획, 제어, 접촉, embodiment, 배포, HRI와 안전
 - [[05-construction-robotics/index|건설로봇]] — 건설·제조 분야 로봇 연구 논문 정리
 
 ### 참고 자료
 
 - [[02-foundations/index|기초 과목]] — 수학·시스템 기초, 우선순위 지도 포함
+- [[01-canonical-papers/how-to-read|How to Read Papers]] — 논문의 용어·수식·주장·증거 읽기
+- [[06-research-practice/index|Research Practice]] — 연구 질문, 실험, 실패 분석, 글쓰기와 peer review
 - [[glossary|용어집]] — 용어 빠르게 찾아보기
 - [[study-log|학습 일지]] — 언제 무엇을 읽었는지 기록
 

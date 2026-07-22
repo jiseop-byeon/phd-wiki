@@ -73,6 +73,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 4. A gripper command is "move 5cm along the *gripper's own* z-axis." Is that a left- or
    right-multiplication of the current pose? Why?
 
+### Robotics bridge
+
+SE(3) becomes operational in [[04-robotics/state-estimation-slam|SLAM and localization]] and in the time-indexed TF trees of [[04-robotics/robot-systems-deployment|Robot Systems]].
+
 ## 한국어
 
 이 위키의 모든 로봇 행동, 카메라 자세, 3D 재구성은 SE(3) — 강체 자세의 공간 — 에 산다.

@@ -98,6 +98,10 @@ functions.
 4. Why does a Kalman filter typically beat a hand-tuned low-pass for velocity estimation
    in a control loop? (Two reasons: one about lag, one about models.)
 
+### Robotics bridge
+
+Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state-estimation-slam|State Estimation]] and [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]].
+
 ## 한국어
 
 건설로봇이 싣고 다니는 모든 센서 — 카메라, LiDAR, IMU, 엔코더 — 는 샘플링된, 노이즈 낀

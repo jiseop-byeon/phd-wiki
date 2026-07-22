@@ -29,6 +29,17 @@ tags: [reference]
 - **Pretraining vs Fine-tuning vs Post-training** — 대규모 일반 데이터 → 과제 데이터로 조정 → (최근 용법) SFT·RLHF 등 정렬 단계 전체를 묶어 부르는 말. π0의 "post-training"은 고품질 과제 데이터 단계다. → [[01-canonical-papers/notes/4-vla/pi0\|π0]]
 - **Generalization vs Robustness vs Transfer** — 같은 분포의 새 샘플 / 교란·이동된 분포 / 다른 과제·도메인으로의 이전. 논문이 셋 중 무엇을 재는지 확인하고 읽어라.
 - **Zero-shot vs Few-shot vs OOD** — 과제 예시 0개 / 소수 예시 / 학습 분포 밖 평가. zero-shot이라도 사전학습에 유사 데이터가 있었는지가 실제 쟁점이다. → [[02-foundations/ml-practice|ML 실무 §1]]
+- **State vs Observation vs Estimate vs Belief** — state는 모델에 필요한 숨은 변수, observation은 센서값, estimate는 추론한 점 요약, belief는 가능한 state의 분포. → [[04-robotics/state-estimation-slam|State Estimation]]
+- **Covariance vs Confidence** — covariance는 가정한 모델 아래 추정 오차의 분산·상관 구조다. 모델이 틀리면 작아도 과신할 수 있으며, 일반적인 confidence와 동의어가 아니다.
+- **Odometry vs Localization vs Mapping vs SLAM** — 상대 이동 / 알려진 지도에서 pose / pose가 주어진 지도 / pose와 지도의 공동 추정. → [[04-robotics/state-estimation-slam|State Estimation & SLAM]]
+- **Path vs Trajectory vs Plan vs Policy** — 시간 없는 기하 곡선 / 시간별 상태·입력 / 미래 결정의 제안 / 현재 정보에서 행동으로의 규칙. → [[04-robotics/planning-decision-making|Planning]]
+- **Planner vs Controller** — planner는 미래 reference·행동을 만들고 controller는 feedback으로 실행을 유지한다. MPC나 학습 정책에서는 경계가 합쳐질 수 있으므로 실제 입출력과 실행 주기를 확인한다.
+- **Form closure vs Force closure** — 접촉 기하로 움직임을 막는 조건 / 허용 접촉력으로 임의 외력 wrench에 저항하는 조건. 둘 다 contact model과 마찰 가정에 의존한다. → [[04-robotics/contact-force-tactile|Contact]]
+- **Impedance vs Admittance** — motion error에서 interaction force로의 관계를 형성 / 측정 force에서 motion response로의 관계를 형성. → [[04-robotics/contact-force-tactile|Contact]]
+- **Frequency vs Latency vs Jitter** — 초당 update 수 / 입력에서 효과까지 걸린 시간 / 그 시간의 변동. 높은 Hz가 낮은 latency를 보장하지 않는다. → [[04-robotics/robot-systems-deployment|Robot Systems]]
+- **Hazard vs Risk** — 잠재적 harm의 원천 / 정의된 방법에서 가능성·노출과 consequence의 결합. → [[04-robotics/hri-safety|HRI & Safety]]
+- **Fail-safe vs Fail-operational** — 실패 시 더 낮은 위험 상태로 전이 / 정해진 실패 중에도 선택 기능을 유지. → [[04-robotics/hri-safety|HRI & Safety]]
+- **Repeatability vs Reproducibility vs Replicability** — 같은 setup의 반복 / 독립 팀의 artifacts·절차 재현 / 독립 구현·연구로 같은 claim 검증. 커뮤니티별 용법이 달라 논문 안에서 정의해야 한다. → [[06-research-practice/experimental-design-reproducibility|Experimental Design]]
 
 ## A–C
 
@@ -40,6 +51,7 @@ tags: [reference]
 - **BLEU** — 기계번역 품질 지표. 생성문과 참조 번역의 n-gram 겹침을 측정.
 - **CFG (Classifier-Free Guidance)** — 조건부/무조건부 예측의 차이 방향으로 외삽해 조건 충실도를 높이는 샘플링 기법. → [[01-canonical-papers/notes/6-diffusion/classifier-free-guidance|CFG]]
 - **Condition number (조건수)** — 일반 행렬의 2-노름에서는 $\kappa_2(A) = \sigma_{max}/\sigma_{min}$(특이값 비); 대칭 양정부호(헤시안 등)에서는 고유값 비와 같다. 선형계의 민감도와 최적화 난이도의 지표. → [[02-foundations/linear-algebra|선형대수]]
+- **Covariance (공분산)** — 여러 추정 오차의 크기와 함께 움직이는 방향을 나타내는 행렬. 추정기의 모델 가정이 맞을 때에만 불확실성 해석이 신뢰할 만하다. → [[04-robotics/state-estimation-slam|State Estimation]]
 - **Contrastive learning (대조학습)** — 짝이 맞는 쌍은 가깝게, 아닌 쌍은 멀게 임베딩을 학습. → [[01-canonical-papers/notes/3-vlm/clip|CLIP]], [[02-foundations/information-theory|InfoNCE]]
 - **Cross-entropy (교차 엔트로피)** — $-E_p[\log q]$. 분류·언어모델의 표준 손실이며 그 정체는 MLE. → [[02-foundations/information-theory|정보이론]]
 - **CVAE** — 조건부 VAE. 조건이 주어졌을 때의 다양한 출력 분포를 잠재변수로 담는다. → [[01-canonical-papers/notes/4-vla/act|ACT]]
@@ -71,12 +83,14 @@ tags: [reference]
 - **NeRF** — (위치, 시선) → (색, 밀도) MLP와 볼륨 렌더링으로 장면을 표현하는 암시적 3D. → [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]
 - **Positional encoding (위치 인코딩)** — 순서를 모르는 어텐션에 위치 정보를 주입하는 방법. NeRF의 고주파 표현에도 쓰인다.
 - **PPO** — 정책 비율을 클리핑해 신뢰 영역을 흉내 내는 정책 그래디언트. RLHF 속의 알고리즘. → [[02-foundations/rl-basics|RL 기초 §4]]
+- **Probabilistic completeness** — 계산·표본 수가 늘 때 해를 찾을 확률이 1에 가까워지는 planning 성질. 빠른 성공이나 유한 시간 optimality 보장은 아니다. → [[04-robotics/planning-decision-making|Planning]]
 - **Pseudo-label (의사 라벨)** — 교사 모델의 예측을 라벨 삼아 무라벨 데이터로 학생을 학습. → [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]
 
 ## Q–Z
 
 - **Q-Former** — 학습된 쿼리로 이미지를 소수 토큰으로 증류하는 연결 모듈. → [[01-canonical-papers/notes/3-vlm/blip-2|BLIP-2]]
 - **Receding horizon** — 지평을 앞으로 밀며 계획을 반복 갱신하는 MPC/정책의 실행 구조. → [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]
+- **Shared autonomy** — 사람과 로봇이 정상 실행 중 authority와 의사결정을 나누는 구조. 단순한 human monitoring과 다르며 arbitration·override를 명시해야 한다. → [[04-robotics/hri-safety|HRI & Safety]]
 - **RLHF** — 인간 선호로 보상 모델을 배우고 RL로 정책을 정렬하는 3단계 레시피. → [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]
 - **RSSM** — 결정론적+확률적 상태를 함께 갖는 순환 상태공간 모델. 월드모델의 표준 백본. → [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]
 - **Scaling law (스케일링 법칙)** — 손실이 파라미터·데이터·연산의 거듭제곱 법칙을 따른다는 경험 법칙. → [[01-canonical-papers/notes/1-foundations/scaling-laws|Scaling Laws]]
@@ -86,6 +100,7 @@ tags: [reference]
 - **Stop-gradient** — 역전파를 의도적으로 차단하는 연산. 논문 그림의 점선 화살표. → [[02-foundations/calculus-backprop|미적분·역전파 §5]]
 - **TD error** — $r + \gamma V(s') - V(s)$. RL의 만능 학습 신호. → [[02-foundations/rl-basics|RL 기초 §3]]
 - **Teleoperation (원격조작)** — 사람이 장치로 로봇을 조종해 시연 데이터를 만드는 방법. → [[01-canonical-papers/notes/4-vla/act|ALOHA]]
+- **Watchdog** — update·process·subsystem의 비정상 또는 timeout을 감지해 fallback을 실행하는 감시 장치. → [[04-robotics/robot-systems-deployment|Robot Systems]]
 - **VLA (Vision-Language-Action)** — 시각·언어 입력에서 로봇 행동을 직접 출력하는 모델. → [[01-canonical-papers/notes/4-vla/rt-2|RT-2]], [[01-canonical-papers/notes/4-vla/pi0|π0]]
 - **VQ (Vector Quantization)** — 연속 표현을 코드북의 이산 코드로 양자화. 토크나이저의 핵심. → [[01-canonical-papers/notes/5-world-models/genie|Genie]], [[01-canonical-papers/notes/6-diffusion/latent-diffusion|VQGAN]]
 - **World model (월드모델)** — 환경의 다음 상태를 예측하도록 학습된 모델. 상상 속 계획·학습을 가능하게 한다. → [[01-canonical-papers/notes/5-world-models/world-models|World Models]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]

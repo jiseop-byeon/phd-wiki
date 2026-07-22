@@ -92,10 +92,24 @@ above exists.
 
 ### Where to go next
 
-After the foundations: read [[01-canonical-papers/how-to-read|0. How to Read Papers]] once,
-then follow the [[01-canonical-papers/canonical-list|canonical list]] in
-order (its section 1 mirrors this page's logic), with the
-[[03-deep-learning/lineage|paper lineage]] open in a second tab.
+After the common foundations, choose two parallel literacy paths. They converge in physical AI rather than forming one long prerequisite queue.
+
+```mermaid
+flowchart TD
+    F["Foundations"] --> AI["AI model literacy"]
+    F --> RS["Robot systems literacy"]
+    AI --> DL["Deep Learning · VLM · VLA · World Models"]
+    RS --> EST["Estimation"] --> PLAN["Planning"] --> CTRL["Control"]
+    CTRL --> PHY["Contact · Systems · HRI"]
+    DL --> PAI["Physical AI"]
+    PHY --> PAI
+    PAI --> CR["Construction Robotics"]
+    CR --> RP["Research Practice"]
+```
+
+- **AI model literacy:** read [[01-canonical-papers/how-to-read|0. How to Read Papers]], then follow the [[01-canonical-papers/canonical-list|canonical list]] with the [[03-deep-learning/lineage|paper lineage]] open.
+- **Robot systems literacy:** follow [[04-robotics/index|Robotics & Physical Systems]] from estimation and planning through control, contact, deployment, and HRI/safety.
+- **Research production:** use [[06-research-practice/index|Research Practice]] when designing questions, experiments, failure analysis, and papers.
 
 ## 한국어
 
@@ -138,7 +152,8 @@ order (its section 1 mirrors this page's logic), with the
 
 ### 다음으로 갈 곳
 
-기초를 마치면: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 한 번 읽은 뒤,
-[[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로
-(1번 섹션이 이 페이지의 논리를 그대로 반영한다), [[03-deep-learning/lineage|논문 계보도]]를
-두 번째 탭에 열어두고.
+기초를 마친 뒤에는 한 줄로 계속 쌓는 대신 두 병렬 경로를 따른다.
+
+- **AI model literacy:** [[01-canonical-papers/how-to-read|How to Read Papers]] → [[01-canonical-papers/canonical-list|핵심 논문 리스트]], [[03-deep-learning/lineage|논문 계보도]] 병행.
+- **Robot systems literacy:** [[04-robotics/index|Robotics & Physical Systems]]에서 estimation → planning → control → contact → systems → HRI/safety.
+- 두 경로는 Physical AI와 [[05-construction-robotics/index|Construction Robotics]]에서 합류한다. 새 연구를 만들 때는 [[06-research-practice/index|Research Practice]]로 이어간다.

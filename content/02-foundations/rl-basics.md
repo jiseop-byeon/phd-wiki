@@ -111,6 +111,10 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 3. In PPO's objective, what does the $\min$ do when $A_t > 0$ vs $A_t < 0$? Why clip at all?
 4. Give two reasons Dreamer-style imagination training keeps horizons short (~15 steps).
 
+### Robotics bridge
+
+MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]].
+
 ## 한국어
 
 MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]도,

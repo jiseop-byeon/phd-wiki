@@ -101,6 +101,10 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
    ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]) has the claimed distribution.
 4. In the Kalman gain, what happens as sensor noise $R \to 0$? As $R \to \infty$? Interpret.
 
+### Robotics bridge
+
+Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
+
 ## 한국어
 
 확률은 추정, 필터링, 그리고 딥러닝의 많은 표준 목적함수 아래에 깔린 토대다. 교재 수준의 서술:

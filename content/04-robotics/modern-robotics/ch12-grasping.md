@@ -43,6 +43,10 @@ tags: [robotics, modern-robotics]
 > 2. 마찰 없이 기하만으로 모든 방향을 막아야 하므로 — 마찰 원뿔이 주는 "공짜 방향들"이 없다.
 > 3. 두 접촉점이 서로 상대의 마찰 원뿔 안에 있을 것 — 두 원뿔이 서로를 "볼" 수 있어야 한다.
 
+### Continue beyond this chapter
+
+[[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] extends grasping to contact modes, force/impedance control, tactile sensing, deformable materials, and sim-to-real evaluation.
+
 ## 한국어
 
 **핵심 질문**: 파지는 언제 실제로 물체를 붙잡는가?

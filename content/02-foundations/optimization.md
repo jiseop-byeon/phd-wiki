@@ -112,6 +112,10 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 4. Why is the MPC problem above convex, and what could make it non-convex in practice?
    (Hint: obstacle avoidance constraints.)
 
+### Robotics bridge
+
+Constraints and nonlinear optimization become executable robot decisions in [[04-robotics/planning-decision-making|Planning & Decision-Making]] and [[04-robotics/mpc|MPC]].
+
 ## 한국어
 
 최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/1-foundations/adam|Adam]]),

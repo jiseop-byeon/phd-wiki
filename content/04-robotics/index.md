@@ -1,59 +1,71 @@
 ---
-title: 4. Robotics & Control
+title: 4. Robotics & Physical Systems
+cssclasses: [curated-folder-index]
 ---
 
 ## English
 
-Map of content for robotics and control theory.
+Robotics is a closed physical system: sensing produces uncertain observations, estimation forms a belief, planning selects feasible behavior, control stabilizes execution, and contact and embodiment determine what the world actually permits.
 
-### Textbook spine
+```mermaid
+flowchart LR
+    S["Sense"] --> E["Estimate"] --> P["Plan / policy"] --> C["Control"] --> A["Actuate and contact"]
+    A --> W["World and people"] --> S
+    SYS["Timing · frames · safety · logs"] -.-> E
+    SYS -.-> P
+    SYS -.-> C
+```
 
-- **Modern Robotics** (Lynch & Park) — [[04-robotics/modern-robotics-book|book guide]] and
-  [[04-robotics/modern-robotics/index|chapter summaries]] (ch. 2–6, 8–13): configuration
-  space, rigid-body motions, forward/inverse kinematics, velocity kinematics & statics,
-  dynamics, trajectory generation, motion planning, robot control
-- Study guides: [[04-robotics/control-theory-ce397|control theory]] ·
-  [[04-robotics/lqr-lqg|LQR/LQG]] · [[04-robotics/mpc|MPC]] ·
-  [[04-robotics/convex-mpc-legged|convex MPC for legged robots]]
+### A. Geometry, mechanics & motion
 
-### Control theory track
+- [[04-robotics/modern-robotics-book|1. Modern Robotics]] — book guide and scope
+- [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] — chapters 2–6 and 8–13
+- Chapter 7 (closed-chain kinematics) is intentionally optional: this track prioritizes open-chain manipulation, control, physical interaction, and field/mobile robotics literacy.
 
-Depth target: classical control solid, MPC to the level of "understand the formulation
-and representative applications" (enough to read modern robotics papers).
+### B. State, perception & belief
 
-1. State-space representation, stability, controllability/observability
-2. LQR / LQG
-3. MPC — receding horizon formulation, constraints, linear MPC; awareness of nonlinear MPC
-4. Bridge to learning-based control (RL policies vs. MPC, hybrid approaches)
+- [[04-robotics/state-estimation-slam|7. State Estimation, Localization & SLAM]] — state versus observation, Bayes/Kalman filtering, sensor fusion, factor graphs, drift and loop closure
+- Learned visual perception lives in [[03-deep-learning/index|Deep Learning]]; this page explains how sensor evidence becomes a time-indexed robot belief.
+
+### C. Planning & decision-making
+
+- [[04-robotics/planning-decision-making|8. Planning & Decision-Making]] — graph search, sampling, trajectory optimization, TAMP, uncertainty, replanning, and learned planning
+
+### D. Feedback & control
+
+Depth target: classical control solid; MPC to formulation and representative applications—enough to read modern robotics papers.
+
+1. [[04-robotics/control-theory-ce397|3. Control Theory]] — state space, stability, controllability and observability
+2. [[04-robotics/lqr-lqg|4. LQR & LQG]] — optimal feedback and estimator–controller separation
+3. [[04-robotics/mpc|5. Model Predictive Control]] — finite-horizon optimization, constraints and replanning
+4. [[04-robotics/convex-mpc-legged|6. Convex MPC for Legged Robots]] — representative high-rate application
+
+### E. Physical interaction
+
+- [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]] — friction, contact modes, force/impedance/admittance control, tactile sensing, deformable materials
+
+### F. Embodiment & deployment
+
+- [[04-robotics/robot-systems-deployment|10. Robot Systems, Embodiment & Deployment]] — action interfaces, timing, frames, middleware, reliability, simulation, logging, and failure diagnosis
+
+### G. Humans & safety
+
+- [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]] — autonomy levels, authority, intervention, human studies, hazard and risk literacy
+
+### Where this track leads
+
+These components converge in VLA, world-model, and learning-based-control systems, then meet field constraints in [[05-construction-robotics/index|Construction Robotics]]. Use [[06-research-practice/index|Research Practice]] to design and evaluate new work rather than only read it.
 
 ## 한국어
 
-로보틱스와 제어 이론 공부의 전체 지도.
+로보틱스는 닫힌 물리 시스템이다. 센서는 불확실한 관측을 만들고, estimation은 belief를 만들며, planning은 실행 가능한 행동을 고르고, control은 실행을 안정화한다. Contact와 embodiment는 세계에서 실제로 가능한 행동을 결정하고 timing·frame·safety·logging은 전체를 연결한다.
 
-### 교재
+- **기하·역학·운동:** [[04-robotics/modern-robotics-book|1. Modern Robotics]] · [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]]. 7장 closed-chain kinematics는 의도적으로 선택 사항이다.
+- **상태·인지·belief:** [[04-robotics/state-estimation-slam|7. State Estimation, Localization & SLAM]]
+- **계획·의사결정:** [[04-robotics/planning-decision-making|8. Planning & Decision-Making]]
+- **Feedback·제어:** [[04-robotics/control-theory-ce397|3. Control Theory]] → [[04-robotics/lqr-lqg|4. LQR & LQG]] → [[04-robotics/mpc|5. MPC]] → [[04-robotics/convex-mpc-legged|6. Convex MPC]]
+- **물리 상호작용:** [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]]
+- **Embodiment·배포:** [[04-robotics/robot-systems-deployment|10. Robot Systems, Embodiment & Deployment]]
+- **사람·안전:** [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
-- **Modern Robotics** (Lynch & Park) — 챕터 요약 (2–6장, 8–13장):
-  [[04-robotics/modern-robotics/ch02-configuration-space|2장 C-space]] ·
-  [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 강체 운동]] ·
-  [[04-robotics/modern-robotics/ch04-forward-kinematics|4장 정기구학]] ·
-  [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 속도 기구학·정역학]] ·
-  [[04-robotics/modern-robotics/ch06-inverse-kinematics|6장 역기구학]] ·
-  [[04-robotics/modern-robotics/ch08-dynamics|8장 동역학]] ·
-  [[04-robotics/modern-robotics/ch09-trajectory-generation|9장 궤적 생성]] ·
-  [[04-robotics/modern-robotics/ch10-motion-planning|10장 모션 플래닝]] ·
-  [[04-robotics/modern-robotics/ch11-robot-control|11장 로봇 제어]] ·
-  [[04-robotics/modern-robotics/ch12-grasping|12장 파지]] ·
-  [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장 이동 로봇]]
-
-
-교재·가이드: [[04-robotics/modern-robotics-book|Modern Robotics]] · [[04-robotics/control-theory-ce397|제어 이론]] · [[04-robotics/lqr-lqg|LQR/LQG]] · [[04-robotics/mpc|MPC]] · [[04-robotics/convex-mpc-legged|보행 convex MPC]]
-
-### 제어 공부 순서
-
-목표 수준: 고전 제어는 확실하게, MPC는 문제 정식화와 대표적인 응용 사례를
-이해하는 정도까지 (최신 로보틱스 논문을 읽을 수 있으면 충분하다).
-
-1. 상태공간 표현, 안정성, 가제어성/가관측성
-2. LQR / LQG
-3. MPC — receding horizon 정식화, 제약조건 처리, 선형 MPC (비선형 MPC는 개념만)
-4. 학습 기반 제어와의 연결 (RL 정책과 MPC의 비교, 하이브리드 방식)
+이 지식은 VLA·world model·learning-based control에서 합류하고 [[05-construction-robotics/index|Construction Robotics]]의 현장 조건으로 이어진다. 새 연구의 질문·실험·실패 분석·글쓰기는 [[06-research-practice/index|Research Practice]]에서 다룬다.

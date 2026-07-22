@@ -31,6 +31,10 @@ a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pa
 on real sites, sampling planners still provide the safety-checkable backbone that learned
 proposals get filtered through.
 
+### Continue beyond this chapter
+
+[[04-robotics/planning-decision-making|Planning & Decision-Making]] connects this chapter to A*, sampling-based planning, trajectory optimization, TAMP, uncertainty, MPC, and learned planners.
+
 ## 한국어
 
 **핵심 질문**: C-space를 통과하는 충돌 없는 경로를 어떻게 찾는가?

@@ -9,6 +9,7 @@ Checks (run before every deploy):
   5. Every checked [x] canonical-list paper entry carries a depth marker (star/half/circle).
   6. Every paper note has ## English, ## 한국어, and an after-reading checklist.
   7. Every paper note frontmatter has status: and last_verified:.
+  8. New robotics-literacy and research-practice pages keep the bilingual learning scaffold.
 Exit code 1 on any failure, with a per-file report.
 """
 
@@ -108,6 +109,33 @@ for root, _dirs, files in os.walk(notes_dir):
             err(p, "frontmatter missing status:")
         if not re.search(r"^last_verified:", text, re.M):
             err(p, "frontmatter missing last_verified:")
+
+# 8. Curriculum pages added beyond the paper-note collection
+curriculum_pages = [
+    "04-robotics/state-estimation-slam.md",
+    "04-robotics/planning-decision-making.md",
+    "04-robotics/contact-force-tactile.md",
+    "04-robotics/robot-systems-deployment.md",
+    "04-robotics/hri-safety.md",
+    "06-research-practice/research-questions-claims.md",
+    "06-research-practice/experimental-design-reproducibility.md",
+    "06-research-practice/failure-analysis-system-evaluation.md",
+    "06-research-practice/scientific-writing-peer-review.md",
+]
+for rel in curriculum_pages:
+    p = os.path.join(CONTENT, rel)
+    if not os.path.exists(p):
+        err(p, "required curriculum page is missing")
+        continue
+    text = open(p, encoding="utf-8").read()
+    if "## English" not in text:
+        err(p, "missing ## English section")
+    if "## 한국어" not in text:
+        err(p, "missing ## 한국어 section")
+    if "### After reading" not in text:
+        err(p, "missing after-reading checklist")
+    if "### Self-check" not in text:
+        err(p, "missing self-check")
 
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

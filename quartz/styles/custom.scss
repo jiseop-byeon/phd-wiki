@@ -12,6 +12,12 @@
   font-weight: 600; // match the global semibold anchor weight of file links
 }
 
+// Curated curriculum indexes already contain an intentional study order.
+// Hide Quartz's duplicate date-sorted folder listing on those pages only.
+article.curated-folder-index + .page-listing {
+  display: none;
+}
+
 .explorer-content .folder-container div > a:hover,
 .explorer-content .folder-container div > button:hover span {
   color: var(--tertiary);

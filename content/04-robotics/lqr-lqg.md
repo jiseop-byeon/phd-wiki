@@ -24,6 +24,10 @@ linear-Gaussian problems recovers LQR; and the Riccati equation is where
 Underactuated ch. (geometric intuition, code) → connect to the
 [[02-foundations/optimization|MPC-as-QP example]].
 
+### Continue beyond this guide
+
+The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
+
 ## 한국어
 
 **무엇인가**: **LQR**은 최적 제어에서 정확히 풀리는 심장부다. 선형 동역학

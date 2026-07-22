@@ -13,9 +13,11 @@ https://jiseop-byeon.github.io/phd-wiki/.
   3. Probability · 4. Optimization · 5. Information Theory · 6. Signal Processing ·
   7. RL Basics · 8. 3D Geometry & SE(3) · 9. ML Practice & Evaluation
 - `03-deep-learning/` — paper lineage diagrams and the physical-AI ecosystem map
-- `04-robotics/` — Modern Robotics book guide + chapter summaries (ch. 2–6, 8–13),
-  control theory, LQR/LQG, MPC, convex MPC for legged robots
+- `04-robotics/` — Modern Robotics (ch. 2–6, 8–13), estimation/SLAM, planning,
+  control, contact/tactile interaction, robot systems/deployment, HRI and safety
 - `05-construction-robotics/` — research lineage (four eras + current streams) and labs map
+- `06-research-practice/` — research questions, experimental design, failure analysis,
+  scientific writing and peer review
 - `glossary.md` / `study-log.md` — term lookup and reading log
 - `templates/` — note templates (not published)
 
