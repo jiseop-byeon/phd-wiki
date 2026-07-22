@@ -49,6 +49,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [ ] DINO (Caron et al., ICCV 2021) → DINOv2 (Oquab et al., 2023)
 - [ ] SAM — *Segment Anything* (Kirillov et al., ICCV 2023)
 - [ ] 3D Gaussian Splatting (Kerbl et al., SIGGRAPH 2023)
+- [ ] Video understanding — I3D / SlowFast (2017–2019) — 시간적 인식, 로봇 비디오 이해의 기초
 - [ ] Depth Anything (Yang et al., CVPR 2024)
 - [ ] VGGT — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025, **Best Paper Award**)
 

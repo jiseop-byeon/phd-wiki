@@ -11,20 +11,22 @@ tags: [paper, foundations, vlm, computer-vision]
 status: to-read
 ---
 
+**📄 원문**: [arXiv](https://arxiv.org/abs/2103.00020) · [PDF](https://arxiv.org/pdf/2103.00020) · [Code](https://github.com/openai/CLIP)
+
 ## English
 
 **One-line summary**: Contrastively align 400M image-text pairs into a shared embedding space — vision learns from raw language supervision, and classification becomes zero-shot prompting.
 
 ### Context
 
-Vision models were trained on fixed label sets (1000 ImageNet classes): expensive to build and frozen in scope — recognizing anything new meant new labels and retraining. NLP had just shown ([[40-papers/notes/gpt-3|GPT-3]]) that web-scale weak supervision produces transferable, promptable models. Could vision learn from the web's *natural pairing* of images and text instead of curated labels?
+Vision models were trained on fixed label sets (1000 ImageNet classes): expensive to build and frozen in scope — recognizing anything new meant new labels and retraining. NLP had just shown ([[40-canonical-papers/notes/gpt-3|GPT-3]]) that web-scale weak supervision produces transferable, promptable models. Could vision learn from the web's *natural pairing* of images and text instead of curated labels?
 
 ### Method
 
 > [!tip] Key intuition
 > Don't predict the exact caption (too hard, wasteful) — just learn *which caption goes with which image*. Matching in a shared embedding space is an easier objective that still forces semantic understanding, and it scales to noisy web data.
 
-- Two encoders: image (ResNet or [[40-papers/notes/vit|ViT]]) and text (Transformer), each projecting into a shared space.
+- Two encoders: image (ResNet or [[40-canonical-papers/notes/vit|ViT]]) and text (Transformer), each projecting into a shared space.
 - **Contrastive objective**: within a batch of N pairs, maximize cosine similarity of the N correct pairs against the N²−N incorrect ones (symmetric InfoNCE, learned temperature).
 - Trained on **WIT-400M**, a web-collected dataset of 400M image-text pairs.
 - **Zero-shot classification**: embed prompts like "a photo of a {class}" and pick the nearest class embedding — the label set is now free-form text.
@@ -47,7 +49,7 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 
 ### Connections
 
-- Previous: [[40-papers/notes/vit|ViT]], [[40-papers/notes/gpt-3|GPT-3]] (web-scale supervision) · Next: Flamingo, LLaVA → RT-2
+- Previous: [[40-canonical-papers/notes/vit|ViT]], [[40-canonical-papers/notes/gpt-3|GPT-3]] (web-scale supervision) · Next: Flamingo, LLaVA → RT-2
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -56,14 +58,14 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 
 ### 배경
 
-비전 모델은 고정된 라벨 집합(ImageNet 1000 클래스)으로 학습됐다: 만들기 비싸고 범위가 얼어붙어 있어, 새로운 것을 인식하려면 새 라벨과 재학습이 필요했다. NLP는 웹 규모의 약한 감독이 전이 가능하고 프롬프트 가능한 모델을 만든다는 것을 막 보여준 참이었다([[40-papers/notes/gpt-3|GPT-3]]). 비전도 선별된 라벨 대신 웹에 *자연적으로 존재하는* 이미지-텍스트 쌍에서 배울 수 없을까?
+비전 모델은 고정된 라벨 집합(ImageNet 1000 클래스)으로 학습됐다: 만들기 비싸고 범위가 얼어붙어 있어, 새로운 것을 인식하려면 새 라벨과 재학습이 필요했다. NLP는 웹 규모의 약한 감독이 전이 가능하고 프롬프트 가능한 모델을 만든다는 것을 막 보여준 참이었다([[40-canonical-papers/notes/gpt-3|GPT-3]]). 비전도 선별된 라벨 대신 웹에 *자연적으로 존재하는* 이미지-텍스트 쌍에서 배울 수 없을까?
 
 ### 방법
 
 > [!tip] 핵심 직관
 > 정확한 캡션을 예측하려 하지 마라(너무 어렵고 낭비다) — *어느 캡션이 어느 이미지 것인지*만 배우자. 공유 임베딩 공간에서의 매칭은 더 쉬운 목표지만 여전히 의미 이해를 강제하고, 시끄러운 웹 데이터로도 스케일된다.
 
-- 인코더 둘: 이미지(ResNet 또는 [[40-papers/notes/vit|ViT]])와 텍스트(Transformer), 각각 공유 공간으로 투영.
+- 인코더 둘: 이미지(ResNet 또는 [[40-canonical-papers/notes/vit|ViT]])와 텍스트(Transformer), 각각 공유 공간으로 투영.
 - **대조 목적함수**: N쌍 배치에서 올바른 N쌍의 코사인 유사도를 나머지 N²−N개의 잘못된 쌍 대비 최대화(대칭 InfoNCE, 학습된 온도).
 - **WIT-400M** — 웹에서 수집한 4억 이미지-텍스트 쌍으로 학습.
 - **Zero-shot 분류**: "a photo of a {class}" 같은 프롬프트를 임베딩해 가장 가까운 클래스를 선택 — 라벨 집합이 자유 텍스트가 된다.
@@ -86,5 +88,5 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 
 ### 연결
 
-- 이전: [[40-papers/notes/vit|ViT]], [[40-papers/notes/gpt-3|GPT-3]] (웹 규모 감독) · 다음: Flamingo, LLaVA → RT-2
+- 이전: [[40-canonical-papers/notes/vit|ViT]], [[40-canonical-papers/notes/gpt-3|GPT-3]] (웹 규모 감독) · 다음: Flamingo, LLaVA → RT-2
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

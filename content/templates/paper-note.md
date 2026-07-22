@@ -12,6 +12,8 @@ tags: [paper]
 status: to-read   # to-read | reading | done
 ---
 
+**📄 원문**: [arXiv]() · [PDF]() · [Code]()
+
 ## English
 
 **One-line summary**: 

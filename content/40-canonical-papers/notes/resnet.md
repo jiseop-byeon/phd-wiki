@@ -10,13 +10,15 @@ tags: [paper, foundations, computer-vision]
 status: to-read
 ---
 
+**📄 원문**: [arXiv](https://arxiv.org/abs/1512.03385) · [PDF](https://arxiv.org/pdf/1512.03385)
+
 ## English
 
 **One-line summary**: Identity shortcut connections let networks learn residuals instead of full mappings, breaking the depth barrier — 152 layers, ILSVRC-2015 winner, and the origin of the skip connections inside every Transformer.
 
 ### Context
 
-After [[40-papers/notes/vgg|VGG]], deeper should have meant better — but past ~20 layers, adding layers made *training* error worse (the **degradation problem**). This is not overfitting: a deeper net containing an identity copy of a shallower one should never be worse, yet optimizers couldn't find that solution. The problem was optimization, not capacity.
+After [[40-canonical-papers/notes/vgg|VGG]], deeper should have meant better — but past ~20 layers, adding layers made *training* error worse (the **degradation problem**). This is not overfitting: a deeper net containing an identity copy of a shallower one should never be worse, yet optimizers couldn't find that solution. The problem was optimization, not capacity.
 
 ### Method
 
@@ -42,11 +44,11 @@ After [[40-papers/notes/vgg|VGG]], deeper should have meant better — but past 
 
 ### Impact & follow-ups
 
-The default vision backbone for nearly a decade, and still the standard baseline. More importantly, the residual connection became a universal ingredient: every [[40-papers/notes/attention-is-all-you-need|Transformer]] block is `x + Sublayer(x)` — ResNet's idea, applied twice per layer, in every LLM, VLM, and VLA today.
+The default vision backbone for nearly a decade, and still the standard baseline. More importantly, the residual connection became a universal ingredient: every [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]] block is `x + Sublayer(x)` — ResNet's idea, applied twice per layer, in every LLM, VLM, and VLA today.
 
 ### Connections
 
-- Previous: [[40-papers/notes/alexnet|AlexNet]] → [[40-papers/notes/vgg|VGG]]
+- Previous: [[40-canonical-papers/notes/alexnet|AlexNet]] → [[40-canonical-papers/notes/vgg|VGG]]
 - Next: ViT (transformers enter vision, on residual foundations)
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
@@ -56,7 +58,7 @@ The default vision backbone for nearly a decade, and still the standard baseline
 
 ### 배경
 
-[[40-papers/notes/vgg|VGG]] 이후 "더 깊으면 더 좋아야" 했지만, 20층을 넘기면 층을 더할수록 *학습* 오차부터 나빠졌다(**열화 문제**). 이는 과적합이 아니다: 얕은 네트워크에 항등 층만 얹은 더 깊은 네트워크는 이론상 절대 더 나쁠 수 없는데, 옵티마이저가 그 해를 찾지 못한 것이다. 즉 용량이 아니라 최적화의 문제였다.
+[[40-canonical-papers/notes/vgg|VGG]] 이후 "더 깊으면 더 좋아야" 했지만, 20층을 넘기면 층을 더할수록 *학습* 오차부터 나빠졌다(**열화 문제**). 이는 과적합이 아니다: 얕은 네트워크에 항등 층만 얹은 더 깊은 네트워크는 이론상 절대 더 나쁠 수 없는데, 옵티마이저가 그 해를 찾지 못한 것이다. 즉 용량이 아니라 최적화의 문제였다.
 
 ### 방법
 
@@ -82,10 +84,10 @@ The default vision backbone for nearly a decade, and still the standard baseline
 
 ### 영향과 후속 연구
 
-이후 거의 10년간 비전의 기본 백본이었고 지금도 표준 베이스라인이다. 더 중요한 유산은 residual 연결이 보편 재료가 됐다는 것: 모든 [[40-papers/notes/attention-is-all-you-need|Transformer]] 블록이 `x + Sublayer(x)` 구조다 — ResNet의 아이디어가 오늘날 모든 LLM·VLM·VLA의 층마다 두 번씩 쓰이고 있다.
+이후 거의 10년간 비전의 기본 백본이었고 지금도 표준 베이스라인이다. 더 중요한 유산은 residual 연결이 보편 재료가 됐다는 것: 모든 [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]] 블록이 `x + Sublayer(x)` 구조다 — ResNet의 아이디어가 오늘날 모든 LLM·VLM·VLA의 층마다 두 번씩 쓰이고 있다.
 
 ### 연결
 
-- 이전: [[40-papers/notes/alexnet|AlexNet]] → [[40-papers/notes/vgg|VGG]]
+- 이전: [[40-canonical-papers/notes/alexnet|AlexNet]] → [[40-canonical-papers/notes/vgg|VGG]]
 - 다음: ViT (residual 토대 위에서 트랜스포머가 비전에 진입)
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

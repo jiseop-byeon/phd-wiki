@@ -79,4 +79,4 @@ graph TD
     VJEPA --> PhysAI
 ```
 
-관련: [[40-papers/canonical-list|핵심 논문 리스트]] · [[10-deep-learning/index|딥러닝 지도]]
+관련: [[40-canonical-papers/canonical-list|핵심 논문 리스트]] · [[10-deep-learning/index|딥러닝 지도]]

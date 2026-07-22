@@ -9,6 +9,8 @@ tags: [paper, foundations, computer-vision]
 status: to-read
 ---
 
+**📄 원문**: [PDF](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)
+
 ## English
 
 **One-line summary**: A deep CNN trained on GPUs crushed ImageNet 2012 by a 10%p margin, ending the hand-crafted-features era and starting the deep learning revolution.
@@ -41,11 +43,11 @@ Through the 2000s, computer vision meant hand-engineered features (SIFT, HOG) fe
 
 ### Impact & follow-ups
 
-Started the modern era: within two years every vision benchmark was CNN-dominated. Direct line to [[40-papers/notes/vgg|VGG]] (depth, principled), GoogLeNet, and [[40-papers/notes/resnet|ResNet]] (depth without degradation). ReLU, dropout, and augmentation remain standard practice today.
+Started the modern era: within two years every vision benchmark was CNN-dominated. Direct line to [[40-canonical-papers/notes/vgg|VGG]] (depth, principled), GoogLeNet, and [[40-canonical-papers/notes/resnet|ResNet]] (depth without degradation). ReLU, dropout, and augmentation remain standard practice today.
 
 ### Connections
 
-- Next: [[40-papers/notes/vgg|VGG]] → [[40-papers/notes/resnet|ResNet]]
+- Next: [[40-canonical-papers/notes/vgg|VGG]] → [[40-canonical-papers/notes/resnet|ResNet]]
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -80,9 +82,9 @@ Started the modern era: within two years every vision benchmark was CNN-dominate
 
 ### 영향과 후속 연구
 
-현대 딥러닝의 출발점. 2년 안에 모든 비전 벤치마크가 CNN으로 넘어갔다. [[40-papers/notes/vgg|VGG]](깊이의 원리화), GoogLeNet, [[40-papers/notes/resnet|ResNet]](열화 없는 깊이)으로 직결된다. ReLU·dropout·데이터 증강은 지금도 표준이다.
+현대 딥러닝의 출발점. 2년 안에 모든 비전 벤치마크가 CNN으로 넘어갔다. [[40-canonical-papers/notes/vgg|VGG]](깊이의 원리화), GoogLeNet, [[40-canonical-papers/notes/resnet|ResNet]](열화 없는 깊이)으로 직결된다. ReLU·dropout·데이터 증강은 지금도 표준이다.
 
 ### 연결
 
-- 다음: [[40-papers/notes/vgg|VGG]] → [[40-papers/notes/resnet|ResNet]]
+- 다음: [[40-canonical-papers/notes/vgg|VGG]] → [[40-canonical-papers/notes/resnet|ResNet]]
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

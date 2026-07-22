@@ -10,13 +10,15 @@ tags: [paper, foundations, alignment]
 status: to-read
 ---
 
+**📄 원문**: [arXiv](https://arxiv.org/abs/2203.02155) · [PDF](https://arxiv.org/pdf/2203.02155)
+
 ## English
 
 **One-line summary**: The three-stage RLHF recipe — supervised fine-tuning, reward model from human preferences, PPO — turns a raw language model into an assistant; a 1.3B aligned model was preferred over 175B GPT-3.
 
 ### Context
 
-[[40-papers/notes/gpt-3|GPT-3]] predicts plausible next tokens, which is not the same as doing what users want: outputs could be unhelpful, fabricated, or toxic, and prompting alone couldn't reliably fix it. The objective (LM likelihood) was **misaligned** with the goal (helpful, honest, harmless assistance). How do you optimize for "what humans actually prefer" when that can't be written as a loss function?
+[[40-canonical-papers/notes/gpt-3|GPT-3]] predicts plausible next tokens, which is not the same as doing what users want: outputs could be unhelpful, fabricated, or toxic, and prompting alone couldn't reliably fix it. The objective (LM likelihood) was **misaligned** with the goal (helpful, honest, harmless assistance). How do you optimize for "what humans actually prefer" when that can't be written as a loss function?
 
 ### Method
 
@@ -45,7 +47,7 @@ The direct blueprint of ChatGPT and the template for aligning every modern assis
 
 ### Connections
 
-- Previous: [[40-papers/notes/gpt-3|GPT-3]] · Successors: DPO, Constitutional AI
+- Previous: [[40-canonical-papers/notes/gpt-3|GPT-3]] · Successors: DPO, Constitutional AI
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -54,7 +56,7 @@ The direct blueprint of ChatGPT and the template for aligning every modern assis
 
 ### 배경
 
-[[40-papers/notes/gpt-3|GPT-3]]는 그럴듯한 다음 토큰을 예측할 뿐, 그것이 사용자가 원하는 일을 하는 것과 같지 않다: 출력은 도움이 안 되거나, 지어냈거나, 유해할 수 있었고 프롬프팅만으로는 안정적으로 고칠 수 없었다. 목적함수(LM 우도)가 목표(도움되고 정직하고 무해한 어시스턴트)와 **어긋나 있었던** 것이다. "인간이 실제로 선호하는 것"을 손실함수로 쓸 수 없다면 어떻게 최적화할까?
+[[40-canonical-papers/notes/gpt-3|GPT-3]]는 그럴듯한 다음 토큰을 예측할 뿐, 그것이 사용자가 원하는 일을 하는 것과 같지 않다: 출력은 도움이 안 되거나, 지어냈거나, 유해할 수 있었고 프롬프팅만으로는 안정적으로 고칠 수 없었다. 목적함수(LM 우도)가 목표(도움되고 정직하고 무해한 어시스턴트)와 **어긋나 있었던** 것이다. "인간이 실제로 선호하는 것"을 손실함수로 쓸 수 없다면 어떻게 최적화할까?
 
 ### 방법
 
@@ -83,5 +85,5 @@ ChatGPT의 직접적 설계도이자 모든 현대 어시스턴트 정렬의 템
 
 ### 연결
 
-- 이전: [[40-papers/notes/gpt-3|GPT-3]] · 후속: DPO, Constitutional AI
+- 이전: [[40-canonical-papers/notes/gpt-3|GPT-3]] · 후속: DPO, Constitutional AI
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

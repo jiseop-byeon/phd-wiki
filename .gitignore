@@ -17,3 +17,6 @@ quartz/cli/tui/dist/
 .obsidian/workspace-mobile.json
 .trash/
 .DS_Store
+
+# Local-only course materials (copyrighted - never publish)
+reference/

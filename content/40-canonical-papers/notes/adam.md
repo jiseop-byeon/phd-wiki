@@ -10,6 +10,8 @@ tags: [paper, foundations, optimization]
 status: to-read
 ---
 
+**📄 원문**: [arXiv](https://arxiv.org/abs/1412.6980) · [PDF](https://arxiv.org/pdf/1412.6980)
+
 ## English
 
 **One-line summary**: Per-parameter adaptive learning rates from bias-corrected first and second moment estimates — the default optimizer of deep learning ever since.
@@ -41,11 +43,11 @@ SGD needs careful learning-rate tuning, and one global rate fits all parameters 
 
 ### Impact & follow-ups
 
-Arguably the most-used algorithm in deep learning; virtually every model in this wiki — from [[40-papers/notes/attention-is-all-you-need|Transformer]] to VLAs — was trained with Adam or AdamW. Follow-ups: AMSGrad, AdamW, and recent memory-efficient variants (Adafactor, 8-bit Adam, Lion).
+Arguably the most-used algorithm in deep learning; virtually every model in this wiki — from [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]] to VLAs — was trained with Adam or AdamW. Follow-ups: AMSGrad, AdamW, and recent memory-efficient variants (Adafactor, 8-bit Adam, Lion).
 
 ### Connections
 
-- Used by: essentially every note in `40-papers/notes/`
+- Used by: essentially every note in `40-canonical-papers/notes/`
 - Lineage: [[10-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -79,9 +81,9 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 
 ### 영향과 후속 연구
 
-딥러닝에서 가장 많이 쓰인 알고리즘이라 해도 과언이 아니다. [[40-papers/notes/attention-is-all-you-need|Transformer]]부터 VLA까지 이 위키의 거의 모든 모델이 Adam/AdamW로 학습됐다. 후속: AMSGrad, AdamW, 메모리 효율 변형들(Adafactor, 8-bit Adam, Lion).
+딥러닝에서 가장 많이 쓰인 알고리즘이라 해도 과언이 아니다. [[40-canonical-papers/notes/attention-is-all-you-need|Transformer]]부터 VLA까지 이 위키의 거의 모든 모델이 Adam/AdamW로 학습됐다. 후속: AMSGrad, AdamW, 메모리 효율 변형들(Adafactor, 8-bit Adam, Lion).
 
 ### 연결
 
-- 쓰이는 곳: `40-papers/notes/`의 사실상 모든 노트
+- 쓰이는 곳: `40-canonical-papers/notes/`의 사실상 모든 노트
 - 계보: [[10-deep-learning/lineage|논문 계보도]]

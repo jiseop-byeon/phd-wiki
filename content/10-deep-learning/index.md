@@ -17,7 +17,7 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 - **World Models** — Dreamer line, Genie, JEPA, video generation as simulation
 - **Diffusion & Generative** — DDPM → latent diffusion → flow matching, DiT
 
-Start from the [[40-papers/canonical-list|canonical paper list]] and create one note per paper.
+Start from the [[40-canonical-papers/canonical-list|canonical paper list]] and create one note per paper.
 
 ## 한국어
 
@@ -33,4 +33,4 @@ Start from the [[40-papers/canonical-list|canonical paper list]] and create one 
 - **월드모델** — Dreamer 계열, Genie, JEPA, 시뮬레이터 역할을 하는 비디오 생성 모델
 - **디퓨전 & 생성모델** — DDPM → latent diffusion → flow matching, DiT
 
-[[40-papers/canonical-list|핵심 논문 리스트]]에서 시작해 논문 하나당 노트를 하나씩 만든다.
+[[40-canonical-papers/canonical-list|핵심 논문 리스트]]에서 시작해 논문 하나당 노트를 하나씩 만든다.
