@@ -14,13 +14,13 @@ these groups' work fits the field's history, see [[05-construction-robotics/line
 | Lab / group | PI | Known for |
 |---|---|---|
 | [RICAL](https://rical.ce.gatech.edu/index.html), Georgia Tech CEE | Yong K. Cho | field-task robotization: construction ops, infrastructure maintenance, worker safety; LiDAR/scan automation |
-| [Francis Baek](https://scholar.google.com/citations?user=7B_RBSAAAAAJ&hl=en), Georgia Tech | Francis Baek | vision-based localization, GAN data augmentation, worker safety/ergonomics, human-robot team dynamics |
+| [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech | Francis Baek | vision-based localization, GAN data augmentation, worker safety/ergonomics, human-robot team dynamics |
 | [RAAMAC](https://raamac.cee.illinois.edu), UIUC CEE | Mani Golparvar-Fard | computer-vision progress monitoring from site photos/BIM; spun out **Reconstruct Inc.** |
 | RAISE Lab ([profile](https://cee.illinois.edu/directory/profile/hjebelli)), UIUC CEE | Houtan Jebelli | construction robotics + physiological computing, human-robot interaction on site |
 | [LIVE Lab](https://live.engin.umich.edu) & CEE robotics group, Univ. of Michigan | Vineet Kamat, Carol Menassa | human-robot collaboration on site, worker-assist robots, digital twins; one of the largest US construction-automation programs |
 | [DPM Lab](https://dpm.engin.umich.edu), Univ. of Michigan | SangHyun Lee | worker-centered construction automation: wearable biosensing, safety/productivity analytics, robots-for-humans |
-| [Hongrui Yu](https://scholar.google.com/citations?user=8GMGKXMAAAAJ&hl=en), Virginia Tech | Hongrui Yu | imitation learning for construction skills, human-robot handover, digital-twin HRC workflows |
-| [Xi Wang](https://scholar.google.com/citations?user=nZeO0zEAAAAJ&hl=en), Texas A&M | Xi Wang | human-robot collaboration in construction (field-defining survey), process-level digital twins |
+| [Yu Research Group](https://hyu-bot.github.io/YuResearchPortfolio/research/), Virginia Tech | Hongrui Yu | imitation learning for construction skills, human-robot handover, digital-twin HRC workflows |
+| [XIC Lab](https://www.xiclab.org/), Texas A&M (Construction Science) | Xi Wang | human-robot collaboration in construction (field-defining survey), process-level digital twins |
 | [SWARM Lab](https://cee.engineering.cmu.edu/directory/bios/tang-pingbo.html), CMU CEE | Pingbo Tang | spatiotemporal sensing & human-cyber-physical systems for construction/infrastructure |
 | CMU CEE ([profile](https://www.cmu.edu/cee/people/faculty/akinci.html)) | Burcu Akinci | BIM + 3D imaging/sensing for facility histories; co-designing a National Institute for AI in Construction; now Dean of Engineering |
 | [CIFE](https://cife.stanford.edu), Stanford | (center, multi-PI) | the long-running home of VDC/BIM research — the digital-model side that site robots consume |
@@ -74,13 +74,13 @@ These groups publish the manipulation/HRC methods construction researchers impor
 | 랩 / 그룹 | PI | 대표 분야 |
 |---|---|---|
 | [RICAL](https://rical.ce.gatech.edu/index.html), Georgia Tech 토목환경 | Yong K. Cho | 현장 작업 로봇화: 시공 운영, 인프라 유지보수, 작업자 안전; LiDAR/스캔 자동화 |
-| [Francis Baek](https://scholar.google.com/citations?user=7B_RBSAAAAAJ&hl=en), Georgia Tech | Francis Baek | 비전 기반 위치 추정, GAN 데이터 증강, 작업자 안전/인간공학, 인간-로봇 팀 역학 |
+| [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech | Francis Baek | 비전 기반 위치 추정, GAN 데이터 증강, 작업자 안전/인간공학, 인간-로봇 팀 역학 |
 | [RAAMAC](https://raamac.cee.illinois.edu), UIUC 토목환경 | Mani Golparvar-Fard | 현장 사진/BIM 기반 CV 공정 모니터링; **Reconstruct Inc.** 창업 |
 | RAISE Lab ([프로필](https://cee.illinois.edu/directory/profile/hjebelli)), UIUC 토목환경 | Houtan Jebelli | 건설로봇 + 생리 신호 컴퓨팅, 현장 인간-로봇 상호작용 |
 | [LIVE Lab](https://live.engin.umich.edu) 및 CEE 로보틱스 그룹, 미시간대 | Vineet Kamat, Carol Menassa | 현장 인간-로봇 협업, 작업자 보조 로봇, 디지털 트윈; 미국 최대급 건설 자동화 프로그램 |
 | [DPM Lab](https://dpm.engin.umich.edu), 미시간대 | SangHyun Lee | 작업자 중심 건설 자동화: 웨어러블 바이오센싱, 안전/생산성 분석 |
-| [Hongrui Yu](https://scholar.google.com/citations?user=8GMGKXMAAAAJ&hl=en), Virginia Tech | Hongrui Yu | 건설 기술의 모방학습, 인간-로봇 물체 전달, 디지털 트윈 HRC 워크플로 |
-| [Xi Wang](https://scholar.google.com/citations?user=nZeO0zEAAAAJ&hl=en), Texas A&M | Xi Wang | 건설 HRC(분야를 정의한 서베이), 공정 수준 디지털 트윈 |
+| [Yu Research Group](https://hyu-bot.github.io/YuResearchPortfolio/research/), Virginia Tech | Hongrui Yu | 건설 기술의 모방학습, 인간-로봇 물체 전달, 디지털 트윈 HRC 워크플로 |
+| [XIC Lab](https://www.xiclab.org/), Texas A&M (Construction Science) | Xi Wang | 건설 HRC(분야를 정의한 서베이), 공정 수준 디지털 트윈 |
 | [SWARM Lab](https://cee.engineering.cmu.edu/directory/bios/tang-pingbo.html), CMU 토목환경 | Pingbo Tang | 건설/인프라의 시공간 센싱과 인간-사이버-물리 시스템 |
 | CMU 토목환경 ([프로필](https://www.cmu.edu/cee/people/faculty/akinci.html)) | Burcu Akinci | BIM + 3D 이미징/센싱; 건설 AI 국가 연구소 설계 참여; 현 공대 학장 |
 | [CIFE](https://cife.stanford.edu), Stanford | (센터, 복수 PI) | VDC/BIM 연구의 오랜 본산 |
