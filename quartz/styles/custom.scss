@@ -1,5 +1,12 @@
 @use "./variables.scss" as *;
 
+// Hide created/modified dates in folder & tag listings (publish dates are
+// meaningless here — paper years live in each note's citation line)
+.section-li .section > .meta,
+ul.section-ul .meta {
+  display: none;
+}
+
 // Floating "save as PDF" button (uses the browser's print-to-PDF)
 #pdf-btn {
   position: fixed;
