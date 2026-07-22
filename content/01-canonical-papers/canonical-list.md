@@ -1,5 +1,5 @@
 ---
-title: Canonical Paper List
+title: 1. Canonical Paper List
 tags: [moc, papers]
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "Control Theory for Smart Infrastructure (CE397) — Study Guide"
+title: "3. Control Theory (CE397)"
 tags: [robotics, control, resource]
 ---
 

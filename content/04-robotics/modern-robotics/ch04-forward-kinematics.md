@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.4 — Forward Kinematics"
+title: "MR Ch.04 — Forward Kinematics"
 tags: [robotics, modern-robotics]
 ---
 

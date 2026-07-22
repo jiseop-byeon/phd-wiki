@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.2 — Configuration Space"
+title: "MR Ch.02 — Configuration Space"
 tags: [robotics, modern-robotics]
 ---
 

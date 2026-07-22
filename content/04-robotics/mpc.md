@@ -1,5 +1,5 @@
 ---
-title: "MPC — Study Guide"
+title: "5. MPC"
 tags: [robotics, control, resource]
 ---
 

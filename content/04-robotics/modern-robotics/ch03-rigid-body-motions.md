@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.3 — Rigid-Body Motions"
+title: "MR Ch.03 — Rigid-Body Motions"
 tags: [robotics, modern-robotics]
 ---
 

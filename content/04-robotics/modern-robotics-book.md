@@ -1,5 +1,5 @@
 ---
-title: "Modern Robotics (Lynch & Park) — Study Guide"
+title: "1. Modern Robotics (Book)"
 tags: [robotics, resource]
 ---
 

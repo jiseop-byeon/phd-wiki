@@ -1,5 +1,5 @@
 ---
-title: "Convex MPC for Legged Robots (MIT Cheetah) — Study Guide"
+title: "6. Convex MPC (Legged Robots)"
 tags: [robotics, control, resource]
 ---
 

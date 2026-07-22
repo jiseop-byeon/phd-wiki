@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.5 — Velocity Kinematics & Statics"
+title: "MR Ch.05 — Velocity Kinematics & Statics"
 tags: [robotics, modern-robotics]
 ---
 

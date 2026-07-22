@@ -1,5 +1,5 @@
 ---
-title: Paper Notes
+title: 2. Paper Notes
 ---
 
 논문 노트 전체 — 섹션별 폴더로 정리되어 있다. 읽기 순서와 체크 현황은

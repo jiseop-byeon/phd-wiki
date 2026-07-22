@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.9 — Trajectory Generation"
+title: "MR Ch.09 — Trajectory Generation"
 tags: [robotics, modern-robotics]
 ---
 

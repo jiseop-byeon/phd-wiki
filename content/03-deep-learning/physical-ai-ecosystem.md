@@ -1,5 +1,5 @@
 ---
-title: Physical AI Ecosystem
+title: 2. Physical AI Ecosystem
 tags: [reference]
 ---
 

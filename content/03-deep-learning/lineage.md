@@ -1,5 +1,5 @@
 ---
-title: Paper Lineage
+title: 1. Paper Lineage
 tags: [moc, reference]
 ---
 

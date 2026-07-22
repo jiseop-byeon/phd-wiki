@@ -1,5 +1,5 @@
 ---
-title: "LQR / LQG — Study Guide"
+title: "4. LQR / LQG"
 tags: [robotics, control, resource]
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.8 — Dynamics of Open Chains"
+title: "MR Ch.08 — Dynamics of Open Chains"
 tags: [robotics, modern-robotics]
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: Construction Robotics Labs
+title: 2. Labs Map
 tags: [reference, construction]
 ---
 

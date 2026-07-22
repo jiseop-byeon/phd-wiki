@@ -1,5 +1,5 @@
 ---
-title: "MR Ch.6 — Inverse Kinematics"
+title: "MR Ch.06 — Inverse Kinematics"
 tags: [robotics, modern-robotics]
 ---
 
