@@ -12,6 +12,15 @@ information theory: cross-entropy loss, KL divergence, the ELBO, contrastive lea
 even "perplexity." This page is the complete working set for reading modern papers —
 no prior background assumed.
 
+### 0. Prerequisite: the three log rules
+
+Everything on this page runs on logarithms. If these three lines are not second nature,
+read [[02-foundations/engineering-math|0.1 Engineering Math §6]] first (5 minutes):
+$\log(ab) = \log a + \log b$ (products of probabilities become sums — why losses are sums);
+$\log(a^n) = n \log a$; and base 2 vs base $e$ only changes units (**bits** vs **nats**) by
+a constant factor. Also remember: probabilities live in $[0,1]$, so log-probabilities are
+$\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
+
 ### 1. Surprise and entropy
 
 - **Surprise** of an outcome: $-\log p(x)$. Rare events carry more information (a sensor
@@ -100,6 +109,15 @@ posterior. Every VAE, diffusion, and world-model paper writes some version of th
 딥러닝에서 확률 분포가 등장하는 모든 것은 결국 정보이론의 언어로 말한다: 교차 엔트로피
 손실, KL divergence, ELBO, 대조학습, 심지어 "perplexity"까지. 이 페이지는 최신 논문을
 읽는 데 필요한 전부를 사전지식 없이 따라올 수 있게 담았다.
+
+### 0. 사전 준비: 로그의 세 규칙
+
+이 페이지 전체가 로그로 굴러간다. 아래 세 줄이 자동으로 나오지 않으면
+[[02-foundations/engineering-math|0.1 공업수학 §6]]을 먼저 읽어라 (5분이면 된다):
+$\log(ab) = \log a + \log b$ (확률의 곱이 합이 된다 — 손실이 합인 이유);
+$\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나트**)만 상수배 바꾼다.
+하나 더: 확률은 $[0,1]$에 살므로 로그 확률은 $\le 0$이다 — "교차 엔트로피가 작다" =
+로그 확률이 0에 가깝다는 뜻.
 
 ### 1. 놀라움과 엔트로피
 

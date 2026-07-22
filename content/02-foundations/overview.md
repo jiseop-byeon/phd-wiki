@@ -16,12 +16,12 @@ with the listed quick source — a few hours each, not a semester.
 
 | Prerequisite | Needed by | Quick source |
 |---|---|---|
-| Single/multivariable calculus — derivatives, partial derivatives, integrals, Taylor series | [[02-foundations/calculus-backprop\|2. Calculus]], [[02-foundations/optimization\|4. Optimization]], [[02-foundations/probability\|3. Probability]] | [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) · [Khan Academy](https://www.khanacademy.org/math) |
-| Matrix/vector arithmetic — systems of equations, matrix multiplication | [[02-foundations/linear-algebra\|1. Linear Algebra]] (start here) | [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
-| Series & convergence basics | [[02-foundations/probability\|3. Probability]] (expectations), [[02-foundations/rl-basics\|7. RL]] (discounted sums) | any calculus text, ch. on series |
-| Complex numbers & Euler's formula $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. Signal Processing]] (Fourier) | [Khan Academy](https://www.khanacademy.org/math) |
-| Exponentials & logarithms (incl. $\log$ rules) | [[02-foundations/information-theory\|5. Information Theory]] | high-school review |
-| Basic set notation & logic | [[02-foundations/probability\|3. Probability]] (axioms) | any discrete math intro |
+| Single/multivariable calculus — derivatives, partial derivatives, integrals, Taylor series | [[02-foundations/calculus-backprop\|2. Calculus]], [[02-foundations/optimization\|4. Optimization]], [[02-foundations/probability\|3. Probability]] | [[02-foundations/engineering-math\|0.1 공업수학 §1–3]] · [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) |
+| Matrix/vector arithmetic — systems of equations, matrix multiplication | [[02-foundations/linear-algebra\|1. Linear Algebra]] (start here) | [[02-foundations/engineering-math\|0.1 공업수학 §4]] · [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
+| Series & convergence basics | [[02-foundations/probability\|3. Probability]] (expectations), [[02-foundations/rl-basics\|7. RL]] (discounted sums) | [[02-foundations/engineering-math\|0.1 공업수학 §5]] |
+| Complex numbers & Euler's formula $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. Signal Processing]] (Fourier) | [[02-foundations/engineering-math\|0.1 공업수학 §7]] |
+| Exponentials & logarithms (incl. $\log$ rules) | [[02-foundations/information-theory\|5. Information Theory]] | [[02-foundations/engineering-math\|0.1 공업수학 §6]] + [[02-foundations/information-theory\|정보이론 §0]] |
+| Basic set notation & logic | [[02-foundations/probability\|3. Probability]] (axioms) | [[02-foundations/engineering-math\|0.1 공업수학 §8 표기법 사전]] |
 
 That's the *entire* prerequisite list — no measure theory, no functional analysis, no
 advanced statistics. If you can differentiate, multiply matrices, and read $\sum$ and
@@ -109,12 +109,12 @@ order (its section 1 mirrors this page's logic), with the
 
 | 사전 지식 | 필요한 페이지 | 빠른 자료 |
 |---|---|---|
-| 단변수/다변수 미적분 — 미분, 편미분, 적분, 테일러 급수 | [[02-foundations/calculus-backprop\|2. 미적분·역전파]], [[02-foundations/optimization\|4. 최적화]], [[02-foundations/probability\|3. 확률]] | [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) · [Khan Academy](https://www.khanacademy.org/math) |
-| 행렬/벡터 연산 — 연립방정식, 행렬곱 | [[02-foundations/linear-algebra\|1. 선형대수]] (여기서 시작) | [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
-| 급수와 수렴 기초 | [[02-foundations/probability\|3. 확률]] (기댓값), [[02-foundations/rl-basics\|7. RL]] (할인 합) | 미적분 교재의 급수 챕터 |
-| 복소수와 오일러 공식 $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. 신호처리]] (푸리에) | [Khan Academy](https://www.khanacademy.org/math) |
-| 지수·로그 (로그 법칙 포함) | [[02-foundations/information-theory\|5. 정보이론]] | 고교 수준 복습 |
-| 기초 집합 표기와 논리 | [[02-foundations/probability\|3. 확률]] (공리) | 이산수학 입문 아무거나 |
+| 단변수/다변수 미적분 — 미분, 편미분, 적분, 테일러 급수 | [[02-foundations/calculus-backprop\|2. 미적분·역전파]], [[02-foundations/optimization\|4. 최적화]], [[02-foundations/probability\|3. 확률]] | [[02-foundations/engineering-math\|0.1 공업수학 §1–3]] · [*Essence of Calculus*](https://www.3blue1brown.com/topics/calculus) |
+| 행렬/벡터 연산 — 연립방정식, 행렬곱 | [[02-foundations/linear-algebra\|1. 선형대수]] (여기서 시작) | [[02-foundations/engineering-math\|0.1 공업수학 §4]] · [*Essence of Linear Algebra*](https://www.3blue1brown.com/topics/linear-algebra) |
+| 급수와 수렴 기초 | [[02-foundations/probability\|3. 확률]] (기댓값), [[02-foundations/rl-basics\|7. RL]] (할인 합) | [[02-foundations/engineering-math\|0.1 공업수학 §5]] |
+| 복소수와 오일러 공식 $e^{j\theta} = \cos\theta + j\sin\theta$ | [[02-foundations/signal-processing\|6. 신호처리]] (푸리에) | [[02-foundations/engineering-math\|0.1 공업수학 §7]] |
+| 지수·로그 (로그 법칙 포함) | [[02-foundations/information-theory\|5. 정보이론]] | [[02-foundations/engineering-math\|0.1 공업수학 §6]] + [[02-foundations/information-theory\|정보이론 §0]] |
+| 기초 집합 표기와 논리 | [[02-foundations/probability\|3. 확률]] (공리) | [[02-foundations/engineering-math\|0.1 공업수학 §8 표기법 사전]] |
 
 이것이 사전 지식의 *전부*다 — 측도론도, 함수해석도, 고급 통계도 없다. 미분할 수 있고,
 행렬을 곱할 수 있고, $\sum$과 $\log$를 읽을 수 있으면 시작할 수 있다.

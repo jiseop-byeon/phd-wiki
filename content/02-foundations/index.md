@@ -35,6 +35,7 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 (optimization, information theory), and two domain bridges (signal processing, RL).
 
 - [[02-foundations/overview|0. Overview]] — prerequisites, study order, connection map
+- [[02-foundations/engineering-math|0.1 Engineering Math]] — the assumed undergraduate math, self-contained: derivatives to Euler's formula, plus a notation dictionary
 - [[02-foundations/linear-algebra|1. Linear Algebra]] — matrices as maps, rank/SVD, the geometry behind attention and LoRA
 - [[02-foundations/calculus-backprop|2. Calculus & Backpropagation]] — chain rule to backprop, vanishing/exploding gradients as architecture history
 - [[02-foundations/probability|3. Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of every loss function
@@ -74,6 +75,7 @@ wiki**: math core (linear algebra, calculus, probability), the two applied pilla
 수학 핵심(선형대수, 미적분, 확률), 응용 기둥 둘(최적화, 정보이론), 도메인 다리 둘(신호처리, RL).
 
 - [[02-foundations/overview|0. Overview]] — 사전 지식, 학습 순서, 연결 지도
+- [[02-foundations/engineering-math|0.1 공업수학]] — 전제되는 학부 수학을 자체 완결로: 미분부터 오일러 공식까지 + 표기법 사전
 - [[02-foundations/linear-algebra|1. 선형대수]] — 사상으로서의 행렬, 랭크/SVD, 어텐션과 LoRA 뒤의 기하
 - [[02-foundations/calculus-backprop|2. 미적분과 역전파]] — 연쇄 법칙에서 역전파까지, 구조 설계사(史)로서의 그래디언트 소실/폭발
 - [[02-foundations/probability|3. 확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 모든 손실함수의 기원으로서의 MLE
