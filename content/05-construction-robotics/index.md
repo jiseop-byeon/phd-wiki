@@ -20,7 +20,10 @@ This area spans four disciplines, so the literature is scattered across their ve
 - Human-robot collaboration on site
 - Learning-based manipulation for construction tasks
 
-A curated survey of this literature is a separate task — collect surveys first, then branch out.
+Start with the two maps: [[05-construction-robotics/lineage|research lineage]] (four eras
+→ today's physical-AI question) and [[05-construction-robotics/labs|who does this research]]
+(US labs + the ETH cluster). Survey entries live in
+[[01-canonical-papers/canonical-list|section 8 of the canonical list]].
 
 ## 한국어
 
@@ -40,4 +43,7 @@ A curated survey of this literature is a separate task — collect surveys first
 - 현장에서의 인간-로봇 협업
 - 건설 작업을 위한 학습 기반 매니퓰레이션
 
-이 분야의 문헌 정리는 별도 작업으로 진행한다 — 서베이 논문부터 모은 뒤 범위를 넓혀 간다.
+두 개의 지도에서 시작하라: [[05-construction-robotics/lineage|연구 계보]](네 시대 →
+오늘의 physical AI 질문)와 [[05-construction-robotics/labs|이 연구를 하는 곳]](미국 랩들 +
+ETH 클러스터). 서베이 항목은 [[01-canonical-papers/canonical-list|핵심 논문 리스트 8번
+섹션]]에 있다.

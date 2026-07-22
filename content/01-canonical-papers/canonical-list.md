@@ -59,7 +59,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] [[notes/flamingo|Flamingo]] (Alayrac et al., NeurIPS 2022)
 - [x] [[notes/blip-2|BLIP-2]] (Li et al., ICML 2023)
 - [x] [[notes/llava|LLaVA]] — *Visual Instruction Tuning* (Liu et al., NeurIPS 2023)
-- [ ] Qwen-VL series (2023–) — representative open VLM line
+- [x] [[notes/qwen-vl|Qwen-VL series]] (Qwen Team, 2023–2025) — representative open VLM line
 - [ ] PaliGemma (2024) — representative small open VLM
 
 ## 4. Vision-Language-Action (VLA) / Robot Learning
@@ -106,8 +106,10 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 8. Construction Robotics
 
-> To be populated as a separate curation task: start with recent surveys in
-> *Automation in Construction* and ISARC proceedings, then branch into
-> excavation automation, robotic assembly, site perception, and HRC on site.
+계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]
 
-- [ ] (survey collection pending)
+- [ ] Bock — *The future of construction automation* ([Automation in Construction, 2015](https://doi.org/10.1016/j.autcon.2015.07.022)) — 분야 조감의 표준 서베이
+- [ ] Davila Delgado et al. — *Robotics and automated systems in construction* ([J. Building Engineering, 2019](https://doi.org/10.1016/j.jobe.2019.100868)) — 도입 장벽 분석
+- [ ] Jud et al. — *HEAP: the autonomous walking excavator* ([ETH RSL](https://rsl.ethz.ch/robots-media/heap.html)) — 학습 시대 중장비 자율성의 기준 시스템
+- [ ] ETH — autonomous dry-stone wall construction ([project](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)) — 비정형 재료 조작의 이정표
+- [ ] (심화 서베이·개별 논문은 읽으며 추가)
