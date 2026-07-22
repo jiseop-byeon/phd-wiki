@@ -16,11 +16,12 @@ tags: [robotics, modern-robotics]
   normal; a point contact with friction can push anywhere inside the **friction cone** —
   half-angle $\alpha = \tan^{-1}\mu$. For $\mu = 0.5$, $\alpha \approx 26.6°$: the physical
   meaning of a friction coefficient is *an angle*.
-- **Form closure**: the geometry alone traps the object (no friction needed) — requires at
-  least 4 well-placed contacts in the plane, 7 in space. Robust but demanding.
+- **Form closure**: the geometry alone traps the object (no friction needed) — for
+  frictionless point contacts in general position, at least 4 contacts in the plane and
+  7 in space. Robust but demanding.
 - **Force closure**: with friction, the contacts can resist *any* external wrench —
   the contact friction cones must positively span the whole wrench space. Practical grasps
-  are force closures with 2–3 fingers.
+  are usually force closures with 2–3 fingers.
 - **The antipodal intuition** (worked): two fingers gripping opposite sides of an object
   give force closure iff each contact point lies inside the *other* contact's friction
   cone — "the fingers can see each other through their cones." This one picture explains
@@ -49,10 +50,10 @@ tags: [robotics, modern-robotics]
 - **접촉 모델**: 마찰 없는 점 접촉은 표면 법선 방향으로만 *밀 수* 있다; 마찰 있는 점
   접촉은 **마찰 원뿔** 안 어디로든 밀 수 있다 — 반각 $\alpha = \tan^{-1}\mu$.
   $\mu = 0.5$면 $\alpha \approx 26.6°$: 마찰 계수의 물리적 의미는 *각도*다.
-- **Form closure**: 기하만으로 물체를 가둔다(마찰 불필요) — 평면에서 최소 4개, 공간에서
-  7개의 잘 배치된 접촉이 필요하다. 강건하지만 요구가 크다.
+- **Form closure**: 기하만으로 물체를 가둔다(마찰 불필요) — 마찰 없는 점 접촉·일반
+  위치 가정에서 평면 최소 4개, 공간 최소 7개의 접촉이 필요하다. 강건하지만 요구가 크다.
 - **Force closure**: 마찰이 있으면 접촉들이 *임의의* 외부 렌치를 버틸 수 있다 — 접촉
-  마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다. 실용적 파지는 손가락
+  마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다. 실용적 파지는 대개 손가락
   2~3개의 force closure다.
 - **대척 파지의 직관** (예제): 물체의 반대편을 잡는 두 손가락이 force closure가 되는
   조건은 각 접촉점이 *상대* 접촉의 마찰 원뿔 안에 있는 것 — "두 손가락이 원뿔을 통해

@@ -15,12 +15,12 @@ tags: [reference]
 - **State vs Observation** — 상태는 과거를 요약하는 마르코프 변수(숨겨져 있을 수 있음); 관측은 센서가 실제로 주는 것. 둘이 다르면 POMDP다. → [[02-foundations/rl-basics|RL 기초 §1]]
 - **Policy vs Controller** — 같은 역할(상태→행동)의 두 커뮤니티 용어. 정책은 학습 문맥, 제어기는 모델 기반 설계·안정성 보장 문맥에서 쓰인다. → [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]
 - **World model vs Model-based RL** — 월드모델은 학습된 동역학 모델 그 자체; model-based RL은 그것을 계획/학습에 쓰는 방법론. → [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]
-- **VLM vs VLA** — VLM은 텍스트를 출력하고, VLA는 로봇 행동을 출력한다(대개 VLM 백본 + 행동 헤드). → [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]
+- **VLM vs VLA** — VLM은 이미지-언어 관계를 모델링한다(임베딩·유사도·분류·텍스트 생성 — CLIP처럼 텍스트를 생성하지 않는 VLM도 있다); VLA의 구별점은 출력이 로봇 행동이라는 것(대개 VLM 백본 + 행동 헤드). → [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]
 - **Behavior cloning vs Imitation learning vs Offline RL** — BC는 IL의 부분집합(시연의 지도학습); IL은 시연 활용 전반(DAgger, IRL 포함); offline RL은 보상 신호로 시연자 초과 성능을 노린다.
-- **Diffusion vs Flow matching** — 같은 수송(노이즈→데이터)의 두 학습법: 디퓨전은 확률적 노이즈 제거 체인을, FM은 결정론적 속도장을 직접 회귀 — 경로가 곧아 추론 스텝이 적다. → [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow Matching]]
+- **Diffusion vs Flow matching** — 분포 수송(노이즈→데이터)의 두 학습 정식화. FM은 선택한 확률 경로의 속도장을 회귀하며 디퓨전 경로도 특수 사례로 포함한다; OT 계열 직선 경로는 그중 한 선택지로, 더 적은 적분 스텝을 가능하게 한다(모든 FM이 직선인 것은 아니다). → [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow Matching]]
 - **Pose vs Configuration** — pose는 강체 하나의 SE(3) 위치·자세; configuration은 로봇 전체의 자유도(모든 관절각 포함). → [[02-foundations/se3-geometry|SE(3)]], [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]
 - **Space vs Body (Jacobian/twist)** — 같은 양을 어느 프레임에서 표현했는가의 차이; $[\text{Ad}_T]$로 변환된다. MR에서 가장 흔한 실수 지점. → [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]
-- **LQR vs MPC** — LQR은 무제약·무한 지평의 닫힌형 해; MPC는 제약 처리·유한 지평·매 스텝 재풀이. → [[04-robotics/mpc|MPC]]
+- **LQR vs MPC** — 무한 지평 LQR은 리카티 방정식을 (오프라인에서) 풀어 고정 선형 이득 $u = -Kx$를 얻고, MPC는 유한 지평·제약 있는 최적화를 매 스텝 다시 푼다. → [[04-robotics/mpc|MPC]]
 - **Open-loop vs Closed-loop** — 계획을 실행하는 동안 새 관측을 반영하는가; receding horizon은 closed-loop을 만드는 장치다.
 - **Objective vs Metric** — 학습이 최소화하는 것 vs 평가에 쓰는 것. 둘은 자주 다르고(교차 엔트로피로 학습, mAP로 평가), 그 간극 자체가 논문의 논점일 때가 있다. → [[02-foundations/ml-practice|ML 실무 §3]]
 - **Feature vs Representation vs Embedding vs Latent** — 거의 같은 뜻의 방언들: 모두 "네트워크가 만든 벡터". 뉘앙스만 다르다 — feature는 층의 출력, representation은 그 품질을 논할 때, embedding은 이산 입력의 벡터화, latent는 생성 모델의 숨은 변수.
@@ -39,7 +39,7 @@ tags: [reference]
 - **Bellman equation (벨만 방정식)** — 오늘의 가치 = 보상 + 할인된 내일의 가치라는 고정점 방정식. 모든 RL의 뿌리. → [[02-foundations/rl-basics|RL 기초]]
 - **BLEU** — 기계번역 품질 지표. 생성문과 참조 번역의 n-gram 겹침을 측정.
 - **CFG (Classifier-Free Guidance)** — 조건부/무조건부 예측의 차이 방향으로 외삽해 조건 충실도를 높이는 샘플링 기법. → [[01-canonical-papers/notes/6-diffusion/classifier-free-guidance|CFG]]
-- **Condition number (조건수)** — $\lambda_{max}/\lambda_{min}$. 최적화 문제의 난이도 그 자체. → [[02-foundations/linear-algebra|선형대수]]
+- **Condition number (조건수)** — 일반 행렬의 2-노름에서는 $\kappa_2(A) = \sigma_{max}/\sigma_{min}$(특이값 비); 대칭 양정부호(헤시안 등)에서는 고유값 비와 같다. 선형계의 민감도와 최적화 난이도의 지표. → [[02-foundations/linear-algebra|선형대수]]
 - **Contrastive learning (대조학습)** — 짝이 맞는 쌍은 가깝게, 아닌 쌍은 멀게 임베딩을 학습. → [[01-canonical-papers/notes/3-vlm/clip|CLIP]], [[02-foundations/information-theory|InfoNCE]]
 - **Cross-entropy (교차 엔트로피)** — $-E_p[\log q]$. 분류·언어모델의 표준 손실이며 그 정체는 MLE. → [[02-foundations/information-theory|정보이론]]
 - **CVAE** — 조건부 VAE. 조건이 주어졌을 때의 다양한 출력 분포를 잠재변수로 담는다. → [[01-canonical-papers/notes/4-vla/act|ACT]]
@@ -55,7 +55,7 @@ tags: [reference]
 - **Fine-tuning (파인튜닝)** — 사전학습 모델을 특정 작업 데이터로 추가 학습. → [[01-canonical-papers/notes/1-foundations/bert|BERT]], [[01-canonical-papers/notes/1-foundations/lora|LoRA]]
 - **Flow matching** — 노이즈→데이터 확률 경로의 속도장을 직접 회귀하는 생성 학습법. π0의 행동 생성 엔진. → [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow Matching]]
 - **Gaussian splatting** — 장면을 수백만 개의 3D 가우시안으로 표현하고 래스터라이즈하는 실시간 3D 표현. → [[01-canonical-papers/notes/2-computer-vision/3d-gaussian-splatting|3DGS]]
-- **Imitation learning (모방 학습)** — 전문가 시연으로 정책을 지도학습. 로봇 매니퓰레이션의 주류. → [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]
+- **Imitation learning (모방 학습)** — 전문가 시연을 활용해 정책을 학습하는 방법 전반(BC·DAgger·IRL 포함); 좁은 의미로는 BC(시연의 지도학습)를 가리키기도 한다. 로봇 매니퓰레이션의 주류. → [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]
 - **InfoNCE** — 배치 안의 다른 샘플들을 "클래스"로 쓰는 대조 손실. 상호 정보량의 하한. → [[02-foundations/information-theory|정보이론 §4]]
 
 ## K–P

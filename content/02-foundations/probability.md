@@ -22,7 +22,8 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   Worked example — sensor diagnosis: a crack detector fires on 95% of cracks
   ($P(+|c)=0.95$), false-alarms 5% ($P(+|\neg c)=0.05$), cracks are rare ($P(c)=0.01$).
   $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
-  A "95% accurate" alarm is right 16% of the time — base rates dominate. This is why
+  An alarm with 95% sensitivity (and a 5% false-positive rate — two separate numbers,
+  not one "accuracy") is right only 16% of the time it fires — base rates dominate. This is why
   perception pipelines calibrate.
 - Independence $P(A,B) = P(A)P(B)$ vs conditional independence $P(A,B|C) = P(A|C)P(B|C)$ —
   the factorization assumptions behind graphical models, naive Bayes, and the Markov
@@ -64,8 +65,9 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   Worked example (Gaussian mean): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{const}$ ⇒
   maximizing likelihood ≡ minimizing squared error; $\hat\mu = \bar{x}$.
   **MSE regression is MLE under Gaussian noise; cross-entropy is MLE for categorical
-  outputs.** Every pretraining objective in [[01-canonical-papers/canonical-list|the paper list]]
-  is an MLE (or a bound on one — [[01-canonical-papers/notes/6-diffusion/vae|ELBO]]).
+  outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
+  are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
+  though not all: contrastive and some self-supervised objectives are not simple MLE.
 - **MAP**: add $\log p(\theta)$. A Gaussian prior on weights ⇒ $+\lambda\|\theta\|^2$ —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: bias, variance, and the tradeoff between them — the vocabulary behind
@@ -115,7 +117,8 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   계산 예제 — 센서 진단: 균열 감지기가 균열의 95%에서 울리고($P(+|c)=0.95$), 오경보율
   5%($P(+|\neg c)=0.05$), 균열은 드물다($P(c)=0.01$).
   $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
-  "95% 정확한" 경보가 실제로는 16%만 맞는다 — 기저율이 지배한다. 인식 파이프라인이
+  민감도 95%짜리(그리고 오경보율 5% — "정확도" 하나가 아니라 별개의 두 숫자다) 경보가
+  울렸을 때 실제로는 16%만 맞는다 — 기저율이 지배한다. 인식 파이프라인이
   캘리브레이션을 하는 이유다.
 - 독립 $P(A,B) = P(A)P(B)$ vs 조건부 독립 $P(A,B|C) = P(A|C)P(B|C)$ — 그래프 모델,
   나이브 베이즈, 마르코프 성질이 공유하는 인수분해 가정.
@@ -156,8 +159,9 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   계산 예제(가우시안 평균): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{상수}$ ⇒
   우도 최대화 ≡ 제곱 오차 최소화; $\hat\mu = \bar{x}$.
   **MSE 회귀는 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
-  [[01-canonical-papers/canonical-list|논문 리스트]]의 모든 사전학습 목적함수가 MLE(또는 그
-  하한 — [[01-canonical-papers/notes/6-diffusion/vae|ELBO]])다.
+  [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
+  하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
+  대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
 - **MAP**: $\log p(\theta)$를 더한다. 가중치의 가우시안 사전 ⇒ $+\lambda\|\theta\|^2$ —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: 편향, 분산, 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)

@@ -32,12 +32,12 @@ What common phrases imply — and what they do **not** guarantee:
 |---|---|---|
 | "we formulate X as Y" | X is being translated into framework Y | that Y's assumptions hold for X |
 | "conditioned on Z" | Z is given as input at inference | that the model actually uses Z well |
-| "end-to-end" | gradients flow through the whole pipeline | that no part is frozen (frozen parts are simply excluded) |
+| "end-to-end" | trainable components are jointly optimized under one task objective | that nothing is frozen — frozen modules can sit inside the pipeline |
 | "frozen" | weights fixed, no gradient | that the module is unimportant |
 | "outperforms baselines" | better on the reported setup | that baselines were tuned, or the comparison is compute-matched |
 | "state-of-the-art" | best on a specific benchmark at a specific time | general superiority |
 | "ablation" | a component was removed to show it matters | that interactions between components were tested |
-| "zero-shot / few-shot" | 0 / a few task examples at inference | that the task never appeared in pretraining data |
+| "zero-shot / few-shot" | 0 / a few task examples (at inference in LLM/VLM usage; some fields mean a few *training* examples) | that the task never appeared in pretraining data |
 | "emergent" | absent at small scale, present at large | an agreed definition — read the evaluation closely |
 | "real-world / in the wild" | outside a controlled lab setup | the operating range you care about |
 | "orthogonal to" | combinable, independent improvement | that combining was actually tried |
@@ -82,7 +82,7 @@ Every note in this wiki supports the same exit test. Without looking back, say:
 
 1. the one-line summary in your own words,
 2. the inputs and outputs of the method,
-3. what each term in one key equation does,
+3. what one key equation, diagram, or algorithmic step does,
 4. one predecessor and one successor paper, and
 5. one limitation.
 
@@ -117,12 +117,12 @@ If any of the five fails, reread that section — not the whole note.
 |---|---|---|
 | "we formulate X as Y" | X를 틀 Y로 번역하고 있다 | Y의 가정이 X에서 성립한다는 것 |
 | "conditioned on Z" | 추론 시 Z가 입력으로 주어진다 | 모델이 Z를 실제로 잘 쓴다는 것 |
-| "end-to-end" | 파이프라인 전체에 그래디언트가 흐른다 | 얼린 부분이 없다는 것 (얼린 부분은 그냥 제외된다) |
+| "end-to-end" | 학습 가능한 구성요소들이 하나의 과제 목적함수로 공동 최적화된다 | 아무것도 얼리지 않았다는 것 — frozen 모듈이 파이프라인 안에 있을 수 있다 |
 | "frozen" | 가중치 고정, 그래디언트 없음 | 그 모듈이 안 중요하다는 것 |
 | "outperforms baselines" | 보고된 설정에서 더 좋다 | 베이스라인이 튜닝됐다는 것, 연산량이 같다는 것 |
 | "state-of-the-art" | 특정 벤치마크·특정 시점의 1위 | 일반적 우월성 |
 | "ablation" | 구성 요소를 빼서 중요함을 보였다 | 요소 간 상호작용까지 검증했다는 것 |
-| "zero-shot / few-shot" | 추론 시 과제 예시 0개/소수 | 사전학습 데이터에 그 과제가 없었다는 것 |
+| "zero-shot / few-shot" | 과제 예시 0개/소수 (LLM/VLM에서는 추론 시 예시; 분야에 따라 소수 *학습* 예시를 뜻하기도 한다) | 사전학습 데이터에 그 과제가 없었다는 것 |
 | "emergent" | 작은 규모에 없다가 큰 규모에 나타남 | 합의된 정의 — 평가 방식을 꼼꼼히 봐야 한다 |
 | "real-world / in the wild" | 통제된 실험실 밖 | 당신이 신경 쓰는 운용 범위 |
 | "orthogonal to" | 결합 가능한 독립적 개선 | 실제로 결합해 봤다는 것 |
@@ -169,7 +169,7 @@ $\text{sg}[\cdot]$ = stop-gradient ([[02-foundations/calculus-backprop|미적분
 
 1. 한 줄 요약을 내 말로,
 2. 방법의 입력과 출력,
-3. 핵심 식 하나의 각 항이 하는 일,
+3. 핵심 식·도식·절차 중 하나가 하는 일,
 4. 이전 논문 하나와 이후 논문 하나,
 5. 한계 하나.
 

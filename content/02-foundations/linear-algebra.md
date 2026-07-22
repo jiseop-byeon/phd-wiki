@@ -61,8 +61,9 @@ where each concept appears in the papers of this wiki.
   - **Optimization landscapes**: for quadratic loss $\frac12 x^\top H x$, gradient descent
     converges per-eigendirection at rate $(1 - \alpha\lambda_i)$; the usable step size is
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
-    **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ *is* the difficulty of the
-    problem — the fact [[01-canonical-papers/notes/1-foundations/adam|Adam]] and
+    **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD Hessian; for a
+    general matrix the 2-norm condition number is the singular-value ratio
+    $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — the fact [[01-canonical-papers/notes/1-foundations/adam|Adam]] and
     [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]] exist to fight.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
@@ -167,7 +168,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   - **최적화 지형**: 이차 손실 $\frac12 x^\top H x$에서 경사 하강은 고유방향별로
     $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
-    $\kappa = \lambda_{max}/\lambda_{min}$가 문제의 난이도 *그 자체*다 —
+    $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD 헤시안 기준; 일반 행렬의 2-노름 조건수는
+    특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$)가 문제의 난이도 *그 자체*다 —
     [[01-canonical-papers/notes/1-foundations/adam|Adam]]과 [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]이
     존재하는 이유가 이것과의 싸움이다.
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서

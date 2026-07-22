@@ -19,6 +19,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 **읽기 깊이 표시** ([[01-canonical-papers/how-to-read|0. How to Read Papers]] 참고):
 ★ 원문 정독 (방법·실험까지) · ◐ 노트 후 원문 훑기 · ○ 노트로 충분 (계보 이해)
+— 이 기호는 **권장 읽기 분량**이지 숙련 수준이 아니다: ★를 정독해도 mastery(가정 비판·변형 설계)에 도달한 것은 아니다.
 
 ## 1. Deep Learning Foundations
 
@@ -63,7 +64,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ○ [[notes/3-vlm/blip-2|BLIP-2]] (Li et al., ICML 2023)
 - [x] ◐ [[notes/3-vlm/llava|LLaVA]] — *Visual Instruction Tuning* (Liu et al., NeurIPS 2023)
 - [x] ◐ [[notes/3-vlm/qwen-vl|Qwen-VL series]] (Qwen Team, 2023–2025) — representative open VLM line
-- [ ] PaliGemma (2024) — representative small open VLM
+- [x] ○ [[notes/3-vlm/paligemma|PaliGemma]] (Google, 2024) — 작은 오픈 VLM의 대표; π0의 백본
 
 ## 4. Vision-Language-Action (VLA) / Robot Learning
 

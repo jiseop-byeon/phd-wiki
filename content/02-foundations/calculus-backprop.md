@@ -77,7 +77,8 @@ bug detector in existence.
   - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: renormalize activations so Jacobians
     stay well-scaled (better conditioning).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
-    — the identity term guarantees the gradient always has an un-attenuated path home.
+    — the identity term gives the gradient a direct, unattenuated path — it *mitigates*
+    vanishing (a path exists) rather than guaranteeing the total gradient never decays.
 - **Exploding gradients**: norms > 1 — treated with gradient clipping (rescale $\|g\|$ to a
   ceiling), standard in RNN/LLM training.
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
@@ -175,7 +176,8 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
     스케일을 유지 (조건수 개선).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]:
     $\partial(x + F(x))/\partial x = I + \partial F/\partial x$ — 항등 항이 감쇠 없는
-    귀갓길을 보장한다.
+    직접 경로를 제공한다 — 소실을 *완화*하는 것이지(경로가 존재한다), 전체 그래디언트가
+    절대 줄지 않음을 보장하는 것은 아니다.
 - **그래디언트 폭발**: 노름 > 1 — gradient clipping($\|g\|$를 상한으로 재스케일)으로
   처치, RNN/LLM 학습의 표준.
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization

@@ -89,7 +89,8 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
 
 - $j = \sqrt{-1}$; a complex number $a + jb$ is a point in the 2D plane;
-  $|a+jb| = \sqrt{a^2+b^2}$ is its length, and its angle is $\theta = \arctan(b/a)$.
+  $|a+jb| = \sqrt{a^2+b^2}$ is its length, and its angle is $\theta = \operatorname{atan2}(b, a)$
+  (use atan2, not $\arctan(b/a)$ — the latter loses the quadrant and fails at $a = 0$).
 - **Euler's formula**: $e^{j\theta} = \cos\theta + j\sin\theta$ — the unit-circle point at
   angle $\theta$. Consequence: multiplying by $e^{j\theta}$ **rotates** by $\theta$.
 - That is the whole reason Fourier analysis works: a sinusoid is the real part of a
@@ -241,7 +242,8 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)
 
 - $j = \sqrt{-1}$; 복소수 $a + jb$는 2차원 평면의 점;
-  $|a+jb| = \sqrt{a^2+b^2}$가 길이, 각도는 $\theta = \arctan(b/a)$.
+  $|a+jb| = \sqrt{a^2+b^2}$가 길이, 각도는 $\theta = \operatorname{atan2}(b, a)$
+  ($\arctan(b/a)$가 아니라 atan2를 써라 — 전자는 사분면을 잃고 $a = 0$에서 정의되지 않는다).
 - **오일러 공식**: $e^{j\theta} = \cos\theta + j\sin\theta$ — 각도 $\theta$의 단위원 위의 점.
   따름정리: $e^{j\theta}$를 곱하는 것 = $\theta$만큼 **회전**.
 - 푸리에 분석이 작동하는 이유의 전부가 이것이다: 사인파는 회전하는 $e^{j\omega t}$의

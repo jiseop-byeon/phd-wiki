@@ -23,8 +23,8 @@ tags: [robotics, modern-robotics]
   → $v = 0.75$ m/s, $\omega = 1.25$ rad/s — a gentle left arc. Equal speeds → straight;
   opposite speeds → turn in place.
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
-  parallel-park into any pose — velocity constraints restrict *paths*, not the reachable
-  set. The deep consequence (Brockett): no smooth time-invariant feedback can stabilize
+  parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
+  car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no smooth time-invariant feedback can stabilize
   such systems to a point — why practical controllers track *trajectories* instead.
 - **Odometry and its decay**: integrating wheel encoders gives pose, but slip and
   quantization make the error grow without bound — the concrete reason mobile robots fuse
@@ -48,7 +48,7 @@ fused localization.
 > [!tip]- 정답 · Answers
 > 1. 제자리 회전은 $v = 0$, 즉 $\omega_R = -\omega_L$; $\omega = r\omega_R/d = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
 > 2. 옆 방향 속도가 없는 시스템은 최종 접근 방향이 제한되어, 연속 시불변 피드백으로는 임의 자세에 점근 안정화할 수 없다(Brockett) — 그래서 궤적 추종으로 우회한다.
-> 3. 단기 정밀(오도메트리) + 장기 무편향(GPS) — 칼만 융합이 두 시간 척도의 장점을 모두 취한다.
+> 3. 단기 정밀(오도메트리) + 드리프트 없는 절대 기준(GPS — 단 현장에서는 멀티패스·차폐로 편향이 생길 수 있다) — 칼만 융합이 두 시간 척도의 장점을 모두 취한다.
 
 ## 한국어
 
@@ -64,7 +64,8 @@ fused localization.
   → $v = 0.75$ m/s, $\omega = 1.25$ rad/s — 완만한 좌회전 호. 같은 속도 → 직진;
   반대 속도 → 제자리 회전.
 - **비홀로노미 ≠ 도달 불가**: 자동차는 *순간적으로* 옆으로 못 가지만 평행 주차로 어떤
-  자세든 도달한다 — 속도 제약은 *경로*를 제한할 뿐 도달 집합을 제한하지 않는다. 깊은
+  자세든 도달한다 — 이상적 구름 모델(외바퀴·차동 구동·자동차)에서 속도 제약은 *경로*를
+  제한할 뿐 도달 집합을 제한하지 않는다. 깊은
   귀결(Brockett): 이런 시스템은 매끄러운 시불변 피드백으로 점에 안정화할 수 없다 —
   실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다.
 - **오도메트리와 그 붕괴**: 바퀴 엔코더 적분으로 자세를 얻지만, 미끄럼과 양자화로 오차가
@@ -88,4 +89,4 @@ fused localization.
 > [!tip]- 정답 · Answers
 > 1. $v = 0$이 되도록 $\omega_R = -\omega_L$; $\omega = r\omega_R/d = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
 > 2. 옆 방향 속도가 없어 연속 시불변 피드백으로는 점 안정화가 불가능하다(Brockett) — 궤적 추종으로 우회한다.
-> 3. 단기 정밀(오도메트리) + 장기 무편향(GPS)을 동시에 — 칼만 융합이 두 시간 척도의 장점을 결합한다.
+> 3. 단기 정밀(오도메트리) + 드리프트 없는 절대 기준(GPS — 현장에서는 멀티패스·차폐 편향 가능)을 동시에 — 칼만 융합이 두 시간 척도의 장점을 결합한다.

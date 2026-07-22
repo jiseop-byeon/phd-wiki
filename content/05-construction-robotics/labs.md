@@ -5,7 +5,8 @@ tags: [reference, construction]
 
 ## English
 
-Who does construction robotics research, and what each group is known for. Links verified.
+Who does construction robotics research, and what each group is known for. Links and
+affiliations verified as of 2026-07.
 (For companies see [[03-deep-learning/physical-ai-ecosystem|the ecosystem page]]; for how
 these groups' work fits the field's history, see [[05-construction-robotics/lineage|the lineage page]].)
 
@@ -65,7 +66,7 @@ These groups publish the manipulation/HRC methods construction researchers impor
 
 ## 한국어
 
-건설로봇 연구를 누가 하고, 각 그룹이 무엇으로 알려져 있는가. 링크는 검증했다.
+건설로봇 연구를 누가 하고, 각 그룹이 무엇으로 알려져 있는가. 링크와 소속은 2026-07 기준으로 확인했다.
 (기업은 [[03-deep-learning/physical-ai-ecosystem|생태계 페이지]], 이 그룹들의 작업이 분야
 역사에서 어디에 놓이는지는 [[05-construction-robotics/lineage|계보 페이지]] 참고.)
 
