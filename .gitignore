@@ -11,3 +11,9 @@ private/
 replit.nix
 .quartz/
 quartz/cli/tui/dist/
+
+# Obsidian workspace state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.trash/
+.DS_Store

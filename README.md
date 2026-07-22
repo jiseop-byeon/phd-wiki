@@ -1,17 +1,26 @@
-# Quartz v5
+# PhD Knowledge Wiki
 
-> “[One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.” — Richard Hamming
+Personal research wiki covering deep learning, robotics, control, and construction robotics.
+Maintained as an Obsidian vault; published online via Quartz + GitHub Pages.
 
-Quartz is a set of tools that helps you publish your [digital garden](https://jzhao.xyz/posts/networked-thought) and notes as a website for free.
+## Structure
 
-🔗 Read the documentation and get started: https://quartz.jzhao.xyz/
+- `00-index/` — home page and maps of content (MOC)
+- `10-deep-learning/` — foundations, computer vision, VLM, VLA, world models, diffusion
+- `20-robotics/` — Modern Robotics (Lynch & Park) notes, control theory (state-space → LQR → MPC)
+- `30-construction-robotics/` — construction/manufacturing robotics literature (CEE, CS, ME, EE venues)
+- `40-papers/` — canonical paper list and individual paper notes
+- `templates/` — note templates (paper note, concept note)
 
-[Join the Discord Community](https://discord.gg/cRFFHYye7t)
+## Conventions
 
-## Sponsors
+- **Language**: each note has an `English` section first, then a `한국어` section.
+- **Links**: use `[[wikilinks]]` liberally to connect concepts and papers.
+- **Paper notes**: one file per paper in `40-papers/notes/`, created from `templates/paper-note.md`.
+- **Status tags**: `to-read` → `reading` → `done` in paper note frontmatter.
 
-<p align="center">
-  <a href="https://github.com/sponsors/jackyzha0">
-    <img src="https://cdn.jsdelivr.net/gh/jackyzha0/jackyzha0/sponsorkit/sponsors.svg" />
-  </a>
-</p>
+## Workflow
+
+1. Edit notes locally in Obsidian (or ask Claude Code to draft/refactor).
+2. Commit and push to GitHub.
+3. GitHub Actions builds the Quartz site and deploys to GitHub Pages automatically.
