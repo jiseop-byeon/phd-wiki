@@ -20,12 +20,13 @@
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
     "install-plugins": "npx tsx ./quartz/plugins/loader/install-plugins.ts",
     "prebuild": "npm run install-plugins",
-    "preview": "NODE_OPTIONS=--max-old-space-size=4096 npx quartz build --serve",
-    "site": "NODE_OPTIONS=--max-old-space-size=4096 npx quartz build"
+    "preview": "NODE_OPTIONS=--max-old-space-size=8192 npx quartz build --concurrency=1 --serve",
+    "site": "NODE_OPTIONS=--max-old-space-size=8192 npx quartz build --concurrency=1",
+    "radar": "python3 scripts/build_research_radar.py"
   },
   "engines": {
     "npm": ">=10.9.2",
-    "node": ">=22"
+    "node": ">=22 <25"
   },
   "keywords": [
     "site generator",

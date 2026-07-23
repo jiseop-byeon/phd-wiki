@@ -1,5 +1,5 @@
 ---
-title: Glossary
+title: 7. Glossary
 tags: [reference]
 ---
 

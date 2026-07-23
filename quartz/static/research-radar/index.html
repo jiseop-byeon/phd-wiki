@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Research Radar</title>
+  <link rel="stylesheet" href="./radar.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">PHYSICAL AI NOTES · DECISION SUPPORT</p>
+        <h1>Research Radar</h1>
+        <p class="lede">See what is large, what is accelerating, and what deserves deeper study—without mixing preprints into the evidence.</p>
+      </div>
+      <div class="stamp" id="stamp">Loading verified proceedings…</div>
+    </header>
+
+    <section class="toolbar" aria-label="Radar filters">
+      <div class="filter-block wide">
+        <span class="filter-label">Research scope</span>
+        <div id="scopeFilters" class="chips"></div>
+      </div>
+      <label class="filter-block">
+        <span class="filter-label">Study intent</span>
+        <select id="depthFilter">
+          <option value="All">Landscape · all</option>
+          <option value="Literacy">Literacy baseline</option>
+          <option value="Working">Working candidates</option>
+          <option value="Mastery">Mastery candidate · contribution area</option>
+        </select>
+      </label>
+      <label class="filter-block">
+        <span class="filter-label">Signal</span>
+        <select id="statusFilter">
+          <option value="All">All signals</option>
+          <option value="Established">Established</option>
+          <option value="Fast Rising">Fast Rising</option>
+          <option value="Emerging">Emerging</option>
+          <option value="Stable">Stable</option>
+          <option value="Cooling">Cooling</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="metrics" id="metrics"></section>
+
+    <section class="main-grid">
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <p class="kicker">OVERVIEW</p>
+            <h2>Scale × momentum</h2>
+          </div>
+          <p class="hint">Select a bubble for evidence</p>
+        </div>
+        <div class="quadrant-label q1">EMERGING</div>
+        <div class="quadrant-label q2">FAST RISING</div>
+        <div class="quadrant-label q3">EARLY / COOLING</div>
+        <div class="quadrant-label q4">ESTABLISHED</div>
+        <svg id="radar" viewBox="0 0 760 470" role="img" aria-label="Research topic scale and momentum chart"></svg>
+        <div class="axis-note x">Recent published-paper volume →</div>
+        <div class="axis-note y">Momentum →</div>
+      </article>
+
+      <aside class="rank-stack">
+        <article class="panel rank-panel"><p class="kicker">SCALE</p><h3>Largest</h3><ol id="rankEstablished"></ol></article>
+        <article class="panel rank-panel"><p class="kicker accent">VELOCITY</p><h3>Fast rising</h3><ol id="rankRising"></ol></article>
+        <article class="panel rank-panel"><p class="kicker warm">WEAK SIGNALS</p><h3>Early signals</h3><ol id="rankEmerging"></ol></article>
+      </aside>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel timeline-panel">
+        <div class="panel-head">
+          <div><p class="kicker">TOPIC EVOLUTION</p><h2 id="timelineTitle">Select a topic</h2></div>
+          <span id="confidenceBadge" class="badge">—</span>
+        </div>
+        <svg id="timeline" viewBox="0 0 700 250" role="img" aria-label="Selected topic publication trend"></svg>
+      </article>
+      <article class="panel detail-panel" id="detail">
+        <p class="kicker">EVIDENCE</p>
+        <h2>Choose a bubble or ranking</h2>
+        <p class="empty">The evidence panel will show venue breadth, trend components, representative papers, and the recommended study depth.</p>
+      </article>
+    </section>
+
+    <details class="method">
+      <summary>Methodology, confidence, and limitations</summary>
+      <div id="methodBody"></div>
+    </details>
+  </main>
+  <script src="./radar.js"></script>
+</body>
+</html>

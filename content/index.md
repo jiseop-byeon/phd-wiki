@@ -58,12 +58,14 @@ one's own research area.
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — 논문의 용어·수식·주장·증거 읽기
 - [[06-research-practice/index|Research Practice]] — 연구 질문, 실험, 실패 분석, 글쓰기와 peer review
 - [[glossary|용어집]] — 용어 빠르게 찾아보기
+- [[08-research-radar/index|Research Radar]] — 문해력 이후 연구 주제 선택을 위한 규모·상승속도·근거 지도
 - [[study-log|학습 일지]] — 언제 무엇을 읽었는지 기록
 
 ---
 
 > [!info]- Sources · 이 위키가 참고한 출처들
 > **Primary sources (1차 자료)** — 모든 논문 노트는 해당 논문의 arXiv/공식 PDF·프로젝트 페이지·공식 코드 저장소를 직접 참조하며, 각 노트 첫 줄에 링크되어 있다.
+> - [DBLP Computer Science Bibliography](https://dblp.org/) — Research Radar의 venue별 출판 논문 메타데이터. arXiv·워크숍을 섞지 않고 연도별 논문량과 토픽 신호를 재현 가능하게 집계한다.
 >
 > **Curricula & study-note exemplars (커리큘럼·정리 방식 참고)**
 > - [Stanford CS231n](https://cs231n.stanford.edu/schedule.html) — 딥러닝 파트의 흐름·정확성 교차 검증

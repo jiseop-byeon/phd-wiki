@@ -1,0 +1,2968 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-07-23",
+  "method": "Published proceedings indexed by DBLP; title-based multi-label taxonomy; arXiv excluded.",
+  "years": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "venues": [
+    "NeurIPS",
+    "ICML",
+    "ICLR",
+    "CVPR",
+    "ICRA",
+    "CoRL"
+  ],
+  "paperCount": 55642,
+  "yearTotals": {
+    "2021": 7589,
+    "2022": 8360,
+    "2023": 10837,
+    "2024": 14103,
+    "2025": 14753
+  },
+  "topics": [
+    {
+      "id": "foundation_models",
+      "label": "Foundation Models",
+      "group": "Deep Learning",
+      "depth": "Literacy",
+      "counts": [
+        1,
+        21,
+        165,
+        853,
+        1238
+      ],
+      "shares": [
+        0.132,
+        2.512,
+        15.226,
+        60.484,
+        83.915
+      ],
+      "recentVolume": 2091,
+      "momentum": 22.554,
+      "burst": 2.65,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 2278,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 419.4,
+      "aliases": [
+        "foundation model",
+        "large language model",
+        "\\bllm\\b",
+        "scaling law"
+      ],
+      "papers": [
+        {
+          "title": "StegoZip: Enhancing Linguistic Steganography Payload in Practice with Large Language Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6c8e215afa321d5d0b295dc1882820df-Abstract-Conference.html",
+          "authors": [
+            "Jun Jiang",
+            "Zijin Yang",
+            "Weiming Zhang",
+            "Nenghai Yu",
+            "Kejiang Chen"
+          ]
+        },
+        {
+          "title": "UniEdit: A Unified Knowledge Editing Benchmark for Large Language Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6cc6c2be42c838827d2f1d12baa05539-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Qizhou Chen",
+            "Dakan Wang",
+            "Taolin Zhang",
+            "Zaoming Yan",
+            "Chengsong You",
+            "Chengyu Wang",
+            "Xiaofeng He"
+          ]
+        },
+        {
+          "title": "Fit the Distribution: Cross-Image/Prompt Adversarial Attacks on Multimodal Large Language Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6cd3ac24cdb789beeaa9f7145670fcae-Abstract-Conference.html",
+          "authors": [
+            "Hai Yan",
+            "Haijian Ma",
+            "Xiaowen Cai",
+            "Daizong Liu",
+            "Zenghui Yuan",
+            "Xiaoye Qu",
+            "Jianfeng Dong",
+            "Runwei Guan"
+          ]
+        },
+        {
+          "title": "Fundamental Limitations in Pointwise Defences of LLM Finetuning APIs",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6ded182245f8e4db3963d2027174133d-Abstract-Conference.html",
+          "authors": [
+            "Xander Davies",
+            "Eric Winsor",
+            "Alexandra Souly",
+            "Tomek Korbak",
+            "Robert Kirk",
+            "Christian Schroeder de Witt",
+            "Yarin Gal"
+          ]
+        },
+        {
+          "title": "MuRating: A High Quality Data Selecting Approach to Multilingual Large Language Model Pretraining",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e54c0fb5c8be96b92055f6a3b6b2d6f-Abstract-Conference.html",
+          "authors": [
+            "Zhixun Chen",
+            "Ping Guo",
+            "Wenhan Han",
+            "Yifan Zhang",
+            "Binbin Li",
+            "Haobin Lin",
+            "Fengze Liu",
+            "Yan Zhao"
+          ]
+        },
+        {
+          "title": "MUSTAFAR: Promoting Unstructured Sparsity for KV Cache Pruning in LLM Inference",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6ea69f8116b7c01e3c3e43b62e6868fc-Abstract-Conference.html",
+          "authors": [
+            "Donghyeon Joo",
+            "Helya Hosseini",
+            "Ramyad Hadidi",
+            "Bahar Asgari"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "self_supervised",
+      "label": "Self-Supervised Learning",
+      "group": "Deep Learning",
+      "depth": "Literacy",
+      "counts": [
+        181,
+        253,
+        283,
+        231,
+        191
+      ],
+      "shares": [
+        23.85,
+        30.263,
+        26.114,
+        16.379,
+        12.947
+      ],
+      "recentVolume": 422,
+      "momentum": -3.569,
+      "burst": -2.22,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 1139,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -54.7,
+      "aliases": [
+        "self.supervised",
+        "masked autoencoder",
+        "contrastive learning"
+      ],
+      "papers": [
+        {
+          "title": "Confusion-Driven Self-Supervised Progressively Weighted Ensemble Learning for Non-Exemplar Class Incremental Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e1a97dfd2ce57ee4c006657ace4b9b6-Abstract-Conference.html",
+          "authors": [
+            "Kai Hu",
+            "Yu Zhang",
+            "Yuan Zhang",
+            "Zhineng Chen",
+            "Xieping Gao"
+          ]
+        },
+        {
+          "title": "TRACE: Contrastive learning for multi-trial time series data in neuroscience",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/728e11c3b1d0fc7e13f85f661b62dcbb-Abstract-Conference.html",
+          "authors": [
+            "Lisa Schmors",
+            "Dominic Gonschorek",
+            "Jan Niklas Böhm",
+            "Yongrong Qiu",
+            "Na Zhou",
+            "Dmitry Kobak",
+            "Andreas S. Tolias",
+            "Fabian H. Sinz"
+          ]
+        },
+        {
+          "title": "Jasmine: Harnessing Diffusion Prior for Self-supervised Depth Estimation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/72bcad2c3fe7625fc233fabe84a6d7ef-Abstract-Conference.html",
+          "authors": [
+            "Jiyuan Wang",
+            "Chunyu Lin",
+            "Cheng Guan",
+            "Lang Nie",
+            "Jing He",
+            "Haodong Li",
+            "Kang Liao",
+            "Yao Zhao"
+          ]
+        },
+        {
+          "title": "Adaptive and Multi-scale Affinity Alignment for Hierarchical Contrastive Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/74d63276e24d3c8af73219a0d6c28e10-Abstract-Conference.html",
+          "authors": [
+            "Jiawei Huang",
+            "Minming Li",
+            "Hu Ding"
+          ]
+        },
+        {
+          "title": "Not All Data are Good Labels: On the Self-supervised Labeling for Time Series Forecasting",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/787e1588cd5eec86f84de07cb329ee94-Abstract-Conference.html",
+          "authors": [
+            "Yuxuan Yang",
+            "Dalin Zhang",
+            "Yuxuan Liang",
+            "Hua Lu",
+            "Gang Chen",
+            "Huan Li"
+          ]
+        },
+        {
+          "title": "Path-Enhanced Contrastive Learning for Recommendation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7cb33a355bbe68305e02a080ad4eb86a-Abstract-Conference.html",
+          "authors": [
+            "Haoran Sun",
+            "Fei Xiong",
+            "Yuanzhe Hu",
+            "Liang Wang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "efficient_adaptation",
+      "label": "Efficient Adaptation",
+      "group": "Deep Learning",
+      "depth": "Working",
+      "counts": [
+        5,
+        11,
+        34,
+        95,
+        148
+      ],
+      "shares": [
+        0.659,
+        1.316,
+        3.137,
+        6.736,
+        10.032
+      ],
+      "recentVolume": 243,
+      "momentum": 2.417,
+      "burst": 2.99,
+      "breadth": 5,
+      "venues": [
+        "CVPR",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 293,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 56.2,
+      "aliases": [
+        "parameter.efficient",
+        "low.rank adaptation",
+        "\\blora\\b",
+        "prompt tuning"
+      ],
+      "papers": [
+        {
+          "title": "StelLA: Subspace Learning in Low-rank Adaptation using Stiefel Manifold",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6cb0c6e7d50d5d65613f0456ca85e2db-Abstract-Conference.html",
+          "authors": [
+            "Zhizhong Li",
+            "Sina Sajadmanesh",
+            "Jingtao Li",
+            "Lingjuan Lyu"
+          ]
+        },
+        {
+          "title": "Adaptive LoRA Experts Allocation and Selection for Federated Fine-Tuning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6df1b2b45e64d402588746f79b68b82c-Abstract-Conference.html",
+          "authors": [
+            "Lei Wang",
+            "Jieming Bian",
+            "Letian Zhang",
+            "Jie Xu"
+          ]
+        },
+        {
+          "title": "S'MoRE: Structural Mixture of Residual Experts for Parameter-Efficient LLM Fine-tuning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/74fa9e6bc36aa567fe7cf002b733a30d-Abstract-Conference.html",
+          "authors": [
+            "Hanqing Zeng",
+            "Yinglong Xia",
+            "Zhuokai Zhao",
+            "Chuan Jiang",
+            "Qiang Zhang",
+            "Jiayi Liu",
+            "Qunshu Zhang",
+            "Lizhu Zhang"
+          ]
+        },
+        {
+          "title": "PT-MoE: An Efficient Finetuning Framework for Integrating Mixture-of-Experts into Prompt Tuning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/77f33e8bd80345de4aea8554bbe5a4da-Abstract-Conference.html",
+          "authors": [
+            "Zongqian Li",
+            "Yixuan Su",
+            "Nigel Collier"
+          ]
+        },
+        {
+          "title": "Turning the Tables: Enabling Backward Transfer via Causal-Aware LoRA in Continual Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7c22f3719c9699c0ea4fe47fb536ff82-Abstract-Conference.html",
+          "authors": [
+            "Chaoyang Li",
+            "Runze Ye",
+            "Jianyang Qin",
+            "Jinhao Cui",
+            "Lingzhi Wang",
+            "Ning Hu",
+            "Qing Liao"
+          ]
+        },
+        {
+          "title": "Latent Space Factorization in LoRA",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7f8662c03b26acab4eb94c66ba1aa7fc-Abstract-Conference.html",
+          "authors": [
+            "Shashi Kumar",
+            "Yacouba Kaloga",
+            "John Mitros",
+            "Petr Motlícek",
+            "Ina Kodrasi"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "diffusion",
+      "label": "Diffusion Models",
+      "group": "Generative Models",
+      "depth": "Working",
+      "counts": [
+        57,
+        107,
+        473,
+        995,
+        1147
+      ],
+      "shares": [
+        7.511,
+        12.799,
+        43.647,
+        70.552,
+        77.747
+      ],
+      "recentVolume": 2142,
+      "momentum": 19.823,
+      "burst": 1.74,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 2779,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 368.6,
+      "aliases": [
+        "diffusion",
+        "score.based",
+        "denoising"
+      ],
+      "papers": [
+        {
+          "title": "Dynamic Diffusion Schrödinger Bridge in Astrophysical Observational Inversions",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6d7a9f292360193eb530d693f7941c73-Abstract-Conference.html",
+          "authors": [
+            "Ye Zhu",
+            "Duo Xu",
+            "Zhiwei Deng",
+            "Jonathan C. Tan",
+            "Olga Russakovsky"
+          ]
+        },
+        {
+          "title": "No Object Is an Island: Enhancing 3D Semantic Segmentation Generalization with Diffusion Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6dd9a73945e3909810ec2c259fc27bb2-Abstract-Conference.html",
+          "authors": [
+            "Fan Li",
+            "Xuan Wang",
+            "Xuanbin Wang",
+            "Zhaoxiang Zhang",
+            "Yuelei Xu"
+          ]
+        },
+        {
+          "title": "Posterior Sampling by Combining Diffusion Models with Annealed Langevin Dynamics",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e3ff2de49f4aeed92472e822d786fcc-Abstract-Conference.html",
+          "authors": [
+            "Zhiyang Xun",
+            "Shivam Gupta",
+            "Eric Price"
+          ]
+        },
+        {
+          "title": "Leveraging Conditional Dependence for Efficient World Model Denoising",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6f01b2a921c0a4dc34609613f4f74b8e-Abstract-Conference.html",
+          "authors": [
+            "Shaowei Zhang",
+            "Jiahan Cao",
+            "Dian Cheng",
+            "Xunlan Zhou",
+            "Shenghua Wan",
+            "Le Gan",
+            "De-Chuan Zhan"
+          ]
+        },
+        {
+          "title": "SViMo: Synchronized Diffusion for Video and Motion Generation in Hand-object Interaction Scenarios",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6f08ce5b354c4afefeff51e6fad306a6-Abstract-Conference.html",
+          "authors": [
+            "Lingwei Dang",
+            "Ruizhi Shao",
+            "Hongwen Zhang",
+            "Wei Min",
+            "Yebin Liu",
+            "Qingyao Wu"
+          ]
+        },
+        {
+          "title": "Uncertainty-aware Preference Alignment for Diffusion Policies",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7016d7b7b6e3c05b2128ac5b3aae492d-Abstract-Conference.html",
+          "authors": [
+            "Runqing Miao",
+            "Sheng Xu",
+            "Runyi Zhao",
+            "Wai Kin (Victor) Chan",
+            "Guiliang Liu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flow_matching",
+      "label": "Flow Matching",
+      "group": "Generative Models",
+      "depth": "Working",
+      "counts": [
+        0,
+        0,
+        6,
+        37,
+        86
+      ],
+      "shares": [
+        0.0,
+        0.0,
+        0.554,
+        2.624,
+        5.829
+      ],
+      "recentVolume": 123,
+      "momentum": 1.428,
+      "burst": 4.66,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 129,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 42.4,
+      "aliases": [
+        "flow matching",
+        "rectified flow"
+      ],
+      "papers": [
+        {
+          "title": "Shallow Flow Matching for Coarse-to-Fine Text-to-Speech Synthesis",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6ee0ebd0983f0926496b7d4e0d48b8e3-Abstract-Conference.html",
+          "authors": [
+            "Dong Yang",
+            "Yiyi Cai",
+            "Yuki Saito",
+            "Lixu Wang",
+            "Hiroshi Saruwatari"
+          ]
+        },
+        {
+          "title": "Missing Data Imputation by Reducing Mutual Information with Rectified Flows",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/739f4c242ab3c38227039e3a6cb378c9-Abstract-Conference.html",
+          "authors": [
+            "Jiahao Yu",
+            "Qizhen Ying",
+            "Leyang Wang",
+            "Ziyue Jiang",
+            "Song Liu"
+          ]
+        },
+        {
+          "title": "Blockwise Flow Matching: Improving Flow Matching Models For Efficient High-Quality Generation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7a67d9390e62237fb90986c48d12ff79-Abstract-Conference.html",
+          "authors": [
+            "Dogyun Park",
+            "Taehoon Lee",
+            "Minseok Joo",
+            "Hyunwoo J. Kim"
+          ]
+        },
+        {
+          "title": "Scalable, Explainable and Provably Robust Anomaly Detection with One-Step Flow Matching",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7f2223201858b6ff4cc1832d8856459b-Abstract-Conference.html",
+          "authors": [
+            "Zhong Li",
+            "Qi Huang",
+            "Yuxuan Zhu",
+            "Lincen Yang",
+            "Mohammad Mohammadi Amiri",
+            "Niki van Stein",
+            "Matthijs van Leeuwen"
+          ]
+        },
+        {
+          "title": "Composite Flow Matching for Reinforcement Learning with Shifted-Dynamics Data",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/855b928e3f64498da7d98a3996bd4971-Abstract-Conference.html",
+          "authors": [
+            "Lingkai Kong",
+            "Haichuan Wang",
+            "Tonghan Wang",
+            "Guojun Xiong",
+            "Milind Tambe"
+          ]
+        },
+        {
+          "title": "CAR-Flow: Condition-Aware Reparameterization Aligns Source and Target for Better Flow Matching",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8838314582eb031f55aee65a703e76c5-Abstract-Conference.html",
+          "authors": [
+            "Chen Chen",
+            "Pengsheng Guo",
+            "Liangchen Song",
+            "Jiasen Lu",
+            "Rui Qian",
+            "Tsu-Jui Fu",
+            "Xinze Wang",
+            "Wei Liu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "world_models",
+      "label": "World Models",
+      "group": "Physical AI",
+      "depth": "Working",
+      "counts": [
+        20,
+        17,
+        32,
+        53,
+        99
+      ],
+      "shares": [
+        2.635,
+        2.033,
+        2.953,
+        3.758,
+        6.71
+      ],
+      "recentVolume": 152,
+      "momentum": 0.987,
+      "burst": 6.21,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 221,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 40.1,
+      "aliases": [
+        "world model",
+        "latent dynamics",
+        "video prediction"
+      ],
+      "papers": [
+        {
+          "title": "Leveraging Conditional Dependence for Efficient World Model Denoising",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6f01b2a921c0a4dc34609613f4f74b8e-Abstract-Conference.html",
+          "authors": [
+            "Shaowei Zhang",
+            "Jiahan Cao",
+            "Dian Cheng",
+            "Xunlan Zhou",
+            "Shenghua Wan",
+            "Le Gan",
+            "De-Chuan Zhan"
+          ]
+        },
+        {
+          "title": "Agents Robust to Distribution Shifts Learn Causal World Models Even Under Mediation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6fe10a4c0d680609f0560920bd9ade4a-Abstract-Conference.html",
+          "authors": [
+            "Matteo Ceriscioli",
+            "Karthika Mohan"
+          ]
+        },
+        {
+          "title": "Learning Interactive World Model for Object-Centric Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8187faaf6759ef6d4e93293339bc656e-Abstract-Conference.html",
+          "authors": [
+            "Fan Feng",
+            "Phillip Lippe",
+            "Sara Magliacane"
+          ]
+        },
+        {
+          "title": "SAMPO: Scale-wise Autoregression with Motion Prompt for Generative World Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/829609778426c334d005d5ab235c2301-Abstract-Conference.html",
+          "authors": [
+            "Sen Wang",
+            "Jingyi Tian",
+            "Le Wang",
+            "Zhimin Liao",
+            "Jiayi Li",
+            "Huaiyi Dong",
+            "Kun Xia",
+            "Sanping Zhou"
+          ]
+        },
+        {
+          "title": "VideoTitans: Scalable Video Prediction with Integrated Short- and Long-term Memory",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/905202e21386913d8eac637c2b50f590-Abstract-Conference.html",
+          "authors": [
+            "Young-Jae Park",
+            "Minseok Seo",
+            "Hae-Gon Jeon"
+          ]
+        },
+        {
+          "title": "Learning 3D Persistent Embodied World Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/970f59b22f4c72aec75174aae63c7459-Abstract-Conference.html",
+          "authors": [
+            "Siyuan Zhou",
+            "Yilun Du",
+            "Yuncong Yang",
+            "Lei Han",
+            "Peihao Chen",
+            "Dit-Yan Yeung",
+            "Chuang Gan"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vision_language",
+      "label": "Vision-Language Models",
+      "group": "Physical AI",
+      "depth": "Literacy",
+      "counts": [
+        10,
+        41,
+        94,
+        246,
+        353
+      ],
+      "shares": [
+        1.318,
+        4.904,
+        8.674,
+        17.443,
+        23.927
+      ],
+      "recentVolume": 599,
+      "momentum": 5.776,
+      "burst": 2.64,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 744,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 117.7,
+      "aliases": [
+        "vision.language",
+        "visual.language",
+        "image.text",
+        "multimodal language"
+      ],
+      "papers": [
+        {
+          "title": "The Narrow Gate: Localized Image-Text Communication in Native Multimodal Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6c420d6d2f19acbd44c219d244d892ee-Abstract-Conference.html",
+          "authors": [
+            "Alessandro Serra",
+            "Francesco Ortu",
+            "Emanuele Panizon",
+            "Lucrezia Valeriani",
+            "Lorenzo Basile",
+            "Alessio Ansuini",
+            "Diego Doimo",
+            "Alberto Cazzaniga"
+          ]
+        },
+        {
+          "title": "Test-Time Adaptation of Vision-Language Models for Open-Vocabulary Semantic Segmentation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6c5b82193c5d8e6aa5806239676ddc97-Abstract-Conference.html",
+          "authors": [
+            "Mehrdad Noori",
+            "David Osowiechi",
+            "Gustavo Adolfo Vargas Hakim",
+            "Ali Bahri",
+            "Moslem Yazdanpanah",
+            "Sahar Dastani",
+            "Farzad Beizaee",
+            "Ismail Ben Ayed"
+          ]
+        },
+        {
+          "title": "PeRL: Permutation-Enhanced Reinforcement Learning for Interleaved Vision-Language Reasoning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6c91c8603c8647fbc9c36446ab45dde6-Abstract-Conference.html",
+          "authors": [
+            "Yizhen Zhang",
+            "Yang Ding",
+            "Shuoshuo Zhang",
+            "Xinchen Zhang",
+            "Haoling Li",
+            "Zhong-Zhi Li",
+            "Peijie Wang",
+            "Jie Wu"
+          ]
+        },
+        {
+          "title": "Impromptu VLA: Open Weights and Open Data for Driving Vision-Language-Action Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e4f0c8c6890899e2206585c3cfba4d1-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Haohan Chi",
+            "Huan-ang Gao",
+            "Ziming Liu",
+            "Jianing Liu",
+            "Chenyu Liu",
+            "Jinwei Li",
+            "Kaisen Yang",
+            "Yangcheng Yu"
+          ]
+        },
+        {
+          "title": "Vision‑Language‑Vision Auto‑Encoder: Scalable Knowledge Distillation from Diffusion Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/71bd51ef7f4c92f84accb44366fec9d7-Abstract-Conference.html",
+          "authors": [
+            "Tiezheng Zhang",
+            "Yitong Li",
+            "Yu-Cheng Chou",
+            "Jieneng Chen",
+            "Alan L. Yuille",
+            "Chen Wei",
+            "Junfei Xiao"
+          ]
+        },
+        {
+          "title": "Δ Energy: Optimizing Energy Change During Vision-Language Alignment Improves both OOD Detection and OOD Generalization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/73a327a16d32a39bfc3c86dc7c8a1148-Abstract-Conference.html",
+          "authors": [
+            "Lin Zhu",
+            "Yifeng Yang",
+            "Xinbing Wang",
+            "Qinying Gu",
+            "Nanyang Ye"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vla",
+      "label": "Vision-Language-Action",
+      "group": "Physical AI",
+      "depth": "Working",
+      "counts": [
+        0,
+        0,
+        2,
+        6,
+        29
+      ],
+      "shares": [
+        0.0,
+        0.0,
+        0.185,
+        0.425,
+        1.966
+      ],
+      "recentVolume": 35,
+      "momentum": 0.436,
+      "burst": 9.07,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 37,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 29.8,
+      "aliases": [
+        "vision.language.action",
+        "\\bvla\\b",
+        "generalist robot"
+      ],
+      "papers": [
+        {
+          "title": "Impromptu VLA: Open Weights and Open Data for Driving Vision-Language-Action Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e4f0c8c6890899e2206585c3cfba4d1-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Haohan Chi",
+            "Huan-ang Gao",
+            "Ziming Liu",
+            "Jianing Liu",
+            "Chenyu Liu",
+            "Jinwei Li",
+            "Kaisen Yang",
+            "Yangcheng Yu"
+          ]
+        },
+        {
+          "title": "ThinkAct: Vision-Language-Action Reasoning via Reinforced Visual Latent Planning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7749f9c0d5ff109231be21e910a3ced2-Abstract-Conference.html",
+          "authors": [
+            "Chi-Pin Huang",
+            "Yueh-Hua Wu",
+            "Min-Hung Chen",
+            "Yu-Chiang Frank Wang",
+            "Fu-En Yang"
+          ]
+        },
+        {
+          "title": "ForceVLA: Enhancing VLA Models with a Force-aware MoE for Contact-rich Manipulation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8633b46e12cc5f2ee1f05a6ca2c65b38-Abstract-Conference.html",
+          "authors": [
+            "Jiawen Yu",
+            "Hairuo Liu",
+            "Qiaojun Yu",
+            "Jieji Ren",
+            "Ce Hao",
+            "Haitong Ding",
+            "Guangyu Huang",
+            "Guofan Huang"
+          ]
+        },
+        {
+          "title": "What Can RL Bring to VLA Generalization? An Empirical Study",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8c0fabe372177d2aded596be2d3b4544-Abstract-Conference.html",
+          "authors": [
+            "Jijia Liu",
+            "Feng Gao",
+            "Bingwen Wei",
+            "Xinlei Chen",
+            "Qingmin Liao",
+            "Yi Wu",
+            "Chao Yu",
+            "Yu Wang"
+          ]
+        },
+        {
+          "title": "Fast-in-Slow: A Dual-System VLA Model Unifying Fast Manipulation within Slow Reasoning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8cf3760422b9d4505589a97c8f9569e7-Abstract-Conference.html",
+          "authors": [
+            "Hao Chen",
+            "Jiaming Liu",
+            "Chenyang Gu",
+            "Zhuoyang Liu",
+            "Renrui Zhang",
+            "Xiaoqi Li",
+            "Xiao He",
+            "Yandong Guo"
+          ]
+        },
+        {
+          "title": "Knowledge Insulating Vision-Language-Action Models: Train Fast, Run Fast, Generalize Better",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/94e936034d12bcd04834ec2773f02aff-Abstract-Conference.html",
+          "authors": [
+            "Danny Driess",
+            "Jost Tobias Springenberg",
+            "Brian Ichter",
+            "Lili Yu",
+            "Adrian Li-Bell",
+            "Karl Pertsch",
+            "Allen Z. Ren",
+            "Homer Walke"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "imitation",
+      "label": "Imitation & Behavior Cloning",
+      "group": "Robot Learning",
+      "depth": "Working",
+      "counts": [
+        42,
+        41,
+        43,
+        60,
+        63
+      ],
+      "shares": [
+        5.534,
+        4.904,
+        3.968,
+        4.254,
+        4.27
+      ],
+      "recentVolume": 123,
+      "momentum": -0.318,
+      "burst": -0.65,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 249,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": 3.1,
+      "aliases": [
+        "imitation learning",
+        "behavior cloning",
+        "behaviour cloning",
+        "learning from demonstration"
+      ],
+      "papers": [
+        {
+          "title": "Improving Generative Behavior Cloning via Self-Guidance and Adaptive Chunking",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/79ce24f9e8d3c4ff5919240eac78a782-Abstract-Conference.html",
+          "authors": [
+            "Junhyuk So",
+            "Chiwoong Lee",
+            "Shinyoung Lee",
+            "Jungseul Ok",
+            "Eunhyeok Park"
+          ]
+        },
+        {
+          "title": "Learning from Demonstrations via Capability-Aware Goal Sampling",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/82c5f628a36bc30a87cd72fe0a81affc-Abstract-Conference.html",
+          "authors": [
+            "Yuanlin Duan",
+            "Yuning Wang",
+            "Wenjie Qiu",
+            "He Zhu"
+          ]
+        },
+        {
+          "title": "Learning Equilibria from Data: Provably Efficient Multi-Agent Imitation Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8cb4b41a28043e865b28db17f0a30edd-Abstract-Conference.html",
+          "authors": [
+            "Till Freihaut",
+            "Luca Viano",
+            "Volkan Cevher",
+            "Matthieu Geist",
+            "Giorgia Ramponi"
+          ]
+        },
+        {
+          "title": "UAV-Flow Colosseo: A Real-World Benchmark for Flying-on-a-Word UAV Imitation Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/92cfa104db7fdd053492df3589ddfd49-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Xiangyu Wang",
+            "Donglin Yang",
+            "Yue Liao",
+            "Wenhao Zheng",
+            "Wenjun Wu",
+            "Bin Dai",
+            "Hongsheng Li",
+            "Si Liu"
+          ]
+        },
+        {
+          "title": "Faithful Dynamic Imitation Learning from Human Intervention with Dynamic Regret Minimization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/bf511c2d1eb9724f4bf16cf743eefcce-Abstract-Conference.html",
+          "authors": [
+            "Bo Ling",
+            "Zhengyu Gan",
+            "Wanyuan Wang",
+            "Guanyu Gao",
+            "Weiwei Wu",
+            "Yan Lyu"
+          ]
+        },
+        {
+          "title": "Quantifying Generalisation in Imitation Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/e000e854c7ea1afc60e1e672502d20dd-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Nathan Gavenski",
+            "Odinaldo Rodrigues"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "offline_rl",
+      "label": "Offline Reinforcement Learning",
+      "group": "Robot Learning",
+      "depth": "Working",
+      "counts": [
+        30,
+        50,
+        74,
+        66,
+        43
+      ],
+      "shares": [
+        3.953,
+        5.981,
+        6.828,
+        4.68,
+        2.915
+      ],
+      "recentVolume": 109,
+      "momentum": -0.338,
+      "burst": -2.19,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 263,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": 2.8,
+      "aliases": [
+        "offline reinforcement",
+        "offline rl"
+      ],
+      "papers": [
+        {
+          "title": "Structural Information-based Hierarchical Diffusion for Offline Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/9df0263b6032123e0ed65be3e42506f5-Abstract-Conference.html",
+          "authors": [
+            "Xianghua Zeng",
+            "Hao Peng",
+            "Yicheng Pan",
+            "Angsheng Li",
+            "Guanlin Wu"
+          ]
+        },
+        {
+          "title": "Pretraining a Shared Q-Network for Data-Efficient Offline Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/bd58c2ce8bcd01727ea3d060a6e297a5-Abstract-Conference.html",
+          "authors": [
+            "Jongchan Park",
+            "Mingyu Park",
+            "Donghwan Lee"
+          ]
+        },
+        {
+          "title": "Uni-RL: Unifying Online and Offline RL via Implicit Value Regularization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/c0f721d329c1a10546869c783e866fb7-Abstract-Conference.html",
+          "authors": [
+            "Haoran Xu",
+            "Liyuan Mao",
+            "Hui Jin",
+            "Weinan Zhang",
+            "Xianyuan Zhan",
+            "Amy Zhang"
+          ]
+        },
+        {
+          "title": "Analytic Energy-Guided Policy Optimization for Offline Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/c710d6b4507e70c6332bee871b8d1ca5-Abstract-Conference.html",
+          "authors": [
+            "Jifeng Hu",
+            "Sili Huang",
+            "Zhejian Yang",
+            "Shengchao Hu",
+            "Li Shen",
+            "Hechang Chen",
+            "Lichao Sun",
+            "Yi Chang"
+          ]
+        },
+        {
+          "title": "Rebalancing Return Coverage for Conditional Sequence Modeling in Offline Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/d9e42b4d7163931f3689d6d6fbaa11d0-Abstract-Conference.html",
+          "authors": [
+            "Wensong Bai",
+            "Chufan Chen",
+            "Yichao Fu",
+            "Qihang Xu",
+            "Chao Zhang",
+            "Hui Qian"
+          ]
+        },
+        {
+          "title": "FANS: A Flatness-Aware Network Structure for Generalization in Offline Reinforcement Learning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/db1d5c63576587fc1d40d33a75190c71-Abstract-Conference.html",
+          "authors": [
+            "Da Wang",
+            "Yi Ma",
+            "Ting Guo",
+            "Hongyao Tang",
+            "Wei Wei",
+            "Jiye Liang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sim_to_real",
+      "label": "Sim-to-Real",
+      "group": "Robot Learning",
+      "depth": "Working",
+      "counts": [
+        13,
+        7,
+        11,
+        23,
+        11
+      ],
+      "shares": [
+        1.713,
+        0.837,
+        1.015,
+        1.631,
+        0.746
+      ],
+      "recentVolume": 34,
+      "momentum": -0.114,
+      "burst": -1.46,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 65,
+      "confidence": "High",
+      "status": "Stable",
+      "trendScore": 5.9,
+      "aliases": [
+        "sim.to.real",
+        "simulation.to.real",
+        "reality gap",
+        "domain randomization"
+      ],
+      "papers": [
+        {
+          "title": "SPiDR: A Simple Approach for Zero-Shot Safety in Sim-to-Real Transfer",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/82eb7f4f7377fc5dc81ca85fc90fa735-Abstract-Conference.html",
+          "authors": [
+            "Yarden As",
+            "Chengrui Qu",
+            "Benjamin Unger",
+            "Dongho Kang",
+            "Max van der Hart",
+            "Laixi Shi",
+            "Stelian Coros",
+            "Adam Wierman"
+          ]
+        },
+        {
+          "title": "DEAL: Diffusion Evolution Adversarial Learning for Sim-to-Real Transfer",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/d7c23d4cf0b141d366e494b6555e1b1f-Abstract-Conference.html",
+          "authors": [
+            "Wentao Xu",
+            "Huiqiao Fu",
+            "Haoyu Dong",
+            "Zhehao Zhou",
+            "Chunlin Chen"
+          ]
+        },
+        {
+          "title": "Robotic Sim-to-Real Transfer for Long-Horizon Pick-and-Place Tasks in the Robotic Sim2Real Competition",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128837",
+          "authors": [
+            "Ming Yang",
+            "Hongyu Cao",
+            "Lixuan Zhao",
+            "Chenrui Zhang",
+            "Yaran Chen"
+          ]
+        },
+        {
+          "title": "Watch Less, Feel More: Sim-to-Real RL for Generalizable Articulated Object Manipulation via Motion Adaptation and Impedance Control",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128365",
+          "authors": [
+            "Tan-Dzung Do",
+            "Nandiraju Gireesh",
+            "Jilong Wang",
+            "He Wang"
+          ]
+        },
+        {
+          "title": "One Net to Rule Them All: Domain Randomization in Quadcopter Racing Across Different Platforms",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128790",
+          "authors": [
+            "Robin Ferede",
+            "Till M. Blaha",
+            "Erin Lucassen",
+            "Christophe De Wagter",
+            "Guido C. H. E. de Croon"
+          ]
+        },
+        {
+          "title": "DemoStart: Demonstration-Led Auto-Curriculum Applied to Sim-to-Real with Multi-Fingered Robots",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127813",
+          "authors": [
+            "Maria Bauzá",
+            "Jose Enriaue Chen",
+            "Valentin Dalibard",
+            "Nimrod Gileadi",
+            "Roland Hafner",
+            "Murilo F. Martins",
+            "Joss Moore",
+            "Rugile Pevceviciute"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "action_chunking",
+      "label": "Action Chunking",
+      "group": "Robot Learning",
+      "depth": "Working",
+      "counts": [
+        12,
+        12,
+        14,
+        15,
+        7
+      ],
+      "shares": [
+        1.581,
+        1.435,
+        1.292,
+        1.064,
+        0.474
+      ],
+      "recentVolume": 22,
+      "momentum": -0.259,
+      "burst": -4.34,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 60,
+      "confidence": "High",
+      "status": "Stable",
+      "trendScore": 3.6,
+      "aliases": [
+        "action chunk",
+        "temporal action"
+      ],
+      "papers": [
+        {
+          "title": "Evolving Minds: Logic-Informed Inference from Temporal Action Patterns",
+          "venue": "ICML",
+          "year": 2025,
+          "url": "https://proceedings.mlr.press/v267/yang25i.html",
+          "authors": [
+            "Chao Yang",
+            "Shuting Cui",
+            "Yang Yang",
+            "Shuang Li"
+          ]
+        },
+        {
+          "title": "Bidirectional Decoding: Improving Action Chunking via Guided Test-Time Sampling",
+          "venue": "ICLR",
+          "year": 2025,
+          "url": "https://openreview.net/forum?id=qZmn2hkuzw",
+          "authors": [
+            "Yuejiang Liu",
+            "Jubayer Ibn Hamid",
+            "Annie Xie",
+            "Yoonho Lee",
+            "Max Du",
+            "Chelsea Finn"
+          ]
+        },
+        {
+          "title": "Bridge the Gap: From Weak to Full Supervision for Temporal Action Localization with PseudoFormer",
+          "venue": "CVPR",
+          "year": 2025,
+          "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Liu_Bridge_the_Gap_From_Weak_to_Full_Supervision_for_Temporal_CVPR_2025_paper.html",
+          "authors": [
+            "Ziyi Liu",
+            "Yangcen Liu"
+          ]
+        },
+        {
+          "title": "Boosting Point-Supervised Temporal Action Localization through Integrating Query Reformation and Optimal Transport",
+          "venue": "CVPR",
+          "year": 2025,
+          "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Liu_Boosting_Point-Supervised_Temporal_Action_Localization_through_Integrating_Query_Reformation_and_CVPR_2025_paper.html",
+          "authors": [
+            "Mengnan Liu",
+            "Le Wang",
+            "Sanping Zhou",
+            "Kun Xia",
+            "Xiaolong Sun",
+            "Gang Hua"
+          ]
+        },
+        {
+          "title": "Weakly Supervised Temporal Action Localization via Dual-Prior Collaborative Learning Guided by Multimodal Large Language Models",
+          "venue": "CVPR",
+          "year": 2025,
+          "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Zhang_Weakly_Supervised_Temporal_Action_Localization_via_Dual-Prior_Collaborative_Learning_Guided_CVPR_2025_paper.html",
+          "authors": [
+            "Quan Zhang",
+            "Jinwei Fang",
+            "Rui Yuan",
+            "Xi Tang",
+            "Yuxin Qi",
+            "Ke Zhang",
+            "Chun Yuan"
+          ]
+        },
+        {
+          "title": "DiGIT: Multi-Dilated Gated Encoder and Central-Adjacent Region Integrated Decoder for Temporal Action Detection Transformer",
+          "venue": "CVPR",
+          "year": 2025,
+          "url": "https://openaccess.thecvf.com/content/CVPR2025/html/Kim_DiGIT_Multi-Dilated_Gated_Encoder_and_Central-Adjacent_Region_Integrated_Decoder_for_CVPR_2025_paper.html",
+          "authors": [
+            "Ho-Joong Kim",
+            "Yearang Lee",
+            "Jung-Ho Hong",
+            "Seong-Whan Lee"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "robot_manipulation",
+      "label": "Robot Manipulation",
+      "group": "Physical AI",
+      "depth": "Working",
+      "counts": [
+        81,
+        77,
+        105,
+        162,
+        143
+      ],
+      "shares": [
+        10.673,
+        9.211,
+        9.689,
+        11.487,
+        9.693
+      ],
+      "recentVolume": 305,
+      "momentum": 0.032,
+      "burst": -0.65,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 568,
+      "confidence": "High",
+      "status": "Emerging",
+      "trendScore": 9.4,
+      "aliases": [
+        "robotic manipulation",
+        "robot manipulation",
+        "grasp",
+        "dexterous",
+        "bimanual"
+      ],
+      "papers": [
+        {
+          "title": "DynaRend: Learning 3D Dynamics via Masked Future Rendering for Robotic Manipulation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6f86111e54988eaf91e7bb7e88dd7f7b-Abstract-Conference.html",
+          "authors": [
+            "Jingyi Tian",
+            "Le Wang",
+            "Sanping Zhou",
+            "Sen Wang",
+            "Jiayi Li",
+            "Gang Hua"
+          ]
+        },
+        {
+          "title": "Contact Map Transfer with Conditional Diffusion Model for Generalizable Dexterous Grasp Generation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/728a3f18902026dc60b7f7a84c7d2ce4-Abstract-Conference.html",
+          "authors": [
+            "Yiyao Ma",
+            "Kai Chen",
+            "Kexin Zheng",
+            "Qi Dou"
+          ]
+        },
+        {
+          "title": "Scaffolding Dexterous Manipulation with Vision-Language Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/862644b156e51c35dea5a7446d640b14-Abstract-Conference.html",
+          "authors": [
+            "Vincent de Bakker",
+            "Joey Hejna",
+            "Tyler Ga Wei Lum",
+            "Onur Celik",
+            "Aleksandar Taranovic",
+            "Denis Blessing",
+            "Gerhard Neumann",
+            "Jeannette Bohg"
+          ]
+        },
+        {
+          "title": "RAPID Hand: Robust, Affordable, Perception-Integrated, Dexterous Manipulation Platform for Embodied Intelligence",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8bead340bb510de5c8356f60ca039efc-Abstract-Conference.html",
+          "authors": [
+            "Zhaoliang Wan",
+            "Zetong Bi",
+            "Zida Zhou",
+            "Hao Ren",
+            "Yiming Zeng",
+            "Yihan Li",
+            "Lu Qi",
+            "Xu Yang"
+          ]
+        },
+        {
+          "title": "Chain-of-Action: Trajectory Autoregressive Modeling for Robotic Manipulation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/9877d915a4b4f00e85e7b4cfdf41e450-Abstract-Conference.html",
+          "authors": [
+            "Wenbo Zhang",
+            "Tianrun Hu",
+            "Hanbo Zhang",
+            "Yanyuan Qiao",
+            "Yuchu Qin",
+            "Yang Li",
+            "Jiajun Liu",
+            "Tao Kong"
+          ]
+        },
+        {
+          "title": "RoboCerebra: A Large-scale Benchmark for Long-horizon Robotic Manipulation Evaluation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/aed3899aa23ae06868aeb2e2a856485d-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Songhao Han",
+            "Boxiang Qiu",
+            "Yue Liao",
+            "Siyuan Huang",
+            "Chen Gao",
+            "Shuicheng Yan",
+            "Si Liu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tactile",
+      "label": "Tactile & Contact Learning",
+      "group": "Physical AI",
+      "depth": "Working",
+      "counts": [
+        28,
+        37,
+        42,
+        72,
+        47
+      ],
+      "shares": [
+        3.69,
+        4.426,
+        3.876,
+        5.105,
+        3.186
+      ],
+      "recentVolume": 119,
+      "momentum": -0.033,
+      "burst": -1.98,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 226,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": 8.0,
+      "aliases": [
+        "tactile",
+        "contact.rich",
+        "force control",
+        "visuotactile"
+      ],
+      "papers": [
+        {
+          "title": "ForceVLA: Enhancing VLA Models with a Force-aware MoE for Contact-rich Manipulation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8633b46e12cc5f2ee1f05a6ca2c65b38-Abstract-Conference.html",
+          "authors": [
+            "Jiawen Yu",
+            "Hairuo Liu",
+            "Qiaojun Yu",
+            "Jieji Ren",
+            "Ce Hao",
+            "Haitong Ding",
+            "Guangyu Huang",
+            "Guofan Huang"
+          ]
+        },
+        {
+          "title": "Taccel: Scaling Up Vision-based Tactile Robotics via High-performance GPU Simulation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/87d91d52272c3166315ca20b18519b9e-Abstract-Conference.html",
+          "authors": [
+            "Yuyang Li",
+            "Wenxin Du",
+            "Chang Yu",
+            "Puhao Li",
+            "Zihang Zhao",
+            "Tengyu Liu",
+            "Chenfanfu Jiang",
+            "Yixin Zhu"
+          ]
+        },
+        {
+          "title": "Universal Visuo-Tactile Video Understanding for Embodied Interaction",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/b9a4d7b88a41652c63962ebcc21701b7-Abstract-Conference.html",
+          "authors": [
+            "Yifan Xie",
+            "Mingyang Li",
+            "Shoujie Li",
+            "Xingting Li",
+            "Guangyu Chen",
+            "Fei Ma",
+            "Fei Richard Yu",
+            "Wenbo Ding"
+          ]
+        },
+        {
+          "title": "Enhancing Tactile-based Reinforcement Learning for Robotic Control",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/bc09efb501c801ed92e181e26a885c2d-Abstract-Conference.html",
+          "authors": [
+            "Elle Miller",
+            "Trevor McInroe",
+            "David Abel",
+            "Oisin Mac Aodha",
+            "Sethu Vijayakumar"
+          ]
+        },
+        {
+          "title": "Compliant Residual DAgger: Improving Real-World Contact-Rich Manipulation with Human Corrections",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/cbf883a744952d4a40591271a58ab9d0-Abstract-Conference.html",
+          "authors": [
+            "Xiaomeng Xu",
+            "Yifan Hou",
+            "Zeyi Liu",
+            "Shuran Song"
+          ]
+        },
+        {
+          "title": "Touch in the Wild: Learning Fine-Grained Manipulation with a Portable Visuo-Tactile Gripper",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/e1fcd183ab33714a8464e4e9a20ac710-Abstract-Conference.html",
+          "authors": [
+            "Xinyue Zhu",
+            "Binghao Huang",
+            "Yunzhu Li"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3d_geometry",
+      "label": "3D Geometry & Reconstruction",
+      "group": "Computer Vision",
+      "depth": "Working",
+      "counts": [
+        23,
+        48,
+        88,
+        166,
+        260
+      ],
+      "shares": [
+        3.031,
+        5.742,
+        8.12,
+        11.771,
+        17.624
+      ],
+      "recentVolume": 426,
+      "momentum": 3.521,
+      "burst": 3.26,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 585,
+      "confidence": "High",
+      "status": "Fast Rising",
+      "trendScore": 78.9,
+      "aliases": [
+        "3d reconstruction",
+        "novel view",
+        "neural radiance",
+        "gaussian splat",
+        "structure.from.motion"
+      ],
+      "papers": [
+        {
+          "title": "1000+ FPS 4D Gaussian Splatting for Dynamic Scene Rendering",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6c39d1a7eecfd98570d74bf7efec1be7-Abstract-Conference.html",
+          "authors": [
+            "Yuheng Yuan",
+            "Qiuhong Shen",
+            "Xingyi Yang",
+            "Xinchao Wang"
+          ]
+        },
+        {
+          "title": "Learning Efficient Fuse-and-Refine for Feed-Forward 3D Gaussian Splatting",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/6e9d416f7ffeb2042729ddee8d3138a3-Abstract-Conference.html",
+          "authors": [
+            "Yiming Wang",
+            "Lucy Chai",
+            "Xuan Luo",
+            "Michael Niemeyer",
+            "Manuel Lagunas",
+            "Stephen Lombardi",
+            "Siyu Tang",
+            "Tiancheng Sun"
+          ]
+        },
+        {
+          "title": "Multimodal LiDAR-Camera Novel View Synthesis with Unified Pose-free Neural Fields",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/70915b08a205ea5522528690d93518f6-Abstract-Conference.html",
+          "authors": [
+            "Weiyi Xue",
+            "Fan Lu",
+            "Yunwei Zhu",
+            "Zehan Zheng",
+            "Sanqing Qu",
+            "Jiangtong Li",
+            "Ya Wu",
+            "Haiyun Wei"
+          ]
+        },
+        {
+          "title": "I2-NeRF: Learning Neural Radiance Fields Under Physically-Grounded Media Interactions",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/77fa0e7d45c6687f1958de0b31e9fc05-Abstract-Conference.html",
+          "authors": [
+            "Shuhong Liu",
+            "Lin Gu",
+            "Ziteng Cui",
+            "Xuangeng Chu",
+            "Tatsuya Harada"
+          ]
+        },
+        {
+          "title": "EF-3DGS: Event-Aided Free-Trajectory 3D Gaussian Splatting",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7cdc4122c4d12cc80a62e6a6af555f5a-Abstract-Conference.html",
+          "authors": [
+            "Bohao Liao",
+            "Wei Zhai",
+            "Zengyu Wan",
+            "Zhixin Cheng",
+            "Wenfei Yang",
+            "Yang Cao",
+            "Tianzhu Zhang",
+            "Zheng-Jun Zha"
+          ]
+        },
+        {
+          "title": "ProDyG: Progressive Dynamic Scene Reconstruction via Gaussian Splatting from Monocular Videos",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/7f70331dbe58ad59d83941dfa7d975aa-Abstract-Conference.html",
+          "authors": [
+            "Shi Chen",
+            "Erik Sandström",
+            "Sandro Lombardi",
+            "Siyuan Li",
+            "Martin R. Oswald"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "depth",
+      "label": "Depth Estimation",
+      "group": "Computer Vision",
+      "depth": "Literacy",
+      "counts": [
+        26,
+        28,
+        40,
+        34,
+        35
+      ],
+      "shares": [
+        3.426,
+        3.349,
+        3.691,
+        2.411,
+        2.372
+      ],
+      "recentVolume": 69,
+      "momentum": -0.305,
+      "burst": -1.75,
+      "breadth": 4,
+      "venues": [
+        "CVPR",
+        "ICLR",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 163,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": 0.5,
+      "aliases": [
+        "depth estimation",
+        "monocular depth",
+        "stereo depth"
+      ],
+      "papers": [
+        {
+          "title": "3D Visual Illusion Depth Estimation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/70c1e653e0594c78897c13b423b7c919-Abstract-Conference.html",
+          "authors": [
+            "Chengtang Yao",
+            "Zhidan Liu",
+            "Jiaxi Zeng",
+            "Lidong Yu",
+            "Yuwei Wu",
+            "Yunde Jia"
+          ]
+        },
+        {
+          "title": "Jasmine: Harnessing Diffusion Prior for Self-supervised Depth Estimation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/72bcad2c3fe7625fc233fabe84a6d7ef-Abstract-Conference.html",
+          "authors": [
+            "Jiyuan Wang",
+            "Chunyu Lin",
+            "Cheng Guan",
+            "Lang Nie",
+            "Jing He",
+            "Haodong Li",
+            "Kang Liao",
+            "Yao Zhao"
+          ]
+        },
+        {
+          "title": "More Than Generation: Unifying Generation and Depth Estimation via Text-to-Image Diffusion Models",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/a76ed4a8ef522c823d73925e7fff16d4-Abstract-Conference.html",
+          "authors": [
+            "Hongkai Lin",
+            "Dingkang Liang",
+            "Mingyang Du",
+            "Xin Zhou",
+            "Xiang Bai"
+          ]
+        },
+        {
+          "title": "Distil-E2D: Distilling Image-to-Depth Priors for Event-Based Monocular Depth Estimation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/b6fa3ed9624c184bd73e435123bd576a-Abstract-Conference.html",
+          "authors": [
+            "Jie Long Lee",
+            "Gim Hee Lee"
+          ]
+        },
+        {
+          "title": "RPG360: Robust 360 Depth Estimation with Perspective Foundation Models and Graph Optimization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/fb1ea28c42fcd32bd49e68769b26028f-Abstract-Conference.html",
+          "authors": [
+            "Dongki Jung",
+            "Jaehoon Choi",
+            "Yonghan Lee",
+            "Dinesh Manocha"
+          ]
+        },
+        {
+          "title": "Depth Estimation Based on 3D Gaussian Splatting Siamese Defocus",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127429",
+          "authors": [
+            "Jinchang Zhang",
+            "Ningning Xu",
+            "Hao Zhang",
+            "Guoyu Lu"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "point_clouds",
+      "label": "Point Clouds & LiDAR",
+      "group": "Computer Vision",
+      "depth": "Working",
+      "counts": [
+        143,
+        151,
+        206,
+        231,
+        192
+      ],
+      "shares": [
+        18.843,
+        18.062,
+        19.009,
+        16.379,
+        13.014
+      ],
+      "recentVolume": 423,
+      "momentum": -1.334,
+      "burst": -4.86,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 923,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -14.8,
+      "aliases": [
+        "point cloud",
+        "\\blidar\\b",
+        "3d point"
+      ],
+      "papers": [
+        {
+          "title": "Multimodal LiDAR-Camera Novel View Synthesis with Unified Pose-free Neural Fields",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/70915b08a205ea5522528690d93518f6-Abstract-Conference.html",
+          "authors": [
+            "Weiyi Xue",
+            "Fan Lu",
+            "Yunwei Zhu",
+            "Zehan Zheng",
+            "Sanqing Qu",
+            "Jiangtong Li",
+            "Ya Wu",
+            "Haiyun Wei"
+          ]
+        },
+        {
+          "title": "BeyondMix: Leveraging Structural Priors and Long-Range Dependencies for Domain-Invariant LiDAR Segmentation",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/812d5b873efe714cfc26342436ea0b0d-Abstract-Conference.html",
+          "authors": [
+            "Yujia Chen",
+            "Rui Sun",
+            "Wangkai Li",
+            "Huayu Mai",
+            "Si Chen",
+            "Zhuoyuan Li",
+            "Zhixin Cheng",
+            "Tianzhu Zhang"
+          ]
+        },
+        {
+          "title": "U-CAN: Unsupervised Point Cloud Denoising with Consistency-Aware Noise2Noise Matching",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8b3dcec3fab2e51203ded2f387867735-Abstract-Conference.html",
+          "authors": [
+            "Junsheng Zhou",
+            "Xingyu Shi",
+            "Haichuan Song",
+            "Yi Fang",
+            "Yu-Shen Liu",
+            "Zhizhong Han"
+          ]
+        },
+        {
+          "title": "Towards Physical Understanding in Video Generation: A 3D Point Regularization Approach",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/94e845868a9ace4bc239d0c529d32f4c-Abstract-Conference.html",
+          "authors": [
+            "Yunuo Chen",
+            "Junli Cao",
+            "Vidit Goel",
+            "Sergei Korolev",
+            "Chenfanfu Jiang",
+            "Jian Ren",
+            "Sergey Tulyakov",
+            "Anil Kag"
+          ]
+        },
+        {
+          "title": "APML: Adaptive Probabilistic Matching Loss for Robust 3D Point Cloud Reconstruction",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/9716eab820e3d953fae1fa3f0fa84304-Abstract-Conference.html",
+          "authors": [
+            "Sasan Sharifipour",
+            "Constantino Álvarez Casado",
+            "Mohammad Sabokrou",
+            "Miguel Bordallo López"
+          ]
+        },
+        {
+          "title": "Novel Class Discovery for Point Cloud Segmentation via Joint Learning of Causal Representation and Reasoning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/97d008f7873b8dd55cb6dd343fc4386f-Abstract-Conference.html",
+          "authors": [
+            "Yang Li",
+            "Aming Wu",
+            "Zihao Zhang",
+            "Yahong Han"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slam",
+      "label": "SLAM & Localization",
+      "group": "Robotics",
+      "depth": "Working",
+      "counts": [
+        122,
+        89,
+        125,
+        154,
+        149
+      ],
+      "shares": [
+        16.076,
+        10.646,
+        11.535,
+        10.92,
+        10.1
+      ],
+      "recentVolume": 303,
+      "momentum": -1.168,
+      "burst": -0.99,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 639,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -11.8,
+      "aliases": [
+        "\\bslam\\b",
+        "visual odometry",
+        "locali[sz]ation"
+      ],
+      "papers": [
+        {
+          "title": "GRE Suite: Geo-localization Inference via Fine-Tuned Vision-Language Models and Enhanced Reasoning Chains",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/854a9ab0f323b841955e70ca383b27d1-Abstract-Conference.html",
+          "authors": [
+            "Chun Wang",
+            "Xiaojun Ye",
+            "Xiaoran Pan",
+            "Zihao Pan",
+            "Haofan Wang",
+            "Yiren Song"
+          ]
+        },
+        {
+          "title": "OCRBench v2: An Improved Benchmark for Evaluating Large Multimodal Models on Visual Text Localization and Reasoning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/8c2e6bb15be1894b8fb4e0f9bcad1739-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Ling Fu",
+            "Zhebin Kuang",
+            "Jiajun Song",
+            "Mingxin Huang",
+            "Biao Yang",
+            "Yuzhe Li",
+            "Linghao Zhu",
+            "Qidi Luo"
+          ]
+        },
+        {
+          "title": "Personalized Federated Conformal Prediction with Localization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/930a720c815416c263b0a090448ee901-Abstract-Conference.html",
+          "authors": [
+            "Yinjie Min",
+            "Chuchen Zhang",
+            "Liuhua Peng",
+            "Changliang Zou"
+          ]
+        },
+        {
+          "title": "NOVA: A Benchmark for Rare Anomaly Localization and Clinical Reasoning in Brain MRI",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/96a9caf416c8951812a666eca742e050-Abstract-Datasets_and_Benchmarks_Track.html",
+          "authors": [
+            "Cosmin Bercea",
+            "Jun Li",
+            "Philipp Raffler",
+            "Evamaria O. Riedel",
+            "Lena Schmitzer",
+            "Angela Kurz",
+            "Felix Bitzer",
+            "Paula Roßmüller"
+          ]
+        },
+        {
+          "title": "Self supervised learning for in vivo localization of microelectrode arrays using raw local field potential",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/b408053531ce6fd66a96bc3a86527bb9-Abstract-Conference.html",
+          "authors": [
+            "Tianxiao He",
+            "Malhar Patel",
+            "Chenyi Li",
+            "Anna Maslarova",
+            "Mihály Vöröslakos",
+            "Nalini Ramanathan",
+            "Wei-Lun Hung",
+            "György Buzsáki"
+          ]
+        },
+        {
+          "title": "VGGT-SLAM: Dense RGB SLAM Optimized on the SL(4) Manifold",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/bc65ab11abfbad890171109686233f4e-Abstract-Conference.html",
+          "authors": [
+            "Dominic Maggio",
+            "Hyungtae Lim",
+            "Luca Carlone"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motion_planning",
+      "label": "Motion & Task Planning",
+      "group": "Robotics",
+      "depth": "Working",
+      "counts": [
+        86,
+        46,
+        71,
+        87,
+        74
+      ],
+      "shares": [
+        11.332,
+        5.502,
+        6.552,
+        6.169,
+        5.016
+      ],
+      "recentVolume": 161,
+      "momentum": -1.197,
+      "burst": -1.03,
+      "breadth": 6,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICML",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 364,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -12.1,
+      "aliases": [
+        "motion planning",
+        "task and motion",
+        "trajectory optimization",
+        "path planning"
+      ],
+      "papers": [
+        {
+          "title": "REMI: Reconstructing Episodic Memory During Internally Driven Path Planning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/72ab0f5ba093e905be35fb27810a9c56-Abstract-Conference.html",
+          "authors": [
+            "Zhaoze Wang",
+            "Genela Morris",
+            "Dori Derdikman",
+            "Pratik Chaudhari",
+            "Vijay Balasubramanian"
+          ]
+        },
+        {
+          "title": "Learning Human-Like RL Agents Through Trajectory Optimization With Action Quantization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/786c204054ab81f886cc9c92ced7c5ed-Abstract-Conference.html",
+          "authors": [
+            "Jian-Ting Guo",
+            "Yu-Cheng Chen",
+            "Ping-Chun Hsieh",
+            "Kuo-Hao Ho",
+            "Po-Wei Huang",
+            "Ti-Rong Wu",
+            "I-Chen Wu"
+          ]
+        },
+        {
+          "title": "SE-Agent: Self-Evolution Trajectory Optimization in Multi-Step Reasoning with LLM-Based Agents",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/a911e543a95493ae5004fdc01909043e-Abstract-Conference.html",
+          "authors": [
+            "Yifu Guo",
+            "Jiaye Lin",
+            "Huacan Wang",
+            "Yuzhen Han",
+            "Sen Hu",
+            "Ziyi Ni",
+            "Licheng Wang",
+            "Mingguang Chen"
+          ]
+        },
+        {
+          "title": "Unsupervised Trajectory Optimization for 3D Registration in Serial Section Electron Microscopy using Neural ODEs",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/b9ecf4d84999a61783c360c3782e801e-Abstract-Conference.html",
+          "authors": [
+            "Zhenbang Zhang",
+            "Jingtong Feng",
+            "Hongjia Li",
+            "Haythem El-Messiry",
+            "Zhiqiang Xu",
+            "Renmin Han"
+          ]
+        },
+        {
+          "title": "Conformal Prediction in The Loop: A Feedback-Based Uncertainty Model for Trajectory Optimization",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/ee1331338cdf0e4d1055304d875548df-Abstract-Conference.html",
+          "authors": [
+            "Han Wang",
+            "Chao Ning"
+          ]
+        },
+        {
+          "title": "Ergodic Trajectory Optimization on Generalized Domains Using Maximum Mean Discrepancy",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127573",
+          "authors": [
+            "Christian Hughes",
+            "Houston Warren",
+            "Darrick Lee",
+            "Fabio Ramos",
+            "Ian Abraham"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "human_robot",
+      "label": "Human-Robot Collaboration",
+      "group": "Robotics",
+      "depth": "Working",
+      "counts": [
+        31,
+        34,
+        26,
+        44,
+        31
+      ],
+      "shares": [
+        4.085,
+        4.067,
+        2.399,
+        3.12,
+        2.101
+      ],
+      "recentVolume": 75,
+      "momentum": -0.491,
+      "burst": -1.87,
+      "breadth": 5,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 166,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -1.3,
+      "aliases": [
+        "human.robot",
+        "shared autonomy",
+        "human aware",
+        "collaborative robot"
+      ],
+      "papers": [
+        {
+          "title": "Human-Robot Collaboration for the Remote Control of Mobile Humanoid Robots With Torso-Arm Coordination",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128048",
+          "authors": [
+            "Nikita Boguslavskii",
+            "Lorena Maria Genua",
+            "Zhi Li"
+          ]
+        },
+        {
+          "title": "Integrating Human-Robot Teaming Dynamics Into Mission Planning Tools for Transparent Tactics in Multi-Robot Human Integrated Teams",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128530",
+          "authors": [
+            "Audrey L. Aldridge",
+            "Tyler Errico",
+            "Mitchell Morrell",
+            "Cindy L. Bethel",
+            "John James",
+            "Christa M. Chewar",
+            "Michael Novitzky"
+          ]
+        },
+        {
+          "title": "CANVAS: Commonsense-Aware Navigation System for Intuitive Human-Robot Interaction",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127664",
+          "authors": [
+            "Suhwan Choi",
+            "Yongjun Cho",
+            "Minchan Kim",
+            "Jaeyoon Jung",
+            "Myunchul Joe",
+            "Yubeen Park",
+            "Minseo Kim",
+            "Sungwoong Kim"
+          ]
+        },
+        {
+          "title": "SYNERGAI: Perception Alignment for Human-Robot Collaboration",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128658",
+          "authors": [
+            "Yixin Chen",
+            "Guoxi Zhang",
+            "Yaowei Zhang",
+            "Hongming Xu",
+            "Peiyuan Zhi",
+            "Qing Li",
+            "Siyuan Huang"
+          ]
+        },
+        {
+          "title": "Digital Model-Driven Genetic Algorithm for Optimizing Layout and Task Allocation in Human-Robot Collaborative Assemblies",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127401",
+          "authors": [
+            "Christian Cella",
+            "Matteo Bruce Robin",
+            "Marco Faroni",
+            "Andrea Maria Zanchettin",
+            "Paolo Rocco"
+          ]
+        },
+        {
+          "title": "Training Human-Robot Teams by Improving Transparency Through a Virtual Spectator Interface",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127625",
+          "authors": [
+            "Sean Dallas",
+            "Hongjiao Qiang",
+            "Motaz AbuHijleh",
+            "Wonse Jo",
+            "Kayla Riegner",
+            "Jonathon M. Smereka",
+            "Lionel Robert",
+            "Wing-Yue Geoffrey Louie"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legged",
+      "label": "Legged & Humanoid Robotics",
+      "group": "Physical AI",
+      "depth": "Literacy",
+      "counts": [
+        66,
+        42,
+        50,
+        89,
+        87
+      ],
+      "shares": [
+        8.697,
+        5.024,
+        4.614,
+        6.311,
+        5.897
+      ],
+      "recentVolume": 176,
+      "momentum": -0.431,
+      "burst": -0.17,
+      "breadth": 5,
+      "venues": [
+        "CVPR",
+        "CoRL",
+        "ICLR",
+        "ICRA",
+        "NeurIPS"
+      ],
+      "support": 334,
+      "confidence": "High",
+      "status": "Established",
+      "trendScore": -0.3,
+      "aliases": [
+        "legged",
+        "quadruped",
+        "humanoid",
+        "biped"
+      ],
+      "papers": [
+        {
+          "title": "From Experts to a Generalist: Toward General Whole-Body Control for Humanoid Robots",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/d8f9cd02831dac9717c1c00329a49cd0-Abstract-Conference.html",
+          "authors": [
+            "Yuxuan Wang",
+            "Ming Yang",
+            "Gang Ding",
+            "Yu Zhang",
+            "Weishuai Zeng",
+            "Xinrun Xu",
+            "Haobin Jiang",
+            "Zongqing Lu"
+          ]
+        },
+        {
+          "title": "HumanoidGen: Data Generation for Bimanual Dexterous Manipulation via LLM Reasoning",
+          "venue": "NeurIPS",
+          "year": 2025,
+          "url": "https://papers.nips.cc/paper_files/paper/2025/hash/e4ef7454447baa15a424314e6284441b-Abstract-Conference.html",
+          "authors": [
+            "Zhi Jing",
+            "Siyuan Yang",
+            "Jicong Ao",
+            "Ting Xiao",
+            "Yu-Gang Jiang",
+            "Chenjia Bai"
+          ]
+        },
+        {
+          "title": "Residual Policy Learning for Perceptive Quadruped Control Using Differentiable Simulation",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127448",
+          "authors": [
+            "Jing Yuan Luo",
+            "Yunlong Song",
+            "Victor Klemm",
+            "Fan Shi",
+            "Davide Scaramuzza",
+            "Marco Hutter"
+          ]
+        },
+        {
+          "title": "Cycloidal Quasi-Direct Drive Actuator Designs with Learning-Based Torque Estimation for Legged Robotics",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11127436",
+          "authors": [
+            "Alvin Zhu",
+            "Yusuke Tanaka",
+            "Fadi Rafeedi",
+            "Dennis W. Hong"
+          ]
+        },
+        {
+          "title": "Human-Robot Collaboration for the Remote Control of Mobile Humanoid Robots With Torso-Arm Coordination",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128048",
+          "authors": [
+            "Nikita Boguslavskii",
+            "Lorena Maria Genua",
+            "Zhi Li"
+          ]
+        },
+        {
+          "title": "Angular Divergent Component of Motion: A Step Towards Planning Spatial DCM Objectives for Legged Robots",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128476",
+          "authors": [
+            "Connor W. Herron",
+            "Robert Schuller",
+            "Benjamin C. Beiter",
+            "Robert J. Griffin",
+            "Alexander Leonessa",
+            "Johannes Englsberger"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "construction",
+      "label": "Construction Robotics",
+      "group": "Construction Physical AI",
+      "depth": "Working",
+      "counts": [
+        1,
+        1,
+        0,
+        0,
+        1
+      ],
+      "shares": [
+        0.132,
+        0.12,
+        0.0,
+        0.0,
+        0.068
+      ],
+      "recentVolume": 1,
+      "momentum": -0.025,
+      "burst": 0.02,
+      "breadth": 1,
+      "venues": [
+        "ICRA"
+      ],
+      "support": 3,
+      "confidence": "Early",
+      "status": "Stable",
+      "trendScore": 0.2,
+      "aliases": [
+        "construction robot",
+        "autonomous excavat",
+        "robotic excavat",
+        "earthmov",
+        "construction site"
+      ],
+      "papers": [
+        {
+          "title": "Autonomous Excavation of Challenging Terrain using Oscillatory Primitives and Adaptive Impedance Control",
+          "venue": "ICRA",
+          "year": 2025,
+          "url": "https://doi.org/10.1109/ICRA55743.2025.11128330",
+          "authors": [
+            "Noah Franceschini",
+            "Pranay Thangeda",
+            "Melkior Ornik",
+            "Kris Hauser"
+          ]
+        },
+        {
+          "title": "Graph-based Multi-sensor Fusion for Consistent Localization of Autonomous Construction Robots",
+          "venue": "ICRA",
+          "year": 2022,
+          "url": "https://doi.org/10.1109/ICRA46639.2022.9812386",
+          "authors": [
+            "Julian Nubert",
+            "Shehryar Khattak",
+            "Marco Hutter"
+          ]
+        },
+        {
+          "title": "TaskNet: A Neural Task Planner for Autonomous Excavator",
+          "venue": "ICRA",
+          "year": 2021,
+          "url": "https://doi.org/10.1109/ICRA48506.2021.9561629",
+          "authors": [
+            "Jinxin Zhao",
+            "Liangjun Zhang"
+          ]
+        }
+      ]
+    }
+  ],
+  "audit": [
+    {
+      "venue": "NeurIPS",
+      "year": 2021,
+      "status": "ok",
+      "papers": 2334,
+      "source": "https://dblp.org/db/conf/nips/"
+    },
+    {
+      "venue": "NeurIPS",
+      "year": 2022,
+      "status": "ok",
+      "papers": 2834,
+      "source": "https://dblp.org/db/conf/nips/"
+    },
+    {
+      "venue": "NeurIPS",
+      "year": 2023,
+      "status": "ok",
+      "papers": 3540,
+      "source": "https://dblp.org/db/conf/nips/"
+    },
+    {
+      "venue": "NeurIPS",
+      "year": 2024,
+      "status": "ok",
+      "papers": 4494,
+      "source": "https://dblp.org/db/conf/nips/"
+    },
+    {
+      "venue": "NeurIPS",
+      "year": 2025,
+      "status": "ok",
+      "papers": 3317,
+      "source": "https://dblp.org/db/conf/nips/"
+    },
+    {
+      "venue": "ICML",
+      "year": 2021,
+      "status": "ok",
+      "papers": 1183,
+      "source": "https://dblp.org/db/conf/icml/"
+    },
+    {
+      "venue": "ICML",
+      "year": 2022,
+      "status": "ok",
+      "papers": 1234,
+      "source": "https://dblp.org/db/conf/icml/"
+    },
+    {
+      "venue": "ICML",
+      "year": 2023,
+      "status": "ok",
+      "papers": 1828,
+      "source": "https://dblp.org/db/conf/icml/"
+    },
+    {
+      "venue": "ICML",
+      "year": 2024,
+      "status": "ok",
+      "papers": 2610,
+      "source": "https://dblp.org/db/conf/icml/"
+    },
+    {
+      "venue": "ICML",
+      "year": 2025,
+      "status": "ok",
+      "papers": 3257,
+      "source": "https://dblp.org/db/conf/icml/"
+    },
+    {
+      "venue": "ICLR",
+      "year": 2021,
+      "status": "ok",
+      "papers": 860,
+      "source": "https://dblp.org/db/conf/iclr/"
+    },
+    {
+      "venue": "ICLR",
+      "year": 2022,
+      "status": "ok",
+      "papers": 1094,
+      "source": "https://dblp.org/db/conf/iclr/"
+    },
+    {
+      "venue": "ICLR",
+      "year": 2023,
+      "status": "ok",
+      "papers": 1573,
+      "source": "https://dblp.org/db/conf/iclr/"
+    },
+    {
+      "venue": "ICLR",
+      "year": 2024,
+      "status": "ok",
+      "papers": 2260,
+      "source": "https://dblp.org/db/conf/iclr/"
+    },
+    {
+      "venue": "ICLR",
+      "year": 2025,
+      "status": "ok",
+      "papers": 3704,
+      "source": "https://dblp.org/db/conf/iclr/"
+    },
+    {
+      "venue": "CVPR",
+      "year": 2021,
+      "status": "ok",
+      "papers": 1660,
+      "source": "https://dblp.org/db/conf/cvpr/"
+    },
+    {
+      "venue": "CVPR",
+      "year": 2022,
+      "status": "ok",
+      "papers": 2072,
+      "source": "https://dblp.org/db/conf/cvpr/"
+    },
+    {
+      "venue": "CVPR",
+      "year": 2023,
+      "status": "ok",
+      "papers": 2356,
+      "source": "https://dblp.org/db/conf/cvpr/"
+    },
+    {
+      "venue": "CVPR",
+      "year": 2024,
+      "status": "ok",
+      "papers": 2715,
+      "source": "https://dblp.org/db/conf/cvpr/"
+    },
+    {
+      "venue": "CVPR",
+      "year": 2025,
+      "status": "ok",
+      "papers": 2871,
+      "source": "https://dblp.org/db/conf/cvpr/"
+    },
+    {
+      "venue": "ICRA",
+      "year": 2021,
+      "status": "ok",
+      "papers": 1386,
+      "source": "https://dblp.org/db/conf/icra/"
+    },
+    {
+      "venue": "ICRA",
+      "year": 2022,
+      "status": "ok",
+      "papers": 929,
+      "source": "https://dblp.org/db/conf/icra/"
+    },
+    {
+      "venue": "ICRA",
+      "year": 2023,
+      "status": "ok",
+      "papers": 1341,
+      "source": "https://dblp.org/db/conf/icra/"
+    },
+    {
+      "venue": "ICRA",
+      "year": 2024,
+      "status": "ok",
+      "papers": 1760,
+      "source": "https://dblp.org/db/conf/icra/"
+    },
+    {
+      "venue": "ICRA",
+      "year": 2025,
+      "status": "ok",
+      "papers": 1604,
+      "source": "https://dblp.org/db/conf/icra/"
+    },
+    {
+      "venue": "CoRL",
+      "year": 2021,
+      "status": "ok",
+      "papers": 166,
+      "source": "https://dblp.org/db/conf/corl/"
+    },
+    {
+      "venue": "CoRL",
+      "year": 2022,
+      "status": "ok",
+      "papers": 197,
+      "source": "https://dblp.org/db/conf/corl/"
+    },
+    {
+      "venue": "CoRL",
+      "year": 2023,
+      "status": "ok",
+      "papers": 199,
+      "source": "https://dblp.org/db/conf/corl/"
+    },
+    {
+      "venue": "CoRL",
+      "year": 2024,
+      "status": "ok",
+      "papers": 264,
+      "source": "https://dblp.org/db/conf/corl/"
+    },
+    {
+      "venue": "CoRL",
+      "year": 2025,
+      "status": "missing"
+    }
+  ]
+}

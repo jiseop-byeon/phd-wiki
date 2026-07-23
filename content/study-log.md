@@ -1,5 +1,5 @@
 ---
-title: Study Log
+title: 9. Study Log
 tags: [log]
 ---
 
@@ -7,6 +7,15 @@ tags: [log]
 나중에 다시 보면 "그때 내가 뭘 몰랐는지"가 보여서 복습 지점을 찾기 좋다.
 
 ## 2026-07
+
+### 2026-07-23 (Research Radar 초기판)
+
+- 문해력 획득 이후 연구 문제를 고르는 단계의 의사결정 도구 [[08-research-radar/index|Research Radar]] 신설
+- 2021–2025 NeurIPS·ICML·ICLR·CVPR·ICRA·CoRL 정식 proceedings 55,642편을 DBLP 서지 메타데이터로 수집; arXiv·워크숍 제외
+- 규모×상승속도 사분면, 절대 규모/Fast Rising/Early Signals 순위, scope·학습 깊이·signal 필터, 연도별 추세, 대표 논문·근거 패널 구현
+- 제목 기반 다중 태그 taxonomy, 연도별 전체 논문 수 정규화, momentum·burst·venue breadth·small-sample shrinkage 적용
+- OpenAlex의 연도별 conference-source 분할이 가짜 추세를 만들 수 있어 집계 소스로 사용하지 않고, DBLP 연도별 proceedings를 로컬 캐시 후 분석하는 보수적 경로 채택
+- 현재 제한: 제목에 방법명이 없는 논문은 누락될 수 있고 기관 정규화·기술적 논쟁 자동 후보는 후속 검증 대상; 화면에 audit와 confidence 공개
 
 ### 2026-07-23 (건설로봇 코퍼스·계보 재구성)
 

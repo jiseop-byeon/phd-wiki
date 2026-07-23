@@ -101,3 +101,46 @@ ul.section-ul .meta {
     break-inside: avoid;
   }
 }
+// Research Radar is an immersive, full-width decision-support page. Removing the
+// sidebars only for this slug prevents the dashboard from overlapping Explorer while
+// leaving every ordinary note layout unchanged.
+body[data-slug="08-research-radar/index"] {
+  #quartz-body {
+    display: block;
+    width: 100%;
+    max-width: 1540px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .left.sidebar,
+  .right.sidebar {
+    display: none;
+  }
+
+  .center {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+.research-radar-frame {
+  display: block;
+  width: 100%;
+  height: 1260px;
+  margin: 1.5rem 0;
+  border: 1px solid var(--lightgray);
+  border-radius: 14px;
+  background: var(--light);
+}
+
+@media (max-width: 800px) {
+  .research-radar-frame {
+    height: 1800px;
+  }
+
+  body[data-slug="08-research-radar/index"] #quartz-body {
+    padding: 0 0.5rem;
+  }
+}

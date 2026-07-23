@@ -37,10 +37,12 @@ https://jiseop-byeon.github.io/phd-wiki/.
 
 1. Edit notes locally in Obsidian (open `content/` as vault) or via Claude Code.
 2. Commit and push to `v5` — GitHub Actions builds and deploys the site automatically.
-3. Local preview: `npm run preview`; one-off build: `npm run site` (requires `npx quartz plugin install` once).
+3. Use Node 24 (`nvm use`; see `.nvmrc`). Local preview: `npm run preview`; one-off build:
+   `npm run site` (requires `npx quartz plugin install` once).
    Local builds need a larger Node heap as the site grows — these scripts set
-   `NODE_OPTIONS=--max-old-space-size=4096`; if calling `npx quartz build` directly, export it yourself.
-   (Do not use `npm run build` — the upstream `prebuild` plugin-install hook fails under Node 26.)
+   `NODE_OPTIONS=--max-old-space-size=8192` and single-worker mode; if calling `npx quartz build` directly, use both settings yourself.
+   (Do not use Node 26 or `npm run build` — the current Quartz/plugin combination is
+   verified on Node 24 and can hang or exhaust memory on Node 26.)
 
 The local `reference/` folder holds copyrighted course materials and is gitignored —
 only original distilled notes are published.
