@@ -138,10 +138,10 @@ def main() -> None:
         confidence = "High" if support >= 30 and len(recent_venues) >= 3 else "Medium" if support >= 10 else "Early"
         if score >= 18 and recent >= 12 and momentum > 0:
             status = "Fast Rising"
-        elif score >= 5 and support >= 6 and momentum > 0:
-            status = "Emerging"
         elif recent >= 60:
             status = "Established"
+        elif score >= 5 and support >= 6 and momentum > 0:
+            status = "Emerging"
         elif momentum < -0.5 and shares[-1] < max(shares) * 0.7 and support >= 15:
             status = "Cooling"
         else:
