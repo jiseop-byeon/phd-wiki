@@ -222,6 +222,7 @@ plugins:
       includeAll: false
       includedProperties:
         - study-depth
+        - wiki-support
         - depth-goal
         - mastery-when
         - description

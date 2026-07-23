@@ -23,7 +23,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: Replaces recurrence and convolution entirely with attention, giving a fully parallelizable sequence model — the Transformer — that became the backbone of essentially all modern deep learning.
+**One-line summary**: Replaces recurrence and convolution entirely with attention, giving a fully parallelizable sequence model — the Transformer — that became the dominant backbone across modern deep learning (with notable exceptions — diffusion U-Nets, SSM/Mamba lines, GNNs).
 
 ### Context
 
@@ -73,7 +73,7 @@ Arguably the most influential DL paper of the decade. Direct descendants: BERT (
 
 ## 한국어
 
-**한 줄 요약**: 순환(RNN)과 합성곱을 완전히 걷어내고 어텐션만으로 시퀀스를 처리하는 Transformer를 제안 — 이후 현대 딥러닝 전체의 기본 골격이 된 논문.
+**한 줄 요약**: 순환(RNN)과 합성곱을 완전히 걷어내고 어텐션만으로 시퀀스를 처리하는 Transformer를 제안 — 이후 현대 딥러닝의 지배적 골격이 된 논문(예외도 있다 — 디퓨전 U-Net, SSM/Mamba 계열, GNN).
 
 ### 배경
 

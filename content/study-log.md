@@ -8,6 +8,13 @@ tags: [log]
 
 ## 2026-07
 
+### 2026-07-24 (최종 편집 3종 — 깊이 정직화·핵심 보강·정밀 교정)
+
+- **깊이 표시 2층 분리**: `study-depth`(권장 목표) vs `wiki-support`(페이지 자체 제공 깊이) — [[00-study-depth-guide|가이드]]에 규약 문서화, MR 8~12장·제어이론 등 격차 페이지에 `wiki-support: Literacy` 표시
+- **핵심 Working 페이지 4개 심층 보강**: [[04-robotics/mpc|MPC]](QP 볼록성 조건, stacked/condensed, infeasibility·softening·warm start, 모델 불일치, 선형/NMPC/접촉), [[04-robotics/lqr-lqg|LQR/LQG]](리카티 구조 읽기, 안정화 가능성·검출 가능성, Q/R 예제, LQG 무여유), [[01-canonical-papers/notes/8-construction/heap|HEAP]](구동 개조·센싱·소프트웨어 스택·증거 성격·공백 4종), [[01-canonical-papers/notes/8-construction/ext|ExT]](시연 생성 3소스·사전학습·SFT/RLFT·전이 증거)
+- **절대 표현 정밀 교정 6건**: Transformer "essentially all"→지배적+예외 명시, CLIP 개념 학습 단정→해석+경쟁 설명, FM 직선 경로→가능 조건(보장 아님), "objective of choice"→지배적 목적함수 중 하나, 고차원 직교성→검색 가능성의 한 이유(관련쌍 점수는 학습의 성질), 칼만 vs 저역통과→모델 조건부
+- MR 책 가이드의 "챕터 노트 추가 예정" 잔재 제거
+
 ### 2026-07-24 (건설 트랙 완성 — 코퍼스 기반 확충 마무리)
 
 - 5클러스터 조사(미시간·UIUC 디아스포라·GT/TAMU/CMU·유럽·로보틱스史+산업)의 잔여 작업 완료:

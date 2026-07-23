@@ -28,6 +28,19 @@ to Mastery. The recommendation is a starting profile, not a permanent label.
 > the common minimum. When a research question is selected, promote its contribution page
 > and closest dependency to Mastery; do not promote an entire field.
 
+## Two layers: recommended depth vs wiki support
+
+`study-depth` on a page is the **recommended target** for this profile — how well *you*
+should eventually command the topic. It is **not** a promise that the page alone gets you
+there. Where the gap matters, pages carry a second field:
+
+- **`wiki-support:`** — the depth this page *by itself* provides. Absent means the page
+  supports its recommended depth. `wiki-support: Literacy` on a Working-recommended page
+  means: this page gives you accurate reading fluency, and reaching Working requires the
+  linked original sources, textbooks, or code — the page tells you which.
+
+This split keeps recommendations honest without bloating every page to textbook length.
+
 ## Recommended profile
 
 | Area | Default | Raise to Mastery when… |
@@ -82,6 +95,19 @@ and sim-to-real** at Working; and the remaining model families at Literacy.
 > 미래의 논문 주제를 커리큘럼이 미리 확정할 수는 없다. 이 가이드는 공통 최소값을
 > 배정한다. 연구 질문이 정해지면 **기여 페이지와 가장 가까운 의존 페이지**만
 > Mastery로 올리고, 분야 전체를 Mastery로 올리지 않는다.
+
+### 두 층: 권장 깊이 vs 위키 지원 깊이
+
+페이지의 `study-depth`는 이 프로필의 **권장 목표** — *당신*이 결국 그 주제를 어느 수준까지
+다뤄야 하는가 — 다. 페이지 하나가 거기까지 데려다준다는 약속이 **아니다**. 격차가 중요한
+곳에는 두 번째 필드가 붙는다:
+
+- **`wiki-support:`** — 이 페이지가 *자체적으로* 제공하는 깊이. 없으면 페이지가 권장
+  깊이를 지원한다는 뜻. Working 권장 페이지의 `wiki-support: Literacy`는: 이 페이지는
+  정확한 읽기 유창성을 주고, Working 도달에는 링크된 원 자료·교재·코드가 필요하며 —
+  페이지가 어떤 자료인지 알려준다는 뜻이다.
+
+이 분리가 모든 페이지를 교재 길이로 불리지 않으면서 권장을 정직하게 유지한다.
 
 ### 권장 프로필
 

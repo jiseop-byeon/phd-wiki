@@ -106,8 +106,10 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### 6. Geometry of high dimensions (paper-reading intuition)
 
-- Random high-dim vectors are nearly orthogonal ($E[\cos\theta] \to 0$) — why dot-product
-  retrieval over millions of embeddings works.
+- Random high-dim vectors are nearly orthogonal ($E[\cos\theta] \to 0$) — one reason
+  dot-product retrieval over millions of embeddings is *possible*: unrelated items score
+  near zero. (That relevant pairs score high is a property of the *learned* embedding, not
+  of geometry.)
 - Distances concentrate: nearest and farthest neighbors differ by little — why cosine
   similarity and *learned* metrics replace raw Euclidean distance.
 - Manifold hypothesis: real data occupies a low-dimensional surface inside pixel space —
@@ -216,7 +218,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 ### 6. 고차원의 기하 (논문 읽기용 직관)
 
 - 무작위 고차원 벡터들은 거의 직교한다($E[\cos\theta] \to 0$) — 수백만 임베딩에 대한
-  내적 검색이 통하는 이유.
+  내적 검색이 *가능한* 이유 중 하나다: 무관한 항목의 점수가 0 근처로 깔린다. (관련 쌍의
+  점수가 높은 것은 기하가 아니라 *학습된* 임베딩의 성질이다.)
 - 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다 — 코사인 유사도와
   *학습된* 거리가 유클리드 거리를 대체하는 이유.
 - 다양체 가설: 실제 데이터는 픽셀 공간 속 저차원 곡면 위에 산다 —

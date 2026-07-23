@@ -11,14 +11,14 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 ## English
 
 > [!info] Depth target · 깊이 목표
-> Read an MPC formulation (cost, horizon, constraints), identify what is solved online at each step, and judge feasibility/stability claims. Solver internals are optional.
-> MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단할 수 있으면 된다. 솔버 내부는 선택이다.
+> Read an MPC formulation (cost, horizon, constraints), identify what is solved online at each step, judge feasibility/stability claims, and recognize the standard failure modes. Solver internals are optional.
+> MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단하고, 표준 실패 모드를 알아볼 수 있으면 된다. 솔버 내부는 선택이다.
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
 at the next step (receding horizon). With linear dynamics and quadratic cost it is a
 convex QP — written out fully in [[02-foundations/optimization|4. Optimization §5]] —
-solvable in milliseconds; constraints on inputs and states are handled *natively*, which is
+and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
 **The Mayne et al. 2000 survey** is the field's canonical reference: it settled *when MPC
@@ -26,11 +26,70 @@ is stable* — the roles of the terminal cost, terminal constraint set, and hori
 turning a practical heuristic into a theory. Read it after the optimization page's example;
 skim §2–3 for the formulation and stability conditions rather than every proof.
 
+### 1. When is the QP actually convex?
+
+The "it's just a QP" claim carries conditions worth checking in any paper:
+
+- **Cost**: $Q \succeq 0$, $R \succ 0$, terminal $P \succeq 0$ — the quadratic must be
+  (semi)definite ([[02-foundations/linear-algebra|SPD, page 1 §3]]). An indefinite $Q$
+  (e.g., from a learned cost) breaks convexity silently.
+- **Dynamics**: linear (or linearized — then the QP is only an approximation whose quality
+  decays away from the linearization point).
+- **Constraints**: input/state sets must be convex (boxes, polytopes). **Obstacle-avoidance
+  constraints are non-convex** — which is why collision-aware MPC papers either convexify
+  locally (safe corridors) or leave the QP world entirely.
+
+### 2. What the solver actually sees
+
+Two standard ways to write the same problem — papers assume you know which one they use:
+
+- **Stacked (sparse) form**: keep all states $x_{0:N}$ and inputs $u_{0:N-1}$ as
+  variables and add dynamics as equality constraints — a large, *sparse, banded* problem
+  that interior-point solvers exploit; cost matrices sit in blocks along the diagonal.
+- **Condensed form**: eliminate the states using $x_k = A^k x_0 + \sum_j A^{k-1-j}Bu_j$,
+  leaving only $u_{0:N-1}$ — a smaller but *dense* QP whose condition number worsens with
+  horizon length (powers of $A$).
+
+Rule of thumb when reading: long horizons and state constraints → stacked; short horizons,
+input constraints only → condensed.
+
+### 3. The failure modes papers gloss over
+
+- **Infeasibility**: a disturbance pushes the state where *no* input sequence satisfies
+  the constraints — the solver returns nothing, and the controller must do *something*.
+  Standard fix: **constraint softening** — replace hard state constraints with penalized
+  slack variables $\sigma \ge 0$ (cost $+\rho\|\sigma\|$), so the QP always has an answer
+  that violates gracefully rather than crashing. Input (actuator) constraints stay hard.
+- **Model mismatch**: MPC optimizes the *model's* future; bias between model and plant
+  turns "optimal" plans into repeated small errors that feedback (the re-solving itself)
+  must absorb. Watch for papers quantifying this vs assuming it away.
+- **Latency and rate**: the plan is computed from a state estimate that is stale by the
+  solve time ([[04-robotics/robot-systems-deployment|systems page §3]]). **Warm starting**
+  — initializing the solver from the previous solution shifted one step — is what makes
+  high-rate MPC possible; cold-started NMPC at 100 Hz is a red flag.
+- **Estimator coupling**: MPC consumes $\hat{x}$, not $x$
+  ([[04-robotics/state-estimation-slam|estimation page]]) — estimator bias becomes
+  systematic constraint violation.
+
+### 4. Linear vs nonlinear vs contact
+
+- **Linear MPC**: convex QP; solve times from microseconds to milliseconds *for
+  small-to-moderate problems on modern CPUs* — always condition speed claims on problem
+  size, solver, and hardware.
+- **Nonlinear MPC (NMPC)**: sequential quadratic programming or DDP-style solvers;
+  local optima and initialization sensitivity return
+  ([[04-robotics/planning-decision-making|planning §6]]).
+- **Contact-implicit MPC**: contact mode switches make the problem non-smooth
+  ([[04-robotics/contact-force-tactile|contact §1]]); the
+  [[04-robotics/convex-mpc-legged|legged convex-MPC]] trick is to *pre-specify* the
+  contact schedule so the remaining problem is convex — read that page as the
+  representative escape route.
+
 **Where it meets learning** (this wiki's angle):
 [[01-canonical-papers/notes/5-world-models/planet|PlaNet]] is MPC with a *learned* model and CEM solver;
 [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]'s receding-horizon action
 chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
-construction-robotics direction ([[05-construction-robotics/index|section 5]]).
+construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-machinery|stream 3]]).
 
 ### Continue beyond this guide
 
@@ -41,7 +100,7 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
 문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학과
 이차 비용이면 볼록 QP가 되고 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써
-놓았다 — 수 밀리초에 풀린다; 입력·상태 제약을 *태생적으로* 다루는 것이
+놓았다 — 입력·상태 제약을 *태생적으로* 다루는 것이
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
 
 **Mayne et al. 2000 서베이**는 이 분야의 정전이다: *MPC가 언제 안정한가* — 종단 비용,
@@ -49,20 +108,88 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는 §2~3의 정식화와 안정성 조건을
 훑는 것을 권한다.
 
+### 1. QP는 언제 실제로 볼록한가?
+
+"그냥 QP다"라는 주장에는 논문에서 확인할 조건들이 붙어 있다:
+
+- **비용**: $Q \succeq 0$, $R \succ 0$, 종단 $P \succeq 0$ — 이차형식이 (준)정부호여야
+  한다 ([[02-foundations/linear-algebra|SPD, 1페이지 §3]]). (학습된 비용 등에서 나온)
+  부정부호 $Q$는 볼록성을 조용히 깨뜨린다.
+- **동역학**: 선형(또는 선형화 — 이 경우 QP는 선형화 지점에서 멀어질수록 품질이 떨어지는
+  근사일 뿐이다).
+- **제약**: 입력/상태 집합이 볼록해야 한다(박스, 폴리토프). **장애물 회피 제약은
+  비볼록이다** — 충돌 인지 MPC 논문들이 국소 볼록화(안전 통로)를 하거나 아예 QP 세계를
+  떠나는 이유다.
+
+### 2. 솔버가 실제로 보는 것
+
+같은 문제를 쓰는 표준적인 두 방식 — 논문은 독자가 어느 쪽인지 안다고 가정한다:
+
+- **Stacked (희소) 형태**: 모든 상태 $x_{0:N}$과 입력 $u_{0:N-1}$을 변수로 두고 동역학을
+  등식 제약으로 추가 — 크지만 *희소·띠 구조*라 내부점 솔버가 활용한다; 비용 행렬이
+  대각 블록으로 놓인다.
+- **Condensed (축약) 형태**: $x_k = A^k x_0 + \sum_j A^{k-1-j}Bu_j$로 상태를 소거해
+  $u_{0:N-1}$만 남긴다 — 작지만 *조밀*하고, 지평이 길수록($A$의 거듭제곱) 조건수가
+  나빠진다.
+
+읽을 때의 어림 규칙: 긴 지평 + 상태 제약 → stacked; 짧은 지평 + 입력 제약만 → condensed.
+
+### 3. 논문이 얼버무리는 실패 모드
+
+- **Infeasibility**: 외란이 상태를 *어떤* 입력 시퀀스로도 제약을 만족할 수 없는 곳으로
+  밀면 — 솔버는 아무것도 돌려주지 않고, 제어기는 *뭐라도* 해야 한다. 표준 처방:
+  **제약 연화(constraint softening)** — 딱딱한 상태 제약을 벌점 붙은 슬랙 변수
+  $\sigma \ge 0$(비용 $+\rho\|\sigma\|$)로 바꿔, QP가 우아하게 위반하는 답이라도 항상
+  내놓게 한다. 입력(액추에이터) 제약은 딱딱하게 유지한다.
+- **모델 불일치**: MPC는 *모델의* 미래를 최적화한다; 모델과 플랜트의 편차는 "최적" 계획을
+  피드백(재풀이 자체)이 흡수해야 하는 반복적 소오차로 바꾼다. 이를 정량화하는 논문과
+  가정으로 치우는 논문을 구분하라.
+- **지연과 주기**: 계획은 풀이 시간만큼 낡은 상태 추정에서 계산된다
+  ([[04-robotics/robot-systems-deployment|시스템 페이지 §3]]). **Warm start** — 이전 해를
+  한 스텝 밀어 솔버를 초기화 — 가 고주기 MPC를 가능하게 하는 것이다; 100 Hz의 cold-start
+  NMPC는 적신호다.
+- **추정기 결합**: MPC는 $x$가 아니라 $\hat{x}$를 소비한다
+  ([[04-robotics/state-estimation-slam|추정 페이지]]) — 추정기 편향은 계통적 제약 위반이
+  된다.
+
+### 4. 선형 vs 비선형 vs 접촉
+
+- **선형 MPC**: 볼록 QP; *현대 CPU에서 중소 규모 문제라면* 마이크로초~밀리초의 풀이
+  시간 — 속도 주장은 항상 문제 크기·솔버·하드웨어를 조건으로 달아 읽어라.
+- **비선형 MPC (NMPC)**: SQP 또는 DDP류 솔버; 국소 최적과 초기화 민감성이 돌아온다
+  ([[04-robotics/planning-decision-making|계획 §6]]).
+- **접촉 내재 MPC**: 접촉 모드 전환이 문제를 비매끄럽게 만든다
+  ([[04-robotics/contact-force-tactile|접촉 §1]]);
+  [[04-robotics/convex-mpc-legged|보행 convex MPC]]의 트릭은 접촉 스케줄을 *미리 지정*해
+  남는 문제를 볼록하게 만드는 것 — 대표적 탈출로로 그 페이지를 읽어라.
+
 **학습과 만나는 지점** (이 위키의 관심사):
 [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]은 *학습된* 모델과 CEM 솔버의 MPC이고,
 [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]의 receding-horizon 행동
 청크는 MPC의 구조를 빌린 것이며, 굴착기의 학습 동역학 MPC는 건설로봇의 활발한 연구
-방향이다 ([[05-construction-robotics/index|5번 섹션]]).
+방향이다 ([[05-construction-robotics/earthmoving-heavy-machinery|스트림 3]]).
 
 ### 연결
 
 - 기초: [[02-foundations/optimization|최적화]] (QP, KKT), [[02-foundations/linear-algebra|선형대수]]
 - 이전: [[04-robotics/lqr-lqg|LQR/LQG]] · 다음: [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
 
+### 스스로 점검 · Self-check
+
+1. 학습된 비용 행렬 $Q$를 MPC에 꽂았더니 솔버가 이상하게 군다. 가장 먼저 확인할 것은?
+2. 지평 $N=50$, 상태 제약이 많은 문제 — stacked와 condensed 중 무엇을 기대해야 하나? 왜?
+3. 외란으로 상태가 제약 밖으로 밀렸다. 하드 제약 MPC와 소프트 제약 MPC는 각각 어떻게 되나?
+4. "우리 NMPC는 200 Hz로 돈다"라는 주장에서 확인할 세 가지는?
+
+> [!tip]- 정답 · Answers
+> 1. $Q \succeq 0$인지 — 부정부호면 QP가 비볼록이 되어 솔버 거동이 정의되지 않는다.
+> 2. Stacked — 긴 지평에서 condensed는 $A$의 거듭제곱으로 조밀·악조건이 되고, 상태 제약은 stacked에서 자연스럽다.
+> 3. 하드: infeasible — 솔버가 해를 반환하지 않아 별도의 폴백이 필요. 소프트: 슬랙이 켜져 벌점을 내며 위반하는 해를 반환 — 제어는 계속된다.
+> 4. ① warm start 여부 ② 문제 크기(지평·상태 차원)와 솔버 ③ 그 200 Hz가 풀이 시간인지 끝-끝 지연인지 ([[04-robotics/robot-systems-deployment|주파수 ≠ 지연]]).
+
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] receding horizon 절차(풀고→첫 입력→재풀이)를 말할 수 있다
-- [ ] LQR 대비 MPC의 존재 이유(제약의 태생적 처리)를 말할 수 있다
-- [ ] Mayne 2000이 정리한 안정성 재료(종단 비용·종단 제약·지평)를 개요 수준에서 말할 수 있다
-- [ ] PlaNet·Diffusion Policy가 MPC의 구조를 빌린 지점을 말할 수 있다
+- [ ] QP 볼록성의 조건($Q,R,P$ 정부호성, 볼록 제약)과 장애물 제약이 깨뜨리는 지점을 말할 수 있다
+- [ ] stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
+- [ ] Mayne 2000의 안정성 재료(종단 비용·종단 제약·지평)와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다

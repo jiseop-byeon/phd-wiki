@@ -98,8 +98,9 @@ functions.
    in the data, and what should have been done?
 3. Derive the frequency response of the 2-point moving average and find the frequency it
    nulls completely.
-4. Why does a Kalman filter typically beat a hand-tuned low-pass for velocity estimation
-   in a control loop? (Two reasons: one about lag, one about models.)
+4. When its motion/noise models are roughly right, why does a Kalman filter tend to beat
+   a hand-tuned low-pass for velocity estimation in a control loop? (Two reasons: one
+   about lag, one about models.) And when would the low-pass win?
 
 ### Robotics bridge
 
@@ -186,7 +187,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 2. IMU가 200 Hz로 샘플링하는데 모터가 170 Hz로 진동한다. 진동은 데이터의 어디에
    나타나고, 무엇을 했어야 하는가?
 3. 2점 이동 평균의 주파수 응답을 유도하고, 완전히 소거되는 주파수를 찾아라.
-4. 제어 루프의 속도 추정에서 칼만 필터가 손튜닝 저역통과를 보통 이기는 이유는?
+4. 운동/잡음 모델이 대략 맞을 때, 제어 루프의 속도 추정에서 칼만 필터가 손튜닝
+   저역통과를 이기는 경향이 있는 이유는? 반대로 저역통과가 이기는 경우는?
    (두 가지: 하나는 지연, 하나는 모델에 관한 것.)
 
 > [!tip]- 스스로 점검 정답 · Answers

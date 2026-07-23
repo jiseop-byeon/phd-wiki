@@ -43,7 +43,7 @@ entry ticket to manipulation research.
 표기다. 저자들이 공식 사이트에서 **책 전체 PDF를 무료로** 제공하고, 코스 위키에 강의
 영상과 소프트웨어(Python/MATLAB/Mathematica), Coursera에 6과목 특화 과정이 있다.
 
-**이 위키의 학습 경로** (공부하며 `04-robotics/` 아래에 챕터 노트 추가 예정):
+**이 위키의 학습 경로** (챕터 요약은 [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]]에 있다):
 
 1. Configuration space (2장) — 자유도, 위상, 제약
 2. 강체 운동 (3장) — 회전 행렬, twist, **SE(3)**, 지수 좌표

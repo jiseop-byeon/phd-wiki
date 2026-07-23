@@ -17,11 +17,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Lipman et al., ICLR 2023** — [arXiv](https://arxiv.org/abs/2210.02747) · [PDF](https://arxiv.org/pdf/2210.02747)
 
 > [!note] 수학 준비물 · ODE 적분 한 입 크기
-> 샘플링 = 오일러 적분: $x \leftarrow x + v_\theta(x, t)\,\Delta t$를 노이즈($t{=}0$)에서 데이터($t{=}1$)까지 반복하는 것이 전부다([[02-foundations/engineering-math|0.5 §8]]의 미분방정식 감각). 경로가 직선에 가까울수록 큰 $\Delta t$로 건너뛰어도 안전하다 — "스텝 수가 적다"의 수학적 이유.
+> 샘플링 = 오일러 적분: $x \leftarrow x + v_\theta(x, t)\,\Delta t$를 노이즈($t{=}0$)에서 데이터($t{=}1$)까지 반복하는 것이 전부다([[02-foundations/engineering-math|0.5 §8]]의 미분방정식 감각). 경로가 직선에 가까울수록 큰 $\Delta t$로 건너뛰어도 안전*할 수 있다* — "스텝 수가 적다"를 *가능하게 하는* 기하학적 조건이지 자동 보장은 아니다.
 
 ## English
 
-**One-line summary**: Skip the SDE — directly regress the velocity field of a probability path from noise to data (per-sample conditional targets make it trivial), yielding straighter paths, simpler training, and the action-generation engine of π0.
+**One-line summary**: Skip the SDE — directly regress the velocity field of a probability path from noise to data (per-sample conditional targets make it trivial), yielding (with OT-style path choices) straighter paths, simpler training, and the action-generation engine of π0.
 
 ### Context
 
@@ -43,7 +43,7 @@ of the flow itself.
   $E_{t, x_1, x_t}\|v_\theta(x_t, t) - u_t(x_t|x_1)\|^2$ over designed conditional
   probability paths — no ODE simulation, no ELBO.
 - **Optimal-transport (straight-line) paths**: $x_t = (1-t)x_0 + t x_1$ with constant
-  velocity $x_1 - x_0$ — straighter than diffusion's curved paths ⇒ far fewer inference
+  velocity $x_1 - x_0$ — straighter than diffusion's curved paths, which *permits* far fewer inference
   steps; diffusion paths are recovered as a special case.
 - Sampling: integrate the learned ODE from noise to data.
 
@@ -60,7 +60,7 @@ of the flow itself.
 
 ### Impact & follow-ups
 
-Now the *training objective of choice* for frontier generators (Stable Diffusion 3, Flux,
+Now a *dominant training objective* among frontier generators (Stable Diffusion 3, Flux,
 video models) — and for robotics: [[pi0|π0]]'s action expert and [[gr00t-n1|GR00T]]'s
 System 1 generate 50–120 Hz action chunks with exactly this recipe, because few-step
 straight-path inference is what real-time control demands. The MIT tutorial in the local
@@ -111,7 +111,7 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 
 ### 영향과 후속 연구
 
-이제 프런티어 생성기(Stable Diffusion 3, Flux, 비디오 모델)의 *선호 학습 목적함수*다 —
+이제 프런티어 생성기(Stable Diffusion 3, Flux, 비디오 모델) 사이의 *지배적 학습 목적함수 중 하나*다 —
 그리고 로보틱스에서: [[pi0|π0]]의 행동 전문가와 [[gr00t-n1|GR00T]]의 System 1이 정확히 이
 레시피로 50~120 Hz 행동 청크를 생성한다. 실시간 제어가 요구하는 것이 바로 소수 스텝의
 직선 경로 추론이기 때문이다. 로컬 reference 폴더의 MIT 튜토리얼(Holderrieth & Erives)이
