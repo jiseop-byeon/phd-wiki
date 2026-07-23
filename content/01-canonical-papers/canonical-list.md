@@ -43,6 +43,8 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/1-foundations/mae|MAE]] — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
 - [x] ◐ [[notes/1-foundations/lora|LoRA]] — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
 - [x] ○ [[notes/1-foundations/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
+- [x] ◐ [[notes/1-foundations/ppo|PPO]] — *Proximal Policy Optimization Algorithms* (Schulman et al., 2017) — ExT 등 simulator-expert/RLFT 레시피
+- [x] ○ [[notes/1-foundations/sac|Soft Actor-Critic]] (Haarnoja et al., ICML 2018) — 연속 제어의 off-policy 기준선
 
 ## 2. Computer Vision
 
@@ -58,6 +60,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/2-computer-vision/3d-gaussian-splatting|3D Gaussian Splatting]] (Kerbl et al., SIGGRAPH 2023)
 - [x] ◐ [[notes/2-computer-vision/depth-anything|Depth Anything]] (Yang et al., CVPR 2024)
 - [x] ★ [[notes/2-computer-vision/vggt|VGGT]] — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
+- [x] ○ [[notes/2-computer-vision/pointnet|PointNet / PointNet++]] (Qi et al., CVPR/NeurIPS 2017) — 건설 LiDAR·포인트 클라우드의 기초 문법
 
 ## 3. Vision-Language Models (VLM)
 
@@ -70,6 +73,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 4. Vision-Language-Action (VLA) / Robot Learning
 
+- [x] ○ [[notes/4-vla/saycan|SayCan]] — *Do As I Can, Not As I Say* (Ahn et al., CoRL 2022) — 언어 계획과 실행 가능한 skill의 접지
 - [x] ◐ [[notes/4-vla/rt-1|RT-1]] — *Robotics Transformer* (Brohan et al., RSS 2023)
 - [x] ★ [[notes/4-vla/rt-2|RT-2]] — *Vision-Language-Action Models* (Brohan et al., CoRL 2023)
 - [x] ★ [[notes/4-vla/diffusion-policy|Diffusion Policy]] (Chi et al., RSS 2023)
@@ -125,11 +129,36 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 8. Construction Robotics
 
-계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]
+계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 18편은 2026-07 랩·계보 코퍼스 감사에서 선별했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
 
-- [x] ◐ [[notes/8-construction/bock-2015|Bock — *The future of construction automation*]] (Automation in Construction, 2015) — 분야 조감의 표준 서베이
-- [x] ◐ [[notes/8-construction/davila-delgado-2019|Davila Delgado et al. — 도입 장벽 분석]] (J. Building Engineering, 2019)
-- [x] ★ [[notes/8-construction/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 중장비 자율성의 기준 시스템 (돌담 프로젝트 포함)
-- [x] ★ [[notes/8-construction/ext|ExT — 굴착의 사전학습→파인튜닝]] (Zhai, Terenzi et al., ETH RSL 2025) — physical AI가 건설 기계에 진입한 최전선
-- [ ] ○ ICRA Construction Robotics Workshop ([2024](https://construction-robots.github.io/index2024.html)) — ExACT(굴착기 ACT) 등; 이 교차점의 커뮤니티
-- [ ] (심화 서베이·개별 논문은 읽으며 추가)
+### Field overview
+
+- [x] ◐ [[notes/8-construction/bock-2015|Bock — *The future of construction automation*]] (Automation in Construction, 2015) — STCR에서 통합 자동화까지의 조감
+- [x] ◐ [[notes/8-construction/davila-delgado-2019|Davila Delgado et al. — adoption barriers]] (J. Building Engineering, 2019) — 기술 외 도입 조건
+
+### Earthmoving & heavy machines
+
+- [x] ◐ [[notes/8-construction/stentz-excavator|Stentz et al. — autonomous truck loading]] (IROS 1998 / Autonomous Robots 1999) — 30년 중장비 자율화 계보의 출발점
+- [x] ★ [[notes/8-construction/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 계측·힘 제어 플랫폼
+- [x] ★ [[notes/8-construction/aes|AES — autonomous material loading]] (Zhang et al., Science Robotics 2021) — 24시간/개입의 산업 규모 시스템
+- [ ] ◐ [Egli et al. — *Soil-Adaptive Excavation Using Reinforcement Learning*](https://www.research-collection.ethz.ch/entities/publication/d126621d-6d1b-42c5-870c-bd69dd6195a4) (RA-L 2022) — 실기계 토질 적응 RL
+- [x] ◐ [[notes/8-construction/wheel-loader-rl|Eriksson et al. — wheel-loader RL]] (ICRA 2024) — 북유럽 실기계 적재 학습
+- [ ] ○ [ExACT — ACT for an excavator](https://arxiv.org/abs/2405.05861) (Chen et al., 2024) — end-to-end 모방학습, 시뮬레이터 검증
+- [x] ★ [[notes/8-construction/ext|ExT — excavation pretrain→fine-tune]] (Zhai, Terenzi et al., ETH RSL 2025) — 멀티태스크 physical-AI 신호
+
+### Assembly & fabrication
+
+- [x] ★ [[notes/8-construction/vision-guided-assembly|Feng et al. — vision-guided assembly and as-built scanning]] (Automation in Construction 2015) — 미시간 조작 계보의 앵커
+- [x] ★ [[notes/8-construction/dry-stone-wall|Johns et al. — excavation and dry-stone construction]] (Science Robotics 2023) — 인식·계획·중장비 조작의 실규모 폐루프
+- [ ] ○ [Zhang et al. — *Aerial Additive Manufacturing with Multiple Autonomous Robots*](https://doi.org/10.1038/s41586-022-04988-4) (Nature 2022) — 공중 적층 제조
+- [ ] ◐ [Yu et al. — cloud-based hierarchical imitation learning](https://arxiv.org/abs/2309.11619) (J. Computing in Civil Engineering 2024) — 작업자 기술의 시연 학습
+
+### Site perception, HRC & workflow layers
+
+- [ ] ○ [Tang et al. — automatic reconstruction of as-built BIM from laser scans](https://doi.org/10.1016/j.autcon.2009.06.007) (Automation in Construction 2010) — scan-to-BIM 기준 서베이
+- [ ] ○ [RICAL autonomous site-scanning line](https://rical.ce.gatech.edu/index.html) — SLAM·UGV/UAV·adaptive view planning의 현장 시스템 계보
+- [ ] ◐ [Liu & Jebelli — intention-aware robot motion planning](https://doi.org/10.1111/mice.13129) (CACAIE 2024) — 작업자 의도 추론을 모션 계획에 연결
+- [ ] ○ [Park et al. — natural-language interaction with field-construction robot assistants](https://doi.org/10.1016/j.autcon.2024.105345) (Automation in Construction 2024) — 언어 기반 HRC 인터페이스
+- [x] ◐ [[notes/8-construction/bim-digital-twin|Wang et al. — BIM-driven closed-loop digital twins]] (Computers in Industry 2024) — 공정 수준 인터페이스
+
+개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).

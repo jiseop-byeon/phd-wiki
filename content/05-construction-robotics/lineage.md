@@ -1,176 +1,252 @@
 ---
-title: 1. Lineage & Research Streams
+title: 1. Research Lineage
 tags: [moc, construction]
 ---
 
 ## English
 
-How construction robotics got here — four eras, each answering the previous era's failure,
-converging on today's physical-AI moment. Papers get notes as they are read; this page is
-the map.
+How construction robotics got to its physical-AI moment — told as **three distinct
+genealogies** that are easy to conflate. Solid connections below are ones with direct
+documented evidence (dissertations, system papers, spinout records); loose influence is
+stated as such.
 
-### The four eras
+> [!info] Why three genealogies
+> "X descends from Y" can mean three different things: an *advisor trained a student*
+> (academic), a *method line evolved* (technical), or a *machine/platform grew into the
+> next one* (system). Papers cite across all three; keeping them separate is what lets you
+> place a new paper precisely.
+
+### 1. The technical genealogy — four eras
+
+**Era 1 — Japanese STCR (1980s–90s).** Shimizu, Obayashi, Kajima and peers built dozens
+of Single-Task Construction Robots (spray, tile, rebar). Technically impressive,
+economically premature — the era ended with the 1990s Japanese recession, and its lesson
+(**the environment, not the mechanism, is the problem**) defined everything after. Thomas
+Bock's STCR taxonomy and reference volumes are the standard record.
+
+**Era 1R — the parallel robotics-side lineage (1990s).** Independently of the
+construction industry, **CMU's Robotics Institute formulated heavy-machine autonomy as a
+robotics problem**: Sanjiv Singh's planning thesis (1995), Stentz–Bares–Singh–Rowe's
+autonomous excavator loading trucks *at expert-operator speed* (1998–99), and Howard
+Cannon's Caterpillar-embedded excavation work (1999). This line never stopped — it
+commercialized through CMU's NREC into Caterpillar's MineStar Command (today's
+operator-free mining fleets) and re-surfaced in quarry autonomy in 2024–25. **Heavy-machine
+autonomy is a ~30-year robotics lineage that the construction-research community
+re-entered after 2015.**
+
+**Era 2 — digital models & sensing (2000s–2010s).** While robots waited, the *information*
+side matured: BIM/VDC (Stanford CIFE), scan-to-BIM (Tang–Huber–Akinci 2010), and
+vision-based progress monitoring (Golparvar-Fard's D4AR line, spun out as Reconstruct).
+This era built the world models today's site robots consume. In parallel, Gramazio Kohler
+at ETH founded architectural robotic fabrication (In situ Fabricator, Mesh Mould), and
+Khoshnevis's Contour Crafting seeded construction 3D printing.
+
+**Era 3 — commercialization of narrow autonomy (2015–2020).** Komatsu Smart Construction
+(2015), Built Robotics retrofits, SAM100 bricklaying, Kajima's A4CSEL fleet automation,
+Shimizu's Shimz Smart Site robots. Narrow tasks, structured slices of the site, human
+supervisors close by.
+
+**Era 4 — learning enters the machine (2020–).** Three clusters carried robot learning
+onto real heavy machines: **ETH RSL** (force-based digging 2017 → HEAP platform 2021 →
+sim-to-real RL hydraulics 2020–22 → the Science Robotics dry-stone wall 2023 → ExT
+multitask pretraining 2025), **Baidu RAL** (the Science Robotics 2021 AES excavator
+running 24 h uncrewed at human-level throughput; ExACT bringing
+[[01-canonical-papers/notes/4-vla/act|ACT]]-style imitation to excavators in 2024,
+sim-validated), and the **Nordic wheel-loader groups** (Tampere, Luleå/Örebro,
+Umeå+Algoryx — real-machine RL loading at ICRA). In parallel the **UMich manipulation
+line** walked the same arc indoors: vision-guided assembly (2015) → adaptive autonomy →
+learning-from-demonstration → digital-twin-grounded, language-instructable collaboration.
+
+### 2. The academic genealogy — who trained whom
+
+Two intermarried US family trees produce a striking share of the field's faculty, with a
+European counterpart:
 
 ```mermaid
-graph TD
-    subgraph E1["1980s–90s: Single-Task Construction Robots (Japan)"]
-    STCR["STCRs: 벽 도장, 철골 용접,<br/>콘크리트 마감 로봇 (Shimizu, Obayashi)"]
-    end
-    subgraph E2["2000s–10s: Digital Fabrication"]
-    DFAB["Gramazio Kohler:<br/>로봇 조적 (ETH)"]
-    CC["Contour Crafting →<br/>건설 3D 프린팅 (Khoshnevis)"]
-    end
-    subgraph E3["2010s: Vision & Startups"]
-    MON["CV 기반 공정 모니터링<br/>(RAAMAC, Reconstruct)"]
-    SAM100["현장 조적/철골 로봇<br/>(SAM100, Hadrian X)"]
-    AUTO["자율 중장비 스타트업<br/>(Built Robotics)"]
-    end
-    subgraph E4["2020s: Learning & Physical AI"]
-    HEAP["HEAP 자율 굴착기 (ETH RSL)<br/>돌담 시공까지"]
-    SPOT["4족 보행 현장 순찰<br/>(Spot + Trimble/HoloBuilder)"]
-    PRINT3D["프린팅의 산업화<br/>(ICON, 주택 단지)"]
-    VLACON["학습 기반 조작의 현장 진입<br/>(VLA·모방학습의 건설 응용)"]
-    end
-    STCR -->|"유연성 부족의 교훈"| DFAB
-    STCR --> SAM100
-    DFAB --> PRINT3D
-    CC --> PRINT3D
-    MON --> SPOT
-    SAM100 -->|"구조화된 작업의 한계"| VLACON
-    AUTO --> HEAP
-    HEAP --> VLACON
-    SPOT --> VLACON
+flowchart TD
+    UM["UMich CEE"] --> KM["Kamat · Menassa (LIVE/SICIS)"]
+    UM --> SL["SangHyun Lee (DPM)"]
+    KM --> CF["Chen Feng — NYU AI4CE"]
+    KM --> HY["Hongrui Yu — Virginia Tech"]
+    KM --> CL["C.-J. Liang — Stony Brook"]
+    KM --> XW["Xi Wang — TAMU"]
+    KM --> SP["Somin Park — UT Arlington"]
+    SL --> HJ["Houtan Jebelli — UIUC RAISE"]
+    SL --> DK["Daeho Kim — U Toronto"]
+    SL --> FB["Francis Baek — Georgia Tech"]
+    HJ --> YL["Yizhi Liu — Syracuse"]
+    GF["Golparvar-Fard — UIUC RAAMAC"] --> KH["Kevin Han — NC State"]
+    GF --> JL["Jacob Lin — NTU"]
+    GF --> YH["Youngjib Ham — TAMU→SNU"]
+    BA["Akinci — CMU"] --> PT["Pingbo Tang — CMU"]
+    GK["Gramazio Kohler — ETH"] --> KD["Dörfler — TUM"]
+    GK --> SPa["Parascho — EPFL"]
+    GK --> NH["Hack — TU Braunschweig"]
+    GK --> RJ["Johns — Gravis CEO"]
+    RSL["Hutter — ETH RSL"] --> DJ["Jud — Gravis CTO"]
 ```
 
-### Why each transition happened
+Every edge above is verified against dissertations, lab alumni pages, or committee
+records (survey 2026-07). Notable pattern: **worker-sensing expertise radiates from
+SangHyun Lee's students** (Jebelli, Kim, Baek — all now fusing physiological signals into
+robot control), while **manipulation/digital-twin expertise radiates from Kamat–Menassa's**
+(Feng, Yu, Liang, Wang, Park). Gramazio Kohler's tree seeded European fabrication chairs
+the way Michigan seeded US robotics ones.
 
-1. **STCR era → digital fabrication**: 1980s Japan built dozens of single-task robots
-   (spraying, finishing, welding). They worked — but each robot did one task in one
-   structured setting, and construction sites are neither. Lesson: *the environment, not
-   the mechanism, is the problem*.
-2. **Digital fabrication era**: ETH's Gramazio Kohler flipped the framing — instead of
-   robotizing existing tasks, design *for* robots (robotic bricklaying, later the NCCR
-   Digital Fabrication program). In parallel, Contour Crafting (USC) seeded construction
-   3D printing.
-3. **Vision & startups era**: cheap cameras + deep learning ([[01-canonical-papers/notes/1-foundations/alexnet|the CNN revolution]])
-   made *monitoring* tractable before manipulation: progress tracking from site photos
-   (RAAMAC → Reconstruct). Meanwhile SAM100/Hadrian X commercialized structured tasks, and
-   Built Robotics retrofitted autonomy onto excavators.
-4. **Learning/physical-AI era**: ETH's HEAP walked excavators into research
-   (autonomous landscaping, a 6m dry-stone wall from irregular local stones — perception +
-   planning + force control in one system), quadrupeds patrol sites, ICON prints house
-   communities — and the open question of the decade: can
-   [[01-canonical-papers/notes/4-vla/pi0|VLA-class]] learned manipulation survive the
-   unstructured, safety-critical, low-data construction site? That question is this wiki's
-   research direction ([[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s data pyramid and
-   [[01-canonical-papers/notes/5-world-models/cosmos|world-model data engines]] are the candidate answers
-   to the data problem).
+### 3. The system genealogy — machines that grew into machines
 
-### Current research streams (from the labs' actual publication records)
+- **Menzi Muck M545 → HEAP (2021) → dry-stone wall (2023) → ExT (2025) → Gravis RACK
+  retrofit kits** — one physical platform carrying an entire research program into a
+  company.
+- **CMU ALS (1998) → NREC programs → Cat MineStar Command → quarry autonomy (2024–25)** —
+  the research-to-OEM arc.
+- **Komatsu Smart Construction (2015) → EarthBrain → Pronto/Tier IV truck autonomy
+  (2025–27)**; **Kajima A4CSEL**: dozer/roller/dump fleets on dam sites, centrally
+  supervised from Tokyo since 2021 — the strongest contractor-side program.
+- **UMich KUKA FabLab testbed → drywall/ceiling/handover task suite → descendants'
+  testbeds** at VT, Stony Brook, TAMU — a *task suite* as the inherited artifact.
 
-Analyzing the publication records of the [[05-construction-robotics/labs|mapped labs]]
-(2019–2025) yields five active streams, each importing a different part of this wiki's
-physical-AI stack:
+### 4. Reading this map as a new researcher
 
-1. **Imitation learning / skill transfer** — Yu (VT): *cloud-based hierarchical imitation
-   learning for transferring construction skills from workers to robots* (2024) — the
-   construction port of the [[01-canonical-papers/notes/4-vla/act|ACT]] / [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] wave. The newest and thinnest stream — VLA-class methods have barely entered.
-2. **HRC + digital twins** — Wang (TAMU) & Yu: *BIM-driven collaborative workflows with
-   closed-loop digital twins* (2021–24); Shah (MIT) supplies the manufacturing HRC
-   playbook. Construction's home-grown analogue of the
-   [[01-canonical-papers/notes/5-world-models/cosmos|world-model-as-coordination-medium]] idea.
-3. **Worker-state sensing (human-centered)** — Lee (UMich) & Jebelli (UIUC): wearable
-   biosensors, EEG workload; Wang's EEG-thermal studies; Baek's ergonomics; Yu's
-   robot-acceptance factor studies. **A first-class topic here that mainstream physical AI
-   barely touches** — construction's distinctive contribution.
-4. **Site perception & the data problem** — Baek (GT): localization + GAN augmentation;
-   Golparvar-Fard (UIUC): progress monitoring. Converging with the
-   [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]] foundation-model
-   wave; data scarcity points the same direction as
-   [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s synthetic-data pyramid.
-5. **Heavy-machine autonomy** — ETH RSL (HEAP) and industry retrofits: learned/optimal
-   control on excavators — the [[04-robotics/mpc|MPC]]-meets-learning stream. In 2024–25 it
-   began merging with stream 1: ExACT (porting [[01-canonical-papers/notes/4-vla/act|ACT]] to an
-   excavator, ICRA 2024 workshop) and [[01-canonical-papers/notes/8-construction/ext|ExT]]
-   (ETH RSL — the large-scale pretrain→fine-tune recipe for excavation) are the opening signals.
+The sensing and narrow-commercialization stories (eras 2–3) are mature and crowded. The
+open territory is where **era-4 learning meets era-1R machines and era-2 world models**:
+bringing [[01-canonical-papers/notes/4-vla/pi0|π0]]-class manipulation onto real
+construction tasks, and closing the loop between site perception (scan-to-BIM, digital
+twins) and machine policies. The 2024–25 signals of that merge: ExACT (Baidu — porting
+[[01-canonical-papers/notes/4-vla/act|ACT]] to an excavator) and
+[[01-canonical-papers/notes/8-construction/ext|ExT]] (ETH — pretrain→fine-tune for
+excavation). The [[05-construction-robotics/index|stream pages]] organize the literature
+this map locates.
 
-**The reading of this map for a new researcher**: streams 2–4 are mature and crowded;
-stream 1 (bringing [[01-canonical-papers/notes/4-vla/pi0|π0]]-class manipulation onto real
-construction tasks) and its intersection with stream 5 are where the open territory lies.
-
-### Reading list — section 8 of the canonical list
+### Reading list — the anchors
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) — the
   era-1-to-3 overview from the field's veteran
-- Davila Delgado et al., *Robotics and automated systems in construction* (J. Building
-  Engineering, 2019) — why adoption is hard (the industry-side constraints)
-- Jud et al., *HEAP — the autonomous walking excavator* (ETH RSL) — the era-4 reference system
-- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|note]]) — the stream-1+5 merge signal: pretrain→fine-tune reaching excavation
-- Site perception: [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]-based
-  as-built capture connects here from the CV track
+- [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz et al., autonomous truck loading]]
+  (IROS 1998 / Autonomous Robots 1999) — the era-1R anchor
+- Davila Delgado et al. (J. Building Engineering, 2019) — why adoption is hard
+- Jud et al., *HEAP* (Automation in Construction, 2021) — the era-4 reference platform
+- [[01-canonical-papers/notes/8-construction/dry-stone-wall|Johns et al., dry-stone wall]]
+  (Science Robotics, 2023) — era 4's flagship demonstration
+- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|note]]) —
+  the pretrain→fine-tune signal
+- Section 8 of the [[01-canonical-papers/canonical-list|canonical list]] carries the full
+  curated set.
 
 ## 한국어
 
-건설로봇이 여기까지 온 길 — 네 시대가 각각 앞 시대의 실패에 답하며, 오늘의 physical AI
-국면으로 수렴한다. 논문은 읽는 대로 노트가 붙는다; 이 페이지는 그 지도다.
+건설로봇이 physical AI의 순간에 도달하기까지 — 혼동하기 쉬운 **세 가지 서로 다른 계보**로
+나누어 말한다. 아래의 실선 관계는 직접 증거(학위논문, 시스템 논문, 스핀아웃 기록)가 있는
+것이고, 느슨한 영향은 느슨하다고 명시한다.
 
-### 각 전환이 일어난 이유
+> [!info] 왜 세 가지 계보인가
+> "X가 Y에서 나왔다"는 세 가지 다른 뜻일 수 있다: *지도교수가 제자를 길렀다*(학술),
+> *방법론이 진화했다*(기술), *기계/플랫폼이 다음 기계로 자랐다*(시스템). 논문은 세 계보를
+> 넘나들며 인용한다 — 셋을 구분해야 새 논문을 정확히 배치할 수 있다.
 
-1. **STCR 시대 → 디지털 패브리케이션**: 1980년대 일본은 수십 종의 단일 작업 로봇(도장,
-   미장, 용접)을 만들었다. 작동은 했다 — 하지만 각 로봇은 구조화된 환경의 한 작업만 했고,
-   건설 현장은 어느 쪽도 아니다. 교훈: *문제는 기구가 아니라 환경이다*.
-2. **디지털 패브리케이션 시대**: ETH의 Gramazio Kohler가 프레임을 뒤집었다 — 기존 작업을
-   로봇화하는 대신, 로봇을 *위해* 설계하라(로봇 조적, 이후 NCCR Digital Fabrication
-   프로그램). 병행해서 Contour Crafting(USC)이 건설 3D 프린팅의 씨앗을 심었다.
-3. **비전·스타트업 시대**: 싼 카메라 + 딥러닝([[01-canonical-papers/notes/1-foundations/alexnet|CNN 혁명]])이
-   조작보다 *모니터링*을 먼저 가능하게 했다: 현장 사진으로 공정 추적(RAAMAC →
-   Reconstruct). 한편 SAM100/Hadrian X가 구조화된 작업을 상업화했고, Built Robotics는
-   굴착기에 자율성을 후장착했다.
-4. **학습/physical AI 시대**: ETH의 HEAP이 굴착기를 연구의 중심으로 걸어 들어오게 했고
-   (자율 조경, 불규칙한 현지 돌로 6m 돌담 시공 — 인식+계획+힘 제어가 한 시스템에), 4족
-   로봇이 현장을 순찰하고, ICON이 주택 단지를 프린트한다 — 그리고 이 10년의 열린 질문:
-   [[01-canonical-papers/notes/4-vla/pi0|VLA급]] 학습 조작이 비구조화·안전 중시·데이터 빈곤의
-   건설 현장에서 살아남을 수 있는가? 이 질문이 이 위키의 연구 방향이다
-   ([[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 데이터 피라미드와
-   [[01-canonical-papers/notes/5-world-models/cosmos|월드모델 데이터 엔진]]이 데이터 문제에 대한 후보
-   답안들이다).
+### 1. 기술 계보 — 네 시대
 
-### 현재 연구 흐름 (랩들의 실제 논문 기록 분석)
+**1시대 — 일본 STCR (1980~90년대).** Shimizu, Obayashi, Kajima 등이 수십 종의 단일 작업
+건설로봇(뿜칠, 타일, 철근)을 만들었다. 기술적으로 인상적이었지만 경제적으로 시기상조 —
+1990년대 일본 불황과 함께 끝났고, 그 교훈(**문제는 기구가 아니라 환경이다**)이 이후
+모든 것을 규정했다. Thomas Bock의 STCR 분류와 참고서가 표준 기록이다.
 
-[[05-construction-robotics/labs|지도에 실린 랩들]]의 논문 기록(2019~2025)을 분석하면
-다섯 개의 활성 흐름이 나오고, 각각 이 위키 physical AI 스택의 다른 부분을 수입하고 있다:
+**1R시대 — 병렬의 로보틱스 쪽 계보 (1990년대).** 건설 산업과 독립적으로, **CMU 로보틱스
+연구소가 중장비 자율성을 로보틱스 문제로 정식화했다**: Sanjiv Singh의 계획 학위논문(1995),
+Stentz–Bares–Singh–Rowe의 *숙련 운전자 속도로* 트럭에 적재하는 자율 굴착기(1998–99),
+Caterpillar 파견 엔지니어 Howard Cannon의 굴착 연구(1999). 이 라인은 멈춘 적이 없다 —
+CMU NREC를 거쳐 Caterpillar MineStar Command(오늘날의 무인 광산 선단)로 상업화됐고
+2024–25년 채석장 자율화로 재부상했다. **중장비 자율성은 건설 연구 커뮤니티가 2015년
+이후 재진입한 ~30년 된 로보틱스 계보다.**
 
-1. **모방학습 / 스킬 전이** — Yu(VT): *작업자의 건설 기술을 로봇에 전이하는 클라우드 기반
-   계층적 모방학습* (2024) — [[01-canonical-papers/notes/4-vla/act|ACT]] / [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] 물결의 건설 이식. 가장 새롭고 가장 얇은 흐름 — VLA급 기법은 이제 막 진입했다.
-2. **HRC + 디지털 트윈** — Wang(TAMU)과 Yu: *폐루프 디지털 트윈의 BIM 연동 협업 워크플로*
-   (2021~24); Shah(MIT)가 제조 HRC 플레이북을 공급.
-   [[01-canonical-papers/notes/5-world-models/cosmos|조율 매체로서의 월드모델]] 아이디어의 건설 자생판.
-3. **작업자 상태 센싱 (인간 중심)** — Lee(미시간)와 Jebelli(UIUC): 웨어러블 바이오센서,
-   EEG 작업부하; Wang의 EEG-온열 연구; Baek의 인간공학; Yu의 로봇 수용성 연구.
-   **주류 physical AI가 거의 다루지 않는데 여기서는 1급 주제** — 건설 분야의 고유한 기여.
-4. **현장 인식과 데이터 문제** — Baek(GT): 위치 추정 + GAN 증강; Golparvar-Fard(UIUC):
-   공정 모니터링. [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]
-   파운데이션 모델 물결과 합류 중; 데이터 빈곤은
-   [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 합성 데이터 피라미드와 같은 방향을 가리킨다.
-5. **중장비 자율화** — ETH RSL(HEAP)과 산업계 개조: 굴착기의 학습/최적 제어 —
-   [[04-robotics/mpc|MPC]]와 학습이 만나는 흐름. 2024~25년에 1번과 합류하기 시작했다:
-   ExACT(굴착기에 [[01-canonical-papers/notes/4-vla/act|ACT]] 이식, ICRA 2024 워크숍)와
-   [[01-canonical-papers/notes/8-construction/ext|ExT]](ETH RSL — 굴착의 대규모 사전학습→파인튜닝
-   레시피)가 그 신호탄이다.
+**2시대 — 디지털 모델과 센싱 (2000~2010년대).** 로봇이 기다리는 동안 *정보* 쪽이
+성숙했다: BIM/VDC(Stanford CIFE), scan-to-BIM(Tang–Huber–Akinci 2010), 비전 기반 공정
+모니터링(Golparvar-Fard의 D4AR 라인, Reconstruct로 창업). 오늘날 현장 로봇이 소비하는
+월드모델을 이 시대가 만들었다. 병행하여 ETH의 Gramazio Kohler가 건축 로봇
+패브리케이션(In situ Fabricator, Mesh Mould)을 창시했고, Khoshnevis의 Contour Crafting이
+건설 3D 프린팅의 씨앗을 심었다.
 
-**신진 연구자를 위한 이 지도의 독해**: 2~4번 흐름은 성숙했고 붐빈다;
-1번([[01-canonical-papers/notes/4-vla/pi0|π0]]급 조작을 실제 건설 과제에 올리는 것)과 그것이
-5번과 만나는 교차점이 열린 영토다.
+**3시대 — 좁은 자율성의 상업화 (2015~2020).** Komatsu Smart Construction(2015), Built
+Robotics 개조, SAM100 조적, Kajima A4CSEL 선단 자동화, Shimizu Shimz Smart Site 로봇.
+좁은 작업, 현장의 구조화된 조각, 가까이 있는 인간 감독자.
 
-### 읽기 목록 — 핵심 논문 리스트 8번 섹션
+**4시대 — 학습이 기계에 들어오다 (2020~).** 세 클러스터가 로봇 학습을 실제 중장비에
+실었다: **ETH RSL**(힘 기반 굴착 2017 → HEAP 플랫폼 2021 → sim-to-real RL 유압 2020–22 →
+Science Robotics 돌담 2023 → ExT 멀티태스크 사전학습 2025), **Baidu RAL**(24시간 무인·
+인간급 처리량의 Science Robotics 2021 AES 굴착기; 2024년 ExACT가
+[[01-canonical-papers/notes/4-vla/act|ACT]]식 모방학습을 굴착기에 이식 — 시뮬레이션 검증),
+그리고 **북유럽 휠로더 그룹**(Tampere, Luleå/Örebro, Umeå+Algoryx — ICRA의 실기계 RL
+적재). 병행하여 **미시간 조작 라인**이 실내에서 같은 궤적을 걸었다: 비전 유도 조립(2015)
+→ 적응적 자율성 → 시연 학습 → 디지털 트윈에 접지된 언어 지시 협업.
+
+### 2. 학술 계보 — 누가 누구를 길렀나
+
+서로 얽힌 미국의 두 가계도가 이 분야 교수진의 놀라운 비율을 배출했고, 유럽에 대응물이
+있다:
+
+```mermaid
+flowchart TD
+    UM["미시간 CEE"] --> KM["Kamat · Menassa (LIVE/SICIS)"]
+    UM --> SL["SangHyun Lee (DPM)"]
+    KM --> CF["Chen Feng — NYU AI4CE"]
+    KM --> HY["Hongrui Yu — Virginia Tech"]
+    KM --> CL["C.-J. Liang — Stony Brook"]
+    KM --> XW["Xi Wang — TAMU"]
+    KM --> SP["Somin Park — UT Arlington"]
+    SL --> HJ["Houtan Jebelli — UIUC RAISE"]
+    SL --> DK["Daeho Kim — 토론토대"]
+    SL --> FB["Francis Baek — Georgia Tech"]
+    HJ --> YL["Yizhi Liu — Syracuse"]
+    GF["Golparvar-Fard — UIUC RAAMAC"] --> KH["Kevin Han — NC State"]
+    GF --> JL["Jacob Lin — NTU"]
+    GF --> YH["Youngjib Ham — TAMU→서울대"]
+    BA["Akinci — CMU"] --> PT["Pingbo Tang — CMU"]
+    GK["Gramazio Kohler — ETH"] --> KD["Dörfler — TUM"]
+    GK --> SPa["Parascho — EPFL"]
+    GK --> NH["Hack — TU Braunschweig"]
+    GK --> RJ["Johns — Gravis CEO"]
+    RSL["Hutter — ETH RSL"] --> DJ["Jud — Gravis CTO"]
+```
+
+위의 모든 간선은 학위논문·랩 동문 페이지·심사위원 기록으로 검증됐다(2026-07 조사).
+주목할 패턴: **작업자 센싱 전문성은 SangHyun Lee의 제자들에게서 방사**되고(Jebelli, Kim,
+Baek — 모두 생리 신호를 로봇 제어에 융합 중), **조작/디지털 트윈 전문성은
+Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park). Gramazio Kohler의
+나무는 미시간이 미국 로봇 교수진을 심은 방식 그대로 유럽 패브리케이션 석좌들을 심었다.
+
+### 3. 시스템 계보 — 기계가 기계로 자라다
+
+- **Menzi Muck M545 → HEAP(2021) → 돌담(2023) → ExT(2025) → Gravis RACK 개조 키트** —
+  하나의 물리 플랫폼이 연구 프로그램 전체를 회사까지 실어 나른 경우.
+- **CMU ALS(1998) → NREC 프로그램 → Cat MineStar Command → 채석장 자율화(2024–25)** —
+  연구에서 OEM으로 가는 궤적.
+- **Komatsu Smart Construction(2015) → EarthBrain → Pronto/Tier IV 트럭 자율화(2025–27)**;
+  **Kajima A4CSEL**: 댐 현장의 도저/롤러/덤프 선단을 2021년부터 도쿄에서 중앙 감독 —
+  가장 강한 시공사 쪽 프로그램.
+- **미시간 KUKA FabLab 테스트베드 → 석고보드/천장/전달 과제 묶음 → 제자들의
+  테스트베드**(VT, Stony Brook, TAMU) — *과제 묶음* 자체가 상속되는 유산.
+
+### 4. 신진 연구자를 위한 이 지도의 독해
+
+센싱과 좁은 상업화 이야기(2~3시대)는 성숙했고 붐빈다. 열린 영토는 **4시대의 학습이
+1R시대의 기계·2시대의 월드모델과 만나는 곳**이다: [[01-canonical-papers/notes/4-vla/pi0|π0]]급
+조작을 실제 건설 과제에 올리는 것, 그리고 현장 인식(scan-to-BIM, 디지털 트윈)과 기계
+정책 사이의 루프를 닫는 것. 그 합류의 2024–25년 신호가 ExACT(Baidu —
+[[01-canonical-papers/notes/4-vla/act|ACT]]의 굴착기 이식)와
+[[01-canonical-papers/notes/8-construction/ext|ExT]](ETH — 굴착의 사전학습→파인튜닝)다.
+이 지도가 위치를 잡아 주는 문헌은 [[05-construction-robotics/index|스트림 페이지]]들이
+조직한다.
+
+### 읽기 목록 — 앵커들
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) —
   이 분야 원로가 쓴 1~3시대 조감
-- Davila Delgado et al., *Robotics and automated systems in construction* (J. Building
-  Engineering, 2019) — 도입이 왜 어려운가 (산업 쪽 제약)
-- Jud et al., *HEAP — 자율 보행 굴착기* (ETH RSL) — 4시대의 기준 시스템
-- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|노트]]) — 1+5번 흐름 합류의 신호탄: 굴착에 도달한 사전학습→파인튜닝
-- 현장 인식: CV 트랙의 [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]
-  기반 준공 캡처가 여기로 합류한다
-
-관련: [[05-construction-robotics/labs|주요 랩실 지도]] · [[05-construction-robotics/index|건설로봇 홈]]
+- [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz et al., 자율 트럭 적재]]
+  (IROS 1998 / Autonomous Robots 1999) — 1R시대의 앵커
+- Davila Delgado et al. (J. Building Engineering, 2019) — 도입이 왜 어려운가
+- Jud et al., *HEAP* (Automation in Construction, 2021) — 4시대의 기준 플랫폼
+- [[01-canonical-papers/notes/8-construction/dry-stone-wall|Johns et al., 돌담]]
+  (Science Robotics, 2023) — 4시대의 대표 시연
+- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|노트]]) —
+  사전학습→파인튜닝의 신호
+- 전체 큐레이션은 [[01-canonical-papers/canonical-list|핵심 논문 리스트]] 8번 섹션에.

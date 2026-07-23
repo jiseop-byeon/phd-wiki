@@ -72,6 +72,7 @@ one's own research area.
 > - [Sutton & Barto, *Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) — RL 기초의 표준 교과서 (무료 공개)
 > - [Holderrieth & Erives, *An Introduction to Flow Matching and Diffusion Models*](https://arxiv.org/abs/2506.02070) — 디퓨전/flow matching 수학의 참고 튜토리얼
 > - [Modern Robotics (Lynch & Park)](http://modernrobotics.org) — 로보틱스 트랙의 교과서 (공식 무료 PDF)
+> - [Matthew Bartos, *Control Theory for Smart Infrastructure* (UT Austin CE397)](https://future-water.org/teaching/) · [공개 course packet PDF](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) — 상태공간·안정성·가제어성/가관측성과 피드백 제어 트랙의 주교재
 > - [Underactuated Robotics (Tedrake)](https://underactuated.csail.mit.edu/) · [Stanford EE363](https://web.stanford.edu/class/ee363/) — 제어 학습 자료
 >
 > **Wiki structure (위키 구조 참고)**

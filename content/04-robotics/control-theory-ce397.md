@@ -3,7 +3,7 @@ title: "5. Control Theory"
 tags: [robotics, control, resource]
 ---
 
-**Bartos, UT Austin CE397** — [Course packet PDF (public)](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) · [Teaching page](https://future-water.org/teaching/)
+**Matthew Bartos, UT Austin CE397** — [Course packet PDF (public)](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) · [Teaching page](https://future-water.org/teaching/)
 
 ## English
 
