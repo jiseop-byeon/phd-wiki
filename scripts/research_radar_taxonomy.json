@@ -1,68 +1,949 @@
 [
-  {"id":"foundation_models","label":"Foundation Models","category":"Deep Learning","scopes":["Deep Learning"],"aliases":["foundation model","large language model","\\bllm\\b"]},
-  {"id":"scaling_laws","label":"Scaling Laws & Data Mixtures","category":"Deep Learning","scopes":["Deep Learning"],"aliases":["scaling law","scaling laws","data mixture","compute optimal"]},
-  {"id":"transformers","label":"Transformer Architectures","category":"Deep Learning","scopes":["Deep Learning"],"aliases":["transformer","attention architecture","state space model","\\bmamba\\b"]},
-  {"id":"self_supervised","label":"Self-Supervised Learning","category":"Deep Learning","scopes":["Deep Learning","Computer Vision"],"aliases":["self.supervised","masked autoencoder","masked modeling"]},
-  {"id":"contrastive_representation","label":"Contrastive & Representation Learning","category":"Deep Learning","scopes":["Deep Learning","Computer Vision","Multimodal"],"aliases":["contrastive learning","representation learning","metric learning"]},
-  {"id":"efficient_adaptation","label":"Efficient Adaptation","category":"Deep Learning","scopes":["Deep Learning","Physical AI"],"aliases":["parameter.efficient","low.rank adaptation","\\blora\\b","prompt tuning","adapter tuning"]},
-  {"id":"model_efficiency","label":"Model Efficiency & Compression","category":"Deep Learning","scopes":["Deep Learning","Physical AI"],"aliases":["model compression","quantization","pruning","knowledge distillation","efficient inference","edge deployment"]},
-  {"id":"mixture_experts","label":"Mixture of Experts","category":"Deep Learning","scopes":["Deep Learning"],"aliases":["mixture of experts","mixture.of.experts","\\bmoe\\b"]},
-  {"id":"robustness_ood","label":"Robustness & Distribution Shift","category":"Deep Learning","scopes":["Deep Learning","Physical AI"],"aliases":["out.of.distribution","distribution shift","domain generalization","adversarial robustness","robust learning"]},
-  {"id":"uncertainty_calibration","label":"Uncertainty & Calibration","category":"Deep Learning","scopes":["Deep Learning","Physical AI"],"aliases":["uncertainty estimation","uncertainty quantification","calibration","conformal prediction"]},
-  {"id":"retrieval_augmented","label":"Retrieval-Augmented Models","category":"Deep Learning","scopes":["Deep Learning","Multimodal"],"aliases":["retrieval.augmented","retrieval augmented generation","\\brag\\b","external memory"]},
-  {"id":"multimodal_learning","label":"Multimodal Learning","category":"Multimodal","scopes":["Deep Learning","Multimodal","Physical AI"],"aliases":["multimodal","multi.modal","cross.modal"]},
-
-  {"id":"diffusion","label":"Diffusion Models","category":"Generative Models","scopes":["Deep Learning","Generative Models","Physical AI"],"aliases":["diffusion","score.based","denoising"]},
-  {"id":"flow_matching","label":"Flow Matching & Rectified Flow","category":"Generative Models","scopes":["Deep Learning","Generative Models","Physical AI"],"aliases":["flow matching","rectified flow","probability flow"]},
-  {"id":"autoregressive_generation","label":"Autoregressive Generation","category":"Generative Models","scopes":["Deep Learning","Generative Models"],"aliases":["autoregressive","auto.regressive"]},
-  {"id":"video_generation","label":"Video Generation","category":"Generative Models","scopes":["Deep Learning","Generative Models","World Models","Physical AI"],"aliases":["video generation","video diffusion","text.to.video","image.to.video"]},
-  {"id":"generative_distillation","label":"Fast Generative Sampling","category":"Generative Models","scopes":["Deep Learning","Generative Models"],"aliases":["consistency model","diffusion distillation","one.step generation","few.step generation"]},
-  {"id":"controllable_generation","label":"Controllable Generation","category":"Generative Models","scopes":["Deep Learning","Generative Models"],"aliases":["controllable generation","conditional generation","classifier.free guidance","controlnet"]},
-
-  {"id":"world_models","label":"World Models","category":"World Models","scopes":["Deep Learning","Physical AI","World Models","Robot Learning"],"aliases":["world model","world models"]},
-  {"id":"latent_dynamics","label":"Latent Dynamics & Imagination","category":"World Models","scopes":["Deep Learning","Physical AI","World Models","Robot Learning"],"aliases":["latent dynamics","latent world model","latent imagination","imagination rollout"]},
-  {"id":"video_world_models","label":"Video World Models","category":"World Models","scopes":["Deep Learning","Physical AI","World Models"],"aliases":["video prediction","interactive world model","video world model","action conditioned video"]},
-
-  {"id":"vision_language","label":"Vision-Language Models","category":"Multimodal","scopes":["Deep Learning","Multimodal","Physical AI","VLM & VLA"],"aliases":["vision.language","visual.language","image.text","multimodal language"]},
-  {"id":"visual_grounding","label":"Visual Grounding & Referring","category":"Multimodal","scopes":["Deep Learning","Multimodal","Computer Vision","Physical AI","VLM & VLA"],"aliases":["visual grounding","referring expression","grounded language","phrase grounding"]},
-  {"id":"vla","label":"Vision-Language-Action","category":"Physical AI","scopes":["Deep Learning","Physical AI","VLM & VLA","Robot Learning"],"aliases":["vision.language.action","\\bvla\\b","generalist robot policy"]},
-  {"id":"robot_foundation_models","label":"Robot Foundation Models","category":"Physical AI","scopes":["Deep Learning","Physical AI","VLM & VLA","Robot Learning"],"aliases":["robot foundation model","robotic foundation model","generalist robot","general purpose robot policy"]},
-  {"id":"language_planning","label":"Language-Conditioned Planning","category":"Physical AI","scopes":["Deep Learning","Physical AI","VLM & VLA","Robot Learning","Robotics"],"aliases":["language conditioned planning","language guided planning","language conditioned policy","language guided robot"]},
-
-  {"id":"reinforcement_learning","label":"Reinforcement Learning","category":"Robot Learning","scopes":["Deep Learning","Robot Learning","Physical AI"],"aliases":["reinforcement learning","policy optimization","actor.critic"]},
-  {"id":"imitation","label":"Imitation & Behavior Cloning","category":"Robot Learning","scopes":["Deep Learning","Robot Learning","Physical AI"],"aliases":["imitation learning","behavior cloning","behaviour cloning","learning from demonstration"]},
-  {"id":"offline_rl","label":"Offline Reinforcement Learning","category":"Robot Learning","scopes":["Deep Learning","Robot Learning","Physical AI"],"aliases":["offline reinforcement","offline rl","batch reinforcement learning"]},
-  {"id":"sim_to_real","label":"Sim-to-Real & Reality Gap","category":"Robot Learning","scopes":["Deep Learning","Robot Learning","Physical AI"],"aliases":["sim.to.real","simulation.to.real","reality gap","domain randomization"]},
-  {"id":"action_chunking","label":"Action Chunking & Horizons","category":"Robot Learning","scopes":["Deep Learning","Robot Learning","Physical AI","VLM & VLA"],"aliases":["action chunk","temporal action","action horizon"]},
-  {"id":"diffusion_policy","label":"Generative Robot Policies","category":"Robot Learning","scopes":["Deep Learning","Generative Models","Robot Learning","Physical AI"],"aliases":["diffusion policy","generative policy","flow policy","action diffusion"]},
-  {"id":"robot_manipulation","label":"Robot Manipulation","category":"Physical AI","scopes":["Deep Learning","Physical AI","Robot Learning","Robotics"],"aliases":["robotic manipulation","robot manipulation","manipulation policy","robot grasp"]},
-  {"id":"dexterous_bimanual","label":"Dexterous & Bimanual Manipulation","category":"Physical AI","scopes":["Deep Learning","Physical AI","Robot Learning","Robotics"],"aliases":["dexterous","bimanual","two.arm manipulation","dual.arm manipulation","in.hand manipulation"]},
-  {"id":"tactile","label":"Tactile & Contact Learning","category":"Physical AI","scopes":["Deep Learning","Physical AI","Robot Learning","Robotics"],"aliases":["tactile","contact.rich","force control","visuotactile","visuo.tactile"]},
-  {"id":"legged","label":"Legged & Humanoid Robotics","category":"Physical AI","scopes":["Deep Learning","Physical AI","Robot Learning","Robotics"],"aliases":["legged","quadruped","humanoid","biped"]},
-  {"id":"embodied_navigation","label":"Embodied Navigation","category":"Physical AI","scopes":["Deep Learning","Physical AI","Robot Learning","Robotics"],"aliases":["embodied navigation","visual navigation","object navigation","vision.language navigation"]},
-
-  {"id":"object_detection","label":"Object Detection","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI"],"aliases":["object detection","object detector","open.vocabulary detection","3d detection"]},
-  {"id":"segmentation","label":"Segmentation","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI"],"aliases":["semantic segmentation","instance segmentation","panoptic segmentation","image segmentation"]},
-  {"id":"3d_geometry","label":"3D Geometry & Reconstruction","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI"],"aliases":["3d reconstruction","structure.from.motion","multi.view geometry","scene reconstruction"]},
-  {"id":"depth","label":"Depth Estimation","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI"],"aliases":["depth estimation","monocular depth","stereo depth","metric depth"]},
-  {"id":"point_clouds","label":"Point Clouds & LiDAR","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI","Robotics"],"aliases":["point cloud","\\blidar\\b","3d point"]},
-  {"id":"pose_tracking","label":"Pose Estimation & Tracking","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI","Robotics"],"aliases":["pose estimation","object pose","6d pose","visual tracking","object tracking"]},
-  {"id":"neural_rendering","label":"Neural Rendering & 3DGS","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Generative Models","Physical AI"],"aliases":["neural radiance","nerf","gaussian splat","neural rendering","novel view"]},
-  {"id":"video_understanding","label":"Video Understanding","category":"Computer Vision","scopes":["Deep Learning","Computer Vision","Physical AI"],"aliases":["video understanding","action recognition","video representation","video transformer"]},
-
-  {"id":"slam","label":"SLAM & Localization","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["\\bslam\\b","visual odometry","(robot|camera|visual|lidar|map).{0,24}locali[sz]ation","locali[sz]ation.{0,24}(robot|camera|lidar|map)"]},
-  {"id":"state_estimation","label":"State Estimation & Sensor Fusion","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["state estimation","sensor fusion","kalman filter","particle filter","factor graph"]},
-  {"id":"motion_planning","label":"Motion & Task Planning","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["motion planning","task and motion","trajectory optimization","path planning"]},
-  {"id":"optimal_control","label":"Optimal Control & MPC","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["model predictive control","\\bmpc\\b","optimal control","trajectory control"]},
-  {"id":"multi_robot","label":"Multi-Robot Systems","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["multi.robot","multi agent robot","robot swarm","swarm robotics"]},
-  {"id":"human_robot","label":"Human-Robot Collaboration","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["human.robot","shared autonomy","human aware","collaborative robot"]},
-  {"id":"robot_safety","label":"Robot Safety & Assurance","category":"Robotics","scopes":["Physical AI","Robotics"],"aliases":["robot safety","safe robot","safety assurance","control barrier function","collision avoidance"]},
-  {"id":"calibration","label":"Robot & Sensor Calibration","category":"Robotics","scopes":["Physical AI","Robotics","Computer Vision"],"aliases":["hand.eye calibration","camera calibration","sensor calibration","extrinsic calibration"]},
-
-  {"id":"construction","label":"Construction Physical AI","category":"Construction Physical AI","scopes":["Physical AI","Construction Physical AI"],"aliases":["construction domain/task × robotics/autonomy/perception/control"]},
-  {"id":"construction_earthmoving","label":"Earthmoving & Heavy Machinery","category":"Construction Physical AI","scopes":["Physical AI","Robotics","Construction Physical AI"],"aliases":["excavation","earthmoving","excavator","wheel loader","bulldozer"]},
-  {"id":"construction_assembly","label":"Assembly & Robotic Fabrication","category":"Construction Physical AI","scopes":["Physical AI","Robotics","Construction Physical AI"],"aliases":["masonry","bricklaying","rebar","timber","concrete printing","robotic fabrication"]},
-  {"id":"construction_perception","label":"Site Perception & Inspection","category":"Construction Physical AI","scopes":["Deep Learning","Computer Vision","Physical AI","Construction Physical AI"],"aliases":["construction site","progress monitoring","as-built","infrastructure inspection","defect perception"]},
-  {"id":"construction_twin","label":"BIM & Digital-Twin Workflows","category":"Construction Physical AI","scopes":["Physical AI","Construction Physical AI"],"aliases":["BIM","scan-to-BIM","digital twin","as-built"]},
-  {"id":"construction_hrc","label":"Construction HRC & Safety","category":"Construction Physical AI","scopes":["Physical AI","Robotics","Construction Physical AI"],"aliases":["construction worker","human-robot","safety","ergonomics","exoskeleton"]}
+  {
+    "id": "foundation_models",
+    "label": "Foundation Models",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning"
+    ],
+    "aliases": [
+      "foundation model",
+      "large language model",
+      "\\bllm\\b"
+    ]
+  },
+  {
+    "id": "scaling_laws",
+    "label": "Scaling Laws & Data Mixtures",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning"
+    ],
+    "aliases": [
+      "scaling law",
+      "scaling laws",
+      "data mixture",
+      "compute optimal"
+    ]
+  },
+  {
+    "id": "transformers",
+    "label": "Transformer Architectures",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning"
+    ],
+    "aliases": [
+      "transformer",
+      "attention architecture"
+    ]
+  },
+  {
+    "id": "self_supervised",
+    "label": "Self-Supervised Learning",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision"
+    ],
+    "aliases": [
+      "self.supervised",
+      "masked autoencoder",
+      "masked modeling"
+    ]
+  },
+  {
+    "id": "contrastive_representation",
+    "label": "Contrastive & Representation Learning",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Multimodal"
+    ],
+    "aliases": [
+      "contrastive learning",
+      "representation learning",
+      "metric learning"
+    ]
+  },
+  {
+    "id": "efficient_adaptation",
+    "label": "Efficient Adaptation",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "parameter.efficient",
+      "low.rank adaptation",
+      "\\blora\\b",
+      "prompt tuning",
+      "adapter tuning"
+    ]
+  },
+  {
+    "id": "model_efficiency",
+    "label": "Model Efficiency & Compression",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "model compression",
+      "quantization",
+      "pruning",
+      "knowledge distillation",
+      "efficient inference",
+      "edge deployment"
+    ]
+  },
+  {
+    "id": "mixture_experts",
+    "label": "Mixture of Experts",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning"
+    ],
+    "aliases": [
+      "mixture of experts",
+      "mixture.of.experts",
+      "\\bmoe\\b"
+    ]
+  },
+  {
+    "id": "robustness_ood",
+    "label": "Robustness & Distribution Shift",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "out.of.distribution",
+      "distribution shift",
+      "domain generalization",
+      "adversarial robustness",
+      "robust learning"
+    ]
+  },
+  {
+    "id": "uncertainty_calibration",
+    "label": "Uncertainty & Calibration",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "uncertainty estimation",
+      "uncertainty quantification",
+      "calibration",
+      "conformal prediction"
+    ]
+  },
+  {
+    "id": "retrieval_augmented",
+    "label": "Retrieval-Augmented Models",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning",
+      "Multimodal"
+    ],
+    "aliases": [
+      "retrieval.augmented",
+      "retrieval augmented generation",
+      "\\brag\\b",
+      "external memory"
+    ]
+  },
+  {
+    "id": "multimodal_learning",
+    "label": "Multimodal Learning",
+    "category": "Multimodal",
+    "scopes": [
+      "Deep Learning",
+      "Multimodal",
+      "Physical AI"
+    ],
+    "aliases": [
+      "multimodal",
+      "multi.modal",
+      "cross.modal"
+    ]
+  },
+  {
+    "id": "diffusion",
+    "label": "Diffusion Models",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models",
+      "Physical AI"
+    ],
+    "aliases": [
+      "diffusion",
+      "score.based",
+      "denoising"
+    ]
+  },
+  {
+    "id": "flow_matching",
+    "label": "Flow Matching & Rectified Flow",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models",
+      "Physical AI"
+    ],
+    "aliases": [
+      "flow matching",
+      "rectified flow",
+      "probability flow"
+    ]
+  },
+  {
+    "id": "autoregressive_generation",
+    "label": "Autoregressive Generation",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models"
+    ],
+    "aliases": [
+      "autoregressive",
+      "auto.regressive"
+    ]
+  },
+  {
+    "id": "video_generation",
+    "label": "Video Generation",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models",
+      "World Models",
+      "Physical AI"
+    ],
+    "aliases": [
+      "video generation",
+      "video diffusion",
+      "text.to.video",
+      "image.to.video"
+    ]
+  },
+  {
+    "id": "generative_distillation",
+    "label": "Fast Generative Sampling",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models"
+    ],
+    "aliases": [
+      "consistency model",
+      "diffusion distillation",
+      "one.step generation",
+      "few.step generation"
+    ]
+  },
+  {
+    "id": "controllable_generation",
+    "label": "Controllable Generation",
+    "category": "Generative Models",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models"
+    ],
+    "aliases": [
+      "controllable generation",
+      "conditional generation",
+      "classifier.free guidance",
+      "controlnet"
+    ]
+  },
+  {
+    "id": "world_models",
+    "label": "World Models",
+    "category": "World Models",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "World Models",
+      "Robot Learning"
+    ],
+    "aliases": [
+      "world model",
+      "world models"
+    ]
+  },
+  {
+    "id": "latent_dynamics",
+    "label": "Latent Dynamics & Imagination",
+    "category": "World Models",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "World Models",
+      "Robot Learning"
+    ],
+    "aliases": [
+      "latent dynamics",
+      "latent world model",
+      "latent imagination",
+      "imagination rollout"
+    ]
+  },
+  {
+    "id": "video_world_models",
+    "label": "Video World Models",
+    "category": "World Models",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "World Models"
+    ],
+    "aliases": [
+      "video prediction",
+      "interactive world model",
+      "video world model",
+      "action conditioned video"
+    ]
+  },
+  {
+    "id": "vision_language",
+    "label": "Vision-Language Models",
+    "category": "Multimodal",
+    "scopes": [
+      "Deep Learning",
+      "Multimodal",
+      "Physical AI",
+      "VLM & VLA"
+    ],
+    "aliases": [
+      "vision.language",
+      "visual.language",
+      "image.text",
+      "multimodal language"
+    ]
+  },
+  {
+    "id": "visual_grounding",
+    "label": "Visual Grounding & Referring",
+    "category": "Multimodal",
+    "scopes": [
+      "Deep Learning",
+      "Multimodal",
+      "Computer Vision",
+      "Physical AI",
+      "VLM & VLA"
+    ],
+    "aliases": [
+      "visual grounding",
+      "referring expression",
+      "grounded language",
+      "phrase grounding"
+    ]
+  },
+  {
+    "id": "vla",
+    "label": "Vision-Language-Action",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "VLM & VLA",
+      "Robot Learning"
+    ],
+    "aliases": [
+      "vision.language.action",
+      "\\bvla\\b",
+      "generalist robot policy"
+    ]
+  },
+  {
+    "id": "robot_foundation_models",
+    "label": "Robot Foundation Models",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "VLM & VLA",
+      "Robot Learning"
+    ],
+    "aliases": [
+      "robot foundation model",
+      "robotic foundation model",
+      "generalist robot",
+      "general purpose robot policy"
+    ]
+  },
+  {
+    "id": "language_planning",
+    "label": "Language-Conditioned Planning",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "VLM & VLA",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "language conditioned planning",
+      "language guided planning",
+      "language conditioned policy",
+      "language guided robot"
+    ]
+  },
+  {
+    "id": "reinforcement_learning",
+    "label": "Reinforcement Learning",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Robot Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "reinforcement learning",
+      "policy optimization",
+      "actor.critic"
+    ]
+  },
+  {
+    "id": "imitation",
+    "label": "Imitation & Behavior Cloning",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Robot Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "imitation learning",
+      "behavior cloning",
+      "behaviour cloning",
+      "learning from demonstration"
+    ]
+  },
+  {
+    "id": "offline_rl",
+    "label": "Offline Reinforcement Learning",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Robot Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "offline reinforcement",
+      "offline rl",
+      "batch reinforcement learning"
+    ]
+  },
+  {
+    "id": "sim_to_real",
+    "label": "Sim-to-Real & Reality Gap",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Robot Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "sim.to.real",
+      "simulation.to.real",
+      "reality gap",
+      "domain randomization"
+    ]
+  },
+  {
+    "id": "action_chunking",
+    "label": "Action Chunking & Horizons",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Robot Learning",
+      "Physical AI",
+      "VLM & VLA"
+    ],
+    "aliases": [
+      "action chunk",
+      "temporal action",
+      "action horizon"
+    ]
+  },
+  {
+    "id": "diffusion_policy",
+    "label": "Generative Robot Policies",
+    "category": "Robot Learning",
+    "scopes": [
+      "Deep Learning",
+      "Generative Models",
+      "Robot Learning",
+      "Physical AI"
+    ],
+    "aliases": [
+      "diffusion policy",
+      "generative policy",
+      "flow policy",
+      "action diffusion"
+    ]
+  },
+  {
+    "id": "robot_manipulation",
+    "label": "Robot Manipulation",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "robotic manipulation",
+      "robot manipulation",
+      "manipulation policy",
+      "robot grasp"
+    ]
+  },
+  {
+    "id": "dexterous_bimanual",
+    "label": "Dexterous & Bimanual Manipulation",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "dexterous",
+      "bimanual",
+      "two.arm manipulation",
+      "dual.arm manipulation",
+      "in.hand manipulation"
+    ]
+  },
+  {
+    "id": "tactile",
+    "label": "Tactile & Contact Learning",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "tactile",
+      "contact.rich",
+      "force control",
+      "visuotactile",
+      "visuo.tactile"
+    ]
+  },
+  {
+    "id": "legged",
+    "label": "Legged & Humanoid Robotics",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "legged",
+      "quadruped",
+      "humanoid",
+      "biped"
+    ]
+  },
+  {
+    "id": "embodied_navigation",
+    "label": "Embodied Navigation",
+    "category": "Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Physical AI",
+      "Robot Learning",
+      "Robotics"
+    ],
+    "aliases": [
+      "embodied navigation",
+      "visual navigation",
+      "object navigation",
+      "vision.language navigation"
+    ]
+  },
+  {
+    "id": "object_detection",
+    "label": "Object Detection",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI"
+    ],
+    "aliases": [
+      "object detection",
+      "object detector",
+      "open.vocabulary detection",
+      "3d detection"
+    ]
+  },
+  {
+    "id": "segmentation",
+    "label": "Segmentation",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI"
+    ],
+    "aliases": [
+      "semantic segmentation",
+      "instance segmentation",
+      "panoptic segmentation",
+      "image segmentation"
+    ]
+  },
+  {
+    "id": "3d_geometry",
+    "label": "3D Geometry & Reconstruction",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI"
+    ],
+    "aliases": [
+      "3d reconstruction",
+      "structure.from.motion",
+      "multi.view geometry",
+      "scene reconstruction"
+    ]
+  },
+  {
+    "id": "depth",
+    "label": "Depth Estimation",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI"
+    ],
+    "aliases": [
+      "depth estimation",
+      "monocular depth",
+      "stereo depth",
+      "metric depth"
+    ]
+  },
+  {
+    "id": "point_clouds",
+    "label": "Point Clouds & LiDAR",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "point cloud",
+      "\\blidar\\b",
+      "3d point"
+    ]
+  },
+  {
+    "id": "pose_tracking",
+    "label": "Pose Estimation & Tracking",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "pose estimation",
+      "object pose",
+      "6d pose",
+      "visual tracking",
+      "object tracking"
+    ]
+  },
+  {
+    "id": "neural_rendering",
+    "label": "Neural Rendering & 3DGS",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Generative Models",
+      "Physical AI"
+    ],
+    "aliases": [
+      "neural radiance",
+      "nerf",
+      "gaussian splat",
+      "neural rendering",
+      "novel view"
+    ]
+  },
+  {
+    "id": "video_understanding",
+    "label": "Video Understanding",
+    "category": "Computer Vision",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI"
+    ],
+    "aliases": [
+      "video understanding",
+      "action recognition",
+      "video representation",
+      "video transformer"
+    ]
+  },
+  {
+    "id": "slam",
+    "label": "SLAM & Localization",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "\\bslam\\b",
+      "visual odometry",
+      "(robot|camera|visual|lidar|map).{0,24}locali[sz]ation",
+      "locali[sz]ation.{0,24}(robot|camera|lidar|map)"
+    ]
+  },
+  {
+    "id": "state_estimation",
+    "label": "State Estimation & Sensor Fusion",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "state estimation",
+      "sensor fusion",
+      "kalman filter",
+      "particle filter",
+      "factor graph"
+    ]
+  },
+  {
+    "id": "motion_planning",
+    "label": "Motion & Task Planning",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "motion planning",
+      "task and motion",
+      "trajectory optimization",
+      "path planning"
+    ]
+  },
+  {
+    "id": "optimal_control",
+    "label": "Optimal Control & MPC",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "model predictive control",
+      "\\bmpc\\b",
+      "optimal control",
+      "trajectory control"
+    ]
+  },
+  {
+    "id": "multi_robot",
+    "label": "Multi-Robot Systems",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "multi.robot",
+      "multi agent robot",
+      "robot swarm",
+      "swarm robotics"
+    ]
+  },
+  {
+    "id": "human_robot",
+    "label": "Human-Robot Collaboration",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "human.robot",
+      "shared autonomy",
+      "human aware",
+      "collaborative robot"
+    ]
+  },
+  {
+    "id": "robot_safety",
+    "label": "Robot Safety & Assurance",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics"
+    ],
+    "aliases": [
+      "robot safety",
+      "safe robot",
+      "safety assurance",
+      "control barrier function",
+      "collision avoidance"
+    ]
+  },
+  {
+    "id": "calibration",
+    "label": "Robot & Sensor Calibration",
+    "category": "Robotics",
+    "scopes": [
+      "Physical AI",
+      "Robotics",
+      "Computer Vision"
+    ],
+    "aliases": [
+      "hand.eye calibration",
+      "camera calibration",
+      "sensor calibration",
+      "extrinsic calibration"
+    ]
+  },
+  {
+    "id": "construction",
+    "label": "Construction Physical AI",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Physical AI",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "construction domain/task × robotics/autonomy/perception/control"
+    ]
+  },
+  {
+    "id": "construction_earthmoving",
+    "label": "Earthmoving & Heavy Machinery",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Physical AI",
+      "Robotics",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "excavation",
+      "earthmoving",
+      "excavator",
+      "wheel loader",
+      "bulldozer"
+    ]
+  },
+  {
+    "id": "construction_assembly",
+    "label": "Assembly & Robotic Fabrication",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Physical AI",
+      "Robotics",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "masonry",
+      "bricklaying",
+      "rebar",
+      "timber",
+      "concrete printing",
+      "robotic fabrication"
+    ]
+  },
+  {
+    "id": "construction_perception",
+    "label": "Site Perception & Inspection",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Deep Learning",
+      "Computer Vision",
+      "Physical AI",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "construction site",
+      "progress monitoring",
+      "as-built",
+      "infrastructure inspection",
+      "defect perception"
+    ]
+  },
+  {
+    "id": "construction_twin",
+    "label": "BIM & Digital-Twin Workflows",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Physical AI",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "BIM",
+      "scan-to-BIM",
+      "digital twin",
+      "as-built"
+    ]
+  },
+  {
+    "id": "construction_hrc",
+    "label": "Construction HRC & Safety",
+    "category": "Construction Physical AI",
+    "scopes": [
+      "Physical AI",
+      "Robotics",
+      "Construction Physical AI"
+    ],
+    "aliases": [
+      "construction worker",
+      "human-robot",
+      "safety",
+      "ergonomics",
+      "exoskeleton"
+    ]
+  },
+  {
+    "id": "state_space_models",
+    "label": "State-Space Models & Mamba",
+    "category": "Deep Learning",
+    "scopes": [
+      "Deep Learning"
+    ],
+    "aliases": [
+      "state space model",
+      "state-space model",
+      "\\bmamba\\b",
+      "\\bssm\\b"
+    ]
+  }
 ]

@@ -7,8 +7,9 @@ year: 2022
 pdf: https://www.nature.com/articles/s41586-022-04988-4
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -39,7 +40,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 - 스트림: [[05-construction-robotics/assembly-fabrication|4. 조립·시공 스트림]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] BuilDrone/ScanDrone 분업과 "개체 수로 스케일한다"는 프레임워크의 핵심을 말할 수 있다
 - [ ] 델타 매니퓰레이터가 왜 필요했고 5 mm 정확도가 어떤 조건의 수치인지 말할 수 있다

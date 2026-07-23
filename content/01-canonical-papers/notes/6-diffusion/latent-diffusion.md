@@ -11,7 +11,7 @@ tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Literacy
-depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 

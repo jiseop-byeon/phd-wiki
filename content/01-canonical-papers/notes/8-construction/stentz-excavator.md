@@ -7,8 +7,9 @@ year: 1999
 pdf: https://publications.ri.cmu.edu/a-robotic-excavator-for-autonomous-truck-loading
 tags: [paper, construction, excavation, systems]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -51,7 +52,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|토공·중장비]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (CMU/NREC→OEM 라인의 출발점)
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] 이 시스템의 sensing–planning–control 루프 — 레이저 거리계 2대(트럭 정위치화 + 토사면 매핑) → 굴착/투하점 선택 → 사이클 실행 → 장애물 정지 — 를 재구성할 수 있다
 - [ ] 1998년의 "숙련 운전자급 속도" 주장이 어떤 평가 범위(준비된 적재 설정)에서 성립했는지 말할 수 있다

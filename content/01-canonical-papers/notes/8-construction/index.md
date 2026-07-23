@@ -16,9 +16,9 @@ alongside.
 **Earthmoving & heavy machines**:
 [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz 1999]] →
 [[01-canonical-papers/notes/8-construction/heap|HEAP]] ·
-[[01-canonical-papers/notes/8-construction/aes|AES]] →
+[[01-canonical-papers/notes/8-construction/aes|AES]] ·
 [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL]] ·
-[[01-canonical-papers/notes/8-construction/wheel-loader-rl|wheel-loader RL]] →
+[[01-canonical-papers/notes/8-construction/wheel-loader-rl|wheel-loader RL]] ·
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
 
@@ -51,9 +51,9 @@ alongside.
 **토공·중장비**:
 [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz 1999]] →
 [[01-canonical-papers/notes/8-construction/heap|HEAP]] ·
-[[01-canonical-papers/notes/8-construction/aes|AES]] →
+[[01-canonical-papers/notes/8-construction/aes|AES]] ·
 [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL]] ·
-[[01-canonical-papers/notes/8-construction/wheel-loader-rl|휠로더 RL]] →
+[[01-canonical-papers/notes/8-construction/wheel-loader-rl|휠로더 RL]] ·
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
 

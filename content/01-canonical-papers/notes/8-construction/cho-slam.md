@@ -8,8 +8,9 @@ doi: https://doi.org/10.1016/j.autcon.2018.01.009
 project: https://rical.ce.gatech.edu/
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -28,7 +29,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: 2018-era testbed environments, not active production sites; autonomy covers navigation-and-scanning, while scan planning (where to scan next) only becomes adaptive in the later work; drift and registration quality depend on environment geometry; the note's claims about exact accuracy are deliberately withheld because the paper is paywalled.
 
-**Reading the claim**: "SLAM-driven" means SLAM supplies the *initialization* for registration — the map quality still rests on fine registration, not on SLAM alone. And keep the evidence ledger straight: the 2018 paper proves the pipeline on testbeds; field deployment is the 2025 descendant's evidence, not this paper's.
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "SLAM-driven" means SLAM supplies the *initialization* for registration — the map quality still rests on fine registration, not on SLAM alone. And keep the evidence ledger straight: the 2018 paper proves the pipeline on testbeds; field deployment is the 2025 descendant's evidence, not this paper's.
 
 ## 한국어
 
@@ -42,14 +44,15 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한계**: 2018년 시점의 테스트베드 환경이지, 가동 중인 생산 현장이 아니다; 자율성은 주행-및-스캔을 다루고, 스캔 계획(다음에 어디를 스캔할지)은 후속 연구에서야 적응형이 된다; 드리프트와 정합 품질은 환경 기하에 의존한다; 정확도 수치에 대한 주장은 논문이 페이월이라 의도적으로 비워 두었다.
 
-**주장 읽는 법**: "SLAM-driven"은 SLAM이 정합의 *초기화*를 공급한다는 뜻이다 — 지도 품질은 여전히 SLAM 단독이 아니라 정밀 정합에 달려 있다. 그리고 증거 장부를 똑바로 두라: 2018년 논문은 테스트베드에서 파이프라인을 증명했고, 현장 배치는 이 논문이 아니라 2025년 후손의 증거다.
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "SLAM-driven"은 SLAM이 정합의 *초기화*를 공급한다는 뜻이다 — 지도 품질은 여전히 SLAM 단독이 아니라 정밀 정합에 달려 있다. 그리고 증거 장부를 똑바로 두라: 2018년 논문은 테스트베드에서 파이프라인을 증명했고, 현장 배치는 이 논문이 아니라 2025년 후손의 증거다.
 
 ### 연결
 
 - 스트림: [[05-construction-robotics/site-perception|5. 현장 인식·Scan-to-BIM 스트림]]
 - 기초: [[04-robotics/state-estimation-slam|3. State Estimation]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] SLAM 자세 추정이 정밀 정합의 초기값으로 쓰이는 파이프라인 구조를 말할 수 있다
 - [ ] 재래식 스테이션 스캐닝 대비 무엇이 자동화되었는지(스테이션 설치·타깃·수동 정합) 말할 수 있다

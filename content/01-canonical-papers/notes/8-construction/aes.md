@@ -7,8 +7,9 @@ year: 2021
 doi: https://doi.org/10.1126/scirobotics.abc3164
 tags: [paper, construction, excavation, deployment]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -51,7 +52,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|토공·중장비]] · [[05-construction-robotics/industry-deployment|산업 배치]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] AES 스택의 모듈 구성(인식 → 과제/모션 계획 → 제어)을 단계별로 재구성하고, 각 모듈이 어떤 센서/출력을 쓰는지 말할 수 있다
 - [ ] 세 가지 증거 축 — 컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour — 를 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다

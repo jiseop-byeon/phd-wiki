@@ -18,8 +18,9 @@ example, plus the gradient pathologies that shaped architecture history.
 
 - **Taylor expansion** is the foundation of all of optimization:
   $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
-  Gradient descent trusts the first-order term; Newton's method trusts the second
-  ([[02-foundations/optimization|optimization]]).
+  ($H$ is the **Hessian** — the matrix of second derivatives $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
+  the multivariable version of $f''$.) Gradient descent trusts the first-order term;
+  Newton's method trusts the second ([[02-foundations/optimization|optimization]]).
 - $\partial L/\partial w$ answers: "nudge $w$, how much does $L$ move?" Training =
   computing millions of these sensitivities and stepping against them.
 - **Gradient** $\nabla_w L$: vector of all sensitivities; points uphill; perpendicular to
@@ -123,7 +124,8 @@ bug detector in existence.
 
 - **테일러 전개**가 최적화 전체의 토대다:
   $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
-  경사 하강은 1차 항을, 뉴턴법은 2차 항까지 믿는다
+  ($H$는 **헤시안** — 2차 도함수의 행렬 $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
+  $f''$의 다변수 버전이다.) 경사 하강은 1차 항을, 뉴턴법은 2차 항까지 믿는다
   ([[02-foundations/optimization|최적화]]).
 - $\partial L/\partial w$의 질문: "$w$를 살짝 밀면 $L$이 얼마나 움직이는가?" 학습 = 이
   민감도 수백만 개를 계산해 반대로 내딛는 일.

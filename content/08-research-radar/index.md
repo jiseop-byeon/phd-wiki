@@ -32,6 +32,19 @@ the visible topic count therefore need not shrink monotonically between scopes.
 Research depth belongs to the pages themselves, not to this dashboard. Use the
 [[00-study-depth-guide|Study Depth Guide]] after the Radar identifies a candidate area.
 
+> [!warning] Known limitations (read before trusting a trend)
+> - **Venue coverage**: IROS, RSS, RA-L, and T-RO — a large share of robotics output — are
+>   not yet indexed; robotics trends here undercount the field. **CoRL 2025 is missing**
+>   from the current dataset (DBLP had not indexed it at build time; see the audit panel).
+> - **Single denominator**: shares normalize by each year's total across all indexed
+>   venues, so changes in venue mix or indexing completeness can masquerade as topic
+>   trends. Treat cross-year momentum as a lead to investigate, not a measurement.
+> - **Ontology mixing**: in the current dataset the Transformer topic also matched
+>   state-space/Mamba terms (separated in the taxonomy going forward), and broad topics
+>   like Foundation Models absorb general LLM vocabulary — a "rise" can be a naming shift.
+> - Use the Radar to *generate* questions and find representative papers — not as the
+>   final basis for choosing a research topic.
+
 > [!warning] Conservative by design
 > The first release excludes arXiv and workshops. A topic can therefore appear later than
 > it does on social media. That lag is intentional: this page tracks published research,
@@ -53,6 +66,19 @@ Deep Learning·Physical AI·Robot Learning에 동시에 나타날 수 있으며,
 
 학습 깊이는 이 대시보드가 아니라 각 학습 페이지에서 정한다. Radar로 후보 분야를 찾은
 뒤 [[00-study-depth-guide|Study Depth Guide]]를 사용한다.
+
+> [!warning] 알려진 한계 (추세를 믿기 전에 읽을 것)
+> - **학회 커버리지**: IROS, RSS, RA-L, T-RO — 로보틱스 출판의 큰 몫 — 이 아직 색인되지
+>   않았다; 여기의 로보틱스 추세는 분야를 과소집계한다. **CoRL 2025도 현재 데이터셋에
+>   없다** (빌드 시점에 DBLP 미색인; 감사 패널 참고).
+> - **단일 분모**: 점유율이 그해 색인된 전체 학회 합계로 정규화되므로, 학회 구성이나 수집
+>   완전성의 변화가 주제 추세처럼 보일 수 있다. 연도 간 momentum은 측정값이 아니라 조사할
+>   단서로 취급하라.
+> - **온톨로지 혼합**: 현 데이터셋에서 Transformer 토픽이 state-space/Mamba 용어와도
+>   매칭됐고(향후 분리), Foundation Models 같은 넓은 토픽은 일반 LLM 어휘를 흡수한다 —
+>   "상승"이 명명 변화일 수 있다.
+> - Radar는 질문을 *생성*하고 대표 논문을 찾는 용도로 쓰라 — 연구 주제 선정의 최종 근거가
+>   아니다.
 
 > [!warning] 의도적으로 보수적
 > 초기판은 arXiv와 워크숍을 제외한다. 소셜미디어보다 신호가 늦게 보일 수 있지만, 이는 관심이

@@ -11,6 +11,7 @@ tags: [paper, vla, robot-learning]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -34,7 +35,7 @@ semantic knowledge *and* output motor commands?
 > [!tip] Key intuition
 > Don't bolt a policy head onto a VLM — make actions *literally another language* the VLM
 > speaks. If "move gripper to 0.3, 0.5" is just a string, then robot control is one more
-> text task, and everything the VLM knows transfers to control for free.
+> text task, and the VLM's semantic knowledge becomes available to control — "for free" at the interface level, though what actually transfers is semantics, not motor skill (see the claim box).
 
 - Backbones: **PaLI-X (up to 55B)** and **PaLM-E (12B)**, pretrained on web-scale
   vision-language data.
@@ -92,7 +93,7 @@ RT-2가 답한 질문: 하나의 모델이 웹의 의미 지식을 유지하면�
 > [!tip] 핵심 직관
 > VLM에 정책 헤드를 접붙이지 말고, 행동을 VLM이 말하는 *말 그대로 또 하나의 언어*로
 > 만들어라. "그리퍼를 0.3, 0.5로 이동"이 그냥 문자열이라면 로봇 제어는 텍스트 과제 하나가
-> 더 생긴 것이고, VLM이 아는 모든 것이 제어로 공짜로 전이된다.
+> 더 생긴 것이고, VLM의 의미 지식이 제어에서 쓸 수 있게 된다 — 인터페이스 수준에서는 "공짜"지만, 실제로 전이되는 것은 운동 기술이 아니라 의미론이다(주장 박스 참고).
 
 - 백본: 웹 규모 시각-언어 데이터로 사전학습된 **PaLI-X(최대 55B)**와 **PaLM-E(12B)**.
 - **행동의 텍스트화**: RT-1의 256 구간 이산화를 쓰되, 각 구간을 (재사용 또는 예약된)

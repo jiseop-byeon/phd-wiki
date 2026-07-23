@@ -10,6 +10,7 @@ tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---

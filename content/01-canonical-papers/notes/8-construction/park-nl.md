@@ -8,7 +8,7 @@ arxiv: https://arxiv.org/abs/2307.04195
 pdf: https://arxiv.org/pdf/2307.04195
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Literacy
 depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
 mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."

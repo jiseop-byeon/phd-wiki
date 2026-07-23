@@ -78,7 +78,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 > [!tip]- Answers
 > 1. Expanding the product gives $\cos^2\theta + \sin^2\theta = 1$ terms → $I$. In general $R$'s columns are orthonormal, so $R^\top R = I \Rightarrow R^{-1} = R^\top$.
-> 2. Angle values jump at the $\pm180°$ boundary ($179° \to -179$, not $-181°$) — neighboring rotations become distant targets and MSE explodes. Quaternions' double cover means $q$ and $-q$ are the same rotation, so a sign-flipped target gives a large loss (wrong gradient) for a correct answer.
+> 2. Angle values jump at the $\pm180°$ boundary ($179° \to -179°$, not $-181°$) — neighboring rotations become distant targets and MSE explodes. Quaternions' double cover means $q$ and $-q$ are the same rotation, so a sign-flipped target gives a large loss (wrong gradient) for a correct answer.
 > 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (append 1 for homogeneous coordinates, then multiply).
 > 4. Right-multiplication $T \cdot \Delta T$ — motion in the body (gripper) frame multiplies on the right; world-frame motion on the left.
 

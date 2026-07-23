@@ -8,8 +8,9 @@ arxiv: https://arxiv.org/abs/2306.09639
 doi: https://doi.org/10.1016/j.compind.2024.104112
 tags: [paper, construction, digital-twin, hrc]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -52,7 +53,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/digital-twin-workflows|디지털 트윈 워크플로 스트림]] · [[05-construction-robotics/hrc-worker-centered|HRC·작업자 중심]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (Kamat/Menassa → Xi Wang(TAMU)·Yu(VT))
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] 정적 BIM과 폐루프 디지털 트윈을 구분하고, "닫힘"의 판정 기준(관측→모델 갱신→다음 결정 변경)을 말할 수 있다
 - [ ] BIM 객체가 로봇 과제 명세로 번역되고 실행 결과가 모델로 되돌아오는 경로를 단계별로 재구성할 수 있다

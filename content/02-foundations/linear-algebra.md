@@ -25,7 +25,8 @@ where each concept appears in the papers of this wiki.
   - **Column picture**: $y = \sum_j x_j\, w_{:,j}$ — the output is a mix of learned
     directions (columns) weighted by the input.
 - Shape discipline: $(m\times n)(n\times 1) = (m \times 1)$. Reading shapes is how you read
-  architectures. Worked example — one attention head with $d_{model}=512$, $d_k=64$:
+  architectures. Worked example — one attention head with $d_{model}=512$, $d_k=64$, where $X$ is the
+  input matrix of $T$ token embeddings (one 512-dim row per token in the sequence):
   $Q = XW_Q$ is $(T\times 512)(512\times 64) = T\times 64$; scores $QK^\top$ are $T\times T$;
   output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$ (softmax turns scores
   into probabilities — defined in [[02-foundations/engineering-math|0.5 §10]]). The whole
@@ -36,7 +37,7 @@ where each concept appears in the papers of this wiki.
 - Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
   (sparsity-inducing — its "corners" touch axes first), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
-### 2. Linear systems, rank, and the four subspaces
+### 2. Linear systems, rank, column space and null space
 
 - $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ (column space). Gaussian elimination = row
   operations to triangular form; LU factorization is elimination *recorded* so multiple
@@ -142,7 +143,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   - **열 관점**: $y = \sum_j x_j\, w_{:,j}$ — 출력은 학습된 방향들(열)을 입력이 가중한
     혼합이다.
 - 모양의 규율: $(m\times n)(n\times 1) = (m \times 1)$. 모양 읽기가 구조 읽기다.
-  계산 예시 — $d_{model}=512$, $d_k=64$인 어텐션 헤드 하나:
+  계산 예시 — $d_{model}=512$, $d_k=64$인 어텐션 헤드 하나, $X$는 시퀀스의 토큰 $T$개를
+  512차원 행으로 쌓은 입력 행렬:
   $Q = XW_Q$는 $(T\times 512)(512\times 64) = T\times 64$; 점수 $QK^\top$는 $T\times T$;
   출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$ (softmax는 점수를 확률로
   바꾼다 — [[02-foundations/engineering-math|0.5 §10]]에 정의).
@@ -153,7 +155,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
   "모서리"가 축에 먼저 닿는다), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
-### 2. 선형계, 랭크, 그리고 네 개의 부분공간
+### 2. 선형계, 랭크, 열공간과 영공간
 
 - $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$(열공간). 가우스 소거 = 삼각형 꼴로 가는 행
   연산; LU 분해는 소거 과정을 *기록*해 우변이 여러 개일 때 재사용을 싸게 만든 것.

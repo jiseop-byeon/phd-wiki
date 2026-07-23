@@ -10,6 +10,7 @@ tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -37,7 +38,7 @@ question: is the Markovian 1000-step *reverse chain* actually required by the tr
   DDIM, recovering DDPM at the stochastic end — **no retraining**, same $\epsilon_\theta$.
 - Deterministic mapping noise↔image = a consistent latent space: interpolation in $x_T$,
   reconstruction, and editing become well-defined.
-- Later understood as a discretization of the [[score-sde|probability-flow ODE]].
+- The ODE connection is already drawn in the paper itself (§4.3) and was later widely exploited via the [[score-sde|probability-flow ODE]] framing.
 
 ### Results
 
@@ -82,7 +83,7 @@ descendants; DDIM inversion underpins image/trajectory editing methods.
   극단에서 DDPM 복원 — **재학습 없음**, 같은 $\epsilon_\theta$.
 - 노이즈↔이미지의 결정론적 사상 = 일관된 잠재 공간: $x_T$에서의 보간, 복원, 편집이
   잘 정의된다.
-- 나중에 [[score-sde|확률 흐름 ODE]]의 이산화로 이해됨.
+- ODE 연결은 논문 자신이 이미 그렸고(§4.3), 이후 [[score-sde|확률 흐름 ODE]] 프레임으로 널리 활용됐다.
 
 ### 결과
 

@@ -41,12 +41,16 @@ climb," not a verdict.
 되면 장벽 순위가 바뀔 수 있다 — 정확히 [[05-construction-robotics/lineage|4시대]]의 경제적
 베팅이다. "판결"이 아니라 "기술이 넘어야 할 벽"으로 읽는 것이 좋다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 이 논문의 장벽 목록은 2019년 설문·문헌 기반의 *수요 측* 스냅숏이다 — 기술 불가능성의 증명이 아니라 도입 조건의 목록으로 읽어야 하고, 학습 시대의 비용 곡선 변화가 어느 장벽을 무너뜨리는지가 오늘의 읽기 포인트다.
+
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/8-construction/bock-2015|Bock 2015]] · 다음: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (기술 쪽의 응답)
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] 네 가지 기술 범주와 최상위 도입 장벽을 말할 수 있다
 - [ ] 기술이 아니라 수요 측 제약이라는 프레임의 의미를 설명할 수 있다
 - [ ] 범용 로봇이 비용 구조를 바꿀 수 있다는 반론을 구성할 수 있다
+- [ ] 이 장벽 목록을 [[05-construction-robotics/industry-deployment|2026 산업 지도]]와 대조해 무엇이 실제로 낮아졌는지 말할 수 있다

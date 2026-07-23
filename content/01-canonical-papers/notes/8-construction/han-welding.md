@@ -7,8 +7,9 @@ year: 2024
 doi: https://doi.org/10.1016/j.autcon.2024.105699
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -36,7 +37,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/assembly-fabrication|4. 조립·시공 스트림]]
 - 계보: Golparvar-Fard → Kevin Han (NC State CARL) — [[05-construction-robotics/lineage|건설로봇 계보]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] 비전 이음부 탐지 → 실시간 용접 실행의 파이프라인과 두 운용 모드의 차이를 말할 수 있다
 - [ ] 테스트베드 증거(2024)와 자율 주행·위치잡기 후속(2025 JCEM)의 분업을 말할 수 있다

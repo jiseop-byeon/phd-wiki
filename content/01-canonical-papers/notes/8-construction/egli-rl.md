@@ -4,12 +4,13 @@ authors: Pascal Egli, Marco Hutter (soil-adaptive sibling adds Dominique Gaschen
 affiliation: ETH Zurich, Robotic Systems Lab
 venue: IEEE Robotics and Automation Letters
 year: 2022
-doi: https://doi.org/10.1109/LRA.2022.3152865
-pdf: https://www.research-collection.ethz.ch/server/api/core/bitstreams/95ef5691-11e8-4a86-b02d-6f0e2501de9b/content
+doi: https://doi.org/10.1109/LRA.2022.3152865  # general-approach paper (RA-L 2022)
+pdf: https://www.research-collection.ethz.ch/server/api/core/bitstreams/95ef5691-11e8-4a86-b02d-6f0e2501de9b/content  # soil-adaptive sibling's ETH OA PDF
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -28,7 +29,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: one machine class — everything is on the instrumented M545, and the actuator model must be re-learned per machine; testbed-vs-site: ETH test pits and controlled digging, not production sites; autonomy covers the *arm skill* (trajectory following, bucket filling) — where to dig, task sequencing, and site logistics remain outside; interventions are those of a supervised research trial, not reported field-duty statistics.
 
-**Reading the claim**: "a general approach" claims generality across *arm motions and tasks on a hydraulically actuated machine, given its learned actuator model* — read it as a reusable sim-to-real recipe for hydraulics, not as machine-general or site-general autonomy. Likewise "soil-adaptive" means online adaptation across the soils tested without parameter identification — evidence of a mechanism, not proof of all-soil generality.
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "a general approach" claims generality across *arm motions and tasks on a hydraulically actuated machine, given its learned actuator model* — read it as a reusable sim-to-real recipe for hydraulics, not as machine-general or site-general autonomy. Likewise "soil-adaptive" means online adaptation across the soils tested without parameter identification — evidence of a mechanism, not proof of all-soil generality.
 
 ## 한국어
 
@@ -42,14 +44,15 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한계**: 단일 기계 클래스 — 모든 것이 계측된 M545 위에서 이뤄지고, 액추에이터 모델은 기계마다 다시 학습해야 한다; 테스트베드 대 현장: ETH 시험 구덩이와 통제된 굴착이지, 생산 현장이 아니다; 자율성은 *팔 스킬*(궤적 추종, 버킷 채우기)을 다룬다 — 어디를 팔지, 작업 순서, 현장 물류는 밖에 있다; 개입은 감독된 연구 시험의 수준이지, 보고된 현장 운용 통계가 아니다.
 
-**주장 읽는 법**: "a general approach"는 *학습된 액추에이터 모델이 주어진 유압 기계 위에서의 팔 동작·과제 전반*에 대한 일반성 주장이다 — 유압 기계를 위한 재사용 가능한 sim-to-real 레시피로 읽어야지, 기계 일반·현장 일반 자율성으로 읽으면 안 된다. 마찬가지로 "soil-adaptive"는 파라미터 식별 없이 시험된 토질들 간 온라인 적응을 뜻한다 — 메커니즘의 증거이지, 모든 토질에 대한 일반성 증명이 아니다.
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "a general approach"는 *학습된 액추에이터 모델이 주어진 유압 기계 위에서의 팔 동작·과제 전반*에 대한 일반성 주장이다 — 유압 기계를 위한 재사용 가능한 sim-to-real 레시피로 읽어야지, 기계 일반·현장 일반 자율성으로 읽으면 안 된다. 마찬가지로 "soil-adaptive"는 파라미터 식별 없이 시험된 토질들 간 온라인 적응을 뜻한다 — 메커니즘의 증거이지, 모든 토질에 대한 일반성 증명이 아니다.
 
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/8-construction/heap|HEAP]] · 다음: [[01-canonical-papers/notes/8-construction/ext|ExT]]
 - 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 자율화]] · [[05-construction-robotics/sim-to-real|sim-to-real 가이드]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] 유압 밸브 동역학이 왜 sim-to-real의 병목이고, NN 액추에이터 모델이 이를 어떻게 푸는지 말할 수 있다
 - [ ] 정책의 입출력(기계 상태 → 파일럿단 밸브 명령)과 "실기계 파인튜닝 제로"의 의미를 말할 수 있다

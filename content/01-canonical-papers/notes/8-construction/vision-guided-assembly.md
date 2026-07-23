@@ -7,8 +7,9 @@ year: 2015
 doi: https://doi.org/10.1016/j.autcon.2015.06.002
 tags: [paper, construction, assembly, perception]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -51,7 +52,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/assembly-fabrication|조립·패브리케이션 스트림]] · [[05-construction-robotics/site-perception|현장 인식]]
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (Kamat/Menassa → Feng(NYU AI4CE)·Yu(VT)·Liang(Stony Brook))
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] 설계 → 모바일 정합 → 비전 유도 조작 → as-built 스캔의 4단계 루프를 재구성하고, 각 단계에서 어떤 변환/모델이 추정되는지 말할 수 있다
 - [ ] 제조와 건설의 reversed spatial relationship이 무엇이고, 왜 이것이 고정 셀 로봇 공학의 가정을 무너뜨리는지 설명할 수 있다

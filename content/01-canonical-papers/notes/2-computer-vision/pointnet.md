@@ -8,6 +8,7 @@ tags: [paper, computer-vision, point-cloud]
 status: note-complete
 last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -34,7 +35,7 @@ A point cloud is an *unordered set* of 3D samples — permuting the points chang
 
 ### Results
 
-- ModelNet40 shape classification on par with or better than voxel and multi-view baselines at a fraction of the compute; strong ShapeNet part segmentation and S3DIS indoor semantic segmentation.
+- ModelNet40 shape classification on par with or better than voxel baselines at a fraction of the compute (multi-view CNNs like MVCNN still edged it on raw accuracy — the win was efficiency and directness, not every leaderboard); strong ShapeNet part segmentation and S3DIS indoor semantic segmentation.
 - Notably robust to point dropout — with the critical-point-set analysis giving the reason rather than just the number.
 - PointNet++ improves precisely where PointNet is weakest: fine local geometry and scenes with uneven sampling density.
 
@@ -77,7 +78,7 @@ The grammar of an entire subfield: nearly every point-cloud architecture since e
 
 ### 결과
 
-- ModelNet40 형상 분류에서 복셀·다시점 기준선과 대등하거나 더 나은 성능을 훨씬 적은 연산으로; ShapeNet 부품 분할과 S3DIS 실내 의미 분할에서도 강력하다.
+- ModelNet40 형상 분류에서 복셀 기준선과 대등하거나 더 나은 성능을 훨씬 적은 연산으로 (MVCNN 같은 다시점 CNN은 순수 정확도에서 여전히 근소 우세 — 승리는 모든 리더보드가 아니라 효율성과 직접성이었다); ShapeNet 부품 분할과 S3DIS 실내 의미 분할에서도 강력하다.
 - 점 탈락(dropout)에 눈에 띄게 강건하다 — 숫자만이 아니라 critical-point-set 분석이 그 이유를 제공한다.
 - PointNet++는 정확히 PointNet의 약점에서 개선한다: 미세한 국소 기하와 샘플링 밀도가 고르지 않은 장면.
 

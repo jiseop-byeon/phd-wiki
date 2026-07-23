@@ -58,7 +58,7 @@ Defined the frozen-backbone + connector recipe every subsequent VLM refines — 
 
 ## 한국어
 
-**한 줄 요약**: 얼린 비전 인코더와 얼린 LLM을 소수의 학습 가능한 연결층으로 잇는다 — 그 결과물인 VLM은 LLM의 few-shot 학습 능력을 물려받고, 이미지-텍스트가 뒤섞인 시퀀스를 다룬다.
+**한 줄 요약**: 얼린 비전 인코더와 얼린 LLM을 학습 가능한 연결층(Perceiver Resampler + 게이트 교차 어텐션 — 80B 스케일에서는 그 자체로 수십억 파라미터)으로 잇는다 — 그 결과물인 VLM은 LLM의 few-shot 학습 능력을 물려받고, 이미지-텍스트가 뒤섞인 시퀀스를 다룬다.
 
 ### 배경
 

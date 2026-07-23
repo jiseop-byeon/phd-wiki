@@ -37,7 +37,7 @@ The [[01-canonical-papers/notes/1-foundations/bert|BERT]] paradigm required task
 
 - Few-shot performance rises smoothly with model size and often approaches fine-tuned SOTA (translation, QA, cloze); the *gap between zero- and few-shot grows with scale* — evidence of in-context learning as an emergent ability.
 - Generates news articles humans struggle to distinguish from human-written ones.
-- Arithmetic, novel word usage, unscrambling — capabilities absent in smaller models appear discontinuously.
+- Arithmetic, novel word usage, unscrambling — capabilities absent in smaller models appear discontinuously *on the reported metrics* (whether such emergence is a real phase change or partly a metric artifact became a live debate — read emergence claims with the evaluation in view).
 
 ### Limitations & critique
 
@@ -76,7 +76,7 @@ Made "scale + prompting" the dominant paradigm and prompting a first-class inter
 
 - Few-shot 성능이 모델 크기에 따라 매끄럽게 상승하며 번역·QA·빈칸 채우기에서 파인튜닝 SOTA에 근접; *zero-shot과 few-shot의 격차가 규모와 함께 벌어짐* — in-context learning이 창발적 능력이라는 증거.
 - 사람이 사람 글과 구별하기 어려운 수준의 뉴스 기사 생성.
-- 산술, 새 단어 활용, 철자 재배열 등 작은 모델에 없던 능력이 불연속적으로 등장.
+- 산술, 새 단어 활용, 철자 재배열 등 작은 모델에 없던 능력이 *보고된 지표상* 불연속적으로 등장 (이 출현이 실제 상전이인지 지표의 인공물인지는 이후 살아 있는 논쟁이 됐다 — 출현 주장은 평가 방식과 함께 읽어라).
 
 ### 한계와 비판
 

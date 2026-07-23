@@ -27,7 +27,7 @@ estimate optimally, then control the estimate optimally, and it is jointly optim
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
 
-You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
+(Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
 stabilizing solution $P \succeq 0$ is what makes $V(x)=x^\top P x$ a Lyapunov function for
 the closed loop. When a paper says "we solve a Riccati equation," it means this constant
@@ -35,9 +35,10 @@ $P$, computed once offline (or once per linearization in iterative/time-varying 
 
 ### 2. When does this actually work? Two conditions
 
-- **Stabilizability** of $(A,B)$: every unstable mode of $A$ must be influenceable by $u$
-  (a weaker, sufficient version of the controllability rank test in
-  [[02-foundations/linear-algebra|page 1's control section]]). Otherwise no feedback can
+- **Stabilizability** of $(A,B)$: every unstable mode of $A$ must be influenceable by $u$ —
+  the exact (necessary and sufficient) condition for a stabilizing feedback to exist,
+  weaker than the full controllability rank test in
+  [[02-foundations/linear-algebra|page 1's control section]]. Otherwise no feedback can
   stabilize, Riccati or not.
 - **Detectability** of $(A,Q^{1/2})$: every unstable mode must show up in the cost —
   otherwise the optimizer can "not care" about a mode that is quietly diverging, and the
@@ -77,6 +78,19 @@ standard tracking controller that learned planners hand their outputs to.
 Underactuated ch. (geometric intuition, code) → connect to the
 [[02-foundations/optimization|MPC-as-QP example]].
 
+### Self-check
+
+1. What happens to the Riccati approach if $(A,B)$ is not stabilizable?
+2. On the double integrator, scale $Q$ by 10 and $R$ by 10 together — what happens to $K$?
+3. In one sentence: why is "LQG is optimal, therefore robust" wrong?
+4. Why use LQR's $P$ as the MPC terminal cost?
+
+> [!tip]- Answers
+> 1. No feedback can catch the unstable mode, so no stabilizing solution $P$ exists — the problem itself is ill-posed.
+> 2. Unchanged — only the overall cost scale changes; the minimizing gain is the same. Only the ratio $Q/R$ determines $K$.
+> 3. Optimality is with respect to the nominal model, and LQG is proven to have no guaranteed margins against model error (Doyle 1978).
+> 4. $x^\top P x$ summarizes the exact unconstrained cost-to-go beyond the horizon, so a short horizon still supports the stability argument — Mayne 2000's terminal ingredient.
+
 ### Continue beyond this guide
 
 The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
@@ -94,7 +108,7 @@ $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대�
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
 
-손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
+(로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해
 $P \succeq 0$가 $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. 논문이 "리카티
 방정식을 푼다"고 하면 이 상수 $P$를 오프라인에서 한 번(반복/시변 LQR에서는 선형화마다
@@ -103,8 +117,9 @@ $P \succeq 0$가 $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만
 ### 2. 언제 실제로 통하는가? 두 조건
 
 - **$(A,B)$의 안정화 가능성(stabilizability)**: $A$의 모든 불안정 모드가 $u$의 영향을
-  받아야 한다 ([[02-foundations/linear-algebra|1페이지 제어 섹션]]의 가제어성 랭크 검정의
-  더 약한 충분 버전). 아니면 리카티든 뭐든 어떤 피드백도 안정화할 수 없다.
+  받아야 한다 — 안정화 피드백이 존재하기 위한 정확한(필요충분) 조건이며,
+  [[02-foundations/linear-algebra|1페이지 제어 섹션]]의 완전한 가제어성 랭크 검정보다
+  약하다. 아니면 리카티든 뭐든 어떤 피드백도 안정화할 수 없다.
 - **$(A,Q^{1/2})$의 검출 가능성(detectability)**: 모든 불안정 모드가 비용에 나타나야
   한다 — 아니면 최적화기가 조용히 발산하는 모드를 "신경 안 쓰는" 것이 허용되어, 최적
   비용의 제어기가 안정화 제어기가 아니게 된다.

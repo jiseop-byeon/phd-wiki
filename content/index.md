@@ -31,6 +31,7 @@ one's own research area.
 - [[00-study-depth-guide|Study Depth Guide]] — topic-by-topic Literacy / Working / Mastery profile
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — paper vocabulary, equations, claims and evidence
 - [[06-research-practice/index|Research Practice]] — questions, experiments, failure analysis, writing and peer review
+- [[08-research-radar/index|Research Radar]] — published-venue trend map, for after foundational literacy
 - [[glossary|Glossary]] — quick term lookup
 - [[study-log|Study Log]] — what I read and when
 

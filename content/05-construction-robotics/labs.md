@@ -77,6 +77,8 @@ excavation lineage at CMU (Stentz/Singh, 1990s) lives in the
 
 ### Asia
 
+*(Coverage note: Chinese academic and OEM heavy-machinery programs — the XCMG/Zhejiang/Tongji orbit increasingly visible at ICRA — are not yet mapped here; flagged for a future survey.)*
+
 | Lab | PI | Known for |
 |---|---|---|
 | [IRiS Lab](https://iris.kaist.ac.kr/), KAIST CEE | Jee-Hwan Ryu | telerobotics + construction robotics (RA-L 2024 Best Paper); the Korean anchor of the ICRA construction-robotics community |
@@ -176,6 +178,8 @@ These groups publish the manipulation/HRC methods construction researchers impor
 | Imperial/UCL 컨소시엄 | Mirko Kovac · Robert Stuart-Smith | **공중 적층 제조** — 비행 중 3D 프린팅하는 드론 (Nature 2022) |
 
 ### 아시아
+
+*(커버리지 주석: 중국 학계·OEM 중장비 프로그램 — ICRA에서 점점 눈에 띄는 XCMG/저장/퉁지 궤도 — 은 아직 이 지도에 없다; 향후 조사 대상으로 표기.)*
 
 | 랩 | PI | 대표 분야 |
 |---|---|---|

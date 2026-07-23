@@ -1,5 +1,5 @@
 ---
-title: "ExT — Scalable Autonomous Excavation via Multi-Task Pretraining and Fine-Tuning (2025)"
+title: "ExT — Towards Scalable Autonomous Excavation via Large-Scale Multi-Task Pretraining and Fine-Tuning (2025)"
 authors: Yifan Zhai, Lorenzo Terenzi, Patrick Frey, Diego Garcia Soto, Pascal Egli, Marco Hutter
 affiliation: ETH Zurich, Robotic Systems Lab
 venue: arXiv
@@ -8,8 +8,9 @@ arxiv: https://arxiv.org/abs/2509.14992
 pdf: https://arxiv.org/pdf/2509.14992
 tags: [paper, construction, robotics, vla]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -30,24 +31,28 @@ and machine configurations is a design goal, not an afterthought.
 
 **The pipeline, concretely** (what a Working-level read should extract):
 
-- **Demonstration generation**: ~100 hours of excavation demonstrations collected in
-  **GPU-parallel simulation** (the [[05-construction-robotics/sim-to-real|Isaac-Gym-lineage]]
-  recipe), from **three heterogeneous sources** — RL expert policies (trained per-task),
-  scripted controllers, and human teleoperation. Simulation is what makes the demos
-  unlimited, labeled, and resettable; it is also the recipe's main scope limit.
+- **Demonstration generation**: 150,000 episodes *per task* collected in **GPU-parallel
+  simulation** (the [[05-construction-robotics/sim-to-real|Isaac-Gym-lineage]] recipe) —
+  the full dataset corresponds to roughly **30 days of continuous real-world operation,
+  generated in under two hours on a single RTX 3090** — from **heterogeneous sources**
+  (per-task RL expert policies, scripted controllers, teleoperation). Simulation is what
+  makes the demos unlimited, labeled, and resettable; it is also the recipe's main scope
+  limit.
 - **Pretraining**: one transformer policy trained by behavior cloning across the mixed
-  multi-task demonstration corpus (arm + chassis action space; excavation task family:
-  digging, grading, trenching-class tasks).
+  multi-task demonstration corpus (arm + cabin-swing action space; **four tasks: Dig,
+  Dump, Move Arm, and Abort-Digging-&-Reset** — together a complete dig–dump–move
+  excavation cycle).
 - **Fine-tuning, two variants**: **SFT** (supervised, on task-specific demonstrations)
-  and **RLFT** (RL fine-tuning against task reward in simulation) — read the paper's
-  comparisons for when RLFT beats SFT; the headline is that *both start from the same
-  pretrained policy*, which is the paradigm claim.
-- **Transfer evidence**: fine-tuned policies execute full digging cycles on the real
-  M545 ([[01-canonical-papers/notes/8-construction/heap|HEAP]]) with centimeter-level
-  tracking accuracy — sim-to-real transfer of the *pretrained-then-fine-tuned* policy,
-  not a from-scratch controller. Evaluation splits are organized around held-out tasks
-  and sim-vs-real execution; trace the exact task lists and metrics in §experiments of
-  the paper (the note deliberately does not reproduce every table).
+  and **RLFT** (RL fine-tuning against task reward) — demonstrated **in simulation** for
+  adapting to new tasks, out-of-distribution conditions, and machine configurations while
+  retaining prior tasks; the headline is that *both start from the same pretrained
+  policy*, which is the paradigm claim.
+- **Transfer evidence**: the **pretrained** multi-task policy executes complete
+  excavation cycles on the real M545 ([[01-canonical-papers/notes/8-construction/heap|HEAP]])
+  with centimeter-level accuracy, comparable to specialized single-task controllers —
+  sim-to-real transfer of the pretrained policy itself; the fine-tuning results are
+  simulation studies. Trace exact task tables and metrics in the paper's experiments
+  section (the note deliberately does not reproduce every table).
 
 **Placed in the map**: the merge that the
 [[05-construction-robotics/lineage|lineage]] page calls open territory — era-4 robot
@@ -68,19 +73,22 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 
 **파이프라인, 구체적으로** (Working 수준의 읽기가 뽑아내야 할 것):
 
-- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 수집한 약 100시간의 굴착 시연 — **세 가지 이질적 소스**: (과제별로
-  학습된) RL 전문가 정책, 스크립트 제어기, 인간 원격조작. 시뮬레이션이 시연을 무제한·
-  라벨된·리셋 가능하게 만들며, 동시에 이 레시피의 주된 범위 한계이기도 하다.
+- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 과제당 **15만 에피소드** 수집 — 전체 데이터셋은 **실기계 연속 운영
+  약 30일 상당이며, RTX 3090 한 장으로 2시간 이내에 생성** — 소스는 이질적(과제별 RL
+  전문가 정책, 스크립트 제어기, 원격조작). 시뮬레이션이 시연을 무제한·라벨된·리셋
+  가능하게 만들며, 동시에 이 레시피의 주된 범위 한계이기도 하다.
 - **사전학습**: 혼합 멀티태스크 시연 코퍼스에 대한 행동 복제로 학습되는 하나의 트랜스포머
-  정책 (팔 + 섀시 행동 공간; 굴착 과제군: 굴착·정지·트렌칭류).
-- **파인튜닝, 두 변형**: **SFT**(과제별 시연에 지도학습)와 **RLFT**(시뮬레이션에서 과제
-  보상에 대한 RL 파인튜닝) — RLFT가 SFT를 이기는 조건은 논문의 비교를 읽어라; 헤드라인은
-  *둘 다 같은 사전학습 정책에서 출발한다*는 것 — 그게 패러다임 주장이다.
-- **전이 증거**: 파인튜닝된 정책이 실제 M545([[01-canonical-papers/notes/8-construction/heap|HEAP]])
-  에서 센티미터급 추종 정확도로 완전한 굴착 사이클을 수행 — 밑바닥부터 만든 제어기가
-  아니라 *사전학습→파인튜닝* 정책의 sim-to-real 전이다. 평가 분할은 held-out 과제와
-  sim/real 실행을 축으로 조직된다; 정확한 과제 목록과 지표는 논문의 실험 섹션에서
-  추적하라 (노트는 모든 표를 재현하지 않는다).
+  정책 (팔 + 캐빈 선회 행동 공간; **과제 4종: Dig, Dump, Move Arm, Abort-Digging-&-Reset**
+  — 합쳐서 완전한 굴착-덤프-이동 사이클).
+- **파인튜닝, 두 변형**: **SFT**(과제별 시연에 지도학습)와 **RLFT**(과제 보상에 대한 RL
+  파인튜닝) — 새 과제·분포 밖 조건·기계 구성에의 적응은 **시뮬레이션에서** 시연됐고 기존
+  과제 성능은 유지된다; 헤드라인은 *둘 다 같은 사전학습 정책에서 출발한다*는 것 — 그게
+  패러다임 주장이다.
+- **전이 증거**: **사전학습된** 멀티태스크 정책이 실제 M545([[01-canonical-papers/notes/8-construction/heap|HEAP]])
+  에서 센티미터급 정확도로 완전한 굴착 사이클을 수행 — 전문화된 단일 과제 제어기에
+  비견되는 성능으로, 사전학습 정책 자체의 sim-to-real 전이다; 파인튜닝 결과는
+  시뮬레이션 연구다. 정확한 과제 표와 지표는 논문의 실험 섹션에서 추적하라 (노트는 모든
+  표를 재현하지 않는다).
 
 **지도에서의 위치**: [[05-construction-robotics/lineage|계보]] 페이지가 열린 영토라 부르는
 합류 — 4시대의 로봇 학습(모방, 사전학습→파인튜닝)이 1R시대의 중장비에 도착하는 지점 —
@@ -98,8 +106,7 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] 시연 생성(GPU 병렬 시뮬, 3소스 혼합)→사전학습→SFT/RLFT→실기계 전이의 파이프라인을 단계별로 말할 수 있다
-- [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔는지 말할 수 있다
-- [ ] "전문가 혼합 시연"이 OXE의 어떤 교훈(이질적 소스 > 순수함)을 반복하는지 말할 수 있다
+- [ ] 파이프라인(과제당 15만 시뮬 에피소드 → BC 사전학습 → SFT/RLFT, 실기계 전이는 사전학습 정책)을 단계별로 말할 수 있다
+- [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔고, "전문가 혼합"이 OXE의 어떤 교훈을 반복하는지 말할 수 있다
 - [ ] 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
 - [ ] 이 논문이 왜 로봇 학습(4시대)과 중장비 자율성(1R시대)의 합류점인지 설명할 수 있다

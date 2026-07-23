@@ -89,7 +89,8 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
 - **Kalman filter, assembled from this page**: model
   $x_{t+1} = Ax_t + w$, $y_t = Cx_t + v$ with Gaussian $w \sim \mathcal{N}(0,Q)$,
   $v \sim \mathcal{N}(0,R)$.
-  - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$.
+  - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
+    the **estimate covariance** (uncertainty of $\hat x$) and $Q$ the process-noise covariance.
   - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
   Nothing new was needed: affine closure + conditioning formula = optimal recursive
@@ -187,7 +188,8 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
 - **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
   $x_{t+1} = Ax_t + w$, $y_t = Cx_t + v$, 가우시안 $w \sim \mathcal{N}(0,Q)$,
   $v \sim \mathcal{N}(0,R)$.
-  - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$
+  - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
+    **추정 공분산**($\hat x$의 불확실성), $Q$는 과정 잡음 공분산이다
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
   새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 최적 재귀 추정. 비선형

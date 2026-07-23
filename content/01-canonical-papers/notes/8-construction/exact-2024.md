@@ -8,8 +8,9 @@ arxiv: https://arxiv.org/abs/2405.05861
 pdf: https://arxiv.org/pdf/2405.05861
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -45,7 +46,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 이전: [[01-canonical-papers/notes/4-vla/act|ACT]] · 다음: [[01-canonical-papers/notes/8-construction/ext|ExT]]
 - 같은 연구소: [[01-canonical-papers/notes/8-construction/aes|AES]] · 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 자율화]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] ACT를 굴착기로 옮길 때 관찰 공간과 행동 공간이 무엇으로 바뀌는지 말할 수 있다
 - [ ] "시뮬레이션 검증뿐"이라는 사실이 이 논문의 주장 강도를 어떻게 제한하는지 말할 수 있다

@@ -8,6 +8,7 @@ tags: [paper, reinforcement-learning]
 status: note-complete
 last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -36,7 +37,7 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 - The paper also proposes an adaptive-KL-penalty variant; clipping won empirically and is what "PPO" means in practice.
 - The full training loss adds a value-function error term and an entropy bonus, optimized jointly when actor and critic share parameters.
 
-**GAE — the paper's other half.** The advantage $A_t$ is estimated with truncated **generalized advantage estimation**: with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: biased, low variance) and Monte Carlo returns ($\lambda=1$: unbiased, high variance). Every serious PPO implementation pairs clipping with GAE (typically $\lambda\approx 0.95$); reading "PPO" without reading GAE misses half the algorithm.
+**GAE — the paper's other half.** The advantage $A_t$ is estimated with **generalized advantage estimation** (truncated at the rollout horizon $T$ in practice): with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: biased, low variance) and Monte Carlo returns ($\lambda=1$: unbiased, high variance). Every serious PPO implementation pairs clipping with GAE (typically $\lambda\approx 0.95$); reading "PPO" without reading GAE misses half the algorithm.
 
 ### Results
 
@@ -83,7 +84,7 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 - 논문은 적응형 KL 페널티 변형도 제안하지만, 실험에서 clip이 이겼고 실무에서 "PPO"는 clip 버전을 뜻한다.
 - 전체 학습 손실에는 가치함수 오차 항과 entropy 보너스가 추가되며, actor와 critic이 파라미터를 공유할 때 함께 최적화된다.
 
-**GAE — 논문의 나머지 절반.** Advantage $A_t$는 truncated **generalized advantage estimation**으로 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향, 저분산)와 Monte Carlo 수익($\lambda=1$: 무편향, 고분산) 사이를 λ로 보간한다. 제대로 된 PPO 구현은 전부 clip과 GAE를 짝지어 쓴다(보통 $\lambda\approx 0.95$); GAE 없이 "PPO"만 읽으면 알고리즘의 절반을 놓친 것이다.
+**GAE — 논문의 나머지 절반.** Advantage $A_t$는 **generalized advantage estimation**(실전에서는 롤아웃 지평 $T$에서 절단)으로 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향, 저분산)와 Monte Carlo 수익($\lambda=1$: 무편향, 고분산) 사이를 λ로 보간한다. 제대로 된 PPO 구현은 전부 clip과 GAE를 짝지어 쓴다(보통 $\lambda\approx 0.95$); GAE 없이 "PPO"만 읽으면 알고리즘의 절반을 놓친 것이다.
 
 ### 결과
 

@@ -31,6 +31,9 @@ level per paper: **★ read the original in full** (method and experiments), **�
 note, then skim the original**, **○ the note is enough** (lineage understanding).
 No one masters every field; a good researcher knows *which* depth each paper deserves.
 
+> [!note] Same words, two axes
+> This table describes how deeply to read *one paper*. The [[00-study-depth-guide|study-depth guide]] reuses Literacy/Working/Mastery for a different axis — how well you should eventually *use a topic*. ★◐○ and this table govern reading; `study-depth` governs usage; a ○-paper can live inside a Working-topic and vice versa.
+
 ### 2. The grammar of paper sentences
 
 What common phrases imply — and what they do **not** guarantee:
@@ -123,6 +126,9 @@ If any of the five fails, reread that section — not the whole note.
 **★ 원문 정독**(방법·실험까지), **◐ 노트 후 원문 훑기**, **○ 노트로 충분**(계보 이해).
 모든 분야를 숙달하는 사람은 없다 — 좋은 연구자는 *어느* 논문이 어느 깊이를 요구하는지
 아는 사람이다.
+
+> [!note] 같은 단어, 두 개의 축
+> 이 표는 *논문 한 편*을 얼마나 깊게 읽을지의 축이다. [[00-study-depth-guide|깊이 가이드]]는 Literacy/Working/Mastery를 다른 축 — 주제를 결국 얼마나 잘 *사용*해야 하는가 — 에 재사용한다. ★◐○과 이 표는 읽기를, `study-depth`는 사용을 다룬다; ○ 논문이 Working 주제 안에 있을 수 있고 그 반대도 가능하다.
 
 ### 2. 논문 문장의 문법
 

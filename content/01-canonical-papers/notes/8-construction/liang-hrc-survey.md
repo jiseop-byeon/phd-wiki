@@ -7,8 +7,9 @@ year: 2021
 doi: https://doi.org/10.1061/%28ASCE%29CO.1943-7862.0002154
 tags: [paper, construction]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -40,7 +41,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 스트림: [[05-construction-robotics/hrc-worker-centered|6. HRC·작업자 중심 스트림]]의 입구
 - 짝: [[01-canonical-papers/notes/8-construction/davila-delgado-2019|Davila Delgado 2019]] (수요 측 서베이) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] 인간-로봇 작업 분담 형태에 따른 분류라는 이 서베이의 조직 원리를 말할 수 있다
 - [ ] Davila Delgado(수요 측)와 Liang(공급 측)의 분업 — 두 방향 잡기 서베이의 짝 — 을 설명할 수 있다

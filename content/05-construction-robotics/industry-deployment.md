@@ -98,7 +98,8 @@ deployment evidence, and economic value** should not be collapsed into one score
 “자율”은 원격 감독이 있는 geofence 안의 한 과제일 수 있고, “배치”는 유료 pilot일 수 있으며,
 “AI-powered”는 인식만 AI이고 움직임은 script일 수 있다. 과제 지정·검증 주체, 기계·현장·고객·
 연속 운용 시간, 원격 운전자 비율과 개입률, 준비·보정·재료·유지·복구 노동, 전체 기존 공정과의
-생산성 비교를 확인하라.
+생산성 비교를 확인하라. 인수·합병 뒤에는 무엇이 실제로 바뀌었는지도 물어라 — 제품인가,
+팀인가, 소유권뿐인가.
 
 > [!warning] 증거 위계
 > 동료평가 시스템 논문, 규제·OEM 문서, 실명 고객 배치는 투자 발표·홍보 영상과 다른 주장을

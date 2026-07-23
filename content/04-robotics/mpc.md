@@ -23,8 +23,13 @@ MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
 **The Mayne et al. 2000 survey** is the field's canonical reference: it settled *when MPC
 is stable* — the roles of the terminal cost, terminal constraint set, and horizon length —
-turning a practical heuristic into a theory. Read it after the optimization page's example;
-skim §2–3 for the formulation and stability conditions rather than every proof.
+turning a practical heuristic into a theory. The mechanism, in one paragraph: if the
+horizon ends inside a **terminal set** that is *invariant* under a known local controller,
+then a feasible plan today implies a feasible plan tomorrow (append one step of that
+controller) — this is **recursive feasibility**, the property MPC papers invoke by name;
+and if the terminal cost decreases like a Lyapunov function under that controller, closed-loop
+stability follows. Read the survey after the optimization page's example; skim §2–3 for
+the formulation and stability conditions rather than every proof.
 
 ### 1. When is the QP actually convex?
 
@@ -51,7 +56,9 @@ Two standard ways to write the same problem — papers assume you know which one
   horizon length (powers of $A$).
 
 Rule of thumb when reading: long horizons and state constraints → stacked; short horizons,
-input constraints only → condensed.
+input constraints only → condensed. (The conditioning penalty applies to marginally stable
+or unstable $A$ — the usual robotics case; for strictly stable $A$ the powers decay and
+condensed stays well-behaved.)
 
 ### 3. The failure modes papers gloss over
 
@@ -91,6 +98,19 @@ input constraints only → condensed.
 chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-machinery|stream 3]]).
 
+### Self-check
+
+1. You plug a learned cost matrix $Q$ into an MPC and the solver misbehaves. First thing to check?
+2. Horizon $N=50$ with many state constraints — expect stacked or condensed? Why?
+3. A disturbance pushes the state outside the constraint set. What happens under hard-constrained vs softened MPC?
+4. A paper claims "our NMPC runs at 200 Hz." Name three things to check.
+
+> [!tip]- Answers
+> 1. Whether $Q \succeq 0$ — if indefinite, the QP is non-convex and solver behavior is undefined.
+> 2. Stacked — at long horizons the condensed form becomes dense and ill-conditioned via powers of $A$, and state constraints are natural in the stacked form.
+> 3. Hard: infeasible — the solver returns nothing and a separate fallback must act. Soft: slacks activate and it returns a penalized, gracefully violating solution — control continues.
+> 4. ① Warm-started or cold? ② Problem size (horizon, state dimension) and solver? ③ Is 200 Hz solve time or end-to-end latency ([[04-robotics/robot-systems-deployment|frequency ≠ latency]])?
+
 ### Continue beyond this guide
 
 See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for trajectory optimization, replanning, task planning, and planning under uncertainty.
@@ -105,8 +125,12 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 
 **Mayne et al. 2000 서베이**는 이 분야의 정전이다: *MPC가 언제 안정한가* — 종단 비용,
 종단 제약 집합, 지평 길이의 역할 — 를 정리해 실용적 휴리스틱을 이론으로 만들었다.
-최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는 §2~3의 정식화와 안정성 조건을
-훑는 것을 권한다.
+메커니즘을 한 단락으로: 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합** 안에
+떨어지면, 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한
+스텝을 이어 붙이면 된다) — 이것이 MPC 논문들이 이름으로 부르는 **recursive
+feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노프 함수처럼 감소하면 폐루프
+안정성이 따라온다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
+§2~3의 정식화와 안정성 조건을 훑는 것을 권한다.
 
 ### 1. QP는 언제 실제로 볼록한가?
 
@@ -133,6 +157,8 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
   나빠진다.
 
 읽을 때의 어림 규칙: 긴 지평 + 상태 제약 → stacked; 짧은 지평 + 입력 제약만 → condensed.
+(조건수 페널티는 한계 안정/불안정 $A$ — 로봇의 통상 사례 — 에 해당하고, 엄격히 안정한
+$A$에서는 거듭제곱이 감쇠해 condensed도 얌전하다.)
 
 ### 3. 논문이 얼버무리는 실패 모드
 

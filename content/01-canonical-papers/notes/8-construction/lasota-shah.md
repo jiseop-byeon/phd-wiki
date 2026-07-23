@@ -8,8 +8,9 @@ pdf: https://journals.sagepub.com/doi/pdf/10.1177/0018720814565188
 companion: https://dspace.mit.edu/bitstream/handle/1721.1/124626/2018_Unhelkar_Lasota_Shah_etal_RA_Letters.pdf
 tags: [paper, hrc]
 status: note-complete
-last_verified: 2026-07-24
+last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -22,7 +23,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Method**: a controlled shared-workspace experiment — human and robot performing a collaborative placement task in close proximity, with the robot running either a standard or a human-aware motion planner (one that adapts trajectories to predicted human actions). Motion capture provides objective fluency metrics; questionnaires provide subjective ones.
 
-**Evidence (with numbers)**: with the human-aware planner, tasks completed **5.57% faster**, concurrent human-robot motion rose **19.9%**, human idle time fell **2.96%**, robot idle time fell **17.3%**, and human-robot separation distance grew **15.1%**. Subjectively, participants agreed significantly more strongly that the robot stayed out of their way, that they felt safer and more comfortable, and that they trusted it as a teammate. The 2018 RA-L companion (Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3)) carried the idea out of the lab: a human-aware robotic assistant **deployed on a real automotive final-assembly line**.
+**Evidence (with numbers)**: with the human-aware planner, tasks completed **5.57% faster**, concurrent human-robot motion rose **19.9%**, human idle time fell **2.96%**, robot idle time fell **17.3%**, and human-robot separation distance grew **15.1%**. Subjectively, participants agreed significantly more strongly that the robot stayed out of their way, that they felt safer and more comfortable, and that they trusted it as a teammate. The 2018 RA-L companion (Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3)) carried the idea toward practice: a human-aware robotic assistant **fielded in a BMW test environment replicating final-assembly work** — the authors themselves note the demonstration is *not* representative of a real factory deployment.
 
 **Testbed vs site, autonomy**: 2015 is a lab experiment; 2018 is a real *manufacturing* site — still not a construction site. The robot is autonomous at the motion level inside a collaborative cell; the human is a co-worker in the shared workspace, not an operator.
 
@@ -34,7 +35,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **방법**: 통제된 공유 작업공간 실험 — 인간과 로봇이 근접 거리에서 협업 배치 과제를 수행하며, 로봇은 표준 모션 플래너 또는 인간 인지 모션 플래너(예측된 인간 행동에 궤적을 적응시키는 플래너)를 사용한다. 모션 캡처가 객관적 유창성 지표를, 설문이 주관적 지표를 제공한다.
 
-**증거 (수치와 함께)**: 인간 인지 플래너에서 과제 완료가 **5.57% 빨라졌고**, 인간-로봇 동시 동작이 **19.9% 증가**, 인간 유휴 시간이 **2.96% 감소**, 로봇 유휴 시간이 **17.3% 감소**, 인간-로봇 이격 거리가 **15.1% 증가**했다. 주관적으로 참가자들은 로봇이 방해되지 않았고, 더 안전하고 편안하게 느꼈으며, 팀 동료로서 더 신뢰했다는 데 유의하게 더 강하게 동의했다. 2018 RA-L 자매 논문(Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3))은 이 아이디어를 실험실 밖으로 가져갔다: 인간 인지 로봇 어시스턴트를 **실제 자동차 최종 조립 라인에 배치**했다.
+**증거 (수치와 함께)**: 인간 인지 플래너에서 과제 완료가 **5.57% 빨라졌고**, 인간-로봇 동시 동작이 **19.9% 증가**, 인간 유휴 시간이 **2.96% 감소**, 로봇 유휴 시간이 **17.3% 감소**, 인간-로봇 이격 거리가 **15.1% 증가**했다. 주관적으로 참가자들은 로봇이 방해되지 않았고, 더 안전하고 편안하게 느꼈으며, 팀 동료로서 더 신뢰했다는 데 유의하게 더 강하게 동의했다. 2018 RA-L 자매 논문(Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3))은 이 아이디어를 실전 쪽으로 가져갔다: 인간 인지 로봇 어시스턴트를 **최종 조립 작업을 재현한 BMW 테스트 환경에 투입**했다 — 저자들 스스로 이 시연이 실제 공장 배치를 대표하지 *않는다*고 명시한다.
 
 **테스트베드 대 현장, 자율성**: 2015는 실험실 실험이고, 2018은 실제 *제조업* 현장이다 — 여전히 건설 현장은 아니다. 로봇은 협업 셀 안에서 모션 수준의 자율성을 갖고, 인간은 운전자가 아니라 공유 작업공간의 동료다.
 
@@ -53,4 +54,4 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - [ ] 유창성 지표들(동시 동작, 유휴 시간, 이격 거리)을 이름과 함께 말할 수 있다
 - [ ] 쌍둥이 발견 — 객관적 지표와 주관적 지표가 함께 개선된다 — 을 수치와 함께 말할 수 있다
 - [ ] 건설이 이 결과에서 빌려올 수 있는 것과 이전되지 않는 것을 구분할 수 있다
-- [ ] 2018 자매 논문이 더한 것(실제 자동차 조립 라인 배치)과 그 한계(제조업이지 건설이 아님)를 말할 수 있다
+- [ ] 2018 자매 논문이 더한 것(BMW 테스트 환경 투입)과 그 한계(테스트 환경이지 실제 공장이 아니며, 제조업이지 건설이 아님)를 말할 수 있다

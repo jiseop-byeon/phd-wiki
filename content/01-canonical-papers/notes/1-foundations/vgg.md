@@ -27,7 +27,7 @@ After [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], everyone knew
 ### Method
 
 > [!tip] Key intuition
-> Two stacked 3×3 convs see a 5×5 receptive field, three see 7×7 — with fewer parameters and more nonlinearities in between. So small filters + depth strictly dominate large filters.
+> Two stacked 3×3 convs see a 5×5 receptive field, three see 7×7 — with fewer parameters and more nonlinearities in between. So small filters + depth dominate this tradeoff — at equal receptive field with fewer parameters (though not universally: large kernels returned in later ConvNeXt-era designs).
 
 - Uniform design: only 3×3 convolutions (stride 1) and 2×2 max-pooling; channel width doubles after each pool (64→128→256→512).
 - Configurations from 11 to 19 weight layers; VGG-16 and VGG-19 became the standard variants.
@@ -64,7 +64,7 @@ Established the "small uniform filters, double width after downsampling" templat
 ### 방법
 
 > [!tip] 핵심 직관
-> 3×3 합성곱 두 개를 쌓으면 5×5의 수용 영역을, 세 개면 7×7을 커버한다 — 파라미터는 더 적고 중간의 비선형성은 더 많다. 즉 작은 필터 + 깊이가 큰 필터를 엄격하게 지배한다.
+> 3×3 합성곱 두 개를 쌓으면 5×5의 수용 영역을, 세 개면 7×7을 커버한다 — 파라미터는 더 적고 중간의 비선형성은 더 많다. 즉 같은 수용 영역에서 더 적은 파라미터라는 트레이드오프에서는 작은 필터 + 깊이가 우세하다(보편 법칙은 아니다 — 이후 ConvNeXt 시대 설계에서 큰 커널이 돌아왔다).
 
 - 균일한 설계: 3×3 합성곱(stride 1)과 2×2 max-pooling만 사용; 풀링마다 채널을 2배로(64→128→256→512).
 - 11층부터 19층까지 실험; VGG-16과 VGG-19가 표준 변형이 됨.

@@ -8,6 +8,7 @@ tags: [paper, reinforcement-learning]
 status: note-complete
 last_verified: 2026-07-23
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -44,6 +45,7 @@ On-policy methods like [[01-canonical-papers/notes/1-foundations/ppo|PPO]] throw
 - The original formulation is sensitive to reward scale (it silently sets the reward/entropy trade-off); automatic $\alpha$ tuning in the follow-up largely fixes this — cite the right version.
 - Entropy encourages stochasticity, not safety: exploratory actions on a hydraulic machine can still be destructive. Constraints, shielding, or simulation remain necessary.
 - Off-policy bootstrapping from replayed data inherits the classic instability triad (function approximation + bootstrapping + off-policy); twin critics mitigate rather than eliminate it.
+- Version note: the ICML 2018 paper trains a **separate state-value network $V$** (with its own target network); the merged 1812.05905 recipe most implementations follow drops $V$ and adds automatic temperature — opening the ICML PDF, expect that extra component.
 
 ### Impact & follow-ups
 
@@ -87,6 +89,7 @@ The standard continuous-control off-policy baseline — most model-free comparis
 - 원 논문 버전은 보상 스케일에 민감하다(보상/entropy 트레이드오프를 암묵적으로 결정하므로); 후속의 자동 $\alpha$ 조정이 대부분 해결 — 어느 버전을 인용하는지 확인하라.
 - entropy는 확률성을 장려할 뿐 안전을 장려하지 않는다: 유압 장비에서 탐색적 행동은 여전히 파괴적일 수 있다. 제약, shielding, 시뮬레이션이 여전히 필요하다.
 - replay 데이터로부터의 off-policy bootstrapping은 고전적 불안정 삼요소(함수 근사 + bootstrapping + off-policy)를 물려받는다; twin critic은 이를 완화할 뿐 제거하지 못한다.
+- 버전 주의: ICML 2018 판은 **별도의 상태 가치 네트워크 $V$**(와 그 타깃 네트워크)를 학습한다; 대부분의 구현이 따르는 병합판 1812.05905는 $V$를 없애고 자동 온도를 더했다 — ICML PDF를 열면 이 추가 구성요소를 만나게 된다.
 
 ### 영향과 후속 연구
 

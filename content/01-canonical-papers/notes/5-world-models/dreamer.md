@@ -11,6 +11,7 @@ tags: [paper, world-models, rl]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -52,8 +53,8 @@ study in making one idea actually robust.
 
 ### Results
 
-- v3 outperforms specialized model-free and model-based methods across domains with fixed
-  hyperparameters — the strongest general RL result of its era.
+- v3 matches or outperforms specialized model-free and model-based methods across many domains with fixed
+  hyperparameters — among the strongest single-configuration general RL results of its era.
 - Sample efficiency inherited from the model-based recipe: most learning happens in
   imagination.
 
@@ -107,8 +108,8 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 
 ### 결과
 
-- v3는 고정 하이퍼파라미터로 전 도메인에서 특화된 모델 프리/기반 기법들을 능가 —
-  당대 가장 강한 범용 RL 결과.
+- v3는 고정 하이퍼파라미터로 여러 도메인에서 특화된 모델 프리/기반 기법들과 대등하거나 능가 —
+  당대 가장 강한 축에 드는 단일 구성 범용 RL 결과.
 - 모델 기반 레시피가 주는 샘플 효율: 학습 대부분이 상상 속에서 일어난다.
 
 ### 한계와 비판

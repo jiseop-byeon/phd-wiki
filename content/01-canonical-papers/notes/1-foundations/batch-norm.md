@@ -10,6 +10,7 @@ tags: [paper, foundations, optimization]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -87,7 +88,7 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 
 ### 영향과 후속 연구
 
-깊은 네트워크 학습을 일상으로 만들었다 — [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]은 모든 합성곱 뒤에 BN을 쓰며, BN 없이는 학습되지 않는다. 정규화 계열(LayerNorm, InstanceNorm, GroupNorm, RMSNorm)을 낳았고, LayerNorm/RMSNorm은 모든 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]의 구조적 구성 요소다.
+깊은 네트워크 학습을 일상으로 만들었다 — [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]은 모든 합성곱 뒤에 BN을 쓰며, 원 구성에서는 BN 없이는 학습이 어렵다(정규화 없는 학습은 이후 특수 초기화 — Fixup, NF-Net — 로 가능해졌다). 정규화 계열(LayerNorm, InstanceNorm, GroupNorm, RMSNorm)을 낳았고, LayerNorm/RMSNorm은 모든 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]의 구조적 구성 요소다.
 
 ### 연결
 

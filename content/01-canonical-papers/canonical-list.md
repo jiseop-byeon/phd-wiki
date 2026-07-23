@@ -133,7 +133,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 8. Construction Robotics
 
-계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 18편은 2026-07 랩·계보 코퍼스 감사에서 선별했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
+계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 23편은 2026-07 랩·계보 코퍼스 감사에서 선별했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
 
 ### Field overview
 

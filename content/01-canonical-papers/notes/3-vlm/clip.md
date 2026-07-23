@@ -11,6 +11,7 @@ tags: [paper, foundations, vlm, computer-vision]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -39,7 +40,7 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
 
 - Zero-shot CLIP matches the original supervised ResNet-50 on **ImageNet without seeing any of its training labels**, and is competitive across 30+ datasets (OCR, actions, fine-grained).
 - Far more robust to distribution shift (ImageNet-V2/R/A, sketches) than supervised counterparts — commonly interpreted as learning concepts rather than dataset idiosyncrasies (an interpretation the robustness numbers support but do not prove; training-distribution breadth is a competing explanation).
-- Contrastive objective is ~4–10× more compute-efficient than caption prediction.
+- Contrastive objective is markedly more compute-efficient than generative alternatives — ~4× vs a bag-of-words prediction baseline and ~12× vs transformer captioning in the paper's comparison.
 
 ### Limitations & critique
 
@@ -78,7 +79,7 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 
 - Zero-shot CLIP이 **ImageNet 학습 라벨을 하나도 보지 않고** 지도학습 ResNet-50과 대등; 30개 이상의 데이터셋(OCR, 행동, 세밀 분류)에서 경쟁력.
 - 분포 이동(ImageNet-V2/R/A, 스케치)에 지도학습 모델보다 훨씬 강건 — 흔히 "데이터셋의 버릇이 아니라 개념을 배웠다"로 해석된다(강건성 수치가 지지하지만 증명하지는 않는 해석 — 학습 분포의 폭 자체가 경쟁 설명이다).
-- 대조 목적함수는 캡션 예측보다 4~10배 연산 효율적.
+- 대조 목적함수는 생성적 대안보다 눈에 띄게 연산 효율적 — 논문의 비교에서 bag-of-words 예측 대비 약 4배, 트랜스포머 캡셔닝 대비 약 12배.
 
 ### 한계와 비판
 

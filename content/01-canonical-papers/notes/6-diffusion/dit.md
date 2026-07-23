@@ -11,6 +11,7 @@ tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
 study-depth: Working
+wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
@@ -55,7 +56,7 @@ architecture that scales best.
 
 ### Impact & follow-ups
 
-The default generative backbone of the current era: [[sora|Sora]] (spacetime DiT),
+The default backbone of current *diffusion-family* generators: [[sora|Sora]] (spacetime DiT),
 Stable Diffusion 3 / Flux (MM-DiT), and — for this wiki — robot action experts:
 [[pi0|π0]] and [[gr00t-n1|GR00T]]'s flow/diffusion modules are DiT-style transformers
 denoising action sequences.
@@ -101,7 +102,7 @@ denoising action sequences.
 
 ### 영향과 후속 연구
 
-현시대 생성 모델의 기본 백본: [[sora|Sora]](시공간 DiT), Stable Diffusion 3 /
+현시대 *디퓨전 계열* 생성기의 기본 백본: [[sora|Sora]](시공간 DiT), Stable Diffusion 3 /
 Flux(MM-DiT), 그리고 이 위키에 중요한 — 로봇 행동 전문가: [[pi0|π0]]와
 [[gr00t-n1|GR00T]]의 flow/디퓨전 모듈이 행동 시퀀스의 노이즈를 제거하는 DiT식
 트랜스포머다.
