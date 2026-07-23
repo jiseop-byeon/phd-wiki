@@ -10,6 +10,9 @@ code:
 project: 
 tags: [paper]
 status: to-read   # to-read | reading | done
+study-depth: Literacy
+depth-goal: "Explain the problem, method I/O, central evidence, and one limitation."
+mastery-when: "Raise only when this paper becomes a baseline, dependency, or contribution target."
 ---
 
 **{Author et al., VENUE YEAR}** — [arXiv]() · [PDF]() · [Code]()

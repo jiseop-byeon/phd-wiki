@@ -1,6 +1,9 @@
 ---
 title: 4. Robotic Assembly & Fabrication
 tags: [construction, assembly, fabrication, manipulation]
+study-depth: Working
+depth-goal: "Use the task taxonomy, system assumptions, and evaluation criteria to formulate construction-robotics research."
+mastery-when: "Raise to Mastery when this task stream or deployment layer is the thesis contribution."
 ---
 
 ## English

@@ -9,6 +9,9 @@ project: https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c843
 tags: [paper, foundations, computer-vision]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Krizhevsky et al., NeurIPS 2012** — [PDF](https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf) · [Official](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)

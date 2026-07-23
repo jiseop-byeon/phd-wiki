@@ -1,5 +1,8 @@
 ---
 title: 2. Foundations
+study-depth: Working
+depth-goal: "Use the notation, equations, and diagnostic ideas while reading methods and designing experiments."
+mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
 ## English

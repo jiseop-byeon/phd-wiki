@@ -10,6 +10,9 @@ project: https://arxiv.org/abs/2506.09985
 tags: [paper, world-models, self-supervised]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **LeCun, 2022 · Assran et al., CVPR 2023 · Meta AI, 2024–25** — [Position paper](https://openreview.net/forum?id=BZ5a1r-kVsf) · [I-JEPA arXiv](https://arxiv.org/abs/2301.08243) · [V-JEPA 2 arXiv](https://arxiv.org/abs/2506.09985)

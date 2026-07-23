@@ -14,9 +14,10 @@ one's own research area.
 
 ### Start here — pick the path that matches you
 
-1. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 2.
-2. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then the [[01-canonical-papers/canonical-list|Canonical Paper List]] in order — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside.
-3. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
+1. **Choose the required depth first**: [[00-study-depth-guide|0. Study Depth Guide]] — Literacy for every adjacent field, Working for methods you use, Mastery only for the contribution area.
+2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 3.
+3. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then the [[01-canonical-papers/canonical-list|Canonical Paper List]] in order — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside.
+4. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 
 ### Maps of Content
 
@@ -27,6 +28,7 @@ one's own research area.
 ### Reference
 
 - [[02-foundations/index|Foundations]] — course-level math & systems basics, with priority map
+- [[00-study-depth-guide|Study Depth Guide]] — topic-by-topic Literacy / Working / Mastery profile
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — paper vocabulary, equations, claims and evidence
 - [[06-research-practice/index|Research Practice]] — questions, experiments, failure analysis, writing and peer review
 - [[glossary|Glossary]] — quick term lookup
@@ -42,9 +44,10 @@ one's own research area.
 
 ### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 
-1. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → 그다음 2번 경로로.
-2. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어두고.
-3. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
+1. **먼저 필요한 깊이를 정한다**: [[00-study-depth-guide|0. Study Depth Guide]] — 모든 인접 분야는 Literacy, 직접 쓰는 방법은 Working, 기여 영역만 Mastery.
+2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → 그다음 3번 경로로.
+3. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어두고.
+4. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 
 ### 콘텐츠 지도
 
@@ -55,6 +58,7 @@ one's own research area.
 ### 참고 자료
 
 - [[02-foundations/index|기초 과목]] — 수학·시스템 기초, 우선순위 지도 포함
+- [[00-study-depth-guide|Study Depth Guide]] — 주제별 Literacy / Working / Mastery 기준
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — 논문의 용어·수식·주장·증거 읽기
 - [[06-research-practice/index|Research Practice]] — 연구 질문, 실험, 실패 분석, 글쓰기와 peer review
 - [[glossary|용어집]] — 용어 빠르게 찾아보기
@@ -66,6 +70,7 @@ one's own research area.
 > [!info]- Sources · 이 위키가 참고한 출처들
 > **Primary sources (1차 자료)** — 모든 논문 노트는 해당 논문의 arXiv/공식 PDF·프로젝트 페이지·공식 코드 저장소를 직접 참조하며, 각 노트 첫 줄에 링크되어 있다.
 > - [DBLP Computer Science Bibliography](https://dblp.org/) — Research Radar의 venue별 출판 논문 메타데이터. arXiv·워크숍을 섞지 않고 연도별 논문량과 토픽 신호를 재현 가능하게 집계한다.
+> - [Crossref](https://www.crossref.org/) — Automation in Construction·Construction Robotics의 출판 메타데이터와 DOI 근거 링크를 보완한다.
 >
 > **Curricula & study-note exemplars (커리큘럼·정리 방식 참고)**
 > - [Stanford CS231n](https://cs231n.stanford.edu/schedule.html) — 딥러닝 파트의 흐름·정확성 교차 검증

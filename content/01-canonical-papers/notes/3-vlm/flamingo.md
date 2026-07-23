@@ -10,6 +10,9 @@ code: https://github.com/mlfoundations/open_flamingo
 tags: [paper, vlm]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Alayrac et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2204.14198) · [PDF](https://arxiv.org/pdf/2204.14198) · [Code (open repro)](https://github.com/mlfoundations/open_flamingo)

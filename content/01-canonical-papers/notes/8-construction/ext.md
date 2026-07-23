@@ -9,6 +9,9 @@ pdf: https://arxiv.org/pdf/2509.14992
 tags: [paper, construction, robotics, vla]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Zhai, Terenzi et al. (ETH RSL), 2025** — [arXiv](https://arxiv.org/abs/2509.14992) · [PDF](https://arxiv.org/pdf/2509.14992)

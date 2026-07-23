@@ -9,6 +9,9 @@ pdf: https://arxiv.org/pdf/2407.07726
 tags: [paper, vlm]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Beyer, Steiner et al. (Google), 2024** — [arXiv](https://arxiv.org/abs/2407.07726) · [PDF](https://arxiv.org/pdf/2407.07726)

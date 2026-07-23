@@ -22,7 +22,8 @@
     "prebuild": "npm run install-plugins",
     "preview": "NODE_OPTIONS=--max-old-space-size=8192 npx quartz build --concurrency=1 --serve",
     "site": "NODE_OPTIONS=--max-old-space-size=8192 npx quartz build --concurrency=1",
-    "radar": "python3 scripts/build_research_radar.py"
+    "radar": "python3 scripts/build_research_radar.py",
+    "depths": "python3 scripts/assign_study_depth.py"
   },
   "engines": {
     "npm": ">=10.9.2",

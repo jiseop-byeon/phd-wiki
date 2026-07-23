@@ -11,6 +11,9 @@ project: https://openvla.github.io
 tags: [paper, vla, robot-learning]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Kim et al., CoRL 2024** — [arXiv](https://arxiv.org/abs/2406.09246) · [PDF](https://arxiv.org/pdf/2406.09246) · [Code](https://github.com/openvla/openvla) · [Official](https://openvla.github.io)

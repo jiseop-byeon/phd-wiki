@@ -1,6 +1,9 @@
 ---
 title: 6. HRC & Worker-Centered Robotics
 tags: [construction, hri, safety, workers]
+study-depth: Working
+depth-goal: "Use the task taxonomy, system assumptions, and evaluation criteria to formulate construction-robotics research."
+mastery-when: "Raise to Mastery when this task stream or deployment layer is the thesis contribution."
 ---
 
 ## English

@@ -10,6 +10,9 @@ code: https://github.com/facebookresearch/mae
 tags: [paper, foundations, computer-vision, self-supervised]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **He et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2111.06377) · [PDF](https://arxiv.org/pdf/2111.06377) · [Code](https://github.com/facebookresearch/mae)

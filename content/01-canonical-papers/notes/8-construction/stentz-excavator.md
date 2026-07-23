@@ -3,6 +3,9 @@ title: A Robotic Excavator for Autonomous Truck Loading
 tags: [construction, excavation, systems]
 status: note-complete
 last_verified: 2026-07-23
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Stentz, Bares, Singh & Rowe · IROS 1998 / Autonomous Robots 1999** — [official CMU page and PDF](https://publications.ri.cmu.edu/a-robotic-excavator-for-autonomous-truck-loading)

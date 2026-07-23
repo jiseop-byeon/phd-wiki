@@ -10,6 +10,7 @@ Checks (run before every deploy):
   6. Every paper note has ## English, ## 한국어, and an after-reading checklist.
   7. Every paper note frontmatter has status: and last_verified:.
   8. New robotics-literacy and research-practice pages keep the bilingual learning scaffold.
+  9. Substantive curriculum pages declare a valid study-depth profile.
 Exit code 1 on any failure, with a per-file report.
 """
 
@@ -136,6 +137,32 @@ for rel in curriculum_pages:
         err(p, "missing after-reading checklist")
     if "### Self-check" not in text:
         err(p, "missing self-check")
+
+# 9. Global topic-depth contract. Indexes, templates, logs, and the Radar itself
+# are navigation/operations pages rather than study objects.
+depth_exclusions = {
+    "index.md",
+    "glossary.md",
+    "study-log.md",
+    "08-research-radar/index.md",
+}
+depth_exclusion_prefixes = ("templates/",)
+valid_depths = {"Literacy", "Working", "Mastery"}
+for p in md_files:
+    rel = os.path.relpath(p, CONTENT)
+    if rel in depth_exclusions or rel.endswith("/index.md") or rel.startswith(depth_exclusion_prefixes):
+        continue
+    text = open(p, encoding="utf-8").read()
+    match = re.search(r"^study-depth:\s*(.+?)\s*$", text, re.M)
+    if not match:
+        err(p, "missing global study-depth profile")
+        continue
+    if match.group(1).strip() not in valid_depths:
+        err(p, f"invalid study-depth: {match.group(1).strip()}")
+    if not re.search(r"^depth-goal:\s*.+$", text, re.M):
+        err(p, "frontmatter missing depth-goal:")
+    if not re.search(r"^mastery-when:\s*.+$", text, re.M):
+        err(p, "frontmatter missing mastery-when:")
 
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

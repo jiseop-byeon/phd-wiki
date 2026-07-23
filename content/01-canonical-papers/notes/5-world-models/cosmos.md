@@ -10,6 +10,9 @@ code: https://github.com/nvidia-cosmos/cosmos-predict1
 tags: [paper, world-models, generative]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **NVIDIA, 2025** — [arXiv](https://arxiv.org/abs/2501.03575) · [PDF](https://arxiv.org/pdf/2501.03575) · [Code](https://github.com/nvidia-cosmos/cosmos-predict1)

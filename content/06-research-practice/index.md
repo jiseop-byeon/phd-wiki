@@ -2,6 +2,9 @@
 title: 6. Research Practice
 tags: [research, moc]
 cssclasses: [curated-folder-index]
+study-depth: Literacy
+depth-goal: "Use this page to navigate the research workflow and its completion criteria."
+mastery-when: "Apply the individual practice pages at Working level throughout the project."
 ---
 
 ## English

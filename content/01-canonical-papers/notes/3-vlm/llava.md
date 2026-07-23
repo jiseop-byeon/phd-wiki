@@ -11,6 +11,9 @@ project: https://llava-vl.github.io
 tags: [paper, vlm]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Liu et al., NeurIPS 2023** — [arXiv](https://arxiv.org/abs/2304.08485) · [PDF](https://arxiv.org/pdf/2304.08485) · [Code](https://github.com/haotian-liu/LLaVA) · [Official](https://llava-vl.github.io)

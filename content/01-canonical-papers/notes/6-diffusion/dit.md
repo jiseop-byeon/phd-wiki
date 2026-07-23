@@ -10,6 +10,9 @@ code: https://github.com/facebookresearch/DiT
 tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Peebles & Xie, ICCV 2023** — [arXiv](https://arxiv.org/abs/2212.09748) · [PDF](https://arxiv.org/pdf/2212.09748) · [Code](https://github.com/facebookresearch/DiT)

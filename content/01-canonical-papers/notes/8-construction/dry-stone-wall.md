@@ -3,6 +3,9 @@ title: Robotic Excavation and Dry-Stone Construction Using On-Site Materials
 tags: [construction, excavation, assembly]
 status: note-complete
 last_verified: 2026-07-23
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Johns et al. · Science Robotics 2023, 8(84)** — [paper](https://doi.org/10.1126/scirobotics.abp9758) · [ETH project report](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)

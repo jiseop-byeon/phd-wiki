@@ -1,5 +1,8 @@
 ---
 title: 2. Modern Robotics Summary
+study-depth: Literacy
+depth-goal: "Understand the track structure and identify which robotics tool a paper assumes."
+mastery-when: "Raise the chapters and tools used by the thesis to Working; master only the contribution-bearing subsystem."
 ---
 
 Chapter summaries of *Modern Robotics* (Lynch & Park), covering ch. 2–6 and 8–13 —

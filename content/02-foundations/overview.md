@@ -1,6 +1,9 @@
 ---
 title: 0. Overview
 tags: [foundations, moc]
+study-depth: Literacy
+depth-goal: "Read the notation and recurring ideas accurately; return for deeper derivations when a paper requires them."
+mastery-when: "Raise to Working or Mastery when the thesis objective depends directly on these formulations."
 ---
 
 ## English

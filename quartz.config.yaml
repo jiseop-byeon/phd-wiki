@@ -221,6 +221,9 @@ plugins:
     options:
       includeAll: false
       includedProperties:
+        - study-depth
+        - depth-goal
+        - mastery-when
         - description
         - tags
         - aliases

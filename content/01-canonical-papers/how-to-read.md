@@ -1,6 +1,9 @@
 ---
 title: 0. How to Read Papers
 tags: [reference]
+study-depth: Literacy
+depth-goal: "Use this map or guide to choose reading order, reading volume, and evidence checks."
+mastery-when: "Working and Mastery are assigned on the individual concept or paper pages."
 ---
 
 ## English
@@ -9,6 +12,10 @@ The notes in this wiki exist for one purpose: making the vocabulary, sentence pa
 and equations of papers familiar enough that the originals read smoothly. This page is the
 method — how deep to read each paper, how to decode paper sentences and equations, and how
 to check that a note actually landed.
+
+This page governs **paper-reading behavior**. The separate
+[[00-study-depth-guide|Study Depth Guide]] assigns Literacy / Working / Mastery targets to
+foundations, concepts, robotics tools, construction topics, and individual papers.
 
 ### 1. Four reading depths — not every paper deserves the same
 
@@ -98,6 +105,10 @@ If any of the five fails, reread that section — not the whole note.
 친숙하게 만들어 원문이 술술 읽히게 하는 것. 이 페이지는 그 방법론이다 — 논문마다 얼마나
 깊게 읽을지, 논문 문장과 수식을 어떻게 해독할지, 노트가 실제로 흡수됐는지 어떻게
 점검할지.
+
+이 페이지는 **논문을 읽는 행동**을 다룬다. Foundations·개념·로보틱스 도구·건설 주제·
+개별 논문을 어느 수준까지 사용할지는 [[00-study-depth-guide|Study Depth Guide]]와 각
+페이지 상단의 `study-depth`가 안내한다.
 
 ### 1. 네 가지 읽기 깊이 — 모든 논문이 같은 깊이를 요구하지 않는다
 

@@ -1,5 +1,8 @@
 ---
 title: 1. Canonical Papers
+study-depth: Literacy
+depth-goal: "Use this map or guide to choose reading order, reading volume, and evidence checks."
+mastery-when: "Working and Mastery are assigned on the individual concept or paper pages."
 ---
 
 ## English

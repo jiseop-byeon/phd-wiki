@@ -1,6 +1,9 @@
 ---
 title: 0.5 Engineering Math
 tags: [foundations]
+study-depth: Working
+depth-goal: "Use the notation, equations, and diagnostic ideas while reading methods and designing experiments."
+mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
 > [[02-foundations/overview|0. Overview]] — 이 페이지가 어디에 쓰이는지의 지도 · where this page fits

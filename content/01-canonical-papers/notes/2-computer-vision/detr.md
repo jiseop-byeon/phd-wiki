@@ -10,6 +10,9 @@ code: https://github.com/facebookresearch/detr
 tags: [paper, computer-vision]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Carion et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2005.12872) · [PDF](https://arxiv.org/pdf/2005.12872) · [Code](https://github.com/facebookresearch/detr)

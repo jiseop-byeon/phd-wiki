@@ -10,6 +10,9 @@ code: https://github.com/openai/CLIP
 tags: [paper, foundations, vlm, computer-vision]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Radford et al., ICML 2021** — [arXiv](https://arxiv.org/abs/2103.00020) · [PDF](https://arxiv.org/pdf/2103.00020) · [Code](https://github.com/openai/CLIP)

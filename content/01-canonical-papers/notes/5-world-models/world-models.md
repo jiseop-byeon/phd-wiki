@@ -10,6 +10,9 @@ project: https://worldmodels.github.io
 tags: [paper, world-models, rl]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Ha & Schmidhuber, NeurIPS 2018** (proceedings title: "Recurrent World Models Facilitate Policy Evolution") — [arXiv](https://arxiv.org/abs/1803.10122) · [PDF](https://arxiv.org/pdf/1803.10122) · [Official](https://worldmodels.github.io)

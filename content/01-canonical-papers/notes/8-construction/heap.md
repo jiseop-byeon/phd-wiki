@@ -9,6 +9,9 @@ project: https://rsl.ethz.ch/robots-media/heap.html
 tags: [paper, construction, robotics]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Jud et al., Automation in Construction 2021** — [DOI](https://doi.org/10.1016/j.autcon.2021.103783) · [Official](https://rsl.ethz.ch/robots-media/heap.html)

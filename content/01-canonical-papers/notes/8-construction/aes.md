@@ -3,6 +3,9 @@ title: An Autonomous Excavator System for Material Loading Tasks
 tags: [construction, excavation, deployment]
 status: note-complete
 last_verified: 2026-07-23
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Zhang et al. · Science Robotics 2021** — [paper](https://doi.org/10.1126/scirobotics.abc3164) · [PubMed record](https://pubmed.ncbi.nlm.nih.gov/34193561/)

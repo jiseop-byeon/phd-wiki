@@ -1,6 +1,9 @@
 ---
 title: 5. Information Theory
 tags: [foundations]
+study-depth: Literacy
+depth-goal: "Read the notation and recurring ideas accurately; return for deeper derivations when a paper requires them."
+mastery-when: "Raise to Working or Mastery when the thesis objective depends directly on these formulations."
 ---
 
 > [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map

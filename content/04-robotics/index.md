@@ -1,6 +1,9 @@
 ---
 title: 4. Robotics & Physical Systems
 cssclasses: [curated-folder-index]
+study-depth: Literacy
+depth-goal: "Understand the track structure and identify which robotics tool a paper assumes."
+mastery-when: "Raise the chapters and tools used by the thesis to Working; master only the contribution-bearing subsystem."
 ---
 
 ## English

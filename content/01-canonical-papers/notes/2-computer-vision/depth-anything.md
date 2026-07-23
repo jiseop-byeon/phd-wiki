@@ -10,6 +10,9 @@ code: https://github.com/LiheYoung/Depth-Anything
 tags: [paper, computer-vision, 3d]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Yang et al., CVPR 2024** — [arXiv](https://arxiv.org/abs/2401.10891) · [PDF](https://arxiv.org/pdf/2401.10891) · [Code](https://github.com/LiheYoung/Depth-Anything)

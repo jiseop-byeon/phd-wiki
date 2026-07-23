@@ -9,6 +9,9 @@ project: https://doi.org/10.1162/neco.1997.9.8.1735
 tags: [paper, foundations, nlp]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Hochreiter & Schmidhuber, Neural Computation 1997** — [PDF](https://deeplearning.cs.cmu.edu/F23/document/readings/LSTM.pdf) · [Official](https://doi.org/10.1162/neco.1997.9.8.1735)

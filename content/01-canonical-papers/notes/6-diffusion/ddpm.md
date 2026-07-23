@@ -10,6 +10,9 @@ code: https://github.com/hojonathanho/diffusion
 tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Ho et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2006.11239) · [PDF](https://arxiv.org/pdf/2006.11239) · [Code](https://github.com/hojonathanho/diffusion)

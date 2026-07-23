@@ -1,6 +1,9 @@
 ---
 title: 8. Industry & Deployment Map
 tags: [construction, industry, deployment]
+study-depth: Literacy
+depth-goal: "Explain the domain landscape, research lineage, actors, and deployment constraints."
+mastery-when: "Raise the chosen construction task and system layer to Working or Mastery."
 ---
 
 ## English

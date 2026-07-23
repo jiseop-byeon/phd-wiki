@@ -1,5 +1,8 @@
 ---
 title: 2. Paper Notes
+study-depth: Literacy
+depth-goal: "Use this map or guide to choose reading order, reading volume, and evidence checks."
+mastery-when: "Working and Mastery are assigned on the individual concept or paper pages."
 ---
 
 논문 노트 전체 — 섹션별 폴더로 정리되어 있다. 읽기 순서와 체크 현황은

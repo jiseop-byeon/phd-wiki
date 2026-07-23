@@ -1,6 +1,9 @@
 ---
 title: 3. State Estimation, Localization & SLAM
 tags: [robotics, estimation, slam]
+study-depth: Working
+depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 ## English

@@ -11,6 +11,9 @@ project: https://octo-models.github.io
 tags: [paper, vla, robot-learning]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Octo Model Team, RSS 2024** — [arXiv](https://arxiv.org/abs/2405.12213) · [PDF](https://arxiv.org/pdf/2405.12213) · [Code](https://github.com/octo-models/octo) · [Official](https://octo-models.github.io)

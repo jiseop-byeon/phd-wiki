@@ -1,6 +1,9 @@
 ---
 title: "1. Modern Robotics"
 tags: [robotics, resource]
+study-depth: Literacy
+depth-goal: "Understand the track structure and identify which robotics tool a paper assumes."
+mastery-when: "Raise the chapters and tools used by the thesis to Working; master only the contribution-bearing subsystem."
 ---
 
 **Lynch & Park, Cambridge University Press 2017** — [Free official preprint PDF](http://modernrobotics.org) · [Course wiki (videos, software)](http://hades.mech.northwestern.edu/index.php/Modern_Robotics) · [Coursera specialization](https://www.coursera.org/specializations/modernrobotics)

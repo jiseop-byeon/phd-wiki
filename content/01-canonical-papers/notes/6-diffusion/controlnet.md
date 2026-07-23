@@ -10,6 +10,9 @@ code: https://github.com/lllyasviel/ControlNet
 tags: [paper, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Zhang et al., ICCV 2023** — [arXiv](https://arxiv.org/abs/2302.05543) · [PDF](https://arxiv.org/pdf/2302.05543) · [Code](https://github.com/lllyasviel/ControlNet)

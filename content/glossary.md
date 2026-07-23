@@ -1,6 +1,9 @@
 ---
 title: 7. Glossary
 tags: [reference]
+study-depth: Literacy
+depth-goal: "Distinguish neighboring terms and read them consistently across papers."
+mastery-when: "Raise a term to Working through its linked concept or method page when it enters daily use."
 ---
 
 빠르게 찾아보는 용어 사전. 새 용어를 만날 때마다 추가한다. (English term — 한국어 설명, 관련 노트 링크)

@@ -1,6 +1,9 @@
 ---
 title: 2. Experimental Design & Reproducibility
 tags: [research, experiments, reproducibility]
+study-depth: Working
+depth-goal: "Apply the procedure when forming claims, running experiments, analyzing failure, and writing."
+mastery-when: "Mastery means consistently producing defensible work, not memorizing the page."
 ---
 
 ## English

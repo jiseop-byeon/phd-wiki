@@ -6,6 +6,8 @@ https://jiseop-byeon.github.io/phd-wiki/.
 
 ## Structure (under `content/`)
 
+- `00-study-depth-guide.md` — global Literacy / Working / Mastery targets; each
+  substantive page also displays its target and Mastery promotion condition
 - `01-canonical-papers/` — the curated paper list and one study note per paper,
   grouped by section (`notes/1-foundations/` … `notes/8-construction/`)
 - `02-foundations/` — course-depth foundations, numbered in study order:
@@ -18,6 +20,8 @@ https://jiseop-byeon.github.io/phd-wiki/.
 - `05-construction-robotics/` — research lineage (four eras + current streams) and labs map
 - `06-research-practice/` — research questions, experimental design, failure analysis,
   scientific writing and peer review
+- `08-research-radar/` — interactive, conservative trend map built from published
+  proceedings and journal metadata using a multi-scope ontology
 - `glossary.md` / `study-log.md` — term lookup and reading log
 - `templates/` — note templates (not published)
 
@@ -43,6 +47,11 @@ https://jiseop-byeon.github.io/phd-wiki/.
    `NODE_OPTIONS=--max-old-space-size=8192` and single-worker mode; if calling `npx quartz build` directly, use both settings yourself.
    (Do not use Node 26 or `npm run build` — the current Quartz/plugin combination is
    verified on Node 24 and can hang or exhaust memory on Node 26.)
+
+Content QA: `python3 scripts/verify_content.py`. Rebuild the global page-depth profile
+with `npm run depths`. Refresh the Radar dataset with `npm run radar`; its taxonomy lives
+in `scripts/research_radar_taxonomy.json` and permits one topic to belong to multiple
+research scopes.
 
 The local `reference/` folder holds copyrighted course materials and is gitignored —
 only original distilled notes are published.

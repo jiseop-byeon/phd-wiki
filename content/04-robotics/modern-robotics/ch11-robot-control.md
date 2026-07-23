@@ -1,6 +1,9 @@
 ---
 title: "MR Ch.11 — Robot Control"
 tags: [robotics, modern-robotics]
+study-depth: Working
+depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 **Modern Robotics ch.11** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · continues into [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]

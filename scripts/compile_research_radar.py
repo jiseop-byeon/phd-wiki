@@ -18,53 +18,63 @@ OUT = ROOT / "quartz/static/research-radar/data.json"
 YEARS = [2021, 2022, 2023, 2024, 2025]
 VENUES = {"nips": "NeurIPS", "icml": "ICML", "iclr": "ICLR",
           "cvpr": "CVPR", "icra": "ICRA", "corl": "CoRL"}
+JOURNALS = {
+    "automation-in-construction": {
+        "name": "Automation in Construction",
+        "issn": "0926-5805",
+    },
+    "construction-robotics": {
+        "name": "Construction Robotics",
+        "issn": "2509-8780",
+    },
+}
 
-TOPICS = [
-    ("foundation_models", "Foundation Models", "Deep Learning", "Literacy",
-     [r"foundation model", r"large language model", r"\bllm\b", r"scaling law"]),
-    ("self_supervised", "Self-Supervised Learning", "Deep Learning", "Literacy",
-     [r"self.supervised", r"masked autoencoder", r"contrastive learning"]),
-    ("efficient_adaptation", "Efficient Adaptation", "Deep Learning", "Working",
-     [r"parameter.efficient", r"low.rank adaptation", r"\blora\b", r"prompt tuning"]),
-    ("diffusion", "Diffusion Models", "Generative Models", "Working",
-     [r"diffusion", r"score.based", r"denoising"]),
-    ("flow_matching", "Flow Matching", "Generative Models", "Working",
-     [r"flow matching", r"rectified flow"]),
-    ("world_models", "World Models", "Physical AI", "Working",
-     [r"world model", r"latent dynamics", r"video prediction"]),
-    ("vision_language", "Vision-Language Models", "Physical AI", "Literacy",
-     [r"vision.language", r"visual.language", r"image.text", r"multimodal language"]),
-    ("vla", "Vision-Language-Action", "Physical AI", "Working",
-     [r"vision.language.action", r"\bvla\b", r"generalist robot"]),
-    ("imitation", "Imitation & Behavior Cloning", "Robot Learning", "Working",
-     [r"imitation learning", r"behavior cloning", r"behaviour cloning", r"learning from demonstration"]),
-    ("offline_rl", "Offline Reinforcement Learning", "Robot Learning", "Working",
-     [r"offline reinforcement", r"offline rl"]),
-    ("sim_to_real", "Sim-to-Real", "Robot Learning", "Working",
-     [r"sim.to.real", r"simulation.to.real", r"reality gap", r"domain randomization"]),
-    ("action_chunking", "Action Chunking", "Robot Learning", "Working",
-     [r"action chunk", r"temporal action"]),
-    ("robot_manipulation", "Robot Manipulation", "Physical AI", "Working",
-     [r"robotic manipulation", r"robot manipulation", r"grasp", r"dexterous", r"bimanual"]),
-    ("tactile", "Tactile & Contact Learning", "Physical AI", "Working",
-     [r"tactile", r"contact.rich", r"force control", r"visuotactile"]),
-    ("3d_geometry", "3D Geometry & Reconstruction", "Computer Vision", "Working",
-     [r"3d reconstruction", r"novel view", r"neural radiance", r"gaussian splat", r"structure.from.motion"]),
-    ("depth", "Depth Estimation", "Computer Vision", "Literacy",
-     [r"depth estimation", r"monocular depth", r"stereo depth"]),
-    ("point_clouds", "Point Clouds & LiDAR", "Computer Vision", "Working",
-     [r"point cloud", r"\blidar\b", r"3d point"]),
-    ("slam", "SLAM & Localization", "Robotics", "Working",
-     [r"\bslam\b", r"visual odometry", r"locali[sz]ation"]),
-    ("motion_planning", "Motion & Task Planning", "Robotics", "Working",
-     [r"motion planning", r"task and motion", r"trajectory optimization", r"path planning"]),
-    ("human_robot", "Human-Robot Collaboration", "Robotics", "Working",
-     [r"human.robot", r"shared autonomy", r"human aware", r"collaborative robot"]),
-    ("legged", "Legged & Humanoid Robotics", "Physical AI", "Literacy",
-     [r"legged", r"quadruped", r"humanoid", r"biped"]),
-    ("construction", "Construction Robotics", "Construction Physical AI", "Working",
-     [r"construction robot", r"autonomous excavat", r"robotic excavat", r"earthmov", r"construction site"]),
+TOPICS = json.loads((ROOT / "scripts/research_radar_taxonomy.json").read_text(encoding="utf-8"))
+
+CONSTRUCTION_DOMAIN = [
+    r"construction (site|industry|project|task|process|robot|automat)", r"\bjobsite\b",
+    r"\bexcavat", r"\bearthmov", r"\bexcavator", r"wheel loader", r"\bbulldozer",
+    r"tower crane", r"\bmasonry\b", r"\bbricklay", r"\brebar\b", r"\bconcrete\b",
+    r"\bdrywall\b", r"building information model", r"\bBIM\b", r"scan.to.bim",
+    r"\bas.built\b", r"construction worker", r"built environment",
 ]
+INFRASTRUCTURE_DOMAIN = [r"\bbridge\b", r"\btunnel\b", r"\bpavement\b", r"\bbuilding\b", r"civil infrastructure"]
+FIELD_TASK = [r"inspect", r"damage", r"defect", r"maintenance", r"repair", r"progress monitor", r"\bconstruction\b", r"as.built"]
+PHYSICAL_TECH = [
+    r"\brobot", r"\bautonom", r"\bautomation\b", r"\bmanipulat", r"\bplanning\b",
+    r"\bcontrol\b", r"reinforcement learning", r"imitation learning", r"computer vision",
+    r"semantic segmentation", r"instance segmentation", r"image segmentation", r"crack segmentation",
+    r"(crack|damage|defect|object|equipment|worker|hazard).{0,20}detect", r"\bSLAM\b",
+    r"locali[sz]", r"3d mapping", r"point cloud mapping", r"digital twin", r"\bUAV\b",
+    r"\bdrone\b", r"\bnavigation\b", r"point cloud", r"3d reconstruction",
+    r"teleoperat", r"human.robot", r"\bexoskeleton",
+]
+EMBODIED_TECH = [
+    r"\brobot", r"\bautonom", r"\bmanipulat", r"\bnavigation\b",
+    r"\bUAV\b", r"\bdrone\b", r"teleoperat", r"\bexoskeleton",
+]
+PERCEPTION_TECH = [
+    r"computer vision", r"semantic segmentation", r"instance segmentation",
+    r"image segmentation", r"crack segmentation",
+    r"(crack|damage|defect|object|equipment|worker|hazard).{0,20}detect",
+    r"\bSLAM\b", r"locali[sz]", r"3d mapping", r"point cloud mapping", r"\bscan",
+    r"point cloud", r"3d reconstruction", r"photogrammetr", r"\bvisual\b", r"vision.based",
+]
+NON_PHYSICAL = [
+    r"risk (prediction|management|assessment)", r"cost (prediction|estimation)",
+    r"schedule (prediction|optimization)", r"contract management", r"real estate",
+    r"energy consumption", r"occupant behavior", r"supply chain",
+    r"cause of delay", r"\bscientometric", r"\bbibliometric", r"special issue",
+]
+GENERIC_CONSTRUCTION_PHRASES = [
+    r"model construction", r"construction and analysis", r"dataset construction",
+    r"communication infrastructure building",
+]
+EARTHMOVING = [r"\bexcavat", r"\bearthmov", r"\bexcavator", r"wheel loader", r"\bbulldozer", r"material loading", r"soil loading"]
+ASSEMBLY = [r"\bassembly\b", r"\bfabricat", r"\bmasonry\b", r"\bbrick", r"\brebar\b", r"\btimber\b", r"\bdrywall\b", r"concrete print", r"additive manufactur"]
+PERCEPTION = [r"\bperception\b", r"computer vision", r"\bsegment", r"\bdetect", r"\binspect", r"progress monitor", r"point cloud", r"\bscan", r"\bSLAM\b", r"locali[sz]", r"3d reconstruction"]
+TWIN = [r"digital twin", r"\bBIM\b", r"building information model", r"scan.to.bim", r"\bas.built\b"]
+HRC_SAFETY = [r"human.robot", r"construction worker", r"shared autonomy", r"\bsafety\b", r"\bergonomic", r"\bexoskeleton"]
 
 
 def clean(value: str) -> str:
@@ -96,6 +106,86 @@ def parse(path: Path, venue: str, year: int) -> list[dict]:
     return list({r["title"].lower(): r for r in records}.values())
 
 
+def parse_crossref(path: Path, venue: str) -> list[dict]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    records = []
+    excluded = re.compile(r"^(editorial board|front matter|contents|erratum|corrigendum|retraction|publisher correction)", re.I)
+    for item in payload.get("items", []):
+        titles = item.get("title") or []
+        title = clean(titles[0]) if titles else ""
+        parts = ((item.get("published") or {}).get("date-parts") or [[]])[0]
+        year = int(parts[0]) if parts and str(parts[0]).isdigit() else 0
+        if not title or year not in YEARS or excluded.search(title):
+            continue
+        authors = []
+        for author in item.get("author") or []:
+            name = " ".join(x for x in (author.get("given", ""), author.get("family", "")) if x).strip()
+            if name:
+                authors.append(name)
+        doi = item.get("DOI", "")
+        records.append(
+            {
+                "title": title,
+                "venue": venue,
+                "year": year,
+                "url": f"https://doi.org/{doi}" if doi else "",
+                "authors": authors[:8],
+            }
+        )
+    return list({r["title"].lower(): r for r in records}.values())
+
+
+def any_match(patterns: list[str], title: str) -> bool:
+    return any(re.search(pattern, title, re.I) for pattern in patterns)
+
+
+def construction_flags(title: str, venue: str) -> dict[str, bool]:
+    primary_domain = any_match(CONSTRUCTION_DOMAIN, title)
+    infrastructure_domain = any_match(INFRASTRUCTURE_DOMAIN, title)
+    field_task = any_match(FIELD_TASK, title)
+    physical_tech = any_match(PHYSICAL_TECH, title)
+    embodied = any_match(EMBODIED_TECH, title)
+    perception = any_match(PERCEPTION_TECH, title)
+    non_physical = any_match(NON_PHYSICAL, title)
+    generic_phrase = any_match(GENERIC_CONSTRUCTION_PHRASES, title)
+    if venue == "Construction Robotics":
+        parent = not non_physical and (
+            embodied
+            or perception
+            or any_match(TWIN + EARTHMOVING + ASSEMBLY + HRC_SAFETY, title)
+            or any_match([r"3d print", r"digital manufactur", r"robotic"], title)
+        )
+    elif venue == "Automation in Construction":
+        # The venue supplies the construction-domain prior, but management-only work
+        # still needs to be excluded. Embodied systems, field perception, and closed-loop
+        # digital workflows remain in scope.
+        parent = not non_physical and (
+            embodied
+            or perception
+            or (any_match(TWIN, title) and any_match([r"\bscan", r"\brobot", r"\bautomation", r"closed.loop"], title))
+            or (any_match(ASSEMBLY, title) and any_match([r"\brobot", r"\bautomation", r"3d print", r"additive manufactur"], title))
+        )
+    else:
+        parent = not generic_phrase and (
+            (primary_domain and physical_tech)
+            or (infrastructure_domain and field_task and physical_tech)
+        )
+    return {
+        "construction": parent,
+        "construction_earthmoving": parent and any_match(EARTHMOVING, title),
+        "construction_assembly": parent and any_match(ASSEMBLY, title),
+        "construction_perception": parent and any_match(PERCEPTION, title),
+        "construction_twin": parent and any_match(TWIN, title),
+        "construction_hrc": parent and any_match(HRC_SAFETY, title),
+    }
+
+
+def matches_topic(key: str, paper: dict, patterns: list[re.Pattern]) -> bool:
+    if key.startswith("construction"):
+        return construction_flags(paper["title"], paper["venue"]).get(key, False)
+    return any(pattern.search(paper["title"]) for pattern in patterns)
+
+
 def slope(values: list[float]) -> float:
     xs = range(len(values))
     mx, my = statistics.mean(xs), statistics.mean(values)
@@ -115,15 +205,40 @@ def main() -> None:
             papers.extend(rows)
             audit.append({"venue": venue, "year": year, "status": "ok", "papers": len(rows),
                           "source": f"https://dblp.org/db/conf/{slug}/"})
+    for slug, journal in JOURNALS.items():
+        venue = journal["name"]
+        path = CACHE / f"crossref-{slug}.json"
+        if not path.exists() or path.stat().st_size < 1_000:
+            for year in YEARS:
+                audit.append({"venue": venue, "year": year, "status": "missing"})
+            continue
+        rows = parse_crossref(path, venue)
+        papers.extend(rows)
+        for year in YEARS:
+            count = sum(row["year"] == year for row in rows)
+            audit.append(
+                {
+                    "venue": venue,
+                    "year": year,
+                    "status": "ok",
+                    "papers": count,
+                    "source": f"https://api.crossref.org/journals/{journal['issn']}/works",
+                }
+            )
 
     totals = defaultdict(int)
     for paper in papers:
         totals[paper["year"]] += 1
 
     topics = []
-    for key, label, group, depth, aliases in TOPICS:
+    for topic in TOPICS:
+        key = topic["id"]
+        label = topic["label"]
+        category = topic["category"]
+        scopes = topic["scopes"]
+        aliases = topic["aliases"]
         patterns = [re.compile(x, re.I) for x in aliases]
-        matched = [p for p in papers if any(pattern.search(p["title"]) for pattern in patterns)]
+        matched = [p for p in papers if matches_topic(key, p, patterns)]
         counts = [sum(p["year"] == y for p in matched) for y in YEARS]
         shares = [1000 * c / totals[y] if totals[y] else 0 for y, c in zip(YEARS, counts)]
         momentum = slope(shares)
@@ -148,7 +263,7 @@ def main() -> None:
             status = "Stable"
         representatives = sorted(matched, key=lambda p: (p["year"], p["venue"]), reverse=True)[:6]
         topics.append({
-            "id": key, "label": label, "group": group, "depth": depth,
+            "id": key, "label": label, "category": category, "scopes": scopes,
             "counts": counts, "shares": [round(v, 3) for v in shares],
             "recentVolume": recent, "momentum": round(momentum, 3),
             "burst": round(burst, 2), "breadth": len(recent_venues),
@@ -159,9 +274,10 @@ def main() -> None:
 
     payload = {
         "schemaVersion": 1, "generated": date.today().isoformat(),
-        "method": "Published proceedings indexed by DBLP; title-based multi-label taxonomy; arXiv excluded.",
-        "years": YEARS, "venues": list(VENUES.values()), "paperCount": len(papers),
+        "method": "Published proceedings indexed by DBLP plus peer-reviewed construction journals from Crossref; title-based multi-label taxonomy; arXiv excluded.",
+        "years": YEARS, "venues": [*VENUES.values(), *(j["name"] for j in JOURNALS.values())], "paperCount": len(papers),
         "yearTotals": {str(y): totals[y] for y in YEARS},
+        "scopes": list(dict.fromkeys(scope for topic in TOPICS for scope in topic["scopes"])),
         "topics": topics, "audit": audit,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

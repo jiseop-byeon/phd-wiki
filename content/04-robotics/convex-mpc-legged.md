@@ -1,6 +1,9 @@
 ---
 title: "8. Convex MPC (Legged Robots)"
 tags: [robotics, control, resource]
+study-depth: Literacy
+depth-goal: "Read the MPC formulation and recognize its assumptions and role in a complete robot system."
+mastery-when: "Raise to Working or Mastery when legged control or MPC design is used directly."
 ---
 
 **Key references** — Di Carlo et al., *Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control*, IROS 2018 · [IEEE](https://ieeexplore.ieee.org/document/8594448) · Kim et al., *Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and MPC* (open access) · [arXiv](https://arxiv.org/abs/1909.06586) · [PDF](https://arxiv.org/pdf/1909.06586)

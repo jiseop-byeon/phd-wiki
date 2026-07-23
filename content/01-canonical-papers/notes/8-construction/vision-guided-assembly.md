@@ -3,6 +3,9 @@ title: Vision-Guided Autonomous Robotic Assembly and As-Built Scanning
 tags: [construction, assembly, perception]
 status: note-complete
 last_verified: 2026-07-23
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Feng, Xiao, Willette, McGee & Kamat · Automation in Construction 2015** — [paper](https://doi.org/10.1016/j.autcon.2015.06.002)

@@ -1,6 +1,9 @@
 ---
 title: 1. Paper Lineage
 tags: [moc, reference]
+study-depth: Literacy
+depth-goal: "Use the map to locate a method historically and explain how neighboring research streams connect."
+mastery-when: "Raise the specific downstream method pages—not the whole map—to Working or Mastery."
 ---
 
 논문을 낱개로 읽으면 잊어버리지만, 계보로 읽는다면 남는다.

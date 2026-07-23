@@ -11,6 +11,9 @@ project: https://www.physicalintelligence.company/blog/pi0
 tags: [paper, vla, robot-learning, diffusion]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Black et al. (Physical Intelligence), 2024** — [arXiv](https://arxiv.org/abs/2410.24164) · [PDF](https://arxiv.org/pdf/2410.24164) · [Code](https://github.com/Physical-Intelligence/openpi) · [Official](https://www.physicalintelligence.company/blog/pi0)

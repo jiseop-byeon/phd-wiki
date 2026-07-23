@@ -11,6 +11,9 @@ project: https://arxiv.org/abs/2304.07193
 tags: [paper, computer-vision, self-supervised]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Caron et al., ICCV 2021 · Oquab et al., 2023** — [DINO arXiv](https://arxiv.org/abs/2104.14294) · [PDF](https://arxiv.org/pdf/2104.14294) · [DINOv2 arXiv](https://arxiv.org/abs/2304.07193) · [Code](https://github.com/facebookresearch/dinov2)

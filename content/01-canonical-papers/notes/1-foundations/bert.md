@@ -10,6 +10,9 @@ code: https://github.com/google-research/bert
 tags: [paper, foundations, nlp]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Devlin et al., NAACL 2019** — [arXiv](https://arxiv.org/abs/1810.04805) · [PDF](https://arxiv.org/pdf/1810.04805) · [Code](https://github.com/google-research/bert)

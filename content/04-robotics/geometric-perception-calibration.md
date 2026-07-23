@@ -1,6 +1,9 @@
 ---
 title: 3.5 Geometric Perception & Calibration
 tags: [robotics, perception, calibration, geometry]
+study-depth: Working
+depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 ## English

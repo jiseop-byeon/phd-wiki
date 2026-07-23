@@ -1,6 +1,9 @@
 ---
 title: "{{Concept Name}}"
 tags: [concept]
+study-depth: Literacy
+depth-goal: "Explain the concept and recognize it in papers."
+mastery-when: "Raise when this concept carries the thesis formulation or novelty."
 ---
 
 ## English

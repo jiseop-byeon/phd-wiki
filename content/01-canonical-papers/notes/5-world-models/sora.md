@@ -8,6 +8,9 @@ pdf: https://openai.com/index/video-generation-models-as-world-simulators/
 tags: [paper, world-models, generative, diffusion]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **OpenAI, 2024 (technical report)** — [Report](https://openai.com/index/video-generation-models-as-world-simulators/)

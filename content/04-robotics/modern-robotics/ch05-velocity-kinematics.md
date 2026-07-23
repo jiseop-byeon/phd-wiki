@@ -1,6 +1,9 @@
 ---
 title: "MR Ch.05 — Velocity Kinematics & Statics"
 tags: [robotics, modern-robotics]
+study-depth: Working
+depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]

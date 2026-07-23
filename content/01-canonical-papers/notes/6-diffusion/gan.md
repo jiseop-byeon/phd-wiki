@@ -9,6 +9,9 @@ pdf: https://arxiv.org/pdf/1406.2661
 tags: [paper, generative]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Goodfellow et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1406.2661) · [PDF](https://arxiv.org/pdf/1406.2661)

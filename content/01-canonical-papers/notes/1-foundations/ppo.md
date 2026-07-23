@@ -7,6 +7,9 @@ pdf: https://arxiv.org/abs/1707.06347
 tags: [paper, reinforcement-learning]
 status: note-complete
 last_verified: 2026-07-23
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 ## English

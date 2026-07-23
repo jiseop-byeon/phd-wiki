@@ -8,6 +8,15 @@ tags: [log]
 
 ## 2026-07
 
+### 2026-07-23 (전역 학습 깊이 + 다중 범위 Research Radar)
+
+- Study intent를 Radar의 임시 필터에서 제거하고 [[00-study-depth-guide|0. Study Depth Guide]]와 모든 실질 학습 페이지의 `study-depth`·`depth-goal`·`mastery-when` 속성으로 이동
+- 140개 foundations·개념·논문·로보틱스·건설·research-practice 페이지에 Literacy/Working 기본 목표와 Mastery 승격 조건을 명시; 템플릿과 배포 QA에도 강제
+- Radar 온톨로지를 59개 토픽·10개 겹치는 연구 관점으로 확장: Deep Learning, Computer Vision, Generative Models, Multimodal, Physical AI, World Models, VLM & VLA, Robot Learning, Robotics, Construction Physical AI
+- 단일 폴더 분류를 폐기하고 Diffusion Policy처럼 여러 분야의 합류점이 복수 관점에 동시에 나타나는 multi-label 구조 채택
+- 건설 신호는 `construction robotics` 검색이 아니라 작업·장비·자산·재료·현장 맥락 × 로봇·자율성·인식·계획·제어·HRI의 교차 조건으로 검출; Automation in Construction와 Construction Robotics의 Crossref 메타데이터 추가
+- 2021–2025 출판 논문 58,439편, 59개 토픽으로 재집계; SLAM의 일반 `localization` 오탐과 건물 설계 RL의 embodied 오탐을 제거하고 대표 표본·필터·캐시 갱신을 브라우저에서 검증
+
 ### 2026-07-23 (Research Radar 초기판)
 
 - 문해력 획득 이후 연구 문제를 고르는 단계의 의사결정 도구 [[08-research-radar/index|Research Radar]] 신설

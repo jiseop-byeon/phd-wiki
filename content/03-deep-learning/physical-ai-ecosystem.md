@@ -1,6 +1,9 @@
 ---
 title: 2. Physical AI Ecosystem
 tags: [reference]
+study-depth: Literacy
+depth-goal: "Use the map to locate a method historically and explain how neighboring research streams connect."
+mastery-when: "Raise the specific downstream method pages—not the whole map—to Working or Mastery."
 ---
 
 ## English

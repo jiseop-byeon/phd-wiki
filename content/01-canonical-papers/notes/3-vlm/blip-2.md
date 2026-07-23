@@ -10,6 +10,9 @@ code: https://github.com/salesforce/LAVIS
 tags: [paper, vlm]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Li et al., ICML 2023** — [arXiv](https://arxiv.org/abs/2301.12597) · [PDF](https://arxiv.org/pdf/2301.12597) · [Code](https://github.com/salesforce/LAVIS)

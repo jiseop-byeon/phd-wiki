@@ -10,6 +10,9 @@ code: https://github.com/microsoft/LoRA
 tags: [paper, foundations, efficiency]
 status: note-complete
 last_verified: 2026-07-22
+study-depth: Working
+depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
+mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
 **Hu et al., ICLR 2022** — [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)
