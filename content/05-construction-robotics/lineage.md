@@ -89,7 +89,10 @@ physical-AI stack:
    wave; data scarcity points the same direction as
    [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s synthetic-data pyramid.
 5. **Heavy-machine autonomy** — ETH RSL (HEAP) and industry retrofits: learned/optimal
-   control on excavators — the [[04-robotics/mpc|MPC]]-meets-learning stream.
+   control on excavators — the [[04-robotics/mpc|MPC]]-meets-learning stream. In 2024–25 it
+   began merging with stream 1: ExACT (porting [[01-canonical-papers/notes/4-vla/act|ACT]] to an
+   excavator, ICRA 2024 workshop) and [[01-canonical-papers/notes/8-construction/ext|ExT]]
+   (ETH RSL — the large-scale pretrain→fine-tune recipe for excavation) are the opening signals.
 
 **The reading of this map for a new researcher**: streams 2–4 are mature and crowded;
 stream 1 (bringing [[01-canonical-papers/notes/4-vla/pi0|π0]]-class manipulation onto real
@@ -102,6 +105,7 @@ construction tasks) and its intersection with stream 5 are where the open territ
 - Davila Delgado et al., *Robotics and automated systems in construction* (J. Building
   Engineering, 2019) — why adoption is hard (the industry-side constraints)
 - Jud et al., *HEAP — the autonomous walking excavator* (ETH RSL) — the era-4 reference system
+- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|note]]) — the stream-1+5 merge signal: pretrain→fine-tune reaching excavation
 - Site perception: [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]-based
   as-built capture connects here from the CV track
 
@@ -151,7 +155,7 @@ construction tasks) and its intersection with stream 5 are where the open territ
 5. **중장비 자율화** — ETH RSL(HEAP)과 산업계 개조: 굴착기의 학습/최적 제어 —
    [[04-robotics/mpc|MPC]]와 학습이 만나는 흐름. 2024~25년에 1번과 합류하기 시작했다:
    ExACT(굴착기에 [[01-canonical-papers/notes/4-vla/act|ACT]] 이식, ICRA 2024 워크숍)와
-   [ExT](https://arxiv.org/abs/2509.14992)(ETH RSL — 굴착의 대규모 사전학습→파인튜닝
+   [[01-canonical-papers/notes/8-construction/ext|ExT]](ETH RSL — 굴착의 대규모 사전학습→파인튜닝
    레시피)가 그 신호탄이다.
 
 **신진 연구자를 위한 이 지도의 독해**: 2~4번 흐름은 성숙했고 붐빈다;
@@ -165,6 +169,7 @@ construction tasks) and its intersection with stream 5 are where the open territ
 - Davila Delgado et al., *Robotics and automated systems in construction* (J. Building
   Engineering, 2019) — 도입이 왜 어려운가 (산업 쪽 제약)
 - Jud et al., *HEAP — 자율 보행 굴착기* (ETH RSL) — 4시대의 기준 시스템
+- Zhai, Terenzi et al., *ExT* ([[01-canonical-papers/notes/8-construction/ext|노트]]) — 1+5번 흐름 합류의 신호탄: 굴착에 도달한 사전학습→파인튜닝
 - 현장 인식: CV 트랙의 [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]
   기반 준공 캡처가 여기로 합류한다
 

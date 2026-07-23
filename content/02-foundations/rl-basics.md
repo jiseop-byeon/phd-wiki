@@ -67,7 +67,7 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   reductions, in order of importance: subtract a **baseline** $b(s)$ (unbiased for any
   state-only baseline; best choice ≈ $V(s)$, making the weight the advantage $A$);
   use reward-to-go; **actor-critic**: learn $V_\phi$ with TD and use
-  $\delta = r + \gamma V(s') - V(s)$ as a one-sample advantage estimate. **GAE** interpolates
+  $\delta = r + \gamma V(s') - V(s)$ as a one-sample advantage estimate. **GAE** (generalized advantage estimation) interpolates
   between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ.
 - **PPO** — the workhorse ([[01-canonical-papers/notes/1-foundations/instructgpt|the one inside RLHF]]):
   with ratio $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$,
@@ -212,7 +212,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 - **REINFORCE**가 정확히 이것 — 불편이지만 분산이 파국적으로 크다. 분산 감소책, 중요한
   순서로: **베이스라인** $b(s)$ 빼기(상태만의 베이스라인이면 무편향; 최선은 ≈ $V(s)$,
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를
-  TD로 배우고 $\delta = r + \gamma V(s') - V(s)$를 1-샘플 어드밴티지로. **GAE**는
+  TD로 배우고 $\delta = r + \gamma V(s') - V(s)$를 1-샘플 어드밴티지로. **GAE**(generalized advantage estimation)는
   λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다.
 - **PPO** — 주력 알고리즘 ([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF 속의 그것]]):
   비율 $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$에 대해

@@ -71,7 +71,7 @@ directly and is exactly the action-generation mechanism of π0. When robotics pa
 ### Connections
 
 - Previous: [[ddpm|DDPM]] (the discrete special case it unifies)
-- Next: DDIM, Flow Matching → π0 · Foundations: [[02-foundations/probability|probability]] (SDE ← random processes)
+- Next: [[ddim|DDIM]], [[flow-matching|Flow Matching]] → [[pi0|π0]] · Foundations: [[02-foundations/probability|probability]] (SDE ← random processes)
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -125,7 +125,7 @@ directly and is exactly the action-generation mechanism of π0. When robotics pa
 ### 연결
 
 - 이전: [[ddpm|DDPM]] (이 프레임워크가 통합하는 이산 특수 사례)
-- 다음: DDIM, Flow Matching → π0 · 기초: [[02-foundations/probability|확률]] (SDE ← 랜덤 프로세스)
+- 다음: [[ddim|DDIM]], [[flow-matching|Flow Matching]] → [[pi0|π0]] · 기초: [[02-foundations/probability|확률]] (SDE ← 랜덤 프로세스)
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading

@@ -62,7 +62,7 @@ complex multimodal distributions with a stable regression loss. The transfer was
 ### Impact & follow-ups
 
 Made diffusion the default action head of robot learning. Successors: 3D Diffusion Policy,
-diffusion heads in Octo, and π0's flow-matching head ([[score-sde|the continuous-time sibling]]); together with [[act|ACT]] it established **action chunking** as standard practice.
+diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the related training formulation]]); together with [[act|ACT]] it established **action chunking** as standard practice.
 
 ### Connections
 
@@ -116,7 +116,7 @@ diffusion heads in Octo, and π0's flow-matching head ([[score-sde|the continuou
 ### 영향과 후속 연구
 
 디퓨전을 로봇 학습의 기본 행동 헤드로 만들었다. 후속: 3D Diffusion Policy, Octo의 디퓨전
-헤드, π0의 flow matching 헤드([[score-sde|연속 시간 형제]]); [[act|ACT]]와 함께
+헤드, π0의 flow matching 헤드([[flow-matching|관련 학습 정식화]]); [[act|ACT]]와 함께
 **행동 청킹**을 표준 관행으로 확립했다.
 
 ### 연결

@@ -18,7 +18,7 @@ uses. The authors provide the **full book PDF free** at the official site, plus 
 lectures and software (Python/MATLAB/Mathematica) on the course wiki, and a 6-course
 Coursera specialization.
 
-**Study path used in this wiki** (chapter notes to be added under `04-robotics/` as studied):
+**Study path used in this wiki** (chapter summaries live in [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]]):
 
 1. Configuration space (Ch. 2) — DoF, topology, constraints
 2. Rigid-body motions (Ch. 3) — rotation matrices, twists, **SE(3)**, exponential coordinates
@@ -26,7 +26,8 @@ Coursera specialization.
 4. Velocity kinematics & statics (Ch. 5) — the **Jacobian** (the same object as
    [[02-foundations/calculus-backprop|backprop's Jacobian]])
 5. Inverse kinematics (Ch. 6) → Dynamics (Ch. 8) → Trajectory generation (Ch. 9) →
-   Motion planning (Ch. 10) → Robot control (Ch. 11)
+   Motion planning (Ch. 10) → Robot control (Ch. 11) → Grasping (Ch. 12) →
+   Wheeled mobile robots (Ch. 13)
 
 **Why it matters for this wiki**: every VLA paper's action space (end-effector poses,
 joint commands) and every simulator's dynamics assume this material; SE(3) fluency is the
@@ -46,7 +47,7 @@ entry ticket to manipulation research.
 3. 정기구학 (4장) — product of exponentials
 4. 속도 기구학과 정역학 (5장) — **야코비안**
    ([[02-foundations/calculus-backprop|역전파의 야코비안]]과 같은 대상)
-5. 역기구학 (6장) → 동역학 (8장) → 궤적 생성 (9장) → 모션 플래닝 (10장) → 로봇 제어 (11장)
+5. 역기구학 (6장) → 동역학 (8장) → 궤적 생성 (9장) → 모션 플래닝 (10장) → 로봇 제어 (11장) → 파지 (12장) → 바퀴 이동 로봇 (13장)
 
 **이 위키에서 중요한 이유**: 모든 VLA 논문의 행동 공간(말단 자세, 관절 명령)과 모든
 시뮬레이터의 동역학이 이 내용을 전제한다; SE(3)에 능숙해지는 것이 매니퓰레이션 연구의

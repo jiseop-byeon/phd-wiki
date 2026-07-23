@@ -81,7 +81,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 ### Robotics bridge
 
-SE(3) becomes operational in [[04-robotics/state-estimation-slam|SLAM and localization]] and in the time-indexed TF trees of [[04-robotics/robot-systems-deployment|Robot Systems]].
+This notation is used verbatim throughout the [[04-robotics/modern-robotics/index|Modern Robotics summary]] and the extrinsics of [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]; it becomes operational in [[04-robotics/state-estimation-slam|SLAM and localization]] and the time-indexed TF trees of [[04-robotics/robot-systems-deployment|Robot Systems]].
 
 ## 한국어
 
@@ -157,4 +157,4 @@ SE(3) becomes operational in [[04-robotics/state-estimation-slam|SLAM and locali
 
 ### 로보틱스 다리
 
-여기서의 회전·변환 표기는 [[04-robotics/modern-robotics/index|Modern Robotics 요약]] 전체와 [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]의 extrinsics가 그대로 사용한다.
+여기서의 회전·변환 표기는 [[04-robotics/modern-robotics/index|Modern Robotics 요약]] 전체와 [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]의 extrinsics가 그대로 사용하며, [[04-robotics/state-estimation-slam|SLAM·위치 추정]]과 [[04-robotics/robot-systems-deployment|로봇 시스템]]의 시간 인덱스 TF 트리에서 실전이 된다.

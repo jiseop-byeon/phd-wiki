@@ -16,7 +16,7 @@ last_verified: 2026-07-22
 
 ## English
 
-**One-line summary**: Bridge a frozen vision encoder and a frozen LLM with a small set of trainable connector layers — the resulting VLM inherits the LLM's few-shot learning and handles interleaved image-text sequences.
+**One-line summary**: Bridge a frozen vision encoder and a frozen LLM with trainable connector layers (Perceiver Resampler + gated cross-attention — themselves billions of parameters at the 80B scale) — the resulting VLM inherits the LLM's few-shot learning and handles interleaved image-text sequences.
 
 ### Context
 

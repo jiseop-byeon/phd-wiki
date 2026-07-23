@@ -62,7 +62,7 @@ where each concept appears in the papers of this wiki.
   - **Optimization landscapes**: for quadratic loss $\frac12 x^\top H x$, gradient descent
     converges per-eigendirection at rate $(1 - \alpha\lambda_i)$; the usable step size is
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
-    **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD Hessian; for a
+    **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD — symmetric positive-definite, defined below — Hessian; for a
     general matrix the 2-norm condition number is the singular-value ratio
     $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
     adaptive optimization ([[01-canonical-papers/notes/1-foundations/adam|Adam]]) and normalization
@@ -173,7 +173,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   - **최적화 지형**: 이차 손실 $\frac12 x^\top H x$에서 경사 하강은 고유방향별로
     $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
-    $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD 헤시안 기준; 일반 행렬의 2-노름 조건수는
+    $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD — 대칭 양정부호, 아래에 정의 — 헤시안 기준; 일반 행렬의 2-노름 조건수는
     특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$)가 문제의 난이도 *그 자체*다 —
     나쁜 조건수는 적응형 최적화([[01-canonical-papers/notes/1-foundations/adam|Adam]])와
     정규화([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]])가 왜 돕는지 이해하는
