@@ -280,6 +280,12 @@ def main() -> None:
         "scopes": list(dict.fromkeys(scope for topic in TOPICS for scope in topic["scopes"])),
         "topics": topics, "audit": audit,
     }
+    if not papers:
+        raise SystemExit(
+            f"Refusing to overwrite {OUT}: 0 papers parsed. "
+            f"The DBLP/Crossref cache at {CACHE} is missing or empty — "
+            f"run scripts/build_research_radar.py to fetch it first."
+        )
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {OUT}: {len(papers)} papers, {len(topics)} topics")

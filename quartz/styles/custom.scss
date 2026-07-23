@@ -128,7 +128,7 @@ body[data-slug="08-research-radar/index"] {
 .research-radar-frame {
   display: block;
   width: 100%;
-  height: 1260px;
+  height: 2760px;
   margin: 1.5rem 0;
   border: 1px solid var(--lightgray);
   border-radius: 14px;
@@ -137,7 +137,7 @@ body[data-slug="08-research-radar/index"] {
 
 @media (max-width: 800px) {
   .research-radar-frame {
-    height: 1800px;
+    height: 3200px;
   }
 
   body[data-slug="08-research-radar/index"] #quartz-body {

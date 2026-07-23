@@ -12,6 +12,12 @@ Simulation makes dangerous, slow, and expensive robot experience cheap. It does 
 that experience real. **Sim-to-real** is the set of modeling, training, adaptation, and
 evaluation practices used to keep a policy useful when its simulator assumptions fail.
 
+> [!info] Depth target
+> Read a sim-to-real paper and identify: which gap (dynamics, contact, sensing, task,
+> implementation) dominates, which strategy addresses it and at what cost, what real-data
+> and intervention budget the transfer consumed, and which rung of the deployment ladder
+> the evidence actually reaches. Designing transfer pipelines is a working/mastery topic.
+
 > [!note] Prerequisites
 > [[02-foundations/probability|Probability]] · [[02-foundations/rl-basics|RL Basics]] ·
 > [[04-robotics/robot-systems-deployment|Robot Systems]] ·
@@ -34,6 +40,9 @@ that affect the policy were represented, varied, or adapted**.
 
 - **System identification** fits simulator parameters to measured trajectories. It makes
   one simulator more faithful but can overfit one machine and one operating condition.
+  The stream's canonical payoff is [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL]]:
+  a learned neural-network valve/actuator model makes the excavator simulator faithful
+  enough that the RL policy runs on the real M545 without fine-tuning.
 - **Domain randomization** trains across a distribution of dynamics, sensing, and scene
   parameters. Success depends on whether the real system lies inside a useful training
   distribution; “more random” is not automatically better.
@@ -49,7 +58,10 @@ that affect the policy were represented, varied, or adapted**.
 
 ### 3. A deployment ladder
 
-1. Simulator-only evaluation with held-out parameters.
+1. Simulator-only evaluation with held-out parameters —
+   [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] sits here: end-to-end
+   imitation from multimodal sensors to hydraulic valve commands, validated in simulation
+   only, so its claim stops at this rung.
 2. Hardware-in-the-loop and timing/saturation tests.
 3. Slow, supervised real trials inside a safety envelope.
 4. Adaptation without changing the evaluation cases.
@@ -78,6 +90,24 @@ outside the training range.
 - Identify simulator-only information and the real-data budget in a paper.
 - State what evidence would support generalization beyond one machine and one soil bin.
 
+### Self-check
+
+1. A team scales training from 100 to 10,000 parallel environments and reports better
+   sim performance. Why might the real-machine result not improve at all?
+2. Egli RL transferred zero-shot to the real M545. What did "zero-shot" cost upstream,
+   and what does the term not mean?
+3. A teacher policy uses ground-truth soil parameters; the student uses joint and
+   pressure signals. What is the single most important check before believing the
+   deployment claim?
+4. ExACT and ExT both apply imitation learning to excavation. Why do their claims sit on
+   different rungs of the deployment ladder?
+
+> [!tip]- Answers
+> 1. Parallelism raises sample throughput, not simulator validity: 10,000 environments can repeat the same wrong hydraulics, contact, and sensing physics. If the dominant gap is a modeling error rather than sample scarcity, more samples converge harder onto the wrong optimum.
+> 2. Upstream it cost real-machine data and engineering to fit the neural-network valve/actuator model — real-system knowledge baked into the simulator. "Zero-shot" means no target-domain training update before deployment; it does not mean the simulator was built without real data, nor that transfer holds beyond the identified machine and operating range.
+> 3. Whether every observation the student consumes actually exists, at deployment rate and latency, on the real machine — and whether the distillation was evaluated with realistic noise on those signals. Privileged learning fails silently when test-time observability is quietly optimistic.
+> 4. ExACT is validated in simulation only, so its evidence stops at rung 1 (simulator-only evaluation); ExT reports centimeter-level transfer on a real machine, reaching the supervised real-trial rungs. Same method family, different evidentiary weight — the ladder, not the method name, sets the claim.
+
 ### Sources
 
 - [Tobin et al., *Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World*](https://arxiv.org/abs/1703.06907)
@@ -89,6 +119,12 @@ outside the training range.
 시뮬레이션은 위험하고 느리며 비싼 로봇 경험을 싸게 만든다. 그 경험을 현실로 만들어 주지는
 않는다. **Sim-to-real**은 시뮬레이터의 가정이 깨져도 정책이 쓸모 있도록 만드는 모델링·학습·
 적응·평가 방법의 묶음이다.
+
+> [!info] 깊이 목표
+> Sim-to-real 논문을 읽고 다음을 짚는다: 어느 격차(동역학·접촉·센싱·과제·구현)가
+> 지배적인지, 어떤 전략이 어떤 비용으로 이를 다루는지, 전이가 소비한 실데이터·개입
+> 예산은 얼마인지, 증거가 배치 사다리의 어느 단에 실제로 도달하는지. 전이 파이프라인
+> 설계는 실무/숙달 단계의 주제다.
 
 > [!note] 선수지식
 > [[02-foundations/probability|확률]] · [[02-foundations/rl-basics|RL 기초]] ·
@@ -110,7 +146,10 @@ outside the training range.
 ### 2. 주요 전략
 
 - **시스템 식별**은 측정 궤적에 시뮬레이터 파라미터를 맞춘다. 한 조건에는 정확해지지만 한
-  기계에 과적합할 수 있다.
+  기계에 과적합할 수 있다. 이 스트림의 정전적 성과가
+  [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL]]이다: 학습된 신경망
+  밸브/액추에이터 모델이 굴착기 시뮬레이터를 충분히 충실하게 만들어 RL 정책이 파인튜닝
+  없이 실제 M545에서 돈다.
 - **도메인 랜덤화**는 동역학·센싱·장면 파라미터의 분포에서 학습한다. 현실이 유용한 학습
   분포 안에 있어야 하며, 무조건 더 많이 흔든다고 좋아지지 않는다.
 - **교사–학생/privileged learning**은 교사가 완벽한 자세나 지반 파라미터 같은 시뮬레이터
@@ -124,7 +163,10 @@ outside the training range.
 
 ### 3. 배치 사다리
 
-1. 보지 않은 파라미터에서 시뮬레이터 평가
+1. 보지 않은 파라미터에서 시뮬레이터 평가 —
+   [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]]가 여기에 있다:
+   멀티모달 센서에서 유압 밸브 명령까지의 end-to-end 모방이지만 시뮬레이션 검증뿐이라
+   주장은 이 단에서 멈춘다
 2. hardware-in-the-loop와 지연·포화 시험
 3. 안전 영역 안의 저속·감독 실제 시험
 4. 평가 사례를 보며 튜닝하지 않는 적응
@@ -149,6 +191,23 @@ Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없�
 - 시스템 식별, 도메인 랜덤화, privileged learning, 잔차, 실데이터 적응을 구별한다.
 - 논문의 시뮬레이터 전용 정보와 실데이터 예산을 찾는다.
 - 한 기계·한 토조를 넘어선 일반화를 지지할 증거를 말한다.
+
+### 스스로 점검
+
+1. 병렬 환경을 100개에서 10,000개로 늘려 시뮬레이션 성능이 좋아졌다. 실기계 결과는 왜
+   전혀 나아지지 않을 수 있는가?
+2. Egli RL은 실제 M545에 zero-shot으로 전이했다. "zero-shot"이 상류에서 무엇을
+   지불했으며, 이 용어가 뜻하지 않는 것은?
+3. 교사 정책은 지반 파라미터의 정답을 쓰고, 학생은 관절·압력 신호를 쓴다. 배치 주장을
+   믿기 전에 가장 중요한 단일 확인 사항은?
+4. ExACT와 ExT는 둘 다 굴착에 모방 학습을 적용한다. 두 주장은 왜 배치 사다리의 다른
+   단에 있는가?
+
+> [!tip]- 정답 · Answers
+> 1. 병렬화는 샘플 생산량을 올릴 뿐 시뮬레이터 타당성을 올리지 않는다: 10,000개 환경이 같은 잘못된 유압·접촉·센싱 물리를 반복할 수 있다. 지배적 격차가 샘플 부족이 아니라 모델링 오류라면, 더 많은 샘플은 잘못된 최적점에 더 세게 수렴한다.
+> 2. 상류에서는 신경망 밸브/액추에이터 모델을 맞추기 위한 실기계 데이터와 엔지니어링 — 실제 시스템 지식을 시뮬레이터에 구워 넣은 것 — 을 지불했다. "Zero-shot"은 배치 전 목표 도메인 학습 업데이트가 없다는 뜻이지, 시뮬레이터를 실데이터 없이 만들었다거나 식별된 기계·운용 범위 너머로 전이가 유지된다는 뜻이 아니다.
+> 3. 학생이 소비하는 모든 관측이 실기계에서 배치 주기와 지연으로 실제로 존재하는지 — 그리고 그 신호의 현실적 노이즈 아래에서 증류가 평가되었는지. Privileged learning은 시험 시점 관측 가능성이 조용히 낙관적일 때 소리 없이 실패한다.
+> 4. ExACT는 시뮬레이션 검증뿐이라 증거가 1단(시뮬레이터 평가)에서 멈춘다; ExT는 실기계에서 센티미터급 전이를 보고해 감독 실기 시험 단까지 도달한다. 같은 방법 계열, 다른 증거 무게 — 주장을 정하는 것은 방법 이름이 아니라 사다리다.
 
 ### 출처
 

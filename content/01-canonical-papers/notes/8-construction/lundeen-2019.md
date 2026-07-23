@@ -1,0 +1,42 @@
+---
+title: "Geometrically Adaptive Robotized Construction Work (Lundeen et al., 2019)"
+authors: Kurt M. Lundeen, Vineet R. Kamat, Carol C. Menassa, Wes McGee
+affiliation: University of Michigan
+venue: Automation in Construction
+year: 2019
+pdf: https://doi.org/10.1016/j.autcon.2018.12.020
+tags: [paper, construction]
+status: note-complete
+last_verified: 2026-07-24
+study-depth: Literacy
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
+---
+
+**Lundeen et al., Automation in Construction 2019** — [DOI](https://doi.org/10.1016/j.autcon.2018.12.020)
+
+## English
+
+**One-line summary**: A construction manipulator senses as-built geometry and adapts its motion plan and task execution on the fly — the paper that operationalizes construction's core difference from factory automation: the workpiece never matches the drawing.
+
+**Why read it**: it is the middle step of the Michigan line. [[vision-guided-assembly|Feng 2015]] showed marker-based vision guidance; Lundeen replaces "detect a fiducial" with "sense the actual as-built geometry and re-plan," so the robot handles per-instance variability autonomously instead of replaying fixed trajectories; [[liang-lfd|Liang 2020]] then replaces the remaining task scripting with human demonstration. Evidence is lab-testbed demonstration of sensor-driven adaptive execution — a **testbed, not a site** — with autonomy at the task-execution level inside a structured experiment.
+
+**Critique through this wiki's lens**: the adaptation is model-based and sensor-driven, not learned — every new task class still needs engineering. That is precisely the gap the next step in the line (demonstration, then hierarchical imitation) exists to close.
+
+## 한국어
+
+**한 줄 요약**: 건설 매니퓰레이터가 준공(as-built) 기하를 감지해 모션 계획과 과제 실행을 즉석에서 적응시킨다 — 건설이 공장 자동화와 다른 핵심, 즉 "작업 대상은 도면과 결코 일치하지 않는다"를 실제로 구현한 논문.
+
+**읽는 이유**: 미시간 계열의 중간 단계다. [[vision-guided-assembly|Feng 2015]]가 마커 기반 비전 유도를 보였다면, Lundeen은 "마커를 검출한다"를 "실제 준공 기하를 감지하고 다시 계획한다"로 바꿔, 로봇이 고정 궤적을 재생하는 대신 개체별 변동을 자율적으로 처리하게 한다; 이어서 [[liang-lfd|Liang 2020]]이 남은 과제 스크립팅을 인간 시연으로 대체한다. 증거는 센서 기반 적응 실행의 실험실 테스트베드 시연 — **현장이 아니라 테스트베드** — 이고, 자율성은 구조화된 실험 안의 과제 실행 수준이다.
+
+**이 위키의 렌즈로 본 비판**: 이 적응은 모델 기반·센서 기반이지 학습된 것이 아니다 — 새로운 과제 부류마다 여전히 엔지니어링이 필요하다. 바로 그 간극을 메우려고 계열의 다음 단계(시연, 그다음 계층적 모방)가 존재한다.
+
+### 연결
+
+- 이전: [[vision-guided-assembly|Feng 2015]] · 다음: [[liang-lfd|Liang 2020]] (미시간 계열: 비전 유도 → 기하 적응 → 시연 학습)
+
+### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
+
+- [ ] 준공 기하 변동성이 왜 사전 프로그래밍된 자동화를 깨뜨리는지 설명할 수 있다
+- [ ] 감지 → 재계획 → 실행의 적응 루프를 말할 수 있다
+- [ ] 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문의 위치를 말할 수 있다

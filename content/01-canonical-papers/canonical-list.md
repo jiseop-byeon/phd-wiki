@@ -46,6 +46,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/1-foundations/mae|MAE]] — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
 - [x] ◐ [[notes/1-foundations/lora|LoRA]] — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
 - [x] ○ [[notes/1-foundations/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
+*(아래 두 편은 로보틱스 트랙의 선행 재료로 부록처럼 추가 — 시간순 예외)*
 - [x] ◐ [[notes/1-foundations/ppo|PPO]] — *Proximal Policy Optimization Algorithms* (Schulman et al., 2017) — ExT 등 simulator-expert/RLFT 레시피
 - [x] ○ [[notes/1-foundations/sac|Soft Actor-Critic]] (Haarnoja et al., ICML 2018) — 연속 제어의 off-policy 기준선
 
@@ -144,24 +145,29 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/8-construction/stentz-excavator|Stentz et al. — autonomous truck loading]] (IROS 1998 / Autonomous Robots 1999) — 30년 중장비 자율화 계보의 출발점
 - [x] ★ [[notes/8-construction/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 계측·힘 제어 플랫폼
 - [x] ★ [[notes/8-construction/aes|AES — autonomous material loading]] (Zhang et al., Science Robotics 2021) — 24시간/개입의 산업 규모 시스템
-- [ ] ◐ [Egli et al. — *Soil-Adaptive Excavation Using Reinforcement Learning*](https://www.research-collection.ethz.ch/entities/publication/d126621d-6d1b-42c5-870c-bd69dd6195a4) (RA-L 2022) — 실기계 토질 적응 RL
+- [x] ◐ [[notes/8-construction/egli-rl|Egli et al. — RL for hydraulic excavator arms + soil-adaptive excavation]] (RA-L 2022) — 실기계 토질 적응 RL
 - [x] ◐ [[notes/8-construction/wheel-loader-rl|Eriksson et al. — wheel-loader RL]] (ICRA 2024) — 북유럽 실기계 적재 학습
-- [ ] ○ [ExACT — ACT for an excavator](https://arxiv.org/abs/2405.05861) (Chen et al., 2024) — end-to-end 모방학습, 시뮬레이터 검증
+- [x] ○ [[notes/8-construction/exact-2024|ExACT — ACT for an excavator]] (Chen et al., Baidu, 2024) — end-to-end 모방학습, 시뮬레이터 검증
 - [x] ★ [[notes/8-construction/ext|ExT — excavation pretrain→fine-tune]] (Zhai, Terenzi et al., ETH RSL 2025) — 멀티태스크 physical-AI 신호
 
 ### Assembly & fabrication
 
 - [x] ★ [[notes/8-construction/vision-guided-assembly|Feng et al. — vision-guided assembly and as-built scanning]] (Automation in Construction 2015) — 미시간 조작 계보의 앵커
 - [x] ★ [[notes/8-construction/dry-stone-wall|Johns et al. — excavation and dry-stone construction]] (Science Robotics 2023) — 인식·계획·중장비 조작의 실규모 폐루프
-- [ ] ○ [Zhang et al. — *Aerial Additive Manufacturing with Multiple Autonomous Robots*](https://doi.org/10.1038/s41586-022-04988-4) (Nature 2022) — 공중 적층 제조
-- [ ] ◐ [Yu et al. — cloud-based hierarchical imitation learning](https://arxiv.org/abs/2309.11619) (J. Computing in Civil Engineering 2024) — 작업자 기술의 시연 학습
+- [x] ○ [[notes/8-construction/aerial-am-2022|Zhang et al. — aerial additive manufacturing]] (Nature 2022) — 공중 적층 제조
+- [x] ◐ [[notes/8-construction/yu-imitation|Yu et al. — cloud-based hierarchical imitation learning]] (JCCE 2024) — 작업자 기술의 시연 학습
+- [x] ○ [[notes/8-construction/lundeen-2019|Lundeen et al. — geometrically adaptive robotized construction]] (Automation in Construction 2019) — as-built 변동 적응
+- [x] ◐ [[notes/8-construction/liang-lfd|Liang et al. — LfD for quasi-repetitive construction tasks]] (Automation in Construction 2020) — 건설 모방학습의 입구
+- [x] ○ [[notes/8-construction/han-welding|Lee & Han — mobile robotic welding with HRI]] (Automation in Construction 2024) — UGV+팔 용접 시스템
 
 ### Site perception, HRC & workflow layers
 
-- [ ] ○ [Tang et al. — automatic reconstruction of as-built BIM from laser scans](https://doi.org/10.1016/j.autcon.2009.06.007) (Automation in Construction 2010) — scan-to-BIM 기준 서베이
-- [ ] ○ [RICAL autonomous site-scanning line](https://rical.ce.gatech.edu/index.html) — SLAM·UGV/UAV·adaptive view planning의 현장 시스템 계보
-- [ ] ◐ [Liu & Jebelli — intention-aware robot motion planning](https://doi.org/10.1111/mice.13129) (CACAIE 2024) — 작업자 의도 추론을 모션 계획에 연결
-- [ ] ○ [Park et al. — natural-language interaction with field-construction robot assistants](https://doi.org/10.1016/j.autcon.2024.105345) (Automation in Construction 2024) — 언어 기반 HRC 인터페이스
+- [ ] ○ [Tang et al. — automatic reconstruction of as-built BIM from laser scans](https://doi.org/10.1016/j.autcon.2010.06.007) (Automation in Construction 2010) — scan-to-BIM 기준 서베이
+- [x] ◐ [[notes/8-construction/cho-slam|Kim, Chen & Cho — SLAM-driven robotic site mapping]] (Automation in Construction 2018) — RICAL 자율 스캔 계보의 앵커 (2019 UAV+UGV, 2025 view planning으로 이어짐)
+- [x] ◐ [[notes/8-construction/liu-jebelli-bci|Liu & Jebelli — BCI teleoperation → intention-aware planning]] (AutCon 2021 / CACAIE 2024) — 생리 신호를 로봇 루프에 연결한 계보
+- [x] ○ [[notes/8-construction/park-nl|Park et al. — natural-language robot instructions]] (Automation in Construction 2024) — 언어 기반 HRC 인터페이스
 - [x] ◐ [[notes/8-construction/bim-digital-twin|Wang et al. — BIM-driven closed-loop digital twins]] (Computers in Industry 2024) — 공정 수준 인터페이스
+- [x] ◐ [[notes/8-construction/lasota-shah|Lasota & Shah — human-aware motion planning]] (Human Factors 2015 / RA-L 2018) — 건설이 수입하는 제조 HRC 증거
+- [x] ○ [[notes/8-construction/liang-hrc-survey|Liang et al. — HRC in construction: classification & trends]] (JCEM 2021) — 스트림 6의 방향 잡는 분류 체계
 
 개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).

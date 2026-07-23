@@ -8,6 +8,16 @@ tags: [log]
 
 ## 2026-07
 
+### 2026-07-24 (건설 트랙 완성 — 코퍼스 기반 확충 마무리)
+
+- 5클러스터 조사(미시간·UIUC 디아스포라·GT/TAMU/CMU·유럽·로보틱스史+산업)의 잔여 작업 완료:
+- **신규 논문 노트 12편**: [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]](Baidu, sim 검증), [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL 굴착]], [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]], [[01-canonical-papers/notes/8-construction/han-welding|Han 용접]], [[01-canonical-papers/notes/8-construction/aerial-am-2022|Nature 공중 AM]], [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC 서베이]], [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI 원격조작]], [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]], [[01-canonical-papers/notes/8-construction/park-nl|Park NL]], [[01-canonical-papers/notes/8-construction/yu-imitation|Yu 모방학습]], [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen]], [[01-canonical-papers/notes/8-construction/liang-lfd|Liang LfD]] — 8-construction 총 22노트
+- 기존 6노트(AES·돌담·Feng·Stentz·Wang DT·휠로더) 하우스 스타일 승격: 완전 한국어 병기, 연결, 수치 심층화
+- 스트림 5페이지(조립·인식·HRC·DT·sim-to-real)에 Depth target·자가 점검·KR 다이어그램 복원 + 전 스트림↔노트 양방향 링크
+- 선행 노트 4편(PPO·SAC·PointNet·SayCan) 완전 통합: opener·위키링크·RL 기초 §4 on-ramp·GAE 단락
+- 오류 수정: Tang DOI(2010), ext.md 구식 스트림 참조, Radar 빈 캐시 가드, iframe 높이, LDM 깊이(Literacy)
+
+
 ### 2026-07-23 (전역 학습 깊이 + 다중 범위 Research Radar)
 
 - Study intent를 Radar의 임시 필터에서 제거하고 [[00-study-depth-guide|0. Study Depth Guide]]와 모든 실질 학습 페이지의 `study-depth`·`depth-goal`·`mastery-when` 속성으로 이동

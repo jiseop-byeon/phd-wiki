@@ -1,6 +1,9 @@
 ---
 title: 8. Research Radar
 tags: [research, trends, dashboard]
+study-depth: Literacy
+depth-goal: "Use the radar to locate momentum and volume; depth decisions belong to the study-depth guide."
+mastery-when: "Not applicable — this is a decision-support dashboard, not study material."
 ---
 
 The Research Radar is a decision-support layer for the point **after foundational

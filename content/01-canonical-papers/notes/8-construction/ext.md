@@ -28,10 +28,10 @@ sources beat purity), and fine-tuning offers both supervised and RL variants (th
 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]-shaped choice). Transfer across sim/real
 and machine configurations is a design goal, not an afterthought.
 
-**Placed in the map**: the merge point of the
-[[05-construction-robotics/lineage|lineage]]'s stream 1 (imitation learning) and stream 5
-(heavy-machine autonomy) — the open territory this wiki identified, now with its first
-occupant. Open questions: task diversity is still excavation-shaped; no language
+**Placed in the map**: the merge that the
+[[05-construction-robotics/lineage|lineage]] page calls open territory — era-4 robot
+learning (imitation, pretrain→fine-tune) arriving on era-1R heavy machines — now with its
+first occupant. Open questions: task diversity is still excavation-shaped; no language
 conditioning; and the safety story for learned policies on real sites is unwritten.
 
 ## 한국어
@@ -45,15 +45,16 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 ([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]] 모양의 선택지). 시뮬레이션/실기계와 기계
 구성 간 전이가 사후 고려가 아니라 설계 목표다.
 
-**지도에서의 위치**: [[05-construction-robotics/lineage|계보]]의 1번 흐름(모방학습)과 5번
-흐름(중장비 자율성)의 합류점 — 이 위키가 지목했던 열린 영토의 첫 입주자다. 열린 질문:
+**지도에서의 위치**: [[05-construction-robotics/lineage|계보]] 페이지가 열린 영토라 부르는
+합류 — 4시대의 로봇 학습(모방, 사전학습→파인튜닝)이 1R시대의 중장비에 도착하는 지점 —
+의 첫 입주자다. 열린 질문:
 과제 다양성이 아직 굴착 모양이고, 언어 조건화가 없으며, 실제 현장에서 학습 정책의 안전
 서사는 쓰이지 않았다.
 
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/8-construction/heap|HEAP]] (플랫폼), [[01-canonical-papers/notes/4-vla/act|ACT]]/[[01-canonical-papers/notes/4-vla/pi0|π0]] (방법론)
-- 계보: [[05-construction-robotics/lineage|건설로봇 계보]] 1+5 합류점
+- 계보: [[05-construction-robotics/lineage|건설로봇 계보]]의 4시대×1R시대 합류점
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "scalable autonomous excavation"의 scalable은 프레임워크(수집→사전학습→파인튜닝)의 확장 가능성 주장이지, 실제 현장 배치의 검증이 아니다 — 안전 체계와 과제 다양성은 열린 문제로 남아 있다. "굴착의 파운데이션 모델 시대가 열렸다"는 신호로 읽되, "도착했다"로 읽지 마라.
@@ -63,4 +64,4 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 - [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔는지 말할 수 있다
 - [ ] "전문가 혼합 시연"이 OXE의 어떤 교훈(이질적 소스 > 순수함)을 반복하는지 말할 수 있다
 - [ ] 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
-- [ ] 이 논문이 계보의 1번(모방학습)·5번(중장비) 흐름의 합류점인 이유를 설명할 수 있다
+- [ ] 이 논문이 왜 로봇 학습(4시대)과 중장비 자율성(1R시대)의 합류점인지 설명할 수 있다

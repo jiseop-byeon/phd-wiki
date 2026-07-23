@@ -13,6 +13,13 @@ linked to a physical system**. For robotics, the distinction matters: geometry t
 never updated cannot tell a robot what is currently reachable, installed, occupied, or
 failed.
 
+> [!info] Depth target
+> Read a digital-twin or BIM-robotics paper and identify: which twin level the system
+> actually reaches (model, shadow, closed loop, process), what crosses the semantic gap
+> from design entity to robot skill, how fresh and trustworthy the state is, and whether
+> information really returns from the site to change the next action. Building twin
+> architectures is a working/mastery topic.
+
 > [!note] Prerequisites
 > [[05-construction-robotics/site-perception|Site Perception]] ·
 > [[04-robotics/robot-systems-deployment|Robot Systems]] ·
@@ -29,6 +36,10 @@ flowchart LR
 The hard interfaces are semantic: converting a wall or weld in BIM into robot actions,
 assigning coordinate frames and tolerances, deciding when observations are sufficient to
 declare completion, and propagating failure back to the process plan.
+[[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang 2024]] is the stream's
+reference closed loop: BIM-generated tasks drive robot execution and as-built scans
+verify completion back into the model — read it against the levels below to see which
+interfaces it actually closes.
 
 ### 2. Levels often called a digital twin
 
@@ -71,6 +82,24 @@ digital twin.
 - Identify update rate, uncertainty, and mismatch recovery in a paper.
 - Trace whether information actually returns from the site to change the next action.
 
+### Self-check
+
+1. A system streams site sensor data into a live 3D dashboard. Which twin level is this,
+   and what is missing before it becomes a closed-loop twin?
+2. What must be added to a BIM wall object before a robot can install it? Name at least
+   four kinds of information.
+3. Why must measured, inferred, planned, and manually entered state carry different
+   trust, and what can go wrong if a robot treats them equally?
+4. In a loop like Wang 2024's (BIM task generation, robot execution, as-built scan
+   verification), what single failure would silently break the twin claim while leaving
+   every demo video looking correct?
+
+> [!tip]- Answers
+> 1. A digital shadow: physical data updates the model, but the model commands nothing. Closing the loop requires a command path — twin state generating or gating robot actions — plus defined semantics for when observation suffices to change decisions.
+> 2. A coordinate frame and metric tolerances; an ordered decomposition into robot skills with preconditions and effects; grasp/tool and reachability information; material and component identity binding model entity to physical part; and completion/verification criteria with recovery behavior on mismatch.
+> 3. Provenance encodes uncertainty and staleness: a manually entered "installed" flag can be wrong or outdated, an inferred pose has error bounds, a planned state may never have happened. A robot weighting them equally can act on fiction — e.g., planning through a wall that was never built or declaring completion from a stale scan.
+> 4. The verification step passing without discriminating power — e.g., registration tolerance looser than the defects it should catch, or ground truth derived from the same alignment being verified. Execution then always "verifies," the model is updated with unearned confidence, and the loop is open in exactly the place the twin claim depends on.
+
 ### Sources
 
 - [buildingSMART International](https://www.buildingsmart.org/) — openBIM standards context
@@ -83,15 +112,31 @@ BIM은 구조화된 설계 모델이다. 디지털 트윈은 **물리 시스템�
 상태**다. 로봇에는 이 차이가 중요하다. 갱신되지 않는 형상은 현재 무엇이 설치·점유·고장
 났고 로봇이 어디에 접근할 수 있는지 말해 주지 못한다.
 
+> [!info] 깊이 목표
+> 디지털 트윈·BIM 로보틱스 논문을 읽고 다음을 짚는다: 시스템이 실제로 도달한 트윈
+> 수준(모델·섀도·폐루프·공정), 설계 객체에서 로봇 skill로 의미 격차를 무엇이 건너는지,
+> 상태가 얼마나 신선하고 신뢰할 만한지, 정보가 정말 현장에서 돌아와 다음 행동을 바꾸는지.
+> 트윈 아키텍처 구축은 실무/숙달 단계의 주제다.
+
 > [!note] 선수지식
 > [[05-construction-robotics/site-perception|현장 인식]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[04-robotics/planning-decision-making|계획]]
 
-BIM+공정+제약 → 로봇 과제 모델 → 계획·실행 → 결과 관측 → 정합·트윈 갱신 → 다음 과제의
-폐루프로 읽는다. 어려운 인터페이스는 의미론이다: BIM의 벽·용접을 로봇 행동으로 바꾸고,
-좌표계·공차를 주고, 완료를 판정하며, 실패를 공정 계획에 되돌려야 한다.
+### 1. 닫힌 워크플로
 
-### 1. 디지털 트윈이라 불리는 수준
+```mermaid
+flowchart LR
+    B["BIM + 공정 + 제약"] --> T["로봇 과제 모델"] --> X["계획·실행"]
+    X --> O["결과 관측"] --> A["정합 + 트윈 갱신"] --> T
+```
+
+어려운 인터페이스는 의미론이다: BIM의 벽·용접을 로봇 행동으로 바꾸고, 좌표계·공차를
+주고, 완료를 판정하며, 실패를 공정 계획에 되돌려야 한다.
+[[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang 2024]]가 이 스트림의
+기준 폐루프다: BIM에서 생성된 과제가 로봇 실행을 구동하고 as-built 스캔이 완료를 모델로
+되돌려 검증한다 — 아래 수준표에 대조해 실제로 어떤 인터페이스가 닫히는지 읽어라.
+
+### 2. 디지털 트윈이라 불리는 수준
 
 | 수준 | 기능 | 빠진 것 |
 |---|---|---|
@@ -102,7 +147,7 @@ BIM+공정+제약 → 로봇 과제 모델 → 계획·실행 → 결과 관측 
 
 “트윈”이라는 이름이 아니라 데이터와 명령 경로를 보고 수준을 판단하라.
 
-### 2. 로봇 관점의 문제
+### 3. 로봇 관점의 문제
 
 - **의미 접지**: 모델 객체와 관측 객체가 어떻게 대응하는가?
 - **상태 신선도**: 어떤 주기와 지연으로 갱신되는가?
@@ -110,7 +155,7 @@ BIM+공정+제약 → 로봇 과제 모델 → 계획·실행 → 결과 관측 
 - **과제 생성**: 시공 활동을 선행조건·공차·복구가 있는 로봇 skill 순서로 바꿔야 한다.
 - **멀티에이전트**: 공유 상태만으로 할당·충돌·통신 손실이 해결되지는 않는다.
 
-### 3. 평가 읽기
+### 4. 평가 읽기
 
 실제 양방향 루프, 좌표·의미 오차, 갱신 지연, stale state 처리, 불일치 뒤 복구, 기존 공정과의
 비교를 보라. 센서 데이터를 보여 주는 대시보드는 유용하지만 로봇 디지털 트윈의 증거는 아니다.
@@ -126,6 +171,23 @@ BIM+공정+제약 → 로봇 과제 모델 → 계획·실행 → 결과 관측 
 - BIM 객체와 실행 가능한 로봇 skill 사이의 의미 격차를 설명한다.
 - 갱신률·불확실성·불일치 복구를 찾는다.
 - 현장 정보가 다음 행동을 실제로 바꾸는지 추적한다.
+
+### 스스로 점검
+
+1. 현장 센서 데이터를 실시간 3D 대시보드로 스트리밍하는 시스템이 있다. 어느 트윈
+   수준이며, 폐루프 트윈이 되려면 무엇이 빠져 있는가?
+2. 로봇이 BIM 벽 객체를 설치할 수 있으려면 무엇을 더해야 하는가? 최소 네 종류의 정보를
+   들라.
+3. 측정·추론·계획·수기 입력 상태는 왜 다른 신뢰도를 가져야 하며, 로봇이 이를 동등하게
+   취급하면 무엇이 잘못될 수 있는가?
+4. Wang 2024 같은 루프(BIM 과제 생성 → 로봇 실행 → as-built 스캔 검증)에서, 모든 데모
+   영상은 멀쩡해 보이면서 트윈 주장을 조용히 무너뜨리는 단일 실패는 무엇인가?
+
+> [!tip]- 정답 · Answers
+> 1. 디지털 섀도: 물리 데이터가 모델을 갱신하지만 모델이 아무것도 지시하지 않는다. 루프를 닫으려면 명령 경로 — 트윈 상태가 로봇 행동을 생성하거나 통제하는 — 와 관측이 언제 결정을 바꾸기에 충분한지에 대한 의미론이 필요하다.
+> 2. 좌표계와 미터 공차; 선행조건·효과가 있는 로봇 skill로의 순서 있는 분해; 파지/공구와 도달성 정보; 모델 객체를 물리 부재에 묶는 재료·부품 ID; 불일치 시 복구 거동을 포함한 완료·검증 기준.
+> 3. 출처는 불확실성과 신선도를 담는다: 수기 입력된 "설치됨" 플래그는 틀리거나 낡았을 수 있고, 추론된 자세에는 오차 한계가 있으며, 계획된 상태는 일어나지 않았을 수 있다. 이를 동등하게 취급하는 로봇은 허구에 따라 행동할 수 있다 — 지어지지 않은 벽을 통과하는 계획, 낡은 스캔으로 완료 선언 등.
+> 4. 판별력 없는 검증 단계의 통과 — 예: 잡아야 할 결함보다 느슨한 정합 공차, 또는 검증 대상 정렬로 만든 정답. 그러면 실행은 항상 "검증"되고, 모델은 근거 없는 확신으로 갱신되며, 트윈 주장이 의존하는 바로 그 지점에서 루프가 열려 있게 된다.
 
 ### 출처
 

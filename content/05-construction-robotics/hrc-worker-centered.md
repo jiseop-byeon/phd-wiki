@@ -12,6 +12,12 @@ Construction HRC studies a robot and a worker as one changing system. The distin
 question is not only whether the robot avoids collision, but whether it can infer,
 communicate, allocate, and recover without increasing cognitive or physical burden.
 
+> [!info] Depth target
+> Read an HRC paper and identify: what is sensed, what construct is inferred, whether
+> the estimate actually changes robot behavior, what human outcome is measured, and how
+> far the participant sample and task realism carry the claim. Designing worker-in-the-
+> loop studies is a working/mastery topic.
+
 > [!note] Prerequisites
 > [[04-robotics/hri-safety|HRI & Safety]] · [[02-foundations/signal-processing|Signal Processing]] ·
 > [[04-robotics/planning-decision-making|Planning]] · [[06-research-practice/experimental-design-reproducibility|Experimental Design]]
@@ -30,12 +36,22 @@ only when the estimate changes robot behavior and that closed loop is evaluated.
 ### 2. Main research lines
 
 - The **Michigan DPM → UIUC/Georgia Tech/Toronto diaspora** connects physiological
-  computing to intention-aware planning, BCI/teleoperation, co-robotic safety, and LMM-
-  mediated field robots.
+  computing to intention-aware planning,
+  [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI teleoperation]]
+  (EEG-decoded commands driving a construction robot hands-free), co-robotic safety, and
+  LMM-mediated field robots.
 - The **Michigan LIVE/SICIS → VT/Stony Brook/TAMU** line connects adaptive autonomy,
   learning from demonstration, tactile handover, digital twins, and multi-robot supervision.
 - The **MIT Shah manufacturing line** supplies cross-training, role allocation, legible
-  motion, and human-aware planning methods that construction imports.
+  motion, and human-aware planning methods that construction imports —
+  [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]] is the anchor:
+  human-aware motion planning evaluated on measured human responses in close-proximity
+  collaboration, later deployed on a real automotive final-assembly line.
+
+For orientation across the field, the defining taxonomy is the
+[[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC survey]] (JCEM
+2021), which classifies collaboration levels and research trends and is the standard map
+for placing any construction-HRC paper.
 
 ### 3. Claims that require care
 
@@ -66,6 +82,23 @@ a small study is not evidence of low operational risk.
 - Identify authority, override, and recovery in shared autonomy.
 - Explain why a collision-free small study does not validate operational safety.
 
+### Self-check
+
+1. A paper classifies worker fatigue from a wristband with 91% accuracy. What is still
+   missing before this counts as worker-centered robotics rather than worker sensing?
+2. What did Lasota & Shah measure that a collision-count evaluation would have missed,
+   and why does that matter for construction?
+3. BCI teleoperation decodes EEG into robot commands in a testbed. List the gaps between
+   this and a deployable hands-free interface on a site.
+4. A shared-autonomy system halves task completion time in a 12-participant lab study.
+   Give two ways this result can coexist with a worse outcome for workers.
+
+> [!tip]- Answers
+> 1. The closed loop: the fatigue estimate must change robot behavior (speed, allocation, assistance), and that coupled system must be evaluated on human outcomes — safety, workload, trust — not just classification accuracy. A correlate with self-report labels is also not yet a causal state estimate.
+> 2. They measured human responses to the robot's motion — concurrent motion, separation distance, task time, and subjective satisfaction — showing human-aware planning changed how people worked alongside the robot, not merely that collisions were absent. Construction imports this because its spaces are shared and unstructured: collision absence in a short study says nothing about whether workers can predict and comfortably work around the robot.
+> 3. Signal robustness under sweat, motion artifacts, PPE (helmets), and site noise; calibration time per user and per day; command latency and error cost when a misdecoded command moves a heavy machine; fallback authority and override; and validation beyond a controlled testbed population.
+> 4. Faster completion can come with higher cognitive workload or reduced situation awareness (hidden costs the timing metric misses), and short-term lab gains can vanish or invert with learning/order effects, fatigue over full shifts, or trust miscalibration — none observable in a small counterbalanced session.
+
 ### Sources
 
 - [ACM/IEEE International Conference on Human-Robot Interaction](https://humanrobotinteraction.org/)
@@ -76,6 +109,11 @@ a small study is not evidence of low operational risk.
 
 건설 HRC는 로봇과 작업자를 하나의 변하는 시스템으로 본다. 충돌 회피뿐 아니라 인지·소통·
 과제 배분·복구가 작업자의 인지·신체 부담을 늘리지 않는지가 핵심이다.
+
+> [!info] 깊이 목표
+> HRC 논문을 읽고 다음을 짚는다: 무엇을 센싱하는지, 어떤 구성개념을 추론하는지, 추정값이
+> 실제로 로봇 행동을 바꾸는지, 어떤 인간 결과를 측정하는지, 참가자 표본과 과제 현실성이
+> 주장을 어디까지 지지하는지. 작업자 폐루프 연구 설계는 실무/숙달 단계의 주제다.
 
 > [!note] 선수지식
 > [[04-robotics/hri-safety|HRI와 안전]] · [[02-foundations/signal-processing|신호처리]] ·
@@ -94,11 +132,21 @@ a small study is not evidence of low operational risk.
 
 ### 2. 연구 계보
 
-- **미시간 DPM → UIUC·GT·토론토**: 생리 컴퓨팅에서 의도 인식 계획, BCI/원격조작,
-  co-robotic 안전, LMM 필드 로봇으로.
+- **미시간 DPM → UIUC·GT·토론토**: 생리 컴퓨팅에서 의도 인식 계획,
+  [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI 원격조작]](EEG 해독
+  명령으로 건설 로봇을 핸즈프리 구동), co-robotic 안전, LMM 필드 로봇으로.
 - **미시간 LIVE/SICIS → VT·Stony Brook·TAMU**: 적응적 자율성, 시연 학습, 촉각 전달,
   디지털 트윈, 멀티로봇 감독으로.
-- **MIT Shah 제조 HRC**: 교차 훈련, 역할 배분, 읽기 쉬운 움직임, 인간 인지 계획을 공급한다.
+- **MIT Shah 제조 HRC**: 교차 훈련, 역할 배분, 읽기 쉬운 움직임, 인간 인지 계획을
+  공급한다 — 앵커는
+  [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]]: 근접 협업에서
+  측정된 인간 반응으로 평가한 인간 인지 모션 계획으로, 이후 실제 자동차 최종 조립 라인에
+  배치되었다.
+
+분야 전체의 지도로는
+[[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC 서베이]](JCEM
+2021)가 정의적 분류 체계다 — 협업 수준과 연구 동향을 분류하며, 어떤 건설 HRC 논문이든
+위치시키는 표준 지도다.
 
 ### 3. 조심해서 읽을 주장
 
@@ -125,6 +173,23 @@ a small study is not evidence of low operational risk.
 - 측정부터 추론·로봇 행동·인간 결과까지 주장을 추적한다.
 - 공유 자율성의 권한·override·복구를 찾는다.
 - 작은 무충돌 연구가 운용 안전을 검증하지 못하는 이유를 설명한다.
+
+### 스스로 점검
+
+1. 손목 밴드로 작업자 피로를 91% 정확도로 분류한 논문이 있다. 작업자 센싱이 아니라
+   작업자 중심 로보틱스로 인정받으려면 무엇이 더 필요한가?
+2. Lasota & Shah는 충돌 횟수 평가가 놓쳤을 무엇을 측정했으며, 그것이 건설에 왜
+   중요한가?
+3. BCI 원격조작은 테스트베드에서 EEG를 로봇 명령으로 해독한다. 이것과 현장에서 배치
+   가능한 핸즈프리 인터페이스 사이의 격차를 나열하라.
+4. 공유 자율 시스템이 참가자 12명 실험에서 과제 시간을 절반으로 줄였다. 이 결과가
+   작업자에게 더 나쁜 결과와 공존할 수 있는 방식 두 가지를 들라.
+
+> [!tip]- 정답 · Answers
+> 1. 폐루프: 피로 추정값이 로봇 행동(속도·배분·지원)을 바꿔야 하고, 그 결합 시스템이 분류 정확도가 아니라 인간 결과 — 안전·작업부하·신뢰 — 로 평가되어야 한다. 자기보고 라벨과의 상관관계는 아직 인과적 상태 추정도 아니다.
+> 2. 로봇 모션에 대한 인간의 반응 — 동시 동작, 이격 거리, 과제 시간, 주관적 만족 — 을 측정해, 인간 인지 계획이 충돌의 부재를 넘어 사람들이 로봇 곁에서 일하는 방식 자체를 바꿈을 보였다. 건설의 공간은 공유되고 비정형이므로 이것이 수입된다: 짧은 연구의 무충돌은 작업자가 로봇을 예측하고 편하게 함께 일할 수 있는지에 대해 아무것도 말하지 않는다.
+> 3. 땀·동작 아티팩트·PPE(헬멧)·현장 소음 아래의 신호 강건성; 사용자별·일별 보정 시간; 오해독 명령이 중장비를 움직일 때의 지연과 오류 비용; 대체 권한과 override; 통제된 테스트베드 집단 너머의 검증.
+> 4. 시간 단축이 더 높은 인지 부하나 상황 인식 저하와 함께 올 수 있다(시간 지표가 놓치는 숨은 비용); 단기 실험실 이득이 학습/순서 효과, 전체 근무의 피로, 신뢰 오보정으로 사라지거나 뒤집힐 수 있다 — 작은 세션에서는 관측되지 않는다.
 
 ### 출처
 
