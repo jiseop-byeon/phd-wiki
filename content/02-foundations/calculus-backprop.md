@@ -55,7 +55,9 @@ $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
    gradient is a mask (call it $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
 
-Every deep network's backward pass is this pattern iterated: *deltas flow backward through
+Each step above *is* one VJP: step 3, $W_2^\top\delta_2$, is the layer's Jacobian-transpose
+applied to the incoming $\delta$ — you just did by hand what §2 described abstractly. Every
+deep network's backward pass is this pattern iterated: *deltas flow backward through
 transposes, weight gradients are outer products of deltas with cached activations.*
 Dimensional sanity check: each gradient has the same shape as its variable — the fastest
 bug detector in existence.
@@ -159,8 +161,10 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
    그래디언트는 마스크 (이것이 $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
 
-모든 깊은 네트워크의 backward가 이 패턴의 반복이다: *델타는 전치를 타고 뒤로 흐르고,
-가중치 그래디언트는 델타와 캐시된 활성값의 외적이다.* 차원 검산: 각 그래디언트는 그
+위의 각 단계가 곧 VJP 하나다: 3단계 $W_2^\top\delta_2$는 층의 야코비안-전치를 들어온
+$\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으로 한 셈이다. 모든 깊은
+네트워크의 backward가 이 패턴의 반복이다: *델타는 전치를 타고 뒤로 흐르고, 가중치
+그래디언트는 델타와 캐시된 활성값의 외적이다.* 차원 검산: 각 그래디언트는 그
 변수와 같은 모양이다 — 세상에서 가장 빠른 버그 검출기.
 
 ### 4. 고전 층들의 그래디언트

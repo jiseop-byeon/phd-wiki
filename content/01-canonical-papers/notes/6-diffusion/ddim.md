@@ -34,11 +34,23 @@ question: is the Markovian 1000-step *reverse chain* actually required by the tr
 > Choose the *deterministic* one: each step uses the predicted noise to jump toward the
 > implied $x_0$, then re-project to the next (sparser) noise level — an ODE in disguise.
 
-- A family of non-Markovian processes indexed by $\sigma$; $\sigma = 0$ gives deterministic
-  DDIM, recovering DDPM at the stochastic end — **no retraining**, same $\epsilon_\theta$.
+- **The step, concretely**: at noise level $t$ the network predicts the noise
+  $\epsilon_\theta(x_t, t)$, from which you *read off the implied clean image*
+  $\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t}\,\epsilon_\theta)/\sqrt{\bar\alpha_t}$ (just the
+  [[ddpm|DDPM]] marginal solved for $x_0$). Then you *re-noise $\hat x_0$ to the next, lower
+  level* $t'$: $x_{t'} = \sqrt{\bar\alpha_{t'}}\,\hat x_0 + \sqrt{1-\bar\alpha_{t'}}\,\epsilon_\theta$.
+  Guess-the-clean-image, re-noise-a-little-less, repeat — no random term, so you can take big
+  jumps in $t$.
+- Why this is *allowed*: DDPM's loss only ever constrained the marginals $q(x_t|x_0)$, never
+  the specific reverse chain. A whole *family* of processes indexed by injected noise $\sigma$
+  shares those marginals; $\sigma=0$ is the deterministic recipe above, $\sigma=\text{max}$
+  recovers stochastic DDPM — **no retraining, same $\epsilon_\theta$**.
+- That deterministic map has a continuous-time limit — an ODE — which is why "fewer steps"
+  is legitimate: you are numerically integrating a smooth trajectory, not truncating a
+  random walk.
 - Deterministic mapping noise↔image = a consistent latent space: interpolation in $x_T$,
   reconstruction, and editing become well-defined.
-- The ODE connection is already drawn in the paper itself (§4.3) and was later widely exploited via the [[score-sde|probability-flow ODE]] framing.
+- The ODE connection is drawn in the paper itself (§4.3) and later unified with the [[score-sde|probability-flow ODE]] framing.
 
 ### Results
 
@@ -79,8 +91,19 @@ descendants; DDIM inversion underpins image/trajectory editing methods.
 > 골라라: 각 스텝은 예측된 노이즈로 함의된 $x_0$ 쪽으로 점프한 뒤 다음(더 성긴) 노이즈
 > 수준으로 재투영한다 — 변장한 ODE다.
 
-- $\sigma$로 인덱싱되는 비마르코프 과정의 족; $\sigma = 0$이면 결정론적 DDIM, 확률적
-  극단에서 DDPM 복원 — **재학습 없음**, 같은 $\epsilon_\theta$.
+- **단계, 구체적으로**: 노이즈 수준 $t$에서 네트워크가 노이즈 $\epsilon_\theta(x_t, t)$를
+  예측하고, 거기서 *함의된 깨끗한 이미지를 읽어낸다*
+  $\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t}\,\epsilon_\theta)/\sqrt{\bar\alpha_t}$ (그냥
+  [[ddpm|DDPM]] marginal을 $x_0$에 대해 푼 것). 그다음 *$\hat x_0$를 다음의 더 낮은
+  수준* $t'$로 다시 노이즈화한다:
+  $x_{t'} = \sqrt{\bar\alpha_{t'}}\,\hat x_0 + \sqrt{1-\bar\alpha_{t'}}\,\epsilon_\theta$.
+  깨끗한 이미지 추정 → 조금 덜 노이즈화 → 반복 — 무작위 항이 없으니 $t$를 크게 건너뛸 수 있다.
+- 왜 *허용*되나: DDPM의 손실은 marginal $q(x_t|x_0)$만 제약했지 특정 역방향 체인을 제약한
+  적이 없다. 주입 노이즈 $\sigma$로 인덱싱되는 과정의 *족* 전체가 그 marginal을 공유한다;
+  $\sigma=0$이 위의 결정론적 레시피, $\sigma=\text{max}$가 확률적 DDPM을 복원 — **재학습
+  없음, 같은 $\epsilon_\theta$**.
+- 그 결정론적 사상은 연속 시간 극한(ODE)을 가진다 — 그래서 "스텝 수 감소"가 정당하다:
+  무작위 보행을 잘라내는 게 아니라 매끄러운 궤적을 수치 적분하는 것이다.
 - 노이즈↔이미지의 결정론적 사상 = 일관된 잠재 공간: $x_T$에서의 보간, 복원, 편집이
   잘 정의된다.
 - ODE 연결은 논문 자신이 이미 그렸고(§4.3), 이후 [[score-sde|확률 흐름 ODE]] 프레임으로 널리 활용됐다.

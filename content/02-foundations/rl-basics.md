@@ -103,34 +103,36 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
   the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
 
-**The imitation-learning toolbox** (the vocabulary of every VLA paper):
+**The imitation-learning toolbox** (the vocabulary of every VLA paper). Read it in three
+groups — *the core objective and its one failure mode*, *what the data looks like*, and
+*what makes a policy expressive* — not as six loose facts.
 
-- **The BC objective**: maximize $\log \pi_\theta(a|o)$ over demo pairs — supervised
-  learning wearing a policy costume ([[01-canonical-papers/how-to-read|how-to-read §3]]
-  walks through this exact equation).
-- **Covariate shift and compounding error**: the policy is trained on *expert* states but
-  executed on *its own* — small errors drift the state off-distribution, where errors grow.
-  This is the single most-cited failure mode of BC, and the reason **DAgger** exists
-  (execute the learner, have the expert label the visited states, retrain).
-- **Where demos come from**: teleoperation ([[01-canonical-papers/notes/4-vla/act|ALOHA]]-style
-  rigs, VR, kinesthetic teaching), scripted policies, or cross-embodiment pooling
-  ([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]). Reading a dataset section means
-  checking: who collected, at what rate, how actions were labeled, and how observation-action
-  pairs were *time-synchronized* (a mislabeled 100 ms offset silently corrupts everything).
-- **Action representation choices** you will meet: absolute vs delta actions; joint vs
-  end-effector space; **action chunking** (predict $k$ future actions at once —
-  [[01-canonical-papers/notes/4-vla/act|ACT]]) which fights compounding error at the cost of
-  reactivity; and expressive output heads
-  ([[01-canonical-papers/notes/4-vla/diffusion-policy|diffusion]],
-  [[01-canonical-papers/notes/4-vla/pi0|flow matching]]) because demonstrations are
-  **multimodal** — two demonstrators avoid an obstacle on different sides, and a
-  mean-regression policy would drive through the middle.
-- **Data curation beats raw count**: success filtering, deduplication, and *trajectory
-  diversity* (scenes, objects, initial conditions) usually matter more than the number of
-  episodes — the claim to audit whenever a paper reports "N thousand demos."
-- **Offline RL vs imitation**: offline RL also learns from a fixed dataset but uses
-  rewards and value estimation to *stitch* better behavior than any single demonstrator —
-  at the price of value-extrapolation instability that pure BC never has.
+*Group 1 — the objective and its Achilles' heel.* **BC** just maximizes
+$\log \pi_\theta(a|o)$ over demo pairs — supervised learning wearing a policy costume
+([[01-canonical-papers/how-to-read|how-to-read §3]] walks this exact equation). Its one
+structural weakness is **covariate shift**: the policy is trained on *expert* states but
+runs on *its own*, so small errors drift the state off-distribution where errors compound.
+That single failure mode is why **DAgger** exists — execute the learner, let the expert
+label the states it actually visited, retrain.
+
+*Group 2 — reading a dataset section.* Demos come from teleoperation
+([[01-canonical-papers/notes/4-vla/act|ALOHA]]-style rigs, VR, kinesthetic teaching), scripted
+policies, or cross-embodiment pooling ([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]).
+Two things to check: **time-synchronization** (a mislabeled 100 ms offset silently corrupts
+every observation-action pair) and **curation over count** — success filtering and
+*trajectory diversity* (scenes, objects, initial conditions) usually matter more than "N
+thousand demos," which is the number to audit skeptically.
+
+*Group 3 — why the fancy output heads exist.* Demonstrations are **multimodal**: two
+experts pass an obstacle on opposite sides, so a mean-regressing policy drives straight
+through the middle. The fixes you'll meet are **action chunking** (predict $k$ future
+actions at once — [[01-canonical-papers/notes/4-vla/act|ACT]] — trading reactivity to fight
+compounding error) and **expressive heads** that can represent multiple modes
+([[01-canonical-papers/notes/4-vla/diffusion-policy|diffusion]],
+[[01-canonical-papers/notes/4-vla/pi0|flow matching]]). (Action *representation* also varies:
+absolute vs delta, joint vs end-effector space.) Aside: **offline RL** learns from a fixed
+dataset too, but uses rewards to *stitch* behavior better than any single demonstrator — at
+the price of value-extrapolation instability BC never has.
 
 Entry chain into the papers: this section →
 [[01-canonical-papers/notes/4-vla/act|ACT]] →
@@ -249,32 +251,31 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
   [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
 
-**모방 학습 도구 상자** (모든 VLA 논문의 어휘):
+**모방 학습 도구 상자** (모든 VLA 논문의 어휘). 여섯 개의 사실이 아니라 *세 묶음*으로
+읽어라 — *핵심 목적함수와 그 하나의 약점*, *데이터의 모습*, *정책을 표현력 있게 만드는 것*.
 
-- **BC 목적함수**: 시연 쌍에 대해 $\log \pi_\theta(a|o)$를 최대화 — 정책의 옷을 입은
-  지도학습이다 ([[01-canonical-papers/how-to-read|how-to-read §3]]이 정확히 이 식을
-  해부한다).
-- **Covariate shift와 오차 누적**: 정책은 *전문가의* 상태에서 학습되지만 *자신의*
-  상태에서 실행된다 — 작은 오차가 상태를 분포 밖으로 밀고, 거기서 오차가 더 자란다.
-  BC의 가장 많이 인용되는 실패 모드이고, **DAgger**가 존재하는 이유다(학습자를
-  실행시키고, 방문한 상태를 전문가가 라벨하고, 재학습).
-- **시연의 출처**: 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]]식 장비, VR,
-  직접 교시), 스크립트 정책, 또는 교차-embodiment 풀링
-  ([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]]). 데이터셋 절을 읽는다는 것은:
-  누가, 어떤 주기로 수집했고, 행동을 어떻게 라벨했고, 관측-행동 쌍이 어떻게 *시간
-  동기화*됐는지 확인하는 일이다(100 ms 어긋난 라벨은 조용히 전부를 오염시킨다).
-- **만나게 될 행동 표현의 선택지**: 절대 vs 델타 행동; 관절 vs 말단 공간; 오차 누적과
-  싸우는 대신 반응성을 지불하는 **행동 청킹**(미래 행동 $k$개를 한 번에 예측 —
-  [[01-canonical-papers/notes/4-vla/act|ACT]]); 그리고 표현력 있는 출력 헤드
-  ([[01-canonical-papers/notes/4-vla/diffusion-policy|디퓨전]],
-  [[01-canonical-papers/notes/4-vla/pi0|flow matching]]) — 시연이 **다봉**이기 때문이다:
-  두 시연자가 장애물을 서로 다른 쪽으로 피하면, 평균 회귀 정책은 한가운데로 돌진한다.
-- **큐레이션이 개수를 이긴다**: 성공 필터링, 중복 제거, *궤적 다양성*(장면·물체·초기
-  조건)이 에피소드 수보다 대개 더 중요하다 — 논문이 "시연 N천 개"를 보고할 때마다
-  검사할 주장.
-- **오프라인 RL vs 모방**: 오프라인 RL도 고정 데이터셋에서 배우지만 보상과 가치 추정으로
-  어느 단일 시연자보다 나은 행동을 *꿰맨다* — 순수 BC에는 없는 가치 외삽 불안정을
-  대가로.
+*묶음 1 — 목적함수와 아킬레스건.* **BC**는 시연 쌍에 대해 $\log \pi_\theta(a|o)$를 최대화할
+뿐 — 정책의 옷을 입은 지도학습이다([[01-canonical-papers/how-to-read|how-to-read §3]]이 이
+식을 해부한다). 유일한 구조적 약점은 **covariate shift**다: 정책은 *전문가의* 상태에서
+학습되지만 *자신의* 상태에서 실행되므로, 작은 오차가 상태를 분포 밖으로 밀고 거기서 오차가
+누적된다. 이 하나의 실패 모드가 **DAgger**가 존재하는 이유다 — 학습자를 실행시키고, 실제로
+방문한 상태를 전문가가 라벨하고, 재학습.
+
+*묶음 2 — 데이터셋 절 읽기.* 시연은 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]]식
+장비, VR, 직접 교시), 스크립트 정책, 교차-embodiment 풀링
+([[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]])에서 온다. 확인할 것 둘:
+**시간 동기화**(100 ms 어긋난 라벨이 모든 관측-행동 쌍을 조용히 오염시킨다)와 **개수보다
+큐레이션** — 성공 필터링과 *궤적 다양성*(장면·물체·초기 조건)이 "시연 N천 개"보다 대개 더
+중요하며, 그 개수야말로 회의적으로 검사할 대상이다.
+
+*묶음 3 — 화려한 출력 헤드가 존재하는 이유.* 시연은 **다봉**이다: 두 전문가가 장애물을
+반대쪽으로 지나가면 평균 회귀 정책은 한가운데로 돌진한다. 만나게 될 처방은 **행동
+청킹**(미래 행동 $k$개를 한 번에 예측 — [[01-canonical-papers/notes/4-vla/act|ACT]] — 반응성을
+지불해 오차 누적과 싸움)과 여러 모드를 표현할 수 있는 **표현력 있는 헤드**
+([[01-canonical-papers/notes/4-vla/diffusion-policy|디퓨전]],
+[[01-canonical-papers/notes/4-vla/pi0|flow matching]])다. (행동 *표현*도 갈린다: 절대 vs 델타,
+관절 vs 말단 공간.) 곁가지: **오프라인 RL**도 고정 데이터셋에서 배우지만 보상으로 어느 단일
+시연자보다 나은 행동을 *꿰맨다* — BC엔 없는 가치 외삽 불안정을 대가로.
 
 논문으로 들어가는 진입 사슬: 이 절 →
 [[01-canonical-papers/notes/4-vla/act|ACT]] →

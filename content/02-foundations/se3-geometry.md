@@ -52,8 +52,11 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 - Angular velocity $\omega$ is a vector (axis × speed); rigid-body velocity = **twist**
   $(\omega, v)$ — six numbers, and the reason end-effector velocity commands are 6-DoF.
-- Small rotation ≈ $I + [\hat\omega\theta]_\times$ (skew-symmetric matrix) — rotations are
-  *locally linear*, which is what lets Jacobians ([[02-foundations/calculus-backprop|2. Calculus]])
+- Small rotation ≈ $I + [\hat\omega\theta]_\times$. Why skew-symmetric? A rotation keeps
+  lengths fixed, so $R^\top R = I$; differentiating at $R=I$ gives $\dot R + \dot R^\top = 0$,
+  i.e. the generator $\dot R$ *must* be skew — its off-diagonal $\pm$ entries are exactly the
+  components of the rotation axis $\omega$ (that is what $[\cdot]_\times$ packs). Rotations are
+  thus *locally linear*, which is what lets Jacobians ([[02-foundations/calculus-backprop|2. Calculus]])
   map joint rates to end-effector twists, and what the exponential map formalizes
   ([[04-robotics/modern-robotics-book|MR ch. 3]]).
 
@@ -127,7 +130,10 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 
 - 각속도 $\omega$는 벡터(축 × 속력); 강체 속도 = **twist** $(\omega, v)$ — 여섯 숫자이고,
   말단 속도 명령이 6자유도인 이유다.
-- 미소 회전 ≈ $I + [\hat\omega\theta]_\times$ (반대칭 행렬) — 회전은 *국소적으로 선형*이고,
+- 미소 회전 ≈ $I + [\hat\omega\theta]_\times$. 왜 반대칭인가? 회전은 길이를 보존하므로
+  $R^\top R = I$; $R=I$에서 미분하면 $\dot R + \dot R^\top = 0$, 즉 생성원 $\dot R$는 *반드시*
+  반대칭이고, 그 비대각 $\pm$ 성분이 정확히 회전축 $\omega$의 성분이다($[\cdot]_\times$가
+  담는 것). 그래서 회전은 *국소적으로 선형*이고,
   이것이 야코비안([[02-foundations/calculus-backprop|2. 미적분]])이 관절 속도를 말단
   twist로 사상할 수 있는 이유이자, 지수 사상이 정식화하는 내용이다
   ([[04-robotics/modern-robotics-book|MR 3장]]).

@@ -22,6 +22,13 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   products), gravity. $M(\theta)$ is symmetric positive-definite
   ([[02-foundations/linear-algebra|PSD]]) — kinetic energy $\tfrac12\dot\theta^\top M \dot\theta$
   is a genuine square.
+- **Where the three terms come from, on one link**: a pendulum (mass $m$, length $l$,
+  angle $\theta$ from vertical) has $\tau = \underbrace{ml^2}_{M}\,\ddot\theta +
+  \underbrace{mgl\sin\theta}_{g(\theta)}$ — here $M=ml^2$ is the (constant) inertia and
+  $g(\theta)=mgl\sin\theta$ is the configuration-dependent gravity torque; the Coriolis
+  term $c$ is *zero* because a single link has no velocity-coupling between joints. Add a
+  second link and $M$ becomes $\theta$-dependent and $c$ turns on — that is the whole jump
+  from "one equation" to "why multi-link dynamics are hard.
 - Two derivations, one answer: **Lagrangian** (energy-based, clean for analysis) vs
   **recursive Newton-Euler** (force-balance, $O(n)$, what simulators and controllers
   actually compute).
@@ -46,6 +53,12 @@ to buy solvability.
   질량 행렬(자세 의존 관성), 코리올리/원심 항(속도 곱), 중력. $M(\theta)$는 대칭
   양정부호([[02-foundations/linear-algebra|PSD]]) — 운동 에너지
   $\tfrac12\dot\theta^\top M \dot\theta$가 진짜 제곱량이라는 뜻.
+- **세 항이 어디서 오는지, 1링크로**: 진자(질량 $m$, 길이 $l$, 연직에서의 각 $\theta$)는
+  $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$ —
+  여기서 $M=ml^2$가 (상수) 관성, $g(\theta)=mgl\sin\theta$가 자세 의존 중력 토크다;
+  코리올리 항 $c$는 *0*인데 단일 링크는 관절 간 속도 결합이 없기 때문이다. 링크를 하나
+  더 붙이면 $M$이 $\theta$ 의존이 되고 $c$가 켜진다 — 그것이 "한 방정식"에서 "다링크
+  동역학이 왜 어려운가"로 가는 도약 전부다.
 - 유도는 둘, 답은 하나: **라그랑주**(에너지 기반, 해석에 깔끔) vs **재귀
   뉴턴-오일러**(힘 평형, $O(n)$, 시뮬레이터·제어기가 실제로 계산하는 것).
 - **순동역학** ($\tau \to \ddot\theta$): 시뮬레이터가 매 스텝 적분하는 것 — 모든 물리

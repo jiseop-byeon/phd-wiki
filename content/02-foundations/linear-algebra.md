@@ -99,9 +99,13 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   is repeated matrix multiplication; the matrix exponential $e^{At}$ solves it exactly.
 - **Stability = eigenvalues of $A$** (poles): continuous-time stable iff all
   $\text{Re}(\lambda_i) < 0$; discrete-time iff all $|\lambda_i| < 1$.
-- **Controllability**: $\text{rank}[B, AB, \ldots, A^{n-1}B] = n$ — a rank condition
-  decides whether any state is reachable; observability is its transpose twin
-  ($[C^\top, A^\top C^\top, \ldots]$).
+- **Controllability**: which directions can the input actually push the state? One step
+  of input moves you along the columns of $B$; the dynamics then rotate that reach into
+  $AB$, then $A^2B$, and so on. Stack those reachable directions —
+  $[B, AB, \ldots, A^{n-1}B]$ — and if together they span all $n$ dimensions
+  ($\text{rank} = n$), *every* state is reachable; if they miss a direction, no input
+  sequence ever drives the state there. Observability is the transpose twin — can the
+  output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
 - LQR gains, Kalman filters, and MPC condensing all reduce to solving structured linear
   systems (Riccati equations) — numerical linear algebra is the control engineer's daily tool.
 
@@ -212,8 +216,11 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   반복된 행렬곱이고, 행렬 지수 $e^{At}$가 정확한 해를 준다.
 - **안정성 = $A$의 고유값** (극점): 연속 시간은 모든 $\text{Re}(\lambda_i) < 0$일 때,
   이산 시간은 모든 $|\lambda_i| < 1$일 때 안정.
-- **가제어성**: $\text{rank}[B, AB, \ldots, A^{n-1}B] = n$ — 어떤 상태든 도달 가능한지를
-  랭크 조건이 결정한다; 가관측성은 그 전치 쌍둥이($[C^\top, A^\top C^\top, \ldots]$).
+- **가제어성**: 입력이 상태를 실제로 어느 방향으로 밀 수 있나? 입력 한 스텝은 $B$의 열
+  방향으로 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그 도달
+  방향들을 쌓아 —$[B, AB, \ldots, A^{n-1}B]$— 함께 $n$차원 전체를 생성하면($\text{rank}=n$)
+  *모든* 상태에 도달 가능하고, 한 방향이라도 빠지면 어떤 입력 시퀀스도 상태를 그리로
+  몰지 못한다. 가관측성은 전치 쌍둥이($[C^\top, A^\top C^\top, \ldots]$).
 - LQR 이득, 칼만 필터, MPC의 응축(condensing)이 전부 구조화된 선형계(리카티 방정식)
   풀이로 환원된다 — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
 

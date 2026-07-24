@@ -173,6 +173,18 @@ Two definitions used everywhere before they are formally introduced:
    agent with $\gamma = 0.99$.
 3. Show $\log \frac{a}{b} = \log a - \log b$ from the product rule.
 4. Compute $e^{j\pi}$ from Euler's formula and interpret the result as a rotation.
+5. (§8) A joint obeys $\dot x = -3x$. Is it stable? What is $x(t)$ from $x(0)=2$, and roughly
+   when has it decayed to ~5% of the start?
+6. (§9) The system $\dot x = -3x + u$ has transfer function $G(s) = \frac{1}{s+3}$. Where is
+   its pole, which half-plane, and what does that say about stability?
+
+> [!tip]- Answers
+> 1. $f'(x) = \frac{e^x}{1+e^x} = \frac{1}{1+e^{-x}} = \sigma(x)$ — softplus's derivative is the sigmoid.
+> 2. The weight on a reward 200 steps out is $\gamma^{200}=0.99^{200}\approx 0.13$ — already faint at twice the effective horizon (100 steps); by 400 steps it is ~0.
+> 3. $\log\frac{a}{b} = \log(a\cdot b^{-1}) = \log a + \log b^{-1} = \log a - \log b$.
+> 4. $e^{j\pi} = \cos\pi + j\sin\pi = -1$ — a 180° rotation sends 1 to $-1$.
+> 5. Stable ($a=-3<0$). $x(t) = 2e^{-3t}$; ~5% means $e^{-3t}\approx 0.05 \Rightarrow 3t\approx 3 \Rightarrow t\approx 1$ s.
+> 6. Pole at $s=-3$ — left half-plane (negative real part), so **stable**; the pole *is* the $a=-3$ of §8 and the eigenvalue of a 1-D state-space $A$.
 
 ## 한국어
 
@@ -328,9 +340,13 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
    이유를 설명하라.
 3. 곱 규칙에서 $\log \frac{a}{b} = \log a - \log b$를 유도하라.
 4. 오일러 공식으로 $e^{j\pi}$를 계산하고, 그 결과를 회전으로 해석하라.
+5. (§8) 어떤 관절이 $\dot x = -3x$를 따른다. 안정한가? $x(0)=2$에서 $x(t)$는? 대략 언제 시작값의 ~5%로 감쇠하나?
+6. (§9) 시스템 $\dot x = -3x + u$의 전달함수는 $G(s) = \frac{1}{s+3}$이다. 극점은 어디이고 어느 반평면이며, 그것이 안정성에 대해 무엇을 말하나?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $f'(x) = \frac{e^x}{1+e^x} = \frac{1}{1+e^{-x}} = \sigma(x)$ — softplus의 미분이 시그모이드.
 > 2. 200스텝 뒤 보상의 가중치는 $\gamma^{200} = 0.99^{200} \approx 0.13$ — 유효 지평(100스텝)의 두 배 거리라 이미 $1/e^2$ 수준으로 희미하고, 400스텝이면 사실상 0이다.
 > 3. $\log\frac{a}{b} = \log(a \cdot b^{-1}) = \log a + \log b^{-1} = \log a - \log b$.
 > 4. $e^{j\pi} = \cos\pi + j\sin\pi = -1$ — 180° 회전이 1을 $-1$로 보낸다.
+> 5. 안정($a=-3<0$). $x(t) = 2e^{-3t}$; ~5%는 $e^{-3t}\approx 0.05 \Rightarrow 3t\approx 3 \Rightarrow t\approx 1$초.
+> 6. 극점 $s=-3$ — 좌반평면(음의 실수부)이라 **안정**; 이 극점이 곧 §8의 $a=-3$이자 1차원 상태공간 $A$의 고유값이다.

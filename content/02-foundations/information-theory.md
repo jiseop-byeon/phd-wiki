@@ -102,9 +102,16 @@ makes $q$ appear: multiply and divide the integrand by any distribution $q(z|x)$
 turns the integral into an expectation over $q$ — then Jensen's inequality ($\log$ is
 concave, so $\log E \ge E \log$) drops the log inside:
 
-$$\log p_\theta(x) = \log \int q(z|x)\,\frac{p_\theta(x|z)p(z)}{q(z|x)}\,dz = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+$$\log p_\theta(x) = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \;\ge\; E_{q}\!\left[\log\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \quad\text{(Jensen)}$$
 
-The gap between the two sides is exactly $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$ — so maximizing
+Now split that single log with $\log\frac{p(x|z)\,p(z)}{q} = \log p(x|z) + \log\frac{p(z)}{q}$
+and take the expectation term by term — the first piece is the reconstruction term, the
+second is *minus* a KL:
+
+$$= \underbrace{E_{q}[\log p_\theta(x|z)]}_{\text{reconstruction}} \;+\; \underbrace{E_{q}\!\left[\log\frac{p(z)}{q(z|x)}\right]}_{-\,D_{KL}(q\,\|\,p(z))} \;=\; E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+
+(the second expectation is $-E_q[\log\frac{q}{p(z)}]$, which is exactly $-D_{KL}(q\|p(z))$ by
+its definition in §3.) The gap between the two sides is exactly $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$ — so maximizing
 the ELBO simultaneously (1) raises the likelihood bound and (2) pulls $q$ toward the true
 posterior. Many foundational VAE, diffusion, and latent world-model papers use this ELBO
 or a closely related variational objective (though not all — flow matching and
@@ -224,8 +231,14 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 적분 안을 아무 분포 $q(z|x)$로 곱하고 나눠 $q$에 대한 기댓값으로 바꾼 뒤, 옌센
 부등식($\log$은 오목이므로 $\log E \ge E \log$)으로 로그를 안으로 떨어뜨린다:
 
-$$\log p_\theta(x) = \log \int q(z|x)\,\frac{p_\theta(x|z)p(z)}{q(z|x)}\,dz = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \ge E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+$$\log p_\theta(x) = \log E_{q}\!\left[\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \;\ge\; E_{q}\!\left[\log\frac{p_\theta(x|z)p(z)}{q(z|x)}\right] \quad\text{(옌센)}$$
 
+이제 그 로그 하나를 $\log\frac{p(x|z)\,p(z)}{q} = \log p(x|z) + \log\frac{p(z)}{q}$로 쪼개고
+항별로 기댓값을 취하면 — 첫 조각은 재구성 항, 둘째는 *마이너스* KL이다:
+
+$$= \underbrace{E_{q}[\log p_\theta(x|z)]}_{\text{재구성}} \;+\; \underbrace{E_{q}\!\left[\log\frac{p(z)}{q(z|x)}\right]}_{-\,D_{KL}(q\,\|\,p(z))} \;=\; E_{q}[\log p_\theta(x|z)] - D_{KL}(q(z|x)\,\|\,p(z))$$
+
+(둘째 기댓값은 $-E_q[\log\frac{q}{p(z)}]$이고, §3의 정의에 의해 정확히 $-D_{KL}(q\|p(z))$다.)
 양변의 간극이 정확히 $D_{KL}(q(z|x)\,\|\,p_\theta(z|x))$다 — 그래서 ELBO 최대화는 동시에
 (1) 우도 하한을 올리고 (2) $q$를 진짜 사후분포로 끌어당긴다. 기초적인 VAE·디퓨전·잠재
 월드모델 논문 다수가 이 ELBO 또는 밀접한 변분 목적함수를 쓴다 (전부는 아니다 — flow
