@@ -8,7 +8,7 @@ tags: [log]
 
 ## 2026-07
 
-### 2026-07-24 (교차 검증 수리 + 제어 트랙 자립화 + 이중언어 완결)
+### 2026-07-26 (교차 검증 수리 + 제어 트랙 자립화 + 이중언어 완결)
 
 전 페이지 정독 평가에서 나온 항목을 전부 반영했다.
 
@@ -26,14 +26,28 @@ tags: [log]
 
 **검증 방법 메모** — 이번에 실제로 문제를 잡아낸 것은 눈이 아니라 스크립트다: ① 위키링크 in/out-degree 계산(고아 3개 발견) ② 논문 노트별 claim box·체크리스트의 언어 판정(31 + 약 300건 발견) ③ `## English`/`## 한국어` 짝 검사(위의 2건 발견). 다음 감사 때도 이 셋을 먼저 돌릴 것.
 
-### 2026-07-24 (최종 편집 3종 — 깊이 정직화·핵심 보강·정밀 교정)
+### 2026-07-24 (독학의 벽 9곳 낮추기)
+
+교육 평가가 "외부 자료 없이는 못 넘는다"고 지목한 지점 — 주변 페이지가 유도를 기대하도록 훈련시켜 놓고 결과만 단정하던 곳 — 을 EN·KR 양쪽에서 메웠다.
+
+- **정보이론 §5 ELBO**: 숨어 있던 대수를 노출 — $\log\frac{p(x|z)p(z)}{q}$를 재구성항 + (−KL)로 항별 분할해 우변이 허공에서 나오지 않도록
+- **선형대수 §5 가제어성**: 랭크 조건을 단정 대신 직관으로 구축(입력이 $B$ 열 방향으로 밀고, 동역학이 도달 범위를 $AB$, $A^2B$로 회전)
+- **공업수학 §8–9**: 가장 어려운 절에 자가점검이 0개였던 것 → ODE 안정성·극점/반평면 문제 2개와 정답 추가
+- **RL 기초 §6**: 모방학습 7개 밀집 불릿을 3개 라벨 묶음으로(목적함수+covariate shift / 데이터셋 읽기 / 표현력 헤드가 존재하는 이유)
+- **DDIM**: core 디퓨전 노트 중 유일하게 램프가 없던 것 → 결정론적 단계를 구체적으로(노이즈 예측 → 함의된 $x_0$ 읽기 → 낮은 수준으로 재노이즈)와 왜 허용되는지(손실이 marginal만 제약)
+- **미적분·역전파**: "위의 각 단계가 곧 VJP 하나다" 연결문으로 손 계산 예제와 §2 추상 정의를 융합
+- **최적화 §4**: "왜 제약을 목적함수에 더하나" — 최적점에서 $\nabla f$가 $\nabla g$와 반평행 → $\nabla(f+\lambda g)=0$
+- **SE(3) §4**: 반대칭 형태 유도($R^\top R=I$ 미분 → $\dot R+\dot R^\top=0$)
+- **MR 8장**: 진자 1링크로 $M/c/g$ 접지($\tau=ml^2\ddot\theta+mgl\sin\theta$), 왜 1링크는 코리올리가 0이고 2링크에서 켜지는지
+
+### 2026-07-23 (최종 편집 3종 — 깊이 정직화·핵심 보강·정밀 교정)
 
 - **깊이 표시 2층 분리**: `study-depth`(권장 목표) vs `wiki-support`(페이지 자체 제공 깊이) — [[00-study-depth-guide|가이드]]에 규약 문서화, MR 8~12장·제어이론 등 격차 페이지에 `wiki-support: Literacy` 표시
 - **핵심 Working 페이지 4개 심층 보강**: [[04-robotics/mpc|MPC]](QP 볼록성 조건, stacked/condensed, infeasibility·softening·warm start, 모델 불일치, 선형/NMPC/접촉), [[04-robotics/lqr-lqg|LQR/LQG]](리카티 구조 읽기, 안정화 가능성·검출 가능성, Q/R 예제, LQG 무여유), [[01-canonical-papers/notes/8-construction/heap|HEAP]](구동 개조·센싱·소프트웨어 스택·증거 성격·공백 4종), [[01-canonical-papers/notes/8-construction/ext|ExT]](시연 생성 3소스·사전학습·SFT/RLFT·전이 증거)
 - **절대 표현 정밀 교정 6건**: Transformer "essentially all"→지배적+예외 명시, CLIP 개념 학습 단정→해석+경쟁 설명, FM 직선 경로→가능 조건(보장 아님), "objective of choice"→지배적 목적함수 중 하나, 고차원 직교성→검색 가능성의 한 이유(관련쌍 점수는 학습의 성질), 칼만 vs 저역통과→모델 조건부
 - MR 책 가이드의 "챕터 노트 추가 예정" 잔재 제거
 
-### 2026-07-24 (건설 트랙 완성 — 코퍼스 기반 확충 마무리)
+### 2026-07-23 (건설 트랙 완성 — 코퍼스 기반 확충 마무리)
 
 - 5클러스터 조사(미시간·UIUC 디아스포라·GT/TAMU/CMU·유럽·로보틱스史+산업)의 잔여 작업 완료:
 - **신규 논문 노트 12편**: [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]](Baidu, sim 검증), [[01-canonical-papers/notes/8-construction/egli-rl|Egli RL 굴착]], [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]], [[01-canonical-papers/notes/8-construction/han-welding|Han 용접]], [[01-canonical-papers/notes/8-construction/aerial-am-2022|Nature 공중 AM]], [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC 서베이]], [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI 원격조작]], [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]], [[01-canonical-papers/notes/8-construction/park-nl|Park NL]], [[01-canonical-papers/notes/8-construction/yu-imitation|Yu 모방학습]], [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen]], [[01-canonical-papers/notes/8-construction/liang-lfd|Liang LfD]] — 8-construction 총 22노트
