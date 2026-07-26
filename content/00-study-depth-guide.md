@@ -6,6 +6,8 @@ depth-goal: "Use this guide to assign the minimum depth for every topic before s
 mastery-when: "The guide itself is not a mastery target; promote the selected contribution pages."
 ---
 
+## English
+
 This page sets the **recommended minimum depth for a construction Physical AI
 researcher**. It is different from the ★·◐·○ marks in the paper list:
 
@@ -15,7 +17,7 @@ researcher**. It is different from the ★·◐·○ marks in the paper list:
 Every substantive page displays its recommended minimum and the condition for raising it
 to Mastery. The recommendation is a starting profile, not a permanent label.
 
-## The three depths
+### The three depths
 
 | Depth | Completion test | Use it for |
 |---|---|---|
@@ -28,7 +30,7 @@ to Mastery. The recommendation is a starting profile, not a permanent label.
 > the common minimum. When a research question is selected, promote its contribution page
 > and closest dependency to Mastery; do not promote an entire field.
 
-## Two layers: recommended depth vs wiki support
+### Two layers: recommended depth vs wiki support
 
 `study-depth` on a page is the **recommended target** for this profile — how well *you*
 should eventually command the topic. It is **not** a promise that the page alone gets you
@@ -41,7 +43,7 @@ there. Where the gap matters, pages carry a second field:
 
 This split keeps recommendations honest without bloating every page to textbook length.
 
-## Recommended profile
+### Recommended profile
 
 | Area | Default | Raise to Mastery when… |
 |---|---:|---|
@@ -59,7 +61,7 @@ This split keeps recommendations honest without bloating every page to textbook 
 | Construction task streams and deployment evaluation | Working | the selected task, workflow, or field-deployment layer carries the novelty |
 | Research practice | Working | throughout the project; mastery is demonstrated through defensible research |
 
-## How to adjust the profile
+### How to adjust the profile
 
 1. Begin with each page's `study-depth`.
 2. When a candidate problem appears, identify its **contribution layer** and one closest
@@ -139,6 +141,6 @@ and sim-to-real** at Working; and the remaining model families at Literacy.
 Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열은 Literacy가
 될 수 있다.
 
-### Connections
+### Connections · 연결
 
 - [[01-canonical-papers/how-to-read|How to Read Papers]] · [[01-canonical-papers/canonical-list|Canonical Paper List]] · [[08-research-radar/index|Research Radar]]

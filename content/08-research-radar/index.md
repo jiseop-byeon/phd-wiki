@@ -6,6 +6,8 @@ depth-goal: "Use the radar to locate momentum and volume; depth decisions belong
 mastery-when: "Not applicable — this is a decision-support dashboard, not study material."
 ---
 
+## English
+
 The Research Radar is a decision-support layer for the point **after foundational
 literacy and before choosing a research problem**. It separates established volume from
 momentum and small-but-rising signals, then exposes the evidence behind every label.
@@ -17,7 +19,7 @@ momentum and small-but-rising signals, then exposes the evidence behind every la
   loading="eager"
 ></iframe>
 
-## How to use it
+### How to use it
 
 1. Start broad with **Deep Learning** or **Physical AI** to see the field-level landscape.
 2. Filter to Robot Learning, Computer Vision, or Construction Physical AI as the question
@@ -50,10 +52,21 @@ Research depth belongs to the pages themselves, not to this dashboard. Use the
 > it does on social media. That lag is intentional: this page tracks published research,
 > not attention.
 
+### Methodology
+
+- Data compiler: `scripts/compile_research_radar.py`
+- Source cache builder: `scripts/build_research_radar.py`
+- Output: versioned static JSON; no personal API credentials or user tracking
+- Topic ontology is multi-scope and auditable; confidence is reduced for small samples
+- Construction signals use domain/task × robotics/AI intersections and two dedicated journals
+- Technical-debate labels will be published only after human review
+
 ## 한국어
 
 Research Radar는 **기초 문해력을 얻은 뒤, 연구 문제를 고르기 전**에 쓰는 의사결정 층이다.
 현재 논문량과 상승 속도, 작지만 떠오르는 신호를 분리하고 모든 판정의 근거를 공개한다.
+
+### 사용법
 
 1. Deep Learning 또는 Physical AI에서 전체 지형을 본다.
 2. 질문이 구체화되면 Robot Learning·Computer Vision·Construction Physical AI로 좁힌다.
@@ -84,11 +97,11 @@ Deep Learning·Physical AI·Robot Learning에 동시에 나타날 수 있으며,
 > 초기판은 arXiv와 워크숍을 제외한다. 소셜미디어보다 신호가 늦게 보일 수 있지만, 이는 관심이
 > 아니라 출판된 연구를 추적하기 위한 의도적인 지연이다.
 
-## Methodology
+### 방법론
 
-- Data compiler: `scripts/compile_research_radar.py`
-- Source cache builder: `scripts/build_research_radar.py`
-- Output: versioned static JSON; no personal API credentials or user tracking
-- Topic ontology is multi-scope and auditable; confidence is reduced for small samples
-- Construction signals use domain/task × robotics/AI intersections and two dedicated journals
-- Technical-debate labels will be published only after human review
+- 데이터 컴파일러: `scripts/compile_research_radar.py`
+- 소스 캐시 빌더: `scripts/build_research_radar.py`
+- 출력: 버전이 매겨진 정적 JSON; 개인 API 자격 증명이나 사용자 추적 없음
+- 토픽 온톨로지는 다중 범위이며 감사 가능; 표본이 작으면 신뢰도를 낮춘다
+- 건설 신호는 도메인/작업 × 로보틱스/AI 교차와 전용 저널 두 곳을 사용
+- 기술적 논쟁 라벨은 사람의 검토를 거친 뒤에만 공개한다
