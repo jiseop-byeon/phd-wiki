@@ -133,7 +133,7 @@ Proved robot-side scaling works and defined the VLA data flywheel. Direct line t
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 행동 이산화의 구성(11차원 × 256 구간 = 분류 문제)을 말할 수 있다
-- [ ] FiLM과 TokenLearner가 각각 무엇을 하는지 말할 수 있다
-- [ ] 데이터 양보다 다양성이라는 절제 실험 결과의 의미를 설명할 수 있다
-- [ ] 모방 전용 학습의 상한(시연자 품질, 회복 부재)을 말할 수 있다
+- [ ] Describe the composition of the action discretization (11 dimensions × 256 bins = a classification problem) · 행동 이산화의 구성(11차원 × 256 구간 = 분류 문제)을 말할 수 있다
+- [ ] Say what FiLM and TokenLearner each do · FiLM과 TokenLearner가 각각 무엇을 하는지 말할 수 있다
+- [ ] Explain the meaning of the ablation result that diversity beats sheer data volume · 데이터 양보다 다양성이라는 절제 실험 결과의 의미를 설명할 수 있다
+- [ ] State the ceiling of imitation-only training (demonstrator quality, absence of recoveries) · 모방 전용 학습의 상한(시연자 품질, 회복 부재)을 말할 수 있다

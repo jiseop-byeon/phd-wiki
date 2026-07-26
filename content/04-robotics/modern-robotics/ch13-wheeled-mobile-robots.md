@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.13** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> Nonholonomic constraints from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] and trigonometry are enough.
 > [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 비홀로노믹 제약과 삼각함수면 충분하다.
 
 ## English
@@ -49,10 +50,10 @@ fused localization.
 3. Odometry error grows without bound; GPS error doesn't. What does the fusion of the two
    give you that neither has alone?
 
-> [!tip]- 정답 · Answers
-> 1. 제자리 회전은 $v = 0$, 즉 $\omega_R = -\omega_L$; $\omega = r\omega_R/d = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
-> 2. 옆 방향 속도가 없는 시스템은 최종 접근 방향이 제한되어, 연속 시불변 피드백으로는 임의 자세에 점근 안정화할 수 없다(Brockett) — 그래서 궤적 추종으로 우회한다.
-> 3. 단기 정밀(오도메트리) + 드리프트 없는 절대 기준(GPS — 단 현장에서는 멀티패스·차폐로 편향이 생길 수 있다) — 칼만 융합이 두 시간 척도의 장점을 모두 취한다.
+> [!tip]- Answers
+> 1. Spinning in place means $v = 0$, i.e. $\omega_R = -\omega_L$. Then $\omega = r(2\omega_R)/(2d) = r\omega_R/d = 0.5\,\omega_R = 1$, so $\omega_R = 2$ and $\omega_L = -2$ rad/s.
+> 2. Because the system has no sideways velocity, its reachable directions at a point are restricted, and Brockett's condition shows no smooth time-invariant feedback can asymptotically stabilize it to an arbitrary pose — which is why practical controllers track *trajectories* instead of regulating to a point.
+> 3. Short-term precision (odometry, smooth and high-rate but drifting) plus a drift-free absolute reference (GNSS — though on site, multipath and occlusion add bias, not just noise). Kalman fusion takes the strengths of both timescales: locally smooth *and* globally bounded, which neither has alone. See [[04-robotics/state-estimation-slam|State Estimation §8]].
 
 ## 한국어
 

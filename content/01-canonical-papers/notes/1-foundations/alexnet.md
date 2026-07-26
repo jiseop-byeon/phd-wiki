@@ -96,6 +96,6 @@ Started the modern era: within two years every vision benchmark was CNN-dominate
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 이 논문이 증명한 것(규모 > 수작업 설계)을 말할 수 있다
-- [ ] 살아남은 유산 셋(ReLU·dropout·증강)과 버려진 것(LRN 등)을 구분할 수 있다
-- [ ] 구조가 임기응변이었다는 비판의 근거를 말할 수 있다
+- [ ] State what this paper proved (scale beats hand-design) · 이 논문이 증명한 것(규모 > 수작업 설계)을 말할 수 있다
+- [ ] Separate the three surviving legacies (ReLU, dropout, augmentation) from what was discarded (LRN and friends) · 살아남은 유산 셋(ReLU·dropout·증강)과 버려진 것(LRN 등)을 구분할 수 있다
+- [ ] Give the grounds for the criticism that the architecture was ad hoc · 구조가 임기응변이었다는 비판의 근거를 말할 수 있다

@@ -102,11 +102,13 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]]의 4시대×1R시대 합류점
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The "scalable" in "scalable autonomous excavation" is a claim about the framework's scalability (collection → pretraining → fine-tuning), not validation of real site deployment — the safety story and task diversity remain open problems. Read it as a signal that the foundation-model era of excavation has *opened*, not that it has arrived.
+>
 > "scalable autonomous excavation"의 scalable은 프레임워크(수집→사전학습→파인튜닝)의 확장 가능성 주장이지, 실제 현장 배치의 검증이 아니다 — 안전 체계와 과제 다양성은 열린 문제로 남아 있다. "굴착의 파운데이션 모델 시대가 열렸다"는 신호로 읽되, "도착했다"로 읽지 마라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] 파이프라인(과제당 15만 시뮬 에피소드 → BC 사전학습 → SFT/RLFT, 실기계 전이는 사전학습 정책)을 단계별로 말할 수 있다
-- [ ] 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔고, "전문가 혼합"이 OXE의 어떤 교훈을 반복하는지 말할 수 있다
-- [ ] 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
-- [ ] 이 논문이 왜 로봇 학습(4시대)과 중장비 자율성(1R시대)의 합류점인지 설명할 수 있다
+- [ ] Walk through the pipeline stage by stage (150k simulated episodes per task → BC pretraining → SFT/RLFT, with the *pretrained* policy doing the real-machine transfer) · 파이프라인(과제당 15만 시뮬 에피소드 → BC 사전학습 → SFT/RLFT, 실기계 전이는 사전학습 정책)을 단계별로 말할 수 있다
+- [ ] Say what the pretrain → SFT/RLFT structure imports from the LLM/VLA recipe, and which OXE lesson the "mixture of experts" repeats · 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔고, "전문가 혼합"이 OXE의 어떤 교훈을 반복하는지 말할 수 있다
+- [ ] Name what makes excavation harder than tabletop manipulation (contact forces, machine scale, safety) · 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
+- [ ] Explain why this paper is the meeting point of robot learning (era 4) and heavy-machine autonomy (era 1R) · 이 논문이 왜 로봇 학습(4시대)과 중장비 자율성(1R시대)의 합류점인지 설명할 수 있다

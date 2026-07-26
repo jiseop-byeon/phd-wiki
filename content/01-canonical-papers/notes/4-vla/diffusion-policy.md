@@ -130,11 +130,13 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The "+46.9%" is an average over 15 tasks with large per-task variance. The substance of the claim is "it can represent multimodal action distributions", not "a general solution to manipulation" — language and cross-task generalization are outside this paper's scope (they arrive when it is combined with VLAs).
+>
 > "+46.9%"는 15개 과제의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 시연의 다봉성이 평균 회귀를 실패시키는 이유를 장애물 예시로 설명할 수 있다
-- [ ] 노이즈 제거의 조건(관측)과 생성 대상(행동 청크)을 구분할 수 있다
-- [ ] receding-horizon 실행이 [[04-robotics/mpc|MPC]]의 구조를 어떻게 빌렸는지 말할 수 있다
-- [ ] 추론 스텝 수가 정밀도·지연과 맺는 트레이드오프를 말할 수 있다
+- [ ] Explain with the obstacle example why multimodal demonstrations break mean-regression · 시연의 다봉성이 평균 회귀를 실패시키는 이유를 장애물 예시로 설명할 수 있다
+- [ ] Distinguish the denoising *condition* (observation) from the denoising *target* (action chunk) · 노이즈 제거의 조건(관측)과 생성 대상(행동 청크)을 구분할 수 있다
+- [ ] Say how receding-horizon execution borrows [[04-robotics/mpc|MPC]]'s structure · receding-horizon 실행이 [[04-robotics/mpc|MPC]]의 구조를 어떻게 빌렸는지 말할 수 있다
+- [ ] State the trade-off between the number of inference steps, precision, and latency · 추론 스텝 수가 정밀도·지연과 맺는 트레이드오프를 말할 수 있다

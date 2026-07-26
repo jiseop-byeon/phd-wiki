@@ -92,6 +92,6 @@ Dominant sequence architecture for two decades: speech recognition, handwriting,
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 게이트 + 오차 회전목마가 vanishing gradient의 무엇을 고쳤는지 말할 수 있다
-- [ ] 원 논문에 없던 forget 게이트가 왜 표준이 됐는지 말할 수 있다
-- [ ] 순차 계산이라는 본질적 한계와 Transformer로의 교체 이유를 말할 수 있다
+- [ ] Say what the gates plus the error carousel fixed about vanishing gradients · 게이트 + 오차 회전목마가 vanishing gradient의 무엇을 고쳤는지 말할 수 있다
+- [ ] Explain why the forget gate — absent from the original paper — became standard · 원 논문에 없던 forget 게이트가 왜 표준이 됐는지 말할 수 있다
+- [ ] State the intrinsic limit of sequential computation and why the Transformer replaced it · 순차 계산이라는 본질적 한계와 Transformer로의 교체 이유를 말할 수 있다

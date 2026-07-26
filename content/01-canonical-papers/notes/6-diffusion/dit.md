@@ -114,7 +114,7 @@ Flux(MM-DiT), 그리고 이 위키에 중요한 — 로봇 행동 전문가: [[p
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] U-Net 대체의 논거(스케일링 플레이북 통합)를 말할 수 있다
-- [ ] adaLN-Zero의 역할과 no-op 초기화 패턴을 말할 수 있다
-- [ ] Gflops-FID 상관이 보여주는 것을 말할 수 있다
-- [ ] π0·GR00T 행동 헤드가 DiT인 이유를 말할 수 있다
+- [ ] Give the argument for replacing the U-Net (unifying the scaling playbook) · U-Net 대체의 논거(스케일링 플레이북 통합)를 말할 수 있다
+- [ ] State the role of adaLN-Zero and its no-op initialization pattern · adaLN-Zero의 역할과 no-op 초기화 패턴을 말할 수 있다
+- [ ] Say what the Gflops–FID correlation demonstrates · Gflops-FID 상관이 보여주는 것을 말할 수 있다
+- [ ] Explain why the π0 and GR00T action heads are DiTs · π0·GR00T 행동 헤드가 DiT인 이유를 말할 수 있다

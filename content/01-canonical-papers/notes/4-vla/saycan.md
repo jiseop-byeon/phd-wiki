@@ -101,6 +101,6 @@ The canonical "LLM as planner over robot skills" architecture, and the bridge be
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 언어 점수와 affordance 점수의 역할을 구분하고, 곱이 왜 product-of-experts인지 설명할 수 있다
-- [ ] skill-library planner와 end-to-end VLA의 차이, 그리고 각각 무엇을 얻고 잃는지 말할 수 있다
-- [ ] SayCan의 성공이 새 운동 기술 학습을 뜻하지 않는 이유와, 실패를 어느 구성요소에 귀속해야 하는지 설명할 수 있다
+- [ ] Separate the roles of the language score and the affordance score, and explain why their product is a product-of-experts · 언어 점수와 affordance 점수의 역할을 구분하고, 곱이 왜 product-of-experts인지 설명할 수 있다
+- [ ] State the difference between a skill-library planner and an end-to-end VLA, and what each gains and loses · skill-library planner와 end-to-end VLA의 차이, 그리고 각각 무엇을 얻고 잃는지 말할 수 있다
+- [ ] Explain why SayCan's success does not mean new motor skills were learned, and to which component a failure should be attributed · SayCan의 성공이 새 운동 기술 학습을 뜻하지 않는 이유와, 실패를 어느 구성요소에 귀속해야 하는지 설명할 수 있다

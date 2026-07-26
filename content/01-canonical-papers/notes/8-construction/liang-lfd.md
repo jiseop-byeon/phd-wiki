@@ -47,11 +47,13 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: Kamat/Menassa → Liang(Stony Brook CROSS Lab) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> 78% is an entry proof on a testbed, not deployment readiness — read it as "LfD is feasible for this class of construction task", and read the gap to 100% as a miniature lecture on covariate shift. This paper's historical weight is in its position rather than its number: it is the first term of the construction robot-learning line (demonstration to hierarchy to skill library).
+>
 > 78%는 테스트베드 위의 진입 증명이지 배치 준비도가 아니다 — "건설 과제 부류에 LfD가 실현 가능하다"로 읽고, 100%와의 간극은 공변량 이동 강의의 축소판으로 읽어라. 이 논문의 역사적 의미는 수치보다 위치에 있다: 건설 로봇 학습 계열(시연 → 계층 → 스킬 라이브러리)의 첫 항이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] "준반복 과제"가 무엇이고 왜 LfD에 맞는 과제 부류인지 설명할 수 있다
-- [ ] 일반화 원통 표현이 단순 궤적 재생과 어떻게 다른지 말할 수 있다
-- [ ] 78% 성공률을 BC/공변량 이동의 어휘로 해석할 수 있다
-- [ ] 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문이 "학습의 진입점"인 이유를 말할 수 있다
+- [ ] Explain what a "quasi-repetitive task" is and why it is the right task class for LfD · "준반복 과제"가 무엇이고 왜 LfD에 맞는 과제 부류인지 설명할 수 있다
+- [ ] Say how the generalized-cylinder representation differs from simple trajectory replay · 일반화 원통 표현이 단순 궤적 재생과 어떻게 다른지 말할 수 있다
+- [ ] Interpret the 78% success rate in the vocabulary of BC and covariate shift · 78% 성공률을 BC/공변량 이동의 어휘로 해석할 수 있다
+- [ ] Say why this paper is the *entry point of learning* in the Michigan line (Feng → Lundeen → Liang → Yu) · 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문이 "학습의 진입점"인 이유를 말할 수 있다

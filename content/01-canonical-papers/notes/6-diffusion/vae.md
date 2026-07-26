@@ -125,7 +125,7 @@ ELBO + reparameterization 도구 상자는 하중을 받치는 인프라가 됐�
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] ELBO 두 항(복원/정규화)의 역할을 말할 수 있다
-- [ ] reparameterization이 푸는 문제(샘플링 통과 역전파)를 설명할 수 있다
-- [ ] 흐릿함의 원인(가우시안 우도 + KL)을 말할 수 있다
-- [ ] ELBO 기계장치가 DDPM·월드모델에서 재사용되는 지점을 말할 수 있다
+- [ ] State the role of the ELBO's two terms (reconstruction and regularization) · ELBO 두 항(복원/정규화)의 역할을 말할 수 있다
+- [ ] Explain the problem reparameterization solves (backpropagating through sampling) · reparameterization이 푸는 문제(샘플링 통과 역전파)를 설명할 수 있다
+- [ ] Name the causes of blurriness (Gaussian likelihood plus KL) · 흐릿함의 원인(가우시안 우도 + KL)을 말할 수 있다
+- [ ] Identify where the ELBO machinery is reused in DDPM and world models · ELBO 기계장치가 DDPM·월드모델에서 재사용되는 지점을 말할 수 있다

@@ -115,11 +115,13 @@ useful for site monitoring.
 - 도메인: [[05-construction-robotics/index|현장 인식]] · 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "Segment anything" means "find the boundary of anything", not "know what it is" — class-agnosticism is part of the design. And the qualifier *promptable* carries half the claim: this is not a claim to segment everything correctly on its own, without a prompt.
+>
 > "segment anything"은 "무엇이든 경계를 찾는다"이지 "무엇인지 안다"가 아니다 — 클래스 불가지가 설계의 일부다. 그리고 promptable이라는 단서가 주장의 절반이다: 프롬프트 없이 모든 것을 알아서 분할한다는 주장이 아니다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "프롬프트 가능한 분할"이라는 과제 정의가 왜 사전학습에 적합한지 설명할 수 있다
-- [ ] 데이터 엔진 3단계(보조 수동→반자동→자동)가 11억 마스크를 만든 과정을 말할 수 있다
-- [ ] SAM이 아는 것(경계)과 모르는 것(클래스)을 구분하고, 보완 조합(검출기+SAM)을 말할 수 있다
-- [ ] 무거운 인코더/가벼운 디코더 분리가 인터랙티브 사용에 왜 결정적인지 말할 수 있다
+- [ ] Explain why framing the task as *promptable segmentation* makes it suitable for pretraining · "프롬프트 가능한 분할"이라는 과제 정의가 왜 사전학습에 적합한지 설명할 수 있다
+- [ ] Describe how the three-stage data engine (assisted-manual → semi-automatic → automatic) produced 1.1 B masks · 데이터 엔진 3단계(보조 수동→반자동→자동)가 11억 마스크를 만든 과정을 말할 수 있다
+- [ ] Separate what SAM knows (boundaries) from what it does not (classes), and name the complementary pairing (detector + SAM) · SAM이 아는 것(경계)과 모르는 것(클래스)을 구분하고, 보완 조합(검출기+SAM)을 말할 수 있다
+- [ ] Say why splitting a heavy encoder from a light decoder is decisive for interactive use · 무거운 인코더/가벼운 디코더 분리가 인터랙티브 사용에 왜 결정적인지 말할 수 있다

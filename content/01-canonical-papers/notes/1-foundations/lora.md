@@ -101,7 +101,7 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] $\Delta W = BA$의 학습 파라미터 수를 $d, k, r$로 계산할 수 있다
-- [ ] $B = 0$ 초기화가 보장하는 것을 말할 수 있다
-- [ ] 배포 시 병합으로 추론 지연이 0인 이유(어댑터와의 차이)를 설명할 수 있다
-- [ ] 내재적 저랭크 가설이 실증이지 설명이 아니라는 점을 말할 수 있다
+- [ ] Compute the number of trained parameters in $\Delta W = BA$ from $d, k, r$ · $\Delta W = BA$의 학습 파라미터 수를 $d, k, r$로 계산할 수 있다
+- [ ] State what the $B = 0$ initialization guarantees · $B = 0$ 초기화가 보장하는 것을 말할 수 있다
+- [ ] Explain why merging at deployment leaves zero inference latency (and how that differs from adapters) · 배포 시 병합으로 추론 지연이 0인 이유(어댑터와의 차이)를 설명할 수 있다
+- [ ] Say why the intrinsic low-rank hypothesis is an empirical finding rather than an explanation · 내재적 저랭크 가설이 실증이지 설명이 아니라는 점을 말할 수 있다

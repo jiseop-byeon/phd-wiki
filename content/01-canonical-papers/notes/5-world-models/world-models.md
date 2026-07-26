@@ -123,7 +123,7 @@ states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] V/M/C 분해와 각 모듈의 학습 신호를 말할 수 있다
-- [ ] 꿈속 훈련이 가능했던 조건과 온도의 역할을 설명할 수 있다
-- [ ] 모델 악용 문제가 왜 모든 모델 기반 RL의 질병인지 말할 수 있다
-- [ ] 이 뼈대가 PlaNet/Dreamer에서 어떻게 정교화됐는지 말할 수 있다
+- [ ] Name the V/M/C decomposition and the training signal of each module · V/M/C 분해와 각 모듈의 학습 신호를 말할 수 있다
+- [ ] Explain the conditions that made training inside a dream possible, and the role of the temperature · 꿈속 훈련이 가능했던 조건과 온도의 역할을 설명할 수 있다
+- [ ] Say why model exploitation is a disease of all model-based RL · 모델 악용 문제가 왜 모든 모델 기반 RL의 질병인지 말할 수 있다
+- [ ] Describe how this skeleton was refined in PlaNet and Dreamer · 이 뼈대가 PlaNet/Dreamer에서 어떻게 정교화됐는지 말할 수 있다

@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.9** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> Differentiating polynomials ([[02-foundations/engineering-math|0.5 §1]]) and the idea of separating path from timing are all you need — the lightest chapter in the track.
 > 다항식 미분([[02-foundations/engineering-math|0.5 §1]])과 경로/시간의 분리라는 아이디어만 있으면 된다 — 이 장은 트랙에서 가장 가벼운 장이다.
 
 ## English
@@ -58,13 +59,13 @@ on real hardware for safety/limits.
 대체물이고, 실제 하드웨어에서는 안전/한계를 위해 고전적 시간 스케일링이 학습 출력을 여전히
 감싼다.
 
-### 스스로 점검 · Self-check
+### Self-check · 스스로 점검
 
-1. 3차 시간 스케일링 $s(t) = 3t^2/T^2 - 2t^3/T^3$에서 $s(0), s(T), \dot s(0), \dot s(T)$를 계산해 경계 조건을 확인하라.
-2. 5차 스케일링이 3차보다 나은 점은 무엇이고, 그 대가는?
-3. 사다리꼴 속도 프로파일이 산업 제어기의 기본값인 실용적 이유는?
+1. For the cubic scaling $s(t) = 3t^2/T^2 - 2t^3/T^3$, compute $s(0), s(T), \dot s(0), \dot s(T)$ and confirm the boundary conditions. · 3차 시간 스케일링에서 $s(0), s(T), \dot s(0), \dot s(T)$를 계산해 경계 조건을 확인하라.
+2. What does quintic scaling buy over cubic, and what does it cost? · 5차 스케일링이 3차보다 나은 점은 무엇이고, 그 대가는?
+3. Why is the trapezoidal velocity profile the industrial default? · 사다리꼴 속도 프로파일이 산업 제어기의 기본값인 실용적 이유는?
 
-> [!tip]- 정답 · Answers
-> 1. $s(0)=0, s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$이므로 $\dot s(0)=\dot s(T)=0$ — 양 끝 정지.
-> 2. 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 같은 시간 내 최대 *속도*가 더 커짐(1.875/T vs 1.5/T — 최대 가속도는 오히려 큐빅보다 작다).
-> 3. 최대 속도·가속도 한계를 직접 파라미터로 가져서 액추에이터 스펙과 1:1로 대응되기 때문.
+> [!tip]- Answers · 정답
+> 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement. · 양 끝에서 정지한다.
+> 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay. · 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 최대 속도가 커지는 것(최대 가속도는 오히려 작다).
+> 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything. · 최대 속도·가속도 한계를 직접 파라미터로 가져 액추에이터 스펙과 1:1로 대응되기 때문.

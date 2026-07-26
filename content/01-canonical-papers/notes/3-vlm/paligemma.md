@@ -73,6 +73,6 @@ PaliGemma가 무엇을 제공하는지(로봇 행동 전문가를 붙일 수 있
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
-- [ ] 구성 두 조각(SigLIP + Gemma-2B)과 "전이 베이스" 설계 철학을 말할 수 있다
-- [ ] π0가 왜 프런티어급 VLM이 아니라 이 3B 모델을 백본으로 골랐는지 설명할 수 있다
-- [ ] "versatile"이 zero-shot 성능이 아니라 파인튜닝 전이 범위 주장임을 안다
+- [ ] Name the two components (SigLIP + Gemma-2B) and the "transfer base" design philosophy · 구성 두 조각(SigLIP + Gemma-2B)과 "전이 베이스" 설계 철학을 말할 수 있다
+- [ ] Explain why π0 chose this 3B model as its backbone rather than a frontier VLM · π0가 왜 프런티어급 VLM이 아니라 이 3B 모델을 백본으로 골랐는지 설명할 수 있다
+- [ ] Know that "versatile" is a claim about fine-tuning transfer breadth, not zero-shot performance · "versatile"이 zero-shot 성능이 아니라 파인튜닝 전이 범위 주장임을 안다

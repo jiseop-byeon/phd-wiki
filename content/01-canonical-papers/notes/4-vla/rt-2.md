@@ -132,11 +132,13 @@ vs 연속 헤드, 공동 학습 비율)은 곧 RT-2의 설계 선택에 대한 �
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The title's "transfers web knowledge to robotic control" does not mean the robot learned new motor skills from the web — it means semantic knowledge from web pretraining transferred into action selection. The experiments measure exactly that (semantic generalization) and not the acquisition of new dexterity. Check the gap between the strongest reading the title permits and the reading the experiments support.
+>
 > 제목의 "transfers web knowledge to robotic control"은 로봇이 새 운동 기술을 웹에서 배웠다는 뜻이 아니다 — 웹 사전학습의 의미 지식이 행동 선택으로 전이됐다는 뜻이다. 실험도 정확히 그것(semantic generalization)만 재고, 새로운 손재주 획득은 재지 않는다. 제목이 허용하는 가장 강한 독해와 실험이 지지하는 독해의 간극을 확인하라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "행동을 토큰화한다"의 구체적 의미(차원당 256 구간 → 예약된 텍스트 토큰)를 설명할 수 있다
-- [ ] co-fine-tuning이 무엇을 막기 위한 장치인지(웹 지식의 파국적 망각) 말할 수 있다
-- [ ] 의미적 일반화와 운동 기술 일반화를 구분하고, RT-2가 어느 쪽만 얻었는지 말할 수 있다
-- [ ] 창발 능력 평가가 증명하는 것과 증명하지 않는 것을 말할 수 있다
+- [ ] Explain concretely what "tokenizing actions" means (256 bins per dimension → reserved text tokens) · "행동을 토큰화한다"의 구체적 의미(차원당 256 구간 → 예약된 텍스트 토큰)를 설명할 수 있다
+- [ ] Say what co-fine-tuning is there to prevent (catastrophic forgetting of web knowledge) · co-fine-tuning이 무엇을 막기 위한 장치인지(웹 지식의 파국적 망각) 말할 수 있다
+- [ ] Distinguish semantic generalization from motor-skill generalization, and say which one RT-2 obtained · 의미적 일반화와 운동 기술 일반화를 구분하고, RT-2가 어느 쪽만 얻었는지 말할 수 있다
+- [ ] State what the emergent-capability evaluation does and does not prove · 창발 능력 평가가 증명하는 것과 증명하지 않는 것을 말할 수 있다

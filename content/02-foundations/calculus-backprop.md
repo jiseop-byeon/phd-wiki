@@ -116,6 +116,12 @@ bug detector in existence.
 4. In the [[01-canonical-papers/notes/6-diffusion/vae|VAE]], why can't you backprop through
    $z \sim \mathcal{N}(\mu, \sigma^2)$ directly, and how does $z = \mu + \sigma\epsilon$ fix it?
 
+> [!tip]- Answers
+> 1. Only step 1 changes: $\delta_2$ becomes $p - y$ (the softmax + cross-entropy gradient) instead of $\hat y - y$. Steps 2–5 are identical — the backward pattern does not care which loss produced the incoming delta.
+> 2. The derivative of a sum is the sum of derivatives: $\partial(x + F(x))/\partial x = I + \partial F/\partial x = I + J_F$. The identity term gives the backward signal one path that is never multiplied down, so depth stops *forcing* decay — it mitigates vanishing rather than guaranteeing the total gradient never shrinks.
+> 3. Forward mode propagates sensitivities with respect to *one* input direction per pass, so covering 7B parameters would need 7B passes. Reverse mode propagates from a *scalar* loss, so a single backward pass yields every parameter gradient — the asymmetry is why training is possible at all.
+> 4. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
+
 ## 한국어
 
 모든 딥러닝 논문이 말없이 전제하는 단 하나의 알고리즘: 역방향 자동 미분. 교재 수준의

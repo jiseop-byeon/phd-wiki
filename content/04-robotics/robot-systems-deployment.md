@@ -33,7 +33,7 @@ The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz m
 
 Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful.
 
-When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, impedance target, or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change.
+When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, impedance target, or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change. An end-effector-pose action does not reach a motor until [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] resolves it — including its branch choices and singularities — and a waypoint action does not become motion until [[04-robotics/modern-robotics/ch09-trajectory-generation|time scaling (MR ch.9)]] gives it a velocity profile inside the actuator limits. On a wheeled base, both sit on the [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|nonholonomic kinematics of MR ch.13]].
 
 ### 3. Timing and a latency budget
 
@@ -193,7 +193,13 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 
 논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·임피던스
 타깃·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
-바뀌면 다르게 행동할 수 있다.
+바뀌면 다르게 행동할 수 있다. 말단 pose 행동은
+[[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이 — 가지 선택과
+특이점까지 포함해 — 풀어 주기 전까지 모터에 닿지 않고, 웨이포인트 행동은
+[[04-robotics/modern-robotics/ch09-trajectory-generation|시간 스케일링(MR 9장)]]이 액추에이터
+한계 안의 속도 프로파일을 줄 때 비로소 운동이 된다. 바퀴 베이스에서는 이 둘이
+[[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장의 비홀로노믹 기구학]] 위에
+앉는다.
 
 ### 3. 타이밍과 지연 예산
 

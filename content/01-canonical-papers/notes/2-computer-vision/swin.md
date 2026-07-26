@@ -109,6 +109,6 @@ bridge showing attention and convolutional inductive biases can be mixed freely
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 창 어텐션 + 이동 창의 요지(선형 비용 + 경계 통신)를 말할 수 있다
-- [ ] 계층 백본이 밀집 예측에 필요한 이유를 말할 수 있다
-- [ ] 순정 ViT + 강한 사전학습이 다시 이긴 흐름을 말할 수 있다
+- [ ] State the essence of window attention plus shifted windows (linear cost plus cross-boundary communication) · 창 어텐션 + 이동 창의 요지(선형 비용 + 경계 통신)를 말할 수 있다
+- [ ] Say why a hierarchical backbone is needed for dense prediction · 계층 백본이 밀집 예측에 필요한 이유를 말할 수 있다
+- [ ] Describe the later swing back to plain ViT with strong pretraining · 순정 ViT + 강한 사전학습이 다시 이긴 흐름을 말할 수 있다

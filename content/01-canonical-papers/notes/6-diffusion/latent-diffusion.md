@@ -118,7 +118,7 @@ latent world models).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 압축과 생성의 2단계 분리 논리(지각적 중복 제거)를 설명할 수 있다
-- [ ] cross-attention 조건화가 범용 인터페이스인 이유를 말할 수 있다
-- [ ] 오토인코더가 디테일의 상한이 되는 지점을 말할 수 있다
-- [ ] 공개 릴리스가 만든 생태계 효과(LoRA·ControlNet)를 말할 수 있다
+- [ ] Explain the logic of separating compression from generation (removing perceptual redundancy) · 압축과 생성의 2단계 분리 논리(지각적 중복 제거)를 설명할 수 있다
+- [ ] Say why cross-attention conditioning is a general-purpose interface · cross-attention 조건화가 범용 인터페이스인 이유를 말할 수 있다
+- [ ] Identify where the autoencoder becomes the ceiling on detail · 오토인코더가 디테일의 상한이 되는 지점을 말할 수 있다
+- [ ] Describe the ecosystem effect of the open release (LoRA, ControlNet) · 공개 릴리스가 만든 생태계 효과(LoRA·ControlNet)를 말할 수 있다

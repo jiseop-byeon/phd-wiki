@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.6** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], least squares / the pseudoinverse ([[02-foundations/linear-algebra|1. Linear Algebra §2]]), and Newton's method ([[02-foundations/optimization|4. Optimization §3]]).
 > [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안과 [[02-foundations/linear-algebra|최소제곱/유사역행렬]], [[02-foundations/optimization|뉴턴법]]을 알고 있어야 한다.
 
 ## English
@@ -72,11 +73,11 @@ and motor commands.
 3. What goes wrong if you run the ch.5 arm's IK starting exactly at $\theta_2 = 0$?
 4. Write the damped least squares update and say what $\lambda$ trades off.
 
-> [!tip]- 정답 · Answers
-> 1. 팔꿈치 반대 굽힘: $(180°, -90°)$ — elbow-down 가지.
-> 2. 뉴턴법은 국소 수렴이므로; 제어 루프에서는 직전 시점의 해가 자연스러운 초기값이 된다 (연속성).
-> 3. $\theta_2 = 0$은 특이점 — $\det J = 0$이라 $J^{-1}$이 존재하지 않고, 유사역행렬도 한 방향 오차를 못 줄인다.
-> 4. $\Delta\theta = J^\top(JJ^\top + \lambda^2 I)^{-1} e$; $\lambda$가 크면 안정적이지만 수렴이 느리고 편향, 작으면 정확하지만 특이점 근처에서 폭주.
+> [!tip]- Answers
+> 1. The elbow-down branch: $(180°, -90°)$. Check: link 1 points along $-\hat x$ to $(-1,0)$, then link 2 turns $-90°$ to point along $+\hat y$, giving tip $(-1,1)$. ✓ Two joint configurations, one task pose — that is IK's multimodality in a single example.
+> 2. Newton's method converges only locally: far from a solution the linearization $J$ is a poor model and the step can diverge or land in a different branch. In a control loop the previous timestep's solution is the natural seed, since the target moves continuously — which also keeps the arm on one branch instead of flipping elbow configurations mid-motion.
+> 3. $\theta_2 = 0$ is a singularity: $\det J = L_1L_2\sin\theta_2 = 0$, so $J^{-1}$ does not exist. The pseudoinverse still returns a step, but it cannot reduce error in the lost direction at all — the iteration stalls (or blows up numerically without damping).
+> 4. $\Delta\theta = J^\top(JJ^\top + \lambda^2 I)^{-1}e$. Large $\lambda$ = stable near singularities but slower and biased (the step no longer solves the exact least-squares problem); small $\lambda$ = accurate away from singularities but explosive near them. It is ridge regression, and $\lambda$ is the ridge.
 
 ## 한국어
 

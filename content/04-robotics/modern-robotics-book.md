@@ -58,5 +58,11 @@ entry ticket to manipulation research.
 
 ### Connections · 연결
 
-- Prereqs · 선수: [[02-foundations/linear-algebra|1. 선형대수]] (회전 행렬, 고유값) · [[02-foundations/calculus-backprop|2. 미적분]] (야코비안)
+- Prereqs · 선수: [[02-foundations/linear-algebra|1. 선형대수]] (회전 행렬, 고유값) · [[02-foundations/calculus-backprop|2. 미적분]] (야코비안) · [[02-foundations/se3-geometry|8. SE(3)]] (this book's core object, introduced gently there first · 이 책의 핵심 대상을 먼저 부드럽게 소개한 곳)
 - Next · 다음: [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] → [[04-robotics/state-estimation-slam|3. State Estimation]] (트랙 순서를 따른다)
+
+### After reading · 읽고 나면 말할 수 있어야 하는 것
+
+- [ ] Say why MR uses screw theory / exponential coordinates instead of D–H parameters · MR이 D-H 파라미터 대신 스크류 이론·지수 좌표를 쓰는 이유를 말할 수 있다
+- [ ] Name which chapter answers which question (configuration, pose, FK, Jacobian, IK, dynamics, control) · 어느 장이 어느 질문(컨피규레이션·자세·FK·야코비안·IK·동역학·제어)에 답하는지 말할 수 있다
+- [ ] Explain why SE(3) fluency is the entry ticket to reading manipulation and VLA papers · SE(3) 유창성이 매니퓰레이션·VLA 논문 독해의 입장권인 이유를 설명할 수 있다

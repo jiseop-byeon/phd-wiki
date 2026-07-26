@@ -97,6 +97,6 @@ Q-Former는 그 시대의 표준 연결자가 됐다 — InstructBLIP, MiniGPT-4
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] Q-Former 병목(32 토큰)의 역할과 비용 절감을 말할 수 있다
-- [ ] 2단계 사전학습이 각각 가르치는 것을 말할 수 있다
-- [ ] LLaVA가 이 복잡성을 어떻게 우회했는지 말할 수 있다
+- [ ] State the role of the Q-Former bottleneck (32 tokens) and the compute it saves · Q-Former 병목(32 토큰)의 역할과 비용 절감을 말할 수 있다
+- [ ] Say what each of the two pretraining stages teaches · 2단계 사전학습이 각각 가르치는 것을 말할 수 있다
+- [ ] Say how LLaVA bypassed this complexity · LLaVA가 이 복잡성을 어떻게 우회했는지 말할 수 있다

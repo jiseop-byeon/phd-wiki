@@ -108,7 +108,7 @@ beats most successors.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] skip 연결이 나르는 정보(위치)와 본줄기가 나르는 정보(의미)를 구분할 수 있다
-- [ ] 분할에 인코더-디코더가 필요한 이유를 말할 수 있다
-- [ ] 디퓨전의 노이즈 예측이 왜 U-Net과 맞는지(밀집 픽셀 예측) 설명할 수 있다
-- [ ] 30장 데이터에서 생존하게 한 장치(탄성 증강)를 말할 수 있다
+- [ ] Separate what the skip connections carry (location) from what the trunk carries (semantics) · skip 연결이 나르는 정보(위치)와 본줄기가 나르는 정보(의미)를 구분할 수 있다
+- [ ] Say why segmentation needs an encoder–decoder · 분할에 인코더-디코더가 필요한 이유를 말할 수 있다
+- [ ] Explain why diffusion's noise prediction fits a U-Net (dense per-pixel prediction) · 디퓨전의 노이즈 예측이 왜 U-Net과 맞는지(밀집 픽셀 예측) 설명할 수 있다
+- [ ] Name the device that made it survive on 30 images (elastic augmentation) · 30장 데이터에서 생존하게 한 장치(탄성 증강)를 말할 수 있다

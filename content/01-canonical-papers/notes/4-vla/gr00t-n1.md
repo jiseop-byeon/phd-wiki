@@ -133,11 +133,13 @@ to data-scarce domains like construction robotics.
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The "open" in "open foundation model" means weights and code, not the full data; and the verified scope of "generalist humanoid" is short-horizon, tabletop-adjacent tasks. This paper's strongest contribution is best read as the data-pyramid *strategy statement* rather than the model itself.
+>
 > "open foundation model"의 open은 가중치·코드이지 데이터 전체가 아니고, "generalist humanoid"의 검증 범위는 짧은 지평의 탁상 인접 과제다. 이 논문의 가장 강한 기여는 모델 자체보다 데이터 피라미드라는 전략 선언으로 읽는 것이 정확하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] System 2와 System 1의 역할·주기 차이(~10 Hz 추론 vs 최대 120 Hz 행동)를 설명할 수 있다
-- [ ] 데이터 피라미드의 세 층과 각 층이 채우는 공백을 말할 수 있다
-- [ ] 신경 궤적(생성 비디오 데이터)의 이점과 위험을 말할 수 있다
-- [ ] 이 데이터 전략이 건설로봇의 데이터 빈곤에 시사하는 바를 말할 수 있다
+- [ ] Explain the role and rate difference between System 2 and System 1 (~10 Hz reasoning vs up to 120 Hz action) · System 2와 System 1의 역할·주기 차이(~10 Hz 추론 vs 최대 120 Hz 행동)를 설명할 수 있다
+- [ ] Name the three layers of the data pyramid and the gap each one fills · 데이터 피라미드의 세 층과 각 층이 채우는 공백을 말할 수 있다
+- [ ] State the benefit and the risk of neural trajectories (generated video data) · 신경 궤적(생성 비디오 데이터)의 이점과 위험을 말할 수 있다
+- [ ] Say what this data strategy implies for construction robotics' data scarcity · 이 데이터 전략이 건설로봇의 데이터 빈곤에 시사하는 바를 말할 수 있다

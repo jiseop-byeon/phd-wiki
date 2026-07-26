@@ -125,7 +125,7 @@ Qwen2/2.5-VL 체크포인트에서 출발한다 ([[openvla|OpenVLA]]가 Prismati
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 세 세대 각각이 추가한 것을 하나씩 말할 수 있다
-- [ ] 동적 해상도가 고정 리사이즈 대비 푸는 문제를 말할 수 있다
-- [ ] 2023년 이후 VLM 진보가 구조가 아니라 데이터·인터페이스 이야기라는 주장을 설명할 수 있다
-- [ ] 오픈 가중치 ≠ 오픈 데이터의 함의를 말할 수 있다
+- [ ] Name one thing each of the three generations added · 세 세대 각각이 추가한 것을 하나씩 말할 수 있다
+- [ ] Say what dynamic resolution solves relative to fixed resizing · 동적 해상도가 고정 리사이즈 대비 푸는 문제를 말할 수 있다
+- [ ] Explain the claim that VLM progress after 2023 is a data-and-interface story rather than an architecture story · 2023년 이후 VLM 진보가 구조가 아니라 데이터·인터페이스 이야기라는 주장을 설명할 수 있다
+- [ ] State the implication of open weights ≠ open data · 오픈 가중치 ≠ 오픈 데이터의 함의를 말할 수 있다

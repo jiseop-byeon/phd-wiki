@@ -47,11 +47,13 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 기초: [[04-robotics/hri-safety|11. HRI & Safety]] (인간 인지 계획과 안전 지표의 원류)
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The numbers (5.57%, 19.9%, …) come from a controlled laboratory task — what transfers to construction is the direction, not the magnitude: "human-aware planning improves objective fluency and subjective safety *at the same time*." That direction is robust; the magnitudes are task-specific and must be re-measured on unstructured sites. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
+>
 > 수치(5.57%, 19.9%, ...)는 통제된 실험실 과제의 것이다 — 건설로 가져갈 것은 크기가 아니라 방향이다: "인간 인지 계획은 객관적 유창성과 주관적 안전감을 *동시에* 개선한다." 이 방향은 강건하지만, 크기는 과제 특정적이며 비구조적 현장에서는 재측정되어야 한다. 2018 배치도 제조업 현장이지 건설 현장이 아님을 구분하라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 유창성 지표들(동시 동작, 유휴 시간, 이격 거리)을 이름과 함께 말할 수 있다
-- [ ] 쌍둥이 발견 — 객관적 지표와 주관적 지표가 함께 개선된다 — 을 수치와 함께 말할 수 있다
-- [ ] 건설이 이 결과에서 빌려올 수 있는 것과 이전되지 않는 것을 구분할 수 있다
-- [ ] 2018 자매 논문이 더한 것(BMW 테스트 환경 투입)과 그 한계(테스트 환경이지 실제 공장이 아니며, 제조업이지 건설이 아님)를 말할 수 있다
+- [ ] Name the fluency metrics (concurrent motion, idle time, separation distance) · 유창성 지표들(동시 동작, 유휴 시간, 이격 거리)을 이름과 함께 말할 수 있다
+- [ ] State the twin finding — objective and subjective measures improve together — with its numbers · 쌍둥이 발견 — 객관적 지표와 주관적 지표가 함께 개선된다 — 을 수치와 함께 말할 수 있다
+- [ ] Separate what construction can borrow from this result from what does not transfer · 건설이 이 결과에서 빌려올 수 있는 것과 이전되지 않는 것을 구분할 수 있다
+- [ ] State what the 2018 companion added (fielding in a BMW test environment) and its limits (a test environment, not a real factory; manufacturing, not construction) · 2018 자매 논문이 더한 것(BMW 테스트 환경 투입)과 그 한계(테스트 환경이지 실제 공장이 아니며, 제조업이지 건설이 아님)를 말할 수 있다

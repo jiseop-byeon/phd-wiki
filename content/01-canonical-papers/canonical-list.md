@@ -24,11 +24,13 @@ Recent-trend papers get appended over time via the tracking workflow.
 ★ 원문 정독 (방법·실험까지) · ◐ 노트 후 원문 훑기 · ○ 노트로 충분 (계보 이해)
 — 이 기호는 **권장 읽기 분량**이지 숙련 수준이 아니다: ★를 정독해도 mastery(가정 비판·변형 설계)에 도달한 것은 아니다.
 (EN: ★ read the original in full · ◐ read the note, then skim the original · ○ the note is enough. These marks are the *recommended reading amount*, not a mastery level.)
+— Reading depths are tuned to the **construction physical-AI profile** (2026-07): the NLP-ancestor line (BERT, GPT-3, InstructGPT) and the deep generative-image papers (Score-SDE, LDM) are one-line citations in this field's papers, so they are ○; visual perception, VLA, and diffusion-policy mathematics keep their depth.
 — 깊이 배정은 **건설 physical AI 프로필** 기준으로 조정했다(2026-07): NLP 조상 계열(BERT·GPT-3·InstructGPT)과 생성 이미지 심화(Score-SDE·LDM)는 이 분야 논문에서 한 줄 인용 수준이라 ○, 시각 인식·VLA·디퓨전 정책 수학은 유지.
 
 ## 1. Deep Learning Foundations
 
-시간순 정렬 — 2012년 ImageNet에서 시작해 CNN 계열과 RNN 계열이 2017년 Transformer에서 합류하는 흐름. [[03-deep-learning/lineage|계보도]] 참고.
+Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at the Transformer in 2017. Keep the [[03-deep-learning/lineage|lineage map]] open.
+시간순 정렬 — 2012년 ImageNet에서 시작해 CNN 계열과 RNN 계열이 2017년 Transformer에서 합류하는 흐름.
 
 - [x] ○ [[notes/1-foundations/lstm|LSTM]] — *Long Short-Term Memory* (Hochreiter & Schmidhuber, Neural Computation 1997)
 - [x] ○ [[notes/1-foundations/alexnet|AlexNet]] — *ImageNet Classification with Deep CNNs* (Krizhevsky et al., NeurIPS 2012)
@@ -46,7 +48,7 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/1-foundations/mae|MAE]] — *Masked Autoencoders Are Scalable Vision Learners* (He et al., CVPR 2022)
 - [x] ◐ [[notes/1-foundations/lora|LoRA]] — *Low-Rank Adaptation* (Hu et al., ICLR 2022)
 - [x] ○ [[notes/1-foundations/instructgpt|InstructGPT/RLHF]] — *Training LMs to Follow Instructions* (Ouyang et al., NeurIPS 2022)
-*(아래 두 편은 로보틱스 트랙의 선행 재료로 부록처럼 추가 — 시간순 예외)*
+*(The two below are appended as prerequisites for the robotics track — an exception to the chronological order. · 로보틱스 트랙의 선행 재료로 부록처럼 추가 — 시간순 예외)*
 - [x] ◐ [[notes/1-foundations/ppo|PPO]] — *Proximal Policy Optimization Algorithms* (Schulman et al., 2017) — ExT 등 simulator-expert/RLFT 레시피
 - [x] ○ [[notes/1-foundations/sac|Soft Actor-Critic]] (Haarnoja et al., ICML 2018) — 연속 제어의 off-policy 기준선
 
@@ -113,25 +115,28 @@ Recent-trend papers get appended over time via the tracking workflow.
 
 ## 7. Robotics & Physical Systems
 
-**Core textbook and papers** (★◐○ = 읽기 분량)
+**Core textbook and papers** (★◐○ = recommended reading amount · 읽기 분량)
 
 - [x] ★ [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — textbook with free official PDF & course links
 - [x] ◐ [[04-robotics/mpc|MPC]] — Mayne et al., *Constrained MPC* (Automatica 2000) + study guide
 - [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
 
+**Study guides** — concept guides rather than papers, so they carry no ★◐○ mark; read them in track order.
 **Study guides** (논문이 아닌 개념 가이드 — 읽기 기호 대신 트랙 순서로 읽는다)
 
 - [[04-robotics/modern-robotics/index|Modern Robotics Summary]] — 2–6장·8–13장 챕터 요약 (트랙 2번)
 - [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]] — Probabilistic Robotics 기반 (3)
 - [[04-robotics/geometric-perception-calibration|Geometric Perception & Calibration]] — 카메라 모델·registration·보정 (3.5)
 - [[04-robotics/planning-decision-making|Planning & Decision-Making]] — search·sampling·trajectory optimization·TAMP (4)
-- [[04-robotics/control-theory-ce397|Control Theory]] — 상태공간·안정성·가제어성 (5)
+- [[04-robotics/control-theory-ce397|Control Theory]] — 상태공간·안정성·극점·가제어성/가관측성·극점 배치·PID·관측기 (5)
 - [[04-robotics/lqr-lqg|LQR/LQG]] — Underactuated Robotics, Stanford EE363 기반 (6)
 - [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — MR 12장의 연장 (9)
 - [[04-robotics/robot-systems-deployment|Robot Systems, Embodiment & Deployment]] — timing·frames·middleware·failure (10)
 - [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — autonomy levels·human studies·hazard/risk (11)
 
 ## 8. Construction Robotics
+
+Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. The 23 entries below were selected in the 2026-07 lab/lineage corpus audit. **Core** papers changed the technical or system trajectory of construction physical AI; **Supporting** papers represent the key perception, HRC, and workflow connections. Papers from famous labs were still excluded when purely construction-management.
 
 계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 23편은 2026-07 랩·계보 코퍼스 감사에서 선별했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
 
@@ -170,4 +175,4 @@ Recent-trend papers get appended over time via the tracking workflow.
 - [x] ◐ [[notes/8-construction/lasota-shah|Lasota & Shah — human-aware motion planning]] (Human Factors 2015 / RA-L 2018) — 건설이 수입하는 제조 HRC 증거
 - [x] ○ [[notes/8-construction/liang-hrc-survey|Liang et al. — HRC in construction: classification & trends]] (JCEM 2021) — 스트림 6의 방향 잡는 분류 체계
 
-개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).
+Concept pages · 개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).

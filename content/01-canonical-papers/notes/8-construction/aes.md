@@ -28,7 +28,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. Task variety is narrow (loading), the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
 
-> [!question] Reading the claim
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > Continuous operation in a constrained material-handling site is strong deployment evidence, but not proof of general excavation autonomy. Separate three different claims when citing AES: (a) machine-size transfer of one stack, (b) 24-hour uncrewed intervals, and (c) human-level tons/hour — each holds in the reported loading deployment, none automatically extends to arbitrary soils, sites, or tasks.
 
 ## 한국어
@@ -54,7 +54,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] AES 스택의 모듈 구성(인식 → 과제/모션 계획 → 제어)을 단계별로 재구성하고, 각 모듈이 어떤 센서/출력을 쓰는지 말할 수 있다
-- [ ] 세 가지 증거 축 — 컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour — 를 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다
-- [ ] "24시간 무인"이 정확히 무엇의 지표인지(개입 간격이지 무한 자율이 아님)와 현장 통제가 안전에서 맡는 역할을 말할 수 있다
-- [ ] 학습 신규성과 시스템 완결성을 구분하고, AES가 Stentz→현대 학습 기반 굴착 사이에서 차지하는 배치 측 위치를 설명할 수 있다
+- [ ] Reconstruct the AES stack module by module (perception → task/motion planning → control) and say which sensors and outputs each module uses · AES 스택의 모듈 구성(인식 → 과제/모션 계획 → 제어)을 단계별로 재구성하고, 각 모듈이 어떤 센서/출력을 쓰는지 말할 수 있다
+- [ ] Explain the three evidence axes — transfer from compact to 49-tonne machines, 24 h uncrewed per intervention, expert-operator tons/hour — with their numbers and within their evaluation scope · 세 가지 증거 축 — 컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour — 를 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다
+- [ ] Say exactly what "24 hours uncrewed" is a measure of (an interval between interventions, not unbounded autonomy) and the role site control plays in safety · "24시간 무인"이 정확히 무엇의 지표인지(개입 간격이지 무한 자율이 아님)와 현장 통제가 안전에서 맡는 역할을 말할 수 있다
+- [ ] Separate method novelty from system completeness, and place AES on the deployment side between Stentz and modern learned excavation · 학습 신규성과 시스템 완결성을 구분하고, AES가 Stentz→현대 학습 기반 굴착 사이에서 차지하는 배치 측 위치를 설명할 수 있다

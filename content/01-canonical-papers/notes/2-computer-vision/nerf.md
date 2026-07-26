@@ -118,7 +118,7 @@ data generation ([[cosmos|world-model data engines]]).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] $(x, d) \to (c, \sigma)$ MLP와 광선 볼륨 렌더링의 관계를 설명할 수 있다
-- [ ] 위치 인코딩 없이는 고주파를 못 그리는 이유를 말할 수 있다
-- [ ] 장면별 최적화라는 한계와 그 비용을 말할 수 있다
-- [ ] 3DGS가 무엇을 바꿔 실시간을 얻었는지 말할 수 있다
+- [ ] Explain the relation between the $(x,d)\to(c,\sigma)$ MLP and ray volume rendering · $(x, d) \to (c, \sigma)$ MLP와 광선 볼륨 렌더링의 관계를 설명할 수 있다
+- [ ] Say why high frequencies cannot be represented without positional encoding · 위치 인코딩 없이는 고주파를 못 그리는 이유를 말할 수 있다
+- [ ] State the limit of per-scene optimization and its cost · 장면별 최적화라는 한계와 그 비용을 말할 수 있다
+- [ ] Say what 3DGS changed to obtain real-time rendering · 3DGS가 무엇을 바꿔 실시간을 얻었는지 말할 수 있다

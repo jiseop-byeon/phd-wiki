@@ -28,7 +28,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: it relies on structured task geometry and 1990s sensing; it does not address learning across machines or soils, long-duration unattended operation, or open-site human interaction. Safety is an obstacle-stop protocol, not a certified safety case.
 
-> [!question] Reading the claim
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > "As fast as human operators" refers to the demonstrated loading setup — a localized truck, a prepared soil face, a bounded workspace — not arbitrary excavation, soils, sites, or safety conditions. Read the task boundary and the obstacle protocol before translating this 1999 result into modern autonomy language; the honest modern comparison is against [[01-canonical-papers/notes/8-construction/aes|AES]]'s deployment metrics, not against learned-policy papers.
 
 ## 한국어
@@ -54,7 +54,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 이 시스템의 sensing–planning–control 루프 — 레이저 거리계 2대(트럭 정위치화 + 토사면 매핑) → 굴착/투하점 선택 → 사이클 실행 → 장애물 정지 — 를 재구성할 수 있다
-- [ ] 1998년의 "숙련 운전자급 속도" 주장이 어떤 평가 범위(준비된 적재 설정)에서 성립했는지 말할 수 있다
-- [ ] 이 논문의 기여가 학습 정책이 아니라 통합 자율 시스템인 이유와, 그것이 오늘날 모듈형 스택과 어떻게 이어지는지 설명할 수 있다
-- [ ] 1998년 결과와 오늘날 학습 기반 굴착([[01-canonical-papers/notes/8-construction/ext|ExT]] 등)이 같은 주장을 하는 것이 아님을 구분해 말할 수 있다
+- [ ] Reconstruct this system's sensing–planning–control loop — two laser rangefinders (truck localization plus soil-face mapping) → choosing dig and dump points → cycle execution → obstacle stop · 이 시스템의 sensing–planning–control 루프 — 레이저 거리계 2대(트럭 정위치화 + 토사면 매핑) → 굴착/투하점 선택 → 사이클 실행 → 장애물 정지 — 를 재구성할 수 있다
+- [ ] State the evaluation scope in which the 1998 "expert-operator speed" claim held (a prepared loading setup) · 1998년의 "숙련 운전자급 속도" 주장이 어떤 평가 범위(준비된 적재 설정)에서 성립했는지 말할 수 있다
+- [ ] Explain why the contribution is an integrated autonomous system rather than a learned policy, and how it connects to today's modular stacks · 이 논문의 기여가 학습 정책이 아니라 통합 자율 시스템인 이유와, 그것이 오늘날 모듈형 스택과 어떻게 이어지는지 설명할 수 있다
+- [ ] Distinguish the 1998 result from what learning-based excavation ([[01-canonical-papers/notes/8-construction/ext|ExT]] and others) claims today · 1998년 결과와 오늘날 학습 기반 굴착([[01-canonical-papers/notes/8-construction/ext|ExT]] 등)이 같은 주장을 하는 것이 아님을 구분해 말할 수 있다

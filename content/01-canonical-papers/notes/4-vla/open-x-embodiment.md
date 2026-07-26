@@ -120,7 +120,7 @@ Common Crawl)로 스케일했는데 로보틱스에는 그런 것이 없었다. 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] RLDS 표준화가 푼 문제(형식 파편화)를 말할 수 있다
-- [ ] 교차-신체 양의 전이의 증거(RT-1-X가 전문 모델을 이김)를 말할 수 있다
-- [ ] 커버리지 편향(탁상 pick-place 중심)과 그 하류 효과를 말할 수 있다
-- [ ] 건설로봇 데이터셋을 만든다면 이 논문에서 가져올 템플릿을 말할 수 있다
+- [ ] State the problem RLDS standardization solved (format fragmentation) · RLDS 표준화가 푼 문제(형식 파편화)를 말할 수 있다
+- [ ] Give the evidence for positive cross-embodiment transfer (RT-1-X beating specialist models) · 교차-신체 양의 전이의 증거(RT-1-X가 전문 모델을 이김)를 말할 수 있다
+- [ ] State the coverage bias (tabletop pick-and-place heavy) and its downstream effect · 커버리지 편향(탁상 pick-place 중심)과 그 하류 효과를 말할 수 있다
+- [ ] Say what template you would take from this paper if you built a construction-robotics dataset · 건설로봇 데이터셋을 만든다면 이 논문에서 가져올 템플릿을 말할 수 있다

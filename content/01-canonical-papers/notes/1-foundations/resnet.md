@@ -99,7 +99,7 @@ The default vision backbone for nearly a decade, and still the standard baseline
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 열화 문제가 과적합이 아니라 최적화 문제인 증거(학습 오차부터 나빠짐)를 말할 수 있다
-- [ ] $F(x) + x$ 구조가 "아무것도 안 하기"를 왜 쉽게 만드는지 설명할 수 있다
-- [ ] 병목 블록(1×1→3×3→1×1)이 깊이를 늘리면서 연산을 지키는 방식을 말할 수 있다
-- [ ] residual 연결이 Transformer의 어디에 어떻게 살아 있는지 말할 수 있다
+- [ ] State the evidence that degradation is an optimization problem rather than overfitting (training error worsens too) · 열화 문제가 과적합이 아니라 최적화 문제인 증거(학습 오차부터 나빠짐)를 말할 수 있다
+- [ ] Explain why the $F(x) + x$ structure makes "doing nothing" easy · $F(x) + x$ 구조가 "아무것도 안 하기"를 왜 쉽게 만드는지 설명할 수 있다
+- [ ] Say how the bottleneck block (1×1 → 3×3 → 1×1) adds depth while preserving compute · 병목 블록(1×1→3×3→1×1)이 깊이를 늘리면서 연산을 지키는 방식을 말할 수 있다
+- [ ] Say where and how residual connections survive inside the Transformer · residual 연결이 Transformer의 어디에 어떻게 살아 있는지 말할 수 있다

@@ -105,6 +105,6 @@ Search — 이미지당 약 2초를 잡아먹으며 품질의 상한이 되는 �
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] RPN이 대체한 것(수작업 제안)과 공유 백본의 의미를 말할 수 있다
-- [ ] 2단계 구조의 정확도-복잡성 트레이드오프를 말할 수 있다
-- [ ] YOLO와 DETR가 각각 어느 쪽에서 이 구조를 공격했는지 말할 수 있다
+- [ ] Say what the RPN replaced (hand-crafted proposals) and what sharing the backbone means · RPN이 대체한 것(수작업 제안)과 공유 백본의 의미를 말할 수 있다
+- [ ] State the accuracy–complexity trade-off of the two-stage design · 2단계 구조의 정확도-복잡성 트레이드오프를 말할 수 있다
+- [ ] Say which side of that structure YOLO and DETR each attacked · YOLO와 DETR가 각각 어느 쪽에서 이 구조를 공격했는지 말할 수 있다

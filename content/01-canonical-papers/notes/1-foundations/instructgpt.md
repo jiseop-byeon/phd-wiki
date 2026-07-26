@@ -97,7 +97,7 @@ ChatGPT의 직접적 설계도이자 모든 현대 어시스턴트 정렬의 템
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 3단계(SFT→보상 모델→PPO) 각각의 입력과 출력을 말할 수 있다
-- [ ] 보상을 절대 점수가 아니라 비교로 학습하는 이유를 설명할 수 있다
-- [ ] KL 페널티가 무엇을 막는지(보상 과최적화)와 그 정보이론적 독해를 말할 수 있다
-- [ ] 1.3B가 175B를 이긴 결과가 무엇을 증명하는지 말할 수 있다
+- [ ] Name the input and output of each of the three stages (SFT → reward model → PPO) · 3단계(SFT→보상 모델→PPO) 각각의 입력과 출력을 말할 수 있다
+- [ ] Explain why the reward is learned from comparisons rather than absolute scores · 보상을 절대 점수가 아니라 비교로 학습하는 이유를 설명할 수 있다
+- [ ] Say what the KL penalty prevents (reward over-optimization) and give its information-theoretic reading · KL 페널티가 무엇을 막는지(보상 과최적화)와 그 정보이론적 독해를 말할 수 있다
+- [ ] Say what the 1.3B-beats-175B result actually proves · 1.3B가 175B를 이긴 결과가 무엇을 증명하는지 말할 수 있다

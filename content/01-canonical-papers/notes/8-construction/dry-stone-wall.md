@@ -29,7 +29,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: one platform, one project, one site. The workflow demonstrates integrated material reuse at full scale but not unrestricted autonomous masonry, arbitrary rock supply, or commercial productivity benchmarked against a human mason. Throughput and cost comparisons are not the paper's claim.
 
-> [!question] Reading the claim
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > The result demonstrates an integrated material-reuse workflow — local material becomes sensed state, planned structure, and executed contact — on one instrumented platform and one project. Read it as a system-breadth claim (the closed perception→planning→force-control loop at multi-tonne scale), not as an object-detection benchmark and not as evidence that autonomous masonry is commercially solved.
 
 ## 한국어
@@ -55,7 +55,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] 스캔 → 돌별 재구성 → 배치 계획 → 힘 제어 배치 → 모델 갱신의 폐루프를 단계별로 재구성하고, 왜 각 단계가 이전 단계의 출력을 필요로 하는지 말할 수 있다
-- [ ] 핵심 숫자 — 6 m 높이 × 65 m 길이, 수 톤급 자연석·철거 잔해, Menzi Muck M545 보행 굴착기 한 대, Oberglatt Circularity Park — 를 각각 무엇의 증거로 읽어야 하는지 말할 수 있다
-- [ ] 왜 이 과제에서 위치 제어가 아니라 힘 제어 조작이 필수인지(불규칙 형상, 수 톤 질량, 접촉 기반 안착)를 설명할 수 있다
-- [ ] 이 논문이 굴착(중장비) 스트림과 조립(패브리케이션) 스트림의 합류점인 이유와, 실규모 시연이 증명한 것과 남긴 일반화 공백(석재 공급, 상업 생산성)을 구분해 말할 수 있다
+- [ ] Reconstruct the closed loop (scan → per-stone reconstruction → placement planning → force-controlled placement → model update) and say why each stage needs the previous stage's output · 스캔 → 돌별 재구성 → 배치 계획 → 힘 제어 배치 → 모델 갱신의 폐루프를 단계별로 재구성하고, 왜 각 단계가 이전 단계의 출력을 필요로 하는지 말할 수 있다
+- [ ] Say what each headline number is evidence *of* — 6 m tall × 65 m long, multi-tonne natural stone and demolition debris, one Menzi Muck M545 walking excavator, Oberglatt Circularity Park · 핵심 숫자 — 6 m 높이 × 65 m 길이, 수 톤급 자연석·철거 잔해, Menzi Muck M545 보행 굴착기 한 대, Oberglatt Circularity Park — 를 각각 무엇의 증거로 읽어야 하는지 말할 수 있다
+- [ ] Explain why this task requires force-controlled rather than position-controlled manipulation (irregular shapes, multi-tonne mass, contact-based seating) · 왜 이 과제에서 위치 제어가 아니라 힘 제어 조작이 필수인지(불규칙 형상, 수 톤 질량, 접촉 기반 안착)를 설명할 수 있다
+- [ ] Say why this paper is the confluence of the earthmoving and the assembly/fabrication streams, and separate what the full-scale demonstration proved from the generalization gaps it left (stone supply, commercial productivity) · 이 논문이 굴착(중장비) 스트림과 조립(패브리케이션) 스트림의 합류점인 이유와, 실규모 시연이 증명한 것과 남긴 일반화 공백(석재 공급, 상업 생산성)을 구분해 말할 수 있다

@@ -97,7 +97,7 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 무엇을 어느 축(미니배치)으로 정규화하는지, $\gamma, \beta$가 왜 있는지 말할 수 있다
-- [ ] 학습 시 배치 통계와 추론 시 이동 평균의 차이가 만드는 버그 유형을 말할 수 있다
-- [ ] 작은 배치·시퀀스에서 깨지는 이유와 Transformer가 LayerNorm을 쓰는 이유를 말할 수 있다
-- [ ] internal covariate shift 설명이 이후 어떻게 반박됐는지 말할 수 있다
+- [ ] Say what is normalized over which axis (the minibatch), and why $\gamma, \beta$ exist · 무엇을 어느 축(미니배치)으로 정규화하는지, $\gamma, \beta$가 왜 있는지 말할 수 있다
+- [ ] Name the class of bug created by the gap between training batch statistics and inference running averages · 학습 시 배치 통계와 추론 시 이동 평균의 차이가 만드는 버그 유형을 말할 수 있다
+- [ ] Explain why it breaks on small batches and sequences, and why Transformers use LayerNorm · 작은 배치·시퀀스에서 깨지는 이유와 Transformer가 LayerNorm을 쓰는 이유를 말할 수 있다
+- [ ] Say how the internal-covariate-shift explanation was later challenged · internal covariate shift 설명이 이후 어떻게 반박됐는지 말할 수 있다

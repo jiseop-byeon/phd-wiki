@@ -127,6 +127,6 @@ video world models ([[cosmos|Cosmos]]) that add what Sora lacks — control.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 시공간 패치 = ViT 논리의 시간 확장이라는 것을 말할 수 있다
-- [ ] "창발한 시뮬레이션 성질" 주장과 그 반례(물리 실패)를 말할 수 있다
-- [ ] 행동이 없다는 한계와 Genie/Cosmos와의 차이를 말할 수 있다
+- [ ] State that spacetime patches are the ViT logic extended through time · 시공간 패치 = ViT 논리의 시간 확장이라는 것을 말할 수 있다
+- [ ] State the "emergent simulation properties" claim and its counterexamples (physics failures) · "창발한 시뮬레이션 성질" 주장과 그 반례(물리 실패)를 말할 수 있다
+- [ ] State the limitation of having no actions and the difference from Genie and Cosmos · 행동이 없다는 한계와 Genie/Cosmos와의 차이를 말할 수 있다

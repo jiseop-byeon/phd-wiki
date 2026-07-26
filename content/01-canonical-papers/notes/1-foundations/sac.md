@@ -51,7 +51,7 @@ On-policy methods like [[01-canonical-papers/notes/1-foundations/ppo|PPO]] throw
 
 The standard continuous-control off-policy baseline — most model-free comparisons in manipulation and locomotion papers include it, and its machinery (twin critics, squashed Gaussians, auto-temperature) became community defaults. For heavy machinery, replay efficiency is attractive because samples are expensive, but real deployments still route through simulation, constraints, or supervised data rather than raw on-hardware SAC.
 
-> [!warning] Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "Off-policy and sample-efficient" is measured in simulators with resets and dense rewards. On a real machine, add reset cost, safety envelopes, and reward instrumentation before the efficiency claim transfers.
 
 ### Connections
@@ -105,6 +105,6 @@ The standard continuous-control off-policy baseline — most model-free comparis
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 보상과 entropy 항의 trade-off, 그리고 온도 $\alpha$의 역할(및 자동 조정)을 설명할 수 있다
-- [ ] on-policy PPO와 off-policy SAC의 데이터 사용 차이와 그 대가(신선도 vs 재사용)를 말할 수 있다
-- [ ] 실제 장비에서 replay 효율만으로 충분하지 않은 이유(안전, 리셋, 보상 계측)를 설명할 수 있다
+- [ ] Explain the reward–entropy trade-off and the role of the temperature $\alpha$ (including automatic tuning) · 보상과 entropy 항의 trade-off, 그리고 온도 $\alpha$의 역할(및 자동 조정)을 설명할 수 있다
+- [ ] State how on-policy PPO and off-policy SAC differ in data use, and the price of each (freshness vs reuse) · on-policy PPO와 off-policy SAC의 데이터 사용 차이와 그 대가(신선도 vs 재사용)를 말할 수 있다
+- [ ] Explain why replay efficiency alone is not enough on real hardware (safety, resets, reward instrumentation) · 실제 장비에서 replay 효율만으로 충분하지 않은 이유(안전, 리셋, 보상 계측)를 설명할 수 있다

@@ -129,11 +129,13 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "High quality image synthesis" is a claim measured by FID (sample quality) — the paper itself reports that it trails autoregressive models on log-likelihood. And "probabilistic models" means it is trained with a variational bound, not that sampling is practical (1000 steps) — DDIM is what closes that gap.
+>
 > "high quality image synthesis"는 FID(샘플 품질) 기준의 주장이다 — 로그 우도로는 자기회귀 모델에 뒤진다는 것을 논문 스스로 보고한다. 또 "probabilistic models"는 변분 하한으로 학습한다는 뜻이지 샘플링이 실용적이라는 뜻이 아니다(1000 스텝) — 그 격차는 DDIM이 메운다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 순방향 폐쇄형 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$을 가우시안 닫힘 성질로 유도할 수 있다
-- [ ] 네트워크가 무엇을 입력받아 무엇을 예측하도록 학습되는지(노이즈 예측) 말할 수 있다
-- [ ] 학습(임의의 $t$ 한 스텝)과 샘플링(전 스텝 역방향)의 비대칭을 설명할 수 있다
-- [ ] VAE·GAN 대비 디퓨전이 무엇을 얻고 무엇을 지불했는지(학습 안정성 vs 샘플링 비용) 말할 수 있다
+- [ ] Derive the closed-form forward step $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$ from Gaussian closure · 순방향 폐쇄형 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$을 가우시안 닫힘 성질로 유도할 수 있다
+- [ ] Say what the network takes as input and what it is trained to predict (the noise) · 네트워크가 무엇을 입력받아 무엇을 예측하도록 학습되는지(노이즈 예측) 말할 수 있다
+- [ ] Explain the asymmetry between training (one random $t$) and sampling (every step, in reverse) · 학습(임의의 $t$ 한 스텝)과 샘플링(전 스텝 역방향)의 비대칭을 설명할 수 있다
+- [ ] Say what diffusion gained and paid relative to VAEs and GANs (training stability vs sampling cost) · VAE·GAN 대비 디퓨전이 무엇을 얻고 무엇을 지불했는지(학습 안정성 vs 샘플링 비용) 말할 수 있다

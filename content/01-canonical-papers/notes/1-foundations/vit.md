@@ -98,7 +98,7 @@ CNN 독점을 끝내고 모달리티를 통일했다: 텍스트와 이미지가 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 이미지→패치→토큰 절차와 위치 임베딩의 역할을 말할 수 있다
-- [ ] 데이터 규모 vs 귀납 편향 트레이드오프를 보여준 실험 구조를 말할 수 있다
-- [ ] 작은 데이터에서 CNN에 지는 이유를 설명할 수 있다
-- [ ] 순정 ViT가 밀집 예측(검출·분할)에서 겪는 한계와 Swin이 그것을 어떻게 풀었는지 말할 수 있다
+- [ ] Describe the image → patch → token procedure and the role of positional embeddings · 이미지→패치→토큰 절차와 위치 임베딩의 역할을 말할 수 있다
+- [ ] Describe the experimental structure that exposed the data-scale vs inductive-bias trade-off · 데이터 규모 vs 귀납 편향 트레이드오프를 보여준 실험 구조를 말할 수 있다
+- [ ] Explain why it loses to CNNs on small data · 작은 데이터에서 CNN에 지는 이유를 설명할 수 있다
+- [ ] State plain ViT's limits on dense prediction (detection, segmentation) and how Swin addressed them · 순정 ViT가 밀집 예측(검출·분할)에서 겪는 한계와 Swin이 그것을 어떻게 풀었는지 말할 수 있다

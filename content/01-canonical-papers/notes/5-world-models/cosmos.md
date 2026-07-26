@@ -137,11 +137,13 @@ VLA를 위한 합성 데이터, 폐루프 정책 평가, Cosmos-Reason/Transfer 
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "World foundation model platform" is a claim about a platform — reusable infrastructure — not a claim to have achieved accurate physical simulation; the paper itself concedes the physics benchmarks remain approximate. Read it as a declaration of what is being built rather than of what has been achieved.
+>
 > "world foundation model platform"은 플랫폼(재사용 가능한 인프라) 주장이지 물리 시뮬레이션의 정확성 달성 주장이 아니다 — 물리 벤치마크는 아직 근사 수준임을 논문도 인정한다. "무엇이 됐다"보다 "무엇을 지으려는가"의 선언으로 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "월드모델을 인프라로"의 의미 — 사전학습된 WFM을 사후학습해 무엇들로 만드는가 — 를 말할 수 있다
-- [ ] 디퓨전 계열과 자기회귀 계열 WFM의 차이를 말할 수 있다
-- [ ] 합성 데이터를 쓸 때 sim-to-real 문제가 어디로 이동하는지 설명할 수 있다
-- [ ] GR00T 생태계에서 Cosmos가 맡는 층을 말할 수 있다
+- [ ] State what "world models as infrastructure" means — what a pretrained WFM is post-trained into · "월드모델을 인프라로"의 의미 — 사전학습된 WFM을 사후학습해 무엇들로 만드는가 — 를 말할 수 있다
+- [ ] State the difference between diffusion-family and autoregressive-family WFMs · 디퓨전 계열과 자기회귀 계열 WFM의 차이를 말할 수 있다
+- [ ] Explain where the sim-to-real problem *moves to* when synthetic data is used · 합성 데이터를 쓸 때 sim-to-real 문제가 어디로 이동하는지 설명할 수 있다
+- [ ] Name the layer Cosmos occupies in the GR00T ecosystem · GR00T 생태계에서 Cosmos가 맡는 층을 말할 수 있다

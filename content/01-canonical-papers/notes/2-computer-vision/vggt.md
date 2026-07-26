@@ -134,11 +134,13 @@ forward pass 하나로 압축된 것이다.
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "Feed-forward replaces SfM" is a speed-accuracy trade claim *inside the training distribution*. On the highest-precision benchmarks optimization pipelines can still win, and the paper concedes this by leaving a BA-refinement option. Read it as "the default has changed", not "the method is replaced".
+>
 > "feed-forward가 SfM을 대체한다"는 학습 분포 안에서의 속도-정확도 교환 주장이다 — 최고 정밀 벤치마크에서는 최적화 파이프라인이 여전히 우세할 수 있고, 논문 스스로 BA 정제 옵션을 남겨 이를 인정한다. "대체"가 아니라 "기본값의 교대"로 읽는 것이 정확하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "기하를 최적화가 아니라 예측으로"의 의미와 그 전제(대규모 3D 주석 데이터)를 말할 수 있다
-- [ ] 프레임별/전역 교대 어텐션이 각각 무엇을 섞는지 설명할 수 있다
-- [ ] 출력 4종(카메라·깊이맵·포인트맵·트랙)과 1번 프레임 좌표 앵커를 말할 수 있다
-- [ ] 고전 SfM/MVS 대비 무엇을 얻었고 어떤 조건에서 아직 뒤지는지 말할 수 있다
+- [ ] State what "geometry by prediction rather than optimization" means and the precondition it rests on (large-scale 3D annotation) · "기하를 최적화가 아니라 예측으로"의 의미와 그 전제(대규모 3D 주석 데이터)를 말할 수 있다
+- [ ] Explain what the alternating frame-wise and global attention each mix · 프레임별/전역 교대 어텐션이 각각 무엇을 섞는지 설명할 수 있다
+- [ ] Name the four outputs (camera, depth map, point map, tracks) and the first-frame coordinate anchor · 출력 4종(카메라·깊이맵·포인트맵·트랙)과 1번 프레임 좌표 앵커를 말할 수 있다
+- [ ] Say what it gained over classical SfM/MVS and under which conditions it still trails · 고전 SfM/MVS 대비 무엇을 얻었고 어떤 조건에서 아직 뒤지는지 말할 수 있다

@@ -129,11 +129,13 @@ defined how modern policies output actions.
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The scope of "fine manipulation with low-cost hardware" is per-task specialist policies (~50 demonstrations each) — it is not a generality claim. And this paper actually contains two contributions (the ALOHA hardware and the ACT algorithm) — read it while asking what share of the success belongs to each.
+>
 > "fine manipulation with low-cost hardware"의 범위는 과제별 전문 정책(과제당 시연 ~50개)이다 — 범용성 주장이 아니다. 그리고 이 논문은 사실 두 개의 기여(ALOHA 하드웨어, ACT 알고리즘)를 담고 있다 — 성공의 몇 %가 어느 쪽 덕인지 분리해 생각하며 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 복합 오차가 왜 생기고, 100-스텝 청킹이 그것을 어떻게 줄이는지 설명할 수 있다
-- [ ] CVAE 잠재변수 $z$가 시연의 무엇(스타일 변동)을 흡수하는지 말할 수 있다
-- [ ] temporal ensembling이 무엇을 평균하고, 어떤 부작용(다봉 선택지의 뭉개짐)이 있는지 말할 수 있다
-- [ ] ALOHA 하드웨어가 방법론만큼 중요한 기여인 이유를 말할 수 있다
+- [ ] Explain why compounding error arises and how 100-step chunking reduces it · 복합 오차가 왜 생기고, 100-스텝 청킹이 그것을 어떻게 줄이는지 설명할 수 있다
+- [ ] Say what the CVAE latent $z$ absorbs from the demonstrations (stylistic variation) · CVAE 잠재변수 $z$가 시연의 무엇(스타일 변동)을 흡수하는지 말할 수 있다
+- [ ] Say what temporal ensembling averages and what side effect it has (blurring genuinely multimodal choices) · temporal ensembling이 무엇을 평균하고, 어떤 부작용(다봉 선택지의 뭉개짐)이 있는지 말할 수 있다
+- [ ] Explain why the ALOHA hardware is as important a contribution as the method · ALOHA 하드웨어가 방법론만큼 중요한 기여인 이유를 말할 수 있다

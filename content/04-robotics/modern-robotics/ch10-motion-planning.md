@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.10** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] and the basics of graph search (BFS/Dijkstra).
 > [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념과 그래프 탐색(BFS/다익스트라)의 기초가 필요하다.
 
 ## English
@@ -63,13 +64,13 @@ proposals get filtered through.
 실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.
 
-### 스스로 점검 · Self-check
+### Self-check · 스스로 점검
 
-1. 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 크기는? 이것이 샘플링 기반 계획의 존재 이유를 어떻게 설명하는가?
-2. RRT의 "확률적 완전성"이 보장하는 것과 보장하지 않는 것은?
-3. 자동차에 일반 RRT를 그대로 쓰면 안 되는 이유는?
+1. Discretize a 7-dof arm's C-space at 100 cells per axis — how many cells? What does that explain about sampling-based planning? · 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 크기는? 이것이 샘플링 기반 계획의 존재 이유를 어떻게 설명하는가?
+2. What does RRT's "probabilistic completeness" guarantee, and what does it not? · RRT의 "확률적 완전성"이 보장하는 것과 보장하지 않는 것은?
+3. Why can't you run plain RRT on a car? · 자동차에 일반 RRT를 그대로 쓰면 안 되는 이유는?
 
-> [!tip]- 정답 · Answers
-> 1. $100^7 = 10^{14}$칸 — 격자 탐색은 자유도에 지수적으로 폭발하므로, 고차원에서는 샘플링만이 실용적이다.
-> 2. 보장: 해가 존재하면 확률 1로 언젠가 찾는다. 비보장: 언제 찾는지(시간), 경로의 품질(최적성 — RRT*가 필요).
-> 3. 비홀로노믹 제약(옆 미끄럼 불가) 때문에 두 컨피규레이션 사이를 직선으로 잇는 확장이 실행 불가능한 운동일 수 있다 — 제어 샘플링(키노다이나믹)이 필요.
+> [!tip]- Answers · 정답
+> 1. $100^7 = 10^{14}$ cells. Grid search explodes exponentially in dof, so beyond a few dimensions only sampling is tractable — you cannot even enumerate the space, let alone search it. · 격자 탐색은 자유도에 지수적으로 폭발하므로 고차원에서는 샘플링만이 실용적이다.
+> 2. Guaranteed: if a solution exists (under the method's assumptions), the probability of finding it tends to 1 as computation grows. Not guaranteed: *when* it is found, or the quality of the path — plain RRT paths are typically far from optimal, which is what RRT\* and post-smoothing address. · 언제 찾는지와 경로 품질은 보장하지 않는다.
+> 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. You must sample *controls* and integrate the dynamics (kinodynamic planning) instead. · 비홀로노믹 제약 때문에 직선 확장이 실행 불가능한 운동일 수 있다 — 제어 샘플링이 필요하다. ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]])

@@ -122,11 +122,13 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 - 다음으로 읽을 것: BERT, GPT-3, ViT
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The title "Attention Is All You Need" does not claim "attention suffices for every task"; it claims that *for sequence transduction*, attention alone — no recurrence, no convolution — reaches state of the art. The verified scope is translation (plus parsing); generalization to vision and robotics was proven years later by other papers. Read the ambition of the title separately from the reach of the experiments.
+>
 > 제목 "Attention Is All You Need"는 "모든 과제에 어텐션이면 충분"이 아니라 "시퀀스 변환에서 순환·합성곱 없이 어텐션만으로 SOTA가 가능"이라는 주장이다. 검증 범위는 번역(+구문 분석)뿐 — 비전·로봇으로의 일반화는 수년 뒤 다른 논문들이 증명했다. 제목의 야심과 실험의 범위를 분리해서 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] $\text{softmax}(QK^\top/\sqrt{d_k})V$에서 Q·K·V가 각각 무엇이고, $\sqrt{d_k}$로 나누는 이유를 설명할 수 있다
-- [ ] self-attention / masked self-attention / cross-attention이 각각 무엇을 참조하는지 구분할 수 있다
-- [ ] RNN 대비 병렬화가 가능한 이유(임의 두 토큰 사이 경로 길이 $O(1)$)를 설명할 수 있다
-- [ ] $O(n^2)$ 비용이 정확히 어느 연산에서 나오고, 왜 후속 연구의 표적이 됐는지 말할 수 있다
+- [ ] Say what Q, K and V each are in $\text{softmax}(QK^\top/\sqrt{d_k})V$, and why the division by $\sqrt{d_k}$ is there · $\text{softmax}(QK^\top/\sqrt{d_k})V$에서 Q·K·V가 각각 무엇이고, $\sqrt{d_k}$로 나누는 이유를 설명할 수 있다
+- [ ] Distinguish what self-attention, masked self-attention and cross-attention each attend to · self-attention / masked self-attention / cross-attention이 각각 무엇을 참조하는지 구분할 수 있다
+- [ ] Explain why it parallelizes where an RNN cannot (path length $O(1)$ between any two tokens) · RNN 대비 병렬화가 가능한 이유(임의 두 토큰 사이 경로 길이 $O(1)$)를 설명할 수 있다
+- [ ] Say exactly which operation produces the $O(n^2)$ cost, and why that became the target of follow-up work · $O(n^2)$ 비용이 정확히 어느 연산에서 나오고, 왜 후속 연구의 표적이 됐는지 말할 수 있다

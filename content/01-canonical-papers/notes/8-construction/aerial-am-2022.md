@@ -42,6 +42,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
-- [ ] BuilDrone/ScanDrone 분업과 "개체 수로 스케일한다"는 프레임워크의 핵심을 말할 수 있다
-- [ ] 델타 매니퓰레이터가 왜 필요했고 5 mm 정확도가 어떤 조건의 수치인지 말할 수 있다
-- [ ] 실험실 규모 존재 증명과 현장 기술 사이의 간극(페이로드, 처리량, 감독)을 지적할 수 있다
+- [ ] State the BuilDrone/ScanDrone division of labour and the core of the "scale by number of agents" framework · BuilDrone/ScanDrone 분업과 "개체 수로 스케일한다"는 프레임워크의 핵심을 말할 수 있다
+- [ ] Say why a delta manipulator was needed and under what conditions the 5 mm accuracy figure holds · 델타 매니퓰레이터가 왜 필요했고 5 mm 정확도가 어떤 조건의 수치인지 말할 수 있다
+- [ ] Point out the gap between a laboratory-scale existence proof and a field technology (payload, throughput, supervision) · 실험실 규모 존재 증명과 현장 기술 사이의 간극(페이로드, 처리량, 감독)을 지적할 수 있다

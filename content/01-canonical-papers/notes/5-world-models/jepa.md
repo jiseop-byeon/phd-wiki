@@ -139,7 +139,7 @@ questions of physical AI.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 픽셀 예측 대신 표현 예측이라는 논거를 설명할 수 있다
-- [ ] I-JEPA의 세 부품(문맥 인코더/타깃 인코더/예측기)과 EMA의 역할을 말할 수 있다
-- [ ] V-JEPA 2의 zero-shot 로봇 플래닝 절차를 개요 수준에서 말할 수 있다
-- [ ] 렌더링 불가라는 트레이드오프(생성 진영과의 대비)를 말할 수 있다
+- [ ] Give the argument for predicting representations rather than pixels · 픽셀 예측 대신 표현 예측이라는 논거를 설명할 수 있다
+- [ ] Name I-JEPA's three parts (context encoder, target encoder, predictor) and the role of the EMA · I-JEPA의 세 부품(문맥 인코더/타깃 인코더/예측기)과 EMA의 역할을 말할 수 있다
+- [ ] Outline V-JEPA 2's zero-shot robot planning procedure · V-JEPA 2의 zero-shot 로봇 플래닝 절차를 개요 수준에서 말할 수 있다
+- [ ] State the trade-off of not being able to render (the contrast with the generative camp) · 렌더링 불가라는 트레이드오프(생성 진영과의 대비)를 말할 수 있다

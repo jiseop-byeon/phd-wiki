@@ -48,6 +48,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
-- [ ] ACT를 굴착기로 옮길 때 관찰 공간과 행동 공간이 무엇으로 바뀌는지 말할 수 있다
-- [ ] "시뮬레이션 검증뿐"이라는 사실이 이 논문의 주장 강도를 어떻게 제한하는지 말할 수 있다
-- [ ] 같은 Baidu 연구소의 모듈형 AES와 이 엔드투엔드 시도의 관계, 그리고 ExT와의 차이를 말할 수 있다
+- [ ] Say what the observation and action spaces become when ACT is moved onto an excavator · ACT를 굴착기로 옮길 때 관찰 공간과 행동 공간이 무엇으로 바뀌는지 말할 수 있다
+- [ ] Explain how the fact that validation is simulation-only limits the strength of this paper's claim · "시뮬레이션 검증뿐"이라는 사실이 이 논문의 주장 강도를 어떻게 제한하는지 말할 수 있다
+- [ ] State the relation between this end-to-end attempt and the modular AES from the same Baidu lab, and the difference from ExT · 같은 Baidu 연구소의 모듈형 AES와 이 엔드투엔드 시도의 관계, 그리고 ExT와의 차이를 말할 수 있다

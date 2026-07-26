@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.12** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> You need the wrench (moment + force) concept from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]] and vector cross products.
 > [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 렌치(모멘트+힘) 개념과 벡터 외적이 필요하다.
 
 ## English
@@ -42,10 +43,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 2. Why does form closure need more contacts than force closure?
 3. State the antipodal grasp condition for a parallel-jaw gripper.
 
-> [!tip]- 정답 · Answers
-> 1. $\tan^{-1} 1.0 = 45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다.
-> 2. 마찰 없이 기하만으로 모든 방향을 막아야 하므로 — 마찰 원뿔이 주는 "공짜 방향들"이 없다.
-> 3. 두 접촉점이 서로 상대의 마찰 원뿔 안에 있을 것 — 두 원뿔이 서로를 "볼" 수 있어야 한다.
+> [!tip]- Answers
+> 1. $\alpha = \tan^{-1}1.0 = 45°$: the contact force may tilt up to 45° away from the surface normal before the model says it slips. A friction coefficient is an *angle*, which is why doubling $\mu$ from 0.5 to 1.0 widens the cone from ~26.6° to 45° rather than doubling anything.
+> 2. Form closure must block every direction using geometry alone, without the "free" tangential directions that friction cones supply — so it needs more contacts (at least 4 in the plane, 7 in space for frictionless point contacts in general position).
+> 3. Each contact point must lie inside the *other* contact's friction cone — the two cones must be able to "see" each other along the line joining the contacts.
 
 ### Continue beyond this chapter
 

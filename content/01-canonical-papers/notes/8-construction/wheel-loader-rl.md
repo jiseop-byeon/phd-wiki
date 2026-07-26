@@ -37,6 +37,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **증거와 한계**: 평가는 정책에 직접 매개변수화되지 않은 재료로 실제 휠로더에서 이루어졌다 — "unknown material"은 보고된 평가에서 정책의 식별된 매개변수 밖이라는 뜻이지, 모든 입상 재료·더미 기하·날씨·기계를 뜻하지 않는다. 주장을 일반화하기 전에 실제로 시험된 변동 범위를 확인하라.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "Unknown material" claims generalization to materials not used in training, not a guarantee for arbitrary materials — the list of materials tested *is* the scope of the claim. And "automatic loading" means automating the short loading cycle, not site operations as a whole.
+>
 > "unknown material"은 학습에 안 쓴 재료로의 일반화 주장이지 임의 재료 보장이 아니다 — 시험된 재료 목록이 곧 주장의 범위다. 그리고 "automatic loading"은 짧은 적재 사이클(short loading cycle)의 자동화이지 현장 운영 전체가 아니다.
 
 ### 연결
@@ -46,7 +48,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 휠로더 버킷 채우기에서 학습 정책이 담당하는 제어 범위(차량 + 붐/버킷 조정)를 말할 수 있다
-- [ ] IL 사전학습 + RL 파인튜닝 구조와 sim-to-real 증거·안전 장치를 논문에서 찾아 말할 수 있다
-- [ ] "unknown material" 주장이 실제로 시험된 변동 분포에 어떻게 한정되는지 설명할 수 있다
-- [ ] 굴착기(Egli)와 휠로더의 학습 문제가 어디서 같고 어디서 다른지(사이클 구조·주행 결합) 말할 수 있다
+- [ ] State the control scope the learned policy covers in wheel-loader bucket filling (vehicle plus boom/bucket coordination) · 휠로더 버킷 채우기에서 학습 정책이 담당하는 제어 범위(차량 + 붐/버킷 조정)를 말할 수 있다
+- [ ] Find and state the IL-pretraining plus RL-fine-tuning structure, the sim-to-real evidence, and the safety devices in the paper · IL 사전학습 + RL 파인튜닝 구조와 sim-to-real 증거·안전 장치를 논문에서 찾아 말할 수 있다
+- [ ] Explain how the "unknown material" claim is bounded by the variation distribution actually tested · "unknown material" 주장이 실제로 시험된 변동 분포에 어떻게 한정되는지 설명할 수 있다
+- [ ] Say where the learning problem is the same and where it differs between excavators (Egli) and wheel loaders (cycle structure, driving coupling) · 굴착기(Egli)와 휠로더의 학습 문제가 어디서 같고 어디서 다른지(사이클 구조·주행 결합) 말할 수 있다

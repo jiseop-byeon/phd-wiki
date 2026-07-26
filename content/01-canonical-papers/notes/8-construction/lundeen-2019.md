@@ -37,6 +37,6 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
-- [ ] 준공 기하 변동성이 왜 사전 프로그래밍된 자동화를 깨뜨리는지 설명할 수 있다
-- [ ] 감지 → 재계획 → 실행의 적응 루프를 말할 수 있다
-- [ ] 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문의 위치를 말할 수 있다
+- [ ] Explain why as-built geometric variability breaks pre-programmed automation · 준공 기하 변동성이 왜 사전 프로그래밍된 자동화를 깨뜨리는지 설명할 수 있다
+- [ ] Describe the sense → replan → execute adaptation loop · 감지 → 재계획 → 실행의 적응 루프를 말할 수 있다
+- [ ] State this paper's position in the Michigan line (Feng → Lundeen → Liang → Yu) · 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문의 위치를 말할 수 있다

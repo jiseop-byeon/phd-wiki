@@ -14,6 +14,10 @@ mastery-when: "Raise to Working or Mastery when legged control or MPC design is 
 > Understand why the problem is convexified and what the simplification costs. This is a representative-application read, not a controller-design guide.
 > 왜 문제를 볼록화했고 그 단순화의 대가가 무엇인지 이해하는 것이 목표다. 대표 응용 읽기이지 제어기 설계 가이드가 아니다.
 
+> [!note] Prerequisites · 선수 지식
+> [[04-robotics/mpc|7. MPC]] (the formulation being applied) · [[02-foundations/optimization|4. Optimization §5]] (QP) · [[04-robotics/contact-force-tactile|9. Contact §2]] (the friction cone that becomes the constraint set) · [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] (what the single-rigid-body approximation throws away)
+> [[04-robotics/mpc|7. MPC]] (적용되는 정식화) · [[02-foundations/optimization|4. 최적화 §5]] (QP) · [[04-robotics/contact-force-tactile|9. 접촉 §2]] (제약 집합이 되는 마찰 원뿔) · [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] (단일 강체 근사가 버리는 것)
+
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*: approximate the robot as a single rigid body (ignore leg
 dynamics), linearize the rotation dynamics around the current yaw, and treat ground
@@ -54,9 +58,9 @@ locomotion policies (RL) are compared against.
 - 기초: [[02-foundations/optimization|최적화]] · 이전: [[04-robotics/mpc|MPC]]
 - 반향: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (이중 시스템)
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### After reading · 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
-- [ ] 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
-- [ ] 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
-- [ ] 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다
+- [ ] Say what the single-rigid-body approximation throws away and what it buys (convexity) · 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
+- [ ] Describe the setup in which ground reaction forces are the decision variables and friction cones the constraints · 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
+- [ ] Explain the division of labour in the slow-MPC + fast-WBC two-level stack · 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
+- [ ] State the modelling craft this case teaches: choose the approximation that makes the problem convex · 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다

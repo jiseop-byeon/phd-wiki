@@ -122,6 +122,6 @@ adversarial training frames robustness research.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] minimax 게임에서 손실함수가 함께 진화한다는 것의 의미를 말할 수 있다
-- [ ] 불안정과 모드 붕괴가 구조적인 이유를 말할 수 있다
-- [ ] 디퓨전이 무엇을 맞바꿔 GAN을 대체했는지 말할 수 있다
+- [ ] Say what it means that in a minimax game the loss function co-evolves · minimax 게임에서 손실함수가 함께 진화한다는 것의 의미를 말할 수 있다
+- [ ] Give the structural reasons for instability and mode collapse · 불안정과 모드 붕괴가 구조적인 이유를 말할 수 있다
+- [ ] State what diffusion traded away in order to displace GANs · 디퓨전이 무엇을 맞바꿔 GAN을 대체했는지 말할 수 있다

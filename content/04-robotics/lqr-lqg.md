@@ -14,6 +14,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > State the LQR problem, the role of the Riccati equation, the conditions under which the solution exists and stabilizes, and LQG's estimator–controller separation with its caveat. Deriving or implementing Riccati solvers is optional.
 > LQR 문제, 리카티 방정식의 역할, 해가 존재하고 안정화하는 조건, LQG의 추정기–제어기 분리와 그 단서를 말할 수 있으면 된다. 리카티 해법의 유도·구현은 선택이다.
 
+> [!note] Prerequisites · 선수 지식
+> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, eigenvalue stability, controllability/observability, pole placement — this page is *"choose $K$ by optimization instead of by hand"*) · [[02-foundations/optimization|4. Optimization]] (quadratic objectives) · [[02-foundations/probability|3. Probability]] (the Kalman filter, for the LQG half)
+> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 고유값 안정성, 가제어성/가관측성, 극점 배치 — 이 페이지는 *"$K$를 손이 아니라 최적화로 고르기"*다) · [[02-foundations/optimization|4. 최적화]] (이차 목적함수) · [[02-foundations/probability|3. 확률]] (LQG 절반을 위한 칼만 필터)
+
 **What it is**: the **Linear Quadratic Regulator** is the exactly-solvable heart of optimal
 control. For linear dynamics $\dot x = Ax + Bu$ and quadratic cost
 $\int (x^\top Q x + u^\top R u)\,dt$, the optimal controller is a constant linear feedback
@@ -174,7 +178,7 @@ $P \succeq 0$가 $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] LQR 문제 설정과 해의 형태($u = -Kx$, $K = R^{-1}B^\top P$)를 말할 수 있다
-- [ ] 안정화 가능성·검출 가능성이 각각 무엇을 보장하는 조건인지 말할 수 있다
-- [ ] $Q/R$ 비율이 이득·응답·포화 위험을 어떻게 바꾸는지 예제로 말할 수 있다
-- [ ] 분리 원리와 그 취약성(LQG 무여유), LQR이 MPC·RL의 기준점인 이유를 말할 수 있다
+- [ ] State the LQR problem and the form of its solution ($u = -Kx$, $K = R^{-1}B^\top P$) · LQR 문제 설정과 해의 형태를 말할 수 있다
+- [ ] Say what stabilizability and detectability each guarantee, and what fails without them · 안정화 가능성·검출 가능성이 각각 무엇을 보장하는 조건인지 말할 수 있다
+- [ ] Explain with the worked example how the $Q/R$ ratio changes gains, response, and saturation risk · $Q/R$ 비율이 이득·응답·포화 위험을 어떻게 바꾸는지 예제로 말할 수 있다
+- [ ] State the separation principle and its fragility (LQG has no guaranteed margins), and why LQR is the reference point for MPC and RL · 분리 원리와 그 취약성(LQG 무여유), LQR이 MPC·RL의 기준점인 이유를 말할 수 있다

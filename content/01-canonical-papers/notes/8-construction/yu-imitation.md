@@ -48,11 +48,13 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: Kamat/Menassa → Yu(Virginia Tech 교수) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> The "scalable" in "Scalable Transfer" is a claim about the *potential* scalability of the collection framework (cloud, reusable VR demonstrations), not a demonstration across trades and sites — the evaluation is a single drywall task. The hidden assumption is how much demonstration fidelity is sacrificed to make VR demos cheap (the VR-reality gap).
+>
 > "Scalable Transfer"의 scalable은 수집 프레임워크(클라우드, 재사용 가능한 VR 시연)의 확장 *가능성* 주장이지, 여러 공종·현장에 걸친 실증이 아니다 — 평가는 석고보드 하나다. VR 시연의 값싸짐이 실물 시연의 충실도를 얼마나 희생하는지(VR-실물 간극)가 이 주장의 숨은 가정이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] VR/클라우드 시연 수집이 모방학습의 시연 비용 문제를 어떻게 공략하는지 말할 수 있다
-- [ ] 계층적 분해(순차적 대 반응적 하위 스킬)와 공변량 이동의 관계를 설명할 수 있다
-- [ ] 2023 핸드오버 자매 논문(햅틱 장갑, 1ms 그립 적응)이 계열에 더하는 것을 말할 수 있다
-- [ ] "scalable"이 주장하는 것과 주장하지 않는 것을 구분할 수 있다
+- [ ] Say how VR/cloud demonstration collection attacks imitation learning's demonstration-cost problem · VR/클라우드 시연 수집이 모방학습의 시연 비용 문제를 어떻게 공략하는지 말할 수 있다
+- [ ] Explain the relation between hierarchical decomposition (sequential vs reactive sub-skills) and covariate shift · 계층적 분해(순차적 대 반응적 하위 스킬)와 공변량 이동의 관계를 설명할 수 있다
+- [ ] State what the 2023 handover companion (haptic glove, 1 ms grip adaptation) adds to the line · 2023 핸드오버 자매 논문(햅틱 장갑, 1ms 그립 적응)이 계열에 더하는 것을 말할 수 있다
+- [ ] Separate what "scalable" claims from what it does not · "scalable"이 주장하는 것과 주장하지 않는 것을 구분할 수 있다

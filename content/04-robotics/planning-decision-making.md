@@ -26,7 +26,7 @@ Planning asks how a robot should choose a feasible sequence of future states and
 | Policy | Rule mapping available information to an action |
 | Controller | Feedback system that tracks a reference or regulates behavior |
 
-A planner may produce a path that a trajectory generator times and a controller tracks. In learned systems, a policy can collapse these boundaries, but the physical requirements do not disappear.
+A planner may produce a path that a trajectory generator times ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] — time scaling, via points, time-optimal scaling) and a controller tracks. When the plan lives in task space but the robot is commanded in joint space, [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] sits between them, and its multimodality is a planning problem in miniature. In learned systems, a policy can collapse these boundaries, but the physical requirements do not disappear.
 
 ### 2. Spaces and constraints
 
@@ -150,8 +150,12 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 | Policy | 가용 정보를 행동으로 사상하는 규칙 |
 | Controller | 기준을 추종하거나 거동을 조절하는 피드백 시스템 |
 
-플래너가 path를 내면 궤적 생성기가 시간을 매기고 제어기가 추종한다. 학습 시스템에서는
-정책이 이 경계들을 합칠 수 있지만, 물리적 요구 사항이 사라지는 것은 아니다.
+플래너가 path를 내면 궤적 생성기가 시간을 매기고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]
+— 시간 스케일링, 경유점, 시간 최적 스케일링) 제어기가 추종한다. 계획은 작업 공간에 있는데
+로봇은 관절 공간으로 명령받는다면 그 사이에
+[[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이 앉고, 그 다봉성은
+축소판 계획 문제다. 학습 시스템에서는 정책이 이 경계들을 합칠 수 있지만, 물리적 요구 사항이
+사라지는 것은 아니다.
 
 ### 2. 공간과 제약
 

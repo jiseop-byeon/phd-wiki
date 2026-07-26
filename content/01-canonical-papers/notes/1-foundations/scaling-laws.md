@@ -98,7 +98,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 세 거듭제곱 법칙의 변수(N, D, C)와 각 법칙이 성립하는 조건을 말할 수 있다
-- [ ] Kaplan과 Chinchilla의 배분 결론 차이(파라미터당 ~20토큰)를 말할 수 있다
-- [ ] 작은 파일럿에서 거대 학습을 설계할 수 있게 된 것의 공학적 의미를 말할 수 있다
-- [ ] 사전학습 손실 예측과 다운스트림 능력 예측의 간극을 말할 수 있다
+- [ ] Name the variables of the three power laws (N, D, C) and the conditions under which each holds · 세 거듭제곱 법칙의 변수(N, D, C)와 각 법칙이 성립하는 조건을 말할 수 있다
+- [ ] State the difference between Kaplan's and Chinchilla's allocation conclusions (~20 tokens per parameter) · Kaplan과 Chinchilla의 배분 결론 차이(파라미터당 ~20토큰)를 말할 수 있다
+- [ ] Say what it means engineering-wise that a small pilot can now size a huge training run · 작은 파일럿에서 거대 학습을 설계할 수 있게 된 것의 공학적 의미를 말할 수 있다
+- [ ] State the gap between predicting pretraining loss and predicting downstream capability · 사전학습 손실 예측과 다운스트림 능력 예측의 간극을 말할 수 있다

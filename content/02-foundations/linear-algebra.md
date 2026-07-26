@@ -131,6 +131,12 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 4. Why does [[01-canonical-papers/notes/1-foundations/lora|LoRA]] initialize $B = 0$? (What map does
    $W_0 + BA$ equal at step 0?)
 
+> [!tip]- Answers
+> 1. $W_2(W_1x) = (W_2W_1)x$ — the product *is* a single linear map, so the composition collapses. Its rank is at most $\min(\text{rank}\,W_1, \text{rank}\,W_2)$: stacking cannot create expressive power that neither factor had.
+> 2. Setting $\nabla\|Ax-b\|^2 = 2A^\top(Ax-b) = 0$ gives $A^\top A\hat x = A^\top b$. The residual $r = b - A\hat x$ then satisfies $A^\top r = 0$, i.e. $r$ is orthogonal to every column of $A$ — which is exactly the statement that $A\hat x$ is the orthogonal projection of $b$ onto $\text{col}(A)$.
+> 3. The component along the $0.9$ eigenvector decays; the component along the $1.02$ eigenvector grows 2% per step. The state therefore diverges, asymptotically aligned with the $1.02$ eigenvector — a single unstable mode dominates the long run no matter how small it starts.
+> 4. With $B = 0$ the update is $\Delta W = BA = 0$, so $W_0 + BA = W_0$ at step 0: training starts *exactly* at the pretrained model (a no-op initialization) instead of perturbing it randomly.
+
 ## 한국어
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의

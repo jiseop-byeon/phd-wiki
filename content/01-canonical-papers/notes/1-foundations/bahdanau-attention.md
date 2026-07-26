@@ -96,6 +96,6 @@ seq2seq(Sutskever et al., 2014)는 원문 문장 전체를 고정 길이 벡터 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "부드러운 검색"으로서의 어텐션 아이디어를 말할 수 있다
-- [ ] 정렬이 학습 가능한 부품이 됐다는 것의 의미를 말할 수 있다
-- [ ] Transformer가 이 아이디어에서 무엇만 남기고 무엇을 버렸는지 말할 수 있다
+- [ ] State the idea of attention as a *soft lookup* · "부드러운 검색"으로서의 어텐션 아이디어를 말할 수 있다
+- [ ] Say what it means that alignment became a learnable component · 정렬이 학습 가능한 부품이 됐다는 것의 의미를 말할 수 있다
+- [ ] Say what the Transformer kept from this idea and what it threw away · Transformer가 이 아이디어에서 무엇만 남기고 무엇을 버렸는지 말할 수 있다

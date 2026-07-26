@@ -125,7 +125,7 @@ RSSM은 월드모델의 표준 백본이 됐다: [[dreamer|Dreamer v1–v3]]가 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 말할 수 있다
-- [ ] CEM 플래닝의 절차(샘플→평가→상위 선택→재샘플)를 말할 수 있다
-- [ ] ~200× 샘플 효율이 어디서 오는지 설명할 수 있다
-- [ ] 온라인 플래닝의 비용과 Dreamer의 대체(정책 상각)를 말할 수 있다
+- [ ] Say why the RSSM needs both a deterministic and a stochastic path · RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 말할 수 있다
+- [ ] Describe the CEM planning procedure (sample → evaluate → keep the elites → resample) · CEM 플래닝의 절차(샘플→평가→상위 선택→재샘플)를 말할 수 있다
+- [ ] Explain where the ~200× sample efficiency comes from · ~200× 샘플 효율이 어디서 오는지 설명할 수 있다
+- [ ] State the cost of online planning and Dreamer's replacement for it (amortizing into a policy) · 온라인 플래닝의 비용과 Dreamer의 대체(정책 상각)를 말할 수 있다

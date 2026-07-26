@@ -135,11 +135,13 @@ models.
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
+>
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] VLM 백본과 행동 전문가가 각각 무엇을 처리하는지(의미론 vs 고주파 연속 제어) 설명할 수 있다
-- [ ] flow matching 헤드가 이산 토큰 대비 무엇을 사는지 말할 수 있다
-- [ ] 사전학습→사후학습 레시피가 LLM 관행의 무엇을 미러링하는지 말할 수 있다
-- [ ] 평가의 한계(자체 프로토콜, 데이터 해자)를 지적할 수 있다
+- [ ] Explain what the VLM backbone and the action expert each handle (semantics vs high-frequency continuous control) · VLM 백본과 행동 전문가가 각각 무엇을 처리하는지(의미론 vs 고주파 연속 제어) 설명할 수 있다
+- [ ] Say what the flow-matching head buys over discrete tokens · flow matching 헤드가 이산 토큰 대비 무엇을 사는지 말할 수 있다
+- [ ] Say what the pretrain → post-train recipe mirrors from LLM practice · 사전학습→사후학습 레시피가 LLM 관행의 무엇을 미러링하는지 말할 수 있다
+- [ ] Point out the evaluation's limits (self-defined protocol, data moat) · 평가의 한계(자체 프로토콜, 데이터 해자)를 지적할 수 있다

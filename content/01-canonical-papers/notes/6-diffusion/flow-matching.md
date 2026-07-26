@@ -125,11 +125,13 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> Read two claims separately: (1) the theoretical one — it is a general framework containing diffusion paths as a special case (proved); (2) the empirical one — straight OT paths work better in practice (benchmark-dependent). The first does not automatically guarantee the second, and the real reason for adoption is that the second happened to fit robot real-time control.
+>
 > 두 주장을 분리해서 읽어라: ① 이론적 주장 — 디퓨전 경로를 특수 사례로 포함하는 일반 프레임이다(증명됨), ② 경험적 주장 — OT 직선 경로가 실용적으로 낫다(벤치마크 의존). ①이 ②를 자동으로 보장하지 않는다 — 채택의 실제 이유는 ②가 로봇 실시간 제어와 맞아떨어졌기 때문이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 속도장 $v_\theta(x, t)$가 무엇을 하는 함수이고, 샘플링이 왜 ODE 적분인지 말할 수 있다
-- [ ] 조건부 타깃(샘플별 직선 경로의 상수 속도)으로 학습해도 옳은 이유를 개념 수준에서 설명할 수 있다
-- [ ] 경로가 곧을수록 추론 스텝이 줄어드는 이유를 말할 수 있다
-- [ ] π0가 행동 생성에 이 방식을 채택한 이유(소수 스텝 → 실시간 제어)를 연결할 수 있다
+- [ ] Say what the velocity field $v_\theta(x,t)$ does and why sampling is ODE integration · 속도장 $v_\theta(x, t)$가 무엇을 하는 함수이고, 샘플링이 왜 ODE 적분인지 말할 수 있다
+- [ ] Explain conceptually why training on the conditional target (constant velocity along a per-sample straight path) is still correct · 조건부 타깃(샘플별 직선 경로의 상수 속도)으로 학습해도 옳은 이유를 개념 수준에서 설명할 수 있다
+- [ ] Say why straighter paths mean fewer inference steps · 경로가 곧을수록 추론 스텝이 줄어드는 이유를 말할 수 있다
+- [ ] Connect why π0 adopted this for action generation (few steps → real-time control) · π0가 행동 생성에 이 방식을 채택한 이유(소수 스텝 → 실시간 제어)를 연결할 수 있다

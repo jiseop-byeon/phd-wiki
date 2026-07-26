@@ -117,7 +117,7 @@ Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictor
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 학생/EMA 교사 자기 증류 구조와 라벨이 필요 없는 이유를 설명할 수 있다
-- [ ] 붕괴(모두 같은 출력)를 막는 장치를 말할 수 있다
-- [ ] 감독 없이 분할이 창발한 관찰의 의미를 말할 수 있다
-- [ ] DINOv2가 로봇/VLA의 고정 백본으로 선택되는 이유를 말할 수 있다
+- [ ] Explain the student / EMA-teacher self-distillation structure and why no labels are needed · 학생/EMA 교사 자기 증류 구조와 라벨이 필요 없는 이유를 설명할 수 있다
+- [ ] Name the devices that prevent collapse (all outputs identical) · 붕괴(모두 같은 출력)를 막는 장치를 말할 수 있다
+- [ ] State the significance of segmentation emerging without supervision · 감독 없이 분할이 창발한 관찰의 의미를 말할 수 있다
+- [ ] Say why DINOv2 is chosen as a frozen backbone in robotics and VLA work · DINOv2가 로봇/VLA의 고정 백본으로 선택되는 이유를 말할 수 있다

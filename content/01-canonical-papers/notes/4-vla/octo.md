@@ -130,7 +130,7 @@ against which [[openvla|OpenVLA]] and later open VLAs measure themselves.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 토큰-모듈 설계(모든 입력은 토큰, 모든 출력은 readout)를 설명할 수 있다
-- [ ] 디퓨전 행동 헤드 채택의 이유(다봉성)를 말할 수 있다
-- [ ] 새 로봇 적응 레시피(토큰 추가 + 소량 시연)를 말할 수 있다
-- [ ] 웹 사전학습 부재가 만드는 의미적 한계를 말할 수 있다
+- [ ] Explain the token-module design (every input a token, every output a readout) · 토큰-모듈 설계(모든 입력은 토큰, 모든 출력은 readout)를 설명할 수 있다
+- [ ] State the reason a diffusion action head was adopted (multimodality) · 디퓨전 행동 헤드 채택의 이유(다봉성)를 말할 수 있다
+- [ ] Describe the recipe for adapting to a new robot (add tokens plus a small number of demonstrations) · 새 로봇 적응 레시피(토큰 추가 + 소량 시연)를 말할 수 있다
+- [ ] State the semantic limitation created by the absence of web pretraining · 웹 사전학습 부재가 만드는 의미적 한계를 말할 수 있다

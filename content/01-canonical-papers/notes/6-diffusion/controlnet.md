@@ -113,6 +113,6 @@ generation for training data.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 얼린 베이스 + zero-conv 곁가지 패턴의 안전장치를 말할 수 있다
-- [ ] 조건별 브랜치 방식의 비용을 말할 수 있다
-- [ ] LoRA와 함께 범용 적응 관용구가 된 이유를 말할 수 있다
+- [ ] Name the safety device in the frozen-base plus zero-conv side-branch pattern · 얼린 베이스 + zero-conv 곁가지 패턴의 안전장치를 말할 수 있다
+- [ ] State the cost of having one branch per condition · 조건별 브랜치 방식의 비용을 말할 수 있다
+- [ ] Explain why, together with LoRA, it became the general adaptation idiom · LoRA와 함께 범용 적응 관용구가 된 이유를 말할 수 있다

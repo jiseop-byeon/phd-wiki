@@ -115,7 +115,7 @@ SLAM 통합, 의미론 변형들을 낳았다. 건설에서는: 빠른 사진 �
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 가우시안 하나의 파라미터(위치·공분산·불투명도·색)를 말할 수 있다
-- [ ] 미분 가능 래스터라이저가 학습을 가능하게 하는 지점을 설명할 수 있다
-- [ ] NeRF 대비 트레이드오프(메모리 vs 속도)를 말할 수 있다
-- [ ] 명시적 표현의 이점(편집·물리 결합)이 채택을 이끈 이유를 말할 수 있다
+- [ ] Name the parameters of a single Gaussian (position, covariance, opacity, colour) · 가우시안 하나의 파라미터(위치·공분산·불투명도·색)를 말할 수 있다
+- [ ] Explain where the differentiable rasterizer makes learning possible · 미분 가능 래스터라이저가 학습을 가능하게 하는 지점을 설명할 수 있다
+- [ ] State the trade-off against NeRF (memory vs speed) · NeRF 대비 트레이드오프(메모리 vs 속도)를 말할 수 있다
+- [ ] Say why the advantages of an explicit representation (editing, physics coupling) drove adoption · 명시적 표현의 이점(편집·물리 결합)이 채택을 이끈 이유를 말할 수 있다

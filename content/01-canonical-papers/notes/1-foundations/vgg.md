@@ -92,6 +92,6 @@ Established the "small uniform filters, double width after downsampling" templat
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 3×3 스택이 큰 필터를 지배하는 논거(수용 영역 vs 파라미터)를 말할 수 있다
-- [ ] "작은 균일 필터, 풀링마다 채널 2배" 템플릿의 유산을 말할 수 있다
-- [ ] 19층 벽이 ResNet의 열화 문제로 이어지는 다리를 말할 수 있다
+- [ ] Give the argument that stacked 3×3 filters dominate large ones (receptive field vs parameters) · 3×3 스택이 큰 필터를 지배하는 논거(수용 영역 vs 파라미터)를 말할 수 있다
+- [ ] State the legacy of the template "small uniform filters, double the channels at every pooling" · "작은 균일 필터, 풀링마다 채널 2배" 템플릿의 유산을 말할 수 있다
+- [ ] Draw the bridge from the 19-layer wall to ResNet's degradation problem · 19층 벽이 ResNet의 열화 문제로 이어지는 다리를 말할 수 있다

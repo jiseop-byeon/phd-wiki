@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> You need FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]).
 > [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK와 [[02-foundations/calculus-backprop|편미분·야코비안]], 그리고 행렬 랭크의 의미([[02-foundations/linear-algebra|선형대수 §2]])를 알고 있어야 한다.
 
 ## English
@@ -70,11 +71,11 @@ VLA outputs pass through safety filters on real arms.
    motion along the arm's axis? Perpendicular to it?
 4. Why do the manipulability and force ellipsoids have reciprocal axes?
 
-> [!tip]- 정답 · Answers
-> 1. $s_1 = 1, c_1 = 0, s_{12} = 0, c_{12} = -1$ → $J = \begin{pmatrix} -1 & 0 \\ -1 & -1 \end{pmatrix}$, $\det J = 1$ (여전히 정칙 — $\theta_2 = 90°$이므로).
-> 2. $\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$, $\mathcal{V} = J\dot\theta$ 대입, 모든 $\dot\theta$에 대해 성립 ⇒ $\tau = J^\top \mathcal{F}$.
-> 3. 축 방향(거의 특이 방향)은 거대한 관절 속도가 필요하고, 수직 방향은 정상적으로 움직인다.
-> 4. $J$의 특이값 $\sigma$ 방향으로 속도는 $\sigma$배 증폭되고, $\tau = J^\top \mathcal{F}$에 의해 같은 방향의 힘 저항은 $1/\sigma$로 스케일되기 때문.
+> [!tip]- Answers
+> 1. $s_1 = 1, c_1 = 0, s_{12} = \sin 180° = 0, c_{12} = -1$, so $J = \begin{pmatrix}-1 & 0\\ -1 & -1\end{pmatrix}$ and $\det J = 1$. Still nonsingular — consistent with $\det J = L_1L_2\sin\theta_2 = \sin 90° = 1$.
+> 2. Power must match at both ends: $\dot\theta^\top\tau = \mathcal{V}^\top\mathcal{F}$. Substituting $\mathcal{V} = J\dot\theta$ gives $\dot\theta^\top\tau = \dot\theta^\top J^\top\mathcal{F}$ for *all* $\dot\theta$, hence $\tau = J^\top\mathcal{F}$.
+> 3. Motion along the arm's own axis is the nearly-singular direction: $\det J = \sin 5° \approx 0.087$, so producing that tip velocity demands roughly an order of magnitude more joint speed than normal — often beyond joint limits. Perpendicular motion is unaffected and behaves normally.
+> 4. Velocities are amplified by the singular value $\sigma$ in each principal direction; by $\tau = J^\top\mathcal{F}$ the force transmitted in that same direction scales as $1/\sigma$. Directions that are easy to move are therefore hard to hold force in, and vice versa — the two ellipsoids are reciprocal.
 
 ## 한국어
 

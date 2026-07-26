@@ -10,6 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.4** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] 시작 전 점검 · Before you start
+> You need $e^{[\mathcal{S}]\theta}$ and screw axes from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]], plus fluency multiplying 4×4 homogeneous transforms.
 > [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 $e^{[\mathcal{S}]\theta}$와 스크류 축, 그리고 4×4 동차 변환의 곱을 쓸 수 있어야 한다.
 
 ## English
@@ -72,10 +73,10 @@ twin ([[05-construction-robotics/index|construction]]); VLAs that output joint c
    point when the body rotates about the axis through $q_i$?)
 3. In the body form, which joint's exponential sits closest to $M$, and why?
 
-> [!tip]- 정답 · Answers
-> 1. 팔꿈치 $(1,0)$, 관절 2만 90° 회전 → 링크 2가 $+\hat y$ 방향, 끝점 $(1,1,0)$, 방향 $R_z(90°)$.
-> 2. 축이 $q_i$를 지나므로 원점과 겹친 몸체 점의 속도는 $\omega \times (0 - q_i) = -\omega \times q_i$ — [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3]]의 "$v$의 정확한 의미" 그대로다.
-> 3. 관절 $n$ (말단에 가장 가까운 관절) — 바디 형식은 말단 프레임 기준이라 곱의 순서가 뒤집힌다.
+> [!tip]- Answers
+> 1. Joint 1 is at zero, so the elbow stays at $(1,0)$; joint 2 rotates link 2 by 90° about the axis through $q_2$, pointing it along $+\hat y$. Tip $= (1,1,0)$, orientation $R_z(90°)$. Check geometrically: $(1,0) + (0,1) = (1,1)$. ✓
+> 2. Because the axis passes through $q_i$, the body point *currently coincident with the origin* sits at $-q_i$ relative to the axis, so its velocity is $\omega\times(0 - q_i) = -\omega\times q_i$ — literally the "what $v$ means" warning of [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3]].
+> 3. Joint $n$, the one nearest the end-effector. The body form expresses each screw axis in the end-effector frame, which reverses the order of the product relative to the space form.
 
 ## 한국어
 

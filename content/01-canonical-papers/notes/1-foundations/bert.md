@@ -95,7 +95,7 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 다음 단어 예측으로는 양방향이 불가능한 이유와 MLM이 그것을 푸는 방식을 말할 수 있다
-- [ ] 15% 마스킹의 80/10/10 트릭이 무엇을 완화하는지 말할 수 있다
-- [ ] 사전학습-파인튜닝 패러다임이 응용 NLP를 어떻게 바꿨는지 말할 수 있다
-- [ ] 인코더 전용 구조의 한계(생성 불가)와 그 역사적 결과를 말할 수 있다
+- [ ] Explain why next-word prediction cannot be bidirectional, and how MLM solves that · 다음 단어 예측으로는 양방향이 불가능한 이유와 MLM이 그것을 푸는 방식을 말할 수 있다
+- [ ] Say what the 80/10/10 trick within 15% masking mitigates · 15% 마스킹의 80/10/10 트릭이 무엇을 완화하는지 말할 수 있다
+- [ ] Explain how the pretrain–fine-tune paradigm changed applied NLP · 사전학습-파인튜닝 패러다임이 응용 NLP를 어떻게 바꿨는지 말할 수 있다
+- [ ] State the limit of an encoder-only architecture (it cannot generate) and its historical consequence · 인코더 전용 구조의 한계(생성 불가)와 그 역사적 결과를 말할 수 있다

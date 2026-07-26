@@ -47,11 +47,13 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: SangHyun Lee → Jebelli(UIUC) → Yizhi Liu(Syracuse) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "Hands-free teleoperation" is an interface claim on a testbed — judge it by HCI/human-factors criteria (channel quality, operator burden, safety distance), not as a robot-autonomy contribution. This paper's real value lies less in any single result than in the worker-centered research programme it opened: from command, to collaboration, to intention prediction.
+>
 > "hands-free teleoperation"은 테스트베드 위의 인터페이스 주장이다 — 로봇 자율성 기여가 아니라 HCI/인간공학 기여의 기준(채널 품질, 작업자 부담, 안전 거리)으로 평가해야 한다. 이 논문의 진짜 가치는 개별 결과보다 그것이 연 작업자 중심 연구 프로그램 — 명령에서 협업으로, 협업에서 의도 예측으로 — 에 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] EEG → 특징 추출 → 분류 → 로봇 명령 파이프라인을 단계별로 말할 수 있다
-- [ ] 이것이 자율성이 아니라 원격조종인 이유와 자율성 스펙트럼상의 위치를 설명할 수 있다
-- [ ] 테스트베드 EEG와 현장 EEG 사이의 간극(노이즈, 대역폭, 보정)을 말할 수 있다
-- [ ] 계열의 궤적(원격조종 → 뇌파 협업 → 의도 인지 계획)이 왜 공유 제어로 수렴하는지 설명할 수 있다
+- [ ] Walk through the EEG → feature extraction → classification → robot command pipeline stage by stage · EEG → 특징 추출 → 분류 → 로봇 명령 파이프라인을 단계별로 말할 수 있다
+- [ ] Explain why this is teleoperation rather than autonomy, and locate it on the autonomy spectrum · 이것이 자율성이 아니라 원격조종인 이유와 자율성 스펙트럼상의 위치를 설명할 수 있다
+- [ ] State the gap between testbed EEG and site EEG (noise, bandwidth, calibration) · 테스트베드 EEG와 현장 EEG 사이의 간극(노이즈, 대역폭, 보정)을 말할 수 있다
+- [ ] Explain why the line's trajectory (teleoperation → EEG collaboration → intention-aware planning) converges on shared control · 계열의 궤적(원격조종 → 뇌파 협업 → 의도 인지 계획)이 왜 공유 제어로 수렴하는지 설명할 수 있다

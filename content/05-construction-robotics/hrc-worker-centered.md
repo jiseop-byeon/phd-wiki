@@ -46,7 +46,10 @@ only when the estimate changes robot behavior and that closed loop is evaluated.
   motion, and human-aware planning methods that construction imports —
   [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]] is the anchor:
   human-aware motion planning evaluated on measured human responses in close-proximity
-  collaboration, later deployed on a real automotive final-assembly line.
+  collaboration, later carried toward practice in a BMW *test environment* replicating
+  final-assembly work — which the authors explicitly note is not representative of a real
+  factory deployment. Cite it as lab-plus-industrial-testbed evidence, not as a factory
+  deployment result.
 
 For orientation across the field, the defining taxonomy is the
 [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC survey]] (JCEM
@@ -140,8 +143,9 @@ a small study is not evidence of low operational risk.
 - **MIT Shah 제조 HRC**: 교차 훈련, 역할 배분, 읽기 쉬운 움직임, 인간 인지 계획을
   공급한다 — 앵커는
   [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]]: 근접 협업에서
-  측정된 인간 반응으로 평가한 인간 인지 모션 계획으로, 이후 실제 자동차 최종 조립 라인에
-  배치되었다.
+  측정된 인간 반응으로 평가한 인간 인지 모션 계획이며, 이후 최종 조립 작업을 재현한 BMW
+  *테스트 환경*으로 이어졌다 — 저자들 스스로 이것이 실제 공장 배치를 대표하지 않는다고
+  명시한다. 공장 배치 결과가 아니라 실험실+산업 테스트베드 증거로 인용하라.
 
 분야 전체의 지도로는
 [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC 서베이]](JCEM

@@ -55,7 +55,7 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 
 The default policy-gradient algorithm of the field: simulator locomotion, dexterous manipulation, game-playing, and — via RLHF — language-model alignment ([[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]] runs PPO in its third stage). In construction robotics, PPO-class methods train the simulator experts that pipelines like [[01-canonical-papers/notes/8-construction/ext|ExT]] later distill into deployable transformer policies.
 
-> [!warning] Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "PPO-trained" does not specify observation design, reward, simulator, curriculum, safety constraints, or real transfer. These choices often explain more than the optimizer name — read them before crediting or blaming PPO.
 
 ### Connections
@@ -114,7 +114,7 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] $r_t$, advantage, clip이 각각 무엇을 하고, $\min$이 왜 필요한지 설명할 수 있다
-- [ ] PPO clip이 보장하지 않는 것(hard constraint 아님, 단조 향상 아님)을 말할 수 있다
-- [ ] GAE의 λ가 무엇과 무엇 사이를 보간하는지, 왜 clip과 항상 짝지어 쓰이는지 말할 수 있다
-- [ ] 굴착 pretraining/finetuning 파이프라인(예: ExT)에서 PPO의 역할이 어디까지인지 짚을 수 있다
+- [ ] Explain what $r_t$, the advantage, and the clip each do, and why the $\min$ is needed · $r_t$, advantage, clip이 각각 무엇을 하고, $\min$이 왜 필요한지 설명할 수 있다
+- [ ] Say what PPO's clip does *not* guarantee (not a hard constraint, not monotonic improvement) · PPO clip이 보장하지 않는 것(hard constraint 아님, 단조 향상 아님)을 말할 수 있다
+- [ ] Say what GAE's λ interpolates between, and why it is always paired with the clip · GAE의 λ가 무엇과 무엇 사이를 보간하는지, 왜 clip과 항상 짝지어 쓰이는지 말할 수 있다
+- [ ] Identify how far PPO's role extends in an excavation pretraining/fine-tuning pipeline such as ExT · 굴착 pretraining/finetuning 파이프라인(예: ExT)에서 PPO의 역할이 어디까지인지 짚을 수 있다

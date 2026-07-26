@@ -133,7 +133,7 @@ directly and is exactly the action-generation mechanism of π0. When robotics pa
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] score $\nabla_x \log p_t(x)$가 무엇이고 역방향 SDE에서 왜 유일한 미지수인지 말할 수 있다
-- [ ] VE/VP-SDE가 기존 두 계열을 통합하는 방식을 말할 수 있다
-- [ ] 확률 흐름 ODE가 주는 두 가지(우도, 빠른 결정론적 샘플링)를 말할 수 있다
-- [ ] DDPM 노이즈 예측과 score 학습의 동치를 말할 수 있다
+- [ ] Say what the score $\nabla_x \log p_t(x)$ is and why it is the only unknown in the reverse SDE · score $\nabla_x \log p_t(x)$가 무엇이고 역방향 SDE에서 왜 유일한 미지수인지 말할 수 있다
+- [ ] Explain how VE/VP-SDEs unify the two prior families · VE/VP-SDE가 기존 두 계열을 통합하는 방식을 말할 수 있다
+- [ ] Name the two things the probability-flow ODE provides (likelihood, fast deterministic sampling) · 확률 흐름 ODE가 주는 두 가지(우도, 빠른 결정론적 샘플링)를 말할 수 있다
+- [ ] State the equivalence between DDPM noise prediction and score learning · DDPM 노이즈 예측과 score 학습의 동치를 말할 수 있다

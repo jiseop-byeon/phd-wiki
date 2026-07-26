@@ -128,7 +128,7 @@ continuous outputs — converging toward the [[pi0|π0]]/[[gr00t-n1|GR00T]] desi
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] SigLIP+DINOv2 융합이 각각 무엇을 보태는지 말할 수 있다
-- [ ] 7B가 55B RT-2-X를 이긴 결과의 접근성 함의를 말할 수 있다
-- [ ] LoRA 파인튜닝·양자화가 실험실 채택에 결정적인 이유를 말할 수 있다
-- [ ] 자기회귀 이산 토큰의 제어 주기 한계와 π0의 응답을 말할 수 있다
+- [ ] Say what SigLIP and DINOv2 each add in the fused encoder · SigLIP+DINOv2 융합이 각각 무엇을 보태는지 말할 수 있다
+- [ ] State the accessibility implication of a 7B model beating 55B RT-2-X · 7B가 55B RT-2-X를 이긴 결과의 접근성 함의를 말할 수 있다
+- [ ] Explain why LoRA fine-tuning and quantization are decisive for lab adoption · LoRA 파인튜닝·양자화가 실험실 채택에 결정적인 이유를 말할 수 있다
+- [ ] State the control-rate limit of autoregressive discrete tokens and π0's answer to it · 자기회귀 이산 토큰의 제어 주기 한계와 π0의 응답을 말할 수 있다

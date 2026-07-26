@@ -54,7 +54,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] SLAM 자세 추정이 정밀 정합의 초기값으로 쓰이는 파이프라인 구조를 말할 수 있다
-- [ ] 재래식 스테이션 스캐닝 대비 무엇이 자동화되었는지(스테이션 설치·타깃·수동 정합) 말할 수 있다
-- [ ] 2018 테스트베드 증거와 2019/2025 후속(UAV+UGV, 현장 배치 뷰 플래닝)의 증거 수준을 구분할 수 있다
-- [ ] scan-to-BIM 파이프라인에서 이 논문이 차지하는 앞단(데이터 수집 자동화) 위치를 설명할 수 있다
+- [ ] Describe the pipeline structure in which the SLAM pose estimate serves as the initial guess for fine registration · SLAM 자세 추정이 정밀 정합의 초기값으로 쓰이는 파이프라인 구조를 말할 수 있다
+- [ ] Say what was automated relative to conventional station scanning (station setup, targets, manual registration) · 재래식 스테이션 스캐닝 대비 무엇이 자동화되었는지(스테이션 설치·타깃·수동 정합) 말할 수 있다
+- [ ] Distinguish the evidence level of the 2018 testbed from the 2019/2025 follow-ups (UAV+UGV, field-deployed view planning) · 2018 테스트베드 증거와 2019/2025 후속(UAV+UGV, 현장 배치 뷰 플래닝)의 증거 수준을 구분할 수 있다
+- [ ] Explain this paper's position at the front end (acquisition automation) of the scan-to-BIM pipeline · scan-to-BIM 파이프라인에서 이 논문이 차지하는 앞단(데이터 수집 자동화) 위치를 설명할 수 있다

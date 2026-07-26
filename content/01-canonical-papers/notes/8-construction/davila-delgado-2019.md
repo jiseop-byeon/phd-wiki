@@ -42,6 +42,8 @@ climb," not a verdict.
 베팅이다. "판결"이 아니라 "기술이 넘어야 할 벽"으로 읽는 것이 좋다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> This barrier list is a 2019 *demand-side* snapshot built from surveys and literature — read it as a list of adoption conditions, not as proof of technical impossibility. Today's reading question is which of those barriers the learning era's cost curve has knocked down.
+>
 > 이 논문의 장벽 목록은 2019년 설문·문헌 기반의 *수요 측* 스냅숏이다 — 기술 불가능성의 증명이 아니라 도입 조건의 목록으로 읽어야 하고, 학습 시대의 비용 곡선 변화가 어느 장벽을 무너뜨리는지가 오늘의 읽기 포인트다.
 
 ### 연결
@@ -50,7 +52,7 @@ climb," not a verdict.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 네 가지 기술 범주와 최상위 도입 장벽을 말할 수 있다
-- [ ] 기술이 아니라 수요 측 제약이라는 프레임의 의미를 설명할 수 있다
-- [ ] 범용 로봇이 비용 구조를 바꿀 수 있다는 반론을 구성할 수 있다
-- [ ] 이 장벽 목록을 [[05-construction-robotics/industry-deployment|2026 산업 지도]]와 대조해 무엇이 실제로 낮아졌는지 말할 수 있다
+- [ ] Name the four technology categories and the top adoption barriers · 네 가지 기술 범주와 최상위 도입 장벽을 말할 수 있다
+- [ ] Explain what it means to frame the constraint as demand-side rather than technical · 기술이 아니라 수요 측 제약이라는 프레임의 의미를 설명할 수 있다
+- [ ] Construct the counterargument that general-purpose robots could change the cost structure · 범용 로봇이 비용 구조를 바꿀 수 있다는 반론을 구성할 수 있다
+- [ ] Compare this barrier list against the [[05-construction-robotics/industry-deployment|2026 industry map]] and say which barriers actually fell · 이 장벽 목록을 [[05-construction-robotics/industry-deployment|2026 산업 지도]]와 대조해 무엇이 실제로 낮아졌는지 말할 수 있다

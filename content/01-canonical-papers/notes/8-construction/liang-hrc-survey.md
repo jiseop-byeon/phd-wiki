@@ -43,6 +43,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
-- [ ] 인간-로봇 작업 분담 형태에 따른 분류라는 이 서베이의 조직 원리를 말할 수 있다
-- [ ] Davila Delgado(수요 측)와 Liang(공급 측)의 분업 — 두 방향 잡기 서베이의 짝 — 을 설명할 수 있다
-- [ ] 2021년 스냅숏의 공백(파운데이션 모델, 학습된 범용 로봇)이 분류 체계에 줄 압박을 지적할 수 있다
+- [ ] State this survey's organizing principle: classification by the form of human–robot work division · 인간-로봇 작업 분담 형태에 따른 분류라는 이 서베이의 조직 원리를 말할 수 있다
+- [ ] Explain the division of labour between Davila Delgado (demand side) and Liang (supply side) as a pair of orienting surveys · Davila Delgado(수요 측)와 Liang(공급 측)의 분업 — 두 방향 잡기 서베이의 짝 — 을 설명할 수 있다
+- [ ] Point out the pressure that the 2021 snapshot's blind spots (foundation models, learned general-purpose robots) place on the taxonomy · 2021년 스냅숏의 공백(파운데이션 모델, 학습된 범용 로봇)이 분류 체계에 줄 압박을 지적할 수 있다

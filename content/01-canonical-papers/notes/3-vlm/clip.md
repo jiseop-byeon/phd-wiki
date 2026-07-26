@@ -97,11 +97,13 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> "Transferable visual models from natural language supervision" — the substance is zero-shot transfer and robustness to distribution shift, not the best performance on every vision task (it is weak on fine-grained classification and counting). And the data condition, 400 million pairs, is built into the claim: data scale is half the result, not the method alone.
+>
 > "transferable visual models from natural language supervision" — 주장의 핵심은 zero-shot 전이와 분포 이동 강건성이지, 모든 시각 과제의 최고 성능이 아니다(세밀 분류·카운팅에선 약하다). 그리고 "4억 쌍"이라는 데이터 조건이 주장에 내장되어 있다 — 방법만이 아니라 데이터 규모가 결과의 절반이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 대조 목적함수가 "정확한 캡션 예측"과 어떻게 다르고 왜 웹 노이즈에 강한지 설명할 수 있다
-- [ ] zero-shot 분류 = 클래스 프롬프트 임베딩과의 유사도 비교임을 절차 수준에서 말할 수 있다
-- [ ] 분포 이동에 강한 이유와 개수 세기·공간 관계에 약한 이유를 구분해 말할 수 있다
-- [ ] CLIP 인코더가 부품으로 들어가는 곳을 두 가지 이상(VLM 시각 인코더, 디퓨전 텍스트 조건 등) 들 수 있다
+- [ ] Explain how the contrastive objective differs from "predict the exact caption" and why that makes it robust to web noise · 대조 목적함수가 "정확한 캡션 예측"과 어떻게 다르고 왜 웹 노이즈에 강한지 설명할 수 있다
+- [ ] Describe zero-shot classification procedurally as a similarity comparison against class-prompt embeddings · zero-shot 분류 = 클래스 프롬프트 임베딩과의 유사도 비교임을 절차 수준에서 말할 수 있다
+- [ ] Separate why it is robust to distribution shift from why it is weak at counting and spatial relations · 분포 이동에 강한 이유와 개수 세기·공간 관계에 약한 이유를 구분해 말할 수 있다
+- [ ] Name at least two places a CLIP encoder is reused as a component (VLM vision encoder, diffusion text conditioning, …) · CLIP 인코더가 부품으로 들어가는 곳을 두 가지 이상(VLM 시각 인코더, 디퓨전 텍스트 조건 등) 들 수 있다

@@ -121,6 +121,12 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 4. Why is the MPC problem above convex, and what could make it non-convex in practice?
    (Hint: obstacle avoidance constraints.)
 
+> [!tip]- Answers
+> 1. The epigraph of $\max(f,g)$ is the intersection of two convex epigraphs, hence convex. Hinge loss $\max(0, 1-yx)$ is the max of two affine functions, so it is convex.
+> 2. Stability needs $\alpha < 2/\lambda_{max} = 0.02$. Taking the usual half-of-the-limit $\alpha = 0.01$ (near the boundary the fast mode oscillates), the slow mode contracts as $(1-\alpha\lambda_{min})^k = 0.99^k$; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$ iterations. The condition number $\kappa = 100$ *is* that cost.
+> 3. Binding case: stationarity holds by construction, $x^* = p - \lambda a$; primal feasibility $a^\top x^* = b$ (active); dual feasibility $\lambda = (a^\top p - b)/\|a\|^2 > 0$ precisely because the constraint was violated at $p$; complementary slackness $\lambda g = \lambda\cdot 0 = 0$.
+> 4. The objective is a convex quadratic and the constraints are linear (dynamics equalities plus input/state boxes) — a convex QP. It stops being convex when obstacle avoidance enters (the free space is a non-convex complement) or when discrete decisions such as task ordering or contact-mode selection are added.
+
 ### Robotics bridge
 
 Constraints and nonlinear optimization become executable robot decisions in [[04-robotics/planning-decision-making|Planning & Decision-Making]] and [[04-robotics/mpc|MPC]].

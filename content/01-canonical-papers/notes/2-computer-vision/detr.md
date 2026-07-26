@@ -118,7 +118,7 @@ readout 토큰은 새 옷을 입은 DETR 쿼리다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 검출을 집합 예측으로 보는 관점과 헝가리안 매칭의 역할을 설명할 수 있다
-- [ ] NMS가 불필요해지는 구조적 이유를 말할 수 있다
-- [ ] 물체 쿼리가 무엇을 배우는지, 고정 N의 한계는 무엇인지 말할 수 있다
-- [ ] 학습된 쿼리 아이디어가 어디로 수출됐는지(Q-Former, readout) 말할 수 있다
+- [ ] Explain detection-as-set-prediction and the role of Hungarian matching · 검출을 집합 예측으로 보는 관점과 헝가리안 매칭의 역할을 설명할 수 있다
+- [ ] Give the structural reason NMS becomes unnecessary · NMS가 불필요해지는 구조적 이유를 말할 수 있다
+- [ ] Say what object queries learn and what the fixed $N$ limits · 물체 쿼리가 무엇을 배우는지, 고정 N의 한계는 무엇인지 말할 수 있다
+- [ ] Say where the learned-query idea was exported to (Q-Former, readout tokens) · 학습된 쿼리 아이디어가 어디로 수출됐는지(Q-Former, readout) 말할 수 있다

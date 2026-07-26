@@ -108,12 +108,14 @@ uncrewed continuous operation in a constrained waste-handling site. Read it as t
 existence proof that the *systems integration* problem is solvable at industrial scale.
 
 **ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|note]]).** The
-paradigm signal: one transformer policy pretrained on ~100 h of GPU-parallel simulated
-excavation demonstrations (RL experts + scripted + teleop), then SFT/RLFT fine-tuned to
-new tasks — centimeter-level real-machine transfer. The
-[[02-foundations/rl-basics|pretrain→fine-tune]] recipe, on hydraulics. Limitation to
-notice: demonstrations are sim-generated; the diversity of *real* sites remains outside
-the training distribution.
+paradigm signal: one transformer policy pretrained on **150,000 GPU-parallel simulated
+episodes per task** (RL experts + scripted + teleop) — a corpus worth roughly 30 days of
+continuous real-machine operation, generated in under two hours on a single RTX 3090 —
+then SFT/RLFT fine-tuned to new tasks. The *pretrained* policy is the one that transfers
+to the real M545 at centimeter-level accuracy; the fine-tuning results are simulation
+studies. The [[02-foundations/rl-basics|pretrain→fine-tune]] recipe, on hydraulics.
+Limitation to notice: demonstrations are sim-generated; the diversity of *real* sites
+remains outside the training distribution.
 
 **The wheel-loader cluster (Tampere/Luleå/Umeå, ICRA 2024– —
 [[01-canonical-papers/notes/8-construction/wheel-loader-rl|note]]).** Short-loading-cycle
@@ -125,8 +127,11 @@ the excavator work to see which conclusions are machine-specific.
 
 Apply the [[04-robotics/hri-safety|autonomy-spectrum vocabulary]] strictly here:
 
-- Research systems (HEAP, AES) run **full task autonomy inside a surveyed, controlled
-  site** — geofenced, no public traffic, staff supervising.
+- Research systems (HEAP, AES) run **full task autonomy inside a bounded, prepared work
+  area**: tasks are specified from surveyed geometry, the workspace is defined in advance,
+  and the papers do not claim operation in shared or public traffic. What each paper
+  actually states about supervision, site access, and intervention differs — read it from
+  the deployment section rather than assuming a common protocol.
 - Commercial systems are mostly **supervised autonomy or assisted teleoperation**
   (Gravis RACK, Built Robotics' remote supervisors, Cat Command's control-room
   operators) — the human moved from the cab to a screen, and *reset/recovery is still
@@ -276,10 +281,13 @@ flowchart LR
 증명으로 읽어라.
 
 **ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|노트]]).** 패러다임
-신호: GPU 병렬 시뮬레이션 굴착 시연 ~100시간(RL 전문가 + 스크립트 + 원격조작)으로
-사전학습한 하나의 트랜스포머 정책을 SFT/RLFT로 새 과제에 파인튜닝 — 센티미터급 실기계
-전이. [[02-foundations/rl-basics|사전학습→파인튜닝]] 레시피를 유압 위에 얹은 것. 주목할
-한계: 시연이 시뮬레이션 생성이다; *실제* 현장의 다양성은 학습 분포 밖에 남아 있다.
+신호: **과제당 15만 에피소드**의 GPU 병렬 시뮬레이션 시연(RL 전문가 + 스크립트 +
+원격조작)으로 사전학습한 하나의 트랜스포머 정책 — 실기계 연속 운용 약 30일 상당의
+코퍼스를 RTX 3090 한 장으로 2시간 안에 생성했다 — 을 SFT/RLFT로 새 과제에 파인튜닝한다.
+실제 M545에 센티미터급으로 전이하는 것은 *사전학습된* 정책이고, 파인튜닝 결과는
+시뮬레이션 연구다. [[02-foundations/rl-basics|사전학습→파인튜닝]] 레시피를 유압 위에 얹은
+것. 주목할 한계: 시연이 시뮬레이션 생성이다; *실제* 현장의 다양성은 학습 분포 밖에 남아
+있다.
 
 **휠로더 클러스터 (Tampere/Luleå/Umeå, ICRA 2024– —
 [[01-canonical-papers/notes/8-construction/wheel-loader-rl|노트]]).** 실제 로더에서의 IL 사전학습 + RL
@@ -290,8 +298,10 @@ flowchart LR
 
 [[04-robotics/hri-safety|자율성 스펙트럼 어휘]]를 여기에 엄격히 적용하라:
 
-- 연구 시스템(HEAP, AES)은 **측량되고 통제된 현장 안의 완전 과제 자율**로 돈다 —
-  지오펜스, 공공 통행 없음, 직원 감독.
+- 연구 시스템(HEAP, AES)은 **경계가 정해지고 준비된 작업 구역 안의 완전 과제 자율**로
+  돈다: 과제는 측량된 기하로 지정되고, 작업 공간은 사전에 정의되며, 논문들은 공유·공공
+  통행 환경에서의 운용을 주장하지 않는다. 감독·현장 접근·개입에 대해 각 논문이 실제로
+  명시하는 내용은 서로 다르다 — 공통 규약을 가정하지 말고 배치 섹션에서 직접 읽어라.
 - 상용 시스템은 대부분 **감독 자율 또는 보조 원격조작**이다(Gravis RACK, Built
   Robotics의 원격 감독자, Cat Command의 관제실 운전자) — 인간이 운전석에서 화면으로
   옮겨 갔을 뿐이고, *리셋/복구는 여전히 인간 노동*이다.

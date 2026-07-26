@@ -14,6 +14,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > Read an MPC formulation (cost, horizon, constraints), identify what is solved online at each step, judge feasibility/stability claims, and recognize the standard failure modes. Solver internals are optional.
 > MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단하고, 표준 실패 모드를 알아볼 수 있으면 된다. 솔버 내부는 선택이다.
 
+> [!note] Prerequisites · 선수 지식
+> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, stability, and *why saturation breaks every linear guarantee* — the gap MPC exists to close) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (its Riccati $P$ is MPC's usual terminal cost) · [[02-foundations/optimization|4. Optimization §2–5]] (convexity, KKT, and the MPC-as-QP example written out there)
+> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 안정성, 그리고 *포화가 모든 선형 보장을 왜 깨는가* — MPC가 메우려는 그 간극) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (그 리카티 $P$가 MPC의 표준 종단 비용) · [[02-foundations/optimization|4. 최적화 §2–5]] (볼록성, KKT, 거기 써 놓은 MPC-QP 예제)
+
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
 at the next step (receding horizon). With linear dynamics and quadratic cost it is a
@@ -215,7 +219,7 @@ $A$에서는 거듭제곱이 감쇠해 condensed도 얌전하다.)
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] receding horizon 절차(풀고→첫 입력→재풀이)를 말할 수 있다
-- [ ] QP 볼록성의 조건($Q,R,P$ 정부호성, 볼록 제약)과 장애물 제약이 깨뜨리는 지점을 말할 수 있다
-- [ ] stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
-- [ ] Mayne 2000의 안정성 재료(종단 비용·종단 제약·지평)와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다
+- [ ] Describe the receding-horizon procedure (solve → apply the first input → re-solve) · receding horizon 절차를 말할 수 있다
+- [ ] State the conditions for QP convexity ($Q,R,P$ definiteness, convex constraints) and where obstacle constraints break them · QP 볼록성의 조건과 장애물 제약이 깨뜨리는 지점을 말할 수 있다
+- [ ] Explain the stacked vs condensed trade-off, and infeasibility, constraint softening, and warm starting · stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
+- [ ] Name Mayne 2000's stability ingredients (terminal cost, terminal set, horizon) and where PlaNet and Diffusion Policy borrow MPC's structure · Mayne 2000의 안정성 재료와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다

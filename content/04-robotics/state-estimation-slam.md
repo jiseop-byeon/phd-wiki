@@ -100,7 +100,7 @@ A SLAM **front end** extracts features or geometric constraints and performs dat
 - IMU: high-rate acceleration/angular velocity; bias causes drift.
 - Camera: rich appearance and geometry; sensitive to blur, lighting, and texture.
 - LiDAR: direct range geometry; affected by sparsity, weather, and motion distortion.
-- Wheel odometry: inexpensive local motion; fails under slip.
+- Wheel odometry: inexpensive local motion; fails under slip. The kinematic model being integrated — and why its error grows without bound — is [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]].
 - GNSS: absolute non-drifting reference in favorable conditions, but obstruction and multipath can introduce noise and bias.
 
 **Loosely coupled** systems fuse completed subsystem estimates. **Tightly coupled** systems jointly use lower-level measurements, often preserving information but increasing model and implementation complexity. Calibration, timestamps, rolling shutter, latency, and clock offset can dominate algorithmic improvements.
@@ -253,7 +253,7 @@ end**는 pose, landmark, 때로는 보정 변수까지 최적화한다. Loop clo
 - IMU: 고주기 가속도/각속도; bias가 drift를 만든다.
 - 카메라: 풍부한 외양·기하; 블러·조명·텍스처에 민감.
 - LiDAR: 직접적 거리 기하; 희소성·날씨·운동 왜곡의 영향.
-- 바퀴 odometry: 저렴한 국소 이동; 미끄럼에서 실패.
+- 바퀴 odometry: 저렴한 국소 이동; 미끄럼에서 실패. 적분되는 기구학 모델과 그 오차가 왜 무한정 자라는지는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]에 있다.
 - GNSS: 유리한 조건에서 드리프트 없는 절대 기준 — 단 차폐·멀티패스가 잡음과 편향을
   넣을 수 있다.
 

@@ -55,7 +55,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 정적 BIM과 폐루프 디지털 트윈을 구분하고, "닫힘"의 판정 기준(관측→모델 갱신→다음 결정 변경)을 말할 수 있다
-- [ ] BIM 객체가 로봇 과제 명세로 번역되고 실행 결과가 모델로 되돌아오는 경로를 단계별로 재구성할 수 있다
-- [ ] 어떤 물리 관측이 어떤 과제 상태를 갱신하는지 — 이 논문에서 양방향성이 실제로 구현된 지점 — 를 짚을 수 있다
-- [ ] 실험실 폐루프가 증명한 것과 프로젝트 규모 배치(연합 모델, 오래된 데이터, 다중 로봇)에 남은 공백을 구분해 말할 수 있다
+- [ ] Distinguish a static BIM from a closed-loop digital twin, and state the test for "closed" (observation → model update → changed next decision) · 정적 BIM과 폐루프 디지털 트윈을 구분하고, "닫힘"의 판정 기준(관측→모델 갱신→다음 결정 변경)을 말할 수 있다
+- [ ] Reconstruct, stage by stage, how a BIM object is translated into a robot task specification and how the execution result returns to the model · BIM 객체가 로봇 과제 명세로 번역되고 실행 결과가 모델로 되돌아오는 경로를 단계별로 재구성할 수 있다
+- [ ] Identify which physical observations update which task state — the place where bidirectionality is actually implemented in this paper · 어떤 물리 관측이 어떤 과제 상태를 갱신하는지 — 이 논문에서 양방향성이 실제로 구현된 지점 — 를 짚을 수 있다
+- [ ] Separate what the laboratory loop proved from the gaps left at project scale (federated models, stale data, multiple robots) · 실험실 폐루프가 증명한 것과 프로젝트 규모 배치(연합 모델, 오래된 데이터, 다중 로봇)에 남은 공백을 구분해 말할 수 있다

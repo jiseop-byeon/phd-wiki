@@ -97,6 +97,6 @@ Defined the frozen-backbone + connector recipe every subsequent VLM refines — 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 얼린 두 거인 + 게이트 cross-attention 연결이라는 설계를 말할 수 있다
-- [ ] 혼재 데이터가 멀티모달 few-shot을 가능하게 한 이유를 말할 수 있다
-- [ ] 이후 연결자 경쟁(Q-Former→선형)에서 이 논문의 위치를 말할 수 있다
+- [ ] Describe the design: two frozen giants joined by gated cross-attention · 얼린 두 거인 + 게이트 cross-attention 연결이라는 설계를 말할 수 있다
+- [ ] Explain why interleaved data made multimodal few-shot possible · 혼재 데이터가 멀티모달 few-shot을 가능하게 한 이유를 말할 수 있다
+- [ ] Place this paper within the later competition of connector designs (Q-Former → linear) · 이후 연결자 경쟁(Q-Former→선형)에서 이 논문의 위치를 말할 수 있다

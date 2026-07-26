@@ -101,9 +101,9 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
   DFT formula in [[02-foundations/signal-processing|6. Signal Processing]] is exactly this
   projection.
 
-### 8. Linear differential equations (→ control: CE397, LQR)
+### 8. Linear differential equations (→ control track: pages 5–7)
 
-Physical systems are described by ODEs — this is the modeling language of all of control.
+Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]].
 
 - **First order**: $\dot x = ax$ has solution $x(t) = x(0)\,e^{at}$. Everything follows from
   this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). A robot joint,
@@ -121,9 +121,9 @@ Physical systems are described by ODEs — this is the modeling language of all 
   $|a| < 1$. The continuous/discrete stability conditions ($\text{Re} < 0$ vs $|\cdot|<1$)
   are the two halves of one story.
 
-### 9. Laplace transform and the s-plane (→ control, 6. Signal Processing §5)
+### 9. Laplace transform and the s-plane (→ control track, 6. Signal Processing §5)
 
-The Laplace transform turns ODEs into algebra:
+The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theory-ce397|5. Control Theory §5]] turns the resulting pole picture into the settling-time and overshoot numbers papers quote:
 
 - Definition: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; the one property that matters:
   **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
@@ -275,9 +275,9 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   실수부이므로, "사인파로 분해" = "회전들에 투영" —
   [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식이 정확히 이 투영이다.
 
-### 8. 선형 미분방정식 (→ 제어: CE397, LQR)
+### 8. 선형 미분방정식 (→ 제어 트랙 5~7번)
 
-물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어다.
+물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다.
 
 - **1차**: $\dot x = ax$의 해는 $x(t) = x(0)\,e^{at}$. 모든 것이 이 한 사실에서 나온다:
   $a < 0$이면 감쇠(안정), $a > 0$이면 폭발(불안정). 로봇 관절, 데워지는 방, 빠지는 물탱크
@@ -293,9 +293,9 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
   때만 안정. 연속/이산의 안정 조건($\text{Re} < 0$ vs $|\cdot|<1$)은 한 이야기의 두 반쪽이다.
 
-### 9. 라플라스 변환과 s-평면 (→ 제어, 6. 신호처리 §5)
+### 9. 라플라스 변환과 s-평면 (→ 제어 트랙, 6. 신호처리 §5)
 
-라플라스 변환은 미분방정식을 대수로 바꾼다:
+라플라스 변환은 미분방정식을 대수로 바꾼다 — 그리고 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]가 그 극점 그림을 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾼다:
 
 - 정의: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; 중요한 성질은 하나:
   **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.

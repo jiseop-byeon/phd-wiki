@@ -54,7 +54,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
-- [ ] 유압 밸브 동역학이 왜 sim-to-real의 병목이고, NN 액추에이터 모델이 이를 어떻게 푸는지 말할 수 있다
-- [ ] 정책의 입출력(기계 상태 → 파일럿단 밸브 명령)과 "실기계 파인튜닝 제로"의 의미를 말할 수 있다
-- [ ] soil-adaptive 논문의 "파라미터 식별 없는 적응" 주장의 메커니즘과 한계를 구분할 수 있다
-- [ ] HEAP(플랫폼) → Egli RL(스킬 학습) → ExT(사전학습 프레임워크)로 이어지는 계보를 설명할 수 있다
+- [ ] Say why hydraulic valve dynamics are the sim-to-real bottleneck, and how a neural actuator model resolves it · 유압 밸브 동역학이 왜 sim-to-real의 병목이고, NN 액추에이터 모델이 이를 어떻게 푸는지 말할 수 있다
+- [ ] State the policy's inputs and outputs (machine state → pilot-stage valve commands) and what "zero real-machine fine-tuning" means · 정책의 입출력(기계 상태 → 파일럿단 밸브 명령)과 "실기계 파인튜닝 제로"의 의미를 말할 수 있다
+- [ ] Separate the mechanism from the limits of the soil-adaptive paper's "adaptation without parameter identification" claim · soil-adaptive 논문의 "파라미터 식별 없는 적응" 주장의 메커니즘과 한계를 구분할 수 있다
+- [ ] Explain the lineage HEAP (platform) → Egli RL (skill learning) → ExT (pretraining framework) · HEAP(플랫폼) → Egli RL(스킬 학습) → ExT(사전학습 프레임워크)로 이어지는 계보를 설명할 수 있다

@@ -132,11 +132,13 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> V3's "mastering diverse domains" is a robustness claim — 150+ tasks under a single configuration — not a claim to beat every specialized model on every task. And the validation is simulation-centred; real-robot generalization remains a separate question.
+>
 > v3의 "mastering diverse domains"는 "단일 설정으로 150+ 과제"라는 강건성 주장이지, 각 과제에서 특화 모델을 모두 이긴다는 주장이 아니다. 그리고 검증은 시뮬레이션 중심이다 — 실로봇 일반화는 별도의 질문으로 남아 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] "상상 속 actor-critic"에서 실제 환경 스텝이 어디에만 쓰이는지(모델 갱신) 말할 수 있다
-- [ ] RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 설명할 수 있다
-- [ ] 가치 부트스트래핑이 짧은(~15 스텝) 상상 지평을 어떻게 보완하는지 말할 수 있다
-- [ ] v1→v3의 변화가 새 아이디어가 아니라 강건성 공학이라는 점과 그 구체 장치를 말할 수 있다
+- [ ] Say where real environment steps are used at all in "actor-critic in imagination" (model updates only) · "상상 속 actor-critic"에서 실제 환경 스텝이 어디에만 쓰이는지(모델 갱신) 말할 수 있다
+- [ ] Explain why the RSSM needs both a deterministic and a stochastic path · RSSM의 결정론적/확률적 두 경로가 각각 왜 필요한지 설명할 수 있다
+- [ ] Say how value bootstrapping compensates for the short (~15-step) imagination horizon · 가치 부트스트래핑이 짧은(~15 스텝) 상상 지평을 어떻게 보완하는지 말할 수 있다
+- [ ] State that v1 → v3 is robustness engineering rather than new ideas, and name the concrete devices · v1→v3의 변화가 새 아이디어가 아니라 강건성 공학이라는 점과 그 구체 장치를 말할 수 있다

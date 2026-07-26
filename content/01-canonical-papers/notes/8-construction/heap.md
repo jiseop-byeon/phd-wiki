@@ -103,11 +103,13 @@ learning-based digging. The construction analogue of what ALOHA
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (4시대의 기준 시스템) · 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
+> This paper's claim is a demonstration of an autonomous walking-excavator *system*, not a new learning method. It is fair to judge it by system/platform criteria — integration completeness, reusability, whether it enabled follow-up research — and by those criteria it is among the field's best. Be precise about "autonomous" too: autonomous task execution on research worksites, not validation of unsupervised commercial deployment.
+>
 > 이 논문의 주장은 "자율 보행 굴착기 시스템의 실증"이다 — 새로운 학습 방법론의 기여가 아니다. 시스템/플랫폼 논문의 기준(통합 완성도, 재사용성, 후속 연구를 가능하게 했는가)으로 평가해야 공정하고, 그 기준으로는 이 분야 최고 수준이다. "autonomous"의 운용적 의미도 정확히: 연구 작업지에서의 과제 자율 실행이지, 상업적 무감독 배치의 검증이 아니다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] 구동 개조(전기 파일럿 밸브, 압력 센싱)가 왜 힘 기반 굴착의 전제인지 말할 수 있다
-- [ ] 센싱 스택(GNSS-RTK/IMU/LiDAR/압력)과 소프트웨어 구조(매핑→계획→힘 제어)를 단계별로 말할 수 있다
-- [ ] 평가의 성격 — 연구 작업지에서의 자율 실행(제방 오차 0.03~0.05 m), 원격조작 지원 — 을 정확히 기술할 수 있다
-- [ ] 논문이 남긴 공백 4가지(일반성·학습·생산성 비교·장기 무인)와 각각을 공략한 후속을 짝지을 수 있다
+- [ ] Say why the actuation retrofit (electric pilot valves, pressure sensing) is the precondition for force-based digging · 구동 개조(전기 파일럿 밸브, 압력 센싱)가 왜 힘 기반 굴착의 전제인지 말할 수 있다
+- [ ] Walk through the sensing stack (GNSS-RTK/IMU/LiDAR/pressure) and the software structure (mapping → planning → force control) · 센싱 스택(GNSS-RTK/IMU/LiDAR/압력)과 소프트웨어 구조(매핑→계획→힘 제어)를 단계별로 말할 수 있다
+- [ ] State the character of the evaluation precisely — autonomous execution on research worksites (embankments 0.03–0.05 m mean error), with teleoperation supported · 평가의 성격 — 연구 작업지에서의 자율 실행(제방 오차 0.03~0.05 m), 원격조작 지원 — 을 정확히 기술할 수 있다
+- [ ] Pair the four gaps the paper left (generality, learning, productivity comparison, long unattended operation) with the follow-up that attacked each · 논문이 남긴 공백 4가지(일반성·학습·생산성 비교·장기 무인)와 각각을 공략한 후속을 짝지을 수 있다

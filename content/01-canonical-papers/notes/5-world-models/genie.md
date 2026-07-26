@@ -129,7 +129,7 @@ simulator that generates embodied training data at scale — the base of
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] 잠재 행동이 발견되는 메커니즘(8-코드 병목)을 설명할 수 있다
-- [ ] 세 구성요소(토크나이저/잠재 행동 모델/동역학 모델)를 말할 수 있다
-- [ ] 행동 라벨 없는 인터넷 비디오가 훈련장이 된다는 주장의 의미를 말할 수 있다
-- [ ] 그럴듯함 ≠ 물리적 정확함 문제를 말할 수 있다
+- [ ] Explain the mechanism by which latent actions are discovered (the 8-code bottleneck) · 잠재 행동이 발견되는 메커니즘(8-코드 병목)을 설명할 수 있다
+- [ ] Name the three components (tokenizer, latent action model, dynamics model) · 세 구성요소(토크나이저/잠재 행동 모델/동역학 모델)를 말할 수 있다
+- [ ] State what it means to claim that action-unlabeled internet video becomes a training ground · 행동 라벨 없는 인터넷 비디오가 훈련장이 된다는 주장의 의미를 말할 수 있다
+- [ ] State the plausible ≠ physically correct problem · 그럴듯함 ≠ 물리적 정확함 문제를 말할 수 있다
