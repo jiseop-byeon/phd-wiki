@@ -196,6 +196,11 @@ plugins:
     layout:
       position: afterBody
       priority: 10
+  - source: ./plugins/read-log
+    enabled: true
+    layout:
+      position: afterBody
+      priority: 20
   - source: github:quartz-community/footer
     enabled: true
     options:

@@ -1,0 +1,39 @@
+{
+  "name": "phd-wiki-read-log",
+  "version": "1.0.0",
+  "description": "Per-page reading log: record each read with a date, +/- to add or remove, with a read count.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./components": {
+      "import": "./index.js"
+    }
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "read-log",
+    "displayName": "Reading Log",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 60,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "ReadLog": {
+        "displayName": "Reading Log",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 20
+      }
+    }
+  }
+}
