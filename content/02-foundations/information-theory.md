@@ -6,7 +6,11 @@ depth-goal: "Read the notation and recurring ideas accurately; return for deeper
 mastery-when: "Raise to Working or Mastery when the thesis objective depends directly on these formulations."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
+> [!note] Prerequisites · 선수 지식
+> [[02-foundations/engineering-math|0.5 §6]] (log rules — §0 below re-states them) · [[02-foundations/probability|3. Probability §1–2]] (distributions, expectation)
+> [[02-foundations/engineering-math|0.5 §6]](로그 규칙 — 아래 §0이 다시 정리한다) · [[02-foundations/probability|3. 확률 §1–2]](분포·기댓값)
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 

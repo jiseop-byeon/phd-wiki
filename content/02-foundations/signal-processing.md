@@ -6,7 +6,11 @@ depth-goal: "Use the notation, equations, and diagnostic ideas while reading met
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
+> [!note] Prerequisites · 선수 지식
+> [[02-foundations/engineering-math|0.5 §7]] (complex numbers, Euler's formula) · [[02-foundations/engineering-math|0.5 §9]] (Laplace, poles) · [[02-foundations/probability|3. Probability §5]] (white noise, stationarity)
+> [[02-foundations/engineering-math|0.5 §7]](복소수·오일러 공식) · [[02-foundations/engineering-math|0.5 §9]](라플라스·극점) · [[02-foundations/probability|3. 확률 §5]](백색 잡음·정상성)
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 

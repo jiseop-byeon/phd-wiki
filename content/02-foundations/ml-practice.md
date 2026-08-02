@@ -6,7 +6,11 @@ depth-goal: "Use the notation, equations, and diagnostic ideas while reading met
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 연결 지도 · prerequisites & connection map
+> [!note] Prerequisites · 선수 지식
+> [[02-foundations/neural-network-basics|0.7]] (training, validation, hyperparameters) · [[02-foundations/probability|3. Probability §1]] (conditional probability, for precision/recall)
+> [[02-foundations/neural-network-basics|0.7]](학습·검증·하이퍼파라미터) · [[02-foundations/probability|3. 확률 §1]](정밀도·재현율을 위한 조건부 확률)
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 

@@ -53,6 +53,10 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 
 ## A–C
 
+- **Activation function** — The simple nonlinearity applied between layers (ReLU $\max(0,z)$ is the common one). Without it, stacked layers collapse into a single matrix. · 층 사이에 적용하는 단순한 비선형 함수. 없으면 층을 쌓아도 행렬 하나로 접힌다. → [[02-foundations/neural-network-basics|0.7]]
+- **Affordance** — What an object or state makes possible for a particular robot (graspable, pushable). In SayCan-style planners an affordance model scores whether a skill can succeed *here and now*, which is what grounds a language plan. · 특정 로봇에게 그 대상·상태가 무엇을 가능하게 하는가. 언어 계획을 접지하는 것이 이 점수다. → [[01-canonical-papers/notes/4-vla/saycan|SayCan]]
+- **Batch / minibatch** — The group of samples whose losses are averaged for one parameter update. Batch size is a hyperparameter; dataset size ÷ batch size = iterations per epoch. · 한 번의 파라미터 갱신을 위해 손실을 평균하는 샘플 묶음. → [[02-foundations/neural-network-basics|0.7 §4]]
+
 - **Action chunking** — Predicting actions in blocks of tens of steps instead of one at a time, which shrinks compounding error. · 행동을 하나씩이 아니라 수십 스텝 덩어리로 예측해 복합 오차를 줄이는 기법. → [[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]
 - **Advantage** — $A = Q - V$: how much better an action is than that state's average choice. · 어떤 행동이 그 상태의 평균적 선택보다 얼마나 나은가. → [[02-foundations/rl-basics|RL 기초]]
 - **Anti-windup** — The mechanism that stops a PID integrator accumulating while the actuator is saturated; every real implementation has one, and a PID baseline without it is unfairly weak. · 액추에이터 포화 중 적분항이 쌓이는 것을 막는 장치. → [[04-robotics/control-theory-ce397|제어 이론 §7]]
@@ -70,6 +74,11 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 
 ## D–I
 
+- **Digital twin** — A *maintained* operational state linked to a physical system, as opposed to a static BIM/CAD model. Only a bidirectional (closed) loop — observation updates the model, the model changes the next action — earns the name for robotics. · 정적 BIM이 아니라 물리 시스템과 연결되어 유지되는 운용 상태; 양방향 폐루프여야 로보틱스에서 이 이름값을 한다. → [[05-construction-robotics/digital-twin-workflows|Digital Twins]]
+- **Eigenvalue / eigenvector** — Directions a matrix only stretches: $Av = \lambda v$. They govern long-run behaviour ($A^k$), optimization difficulty (the condition number), and stability (poles). · 사상이 늘이기만 하는 방향; 장기 거동·최적화 난이도·안정성을 지배한다. → [[02-foundations/linear-algebra|Linear Algebra §3]]
+- **Epoch** — One full pass over the training dataset. "300 epochs" times iterations-per-epoch gives the number of parameter updates. · 데이터셋 전체를 한 바퀴 도는 것. → [[02-foundations/neural-network-basics|0.7 §4]]
+- **Hyperparameter** — A value a human sets before training (learning rate, batch size, depth, width), as opposed to a parameter that gradient descent learns. Ablations vary these. · 학습 전에 사람이 정하는 값; 경사 하강이 배우는 파라미터와 구분된다. → [[02-foundations/neural-network-basics|0.7 §5]]
+
 - **Damping ratio ($\zeta$)** — The number deciding whether a second-order response rings: $\zeta<1$ oscillates, $\zeta=1$ is critically damped, $\zeta>1$ is sluggish. With $\omega_n$ it fixes settling time and overshoot. · 2차 응답이 울리는지를 정하는 수. → [[04-robotics/control-theory-ce397|제어 이론 §5]]
 - **Diffusion model** — A generative model that learns to reverse a fixed noising process. · 데이터에 노이즈를 점진적으로 섞는 고정 과정을 학습으로 되돌려 생성하는 모델. → [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]
 - **DiT (Diffusion Transformer)** — Diffusion with the U-Net replaced by a Transformer over latent patches; the architecture inside π0 and GR00T action heads. · 디퓨전의 U-Net을 잠재 패치 위의 Transformer로 교체한 백본. → [[01-canonical-papers/notes/6-diffusion/dit|DiT]]
@@ -86,6 +95,12 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 - **Inverse kinematics (IK)** — Finding joint angles that achieve a desired end-effector pose. Unlike forward kinematics it may have zero, one, several, or infinitely many solutions — the classical face of action multimodality. · 원하는 말단 자세를 만드는 관절 각 찾기; 해가 0개·1개·여러 개·무한일 수 있다. → [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]
 
 ## K–P
+
+- **Loop closure** — Recognizing that the robot has returned to a previously mapped place, and adding that constraint so accumulated drift can be corrected. A *false* closure corrupts the whole map. · 이전에 지도화한 장소로 돌아왔음을 인식해 제약을 추가하고 누적 drift를 보정하는 것; 잘못된 closure 하나가 지도 전체를 망친다. → [[04-robotics/state-estimation-slam|State Estimation §7]]
+- **Loss function** — The single number measuring how wrong a prediction is (MSE for continuous outputs, cross-entropy for categories). Training minimizes it; it is not the same as the evaluation metric. · 예측이 얼마나 틀렸는지를 재는 숫자 하나; 평가 지표와 같지 않다. → [[02-foundations/neural-network-basics|0.7 §3]]
+- **MDP (Markov Decision Process)** — $(\mathcal{S},\mathcal{A},p,r,\gamma)$: states, actions, transition kernel, reward, discount. The formalism every RL paper writes its problem in; robotics usually faces the partially observed version (POMDP). · RL 논문이 문제를 쓰는 형식; 로보틱스는 대개 부분 관측(POMDP)이다. → [[02-foundations/rl-basics|RL Basics §1]]
+- **Neural network** — A composition of matrix multiplications with a nonlinearity between them; the weights and biases are the parameters fitted to data. · 행렬곱 사이에 비선형성을 끼워 합성한 것; 가중치와 편향이 데이터에 맞춰지는 파라미터다. → [[02-foundations/neural-network-basics|0.7 §1]]
+- **Policy gradient** — Differentiating the RL objective itself via the log-derivative trick, then raising the log-probability of actions in proportion to the return that followed. Unbiased but high variance, hence baselines, advantages and GAE. · 목적함수 자체를 미분해 뒤따른 리턴에 비례해 행동의 로그 확률을 올리는 것. → [[02-foundations/rl-basics|RL Basics §4]]
 
 - **Kalman gain** — The weight deciding how far an estimate moves toward a new measurement; it follows from predicted covariance, sensor covariance, and observation geometry rather than being set by hand. · 추정값을 새 측정 쪽으로 얼마나 옮길지 정하는 가중치. → [[02-foundations/probability|확률 §5]], [[04-robotics/state-estimation-slam|State Estimation]]
 - **KKT conditions** — First-order optimality for constrained optimization: stationarity, primal and dual feasibility, complementary slackness. · 제약 최적화의 1차 최적성 조건. → [[02-foundations/optimization|최적화 §4]]
@@ -106,6 +121,10 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 - **Pseudo-label** — Training a student on unlabeled data using a teacher model's predictions as labels. · 교사 모델의 예측을 라벨 삼아 무라벨 데이터로 학생을 학습. → [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]
 
 ## Q–Z
+
+- **Reality gap** — The set of mismatches between simulator and world (dynamics, contact/material, sensing, task distribution, software/hardware) that a sim-trained policy meets at deployment. Sim-to-real is the practice of managing it. · 시뮬레이터와 현실 사이의 불일치 묶음; sim-to-real이 이를 관리하는 실무다. → [[05-construction-robotics/sim-to-real|Sim-to-Real §1]]
+- **Replay buffer** — A store of past transitions that an off-policy algorithm samples from repeatedly, so experience is reused instead of discarded after one update. · off-policy 알고리즘이 반복해 샘플하는 과거 전이 저장소 — 경험을 한 번 쓰고 버리지 않는다. → [[02-foundations/rl-basics|RL Basics §3]], [[01-canonical-papers/notes/1-foundations/sac|SAC]]
+- **SVD / singular value** — The factorization $A = U\Sigma V^\top$ available for *every* matrix; the singular values give rank, the 2-norm, the best low-rank approximation (Eckart–Young), and the axes of a manipulability ellipsoid. · 모든 행렬에 존재하는 분해; 랭크·2-노름·최적 저랭크 근사·가조작성 타원체의 축을 준다. → [[02-foundations/linear-algebra|Linear Algebra §4]]
 
 - **Q-Former** — A connector module distilling an image into a few tokens using learned queries. · 학습된 쿼리로 이미지를 소수 토큰으로 증류하는 연결 모듈. → [[01-canonical-papers/notes/3-vlm/blip-2|BLIP-2]]
 - **Receding horizon** — The execution structure of repeatedly re-planning while pushing the horizon forward; what makes a planner closed-loop. · 지평을 앞으로 밀며 계획을 반복 갱신하는 실행 구조. → [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]

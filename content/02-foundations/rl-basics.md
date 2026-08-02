@@ -6,7 +6,11 @@ depth-goal: "Use the notation, equations, and diagnostic ideas while reading met
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
+> [!note] Prerequisites · 선수 지식
+> [[02-foundations/engineering-math|0.5 §5]] (geometric series — where the effective horizon comes from) · [[02-foundations/probability|3. Probability §1–2, §5]] (conditioning, expectation, the Markov property) · [[02-foundations/calculus-backprop|2. Calculus]] (gradients, for policy gradients)
+> [[02-foundations/engineering-math|0.5 §5]](기하급수 — 유효 지평이 여기서 나온다) · [[02-foundations/probability|3. 확률 §1–2, §5]](조건화·기댓값·마르코프 성질) · [[02-foundations/calculus-backprop|2. 미적분]](정책 그래디언트를 위한 그래디언트)
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 

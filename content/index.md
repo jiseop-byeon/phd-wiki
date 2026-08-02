@@ -15,7 +15,7 @@ one's own research area.
 ### Start here — pick the path that matches you
 
 1. **Choose the required depth first**: [[00-study-depth-guide|0. Study Depth Guide]] — Literacy for every adjacent field, Working for methods you use, Mastery only for the contribution area.
-2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 3.
+2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → then path 3. If you have engineering mathematics but no machine learning, [[02-foundations/neural-network-basics|0.7 What a Neural Network Is]] is the twenty minutes that makes the rest readable.
 3. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then the [[01-canonical-papers/canonical-list|Canonical Paper List]] in order — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside.
 4. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 
@@ -46,7 +46,7 @@ one's own research area.
 ### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 
 1. **먼저 필요한 깊이를 정한다**: [[00-study-depth-guide|0. Study Depth Guide]] — 모든 인접 분야는 Literacy, 직접 쓰는 방법은 Working, 기여 영역만 Mastery.
-2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → 그다음 3번 경로로.
+2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → 그다음 3번 경로로. 공업수학은 했지만 기계학습이 처음이라면 [[02-foundations/neural-network-basics|0.7 신경망이란 무엇인가]]가 나머지를 읽히게 만드는 20분이다.
 3. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어두고.
 4. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
 

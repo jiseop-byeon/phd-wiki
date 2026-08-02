@@ -6,7 +6,11 @@ depth-goal: "Use the notation, equations, and diagnostic ideas while reading met
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지에 필요한 사전 수학과 다른 지식과의 연결 지도 · prerequisites & connection map
+> [!note] Prerequisites · 선수 지식
+> [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.7]] (what a layer and a loss are)
+> [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.7]](층과 손실이 무엇인지)
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 

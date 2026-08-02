@@ -39,6 +39,7 @@ paper in this wiki** (individual papers may require deeper references): math cor
 
 - [[02-foundations/overview|0. Overview]] — prerequisites, study order, connection map
 - [[02-foundations/engineering-math|0.5 Engineering Math]] — the assumed undergraduate math, self-contained: derivatives to Euler's formula, plus a notation dictionary
+- [[02-foundations/neural-network-basics|0.7 What a Neural Network Is]] — layers, loss, batch, epoch, hyperparameter: the ML vocabulary pages 1–9 assume, for a reader who has only done engineering math
 - [[02-foundations/linear-algebra|1. Linear Algebra]] — matrices as maps, rank/SVD, the geometry behind attention and LoRA
 - [[02-foundations/calculus-backprop|2. Calculus & Backpropagation]] — chain rule to backprop, vanishing/exploding gradients as architecture history
 - [[02-foundations/probability|3. Probability & Random Processes]] — Bayes to Kalman, MLE as the origin of many standard losses
@@ -81,6 +82,7 @@ paper in this wiki** (individual papers may require deeper references): math cor
 
 - [[02-foundations/overview|0. Overview]] — 사전 지식, 학습 순서, 연결 지도
 - [[02-foundations/engineering-math|0.5 공업수학]] — 전제되는 학부 수학을 자체 완결로: 미분부터 오일러 공식까지 + 표기법 사전
+- [[02-foundations/neural-network-basics|0.7 신경망이란 무엇인가]] — 층·손실·배치·에포크·하이퍼파라미터: 1~9페이지가 전제하는 ML 어휘를 공업수학만 한 독자를 위해
 - [[02-foundations/linear-algebra|1. 선형대수]] — 사상으로서의 행렬, 랭크/SVD, 어텐션과 LoRA 뒤의 기하
 - [[02-foundations/calculus-backprop|2. 미적분과 역전파]] — 연쇄 법칙에서 역전파까지, 구조 설계사(史)로서의 그래디언트 소실/폭발
 - [[02-foundations/probability|3. 확률과 랜덤 프로세스]] — 베이즈에서 칼만까지, 많은 표준 손실함수의 기원으로서의 MLE

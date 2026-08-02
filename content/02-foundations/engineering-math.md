@@ -6,7 +6,11 @@ depth-goal: "Use the notation, equations, and diagnostic ideas while reading met
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
 
-> [[02-foundations/overview|0. Overview]] — 이 페이지가 어디에 쓰이는지의 지도 · where this page fits
+> [!note] Prerequisites · 선수 지식
+> None — this is the entry point. It assumes only first- or second-year engineering mathematics, and re-derives what it needs.
+> 없음 — 여기가 진입점이다. 공대 1~2학년 공업수학만 전제하고, 필요한 것은 이 페이지가 다시 세운다.
+>
+> Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 
