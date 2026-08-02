@@ -17,7 +17,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 You cannot read [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]], the
 [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] line, or half of modern robot learning without
 the MDP vocabulary. Course-depth treatment: the Bellman machinery, both algorithm families
-with their update rules, the policy gradient theorem, and PPO's actual objective.
+with their update rules, the policy gradient theorem, and PPO's actual objective — then the
+layer robot papers actually spend their pages on: reward design, exploration, RL
+fine-tuning on real machines, and how to read an RL experimental section.
 
 ### 1. The MDP
 
@@ -76,6 +78,12 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   use reward-to-go; **actor-critic**: learn $V_\phi$ with TD and use
   $\delta = r + \gamma V(s') - V(s)$ as a one-sample advantage estimate. **GAE** (generalized advantage estimation) interpolates
   between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ.
+- **Why a baseline matters, in numbers.** One state, two actions, $\pi(a_1)=0.6$,
+  $\pi(a_2)=0.4$, returns $G_1 = 1$, $G_2 = 0$. Raw REINFORCE weights the two
+  log-probability gradients by $1$ and $0$: $a_1$ is pushed up and $a_2$ is *left alone*.
+  Subtract the baseline $b = E[G] = 0.6\cdot1 + 0.4\cdot0 = 0.6$ and the weights become
+  advantages $A_1 = +0.4$, $A_2 = -0.6$ — now the worse action is actively pushed **down**.
+  Same expected gradient, far less variance: that is the whole trick.
 - **PPO** — the workhorse ([[01-canonical-papers/notes/1-foundations/instructgpt|the one inside RLHF]]):
   with ratio $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$,
   $$\mathcal{L} = E_t\big[\min\big(\rho_t A_t,\ \text{clip}(\rho_t, 1{-}\epsilon, 1{+}\epsilon)\, A_t\big)\big]$$
@@ -83,6 +91,13 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
   — take policy-gradient steps but *clip away the incentive* to move far from the data-
   collecting policy. A trust region by clamp, plus (in RLHF) an explicit KL penalty
   ([[02-foundations/information-theory|information theory]]).
+- **The clip, in numbers** ($\epsilon = 0.2$). Good action, $A = +1$, and the policy has
+  already raised it to $\rho = 1.3$: $\min(1.3,\ \text{clip}(1.3)=1.2) = 1.2$ — the
+  *clipped* branch wins, and it is flat, so the gradient is **zero**: no incentive to push
+  further. Bad action, $A = -1$, and the policy is moving the wrong way at $\rho = 1.5$:
+  $\min(-1.5,\ -1.2) = -1.5$ — the *unclipped* branch wins, gradient nonzero, so the
+  penalty **keeps acting**. Clipping removes the incentive to overshoot, never the
+  incentive to correct.
 
 ### 5. Model-based RL — the world-model connection
 
@@ -149,6 +164,135 @@ Entry chain into the papers: this section →
   policy improvement re-weighted by $e^{A/\beta}$; "KL-regularized policy" = stay near a
   reference policy while improving.
 
+### 7. Reward design — the choice that decides the outcome
+
+Supervised learning is handed its target; RL is handed a *reward someone wrote*. That
+authoring step is where most robot-RL papers actually succeed or fail, and it is the part
+their abstracts never mention.
+
+- **Sparse vs dense.** A **sparse** reward (+1 when the bucket is full, 0 otherwise) is
+  honest — it says exactly what you want and nothing else — but a randomly initialized
+  policy may never see it. A **dense** (shaped) reward gives signal every step and learns
+  far faster, at the price that you are now optimizing your *proxy* for the goal.
+- **Potential-based shaping** is the one shaping form that provably cannot change the
+  optimal policy: add $F = \gamma\Phi(s') - \Phi(s)$ for any function $\Phi$ of state.
+  Anything else — and most papers use something else — can change what is optimal.
+- **A real reward is a weighted sum of terms.** A digging policy's reward typically looks
+  like this, and the table *is* the method section worth reading:
+
+| Term | Purpose | Typical sign |
+|---|---|---|
+| task progress (soil moved, distance to target) | do the job | + |
+| tracking / pose error | do it accurately | − |
+| action magnitude or rate ("smoothness") | stop the policy from chattering the actuators | − |
+| energy or effort | efficiency, hardware life | − |
+| constraint violation (joint limit, tipping, force cap) | stay safe | − (large) |
+| termination / failure penalty | end episodes meaningfully | − (large) |
+
+- **The weights are hyperparameters, and they fight.** Take
+  $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$. Moving 1 cm ($\Delta d = 0.01$) with a
+  unit-norm action earns $2.0(0.01) - 0.5(1) = -0.48$ — **negative**, so the optimal policy
+  is to *do nothing*. Degenerate "stands still and collects the smoothness bonus" solutions
+  come from arithmetic exactly this simple.
+- **Reward hacking** is the general form: the policy maximizes what you wrote, not what you
+  meant. A velocity reward met by vibrating in place; a distance-to-goal reward met by
+  circling just inside the threshold. Symptom: reward curve rises, behaviour is wrong.
+  The diagnostic question is always *what is the cheapest way to earn this reward?*
+- **Reading cue**: find the reward table, count the terms, look for the weights (often only
+  in an appendix), and ask which term dominates at the operating point the paper reports.
+  A paper that will not show its reward has not shown its method.
+
+### 8. Exploration — and curriculum as its scaffolding
+
+A policy only learns from what it tries. With a sparse reward and a random start, it may
+try forever and see nothing — which is why exploration, not the update rule, is usually
+the binding constraint.
+
+- **Discrete actions**: $\epsilon$-greedy — act greedily with probability $1-\epsilon$,
+  uniformly at random otherwise, with $\epsilon$ decayed over training.
+- **Continuous actions** (the robotics case): add noise to the action (Gaussian, or
+  temporally correlated Ornstein–Uhlenbeck noise so the machine does not jitter), or keep
+  the policy **stochastic** and let it learn its own standard deviation — what PPO does.
+- **Entropy bonus**: add $+\alpha H(\pi)$ to the objective
+  ([[02-foundations/information-theory|information theory]]) so the policy is rewarded for
+  staying undecided, and does not collapse to a deterministic mediocre habit early.
+  [[01-canonical-papers/notes/1-foundations/sac|SAC]] promotes this from a bonus to *the*
+  objective and tunes $\alpha$ automatically.
+- **Curriculum learning** changes the *task* instead of the algorithm: start with shallow
+  digs in soft soil, raise depth and resistance once success rate passes a threshold. It is
+  cheap and often does most of the work — which is exactly why it belongs in the comparison:
+  if a paper's method used a curriculum and the baseline did not, the ablation is not
+  measuring the method.
+- Its transfer-side sibling, **domain randomization**, is about robustness rather than
+  exploration and lives in the [[05-construction-robotics/sim-to-real|sim-to-real guide]].
+
+### 9. RL on a real machine: fine-tuning, safety, and where sim-to-real sits
+
+- **RL fine-tuning (RLFT)** is how RL now most often reaches robots — and how you will
+  meet it in this wiki. Start from a policy already pretrained by behavior cloning (or an
+  earlier RL run), then continue with RL on task reward. Pretraining puts you in a region
+  where exploration is not hopeless; RL then fixes what the demonstrations could not cover.
+  It is the same shape as [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]],
+  and it is what [[01-canonical-papers/notes/8-construction/ext|ExT]]'s SFT/RLFT stage does
+  on an excavator.
+- **Keep it near the reference.** RLFT is usually regularized by a KL term back to the
+  pretrained policy. Drift too far and you lose what pretraining bought — and reward
+  hacking becomes likely, because the reward was never meant to define the whole behaviour.
+- **Safety while learning** has only a few honest answers, and reward penalties are the
+  weakest of them:
+  1. train in simulation (dominant — a 12-tonne machine cannot "try and correct");
+  2. wrap the policy in a **safety filter / envelope** that clips or vetoes unsafe commands
+     before they reach the actuator ([[04-robotics/mpc|MPC]] is often that filter);
+  3. formulate a **constrained MDP** and optimize reward subject to a bound on expected
+     violation (Lagrangian methods);
+  4. penalize violations in the reward — convenient, and it guarantees **nothing**: a large
+     enough task reward will buy the penalty.
+- **The real cost is not compute.** On hardware, every episode needs a reset, resets are
+  human labour, and wear and safety review are real budgets
+  ([[04-robotics/hri-safety|HRI & safety]]).
+- The transfer half of this story — reality gap, randomization, privileged learning,
+  residuals, the deployment ladder — is the
+  [[05-construction-robotics/sim-to-real|Sim-to-Real guide]]. Read it right after this page
+  if your interest is robots rather than language models.
+
+### 10. Reading an RL experimental section
+
+RL results depend on protocol more than almost any other subfield's. What to check:
+
+| Paper phrase | What to check |
+|---|---|
+| "trained for $2\times10^9$ environment steps" | steps ≠ time, and steps ≠ real experience — how many parallel environments, and simulated or real? |
+| "sample-efficient" | measured in environment steps, wall-clock, or *real machine hours*? Only the last is scarce |
+| "outperforms PPO/SAC baseline" | same reward, same observation space, same curriculum, same tuning budget? |
+| learning curve | x-axis units, number of seeds, and whether the shaded band is std, standard error, or a CI ([[02-foundations/ml-practice\|ML practice §4]]) |
+| "we use PPO" | the optimizer name specifies almost nothing — the reward, observations and curriculum do ([[01-canonical-papers/notes/1-foundations/ppo\|PPO note]]) |
+| "zero-shot transfer" | no target-domain training update — but the simulator was probably built from real data |
+| success rate | how many evaluation episodes, from what initial-state distribution, under what time limit |
+
+- **Scale, in numbers.** $2\times10^9$ steps sounds enormous. With 4,096 parallel
+  environments that is 488,000 steps each; at a 50 Hz control rate, 9,760 s ≈ **2.7 hours of
+  simulated experience per environment** — a few GPU-hours. The identical number on *one
+  real machine* at 50 Hz would be **1.3 years**. That ratio is the whole reason robot RL
+  lives in simulation.
+- **Observation and action spaces are part of the result.** What the policy sees (joint
+  states? terrain heightmap? privileged soil parameters?) and what it emits (joint
+  velocities? valve currents? end-effector poses?) change the problem more than the
+  algorithm does. Observation **normalization statistics are part of the model** — shipping
+  a policy without them is a classic silent deployment failure.
+- **Episode termination and time limits.** Ending an episode because the task failed and
+  ending it because the clock ran out are different: the second should still bootstrap the
+  value function, and treating it as terminal quietly teaches the policy that the world
+  ends at the time limit.
+
+> [!warning] Reading the claim · 주장 읽는 법
+> An RL result is a claim about a *reward, an observation space, a simulator, a curriculum,
+> an exploration scheme, and an evaluation protocol* — the algorithm name is the least
+> informative part of it. Before comparing two RL papers, check that those six match; when
+> they do not, you are comparing problem definitions, not methods.
+> RL 결과는 *보상·관측 공간·시뮬레이터·커리큘럼·탐색 방식·평가 규약*에 대한 주장이고,
+> 알고리즘 이름이 그중 가장 정보가 적다. 두 RL 논문을 비교하기 전에 이 여섯이 일치하는지
+> 확인하라 — 일치하지 않으면 방법이 아니라 문제 정의를 비교하는 것이다.
+
 ### Self-check
 
 1. Derive the Bellman expectation equation from the definition of $V^\pi$ (one line of
@@ -158,6 +302,15 @@ Entry chain into the papers: this section →
 3. In PPO's objective, what does the $\min$ do when $A_t > 0$ vs $A_t < 0$? Why clip at all?
 4. Give two reasons Dreamer-style imagination training keeps horizons short (~15 steps).
 5. Why does action chunking reduce compounding error, and what does it trade away?
+6. A reward is $r = 1.0\,\Delta d - 0.2\lVert a\rVert^2 - 5.0\,\mathbb{1}[\text{limit hit}]$.
+   The policy learns to freeze at the start. Give the arithmetic reason, and one fix.
+7. A paper's method uses a curriculum; its PPO baseline does not. What has the ablation
+   actually measured?
+8. Why is "penalize constraint violations in the reward" not a safety guarantee, and what
+   are two mechanisms that are stronger?
+9. A paper reports $1\times10^9$ environment steps with 2,048 parallel environments at
+   100 Hz. How much simulated experience is that per environment, and how long would the
+   same number take on one real machine?
 
 > [!tip]- Answers
 > 1. $V^\pi(s) = E[G_t\mid s] = E[r_t + \gamma G_{t+1}\mid s]$ by splitting the return; the Markov property lets you fold the inner expectation of $G_{t+1}$ into $V^\pi(s')$, giving $V^\pi(s) = E_{a\sim\pi, s'\sim p}[r + \gamma V^\pi(s')]$.
@@ -165,17 +318,22 @@ Entry chain into the papers: this section →
 > 3. With $A_t > 0$, once the ratio exceeds $1+\epsilon$ the gain is clipped, removing the incentive to keep *raising* that action's probability. With $A_t < 0$, the $\min$ selects the *unclipped* (more negative) term whenever the policy is moving the wrong way, so the penalty keeps acting; clipping bounds the excessive *decrease*. The purpose of clipping is a trust region: stay near the policy that collected the data, where the importance-weighted estimate is still valid.
 > 4. ① Model error compounds exponentially along an imagined rollout, so long horizons optimize against fiction. ② A learned value function bootstraps everything beyond the horizon, so the rollout does not *need* to be long — the value estimate replaces the tail.
 > 5. Predicting $k$ actions at once cuts by a factor of $k$ the number of times the policy re-conditions on its own (possibly drifted) state, so off-distribution drift accumulates more slowly. The trade is reactivity: during chunk execution new observations are only partially incorporated (or not at all), so a disturbance mid-chunk is answered late.
+> 6. Any motion costs the smoothness term immediately while the progress term pays only $1.0\Delta d$; for a unit-norm action, moving 1 cm earns $0.01 - 0.2 = -0.19$, so standing still (reward 0) is optimal. Fixes: raise the progress weight or rescale $\Delta d$ to comparable units, penalize *action rate* rather than magnitude, or add a small per-step alive/idle penalty so doing nothing is not free.
+> 7. The difference between (method + curriculum) and (baseline without curriculum) — that is, it measured the curriculum and the method together. The comparison isolates nothing unless the baseline gets the same curriculum.
+> 8. Because it is a soft trade: a large enough task reward simply buys the penalty, and nothing bounds violations during the exploration that precedes learning. Stronger: a safety filter/envelope that vetoes unsafe commands before the actuator (often an MPC), and a constrained-MDP formulation that optimizes reward subject to an explicit bound on expected violation.
+> 9. $1\times10^9/2{,}048 \approx 488{,}000$ steps per environment; at 100 Hz that is 4,880 s ≈ **1.4 hours** of simulated experience each. On one real machine at 100 Hz: $10^9/100 = 10^7$ s ≈ **116 days**.
 
 ### Robotics bridge
 
-MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]].
+MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]]. If your interest is robots, read the [[05-construction-robotics/sim-to-real|Sim-to-Real guide]] next — it is the transfer half of §9.
 
 ## 한국어
 
 MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]도,
 [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] 계열도, 현대 로봇 학습의 절반도 읽을 수 없다.
 교재 수준의 서술: 벨만 기계장치, 갱신 규칙까지 포함한 두 알고리즘 계열, 정책 그래디언트
-정리, 그리고 PPO의 실제 목적함수.
+정리, PPO의 실제 목적함수 — 그리고 로봇 논문이 실제로 지면을 쓰는 층: 보상 설계, 탐색,
+실기계 위의 RL 파인튜닝, RL 실험 절 읽는 법.
 
 ### 1. MDP
 
@@ -231,6 +389,12 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를
   TD로 배우고 $\delta = r + \gamma V(s') - V(s)$를 1-샘플 어드밴티지로. **GAE**(generalized advantage estimation)는
   λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다.
+- **베이스라인이 왜 중요한지, 숫자로.** 상태 하나에 행동 둘, $\pi(a_1)=0.6$,
+  $\pi(a_2)=0.4$, 리턴 $G_1 = 1$, $G_2 = 0$. 날것의 REINFORCE는 두 로그 확률
+  그래디언트에 $1$과 $0$을 곱한다: $a_1$은 올라가고 $a_2$는 *그대로 방치*된다.
+  베이스라인 $b = E[G] = 0.6$을 빼면 가중치가 어드밴티지 $A_1 = +0.4$, $A_2 = -0.6$이
+  되어, 이제 나쁜 행동이 적극적으로 **내려간다**. 기댓값은 같고 분산만 줄었다 — 트릭의
+  전부가 이것이다.
 - **PPO** — 주력 알고리즘 ([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF 속의 그것]]):
   비율 $\rho_t = \pi_\theta(a_t|s_t)/\pi_{old}(a_t|s_t)$에 대해
   $$\mathcal{L} = E_t\big[\min\big(\rho_t A_t,\ \text{clip}(\rho_t, 1{-}\epsilon, 1{+}\epsilon)\, A_t\big)\big]$$
@@ -238,6 +402,12 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   — 정책 그래디언트 스텝을 밟되, 데이터를 모은 정책에서 멀어질 *유인을 클리핑으로
   제거*한다. 클램프로 만든 신뢰 영역, 그리고 (RLHF에서는) 명시적 KL 페널티
   ([[02-foundations/information-theory|정보이론]])까지.
+- **클리핑, 숫자로** ($\epsilon = 0.2$). 좋은 행동 $A = +1$인데 정책이 이미
+  $\rho = 1.3$까지 올려놨다면: $\min(1.3,\ \text{clip}(1.3)=1.2) = 1.2$ — *잘린* 가지가
+  이기고, 그 가지는 평평하므로 그래디언트가 **0**이다: 더 밀 유인이 없다. 나쁜 행동
+  $A = -1$인데 정책이 엉뚱하게 $\rho = 1.5$로 가고 있다면:
+  $\min(-1.5,\ -1.2) = -1.5$ — *안 잘린* 가지가 이기고 그래디언트가 0이 아니므로
+  페널티가 **계속 작용한다**. 클리핑은 과잉의 유인만 없애지, 교정의 유인은 없애지 않는다.
 
 ### 5. 모델 기반 RL — 월드모델과의 연결
 
@@ -298,6 +468,113 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 - 논문 해독기: "BC baseline" = 행동 복제; "advantage-weighted" = $e^{A/\beta}$로 재가중된
   정책 개선; "KL-regularized policy" = 기준 정책 근처에 머물며 개선하기.
 
+### 7. 보상 설계 — 결과를 결정하는 선택
+
+지도학습은 타깃을 받아 든다. RL은 *누군가 써 놓은 보상*을 받아 든다. 로봇 RL 논문이 실제로
+성공하거나 실패하는 지점이 그 저술 단계이고, 초록이 결코 말하지 않는 부분이다.
+
+- **희소 vs 촘촘.** **희소** 보상(버킷이 차면 +1, 아니면 0)은 정직하다 — 원하는 것만 정확히
+  말한다 — 하지만 무작위 초기 정책은 그것을 영영 못 볼 수 있다. **촘촘한**(shaped) 보상은
+  매 스텝 신호를 주어 훨씬 빨리 학습하지만, 이제 목표가 아니라 목표의 *대리물*을 최적화하게 된다.
+- **포텐셜 기반 shaping**은 최적 정책을 바꾸지 않음이 증명된 유일한 형태다: 상태의 임의 함수
+  $\Phi$에 대해 $F = \gamma\Phi(s') - \Phi(s)$를 더한다. 그 외의 것은 — 그리고 대부분의 논문이
+  그 외의 것을 쓴다 — 무엇이 최적인지를 바꿀 수 있다.
+- **실제 보상은 항들의 가중합이다.** 굴착 정책의 보상은 보통 이렇게 생겼고, 이 표가 곧 읽을
+  가치가 있는 방법 절이다:
+
+| 항 | 목적 | 부호 |
+|---|---|---|
+| 과제 진행(옮긴 토량, 목표까지 거리) | 일을 한다 | + |
+| 추종·자세 오차 | 정확하게 한다 | − |
+| 행동 크기·변화율("매끄러움") | 액추에이터를 떨지 않게 한다 | − |
+| 에너지·노력 | 효율, 기계 수명 | − |
+| 제약 위반(관절 한계, 전도, 힘 상한) | 안전 | − (큼) |
+| 종료·실패 페널티 | 에피소드를 의미 있게 끝낸다 | − (큼) |
+
+- **가중치는 하이퍼파라미터이고, 서로 싸운다.** $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$를
+  보자. 단위 노름 행동으로 1 cm 이동($\Delta d = 0.01$)하면
+  $2.0(0.01) - 0.5(1) = -0.48$ — **음수**다. 즉 최적 정책은 *아무것도 하지 않는 것*이다.
+  "가만히 서서 매끄러움 보너스만 챙긴다"는 퇴화 해가 정확히 이만큼 단순한 산수에서 나온다.
+- **Reward hacking**이 그 일반형이다: 정책은 당신이 *의도한* 것이 아니라 *써 놓은* 것을
+  최대화한다. 속도 보상을 제자리 진동으로 채우고, 목표까지 거리 보상을 문턱 안쪽에서 맴돌며
+  채운다. 증상: 보상 곡선은 오르는데 거동이 틀렸다. 진단 질문은 언제나
+  *이 보상을 버는 가장 싼 방법이 무엇인가?* 다.
+- **읽기 단서**: 보상 표를 찾고, 항의 개수를 세고, 가중치를 찾고(대개 부록에만 있다), 논문이
+  보고하는 운용점에서 어느 항이 지배적인지 물어라. 보상을 보여주지 않는 논문은 방법을 보여주지
+  않은 것이다.
+
+### 8. 탐색 — 그리고 그 발판으로서의 커리큘럼
+
+정책은 자기가 시도한 것에서만 배운다. 희소 보상에 무작위 시작이면 영원히 시도하고도 아무것도
+못 볼 수 있다 — 갱신 규칙이 아니라 탐색이 대개 병목인 이유다.
+
+- **이산 행동**: $\epsilon$-greedy — 확률 $1-\epsilon$로 탐욕적으로, 나머지는 균등 무작위로
+  행동하고, 학습이 진행되면 $\epsilon$을 줄인다.
+- **연속 행동**(로보틱스의 경우): 행동에 노이즈를 더하거나(가우시안, 또는 기계가 떨지 않도록
+  시간 상관이 있는 Ornstein–Uhlenbeck 노이즈), 정책을 **확률적**으로 두고 표준편차 자체를
+  학습시킨다 — PPO가 하는 방식.
+- **엔트로피 보너스**: 목적함수에 $+\alpha H(\pi)$를 더해
+  ([[02-foundations/information-theory|정보이론]]) 정책이 결정을 유보하는 데 보상을 주고,
+  이른 시점에 평범한 결정론적 습관으로 붕괴하지 않게 한다.
+  [[01-canonical-papers/notes/1-foundations/sac|SAC]]는 이것을 보너스에서 *목적함수 자체*로
+  승격시키고 $\alpha$를 자동 조정한다.
+- **커리큘럼 학습**은 알고리즘 대신 *과제*를 바꾼다: 무른 토질에서 얕게 파는 것으로 시작해,
+  성공률이 문턱을 넘으면 깊이와 저항을 올린다. 싸고 대개 일의 대부분을 해낸다 — 그래서 비교에
+  반드시 들어가야 한다: 제안 방법은 커리큘럼을 쓰고 베이스라인은 안 썼다면, 그 절제 실험은
+  방법을 재고 있는 것이 아니다.
+- 전이 쪽 형제인 **도메인 랜덤화**는 탐색이 아니라 강건성의 문제이고
+  [[05-construction-robotics/sim-to-real|sim-to-real 가이드]]에 있다.
+
+### 9. 실기계 위의 RL: 파인튜닝, 안전, 그리고 sim-to-real의 자리
+
+- **RL 파인튜닝(RLFT)**이 오늘날 RL이 로봇에 닿는 가장 흔한 경로이고, 이 위키에서 만나게 될
+  형태다. 행동 복제(또는 이전 RL 실행)로 이미 사전학습된 정책에서 출발해, 과제 보상으로 RL을
+  이어간다. 사전학습이 탐색이 절망적이지 않은 영역에 데려다 놓고, RL이 시연으로 덮지 못한 것을
+  고친다. [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]]와 같은
+  모양이며, [[01-canonical-papers/notes/8-construction/ext|ExT]]의 SFT/RLFT 단계가 굴착기에서
+  하는 일이 이것이다.
+- **기준 근처에 붙들어 둔다.** RLFT는 보통 사전학습 정책으로의 KL 항으로 정규화한다. 너무 멀리
+  가면 사전학습이 사 준 것을 잃고, reward hacking이 유력해진다 — 보상은 애초에 거동 전체를
+  정의하려고 쓴 것이 아니기 때문이다.
+- **학습 중 안전**에는 정직한 선택지가 몇 개뿐이고, 보상 페널티가 그중 가장 약하다:
+  1. 시뮬레이션에서 학습한다(지배적 — 12톤 기계는 "해 보고 고치기"를 할 수 없다);
+  2. 안전하지 않은 명령이 액추에이터에 닿기 전에 자르거나 거부하는 **안전 필터·엔벨로프**로
+     정책을 감싼다([[04-robotics/mpc|MPC]]가 흔히 그 필터다);
+  3. **제약 MDP**로 정식화해 기대 위반량의 상한 아래에서 보상을 최적화한다(라그랑주 방법);
+  4. 보상에 위반 페널티를 넣는다 — 편하지만 **아무것도 보장하지 않는다**: 과제 보상이 충분히
+     크면 페널티를 사 버린다.
+- **진짜 비용은 연산이 아니다.** 하드웨어에서는 에피소드마다 리셋이 필요하고, 리셋은 인간
+  노동이며, 마모와 안전 심사가 실제 예산이다([[04-robotics/hri-safety|HRI·안전]]).
+- 이 이야기의 전이 쪽 절반 — reality gap, 랜덤화, privileged learning, 잔차, 배치 사다리 — 은
+  [[05-construction-robotics/sim-to-real|Sim-to-Real 가이드]]다. 관심이 언어모델이 아니라
+  로봇이라면 이 페이지 바로 다음에 읽어라.
+
+### 10. RL 실험 절 읽기
+
+RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할 것:
+
+| 논문 표현 | 확인할 것 |
+|---|---|
+| "$2\times10^9$ environment steps 학습" | 스텝 ≠ 시간이고 스텝 ≠ 실제 경험 — 병렬 환경이 몇 개이고, 시뮬레이션인가 실기계인가 |
+| "sample-efficient" | environment step 기준인가, wall-clock인가, *실기계 시간* 기준인가? 희소한 것은 마지막뿐이다 |
+| "PPO/SAC 베이스라인을 능가" | 같은 보상·같은 관측 공간·같은 커리큘럼·같은 튜닝 예산인가? |
+| 학습 곡선 | x축 단위, 시드 개수, 음영이 표준편차인지 표준오차인지 신뢰구간인지 ([[02-foundations/ml-practice\|ML 실무 §4]]) |
+| "PPO를 쓴다" | 옵티마이저 이름은 거의 아무것도 특정하지 않는다 — 보상·관측·커리큘럼이 특정한다 ([[01-canonical-papers/notes/1-foundations/ppo\|PPO 노트]]) |
+| "zero-shot transfer" | 목표 도메인 학습 갱신이 없다는 뜻 — 단 시뮬레이터는 실데이터로 만들었을 것이다 |
+| success rate | 평가 에피소드 수, 초기 상태 분포, 시간 제한은? |
+
+- **규모, 숫자로.** $2\times10^9$ 스텝은 엄청나 보인다. 병렬 환경 4,096개면 환경당 488,000
+  스텝이고, 50 Hz 제어 주기에서 9,760초 ≈ **환경당 시뮬레이션 경험 2.7시간** — GPU 몇 시간이다.
+  같은 숫자를 *실기계 한 대*에서 50 Hz로 채우면 **1.3년**이다. 이 비율이 로봇 RL이 시뮬레이션에
+  사는 이유 전부다.
+- **관측·행동 공간이 결과의 일부다.** 정책이 무엇을 보는지(관절 상태? 지형 높이맵? 특권 토질
+  파라미터?)와 무엇을 내보내는지(관절 속도? 밸브 전류? 말단 자세?)가 알고리즘보다 문제를 더
+  크게 바꾼다. 관측 **정규화 통계량은 모델의 일부**다 — 그것 없이 정책만 배포하는 것이 전형적인
+  조용한 실패다.
+- **에피소드 종료와 시간 제한.** 과제가 실패해서 끝난 것과 시계가 다 되어 끝난 것은 다르다:
+  후자는 여전히 가치 함수를 부트스트랩해야 하고, 이를 종료로 취급하면 정책에게 "시간 제한에서
+  세계가 끝난다"고 조용히 가르치게 된다.
+
 ### 스스로 점검
 
 1. $V^\pi$의 정의에서 벨만 기대 방정식을 유도하라 (선형성 + 마르코프 한 줄).
@@ -307,6 +584,13 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
    애초에 왜 클리핑하는가?
 4. Dreamer식 상상 학습이 지평을 짧게(~15 스텝) 유지하는 이유 두 가지를 들어라.
 5. 행동 청킹이 오차 누적을 줄이는 이유는? 그 대가로 잃는 것은?
+6. 보상이 $r = 1.0\,\Delta d - 0.2\lVert a\rVert^2 - 5.0\,\mathbb{1}[\text{한계 접촉}]$인데
+   정책이 시작부터 얼어붙는다. 산술적 이유와 처방 하나를 말하라.
+7. 어떤 논문의 제안 방법은 커리큘럼을 쓰고 PPO 베이스라인은 안 썼다. 그 절제 실험이 실제로
+   측정한 것은 무엇인가?
+8. "제약 위반을 보상에서 페널티로 준다"가 왜 안전 보장이 아닌가? 더 강한 장치 두 가지는?
+9. 어떤 논문이 병렬 환경 2,048개, 100 Hz에서 $1\times10^9$ environment step을 보고했다.
+   환경당 시뮬레이션 경험은 얼마이고, 같은 숫자를 실기계 한 대로 채우면 얼마나 걸리는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $V^\pi(s) = E[r_t + \gamma G_{t+1} \mid s]$에서 안쪽 기댓값을 마르코프 성질로 $V^\pi(s')$로 접으면 $E[r + \gamma V^\pi(s')]$.
@@ -314,7 +598,11 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 > 3. $A_t > 0$: 비율이 $1+\epsilon$을 넘으면 이득이 잘려 과도한 확률 *증가* 유인이 사라진다. $A_t < 0$: 비율이 $1-\epsilon$ 아래로 내려가는 과도한 확률 *감소*가 클리핑으로 제한되고, min이 잘리지 않은(더 나쁜) 항을 고르므로 정책이 나쁜 방향으로 움직이는 동안에는 페널티가 계속 작용한다. 클리핑의 목적 = 데이터를 모은 정책 근처에 머무는 신뢰 영역.
 > 4. ① 모델 오차가 상상 지평을 따라 지수적으로 누적된다(복합 오차) ② 가치 부트스트랩이 짧은 지평 너머를 대신 평가하므로 길 필요가 없다.
 > 5. 정책이 자기 오차 위에서 다시 예측하는 횟수가 $k$분의 1로 줄어 분포 이탈이 느려진다; 대가는 반응성 — 청크 실행 중에 들어온 새 관측을 (부분적으로만) 반영한다.
+> 6. 움직이면 매끄러움 항이 즉시 비용을 물리는데 진행 항은 $1.0\Delta d$만 준다; 단위 노름 행동으로 1 cm 이동하면 $0.01 - 0.2 = -0.19$라 가만히 있기(보상 0)가 최적이다. 처방: 진행 항 가중치를 올리거나 $\Delta d$를 비교 가능한 단위로 재척도, 크기 대신 *변화율*에 페널티, 또는 아무것도 안 하는 것이 공짜가 아니도록 스텝당 작은 페널티 추가.
+> 7. (방법 + 커리큘럼)과 (커리큘럼 없는 베이스라인)의 차이 — 즉 커리큘럼과 방법을 합쳐서 측정했다. 베이스라인이 같은 커리큘럼을 받기 전까지 이 비교는 아무것도 분리하지 못한다.
+> 8. 부드러운 교환이기 때문이다: 과제 보상이 충분히 크면 페널티를 사 버리고, 학습 이전의 탐색 구간에서는 위반을 아무것도 제한하지 않는다. 더 강한 것: 액추에이터 앞에서 안전하지 않은 명령을 거부하는 안전 필터·엔벨로프(대개 MPC), 그리고 기대 위반량의 명시적 상한 아래에서 보상을 최적화하는 제약 MDP 정식화.
+> 9. 환경당 $1\times10^9/2{,}048 \approx 488{,}000$ 스텝; 100 Hz면 4,880초 ≈ **1.4시간**의 시뮬레이션 경험이다. 실기계 한 대로는 $10^9/100 = 10^7$초 ≈ **116일**.
 
 ### 로보틱스 다리
 
-MDP·정책·불확실성은 [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]의 그래프/궤적 방법과 belief-space 추론으로 연결된다.
+MDP·정책·불확실성은 [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]의 그래프/궤적 방법과 belief-space 추론으로 연결된다. 관심이 로봇이라면 다음은 [[05-construction-robotics/sim-to-real|Sim-to-Real 가이드]] — §9의 전이 쪽 절반이다.

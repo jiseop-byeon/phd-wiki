@@ -53,6 +53,8 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 
 ## A–C
 
+- **Curriculum learning** — Changing the *task* rather than the algorithm: start easy and raise difficulty as success rate crosses a threshold. Cheap and often does most of the work, so a baseline that did not get the same curriculum is not a fair comparison. · 알고리즘이 아니라 *과제*를 바꾸는 것; 베이스라인이 같은 커리큘럼을 못 받았다면 공정한 비교가 아니다. → [[02-foundations/rl-basics|RL Basics §8]]
+
 - **Activation function** — The simple nonlinearity applied between layers (ReLU $\max(0,z)$ is the common one). Without it, stacked layers collapse into a single matrix. · 층 사이에 적용하는 단순한 비선형 함수. 없으면 층을 쌓아도 행렬 하나로 접힌다. → [[02-foundations/neural-network-basics|0.7]]
 - **Affordance** — What an object or state makes possible for a particular robot (graspable, pushable). In SayCan-style planners an affordance model scores whether a skill can succeed *here and now*, which is what grounds a language plan. · 특정 로봇에게 그 대상·상태가 무엇을 가능하게 하는가. 언어 계획을 접지하는 것이 이 점수다. → [[01-canonical-papers/notes/4-vla/saycan|SayCan]]
 - **Batch / minibatch** — The group of samples whose losses are averaged for one parameter update. Batch size is a hyperparameter; dataset size ÷ batch size = iterations per epoch. · 한 번의 파라미터 갱신을 위해 손실을 평균하는 샘플 묶음. → [[02-foundations/neural-network-basics|0.7 §4]]
@@ -73,6 +75,9 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 - **CVAE** — A conditional VAE: it holds the distribution of plausible outputs given a condition inside a latent variable. · 조건부 VAE. → [[01-canonical-papers/notes/4-vla/act|ACT]]
 
 ## D–I
+
+- **Entropy bonus** — Adding $+\alpha H(\pi)$ to an RL objective so the policy is rewarded for staying undecided and does not collapse early to a deterministic mediocre habit. SAC promotes it from bonus to objective. · 정책이 이른 시점에 결정론적 습관으로 붕괴하지 않도록 목적함수에 엔트로피를 더하는 것. → [[02-foundations/rl-basics|RL Basics §8]], [[01-canonical-papers/notes/1-foundations/sac|SAC]]
+- **Environment step** — One transition of the simulated or real environment; the usual x-axis of an RL learning curve. Steps are not wall-clock and not real experience: divide by the number of parallel environments and the control rate before believing a number. · 시뮬레이션·실제 환경의 전이 1회; 스텝은 시간도 실제 경험도 아니다. → [[02-foundations/rl-basics|RL Basics §10]]
 
 - **Digital twin** — A *maintained* operational state linked to a physical system, as opposed to a static BIM/CAD model. Only a bidirectional (closed) loop — observation updates the model, the model changes the next action — earns the name for robotics. · 정적 BIM이 아니라 물리 시스템과 연결되어 유지되는 운용 상태; 양방향 폐루프여야 로보틱스에서 이 이름값을 한다. → [[05-construction-robotics/digital-twin-workflows|Digital Twins]]
 - **Eigenvalue / eigenvector** — Directions a matrix only stretches: $Av = \lambda v$. They govern long-run behaviour ($A^k$), optimization difficulty (the condition number), and stability (poles). · 사상이 늘이기만 하는 방향; 장기 거동·최적화 난이도·안정성을 지배한다. → [[02-foundations/linear-algebra|Linear Algebra §3]]
@@ -95,6 +100,8 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 - **Inverse kinematics (IK)** — Finding joint angles that achieve a desired end-effector pose. Unlike forward kinematics it may have zero, one, several, or infinitely many solutions — the classical face of action multimodality. · 원하는 말단 자세를 만드는 관절 각 찾기; 해가 0개·1개·여러 개·무한일 수 있다. → [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]
 
 ## K–P
+
+- **Potential-based shaping** — The one reward-shaping form provably guaranteed not to change the optimal policy: add $F = \gamma\Phi(s')-\Phi(s)$ for a state function $\Phi$. Other shaping can change what is optimal. · 최적 정책을 바꾸지 않음이 증명된 유일한 shaping 형태. → [[02-foundations/rl-basics|RL Basics §7]]
 
 - **Loop closure** — Recognizing that the robot has returned to a previously mapped place, and adding that constraint so accumulated drift can be corrected. A *false* closure corrupts the whole map. · 이전에 지도화한 장소로 돌아왔음을 인식해 제약을 추가하고 누적 drift를 보정하는 것; 잘못된 closure 하나가 지도 전체를 망친다. → [[04-robotics/state-estimation-slam|State Estimation §7]]
 - **Loss function** — The single number measuring how wrong a prediction is (MSE for continuous outputs, cross-entropy for categories). Training minimizes it; it is not the same as the evaluation metric. · 예측이 얼마나 틀렸는지를 재는 숫자 하나; 평가 지표와 같지 않다. → [[02-foundations/neural-network-basics|0.7 §3]]
@@ -121,6 +128,11 @@ What actually stalls a reader is rarely an unfamiliar word — it is two words t
 - **Pseudo-label** — Training a student on unlabeled data using a teacher model's predictions as labels. · 교사 모델의 예측을 라벨 삼아 무라벨 데이터로 학생을 학습. → [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]
 
 ## Q–Z
+
+- **Reward hacking** — The policy maximizes the reward as written rather than the intent behind it (velocity reward met by vibrating in place). Symptom: the reward curve rises while the behaviour is wrong. The diagnostic is "what is the cheapest way to earn this reward?" · 의도가 아니라 적힌 대로 보상을 최대화하는 것; 보상 곡선은 오르고 거동은 틀린다. → [[02-foundations/rl-basics|RL Basics §7]]
+- **Reward shaping** — Replacing a sparse reward with a dense per-step signal so learning is feasible, at the cost of optimizing a proxy for the goal. In robotics the reward is a weighted sum of task, accuracy, smoothness, effort and constraint terms — the weights are hyperparameters that fight each other. · 희소 보상을 촘촘한 신호로 바꾸는 것; 로봇에서는 항들의 가중합이고 가중치가 서로 싸운다. → [[02-foundations/rl-basics|RL Basics §7]]
+- **RLFT (RL fine-tuning)** — Continuing with RL from a policy already pretrained by behavior cloning, usually with a KL term back to that policy. Pretraining makes exploration feasible; RL fixes what demonstrations could not cover. The same shape as pretrain → RLHF. · 행동 복제로 사전학습된 정책에서 RL을 이어가는 것; 사전학습 → RLHF와 같은 모양. → [[02-foundations/rl-basics|RL Basics §9]], [[01-canonical-papers/notes/8-construction/ext|ExT]]
+- **Safety filter / envelope** — A layer that clips or vetoes unsafe commands before they reach the actuator (often an MPC). Unlike a reward penalty it is a hard mechanism, which is why reward penalties alone are not a safety guarantee. · 안전하지 않은 명령을 액추에이터 앞에서 자르거나 거부하는 층; 보상 페널티와 달리 하드 장치다. → [[02-foundations/rl-basics|RL Basics §9]], [[04-robotics/mpc|MPC]]
 
 - **Reality gap** — The set of mismatches between simulator and world (dynamics, contact/material, sensing, task distribution, software/hardware) that a sim-trained policy meets at deployment. Sim-to-real is the practice of managing it. · 시뮬레이터와 현실 사이의 불일치 묶음; sim-to-real이 이를 관리하는 실무다. → [[05-construction-robotics/sim-to-real|Sim-to-Real §1]]
 - **Replay buffer** — A store of past transitions that an off-policy algorithm samples from repeatedly, so experience is reused instead of discarded after one update. · off-policy 알고리즘이 반복해 샘플하는 과거 전이 저장소 — 경험을 한 번 쓰고 버리지 않는다. → [[02-foundations/rl-basics|RL Basics §3]], [[01-canonical-papers/notes/1-foundations/sac|SAC]]
