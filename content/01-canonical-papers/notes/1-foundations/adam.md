@@ -100,4 +100,4 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 - [ ] Say what the first moment (direction) and second moment (scale) each provide · 1차 모멘트(방향)와 2차 모멘트(스케일)가 각각 무엇을 제공하는지 말할 수 있다
 - [ ] Explain why zero-initialized moments need bias correction · 0 초기화된 모멘트에 편향 보정이 필요한 이유를 설명할 수 있다
 - [ ] Explain why second-moment normalization makes the effective step less sensitive to gradient scale, and what that means in practice · 2차 모멘트 정규화가 유효 스텝을 그래디언트 스케일에 덜 민감하게 만드는 이유와 실용적 의미를 말할 수 있다
-- [ ] Say what AdamW decoupled from the original Adam to fix it · AdamW가 원래 Adam의 무엇을 분리해서 고쳤는지 말할 수 있다
+- [ ] Say what AdamW decoupled from Adam, and what that decoupling fixed · AdamW가 원래 Adam의 무엇을 분리해서 고쳤는지 말할 수 있다

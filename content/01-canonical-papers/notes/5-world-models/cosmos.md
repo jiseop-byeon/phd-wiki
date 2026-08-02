@@ -143,7 +143,7 @@ VLA를 위한 합성 데이터, 폐루프 정책 평가, Cosmos-Reason/Transfer 
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] State what "world models as infrastructure" means — what a pretrained WFM is post-trained into · "월드모델을 인프라로"의 의미 — 사전학습된 WFM을 사후학습해 무엇들로 만드는가 — 를 말할 수 있다
+- [ ] State what "world models as infrastructure" means — what a pretrained WFM is post-trained into · "월드모델을 인프라로"의 의미, 즉 사전학습된 WFM을 사후학습해 무엇으로 만드는가를 말할 수 있다
 - [ ] State the difference between diffusion-family and autoregressive-family WFMs · 디퓨전 계열과 자기회귀 계열 WFM의 차이를 말할 수 있다
 - [ ] Explain where the sim-to-real problem *moves to* when synthetic data is used · 합성 데이터를 쓸 때 sim-to-real 문제가 어디로 이동하는지 설명할 수 있다
 - [ ] Name the layer Cosmos occupies in the GR00T ecosystem · GR00T 생태계에서 Cosmos가 맡는 층을 말할 수 있다

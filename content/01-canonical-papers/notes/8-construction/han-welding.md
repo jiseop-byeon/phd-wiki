@@ -40,5 +40,5 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] Describe the vision seam-detection → real-time welding execution pipeline and the difference between the two operating modes · 비전 이음부 탐지 → 실시간 용접 실행의 파이프라인과 두 운용 모드의 차이를 말할 수 있다
-- [ ] State the division of labour between the 2024 testbed evidence and the 2025 JCEM follow-up on autonomous navigation and positioning · 테스트베드 증거(2024)와 자율 주행·위치잡기 후속(2025 JCEM)의 분업을 말할 수 있다
+- [ ] State the division of labor between the 2024 testbed evidence and the 2025 JCEM follow-up on autonomous navigation and positioning · 테스트베드 증거(2024)와 자율 주행·위치잡기 후속(2025 JCEM)의 분업을 말할 수 있다
 - [ ] Place this paper as the Golparvar-Fard vision lineage extending into manipulation · 이 논문을 Golparvar-Fard 비전 계보가 조작으로 확장된 사례로 자리매김할 수 있다

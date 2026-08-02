@@ -117,7 +117,7 @@ with full multi-view geometry.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] Explain why teacher pseudo-labels combined with strong student-only augmentation works · 교사 의사 라벨 + 학생만의 강한 증강 조합이 왜 작동하는지 설명할 수 있다
+- [ ] Explain why combining teacher pseudo-labels with strong student-only augmentation works · 교사 의사 라벨 + 학생만의 강한 증강 조합이 왜 작동하는지 설명할 수 있다
 - [ ] State the difference between relative and absolute depth, and monocular scale ambiguity · 상대 깊이와 절대 깊이의 차이, 단안의 스케일 모호성을 말할 수 있다
 - [ ] Say what aligning to DINOv2 features adds · DINOv2 특징 정렬이 더하는 것을 말할 수 있다
 - [ ] State its use and its limits for low-cost sensing on site · 현장 저비용 센싱에서의 쓰임과 한계를 말할 수 있다

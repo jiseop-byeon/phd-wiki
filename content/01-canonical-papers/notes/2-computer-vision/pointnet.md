@@ -103,6 +103,6 @@ The grammar of an entire subfield: nearly every point-cloud architecture since e
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] Explain why the symmetric aggregation $g(\max_i h(x_i))$ produces permutation invariance, and what it does *not* guarantee (rotation, density, calibration, occlusion) · 대칭 집계 $g(\max_i h(x_i))$가 permutation invariance를 만드는 이유와, 그것이 보장하지 않는 것(회전·밀도·보정·가림)을 설명할 수 있다
-- [ ] Say what PointNet++ added (hierarchical local neighbourhoods, density-adaptive grouping) · PointNet++가 PointNet에 추가한 것(계층적 국소 이웃, 밀도 대응 grouping)을 말할 수 있다
+- [ ] Explain why the symmetric aggregation $g(\max_i h(x_i))$ produces permutation invariance, and what it does *not* guarantee (invariance to rotation, density, calibration or occlusion) · 대칭 집계 $g(\max_i h(x_i))$가 permutation invariance를 만드는 이유와, 그것이 보장하지 않는 것(회전·밀도·보정·가림)을 설명할 수 있다
+- [ ] Say what PointNet++ added (hierarchical local neighborhoods, density-adaptive grouping) · PointNet++가 PointNet에 추가한 것(계층적 국소 이웃, 밀도 대응 grouping)을 말할 수 있다
 - [ ] Explain why this paper still matters despite newer point models (sparse convolutions, point transformers) · 최신 포인트 모델(sparse conv, point transformer)이 있어도 이 논문을 알아야 하는 이유를 설명할 수 있다

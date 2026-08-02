@@ -116,6 +116,6 @@ SlowFast급 모델을 흔히 돌린다. 개념적으로 두-속도 아이디어�
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] State the essence of I3D inflation (2D filters → 3D) and the benefit of inheriting ImageNet weights · I3D 팽창(2D 필터→3D)의 요지와 ImageNet 상속의 이점을 말할 수 있다
-- [ ] Explain the division of labour between SlowFast's two pathways (semantics vs motion) · SlowFast 두 경로의 분업(의미 vs 운동)을 설명할 수 있다
+- [ ] Explain the division of labor between SlowFast's two pathways (semantics vs motion) · SlowFast 두 경로의 분업(의미 vs 운동)을 설명할 수 있다
 - [ ] Say why Kinetics pretraining was video's ImageNet moment · Kinetics 사전학습이 비디오의 ImageNet 모먼트인 이유를 말할 수 있다
 - [ ] State the limits of clip-level classification and the gap to site-monitoring applications · 클립 수준 분류의 한계와 현장 모니터링 응용의 간극을 말할 수 있다

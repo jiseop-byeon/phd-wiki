@@ -83,7 +83,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 2. Why does regressing Euler angles with MSE misbehave near $\pm180°$? What do quaternions'
    double cover do to naive MSE?
 3. Given $T_{base \leftarrow cam}$ and a point $p_{cam}$, write the point in base frame.
-4. A gripper command is "move 5cm along the *gripper's own* z-axis." Is that a left- or
+4. A gripper command is "move 5 cm along the *gripper's own* z-axis." Is that a left- or
    right-multiplication of the current pose? Why?
 
 > [!tip]- Answers
@@ -164,7 +164,7 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 2. 오일러 각을 MSE로 회귀하면 $\pm180°$ 근처에서 왜 이상해지는가? 쿼터니언의 이중 덮개는
    순진한 MSE에 무슨 짓을 하는가?
 3. $T_{base \leftarrow cam}$과 점 $p_{cam}$이 주어졌을 때, 베이스 프레임의 점을 써라.
-4. "그리퍼 *자신의* z축 방향으로 5cm 이동" 명령은 현재 자세에 왼쪽 곱인가 오른쪽 곱인가?
+4. "그리퍼 *자신의* z축 방향으로 5 cm 이동" 명령은 현재 자세에 왼쪽 곱인가 오른쪽 곱인가?
    왜인가?
 
 > [!tip]- 스스로 점검 정답 · Answers

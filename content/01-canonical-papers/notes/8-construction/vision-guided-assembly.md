@@ -55,6 +55,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] Reconstruct the four-stage loop (design → mobile registration → vision-guided manipulation → as-built scan) and say which transform or model is estimated at each stage · 설계 → 모바일 정합 → 비전 유도 조작 → as-built 스캔의 4단계 루프를 재구성하고, 각 단계에서 어떤 변환/모델이 추정되는지 말할 수 있다
-- [ ] Explain the reversed spatial relationship between manufacturing and construction, and why it breaks the assumptions of fixed-cell robotics · 제조와 건설의 reversed spatial relationship이 무엇이고, 왜 이것이 고정 셀 로봇 공학의 가정을 무너뜨리는지 설명할 수 있다
+- [ ] Explain the reversed spatial relationship between manufacturing and construction, and why it breaks the assumptions of fixed-cell robotics · 제조와 건설의 역전된 공간 관계(reversed spatial relationship)가 무엇이고, 왜 이것이 고정 셀 로봇 공학의 가정을 무너뜨리는지 설명할 수 있다
 - [ ] Say what conditions fiducial-marker instrumentation attaches to the autonomy claim, and exactly which uncertainty the markers remove · 피두셜 마커 기반 계측이 자율성 주장에 어떤 조건을 다는지, 그리고 마커가 제거하는 불확실성이 정확히 무엇인지 말할 수 있다
 - [ ] Explain on the genealogy why this paper is the origin of the Michigan line (Lundeen, Liang, Yu) and of today's BIM digital-twin workflows · 이 논문이 미시간 계보(Lundeen, Liang, Yu)와 오늘날 BIM 디지털 트윈 워크플로의 출발점인 이유를 계보 위에서 설명할 수 있다

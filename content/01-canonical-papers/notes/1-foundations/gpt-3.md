@@ -96,7 +96,7 @@ Made "scale + prompting" the dominant paradigm and prompting a first-class inter
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
-- [ ] State the definition of in-context learning — learning from the prompt with no weight update · in-context learning의 정의 — 가중치 갱신 없이 프롬프트로 학습 — 를 말할 수 있다
+- [ ] State the definition of in-context learning — learning from the prompt with no weight update · in-context learning의 정의(가중치 갱신 없이 프롬프트만으로 학습)를 말할 수 있다
 - [ ] Explain why the observation that the zero/few-shot gap widens with scale matters · zero/few-shot 격차가 규모와 함께 커지는 관찰이 왜 중요한지 설명할 수 있다
 - [ ] Give an example of an emergent capability and the evaluation caveat attached to it · 창발 능력의 예와 그 평가상 주의점을 말할 수 있다
 - [ ] State the alignment problem of a raw LM and the bridge to InstructGPT · 날것 LM의 비정렬 문제와 InstructGPT로의 다리를 말할 수 있다

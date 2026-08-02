@@ -196,7 +196,7 @@ their abstracts never mention.
   come from arithmetic exactly this simple.
 - **Reward hacking** is the general form: the policy maximizes what you wrote, not what you
   meant. A velocity reward met by vibrating in place; a distance-to-goal reward met by
-  circling just inside the threshold. Symptom: reward curve rises, behaviour is wrong.
+  circling just inside the threshold. Symptom: reward curve rises, behavior is wrong.
   The diagnostic question is always *what is the cheapest way to earn this reward?*
 - **Reading cue**: find the reward table, count the terms, look for the weights (often only
   in an appendix), and ask which term dominates at the operating point the paper reports.
@@ -215,7 +215,7 @@ the binding constraint.
   the policy **stochastic** and let it learn its own standard deviation — what PPO does.
 - **Entropy bonus**: add $+\alpha H(\pi)$ to the objective
   ([[02-foundations/information-theory|information theory]]) so the policy is rewarded for
-  staying undecided, and does not collapse to a deterministic mediocre habit early.
+  staying undecided, and does not collapse early into a mediocre deterministic habit.
   [[01-canonical-papers/notes/1-foundations/sac|SAC]] promotes this from a bonus to *the*
   objective and tunes $\alpha$ automatically.
 - **Curriculum learning** changes the *task* instead of the algorithm: start with shallow
@@ -237,7 +237,7 @@ the binding constraint.
   on an excavator.
 - **Keep it near the reference.** RLFT is usually regularized by a KL term back to the
   pretrained policy. Drift too far and you lose what pretraining bought — and reward
-  hacking becomes likely, because the reward was never meant to define the whole behaviour.
+  hacking becomes likely, because the reward was never meant to define the whole behavior.
 - **Safety while learning** has only a few honest answers, and reward penalties are the
   weakest of them:
   1. train in simulation (dominant — a 12-tonne machine cannot "try and correct");
@@ -248,7 +248,7 @@ the binding constraint.
   4. penalize violations in the reward — convenient, and it guarantees **nothing**: a large
      enough task reward will buy the penalty.
 - **The real cost is not compute.** On hardware, every episode needs a reset, resets are
-  human labour, and wear and safety review are real budgets
+  human labor, and wear and safety review are real budgets
   ([[04-robotics/hri-safety|HRI & safety]]).
 - The transfer half of this story — reality gap, randomization, privileged learning,
   residuals, the deployment ladder — is the
@@ -257,7 +257,7 @@ the binding constraint.
 
 ### 10. Reading an RL experimental section
 
-RL results depend on protocol more than almost any other subfield's. What to check:
+RL results depend on protocol more than those of almost any other subfield. What to check:
 
 | Paper phrase | What to check |
 |---|---|

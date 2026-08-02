@@ -40,5 +40,5 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (○)
 
 - [ ] Name the inputs and outputs of the three-stage NLU → IM → RC pipeline · NLU → IM → RC 3단계 파이프라인의 입력과 출력을 말할 수 있다
-- [ ] Explain the contrast with SayCan and RT-2 — modular grounding versus learned semantics · SayCan/RT-2와의 대비 — 모듈식 접지 대 학습된 의미론 — 를 설명할 수 있다
+- [ ] Explain the contrast with SayCan and RT-2 — modular grounding versus learned semantics · SayCan·RT-2와의 대비(모듈식 접지 대 학습된 의미론)를 설명할 수 있다
 - [ ] Point out the case-study scale of the evidence and the limitation that language is the specification while execution is scripted · 사례 연구 규모의 증거와 "언어는 명세, 실행은 스크립트"라는 한계를 지적할 수 있다

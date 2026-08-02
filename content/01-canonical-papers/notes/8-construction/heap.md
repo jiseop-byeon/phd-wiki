@@ -111,5 +111,5 @@ learning-based digging. The construction analogue of what ALOHA
 
 - [ ] Say why the actuation retrofit (electric pilot valves, pressure sensing) is the precondition for force-based digging · 구동 개조(전기 파일럿 밸브, 압력 센싱)가 왜 힘 기반 굴착의 전제인지 말할 수 있다
 - [ ] Walk through the sensing stack (GNSS-RTK/IMU/LiDAR/pressure) and the software structure (mapping → planning → force control) · 센싱 스택(GNSS-RTK/IMU/LiDAR/압력)과 소프트웨어 구조(매핑→계획→힘 제어)를 단계별로 말할 수 있다
-- [ ] State the character of the evaluation precisely — autonomous execution on research worksites (embankments 0.03–0.05 m mean error), with teleoperation supported · 평가의 성격 — 연구 작업지에서의 자율 실행(제방 오차 0.03~0.05 m), 원격조작 지원 — 을 정확히 기술할 수 있다
-- [ ] Pair the four gaps the paper left (generality, learning, productivity comparison, long unattended operation) with the follow-up that attacked each · 논문이 남긴 공백 4가지(일반성·학습·생산성 비교·장기 무인)와 각각을 공략한 후속을 짝지을 수 있다
+- [ ] State the character of the evaluation precisely — autonomous execution on research worksites (embankments 0.03–0.05 m mean error), with teleoperation supported · 평가의 성격(연구 작업지에서의 자율 실행, 제방 오차 0.03~0.05 m, 원격조작 지원)을 정확히 기술할 수 있다
+- [ ] Pair the four gaps the paper left (generality, learning, productivity comparison, long unattended operation) with the follow-up that attacked it · 논문이 남긴 공백 4가지(일반성·학습·생산성 비교·장기 무인)와 각각을 공략한 후속을 짝지을 수 있다

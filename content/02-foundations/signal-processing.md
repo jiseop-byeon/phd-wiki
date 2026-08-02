@@ -110,7 +110,7 @@ functions.
 > 1. Flip, slide, multiply, accumulate: $y = [1\cdot 1,\; 1\cdot 2 + 0\cdot 1,\; 1\cdot 1 + 0\cdot 2 + (-1)\cdot 1,\; 0\cdot 1 + (-1)\cdot 2,\; (-1)\cdot 1] = [1, 2, 0, -2, -1]$, of length $3+3-1 = 5$.
 > 2. It aliases to $|170 - 200| = 30$ Hz — it will look like a real 30 Hz structural mode and you may "fix" the wrong thing. The remedy is an analog anti-alias filter (cutoff below 100 Hz) *before* sampling, or a sample rate above 340 Hz.
 > 3. $H(f) = \tfrac12(1 + e^{-j2\pi f})$, so $|H(f)| = |\cos(\pi f)|$ with $f$ in cycles/sample. It nulls completely at $f = 1/2$ — the Nyquist frequency, where consecutive samples alternate sign and average to zero.
-> 4. Lag: the Kalman filter's *prediction* step advances the state before correcting, so it does not pay the full phase lag a causal low-pass does. Models: it uses an explicit process/measurement noise ratio to compute a time-varying optimal gain, instead of one fixed cutoff. The low-pass wins when the motion model is wrong or unknown, when the noise is far from the assumed statistics, or when you simply cannot afford the modelling and tuning effort — a wrong model makes the Kalman filter confidently wrong.
+> 4. Lag: the Kalman filter's *prediction* step advances the state before correcting, so it does not pay the full phase lag a causal low-pass does. Models: it uses an explicit process/measurement noise ratio to compute a time-varying optimal gain, instead of one fixed cutoff. The low-pass wins when the motion model is wrong or unknown, when the noise is far from the assumed statistics, or when you simply cannot afford the modeling and tuning effort — a wrong model makes the Kalman filter confidently wrong.
 
 ### Robotics bridge
 

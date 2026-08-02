@@ -54,6 +54,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] Name the fluency metrics (concurrent motion, idle time, separation distance) · 유창성 지표들(동시 동작, 유휴 시간, 이격 거리)을 이름과 함께 말할 수 있다
-- [ ] State the twin finding — objective and subjective measures improve together — with its numbers · 쌍둥이 발견 — 객관적 지표와 주관적 지표가 함께 개선된다 — 을 수치와 함께 말할 수 있다
+- [ ] State the twin finding — objective and subjective measures improve together — with its numbers · 쌍둥이 발견, 즉 객관적 지표와 주관적 지표가 함께 개선된다는 사실을 수치와 함께 말할 수 있다
 - [ ] Separate what construction can borrow from this result from what does not transfer · 건설이 이 결과에서 빌려올 수 있는 것과 이전되지 않는 것을 구분할 수 있다
 - [ ] State what the 2018 companion added (fielding in a BMW test environment) and its limits (a test environment, not a real factory; manufacturing, not construction) · 2018 자매 논문이 더한 것(BMW 테스트 환경 투입)과 그 한계(테스트 환경이지 실제 공장이 아니며, 제조업이지 건설이 아님)를 말할 수 있다

@@ -132,7 +132,7 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> V3's "mastering diverse domains" is a robustness claim — 150+ tasks under a single configuration — not a claim to beat every specialized model on every task. And the validation is simulation-centred; real-robot generalization remains a separate question.
+> V3's "mastering diverse domains" is a robustness claim — 150+ tasks under a single configuration — not a claim to beat every specialized model on every task. And the validation is simulation-centered; real-robot generalization remains a separate question.
 >
 > v3의 "mastering diverse domains"는 "단일 설정으로 150+ 과제"라는 강건성 주장이지, 각 과제에서 특화 모델을 모두 이긴다는 주장이 아니다. 그리고 검증은 시뮬레이션 중심이다 — 실로봇 일반화는 별도의 질문으로 남아 있다.
 

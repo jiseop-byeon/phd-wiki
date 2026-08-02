@@ -95,5 +95,5 @@ Established the encoder-decoder framing that still structures the field: the [[0
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] Explain why the fixed-vector bottleneck fails on long sentences · 고정 벡터 병목이 긴 문장에서 실패를 만드는 이유를 말할 수 있다
-- [ ] Explain that the sentence-reversal trick relieved a symptom of that bottleneck · 문장 뒤집기 트릭이 병목의 증상 완화였다는 것을 설명할 수 있다
+- [ ] Explain how the sentence-reversal trick relieved a symptom of that bottleneck rather than its cause · 문장 뒤집기 트릭이 병목의 증상 완화였다는 것을 설명할 수 있다
 - [ ] Say how far the encoder–decoder frame was extended afterwards · 인코더-디코더 프레임이 이후 어디까지 확장됐는지 말할 수 있다

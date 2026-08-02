@@ -35,7 +35,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **방법**: 클라우드 로보틱스 기반 가상 시연 프레임워크가 시연 과정을 디지털화해, 작업자가 과제를 실물 규모로 반복 수행할 필요가 없고 시연이 유사 과제 간에 재사용된다. 심층 생성 모델 위에 지은 계층적 모방학습 모델이 스킬을 상위의 *순차적* 하위 스킬(다음에 무엇을 할지)과 하위의 *반응적* 하위 스킬(접촉과 변동에 어떻게 반응할지)로 나눈다. [[02-foundations/rl-basics|RL 기초 §6]]의 어휘로 말하면: 순수 행동 복제(BC)는 로봇이 시연된 상태에서 벗어나는 순간 오차가 누적된다(공변량 이동); 이 논문은 양쪽에서 공략한다 — 이탈을 흡수하는 계층 + 반응적 하위 스킬, 그리고 상태 커버리지를 넓히는 값싼 VR 시연.
 
-**증거**: VR로 수집한 시연으로 석고보드 설치 과제에서 검증 — **현장이 아니라 가상/실험실 테스트베드**다. 초록의 주장은 방법론이지 배치가 아니다. 2023년 자매 논문(Yu et al., "mutual physical-state-aware object handover," AutCon 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104829))이 이 계열의 가장 단단한 수치를 제공한다: 햅틱 장갑 기반 핸드오버에서 **1ms 그립 상태 적응** — 작업자-로봇 물체 핸드오버 중 로봇이 인간의 그립에 밀리초 안에 반응한다. 2025년 후속([arXiv:2509.02876](https://arxiv.org/abs/2509.02876))은 스킬 라이브러리를 LLM 기반 조합 쪽으로 밀고 간다.
+**증거**: VR로 수집한 시연으로 석고보드 설치 과제에서 검증 — **현장이 아니라 가상/실험실 테스트베드**다. 초록의 주장은 방법론이지 배치가 아니다. 2023년 자매 논문(Yu et al., "mutual physical-state-aware object handover," AutCon 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104829))이 이 계열의 가장 단단한 수치를 제공한다: 햅틱 장갑 기반 핸드오버에서 **1 ms 그립 상태 적응** — 작업자-로봇 물체 핸드오버 중 로봇이 인간의 그립에 밀리초 안에 반응한다. 2025년 후속([arXiv:2509.02876](https://arxiv.org/abs/2509.02876))은 스킬 라이브러리를 LLM 기반 조합 쪽으로 밀고 간다.
 
 **테스트베드 대 현장, 자율성**: 시연 이후 로봇은 학습된 하위 스킬을 자율적으로 실행한다; 인간의 역할은 시연자(그리고 2023 자매 논문에서는 물리적 핸드오버 파트너)로 이동한다. 이 계열 어디에도 아직 필드 배치 주장은 없다.
 
@@ -56,5 +56,5 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 - [ ] Say how VR/cloud demonstration collection attacks imitation learning's demonstration-cost problem · VR/클라우드 시연 수집이 모방학습의 시연 비용 문제를 어떻게 공략하는지 말할 수 있다
 - [ ] Explain the relation between hierarchical decomposition (sequential vs reactive sub-skills) and covariate shift · 계층적 분해(순차적 대 반응적 하위 스킬)와 공변량 이동의 관계를 설명할 수 있다
-- [ ] State what the 2023 handover companion (haptic glove, 1 ms grip adaptation) adds to the line · 2023 핸드오버 자매 논문(햅틱 장갑, 1ms 그립 적응)이 계열에 더하는 것을 말할 수 있다
+- [ ] State what the 2023 handover companion (haptic glove, 1 ms grip adaptation) adds to the line · 2023 핸드오버 자매 논문(햅틱 장갑, 1 ms 그립 적응)이 계열에 더하는 것을 말할 수 있다
 - [ ] Separate what "scalable" claims from what it does not · "scalable"이 주장하는 것과 주장하지 않는 것을 구분할 수 있다

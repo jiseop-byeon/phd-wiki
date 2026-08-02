@@ -37,7 +37,7 @@ dataset had to be built *by* the model.
 > annotate, annotations improve the model, until annotation is fully automatic.
 
 - Architecture: heavy **ViT image encoder** ([[mae|MAE]]-pretrained) run once per image +
-  light prompt encoder + fast mask decoder (~50ms) — interactive by design; outputs 3 masks
+  light prompt encoder + fast mask decoder (~50 ms) — interactive by design; outputs 3 masks
   to resolve prompt ambiguity.
 - **Data engine → SA-1B**: assisted-manual → semi-automatic → fully automatic stages;
   final dataset **11M images, 1.1B masks**, released.
@@ -86,7 +86,7 @@ useful for site monitoring.
 > 주석이 모델을 개선하고, 결국 주석이 완전 자동이 될 때까지.
 
 - 구조: 이미지당 한 번 도는 무거운 **ViT 이미지 인코더**([[mae|MAE]] 사전학습) + 가벼운
-  프롬프트 인코더 + 빠른 마스크 디코더(~50ms) — 설계부터 인터랙티브; 프롬프트 모호성을
+  프롬프트 인코더 + 빠른 마스크 디코더(~50 ms) — 설계부터 인터랙티브; 프롬프트 모호성을
   풀기 위해 마스크 3개를 출력.
 - **데이터 엔진 → SA-1B**: 보조 수동 → 반자동 → 완전 자동 단계;
   최종 **1,100만 이미지, 11억 마스크** 공개.
@@ -122,6 +122,6 @@ useful for site monitoring.
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] Explain why framing the task as *promptable segmentation* makes it suitable for pretraining · "프롬프트 가능한 분할"이라는 과제 정의가 왜 사전학습에 적합한지 설명할 수 있다
-- [ ] Describe how the three-stage data engine (assisted-manual → semi-automatic → automatic) produced 1.1 B masks · 데이터 엔진 3단계(보조 수동→반자동→자동)가 11억 마스크를 만든 과정을 말할 수 있다
+- [ ] Describe how the three-stage data engine (assisted-manual → semi-automatic → automatic) produced 1.1 billion masks · 데이터 엔진 3단계(보조 수동→반자동→자동)가 11억 마스크를 만든 과정을 말할 수 있다
 - [ ] Separate what SAM knows (boundaries) from what it does not (classes), and name the complementary pairing (detector + SAM) · SAM이 아는 것(경계)과 모르는 것(클래스)을 구분하고, 보완 조합(검출기+SAM)을 말할 수 있다
 - [ ] Say why splitting a heavy encoder from a light decoder is decisive for interactive use · 무거운 인코더/가벼운 디코더 분리가 인터랙티브 사용에 왜 결정적인지 말할 수 있다
