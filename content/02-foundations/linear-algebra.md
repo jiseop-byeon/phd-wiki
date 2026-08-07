@@ -102,6 +102,58 @@ where each concept appears in the papers of this wiki.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
+- **Reading $x^\top A x$ — it really is $ax^2$ with more indices.** The transposes are
+  bookkeeping, not content. $x$ is a column ($n\times1$), so $x^\top$ is $1\times n$, and
+  $(1\times n)(n\times n)(n\times 1) = 1\times 1$: you need an $x$ on *each* side or the
+  answer would not be a number. Written out,
+  $$x^\top A x = \sum_i\sum_j A_{ij}\,x_i x_j$$
+  — every term is a coefficient times a product of two coordinates, which is exactly what
+  "quadratic" means. In one dimension it collapses to $a x^2$, as you would hope.
+  - *Diagonal $A$ = independent parabolas.* $A = \begin{pmatrix}2&0\\0&3\end{pmatrix}$ gives
+    $x^\top A x = 2x_1^2 + 3x_2^2$ — a bowl, steeper along $x_2$.
+  - *Off-diagonal entries are the cross-terms that tilt it.*
+    $A = \begin{pmatrix}1&1\\1&1\end{pmatrix}$ gives
+    $x_1^2 + 2x_1x_2 + x_2^2 = (x_1+x_2)^2$ — still never negative, but flat along the whole
+    line $x_1 = -x_2$, where it is exactly zero. That is *semi*-definite: a valley with a
+    flat floor rather than a single lowest point.
+  - *Not PSD looks like this.* $A = \begin{pmatrix}1&0\\0&-1\end{pmatrix}$ gives
+    $x_1^2 - x_2^2$, which is $+1$ at $x=(1,0)$ and $-1$ at $x=(0,1)$ — up one way, down the
+    other. A saddle, not a bowl.
+- **Why the two definitions are the same statement.** Substitute $A = Q\Lambda Q^\top$ and
+  let $y = Q^\top x$ (just $x$ read in the eigenvector coordinate system):
+  $$x^\top A x = x^\top Q\Lambda Q^\top x = y^\top \Lambda y = \sum_i \lambda_i\, y_i^2$$
+  A weighted sum of squares, with the eigenvalues as the weights. Squares are never negative,
+  so the whole thing is $\ge 0$ for every $x$ **exactly when** every $\lambda_i \ge 0$. The
+  eigenvalue test and the $x^\top A x$ test are one fact seen twice.
+- **Where you will actually meet it.** Two places, and both make the abstraction concrete:
+  - *Taylor's second-order term* ([[02-foundations/engineering-math|0.5 §2]]) is
+    $\tfrac12\,\delta^\top H \delta$ — the curvature you feel when stepping $\delta$ away
+    from a point. $H \succeq 0$ says the surface curves upward *whichever direction you
+    walk*, which is precisely the condition for a local minimum
+    ([[02-foundations/optimization|4. Optimization §3]]).
+  - *Variance of any linear readout*: for a random vector $x$ with covariance $\Sigma$,
+    $\text{Var}(w^\top x) = w^\top \Sigma w$. A variance cannot be negative — and that,
+    with no further argument, is **why every covariance matrix is PSD**. When a paper says
+    "$\Sigma \succeq 0$", it is asserting nothing more exotic than that.
+
+<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="three quadratic forms: a bowl, a flat-floored valley, and a saddle">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="15" y1="118" x2="125" y2="118"/><line x1="180" y1="118" x2="290" y2="118"/><line x1="345" y1="118" x2="455" y2="118"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15.0 72.0L16.8 75.0L18.7 77.9L20.5 80.7L22.3 83.4L24.2 86.1L26.0 88.6L27.8 91.0L29.7 93.3L31.5 95.5L33.3 97.6L35.2 99.5L37.0 101.4L38.8 103.2L40.7 104.9L42.5 106.5L44.3 108.0L46.2 109.4L48.0 110.6L49.8 111.8L51.7 112.9L53.5 113.9L55.3 114.7L57.2 115.5L59.0 116.2L60.8 116.7L62.7 117.2L64.5 117.5L66.3 117.8L68.2 117.9L70.0 118.0L71.8 117.9L73.7 117.8L75.5 117.5L77.3 117.2L79.2 116.7L81.0 116.2L82.8 115.5L84.7 114.7L86.5 113.9L88.3 112.9L90.2 111.8L92.0 110.6L93.8 109.4L95.7 108.0L97.5 106.5L99.3 104.9L101.2 103.2L103.0 101.4L104.8 99.5L106.7 97.6L108.5 95.5L110.3 93.3L112.2 91.0L114.0 88.6L115.8 86.1L117.7 83.4L119.5 80.7L121.3 77.9L123.2 75.0L125.0 72.0"/><path d="M180.0 87.3L181.8 89.3L183.7 91.3L185.5 93.2L187.3 95.0L189.2 96.7L191.0 98.4L192.8 100.0L194.7 101.5L196.5 103.0L198.3 104.4L200.2 105.7L202.0 107.0L203.8 108.2L205.7 109.3L207.5 110.3L209.3 111.3L211.2 112.2L213.0 113.1L214.8 113.9L216.7 114.6L218.5 115.2L220.3 115.8L222.2 116.3L224.0 116.8L225.8 117.1L227.7 117.5L229.5 117.7L231.3 117.9L233.2 118.0L235.0 118.0L236.8 118.0L238.7 117.9L240.5 117.7L242.3 117.5L244.2 117.1L246.0 116.8L247.8 116.3L249.7 115.8L251.5 115.2L253.3 114.6L255.2 113.9L257.0 113.1L258.8 112.2L260.7 111.3L262.5 110.3L264.3 109.3L266.2 108.2L268.0 107.0L269.8 105.7L271.7 104.4L273.5 103.0L275.3 101.5L277.2 100.0L279.0 98.4L280.8 96.7L282.7 95.0L284.5 93.2L286.3 91.3L288.2 89.3L290.0 87.3"/><path d="M345.0 87.3L346.8 89.3L348.7 91.3L350.5 93.2L352.3 95.0L354.2 96.7L356.0 98.4L357.8 100.0L359.7 101.5L361.5 103.0L363.3 104.4L365.2 105.7L367.0 107.0L368.8 108.2L370.7 109.3L372.5 110.3L374.3 111.3L376.2 112.2L378.0 113.1L379.8 113.9L381.7 114.6L383.5 115.2L385.3 115.8L387.2 116.3L389.0 116.8L390.8 117.1L392.7 117.5L394.5 117.7L396.3 117.9L398.2 118.0L400.0 118.0L401.8 118.0L403.7 117.9L405.5 117.7L407.3 117.5L409.2 117.1L411.0 116.8L412.8 116.3L414.7 115.8L416.5 115.2L418.3 114.6L420.2 113.9L422.0 113.1L423.8 112.2L425.7 111.3L427.5 110.3L429.3 109.3L431.2 108.2L433.0 107.0L434.8 105.7L436.7 104.4L438.5 103.0L440.3 101.5L442.2 100.0L444.0 98.4L445.8 96.7L447.7 95.0L449.5 93.2L451.3 91.3L453.2 89.3L455.0 87.3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="70" y="22">positive definite</text><text x="235" y="22">positive semidefinite</text><text x="400" y="22">indefinite</text>
+    <text x="70" y="40" font-size="10" opacity="0.8">2x&#8321;&#178; + 3x&#8322;&#178;</text><text x="235" y="40" font-size="10" opacity="0.8">(x&#8321; + x&#8322;)&#178;</text><text x="400" y="40" font-size="10" opacity="0.8">x&#8321;&#178; &#8722; x&#8322;&#178;</text>
+    <text x="70" y="176">up in every direction</text><text x="235" y="176">up, but flat along a line</text><text x="400" y="176">up one way, down the other</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="15" y="196" opacity="0.85">Each panel plots x&#7488;Ax along two directions through the origin (solid and dashed).</text>
+    <text x="15" y="209" opacity="0.85">Positive semidefinite means no direction ever dips below the axis.</text>
+  </g>
+</svg>
+
+
 
 ### 4. SVD — a universal factorization, available for every matrix
 
@@ -308,6 +360,57 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
   논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻.
+- **$x^\top A x$ 읽는 법 — 정말로 인덱스가 늘어난 $ax^2$이다.** 전치는 내용이 아니라 부기다.
+  $x$가 열벡터($n\times1$)이므로 $x^\top$은 $1\times n$이고,
+  $(1\times n)(n\times n)(n\times 1) = 1\times 1$ — 즉 답이 숫자가 되려면 $x$가 *양쪽에*
+  하나씩 있어야 한다. 풀어 쓰면
+  $$x^\top A x = \sum_i\sum_j A_{ij}\,x_i x_j$$
+  — 모든 항이 계수 × 좌표 두 개의 곱이고, 그것이 정확히 "이차"의 뜻이다. 1차원으로 줄이면
+  기대대로 $a x^2$가 된다.
+  - *대각 $A$ = 서로 독립인 포물선들.* $A = \begin{pmatrix}2&0\\0&3\end{pmatrix}$이면
+    $x^\top A x = 2x_1^2 + 3x_2^2$ — 그릇 모양이고 $x_2$ 방향이 더 가파르다.
+  - *비대각 성분이 그릇을 기울이는 교차항이다.*
+    $A = \begin{pmatrix}1&1\\1&1\end{pmatrix}$이면
+    $x_1^2 + 2x_1x_2 + x_2^2 = (x_1+x_2)^2$ — 여전히 음수가 되지 않지만, 직선 $x_1 = -x_2$
+    전체에서 정확히 0으로 평평하다. 이것이 *준*정부호다: 최저점 하나가 아니라 바닥이 평평한
+    골짜기.
+  - *PSD가 아닌 경우는 이렇게 생겼다.* $A = \begin{pmatrix}1&0\\0&-1\end{pmatrix}$이면
+    $x_1^2 - x_2^2$이고, $x=(1,0)$에서 $+1$, $x=(0,1)$에서 $-1$ — 한 방향은 올라가고 다른
+    방향은 내려간다. 그릇이 아니라 안장이다.
+- **두 정의가 왜 같은 말인가.** $A = Q\Lambda Q^\top$을 대입하고 $y = Q^\top x$로 두면
+  (그저 $x$를 고유벡터 좌표계에서 읽은 것):
+  $$x^\top A x = x^\top Q\Lambda Q^\top x = y^\top \Lambda y = \sum_i \lambda_i\, y_i^2$$
+  고유값을 가중치로 쓴 제곱들의 가중합이다. 제곱은 결코 음수가 아니므로, 이 전체가 모든 $x$에
+  대해 $\ge 0$일 **필요충분조건**이 모든 $\lambda_i \ge 0$이다. 고유값 판정과 $x^\top A x$
+  판정은 하나의 사실을 두 번 본 것이다.
+- **실제로 만나게 되는 자리.** 두 곳이고, 둘 다 이 추상을 구체로 만든다:
+  - *테일러의 2차 항*([[02-foundations/engineering-math|0.5 §2]])이
+    $\tfrac12\,\delta^\top H \delta$다 — 어떤 점에서 $\delta$만큼 움직일 때 느끼는 곡률.
+    $H \succeq 0$은 *어느 방향으로 걸어도* 표면이 위로 휜다는 뜻이고, 그것이 정확히 지역
+    최솟값의 조건이다([[02-foundations/optimization|4. 최적화 §3]]).
+  - *임의의 선형 판독값의 분산*: 공분산이 $\Sigma$인 확률벡터 $x$에 대해
+    $\text{Var}(w^\top x) = w^\top \Sigma w$. 분산은 음수가 될 수 없고 — 더 이상의 논증 없이
+    이것이 **모든 공분산 행렬이 PSD인 이유**다. 논문의 "$\Sigma \succeq 0$"은 그 이상 별난
+    것을 주장하지 않는다.
+
+<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="세 가지 이차형식: 그릇, 바닥이 평평한 골짜기, 안장">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="15" y1="118" x2="125" y2="118"/><line x1="180" y1="118" x2="290" y2="118"/><line x1="345" y1="118" x2="455" y2="118"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15.0 72.0L16.8 75.0L18.7 77.9L20.5 80.7L22.3 83.4L24.2 86.1L26.0 88.6L27.8 91.0L29.7 93.3L31.5 95.5L33.3 97.6L35.2 99.5L37.0 101.4L38.8 103.2L40.7 104.9L42.5 106.5L44.3 108.0L46.2 109.4L48.0 110.6L49.8 111.8L51.7 112.9L53.5 113.9L55.3 114.7L57.2 115.5L59.0 116.2L60.8 116.7L62.7 117.2L64.5 117.5L66.3 117.8L68.2 117.9L70.0 118.0L71.8 117.9L73.7 117.8L75.5 117.5L77.3 117.2L79.2 116.7L81.0 116.2L82.8 115.5L84.7 114.7L86.5 113.9L88.3 112.9L90.2 111.8L92.0 110.6L93.8 109.4L95.7 108.0L97.5 106.5L99.3 104.9L101.2 103.2L103.0 101.4L104.8 99.5L106.7 97.6L108.5 95.5L110.3 93.3L112.2 91.0L114.0 88.6L115.8 86.1L117.7 83.4L119.5 80.7L121.3 77.9L123.2 75.0L125.0 72.0"/><path d="M180.0 87.3L181.8 89.3L183.7 91.3L185.5 93.2L187.3 95.0L189.2 96.7L191.0 98.4L192.8 100.0L194.7 101.5L196.5 103.0L198.3 104.4L200.2 105.7L202.0 107.0L203.8 108.2L205.7 109.3L207.5 110.3L209.3 111.3L211.2 112.2L213.0 113.1L214.8 113.9L216.7 114.6L218.5 115.2L220.3 115.8L222.2 116.3L224.0 116.8L225.8 117.1L227.7 117.5L229.5 117.7L231.3 117.9L233.2 118.0L235.0 118.0L236.8 118.0L238.7 117.9L240.5 117.7L242.3 117.5L244.2 117.1L246.0 116.8L247.8 116.3L249.7 115.8L251.5 115.2L253.3 114.6L255.2 113.9L257.0 113.1L258.8 112.2L260.7 111.3L262.5 110.3L264.3 109.3L266.2 108.2L268.0 107.0L269.8 105.7L271.7 104.4L273.5 103.0L275.3 101.5L277.2 100.0L279.0 98.4L280.8 96.7L282.7 95.0L284.5 93.2L286.3 91.3L288.2 89.3L290.0 87.3"/><path d="M345.0 87.3L346.8 89.3L348.7 91.3L350.5 93.2L352.3 95.0L354.2 96.7L356.0 98.4L357.8 100.0L359.7 101.5L361.5 103.0L363.3 104.4L365.2 105.7L367.0 107.0L368.8 108.2L370.7 109.3L372.5 110.3L374.3 111.3L376.2 112.2L378.0 113.1L379.8 113.9L381.7 114.6L383.5 115.2L385.3 115.8L387.2 116.3L389.0 116.8L390.8 117.1L392.7 117.5L394.5 117.7L396.3 117.9L398.2 118.0L400.0 118.0L401.8 118.0L403.7 117.9L405.5 117.7L407.3 117.5L409.2 117.1L411.0 116.8L412.8 116.3L414.7 115.8L416.5 115.2L418.3 114.6L420.2 113.9L422.0 113.1L423.8 112.2L425.7 111.3L427.5 110.3L429.3 109.3L431.2 108.2L433.0 107.0L434.8 105.7L436.7 104.4L438.5 103.0L440.3 101.5L442.2 100.0L444.0 98.4L445.8 96.7L447.7 95.0L449.5 93.2L451.3 91.3L453.2 89.3L455.0 87.3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="70" y="22">양정부호</text><text x="235" y="22">양준정부호</text><text x="400" y="22">부정부호</text>
+    <text x="70" y="40" font-size="10" opacity="0.8">2x&#8321;&#178; + 3x&#8322;&#178;</text><text x="235" y="40" font-size="10" opacity="0.8">(x&#8321; + x&#8322;)&#178;</text><text x="400" y="40" font-size="10" opacity="0.8">x&#8321;&#178; &#8722; x&#8322;&#178;</text>
+    <text x="70" y="176">모든 방향에서 위로</text><text x="235" y="176">위로, 다만 한 직선에서 평평</text><text x="400" y="176">한쪽은 위, 다른 쪽은 아래</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="15" y="196" opacity="0.85">각 패널은 원점을 지나는 두 방향(실선·점선)을 따라 x&#7488;Ax 값을 그린 것이다.</text>
+    <text x="15" y="209" opacity="0.85">양준정부호란 어느 방향으로도 축 아래로 내려가지 않는다는 뜻이다.</text>
+  </g>
+</svg>
+
+
 
 ### 4. SVD — 모든 행렬에 존재하는 보편적 분해
 

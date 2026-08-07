@@ -86,6 +86,23 @@ Two standard ways to write the same problem — papers assume you know which one
   leaving only $u_{0:N-1}$ — a smaller but *dense* QP whose condition number worsens with
   horizon length (powers of $A$).
 
+**Size it, so "large" and "small" stop being adjectives.** Take a quadruped centroidal MPC
+of the kind [[04-robotics/convex-mpc-legged|convex MPC papers]] run: state $n_x = 13$
+(position, orientation, their velocities, plus gravity), input $n_u = 12$ (a 3-vector force
+at each of 4 feet), horizon $N = 10$.
+
+| | variables | equality constraints | Hessian |
+|---|---|---|---|
+| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x = 130$ | $263\times263$, **banded** — mostly zeros |
+| **Condensed** | $Nn_u = 120$ | none (dynamics substituted in) | $120\times120$, **dense** — every entry filled |
+
+Condensed has under half the variables, which sounds decisive until you notice its Hessian is
+dense: $120^2 = 14{,}400$ nonzeros, against a stacked matrix whose nonzero count grows only
+linearly in $N$. Doubling the horizon roughly doubles stacked work and *quadruples* condensed
+work. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
+estimation already spent — which is why this choice is a real engineering decision rather
+than a stylistic one.
+
 Rule of thumb when reading: long horizons and state constraints → stacked; short horizons,
 input constraints only → condensed. (The conditioning penalty applies to marginally stable
 or unstable $A$ — the usual robotics case; for strictly stable $A$ the powers decay and
@@ -212,6 +229,22 @@ feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노�
 - **Condensed (축약) 형태**: $x_k = A^k x_0 + \sum_j A^{k-1-j}Bu_j$로 상태를 소거해
   $u_{0:N-1}$만 남긴다 — 작지만 *조밀*하고, 지평이 길수록($A$의 거듭제곱) 조건수가
   나빠진다.
+
+**크기를 재 보자 — 그래야 "크다"와 "작다"가 형용사에서 벗어난다.**
+[[04-robotics/convex-mpc-legged|convex MPC 논문]]들이 돌리는 사족보행 centroidal MPC로 예를
+들면: 상태 $n_x = 13$(위치, 자세, 그 속도들, 그리고 중력), 입력 $n_u = 12$(발 4개 각각의
+3차원 힘), 지평 $N = 10$.
+
+| | 변수 | 등식 제약 | 헤시안 |
+|---|---|---|---|
+| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x = 130$ | $263\times263$, **띠 구조** — 대부분 0 |
+| **Condensed** | $Nn_u = 120$ | 없음(동역학을 대입해 소거) | $120\times120$, **밀집** — 모든 성분이 채워짐 |
+
+Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
+비영 성분이 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
+지평을 두 배로 하면 stacked는 대략 두 배, condensed는 *네 배*의 일이 된다. 그리고 50 Hz라면
+이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
+이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 
 읽을 때의 어림 규칙: 긴 지평 + 상태 제약 → stacked; 짧은 지평 + 입력 제약만 → condensed.
 (조건수 페널티는 한계 안정/불안정 $A$ — 로봇의 통상 사례 — 에 해당하고, 엄격히 안정한
