@@ -74,6 +74,30 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 | Robotics | **success rate** | fraction of trials achieving the goal — plus *which* trials (seen/unseen) matters more than the number |
 | Retrieval | recall@k | truth within top-k results |
 
+**Worked example — why accuracy lies on imbalanced data.** A crack detector is run on
+1,000 wall panels; 60 really have cracks. It flags 50 panels, of which 40 are real cracks.
+Lay the four counts out:
+
+| | predicted crack | predicted fine |
+|---|---|---|
+| **really cracked** | TP = 40 | FN = 20 |
+| **really fine** | FP = 10 | TN = 930 |
+
+- **Accuracy** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — and a detector that
+  simply says "fine" every single time scores $94.0\%$. Accuracy is nearly useless here.
+- **Precision** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — of what you flagged, 80% was
+  real. This is the number an inspector cares about: how often a dispatch is wasted.
+- **Recall** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — of the real cracks, you caught
+  two-thirds. **20 cracks were missed**, and that is the number a safety engineer cares about.
+- **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — the harmonic mean, which
+  stays low if *either* is low (an arithmetic mean would have hidden it at 0.73 vs a lopsided
+  0.9/0.5 = 0.7).
+
+The lesson to carry into every Results table: precision and recall trade against each other
+through one threshold knob, so a paper reporting only the flattering one has told you half a
+sentence. And in construction the asymmetry is real — a false alarm costs an inspection, a
+missed crack can cost a structure.
+
 - Read metrics adversarially: success rate on *what* distribution, of *how many* trials,
   with *what* variance? 9 successes in 10 trials has a wide confidence interval — report
   the counts and the uncertainty, not just "90%".
@@ -178,6 +202,29 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 | 번역/캡셔닝 | BLEU | 참조문과의 n-gram 겹침 |
 | 로보틱스 | **success rate** | 목표 달성 시행 비율 — 숫자보다 *어떤* 시행(seen/unseen)인지가 더 중요 |
 | 검색 | recall@k | 정답이 상위 k개 안 |
+
+**계산 예제 — 불균형 데이터에서 정확도가 거짓말하는 이유.** 벽체 패널 1,000장에 균열
+감지기를 돌렸고, 실제 균열은 60장에 있다. 감지기는 50장을 플래그했고 그중 40장이 진짜였다.
+네 숫자를 늘어놓으면:
+
+| | 균열로 예측 | 정상으로 예측 |
+|---|---|---|
+| **실제 균열** | TP = 40 | FN = 20 |
+| **실제 정상** | FP = 10 | TN = 930 |
+
+- **정확도(accuracy)** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — 그런데 무조건
+  "정상"이라고만 답하는 감지기도 $94.0\%$가 나온다. 여기서 정확도는 거의 무용하다.
+- **정밀도(precision)** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — 플래그한 것 중 80%가
+  진짜였다. 점검자가 신경 쓰는 숫자다: 출동이 얼마나 헛되는가.
+- **재현율(recall)** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — 실제 균열 중 3분의 2를
+  잡았다. **균열 20개를 놓쳤고**, 이것이 안전 담당자가 신경 쓰는 숫자다.
+- **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — 조화평균이라 *둘 중
+  하나만* 낮아도 낮게 유지된다(산술평균이었다면 0.9와 0.5처럼 한쪽으로 쏠린 경우도 0.7로
+  가려줬을 것이다).
+
+모든 Results 표에 들고 갈 교훈: 정밀도와 재현율은 문턱값 하나로 서로 맞바꾸는 값이므로,
+유리한 쪽만 보고한 논문은 문장의 절반만 말한 것이다. 그리고 건설에서는 이 비대칭이 실제다 —
+오경보는 점검 한 번을 낭비하지만, 놓친 균열은 구조물을 대가로 할 수 있다.
 
 - 지표는 적대적으로 읽어라: *어떤* 분포에서, *몇 번의* 시행으로, *분산은* 얼마인 success
   rate인가? 10회 중 9회 성공은 신뢰구간이 넓다 — "90%"만이 아니라 횟수와 불확실성을

@@ -50,9 +50,18 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 - $H(p, q) = -\sum_x p(x)\log q(x)$: the cost of encoding data from true distribution $p$
   using a code optimized for your model $q$.
+- **Worked, in bits.** True $p = (0.7,\,0.2,\,0.1)$, model $q = (0.5,\,0.3,\,0.2)$.
+  $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{bits}$$
+  $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{bits}$$
+  The model costs $1.280$ bits per symbol where $1.157$ was achievable — an overpayment of
+  $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
 - Classification training: $p$ = one-hot label, $q$ = softmax output ⇒
-  cross-entropy loss $= -\log q(\text{correct class})$. **Minimizing cross-entropy = MLE**
-  (see [[02-foundations/probability|probability]]).
+  cross-entropy loss $= -\log q(\text{correct class})$. Every other term is multiplied by
+  $p(x) = 0$ and vanishes — which is why the loss in code is a *single* log. If the model
+  gives the correct class probability $0.5$, the loss is $-\log 0.5 = 0.693$ nats ($=1$ bit);
+  at $0.9$ it is $0.105$; at $0.99$, $0.010$. The loss falls steeply at first and then barely
+  moves — most of the training signal comes from examples the model still gets wrong.
+  **Minimizing cross-entropy = MLE** (see [[02-foundations/probability|probability]]).
 - Language models: per-token cross-entropy is *the* pretraining objective
   ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "the model is as
   confused as if choosing among perplexity-many options."
@@ -61,6 +70,11 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — the *extra* bits paid for using $q$ when the truth is $p$.
+- **Same numbers as §2, computed directly:**
+  $$D_{KL} = 0.7\log_2\tfrac{0.7}{0.5} + 0.2\log_2\tfrac{0.2}{0.3} + 0.1\log_2\tfrac{0.1}{0.2} = 0.340 - 0.117 - 0.100 = 0.123\ \text{bits}$$
+  — exactly $H(p,q) - H(p) = 1.280 - 1.157$. Two things become visible: individual terms
+  **can be negative** (the middle one is), yet the total never is; and the total is zero only
+  when $q = p$ everywhere.
 
 <svg viewBox="0 0 480 120" style="max-width:100%;height:auto" role="img" aria-label="cross-entropy equals entropy plus KL">
   <g fill="currentColor" opacity="0.10"><rect x="30" y="74" width="105" height="30" transform="translate(180,0)"/></g>
@@ -107,6 +121,15 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 - $I(X;Y) = D_{KL}(p(x,y)\,\|\,p(x)p(y)) = H(X) - H(X|Y)$
   — how many bits knowing $Y$ tells you about $X$; zero iff independent.
+- **Worked, with the crack detector from [[02-foundations/probability|3. Probability §1]].**
+  $X$ = crack present ($P = 0.01$), $Y$ = alarm fires, with $P(Y{=}1|X{=}1) = 0.95$ and
+  $P(Y{=}1|X{=}0) = 0.05$. Then $P(Y{=}1) = 0.95(0.01) + 0.05(0.99) = 0.059$. Computing the
+  four joint terms gives $I(X;Y) = 0.037$ bits, while $H(X) = 0.081$ bits. So the alarm
+  removes **46% of the uncertainty** about whether a crack is there — informative, but
+  nothing like "knowing." That single ratio is the honest version of the sentence
+  "our sensor detects cracks with 95% accuracy": high sensitivity on a rare event still
+  leaves most of the question open, which is the same fact Bayes' rule showed as
+  $P(X|Y) = 0.16$.
 - **InfoNCE / contrastive learning** ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]'s objective) is a
   lower bound on mutual information between views/modalities — "maximize what the image
   embedding tells you about the text embedding." Written out for a batch of $N$ pairs with
@@ -203,8 +226,17 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $H(p, q) = -\sum_x p(x)\log q(x)$: 진짜 분포가 $p$인 데이터를, 내 모델 $q$에 최적화된
   부호로 인코딩할 때의 비용.
+- **비트 단위 계산 예제.** 참분포 $p = (0.7,\,0.2,\,0.1)$, 모델 $q = (0.5,\,0.3,\,0.2)$.
+  $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
+  $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
+  $1.157$이면 되는 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다.
+  이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
 - 분류 학습: $p$ = 원-핫 라벨, $q$ = 소프트맥스 출력 ⇒ 교차 엔트로피 손실
-  $= -\log q(\text{정답 클래스})$. **교차 엔트로피 최소화 = MLE**
+  $= -\log q(\text{정답 클래스})$. 나머지 항은 전부 $p(x) = 0$이 곱해져 사라진다 — 코드에서
+  보는 손실이 로그 *하나*인 이유가 이것이다. 모델이 정답 클래스에 확률 $0.5$를 주면 손실은
+  $-\log 0.5 = 0.693$ 나트($=1$비트), $0.9$면 $0.105$, $0.99$면 $0.010$이다. 손실이 처음엔
+  가파르게 떨어지다 이후 거의 움직이지 않는다 — 학습 신호의 대부분은 모델이 아직 틀리는
+  예제에서 온다. **교차 엔트로피 최소화 = MLE**
   ([[02-foundations/probability|확률]] 참고).
 - 언어모델: 토큰별 교차 엔트로피가 사전학습 목적함수 *그 자체*다
   ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "모델이
@@ -214,6 +246,11 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — 진실이 $p$인데 $q$를 썼을 때 *추가로* 내는 비트.
+- **2절과 같은 숫자를, 이번엔 직접 계산:**
+  $$D_{KL} = 0.7\log_2\tfrac{0.7}{0.5} + 0.2\log_2\tfrac{0.2}{0.3} + 0.1\log_2\tfrac{0.1}{0.2} = 0.340 - 0.117 - 0.100 = 0.123\ \text{비트}$$
+  — 정확히 $H(p,q) - H(p) = 1.280 - 1.157$이다. 두 가지가 눈에 보인다: 개별 항은 **음수가 될
+  수 있지만**(가운데 항이 그렇다) 총합은 결코 음수가 되지 않으며, 총합이 0이 되는 것은 모든
+  곳에서 $q = p$일 때뿐이다.
 
 <svg viewBox="0 0 480 120" style="max-width:100%;height:auto" role="img" aria-label="교차 엔트로피 = 엔트로피 + KL">
   <g fill="currentColor" opacity="0.10"><rect x="30" y="74" width="105" height="30" transform="translate(180,0)"/></g>
@@ -260,6 +297,14 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $I(X;Y) = D_{KL}(p(x,y)\,\|\,p(x)p(y)) = H(X) - H(X|Y)$
   — $Y$를 알면 $X$에 대해 몇 비트를 알게 되는가; 독립일 때만 0.
+- **[[02-foundations/probability|3. 확률 §1]]의 균열 감지기로 계산해 보면.**
+  $X$ = 균열 있음($P = 0.01$), $Y$ = 경보 울림, $P(Y{=}1|X{=}1) = 0.95$,
+  $P(Y{=}1|X{=}0) = 0.05$. 그러면 $P(Y{=}1) = 0.95(0.01) + 0.05(0.99) = 0.059$이고, 네 개의
+  결합 항을 계산하면 $I(X;Y) = 0.037$비트, 한편 $H(X) = 0.081$비트다. 즉 경보는 균열 유무에
+  대한 불확실성 중 **46퍼센트**를 없앤다 — 정보가 있긴 하지만 "안다"와는 거리가 멀다. 이 비 하나가
+  "우리 센서는 95% 정확도로 균열을 감지한다"는 문장의 정직한 판본이다: 희귀 사건에 대한 높은
+  민감도는 여전히 질문의 대부분을 열어둔 채로 남기고, 베이즈 정리가 $P(X|Y) = 0.16$으로 보여준
+  것과 같은 사실이다.
 - **InfoNCE / 대조학습** ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 목적함수)은 뷰/모달리티 간
   상호 정보량의 하한이다 — "이미지 임베딩이 텍스트 임베딩에 대해 알려주는 양을 최대화하라."
   유사도 $s(\cdot,\cdot)$와 온도 $\tau$, $N$쌍 배치에 대해 써보면:

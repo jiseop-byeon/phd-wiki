@@ -42,6 +42,13 @@ example, plus the gradient pathologies that shaped architecture history.
   - **Reverse mode**: propagate $\partial L/\partial(\cdot)$ output-side first — one pass *per output*.
 - Losses are scalar: one output, millions of inputs ⇒ reverse mode computes *every*
   parameter gradient in a single backward pass. **Backprop is exactly this choice.**
+  **Put numbers on it.** A modest network with $10^7$ parameters and one scalar loss:
+  forward mode would need one pass *per parameter*, so $10^7$ passes; reverse mode needs
+  **one**. At roughly 2–3× the cost of a forward pass, that is a speedup of about seven
+  orders of magnitude — and it is the only reason training large models is possible at all.
+  The asymmetry is not a clever trick; it falls straight out of the shape of the problem
+  (many inputs, one output), and it would reverse if you ever needed the sensitivity of many
+  outputs to *one* input.
 - Autodiff mechanics: each primitive supplies a **VJP** (vector-Jacobian product)
   $v \mapsto J^\top v$; the framework composes them along the recorded graph.
   Cost ≈ 2–3× a forward pass; memory ≈ stored activations (hence gradient checkpointing:
@@ -59,6 +66,31 @@ $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU's
    gradient is a mask (call it $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
+
+**Now with actual numbers** — the *same* network as
+[[02-foundations/neural-network-basics|0.7 §2]], so nothing new has to be set up:
+$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}$,
+$W_2 = \begin{pmatrix}1&-1&0.5\end{pmatrix}$, $x = (1,2)$. Forward, from that page:
+$z = (1,2,3)$, $h = (1,2,3)$, $\hat y = 0.5$. Suppose the target is $y = 1$, so
+$L = \tfrac12(0.5-1)^2 = 0.125$. Backward, one line per step above:
+
+| Step | Formula | Numbers |
+|---|---|---|
+| 1 | $\delta_2 = \hat y - y$ | $0.5 - 1 = -0.5$ |
+| 2 | $\partial L/\partial W_2 = \delta_2 h^\top$ | $-0.5\,(1,2,3) = (-0.5,\,-1,\,-1.5)$ |
+| 3 | $\partial L/\partial h = W_2^\top\delta_2$ | $-0.5\,(1,-1,0.5) = (-0.5,\,0.5,\,-0.25)$ |
+| 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | mask is $(1,1,1)$ since $z>0$, so $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
+| 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
+
+Three things to notice, and they generalize to every network you will read about:
+- **The sign says what to do.** $\delta_2 = -0.5$ is negative because the prediction was
+  *too low*; gradient descent subtracts the gradient, so every weight feeding a positive
+  activation goes **up**. The arithmetic is doing the obvious thing.
+- **Bigger activation, bigger gradient.** In step 2 the third weight gets $-1.5$ while the
+  first gets $-0.5$, purely because $h_3 = 3$ was the loudest input. Credit is assigned in
+  proportion to who spoke.
+- **Shapes match their variables.** $\partial L/\partial W_1$ came out $3\times2$, exactly
+  $W_1$'s shape. If yours does not, you have a bug — no exceptions.
 
 Each step above *is* one VJP: step 3, $W_2^\top\delta_2$, is the layer's Jacobian-transpose
 applied to the incoming $\delta$ — you just did by hand what §2 described abstractly. Every
@@ -197,6 +229,11 @@ bug detector in existence.
   - **역방향 모드**: $\partial L/\partial(\cdot)$를 출력 쪽부터 전파 — *출력마다* 한 패스.
 - 손실은 스칼라다: 출력 1개, 입력 수백만 개 ⇒ 역방향 모드가 backward 한 번으로 *모든*
   파라미터의 그래디언트를 계산한다. **역전파는 정확히 이 선택이다.**
+  **숫자를 붙여 보자.** 파라미터 $10^7$개에 스칼라 손실 하나인 평범한 신경망이라면, 순방향
+  모드는 *파라미터마다* 한 패스가 필요하니 $10^7$번, 역방향 모드는 **한 번**이다. 역방향
+  패스가 순방향의 2~3배 비용이므로 대략 7자릿수의 차이이고, 대형 모델 학습이 가능한 이유가
+  오직 이것이다. 이 비대칭은 영리한 요령이 아니라 문제의 모양(입력 다수, 출력 하나)에서 곧장
+  나오는 것이고, 만약 *하나의* 입력에 대한 다수 출력의 민감도가 필요했다면 우열이 뒤집힌다.
 - 자동 미분의 동작: 각 기본 연산이 **VJP**(벡터-야코비안 곱) $v \mapsto J^\top v$를
   제공하고, 프레임워크가 기록된 그래프를 따라 이를 합성한다.
   비용 ≈ 순방향의 2~3배; 메모리 ≈ 저장된 활성값 (gradient checkpointing: 저장 대신 재계산).
@@ -213,6 +250,30 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU의
    그래디언트는 마스크 (이것이 $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
+
+**이제 실제 숫자로** — [[02-foundations/neural-network-basics|0.7 §2]]와 *같은* 신경망이라
+새로 세팅할 것이 없다: $W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}$,
+$W_2 = \begin{pmatrix}1&-1&0.5\end{pmatrix}$, $x = (1,2)$. 그 페이지의 순전파 결과가
+$z = (1,2,3)$, $h = (1,2,3)$, $\hat y = 0.5$였다. 정답이 $y = 1$이라 하면
+$L = \tfrac12(0.5-1)^2 = 0.125$. 역전파는 위 단계마다 한 줄씩:
+
+| 단계 | 식 | 숫자 |
+|---|---|---|
+| 1 | $\delta_2 = \hat y - y$ | $0.5 - 1 = -0.5$ |
+| 2 | $\partial L/\partial W_2 = \delta_2 h^\top$ | $-0.5\,(1,2,3) = (-0.5,\,-1,\,-1.5)$ |
+| 3 | $\partial L/\partial h = W_2^\top\delta_2$ | $-0.5\,(1,-1,0.5) = (-0.5,\,0.5,\,-0.25)$ |
+| 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | $z>0$이라 마스크가 $(1,1,1)$, 따라서 $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
+| 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
+
+눈여겨볼 것 셋, 그리고 이 셋은 앞으로 읽을 모든 신경망에 그대로 적용된다:
+- **부호가 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이 *너무 낮았기*
+  때문이다. 경사 하강은 그래디언트를 빼므로, 양의 활성값을 받는 가중치는 전부 **올라간다**.
+  산수가 당연한 일을 하고 있다.
+- **활성값이 클수록 그래디언트가 크다.** 2단계에서 세 번째 가중치가 $-1.5$를 받고 첫 번째가
+  $-0.5$를 받는 이유는 오직 $h_3 = 3$이 가장 크게 말했기 때문이다. 책임이 발언량에 비례해
+  배분된다.
+- **모양은 변수와 일치한다.** $\partial L/\partial W_1$이 $3\times2$로 나왔고, 이는 정확히
+  $W_1$의 모양이다. 그렇지 않다면 버그다 — 예외 없다.
 
 위의 각 단계가 곧 VJP 하나다: 3단계 $W_2^\top\delta_2$는 층의 야코비안-전치를 들어온
 $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으로 한 셈이다. 모든 깊은

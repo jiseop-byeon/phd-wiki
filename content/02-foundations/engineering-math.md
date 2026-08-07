@@ -36,16 +36,46 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
   stacks them into a vector.
 - Worked example (the shape of every loss-gradient computation):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — outer derivative
-  times inner derivative, chain rule in action.
+  times inner derivative, chain rule in action. **Evaluate at $(x,y) = (2,1)$:** the inner
+  part is $xy - 3 = -1$, so $\partial f/\partial x = 2(-1)(1) = -2$ and
+  $\partial f/\partial y = 2(-1)(2) = -4$, i.e. $\nabla f = (-2, -4)$. Read the answer: both
+  components are negative, so *increasing* either variable lowers the loss — correct, since
+  $xy = 2$ is still short of the target $3$. And $|{-4}| > |{-2}|$ says $y$ is the more
+  effective knob here, because it is multiplied by the larger $x$. Gradient descent steps
+  $-\alpha(-2,-4)$: push both up, push $y$ twice as hard. Every loss-gradient in this wiki is
+  this computation with more indices.
 
 ### 2. Taylor expansion (→ 2. Calculus, 4. Optimization)
 
 $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 "Any smooth function is locally a line (1st order) or a parabola (2nd order)."
-Gradient descent trusts the line; Newton's method trusts the parabola. Sanity check with
-$f = x^2$ at $x=1$: $f(1+\delta) = 1 + 2\delta + \delta^2$ — exact, because $x^2$ *is* a
-parabola.
+Gradient descent trusts the line; Newton's method trusts the parabola.
+
+**Sanity check.** With $f = x^2$ at $x=1$: $f(1+\delta) = 1 + 2\delta + \delta^2$ — exact,
+because $x^2$ *is* a parabola.
+
+**Worked example with real numbers** — estimate $\sqrt{4.1}$ without a calculator. Take
+$f(x) = \sqrt{x}$ and expand around $x = 4$, where you already know the answer is $2$. You
+need two derivatives: $f'(x) = \frac{1}{2\sqrt x}$, so $f'(4) = \frac{1}{4} = 0.25$; and
+$f''(x) = -\frac{1}{4x^{3/2}}$, so $f''(4) = -\frac{1}{32} = -0.03125$. With $\delta = 0.1$:
+
+| Order | Computation | Result | Error |
+|---|---|---|---|
+| 0th | $2$ | 2 | $2.5\times10^{-2}$ |
+| 1st | $2 + 0.25(0.1)$ | 2.025 | $1.5\times10^{-4}$ |
+| 2nd | $2.025 + \tfrac12(-0.03125)(0.1)^2$ | 2.02484375 | $1.9\times10^{-6}$ |
+
+(True value $\sqrt{4.1} = 2.0248456\ldots$) Each order costs one more derivative and buys
+about two more correct decimal digits *for a small step*. That trade is the entire argument
+between gradient descent and Newton's method in
+[[02-foundations/optimization|4. Optimization §3]]: Newton uses the second derivative to take
+a far better step, and pays $O(n^3)$ per step for it.
+
+**Two first-order expansions worth memorizing**, because papers use them silently:
+$e^\delta \approx 1 + \delta$ and $\log(1+\delta) \approx \delta$ for small $\delta$. (Check at
+$\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a derivation says
+"for small $\epsilon$, this is approximately…", this is what happened.
 
 ### 3. Integrals and expectations (→ 3. Probability)
 
@@ -55,23 +85,59 @@ parabola.
   all the way down to infinitesimal. That sum is written $\int f(x)\,dx$.
 - The only integral pattern the foundations really use:
   $E[g(X)] = \int g(x)\,p(x)\,dx$ — "average $g$ over the distribution $p$."
-  In code this is always a sample mean; you almost never solve integrals by hand here.
+  **Made concrete, three ways:**
+  - *Discrete, so "weighted sum" is literal.* A fair die: $E[X] = \sum_x x\,p(x)
+    = 1(\tfrac16) + 2(\tfrac16) + \cdots + 6(\tfrac16) = \tfrac{21}{6} = 3.5$. Each value is
+    weighted by how often it happens. The integral is this same sum taken to the continuum
+    limit.
+  - *Continuous, done by hand.* $X$ uniform on $[0,1]$, so $p(x) = 1$ there:
+    $E[X] = \int_0^1 x\cdot 1\,dx = \big[\tfrac{x^2}{2}\big]_0^1 = \tfrac12$, and
+    $E[X^2] = \int_0^1 x^2\,dx = \tfrac13$. Note $E[X^2] = \tfrac13 \ne (E[X])^2 = \tfrac14$ —
+    the gap between them *is* the variance, $\tfrac13 - \tfrac14 = \tfrac{1}{12}$
+    ([[02-foundations/probability|3. Probability §2]]).
+  - *In code, always a sample mean.* You never integrate: you draw $N$ samples and average,
+    $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. Roll a die 10,000 times and the average
+    lands near 3.5. Every "expected return", "expected reward", and "expected loss" in the
+    paper list is computed exactly this way — which is also why they all come with error
+    bars ([[02-foundations/ml-practice|9. ML Practice §3]]).
 - $\int p(x)\,dx = 1$ (probabilities sum to one) is the identity used in half the proofs
   (e.g., KL non-negativity in [[02-foundations/information-theory|5. Information Theory]]).
 
 ### 4. Matrix arithmetic (→ 1. Linear Algebra — its entry requirement)
 
-- $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: row of $A$ · column of $B$. Shapes:
-  $(m\times n)(n \times p) = m \times p$.
-- Worked 2×2:
-  $\begin{pmatrix}1&2\\3&4\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix} = \begin{pmatrix}2&1\\4&3\end{pmatrix}$
-  (it swapped the columns — matrices *do things*).
-- Not commutative: $AB \ne BA$ in general. Transpose flips indices ($A^\top_{ij} = A_{ji}$);
-  identity $I$ changes nothing; the inverse $A^{-1}$ undoes ($A^{-1}A = I$) and only exists
-  for square, **full-rank** $A$ — full rank means no column is a combination of the others,
-  so the map squashes nothing flat and can be undone. (Rank gets its proper definition in
-  [[02-foundations/linear-algebra|1. Linear Algebra §2]]; here, read "full-rank" as
-  "nothing was lost, so it is reversible.")
+- $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: **row $i$ of $A$ dotted with column $j$ of $B$.** Shapes:
+  $(m\times n)(n \times p) = m \times p$ — the inner dimensions must match and then vanish.
+- **One entry, computed slowly.** With
+  $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $B = \begin{pmatrix}0&1\\1&0\end{pmatrix}$:
+  $(AB)_{11}$ is row 1 of $A$, which is $(1, 2)$, dotted with column 1 of $B$, which is
+  $(0, 1)$ — so $(AB)_{11} = 1(0) + 2(1) = 2$. Doing the other three the same way:
+  $AB = \begin{pmatrix}2&1\\4&3\end{pmatrix}$ — $A$ with its **columns** swapped.
+- **Why order matters, seen rather than asserted.** Multiply the other way:
+  $BA = \begin{pmatrix}3&4\\1&2\end{pmatrix}$ — $A$ with its **rows** swapped. Same two
+  matrices, different answers, and now you can see *why*: multiplying on the right acts on
+  columns, multiplying on the left acts on rows. That asymmetry is the reason $W_2W_1x$ and
+  $W_1W_2x$ are different networks, and the reason frame order matters in
+  [[02-foundations/se3-geometry|SE(3)]] ($R_1R_2 \ne R_2R_1$).
+- **Transpose**: flip across the diagonal, $A^\top_{ij} = A_{ji}$. Here
+  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. Identity $I$ changes nothing.
+- **Inverse, with the numbers.** $A^{-1}$ undoes $A$ ($A^{-1}A = I$) and exists only for
+  square, **full-rank** $A$. For a $2\times2$,
+  $A^{-1} = \frac{1}{\det A}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$ with
+  $\det A = ad - bc$. For our $A$: $\det A = 1(4) - 2(3) = -2 \ne 0$, so
+  $A^{-1} = -\tfrac12\begin{pmatrix}4&-2\\-3&1\end{pmatrix} = \begin{pmatrix}-2&1\\1.5&-0.5\end{pmatrix}$.
+  Check the first entry of $AA^{-1}$: $1(-2) + 2(1.5) = 1$ ✓.
+- **What "full rank" rules out, concretely.** Take
+  $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$. Its second column is exactly $2\times$ the
+  first, so $C$ maps the entire plane onto a single line — every input's information about
+  the perpendicular direction is gone. Consistently, $\det C = 1(4) - 2(2) = 0$, and the
+  inverse formula divides by zero: **there is nothing to invert back to.** That is rank
+  deficiency, and rank gets its proper definition in
+  [[02-foundations/linear-algebra|1. Linear Algebra §2]]. Here, read "full rank" as
+  "nothing was lost, so it is reversible."
+- **A shape check you will do constantly.** A batch of 32 samples with 512 features is
+  $(32 \times 512)$; a linear layer to 10 classes is $(512 \times 10)$; the output is
+  $(32 \times 10)$ — one score vector per sample. Reading shapes like this *is* reading an
+  architecture ([[02-foundations/linear-algebra|1. Linear Algebra §1]]).
 
 ### 5. Series and the geometric sum (→ 7. RL Basics)
 
@@ -275,8 +341,15 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
 - Definition: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; the one property that matters:
   **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
 - Consequence: an ODE becomes a polynomial equation, and a system becomes a
-  **transfer function** $G(s) = \frac{\text{output}(s)}{\text{input}(s)}$ — e.g.,
-  $\dot x = ax + u$ gives $G(s) = \frac{1}{s - a}$.
+  **transfer function** $G(s) = \frac{\text{output}(s)}{\text{input}(s)}$.
+  **Worked, in four lines.** Take $\dot x = ax + u$ and Laplace-transform both sides.
+  Transfer functions are always defined with the system starting at rest, $x(0) = 0$, so
+  the left side is $\mathcal{L}[\dot x] = sX(s) - x(0) = sX(s)$, and the right side is
+  $aX(s) + U(s)$ because the transform is linear. So:
+  $$sX(s) = aX(s) + U(s) \;\Rightarrow\; (s-a)X(s) = U(s) \;\Rightarrow\; G(s) = \frac{X(s)}{U(s)} = \frac{1}{s-a}$$
+  Notice what just happened: a differential equation became a *division*. And the one value
+  of $s$ that breaks the division, $s = a$, is the **pole** — the same $a$ whose sign decided
+  stability back in §8. Poles are not a new idea; they are §8's exponents, relabelled.
 - **Poles** = roots of the denominator = the $a$'s of section 8 = eigenvalues of the
   state-space $A$. Plotted in the complex **s-plane**:
   - left half-plane (negative real part) → decaying → **stable**
@@ -305,11 +378,28 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
 </svg>
 
 
-- This is why [[02-foundations/engineering-math|§7]]'s complex plane matters for control:
-  *a system's entire qualitative behavior is a picture — where its poles sit.* Frequency
-  response is $G(j\omega)$ — evaluate on the imaginary axis, and you recover
-  [[02-foundations/signal-processing|signal processing]]'s filters. (Discrete-time twin:
-  the Z-transform, unit circle instead of left half-plane.)
+- This is why §7's complex plane matters for control:
+  *a system's entire qualitative behavior is a picture — where its poles sit.*
+- **What "frequency response is $G(j\omega)$" means.** $G$ was defined for complex $s$, so you
+  may ask what it does at any $s$ you like. Put $s = j\omega$ — a purely imaginary number,
+  which by §7 is a pure rotation at rate $\omega$: an input that oscillates forever without
+  growing or decaying. That is exactly "feed the system a sine wave at frequency $\omega$."
+  The answer $G(j\omega)$ is a complex number, and its two parts are the two things you
+  measure in the lab: its **magnitude** $|G(j\omega)|$ is how much the system amplifies that
+  frequency, and its **angle** is how much it delays it. Sweep $\omega$ from low to high and
+  you have plotted the system's filter — which is why the same picture serves control and
+  [[02-foundations/signal-processing|signal processing]]. Poles near the imaginary axis at
+  height $\omega$ make $|G(j\omega)|$ large there: that is a resonance.
+  (Discrete-time twin: the Z-transform, unit circle instead of left half-plane.)
+
+> [!note] This section is a preview, not the destination
+> §9 exists so the words *pole*, *transfer function*, and *frequency response* are not new
+> when you meet them. The places that actually teach them are
+> [[04-robotics/control-theory-ce397|5. Control Theory §5]] — which turns pole positions into
+> the settling-time and overshoot **numbers** papers quote — and
+> [[02-foundations/signal-processing|6. Signal Processing §5]], which uses the same object to
+> design filters. If this section feels thin, that is by design: read it once for vocabulary
+> and come back after those two.
 
 ### 10. Notation dictionary (all pages)
 
@@ -382,15 +472,44 @@ Two definitions used everywhere before they are formally introduced:
   **그래디언트** $\nabla f = (\partial f/\partial x_1, \ldots)$는 그것들을 벡터로 쌓은 것.
 - 계산 예제 (모든 손실-그래디언트 계산의 원형):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — 바깥 미분 × 안쪽
-  미분, 연쇄 법칙의 실전.
+  미분, 연쇄 법칙의 실전. **$(x,y) = (2,1)$에서 값을 넣어 보면:** 안쪽이 $xy - 3 = -1$이므로
+  $\partial f/\partial x = 2(-1)(1) = -2$, $\partial f/\partial y = 2(-1)(2) = -4$, 즉
+  $\nabla f = (-2, -4)$다. 답을 읽어보자: 두 성분이 모두 음수이므로 어느 변수든 *키우면*
+  손실이 줄어든다 — $xy = 2$가 아직 목표 $3$에 못 미치니 맞는 말이다. 그리고
+  $|{-4}| > |{-2}|$는 여기서 $y$가 더 효과적인 손잡이라는 뜻인데, $y$에 곱해지는 $x$가 더 크기
+  때문이다. 경사 하강은 $-\alpha(-2,-4)$만큼 움직인다: 둘 다 올리되 $y$를 두 배 세게. 이 위키의
+  모든 손실 그래디언트가 인덱스만 더 많은 이 계산이다.
 
 ### 2. 테일러 전개 (→ 2. 미적분, 4. 최적화)
 
 $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 "매끄러운 함수는 국소적으로 직선(1차)이거나 포물선(2차)이다." 경사 하강은 직선을 믿고,
-뉴턴법은 포물선을 믿는다. $f = x^2$, $x=1$에서 검산: $f(1+\delta) = 1 + 2\delta + \delta^2$
-— 정확히 맞다, $x^2$ 자체가 포물선이니까.
+뉴턴법은 포물선을 믿는다.
+
+**검산.** $f = x^2$, $x=1$에서: $f(1+\delta) = 1 + 2\delta + \delta^2$ — 정확히 맞다,
+$x^2$ 자체가 포물선이니까.
+
+**실제 숫자로 하는 계산 예제** — 계산기 없이 $\sqrt{4.1}$을 추정해 보자. $f(x) = \sqrt{x}$를
+답을 이미 아는 지점 $x = 4$ 주위로 전개한다. 도함수 둘이 필요하다: $f'(x) = \frac{1}{2\sqrt x}$이니
+$f'(4) = \frac{1}{4} = 0.25$, 그리고 $f''(x) = -\frac{1}{4x^{3/2}}$이니
+$f''(4) = -\frac{1}{32} = -0.03125$. $\delta = 0.1$로 두면:
+
+| 차수 | 계산 | 결과 | 오차 |
+|---|---|---|---|
+| 0차 | $2$ | 2 | $2.5\times10^{-2}$ |
+| 1차 | $2 + 0.25(0.1)$ | 2.025 | $1.5\times10^{-4}$ |
+| 2차 | $2.025 + \tfrac12(-0.03125)(0.1)^2$ | 2.02484375 | $1.9\times10^{-6}$ |
+
+(참값 $\sqrt{4.1} = 2.0248456\ldots$) 차수를 하나 올릴 때마다 도함수 하나를 더 치르고,
+*작은 스텝에 한해* 소수점 두 자리쯤을 더 얻는다. 이 거래가 곧
+[[02-foundations/optimization|4. 최적화 §3]]에서 경사 하강과 뉴턴법이 벌이는 논쟁 전부다:
+뉴턴법은 2차 도함수로 훨씬 나은 스텝을 밟고, 그 대가로 스텝당 $O(n^3)$을 낸다.
+
+**외워둘 만한 1차 전개 둘** — 논문이 말없이 쓴다: 작은 $\delta$에 대해
+$e^\delta \approx 1 + \delta$, $\log(1+\delta) \approx \delta$. ($\delta = 0.01$에서 검산:
+$e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$에 대해 이것은
+근사적으로…"가 나오면 십중팔구 이 일이 벌어진 것이다.
 
 ### 3. 적분과 기댓값 (→ 3. 확률)
 
@@ -398,24 +517,55 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
   조각의 폭을 곱해 더한 뒤, 조각의 폭을 0으로 보낸 것. "연속 극한"은 언제나 이 뜻이다:
   더하는 단위를 끝까지 무한소로 내려보낸 합. 그 합을 $\int f(x)\,dx$로 쓴다.
 - 기초 페이지들이 실제로 쓰는 적분 패턴은 사실상 하나:
-  $E[g(X)] = \int g(x)\,p(x)\,dx$ — "분포 $p$ 위에서 $g$의 평균." 코드에서는 언제나 샘플
-  평균이 되고, 여기서 적분을 손으로 풀 일은 거의 없다.
+  $E[g(X)] = \int g(x)\,p(x)\,dx$ — "분포 $p$ 위에서 $g$의 평균."
+  **구체적으로, 세 가지 방식:**
+  - *이산 — 그래서 "가중합"이 말 그대로다.* 공정한 주사위:
+    $E[X] = \sum_x x\,p(x) = 1(\tfrac16) + 2(\tfrac16) + \cdots + 6(\tfrac16) = \tfrac{21}{6} = 3.5$.
+    각 값에 그 값이 나오는 빈도를 가중한 것이다. 적분은 이 합을 연속 극한으로 보낸 것이다.
+  - *연속 — 손으로 계산.* $X$가 $[0,1]$에서 균등하면 그 구간에서 $p(x) = 1$이므로
+    $E[X] = \int_0^1 x\cdot 1\,dx = \big[\tfrac{x^2}{2}\big]_0^1 = \tfrac12$,
+    $E[X^2] = \int_0^1 x^2\,dx = \tfrac13$. $E[X^2] = \tfrac13$이 $(E[X])^2 = \tfrac14$과
+    다르다는 점에 주목하라 — 그 차이가 곧 분산이다: $\tfrac13 - \tfrac14 = \tfrac{1}{12}$
+    ([[02-foundations/probability|3. 확률 §2]]).
+  - *코드에서는 언제나 샘플 평균.* 적분하지 않는다. $N$개를 뽑아 평균 낸다:
+    $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. 주사위를 1만 번 굴리면 평균이 3.5 근처에
+    앉는다. 논문 목록의 모든 "기대 리턴", "기대 보상", "기대 손실"이 정확히 이렇게 계산되고,
+    그래서 전부 오차 막대를 달고 다닌다([[02-foundations/ml-practice|9. ML 실무 §3]]).
 - $\int p(x)\,dx = 1$ (확률의 합은 1) — 증명의 절반에 쓰이는 항등식이다
   (예: [[02-foundations/information-theory|5. 정보이론]]의 KL 비음수성).
 
 ### 4. 행렬 연산 (→ 1. 선형대수의 입장 조건)
 
-- $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: $A$의 행 · $B$의 열. 모양:
-  $(m\times n)(n \times p) = m \times p$.
-- 2×2 계산 예제:
-  $\begin{pmatrix}1&2\\3&4\end{pmatrix}\begin{pmatrix}0&1\\1&0\end{pmatrix} = \begin{pmatrix}2&1\\4&3\end{pmatrix}$
-  (열이 서로 바뀌었다 — 행렬은 *무언가를 한다*).
-- 교환 법칙 없음: 일반적으로 $AB \ne BA$. 전치는 인덱스를 뒤집고($A^\top_{ij} = A_{ji}$),
-  항등 행렬 $I$는 아무것도 바꾸지 않으며, 역행렬 $A^{-1}$은 되돌린다($A^{-1}A = I$) —
-  정방·**풀랭크**(full rank)일 때만 존재 — 풀랭크란 어떤 열도 다른 열들의 조합이 아니라는
-  뜻이고, 그래서 사상이 아무것도 납작하게 뭉개지 않으므로 되돌릴 수 있다. (랭크의 정식
-  정의는 [[02-foundations/linear-algebra|1. 선형대수 §2]]. 여기서는 "풀랭크" = "잃어버린
-  것이 없어 되돌릴 수 있다"로 읽으면 된다.)
+- $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: **$A$의 $i$행과 $B$의 $j$열의 내적.** 모양:
+  $(m\times n)(n \times p) = m \times p$ — 안쪽 차원이 맞아야 하고, 맞으면 사라진다.
+- **한 성분을 천천히 계산해 보면.**
+  $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $B = \begin{pmatrix}0&1\\1&0\end{pmatrix}$일 때
+  $(AB)_{11}$은 $A$의 1행 $(1, 2)$와 $B$의 1열 $(0, 1)$의 내적이므로
+  $(AB)_{11} = 1(0) + 2(1) = 2$. 나머지 셋도 같은 방식으로 하면
+  $AB = \begin{pmatrix}2&1\\4&3\end{pmatrix}$ — $A$의 **열**이 서로 바뀐 것이다.
+- **순서가 왜 중요한지, 단정이 아니라 눈으로.** 반대로 곱해 보면
+  $BA = \begin{pmatrix}3&4\\1&2\end{pmatrix}$ — 이번엔 $A$의 **행**이 바뀌었다. 같은 두 행렬,
+  다른 답이고, 이제 *왜*인지 보인다: 오른쪽에서 곱하면 열에 작용하고, 왼쪽에서 곱하면 행에
+  작용한다. 이 비대칭이 $W_2W_1x$와 $W_1W_2x$가 서로 다른 신경망인 이유이고,
+  [[02-foundations/se3-geometry|SE(3)]]에서 프레임 순서가 중요한 이유($R_1R_2 \ne R_2R_1$)다.
+- **전치**: 대각선 기준으로 뒤집기, $A^\top_{ij} = A_{ji}$. 위의 $A$라면
+  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. 항등 행렬 $I$는 아무것도 바꾸지 않는다.
+- **역행렬, 숫자와 함께.** $A^{-1}$은 $A$를 되돌리고($A^{-1}A = I$), 정방·**풀랭크**일 때만
+  존재한다. $2\times2$에서는
+  $A^{-1} = \frac{1}{\det A}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$, $\det A = ad - bc$.
+  위의 $A$는 $\det A = 1(4) - 2(3) = -2 \ne 0$이므로
+  $A^{-1} = -\tfrac12\begin{pmatrix}4&-2\\-3&1\end{pmatrix} = \begin{pmatrix}-2&1\\1.5&-0.5\end{pmatrix}$.
+  $AA^{-1}$의 첫 성분으로 검산: $1(-2) + 2(1.5) = 1$ ✓.
+- **"풀랭크"가 배제하는 것, 구체적으로.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$를 보자.
+  둘째 열이 첫째 열의 정확히 $2$배라서, $C$는 평면 전체를 직선 하나 위로 보낸다 — 수직
+  방향에 대한 정보가 통째로 사라진다. 일관되게 $\det C = 1(4) - 2(2) = 0$이고, 역행렬 공식은
+  0으로 나눈다: **되돌아갈 곳이 없다.** 이것이 랭크 부족이고, 랭크의 정식 정의는
+  [[02-foundations/linear-algebra|1. 선형대수 §2]]에 있다. 여기서는 "풀랭크" = "잃어버린 것이
+  없어 되돌릴 수 있다"로 읽으면 된다.
+- **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개짜리 샘플 32개 배치는 $(32 \times 512)$,
+  10개 클래스로 가는 선형 층은 $(512 \times 10)$, 출력은 $(32 \times 10)$ — 샘플당 점수
+  벡터 하나. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
+  ([[02-foundations/linear-algebra|1. 선형대수 §1]]).
 
 ### 5. 급수와 기하급수 합 (→ 7. RL 기초)
 
@@ -602,8 +752,14 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 - 정의: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; 중요한 성질은 하나:
   **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
 - 따름정리: 미분방정식이 다항 방정식이 되고, 시스템이 **전달함수**
-  $G(s) = \frac{\text{출력}(s)}{\text{입력}(s)}$가 된다 — 예: $\dot x = ax + u$이면
-  $G(s) = \frac{1}{s - a}$.
+  $G(s) = \frac{\text{출력}(s)}{\text{입력}(s)}$가 된다.
+  **네 줄 유도.** $\dot x = ax + u$의 양변에 라플라스 변환을 취한다. 전달함수는 언제나 시스템이
+  정지 상태에서 출발한다는 가정($x(0) = 0$) 위에 정의되므로 좌변은
+  $\mathcal{L}[\dot x] = sX(s) - x(0) = sX(s)$이고, 변환이 선형이므로 우변은 $aX(s) + U(s)$다:
+  $$sX(s) = aX(s) + U(s) \;\Rightarrow\; (s-a)X(s) = U(s) \;\Rightarrow\; G(s) = \frac{X(s)}{U(s)} = \frac{1}{s-a}$$
+  방금 무슨 일이 일어났는지 보라: 미분방정식이 *나눗셈*이 되었다. 그리고 그 나눗셈을 깨뜨리는
+  단 하나의 $s$ 값, $s = a$가 **극점**이다 — 8절에서 부호로 안정성을 결정하던 바로 그 $a$다.
+  극점은 새 개념이 아니라, 8절의 지수를 다른 이름으로 부른 것이다.
 - **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값. 복소 **s-평면**에 그리면:
   - 좌반평면(실수부 음수) → 감쇠 → **안정**
   - 우반평면 → 성장 → **불안정**
@@ -631,10 +787,25 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 </svg>
 
 
-- [[02-foundations/engineering-math|§7]]의 복소평면이 제어에서 중요한 이유가 이것이다:
-  *시스템의 정성적 거동 전체가 그림 하나 — 극점이 어디에 앉아 있는가 — 다.* 주파수 응답은
-  $G(j\omega)$ — 허수축 위에서 평가하면 [[02-foundations/signal-processing|신호처리]]의
-  필터가 복원된다. (이산 시간의 쌍둥이: Z-변환, 좌반평면 대신 단위원.)
+- 7절의 복소평면이 제어에서 중요한 이유가 이것이다:
+  *시스템의 정성적 거동 전체가 그림 하나 — 극점이 어디에 앉아 있는가 — 다.*
+- **"주파수 응답이 $G(j\omega)$다"가 무슨 뜻인가.** $G$는 복소수 $s$에 대해 정의되었으므로,
+  원하는 아무 $s$에서나 값을 물어볼 수 있다. 거기에 $s = j\omega$를 넣어 보자 — 순허수이고,
+  7절에 따르면 속도 $\omega$의 순수한 회전, 즉 자라지도 줄지도 않고 영원히 진동하는 입력이다.
+  이것이 정확히 "시스템에 주파수 $\omega$의 사인파를 넣는다"는 뜻이다. 답 $G(j\omega)$는
+  복소수이고, 그 두 부분이 실험실에서 재는 바로 그 두 가지다: **크기** $|G(j\omega)|$는 그
+  주파수를 얼마나 증폭하는가, **각도**는 얼마나 지연시키는가. $\omega$를 낮은 쪽에서 높은
+  쪽으로 훑으면 그 시스템의 필터를 그린 것이 되고, 그래서 같은 그림이 제어와
+  [[02-foundations/signal-processing|신호처리]] 양쪽에 쓰인다. 허수축 근처 높이 $\omega$에
+  극점이 있으면 거기서 $|G(j\omega)|$가 커지는데, 그것이 공진이다.
+  (이산 시간의 쌍둥이: Z-변환, 좌반평면 대신 단위원.)
+
+> [!note] 이 절은 예고편이지 목적지가 아니다
+> 9절은 *극점*, *전달함수*, *주파수 응답*이라는 말을 처음 만나는 것이 아니게 하려고 있다.
+> 실제로 가르치는 곳은 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]] — 극점 위치를
+> 논문이 인용하는 정착 시간·오버슈트 **숫자**로 바꾸는 곳 — 와, 같은 대상으로 필터를 설계하는
+> [[02-foundations/signal-processing|6. 신호처리 §5]]다. 이 절이 얇게 느껴진다면 그건 설계
+> 의도다: 어휘용으로 한 번 읽고, 저 둘을 본 뒤 다시 오라.
 
 ### 10. 표기법 사전 (전 페이지 공용)
 

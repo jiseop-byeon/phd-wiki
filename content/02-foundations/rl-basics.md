@@ -51,6 +51,16 @@ flowchart LR
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
 - **Bellman optimality**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   the greedy policy on $Q^*$ is optimal.
+- **A two-state MDP you can solve on paper.** States $A$ (empty bucket) and $B$ (bucket
+  full). From $A$ the only action moves you to $B$ with reward $0$; in $B$ you stay in $B$
+  and collect reward $1$ every step. Take $\gamma = 0.9$. Write the Bellman equation for $B$:
+  $$V(B) = 1 + 0.9\,V(B) \quad\Rightarrow\quad V(B)(1 - 0.9) = 1 \quad\Rightarrow\quad V(B) = 10$$
+  — which is the geometric sum $1/(1-\gamma)$ from
+  [[02-foundations/engineering-math|0.5 §5]], arriving here as a *value*. Then
+  $V(A) = 0 + 0.9\,V(B) = 9$. Read it: being one step away from the good state costs you
+  exactly one discount factor, $9 = 0.9 \times 10$. And the advantage of the move out of $A$
+  is $Q(A,\text{move}) - V(A) = 9 - 9 = 0$ — there was no alternative, so no move can be
+  better than average. Advantage measures *choice*, and where there is no choice it is zero.
 - These are fixed-point equations; the Bellman operator is a $\gamma$-contraction, so
   iterating it converges — the license behind everything below.
 
@@ -446,6 +456,15 @@ flowchart LR
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
 - **벨만 최적성**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   $Q^*$에 대한 탐욕 정책이 최적이다.
+- **종이 위에서 풀 수 있는 2-상태 MDP.** 상태 $A$(빈 버킷)와 $B$(버킷 가득). $A$에서는
+  유일한 행동이 보상 $0$으로 $B$로 데려가고, $B$에서는 계속 $B$에 머물며 매 스텝 보상 $1$을
+  받는다. $\gamma = 0.9$로 두고 $B$의 벨만 방정식을 쓰면:
+  $$V(B) = 1 + 0.9\,V(B) \quad\Rightarrow\quad V(B)(1 - 0.9) = 1 \quad\Rightarrow\quad V(B) = 10$$
+  — [[02-foundations/engineering-math|0.5 §5]]의 기하급수 합 $1/(1-\gamma)$가 이번에는
+  *가치*로 도착한 것이다. 이어서 $V(A) = 0 + 0.9\,V(B) = 9$. 읽어보면: 좋은 상태에서 한 스텝
+  떨어져 있다는 것의 대가가 정확히 할인율 한 번, $9 = 0.9 \times 10$이다. 그리고 $A$에서
+  나가는 행동의 어드밴티지는 $Q(A,\text{이동}) - V(A) = 9 - 9 = 0$ — 대안이 없었으니 어떤
+  수도 평균보다 나을 수 없다. 어드밴티지는 *선택*을 재는 양이고, 선택이 없는 곳에서는 0이다.
 - 이들은 고정점 방정식이고, 벨만 연산자는 $\gamma$-수축이라 반복하면 수렴한다 —
   아래 모든 것의 면허장.
 

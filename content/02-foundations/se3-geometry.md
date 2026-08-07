@@ -32,6 +32,23 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   orders to feel it).
 - 2D worked example: $R(\theta) = \begin{pmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{pmatrix}$
   — check $R(90°)\,(1,0)^\top = (0,1)^\top$. All of SO(3) is this idea, three axes at once.
+- **Order matters — with numbers, so you never have to trust the phone demo.** Let
+  $$R_z(90°) = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}, \qquad R_x(90°) = \begin{pmatrix}1&0&0\\0&0&-1\\0&1&0\end{pmatrix}$$
+  and track the point $p = (1,0,0)$ — the tip of the x-axis.
+  - $R_z$ **first**, then $R_x$: $R_z p = (0,1,0)$, and $R_x(0,1,0) = (0,0,1)$. The point
+    ends up on the **z**-axis.
+  - $R_x$ **first**, then $R_z$: $R_x p = (1,0,0)$ (a rotation about x does nothing to a
+    point *on* x), and $R_z(1,0,0) = (0,1,0)$. The point ends up on the **y**-axis.
+
+  Same two rotations, two completely different places. Nothing subtle is happening: the
+  second rotation acts on wherever the first one *left* you. This is why a paper writing
+  $R_{world}R_{body}$ versus $R_{body}R_{world}$ is describing different motions, and why
+  every convention mismatch in robotics is ultimately this.
+- **Checking a matrix is a rotation**, which you should do whenever you build one: columns
+  must have length 1, be mutually perpendicular, and $\det = +1$. For $R_z(90°)$: columns are
+  $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ — unit length ✓, pairwise dot products all 0 ✓, and
+  $\det = +1$ ✓. A $\det$ of $-1$ means you built a **reflection**, which mirrors the robot
+  rather than turning it — a real and common bug when converting conventions.
 
 ### 2. The four ways papers write rotations
 
@@ -73,6 +90,17 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 </svg>
 
 
+- **Worked composition, with numbers.** Let the base sit $2$ m along world-$x$ and be turned
+  $90°$ about $z$: $T_{AB}$ has $R = R_z(90°)$ and $p = (2,0,0)$. Let the camera sit $1$ m
+  straight up from the base with no extra rotation: $T_{BC}$ has $R = I$, $p = (0,0,1)$.
+  Multiplying, the rotation part is $R_z(90°)\,I = R_z(90°)$ and the translation part is
+  $R_z(90°)(0,0,1) + (2,0,0) = (0,0,1) + (2,0,0) = (2,0,1)$. So the camera is at
+  $(2, 0, 1)$ in world coordinates, still turned $90°$.
+  Note *why* the translation worked out that way: $T_{BC}$'s offset was expressed in the
+  **base** frame, so it had to be rotated into world before adding. That single rotation of
+  the offset is the step people forget, and it is exactly what the matrix form does for you
+  automatically — which is the entire reason poses are written as $4\times4$ matrices instead
+  of an $(R, p)$ pair you combine by hand.
 - **Frames discipline** is 90% of not making sign errors: every quantity has a frame
   (world, base, camera, end-effector); write it down. "Where is the camera?" = $T_{world \leftarrow cam}$.
 
@@ -137,6 +165,21 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
   순서 바꿔 돌려보면 몸으로 느껴진다).
 - 2D 계산 예제: $R(\theta) = \begin{pmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{pmatrix}$
   — $R(90°)\,(1,0)^\top = (0,1)^\top$ 검산. SO(3) 전체가 이 아이디어를 세 축으로 한 것이다.
+- **순서가 중요하다 — 숫자로, 폰 시연을 믿지 않아도 되게.**
+  $$R_z(90°) = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}, \qquad R_x(90°) = \begin{pmatrix}1&0&0\\0&0&-1\\0&1&0\end{pmatrix}$$
+  로 두고, 점 $p = (1,0,0)$ — x축의 끝 — 을 따라가 보자.
+  - $R_z$를 **먼저**, 그다음 $R_x$: $R_z p = (0,1,0)$, 그리고 $R_x(0,1,0) = (0,0,1)$.
+    점이 **z**축 위에 도착한다.
+  - $R_x$를 **먼저**, 그다음 $R_z$: $R_x p = (1,0,0)$(x축 *위의* 점은 x축 회전으로 움직이지
+    않는다), 그리고 $R_z(1,0,0) = (0,1,0)$. 점이 **y**축 위에 도착한다.
+
+  같은 회전 둘, 전혀 다른 두 위치. 미묘한 일은 하나도 없다: 두 번째 회전은 첫 번째 회전이
+  *남겨둔* 자리에 작용한다. 논문의 $R_{world}R_{body}$와 $R_{body}R_{world}$가 서로 다른 운동을
+  기술하는 이유이고, 로보틱스의 모든 규약 불일치가 결국 이것인 이유다.
+- **어떤 행렬이 회전인지 확인하기** — 회전 행렬을 만들 때마다 해야 한다: 열의 길이가 1이고,
+  서로 수직이며, $\det = +1$이어야 한다. $R_z(90°)$라면 열이 $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ —
+  길이 1 ✓, 서로의 내적이 모두 0 ✓, $\det = +1$ ✓. $\det$가 $-1$이면 **반사**를 만든 것이고,
+  로봇을 돌리는 대신 거울에 비춘 셈이다 — 규약 변환에서 실제로 자주 나는 버그다.
 
 ### 2. 논문이 회전을 쓰는 네 가지 방법
 
@@ -177,6 +220,16 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 </svg>
 
 
+- **합성 계산 예제, 숫자와 함께.** 베이스가 월드 $x$축으로 $2$ m 떨어져 있고 $z$축으로
+  $90°$ 돌아가 있다고 하자: $T_{AB}$는 $R = R_z(90°)$, $p = (2,0,0)$. 카메라는 베이스에서
+  똑바로 위로 $1$ m, 추가 회전은 없다: $T_{BC}$는 $R = I$, $p = (0,0,1)$.
+  곱하면 회전부는 $R_z(90°)\,I = R_z(90°)$이고, 병진부는
+  $R_z(90°)(0,0,1) + (2,0,0) = (0,0,1) + (2,0,0) = (2,0,1)$이다. 즉 카메라는 월드 좌표로
+  $(2, 0, 1)$에 있고 여전히 $90°$ 돌아가 있다.
+  병진이 *왜* 그렇게 나왔는지에 주목하라: $T_{BC}$의 오프셋은 **베이스** 프레임에서 표현된
+  것이므로, 더하기 전에 월드로 회전시켜야 했다. 사람들이 빼먹는 단계가 바로 그 오프셋 회전이고,
+  행렬 형태가 자동으로 해주는 일이 정확히 그것이다 — pose를 $(R, p)$ 쌍으로 들고 손으로
+  합치는 대신 $4\times4$ 행렬로 쓰는 이유 전부가 이것이다.
 - **프레임 규율**이 부호 실수 안 하기의 90%다: 모든 양에는 프레임(월드, 베이스, 카메라,
   말단)이 있다; 항상 적어라. "카메라가 어디 있나?" = $T_{world \leftarrow cam}$.
 

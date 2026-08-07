@@ -44,7 +44,15 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 
 - PMF (discrete) / PDF (continuous) / CDF; $E[g(X)] = \int g(x)p(x)dx$.
 - **Linearity** $E[aX + bY] = aE[X] + bE[Y]$ — *no independence needed*; the single most
-  used identity in proofs.
+  used identity in proofs. **Why that caveat is worth noticing:** with two dice,
+  $E[X_1 + X_2] = 3.5 + 3.5 = 7$ whether or not the dice are glued together. Variance is
+  *not* like that. Independent dice give
+  $\text{Var}(X_1{+}X_2) = \tfrac{35}{12} + \tfrac{35}{12} = 5.83$; two dice forced to show
+  the same face give $X_1 + X_2 = 2X_1$ and
+  $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — double. Means always add; spreads add only
+  when things are uncorrelated. That is exactly why averaging $N$ *independent* runs shrinks
+  an error bar by $\sqrt N$ and averaging $N$ correlated runs does not
+  ([[02-foundations/ml-practice|9. ML Practice §3]]).
 - Variance $\text{Var}(X) = E[X^2] - E[X]^2$; covariance
   $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$; for vectors, the covariance matrix
   $\Sigma = E[(x-\mu)(x-\mu)^\top]$ is PSD ([[02-foundations/linear-algebra|linear algebra]]).
@@ -76,6 +84,14 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
 - **MLE**: $\hat\theta = \arg\max_\theta \sum_i \log p(x_i|\theta)$.
   Worked example (Gaussian mean): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{const}$ ⇒
   maximizing likelihood ≡ minimizing squared error; $\hat\mu = \bar{x}$.
+  **With actual data:** five distance readings $2.1, 1.9, 2.4, 1.6, 2.0$ m of one wall.
+  MLE says the best estimate is the plain average, $\hat\mu = 10.0/5 = 2.0$ m. Nothing
+  fancier is optimal *given the Gaussian assumption* — and that is the point: "take the mean"
+  is not a habit, it is the maximum-likelihood answer for Gaussian noise. Change the noise
+  model and the answer changes: assume Laplace noise instead and the MLE becomes the
+  **median** ($2.0$ here too, but it would differ if one reading were $9.0$ — the mean would
+  jump to $3.4$ and the median would not move). *Every loss function is a noise assumption in
+  disguise.*
   **MSE regression is MLE under Gaussian noise; cross-entropy is MLE for categorical
   outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
   are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
@@ -108,6 +124,15 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
   Nothing new was needed: affine closure + conditioning formula = optimal recursive
   estimation.
+- **The gain, in one scalar example.** You believe a wall is $10$ cm away with variance
+  $P^- = 4$ (so $\pm2$ cm), and a sensor with variance $R = 1$ (so $\pm1$ cm) reads $12$.
+  Then $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$, so
+  $\hat x = 10 + 0.8(12-10) = 11.6$ and $P = (1-K)P^- = 0.8$. Three things worth reading off:
+  the estimate landed **closer to the sensor** because the sensor was the more trustworthy of
+  the two; the new uncertainty $0.8$ is **smaller than either input** ($4$ and $1$) — combining
+  two noisy opinions beats both; and if you set $R = 100$ (a terrible sensor) you get
+  $K = 0.04$ and $\hat x = 10.08$, i.e. the filter almost ignores it. The gain is just
+  *relative trust*, and that is all any Kalman-gain sentence in a paper is saying.
 
 ```mermaid
 flowchart LR
@@ -169,7 +194,14 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 - PMF(이산) / PDF(연속) / CDF; $E[g(X)] = \int g(x)p(x)dx$.
 - **선형성** $E[aX + bY] = aE[X] + bE[Y]$ — *독립이 필요 없다*; 증명에서 가장 많이 쓰는
-  항등식.
+  항등식. **그 단서가 왜 눈여겨볼 점인가:** 주사위 둘이면 $E[X_1 + X_2] = 3.5 + 3.5 = 7$이고,
+  두 주사위가 붙어 있든 말든 그렇다. 분산은 *그렇지 않다*. 독립인 주사위 둘은
+  $\text{Var}(X_1{+}X_2) = \tfrac{35}{12} + \tfrac{35}{12} = 5.83$이지만, 항상 같은 눈이 나오게
+  묶인 두 주사위는 $X_1 + X_2 = 2X_1$이라
+  $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — 두 배다. 평균은 언제나 더해지지만, 퍼짐은
+  서로 무관할 때만 더해진다. *독립인* 실행 $N$번을 평균 내면 오차 막대가 $\sqrt N$배로 줄고
+  상관된 실행 $N$번은 그렇지 않은 이유가 정확히 이것이다
+  ([[02-foundations/ml-practice|9. ML 실무 §3]]).
 - 분산 $\text{Var}(X) = E[X^2] - E[X]^2$; 공분산 $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$;
   벡터의 공분산 행렬 $\Sigma = E[(x-\mu)(x-\mu)^\top]$는 PSD다
   ([[02-foundations/linear-algebra|선형대수]]).
@@ -201,6 +233,12 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
 - **MLE**: $\hat\theta = \arg\max_\theta \sum_i \log p(x_i|\theta)$.
   계산 예제(가우시안 평균): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{상수}$ ⇒
   우도 최대화 ≡ 제곱 오차 최소화; $\hat\mu = \bar{x}$.
+  **실제 데이터로:** 같은 벽을 잰 거리 측정값 다섯 개 $2.1, 1.9, 2.4, 1.6, 2.0$ m. MLE는 최선의
+  추정이 그냥 평균, $\hat\mu = 10.0/5 = 2.0$ m라고 말한다. *가우시안 가정 아래에서는* 더
+  정교한 무언가가 최적이 아니다 — 그리고 그것이 핵심이다: "평균을 취한다"는 습관이 아니라
+  가우시안 잡음에 대한 최대우도 답이다. 잡음 모델을 바꾸면 답이 바뀐다: 라플라스 잡음을
+  가정하면 MLE는 **중앙값**이 된다(여기서는 $2.0$으로 같지만, 측정값 하나가 $9.0$이었다면
+  평균은 $3.4$로 튀고 중앙값은 꿈쩍도 않는다). *모든 손실 함수는 변장한 잡음 가정이다.*
   **MSE 회귀는 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
@@ -232,6 +270,14 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
   새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 최적 재귀 추정.
+- **이득(gain)을 스칼라 예제 하나로.** 벽이 $10$ cm 앞에 있다고 믿고 그 분산이 $P^- = 4$
+  ($\pm2$ cm), 분산 $R = 1$($\pm1$ cm)짜리 센서가 $12$를 읽었다고 하자. 그러면
+  $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$이므로 $\hat x = 10 + 0.8(12-10) = 11.6$,
+  $P = (1-K)P^- = 0.8$. 읽어낼 것 셋: 추정값이 **센서 쪽에 더 가깝게** 앉았는데 둘 중 센서가
+  더 믿을 만했기 때문이고; 새 불확실성 $0.8$은 **두 입력($4$와 $1$) 어느 쪽보다도 작다** —
+  잡음 섞인 두 의견을 합치면 둘 다보다 낫다; 그리고 $R = 100$(형편없는 센서)으로 두면
+  $K = 0.04$, $\hat x = 10.08$이 되어 필터가 센서를 거의 무시한다. 이득은 그저 *상대적
+  신뢰도*이고, 논문의 칼만 이득 문장이 말하는 것도 그게 전부다.
 
 ```mermaid
 flowchart LR

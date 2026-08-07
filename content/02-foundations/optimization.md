@@ -68,6 +68,15 @@ formulations of the same engineering problem differ wildly in solvability.
   $\alpha < 2/\lambda_{max}$, so the slow direction converges like
   $(1 - \lambda_{min}/\lambda_{max})^k$ — **the condition number $\kappa$ is the pain**
   ([[02-foundations/linear-algebra|linear algebra]]).
+- **Gradient descent vs Newton, in one line of arithmetic.** Take $f(x) = 5x^2$, so
+  $f'(x) = 10x$ and $f''(x) = 10$, starting at $x_0 = 1$. Gradient descent with
+  $\alpha = 0.05$ gives $x_1 = 1 - 0.05(10) = 0.5$, then $0.25$, then $0.125$ — halving every
+  step, so about 10 steps to reach $10^{-3}$. Newton divides by the curvature instead:
+  $x_1 = 1 - \frac{f'(1)}{f''(1)} = 1 - \frac{10}{10} = 0$ — **exact, in a single step**,
+  because a quadratic is precisely the model Newton assumes. Worth seeing once: Newton's
+  speed is not magic, it is the payoff for owning the second derivative. On a non-quadratic
+  you get that behavior only near the optimum, and you pay $O(n^3)$ per step to form and
+  invert $H$ — which is why nobody runs it on a neural network.
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum, $O(n^3)$ per
@@ -205,6 +214,14 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   $|1 - \alpha\lambda_i|$; 안정성엔 $\alpha < 2/\lambda_{max}$가 필요해 느린 방향은
   $(1 - \lambda_{min}/\lambda_{max})^k$처럼 수렴한다 — **조건수 $\kappa$가 곧 고통이다**
   ([[02-foundations/linear-algebra|선형대수]]).
+- **경사 하강 vs 뉴턴법, 산수 한 줄로.** $f(x) = 5x^2$이면 $f'(x) = 10x$, $f''(x) = 10$이다.
+  $x_0 = 1$에서 $\alpha = 0.05$의 경사 하강을 하면 $x_1 = 1 - 0.05(10) = 0.5$, 다음 $0.25$,
+  그다음 $0.125$ — 매 스텝 절반이 되므로 $10^{-3}$에 닿는 데 약 10 스텝이 든다. 뉴턴법은 대신
+  곡률로 나눈다: $x_1 = 1 - \frac{f'(1)}{f''(1)} = 1 - \frac{10}{10} = 0$ — **단 한 스텝에
+  정확히** 도착한다. 이차 함수가 곧 뉴턴법이 가정하는 모델 그 자체이기 때문이다. 한 번은 봐둘
+  값어치가 있다: 뉴턴법의 속도는 마법이 아니라 2차 도함수를 가진 값이다. 이차가 아닌 함수에서는
+  최적점 근처에서만 이 거동이 나오고, 매 스텝 $H$를 만들고 역행렬을 구하는 데 $O(n^3)$을 낸다 —
+  아무도 신경망에 이걸 돌리지 않는 이유다.
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
   모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.

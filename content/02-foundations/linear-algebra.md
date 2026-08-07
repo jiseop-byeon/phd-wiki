@@ -65,6 +65,16 @@ where each concept appears in the papers of this wiki.
 - $Av = \lambda v$: along eigenvector $v$, the map is pure scaling by $\lambda$. For
   symmetric $A$: real eigenvalues, orthogonal eigenvectors, $A = Q\Lambda Q^\top$
   (spectral theorem).
+- **Worked $2\times2$, start to finish.** Take $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$.
+  Eigenvalues solve $\det(A - \lambda I) = 0$:
+  $$(2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0 \quad\Rightarrow\quad \lambda = 3,\ 1$$
+  For $\lambda = 3$, solve $(A - 3I)v = 0$: the matrix
+  $\begin{pmatrix}-1&1\\1&-1\end{pmatrix}$ says $v_1 = v_2$, so $v = (1,1)$.
+  Check: $A(1,1) = (3,3) = 3(1,1)$ ✓. For $\lambda = 1$ the same steps give $v = (1,-1)$,
+  and $A(1,-1) = (1,-1)$ ✓. The two eigenvectors came out perpendicular — that is the
+  spectral theorem at work, not luck, and it happened because $A$ is symmetric.
+  *Reading it aloud:* this matrix stretches everything along the $45°$ diagonal by $3\times$
+  and leaves the anti-diagonal untouched. Every symmetric matrix is a version of that sentence.
 - Why you care, concretely:
   - **Powers**: $A^k = Q\Lambda^k Q^\top$ — long-run behavior is governed by the largest
     $|\lambda|$. Stability of $x_{t+1} = Ax_t$ ⟺ all $|\lambda_i| < 1$
@@ -77,6 +87,18 @@ where each concept appears in the papers of this wiki.
     $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
     adaptive optimization ([[01-canonical-papers/notes/1-foundations/adam|Adam]]) and normalization
     ([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]) help.
+
+    **What $\kappa$ costs you, in numbers.** Let $H = \text{diag}(10, 1)$, so
+    $\lambda_{max} = 10$, $\lambda_{min} = 1$, $\kappa = 10$. Gradient descent multiplies
+    coordinate $i$ by $(1 - \alpha\lambda_i)$ each step. Stability needs
+    $\alpha < 2/\lambda_{max} = 0.2$, so take $\alpha = 0.18$. The steep direction then
+    shrinks by $|1 - 1.8| = 0.8$ per step — fine — but the flat direction shrinks by only
+    $1 - 0.18 = 0.82$ per step. Starting from $x_0 = (1,1)$, after 20 steps you are at about
+    $(0.012,\ 0.019)$: the flat coordinate is what holds you back, and always will. Raise
+    $\kappa$ to 1000 and the flat direction needs roughly 100× more steps. *That* is why
+    people say "the problem is ill-conditioned" rather than "the learning rate is wrong" —
+    no single $\alpha$ can serve both directions, which is exactly the gap per-coordinate
+    methods try to close.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
@@ -114,6 +136,14 @@ where each concept appears in the papers of this wiki.
 
 *Every matrix does exactly this to a sphere: rotate, stretch along axes, rotate again. The $\sigma_i$ are the stretch factors, and a zero $\sigma_i$ is a direction the map destroys.*
 
+- **Worked, on the singular matrix from §2.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
+  Compute $C^\top C = \begin{pmatrix}5&10\\10&20\end{pmatrix}$, whose eigenvalues solve
+  $\lambda^2 - 25\lambda = 0$, giving $\lambda = 25, 0$. So $\sigma_1 = \sqrt{25} = 5$ and
+  $\sigma_2 = 0$. Read that off: **one** nonzero singular value means rank 1, so $C$ collapses
+  the plane onto a line, and $\|C\|_2 = \sigma_1 = 5$ is the most it can stretch anything. The
+  direction it destroys is the right singular vector belonging to $\sigma_2 = 0$, here
+  $(2,-1)/\sqrt5$ — check: $C(2,-1) = (0,0)$ ✓. That is §2's null space, found by a different
+  route.
 - Connections: $\sigma_i^2$ = eigenvalues of $A^\top A$; rank = number of nonzero $\sigma_i$;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: the best rank-$k$ approximation (in $\|\cdot\|_F$ or $\|\cdot\|_2$) is
@@ -243,6 +273,16 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 - $Av = \lambda v$: 고유벡터 $v$ 방향에서 사상은 $\lambda$배 순수 스케일링이다.
   대칭 $A$: 실수 고유값, 직교 고유벡터, $A = Q\Lambda Q^\top$ (스펙트럼 정리).
+- **$2\times2$ 계산 예제, 처음부터 끝까지.** $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$를 보자.
+  고유값은 $\det(A - \lambda I) = 0$을 푼다:
+  $$(2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0 \quad\Rightarrow\quad \lambda = 3,\ 1$$
+  $\lambda = 3$이면 $(A - 3I)v = 0$을 푼다: 행렬
+  $\begin{pmatrix}-1&1\\1&-1\end{pmatrix}$이 $v_1 = v_2$를 말하므로 $v = (1,1)$.
+  검산: $A(1,1) = (3,3) = 3(1,1)$ ✓. $\lambda = 1$도 같은 절차로 $v = (1,-1)$,
+  $A(1,-1) = (1,-1)$ ✓. 두 고유벡터가 서로 수직으로 나온 것은 운이 아니라 스펙트럼 정리가
+  작동한 것이고, $A$가 대칭이기 때문이다.
+  *소리 내어 읽으면:* 이 행렬은 $45°$ 대각선 방향으로 모든 것을 $3$배 늘이고 반대 대각선은
+  건드리지 않는다. 모든 대칭 행렬이 이 문장의 어떤 판본이다.
 - 구체적으로 왜 중요한가:
   - **거듭제곱**: $A^k = Q\Lambda^k Q^\top$ — 장기 거동은 가장 큰 $|\lambda|$가 지배한다.
     $x_{t+1} = Ax_t$의 안정성 ⟺ 모든 $|\lambda_i| < 1$
@@ -255,6 +295,16 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     나쁜 조건수는 적응형 최적화([[01-canonical-papers/notes/1-foundations/adam|Adam]])와
     정규화([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]])가 왜 돕는지 이해하는
     유용한 관점 중 하나다.
+
+    **$\kappa$가 치르게 하는 대가, 숫자로.** $H = \text{diag}(10, 1)$이면 $\lambda_{max} = 10$,
+    $\lambda_{min} = 1$, $\kappa = 10$이다. 경사 하강은 매 스텝 좌표 $i$에
+    $(1 - \alpha\lambda_i)$를 곱한다. 안정하려면 $\alpha < 2/\lambda_{max} = 0.2$여야 하니
+    $\alpha = 0.18$로 두자. 그러면 가파른 방향은 스텝당 $|1 - 1.8| = 0.8$배로 줄어 괜찮지만,
+    평평한 방향은 스텝당 $1 - 0.18 = 0.82$배밖에 줄지 않는다. $x_0 = (1,1)$에서 시작하면 20
+    스텝 뒤 대략 $(0.012,\ 0.019)$ — 발목을 잡는 것은 평평한 좌표이고 앞으로도 계속 그렇다.
+    $\kappa$를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 더 필요하다. "학습률이
+    잘못됐다"가 아니라 *"문제의 조건이 나쁘다"*고 말하는 이유가 이것이다 — 어떤 단일 $\alpha$도
+    두 방향을 동시에 만족시킬 수 없고, 좌표별 방법들이 메우려는 격차가 정확히 이것이다.
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
   논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻.
@@ -292,6 +342,13 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 *모든 행렬이 구에 하는 일이 정확히 이것이다: 회전 → 축 방향으로 늘이기 → 다시 회전. $\sigma_i$가 늘이는 배율이고, $\sigma_i = 0$인 방향은 사상이 파괴하는 방향이다.*
 
+- **2절의 특이 행렬로 계산해 보면.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
+  $C^\top C = \begin{pmatrix}5&10\\10&20\end{pmatrix}$이고 그 고유값은
+  $\lambda^2 - 25\lambda = 0$에서 $\lambda = 25, 0$. 따라서 $\sigma_1 = \sqrt{25} = 5$,
+  $\sigma_2 = 0$이다. 그대로 읽으면: 0이 아닌 특이값이 **하나**이므로 랭크 1, 즉 $C$는 평면을
+  직선 하나로 뭉갠다. 그리고 $\|C\|_2 = \sigma_1 = 5$가 이 행렬이 무언가를 늘일 수 있는
+  최대치다. 파괴되는 방향은 $\sigma_2 = 0$에 대응하는 우특이벡터, 여기서는 $(2,-1)/\sqrt5$ —
+  검산: $C(2,-1) = (0,0)$ ✓. 2절의 영공간을 다른 길로 찾은 것이다.
 - 연결: $\sigma_i^2$ = $A^\top A$의 고유값; 랭크 = 0이 아닌 $\sigma_i$의 수;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: 최적 랭크-$k$ 근사($\|\cdot\|_F$·$\|\cdot\|_2$ 기준)는 절단 SVD

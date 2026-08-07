@@ -71,7 +71,17 @@ functions.
   a sinusoid in gives the same sinusoid out, scaled by $H(f)$. That is why frequency
   analysis diagonalizes filtering.
 - **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — correlation of the signal
-  with each basis frequency; **FFT** computes all $N$ in $O(N\log N)$.
+  with each basis frequency ([[02-foundations/engineering-math|0.5 §7]] unpacks *why* that
+  sum is a projection); **FFT** computes all $N$ in $O(N\log N)$.
+- **Worked DFT, $N = 4$, by hand.** Take $x = [1, 0, -1, 0]$ — one full cycle across the
+  4-sample window. The twiddle factor is $e^{-j2\pi kn/4} = (-j)^{kn}$, so:
+  $$X[0] = 1 + 0 - 1 + 0 = 0, \qquad X[1] = 1(1) + 0(-j) + (-1)(-1) + 0(j) = 2$$
+  $$X[2] = 0, \qquad X[3] = 2$$
+  Read it off: $X[0] = 0$ says the signal has **no DC** — it averages to zero, which it
+  visibly does. All the energy sits in $k = 1$ and its mirror $k = 3$ (the same frequency
+  seen as negative — real signals always produce this symmetry, which is why an FFT plot only
+  ever shows you the first half). One bin lit up, and it is the bin whose rotation completes
+  exactly one turn across the window. That is the entire DFT.
 - **Convolution theorem**: $x * h \leftrightarrow X \cdot H$ — filtering is multiplication
   in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first).
 - Signal fingerprints: white noise = flat spectrum; drift/bias = spike near **DC** ("DC" is
@@ -88,6 +98,14 @@ functions.
   tradeoff: longer window ⇒ narrower passband *and* more delay.
 - **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
   smoother): cheap and sharp, but can ring and go unstable; phase is nonlinear.
+- **The smoother, traced step by step.** Run $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$ on a step: the
+  input jumps from $0$ to $1$ and stays. Starting at $y = 0$ the output goes
+  $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$ — reaching 90% of the new value takes about
+  **22 samples**, since $0.9^{22} \approx 0.1$. At 100 Hz that is $0.22$ s of lag you just
+  added to your feedback loop. Set $\alpha = 0.5$ instead and it arrives in 3 samples but
+  smooths ten times less. That one trade — noise rejection bought with delay — is the whole
+  of filter design, and the reason a control engineer always asks what your filter cost you
+  in phase ([[04-robotics/control-theory-ce397|control theory §7]]).
 - Choosing: low-pass for sensor noise, high-pass for drift removal, notch at known
   vibration harmonics, complementary filters to fuse IMU accel (low-passed) + gyro
   (high-passed).
@@ -188,7 +206,16 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   고유함수다** ([[02-foundations/linear-algebra|고유값적 사고]]) — 사인파가 들어가면 같은
   사인파가 $H(f)$배 되어 나온다. 주파수 분석이 필터링을 대각화하는 이유가 이것이다.
 - **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — 신호와 각 기저 주파수의
-  상관; **FFT**가 $N$개 전부를 $O(N\log N)$에 계산.
+  상관(그 합이 *왜* 투영인지는 [[02-foundations/engineering-math|0.5 §7]]에서 푼다);
+  **FFT**가 $N$개 전부를 $O(N\log N)$에 계산.
+- **$N = 4$ DFT, 손으로.** $x = [1, 0, -1, 0]$을 보자 — 4샘플 창에서 정확히 한 주기를 도는
+  신호다. 회전 인자는 $e^{-j2\pi kn/4} = (-j)^{kn}$이므로:
+  $$X[0] = 1 + 0 - 1 + 0 = 0, \qquad X[1] = 1(1) + 0(-j) + (-1)(-1) + 0(j) = 2$$
+  $$X[2] = 0, \qquad X[3] = 2$$
+  읽어보면: $X[0] = 0$은 이 신호에 **DC가 없다**는 뜻이고, 실제로 평균이 0이다. 에너지 전부가
+  $k = 1$과 그 거울상 $k = 3$(같은 주파수를 음수 쪽에서 본 것 — 실수 신호는 항상 이 대칭을
+  만들고, 그래서 FFT 플롯이 앞쪽 절반만 보여준다)에 앉는다. 켜진 빈은 하나이고, 그 빈의 회전이
+  창 전체에서 정확히 한 바퀴를 돈다. DFT의 전부가 이것이다.
 - **합성곱 정리**: $x * h \leftrightarrow X \cdot H$ — 필터링은 주파수 영역의 곱;
   신경망의 스펙트럼 편향(저주파부터 맞춘다)을 이해하는 렌즈이기도 하다.
 - 신호의 지문: 백색 잡음 = 평평한 스펙트럼; 드리프트/바이어스 = **DC** 근처 스파이크
@@ -205,6 +232,14 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   대역이 좁아지고 *그리고* 지연이 커진다.
 - **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고
   날카롭지만 링잉·불안정 가능; 위상이 비선형.
+- **평활기를 한 스텝씩 따라가 보면.** $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$을 계단 입력에 돌려
+  보자 — 입력이 $0$에서 $1$로 뛰어 그대로 유지된다. $y = 0$에서 시작하면 출력은
+  $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$으로 가고, 새 값의 90%에 닿는 데 약
+  **22 샘플**이 걸린다($0.9^{22} \approx 0.1$이므로). 100 Hz라면 방금 피드백 루프에 $0.22$초의
+  지연을 더한 셈이다. $\alpha = 0.5$로 두면 3 샘플 만에 도달하지만 평활 효과는 10분의 1이 된다.
+  이 거래 하나 — 지연을 치르고 사는 잡음 제거 — 가 필터 설계의 전부이고, 제어 엔지니어가
+  언제나 "그 필터가 위상에서 얼마를 앗아갔나"를 묻는 이유다
+  ([[04-robotics/control-theory-ce397|제어 이론 §7]]).
 - 선택: 센서 노이즈엔 저역통과, 드리프트 제거엔 고역통과, 알려진 진동 고조파엔 노치,
   IMU 융합엔 상보 필터(가속도 저역 + 자이로 고역).
 - **위상 지연은 인과적 평활화의 대가다**: 모든 인과적 저역통과는 신호를 늦춘다 — 과한
