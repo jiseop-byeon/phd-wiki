@@ -90,7 +90,8 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   term coded in [[01-canonical-papers/notes/6-diffusion/vae|VAE]] losses.
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
-  - Reverse KL (used in variational inference): mode-**seeking** — $q$ locks onto one mode.
+  - Reverse KL (used in *variational inference* — approximating an intractable distribution
+    by picking the closest member of a simple family): mode-**seeking** — $q$ locks onto one mode.
   This asymmetry contributes to VAEs' limited posterior coverage and to RL-style objectives
   collapsing to narrow behaviors — though classical VAE blur is *primarily* the Gaussian
   pixel likelihood averaging plausible outputs (see the self-check answer below).
@@ -120,7 +121,9 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 ### 5. The ELBO, derived honestly
 
-Goal: maximize $\log p_\theta(x)$, intractable because of the latent $z$. The trick that
+Goal: maximize $\log p_\theta(x)$, intractable because of the **latent** $z$ — a variable the
+model uses but never observes (the "code" behind an image, the compressed state behind a
+sensor stream); to get $p(x)$ you would have to integrate over every value it could take. The trick that
 makes $q$ appear: multiply and divide the integrand by any distribution $q(z|x)$, which
 turns the integral into an expectation over $q$ — then Jensen's inequality ($\log$ is
 concave, so $\log E \ge E \log$) drops the log inside:
@@ -240,7 +243,8 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   손실에 코딩되는 정규화 항 그 자체다.
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
-  - Reverse KL (변분 추론에서 사용): 모드 **시킹** — $q$가 한 모드에 들러붙는다.
+  - Reverse KL(*변분 추론*에서 사용 — 계산 불가능한 분포를, 다루기 쉬운 분포 가족 중
+    가장 가까운 것으로 근사하는 방법): 모드 **시킹** — $q$가 한 모드에 들러붙는다.
   이 비대칭은 VAE의 제한적 사후분포 커버리지와 RL식 목적함수가 좁은 행동으로 붕괴하는
   현상에 기여한다 — 단 고전적 VAE 흐릿함의 *주원인*은 가우시안 픽셀 우도의 평균화다
   (아래 스스로 점검 정답 참고).
@@ -269,7 +273,9 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 ### 5. ELBO, 정직하게 유도하기
 
-목표: $\log p_\theta(x)$ 최대화 — 잠재변수 $z$ 때문에 계산 불가. $q$가 등장하는 트릭:
+목표: $\log p_\theta(x)$ 최대화 — **잠재변수(latent)** $z$ 때문에 계산 불가. 잠재변수란
+모델이 쓰지만 관측되지는 않는 변수다(이미지 뒤의 "코드", 센서 스트림 뒤의 압축된 상태).
+$p(x)$를 얻으려면 $z$가 가질 수 있는 모든 값에 대해 적분해야 한다. $q$가 등장하는 트릭:
 적분 안을 아무 분포 $q(z|x)$로 곱하고 나눠 $q$에 대한 기댓값으로 바꾼 뒤, 옌센
 부등식($\log$은 오목이므로 $\log E \ge E \log$)으로 로그를 안으로 떨어뜨린다:
 

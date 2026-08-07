@@ -22,7 +22,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 ### 1. Rotations are matrices with rules
 
 - A 3D rotation is a matrix $R \in \mathbb{R}^{3\times 3}$ with $R^\top R = I$ and
-  $\det R = +1$ — the set of all such matrices is the group **SO(3)**.
+  $\det R = +1$ — the set of all such matrices is the **group SO(3)**. ("Group" is the
+  algebraic word for a set closed under composition where every element has an inverse:
+  a rotation times a rotation is a rotation, and every rotation can be undone. That is all
+  the word carries here.)
 - Consequences: columns are an orthonormal frame (the rotated x/y/z axes);
   $R^{-1} = R^\top$ (undoing a rotation is free); rotations compose by multiplication,
   and **order matters** ($R_1 R_2 \ne R_2 R_1$ — rotate your phone about two axes in both
@@ -126,7 +129,9 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 ### 1. 회전은 규칙 있는 행렬이다
 
 - 3D 회전은 $R^\top R = I$이고 $\det R = +1$인 행렬 $R \in \mathbb{R}^{3\times 3}$ —
-  이런 행렬 전체의 집합이 군 **SO(3)**다.
+  이런 행렬 전체의 집합을 **군**(group) SO(3)라고 부른다. ("군"은 합성에 대해 닫혀 있고 모든
+  원소에 역원이 있는 집합을 가리키는 대수학 용어다: 회전 × 회전 = 회전이고, 모든 회전은
+  되돌릴 수 있다. 여기서 이 단어가 담는 뜻은 그것이 전부다.)
 - 따름정리: 열들은 정규직교 프레임(회전된 x/y/z 축)이다; $R^{-1} = R^\top$(회전 되돌리기는
   공짜); 회전은 곱셈으로 합성되고 **순서가 중요하다** ($R_1 R_2 \ne R_2 R_1$ — 폰을 두 축으로
   순서 바꿔 돌려보면 몸으로 느껴진다).

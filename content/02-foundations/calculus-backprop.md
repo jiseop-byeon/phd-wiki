@@ -53,7 +53,8 @@ Network: $z = W_1 x$, $h = \text{ReLU}(z)$, $\hat y = W_2 h$, loss
 $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
 
 1. $\dfrac{\partial L}{\partial \hat y} = \hat y - y \quad$ (call it $\delta_2$)
-2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **error × input**, an outer product
+2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **error × input**, an *outer product*
+   (a column times a row, which produces a whole matrix — the same shape as $W_2$)
 3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — the error, mapped backwards
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU's
    gradient is a mask (call it $\delta_1$)
@@ -194,7 +195,8 @@ bug detector in existence.
 $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 
 1. $\dfrac{\partial L}{\partial \hat y} = \hat y - y \quad$ (이것을 $\delta_2$라 하자)
-2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **오차 × 입력**, 외적이다
+2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **오차 × 입력**, *외적(outer product)*이다
+   (열벡터 × 행벡터 → 행렬 하나가 나온다 — $W_2$와 같은 모양)
 3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — 오차를 거꾸로 사상한 것
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU의
    그래디언트는 마스크 (이것이 $\delta_1$)

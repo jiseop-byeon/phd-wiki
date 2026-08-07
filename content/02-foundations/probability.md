@@ -53,7 +53,8 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
-Three closure properties make the Gaussian the workhorse:
+Three **closure** properties make the Gaussian the workhorse — "closure" meaning the answer
+is still a Gaussian, so you never leave the family and never need a harder distribution:
 
 1. **Affine maps**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$.
 2. **Sums** of independent Gaussians are Gaussian (variances add).
@@ -77,14 +78,18 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   though not all: contrastive and some self-supervised objectives are not simple MLE.
 - **MAP**: add $\log p(\theta)$. A Gaussian prior on weights ⇒ $+\lambda\|\theta\|^2$ —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
-- Estimator quality: bias, variance, and the tradeoff between them — the vocabulary behind
+- Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
+  **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
   "our estimator is unbiased but high-variance" in RL papers
   ([[02-foundations/rl-basics|policy gradients]]).
 
 ### 5. Random processes and the Kalman filter
 
-- A random process = an indexed family of RVs; characterized by mean function and
-  autocorrelation. **Stationarity/WSS**: statistics don't drift (assumption behind spectral
+- A random process = an indexed family of RVs; characterized by its mean function and its
+  **autocorrelation** — $E[x(t)x(t+\tau)]$, how strongly the signal at one instant predicts
+  itself $\tau$ later (a noisy signal's frequency content, seen in the time domain).
+  **Stationarity / WSS** (*wide-sense stationary*: the mean and autocorrelation don't depend
+  on *when* you look, only on the gap $\tau$): statistics don't drift (assumption behind spectral
   analysis, [[02-foundations/signal-processing|signal processing]]).
   **White noise**: uncorrelated samples, flat spectrum — the default disturbance model and
   the $\epsilon$ of [[01-canonical-papers/notes/6-diffusion/ddpm|diffusion]].
@@ -169,7 +174,8 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
-세 가지 닫힘 성질이 가우시안을 주력으로 만든다:
+세 가지 **닫힘(closure)** 성질이 가우시안을 주력으로 만든다 — "닫힘"이란 결과가 여전히
+가우시안이라는 뜻이다. 즉 이 가족을 벗어날 일이 없고, 더 어려운 분포가 필요해지지 않는다:
 
 1. **아핀 사상**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$
 2. 독립 가우시안의 **합**은 가우시안 (분산이 더해진다).
@@ -193,14 +199,18 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
 - **MAP**: $\log p(\theta)$를 더한다. 가중치의 가우시안 사전 ⇒ $+\lambda\|\theta\|^2$ —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
-- 추정기의 품질: 편향, 분산, 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
+- 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
+  **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
   이지만 고분산인 추정기"라는 어휘가 여기서 온다
   ([[02-foundations/rl-basics|정책 그래디언트]]).
 
 ### 5. 랜덤 프로세스와 칼만 필터
 
-- 랜덤 프로세스 = 인덱스 달린 확률변수의 족; 평균 함수와 자기상관으로 특성화.
-  **정상성/WSS**: 통계량이 표류하지 않는다(스펙트럼 분석의 전제,
+- 랜덤 프로세스 = 인덱스 달린 확률변수의 족; 평균 함수와 **자기상관**(autocorrelation)으로
+  특성화한다 — $E[x(t)x(t+\tau)]$, 어느 순간의 신호가 $\tau$ 뒤의 자기 자신을 얼마나
+  예측하는가(잡음 신호의 주파수 내용을 시간 영역에서 본 것).
+  **정상성 / WSS**(*wide-sense stationary*, 광의의 정상성: 평균과 자기상관이 *언제*
+  보느냐가 아니라 시간 간격 $\tau$에만 의존한다): 통계량이 표류하지 않는다(스펙트럼 분석의 전제,
   [[02-foundations/signal-processing|신호처리]]).
   **백색 잡음**: 무상관 샘플, 평평한 스펙트럼 — 기본 외란 모델이자
   [[01-canonical-papers/notes/6-diffusion/ddpm|디퓨전]]의 $\epsilon$.

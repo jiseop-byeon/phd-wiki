@@ -43,7 +43,9 @@ where each concept appears in the papers of this wiki.
 
 ### 2. Linear systems, rank, column space and null space
 
-- $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ (column space). Gaussian elimination = row
+- $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ — the **column space**, i.e. everything you can
+  reach by scaling $A$'s columns and adding them up. ("Everything reachable from a set of
+  vectors this way" is their **span**; the column space is the span of the columns.) Gaussian elimination = row
   operations to triangular form; LU factorization is elimination *recorded* so multiple
   right-hand sides are cheap.
 - **Rank** = number of independent columns = number of independent rows = dimension of
@@ -81,7 +83,8 @@ where each concept appears in the papers of this wiki.
 
 ### 4. SVD — a universal factorization, available for every matrix
 
-- **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with orthogonal $U, V$ and
+- **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with **orthogonal** $U, V$ (columns unit-length and mutually
+  perpendicular, so multiplying by one is a pure rotation/reflection — it stretches nothing) and
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$. Reading: rotate (input
   basis $V$) → scale (singular values) → rotate (output basis $U$).
 
@@ -222,7 +225,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### 2. 선형계, 랭크, 열공간과 영공간
 
-- $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$(열공간). 가우스 소거 = 삼각형 꼴로 가는 행
+- $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$ — **열공간(column space)**, 즉 $A$의 열들을
+  스칼라배해 더해서 도달할 수 있는 점 전체다. ("어떤 벡터 집합에서 이렇게 도달할 수 있는
+  것 전체"를 그 집합의 **span**(생성)이라 하고, 열공간은 열들의 span이다.) 가우스 소거 = 삼각형 꼴로 가는 행
   연산; LU 분해는 소거 과정을 *기록*해 우변이 여러 개일 때 재사용을 싸게 만든 것.
 - **랭크** = 독립인 열의 수 = 독립인 행의 수 = 사상이 표현할 수 있는 것의 차원.
   랭크 부족 ⇒ 정보가 파괴된다 (영공간 $\{x: Ax = 0\}$이 자명하지 않다).
@@ -256,7 +261,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### 4. SVD — 모든 행렬에 존재하는 보편적 분해
 
-- **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 직교,
+- **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 **직교행렬**(열들이 길이 1이고 서로 수직 — 그래서 곱하는
+  것은 순수한 회전/반사이고 아무것도 늘이지 않는다),
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$.
   독해: 회전(입력 기저 $V$) → 스케일(특이값) → 회전(출력 기저 $U$).
 

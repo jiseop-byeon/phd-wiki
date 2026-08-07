@@ -59,8 +59,10 @@ functions.
   IMU logs in software).
 - Engineering corollary: pick sensor rates from the fastest dynamics you must *observe*,
   with margin — a 10 Hz perception loop cannot even see, let alone damp, a 50 Hz vibration.
-- Quantization: finite bits add ~uniform noise (~6 dB SNR per bit) — the *other* half of
-  digitization.
+- Quantization: finite bits add ~uniform noise — roughly **6 dB of SNR per bit**. *SNR* =
+  signal-to-noise ratio, signal power divided by noise power; *dB* (decibel) is the log scale
+  it is quoted on, where +6 dB ≈ 2× in amplitude. So each extra bit of an ADC roughly halves
+  the quantization noise. This is the *other* half of digitization.
 
 ### 3. Frequency domain — the diagonalizing basis
 
@@ -72,13 +74,16 @@ functions.
   with each basis frequency; **FFT** computes all $N$ in $O(N\log N)$.
 - **Convolution theorem**: $x * h \leftrightarrow X \cdot H$ — filtering is multiplication
   in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first).
-- Signal fingerprints: white noise = flat spectrum; drift/bias = spike near DC; rotating
+- Signal fingerprints: white noise = flat spectrum; drift/bias = spike near **DC** ("DC" is
+  borrowed from direct current and here just means zero frequency — the constant part); rotating
   machinery = sharp peaks at harmonics (an excavator's engine band is a notch-filter target).
 
 ### 4. Filtering — design basics
 
 - **FIR** (finite impulse response, $y = \sum b_k x[n-k]$): always stable, exactly linear
-  phase possible (no waveform distortion), needs more taps. The moving average is the
+  phase possible (no waveform distortion), but needs more **taps** — one tap = one $b_k$,
+  i.e. one past sample the filter still has to keep and multiply, so "more taps" means more
+  memory, more arithmetic, and more delay. The moving average is the
   simplest FIR; its frequency response $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$ shows the
   tradeoff: longer window ⇒ narrower passband *and* more delay.
 - **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
@@ -172,8 +177,10 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   때도 포함).
 - 공학적 따름정리: *관측해야 할* 가장 빠른 동역학에서 여유를 두고 센서 주기를 정하라 —
   10 Hz 인식 루프는 50 Hz 진동을 감쇠는커녕 보지도 못한다.
-- 양자화: 유한 비트는 거의 균일한 노이즈를 더한다(비트당 약 6 dB SNR) — 디지털화의
-  나머지 절반.
+- 양자화: 유한 비트는 거의 균일한 노이즈를 더한다 — 대략 **비트당 6 dB의 SNR**. *SNR*은
+  신호 대 잡음비(신호 전력 ÷ 잡음 전력)이고, *dB*(데시벨)는 그것을 표기하는 로그 척도로
+  +6 dB가 진폭 약 2배다. 즉 ADC의 비트 하나가 늘 때마다 양자화 잡음이 대략 절반이 된다.
+  디지털화의 나머지 절반이 이것이다.
 
 ### 3. 주파수 영역 — 대각화하는 기저
 
@@ -184,13 +191,16 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   상관; **FFT**가 $N$개 전부를 $O(N\log N)$에 계산.
 - **합성곱 정리**: $x * h \leftrightarrow X \cdot H$ — 필터링은 주파수 영역의 곱;
   신경망의 스펙트럼 편향(저주파부터 맞춘다)을 이해하는 렌즈이기도 하다.
-- 신호의 지문: 백색 잡음 = 평평한 스펙트럼; 드리프트/바이어스 = DC 근처 스파이크;
+- 신호의 지문: 백색 잡음 = 평평한 스펙트럼; 드리프트/바이어스 = **DC** 근처 스파이크
+  ("DC"는 직류에서 온 말이고 여기서는 그냥 주파수 0 — 신호의 상수 성분을 뜻한다);
   회전 기계 = 고조파의 날카로운 피크 (굴착기 엔진 대역은 노치 필터의 표적).
 
 ### 4. 필터링 — 설계 기초
 
 - **FIR** (유한 임펄스 응답, $y = \sum b_k x[n-k]$): 항상 안정, 정확한 선형 위상
-  가능(파형 왜곡 없음), 대신 탭이 많이 필요. 이동 평균이 가장 단순한 FIR; 그 주파수 응답
+  가능(파형 왜곡 없음), 대신 **탭**(tap)이 많이 필요하다 — 탭 하나 = $b_k$ 하나, 즉 필터가
+  아직 들고 있으면서 곱해야 하는 과거 샘플 하나다. 따라서 "탭이 많다"는 메모리·연산량·
+  지연이 모두 늘어난다는 뜻이다. 이동 평균이 가장 단순한 FIR; 그 주파수 응답
   $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$이 트레이드오프를 보여준다: 창이 길수록 통과
   대역이 좁아지고 *그리고* 지연이 커진다.
 - **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고

@@ -158,7 +158,7 @@ An automated excavator receives a goal from an operator, plans and executes a di
 ### 4. 인간 성능
 
 작업 부하, 상황 인식, 주의, 반응 시간, 피로, 숙련, 멘탈 모델, 신뢰가 관련 구성 개념이다.
-높은 신뢰가 자동으로 좋은 것이 아니다: **보정된 신뢰(calibrated trust)**란 의존이 시스템의
+높은 신뢰가 자동으로 좋은 것이 아니다: **보정된 신뢰**(calibrated trust)란 의존이 시스템의
 능력과 불확실성에 맞는 상태다. 자기 보고 신뢰는 행동·과제 결과와 짝지어 읽어야 한다.
 
 ### 5. 인터페이스

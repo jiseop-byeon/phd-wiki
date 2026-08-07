@@ -31,7 +31,9 @@ formulations of the same engineering problem differ wildly in solvability.
 
 - A set is convex if it contains all line segments between its points; $f$ is convex if
   $f(\lambda x + (1-\lambda)y) \le \lambda f(x) + (1-\lambda)f(y)$ — equivalently
-  (twice-differentiable case) $H \succeq 0$ everywhere.
+  (twice-differentiable case) $H \succeq 0$ everywhere — read $\succeq 0$ as "positive
+  semidefinite", the matrix version of $\ge 0$: $x^\top H x \ge 0$ for every direction $x$,
+  i.e. the surface curves upward (or at worst is flat) whichever way you walk.
 - Convex problem = convex $f$ over a convex feasible set ⇒ **every local minimum is
   global**, and polynomial-time reliable solvers exist.
 
@@ -168,7 +170,9 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 
 - 집합이 볼록 = 두 점 사이 선분을 모두 포함; $f$가 볼록 =
   $f(\lambda x + (1-\lambda)y) \le \lambda f(x) + (1-\lambda)f(y)$ — (2차 미분 가능하면)
-  모든 곳에서 $H \succeq 0$과 동치.
+  모든 곳에서 $H \succeq 0$과 동치 — $\succeq 0$은 "양의 준정부호"로 읽고, $\ge 0$의 행렬판이다:
+  모든 방향 $x$에 대해 $x^\top H x \ge 0$, 즉 어느 방향으로 걸어도 표면이 위로 휘거나
+  (최악의 경우) 평평하다는 뜻.
 - 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이고,
   다항 시간의 신뢰할 수 있는 솔버가 존재한다.
 

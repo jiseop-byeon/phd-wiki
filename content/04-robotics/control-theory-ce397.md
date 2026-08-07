@@ -191,7 +191,9 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
 
 - **P** pushes proportional to error (raises $\omega_n$ — faster, but too much causes ringing).
 - **D** pushes against the error's *rate* (adds damping, raises $\zeta$) — and amplifies
-  sensor noise, so it is always used with a filter (whose lag then costs you phase margin,
+  sensor noise, so it is always used with a filter (whose lag then eats into **phase margin**
+  — how much extra delay the loop can absorb before its correction arrives so late that it
+  reinforces the error instead of cancelling it,
   [[02-foundations/signal-processing|signal processing §4]]).
 - **I** integrates residual error to kill steady-state offset — and introduces
   **integral windup**: while an actuator is saturated the integral keeps growing, then
@@ -457,7 +459,9 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
 
 - **P**는 오차에 비례해 민다($\omega_n$을 올린다 — 빨라지지만 과하면 울린다).
 - **D**는 오차의 *변화율*에 맞선다(감쇠를 더해 $\zeta$를 올린다) — 그리고 센서 잡음을
-  증폭하므로 항상 필터와 함께 쓰이고, 그 필터의 지연이 다시 위상 여유를 깎는다
+  증폭하므로 항상 필터와 함께 쓰이고, 그 필터의 지연이 다시 **위상 여유**(phase margin)를
+  깎는다 — 위상 여유란 루프가 불안정해지기 전까지 더 견딜 수 있는 지연의 양이다. 보정이
+  너무 늦게 도착하면 오차를 상쇄하는 대신 되레 키운다
   ([[02-foundations/signal-processing|신호처리 §4]]).
 - **I**는 잔여 오차를 적분해 정상 상태 오프셋을 없앤다 — 그리고 **적분 와인드업**을
   데려온다: 액추에이터가 포화된 동안 적분값이 계속 자라고, 풀리는 순간 크게 오버슈트한다.

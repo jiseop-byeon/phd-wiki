@@ -148,7 +148,7 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 
 ### 1. 접촉이 문제를 바꾸는 이유
 
-접촉은 보통 **단방향(unilateral)**이다: 물체는 밀 수 있지만 평범한 표면을 통해 당길 수는
+접촉은 보통 **단방향**(unilateral)이다: 물체는 밀 수 있지만 평범한 표면을 통해 당길 수는
 없다. 운동은 분리·충격·고착(sticking)·미끄럼(sliding) 사이를 오간다. 그래서 동역학이
 하이브리드가 되고 대개 비매끄럽다.
 

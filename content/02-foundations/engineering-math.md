@@ -49,7 +49,10 @@ parabola.
 
 ### 3. Integrals and expectations (→ 3. Probability)
 
-- An integral is a weighted sum in the continuum limit: $\int f(x)\,dx$.
+- An integral is a weighted sum **in the continuum limit** — slice the axis into pieces,
+  multiply each $f$ value by its slice width, add them up, then let the slice width shrink
+  to zero. "Continuum limit" always means exactly that: a sum whose steps have been taken
+  all the way down to infinitesimal. That sum is written $\int f(x)\,dx$.
 - The only integral pattern the foundations really use:
   $E[g(X)] = \int g(x)\,p(x)\,dx$ — "average $g$ over the distribution $p$."
   In code this is always a sample mean; you almost never solve integrals by hand here.
@@ -65,7 +68,10 @@ parabola.
   (it swapped the columns — matrices *do things*).
 - Not commutative: $AB \ne BA$ in general. Transpose flips indices ($A^\top_{ij} = A_{ji}$);
   identity $I$ changes nothing; the inverse $A^{-1}$ undoes ($A^{-1}A = I$) and only exists
-  for square, full-rank $A$.
+  for square, **full-rank** $A$ — full rank means no column is a combination of the others,
+  so the map squashes nothing flat and can be undone. (Rank gets its proper definition in
+  [[02-foundations/linear-algebra|1. Linear Algebra §2]]; here, read "full-rank" as
+  "nothing was lost, so it is reversible.")
 
 ### 5. Series and the geometric sum (→ 7. RL Basics)
 
@@ -191,6 +197,9 @@ Two definitions used everywhere before they are formally introduced:
 | $\mathbb{1}[\cdot]$ | indicator: 1 if true, 0 if false |
 | $\odot$ | element-wise product |
 | $:=$ | defined as |
+| $A^\top$ | transpose — flip the matrix across its diagonal ($A^\top_{ij} = A_{ji}$) |
+| $\det A$ | determinant — the factor by which the map scales volume; $0$ means it flattens space, so it has no inverse |
+| $A \succeq 0$, $A \succ 0$ | positive semidefinite / definite — the matrix version of "$\ge 0$" / "$>0$": $x^\top A x \ge 0$ for every $x$ |
 
 ### Self-check
 
@@ -248,7 +257,9 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 ### 3. 적분과 기댓값 (→ 3. 확률)
 
-- 적분은 연속 극한의 가중합이다: $\int f(x)\,dx$.
+- 적분은 **연속 극한**(continuum limit)의 가중합이다 — 축을 조각으로 자르고, 각 $f$ 값에
+  조각의 폭을 곱해 더한 뒤, 조각의 폭을 0으로 보낸 것. "연속 극한"은 언제나 이 뜻이다:
+  더하는 단위를 끝까지 무한소로 내려보낸 합. 그 합을 $\int f(x)\,dx$로 쓴다.
 - 기초 페이지들이 실제로 쓰는 적분 패턴은 사실상 하나:
   $E[g(X)] = \int g(x)\,p(x)\,dx$ — "분포 $p$ 위에서 $g$의 평균." 코드에서는 언제나 샘플
   평균이 되고, 여기서 적분을 손으로 풀 일은 거의 없다.
@@ -264,7 +275,10 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
   (열이 서로 바뀌었다 — 행렬은 *무언가를 한다*).
 - 교환 법칙 없음: 일반적으로 $AB \ne BA$. 전치는 인덱스를 뒤집고($A^\top_{ij} = A_{ji}$),
   항등 행렬 $I$는 아무것도 바꾸지 않으며, 역행렬 $A^{-1}$은 되돌린다($A^{-1}A = I$) —
-  정방·풀랭크일 때만 존재.
+  정방·**풀랭크**(full rank)일 때만 존재 — 풀랭크란 어떤 열도 다른 열들의 조합이 아니라는
+  뜻이고, 그래서 사상이 아무것도 납작하게 뭉개지 않으므로 되돌릴 수 있다. (랭크의 정식
+  정의는 [[02-foundations/linear-algebra|1. 선형대수 §2]]. 여기서는 "풀랭크" = "잃어버린
+  것이 없어 되돌릴 수 있다"로 읽으면 된다.)
 
 ### 5. 급수와 기하급수 합 (→ 7. RL 기초)
 
@@ -382,6 +396,9 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 | $\mathbb{1}[\cdot]$ | 지시 함수: 참이면 1, 거짓이면 0 |
 | $\odot$ | 원소별 곱 |
 | $:=$ | ~로 정의함 |
+| $A^\top$ | 전치 — 대각선을 기준으로 뒤집기 ($A^\top_{ij} = A_{ji}$) |
+| $\det A$ | 행렬식 — 사상이 부피를 몇 배로 만드는가; $0$이면 공간을 납작하게 뭉개므로 역행렬이 없다 |
+| $A \succeq 0$, $A \succ 0$ | 양의 준정부호/정부호 — 행렬판 "$\ge 0$"/"$>0$": 모든 $x$에 대해 $x^\top A x \ge 0$ |
 
 ### 스스로 점검
 

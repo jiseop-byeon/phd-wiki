@@ -61,7 +61,9 @@ flowchart LR
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{target}} - V(s)]$
   — bootstrap from your own estimate. The bracket is the **TD error** $\delta$, RL's
   all-purpose learning signal.
-- **Q-learning** (off-policy):
+- **Q-learning** (**off-policy** — it learns about the greedy policy while acting under a
+  different, exploratory one, so it can reuse old data; **on-policy** methods such as PPO
+  must learn from data their *current* policy just generated, and discard it after):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$.
   DQN = this + neural $Q$ + replay buffer + target network (a
   [[02-foundations/calculus-backprop|stop-gradient]] copy for stable targets).
@@ -177,7 +179,8 @@ flowchart TD
 - **Imitation** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): supervised on demos —
   stable, no reward design, but plain offline BC is capped by data coverage and cannot
-  learn recoveries *outside the support of its demos* (demos with recoveries, or DAgger-style
+  learn recoveries *outside the **support** of its demos* (the support of a dataset = the
+  region of states and actions it actually covers; outside it the model has seen nothing) (demos with recoveries, or DAgger-style
   data collection, change this).
 - **RL** *can* exceed the demonstrator — when an informative reward and enough exploration
   are available — practical mostly in
@@ -451,7 +454,9 @@ flowchart LR
 - 모델이 없으면 샘플링: **TD(0)** 갱신
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{타깃}} - V(s)]$
   — 자기 자신의 추정으로 부트스트랩. 괄호 안이 **TD 오차** $\delta$, RL의 만능 학습 신호다.
-- **Q-learning** (off-policy):
+- **Q-learning** (**오프폴리시(off-policy)** — 탐색용의 다른 정책으로 행동하면서 탐욕 정책에
+  대해 학습하므로 과거 데이터를 재사용할 수 있다; PPO 같은 **온폴리시(on-policy)** 방법은
+  *현재* 정책이 방금 만든 데이터로만 학습하고, 쓰고 나면 버려야 한다):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$
   DQN = 이것 + 신경망 $Q$ + 리플레이 버퍼 + 타깃 네트워크(안정된 타깃을 위한
   [[02-foundations/calculus-backprop|stop-gradient]] 복사본).
@@ -550,7 +555,8 @@ flowchart TD
 - **모방** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): 시연에 대한 지도학습 —
   안정적이고 보상 설계가 없지만, 순수 오프라인 BC는 데이터 커버리지가 상한이고 *시연
-  분포 밖의* 회복 동작은 학습할 수 없다(회복이 담긴 시연이나 DAgger식 데이터 수집은
+  분포 밖의* 회복 동작은 학습할 수 없다(데이터의 **support(지지집합)** = 그 데이터가 실제로
+  덮고 있는 상태·행동의 영역. 그 바깥에서 모델은 본 것이 하나도 없다)(회복이 담긴 시연이나 DAgger식 데이터 수집은
   이를 바꾼다).
 - **RL**은 유익한 보상과 충분한 탐색이 있으면 시연자를 넘어설 *수 있다* — 주로
   시뮬레이션(sim-to-real)
@@ -667,7 +673,7 @@ flowchart TD
 
 ### 9. 실기계 위의 RL: 파인튜닝, 안전, 그리고 sim-to-real의 자리
 
-- **RL 파인튜닝(RLFT)**이 오늘날 RL이 로봇에 닿는 가장 흔한 경로이고, 이 위키에서 만나게 될
+- **RL 파인튜닝**(RLFT)이 오늘날 RL이 로봇에 닿는 가장 흔한 경로이고, 이 위키에서 만나게 될
   형태다. 행동 복제(또는 이전 RL 실행)로 이미 사전학습된 정책에서 출발해, 과제 보상으로 RL을
   이어간다. 사전학습이 탐색이 절망적이지 않은 영역에 데려다 놓고, RL이 시연으로 덮지 못한 것을
   고친다. [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]]와 같은

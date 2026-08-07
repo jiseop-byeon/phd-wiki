@@ -11,6 +11,9 @@ Checks (run before every deploy):
   7. Every paper note frontmatter has status: and last_verified:.
   8. New robotics-literacy and research-practice pages keep the bilingual learning scaffold.
   9. Substantive curriculum pages declare a valid study-depth profile.
+ 10. No **bold** run is left unrendered by CommonMark's right-flanking rule
+     (a closing ** preceded by punctuation and followed by a letter never closes —
+     it bites Korean text like `**용어(term)**이`, which then shows literal asterisks).
 Exit code 1 on any failure, with a per-file report.
 """
 
@@ -163,6 +166,24 @@ for p in md_files:
         err(p, "frontmatter missing depth-goal:")
     if not re.search(r"^mastery-when:\s*.+$", text, re.M):
         err(p, "frontmatter missing mastery-when:")
+
+# 10. Bold runs that CommonMark will not close.
+# A closing "**" is right-flanking only if it is NOT preceded by punctuation, or is
+# followed by whitespace/punctuation. `**연속 극한(continuum limit)**의` fails both and
+# renders as literal asterisks. Fix by moving the parenthetical outside: `**연속 극한**(...)`.
+bold_re = re.compile(r"\*\*(?=\S)([^*\n]{1,120}?)\*\*(.?)", re.S)
+punct = set("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~—–·…“”‘’()、。，")
+for p in md_files:
+    for i, line in enumerate(open(p, encoding="utf-8").read().split("\n"), 1):
+        if line.lstrip().startswith(("<", "|")):
+            continue
+        line = re.sub(r"`[^`]*`", "", line)  # inline code is not parsed as emphasis
+        for m in bold_re.finditer(line):
+            inner, nxt = m.group(1), m.group(2)
+            if not inner or inner[-1] not in punct:
+                continue
+            if nxt and not nxt.isspace() and nxt not in punct:
+                err(p, f"line {i}: bold never closes (** preceded by '{inner[-1]}', followed by '{nxt}') — move the parenthetical outside the ** in: **{inner}**{nxt}")
 
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

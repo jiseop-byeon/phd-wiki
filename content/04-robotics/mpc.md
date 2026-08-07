@@ -54,7 +54,8 @@ MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 **The Mayne et al. 2000 survey** is the field's canonical reference: it settled *when MPC
 is stable* — the roles of the terminal cost, terminal constraint set, and horizon length —
 turning a practical heuristic into a theory. The mechanism, in one paragraph: if the
-horizon ends inside a **terminal set** that is *invariant* under a known local controller,
+horizon ends inside a **terminal set** that is *invariant* under a known local controller
+(invariant = once the state is inside that set, the controller keeps it inside forever),
 then a feasible plan today implies a feasible plan tomorrow (append one step of that
 controller) — this is **recursive feasibility**, the property MPC papers invoke by name;
 and if the terminal cost decreases like a Lyapunov function under that controller, closed-loop
@@ -182,7 +183,7 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 **Mayne et al. 2000 서베이**는 이 분야의 정전이다: *MPC가 언제 안정한가* — 종단 비용,
 종단 제약 집합, 지평 길이의 역할 — 를 정리해 실용적 휴리스틱을 이론으로 만들었다.
 메커니즘을 한 단락으로: 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합** 안에
-떨어지면, 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한
+떨어지면(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에 잡아둔다), 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한
 스텝을 이어 붙이면 된다) — 이것이 MPC 논문들이 이름으로 부르는 **recursive
 feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노프 함수처럼 감소하면 폐루프
 안정성이 따라온다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
