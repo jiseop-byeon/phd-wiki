@@ -38,6 +38,27 @@ Report trial count, independent runs, failures, exclusions, aggregation, and an 
 
 Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a CI of roughly $\pm 1/\sqrt{n}$ (10 trials → ±30%p; 100 → ±10%p), and if zero failures are observed in $n$ trials, the rule of three says the true failure rate may still be as high as $\approx 3/n$.
 
+<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="how the uncertainty of a success rate shrinks with the number of trials">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
+  <path d="M55.0 90.8L58.8 92.2L62.7 93.6L66.5 94.9L70.4 96.2L74.2 97.5L78.1 98.7L81.9 99.9L85.8 101.0L89.6 102.2L93.5 103.2L97.3 104.3L101.2 105.3L105.0 106.3L108.9 107.3L112.7 108.2L116.6 109.1L120.4 110.0L124.3 110.9L128.1 111.7L132.0 112.5L135.8 113.3L139.7 114.1L143.5 114.8L147.4 115.6L151.2 116.3L155.1 116.9L158.9 117.6L162.8 118.2L166.6 118.9L170.5 119.5L174.3 120.1L178.2 120.6L182.0 121.2L185.9 121.7L189.7 122.3L193.6 122.8L197.4 123.3L201.3 123.7L205.1 124.2L209.0 124.7L212.8 125.1L216.7 125.5L220.5 125.9L224.4 126.3L228.2 126.7L232.1 127.1L235.9 127.5L239.8 127.9L243.6 128.2L247.5 128.5L251.3 128.9L255.2 129.2L259.0 129.5L262.9 129.8L266.7 130.1L270.6 130.4L274.4 130.7L278.3 130.9L282.1 131.2L286.0 131.4L289.8 131.7L293.6 131.9L297.5 132.2L301.3 132.4L305.2 132.6L309.0 132.8L312.9 133.0L316.7 133.2L320.6 133.4L324.4 133.6L328.3 133.8L332.1 134.0L336.0 134.1L339.8 134.3L343.7 134.5L347.5 134.6L351.4 134.8L355.2 134.9L359.1 135.1L362.9 135.2L366.8 135.4L370.6 135.5L374.5 135.6L378.3 135.7L382.2 135.9L386.0 136.0L389.9 136.1L393.7 136.2L397.6 136.3L401.4 136.4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M55.0 74.0L58.8 77.7L62.7 81.3L66.5 84.6L70.4 87.7L74.2 90.7L78.1 93.5L81.9 96.1L85.8 98.6L89.6 100.9L93.5 103.1L97.3 105.2L101.2 107.2L105.0 109.1L108.9 110.8L112.7 112.5L116.6 114.0L120.4 115.5L124.3 116.9L128.1 118.2L132.0 119.4L135.8 120.6L139.7 121.7L143.5 122.7L147.4 123.7L151.2 124.6L155.1 125.5L158.9 126.3L162.8 127.1L166.6 127.8L170.5 128.5L174.3 129.2L178.2 129.8L182.0 130.4L185.9 130.9L189.7 131.4L193.6 131.9L197.4 132.4L201.3 132.8L205.1 133.2L209.0 133.6L212.8 133.9L216.7 134.3L220.5 134.6L224.4 134.9L228.2 135.2L232.1 135.5L235.9 135.7L239.8 136.0L243.6 136.2L247.5 136.4L251.3 136.6L255.2 136.8L259.0 137.0L262.9 137.2L266.7 137.3L270.6 137.5L274.4 137.6L278.3 137.8L282.1 137.9L286.0 138.0L289.8 138.1L293.6 138.2L297.5 138.3L301.3 138.4L305.2 138.5L309.0 138.6L312.9 138.7L316.7 138.7L320.6 138.8L324.4 138.9L328.3 138.9L332.1 139.0L336.0 139.1L339.8 139.1L343.7 139.2L347.5 139.2L351.4 139.3L355.2 139.3L359.1 139.3L362.9 139.4L366.8 139.4L370.6 139.4L374.5 139.5L378.3 139.5L382.2 139.5L386.0 139.6L389.9 139.6L393.7 139.6L397.6 139.6L401.4 139.7" fill="none" stroke="currentColor" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/>
+  <g fill="currentColor"><circle cx="100.8" cy="105.2" r="3.5"/><circle cx="252.9" cy="129.0" r="3.5"/><circle cx="405.0" cy="136.5" r="3.5"/></g>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="55.0" y="158">5</text><text x="100.8" y="158">10</text><text x="173.4" y="158">30</text><text x="252.9" y="158">100</text><text x="325.5" y="158">300</text><text x="405.0" y="158">1000</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="10" y="34">uncertainty</text>
+    <text x="106.8" y="101.2">&#177;32%p</text>
+    <text x="258.9" y="125.0">&#177;10%p</text>
+    <text x="365.0" y="130.5">&#177;3%p</text>
+    <text x="316" y="172">number of trials n (log scale)</text>
+  </g>
+  <g stroke="currentColor"><line x1="55" y1="180" x2="85" y2="180" stroke-width="2"/><line x1="55" y1="196" x2="85" y2="196" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="92" y="184">rough CI half-width, &#8776; 1/&#8730;n</text><text x="92" y="200">rule of three: worst-case failure rate after zero failures, 3/n</text></g>
+</svg>
+
+
+
 ### 5. Ablations and budgets
 
 An ablation may remove or change architecture, objective, data, sensing, controller, or hyperparameter. Hold the rest constant enough to isolate interpretation. Compare data, compute, tuning effort, pretrained assets, sensors, and control interface—not architecture names alone.
@@ -126,6 +147,27 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 시행 수를 가늠하는 문해력 수준의 도구 둘: $n$회 시행의 성공률 신뢰구간은 대략
 $\pm 1/\sqrt{n}$ (10회 → ±30%p; 100회 → ±10%p), 그리고 $n$회에서 실패 0이면 3의
 법칙(rule of three)상 진짜 실패율은 여전히 $\approx 3/n$까지 가능하다.
+
+<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="시행 횟수에 따라 성공률의 불확실성이 줄어드는 방식">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
+  <path d="M55.0 90.8L58.8 92.2L62.7 93.6L66.5 94.9L70.4 96.2L74.2 97.5L78.1 98.7L81.9 99.9L85.8 101.0L89.6 102.2L93.5 103.2L97.3 104.3L101.2 105.3L105.0 106.3L108.9 107.3L112.7 108.2L116.6 109.1L120.4 110.0L124.3 110.9L128.1 111.7L132.0 112.5L135.8 113.3L139.7 114.1L143.5 114.8L147.4 115.6L151.2 116.3L155.1 116.9L158.9 117.6L162.8 118.2L166.6 118.9L170.5 119.5L174.3 120.1L178.2 120.6L182.0 121.2L185.9 121.7L189.7 122.3L193.6 122.8L197.4 123.3L201.3 123.7L205.1 124.2L209.0 124.7L212.8 125.1L216.7 125.5L220.5 125.9L224.4 126.3L228.2 126.7L232.1 127.1L235.9 127.5L239.8 127.9L243.6 128.2L247.5 128.5L251.3 128.9L255.2 129.2L259.0 129.5L262.9 129.8L266.7 130.1L270.6 130.4L274.4 130.7L278.3 130.9L282.1 131.2L286.0 131.4L289.8 131.7L293.6 131.9L297.5 132.2L301.3 132.4L305.2 132.6L309.0 132.8L312.9 133.0L316.7 133.2L320.6 133.4L324.4 133.6L328.3 133.8L332.1 134.0L336.0 134.1L339.8 134.3L343.7 134.5L347.5 134.6L351.4 134.8L355.2 134.9L359.1 135.1L362.9 135.2L366.8 135.4L370.6 135.5L374.5 135.6L378.3 135.7L382.2 135.9L386.0 136.0L389.9 136.1L393.7 136.2L397.6 136.3L401.4 136.4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M55.0 74.0L58.8 77.7L62.7 81.3L66.5 84.6L70.4 87.7L74.2 90.7L78.1 93.5L81.9 96.1L85.8 98.6L89.6 100.9L93.5 103.1L97.3 105.2L101.2 107.2L105.0 109.1L108.9 110.8L112.7 112.5L116.6 114.0L120.4 115.5L124.3 116.9L128.1 118.2L132.0 119.4L135.8 120.6L139.7 121.7L143.5 122.7L147.4 123.7L151.2 124.6L155.1 125.5L158.9 126.3L162.8 127.1L166.6 127.8L170.5 128.5L174.3 129.2L178.2 129.8L182.0 130.4L185.9 130.9L189.7 131.4L193.6 131.9L197.4 132.4L201.3 132.8L205.1 133.2L209.0 133.6L212.8 133.9L216.7 134.3L220.5 134.6L224.4 134.9L228.2 135.2L232.1 135.5L235.9 135.7L239.8 136.0L243.6 136.2L247.5 136.4L251.3 136.6L255.2 136.8L259.0 137.0L262.9 137.2L266.7 137.3L270.6 137.5L274.4 137.6L278.3 137.8L282.1 137.9L286.0 138.0L289.8 138.1L293.6 138.2L297.5 138.3L301.3 138.4L305.2 138.5L309.0 138.6L312.9 138.7L316.7 138.7L320.6 138.8L324.4 138.9L328.3 138.9L332.1 139.0L336.0 139.1L339.8 139.1L343.7 139.2L347.5 139.2L351.4 139.3L355.2 139.3L359.1 139.3L362.9 139.4L366.8 139.4L370.6 139.4L374.5 139.5L378.3 139.5L382.2 139.5L386.0 139.6L389.9 139.6L393.7 139.6L397.6 139.6L401.4 139.7" fill="none" stroke="currentColor" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/>
+  <g fill="currentColor"><circle cx="100.8" cy="105.2" r="3.5"/><circle cx="252.9" cy="129.0" r="3.5"/><circle cx="405.0" cy="136.5" r="3.5"/></g>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="55.0" y="158">5</text><text x="100.8" y="158">10</text><text x="173.4" y="158">30</text><text x="252.9" y="158">100</text><text x="325.5" y="158">300</text><text x="405.0" y="158">1000</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="10" y="34">불확실성</text>
+    <text x="106.8" y="101.2">&#177;32%p</text>
+    <text x="258.9" y="125.0">&#177;10%p</text>
+    <text x="365.0" y="130.5">&#177;3%p</text>
+    <text x="316" y="172">시행 횟수 n (로그 축)</text>
+  </g>
+  <g stroke="currentColor"><line x1="55" y1="180" x2="85" y2="180" stroke-width="2"/><line x1="55" y1="196" x2="85" y2="196" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="92" y="184">대략적인 신뢰구간 반폭, &#8776; 1/&#8730;n</text><text x="92" y="200">rule of three: 실패 0회 뒤 최악의 실패율, 3/n</text></g>
+</svg>
+
+
 
 ### 5. 절제와 예산
 

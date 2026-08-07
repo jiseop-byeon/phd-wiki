@@ -52,6 +52,30 @@ interfaces it actually closes.
 
 Do not infer the level from the word “twin”; inspect the data and command paths.
 
+<svg viewBox="0 0 600 214" style="max-width:100%;height:auto" role="img" aria-label="four things called a digital twin, and what each one is still missing">
+  <defs><marker id="dtA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" opacity="0.10">
+    <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
+    <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75">
+    <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
+    <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#dtA)" opacity="0.7">
+    <line x1="330" y1="167" x2="386" y2="167"/><line x1="350" y1="125" x2="386" y2="125"/><line x1="370" y1="83" x2="386" y2="83"/><line x1="390" y1="41" x2="392" y2="41"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="36" y="171">digital model &#8212; static BIM/CAD</text><text x="56" y="129">digital shadow &#8212; physical updates model</text><text x="76" y="87">closed-loop twin &#8212; model commands back</text><text x="96" y="45">process twin &#8212; resources, humans, fleets</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="396" y="171">missing: live state</text><text x="396" y="129">missing: a command path</text><text x="396" y="87">missing: scale past one task</text><text x="400" y="45">missing: project-scale semantics</text>
+  </g>
+  <g font-size="11" fill="currentColor"><text x="24" y="205" opacity="0.9">Each rung adds one path, not a new noun. Ask which path a paper actually closed.</text></g>
+</svg>
+
+
+
 ### 3. Robot-facing problems
 
 - **Semantic grounding**: which model entity corresponds to which observed object?
@@ -146,6 +170,30 @@ flowchart LR
 | 공정 수준 트윈 | 자원·의존성·인간·멀티로봇 | 프로젝트 규모 의미론·불확실성 |
 
 “트윈”이라는 이름이 아니라 데이터와 명령 경로를 보고 수준을 판단하라.
+
+<svg viewBox="0 0 600 214" style="max-width:100%;height:auto" role="img" aria-label="디지털 트윈이라 불리는 네 가지와, 각각에 아직 없는 것">
+  <defs><marker id="dtA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" opacity="0.10">
+    <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
+    <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75">
+    <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
+    <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#dtA)" opacity="0.7">
+    <line x1="330" y1="167" x2="386" y2="167"/><line x1="350" y1="125" x2="386" y2="125"/><line x1="370" y1="83" x2="386" y2="83"/><line x1="390" y1="41" x2="392" y2="41"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="36" y="171">디지털 모델 &#8212; 정적 BIM/CAD</text><text x="56" y="129">디지털 섀도 &#8212; 실물이 모델을 갱신</text><text x="76" y="87">폐루프 트윈 &#8212; 모델이 되돌려 명령</text><text x="96" y="45">프로세스 트윈 &#8212; 자원·사람·다중 로봇</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="396" y="171">없는 것: 실시간 상태</text><text x="396" y="129">없는 것: 명령 경로</text><text x="396" y="87">없는 것: 한 과제 너머의 규모</text><text x="400" y="45">없는 것: 프로젝트 규모 의미론</text>
+  </g>
+  <g font-size="11" fill="currentColor"><text x="24" y="205" opacity="0.9">각 단은 명사가 아니라 경로 하나를 더한다. 논문이 실제로 닫은 경로가 무엇인지 물어라.</text></g>
+</svg>
+
+
 
 ### 3. 로봇 관점의 문제
 

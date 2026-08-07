@@ -68,6 +68,32 @@ halves": $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **Frame subscripts are not de
 time. The pose exponential works like the rotation one:
 $T = e^{[\mathcal{S}]\theta}$ means "follow screw $\mathcal{S}$ for angle $\theta$."
 
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="one physical motion described from the fixed frame and from the body frame">
+  <defs><marker id="mr3a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="45" y1="150" x2="45" y2="100"/><line x1="45" y1="150" x2="95" y2="150"/>
+  </g>
+  <g fill="currentColor"><circle cx="45" cy="150" r="3.5"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="250" y1="95" x2="216" y2="60"/><line x1="250" y1="95" x2="285" y2="61"/>
+  </g>
+  <g fill="currentColor"><circle cx="250" cy="95" r="3.5"/></g>
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.5" stroke-dasharray="4 3"><line x1="45" y1="150" x2="250" y2="95"/></g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.85">
+    <path d="M250,95 C300,70 340,80 372,110" marker-end="url(#mr3a)"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="26" y="172">space frame {s}</text><text x="234" y="120">body frame {b}</text>
+    <text x="130" y="112" font-size="10.5" opacity="0.8">p, R</text>
+    <text x="300" y="66">one motion</text>
+    <text x="20" y="30">Same arrow, two sets of numbers</text>
+    <text x="20" y="188" opacity="0.9">Nothing about the motion changes &#8212; only which frame you write it in. [Ad_T] converts between them,</text>
+    <text x="20" y="204" opacity="0.9">and it needs BOTH R and p: rotating the frame is not enough when the frames are also offset.</text>
+  </g>
+</svg>
+
+
+
 **Why learning people should care**: exp/log maps are how you interpolate poses, average
 rotations, and define losses on SE(3) — the machinery under SE(3) diffusion/flow action
 heads ([[01-canonical-papers/notes/4-vla/pi0|π0]]-style).
@@ -136,6 +162,32 @@ $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **프레임 아래 첨자는 장식이
 장들의 부호 실수 대부분이 $s$/$b$ 혼동이므로, 매번 아래 첨자를 써라. 자세의 지수도
 회전과 같다: $T = e^{[\mathcal{S}]\theta}$ = "스크류 $\mathcal{S}$를 $\theta$만큼
 따라가라."
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="하나의 물리적 운동을 고정 프레임에서, 그리고 몸체 프레임에서 기술한 것">
+  <defs><marker id="mr3a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="45" y1="150" x2="45" y2="100"/><line x1="45" y1="150" x2="95" y2="150"/>
+  </g>
+  <g fill="currentColor"><circle cx="45" cy="150" r="3.5"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="250" y1="95" x2="216" y2="60"/><line x1="250" y1="95" x2="285" y2="61"/>
+  </g>
+  <g fill="currentColor"><circle cx="250" cy="95" r="3.5"/></g>
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.5" stroke-dasharray="4 3"><line x1="45" y1="150" x2="250" y2="95"/></g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.85">
+    <path d="M250,95 C300,70 340,80 372,110" marker-end="url(#mr3a)"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="26" y="172">space 프레임 {s}</text><text x="234" y="120">body 프레임 {b}</text>
+    <text x="130" y="112" font-size="10.5" opacity="0.8">p, R</text>
+    <text x="300" y="66">하나의 운동</text>
+    <text x="20" y="30">같은 화살표, 두 벌의 숫자</text>
+    <text x="20" y="188" opacity="0.9">운동 자체는 아무것도 바뀌지 않는다 &#8212; 어느 프레임에서 쓰느냐만 다르다. [Ad_T]가 둘을 변환하고,</text>
+    <text x="20" y="204" opacity="0.9">R과 p가 둘 다 필요하다: 프레임이 떨어져 있으면 회전만으로는 부족하다.</text>
+  </g>
+</svg>
+
+
 
 **학습 쪽에서 중요한 이유**: exp/log 사상이 자세 보간, 회전 평균, SE(3) 위의 손실 정의의
 방법이고 — SE(3) 디퓨전/flow 행동 헤드([[01-canonical-papers/notes/4-vla/pi0|π0]]류)의

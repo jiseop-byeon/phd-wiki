@@ -33,6 +33,23 @@ communicate, allocate, and recover without increasing cognitive or physical burd
 Wearable classification alone is worker sensing. It becomes worker-centered robotics
 only when the estimate changes robot behavior and that closed loop is evaluated.
 
+```mermaid
+flowchart LR
+    S["1 SENSE<br/>motion, gaze, EEG,<br/>proximity"] --> I["2 INFER<br/>intent, fatigue,<br/>trust — with uncertainty"]
+    I --> D["3 DECIDE<br/>robot speed, path,<br/>allocation, handover"]
+    D --> C["4 COMMUNICATE<br/>intent the worker<br/>can read"]
+    C --> W["worker"]
+    W --> S
+    D -. "5 EVALUATE over time" .-> E["safety, productivity,<br/>workload, trust"]
+```
+
+*Steps 1–2 alone are worker **sensing** — a classifier with a paper attached. It becomes
+worker-centered **robotics** only where the arrow from 2 to 3 exists, i.e. where the estimate
+actually changes what the robot does, and only when step 5 evaluates that loop rather than
+the classifier's accuracy.*
+
+
+
 ### 2. Main research lines
 
 - The **Michigan DPM → UIUC/Georgia Tech/Toronto diaspora** connects physiological
@@ -132,6 +149,22 @@ a small study is not evidence of low operational risk.
 
 웨어러블 분류만 하면 작업자 센싱이다. 추정값이 로봇 행동을 바꾸고 폐루프를 평가해야 작업자
 중심 로보틱스가 된다.
+
+```mermaid
+flowchart LR
+    S["1 감지<br/>동작, 시선, EEG,<br/>근접"] --> I["2 추론<br/>의도, 피로, 신뢰<br/>— 불확실성과 함께"]
+    I --> D["3 결정<br/>로봇 속도, 경로,<br/>과제 배분, 핸드오버"]
+    D --> C["4 소통<br/>작업자가 읽을 수<br/>있는 형태의 의도"]
+    C --> W["작업자"]
+    W --> S
+    D -. "5 시간에 걸친 평가" .-> E["안전, 생산성,<br/>작업부하, 신뢰"]
+```
+
+*1~2단계만 있으면 그것은 작업자 **센싱**이다 — 논문이 붙은 분류기. 2에서 3으로 가는 화살표가
+있을 때, 즉 그 추정이 실제로 로봇의 행동을 바꿀 때 비로소 작업자 중심 **로보틱스**가 되고,
+5단계가 분류기의 정확도가 아니라 그 루프를 평가할 때만 그렇다.*
+
+
 
 ### 2. 연구 계보
 
