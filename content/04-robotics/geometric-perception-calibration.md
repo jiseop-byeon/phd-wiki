@@ -39,6 +39,30 @@ $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
   image, and **absolute scale is lost** — a single image cannot tell a large-far object
   from a small-near one.
 
+<svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="pinhole projection: a small near object and a large far one land on the same pixels">
+  <g stroke="currentColor" stroke-width="1.3"><line x1="150" y1="25" x2="150" y2="170"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35" stroke-dasharray="4 3"><line x1="60" y1="110.0" x2="440" y2="110.0"/></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.8">
+    <line x1="60" y1="110" x2="440" y2="26.4"/><line x1="60" y1="110" x2="440" y2="72.0"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3.2">
+    <line x1="150" y1="90.2" x2="150" y2="101.0"/>
+    <line x1="250" y1="68.2" x2="250" y2="91.0"/>
+    <line x1="420" y1="30.8" x2="420" y2="74.0"/>
+  </g>
+  <g fill="currentColor"><circle cx="60" cy="110" r="3.5"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="30" y="114">O</text>
+    <text x="112" y="20">image plane</text>
+    <text x="212" y="110">small and near</text>
+    <text x="372" y="92">large and far</text>
+    <text x="158" y="128">the same image on the sensor</text>
+    <text x="25" y="192" opacity="0.85">u = f X / Z + c &#8212; dividing by Z is exactly what destroys absolute scale</text>
+  </g>
+</svg>
+
+
+
 **Worked projection**: $f_x=f_y=600$ px, $(c_x,c_y)=(320,240)$, point
 $p^{c}=(0.5, 0.2, 2.0)$ m. Then $u = 600\cdot 0.5/2.0+320=470$,
 $v = 600\cdot 0.2/2.0+240=300$. Move the point twice as far
@@ -176,6 +200,30 @@ $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
 - $Z$로 나누는 것이 원근의 전부다: 먼 점일수록 이미지에서 덜 움직이고, **절대
   스케일이 사라진다** — 이미지 한 장으로는 크고 먼 물체와 작고 가까운 물체를 구분할
   수 없다.
+
+<svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="핀홀 투영: 작고 가까운 물체와 크고 먼 물체가 같은 픽셀에 맺힌다">
+  <g stroke="currentColor" stroke-width="1.3"><line x1="150" y1="25" x2="150" y2="170"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35" stroke-dasharray="4 3"><line x1="60" y1="110.0" x2="440" y2="110.0"/></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.8">
+    <line x1="60" y1="110" x2="440" y2="26.4"/><line x1="60" y1="110" x2="440" y2="72.0"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3.2">
+    <line x1="150" y1="90.2" x2="150" y2="101.0"/>
+    <line x1="250" y1="68.2" x2="250" y2="91.0"/>
+    <line x1="420" y1="30.8" x2="420" y2="74.0"/>
+  </g>
+  <g fill="currentColor"><circle cx="60" cy="110" r="3.5"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="30" y="114">O</text>
+    <text x="112" y="20">이미지 평면</text>
+    <text x="212" y="110">작고 가깝다</text>
+    <text x="372" y="92">크고 멀다</text>
+    <text x="158" y="128">센서 위에서는 같은 상</text>
+    <text x="25" y="192" opacity="0.85">u = f X / Z + c &#8212; Z로 나누는 그 한 번이 절대 스케일을 지운다</text>
+  </g>
+</svg>
+
+
 
 **투영 계산 예제**: $f_x=f_y=600$ px, $(c_x,c_y)=(320,240)$, 점
 $p^{c}=(0.5, 0.2, 2.0)$ m이면 $u = 600\cdot 0.5/2.0+320=470$,

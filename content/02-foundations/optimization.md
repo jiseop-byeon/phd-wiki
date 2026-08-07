@@ -34,6 +34,22 @@ formulations of the same engineering problem differ wildly in solvability.
   (twice-differentiable case) $H \succeq 0$ everywhere.
 - Convex problem = convex $f$ over a convex feasible set ⇒ **every local minimum is
   global**, and polynomial-time reliable solvers exist.
+
+<svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="convex versus non-convex landscape">
+  <g fill="none" stroke="currentColor" stroke-width="1.8">
+    <path d="M25,32 Q120,152 215,32"/>
+    <path d="M265,50 C288,122 302,60 326,102 C349,142 366,50 396,98 C416,130 436,74 455,45"/>
+  </g>
+  <g fill="currentColor"><circle cx="120" cy="92" r="4"/><circle cx="292" cy="88" r="3.5"/><circle cx="409" cy="108" r="4"/></g>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle">
+    <text x="120" y="126">the minimum</text>
+    <text x="292" y="76" opacity="0.8">local</text><text x="409" y="132">another local</text>
+    <text x="120" y="20">convex — every local min is global</text>
+    <text x="360" y="20">non-convex — network training lives here</text>
+  </g>
+</svg>
+
+
 - Recognizing/preserving convexity is the practical skill: norms, max of affine functions,
   and nonnegative sums of convex functions are convex; LP/QP and most MPC formulations are
   convex *by design*. Neural network training is deliberately non-convex — we trade
@@ -155,6 +171,22 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   모든 곳에서 $H \succeq 0$과 동치.
 - 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이고,
   다항 시간의 신뢰할 수 있는 솔버가 존재한다.
+
+<svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="볼록 지형과 비볼록 지형">
+  <g fill="none" stroke="currentColor" stroke-width="1.8">
+    <path d="M25,32 Q120,152 215,32"/>
+    <path d="M265,50 C288,122 302,60 326,102 C349,142 366,50 396,98 C416,130 436,74 455,45"/>
+  </g>
+  <g fill="currentColor"><circle cx="120" cy="92" r="4"/><circle cx="292" cy="88" r="3.5"/><circle cx="409" cy="108" r="4"/></g>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle">
+    <text x="120" y="126">최솟값</text>
+    <text x="292" y="76" opacity="0.8">지역 최솟값</text><text x="409" y="132">또 다른 지역 최솟값</text>
+    <text x="120" y="20">볼록 — 모든 지역 최솟값이 전역이다</text>
+    <text x="360" y="20">비볼록 — 신경망 학습이 사는 곳</text>
+  </g>
+</svg>
+
+
 - 볼록성을 알아보고 보존하는 것이 실전 기술이다: 노름, 아핀 함수들의 max, 볼록 함수의
   비음수 합은 볼록; LP/QP와 대부분의 MPC 정식화는 *설계상* 볼록이다. 신경망 학습은
   의도적 비볼록 — 보장을 표현력과 맞바꾸고 좋은 지역 최솟값에 만족한다.

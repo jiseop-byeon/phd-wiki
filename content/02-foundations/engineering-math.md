@@ -139,6 +139,29 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   - left half-plane (negative real part) → decaying → **stable**
   - right half-plane → growing → **unstable**
   - imaginary part → oscillation frequency; distance from axis → decay speed
+
+<svg viewBox="0 0 430 212" style="max-width:100%;height:auto" role="img" aria-label="the s-plane: pole locations and what they mean">
+  <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
+  <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
+  <g fill="currentColor">
+    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,142 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,129 l6,6 l-6,6 l-6,-6 z"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
+    <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="26" y="32">LEFT half-plane = stable</text><text x="250" y="32">RIGHT half-plane = unstable</text>
+    <text x="386" y="120">Re</text><text x="222" y="26">Im</text>
+    <text x="124" y="56" font-size="10.5" opacity="0.9">complex pair</text>
+    <text x="26" y="90" font-size="10.5" opacity="0.9">real pole</text>
+    <text x="26" y="192" font-size="11" opacity="0.85">complex pair = decaying oscillation &#183; real pole = pure decay</text>
+    <text x="26" y="206" font-size="11" opacity="0.85">farther left = faster decay &#183; farther from the real axis = faster oscillation</text>
+  </g>
+</svg>
+
+
 - This is why [[02-foundations/engineering-math|§7]]'s complex plane matters for control:
   *a system's entire qualitative behavior is a picture — where its poles sit.* Frequency
   response is $G(j\omega)$ — evaluate on the imaginary axis, and you recover
@@ -310,6 +333,29 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   - 좌반평면(실수부 음수) → 감쇠 → **안정**
   - 우반평면 → 성장 → **불안정**
   - 허수부 → 진동 주파수; 축에서의 거리 → 감쇠 속도
+
+<svg viewBox="0 0 430 212" style="max-width:100%;height:auto" role="img" aria-label="s-평면: 극점 위치와 그 의미">
+  <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
+  <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
+  <g fill="currentColor">
+    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,142 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,129 l6,6 l-6,6 l-6,-6 z"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
+    <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="26" y="32">좌반평면 = 안정</text><text x="250" y="32">우반평면 = 불안정</text>
+    <text x="386" y="120">Re</text><text x="222" y="26">Im</text>
+    <text x="124" y="56" font-size="10.5" opacity="0.9">복소 켤레쌍</text>
+    <text x="26" y="90" font-size="10.5" opacity="0.9">실수 극점</text>
+    <text x="26" y="192" font-size="11" opacity="0.85">복소 켤레쌍 = 감쇠 진동 &#183; 실수 극점 = 순수 감쇠</text>
+    <text x="26" y="206" font-size="11" opacity="0.85">왼쪽일수록 빨리 감쇠 &#183; 실수축에서 멀수록 빨리 진동</text>
+  </g>
+</svg>
+
+
 - [[02-foundations/engineering-math|§7]]의 복소평면이 제어에서 중요한 이유가 이것이다:
   *시스템의 정성적 거동 전체가 그림 하나 — 극점이 어디에 앉아 있는가 — 다.* 주파수 응답은
   $G(j\omega)$ — 허수축 위에서 평가하면 [[02-foundations/signal-processing|신호처리]]의

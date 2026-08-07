@@ -25,6 +25,28 @@ to Mastery. The recommendation is a starting profile, not a permanent label.
 | **Working** | Select the method, follow its formulation or code, choose evaluation, and diagnose common failure | methods and system layers used in experiments |
 | **Mastery** | Critique assumptions, reproduce or modify the method, design decisive experiments, and defend novelty | the thesis contribution and its closest dependency |
 
+<svg viewBox="0 0 560 218" style="max-width:100%;height:auto" role="img" aria-label="two independent ladders: how much of a paper to read, and how well to command a topic">
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5">
+    <rect x="18" y="34" width="240" height="160" rx="4"/><rect x="282" y="34" width="258" height="160" rx="4"/>
+  </g>
+  <g fill="currentColor" opacity="0.10">
+    <rect x="34" y="146" width="209" height="32" rx="3"/><rect x="52" y="106" width="191" height="32" rx="3"/><rect x="70" y="66" width="173" height="32" rx="3"/>
+    <rect x="298" y="146" width="222" height="32" rx="3"/><rect x="316" y="106" width="204" height="32" rx="3"/><rect x="334" y="66" width="186" height="32" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.7">
+    <rect x="34" y="146" width="209" height="32" rx="3"/><rect x="52" y="106" width="191" height="32" rx="3"/><rect x="70" y="66" width="173" height="32" rx="3"/>
+    <rect x="298" y="146" width="222" height="32" rx="3"/><rect x="316" y="106" width="204" height="32" rx="3"/><rect x="334" y="66" width="186" height="32" rx="3"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="18" y="26">per PAPER: how much to read</text><text x="282" y="26">per TOPIC: how well to command it</text>
+    <text x="44" y="166">&#9675; &nbsp;abstract + figures + conclusion</text><text x="62" y="126">&#9680; &nbsp;method and experiments too</text><text x="80" y="86">&#9733; &nbsp;the whole paper, carefully</text>
+    <text x="308" y="166">Literacy &#8212; explain it</text><text x="326" y="126">Working &#8212; use and diagnose it</text><text x="344" y="86">Mastery &#8212; critique and defend it</text>
+    <text x="18" y="212" font-size="11" opacity="0.85">these two are independent: a Literacy topic can still contain a &#9733; paper</text>
+  </g>
+</svg>
+
+
+
 > [!important] Mastery is contribution-dependent
 > No fixed curriculum can declare every future thesis topic in advance. This guide assigns
 > the common minimum. When a research question is selected, promote its contribution page
@@ -92,6 +114,28 @@ and sim-to-real** at Working; and the remaining model families at Literacy.
 | **Literacy · 독해** | 문제·용어·입출력·핵심 주장·근거·한계를 설명한다 | 모든 인접 분야 |
 | **Working · 실무** | 방법을 선택하고 정식화/코드를 따라가며 평가와 실패 원인을 판단한다 | 실험에서 직접 쓰는 방법과 시스템 층 |
 | **Mastery · 숙달** | 가정을 비판하고 재현·변형하며 결정적 실험과 novelty를 방어한다 | 논문의 기여 영역과 가장 가까운 의존 영역 |
+
+<svg viewBox="0 0 560 218" style="max-width:100%;height:auto" role="img" aria-label="독립적인 두 사다리: 논문을 얼마나 읽는가, 주제를 얼마나 다루는가">
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5">
+    <rect x="18" y="34" width="240" height="160" rx="4"/><rect x="282" y="34" width="258" height="160" rx="4"/>
+  </g>
+  <g fill="currentColor" opacity="0.10">
+    <rect x="34" y="146" width="209" height="32" rx="3"/><rect x="52" y="106" width="191" height="32" rx="3"/><rect x="70" y="66" width="173" height="32" rx="3"/>
+    <rect x="298" y="146" width="222" height="32" rx="3"/><rect x="316" y="106" width="204" height="32" rx="3"/><rect x="334" y="66" width="186" height="32" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.7">
+    <rect x="34" y="146" width="209" height="32" rx="3"/><rect x="52" y="106" width="191" height="32" rx="3"/><rect x="70" y="66" width="173" height="32" rx="3"/>
+    <rect x="298" y="146" width="222" height="32" rx="3"/><rect x="316" y="106" width="204" height="32" rx="3"/><rect x="334" y="66" width="186" height="32" rx="3"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="18" y="26">논문 단위: 얼마나 읽는가</text><text x="282" y="26">주제 단위: 얼마나 다루는가</text>
+    <text x="44" y="166">&#9675; &nbsp;초록 + 그림 + 결론</text><text x="62" y="126">&#9680; &nbsp;방법과 실험까지</text><text x="80" y="86">&#9733; &nbsp;전문을 꼼꼼히</text>
+    <text x="308" y="166">Literacy &#8212; 설명할 수 있다</text><text x="326" y="126">Working &#8212; 쓰고 진단할 수 있다</text><text x="344" y="86">Mastery &#8212; 비판하고 방어할 수 있다</text>
+    <text x="18" y="212" font-size="11" opacity="0.85">둘은 독립이다: Literacy 주제 안에도 &#9733; 논문이 있을 수 있다</text>
+  </g>
+</svg>
+
+
 
 > [!important] Mastery는 연구 기여에 따라 정한다
 > 미래의 논문 주제를 커리큘럼이 미리 확정할 수는 없다. 이 가이드는 공통 최소값을

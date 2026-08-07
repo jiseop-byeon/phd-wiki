@@ -25,6 +25,32 @@ convex QP — written out fully in [[02-foundations/optimization|4. Optimization
 and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
+<svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: plan over the horizon, execute one step, re-plan">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="30" y1="170" x2="440" y2="170"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.25" stroke-dasharray="2 4">
+    <line x1="60" y1="20" x2="60" y2="170"/><line x1="100" y1="20" x2="100" y2="170"/><line x1="140" y1="20" x2="140" y2="170"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.45" stroke-dasharray="5 3">
+    <path d="M60,120 C110,96 170,88 260,84"/>
+    <path d="M100,110 C150,88 210,80 300,78"/>
+    <path d="M140,100 C190,80 250,74 340,72"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4">
+    <path d="M60,120 L100,110"/><path d="M100,110 L140,100"/>
+  </g>
+  <g fill="currentColor"><circle cx="60" cy="120" r="3.5"/><circle cx="100" cy="110" r="3.5"/><circle cx="140" cy="100" r="3.5"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="186">t</text><text x="90" y="186">t+1</text><text x="130" y="186">t+2</text>
+    <text x="268" y="88" opacity="0.8">planned horizon (thrown away)</text>
+    <text x="150" y="130">actually executed</text>
+    <text x="30" y="16" opacity="0.9">each step: solve the whole horizon, keep only the first input, shift, solve again</text>
+  </g>
+</svg>
+
+
+
 **The Mayne et al. 2000 survey** is the field's canonical reference: it settled *when MPC
 is stable* — the roles of the terminal cost, terminal constraint set, and horizon length —
 turning a practical heuristic into a theory. The mechanism, in one paragraph: if the
@@ -126,6 +152,32 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 이차 비용이면 볼록 QP가 되고 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써
 놓았다 — 입력·상태 제약을 *태생적으로* 다루는 것이
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
+
+<svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: 지평 전체를 계획하고 한 스텝만 실행한 뒤 다시 계획">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="30" y1="170" x2="440" y2="170"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.25" stroke-dasharray="2 4">
+    <line x1="60" y1="20" x2="60" y2="170"/><line x1="100" y1="20" x2="100" y2="170"/><line x1="140" y1="20" x2="140" y2="170"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.45" stroke-dasharray="5 3">
+    <path d="M60,120 C110,96 170,88 260,84"/>
+    <path d="M100,110 C150,88 210,80 300,78"/>
+    <path d="M140,100 C190,80 250,74 340,72"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4">
+    <path d="M60,120 L100,110"/><path d="M100,110 L140,100"/>
+  </g>
+  <g fill="currentColor"><circle cx="60" cy="120" r="3.5"/><circle cx="100" cy="110" r="3.5"/><circle cx="140" cy="100" r="3.5"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="186">t</text><text x="90" y="186">t+1</text><text x="130" y="186">t+2</text>
+    <text x="268" y="88" opacity="0.8">계획된 지평(버려진다)</text>
+    <text x="150" y="130">실제로 실행된 부분</text>
+    <text x="30" y="16" opacity="0.9">매 주기: 지평 전체를 풀고, 첫 입력만 남기고, 한 칸 밀어 다시 푼다</text>
+  </g>
+</svg>
+
+
 
 **Mayne et al. 2000 서베이**는 이 분야의 정전이다: *MPC가 언제 안정한가* — 종단 비용,
 종단 제약 집합, 지평 길이의 역할 — 를 정리해 실용적 휴리스틱을 이론으로 만들었다.

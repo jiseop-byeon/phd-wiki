@@ -36,6 +36,24 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
 - **Overfitting**: train loss ↓ while validation loss ↑ — memorizing instead of
   generalizing. **Underfitting**: both stay high. Diagnose with **learning curves** before
   anything else.
+
+<svg viewBox="0 0 470 216" style="max-width:100%;height:auto" role="img" aria-label="training and validation loss curves showing overfitting">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="50" y1="22" x2="50" y2="140"/><line x1="50" y1="140" x2="415" y2="140"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" stroke-dasharray="3 3"><line x1="220" y1="22" x2="220" y2="140"/></g>
+  <path d="M50,36 C120,80 180,106 260,120 C320,128 375,132 410,133" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M50,34 C120,76 180,100 220,104 C285,110 345,86 410,58" fill="none" stroke="currentColor" stroke-width="1.9" stroke-dasharray="6 4"/>
+  <g stroke="currentColor" stroke-width="1.9"><line x1="50" y1="164" x2="80" y2="164" stroke-dasharray="6 4"/><line x1="50" y1="182" x2="80" y2="182"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="14" y="30">loss</text>
+    <text x="220" y="16" text-anchor="middle">early stopping</text>
+    <text x="378" y="156">epochs &#8594;</text>
+    <text x="88" y="168">validation loss &#8212; turns back up</text>
+    <text x="88" y="186">training loss &#8212; keeps falling</text>
+    <text x="50" y="208" opacity="0.85">right of the dashed line the model is memorizing, not generalizing</text>
+  </g>
+</svg>
+
+
 - Regularization methods share one broad goal — *reduce harmful overfit* — but work through
   different mechanisms: weight decay (a Gaussian prior — [[02-foundations/probability|3. Probability §4]]),
   dropout ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), data augmentation
@@ -123,6 +141,24 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 
 - **과적합**: train 손실은 ↓인데 validation 손실이 ↑ — 일반화 대신 암기. **과소적합**:
   둘 다 높음. 무엇보다 먼저 **학습 곡선**으로 진단하라.
+
+<svg viewBox="0 0 470 216" style="max-width:100%;height:auto" role="img" aria-label="과적합을 보여주는 학습·검증 손실 곡선">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="50" y1="22" x2="50" y2="140"/><line x1="50" y1="140" x2="415" y2="140"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" stroke-dasharray="3 3"><line x1="220" y1="22" x2="220" y2="140"/></g>
+  <path d="M50,36 C120,80 180,106 260,120 C320,128 375,132 410,133" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M50,34 C120,76 180,100 220,104 C285,110 345,86 410,58" fill="none" stroke="currentColor" stroke-width="1.9" stroke-dasharray="6 4"/>
+  <g stroke="currentColor" stroke-width="1.9"><line x1="50" y1="164" x2="80" y2="164" stroke-dasharray="6 4"/><line x1="50" y1="182" x2="80" y2="182"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="14" y="30">손실</text>
+    <text x="220" y="16" text-anchor="middle">조기 종료</text>
+    <text x="378" y="156">에폭 &#8594;</text>
+    <text x="88" y="168">검증 손실 &#8212; 다시 올라간다</text>
+    <text x="88" y="186">학습 손실 &#8212; 계속 내려간다</text>
+    <text x="50" y="208" opacity="0.85">점선의 오른쪽에서 모델은 일반화가 아니라 암기를 하고 있다</text>
+  </g>
+</svg>
+
+
 - "정규화"라 불리는 방법들은 *해로운 과적합을 줄인다*는 넓은 목표를 공유하지만, 작동
   기제는 서로 다르다: weight decay(가우시안 사전 — [[02-foundations/probability|3. 확률 §4]]),
   dropout([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), 데이터 증강

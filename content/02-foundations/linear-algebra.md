@@ -84,6 +84,33 @@ where each concept appears in the papers of this wiki.
 - **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with orthogonal $U, V$ and
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$. Reading: rotate (input
   basis $V$) → scale (singular values) → rotate (output basis $U$).
+
+<svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD as rotate, scale, rotate">
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <circle cx="60" cy="75" r="38"/>
+    <circle cx="205" cy="75" r="38"/>
+    <ellipse cx="350" cy="75" rx="42" ry="17"/>
+    <ellipse cx="475" cy="75" rx="17" ry="42" transform="rotate(-30 475 75)"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.6">
+    <line x1="60" y1="75" x2="98" y2="75"/><line x1="60" y1="75" x2="60" y2="37"/>
+    <line x1="205" y1="75" x2="232" y2="48"/><line x1="205" y1="75" x2="178" y2="48"/>
+    <line x1="350" y1="75" x2="392" y2="75"/><line x1="350" y1="75" x2="350" y2="58"/>
+  </g>
+  <defs><marker id="svdArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#svdArrow)" opacity="0.8">
+    <line x1="108" y1="75" x2="152" y2="75"/><line x1="253" y1="75" x2="297" y2="75"/><line x1="400" y1="75" x2="428" y2="75"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="60" y="138">unit ball</text>
+    <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
+    <text x="205" y="138">rotate</text><text x="350" y="138">scale σ₁, σ₂</text><text x="475" y="138">rotate</text>
+  </g>
+</svg>
+
+*Every matrix does exactly this to a sphere: rotate, stretch along axes, rotate again. The $\sigma_i$ are the stretch factors, and a zero $\sigma_i$ is a direction the map destroys.*
+
 - Connections: $\sigma_i^2$ = eigenvalues of $A^\top A$; rank = number of nonzero $\sigma_i$;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: the best rank-$k$ approximation (in $\|\cdot\|_F$ or $\|\cdot\|_2$) is
@@ -108,7 +135,31 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $AB$, then $A^2B$, and so on. Stack those reachable directions —
   $[B, AB, \ldots, A^{n-1}B]$ — and if together they span all $n$ dimensions
   ($\text{rank} = n$), *every* state is reachable; if they miss a direction, no input
-  sequence ever drives the state there. Observability is the transpose twin — can the
+  sequence ever drives the state there. 
+<svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="controllable versus uncontrollable reachable directions">
+  <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35">
+    <line x1="30" y1="120" x2="190" y2="120"/><line x1="30" y1="120" x2="30" y2="20"/>
+    <line x1="280" y1="120" x2="440" y2="120"/><line x1="280" y1="120" x2="280" y2="20"/>
+  </g>
+  <defs><marker id="cArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)">
+    <line x1="30" y1="120" x2="30" y2="58"/>
+    <line x1="30" y1="120" x2="102" y2="58"/>
+    <line x1="280" y1="120" x2="362" y2="120"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="36" y="52">B</text><text x="108" y="52">AB</text>
+    <text x="368" y="116">B</text><text x="330" y="140">AB is on the same line</text>
+    <text x="14" y="156" font-size="12">rank 2 → every state reachable</text>
+    <text x="264" y="156" font-size="12">rank 1 → one direction unreachable</text>
+  </g>
+</svg>
+
+*Left: $B$ and $AB$ point in different directions, so together they span the plane. Right: the dynamics only ever rotate $B$ back onto itself — a whole direction of the state space is out of reach, whatever you do with $u$.*
+
+  Observability is the transpose twin — can the
   output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
 - LQR gains, Kalman filters, and MPC condensing all reduce to solving structured linear
   systems (Riccati equations) — numerical linear algebra is the control engineer's daily tool.
@@ -208,6 +259,33 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 직교,
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$.
   독해: 회전(입력 기저 $V$) → 스케일(특이값) → 회전(출력 기저 $U$).
+
+<svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD = 회전 → 스케일 → 회전">
+  <g fill="none" stroke="currentColor" stroke-width="1.5">
+    <circle cx="60" cy="75" r="38"/>
+    <circle cx="205" cy="75" r="38"/>
+    <ellipse cx="350" cy="75" rx="42" ry="17"/>
+    <ellipse cx="475" cy="75" rx="17" ry="42" transform="rotate(-30 475 75)"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.6">
+    <line x1="60" y1="75" x2="98" y2="75"/><line x1="60" y1="75" x2="60" y2="37"/>
+    <line x1="205" y1="75" x2="232" y2="48"/><line x1="205" y1="75" x2="178" y2="48"/>
+    <line x1="350" y1="75" x2="392" y2="75"/><line x1="350" y1="75" x2="350" y2="58"/>
+  </g>
+  <defs><marker id="svdArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#svdArrow)" opacity="0.8">
+    <line x1="108" y1="75" x2="152" y2="75"/><line x1="253" y1="75" x2="297" y2="75"/><line x1="400" y1="75" x2="428" y2="75"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="60" y="138">단위 원</text>
+    <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
+    <text x="205" y="138">회전</text><text x="350" y="138">σ₁, σ₂ 배로 늘리기</text><text x="475" y="138">회전</text>
+  </g>
+</svg>
+
+*모든 행렬이 구에 하는 일이 정확히 이것이다: 회전 → 축 방향으로 늘이기 → 다시 회전. $\sigma_i$가 늘이는 배율이고, $\sigma_i = 0$인 방향은 사상이 파괴하는 방향이다.*
+
 - 연결: $\sigma_i^2$ = $A^\top A$의 고유값; 랭크 = 0이 아닌 $\sigma_i$의 수;
   $\|A\|_2 = \sigma_1$.
 - **Eckart–Young**: 최적 랭크-$k$ 근사($\|\cdot\|_F$·$\|\cdot\|_2$ 기준)는 절단 SVD
@@ -230,7 +308,31 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   방향으로 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그 도달
   방향들을 쌓아 —$[B, AB, \ldots, A^{n-1}B]$— 함께 $n$차원 전체를 생성하면($\text{rank}=n$)
   *모든* 상태에 도달 가능하고, 한 방향이라도 빠지면 어떤 입력 시퀀스도 상태를 그리로
-  몰지 못한다. 가관측성은 전치 쌍둥이($[C^\top, A^\top C^\top, \ldots]$).
+  몰지 못한다. 
+<svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="가제어 vs 비가제어: 도달 가능한 방향">
+  <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35">
+    <line x1="30" y1="120" x2="190" y2="120"/><line x1="30" y1="120" x2="30" y2="20"/>
+    <line x1="280" y1="120" x2="440" y2="120"/><line x1="280" y1="120" x2="280" y2="20"/>
+  </g>
+  <defs><marker id="cArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)">
+    <line x1="30" y1="120" x2="30" y2="58"/>
+    <line x1="30" y1="120" x2="102" y2="58"/>
+    <line x1="280" y1="120" x2="362" y2="120"/>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="36" y="52">B</text><text x="108" y="52">AB</text>
+    <text x="368" y="116">B</text><text x="330" y="140">AB가 같은 직선 위에 있다</text>
+    <text x="14" y="156" font-size="12">rank 2 → 모든 상태에 도달 가능</text>
+    <text x="264" y="156" font-size="12">rank 1 → 한 방향에 도달 불가</text>
+  </g>
+</svg>
+
+*왼쪽: $B$와 $AB$가 다른 방향을 가리켜 둘이 평면을 생성한다. 오른쪽: 동역학이 $B$를 자기 자신 위로만 돌려놓아, $u$를 어떻게 써도 상태 공간의 한 방향 전체에 닿지 못한다.*
+
+  가관측성은 전치 쌍둥이($[C^\top, A^\top C^\top, \ldots]$).
 - LQR 이득, 칼만 필터, MPC의 응축(condensing)이 전부 구조화된 선형계(리카티 방정식)
   풀이로 환원된다 — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
 

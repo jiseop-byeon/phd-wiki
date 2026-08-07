@@ -50,6 +50,31 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
 - $W_1x = (1,\; 2,\; 3)$ → ReLU leaves it unchanged (all positive) → $h = (1,2,3)$.
 - $\hat y = W_2h = 1 - 2 + 1.5 = 0.5$.
 
+<svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="2-3-1 network with the worked numbers">
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" fill="none">
+    <line x1="78" y1="70" x2="205" y2="40"/><line x1="78" y1="70" x2="205" y2="95"/><line x1="78" y1="70" x2="205" y2="150"/>
+    <line x1="78" y1="125" x2="205" y2="40"/><line x1="78" y1="125" x2="205" y2="95"/><line x1="78" y1="125" x2="205" y2="150"/>
+    <line x1="230" y1="40" x2="360" y2="95"/><line x1="230" y1="95" x2="360" y2="95"/><line x1="230" y1="150" x2="360" y2="95"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="65" cy="70" r="16"/><circle cx="65" cy="125" r="16"/>
+    <circle cx="218" cy="40" r="16"/><circle cx="218" cy="95" r="16"/><circle cx="218" cy="150" r="16"/>
+    <circle cx="373" cy="95" r="16"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle" font-family="ui-monospace,monospace">
+    <text x="65" y="74">1</text><text x="65" y="129">2</text>
+    <text x="218" y="44">1</text><text x="218" y="99">2</text><text x="218" y="154">3</text>
+    <text x="373" y="99">0.5</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">
+    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W₁x)</text><text x="373" y="24">ŷ = W₂h</text>
+    <text x="141" y="182">W₁  (3×2)</text><text x="296" y="182">W₂  (1×3)</text>
+    <text x="65" y="162">input</text><text x="218" y="182">hidden</text><text x="373" y="130">output</text>
+  </g>
+</svg>
+
+*The same computation as a picture: two inputs fan out through $W_1$, ReLU passes them, $W_2$ collapses them to one number.*
+
 That is a **forward pass**: numbers in, matrix multiplies, numbers out. Nothing more
 mysterious happens in a 70-billion-parameter model — there are just more of these.
 
@@ -71,6 +96,16 @@ The parameters start random and are *fitted to data*. Three pieces:
    ([[02-foundations/calculus-backprop|2. Calculus & Backprop]] shows how it is organized
    efficiently, under the name **backpropagation**), and the stepping rule is
    [[02-foundations/optimization|4. Optimization]]'s gradient descent.
+
+```mermaid
+flowchart LR
+    D["Dataset (x, y)"] --> F["Forward pass<br/>ŷ = network(x)"]
+    F --> L["Loss L<br/>how wrong is ŷ"]
+    L --> G["Gradients<br/>∂L/∂W for every parameter"]
+    G --> U["Update<br/>step against the gradient"]
+    U -- "one iteration" --> D
+    F -. "at deployment: forward pass only, parameters frozen" .-> I["Inference"]
+```
 
 **Training** is repeating 1–3 until the loss stops falling. **Inference** is running only
 step 1's forward pass on new data, with the parameters frozen — which is what a deployed
@@ -184,6 +219,31 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
 - $W_1x = (1,\; 2,\; 3)$ → 전부 양수라 ReLU가 그대로 통과 → $h = (1,2,3)$.
 - $\hat y = W_2h = 1 - 2 + 1.5 = 0.5$.
 
+<svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="계산 예제 숫자가 붙은 2-3-1 신경망">
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" fill="none">
+    <line x1="78" y1="70" x2="205" y2="40"/><line x1="78" y1="70" x2="205" y2="95"/><line x1="78" y1="70" x2="205" y2="150"/>
+    <line x1="78" y1="125" x2="205" y2="40"/><line x1="78" y1="125" x2="205" y2="95"/><line x1="78" y1="125" x2="205" y2="150"/>
+    <line x1="230" y1="40" x2="360" y2="95"/><line x1="230" y1="95" x2="360" y2="95"/><line x1="230" y1="150" x2="360" y2="95"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="65" cy="70" r="16"/><circle cx="65" cy="125" r="16"/>
+    <circle cx="218" cy="40" r="16"/><circle cx="218" cy="95" r="16"/><circle cx="218" cy="150" r="16"/>
+    <circle cx="373" cy="95" r="16"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle" font-family="ui-monospace,monospace">
+    <text x="65" y="74">1</text><text x="65" y="129">2</text>
+    <text x="218" y="44">1</text><text x="218" y="99">2</text><text x="218" y="154">3</text>
+    <text x="373" y="99">0.5</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">
+    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W₁x)</text><text x="373" y="24">ŷ = W₂h</text>
+    <text x="141" y="182">W₁  (3×2)</text><text x="296" y="182">W₂  (1×3)</text>
+    <text x="65" y="162">입력</text><text x="218" y="182">은닉</text><text x="373" y="130">출력</text>
+  </g>
+</svg>
+
+*같은 계산을 그림으로: 입력 둘이 $W_1$을 통해 퍼지고, ReLU가 통과시키고, $W_2$가 하나의 숫자로 모은다.*
+
 이것이 **순전파(forward pass)**다: 숫자가 들어가고, 행렬을 곱하고, 숫자가 나온다. 700억
 파라미터 모델에서도 더 신비한 일은 일어나지 않는다 — 같은 일이 더 많이 일어날 뿐이다.
 
@@ -204,6 +264,16 @@ $b_2$가 1개 — **13개**. 논문의 "7B 파라미터"는 정확히 이렇게 
    ([[02-foundations/calculus-backprop|2. 미적분과 역전파]]가 이것을 효율적으로 조직하는
    방법을 **역전파**라는 이름으로 보여준다), 미는 규칙이
    [[02-foundations/optimization|4. 최적화]]의 경사 하강이다.
+
+```mermaid
+flowchart LR
+    D["데이터셋 (x, y)"] --> F["순전파<br/>ŷ = 네트워크(x)"]
+    F --> L["손실 L<br/>ŷ가 얼마나 틀렸나"]
+    L --> G["그래디언트<br/>모든 파라미터의 ∂L/∂W"]
+    G --> U["갱신<br/>그래디언트 반대로 한 걸음"]
+    U -- "이터레이션 1회" --> D
+    F -. "배포 시: 순전파만, 파라미터 고정" .-> I["추론"]
+```
 
 **학습(training)**은 손실이 더 안 줄 때까지 1~3을 반복하는 것이고, **추론(inference)**은
 파라미터를 고정한 채 새 데이터에 순전파만 돌리는 것 — 배치된 로봇이 하는 일이 이것이다.

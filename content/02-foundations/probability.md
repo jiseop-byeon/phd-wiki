@@ -98,7 +98,18 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
   Nothing new was needed: affine closure + conditioning formula = optimal recursive
-  estimation. Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
+  estimation.
+
+```mermaid
+flowchart LR
+    P["belief at t-1<br/>mean and covariance"] --> PR["PREDICT<br/>push through dynamics<br/>uncertainty grows"]
+    PR --> U["CORRECT<br/>weight by Kalman gain K<br/>uncertainty shrinks"]
+    Z["measurement z"] --> U
+    U --> N["belief at t"]
+    N -. "next step" .-> P
+```
+
+ Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
 ### Self-check
 
@@ -202,7 +213,18 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
     **추정 공분산**($\hat x$의 불확실성), $Q$는 과정 잡음 공분산이다
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
-  새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 최적 재귀 추정. 비선형
+  새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 최적 재귀 추정.
+
+```mermaid
+flowchart LR
+    P["t-1 시점의 믿음<br/>평균과 공분산"] --> PR["예측<br/>동역학으로 밀어보내기<br/>불확실성 증가"]
+    PR --> U["보정<br/>칼만 이득 K로 가중<br/>불확실성 감소"]
+    Z["측정 z"] --> U
+    U --> N["t 시점의 믿음"]
+    N -. "다음 스텝" .-> P
+```
+
+ 비선형
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
 
 ### 스스로 점검

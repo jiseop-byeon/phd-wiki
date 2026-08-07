@@ -33,6 +33,15 @@ fine-tuning on real machines, and how to read an RL experimental section.
   Practical dodge: condition on observation histories / recurrent state (what
   [[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]s formalize).
 
+```mermaid
+flowchart LR
+    A["agent: policy pi(a|s)"] -->|"action a_t"| E["environment: p(s'|s,a)"]
+    E -->|"reward r_t"| A
+    E -->|"next state s_t+1"| A
+```
+
+
+
 ### 2. Value functions and the Bellman equations
 
 - $V^\pi(s) = E_\pi[G_t | s_t{=}s]$, $Q^\pi(s,a) = E_\pi[G_t | s_t{=}s, a_t{=}a]$,
@@ -99,6 +108,31 @@ fine-tuning on real machines, and how to read an RL experimental section.
   penalty **keeps acting**. Clipping removes the incentive to overshoot, never the
   incentive to correct.
 
+<svg viewBox="0 0 460 185" style="max-width:100%;height:auto" role="img" aria-label="the PPO clipped objective for a good action and for a bad action">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="30" y1="30" x2="30" y2="155"/><line x1="30" y1="155" x2="210" y2="155"/>
+    <line x1="255" y1="30" x2="255" y2="155"/><line x1="255" y1="155" x2="435" y2="155"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="3 3">
+    <line x1="141" y1="30" x2="141" y2="155"/><line x1="303" y1="30" x2="303" y2="155"/>
+    <line x1="110" y1="140" x2="110" y2="155"/><line x1="334" y1="140" x2="334" y2="155"/>
+  </g>
+  <path d="M30,143 L141,59" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <path d="M141,59 L205,59" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
+  <path d="M255,47 L303,47" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
+  <path d="M303,47 L430,143" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="22">good action (A = +1)</text><text x="255" y="22">bad action (A = &#8722;1)</text>
+    <text x="103" y="170" font-size="10">1.0</text><text x="130" y="170" font-size="10">1.2</text>
+    <text x="292" y="170" font-size="10">0.8</text><text x="327" y="170" font-size="10">1.0</text>
+    <text x="150" y="52" font-size="10.5" opacity="0.9">flat: gradient 0</text>
+    <text x="258" y="40" font-size="10.5" opacity="0.9">flat here only</text>
+    <text x="186" y="170" font-size="10">rho</text><text x="410" y="170" font-size="10">rho</text>
+  </g>
+</svg>
+
+
+
 ### 5. Model-based RL — the world-model connection
 
 - Model-free RL asks the *real world* for every gradient — untenable for robots (time,
@@ -109,6 +143,34 @@ fine-tuning on real machines, and how to read an RL experimental section.
 - The tradeoff: sample efficiency vs **model bias** — errors compound over imagined
   horizons (the same compounding-error logic as [[01-canonical-papers/notes/4-vla/act|ACT]]'s
   motivation), managed by short horizons and value bootstrapping.
+
+```mermaid
+flowchart TD
+    R["reinforcement learning"] --> MF["model-free<br/>learn from real experience"]
+    R --> MB["model-based<br/>learn the transition model,<br/>train in imagination"]
+    MF --> V["value-based<br/>learn Q, act greedily<br/>DQN"]
+    MF --> PG["policy-gradient<br/>differentiate the objective<br/>REINFORCE"]
+    PG --> AC["actor-critic<br/>policy + learned baseline<br/>PPO, SAC"]
+    V --> AC
+    MB --> PL["plan through the model<br/>PlaNet"]
+    MB --> BP["backprop through the model<br/>Dreamer"]
+```
+
+
+
+```mermaid
+flowchart TD
+    R["reinforcement learning"] --> MF["model-free<br/>learn from real experience"]
+    R --> MB["model-based<br/>learn p(s'|s,a), train in imagination"]
+    MF --> V["value-based<br/>learn Q, act greedily<br/>DQN"]
+    MF --> PG["policy-gradient<br/>differentiate the objective<br/>REINFORCE"]
+    PG --> AC["actor-critic<br/>policy + learned baseline<br/>PPO, SAC"]
+    V --> AC
+    MB --> PL["plan through the model<br/>PlaNet"]
+    MB --> BP["backprop through the model<br/>Dreamer"]
+```
+
+
 
 ### 6. RL vs imitation in robot learning (orientation map)
 
@@ -194,6 +256,21 @@ their abstracts never mention.
   unit-norm action earns $2.0(0.01) - 0.5(1) = -0.48$ — **negative**, so the optimal policy
   is to *do nothing*. Degenerate "stands still and collects the smoothness bonus" solutions
   come from arithmetic exactly this simple.
+
+<svg viewBox="0 0 460 152" style="max-width:100%;height:auto" role="img" aria-label="the two reward terms drawn to scale: the penalty dwarfs the progress term">
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.5"><line x1="150" y1="20" x2="150" y2="118"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="118" x2="430" y2="118"/></g>
+  <g fill="currentColor" opacity="0.22"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="164" y="52">+0.02 &nbsp; task progress (2.0 &#215; 0.01 m)</text>
+    <text x="164" y="92">&#8722;0.50 &nbsp; action penalty (0.5 &#215; 1)</text>
+    <text x="30" y="140">drawn to scale: the sum is &#8722;0.48, so standing still beats digging</text>
+    <text x="122" y="20" font-size="10.5" opacity="0.7">0</text>
+  </g>
+</svg>
+
+
 - **Reward hacking** is the general form: the policy maximizes what you wrote, not what you
   meant. A velocity reward met by vibrating in place; a distance-to-goal reward met by
   circling just inside the threshold. Symptom: reward curve rises, behavior is wrong.
@@ -347,6 +424,15 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   실전적 우회: 관측 이력/순환 상태를 조건으로 ([[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]이
   이를 정식화한 것).
 
+```mermaid
+flowchart LR
+    A["에이전트: 정책 pi(a|s)"] -->|"행동 a_t"| E["환경: p(s'|s,a)"]
+    E -->|"보상 r_t"| A
+    E -->|"다음 상태 s_t+1"| A
+```
+
+
+
 ### 2. 가치 함수와 벨만 방정식
 
 - $V^\pi(s) = E_\pi[G_t | s_t{=}s]$, $Q^\pi(s,a) = E_\pi[G_t | s_t{=}s, a_t{=}a]$,
@@ -409,6 +495,31 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   $\min(-1.5,\ -1.2) = -1.5$ — *안 잘린* 가지가 이기고 그래디언트가 0이 아니므로
   페널티가 **계속 작용한다**. 클리핑은 과잉의 유인만 없애지, 교정의 유인은 없애지 않는다.
 
+<svg viewBox="0 0 460 185" style="max-width:100%;height:auto" role="img" aria-label="좋은 행동과 나쁜 행동에 대한 PPO 클리핑 목적함수">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3">
+    <line x1="30" y1="30" x2="30" y2="155"/><line x1="30" y1="155" x2="210" y2="155"/>
+    <line x1="255" y1="30" x2="255" y2="155"/><line x1="255" y1="155" x2="435" y2="155"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="3 3">
+    <line x1="141" y1="30" x2="141" y2="155"/><line x1="303" y1="30" x2="303" y2="155"/>
+    <line x1="110" y1="140" x2="110" y2="155"/><line x1="334" y1="140" x2="334" y2="155"/>
+  </g>
+  <path d="M30,143 L141,59" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <path d="M141,59 L205,59" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
+  <path d="M255,47 L303,47" fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.55"/>
+  <path d="M303,47 L430,143" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="22">좋은 행동 (A = +1)</text><text x="255" y="22">나쁜 행동 (A = &#8722;1)</text>
+    <text x="103" y="170" font-size="10">1.0</text><text x="130" y="170" font-size="10">1.2</text>
+    <text x="292" y="170" font-size="10">0.8</text><text x="327" y="170" font-size="10">1.0</text>
+    <text x="150" y="52" font-size="10.5" opacity="0.9">평평: 그래디언트 0</text>
+    <text x="258" y="40" font-size="10.5" opacity="0.9">여기만 평평</text>
+    <text x="186" y="170" font-size="10">rho</text><text x="410" y="170" font-size="10">rho</text>
+  </g>
+</svg>
+
+
+
 ### 5. 모델 기반 RL — 월드모델과의 연결
 
 - 모델 프리 RL은 그래디언트 하나하나를 *실제 세계*에 묻는다 — 로봇에게는 지속 불가능
@@ -419,6 +530,20 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 - 트레이드오프: 샘플 효율 vs **모델 편향** — 상상 지평에서 오차가 누적된다
   ([[01-canonical-papers/notes/4-vla/act|ACT]]의 동기였던 복합 오차와 같은 논리); 짧은 지평과 가치
   부트스트래핑으로 관리한다.
+
+```mermaid
+flowchart TD
+    R["강화학습"] --> MF["모델 프리<br/>실제 경험으로 학습"]
+    R --> MB["모델 기반<br/>전이 모델을 배워<br/>상상 속에서 학습"]
+    MF --> V["가치 기반<br/>Q를 배우고 탐욕적으로 행동<br/>DQN"]
+    MF --> PG["정책 그래디언트<br/>목적함수를 직접 미분<br/>REINFORCE"]
+    PG --> AC["액터-크리틱<br/>정책 + 학습된 베이스라인<br/>PPO, SAC"]
+    V --> AC
+    MB --> PL["모델로 계획<br/>PlaNet"]
+    MB --> BP["모델을 통해 역전파<br/>Dreamer"]
+```
+
+
 
 ### 6. 로봇 학습에서 RL vs 모방 (지도)
 
@@ -495,6 +620,21 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   보자. 단위 노름 행동으로 1 cm 이동($\Delta d = 0.01$)하면
   $2.0(0.01) - 0.5(1) = -0.48$ — **음수**다. 즉 최적 정책은 *아무것도 하지 않는 것*이다.
   "가만히 서서 매끄러움 보너스만 챙긴다"는 퇴화 해가 정확히 이만큼 단순한 산수에서 나온다.
+
+<svg viewBox="0 0 460 152" style="max-width:100%;height:auto" role="img" aria-label="두 보상 항을 실제 비율로 그린 그림: 페널티가 진척 항을 압도한다">
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.5"><line x1="150" y1="20" x2="150" y2="118"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="118" x2="430" y2="118"/></g>
+  <g fill="currentColor" opacity="0.22"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="164" y="52">+0.02 &nbsp; 과제 진척 (2.0 &#215; 0.01 m)</text>
+    <text x="164" y="92">&#8722;0.50 &nbsp; 행동 페널티 (0.5 &#215; 1)</text>
+    <text x="30" y="140">실제 비율: 합이 &#8722;0.48이므로 가만히 있는 쪽이 파는 쪽보다 낫다</text>
+    <text x="122" y="20" font-size="10.5" opacity="0.7">0</text>
+  </g>
+</svg>
+
+
 - **Reward hacking**이 그 일반형이다: 정책은 당신이 *의도한* 것이 아니라 *써 놓은* 것을
   최대화한다. 속도 보상을 제자리 진동으로 채우고, 목표까지 거리 보상을 문턱 안쪽에서 맴돌며
   채운다. 증상: 보상 곡선은 오르는데 거동이 틀렸다. 진단 질문은 언제나

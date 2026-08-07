@@ -34,6 +34,30 @@ $$\lVert f_t\rVert\le \mu f_n$$
 
 where $f_n$ is normal force, $f_t$ tangential force, and $\mu$ the friction coefficient. Forces inside the friction cone can be consistent with sticking; boundary or exceeded conditions indicate impending or actual slip under the model. The cone is a *force-feasibility bound* — whether the contact actually sticks or slides also depends on relative motion and the contact law. Real friction depends on material, speed, pressure, wear, and surface state.
 
+<svg viewBox="0 0 440 214" style="max-width:100%;height:auto" role="img" aria-label="the friction cone: forces inside stick, forces outside slip">
+  <defs><marker id="fcA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6"><line x1="30" y1="150" x2="410" y2="150"/></g>
+  <g fill="currentColor" opacity="0.10"><path d="M150,150 L96,36 L204,36 Z"/></g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none"><path d="M150,150 L96,36"/><path d="M150,150 L204,36"/></g>
+  <g stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"><line x1="150" y1="150" x2="150" y2="30"/></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.75"><path d="M150,95 A55,55 0 0 1 175.9,101.1"/></g>
+  <g stroke="currentColor" stroke-width="2" fill="none">
+    <path d="M150,150 L172,72" marker-end="url(#fcA)"/>
+    <path d="M150,150 L252,92" marker-end="url(#fcA)"/>
+  </g>
+  <g fill="currentColor"><circle cx="150" cy="150" r="3.5"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="138" y="24">f_n</text>
+    <text x="215" y="60">inside the cone: can stick</text>
+    <text x="264" y="100">outside: slips</text>
+    <text x="30" y="172">the marked angle is the cone half-angle = arctan(mu)</text>
+    <text x="30" y="192" opacity="0.85">the cone bounds the force, not the motion &#8212;</text>
+    <text x="30" y="208" opacity="0.85">whether contact actually sticks also depends on the contact law</text>
+  </g>
+</svg>
+
+
+
 ### 3. Rigid and compliant models
 
 | Model | Useful when | Main limitation |
@@ -146,6 +170,30 @@ $$\lVert f_t\rVert\le \mu f_n$$
 원뿔은 *힘의 실행 가능성 경계*다 — 실제로 고착하는지 미끄러지는지는 상대 운동과 접촉
 법칙에도 의존한다.
 실제 마찰은 재료, 속도, 압력, 마모, 표면 상태에 의존한다.
+
+<svg viewBox="0 0 440 214" style="max-width:100%;height:auto" role="img" aria-label="마찰 원뿔: 안쪽 힘은 고착, 바깥 힘은 미끄럼">
+  <defs><marker id="fcA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6"><line x1="30" y1="150" x2="410" y2="150"/></g>
+  <g fill="currentColor" opacity="0.10"><path d="M150,150 L96,36 L204,36 Z"/></g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none"><path d="M150,150 L96,36"/><path d="M150,150 L204,36"/></g>
+  <g stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"><line x1="150" y1="150" x2="150" y2="30"/></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.75"><path d="M150,95 A55,55 0 0 1 175.9,101.1"/></g>
+  <g stroke="currentColor" stroke-width="2" fill="none">
+    <path d="M150,150 L172,72" marker-end="url(#fcA)"/>
+    <path d="M150,150 L252,92" marker-end="url(#fcA)"/>
+  </g>
+  <g fill="currentColor"><circle cx="150" cy="150" r="3.5"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="138" y="24">f_n</text>
+    <text x="215" y="60">원뿔 안: 고착 가능</text>
+    <text x="264" y="100">바깥: 미끄러짐</text>
+    <text x="30" y="172">표시된 각이 원뿔의 반각 = arctan(mu)</text>
+    <text x="30" y="192" opacity="0.85">원뿔은 힘의 경계일 뿐 운동의 보장이 아니다 &#8212;</text>
+    <text x="30" y="208" opacity="0.85">실제로 고착하는지는 접촉 법칙에도 달려 있다</text>
+  </g>
+</svg>
+
+
 
 ### 3. 강체 모델과 유연 모델
 

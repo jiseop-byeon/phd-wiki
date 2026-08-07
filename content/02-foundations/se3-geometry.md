@@ -49,6 +49,27 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   $T = \begin{pmatrix} R & p \\ 0 & 1 \end{pmatrix} \in SE(3)$ (a $4\times4$ matrix).
 - Composition is matrix multiplication: $T_{AC} = T_{AB}\,T_{BC}$ — read subscripts like
   units and they cancel. Inverse: $T^{-1} = \begin{pmatrix} R^\top & -R^\top p \\ 0 & 1 \end{pmatrix}$.
+
+<svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="frame composition: world to base to camera">
+  <defs><marker id="se3a" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <path d="M40,140 L40,100"/><path d="M40,140 L80,140"/>
+    <path d="M200,120 L188,86"/><path d="M200,120 L234,108"/>
+    <path d="M360,70 L352,34"/><path d="M360,70 L396,64"/>
+  </g>
+  <g fill="currentColor"><circle cx="40" cy="140" r="3"/><circle cx="200" cy="120" r="3"/><circle cx="360" cy="70" r="3"/></g>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity="0.8" fill="none">
+    <path d="M46,138 L193,123" marker-end="url(#se3a)"/><path d="M206,118 L353,73" marker-end="url(#se3a)"/>
+    <path d="M44,148 C140,184 272,142 356,80" marker-end="url(#se3a)"/>
+  </g>
+  <g font-size="12" fill="currentColor">
+    <text x="18" y="162">world A</text><text x="176" y="144">base B</text><text x="346" y="26">camera C</text>
+    <text x="98" y="116" font-size="11">T_AB</text><text x="264" y="84" font-size="11">T_BC</text>
+    <text x="150" y="176" font-size="11" opacity="0.85">T_AC = T_AB · T_BC &#8212; B cancels</text>
+  </g>
+</svg>
+
+
 - **Frames discipline** is 90% of not making sign errors: every quantity has a frame
   (world, base, camera, end-effector); write it down. "Where is the camera?" = $T_{world \leftarrow cam}$.
 
@@ -130,6 +151,27 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
   $T = \begin{pmatrix} R & p \\ 0 & 1 \end{pmatrix} \in SE(3)$ ($4\times4$ 행렬).
 - 합성은 행렬곱: $T_{AC} = T_{AB}\,T_{BC}$ — 아래 첨자를 단위처럼 읽으면 약분된다.
   역: $T^{-1} = \begin{pmatrix} R^\top & -R^\top p \\ 0 & 1 \end{pmatrix}$
+
+<svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="프레임 합성: 월드에서 베이스, 베이스에서 카메라">
+  <defs><marker id="se3a" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <path d="M40,140 L40,100"/><path d="M40,140 L80,140"/>
+    <path d="M200,120 L188,86"/><path d="M200,120 L234,108"/>
+    <path d="M360,70 L352,34"/><path d="M360,70 L396,64"/>
+  </g>
+  <g fill="currentColor"><circle cx="40" cy="140" r="3"/><circle cx="200" cy="120" r="3"/><circle cx="360" cy="70" r="3"/></g>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity="0.8" fill="none">
+    <path d="M46,138 L193,123" marker-end="url(#se3a)"/><path d="M206,118 L353,73" marker-end="url(#se3a)"/>
+    <path d="M44,148 C140,184 272,142 356,80" marker-end="url(#se3a)"/>
+  </g>
+  <g font-size="12" fill="currentColor">
+    <text x="18" y="162">월드 A</text><text x="176" y="144">베이스 B</text><text x="346" y="26">카메라 C</text>
+    <text x="98" y="116" font-size="11">T_AB</text><text x="264" y="84" font-size="11">T_BC</text>
+    <text x="150" y="176" font-size="11" opacity="0.85">T_AC = T_AB · T_BC &#8212; B가 약분된다</text>
+  </g>
+</svg>
+
+
 - **프레임 규율**이 부호 실수 안 하기의 90%다: 모든 양에는 프레임(월드, 베이스, 카메라,
   말단)이 있다; 항상 적어라. "카메라가 어디 있나?" = $T_{world \leftarrow cam}$.
 

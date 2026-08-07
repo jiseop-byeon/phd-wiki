@@ -38,6 +38,23 @@ A planner may produce a path that a trajectory generator times ([[04-robotics/mo
 
 Collision-free in workspace does not imply joint, torque, velocity, stability, or contact feasibility.
 
+<svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="workspace obstacle versus its inflated configuration-space obstacle">
+  <g stroke="currentColor" stroke-width="1.3" fill="none"><rect x="25" y="25" width="185" height="150" rx="3"/><rect x="250" y="25" width="185" height="150" rx="3"/></g>
+  <g fill="currentColor" opacity="0.22"><rect x="95" y="70" width="45" height="45" rx="2"/><rect x="308" y="53" width="79" height="79" rx="2"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.7"><rect x="308" y="53" width="79" height="79" rx="2"/></g>
+  <g fill="currentColor"><circle cx="55" cy="150" r="4"/><circle cx="180" cy="50" r="4"/><circle cx="280" cy="150" r="4"/><circle cx="405" cy="50" r="4"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M55,150 C80,150 88,124 92,124 C96,124 140,124 146,118 C152,112 150,60 180,50"/><path d="M280,150 C300,150 300,142 302,140 C304,138 395,140 398,134 C401,128 400,62 405,50"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="25" y="18">workspace</text><text x="250" y="18">configuration space</text>
+    <text x="117" y="96" font-size="10.5" text-anchor="middle">obstacle</text>
+    <text x="347" y="96" font-size="10.5" text-anchor="middle">C-obstacle</text>
+    <text x="25" y="193" opacity="0.85">planning shrinks the robot to a single point &#8212;</text>
+    <text x="25" y="209" opacity="0.85">the obstacle grows by the robot's shape instead, so a point-path is a safe path</text>
+  </g>
+</svg>
+
+
+
 ### 3. Graph search
 
 For A*,
@@ -167,6 +184,23 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 작업 공간에서 충돌이 없다는 것이 관절·토크·속도·안정성·접촉의 실행 가능성을 함의하지
 않는다.
+
+<svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="작업 공간 장애물과 부풀려진 배위 공간 장애물">
+  <g stroke="currentColor" stroke-width="1.3" fill="none"><rect x="25" y="25" width="185" height="150" rx="3"/><rect x="250" y="25" width="185" height="150" rx="3"/></g>
+  <g fill="currentColor" opacity="0.22"><rect x="95" y="70" width="45" height="45" rx="2"/><rect x="308" y="53" width="79" height="79" rx="2"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.7"><rect x="308" y="53" width="79" height="79" rx="2"/></g>
+  <g fill="currentColor"><circle cx="55" cy="150" r="4"/><circle cx="180" cy="50" r="4"/><circle cx="280" cy="150" r="4"/><circle cx="405" cy="50" r="4"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M55,150 C80,150 88,124 92,124 C96,124 140,124 146,118 C152,112 150,60 180,50"/><path d="M280,150 C300,150 300,142 302,140 C304,138 395,140 398,134 C401,128 400,62 405,50"/></g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="25" y="18">작업 공간</text><text x="250" y="18">배위 공간</text>
+    <text x="117" y="96" font-size="10.5" text-anchor="middle">장애물</text>
+    <text x="347" y="96" font-size="10.5" text-anchor="middle">C-장애물</text>
+    <text x="25" y="193" opacity="0.85">계획은 로봇을 점 하나로 줄인다 &#8212;</text>
+    <text x="25" y="209" opacity="0.85">대신 장애물이 로봇의 형상만큼 커지므로, 점의 경로가 곧 안전한 경로다</text>
+  </g>
+</svg>
+
+
 
 ### 3. 그래프 탐색
 

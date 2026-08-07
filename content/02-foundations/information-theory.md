@@ -61,6 +61,25 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — the *extra* bits paid for using $q$ when the truth is $p$.
+
+<svg viewBox="0 0 480 120" style="max-width:100%;height:auto" role="img" aria-label="cross-entropy equals entropy plus KL">
+  <g fill="currentColor" opacity="0.10"><rect x="30" y="74" width="105" height="30" transform="translate(180,0)"/></g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <rect x="30" y="32" width="180" height="30" rx="3"/>
+    <rect x="30" y="74" width="180" height="30" rx="3"/>
+    <rect x="210" y="74" width="105" height="30" rx="3"/>
+  </g>
+  <g font-size="12.5" fill="currentColor" text-anchor="middle">
+    <text x="120" y="52">H(p)</text><text x="120" y="94">H(p)</text><text x="262" y="94">KL(p‖q)</text>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="30" y="20" opacity="0.85">H(p, q)  =  H(p)  +  KL(p‖q)</text>
+    <text x="228" y="52" opacity="0.8">the floor: no code can beat it</text>
+    <text x="330" y="94" opacity="0.8">what q costs you extra</text>
+  </g>
+</svg>
+
+
 - **Non-negativity, proved in two lines** (Jensen's inequality — $\log$ is concave):
   $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
   Equality iff $p = q$. This tiny proof powers the ELBO's validity and half of learning theory.
@@ -192,6 +211,25 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — 진실이 $p$인데 $q$를 썼을 때 *추가로* 내는 비트.
+
+<svg viewBox="0 0 480 120" style="max-width:100%;height:auto" role="img" aria-label="교차 엔트로피 = 엔트로피 + KL">
+  <g fill="currentColor" opacity="0.10"><rect x="30" y="74" width="105" height="30" transform="translate(180,0)"/></g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <rect x="30" y="32" width="180" height="30" rx="3"/>
+    <rect x="30" y="74" width="180" height="30" rx="3"/>
+    <rect x="210" y="74" width="105" height="30" rx="3"/>
+  </g>
+  <g font-size="12.5" fill="currentColor" text-anchor="middle">
+    <text x="120" y="52">H(p)</text><text x="120" y="94">H(p)</text><text x="262" y="94">KL(p‖q)</text>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="30" y="20" opacity="0.85">H(p, q)  =  H(p)  +  KL(p‖q)</text>
+    <text x="228" y="52" opacity="0.8">바닥: 어떤 부호도 이보다 낮출 수 없다</text>
+    <text x="330" y="94" opacity="0.8">q를 써서 더 내는 비용</text>
+  </g>
+</svg>
+
+
 - **비음수성, 두 줄 증명** (옌센 부등식 — $\log$는 오목):
   $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
   등호는 $p = q$일 때만. 이 작은 증명이 ELBO의 유효성과 학습 이론의 절반을 떠받친다.

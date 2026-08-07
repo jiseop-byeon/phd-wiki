@@ -66,6 +66,35 @@ transposes, weight gradients are outer products of deltas with cached activation
 Dimensional sanity check: each gradient has the same shape as its variable — the fastest
 bug detector in existence.
 
+<svg viewBox="0 0 560 175" style="max-width:100%;height:auto" role="img" aria-label="forward and backward pass through a two-layer network">
+  <defs><marker id="bpF" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.4">
+    <rect x="20" y="52" width="62" height="34" rx="4"/><rect x="140" y="52" width="62" height="34" rx="4"/>
+    <rect x="260" y="52" width="72" height="34" rx="4"/><rect x="380" y="52" width="62" height="34" rx="4"/>
+    <rect x="490" y="52" width="52" height="34" rx="4"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="51" y="74">x</text><text x="171" y="74">z = W₁x</text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W₂h</text><text x="516" y="74">L</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)">
+    <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
+    <line x1="332" y1="62" x2="378" y2="62"/><line x1="442" y1="62" x2="488" y2="62"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)" stroke-dasharray="5 3" opacity="0.85">
+    <line x1="488" y1="78" x2="444" y2="78"/><line x1="378" y1="78" x2="334" y2="78"/>
+    <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
+    <text x="466" y="102">δ₂ = ŷ − y</text><text x="356" y="102">W₂ᵀδ₂</text><text x="231" y="102">⊙ 1[z&gt;0] = δ₁</text><text x="111" y="102">W₁ᵀδ₁</text>
+    <text x="411" y="128">∂L/∂W₂ = δ₂hᵀ</text><text x="171" y="128">∂L/∂W₁ = δ₁xᵀ</text>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="20" y="34">forward →</text><text x="20" y="160" opacity="0.85">← backward (dashed): deltas travel through transposes, weight gradients are outer products</text>
+  </g>
+</svg>
+
+
+
 ### 4. Gradients through the classic layers
 
 - **Softmax + cross-entropy** — the tidiest result in the field. With logits $z$,
@@ -176,6 +205,35 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 네트워크의 backward가 이 패턴의 반복이다: *델타는 전치를 타고 뒤로 흐르고, 가중치
 그래디언트는 델타와 캐시된 활성값의 외적이다.* 차원 검산: 각 그래디언트는 그
 변수와 같은 모양이다 — 세상에서 가장 빠른 버그 검출기.
+
+<svg viewBox="0 0 560 175" style="max-width:100%;height:auto" role="img" aria-label="2층 신경망의 순전파와 역전파">
+  <defs><marker id="bpF" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.4">
+    <rect x="20" y="52" width="62" height="34" rx="4"/><rect x="140" y="52" width="62" height="34" rx="4"/>
+    <rect x="260" y="52" width="72" height="34" rx="4"/><rect x="380" y="52" width="62" height="34" rx="4"/>
+    <rect x="490" y="52" width="52" height="34" rx="4"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="51" y="74">x</text><text x="171" y="74">z = W₁x</text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W₂h</text><text x="516" y="74">L</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)">
+    <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
+    <line x1="332" y1="62" x2="378" y2="62"/><line x1="442" y1="62" x2="488" y2="62"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)" stroke-dasharray="5 3" opacity="0.85">
+    <line x1="488" y1="78" x2="444" y2="78"/><line x1="378" y1="78" x2="334" y2="78"/>
+    <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
+    <text x="466" y="102">δ₂ = ŷ − y</text><text x="356" y="102">W₂ᵀδ₂</text><text x="231" y="102">⊙ 1[z&gt;0] = δ₁</text><text x="111" y="102">W₁ᵀδ₁</text>
+    <text x="411" y="128">∂L/∂W₂ = δ₂hᵀ</text><text x="171" y="128">∂L/∂W₁ = δ₁xᵀ</text>
+  </g>
+  <g font-size="11.5" fill="currentColor">
+    <text x="20" y="34">순전파 →</text><text x="20" y="160" opacity="0.85">← 역전파(점선): 델타는 전치를 타고 흐르고, 가중치 그래디언트는 외적이다</text>
+  </g>
+</svg>
+
+
 
 ### 4. 고전 층들의 그래디언트
 
