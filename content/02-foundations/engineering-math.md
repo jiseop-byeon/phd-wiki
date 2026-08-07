@@ -114,15 +114,25 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 ### 6. Exponentials and logarithms (→ 5. Information Theory — its entry requirement)
 
 - $e^x$: the function that is its own derivative; growth at a rate proportional to itself.
-- $\log$ is its inverse: $\log(e^x) = x$. The three rules that carry all of information
-  theory and every likelihood computation:
+  ($e \approx 2.718$.)
+- **Which base?** $\ln$ always means base $e$ (the *natural* log — that is what the "n"
+  stands for), and $\log_2$ means base 2. A bare $\log$ has no universal meaning: in this
+  wiki and in most ML papers it means base $e$, except in information theory, where the
+  unit is the **bit** and the base is 2. The good news is that it almost never matters:
+  changing base only multiplies everything by a constant (third rule below), and constants
+  do not change where a minimum is.
+- $\log$ is the inverse of the exponential: $\log(e^x) = x$. The three rules that carry all
+  of information theory and every likelihood computation:
 
 | Rule | Why it matters |
 |---|---|
 | $\log(ab) = \log a + \log b$ | products of probabilities → **sums** of log-probs (why losses are sums) |
 | $\log(a^n) = n\log a$ | powers become multiplications |
-| $\log_b x = \ln x / \ln b$ | base 2 (bits) vs base e (nats) differ by a constant — that's all |
+| $\log_b x = \ln x / \ln b$ | change of base: base 2 (bits) vs base $e$ (nats) differ by a constant — that's all |
 
+  Where the third rule comes from: let $y = \log_b x$, which by definition means $b^y = x$.
+  Take $\ln$ of both sides — $y \ln b = \ln x$ — and divide. So $1/\ln b$ is just a fixed
+  number: $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. One nat $\approx 1.44$ bits.
 - Numbers to internalize: $\log 1 = 0$; $\log x < 0$ for $x<1$ (log-probs are negative!);
   $\log$ grows painfully slowly.
 - **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the denominator of softmax),
@@ -142,15 +152,94 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
 
-- $j = \sqrt{-1}$; a complex number $a + jb$ is a point in the 2D plane;
-  $|a+jb| = \sqrt{a^2+b^2}$ is its length, and its angle is $\theta = \operatorname{atan2}(b, a)$
-  (use atan2, not $\arctan(b/a)$ — the latter loses the quadrant and fails at $a = 0$).
+- $j = \sqrt{-1}$; a complex number $a + jb$ is a point in the 2D plane, $a$ across and $b$
+  up; $|a+jb| = \sqrt{a^2+b^2}$ is its distance from the origin, and its angle is
+  $\theta = \operatorname{atan2}(b, a)$.
+- **What atan2 is**: the two-argument arctangent, a function every language ships
+  (`atan2(y, x)` in C, Python, NumPy, MATLAB). It takes the two coordinates *separately*
+  and returns the angle of the point $(x, y)$ over the full circle, $(-\pi, \pi]$.
+- **Why not $\arctan(b/a)$**: dividing first throws away information. $\arctan$ only ever
+  sees the single number $b/a$, and a point and its exact opposite have the *same* ratio.
+  Concretely, $(a,b) = (1,1)$ and $(a,b) = (-1,-1)$ both give $b/a = 1$, so $\arctan$ returns
+  $45°$ for both — but the second point is in the third quadrant, at $225°$ (i.e. $-135°$).
+  That is what "loses the quadrant" means: the answer is off by exactly $180°$ for half the
+  plane, and $\arctan$ has no way to know which half you were in. It also breaks at $a = 0$
+  (division by zero) where the true angle is a perfectly ordinary $\pm 90°$. `atan2` keeps
+  both signs, so it gets all four quadrants and the vertical axis right. In robotics this is
+  the difference between a joint commanded forward and the same joint commanded backward —
+  which is why the [[02-foundations/se3-geometry|SE(3)]] page and every IK implementation use
+  atan2 exclusively.
+
+<svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="two opposite points share the same b/a ratio, so arctan cannot tell them apart">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="26" y1="100" x2="234" y2="100"/><line x1="130" y1="16" x2="130" y2="184"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="4 3"><line x1="48" y1="182" x2="212" y2="18"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.7"><path d="M130,100 L183,47"/><path d="M130,100 L77,153"/></g>
+  <g fill="currentColor"><circle cx="185" cy="45" r="4.5"/><circle cx="75" cy="155" r="4.5"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75"><path d="M152,100 A22,22 0 0 0 145.6,84.4"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.55"><path d="M172,100 A42,42 0 1 0 100.3,129.7"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="196" y="40">(1, 1)</text>
+    <text x="22" y="172">(&#8722;1, &#8722;1)</text>
+    <text x="152" y="88" font-size="10">45&#176;</text>
+    <text x="86" y="152" font-size="10">225&#176;</text>
+    <text x="255" y="44">Both points sit on the same dashed line</text>
+    <text x="255" y="62">through the origin, so b/a = 1 for both.</text>
+    <text x="255" y="92">arctan(b/a) = 45&#176; for both &#8212; right for one,</text>
+    <text x="255" y="110">wrong by 180&#176; for the other.</text>
+    <text x="255" y="140">atan2(b, a) keeps the two signs apart</text>
+    <text x="255" y="158">and returns 45&#176; and &#8722;135&#176;.</text>
+  </g>
+</svg>
+
+
 - **Euler's formula**: $e^{j\theta} = \cos\theta + j\sin\theta$ — the unit-circle point at
   angle $\theta$. Consequence: multiplying by $e^{j\theta}$ **rotates** by $\theta$.
-- That is the core reason Fourier analysis works: a sinusoid is the real part of a
-  rotating $e^{j\omega t}$, so "decompose into sinusoids" = "project onto rotations" — the
-  DFT formula in [[02-foundations/signal-processing|6. Signal Processing]] is exactly this
-  projection.
+- **Why this makes Fourier analysis work.** Three steps, and the third is the whole idea.
+  1. *A sinusoid is a rotation seen from the side.* As $t$ runs, $e^{j\omega t}$ is a point
+     going around the unit circle $\omega$ radians per second. Its real part — its shadow on
+     the horizontal axis — is $\cos\omega t$. So a cosine is not a different kind of object
+     from a rotation; it is the same object, viewed edge-on.
+  2. *To ask "how much of frequency $\omega$ is in my signal?", counter-rotate and average.*
+     Multiply the signal by $e^{-j\omega t}$, a rotation going the opposite way at the same
+     rate, and average over time. If the signal really does contain that frequency, the
+     counter-rotation cancels its spinning and holds it still, so the average is a nonzero
+     number. If it doesn't, the product keeps spinning, visits every direction equally, and
+     averages to zero.
+  3. *That "multiply and average" is a dot product* — the same operation as
+     $\langle a,b\rangle$ in [[02-foundations/linear-algebra|1. Linear Algebra §1]], the one
+     that measures how much of one vector lies along another. Measuring the overlap with
+     each rotation is projecting the signal onto that rotation. That is all "decompose into
+     sinusoids" means.
+
+  So the DFT formula $X[k] = \sum_n x[n]\,e^{-j2\pi kn/N}$ in
+  [[02-foundations/signal-processing|6. Signal Processing]] has no hidden content: the
+  $e^{-j(\cdot)}$ is the counter-rotation of step 2, and the $\sum_n$ is the averaging.
+  It is one dot product per frequency.
+
+<svg viewBox="0 0 470 222" style="max-width:100%;height:auto" role="img" aria-label="a point rotating on the unit circle; its shadow on the real axis traces a cosine">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="20" y1="90" x2="150" y2="90"/><line x1="85" y1="25" x2="85" y2="155"/></g>
+  <circle cx="85" cy="90" r="52" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.7" fill="none"><line x1="85" y1="90" x2="118.4" y2="50.2"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="118.4" y1="50.2" x2="118.4" y2="90"/></g>
+  <g fill="currentColor"><circle cx="118.4" cy="50.2" r="4"/><circle cx="118.4" cy="90" r="3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.8"><path d="M105,90 A20,20 0 0 0 97.9,74.7"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="175" y1="90" x2="440" y2="90"/></g>
+  <path d="M175.0 45.0L176.3 45.0L177.6 45.1L178.9 45.2L180.2 45.4L181.5 45.6L182.8 45.8L184.1 46.1L185.4 46.4L186.7 46.8L188.0 47.2L189.3 47.7L190.6 48.2L191.9 48.7L193.2 49.3L194.5 49.9L195.8 50.6L197.1 51.3L198.4 52.0L199.7 52.8L201.0 53.6L202.3 54.4L203.6 55.3L204.9 56.2L206.2 57.2L207.5 58.2L208.8 59.2L210.1 60.2L211.4 61.3L212.7 62.4L214.0 63.5L215.3 64.7L216.6 65.9L217.9 67.1L219.2 68.3L220.5 69.6L221.8 70.8L223.1 72.1L224.4 73.4L225.7 74.8L227.0 76.1L228.3 77.4L229.6 78.8L230.9 80.2L232.2 81.6L233.5 83.0L234.8 84.4L236.1 85.8L237.4 87.2L238.7 88.6L240.0 90.0L241.3 91.4L242.6 92.8L243.9 94.2L245.2 95.6L246.5 97.0L247.8 98.4L249.1 99.8L250.4 101.2L251.7 102.6L253.0 103.9L254.3 105.2L255.6 106.6L256.9 107.9L258.2 109.2L259.5 110.4L260.8 111.7L262.1 112.9L263.4 114.1L264.7 115.3L266.0 116.5L267.3 117.6L268.6 118.7L269.9 119.8L271.2 120.8L272.5 121.8L273.8 122.8L275.1 123.8L276.4 124.7L277.7 125.6L279.0 126.4L280.3 127.2L281.6 128.0L282.9 128.7L284.2 129.4L285.5 130.1L286.8 130.7L288.1 131.3L289.4 131.8L290.7 132.3L292.0 132.8L293.3 133.2L294.6 133.6L295.9 133.9L297.2 134.2L298.5 134.4L299.8 134.6L301.1 134.8L302.4 134.9L303.7 135.0L305.0 135.0L306.3 135.0L307.6 134.9L308.9 134.8L310.2 134.6L311.5 134.4L312.8 134.2L314.1 133.9L315.4 133.6L316.7 133.2L318.0 132.8L319.3 132.3L320.6 131.8L321.9 131.3L323.2 130.7L324.5 130.1L325.8 129.4L327.1 128.7L328.4 128.0L329.7 127.2L331.0 126.4L332.3 125.6L333.6 124.7L334.9 123.8L336.2 122.8L337.5 121.8L338.8 120.8L340.1 119.8L341.4 118.7L342.7 117.6L344.0 116.5L345.3 115.3L346.6 114.1L347.9 112.9L349.2 111.7L350.5 110.4L351.8 109.2L353.1 107.9L354.4 106.6L355.7 105.2L357.0 103.9L358.3 102.6L359.6 101.2L360.9 99.8L362.2 98.4L363.5 97.0L364.8 95.6L366.1 94.2L367.4 92.8L368.7 91.4L370.0 90.0L371.3 88.6L372.6 87.2L373.9 85.8L375.2 84.4L376.5 83.0L377.8 81.6L379.1 80.2L380.4 78.8L381.7 77.4L383.0 76.1L384.3 74.8L385.6 73.4L386.9 72.1L388.2 70.8L389.5 69.6L390.8 68.3L392.1 67.1L393.4 65.9L394.7 64.7L396.0 63.5L397.3 62.4L398.6 61.3L399.9 60.2L401.2 59.2L402.5 58.2L403.8 57.2L405.1 56.2L406.4 55.3L407.7 54.4L409.0 53.6L410.3 52.8L411.6 52.0L412.9 51.3L414.2 50.6L415.5 49.9L416.8 49.3L418.1 48.7L419.4 48.2L420.7 47.7L422.0 47.2L423.3 46.8L424.6 46.4L425.9 46.1L427.2 45.8L428.5 45.6L429.8 45.4L431.1 45.2L432.4 45.1L433.7 45.0L435.0 45.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="211.1" y1="61.1" x2="211.1" y2="90"/></g>
+  <g fill="currentColor"><circle cx="211.1" cy="61.1" r="4"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="124.4" y="44.2">e^(j&#952;)</text>
+    <text x="102" y="86" font-size="10">&#952;</text>
+    <text x="96" y="162" font-size="10">Re = cos &#952;</text>
+    <text x="176" y="18">cos &#952; as &#952; goes around once</text>
+    <text x="416" y="106" font-size="10">&#952;</text>
+    <text x="20" y="184" opacity="0.9">The wave on the right is not a second object &#8212; it is the left</text>
+    <text x="20" y="199" opacity="0.9">picture's shadow, plotted as the point goes around. That is why</text>
+    <text x="20" y="214" opacity="0.9">&#8220;decompose into sinusoids&#8221; and &#8220;project onto rotations&#8221; are one sentence.</text>
+  </g>
+</svg>
+
+
 
 ### 8. Linear differential equations (→ control track: pages 5–7)
 
@@ -366,15 +455,22 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 ### 6. 지수와 로그 (→ 5. 정보이론의 입장 조건)
 
-- $e^x$: 자기 자신이 도함수인 함수; 자신에 비례하는 속도로 성장.
-- $\log$는 그 역함수: $\log(e^x) = x$. 정보이론 전체와 모든 우도 계산을 떠받치는 세 규칙:
+- $e^x$: 자기 자신이 도함수인 함수; 자신에 비례하는 속도로 성장. ($e \approx 2.718$.)
+- **밑이 뭔가?** $\ln$은 언제나 밑이 $e$다(*자연로그*, natural log의 n이다). $\log_2$는 밑이 2.
+  밑 없는 $\log$는 보편적 약속이 없다: 이 위키와 대부분의 ML 논문에서는 밑이 $e$이고,
+  정보이론에서만 단위가 **비트**라서 밑이 2다. 다행히 거의 문제가 되지 않는다 — 밑을 바꿔도
+  전체에 상수가 곱해질 뿐이고(아래 셋째 규칙), 상수는 최솟값의 위치를 바꾸지 않는다.
+- $\log$는 지수함수의 역함수: $\log(e^x) = x$. 정보이론 전체와 모든 우도 계산을 떠받치는 세 규칙:
 
 | 규칙 | 왜 중요한가 |
 |---|---|
 | $\log(ab) = \log a + \log b$ | 확률의 곱 → 로그 확률의 **합** (손실이 합인 이유) |
 | $\log(a^n) = n\log a$ | 거듭제곱이 곱셈이 된다 |
-| $\log_b x = \ln x / \ln b$ | 밑 2(비트)와 밑 e(나트)는 상수배 차이 — 그게 전부다 |
+| $\log_b x = \ln x / \ln b$ | 밑 변환: 밑 2(비트)와 밑 $e$(나트)는 상수배 차이 — 그게 전부다 |
 
+  셋째 규칙은 어디서 나오나: $y = \log_b x$라 두면 정의상 $b^y = x$다. 양변에 $\ln$을 취하면
+  $y \ln b = \ln x$, 나누면 끝. 즉 $1/\ln b$는 그냥 고정된 숫자다:
+  $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. 1 나트 $\approx 1.44$ 비트.
 - 몸에 익힐 숫자 감각: $\log 1 = 0$; $x<1$이면 $\log x < 0$ (로그 확률은 음수다!);
   $\log$는 고통스럽게 천천히 자란다.
 - **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오고(softmax의 분모가 이것이다),
@@ -393,14 +489,86 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)
 
-- $j = \sqrt{-1}$; 복소수 $a + jb$는 2차원 평면의 점;
-  $|a+jb| = \sqrt{a^2+b^2}$가 길이, 각도는 $\theta = \operatorname{atan2}(b, a)$
-  ($\arctan(b/a)$가 아니라 atan2를 써라 — 전자는 사분면을 잃고 $a = 0$에서 정의되지 않는다).
+- $j = \sqrt{-1}$; 복소수 $a + jb$는 2차원 평면의 점(가로 $a$, 세로 $b$);
+  $|a+jb| = \sqrt{a^2+b^2}$가 원점으로부터의 거리, 각도는 $\theta = \operatorname{atan2}(b, a)$.
+- **atan2가 뭔가**: 인자가 둘인 아크탄젠트로, 어느 언어에나 있는 함수다
+  (C·파이썬·NumPy·MATLAB의 `atan2(y, x)`). 두 좌표를 *따로* 받아서 점 $(x, y)$의 각도를
+  원 전체 $(-\pi, \pi]$ 범위로 돌려준다.
+- **왜 $\arctan(b/a)$가 아닌가**: 먼저 나누는 순간 정보가 버려진다. $\arctan$은 $b/a$라는
+  숫자 하나만 보는데, 어떤 점과 그 정반대 점의 비는 *똑같다*. 구체적으로 $(a,b) = (1,1)$과
+  $(a,b) = (-1,-1)$은 둘 다 $b/a = 1$이라서 $\arctan$은 둘 다 $45°$를 준다 — 하지만 두 번째
+  점은 3사분면의 $225°$($=-135°$)다. "사분면을 잃는다"가 이 뜻이다: 평면의 절반에서 답이
+  정확히 $180°$만큼 틀리는데, $\arctan$에는 어느 절반이었는지 알 방법이 없다. 게다가
+  $a = 0$에서 0으로 나누므로 깨지는데, 실제 각도는 지극히 평범한 $\pm 90°$다. `atan2`는 두
+  부호를 모두 들고 있으므로 네 사분면과 수직축을 전부 맞힌다. 로보틱스에서 이것은 관절을
+  앞으로 보내느냐 뒤로 보내느냐의 차이이고, 그래서 [[02-foundations/se3-geometry|SE(3)]]
+  페이지와 모든 역기구학 구현이 atan2만 쓴다.
+
+<svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="정반대인 두 점은 b/a가 같아서 arctan이 구분하지 못한다">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="26" y1="100" x2="234" y2="100"/><line x1="130" y1="16" x2="130" y2="184"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="4 3"><line x1="48" y1="182" x2="212" y2="18"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.7"><path d="M130,100 L183,47"/><path d="M130,100 L77,153"/></g>
+  <g fill="currentColor"><circle cx="185" cy="45" r="4.5"/><circle cx="75" cy="155" r="4.5"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75"><path d="M152,100 A22,22 0 0 0 145.6,84.4"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.55"><path d="M172,100 A42,42 0 1 0 100.3,129.7"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="196" y="40">(1, 1)</text>
+    <text x="22" y="172">(&#8722;1, &#8722;1)</text>
+    <text x="152" y="88" font-size="10">45&#176;</text>
+    <text x="86" y="152" font-size="10">225&#176;</text>
+    <text x="255" y="44">두 점은 원점을 지나는 같은 점선 위에 있고,</text>
+    <text x="255" y="62">따라서 둘 다 b/a = 1이다.</text>
+    <text x="255" y="92">arctan(b/a)는 둘 다 45&#176;를 준다 &#8212; 한쪽은 맞고</text>
+    <text x="255" y="110">다른 쪽은 180&#176; 틀린다.</text>
+    <text x="255" y="140">atan2(b, a)는 두 부호를 따로 들고 있어</text>
+    <text x="255" y="158">45&#176;와 &#8722;135&#176;를 각각 준다.</text>
+  </g>
+</svg>
+
+
 - **오일러 공식**: $e^{j\theta} = \cos\theta + j\sin\theta$ — 각도 $\theta$의 단위원 위의 점.
   따름정리: $e^{j\theta}$를 곱하는 것 = $\theta$만큼 **회전**.
-- 푸리에 분석이 작동하는 핵심 이유가 이것이다: 사인파는 회전하는 $e^{j\omega t}$의
-  실수부이므로, "사인파로 분해" = "회전들에 투영" —
-  [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식이 정확히 이 투영이다.
+- **이것이 푸리에 분석을 작동하게 하는 이유.** 세 단계인데, 셋째가 전부다.
+  1. *사인파는 회전을 옆에서 본 것이다.* $t$가 흐르면 $e^{j\omega t}$는 초당 $\omega$ 라디안씩
+     단위원을 도는 점이다. 그 실수부 — 가로축에 드리운 그림자 — 가 $\cos\omega t$다. 즉
+     코사인은 회전과 다른 종류의 대상이 아니라, 같은 대상을 옆에서 본 것이다.
+  2. *"내 신호에 주파수 $\omega$가 얼마나 들었나"를 물으려면, 반대로 돌려서 평균 내라.*
+     신호에 $e^{-j\omega t}$(같은 속도로 반대 방향으로 도는 회전)를 곱하고 시간에 대해
+     평균한다. 신호가 정말 그 주파수를 담고 있다면 반대 회전이 그 성분의 회전을 상쇄해
+     제자리에 붙들어 두므로 평균이 0이 아닌 값으로 남는다. 담고 있지 않다면 곱은 계속
+     돌면서 모든 방향을 고르게 훑고, 평균이 0이 된다.
+  3. *이 "곱하고 평균 내기"가 곧 내적이다* — [[02-foundations/linear-algebra|1. 선형대수 §1]]의
+     $\langle a,b\rangle$와 같은 연산, 즉 한 벡터가 다른 벡터 방향으로 얼마나 누워 있는지를
+     재는 그 연산이다. 각 회전과의 겹침을 재는 것이 곧 신호를 그 회전 위로 투영하는 것이다.
+     "사인파로 분해"의 뜻은 이게 전부다.
+
+  그래서 [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식
+  $X[k] = \sum_n x[n]\,e^{-j2\pi kn/N}$에는 숨은 내용이 없다: $e^{-j(\cdot)}$가 2단계의 반대
+  회전이고, $\sum_n$이 평균이다. 주파수 하나당 내적 하나일 뿐이다.
+
+<svg viewBox="0 0 470 205" style="max-width:100%;height:auto" role="img" aria-label="단위원 위를 도는 점과, 실수축에 드리운 그림자가 그리는 코사인">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="20" y1="90" x2="150" y2="90"/><line x1="85" y1="25" x2="85" y2="155"/></g>
+  <circle cx="85" cy="90" r="52" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.7" fill="none"><line x1="85" y1="90" x2="118.4" y2="50.2"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="118.4" y1="50.2" x2="118.4" y2="90"/></g>
+  <g fill="currentColor"><circle cx="118.4" cy="50.2" r="4"/><circle cx="118.4" cy="90" r="3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.8"><path d="M105,90 A20,20 0 0 0 97.9,74.7"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="175" y1="90" x2="440" y2="90"/></g>
+  <path d="M175.0 45.0L176.3 45.0L177.6 45.1L178.9 45.2L180.2 45.4L181.5 45.6L182.8 45.8L184.1 46.1L185.4 46.4L186.7 46.8L188.0 47.2L189.3 47.7L190.6 48.2L191.9 48.7L193.2 49.3L194.5 49.9L195.8 50.6L197.1 51.3L198.4 52.0L199.7 52.8L201.0 53.6L202.3 54.4L203.6 55.3L204.9 56.2L206.2 57.2L207.5 58.2L208.8 59.2L210.1 60.2L211.4 61.3L212.7 62.4L214.0 63.5L215.3 64.7L216.6 65.9L217.9 67.1L219.2 68.3L220.5 69.6L221.8 70.8L223.1 72.1L224.4 73.4L225.7 74.8L227.0 76.1L228.3 77.4L229.6 78.8L230.9 80.2L232.2 81.6L233.5 83.0L234.8 84.4L236.1 85.8L237.4 87.2L238.7 88.6L240.0 90.0L241.3 91.4L242.6 92.8L243.9 94.2L245.2 95.6L246.5 97.0L247.8 98.4L249.1 99.8L250.4 101.2L251.7 102.6L253.0 103.9L254.3 105.2L255.6 106.6L256.9 107.9L258.2 109.2L259.5 110.4L260.8 111.7L262.1 112.9L263.4 114.1L264.7 115.3L266.0 116.5L267.3 117.6L268.6 118.7L269.9 119.8L271.2 120.8L272.5 121.8L273.8 122.8L275.1 123.8L276.4 124.7L277.7 125.6L279.0 126.4L280.3 127.2L281.6 128.0L282.9 128.7L284.2 129.4L285.5 130.1L286.8 130.7L288.1 131.3L289.4 131.8L290.7 132.3L292.0 132.8L293.3 133.2L294.6 133.6L295.9 133.9L297.2 134.2L298.5 134.4L299.8 134.6L301.1 134.8L302.4 134.9L303.7 135.0L305.0 135.0L306.3 135.0L307.6 134.9L308.9 134.8L310.2 134.6L311.5 134.4L312.8 134.2L314.1 133.9L315.4 133.6L316.7 133.2L318.0 132.8L319.3 132.3L320.6 131.8L321.9 131.3L323.2 130.7L324.5 130.1L325.8 129.4L327.1 128.7L328.4 128.0L329.7 127.2L331.0 126.4L332.3 125.6L333.6 124.7L334.9 123.8L336.2 122.8L337.5 121.8L338.8 120.8L340.1 119.8L341.4 118.7L342.7 117.6L344.0 116.5L345.3 115.3L346.6 114.1L347.9 112.9L349.2 111.7L350.5 110.4L351.8 109.2L353.1 107.9L354.4 106.6L355.7 105.2L357.0 103.9L358.3 102.6L359.6 101.2L360.9 99.8L362.2 98.4L363.5 97.0L364.8 95.6L366.1 94.2L367.4 92.8L368.7 91.4L370.0 90.0L371.3 88.6L372.6 87.2L373.9 85.8L375.2 84.4L376.5 83.0L377.8 81.6L379.1 80.2L380.4 78.8L381.7 77.4L383.0 76.1L384.3 74.8L385.6 73.4L386.9 72.1L388.2 70.8L389.5 69.6L390.8 68.3L392.1 67.1L393.4 65.9L394.7 64.7L396.0 63.5L397.3 62.4L398.6 61.3L399.9 60.2L401.2 59.2L402.5 58.2L403.8 57.2L405.1 56.2L406.4 55.3L407.7 54.4L409.0 53.6L410.3 52.8L411.6 52.0L412.9 51.3L414.2 50.6L415.5 49.9L416.8 49.3L418.1 48.7L419.4 48.2L420.7 47.7L422.0 47.2L423.3 46.8L424.6 46.4L425.9 46.1L427.2 45.8L428.5 45.6L429.8 45.4L431.1 45.2L432.4 45.1L433.7 45.0L435.0 45.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="211.1" y1="61.1" x2="211.1" y2="90"/></g>
+  <g fill="currentColor"><circle cx="211.1" cy="61.1" r="4"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="124.4" y="44.2">e^(j&#952;)</text>
+    <text x="102" y="86" font-size="10">&#952;</text>
+    <text x="96" y="162" font-size="10">Re = cos &#952;</text>
+    <text x="176" y="18">&#952;가 한 바퀴 도는 동안의 cos &#952;</text>
+    <text x="416" y="106" font-size="10">&#952;</text>
+    <text x="20" y="184" opacity="0.9">오른쪽 파형은 별개의 대상이 아니다 &#8212; 점이 도는 동안 왼쪽 그림의 그림자를 옮겨 그린 것이다.</text>
+    <text x="20" y="199" opacity="0.9">&#8220;사인파로 분해&#8221;와 &#8220;회전들에 투영&#8221;이 같은 문장인 이유가 이것이다.</text>
+  </g>
+</svg>
+
+
 
 ### 8. 선형 미분방정식 (→ 제어 트랙 5~7번)
 

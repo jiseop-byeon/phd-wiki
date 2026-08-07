@@ -98,10 +98,22 @@ bug detector in existence.
 
 ### 4. Gradients through the classic layers
 
-- **Softmax + cross-entropy** — the tidiest result in the field. With logits $z$,
-  $p = \text{softmax}(z)$, one-hot target $y$: $\dfrac{\partial L}{\partial z} = p - y$.
+- **Softmax + cross-entropy** — the tidiest result in the field, and *not* a legacy topic:
+  it is still how every LLM is trained (next-token prediction is one softmax over the
+  vocabulary, scored by cross-entropy), how every classification head works, and softmax is
+  the operation inside attention itself
+  ([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]). Even robot
+  policies use it when actions are discretized into tokens
+  ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]] bins each action dimension into 256 values, making
+  control a classification problem). The main exception worth knowing: policies with
+  continuous-valued outputs — regression heads, and
+  [[01-canonical-papers/notes/4-vla/diffusion-policy|diffusion]]/flow-matching policies — are
+  trained with squared error instead.
+  With logits $z$, $p = \text{softmax}(z)$, one-hot target $y$:
+  $\dfrac{\partial L}{\partial z} = p - y$ — *predicted minus true*, and nothing else.
   (Derivation: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
-  Numerically stabilized via log-sum-exp.
+  Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
+  [[02-foundations/engineering-math|0.5 §6]].
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it beat sigmoid
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). Dead units = permanently zero mask.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every saturating layer multiplies the
@@ -239,10 +251,20 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 ### 4. 고전 층들의 그래디언트
 
-- **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과. 로짓 $z$,
-  $p = \text{softmax}(z)$, 원-핫 정답 $y$일 때: $\dfrac{\partial L}{\partial z} = p - y$.
+- **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과이고, 지나간 주제가 *아니다*:
+  지금도 모든 LLM이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
+  교차 엔트로피로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
+  그 자체다([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]).
+  로봇 정책도 행동을 토큰으로 이산화하면 이것을 쓴다
+  ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]]은 각 행동 차원을 256개 구간으로 나눠 제어를
+  분류 문제로 만든다). 알아둘 예외: 출력이 연속값인 정책 — 회귀 헤드와
+  [[01-canonical-papers/notes/4-vla/diffusion-policy|디퓨전]]·플로우 매칭 정책 — 은 대신
+  제곱 오차로 학습한다.
+  로짓 $z$, $p = \text{softmax}(z)$, 원-핫 정답 $y$일 때:
+  $\dfrac{\partial L}{\partial z} = p - y$ — *예측에서 정답을 뺀 것*, 그게 전부다.
   (유도: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
-  log-sum-exp로 수치 안정화.
+  실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
+  [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다.
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 시그모이드를 이긴 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). 죽은 유닛 = 영원히 0인 마스크.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 포화 층 하나가 역방향 신호에 0.25
