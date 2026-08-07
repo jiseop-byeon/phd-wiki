@@ -28,7 +28,8 @@ fine-tuning on real machines, and how to read an RL experimental section.
   Markov = the state summarizes the past ([[02-foundations/probability|probability]]).
 - **Policy** $\pi(a|s)$; **return** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; objective
   $J(\pi) = E_\pi[G_0]$. Discounting makes infinite sums finite and encodes impatience;
-  $1/(1-\gamma)$ is the effective horizon (γ=0.99 ⇒ ~100 steps).
+  $1/(1-\gamma)$ is the effective horizon (γ=0.99 ⇒ ~100 steps — the geometric sum that
+  produces that number is derived step by step in [[02-foundations/engineering-math|0.5 §5]]).
 - Robotics reality: the state is *unobserved* (POMDP) — you see images and proprioception.
   Practical dodge: condition on observation histories / recurrent state (what
   [[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]s formalize).
@@ -422,7 +423,8 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
   마르코프 = 상태가 과거를 요약한다 ([[02-foundations/probability|확률]]).
 - **정책** $\pi(a|s)$; **리턴** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; 목표
   $J(\pi) = E_\pi[G_0]$. 할인은 무한 합을 유한하게 만들고 조급함을 인코딩한다;
-  $1/(1-\gamma)$이 유효 지평이다 (γ=0.99 ⇒ 약 100 스텝).
+  $1/(1-\gamma)$이 유효 지평이다 (γ=0.99 ⇒ 약 100 스텝 — 이 숫자를 만드는 기하급수 합은
+  [[02-foundations/engineering-math|0.5 §5]]에서 단계별로 유도한다).
 - 로보틱스의 현실: 상태는 *관측되지 않는다*(POMDP) — 보이는 건 이미지와 고유수용감각.
   실전적 우회: 관측 이력/순환 상태를 조건으로 ([[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]이
   이를 정식화한 것).

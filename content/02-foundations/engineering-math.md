@@ -77,9 +77,39 @@ parabola.
 
 $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
-Two-line proof: let $S$ be the sum; $\gamma S = S - 1$ ⇒ $S = 1/(1-\gamma)$.
-This single identity is why a discount factor $\gamma = 0.99$ means "an effective horizon
-of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
+**Where that comes from.** Give the sum a name:
+
+$$S = 1 + \gamma + \gamma^2 + \gamma^3 + \cdots$$
+
+Multiply both sides by $\gamma$. Every term just moves up one power:
+
+$$\gamma S = \gamma + \gamma^2 + \gamma^3 + \gamma^4 + \cdots$$
+
+Now put the two lines side by side. The second one is the first one **with the leading $1$
+removed** — after that, they match term for term forever. Written as an equation, that
+observation is exactly
+
+$$\gamma S = S - 1$$
+
+and that is the whole trick: multiplying by $\gamma$ reproduces the *same* infinite tail, so
+the infinity cancels itself and only ordinary algebra is left:
+
+$$\gamma S = S - 1 \;\Rightarrow\; \gamma S - S = -1 \;\Rightarrow\; S(1 - \gamma) = 1 \;\Rightarrow\; S = \frac{1}{1-\gamma}$$
+
+The condition $|\gamma| < 1$ is what lets the tail shrink to nothing; at $\gamma = 1$ the sum
+really is infinite, and the formula correctly blows up. Sanity check with $\gamma = 0.5$: the
+formula says $S = 1/0.5 = 2$, and by hand $1 + 0.5 + 0.25 + 0.125 + \cdots$ does creep toward $2$.
+
+The truncated version, which is the one that shows up in papers (same proof, one leftover term):
+
+$$1 + \gamma + \cdots + \gamma^{n-1} = \frac{1 - \gamma^n}{1 - \gamma}$$
+
+**Why RL cares.** A reward $k$ steps in the future is counted with weight $\gamma^k$, so the
+total weight an agent can ever collect is precisely this sum, $1/(1-\gamma)$. At
+$\gamma = 0.99$ that is $100$: the agent behaves roughly as if it were adding up 100
+undiscounted steps and ignoring everything past them. Corroboration from the other side —
+$0.99^{100} \approx 0.37$, so by step 100 the weight on a reward has already fallen to about a
+third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl-basics|RL]].
 
 ### 6. Exponentials and logarithms (→ 5. Information Theory — its entry requirement)
 
@@ -95,9 +125,20 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
 
 - Numbers to internalize: $\log 1 = 0$; $\log x < 0$ for $x<1$ (log-probs are negative!);
   $\log$ grows painfully slowly.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$ — computed stably as
-  $x_{max} + \log\sum_i e^{x_i - x_{max}}$; the reason softmax+cross-entropy code never
-  overflows ([[02-foundations/calculus-backprop|2. Calculus §4]]).
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the denominator of softmax),
+  and computed literally it overflows — $e^{800}$ is already $\infty$ in float64. The fix,
+  with $x_{max} = \max_i x_i$:
+
+  $$\log \sum_i e^{x_i} = x_{max} + \log\sum_i e^{x_i - x_{max}}$$
+
+  Where it comes from: factor the largest term out of the sum,
+  $\sum_i e^{x_i} = e^{x_{max}}\sum_i e^{x_i - x_{max}}$, then take $\log$ and use
+  $\log(ab) = \log a + \log b$ from the table above. It is an *exact* identity, not an
+  approximation. Why it fixes the problem: every exponent $x_i - x_{max}$ is now $\le 0$,
+  so every $e^{(\cdot)}$ is between $0$ and $1$ — nothing can overflow, and the largest term
+  is exactly $1$, so nothing underflows to an all-zero sum either. This is why
+  softmax+cross-entropy code never blows up
+  ([[02-foundations/calculus-backprop|2. Calculus §4]]).
 
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
 
@@ -115,8 +156,11 @@ of about $1/(1-\gamma) = 100$ steps" in [[02-foundations/rl-basics|RL]].
 
 Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]].
 
-- **First order**: $\dot x = ax$ has solution $x(t) = x(0)\,e^{at}$. Everything follows from
-  this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). A robot joint,
+- **First order**: $\dot x = ax$ has solution $x(t) = x(0)\,e^{at}$. You do not have to solve
+  anything to believe it — just differentiate the candidate and check:
+  $\frac{d}{dt}\big(x(0)e^{at}\big) = a\,x(0)e^{at} = a\,x(t)$ ✓, and at $t=0$ it gives
+  $x(0)$ ✓. That is the entire content of "$e$ is the function that is its own derivative"
+  (§6) applied to a physical system. Everything follows from this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). A robot joint,
   a heating room, a draining tank — all locally this equation.
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
   input"; this is the scalar version of the state-space model
@@ -128,8 +172,12 @@ Physical systems are described by ODEs — this is the modeling language of all 
   oscillates, $\zeta \ge 1$ doesn't). Robot arms and suspension systems are tuned in this
   vocabulary.
 - Discrete time (what code runs): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — stable iff
-  $|a| < 1$. The continuous/discrete stability conditions ($\text{Re} < 0$ vs $|\cdot|<1$)
-  are the two halves of one story.
+  $|a| < 1$. The continuous and discrete conditions ($\text{Re}(a) < 0$ vs $|a_d| < 1$) are
+  the same statement, and here is the bridge: sampling $\dot x = ax$ every $\Delta t$ gives
+  $x_{t+1} = e^{a\Delta t}x_t$, so the discrete factor is $a_d = e^{a\Delta t}$. Since
+  $|e^{a\Delta t}| = e^{\text{Re}(a)\Delta t}$, that magnitude is below $1$ exactly when
+  $\text{Re}(a) < 0$. The left half-plane *maps onto* the unit disc — one story, two
+  coordinate systems.
 
 ### 9. Laplace transform and the s-plane (→ control track, 6. Signal Processing §5)
 
@@ -284,9 +332,37 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
-두 줄 증명: 합을 $S$라 하면 $\gamma S = S - 1$ ⇒ $S = 1/(1-\gamma)$.
-이 항등식 하나가 [[02-foundations/rl-basics|RL]]에서 할인율 $\gamma = 0.99$가 "유효 지평
-약 $1/(1-\gamma) = 100$ 스텝"을 뜻하는 이유다.
+**어디서 나온 식인가.** 합에 이름부터 붙인다:
+
+$$S = 1 + \gamma + \gamma^2 + \gamma^3 + \cdots$$
+
+양변에 $\gamma$를 곱한다. 각 항의 지수가 하나씩 올라갈 뿐이다:
+
+$$\gamma S = \gamma + \gamma^2 + \gamma^3 + \gamma^4 + \cdots$$
+
+이제 두 줄을 나란히 놓고 보라. 아래 줄은 위 줄에서 **맨 앞의 $1$만 뺀 것**이고, 그 뒤로는
+항이 끝까지 하나씩 정확히 맞물린다. 이 관찰을 식으로 쓴 것이 바로
+
+$$\gamma S = S - 1$$
+
+이다. 요령은 이것이 전부다: $\gamma$를 곱해도 *같은* 무한 꼬리가 그대로 재현되므로, 무한이
+스스로 상쇄되고 평범한 대수만 남는다:
+
+$$\gamma S = S - 1 \;\Rightarrow\; \gamma S - S = -1 \;\Rightarrow\; S(1 - \gamma) = 1 \;\Rightarrow\; S = \frac{1}{1-\gamma}$$
+
+$|\gamma| < 1$ 조건이 꼬리를 0으로 줄어들게 만드는 장치다. $\gamma = 1$이면 합은 실제로
+무한이고, 공식도 그에 맞게 발산한다. $\gamma = 0.5$로 검산: 공식은 $S = 1/0.5 = 2$라 하고,
+손으로 더한 $1 + 0.5 + 0.25 + 0.125 + \cdots$도 실제로 $2$로 다가간다.
+
+논문에서 실제로 보게 되는 유한 합 버전(증명은 같고 항 하나가 남는다):
+
+$$1 + \gamma + \cdots + \gamma^{n-1} = \frac{1 - \gamma^n}{1 - \gamma}$$
+
+**RL이 이것을 쓰는 이유.** $k$ 스텝 뒤의 보상은 가중치 $\gamma^k$로 세므로, 에이전트가 평생
+모을 수 있는 가중치의 총합이 정확히 이 합, $1/(1-\gamma)$다. $\gamma = 0.99$면 $100$ — 즉
+할인 없는 100 스텝을 더하고 그 뒤는 무시하는 것과 대략 같게 행동한다. 반대편에서의 확인:
+$0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가중치가 이미 3분의 1 수준으로
+떨어져 있다. [[02-foundations/rl-basics|RL]]에서 말하는 "유효 지평 약 100 스텝"이 이 뜻이다.
 
 ### 6. 지수와 로그 (→ 5. 정보이론의 입장 조건)
 
@@ -301,9 +377,19 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
 - 몸에 익힐 숫자 감각: $\log 1 = 0$; $x<1$이면 $\log x < 0$ (로그 확률은 음수다!);
   $\log$는 고통스럽게 천천히 자란다.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$ — 안정적으로는
-  $x_{max} + \log\sum_i e^{x_i - x_{max}}$로 계산; softmax+교차 엔트로피 코드가 오버플로
-  하지 않는 이유다 ([[02-foundations/calculus-backprop|2. 미적분 §4]]).
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오고(softmax의 분모가 이것이다),
+  식 그대로 계산하면 넘친다 — float64에서 $e^{800}$은 이미 $\infty$다. $x_{max} = \max_i x_i$로
+  두면 해법은:
+
+  $$\log \sum_i e^{x_i} = x_{max} + \log\sum_i e^{x_i - x_{max}}$$
+
+  어디서 나왔나: 합에서 가장 큰 항을 묶어내면
+  $\sum_i e^{x_i} = e^{x_{max}}\sum_i e^{x_i - x_{max}}$이고, 여기에 $\log$를 취한 뒤 위 표의
+  $\log(ab) = \log a + \log b$를 쓴 것이다. 근사가 아니라 *정확한* 항등식이다. 왜 문제가
+  풀리나: 이제 모든 지수 $x_i - x_{max}$가 $\le 0$이므로 각 $e^{(\cdot)}$가 $0$과 $1$ 사이에
+  있다 — 넘칠 수가 없고, 가장 큰 항이 정확히 $1$이므로 합 전체가 0으로 가라앉지도 않는다.
+  softmax+교차 엔트로피 코드가 터지지 않는 이유가 이것이다
+  ([[02-foundations/calculus-backprop|2. 미적분 §4]]).
 
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)
 
@@ -320,7 +406,10 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
 물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다.
 
-- **1차**: $\dot x = ax$의 해는 $x(t) = x(0)\,e^{at}$. 모든 것이 이 한 사실에서 나온다:
+- **1차**: $\dot x = ax$의 해는 $x(t) = x(0)\,e^{at}$. 이걸 믿기 위해 방정식을 풀 필요는 없다 —
+  후보를 미분해서 확인만 하면 된다: $\frac{d}{dt}\big(x(0)e^{at}\big) = a\,x(0)e^{at} = a\,x(t)$ ✓,
+  그리고 $t=0$에서 $x(0)$ ✓. 6절의 "$e$는 자기 자신이 도함수인 함수"를 물리 시스템에 적용한
+  것이 내용의 전부다. 모든 것이 이 한 사실에서 나온다:
   $a < 0$이면 감쇠(안정), $a > 0$이면 폭발(불안정). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
 - **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
@@ -332,7 +421,11 @@ $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
   $\zeta$(울리는가: $\zeta<1$이면 진동, $\zeta \ge 1$이면 안 함). 로봇 팔과 서스펜션이
   이 어휘로 튜닝된다.
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
-  때만 안정. 연속/이산의 안정 조건($\text{Re} < 0$ vs $|\cdot|<1$)은 한 이야기의 두 반쪽이다.
+  때만 안정. 연속과 이산의 조건($\text{Re}(a) < 0$ vs $|a_d| < 1$)은 같은 말이고, 다리는
+  이것이다: $\dot x = ax$를 $\Delta t$마다 샘플링하면 $x_{t+1} = e^{a\Delta t}x_t$이므로 이산
+  계수가 $a_d = e^{a\Delta t}$다. 그런데 $|e^{a\Delta t}| = e^{\text{Re}(a)\Delta t}$이므로, 이
+  크기가 $1$보다 작을 조건이 정확히 $\text{Re}(a) < 0$이다. 좌반평면이 단위원 *안으로
+  사상된다* — 하나의 이야기를 두 좌표계로 쓴 것이다.
 
 ### 9. 라플라스 변환과 s-평면 (→ 제어 트랙, 6. 신호처리 §5)
 

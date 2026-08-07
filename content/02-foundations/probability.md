@@ -24,8 +24,12 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   bookkeeping on top.
 - **Conditioning** $P(A|B) = P(A\cap B)/P(B)$ re-weights the world after evidence.
   Chain rule: $P(A,B) = P(A|B)P(B)$.
-- **Bayes' rule** (derived in one line from the chain rule's two orderings):
+- **Bayes' rule.** The chain rule above can factor a joint probability in either order —
+  $P(\theta, x) = P(\theta|x)P(x)$ and $P(\theta, x) = P(x|\theta)P(\theta)$ — and both equal
+  the same joint, so set them equal and divide by $P(x)$. That is the derivation:
   $$P(\theta|x) = \frac{P(x|\theta)\,P(\theta)}{P(x)} \;\propto\; \text{likelihood}\times\text{prior}$$
+  Read it as: *what you believed before* ($P(\theta)$), reweighted by *how well each
+  hypothesis explains what you just saw* ($P(x|\theta)$).
   Worked example — sensor diagnosis: a crack detector fires on 95% of cracks
   ($P(+|c)=0.95$), false-alarms 5% ($P(+|\neg c)=0.05$), cracks are rare ($P(c)=0.01$).
   $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
@@ -146,8 +150,12 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 - 공리: $P(\Omega)=1$, $P(A)\ge 0$, 서로소 사건의 가산성. 나머지는 이 위의 장부 정리다.
 - **조건화** $P(A|B) = P(A\cap B)/P(B)$는 증거를 본 뒤 세계를 재가중한다.
   연쇄 법칙: $P(A,B) = P(A|B)P(B)$.
-- **베이즈 정리** (연쇄 법칙의 두 순서에서 한 줄로 유도):
+- **베이즈 정리.** 위의 연쇄 법칙은 결합 확률을 두 순서로 분해할 수 있다 —
+  $P(\theta, x) = P(\theta|x)P(x)$와 $P(\theta, x) = P(x|\theta)P(\theta)$ — 둘 다 같은 결합
+  확률이므로 서로 같다고 놓고 $P(x)$로 나누면 끝이다. 유도가 이게 전부다:
   $$P(\theta|x) = \frac{P(x|\theta)\,P(\theta)}{P(x)} \;\propto\; \text{우도}\times\text{사전}$$
+  읽는 법: *이전에 믿고 있던 것*($P(\theta)$)을, *각 가설이 방금 본 것을 얼마나 잘
+  설명하는가*($P(x|\theta)$)로 다시 가중한 것.
   계산 예제 — 센서 진단: 균열 감지기가 균열의 95%에서 울리고($P(+|c)=0.95$), 오경보율
   5%($P(+|\neg c)=0.05$), 균열은 드물다($P(c)=0.01$).
   $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
