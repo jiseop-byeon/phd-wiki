@@ -43,6 +43,22 @@ dataset had to be built *by* the model.
 - Architecture: heavy **ViT image encoder** ([[mae|MAE]]-pretrained) run once per image +
   light prompt encoder + fast mask decoder (~50 ms) — interactive by design; outputs 3 masks
   to resolve prompt ambiguity.
+
+```mermaid
+flowchart LR
+    I["image"] --> IE["ViT image encoder<br/>HEAVY - run ONCE per image"]
+    IE --> EMB["image embedding<br/>cached"]
+    P1["prompt: point / box / mask"] --> PE["prompt encoder<br/>light"]
+    EMB --> DEC["mask decoder<br/>about 50 ms per prompt"]
+    PE --> DEC
+    DEC --> M["3 masks<br/>one per plausible reading of the prompt"]
+```
+
+*The whole interactive story is that split: the expensive half runs once, the cheap half
+runs per prompt. Emitting three masks is not hedging — it is the model refusing to guess
+which of three valid readings of an ambiguous click you meant.*
+
+
 - **Data engine → SA-1B**: assisted-manual → semi-automatic → fully automatic stages;
   final dataset **11M images, 1.1B masks**, released.
 
@@ -92,6 +108,22 @@ useful for site monitoring.
 - 구조: 이미지당 한 번 도는 무거운 **ViT 이미지 인코더**([[mae|MAE]] 사전학습) + 가벼운
   프롬프트 인코더 + 빠른 마스크 디코더(~50 ms) — 설계부터 인터랙티브; 프롬프트 모호성을
   풀기 위해 마스크 3개를 출력.
+
+```mermaid
+flowchart LR
+    I["이미지"] --> IE["ViT 이미지 인코더<br/>무겁다 - 이미지당 한 번만"]
+    IE --> EMB["이미지 임베딩<br/>캐시됨"]
+    P1["프롬프트: 점 / 박스 / 마스크"] --> PE["프롬프트 인코더<br/>가볍다"]
+    EMB --> DEC["마스크 디코더<br/>프롬프트당 약 50 ms"]
+    PE --> DEC
+    DEC --> M["마스크 3개<br/>프롬프트의 타당한 해석마다 하나씩"]
+```
+
+*상호작용이 가능한 이유 전부가 이 분할이다: 비싼 절반은 한 번만 돌고, 싼 절반이 프롬프트마다
+돈다. 마스크를 셋 내놓는 것은 얼버무리는 것이 아니라, 모호한 클릭 하나에 대한 세 가지 타당한
+해석 중 무엇을 뜻했는지 모델이 넘겨짚기를 거부하는 것이다.*
+
+
 - **데이터 엔진 → SA-1B**: 보조 수동 → 반자동 → 완전 자동 단계;
   최종 **1,100만 이미지, 11억 마스크** 공개.
 

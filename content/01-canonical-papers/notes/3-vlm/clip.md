@@ -37,6 +37,43 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
 
 - Two encoders: image (ResNet or [[01-canonical-papers/notes/1-foundations/vit|ViT]]) and text (Transformer), each projecting into a shared space.
 - **Contrastive objective**: within a batch of N pairs, maximize cosine similarity of the N correct pairs against the N²−N incorrect ones (symmetric InfoNCE, learned temperature).
+
+<svg viewBox="0 0 620 236" style="max-width:100%;height:auto" role="img" aria-label="the CLIP batch as a similarity matrix: N matches on the diagonal, everything else a negative">
+  <rect x="150" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="167" y="40">T&#8321;</text><text x="205" y="40">T&#8322;</text><text x="243" y="40">T&#8323;</text><text x="281" y="40">T&#8324;</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="end">
+    <text x="144" y="68">I&#8321;</text><text x="144" y="106">I&#8322;</text><text x="144" y="144">I&#8323;</text><text x="144" y="182">I&#8324;</text>
+  </g>
+  <g fill="currentColor"><rect x="318" y="60" width="12" height="12" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/><rect x="318" y="86" width="12" height="12" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="150" y="24">cosine similarity of every image with every caption</text>
+    <text x="338" y="70">the N correct pairs &#8212; pushed up</text>
+    <text x="338" y="96">the N&#178; &#8722; N wrong pairs &#8212; pushed down</text>
+    <text x="338" y="132">loss = softmax across each row</text>
+    <text x="338" y="150">+ softmax down each column</text>
+    <text x="30" y="212" opacity="0.9">A batch of N gives N positives and N&#178; &#8722; N negatives for free &#8212; which is why batch size is part of</text>
+    <text x="30" y="228" opacity="0.9">the method, not a training detail. At N = 4 that is 4 against 12; at CLIP's 32,768 it is 32k against a billion.</text>
+  </g>
+</svg>
+
+
 - Trained on **WIT-400M**, a web-collected dataset of 400M image-text pairs.
 - **Zero-shot classification**: embed prompts like "a photo of a {class}" and pick the nearest class embedding — the label set is now free-form text.
 
@@ -76,6 +113,43 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 
 - 인코더 둘: 이미지(ResNet 또는 [[01-canonical-papers/notes/1-foundations/vit|ViT]])와 텍스트(Transformer), 각각 공유 공간으로 투영.
 - **대조 목적함수**: N쌍 배치에서 올바른 N쌍의 코사인 유사도를 나머지 N²−N개의 잘못된 쌍 대비 최대화(대칭 InfoNCE, 학습된 온도).
+
+<svg viewBox="0 0 620 236" style="max-width:100%;height:auto" role="img" aria-label="CLIP 배치를 유사도 행렬로 본 것: 대각선의 N개가 정답, 나머지는 전부 음성">
+  <rect x="150" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="84" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="122" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="150" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="188" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="226" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
+  <rect x="264" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="167" y="40">T&#8321;</text><text x="205" y="40">T&#8322;</text><text x="243" y="40">T&#8323;</text><text x="281" y="40">T&#8324;</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="end">
+    <text x="144" y="68">I&#8321;</text><text x="144" y="106">I&#8322;</text><text x="144" y="144">I&#8323;</text><text x="144" y="182">I&#8324;</text>
+  </g>
+  <g fill="currentColor"><rect x="318" y="60" width="12" height="12" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/><rect x="318" y="86" width="12" height="12" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="150" y="24">모든 이미지와 모든 캡션 사이의 코사인 유사도</text>
+    <text x="338" y="70">정답 N쌍 &#8212; 올린다</text>
+    <text x="338" y="96">틀린 N&#178; &#8722; N쌍 &#8212; 내린다</text>
+    <text x="338" y="132">손실 = 각 행에 대한 softmax</text>
+    <text x="338" y="150">+ 각 열에 대한 softmax</text>
+    <text x="30" y="212" opacity="0.9">배치 크기 N 하나가 정답 N개와 음성 N&#178; &#8722; N개를 공짜로 만든다 &#8212; 배치 크기가 학습 디테일이 아니라</text>
+    <text x="30" y="228" opacity="0.9">방법의 일부인 이유다. N = 4면 4 대 12, CLIP의 32,768이면 3만 2천 대 10억이다.</text>
+  </g>
+</svg>
+
+
 - **WIT-400M** — 웹에서 수집한 4억 이미지-텍스트 쌍으로 학습.
 - **Zero-shot 분류**: "a photo of a {class}" 같은 프롬프트를 임베딩해 가장 가까운 클래스를 선택 — 라벨 집합이 자유 텍스트가 된다.
 

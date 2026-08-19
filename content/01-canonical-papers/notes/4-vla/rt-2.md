@@ -45,6 +45,23 @@ semantic knowledge *and* output motor commands?
   vision-language data.
 - **Actions as text**: RT-1's 256-bin discretization, but each bin is emitted as a (reused
   or reserved) *text token* — the action space is a sentence.
+
+<svg viewBox="0 0 620 200" style="max-width:100%;height:auto" role="img" aria-label="actions written in the model's existing vocabulary rather than through a new head">
+  <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6"><rect x="40" y="46" width="290" height="42" rx="4"/><rect x="40" y="106" width="290" height="42" rx="4"/></g>
+  <g fill="currentColor" opacity="0.14"><rect x="248" y="46" width="82" height="42" rx="4"/><rect x="248" y="106" width="82" height="42" rx="4"/></g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="144" y="72">the tokens the VLM already knows</text><text x="289" y="72">256 bins per dimension</text>
+    <text x="144" y="132">&#8220;pick up the apple&#8221;</text><text x="289" y="132">&#8220;1 128 91 &#8230;&#8221;</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="36">one vocabulary</text><text x="40" y="98">the same vocabulary, used for actions</text>
+    <text x="352" y="60">no new output head</text><text x="352" y="80">no new loss</text><text x="352" y="100">actions are just more text</text>
+    <text x="30" y="176" opacity="0.9">Because the action bins live inside the vocabulary the VLM was already trained on, web pretraining and robot</text>
+    <text x="30" y="191" opacity="0.9">fine-tuning share every parameter &#8212; which is why semantics transfer, and why the bin count caps resolution.</text>
+  </g>
+</svg>
+
+
 - **Co-fine-tuning**: robot episodes are mixed with the original web VQA-style data during
   fine-tuning — keeping web knowledge alive instead of catastrophically forgetting it.
 - Inference: constrained decoding to valid action tokens, run in the cloud at 1–3 Hz.
@@ -102,6 +119,23 @@ RT-2가 답한 질문: 하나의 모델이 웹의 의미 지식을 유지하면�
 - 백본: 웹 규모 시각-언어 데이터로 사전학습된 **PaLI-X**(최대 55B)와 **PaLM-E(12B)**.
 - **행동의 텍스트화**: RT-1의 256 구간 이산화를 쓰되, 각 구간을 (재사용 또는 예약된)
   *텍스트 토큰*으로 출력 — 행동 공간이 문장이 된다.
+
+<svg viewBox="0 0 620 200" style="max-width:100%;height:auto" role="img" aria-label="새 헤드를 통하지 않고 모델이 이미 가진 어휘로 행동을 쓰는 방식">
+  <g fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6"><rect x="40" y="46" width="290" height="42" rx="4"/><rect x="40" y="106" width="290" height="42" rx="4"/></g>
+  <g fill="currentColor" opacity="0.14"><rect x="248" y="46" width="82" height="42" rx="4"/><rect x="248" y="106" width="82" height="42" rx="4"/></g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="144" y="72">VLM이 이미 아는 토큰들</text><text x="289" y="72">차원당 256구간</text>
+    <text x="144" y="132">&#8220;사과를 집어라&#8221;</text><text x="289" y="132">&#8220;1 128 91 &#8230;&#8221;</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="36">하나의 어휘</text><text x="40" y="98">같은 어휘를 행동에 사용</text>
+    <text x="352" y="60">새 출력 헤드 없음</text><text x="352" y="80">새 손실 없음</text><text x="352" y="100">행동도 그냥 텍스트</text>
+    <text x="30" y="176" opacity="0.9">행동 구간이 VLM이 이미 학습한 어휘 안에 살기 때문에, 웹 사전학습과 로봇 파인튜닝이 모든 파라미터를 공유한다 &#8212;</text>
+    <text x="30" y="191" opacity="0.9">의미가 전이되는 이유이자, 구간 개수가 행동 해상도의 상한이 되는 이유다.</text>
+  </g>
+</svg>
+
+
 - **공동 파인튜닝**: 파인튜닝 중 로봇 에피소드를 원래의 웹 VQA류 데이터와 섞는다 —
   웹 지식을 파국적으로 잊는 대신 살려두는 장치.
 - 추론: 유효한 행동 토큰으로 제약된 디코딩, 클라우드에서 1~3 Hz.

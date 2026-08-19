@@ -51,6 +51,24 @@ question was whether a *single network* could swallow the entire multi-view prob
 - Multi-task heads predict, per image: **camera parameters** (pose+intrinsics), **depth
   map**, **point map** (per-pixel 3D in a common frame), and **3D point tracks**; one first
   frame anchors the coordinate system.
+
+```mermaid
+flowchart LR
+    subgraph CL["classical structure-from-motion"]
+      A1["detect + match features"] --> A2["estimate poses"] --> A3["triangulate points"] --> A4["bundle adjustment"] --> A2
+    end
+    subgraph VG["VGGT"]
+      B1["N images"] --> B2["one transformer<br/>per-frame and global attention, alternating"] --> B3["cameras + depth + point maps + tracks<br/>all at once"]
+    end
+```
+
+*The classical route is a loop: every quantity is solved for, then re-solved to agree with
+the others. VGGT replaces the loop with one forward pass and lets consistency come from
+training rather than from a solver — which is why the failure mode differs too. A solver
+that cannot converge says so; a network off its training distribution just returns a
+confident answer.*
+
+
 - Trained on a large mix of real+synthetic 3D-annotated datasets; purely feed-forward at
   inference (~seconds for hundreds of frames).
 
@@ -104,6 +122,23 @@ pass.
   **프레임별/전역 교대 어텐션** 층.
 - 멀티태스크 헤드가 이미지마다 예측: **카메라 파라미터**(자세+내부), **깊이맵**,
   **포인트맵**(공통 좌표계의 픽셀별 3D), **3D 포인트 트랙**; 첫 프레임이 좌표계의 닻.
+
+```mermaid
+flowchart LR
+    subgraph CL["고전적 structure-from-motion"]
+      A1["특징 검출 + 매칭"] --> A2["자세 추정"] --> A3["점 삼각측량"] --> A4["번들 조정"] --> A2
+    end
+    subgraph VG["VGGT"]
+      B1["이미지 N장"] --> B2["트랜스포머 하나<br/>프레임별 어텐션과 전역 어텐션을 교대로"] --> B3["카메라 + 깊이 + 포인트맵 + 트랙<br/>한 번에"]
+    end
+```
+
+*고전적 경로는 루프다: 모든 양을 풀고, 서로 일치하도록 다시 푼다. VGGT는 그 루프를 순방향
+한 번으로 대체하고 일관성을 솔버가 아니라 학습에서 얻는다 — 그래서 실패 양상도 다르다.
+수렴하지 못하는 솔버는 그 사실을 알려주지만, 학습 분포에서 벗어난 신경망은 그냥 자신 있는
+답을 돌려준다.*
+
+
 - 실제+합성 3D 주석 데이터셋의 대규모 혼합으로 학습; 추론은 순수 feed-forward
   (수백 프레임에 약 수 초).
 

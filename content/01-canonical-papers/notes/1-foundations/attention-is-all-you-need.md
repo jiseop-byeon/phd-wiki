@@ -45,6 +45,41 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
   look at whom" scores; softmax turns each row into weights summing to 1; multiplying by
   $V$ mixes the value vectors with those weights; $\sqrt{d_k}$ keeps scores from growing
   with dimension. Output shape: (number of queries) × (value dimension).
+
+<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="one attention head as a chain of shapes">
+  <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.3">
+    <rect x="24" y="76" width="58" height="44" rx="3"/>
+    <rect x="128" y="30" width="52" height="30" rx="3"/><rect x="128" y="80" width="52" height="30" rx="3"/><rect x="128" y="130" width="52" height="30" rx="3"/>
+    <rect x="238" y="46" width="70" height="52" rx="3"/>
+    <rect x="348" y="46" width="70" height="52" rx="3"/>
+    <rect x="470" y="76" width="58" height="44" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#atA)" opacity="0.8">
+    <line x1="82" y1="90" x2="124" y2="48"/><line x1="82" y1="98" x2="124" y2="95"/><line x1="82" y1="106" x2="124" y2="142"/>
+    <line x1="180" y1="45" x2="234" y2="62"/><line x1="180" y1="95" x2="234" y2="78"/>
+    <line x1="308" y1="72" x2="344" y2="72"/>
+    <line x1="418" y1="72" x2="466" y2="90"/><line x1="180" y1="145" x2="466" y2="108"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="53" y="94">X</text><text x="53" y="110" font-size="9.5" opacity="0.8">T&#215;512</text>
+    <text x="154" y="44">Q</text><text x="154" y="56" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="154" y="94">K</text><text x="154" y="106" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="154" y="144">V</text><text x="154" y="156" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="273" y="68">QK&#7488;</text><text x="273" y="84" font-size="9.5" opacity="0.8">T&#215;T</text>
+    <text x="383" y="68">softmax</text><text x="383" y="84" font-size="9.5" opacity="0.8">T&#215;T</text>
+    <text x="499" y="94">out</text><text x="499" y="110" font-size="9.5" opacity="0.8">T&#215;64</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.85">
+    <text x="238" y="40">who looks at whom</text><text x="348" y="40">rows sum to 1</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="24" y="192" opacity="0.9">One head with d_model = 512 and d_k = 64, drawn as shapes. The only square thing in the diagram is the T&#215;T table &#8212;</text>
+    <text x="24" y="207" opacity="0.9">that is the quadratic cost, and the reason a whole subfield exists to avoid building it.</text>
+  </g>
+</svg>
+
+
 - **Multi-head attention** — run $h=8$ attention operations in parallel on different learned projections, then concatenate. Different heads learn different relation types (syntax, coreference, …).
 - **Three uses of attention**: encoder self-attention, decoder *masked* self-attention (causal mask preserves autoregression), and encoder-decoder cross-attention.
 - **Position-wise feed-forward** networks, **residual connections + LayerNorm** around every sublayer.
@@ -94,6 +129,41 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
   **수식을 축 단위로 읽기**: $QK^\top$ = "누가 누구를 볼지"의 $T{\times}T$ 점수표;
   softmax가 각 행을 합 1의 가중치로 바꾸고; $V$를 곱해 그 가중치로 값 벡터들을 섞는다;
   $\sqrt{d_k}$는 점수가 차원과 함께 자라는 것을 막는다. 출력 모양: (쿼리 수) × (값 차원).
+
+<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="어텐션 헤드 하나를 모양의 연쇄로 본 것">
+  <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.3">
+    <rect x="24" y="76" width="58" height="44" rx="3"/>
+    <rect x="128" y="30" width="52" height="30" rx="3"/><rect x="128" y="80" width="52" height="30" rx="3"/><rect x="128" y="130" width="52" height="30" rx="3"/>
+    <rect x="238" y="46" width="70" height="52" rx="3"/>
+    <rect x="348" y="46" width="70" height="52" rx="3"/>
+    <rect x="470" y="76" width="58" height="44" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#atA)" opacity="0.8">
+    <line x1="82" y1="90" x2="124" y2="48"/><line x1="82" y1="98" x2="124" y2="95"/><line x1="82" y1="106" x2="124" y2="142"/>
+    <line x1="180" y1="45" x2="234" y2="62"/><line x1="180" y1="95" x2="234" y2="78"/>
+    <line x1="308" y1="72" x2="344" y2="72"/>
+    <line x1="418" y1="72" x2="466" y2="90"/><line x1="180" y1="145" x2="466" y2="108"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="53" y="94">X</text><text x="53" y="110" font-size="9.5" opacity="0.8">T&#215;512</text>
+    <text x="154" y="44">Q</text><text x="154" y="56" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="154" y="94">K</text><text x="154" y="106" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="154" y="144">V</text><text x="154" y="156" font-size="9.5" opacity="0.8">T&#215;64</text>
+    <text x="273" y="68">QK&#7488;</text><text x="273" y="84" font-size="9.5" opacity="0.8">T&#215;T</text>
+    <text x="383" y="68">softmax</text><text x="383" y="84" font-size="9.5" opacity="0.8">T&#215;T</text>
+    <text x="499" y="94">out</text><text x="499" y="110" font-size="9.5" opacity="0.8">T&#215;64</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.85">
+    <text x="238" y="40">누가 누구를 보는가</text><text x="348" y="40">각 행의 합이 1</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="24" y="192" opacity="0.9">d_model = 512, d_k = 64인 헤드 하나를 모양으로 그린 것. 그림에서 정사각형인 것은 T&#215;T 표 하나뿐이고 &#8212;</text>
+    <text x="24" y="207" opacity="0.9">그것이 이차 비용이며, 그 표를 만들지 않으려는 하위 분야가 통째로 생겨난 이유다.</text>
+  </g>
+</svg>
+
+
 - **Multi-head attention** — 서로 다른 학습된 투영 위에서 어텐션을 $h=8$개 병렬로 수행한 뒤 이어붙인다. 헤드마다 다른 종류의 관계(문법 구조, 지시 관계 등)를 학습한다.
 - **어텐션의 세 가지 쓰임**: 인코더 self-attention, 디코더의 *마스킹된* self-attention(인과 마스크로 자기회귀 유지), 인코더-디코더 cross-attention.
 - 위치별 feed-forward 네트워크, 모든 서브레이어에 **residual 연결 + LayerNorm**.

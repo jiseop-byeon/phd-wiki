@@ -58,6 +58,24 @@ and machine configurations is a design goal, not an afterthought.
   simulation studies. Trace exact task tables and metrics in the paper's experiments
   section (the note deliberately does not reproduce every table).
 
+```mermaid
+flowchart LR
+    RL["RL experts in simulation"] --> D["150,000 episodes PER TASK<br/>GPU-parallel - the demonstrations are generated, not human"]
+    D --> PT["pretrain one transformer policy<br/>behaviour cloning across the task mixture"]
+    PT ==>|"REAL M545 - centimetre-level - no fine-tuning"| REAL["complete excavation cycles on hardware"]
+    PT --> SFT["SFT on task demos"]
+    PT --> RLFT["RLFT against task reward"]
+    SFT -.->|"simulation only"| SIM["new tasks, OOD conditions, new machine configs"]
+    RLFT -.-> SIM
+```
+
+*Read the arrow weights before the architecture. The thick arrow is the only claim tested
+on hardware, and it comes from the **pretrained** policy; the fine-tuning results — the
+part that sounds most like the LLM paradigm — are simulation studies. Same paper, two very
+different evidentiary weights ([[05-construction-robotics/sim-to-real|deployment ladder]]).*
+
+
+
 **Placed in the map**: the merge that the
 [[05-construction-robotics/lineage|lineage]] page calls open territory — era-4 robot
 learning (imitation, pretrain→fine-tune) arriving on era-1R heavy machines — now with its
@@ -93,6 +111,23 @@ LLM/VLA 학습의 바로 그 구조 — 를 20톤급 기계에 적용한 것이�
   비견되는 성능으로, 사전학습 정책 자체의 sim-to-real 전이다; 파인튜닝 결과는
   시뮬레이션 연구다. 정확한 과제 표와 지표는 논문의 실험 섹션에서 추적하라 (노트는 모든
   표를 재현하지 않는다).
+
+```mermaid
+flowchart LR
+    RL["시뮬레이션 속 RL 전문가"] --> D["과제당 15만 에피소드<br/>GPU 병렬 - 시연은 사람이 아니라 생성된 것"]
+    D --> PT["트랜스포머 정책 하나를 사전학습<br/>과제 혼합물 전체에 대한 행동 복제"]
+    PT ==>|"실제 M545 - 센티미터 수준 - 파인튜닝 없이"| REAL["실기계에서 완전한 굴착 사이클"]
+    PT --> SFT["과제 시연으로 SFT"]
+    PT --> RLFT["과제 보상으로 RLFT"]
+    SFT -.->|"시뮬레이션에서만"| SIM["새 과제, 분포 밖 조건, 새 기계 구성"]
+    RLFT -.-> SIM
+```
+
+*구조보다 화살표의 굵기를 먼저 읽어라. 굵은 화살표가 실기계에서 검증된 유일한 주장이고 그것은
+**사전학습된** 정책에서 나온다. LLM 패러다임처럼 들리는 파인튜닝 결과 쪽은 시뮬레이션 연구다.
+같은 논문, 매우 다른 두 증거 무게([[05-construction-robotics/sim-to-real|배치 사다리]]).*
+
+
 
 **지도에서의 위치**: [[05-construction-robotics/lineage|계보]] 페이지가 열린 영토라 부르는
 합류 — 4시대의 로봇 학습(모방, 사전학습→파인튜닝)이 1R시대의 중장비에 도착하는 지점 —

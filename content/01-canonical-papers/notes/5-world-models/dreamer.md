@@ -44,6 +44,21 @@ study in making one idea actually robust.
 - **v1 (ICLR 2020)**: RSSM world model + actor-critic trained on imagined latent
   trajectories; value bootstrapping (TD-λ) extends the effective horizon beyond the
   imagination length; gradients flow through dynamics.
+
+```mermaid
+flowchart LR
+    ENV["real environment"] -->|"expensive steps"| BUF["replay buffer"]
+    BUF --> WM["RSSM world model<br/>learns p(next latent | latent, action)"]
+    WM --> IMG["imagined latent rollouts<br/>thousands, no environment needed"]
+    IMG --> AC["actor-critic<br/>gradients flow BACK through the dynamics"]
+    AC -->|"policy"| ENV
+```
+
+*Two loops, and only the outer one touches the world. Real steps buy model accuracy;
+policy improvement happens entirely inside the model — which is why the sample cost is set
+by how fast the model becomes right, not by how fast the policy does.*
+
+
 - **v2 (ICLR 2021)**: categorical (discrete) latents + KL balancing — first world-model
   agent to reach human-level Atari (55 games) from pixels.
 - **v3 (arXiv 2023 → Nature 2025)**: robustness engineering so *one config fits all* —
@@ -100,6 +115,21 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 - **v1 (ICLR 2020)**: RSSM 월드모델 + 상상된 잠재 궤적으로 학습되는 actor-critic;
   가치 부트스트래핑(TD-λ)이 유효 지평을 상상 길이 너머로 확장; 그래디언트가 동역학을
   통과해 흐른다.
+
+```mermaid
+flowchart LR
+    ENV["실제 환경"] -->|"비싼 스텝"| BUF["리플레이 버퍼"]
+    BUF --> WM["RSSM 월드모델<br/>p(다음 잠재 | 잠재, 행동)를 학습"]
+    WM --> IMG["상상된 잠재 롤아웃<br/>수천 개, 환경 불필요"]
+    IMG --> AC["액터-크리틱<br/>그래디언트가 동역학을 거슬러 흐른다"]
+    AC -->|"정책"| ENV
+```
+
+*루프가 둘이고, 세계에 닿는 것은 바깥 루프뿐이다. 실제 스텝은 모델의 정확도를 사고, 정책
+개선은 전부 모델 안에서 일어난다 — 샘플 비용을 정하는 것이 정책이 좋아지는 속도가 아니라
+모델이 맞아지는 속도인 이유다.*
+
+
 - **v2 (ICLR 2021)**: 카테고리형(이산) 잠재변수 + KL 균형 — 월드모델 에이전트 최초로
   픽셀 입력 Atari(55개)에서 인간 수준 도달.
 - **v3 (arXiv 2023 → Nature 2025)**: *하나의 설정이 모두에 맞도록* 만드는 강건성 공학 —

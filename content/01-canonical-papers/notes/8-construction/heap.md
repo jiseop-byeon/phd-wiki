@@ -42,6 +42,22 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
   a classical [[04-robotics/robot-systems-deployment|sense–plan–control stack]]; nothing
   in the 2021 platform paper is learned.
 
+```mermaid
+flowchart LR
+    S["GNSS-RTK + IMU + LiDAR<br/>cylinder encoders and pressures"] --> MAP["terrain map + machine state"]
+    MAP --> TASK["task planning<br/>where to dig, trench geometry"]
+    TASK --> ARM["arm trajectory and FORCE planning"]
+    ARM --> CH["chassis force control<br/>four legs, each on the ground it found"]
+    CH --> W["terrain changes"] --> S
+```
+
+*Two things to notice. First, nothing here is learned — the 2021 platform paper is a
+classical sense-plan-control stack, which is why it is a useful baseline for the learned
+papers that followed. Second, the arm plans a FORCE trajectory rather than a position one;
+that choice is what makes a dig soil-agnostic, because the soil never has to be modelled.*
+
+
+
 **What it demonstrates, with the evidence character**: autonomous free-form trenching and
 embankment/grading on real outdoor terrain (embankments at 0.03–0.05 m mean error); slope
 operation via active chassis adaptation; tasks specified from geometric files and executed
@@ -84,6 +100,22 @@ learning-based digging. The construction analogue of what ALOHA
   팔 궤적/힘 계획 → 섀시 힘 제어 — 고전적
   [[04-robotics/robot-systems-deployment|sense–plan–control 스택]]이며, 2021 플랫폼
   논문에는 학습이 전혀 없다.
+
+```mermaid
+flowchart LR
+    S["GNSS-RTK + IMU + LiDAR<br/>실린더 엔코더와 압력"] --> MAP["지형 맵 + 기계 상태"]
+    MAP --> TASK["과제 계획<br/>어디를 팔 것인가, 트렌치 기하"]
+    TASK --> ARM["팔 궤적과 힘 계획"]
+    ARM --> CH["섀시 힘 제어<br/>네 다리가 각자 딛은 땅 위에서"]
+    CH --> W["지형이 바뀐다"] --> S
+```
+
+*두 가지를 눈여겨보라. 첫째, 여기에 학습된 것은 하나도 없다 — 2021년 플랫폼 논문은 고전적
+sense-plan-control 스택이고, 그래서 뒤이은 학습 기반 논문들의 유용한 기준선이 된다. 둘째,
+팔이 계획하는 것은 위치 궤적이 아니라 *힘* 궤적이다. 그 선택이 굴착을 토질에 무관하게 만드는
+장치다 — 흙을 아예 모델링하지 않아도 되기 때문이다.*
+
+
 
 **보여준 것, 증거의 성격과 함께**: 실제 야외 현장에서의 자율 자유 곡선 트렌칭과
 제방/정지 작업(제방 평균 오차 0.03~0.05 m); 능동 섀시 적응을 통한 경사 작업; 기하

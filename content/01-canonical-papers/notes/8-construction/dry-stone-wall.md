@@ -29,6 +29,22 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Method (pipeline)**: site and stone scanning → per-stone candidate reconstruction (geometry and mass properties from point clouds) → structural/placement planning that searches stable poses against the as-built wall state → grasping and force-controlled placement with the excavator arm → updated site model that feeds the next placement. The loop is closed: every placed stone changes the wall state the planner sees next. The material is *found* — multi-tonne local boulders and demolition debris, not fabricated units — so nothing about a stone's geometry is known before it is scanned.
 
+```mermaid
+flowchart LR
+    SC["scan site + the next stone<br/>nothing about its shape is known in advance"] --> REC["reconstruct that stone<br/>geometry and mass properties from the point cloud"]
+    REC --> PL["search stable poses<br/>against the wall AS BUILT, not as designed"]
+    PL --> PLACE["grasp and place<br/>force-controlled"]
+    PLACE --> UP["update the site model"]
+    UP --> SC
+```
+
+*What makes this hard is the arrow that closes the loop. Every placed stone changes the
+wall the planner will see next, and the stones are found rather than fabricated — so the
+plan cannot be computed once in advance. Compare a factory assembly line, where part and
+fixture are both known before the robot moves.*
+
+
+
 **Evidence, with numbers**: the built artifact is the evidence — a dry-stone wall 6 m high and 65 m long, built from multi-tonne on-site stones and recycled demolition debris at the Oberglatt Circularity Park (Switzerland), by a single ~12-tonne-class walking excavator platform (the Menzi Muck M545 that HEAP instruments). This is a full-scale, permanent civil structure, not a lab mock-up: the placement planner had to guarantee static stability under real masses, and the manipulation had to be force-controlled because irregular multi-tonne stones cannot be position-placed blindly.
 
 **Limitations**: one platform, one project, one site. The workflow demonstrates integrated material reuse at full scale but not unrestricted autonomous masonry, arbitrary rock supply, or commercial productivity benchmarked against a human mason. Throughput and cost comparisons are not the paper's claim.
@@ -43,6 +59,21 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **계보에서의 위치**: 이 논문은 좀처럼 만나지 않는 두 스트림 — [[05-construction-robotics/earthmoving-heavy-machinery|중장비 자율성]]과 [[05-construction-robotics/assembly-fabrication|로봇 조립·패브리케이션]] — 의 합류점이며, ETH의 네 석좌 협업(디지털 패브리케이션의 Gramazio Kohler Research, 기계의 RSL, 비전의 Chli 그룹, 조경 설계의 Girot 석좌)으로 실행됐다. HEAP 플랫폼 투자가 지불한 대표 후속 성과다.
 
 **방법(파이프라인)**: 현장·돌 스캔 → 돌별 후보 재구성(점군에서 형상·질량 특성) → 현재 as-built 벽 상태에 대해 안정적 자세를 탐색하는 구조/배치 계획 → 굴착기 팔의 파지와 힘 제어 배치 → 다음 배치에 입력되는 현장 모델 갱신. 루프는 닫혀 있다: 놓인 돌 하나하나가 계획기가 다음에 보는 벽 상태를 바꾼다. 재료는 *발견된* 것 — 수 톤급 현지 자연석과 철거 잔해이지 제작된 유닛이 아니다 — 이므로 스캔 전에는 돌의 형상에 대해 아무것도 알 수 없다.
+
+```mermaid
+flowchart LR
+    SC["현장과 다음 돌을 스캔<br/>그 돌의 형상은 사전에 아무것도 모른다"] --> REC["그 돌을 재구성<br/>점군에서 형상과 질량 특성"]
+    REC --> PL["안정한 자세를 탐색<br/>설계도가 아니라 실제로 쌓인 벽에 대해"]
+    PL --> PLACE["파지하고 놓기<br/>힘 제어"]
+    PLACE --> UP["현장 모델 갱신"]
+    UP --> SC
+```
+
+*이 문제를 어렵게 만드는 것은 루프를 닫는 저 화살표다. 놓인 돌 하나하나가 계획기가 다음에 볼
+벽을 바꾸고, 돌은 제작된 것이 아니라 발견된 것이다 — 그래서 계획을 미리 한 번에 계산할 수
+없다. 부품과 지그가 로봇이 움직이기 전에 이미 알려져 있는 공장 조립 라인과 대조해 보라.*
+
+
 
 **증거, 숫자와 함께**: 지어진 구조물 자체가 증거다 — 스위스 Oberglatt Circularity Park에서 수 톤급 현장 자연석과 재활용 철거 잔해로 쌓은 높이 6 m·길이 65 m의 건식 돌담을, 약 12톤급 보행 굴착기 플랫폼 한 대(HEAP이 계측한 Menzi Muck M545)가 만들었다. 실험실 목업이 아니라 실규모의 영구 토목 구조물이다: 배치 계획기는 실제 질량 하에서 정적 안정성을 보장해야 했고, 불규칙한 수 톤급 돌은 눈감고 위치 배치할 수 없기 때문에 조작은 힘 제어여야 했다.
 

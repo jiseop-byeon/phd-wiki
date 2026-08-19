@@ -48,6 +48,20 @@ both — semantics to decide, high-rate continuous control to execute.
 - **Flow matching head**: learns the velocity field that transports noise to action chunks
   ($H = 50$ actions, all continuous joints) — a handful of integration steps at inference,
   fast enough for **50 Hz** control.
+
+```mermaid
+flowchart LR
+    O["images + language + robot state"] --> VLM["PaliGemma VLM (3B)<br/>semantics: what to do"]
+    VLM --> AE["action expert (~300M)<br/>separate weights, same forward pass"]
+    AE --> FM["flow matching<br/>noise to a 50-step action chunk<br/>a few integration steps"]
+    FM --> C["continuous joint commands at 50 Hz"]
+```
+
+*One network, two specialists. The VLM half carries web semantics but cannot control at
+50 Hz; the action expert can, but knows nothing on its own. Splitting the weights while
+sharing the forward pass is what lets each half keep what it is good at.*
+
+
 - **Pretrain → post-train recipe**, explicitly mirroring LLM practice: pretrain on a large
   cross-embodiment mixture (7 platforms, 68 tasks, 10k+ hours, including
   [[open-x-embodiment|OXE]]), then post-train on curated high-quality task data.
@@ -105,6 +119,20 @@ models.
   분할(VLM 토큰과 행동 토큰이 별도 가중치 사용)로 그 상태를 참조.
 - **Flow matching 헤드**: 노이즈를 행동 청크($H = 50$, 전부 연속 관절값)로 수송하는
   속도장을 학습 — 추론 시 적분 몇 스텝이면 충분해 **50 Hz** 제어가 가능.
+
+```mermaid
+flowchart LR
+    O["이미지 + 언어 + 로봇 상태"] --> VLM["PaliGemma VLM (3B)<br/>의미론: 무엇을 할 것인가"]
+    VLM --> AE["행동 전문가 (약 3억)<br/>별도 가중치, 같은 순전파"]
+    AE --> FM["flow matching<br/>노이즈에서 50스텝 행동 청크로<br/>적분 몇 스텝"]
+    FM --> C["50 Hz 연속 관절 명령"]
+```
+
+*하나의 신경망, 두 전문가. VLM 절반은 웹의 의미를 지고 있지만 50 Hz로 제어하지 못하고,
+행동 전문가는 제어하지만 혼자서는 아무것도 모른다. 가중치를 나누되 순전파를 공유하는 것이
+각 절반이 잘하는 것을 지키게 하는 장치다.*
+
+
 - **사전학습 → 사후학습 레시피**, LLM 관행을 명시적으로 미러링: 대규모 교차-신체
   혼합물(플랫폼 7종, 과제 68개, 1만 시간+, [[open-x-embodiment|OXE]] 포함)로 사전학습 후
   선별된 고품질 과제 데이터로 사후학습.

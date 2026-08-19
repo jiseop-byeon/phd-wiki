@@ -28,6 +28,21 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Method**: the workflow chains four stages — (1) design model specifies target geometry; (2) the mobile platform localizes at the work face using fiducial-marker-based vision metrology, recovering the robot-to-workpiece transform without factory fixturing; (3) vision-guided manipulation places prepared components against the target geometry; (4) the same sensing scans the assembled result into an as-built model that can be compared against design intent. Every stage is 2015-era classical vision — printed fiducial markers, calibrated cameras — not learned perception.
 
+```mermaid
+flowchart LR
+    D["design model<br/>target geometry"] --> L["localize at the work face<br/>fiducial-marker vision metrology"]
+    L --> M["vision-guided placement<br/>component against target"]
+    M --> S["scan the result<br/>as-built model"]
+    S --> CMP["compare against design intent"]
+    CMP -.->|"deviation feeds the next placement"| L
+```
+
+*Step 2 is the whole contribution: a factory bolts the workpiece into a known fixture, and
+a construction site cannot. Recovering the robot-to-workpiece transform on the spot is what
+replaces the fixture — and step 4 is what makes the claim checkable rather than asserted.*
+
+
+
 **Evidence**: the demonstration is a physical mobile-manipulator assembly cell executing the full loop — mobile localization, autonomous component placement, and as-built scanning — on real hardware with prepared components. The contribution the field kept is the *architecture*: it is the earliest complete instance of the design → mobile registration → manipulation → as-built verification cycle that later Michigan work (and today's [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM-driven digital-twin workflows]]) elaborates.
 
 **Limitations**: marker-based metrology and prepared components deliberately remove most site uncertainty — the paper solves registration and closure, not perception in clutter. Component variety, tolerance recovery when parts do not fit, and marker-free localization are all left to successors (Lundeen 2019 addresses as-built geometric adaptation directly).
@@ -42,6 +57,21 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **계보에서의 위치**: 미시간(Kamat/Menassa) 건설 조작 계보의 앵커 논문이다 — 이 라인은 [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen의 기하 적응형 과제 실행(2019)]]과 [[01-canonical-papers/notes/8-construction/liang-lfd|Liang의 시연 학습(2020)]]으로 이어지고, 제1저자 Chen Feng은 현재 NYU AI4CE 랩을 이끈다. 건설 로봇을 제조업과 가르는 구조적 사실에 이름을 붙였다: **역전된 공간 관계(reversed spatial relationship)** — 고정된 로봇에 지그로 고정된 제품이 오는 것이 아니라, 매니퓰레이터가 크고 정적인 구조물로 이동해 정합해야 한다.
 
 **방법**: 워크플로는 네 단계를 잇는다 — (1) 설계 모델이 목표 기하를 지정한다; (2) 모바일 플랫폼이 피두셜 마커 기반 비전 계측으로 작업면에서 위치를 정합해, 공장식 지그 없이 로봇-작업물 변환을 복원한다; (3) 비전 유도 조작이 준비된 부품을 목표 기하에 맞춰 배치한다; (4) 같은 센싱이 조립 결과를 as-built 모델로 스캔해 설계 의도와 비교할 수 있게 한다. 모든 단계가 2015년대의 고전 비전 — 인쇄된 피두셜 마커, 캘리브레이션된 카메라 — 이며 학습 기반 인식이 아니다.
+
+```mermaid
+flowchart LR
+    D["설계 모델<br/>목표 기하"] --> L["작업면에서 위치 정합<br/>피두셜 마커 비전 계측"]
+    L --> M["비전 유도 배치<br/>부품을 목표 기하에 맞춰"]
+    M --> S["결과 스캔<br/>as-built 모델"]
+    S --> CMP["설계 의도와 비교"]
+    CMP -.->|"편차가 다음 배치로 되먹임"| L
+```
+
+*2단계가 기여 전부다: 공장은 작업물을 알려진 지그에 볼트로 고정하지만 건설 현장은 그럴 수
+없다. 현장에서 로봇-작업물 변환을 그 자리에서 복원하는 것이 지그를 대신한다 — 그리고 4단계가
+그 주장을 단정이 아니라 검증 가능한 것으로 만든다.*
+
+
 
 **증거**: 시연은 실제 하드웨어에서 준비된 부품으로 전체 루프 — 모바일 정합, 자율 부품 배치, as-built 스캔 — 를 실행하는 물리적 모바일 매니퓰레이터 조립 셀이다. 분야가 간직한 기여는 *아키텍처*다: 설계 → 이동 정합 → 조작 → as-built 검증 사이클의 최초 완결 사례이며, 이후 미시간 연구(그리고 오늘날의 [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM 기반 디지털 트윈 워크플로]])가 이를 정교화한다.
 

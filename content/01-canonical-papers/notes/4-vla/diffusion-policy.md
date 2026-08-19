@@ -44,6 +44,32 @@ complex multimodal distributions with a stable regression loss. The transfer was
 
 - **Action-sequence diffusion**: the model denoises a chunk of the next $T_a$ actions
   (e.g., 16 steps) conditioned on recent observations — not one action at a time.
+
+<svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="why a regression head fails on multimodal demonstrations and a diffusion head does not">
+  <g fill="currentColor" opacity="0.22"><rect x="126" y="86" width="44" height="44" rx="3"/><rect x="426" y="86" width="44" height="44" rx="3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55" stroke-dasharray="5 3">
+    <path d="M40,108 C80,108 100,54 148,52 C196,50 220,90 260,108"/>
+    <path d="M40,108 C80,108 100,162 148,164 C196,166 220,126 260,108"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4"><path d="M40,108 L260,108"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.5" stroke-dasharray="5 3">
+    <path d="M340,108 C380,108 400,54 448,52 C496,50 520,90 560,108"/>
+    <path d="M340,108 C380,108 400,162 448,164 C496,166 520,126 560,108"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4"><path d="M340,108 C380,108 400,54 448,52 C496,50 520,90 560,108"/></g>
+  <g fill="currentColor"><circle cx="40" cy="108" r="4"/><circle cx="260" cy="108" r="4"/><circle cx="340" cy="108" r="4"/><circle cx="560" cy="108" r="4"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="150" y="24">regression head: averages the modes</text><text x="450" y="24">diffusion head: samples one mode</text>
+    <text x="148" y="148">obstacle</text><text x="448" y="148">obstacle</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="176" y="102">the average &#8212; straight through</text><text x="238" y="44">demo A: go over</text><text x="238" y="182">demo B: go under</text>
+    <text x="30" y="204" opacity="0.9">Two demonstrations solve the task in two valid ways. Averaging them is not a third valid way &#8212; it is the one</text>
+    <text x="30" y="219" opacity="0.9">trajectory that hits the obstacle. That is the whole argument for a generative action head.</text>
+  </g>
+</svg>
+
+
 - **Receding-horizon control**: execute the first few actions of the chunk, re-plan —
   MPC's structure with a learned generative "solver" inside.
 - Visual encoder (CNN or Transformer) feeds the conditioning; the denoiser is a 1-D temporal
@@ -99,6 +125,32 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 
 - **행동 시퀀스 디퓨전**: 최근 관측을 조건으로 다음 $T_a$개 행동 청크(예: 16 스텝)의
   노이즈를 제거 — 행동을 하나씩이 아니라 덩어리로.
+
+<svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="다봉 시연에서 회귀 헤드는 왜 실패하고 디퓨전 헤드는 왜 실패하지 않는가">
+  <g fill="currentColor" opacity="0.22"><rect x="126" y="86" width="44" height="44" rx="3"/><rect x="426" y="86" width="44" height="44" rx="3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.55" stroke-dasharray="5 3">
+    <path d="M40,108 C80,108 100,54 148,52 C196,50 220,90 260,108"/>
+    <path d="M40,108 C80,108 100,162 148,164 C196,166 220,126 260,108"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4"><path d="M40,108 L260,108"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.5" stroke-dasharray="5 3">
+    <path d="M340,108 C380,108 400,54 448,52 C496,50 520,90 560,108"/>
+    <path d="M340,108 C380,108 400,162 448,164 C496,166 520,126 560,108"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2.4"><path d="M340,108 C380,108 400,54 448,52 C496,50 520,90 560,108"/></g>
+  <g fill="currentColor"><circle cx="40" cy="108" r="4"/><circle cx="260" cy="108" r="4"/><circle cx="340" cy="108" r="4"/><circle cx="560" cy="108" r="4"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="150" y="24">회귀 헤드: 모드를 평균 낸다</text><text x="450" y="24">디퓨전 헤드: 한 모드를 샘플링한다</text>
+    <text x="148" y="148">장애물</text><text x="448" y="148">장애물</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="176" y="102">평균 &#8212; 정통으로 관통</text><text x="238" y="44">시연 A: 위로</text><text x="238" y="182">시연 B: 아래로</text>
+    <text x="30" y="204" opacity="0.9">두 시연이 과제를 서로 다른 두 가지 타당한 방법으로 푼다. 그 둘의 평균은 세 번째 타당한 방법이 아니라,</text>
+    <text x="30" y="219" opacity="0.9">장애물에 정확히 부딪히는 유일한 궤적이다. 생성형 행동 헤드를 쓰는 논거 전부가 이것이다.</text>
+  </g>
+</svg>
+
+
 - **Receding-horizon 제어**: 청크의 앞부분 몇 개만 실행하고 재계획 — 학습된 생성형
   "솔버"를 안에 품은 MPC의 구조다.
 - 시각 인코더(CNN 또는 Transformer)가 조건을 공급; 노이즈 제거기는 행동 시퀀스 위의

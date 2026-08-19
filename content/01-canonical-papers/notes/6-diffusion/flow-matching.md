@@ -45,6 +45,31 @@ of the flow itself.
   $E_{t, x_1, x_t}\|v_\theta(x_t, t) - u_t(x_t|x_1)\|^2$ over designed conditional
   probability paths — no ODE simulation, no ELBO.
 - **Optimal-transport (straight-line) paths**: $x_t = (1-t)x_0 + t x_1$ with constant
+
+<svg viewBox="0 0 620 218" style="max-width:100%;height:auto" role="img" aria-label="a curved probability path needs many integration steps; a straight one needs few">
+  <defs><marker id="fmA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor"><circle cx="60" cy="120" r="5"/><circle cx="290" cy="62" r="5"/><circle cx="330" cy="120" r="5"/><circle cx="560" cy="62" r="5"/></g>
+  <path d="M60,120 C110,152 150,42 200,56 C230,64 260,60 288,62" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.75"/>
+  <g fill="currentColor" opacity="0.9">
+    <circle cx="88" cy="136" r="2.6"/><circle cx="118" cy="122" r="2.6"/><circle cx="146" cy="78" r="2.6"/><circle cx="176" cy="57" r="2.6"/><circle cx="206" cy="57" r="2.6"/><circle cx="236" cy="61" r="2.6"/><circle cx="264" cy="61" r="2.6"/>
+  </g>
+  <line x1="330" y1="120" x2="556" y2="64" stroke="currentColor" stroke-width="1.8" opacity="0.75" marker-end="url(#fmA)"/>
+  <g fill="currentColor" opacity="0.9"><circle cx="405" cy="101" r="2.6"/><circle cx="481" cy="82" r="2.6"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="30" y="140">noise</text><text x="272" y="48">data</text>
+    <text x="300" y="140">noise</text><text x="542" y="48">data</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="175" y="26">a curved path</text><text x="445" y="26">a straight (OT-style) path</text>
+    <text x="175" y="172">many small Euler steps to stay on it</text><text x="445" y="172">a few large steps suffice</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="198" opacity="0.9">Sampling is Euler integration either way. The number of steps is not a property of the model but of the path's</text>
+    <text x="30" y="212" opacity="0.9">curvature &#8212; which is why choosing a straighter path is a design decision that pays at runtime.</text>
+  </g>
+</svg>
+
+
   velocity $x_1 - x_0$ — straighter than diffusion's curved paths, which *permits* far fewer inference
   steps; diffusion paths are recovered as a special case.
 - Sampling: integrate the learned ODE from noise to data.
@@ -96,6 +121,31 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
   $E_{t, x_1, x_t}\|v_\theta(x_t, t) - u_t(x_t|x_1)\|^2$로 $v_\theta$ 학습 —
   ODE 시뮬레이션도 ELBO도 없다.
 - **최적 수송(직선) 경로**: $x_t = (1-t)x_0 + t x_1$, 속도는 상수 $x_1 - x_0$ —
+
+<svg viewBox="0 0 620 218" style="max-width:100%;height:auto" role="img" aria-label="휘어진 확률 경로는 적분 스텝이 많이 필요하고, 곧은 경로는 적게 필요하다">
+  <defs><marker id="fmA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor"><circle cx="60" cy="120" r="5"/><circle cx="290" cy="62" r="5"/><circle cx="330" cy="120" r="5"/><circle cx="560" cy="62" r="5"/></g>
+  <path d="M60,120 C110,152 150,42 200,56 C230,64 260,60 288,62" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.75"/>
+  <g fill="currentColor" opacity="0.9">
+    <circle cx="88" cy="136" r="2.6"/><circle cx="118" cy="122" r="2.6"/><circle cx="146" cy="78" r="2.6"/><circle cx="176" cy="57" r="2.6"/><circle cx="206" cy="57" r="2.6"/><circle cx="236" cy="61" r="2.6"/><circle cx="264" cy="61" r="2.6"/>
+  </g>
+  <line x1="330" y1="120" x2="556" y2="64" stroke="currentColor" stroke-width="1.8" opacity="0.75" marker-end="url(#fmA)"/>
+  <g fill="currentColor" opacity="0.9"><circle cx="405" cy="101" r="2.6"/><circle cx="481" cy="82" r="2.6"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="30" y="140">노이즈</text><text x="272" y="48">데이터</text>
+    <text x="300" y="140">노이즈</text><text x="542" y="48">데이터</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="175" y="26">휘어진 경로</text><text x="445" y="26">곧은 (OT식) 경로</text>
+    <text x="175" y="172">경로를 벗어나지 않으려면 작은 스텝이 많이 필요</text><text x="445" y="172">큰 스텝 몇 번이면 충분</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="198" opacity="0.9">어느 쪽이든 샘플링은 오일러 적분이다. 스텝 수는 모델의 성질이 아니라 경로의 곡률이 정한다 &#8212;</text>
+    <text x="30" y="212" opacity="0.9">더 곧은 경로를 고르는 것이 실행 시간의 이득으로 돌아오는 설계 결정인 이유다.</text>
+  </g>
+</svg>
+
+
   디퓨전의 굽은 경로보다 곧다 ⇒ 추론 스텝이 훨씬 적어도 된다; 디퓨전 경로는 특수 사례로
   복원된다.
 - 샘플링: 학습된 ODE를 노이즈에서 데이터로 적분.

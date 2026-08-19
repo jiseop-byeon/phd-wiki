@@ -47,6 +47,25 @@ and the algorithmic fragility needed fixing at once.
   4 cameras, ~$20k, open-source — high-quality bimanual demos at 50 Hz become easy to collect.
 - **ACT**: a CVAE whose decoder is a Transformer — conditioned on images + joint positions
   (+ a latent style variable $z$), it outputs the next $k{=}100$ joint-space actions.
+
+<svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="single-step prediction versus action chunking, drawn on the same timeline">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="61" x2="540" y2="61"/><line x1="60" y1="56" x2="60" y2="66"/><line x1="84" y1="56" x2="84" y2="66"/><line x1="108" y1="56" x2="108" y2="66"/><line x1="132" y1="56" x2="132" y2="66"/><line x1="156" y1="56" x2="156" y2="66"/><line x1="180" y1="56" x2="180" y2="66"/><line x1="204" y1="56" x2="204" y2="66"/><line x1="228" y1="56" x2="228" y2="66"/><line x1="252" y1="56" x2="252" y2="66"/><line x1="276" y1="56" x2="276" y2="66"/><line x1="300" y1="56" x2="300" y2="66"/><line x1="324" y1="56" x2="324" y2="66"/><line x1="348" y1="56" x2="348" y2="66"/><line x1="372" y1="56" x2="372" y2="66"/><line x1="396" y1="56" x2="396" y2="66"/><line x1="420" y1="56" x2="420" y2="66"/><line x1="444" y1="56" x2="444" y2="66"/><line x1="468" y1="56" x2="468" y2="66"/><line x1="492" y1="56" x2="492" y2="66"/><line x1="516" y1="56" x2="516" y2="66"/><line x1="540" y1="56" x2="540" y2="66"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="60" cy="50" r="3"/><circle cx="84" cy="50" r="3"/><circle cx="108" cy="50" r="3"/><circle cx="132" cy="50" r="3"/><circle cx="156" cy="50" r="3"/><circle cx="180" cy="50" r="3"/><circle cx="204" cy="50" r="3"/><circle cx="228" cy="50" r="3"/><circle cx="252" cy="50" r="3"/><circle cx="276" cy="50" r="3"/><circle cx="300" cy="50" r="3"/><circle cx="324" cy="50" r="3"/><circle cx="348" cy="50" r="3"/><circle cx="372" cy="50" r="3"/><circle cx="396" cy="50" r="3"/><circle cx="420" cy="50" r="3"/><circle cx="444" cy="50" r="3"/><circle cx="468" cy="50" r="3"/><circle cx="492" cy="50" r="3"/><circle cx="516" cy="50" r="3"/><circle cx="540" cy="50" r="3"/></g>
+  <rect x="60" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="180" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="300" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="420" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="141" x2="540" y2="141"/><line x1="60" y1="136" x2="60" y2="146"/><line x1="84" y1="136" x2="84" y2="146"/><line x1="108" y1="136" x2="108" y2="146"/><line x1="132" y1="136" x2="132" y2="146"/><line x1="156" y1="136" x2="156" y2="146"/><line x1="180" y1="136" x2="180" y2="146"/><line x1="204" y1="136" x2="204" y2="146"/><line x1="228" y1="136" x2="228" y2="146"/><line x1="252" y1="136" x2="252" y2="146"/><line x1="276" y1="136" x2="276" y2="146"/><line x1="300" y1="136" x2="300" y2="146"/><line x1="324" y1="136" x2="324" y2="146"/><line x1="348" y1="136" x2="348" y2="146"/><line x1="372" y1="136" x2="372" y2="146"/><line x1="396" y1="136" x2="396" y2="146"/><line x1="420" y1="136" x2="420" y2="146"/><line x1="444" y1="136" x2="444" y2="146"/><line x1="468" y1="136" x2="468" y2="146"/><line x1="492" y1="136" x2="492" y2="146"/><line x1="516" y1="136" x2="516" y2="146"/><line x1="540" y1="136" x2="540" y2="146"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="60" cy="130" r="4"/><circle cx="180" cy="130" r="4"/><circle cx="300" cy="130" r="4"/><circle cx="420" cy="130" r="4"/><circle cx="540" cy="130" r="4"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="32">single-step policy &#8212; one decision every tick</text>
+    <text x="60" y="106">action chunking &#8212; one decision per chunk</text>
+    <text x="60" y="88" font-size="10.5" opacity="0.85">21 decisions across the window; each one can drift a little further from the demonstrated states</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">5 decisions; inside a chunk the robot is open-loop, which is the price paid for the reduction</text>
+    <text x="30" y="186" opacity="0.9">Chunking does not make each prediction better &#8212; it makes fewer of them,</text>
+    <text x="30" y="200" opacity="0.9">so compounding error has fewer chances to accumulate.</text>
+    <text x="30" y="216" opacity="0.9">What it spends is reactivity: nothing that happens mid-chunk can change the plan until the next decision.</text>
+  </g>
+</svg>
+
+
 - **Temporal ensembling**: at each timestep, average all previously predicted actions for
   that step — smooth control without re-planning jitter.
 - Trained per task from ~50 human demos (~10 minutes of data); runs on a single GPU.
@@ -101,6 +120,24 @@ defined how modern policies output actions.
   카메라 4대, 약 $20k, 오픈소스 — 50 Hz 고품질 양팔 시연 수집이 쉬워진다.
 - **ACT**: 디코더가 Transformer인 CVAE — 이미지 + 관절 위치(+ 스타일 잠재변수 $z$)를
   조건으로 다음 $k{=}100$개의 관절 공간 행동을 출력.
+
+<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="단일 스텝 예측과 행동 청킹을 같은 타임라인 위에 그린 것">
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="61" x2="540" y2="61"/><line x1="60" y1="56" x2="60" y2="66"/><line x1="84" y1="56" x2="84" y2="66"/><line x1="108" y1="56" x2="108" y2="66"/><line x1="132" y1="56" x2="132" y2="66"/><line x1="156" y1="56" x2="156" y2="66"/><line x1="180" y1="56" x2="180" y2="66"/><line x1="204" y1="56" x2="204" y2="66"/><line x1="228" y1="56" x2="228" y2="66"/><line x1="252" y1="56" x2="252" y2="66"/><line x1="276" y1="56" x2="276" y2="66"/><line x1="300" y1="56" x2="300" y2="66"/><line x1="324" y1="56" x2="324" y2="66"/><line x1="348" y1="56" x2="348" y2="66"/><line x1="372" y1="56" x2="372" y2="66"/><line x1="396" y1="56" x2="396" y2="66"/><line x1="420" y1="56" x2="420" y2="66"/><line x1="444" y1="56" x2="444" y2="66"/><line x1="468" y1="56" x2="468" y2="66"/><line x1="492" y1="56" x2="492" y2="66"/><line x1="516" y1="56" x2="516" y2="66"/><line x1="540" y1="56" x2="540" y2="66"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="60" cy="50" r="3"/><circle cx="84" cy="50" r="3"/><circle cx="108" cy="50" r="3"/><circle cx="132" cy="50" r="3"/><circle cx="156" cy="50" r="3"/><circle cx="180" cy="50" r="3"/><circle cx="204" cy="50" r="3"/><circle cx="228" cy="50" r="3"/><circle cx="252" cy="50" r="3"/><circle cx="276" cy="50" r="3"/><circle cx="300" cy="50" r="3"/><circle cx="324" cy="50" r="3"/><circle cx="348" cy="50" r="3"/><circle cx="372" cy="50" r="3"/><circle cx="396" cy="50" r="3"/><circle cx="420" cy="50" r="3"/><circle cx="444" cy="50" r="3"/><circle cx="468" cy="50" r="3"/><circle cx="492" cy="50" r="3"/><circle cx="516" cy="50" r="3"/><circle cx="540" cy="50" r="3"/></g>
+  <rect x="60" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="180" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="300" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/><rect x="420" y="120" width="112" height="20" rx="3" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="141" x2="540" y2="141"/><line x1="60" y1="136" x2="60" y2="146"/><line x1="84" y1="136" x2="84" y2="146"/><line x1="108" y1="136" x2="108" y2="146"/><line x1="132" y1="136" x2="132" y2="146"/><line x1="156" y1="136" x2="156" y2="146"/><line x1="180" y1="136" x2="180" y2="146"/><line x1="204" y1="136" x2="204" y2="146"/><line x1="228" y1="136" x2="228" y2="146"/><line x1="252" y1="136" x2="252" y2="146"/><line x1="276" y1="136" x2="276" y2="146"/><line x1="300" y1="136" x2="300" y2="146"/><line x1="324" y1="136" x2="324" y2="146"/><line x1="348" y1="136" x2="348" y2="146"/><line x1="372" y1="136" x2="372" y2="146"/><line x1="396" y1="136" x2="396" y2="146"/><line x1="420" y1="136" x2="420" y2="146"/><line x1="444" y1="136" x2="444" y2="146"/><line x1="468" y1="136" x2="468" y2="146"/><line x1="492" y1="136" x2="492" y2="146"/><line x1="516" y1="136" x2="516" y2="146"/><line x1="540" y1="136" x2="540" y2="146"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="60" cy="130" r="4"/><circle cx="180" cy="130" r="4"/><circle cx="300" cy="130" r="4"/><circle cx="420" cy="130" r="4"/><circle cx="540" cy="130" r="4"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="32">단일 스텝 정책 &#8212; 매 틱마다 결정 하나</text>
+    <text x="60" y="106">행동 청킹 &#8212; 청크당 결정 하나</text>
+    <text x="60" y="88" font-size="10.5" opacity="0.85">이 구간에서 결정 21번; 하나하나가 시연된 상태에서 조금씩 더 벗어날 수 있다</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">결정 5번; 청크 안에서는 개루프이고, 그것이 줄인 대가로 치르는 값이다</text>
+    <text x="30" y="192" opacity="0.9">청킹은 예측 하나하나를 더 좋게 만들지 않는다 &#8212; 예측 횟수를 줄여서 복합 오차가 쌓일 기회를 줄인다.</text>
+    <text x="30" y="207" opacity="0.9">그 대가로 내주는 것은 반응성이다: 청크 도중에 일어난 일은 다음 결정 지점까지 계획을 바꿀 수 없다.</text>
+  </g>
+</svg>
+
+
 - **Temporal ensembling**: 각 시점에 대해 이전에 예측된 모든 행동을 평균 —
   재계획 떨림 없는 부드러운 제어.
 - 과제당 인간 시연 약 50개(약 10분 분량)로 학습; GPU 한 장에서 구동.

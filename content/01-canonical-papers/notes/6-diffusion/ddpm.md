@@ -43,6 +43,65 @@ years. DDPM found the parameterization that makes them work.
 - **Forward process** (fixed, no learning): $q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\,x_{t-1}, \beta_t I)$;
   closed form allows jumping to any $t$: $x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$.
 - **Reverse process**: learn $p_\theta(x_{t-1}|x_t)$, Gaussian with predicted mean.
+
+<svg viewBox="0 0 620 208" style="max-width:100%;height:auto" role="img" aria-label="the fixed forward noising chain and the learned reverse chain">
+  <defs><marker id="ddA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.3" opacity="0.75"><line x1="94" y1="42" x2="126" y2="42" marker-end="url(#ddA)"/><line x1="174" y1="42" x2="206" y2="42" marker-end="url(#ddA)"/><line x1="254" y1="42" x2="286" y2="42" marker-end="url(#ddA)"/><line x1="334" y1="42" x2="366" y2="42" marker-end="url(#ddA)"/><line x1="414" y1="42" x2="446" y2="42" marker-end="url(#ddA)"/><line x1="494" y1="42" x2="526" y2="42" marker-end="url(#ddA)"/></g>
+  <circle cx="72.1" cy="71.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="67.8" cy="72.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="72.7" cy="72.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="68.4" cy="79.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="68.4" cy="76.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="70.7" cy="80.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="144.3" cy="69.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="151.3" cy="65.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="144.4" cy="71.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="157.7" cy="78.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="157.4" cy="84.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="156.0" cy="76.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="218.2" cy="62.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="218.7" cy="65.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="236.9" cy="73.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="219.4" cy="87.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="227.3" cy="68.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="228.3" cy="84.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="313.5" cy="64.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="306.4" cy="80.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="326.7" cy="71.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="293.1" cy="95.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="296.8" cy="76.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="298.6" cy="81.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="381.2" cy="58.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="389.9" cy="66.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="404.8" cy="51.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="378.5" cy="71.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="371.0" cy="74.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="369.0" cy="100.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="486.7" cy="95.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="477.8" cy="77.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="470.3" cy="51.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="451.6" cy="70.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="467.9" cy="83.0" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="450.4" cy="98.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="579.1" cy="59.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="529.7" cy="74.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="543.5" cy="59.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="527.9" cy="83.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="521.2" cy="106.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="528.4" cy="83.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddA)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddA)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddA)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddA)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddA)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddA)"/></g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="70" y="112">x&#8320;</text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="26">forward: fixed, nothing learned &#8212; add a little Gaussian noise, T times &#8594;</text>
+    <text x="30" y="144">&#8592; reverse: the only thing learned &#8212; predict the noise, subtract a little, repeat</text>
+    <text x="30" y="186" opacity="0.9">The top arrow needs no network at all; it is a known recipe. All of training goes into the bottom arrow, and even</text>
+    <text x="30" y="201" opacity="0.9">there the network is asked one thing: which noise was added. Generation is that answer applied T times.</text>
+  </g>
+</svg>
+
+
 - **The key reparameterization**: predict the noise $\epsilon_\theta(x_t, t)$ instead of the mean;
   the (weighted) ELBO becomes $E_{t,x_0,\epsilon}\big[\|\epsilon - \epsilon_\theta(x_t,t)\|^2\big]$ — the "simple loss."
 - U-Net backbone with timestep embedding; ~1000 steps at inference.
@@ -97,6 +156,65 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 - **순방향 과정** (고정, 학습 없음): $q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\,x_{t-1}, \beta_t I)$;
   닫힌 형태 덕에 임의의 $t$로 점프 가능: $x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$
 - **역방향 과정**: 예측된 평균을 갖는 가우시안 $p_\theta(x_{t-1}|x_t)$를 학습.
+
+<svg viewBox="0 0 620 208" style="max-width:100%;height:auto" role="img" aria-label="고정된 순방향 노이즈 사슬과 학습되는 역방향 사슬">
+  <defs><marker id="ddA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.3" opacity="0.75"><line x1="94" y1="42" x2="126" y2="42" marker-end="url(#ddA)"/><line x1="174" y1="42" x2="206" y2="42" marker-end="url(#ddA)"/><line x1="254" y1="42" x2="286" y2="42" marker-end="url(#ddA)"/><line x1="334" y1="42" x2="366" y2="42" marker-end="url(#ddA)"/><line x1="414" y1="42" x2="446" y2="42" marker-end="url(#ddA)"/><line x1="494" y1="42" x2="526" y2="42" marker-end="url(#ddA)"/></g>
+  <circle cx="72.1" cy="71.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="67.8" cy="72.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="72.7" cy="72.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="68.4" cy="79.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="68.4" cy="76.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="70.7" cy="80.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="144.3" cy="69.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="151.3" cy="65.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="144.4" cy="71.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="157.7" cy="78.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="157.4" cy="84.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="156.0" cy="76.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="218.2" cy="62.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="218.7" cy="65.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="236.9" cy="73.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="219.4" cy="87.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="227.3" cy="68.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="228.3" cy="84.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="313.5" cy="64.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="306.4" cy="80.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="326.7" cy="71.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="293.1" cy="95.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="296.8" cy="76.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="298.6" cy="81.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="381.2" cy="58.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="389.9" cy="66.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="404.8" cy="51.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="378.5" cy="71.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="371.0" cy="74.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="369.0" cy="100.5" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="486.7" cy="95.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="477.8" cy="77.2" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="470.3" cy="51.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="451.6" cy="70.8" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="467.9" cy="83.0" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="450.4" cy="98.3" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="579.1" cy="59.7" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="529.7" cy="74.4" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="543.5" cy="59.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="527.9" cy="83.6" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="521.2" cy="106.1" r="2.6" fill="currentColor" opacity="0.8"/>
+  <circle cx="528.4" cy="83.9" r="2.6" fill="currentColor" opacity="0.8"/>
+  <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddA)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddA)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddA)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddA)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddA)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddA)"/></g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="70" y="112">x&#8320;</text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="26">순방향: 고정, 학습되는 것 없음 &#8212; 가우시안 노이즈를 조금씩 T번 더한다 &#8594;</text>
+    <text x="30" y="144">&#8592; 역방향: 학습되는 것은 이것뿐 &#8212; 노이즈를 예측해 조금 빼고, 반복</text>
+    <text x="30" y="186" opacity="0.9">위쪽 화살표에는 신경망이 전혀 필요 없다. 알려진 레시피일 뿐이다. 학습 전부가 아래 화살표로 들어가고, 거기서도</text>
+    <text x="30" y="201" opacity="0.9">신경망에 묻는 것은 하나다: 어떤 노이즈가 더해졌는가. 생성은 그 답을 T번 적용하는 것이다.</text>
+  </g>
+</svg>
+
+
 - **결정적 재매개변수화**: 평균 대신 노이즈 $\epsilon_\theta(x_t, t)$를 예측;
   (가중된) ELBO가 $E_{t,x_0,\epsilon}\big[\|\epsilon - \epsilon_\theta(x_t,t)\|^2\big]$가 된다 — "simple loss".
 - 타임스텝 임베딩을 가진 U-Net 백본; 추론 시 약 1000 스텝.
