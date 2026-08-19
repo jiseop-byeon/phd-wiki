@@ -99,7 +99,7 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
     $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. Roll a die 10,000 times and the average
     lands near 3.5. Every "expected return", "expected reward", and "expected loss" in the
     paper list is computed exactly this way — which is also why they all come with error
-    bars ([[02-foundations/ml-practice|9. ML Practice §3]]).
+    bars ([[02-foundations/ml-practice|9. ML Practice §4]]).
 - $\int p(x)\,dx = 1$ (probabilities sum to one) is the identity used in half the proofs
   (e.g., KL non-negativity in [[02-foundations/information-theory|5. Information Theory]]).
 
@@ -431,7 +431,7 @@ Two definitions used everywhere before they are formally introduced:
 ### Self-check
 
 1. Differentiate $f(x) = \log(1 + e^x)$ (softplus) using the chain rule; show the result
-   is the sigmoid.
+   is the sigmoid $\sigma(x) = 1/(1+e^{-x})$.
 2. Use the geometric sum to explain why rewards ~200 steps away are nearly invisible to an
    agent with $\gamma = 0.99$.
 3. Show $\log \frac{a}{b} = \log a - \log b$ from the product rule.
@@ -530,7 +530,7 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   - *코드에서는 언제나 샘플 평균.* 적분하지 않는다. $N$개를 뽑아 평균 낸다:
     $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. 주사위를 1만 번 굴리면 평균이 3.5 근처에
     앉는다. 논문 목록의 모든 "기대 리턴", "기대 보상", "기대 손실"이 정확히 이렇게 계산되고,
-    그래서 전부 오차 막대를 달고 다닌다([[02-foundations/ml-practice|9. ML 실무 §3]]).
+    그래서 전부 오차 막대를 달고 다닌다([[02-foundations/ml-practice|9. ML 실무 §4]]).
 - $\int p(x)\,dx = 1$ (확률의 합은 1) — 증명의 절반에 쓰이는 항등식이다
   (예: [[02-foundations/information-theory|5. 정보이론]]의 KL 비음수성).
 
@@ -834,7 +834,8 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 ### 스스로 점검
 
-1. $f(x) = \log(1 + e^x)$ (softplus)를 연쇄 법칙으로 미분하고, 결과가 시그모이드임을 보여라.
+1. $f(x) = \log(1 + e^x)$ (softplus)를 연쇄 법칙으로 미분하고, 결과가 시그모이드
+   $\sigma(x) = 1/(1+e^{-x})$임을 보여라.
 2. 기하급수 합으로, $\gamma = 0.99$인 에이전트에게 200 스텝 뒤의 보상이 거의 안 보이는
    이유를 설명하라.
 3. 곱 규칙에서 $\log \frac{a}{b} = \log a - \log b$를 유도하라.

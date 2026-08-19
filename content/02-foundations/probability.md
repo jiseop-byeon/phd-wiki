@@ -52,7 +52,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — double. Means always add; spreads add only
   when things are uncorrelated. That is exactly why averaging $N$ *independent* runs shrinks
   an error bar by $\sqrt N$ and averaging $N$ correlated runs does not
-  ([[02-foundations/ml-practice|9. ML Practice §3]]).
+  ([[02-foundations/ml-practice|9. ML Practice §4]]).
 - Variance $\text{Var}(X) = E[X^2] - E[X]^2$; covariance
   $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$; for vectors, the covariance matrix
   $\Sigma = E[(x-\mu)(x-\mu)^\top]$ is PSD ([[02-foundations/linear-algebra|linear algebra]]).
@@ -201,7 +201,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — 두 배다. 평균은 언제나 더해지지만, 퍼짐은
   서로 무관할 때만 더해진다. *독립인* 실행 $N$번을 평균 내면 오차 막대가 $\sqrt N$배로 줄고
   상관된 실행 $N$번은 그렇지 않은 이유가 정확히 이것이다
-  ([[02-foundations/ml-practice|9. ML 실무 §3]]).
+  ([[02-foundations/ml-practice|9. ML 실무 §4]]).
 - 분산 $\text{Var}(X) = E[X^2] - E[X]^2$; 공분산 $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$;
   벡터의 공분산 행렬 $\Sigma = E[(x-\mu)(x-\mu)^\top]$는 PSD다
   ([[02-foundations/linear-algebra|선형대수]]).

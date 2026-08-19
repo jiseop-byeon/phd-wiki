@@ -40,7 +40,7 @@ $L_1 = L_2 = 1$; target tip $(-1, 1)$ (true answer: $\theta^* = (90°, 90°)$, f
 [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]]'s example). Start at
 $\theta^{(0)} = (45°, 90°)$.
 
-- **FK**: tip $= (\cos 45° - \cos 135°,\; \sin 45° + \sin 135°)$... compute:
+- **FK**: tip $= (\cos 45° + \cos 135°,\; \sin 45° + \sin 135°)$ — compute:
   $(0.707 - 0.707,\; 0.707 + 0.707) = (0,\, 1.414)$.
 - **Error**: $e = (-1, 1) - (0, 1.414) = (-1, -0.414)$; $\|e\| = 1.08$.
 - **Jacobian** (ch.5 formula, $s_1 = c_1 = 0.707$, $s_{12} = 0.707$, $c_{12} = -0.707$):

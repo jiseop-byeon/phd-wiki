@@ -110,12 +110,12 @@ themselves (prose only — code blocks and equations excluded):
 
 | Track | Pages | One read-through |
 |---|---:|---:|
-| Foundations 0–9 | 13 | ~1 h |
+| Foundations 0–9 | 13 | ~1.6 h |
 | Robotics 1–11 (incl. the 11 MR chapters) | 24 | ~1.3 h |
-| Construction robotics | 10 | ~0.7 h |
-| Paper notes (86) | 86 | ~3.3 h |
-| Research practice | 5 | ~0.3 h |
-| **Total** | **138** | **~6.5 h** |
+| Construction robotics | 10 | ~0.8 h |
+| Paper notes (86) | 86 | ~2.5 h |
+| Research practice | 5 | ~0.2 h |
+| **Total** | **138** | **~6.4 h** |
 
 Read that number honestly: it is *one pass of the prose*, and it is not the study time.
 Working the self-checks and re-deriving the worked examples typically costs **3–5× the
@@ -201,12 +201,12 @@ flowchart TD
 
 | 트랙 | 페이지 | 1회 정독 |
 |---|---:|---:|
-| 기초 0~9 | 13 | 약 1시간 |
+| 기초 0~9 | 13 | 약 1.6시간 |
 | 로보틱스 1~11 (MR 11개 장 포함) | 24 | 약 1.3시간 |
-| 건설로봇 | 10 | 약 0.7시간 |
-| 논문 노트 (86편) | 86 | 약 3.3시간 |
-| Research Practice | 5 | 약 0.3시간 |
-| **합계** | **138** | **약 6.5시간** |
+| 건설로봇 | 10 | 약 0.8시간 |
+| 논문 노트 (86편) | 86 | 약 2.5시간 |
+| Research Practice | 5 | 약 0.2시간 |
+| **합계** | **138** | **약 6.4시간** |
 
 이 숫자를 정직하게 읽어라: *산문 1회 통과*이지 공부 시간이 아니다. 자가점검을 풀고 계산
 예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로 20~30시간 — 가 들고, ★ 논문은

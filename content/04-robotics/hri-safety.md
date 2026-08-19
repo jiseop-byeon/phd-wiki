@@ -100,7 +100,7 @@ An automated excavator receives a goal from an operator, plans and executes a di
 4. What information is missing from the phrase “fully autonomous construction robot”?
 
 > [!tip]- Answers
-> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling.
+> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials is still consistent with a true failure rate as high as $3/20 = 15\%$ — one collision every seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling.
 
 ### Sources
 
@@ -226,7 +226,7 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 4. "완전 자율 건설로봇"이라는 문구에 빠진 정보는?
 
 > [!tip]- 정답 · Answers
-> 1. 노출이 작고 희귀 위험, 분포 이동, 심각도, 시스템 실패를 놓칠 수 있다.
+> 1. 노출이 작고 희귀 위험, 분포 이동, 심각도, 시스템 실패를 놓칠 수 있다. 숫자로 말하면: rule of three([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]])에 따라 20회에서 실패 0은 참 실패율이 $3/20 = 15\%$ — 일곱 번에 한 번꼴의 충돌 — 까지와도 양립한다.
 > 2. 운용자가 위험을 놓치거나, 인터페이스를 불신하거나, 과부하이거나, 권한이 없을 때.
 > 3. 숙련, 멘탈 모델, 속도, 작업 부하, 위험 반응이 다르다.
 > 4. 과제, 운용 도메인, 인간 역할, 개입/리셋, 안전 폴백, 지속 시간, 실패 처리.

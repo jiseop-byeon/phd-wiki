@@ -79,7 +79,9 @@ where each concept appears in the papers of this wiki.
   - **Powers**: $A^k = Q\Lambda^k Q^\top$ — long-run behavior is governed by the largest
     $|\lambda|$. Stability of $x_{t+1} = Ax_t$ ⟺ all $|\lambda_i| < 1$
     (continuous time $\dot x = Ax$: all $\text{Re}(\lambda_i) < 0$).
-  - **Optimization landscapes**: for quadratic loss $\frac12 x^\top H x$, gradient descent
+  - **Optimization landscapes**: for quadratic loss $\frac12 x^\top H x$ ($H$ = the **Hessian**,
+    the matrix of second derivatives — defined properly in
+    [[02-foundations/calculus-backprop|2. Calculus §1]]; here just "the curvature matrix"), gradient descent
     converges per-eigendirection at rate $(1 - \alpha\lambda_i)$; the usable step size is
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
     **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD — symmetric positive-definite, defined below — Hessian; for a
@@ -188,7 +190,7 @@ where each concept appears in the papers of this wiki.
 
 *Every matrix does exactly this to a sphere: rotate, stretch along axes, rotate again. The $\sigma_i$ are the stretch factors, and a zero $\sigma_i$ is a direction the map destroys.*
 
-- **Worked, on the singular matrix from §2.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
+- **Worked, on the singular matrix from [[02-foundations/engineering-math|0.5 §4]].** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
   Compute $C^\top C = \begin{pmatrix}5&10\\10&20\end{pmatrix}$, whose eigenvalues solve
   $\lambda^2 - 25\lambda = 0$, giving $\lambda = 25, 0$. So $\sigma_1 = \sqrt{25} = 5$ and
   $\sigma_2 = 0$. Read that off: **one** nonzero singular value means rank 1, so $C$ collapses
@@ -339,7 +341,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   - **거듭제곱**: $A^k = Q\Lambda^k Q^\top$ — 장기 거동은 가장 큰 $|\lambda|$가 지배한다.
     $x_{t+1} = Ax_t$의 안정성 ⟺ 모든 $|\lambda_i| < 1$
     (연속 시간 $\dot x = Ax$: 모든 $\text{Re}(\lambda_i) < 0$).
-  - **최적화 지형**: 이차 손실 $\frac12 x^\top H x$에서 경사 하강은 고유방향별로
+  - **최적화 지형**: 이차 손실 $\frac12 x^\top H x$($H$ = **헤시안**, 2차 도함수의 행렬 —
+    정식 정의는 [[02-foundations/calculus-backprop|2. 미적분 §1]]; 여기서는 "곡률 행렬"로
+    읽으면 된다)에서 경사 하강은 고유방향별로
     $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
     $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD — 대칭 양정부호, 아래에 정의 — 헤시안 기준; 일반 행렬의 2-노름 조건수는
@@ -445,7 +449,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 *모든 행렬이 구에 하는 일이 정확히 이것이다: 회전 → 축 방향으로 늘이기 → 다시 회전. $\sigma_i$가 늘이는 배율이고, $\sigma_i = 0$인 방향은 사상이 파괴하는 방향이다.*
 
-- **2절의 특이 행렬로 계산해 보면.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
+- **[[02-foundations/engineering-math|0.5 §4]]의 특이 행렬로 계산해 보면.** $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$.
   $C^\top C = \begin{pmatrix}5&10\\10&20\end{pmatrix}$이고 그 고유값은
   $\lambda^2 - 25\lambda = 0$에서 $\lambda = 25, 0$. 따라서 $\sigma_1 = \sqrt{25} = 5$,
   $\sigma_2 = 0$이다. 그대로 읽으면: 0이 아닌 특이값이 **하나**이므로 랭크 1, 즉 $C$는 평면을

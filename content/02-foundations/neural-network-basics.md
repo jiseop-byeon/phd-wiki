@@ -92,7 +92,11 @@ The parameters start random and are *fitted to data*. Three pieces:
    **cross-entropy** for categories ([[02-foundations/information-theory|5. Information Theory §2]]).
    Continuing the example with target $y = 1$: $L = \tfrac12(0.5-1)^2 = 0.125$.
 3. **Update**: compute $\partial L/\partial W$ for every parameter and nudge each one
-   against its gradient. That is ordinary multivariable calculus
+   against its gradient:
+   $$W \leftarrow W - \alpha\,\frac{\partial L}{\partial W}$$
+   The small number $\alpha$ is the **learning rate** — how far to step each time (typical
+   values $10^{-4}$ to $10^{-2}$; too large and training diverges, too small and it crawls).
+   That is ordinary multivariable calculus
    ([[02-foundations/calculus-backprop|2. Calculus & Backprop]] shows how it is organized
    efficiently, under the name **backpropagation**), and the stepping rule is
    [[02-foundations/optimization|4. Optimization]]'s gradient descent.
@@ -260,7 +264,10 @@ $b_2$가 1개 — **13개**. 논문의 "7B 파라미터"는 정확히 이렇게 
    ([[02-foundations/information-theory|5. 정보이론 §2]]). 위 예제에서 정답이 $y = 1$이면
    $L = \tfrac12(0.5-1)^2 = 0.125$.
 3. **갱신**: 모든 파라미터에 대해 $\partial L/\partial W$를 구해 그래디언트 반대로 조금씩
-   민다. 평범한 다변수 미적분이고
+   민다:
+   $$W \leftarrow W - \alpha\,\frac{\partial L}{\partial W}$$
+   작은 수 $\alpha$가 **학습률**(learning rate) — 매번 얼마나 멀리 갈 것인가다(보통
+   $10^{-4}$~$10^{-2}$; 너무 크면 발산하고 너무 작으면 기어간다). 평범한 다변수 미적분이고
    ([[02-foundations/calculus-backprop|2. 미적분과 역전파]]가 이것을 효율적으로 조직하는
    방법을 **역전파**라는 이름으로 보여준다), 미는 규칙이
    [[02-foundations/optimization|4. 최적화]]의 경사 하강이다.
