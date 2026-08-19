@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Zhang et al., Science Robotics 2021** — [DOI](https://doi.org/10.1126/scirobotics.abc3164) · [PubMed](https://pubmed.ncbi.nlm.nih.gov/34193561/)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/planning-decision-making|4. Planning]] and [[04-robotics/state-estimation-slam|3. State Estimation]] — this is a full classical stack, so read it as a systems-integration paper against [[05-construction-robotics/index|the construction reading frame]] rather than looking for a new algorithm.
+> [[04-robotics/planning-decision-making|4. 계획]]과 [[04-robotics/state-estimation-slam|3. 상태 추정]] — 고전적 스택 전체이므로 새 알고리즘을 찾기보다 [[05-construction-robotics/index|건설 트랙의 읽기 프레임]]에 대조해 시스템 통합 논문으로 읽어라.
+
 ## English
 
 **One-line summary**: Baidu's AES integrated perception, task/motion planning, and control into a full autonomous excavation stack, deployed it across excavator sizes from compact class up to the 49-tonne class, and reported 24 hours of uncrewed operation per human intervention with material throughput (tons/hour) close to an experienced human operator.

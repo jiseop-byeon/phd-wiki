@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Sutskever et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1409.3215) · [PDF](https://arxiv.org/pdf/1409.3215)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/neural-network-basics|0.7 §6]] for encoder/decoder, and [[02-foundations/calculus-backprop|2. Calculus §5]] for the bottleneck this paper creates and [[01-canonical-papers/notes/1-foundations/bahdanau-attention|Bahdanau]] removes: everything must survive one fixed-size vector.
+> 인코더/디코더는 [[02-foundations/neural-network-basics|0.7 §6]], 이 논문이 만들고 [[01-canonical-papers/notes/1-foundations/bahdanau-attention|Bahdanau]]가 없앤 병목은 [[02-foundations/calculus-backprop|2. 미적분 §5]]: 모든 것이 고정 크기 벡터 하나를 통과해 살아남아야 한다.
+
 ## English
 
 **One-line summary**: Two LSTMs — one encoding the input into a vector, one decoding the output from it — established the encoder-decoder paradigm for mapping sequences to sequences.

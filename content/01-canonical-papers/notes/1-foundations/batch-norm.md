@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Ioffe & Szegedy, ICML 2015** — [arXiv](https://arxiv.org/abs/1502.03167) · [PDF](https://arxiv.org/pdf/1502.03167)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/probability|3. Probability §2]] for mean and variance (that is literally all BatchNorm computes) and [[02-foundations/linear-algebra|1. Linear Algebra §3]] for conditioning — the *why* this paper claims, which is still debated. Read the mechanism as settled and the explanation as open.
+> 평균과 분산은 [[02-foundations/probability|3. 확률 §2]](BatchNorm이 계산하는 것은 문자 그대로 이것이 전부다), 조건수는 [[02-foundations/linear-algebra|1. 선형대수 §3]] — 이 논문이 주장하는 *이유* 쪽인데 아직 논쟁 중이다. 메커니즘은 확정된 것으로, 설명은 열린 것으로 읽어라.
+
 ## English
 
 **One-line summary**: Normalize each layer's activations over the mini-batch (with learnable scale/shift) — training becomes dramatically faster and more stable, enabling the very deep networks that followed.

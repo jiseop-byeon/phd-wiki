@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Ronneberger et al., MICCAI 2015** — [arXiv](https://arxiv.org/abs/1505.04597) · [PDF](https://arxiv.org/pdf/1505.04597)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/signal-processing|6. Signal Processing §1]] (convolution) and [[02-foundations/calculus-backprop|2. Calculus §5]] (why a skip connection helps the gradient). The skip connections here carry *resolution* rather than gradient — the same wiring, a different purpose from [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]'s.
+> 합성곱은 [[02-foundations/signal-processing|6. 신호처리 §1]], 스킵 연결이 그래디언트에 도움이 되는 이유는 [[02-foundations/calculus-backprop|2. 미적분 §5]]. 다만 여기서의 스킵은 그래디언트가 아니라 *해상도*를 나른다 — 같은 배선, [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]과는 다른 목적이다.
+
 ## English
 
 **One-line summary**: An encoder-decoder with skip connections at every scale — the architecture that made dense per-pixel prediction work, and a decade later became the default backbone of diffusion models.

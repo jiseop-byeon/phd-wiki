@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lee & Han, Automation in Construction 2024** — [DOI](https://doi.org/10.1016/j.autcon.2024.105699)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]] (seam detection is a perception problem) and [[04-robotics/hri-safety|11. HRI & Safety §1]] — the paper ships *two operating modes*, so its autonomy claim is a spectrum position, not a binary.
+> [[04-robotics/geometric-perception-calibration|3.5 기하 인식]](용접선 검출은 인식 문제)과 [[04-robotics/hri-safety|11. HRI·안전 §1]] — 논문이 *두 가지 운용 모드*를 함께 내놓으므로, 자율성 주장은 이분법이 아니라 스펙트럼 위의 위치다.
+
 ## English
 
 **One-line summary**: A UGV-mounted robot arm detects weld joints with vision and welds them in real time, shipping with two operating modes — fully automated *and* a human-robot-interaction mode that keeps the worker in the loop.

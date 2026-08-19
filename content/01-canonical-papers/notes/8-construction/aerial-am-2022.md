@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Zhang et al., Nature 2022** — [Nature (open link)](https://www.nature.com/articles/s41586-022-04988-4)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/state-estimation-slam|3. State Estimation]] (drones deposit material *while flying*, so pose error becomes print error directly) and [[04-robotics/robot-systems-deployment|10. Robot Systems §3]] — the latency budget is unusually load-bearing here.
+> [[04-robotics/state-estimation-slam|3. 상태 추정]](드론이 *비행 중에* 재료를 쌓으므로 자세 오차가 곧바로 출력 오차가 된다)과 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]] — 여기서는 지연 예산이 유난히 결정적이다.
+
 ## English
 
 **One-line summary**: A team of drones 3D-prints *during flight* — BuilDrones deposit material while ScanDrones measure print quality — a wasp-inspired multi-robot framework that reached Nature by demonstrating manufacturing in a regime (unbounded, at-height, hard-to-access) where ground robots cannot go.

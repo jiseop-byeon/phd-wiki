@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Kerbl et al., SIGGRAPH 2023** — [arXiv](https://arxiv.org/abs/2308.04079) · [PDF](https://arxiv.org/pdf/2308.04079) · [Code](https://github.com/graphdeco-inria/gaussian-splatting)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/probability|3. Probability §3]] for what a Gaussian's mean and covariance mean geometrically (an ellipsoid — the covariance is PSD, [[02-foundations/linear-algebra|1. Linear Algebra §3]]), and [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]] for the rendering problem this replaces. The optimization is plain gradient descent on a photometric loss.
+> 가우시안의 평균·공분산이 기하학적으로 무엇인지는 [[02-foundations/probability|3. 확률 §3]](타원체 — 공분산이 PSD인 것은 [[02-foundations/linear-algebra|1. 선형대수 §3]]), 이것이 대체하는 렌더링 문제는 [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]. 최적화는 광도 손실에 대한 평범한 경사 하강이다.
+
 ## English
 
 **One-line summary**: Represent the scene as millions of optimizable 3D Gaussians and *rasterize* them — NeRF-quality novel views at 100+ fps, trained in minutes, returning 3D reconstruction to an explicit, editable representation.

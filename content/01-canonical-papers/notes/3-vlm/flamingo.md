@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Alayrac et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2204.14198) · [PDF](https://arxiv.org/pdf/2204.14198) · [Code (open repro)](https://github.com/mlfoundations/open_flamingo)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/3-vlm/clip|CLIP]] (the frozen vision side) and [[02-foundations/neural-network-basics|0.7 §6]] for *frozen* — the whole design question here is which parts receive gradient and which do not, so that one word carries the paper.
+> [[01-canonical-papers/notes/3-vlm/clip|CLIP]](얼어붙은 비전 쪽)과 *frozen*의 뜻은 [[02-foundations/neural-network-basics|0.7 §6]] — 여기서 설계 질문 전체가 "어느 부분이 그래디언트를 받고 어느 부분이 받지 않는가"이므로, 그 한 단어가 논문을 떠받친다.
+
 ## English
 
 **One-line summary**: Bridge a frozen vision encoder and a frozen LLM with trainable connector layers (Perceiver Resampler + gated cross-attention — themselves billions of parameters at the 80B scale) — the resulting VLM inherits the LLM's few-shot learning and handles interleaved image-text sequences.

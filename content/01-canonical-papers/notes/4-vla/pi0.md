@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Black et al. (Physical Intelligence), 2024** — [arXiv](https://arxiv.org/abs/2410.24164) · [PDF](https://arxiv.org/pdf/2410.24164) · [Code](https://github.com/Physical-Intelligence/openpi) · [Official](https://www.physicalintelligence.company/blog/pi0)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/flow-matching|Flow matching]] is the prerequisite the paper leans on hardest, and [[02-foundations/rl-basics|7. RL Basics §6]] explains why continuous chunks are wanted over discrete tokens. For "50 Hz", read [[04-robotics/robot-systems-deployment|10. Robot Systems §3]] — a control rate is a latency claim, and this paper's whole architecture is shaped by it.
+> 논문이 가장 크게 기대는 선수 지식은 [[01-canonical-papers/notes/6-diffusion/flow-matching|flow matching]]이고, 이산 토큰보다 연속 청크를 원하는 이유는 [[02-foundations/rl-basics|7. RL 기초 §6]]. "50 Hz"는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]에서 읽어라 — 제어 주기는 지연에 관한 주장이고, 이 논문의 구조 전체가 그것에 의해 빚어졌다.
+
 ## English
 
 **One-line summary**: A VLM backbone plus a flow-matching "action expert" that outputs 50 Hz continuous action chunks — merging the RT-2 semantic lineage with the Diffusion Policy control lineage, and folding laundry to prove it.

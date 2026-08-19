@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Liu et al., ICCV 2021** — [arXiv](https://arxiv.org/abs/2103.14030) · [PDF](https://arxiv.org/pdf/2103.14030) · [Code](https://github.com/microsoft/Swin-Transformer)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] first, then one arithmetic check: attention costs $O(n^2)$ in the number of tokens, so restricting it to windows of $M$ tokens turns $O(n^2)$ into $O(nM)$. That single line is why this architecture exists.
+> [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]를 먼저, 그다음 산수 하나만 확인하라: 어텐션은 토큰 수에 대해 $O(n^2)$이므로 $M$개짜리 윈도로 제한하면 $O(n^2)$이 $O(nM)$이 된다. 이 한 줄이 이 구조가 존재하는 이유다.
+
 ## English
 
 **One-line summary**: Windowed attention with shifted windows + hierarchical downsampling gives Transformers linear complexity and multi-scale features — making ViT usable as a general *backbone* for detection and segmentation.

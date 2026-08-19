@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Bruce et al., ICML 2024** — [arXiv](https://arxiv.org/abs/2402.15391) · [PDF](https://arxiv.org/pdf/2402.15391) · [Genie 2 (Official)](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/5-world-models/world-models|World Models]] and [[02-foundations/information-theory|5. Information Theory §5]] (latent variables and the ELBO). The distinctive move — learning a latent *action* space from unlabeled video — is a latent-variable argument, so hold that section's definition of "latent" firmly.
+> [[01-canonical-papers/notes/5-world-models/world-models|World Models]]와 [[02-foundations/information-theory|5. 정보이론 §5]](잠재변수와 ELBO). 이 논문의 독특한 수 — 레이블 없는 영상에서 잠재 *행동* 공간을 배우는 것 — 은 잠재변수 논증이므로, 그 절의 "잠재" 정의를 단단히 붙들고 가라.
+
 ## English
 
 **One-line summary**: From ~30k hours of *unlabeled* gameplay video (filtered from a ~244k-hour crawl), learn a latent action space and an action-controllable video model — turning any image into a playable world, no action labels ever provided.

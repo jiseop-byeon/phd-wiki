@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Octo Model Team, RSS 2024** — [arXiv](https://arxiv.org/abs/2405.12213) · [PDF](https://arxiv.org/pdf/2405.12213) · [Code](https://github.com/octo-models/octo) · [Official](https://octo-models.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]] (the data) and [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] (the action head). The interesting engineering claim is *modularity* — swapping observation and action heads per embodiment — which is an interface question: [[04-robotics/robot-systems-deployment|10. Robot Systems §2]] on what "action" actually means.
+> 데이터는 [[01-canonical-papers/notes/4-vla/open-x-embodiment|OXE]], 행동 헤드는 [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]. 흥미로운 공학적 주장은 *모듈성* — 임베디먼트마다 관측·행동 헤드를 갈아끼우는 것 — 이고 이는 인터페이스 문제다: "행동"이 실제로 무엇을 뜻하는지는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §2]].
+
 ## English
 
 **One-line summary**: A small open transformer trained on 800k Open X-Embodiment trajectories, with a diffusion action head and a plug-in token design — the first generalist policy anyone could download, fine-tune, and re-wire to a new robot in hours.

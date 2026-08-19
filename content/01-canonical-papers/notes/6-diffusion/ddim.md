@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Song et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2010.02502) · [PDF](https://arxiv.org/pdf/2010.02502)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] is mandatory here. The key permission is stated in that note: the training loss only constrains the *marginals* $q(x_t|x_0)$, so any sampler consistent with them is legal — which is exactly the freedom DDIM spends.
+> 여기서는 [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]이 필수다. 핵심 허가는 그 노트에 적혀 있다: 학습 손실은 *주변분포* $q(x_t|x_0)$만 제약하므로 그것과 일관된 어떤 샘플러도 허용된다 — DDIM이 쓰는 자유가 정확히 그것이다.
+
 ## English
 
 **One-line summary**: The same trained DDPM network admits a *non-Markovian, deterministic* sampler — 10–50 steps instead of 1000, plus an invertible latent space enabling interpolation and editing.

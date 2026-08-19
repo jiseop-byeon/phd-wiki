@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Carreira & Zisserman, CVPR 2017 · Feichtenhofer et al., ICCV 2019** — [I3D arXiv](https://arxiv.org/abs/1705.07750) · [PDF](https://arxiv.org/pdf/1705.07750) · [SlowFast arXiv](https://arxiv.org/abs/1812.03982)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/signal-processing|6. Signal Processing §1–2]]: a 3D convolution is the same flip-slide-multiply-accumulate with one more axis, and the two-pathway (slow/fast) design is a *sampling-rate* argument — different frame rates capture different temporal frequencies.
+> [[02-foundations/signal-processing|6. 신호처리 §1–2]]: 3D 합성곱은 축이 하나 늘었을 뿐 같은 뒤집기·밀기·곱하기·더하기이고, 느린/빠른 두 경로 설계는 *샘플링 레이트* 논증이다 — 프레임률이 다르면 잡히는 시간 주파수가 다르다.
+
 ## English
 
 **One-line summary**: The two canonical answers to "how do CNNs watch video": inflate 2D filters into 3D and inherit ImageNet weights (I3D), or process time at two rates — a slow semantic pathway and a fast motion pathway (SlowFast).

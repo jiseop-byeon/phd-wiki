@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **LeCun, 2022 · Assran et al., CVPR 2023 · Meta AI, 2024–25** — [Position paper](https://openreview.net/forum?id=BZ5a1r-kVsf) · [I-JEPA arXiv](https://arxiv.org/abs/2301.08243) · [V-JEPA 2 arXiv](https://arxiv.org/abs/2506.09985)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/calculus-backprop|2. Calculus §5]]'s stop-gradient paragraph and [[02-foundations/information-theory|5. Information Theory §4]]. The architectural claim is negative — predict in representation space *instead of* pixels — so the question to carry is what stops the representation from collapsing to a constant.
+> [[02-foundations/calculus-backprop|2. 미적분 §5]]의 stop-gradient 단락과 [[02-foundations/information-theory|5. 정보이론 §4]]. 이 논문의 구조적 주장은 부정형이다 — 픽셀 *대신* 표현 공간에서 예측하라 — 그러므로 들고 갈 질문은 "무엇이 표현이 상수로 붕괴하는 것을 막는가"다.
+
 ## English
 
 **One-line summary**: Predict in *representation space*, not pixel space — LeCun's architectural manifesto, made real by I-JEPA (images), V-JEPA (video), and V-JEPA 2 (zero-shot robot planning from 1M hours of video).

@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Kirillov et al., ICCV 2023** — [arXiv](https://arxiv.org/abs/2304.02643) · [PDF](https://arxiv.org/pdf/2304.02643) · [Code](https://github.com/facebookresearch/segment-anything)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/1-foundations/vit|ViT]] (the image encoder) and [[02-foundations/ml-practice|9. ML Practice §1 and §3]] — the interesting claims here are about *data* and *zero-shot transfer*, so the split/leakage and metric vocabulary matter more than any equation in the paper.
+> [[01-canonical-papers/notes/1-foundations/vit|ViT]](이미지 인코더)와 [[02-foundations/ml-practice|9. ML 실무 §1·§3]] — 여기서 흥미로운 주장은 *데이터*와 *zero-shot 전이*에 관한 것이라, 논문의 어떤 수식보다 분할·누출과 지표 어휘가 더 중요하다.
+
 ## English
 
 **One-line summary**: A promptable segmentation foundation model — point/box/mask prompts in, valid mask out — trained via a model-in-the-loop data engine that produced 1.1B masks, making segmentation zero-shot.

@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Stentz et al., Autonomous Robots 1999 / IROS 1998** — [Official CMU page + PDF](https://publications.ri.cmu.edu/a-robotic-excavator-for-autonomous-truck-loading)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/planning-decision-making|4. Planning]] and [[04-robotics/state-estimation-slam|3. State Estimation]]. Read it historically: a complete autonomous cycle in 1999, before learning entered the field — useful as the baseline that later papers implicitly claim to beat.
+> [[04-robotics/planning-decision-making|4. 계획]]과 [[04-robotics/state-estimation-slam|3. 상태 추정]]. 역사적으로 읽어라: 학습이 이 분야에 들어오기 전인 1999년의 완전한 자율 사이클 — 이후 논문들이 암묵적으로 이기겠다고 주장하는 기준선으로 유용하다.
+
 ## English
 
 **One-line summary**: CMU automated the complete truck-loading cycle — perception, dig/dump-point selection, motion, and obstacle stopping — on a real hydraulic excavator, demonstrating loading at expert-operator speed decades before modern robot learning.

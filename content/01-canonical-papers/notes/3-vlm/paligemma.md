@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Beyer, Steiner et al. (Google), 2024** — [arXiv](https://arxiv.org/abs/2407.07726) · [PDF](https://arxiv.org/pdf/2407.07726)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/3-vlm/clip|CLIP]] for the vision encoder lineage and [[02-foundations/neural-network-basics|0.7 §4]] for the training-budget arithmetic (batch, epoch, steps) — this paper is a *recipe* paper, so its contribution lives in those numbers rather than in a new equation.
+> 비전 인코더 계보는 [[01-canonical-papers/notes/3-vlm/clip|CLIP]], 학습 예산 산수(배치·에포크·스텝)는 [[02-foundations/neural-network-basics|0.7 §4]] — 이 논문은 *레시피* 논문이라 새 수식이 아니라 그 숫자들에 기여가 담겨 있다.
+
 ## English
 
 **One-line summary**: A deliberately small (~3B) open VLM — SigLIP vision encoder + Gemma-2B language model — designed as a *transfer base*: pretrain broadly, then fine-tune to each downstream task.

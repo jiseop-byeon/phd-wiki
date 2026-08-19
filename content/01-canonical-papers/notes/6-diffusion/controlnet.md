@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Zhang et al., ICCV 2023** — [arXiv](https://arxiv.org/abs/2302.05543) · [PDF](https://arxiv.org/pdf/2302.05543) · [Code](https://github.com/lllyasviel/ControlNet)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]] and one initialization fact worth pausing on: the connecting layers start at **zero**, so at step 0 the whole side-branch contributes nothing and the model is exactly the pretrained one — the same no-op initialization idea as [[01-canonical-papers/notes/1-foundations/lora|LoRA]]'s $B = 0$.
+> [[01-canonical-papers/notes/6-diffusion/latent-diffusion|잠재 디퓨전]], 그리고 잠깐 멈춰 볼 초기화 사실 하나: 연결층이 **0**에서 출발하므로 0 스텝에서는 곁가지 전체가 아무 기여도 하지 않고 모델이 정확히 사전학습 모델과 같다 — [[01-canonical-papers/notes/1-foundations/lora|LoRA]]의 $B = 0$과 같은 no-op 초기화 발상이다.
+
 ## English
 
 **One-line summary**: Clone the diffusion U-Net's encoder as a trainable side-branch, connect it through zero-initialized layers, and any spatial signal — edges, pose, depth — becomes a precise control input without touching the base model.

@@ -16,6 +16,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Schulman et al., arXiv 2017** — [arXiv](https://arxiv.org/abs/1707.06347) · [PDF](https://arxiv.org/pdf/1707.06347)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Read the derivation in [[02-foundations/rl-basics|7. RL Basics §4]] first — log-derivative trick → REINFORCE → baseline/advantage → clipped surrogate. This note does not repeat that chain; it covers only what the paper adds on top of it.
 > [[02-foundations/rl-basics|RL 기초 §4]]에서 log-derivative trick → REINFORCE → baseline/advantage → clipped surrogate까지의 유도를 먼저 읽어라 — 이 노트는 그 유도를 반복하지 않고, 논문이 그 위에 무엇을 얹었는지만 다룬다.
 
 ## English

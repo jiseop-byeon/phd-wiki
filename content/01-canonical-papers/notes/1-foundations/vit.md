@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Dosovitskiy et al., ICLR 2021** — [arXiv](https://arxiv.org/abs/2010.11929) · [PDF](https://arxiv.org/pdf/2010.11929) · [Code](https://github.com/google-research/vision_transformer)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/linear-algebra|1. Linear Algebra §1]]'s attention shape walk-through ($Q = XW_Q$ giving $T\times64$) — here the $T$ tokens are image patches instead of words. Read [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] first; ViT changes the input, not the machinery.
+> [[02-foundations/linear-algebra|1. 선형대수 §1]]의 어텐션 차원 따라가기($Q = XW_Q$가 $T\times64$) — 여기서 $T$개의 토큰이 단어가 아니라 이미지 패치일 뿐이다. [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]를 먼저 읽어라. ViT가 바꾼 것은 입력이지 기계장치가 아니다.
+
 ## English
 
 **One-line summary**: Cut an image into 16×16 patches, treat them as tokens, and feed a plain Transformer — with enough pretraining data, it beats the best CNNs, unifying vision and language under one architecture.

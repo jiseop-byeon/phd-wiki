@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Peebles & Xie, ICCV 2023** — [arXiv](https://arxiv.org/abs/2212.09748) · [PDF](https://arxiv.org/pdf/2212.09748) · [Code](https://github.com/facebookresearch/DiT)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/1-foundations/vit|ViT]] and [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]. No new mathematics: the diffusion objective is unchanged, only the network computing $\epsilon_\theta$ is swapped. Read the scaling plots with [[01-canonical-papers/notes/1-foundations/scaling-laws|scaling laws]] in mind.
+> [[01-canonical-papers/notes/1-foundations/vit|ViT]]와 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|잠재 디퓨전]]. 새 수학은 없다: 디퓨전 목적함수는 그대로이고 $\epsilon_\theta$를 계산하는 신경망만 바뀌었다. 스케일링 그래프는 [[01-canonical-papers/notes/1-foundations/scaling-laws|스케일링 법칙]]을 염두에 두고 읽어라.
+
 ## English
 
 **One-line summary**: Replace the diffusion U-Net with a plain Transformer over latent patches — quality scales cleanly with compute (Gflops), unifying diffusion with the scaling playbook and becoming the backbone of Sora and modern robot action heads.

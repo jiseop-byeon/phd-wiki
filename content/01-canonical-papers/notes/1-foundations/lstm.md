@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Hochreiter & Schmidhuber, Neural Computation 1997** — [PDF](https://deeplearning.cs.cmu.edu/F23/document/readings/LSTM.pdf) · [Official](https://doi.org/10.1162/neco.1997.9.8.1735)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/calculus-backprop|2. Calculus §5]], the vanishing-gradient section: products of Jacobians with norm < 1 decay exponentially with depth or time. The LSTM's answer — a self-connection of weight exactly 1.0 — is a single line once you have that picture.
+> [[02-foundations/calculus-backprop|2. 미적분 §5]]의 그래디언트 소실 절: 노름이 1보다 작은 야코비안의 곱은 깊이·시간에 대해 지수적으로 줄어든다. LSTM의 답 — 가중치가 정확히 1.0인 자기 연결 — 은 그 그림만 있으면 한 줄이다.
+
 ## English
 
 **One-line summary**: Gated memory cells with constant error flow solved the vanishing gradient problem, making RNNs actually able to learn long-range dependencies — the workhorse of sequence modeling until the Transformer.

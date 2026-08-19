@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Zhai, Terenzi et al. (ETH RSL), 2025** — [arXiv](https://arxiv.org/abs/2509.14992) · [PDF](https://arxiv.org/pdf/2509.14992)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §6 and §9]] (imitation from RL-expert demonstrations, and what fine-tuning on a real machine costs) plus [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]'s deployment ladder — the ladder, not the method name, is what sets this paper's claim.
+> [[02-foundations/rl-basics|7. RL 기초 §6·§9]](RL 전문가 시연으로부터의 모방, 그리고 실기계 파인튜닝의 비용)와 [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]의 배치 사다리 — 이 논문의 주장 수준을 정하는 것은 방법 이름이 아니라 그 사다리다.
+
 ## English
 
 **One-line summary**: The foundation-model recipe arrives at excavation — a unified open-source framework for large-scale demonstration collection, **multi-task pretraining**, and **SFT/RLFT fine-tuning** of excavation policies, executing full digging cycles with centimeter-level accuracy.

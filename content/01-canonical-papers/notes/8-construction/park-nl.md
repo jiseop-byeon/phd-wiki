@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Park et al., Automation in Construction 2024** — [arXiv](https://arxiv.org/abs/2307.04195) · [PDF](https://arxiv.org/pdf/2307.04195)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/saycan|SayCan]] for the same shape of problem (language → executable actions), and [[04-robotics/planning-decision-making|4. Planning §7]] for why symbolic validity does not imply geometric feasibility.
+> 같은 형태의 문제(언어 → 실행 가능한 행동)는 [[01-canonical-papers/notes/4-vla/saycan|SayCan]], 기호적으로 타당한 것이 왜 기하학적으로 실행 가능함을 뜻하지 않는지는 [[04-robotics/planning-decision-making|4. 계획 §7]].
+
 ## English
 
 **One-line summary**: A three-stage pipeline — Natural Language Understanding → Information Mapping against building-component data → Robot Control — lets a field worker direct a robotic assistant with ordinary spoken-style instructions, demonstrated on a drywall installation case study.

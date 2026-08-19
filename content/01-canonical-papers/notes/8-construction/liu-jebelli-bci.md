@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Liu, Habibnezhad & Jebelli, Automation in Construction 2021** — [DOI](https://doi.org/10.1016/j.autcon.2020.103523) · [Sibling paper](https://doi.org/10.1016/j.autcon.2021.103556)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/signal-processing|6. Signal Processing §2 and §4]] (EEG is a sampled, heavily filtered signal — sampling rate and filter lag are not incidental here) and [[04-robotics/hri-safety|11. HRI & Safety §2]] for what "hands-free teleoperation" places in the loop.
+> [[02-foundations/signal-processing|6. 신호처리 §2·§4]](EEG는 샘플링되고 강하게 필터링된 신호이며, 여기서 샘플링 레이트와 필터 지연은 부수적인 것이 아니다)와, "핸즈프리 원격조작"이 루프에 무엇을 놓는지는 [[04-robotics/hri-safety|11. HRI·안전 §2]].
+
 ## English
 
 **One-line summary**: A wearable EEG headset decodes a worker's brainwaves into robot commands, giving hands-free teleoperation of a construction robot — the founding pair of the worker-centered BCI line, where the *interface* is the contribution and the human stays the controller.

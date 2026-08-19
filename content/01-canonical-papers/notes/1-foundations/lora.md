@@ -19,6 +19,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Hu et al., ICLR 2022** — [arXiv](https://arxiv.org/abs/2106.09685) · [PDF](https://arxiv.org/pdf/2106.09685) · [Code](https://github.com/microsoft/LoRA)
 
 > [!note] 수학 준비물 · Math on-ramp
+> [[02-foundations/linear-algebra|1. Linear Algebra §2 and §4]] — rank and the SVD (Eckart–Young) are the whole mathematics here. Note the honest distinction that page draws: LoRA does not SVD-approximate a finished update, it *parameterizes* the update as low-rank from the start.
 > [[02-foundations/linear-algebra|선형대수 §2·§4]]의 랭크와 SVD(Eckart–Young)가 이 논문의 수학 전부다: "업데이트가 저랭크"라는 가설은 $\Delta W$를 얇은 행렬 둘의 곱으로 근사해도 된다는 뜻이다.
 
 ## English

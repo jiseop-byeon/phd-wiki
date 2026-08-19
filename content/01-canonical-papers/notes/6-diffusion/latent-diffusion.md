@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Rombach et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2112.10752) · [PDF](https://arxiv.org/pdf/2112.10752) · [Code](https://github.com/CompVis/latent-diffusion)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]] (the compressor) and [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] (what runs inside it). One arithmetic check earns the paper: diffusing $64\times64$ latents instead of $512\times512$ pixels is $64$× fewer positions per step — the "~50× cheaper" headline is that ratio, softened by the autoencoder's own cost.
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]](압축기)와 [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]](그 안에서 도는 것). 산수 한 번이면 논문이 이해된다: $512\times512$ 픽셀 대신 $64\times64$ 잠재를 디퓨전하면 스텝당 위치 수가 $64$배 적다 — "약 50배 저렴"이라는 헤드라인이 그 비율이고, 오토인코더 자신의 비용이 그것을 조금 깎는다.
+
 ## English
 
 **One-line summary**: Run diffusion in a VAE's compressed latent space instead of pixel space — ~50× cheaper generation at high resolution, and (as Stable Diffusion, openly released) the model that democratized image generation.

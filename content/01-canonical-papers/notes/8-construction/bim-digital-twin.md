@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Wang et al., Computers in Industry 2024** — [arXiv (OA)](https://arxiv.org/abs/2306.09639) · [DOI](https://doi.org/10.1016/j.compind.2024.104112)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[05-construction-robotics/digital-twin-workflows|7. Digital Twins §2]] — read the paper against the four-rung ladder there and decide which data and command paths it actually closes, before accepting the word "twin".
+> [[05-construction-robotics/digital-twin-workflows|7. 디지털 트윈 §2]] — "트윈"이라는 단어를 받아들이기 전에, 그 절의 4단 사다리에 논문을 대조해 실제로 어떤 데이터·명령 경로를 닫았는지 판정하라.
+
 ## English
 
 **One-line summary**: A BIM-grounded, process-level digital twin links task generation from the building model, robot execution, sensing of the as-built result, and model updates into one closed loop for human–robot construction work.

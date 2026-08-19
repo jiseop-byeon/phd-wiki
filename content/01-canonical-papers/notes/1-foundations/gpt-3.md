@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Brown et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2005.14165) · [PDF](https://arxiv.org/pdf/2005.14165)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/information-theory|5. Information Theory §2]] for the training objective and for **perplexity** ($e^{H(p,q)}$) — the only number this paper reports that needs a definition. In-context learning is an empirical finding, not a mechanism the math predicts.
+> 학습 목적함수와 **perplexity**($e^{H(p,q)}$)는 [[02-foundations/information-theory|5. 정보이론 §2]] — 이 논문이 보고하는 숫자 중 정의가 필요한 것은 그것뿐이다. in-context learning은 수학이 예측한 메커니즘이 아니라 경험적 발견이다.
+
 ## English
 
 **One-line summary**: A 175B-parameter decoder-only Transformer performs new tasks from a few examples in its prompt, without any gradient updates — scale itself produces a general-purpose learner.

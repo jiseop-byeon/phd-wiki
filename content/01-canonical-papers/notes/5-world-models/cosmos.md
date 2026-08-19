@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **NVIDIA, 2025** — [arXiv](https://arxiv.org/abs/2501.03575) · [PDF](https://arxiv.org/pdf/2501.03575) · [Code](https://github.com/nvidia-cosmos/cosmos-predict1)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] and [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]] (the generator halves), plus [[05-construction-robotics/sim-to-real|Sim-to-Real §4]] — the claim that matters here is whether generated video is *usable as training experience*, which is a transfer-evidence question, not a video-quality one.
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]과 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|잠재 디퓨전]](생성기 절반), 그리고 [[05-construction-robotics/sim-to-real|Sim-to-Real §4]] — 여기서 중요한 주장은 생성된 영상이 *학습 경험으로 쓸 수 있는가*이고, 그것은 영상 품질이 아니라 전이 증거의 문제다.
+
 ## English
 
 **One-line summary**: An open platform of video world foundation models — tokenizers plus diffusion and autoregressive generators pretrained on ~20M hours of video — built to be *post-trained* into simulators, data engines, and policy evaluators for robots and autonomous vehicles.

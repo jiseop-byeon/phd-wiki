@@ -18,6 +18,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 **Hafner et al., ICML 2019** — [arXiv](https://arxiv.org/abs/1811.04551) · [PDF](https://arxiv.org/pdf/1811.04551) · [Code](https://github.com/google-research/planet)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Training the RSSM is [[01-canonical-papers/notes/6-diffusion/vae|VAE]]'s ELBO unrolled over a sequence (prerequisite: [[02-foundations/information-theory|5. Information Theory §5]]). CEM planning is derivative-free optimization — sample, score, keep the best, refit.
 > RSSM 학습은 [[01-canonical-papers/notes/6-diffusion/vae|VAE]]의 ELBO를 시퀀스로 편 것이다(준비물: [[02-foundations/information-theory|정보이론 §5]]). CEM은 미분 없는 최적화 — 샘플→상위 k 선택→분포 재적합의 반복일 뿐이다.
 
 ## English

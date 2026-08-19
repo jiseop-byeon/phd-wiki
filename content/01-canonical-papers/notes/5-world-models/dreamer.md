@@ -19,6 +19,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Hafner et al., ICLR 2020 → Nature 2025 (v3)** — [arXiv (v3)](https://arxiv.org/abs/2301.04104) · [PDF](https://arxiv.org/pdf/2301.04104) · [Code](https://github.com/danijar/dreamerv3) · v1: [1912.01603](https://arxiv.org/abs/1912.01603) · v2: [2010.02193](https://arxiv.org/abs/2010.02193)
 
 > [!note] 수학 준비물 · Math on-ramp
+> RSSM = [[01-canonical-papers/notes/6-diffusion/vae|VAE]]'s ELBO machinery plus an RNN's recurrence. Prerequisites: [[02-foundations/information-theory|5. Information Theory §5]] (ELBO) and [[02-foundations/rl-basics|7. RL Basics §2 and §5]] (value functions, model-based RL). With those three, every equation in the paper reads as a combination.
 > RSSM = [[01-canonical-papers/notes/6-diffusion/vae|VAE]]의 ELBO 기계장치 + RNN의 순환. 준비물: [[02-foundations/information-theory|정보이론 §5]] ELBO, [[02-foundations/rl-basics|RL 기초 §2·§5]]의 가치 함수와 모델 기반 RL. 이 셋이 있으면 논문의 모든 식이 조합으로 읽힌다.
 
 ## English

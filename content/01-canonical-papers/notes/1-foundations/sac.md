@@ -15,6 +15,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Haarnoja et al., ICML 2018** — [arXiv](https://arxiv.org/abs/1801.01290) · [PDF](https://arxiv.org/pdf/1801.01290)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §3]] (Q-learning and what off-policy buys you) and [[02-foundations/rl-basics|§4]] (actor-critic). The one extra ingredient is the entropy term, whose definition is [[02-foundations/information-theory|5. Information Theory §1]] — SAC maximizes return *plus* entropy, so read it as "stay as random as you can afford to be".
+> [[02-foundations/rl-basics|7. RL 기초 §3]](Q-러닝과 오프폴리시가 사주는 것)과 [[02-foundations/rl-basics|§4]](액터-크리틱). 추가 재료는 엔트로피 항 하나이고 그 정의는 [[02-foundations/information-theory|5. 정보이론 §1]]이다 — SAC은 리턴 *더하기* 엔트로피를 최대화하므로 "감당할 수 있는 만큼 무작위로 남아 있어라"로 읽으면 된다.
+
 ## English
 
 **One-line summary**: SAC is an off-policy actor–critic that maximizes expected return *plus* policy entropy, getting replay-buffer sample efficiency and robust exploration from one maximum-entropy objective.

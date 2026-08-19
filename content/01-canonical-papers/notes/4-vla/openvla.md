@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Kim et al., CoRL 2024** — [arXiv](https://arxiv.org/abs/2406.09246) · [PDF](https://arxiv.org/pdf/2406.09246) · [Code](https://github.com/openvla/openvla) · [Official](https://openvla.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/rt-2|RT-2]] (the discretize-actions-into-tokens idea) and [[01-canonical-papers/notes/1-foundations/lora|LoRA]] (how it is fine-tuned cheaply). The discretization itself is worth one arithmetic pause: 256 bins per dimension makes control a classification problem — [[02-foundations/calculus-backprop|2. Calculus §4]] on softmax + cross-entropy.
+> [[01-canonical-papers/notes/4-vla/rt-2|RT-2]](행동을 토큰으로 이산화하는 발상)와 [[01-canonical-papers/notes/1-foundations/lora|LoRA]](저렴한 파인튜닝 방법). 이산화 자체에 산수 한 번 멈출 값이 있다: 차원당 256구간이면 제어가 분류 문제가 된다 — softmax + 교차 엔트로피는 [[02-foundations/calculus-backprop|2. 미적분 §4]].
+
 ## English
 
 **One-line summary**: A fully open 7B VLA — SigLIP+DINOv2 vision fused into a Llama-2 backbone, trained on 970k OXE trajectories — that outperforms the closed 55B RT-2-X and fine-tunes on a consumer GPU via LoRA.

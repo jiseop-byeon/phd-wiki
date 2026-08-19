@@ -17,6 +17,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 **Goodfellow et al., NeurIPS 2014** — [arXiv](https://arxiv.org/abs/1406.2661) · [PDF](https://arxiv.org/pdf/1406.2661)
 
 > [!note] 수학 준비물 · Math on-ramp
+> How to read $\min_G \max_D$: take the inner $\max_D$ first as "the best discriminator against a fixed $G$", then the outer $\min_G$ as "the generator that makes even that best discriminator do worst". No likelihood appears anywhere — which is exactly why evaluation needs FID ([[02-foundations/ml-practice|9. ML Practice §3]]).
 > $\min_G \max_D$ 읽는 법: 안쪽 $\max_D$를 먼저 고정된 $G$에 대한 "최선의 판별자"로 읽고, 바깥 $\min_G$는 그 최선의 판별자를 상대로 한 생성자 최적화로 읽어라 — 두 플레이어가 번갈아 움직이는 [[02-foundations/optimization|최적화]] 문제다. 기댓값 표기는 [[02-foundations/probability|확률 §2]].
 
 ## English

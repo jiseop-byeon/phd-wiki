@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Yu, Kamat & Menassa, JCCE 2024** — [arXiv](https://arxiv.org/abs/2309.11619) · [PDF](https://arxiv.org/pdf/2309.11619)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §6]] and [[02-foundations/ml-practice|9. ML Practice §1]]. VR demonstrations raise a distribution-shift question that the paper must answer: what differs between a demonstration in VR and the same action on a site?
+> [[02-foundations/rl-basics|7. RL 기초 §6]]과 [[02-foundations/ml-practice|9. ML 실무 §1]]. VR 시연은 논문이 답해야 할 분포 이동 질문을 만든다: VR에서의 시연과 현장에서의 같은 동작은 무엇이 다른가?
+
 ## English
 
 **One-line summary**: Workers demonstrate construction tasks in VR, the demonstrations pool in the cloud as reusable digital assets, and hierarchical imitation learning decomposes the craft skill into sequential and reactive sub-skills — an attack on IL's demonstration-cost problem shaped for construction (drywall installation).

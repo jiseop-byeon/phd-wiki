@@ -15,6 +15,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **OpenAI, 2024 (technical report)** — [Report](https://openai.com/index/video-generation-models-as-world-simulators/)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/dit|DiT]] (the architecture) and [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]] (the space it runs in). The "emergent 3D consistency" claim needs [[02-foundations/ml-practice|9. ML Practice §5]] more than it needs mathematics — it is a claim about evaluation, made without one.
+> 구조는 [[01-canonical-papers/notes/6-diffusion/dit|DiT]], 그것이 도는 공간은 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|잠재 디퓨전]]. "3D 일관성이 창발한다"는 주장에는 수학보다 [[02-foundations/ml-practice|9. ML 실무 §5]]가 더 필요하다 — 평가에 관한 주장인데 평가 없이 제시되었다.
+
 ## English
 
 **One-line summary**: A diffusion transformer over spacetime patches of video latents, scaled hard — and the claim that emergent 3D consistency and object permanence make video generators a path to world simulators.

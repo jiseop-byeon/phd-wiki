@@ -19,6 +19,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Carion et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2005.12872) · [PDF](https://arxiv.org/pdf/2005.12872) · [Code](https://github.com/facebookresearch/detr)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Hungarian matching = the optimal one-to-one pairing of predictions with ground truth (an assignment problem — the combinatorial cousin of [[02-foundations/optimization|4. Optimization]]). Take it as a black box that makes the loss permutation-invariant.
 > 헝가리안 매칭 = 예측과 정답의 최적 1:1 짝짓기(할당 문제, [[02-foundations/optimization|최적화]]의 조합 버전). 여기서는 "이 손실이 유일 대응 위에서 계산된다"는 것만 알면 논문이 읽힌다 — 알고리즘 내부는 블랙박스로 둬도 된다.
 
 ## English

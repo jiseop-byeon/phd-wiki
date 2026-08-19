@@ -15,6 +15,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Lundeen et al., Automation in Construction 2019** — [DOI](https://doi.org/10.1016/j.autcon.2018.12.020)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]] and [[04-robotics/planning-decision-making|4. Planning §7]] (replanning). The claim is adaptation to *as-built* rather than as-designed geometry — a sensing-and-replanning loop, so check both halves.
+> [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]과 [[04-robotics/planning-decision-making|4. 계획 §7]](replanning). 주장은 설계도가 아니라 *실제 시공된* 형상에 적응한다는 것 — 감지와 재계획의 루프이므로 양쪽 절반을 모두 확인하라.
+
 ## English
 
 **One-line summary**: A construction manipulator senses as-built geometry and adapts its motion plan and task execution on the fly — the paper that operationalizes construction's core difference from factory automation: the workpiece never matches the drawing.

@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Egli & Hutter, IEEE RA-L 2022 (+ soil-adaptive sibling, RA-L/IROS 2022)** — [DOI](https://doi.org/10.1109/LRA.2022.3152865) · [Soil-adaptive OA PDF](https://www.research-collection.ethz.ch/server/api/core/bitstreams/95ef5691-11e8-4a86-b02d-6f0e2501de9b/content)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §7–§9]] and [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]. The paper's real contribution is upstream of the policy: a learned actuator model that makes the *simulator* faithful. Read "zero-shot" with that section's warning in hand.
+> [[02-foundations/rl-basics|7. RL 기초 §7~§9]]와 [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]. 이 논문의 진짜 기여는 정책보다 위쪽에 있다: *시뮬레이터*를 충실하게 만드는 학습된 액추에이터 모델. "zero-shot"은 그 절의 경고를 손에 들고 읽어라.
+
 ## English
 
 **One-line summary**: RL policies drive a real hydraulic excavator arm **without fine-tuning** because the training simulation embeds a *neural-network model of the valve/actuator dynamics* learned from machine data — and the soil-adaptive sibling paper extends the recipe to bucket filling that adapts online across soils without ever identifying soil parameters.

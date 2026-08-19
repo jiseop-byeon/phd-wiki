@@ -15,6 +15,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Davila Delgado et al., J. Building Engineering 2019** — [DOI](https://doi.org/10.1016/j.jobe.2019.100868)
 
+> [!note] Math on-ramp · 수학 준비물
+> No mathematics; the relevant preparation is [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §1]] — a stakeholder survey has *units of analysis* and sampling limits like any other study, and its barrier rankings inherit them.
+> 수학은 없다. 관련 준비는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §1]]이다 — 이해관계자 설문에도 다른 연구와 마찬가지로 *분석 단위*와 표집의 한계가 있고, 장벽 순위가 그것을 그대로 물려받는다.
+
 ## English
 
 **One-line summary**: Surveys industry stakeholders to answer why construction robots aren't adopted — ranking barriers (high capital cost first) across four technology categories: off-site prefabrication robots, on-site automation, drones/autonomous vehicles, and exoskeletons.

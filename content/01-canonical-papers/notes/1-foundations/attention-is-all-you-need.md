@@ -20,6 +20,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Vaswani et al., NeurIPS 2017** — [arXiv](https://arxiv.org/abs/1706.03762) · [PDF](https://arxiv.org/pdf/1706.03762) · [Code](https://github.com/tensorflow/tensor2tensor) · [Official](https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Do [[02-foundations/linear-algebra|1. Linear Algebra §1]]'s attention shape walk by hand once ($Q = XW_Q$ coming out $T\times 64$) — every equation in this paper is that one line repeated. Softmax's numerical stabilization is log-sum-exp in [[02-foundations/engineering-math|0.5 §6]].
 > [[02-foundations/linear-algebra|선형대수 §1]]의 어텐션 차원 따라가기($Q = XW_Q$가 $T\times 64$가 되는 계산)를 먼저 한 번 손으로 해 보라 — 이 논문의 모든 수식이 그 한 줄의 반복이다. softmax의 수치 안정화는 [[02-foundations/engineering-math|0.5 §6]]의 log-sum-exp.
 
 ## English

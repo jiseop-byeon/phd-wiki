@@ -15,6 +15,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Ahn et al., CoRL 2022** — [arXiv](https://arxiv.org/abs/2204.01691) · [PDF](https://arxiv.org/pdf/2204.01691)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/probability|3. Probability §1]] is the whole method: the score is a *product* of two probabilities — the LM's "is this useful?" and the affordance model's "can I do this here?" — so a skill needs both to be high. That is a conditional-independence assumption; ask whether it holds.
+> [[02-foundations/probability|3. 확률 §1]]이 방법 전체다: 점수가 두 확률의 *곱*이다 — 언어모델의 "이것이 도움이 되는가"와 어포던스 모델의 "여기서 할 수 있는가" — 그래서 어떤 스킬이든 둘 다 높아야 한다. 이는 조건부 독립 가정이고, 그것이 성립하는지 물어야 한다.
+
 ## English
 
 **One-line summary**: SayCan multiplies a language model's preference over high-level skills ("does this advance the instruction?") by a learned affordance/value estimate ("can the robot do it here and now?"), producing grounded skill sequences without making the LM a low-level controller.

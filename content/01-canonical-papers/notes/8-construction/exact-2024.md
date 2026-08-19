@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Chen et al., ICRA 2024 Workshop (Future of Construction)** — [arXiv](https://arxiv.org/abs/2405.05861) · [PDF](https://arxiv.org/pdf/2405.05861)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/act|ACT]] (the method being retargeted) and [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]. The single most important reading act here is placing the evidence on that ladder — this work is validated in simulation only.
+> [[01-canonical-papers/notes/4-vla/act|ACT]](재대상화된 방법)와 [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]. 여기서 가장 중요한 읽기 행위는 증거를 그 사다리 위에 놓는 것이다 — 이 연구는 시뮬레이션에서만 검증되었다.
+
 ## English
 
 **One-line summary**: Baidu Research retargets ACT to excavation — imitation learning maps raw LiDAR, camera images, and joint positions *directly to hydraulic valve commands* — but the entire validation is **in simulation only**; no real machine was moved.

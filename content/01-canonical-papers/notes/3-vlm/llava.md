@@ -18,6 +18,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Liu et al., NeurIPS 2023** — [arXiv](https://arxiv.org/abs/2304.08485) · [PDF](https://arxiv.org/pdf/2304.08485) · [Code](https://github.com/haotian-liu/LLaVA) · [Official](https://llava-vl.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> Light on math: one projection matrix and a cross-entropy loss ([[02-foundations/information-theory|5. Information Theory §2]]). The load-bearing prerequisite is instead [[02-foundations/ml-practice|9. ML Practice §1]] — the training data was *synthesized by GPT-4*, which is a data-provenance question, not an architecture question.
+> 수학은 가볍다: 투영 행렬 하나와 교차 엔트로피 손실([[02-foundations/information-theory|5. 정보이론 §2]]). 정작 핵심 선수 지식은 [[02-foundations/ml-practice|9. ML 실무 §1]]이다 — 학습 데이터가 *GPT-4로 합성*되었고, 이는 구조가 아니라 데이터 출처의 문제다.
+
 ## English
 
 **One-line summary**: Use GPT-4 to synthesize multimodal instruction-following data, then train the simplest possible architecture (CLIP encoder + linear projection + LLM) on it — the open recipe that democratized VLMs.

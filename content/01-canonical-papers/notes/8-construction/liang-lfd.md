@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Liang, Kamat & Menassa, Automation in Construction 2020** — [DOI](https://doi.org/10.1016/j.autcon.2020.103370)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §6]] for the imitation toolbox, and [[02-foundations/ml-practice|9. ML Practice §1]] for the split question that matters most here: 3,000 virtual plus 85 real demonstrations is a data-provenance claim before it is a method claim.
+> 모방 도구상자는 [[02-foundations/rl-basics|7. RL 기초 §6]], 그리고 여기서 가장 중요한 분할 문제는 [[02-foundations/ml-practice|9. ML 실무 §1]]이다: 가상 3,000 + 실제 85 시연은 방법에 대한 주장이기 이전에 데이터 출처에 대한 주장이다.
+
 ## English
 
 **One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on a ceiling-tile installation testbed; the generalized-cylinder trajectory representation arrived in the 2022 JCCE follow-up (82.0% vs 71.3%).

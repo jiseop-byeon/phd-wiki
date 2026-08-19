@@ -18,6 +18,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Lipman et al., ICLR 2023** — [arXiv](https://arxiv.org/abs/2210.02747) · [PDF](https://arxiv.org/pdf/2210.02747)
 
 > [!note] 수학 준비물 · ODE 적분 한 입 크기
+> Sampling is Euler integration: repeat $x \leftarrow x + v_\theta(x,t)\,\Delta t$ from noise ($t{=}0$) to data ($t{=}1$) — that is all of it ([[02-foundations/engineering-math|0.5 §8]]'s differential-equation sense). The straighter the path, the larger a $\Delta t$ you *may* get away with — a geometric condition that makes few steps possible, not an automatic guarantee.
 > 샘플링 = 오일러 적분: $x \leftarrow x + v_\theta(x, t)\,\Delta t$를 노이즈($t{=}0$)에서 데이터($t{=}1$)까지 반복하는 것이 전부다([[02-foundations/engineering-math|0.5 §8]]의 미분방정식 감각). 경로가 직선에 가까울수록 큰 $\Delta t$로 건너뛰어도 안전*할 수 있다* — "스텝 수가 적다"를 *가능하게 하는* 기하학적 조건이지 자동 보장은 아니다.
 
 ## English

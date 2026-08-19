@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **He et al., CVPR 2016** — [arXiv](https://arxiv.org/abs/1512.03385) · [PDF](https://arxiv.org/pdf/1512.03385)
 
+> [!note] Math on-ramp · 수학 준비물
+> One line from [[02-foundations/calculus-backprop|2. Calculus §5]] carries this paper: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$. The identity term gives the gradient a path that is never multiplied down. Note the honest phrasing there — it *mitigates* vanishing rather than guaranteeing the total gradient never decays.
+> [[02-foundations/calculus-backprop|2. 미적분 §5]]의 한 줄이 이 논문을 떠받친다: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$. 항등 항이 그래디언트에 결코 곱해져 줄어들지 않는 경로를 준다. 거기 적힌 정직한 표현에 주의하라 — 소실을 *완화*하는 것이지 전체 그래디언트가 절대 줄지 않음을 보장하지는 않는다.
+
 ## English
 
 **One-line summary**: Identity shortcut connections let networks learn residuals instead of full mappings, breaking the depth barrier — 152 layers, ILSVRC-2015 winner, and the origin of the skip connections inside every Transformer.

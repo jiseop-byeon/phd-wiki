@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Devlin et al., NAACL 2019** — [arXiv](https://arxiv.org/abs/1810.04805) · [PDF](https://arxiv.org/pdf/1810.04805) · [Code](https://github.com/google-research/bert)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/information-theory|5. Information Theory §2]]: masked language modeling is cross-entropy over the vocabulary at the masked positions, nothing more exotic. The words *pretraining* and *fine-tuning* are defined in [[02-foundations/neural-network-basics|0.7 §6]].
+> [[02-foundations/information-theory|5. 정보이론 §2]]: 마스킹 언어 모델링은 마스킹된 위치에서 어휘 전체에 대한 교차 엔트로피일 뿐, 그 이상의 것이 아니다. *사전학습*·*파인튜닝*이라는 말은 [[02-foundations/neural-network-basics|0.7 §6]]에 정의돼 있다.
+
 ## English
 
 **One-line summary**: Pre-train a bidirectional Transformer encoder with masked language modeling, then fine-tune it — one recipe swept every NLP benchmark and established the pretrain-finetune paradigm.

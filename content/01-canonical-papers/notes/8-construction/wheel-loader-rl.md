@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Eriksson, Ghabcheloo & Geimer, ICRA 2024** — [Open PDF (Trepo)](https://trepo.tuni.fi/bitstream/handle/10024/211807/icra2024.pdf)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/rl-basics|7. RL Basics §6 and §9]] — the recipe is imitation pretraining followed by RL fine-tuning on hardware, which is exactly the RLFT pattern §9 describes, including its safety-envelope question.
+> [[02-foundations/rl-basics|7. RL 기초 §6·§9]] — 레시피가 모방 사전학습 후 실기계 RL 파인튜닝이고, 이는 §9가 기술하는 RLFT 패턴 그대로다(안전 영역 문제까지 포함해서).
+
 ## English
 
 **One-line summary**: An imitation-pretrained, RL-fine-tuned controller performs wheel-loader bucket filling on a real machine against previously unknown material, bringing learned contact control across material variation onto a real heavy-machine task.

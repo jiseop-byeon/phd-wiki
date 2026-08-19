@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Open X-Embodiment Collaboration, ICRA 2024** — [arXiv](https://arxiv.org/abs/2310.08864) · [PDF](https://arxiv.org/pdf/2310.08864) · [Official](https://robotics-transformer-x.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> Almost no mathematics; the load-bearing pages are [[02-foundations/ml-practice|9. ML Practice §1]] (splits, leakage, distribution shift) and [[04-robotics/robot-systems-deployment|10. Robot Systems §2]] (why pooling 22 embodiments is hard — each has a different action interface). Read this as a dataset paper and judge it by those two standards.
+> 수학은 거의 없다. 떠받치는 페이지는 [[02-foundations/ml-practice|9. ML 실무 §1]](분할·누출·분포 이동)과 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §2]](22개 임베디먼트를 합치는 일이 왜 어려운가 — 각각 행동 인터페이스가 다르다)다. 데이터셋 논문으로 읽고 그 두 기준으로 판단하라.
+
 ## English
 
 **One-line summary**: 34 labs pooled 60 datasets — 1M+ trajectories across 22 robot embodiments — into one standardized corpus, and showed that policies trained on the mixture beat specialists on their *own* robots.

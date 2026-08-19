@@ -16,6 +16,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Liang et al., JCEM 2021** — [DOI](https://doi.org/10.1061/%28ASCE%29CO.1943-7862.0002154) (paywalled, ASCE)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/hri-safety|11. HRI & Safety §1–§2]] — a taxonomy paper is only useful if you can place papers into it, so read it holding the autonomy-spectrum and in/on/out-of-the-loop distinctions.
+> [[04-robotics/hri-safety|11. HRI·안전 §1~§2]] — 분류 논문은 다른 논문을 그 안에 놓을 수 있어야 쓸모가 있으므로, 자율성 스펙트럼과 in/on/out-of-the-loop 구분을 손에 들고 읽어라.
+
 ## English
 
 **One-line summary**: THE orientation taxonomy for construction HRC — a systematic review that classifies how humans and robots divide work in construction research and maps where the field's effort concentrates, cited ~283 times as the field's shared vocabulary.

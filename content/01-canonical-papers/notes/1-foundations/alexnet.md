@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Krizhevsky et al., NeurIPS 2012** — [PDF](https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf) · [Official](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)
 
+> [!note] Math on-ramp · 수학 준비물
+> Two things: [[02-foundations/signal-processing|6. Signal Processing §1]] for what a convolution actually computes (flip, slide, multiply, accumulate — worked by hand there), and [[02-foundations/calculus-backprop|2. Calculus §4]] for why ReLU's mask gradient beat sigmoid's $\le 1/4$ factor. Those two facts are the whole technical core of this paper.
+> 두 가지: 합성곱이 실제로 무엇을 계산하는지는 [[02-foundations/signal-processing|6. 신호처리 §1]](뒤집고·밀고·곱하고·더하기를 손으로 해 둔다), ReLU의 마스크 그래디언트가 시그모이드의 $\le 1/4$를 이긴 이유는 [[02-foundations/calculus-backprop|2. 미적분 §4]]. 이 논문의 기술적 핵심은 이 두 사실이 전부다.
+
 ## English
 
 **One-line summary**: A deep CNN trained on GPUs crushed ImageNet 2012 by a 10%p margin, ending the hand-crafted-features era and starting the deep learning revolution.

@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Redmon et al., CVPR 2016** — [arXiv](https://arxiv.org/abs/1506.02640) · [PDF](https://arxiv.org/pdf/1506.02640)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/ml-practice|9. ML Practice §3]] for IoU/mAP, and one framing worth holding: YOLO replaces a search with a *regression*, so its errors are systematically different from [[01-canonical-papers/notes/2-computer-vision/faster-r-cnn|Faster R-CNN]]'s — the speed/accuracy trade the paper reports is not a free lunch.
+> IoU·mAP는 [[02-foundations/ml-practice|9. ML 실무 §3]], 그리고 붙들고 갈 관점 하나: YOLO는 탐색을 *회귀*로 바꿨으므로 오류의 성격이 [[01-canonical-papers/notes/2-computer-vision/faster-r-cnn|Faster R-CNN]]과 체계적으로 다르다 — 논문이 보고하는 속도/정확도 거래는 공짜가 아니다.
+
 ## English
 
 **One-line summary**: Detection as a single regression — one forward pass predicts all boxes and classes from a grid — trading some accuracy for 45+ fps and creating the real-time detection family robots actually deploy.

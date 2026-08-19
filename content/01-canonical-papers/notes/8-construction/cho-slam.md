@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Kim, Chen & Cho, Automation in Construction 2018** — [DOI](https://doi.org/10.1016/j.autcon.2018.01.009) (paywalled) · [Lab](https://rical.ce.gatech.edu/)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/state-estimation-slam|3. State Estimation §7–§9]] — front end, back end, drift, loop closure, and the evaluation vocabulary. Construction sites break the assumptions that section lists, which is what makes this paper interesting.
+> [[04-robotics/state-estimation-slam|3. 상태 추정 §7~§9]] — 프런트엔드, 백엔드, 드리프트, 루프 클로저, 그리고 평가 어휘. 건설 현장이 그 절이 나열하는 가정들을 깨뜨리고, 그 점이 이 논문을 흥미롭게 만든다.
+
 ## English
 
 **One-line summary**: Robotics SLAM arrives on the construction-informatics side — a ground robot navigates a construction environment on its own, uses SLAM poses as the initial alignment, and automatically registers its laser scans into one site point cloud, removing the manual station setup and target placement of conventional laser scanning.

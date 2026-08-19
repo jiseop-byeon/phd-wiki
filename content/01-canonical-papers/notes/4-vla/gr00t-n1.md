@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **NVIDIA, 2025** — [arXiv](https://arxiv.org/abs/2503.14734) · [PDF](https://arxiv.org/pdf/2503.14734) · [Code](https://github.com/NVIDIA/Isaac-GR00T)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/pi0|π0]] first (the same VLM + flow-matching action-expert pattern). The System 2 / System 1 split is the same two-rate structure as [[04-robotics/convex-mpc-legged|convex MPC + whole-body control]] — slow reasoning above, fast tracking below — so read it with [[04-robotics/robot-systems-deployment|10. Robot Systems §3]]'s latency budget in hand.
+> [[01-canonical-papers/notes/4-vla/pi0|π0]]를 먼저(같은 VLM + flow-matching action expert 패턴). System 2 / System 1 분할은 [[04-robotics/convex-mpc-legged|convex MPC + 전신 제어]]와 같은 2단 속도 구조다 — 위에서 느리게 추론하고 아래에서 빠르게 추종한다 — 그러니 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]의 지연 예산을 손에 들고 읽어라.
+
 ## English
 
 **One-line summary**: An open humanoid foundation model with a dual-system design — a VLM "System 2" reasons slowly, a flow-matching diffusion transformer "System 1" acts at 120 Hz — trained on a data pyramid of web video, synthetic data, and real robot demos.

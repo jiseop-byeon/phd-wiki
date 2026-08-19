@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Brohan et al., CoRL 2023** — [arXiv](https://arxiv.org/abs/2307.15818) · [PDF](https://arxiv.org/pdf/2307.15818) · [Official](https://robotics-transformer2.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/4-vla/rt-1|RT-1]] (action tokenization) and [[01-canonical-papers/notes/3-vlm/clip|CLIP]]/[[01-canonical-papers/notes/1-foundations/vit|ViT]] (the web-pretrained side). The claim to test carefully is *transfer of semantics*, so bring [[02-foundations/ml-practice|9. ML Practice §1]]'s vocabulary for seen/unseen splits — the entire argument rests on which objects were in pretraining.
+> [[01-canonical-papers/notes/4-vla/rt-1|RT-1]](행동 토큰화)과 [[01-canonical-papers/notes/3-vlm/clip|CLIP]]/[[01-canonical-papers/notes/1-foundations/vit|ViT]](웹 사전학습 쪽). 신중히 검증할 주장은 *의미의 전이*이므로 seen/unseen 분할 어휘를 [[02-foundations/ml-practice|9. ML 실무 §1]]에서 가져오라 — 논증 전체가 어떤 물체가 사전학습에 있었는가에 걸려 있다.
+
 ## English
 
 **One-line summary**: Express robot actions as text tokens and co-fine-tune a web-pretrained VLM on robot data — the robot inherits the internet's semantics, and "vision-language-action model" enters the vocabulary.

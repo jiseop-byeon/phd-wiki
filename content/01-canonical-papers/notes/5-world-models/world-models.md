@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Ha & Schmidhuber, NeurIPS 2018** (proceedings title: "Recurrent World Models Facilitate Policy Evolution") — [arXiv](https://arxiv.org/abs/1803.10122) · [PDF](https://arxiv.org/pdf/1803.10122) · [Official](https://worldmodels.github.io)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]] (the V) and [[02-foundations/rl-basics|7. RL Basics §5]] (model-based RL). The paper's structure is literally V + M + C — a compressor, a predictor, and a tiny controller — so read each part against the section that defines it.
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]](V)와 [[02-foundations/rl-basics|7. RL 기초 §5]](모델 기반 RL). 논문의 구조가 문자 그대로 V + M + C — 압축기, 예측기, 아주 작은 제어기 — 이므로 각 부분을 그것을 정의한 절과 맞대어 읽어라.
+
 ## English
 
 **One-line summary**: Learn a compressed generative model of the environment (VAE + RNN), then train a tiny controller *inside the model's dream* — the modern founding document of world-model-based agents.

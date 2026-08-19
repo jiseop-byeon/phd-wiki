@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Caron et al., ICCV 2021 · Oquab et al., 2023** — [DINO arXiv](https://arxiv.org/abs/2104.14294) · [PDF](https://arxiv.org/pdf/2104.14294) · [DINOv2 arXiv](https://arxiv.org/abs/2304.07193) · [Code](https://github.com/facebookresearch/dinov2)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/calculus-backprop|2. Calculus §5]]'s stop-gradient paragraph is the one thing you must have: the EMA teacher receives *no gradient by design*, and without that the whole objective collapses to a constant. [[02-foundations/information-theory|5. Information Theory §2]] for the cross-entropy between student and teacher distributions.
+> 반드시 갖춰야 할 하나는 [[02-foundations/calculus-backprop|2. 미적분 §5]]의 stop-gradient 단락이다: EMA 교사는 *설계상* 그래디언트를 받지 않고, 그것이 없으면 목적함수 전체가 상수로 붕괴한다. 학생·교사 분포 사이의 교차 엔트로피는 [[02-foundations/information-theory|5. 정보이론 §2]].
+
 ## English
 
 **One-line summary**: Self-distillation with no labels — a student ViT matches an EMA teacher across augmented views — yields features with emergent segmentation; scaled up (DINOv2), it became the frozen vision backbone the robotics world runs on.

@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Jud et al., Automation in Construction 2021** — [DOI](https://doi.org/10.1016/j.autcon.2021.103783) · [ETH OA PDF](https://www.research-collection.ethz.ch/server/api/core/bitstreams/62e1de57-8939-4701-8672-ec2bb55e1c5d/content) · [Official](https://rsl.ethz.ch/robots-media/heap.html)
 
+> [!note] Math on-ramp · 수학 준비물
+> Robotics rather than deep learning: [[04-robotics/state-estimation-slam|3. State Estimation]], [[04-robotics/contact-force-tactile|9. Contact §5]] (this is *force* control, not position control — that choice is the paper's central idea), and [[04-robotics/robot-systems-deployment|10. Robot Systems]]. Then fill in [[05-construction-robotics/index|the construction reading frame]]'s axes as you read.
+> 딥러닝이 아니라 로보틱스다: [[04-robotics/state-estimation-slam|3. 상태 추정]], [[04-robotics/contact-force-tactile|9. 접촉 §5]](위치 제어가 아니라 *힘* 제어이고, 그 선택이 논문의 중심 발상이다), [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]. 그다음 [[05-construction-robotics/index|건설 트랙의 읽기 프레임]]의 축들을 채우며 읽어라.
+
 ## English
 
 **One-line summary**: A Menzi Muck M545 walking excavator rebuilt for autonomy — force-controllable hydraulics, full-state sensing (GNSS-RTK/IMU/LiDAR), and chassis adaptation to arbitrary terrain — the reference *system* for research-grade heavy-machine autonomy.

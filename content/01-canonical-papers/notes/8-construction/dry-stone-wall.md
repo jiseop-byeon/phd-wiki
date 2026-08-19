@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Johns et al., Science Robotics 2023** — [DOI](https://doi.org/10.1126/scirobotics.abp9758) · [ETH project report](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] (force closure on irregular objects) and [[04-robotics/contact-force-tactile|9. Contact]]. The interesting question is geometric: how do you plan a stable structure from *unmeasured, irregular* stones?
+> [[04-robotics/modern-robotics/ch12-grasping|MR 12장]](불규칙 물체의 force closure)과 [[04-robotics/contact-force-tactile|9. 접촉]]. 흥미로운 질문은 기하학적이다: *측정되지 않은 불규칙한* 돌들로 어떻게 안정한 구조를 계획하는가?
+
 ## English
 
 **One-line summary**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH's autonomous Menzi Muck M545 walking excavator — scanned irregular on-site stones, estimated usable geometry and mass properties, planned stable placements, and manipulated multi-tonne boulders and demolition debris into a 6 m-high, 65 m-long dry-stone wall at the Oberglatt Circularity Park.

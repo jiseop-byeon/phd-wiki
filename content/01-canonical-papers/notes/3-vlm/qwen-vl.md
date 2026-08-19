@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Qwen Team (Alibaba), 2023–2025** — [Qwen-VL arXiv](https://arxiv.org/abs/2308.12966) · [Qwen2-VL arXiv](https://arxiv.org/abs/2409.12191) · [Qwen2.5-VL arXiv/PDF](https://arxiv.org/pdf/2502.13923) · [Code](https://github.com/QwenLM/Qwen2.5-VL)
 
+> [!note] Math on-ramp · 수학 준비물
+> No new mathematics — read [[01-canonical-papers/notes/3-vlm/llava|LLaVA]] first for the architecture pattern, then use [[02-foundations/ml-practice|9. ML Practice §4]]'s fair-comparison checklist, because a production model line is exactly where compute, data, and tuning effort are hardest to hold constant.
+> 새 수학은 없다 — 구조 패턴은 [[01-canonical-papers/notes/3-vlm/llava|LLaVA]]를 먼저 보고, 그다음 [[02-foundations/ml-practice|9. ML 실무 §4]]의 공정 비교 체크리스트를 쓰라. 프로덕션 모델 계열이야말로 연산량·데이터·튜닝 노력을 고정하기 가장 어려운 곳이다.
+
 ## English
 
 **One-line summary**: The representative *open-weights production* VLM line — three iterations that show what turns the [[llava|LLaVA]]-era recipe into a deployable model family: native resolution, grounding, video, and document intelligence.

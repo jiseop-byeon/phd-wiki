@@ -18,6 +18,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 **Kaplan et al., 2020 · Hoffmann et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2001.08361) · [PDF](https://arxiv.org/pdf/2001.08361) · [Official](https://arxiv.org/abs/2203.15556)
 
 > [!note] 수학 준비물 · Math on-ramp
+> A power law $L \propto N^{-\alpha}$ is a straight line on log-log axes ([[02-foundations/engineering-math|0.5 §6]]) — that single fact is what makes the paper's plots readable, and the slope is $-\alpha$.
 > 거듭제곱 법칙 $L \propto N^{-\alpha}$은 log-log 축에서 직선이다([[02-foundations/engineering-math|0.5 §6]]의 로그 규칙) — 논문의 모든 그림이 그 직선 위의 데이터다. 기울기 $\alpha$가 "규모의 수익률".
 
 ## English

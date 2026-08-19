@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Yang et al., CVPR 2024** — [arXiv](https://arxiv.org/abs/2401.10891) · [PDF](https://arxiv.org/pdf/2401.10891) · [Code](https://github.com/LiheYoung/Depth-Anything)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1–2]] is the load-bearing prerequisite: monocular depth is *scale-ambiguous* because projection divides by $Z$, and that page's worked example shows exactly what is lost. Read the paper's claims against that, not against the pretty depth maps.
+> 핵심 선수 지식은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1–2]]다: 투영이 $Z$로 나누기 때문에 단안 깊이는 *스케일이 모호*하고, 그 페이지의 계산 예제가 무엇이 사라지는지 정확히 보여준다. 예쁜 깊이 맵이 아니라 그 사실에 논문의 주장을 대조하라.
+
 ## English
 
 **One-line summary**: A monocular depth foundation model built by pseudo-labeling 62M unlabeled images with a teacher and forcing the student to survive harder augmentations — robust metric/relative depth for any image, from one camera.

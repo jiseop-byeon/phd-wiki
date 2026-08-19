@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Kingma & Ba, ICLR 2015** — [arXiv](https://arxiv.org/abs/1412.6980) · [PDF](https://arxiv.org/pdf/1412.6980)
 
+> [!note] Math on-ramp · 수학 준비물
+> Read [[02-foundations/optimization|4. Optimization §3]] first: it derives gradient descent from Taylor, shows numerically why the condition number — not the learning rate — is the real obstacle, and names Adam as "momentum + a per-coordinate curvature proxy". The paper is what it takes to make that sentence work in floating point (bias correction, $\epsilon$).
+> [[02-foundations/optimization|4. 최적화 §3]]을 먼저 읽어라: 테일러에서 경사 하강을 유도하고, 진짜 장애물이 학습률이 아니라 조건수임을 숫자로 보이며, Adam을 "모멘텀 + 좌표별 곡률 대리값"으로 부른다. 논문은 그 한 문장을 부동소수점에서 실제로 작동시키는 데 필요한 것(편향 보정, $\epsilon$)이다.
+
 ## English
 
 **One-line summary**: Per-parameter adaptive learning rates from bias-corrected first and second moment estimates — the default optimizer of deep learning ever since.

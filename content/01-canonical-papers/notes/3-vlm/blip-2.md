@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Li et al., ICML 2023** — [arXiv](https://arxiv.org/abs/2301.12597) · [PDF](https://arxiv.org/pdf/2301.12597) · [Code](https://github.com/salesforce/LAVIS)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/3-vlm/clip|CLIP]] and [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] first. The Q-Former is cross-attention with a *fixed* set of 32 learned queries — reread [[02-foundations/linear-algebra|1. Linear Algebra §1]]'s shape walk with $T = 32$ on the query side and the image patches on the key/value side, and the architecture stops being mysterious.
+> [[01-canonical-papers/notes/3-vlm/clip|CLIP]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]를 먼저. Q-Former는 학습된 *고정* 쿼리 32개를 쓰는 cross-attention이다 — [[02-foundations/linear-algebra|1. 선형대수 §1]]의 차원 따라가기를 쿼리 쪽 $T = 32$, 키/값 쪽은 이미지 패치로 다시 해 보면 구조가 신비롭지 않게 된다.
+
 ## English
 
 **One-line summary**: A small Q-Former distills an image into 32 query tokens through two-stage pretraining, connecting frozen vision encoders to frozen LLMs at a fraction of Flamingo's training cost.

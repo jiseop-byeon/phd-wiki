@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Chi et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2303.04137) · [PDF](https://arxiv.org/pdf/2303.04137) · [Code](https://github.com/real-stanford/diffusion_policy) · [Official](https://diffusion-policy.cs.columbia.edu)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] is the prerequisite — the policy *is* a diffusion model whose "image" is a short action sequence. The reason to want it is in [[02-foundations/rl-basics|7. RL Basics §6]]: expert demonstrations are **multimodal**, and a regression head averages two valid ways to do a task into one invalid one. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] is the classical face of the same multimodality.
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]이 선수 지식이다 — 정책이 곧 디퓨전 모델이고 그 "이미지"가 짧은 행동 시퀀스다. 그것을 원하는 이유는 [[02-foundations/rl-basics|7. RL 기초 §6]]에 있다: 전문가 시연은 **다봉적**이고, 회귀 헤드는 유효한 두 방법을 평균 내 무효한 하나로 만든다. 같은 다봉성의 고전적 얼굴이 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]이다.
+
 ## English
 
 **One-line summary**: Represent the policy as a conditional [[ddpm|diffusion model]] that denoises a short *sequence* of future actions — cleanly capturing multimodal demonstrations and lifting imitation learning success rates by ~47% on average.

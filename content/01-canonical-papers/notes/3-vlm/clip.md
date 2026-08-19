@@ -18,6 +18,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Radford et al., ICML 2021** — [arXiv](https://arxiv.org/abs/2103.00020) · [PDF](https://arxiv.org/pdf/2103.00020) · [Code](https://github.com/openai/CLIP)
 
+> [!note] Math on-ramp · 수학 준비물
+> Two prerequisites, both short. [[02-foundations/linear-algebra|1. Linear Algebra §1]]: cosine similarity is a normalized dot product, and [[02-foundations/linear-algebra|§6]] explains why unrelated high-dimensional embeddings score near zero — the geometric reason retrieval over 400M pairs is possible at all. [[02-foundations/information-theory|5. Information Theory §4]]: the InfoNCE loss is a lower bound on mutual information, so "align the two modalities" has a precise meaning.
+> 선수 지식 둘, 둘 다 짧다. [[02-foundations/linear-algebra|1. 선형대수 §1]]: 코사인 유사도는 정규화된 내적이고, 무관한 고차원 임베딩이 왜 0 근처 점수를 받는지는 [[02-foundations/linear-algebra|§6]] — 4억 쌍에 대한 검색이 애초에 가능한 기하학적 이유다. [[02-foundations/information-theory|5. 정보이론 §4]]: InfoNCE 손실이 상호정보량의 하한이므로 "두 모달리티를 정렬한다"는 말에 정확한 뜻이 생긴다.
+
 ## English
 
 **One-line summary**: Contrastively align 400M image-text pairs into a shared embedding space — vision learns from raw language supervision, and classification becomes zero-shot prompting.

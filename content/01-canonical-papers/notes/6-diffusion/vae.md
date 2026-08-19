@@ -18,6 +18,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Kingma & Welling, ICLR 2014** — [arXiv](https://arxiv.org/abs/1312.6114) · [PDF](https://arxiv.org/pdf/1312.6114)
 
 > [!note] 수학 준비물 · Math on-ramp
+> The ELBO derivation (via Jensen) in [[02-foundations/information-theory|5. Information Theory §5]] and the reparameterization paragraph in [[02-foundations/calculus-backprop|2. Calculus §5]] — sampling has no gradient, so $z = \mu + \sigma\epsilon$ moves the randomness to an external input and leaves a differentiable function.
 > [[02-foundations/information-theory|정보이론 §5]]의 ELBO 유도(옌센 부등식)와 [[02-foundations/calculus-backprop|미적분 §5]]의 stop-gradient/샘플링 문제를 먼저 보라 — 이 논문의 두 기여(ELBO, reparameterization)가 정확히 그 두 지점의 해답이다.
 
 ## English

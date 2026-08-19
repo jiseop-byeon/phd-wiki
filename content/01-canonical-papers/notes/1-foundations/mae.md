@@ -17,6 +17,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **He et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2111.06377) · [PDF](https://arxiv.org/pdf/2111.06377) · [Code](https://github.com/facebookresearch/mae)
 
+> [!note] Math on-ramp · 수학 준비물
+> Read [[01-canonical-papers/notes/1-foundations/vit|ViT]] first (this is BERT-style pretraining *for* ViT), plus [[02-foundations/neural-network-basics|0.7 §6]] for token/patch/embedding vocabulary. The loss is plain MSE on pixels — [[02-foundations/probability|3. Probability §4]] explains why that is Gaussian MLE.
+> [[01-canonical-papers/notes/1-foundations/vit|ViT]]를 먼저 읽어라(이 논문은 ViT를 *위한* BERT식 사전학습이다). 토큰·패치·임베딩 어휘는 [[02-foundations/neural-network-basics|0.7 §6]]. 손실은 픽셀에 대한 평범한 MSE이고, 그것이 왜 가우시안 MLE인지는 [[02-foundations/probability|3. 확률 §4]].
+
 ## English
 
 **One-line summary**: Mask 75% of image patches and reconstruct the pixels with an asymmetric encoder-decoder — BERT-style pretraining finally made simple, fast, and scalable for vision.

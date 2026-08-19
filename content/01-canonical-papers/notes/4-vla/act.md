@@ -19,6 +19,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Zhao et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2304.13705) · [PDF](https://arxiv.org/pdf/2304.13705) · [Code](https://github.com/tonyzhaozh/act) · [Official](https://tonyzhaozh.github.io/aloha/)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] plus [[02-foundations/rl-basics|7. RL Basics §6]], which names the failure ACT is built against: behaviour cloning's **compounding error**. Chunking trades reactivity for fewer decision points — and [[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] is the classical machinery a chunk replaces.
+> [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]와 [[02-foundations/rl-basics|7. RL 기초 §6]] — ACT가 맞서 만들어진 실패를 그 절이 이름 짓는다: 행동 복제의 **복합 오차**. 청킹은 반응성을 내주고 결정 지점 수를 줄이는 거래이며, 청크가 대체하는 고전 기계장치는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이다.
+
 ## English
 
 **One-line summary**: A $20k open-source bimanual teleoperation rig (ALOHA) plus Action Chunking with Transformers (ACT) — predict 100 actions at once with a CVAE — makes precise two-handed manipulation learnable from just 50 demonstrations.

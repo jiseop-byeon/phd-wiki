@@ -19,6 +19,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Mildenhall et al., ECCV 2020** — [arXiv](https://arxiv.org/abs/2003.08934) · [PDF](https://arxiv.org/pdf/2003.08934) · [Official](https://www.matthewtancik.com/nerf)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Read the volume-rendering integral as "a weighted average along a ray": colour $c$ averaged with density-derived weights, i.e. an $E[c]$ ([[02-foundations/probability|3. Probability §2]]'s expectation sense). In code it is a weighted sum over finitely many samples. The positional-encoding sinusoids are [[02-foundations/engineering-math|0.5 §7]]'s Fourier intuition.
 > 볼륨 렌더링 적분은 "광선 위의 가중 평균"으로 읽으면 된다: 색 $c$를 밀도 기반 가중치로 평균하는 $E[c]$ 꼴([[02-foundations/probability|확률 §2]]의 기댓값 감각). 구현에서는 광선을 유한 샘플로 이산화한 가중합이다. 위치 인코딩의 사인파는 [[02-foundations/engineering-math|0.5 §7]]의 푸리에 감각.
 
 ## English

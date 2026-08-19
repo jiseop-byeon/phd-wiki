@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Bahdanau et al., ICLR 2015** — [arXiv](https://arxiv.org/abs/1409.0473) · [PDF](https://arxiv.org/pdf/1409.0473)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/linear-algebra|1. Linear Algebra §1]] (a dot product *is* a similarity score) and [[02-foundations/engineering-math|0.5 §10]] (softmax turns scores into weights that sum to 1). Attention is those two ideas composed; everything after 2015 is a variation on this one paragraph.
+> [[02-foundations/linear-algebra|1. 선형대수 §1]](내적이 곧 유사도 점수)과 [[02-foundations/engineering-math|0.5 §10]](softmax이 점수를 합 1의 가중치로 바꾼다). 어텐션은 이 둘의 합성이고, 2015년 이후의 모든 것이 이 한 단락의 변주다.
+
 ## English
 
 **One-line summary**: Introduced attention — let the decoder look back at all encoder states and learn where to look — removing seq2seq's fixed-vector bottleneck.

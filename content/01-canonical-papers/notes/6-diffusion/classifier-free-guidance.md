@@ -17,6 +17,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Ho & Salimans, 2022** — [arXiv](https://arxiv.org/abs/2207.12598) · [PDF](https://arxiv.org/pdf/2207.12598)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] first. The whole trick is one line of arithmetic on the predicted noise: $\hat\epsilon = \epsilon_u + w(\epsilon_c - \epsilon_u)$ — an extrapolation *away* from the unconditional prediction. Write that line out and note that $w = 1$ recovers ordinary conditional sampling.
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]을 먼저. 요령 전체가 예측된 노이즈에 대한 산수 한 줄이다: $\hat\epsilon = \epsilon_u + w(\epsilon_c - \epsilon_u)$ — 무조건 예측에서 *멀어지는* 외삽. 이 줄을 직접 써 보고, $w = 1$이면 평범한 조건부 샘플링으로 되돌아온다는 점을 확인하라.
+
 ## English
 
 **One-line summary**: Drop the conditioning at random during training, then at sampling extrapolate *away* from the unconditional prediction — one knob that trades diversity for prompt fidelity, used by essentially every conditional diffusion system.

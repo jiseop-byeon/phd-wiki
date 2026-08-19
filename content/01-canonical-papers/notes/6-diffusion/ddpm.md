@@ -19,6 +19,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Ho et al., NeurIPS 2020** — [arXiv](https://arxiv.org/abs/2006.11239) · [PDF](https://arxiv.org/pdf/2006.11239) · [Code](https://github.com/hojonathanho/diffusion)
 
 > [!note] 수학 준비물 · Math on-ramp
+> Everything you need: Gaussian closure from [[02-foundations/probability|3. Probability §3]], the ELBO from [[02-foundations/information-theory|5. Information Theory §5]], and logs from [[02-foundations/engineering-math|0.5 §6]]. Two steps give the feel of the closed form: substitute $x_1 = \sqrt{1-\beta_1}x_0 + \sqrt{\beta_1}\epsilon_1$ into $x_2 = \sqrt{1-\beta_2}x_1 + \sqrt{\beta_2}\epsilon_2$ — the coefficient of $x_0$ becomes $\sqrt{\bar\alpha_2}$ and the two independent Gaussians merge into one with variance $1-\bar\alpha_2$. The $t$-step case is the same logic.
 > 필요한 전부: [[02-foundations/probability|확률 §3]]의 가우시안 닫힘 성질, [[02-foundations/information-theory|정보이론 §5]]의 ELBO, [[02-foundations/engineering-math|0.5 §6]]의 로그. 폐쇄형의 유도 감각은 두 스텝이면 잡힌다: $x_2 = \sqrt{1-\beta_2}\,x_1 + \sqrt{\beta_2}\,\epsilon_2$에 $x_1 = \sqrt{1-\beta_1}\,x_0 + \sqrt{\beta_1}\,\epsilon_1$을 대입하면, $x_0$의 계수는 $\sqrt{(1-\beta_1)(1-\beta_2)} = \sqrt{\bar\alpha_2}$가 되고 두 개의 독립 가우시안 노이즈는 분산이 더해져 하나의 $\epsilon$으로 합쳐진다(분산 $1-\bar\alpha_2$). $t$스텝이어도 같은 논리다.
 
 ## English

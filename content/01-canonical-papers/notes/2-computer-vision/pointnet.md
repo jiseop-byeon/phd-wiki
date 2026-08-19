@@ -15,6 +15,10 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Qi et al., CVPR 2017** — [arXiv](https://arxiv.org/abs/1612.00593) · [PDF](https://arxiv.org/pdf/1612.00593)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §3]] for what a point cloud is and which frame it lives in. The paper's core is one property from [[02-foundations/linear-algebra|1. Linear Algebra §1]]: max-pooling over points is **permutation-invariant**, which is exactly what an unordered set demands.
+> 포인트 클라우드가 무엇이고 어느 프레임에 사는지는 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §3]]. 논문의 핵심은 [[02-foundations/linear-algebra|1. 선형대수 §1]]에서 오는 성질 하나다: 점들에 대한 max-pooling은 **순열 불변**이고, 그것이 순서 없는 집합이 요구하는 바로 그것이다.
+
 ## English
 
 **One-line summary**: PointNet feeds every point through the same feature function and aggregates with a symmetric max-pool, making the output invariant to point order; PointNet++ adds a hierarchy of local neighborhoods so geometry is captured at multiple scales.

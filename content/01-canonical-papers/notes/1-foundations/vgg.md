@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Simonyan & Zisserman, ICLR 2015** — [arXiv](https://arxiv.org/abs/1409.1556) · [PDF](https://arxiv.org/pdf/1409.1556)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/signal-processing|6. Signal Processing §1]] for convolution, and one arithmetic fact worth checking yourself: two stacked $3\times3$ convolutions see the same $5\times5$ region as one $5\times5$ convolution, using $2(9) = 18$ weights instead of $25$. That comparison is the paper's entire argument.
+> 합성곱은 [[02-foundations/signal-processing|6. 신호처리 §1]], 그리고 직접 확인해 볼 산수 하나: $3\times3$ 합성곱 둘을 쌓으면 $5\times5$ 합성곱 하나와 같은 영역을 보면서 가중치는 $25$개가 아니라 $2(9) = 18$개다. 이 비교가 논문의 논증 전부다.
+
 ## English
 
 **One-line summary**: Showed that depth itself is the key variable — stacking uniform 3×3 convolutions to 16–19 layers beats shallower nets with fancier filters.

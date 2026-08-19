@@ -16,6 +16,10 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 **Ren et al., NeurIPS 2015** — [arXiv](https://arxiv.org/abs/1506.01497) · [PDF](https://arxiv.org/pdf/1506.01497)
 
+> [!note] Math on-ramp · 수학 준비물
+> [[02-foundations/signal-processing|6. Signal Processing §1]] for convolution and [[02-foundations/ml-practice|9. ML Practice §3]] for **IoU** and **mAP** — you cannot read this paper's tables without those two metrics, and the metrics dictionary defines both.
+> 합성곱은 [[02-foundations/signal-processing|6. 신호처리 §1]], **IoU**와 **mAP**는 [[02-foundations/ml-practice|9. ML 실무 §3]] — 이 두 지표 없이는 이 논문의 표를 읽을 수 없고, 지표 사전에 둘 다 정의돼 있다.
+
 ## English
 
 **One-line summary**: Replace hand-crafted region proposals with a learned Region Proposal Network sharing the backbone — making detection fully end-to-end learnable and defining the two-stage paradigm.
