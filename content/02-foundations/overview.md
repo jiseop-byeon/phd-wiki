@@ -64,6 +64,8 @@ graph LR
     IT["Information Theory"]
     SP["Signal Processing"]
     RL["RL Basics"]
+    SE["3D Geometry · SE(3)"]
+    MLP["ML Practice"]
     end
     subgraph D["Deep learning (papers)"]
     TF["Transformers · ViT · CLIP"]
@@ -95,13 +97,20 @@ graph LR
     RL --> WM
     GEN --> WM
     IT --> WM
+    MAT --> SE
+    SE --> VLA
+    MLP -.-> TF
+    MLP -.-> VLA
 ```
 
 Reading the map: **Transformers** need linear algebra (attention = matrix products),
 backprop, and optimization (Adam). **Generative models** add probability (MLE) and
 information theory (ELBO/KL). **World models** are generative models + RL. **VLA** sits on
 top of everything — plus signal processing on the sensor side. This is why the study order
-above exists.
+above exists. Two pages sit slightly apart from that chain and are drawn accordingly:
+**SE(3)** branches off matrix arithmetic and feeds the robot-action side of VLA, and
+**ML Practice** attaches to everything with dashed arrows — it is not a prerequisite for
+understanding a method, but it is a prerequisite for believing any of their results tables.
 
 ### Reading load and pacing
 
@@ -250,7 +259,10 @@ flowchart TD
 위의 mermaid 지도를 읽는 법: **Transformer**는 선형대수(어텐션 = 행렬곱), 역전파,
 최적화(Adam)가 필요하다. **생성모델**은 거기에 확률(MLE)과 정보이론(ELBO/KL)을 더한다.
 **월드모델** = 생성모델 + RL. **VLA**는 이 전부의 꼭대기에 앉아 있다 — 센서 쪽에서는
-신호처리까지. 위의 학습 순서가 존재하는 이유가 이것이다.
+신호처리까지. 위의 학습 순서가 존재하는 이유가 이것이다. 두 페이지는 이 사슬에서 살짝 비켜 있고 지도에도
+그렇게 그려져 있다: **SE(3)** 페이지는 행렬 연산에서 갈라져 나와 VLA의 로봇 행동 쪽으로 들어가고,
+**ML 실무**는 점선으로 모든 것에 붙는다 — 방법을 *이해*하는 데 필요한 선수 지식이 아니라,
+그 방법들의 결과 표를 *믿는* 데 필요한 선수 지식이기 때문이다.
 
 ### 학습 분량과 페이스
 

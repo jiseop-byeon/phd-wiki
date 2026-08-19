@@ -37,6 +37,13 @@ example, plus the gradient pathologies that shaped architecture history.
 
 - Composition $L = f_3(f_2(f_1(x)))$:
   $\dfrac{\partial L}{\partial x} = J_1^\top J_2^\top J_3^\top \cdot 1$.
+  **Two things in that line deserve a sentence.** The trailing $1$ is $\partial L/\partial L$ —
+  the loss's sensitivity to itself, where every backward pass starts; frameworks literally
+  call `backward()` on a scalar and seed it with 1. The **transposes** are there because a
+  Jacobian $J$ maps input perturbations *forward* into output perturbations, while here we
+  are carrying sensitivities *backward* from the output — $J^\top$ is that same map run the
+  other way. Shape-check it: if $f_1: \mathbb{R}^n \to \mathbb{R}^m$ then $J_1$ is $m\times n$,
+  so only $J_1^\top$ ($n\times m$) can produce something the size of $x$.
 - Two evaluation orders for that product:
   - **Forward mode**: propagate $\partial/\partial x_i$ input-side first — one pass *per input*.
   - **Reverse mode**: propagate $\partial L/\partial(\cdot)$ output-side first — one pass *per output*.
@@ -223,7 +230,14 @@ bug detector in existence.
 ### 2. 연쇄 법칙, 그리고 역전파가 뒤로 도는 이유
 
 - 합성 $L = f_3(f_2(f_1(x)))$:
-  $\dfrac{\partial L}{\partial x} = J_1^\top J_2^\top J_3^\top \cdot 1$
+  $\dfrac{\partial L}{\partial x} = J_1^\top J_2^\top J_3^\top \cdot 1$.
+  **이 줄에서 두 가지는 한 문장씩 설명할 값이 있다.** 끝의 $1$은 $\partial L/\partial L$ —
+  손실의 자기 자신에 대한 민감도이고 모든 역전파가 여기서 시작한다. 프레임워크가 스칼라에
+  `backward()`를 부르며 1을 씨앗으로 놓는 것이 문자 그대로 이것이다. **전치**가 붙은 이유는,
+  야코비안 $J$가 입력의 섭동을 *앞으로* 밀어 출력의 섭동으로 보내는 사상인데 여기서는
+  민감도를 출력에서 *뒤로* 나르고 있기 때문이다 — $J^\top$이 그 사상을 반대 방향으로 돌린
+  것이다. 모양으로 확인하면: $f_1: \mathbb{R}^n \to \mathbb{R}^m$이면 $J_1$이 $m\times n$이므로
+  $x$ 크기의 결과를 낼 수 있는 것은 $J_1^\top$($n\times m$)뿐이다.
 - 이 곱의 두 가지 계산 순서:
   - **순방향 모드**: $\partial/\partial x_i$를 입력 쪽부터 전파 — *입력마다* 한 패스.
   - **역방향 모드**: $\partial L/\partial(\cdot)$를 출력 쪽부터 전파 — *출력마다* 한 패스.

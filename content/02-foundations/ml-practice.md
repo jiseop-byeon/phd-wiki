@@ -112,7 +112,11 @@ missed crack can cost a structure.
   protocol? tuned baselines? If a table doesn't answer these, the numbers are decoration.
 - Seeds and variance: deep learning results wobble across random seeds; serious reporting
   states the number of runs and an uncertainty measure fit to the experiment (std, standard
-  error, CI, or paired tests) — robotics papers report over several *rollouts and scenes*.
+  error, CI, or paired tests). **Know which one you are looking at**: the standard deviation
+  $\sigma$ says how much *individual runs* scatter and does not shrink as you add runs; the
+  standard error $\sigma/\sqrt{n}$ says how well the *mean* is pinned down and does. At
+  $n = 4$ they differ by a factor of 2, so a paper plotting the smaller one gets visually
+  tighter error bars for free — check the caption before comparing two papers' bars — robotics papers report over several *rollouts and scenes*.
 
 ### 5. Evaluation pitfalls to watch for in papers
 
@@ -240,7 +244,11 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
   튜닝된 베이스라인? 표가 이에 답하지 않으면 그 숫자는 장식이다.
 - 시드와 분산: 딥러닝 결과는 랜덤 시드에 따라 흔들린다; 진지한 보고는 실행 횟수와 실험에
   맞는 불확실성 지표(표준편차·표준오차·신뢰구간·짝지은 검정)를 명시한다 — 로보틱스
-  논문은 여러 *롤아웃과 장면*에 걸쳐 보고한다.
+  논문은 여러 *롤아웃과 장면*에 걸쳐 보고한다. **지금 보는 것이 어느 쪽인지 알아야 한다**:
+  표준편차 $\sigma$는 *개별 실행*이 얼마나 흩어지는지를 말하고 실행을 늘려도 줄지 않는다.
+  표준오차 $\sigma/\sqrt{n}$은 *평균*이 얼마나 단단히 고정됐는지를 말하고 줄어든다.
+  $n = 4$면 둘이 2배 차이이므로, 작은 쪽을 그린 논문은 공짜로 더 좁은 오차 막대를 얻는다 —
+  두 논문의 막대를 비교하기 전에 캡션을 확인하라.
 
 ### 5. 논문에서 경계할 평가 함정
 

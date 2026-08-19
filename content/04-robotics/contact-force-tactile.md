@@ -81,11 +81,15 @@ A contact force produces a force and moment—a **wrench**—on the object. The 
 | Impedance control | desired relationship from motion error to force |
 | Admittance control | desired motion response to measured force |
 
-Impedance does not simply “control both position and force.” It shapes interaction behavior, often as a virtual mass–spring–damper. Admittance is useful when a stiff, accurate position-controlled robot can convert measured force into a compliant motion command.
+Impedance does not simply “control both position and force.” It shapes interaction behavior, often as a virtual mass–spring–damper — written out, the controller commands
+
+$$F = K(x_d - x) + D(\dot x_d - \dot x)$$
+
+so $K$ (stiffness, N/m) and $D$ (damping, N·s/m) are the *design* variables, and the force that actually appears depends on how far the environment pushed the tool off $x_d$. Position control is the limit $K \to \infty$; force control regulates $F$ directly and lets $x$ go where it must. Admittance is useful when a stiff, accurate position-controlled robot can convert measured force into a compliant motion command.
 
 ### 6. Scenario: cleaning a wall
 
-A pure position controller commands the tool 2 cm beyond an estimated wall. A 1 cm wall-location error can cause very different force because contact stiffness is high. An impedance controller instead permits pose error while shaping the restoring force; a force controller regulates normal force directly but still needs tangential motion and stability handling. The best architecture depends on actuator bandwidth, sensing, surface variation, and safety limits.
+A pure position controller commands the tool 2 cm beyond an estimated wall. A 1 cm wall-location error can cause very different force because contact stiffness is high. **With numbers**: a stiff tool–wall contact of $K = 10^4$ N/m turns a 1 cm position error into $10^4 \times 0.01 = 100$ N — enough to gouge the surface or trip a force limit — while a 3 cm error would demand 300 N the arm may not even be able to produce. Set the *controller's* stiffness to $K = 200$ N/m instead and the same 1 cm error asks for 2 N. That ratio, not any control theory, is why contact tasks are run compliantly. An impedance controller instead permits pose error while shaping the restoring force; a force controller regulates normal force directly but still needs tangential motion and stability handling. The best architecture depends on actuator bandwidth, sensing, surface variation, and safety limits.
 
 ### 7. Force, tactile, and material state
 
@@ -223,13 +227,21 @@ $$\lVert f_t\rVert\le \mu f_n$$
 | 어드미턴스 제어 | 측정 힘 → 운동 응답의 원하는 관계 |
 
 임피던스는 단순히 "위치와 힘을 동시에 제어"하는 것이 아니다. 상호작용 거동을 — 대개
-가상 질량-스프링-댐퍼로 — *형성*한다. 어드미턴스는 강성 높고 정확한 위치 제어 로봇이
+가상 질량-스프링-댐퍼로 — *형성*한다. 풀어 쓰면 제어기가 명령하는 것은
+
+$$F = K(x_d - x) + D(\dot x_d - \dot x)$$
+
+이고, $K$(강성, N/m)와 $D$(감쇠, N·s/m)가 *설계* 변수이며, 실제로 나타나는 힘은 환경이 도구를 $x_d$에서 얼마나 밀어냈는가에 달려 있다. 위치 제어는 $K \to \infty$의 극한이고, 힘 제어는 $F$를 직접 조절하며 $x$는 가야 할 곳으로 가게 둔다. 어드미턴스는 강성 높고 정확한 위치 제어 로봇이
 측정 힘을 유연한 운동 명령으로 바꿀 때 유용하다.
 
 ### 6. 시나리오: 벽 닦기
 
 순수 위치 제어기가 도구를 추정 벽면보다 2 cm 안쪽으로 명령한다. 접촉 강성이 높아 벽
-위치의 1 cm 오차가 완전히 다른 힘을 만들 수 있다. 임피던스 제어기는 pose 오차를
+위치의 1 cm 오차가 완전히 다른 힘을 만들 수 있다. **숫자로 보면**: 도구-벽 접촉 강성이
+$K = 10^4$ N/m이면 1 cm 위치 오차가 $10^4 \times 0.01 = 100$ N이 된다 — 표면을 파거나 힘
+제한을 걸기에 충분하고, 3 cm 오차라면 팔이 낼 수조차 없을 300 N을 요구한다. 대신
+*제어기의* 강성을 $K = 200$ N/m로 두면 같은 1 cm 오차가 요구하는 힘은 2 N이다. 접촉
+작업을 유연하게 돌리는 이유는 어떤 제어 이론이 아니라 이 비율이다. 임피던스 제어기는 pose 오차를
 허용하면서 복원력을 형성하고, 힘 제어기는 법선력을 직접 조절하지만 접선 운동과 안정성
 처리가 따로 필요하다. 최선의 구조는 액추에이터 대역폭, 센싱, 표면 변동, 안전 한계에
 달려 있다.

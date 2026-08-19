@@ -82,6 +82,36 @@ $v = 600\cdot 0.2/2.0+240=300$. Move the point twice as far
 → $Z = 600\cdot 0.12/9 = 8$ m. One pixel of disparity error ($d=8$) gives $Z=9$ m —
 a 12.5% jump at this range: depth error grows quadratically with distance.
 
+
+
+<svg viewBox="0 0 620 246" style="max-width:100%;height:auto" role="img" aria-label="stereo: a near point splays the two rays, a far point makes them nearly parallel">
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="60" y1="190" x2="60" y2="172"/><line x1="140" y1="190" x2="140" y2="172"/>
+    <line x1="360" y1="190" x2="360" y2="172"/><line x1="440" y1="190" x2="440" y2="172"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" opacity="0.8" fill="none">
+    <line x1="60" y1="190" x2="100" y2="140"/><line x1="140" y1="190" x2="100" y2="140"/>
+    <line x1="360" y1="190" x2="400" y2="70"/><line x1="440" y1="190" x2="400" y2="70"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="60" cy="190" r="3.5"/><circle cx="140" cy="190" r="3.5"/>
+    <circle cx="360" cy="190" r="3.5"/><circle cx="440" cy="190" r="3.5"/>
+    <circle cx="100" cy="140" r="4.5"/><circle cx="400" cy="70" r="4.5"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35" stroke-dasharray="3 3">
+    <line x1="60" y1="202" x2="140" y2="202"/><line x1="360" y1="202" x2="440" y2="202"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="100" y="30">NEAR</text><text x="400" y="30">FAR</text>
+    <text x="100" y="48" font-size="10.5" opacity="0.85">Z = 2 m &#183; disparity 36 px</text>
+    <text x="400" y="48" font-size="10.5" opacity="0.85">Z = 8 m &#183; disparity 9 px</text>
+    <text x="100" y="218" font-size="10.5">baseline b</text><text x="400" y="218" font-size="10.5">baseline b</text>
+  </g>
+  <g font-size="11" fill="currentColor"><text x="30" y="240" opacity="0.9">Disparity is that angle &#8212; and a far point squeezes it toward zero.</text></g>
+</svg>
+
+
+
 ### 3. Point clouds and frames
 
 A depth image plus intrinsics back-projects to a **point cloud**:
@@ -243,6 +273,34 @@ $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, 
 **스테레오 계산 예제**: $f=600$ px, 기선 $b=0.12$ m, 시차 $d=9$ px
 → $Z = 600\cdot 0.12/9 = 8$ m. 시차 1픽셀 오차($d=8$)면 $Z=9$ m — 이 거리에서 12.5%
 튄다: 깊이 오차는 거리에 제곱으로 자란다.
+
+<svg viewBox="0 0 620 246" style="max-width:100%;height:auto" role="img" aria-label="스테레오: 가까운 점은 두 광선을 크게 벌리고, 먼 점은 거의 나란하게 만든다">
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="60" y1="190" x2="60" y2="172"/><line x1="140" y1="190" x2="140" y2="172"/>
+    <line x1="360" y1="190" x2="360" y2="172"/><line x1="440" y1="190" x2="440" y2="172"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" opacity="0.8" fill="none">
+    <line x1="60" y1="190" x2="100" y2="140"/><line x1="140" y1="190" x2="100" y2="140"/>
+    <line x1="360" y1="190" x2="400" y2="70"/><line x1="440" y1="190" x2="400" y2="70"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="60" cy="190" r="3.5"/><circle cx="140" cy="190" r="3.5"/>
+    <circle cx="360" cy="190" r="3.5"/><circle cx="440" cy="190" r="3.5"/>
+    <circle cx="100" cy="140" r="4.5"/><circle cx="400" cy="70" r="4.5"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.35" stroke-dasharray="3 3">
+    <line x1="60" y1="202" x2="140" y2="202"/><line x1="360" y1="202" x2="440" y2="202"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="100" y="30">가깝다</text><text x="400" y="30">멀다</text>
+    <text x="100" y="48" font-size="10.5" opacity="0.85">Z = 2 m &#183; 시차 36 px</text>
+    <text x="400" y="48" font-size="10.5" opacity="0.85">Z = 8 m &#183; 시차 9 px</text>
+    <text x="100" y="218" font-size="10.5">베이스라인 b</text><text x="400" y="218" font-size="10.5">베이스라인 b</text>
+  </g>
+  <g font-size="11" fill="currentColor"><text x="30" y="240" opacity="0.9">시차가 곧 그 각도다 &#8212; 그리고 먼 점은 그 각도를 0 쪽으로 눌러버린다.</text></g>
+</svg>
+
+
 
 ### 3. 포인트 클라우드와 프레임
 

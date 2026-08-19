@@ -105,6 +105,12 @@ formulations of the same engineering problem differ wildly in solvability.
   $x^* = p$ (constraint free). Else the constraint binds:
   $\lambda = (a^\top p - b)/\|a\|^2$, $x^* = p - \lambda a$ — exactly the projection formula.
   Complementary slackness *is* the case split.
+  **With numbers**: $p = (3,4)$ and the constraint $x_1 + x_2 \le 5$, so $a = (1,1)$, $b = 5$.
+  Check feasibility first: $a^\top p = 7 > 5$, so the constraint binds. Then
+  $\lambda = (7-5)/2 = 1$ and $x^* = (3,4) - 1(1,1) = (2,3)$. Verify: $2+3 = 5$ ✓ (on the
+  boundary), and the correction moved *perpendicular* to the constraint line — the shortest
+  way out. Had the point been $p = (1,1)$, then $a^\top p = 2 \le 5$ gives $\lambda = 0$ and
+  $x^* = p$: the constraint costs nothing, which is what a zero multiplier means.
 - **Duality**: $q(\lambda,\nu) = \min_x \mathcal{L}$ lower-bounds the optimum (weak
   duality); under convexity + constraint qualification the bound is tight. Multipliers =
   **shadow prices**: sensitivity of the optimum to constraint relaxation — in scheduling,
@@ -247,6 +253,12 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   정상성: $x = p - \lambda a$. $a^\top p \le b$이면: $\lambda = 0$, $x^* = p$(제약이 논다).
   아니면 제약이 구속되어: $\lambda = (a^\top p - b)/\|a\|^2$, $x^* = p - \lambda a$ —
   정확히 투영 공식이다. 상보 여유성이 *곧* 이 경우 나누기다.
+  **숫자로**: $p = (3,4)$, 제약 $x_1 + x_2 \le 5$이므로 $a = (1,1)$, $b = 5$. 실행 가능성부터
+  확인하면 $a^\top p = 7 > 5$이라 제약이 활성이다. 그러면 $\lambda = (7-5)/2 = 1$,
+  $x^* = (3,4) - 1(1,1) = (2,3)$. 검산: $2+3 = 5$ ✓(경계 위), 그리고 보정이 제약 직선에
+  *수직*으로 움직였다 — 가장 짧게 빠져나오는 방향이다. 점이 $p = (1,1)$이었다면
+  $a^\top p = 2 \le 5$이므로 $\lambda = 0$, $x^* = p$: 제약이 아무 대가도 요구하지 않는다는
+  뜻이고, 그것이 승수 0의 의미다.
 - **쌍대성**: $q(\lambda,\nu) = \min_x \mathcal{L}$은 최적값의 하한(약쌍대성); 볼록성 +
   제약 자격 조건에서 하한이 딱 맞는다. 승수 = **잠재 가격**: 제약을 풀어줄 때 최적값의
   민감도 — 스케줄링에서는 말 그대로 크레인 1시간 추가의 한계 가치다.

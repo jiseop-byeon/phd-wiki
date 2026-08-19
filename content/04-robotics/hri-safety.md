@@ -32,6 +32,31 @@ When people operate, supervise, share space with, or depend on a robot, task suc
 
 The label “autonomous” is incomplete without the task, operating domain, intervention policy, reset procedure, and fallback.
 
+
+
+<svg viewBox="0 0 620 234" style="max-width:100%;height:auto" role="img" aria-label="the autonomy spectrum drawn as the human's shrinking share of moment-to-moment decisions">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="150" y1="26" x2="150" y2="196"/><line x1="430" y1="26" x2="430" y2="196"/></g>
+  <rect x="150" y="29" width="269.6" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="42" font-size="10.5" fill="currentColor" text-anchor="end">Direct teleoperation</text>
+  <rect x="150" y="56" width="218.1" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="69" font-size="10.5" fill="currentColor" text-anchor="end">Assisted teleoperation</text>
+  <rect x="150" y="83" width="166.6" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="96" font-size="10.5" fill="currentColor" text-anchor="end">Shared autonomy</text>
+  <rect x="150" y="110" width="115.0" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="123" font-size="10.5" fill="currentColor" text-anchor="end">Supervisory control</text>
+  <rect x="150" y="137" width="63.5" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="150" font-size="10.5" fill="currentColor" text-anchor="end">Conditional autonomy</text>
+  <rect x="150" y="164" width="12.0" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="177" font-size="10.5" fill="currentColor" text-anchor="end">Full autonomy</text>
+  <g font-size="10.5" fill="currentColor">
+    <text x="152" y="20">human&#39;s share of the moment-to-moment decisions &#8594;</text><text x="456" y="20">&#8592; robot&#39;s share</text>
+    <text x="20" y="210" opacity="0.9">The bar is the human's share. No rung is &#8220;autonomous&#8221; by itself &#8212;</text>
+    <text x="20" y="224" opacity="0.9">name the task, the domain, who may intervene, and who resets.</text>
+  </g>
+</svg>
+
+
+
 ### 2. Human in, on, and out of the loop
 
 - **In the loop:** human input is part of normal decision/action execution.
@@ -138,6 +163,29 @@ An automated excavator receives a goal from an operator, plans and executes a di
 | 완전 자율성 | 범위가 정해진 과제를 런타임 개입 없이 수행 |
 
 "autonomous"라는 라벨은 과제, 운용 도메인, 개입 정책, 리셋 절차, 폴백 없이는 불완전하다.
+
+<svg viewBox="0 0 620 234" style="max-width:100%;height:auto" role="img" aria-label="순간순간의 결정에서 사람의 몫이 줄어드는 것으로 그린 자율성 스펙트럼">
+  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="150" y1="26" x2="150" y2="196"/><line x1="430" y1="26" x2="430" y2="196"/></g>
+  <rect x="150" y="29" width="269.6" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="42" font-size="10.5" fill="currentColor" text-anchor="end">직접 원격조작</text>
+  <rect x="150" y="56" width="218.1" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="69" font-size="10.5" fill="currentColor" text-anchor="end">보조 원격조작</text>
+  <rect x="150" y="83" width="166.6" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="96" font-size="10.5" fill="currentColor" text-anchor="end">공유 자율</text>
+  <rect x="150" y="110" width="115.0" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="123" font-size="10.5" fill="currentColor" text-anchor="end">감독 제어</text>
+  <rect x="150" y="137" width="63.5" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="150" font-size="10.5" fill="currentColor" text-anchor="end">조건부 자율</text>
+  <rect x="150" y="164" width="12.0" height="18" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="0.9"/>
+  <text x="144" y="177" font-size="10.5" fill="currentColor" text-anchor="end">완전 자율</text>
+  <g font-size="10.5" fill="currentColor">
+    <text x="152" y="20">순간순간의 결정 중 사람의 몫 &#8594;</text><text x="456" y="20">&#8592; 로봇의 몫</text>
+    <text x="20" y="210" opacity="0.9">막대는 사람의 몫이다. 어느 단도 그 자체로 &#8220;자율&#8221;이 아니다 &#8212;</text>
+    <text x="20" y="224" opacity="0.9">과제·영역·개입 권한·리셋 주체를 함께 말해야 한다.</text>
+  </g>
+</svg>
+
+
 
 ### 2. Human in / on / out of the loop
 

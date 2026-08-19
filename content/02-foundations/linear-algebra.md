@@ -57,6 +57,15 @@ where each concept appears in the papers of this wiki.
   (the **normal equations**). Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. Linear regression,
   calibration, and the Kalman filter's update all live here.
+  **Worked, three points and a line.** Fit $y = c + mx$ to $(1,1), (2,3), (3,4)$ — three
+  equations, two unknowns, no exact solution. Stack them:
+  $A = \begin{pmatrix}1&1\\1&2\\1&3\end{pmatrix}$, $b = (1,3,4)$. Then
+  $A^\top A = \begin{pmatrix}3&6\\6&14\end{pmatrix}$ and $A^\top b = (8, 19)$, so
+  $\hat x = (c, m) = (-\tfrac13, \tfrac32)$. The residual is
+  $b - A\hat x = (-\tfrac16, \tfrac13, -\tfrac16)$ — and check the geometry claim directly:
+  its sum is $0$ and its dot product with $(1,2,3)$ is $-\tfrac16 + \tfrac23 - \tfrac12 = 0$.
+  The residual really is perpendicular to both columns of $A$, which is exactly what
+  "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors.
 - Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
 
@@ -320,6 +329,15 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (**정규방정식**). 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
+  **계산 예제 — 점 셋에 직선 하나.** $(1,1), (2,3), (3,4)$에 $y = c + mx$를 맞춰 보자 —
+  식 셋, 미지수 둘, 정확한 해는 없다. 쌓으면
+  $A = \begin{pmatrix}1&1\\1&2\\1&3\end{pmatrix}$, $b = (1,3,4)$. 그러면
+  $A^\top A = \begin{pmatrix}3&6\\6&14\end{pmatrix}$, $A^\top b = (8, 19)$이므로
+  $\hat x = (c, m) = (-\tfrac13, \tfrac32)$. 잔차는 $b - A\hat x = (-\tfrac16, \tfrac13, -\tfrac16)$이고,
+  기하 주장을 직접 검산해 보라: 합이 $0$이고 $(1,2,3)$과의 내적이
+  $-\tfrac16 + \tfrac23 - \tfrac12 = 0$이다. 잔차가 정말로 $A$의 두 열 모두에 수직이고,
+  그것이 "직교 투영"이 주장하는 바로 그것이다. 이 검산은 10초면 되고 부호 실수의 대부분을
+  잡아낸다.
 - 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 가중치
   *업데이트*의 내재 랭크가 낮다고 가정한다($r \ll d$인 $\Delta W = BA$).
 

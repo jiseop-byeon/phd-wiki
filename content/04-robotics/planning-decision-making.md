@@ -84,6 +84,29 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 
 **Probabilistic completeness** means the probability of finding a solution approaches one with increasing computation when a robust solution exists under the method's assumptions. It does not mean fast success. **Asymptotic optimality** concerns convergence toward an optimum with increasing samples, not the quality available under a real-time budget.
 
+
+
+<svg viewBox="0 0 660 214" style="max-width:100%;height:auto" role="img" aria-label="how a sampling-based planner grows a tree through free space">
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5"><rect x="30" y="30" width="330" height="140" rx="3"/></g>
+  <g fill="currentColor" opacity="0.20"><rect x="150" y="96" width="52" height="40" rx="2"/><rect x="240" y="128" width="52" height="34" rx="2"/></g>
+  <g stroke="currentColor" stroke-width="1.3" fill="none" opacity="0.85"><line x1="60" y1="150" x2="85" y2="132"/><line x1="85" y1="132" x2="110" y2="110"/><line x1="110" y1="110" x2="135" y2="88"/><line x1="135" y1="88" x2="170" y2="74"/><line x1="170" y1="74" x2="210" y2="66"/><line x1="210" y1="66" x2="250" y2="80"/><line x1="250" y1="80" x2="290" y2="66"/><line x1="290" y1="66" x2="330" y2="52"/><line x1="85" y1="132" x2="70" y2="108"/><line x1="110" y1="110" x2="96" y2="146"/><line x1="170" y1="74" x2="178" y2="46"/><line x1="210" y1="66" x2="226" y2="40"/><line x1="250" y1="80" x2="258" y2="110"/><line x1="290" y1="66" x2="304" y2="92"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="85" cy="132" r="2.4"/><circle cx="110" cy="110" r="2.4"/><circle cx="135" cy="88" r="2.4"/><circle cx="170" cy="74" r="2.4"/><circle cx="210" cy="66" r="2.4"/><circle cx="250" cy="80" r="2.4"/><circle cx="290" cy="66" r="2.4"/><circle cx="330" cy="52" r="2.4"/><circle cx="70" cy="108" r="2.4"/><circle cx="96" cy="146" r="2.4"/><circle cx="178" cy="46" r="2.4"/><circle cx="226" cy="40" r="2.4"/><circle cx="258" cy="110" r="2.4"/><circle cx="304" cy="92" r="2.4"/></g>
+  <g fill="currentColor"><circle cx="60" cy="150" r="4.5"/><circle cx="330" cy="52" r="4.5"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="40" y="166">start</text><text x="306" y="44">goal</text>
+    <text x="370" y="62">1. sample a random point</text><text x="370" y="80">2. find the nearest node</text><text x="370" y="98">3. extend toward it if collision-free</text>
+  </g>
+  <g font-size="10" fill="currentColor" text-anchor="middle" opacity="0.9">
+    <text x="176" y="120">obstacle</text><text x="266" y="149">obstacle</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="190" opacity="0.9">The tree never enumerates the space &#8212; it only ever asks whether one short segment is free.</text>
+    <text x="30" y="205" opacity="0.9">That is why it survives high dimensions, and why the path comes out jagged and needs smoothing.</text>
+  </g>
+</svg>
+
+
+
 ### 6. Trajectory optimization and MPC
 
 A common formulation is
@@ -240,6 +263,27 @@ cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은
 **Probabilistic completeness**는 방법의 가정 아래 robust한 해가 존재할 때 계산이 늘수록
 해를 찾을 확률이 1에 다가간다는 뜻이다. 빠른 성공을 뜻하지 않는다. **Asymptotic
 optimality**도 표본이 늘 때의 수렴 성질이지, 실시간 예산에서 얻는 품질이 아니다.
+
+<svg viewBox="0 0 660 214" style="max-width:100%;height:auto" role="img" aria-label="표본 기반 플래너가 자유 공간에 트리를 키우는 방식">
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5"><rect x="30" y="30" width="330" height="140" rx="3"/></g>
+  <g fill="currentColor" opacity="0.20"><rect x="150" y="96" width="52" height="40" rx="2"/><rect x="240" y="128" width="52" height="34" rx="2"/></g>
+  <g stroke="currentColor" stroke-width="1.3" fill="none" opacity="0.85"><line x1="60" y1="150" x2="85" y2="132"/><line x1="85" y1="132" x2="110" y2="110"/><line x1="110" y1="110" x2="135" y2="88"/><line x1="135" y1="88" x2="170" y2="74"/><line x1="170" y1="74" x2="210" y2="66"/><line x1="210" y1="66" x2="250" y2="80"/><line x1="250" y1="80" x2="290" y2="66"/><line x1="290" y1="66" x2="330" y2="52"/><line x1="85" y1="132" x2="70" y2="108"/><line x1="110" y1="110" x2="96" y2="146"/><line x1="170" y1="74" x2="178" y2="46"/><line x1="210" y1="66" x2="226" y2="40"/><line x1="250" y1="80" x2="258" y2="110"/><line x1="290" y1="66" x2="304" y2="92"/></g>
+  <g fill="currentColor" opacity="0.85"><circle cx="85" cy="132" r="2.4"/><circle cx="110" cy="110" r="2.4"/><circle cx="135" cy="88" r="2.4"/><circle cx="170" cy="74" r="2.4"/><circle cx="210" cy="66" r="2.4"/><circle cx="250" cy="80" r="2.4"/><circle cx="290" cy="66" r="2.4"/><circle cx="330" cy="52" r="2.4"/><circle cx="70" cy="108" r="2.4"/><circle cx="96" cy="146" r="2.4"/><circle cx="178" cy="46" r="2.4"/><circle cx="226" cy="40" r="2.4"/><circle cx="258" cy="110" r="2.4"/><circle cx="304" cy="92" r="2.4"/></g>
+  <g fill="currentColor"><circle cx="60" cy="150" r="4.5"/><circle cx="330" cy="52" r="4.5"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="40" y="166">시작</text><text x="306" y="44">목표</text>
+    <text x="370" y="62">1. 무작위 점을 하나 뽑는다</text><text x="370" y="80">2. 가장 가까운 노드를 찾는다</text><text x="370" y="98">3. 충돌이 없으면 그쪽으로 뻗는다</text>
+  </g>
+  <g font-size="10" fill="currentColor" text-anchor="middle" opacity="0.9">
+    <text x="176" y="120">장애물</text><text x="266" y="149">장애물</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="30" y="190" opacity="0.9">트리는 공간을 열거하지 않는다 &#8212; 짧은 선분 하나가 자유로운지만 매번 묻는다.</text>
+    <text x="30" y="205" opacity="0.9">고차원에서 살아남는 이유이자, 경로가 들쭉날쭉하게 나와 평활화가 필요한 이유다.</text>
+  </g>
+</svg>
+
+
 
 ### 6. 궤적 최적화와 MPC
 

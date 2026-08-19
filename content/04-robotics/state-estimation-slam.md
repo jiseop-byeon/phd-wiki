@@ -66,9 +66,9 @@ Prediction moves the previous belief through the dynamics and normally increases
 |---|---|---|
 | Kalman filter | Linear-Gaussian mean and covariance | Model must fit the assumptions |
 | EKF | Linearizes nonlinear models with Jacobians | Linearization and inconsistency |
-| UKF | Propagates selected sigma points | Still assumes a compact unimodal belief |
-| Particle filter | Weighted samples; useful for multimodality | Particle depletion and computation |
-| Factor/pose graph | Batch or incremental optimization over constraints | Association errors and gauge freedom (the whole map's global pose is unobservable without an anchor) |
+| UKF | Propagates selected **sigma points** — a small set of chosen sample states whose mean and covariance match the belief, pushed through the true nonlinear model instead of a linearization | Still assumes a compact unimodal belief |
+| Particle filter | Weighted samples; useful for multimodality | **Particle depletion** — resampling keeps copying the few high-weight particles until diversity is gone and the filter is confidently wrong — and computation |
+| Factor/pose graph | Batch or incremental optimization over constraints | Association errors and **gauge freedom** — relative constraints fix the map's *shape* but not where it sits in the world, so the whole map can slide and rotate freely until one pose is anchored |
 
 For a linear Kalman measurement update,
 
@@ -214,9 +214,9 @@ $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 |---|---|---|
 | 칼만 필터 | 선형-가우시안 평균·공분산 | 모델이 가정에 맞아야 함 |
 | EKF | 야코비안으로 비선형 모델을 선형화 | 선형화 오차와 비일관성 |
-| UKF | 선택된 시그마 포인트를 전파 | 여전히 조밀한 단봉 belief 가정 |
-| 파티클 필터 | 가중 표본; 다봉성에 유용 | 파티클 고갈과 계산량 |
-| Factor/pose graph | 제약들 위의 일괄·증분 최적화 | association 오류와 게이지 자유도(앵커 없이는 지도 전체의 전역 pose가 관측 불가) |
+| UKF | **시그마 포인트** 전파 — 평균과 공분산이 belief와 일치하도록 고른 소수의 표본 상태를 선형화 대신 진짜 비선형 모델에 통과시킨다 | 여전히 조밀한 단봉 belief 가정 |
+| 파티클 필터 | 가중 표본; 다봉성에 유용 | **파티클 고갈** — 재표집이 가중치 높은 소수 파티클만 계속 복제해 다양성이 사라지고 필터가 자신 있게 틀리게 된다 — 과 계산량 |
+| Factor/pose graph | 제약들 위의 일괄·증분 최적화 | association 오류와 **게이지 자유도** — 상대 제약은 지도의 *모양*은 고정하지만 그것이 세계 어디에 놓이는지는 고정하지 않아, 한 pose를 앵커로 박기 전까지 지도 전체가 자유롭게 미끄러지고 회전한다 |
 
 선형 칼만 측정 갱신은
 
