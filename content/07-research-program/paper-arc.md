@@ -105,7 +105,7 @@ Tactile or force sensing, teleoperated demonstration collection, and imitation l
 applied to the Paper 3 task. Same platform, same task, harder conditions — which is
 exactly why it is cheap to run and persuasive to read.
 
-- Leans on: [[04-robotics/contact-force-tactile|Contact, Force & Tactile]], [[02-foundations/rl-basics|7. RL Basics §6]] for the imitation-versus-RL orientation.
+- Leans on: [[04-robotics/contact-force-tactile|Contact, Force & Tactile]], [[04-robotics/teleoperation-demonstration|Teleoperation & Demonstration Collection]] for the data pipeline, [[02-foundations/rl-basics|7. RL Basics §6]] for the imitation-versus-RL orientation.
 - Anchor reading: [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]], [[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/8-construction/liang-lfd|Liang — learning from demonstration]], [[01-canonical-papers/notes/8-construction/yu-imitation|Yu — imitation]].
 
 #### Paper 5 — Integrated human-aware mobile manipulation
@@ -287,7 +287,7 @@ arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 �
 촉각 또는 힘 센싱, 원격조작 시연 수집, 그리고 3편의 작업에 적용한 모방학습. 같은 플랫폼,
 같은 작업, 더 어려운 조건 — 바로 그래서 돌리기 싸고 읽기 설득력 있다.
 
-- 기대는 곳: [[04-robotics/contact-force-tactile|접촉·힘·촉각]], 모방 대 RL 방향 잡기는 [[02-foundations/rl-basics|7. RL 기초 §6]].
+- 기대는 곳: [[04-robotics/contact-force-tactile|접촉·힘·촉각]], 데이터 파이프라인은 [[04-robotics/teleoperation-demonstration|원격조작과 시연 수집]], 모방 대 RL 방향 잡기는 [[02-foundations/rl-basics|7. RL 기초 §6]].
 - 앵커 읽기: [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]], [[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/8-construction/liang-lfd|Liang — 시연 학습]], [[01-canonical-papers/notes/8-construction/yu-imitation|Yu — 모방]].
 
 #### 5편 — 통합된 작업자 인지 모바일 조작
