@@ -24,6 +24,7 @@ flowchart LR
 - [[04-robotics/modern-robotics-book|1. Modern Robotics]] — book guide and scope
 - [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] — chapters 2–6 and 8–13
 - Chapter 7 (closed-chain kinematics) is intentionally optional: this track prioritizes open-chain manipulation, control, physical interaction, and field/mobile robotics literacy.
+- On the manipulation-first path, follow ch.2–6 with [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — the dynamics half those summaries stop short of, and the operational-space inertia that makes section E readable.
 
 ### B. State, perception & belief
 
@@ -60,7 +61,7 @@ Note: page numbers are the recommended study order — estimation (3) → geomet
 
 ### Where this track leads
 
-These components converge in VLA, world-model, and learning-based-control systems, then meet field constraints in [[05-construction-robotics/index|Construction Robotics]]. Use [[06-research-practice/index|Research Practice]] to design and evaluate new work rather than only read it.
+These components converge in VLA, world-model, and learning-based-control systems, then meet field constraints in [[05-construction-robotics/index|Construction Robotics]]. Use [[06-research-practice/index|Research Practice]] to design and evaluate new work rather than only read it, and [[07-research-program/index|Research Program]] to decide which of these pages your own work actually needs at depth.
 
 ## 한국어
 
@@ -82,6 +83,7 @@ flowchart LR
 - [[04-robotics/modern-robotics-book|1. Modern Robotics]] — 책 가이드와 범위
 - [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] — 2–6장, 8–13장
 - 7장(폐쇄 사슬 기구학)은 의도적으로 선택 사항이다: 이 트랙은 개연쇄 매니퓰레이션, 제어, 물리 상호작용, 현장/모바일 로보틱스 문해력을 우선한다.
+- 매니퓰레이션 우선 경로에서는 2~6장 다음에 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]을 읽는다 — 그 요약들이 못 미치고 멈춘 동역학 절반, 그리고 E절을 읽을 수 있게 만드는 작업 공간 관성.
 
 ### B. 상태·인지·belief
 
@@ -118,7 +120,8 @@ flowchart LR
 
 이 구성요소들은 VLA·월드모델·학습 기반 제어 시스템에서 합류한 뒤,
 [[05-construction-robotics/index|건설로봇]]의 현장 제약과 만난다. 새 연구를 읽는 것을 넘어
-설계·평가할 때는 [[06-research-practice/index|Research Practice]]를 쓰라.
+설계·평가할 때는 [[06-research-practice/index|Research Practice]]를, 이 페이지들 중 무엇을
+실제로 깊이 알아야 하는지 정할 때는 [[07-research-program/index|Research Program]]을 쓰라.
 
 참고: 페이지 번호는 권장 학습 순서다 — 추정(3) → 기하 인식(3.5) → 계획(4) → 제어(5–8) →
 접촉(9) → 시스템(10) → 사람·안전(11).

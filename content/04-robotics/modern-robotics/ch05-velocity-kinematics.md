@@ -72,23 +72,6 @@ with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.)
   </g>
 </svg>
 
-
-
-<svg viewBox="0 0 560 220" style="max-width:100%;height:auto" role="img" aria-label="the 2R arm's manipulability ellipse well away from and close to a singularity">
-  <ellipse cx="103.0" cy="92.0" rx="39.4" ry="15.1" transform="rotate(-31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
-  <ellipse cx="397.5" cy="130.2" rx="53.7" ry="3.8" transform="rotate(-80.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
-  <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="115" y="26">&#952;&#8322; = 90&#176; &#8212; well conditioned</text><text x="355" y="26">&#952;&#8322; = 20&#176; &#8212; nearing a singularity</text>
-    <text x="115" y="42" font-size="10" opacity="0.8">det J = 1.00 &#183; &#963; = 1.62, 0.62 &#183; ratio 2.6</text><text x="355" y="42" font-size="10" opacity="0.8">det J = 0.34 &#183; &#963; = 2.20, 0.16 &#183; ratio 14</text>
-  </g>
-  <g font-size="11" fill="currentColor">
-    <text x="20" y="196" opacity="0.9">The ellipse is the set of tip velocities reachable with unit joint speed. As the arm straightens</text>
-    <text x="20" y="211" opacity="0.9">it flattens: one direction stays easy, the other needs ever larger joint rates. At 0&#176; it is a line.</text>
-  </g>
-</svg>
-
-
-
 **Wiki connections**: teleoperation ([[01-canonical-papers/notes/4-vla/act|ALOHA]]) and
 compliant control live on $\tau = J^\top \mathcal{F}$; singularity awareness is why raw
 VLA outputs pass through safety filters on real arms.

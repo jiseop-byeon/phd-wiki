@@ -80,33 +80,6 @@ Do this double-check on every robot you model — geometric FK and PoE FK must a
   </g>
 </svg>
 
-
-
-<svg viewBox="0 0 540 210" style="max-width:100%;height:auto" role="img" aria-label="the planar 2R arm at home and at 90/90, with the tip reached by both routes">
-  <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="30" y1="150" x2="440" y2="150"/><line x1="70" y1="30" x2="70" y2="180"/></g>
-  <g stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.45" stroke-dasharray="6 4">
-    <line x1="70" y1="150" x2="130" y2="150"/><line x1="130" y1="150" x2="190" y2="150"/>
-  </g>
-  <g fill="currentColor" opacity="0.5"><circle cx="130" cy="150" r="3.5"/><circle cx="190" cy="150" r="3.5"/></g>
-  <g stroke="currentColor" stroke-width="2.6" fill="none">
-    <line x1="70" y1="150" x2="70" y2="90"/><line x1="70" y1="90" x2="10" y2="90"/>
-  </g>
-  <g fill="currentColor"><circle cx="70" cy="150" r="4.5"/><circle cx="70" cy="90" r="4.5"/><circle cx="10" cy="90" r="4"/></g>
-  <g font-size="11" fill="currentColor">
-    <text x="150" y="168" opacity="0.7">home: both links along +x, tip at (2, 0)</text>
-    <text x="84" y="120">link 1</text><text x="18" y="80">link 2</text>
-    <text x="52" y="168">q&#8321; = (0,0)</text><text x="118" y="168" opacity="0.7">q&#8322; = (1,0)</text>
-    <text x="230" y="52">at &#952;&#8321; = &#952;&#8322; = 90&#176;:</text>
-    <text x="230" y="72">PoE:  tip &#8594; (1,1) &#8594; (&#8722;1, 1),  R = R_z(180&#176;)</text>
-    <text x="230" y="92">geometry:  elbow (0,1) + link 2 along &#8722;x</text>
-    <text x="230" y="112">&#8594; tip (0,1) + (&#8722;1,0) = (&#8722;1, 1)  &#8212; same</text>
-    <text x="230" y="140">dashed = home pose, solid = &#952; = (90&#176;, 90&#176;)</text>
-    <text x="30" y="198" opacity="0.85">Two routes to the same tip. If they disagree, the screw axes or the home pose are wrong &#8212; check q first.</text>
-  </g>
-</svg>
-
-
-
 The recipe generalizes verbatim: home pose → per-joint $(\hat\omega_i, q_i)$ →
 $v_i = -\hat\omega_i \times q_i$ → exponentials → multiply. For code, the Modern Robotics
 Python library implements `FKinSpace(M, Slist, thetalist)` — verify your hand computation

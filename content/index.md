@@ -18,6 +18,7 @@ one's own research area.
 2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → the [[02-foundations/overview|gate check]] at the end of the Overview → then path 3. If you have engineering mathematics but no machine learning, [[02-foundations/neural-network-basics|0.7 What a Neural Network Is]] is the twenty minutes that makes the rest readable.
 3. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then the [[01-canonical-papers/canonical-list|Canonical Paper List]] in order — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside.
 4. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
+5. **Manipulation-first path** (specialization — take it *after* path 2, not instead of it): read [[07-research-program/index|7. Research Program]] for why this order exists, then kinematics ([[04-robotics/modern-robotics/index|MR ch.2–6]]) → dynamics and the task-space bridge ([[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]]) → control ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]], [[04-robotics/control-theory-ce397|Control Theory]]) → grasping and contact ([[04-robotics/modern-robotics/ch12-grasping|MR ch.12]], [[04-robotics/contact-force-tactile|Contact, Force & Tactile]]) → planning ([[04-robotics/planning-decision-making|Planning]]) → policies ([[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]) → the construction task layer ([[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]]).
 
 ### Maps of Content
 
@@ -31,6 +32,7 @@ one's own research area.
 - [[00-study-depth-guide|Study Depth Guide]] — topic-by-topic Literacy / Working / Mastery profile
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — paper vocabulary, equations, claims and evidence
 - [[06-research-practice/index|Research Practice]] — questions, experiments, failure analysis, writing and peer review
+- [[07-research-program/index|Research Program]] — the research identity, the three pillars, and the paper arc they become
 - [[08-research-radar/index|Research Radar]] — published-venue trend map, for after foundational literacy
 - [[glossary|Glossary]] — quick term lookup
 - [[study-log|Study Log]] — what I read and when
@@ -49,6 +51,7 @@ one's own research area.
 2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5~9를 순서대로 → Overview 끝의 [[02-foundations/overview|통과 점검]] → 그다음 3번 경로로. 공업수학은 했지만 기계학습이 처음이라면 [[02-foundations/neural-network-basics|0.7 신경망이란 무엇인가]]가 나머지를 읽히게 만드는 20분이다.
 3. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]를 순서대로 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어두고.
 4. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
+5. **매니퓰레이션 우선 경로** (전문화 — 2번을 *대신하는* 것이 아니라 2번 *다음에* 타는 경로): 왜 이 순서인지는 [[07-research-program/index|7. 연구 프로그램]]에서 읽고, 그다음 기구학([[04-robotics/modern-robotics/index|MR 2~6장]]) → 동역학과 작업 공간 다리([[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]) → 제어([[04-robotics/modern-robotics/ch11-robot-control|MR 11장]], [[04-robotics/control-theory-ce397|제어 이론]]) → 파지와 접촉([[04-robotics/modern-robotics/ch12-grasping|MR 12장]], [[04-robotics/contact-force-tactile|접촉·힘·촉각]]) → 계획([[04-robotics/planning-decision-making|계획]]) → 정책([[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]) → 건설 작업 층([[05-construction-robotics/assembly-fabrication|조립·제작]]).
 
 ### 콘텐츠 지도
 
@@ -62,6 +65,7 @@ one's own research area.
 - [[00-study-depth-guide|Study Depth Guide]] — 주제별 Literacy / Working / Mastery 기준
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — 논문의 용어·수식·주장·증거 읽기
 - [[06-research-practice/index|Research Practice]] — 연구 질문, 실험, 실패 분석, 글쓰기와 peer review
+- [[07-research-program/index|Research Program]] — 연구 정체성, 세 기둥, 그리고 그것이 되는 논문 arc
 - [[glossary|용어집]] — 용어 빠르게 찾아보기
 - [[08-research-radar/index|Research Radar]] — 문해력 이후 연구 주제 선택을 위한 규모·상승속도·근거 지도
 - [[study-log|학습 일지]] — 언제 무엇을 읽었는지 기록

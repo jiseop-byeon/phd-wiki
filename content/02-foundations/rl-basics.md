@@ -169,22 +169,6 @@ flowchart TD
     MB --> BP["backprop through the model<br/>Dreamer"]
 ```
 
-
-
-```mermaid
-flowchart TD
-    R["reinforcement learning"] --> MF["model-free<br/>learn from real experience"]
-    R --> MB["model-based<br/>learn p(s'|s,a), train in imagination"]
-    MF --> V["value-based<br/>learn Q, act greedily<br/>DQN"]
-    MF --> PG["policy-gradient<br/>differentiate the objective<br/>REINFORCE"]
-    PG --> AC["actor-critic<br/>policy + learned baseline<br/>PPO, SAC"]
-    V --> AC
-    MB --> PL["plan through the model<br/>PlaNet"]
-    MB --> BP["backprop through the model<br/>Dreamer"]
-```
-
-
-
 ### 6. RL vs imitation in robot learning (orientation map)
 
 - **Imitation** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],

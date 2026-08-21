@@ -96,6 +96,59 @@ Example: a construction-excavator VLA thesis might use **construction deployment
 action representation, and policy learning** at Mastery; **SE(3), perception, control,
 and sim-to-real** at Working; and the remaining model families at Literacy.
 
+### Profile: construction manipulation
+
+The table above is the common minimum. This section is the **concrete profile** for the
+program in [[07-research-program/index|7. Research Program]] — a T-shape: broad literacy
+across physical AI, with one deep column where the contribution lives.
+
+<svg viewBox="0 0 560 226" style="max-width:100%;height:auto" role="img" aria-label="four bands narrowing downward from a wide literacy band to a narrow mastery band">
+  <g fill="currentColor">
+    <rect x="30" y="36" width="500" height="32" rx="3" fill-opacity="0.06"/>
+    <rect x="90" y="68" width="380" height="32" rx="3" fill-opacity="0.12"/>
+    <rect x="150" y="100" width="260" height="32" rx="3" fill-opacity="0.20"/>
+    <rect x="195" y="132" width="170" height="46" rx="3" fill-opacity="0.32"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.6">
+    <rect x="30" y="36" width="500" height="32" rx="3"/><rect x="90" y="68" width="380" height="32" rx="3"/><rect x="150" y="100" width="260" height="32" rx="3"/><rect x="195" y="132" width="170" height="46" rx="3"/>
+  </g>
+  <g fill="currentColor" text-anchor="middle">
+    <text x="280" y="51" font-size="10.5">Literacy &#8212; read the field and cite it correctly</text>
+    <text x="280" y="63" font-size="9" opacity="0.8">world models &#183; diffusion internals &#183; generic VLM &#183; broader RL theory</text>
+    <text x="280" y="83" font-size="10.5">Working &#8212; select, follow, evaluate, diagnose</text>
+    <text x="280" y="95" font-size="9" opacity="0.8">navigation &#183; SLAM &#183; estimation &#183; HRI &#183; optimization &#183; control &#183; tooling</text>
+    <text x="280" y="115" font-size="10.5">Working, raised to Mastery if the thesis needs it</text>
+    <text x="280" y="127" font-size="9" opacity="0.8">teleoperation &#183; tactile &#183; 3D perception &#183; VLA &#183; TAMP</text>
+    <text x="280" y="148" font-size="10.5">Mastery</text>
+    <text x="280" y="161" font-size="9" opacity="0.8">contact-rich manipulation</text>
+    <text x="280" y="173" font-size="9" opacity="0.8">force control &#183; grasping &#183; dynamics</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="30" y="200">The bar narrows as the depth rises. Breadth is not the sacrifice made for depth &#8212; it is what lets</text>
+    <text x="30" y="216">you recognise, from inside a narrow column, that something outside it has started to matter.</text>
+  </g>
+</svg>
+
+| Depth | Areas | Why it earns that depth |
+|---|---|---|
+| **Mastery** | contact-rich manipulation; force, impedance and admittance control; grasping; manipulator dynamics and the operational-space bridge; imitation learning as used for manipulation | the contribution and its closest dependency — the claims a defense has to survive |
+| **Working, raised to Mastery if the thesis needs it** | teleoperation and demonstration collection; tactile and visuotactile sensing; 3D perception; VLA; task and motion planning; mobile manipulation | each becomes the contribution only if the thesis turns that way; until then, enough to use and diagnose |
+| **Working** | navigation; SLAM and localization; state estimation; HRI; RL; optimization; ROS 2 and simulation tooling | supporting pillars and shared infrastructure — integration matters here, novelty does not |
+| **Literacy, raised to Working on demand** | broader RL theory; generic VLM topics; world models; diffusion internals; autonomy topics outside manipulation | read them accurately, cite them correctly, and notice when one starts to matter |
+
+> [!important] Mastery here is narrower than "manipulation"
+> This profile does **not** promote all of manipulation to Mastery. Kinematics, inverse
+> kinematics, and trajectory generation stay at Working: they are prerequisites to use
+> fluently, not claims to defend. What is promoted is the contact-bearing core — what
+> happens when the robot touches something — plus [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]],
+> which is promoted only because force control is unreadable without it.
+
+The admission test for moving anything up a row:
+
+> **Does this directly improve the construction manipulation research question?**
+
+If the honest answer is "it would be interesting", the answer is no.
+
 ## 한국어
 
 이 페이지는 **건설 Physical AI 연구자에게 권장하는 최소 학습 깊이**를 정한다.
@@ -184,6 +237,59 @@ and sim-to-real** at Working; and the remaining model families at Literacy.
 예를 들어 건설 굴착기 VLA 논문이라면 건설 현장 평가·행동 표현·정책 학습은
 Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열은 Literacy가
 될 수 있다.
+
+### 프로파일: 건설 매니퓰레이션
+
+위의 표는 공통 최소치다. 이 절은 [[07-research-program/index|7. 연구 프로그램]]의
+프로그램에 대한 **구체적 프로파일**이다 — T자 형태: physical AI 전반에 걸친 넓은 Literacy,
+그리고 기여가 사는 깊은 기둥 하나.
+
+<svg viewBox="0 0 560 226" style="max-width:100%;height:auto" role="img" aria-label="넓은 Literacy 띠에서 좁은 Mastery 띠로 아래로 갈수록 좁아지는 네 개의 띠">
+  <g fill="currentColor">
+    <rect x="30" y="36" width="500" height="32" rx="3" fill-opacity="0.06"/>
+    <rect x="90" y="68" width="380" height="32" rx="3" fill-opacity="0.12"/>
+    <rect x="150" y="100" width="260" height="32" rx="3" fill-opacity="0.20"/>
+    <rect x="195" y="132" width="170" height="46" rx="3" fill-opacity="0.32"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.6">
+    <rect x="30" y="36" width="500" height="32" rx="3"/><rect x="90" y="68" width="380" height="32" rx="3"/><rect x="150" y="100" width="260" height="32" rx="3"/><rect x="195" y="132" width="170" height="46" rx="3"/>
+  </g>
+  <g fill="currentColor" text-anchor="middle">
+    <text x="280" y="51" font-size="10.5">Literacy &#8212; 분야를 읽고 정확히 인용한다</text>
+    <text x="280" y="63" font-size="9" opacity="0.8">월드모델 &#183; 디퓨전 내부 &#183; 일반 VLM &#183; 넓은 RL 이론</text>
+    <text x="280" y="83" font-size="10.5">Working &#8212; 선택하고, 따라가고, 평가하고, 진단한다</text>
+    <text x="280" y="95" font-size="9" opacity="0.8">내비게이션 &#183; SLAM &#183; 상태추정 &#183; HRI &#183; 최적화 &#183; 제어 &#183; 도구</text>
+    <text x="280" y="115" font-size="10.5">Working, 논문이 요구하면 Mastery로</text>
+    <text x="280" y="127" font-size="9" opacity="0.8">원격조작 &#183; 촉각 &#183; 3D 인식 &#183; VLA &#183; TAMP</text>
+    <text x="280" y="148" font-size="10.5">Mastery</text>
+    <text x="280" y="161" font-size="9" opacity="0.8">접촉 다량 매니퓰레이션</text>
+    <text x="280" y="173" font-size="9" opacity="0.8">힘 제어 &#183; 파지 &#183; 동역학</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="30" y="200">깊이가 올라갈수록 폭은 좁아진다. 폭은 깊이를 위해 치르는 대가가 아니다 &#8212; 좁은 기둥 안에서도</text>
+    <text x="30" y="216">바깥의 무언가가 중요해지기 시작했음을 알아보게 해 주는 것이 폭이다.</text>
+  </g>
+</svg>
+
+| 깊이 | 영역 | 왜 그 깊이인가 |
+|---|---|---|
+| **Mastery** | 접촉 다량 매니퓰레이션; 힘·임피던스·어드미턴스 제어; 파지; 매니퓰레이터 동역학과 작업 공간 다리; 조작에 쓰는 모방학습 | 기여와 그 가장 가까운 의존 층 — 디펜스에서 살아남아야 하는 주장들 |
+| **Working, 논문이 요구하면 Mastery로** | 원격조작과 시연 수집; 촉각·시촉각 센싱; 3D 인식; VLA; 과제·모션 계획(TAMP); 모바일 조작 | 논문이 그쪽으로 틀 때만 기여가 된다. 그전까지는 쓰고 진단할 만큼 |
+| **Working** | 내비게이션; SLAM·위치추정; 상태 추정; HRI; RL; 최적화; ROS 2와 시뮬레이션 도구 | 보조 기둥과 공용 인프라 — 여기서는 통합이 중요하고 novelty는 중요하지 않다 |
+| **Literacy, 필요하면 Working으로** | 넓은 RL 이론; 일반 VLM 주제; 월드모델; 디퓨전 내부; 조작 밖의 자율성 주제 | 정확히 읽고, 정확히 인용하고, 그중 하나가 중요해지기 시작하는 순간을 알아차린다 |
+
+> [!important] 여기서의 Mastery는 "매니퓰레이션"보다 좁다
+> 이 프로파일은 매니퓰레이션 전체를 Mastery로 올리지 **않는다**. 기구학, 역기구학, 궤적
+> 생성은 Working에 남는다: 유창하게 *써야 하는* 선수 지식이지 *방어할* 주장이 아니다.
+> 승격되는 것은 접촉을 지는 핵심 — 로봇이 무언가에 닿을 때 일어나는 일 — 과
+> [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]이며,
+> 후자는 오직 그것 없이는 힘 제어를 읽을 수 없기 때문에 승격된다.
+
+한 칸 올리려 할 때의 입장 시험:
+
+> **이것이 건설 조작 연구 질문을 직접 개선하는가?**
+
+정직한 답이 "흥미로울 것 같다"라면, 답은 아니오다.
 
 ### Connections · 연결
 
