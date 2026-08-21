@@ -304,7 +304,7 @@ whether a contact will feel stiff or soft — and be right.
 ### Sources
 
 - *Modern Robotics* (Lynch & Park) ch.8 (dynamics) and ch.11 (control) — see [[04-robotics/modern-robotics-book|the book guide]] for the free official PDF. The mass-matrix form in §3 is the standard planar 2R result derived there.
-- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, 1987 — the origin of $\Lambda$ and of task-space control.
+- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987 — the origin of $\Lambda$ and of task-space control. (The journal is "Journal *on*", not "of".)
 - The numeric examples on this page were computed here from the stated masses and lengths, not quoted from a source; recompute them rather than trusting them.
 
 ## 한국어
@@ -572,5 +572,5 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 ### 출처
 
 - *Modern Robotics* (Lynch & Park) 8장(동역학)·11장(제어) — 공식 무료 PDF는 [[04-robotics/modern-robotics-book|책 가이드]]에. §3의 질량 행렬 형태는 거기서 유도되는 표준 평면 2R 결과다.
-- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, 1987 — $\Lambda$와 작업 공간 제어의 출처.
+- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987 — $\Lambda$와 작업 공간 제어의 출처. (저널명은 "Journal *on*"이며 "of"가 아니다.)
 - 이 페이지의 수치 예제는 명시된 질량과 길이로부터 여기서 직접 계산한 것이며 어느 출처에서 인용한 것이 아니다. 믿지 말고 다시 계산하라.

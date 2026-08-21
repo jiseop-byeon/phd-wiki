@@ -1,0 +1,622 @@
+---
+title: 13. Force & Compliance Control
+tags: [robotics, manipulation, control]
+study-depth: Mastery
+wiki-support: Working
+depth-goal: "Choose between impedance, admittance, hybrid, and passive compliance for a stated task and environment; say what a force-control claim in a paper actually established."
+mastery-when: "This is the contribution-bearing layer of contact-rich manipulation — Mastery is the point of the manipulation track, not an optional upgrade."
+---
+
+> [!abstract] Depth target · 깊이 목표
+> **Mastery** — with [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] this is the pair the
+> [[07-research-program/index|research program]] promotes past Working, because every
+> contact-rich manipulation claim is ultimately a claim about one of these controllers.
+> **Mastery** — [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]과 함께
+> [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 쌍이다. 접촉 다량 조작의
+> 모든 주장이 결국 이 제어기들 중 하나에 관한 주장이기 때문이다.
+
+> [!note] Before you start · 시작 전 점검
+> You need the manipulator equation and the operational-space inertia $\Lambda$ ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), and closed-loop stability and bandwidth ([[04-robotics/control-theory-ce397|Control Theory §5, §7]]).
+> 매니퓰레이터 방정식과 작업 공간 관성 $\Lambda$([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 폐루프 안정성과 대역폭([[04-robotics/control-theory-ce397|제어 이론 §5, §7]])이 필요하다.
+
+## English
+
+### 1. Position control cannot survive contact
+
+A position controller's job is to drive position error to zero, and it does so with whatever
+force that requires. In free space this is exactly right. In contact it is a specification
+for breaking things, because the environment now decides what position error means.
+
+Take the wall from [[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]:
+a stiff structural surface at roughly $K_e = 10^4$ N/m, commanded 1 cm past its surface.
+
+$$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
+
+The controller does not "decide" to push with 100 N; it is simply what closing a 1 cm error
+against that stiffness costs. A compliant controller rendering $K = 200$ N/m in the same
+situation produces $200 \times 0.01 = 2$ N and holds a 1 cm error it never resolves — which
+in contact is the correct behaviour, not a failure.
+
+This is the whole subject in one comparison. **Contact turns position error into force**, so
+control in contact is about choosing the *relation* between them rather than eliminating
+either one. Mason's 1981 formalisation of this is still the cleanest way to say it: contact
+imposes **natural constraints** (the wall determines the force normal to it, whatever you
+command) and leaves you **artificial constraints** (you choose the motion along it). The
+two sets are complementary, and **you cannot control position and force in the same
+direction** — not because it is hard, but because the task's geometry has already assigned
+one of them to the environment.
+
+### 2. Impedance and admittance — the same idea, opposite causality
+
+Both aim at the same thing: make the robot behave like a chosen mass–spring–damper
+
+$$\mathcal{F} = M_d(\ddot x_d - \ddot x) + D_d(\dot x_d - \dot x) + K_d(x_d - x)$$
+
+with $M_d, D_d, K_d$ the *desired* inertia, damping, and stiffness. They differ in which
+variable is measured and which is commanded, and that single difference decides which
+hardware and which environment each one suits.
+
+<svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
+  <g font-size="11" fill="currentColor" font-weight="600">
+    <text x="20" y="22">IMPEDANCE &#8212; measure motion, command force</text>
+    <text x="20" y="128">ADMITTANCE &#8212; measure force, command motion</text>
+  </g>
+  <g fill="currentColor">
+    <rect x="96" y="34" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="232" y="34" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="368" y="34" width="96" height="38" rx="3" fill-opacity="0.28"/>
+    <rect x="96" y="140" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="232" y="140" width="96" height="38" rx="3" fill-opacity="0.28"/>
+    <rect x="368" y="140" width="96" height="38" rx="3" fill-opacity="0.14"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.6">
+    <rect x="96" y="34" width="96" height="38" rx="3"/><rect x="232" y="34" width="96" height="38" rx="3"/><rect x="368" y="34" width="96" height="38" rx="3"/>
+    <rect x="96" y="140" width="96" height="38" rx="3"/><rect x="232" y="140" width="96" height="38" rx="3"/><rect x="368" y="140" width="96" height="38" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.3" fill="none" opacity="0.85" marker-end="url(#arF)">
+    <line x1="196" y1="53" x2="228" y2="53"/><line x1="332" y1="53" x2="364" y2="53"/>
+    <line x1="196" y1="159" x2="228" y2="159"/><line x1="332" y1="159" x2="364" y2="159"/>
+    <path d="M 464 80 L 490 80 L 490 96 L 76 96 L 76 53 L 92 53"/>
+    <path d="M 464 186 L 490 186 L 490 202 L 76 202 L 76 159 L 92 159"/>
+  </g>
+  <defs><marker id="arF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="144" y="51">measured</text><text x="144" y="64">position</text>
+    <text x="280" y="51">desired</text><text x="280" y="64">impedance</text>
+    <text x="416" y="51">joint torque</text><text x="416" y="64">on the arm</text>
+    <text x="144" y="157">measured</text><text x="144" y="170">force</text>
+    <text x="280" y="157">desired</text><text x="280" y="170">admittance</text>
+    <text x="416" y="157">inner position</text><text x="416" y="170">loop</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.85" text-anchor="end">
+    <text x="536" y="30">needs a backdrivable, torque-controlled arm</text>
+    <text x="536" y="136">needs a force sensor at the wrist</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="222">The shaded box is where each one needs hardware it cannot fake.</text>
+    <text x="20" y="236">That is usually what decides the choice.</text>
+  </g>
+</svg>
+
+- **Impedance control** measures motion and commands force. It needs an arm whose joints can
+  be commanded in torque and are backdrivable. The robot is *soft by default* and its
+  position accuracy in free space is only as good as its model.
+- **Admittance control** measures force and commands motion into a stiff inner position
+  loop. It needs a force sensor, and it works with the industrial arms that only accept
+  position commands. The robot is *stiff by default*.
+
+The rule that follows is not a preference but a consequence:
+
+| | Suits | Fails against |
+|---|---|---|
+| **Impedance** | stiff environments — the arm's own compliance absorbs the contact | very soft environments and free space, where "soft by default" means poor positioning |
+| **Admittance** | soft environments and precise free-space motion | stiff environments — a micron of motion makes a large force, the outer loop over-reacts, and the loop oscillates |
+
+The asymmetry is worth internalising, because it inverts the naive expectation. The
+*stiff* robot is the one that cannot handle a *stiff* wall.
+
+> [!warning] The most common quiet error in reading force-control papers
+> An industrial arm with a wrist force sensor doing "force control" is doing **admittance**
+> control, and the vendor's position loop is in series with the environment. The two
+> stiffnesses add, so a result demonstrated against foam says nothing about steel. Ask what
+> the inner loop is before believing any compliance claim — see
+> [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
+
+### 3. Hybrid position/force control
+
+Mason's constraint analysis says which directions belong to the environment. Raibert and
+Craig's 1981 architecture is how you act on that: choose a task frame, and a diagonal
+**selection matrix** $S$ of ones and zeros that assigns each direction to one controller.
+
+$$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
+
+Position control runs in the $S$ directions, force control in the complementary ones, and
+the two never fight because they never address the same axis. For sliding a tool along a
+surface: position control in the two tangential directions, force control along the normal.
+
+This is the architecture that made constrained-manipulation tasks *specifiable*, and its
+limitation is the same as its premise — it assumes you know the task frame and the contact
+geometry. When the surface is where you thought it was, hybrid control is exact and easy to
+tune. When the part is 3 mm from where the model says, the selection matrix is assigning
+force control to a direction that is no longer normal to anything, which is the standard
+way construction geometry breaks a factory controller.
+
+### 4. Operational-space control
+
+Khatib's 1987 formulation is what makes the previous two sections implementable on a real
+arm rather than on a point mass. Control is written directly in task coordinates using the
+operational-space inertia from [[02-foundations/manipulator-kinematics-dynamics|10. §6]]:
+
+$$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
+
+with $\mu$ and $p$ the task-space Coriolis and gravity terms. Two consequences that matter:
+
+- The arm's configuration-dependent inertia is **compensated**, so a commanded task-space
+  behaviour is the same in every pose. Without this, the factor-of-five inertia change from
+  [[02-foundations/manipulator-kinematics-dynamics|10. §3]] shows up directly as a
+  pose-dependent change in the contact behaviour you thought you had specified.
+- Redundancy resolution becomes a **null-space projection**: a redundant arm can satisfy a
+  secondary objective — stay away from joint limits, keep the elbow clear of a worker —
+  using motion that produces no task-space force. For a mobile manipulator on a site with
+  people in it, this is the mechanism, not a nicety.
+
+### 5. Contact transitions — where the theory earns its keep
+
+Steady contact is the easy part. The hard part is the microsecond the robot arrives, and
+the argument here is quantitative rather than rhetorical.
+
+Model the impact as the end-effector's apparent mass $\Lambda$ meeting a spring of stiffness
+$K$ at approach speed $v$. The contact is a half-sine, with
+
+$$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
+
+Take the $\Lambda = 2$ kg from [[02-foundations/manipulator-kinematics-dynamics|10. §6]] and
+a gentle approach at $v = 5$ cm/s.
+
+| Interface | $K$ (N/m) | $F_{\max}$ | contact duration | 1 kHz samples inside the contact |
+|---|---:|---:|---:|---:|
+| bare tool on a stiff structure | $10^7$ | **224 N** | **1.4 ms** | about 1 |
+| compliant wrist in series | $10^4$ | **7.1 N** | **44 ms** | about 44 |
+
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="the stiff contact drawn to scale as a needle-thin spike between two control samples, against the compliant contact as a broad flat bump">
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
+    <line x1="55" y1="170" x2="512" y2="170"/><line x1="55" y1="170" x2="55" y2="40"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.7" opacity="0.55" fill="none"><line x1="60.0" y1="170" x2="60.0" y2="176"/><line x1="68.8" y1="170" x2="68.8" y2="176"/><line x1="77.6" y1="170" x2="77.6" y2="176"/><line x1="86.4" y1="170" x2="86.4" y2="176"/><line x1="95.2" y1="170" x2="95.2" y2="176"/><line x1="104.0" y1="170" x2="104.0" y2="176"/><line x1="112.8" y1="170" x2="112.8" y2="176"/><line x1="121.6" y1="170" x2="121.6" y2="176"/><line x1="130.4" y1="170" x2="130.4" y2="176"/><line x1="139.2" y1="170" x2="139.2" y2="176"/><line x1="148.0" y1="170" x2="148.0" y2="176"/><line x1="156.8" y1="170" x2="156.8" y2="176"/><line x1="165.6" y1="170" x2="165.6" y2="176"/><line x1="174.4" y1="170" x2="174.4" y2="176"/><line x1="183.2" y1="170" x2="183.2" y2="176"/><line x1="192.0" y1="170" x2="192.0" y2="176"/><line x1="200.8" y1="170" x2="200.8" y2="176"/><line x1="209.6" y1="170" x2="209.6" y2="176"/><line x1="218.4" y1="170" x2="218.4" y2="176"/><line x1="227.2" y1="170" x2="227.2" y2="176"/><line x1="236.0" y1="170" x2="236.0" y2="176"/><line x1="244.8" y1="170" x2="244.8" y2="176"/><line x1="253.6" y1="170" x2="253.6" y2="176"/><line x1="262.4" y1="170" x2="262.4" y2="176"/><line x1="271.2" y1="170" x2="271.2" y2="176"/><line x1="280.0" y1="170" x2="280.0" y2="176"/><line x1="288.8" y1="170" x2="288.8" y2="176"/><line x1="297.6" y1="170" x2="297.6" y2="176"/><line x1="306.4" y1="170" x2="306.4" y2="176"/><line x1="315.2" y1="170" x2="315.2" y2="176"/><line x1="324.0" y1="170" x2="324.0" y2="176"/><line x1="332.8" y1="170" x2="332.8" y2="176"/><line x1="341.6" y1="170" x2="341.6" y2="176"/><line x1="350.4" y1="170" x2="350.4" y2="176"/><line x1="359.2" y1="170" x2="359.2" y2="176"/><line x1="368.0" y1="170" x2="368.0" y2="176"/><line x1="376.8" y1="170" x2="376.8" y2="176"/><line x1="385.6" y1="170" x2="385.6" y2="176"/><line x1="394.4" y1="170" x2="394.4" y2="176"/><line x1="403.2" y1="170" x2="403.2" y2="176"/><line x1="412.0" y1="170" x2="412.0" y2="176"/><line x1="420.8" y1="170" x2="420.8" y2="176"/><line x1="429.6" y1="170" x2="429.6" y2="176"/><line x1="438.4" y1="170" x2="438.4" y2="176"/><line x1="447.2" y1="170" x2="447.2" y2="176"/><line x1="456.0" y1="170" x2="456.0" y2="176"/><line x1="464.8" y1="170" x2="464.8" y2="176"/><line x1="473.6" y1="170" x2="473.6" y2="176"/><line x1="482.4" y1="170" x2="482.4" y2="176"/><line x1="491.2" y1="170" x2="491.2" y2="176"/><line x1="500.0" y1="170" x2="500.0" y2="176"/></g>
+  <path d="M 60 170 C 64 10 68 10 72.4 170" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M 60 170 C 190 165 321 165 451 170" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.7">
+    <line x1="80" y1="56" x2="120" y2="56"/><line x1="300" y1="150" x2="300" y2="164"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="126" y="60">224 N, and all of it inside 1.4 ms</text>
+    <text x="300" y="146" text-anchor="middle">7.1 N spread over 44 ms</text>
+    <text x="60" y="192" font-size="10" opacity="0.85">1 kHz control samples</text>
+    <text x="16" y="106" font-size="10" opacity="0.85">force</text>
+    <text x="512" y="164" font-size="10" opacity="0.85" text-anchor="end">time (50 ms shown)</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="218">Both axes are to scale. The bare-tool contact is the needle at the left &#8212; taller than the plot</text>
+    <text x="20" y="234">can hold, and narrower than the gap between two control samples. The compliant contact is</text>
+    <text x="20" y="250">the broad bump: barely visible on that force axis, long enough for about 44 samples.</text>
+  </g>
+</svg>
+
+Read the table rather than the picture. Against the bare structure the entire impact is over
+in 1.4 ms, so a 1 kHz controller sees roughly **one sample** of it, arriving as late as
+1 ms in — possibly after the peak has already passed. No control law fixes this, because
+the information arrives after the event.
+
+Put a compliant element in series and both numbers move, in opposite directions and by the
+same factor: $F_{\max} \propto \sqrt{K}$ and $t_{\text{contact}} \propto 1/\sqrt{K}$, so
+softening by $1000\times$ buys $\sqrt{1000} \approx 32\times$ in each. The force becomes
+something the arm can survive *and* the event becomes long enough to regulate.
+
+The lesson generalises past the arithmetic: **passive compliance is not a cheap substitute
+for active control; it is the only thing that acts at contact bandwidth.** Whitney's 1982
+quasi-static analysis of compliantly supported insertion is the mature version of this
+idea — it derives, for chamfered and chamferless peg-in-hole, the conditions under which
+misalignment causes **wedging** (opposing contact forces lock the part) or **jamming**
+(the applied wrench falls outside the cone that produces insertion), and turns them into
+design inequalities the support compliance must satisfy. A remote-centre compliance device
+places the compliance centre at the part's tip, so a lateral error produces lateral motion
+and an angular error produces rotation about the tip, and the two errors stop feeding each
+other. It solves the insertion problem in aluminium, with no sensor and no latency.
+
+Colgate and Hogan's 1988 result is the theoretical boundary of the active alternative: for
+a manipulator coupled to an arbitrary passive but unknown environment, coupled stability
+holds if and only if the manipulator's driving-point impedance is passive. That converts
+contact stability from a per-experiment tuning question into a frequency-domain test, and
+it says something uncomfortable — there is a **limit** to how light an apparent inertia or
+how high a stiffness a controller can render stably. The controller cannot pretend the
+arm's mass away.
+
+### 6. Where learned policies sit
+
+The framing this wiki's [[07-research-program/index|research program]] uses is deliberately
+not "replace control with learning":
+
+> **human demonstrations + a learned policy + classical control + tactile/visual feedback**
+
+The division of labour follows directly from §5. A learned policy chooses *what compliance
+to ask for and where to go* — decisions that require perception and context, and that run
+happily at 10–50 Hz. A classical impedance or hybrid controller *realises* that request at
+500–1000 Hz, and passive compliance handles the millisecond nobody can sample. A policy
+that outputs joint positions into a stiff vendor loop has quietly opted out of all three
+lower layers, whatever its paper says about contact.
+
+This is also why the action space is the first thing to check in a manipulation-policy
+paper: end-effector pose, joint position, joint torque, and *impedance parameters* are four
+different claims about which layer the learning is contributing to.
+
+### 7. Reading force control in a paper
+
+| Question | What a wrong answer hides |
+|---|---|
+| Impedance or admittance? What is the inner loop? | Admittance on a stiff vendor loop cannot claim contact compliance |
+| Was it tested against a **stiff** environment? | Foam and free space hide the instability entirely |
+| Are $M_d, D_d, K_d$ reported, with units? | "Compliant" without numbers is not a specification |
+| Contact **transition** shown, or only steady contact? | The transition is where §5 says the difficulty lives |
+| Control rate, and sensor rate? | Below about 500 Hz, contact regulation is mostly the mechanics, not the controller |
+| Any passive compliance in the hardware? | If yes, part of the result belongs to the spring, not the algorithm |
+| Position accuracy in free space *and* force accuracy in contact? | Each architecture is bad at one of them; reporting one is reporting half |
+
+### 8. The path to Mastery
+
+| Need | Where |
+|---|---|
+| The impedance argument in its original form | Hogan 1985, Part I — the causality argument is the part to read closely |
+| Constraint analysis and the task frame | Mason 1981; then Raibert & Craig 1981 for the architecture |
+| Task-space implementation | Khatib 1987, with [[02-foundations/manipulator-kinematics-dynamics\|10. §6]] as the prerequisite |
+| Why stiff contact destabilizes | Colgate & Hogan 1988 |
+| The assembly reality check | Whitney 1982, and Whitney's 1987 IJRR survey for the landscape |
+| Hands-on | A simulator with a torque-controlled arm: render $K_d$ from 50 to 5000 N/m against a stiff surface and find where it buzzes |
+
+The Mastery test: given an arm, an environment stiffness, a sensor rate, and a task
+tolerance, say which architecture can meet it — and whether any can.
+
+### After reading
+
+- [ ] State why position and force cannot be controlled in the same direction.
+- [ ] Say which of impedance and admittance suits a stiff environment, and why it is the opposite of the naive guess.
+- [ ] Write the selection-matrix form of hybrid control and give a task for it.
+- [ ] Compute $F_{\max}$ and contact duration for a given $\Lambda$, $K$, $v$, and say how many control samples land inside.
+- [ ] Explain what Colgate and Hogan's passivity condition forbids.
+
+### Self-check
+
+1. An industrial arm with a wrist force sensor holds 5 N against foam beautifully and
+   oscillates violently against a steel plate. Name the architecture and the cause.
+2. Approach speed doubles from 5 to 10 cm/s. What happens to the peak contact force and to
+   the contact duration?
+3. Why does a remote-centre compliance device solve peg-in-hole insertion without any sensor?
+4. A paper reports a learned policy achieving "compliant insertion", with the policy
+   outputting end-effector positions at 10 Hz to a position-controlled arm. What is the
+   strongest claim it can actually support?
+5. Hybrid position/force control is exact when the geometry is known. Why is that a problem
+   specifically in construction?
+
+> [!tip]- Answers
+> 1. It is admittance control — the force sensor drives an outer loop that commands positions into the vendor's stiff inner loop. Against foam a large motion produces a small force, so the loop gain is low and it behaves. Against steel, micrometres of motion produce large forces, so the effective loop gain is enormous; the outer loop over-reacts, and the sensor and inner-loop delays turn that into oscillation. The stiff robot is the one that cannot handle the stiff wall.
+> 2. $F_{\max} = v\sqrt{\Lambda K}$ is linear in $v$, so the peak force doubles to about 450 N in the stiff case. The duration $\pi\sqrt{\Lambda/K}$ does not contain $v$ at all, so it stays at 1.4 ms. Approaching faster buys you nothing in reaction time and costs you proportionally in force — which is why approach-speed limits, not better control, are the usual fix.
+> 3. Because it places the compliance centre at the tip of the peg, so a lateral misalignment produces lateral compliance and an angular misalignment produces rotation about the tip, instead of each error generating the other. The correction is mechanical, so it happens at the speed of the material rather than the speed of a control loop — and §5 shows the control loop is too slow to have helped anyway.
+> 4. That the policy chose good *positions*. Every compliance in the system belongs to the arm's inner loop and whatever passive give exists in the tool and part; the policy at 10 Hz cannot be regulating contact force, since the contact events of §5 are three orders of magnitude faster. It may well be a good result — it is a result about trajectory selection, not about compliance.
+> 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres or a couple of degrees of error means force control is now acting partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
+
+### Sources
+
+**The classics — verified citations**
+
+- N. Hogan, "Impedance Control: An Approach to Manipulation: Part I—Theory / Part II—Implementation / Part III—Applications," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 107, no. 1, pp. 1–7, 8–16, 17–24, March 1985. An undivided earlier version appeared at the 1984 American Control Conference, pp. 304–313.
+- M. T. Mason, "Compliance and Force Control for Computer Controlled Manipulators," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-11, no. 6, pp. 418–432, 1981 — natural and artificial constraints.
+- M. H. Raibert and J. J. Craig, "Hybrid Position/Force Control of Manipulators," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. **103**, no. 2, pp. 126–133, June 1981. Widely miscited as vol. 102; the volume is 103.
+- J. K. Salisbury, "Active stiffness control of a manipulator in cartesian coordinates," *IEEE Conference on Decision and Control*, pp. 95–100, 1980 — Cartesian stiffness via $J^\top$, the direct antecedent of impedance control.
+- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal **on** Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987.
+- J. E. Colgate and N. Hogan, "Robust control of dynamically interacting systems," *International Journal of Control*, vol. 48, no. 1, pp. 65–88, 1988 — coupled stability as a passivity condition on driving-point impedance.
+- D. E. Whitney, "Quasi-Static Assembly of Compliantly Supported Rigid Parts," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 104, no. 1, pp. 65–77, March 1982 — wedging and jamming conditions. For the landscape, D. E. Whitney, "Historical Perspective and State of the Art in Robot Force Control," *IJRR*, vol. 6, no. 1, pp. 3–14, 1987.
+
+> [!note] On citing the RCC itself
+> Whitney 1982 is the *analysis* that justifies the remote-centre compliance, not its
+> introduction. The device is usually traced to S. H. Drake's 1977 MIT PhD thesis and to
+> Whitney & Nevins, "What is the Remote Center Compliance (RCC) and What Can It Do?",
+> 9th International Symposium on Industrial Robots, 1979 — neither of which could be
+> confirmed against an indexed primary record here, both predating DOI coverage. Check them
+> against a library catalogue before citing rather than copying them from a secondary source.
+
+**Within this wiki**
+
+- [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — $\Lambda$, the manipulator equation, and why the inner loop matters.
+- [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — friction, contact modes, and the wall example §1 reuses.
+- The impact numbers in §5 were computed here from the stated $\Lambda$, $K$, and $v$ with the linear half-sine impact model; recompute them rather than trusting them.
+
+## 한국어
+
+### 1. 위치 제어는 접촉에서 살아남지 못한다
+
+위치 제어기의 일은 위치 오차를 0으로 모는 것이고, 그러기 위해 필요한 힘이 얼마든 그것을 쓴다.
+자유 공간에서는 정확히 옳다. 접촉에서는 물건을 부수라는 명세가 된다. 이제 위치 오차가 무엇을
+뜻하는지를 환경이 결정하기 때문이다.
+
+[[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]의 벽을 보자: 대략 $K_e = 10^4$ N/m인
+단단한 구조물 표면에, 표면보다 1 cm 안쪽을 명령했다.
+
+$$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
+
+제어기가 100 N으로 밀기로 "결정"한 것이 아니다. 그 강성에 대해 1 cm 오차를 닫는 비용이 그저
+그것일 뿐이다. 같은 상황에서 $K = 200$ N/m를 구현하는 유연한 제어기는 $200 \times 0.01 = 2$ N을
+내고 끝내 해소하지 않는 1 cm 오차를 유지한다 — 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
+
+이 비교 하나가 주제 전체다. **접촉은 위치 오차를 힘으로 바꾼다.** 그러므로 접촉에서의 제어는
+둘 중 하나를 없애는 일이 아니라 둘 사이의 *관계*를 고르는 일이다. Mason이 1981년에 이것을
+형식화한 방식이 여전히 가장 깔끔하다: 접촉은 **자연 제약**(natural constraint)을 부과하고
+— 무엇을 명령하든 벽이 자기에 수직한 힘을 결정한다 — **인공 제약**(artificial constraint)을
+남긴다 — 표면을 따라가는 운동은 당신이 고른다. 두 집합은 상보적이며, **같은 방향에서 위치와
+힘을 동시에 제어할 수 없다**. 어려워서가 아니라, 과제의 기하가 둘 중 하나를 이미 환경에
+배정해 버렸기 때문이다.
+
+### 2. 임피던스와 어드미턴스 — 같은 발상, 반대 인과
+
+둘 다 같은 것을 노린다: 로봇이 선택된 질량–스프링–감쇠기처럼 거동하게 만드는 것
+
+$$\mathcal{F} = M_d(\ddot x_d - \ddot x) + D_d(\dot x_d - \dot x) + K_d(x_d - x)$$
+
+($M_d, D_d, K_d$는 *원하는* 관성·감쇠·강성). 차이는 어느 변수를 측정하고 어느 것을 명령하는가
+뿐이며, 그 하나의 차이가 어떤 하드웨어와 어떤 환경에 맞는지를 결정한다.
+
+<svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">
+  <g font-size="11" fill="currentColor" font-weight="600">
+    <text x="20" y="22">임피던스 &#8212; 운동을 재고, 힘을 명령한다</text>
+    <text x="20" y="128">어드미턴스 &#8212; 힘을 재고, 운동을 명령한다</text>
+  </g>
+  <g fill="currentColor">
+    <rect x="96" y="34" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="232" y="34" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="368" y="34" width="96" height="38" rx="3" fill-opacity="0.28"/>
+    <rect x="96" y="140" width="96" height="38" rx="3" fill-opacity="0.14"/>
+    <rect x="232" y="140" width="96" height="38" rx="3" fill-opacity="0.28"/>
+    <rect x="368" y="140" width="96" height="38" rx="3" fill-opacity="0.14"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.6">
+    <rect x="96" y="34" width="96" height="38" rx="3"/><rect x="232" y="34" width="96" height="38" rx="3"/><rect x="368" y="34" width="96" height="38" rx="3"/>
+    <rect x="96" y="140" width="96" height="38" rx="3"/><rect x="232" y="140" width="96" height="38" rx="3"/><rect x="368" y="140" width="96" height="38" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.3" fill="none" opacity="0.85" marker-end="url(#arFk)">
+    <line x1="196" y1="53" x2="228" y2="53"/><line x1="332" y1="53" x2="364" y2="53"/>
+    <line x1="196" y1="159" x2="228" y2="159"/><line x1="332" y1="159" x2="364" y2="159"/>
+    <path d="M 464 80 L 490 80 L 490 96 L 76 96 L 76 53 L 92 53"/>
+    <path d="M 464 186 L 490 186 L 490 202 L 76 202 L 76 159 L 92 159"/>
+  </g>
+  <defs><marker id="arFk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="144" y="51">측정된</text><text x="144" y="64">위치</text>
+    <text x="280" y="51">원하는</text><text x="280" y="64">임피던스</text>
+    <text x="416" y="51">팔에 가하는</text><text x="416" y="64">관절 토크</text>
+    <text x="144" y="157">측정된</text><text x="144" y="170">힘</text>
+    <text x="280" y="157">원하는</text><text x="280" y="170">어드미턴스</text>
+    <text x="416" y="157">내부 위치</text><text x="416" y="170">루프</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.85" text-anchor="end">
+    <text x="536" y="30">역구동 가능한 토크 제어 팔이 필요하다</text>
+    <text x="536" y="136">손목에 힘 센서가 필요하다</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="222">음영 상자가 각각이 흉내 낼 수 없는 하드웨어를 요구하는 자리다.</text>
+    <text x="20" y="236">대개 그것이 선택을 결정한다.</text>
+  </g>
+</svg>
+
+- **임피던스 제어**는 운동을 재고 힘을 명령한다. 관절을 토크로 명령할 수 있고 역구동 가능한
+  팔이 필요하다. 로봇은 *기본적으로 무르고*, 자유 공간에서의 위치 정확도는 모델이 정확한
+  만큼만이다.
+- **어드미턴스 제어**는 힘을 재고 뻣뻣한 내부 위치 루프에 운동을 명령한다. 힘 센서가
+  필요하고, 위치 명령만 받는 산업용 팔에서도 동작한다. 로봇은 *기본적으로 뻣뻣하다*.
+
+여기서 따라 나오는 규칙은 취향이 아니라 귀결이다:
+
+| | 맞는 곳 | 무너지는 곳 |
+|---|---|---|
+| **임피던스** | 단단한 환경 — 팔 자신의 유연성이 접촉을 흡수한다 | 매우 무른 환경과 자유 공간. "기본적으로 무르다"가 곧 위치 정확도 부족이다 |
+| **어드미턴스** | 무른 환경과 정밀한 자유 공간 운동 | 단단한 환경 — 마이크로미터의 운동이 큰 힘을 만들고, 외부 루프가 과반응하며, 루프가 진동한다 |
+
+이 비대칭은 몸에 새겨 둘 가치가 있다. 소박한 예상을 뒤집기 때문이다: **뻣뻣한** 로봇이야말로
+**단단한** 벽을 감당하지 못하는 쪽이다.
+
+> [!warning] 힘 제어 논문을 읽을 때 가장 흔한, 조용한 오독
+> 손목 힘 센서를 단 산업용 팔이 하는 "힘 제어"는 **어드미턴스** 제어이고, 벤더의 위치 루프가
+> 환경과 직렬로 끼어 있다. 두 강성이 더해지므로, 폼(foam)에 대해 보인 결과는 강철에 대해
+> 아무것도 말해 주지 않는다. 어떤 컴플라이언스 주장이든 믿기 전에 내부 루프가 무엇인지
+> 물어라 — [[02-foundations/manipulator-kinematics-dynamics|10. §8]]을 보라.
+
+### 3. 하이브리드 위치/힘 제어
+
+Mason의 제약 분석이 어느 방향이 환경의 것인지를 말해 준다. Raibert와 Craig의 1981년
+아키텍처는 그것을 실행하는 방법이다: 과제 프레임을 고르고, 각 방향을 어느 제어기에 배정할지를
+0과 1로 적은 대각 **선택 행렬** $S$를 고른다.
+
+$$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
+
+$S$ 방향에서는 위치 제어가, 나머지 방향에서는 힘 제어가 돈다. 같은 축을 건드리는 일이 없으므로
+둘이 싸우지 않는다. 표면을 따라 공구를 미끄러뜨린다면: 접선 두 방향은 위치 제어, 법선 방향은
+힘 제어.
+
+구속 조작 과제를 *명세 가능하게* 만든 아키텍처이고, 그 한계는 그 전제와 같다 — 과제 프레임과
+접촉 기하를 안다고 가정한다. 표면이 생각한 자리에 있으면 하이브리드 제어는 정확하고 튜닝도
+쉽다. 부재가 모델이 말하는 곳에서 3 mm 벗어나 있으면, 선택 행렬은 더 이상 아무것에도 수직이
+아닌 방향에 힘 제어를 배정하고 있는 것이다. 건설 현장의 기하가 공장용 제어기를 깨뜨리는
+표준적인 방식이 이것이다.
+
+### 4. 작업 공간 제어
+
+Khatib의 1987년 정식화가 앞의 두 절을 점질량이 아니라 실제 팔 위에서 구현 가능하게 만든다.
+제어를 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 작업 공간 관성을 써서 과제
+좌표에서 직접 쓴다:
+
+$$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
+
+($\mu$와 $p$는 작업 공간의 코리올리·중력 항). 중요한 귀결 둘:
+
+- 팔의 자세 의존적 관성이 **보상된다.** 그래서 명령한 작업 공간 거동이 모든 자세에서 같아진다.
+  이것이 없으면 [[02-foundations/manipulator-kinematics-dynamics|10. §3]]의 5배 관성 변화가
+  곧바로, 명세했다고 믿은 접촉 거동의 자세 의존적 변화로 나타난다.
+- 여유 자유도 해소가 **영공간 투영**이 된다: 여유 자유도가 있는 팔은 작업 공간 힘을 전혀 만들지
+  않는 운동으로 부차 목표 — 관절 한계에서 멀어지기, 팔꿈치를 작업자에게서 비키기 — 를 만족할 수
+  있다. 사람이 있는 현장의 모바일 매니퓰레이터에게 이것은 덤이 아니라 기제 그 자체다.
+
+### 5. 접촉 천이 — 이론이 값을 하는 지점
+
+정상 접촉은 쉬운 부분이다. 어려운 것은 로봇이 도착하는 그 순간이고, 여기서의 논증은 수사가
+아니라 정량적이다.
+
+충돌을 말단의 겉보기 질량 $\Lambda$가 접근 속도 $v$로 강성 $K$인 스프링을 만나는 것으로
+모델링하면, 접촉은 반주기 사인이고
+
+$$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
+
+[[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 $\Lambda = 2$ kg와 부드러운
+접근 $v = 5$ cm/s를 넣자.
+
+| 접촉면 | $K$ (N/m) | $F_{\max}$ | 접촉 지속 | 접촉 중 1 kHz 샘플 수 |
+|---|---:|---:|---:|---:|
+| 맨 공구가 단단한 구조물에 | $10^7$ | **224 N** | **1.4 ms** | 약 1개 |
+| 유연 손목을 직렬로 | $10^4$ | **7.1 N** | **44 ms** | 약 44개 |
+
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="단단한 접촉이 제어 샘플 두 개 사이에 들어가는 바늘 같은 스파이크로, 유연한 접촉이 넓고 평평한 봉우리로 실제 비례로 그려져 있다">
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
+    <line x1="55" y1="170" x2="512" y2="170"/><line x1="55" y1="170" x2="55" y2="40"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.7" opacity="0.55" fill="none"><line x1="60.0" y1="170" x2="60.0" y2="176"/><line x1="68.8" y1="170" x2="68.8" y2="176"/><line x1="77.6" y1="170" x2="77.6" y2="176"/><line x1="86.4" y1="170" x2="86.4" y2="176"/><line x1="95.2" y1="170" x2="95.2" y2="176"/><line x1="104.0" y1="170" x2="104.0" y2="176"/><line x1="112.8" y1="170" x2="112.8" y2="176"/><line x1="121.6" y1="170" x2="121.6" y2="176"/><line x1="130.4" y1="170" x2="130.4" y2="176"/><line x1="139.2" y1="170" x2="139.2" y2="176"/><line x1="148.0" y1="170" x2="148.0" y2="176"/><line x1="156.8" y1="170" x2="156.8" y2="176"/><line x1="165.6" y1="170" x2="165.6" y2="176"/><line x1="174.4" y1="170" x2="174.4" y2="176"/><line x1="183.2" y1="170" x2="183.2" y2="176"/><line x1="192.0" y1="170" x2="192.0" y2="176"/><line x1="200.8" y1="170" x2="200.8" y2="176"/><line x1="209.6" y1="170" x2="209.6" y2="176"/><line x1="218.4" y1="170" x2="218.4" y2="176"/><line x1="227.2" y1="170" x2="227.2" y2="176"/><line x1="236.0" y1="170" x2="236.0" y2="176"/><line x1="244.8" y1="170" x2="244.8" y2="176"/><line x1="253.6" y1="170" x2="253.6" y2="176"/><line x1="262.4" y1="170" x2="262.4" y2="176"/><line x1="271.2" y1="170" x2="271.2" y2="176"/><line x1="280.0" y1="170" x2="280.0" y2="176"/><line x1="288.8" y1="170" x2="288.8" y2="176"/><line x1="297.6" y1="170" x2="297.6" y2="176"/><line x1="306.4" y1="170" x2="306.4" y2="176"/><line x1="315.2" y1="170" x2="315.2" y2="176"/><line x1="324.0" y1="170" x2="324.0" y2="176"/><line x1="332.8" y1="170" x2="332.8" y2="176"/><line x1="341.6" y1="170" x2="341.6" y2="176"/><line x1="350.4" y1="170" x2="350.4" y2="176"/><line x1="359.2" y1="170" x2="359.2" y2="176"/><line x1="368.0" y1="170" x2="368.0" y2="176"/><line x1="376.8" y1="170" x2="376.8" y2="176"/><line x1="385.6" y1="170" x2="385.6" y2="176"/><line x1="394.4" y1="170" x2="394.4" y2="176"/><line x1="403.2" y1="170" x2="403.2" y2="176"/><line x1="412.0" y1="170" x2="412.0" y2="176"/><line x1="420.8" y1="170" x2="420.8" y2="176"/><line x1="429.6" y1="170" x2="429.6" y2="176"/><line x1="438.4" y1="170" x2="438.4" y2="176"/><line x1="447.2" y1="170" x2="447.2" y2="176"/><line x1="456.0" y1="170" x2="456.0" y2="176"/><line x1="464.8" y1="170" x2="464.8" y2="176"/><line x1="473.6" y1="170" x2="473.6" y2="176"/><line x1="482.4" y1="170" x2="482.4" y2="176"/><line x1="491.2" y1="170" x2="491.2" y2="176"/><line x1="500.0" y1="170" x2="500.0" y2="176"/></g>
+  <path d="M 60 170 C 64 10 68 10 72.4 170" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M 60 170 C 190 165 321 165 451 170" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.7">
+    <line x1="80" y1="56" x2="120" y2="56"/><line x1="300" y1="150" x2="300" y2="164"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="126" y="60">224 N, 그 전부가 1.4 ms 안에</text>
+    <text x="300" y="146" text-anchor="middle">7.1 N이 44 ms에 걸쳐</text>
+    <text x="60" y="192" font-size="10" opacity="0.85">1 kHz 제어 샘플</text>
+    <text x="16" y="106" font-size="10" opacity="0.85">힘</text>
+    <text x="512" y="164" font-size="10" opacity="0.85" text-anchor="end">시간 (50 ms 구간)</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="218">두 축 모두 실제 비례다. 맨 공구의 접촉이 왼쪽의 바늘이다 &#8212; 그림이 담기 버거울 만큼</text>
+    <text x="20" y="234">높고, 제어 샘플 두 개 사이보다 좁다. 유연한 접촉은 넓은 봉우리다: 같은 힘 축에서는</text>
+    <text x="20" y="250">거의 보이지 않고, 샘플이 약 44개 들어올 만큼 길다.</text>
+  </g>
+</svg>
+
+그림보다 표를 읽어라. 맨 구조물에 대해서는 충돌 전체가 1.4 ms 안에 끝나므로, 1 kHz 제어기는
+그중 **샘플 하나** 정도를 보고, 그마저 최대 1 ms 늦게 — 정점이 이미 지나간 뒤에 — 도착할 수
+있다. 어떤 제어 법칙도 이것을 고치지 못한다. 정보가 사건 뒤에 오기 때문이다.
+
+유연 요소를 직렬로 넣으면 두 숫자가 반대 방향으로, 같은 배수만큼 움직인다:
+$F_{\max} \propto \sqrt{K}$이고 $t_{\text{contact}} \propto 1/\sqrt{K}$이므로 $1000\times$
+무르게 하면 각각 $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되고, *동시에*
+사건이 조절할 수 있을 만큼 길어진다.
+
+교훈은 산수 너머로 일반화된다: **수동 컴플라이언스는 능동 제어의 값싼 대체품이 아니라, 접촉
+대역폭에서 작동하는 유일한 것이다.** Whitney의 1982년 준정적 분석이 이 발상의 성숙한 판본이다 —
+챔퍼가 있는 경우와 없는 경우의 peg-in-hole에 대해, 정렬 오차가 언제 **wedging**(맞서는 접촉력이
+부재를 잠가 버림)이나 **jamming**(가해진 렌치가 삽입을 만드는 원뿔 밖으로 벗어남)을 일으키는지의
+조건을 유도하고, 그것을 지지부 컴플라이언스가 만족해야 할 설계 부등식으로 바꾼다. RCC 장치는
+컴플라이언스 중심을 부재의 끝점에 놓아서, 횡방향 오차는 횡방향 운동을, 각도 오차는 끝점 둘레의
+회전을 만들게 하고 두 오차가 서로를 먹여 살리지 못하게 한다. 알루미늄으로, 센서 없이, 지연
+없이 삽입 문제를 푼다.
+
+Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: 임의의 수동적이지만 알려지지 않은
+환경에 결합된 매니퓰레이터에 대해, 결합 안정성은 매니퓰레이터의 구동점 임피던스가 수동적일 때
+그리고 오직 그때만 성립한다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
+바꾸고, 불편한 것을 하나 말해 준다 — 제어기가 안정하게 구현할 수 있는 겉보기 관성의 가벼움과
+강성의 높음에는 **한계가 있다.** 제어기가 팔의 질량을 없는 척할 수는 없다.
+
+### 6. 학습된 정책이 앉는 자리
+
+이 위키의 [[07-research-program/index|연구 프로그램]]이 쓰는 프레이밍은 의도적으로 "제어를
+학습으로 대체한다"가 아니다:
+
+> **사람의 시연 + 학습된 정책 + 고전 제어 + 촉각·시각 피드백**
+
+분업은 §5에서 곧바로 따라 나온다. 학습된 정책은 *어떤 컴플라이언스를 요구하고 어디로 갈지*를
+고른다 — 인식과 맥락이 필요하고, 10~50 Hz에서 편안히 도는 결정들이다. 고전적 임피던스 또는
+하이브리드 제어기가 그 요구를 500~1000 Hz에서 *실현한다.* 그리고 수동 컴플라이언스가 아무도
+샘플링할 수 없는 그 밀리초를 맡는다. 뻣뻣한 벤더 루프에 관절 위치를 내보내는 정책은, 논문이
+접촉에 대해 무슨 말을 하든, 아래 세 층에서 조용히 빠져나온 것이다.
+
+조작 정책 논문에서 행동 공간을 가장 먼저 확인해야 하는 이유이기도 하다: 말단 자세, 관절 위치,
+관절 토크, 그리고 *임피던스 파라미터*는 학습이 어느 층에 기여하고 있는가에 대한 네 개의 서로
+다른 주장이다.
+
+### 7. 논문에서 힘 제어 읽기
+
+| 질문 | 틀린 답이 감추는 것 |
+|---|---|
+| 임피던스인가 어드미턴스인가? 내부 루프는 무엇인가? | 뻣뻣한 벤더 루프 위의 어드미턴스는 접촉 컴플라이언스를 주장할 수 없다 |
+| **단단한** 환경에서 검증했는가? | 폼과 자유 공간은 불안정을 통째로 감춘다 |
+| $M_d, D_d, K_d$를 단위와 함께 보고했는가? | 숫자 없는 "유연함"은 명세가 아니다 |
+| 접촉 **천이**를 보였는가, 정상 접촉만인가? | §5에 따르면 어려움은 천이에 산다 |
+| 제어 주기와 센서 주기는? | 약 500 Hz 아래에서는 접촉 조절의 대부분이 제어기가 아니라 역학이다 |
+| 하드웨어에 수동 컴플라이언스가 있는가? | 있다면 결과의 일부는 알고리즘이 아니라 스프링의 몫이다 |
+| 자유 공간의 위치 정확도 *그리고* 접촉의 힘 정확도를 함께 보고했는가? | 각 아키텍처는 둘 중 하나에 약하다. 하나만 보고하는 것은 절반만 보고하는 것이다 |
+
+### 8. Mastery로 가는 길
+
+| 필요한 것 | 어디서 |
+|---|---|
+| 임피던스 논증의 원형 | Hogan 1985 Part I — 인과(causality) 논증을 정독할 것 |
+| 제약 분석과 과제 프레임 | Mason 1981, 그다음 아키텍처는 Raibert & Craig 1981 |
+| 작업 공간 구현 | Khatib 1987, 선수 지식은 [[02-foundations/manipulator-kinematics-dynamics\|10. §6]] |
+| 단단한 접촉이 왜 불안정하게 만드는가 | Colgate & Hogan 1988 |
+| 조립의 현실 점검 | Whitney 1982, 분야 조감은 Whitney의 1987 IJRR 서베이 |
+| 직접 해 보기 | 토크 제어 팔이 있는 시뮬레이터에서 단단한 면에 대해 $K_d$를 50에서 5000 N/m까지 올리며 어디서 떨리기 시작하는지 찾을 것 |
+
+Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을 때 어느 아키텍처가 그것을 만족할
+수 있는지 — 그리고 만족할 수 있는 것이 하나라도 있는지 — 말하는 것.
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- [ ] 같은 방향에서 위치와 힘을 동시에 제어할 수 없는 이유를 말한다.
+- [ ] 임피던스와 어드미턴스 중 단단한 환경에 맞는 쪽과, 그것이 왜 소박한 예상과 반대인지 말한다.
+- [ ] 하이브리드 제어의 선택 행렬 형태를 쓰고 적합한 과제를 하나 든다.
+- [ ] 주어진 $\Lambda$, $K$, $v$에 대해 $F_{\max}$와 접촉 지속을 계산하고 제어 샘플이 몇 개 들어가는지 말한다.
+- [ ] Colgate와 Hogan의 수동성 조건이 무엇을 금지하는지 설명한다.
+
+### 스스로 점검
+
+1. 손목 힘 센서를 단 산업용 팔이 폼에 대해서는 5 N을 훌륭하게 유지하는데 강판에 대해서는
+   격렬하게 진동한다. 아키텍처와 원인을 대라.
+2. 접근 속도가 5에서 10 cm/s로 두 배가 된다. 최대 접촉력과 접촉 지속 시간은 어떻게 되는가?
+3. RCC 장치는 왜 센서 하나 없이 peg-in-hole 삽입을 푸는가?
+4. 어떤 논문이 학습된 정책으로 "유연한 삽입"을 달성했다고 보고하는데, 정책은 위치 제어되는
+   팔에 10 Hz로 말단 위치를 내보낸다. 이 논문이 실제로 뒷받침할 수 있는 가장 강한 주장은?
+5. 하이브리드 위치/힘 제어는 기하를 알 때 정확하다. 왜 그것이 하필 건설에서 문제인가?
+
+> [!tip]- 정답 · Answers
+> 1. 어드미턴스 제어다 — 힘 센서가 외부 루프를 구동해 벤더의 뻣뻣한 내부 루프에 위치를 명령한다. 폼에서는 큰 운동이 작은 힘을 만들어 루프 게인이 낮고 얌전하다. 강철에서는 마이크로미터의 운동이 큰 힘을 만들어 실효 루프 게인이 거대해지고, 센서와 내부 루프의 지연이 그것을 진동으로 바꾼다. 뻣뻣한 로봇이야말로 단단한 벽을 감당하지 못하는 쪽이다.
+> 2. $F_{\max} = v\sqrt{\Lambda K}$는 $v$에 선형이므로 단단한 경우 최대 힘은 약 450 N으로 두 배가 된다. 지속 시간 $\pi\sqrt{\Lambda/K}$에는 $v$가 아예 없으므로 1.4 ms 그대로다. 빨리 접근해도 반응 시간은 하나도 벌지 못하고 힘만 비례해서 치른다 — 더 나은 제어가 아니라 접근 속도 제한이 통상적인 처방인 이유다.
+> 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
+> 4. 정책이 좋은 *위치*를 골랐다는 것. 시스템의 모든 컴플라이언스는 팔의 내부 루프와 공구·부재에 있는 수동적 여유의 몫이다. 10 Hz의 정책이 접촉력을 조절하고 있을 수는 없다. §5의 접촉 사건은 세 자릿수 더 빠르기 때문이다. 좋은 결과일 수는 있다 — 다만 컴플라이언스가 아니라 궤적 선택에 관한 결과다.
+> 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터나 몇 도의 오차는 힘 제어가 이제 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용한다는 뜻이고, 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
+
+### 출처
+
+**고전 — 검증된 인용**
+
+- N. Hogan, "Impedance Control: An Approach to Manipulation: Part I—Theory / Part II—Implementation / Part III—Applications," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 107, no. 1, pp. 1–7, 8–16, 17–24, March 1985. 나뉘지 않은 이전 판본이 1984 American Control Conference, pp. 304–313에 있다.
+- M. T. Mason, "Compliance and Force Control for Computer Controlled Manipulators," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-11, no. 6, pp. 418–432, 1981 — 자연 제약과 인공 제약.
+- M. H. Raibert and J. J. Craig, "Hybrid Position/Force Control of Manipulators," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. **103**, no. 2, pp. 126–133, June 1981. vol. 102로 널리 잘못 인용된다. 실제 권은 103이다.
+- J. K. Salisbury, "Active stiffness control of a manipulator in cartesian coordinates," *IEEE Conference on Decision and Control*, pp. 95–100, 1980 — $J^\top$를 통한 카테시안 강성, 임피던스 제어의 직계 선조.
+- O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal **on** Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987.
+- J. E. Colgate and N. Hogan, "Robust control of dynamically interacting systems," *International Journal of Control*, vol. 48, no. 1, pp. 65–88, 1988 — 구동점 임피던스의 수동성 조건으로서의 결합 안정성.
+- D. E. Whitney, "Quasi-Static Assembly of Compliantly Supported Rigid Parts," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 104, no. 1, pp. 65–77, March 1982 — wedging과 jamming 조건. 분야 조감은 D. E. Whitney, "Historical Perspective and State of the Art in Robot Force Control," *IJRR*, vol. 6, no. 1, pp. 3–14, 1987.
+
+> [!note] RCC 자체를 인용하는 것에 대하여
+> Whitney 1982는 remote-centre compliance를 정당화하는 *분석*이지 그것을 도입한 논문이 아니다.
+> 장치는 보통 S. H. Drake의 1977년 MIT 박사학위 논문과 Whitney & Nevins, "What is the Remote
+> Center Compliance (RCC) and What Can It Do?", 9th International Symposium on Industrial
+> Robots, 1979로 거슬러 올라간다 — 둘 다 DOI 시대 이전이라 여기서는 색인된 1차 기록으로
+> 확인하지 못했다. 2차 출처에서 베끼지 말고 도서관 목록에서 확인한 뒤 인용하라.
+
+**이 위키 안에서**
+
+- [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] — $\Lambda$, 매니퓰레이터 방정식, 그리고 내부 루프가 중요한 이유.
+- [[04-robotics/contact-force-tactile|접촉·힘·촉각 상호작용]] — 마찰, 접촉 모드, 그리고 §1이 다시 쓰는 벽 예제.
+- §5의 충돌 수치는 명시된 $\Lambda$, $K$, $v$와 선형 반주기 사인 충돌 모델로 여기서 계산한 것이다. 믿지 말고 다시 계산하라.
