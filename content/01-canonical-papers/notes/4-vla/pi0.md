@@ -170,6 +170,21 @@ flowchart LR
 > "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
 >
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
+>
+> **Independent evaluation, added 2026-08.** A third-party study at UPenn ran 300+ trials of
+> π0-FAST-DROID on a Franka and reports **~24% overall success**, with **fabric manipulation
+> at 19.4%** and **t-shirt folding at 80% progress on individual folds but 0% task
+> completion**. It also found extreme prompt sensitivity: *"Close the white lid of the
+> toilet"* succeeded 100% of the time while *"Close the toilet"* succeeded 0%. Cite that
+> alongside any laundry-folding claim from this line — the first-party results and the only
+> independent quantified evaluation disagree by a wide margin, and the gap is the honest
+> state of the art.
+>
+> **독립 평가, 2026-08 추가.** UPenn의 제3자 연구가 Franka에서 π0-FAST-DROID로 300회 이상을
+> 돌려 **전체 성공률 약 24%**, **천 조작 19.4%**, **티셔츠 접기는 개별 접힘 진행률 80%인데 과제
+> 완료 0%** 를 보고한다. 극단적인 프롬프트 민감도도 발견했다: *"변기의 흰 뚜껑을 닫아라"* 는
+> 100%, *"변기를 닫아라"* 는 0%였다. 이 계열의 빨래 개기 주장 옆에는 이것을 함께 인용하라 —
+> 1차 결과와 유일한 독립 정량 평가가 크게 어긋나고, 그 격차가 정직한 현재 수준이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

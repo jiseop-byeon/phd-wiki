@@ -160,6 +160,9 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [[04-robotics/tactile-visuotactile|Tactile & Visuotactile Sensing]] — 센서 계열·미끄러짐·접촉 상태·시촉각 융합 (14, 매니퓰레이션 전문화)
 - [[04-robotics/grasping|Grasping]] — 마찰 원뿔·form/force closure·엡실론 지표·학습 파지 (15, 매니퓰레이션 전문화)
 - [[04-robotics/navigation-mobile-manipulation|Navigation & Mobile Manipulation]] — 조작 가능한 자세·도달성/능력 지도·base placement·오차 예산 (16, 매니퓰레이션 전문화)
+- [[04-robotics/traversability-off-road|Traversability & Off-Road Autonomy]] — 학습된 어포던스로서의 traversability·지도 신호·SubT/RACER (17, 내비게이션)
+- [[04-robotics/legged-locomotion|Legged Locomotion]] — privileged teacher-student 증류·정본의 실제 주장·파쿠르 대조 (18, 내비게이션)
+- [[04-robotics/semantic-language-navigation|Semantic & Language-Driven Navigation]] — ObjectNav/VLN 정의와 지표·언어로 질의하는 지도·벤치마크의 해체 (19, 내비게이션)
 
 ## 8. Construction Robotics
 

@@ -249,6 +249,38 @@ This is also why the action space is the first thing to check in a manipulation-
 paper: end-effector pose, joint position, joint torque, and *impedance parameters* are four
 different claims about which layer the learning is contributing to.
 
+#### The convergence, and the interface it is settling on
+
+That framing is no longer only this wiki's opinion — it is where the field is moving, and
+the direction is one-way. **The VLA is being demoted from motor controller to a slow
+semantic layer that parameterises a classical inner loop.** That is a classical-control idea
+winning an architectural argument.
+
+- **ForceVLA** (NeurIPS 2025) treats 6-axis force/torque as a **primary** input channel
+  rather than an auxiliary one, fused through a force-aware mixture of experts during action
+  decoding — reporting +23.2% average success and up to 80% on plug insertion.
+- **PaCo-VLA** goes further and is the sharpest single datapoint: it reframes VLA outputs as
+  **task-level compliance proposals** and interposes a high-frequency **passivity shield**
+  with energy-tank accounting, claiming zero passivity violations under adversarial
+  compliance shifts. Passivity and energy tanks are 1990s interaction-control theory being
+  used as a **runtime safety contract on a foundation model** — Colgate and Hogan's condition
+  from §5, enforced at execution time.
+- **VIDP** predicts pose *and* task compliance — stiffness profiles — jointly, without force
+  sensors, separating geometric adaptation from intentional compliance change in the
+  demonstrations.
+
+The honest counterweight: this is convergence of **practice**, not of community. The
+classical contact line — Tedrake's group on contact-mode explosion and non-smooth contact
+gradients — goes largely uncited by the frontier VLA papers, and the flagship releases remain
+position-controlled and largely force-blind. What is happening is that every group trying to
+deploy a VLA on a contact-rich task independently rediscovers that it needs an
+impedance or admittance inner loop, and reaches for the toolbox on this page.
+
+> [!note] The prediction worth recording
+> If the merge completes, **the interface will be compliance parameters, not positions.**
+> That is the thing to watch, and it is the reason this page sits at Mastery in a research
+> programme whose contribution is contact-rich manipulation.
+
 ### 7. Reading force control in a paper
 
 | Question | What a wrong answer hides |
@@ -327,6 +359,7 @@ tolerance, say which architecture can meet it — and whether any can.
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — $\Lambda$, the manipulator equation, and why the inner loop matters.
 - [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] — friction, contact modes, and the wall example §1 reuses.
+- Convergence work cited in §6: Yu et al., "ForceVLA," NeurIPS 2025 ([arXiv:2505.22159](https://arxiv.org/abs/2505.22159)); Cao et al., "PaCo-VLA" ([arXiv:2606.00515](https://arxiv.org/abs/2606.00515), **preprint, under review**); Khalil et al., "VIDP" ([arXiv:2608.06210](https://arxiv.org/abs/2608.06210), **preprint**). The classical counterweight: Pang, Suh, Yang, Tedrake, *IEEE T-RO*, 2023 ([arXiv:2206.10787](https://arxiv.org/abs/2206.10787)).
 - The impact numbers in §5 were computed here from the stated $\Lambda$, $K$, and $v$ with the linear half-sine impact model; recompute them rather than trusting them.
 
 ## 한국어
@@ -545,6 +578,34 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 관절 토크, 그리고 *임피던스 파라미터*는 학습이 어느 층에 기여하고 있는가에 대한 네 개의 서로
 다른 주장이다.
 
+#### 수렴, 그리고 그것이 자리 잡아 가는 인터페이스
+
+이 프레이밍은 더 이상 이 위키의 의견만이 아니다 — 분야가 움직이고 있는 방향이고, 그 방향은
+일방향이다. **VLA가 운동 제어기에서, 고전적 내부 루프를 매개변수화하는 느린 의미 층으로 강등되고
+있다.** 고전 제어의 발상이 아키텍처 논쟁에서 이기고 있는 것이다.
+
+- **ForceVLA**(NeurIPS 2025)는 6축 힘/토크를 부차가 아니라 **주** 입력 채널로 다루고, 행동
+  디코딩 중에 힘 인지 mixture of experts로 융합한다 — 평균 성공률 +23.2%, 플러그 삽입에서 최대
+  80%를 보고한다.
+- **PaCo-VLA**는 한 걸음 더 나아가며 가장 날카로운 단일 근거다: VLA의 출력을 **과제 수준
+  컴플라이언스 제안**으로 재해석하고, 에너지 탱크 회계를 갖춘 고주파 **수동성 방패**(passivity
+  shield)를 끼워 넣어, 적대적인 컴플라이언스 변화에서도 수동성 위반이 0이라고 주장한다.
+  수동성과 에너지 탱크는 1990년대 상호작용 제어 이론이며, 그것이 **파운데이션 모델 위의 런타임
+  안전 계약**으로 쓰이고 있다 — §5의 Colgate–Hogan 조건을 실행 시점에 강제하는 것이다.
+- **VIDP**는 자세 *와* 과제 컴플라이언스 — 강성 프로파일 — 를 힘 센서 없이 함께 예측하며,
+  시연 안에서 기하적 적응과 의도적 컴플라이언스 변화를 구분한다.
+
+정직한 균형추: 이것은 **실무**의 수렴이지 공동체의 수렴이 아니다. 고전적 접촉 계열 — 접촉 모드
+폭발과 비평활 접촉 그래디언트에 관한 Tedrake 그룹의 작업 — 은 프런티어 VLA 논문들에 거의 인용되지
+않고, 대표 릴리스들은 여전히 위치 제어되고 대체로 힘에 눈이 멀어 있다. 실제로 일어나는 일은,
+접촉이 많은 과제에 VLA를 배치하려는 모든 그룹이 임피던스나 어드미턴스 내부 루프가 필요하다는
+것을 독립적으로 재발견하고, 이 페이지의 도구상자로 손을 뻗는 것이다.
+
+> [!note] 기록해 둘 예측
+> 그 합류가 완성된다면 **인터페이스는 위치가 아니라 컴플라이언스 파라미터일 것이다.**
+> 그것이 지켜볼 지점이고, 기여가 접촉 다량 조작인 연구 프로그램에서 이 페이지가 Mastery에 있는
+> 이유다.
+
 ### 7. 논문에서 힘 제어 읽기
 
 | 질문 | 틀린 답이 감추는 것 |
@@ -619,4 +680,5 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] — $\Lambda$, 매니퓰레이터 방정식, 그리고 내부 루프가 중요한 이유.
 - [[04-robotics/contact-force-tactile|접촉·힘·촉각 상호작용]] — 마찰, 접촉 모드, 그리고 §1이 다시 쓰는 벽 예제.
+- §6이 인용하는 수렴 연구: Yu et al., "ForceVLA," NeurIPS 2025 ([arXiv:2505.22159](https://arxiv.org/abs/2505.22159)); Cao et al., "PaCo-VLA" ([arXiv:2606.00515](https://arxiv.org/abs/2606.00515), **프리프린트, 심사 중**); Khalil et al., "VIDP" ([arXiv:2608.06210](https://arxiv.org/abs/2608.06210), **프리프린트**). 고전 쪽 균형추: Pang, Suh, Yang, Tedrake, *IEEE T-RO*, 2023 ([arXiv:2206.10787](https://arxiv.org/abs/2206.10787)).
 - §5의 충돌 수치는 명시된 $\Lambda$, $K$, $v$와 선형 반주기 사인 충돌 모델로 여기서 계산한 것이다. 믿지 말고 다시 계산하라.

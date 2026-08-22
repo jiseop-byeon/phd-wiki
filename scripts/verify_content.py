@@ -173,18 +173,43 @@ for p in md_files:
 # renders as literal asterisks. Fix by moving the parenthetical outside: `**연속 극한**(...)`.
 bold_re = re.compile(r"\*\*(?=\S)([^*\n]{1,120}?)\*\*(.?)", re.S)
 punct = set("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~—–·…“”‘’()、。，")
+def _bold_scan(path, text, lineno):
+    text = re.sub(r"`[^`]*`", "", text)  # inline code is not parsed as emphasis
+    for m in bold_re.finditer(text):
+        inner, nxt = m.group(1), m.group(2)
+        if not inner or inner[-1] not in punct:
+            continue
+        if nxt and not nxt.isspace() and nxt not in punct:
+            flat = " ".join(inner.split())
+            err(path, f"line {lineno}: bold never closes (** preceded by '{inner[-1]}', "
+                      f"followed by '{nxt}') — move the parenthetical outside the ** in: "
+                      f"**{flat}**{nxt}")
+
 for p in md_files:
-    for i, line in enumerate(open(p, encoding="utf-8").read().split("\n"), 1):
+    lines = open(p, encoding="utf-8").read().split("\n")
+    # (a) per line
+    for i, line in enumerate(lines, 1):
         if line.lstrip().startswith(("<", "|")):
             continue
-        line = re.sub(r"`[^`]*`", "", line)  # inline code is not parsed as emphasis
-        for m in bold_re.finditer(line):
-            inner, nxt = m.group(1), m.group(2)
-            if not inner or inner[-1] not in punct:
-                continue
-            if nxt and not nxt.isspace() and nxt not in punct:
-                err(p, f"line {i}: bold never closes (** preceded by '{inner[-1]}', followed by '{nxt}') — move the parenthetical outside the ** in: **{inner}**{nxt}")
+        _bold_scan(p, line, i)
+    # (b) per paragraph — a bold run split across a line break escapes the per-line scan,
+    #     because the regex cannot cross a newline. Join wrapped prose and scan again.
+    start, buf = 0, []
+    def _flush():
+        if buf:
+            _bold_scan(p, " ".join(buf), start)
+        buf.clear()
+    for i, line in enumerate(lines, 1):
+        s = line.strip()
+        if not s or s.startswith(("<", "|", "#", "```")):
+            _flush()
+            continue
+        if not buf:
+            start = i
+        buf.append(re.sub(r"^>\s?", "", line).strip())
+    _flush()
 
+errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")
     for e in errors:
