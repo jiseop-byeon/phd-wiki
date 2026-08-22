@@ -1,0 +1,325 @@
+---
+title: 6. Real-World Impact
+tags: [research-practice, guide]
+study-depth: Working
+wiki-support: Working
+depth-goal: "Say what a given piece of evidence licenses you to claim, and design a project so its outputs compound instead of expiring with the paper."
+mastery-when: "This is operational judgement, demonstrated through the work rather than studied."
+---
+
+> [!abstract] Depth target · 깊이 목표
+> **Working** — enough to plan a project's outputs deliberately and to state impact claims
+> that survive being checked.
+> **Working** — 프로젝트의 산출물을 의도적으로 계획하고, 확인을 견디는 임팩트 주장을 할 만큼.
+
+> [!note] Before you start · 시작 전 점검
+> Read [[07-research-program/index|7. Research Program]] and [[06-research-practice/research-questions-claims|Research Questions & Claims]] first — this page is about what evidence licenses which claim, and those two define the claims.
+> [[07-research-program/index|7. 연구 프로그램]]과 [[06-research-practice/research-questions-claims|연구 질문과 주장]]을 먼저 읽어라 — 이 페이지는 어떤 증거가 어떤 주장을 허락하는가에 관한 것이고, 그 둘이 주장을 정의한다.
+
+## English
+
+### 1. Impact is a claim, and claims need evidence
+
+"Real-world impact" is usually used as an aspiration. It is more useful as a **claim type**
+with its own evidence requirements, exactly like a performance claim. The question is never
+"did this have impact?" but "**what does this evidence license me to say?**"
+
+That reframing does real work, because it turns an unbounded ambition into a checklist you
+can act on this month.
+
+### 2. The evidence ladder, and what each rung licenses
+
+<svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="five rungs of deployment evidence, each paired with the strongest claim it supports">
+  <g fill="currentColor">
+    <rect x="24" y="192" width="200" height="34" rx="3" fill-opacity="0.06"/>
+    <rect x="24" y="152" width="200" height="34" rx="3" fill-opacity="0.12"/>
+    <rect x="24" y="112" width="200" height="34" rx="3" fill-opacity="0.20"/>
+    <rect x="24" y="72" width="200" height="34" rx="3" fill-opacity="0.28"/>
+    <rect x="24" y="32" width="200" height="34" rx="3" fill-opacity="0.36"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <rect x="24" y="192" width="200" height="34" rx="3"/><rect x="24" y="152" width="200" height="34" rx="3"/><rect x="24" y="112" width="200" height="34" rx="3"/><rect x="24" y="72" width="200" height="34" rx="3"/><rect x="24" y="32" width="200" height="34" rx="3"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="36" y="213">simulation</text>
+    <text x="36" y="173">laboratory hardware</text>
+    <text x="36" y="133">full-scale mock-up</text>
+    <text x="36" y="93">active site, once</text>
+    <text x="36" y="53">used by someone else</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.9">
+    <text x="240" y="213">&#8220;the method is sound under my assumptions&#8221;</text>
+    <text x="240" y="173">&#8220;it works on real hardware, in my conditions&#8221;</text>
+    <text x="240" y="133">&#8220;it survives realistic geometry and scale&#8221;</text>
+    <text x="240" y="93">&#8220;it survived conditions I did not choose&#8221;</text>
+    <text x="240" y="53">&#8220;it is useful to people who are not me&#8221;</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="248">Each rung licenses one more sentence. Nothing licenses a sentence from a rung you did not reach.</text>
+  </g>
+</svg>
+
+The top rung is the one people forget, and it is the only one that does not depend on you
+being present. A method someone else runs — on their robot, for their problem, without
+asking you — is the strongest impact evidence there is, and it is bought almost entirely by
+the artifacts of §3 rather than by the result itself.
+
+The rung below it is the one this domain lacks. As
+[[05-construction-robotics/construction-manipulation|9. §3]] found, contact-rich
+construction manipulation has almost no active-site results at all — which makes reaching
+that rung both hard and unusually valuable.
+
+> [!warning] The move this page exists to prevent
+> Describing mock-up work with site language. It is easy, it is common in this literature,
+> and it is the one thing that makes a reviewer distrust everything else in the paper. If
+> the evidence is a mock-up, say mock-up and claim what a mock-up licenses — which is
+> plenty.
+
+### 3. Artifacts, and what each actually costs
+
+Outputs that keep working after the paper is published. Each is listed with its real cost,
+because an artifact you cannot maintain is worse than none.
+
+| Artifact | What it buys | What it actually costs |
+|---|---|---|
+| **Released code** | reproduction, and other people's baselines | the cost is not release, it is *questions* — budget ongoing time |
+| **Released dataset** | others use your problem, not just your method | curation, licensing, and storage that outlives the grant |
+| **Hardware design files** | replication at other labs | documentation is most of the work; a BOM ages fast |
+| **A benchmark** | shapes what the field measures | you inherit responsibility for its flaws |
+| **A deployed system** | the site rung, plus problems you could not have imagined | schedule, access, safety, and a building that will not wait |
+| **Industry collaboration** | data and realism you cannot get otherwise | publication delays, and sometimes restrictions — settle these in writing first |
+
+Datasets deserve a specific note in this domain. There is no web-scale corpus of
+construction manipulation and there will not be one
+([[04-robotics/teleoperation-demonstration|12. §7]]), so a well-curated dataset of a real
+construction task is disproportionately valuable — possibly more citable than the method
+trained on it.
+
+### 4. The pipeline, run deliberately
+
+The ladder of §2 is also a plan, and the useful discipline is to decide **in advance** which
+rung a given project is aiming at, then design the evaluation for that rung rather than
+discovering at writing time that the evidence does not support the sentence you wanted.
+
+```mermaid
+flowchart LR
+    Q["a claim you want to make"] --> R["the rung that licenses it"]
+    R --> E["the evaluation that reaches that rung"]
+    E --> A["the artifacts that outlive it"]
+    A -.->|"someone else uses it"| Q
+```
+
+Reading that chain backwards is the common failure: running the experiment that was
+convenient, then choosing the strongest claim it can bear. That produces defensible papers
+and no program.
+
+### 5. Designing so the outputs compound
+
+The [[07-research-program/paper-arc|arc]] already does this for publications — each paper
+reuses the previous one's platform, dataset and protocol. Extend the same logic to
+artifacts:
+
+- The **teleoperation rig** built for Paper 4 is a demonstration-collection artifact, a
+  dataset generator, and a piece of releasable hardware.
+- The **dataset** from that rig outlives the policy trained on it.
+- The **evaluation protocol** for a construction task — how success is defined, in
+  millimetres or newtons — is reusable by anyone attacking the same task, and defining it
+  well is a quiet way to shape a subfield.
+
+The test for whether a project is designed or merely executed: **name what will still be
+used in three years.** If the honest answer is "the paper", the project was a paper.
+
+### 6. What not to optimise
+
+Two failure modes, stated plainly because they are tempting.
+
+**Optimising for counts.** Numbers of papers and citations are downstream measurements, not
+objectives. Work aimed at them tends to be safe, incremental and forgettable; work aimed at
+a real problem accumulates them as a side effect. The distinction matters practically: it
+decides whether you split a result into two papers or make one good one.
+
+**Optimising for demonstrations.** A video of a robot doing something is not a result. The
+test in [[07-research-program/paper-arc|7.1]] applies here too — if it cannot state what is
+now possible that was not before, with an evaluation that could have come out the other
+way, it is a demo. Demos are useful for funding and for morale; they are not evidence.
+
+### After reading
+
+- [ ] State the five rungs and the claim each licenses.
+- [ ] Name an artifact you could release from current work, and its real cost.
+- [ ] Say which rung a current project is aiming at, decided in advance.
+- [ ] Name what from a current project will still be used in three years.
+
+### Self-check
+
+1. A paper says its system was "validated on site". The methods section describes a
+   full-scale mock-up. What is the cost of that phrasing?
+2. Why is a released dataset potentially more valuable than the method trained on it, in
+   this domain specifically?
+3. You could split a result into two papers or publish one. What decides it?
+4. An industry partner offers site access and data, in exchange for review rights over
+   publications. What do you settle first?
+5. Which rung of §2 does not depend on your presence, and why does that matter?
+
+> [!tip]- Answers
+> 1. It buys nothing and costs the paper's credibility. A reviewer who checks the methods section finds the claim overstated, and then reasonably wonders what else is. The mock-up rung licenses a real and useful sentence — "it survives realistic geometry and scale" — and claiming exactly that is both honest and sufficient.
+> 2. Because no web-scale corpus of construction manipulation exists and none is coming, so a curated dataset of a real construction task is a scarce resource rather than one contribution among many. Methods are superseded every couple of years; a dataset of a task nobody else can access keeps being the thing people build on.
+> 3. Whether the two halves each state something that could have come out otherwise. If splitting produces one real claim and one thin one, the thin one costs more in credibility than it adds in count — and the arc's logic in [[07-research-program/paper-arc|7.1 §1]] says a coherent sequence beats a longer list.
+> 4. The publication terms, in writing, before any data changes hands: what may be published, after what delay, and who decides. Review rights are often reasonable in practice and occasionally fatal, and the difference is entirely in the wording. A delay you agreed to is a schedule item; a veto you did not notice is a lost chapter.
+> 5. The top one — someone else using the work. Every other rung is evidence that *you* made it work, which depends on your setup, your tuning and your presence. Independent use is the only evidence that the contribution transferred, and it is bought mostly through artifacts rather than through the result.
+
+### Sources
+
+- This page is method, not a literature claim. The deployment ladder is this wiki's own standard, applied throughout [[05-construction-robotics/index|Construction Robotics]] and stated in [[05-construction-robotics/construction-manipulation|9. §3]].
+- [[06-research-practice/research-questions-claims|Research Questions & Claims]] — what makes a claim defensible.
+- [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — the evaluation design the rungs require.
+- [[06-research-practice/venue-strategy|5. Venue Strategy]] — where the resulting papers go.
+
+## 한국어
+
+### 1. 임팩트는 주장이고, 주장에는 증거가 필요하다
+
+"실세계 임팩트"는 보통 포부로 쓰인다. 성능 주장과 똑같이, 자기만의 증거 요건을 가진 **주장의
+한 종류**로 쓰는 편이 더 쓸모 있다. 질문은 결코 "이것이 임팩트가 있었는가"가 아니라
+"**이 증거가 내가 무엇을 말하도록 허락하는가**"다.
+
+이 재프레이밍은 실제로 일을 한다. 끝이 없는 포부를 이번 달에 행동에 옮길 수 있는 체크리스트로
+바꾸기 때문이다.
+
+### 2. 증거의 사다리와, 각 단계가 허락하는 것
+
+<svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="배치 증거의 다섯 단계와 각각이 뒷받침하는 가장 강한 주장">
+  <g fill="currentColor">
+    <rect x="24" y="192" width="200" height="34" rx="3" fill-opacity="0.06"/>
+    <rect x="24" y="152" width="200" height="34" rx="3" fill-opacity="0.12"/>
+    <rect x="24" y="112" width="200" height="34" rx="3" fill-opacity="0.20"/>
+    <rect x="24" y="72" width="200" height="34" rx="3" fill-opacity="0.28"/>
+    <rect x="24" y="32" width="200" height="34" rx="3" fill-opacity="0.36"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <rect x="24" y="192" width="200" height="34" rx="3"/><rect x="24" y="152" width="200" height="34" rx="3"/><rect x="24" y="112" width="200" height="34" rx="3"/><rect x="24" y="72" width="200" height="34" rx="3"/><rect x="24" y="32" width="200" height="34" rx="3"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="36" y="213">시뮬레이션</text>
+    <text x="36" y="173">실험실 하드웨어</text>
+    <text x="36" y="133">실물 크기 목업</text>
+    <text x="36" y="93">가동 중 현장, 1회</text>
+    <text x="36" y="53">다른 사람이 쓴다</text>
+  </g>
+  <g font-size="10" fill="currentColor" opacity="0.9">
+    <text x="240" y="213">&#8220;내 가정 아래에서 방법이 타당하다&#8221;</text>
+    <text x="240" y="173">&#8220;내 조건에서 실기계에서 동작한다&#8221;</text>
+    <text x="240" y="133">&#8220;현실적인 기하와 규모를 견딘다&#8221;</text>
+    <text x="240" y="93">&#8220;내가 고르지 않은 조건을 견뎠다&#8221;</text>
+    <text x="240" y="53">&#8220;내가 아닌 사람들에게 쓸모 있다&#8221;</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="20" y="248">각 단계가 문장을 하나씩 더 허락한다. 도달하지 않은 단계의 문장은 무엇도 허락하지 않는다.</text>
+  </g>
+</svg>
+
+맨 위 단계가 사람들이 잊는 것이고, 당신이 그 자리에 있는지에 의존하지 않는 유일한 단계다.
+다른 사람이 자기 로봇에서, 자기 문제에 대해, 당신에게 묻지 않고 돌리는 방법 — 그것이 존재하는
+가장 강한 임팩트 증거이며, 거의 전적으로 결과 자체가 아니라 §3의 산출물로 사는 것이다.
+
+그 아래 단계가 이 도메인에 없는 것이다. [[05-construction-robotics/construction-manipulation|9. §3]]이
+찾아냈듯 접촉 다량 건설 조작에는 가동 중 현장 결과가 거의 전무하고 — 그래서 그 단계에
+도달하는 것이 어렵고 동시에 유난히 값어치 있다.
+
+> [!warning] 이 페이지가 막으려고 존재하는 수
+> 목업 작업을 현장의 언어로 서술하는 것. 쉽고, 이 문헌에서 흔하며, 심사자가 논문의 나머지
+> 전부를 불신하게 만드는 유일한 것이다. 증거가 목업이면 목업이라고 말하고 목업이 허락하는
+> 것을 주장하라 — 충분히 많다.
+
+### 3. 산출물과, 각각의 실제 비용
+
+논문이 나온 뒤에도 계속 작동하는 산출물들. 유지할 수 없는 산출물은 없느니만 못하므로 실제
+비용과 함께 적는다.
+
+| 산출물 | 사는 것 | 실제로 드는 비용 |
+|---|---|---|
+| **공개 코드** | 재현, 그리고 다른 사람들의 기준선 | 비용은 공개가 아니라 *질문*이다 — 계속되는 시간을 예산에 넣어라 |
+| **공개 데이터셋** | 다른 사람들이 당신의 방법이 아니라 당신의 문제를 쓴다 | 큐레이션, 라이선싱, 그리고 과제보다 오래 사는 저장소 |
+| **하드웨어 설계 파일** | 다른 랩에서의 복제 | 문서화가 일의 대부분이고, BOM은 빨리 낡는다 |
+| **벤치마크** | 분야가 무엇을 재는지를 형성한다 | 그 결함에 대한 책임을 물려받는다 |
+| **배치된 시스템** | 현장 단계, 그리고 상상할 수 없었던 문제들 | 공정, 출입, 안전, 그리고 기다려 주지 않는 건물 |
+| **산업 협력** | 달리 얻을 수 없는 데이터와 현실성 | 출판 지연, 때로는 제약 — 먼저 문서로 정리하라 |
+
+이 도메인에서 데이터셋은 따로 언급할 값이 있다. 건설 조작의 웹 규모 코퍼스는 없고 앞으로도
+없을 것이므로([[04-robotics/teleoperation-demonstration|12. §7]]), 실제 건설 작업의 잘
+큐레이션된 데이터셋은 불균형하게 값어치가 크다 — 그것으로 학습한 방법보다 더 인용될 수도 있다.
+
+### 4. 파이프라인을 의도적으로 돌리기
+
+§2의 사다리는 계획이기도 하다. 쓸모 있는 규율은 주어진 프로젝트가 어느 단계를 겨냥하는지를
+**미리** 정하고, 쓰는 시점에 가서야 증거가 원했던 문장을 뒷받침하지 않는다는 것을 발견하는
+대신, 그 단계를 위해 평가를 설계하는 것이다.
+
+```mermaid
+flowchart LR
+    Q["하고 싶은 주장"] --> R["그것을 허락하는 단계"]
+    R --> E["그 단계에 도달하는 평가"]
+    E --> A["그보다 오래 사는 산출물"]
+    A -.->|"다른 사람이 쓴다"| Q
+```
+
+그 사슬을 거꾸로 읽는 것이 흔한 실패다: 편한 실험을 돌리고, 그것이 견딜 수 있는 가장 강한
+주장을 고르는 것. 그렇게 하면 방어 가능한 논문들은 나오고 프로그램은 나오지 않는다.
+
+### 5. 산출물이 복리로 쌓이도록 설계하기
+
+[[07-research-program/paper-arc|arc]]는 출판에 대해 이미 이것을 한다 — 각 논문이 앞 논문의
+플랫폼·데이터셋·프로토콜을 재사용한다. 같은 논리를 산출물로 확장하라:
+
+- 4편을 위해 만든 **원격조작 장비**는 시연 수집 산출물이자, 데이터 생성기이자, 공개 가능한
+  하드웨어다.
+- 그 장비에서 나온 **데이터셋**은 그것으로 학습한 정책보다 오래 산다.
+- 건설 작업의 **평가 프로토콜** — 성공을 밀리미터나 뉴턴으로 어떻게 정의하는가 — 은 같은
+  작업을 공략하는 누구에게나 재사용 가능하고, 그것을 잘 정의하는 것이 하위 분야를 형성하는
+  조용한 방법이다.
+
+프로젝트가 설계된 것인지 그냥 수행된 것인지를 가르는 시험: **3년 뒤에도 여전히 쓰이고 있을
+것의 이름을 대라.** 정직한 답이 "논문"이라면 그 프로젝트는 논문이었다.
+
+### 6. 최적화하지 말아야 할 것
+
+두 실패 모드를, 유혹적이기 때문에 분명히 적는다.
+
+**개수를 최적화하기.** 논문 수와 인용 수는 하류의 측정값이지 목표가 아니다. 그것을 겨냥한
+연구는 안전하고 점진적이고 잊히기 쉽다. 실제 문제를 겨냥한 연구는 그것들을 부수적으로 쌓는다.
+이 구분은 실전에서 중요하다: 결과를 논문 둘로 쪼갤지 좋은 하나로 만들지를 결정한다.
+
+**실연을 최적화하기.** 로봇이 무언가를 하는 영상은 결과가 아니다. [[07-research-program/paper-arc|7.1]]의
+시험이 여기에도 적용된다 — 전에는 불가능했고 지금은 가능한 것을, 반대 결과가 나올 수도 있었던
+평가와 함께 말하지 못하면 그것은 데모다. 데모는 연구비와 사기에 쓸모 있다. 증거는 아니다.
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- [ ] 다섯 단계와 각각이 허락하는 주장을 말한다.
+- [ ] 현재 연구에서 공개할 수 있는 산출물 하나와 그 실제 비용을 댄다.
+- [ ] 현재 프로젝트가 어느 단계를 겨냥하는지, 미리 정해서 말한다.
+- [ ] 현재 프로젝트에서 3년 뒤에도 쓰이고 있을 것을 댄다.
+
+### 스스로 점검
+
+1. 어떤 논문이 시스템을 "현장에서 검증했다"고 말한다. 방법 절은 실물 크기 목업을 서술한다.
+   그 표현의 비용은?
+2. 하필 이 도메인에서, 공개 데이터셋이 그것으로 학습한 방법보다 값어치 있을 수 있는 이유는?
+3. 결과를 논문 둘로 쪼갤 수도, 하나로 낼 수도 있다. 무엇이 결정하는가?
+4. 산업 파트너가 출판에 대한 검토 권한을 대가로 현장 출입과 데이터를 제안한다. 무엇을 먼저
+   정리해야 하는가?
+5. §2의 어느 단계가 당신의 존재에 의존하지 않으며, 왜 그것이 중요한가?
+
+> [!tip]- 정답 · Answers
+> 1. 사는 것은 없고 논문의 신뢰도를 잃는다. 방법 절을 확인하는 심사자는 주장이 과장되었음을 발견하고, 그다음 나머지는 또 어떨지 합리적으로 의심하게 된다. 목업 단계는 실재하고 쓸모 있는 문장 — "현실적인 기하와 규모를 견딘다" — 을 허락하고, 정확히 그것을 주장하는 것이 정직하면서 충분하다.
+> 2. 건설 조작의 웹 규모 코퍼스가 없고 앞으로도 오지 않으므로, 실제 건설 작업의 큐레이션된 데이터셋은 여러 기여 중 하나가 아니라 희소 자원이다. 방법은 몇 년마다 밀려나지만, 다른 누구도 접근할 수 없는 작업의 데이터셋은 계속해서 사람들이 그 위에 쌓는 것으로 남는다.
+> 3. 두 절반이 각각 반대 결과가 나올 수도 있었던 무언가를 말하는가다. 쪼개서 실한 주장 하나와 얄팍한 하나가 나온다면, 얄팍한 쪽이 개수로 더하는 것보다 신뢰도로 잃는 것이 크다 — 그리고 [[07-research-program/paper-arc|7.1 §1]]의 arc 논리가 일관된 연쇄가 긴 목록을 이긴다고 말한다.
+> 4. 어떤 데이터가 오가기 전에, 문서로 출판 조건부터: 무엇을 출판할 수 있고, 얼마나 지연되며, 누가 결정하는가. 검토 권한은 실무에서 흔히 합리적이고 때로는 치명적인데, 그 차이가 전적으로 문구에 있다. 합의한 지연은 일정 항목이고, 알아차리지 못한 거부권은 잃어버린 장(章)이다.
+> 5. 맨 위 — 다른 사람이 그 연구를 쓰는 것. 다른 모든 단계는 *당신이* 동작하게 만들었다는 증거이고, 당신의 셋업·튜닝·존재에 의존한다. 독립적 사용만이 기여가 이전되었다는 증거이며, 결과보다는 대체로 산출물로 사는 것이다.
+
+### 출처
+
+- 이 페이지는 방법이지 문헌 주장이 아니다. 배치 사다리는 이 위키 자신의 기준이며, [[05-construction-robotics/index|건설로봇]] 전반에 적용되고 [[05-construction-robotics/construction-manipulation|9. §3]]에 진술되어 있다.
+- [[06-research-practice/research-questions-claims|연구 질문과 주장]] — 무엇이 주장을 방어 가능하게 만드는가.
+- [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]] — 각 단계가 요구하는 평가 설계.
+- [[06-research-practice/venue-strategy|5. Venue 전략]] — 그 결과 나온 논문들이 갈 곳.

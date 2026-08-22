@@ -62,10 +62,10 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/2-computer-vision/nerf|NeRF]] (Mildenhall et al., ECCV 2020)
 - [x] ○ [[notes/2-computer-vision/swin|Swin Transformer]] (Liu et al., ICCV 2021)
 - [x] ◐ [[notes/2-computer-vision/dino|DINO → DINOv2]] (Caron et al., ICCV 2021 · Oquab et al., 2023)
-- [x] ★ [[notes/2-computer-vision/sam|SAM]] — *Segment Anything* (Kirillov et al., ICCV 2023)
+- [x] ◐ [[notes/2-computer-vision/sam|SAM]] — *Segment Anything* (Kirillov et al., ICCV 2023)
 - [x] ◐ [[notes/2-computer-vision/3d-gaussian-splatting|3D Gaussian Splatting]] (Kerbl et al., SIGGRAPH 2023)
 - [x] ◐ [[notes/2-computer-vision/depth-anything|Depth Anything]] (Yang et al., CVPR 2024)
-- [x] ★ [[notes/2-computer-vision/vggt|VGGT]] — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
+- [x] ◐ [[notes/2-computer-vision/vggt|VGGT]] — *Visual Geometry Grounded Transformer* (Wang et al., CVPR 2025)
 - [x] ○ [[notes/2-computer-vision/pointnet|PointNet / PointNet++]] (Qi et al., CVPR/NeurIPS 2017) — 건설 LiDAR·포인트 클라우드의 기초 문법
 
 ## 3. Vision-Language Models (VLM)
@@ -88,13 +88,15 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/4-vla/octo|Octo]] — open generalist robot policy (RSS 2024)
 - [x] ◐ [[notes/4-vla/openvla|OpenVLA]] (Kim et al., CoRL 2024)
 - [x] ★ [[notes/4-vla/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, 2024)
-- [x] ★ [[notes/4-vla/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
+- [x] ◐ [[notes/4-vla/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
+- [ ] ◐ [[notes/4-vla/robomimic|robomimic]] — Mandlekar et al., CoRL 2021 — 시연 데이터에서 무엇이 중요한가
+- [ ] ○ [[notes/4-vla/dagger|DAgger]] — Ross, Gordon & Bagnell, AISTATS 2011 — 복합 오차의 원리적 해법
 
 ## 5. World Models
 
 - [x] ◐ [[notes/5-world-models/world-models|World Models]] (Ha & Schmidhuber, NeurIPS 2018)
 - [x] ○ [[notes/5-world-models/planet|PlaNet]] (Hafner et al., ICML 2019)
-- [x] ★ [[notes/5-world-models/dreamer|Dreamer → DreamerV2 → DreamerV3]] (Hafner et al., 2020–2023, Nature 2025)
+- [x] ◐ [[notes/5-world-models/dreamer|Dreamer → DreamerV2 → DreamerV3]] (Hafner et al., 2020–2023, Nature 2025)
 - [x] ◐ [[notes/5-world-models/jepa|JEPA line]] — LeCun 2022 position paper → I-JEPA (CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025)
 - [x] ◐ [[notes/5-world-models/genie|Genie]] (Bruce et al., ICML 2024) → Genie 2 (2024)
 - [x] ○ [[notes/5-world-models/sora|Sora]] — *Video Generation Models as World Simulators* (OpenAI, 2024)
@@ -104,14 +106,14 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 - [x] ◐ [[notes/6-diffusion/vae|VAE]] — *Auto-Encoding Variational Bayes* (Kingma & Welling, ICLR 2014)
 - [x] ○ [[notes/6-diffusion/gan|GAN]] (Goodfellow et al., NeurIPS 2014)
-- [x] ★ [[notes/6-diffusion/ddpm|DDPM]] — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
+- [x] ◐ [[notes/6-diffusion/ddpm|DDPM]] — *Denoising Diffusion Probabilistic Models* (Ho et al., NeurIPS 2020)
 - [x] ○ [[notes/6-diffusion/score-sde|Score SDE]] — *Score-Based Generative Modeling through SDEs* (Song et al., ICLR 2021)
 - [x] ◐ [[notes/6-diffusion/ddim|DDIM]] (Song et al., ICLR 2021)
 - [x] ◐ [[notes/6-diffusion/classifier-free-guidance|Classifier-Free Guidance]] (Ho & Salimans, 2022)
 - [x] ○ [[notes/6-diffusion/latent-diffusion|Latent Diffusion / Stable Diffusion]] (Rombach et al., CVPR 2022)
 - [x] ○ [[notes/6-diffusion/controlnet|ControlNet]] (Zhang et al., ICCV 2023)
 - [x] ◐ [[notes/6-diffusion/dit|DiT]] — *Scalable Diffusion Models with Transformers* (Peebles & Xie, ICCV 2023)
-- [x] ★ [[notes/6-diffusion/flow-matching|Flow Matching]] (Lipman et al., ICLR 2023)
+- [x] ◐ [[notes/6-diffusion/flow-matching|Flow Matching]] (Lipman et al., ICLR 2023)
 
 ## 7. Robotics & Physical Systems
 
@@ -120,6 +122,26 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ★ [[04-robotics/modern-robotics-book|Modern Robotics]] (Lynch & Park) — textbook with free official PDF & course links
 - [x] ◐ [[04-robotics/mpc|MPC]] — Mayne et al., *Constrained MPC* (Automatica 2000) + study guide
 - [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
+
+**Force control classics** (힘 제어 고전)
+
+- [ ] ◐ [[notes/7-robotics/hogan-impedance|Impedance Control]] — Hogan, ASME JDSMC 107(1), 1985 (3부작)
+
+**Grasping** (파지)
+
+- [ ] ◐ [[notes/7-robotics/dex-net-2|Dex-Net 2.0]] — Mahler et al., RSS 2017 — 해석 지표가 라벨 생성기가 되다
+- [ ] ◐ [[notes/7-robotics/anygrasp|AnyGrasp]] — Fang et al., T-RO 2023 — 조밀·시간적으로 매끄러운 7-DoF 파지
+
+**Tactile & visuotactile** (촉각·시촉각)
+
+- [ ] ◐ [[notes/7-robotics/gelsight|GelSight]] — Yuan, Dong & Adelson, Sensors 2017 — 기하를 재고 힘은 추론한다
+- [ ] ★ [[notes/7-robotics/vision-and-touch|Making Sense of Vision and Touch]] — Lee et al., ICRA 2019 — 자기지도 시촉각 표현
+
+**Teleoperation & demonstration data** (원격조작·시연 데이터)
+
+- [ ] ★ [[notes/7-robotics/umi|UMI]] — Chi et al., RSS 2024 — 로봇 없이 야생에서 시연 수집
+- [ ] ○ [[notes/7-robotics/gello|GELLO]] — Wu et al., IROS 2024 — 기구학이 같은 저가 리더 암
+- [ ] ◐ [[notes/7-robotics/mobile-aloha|Mobile ALOHA]] — Fu, Zhao & Finn, CoRL 2024 — 전신 원격조작과 co-training
 
 **Study guides** — concept guides rather than papers, so they carry no ★◐○ mark; read them in track order.
 **Study guides** (논문이 아닌 개념 가이드 — 읽기 기호 대신 트랙 순서로 읽는다)
@@ -137,6 +159,7 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [[04-robotics/force-compliance-control|Force & Compliance Control]] — 임피던스/어드미턴스·하이브리드·작업 공간 제어·접촉 천이 (13, 매니퓰레이션 전문화)
 - [[04-robotics/tactile-visuotactile|Tactile & Visuotactile Sensing]] — 센서 계열·미끄러짐·접촉 상태·시촉각 융합 (14, 매니퓰레이션 전문화)
 - [[04-robotics/grasping|Grasping]] — 마찰 원뿔·form/force closure·엡실론 지표·학습 파지 (15, 매니퓰레이션 전문화)
+- [[04-robotics/navigation-mobile-manipulation|Navigation & Mobile Manipulation]] — 조작 가능한 자세·도달성/능력 지도·base placement·오차 예산 (16, 매니퓰레이션 전문화)
 
 ## 8. Construction Robotics
 
@@ -153,7 +176,7 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 
 - [x] ◐ [[notes/8-construction/stentz-excavator|Stentz et al. — autonomous truck loading]] (IROS 1998 / Autonomous Robots 1999) — 30년 중장비 자율화 계보의 출발점
 - [x] ★ [[notes/8-construction/heap|HEAP — the autonomous walking excavator]] (Jud et al., Automation in Construction 2021) — 계측·힘 제어 플랫폼
-- [x] ★ [[notes/8-construction/aes|AES — autonomous material loading]] (Zhang et al., Science Robotics 2021) — 24시간/개입의 산업 규모 시스템
+- [x] ◐ [[notes/8-construction/aes|AES — autonomous material loading]] (Zhang et al., Science Robotics 2021) — 24시간/개입의 산업 규모 시스템
 - [x] ◐ [[notes/8-construction/egli-rl|Egli et al. — RL for hydraulic excavator arms + soil-adaptive excavation]] (RA-L 2022) — 실기계 토질 적응 RL
 - [x] ◐ [[notes/8-construction/wheel-loader-rl|Eriksson et al. — wheel-loader RL]] (ICRA 2024) — 북유럽 실기계 적재 학습
 - [x] ○ [[notes/8-construction/exact-2024|ExACT — ACT for an excavator]] (Chen et al., Baidu, 2024) — end-to-end 모방학습, 시뮬레이터 검증
@@ -162,6 +185,9 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 ### Assembly & fabrication
 
 - [x] ★ [[notes/8-construction/vision-guided-assembly|Feng et al. — vision-guided assembly and as-built scanning]] (Automation in Construction 2015) — 미시간 조작 계보의 앵커
+- [ ] ★ [[notes/8-construction/apolinarska-timber|Apolinarska et al. — 목재 접합의 힘 유도 삽입]] (Automation in Construction 2021) — 전적으로 시뮬에서 학습해 실기계로 전이
+- [ ] ◐ [[notes/8-construction/feng-rebar|Feng et al. — 철근 결속 로봇]] (Buildings 2024) — 현장 검증된 드문 사례
+- [ ] ◐ [[notes/8-construction/kindle-jaibot|Kindle et al. — 드릴링 로봇의 변형·백래시 보상]] (RA-L 2024)
 - [x] ★ [[notes/8-construction/dry-stone-wall|Johns et al. — excavation and dry-stone construction]] (Science Robotics 2023) — 인식·계획·중장비 조작의 실규모 폐루프
 - [x] ○ [[notes/8-construction/aerial-am-2022|Zhang et al. — aerial additive manufacturing]] (Nature 2022) — 공중 적층 제조
 - [x] ◐ [[notes/8-construction/yu-imitation|Yu et al. — cloud-based hierarchical imitation learning]] (JCCE 2024) — 작업자 기술의 시연 학습

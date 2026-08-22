@@ -23,6 +23,8 @@ This section complements [[01-canonical-papers/how-to-read|How to Read Papers]] 
 2. [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]]
 3. [[06-research-practice/failure-analysis-system-evaluation|Failure Analysis & System Evaluation]]
 4. [[06-research-practice/scientific-writing-peer-review|Scientific Writing & Peer Review]]
+5. [[06-research-practice/venue-strategy|Venue Strategy for Robotics & CS]] — where a result goes, what each review process does to it, and the submission rules that quietly block a later paper
+6. [[06-research-practice/real-world-impact|Real-World Impact]] — what each rung of deployment evidence licenses you to claim, and which artifacts outlive the paper
 
 ```mermaid
 flowchart LR
@@ -52,6 +54,8 @@ The loop matters: failed experiments can revise the question or reveal that a sy
 2. [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]
 3. [[06-research-practice/failure-analysis-system-evaluation|실패 분석과 시스템 평가]]
 4. [[06-research-practice/scientific-writing-peer-review|과학적 글쓰기와 peer review]]
+5. [[06-research-practice/venue-strategy|로보틱스·CS의 Venue 전략]] — 결과가 어디로 가는가, 각 심사 과정이 그것에 무엇을 하는가, 그리고 다음 논문을 조용히 막는 제출 규칙들
+6. [[06-research-practice/real-world-impact|실세계 임팩트]] — 배치 증거의 각 단계가 무엇을 주장하도록 허락하는가, 그리고 어떤 산출물이 논문보다 오래 사는가
 
 ```mermaid
 flowchart LR

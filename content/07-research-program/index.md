@@ -212,6 +212,7 @@ recognize when it starts to matter. Most of this wiki is deliberately Literacy.
   this wiki; see [[04-robotics/index|Robotics & Physical Systems]] and
   [[05-construction-robotics/index|Construction Robotics]] for the underlying sources.
 - [[07-research-program/paper-arc|Paper Arc]] — how these pillars become a sequence of papers.
+- [[06-research-practice/venue-strategy|Venue Strategy]] and [[06-research-practice/real-world-impact|Real-World Impact]] — where the resulting papers go, and what evidence licenses which claim.
 
 ## 한국어
 
@@ -394,3 +395,4 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
   로보틱스 문헌의 표준 개념이다. 근거 자료는 [[04-robotics/index|Robotics & Physical Systems]]와
   [[05-construction-robotics/index|Construction Robotics]]를 보라.
 - [[07-research-program/paper-arc|논문 arc]] — 이 기둥들이 어떻게 논문의 연쇄가 되는가.
+- [[06-research-practice/venue-strategy|Venue 전략]]과 [[06-research-practice/real-world-impact|실세계 임팩트]] — 그 논문들이 갈 곳, 그리고 어떤 증거가 어떤 주장을 허락하는가.
