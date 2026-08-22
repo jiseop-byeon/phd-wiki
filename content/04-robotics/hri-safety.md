@@ -129,6 +129,8 @@ An automated excavator receives a goal from an operator, plans and executes a di
 
 ### Sources
 
+
+- The perception layer these decisions run on: [[04-robotics/video-action-understanding|20. Video & Action Understanding]], [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]], [[04-robotics/egocentric-perception|22. Egocentric Perception]], [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] — autonomy and authority are decisions; those pages are what the decision is made from.
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
 - [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — the field's flagship venue; its papers set the de facto standard for human-study design
@@ -281,6 +283,8 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 
 ### 출처
 
+
+- 이 결정들이 딛고 선 인지 층: [[04-robotics/video-action-understanding|20. 비디오·행동 이해]], [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]], [[04-robotics/egocentric-perception|22. 자기중심 인지]], [[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]] — 자율성과 권한은 결정이고, 그 페이지들이 그 결정의 근거다.
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
 - [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — 분야 대표 학회; 인간 대상 연구 설계의 실제 기준을 보여주는 논문들

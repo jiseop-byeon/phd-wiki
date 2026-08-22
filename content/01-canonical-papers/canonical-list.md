@@ -163,6 +163,10 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [[04-robotics/traversability-off-road|Traversability & Off-Road Autonomy]] — 학습된 어포던스로서의 traversability·지도 신호·SubT/RACER (17, 내비게이션)
 - [[04-robotics/legged-locomotion|Legged Locomotion]] — privileged teacher-student 증류·정본의 실제 주장·파쿠르 대조 (18, 내비게이션)
 - [[04-robotics/semantic-language-navigation|Semantic & Language-Driven Navigation]] — ObjectNav/VLN 정의와 지표·언어로 질의하는 지도·벤치마크의 해체 (19, 내비게이션)
+- [[04-robotics/video-action-understanding|Video Representation & Action Understanding]] — 인식/위치추정/예측의 구분·장면 편향·백본 계보 (20, 사람 인지)
+- [[04-robotics/human-pose-gaze|Human Pose, Hands & Gaze]] — 표현의 사다리·MPJPE의 물리적 의미·머리 자세를 시선으로 대체하는 문제 (21, 사람 인지)
+- [[04-robotics/egocentric-perception|Egocentric & First-Person Perception]] — 1인칭 시점이 관측 가능성을 바꾸는 방식·시선→머리→손→접촉 단서 사슬 (22, 사람 인지)
+- [[04-robotics/human-intent-prediction|Human Intent & Trajectory Prediction]] — 의도 대 궤적·가용 지평 Δ*와 필요 선행 시간·보정과 base rate (23, 사람 인지)
 
 ## 8. Construction Robotics
 
