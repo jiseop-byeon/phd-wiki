@@ -17,7 +17,8 @@ CACHE = Path(os.environ.get("RADAR_CACHE", "/private/tmp/research-radar-dblp"))
 OUT = ROOT / "quartz/static/research-radar/data.json"
 YEARS = [2021, 2022, 2023, 2024, 2025]
 VENUES = {"nips": "NeurIPS", "icml": "ICML", "iclr": "ICLR",
-          "cvpr": "CVPR", "icra": "ICRA", "corl": "CoRL"}
+          "cvpr": "CVPR", "icra": "ICRA", "corl": "CoRL",
+          "iros": "IROS", "rss": "RSS"}
 JOURNALS = {
     "automation-in-construction": {
         "name": "Automation in Construction",
@@ -26,6 +27,14 @@ JOURNALS = {
     "construction-robotics": {
         "name": "Construction Robotics",
         "issn": "2509-8780",
+    },
+    "ieee-ral": {
+        "name": "IEEE Robotics and Automation Letters",
+        "issn": "2377-3766",
+    },
+    "ieee-tro": {
+        "name": "IEEE Transactions on Robotics",
+        "issn": "1552-3098",
     },
 }
 

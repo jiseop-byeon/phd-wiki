@@ -36,8 +36,11 @@ Research depth belongs to the pages themselves, not to this dashboard. Use the
 
 > [!warning] Known limitations (read before trusting a trend)
 > - **Venue coverage**: IROS, RSS, RA-L, and T-RO — a large share of robotics output — are
->   not yet indexed; robotics trends here undercount the field. **CoRL 2025 is missing**
->   from the current dataset (DBLP had not indexed it at build time; see the audit panel).
+>   now indexed as of the 2026-08-21 rebuild, which took robotics coverage from 7,846 to
+>   23,604 papers (a factor of 3.0) and the whole corpus from 58,439 to 76,701. Robotics trends before that rebuild
+>   undercounted the field badly, so do not compare a reading taken now against one taken
+>   earlier. **CoRL 2025 and RSS 2025 are missing** from the current dataset (DBLP had not
+>   indexed them at build time; see the audit panel).
 > - **Single denominator**: shares normalize by each year's total across all indexed
 >   venues, so changes in venue mix or indexing completeness can masquerade as topic
 >   trends. Treat cross-year momentum as a lead to investigate, not a measurement.
@@ -81,9 +84,11 @@ Deep Learning·Physical AI·Robot Learning에 동시에 나타날 수 있으며,
 뒤 [[00-study-depth-guide|Study Depth Guide]]를 사용한다.
 
 > [!warning] 알려진 한계 (추세를 믿기 전에 읽을 것)
-> - **학회 커버리지**: IROS, RSS, RA-L, T-RO — 로보틱스 출판의 큰 몫 — 이 아직 색인되지
->   않았다; 여기의 로보틱스 추세는 분야를 과소집계한다. **CoRL 2025도 현재 데이터셋에
->   없다** (빌드 시점에 DBLP 미색인; 감사 패널 참고).
+> - **학회 커버리지**: IROS, RSS, RA-L, T-RO — 로보틱스 출판의 큰 몫 — 이
+>   2026-08-21 재빌드에서 색인됐다. 로보틱스 커버리지가 7,846편에서 23,604편으로
+>   (3.0배), 전체 코퍼스가 58,439편에서 76,701편으로 늘었다. 그 재빌드 이전의 로보틱스 추세는 분야를 크게
+>   과소집계했으므로, 지금 읽은 값을 그 이전에 읽은 값과 비교하지 마라. **CoRL 2025와
+>   RSS 2025는 현재 데이터셋에 없다** (빌드 시점에 DBLP 미색인; 감사 패널 참고).
 > - **단일 분모**: 점유율이 그해 색인된 전체 학회 합계로 정규화되므로, 학회 구성이나 수집
 >   완전성의 변화가 주제 추세처럼 보일 수 있다. 연도 간 momentum은 측정값이 아니라 조사할
 >   단서로 취급하라.

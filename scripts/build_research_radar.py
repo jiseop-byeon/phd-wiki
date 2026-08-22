@@ -15,13 +15,16 @@ import json
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from http.client import HTTPException
 from urllib.error import HTTPError, URLError
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = Path(os.environ.get("RADAR_CACHE", "/private/tmp/research-radar-dblp"))
 YEARS = range(2021, 2026)
-VENUES = ("nips", "icml", "iclr", "cvpr", "icra", "corl")
-BASE_URL = "https://dblp.org/db/conf/{venue}/{venue}{year}.xml"
+VENUES = ("nips", "icml", "iclr", "cvpr", "icra", "corl", "iros", "rss")
+BASE_URL = "https://dblp.org/db/conf/{venue}/{slug}{year}.xml"
+# DBLP keeps NeurIPS under conf/nips/ but renamed the per-year files to "neurips".
+DBLP_SLUG = {"nips": "neurips"}
 JOURNALS = {
     "automation-in-construction": {
         "issn": "0926-5805",
@@ -30,6 +33,14 @@ JOURNALS = {
     "construction-robotics": {
         "issn": "2509-8780",
         "name": "Construction Robotics",
+    },
+    "ieee-ral": {
+        "issn": "2377-3766",
+        "name": "IEEE Robotics and Automation Letters",
+    },
+    "ieee-tro": {
+        "issn": "1552-3098",
+        "name": "IEEE Transactions on Robotics",
     },
 }
 
@@ -61,7 +72,7 @@ def fetch(url: str, destination: Path) -> str:
             if exc.code != 429 and 500 > exc.code:
                 raise
             retry_after = float(exc.headers.get("Retry-After", 2 ** attempt))
-        except (URLError, TimeoutError, ValueError):
+        except (URLError, TimeoutError, ValueError, ConnectionError, HTTPException):
             retry_after = 2 ** attempt
         if attempt == 4:
             return "failed after retries"
@@ -96,7 +107,8 @@ def fetch_crossref(slug: str, issn: str, name: str) -> str:
                 with urllib.request.urlopen(request, timeout=90) as response:
                     message = json.load(response)["message"]
                 break
-            except (HTTPError, URLError, TimeoutError, ValueError, KeyError):
+            except (HTTPError, URLError, TimeoutError, ValueError, KeyError,
+                    ConnectionError, HTTPException):
                 if attempt == 4:
                     return "failed after retries"
                 time.sleep(min(2 ** attempt, 30))
@@ -123,7 +135,8 @@ def main() -> None:
     for venue in VENUES:
         for year in YEARS:
             destination = CACHE / f"{venue}-{year}.xml"
-            result = fetch(BASE_URL.format(venue=venue, year=year), destination)
+            slug = DBLP_SLUG.get(venue, venue)
+            result = fetch(BASE_URL.format(venue=venue, slug=slug, year=year), destination)
             print(f"{venue.upper()} {year}: {result}")
             # DBLP asks automated clients to remain polite. Cached runs do not wait.
             if result == "downloaded":

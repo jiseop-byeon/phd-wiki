@@ -95,9 +95,9 @@ Assembly, insertion, fitting, fastening, or tool use on a real construction task
 where the dissertation's center of gravity moves**, and the first paper that would be hard
 for someone outside this program to have written.
 
-- Leans on: [[04-robotics/contact-force-tactile|Contact, Force & Tactile]], [[04-robotics/force-compliance-control|Force & Compliance Control]], [[04-robotics/planning-decision-making|Planning]], [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]], [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]].
+- Leans on: [[04-robotics/contact-force-tactile|Contact, Force & Tactile]], [[04-robotics/force-compliance-control|Force & Compliance Control]], [[04-robotics/planning-decision-making|Planning]], [[05-construction-robotics/construction-manipulation|Construction Manipulation]], [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]].
 - Anchor reading: [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Vision-Guided Assembly]], [[01-canonical-papers/notes/8-construction/dry-stone-wall|Dry Stone Wall]].
-- Choosing the task is the hardest decision in the arc; see §4.
+- Choosing the task is the hardest decision in the arc; see §4, and [[05-construction-robotics/construction-manipulation|9. Construction Manipulation §5]] for the criteria applied task by task.
 
 #### Paper 4 — Contact-rich and learned manipulation
 
@@ -278,9 +278,9 @@ arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 �
 실제 건설 작업에서의 조립·삽입·끼움·체결·공구 사용. **여기서 학위논문의 무게 중심이
 이동한다**, 그리고 이 프로그램 밖의 사람이 쓰기 어려운 첫 번째 논문이다.
 
-- 기대는 곳: [[04-robotics/contact-force-tactile|접촉·힘·촉각]], [[04-robotics/force-compliance-control|힘·컴플라이언스 제어]], [[04-robotics/planning-decision-making|계획]], [[05-construction-robotics/assembly-fabrication|조립·제작]], [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]].
+- 기대는 곳: [[04-robotics/contact-force-tactile|접촉·힘·촉각]], [[04-robotics/force-compliance-control|힘·컴플라이언스 제어]], [[04-robotics/planning-decision-making|계획]], [[05-construction-robotics/construction-manipulation|건설 매니퓰레이션]], [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]].
 - 앵커 읽기: [[01-canonical-papers/notes/8-construction/vision-guided-assembly|비전 유도 조립]], [[01-canonical-papers/notes/8-construction/dry-stone-wall|건식 석벽]].
-- 작업 선택이 arc에서 가장 어려운 결정이다. §4를 보라.
+- 작업 선택이 arc에서 가장 어려운 결정이다. §4와, 기준을 작업별로 적용한 [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션 §5]]를 보라.
 
 #### 4편 — 접촉 다량·학습 조작
 

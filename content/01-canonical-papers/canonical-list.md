@@ -135,6 +135,8 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [[04-robotics/hri-safety|Human–Robot Interaction & Safety]] — autonomy levels·human studies·hazard/risk (11)
 - [[04-robotics/teleoperation-demonstration|Teleoperation & Demonstration Collection]] — 양방향 제어·지연과 수동성·인터페이스·시연 데이터 품질 (12, 매니퓰레이션 전문화)
 - [[04-robotics/force-compliance-control|Force & Compliance Control]] — 임피던스/어드미턴스·하이브리드·작업 공간 제어·접촉 천이 (13, 매니퓰레이션 전문화)
+- [[04-robotics/tactile-visuotactile|Tactile & Visuotactile Sensing]] — 센서 계열·미끄러짐·접촉 상태·시촉각 융합 (14, 매니퓰레이션 전문화)
+- [[04-robotics/grasping|Grasping]] — 마찰 원뿔·form/force closure·엡실론 지표·학습 파지 (15, 매니퓰레이션 전문화)
 
 ## 8. Construction Robotics
 

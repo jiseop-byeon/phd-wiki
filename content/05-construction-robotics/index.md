@@ -49,6 +49,9 @@ Cross-cutting layers (not streams — every stream uses them):
   sources, randomization, privileged learning, residuals, and transfer evidence
 - [[05-construction-robotics/industry-deployment|8. Industry & Deployment Map]] — who is
   commercializing what, at what autonomy level (verified 2026-07)
+- [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the
+  manipulation lens across the streams: task-to-primitive matrix, the simulation–lab–site
+  ladder applied to contact-rich work, and how to choose a defensible core task
 - The **reading frame** below — how to evaluate any paper from any stream
 
 ### Reading frame for construction-robotics papers
@@ -114,6 +117,9 @@ this field's specific literature.
   랜덤화, privileged learning, 잔차, 전이 증거
 - [[05-construction-robotics/industry-deployment|8. Industry & Deployment Map]] — 누가
   무엇을 어떤 자율성 수준으로 상업화하는가 (2026-07 검증)
+- [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 스트림을
+  가로지르는 조작의 렌즈: 작업–원시동작 매트릭스, 접촉 다량 작업에 적용한 시뮬–실험실–현장
+  사다리, 그리고 방어 가능한 핵심 작업 고르기
 - 아래의 **읽기 틀** — 어느 스트림의 논문이든 평가하는 법
 
 ### 건설로봇 논문 읽기 틀 · Reading frame
