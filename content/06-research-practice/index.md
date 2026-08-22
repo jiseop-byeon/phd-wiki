@@ -25,6 +25,7 @@ This section complements [[01-canonical-papers/how-to-read|How to Read Papers]] 
 4. [[06-research-practice/scientific-writing-peer-review|Scientific Writing & Peer Review]]
 5. [[06-research-practice/venue-strategy|Venue Strategy for Robotics & CS]] — where a result goes, what each review process does to it, and the submission rules that quietly block a later paper
 6. [[06-research-practice/real-world-impact|Real-World Impact]] — what each rung of deployment evidence licenses you to claim, and which artifacts outlive the paper
+7. [[06-research-practice/simulators-benchmarks-datasets|Simulators, Benchmarks & Datasets]] — which instrument to use for a stated experiment, what each one cannot represent, and the three verified absences that shape this domain
 
 ```mermaid
 flowchart LR
@@ -56,6 +57,7 @@ The loop matters: failed experiments can revise the question or reveal that a sy
 4. [[06-research-practice/scientific-writing-peer-review|과학적 글쓰기와 peer review]]
 5. [[06-research-practice/venue-strategy|로보틱스·CS의 Venue 전략]] — 결과가 어디로 가는가, 각 심사 과정이 그것에 무엇을 하는가, 그리고 다음 논문을 조용히 막는 제출 규칙들
 6. [[06-research-practice/real-world-impact|실세계 임팩트]] — 배치 증거의 각 단계가 무엇을 주장하도록 허락하는가, 그리고 어떤 산출물이 논문보다 오래 사는가
+7. [[06-research-practice/simulators-benchmarks-datasets|시뮬레이터·벤치마크·데이터셋]] — 주어진 실험에 어느 도구를 쓸 것인가, 각각이 무엇을 표현하지 못하는가, 그리고 이 도메인을 규정하는 검증된 부재 셋
 
 ```mermaid
 flowchart LR

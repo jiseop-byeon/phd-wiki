@@ -241,6 +241,7 @@ the [[07-research-program/index|research program]] is built on.
 - [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]] — the lineages behind these systems.
 - [[05-construction-robotics/industry-deployment|Industry Deployment]] — the commercial systems that have no papers.
 - [[07-research-program/paper-arc|7.1 Paper Arc §4]] — the five criteria applied in §5.
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] — the tools these tasks would be studied with, and the benchmark and dataset absences that go with them.
 
 ## 한국어
 
@@ -453,3 +454,4 @@ the [[07-research-program/index|research program]] is built on.
 - [[05-construction-robotics/assembly-fabrication|조립·제작]] — 이 시스템들 뒤의 계보.
 - [[05-construction-robotics/industry-deployment|산업 배치]] — 논문이 없는 상용 시스템들.
 - [[07-research-program/paper-arc|7.1 논문 arc §4]] — §5에서 적용한 다섯 기준.
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]] — 이 작업들을 연구할 도구와, 그에 딸린 벤치마크·데이터셋의 부재.

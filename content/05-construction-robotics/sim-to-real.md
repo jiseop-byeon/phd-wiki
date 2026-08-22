@@ -110,6 +110,8 @@ outside the training range.
 
 ### Sources
 
+
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] — which simulator actually models terrain and contact, and what each one leaves out.
 - [Tobin et al., *Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World*](https://arxiv.org/abs/1703.06907)
 - [Peng et al., *Sim-to-Real Transfer of Robotic Control with Dynamics Randomization*](https://arxiv.org/abs/1710.06537)
 - [Lee et al., *Learning Quadrupedal Locomotion over Challenging Terrain*](https://www.science.org/doi/10.1126/scirobotics.abc5986) — privileged learning example
@@ -211,6 +213,8 @@ Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없�
 
 ### 출처
 
+
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]] — 어느 시뮬레이터가 실제로 지형과 접촉을 모델링하는가, 그리고 각각이 무엇을 빠뜨리는가.
 - [Tobin et al., Domain Randomization](https://arxiv.org/abs/1703.06907)
 - [Peng et al., Dynamics Randomization](https://arxiv.org/abs/1710.06537)
 - [Lee et al., challenging-terrain locomotion](https://www.science.org/doi/10.1126/scirobotics.abc5986)
