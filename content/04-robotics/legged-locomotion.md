@@ -231,6 +231,7 @@ for the full picture and the licensing traps.
 
 **Within this wiki**
 
+- **Paper notes** — [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee et al. 2020]] · [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al. 2022]] · [[01-canonical-papers/notes/9-navigation/rma|RMA]] · [[01-canonical-papers/notes/9-navigation/anymal-parkour|ANYmal Parkour]]
 - [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] — where these robots are sent
 - [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — the model-based side of the same problem
 - [[05-construction-robotics/sim-to-real|Sim-to-Real for Field Robots]] — teacher-student as one strategy among several
@@ -432,6 +433,7 @@ for the full picture and the licensing traps.
 
 **이 위키 안에서**
 
+- **논문 노트** — [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee 등 2020]] · [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등 2022]] · [[01-canonical-papers/notes/9-navigation/rma|RMA]] · [[01-canonical-papers/notes/9-navigation/anymal-parkour|ANYmal Parkour]]
 - [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]] — 이 로봇들이 보내지는 곳
 - [[04-robotics/convex-mpc-legged|레그드 로봇의 Convex MPC]] — 같은 문제의 모델 기반 쪽
 - [[05-construction-robotics/sim-to-real|필드 로봇 Sim-to-Real]] — 여러 전략 중 하나로서의 교사-학생

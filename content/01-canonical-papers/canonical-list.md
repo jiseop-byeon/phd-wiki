@@ -137,6 +137,10 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [ ] ◐ [[notes/7-robotics/gelsight|GelSight]] — Yuan, Dong & Adelson, Sensors 2017 — 기하를 재고 힘은 추론한다
 - [ ] ★ [[notes/7-robotics/vision-and-touch|Making Sense of Vision and Touch]] — Lee et al., ICRA 2019 — 자기지도 시촉각 표현
 
+**Real-world reinforcement learning** (실제 환경 RL)
+
+- [ ] ★ [[notes/7-robotics/hil-serl|HIL-SERL]] — Luo, Xu, Wu & Levine, Science Robotics 2025 — 실제 로봇 위에서 1~2.5시간, 사람이 루프 안의 교정 채널
+
 **Teleoperation & demonstration data** (원격조작·시연 데이터)
 
 - [ ] ★ [[notes/7-robotics/umi|UMI]] — Chi et al., RSS 2024 — 로봇 없이 야생에서 시연 수집
@@ -167,6 +171,7 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [[04-robotics/human-pose-gaze|Human Pose, Hands & Gaze]] — 표현의 사다리·MPJPE의 물리적 의미·머리 자세를 시선으로 대체하는 문제 (21, 사람 인지)
 - [[04-robotics/egocentric-perception|Egocentric & First-Person Perception]] — 1인칭 시점이 관측 가능성을 바꾸는 방식·시선→머리→손→접촉 단서 사슬 (22, 사람 인지)
 - [[04-robotics/human-intent-prediction|Human Intent & Trajectory Prediction]] — 의도 대 궤적·가용 지평 Δ*와 필요 선행 시간·보정과 base rate (23, 사람 인지)
+
 
 ## 8. Construction Robotics
 
@@ -213,3 +218,46 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 - [x] ○ [[notes/8-construction/liang-hrc-survey|Liang et al. — HRC in construction: classification & trends]] (JCEM 2021) — 스트림 6의 방향 잡는 분류 체계
 
 Concept pages · 개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).
+
+## 9. Navigation & Locomotion
+
+Notes: [[01-canonical-papers/notes/9-navigation/index|9. Navigation & Locomotion]]. Concept guides: section I of [[04-robotics/index|Robotics & Physical Systems]] — pages 17, 18, 19. These fifteen papers are the navigation pillar of [[07-research-program/index|the research program]]: enough to know what a site robot's base can already do, and where the literature stops.
+
+노트: [[01-canonical-papers/notes/9-navigation/index|9. Navigation & Locomotion]]. 개념 가이드는 [[04-robotics/index|Robotics & Physical Systems]] I절 — 17·18·19번. 아래 15편이 [[07-research-program/index|연구 프로그램]]의 내비게이션 기둥이다: 현장 로봇의 베이스가 이미 무엇을 할 수 있고 문헌이 어디서 멈추는지를 알기에 충분한 만큼.
+
+### Traversability — the learned affordance
+
+- [ ] ◐ [[notes/9-navigation/badgr|BADGR]] — Kahn, Abbeel & Levine, RA-L 2021 — 기하가 아니라 주행 사건을 예측한다
+- [ ] ★ [[notes/9-navigation/wild-visual-navigation|WVN]] — Frey, Mattamala et al., RSS 2023 — 현장에서 5분 만에 학습하는 traversability
+
+### Legged locomotion
+
+- [ ] ★ [[notes/9-navigation/lee-quadruped-terrain|Lee et al. — 험지 4족 로코모션]] (Science Robotics 2020) — 특권 정보 teacher–student 증류의 정본
+- [ ] ◐ [[notes/9-navigation/miki-perceptive-locomotion|Miki et al. — 야생의 지각적 로코모션]] (Science Robotics 2022) — 센서를 *언제* 믿을지 학습한다
+- [ ] ◐ [[notes/9-navigation/rma|RMA]] — Kumar, Fu, Pathak & Malik, RSS 2021 — 증류 대신 온라인 시스템 식별
+- [ ] ○ [[notes/9-navigation/anymal-parkour|ANYmal Parkour]] — Hoeller et al., Science Robotics 2024 — 발디딤 계획이 아니라 기술 선택
+
+### Object-goal and language navigation
+
+- [ ] ◐ [[notes/9-navigation/semexp|SemExp]] — Chaplot et al., NeurIPS 2020 — 목표 범주에 조건부인 탐색, Habitat 챌린지 우승
+- [ ] ◐ [[notes/9-navigation/vln-ce|VLN-CE]] — Krantz et al., ECCV 2020 — nav-graph 벤치마크의 세 가정을 해체한다
+- [ ] ◐ [[notes/9-navigation/vlfm|VLFM]] — Yokoyama et al., ICRA 2024 — 사전학습 VLM이 frontier에 점수를 매긴다 (zero-shot)
+- [ ] ◐ [[notes/9-navigation/navid|NaVid]] — Zhang et al., RSS 2024 — 지도·오도메트리·깊이 없이 비디오 VLM만으로
+- [ ] ○ [[notes/9-navigation/uni-navid|Uni-NaVid]] — Zhang et al., RSS 2025 — 네 내비게이션 과제를 한 VLA로
+
+### Language-queryable maps
+
+- [ ] ◐ [[notes/9-navigation/conceptgraphs|ConceptGraphs]] — Gu, Kuwajerwala et al., ICRA 2024 — 점별 특징장이 아니라 물체 그래프
+- [ ] ○ [[notes/9-navigation/clio|Clio]] — Maggio et al., RA-L 2024 — 입도는 물체의 성질이 아니라 과제의 성질이다
+
+### Navigation foundation models, and the reality check
+
+- [ ] ◐ [[notes/9-navigation/vint-nomad|ViNT / NoMaD]] — Shah et al., CoRL 2023 · Sridhar et al., ICRA 2024 — 신체 교차 사전학습과 목표 가리기
+- [ ] ★ [[notes/9-navigation/gervet-real-world-objectnav|Gervet et al. — 실제 환경의 물체 내비게이션]] (Science Robotics 2023) — end-to-end가 시뮬 77%에서 현실 23%로 무너진다
+
+**Study guides** — the concept pages these papers depend on · 이 논문들이 딛고 선 개념 페이지
+
+- [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]]
+- [[04-robotics/legged-locomotion|18. Legged Locomotion]]
+- [[04-robotics/semantic-language-navigation|19. Semantic & Language-Driven Navigation]]
+- [[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]] — 조작과 만나는 지점

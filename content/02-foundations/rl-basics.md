@@ -256,7 +256,7 @@ the price of value-extrapolation instability BC never has.
 > [!important] The 2024–2026 correction to this section
 > The framing above — imitation is stable but capped, RL can exceed the demonstrator — is
 > right, and the last two years sharpened it in a way worth carrying. On **contact-rich
-> precision** tasks the gap is not narrow: **HIL-SERL** (*Science Robotics*, 2025) reports
+> precision** tasks the gap is not narrow: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]** (*Science Robotics*, 2025) reports
 > 100% success on around thirteen such tasks after **1–2.5 hours of real-robot training**,
 > while diffusion-policy baselines score **27%** on RAM insertion and **18%** on dashboard
 > assembly. Demonstrations do not contain the corrective micro-adjustments needed when you
@@ -701,7 +701,7 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 > [!important] 이 절에 대한 2024~26년의 교정
 > 위의 프레이밍 — 모방은 안정적이지만 상한이 있고, RL은 시연자를 넘어설 수 있다 — 은 옳고,
 > 지난 2년이 그것을 가져갈 만한 방식으로 날카롭게 만들었다. **접촉 다량 정밀** 과제에서 격차는
-> 좁지 않다: **HIL-SERL**(*Science Robotics*, 2025)이 그런 과제 약 열세 개에서 **실기계 학습
+> 좁지 않다: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]**(*Science Robotics*, 2025)이 그런 과제 약 열세 개에서 **실기계 학습
 > 1~2.5시간** 후 100% 성공을 보고하는 동안, diffusion policy 베이스라인은 RAM 삽입 **27%**,
 > 대시보드 조립 **18%** 를 낸다. 시연에는 2 mm 어긋났을 때 필요한 교정적 미세 조정이 담겨 있지
 > 않고, 사람 시연들에 대해 평균을 내는 것이 반응적 거동을 적극적으로 파괴한다.

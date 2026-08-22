@@ -273,6 +273,7 @@ underneath.
 
 **Within this wiki**
 
+- **Paper notes** — [[01-canonical-papers/notes/9-navigation/semexp|SemExp]] · [[01-canonical-papers/notes/9-navigation/vlfm|VLFM]] · [[01-canonical-papers/notes/9-navigation/vln-ce|VLN-CE]] · [[01-canonical-papers/notes/9-navigation/navid|NaVid]] · [[01-canonical-papers/notes/9-navigation/uni-navid|Uni-NaVid]] · [[01-canonical-papers/notes/9-navigation/conceptgraphs|ConceptGraphs]] · [[01-canonical-papers/notes/9-navigation/clio|Clio]] · [[01-canonical-papers/notes/9-navigation/vint-nomad|ViNT / NoMaD]] · [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al. 2023]]
 - [[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]] — the geometric half of the same problem
 - [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] — the outdoor counterpart
 - [[01-canonical-papers/notes/3-vlm/clip|CLIP]] and [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] — the ingredients §7 assembles
@@ -512,6 +513,7 @@ LERF식 방사 필드는 레거시다. 그리고 **로보틱스 쪽에서는 장
 
 **이 위키 안에서**
 
+- **논문 노트** — [[01-canonical-papers/notes/9-navigation/semexp|SemExp]] · [[01-canonical-papers/notes/9-navigation/vlfm|VLFM]] · [[01-canonical-papers/notes/9-navigation/vln-ce|VLN-CE]] · [[01-canonical-papers/notes/9-navigation/navid|NaVid]] · [[01-canonical-papers/notes/9-navigation/uni-navid|Uni-NaVid]] · [[01-canonical-papers/notes/9-navigation/conceptgraphs|ConceptGraphs]] · [[01-canonical-papers/notes/9-navigation/clio|Clio]] · [[01-canonical-papers/notes/9-navigation/vint-nomad|ViNT / NoMaD]] · [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등 2023]]
 - [[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 조작]] — 같은 문제의 기하학적 절반
 - [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]] — 실외 대응물
 - [[01-canonical-papers/notes/3-vlm/clip|CLIP]]과 [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] — §7이 조립하는 재료들

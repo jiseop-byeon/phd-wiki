@@ -199,6 +199,7 @@ includes construction machinery is the nearest existing bridge between this page
 
 **Within this wiki**
 
+- **Paper notes** — [[01-canonical-papers/notes/9-navigation/badgr|BADGR]] · [[01-canonical-papers/notes/9-navigation/wild-visual-navigation|WVN]]
 - [[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]] — the pose estimate whose drift the elevation map propagates
 - [[04-robotics/mpc|MPC]] — what STEP's risk-constrained planner is a variant of
 - [[04-robotics/legged-locomotion|18. Legged Locomotion]] — the robots most of this work runs on
@@ -371,6 +372,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 
 **이 위키 안에서**
 
+- **논문 노트** — [[01-canonical-papers/notes/9-navigation/badgr|BADGR]] · [[01-canonical-papers/notes/9-navigation/wild-visual-navigation|WVN]]
 - [[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]] — 고도 지도가 드리프트를 전파하는 그 자세 추정
 - [[04-robotics/mpc|MPC]] — STEP의 위험 제약 계획기가 그 변형인 것
 - [[04-robotics/legged-locomotion|18. 레그드 로코모션]] — 이 연구 대부분이 돌아가는 로봇들
