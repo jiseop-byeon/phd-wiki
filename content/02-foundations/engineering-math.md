@@ -250,8 +250,8 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
     <text x="86" y="152" font-size="10">225&#176;</text>
     <text x="255" y="44">Both points sit on the same dashed line</text>
     <text x="255" y="62">through the origin, so b/a = 1 for both.</text>
-    <text x="255" y="92">arctan(b/a) = 45&#176; for both &#8212; right for one,</text>
-    <text x="255" y="110">wrong by 180&#176; for the other.</text>
+    <text x="255" y="92">arctan(b/a) = 45&#176; for both &#8212; right for</text>
+    <text x="255" y="110">one, wrong by 180&#176; for the other.</text>
     <text x="255" y="140">atan2(b, a) keeps the two signs apart</text>
     <text x="255" y="158">and returns 45&#176; and &#8722;135&#176;.</text>
   </g>

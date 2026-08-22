@@ -156,7 +156,7 @@ where each concept appears in the papers of this wiki.
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="70" y="22">positive definite</text><text x="235" y="22">positive semidefinite</text><text x="400" y="22">indefinite</text>
     <text x="70" y="40" font-size="10" opacity="0.8">2x&#8321;&#178; + 3x&#8322;&#178;</text><text x="235" y="40" font-size="10" opacity="0.8">(x&#8321; + x&#8322;)&#178;</text><text x="400" y="40" font-size="10" opacity="0.8">x&#8321;&#178; &#8722; x&#8322;&#178;</text>
-    <text x="70" y="176">up in every direction</text><text x="235" y="176">up, but flat along a line</text><text x="400" y="176">up one way, down the other</text>
+    <text x="70" y="176">up in every direction</text><text x="235" y="176">up, but flat along a line</text><text x="400" y="176">one way up, one way down</text>
   </g>
   <g font-size="11" fill="currentColor">
     <text x="15" y="196" opacity="0.85">Each panel plots x&#7488;Ax along two directions through the origin (solid and dashed).</text>

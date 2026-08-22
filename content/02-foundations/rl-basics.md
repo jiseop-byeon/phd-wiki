@@ -198,7 +198,7 @@ label the states it actually visited, retrain.
 error that puts the policy somewhere its demonstrations never went. Then a $T$-step task
 survives with probability $(1-\epsilon)^T$, and the horizon does the damage:
 
-<svg viewBox="0 0 560 236" style="max-width:100%;height:auto" role="img" aria-label="probability of finishing a task without a single mistake, falling with horizon for three per-step error rates">
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="probability of finishing a task without a single mistake, falling with horizon for three per-step error rates">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
     <line x1="60" y1="170" x2="524" y2="170"/><line x1="60" y1="170" x2="60" y2="36"/>
   </g>
@@ -218,11 +218,12 @@ survives with probability $(1-\epsilon)^T$, and the horizon does the damage:
     <text x="54" y="44" text-anchor="end">1.0</text><text x="54" y="109" text-anchor="end">0.5</text><text x="54" y="174" text-anchor="end">0</text>
     <text x="152" y="188" text-anchor="middle">100</text><text x="244" y="188" text-anchor="middle">200</text><text x="336" y="188" text-anchor="middle">300</text><text x="428" y="188" text-anchor="middle">400</text><text x="520" y="188" text-anchor="middle">500</text>
     <text x="292" y="204" text-anchor="middle">task length (steps)</text>
-    <text x="14" y="106">chance of a clean run</text>
+    <text x="20" y="30">chance of a clean run</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="222">A per-step error rate that sounds negligible becomes a task failure rate. At one error in a hundred steps, a</text>
-    <text x="20" y="236">50-step task finishes cleanly about 60% of the time and a 500-step task about 0.7%.</text>
+    <text x="20" y="226">A per-step error rate that sounds negligible becomes a task failure rate.</text>
+    <text x="20" y="242">At one error in a hundred steps, a 50-step task finishes cleanly about 60% of</text>
+    <text x="20" y="258">the time &#8212; and a 500-step task about 0.7%.</text>
   </g>
 </svg>
 
@@ -647,7 +648,7 @@ flowchart TD
 정책을 밀어내는 오차를 낸다고 하자. 그러면 $T$스텝 과제가 살아남을 확률은 $(1-\epsilon)^T$이고,
 피해를 입히는 것은 지평이다:
 
-<svg viewBox="0 0 560 236" style="max-width:100%;height:auto" role="img" aria-label="한 번도 틀리지 않고 과제를 끝낼 확률이 스텝당 오류율 세 가지에 대해 지평에 따라 떨어진다">
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="한 번도 틀리지 않고 과제를 끝낼 확률이 스텝당 오류율 세 가지에 대해 지평에 따라 떨어진다">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
     <line x1="60" y1="170" x2="524" y2="170"/><line x1="60" y1="170" x2="60" y2="36"/>
   </g>
@@ -667,11 +668,12 @@ flowchart TD
     <text x="54" y="44" text-anchor="end">1.0</text><text x="54" y="109" text-anchor="end">0.5</text><text x="54" y="174" text-anchor="end">0</text>
     <text x="152" y="188" text-anchor="middle">100</text><text x="244" y="188" text-anchor="middle">200</text><text x="336" y="188" text-anchor="middle">300</text><text x="428" y="188" text-anchor="middle">400</text><text x="520" y="188" text-anchor="middle">500</text>
     <text x="292" y="204" text-anchor="middle">과제 길이 (스텝)</text>
-    <text x="14" y="106">무결 수행 확률</text>
+    <text x="20" y="30">무결 수행 확률</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="222">무시해도 될 것 같은 스텝당 오류율이 과제 실패율이 된다. 100스텝에 1번 틀리면, 50스텝 과제는 약 60%,</text>
-    <text x="20" y="236">500스텝 과제는 약 0.7% 확률로만 깨끗하게 끝난다.</text>
+    <text x="20" y="226">무시해도 될 것 같은 스텝당 오류율이 과제 실패율이 된다.</text>
+    <text x="20" y="242">100스텝에 1번 틀리면 50스텝 과제는 약 60% 확률로 깨끗하게 끝나고,</text>
+    <text x="20" y="258">500스텝 과제는 약 0.7%다.</text>
   </g>
 </svg>
 

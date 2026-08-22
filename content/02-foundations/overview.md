@@ -119,18 +119,23 @@ themselves (prose only — code blocks and equations excluded):
 
 | Track | Pages | One read-through |
 |---|---:|---:|
-| Foundations 0–9 | 13 | ~1.6 h |
-| Robotics 1–11 (incl. the 11 MR chapters) | 24 | ~1.3 h |
+| Foundations 0–9 | 13 | ~1.8 h |
+| Robotics 1–23 (incl. the 11 MR chapters) | 34 | ~3.0 h |
 | Construction robotics | 10 | ~0.8 h |
-| Paper notes (86) | 86 | ~2.5 h |
-| Research practice | 5 | ~0.2 h |
-| **Total** | **138** | **~6.4 h** |
+| Paper notes (115) | 115 | ~3.8 h |
+| Research practice | 7 | ~0.7 h |
+| Research program | 1 | ~0.1 h |
+| **Total** | **180** | **~10.2 h** |
 
-Read that number honestly: it is *one pass of the prose*, and it is not the study time.
-Working the self-checks and re-deriving the worked examples typically costs **3–5× the
-reading time** — call it 20–30 hours for the whole wiki — and the ★ papers are extra: 17
-of them read in the original at a few hours each is another 50–70 hours. The notes exist
-so that the ◐ and ○ papers do *not* need that.
+Read that number honestly: it is *one pass of the prose in one language*, and it is not the
+study time. Working the self-checks and re-deriving the worked examples typically costs
+**3–5× the reading time** — call it 30–50 hours for the whole wiki — and the ★ papers are
+extra: 23 of them read in the original at a few hours each is another 70–95 hours. The
+notes exist so that the ◐ and ○ papers do *not* need that.
+
+Two of those tracks are optional, and the total above assumes you read everything.
+Robotics 12–23 are specialization layers — manipulation, navigation, human perception —
+and the common curriculum stops at 11.
 
 A pace that works: **foundations in two weeks** (one page per weekday, self-checks done
 the same day), then the robotics track over three weeks, then papers at two ★ or four ◐
@@ -256,6 +261,62 @@ flowchart TD
 
 ### 연결 지도 — 수학 → 기초 → 논문
 
+```mermaid
+graph LR
+    subgraph M["Engineering math"]
+    CALC["Calculus · Taylor"]
+    MAT["Matrix basics"]
+    EUL["Euler's formula"]
+    LOG["Exp · Log"]
+    end
+    subgraph F["Foundations"]
+    LA["Linear Algebra"]
+    NN["What a Neural Network Is"]
+    CB["Calculus & Backprop"]
+    PR["Probability"]
+    OPT["Optimization"]
+    IT["Information Theory"]
+    SP["Signal Processing"]
+    RL["RL Basics"]
+    SE["3D Geometry · SE(3)"]
+    MLP["ML Practice"]
+    end
+    subgraph D["Deep learning (papers)"]
+    TF["Transformers · ViT · CLIP"]
+    GEN["VAE · GAN · Diffusion"]
+    VLA["VLA: RT-2 · π0 · GR00T"]
+    WM["World models: Dreamer · JEPA"]
+    end
+    MAT --> LA
+    MAT --> NN
+    NN --> CB
+    CALC --> CB
+    CALC --> PR
+    EUL --> SP
+    LOG --> IT
+    LA --> CB --> OPT
+    LA --> OPT
+    PR --> IT
+    PR --> RL
+    PR --> SP
+    LA --> TF
+    CB --> TF
+    OPT --> TF
+    PR --> GEN
+    IT --> GEN
+    CB --> GEN
+    SP --> VLA
+    GEN --> VLA
+    RL --> VLA
+    RL --> WM
+    GEN --> WM
+    IT --> WM
+    MAT --> SE
+    SE --> VLA
+    MLP -.-> TF
+    MLP -.-> VLA
+```
+
 위의 mermaid 지도를 읽는 법: **Transformer**는 선형대수(어텐션 = 행렬곱), 역전파,
 최적화(Adam)가 필요하다. **생성모델**은 거기에 확률(MLE)과 정보이론(ELBO/KL)을 더한다.
 **월드모델** = 생성모델 + RL. **VLA**는 이 전부의 꼭대기에 앉아 있다 — 센서 쪽에서는
@@ -270,17 +331,21 @@ flowchart TD
 
 | 트랙 | 페이지 | 1회 정독 |
 |---|---:|---:|
-| 기초 0~9 | 13 | 약 1.6시간 |
-| 로보틱스 1~11 (MR 11개 장 포함) | 24 | 약 1.3시간 |
+| 기초 0~9 | 13 | 약 1.8시간 |
+| 로보틱스 1~23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
-| 논문 노트 (86편) | 86 | 약 2.5시간 |
-| Research Practice | 5 | 약 0.2시간 |
-| **합계** | **138** | **약 6.4시간** |
+| 논문 노트 (115편) | 115 | 약 3.8시간 |
+| Research Practice | 7 | 약 0.7시간 |
+| Research Program | 1 | 약 0.1시간 |
+| **합계** | **180** | **약 10.2시간** |
 
-이 숫자를 정직하게 읽어라: *산문 1회 통과*이지 공부 시간이 아니다. 자가점검을 풀고 계산
-예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로 20~30시간 — 가 들고, ★ 논문은
-별도다: 17편을 원문으로 각각 몇 시간씩 읽으면 50~70시간이 더 붙는다. ◐·○ 논문은 그럴 필요가
-없도록 노트가 존재한다.
+이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
+자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로
+30~50시간 — 가 들고, ★ 논문은 별도다: 23편을 원문으로 각각 몇 시간씩 읽으면 70~95시간이
+더 붙는다. ◐·○ 논문은 그럴 필요가 없도록 노트가 존재한다.
+
+이 중 두 트랙은 선택이고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12~23번은
+전문화 층 — 매니퓰레이션·내비게이션·사람 인지 — 이고, 공통 커리큘럼은 11번에서 끝난다.
 
 통하는 페이스: **기초 2주**(평일 하루 한 페이지, 자가점검은 그날 안에), 그다음 로보틱스
 트랙 3주, 그다음부터 주당 ★ 2편 또는 ◐ 4편을 병행. 여기 어떤 것도 마감이 아니다 — 이
@@ -340,6 +405,19 @@ flowchart TD
 ### 다음으로 갈 곳
 
 기초를 마친 뒤에는 한 줄로 계속 쌓는 대신 두 병렬 경로를 따른다.
+
+```mermaid
+flowchart TD
+    F["Foundations"] --> AI["AI model literacy"]
+    F --> RS["Robot systems literacy"]
+    AI --> DL["Deep Learning · VLM · VLA · World Models"]
+    RS --> EST["Estimation"] --> PLAN["Planning"] --> CTRL["Control"]
+    CTRL --> PHY["Contact · Systems · HRI"]
+    DL --> PAI["Physical AI"]
+    PHY --> PAI
+    PAI --> CR["Construction Robotics"]
+    CR --> RP["Research Practice"]
+```
 
 - **AI model literacy:** [[01-canonical-papers/how-to-read|How to Read Papers]] → [[01-canonical-papers/canonical-list|핵심 논문 리스트]], [[03-deep-learning/lineage|논문 계보도]] 병행.
 - **Robot systems literacy:** [[04-robotics/index|Robotics & Physical Systems]]에서 estimation → planning → control → contact → systems → HRI/safety.

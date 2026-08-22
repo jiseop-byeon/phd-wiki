@@ -46,7 +46,7 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
   $V$ mixes the value vectors with those weights; $\sqrt{d_k}$ keeps scores from growing
   with dimension. Output shape: (number of queries) × (value dimension).
 
-<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="one attention head as a chain of shapes">
+<svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="one attention head as a chain of shapes">
   <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="none" stroke="currentColor" stroke-width="1.3">
     <rect x="24" y="76" width="58" height="44" rx="3"/>
@@ -74,8 +74,9 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
     <text x="238" y="40">who looks at whom</text><text x="348" y="40">rows sum to 1</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="24" y="192" opacity="0.9">One head with d_model = 512 and d_k = 64, drawn as shapes. The only square thing in the diagram is the T&#215;T table &#8212;</text>
-    <text x="24" y="207" opacity="0.9">that is the quadratic cost, and the reason a whole subfield exists to avoid building it.</text>
+    <text x="24" y="186" opacity="0.9">One head with d_model = 512 and d_k = 64, drawn as shapes. The only square thing in the</text>
+    <text x="24" y="201" opacity="0.9">diagram is the T&#215;T table &#8212; that is the quadratic cost, and the reason a whole subfield</text>
+    <text x="24" y="216" opacity="0.9">exists to avoid building it.</text>
   </g>
 </svg>
 
@@ -130,7 +131,7 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
   softmax가 각 행을 합 1의 가중치로 바꾸고; $V$를 곱해 그 가중치로 값 벡터들을 섞는다;
   $\sqrt{d_k}$는 점수가 차원과 함께 자라는 것을 막는다. 출력 모양: (쿼리 수) × (값 차원).
 
-<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="어텐션 헤드 하나를 모양의 연쇄로 본 것">
+<svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="어텐션 헤드 하나를 모양의 연쇄로 본 것">
   <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="none" stroke="currentColor" stroke-width="1.3">
     <rect x="24" y="76" width="58" height="44" rx="3"/>
@@ -158,8 +159,9 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
     <text x="238" y="40">누가 누구를 보는가</text><text x="348" y="40">각 행의 합이 1</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="24" y="192" opacity="0.9">d_model = 512, d_k = 64인 헤드 하나를 모양으로 그린 것. 그림에서 정사각형인 것은 T&#215;T 표 하나뿐이고 &#8212;</text>
-    <text x="24" y="207" opacity="0.9">그것이 이차 비용이며, 그 표를 만들지 않으려는 하위 분야가 통째로 생겨난 이유다.</text>
+    <text x="24" y="186" opacity="0.9">d_model = 512, d_k = 64인 헤드 하나를 모양으로 그린 것. 그림에서 정사각형인 것은</text>
+    <text x="24" y="201" opacity="0.9">T&#215;T 표 하나뿐이고 &#8212; 그것이 이차 비용이며, 그 표를 만들지 않으려는 하위 분야가</text>
+    <text x="24" y="216" opacity="0.9">통째로 생겨난 이유다.</text>
   </g>
 </svg>
 

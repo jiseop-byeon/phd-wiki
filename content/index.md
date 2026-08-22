@@ -23,7 +23,7 @@ one's own research area.
 ### Maps of Content
 
 - [[03-deep-learning/index|Deep Learning]] — foundations, computer vision, VLM, VLA, world models, diffusion
-- [[04-robotics/index|Robotics & Physical Systems]] — geometry, estimation, planning, control, contact, embodiment, deployment, HRI and safety
+- [[04-robotics/index|Robotics & Physical Systems]] — geometry, estimation, planning, control, contact, embodiment, deployment, HRI and safety (sections A–G), then three optional specialization layers: manipulation, unstructured-environment navigation, and human perception (H–J)
 - [[05-construction-robotics/index|Construction Robotics]] — construction & manufacturing robotics literature
 
 ### Reference
@@ -56,7 +56,7 @@ one's own research area.
 ### 콘텐츠 지도
 
 - [[03-deep-learning/index|딥러닝]] — 기초 이론, 컴퓨터비전, VLM, VLA, 월드모델, 디퓨전
-- [[04-robotics/index|로보틱스 & Physical Systems]] — 기하, 추정, 계획, 제어, 접촉, embodiment, 배포, HRI와 안전
+- [[04-robotics/index|로보틱스 & Physical Systems]] — 기하, 추정, 계획, 제어, 접촉, embodiment, 배포, HRI와 안전(A~G절), 그다음 선택 전문화 층 셋: 매니퓰레이션, 비정형 환경 내비게이션, 사람 인지(H~J절)
 - [[05-construction-robotics/index|건설로봇]] — 건설·제조 분야 로봇 연구 논문 정리
 
 ### 참고 자료
