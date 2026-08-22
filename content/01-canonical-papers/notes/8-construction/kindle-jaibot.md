@@ -61,6 +61,7 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 
 ### Connections
 
+- [[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]] — the general treatment of the error budget this paper compensates term by term
 - [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §7]] — where model parameters stop matching reality
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the task matrix row this belongs to
 - [[04-robotics/state-estimation-slam|3. State Estimation & SLAM]] — factor graphs
@@ -105,6 +106,7 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 
 ### 연결
 
+- [[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 매니퓰레이션]] — 이 논문이 항별로 보상하는 오차 예산의 일반적 취급
 - [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학 §7]] — 모델 파라미터가 현실과 어긋나기 시작하는 곳
 - [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 이것이 속하는 작업 매트릭스의 행
 - [[04-robotics/state-estimation-slam|3. 상태 추정·SLAM]] — factor graph

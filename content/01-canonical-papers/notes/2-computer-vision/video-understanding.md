@@ -67,6 +67,7 @@ the two-rate idea re-echoes in [[gr00t-n1|GR00T]]'s slow/fast dual system.
 
 ### Connections
 
+- [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] — the concept page these two backbones sit under: task taxonomy, scene bias, and how to read an anticipation claim
 - Previous: [[alexnet|CNN era]], two-stream networks · Next: video transformers, [[jepa|V-JEPA]], [[sora|video generation]]
 - Domain: [[05-construction-robotics/index|site activity monitoring]] · Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
@@ -114,6 +115,7 @@ SlowFast급 모델을 흔히 돌린다. 개념적으로 두-속도 아이디어�
 
 ### 연결
 
+- [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] — 이 두 백본이 놓이는 개념 페이지: 과제 분류, 장면 편향, anticipation 주장 읽는 법
 - 이전: [[alexnet|CNN 시대]], two-stream 네트워크 · 다음: 비디오 트랜스포머, [[jepa|V-JEPA]], [[sora|비디오 생성]]
 - 도메인: [[05-construction-robotics/index|현장 활동 모니터링]] · 계보: [[03-deep-learning/lineage|논문 계보도]]
 

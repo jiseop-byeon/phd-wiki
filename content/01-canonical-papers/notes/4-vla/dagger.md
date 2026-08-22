@@ -46,6 +46,7 @@ $O(\epsilon T^2)$ in the horizon $T$ with per-step error $\epsilon$, while a no-
 
 ### Connections
 
+- [[04-robotics/legged-locomotion|18. Legged Locomotion §2]] — where this algorithm does its most consequential work: distilling a privileged teacher into a proprioception-only student
 - [[02-foundations/rl-basics|7. RL Basics §6]] — where the compounding-error argument and its arithmetic live
 - [[01-canonical-papers/notes/4-vla/act|ACT]] — the cheap alternative to the same problem
 - [[04-robotics/teleoperation-demonstration|12. §6]] — why demonstrations rarely contain recoveries
@@ -81,6 +82,7 @@ $O(\epsilon T^2)$ in the horizon $T$ with per-step error $\epsilon$, while a no-
 
 ### 연결
 
+- [[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]] — 이 알고리즘이 가장 큰 일을 하는 곳: 특권 교사를 고유수용 감각만 쓰는 학생으로 증류하기
 - [[02-foundations/rl-basics|7. RL 기초 §6]] — 복합 오차 논증과 그 산수가 있는 곳
 - [[01-canonical-papers/notes/4-vla/act|ACT]] — 같은 문제에 대한 싼 대안
 - [[04-robotics/teleoperation-demonstration|12. §6]] — 시연에 복구가 좀처럼 없는 이유

@@ -94,6 +94,7 @@ defined how modern policies output actions.
 
 ### Connections
 
+- [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — the interface spectrum this sits at one end of, and what its data does and does not contain
 - Parallel: [[diffusion-policy|Diffusion Policy]] (generative chunking) · Previous: [[vae|VAE]] (the CVAE machinery)
 - Next: Mobile ALOHA, Octo, π0
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
@@ -165,6 +166,7 @@ defined how modern policies output actions.
 
 ### 연결
 
+- [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집]] — 이것이 한쪽 끝에 놓이는 인터페이스 스펙트럼, 그리고 그 데이터에 무엇이 있고 없는지
 - 병행: [[diffusion-policy|Diffusion Policy]] (생성형 청킹) · 이전: [[vae|VAE]] (CVAE 기계장치)
 - 다음: Mobile ALOHA, Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]

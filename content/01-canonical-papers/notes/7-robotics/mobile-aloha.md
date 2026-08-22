@@ -52,6 +52,7 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 
 ### Connections
 
+- [[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]] — the class this belongs to: manipulable poses, reachability, base placement, error budget
 - [[01-canonical-papers/notes/4-vla/act|ACT / ALOHA]] — the static predecessor
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — the interface question
 - [[07-research-program/paper-arc|7.1 Paper Arc]] — the paper 2 plus paper 4 combination this exemplifies
@@ -93,6 +94,7 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 
 ### 연결
 
+- [[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 매니퓰레이션]] — 이것이 속한 계열: 조작 가능한 자세, 도달성, base placement, 오차 예산
 - [[01-canonical-papers/notes/4-vla/act|ACT / ALOHA]] — 고정형 선행 연구
 - [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집]] — 인터페이스 문제
 - [[07-research-program/paper-arc|7.1 논문 arc]] — 이것이 예시하는 2편 + 4편 결합
