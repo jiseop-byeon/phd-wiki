@@ -278,11 +278,11 @@ For controller *design* practice, the CE397 packet linked above works through th
 material with infrastructure examples — for a construction-robotics researcher its
 examples *are* your domain.
 
-### 연결
+### Connections · 연결
 
-- 기초: [[02-foundations/engineering-math|0.5 공업수학 §8–9]], [[02-foundations/linear-algebra|1. 선형대수 §5]], [[02-foundations/probability|3. 확률]] (칼만)
-- 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|보행 convex MPC]]
-- 로봇 제어법: [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]] · 접촉: [[04-robotics/contact-force-tactile|9. 접촉·힘]]
+- Foundations · 기초: [[02-foundations/engineering-math|0.5 Engineering Math §8–9]], [[02-foundations/linear-algebra|1. Linear Algebra §5]], [[02-foundations/probability|3. Probability]] (Kalman · 칼만)
+- Next · 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]]
+- Robot-specific control · 로봇 제어법: [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]] · Contact · 접촉: [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile]]
 
 ### After reading · 읽고 나면 말할 수 있어야 하는 것
 

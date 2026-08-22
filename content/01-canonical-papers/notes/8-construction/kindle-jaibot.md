@@ -65,7 +65,7 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the task matrix row this belongs to
 - [[04-robotics/state-estimation-slam|3. State Estimation & SLAM]] — factor graphs
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] Say why forward kinematics is not enough on a machine that pushes hard.
 - [ ] State what the accelerometers see that the encoders cannot.

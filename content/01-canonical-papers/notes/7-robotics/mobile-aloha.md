@@ -56,7 +56,7 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — the interface question
 - [[07-research-program/paper-arc|7.1 Paper Arc]] — the paper 2 plus paper 4 combination this exemplifies
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] Say why base and arms must be demonstrated together rather than separately.
 - [ ] State exactly what the 90% figure measures.

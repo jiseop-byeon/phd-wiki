@@ -19,6 +19,7 @@ Exit code 1 on any failure, with a per-file report.
 
 import os
 import re
+import unicodedata
 import sys
 
 CONTENT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "content")
@@ -171,8 +172,15 @@ for p in md_files:
 # A closing "**" is right-flanking only if it is NOT preceded by punctuation, or is
 # followed by whitespace/punctuation. `**연속 극한(continuum limit)**의` fails both and
 # renders as literal asterisks. Fix by moving the parenthetical outside: `**연속 극한**(...)`.
+# CommonMark counts Unicode *symbols* as punctuation here too, so `**HIL-SERL ★**을`
+# fails for the same reason — hence the category test rather than a literal character set.
 bold_re = re.compile(r"\*\*(?=\S)([^*\n]{1,120}?)\*\*(.?)", re.S)
-punct = set("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~—–·…“”‘’()、。，")
+def _is_punct(ch):
+    return unicodedata.category(ch)[0] in ("P", "S")
+class _PunctSet:
+    def __contains__(self, ch):
+        return bool(ch) and _is_punct(ch)
+punct = _PunctSet()
 def _bold_scan(path, text, lineno):
     text = re.sub(r"`[^`]*`", "", text)  # inline code is not parsed as emphasis
     for m in bold_re.finditer(text):

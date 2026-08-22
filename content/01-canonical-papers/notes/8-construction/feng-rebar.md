@@ -49,7 +49,7 @@ The robot drives on the mesh it is working on, which neatly solves mobility and 
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the ladder this sits at the top of
 - [[07-research-program/paper-arc|7.1 Paper Arc]] — why a site-verified but lightly-contact task is a weak core choice
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] Say why driving on the mesh solves two problems at once.
 - [ ] Name what the field evidence does and does not establish.

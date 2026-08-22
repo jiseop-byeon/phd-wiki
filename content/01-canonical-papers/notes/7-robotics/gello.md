@@ -52,7 +52,7 @@ A user study reports it beating VR controllers and 3D spacemice for demonstratio
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §4]] — the interface spectrum
 - [[01-canonical-papers/notes/4-vla/act|ACT / ALOHA]] — the puppeteering rig this generalises
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] Say what kinematic isomorphism removes, and why that improves the data rather than only the experience.
 - [ ] Name the two things this interface does not provide.

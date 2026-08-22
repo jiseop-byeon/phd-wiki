@@ -56,7 +56,7 @@ From the **abstract**: "an extensive study of **six** offline learning algorithm
 - [[02-foundations/rl-basics|7. RL Basics §6]] — the imitation toolbox it evaluates
 - [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — the methodology this paper exemplifies
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] Say what question this paper asks that a method paper does not.
 - [ ] State what its abstract does and does not report.

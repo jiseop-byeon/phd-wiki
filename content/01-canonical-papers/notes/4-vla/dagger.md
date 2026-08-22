@@ -50,7 +50,7 @@ $O(\epsilon T^2)$ in the horizon $T$ with per-step error $\epsilon$, while a no-
 - [[01-canonical-papers/notes/4-vla/act|ACT]] — the cheap alternative to the same problem
 - [[04-robotics/teleoperation-demonstration|12. §6]] — why demonstrations rarely contain recoveries
 
-### 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
 - [ ] State the distribution mismatch in one sentence.
 - [ ] Give the two error rates and say what the difference means practically.
