@@ -92,6 +92,55 @@ Visual, audio, haptic, and physical interfaces can show state, intent, uncertain
 
 No learned policy is “safe” merely because it had zero collisions in a small test. Safety is a system property involving sensing, control, hardware, people, environment, procedures, and evidence.
 
+**The standards a paper will cite.** Safety sections quote standard numbers as shorthand, and
+the shorthand carries the actual claim. You are reading them, not certifying against them —
+but you cannot check a safety claim without knowing which document defines the term.
+
+| Standard | Covers | What it gives a reader |
+|---|---|---|
+| **ISO 10218-1 / -2** | industrial robots (part 1: the robot; part 2: the system/cell) | the base requirements; **revised in 2025**, first update since 2011 |
+| **ISO/TS 15066:2016** | collaborative applications, biomechanical limits | the origin of PFL thresholds — but see the warning below |
+| **ISO 13482:2014** | personal care robots | the standard for service robots in physical contact with people |
+| **ISO 3691-4** | driverless industrial trucks — AGVs and AMRs | the mobile-base standard; a wheeled site robot is read against this, not 10218 |
+
+> [!warning] ISO/TS 15066 no longer stands alone — and most papers predate that
+> ISO 10218-1:2025 and ISO 10218-2:2025 came into force **1 April 2025** and folded the
+> collaborative-application and power-and-force-limiting requirements of ISO/TS 15066:2016
+> **into the 10218 series**. The revision also drops the terms *collaborative robot* and
+> *collaborative operation* in favour of **collaborative application** — the argument being
+> that only a use of a robot, not a robot by itself, can be designed and verified as
+> collaborative.
+> A paper written before 2025 that cites "ISO/TS 15066" is citing the document that was
+> current when it was written; that is correct practice and not an error. **What is an error
+> is repeating it now as the live authority**, or calling a machine "a 15066-compliant
+> cobot" — under the current wording compliance is a property of the application, not of the
+> arm you bought.
+
+**The four methods of safe interaction**, named the same way across the series, are the
+vocabulary every pHRI paper's safety paragraph is written in:
+
+| Method | The mechanism | What it costs |
+|---|---|---|
+| Safety-rated monitored stop | robot halts while a person is in the shared space; motion resumes when they leave | throughput — no concurrent work |
+| Hand guiding | the operator moves the robot through a hand-operated device | requires the human at the robot |
+| **Speed and separation monitoring (SSM)** | keep a *protective separation distance*; slow or stop as it closes | needs reliable person tracking |
+| **Power and force limiting (PFL)** | contact is permitted, bounded by force/pressure limits per body region | caps speed and payload by design |
+
+The two that generate research are the last two, and they fail differently. SSM's separation
+distance is a **sum**, not a threshold: how far the human travels while you react, plus how
+far the robot travels before it begins stopping, plus its stopping distance, plus the
+uncertainty of both position estimates. Every learned-perception paper that claims to enable
+SSM is making a claim about the *uncertainty* terms, and a detector's latency enters the
+distance directly. PFL's limits are **per body region** — the tolerable force and pressure on
+a hand differ from those on a face — so "under the force limit" is meaningless without saying
+which region and which contact type (transient vs quasi-static) was assumed.
+
+For construction, note which standard applies to what: a tracked or wheeled base moving on
+site is read against **ISO 3691-4**, an arm working next to a person against **ISO 10218**,
+and neither was written for an outdoor, unfenced, weather-exposed site with a changing
+layout. That gap is a legitimate thing to say in a paper — but say it against the named
+standard, not against "safety" in general.
+
 ### 7. Human-study design
 
 Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review.
@@ -232,6 +281,50 @@ An automated excavator receives a goal from an operator, plans and executes a di
 
 작은 시험에서 충돌이 없었다는 이유만으로 학습 정책이 "안전"한 것은 아니다. 안전은 센싱,
 제어, 하드웨어, 사람, 환경, 절차, 증거가 얽힌 시스템 속성이다.
+
+**논문이 인용할 표준들.** 안전 절은 표준 번호를 약칭처럼 인용하고, 그 약칭이 실제 주장을
+지고 있다. 우리는 인증하는 것이 아니라 읽는 것이지만, 어느 문서가 그 용어를 정의하는지
+모르면 안전 주장을 검증할 수 없다.
+
+| 표준 | 대상 | 읽는 사람에게 주는 것 |
+|---|---|---|
+| **ISO 10218-1 / -2** | 산업용 로봇(1부: 로봇, 2부: 시스템·셀) | 기본 요구사항. **2025년 개정**, 2011년 이후 첫 갱신 |
+| **ISO/TS 15066:2016** | 협동 응용, 생체역학 한계 | PFL 임계값의 출처 — 다만 아래 경고를 보라 |
+| **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇의 표준 |
+| **ISO 3691-4** | 무인 산업 차량 — AGV·AMR | 이동 베이스의 표준. 바퀴형 현장 로봇은 10218이 아니라 이쪽으로 읽는다 |
+
+> [!warning] ISO/TS 15066은 더 이상 단독으로 존재하지 않는다 — 그리고 대부분의 논문은 그 이전이다
+> ISO 10218-1:2025와 ISO 10218-2:2025가 **2025년 4월 1일** 발효되면서 ISO/TS 15066:2016의
+> 협동 응용·역량 제한(PFL) 요구사항을 **10218 시리즈 안으로 흡수했다.** 개정판은 *협동 로봇*과
+> *협동 운전*이라는 용어도 버리고 **협동 응용**(collaborative application)을 쓴다 — 로봇 자체가
+> 아니라 로봇의 사용만이 협동적이라고 설계·검증될 수 있다는 논거다.
+> 2025년 이전에 쓰인 논문이 "ISO/TS 15066"을 인용하는 것은 당시의 현행 문서를 인용한 것이고
+> 올바른 관행이지 오류가 아니다. **오류는 그것을 지금도 살아 있는 권위로 되풀이하는 것**,
+> 또는 어떤 기계를 "15066 준수 협동로봇"이라 부르는 것이다 — 현재 표현으로 준수는 사놓은 팔이
+> 아니라 응용의 성질이다.
+
+**안전한 상호작용의 네 가지 방법**은 시리즈 전체에서 같은 이름으로 불리며, 모든 pHRI 논문의
+안전 문단이 쓰이는 어휘다:
+
+| 방법 | 기구 | 대가 |
+|---|---|---|
+| 안전 정격 감시 정지 | 사람이 공유 공간에 있는 동안 로봇이 멈추고, 나가면 재개 | 처리량 — 동시 작업이 불가능 |
+| Hand guiding | 조작자가 손으로 조작하는 장치로 로봇을 움직인다 | 사람이 로봇 옆에 있어야 함 |
+| **속도·이격 감시(SSM)** | *보호 이격 거리*를 유지하고, 거리가 좁혀지면 감속·정지 | 신뢰할 수 있는 사람 추적이 필요 |
+| **역량 제한(PFL)** | 접촉을 허용하되 신체 부위별 힘·압력 한계로 제한 | 설계상 속도와 가반하중이 묶임 |
+
+연구를 낳는 것은 뒤의 둘이고, 둘은 서로 다르게 실패한다. SSM의 이격 거리는 임계값이 아니라
+**합**이다: 반응하는 동안 사람이 이동한 거리 + 로봇이 정지를 시작하기 전에 이동한 거리 +
+정지 거리 + 두 위치 추정의 불확실성. SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지
+논문은 사실 *불확실성* 항에 대한 주장을 하고 있고, 검출기의 지연이 그 거리에 직접 들어간다.
+PFL의 한계는 **신체 부위별**이다 — 손에 허용되는 힘과 압력은 얼굴의 것과 다르다 — 그래서
+"힘 한계 이하"는 어느 부위, 어떤 접촉 유형(과도 접촉 대 준정적 접촉)을 가정했는지 밝히지
+않으면 아무 의미가 없다.
+
+건설에서는 어느 표준이 무엇에 적용되는지를 구분하라: 현장에서 움직이는 궤도·바퀴형 베이스는
+**ISO 3691-4**로, 사람 옆에서 일하는 팔은 **ISO 10218**로 읽는다. 그리고 둘 중 어느 것도
+울타리 없이 날씨에 노출되고 배치가 계속 바뀌는 옥외 현장을 위해 쓰이지 않았다. 그 빈틈을
+논문에서 지적하는 것은 정당하다 — 다만 "안전" 일반이 아니라 이름을 댄 표준에 대고 말하라.
 
 ### 7. 인간 대상 연구 설계
 

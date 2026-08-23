@@ -38,6 +38,51 @@ A planner may produce a path that a trajectory generator times ([[04-robotics/mo
 
 Collision-free in workspace does not imply joint, torque, velocity, stability, or contact feasibility.
 
+**How that space is actually stored.** Two pages of this wiki send you here for occupancy and
+cost representations, so they belong in this section rather than in a system paper's
+appendix.
+
+- **Occupancy grid** — the map is a grid of cells, each holding the probability that the cell
+  is occupied. Updates are done in **log-odds** so that accumulating evidence is an addition
+  rather than a multiplication, and so that a cell can never saturate to a probability it can
+  never recover from. A cell is *free*, *occupied*, or **unknown**, and the third state is the
+  one beginners drop: unknown is not free, and the difference is what exploration is about.
+- **Inflation** — a planner that treats the robot as a point (the figure above) has to grow
+  the obstacles instead. Inflating occupied cells by the robot radius produces a C-space
+  obstacle directly on the grid; adding a decaying cost outside that radius produces a margin
+  the planner prefers not to enter.
+- **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
+  Cost combines inflation with whatever else the robot should avoid: unknown space, rough
+  terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
+  being a plan and becomes geometry** — this is the representation
+  [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy §1]] argues is
+  the wrong place to encode a learned affordance, and you need to know what it is to see why.
+- **Layered costmaps** — production stacks keep several layers (static map, obstacles, inflation,
+  sensor-specific) and compose them, so that clearing a stale obstacle does not erase the map.
+- **Frontier** — a boundary cell between *known free* and *unknown*. **Frontier exploration**
+  is the classic answer to "where next": drive to the nearest frontier, and the known region
+  grows until no frontier remains. Every semantic-navigation method in
+  [[04-robotics/semantic-language-navigation|19. §3]] that "chooses where to explore" is
+  choosing among frontiers; what the learned part supplies is a *score* over them, not the
+  candidate set.
+
+> [!warning] Two meanings of "frontier"
+> §4 below uses *frontier nodes* for the open list of a graph search — the set of nodes
+> discovered but not yet expanded. That is a different object from an exploration frontier on
+> a map, and the two are unrelated despite the shared word. Papers rarely disambiguate.
+
+**Global and local.** Navigation stacks split planning in two: a **global planner** searches
+the whole costmap for a route (§3–§5), and a **local planner** repeatedly picks the next few
+seconds of motion, given the route, the robot's dynamics, and obstacles that appeared since.
+The local layer is where the classical names live — *dynamic window* approaches sample
+feasible velocity pairs and score them; elastic-band and timed-elastic-band methods deform a
+trajectory against obstacle and time costs; **sampling-based MPC** (the family
+[[01-canonical-papers/notes/9-navigation/badgr|BADGR]] uses) samples many action sequences,
+rolls each one forward through a model, and executes the first step of the best. §6 gives the
+optimization view of the same layer. **A paper that says "we replace the planner" almost
+always means the local one**, and keeps the global search and the costmap untouched — which
+bounds what the result can be claiming.
+
 <svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="workspace obstacle versus its inflated configuration-space obstacle">
   <g stroke="currentColor" stroke-width="1.3" fill="none"><rect x="25" y="25" width="185" height="150" rx="3"/><rect x="250" y="25" width="185" height="150" rx="3"/></g>
   <g fill="currentColor" opacity="0.22"><rect x="95" y="70" width="45" height="45" rx="2"/><rect x="308" y="53" width="79" height="79" rx="2"/></g>
@@ -207,6 +252,46 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 작업 공간에서 충돌이 없다는 것이 관절·토크·속도·안정성·접촉의 실행 가능성을 함의하지
 않는다.
+
+**그 공간을 실제로 저장하는 방법.** 이 위키의 두 페이지가 점유·비용 표현을 위해 여기로
+보내므로, 시스템 논문의 부록이 아니라 이 절에 있어야 한다.
+
+- **점유 격자(occupancy grid)** — 지도를 격자로 두고 각 칸이 점유되어 있을 확률을 담는다.
+  갱신은 **로그 승산(log-odds)** 으로 하는데, 그래야 증거 누적이 곱셈이 아니라 덧셈이 되고,
+  한 칸이 되돌아올 수 없는 확률로 포화되지 않는다. 칸은 *비어 있음*, *점유됨*, 그리고
+  **미지**의 셋 중 하나이고, 초심자가 빠뜨리는 것이 셋째다. 미지는 비어 있음이 아니며,
+  그 차이가 곧 탐색이 존재하는 이유다.
+- **팽창(inflation)** — 로봇을 점으로 다루는 계획기(위 그림)는 대신 장애물을 키워야 한다.
+  점유 칸을 로봇 반경만큼 팽창시키면 격자 위에서 바로 C-공간 장애물이 되고, 그 바깥에
+  감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다.
+- **비용 지도(costmap)** — 칸이 이진값이 아니라 *통행 비용*을 담는 점유 격자다. 비용은
+  팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
+  진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
+  [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성 §1]]이 학습된
+  어포던스를 넣기에 잘못된 자리라고 논하는 바로 그 표현이고, 왜 그런지 보려면 이것이
+  무엇인지 알아야 한다.
+- **계층형 비용 지도** — 실제 스택은 여러 층(정적 지도, 장애물, 팽창, 센서별)을 두고 합성한다.
+  그래야 낡은 장애물 하나를 지우는 일이 지도를 지워버리지 않는다.
+- **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. **frontier 탐색**은 "다음에
+  어디로"에 대한 고전적 답이다: 가장 가까운 frontier로 가면 아는 영역이 자라고, frontier가
+  없어질 때까지 반복한다. [[04-robotics/semantic-language-navigation|19. §3]]에서 "어디를
+  탐색할지 고른다"는 모든 의미 내비게이션 방법은 frontier 중에서 고르고 있는 것이고,
+  학습된 부분이 공급하는 것은 후보 집합이 아니라 그 위의 *점수*다.
+
+> [!warning] "frontier"의 두 가지 뜻
+> 아래 §4는 그래프 탐색의 열린 목록 — 발견했지만 아직 확장하지 않은 노드 집합 — 을 가리켜
+> *frontier 노드*라고 쓴다. 지도 위의 탐색 frontier와는 다른 대상이고, 단어만 같을 뿐 서로
+> 무관하다. 논문들은 이것을 거의 구분해 주지 않는다.
+
+**전역과 지역.** 내비게이션 스택은 계획을 둘로 나눈다: **전역 계획기**가 비용 지도 전체에서
+경로를 탐색하고(§3~§5), **지역 계획기**가 그 경로와 로봇의 동역학, 그리고 그사이 나타난
+장애물을 놓고 다음 몇 초의 운동을 반복해서 고른다. 고전적 이름들이 사는 곳이 지역 층이다 —
+*dynamic window* 계열은 실행 가능한 속도 쌍을 표본으로 뽑아 점수를 매기고, elastic-band와
+timed-elastic-band는 장애물·시간 비용에 맞서 궤적을 변형하며, **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr|BADGR]]이
+쓰는 계열)는 많은 행동열을 표본으로 뽑아 모델로 굴려 보고 가장 좋은 것의 첫 스텝만 실행한다.
+§6이 같은 층을 최적화 관점에서 다룬다. **"계획기를 대체했다"는 논문은 거의 언제나 지역
+계획기를 뜻하고**, 전역 탐색과 비용 지도는 건드리지 않는다 — 그것이 그 결과가 주장할 수 있는
+범위를 한정한다.
 
 <svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="작업 공간 장애물과 부풀려진 배위 공간 장애물">
   <g stroke="currentColor" stroke-width="1.3" fill="none"><rect x="25" y="25" width="185" height="150" rx="3"/><rect x="250" y="25" width="185" height="150" rx="3"/></g>

@@ -95,6 +95,47 @@ The posterior variance is $(1-K)4=0.8\,\mathrm{m}^2$. The estimate lies closer t
 
 A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables. Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
 
+**The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
+paper names its front end by acronym and assumes you know what the letters buy. They differ
+in which sensors are fused and how tightly:
+
+| Name | Sensors | Fails when |
+|---|---|---|
+| Wheel odometry | encoders | wheels slip — unbounded drift, no recovery |
+| **VO / VIO** — visual(-inertial) odometry | camera (+ IMU) | texture-poor walls, motion blur, sudden lighting change |
+| **LO / LIO** — lidar(-inertial) odometry | lidar (+ IMU) | geometrically degenerate places — a long corridor, an open field, a tunnel |
+| GNSS-fused | any of the above + GNSS | obstruction and multipath near structures |
+
+The **inertial** term is doing specific work in both: an IMU is accurate over milliseconds and
+useless over minutes, while a camera or lidar is the reverse, so fusing them lets each cover
+the other's failure timescale. Two mechanics recur in the papers and are worth recognising:
+**IMU preintegration** — summarising many IMU samples between two keyframes into one
+constraint, so the optimizer does not carry every sample — and **deskewing**, correcting a
+lidar scan for the fact that the robot moved *during* the sweep. A paper that omits deskewing
+on a fast platform is reporting a map built from distorted scans.
+
+**Keyframes** are the other structural idea: rather than optimize every frame, the back end
+keeps a sparse subset and marginalizes the rest, which is what keeps the problem bounded as
+the session grows.
+
+> [!warning] "Drift-free" and "loop closure" are claims about different things
+> Loop closure removes accumulated drift *only along paths that return to a previously visited
+> place*. A robot that drives out and never comes back gets no correction from it, and its
+> error grows the whole way — which is exactly the construction-site case, where the machine
+> follows the work face outward. When a paper reports drift as a percentage of trajectory
+> length, check whether the trajectory contained loops, because that single fact can change
+> the number by an order of magnitude.
+
+**Distance-field maps.** Beyond the occupancy grid of
+[[04-robotics/planning-decision-making|4. Planning §2]], mapping systems commonly store a
+**TSDF** (truncated signed distance field): each voxel holds the signed distance to the
+nearest surface, truncated near zero, so the surface itself is the zero crossing. That
+representation fuses many noisy depth images into one smooth surface and is what most
+real-time reconstruction pipelines are built on. Its planning cousin is the **ESDF**
+(Euclidean signed distance field), which stores distance-to-nearest-obstacle everywhere —
+giving a planner both a clearance value and its gradient for free, which is why
+trajectory-optimization planners want one.
+
 ### 8. Sensor fusion and systems details
 
 - IMU: high-rate acceleration/angular velocity; bias causes drift.
@@ -247,6 +288,42 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 SLAM **front end**는 특징·기하 제약을 추출하고 data association을 수행한다. **back
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다. Loop closure는 누적 drift를
 고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
+
+**실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
+front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
+얼마나 단단히 융합하느냐다:
+
+| 이름 | 센서 | 실패하는 곳 |
+|---|---|---|
+| 휠 오도메트리 | 엔코더 | 바퀴가 미끄러질 때 — 무한히 자라는 drift, 회복 불가 |
+| **VO / VIO** — 시각(-관성) 오도메트리 | 카메라 (+ IMU) | 질감 없는 벽, 모션 블러, 급격한 조명 변화 |
+| **LO / LIO** — 라이다(-관성) 오도메트리 | 라이다 (+ IMU) | 기하적으로 퇴화한 장소 — 긴 복도, 트인 벌판, 터널 |
+| GNSS 융합 | 위의 것 + GNSS | 구조물 근처의 차폐와 다중경로 |
+
+두 경우 모두 **관성**이라는 항이 구체적인 일을 한다: IMU는 밀리초 단위에서 정확하고 분 단위에서
+쓸모없으며, 카메라와 라이다는 그 반대다. 그래서 융합하면 서로의 실패 시간대를 덮어 준다. 논문에
+반복해서 나오는 두 기구를 알아볼 수 있어야 한다: **IMU preintegration** — 두 keyframe 사이의
+IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것 — 과
+**deskewing**, 라이다 스캔이 훑는 *동안* 로봇이 움직였다는 사실을 보정하는 것. 빠른 플랫폼에서
+deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다.
+
+**Keyframe**이 나머지 한 축이다: 모든 프레임을 최적화하는 대신 성긴 부분집합만 남기고 나머지를
+주변화(marginalize)하며, 그것이 세션이 길어져도 문제 크기를 유한하게 유지하는 방법이다.
+
+> [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
+> Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
+> 돌아오지 않는 로봇은 아무 보정도 받지 못하고 오차가 가는 내내 자란다 — 그리고 그것이 정확히
+> 건설 현장의 경우다. 기계가 작업면을 따라 바깥으로 나아가기 때문이다. 논문이 drift를 궤적
+> 길이의 백분율로 보고하면, 그 궤적에 루프가 있었는지를 확인하라. 그 사실 하나가 숫자를 한
+> 자릿수 바꿔 놓을 수 있다.
+
+**거리장 지도.** [[04-robotics/planning-decision-making|4. 계획·의사결정 §2]]의 점유 격자
+너머로, 매핑 시스템은 흔히 **TSDF**(truncated signed distance field)를 쓴다: 각 복셀이 가장
+가까운 표면까지의 부호 있는 거리를 담되 0 근처에서 잘라내므로, 표면 자체가 0을 지나는 자리가
+된다. 이 표현은 잡음 많은 깊이 이미지 여럿을 하나의 매끄러운 표면으로 융합하고, 대부분의
+실시간 재구성 파이프라인이 그 위에 서 있다. 계획 쪽 사촌이 **ESDF**(Euclidean signed distance
+field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저장한다 — 계획기에게 여유 간격 값과
+그 그래디언트를 공짜로 주고, 궤적 최적화 계획기가 이것을 원하는 이유가 그것이다.
 
 ### 8. 센서 융합과 시스템 세부
 
