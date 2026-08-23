@@ -61,7 +61,9 @@ there. Where the gap matters, pages carry a second field:
 - **`wiki-support:`** — the depth this page *by itself* provides. Absent means the page
   supports its recommended depth. `wiki-support: Literacy` on a Working-recommended page
   means: this page gives you accurate reading fluency, and reaching Working requires the
-  linked original sources, textbooks, or code — the page tells you which.
+  linked original sources, textbooks, or code — the page tells you which. Stating it
+  explicitly is allowed even when it equals `study-depth`, and a value *above* `study-depth`
+  means the page over-delivers: it will carry you past the depth this topic asks of you.
 
 This split keeps recommendations honest without bloating every page to textbook length.
 
@@ -204,7 +206,9 @@ If the honest answer is "it would be interesting", the answer is no.
 - **`wiki-support:`** — 이 페이지가 *자체적으로* 제공하는 깊이. 없으면 페이지가 권장
   깊이를 지원한다는 뜻. Working 권장 페이지의 `wiki-support: Literacy`는: 이 페이지는
   정확한 읽기 유창성을 주고, Working 도달에는 링크된 원 자료·교재·코드가 필요하며 —
-  페이지가 어떤 자료인지 알려준다는 뜻이다.
+  페이지가 어떤 자료인지 알려준다는 뜻이다. `study-depth`와 같은 값을 명시해도 되고,
+  `study-depth`보다 *높은* 값은 페이지가 더 준다는 뜻이다 — 이 주제가 요구하는 깊이보다
+  더 멀리 데려간다.
 
 이 분리가 모든 페이지를 교재 길이로 불리지 않으면서 권장을 정직하게 유지한다.
 

@@ -191,7 +191,7 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 - [x] ◐ [[notes/8-construction/aes|AES — autonomous material loading]] (Zhang et al., Science Robotics 2021) — 24시간/개입의 산업 규모 시스템
 - [x] ◐ [[notes/8-construction/egli-rl|Egli et al. — RL for hydraulic excavator arms + soil-adaptive excavation]] (RA-L 2022) — 실기계 토질 적응 RL
 - [x] ◐ [[notes/8-construction/wheel-loader-rl|Eriksson et al. — wheel-loader RL]] (ICRA 2024) — 북유럽 실기계 적재 학습
-- [x] ○ [[notes/8-construction/exact-2024|ExACT — ACT for an excavator]] (Chen et al., Baidu, 2024) — end-to-end 모방학습, 시뮬레이터 검증
+- [x] ○ [[notes/8-construction/exact-2024|ExACT — ACT for an excavator]] (Chen et al., Baidu, ICRA 2024 **Workshop**) — end-to-end 모방학습, 시뮬레이터 검증
 - [x] ★ [[notes/8-construction/ext|ExT — excavation pretrain→fine-tune]] (Zhai, Terenzi et al., ETH RSL 2025) — 멀티태스크 physical-AI 신호
 
 ### Assembly & fabrication
@@ -217,7 +217,7 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 - [x] ◐ [[notes/8-construction/lasota-shah|Lasota & Shah — human-aware motion planning]] (Human Factors 2015 / RA-L 2018) — 건설이 수입하는 제조 HRC 증거
 - [x] ○ [[notes/8-construction/liang-hrc-survey|Liang et al. — HRC in construction: classification & trends]] (JCEM 2021) — 스트림 6의 방향 잡는 분류 체계
 
-Concept pages · 개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).
+Concept pages · 개념 페이지: [[05-construction-robotics/earthmoving-heavy-machinery|Earthmoving]] · [[05-construction-robotics/assembly-fabrication|Assembly]] · [[05-construction-robotics/site-perception|Site Perception]] · [[05-construction-robotics/hrc-worker-centered|HRC]] · [[05-construction-robotics/digital-twin-workflows|Digital Twins]] · [[05-construction-robotics/sim-to-real|Sim-to-Real]] · [[05-construction-robotics/industry-deployment|Industry Map]] · [[05-construction-robotics/construction-manipulation|Construction Manipulation]]. 커뮤니티 추적: [ICRA Construction Robotics Workshop](https://construction-robots.github.io/index2024.html).
 
 ## 9. Navigation & Locomotion
 

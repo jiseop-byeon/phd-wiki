@@ -50,7 +50,7 @@ paper in this wiki** (individual papers may require deeper references): math cor
 - [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] — rotations, quaternions, homogeneous transforms — the language of robot actions and camera poses
 - [[02-foundations/ml-practice|9. ML Practice & Evaluation]] — data splits, overfitting, and the metrics dictionary for reading results tables
 
-When the nine pages are done, take the **gate check** at the end of
+When the eleven pages (0.5–9) are done, take the **gate check** at the end of
 [[02-foundations/overview|0. Overview]]: twelve cumulative questions that decide whether to
 start the paper track. Nine or more is a pass.
 
@@ -110,7 +110,7 @@ Skip it unless manipulation is your contribution area; read it before
 - [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]] — 회전, 쿼터니언, 동차 변환 — 로봇 행동과 카메라 자세의 언어
 - [[02-foundations/ml-practice|9. ML 실무와 평가]] — 데이터 분할, 과적합, 결과 표를 읽는 지표 사전
 
-아홉 페이지를 마쳤으면 [[02-foundations/overview|0. Overview]] 끝의 **통과 점검**을 보라:
+열한 페이지(0.5~9)를 마쳤으면 [[02-foundations/overview|0. Overview]] 끝의 **통과 점검**을 보라:
 논문 트랙으로 넘어갈지를 판정하는 누적 12문항이고, 9개 이상이면 통과다.
 
 ### 전문화 트랙
