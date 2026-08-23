@@ -37,9 +37,13 @@ and machine configurations is a design goal, not an afterthought.
 
 - **Demonstration generation**: 150,000 episodes *per task* collected in **GPU-parallel
   simulation** (the [[05-construction-robotics/sim-to-real|Isaac-Gym-lineage]] recipe) —
-  the full dataset corresponds to roughly **30 days of continuous real-world operation,
-  generated in under two hours on a single RTX 3090** — from **heterogeneous sources**
-  (per-task RL expert policies, scripted controllers, teleoperation). Simulation is what
+  from **heterogeneous sources** (per-task RL expert policies, scripted controllers,
+  teleoperation). Read the two headline figures with their scope attached: the
+  **scripted** Dump and Move Arm data is "roughly 30 days of continuous real-world
+  operation, generated in under two hours on a single RTX 3090", while Dig's 150,000
+  episodes come from a *trained* RL expert (~98% success) and are worth about **15 more
+  days** — so the corpus is 45-plus days-equivalent, and the two-hour figure covers only
+  the scripted portion. Simulation is what
   makes the demos unlimited, labeled, and resettable; it is also the recipe's main scope
   limit.
 - **Pretraining**: one transformer policy trained by behavior cloning across the mixed
@@ -95,9 +99,12 @@ LLM/VLA 학습의 바로 그 구조 — 를 실물 크기 유압 굴착기(약 1
 
 **파이프라인, 구체적으로** (Working 수준의 읽기가 뽑아내야 할 것):
 
-- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 과제당 **15만 에피소드** 수집 — 전체 데이터셋은 **실기계 연속 운영
-  약 30일 상당이며, RTX 3090 한 장으로 2시간 이내에 생성** — 소스는 이질적(과제별 RL
-  전문가 정책, 스크립트 제어기, 원격조작). 시뮬레이션이 시연을 무제한·라벨된·리셋
+- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 과제당 **15만 에피소드** 수집.
+  소스는 이질적이다(과제별 RL 전문가 정책, 스크립트 제어기, 원격조작). 두 헤드라인 수치는
+  범위와 함께 읽어라: **스크립트** 기반 Dump·Move Arm 데이터가 "실기계 연속 운영 약 30일
+  상당, RTX 3090 한 장으로 2시간 이내 생성"이고, Dig의 15만 에피소드는 *학습된* RL
+  전문가(성공률 약 98%)에서 나오며 **약 15일**을 더한다 — 따라서 코퍼스는 45일 이상
+  상당이고, 2시간이라는 수치는 스크립트 부분만 덮는다. 시뮬레이션이 시연을 무제한·라벨된·리셋
   가능하게 만들며, 동시에 이 레시피의 주된 범위 한계이기도 하다.
 - **사전학습**: 혼합 멀티태스크 시연 코퍼스에 대한 행동 복제로 학습되는 하나의 트랜스포머
   정책 (팔 + 캐빈 선회 행동 공간; **과제 4종: Dig, Dump, Move Arm, Abort-Digging-&-Reset**

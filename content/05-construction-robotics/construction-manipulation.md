@@ -89,21 +89,23 @@ produces a striking result.
     <text x="372" y="82" font-size="9.5" opacity="0.75">nearly empty</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="208">Across a targeted search of drilling, drywall, rebar, facade, timber and welding, only two papers put a</text>
-    <text x="20" y="224">manipulator on an active construction site &#8212; and one of them is from 2007. That gap is the opportunity.</text>
+    <text x="20" y="208">Across a targeted search of drilling, drywall, rebar, facade, timber and welding, only three papers put</text>
+    <text x="20" y="224">a manipulator on an active construction site, the oldest from 2007. That thin record is the opportunity.</text>
   </g>
 </svg>
 
-Two verified exceptions stand out. Feng et al. (2024) report a planar rebar-tying robot
+Three verified exceptions stand out. Feng et al. (2024) report a planar rebar-tying robot
 validated first on a rebar-mesh demonstration platform and then applied in the field on the
-Shenyang Hunnan Science and Technology City Phase IV project. Yu et al. (2007) built a
-curtain-wall installation robot on an excavator base and tested it on a construction site —
-the title says so — but it is nearly twenty years old.
+Shenyang Hunnan Science and Technology City Phase IV project. Dörfler et al. (2019) drove
+the In situ Fabricator through the Mesh Mould wall of the DFAB HOUSE at NEST — a mobile
+manipulator bending and welding rebar in place, in a permitted building that is now
+occupied. Yu et al. (2007) built a curtain-wall installation robot on an excavator base and
+tested it on a construction site — the title says so — but it is nearly twenty years old.
 
-Everything else that is technically strong stops at the lab or a mock-up, and several papers
-with "on-site" in the title say plainly in their text that the work was done in a controlled
-laboratory. The strongest overhead-drilling result states that a real-site demonstration is
-still future work.
+Everything else that is technically strong stops at the lab or a mock-up. Do not take a
+title as evidence of where the work happened: read the methods section for a sentence that
+names the location. The strongest overhead-drilling result, Kindle et al., is evaluated on
+datasets recorded under *simulated* site disturbances — not on a site.
 
 > [!important] What to do with that finding
 > Read it as a research opportunity, not as permission to skip the rung. The reason the top
@@ -121,6 +123,8 @@ Sorted by rung rather than by fame, because that is the ordering that matters he
 - **Feng et al. (2024)**, rebar-tying robot with two-stage recognition (depth camera plus
   industrial camera), driving on the rebar mesh. Verified on a demonstration platform and
   then in the field.
+- **Dörfler et al. (2019)**, In situ Fabricator building the Mesh Mould wall of the DFAB
+  HOUSE — rebar bent and welded in place in a real, permitted, now-occupied building.
 - **Yu et al. (2007)**, curtain-wall installation robot on an excavator base, tested on site.
 
 **Real contact, laboratory or full-scale mock-up**
@@ -130,7 +134,9 @@ Sorted by rung rather than by fame, because that is the ordering that matters he
   tolerances and shape variations not seen in training. This is construction-scale
   peg-in-hole, and it is the closest thing the field has to a contact-rich learning result.
 - **Kindle et al. (RA-L 2025)** — deflection and backlash compensation on a 700 kg tracked
-  drilling robot (the Hilti Jaibot platform), evaluated on seven datasets recorded under
+  drilling robot (widely identified as the Hilti Jaibot; the paper itself describes only a
+  ~700 kg tracked base with a lifting column, a Doosan manipulator and a drilling end
+  effector), evaluated on seven datasets recorded under
   simulated site disturbances. The compliance problem of
   [[04-robotics/force-compliance-control|13]] stated in construction terms.
 - **Iturralde et al. (2022)** — a cable-driven parallel robot installing curtain-wall
@@ -220,6 +226,7 @@ the [[07-research-program/index|research program]] is built on.
 **Site-verified**
 
 - R. Feng, Y. Jia, T. Wang, H. Gan, "Research on the System Design and Target Recognition Method of the Rebar-Tying Robot," *Buildings*, vol. 14, no. 3, art. 838, 2024. DOI 10.3390/buildings14030838. Open access. Its abstract states validation on a rebar-mesh demonstration platform followed by application on the Shenyang Hunnan Science and Technology City Phase IV project.
+- K. Dörfler, T. Hack, T. Sandy, M. Giftthaler, M. Lussi, A. R. Walzer, J. Buchli, F. Gramazio, M. Kohler, "Mobile robotic fabrication beyond factory conditions: case study Mesh Mould wall of the DFAB HOUSE," *Construction Robotics*, vol. 3, no. 1–4, pp. 53–67, 2019. DOI 10.1007/s41693-019-00020-w
 - S. N. Yu, S. Y. Lee, C. S. Han, K. Y. Lee, S. H. Lee, "Development of the curtain wall installation robot: Performance and efficiency tests at a construction site," *Autonomous Robots*, vol. 22, no. 3, pp. 281–291, 2007. DOI 10.1007/s10514-006-9019-2.
 
 **Laboratory or mock-up**
@@ -314,18 +321,21 @@ the [[07-research-program/index|research program]] is built on.
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="20" y="208">드릴링·드라이월·철근·파사드·목재·용접을 겨냥해 찾아본 결과, 가동 중인 건설 현장에 매니퓰레이터를</text>
-    <text x="20" y="224">올린 논문은 둘뿐이고 그중 하나는 2007년 것이다. 그 공백이 기회다.</text>
+    <text x="20" y="224">올린 논문은 셋뿐이고 가장 오래된 것은 2007년이다. 그 얇은 기록이 기회다.</text>
   </g>
 </svg>
 
-검증된 예외 둘이 두드러진다. Feng 등(2024)은 평면형 철근 결속 로봇을 철근 메시 실증
-플랫폼에서 먼저 검증한 뒤 선양 훈난 과학기술도시 4기 현장에 적용했다고 보고한다. Yu 등(2007)은
-굴착기 베이스 위에 커튼월 설치 로봇을 만들어 건설 현장에서 시험했다 — 제목이 그렇게 말한다 —
-그러나 스무 해 가까이 된 연구다.
+검증된 예외 셋이 두드러진다. Feng 등(2024)은 평면형 철근 결속 로봇을 철근 메시 실증
+플랫폼에서 먼저 검증한 뒤 선양 훈난 과학기술도시 4기 현장에 적용했다고 보고한다.
+Dörfler 등(2019)은 In situ Fabricator로 NEST의 DFAB HOUSE Mesh Mould 벽을 지었다 —
+모바일 매니퓰레이터가 철근을 현장에서 구부리고 용접했고, 허가받아 지금은 사람이 사는
+건물이다. Yu 등(2007)은 굴착기 베이스 위에 커튼월 설치 로봇을 만들어 건설 현장에서
+시험했다 — 제목이 그렇게 말한다 — 그러나 스무 해 가까이 된 연구다.
 
-기술적으로 강한 나머지는 전부 실험실이나 목업에서 멈추고, "on-site"를 제목에 단 여러 논문이
-본문에서는 통제된 실험실 환경에서 수행했다고 분명히 말한다. 가장 강한 천장 드릴링 결과는
-실제 현장 실증이 아직 향후 과제라고 밝힌다.
+기술적으로 강한 나머지는 전부 실험실이나 목업에서 멈춘다. 제목을 작업 장소의 증거로
+삼지 마라. 방법 절에서 장소를 지명한 문장을 읽어라. 가장 강한
+천장 드릴링 결과인 Kindle 등은 *모사된* 현장 교란 조건에서 기록한 데이터셋으로 평가된다 —
+현장이 아니다.
 
 > [!important] 이 발견을 어떻게 쓸 것인가
 > 연구 기회로 읽되, 단계를 건너뛰어도 된다는 허가로 읽지 마라. 맨 위 칸이 비어 있는 이유는
@@ -342,6 +352,8 @@ the [[07-research-program/index|research program]] is built on.
 
 - **Feng 등(2024)** — 깊이 카메라와 산업용 카메라를 결합한 2단 인식으로 철근 메시 위를 주행하는
   철근 결속 로봇. 실증 플랫폼에서 검증한 뒤 현장에 적용.
+- **Dörfler 등(2019)** — NEST DFAB HOUSE의 Mesh Mould 벽을 지은 In situ Fabricator.
+  실제로 허가받아 지금 사람이 사는 건물에서 철근을 현장 성형·용접했다.
 - **Yu 등(2007)** — 굴착기 베이스 위의 커튼월 설치 로봇. 현장에서 시험.
 
 **실제 접촉, 실험실 또는 실물 크기 목업**
@@ -349,7 +361,9 @@ the [[07-research-program/index|research program]] is built on.
 - **Apolinarska 등(2021)** — 목재 접합 조립. 전적으로 시뮬레이션에서 학습한 정책을 힘/토크와
   자세를 안내 삼아 실기계에 배치하고, 학습에서 보지 못한 공차와 형상 변동에도 일반화한다.
   건설 규모의 peg-in-hole이며, 이 분야가 가진 접촉 다량 학습 결과에 가장 가까운 것이다.
-- **Kindle 등(RA-L 2025)** — 700 kg 궤도형 드릴링 로봇(Hilti Jaibot 플랫폼)에서의 변형·백래시 보상.
+- **Kindle 등(RA-L 2025)** — 700 kg 궤도형 드릴링 로봇(널리 Hilti Jaibot으로 지목되지만,
+  논문 자체는 리프팅 칼럼·Doosan 매니퓰레이터·드릴링 엔드이펙터를 갖춘 약 700 kg 궤도
+  베이스라고만 기술한다)에서의 변형·백래시 보상.
   현장 교란을 모사한 조건에서 기록한 데이터셋 일곱 개로 평가했다.
   [[04-robotics/force-compliance-control|13번]]의 컴플라이언스 문제를 건설의 언어로 진술한 것.
 - **Iturralde 등(2022)** — 커튼월 모듈을 설치하는 케이블 구동 병렬 로봇. 실물에 가까운 실증
@@ -433,6 +447,7 @@ the [[07-research-program/index|research program]] is built on.
 **현장 검증**
 
 - R. Feng, Y. Jia, T. Wang, H. Gan, "Research on the System Design and Target Recognition Method of the Rebar-Tying Robot," *Buildings*, vol. 14, no. 3, art. 838, 2024. DOI 10.3390/buildings14030838. 오픈 액세스. 초록이 철근 메시 실증 플랫폼 검증과 이어진 선양 훈난 과학기술도시 4기 현장 적용을 명시한다.
+- K. Dörfler, T. Hack, T. Sandy, M. Giftthaler, M. Lussi, A. R. Walzer, J. Buchli, F. Gramazio, M. Kohler, "Mobile robotic fabrication beyond factory conditions: case study Mesh Mould wall of the DFAB HOUSE," *Construction Robotics*, vol. 3, no. 1–4, pp. 53–67, 2019. DOI 10.1007/s41693-019-00020-w
 - S. N. Yu, S. Y. Lee, C. S. Han, K. Y. Lee, S. H. Lee, "Development of the curtain wall installation robot: Performance and efficiency tests at a construction site," *Autonomous Robots*, vol. 22, no. 3, pp. 281–291, 2007. DOI 10.1007/s10514-006-9019-2.
 
 **실험실 또는 목업**
