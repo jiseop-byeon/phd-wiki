@@ -89,7 +89,7 @@ question.
 Two practical points the figure is making:
 
 - **Nearer is not better.** Too close and the arm cannot fold enough to reach; too far and it
-  is extended, near-singular, and weak in exactly the direction a contact task needs
+  is extended and near-singular, and **loses controllable motion** in exactly the direction a contact task needs — note the duality: near a singularity the arm is *strong* along the collapsed direction (locked-knee mechanical advantage) and unable to move or modulate there, which is the [[04-robotics/modern-robotics/ch05-velocity-kinematics|force/velocity ellipsoid reciprocity of MR ch.5]]
   ([[02-foundations/manipulator-kinematics-dynamics|10. §6]] on why an extended arm is also
   effectively heavier).
 - **The usable band is narrow**, so base-pose error is not a rounding error — it is a
@@ -126,7 +126,7 @@ Robotics* — whole-body control, redundancy resolution, and the interaction bet
 navigation and manipulation constraints.
 
 > [!warning] Another absence worth knowing
-> There is **no recent survey of mobile manipulation** in the *Annual Review of Control,
+> There is no recent *Annual Review* survey of mobile manipulation — but one does exist elsewhere, and this page previously claimed none did: Thakar et al., "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. What is absent is a survey in the *Annual Review of Control,
 > Robotics, and Autonomous Systems*, and none by the authors it is often attributed to. The
 > Springer Handbook chapter (2016) remains the reference treatment despite its age. If you
 > need something recent and are willing to accept a narrow scope, there is a 2025
@@ -184,7 +184,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 5. You want to cite a survey of base placement. What do you do?
 
 > [!tip]- Answers
-> 1. Reach is not the binding constraint; conditioning is. Flush against the wall the arm is folded or extended near the edge of its workspace, where the manipulability ellipsoid has flattened and the arm is weak and imprecise in some direction — often the very direction the task pushes. The right target is the shaded band of §3, not the outer limit of reach.
+> 1. Reach is not the binding constraint; conditioning is. Flush against the wall the arm is folded or extended near the edge of its workspace, where the manipulability ellipsoid has flattened, so the arm cannot move or modulate precisely in some direction — often the very direction the task pushes. (It is *strong* in that direction; what it has lost is controllable motion.) The right target is the shaded band of §3, not the outer limit of reach.
 > 2. That open-loop execution cannot meet the tolerance — a ±3 cm base error alone is fifteen times the requirement, before the arm and the workpiece contribute. Something must close the loop at the task: **visual servoing** — driving the arm from the camera's live view of a feature rather than from its estimated pose — or a compliant contact stage that finds the feature mechanically ([[04-robotics/force-compliance-control|13. §5]]). This is not a weakness to apologise for; it is the design.
 > 3. Because it measures the wrong difficulty. A static map benchmark rewards accurate registration to a scene that stays put, while a construction site changes *because the robot and the trades are changing it*, and the changed regions are exactly the work areas. A system that scores well on the first can drift badly on the second.
 > 4. That the *manipulation* worked given accurate base poses. External motion capture supplies a pose the robot would not have on a site, so the result is a lower bound on the real difficulty — the navigation and localization contribution has been measured out of the experiment. It is a legitimate way to isolate a manipulation claim, as long as the paper says so and you read it that way.
@@ -274,7 +274,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 그림이 말하는 실용적 요점 둘:
 
 - **가까울수록 좋은 것이 아니다.** 너무 가까우면 팔이 충분히 접히지 못해 닿을 수 없고, 너무
-  멀면 뻗은 자세라 특이점에 가깝고 하필 접촉 작업이 필요로 하는 방향으로 약하다
+  멀면 뻗은 자세라 특이점에 가깝고, 하필 접촉 작업이 필요로 하는 방향으로 **제어 가능한 운동을 잃는다** — 쌍대성에 유의하라: 특이점 근처에서 팔은 붕괴한 방향으로 오히려 *힘은 세고*(무릎을 편 기계적 이점) 그 방향으로 움직이거나 조절하지 못한다. [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장의 힘·속도 타원체 쌍대성]]이 그것이다
   ([[02-foundations/manipulator-kinematics-dynamics|10. §6]] — 뻗은 팔이 실효적으로 더 무겁기도
   한 이유).
 - **쓸 만한 띠가 좁으므로**, 베이스 자세 오차는 반올림 오차가 아니라 여유를 직접 소비한다.
@@ -305,7 +305,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 해소, 그리고 내비게이션 제약과 조작 제약의 상호작용.
 
 > [!warning] 알아 둘 또 하나의 부재
-> *Annual Review of Control, Robotics, and Autonomous Systems*에 **최근의 모바일 조작 서베이가
+> 모바일 조작 서베이는 존재한다 — Thakar 등, "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. (이 페이지의 이전 판은 없다고 적었다.) 없는 것은 *Annual Review of Control, Robotics, and Autonomous Systems*의 **최근 모바일 조작 서베이가
 > 없고**, 흔히 그것으로 귀속되는 저자들의 것도 없다. Springer Handbook 장(2016)이 나이에도
 > 불구하고 여전히 기준 서술이다. 최근 것이 필요하고 좁은 범위를 감수할 수 있다면, **가변
 > 자율성**을 다룬 2025년 *Frontiers in Robotics and AI* 미니 리뷰가 있다 — 비슷한 이름을 쓴
@@ -360,7 +360,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 5. Base placement 서베이를 인용하고 싶다. 어떻게 하겠는가?
 
 > [!tip]- 정답 · Answers
-> 1. 구속 조건은 도달 범위가 아니라 조건수다. 벽에 바짝 붙이면 팔이 접히거나 작업 공간 가장자리 가까이 뻗은 자세가 되고, 거기서는 가조작성 타원체가 납작해져 어떤 방향으로 약하고 부정확하다 — 흔히 하필 작업이 미는 그 방향이다. 목표는 도달 한계선이 아니라 §3의 음영 띠다.
+> 1. 구속 조건은 도달 범위가 아니라 조건수다. 벽에 바짝 붙이면 팔이 접히거나 작업 공간 가장자리 가까이 뻗은 자세가 되고, 거기서는 가조작성 타원체가 납작해져 어떤 방향으로 정밀하게 움직이거나 조절하지 못한다 — 흔히 하필 작업이 미는 그 방향이다. (그 방향으로 힘은 오히려 *세다*. 잃은 것은 제어 가능한 운동이다.) 목표는 도달 한계선이 아니라 §3의 음영 띠다.
 > 2. 개루프 실행으로는 공차를 맞출 수 없다는 것 — ±3 cm의 베이스 오차만으로도 요구치의 열다섯 배이고, 팔과 작업물이 기여하기도 전이다. 무언가가 작업에서 루프를 닫아야 한다: **비전 서보잉**(추정된 자세가 아니라 카메라가 지금 보는 특징으로 팔을 구동하는 것)이나, 특징을 기계적으로 찾아 들어가는 유연 접촉 단계([[04-robotics/force-compliance-control|13. §5]]). 변명할 약점이 아니라 그것이 설계다.
 > 3. 틀린 난이도를 재기 때문이다. 정적 지도 벤치마크는 가만히 있는 장면에 정확히 정합하는 것을 보상하는데, 건설 현장은 *로봇과 다른 공종이 그것을 바꾸고 있기 때문에* 변하고, 변한 영역이 정확히 작업 영역이다. 앞의 것에서 좋은 점수를 받는 시스템이 뒤의 것에서는 크게 표류할 수 있다.
 > 4. 정확한 베이스 자세가 주어졌을 때 *조작*이 동작했다는 것. 외부 모션 캡처는 현장에서 로봇이 갖지 못할 자세를 공급하므로, 결과는 실제 난이도의 하한이다 — 내비게이션과 위치추정의 기여가 실험에서 빠져 있다. 조작 주장을 분리하는 정당한 방법이다. 논문이 그렇게 밝히고 독자가 그렇게 읽는다면.

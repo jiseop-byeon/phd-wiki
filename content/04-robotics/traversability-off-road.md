@@ -43,8 +43,8 @@ Three consequences worth stating, because they are what a textbook does not prep
   so a costmap conditioned on velocity is a different object from a static one.
 - **Terrain that a planner calls impassable is often passable.** The Verti-Wheelers line
   makes this its thesis: boulders, fallen trunks and rocky outcrops that classical planners
-  label non-traversable are crossable by *ordinary wheeled robots with no hardware
-  modification*, given a 6-DoF kinodynamic model. That reframes traversability as a
+  label non-traversable are crossable by *ordinary wheeled robots with **little** hardware
+  modification* — the paper's own hedge — given a 6-DoF kinodynamic model. That reframes traversability as a
   **modelling** problem rather than a segmentation problem.
 
 ### 2. Where the supervision comes from
@@ -66,7 +66,7 @@ limited: *less than five minutes of in-field training* from a short human demons
 then 1.4 km of footpath following and high grass.
 
 **How Does It Feel?** pairs vision with proprioceptive IMU and shock feedback and conditions
-the costmap on commanded velocity, reporting a **57% reduction in interventions** against an
+the costmap on commanded velocity, reporting a reduction in interventions of **up to 57%** against an
 occupancy baseline over courses of 400 m to 3,150 m.
 
 **SALON** is the sharpest current statement of the same thesis: online adaptation producing
@@ -75,9 +75,14 @@ kilometre-scale routes after *seconds* of real data, matching methods that need
 "100–1000× more data".
 
 > [!important] The claim divergence — read every paper for this
-> WVN, *How Does It Feel?* and SALON all claim **fast in-field adaptation and explicitly
-> disclaim generalization**. **V-STRONG** claims the opposite: "unprecedented performance for
-> generalization to new environments" on zero- and few-shot tasks. That disagreement is the
+> The papers split, but not the way a first reading suggests — check each abstract rather
+> than assuming. **WVN** is the in-field-adaptation case (five minutes from a demonstration),
+> yet still closes by claiming the approach "can generalize to any ground robot".
+> ***How Does It Feel?*** makes **no online-adaptation claim at all** — its self-supervision
+> is offline, from proprioceptive feedback. **SALON** adapts "within seconds" *and* claims
+> generalization, reporting "promising results on significantly different robots in different
+> environments". **V-STRONG** is the pure generalization claim: "unprecedented performance
+> for generalization to new environments", zero- and few-shot. That disagreement is the
 > most interesting open question in the thread, and the two claims require completely
 > different evidence. When you read a traversability paper, the first thing to establish is
 > which of the two it is claiming — the abstracts do not always make it obvious.
@@ -122,9 +127,14 @@ tracked platform. DARPA names the **perception architecture** as the headline ou
 cites retraining for a new environment dropping from weeks to a day.
 
 > [!warning] Three citation traps in this area
-> - **DARPA publishes no speed or distance figures for RACER.** Do not attribute a top speed
->   to the programme; use paper-level numbers instead — RoadRunner reports up to 15 m/s on
->   the Polaris RZR, with 20 m/s in some tests.
+> - **DARPA does publish RACER speed and distance figures — use them, and cite darpa.mil.**
+>   The 2023 release reports 55+ driverless runs of roughly 4–11 miles at about 25 mph, and
+>   246 miles over 24.6 hours on course; the 2024 release reports 30+ runs on 3–10 mile
+>   courses, 150+ autonomous unoccupied miles, and speeds **up to 30 mph**. (An earlier
+>   version of this page asserted the opposite and told you not to quote a top speed — that
+>   was wrong.) Paper-level numbers complement rather than replace them: RoadRunner states up
+>   to **15 m/s** on the Polaris RZR, and its 20 m/s figure is a *design* statement about
+>   prediction cadence, not a measured run.
 > - **RACER expands to *Robotic Autonomy in Complex Environments with Resiliency*,** not
 >   "Rapid Autonomy". And there is a **name collision**: a separate paper titled "RACER:
 >   Epistemic Risk-Sensitive RL" is a 1/10-scale rally-car method with no connection to the
@@ -162,7 +172,7 @@ includes construction machinery is the nearest existing bridge between this page
 - [ ] Name three supervision sources and the paper for each.
 - [ ] Explain the adaptation-versus-generalization divergence and why it matters.
 - [ ] Say what CVaR buys over optimising the mean.
-- [ ] Name what SubT and RACER each established, without attributing numbers DARPA did not publish.
+- [ ] Name what SubT and RACER each established, citing DARPA's own published speed and distance figures.
 
 ### Self-check
 
@@ -230,7 +240,7 @@ RGB와 GPS만 쓴다. 결과는 풀을 *통과해* 주행하고 매끈한 콘크
   조건으로 하는 costmap은 정적인 것과 다른 대상이다.
 - **계획기가 통과 불가라고 부르는 지형이 흔히 통과 가능하다.** Verti-Wheelers 계열이 이것을 자기
   주장으로 삼는다: 고전적 계획기가 비주행 가능으로 표시하는 바위, 쓰러진 줄기, 노두를 *하드웨어를
-  전혀 개조하지 않은 평범한 바퀴 로봇이* 6자유도 기구·동역학 모델만 있으면 넘는다. Traversability를
+  전혀 하드웨어를 **거의** 개조하지 않은 평범한 바퀴 로봇이* — 논문 자신의 유보다 — 6자유도 기구·동역학 모델만 있으면 넘는다. Traversability를
   분할(segmentation) 문제가 아니라 **모델링** 문제로 재프레이밍한다.
 
 ### 2. 지도 신호는 어디서 오는가
@@ -251,18 +261,22 @@ RGB와 GPS만 쓴다. 결과는 풀을 *통과해* 주행하고 매끈한 콘크
 1.4 km의 오솔길 추종과 키 큰 풀.
 
 **How Does It Feel?** 은 비전을 고유수용감각 IMU·충격 피드백과 짝짓고 costmap을 명령 속도에
-조건화해, 400 m~3,150 m 코스에서 점유 기반 기준선 대비 **개입 57% 감소**를 보고한다.
+조건화해, 400 m~3,150 m 코스에서 점유 기반 기준선 대비 **개입 **최대** 57% 감소**를 보고한다.
 
 **SALON**이 같은 주장의 가장 날카로운 현재 진술이다: 낯선 지형을 능동적으로 피하면서 **비용과
 속도**를 함께 담은 지도를 만드는 온라인 적응. 실제 데이터 *수 초* 만에 킬로미터 규모 경로를
 주장하며, "100~1000배 많은 데이터"를 필요로 하는 방법들과 대등하다고 말한다.
 
-> [!important] 주장의 분기 — 모든 논문을 이것으로 읽어라
-> WVN, *How Does It Feel?*, SALON은 전부 **빠른 현장 적응을 주장하고 일반화를 명시적으로
-> 부인한다.** **V-STRONG**은 정반대를 주장한다: zero-shot·few-shot 과제에서 "새 환경으로의
-> 일반화에서 전례 없는 성능". 이 불일치가 이 갈래에서 가장 흥미로운 열린 질문이고, 두 주장은
-> 완전히 다른 증거를 요구한다. Traversability 논문을 읽을 때 가장 먼저 확정할 것은 둘 중 어느
-> 쪽을 주장하는가이며, 초록이 늘 분명히 밝혀 주지는 않는다.
+> [!important] 주장의 분기 — 논문마다 이것부터 확인하라
+> 논문들은 갈리지만 처음 읽을 때 보이는 방식으로는 아니다 — 가정하지 말고 초록을 각각 확인하라.
+> **WVN**은 현장 적응 사례(시연으로부터 5분)이면서도 접근법이 "어떤 지상 로봇으로도 일반화될
+> 수 있다"고 맺는다. ***How Does It Feel?*** 은 **온라인 적응을 아예 주장하지 않는다** —
+> 자기지도가 오프라인이고 고유수용 피드백에서 온다. **SALON**은 "수 초 안에" 적응하면서
+> *동시에* 일반화를 주장하고 "상당히 다른 로봇과 다른 환경에서의 유망한 결과"를 보고한다.
+> **V-STRONG**이 순수한 일반화 주장이다: zero-shot·few-shot 과제에서 "새 환경으로의 일반화에서
+> 전례 없는 성능". 적응 주장과 일반화 주장은 완전히 다른 증거를 요구하므로, traversability
+> 논문을 읽을 때 가장 먼저 확정할 것은 어느 쪽을 주장하는가이고, 초록이 늘 분명히 밝혀 주지는
+> 않는다.
 
 ### 3. 기하학적 쪽이 사라진 것은 아니다
 
@@ -298,9 +312,13 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 주에서 하루로 줄었다고 밝힌다.
 
 > [!warning] 이 분야의 인용 함정 셋
-> - **DARPA는 RACER의 속도나 거리 수치를 발표하지 않는다.** 프로그램에 최고 속도를 귀속시키지
->   말고 논문 수준 수치를 쓰라 — RoadRunner가 Polaris RZR에서 15 m/s까지, 일부 시험에서 20 m/s를
->   보고한다.
+> - **DARPA는 RACER의 속도·거리 수치를 발표한다 — 그것을 쓰고 darpa.mil을 인용하라.**
+>   2023년 발표는 약 4~11마일 무인 주행 55회 이상, 시속 약 25마일, 코스에서 24.6시간 동안
+>   246마일을 보고한다. 2024년 발표는 3~10마일 코스 30회 이상, 무인 자율 150마일 이상,
+>   **시속 최대 30마일**을 보고한다. (이 페이지의 이전 판은 정반대로 적고 최고 속도를 인용하지
+>   말라고 했다. 그것이 틀렸다.) 논문 수준 수치는 대체재가 아니라 보완재다: RoadRunner는
+>   Polaris RZR에서 **15 m/s**까지를 진술하고, 20 m/s는 측정된 주행이 아니라 예측 주기에 대한
+>   *설계* 진술이다.
 > - **RACER는 *Robotic Autonomy in Complex Environments with Resiliency*의 약자**이지 "Rapid
 >   Autonomy"가 아니다. 그리고 **이름 충돌**이 있다: "RACER: Epistemic Risk-Sensitive RL"이라는
 >   별개 논문은 1/10 스케일 랠리카 방법으로 이 프로그램과 무관하다.
@@ -337,7 +355,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 - [ ] 지도 신호의 출처 셋과 각각의 논문을 댄다.
 - [ ] 적응 대 일반화의 분기를 설명하고 왜 중요한지 말한다.
 - [ ] CVaR이 평균 최적화에 비해 무엇을 사는지 말한다.
-- [ ] SubT와 RACER가 각각 확립한 것을, DARPA가 발표하지 않은 수치를 붙이지 않고 말한다.
+- [ ] SubT와 RACER가 각각 확립한 것을, DARPA가 발표한 속도·거리 수치를 인용하며 말한다.
 
 ### 스스로 점검
 
@@ -352,7 +370,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 > [!tip]- 정답 · Answers
 > 1. 그 논문이 *적응*을 주장하는지 *일반화*를 주장하는지, 그리고 두 번째 로봇의 동역학이 첫 로봇이 학습한 결과가 유효할 만큼 가까운지. Traversability는 구조적으로 로봇마다 다르다 — 궤도 차량이 쉽게 넘는 잔해 더미가 4족을 굴릴 수 있다 — 그러니 로봇 간 이전은 시각 특징이 일반적이라는 데서 공짜로 따라 나오는 것이 아니라 자기 증거가 필요한 강한 주장이다.
 > 2. Traversability가 지형이 무엇인가만이 아니라 로봇이 무엇을 하려 하는가의 함수이기 때문이다. 1 m/s에서 편안한 골이 10 m/s에서는 차량을 튀어 오르게 할 수 있으므로, 단일 정적 비용은 속도 범위의 한쪽 끝에서 틀린다. 명령 속도에 조건화하는 것이 지도 하나로 속도 포락선 전체를 감당하게 만들고, *How Does It Feel?* 과 SALON이 둘 다 그렇게 하는 이유다.
-> 3. **킬로미터당 개입 횟수**, 그리고 거리 그 자체. 고정 코스의 성공률은 "깨끗하게 주행했다"와 "조작자가 세 번 구해 준 뒤 주행했다"를 뭉뚱그리고, 배치 가능성을 추적하는 숫자는 개입 횟수다. *How Does It Feel?* 의 대표 수치가 성공률이 아니라 정확히 이것 — 개입 57% 감소 — 이다.
+> 3. **킬로미터당 개입 횟수**, 그리고 거리 그 자체. 고정 코스의 성공률은 "깨끗하게 주행했다"와 "조작자가 세 번 구해 준 뒤 주행했다"를 뭉뚱그리고, 배치 가능성을 추적하는 숫자는 개입 횟수다. *How Does It Feel?* 의 대표 수치가 성공률이 아니라 정확히 이것 — 개입 **최대** 57% 감소 — 이다.
 > 4. 이름 충돌이다. DARPA 프로그램은 *Robotic Autonomy in Complex Environments with Resiliency*이고, 별개의 무관한 논문이 1/10 스케일 랠리카의 epistemic risk-sensitive RL 방법에 RACER를 쓴다. 둘 다 실재하며, 하나를 다른 하나로 인용하는 것이 흔한 오류다.
 > 5. **GOOSE-Ex.** 여기서 로봇 굴착기를 담은 유일한 오프로드 인식 데이터셋이고 교차 embodiment 일반화를 위해 만들어졌기 때문이다. 여전히 없는 것은 기계 자신의 상태 전부다 — 액추에이터·관절·유압·힘 채널이 하나도 공개되지 않으며, 이는 [[06-research-practice/simulators-benchmarks-datasets|7. §8]]이 건설 데이터셋 전반에 대해 기록한 바로 그 공백이다.
 
