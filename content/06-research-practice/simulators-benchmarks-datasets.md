@@ -344,6 +344,54 @@ soil-tool interaction exists.**
 | Does the data contain force or tactile at all? | Most does not, and most papers do not say so |
 | Is the tool citable? | PyBullet, Drake, Isaac Sim and Genesis have no peer-reviewed paper |
 
+### 11. Reading a learned-policy evaluation
+
+The tooling section tells you what the numbers were produced *on*. This section is about the
+numbers themselves — the part of a VLA, diffusion-policy or locomotion paper where a
+percentage appears and has to be interpreted before it can be compared.
+
+**What "success rate" leaves out.** A single percentage compresses four independent choices,
+and two papers reporting 80% may agree on none of them:
+
+| Choice | Why it moves the number |
+|---|---|
+| **How many trials** | 10 trials resolves nothing below ~10 percentage points. By the rule of three, zero failures in 10 trials is consistent with a true failure rate up to ~26% — so "10/10" is *not* evidence of reliability ([[06-research-practice/experimental-design-reproducibility\|3. Experimental Design §4]]) |
+| **Initial-state distribution** | were object poses randomized, or reset to the same spot? A policy evaluated from a fixed start is being asked an easier question than one evaluated from a distribution |
+| **What counts as done** | a time limit, a pose tolerance, a human judge. The tolerance is often unstated and is frequently the whole difference between two systems |
+| **Whether resets and retries count** | a human straightening the object between trials is part of the system; if it is not counted, the reported autonomy is not the measured autonomy |
+
+**Progress and partial credit.** Long-horizon and chained tasks are increasingly scored by
+*how far the policy got* rather than whether it finished — stage completion, subtask counts,
+or a normalized progress score. This is a reasonable response to binary success being too
+coarse, and it introduces a specific failure of comparison: **a high progress score and a
+zero success rate are compatible**, and they describe a policy that reliably starts a task and
+reliably fails to finish it. The independent evaluation in
+[[01-canonical-papers/notes/4-vla/pi0|π0]]'s claim box is exactly this shape. When a paper
+leads with progress, look for the completion number; when it leads with completion, look for
+whether partial credit was available to the baselines too.
+
+**Seen versus unseen.** Nearly every generalization claim in this literature rests on a split,
+and the split's *axis* is the claim: unseen object instances, unseen object categories, unseen
+backgrounds, unseen lighting, unseen scenes, unseen embodiments. These are not equally hard
+and papers rarely rank them. A method that generalizes across instances of a trained category
+is making a much weaker claim than one that generalizes across categories — **read the split
+definition before the number**, because the number is only meaningful relative to it.
+
+**First-party versus independent numbers.** Robot-learning results are expensive to reproduce,
+so most published comparisons are the authors' own reproductions of someone else's method.
+That is not dishonest, and it is also not independent. Where a genuinely third-party
+evaluation exists it is worth more than the headline, and the gap between the two is
+frequently large — see [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al.]]
+(77% in simulation to 23% in six real homes) and π0's independent re-evaluation. **When you
+cite a comparison, say whose evaluation it was.**
+
+> [!warning] The three questions that settle most policy tables
+> **1. How many trials, and from what initial-state distribution?** **2. Is this simulation,
+> a lab testbed, or the deployment environment?** **3. Whose evaluation is it?** A results
+> table that does not let you answer all three is reporting a demonstration, not a
+> measurement — which is a legitimate contribution, but a different one, and it should not be
+> compared against a table that does.
+
 ### After reading
 
 - [ ] Name the four status traps in §2 and why each one produces a wrong sentence.
@@ -680,6 +728,47 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 | 어느 데이터셋 **판본**이며, 어느 초록의 숫자인가? | DROID와 BridgeData V2 둘 다 서로 다른 수치를 보고한다 |
 | 데이터에 힘이나 촉각이 있기는 한가? | 대개 없고, 대개 논문이 그렇다고 말하지 않는다 |
 | 그 도구는 인용 가능한가? | PyBullet·Drake·Isaac Sim·Genesis에는 심사받은 논문이 없다 |
+
+### 11. 학습된 정책의 평가 읽기
+
+도구 절은 그 숫자들이 *무엇 위에서* 나왔는지를 알려준다. 이 절은 숫자 자체에 관한 것이다 —
+VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교되기 전에 해석되어야 하는 그 부분.
+
+**"성공률"이 빠뜨리는 것.** 백분율 하나가 독립적인 선택 네 개를 압축하고 있고, 80%를 보고한
+두 논문이 그중 어느 것에서도 일치하지 않을 수 있다:
+
+| 선택 | 숫자를 움직이는 이유 |
+|---|---|
+| **시행 횟수** | 10회로는 약 10퍼센트포인트 아래를 분간할 수 없다. 3의 법칙으로, 10회 중 실패 0회는 참 실패율 약 26%까지와 양립한다 — 그러니 "10/10"은 신뢰성의 증거가 *아니다*([[06-research-practice/experimental-design-reproducibility\|3. 실험 설계 §4]]) |
+| **초기 상태 분포** | 물체 자세를 무작위화했는가, 같은 자리로 리셋했는가? 고정된 시작에서 평가된 정책은 분포에서 평가된 정책보다 쉬운 질문을 받고 있다 |
+| **무엇을 완료로 세는가** | 시간 제한, 자세 허용오차, 사람 판정. 허용오차는 자주 명시되지 않고, 두 시스템의 차이 전체가 거기인 경우가 흔하다 |
+| **리셋과 재시도를 세는가** | 시행 사이에 사람이 물체를 바로 세워 준다면 그 사람도 시스템의 일부다. 그것을 세지 않으면 보고된 자율성은 측정된 자율성이 아니다 |
+
+**진행도와 부분 점수.** 긴 지평 과제와 연쇄 과제는 완료 여부가 아니라 *정책이 얼마나 갔는지*로
+채점되는 일이 늘고 있다 — 단계 완료 수, 하위 과제 수, 정규화된 진행 점수. 이진 성공이 너무
+거칠다는 데 대한 합당한 대응이고, 동시에 특정한 비교 실패를 들여온다: **높은 진행 점수와 0%
+성공률은 양립한다.** 그리고 그것은 과제를 안정적으로 시작하고 안정적으로 끝내지 못하는 정책을
+기술한다. [[01-canonical-papers/notes/4-vla/pi0|π0]] 주장 상자의 독립 평가가 정확히 이 모양이다.
+논문이 진행도를 앞세우면 완료 숫자를 찾아보고, 완료를 앞세우면 베이스라인에도 부분 점수가
+주어졌는지를 확인하라.
+
+**Seen 대 unseen.** 이 문헌의 거의 모든 일반화 주장이 분할 위에 서 있고, 그 분할의 *축*이 곧
+주장이다: 본 적 없는 물체 개체, 본 적 없는 물체 범주, 본 적 없는 배경, 조명, 장면, 신체.
+이것들은 난이도가 같지 않은데 논문은 좀처럼 서열을 밝히지 않는다. 학습한 범주의 다른 개체로
+일반화하는 방법은 범주를 가로질러 일반화하는 방법보다 훨씬 약한 주장을 하고 있다 — **숫자보다
+분할의 정의를 먼저 읽어라.** 숫자는 그것에 상대적으로만 의미가 있다.
+
+**1차 평가 대 독립 평가.** 로봇 학습 결과는 재현 비용이 커서, 출판된 비교 대부분은 저자들이
+남의 방법을 직접 재현한 것이다. 부정직한 것은 아니지만 독립적인 것도 아니다. 진짜 제3자
+평가가 존재한다면 그것이 헤드라인보다 값어치가 있고, 둘 사이의 격차는 자주 크다 —
+[[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등]](시뮬 77% →
+실제 주택 여섯 곳 23%)과 π0의 독립 재평가를 보라. **비교를 인용할 때는 누구의 평가인지 밝혀라.**
+
+> [!warning] 정책 표 대부분을 결판내는 세 질문
+> **1. 시행 몇 회이고, 어떤 초기 상태 분포에서인가?** **2. 이것은 시뮬레이션인가, 실험실
+> 테스트베드인가, 배포 환경인가?** **3. 누구의 평가인가?** 이 셋에 답할 수 없게 만드는 결과
+> 표는 측정이 아니라 실증을 보고하고 있는 것이다 — 그것도 정당한 기여이지만 다른 종류의
+> 기여이고, 답할 수 있는 표와 나란히 비교되어서는 안 된다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

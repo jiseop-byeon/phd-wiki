@@ -93,6 +93,24 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
 
 The foundation of the multimodal era: CLIP encoders power text-to-image diffusion guidance (Stable Diffusion), open-vocabulary detection/segmentation, and are the visual front-end of VLMs (LLaVA, Flamingo lineage) — and through them, VLAs: RT-2's "vision-language-action" is CLIP's alignment idea extended to robot actions. Successors: ALIGN, OpenCLIP, SigLIP.
 
+> [!note] SigLIP — the encoder you will actually find inside a 2024–26 VLA
+> π0, OpenVLA and PaliGemma all name **SigLIP** rather than CLIP as their vision encoder, so
+> it is worth one paragraph. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for
+> Language Image Pre-Training*, **ICCV 2023 (Oral)**, [arXiv:2303.15343](https://arxiv.org/abs/2303.15343).
+>
+> The change is the loss, not the architecture. CLIP's InfoNCE **softmax** normalizes each
+> row and column of the similarity matrix above, so computing the loss needs a *global view
+> of every pairwise similarity in the batch*. SigLIP replaces it with a **pairwise sigmoid**:
+> every image–text pair is scored independently as "match or not", with no normalization
+> across the batch.
+>
+> The consequence is practical rather than conceptual: **the loss no longer couples the batch
+> to the normalization**, which removes the engineering pressure that made CLIP-style
+> training want enormous batches, and works better at both small and large batch sizes. When
+> a VLA paper says "SigLIP encoder", read it as *a CLIP-style aligned encoder trained with a
+> cheaper-to-shard objective* — the alignment idea this paper introduced is unchanged, and
+> everything §Method above says about what the embedding space means still applies.
+
 ### Connections
 
 - Previous: [[01-canonical-papers/notes/1-foundations/vit|ViT]], [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] (web-scale supervision) · Next: Flamingo, LLaVA → RT-2
@@ -168,6 +186,22 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 ### 영향과 후속 연구
 
 멀티모달 시대의 초석: CLIP 인코더는 텍스트-이미지 디퓨전의 가이던스(Stable Diffusion), open-vocabulary 검출·분할을 구동하고, VLM(LLaVA, Flamingo 계열)의 시각 front-end다 — 그리고 그 연장선에서 VLA로: RT-2의 "vision-language-action"은 CLIP의 정렬 아이디어를 로봇 행동까지 확장한 것이다. 후속: ALIGN, OpenCLIP, SigLIP.
+
+> [!note] SigLIP — 2024~26년 VLA 안에서 실제로 발견하게 될 인코더
+> π0, OpenVLA, PaliGemma가 모두 시각 인코더로 CLIP이 아니라 **SigLIP**을 지목하므로 한 문단
+> 값어치가 있다. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for Language Image
+> Pre-Training*, **ICCV 2023 (Oral)**, [arXiv:2303.15343](https://arxiv.org/abs/2303.15343).
+>
+> 바뀐 것은 구조가 아니라 손실이다. CLIP의 InfoNCE **softmax**는 위 유사도 행렬의 각 행과
+> 열을 정규화하므로, 손실을 계산하려면 *배치 안의 모든 쌍별 유사도를 전역적으로* 봐야 한다.
+> SigLIP은 그것을 **쌍별 sigmoid**로 바꾼다: 모든 이미지-텍스트 쌍을 배치 전체에 걸친 정규화
+> 없이 "맞음/아님"으로 독립적으로 채점한다.
+>
+> 결과는 개념적이라기보다 실용적이다: **손실이 더 이상 배치를 정규화에 묶지 않는다.** 그래서
+> CLIP 계열 학습이 거대한 배치를 원하게 만들던 공학적 압력이 사라지고, 작은 배치와 큰 배치
+> 양쪽에서 더 잘 작동한다. VLA 논문이 "SigLIP 인코더"라고 하면 *샤딩하기 더 싼 목적함수로
+> 학습한 CLIP 계열 정렬 인코더*로 읽어라 — 이 논문이 도입한 정렬 아이디어는 그대로이고, 위
+> §방법이 임베딩 공간의 의미에 대해 말한 것도 전부 그대로 적용된다.
 
 ### 연결
 

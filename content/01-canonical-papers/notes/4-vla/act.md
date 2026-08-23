@@ -94,6 +94,7 @@ defined how modern policies output actions.
 
 ### Connections
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — the interface spectrum this sits at one end of, and what its data does and does not contain
 - Parallel: [[diffusion-policy|Diffusion Policy]] (generative chunking) · Previous: [[vae|VAE]] (the CVAE machinery)
 - Next: Mobile ALOHA, Octo, π0
@@ -166,6 +167,7 @@ defined how modern policies output actions.
 
 ### 연결
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
 - [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집]] — 이것이 한쪽 끝에 놓이는 인터페이스 스펙트럼, 그리고 그 데이터에 무엇이 있고 없는지
 - 병행: [[diffusion-policy|Diffusion Policy]] (생성형 청킹) · 이전: [[vae|VAE]] (CVAE 기계장치)
 - 다음: Mobile ALOHA, Octo, π0

@@ -94,6 +94,7 @@ models.
 
 ### Connections
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
 - Previous: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (semantics), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (control), [[flow-matching|Flow Matching]] (the math)
 - Next: [[gr00t-n1|GR00T N1]], π0.5
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
@@ -162,6 +163,7 @@ flowchart LR
 
 ### 연결
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
 - 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[flow-matching|Flow Matching]] (수학)
 - 다음: [[gr00t-n1|GR00T N1]], π0.5
 - 계보: [[03-deep-learning/lineage|논문 계보도]]

@@ -63,6 +63,7 @@ HIL-SERL is the strongest existing evidence for the claim in [[02-foundations/rl
 
 ### Connections
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
 - [[02-foundations/rl-basics|7. RL Basics §6]] — the interactive-versus-offline argument this anchors
 - [[04-robotics/force-compliance-control|13. Force & Compliance Control]] — the contact regime these tasks live in
 - [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] — the imitation baseline it is measured against
@@ -116,6 +117,7 @@ HIL-SERL은 접촉이 많은 조작에서 **상호작용적 학습이 오프라�
 
 ### 연결
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
 - [[02-foundations/rl-basics|7. RL 기초 §6]] — 이것이 정박하는 상호작용 대 오프라인 논증
 - [[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어]] — 이 과제들이 사는 접촉 영역
 - [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] — 비교 대상이 되는 모방학습 베이스라인

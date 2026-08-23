@@ -127,6 +127,28 @@ missed crack can cost a structure.
 - **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things.
 - **Benchmark saturation**: near-ceiling benchmarks reward overfitting to quirks; gains there generalize least.
 
+### 6. The training recipe, as vocabulary
+
+An experimental section spends a paragraph on how the model was trained, in terms this wiki's
+optimization page does not name. You are not reproducing the run — but these decide whether a
+reported number is a property of the *method* or of the *recipe*, and an ablation that changes
+one of them is not comparing what it claims.
+
+| Term | What it is | Why it appears in the claim |
+|---|---|---|
+| **Learning-rate schedule** | the step size varies over training — a linear **warmup** for the first few % of steps, then **cosine decay** toward zero | post-norm Transformers do not train at all without warmup; the final LR affects the last few points of accuracy, so "same architecture, different schedule" is not a fair comparison |
+| **Weight decay / AdamW** | an L2 pull toward zero. AdamW applies it *decoupled* from the adaptive step rather than folding it into the gradient | the Gaussian-prior reading in [[02-foundations/probability\|3. Probability §4]] is the plain Adam version; AdamW is what papers actually use |
+| **Gradient accumulation** | sum gradients over several forward passes before stepping, to simulate a batch the hardware cannot hold | a paper's "batch size 4096" may be 8 × 512; matters when the method is batch-sensitive — contrastive losses especially ([[01-canonical-papers/notes/3-vlm/clip\|CLIP]] and SigLIP) |
+| **Mixed precision** (fp16/bf16) | weights and activations in 16 bits, with a master copy and loss scaling in 32 | roughly halves memory and raises throughput; bf16 trades mantissa for exponent range and is why large models train stably in 16 bits |
+| **EMA of weights** | keep a slowly-moving average of the parameters and *evaluate that*, not the live weights | a free fraction of a point on many benchmarks. Distinct from the EMA *teacher* of [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]], which is a target network, not an evaluation trick — diffusion and policy papers almost always report EMA weights |
+| **Initialization** | Xavier/He scaling keeps activation variance stable across depth | rarely load-bearing now that normalization layers exist, but named when a paper trains without them |
+
+> [!warning] Recipe differences masquerading as method differences
+> The most common unfair comparison in this literature is a new method trained with a modern
+> recipe against a baseline reproduced with the original one. **Check that the baseline's
+> schedule, optimizer, precision and epoch budget match the proposed method's** before
+> believing a margin — and note that when they do match, the honest papers say so explicitly.
+
 ### Self-check
 
 1. A model picks its best checkpoint by test accuracy. What went wrong, and in which
@@ -258,6 +280,28 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 - **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다.
 - **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다.
 - **벤치마크 포화**: 천장 근처의 벤치마크는 그 벤치마크의 버릇에 과적합하는 것을 보상한다 — 거기서의 이득이 가장 일반화되지 않는다.
+
+### 6. 학습 레시피, 어휘로서
+
+실험 절은 모델을 어떻게 학습시켰는지에 한 문단을 쓰는데, 그 용어들을 이 위키의 최적화
+페이지는 다루지 않는다. 우리가 그 실행을 재현하는 것은 아니다 — 그러나 이것들이 보고된
+숫자가 *방법*의 성질인지 *레시피*의 성질인지를 가르고, 이 중 하나를 바꾼 절제 실험은 자기가
+주장하는 것을 비교하고 있지 않다.
+
+| 용어 | 무엇인가 | 왜 주장에 등장하는가 |
+|---|---|---|
+| **학습률 스케줄** | 학습 도중 스텝 크기가 변한다 — 처음 몇 % 스텝의 선형 **warmup**, 그다음 0을 향한 **cosine decay** | post-norm Transformer는 warmup 없이는 아예 학습되지 않는다. 마지막 학습률이 정확도 끝자리 몇 점을 좌우하므로 "같은 구조, 다른 스케줄"은 공정한 비교가 아니다 |
+| **Weight decay / AdamW** | 0을 향한 L2 당김. AdamW는 그것을 그래디언트에 접어 넣지 않고 적응 스텝과 *분리해서* 적용한다 | [[02-foundations/probability\|3. 확률 §4]]의 가우시안 사전 해석은 평범한 Adam 판본이다. 논문이 실제로 쓰는 것은 AdamW다 |
+| **그래디언트 누적** | 하드웨어가 담을 수 없는 배치를 흉내 내려고 여러 번의 순전파 그래디언트를 더한 뒤 한 번 스텝 | 논문의 "배치 크기 4096"이 8 × 512일 수 있다. 방법이 배치에 민감할 때 중요하다 — 특히 대조 손실([[01-canonical-papers/notes/3-vlm/clip\|CLIP]]과 SigLIP) |
+| **혼합 정밀도**(fp16/bf16) | 가중치와 활성을 16비트로 두고, 마스터 사본과 손실 스케일링은 32비트로 | 메모리를 대략 절반으로 줄이고 처리량을 올린다. bf16은 가수를 지수 범위와 맞바꾼 것이고, 큰 모델이 16비트에서 안정적으로 학습되는 이유다 |
+| **가중치 EMA** | 파라미터의 느리게 움직이는 평균을 유지하고, 살아 있는 가중치가 아니라 *그것을* 평가한다 | 여러 벤치마크에서 공짜로 얻는 소수점 몇 자리. [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]]의 EMA *교사*와는 다르다 — 그쪽은 타깃 네트워크이지 평가 요령이 아니다. 확산 모델과 정책 논문은 거의 항상 EMA 가중치를 보고한다 |
+| **초기화** | Xavier/He 스케일링이 깊이에 걸쳐 활성 분산을 안정시킨다 | 정규화 층이 있는 지금은 결정적인 경우가 드물지만, 정규화 없이 학습하는 논문은 이것을 명시한다 |
+
+> [!warning] 방법 차이로 위장한 레시피 차이
+> 이 문헌에서 가장 흔한 불공정 비교는, 새 방법은 현대적 레시피로 학습시키고 베이스라인은
+> 원래 레시피로 재현하는 것이다. 격차를 믿기 전에 **베이스라인의 스케줄·옵티마이저·정밀도·
+> 에폭 예산이 제안 방법과 일치하는지 확인하라** — 그리고 일치할 때는 정직한 논문들이 그렇다고
+> 명시한다는 점도 함께 기억하라.
 
 ### 스스로 점검
 

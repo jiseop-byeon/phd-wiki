@@ -100,6 +100,7 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 
 ### Connections
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
 - Previous: [[ddpm|DDPM]] (the generative engine), [[rt-1|RT-1]] (the tokenized alternative)
 - Next: [[act|ACT]] (parallel chunking approach), Octo, π0
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
@@ -181,6 +182,7 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 
 ### 연결
 
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
 - 이전: [[ddpm|DDPM]] (생성 엔진), [[rt-1|RT-1]] (토큰화 대안)
 - 다음: [[act|ACT]] (병행하는 청킹 접근), Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
