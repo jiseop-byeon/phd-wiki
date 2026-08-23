@@ -26,7 +26,7 @@ graph TD
     C --> D["2020-23 the generative turn<br/>DDPM to Stable Diffusion to Flow Matching"]
     C --> E["2023- VLA<br/>RT-2 to OpenVLA to pi-0 to GR00T"]
     D --> E
-    C --> F["2018- world models<br/>Dreamer to Genie to Cosmos"]
+    C --> F["2018- world models<br/>Ha-Schmidhuber to Dreamer to Cosmos"]
     D --> F
     F -. synthetic data .-> E
     E --> G["Open question:<br/>physical AI on construction<br/>and manufacturing sites<br/>(ExT is the first signal)"]
@@ -52,7 +52,7 @@ graph TD
     end
     BahdanauE --> TE["Attention Is All You Need 2017"]
     ResNetE -."residual connections live in<br/>every Transformer block".-> TE
-    ResNetE --> ViTE2["ViT 2021"]
+    ResNetE -."the baseline ViT dethroned".-> ViTE2["ViT 2021"]
 ```
 
 ### Backbone: the main currents after the Transformer
@@ -93,8 +93,9 @@ graph TD
     ACTE["ACT/ALOHA 2023"] --> Pi0E2
     RT2E --> OpenVLAE["OpenVLA 2024"]
     OXEE["Open X-Embodiment ICRA 2024<br/>dataset"] --> OpenVLAE
-    OpenVLAE --> GR00TE["GR00T N1 2025"]
-    Pi0E2 --> GR00TE
+    Pi0E2 --> GR00TE["GR00T N1 2025"]
+    OXEE --> GR00TE
+    OpenVLAE -.-> GR00TE
 ```
 
 ### World models: learning inside imagination
@@ -105,9 +106,10 @@ graph TD
     PlaNetE --> DreamerE["Dreamer v1-v3<br/>2020-23"]
     JEPAE["JEPA position paper 2022"] --> IJEPAE["I-JEPA 2023"]
     IJEPAE --> VJEPAE["V-JEPA 1-2 2024-25"]
-    GenieE["Genie 1-2 2024"] --> PhysAIE["world models for physical AI<br/>Cosmos 2025"]
-    DreamerE --> PhysAIE
-    VJEPAE --> PhysAIE
+    DreamerE --> GenieE["Genie 1-2 2024"]
+    GenieE --> PhysAIE["world models for physical AI<br/>Cosmos 2025"]
+    SoraE["Sora 2024<br/>the thesis Cosmos names"] --> PhysAIE
+    VJEPAE -. "a contrast, not a parent" .-> PhysAIE
 ```
 
 Related: [[01-canonical-papers/canonical-list|Canonical Paper List]] · [[03-deep-learning/index|Deep Learning map]] · [[05-construction-robotics/lineage|Construction Robotics Lineage]] — the three genealogies of this wiki's own domain.
@@ -130,7 +132,7 @@ graph TD
     C --> D["2020~23 생성모델 혁명<br/>DDPM → Stable Diffusion → Flow Matching"]
     C --> E["2023~ VLA<br/>RT-2 → OpenVLA → π0 → GR00T"]
     D --> E
-    C --> F["2018~ 월드모델<br/>Dreamer → Genie → Cosmos"]
+    C --> F["2018~ 월드모델<br/>Ha-Schmidhuber → Dreamer → Cosmos"]
     D --> F
     F -.합성 데이터.-> E
     E --> G["열린 질문:<br/>건설·제조 현장의 physical AI<br/>(ExT가 첫 신호탄)"]
@@ -155,7 +157,7 @@ graph TD
     end
     Bahdanau --> T["Attention Is All You Need (2017)"]
     ResNet -."residual 연결은 모든<br/>Transformer 블록에".-> T
-    ResNet --> ViT2["ViT (2021)"]
+    ResNet -."ViT가 끌어내린 기준선".-> ViT2["ViT (2021)"]
 ```
 
 ### Backbone: Transformer 이후의 큰 흐름
@@ -196,8 +198,9 @@ graph TD
     ACT["ACT/ALOHA (2023)"] --> Pi0
     RT2 --> OpenVLA["OpenVLA (2024)"]
     OXE["Open X-Embodiment (ICRA 2024)<br/>데이터셋"] --> OpenVLA
-    OpenVLA --> GR00T["GR00T N1 (2025)"]
-    Pi0 --> GR00T
+    Pi0 --> GR00T["GR00T N1 (2025)"]
+    OXE --> GR00T
+    OpenVLA -.-> GR00T
 ```
 
 ### World Models: 상상 속에서 배우기
@@ -208,9 +211,10 @@ graph TD
     PlaNet --> Dreamer["Dreamer v1–v3<br/>(2020–23)"]
     JEPA["JEPA 선언문 (2022)"] --> IJEPA["I-JEPA (2023)"]
     IJEPA --> VJEPA["V-JEPA 1–2 (2024–25)"]
-    Genie["Genie 1–2 (2024)"] --> PhysAI["Physical AI용 월드모델<br/>(Cosmos, 2025)"]
-    Dreamer --> PhysAI
-    VJEPA --> PhysAI
+    Dreamer --> Genie["Genie 1–2 (2024)"]
+    Genie --> PhysAI["Physical AI용 월드모델<br/>(Cosmos, 2025)"]
+    Sora["Sora (2024)<br/>Cosmos가 지목한 테제"] --> PhysAI
+    VJEPA -. "부모가 아니라 대조" .-> PhysAI
 ```
 
 관련: [[01-canonical-papers/canonical-list|핵심 논문 리스트]] · [[03-deep-learning/index|딥러닝 지도]] · [[05-construction-robotics/lineage|건설로봇 계보]] — 이 위키 도메인의 세 계보
