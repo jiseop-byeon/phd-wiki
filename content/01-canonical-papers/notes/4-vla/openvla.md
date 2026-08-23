@@ -53,7 +53,7 @@ lessons the closed papers never reported.
 ### Results
 
 - **+16.5%p absolute** over RT-2-X (55B) across 29 evaluation tasks on WidowX and Google
-  robot platforms — with ~8× fewer parameters.
+  robot platforms — with **7×** fewer parameters (the abstract's own figure).
 - Beats [[diffusion-policy|Diffusion Policy]] baselines when fine-tuned on multi-task setups
   involving language grounding, though single-task dexterity remains competitive territory.
 - Fine-tunes to new robots with ~10–150 demos on a single consumer GPU (LoRA).
@@ -107,7 +107,7 @@ continuous outputs — converging toward the [[pi0|π0]]/[[gr00t-n1|GR00T]] desi
 ### 결과
 
 - WidowX·Google 로봇 플랫폼의 29개 평가 과제에서 RT-2-X(55B) 대비 **절대 +16.5%p** —
-  파라미터는 약 8분의 1로.
+  파라미터는 약 7분의 1(초록의 표현)로.
 - 언어 접지가 필요한 다중 과제 파인튜닝에서 [[diffusion-policy|Diffusion Policy]]
   베이스라인 상회 — 단일 과제 정밀 조작에서는 여전히 접전.
 - 시연 10~150개 + 소비자용 GPU 한 장(LoRA)으로 새 로봇에 파인튜닝.

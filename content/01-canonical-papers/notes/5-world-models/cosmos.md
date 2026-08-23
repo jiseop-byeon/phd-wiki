@@ -23,7 +23,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ## English
 
-**One-line summary**: An open platform of video world foundation models — tokenizers plus diffusion and autoregressive generators pretrained on ~20M hours of video — built to be *post-trained* into simulators, data engines, and policy evaluators for robots and autonomous vehicles.
+**One-line summary**: An open platform of video world foundation models — tokenizers plus diffusion and autoregressive generators pretrained on ~20M hours of raw video — built to be *post-trained* into simulators, data engines, and policy evaluators for robots and autonomous vehicles.
 
 ### Context
 
@@ -40,7 +40,7 @@ not the product but the **infrastructure** other robot models train on.
 > they need — a camera-conditioned simulator, a synthetic data generator, or a
 > policy-evaluation environment.
 
-- **Data**: ~20M hours of video curated for physical dynamics (driving, manipulation,
+- **Data**: ~20M hours of **raw** video, curated down to about 10^8 clips for pretraining (driving, manipulation,
   human activity), heavy filtering/dedup pipelines described openly.
 - **Tokenizers (Cosmos Tokenizer)**: continuous and discrete video tokenizers at multiple
   compression rates — released standalone, widely reused.
@@ -84,7 +84,7 @@ this "pretrain a world model, post-train to your domain" pattern is the one to w
 
 ## 한국어
 
-**한 줄 요약**: 오픈 비디오 월드 파운데이션 모델 플랫폼 — 약 2천만 시간의 비디오로 사전학습된 토크나이저 + 디퓨전·자기회귀 생성기 — 로봇과 자율주행을 위한 시뮬레이터·데이터 엔진·정책 평가기로 *사후학습*되도록 설계됐다.
+**한 줄 요약**: 오픈 비디오 월드 파운데이션 모델 플랫폼 — 약 2천만 시간의 **원본** 비디오에서 선별한 데이터로 사전학습된 토크나이저 + 디퓨전·자기회귀 생성기 — 로봇과 자율주행을 위한 시뮬레이터·데이터 엔진·정책 평가기로 *사후학습*되도록 설계됐다.
 
 ### 배경
 
@@ -100,7 +100,7 @@ this "pretrain a world model, post-train to your domain" pattern is the one to w
 > 사전학습하고, 각 로보틱스 팀이 필요한 것으로 *사후학습*하게 하라 — 카메라 조건
 > 시뮬레이터든, 합성 데이터 생성기든, 정책 평가 환경이든.
 
-- **데이터**: 물리 동역학 중심으로 선별한 약 2천만 시간의 비디오(주행, 조작, 인간 활동),
+- **데이터**: 약 2천만 시간의 **원본** 비디오를 물리 동역학 중심으로 선별해 사전학습용 약 10^8개 클립으로 줄인 것(주행, 조작, 인간 활동),
   필터링/중복 제거 파이프라인을 공개적으로 기술.
 - **토크나이저(Cosmos Tokenizer)**: 여러 압축률의 연속·이산 비디오 토크나이저 —
   단독 공개되어 널리 재사용됨.

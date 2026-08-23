@@ -45,8 +45,7 @@ expensive, slow, and closed-loop at real-time rates?
 - **Data**: 130k episodes, 13 mobile manipulators, 17 months, 700+ language-labeled kitchen
   tasks (pick/place/open/close/drawer operations).
 - **Architecture**: EfficientNet-B3 conditioned on the instruction embedding via **FiLM**
-  layers → **TokenLearner** compresses to 8 visual tokens → decoder-only Transformer (35M
-  params — small, for 3 Hz real-time control).
+  layers → **TokenLearner** compresses to 8 visual tokens → decoder-only Transformer (**19M** params; 35M is the *whole* model including the 16M FiLM EfficientNet-B3 tokenizer — small either way, for 3 Hz real-time control).
 - **Actions as tokens**: 11 dimensions (7 arm, 3 base, 1 mode switch), each discretized to
   256 bins — control becomes next-token classification.
 - Absorbs heterogeneous data: adding simulation data and even another robot's (Kuka) data
@@ -102,7 +101,7 @@ Proved robot-side scaling works and defined the VLA data flywheel. Direct line t
 - **데이터**: 13만 에피소드, 모바일 매니퓰레이터 13대, 17개월, 언어 라벨이 달린 주방 과제
   700개+ (집기/놓기/열기/닫기/서랍 조작).
 - **구조**: 지시 임베딩을 **FiLM** 층으로 조건화한 EfficientNet-B3 → **TokenLearner**가
-  시각 토큰 8개로 압축 → 디코더 전용 Transformer (3500만 파라미터 — 3 Hz 실시간 제어를
+  시각 토큰 8개로 압축 → 디코더 전용 Transformer (**1900만** 파라미터. 3500만은 1600만짜리 FiLM EfficientNet-B3 토크나이저까지 포함한 *전체* 모델이다 — 어느 쪽이든 작고, 3 Hz 실시간 제어를
   위해 의도적으로 작게).
 - **행동의 토큰화**: 11차원(팔 7, 베이스 3, 모드 1)을 각각 256 구간으로 이산화 —
   제어가 다음 토큰 분류 문제가 된다.

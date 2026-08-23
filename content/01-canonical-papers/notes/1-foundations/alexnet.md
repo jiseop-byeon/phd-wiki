@@ -41,7 +41,7 @@ Through the 2000s, computer vision meant hand-engineered features (SIFT, HOG) fe
 
 ### Results
 
-- ILSVRC-2012: **top-5 error 15.3%** vs. 26.2% for the runner-up — an unheard-of margin for the field.
+- ILSVRC-2012: **top-5 error 15.3%** vs. 26.2% for the runner-up — an unheard-of margin. Note the 15.3% is a **7-model ensemble** (a single CNN is 18.2%, five averaged 16.4%); the abstract does not disclose this.
 - Ablations showed depth mattered: removing any conv layer hurt performance.
 
 ### Limitations & critique
@@ -80,7 +80,7 @@ Started the modern era: within two years every vision benchmark was CNN-dominate
 
 ### 결과
 
-- ILSVRC-2012: **top-5 오류율 15.3%** vs 2위 26.2% — 이 분야에서 전례 없는 격차.
+- ILSVRC-2012: **top-5 오류율 15.3%** vs 2위 26.2% — 전례 없는 격차. 다만 15.3%는 **7개 모델 앙상블**이다(단일 CNN은 18.2%, 5개 평균이 16.4%). 초록은 이것을 밝히지 않는다.
 - 절제 실험에서 깊이의 중요성 확인: 합성곱 층을 하나만 빼도 성능이 떨어졌다.
 
 ### 한계와 비판

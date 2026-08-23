@@ -79,7 +79,7 @@ complex multimodal distributions with a stable regression loss. The transfer was
 
 ### Results
 
-- **+46.9% average success** over prior state of the art across 15 tasks / 4 benchmarks
+- **+46.9% average success** over prior state of the art across 12 tasks (the RSS 2023 count; the 2025 *IJRR* version reports 15) / 4 benchmarks
   (RoboMimic, Push-T, and more), simulation and real robots.
 - Visibly handles multimodality (commits to one mode instead of averaging), long-horizon
   chunks reduce compounding error, and training is as stable as supervised learning.
@@ -160,7 +160,7 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 
 ### 결과
 
-- 15개 과제 / 4개 벤치마크(RoboMimic, Push-T 등), 시뮬레이션과 실제 로봇에서 기존 최고
+- 12개 과제(RSS 2023 기준. 2025년 *IJRR* 판은 15개) / 4개 벤치마크(RoboMimic, Push-T 등), 시뮬레이션과 실제 로봇에서 기존 최고
   대비 **평균 +46.9% 성공률**.
 - 다봉성을 눈에 띄게 처리(평균 내지 않고 한 모드에 전념), 긴 청크가 복합 오차를 줄이며,
   학습은 지도학습만큼 안정적.
@@ -188,9 +188,9 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> The "+46.9%" is an average over 15 tasks with large per-task variance. The substance of the claim is "it can represent multimodal action distributions", not "a general solution to manipulation" — language and cross-task generalization are outside this paper's scope (they arrive when it is combined with VLAs).
+> The "+46.9%" is an average over 12 tasks (the RSS 2023 count; the 2025 *IJRR* version reports 15) with large per-task variance. The substance of the claim is "it can represent multimodal action distributions", not "a general solution to manipulation" — language and cross-task generalization are outside this paper's scope (they arrive when it is combined with VLAs).
 >
-> "+46.9%"는 15개 과제의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
+> "+46.9%"는 12개 과제(RSS 2023 기준. 2025년 *IJRR* 판은 15개)의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

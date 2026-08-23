@@ -34,7 +34,7 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 > [!tip] Key intuition
 > Loss falls as a smooth power law in each of N (params), D (tokens), C (compute), as long as the other two aren't bottlenecks. If performance is predictable, then optimal allocation of a compute budget is a solvable equation — you can plan a giant training run from small pilot runs.
 
-- $L(N) \propto N^{-0.076}$, $L(D) \propto D^{-0.095}$, $L(C) \propto C^{-0.050}$ (approximately), remarkably stable across scales.
+- $L(N) \propto N^{-0.076}$, $L(D) \propto D^{-0.095}$, $L(C_{\min}) \propto C_{\min}^{-0.050}$ (the compute-*optimal* allocation; at fixed batch size the exponent is $\approx 0.057$), remarkably stable across scales.
 - Architecture details (depth vs. width) matter far less than raw scale.
 - Larger models are more **sample-efficient**; Kaplan's allocation advice: grow N fast, D slowly — and stop training well before convergence.
 
@@ -72,7 +72,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 > [!tip] 핵심 직관
 > 나머지 둘이 병목이 아닌 한, 손실은 N(파라미터), D(토큰), C(연산량) 각각에 대해 매끄러운 거듭제곱 법칙으로 떨어진다. 성능이 예측 가능하다면 연산 예산의 최적 배분은 풀 수 있는 방정식이 된다 — 작은 파일럿 실험으로 거대 학습을 설계할 수 있다.
 
-- 대략 $L(N) \propto N^{-0.076}$, $L(D) \propto D^{-0.095}$, $L(C) \propto C^{-0.050}$ — 규모 전반에서 놀랍도록 안정적.
+- 대략 $L(N) \propto N^{-0.076}$, $L(D) \propto D^{-0.095}$, $L(C_{\min}) \propto C_{\min}^{-0.050}$(계산 *최적* 배분 기준. 배치 크기를 고정하면 지수가 $\approx 0.057$) — 규모 전반에서 놀랍도록 안정적.
 - 구조 세부(깊이 vs 폭)는 순수 규모에 비해 훨씬 덜 중요하다.
 - 큰 모델일수록 **샘플 효율**이 좋다; Kaplan의 배분 조언은 "N을 빨리, D를 천천히 키우고, 수렴 훨씬 전에 학습을 멈춰라"였다.
 

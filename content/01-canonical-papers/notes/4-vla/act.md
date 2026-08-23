@@ -25,7 +25,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: A $20k open-source bimanual teleoperation rig (ALOHA) plus Action Chunking with Transformers (ACT) — predict 100 actions at once with a CVAE — makes precise two-handed manipulation learnable from just 50 demonstrations.
+**One-line summary**: A low-cost open-source bimanual teleoperation rig (ALOHA — the paper's §III states a 20k USD budget; the abstract gives no price) plus Action Chunking with Transformers (ACT) — predict 100 actions at once with a CVAE — makes precise two-handed manipulation learnable from just 50 demonstrations.
 
 ### Context
 
@@ -41,10 +41,14 @@ and the algorithmic fragility needed fixing at once.
 > Cut the number of decisions: predict a *chunk* of the next 100 actions in one shot, and
 > the horizon over which errors compound shrinks 100×. Handle the stylistic variability of
 > human demos with a CVAE latent, and smooth chunk boundaries by averaging overlapping
-> predictions (temporal ensembling).
+> predictions (temporal ensembling). **Note what chunking does and does not change**: ACT
+> explicitly does *not* run open-loop inside a chunk — the paper queries the policy at every
+> timestep and ensembles the overlapping predictions, precisely to avoid the jerky motion a
+> once-per-k-steps observation would cause. What chunking shortens is the horizon over which
+> errors compound, not the observation rate.
 
 - **ALOHA hardware**: two leader arms puppeteer two follower arms (joint-space mapping),
-  4 cameras, ~$20k, open-source — high-quality bimanual demos at 50 Hz become easy to collect.
+  4 cameras, open-source, built to a stated 20k USD budget (§III, not the abstract) — high-quality bimanual demos at 50 Hz become easy to collect.
 - **ACT**: a CVAE whose decoder is a Transformer — conditioned on images + joint positions
   (+ a latent style variable $z$), it outputs the next $k{=}100$ joint-space actions.
 
@@ -58,7 +62,7 @@ and the algorithmic fragility needed fixing at once.
     <text x="60" y="32">single-step policy &#8212; one decision every tick</text>
     <text x="60" y="106">action chunking &#8212; one decision per chunk</text>
     <text x="60" y="88" font-size="10.5" opacity="0.85">21 decisions across the window; each one can drift a little further from the demonstrated states</text>
-    <text x="60" y="166" font-size="10.5" opacity="0.85">5 decisions; inside a chunk the robot is open-loop, which is the price paid for the reduction</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">5 decisions - but ACT still queries every timestep and ensembles overlapping chunks</text>
     <text x="30" y="186" opacity="0.9">Chunking does not make each prediction better &#8212; it makes fewer of them,</text>
     <text x="30" y="200" opacity="0.9">so compounding error has fewer chances to accumulate.</text>
     <text x="30" y="216" opacity="0.9">What it spends is reactivity: nothing that happens mid-chunk can change the plan until the next decision.</text>
@@ -119,7 +123,7 @@ defined how modern policies output actions.
 > 경계는 겹치는 예측들의 평균(temporal ensembling)으로 매끄럽게 만든다.
 
 - **ALOHA 하드웨어**: 리더 팔 두 개로 팔로워 팔 두 개를 인형처럼 조종(관절 공간 매핑),
-  카메라 4대, 약 $20k, 오픈소스 — 50 Hz 고품질 양팔 시연 수집이 쉬워진다.
+  카메라 4대, 오픈소스, 논문 §III가 밝힌 2만 달러 예산(초록에는 가격이 없다) — 50 Hz 고품질 양팔 시연 수집이 쉬워진다.
 - **ACT**: 디코더가 Transformer인 CVAE — 이미지 + 관절 위치(+ 스타일 잠재변수 $z$)를
   조건으로 다음 $k{=}100$개의 관절 공간 행동을 출력.
 
@@ -133,7 +137,7 @@ defined how modern policies output actions.
     <text x="60" y="32">단일 스텝 정책 &#8212; 매 틱마다 결정 하나</text>
     <text x="60" y="106">행동 청킹 &#8212; 청크당 결정 하나</text>
     <text x="60" y="88" font-size="10.5" opacity="0.85">이 구간에서 결정 21번; 하나하나가 시연된 상태에서 조금씩 더 벗어날 수 있다</text>
-    <text x="60" y="166" font-size="10.5" opacity="0.85">결정 5번; 청크 안에서는 개루프이고, 그것이 줄인 대가로 치르는 값이다</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">결정 5번 - 다만 ACT는 매 스텝 질의하고 겹치는 청크를 앙상블한다</text>
     <text x="30" y="192" opacity="0.9">청킹은 예측 하나하나를 더 좋게 만들지 않는다 &#8212; 예측 횟수를 줄여서 복합 오차가 쌓일 기회를 줄인다.</text>
     <text x="30" y="207" opacity="0.9">그 대가로 내주는 것은 반응성이다: 청크 도중에 일어난 일은 다음 결정 지점까지 계획을 바꿀 수 없다.</text>
   </g>

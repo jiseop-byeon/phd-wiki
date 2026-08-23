@@ -39,7 +39,7 @@ By 2022, LLMs could decompose "I spilled my drink, can you help?" into sensible 
 
 ### Results
 
-- Evaluated on 101 real-world instructions in a kitchen/office setting with a mobile manipulator over a library of pretrained skills — roughly **84% correct planning and 74% end-to-end execution in the PaLM-SayCan configuration** (the paper's strongest LM).
+- Evaluated on 101 instructions in a kitchen/office setting with a mobile manipulator over a library of pretrained skills — in the **mock kitchen**, **84% planning and 74% execution** in the PaLM-SayCan configuration; the same system scores **81% planning and 60% execution in a real kitchen** (the paper's strongest LM).
 - Affordance grounding is the differentiator: language-only ranking picks infeasible steps that affordances filter out, and planning quality scales with the underlying LM (the move to PaLM is what produced those headline numbers).
 - Handles long-horizon, temporally extended instructions ("bring the apple, then throw away the bag") by chaining scored skill selections.
 
@@ -81,7 +81,7 @@ The canonical "LLM as planner over robot skills" architecture, and the bridge be
 
 ### 결과
 
-- 주방/사무실 환경에서 모바일 매니퓰레이터와 사전학습 skill library로 실세계 지시 101개를 평가 — **PaLM-SayCan 구성에서** 계획 정확도 약 84%, 끝까지 실행 약 74% (논문의 최강 LM 구성).
+- 주방/사무실 환경에서 모바일 매니퓰레이터와 사전학습 skill library로 지시 101개를 평가 — **모의 주방**에서 PaLM-SayCan 구성 계획 84%·실행 74%, **실제 주방**에서는 계획 81%·실행 60% (논문의 최강 LM 구성).
 - 차별점은 affordance 접지다: 언어 점수만으로 순위를 매기면 불가능한 단계를 고르고, affordance가 이를 걸러낸다; 계획 품질은 기반 LM 규모에 따라 오른다(위 대표 수치가 바로 PaLM 이행의 결과다).
 - 점수화된 skill 선택을 연쇄해 장기·시간 확장 지시("사과 갖다주고, 그 다음 봉지를 버려")를 처리한다.
 

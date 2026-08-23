@@ -18,12 +18,12 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Rombach et al., CVPR 2022** — [arXiv](https://arxiv.org/abs/2112.10752) · [PDF](https://arxiv.org/pdf/2112.10752) · [Code](https://github.com/CompVis/latent-diffusion)
 
 > [!note] Math on-ramp · 수학 준비물
-> [[01-canonical-papers/notes/6-diffusion/vae|VAE]] (the compressor) and [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] (what runs inside it). One arithmetic check earns the paper: diffusing $64\times64$ latents instead of $512\times512$ pixels is $64$× fewer positions per step — the "~50× cheaper" headline is that ratio, softened by the autoencoder's own cost.
-> [[01-canonical-papers/notes/6-diffusion/vae|VAE]](압축기)와 [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]](그 안에서 도는 것). 산수 한 번이면 논문이 이해된다: $512\times512$ 픽셀 대신 $64\times64$ 잠재를 디퓨전하면 스텝당 위치 수가 $64$배 적다 — "약 50배 저렴"이라는 헤드라인이 그 비율이고, 오토인코더 자신의 비용이 그것을 조금 깎는다.
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]] (the compressor) and [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] (what runs inside it). One arithmetic check earns the paper: diffusing $64\times64$ latents instead of $512\times512$ pixels is $64$× fewer positions per step — the compute saving (the paper states no multiplicative figure — its only quantified resource claim is "4-times less train resources" against ADM on LSUN-Bedrooms) is that ratio, softened by the autoencoder's own cost.
+> [[01-canonical-papers/notes/6-diffusion/vae|VAE]](압축기)와 [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]](그 안에서 도는 것). 산수 한 번이면 논문이 이해된다: $512\times512$ 픽셀 대신 $64\times64$ 잠재를 디퓨전하면 스텝당 위치 수가 $64$배 적다 — 그 비율이 계산 절감의 출처이고(논문 자신은 배수를 제시하지 않는다 — 유일한 정량 자원 주장은 LSUN-Bedrooms에서 ADM 대비 "4배 적은 학습 자원"이다), 오토인코더 자신의 비용이 그것을 조금 깎는다.
 
 ## English
 
-**One-line summary**: Run diffusion in a VAE's compressed latent space instead of pixel space — ~50× cheaper generation at high resolution, and (as Stable Diffusion, openly released) the model that democratized image generation.
+**One-line summary**: Run diffusion in a VAE's compressed latent space instead of pixel space — far cheaper generation at high resolution (the paper quantifies this only as "significantly reducing computational requirements"), and (as Stable Diffusion, openly released) the model that democratized image generation.
 
 ### Context
 
@@ -74,7 +74,7 @@ latent world models).
 
 ## 한국어
 
-**한 줄 요약**: 디퓨전을 픽셀 공간 대신 VAE의 압축된 잠재 공간에서 돌린다 — 고해상도 생성이 약 50배 저렴해졌고, (Stable Diffusion으로 공개되어) 이미지 생성을 대중화한 그 모델이 됐다.
+**한 줄 요약**: 디퓨전을 픽셀 공간 대신 VAE의 압축된 잠재 공간에서 돌린다 — 고해상도 생성이 훨씬 저렴해졌고(논문은 "계산 요구량을 크게 줄인다"로만 정량화한다), (Stable Diffusion으로 공개되어) 이미지 생성을 대중화한 그 모델이 됐다.
 
 ### 배경
 

@@ -49,7 +49,7 @@ them soft, differentiable, and optimizable.
 
 ### Results
 
-- Matches or beats Mip-NeRF360 quality with **~30–60 min training and ≥100 fps 1080p
+- Matches or beats Mip-NeRF360 quality with **~27–42 min training** (30K iterations: 41m33s / 26m54s / 36m02s on the three benchmark sets) and, per the results table, **100+ fps 1080p** — note the abstract itself claims only **≥30 fps 1080p
   rendering** (vs days/seconds-per-frame for NeRF-class methods).
 
 ### Limitations & critique

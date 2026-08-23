@@ -38,7 +38,7 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 - The paper also proposes an adaptive-KL-penalty variant; clipping won empirically and is what "PPO" means in practice.
 - The full training loss adds a value-function error term and an entropy bonus, optimized jointly when actor and critic share parameters.
 
-**GAE — the paper's other half.** The advantage $A_t$ is estimated with **generalized advantage estimation** (truncated at the rollout horizon $T$ in practice): with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: biased, low variance) and Monte Carlo returns ($\lambda=1$: unbiased, high variance). Every serious PPO implementation pairs clipping with GAE (typically $\lambda\approx 0.95$); reading "PPO" without reading GAE misses half the algorithm.
+**GAE — not PPO's own, but the estimator it runs on.** (Generalized advantage estimation is Schulman et al. 2015, [arXiv:1506.02438](https://arxiv.org/abs/1506.02438); PPO cites and truncates it.) The advantage $A_t$ is estimated with **generalized advantage estimation** (truncated at the rollout horizon $T$ in practice): with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: biased, low variance) and Monte Carlo returns ($\lambda=1$: unbiased, high variance). Every serious PPO implementation pairs clipping with GAE (typically $\lambda\approx 0.95$); reading "PPO" without reading GAE misses half the algorithm.
 
 ### Results
 

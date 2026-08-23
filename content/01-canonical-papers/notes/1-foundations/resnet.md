@@ -43,7 +43,7 @@ After [[01-canonical-papers/notes/1-foundations/vgg|VGG]], deeper should have me
 
 - ILSVRC-2015 classification winner: **top-5 error 3.57%** (ensemble) with 152 layers — deeper *and* less compute than VGG-19.
 - Also won ImageNet detection/localization and COCO detection/segmentation the same year — evidence that better backbones transfer everywhere.
-- On CIFAR-10, trained networks over 1000 layers deep — demonstrating the degradation problem was solved.
+- On CIFAR-10, trained a **1202-layer** net with training error under 0.1% — so the *optimization* difficulty is gone. But its test error is **7.93% against ResNet-110's 6.43%**: deeper stopped helping, and the paper attributes the gap to overfitting on a small dataset, not to degradation.
 
 ### Limitations & critique
 
@@ -83,7 +83,7 @@ The default vision backbone for nearly a decade, and still the standard baseline
 
 - ILSVRC-2015 분류 우승: 152층으로 **top-5 오류율 3.57%**(앙상블) — VGG-19보다 깊으면서 연산은 오히려 적다.
 - 같은 해 ImageNet 검출/localization, COCO 검출/분할까지 석권 — 좋은 백본은 어디로든 전이된다는 증거.
-- CIFAR-10에서는 1000층 넘는 네트워크도 학습시켜 열화 문제 해결을 실증.
+- CIFAR-10에서 **1202층** 네트워크를 학습 오류 0.1% 미만으로 학습시켰다 — *최적화* 어려움은 사라졌다는 뜻이다. 그러나 테스트 오류는 **7.93%로 ResNet-110의 6.43%보다 나쁘다**: 더 깊어지는 것이 더는 도움이 되지 않았고, 논문은 그 격차를 열화가 아니라 작은 데이터셋에서의 과적합으로 돌린다.
 
 ### 한계와 비판
 

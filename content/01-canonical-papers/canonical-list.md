@@ -87,7 +87,7 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/4-vla/open-x-embodiment|Open X-Embodiment]] — the cross-embodiment dataset effort (ICRA 2024)
 - [x] ◐ [[notes/4-vla/octo|Octo]] — open generalist robot policy (RSS 2024)
 - [x] ◐ [[notes/4-vla/openvla|OpenVLA]] (Kim et al., CoRL 2024)
-- [x] ★ [[notes/4-vla/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, 2024)
+- [x] ★ [[notes/4-vla/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, RSS 2025)
 - [x] ◐ [[notes/4-vla/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
 - [ ] ◐ [[notes/4-vla/robomimic|robomimic]] — Mandlekar et al., CoRL 2021 — 시연 데이터에서 무엇이 중요한가
 - [ ] ○ [[notes/4-vla/dagger|DAgger]] — Ross, Gordon & Bagnell, AISTATS 2011 — 복합 오차의 원리적 해법

@@ -2,8 +2,9 @@
 title: "π0 — A Vision-Language-Action Flow Model for General Robot Control"
 authors: Kevin Black, Noah Brown, Danny Driess, et al.
 affiliation: Physical Intelligence
-venue: arXiv
-year: 2024
+venue: RSS
+year: 2025
+journal-ref: "Proc. Robotics: Science and Systems XXI, Los Angeles, June 2025, DOI 10.15607/RSS.2025.XXI.010 (DBLP still lists only the CoRR preprint)"
 arxiv: https://arxiv.org/abs/2410.24164
 pdf: https://arxiv.org/pdf/2410.24164
 code: https://github.com/Physical-Intelligence/openpi
@@ -63,8 +64,7 @@ sharing the forward pass is what lets each half keep what it is good at.*
 
 
 - **Pretrain → post-train recipe**, explicitly mirroring LLM practice: pretrain on a large
-  cross-embodiment mixture (7 platforms, 68 tasks, 10k+ hours, including
-  [[open-x-embodiment|OXE]]), then post-train on curated high-quality task data.
+  cross-embodiment mixture (7 robot configurations, 68 tasks, 10k+ hours of the team's own data — **in addition to** [[open-x-embodiment|OXE]], DROID and Bridge, not including them), then post-train on curated high-quality task data.
 - Language interface allows high-level decomposition (a VLM planner can feed subtask
   commands to π0).
 
@@ -79,8 +79,7 @@ sharing the forward pass is what lets each half keep what it is good at.*
 
 ### Limitations & critique
 
-- arXiv/industrial release: evaluation protocols are self-designed and hard to reproduce
-  independently (openpi weights came later and partially).
+- Self-designed evaluation: the protocols are the authors' own and hard to reproduce independently (openpi weights came later and partially).
 - Data engine (10k+ hours, much proprietary) is the real moat — the method may matter less
   than the corpus.
 - Still imitation-bounded; no force/tactile sensing; failure recovery relies on data coverage.
@@ -135,7 +134,7 @@ flowchart LR
 
 
 - **사전학습 → 사후학습 레시피**, LLM 관행을 명시적으로 미러링: 대규모 교차-신체
-  혼합물(플랫폼 7종, 과제 68개, 1만 시간+, [[open-x-embodiment|OXE]] 포함)로 사전학습 후
+  혼합물(로봇 구성 7종, 과제 68개, 1만 시간+의 자체 데이터 — [[open-x-embodiment|OXE]]·DROID·Bridge를 **포함한 것이 아니라 그에 더한** 것)로 사전학습 후
   선별된 고품질 과제 데이터로 사후학습.
 - 언어 인터페이스로 상위 분해 가능(VLM 플래너가 π0에 하위 과제 명령을 공급).
 

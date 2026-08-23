@@ -58,7 +58,7 @@ question: is the Markovian 1000-step *reverse chain* actually required by the tr
 
 ### Results
 
-- 10–50 step samples with quality near 1000-step DDPM (10–100× speedup); smooth latent
+- 10–50 step samples with quality near 1000-step DDPM (10–50× speedup); smooth latent
   interpolations; near-exact inversion.
 
 ### Limitations & critique
@@ -114,7 +114,7 @@ descendants; DDIM inversion underpins image/trajectory editing methods.
 
 ### 결과
 
-- 10~50 스텝으로 1000 스텝 DDPM에 근접한 품질(10~100배 가속); 매끄러운 잠재 보간;
+- 10~50 스텝으로 1000 스텝 DDPM에 근접한 품질(10~50배 가속); 매끄러운 잠재 보간;
   거의 정확한 역변환.
 
 ### 한계와 비판

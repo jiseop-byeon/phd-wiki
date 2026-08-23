@@ -43,7 +43,7 @@ Training deep nets in 2014 was fragile: it demanded small learning rates and car
 
 - Matched Inception's ImageNet accuracy with **14× fewer training steps**; enabled much higher learning rates and made initialization far less delicate.
 - Slight regularization for free (batch noise), reducing the need for dropout.
-- BN-Inception ensemble: top-5 error 4.9%, surpassing human-level (5.1%) on ImageNet classification.
+- BN-Inception ensemble: top-5 validation error **4.9%** (4.8% test), which the abstract says exceeds "the accuracy of human raters". The often-quoted 5.1% human figure is **not from this paper** — it is Russakovsky et al.'s estimate, cited in the body without a number.
 
 ### Limitations & critique
 
@@ -82,7 +82,7 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 
 - Inception의 ImageNet 정확도를 **14배 적은 학습 스텝**으로 달성; 훨씬 큰 학습률 사용 가능, 초기화 민감도 대폭 감소.
 - 배치 노이즈 덕에 공짜 정규화 효과 — dropout 필요성이 줄었다.
-- BN-Inception 앙상블: top-5 오류율 4.9%로 인간 수준(5.1%)을 넘어섰다.
+- BN-Inception 앙상블: top-5 검증 오류율 **4.9%**(테스트 4.8%). 초록은 이것이 "인간 평가자의 정확도"를 넘는다고 말한다. 흔히 인용되는 5.1%라는 인간 수준 수치는 **이 논문의 것이 아니다** — Russakovsky 등의 추정치이고, 본문이 숫자 없이 인용만 한다.
 
 ### 한계와 비판
 

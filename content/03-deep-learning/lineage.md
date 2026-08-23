@@ -89,7 +89,7 @@ graph TD
 graph TD
     BCE["behavior cloning"] --> RT1E["RT-1 2023"]
     RT1E --> RT2E["RT-2 2023<br/>a VLM put on a robot"]
-    DPE["Diffusion Policy 2023"] --> Pi0E2["pi-0 2024"]
+    DPE["Diffusion Policy 2023"] --> Pi0E2["pi-0 RSS 2025"]
     ACTE["ACT/ALOHA 2023"] --> Pi0E2
     RT2E --> OpenVLAE["OpenVLA 2024"]
     OXEE["Open X-Embodiment 2023<br/>dataset"] --> OpenVLAE

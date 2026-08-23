@@ -42,14 +42,14 @@ complexity* and *where the data comes from*.
 > base, simulation and *neural trajectories* (video-generation-augmented data) in the
 > middle, expensive real demos only at the top.
 
-- **System 2**: NVIDIA Eagle-2 VLM (~2B), processes vision + language at ~10 Hz.
+- **System 2**: NVIDIA Eagle-2 VLM (**1.34B**; the whole dual-system model is 2.2B, which is what "N1-2B" names), processes vision + language at ~10 Hz.
 - **System 1**: a **flow-matching diffusion transformer** ([[pi0|π0]]-style action expert,
   [[act|ACT]]-style chunks) generating whole-body continuous actions at up to 120 Hz;
   embodiment-specific encoders/decoders handle different robots in one model.
 
 ```mermaid
 flowchart LR
-    OBS["cameras + language"] --> S2["System 2 &#183; Eagle-2 VLM (2B)<br/>about 10 Hz &#183; what to do"]
+    OBS["cameras + language"] --> S2["System 2 &#183; Eagle-2 VLM (1.34B)<br/>about 10 Hz &#183; what to do"]
     S2 -->|"latent plan"| S1["System 1 &#183; flow-matching DiT<br/>up to 120 Hz &#183; how to move"]
     S1 --> ENC["embodiment-specific decoder"]
     ENC --> ROB["robot"]
@@ -58,7 +58,7 @@ flowchart LR
 
 *The same two-rate structure as MPC over a whole-body controller: a slow deliberate layer
 choosing what to do, a fast layer keeping the body on that decision. The 10 Hz / 120 Hz gap
-is not an implementation detail — it is why a 2B VLM can be in the loop at all.*
+is not an implementation detail — it is why a 1.34B VLM can be in the loop at all.*
 
 
 - Trained end-to-end across the pyramid: human videos (latent action learning), synthetic
@@ -116,14 +116,14 @@ to data-scarce domains like construction robotics.
 > **데이터 피라미드**를 쌓아라: 바닥은 웹 규모 인간 비디오, 중간은 시뮬레이션과 *신경
 > 궤적*(비디오 생성으로 증강한 데이터), 꼭대기만 비싼 실제 시연.
 
-- **System 2**: NVIDIA Eagle-2 VLM(약 2B), 시각+언어를 약 10 Hz로 처리.
+- **System 2**: NVIDIA Eagle-2 VLM(**1.34B**. 2.2B는 이중 시스템 *전체*이고 "N1-2B"라는 이름이 가리키는 것이 그쪽이다), 시각+언어를 약 10 Hz로 처리(NVIDIA L40 GPU 기준).
 - **System 1**: 전신 연속 행동을 최대 120 Hz로 생성하는 **flow matching 디퓨전
   트랜스포머** ([[pi0|π0]]식 행동 전문가, [[act|ACT]]식 청크); 신체별 인코더/디코더가
   한 모델에서 여러 로봇을 처리.
 
 ```mermaid
 flowchart LR
-    OBS["카메라 + 언어"] --> S2["System 2 &#183; Eagle-2 VLM (2B)<br/>약 10 Hz &#183; 무엇을 할 것인가"]
+    OBS["카메라 + 언어"] --> S2["System 2 &#183; Eagle-2 VLM (1.34B)<br/>약 10 Hz &#183; 무엇을 할 것인가"]
     S2 -->|"잠재 계획"| S1["System 1 &#183; flow matching DiT<br/>최대 120 Hz &#183; 어떻게 움직일 것인가"]
     S1 --> ENC["신체별 디코더"]
     ENC --> ROB["로봇"]
@@ -132,7 +132,7 @@ flowchart LR
 
 *전신 제어기 위에 MPC를 얹은 것과 같은 2단 속도 구조다: 느리고 신중한 층이 무엇을 할지
 고르고, 빠른 층이 몸을 그 결정 위에 붙들어 둔다. 10 Hz / 120 Hz의 간격은 구현 디테일이
-아니라, 2B짜리 VLM이 애초에 루프 안에 들어올 수 있는 이유다.*
+아니라, 1.34B짜리 VLM이 애초에 루프 안에 들어올 수 있는 이유다.*
 
 
 - 피라미드 전체에 걸쳐 end-to-end 학습: 인간 비디오(잠재 행동 학습), Isaac 합성 데이터,
