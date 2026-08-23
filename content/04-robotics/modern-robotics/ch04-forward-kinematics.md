@@ -99,7 +99,7 @@ twin ([[05-construction-robotics/index|construction]]); VLAs that output joint c
 > [!tip]- Answers
 > 1. Joint 1 is at zero, so the elbow stays at $(1,0)$; joint 2 rotates link 2 by 90° about the axis through $q_2$, pointing it along $+\hat y$. Tip $= (1,1,0)$, orientation $R_z(90°)$. Check geometrically: $(1,0) + (0,1) = (1,1)$. ✓
 > 2. Because the axis passes through $q_i$, the body point *currently coincident with the origin* sits at $-q_i$ relative to the axis, so its velocity is $\omega\times(0 - q_i) = -\omega\times q_i$ — literally the "what $v$ means" warning of [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3]].
-> 3. Joint $n$, the one nearest the end-effector. The body form expresses each screw axis in the end-effector frame, which reverses the order of the product relative to the space form.
+> 3. **Joint 1.** The body form is $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots e^{[\mathcal{B}_n]\theta_n}$ (MR eq. 4.16), so $e^{[\mathcal{B}_1]\theta_1}$ sits against $M$. The joint order is **not** reversed — it runs $1 \ldots n$ in both forms; what changes is which side $M$ sits on (right in the space form, left in the body form) and that the axes are written in the end-effector frame.
 
 ## 한국어
 
@@ -187,4 +187,4 @@ $v_i = -\hat\omega_i \times q_i$ → 지수들 → 곱. 코드로는 Modern Robo
 > [!tip]- 정답 · Answers
 > 1. 팔꿈치 $(1,0)$; 링크 2가 $+\hat y$ 방향 → 끝점 $(1,1,0)$; 방향 $R_z(90°)$.
 > 2. 원점과 겹친 몸체 점은 축에서 $-q_i$만큼 떨어져 있으므로 속도는 $\omega \times (-q_i)$ — [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3]]의 $v$ 정의 그대로.
-> 3. 관절 $n$(말단 쪽) — 바디 형식은 말단 프레임 기준이므로 곱 순서가 공간 형식과 반대다.
+> 3. **관절 1.** 바디 형식은 $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots e^{[\mathcal{B}_n]\theta_n}$(MR 식 4.16)이므로 $e^{[\mathcal{B}_1]\theta_1}$이 $M$에 붙는다. 곱 순서는 **뒤집히지 않는다** — 두 형식 모두 $1 \ldots n$이고, 달라지는 것은 $M$이 어느 쪽에 오는지(공간 형식은 오른쪽, 바디 형식은 왼쪽)와 축을 말단 프레임에서 쓴다는 점이다.

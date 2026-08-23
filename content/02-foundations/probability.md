@@ -116,8 +116,8 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   fancier is optimal *given the Gaussian assumption* — and that is the point: "take the mean"
   is not a habit, it is the maximum-likelihood answer for Gaussian noise. Change the noise
   model and the answer changes: assume Laplace noise instead and the MLE becomes the
-  **median** ($2.0$ here too, but it would differ if one reading were $9.0$ — the mean would
-  jump to $3.4$ and the median would not move). *Every loss function is a noise assumption in
+  **median** ($2.0$ here too, but it would differ if the $2.1$ reading were $9.0$ — the mean
+  would jump to $3.38$ and the median would not move at all). *Every loss function is a noise assumption in
   disguise.*
   **MSE regression is MLE under Gaussian noise; cross-entropy is MLE for categorical
   outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
@@ -289,8 +289,8 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   추정이 그냥 평균, $\hat\mu = 10.0/5 = 2.0$ m라고 말한다. *가우시안 가정 아래에서는* 더
   정교한 무언가가 최적이 아니다 — 그리고 그것이 핵심이다: "평균을 취한다"는 습관이 아니라
   가우시안 잡음에 대한 최대우도 답이다. 잡음 모델을 바꾸면 답이 바뀐다: 라플라스 잡음을
-  가정하면 MLE는 **중앙값**이 된다(여기서는 $2.0$으로 같지만, 측정값 하나가 $9.0$이었다면
-  평균은 $3.4$로 튀고 중앙값은 꿈쩍도 않는다). *모든 손실 함수는 변장한 잡음 가정이다.*
+  가정하면 MLE는 **중앙값**이 된다(여기서는 $2.0$으로 같지만, $2.1$ 측정값이 $9.0$이었다면
+  평균은 $3.38$로 튀고 중앙값은 전혀 움직이지 않는다). *모든 손실 함수는 변장한 잡음 가정이다.*
   **MSE 회귀는 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:

@@ -20,8 +20,11 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Error dynamics thinking**: design the controller so the *error* obeys a stable
   differential equation ([[02-foundations/engineering-math|0.5 §8]]) — e.g.,
   $\ddot e + K_d \dot e + K_p e = 0$ with gains picking damping/frequency.
-- **PID** (velocity-input regime): the workhorse; P fights error, D adds damping, I kills
+- **PI** (velocity-input regime, MR §11.3): with velocity inputs the error dynamics are
+  *first order*, $\dot\theta_e + K_p\theta_e = 0$, so this section gives P and PI. I kills
   steady-state offset (and brings windup — hence anti-windup in every real implementation).
+  **PID and the second-order $\ddot e + K_d\dot e + K_p e = 0$ belong to the torque-input
+  regime of §11.4** — that is where $K_d$ buys damping.
 - **Computed torque / feedback linearization** — the chapter's centerpiece:
   $$\tau = M(\theta)\big(\ddot\theta_d + K_p e + K_d \dot e\big) + c(\theta,\dot\theta) + g(\theta)$$
   Use the [[04-robotics/modern-robotics/ch08-dynamics|dynamics model]] to cancel the
@@ -45,8 +48,11 @@ tracked by exactly these low-level loops; impedance control is why
 - **오차 동역학 사고**: *오차*가 안정한 미분방정식([[02-foundations/engineering-math|0.5 §8]])을
   따르도록 제어기를 설계한다 — 예: $\ddot e + K_d \dot e + K_p e = 0$, 이득이 감쇠/주파수를
   고른다.
-- **PID** (속도 입력 영역): 주력 일꾼; P는 오차와 싸우고, D는 감쇠를 더하고, I는 정상 상태
-  오프셋을 없앤다(그리고 와인드업을 데려온다 — 모든 실전 구현에 anti-windup이 있는 이유).
+- **PI**(속도 입력 영역, MR §11.3): 속도 입력에서는 오차 동역학이 *1차*
+  ($\dot\theta_e + K_p\theta_e = 0$)여서 이 절은 P와 PI를 다룬다. I는 정상 상태 오프셋을
+  없앤다(그리고 와인드업을 데려온다 — 모든 실전 구현에 anti-windup이 있는 이유).
+  **PID와 2차 형태 $\ddot e + K_d\dot e + K_p e = 0$은 §11.4의 토크 입력 영역에 속한다** —
+  $K_d$로 감쇠를 사는 곳이 거기다.
 - **계산 토크 / 피드백 선형화** — 이 장의 중심:
   $$\tau = M(\theta)\big(\ddot\theta_d + K_p e + K_d \dot e\big) + c(\theta,\dot\theta) + g(\theta)$$
   [[04-robotics/modern-robotics/ch08-dynamics|동역학 모델]]로 비선형성을 상쇄해, 마음대로

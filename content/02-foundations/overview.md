@@ -195,7 +195,7 @@ each answerable in a few lines. Do them in writing, closed-book. **Nine or more 
 > 9. Stable ($a = -2 < 0$). $G(s) = 1/(s+2)$, pole at $s = -2$, left half-plane. Discrete factor $e^{-2(0.1)} = 0.819 < 1$ ✓ — the left half-plane maps into the unit disc.
 > 10. $|170 - 200| = 30$ Hz. An analog anti-alias filter before sampling (or a higher $f_s$); no software filter can undo it afterwards.
 > 11. $1/(1-0.95) = 20$ steps. Weight at 60 steps is $0.95^{60} \approx 0.046$ — about 5%, i.e. three effective horizons out and nearly invisible.
-> 12. 9 of 10 gives roughly $\pm 1/\sqrt{10} \approx \pm 32$ percentage points — the interval covers most of the plausible range. Not told: whether the trials were seen or unseen conditions, how many seeds/scenes, whether evaluation was open- or closed-loop, and what counted as success (any two of these are enough).
+> 12. 9 of 10 is a wide interval: the standard error of a proportion is $\sqrt{p(1-p)/n} = \pm 9.5$ percentage points, and the exact 95% interval runs roughly **55–100%** — asymmetric, because it cannot exceed 100%. (Do not use $1/\sqrt{n}$ here; that is not the standard error of a proportion.) Not told: whether the trials were seen or unseen conditions, how many seeds/scenes, whether evaluation was open- or closed-loop, and what counted as success (any two of these are enough).
 
 If several answers were shaky, the failures point at pages, not at "the foundations" as a
 whole — reread those pages' worked examples rather than starting over.
@@ -397,7 +397,7 @@ graph LR
 > 9. 안정($a = -2 < 0$). $G(s) = 1/(s+2)$, 극점 $s = -2$, 좌반평면. 이산 계수 $e^{-2(0.1)} = 0.819 < 1$ ✓ — 좌반평면이 단위원 안으로 사상된다.
 > 10. $|170 - 200| = 30$ Hz. 샘플링 전에 아날로그 안티에일리어스 필터를 넣었어야 한다(또는 $f_s$를 올렸어야). 사후의 어떤 소프트웨어 필터도 되돌릴 수 없다.
 > 11. $1/(1-0.95) = 20$ 스텝. 60 스텝의 가중치는 $0.95^{60} \approx 0.046$ — 약 5%, 즉 유효 지평 세 배 밖이라 거의 보이지 않는다.
-> 12. 10회 중 9회는 대략 $\pm 1/\sqrt{10} \approx \pm 32$%p — 구간이 그럴듯한 범위의 대부분을 덮는다. 알려주지 않는 것: 시행이 본 조건인지 못 본 조건인지, 시드·장면이 몇 개인지, 평가가 개루프인지 폐루프인지, 무엇을 성공으로 셌는지(이 중 둘이면 충분).
+> 12. 10회 중 9회는 넓은 구간이다: 비율의 표준오차는 $\sqrt{p(1-p)/n} = \pm 9.5$%p이고, 정확한 95% 구간은 대략 **55~100%** 다 — 100%를 넘을 수 없으므로 비대칭이다. ($1/\sqrt{n}$을 쓰지 마라. 비율의 표준오차가 아니다.) 알려주지 않는 것: 시행이 본 조건인지 못 본 조건인지, 시드·장면이 몇 개인지, 평가가 개루프인지 폐루프인지, 무엇을 성공으로 셌는지(이 중 둘이면 충분).
 
 여러 개가 흔들렸다면, 그 실패는 "기초 전체"가 아니라 특정 페이지를 가리킨다 — 처음부터
 다시 하지 말고 그 페이지들의 계산 예제를 다시 보라.

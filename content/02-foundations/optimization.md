@@ -88,8 +88,9 @@ formulations of the same engineering problem differ wildly in solvability.
 ### 4. Constrained optimization — Lagrange, KKT, duality
 
 - **Why add the constraint to the objective at all?** At a constrained optimum, you can't
-  descend $f$ without violating a constraint — which means $\nabla f$ points straight *into*
-  the active constraint's forbidden side, i.e. $\nabla f = -\lambda\nabla g$ for some
+  descend $f$ without violating a constraint — the *descent* direction $-\nabla f$ points
+  straight into the active constraint's forbidden side, so $\nabla f$ itself points back into
+  the feasible region, anti-parallel to $\nabla g$: $\nabla f = -\lambda\nabla g$ for some
   $\lambda \ge 0$ (the two gradients are anti-parallel). Rearranged, that is
   $\nabla(f + \lambda g) = 0$ — so minimizing the combined **Lagrangian** finds exactly the
   points where no feasible descent direction remains.
@@ -238,7 +239,8 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 ### 4. 제약 최적화 — 라그랑주, KKT, 쌍대성
 
 - **왜 제약을 목적함수에 더하나?** 제약 최적점에서는 제약을 어기지 않고는 $f$를 더 내릴
-  수 없다 — 즉 $\nabla f$가 활성 제약의 금지 영역 쪽을 정면으로 가리키고, 어떤
+  수 없다 — *하강* 방향 $-\nabla f$가 활성 제약의 금지 영역 쪽을 정면으로 가리키므로,
+  $\nabla f$ 자신은 실행 가능 영역 쪽을 향한다. 어떤
   $\lambda \ge 0$에 대해 $\nabla f = -\lambda\nabla g$(두 그래디언트가 반평행)가 된다.
   정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**을 최소화하면 실행
   가능한 하강 방향이 남지 않는 점을 정확히 찾는다.

@@ -103,7 +103,7 @@ functions.
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$ — reaching 90% of the new value takes about
   **22 samples**, since $0.9^{22} \approx 0.1$. At 100 Hz that is $0.22$ s of lag you just
   added to your feedback loop. Set $\alpha = 0.5$ instead and it arrives in 3 samples but
-  smooths ten times less. That one trade — noise rejection bought with delay — is the whole
+  smooths about 2.5× less (noise *variance* gain is $\alpha/(2-\alpha)$: 0.053 vs 0.333, a factor of 6.3 in variance and 2.5 in standard deviation). That one trade — noise rejection bought with delay — is the whole
   of filter design, and the reason a control engineer always asks what your filter cost you
   in phase ([[04-robotics/control-theory-ce397|control theory §7]]).
 - Choosing: low-pass for sensor noise, high-pass for drift removal, notch at known
@@ -236,7 +236,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   보자 — 입력이 $0$에서 $1$로 뛰어 그대로 유지된다. $y = 0$에서 시작하면 출력은
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$으로 가고, 새 값의 90%에 닿는 데 약
   **22 샘플**이 걸린다($0.9^{22} \approx 0.1$이므로). 100 Hz라면 방금 피드백 루프에 $0.22$초의
-  지연을 더한 셈이다. $\alpha = 0.5$로 두면 3 샘플 만에 도달하지만 평활 효과는 10분의 1이 된다.
+  지연을 더한 셈이다. $\alpha = 0.5$로 두면 약 3.3 샘플 만에 도달하지만 평활 효과는 약 2.5배 나빠진다(잡음 *분산* 이득이 $\alpha/(2-\alpha)$로 0.053 대 0.333 — 분산으로 6.3배, 표준편차로 2.5배).
   이 거래 하나 — 지연을 치르고 사는 잡음 제거 — 가 필터 설계의 전부이고, 제어 엔지니어가
   언제나 "그 필터가 위상에서 얼마를 앗아갔나"를 묻는 이유다
   ([[04-robotics/control-theory-ce397|제어 이론 §7]]).

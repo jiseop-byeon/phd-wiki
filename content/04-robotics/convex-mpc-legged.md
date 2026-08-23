@@ -22,7 +22,7 @@ mastery-when: "Raise to Working or Mastery when legged control or MPC design is 
 *deliberate simplification*: approximate the robot as a single rigid body (ignore leg
 dynamics), linearize the rotation dynamics around the current yaw, and treat ground
 reaction forces as the decision variables with friction-cone constraints — the problem
-becomes a **convex QP** solved at hundreds of Hz, exactly the machinery of
+becomes a **convex QP** that solves to optimality in under a millisecond and is re-run at tens of Hz (Di Carlo et al. report 20–30 Hz; [[04-robotics/mpc|7. MPC §2]] sizes the same model at 50 Hz) — exactly the machinery of
 [[02-foundations/optimization|4. Optimization §5]]. Cheetah 3 galloped on this; the
 follow-up (Kim et al., open access) pairs the MPC with whole-body impulse control — the
 standard two-level stack (slow MPC plans forces, fast WBC tracks them) that echoes
@@ -40,7 +40,7 @@ locomotion policies (RL) are compared against.
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*다:
 로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 현재 요(yaw) 주변에서
-선형화하고, 지면 반력을 마찰 원뿔 제약이 달린 결정 변수로 삼는다 — 문제가 수백 Hz로
+선형화하고, 지면 반력을 마찰 원뿔 제약이 달린 결정 변수로 삼는다 — 문제가 1밀리초 안에 최적으로 풀리고 수십 Hz로 다시 도는(Di Carlo 등은 20~30 Hz, [[04-robotics/mpc|7. MPC §2]]는 같은 모델을 50 Hz로 잡는다)
 풀리는 **볼록 QP**가 된다. 정확히 [[02-foundations/optimization|4. 최적화 §5]]의
 기계장치다. Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를 전신 임펄스
 제어와 결합한다 — 느린 MPC가 힘을 계획하고 빠른 WBC가 추종하는 표준 2단 스택으로,

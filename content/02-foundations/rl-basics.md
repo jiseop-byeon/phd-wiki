@@ -80,7 +80,7 @@ flowchart LR
   [[02-foundations/calculus-backprop|stop-gradient]] copy for stable targets).
 - Value-based methods are sample-efficient but awkward for continuous actions
   (the $\max_{a'}$ needs an inner optimization) — hence robotics leans policy-side.
-- **Worked example — value iteration you can do on paper.** Two states, fixed policy,
+- **Worked example — policy evaluation you can do on paper.** (Value *iteration* would take a $\max_a$ at each step; with the policy fixed this is the evaluation half.) Two states, fixed policy,
   $\gamma = 0.9$: state $A$ gives reward 1 and moves to $B$; state $B$ gives 0 and moves
   back to $A$. Bellman: $V(A) = 1 + 0.9V(B)$, $V(B) = 0.9V(A)$. Iterate from $V_0 = (0,0)$:
   $V_1 = (1, 0)$, $V_2 = (1, 0.9)$, $V_3 = (1.81, 0.9)$, … converging to the fixed point
@@ -533,7 +533,7 @@ flowchart LR
   [[02-foundations/calculus-backprop|stop-gradient]] 복사본).
 - 가치 기반은 샘플 효율이 좋지만 연속 행동에 어색하다($\max_{a'}$가 내부 최적화를
   요구) — 로보틱스가 정책 쪽으로 기우는 이유.
-- **계산 예제 — 종이로 하는 가치 반복.** 상태 둘, 고정 정책, $\gamma = 0.9$:
+- **계산 예제 — 종이로 하는 정책 평가.**(가치 *반복*이라면 매 스텝 $\max_a$를 취한다. 정책이 고정이면 평가 쪽 절반이다.) 상태 둘, 고정 정책, $\gamma = 0.9$:
   상태 $A$는 보상 1을 주고 $B$로, $B$는 0을 주고 $A$로 간다. 벨만:
   $V(A) = 1 + 0.9V(B)$, $V(B) = 0.9V(A)$. $V_0 = (0,0)$에서 반복하면
   $V_1 = (1, 0)$, $V_2 = (1, 0.9)$, $V_3 = (1.81, 0.9)$, … 고정점

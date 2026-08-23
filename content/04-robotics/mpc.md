@@ -98,7 +98,9 @@ at each of 4 feet), horizon $N = 10$.
 
 Condensed has under half the variables, which sounds decisive until you notice its Hessian is
 dense: $120^2 = 14{,}400$ nonzeros, against a stacked matrix whose nonzero count grows only
-linearly in $N$. Doubling the horizon roughly doubles stacked work and *quadruples* condensed
+linearly in $N$. Doubling the horizon roughly doubles stacked work; it *quadruples* the
+condensed Hessian's entry count and, because dense factorization is cubic in the variable
+count, multiplies condensed solve
 work. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
 estimation already spent — which is why this choice is a real engineering decision rather
 than a stylistic one.
@@ -242,7 +244,7 @@ feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노�
 
 Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
 비영 성분이 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
-지평을 두 배로 하면 stacked는 대략 두 배, condensed는 *네 배*의 일이 된다. 그리고 50 Hz라면
+지평을 두 배로 하면 stacked는 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 실제 풀이 일은 약 **여덟 배**가 된다. 그리고 50 Hz라면
 이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
 이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 

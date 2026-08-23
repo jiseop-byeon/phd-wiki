@@ -84,8 +84,9 @@ eigenvector direction decaying or growing like $e^{\lambda_i t}$.
 **Worked eigenvalues.** For $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$:
 $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm j1.94$.
 Read it off directly: negative real part → decaying; nonzero imaginary part → oscillating
-at ~1.94 rad/s while it decays. **Complex eigenvalues are ringing; real ones are pure
-decay.** You now know the qualitative response without simulating anything.
+at ~1.94 rad/s while it decays. **Complex eigenvalues are ringing; real ones are monotone —
+decaying if negative, growing if positive.** You now know the qualitative response without
+simulating anything.
 
 ### 4. Stability, and the two half-stories
 
@@ -192,8 +193,10 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
 - **P** pushes proportional to error (raises $\omega_n$ — faster, but too much causes ringing).
 - **D** pushes against the error's *rate* (adds damping, raises $\zeta$) — and amplifies
   sensor noise, so it is always used with a filter (whose lag then eats into **phase margin**
-  — how much extra delay the loop can absorb before its correction arrives so late that it
-  reinforces the error instead of cancelling it,
+  — the extra phase lag, in degrees at the gain-crossover frequency, the loop can absorb
+  before its correction reinforces the error instead of cancelling it. Divide it by that
+  frequency and you get the *delay* margin in seconds; the two are related but not
+  interchangeable across controllers of different bandwidth,
   [[02-foundations/signal-processing|signal processing §4]]).
 - **I** integrates residual error to kill steady-state offset — and introduces
   **integral windup**: while an actuator is saturated the integral keeps growing, then
@@ -460,7 +463,7 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
 - **P**는 오차에 비례해 민다($\omega_n$을 올린다 — 빨라지지만 과하면 울린다).
 - **D**는 오차의 *변화율*에 맞선다(감쇠를 더해 $\zeta$를 올린다) — 그리고 센서 잡음을
   증폭하므로 항상 필터와 함께 쓰이고, 그 필터의 지연이 다시 **위상 여유**(phase margin)를
-  깎는다 — 위상 여유란 루프가 불안정해지기 전까지 더 견딜 수 있는 지연의 양이다. 보정이
+  깎는다 — 위상 여유란 이득 교차 주파수에서 루프가 더 견딜 수 있는 위상 지연을 도(度)로 잰 값이다. 그것을 그 주파수로 나누면 초 단위의 *지연* 여유가 되는데, 대역폭이 다른 제어기 사이에서는 둘을 바꿔 쓸 수 없다. 보정이
   너무 늦게 도착하면 오차를 상쇄하는 대신 되레 키운다
   ([[02-foundations/signal-processing|신호처리 §4]]).
 - **I**는 잔여 오차를 적분해 정상 상태 오프셋을 없앤다 — 그리고 **적분 와인드업**을

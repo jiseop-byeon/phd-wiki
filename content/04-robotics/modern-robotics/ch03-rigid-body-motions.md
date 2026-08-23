@@ -54,7 +54,7 @@ end-effector point."** It is the velocity of *the point of the (imagined, infini
 large) body that currently coincides with the frame origin*. That is why a body rotating
 about a distant axis has a nonzero $v$ even if "its center" barely moves. Every twist is a
 **screw**: rotate about an axis while translating along it; pure translation is the
-zero-pitch limit.
+**infinite**-pitch limit, and pure rotation is the zero-pitch case (MR Def. 3.24: $h = 0$ for a pure rotation; $h \to \infty$ when $\omega = 0$).
 
 ### 4. One motion, two descriptions: space frame vs body frame
 
@@ -149,7 +149,7 @@ $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{
 이 책 전체에서 가장 흔한 오해: **$v$는 "말단 점의 속도"가 아니다.** $v$는 *(무한히
 크다고 상상한) 몸체에서 지금 프레임 원점과 겹쳐 있는 점*의 속도다. 그래서 멀리 있는 축
 둘레로 도는 몸체는 "중심"이 거의 안 움직여도 $v$가 0이 아니다. 모든 twist는
-**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동; 순수 병진은 피치 0의
+**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동; 순수 병진은 피치가 **무한대**인 극한이고, 순수 회전이 피치 0인 경우다(MR 정의 3.24: 순수 회전이면 $h = 0$, $\omega = 0$이면 $h \to \infty$). 이는 피치 0의
 극한이다.
 
 ### 4. 하나의 운동, 두 개의 기술: space 프레임 vs body 프레임

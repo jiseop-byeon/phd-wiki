@@ -224,7 +224,7 @@ assumes you have absorbed:
   impedance controller depends on $\Lambda$, so identical gains give different effective
   dynamics in different directions and different poses.
 
-The relationship to MR ch.5's manipulability ellipsoid is exact and worth stating: that
+The relationship to MR ch.5's manipulability ellipsoid is qualitative, not exact — $\Lambda^{-1} = JM^{-1}J^\top$ is the reciprocal of the *dynamic* manipulability ellipsoid, which coincides with ch.5's kinematic $JJ^\top$ only when $M \propto I$. The direction of the statement still holds: that
 ellipsoid's long axis is the direction that is *easy to move*, and an apparent-mass
 ellipse's long axis is the direction that is *hard to move*. Near a singularity the
 manipulability ellipse collapses to a line, and correspondingly $\Lambda$ blows up in that
@@ -498,7 +498,7 @@ $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\
 - **하나의 강성 게인이 모든 방향에서 옳을 수 없다.** 임피던스 제어기의 폐루프 거동은
   $\Lambda$에 의존하므로, 같은 게인이 방향과 자세에 따라 다른 유효 동역학을 준다.
 
-MR 5장의 가조작성 타원체와의 관계는 정확하며 명시할 가치가 있다: 그 타원체의 긴 축은
+MR 5장의 가조작성 타원체와의 관계는 정확한 일치가 아니라 정성적이다 — $\Lambda^{-1} = JM^{-1}J^\top$은 *동역학* 가조작성 타원체의 역이고, 5장의 기구학적 $JJ^\top$과는 $M \propto I$일 때만 일치한다. 진술의 방향은 그대로다: 그 타원체의 긴 축은
 *움직이기 쉬운* 방향이고, 겉보기 질량 타원의 긴 축은 *움직이기 어려운* 방향이다. 특이점
 근처에서 가조작성 타원은 직선으로 붕괴하고, 대응해서 $\Lambda$는 그 방향으로 발산한다 —
 팔이 더 이상 움직일 수 없는 방향으로 사실상 무한히 무거워진다.
