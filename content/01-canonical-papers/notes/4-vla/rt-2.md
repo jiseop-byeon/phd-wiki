@@ -94,7 +94,7 @@ RT-2's design choices.
 
 ### Connections
 
-- Previous: [[rt-1|RT-1]] (the data & tokenization), [[flamingo|Flamingo]]/[[llava|LLaVA]] (the VLM substrate)
+- Previous: [[saycan|SayCan]] (language grounded in affordances), [[rt-1|RT-1]] (the data & tokenization), [[flamingo|Flamingo]]/[[llava|LLaVA]] (the VLM substrate)
 - Next: OpenVLA, π0, GR00T N1
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
@@ -165,7 +165,7 @@ vs 연속 헤드, 공동 학습 비율)은 곧 RT-2의 설계 선택에 대한 �
 
 ### 연결
 
-- 이전: [[rt-1|RT-1]] (데이터와 토큰화), [[flamingo|Flamingo]]/[[llava|LLaVA]] (VLM 토대)
+- 이전: [[saycan|SayCan]](어포던스에 접지된 언어), [[rt-1|RT-1]] (데이터와 토큰화), [[flamingo|Flamingo]]/[[llava|LLaVA]] (VLM 토대)
 - 다음: OpenVLA, π0, GR00T N1
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 

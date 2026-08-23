@@ -65,7 +65,7 @@ guidance, autoguidance.
 
 ### Connections
 
-- Previous: [[score-sde|classifier guidance]], [[ddpm|DDPM]] · Used by: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]-class models
+- Previous: classifier guidance (Dhariwal & Nichol 2021 — no note here), [[score-sde|Score SDE]], [[ddpm|DDPM]] · Used by: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]-class models
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
 ## 한국어
@@ -111,7 +111,7 @@ CFG를 쓴다). 후속: 증류된 가이던스, 구간 가이던스, autoguidanc
 
 ### 연결
 
-- 이전: [[score-sde|분류기 가이던스]], [[ddpm|DDPM]] · 쓰는 곳: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]급 모델
+- 이전: 분류기 가이던스(Dhariwal & Nichol 2021 — 이 위키에 노트 없음), [[score-sde|Score SDE]], [[ddpm|DDPM]] · 쓰는 곳: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]급 모델
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading

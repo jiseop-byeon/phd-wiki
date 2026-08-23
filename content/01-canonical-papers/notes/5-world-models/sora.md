@@ -71,7 +71,7 @@ video world models ([[cosmos|Cosmos]]) that add what Sora lacks — control.
 
 ### Connections
 
-- Previous: [[ddpm|DDPM]] + DiT, [[vit|ViT]] (patch logic), [[scaling-laws|Scaling Laws]]
+- Previous: [[latent-diffusion|Latent Diffusion]] (the latent-space move), [[ddpm|DDPM]] + DiT, [[vit|ViT]] (patch logic), [[scaling-laws|Scaling Laws]]
 - Parallel: [[genie|Genie]] (interactive), [[jepa|JEPA]] (the counter-position) · Next: [[cosmos|Cosmos]]
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
@@ -125,7 +125,7 @@ video world models ([[cosmos|Cosmos]]) that add what Sora lacks — control.
 
 ### 연결
 
-- 이전: [[ddpm|DDPM]] + DiT, [[vit|ViT]] (패치 논리), [[scaling-laws|Scaling Laws]]
+- 이전: [[latent-diffusion|Latent Diffusion]](잠재 공간으로의 이동), [[ddpm|DDPM]] + DiT, [[vit|ViT]] (패치 논리), [[scaling-laws|Scaling Laws]]
 - 병행: [[genie|Genie]] (상호작용형), [[jepa|JEPA]] (반대 진영) · 다음: [[cosmos|Cosmos]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 

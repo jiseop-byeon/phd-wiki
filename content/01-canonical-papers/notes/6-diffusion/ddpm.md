@@ -131,7 +131,7 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 
 ### Connections
 
-- Previous: [[vae|VAE]] (the variational machinery), [[gan|GAN]] (the rival it displaced)
+- Previous: [[u-net|U-Net]] (the backbone), [[vae|VAE]] (the variational machinery), [[gan|GAN]] (the rival it displaced)
 - Next: [[score-sde|Score SDE]] (unifying view), [[ddim|DDIM]], [[latent-diffusion|Latent Diffusion]] → [[diffusion-policy|Diffusion Policy]]
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
 
@@ -243,7 +243,7 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 
 ### 연결
 
-- 이전: [[vae|VAE]] (변분 기계장치), [[gan|GAN]] (밀어낸 경쟁자)
+- 이전: [[u-net|U-Net]](백본), [[vae|VAE]] (변분 기계장치), [[gan|GAN]] (밀어낸 경쟁자)
 - 다음: [[score-sde|Score SDE]] (통합 관점), [[ddim|DDIM]], [[latent-diffusion|Latent Diffusion]] → [[diffusion-policy|Diffusion Policy]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
 
