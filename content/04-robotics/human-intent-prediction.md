@@ -34,14 +34,14 @@ Intent is latent. What is measurable, roughly in order of lead time:
 
 | Cue | Lead | Observable at range? | Source |
 |---|---|---|---|
-| Gaze | longest | **no** beyond a few metres | [[04-robotics/human-pose-gaze\|§21.4]] |
-| Head / body orientation | long | yes | §21.4–21.5 |
-| Gait change, deceleration | medium | yes, from a tracked box | §21.5 |
+| Gaze | longest | **no** beyond a few metres | [[04-robotics/human-pose-gaze\|21. §4]] |
+| Head / body orientation | long | yes | [[04-robotics/human-pose-gaze\|21. §4–§5]] |
+| Gait change, deceleration | medium | yes, from a tracked box | [[04-robotics/human-pose-gaze\|21. §5]] |
 | Proximity to boundary (curb, machine envelope) | medium | yes, needs scene geometry | — |
 | Trajectory curvature toward target | short | yes | §1 above |
 | Contact / entry | zero | yes | too late |
 
-This is the same cascade as [[04-robotics/egocentric-perception|§22.4]], seen from outside instead of from the head. **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
+This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen from outside instead of from the head. **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
 
 > [!warning] The "subtle cue" trap
 > The cues that carry the most intent information are the ones that stop being resolvable first. A study that establishes gaze as predictive using close-range or instrumented data has not shown that a vehicle or robot camera can use it. Always state the distance at which the cue was measured and the distance at which the system must work.
@@ -110,7 +110,7 @@ Among all cases where the model said 0.7, did the event occur 70% of the time? D
 | Temperature scaling | recalibrated probabilities from a held-out set | one parameter |
 | **Conformal prediction** | a set/interval with a **distribution-free coverage guarantee** under exchangeability | a held-out calibration set |
 
-Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability plus a quantile — and the output is exactly what a safety decision needs: not "probably crossing" but "crossing is in the 90%-coverage prediction set." This is also the machinery behind ask-for-help policies in [[04-robotics/hri-safety|§11]]: a robot that knows its prediction set is ambiguous is a robot that knows when to defer to a human.
+Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability plus a quantile — and the output is exactly what a safety decision needs: not "probably crossing" but "crossing is in the 90%-coverage prediction set." This is also the machinery behind ask-for-help policies in [[04-robotics/hri-safety|11. HRI & Safety]]: a robot that knows its prediction set is ambiguous is a robot that knows when to defer to a human.
 
 **A calibrated 0.7 supports a decision rule. An uncalibrated 0.9 does not.**
 
@@ -153,7 +153,7 @@ That last row is the substantive difference and a genuine research opening. **A 
 | Reporting only minADE$_k$ | rewards diversity, not belief; no probability for the planner |
 | Ignoring scene context leakage | crosswalk position alone predicts crossing; the model may not use the human at all |
 
-The last one deserves the same treatment as scene bias in [[04-robotics/video-action-understanding|§20.2]]: **ablate the human.** If a model with the pedestrian masked out performs nearly as well, the paper has built a scene prior, not an intent model.
+The last one deserves the same treatment as scene bias in [[04-robotics/video-action-understanding|20. §2]]: **ablate the human.** If a model with the pedestrian masked out performs nearly as well, the paper has built a scene prior, not an intent model.
 
 ### 9. Reading claims and evaluations
 
@@ -259,14 +259,14 @@ You should be able to:
 
 | 단서 | 선행 | 원거리 관측? | 출처 |
 |---|---|---|---|
-| 시선 | 가장 김 | 수 미터 넘으면 **불가** | [[04-robotics/human-pose-gaze\|§21.4]] |
-| 머리·몸 방향 | 김 | 가능 | §21.4–21.5 |
-| 보행 변화, 감속 | 중간 | 가능, 추적 박스로 | §21.5 |
+| 시선 | 가장 김 | 수 미터 넘으면 **불가** | [[04-robotics/human-pose-gaze\|21. §4]] |
+| 머리·몸 방향 | 김 | 가능 | [[04-robotics/human-pose-gaze\|21. §4–§5]] |
+| 보행 변화, 감속 | 중간 | 가능, 추적 박스로 | [[04-robotics/human-pose-gaze\|21. §5]] |
 | 경계(연석·기계 반경)와의 근접 | 중간 | 가능, 장면 기하 필요 | — |
 | 목표를 향한 궤적 곡률 | 짧음 | 가능 | 위 §1 |
 | 접촉·진입 | 0 | 가능 | 이미 늦음 |
 
-이는 [[04-robotics/egocentric-perception|§22.4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이다. **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
+이는 [[04-robotics/egocentric-perception|22. §4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이다. **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
 
 > [!warning] "subtle cue" 함정
 > 의도 정보를 가장 많이 담은 단서가 가장 먼저 분해 불가능해진다. 근거리나 계측 장비로 시선의 예측력을 입증한 연구가, 차량·로봇 카메라가 그것을 쓸 수 있음을 보인 것은 아니다. **단서를 측정한 거리와 시스템이 작동해야 하는 거리를 항상 밝혀라.**
@@ -335,7 +335,7 @@ $$\mathbb{P}\big(y = 1 \mid \hat{p} = p\big) \;\overset{?}{=}\; p$$
 | Temperature scaling | held-out으로 재보정된 확률 | 파라미터 1개 |
 | **Conformal prediction** | 교환가능성 하에 **분포 무관 커버리지 보장**이 붙은 집합/구간 | held-out 보정 집합 |
 
-Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환가능성 + 분위수) 출력이 정확히 안전 결정이 필요로 하는 형태이기 때문이다 — "아마 건널 것"이 아니라 "90% 커버리지 예측 집합 안에 횡단이 있다". 이건 [[04-robotics/hri-safety|§11]]의 ask-for-help 정책을 떠받치는 기계장치이기도 하다: **자기 예측 집합이 모호하다는 걸 아는 로봇이 사람에게 넘길 때를 아는 로봇이다.**
+Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환가능성 + 분위수) 출력이 정확히 안전 결정이 필요로 하는 형태이기 때문이다 — "아마 건널 것"이 아니라 "90% 커버리지 예측 집합 안에 횡단이 있다". 이건 [[04-robotics/hri-safety|11. HRI & Safety]]의 ask-for-help 정책을 떠받치는 기계장치이기도 하다: **자기 예측 집합이 모호하다는 걸 아는 로봇이 사람에게 넘길 때를 아는 로봇이다.**
 
 **보정된 0.7은 결정 규칙을 지지한다. 보정 안 된 0.9는 그러지 못한다.**
 
@@ -378,7 +378,7 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 | minADE$_k$만 보고 | 다양성을 보상하고 믿음을 보상하지 않음; 플래너에 줄 확률이 없음 |
 | 장면 맥락 누수 무시 | 횡단보도 위치만으로 횡단이 예측됨 → 모델이 사람을 안 볼 수도 |
 
-마지막 항목은 [[04-robotics/video-action-understanding|§20.2]]의 장면 편향과 같은 처방이 필요하다: **사람을 ablate 하라.** 보행자를 마스킹한 모델이 거의 같은 성능이면, 그 논문은 의도 모델이 아니라 **장면 사전확률**을 만든 것이다.
+마지막 항목은 [[04-robotics/video-action-understanding|20. §2]]의 장면 편향과 같은 처방이 필요하다: **사람을 ablate 하라.** 보행자를 마스킹한 모델이 거의 같은 성능이면, 그 논문은 의도 모델이 아니라 **장면 사전확률**을 만든 것이다.
 
 ### 9. 주장과 평가 읽기
 

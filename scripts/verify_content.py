@@ -217,6 +217,51 @@ for p in md_files:
         buf.append(re.sub(r"^>\s?", "", line).strip())
     _flush()
 
+# 11. Section references that point OUT OF RANGE on the target page.
+# Convention: [[target|<page-no>. §<n>]] — the label's § numbers must exist as
+# "### <n>." headings in the target.
+# KNOWN LIMIT, do not overtrust: this catches only refs to sections that do not
+# exist. It cannot catch a ref to the WRONG existing section, which is the more
+# common failure — six refs went stale in one session by pointing at §4 when the
+# material had moved to §7, and every one of them would pass this check. It does
+# catch the "§<page>.<sec>" fused form (§21.4), which parses as out of range.
+_sec_cache = {}
+def _sections_of(rel):
+    if rel not in _sec_cache:
+        try:
+            body = open(os.path.join("content", rel + ".md"), encoding="utf-8").read()
+        except OSError:
+            _sec_cache[rel] = set()
+        else:
+            _sec_cache[rel] = set(re.findall(r"^#{3,4}\s*(\d+(?:\.\d+)?)\.", body, re.M))
+    return _sec_cache[rel]
+
+_link_re = re.compile(r"\[\[([^\]|#]+)\|([^\]]*?)\]\]")
+for p in md_files:
+    rel_src = os.path.relpath(p, "content")[:-3]
+    text = open(p, encoding="utf-8").read()
+    for m in _link_re.finditer(text):
+        tgt_raw, label = m.group(1), m.group(2)
+        secs = re.findall(r"§\s*(\d+(?:\.\d+)?)", label)
+        if not secs:
+            continue
+        tgt_raw = tgt_raw.split("#")[0].strip().rstrip("\\")
+        src_dir = os.path.dirname(rel_src)
+        tgt = None
+        for cand in (tgt_raw, os.path.normpath(os.path.join(src_dir, tgt_raw))):
+            if cand in targets:
+                tgt = cand
+                break
+        if tgt is None:
+            continue                      # broken link: already reported by check 4
+        have = _sections_of(tgt)
+        if not have:
+            continue                      # target has no numbered sections
+        for s in secs:
+            if s not in have:
+                err(p, f"section reference {tgt} §{s} does not exist "
+                       f"(that page has §{', §'.join(sorted(have, key=float))})")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

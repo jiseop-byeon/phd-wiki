@@ -59,7 +59,7 @@ It fails in three predictable places:
 
 ### 4. Anticipation from the first person
 
-The egocentric anticipation setting is the same formulation as [[04-robotics/video-action-understanding|§20.4]],
+The egocentric anticipation setting is the same formulation as [[04-robotics/video-action-understanding|20. §4]],
 
 $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
@@ -208,7 +208,7 @@ flowchart TD
 
 ### 4. 1인칭에서의 예측
 
-자기중심 anticipation의 정식화는 [[04-robotics/video-action-understanding|§20.4]]와 같다,
+자기중심 anticipation의 정식화는 [[04-robotics/video-action-understanding|20. §4]]와 같다,
 
 $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
