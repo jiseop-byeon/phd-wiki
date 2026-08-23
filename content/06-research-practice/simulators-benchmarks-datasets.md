@@ -228,7 +228,7 @@ change annually.
     <text x="115" y="136">RH20T</text><text x="115" y="147" font-size="9">110,000+ sequences</text>
     <text x="280" y="136">FMB</text><text x="280" y="147" font-size="9">functional manipulation</text>
     <text x="445" y="136">REASSEMBLE</text><text x="445" y="147" font-size="9">4,551 demonstrations</text>
-    <text x="280" y="212" font-size="11" opacity="0.9">nothing published, at any scale</text>
+    <text x="280" y="212" font-size="11" opacity="0.9">no shared real-robot force data</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="20" y="250">Every count is quoted from that paper&#8217;s own abstract. The third band is empty, and that is the finding.</text>
@@ -310,10 +310,17 @@ soil-tool interaction exists.**
 > force, torque, tactile or contact row in it at all.**
 
 > [!important] The gap this program sits in
-> **No large-scale dataset of construction manipulation demonstrations exists — at any
-> scale.** Not at DROID scale, not at 10,000, not at 1,000. The published construction
-> manipulation learning papers report demonstrations in the tens, evaluate on roughly twenty
-> rollouts, and release nothing. The OXE `scene type` column takes values like *table top,
+> **No shared dataset of *real-robot, contact-rich* construction manipulation demonstrations
+> exists.** Not at DROID scale, not at 10,000, not at 1,000. Be exact about what is and is
+> not missing, because three papers in this wiki look like counter-examples and are not:
+> [[01-canonical-papers/notes/8-construction/ext|ExT]] has 150,000 episodes per task, but
+> they are generated in simulation and carry no real contact;
+> [[01-canonical-papers/notes/8-construction/liang-lfd|Liang]] uses 3,000 virtual plus 85
+> real demonstration *videos* and evaluates in Gazebo; and
+> [[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle]] releases seven datasets,
+> but they are accelerometer and pose recordings for deflection compensation, not
+> manipulation demonstrations. What none of them provides is force-bearing real-robot
+> demonstrations in a shared schema. The OXE `scene type` column takes values like *table top,
 > kitchen, hallway, office, pantry, shelf, workshop, outdoors* — no construction, no site,
 > no heavy machinery.
 >
@@ -626,7 +633,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
     <text x="115" y="136">RH20T</text><text x="115" y="147" font-size="9">시퀀스 110,000+</text>
     <text x="280" y="136">FMB</text><text x="280" y="147" font-size="9">기능적 조작</text>
     <text x="445" y="136">REASSEMBLE</text><text x="445" y="147" font-size="9">시연 4,551</text>
-    <text x="280" y="212" font-size="11" opacity="0.9">어떤 규모로도, 공개된 것이 없다</text>
+    <text x="280" y="212" font-size="11" opacity="0.9">공유된 실기계 힘 데이터가 없다</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="20" y="250">모든 수치는 그 논문 자신의 초록에서 인용했다. 세 번째 띠가 비어 있고, 그것이 발견이다.</text>
@@ -699,9 +706,16 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 > contact 행이 아예 없다.**
 
 > [!important] 이 프로그램이 놓인 공백
-> **건설 조작 시연의 대규모 데이터셋은 존재하지 않는다 — 어떤 규모로도.** DROID 규모도,
-> 10,000도, 1,000도 아니다. 발표된 건설 조작 학습 논문들은 시연을 수십 개 단위로 보고하고,
-> 대략 20회 롤아웃으로 평가하며, 아무것도 공개하지 않는다. OXE의 `scene type` 열은 *table top,
+> **실기계의 *접촉 다량* 건설 조작 시연을 담은 공유 데이터셋은 존재하지 않는다.** DROID
+> 규모도, 10,000도, 1,000도 아니다. 무엇이 없고 무엇이 있는지를 정확히 말해야 한다. 이 위키
+> 안의 논문 셋이 반례처럼 보이지만 아니기 때문이다:
+> [[01-canonical-papers/notes/8-construction/ext|ExT]]는 과제당 15만 에피소드를 갖지만
+> 시뮬레이션에서 생성되어 실제 접촉이 없고,
+> [[01-canonical-papers/notes/8-construction/liang-lfd|Liang]]은 가상 3,000 + 실제 85개의
+> 시연 *영상*을 쓰고 Gazebo에서 평가하며,
+> [[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle]]은 데이터셋 일곱 개를
+> 공개하지만 그것은 변형 보상용 가속도계·자세 기록이지 조작 시연이 아니다. 셋 중 어느
+> 것도 공유 스키마의 힘을 동반한 실기계 시연을 제공하지 않는다. OXE의 `scene type` 열은 *table top,
 > kitchen, hallway, office, pantry, shelf, workshop, outdoors* 같은 값을 갖는다 — 건설도,
 > 현장도, 중장비도 없다.
 >
