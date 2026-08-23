@@ -161,7 +161,7 @@ depending on where it stopped:
 | **Preprint (arXiv only)** | posted by the authors, **no peer review** | ideas and numbers may be entirely sound; nothing external has checked them. Say "preprint" when you cite it |
 | **Workshop paper** | reviewed, usually lightly, often non-archival | a signal of early direction, not a settled result. Frequently superseded by a conference version with different numbers |
 | **Conference paper** | peer-reviewed, fixed deadline, page limit | the standard unit in robotics — see [[06-research-practice/venue-strategy\|5. Venue Strategy §1]] |
-| **Journal paper** | peer-reviewed with revision rounds, no page pressure | usually the fullest account; often a *later* version of a conference paper, with more experiments |
+| **Journal paper** | peer-reviewed with revision rounds | usually the fullest account, and often a *later* version of a conference paper. **RA-L is the robotics exception**: a journal with a hard 8-page limit that is frequently the *first* version, and via RA-L+ICRA is tied to a conference deadline |
 
 The trap is not citing a preprint — it is citing one **as though it were published**. This
 wiki has hit it twice: a humanoid rough-terrain paper cited as published when it is a preprint
@@ -169,8 +169,10 @@ wiki has hit it twice: a humanoid rough-terrain paper cited as published when it
 Both are worth reading. Neither has been refereed.
 
 > [!tip] Check whether the preprint grew up
-> An arXiv entry is updated when the paper is accepted: the **Comments** field usually says
-> "Accepted to CoRL 2024" or similar, and the listing shows a `journal-ref` once published.
+> Both fields are **author-supplied** — arXiv does not update them for you, and plenty of
+> published papers never get one. Still, they are the cheapest check available: the
+> **Comments** field usually says "Accepted to CoRL 2024" or similar, and a `journal-ref`
+> appears once an author adds it.
 > A two-year-old preprint with no such note has probably not been accepted anywhere — which is
 > information, though not proof. And when a conference version exists, **its numbers may differ
 > from the preprint's**; quote the version you actually read and name it.
@@ -361,15 +363,16 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 | **프리프린트(arXiv만)** | 저자가 올린 것, **심사 없음** | 발상과 숫자가 완전히 타당할 수 있다. 다만 외부에서 확인한 것이 없다. 인용할 때 "프리프린트"라고 밝혀라 |
 | **워크숍 논문** | 심사는 있으나 대개 가볍고, 흔히 비아카이브 | 결정된 결과가 아니라 이른 방향의 신호. 숫자가 다른 학회 판본으로 대체되는 일이 잦다 |
 | **학회 논문** | 동료 심사, 고정 마감, 쪽수 제한 | 로보틱스의 표준 단위 — [[06-research-practice/venue-strategy\|5. 게재지 전략 §1]] |
-| **저널 논문** | 개정 라운드가 있는 동료 심사, 쪽수 압박 없음 | 대개 가장 완전한 기술. 학회 논문의 *나중* 판본이면서 실험이 더 붙은 경우가 많다 |
+| **저널 논문** | 개정 라운드가 있는 동료 심사 | 대개 가장 완전한 기술이고 학회 논문의 *나중* 판본인 경우가 많다. **RA-L이 로보틱스의 예외다**: 8쪽 제한이 있는 저널이면서 흔히 *최초* 판본이고, RA-L+ICRA 경로로는 학회 마감에 묶인다 |
 
 함정은 프리프린트를 인용하는 것이 아니라 **출판된 것처럼** 인용하는 것이다. 이 위키도 두 번
 걸렸다: 휴머노이드 험지 논문을 출판된 것처럼 인용한 사례([[04-robotics/legged-locomotion|18. §5]])와,
 ★을 달고 있으면서 arXiv 전용인 ExT. 둘 다 읽을 값어치가 있다. 둘 다 심사받지 않았다.
 
 > [!tip] 프리프린트가 자랐는지 확인하라
-> arXiv 항목은 게재가 확정되면 갱신된다: **Comments** 필드에 보통 "Accepted to CoRL 2024"
-> 같은 문구가 붙고, 출판되면 목록에 `journal-ref`가 나타난다. 2년 된 프리프린트에 그런 표시가
+> 두 필드 모두 **저자가 직접 채우는** 것이다 — arXiv가 대신 갱신해 주지 않고, 출판되고도
+> 끝내 없는 논문이 흔하다. 그래도 가장 싼 확인 수단이다: **Comments** 필드에 보통
+> "Accepted to CoRL 2024" 같은 문구가 붙고, 저자가 넣으면 `journal-ref`가 나타난다. 2년 된 프리프린트에 그런 표시가
 > 없다면 어디에도 통과하지 못했을 가능성이 크다 — 증명은 아니지만 정보는 된다. 그리고 학회
 > 판본이 존재하면 **그 숫자가 프리프린트와 다를 수 있다.** 실제로 읽은 판본을 인용하고 어느
 > 것인지 밝혀라.

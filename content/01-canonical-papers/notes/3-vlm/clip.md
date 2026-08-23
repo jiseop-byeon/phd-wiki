@@ -94,8 +94,10 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
 The foundation of the multimodal era: CLIP encoders power text-to-image diffusion guidance (Stable Diffusion), open-vocabulary detection/segmentation, and are the visual front-end of VLMs (LLaVA, Flamingo lineage) — and through them, VLAs: RT-2's "vision-language-action" is CLIP's alignment idea extended to robot actions. Successors: ALIGN, OpenCLIP, SigLIP.
 
 > [!note] SigLIP — the encoder you will actually find inside a 2024–26 VLA
-> π0, OpenVLA and PaliGemma all name **SigLIP** rather than CLIP as their vision encoder, so
-> it is worth one paragraph. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for
+> **PaliGemma** names **SigLIP** as its vision encoder; **π0** inherits it by initializing
+> from PaliGemma (it never names SigLIP itself); **OpenVLA** fuses SigLIP features *with*
+> DINOv2 rather than using it alone. Between them that is most of the 2024–26 stack, so it is
+> worth one paragraph. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for
 > Language Image Pre-Training*, **ICCV 2023 (Oral)**, [arXiv:2303.15343](https://arxiv.org/abs/2303.15343).
 >
 > The change is the loss, not the architecture. CLIP's InfoNCE **softmax** normalizes each
@@ -105,10 +107,12 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 > across the batch.
 >
 > The consequence is practical rather than conceptual: **the loss no longer couples the batch
-> to the normalization**, which removes the engineering pressure that made CLIP-style
-> training want enormous batches, and works better at both small and large batch sizes. When
+> to the normalization**. Quote the benefit precisely — the paper reports sigmoid clearly
+> ahead of softmax *below about 16k batch size* and the gap closing as batch grows, with the
+> two comparable above it. Its separate and more useful finding is that **both** losses
+> saturate, so ~32k is enough for either: the enormous batches were never buying much. When
 > a VLA paper says "SigLIP encoder", read it as *a CLIP-style aligned encoder trained with a
-> cheaper-to-shard objective* — the alignment idea this paper introduced is unchanged, and
+> memory-cheaper, small-batch-friendlier objective* — the alignment idea this paper introduced is unchanged, and
 > everything §Method above says about what the embedding space means still applies.
 
 ### Connections
@@ -188,8 +192,9 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 멀티모달 시대의 초석: CLIP 인코더는 텍스트-이미지 디퓨전의 가이던스(Stable Diffusion), open-vocabulary 검출·분할을 구동하고, VLM(LLaVA, Flamingo 계열)의 시각 front-end다 — 그리고 그 연장선에서 VLA로: RT-2의 "vision-language-action"은 CLIP의 정렬 아이디어를 로봇 행동까지 확장한 것이다. 후속: ALIGN, OpenCLIP, SigLIP.
 
 > [!note] SigLIP — 2024~26년 VLA 안에서 실제로 발견하게 될 인코더
-> π0, OpenVLA, PaliGemma가 모두 시각 인코더로 CLIP이 아니라 **SigLIP**을 지목하므로 한 문단
-> 값어치가 있다. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for Language Image
+> **PaliGemma**가 시각 인코더로 **SigLIP**을 지목하고, **π0**는 PaliGemma에서 초기화하며
+> 그것을 물려받는다(π0 자신은 SigLIP을 언급하지 않는다). **OpenVLA**는 SigLIP을 단독으로
+> 쓰지 않고 DINOv2와 *융합*한다. 셋을 합치면 2024~26년 스택의 대부분이므로 한 문단 값어치가 있다. Zhai, Mustafa, Kolesnikov & Beyer, *Sigmoid Loss for Language Image
 > Pre-Training*, **ICCV 2023 (Oral)**, [arXiv:2303.15343](https://arxiv.org/abs/2303.15343).
 >
 > 바뀐 것은 구조가 아니라 손실이다. CLIP의 InfoNCE **softmax**는 위 유사도 행렬의 각 행과
@@ -197,11 +202,14 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 > SigLIP은 그것을 **쌍별 sigmoid**로 바꾼다: 모든 이미지-텍스트 쌍을 배치 전체에 걸친 정규화
 > 없이 "맞음/아님"으로 독립적으로 채점한다.
 >
-> 결과는 개념적이라기보다 실용적이다: **손실이 더 이상 배치를 정규화에 묶지 않는다.** 그래서
-> CLIP 계열 학습이 거대한 배치를 원하게 만들던 공학적 압력이 사라지고, 작은 배치와 큰 배치
-> 양쪽에서 더 잘 작동한다. VLA 논문이 "SigLIP 인코더"라고 하면 *샤딩하기 더 싼 목적함수로
+> 결과는 개념적이라기보다 실용적이다: **손실이 더 이상 배치를 정규화에 묶지 않는다.** 이득을
+> 정확히 인용하라 — 논문은 sigmoid가 *배치 약 16k 아래에서* softmax를 뚜렷이 앞서고, 배치가
+> 커질수록 그 격차가 닫혀 그 위에서는 둘이 비슷하다고 보고한다. 더 쓸모 있는 별개의 발견은
+> **둘 다** 포화한다는 것이다: 어느 손실이든 32k면 충분하고, 거대한 배치는 애초에 사주는 것이
+> 많지 않았다. VLA 논문이 "SigLIP 인코더"라고 하면 *샤딩하기 더 싼 목적함수로
 > 학습한 CLIP 계열 정렬 인코더*로 읽어라 — 이 논문이 도입한 정렬 아이디어는 그대로이고, 위
-> §방법이 임베딩 공간의 의미에 대해 말한 것도 전부 그대로 적용된다.
+> §방법이 임베딩 공간의 의미에 대해 말한 것도 전부 그대로 적용된다. 요약하면 sigmoid가 사는
+> 것은 메모리 효율, 단일 패스 대칭성, 그리고 작은 배치에서의 품질이다.
 
 ### 연결
 

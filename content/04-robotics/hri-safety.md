@@ -98,48 +98,57 @@ but you cannot check a safety claim without knowing which document defines the t
 
 | Standard | Covers | What it gives a reader |
 |---|---|---|
-| **ISO 10218-1 / -2** | industrial robots (part 1: the robot; part 2: the system/cell) | the base requirements; **revised in 2025**, first update since 2011 |
-| **ISO/TS 15066:2016** | collaborative applications, biomechanical limits | the origin of PFL thresholds — but see the warning below |
-| **ISO 13482:2014** | personal care robots | the standard for service robots in physical contact with people |
-| **ISO 3691-4** | driverless industrial trucks — AGVs and AMRs | the mobile-base standard; a wheeled site robot is read against this, not 10218 |
+| **ISO 10218-1 / -2:2025** | industrial robots (part 1: the robot; part 2: applications and robot cells) | the base requirements; **published February 2025**, first revision since 2011 |
+| **ISO/TS 15066:2016** | collaborative applications, biomechanical thresholds | the origin of the force and pressure limits — still a current ISO publication; see below |
+| **ISO 13482:2014** | personal care robots | service robots in physical contact with people. Already at FDIS revision, so the `:2014` pin will go stale |
+| **ISO 3691-4:2023** | driverless industrial trucks — AGVs and AMRs, owned by the industrial-truck committee | the **warehouse and plant** mobile-base standard |
+| **ISO 17757:2019** | **autonomous and semi-autonomous earth-moving and mining machines** | the standard for an autonomous excavator or loader — the ISO 6165 machine classes, outdoors |
 
-> [!warning] ISO/TS 15066 no longer stands alone — and most papers predate that
-> ISO 10218-1:2025 and ISO 10218-2:2025 came into force **1 April 2025** and folded the
-> collaborative-application and power-and-force-limiting requirements of ISO/TS 15066:2016
-> **into the 10218 series**. The revision also drops the terms *collaborative robot* and
-> *collaborative operation* in favour of **collaborative application** — the argument being
-> that only a use of a robot, not a robot by itself, can be designed and verified as
-> collaborative.
-> A paper written before 2025 that cites "ISO/TS 15066" is citing the document that was
-> current when it was written; that is correct practice and not an error. **What is an error
-> is repeating it now as the live authority**, or calling a machine "a 15066-compliant
-> cobot" — under the current wording compliance is a property of the application, not of the
-> arm you bought.
+> [!warning] Two mistakes that are easy to make with these numbers
+> **ISO/TS 15066 is not withdrawn.** ISO 10218:2025 folded the collaborative-application and
+> power-and-force-limiting requirements into the 10218 series, so 10218-1/-2:2025 is now the
+> primary citation for a collaborative application. But ISO's own catalogue shows TS 15066:2016
+> as *Published*, last confirmed in **2022**, with the note that "this version remains
+> current"; its replacement, **ISO/AWI 15066-1** on biomechanical thresholds, is still under
+> development. So it remains the citable source for the threshold **data**. Cite 10218:2025 for
+> requirements and TS 15066 for the numbers, and do not call it superseded.
+>
+> **A construction machine is not an industrial truck.** ISO 3691-4 is part of the
+> industrial-truck series, scoped to powered materials-handling vehicles in warehouses and
+> plants. An autonomous excavator, dozer or loader is read against **ISO 17757:2019** instead.
+> Getting this wrong also inflates the "no standard covers outdoor sites" claim: ISO 17757 *was*
+> written for outdoor autonomous earth-moving machines. The real gap is narrower and more
+> interesting — learned perception, and a site layout that changes weekly.
 
-**The four methods of safe interaction**, named the same way across the series, are the
-vocabulary every pHRI paper's safety paragraph is written in:
+**The four methods of safe interaction** are the vocabulary a pHRI paper's safety paragraph is
+written in. Note that the 2025 revision **renamed the first one**: what the 2011 edition and
+TS 15066 call a *safety-rated monitored stop* is **monitored standstill** in ISO 10218-2:2025,
+because it is used for more than collaborative applications. The other three names are
+unchanged.
 
 | Method | The mechanism | What it costs |
 |---|---|---|
-| Safety-rated monitored stop | robot halts while a person is in the shared space; motion resumes when they leave | throughput — no concurrent work |
+| Monitored standstill (was: safety-rated monitored stop) | robot halts while a person is in the shared space; motion resumes when they leave | throughput — no concurrent work |
 | Hand guiding | the operator moves the robot through a hand-operated device | requires the human at the robot |
 | **Speed and separation monitoring (SSM)** | keep a *protective separation distance*; slow or stop as it closes | needs reliable person tracking |
 | **Power and force limiting (PFL)** | contact is permitted, bounded by force/pressure limits per body region | caps speed and payload by design |
 
 The two that generate research are the last two, and they fail differently. SSM's separation
-distance is a **sum**, not a threshold: how far the human travels while you react, plus how
-far the robot travels before it begins stopping, plus its stopping distance, plus the
-uncertainty of both position estimates. Every learned-perception paper that claims to enable
-SSM is making a claim about the *uncertainty* terms, and a detector's latency enters the
-distance directly. PFL's limits are **per body region** — the tolerable force and pressure on
-a hand differ from those on a face — so "under the force limit" is meaningless without saying
-which region and which contact type (transient vs quasi-static) was assumed.
+distance is a **sum of six contributions**, not a threshold: how far the operator travels while
+the robot reacts *and* stops, how far the robot travels during its reaction time, its stopping
+distance, the **intrusion distance** $C$ — how far a body part reaches into the sensing field
+before it is detected at all — and the position uncertainty of the operator and of the robot.
+Every learned-perception paper that claims to enable SSM is making a claim about $C$ and the
+two uncertainty terms, and detector latency enters the distance directly. PFL's limits are
+**per body region** — the tolerable force on a hand differs from that on a face — and are split
+by contact type, *quasi-static* (the body part is trapped against a surface) versus *transient*
+(it can recoil). "Under the force limit" is meaningless without naming region and contact type.
 
-For construction, note which standard applies to what: a tracked or wheeled base moving on
-site is read against **ISO 3691-4**, an arm working next to a person against **ISO 10218**,
-and neither was written for an outdoor, unfenced, weather-exposed site with a changing
-layout. That gap is a legitimate thing to say in a paper — but say it against the named
-standard, not against "safety" in general.
+For construction, match the standard to the machine: a wheeled or tracked **autonomous
+earth-moving machine** against ISO 17757, an **arm working next to a person** against ISO
+10218, an **AMR moving material in a plant** against ISO 3691-4. None of them was written for
+an unfenced, weather-exposed site whose layout changes week to week — but say that against the
+named standard, not against "safety" in general.
 
 ### 7. Human-study design
 
@@ -288,43 +297,51 @@ An automated excavator receives a goal from an operator, plans and executes a di
 
 | 표준 | 대상 | 읽는 사람에게 주는 것 |
 |---|---|---|
-| **ISO 10218-1 / -2** | 산업용 로봇(1부: 로봇, 2부: 시스템·셀) | 기본 요구사항. **2025년 개정**, 2011년 이후 첫 갱신 |
-| **ISO/TS 15066:2016** | 협동 응용, 생체역학 한계 | PFL 임계값의 출처 — 다만 아래 경고를 보라 |
-| **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇의 표준 |
-| **ISO 3691-4** | 무인 산업 차량 — AGV·AMR | 이동 베이스의 표준. 바퀴형 현장 로봇은 10218이 아니라 이쪽으로 읽는다 |
+| **ISO 10218-1 / -2:2025** | 산업용 로봇(1부: 로봇, 2부: 응용과 로봇 셀) | 기본 요구사항. **2025년 2월 발행**, 2011년 이후 첫 개정 |
+| **ISO/TS 15066:2016** | 협동 응용, 생체역학 임계값 | 힘·압력 한계의 출처. 여전히 유효한 ISO 발행물이다 — 아래를 보라 |
+| **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇. 이미 FDIS 단계 개정 중이라 `:2014` 표기는 곧 낡는다 |
+| **ISO 3691-4:2023** | 무인 산업 차량 — AGV·AMR, 산업차량 위원회 소관 | **창고와 공장**의 이동 베이스 표준 |
+| **ISO 17757:2019** | **자율·반자율 토공 및 광산 기계** | 자율 굴착기나 로더의 표준 — ISO 6165 기계 분류, 옥외 |
 
-> [!warning] ISO/TS 15066은 더 이상 단독으로 존재하지 않는다 — 그리고 대부분의 논문은 그 이전이다
-> ISO 10218-1:2025와 ISO 10218-2:2025가 **2025년 4월 1일** 발효되면서 ISO/TS 15066:2016의
-> 협동 응용·역량 제한(PFL) 요구사항을 **10218 시리즈 안으로 흡수했다.** 개정판은 *협동 로봇*과
-> *협동 운전*이라는 용어도 버리고 **협동 응용**(collaborative application)을 쓴다 — 로봇 자체가
-> 아니라 로봇의 사용만이 협동적이라고 설계·검증될 수 있다는 논거다.
-> 2025년 이전에 쓰인 논문이 "ISO/TS 15066"을 인용하는 것은 당시의 현행 문서를 인용한 것이고
-> 올바른 관행이지 오류가 아니다. **오류는 그것을 지금도 살아 있는 권위로 되풀이하는 것**,
-> 또는 어떤 기계를 "15066 준수 협동로봇"이라 부르는 것이다 — 현재 표현으로 준수는 사놓은 팔이
-> 아니라 응용의 성질이다.
+> [!warning] 이 번호들에서 저지르기 쉬운 두 가지 실수
+> **ISO/TS 15066은 폐지되지 않았다.** ISO 10218:2025가 협동 응용과 역량 제한(PFL) 요구사항을
+> 10218 시리즈로 흡수했으므로, 협동 응용의 1차 인용은 이제 10218-1/-2:2025다. 그러나 ISO의
+> 카탈로그는 TS 15066:2016을 *Published*로 두고 있고, 최종 확인이 **2022년**이며, "이 판본은
+> 여전히 유효하다"고 적고 있다. 후속인 **ISO/AWI 15066-1**(생체역학 임계값)은 아직 개발 중이다.
+> 그러니 임계값 **데이터**의 인용처로는 여전히 유효하다. 요구사항은 10218:2025를, 숫자는
+> TS 15066을 인용하고, 대체되었다고 말하지 마라.
+>
+> **건설 기계는 산업 차량이 아니다.** ISO 3691-4는 산업차량 시리즈의 일부로, 창고와 공장의
+> 동력 자재취급 차량을 범위로 한다. 자율 굴착기·도저·로더는 대신 **ISO 17757:2019**로 읽는다.
+> 이것을 틀리면 "옥외 현장을 다루는 표준이 없다"는 주장도 부풀려진다: ISO 17757은 *바로*
+> 옥외 자율 토공 기계를 위해 쓰였다. 진짜 빈틈은 더 좁고 더 흥미롭다 — 학습된 인지, 그리고
+> 주 단위로 바뀌는 현장 배치.
 
-**안전한 상호작용의 네 가지 방법**은 시리즈 전체에서 같은 이름으로 불리며, 모든 pHRI 논문의
-안전 문단이 쓰이는 어휘다:
+**안전한 상호작용의 네 가지 방법**은 pHRI 논문의 안전 문단이 쓰이는 어휘다. 2025년 개정이
+**첫 번째의 이름을 바꿨다는 점**을 유의하라: 2011년판과 TS 15066이 *safety-rated monitored
+stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**이다. 협동 응용 외에도
+쓰이기 때문이다. 나머지 셋의 이름은 그대로다.
 
 | 방법 | 기구 | 대가 |
 |---|---|---|
-| 안전 정격 감시 정지 | 사람이 공유 공간에 있는 동안 로봇이 멈추고, 나가면 재개 | 처리량 — 동시 작업이 불가능 |
+| Monitored standstill(구: safety-rated monitored stop) | 사람이 공유 공간에 있는 동안 로봇이 멈추고, 나가면 재개 | 처리량 — 동시 작업이 불가능 |
 | Hand guiding | 조작자가 손으로 조작하는 장치로 로봇을 움직인다 | 사람이 로봇 옆에 있어야 함 |
 | **속도·이격 감시(SSM)** | *보호 이격 거리*를 유지하고, 거리가 좁혀지면 감속·정지 | 신뢰할 수 있는 사람 추적이 필요 |
 | **역량 제한(PFL)** | 접촉을 허용하되 신체 부위별 힘·압력 한계로 제한 | 설계상 속도와 가반하중이 묶임 |
 
 연구를 낳는 것은 뒤의 둘이고, 둘은 서로 다르게 실패한다. SSM의 이격 거리는 임계값이 아니라
-**합**이다: 반응하는 동안 사람이 이동한 거리 + 로봇이 정지를 시작하기 전에 이동한 거리 +
-정지 거리 + 두 위치 추정의 불확실성. SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지
-논문은 사실 *불확실성* 항에 대한 주장을 하고 있고, 검출기의 지연이 그 거리에 직접 들어간다.
-PFL의 한계는 **신체 부위별**이다 — 손에 허용되는 힘과 압력은 얼굴의 것과 다르다 — 그래서
-"힘 한계 이하"는 어느 부위, 어떤 접촉 유형(과도 접촉 대 준정적 접촉)을 가정했는지 밝히지
-않으면 아무 의미가 없다.
+**여섯 항의 합**이다: 로봇이 반응하고 *또* 정지하는 동안 조작자가 이동한 거리, 로봇이 반응
+시간 동안 이동한 거리, 로봇의 정지 거리, **침입 거리** $C$ — 신체 부위가 감지되기까지 감지
+영역 안으로 얼마나 들어가는가 — 그리고 조작자와 로봇 각각의 위치 불확실성. SSM을 가능하게
+한다고 주장하는 모든 학습 기반 인지 논문은 사실 $C$와 두 불확실성 항에 대한 주장을 하고 있고,
+검출기의 지연이 그 거리에 직접 들어간다. PFL의 한계는 **신체 부위별**이고 — 손에 허용되는 힘은
+얼굴의 것과 다르다 — 접촉 유형으로도 갈린다: *준정적*(신체 부위가 표면에 끼임) 대 *과도*(튕겨
+나올 수 있음). "힘 한계 이하"는 부위와 접촉 유형을 밝히지 않으면 아무 의미가 없다.
 
-건설에서는 어느 표준이 무엇에 적용되는지를 구분하라: 현장에서 움직이는 궤도·바퀴형 베이스는
-**ISO 3691-4**로, 사람 옆에서 일하는 팔은 **ISO 10218**로 읽는다. 그리고 둘 중 어느 것도
-울타리 없이 날씨에 노출되고 배치가 계속 바뀌는 옥외 현장을 위해 쓰이지 않았다. 그 빈틈을
-논문에서 지적하는 것은 정당하다 — 다만 "안전" 일반이 아니라 이름을 댄 표준에 대고 말하라.
+건설에서는 기계에 표준을 맞춰라: 바퀴·궤도형 **자율 토공 기계**는 ISO 17757, 사람 옆에서
+일하는 **팔**은 ISO 10218, 공장에서 자재를 나르는 **AMR**은 ISO 3691-4. 그중 어느 것도 울타리
+없이 날씨에 노출되고 배치가 주 단위로 바뀌는 현장을 위해 쓰이지 않았다 — 다만 그것을 "안전"
+일반이 아니라 이름을 댄 표준에 대고 말하라.
 
 ### 7. 인간 대상 연구 설계
 

@@ -3,7 +3,8 @@ title: "Kindle et al. — Deflection and Backlash Compensation for a Constructio
 authors: Julien Kindle, Michael Loetscher, Andrea Alessandretti, Cesar Cadena, Marco Hutter
 affiliation: ETH Zurich, Hilti
 venue: IEEE Robotics and Automation Letters
-year: 2024
+year: 2025
+journal-ref: "IEEE RA-L 10(1), 288–295, Jan 2025 (accepted Nov 2024 — the DOI stem reads 2024)"
 arxiv: https://arxiv.org/abs/2501.14280
 tags: [paper, construction, manipulation, calibration]
 status: note-complete

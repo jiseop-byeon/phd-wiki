@@ -95,26 +95,33 @@ contribution; the four things below are the *recipe*, assumed without explanatio
 - **Gait and contact schedule.** A gait is a pattern of which feet are on the ground when —
   *trot* (diagonal pairs), *bound*, *pace*, *crawl*. Model-based controllers are handed this
   as a **contact schedule** and solve for forces within it, which is what
-  [[04-robotics/convex-mpc-legged|8. Convex MPC]] assumes. Learned controllers usually do
-  **not** prescribe one: gait emerges from the reward, and papers report the emergent gait as
-  a result. A paper that *does* impose a schedule is making a different, more constrained
-  claim — check which, because "learned locomotion" covers both.
+  [[04-robotics/convex-mpc-legged|8. Convex MPC]] assumes. Learned controllers split on this,
+  and the split runs through the canon below. In the **terrain-traversal quadruped** line
+  (Rudin, Miki, the parkour work) no schedule is imposed and the gait emerges from the reward.
+  But Hwangbo 2019 and Lee 2020 — rows 1 and 2 of that same table — build on a **foot
+  trajectory generator** with a per-leg phase, and the policy outputs frequencies and
+  residuals on top of it. The bipedal and humanoid lines almost always condition on a gait
+  phase or a reference motion. So **check whether a schedule is imposed**; "learned
+  locomotion" covers both.
 - **Reward terms.** Locomotion reward is a weighted sum, and the weights are the method. The
   recurring groups: a **task** term (track the commanded velocity), **regularization** terms
   (penalize joint torque, joint velocity, action rate, orientation error), and **shaping**
   terms (foot clearance, air time, contact-force smoothness). Energy or
   bioenergetics-inspired penalties are what produce natural-looking gaits without prescribing
-  one. **When a paper says "we use the standard reward", it means this stack** — and an
-  ablation that removes a regularization term usually degrades sim-to-real transfer rather
-  than simulated return.
+  one. **When a paper says "we use the standard reward", it means this stack.** Field
+  folklore holds that removing a regularization term hurts hardware transfer more than it
+  hurts simulated return — plausible, and worth knowing as a hypothesis, but the standard
+  reference implementations publish no per-term ablation to support it.
 - **Termination and curriculum.** Episodes end early on a fall or a bad body orientation, so
   termination *is* a reward signal. **Terrain curriculum** raises difficulty as the policy
   succeeds — flat, then rough, then stairs and gaps — because a policy that starts on the
   hardest terrain never gets enough successful episodes to learn from.
 - **Domain randomization.** Sampling mass, friction, motor gains, latency and terrain
   parameters over a range at training time so the policy is forced to be robust across them
-  rather than tuned to one. This is the single most load-bearing sim-to-real technique in the
-  field and the legged page above assumed it silently.
+  rather than tuned to one. It is one of the two or three load-bearing sim-to-real
+  techniques — alongside actuator modelling and privileged distillation, both of which this
+  page already credits — and not a strict requirement: Xie et al. (ICRA 2021) transfer
+  quadrupedal locomotion to hardware *without* dynamics randomization.
   [[05-construction-robotics/sim-to-real|Sim-to-Real §2]] treats it properly; the reading rule
   here is that **the randomization ranges are part of the result**. A policy robust over a
   ±20% friction range and one robust over ±60% are not the same claim, and the ranges live in
@@ -124,10 +131,13 @@ contribution; the four things below are the *recipe*, assumed without explanatio
 > Widening the ranges makes the policy more robust and *less* performant — it must hedge
 > against conditions it now sees. A paper reporting both a robustness result and a
 > peak-performance result should say whether they came from the same policy. Domain
-> randomization also cannot fix an effect the simulator does not model at all: the reason
-> [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al.]] had to
-> *learn when to distrust exteroception* is that no amount of randomizing terrain parameters
-> teaches a policy what snow looks like to a depth sensor.
+randomization also cannot fix an effect the simulator never models
+> at all — though be careful which example you reach for.
+> [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al.]] is *not*
+> that case: their learned distrust is produced **by** randomization moved onto the
+> exteroceptive channel — height-map noise at three scopes and three regimes, one of which
+> simulates the map being absent entirely. It is evidence that randomizing the right channel
+> works, not that randomization failed.
 
 ### 3. The canon, and what each result actually claimed
 
@@ -350,22 +360,28 @@ for the full picture and the licensing traps.
 - **보행 양식과 접촉 스케줄.** 보행 양식은 어느 발이 언제 땅에 있는지의 패턴이다 —
   *trot*(대각쌍), *bound*, *pace*, *crawl*. 모델 기반 제어기는 이것을 **접촉 스케줄**로 받아
   그 안에서 힘을 푸는데, [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 전제하는 것이 그것이다.
-  학습 제어기는 대개 그것을 **지정하지 않는다**: 보행 양식이 보상에서 창발하고, 논문은 창발한
-  양식을 결과로 보고한다. 스케줄을 *부과하는* 논문은 다르고 더 제약된 주장을 하고 있는 것이니
-  어느 쪽인지 확인하라. "학습된 로코모션"이 둘 다 덮는다.
+  학습 제어기는 여기서 갈리고, 그 갈림이 아래 정본 표를 관통한다. **험지 주행 4족**
+  계열(Rudin, Miki, 파쿠르 연구)은 스케줄을 부과하지 않고 보행 양식이 보상에서 창발한다.
+  그러나 같은 표의 1·2행인 Hwangbo 2019와 Lee 2020은 다리별 위상을 갖는 **발 궤적 생성기**
+  위에 세워져 있고, 정책은 그 위에서 주파수와 잔차를 낸다. 2족과 휴머노이드 계열은 거의 언제나
+  보행 위상이나 참조 동작에 조건화한다. 그러니 **스케줄이 부과되었는지 확인하라.**
+  "학습된 로코모션"이 둘 다 덮는다.
 - **보상 항.** 로코모션 보상은 가중합이고, 그 가중치가 곧 방법이다. 반복되는 묶음: **과제** 항
   (명령된 속도 추종), **정규화** 항(관절 토크·관절 속도·행동 변화율·자세 오차에 벌점),
   **정형화(shaping)** 항(발 여유 높이, 체공 시간, 접촉력 매끄러움). 에너지나 생체에너지학에서
   착안한 벌점이 양식을 지정하지 않고도 자연스러워 보이는 보행을 만들어 낸다. **논문이 "표준
-  보상을 쓴다"고 하면 이 묶음을 뜻하고**, 정규화 항 하나를 빼는 절제 실험은 시뮬레이션 리턴이
-  아니라 sim-to-real 전이를 나빠지게 하는 것이 보통이다.
+  보상을 쓴다"고 하면 이 묶음을 뜻한다.** 정규화 항 하나를 빼면 시뮬레이션 리턴보다 하드웨어
+  전이가 더 나빠진다는 것이 현장의 통설이고 — 그럴듯하고 가설로 알아둘 값어치가 있지만 —
+  표준 참조 구현들은 그것을 뒷받침할 항별 절제 실험을 공개하지 않는다.
 - **종료와 커리큘럼.** 넘어지거나 몸 자세가 나빠지면 에피소드가 조기 종료되므로, 종료 조건이
   *곧* 보상 신호다. **지형 커리큘럼**은 정책이 성공함에 따라 난이도를 올린다 — 평지, 그다음
   거친 지형, 그다음 계단과 틈 — 가장 어려운 지형에서 시작한 정책은 배울 만한 성공 에피소드를
   충분히 얻지 못하기 때문이다.
 - **도메인 무작위화.** 학습 시점에 질량·마찰·모터 이득·지연·지형 파라미터를 어떤 범위에서
   표본으로 뽑아, 정책이 하나에 맞춰지는 대신 그 전체에 걸쳐 강건해지도록 강제하는 것. 이 분야에서
-  가장 무게를 지는 sim-to-real 기법이고, 위의 레그드 페이지는 그것을 조용히 전제하고 있었다.
+  무게를 지는 두세 가지 sim-to-real 기법 중 하나이고 — 이 페이지가 이미 공을 돌린 액추에이터
+  모델링과 특권 증류가 나머지다 — 절대 요건도 아니다: Xie 등(ICRA 2021)은 동역학 무작위화
+  *없이* 4족 로코모션을 하드웨어로 전이한다.
   [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]가 제대로 다루고, 여기서의 읽기 규칙은
   **무작위화 범위가 결과의 일부**라는 것이다. 마찰 ±20% 범위에서 강건한 정책과 ±60%에서 강건한
   정책은 같은 주장이 아니고, 그 범위는 부록 표에 있다.
@@ -374,9 +390,11 @@ for the full picture and the licensing traps.
 > 범위를 넓히면 정책은 더 강건해지고 성능은 *떨어진다* — 이제 보게 된 조건들에 대비해 헤지해야
 > 하기 때문이다. 강건성 결과와 최고 성능 결과를 함께 보고하는 논문은 그 둘이 같은 정책에서
 > 나왔는지 밝혀야 한다. 도메인 무작위화는 시뮬레이터가 아예 모형화하지 않는 효과를 고칠 수도
-> 없다: [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등]]이 외수용
-> 감각을 *언제 불신할지 학습해야* 했던 이유가, 지형 파라미터를 아무리 무작위화해도 눈이 깊이
-> 센서에 어떻게 보이는지는 가르쳐 주지 못하기 때문이다.
+> 없다 — 다만 어떤 예를 드는지 조심해야 한다.
+> [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등]]은 그 사례가
+> *아니다*: 그들의 학습된 불신은 무작위화를 외수용 채널로 옮겨서 **만들어 낸** 것이다 —
+> 세 가지 범위와 세 가지 체제의 높이지도 잡음이고, 그중 하나는 지도가 아예 없는 상황을
+> 흉내 낸다. 무작위화가 실패했다는 증거가 아니라 올바른 채널을 무작위화하면 통한다는 증거다.
 
 ### 3. 정본과, 각 결과가 실제로 주장한 것
 

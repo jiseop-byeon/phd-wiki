@@ -86,29 +86,38 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
 - **Position-wise feed-forward** networks, **residual connections + LayerNorm** around every sublayer.
 
 > [!important] The block you will actually meet is not this one
-> Every VLA, VLM and video model you read is built from Transformer blocks, but almost none
-> of them use the 2017 block. Four substitutions are now near-universal, and a method section
-> names them without explaining them:
+> Every VLA, VLM and video model you read is built from Transformer blocks, and almost none
+> of them is the 2017 block. But the substitutions differ by *which half of the model* you
+> are looking at, and collapsing that is the common mistake.
 >
-> | 2017 | Now | Why it changed |
+> **In the LLM backbone** (Gemma, LLaMA and the language half of a VLA), four changes are
+> near-universal:
+>
+> | 2017 | LLM backbone now | Why it changed |
 > |---|---|---|
-> | LayerNorm **after** the sublayer (post-norm) | **pre-norm**: normalize *before*, add the residual after | post-norm deep stacks need a learning-rate warmup to train at all; pre-norm is stable without one |
-> | **LayerNorm** — subtract the mean, divide by the standard deviation, scale and shift | **RMSNorm** — divide by the root-mean-square only, no mean subtraction, no shift | one fewer statistic and one fewer parameter per feature, at equal quality |
-> | **ReLU** in the feed-forward | **GELU**, **SiLU/Swish**, or **SwiGLU** (a gated variant that splits the layer in two and multiplies) | smooth activations train better; gating buys quality at equal parameter count |
-> | **Sinusoidal absolute** position encoding added to the input | **RoPE** — rotate the query and key vectors by an angle proportional to position | attention then depends on *relative* position, and the same model extends to longer contexts |
+> | LayerNorm **after** the sublayer (post-norm) | **pre-norm**: normalize *before*, add the residual after | post-norm is unstable at large learning rates without warmup and loses most of its quality if you remove it — Xiong et al. (ICML 2020) measure BLEU 8.45 against ~34. Pre-norm trains without relying on it |
+> | **LayerNorm** — subtract the mean, divide by the standard deviation, scale and shift | **RMSNorm** — divide by the root-mean-square only, no mean subtraction, no shift | one fewer statistic and one fewer parameter per feature, at comparable quality |
+> | **ReLU** in the feed-forward | **GELU**, **SiLU/Swish**, or **SwiGLU** (a gated variant adding a third matrix) | SwiGLU is only parameter-neutral because the hidden width is cut by 2/3 to pay for that matrix — which is why LLaMA-family FFNs are $\tfrac{8}{3}d$ rather than $4d$. Shazeer offers no mechanism for the gain |
+> | **Sinusoidal absolute** position encoding added to the input | **RoPE** — rotate the query and key vectors by an angle proportional to position | attention then depends on *relative* position, and the encoding is defined for any length |
+>
+> **In the vision encoder bolted to it, three of those four are false.** A ViT — and so
+> SigLIP, DINOv2, PaliGemma's tower, and the encoders inside π0 and OpenVLA — is pre-norm
+> with **LayerNorm**, an **ungated GELU** MLP, and **learned absolute** position embeddings
+> (Dosovitskiy et al. §3.1). Diffusion transformers are likewise outside the recipe. So read
+> "a standard Transformer" as **pre-norm plus whatever that half of the model does**, and
+> check which half the sentence is about.
 >
 > One more term with no 2017 counterpart: the **KV cache**. At generation time a causal model
-> would recompute every previous token's keys and values at every step; caching them makes
-> each new token cost one step instead of the whole prefix. **This is why VLA inference-rate
-> claims are architecture-dependent** — a policy that emits an action chunk autoregressively
-> is paying per token with a cache, while a diffusion or flow head pays per denoising step
-> instead ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]).
+> would recompute every previous token's keys and values at every step; caching them removes
+> that recomputation, though attention still reads the whole prefix each step, so decoding
+> becomes memory-bandwidth bound rather than free. Both policy architectures use it —
+> π0 encodes the observation prefix once, caches it, and runs its flow steps as short passes
+> that attend into that cache. **What differs is what repeats after the prefix**: one token at
+> a time for an autoregressive action decoder, one pass over the action block per integration
+> step for a flow or diffusion head ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]).
 >
-> None of these change what §1 above explains: the $QK^\top$ table, its $O(T^2)$ cost, and
-> multi-head projection are the same. **When a paper says "a standard Transformer", read it
-> as pre-norm + RMSNorm + a gated activation + RoPE**, and check the appendix if the
-> difference matters to the claim.
-- **Positional encoding** — since attention is permutation-invariant, inject order with fixed sinusoids: $PE_{(pos,2i)} = \sin(pos/10000^{2i/d_{model}})$.
+> None of this changes what §1 above explains: the $QK^\top$ table, its $O(T^2)$ cost, and
+> multi-head projection are the same.
 
 The whole sequence is processed in parallel; path length between any two tokens is $O(1)$ instead of $O(n)$.
 
@@ -195,27 +204,35 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 - 위치별 feed-forward 네트워크, 모든 서브레이어에 **residual 연결 + LayerNorm**.
 
 > [!important] 실제로 마주칠 블록은 이 블록이 아니다
-> 읽게 될 모든 VLA·VLM·비디오 모델이 Transformer 블록으로 만들어져 있지만, 2017년 블록을
-> 쓰는 것은 거의 없다. 네 가지 치환이 이제 사실상 보편적이고, 방법 절은 그것들을 설명 없이
-> 이름만 부른다:
+> 읽게 될 모든 VLA·VLM·비디오 모델이 Transformer 블록으로 만들어져 있고, 2017년 블록인 것은
+> 거의 없다. 그러나 치환은 *모델의 어느 절반*을 보느냐에 따라 다르고, 그것을 뭉뚱그리는 것이
+> 흔한 실수다.
 >
-> | 2017 | 지금 | 바뀐 이유 |
+> **LLM 백본**(Gemma, LLaMA, 그리고 VLA의 언어 절반)에서는 네 가지가 사실상 보편적이다:
+>
+> | 2017 | 지금의 LLM 백본 | 바뀐 이유 |
 > |---|---|---|
-> | 서브레이어 **뒤**의 LayerNorm(post-norm) | **pre-norm**: *먼저* 정규화하고 residual을 뒤에 더한다 | post-norm 깊은 스택은 learning-rate warmup 없이는 아예 학습되지 않는다. pre-norm은 그것 없이도 안정적이다 |
-> | **LayerNorm** — 평균을 빼고 표준편차로 나눈 뒤 스케일·시프트 | **RMSNorm** — 제곱평균제곱근으로 나누기만, 평균 차감도 시프트도 없음 | 통계량 하나와 특징당 파라미터 하나가 줄고 품질은 같다 |
-> | feed-forward의 **ReLU** | **GELU**, **SiLU/Swish**, 또는 **SwiGLU**(층을 둘로 갈라 곱하는 게이팅 변형) | 매끄러운 활성이 더 잘 학습되고, 게이팅은 같은 파라미터 수에서 품질을 산다 |
-> | 입력에 더하는 **정현파 절대** 위치 부호화 | **RoPE** — query와 key 벡터를 위치에 비례하는 각도만큼 회전 | 그러면 어텐션이 *상대* 위치에 의존하고, 같은 모델이 더 긴 문맥으로 확장된다 |
+> | 서브레이어 **뒤**의 LayerNorm(post-norm) | **pre-norm**: *먼저* 정규화하고 residual을 뒤에 더한다 | post-norm은 큰 학습률에서 warmup 없이 불안정하고, warmup을 빼면 품질 대부분을 잃는다 — Xiong 등(ICML 2020)이 BLEU 8.45 대 약 34로 측정했다. pre-norm은 그것에 의존하지 않고 학습된다 |
+> | **LayerNorm** — 평균을 빼고 표준편차로 나눈 뒤 스케일·시프트 | **RMSNorm** — 제곱평균제곱근으로 나누기만, 평균 차감도 시프트도 없음 | 통계량 하나와 특징당 파라미터 하나가 줄고 품질은 비슷하다 |
+> | feed-forward의 **ReLU** | **GELU**, **SiLU/Swish**, 또는 **SwiGLU**(행렬을 하나 더 쓰는 게이팅 변형) | SwiGLU가 파라미터 중립인 것은 그 행렬 값을 치르려고 은닉 폭을 2/3로 줄였기 때문이다 — LLaMA 계열 FFN이 $4d$가 아니라 $\tfrac{8}{3}d$인 이유가 그것이다. Shazeer는 이득의 기제를 설명하지 않는다 |
+> | 입력에 더하는 **정현파 절대** 위치 부호화 | **RoPE** — query와 key 벡터를 위치에 비례하는 각도만큼 회전 | 그러면 어텐션이 *상대* 위치에 의존하고, 부호화가 임의 길이에 대해 정의된다 |
+>
+> **그런데 거기 붙은 비전 인코더에서는 저 넷 중 셋이 거짓이다.** ViT — 그러므로 SigLIP,
+> DINOv2, PaliGemma의 타워, π0와 OpenVLA 안의 인코더 — 는 pre-norm이되 **LayerNorm**,
+> **게이팅 없는 GELU** MLP, **학습된 절대** 위치 임베딩을 쓴다(Dosovitskiy 등 §3.1). 확산
+> 트랜스포머도 이 레시피 바깥이다. 그러니 "표준 Transformer"는 **pre-norm에 더해 그 절반이
+> 하는 것**으로 읽고, 그 문장이 어느 절반에 대한 것인지 확인하라.
 >
 > 2017년에 대응물이 없는 용어가 하나 더 있다: **KV 캐시**. 생성 시점에 causal 모델은 매
-> 스텝마다 이전 토큰 전부의 key와 value를 다시 계산하게 되는데, 그것을 캐싱하면 새 토큰
-> 하나가 접두사 전체가 아니라 한 스텝만큼만 든다. **VLA의 추론 속도 주장이 구조에 의존하는
-> 이유가 이것이다** — 행동 청크를 자기회귀로 내놓는 정책은 캐시를 두고 토큰당 비용을 치르고,
-> 확산이나 flow 헤드는 대신 잡음 제거 스텝당 비용을 치른다([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]).
+> 스텝마다 이전 토큰 전부의 key와 value를 다시 계산하게 되는데, 캐싱은 그 재계산을 없앤다.
+> 다만 어텐션은 매 스텝 접두사 전체를 여전히 읽으므로, 디코딩은 공짜가 되는 것이 아니라
+> 메모리 대역폭에 묶인다. 두 정책 구조 모두 이것을 쓴다 — π0는 관측 접두사를 한 번 부호화해
+> 캐시하고, flow 스텝들을 그 캐시에 어텐션하는 짧은 패스로 돌린다. **다른 것은 접두사 뒤에
+> 무엇이 반복되느냐다**: 자기회귀 행동 디코더는 한 번에 토큰 하나, flow·확산 헤드는 적분
+> 스텝당 행동 블록 전체에 대한 패스 한 번([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]).
 >
 > 이 중 어느 것도 위 §1이 설명하는 것을 바꾸지 않는다: $QK^\top$ 표, 그 $O(T^2)$ 비용,
-> 멀티헤드 투영은 그대로다. **논문이 "표준 Transformer"라고 하면 pre-norm + RMSNorm +
-> 게이팅 활성 + RoPE로 읽어라.** 그 차이가 주장에 영향을 준다면 부록을 확인하라.
-- **위치 인코딩** — 어텐션은 순서를 모르는 연산이므로, 고정된 사인파로 순서 정보를 주입: $PE_{(pos,2i)} = \sin(pos/10000^{2i/d_{model}})$
+> 멀티헤드 투영은 그대로다.
 
 시퀀스 전체가 병렬로 처리되고, 임의의 두 토큰 사이 경로 길이가 $O(n)$에서 $O(1)$로 줄어든다.
 

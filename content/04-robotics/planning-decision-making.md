@@ -44,13 +44,18 @@ appendix.
 
 - **Occupancy grid** — the map is a grid of cells, each holding the probability that the cell
   is occupied. Updates are done in **log-odds** so that accumulating evidence is an addition
-  rather than a multiplication, and so that a cell can never saturate to a probability it can
-  never recover from. A cell is *free*, *occupied*, or **unknown**, and the third state is the
-  one beginners drop: unknown is not free, and the difference is what exploration is about.
+  rather than a multiplication, and to avoid the numerical trouble of probabilities pressed
+  against 0 or 1. Note the direction of the remaining hazard: log-odds is *unbounded*, so a
+  cell observed occupied a thousand times needs a thousand contrary observations to flip —
+  which is why implementations add an explicit **clamping** range (OctoMap's contribution) so
+  the map can still adapt when the world changes. A cell reads as *free*, *occupied*, or
+  **unknown**, and the third is the one beginners drop: unknown is not free, and the difference is what exploration is about.
 - **Inflation** — a planner that treats the robot as a point (the figure above) has to grow
   the obstacles instead. Inflating occupied cells by the robot radius produces a C-space
-  obstacle directly on the grid; adding a decaying cost outside that radius produces a margin
-  the planner prefers not to enter.
+  obstacle directly on the grid **for a circular robot** — for any other footprint it is an
+  approximation, which is why a stack like Nav2 still runs a separate footprint collision
+  check. Adding a decaying cost outside that radius produces a margin the planner prefers not
+  to enter.
 - **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
   Cost combines inflation with whatever else the robot should avoid: unknown space, rough
   terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
@@ -61,27 +66,36 @@ appendix.
   sensor-specific) and compose them, so that clearing a stale obstacle does not erase the map.
 - **Frontier** — a boundary cell between *known free* and *unknown*. **Frontier exploration**
   is the classic answer to "where next": drive to the nearest frontier, and the known region
-  grows until no frontier remains. Every semantic-navigation method in
-  [[04-robotics/semantic-language-navigation|19. §3]] that "chooses where to explore" is
-  choosing among frontiers; what the learned part supplies is a *score* over them, not the
-  candidate set.
+  grows until no frontier remains. Some semantic-navigation methods keep this candidate set
+  and let the learned part supply only a *score* over it — [[04-robotics/semantic-language-navigation|19. §3]]'s
+  VLFM is exactly that. Others do not: SemExp's learned global policy picks an arbitrary
+  long-term goal on the map, which is what its own note means by "goal-oriented rather than
+  frontier-based" ([[01-canonical-papers/notes/9-navigation/semexp|SemExp]]). **Which of the
+  two a paper does is the thing to identify**, because it decides whether the learned
+  component chooses candidates or only ranks them.
 
 > [!warning] Two meanings of "frontier"
 > §4 below uses *frontier nodes* for the open list of a graph search — the set of nodes
-> discovered but not yet expanded. That is a different object from an exploration frontier on
-> a map, and the two are unrelated despite the shared word. Papers rarely disambiguate.
+> discovered but not yet expanded. That is a **different object** from an exploration frontier
+> on a map, though not an unrelated one: both name the boundary between what has been explored
+> and what has not, one in a graph and one in a grid. Papers rarely disambiguate.
 
 **Global and local.** Navigation stacks split planning in two: a **global planner** searches
 the whole costmap for a route (§3–§5), and a **local planner** repeatedly picks the next few
 seconds of motion, given the route, the robot's dynamics, and obstacles that appeared since.
 The local layer is where the classical names live — *dynamic window* approaches sample
-feasible velocity pairs and score them; elastic-band and timed-elastic-band methods deform a
-trajectory against obstacle and time costs; **sampling-based MPC** (the family
-[[01-canonical-papers/notes/9-navigation/badgr|BADGR]] uses) samples many action sequences,
-rolls each one forward through a model, and executes the first step of the best. §6 gives the
-optimization view of the same layer. **A paper that says "we replace the planner" almost
-always means the local one**, and keeps the global search and the costmap untouched — which
-bounds what the result can be claiming.
+feasible velocity pairs and score them; the **elastic band** deforms a *path* under an
+internal contraction force and an external obstacle repulsion, with no notion of time, and
+**timed elastic band** is the descendant that adds the time intervals its name refers to; **sampling-based MPC** (the family
+[[01-canonical-papers/notes/9-navigation/badgr|BADGR]] uses) samples many action sequences
+around a running estimate, rolls each forward through a model, refits the estimate by a
+**reward-weighted average** over the samples rather than taking the single best, and executes
+its first action. §6 gives the
+optimization view of the same layer. In a classical navigation stack the learned component is usually the local layer, with the
+global search and the costmap untouched — but not always: learned global planners and learned
+search heuristics exist, and the end-to-end line of
+[[04-robotics/semantic-language-navigation|19. §3]] replaces the whole stack. **Identify which
+layer a paper actually replaced**, because that bounds what its result can claim.
 
 <svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="workspace obstacle versus its inflated configuration-space obstacle">
   <g stroke="currentColor" stroke-width="1.3" fill="none"><rect x="25" y="25" width="185" height="150" rx="3"/><rect x="250" y="25" width="185" height="150" rx="3"/></g>
@@ -258,12 +272,16 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 - **점유 격자(occupancy grid)** — 지도를 격자로 두고 각 칸이 점유되어 있을 확률을 담는다.
   갱신은 **로그 승산(log-odds)** 으로 하는데, 그래야 증거 누적이 곱셈이 아니라 덧셈이 되고,
-  한 칸이 되돌아올 수 없는 확률로 포화되지 않는다. 칸은 *비어 있음*, *점유됨*, 그리고
+  확률이 0이나 1에 바짝 붙었을 때의 수치 문제를 피할 수 있다. 남는 위험의 방향을 짚어야 한다:
+  로그 승산은 *유계가 아니어서*, 점유로 천 번 관측된 칸은 뒤집으려면 반대 관측 천 번이 필요하다 —
+  그래서 구현들은 명시적 **클램핑** 범위를 둔다(OctoMap의 기여). 세상이 바뀌었을 때 지도가
+  적응할 수 있게 하려는 것이다. 칸은 *비어 있음*, *점유됨*, 그리고
   **미지**의 셋 중 하나이고, 초심자가 빠뜨리는 것이 셋째다. 미지는 비어 있음이 아니며,
   그 차이가 곧 탐색이 존재하는 이유다.
 - **팽창(inflation)** — 로봇을 점으로 다루는 계획기(위 그림)는 대신 장애물을 키워야 한다.
-  점유 칸을 로봇 반경만큼 팽창시키면 격자 위에서 바로 C-공간 장애물이 되고, 그 바깥에
-  감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다.
+  점유 칸을 로봇 반경만큼 팽창시키면 **원형 로봇에 한해** 격자 위에서 바로 C-공간 장애물이
+  된다 — 다른 형상에서는 근사이고, 그래서 Nav2 같은 스택은 별도의 footprint 충돌 검사를 따로
+  돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다.
 - **비용 지도(costmap)** — 칸이 이진값이 아니라 *통행 비용*을 담는 점유 격자다. 비용은
   팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
   진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
@@ -275,20 +293,27 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 - **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. **frontier 탐색**은 "다음에
   어디로"에 대한 고전적 답이다: 가장 가까운 frontier로 가면 아는 영역이 자라고, frontier가
   없어질 때까지 반복한다. [[04-robotics/semantic-language-navigation|19. §3]]에서 "어디를
-  탐색할지 고른다"는 모든 의미 내비게이션 방법은 frontier 중에서 고르고 있는 것이고,
-  학습된 부분이 공급하는 것은 후보 집합이 아니라 그 위의 *점수*다.
+  탐색할지 고른다"는 의미 내비게이션 방법 중 일부는 이 후보 집합을 그대로 두고 학습된 부분이
+  그 위의 *점수*만 공급한다 — [[04-robotics/semantic-language-navigation|19. §3]]의 VLFM이
+  정확히 그렇다. 그렇지 않은 것도 있다: SemExp의 학습된 전역 정책은 지도 위의 임의의 장기
+  목표를 고르고, 그것이 그 노트가 "frontier 기반이 아니라 목표 지향"이라고 말하는 뜻이다
+  ([[01-canonical-papers/notes/9-navigation/semexp|SemExp]]). **논문이 둘 중 어느 쪽인지를
+  가려내는 것이 핵심이고**, 그것이 학습된 구성요소가 후보를 고르는지 순위만 매기는지를 정한다.
 
 > [!warning] "frontier"의 두 가지 뜻
 > 아래 §4는 그래프 탐색의 열린 목록 — 발견했지만 아직 확장하지 않은 노드 집합 — 을 가리켜
 > *frontier 노드*라고 쓴다. 지도 위의 탐색 frontier와는 다른 대상이고, 단어만 같을 뿐 서로
-> 무관하다. 논문들은 이것을 거의 구분해 주지 않는다.
+> 무관하지는 않다: 둘 다 탐색된 것과 아닌 것의 경계를 가리키고, 하나는 그래프에서 하나는
+> 격자에서 그럴 뿐이다. 논문들은 이것을 거의 구분해 주지 않는다.
 
 **전역과 지역.** 내비게이션 스택은 계획을 둘로 나눈다: **전역 계획기**가 비용 지도 전체에서
 경로를 탐색하고(§3~§5), **지역 계획기**가 그 경로와 로봇의 동역학, 그리고 그사이 나타난
 장애물을 놓고 다음 몇 초의 운동을 반복해서 고른다. 고전적 이름들이 사는 곳이 지역 층이다 —
-*dynamic window* 계열은 실행 가능한 속도 쌍을 표본으로 뽑아 점수를 매기고, elastic-band와
-timed-elastic-band는 장애물·시간 비용에 맞서 궤적을 변형하며, **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr|BADGR]]이
-쓰는 계열)는 많은 행동열을 표본으로 뽑아 모델로 굴려 보고 가장 좋은 것의 첫 스텝만 실행한다.
+*dynamic window* 계열은 실행 가능한 속도 쌍을 표본으로 뽑아 점수를 매기고, **elastic band**는
+내부 수축력과 외부 장애물 반발력으로 시간 개념 없이 *경로*를 변형하며, **timed elastic band**는
+이름이 가리키는 시간 간격을 더한 후손이다. **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr|BADGR]]이
+쓰는 계열)는 running estimate 주변에서 많은 행동열을 표본으로 뽑아 모델로 굴린 뒤, 가장 좋은
+하나를 고르는 대신 **보상 가중 평균**으로 추정을 갱신하고 그 첫 행동을 실행한다.
 §6이 같은 층을 최적화 관점에서 다룬다. **"계획기를 대체했다"는 논문은 거의 언제나 지역
 계획기를 뜻하고**, 전역 탐색과 비용 지도는 건드리지 않는다 — 그것이 그 결과가 주장할 수 있는
 범위를 한정한다.

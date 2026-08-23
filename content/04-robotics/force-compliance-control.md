@@ -44,10 +44,22 @@ at the other:
 
 | Contact | $K_e$ (N/m) |
 |---|---:|
-| soft padding, foam, skin | $10^2$–$10^3$ |
-| compliant wrist, series-elastic joint, RCC in series | $10^3$–$10^4$ |
-| rigid tool on wood or plastic | $10^5$–$10^6$ |
-| bare steel tool on steel or concrete | $10^6$–$10^8$ |
+| soft padding, foam, carton | $10^3$–$10^4$ |
+| compliant wrist or series-elastic joint, *in its compliant direction* | $10^3$–$10^4$ |
+| hard paper, aluminium, steel — as **identified by a force controller** | $10^4$–$10^5$ |
+| steel-on-steel **local material contact** (Hertzian) | $10^7$–$10^8$ |
+
+> [!warning] Two stiffnesses wear the same symbol
+> The last two rows are not a range, they are different quantities. A force controller
+> identifies the **series** stiffness of tool + F/T sensor + arm structure + environment, and
+> the structure is far softer than the material: Pham & Pham measure bare steel at
+> $8\times10^4$ N/m and synthesize controllers against $\le 10^5$–$10^6$. The $10^7$–$10^8$
+> figure is the *material's* local contact stiffness, and a control loop essentially never
+> sees it. **When a paper reports an environment stiffness, it is reporting the fourth-row
+> number only if it measured a bare indenter on a rigid fixture** — otherwise expect the third
+> row. An RCC is also directional: compliant laterally ($\approx 10^4$) and stiff axially
+> ($\approx 10^6$), so a single scalar $K_e$ for it is a simplification that fails for a
+> straight-in push.
 
 The example above sits in the second row. Run the same arithmetic in the fourth and it stops
 being survivable: a 1 cm error against $10^7$ N/m asks for $10^5$ N, which no arm produces and
@@ -186,11 +198,13 @@ inverse of the Jacobian, the secondary torque is filtered through
 $$\tau = J^\top\mathcal{F} \;+\; \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{null-space projector } N^\top}\tau_0$$
 
 where $\tau_0$ is whatever the secondary objective asks for. The projector's job is that
-**$\tau_0$ cannot disturb the task**: everything it would have contributed along the task
-directions is removed. The word *dynamically consistent* is the part papers lean on — a
-projector built from the plain pseudo-inverse instead of $\bar J$ does cancel task
-*velocity*, but still perturbs task *force*, which is exactly what you cannot afford during
-contact.
+**$\tau_0$ cannot disturb the task**. Be precise about *which* disturbance, because this is
+commonly stated backwards: a projector built from the plain Moore–Penrose pseudo-inverse is
+already **statically consistent** — in steady state the secondary torque produces no task
+force at all. What it does not do is prevent the task from *accelerating* during the
+transient, because $JM^{-1}\tau_0 \neq 0$ when $M^{-1} \neq I$. **Dynamic consistency buys
+the transient, not the static force**: only $\bar J$ makes $JM^{-1}N^\top = 0$
+(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015).
 
 **Task priority, and whole-body control.** Stack more than two objectives and this becomes a
 hierarchy: each level is projected into the null space of all levels above it, so a lower
@@ -436,10 +450,20 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 
 | 접촉 | $K_e$ (N/m) |
 |---|---:|
-| 무른 패딩, 폼, 피부 | $10^2$–$10^3$ |
-| 유연 손목, 직렬 탄성 관절, 직렬 RCC | $10^3$–$10^4$ |
-| 단단한 도구 대 목재·플라스틱 | $10^5$–$10^6$ |
-| 맨 강철 도구 대 강재·콘크리트 | $10^6$–$10^8$ |
+| 무른 패딩, 폼, 판지 | $10^3$–$10^4$ |
+| 유연 손목이나 직렬 탄성 관절, *그 유연한 방향에서* | $10^3$–$10^4$ |
+| 두꺼운 종이, 알루미늄, 강재 — **힘 제어기가 식별하는 값** | $10^4$–$10^5$ |
+| 강철 대 강철의 **국소 재료 접촉**(헤르츠) | $10^7$–$10^8$ |
+
+> [!warning] 같은 기호를 쓰는 두 개의 강성
+> 마지막 두 행은 하나의 범위가 아니라 서로 다른 양이다. 힘 제어기가 식별하는 것은 도구 + F/T
+> 센서 + 팔 구조 + 환경의 **직렬** 강성이고, 구조가 재료보다 훨씬 무르다: Pham & Pham은 맨
+> 강재를 $8\times10^4$ N/m로 측정하고 $10^5$–$10^6$ 이하를 상대로 제어기를 합성한다.
+> $10^7$–$10^8$은 *재료의* 국소 접촉 강성이고, 제어 루프는 사실상 그것을 볼 일이 없다.
+> **논문이 환경 강성을 보고할 때 그것이 넷째 행의 숫자이려면 강체 지그 위의 맨 인덴터를
+> 측정한 경우여야 하고**, 그 밖에는 셋째 행이라고 보면 된다. RCC도 방향성이 있다: 측면으로는
+> 유연하고($\approx 10^4$) 축 방향으로는 단단하다($\approx 10^6$). 그래서 스칼라 $K_e$ 하나로
+> 적는 것은 곧장 밀어 넣는 경우에는 성립하지 않는 단순화다.
 
 위 예는 둘째 행에 있다. 같은 계산을 넷째 행에서 하면 더 이상 견딜 수 있는 값이 아니다:
 $10^7$ N/m에 대한 1 cm 오차는 $10^5$ N을 요구하고, 그것을 낼 수 있는 팔도 견딜 수 있는 도구도
@@ -570,10 +594,12 @@ $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta),
 $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{영공간 투영자 } N^\top}\tau_0$$
 
 여기서 $\tau_0$는 부차 목표가 요구하는 무엇이든 된다. 투영자의 임무는 **$\tau_0$가 작업을
-교란할 수 없게** 하는 것이다: 작업 방향으로 기여했을 성분이 전부 제거된다. 논문들이 기대는
-지점이 *동역학적으로 일관된*이라는 표현이다 — $\bar J$ 대신 평범한 유사역행렬로 만든 투영자는
-작업 *속도*는 상쇄하지만 작업 *힘*은 여전히 교란하는데, 접촉 중에 감당할 수 없는 것이 정확히
-그것이다.
+교란할 수 없게** 하는 것이다. 다만 *어떤* 교란인지를 정확히 해야 한다. 이 부분은 거꾸로 서술되는
+일이 흔하다: 평범한 Moore–Penrose 유사역행렬로 만든 투영자도 이미 **정적으로 일관되다** —
+정상 상태에서 부차 토크는 작업 힘을 전혀 만들지 않는다. 그것이 막지 못하는 것은 과도 구간에서
+작업이 *가속되는* 것이다. $M^{-1} \neq I$이면 $JM^{-1}\tau_0 \neq 0$이기 때문이다.
+**동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**: $JM^{-1}N^\top = 0$을
+만드는 것은 $\bar J$뿐이다(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015).
 
 **과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
 층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이

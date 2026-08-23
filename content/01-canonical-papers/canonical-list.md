@@ -199,7 +199,7 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 - [x] ★ [[notes/8-construction/vision-guided-assembly|Feng et al. — vision-guided assembly and as-built scanning]] (Automation in Construction 2015) — 미시간 조작 계보의 앵커
 - [x] ★ [[notes/8-construction/apolinarska-timber|Apolinarska et al. — 목재 접합의 힘 유도 삽입]] (Automation in Construction 2021) — 전적으로 시뮬에서 학습해 실기계로 전이
 - [x] ◐ [[notes/8-construction/feng-rebar|Feng et al. — 철근 결속 로봇]] (Buildings 2024) — 현장 검증된 드문 사례
-- [x] ◐ [[notes/8-construction/kindle-jaibot|Kindle et al. — 드릴링 로봇의 변형·백래시 보상]] (RA-L 2024)
+- [x] ◐ [[notes/8-construction/kindle-jaibot|Kindle et al. — 드릴링 로봇의 변형·백래시 보상]] (RA-L 2025)
 - [x] ★ [[notes/8-construction/dry-stone-wall|Johns et al. — excavation and dry-stone construction]] (Science Robotics 2023) — 인식·계획·중장비 조작의 실규모 폐루프
 - [x] ○ [[notes/8-construction/aerial-am-2022|Zhang et al. — aerial additive manufacturing]] (Nature 2022) — 공중 적층 제조
 - [x] ◐ [[notes/8-construction/yu-imitation|Yu et al. — cloud-based hierarchical imitation learning]] (JCCE 2024) — 작업자 기술의 시연 학습

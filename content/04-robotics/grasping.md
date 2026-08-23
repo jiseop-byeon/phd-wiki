@@ -104,14 +104,20 @@ number is a common error.
 > | Model | Each contact transmits | Two-finger force closure in 3D? |
 > |---|---|---|
 > | **Point contact, frictionless** | force along the normal only | no |
-> | **Hard finger** (point contact with friction) | force inside the friction cone, **no moment** | no — this is Markenscoff's four |
+> | **Hard finger** (point contact with friction) | force inside the friction cone, **no moment** | no — **three** non-collinear contacts is the 3D minimum |
 > | **Soft finger** | force inside the cone **plus a moment about the contact normal** (torsional friction) | yes — this is the antipodal case |
 >
 > A parallel-jaw gripper on a real box is a soft-finger contact: the pads deform, so each
-> contact resists twisting about its own normal, and two of them suffice. Markenscoff's
-> count is the hard-finger theorem. **When a paper claims force closure, the first question
-> is which row it is standing on** — learned grasp planners almost always assume soft finger
-> implicitly, by training on grippers with compliant pads.
+> contact resists twisting about its own normal, and two of them suffice. Under hard finger
+> the 3D minimum is **three** non-collinear contacts (Springer Handbook ch. 38).
+>
+> Markenscoff's four is a **third** kind of statement and the easiest to misuse: it is a
+> *universal* bound — how many fingers suffice for **any** object — not the minimum for the
+> object in front of you. So the reconciliation has two moving parts, not one: the contact
+> model, and whether the count is universal or particular. **When a paper claims force
+> closure, ask which row it stands on and whether its number is a worst case** — learned grasp
+> planners almost always assume soft finger implicitly, by training on grippers with
+> compliant pads.
 
 For two contacts specifically, the practical criterion is the **antipodal** condition: the
 line joining the two contact points must lie inside both friction cones. That is the second
@@ -186,7 +192,7 @@ you will meet:
 | Representation | What is fed in | Buys | Costs |
 |---|---|---|---|
 | **RGB images** | one or more camera views | the pretrained-backbone ecosystem (SigLIP, DINO) and web-scale priors | no metric scale; viewpoint changes are out-of-distribution |
-| **Point clouds** | depth back-projected, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | metric geometry and viewpoint invariance almost for free — the argument behind 3D policy variants | depth sensors fail on the glossy, dark and transparent; no colour semantics unless fused |
+| **Point clouds** | depth back-projected into the robot frame, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | metric geometry, and camera extrinsics stop mattering because the points are already in a fixed frame — the argument behind 3D policy variants | the *encoder* is permutation-invariant, **not** rotation- or viewpoint-invariant, and self-occlusion still changes the visible set; depth fails on the glossy, dark and transparent |
 | **Keypoints** | a sparse set of task-relevant points on the object | a low-dimensional, interpretable state that generalizes across instances of a category | someone must define what the keypoints *are*, and a novel category has none |
 | **Affordances** | a per-pixel or per-point map of where an action can be applied | directly language- and task-conditionable, and composes with open-vocabulary models | supervision is expensive, and "graspable" is not a property of the object alone but of the object *and the gripper* |
 
@@ -201,16 +207,23 @@ architecture does** — which is why the seen/unseen split axis of
 **Beyond the parallel jaw.** Everything above §4 assumed two rigid fingers, and a growing
 share of the literature does not. Two distinctions are enough to read those papers:
 
-- **Multi-fingered versus parallel-jaw** is a change in *dimension*, not degree: a
-  three-fingered or anthropomorphic hand has 12–20+ actuated degrees of freedom, so grasp
-  synthesis becomes search in a space where the ε-metric of §4 is expensive to evaluate and
-  the learned pipelines of this section were never trained. Papers usually retreat to a
-  discrete **grasp taxonomy** (power, precision, pinch, tripod) rather than the full space.
+- **Multi-fingered versus parallel-jaw** is a change in *dimension*, not degree — though
+  check the actual number before assuming it is large. Anthropomorphic hands run 16–20
+  actuated DoF (Shadow 20, Allegro and LEAP 16), while the common **three-fingered** hands are
+  underactuated and much smaller (BarrettHand 4, Robotiq 3-Finger 4, Schunk SDH-2 7). Above a
+  handful of DoF, grasp synthesis becomes search in a space where §4's ε-metric is expensive
+  and this section's learned pipelines were never trained. Two reductions are used: a
+  **grasp taxonomy** — power versus precision at the top, with leaf types like tripod and tip
+  pinch underneath — and, more often in synthesis, a *continuous* low-dimensional subspace
+  (eigengrasps).
 - **In-hand manipulation** — reorienting an object *after* it is grasped, without putting it
   down — is a genuinely different problem, because the contact set changes during the motion.
   Force closure ([[04-robotics/grasping|§3]]) describes a *static* condition; in-hand
-  reorientation deliberately breaks and remakes it, which is why the analytic tools stop and
-  RL in simulation with heavy randomization became the default approach.
+  reorientation deliberately breaks and remakes it — though that describes **finger gaiting**;
+  rolling and sliding reorientation can hold contact throughout. What changes is that the
+  problem becomes a hybrid contact-mode problem whose mode combinatorics explode, which is why
+  sampling and RL in simulation with heavy randomization became the default. Analytic work did
+  not stop: contact-implicit MPC for in-hand manipulation is current.
 
 For construction this is mostly a boundary marker: site objects are heavy, held with tools or
 two-finger grips, and the dexterity that matters is force regulation ([[04-robotics/force-compliance-control|13]])
@@ -488,8 +501,11 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
   **파지 분류 체계**(power, precision, pinch, tripod)로 물러난다.
 - **In-hand manipulation** — 잡은 *뒤에* 내려놓지 않고 물체의 방향을 바꾸는 것 — 은 진짜로
   다른 문제다. 운동 중에 접촉 집합 자체가 바뀌기 때문이다. Force closure([[04-robotics/grasping|§3]])는
-  *정적* 조건을 기술하는데, in-hand 재정향은 그것을 의도적으로 깨고 다시 만든다. 해석적 도구가
-  거기서 멈추고 무거운 무작위화를 동반한 시뮬레이션 RL이 기본 접근이 된 이유가 그것이다.
+  *정적* 조건을 기술하는데, in-hand 재정향은 그것을 의도적으로 깨고 다시 만든다 — 다만 그것은
+  **finger gaiting**의 이야기이고, 구르기나 미끄러짐에 의한 재정향은 접촉을 유지한 채로도
+  가능하다. 바뀌는 것은 문제가 접촉 모드의 조합이 폭발하는 하이브리드 문제가 된다는 점이고,
+  그래서 표본 기반 방법과 무거운 무작위화를 동반한 시뮬레이션 RL이 기본이 되었다. 해석적
+  연구가 멈춘 것은 아니다: in-hand manipulation을 위한 contact-implicit MPC는 현재 진행형이다.
 
 건설에서 이것은 대체로 경계 표지다: 현장 물체는 무겁고, 공구나 두 손가락 파지로 다뤄지며,
 중요한 손재주는 손가락 걸음이 아니라 힘 조절([[04-robotics/force-compliance-control|13]])이다.

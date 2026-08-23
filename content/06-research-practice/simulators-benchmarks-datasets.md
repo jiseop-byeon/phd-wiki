@@ -355,7 +355,7 @@ and two papers reporting 80% may agree on none of them:
 
 | Choice | Why it moves the number |
 |---|---|
-| **How many trials** | 10 trials resolves nothing below ~10 percentage points. By the rule of three, zero failures in 10 trials is consistent with a true failure rate up to ~26% — so "10/10" is *not* evidence of reliability ([[06-research-practice/experimental-design-reproducibility\|3. Experimental Design §4]]) |
+| **How many trials** | 10 trials resolves nothing below ~10 percentage points. By the rule of three ($3/n$), zero failures in 10 trials is consistent with a true failure rate near **30%** — the exact bound is 26%, and the wiki uses $3/n$ throughout — so "10/10" is *not* evidence of reliability ([[06-research-practice/experimental-design-reproducibility\|3. Experimental Design §4]]) |
 | **Initial-state distribution** | were object poses randomized, or reset to the same spot? A policy evaluated from a fixed start is being asked an easier question than one evaluated from a distribution |
 | **What counts as done** | a time limit, a pose tolerance, a human judge. The tolerance is often unstated and is frequently the whole difference between two systems |
 | **Whether resets and retries count** | a human straightening the object between trials is part of the system; if it is not counted, the reported autonomy is not the measured autonomy |
@@ -739,7 +739,7 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 
 | 선택 | 숫자를 움직이는 이유 |
 |---|---|
-| **시행 횟수** | 10회로는 약 10퍼센트포인트 아래를 분간할 수 없다. 3의 법칙으로, 10회 중 실패 0회는 참 실패율 약 26%까지와 양립한다 — 그러니 "10/10"은 신뢰성의 증거가 *아니다*([[06-research-practice/experimental-design-reproducibility\|3. 실험 설계 §4]]) |
+| **시행 횟수** | 10회로는 약 10퍼센트포인트 아래를 분간할 수 없다. 3의 법칙($3/n$)으로, 10회 중 실패 0회는 참 실패율 **30%** 근처까지와 양립한다(정확한 상한은 26%이고, 위키는 전체에서 $3/n$을 쓴다) — 그러니 "10/10"은 신뢰성의 증거가 *아니다*([[06-research-practice/experimental-design-reproducibility\|3. 실험 설계 §4]]) |
 | **초기 상태 분포** | 물체 자세를 무작위화했는가, 같은 자리로 리셋했는가? 고정된 시작에서 평가된 정책은 분포에서 평가된 정책보다 쉬운 질문을 받고 있다 |
 | **무엇을 완료로 세는가** | 시간 제한, 자세 허용오차, 사람 판정. 허용오차는 자주 명시되지 않고, 두 시스템의 차이 전체가 거기인 경우가 흔하다 |
 | **리셋과 재시도를 세는가** | 시행 사이에 사람이 물체를 바로 세워 준다면 그 사람도 시스템의 일부다. 그것을 세지 않으면 보고된 자율성은 측정된 자율성이 아니다 |
