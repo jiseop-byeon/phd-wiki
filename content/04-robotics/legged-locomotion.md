@@ -88,6 +88,47 @@ generalist, model-based experts relabelling passive data, and — in a different
 teacher-student structure inside sim-to-real recipes generally
 ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]).
 
+**What is inside the training loop these papers share.** The distillation story above is the
+contribution; the four things below are the *recipe*, assumed without explanation in every
+2024–26 locomotion method section. They are also where most of the engineering actually is.
+
+- **Gait and contact schedule.** A gait is a pattern of which feet are on the ground when —
+  *trot* (diagonal pairs), *bound*, *pace*, *crawl*. Model-based controllers are handed this
+  as a **contact schedule** and solve for forces within it, which is what
+  [[04-robotics/convex-mpc-legged|8. Convex MPC]] assumes. Learned controllers usually do
+  **not** prescribe one: gait emerges from the reward, and papers report the emergent gait as
+  a result. A paper that *does* impose a schedule is making a different, more constrained
+  claim — check which, because "learned locomotion" covers both.
+- **Reward terms.** Locomotion reward is a weighted sum, and the weights are the method. The
+  recurring groups: a **task** term (track the commanded velocity), **regularization** terms
+  (penalize joint torque, joint velocity, action rate, orientation error), and **shaping**
+  terms (foot clearance, air time, contact-force smoothness). Energy or
+  bioenergetics-inspired penalties are what produce natural-looking gaits without prescribing
+  one. **When a paper says "we use the standard reward", it means this stack** — and an
+  ablation that removes a regularization term usually degrades sim-to-real transfer rather
+  than simulated return.
+- **Termination and curriculum.** Episodes end early on a fall or a bad body orientation, so
+  termination *is* a reward signal. **Terrain curriculum** raises difficulty as the policy
+  succeeds — flat, then rough, then stairs and gaps — because a policy that starts on the
+  hardest terrain never gets enough successful episodes to learn from.
+- **Domain randomization.** Sampling mass, friction, motor gains, latency and terrain
+  parameters over a range at training time so the policy is forced to be robust across them
+  rather than tuned to one. This is the single most load-bearing sim-to-real technique in the
+  field and the legged page above assumed it silently.
+  [[05-construction-robotics/sim-to-real|Sim-to-Real §2]] treats it properly; the reading rule
+  here is that **the randomization ranges are part of the result**. A policy robust over a
+  ±20% friction range and one robust over ±60% are not the same claim, and the ranges live in
+  an appendix table.
+
+> [!warning] Randomization is not free robustness
+> Widening the ranges makes the policy more robust and *less* performant — it must hedge
+> against conditions it now sees. A paper reporting both a robustness result and a
+> peak-performance result should say whether they came from the same policy. Domain
+> randomization also cannot fix an effect the simulator does not model at all: the reason
+> [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al.]] had to
+> *learn when to distrust exteroception* is that no amount of randomizing terrain parameters
+> teaches a policy what snow looks like to a depth sensor.
+
 ### 3. The canon, and what each result actually claimed
 
 | Work | What it is famous for | What it actually claimed |
@@ -301,6 +342,41 @@ for the full picture and the licensing traps.
 이 패턴은 이후 로코모션을 훨씬 넘어 일반화되었다: 다수 전문가를 일반가로 증류하기, 모델 기반
 전문가가 수동 데이터를 다시 라벨하기, 그리고 다른 옷을 입고 sim-to-real 레시피 일반의 교사-학생
 구조로([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]).
+
+**이 논문들이 공유하는 학습 루프 안에 있는 것.** 위의 증류 이야기가 기여라면, 아래 넷은
+*레시피*이고, 2024~26년 모든 로코모션 방법 절이 설명 없이 전제한다. 실제 공학의 대부분도
+거기에 있다.
+
+- **보행 양식과 접촉 스케줄.** 보행 양식은 어느 발이 언제 땅에 있는지의 패턴이다 —
+  *trot*(대각쌍), *bound*, *pace*, *crawl*. 모델 기반 제어기는 이것을 **접촉 스케줄**로 받아
+  그 안에서 힘을 푸는데, [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 전제하는 것이 그것이다.
+  학습 제어기는 대개 그것을 **지정하지 않는다**: 보행 양식이 보상에서 창발하고, 논문은 창발한
+  양식을 결과로 보고한다. 스케줄을 *부과하는* 논문은 다르고 더 제약된 주장을 하고 있는 것이니
+  어느 쪽인지 확인하라. "학습된 로코모션"이 둘 다 덮는다.
+- **보상 항.** 로코모션 보상은 가중합이고, 그 가중치가 곧 방법이다. 반복되는 묶음: **과제** 항
+  (명령된 속도 추종), **정규화** 항(관절 토크·관절 속도·행동 변화율·자세 오차에 벌점),
+  **정형화(shaping)** 항(발 여유 높이, 체공 시간, 접촉력 매끄러움). 에너지나 생체에너지학에서
+  착안한 벌점이 양식을 지정하지 않고도 자연스러워 보이는 보행을 만들어 낸다. **논문이 "표준
+  보상을 쓴다"고 하면 이 묶음을 뜻하고**, 정규화 항 하나를 빼는 절제 실험은 시뮬레이션 리턴이
+  아니라 sim-to-real 전이를 나빠지게 하는 것이 보통이다.
+- **종료와 커리큘럼.** 넘어지거나 몸 자세가 나빠지면 에피소드가 조기 종료되므로, 종료 조건이
+  *곧* 보상 신호다. **지형 커리큘럼**은 정책이 성공함에 따라 난이도를 올린다 — 평지, 그다음
+  거친 지형, 그다음 계단과 틈 — 가장 어려운 지형에서 시작한 정책은 배울 만한 성공 에피소드를
+  충분히 얻지 못하기 때문이다.
+- **도메인 무작위화.** 학습 시점에 질량·마찰·모터 이득·지연·지형 파라미터를 어떤 범위에서
+  표본으로 뽑아, 정책이 하나에 맞춰지는 대신 그 전체에 걸쳐 강건해지도록 강제하는 것. 이 분야에서
+  가장 무게를 지는 sim-to-real 기법이고, 위의 레그드 페이지는 그것을 조용히 전제하고 있었다.
+  [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]가 제대로 다루고, 여기서의 읽기 규칙은
+  **무작위화 범위가 결과의 일부**라는 것이다. 마찰 ±20% 범위에서 강건한 정책과 ±60%에서 강건한
+  정책은 같은 주장이 아니고, 그 범위는 부록 표에 있다.
+
+> [!warning] 무작위화는 공짜 강건함이 아니다
+> 범위를 넓히면 정책은 더 강건해지고 성능은 *떨어진다* — 이제 보게 된 조건들에 대비해 헤지해야
+> 하기 때문이다. 강건성 결과와 최고 성능 결과를 함께 보고하는 논문은 그 둘이 같은 정책에서
+> 나왔는지 밝혀야 한다. 도메인 무작위화는 시뮬레이터가 아예 모형화하지 않는 효과를 고칠 수도
+> 없다: [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등]]이 외수용
+> 감각을 *언제 불신할지 학습해야* 했던 이유가, 지형 파라미터를 아무리 무작위화해도 눈이 깊이
+> 센서에 어떻게 보이는지는 가르쳐 주지 못하기 때문이다.
 
 ### 3. 정본과, 각 결과가 실제로 주장한 것
 

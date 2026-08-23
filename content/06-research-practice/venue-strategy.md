@@ -75,6 +75,36 @@ because there is no second chance to explain.
 
 IJRR's single-anonymized model is the other outlier: referees are told who you are.
 
+**The domain venues, which this table has been missing.** Most of the construction papers in
+[[01-canonical-papers/canonical-list|§8 of the canonical list]] are in venues no robotics
+reader has calibration for, and a systems paper reads differently there:
+
+| Venue | Publisher | Review | What acceptance signals |
+|---|---|---|---|
+| ***Automation in Construction*** | Elsevier | **single-anonymized**; editor screens, then ≥2 reviewers | the domain's flagship. Scope is the whole construction life cycle — design, build, operate, dismantle — so a robotics result is judged on **whether the construction problem is real**, not on method novelty |
+| ***J. Computing in Civil Engineering*** (JCCE) | ASCE | single-anonymized | computing/AI/BIM/sensing across civil subdomains; a US civil-engineering readership rather than a robotics one |
+| ***Computer-Aided Civil and Infrastructure Engineering*** (CACAIE) | **moved from Wiley to Elsevier in January 2026** | single-anonymized | computational-method novelty, framed as a bridge from computing to civil engineering |
+| **ISARC** (IAARC) | IAARC, **free open access** | peer-refereed, per-paper DOI, Scopus and Ei Compendex indexed | the field's annual symposium — the place to find what is being tried before it reaches a journal |
+| ***Science Robotics*** | AAAS | editor triage is the main filter | a **general-science** audience: the claim must matter outside robotics. Several construction-robotics landmarks live here (AES, the dry-stone wall, HEAP's lineage) |
+
+Three consequences for reading. **Single-anonymized review means referees see the authors** —
+the same caveat IJRR carries above, and it applies to the whole civil-engineering side.
+**Novelty is judged against a different baseline**: a method that a robotics reviewer would
+call incremental can be a genuine contribution in *Automation in Construction* if it is the
+first time the problem has been posed on a real site, and the reverse is also true. And
+**ISARC is where the negative results and the early systems are**, because a symposium paper
+costs less to write than a journal one — it is under-cited by robotics readers precisely
+because they do not know it is refereed and indexed.
+
+> [!warning] Writing for two audiences at once
+> A construction-robotics paper submitted to ICRA and one submitted to *Automation in
+> Construction* are not the same paper with a different template. ICRA wants the method
+> contribution isolated and compared against robotics baselines; AutCon wants the construction
+> process, the site constraints, and what changes for the trade. **Papers 1, 3 and 5 of
+> [[07-research-program/paper-arc|the arc]] are routed to construction journals precisely
+> because their contribution is the problem framing** — and that framing is what an ICRA
+> reviewer will discount.
+
 ### 3. Acceptance rates — and which venues do not publish them
 
 Read this table for the *pattern*, not the numbers, and check the current year before
@@ -308,6 +338,32 @@ Computing Researchers*가 현재의 언어로 다시 말한다: 엄격하게 심
 두 번째 기회가 없으므로, 명료함의 예산을 제출본에 쓰라.
 
 IJRR의 단측 익명이 또 다른 예외다: 심사자가 당신이 누구인지 안다.
+
+**그동안 이 표에 빠져 있던 도메인 게재지들.** [[01-canonical-papers/canonical-list|핵심 논문 리스트 §8]]의
+건설 논문 대부분은 로보틱스 독자에게 감각이 없는 게재지에 있고, 시스템 논문은
+그곳에서 다르게 읽힌다:
+
+| 게재지 | 출판사 | 심사 | 게재가 뜻하는 것 |
+|---|---|---|---|
+| ***Automation in Construction*** | Elsevier | **단측 익명**. 편집자 선별 후 심사자 2인 이상 | 이 분야의 대표 저널. 범위가 설계·시공·운영·해체의 건설 생애주기 전체이므로, 로보틱스 결과는 방법의 새로움이 아니라 **건설 문제가 진짜인가**로 판정된다 |
+| ***J. Computing in Civil Engineering***(JCCE) | ASCE | 단측 익명 | 토목 하위 분야 전반의 컴퓨팅·AI·BIM·센싱. 로보틱스가 아니라 미국 토목 독자층 |
+| ***Computer-Aided Civil and Infrastructure Engineering***(CACAIE) | **2026년 1월 Wiley에서 Elsevier로 이관** | 단측 익명 | 컴퓨팅에서 토목으로 잇는 다리로서의 계산 방법론적 새로움 |
+| **ISARC**(IAARC) | IAARC, **무료 오픈 액세스** | 동료 심사, 논문별 DOI, Scopus·Ei Compendex 색인 | 이 분야의 연례 심포지엄 — 저널에 닿기 전에 무엇이 시도되고 있는지를 찾을 곳 |
+| ***Science Robotics*** | AAAS | 편집자 트리아지가 주된 관문 | **일반 과학** 독자 — 주장이 로보틱스 바깥에서도 중요해야 한다. 건설로봇의 이정표 몇 개가 여기 있다(AES, 돌담, HEAP 계보) |
+
+읽기에 미치는 결과가 셋이다. **단측 익명 심사는 심사자가 저자를 본다는 뜻이고** — 위에서 IJRR에
+붙인 것과 같은 단서 — 토목 쪽 전체에 적용된다. **새로움이 다른 기준선에 대고 판정된다**:
+로보틱스 심사자가 점진적이라 부를 방법이, 그 문제가 실제 현장에서 처음 제기된 것이라면
+*Automation in Construction*에서는 진짜 기여일 수 있고, 그 역도 참이다. 그리고 **부정적 결과와
+이른 시스템은 ISARC에 있다.** 심포지엄 논문이 저널 논문보다 쓰는 비용이 싸기 때문이다 —
+로보틱스 독자가 이것을 과소 인용하는 이유는 정확히 그것이 심사받고 색인된다는 사실을 모르기
+때문이다.
+
+> [!warning] 두 독자를 동시에 쓰는 일
+> ICRA에 내는 건설로봇 논문과 *Automation in Construction*에 내는 논문은 템플릿만 다른 같은
+> 논문이 아니다. ICRA는 방법 기여를 분리해서 로보틱스 베이스라인과 비교하기를 원하고, AutCon은
+> 건설 공정과 현장 제약, 그리고 그 직종에 무엇이 바뀌는지를 원한다. **[[07-research-program/paper-arc|논문 아크]]의 1·3·5번이 건설 저널로 배정된 이유가 바로 그 기여가 문제 설정이기 때문이고** — 그
+> 설정이 바로 ICRA 심사자가 깎을 부분이다.
 
 ### 3. 채택률 — 그리고 그것을 발표하지 않는 venue들
 

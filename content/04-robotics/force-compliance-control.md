@@ -179,6 +179,39 @@ with $\mu$ and $p$ the task-space Coriolis and gravity terms. Two consequences t
   using motion that produces no task-space force. For a mobile manipulator on a site with
   people in it, this is the mechanism, not a nicety.
 
+**The projector, written out.** "Null-space" is used loosely across the literature, so it is
+worth seeing the object. With $\bar J = M^{-1}J^\top\Lambda$ the dynamically-consistent
+inverse of the Jacobian, the secondary torque is filtered through
+
+$$\tau = J^\top\mathcal{F} \;+\; \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{null-space projector } N^\top}\tau_0$$
+
+where $\tau_0$ is whatever the secondary objective asks for. The projector's job is that
+**$\tau_0$ cannot disturb the task**: everything it would have contributed along the task
+directions is removed. The word *dynamically consistent* is the part papers lean on — a
+projector built from the plain pseudo-inverse instead of $\bar J$ does cancel task
+*velocity*, but still perturbs task *force*, which is exactly what you cannot afford during
+contact.
+
+**Task priority, and whole-body control.** Stack more than two objectives and this becomes a
+hierarchy: each level is projected into the null space of all levels above it, so a lower
+priority can never fight a higher one. That is the classical form. The modern form solves the
+same problem as a **quadratic program** at every control step —
+
+- minimize the weighted task errors,
+- subject to joint-position, velocity and torque limits, friction cones at the contacts, and
+  balance or base-stability constraints.
+
+**This QP is what "whole-body control" names.** The reason the field moved to it is not
+elegance: strict null-space priority cannot express *inequality* constraints, and joint
+limits, torque saturation and contact friction are all inequalities. A humanoid or a mobile
+manipulator that must respect all of them simultaneously is solving a QP, and the priority
+hierarchy survives inside it as constraint weights or as a cascade of QPs.
+
+For the mobile-manipulation case — where the "arm" includes a driveable base — the same QP
+absorbs base and arm degrees of freedom into one problem, which is the formal version of the
+choice [[04-robotics/navigation-mobile-manipulation|16. §4]] describes as deciding whether to
+drive closer or reach further.
+
 ### 5. Contact transitions — where the theory earns its keep
 
 Steady contact is the easy part. The hard part is the microsecond the robot arrives, and
@@ -529,6 +562,34 @@ $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta),
 - 여유 자유도 해소가 **영공간 투영**이 된다: 여유 자유도가 있는 팔은 작업 공간 힘을 전혀 만들지
   않는 운동으로 부차 목표 — 관절 한계에서 멀어지기, 팔꿈치를 작업자에게서 비키기 — 를 만족할 수
   있다. 사람이 있는 현장의 모바일 매니퓰레이터에게 이것은 덤이 아니라 기제 그 자체다.
+
+**투영자를 실제로 써 보면.** "영공간"은 문헌에서 느슨하게 쓰이므로 그 대상을 직접 볼 값어치가
+있다. $\bar J = M^{-1}J^\top\Lambda$를 자코비안의 동역학적으로 일관된 역이라 하면, 부차 토크는
+다음을 통과한다:
+
+$$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{영공간 투영자 } N^\top}\tau_0$$
+
+여기서 $\tau_0$는 부차 목표가 요구하는 무엇이든 된다. 투영자의 임무는 **$\tau_0$가 작업을
+교란할 수 없게** 하는 것이다: 작업 방향으로 기여했을 성분이 전부 제거된다. 논문들이 기대는
+지점이 *동역학적으로 일관된*이라는 표현이다 — $\bar J$ 대신 평범한 유사역행렬로 만든 투영자는
+작업 *속도*는 상쇄하지만 작업 *힘*은 여전히 교란하는데, 접촉 중에 감당할 수 없는 것이 정확히
+그것이다.
+
+**과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
+층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이
+고전적 형태다. 현대적 형태는 같은 문제를 매 제어 스텝의 **이차 계획법(QP)** 으로 푼다 —
+
+- 가중된 과제 오차를 최소화하고,
+- 관절 위치·속도·토크 한계, 접촉점의 마찰 원뿔, 균형 또는 베이스 안정성 제약 아래에서.
+
+**이 QP가 "whole-body control"이 가리키는 것이다.** 이 분야가 그리로 옮겨간 이유는 우아함이
+아니다: 엄격한 영공간 우선순위는 *부등식* 제약을 표현할 수 없는데, 관절 한계도 토크 포화도
+접촉 마찰도 전부 부등식이다. 그것들을 동시에 지켜야 하는 휴머노이드나 모바일 매니퓰레이터는
+QP를 풀고 있고, 우선순위 계층은 그 안에서 제약 가중치나 QP의 종속 연쇄로 살아남는다.
+
+모바일 매니퓰레이션의 경우 — "팔"에 주행 가능한 베이스가 포함될 때 — 같은 QP가 베이스와 팔의
+자유도를 하나의 문제로 흡수하고, 그것이 [[04-robotics/navigation-mobile-manipulation|16. §4]]가
+더 다가갈지 더 뻗을지를 정하는 선택이라고 기술한 것의 형식적 판본이다.
 
 ### 5. 접촉 천이 — 이론이 값을 하는 지점
 

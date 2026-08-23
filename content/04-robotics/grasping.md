@@ -179,6 +179,45 @@ scene. Exploiting that symmetry rather than predicting grasp poses lets it learn
 few demonstrations without object models or keypoints — a reminder that "grasping" and
 "rearrangement" are not the same problem.
 
+**What the policy actually looks at.** A 2024–26 manipulation paper's method section opens by
+naming its observation representation, and the choice bounds what the policy can do. The four
+you will meet:
+
+| Representation | What is fed in | Buys | Costs |
+|---|---|---|---|
+| **RGB images** | one or more camera views | the pretrained-backbone ecosystem (SigLIP, DINO) and web-scale priors | no metric scale; viewpoint changes are out-of-distribution |
+| **Point clouds** | depth back-projected, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | metric geometry and viewpoint invariance almost for free — the argument behind 3D policy variants | depth sensors fail on the glossy, dark and transparent; no colour semantics unless fused |
+| **Keypoints** | a sparse set of task-relevant points on the object | a low-dimensional, interpretable state that generalizes across instances of a category | someone must define what the keypoints *are*, and a novel category has none |
+| **Affordances** | a per-pixel or per-point map of where an action can be applied | directly language- and task-conditionable, and composes with open-vocabulary models | supervision is expensive, and "graspable" is not a property of the object alone but of the object *and the gripper* |
+
+**Read the representation as a claim about generalization.** A policy on RGB generalizes the
+way its visual backbone does; a policy on point clouds generalizes across viewpoint but
+inherits the depth sensor's failure set; a keypoint policy generalizes within the category
+whose keypoints were defined and not outside it. When a paper reports strong unseen-object
+performance, **the representation usually explains more of that number than the policy
+architecture does** — which is why the seen/unseen split axis of
+[[06-research-practice/simulators-benchmarks-datasets|7. §11]] has to be read alongside it.
+
+**Beyond the parallel jaw.** Everything above §4 assumed two rigid fingers, and a growing
+share of the literature does not. Two distinctions are enough to read those papers:
+
+- **Multi-fingered versus parallel-jaw** is a change in *dimension*, not degree: a
+  three-fingered or anthropomorphic hand has 12–20+ actuated degrees of freedom, so grasp
+  synthesis becomes search in a space where the ε-metric of §4 is expensive to evaluate and
+  the learned pipelines of this section were never trained. Papers usually retreat to a
+  discrete **grasp taxonomy** (power, precision, pinch, tripod) rather than the full space.
+- **In-hand manipulation** — reorienting an object *after* it is grasped, without putting it
+  down — is a genuinely different problem, because the contact set changes during the motion.
+  Force closure ([[04-robotics/grasping|§3]]) describes a *static* condition; in-hand
+  reorientation deliberately breaks and remakes it, which is why the analytic tools stop and
+  RL in simulation with heavy randomization became the default approach.
+
+For construction this is mostly a boundary marker: site objects are heavy, held with tools or
+two-finger grips, and the dexterity that matters is force regulation ([[04-robotics/force-compliance-control|13]])
+rather than finger-gaiting. **A dexterous-hand result does not transfer to a construction task
+by default**, and a paper claiming it should be asked which of the two changes above it
+actually relies on.
+
 ### 6. Construction changes the object, not the theory
 
 The mathematics above assumes a rigid object of known-enough geometry. Construction
@@ -422,6 +461,40 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 상관해 추론하는 **공간적 변위**로 다시 정식화한다. 파지 자세를 예측하는 대신 그 대칭성을
 이용해, 물체 모델도 키포인트도 없이 아주 적은 시연으로 학습한다 — "파지"와 "재배치"가 같은
 문제가 아니라는 것을 상기시킨다.
+
+**정책이 실제로 무엇을 보는가.** 2024~26년 매니퓰레이션 논문의 방법 절은 관측 표현을 밝히면서
+시작하고, 그 선택이 정책이 할 수 있는 것의 범위를 정한다. 마주치게 될 네 가지:
+
+| 표현 | 무엇을 넣는가 | 사는 것 | 치르는 것 |
+|---|---|---|---|
+| **RGB 이미지** | 카메라 시점 하나 이상 | 사전학습 백본 생태계(SigLIP, DINO)와 웹 규모 사전지식 | 미터 스케일이 없다. 시점 변화가 분포 밖이다 |
+| **포인트 클라우드** | 깊이를 역투영해 PointNet 계열 순열 불변 네트워크로 부호화([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | 미터 기하와 시점 불변성을 거의 공짜로 — 3D 정책 변형들의 논거 | 깊이 센서가 광택·어두움·투명에서 실패한다. 융합하지 않으면 색 의미가 없다 |
+| **키포인트** | 물체 위 과제 관련 점들의 성긴 집합 | 저차원이고 해석 가능하며 범주 내 개체를 가로질러 일반화되는 상태 | 키포인트가 *무엇인지*를 누군가 정의해야 하고, 새로운 범주에는 그것이 없다 |
+| **어포던스** | 행동을 적용할 수 있는 곳의 픽셀별·점별 지도 | 언어와 과제로 직접 조건화되고 개방 어휘 모델과 결합된다 | 지도 신호가 비싸고, "잡을 수 있음"은 물체만의 성질이 아니라 물체 *와 그리퍼*의 성질이다 |
+
+**표현을 일반화에 대한 주장으로 읽어라.** RGB 위의 정책은 자기 시각 백본이 일반화하는 방식으로
+일반화하고, 포인트 클라우드 위의 정책은 시점을 가로질러 일반화하되 깊이 센서의 실패 집합을
+물려받으며, 키포인트 정책은 키포인트가 정의된 범주 안에서 일반화하고 그 바깥에서는 아니다.
+논문이 강한 unseen 물체 성능을 보고할 때, **그 숫자를 설명하는 것은 정책 구조보다 표현인 경우가
+많다** — [[06-research-practice/simulators-benchmarks-datasets|7. §11]]의 seen/unseen 분할 축을
+그것과 나란히 읽어야 하는 이유다.
+
+**평행 조 너머.** §4까지의 모든 것이 단단한 손가락 둘을 가정했고, 문헌의 점점 더 많은 부분이
+그렇지 않다. 그런 논문을 읽는 데는 두 구분이면 족하다:
+
+- **다지 손 대 평행 조**는 정도가 아니라 *차원*의 변화다: 세 손가락이나 인간형 손은 구동
+  자유도가 12~20개 이상이어서, 파지 합성이 §4의 ε 지표를 평가하기 비싼 공간에서의 탐색이 되고,
+  이 절의 학습 파이프라인들은 거기서 학습된 적이 없다. 논문들은 대개 전체 공간 대신 이산적
+  **파지 분류 체계**(power, precision, pinch, tripod)로 물러난다.
+- **In-hand manipulation** — 잡은 *뒤에* 내려놓지 않고 물체의 방향을 바꾸는 것 — 은 진짜로
+  다른 문제다. 운동 중에 접촉 집합 자체가 바뀌기 때문이다. Force closure([[04-robotics/grasping|§3]])는
+  *정적* 조건을 기술하는데, in-hand 재정향은 그것을 의도적으로 깨고 다시 만든다. 해석적 도구가
+  거기서 멈추고 무거운 무작위화를 동반한 시뮬레이션 RL이 기본 접근이 된 이유가 그것이다.
+
+건설에서 이것은 대체로 경계 표지다: 현장 물체는 무겁고, 공구나 두 손가락 파지로 다뤄지며,
+중요한 손재주는 손가락 걸음이 아니라 힘 조절([[04-robotics/force-compliance-control|13]])이다.
+**다지 손 결과가 건설 과제로 자동으로 옮겨가지는 않는다.** 옮겨간다고 주장하는 논문에는 위 두
+변화 중 무엇에 실제로 기대고 있는지를 물어야 한다.
 
 ### 6. 건설은 이론이 아니라 물체를 바꾼다
 

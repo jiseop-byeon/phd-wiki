@@ -147,6 +147,54 @@ state the seen/unseen gap and why the expectation in step 2 matters, the paper l
 > Pick a paper you have already read and run these four steps on it in writing. The first
 > pass takes an hour; after that it takes about ten minutes and becomes the way you read.
 
+### 4.6 Where the paper sits — status, and verifying what it says
+
+Two questions come before the content, and both are answerable in under a minute. They decide
+how much weight the paper carries and whether the sentence you are about to quote is really
+in it.
+
+**What kind of document is this?** The same result carries different evidential weight
+depending on where it stopped:
+
+| Status | What it means | How to weight it |
+|---|---|---|
+| **Preprint (arXiv only)** | posted by the authors, **no peer review** | ideas and numbers may be entirely sound; nothing external has checked them. Say "preprint" when you cite it |
+| **Workshop paper** | reviewed, usually lightly, often non-archival | a signal of early direction, not a settled result. Frequently superseded by a conference version with different numbers |
+| **Conference paper** | peer-reviewed, fixed deadline, page limit | the standard unit in robotics — see [[06-research-practice/venue-strategy\|5. Venue Strategy §1]] |
+| **Journal paper** | peer-reviewed with revision rounds, no page pressure | usually the fullest account; often a *later* version of a conference paper, with more experiments |
+
+The trap is not citing a preprint — it is citing one **as though it were published**. This
+wiki has hit it twice: a humanoid rough-terrain paper cited as published when it is a preprint
+([[04-robotics/legged-locomotion|18. §5]]), and ExT, which carries a ★ and is arXiv-only.
+Both are worth reading. Neither has been refereed.
+
+> [!tip] Check whether the preprint grew up
+> An arXiv entry is updated when the paper is accepted: the **Comments** field usually says
+> "Accepted to CoRL 2024" or similar, and the listing shows a `journal-ref` once published.
+> A two-year-old preprint with no such note has probably not been accepted anywhere — which is
+> information, though not proof. And when a conference version exists, **its numbers may differ
+> from the preprint's**; quote the version you actually read and name it.
+
+**Does the paper say what the citation says it says?** Secondary citation drift is the most
+common factual error in this field, and it is cheap to defeat:
+
+1. **Resolve the identifier** — DOI or arXiv ID, not the title. Titles collide; the wiki's own
+   traversability page documents a case where two unrelated papers share a name.
+2. **Find the claim in the source**, not in the paper that cited it. If the citing paper says
+   "X showed 30% improvement", the sentence containing 30% should exist in X.
+3. **Match the version** — datasets and models get re-released with different counts. DROID and
+   BridgeData V2 each report two different numbers in different versions
+   ([[06-research-practice/simulators-benchmarks-datasets|7. §7]]).
+4. **Check the metadata against a primary index** — DBLP or the publisher, not a bibliography
+   you copied. Secondary sources reliably corrupt volume numbers and years; this wiki records
+   three cases it hit ([[04-robotics/force-compliance-control|13. Sources]],
+   [[04-robotics/grasping|15. Sources]]).
+
+**A verified absence is a finding.** If you cannot find a benchmark, a survey, or a dataset
+that ought to exist, and you searched properly, that is a citable result and belongs in the
+paper — several of this wiki's sharpest claims are of exactly this kind. State what you
+searched, so a reader can disagree with the search rather than with your conclusion.
+
 ### 5. Before you close a note
 
 Every note in this wiki supports the same exit test. Without looking back, say:
@@ -300,6 +348,49 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 > [!tip] 직접 한 번 해 보라
 > 이미 읽은 논문 하나를 골라 이 네 단계를 글로 써서 돌려 보라. 첫 번째는 한 시간쯤 걸리고,
 > 그 뒤로는 10분이면 되며, 그때부터는 그것이 당신이 논문을 읽는 방식이 된다.
+
+### 4.6 이 논문은 어디에 서 있는가 — 지위, 그리고 말한 내용의 검증
+
+내용보다 먼저 오는 질문이 둘 있고, 둘 다 1분 안에 답할 수 있다. 그 논문이 지는 무게와,
+지금 인용하려는 문장이 정말 거기 있는지를 결정한다.
+
+**이것은 어떤 종류의 문서인가?** 같은 결과라도 어디서 멈췄느냐에 따라 증거로서의 무게가 다르다:
+
+| 지위 | 뜻 | 어떻게 가중할 것인가 |
+|---|---|---|
+| **프리프린트(arXiv만)** | 저자가 올린 것, **심사 없음** | 발상과 숫자가 완전히 타당할 수 있다. 다만 외부에서 확인한 것이 없다. 인용할 때 "프리프린트"라고 밝혀라 |
+| **워크숍 논문** | 심사는 있으나 대개 가볍고, 흔히 비아카이브 | 결정된 결과가 아니라 이른 방향의 신호. 숫자가 다른 학회 판본으로 대체되는 일이 잦다 |
+| **학회 논문** | 동료 심사, 고정 마감, 쪽수 제한 | 로보틱스의 표준 단위 — [[06-research-practice/venue-strategy\|5. 게재지 전략 §1]] |
+| **저널 논문** | 개정 라운드가 있는 동료 심사, 쪽수 압박 없음 | 대개 가장 완전한 기술. 학회 논문의 *나중* 판본이면서 실험이 더 붙은 경우가 많다 |
+
+함정은 프리프린트를 인용하는 것이 아니라 **출판된 것처럼** 인용하는 것이다. 이 위키도 두 번
+걸렸다: 휴머노이드 험지 논문을 출판된 것처럼 인용한 사례([[04-robotics/legged-locomotion|18. §5]])와,
+★을 달고 있으면서 arXiv 전용인 ExT. 둘 다 읽을 값어치가 있다. 둘 다 심사받지 않았다.
+
+> [!tip] 프리프린트가 자랐는지 확인하라
+> arXiv 항목은 게재가 확정되면 갱신된다: **Comments** 필드에 보통 "Accepted to CoRL 2024"
+> 같은 문구가 붙고, 출판되면 목록에 `journal-ref`가 나타난다. 2년 된 프리프린트에 그런 표시가
+> 없다면 어디에도 통과하지 못했을 가능성이 크다 — 증명은 아니지만 정보는 된다. 그리고 학회
+> 판본이 존재하면 **그 숫자가 프리프린트와 다를 수 있다.** 실제로 읽은 판본을 인용하고 어느
+> 것인지 밝혀라.
+
+**그 논문이 인용문이 말하는 것을 실제로 말하는가?** 2차 인용 드리프트는 이 분야에서 가장 흔한
+사실 오류이고, 막는 비용은 싸다:
+
+1. **식별자로 해석하라** — 제목이 아니라 DOI나 arXiv ID. 제목은 충돌한다. 이 위키의
+   traversability 페이지가 이름이 같은 무관한 두 논문의 사례를 기록하고 있다.
+2. **주장을 원문에서 찾아라**, 그것을 인용한 논문에서가 아니라. 인용하는 쪽이 "X가 30% 개선을
+   보였다"고 하면, 30%가 든 문장이 X 안에 있어야 한다.
+3. **판본을 맞춰라** — 데이터셋과 모델은 다른 개수로 다시 공개된다. DROID와 BridgeData V2는
+   각각 판본에 따라 서로 다른 숫자를 보고한다([[06-research-practice/simulators-benchmarks-datasets|7. §7]]).
+4. **메타데이터를 1차 색인과 대조하라** — 베껴 온 참고문헌이 아니라 DBLP나 출판사. 2차 자료는
+   권 번호와 연도를 확실하게 망가뜨린다. 이 위키가 걸린 사례가 셋 기록되어 있다([[04-robotics/force-compliance-control|13. 출처]],
+   [[04-robotics/grasping|15. 출처]]).
+
+**검증된 부재는 발견이다.** 있어야 마땅한 벤치마크·서베이·데이터셋을 제대로 찾았는데도 없다면,
+그것은 인용 가능한 결과이고 논문에 들어가야 한다 — 이 위키의 가장 날카로운 주장 몇 개가 정확히
+이런 종류다. 무엇을 어떻게 찾았는지 밝혀라. 그래야 독자가 당신의 결론이 아니라 그 탐색에
+반론할 수 있다.
 
 ### 5. 노트를 닫기 전에
 
