@@ -40,8 +40,8 @@ The learning contribution is **co-training**: train on the new mobile-manipulati
 From the **abstract**: "With **50 demonstrations** for each task, co-training can increase success rates by **up to 90%**."
 
 > [!warning] Reading the claims · 주장 읽는 법
-> That 90% is a **relative increase in success rate**, not an absolute 90% success rate — the two get confused constantly when this result is quoted. And the widely circulated hardware cost is **not in the abstract**; it comes from the body or the project site.
-> 저 90%는 **성공률의 상대적 증가**이지 절대 90% 성공률이 아니다. 이 결과를 인용할 때 둘이 끊임없이 혼동된다. 그리고 널리 떠도는 하드웨어 가격은 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
+> That 90% is neither a 90% success rate nor a 1.9× multiplier: it is an **increase in percentage points**. The paper's own convention is to write a gain as the difference between two rates ("95% vs. 0%" for Call Elevator), and several no-co-training baselines sit at 0%, where a relative increase is undefined. Quote it as *up to a 90-point gain on the best task*, and read the per-task table rather than the headline. The widely circulated hardware cost is **not in the abstract** either; it comes from the body or the project site.
+> 저 90%는 90% 성공률도 1.9배도 아니다. **퍼센트 포인트 증가**다. 논문 자신의 표기가 두 성공률의 차이(엘리베이터 호출 "95% vs. 0%")이고, co-training 없는 기준선 중 몇은 0%여서 상대 증가는 정의되지 않는다. *가장 좋은 과제에서 최대 90포인트 상승*으로 인용하고, 헤드라인 대신 과제별 표를 읽어라. 널리 떠도는 하드웨어 가격도 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
 
 ### Limitations & critique
 
@@ -60,7 +60,7 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 ### After reading
 
 - [ ] Say why base and arms must be demonstrated together rather than separately.
-- [ ] State exactly what the 90% figure measures.
+- [ ] State exactly what the 90% figure measures — a percentage-point gain over the no-co-training baseline, not a success rate.
 - [ ] Name the assumption co-training depends on, and why it may not hold in construction.
 
 ## 한국어
@@ -82,8 +82,8 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 **초록**에서: "각 과제에 대해 **시연 50개**로, co-training이 성공률을 **최대 90%까지** 높일 수 있다."
 
 > [!warning] 주장 읽는 법 · Reading the claim
-> 저 90%는 **성공률의 상대적 증가**이지 절대 90% 성공률이 아니다. 이 결과를 인용할 때 둘이 끊임없이 혼동된다. 그리고 널리 떠도는 하드웨어 가격은 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
-> The 90% is a relative increase, not an absolute success rate; the cost figure is not in the abstract.
+> 저 90%는 90% 성공률도 1.9배도 아니다. **퍼센트 포인트 증가**다. 논문 자신의 표기가 두 성공률의 차이(엘리베이터 호출 "95% vs. 0%")이고, co-training 없는 기준선 중 몇은 0%여서 상대 증가는 정의되지 않는다. *가장 좋은 과제에서 최대 90포인트 상승*으로 인용하고, 헤드라인 대신 과제별 표를 읽어라. 널리 떠도는 하드웨어 가격도 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
+> The 90% is a gain in percentage points, not a success rate and not a multiplier; the cost figure is not in the abstract.
 
 ### 한계와 비판
 
@@ -102,5 +102,5 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 베이스와 팔을 따로가 아니라 함께 시연해야 하는 이유를 말한다.
-- [ ] 90%라는 수치가 정확히 무엇을 재는지 말한다.
+- [ ] 90%라는 수치가 정확히 무엇을 재는지 말한다 — co-training 없는 기준선 대비 퍼센트 포인트 상승이지 성공률이 아니다.
 - [ ] Co-training이 의존하는 가정과, 건설에서 그것이 성립하지 않을 수 있는 이유를 댄다.

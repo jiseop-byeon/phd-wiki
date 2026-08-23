@@ -2,9 +2,9 @@
 title: "Vision-Based Construction Robot for Real-Time Automated Welding with HRI (Lee & Han, 2024)"
 authors: Doyun Lee, Kevin Han
 affiliation: NC State University, Construction Automation and Robotics Lab (CARL)
-venue: Automation in Construction
+venue: Automation in Construction 168, 105782
 year: 2024
-doi: https://doi.org/10.1016/j.autcon.2024.105699
+doi: https://doi.org/10.1016/j.autcon.2024.105782
 tags: [paper, construction]
 status: note-complete
 last_verified: 2026-07-23

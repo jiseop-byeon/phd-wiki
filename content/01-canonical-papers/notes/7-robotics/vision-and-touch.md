@@ -1,5 +1,5 @@
 ---
-title: "Making Sense of Vision and Touch — Self-Supervised Multimodal Representations for Contact-Rich Tasks"
+title: "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks"
 authors: Michelle A. Lee, Yuke Zhu, Krishnan Srinivasan, et al.
 affiliation: Stanford University
 venue: ICRA
@@ -101,13 +101,14 @@ labels for "what a good multimodal representation of contact looks like".
 
 > [!warning] Reading the claims · 주장 읽는 법
 > **This paper's abstract states no numbers** — not a success rate, not a sample-efficiency
-> multiplier, not a vision-only comparison. Its strongest abstract-level claim is that the
-> representation "generalizes over varying geometries, configurations, and clearances, while
-> being robust to external perturbations". The insertion success rates commonly quoted for
-> it are body-only. Check them there before citing.
+> multiplier, not a vision-only comparison. Its strongest abstract-level claim is verbatim
+> "generalizing over different geometry, configurations, and clearances, while being robust
+> to external perturbations" — note the exact wording, which is routinely misquoted as
+> "varying geometries". The insertion success rates commonly quoted for it are body-only. Check them there before citing.
 > **이 논문의 초록에는 숫자가 없다** — 성공률도, 샘플 효율 배수도, 비전만과의 비교도. 초록
-> 수준의 가장 강한 주장은 표현이 "다양한 기하·구성·공차에 걸쳐 일반화하며 외부 교란에
-> 견고하다"는 것이다. 흔히 인용되는 삽입 성공률은 본문에만 있다. 인용 전에 거기서 확인하라.
+> 수준의 가장 강한 주장은 원문 그대로 "generalizing over different geometry, configurations,
+> and clearances, while being robust to external perturbations"이다 — "varying geometries"로
+> 잘못 인용되는 일이 잦으니 표현을 정확히 옮겨라. 흔히 인용되는 삽입 성공률은 본문에만 있다. 인용 전에 거기서 확인하라.
 
 The claim that matters is the generalisation one: the same learned representation transfers
 across geometries, configurations and clearances rather than being fitted to one peg.

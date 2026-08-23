@@ -31,9 +31,11 @@ that is the Gramazio Kohler line in
 [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]]. Placing is a
 positioning problem, and it is solved by knowing where things are.
 
-Timber **joinery** is a different problem. A tenon entering a mortise is an interference
-fit: the parts touch before they are seated, the contact forces depend on misalignment, and
-the wood's dimensions vary piece to piece because it is wood. That is the situation
+Timber **joinery** is a different problem. The paper's task is the **lap joint** — the
+abstract reads "exemplified by assembly of lap joints for custom timber frames" — where a
+member is slid into its mating counterpart across two bearing faces. The parts touch before
+they are seated, the contact forces depend on misalignment, and the wood's dimensions vary
+piece to piece because it is wood. That is the situation
 [[04-robotics/force-compliance-control|13. §5]] describes — insertion, with wedging and
 jamming available as failure modes — at building scale rather than at connector scale.
 
@@ -113,10 +115,10 @@ method.
 
 ### Limitations & critique
 
-- **The robot platform is not named** on the sources checked here, which matters because
+- **Check the platform's control mode in the paper's appendix** before building on this:
   whether the arm is torque-controlled or position-controlled changes what "force-guided"
-  means ([[04-robotics/force-compliance-control|13. §2]]). Read the paper for this before
-  building on it.
+  means ([[04-robotics/force-compliance-control|13. §2]]), and the policy was trained
+  entirely in simulation, so the transfer story depends on it.
 - **One joint family.** Timber joinery has a specific geometry; the method's reach across
   other construction insertions — pipe, panel, bolted connections — is an open question,
   not a demonstrated one.
@@ -160,8 +162,10 @@ are exactly the gaps the arc is built around.
 [[05-construction-robotics/assembly-fabrication|조립·제작]]의 Gramazio Kohler 라인이 그것이다.
 놓기는 위치 문제이고, 무엇이 어디 있는지 알면 풀린다.
 
-목재 **접합**은 다른 문제다. 장부가 장부구멍에 들어가는 것은 억지 끼워맞춤이다: 부재들이
-안착하기 전에 닿고, 접촉력이 정렬 오차에 의존하며, 나무이기 때문에 치수가 부재마다 다르다.
+목재 **접합**은 다른 문제다. 논문의 과제는 **겹침 이음**(lap joint)이고 — 초록은 "맞춤형 목조
+프레임의 겹침 이음 조립으로 예시한다"고 쓴다 — 부재가 두 접촉면을 따라 짝 부재에 미끄러져
+들어간다. 부재들이 안착하기 전에 닿고, 접촉력이 정렬 오차에 의존하며, 나무이기 때문에
+치수가 부재마다 다르다.
 [[04-robotics/force-compliance-control|13. §5]]가 묘사하는 상황 — 삽입, 그리고 실패 모드로
 준비된 wedging과 jamming — 이 커넥터 규모가 아니라 건물 규모에서 벌어지는 것이다.
 

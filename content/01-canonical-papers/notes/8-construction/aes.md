@@ -22,7 +22,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: Baidu's AES integrated perception, task/motion planning, and control into a full autonomous excavation stack, deployed it across excavator sizes from compact class up to the 49-tonne class, and reported 24 hours of uncrewed operation per human intervention with material throughput (tons/hour) close to an experienced human operator.
+**One-line summary**: Baidu's AES integrated perception, task/motion planning, and control into a full autonomous excavation stack, deployed it across excavator sizes from compact class up to the 49-tonne class, and reported 24 hours of uncrewed operation per human intervention with hourly material throughput "closely equivalent to an experienced human operator".
 
 **Lineage position**: AES is the industrial-deployment answer to the question [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz's 1998 CMU excavator]] opened — can a machine run the full loading cycle without a person in the cab? Where CMU demonstrated the integrated cycle, AES demonstrates *duration and productivity at industrial scale*, and it is the deployment counterweight to simulation-heavy learning papers like [[01-canonical-papers/notes/8-construction/ext|ExT]].
 
@@ -43,7 +43,7 @@ platform and none of them are in the algorithm.*
 
 
 
-**Evidence, with numbers**: (1) *machine range* — the same stack ran on multiple excavator sizes, from compact class to 49-tonne class; (2) *duration* — 24 hours of continuous uncrewed operation per human intervention in deployed material-loading work; (3) *throughput* — tons/hour close to that of an experienced human operator in the production setting. These three axes (transfer across machines, autonomy duration, human-parity productivity) are exactly the ones most academic excavation papers cannot report.
+**Evidence, with numbers**: (1) *machine range* — the same stack ran on multiple excavator sizes, from compact class to 49-tonne class; (2) *duration* — 24 hours of continuous uncrewed operation per human intervention in deployed material-loading work; (3) *throughput* — the abstract's exact claim is that "the amount of material handled by AES per hour is closely equivalent to an experienced human operator". It states no unit and no figure, so cite it as a parity claim, not as a tons/hour or m³/h number. These three axes (transfer across machines, autonomy duration, human-parity productivity) are exactly the ones most academic excavation papers cannot report.
 
 **Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. Task variety is narrow (loading), the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
 
@@ -72,7 +72,7 @@ flowchart LR
 
 
 
-**증거, 숫자와 함께**: (1) *기계 범위* — 같은 스택이 컴팩트급부터 49톤급까지 여러 크기의 굴착기에서 돌아갔다; (2) *지속 시간* — 실제 재료 적재 작업에서 인간 개입당 24시간의 연속 무인 운용; (3) *처리량* — 생산 환경에서 숙련 운전자에 가까운 tons/hour. 이 세 축(기계 간 전이, 자율 지속 시간, 인간 대등 생산성)이 바로 대부분의 학술 굴착 논문이 보고하지 못하는 것들이다.
+**증거, 숫자와 함께**: (1) *기계 범위* — 같은 스택이 컴팩트급부터 49톤급까지 여러 크기의 굴착기에서 돌아갔다; (2) *지속 시간* — 실제 재료 적재 작업에서 인간 개입당 24시간의 연속 무인 운용; (3) *처리량* — 초록의 정확한 주장은 "AES가 시간당 처리하는 자재의 양이 숙련 운전자와 거의 동등하다"이다. 단위도 수치도 제시하지 않으므로 tons/hour나 m³/h 수치가 아니라 대등성 주장으로 인용하라. 이 세 축(기계 간 전이, 자율 지속 시간, 인간 대등 생산성)이 바로 대부분의 학술 굴착 논문이 보고하지 못하는 것들이다.
 
 **한계**: 배치 현장은 제한된 재료 적재 현장이지 개방 환경 토공이 아니다. 과제 다양성이 좁고(적재), 환경이 반구조화되어 있으며, 안전은 온보드 보장이 아니라 현장 통제로 관리된다. 기계 크기 전이, 현장/과제 변동, 누적 생산 시간은 각각 별도의 증거를 가진 별도의 주장으로 읽어야 한다.
 
@@ -88,6 +88,6 @@ flowchart LR
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] Reconstruct the AES stack module by module (perception → task/motion planning → control) and say which sensors and outputs each module uses · AES 스택의 모듈 구성(인식 → 과제/모션 계획 → 제어)을 단계별로 재구성하고, 각 모듈이 어떤 센서/출력을 쓰는지 말할 수 있다
-- [ ] Explain the three evidence axes — transfer from compact to 49-tonne machines, 24 h uncrewed per intervention, expert-operator tons/hour — with their numbers and within their evaluation scope · 세 가지 증거 축(컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour)을 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다
+- [ ] Explain the three evidence axes — transfer from compact to 49-tonne machines, 24 h uncrewed per intervention, expert-operator hourly throughput (a parity claim, with no unit in the paper) — with their numbers and within their evaluation scope · 세 가지 증거 축(컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour)을 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다
 - [ ] Say exactly what "24 hours uncrewed" is a measure of (an interval between interventions, not unbounded autonomy) and the role site control plays in safety · "24시간 무인"이 정확히 무엇의 지표인지(개입 간격이지 무한 자율이 아님)와 현장 통제가 안전에서 맡는 역할을 말할 수 있다
 - [ ] Separate method novelty from system completeness, and place AES on the deployment side between Stentz and modern learned excavation · 학습 신규성과 시스템 완결성을 구분하고, AES가 Stentz→현대 학습 기반 굴착 사이에서 차지하는 배치 측 위치를 설명할 수 있다
