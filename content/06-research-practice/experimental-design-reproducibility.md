@@ -36,7 +36,7 @@ Separate training/tuning/test data and document the unit of split. Random frames
 
 Report trial count, independent runs, failures, exclusions, aggregation, and an uncertainty measure appropriate to the design. A seed captures only software randomness; physical trials vary through calibration, wear, temperature, material, timing, and people.
 
-Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a CI of roughly $\pm 1/\sqrt{n}$ (10 trials → ±30%p; 100 → ±10%p), and if zero failures are observed in $n$ trials, the rule of three says the true failure rate may still be as high as $\approx 3/n$.
+Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a 95% CI half-width of **at most** $\pm 1/\sqrt{n}$ (10 trials → ±32%p; 100 → ±10%p). **That bound is the widest the interval ever gets, and it is reached only at $p = 0.5$** — near 0 or 1 it is far too pessimistic (at $p = 0.9$, $n = 10$, the true half-width is ±19%p), and it produces impossible bounds above 100%, so at high success rates use a Wilson or exact interval instead. Second: if zero failures are observed in $n$ trials, the rule of three puts the 95% **upper confidence bound** on the true failure rate at $\approx 3/n$ — an approximation that only holds for $n \gtrsim 30$; at $n = 10$ the exact bound is 26%, not 30%, and at $n = 5$ it is 45%, not 60%.
 
 <svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="how the uncertainty of a success rate shrinks with the number of trials">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
@@ -54,7 +54,7 @@ Predeclare primary outcomes when many metrics and conditions make cherry-picking
     <text x="316" y="172">number of trials n (log scale)</text>
   </g>
   <g stroke="currentColor"><line x1="55" y1="180" x2="85" y2="180" stroke-width="2"/><line x1="55" y1="196" x2="85" y2="196" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/></g>
-  <g font-size="10.5" fill="currentColor"><text x="92" y="184">rough CI half-width, &#8776; 1/&#8730;n</text><text x="92" y="200">rule of three: worst-case failure rate after zero failures, 3/n</text></g>
+  <g font-size="10.5" fill="currentColor"><text x="92" y="184">maximum CI half-width, &#8776; 1/&#8730;n</text><text x="92" y="200">rule of three: 95% upper bound on failure rate after zero failures, 3/n (n &#8807; 30)</text></g>
 </svg>
 
 
@@ -145,8 +145,8 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 지표와 조건이 많아 체리피킹이 쉬울 때는 주요 결과(primary outcome)를 미리 선언하라.
 통계적 유의성과 실질적 중요성은 다르다([[02-foundations/ml-practice|ML 실무 §5]]).
 시행 수를 가늠하는 문해력 수준의 도구 둘: $n$회 시행의 성공률 신뢰구간은 대략
-$\pm 1/\sqrt{n}$ (10회 → ±30%p; 100회 → ±10%p), 그리고 $n$회에서 실패 0이면 3의
-법칙(rule of three)상 진짜 실패율은 여전히 $\approx 3/n$까지 가능하다.
+**최대** $\pm 1/\sqrt{n}$이다(10회 → ±32%p; 100회 → ±10%p). **이 값은 구간이 가장 넓어질 때의 크기이고 $p = 0.5$에서만 도달한다** — 0이나 1 근처에서는 지나치게 비관적이고($p = 0.9$, $n = 10$이면 실제 반폭은 ±19%p), 100%를 넘는 불가능한 상한을 만든다. 그러니 성공률이 높을 때는 Wilson이나 정확 구간을 써라. 둘째, $n$회에서 실패 0이면 3의
+법칙(rule of three)은 참 실패율의 95% **상한**을 $\approx 3/n$으로 준다 — $n \gtrsim 30$에서만 성립하는 근사이고, $n = 10$이면 정확한 상한이 30%가 아니라 26%, $n = 5$면 60%가 아니라 45%다.
 
 <svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="시행 횟수에 따라 성공률의 불확실성이 줄어드는 방식">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
@@ -164,7 +164,7 @@ $\pm 1/\sqrt{n}$ (10회 → ±30%p; 100회 → ±10%p), 그리고 $n$회에서 �
     <text x="316" y="172">시행 횟수 n (로그 축)</text>
   </g>
   <g stroke="currentColor"><line x1="55" y1="180" x2="85" y2="180" stroke-width="2"/><line x1="55" y1="196" x2="85" y2="196" stroke-width="1.7" opacity="0.6" stroke-dasharray="6 4"/></g>
-  <g font-size="10.5" fill="currentColor"><text x="92" y="184">대략적인 신뢰구간 반폭, &#8776; 1/&#8730;n</text><text x="92" y="200">rule of three: 실패 0회 뒤 최악의 실패율, 3/n</text></g>
+  <g font-size="10.5" fill="currentColor"><text x="92" y="184">신뢰구간 반폭의 최대치, &#8776; 1/&#8730;n</text><text x="92" y="200">3의 법칙: 실패 0회 뒤 실패율의 95% 상한, 3/n (n &#8807; 30)</text></g>
 </svg>
 
 

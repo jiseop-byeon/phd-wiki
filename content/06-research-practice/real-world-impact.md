@@ -55,7 +55,7 @@ can act on this month.
     <text x="240" y="53">&#8220;it is useful to people who are not me&#8221;</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="248">Each rung licenses one more sentence. Nothing licenses a sentence from a rung you did not reach.</text>
+    <text x="20" y="248">Each rung licenses one more sentence, and nothing licenses a sentence from a rung you did not reach — with one exception the ordering does not capture: **"used by someone else" sits on a different axis**. Another lab can independently run a simulation-only method, so adoption is not a strictly higher grade of evidence than a site trial.</text>
   </g>
 </svg>
 
@@ -90,7 +90,8 @@ because an artifact you cannot maintain is worse than none.
 | **Industry collaboration** | data and realism you cannot get otherwise | publication delays, and sometimes restrictions — settle these in writing first |
 
 Datasets deserve a specific note in this domain. There is no web-scale corpus of
-construction manipulation and there will not be one
+the specific tasks this program targets — panel fitting, anchor-bolt fastening, pipe
+insertion — and no sign of one forming
 ([[04-robotics/teleoperation-demonstration|12. §7]]), so a well-curated dataset of a real
 construction task is disproportionately valuable — possibly more citable than the method
 trained on it.
@@ -116,7 +117,7 @@ and no program.
 ### 5. Designing so the outputs compound
 
 The [[07-research-program/paper-arc|arc]] already does this for publications — each paper
-reuses the previous one's platform, dataset and protocol. Extend the same logic to
+reuses the previous one's platform, dataset and protocol — strictly true of Paper 3 into Paper 4; Paper 1 is chosen so it does *not* need the platform, and Paper 2 exists to buy it. Extend the same logic to
 artifacts:
 
 - The **teleoperation rig** built for Paper 4 is a demonstration-collection artifact, a
@@ -170,7 +171,7 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 
 ### Sources
 
-- This page is method, not a literature claim. The deployment ladder is this wiki's own standard, applied throughout [[05-construction-robotics/index|Construction Robotics]] and stated in [[05-construction-robotics/construction-manipulation|9. §3]].
+- This page is method, not a literature claim. The deployment ladder is this wiki's own standard, applied throughout [[05-construction-robotics/index|Construction Robotics]] and is this page's own construct. Do not confuse it with the **three**-rung ladder in [[05-construction-robotics/construction-manipulation|9. §3]] (simulation / lab-or-mock-up / active site), or with the five-step sim-to-real sequence in [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]. Three different objects share the word *ladder* in this wiki; only the first two grade evidence realism.
 - [[06-research-practice/research-questions-claims|Research Questions & Claims]] — what makes a claim defensible.
 - [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — the evaluation design the rungs require.
 - [[06-research-practice/venue-strategy|5. Venue Strategy]] — where the resulting papers go.
@@ -269,7 +270,7 @@ flowchart LR
 ### 5. 산출물이 복리로 쌓이도록 설계하기
 
 [[07-research-program/paper-arc|arc]]는 출판에 대해 이미 이것을 한다 — 각 논문이 앞 논문의
-플랫폼·데이터셋·프로토콜을 재사용한다. 같은 논리를 산출물로 확장하라:
+플랫폼·데이터셋·프로토콜을 재사용한다 — 엄밀히는 3번에서 4번으로 갈 때 그렇다. 1번은 플랫폼이 필요 없도록 고른 것이고, 2번은 그것을 확보하려고 있다. 같은 논리를 산출물로 확장하라:
 
 - 4편을 위해 만든 **원격조작 장비**는 시연 수집 산출물이자, 데이터 생성기이자, 공개 가능한
   하드웨어다.

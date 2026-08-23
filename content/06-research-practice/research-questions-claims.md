@@ -51,7 +51,7 @@ A project can contribute a system without inventing a new algorithm, but must id
 | Mechanistic | evidence must isolate why the method works |
 | Safety/reliability | exposure, severity, rare failures, and system boundaries matter |
 
-“Ablation improves performance when component X is present” supports a scoped dependency; it does not prove the author's complete causal story.
+“Performance drops when component X is removed” supports a scoped dependency; it does not prove the author's complete causal story.
 
 ### 5. Scope and assumptions
 
@@ -149,7 +149,7 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 | 기전적(mechanistic) | 방법이 *왜* 통하는지 분리하는 증거 |
 | 안전/신뢰성 | 노출, 심각도, 희귀 실패, 시스템 경계가 중요 |
 
-"구성요소 X가 있을 때 절제 실험 성능이 오른다"는 범위가 한정된 의존성을 지지할 뿐,
+"구성요소 X를 빼면 성능이 떨어진다"는 범위가 한정된 의존성을 지지할 뿐,
 저자의 완전한 인과 이야기를 증명하지 않는다.
 
 ### 5. 범위와 가정

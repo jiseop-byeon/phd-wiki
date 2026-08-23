@@ -65,9 +65,9 @@ State exactly where the manuscript changed. Do not claim a new experiment proves
 **Reviewer**: "The 85% success rate is unconvincing — only one scene was tested, and the
 baseline appears untuned."
 
-**Response (Revise + Clarify)**: "We agree the single-scene evaluation limited the claim.
+**Response (Agree + Revise + Clarify)**: "We agree the single-scene evaluation limited the claim.
 We added two held-out scenes with randomized object layouts (§5.2, Table 3): success is
-85%, 79%, 81% (20 trials each, ±1 std over 3 seeds). On tuning: the BC baseline used the
+85%, 80%, 80% (17/20, 16/20, 16/20 per scene; binomial SE ≈ 8 %p at this n, so the spread between scenes is inside the noise). On tuning: the BC baseline used the
 same demonstrations, encoder, and a 12-configuration hyperparameter sweep identical to
 ours (App. C); we now state this in §5.1. We have narrowed the abstract's claim from
 'robust manipulation' to 'consistent success across three tabletop scenes.'"
@@ -174,8 +174,8 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 **리뷰어**: "85% 성공률은 설득력이 없다 — 장면 하나에서만 시험됐고 베이스라인이 튜닝되지
 않은 것으로 보인다."
 
-**응답 (Revise + Clarify)**: "단일 장면 평가가 주장을 제한한다는 데 동의합니다. 물체
-배치를 무작위화한 held-out 장면 2개를 추가했습니다(§5.2, 표 3): 성공률 85%, 79%, 81%
+**응답 (Agree + Revise + Clarify)**: "단일 장면 평가가 주장을 제한한다는 데 동의합니다. 물체
+배치를 무작위화한 held-out 장면 2개를 추가했습니다(§5.2, 표 3): 성공률 85%, 80%, 80%(장면당 17/20, 16/20, 16/20. 이 $n$에서 이항 표준오차가 약 8%p이므로 장면 간 차이는 잡음 안이다)
 (각 20회, 시드 3개 ±1 std). 튜닝에 대해: BC 베이스라인은 같은 시연·인코더와, 저희와
 동일한 12개 구성 하이퍼파라미터 탐색을 사용했습니다(부록 C); §5.1에 명시했습니다.
 초록의 주장을 'robust manipulation'에서 '세 탁상 장면에 걸친 일관된 성공'으로
