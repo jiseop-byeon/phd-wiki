@@ -196,7 +196,7 @@ includes construction machinery is the nearest existing bridge between this page
 ### Sources
 
 - G. Kahn, P. Abbeel, S. Levine, "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System," *IEEE RA-L*, vol. 6, no. 2, pp. 1312–1319, 2021 ([arXiv:2002.05700](https://arxiv.org/abs/2002.05700)).
-- J. Frey, M. Mattamala, N. Chebrolu, et al., "Fast Traversability Estimation for Wild Visual Navigation," RSS 2023 ([arXiv:2305.08510](https://arxiv.org/abs/2305.08510)). Journal version: M. Mattamala et al., *Autonomous Robots*, vol. 49, no. 3, art. 19, 2025 — **the same system, two papers**; cite RSS for priority and the journal for the full description.
+- J. Frey, M. Mattamala, N. Chebrolu, et al., "Fast Traversability Estimation for Wild Visual Navigation," RSS 2023 ([arXiv:2305.08510](https://arxiv.org/abs/2305.08510)). Journal version: M. Mattamala et al., "Wild visual navigation: fast traversability learning via pre-trained models and online self-supervision," *Autonomous Robots*, vol. 49, no. 3, art. 19, 2025 — **the same system, two papers**; cite RSS for priority and the journal for the full description.
 - M. Guaman Castro, S. Triest, W. Wang, et al., "How Does It Feel? Self-Supervised Costmap Learning for Off-Road Vehicle Traversability," ICRA 2023 ([arXiv:2209.10788](https://arxiv.org/abs/2209.10788)).
 - M. Sivaprakasam, S. Triest, C. Ho, et al., "SALON: Self-supervised Adaptive Learning for Off-road Navigation," ICRA 2025 ([arXiv:2412.07826](https://arxiv.org/abs/2412.07826)).
 - S. Jung, J. Lee, X. Meng, B. Boots, A. Lambert, "V-STRONG: Visual Self-Supervised Traversability Learning for Off-road Navigation," ICRA 2024 ([arXiv:2312.16016](https://arxiv.org/abs/2312.16016)) — the zero-shot generalization claim.
@@ -377,7 +377,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 ### 출처
 
 - G. Kahn, P. Abbeel, S. Levine, "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System," *IEEE RA-L*, vol. 6, no. 2, pp. 1312–1319, 2021 ([arXiv:2002.05700](https://arxiv.org/abs/2002.05700)).
-- J. Frey, M. Mattamala, N. Chebrolu, et al., "Fast Traversability Estimation for Wild Visual Navigation," RSS 2023 ([arXiv:2305.08510](https://arxiv.org/abs/2305.08510)). 저널판: M. Mattamala et al., *Autonomous Robots*, vol. 49, no. 3, art. 19, 2025 — **같은 시스템, 두 논문**. 우선권은 RSS를, 전체 서술은 저널판을 인용하라.
+- J. Frey, M. Mattamala, N. Chebrolu, et al., "Fast Traversability Estimation for Wild Visual Navigation," RSS 2023 ([arXiv:2305.08510](https://arxiv.org/abs/2305.08510)). 저널판: M. Mattamala et al., "Wild visual navigation: fast traversability learning via pre-trained models and online self-supervision," *Autonomous Robots*, vol. 49, no. 3, art. 19, 2025 — **같은 시스템, 두 논문**. 우선권은 RSS를, 전체 서술은 저널판을 인용하라.
 - M. Guaman Castro, S. Triest, W. Wang, et al., "How Does It Feel? Self-Supervised Costmap Learning for Off-Road Vehicle Traversability," ICRA 2023 ([arXiv:2209.10788](https://arxiv.org/abs/2209.10788)).
 - M. Sivaprakasam, S. Triest, C. Ho, et al., "SALON: Self-supervised Adaptive Learning for Off-road Navigation," ICRA 2025 ([arXiv:2412.07826](https://arxiv.org/abs/2412.07826)).
 - S. Jung, J. Lee, X. Meng, B. Boots, A. Lambert, "V-STRONG," ICRA 2024 ([arXiv:2312.16016](https://arxiv.org/abs/2312.16016)) — zero-shot 일반화 주장.

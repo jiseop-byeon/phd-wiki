@@ -4,6 +4,7 @@ authors: Gregory Kahn, Pieter Abbeel, Sergey Levine
 affiliation: UC Berkeley
 venue: IEEE RA-L
 year: 2021
+journal-ref: "IEEE Robotics and Automation Letters 6(2), 1312–1319, 2021"
 arxiv: https://arxiv.org/abs/2002.05700
 project: https://sites.google.com/view/badgr
 tags: [paper, navigation, traversability, self-supervised]

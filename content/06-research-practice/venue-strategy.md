@@ -59,13 +59,25 @@ get to reply**, and **when you can submit**.
 
 | Venue | Anonymity | Rebuttal | Cadence |
 |---|---|---|---|
-| **ICRA** | double-anonymous | **none** | annual deadline |
-| **IROS** | double-anonymous | **none** | annual deadline |
+| **ICRA** | double-anonymous **from the 2026 edition** (2025 was single-blind) | **none** for regular papers | annual deadline |
+| **IROS** | double-anonymous **from the 2026 edition** (2025 was single-blind) | **none** for regular papers | annual deadline |
 | **RSS** | double-blind | one page, **for a subset only** | annual deadline |
 | **CoRL** | double-blind | one page, **non-interactive** | annual deadline, OpenReview |
 | **T-RO** | double-anonymous **since January 2025** | revise & resubmit | rolling |
 | **RA-L** | double-anonymous | author response + diff | **rolling, all year** |
 | **IJRR** | **single-anonymized** — referees see your name | — | rolling |
+
+**Two dates worth keeping straight.** IEEE RAS moved its *journals* to double-anonymous
+review on 1 January 2025; the ICRA and IROS *conferences* followed one cycle later, with the
+2026 editions. So a 2025 ICRA or IROS paper was reviewed single-blind, and anything you read
+about "ICRA is single-blind" is describing the world up to that flip.
+
+**And one exception to "no rebuttal".** ICRA and IROS now run a **transfer category** — a
+paper rejected from ICRA 2026 may be submitted to IROS 2026 as an "ICRA-IROS transfer" with
+an **author response file**, and the reverse path exists for IROS 2026 into ICRA 2027. That
+is the only place in either conference where you get to answer reviewers. (The RAS transfer
+that runs the other way is journal → conference: T-RO, RA-M, RA-L and T-RL papers can be
+transferred into ICRA. There is no automated ICRA → journal path.)
 
 Two things surprise people arriving from machine learning. **ICRA and IROS have no rebuttal
 at all** — the reviews are the decision, and a reviewer who misread your paper cannot be
@@ -115,7 +127,7 @@ quoting anything.
 | Venue | Official figure? | Most recent official statement |
 |---|---|---|
 | **NeurIPS** | yes, from the program chairs | 2025: 21,575 valid submissions, 5,290 accepted, **24.52%** |
-| **CVPR** | yes | 2026: 16,092 submissions, 4,089 accepted — "about one-quarter" |
+| **CVPR** | yes | 2026: 16,092 submissions. CVF says 4,089 presented and "about one-quarter"; the @CVPR account says 4,090 recommended and 25.42%. Two official sources, one paper apart — quote one |
 | **IROS** | yes | 2025: 4,306 conference papers submitted, 1,991 accepted, **46%** |
 | **ICRA** | **counts only, no rate** | 2025: 4,250 submissions, 1,606 accepted, 503 journal transfers |
 | **RSS** | **no official figure published** | — |
@@ -326,13 +338,23 @@ Computing Researchers*가 현재의 언어로 다시 말한다: 엄격하게 심
 
 | Venue | 익명성 | 반박문 | 주기 |
 |---|---|---|---|
-| **ICRA** | 양측 익명 | **없음** | 연 1회 마감 |
-| **IROS** | 양측 익명 | **없음** | 연 1회 마감 |
+| **ICRA** | **2026년판부터** 양측 익명(2025는 단측) | 일반 논문은 **없음** | 연 1회 마감 |
+| **IROS** | **2026년판부터** 양측 익명(2025는 단측) | 일반 논문은 **없음** | 연 1회 마감 |
 | **RSS** | 이중 블라인드 | 1쪽, **일부 논문만** | 연 1회 마감 |
 | **CoRL** | 이중 블라인드 | 1쪽, **비대화형** | 연 1회 마감, OpenReview |
 | **T-RO** | **2025년 1월부터** 양측 익명 | revise & resubmit | 상시 |
 | **RA-L** | 양측 익명 | 저자 응답 + diff | **상시, 연중** |
 | **IJRR** | **단측 익명** — 심사자가 저자 이름을 본다 | — | 상시 |
+
+**헷갈리지 말아야 할 날짜 둘.** IEEE RAS는 2025년 1월 1일 *저널*을 양측 익명으로 바꿨고,
+ICRA와 IROS *학회*는 한 주기 늦은 2026년판부터 따라갔다. 그러니 2025년 ICRA·IROS 논문은
+단측 심사를 받은 것이고, "ICRA는 단측이다"라는 서술은 그 전환 이전의 세계를 기술한 것이다.
+
+**그리고 "반박문 없음"의 예외 하나.** ICRA와 IROS는 이제 **이관 카테고리**를 둔다 — ICRA
+2026에서 떨어진 논문은 "ICRA-IROS transfer"로 IROS 2026에 낼 수 있고 **저자 응답 파일**을
+첨부한다. 반대 경로(IROS 2026 → ICRA 2027)도 있다. 두 학회에서 심사자에게 답할 수 있는
+자리는 그곳뿐이다. (반대 방향의 RAS 이관은 저널 → 학회다: T-RO·RA-M·RA-L·T-RL 논문을 ICRA로
+이관할 수 있다. ICRA에서 저널로 가는 자동 경로는 없다.)
 
 기계학습에서 오는 사람을 놀라게 하는 것이 둘 있다. **ICRA와 IROS에는 반박문이 아예 없다** —
 리뷰가 곧 결정이고, 논문을 오독한 심사자를 교정할 수 없다. 그리고 **RSS와 CoRL의 반박문은
@@ -375,7 +397,7 @@ IJRR에 붙인 것과 같은 단서다. 이 표에서 CACAIE가 예외이고, �
 | Venue | 공식 수치? | 가장 최근의 공식 진술 |
 |---|---|---|
 | **NeurIPS** | 있음, 프로그램 의장 발표 | 2025: 유효 제출 21,575, 채택 5,290, **24.52%** |
-| **CVPR** | 있음 | 2026: 제출 16,092, 채택 4,089 — "약 4분의 1" |
+| **CVPR** | 있음 | 2026: 제출 16,092. CVF는 발표 4,089편에 "약 4분의 1", @CVPR 계정은 채택 권고 4,090편에 25.42% — 공식 출처 둘이 한 편 차이다. 하나만 인용하라 |
 | **IROS** | 있음 | 2025: 학회 논문 제출 4,306, 채택 1,991, **46%** |
 | **ICRA** | **건수만, 비율 없음** | 2025: 제출 4,250, 채택 1,606, 저널 이관 503 |
 | **RSS** | **공식 수치 없음** | — |

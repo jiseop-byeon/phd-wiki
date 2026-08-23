@@ -53,7 +53,7 @@ Trained on **simulated data only**, transferring to hardware, where the robot na
 
 ### Impact & follow-ups
 
-The paper is the clearest existing demonstration that **navigation over rough terrain can be a skill-selection problem** rather than a footstep-planning problem, and the capability-aware selector is the idea most likely to transfer — it is the same structure a mobile manipulator needs when choosing between driving closer, re-grasping, and repositioning the base ([[04-robotics/navigation-mobile-manipulation|16. §4]]).
+The paper is the clearest existing demonstration that **navigation over rough terrain can be a skill-selection problem** rather than a footstep-planning problem, and the capability-aware selector is the idea most likely to transfer — it is the same structure a mobile manipulator needs when choosing between driving closer, re-grasping, and repositioning the base ([[04-robotics/navigation-mobile-manipulation|16. §3]]).
 
 ### Connections
 
@@ -100,7 +100,7 @@ The paper is the clearest existing demonstration that **navigation over rough te
 
 ### 영향과 후속 연구
 
-이 논문은 **험지 주행이 발디딤 계획 문제가 아니라 기술 선택 문제일 수 있다**는 것을 가장 분명히 보인 사례이고, 능력을 인지하는 선택기가 가장 옮겨갈 만한 발상이다 — 모바일 매니퓰레이터가 더 다가갈지, 다시 잡을지, 베이스를 옮길지 고를 때 필요한 구조가 바로 같은 구조다([[04-robotics/navigation-mobile-manipulation|16. §4]]).
+이 논문은 **험지 주행이 발디딤 계획 문제가 아니라 기술 선택 문제일 수 있다**는 것을 가장 분명히 보인 사례이고, 능력을 인지하는 선택기가 가장 옮겨갈 만한 발상이다 — 모바일 매니퓰레이터가 더 다가갈지, 다시 잡을지, 베이스를 옮길지 고를 때 필요한 구조가 바로 같은 구조다([[04-robotics/navigation-mobile-manipulation|16. §3]]).
 
 ### 연결
 

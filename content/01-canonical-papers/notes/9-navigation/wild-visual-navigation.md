@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery when on-site traversability learning becomes par
 **Frey, Mattamala et al., RSS 2023** — [arXiv:2305.08510](https://arxiv.org/abs/2305.08510)
 
 > [!note] This system has two papers
-> The RSS 2023 paper above and M. Mattamala et al., "Wild Visual Navigation," *Autonomous Robots* 49(3), art. 19, 2025 are **the same system**. Cite RSS for priority and the journal version for the full description — and say which one a number came from.
-> 위의 RSS 2023 논문과 M. Mattamala et al., "Wild Visual Navigation," *Autonomous Robots* 49(3), art. 19, 2025는 **같은 시스템**이다. 우선권은 RSS를, 전체 기술은 저널판을 인용하고, 어느 쪽에서 온 숫자인지 밝혀라.
+> The RSS 2023 paper above and M. Mattamala et al., "Wild visual navigation: fast traversability learning via pre-trained models and online self-supervision," *Autonomous Robots* 49(3), art. 19, 2025 are **the same system**. Cite RSS for priority and the journal version for the full description — and say which one a number came from.
+> 위의 RSS 2023 논문과 M. Mattamala et al., "Wild visual navigation: fast traversability learning via pre-trained models and online self-supervision," *Autonomous Robots* 49(3), art. 19, 2025는 **같은 시스템**이다. 우선권은 RSS를, 전체 기술은 저널판을 인용하고, 어느 쪽에서 온 숫자인지 밝혀라.
 
 > [!note] Math on-ramp · 수학 준비물
 > Self-supervised ViT features (DINO-style) used as a frozen representation, plus online supervised learning on a stream ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]] for what "self-supervised visual transformer features" means). The traversability framing is [[04-robotics/traversability-off-road|17. §1–§3]].
@@ -27,7 +27,7 @@ mastery-when: "Raise to Mastery when on-site traversability learning becomes par
 
 ## English
 
-**One-line summary**: A human walks the robot through the terrain for a few minutes; the robot turns that walk into traversability labels on its own camera images and trains a segmentation model **in the field, online, in under five minutes** — vision only.
+**One-line summary**: A human walks the robot through the terrain for a few minutes; the robot scores each traversed patch by **how well it tracked its own commanded velocity there**, projects that continuous score back onto its camera images, and trains a segmentation model **in the field, online, in under five minutes** — vision only.
 
 ### Context
 
@@ -36,7 +36,7 @@ Two label sources had been on offer for learned traversability, and both are awk
 ### Method
 
 > [!tip] Key intuition
-> The demonstration *is* the label. Wherever the robot's foot went, that pixel was traversable — project the travelled path back into the image and you have positive supervision for free, continuously, with no annotation and no collision.
+> The robot grades its own walk. Where it achieved the speed it commanded, the terrain scores high; where it bogged down, low — a **continuous** traversability score from velocity-tracking error, not a binary "was stepped on". Project that score back into the image and you have supervision for free, continuously, with no annotation and no collision.
 
 <svg viewBox="0 0 560 240" style="max-width:100%;height:auto" role="img" aria-label="the travelled path projected back into the camera image becomes positive labels, which train a segmentation head on frozen visual-transformer features while the robot is still walking">
   <g fill="currentColor">
@@ -67,7 +67,7 @@ Two label sources had been on offer for learned traversability, and both are awk
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="26" y="176">No annotation, no simulator, and no collision is needed to produce a positive label.</text>
     <text x="26" y="194">The cost of adapting to a new environment drops from a dataset campaign to a walk.</text>
-    <text x="26" y="212">What the method never sees is a labelled negative: nowhere the operator declined to step.</text>
+    <text x="26" y="212">Terrain the robot crossed but struggled on scores low, so negatives come from inside the walk.</text>
   </g>
 </svg>
 
@@ -75,7 +75,7 @@ WVN is an **online self-supervised** traversability system that **uses only visi
 
 ### Results
 
-The headline claim is a **time**, not an accuracy: terrain segmentation in **under 5 minutes of in-field training**, supporting navigation through high grass and long footpath-following runs. Demonstrated on the ANYmal quadruped; the authors state the approach extends to other ground platforms.
+The headline claim is a **time**, not an accuracy: terrain segmentation in **under 5 minutes of in-field training**, supporting navigation through high grass and a **1.4 km** footpath-following run. Demonstrated on the ANYmal quadruped — and note the abstract's closing claim is stronger than a careful reader expects: the approach "can generalize to **any ground robot**", which sits oddly beside its in-field-adaptation framing ([[04-robotics/traversability-off-road|17. §2]] treats that tension as the thing to check in every paper here).
 
 > [!warning] Reading the claims · 주장 읽는 법
 > The abstract's only quantitative claim is the **five-minute training time**. There are no success rates, no segmentation IoU, no baseline comparison in it. This is a *deployment-cost* result, and it should be cited as one: the contribution is that the adaptation loop is short enough to run when the robot arrives, not that the segmentation is more accurate than an offline model. Do not quote it as an accuracy result.
@@ -83,7 +83,7 @@ The headline claim is a **time**, not an accuracy: terrain segmentation in **und
 
 ### Limitations & critique
 
-- **Positive-only supervision.** The travelled path proves traversability; nothing proves *un*-traversability. The model learns what is safe from example and must infer the complement, which is the harder half.
+- **The walk bounds what can be graded.** Velocity-tracking error yields a continuous score, including low ones, so the method does produce negatives — but only for terrain the robot actually entered. Ground it never touched is handled by the anomaly-detection side of the objective (unfamiliar embeddings reconstruct badly and are gated as unconfident), which flags the unknown rather than scoring it.
 - **The demonstrator defines the policy.** Whatever the operator walked over becomes acceptable. That is a feature when the operator is an expert and a hazard when they are not — and it is unauditable after the fact.
 - **Vision only.** Snow, water and cut grass look different from what they support. Vision alone cannot see load-bearing capacity, and this is the same blind spot [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al.]] handles by fusing exteroception with proprioception rather than trusting it.
 - Five minutes buys adaptation to *this* place. It says nothing about retaining what was learned at the last one.
@@ -92,7 +92,7 @@ The headline claim is a **time**, not an accuracy: terrain segmentation in **und
 
 WVN made "learn traversability during deployment" a normal design point rather than a research aspiration, and it is the strongest existing answer to how a robot handles a site it has never seen. The frozen-foundation-features-plus-tiny-online-head pattern it uses is now a standard recipe wherever on-site adaptation is needed.
 
-**For construction**: this is the closest existing method to what a site actually needs — every site is new, no site has a prior map, and a foreman can walk a route in five minutes. The gap is the positive-only supervision: on a site, the important label is the negative one ("not over the membrane"), and demonstrating a negative by walking is impossible.
+**For construction**: this is the closest existing method to what a site actually needs — every site is new, no site has a prior map, and a foreman can walk a route in five minutes. The gap is what velocity tracking can express. It grades *how well the robot moved*, so it captures mud and slip; it cannot express "you could drive here perfectly well, and must not" — fresh screed, membrane, laid rebar. A site's decisive constraint is a policy, and this supervision signal has no channel for one.
 
 ### Connections
 
@@ -105,12 +105,12 @@ WVN made "learn traversability during deployment" a normal design point rather t
 
 - [ ] Explain where the positive labels come from and why they are free.
 - [ ] Say why five minutes is possible — which part is learned and which part is not.
-- [ ] Name the label the method structurally cannot obtain, and what that costs on a site.
+- [ ] Say what the supervision signal actually measures, and name the kind of site constraint it cannot express.
 - [ ] State what the five-minute number is and is not evidence for.
 
 ## 한국어
 
-**한 줄 요약**: 사람이 몇 분 동안 로봇을 데리고 지형을 걷는다. 로봇은 그 걸음을 자기 카메라 이미지 위의 traversability 레이블로 바꾸고, **현장에서 온라인으로 5분 안에** 분할 모델을 학습한다 — 비전만으로.
+**한 줄 요약**: 사람이 몇 분 동안 로봇을 데리고 지형을 걷는다. 로봇은 지나온 각 구간을 **자기가 명령한 속도를 얼마나 잘 따라갔는지**로 채점하고, 그 연속적인 점수를 카메라 이미지에 되투영해 **현장에서 온라인으로 5분 안에** 분할 모델을 학습한다 — 비전만으로.
 
 ### 배경
 
@@ -119,7 +119,7 @@ WVN made "learn traversability during deployment" a normal design point rather t
 ### 방법
 
 > [!tip] 핵심 직관
-> 시연이 *곧* 레이블이다. 로봇의 발이 간 곳은 그 픽셀이 통과 가능했다는 뜻이다 — 지나온 경로를 이미지로 되투영하면 주석도 충돌도 없이 양성 지도 신호를 연속적으로, 공짜로 얻는다.
+> 로봇이 자기 걸음을 스스로 채점한다. 명령한 속도를 달성한 곳은 높은 점수, 발이 묶인 곳은 낮은 점수 — "밟았는가"라는 이진값이 아니라 속도 추종 오차에서 나오는 **연속** traversability 점수다. 그 점수를 이미지로 되투영하면 주석도 충돌도 없이 지도 신호를 얻는다.
 
 <svg viewBox="0 0 560 240" style="max-width:100%;height:auto" role="img" aria-label="지나온 경로를 카메라 이미지로 되투영해 양성 레이블을 만들고, 걷는 동안 동결된 시각 트랜스포머 특징 위의 분할 헤드를 학습한다">
   <g fill="currentColor">
@@ -150,7 +150,7 @@ WVN made "learn traversability during deployment" a normal design point rather t
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="26" y="176">양성 레이블을 만드는 데 주석도, 시뮬레이터도, 충돌도 필요 없다.</text>
     <text x="26" y="194">새 환경 적응 비용이 데이터셋 구축 캠페인에서 산책 한 번으로 떨어진다.</text>
-    <text x="26" y="212">이 방법이 결코 보지 못하는 것은 음성 레이블이다: 조작자가 밟기를 거부한 곳.</text>
+    <text x="26" y="212">지나갔지만 애를 먹은 지형은 낮은 점수를 받으므로, 음성이 걸음 안에서 나온다.</text>
   </g>
 </svg>
 
@@ -158,7 +158,7 @@ WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이�
 
 ### 결과
 
-대표 주장은 정확도가 아니라 **시간**이다: **현장 학습 5분 미만**의 지형 분할로, 키 큰 풀 사이 주행과 긴 산책로 추종을 지원한다. ANYmal 4족 로봇에서 실증했고, 저자들은 다른 지상 플랫폼으로도 확장된다고 말한다.
+대표 주장은 정확도가 아니라 **시간**이다: **현장 학습 5분 미만**의 지형 분할로, 키 큰 풀 사이 주행과 **1.4 km** 산책로 추종을 지원한다. ANYmal 4족 로봇에서 실증했다 — 그리고 초록의 맺음말이 신중한 독자의 예상보다 강하다는 점을 유의하라: 이 접근이 "**어떤 지상 로봇으로도** 일반화될 수 있다"고 한다. 현장 적응이라는 프레이밍과 나란히 놓으면 어색한 주장이고, [[04-robotics/traversability-off-road|17. §2]]가 이 분야 모든 논문에서 확인해야 할 것으로 다루는 긴장이 바로 그것이다.
 
 > [!warning] 주장 읽는 법 · Reading the claim
 > 초록의 유일한 정량 주장은 **5분 학습 시간**이다. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
@@ -166,7 +166,7 @@ WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이�
 
 ### 한계와 비판
 
-- **양성만 있는 지도 신호.** 지나온 경로는 통과 가능성을 증명하지만, 통과 *불가능성*은 아무것도 증명하지 않는다. 모델은 안전한 것을 예시로 배우고 그 여집합은 추론해야 하는데, 그쪽이 더 어려운 절반이다.
+- **걸음이 채점 가능한 범위를 한정한다.** 속도 추종 오차는 낮은 값을 포함한 연속 점수를 주므로 이 방법도 음성을 만들어 낸다 — 다만 로봇이 실제로 들어간 지형에 한해서다. 밟지 않은 땅은 목적함수의 이상 탐지 쪽이 처리한다(낯선 임베딩은 복원 손실이 커져 신뢰도가 낮게 게이팅된다). 점수를 매기는 것이 아니라 미지로 표시하는 것이다.
 - **시연자가 정책을 정의한다.** 조작자가 밟고 지나간 것은 무엇이든 허용 가능한 것이 된다. 조작자가 전문가일 때는 장점이고 아닐 때는 위험이며, 사후에 감사할 수도 없다.
 - **비전뿐이다.** 눈, 물, 베어놓은 풀은 그것이 지지하는 것과 다르게 보인다. 비전만으로는 지지력을 볼 수 없고, 이것이 [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등]]이 외수용 감각을 믿는 대신 고유수용 감각과 융합해 다루는 바로 그 사각지대다.
 - 5분은 *이곳*에 대한 적응을 산다. 지난 곳에서 배운 것을 유지하는지에 대해서는 아무 말도 하지 않는다.
@@ -175,7 +175,7 @@ WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이�
 
 WVN은 "배포 중에 traversability를 학습한다"를 연구적 포부가 아니라 평범한 설계 선택지로 만들었고, 로봇이 처음 보는 현장을 어떻게 다루는가에 대한 현존하는 가장 강한 답이다. 이 논문이 쓴 "동결 파운데이션 특징 + 아주 작은 온라인 헤드" 패턴은 이제 현장 적응이 필요한 곳의 표준 레시피다.
 
-**건설의 경우**: 현장이 실제로 필요로 하는 것에 가장 가까운 현존 방법이다 — 모든 현장이 새롭고, 사전 지도가 있는 현장은 없으며, 현장 관리자는 5분이면 동선을 걸어 보여줄 수 있다. 빈틈은 양성만 있는 지도 신호다. 현장에서 중요한 레이블은 음성("방수 시트 위로는 안 됨")인데, 걸어서 음성을 시연하기란 불가능하다.
+**건설의 경우**: 현장이 실제로 필요로 하는 것에 가장 가까운 현존 방법이다 — 모든 현장이 새롭고, 사전 지도가 있는 현장은 없으며, 현장 관리자는 5분이면 동선을 걸어 보여줄 수 있다. 빈틈은 속도 추종이 표현할 수 있는 것의 범위다. 그것은 *로봇이 얼마나 잘 움직였는지*를 채점하므로 진흙과 미끄러짐은 잡아내지만, "여기는 아주 잘 다닐 수 있고, 그래도 다니면 안 된다" — 갓 친 방바닥, 방수 시트, 배근해 놓은 철근 — 를 표현하지 못한다. 현장의 결정적 제약은 정책인데, 이 지도 신호에는 정책을 담을 채널이 없다.
 
 ### 연결
 
@@ -188,5 +188,5 @@ WVN은 "배포 중에 traversability를 학습한다"를 연구적 포부가 아
 
 - [ ] 양성 레이블이 어디서 오고 왜 공짜인지 설명한다.
 - [ ] 5분이 가능한 이유 — 어느 부분이 학습되고 어느 부분이 아닌지 — 를 말한다.
-- [ ] 이 방법이 구조적으로 얻을 수 없는 레이블과, 그것이 현장에서 치르는 대가를 댄다.
+- [ ] 이 지도 신호가 실제로 무엇을 재는지 말하고, 그것이 표현할 수 없는 종류의 현장 제약을 댄다.
 - [ ] 5분이라는 숫자가 무엇의 증거이고 무엇의 증거가 아닌지 말한다.

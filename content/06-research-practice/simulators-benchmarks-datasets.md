@@ -171,8 +171,8 @@ deformable — which is the measurement a contact-rich manipulation study exists
 | **LIBERO** | NeurIPS 2023 D&B | simulation | **lifelong** transfer — forward, backward, task ordering | "four task suites (130 tasks in total)" |
 | **FurnitureBench** | RSS 2023 | **both** | real-world long-horizon contact-rich **assembly** | "200+ hours of pre-collected data (5000+ demonstrations)" |
 | **RoboCasa** | RSS 2024 | simulation | data-scaling behaviour for imitation learning | "over 150 object categories"; "100 tasks" |
-| **NIST Assembly Task Boards** | RA-L 2020 | **real only** | time-to-complete against **human baselines** | "three task board artifacts" |
-| **RAMP** | RA-L 2024 | **both** | assembly planning *and* execution, three difficulty classes | **no numbers in the abstract** |
+| **NIST Assembly Task Boards** | RA-L 2020 | **real only** | time-to-complete against **tabulated** human handling times | "three task board artifacts" |
+| **RAMP** | RA-L 2024 | **both** | assembly planning *and* execution, three difficulty classes | **no scale figures in the abstract** |
 
 **The assembly line of descent is the relevant one here**: NIST task boards give physical
 artifacts and a human-referenced scoring protocol (peg insertion, gear meshing, connectors,
@@ -252,10 +252,12 @@ The datasets that do break the pattern:
 - **FMB** (IJRR) exposes end-effector force and torque fields explicitly.
 - **REASSEMBLE** records event cameras, force-torque, microphones and multi-view RGB, on
   NIST task boards — "4,551 demonstrations, of which 4,035 were successful".
-- Inside OXE, two constituent datasets do carry force in their state vectors —
-  `stanford_kuka_multimodal` (the [[01-canonical-papers/notes/7-robotics/vision-and-touch|Vision-and-Touch]]
-  data) and `iamlab_cmu_pickup_insert` — but they are small, and the pooled schema does not
-  surface the channel.
+- Inside OXE, two constituent datasets do carry force — but be precise about where.
+  `iamlab_cmu_pickup_insert` puts it **in the state vector** (20-dim: 7 joint angles, gripper,
+  6 joint torques, 6 end-effector force). `stanford_kuka_multimodal` (the
+  [[01-canonical-papers/notes/7-robotics/vision-and-touch|Vision-and-Touch]] data) does **not**:
+  its state is 8-dim proprioception only, and force lives in a sibling observation field
+  (`ee_forces_continuous`). Both are small, and the pooled schema surfaces neither.
 
 > [!warning] Two citation traps in the big datasets
 > **DROID** reports different numbers in different places: the arXiv abstract says 76k
@@ -423,7 +425,7 @@ Checked against official sources on **2026-08-22**. Scale figures are from each 
 abstract unless marked otherwise; claims resting on absence mean the official pages were
 checked and contained nothing.
 
-**Simulators** — [MuJoCo](https://mujoco.readthedocs.io/) (Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim) and [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) (predecessor Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [the Isaac Gym legacy notice](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/) and the [Classic end-of-life notice](https://classic.gazebosim.org/) (Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/) and its [hydroelastic contact guide](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN) (Xiang et al., CVPR 2020, pp. 11097–11107); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [the benchmark issue](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181) and [the MuJoCo discussion](https://github.com/google-deepmind/mujoco/discussions/2303).
+**Simulators** — [MuJoCo](https://mujoco.readthedocs.io/) (Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim) and [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) (predecessor Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [the Isaac Gym legacy notice](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/) and the [Classic end-of-life notice](https://classic.gazebosim.org/) (Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/) and its [hydroelastic contact guide](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN) (Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [the benchmark issue](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181) and [the MuJoCo discussion](https://github.com/google-deepmind/mujoco/discussions/2303).
 
 **Terrain** — [agxTerrain user manual](https://www.algoryx.se/documentation/complete/agx/tags/latest/doc/UserManual/source/agxTerrain.html); M. Servin, T. Berglund, S. Nystedt, "A multiscale model of terrain dynamics for real-time earthmoving simulation," *Advanced Modeling and Simulation in Engineering Sciences* 8:11, 2021, DOI 10.1186/s40323-021-00196-3; [Vortex Studio licensing](https://vortexstudio.atlassian.net/wiki/spaces/VSD2511/pages/4607410452); [Project Chrono terrain models](https://api.projectchrono.org/vehicle_terrain.html) and Unjhawala et al., [arXiv:2507.05643](https://arxiv.org/abs/2507.05643) for CRM.
 
@@ -646,9 +648,11 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 - **FMB**(IJRR)는 말단 힘과 토크 필드를 명시적으로 노출한다.
 - **REASSEMBLE**은 NIST 태스크 보드 위에서 이벤트 카메라·힘토크·마이크·다시점 RGB를 기록한다 —
   "4,551 demonstrations, of which 4,035 were successful".
-- OXE 안에서도 구성 데이터셋 둘이 상태 벡터에 힘을 담고 있다 —
-  `stanford_kuka_multimodal`([[01-canonical-papers/notes/7-robotics/vision-and-touch|Vision-and-Touch]]
-  데이터)과 `iamlab_cmu_pickup_insert` — 그러나 작고, 통합 스키마가 그 채널을 드러내지 않는다.
+- OXE 안에서도 구성 데이터셋 둘이 힘을 담고 있다 — 다만 *어디에* 담기는지를 정확히 하라.
+  `iamlab_cmu_pickup_insert`는 **상태 벡터 안에** 넣는다(20차원: 관절각 7, 그리퍼 1, 관절
+  토크 6, 말단 힘 6). `stanford_kuka_multimodal`([[01-canonical-papers/notes/7-robotics/vision-and-touch|Vision-and-Touch]]
+  데이터)은 **그렇지 않다**: 상태는 8차원 고유수용뿐이고, 힘은 형제 관측 필드
+  (`ee_forces_continuous`)에 있다. 둘 다 작고, 통합 스키마는 어느 쪽도 드러내지 않는다.
 
 > [!warning] 큰 데이터셋의 인용 함정 둘
 > **DROID**는 곳에 따라 다른 숫자를 보고한다: arXiv 초록은 궤적 76k에 과제 84개, RSS 프로시딩
@@ -798,7 +802,7 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 **2026-08-22**에 공식 출처로 확인했다. 규모 수치는 따로 표시하지 않는 한 각 논문 자신의
 초록에서 인용한 것이고, 부재에 근거한 주장은 공식 페이지를 확인했으나 아무것도 없었다는 뜻이다.
 
-**시뮬레이터** — [MuJoCo](https://mujoco.readthedocs.io/)(Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim)과 [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)(선행 Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [Isaac Gym 레거시 고지](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/)와 [Classic 수명 종료 고지](https://classic.gazebosim.org/)(Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/)와 [하이드로일래스틱 접촉 가이드](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN)(Xiang et al., CVPR 2020, pp. 11097–11107); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [벤치마크 이슈](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181), [MuJoCo 논의](https://github.com/google-deepmind/mujoco/discussions/2303).
+**시뮬레이터** — [MuJoCo](https://mujoco.readthedocs.io/)(Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim)과 [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)(선행 Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [Isaac Gym 레거시 고지](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/)와 [Classic 수명 종료 고지](https://classic.gazebosim.org/)(Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/)와 [하이드로일래스틱 접촉 가이드](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN)(Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [벤치마크 이슈](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181), [MuJoCo 논의](https://github.com/google-deepmind/mujoco/discussions/2303).
 
 **지형** — [agxTerrain 사용자 매뉴얼](https://www.algoryx.se/documentation/complete/agx/tags/latest/doc/UserManual/source/agxTerrain.html); M. Servin, T. Berglund, S. Nystedt, "A multiscale model of terrain dynamics for real-time earthmoving simulation," *Advanced Modeling and Simulation in Engineering Sciences* 8:11, 2021, DOI 10.1186/s40323-021-00196-3; [Vortex Studio 라이선싱](https://vortexstudio.atlassian.net/wiki/spaces/VSD2511/pages/4607410452); [Project Chrono 지형 모델](https://api.projectchrono.org/vehicle_terrain.html)과 CRM은 Unjhawala et al., [arXiv:2507.05643](https://arxiv.org/abs/2507.05643).
 
