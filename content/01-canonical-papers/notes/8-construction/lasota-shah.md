@@ -15,7 +15,7 @@ depth-goal: "Read the method and evaluation closely enough to select, adapt, or 
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
-**Lasota & Shah, Human Factors 2015** — [PDF](https://journals.sagepub.com/doi/pdf/10.1177/0018720814565188) · [2018 RA-L companion](https://dspace.mit.edu/bitstream/handle/1721.1/124626/2018_Unhelkar_Lasota_Shah_etal_RA_Letters.pdf)
+**Lasota & Shah**, "Analyzing the Effects of Human-Aware Motion Planning on Close-Proximity Human–Robot Collaboration," *Human Factors* 2015 — [PDF](https://journals.sagepub.com/doi/pdf/10.1177/0018720814565188) · [2018 RA-L companion](https://dspace.mit.edu/bitstream/handle/1721.1/124626/2018_Unhelkar_Lasota_Shah_etal_RA_Letters.pdf)
 
 > [!note] Math on-ramp · 수학 준비물
 > [[04-robotics/hri-safety|11. HRI & Safety §7–§8]] — this is a human-study paper, so its evidence stands or falls on within/between-subject design, counterbalancing, and the pairing of subjective with objective measures. That section is the checklist.

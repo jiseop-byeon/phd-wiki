@@ -15,7 +15,7 @@ depth-goal: "Read the method and evaluation closely enough to select, adapt, or 
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
-**Johns et al., Science Robotics 2023** — [DOI](https://doi.org/10.1126/scirobotics.abp9758) · [ETH project report](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)
+**Johns et al.**, "A framework for robotic excavation and dry stone construction using on-site materials," *Science Robotics* 2023 — [DOI](https://doi.org/10.1126/scirobotics.abp9758) · [ETH project report](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)
 
 > [!note] Math on-ramp · 수학 준비물
 > [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] (force closure on irregular objects) and [[04-robotics/contact-force-tactile|9. Contact]]. The interesting question is geometric: how do you plan a stable structure from *unmeasured, irregular* stones?

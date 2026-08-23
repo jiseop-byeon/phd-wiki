@@ -13,7 +13,7 @@ depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, a
 mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
-**Lundeen et al., Automation in Construction 2019** — [DOI](https://doi.org/10.1016/j.autcon.2018.12.020)
+**Lundeen et al.**, "Autonomous motion planning and task execution in geometrically adaptive robotized construction work," *Automation in Construction* 2019 — [DOI](https://doi.org/10.1016/j.autcon.2018.12.020)
 
 > [!note] Math on-ramp · 수학 준비물
 > [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]] and [[04-robotics/planning-decision-making|4. Planning §7]] (replanning). The claim is adaptation to *as-built* rather than as-designed geometry — a sensing-and-replanning loop, so check both halves.

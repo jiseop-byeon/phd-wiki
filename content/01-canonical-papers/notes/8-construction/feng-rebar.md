@@ -13,7 +13,7 @@ depth-goal: "Read the method and evaluation closely enough to select, adapt, or 
 mastery-when: "Raise to Mastery if site deployment becomes the thesis contribution."
 ---
 
-**Feng, Jia, Wang & Gan, *Buildings*, vol. 14, no. 3, art. 838, 2024** — [DOI](https://doi.org/10.3390/buildings14030838) (open access)
+**Feng, Jia, Wang & Gan**, "Research on the System Design and Target Recognition Method of the Rebar-Tying Robot," *Buildings* 14(3), art. 838, 2024 — [DOI](https://doi.org/10.3390/buildings14030838) (open access)
 
 > [!note] Math on-ramp · 수학 준비물
 > Nothing heavy. The interesting parts are perception on a non-rigid target ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]) and coverage over a large workspace ([[04-robotics/planning-decision-making|4. Planning]]). Read it mainly for its deployment evidence, using the ladder in [[05-construction-robotics/construction-manipulation|9. §3]].

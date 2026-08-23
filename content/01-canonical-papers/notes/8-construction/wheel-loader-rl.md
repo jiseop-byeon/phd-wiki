@@ -1,7 +1,7 @@
 ---
 title: "Automatic Loading of Unknown Material with a Wheel Loader Using RL (Eriksson et al., 2024)"
 authors: Eriksson, Ghabcheloo & Geimer
-affiliation: Tampere University (Ghabcheloo group)
+affiliation: Tampere University (Ghabcheloo group) · Karlsruhe Institute of Technology (Geimer)
 venue: ICRA 2024
 year: 2024
 pdf: https://trepo.tuni.fi/bitstream/handle/10024/211807/icra2024.pdf

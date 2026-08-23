@@ -15,7 +15,7 @@ depth-goal: "Read the method and evaluation closely enough to select, adapt, or 
 mastery-when: "Raise to Mastery if end-effector accuracy under load becomes the thesis contribution."
 ---
 
-**Kindle, Loetscher, Alessandretti, Cadena & Hutter** — [arXiv:2501.14280](https://arxiv.org/abs/2501.14280); the arXiv comment field states acceptance to IEEE RA-L in November 2024.
+**Kindle, Loetscher, Alessandretti, Cadena & Hutter**, "Enhancing Robotic Precision in Construction: A Modular Factor Graph-Based Framework to Deflection and Backlash Compensation Using High-Accuracy Accelerometers" — [arXiv:2501.14280](https://arxiv.org/abs/2501.14280); the arXiv comment field states acceptance to IEEE RA-L in November 2024.
 
 > [!note] Math on-ramp · 수학 준비물
 > Factor graphs as a way to fuse measurements into a consistent estimate ([[04-robotics/state-estimation-slam|3. State Estimation §4]]), and the reason a commanded joint angle is not the achieved one: compliance under load, which is the manipulator equation's world meeting real gears ([[02-foundations/manipulator-kinematics-dynamics|10. §7]]).
@@ -40,7 +40,7 @@ The platform, in the paper's own description, "weights about 700 kg and is compo
 
 ### Results
 
-The reported improvement is a **50% reduction in the 95% xy error threshold** against the Virtual Joint Method baseline. Seven datasets were captured "under conditions simulating realistic construction site disturbances" — wooden pallets, tilted surfaces, outdoor temperature variation — and released publicly.
+The reported improvement is a **50% reduction in the 95% xy error threshold** against the Virtual Joint Method baseline — **and 31% when that baseline itself incorporates base tilt compensation**. Quote both: the 50% alone measures the gain over the weaker comparison. Seven datasets were captured "under conditions simulating realistic construction site disturbances" — wooden pallets, tilted surfaces, outdoor temperature variation — and released publicly.
 
 > [!question] Reading the claim · 주장 읽는 법
 > Read the setting precisely: **conditions *simulating* site disturbances**, in a controlled
@@ -92,7 +92,7 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 
 ### 결과
 
-보고된 개선은 Virtual Joint Method 기준선 대비 **95% xy 오차 임계값의 50% 감소**다. "현실적인 건설 현장 교란을 모사하는 조건" — 나무 팔레트, 기울어진 면, 실외 온도 변화 — 에서 데이터셋 일곱 개를 취득해 공개했다.
+보고된 개선은 Virtual Joint Method 기준선 대비 **95% xy 오차 임계값의 50% 감소**이고, 기준선이 베이스 기울기 보상을 포함할 때는 **31% 감소**이다. 둘 다 인용하라 — 50%만 떼면 더 약한 비교 대상에 대한 이득을 재는 것이다. "현실적인 건설 현장 교란을 모사하는 조건" — 나무 팔레트, 기울어진 면, 실외 온도 변화 — 에서 데이터셋 일곱 개를 취득해 공개했다.
 
 > [!question] 주장 읽는 법 · Reading the claim
 > 설정을 정확히 읽어라: 통제된 셋업에서의 **현장 교란을 *모사한* 조건**이지 가동 중인 건설 현장이 아니다. [[05-construction-robotics/construction-manipulation|9. §3]]의 중간 단계이며, 자기가 한 것보다 더 주장하는 논문이 아니라 공개 데이터셋까지 갖춘 정직하고 잘 설계된 판본의 그 단계다.
