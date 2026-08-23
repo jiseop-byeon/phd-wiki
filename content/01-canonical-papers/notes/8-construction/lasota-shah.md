@@ -29,7 +29,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Evidence (with numbers)**: with the human-aware planner, tasks completed **5.57% faster**, concurrent human-robot motion rose **19.9%**, human idle time fell **2.96%**, robot idle time fell **17.3%**, and human-robot separation distance grew **15.1%**. Subjectively, participants agreed significantly more strongly that the robot stayed out of their way, that they felt safer and more comfortable, and that they trusted it as a teammate. The 2018 RA-L companion (Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3)) carried the idea toward practice: a human-aware robotic assistant **fielded in a BMW test environment replicating final-assembly work** — the authors themselves note the demonstration is *not* representative of a real factory deployment.
 
-**Testbed vs site, autonomy**: 2015 is a lab experiment; 2018 is a real *manufacturing* site — still not a construction site. The robot is autonomous at the motion level inside a collaborative cell; the human is a co-worker in the shared workspace, not an operator.
+**Testbed vs site, autonomy**: 2015 is a lab experiment; 2018 moves to a BMW *test environment* replicating final assembly — which the authors themselves state is **not** representative of a deployed line — and neither is a construction site. The robot is autonomous at the motion level inside a collaborative cell; the human is a co-worker in the shared workspace, not an operator.
 
 **What construction borrows, and what does not transfer**: construction borrows the metric vocabulary (fluency, concurrent motion, idle time, separation distance, perceived safety) and the twin finding — motion-level adaptation pays off in productivity *and* comfort at once, so safety and efficiency are not a trade-off. What does not transfer is the setting that made the result cheap to obtain: a fixed workcell, a repeatable task, reliable human tracking, a stable floor. Construction sites are unstructured and tasks are quasi-repetitive, which is why [[05-construction-robotics/hrc-worker-centered|stream 6]] must re-derive these results under site constraints rather than cite them.
 
@@ -41,7 +41,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **증거 (수치와 함께)**: 인간 인지 플래너에서 과제 완료가 **5.57% 빨라졌고**, 인간-로봇 동시 동작이 **19.9% 증가**, 인간 유휴 시간이 **2.96% 감소**, 로봇 유휴 시간이 **17.3% 감소**, 인간-로봇 이격 거리가 **15.1% 증가**했다. 주관적으로 참가자들은 로봇이 방해되지 않았고, 더 안전하고 편안하게 느꼈으며, 팀 동료로서 더 신뢰했다는 데 유의하게 더 강하게 동의했다. 2018 RA-L 자매 논문(Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3))은 이 아이디어를 실전 쪽으로 가져갔다: 인간 인지 로봇 어시스턴트를 **최종 조립 작업을 재현한 BMW 테스트 환경에 투입**했다 — 저자들 스스로 이 시연이 실제 공장 배치를 대표하지 *않는다*고 명시한다.
 
-**테스트베드 대 현장, 자율성**: 2015는 실험실 실험이고, 2018은 실제 *제조업* 현장이다 — 여전히 건설 현장은 아니다. 로봇은 협업 셀 안에서 모션 수준의 자율성을 갖고, 인간은 운전자가 아니라 공유 작업공간의 동료다.
+**테스트베드 대 현장, 자율성**: 2015는 실험실 실험이고, 2018은 최종 조립을 모사한 BMW *테스트 환경*으로 옮겨간다 — 저자들 스스로 배치된 라인을 대표하지 **않는다**고 밝히고 있고, 둘 중 어느 것도 건설 현장은 아니다. 로봇은 협업 셀 안에서 모션 수준의 자율성을 갖고, 인간은 운전자가 아니라 공유 작업공간의 동료다.
 
 **건설이 빌려오는 것과 이전되지 않는 것**: 건설이 빌려오는 것은 지표 어휘(유창성, 동시 동작, 유휴 시간, 이격 거리, 체감 안전)와 쌍둥이 발견 — 모션 수준 적응이 생산성*과* 편안함에 동시에 이득이 되므로 안전과 효율이 트레이드오프가 아니라는 것이다. 이전되지 않는 것은 이 결과를 값싸게 만든 환경이다: 고정된 워크셀, 반복 가능한 과제, 신뢰할 수 있는 인간 추적, 안정된 바닥. 건설 현장은 비구조적이고 과제는 준반복적이라, [[05-construction-robotics/hrc-worker-centered|stream 6]]은 이 결과를 인용하는 대신 현장 제약 아래서 다시 유도해야 한다.
 

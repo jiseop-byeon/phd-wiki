@@ -18,8 +18,8 @@ mastery-when: "Raise to Working if skill selection over a library of learned beh
 **Hoeller, Rudin, Sako & Hutter, *Science Robotics* 9(88), eadi7566, 2024** — [arXiv:2306.14874](https://arxiv.org/abs/2306.14874)
 
 > [!note] Math on-ramp · 수학 준비물
-> Hierarchical policies: low-level skills plus a high-level selector, and what it means for the selector to be *aware of each skill's capability* ([[04-robotics/legged-locomotion|18. §5]], [[04-robotics/planning-decision-making|4. §5]]).
-> 계층적 정책: 저수준 기술들과 고수준 선택기, 그리고 선택기가 *각 기술의 능력을 안다*는 것이 무슨 뜻인지([[04-robotics/legged-locomotion|18. §5]], [[04-robotics/planning-decision-making|4. §5]]).
+> Hierarchical policies: low-level skills plus a high-level selector, and what it means for the selector to be *aware of each skill's capability* ([[04-robotics/legged-locomotion|18. §4]], [[04-robotics/planning-decision-making|4. §5]]).
+> 계층적 정책: 저수준 기술들과 고수준 선택기, 그리고 선택기가 *각 기술의 능력을 안다*는 것이 무슨 뜻인지([[04-robotics/legged-locomotion|18. §4]], [[04-robotics/planning-decision-making|4. §5]]).
 
 ## English
 
@@ -57,7 +57,7 @@ The paper is the clearest existing demonstration that **navigation over rough te
 
 ### Connections
 
-- [[04-robotics/legged-locomotion|18. Legged Locomotion §5]] — the concept page's treatment of skill hierarchies
+- [[04-robotics/legged-locomotion|18. Legged Locomotion §4]] — the concept page's treatment of the parkour contrast and skill hierarchies
 - [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki et al. 2022]] — the perception-robustness lineage this builds on
 - [[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]] — the same selection problem with manipulation skills
 
@@ -104,7 +104,7 @@ The paper is the clearest existing demonstration that **navigation over rough te
 
 ### 연결
 
-- [[04-robotics/legged-locomotion|18. 레그드 로코모션 §5]] — 개념 페이지의 기술 계층 부분
+- [[04-robotics/legged-locomotion|18. 레그드 로코모션 §4]] — 개념 페이지의 파쿠르 대조와 기술 계층 부분
 - [[01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion|Miki 등 2022]] — 이것이 딛고 선 인지 강건성 계보
 - [[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 매니퓰레이션]] — 조작 기술로 하는 같은 선택 문제
 

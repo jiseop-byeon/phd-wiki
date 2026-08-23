@@ -129,7 +129,7 @@ Sorted by rung rather than by fame, because that is the ordering that matters he
   simulation is deployed on hardware, guided by force/torque and pose, and generalises to
   tolerances and shape variations not seen in training. This is construction-scale
   peg-in-hole, and it is the closest thing the field has to a contact-rich learning result.
-- **Kindle et al. (2025)** — deflection and backlash compensation on a 700 kg tracked
+- **Kindle et al. (RA-L 2024)** — deflection and backlash compensation on a 700 kg tracked
   drilling robot (the Hilti Jaibot platform), evaluated on seven datasets recorded under
   simulated site disturbances. The compliance problem of
   [[04-robotics/force-compliance-control|13]] stated in construction terms.
@@ -349,7 +349,7 @@ the [[07-research-program/index|research program]] is built on.
 - **Apolinarska 등(2021)** — 목재 접합 조립. 전적으로 시뮬레이션에서 학습한 정책을 힘/토크와
   자세를 안내 삼아 실기계에 배치하고, 학습에서 보지 못한 공차와 형상 변동에도 일반화한다.
   건설 규모의 peg-in-hole이며, 이 분야가 가진 접촉 다량 학습 결과에 가장 가까운 것이다.
-- **Kindle 등(2025)** — 700 kg 궤도형 드릴링 로봇(Hilti Jaibot 플랫폼)에서의 변형·백래시 보상.
+- **Kindle 등(RA-L 2024)** — 700 kg 궤도형 드릴링 로봇(Hilti Jaibot 플랫폼)에서의 변형·백래시 보상.
   현장 교란을 모사한 조건에서 기록한 데이터셋 일곱 개로 평가했다.
   [[04-robotics/force-compliance-control|13번]]의 컴플라이언스 문제를 건설의 언어로 진술한 것.
 - **Iturralde 등(2022)** — 커튼월 모듈을 설치하는 케이블 구동 병렬 로봇. 실물에 가까운 실증

@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery when the thesis argues about what a benchmark's 
 **Krantz, Wijmans, Majumdar, Batra & Lee, ECCV 2020** — [arXiv:2004.02857](https://arxiv.org/abs/2004.02857) · [Project](https://jacobkrantz.github.io/vlnce/)
 
 > [!note] Math on-ramp · 수학 준비물
-> The distinction between a *nav-graph* setting — teleporting between panorama nodes along known navigable edges — and a continuous one, where the agent emits low-level actions ([[04-robotics/semantic-language-navigation|19. §3]]).
-> *nav-graph* 설정 — 알려진 이동 가능 간선을 따라 파노라마 노드 사이를 순간이동 — 과 저수준 행동을 내놓는 연속 환경의 차이([[04-robotics/semantic-language-navigation|19. §3]]).
+> The distinction between a *nav-graph* setting — teleporting between panorama nodes along known navigable edges — and a continuous one, where the agent emits low-level actions ([[04-robotics/semantic-language-navigation|19. §5]]).
+> *nav-graph* 설정 — 알려진 이동 가능 간선을 따라 파노라마 노드 사이를 순간이동 — 과 저수준 행동을 내놓는 연속 환경의 차이([[04-robotics/semantic-language-navigation|19. §5]]).
 
 ## English
 
@@ -56,7 +56,7 @@ VLN-CE became the standard VLN setting, and [[01-canonical-papers/notes/9-naviga
 
 ### Connections
 
-- [[04-robotics/semantic-language-navigation|19. Semantic & Language-Driven Navigation §3]] — the concept page's VLN treatment
+- [[04-robotics/semantic-language-navigation|19. Semantic & Language-Driven Navigation §5]] — the concept page's VLN treatment
 - [[01-canonical-papers/notes/9-navigation/navid|NaVid]] — a modern agent evaluated in this setting
 - [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al. 2023]] — the same dismantling move, one level further out
 
@@ -102,7 +102,7 @@ VLN-CE는 표준 VLN 설정이 되었고, [[01-canonical-papers/notes/9-navigati
 
 ### 연결
 
-- [[04-robotics/semantic-language-navigation|19. 의미·언어 기반 내비게이션 §3]] — 개념 페이지의 VLN 부분
+- [[04-robotics/semantic-language-navigation|19. 의미·언어 기반 내비게이션 §5]] — 개념 페이지의 VLN 부분
 - [[01-canonical-papers/notes/9-navigation/navid|NaVid]] — 이 설정에서 평가되는 현대적 에이전트
 - [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등 2023]] — 한 단계 더 바깥에서 같은 해체를 수행한 연구
 

@@ -57,7 +57,7 @@ Clio is the paper that made **granularity a first-class design variable** in rob
 
 ### Connections
 
-- [[04-robotics/semantic-language-navigation|19. Semantic & Language-Driven Navigation §4]] — the concept page
+- [[04-robotics/semantic-language-navigation|19. Semantic & Language-Driven Navigation §7]] — the concept page
 - [[01-canonical-papers/notes/9-navigation/conceptgraphs|ConceptGraphs]] — the fixed-granularity predecessor
 - [[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]] — hierarchical scene graphs in the SLAM lineage
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — where task-dependent granularity would pay
@@ -104,7 +104,7 @@ Clio는 로봇 매핑에서 **입도를 구현상의 우연이 아니라 일급 
 
 ### 연결
 
-- [[04-robotics/semantic-language-navigation|19. 의미·언어 기반 내비게이션 §4]] — 개념 페이지
+- [[04-robotics/semantic-language-navigation|19. 의미·언어 기반 내비게이션 §7]] — 개념 페이지
 - [[01-canonical-papers/notes/9-navigation/conceptgraphs|ConceptGraphs]] — 입도가 고정된 선행 연구
 - [[04-robotics/state-estimation-slam|3. 상태 추정·위치 인식·SLAM]] — SLAM 계보에서의 계층적 장면 그래프
 - [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 과제 의존 입도가 값을 하는 곳

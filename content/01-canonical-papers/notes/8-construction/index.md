@@ -25,6 +25,11 @@ alongside.
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
 
+**Construction manipulation (the on-site contact papers)**:
+[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska timber joints 2021]] ·
+[[01-canonical-papers/notes/8-construction/feng-rebar|Feng rebar-tying 2024]] ·
+[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle drilling robot 2024]]
+
 **Assembly & fabrication (the Michigan line + ETH)**:
 [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]] →
 [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen 2019]] →
@@ -59,6 +64,11 @@ alongside.
 [[01-canonical-papers/notes/8-construction/wheel-loader-rl|휠로더 RL]] ·
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
+
+**건설 매니퓰레이션 (현장 접촉 논문들)**:
+[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska 목재 접합 2021]] ·
+[[01-canonical-papers/notes/8-construction/feng-rebar|Feng 철근 결속 2024]] ·
+[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle 드릴링 로봇 2024]]
 
 **조립·패브리케이션 (미시간 라인 + ETH)**:
 [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]] →

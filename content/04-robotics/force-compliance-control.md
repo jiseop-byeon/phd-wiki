@@ -27,8 +27,9 @@ A position controller's job is to drive position error to zero, and it does so w
 force that requires. In free space this is exactly right. In contact it is a specification
 for breaking things, because the environment now decides what position error means.
 
-Take the wall from [[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]:
-a stiff structural surface at roughly $K_e = 10^4$ N/m, commanded 1 cm past its surface.
+Take the wall from [[04-robotics/contact-force-tactile|Contact, Force & Tactile §6]]:
+a **compliantly mounted** tool meeting a surface at roughly $K_e = 10^4$ N/m, commanded 1 cm
+past it.
 
 $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 
@@ -36,6 +37,24 @@ The controller does not "decide" to push with 100 N; it is simply what closing a
 against that stiffness costs. A compliant controller rendering $K = 200$ N/m in the same
 situation produces $200 \times 0.01 = 2$ N and holds a 1 cm error it never resolves — which
 in contact is the correct behaviour, not a failure.
+
+Environment stiffness spans six orders of magnitude, and papers name the contact rather than
+the number — so keep a scale, because the same control law is safe at one end and impossible
+at the other:
+
+| Contact | $K_e$ (N/m) |
+|---|---:|
+| soft padding, foam, skin | $10^2$–$10^3$ |
+| compliant wrist, series-elastic joint, RCC in series | $10^3$–$10^4$ |
+| rigid tool on wood or plastic | $10^5$–$10^6$ |
+| bare steel tool on steel or concrete | $10^6$–$10^8$ |
+
+The example above sits in the second row. Run the same arithmetic in the fourth and it stops
+being survivable: a 1 cm error against $10^7$ N/m asks for $10^5$ N, which no arm produces and
+no tool survives. **That is the real reason a position controller is never pointed at
+structure** — the force diverges long before the error closes. §5 uses the same two rows to
+compute impact forces, so a claim about "a stiff contact" should always be read back to a row
+of this table.
 
 This is the whole subject in one comparison. **Contact turns position error into force**, so
 control in contact is about choosing the *relation* between them rather than eliminating
@@ -370,14 +389,30 @@ tolerance, say which architecture can meet it — and whether any can.
 자유 공간에서는 정확히 옳다. 접촉에서는 물건을 부수라는 명세가 된다. 이제 위치 오차가 무엇을
 뜻하는지를 환경이 결정하기 때문이다.
 
-[[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]의 벽을 보자: 대략 $K_e = 10^4$ N/m인
-단단한 구조물 표면에, 표면보다 1 cm 안쪽을 명령했다.
+[[04-robotics/contact-force-tactile|접촉·힘·촉각 §6]]의 벽을 보자: **유연하게 장착된** 도구가
+대략 $K_e = 10^4$ N/m인 표면에 닿는데, 표면보다 1 cm 안쪽을 명령했다.
 
 $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 
 제어기가 100 N으로 밀기로 "결정"한 것이 아니다. 그 강성에 대해 1 cm 오차를 닫는 비용이 그저
 그것일 뿐이다. 같은 상황에서 $K = 200$ N/m를 구현하는 유연한 제어기는 $200 \times 0.01 = 2$ N을
 내고 끝내 해소하지 않는 1 cm 오차를 유지한다 — 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
+
+환경 강성은 여섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을 이름으로 부른다 — 그러니 눈금을
+갖고 있어야 한다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하기 때문이다:
+
+| 접촉 | $K_e$ (N/m) |
+|---|---:|
+| 무른 패딩, 폼, 피부 | $10^2$–$10^3$ |
+| 유연 손목, 직렬 탄성 관절, 직렬 RCC | $10^3$–$10^4$ |
+| 단단한 도구 대 목재·플라스틱 | $10^5$–$10^6$ |
+| 맨 강철 도구 대 강재·콘크리트 | $10^6$–$10^8$ |
+
+위 예는 둘째 행에 있다. 같은 계산을 넷째 행에서 하면 더 이상 견딜 수 있는 값이 아니다:
+$10^7$ N/m에 대한 1 cm 오차는 $10^5$ N을 요구하고, 그것을 낼 수 있는 팔도 견딜 수 있는 도구도
+없다. **위치 제어기를 구조체에 겨누지 않는 진짜 이유가 이것이다** — 오차가 닫히기 한참 전에
+힘이 발산한다. §5도 같은 두 행으로 충격력을 계산하므로, "단단한 접촉"이라는 주장은 언제나
+이 표의 어느 행인지로 되읽어야 한다.
 
 이 비교 하나가 주제 전체다. **접촉은 위치 오차를 힘으로 바꾼다.** 그러므로 접촉에서의 제어는
 둘 중 하나를 없애는 일이 아니라 둘 사이의 *관계*를 고르는 일이다. Mason이 1981년에 이것을

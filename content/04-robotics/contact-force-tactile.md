@@ -89,7 +89,7 @@ so $K$ (stiffness, N/m) and $D$ (damping, N·s/m) are the *design* variables, an
 
 ### 6. Scenario: cleaning a wall
 
-A pure position controller commands the tool 2 cm beyond an estimated wall. A 1 cm wall-location error can cause very different force because contact stiffness is high. **With numbers**: a stiff tool–wall contact of $K = 10^4$ N/m turns a 1 cm position error into $10^4 \times 0.01 = 100$ N — enough to gouge the surface or trip a force limit — while a 3 cm error would demand 300 N the arm may not even be able to produce. Set the *controller's* stiffness to $K = 200$ N/m instead and the same 1 cm error asks for 2 N. That ratio, not any control theory, is why contact tasks are run compliantly. An impedance controller instead permits pose error while shaping the restoring force; a force controller regulates normal force directly but still needs tangential motion and stability handling. The best architecture depends on actuator bandwidth, sensing, surface variation, and safety limits.
+A pure position controller commands the tool 2 cm beyond an estimated wall. A 1 cm wall-location error can cause very different force because contact stiffness is high. **With numbers**: a *compliantly mounted* tool meeting the wall at $K = 10^4$ N/m turns a 1 cm position error into $10^4 \times 0.01 = 100$ N — enough to gouge the surface or trip a force limit — while a 3 cm error would demand 300 N the arm may not even be able to produce. That stiffness is deliberately a soft one; a bare steel tool against structure is two to three orders stiffer, where the same 1 cm error asks for $10^4$–$10^5$ N and the force diverges long before the error closes. The stiffness scale is tabulated in [[04-robotics/force-compliance-control|13. Force & Compliance Control §1]]. Set the *controller's* stiffness to $K = 200$ N/m instead and the same 1 cm error asks for 2 N. That ratio, not any control theory, is why contact tasks are run compliantly. An impedance controller instead permits pose error while shaping the restoring force; a force controller regulates normal force directly but still needs tangential motion and stability handling. The best architecture depends on actuator bandwidth, sensing, surface variation, and safety limits.
 
 ### 7. Force, tactile, and material state
 
@@ -237,9 +237,12 @@ $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 ### 6. 시나리오: 벽 닦기
 
 순수 위치 제어기가 도구를 추정 벽면보다 2 cm 안쪽으로 명령한다. 접촉 강성이 높아 벽
-위치의 1 cm 오차가 완전히 다른 힘을 만들 수 있다. **숫자로 보면**: 도구-벽 접촉 강성이
-$K = 10^4$ N/m이면 1 cm 위치 오차가 $10^4 \times 0.01 = 100$ N이 된다 — 표면을 파거나 힘
-제한을 걸기에 충분하고, 3 cm 오차라면 팔이 낼 수조차 없을 300 N을 요구한다. 대신
+위치의 1 cm 오차가 완전히 다른 힘을 만들 수 있다. **숫자로 보면**: *유연하게 장착된* 도구가
+벽에 $K = 10^4$ N/m로 닿으면 1 cm 위치 오차가 $10^4 \times 0.01 = 100$ N이 된다 — 표면을 파거나 힘
+제한을 걸기에 충분하고, 3 cm 오차라면 팔이 낼 수조차 없을 300 N을 요구한다. 이 강성은
+의도적으로 무른 쪽을 고른 값이다. 맨 강철 도구가 구조체에 닿으면 두세 자릿수 더 단단하고,
+그때는 같은 1 cm 오차가 $10^4$–$10^5$ N을 요구해서 오차가 닫히기 한참 전에 힘이 발산한다.
+강성 눈금은 [[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어 §1]]에 표로 있다. 대신
 *제어기의* 강성을 $K = 200$ N/m로 두면 같은 1 cm 오차가 요구하는 힘은 2 N이다. 접촉
 작업을 유연하게 돌리는 이유는 어떤 제어 이론이 아니라 이 비율이다. 임피던스 제어기는 pose 오차를
 허용하면서 복원력을 형성하고, 힘 제어기는 법선력을 직접 조절하지만 접선 운동과 안정성

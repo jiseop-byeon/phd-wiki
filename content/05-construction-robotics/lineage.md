@@ -53,7 +53,7 @@ supervisors close by.
 onto real heavy machines: **ETH RSL** (force-based digging 2017 → HEAP platform 2021 →
 sim-to-real RL hydraulics 2020–22 → the Science Robotics dry-stone wall 2023 → ExT
 multitask pretraining 2025), **Baidu RAL** (the Science Robotics 2021 AES excavator
-running 24 h uncrewed at human-level throughput; ExACT bringing
+running 24 h uncrewed *per human intervention* at human-level throughput; ExACT bringing
 [[01-canonical-papers/notes/4-vla/act|ACT]]-style imitation to excavators in 2024,
 sim-validated), and the **Nordic wheel-loader groups** (Tampere, Luleå/Örebro,
 Umeå+Algoryx — real-machine RL loading at ICRA). In parallel the **UMich manipulation
@@ -175,7 +175,7 @@ Robotics 개조, SAM100 조적, Kajima A4CSEL 선단 자동화, Shimizu Shimz Sm
 
 **4시대 — 학습이 기계에 들어오다 (2020~).** 세 클러스터가 로봇 학습을 실제 중장비에
 실었다: **ETH RSL**(힘 기반 굴착 2017 → HEAP 플랫폼 2021 → sim-to-real RL 유압 2020–22 →
-Science Robotics 돌담 2023 → ExT 멀티태스크 사전학습 2025), **Baidu RAL**(24시간 무인·
+Science Robotics 돌담 2023 → ExT 멀티태스크 사전학습 2025), **Baidu RAL**(사람 개입 1회당 24시간 무인·
 인간급 처리량의 Science Robotics 2021 AES 굴착기; 2024년 ExACT가
 [[01-canonical-papers/notes/4-vla/act|ACT]]식 모방학습을 굴착기에 이식 — 시뮬레이션 검증),
 그리고 **북유럽 휠로더 그룹**(Tampere, Luleå/Örebro, Umeå+Algoryx — ICRA의 실기계 RL

@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery if self-supervised traversability labelling beco
 **Kahn, Abbeel & Levine, RA-L 2021** — [arXiv:2002.05700](https://arxiv.org/abs/2002.05700) · [Project](https://sites.google.com/view/badgr)
 
 > [!note] Math on-ramp · 수학 준비물
-> Only the idea of a *learned* predictive model over future events, plus sampling-based action selection ([[04-robotics/planning-decision-making|4. §3]]). The traversability vocabulary it depends on is [[04-robotics/traversability-off-road|17. §1–§2]].
-> 미래 사건에 대한 *학습된* 예측 모델과 표본 기반 행동 선택([[04-robotics/planning-decision-making|4. §3]])만 있으면 된다. 전제되는 traversability 어휘는 [[04-robotics/traversability-off-road|17. §1~§2]].
+> Only the idea of a *learned* predictive model over future events, plus sampling-based action selection ([[04-robotics/planning-decision-making|4. §5–§6]]). The traversability vocabulary it depends on is [[04-robotics/traversability-off-road|17. §1–§2]].
+> 미래 사건에 대한 *학습된* 예측 모델과 표본 기반 행동 선택([[04-robotics/planning-decision-making|4. §5–§6]])만 있으면 된다. 전제되는 traversability 어휘는 [[04-robotics/traversability-off-road|17. §1~§2]].
 
 ## English
 

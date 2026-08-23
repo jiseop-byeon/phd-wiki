@@ -96,6 +96,23 @@ dimensions and four in three dimensions**. The much-quoted **seven** is a differ
 it is the *frictionless* form-closure count in 3D, and quoting it as the force-closure
 number is a common error.
 
+> [!warning] Two fingers or four? Name the contact model
+> Those two statements — "a two-finger grasp of a box achieves force closure" and "four
+> fingers are necessary in 3D" — look contradictory and are not. They assume different
+> **contact models**, and a paper that does not name its model cannot be checked.
+>
+> | Model | Each contact transmits | Two-finger force closure in 3D? |
+> |---|---|---|
+> | **Point contact, frictionless** | force along the normal only | no |
+> | **Hard finger** (point contact with friction) | force inside the friction cone, **no moment** | no — this is Markenscoff's four |
+> | **Soft finger** | force inside the cone **plus a moment about the contact normal** (torsional friction) | yes — this is the antipodal case |
+>
+> A parallel-jaw gripper on a real box is a soft-finger contact: the pads deform, so each
+> contact resists twisting about its own normal, and two of them suffice. Markenscoff's
+> count is the hard-finger theorem. **When a paper claims force closure, the first question
+> is which row it is standing on** — learned grasp planners almost always assume soft finger
+> implicitly, by training on grippers with compliant pads.
+
 For two contacts specifically, the practical criterion is the **antipodal** condition: the
 line joining the two contact points must lie inside both friction cones. That is the second
 panel of the figure above, and it is the geometric core of essentially every two-finger
@@ -331,6 +348,22 @@ Form closure가 더 강하고 더 드문 조건이다. Force closure가 상자�
 Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 때 **2차원에서는 손가락 셋,
 3차원에서는 넷이 필요충분**이라고 말한다. 널리 인용되는 **일곱**은 다른 결과다 — 3D에서의
 *마찰 없는* form closure 개수이고, 이것을 force closure 개수로 인용하는 것이 흔한 오류다.
+
+> [!warning] 손가락 둘인가 넷인가 — 접촉 모델을 밝혀라
+> 두 진술 — "상자를 두 손가락으로 잡으면 force closure다"와 "3D에서는 넷이 필요하다" — 은
+> 모순처럼 보이지만 아니다. 서로 다른 **접촉 모델**을 전제하고 있고, 모델을 밝히지 않은
+> 논문은 검증할 수 없다.
+>
+> | 모델 | 각 접촉이 전달하는 것 | 3D에서 두 손가락 force closure? |
+> |---|---|---|
+> | **점 접촉, 마찰 없음** | 법선 방향 힘만 | 불가 |
+> | **hard finger**(마찰 있는 점 접촉) | 마찰 원뿔 안의 힘, **모멘트 없음** | 불가 — 이것이 Markenscoff의 넷 |
+> | **soft finger** | 원뿔 안의 힘 **+ 접촉 법선 둘레의 모멘트**(비틀림 마찰) | 가능 — 이것이 antipodal의 경우 |
+>
+> 실제 상자를 잡는 평행 조 그리퍼는 soft finger 접촉이다: 패드가 변형되므로 각 접촉이 자기
+> 법선 둘레의 비틀림에 저항하고, 그래서 둘이면 충분하다. Markenscoff의 개수는 hard finger
+> 정리다. **논문이 force closure를 주장하면 첫 질문은 어느 행에 서 있느냐다** — 학습 기반
+> 파지 계획기는 대개 유연한 패드가 달린 그리퍼로 학습하면서 soft finger를 암묵적으로 가정한다.
 
 접촉이 둘일 때의 실용적 판정은 **antipodal** 조건이다: 두 접촉점을 잇는 선이 두 마찰 원뿔
 안에 모두 들어가야 한다. 위 그림의 두 번째 패널이 그것이고, 학습이든 아니든 사실상 모든 두

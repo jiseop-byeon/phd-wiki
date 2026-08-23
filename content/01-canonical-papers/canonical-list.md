@@ -175,9 +175,9 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 ## 8. Construction Robotics
 
-Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. The 23 entries below were selected in the 2026-07 lab/lineage corpus audit. **Core** papers changed the technical or system trajectory of construction physical AI; **Supporting** papers represent the key perception, HRC, and workflow connections. Papers from famous labs were still excluded when purely construction-management.
+Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. The 26 entries below were selected in the 2026-07 lab/lineage corpus audit and extended in 2026-08 with the three construction-manipulation papers. **Core** papers changed the technical or system trajectory of construction physical AI; **Supporting** papers represent the key perception, HRC, and workflow connections. Papers from famous labs were still excluded when purely construction-management.
 
-계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 23편은 2026-07 랩·계보 코퍼스 감사에서 선별했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
+계보와 랩 지도: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05-construction-robotics/labs|Labs]]. 아래 26편은 2026-07 랩·계보 코퍼스 감사에서 선별하고, 2026-08에 건설 매니퓰레이션 3편을 더했다. **Core**는 건설 physical AI의 기술·시스템 흐름을 바꾼 논문, **Supporting**은 핵심 인식·HRC·공정 연결을 대표하는 논문이다. 유명 랩의 논문이라도 순수 건설관리이면 제외했다.
 
 ### Field overview
 
@@ -197,9 +197,9 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 ### Assembly & fabrication
 
 - [x] ★ [[notes/8-construction/vision-guided-assembly|Feng et al. — vision-guided assembly and as-built scanning]] (Automation in Construction 2015) — 미시간 조작 계보의 앵커
-- [ ] ★ [[notes/8-construction/apolinarska-timber|Apolinarska et al. — 목재 접합의 힘 유도 삽입]] (Automation in Construction 2021) — 전적으로 시뮬에서 학습해 실기계로 전이
-- [ ] ◐ [[notes/8-construction/feng-rebar|Feng et al. — 철근 결속 로봇]] (Buildings 2024) — 현장 검증된 드문 사례
-- [ ] ◐ [[notes/8-construction/kindle-jaibot|Kindle et al. — 드릴링 로봇의 변형·백래시 보상]] (RA-L 2024)
+- [x] ★ [[notes/8-construction/apolinarska-timber|Apolinarska et al. — 목재 접합의 힘 유도 삽입]] (Automation in Construction 2021) — 전적으로 시뮬에서 학습해 실기계로 전이
+- [x] ◐ [[notes/8-construction/feng-rebar|Feng et al. — 철근 결속 로봇]] (Buildings 2024) — 현장 검증된 드문 사례
+- [x] ◐ [[notes/8-construction/kindle-jaibot|Kindle et al. — 드릴링 로봇의 변형·백래시 보상]] (RA-L 2024)
 - [x] ★ [[notes/8-construction/dry-stone-wall|Johns et al. — excavation and dry-stone construction]] (Science Robotics 2023) — 인식·계획·중장비 조작의 실규모 폐루프
 - [x] ○ [[notes/8-construction/aerial-am-2022|Zhang et al. — aerial additive manufacturing]] (Nature 2022) — 공중 적층 제조
 - [x] ◐ [[notes/8-construction/yu-imitation|Yu et al. — cloud-based hierarchical imitation learning]] (JCCE 2024) — 작업자 기술의 시연 학습
