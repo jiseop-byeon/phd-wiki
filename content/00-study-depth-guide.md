@@ -39,7 +39,7 @@ to Mastery. The recommendation is a starting profile, not a permanent label.
   </g>
   <g font-size="11.5" fill="currentColor">
     <text x="18" y="26">per PAPER: how much to read</text><text x="282" y="26">per TOPIC: how well to command it</text>
-    <text x="44" y="166">&#9675; &nbsp;abstract + figures + conclusion</text><text x="62" y="126">&#9680; &nbsp;method and experiments too</text><text x="80" y="86">&#9733; &nbsp;the whole paper, carefully</text>
+    <text x="44" y="166">&#9675; &nbsp;the note is enough</text><text x="62" y="126">&#9680; &nbsp;read the note, then skim the original</text><text x="80" y="86">&#9733; &nbsp;read the original in full</text>
     <text x="308" y="166">Literacy &#8212; explain it</text><text x="326" y="126">Working &#8212; use and diagnose it</text><text x="344" y="86">Mastery &#8212; critique and defend it</text>
     <text x="18" y="212" font-size="11" opacity="0.85">these two are independent: a Literacy topic can still contain a &#9733; paper</text>
   </g>
@@ -182,7 +182,7 @@ If the honest answer is "it would be interesting", the answer is no.
   </g>
   <g font-size="11.5" fill="currentColor">
     <text x="18" y="26">논문 단위: 얼마나 읽는가</text><text x="282" y="26">주제 단위: 얼마나 다루는가</text>
-    <text x="44" y="166">&#9675; &nbsp;초록 + 그림 + 결론</text><text x="62" y="126">&#9680; &nbsp;방법과 실험까지</text><text x="80" y="86">&#9733; &nbsp;전문을 꼼꼼히</text>
+    <text x="44" y="166">&#9675; &nbsp;노트로 충분</text><text x="62" y="126">&#9680; &nbsp;노트를 읽고 원문은 훑기</text><text x="80" y="86">&#9733; &nbsp;원문 전체를 읽기</text>
     <text x="308" y="166">Literacy &#8212; 설명할 수 있다</text><text x="326" y="126">Working &#8212; 쓰고 진단할 수 있다</text><text x="344" y="86">Mastery &#8212; 비판하고 방어할 수 있다</text>
     <text x="18" y="212" font-size="11" opacity="0.85">둘은 독립이다: Literacy 주제 안에도 &#9733; 논문이 있을 수 있다</text>
   </g>

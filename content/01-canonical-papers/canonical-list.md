@@ -61,7 +61,7 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/2-computer-vision/detr|DETR]] — *End-to-End Object Detection with Transformers* (Carion et al., ECCV 2020)
 - [x] ◐ [[notes/2-computer-vision/nerf|NeRF]] (Mildenhall et al., ECCV 2020)
 - [x] ○ [[notes/2-computer-vision/swin|Swin Transformer]] (Liu et al., ICCV 2021)
-- [x] ◐ [[notes/2-computer-vision/dino|DINO → DINOv2]] (Caron et al., ICCV 2021 · Oquab et al., 2023)
+- [x] ◐ [[notes/2-computer-vision/dino|DINO → DINOv2]] (Caron et al., ICCV 2021 · Oquab et al., TMLR 2024)
 - [x] ◐ [[notes/2-computer-vision/sam|SAM]] — *Segment Anything* (Kirillov et al., ICCV 2023)
 - [x] ◐ [[notes/2-computer-vision/3d-gaussian-splatting|3D Gaussian Splatting]] (Kerbl et al., SIGGRAPH 2023)
 - [x] ◐ [[notes/2-computer-vision/depth-anything|Depth Anything]] (Yang et al., CVPR 2024)
@@ -89,8 +89,8 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/4-vla/openvla|OpenVLA]] (Kim et al., CoRL 2024)
 - [x] ★ [[notes/4-vla/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, RSS 2025)
 - [x] ◐ [[notes/4-vla/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
-- [ ] ◐ [[notes/4-vla/robomimic|robomimic]] — Mandlekar et al., CoRL 2021 — 시연 데이터에서 무엇이 중요한가
-- [ ] ○ [[notes/4-vla/dagger|DAgger]] — Ross, Gordon & Bagnell, AISTATS 2011 — 복합 오차의 원리적 해법
+- [x] ◐ [[notes/4-vla/robomimic|robomimic]] — Mandlekar et al., CoRL 2021 — 시연 데이터에서 무엇이 중요한가
+- [x] ○ [[notes/4-vla/dagger|DAgger]] — Ross, Gordon & Bagnell, AISTATS 2011 — 복합 오차의 원리적 해법
 
 ## 5. World Models
 
@@ -125,27 +125,27 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 **Force control classics** (힘 제어 고전)
 
-- [ ] ◐ [[notes/7-robotics/hogan-impedance|Impedance Control]] — Hogan, ASME JDSMC 107(1), 1985 (3부작)
+- [x] ◐ [[notes/7-robotics/hogan-impedance|Impedance Control]] — Hogan, ASME JDSMC 107(1), 1985 (3부작)
 
 **Grasping** (파지)
 
-- [ ] ◐ [[notes/7-robotics/dex-net-2|Dex-Net 2.0]] — Mahler et al., RSS 2017 — 해석 지표가 라벨 생성기가 되다
-- [ ] ◐ [[notes/7-robotics/anygrasp|AnyGrasp]] — Fang et al., T-RO 2023 — 조밀·시간적으로 매끄러운 7-DoF 파지
+- [x] ◐ [[notes/7-robotics/dex-net-2|Dex-Net 2.0]] — Mahler et al., RSS 2017 — 해석 지표가 라벨 생성기가 되다
+- [x] ◐ [[notes/7-robotics/anygrasp|AnyGrasp]] — Fang et al., T-RO 2023 — 조밀·시간적으로 매끄러운 7-DoF 파지
 
 **Tactile & visuotactile** (촉각·시촉각)
 
-- [ ] ◐ [[notes/7-robotics/gelsight|GelSight]] — Yuan, Dong & Adelson, Sensors 2017 — 기하를 재고 힘은 추론한다
-- [ ] ★ [[notes/7-robotics/vision-and-touch|Making Sense of Vision and Touch]] — Lee et al., ICRA 2019 — 자기지도 시촉각 표현
+- [x] ◐ [[notes/7-robotics/gelsight|GelSight]] — Yuan, Dong & Adelson, Sensors 2017 — 기하를 재고 힘은 추론한다
+- [x] ★ [[notes/7-robotics/vision-and-touch|Making Sense of Vision and Touch]] — Lee et al., ICRA 2019 — 자기지도 시촉각 표현
 
 **Real-world reinforcement learning** (실제 환경 RL)
 
-- [ ] ★ [[notes/7-robotics/hil-serl|HIL-SERL]] — Luo, Xu, Wu & Levine, Science Robotics 2025 — 실제 로봇 위에서 1~2.5시간, 사람이 루프 안의 교정 채널
+- [x] ★ [[notes/7-robotics/hil-serl|HIL-SERL]] — Luo, Xu, Wu & Levine, Science Robotics 2025 — 실제 로봇 위에서 1~2.5시간, 사람이 루프 안의 교정 채널
 
 **Teleoperation & demonstration data** (원격조작·시연 데이터)
 
-- [ ] ★ [[notes/7-robotics/umi|UMI]] — Chi et al., RSS 2024 — 로봇 없이 야생에서 시연 수집
-- [ ] ○ [[notes/7-robotics/gello|GELLO]] — Wu et al., IROS 2024 — 기구학이 같은 저가 리더 암
-- [ ] ◐ [[notes/7-robotics/mobile-aloha|Mobile ALOHA]] — Fu, Zhao & Finn, CoRL 2024 — 전신 원격조작과 co-training
+- [x] ★ [[notes/7-robotics/umi|UMI]] — Chi et al., RSS 2024 — 로봇 없이 야생에서 시연 수집
+- [x] ○ [[notes/7-robotics/gello|GELLO]] — Wu et al., IROS 2024 — 기구학이 같은 저가 리더 암
+- [x] ◐ [[notes/7-robotics/mobile-aloha|Mobile ALOHA]] — Fu, Zhao & Finn, CoRL 2024 — 전신 원격조작과 co-training
 
 **Study guides** — concept guides rather than papers, so they carry no ★◐○ mark; read them in track order.
 **Study guides** (논문이 아닌 개념 가이드 — 읽기 기호 대신 트랙 순서로 읽는다)
@@ -227,33 +227,33 @@ Notes: [[01-canonical-papers/notes/9-navigation/index|9. Navigation & Locomotion
 
 ### Traversability — the learned affordance
 
-- [ ] ◐ [[notes/9-navigation/badgr|BADGR]] — Kahn, Abbeel & Levine, RA-L 2021 — 기하가 아니라 주행 사건을 예측한다
-- [ ] ★ [[notes/9-navigation/wild-visual-navigation|WVN]] — Frey, Mattamala et al., RSS 2023 — 현장에서 5분 만에 학습하는 traversability
+- [x] ◐ [[notes/9-navigation/badgr|BADGR]] — Kahn, Abbeel & Levine, RA-L 2021 — 기하가 아니라 주행 사건을 예측한다
+- [x] ★ [[notes/9-navigation/wild-visual-navigation|WVN]] — Frey, Mattamala et al., RSS 2023 — 현장에서 5분 만에 학습하는 traversability
 
 ### Legged locomotion
 
-- [ ] ★ [[notes/9-navigation/lee-quadruped-terrain|Lee et al. — 험지 4족 로코모션]] (Science Robotics 2020) — 특권 정보 teacher–student 증류의 정본
-- [ ] ◐ [[notes/9-navigation/miki-perceptive-locomotion|Miki et al. — 야생의 지각적 로코모션]] (Science Robotics 2022) — 센서를 *언제* 믿을지 학습한다
-- [ ] ◐ [[notes/9-navigation/rma|RMA]] — Kumar, Fu, Pathak & Malik, RSS 2021 — 증류 대신 온라인 시스템 식별
-- [ ] ○ [[notes/9-navigation/anymal-parkour|ANYmal Parkour]] — Hoeller et al., Science Robotics 2024 — 발디딤 계획이 아니라 기술 선택
+- [x] ★ [[notes/9-navigation/lee-quadruped-terrain|Lee et al. — 험지 4족 로코모션]] (Science Robotics 2020) — 특권 정보 teacher–student 증류의 정본
+- [x] ◐ [[notes/9-navigation/miki-perceptive-locomotion|Miki et al. — 야생의 지각적 로코모션]] (Science Robotics 2022) — 센서를 *언제* 믿을지 학습한다
+- [x] ◐ [[notes/9-navigation/rma|RMA]] — Kumar, Fu, Pathak & Malik, RSS 2021 — 증류 대신 온라인 시스템 식별
+- [x] ○ [[notes/9-navigation/anymal-parkour|ANYmal Parkour]] — Hoeller et al., Science Robotics 2024 — 발디딤 계획이 아니라 기술 선택
 
 ### Object-goal and language navigation
 
-- [ ] ◐ [[notes/9-navigation/semexp|SemExp]] — Chaplot et al., NeurIPS 2020 — 목표 범주에 조건부인 탐색, Habitat 챌린지 우승
-- [ ] ◐ [[notes/9-navigation/vln-ce|VLN-CE]] — Krantz et al., ECCV 2020 — nav-graph 벤치마크의 세 가정을 해체한다
-- [ ] ◐ [[notes/9-navigation/vlfm|VLFM]] — Yokoyama et al., ICRA 2024 — 사전학습 VLM이 frontier에 점수를 매긴다 (zero-shot)
-- [ ] ◐ [[notes/9-navigation/navid|NaVid]] — Zhang et al., RSS 2024 — 지도·오도메트리·깊이 없이 비디오 VLM만으로
-- [ ] ○ [[notes/9-navigation/uni-navid|Uni-NaVid]] — Zhang et al., RSS 2025 — 네 내비게이션 과제를 한 VLA로
+- [x] ◐ [[notes/9-navigation/semexp|SemExp]] — Chaplot et al., NeurIPS 2020 — 목표 범주에 조건부인 탐색, Habitat 챌린지 우승
+- [x] ◐ [[notes/9-navigation/vln-ce|VLN-CE]] — Krantz et al., ECCV 2020 — nav-graph 벤치마크의 세 가정을 해체한다
+- [x] ◐ [[notes/9-navigation/vlfm|VLFM]] — Yokoyama et al., ICRA 2024 — 사전학습 VLM이 frontier에 점수를 매긴다 (zero-shot)
+- [x] ◐ [[notes/9-navigation/navid|NaVid]] — Zhang et al., RSS 2024 — 지도·오도메트리·깊이 없이 비디오 VLM만으로
+- [x] ○ [[notes/9-navigation/uni-navid|Uni-NaVid]] — Zhang et al., RSS 2025 — 네 내비게이션 과제를 한 VLA로
 
 ### Language-queryable maps
 
-- [ ] ◐ [[notes/9-navigation/conceptgraphs|ConceptGraphs]] — Gu, Kuwajerwala et al., ICRA 2024 — 점별 특징장이 아니라 물체 그래프
-- [ ] ○ [[notes/9-navigation/clio|Clio]] — Maggio et al., RA-L 2024 — 입도는 물체의 성질이 아니라 과제의 성질이다
+- [x] ◐ [[notes/9-navigation/conceptgraphs|ConceptGraphs]] — Gu, Kuwajerwala et al., ICRA 2024 — 점별 특징장이 아니라 물체 그래프
+- [x] ○ [[notes/9-navigation/clio|Clio]] — Maggio et al., RA-L 2024 — 입도는 물체의 성질이 아니라 과제의 성질이다
 
 ### Navigation foundation models, and the reality check
 
-- [ ] ◐ [[notes/9-navigation/vint-nomad|ViNT / NoMaD]] — Shah et al., CoRL 2023 · Sridhar et al., ICRA 2024 — 신체 교차 사전학습과 목표 가리기
-- [ ] ★ [[notes/9-navigation/gervet-real-world-objectnav|Gervet et al. — 실제 환경의 물체 내비게이션]] (Science Robotics 2023) — end-to-end가 시뮬 77%에서 현실 23%로 무너진다
+- [x] ◐ [[notes/9-navigation/vint-nomad|ViNT / NoMaD]] — Shah et al., CoRL 2023 · Sridhar et al., ICRA 2024 — 신체 교차 사전학습과 목표 가리기
+- [x] ★ [[notes/9-navigation/gervet-real-world-objectnav|Gervet et al. — 실제 환경의 물체 내비게이션]] (Science Robotics 2023) — end-to-end가 시뮬 77%에서 현실 23%로 무너진다
 
 **Study guides** — the concept pages these papers depend on · 이 논문들이 딛고 선 개념 페이지
 

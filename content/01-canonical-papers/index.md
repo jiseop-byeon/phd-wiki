@@ -11,7 +11,7 @@ Everything paper-related lives here:
 
 - [[how-to-read|0. How to Read Papers]] — read this first: reading depths, paper-phrase grammar, equation questions, exit test
 - [[canonical-list|Canonical Paper List]] — the curated reading list this wiki is built around, with ★◐○ depth marks
-- `notes/` — one note per paper (80+ already written)
+- `notes/` — one note per paper (115 notes across 9 sections)
 
 ## 한국어
 

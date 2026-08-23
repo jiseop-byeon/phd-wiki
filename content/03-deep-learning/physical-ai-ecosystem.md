@@ -23,7 +23,8 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Tesla / Figure / 1X / Agility | humanoid hardware + in-house VLA stacks | context for humanoid papers |
 | Unitree | affordable humanoids/quadrupeds — academia's default hardware | — |
 | Hugging Face | LeRobot: open-source robot learning framework | practical entry point |
-| Stanford/Berkeley/CMU labs | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
+| Stanford / Berkeley / CMU labs | ALOHA, Octo, OpenVLA | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]] |
+| Columbia / Toyota Research Institute / MIT | Diffusion Policy — diffusion as the action head | [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
 ### Standard hardware in papers
 
@@ -50,7 +51,8 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Tesla / Figure / 1X / Agility | 휴머노이드 하드웨어 + 자체 VLA 스택 | 휴머노이드 논문의 맥락 |
 | Unitree | 저가 휴머노이드/사족보행 — 학계의 기본 하드웨어 | — |
 | Hugging Face | LeRobot: 오픈소스 로봇 학습 프레임워크 | 실습 진입점 |
-| Stanford/Berkeley/CMU 랩들 | ALOHA, Octo, OpenVLA, Diffusion Policy | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
+| Stanford/Berkeley/CMU 랩들 | ALOHA, Octo, OpenVLA | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]] |
+| Columbia / Toyota Research Institute / MIT | Diffusion Policy — 확산 모델을 행동 헤드로 | [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
 ### 논문에 등장하는 표준 하드웨어
 

@@ -31,7 +31,7 @@ Before this, contact control was a choice between two incomplete answers: contro
 ### Method
 
 > [!tip] Key intuition
-> Ask what the environment *is*. A stiff wall is a device that accepts a position and returns a force; it will not accept a force command. So a robot that also insists on commanding position is two position sources fighting over one variable — a conflict with no solution. Command the *relation* between them instead, and there is nothing to fight about.
+> Ask what the environment *is*. Inertias and rigid constraints are *admittances*: you hand them a force and they decide the motion. A wall will not accept a position command — it accepts your push and tells you where your hand stops. At an interaction port the two sides have to be causal duals, so if the environment is the admittance, the robot is the one that must be the impedance. A robot that insists on commanding position anyway puts two position sources on one variable — a conflict with no solution. Command the *relation* between force and motion instead, and there is nothing to fight about.
 
 Part I develops the physical-systems and port argument, and it is the part to read closely: the causality analysis is why impedance control is a claim about physics rather than a tuning preference. Part II gives the nonlinear implementation on manipulator dynamics. Part III applies it to contact and constrained motion.
 
@@ -67,7 +67,7 @@ The result is conceptual rather than numerical: a control objective, a justifica
 ### 방법
 
 > [!tip] 핵심 직관
-> 환경이 *무엇인지* 물어라. 단단한 벽은 위치를 받아 힘을 돌려주는 장치다. 힘 명령은 받지 않는다. 그러니 로봇까지 위치를 명령하겠다고 고집하면 하나의 변수를 놓고 위치 소스 둘이 싸우는 것이고, 해가 없는 충돌이다. 대신 둘 사이의 *관계*를 명령하면 싸울 것이 없어진다.
+> 환경이 *무엇인지* 물어라. 관성과 강체 구속은 *어드미턴스*다. 힘을 건네면 운동을 정해서 돌려준다. 벽은 위치 명령을 받지 않는다 — 미는 힘을 받아 손이 어디서 멈추는지를 알려줄 뿐이다. 상호작용 포트의 양쪽은 인과적으로 서로 쌍대여야 하므로, 환경이 어드미턴스라면 임피던스여야 하는 쪽은 로봇이다. 그런데도 로봇이 위치를 명령하겠다고 고집하면 하나의 변수에 위치 소스가 둘 놓이는 것이고, 해가 없는 충돌이다. 대신 힘과 운동의 *관계*를 명령하면 싸울 것이 없어진다.
 
 Part I이 물리 시스템과 포트 논증을 전개하며, 정독할 부분이다: 인과 분석이야말로 임피던스 제어가 튜닝 취향이 아니라 물리에 관한 주장인 이유다. Part II는 매니퓰레이터 동역학 위의 비선형 구현을, Part III는 접촉과 구속 운동에의 적용을 다룬다.
 

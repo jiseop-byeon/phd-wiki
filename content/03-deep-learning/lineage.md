@@ -80,7 +80,7 @@ graph TD
     ScoreE --> FME["Flow Matching 2023"]
     LDME --> DiTE["DiT 2023"]
     DiTE --> VideoE["video generation<br/>Sora 2024"]
-    FME --> Pi0E["the action head of pi-0, 2024"]
+    FME --> Pi0E["the action head of pi-0, RSS 2025"]
 ```
 
 ### Robot learning: from demonstrations to foundation models
@@ -92,7 +92,7 @@ graph TD
     DPE["Diffusion Policy 2023"] --> Pi0E2["pi-0 RSS 2025"]
     ACTE["ACT/ALOHA 2023"] --> Pi0E2
     RT2E --> OpenVLAE["OpenVLA 2024"]
-    OXEE["Open X-Embodiment 2023<br/>dataset"] --> OpenVLAE
+    OXEE["Open X-Embodiment ICRA 2024<br/>dataset"] --> OpenVLAE
     OpenVLAE --> GR00TE["GR00T N1 2025"]
     Pi0E2 --> GR00TE
 ```
@@ -183,7 +183,7 @@ graph TD
     Score --> FM["Flow Matching (2023)"]
     LDM --> DiT["DiT (2023)"]
     DiT --> Video["비디오 생성<br/>(Sora, 2024)"]
-    FM --> Pi0["π0의 action head (2024)"]
+    FM --> Pi0["π0의 action head (RSS 2025)"]
 ```
 
 ### Robot Learning: 시연에서 파운데이션 모델로
@@ -192,10 +192,10 @@ graph TD
 graph TD
     BC["행동 복제 (BC)"] --> RT1["RT-1 (2023)"]
     RT1 --> RT2["RT-2 (2023)<br/>VLM을 로봇에"]
-    DP["Diffusion Policy (2023)"] --> Pi0["π0 (2024)"]
+    DP["Diffusion Policy (2023)"] --> Pi0["π0 (RSS 2025)"]
     ACT["ACT/ALOHA (2023)"] --> Pi0
     RT2 --> OpenVLA["OpenVLA (2024)"]
-    OXE["Open X-Embodiment (2023)<br/>데이터셋"] --> OpenVLA
+    OXE["Open X-Embodiment (ICRA 2024)<br/>데이터셋"] --> OpenVLA
     OpenVLA --> GR00T["GR00T N1 (2025)"]
     Pi0 --> GR00T
 ```
