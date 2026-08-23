@@ -1,9 +1,11 @@
 ---
 title: PointNet and PointNet++
 authors: Charles R. Qi et al.
+affiliation: Stanford University
 venue: CVPR / NeurIPS
 year: 2017
-pdf: https://arxiv.org/abs/1612.00593
+arxiv: https://arxiv.org/abs/1612.00593
+pdf: https://arxiv.org/pdf/1612.00593
 tags: [paper, computer-vision, point-cloud]
 status: note-complete
 last_verified: 2026-07-23

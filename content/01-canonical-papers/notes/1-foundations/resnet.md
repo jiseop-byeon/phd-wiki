@@ -35,7 +35,7 @@ After [[01-canonical-papers/notes/1-foundations/vgg|VGG]], deeper should have me
 > Don't ask a stack of layers to learn the full mapping $H(x)$; ask it to learn the *correction* $F(x) = H(x) - x$ and add $x$ back. Learning "do nothing" now means pushing weights to zero — trivially easy — so depth stops hurting.
 
 - **Residual block**: output $= F(x) + x$, with the shortcut being parameter-free identity; when dimensions change, a 1×1 conv projects the shortcut.
-- **Bottleneck block** (1×1 → 3×3 → 1×1) keeps computation manageable at 50/101/152 layers.
+- **Bottleneck block** (1×1 → 3×3 → 1×1) keeps computation manageable at 50/101/152 layers: the leading $1\times1$ projects the channel count *down*, so the expensive $3\times3$ runs on a narrow tensor, and the trailing $1\times1$ restores the width — depth is bought without paying $3\times3$ cost at full width.
 - Batch normalization after every convolution; no dropout.
 - Gradients flow directly through shortcuts, so very deep networks remain trainable.
 
@@ -75,7 +75,7 @@ The default vision backbone for nearly a decade, and still the standard baseline
 > 층 무더기에게 전체 매핑 $H(x)$를 배우라고 하지 말고, *보정량* $F(x) = H(x) - x$만 배우게 한 뒤 $x$를 다시 더해준다. 이제 "아무것도 안 하기"는 가중치를 0으로 만들면 되는 아주 쉬운 일이 되고, 깊이가 더 이상 해가 되지 않는다.
 
 - **Residual 블록**: 출력 $= F(x) + x$. 지름길은 파라미터 없는 항등 연결이고, 차원이 바뀔 때만 1×1 합성곱으로 투영.
-- **병목(bottleneck) 블록** (1×1 → 3×3 → 1×1)으로 50/101/152층에서도 연산량 유지.
+- **병목(bottleneck) 블록** (1×1 → 3×3 → 1×1)으로 50/101/152층에서도 연산량 유지: 앞의 $1\times1$이 채널 수를 *줄여* 비싼 $3\times3$이 좁은 텐서 위에서 돌게 하고, 뒤의 $1\times1$이 폭을 되돌린다 — 전폭에서 $3\times3$ 비용을 치르지 않고 깊이를 산다.
 - 모든 합성곱 뒤에 batch normalization; dropout은 쓰지 않음.
 - 그래디언트가 지름길을 타고 직접 흐르므로 매우 깊어도 학습이 된다.
 

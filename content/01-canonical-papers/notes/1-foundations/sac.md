@@ -1,9 +1,11 @@
 ---
 title: Soft Actor-Critic
 authors: Tuomas Haarnoja et al.
+affiliation: UC Berkeley
 venue: ICML
 year: 2018
-pdf: https://arxiv.org/abs/1801.01290
+arxiv: https://arxiv.org/abs/1801.01290
+pdf: https://arxiv.org/pdf/1801.01290
 tags: [paper, reinforcement-learning]
 status: note-complete
 last_verified: 2026-07-23

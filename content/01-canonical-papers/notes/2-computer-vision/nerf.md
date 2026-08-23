@@ -40,7 +40,10 @@ implicit-function idea was in the air (occupancy networks); NeRF made it *photor
 > differentiable, so multi-view photos supervise the function directly.
 
 - MLP: $(x, y, z, \theta, \phi) \to (\text{RGB}, \sigma)$; **positional encoding**
-  (Fourier features) lets the MLP express high frequencies.
+  (Fourier features) lets the MLP express high frequencies. It cannot otherwise because of
+  **spectral bias**: a coordinate MLP fits low frequencies far faster than high ones, so on
+  raw $(x,y,z)$ inputs the fitted radiance field comes out over-smoothed. Lifting the input
+  into a Fourier basis makes the high-frequency directions as easy to fit as the low ones.
 - **Differentiable volume rendering**: integrate color×density along each ray; loss = pixel
   MSE against input photos. Hierarchical coarse-to-fine sampling.
 - View-direction input captures specular/reflective effects.
@@ -88,7 +91,7 @@ data generation ([[cosmos|world-model data engines]]).
 > 사진이 그 함수를 직접 감독한다.
 
 - MLP: $(x, y, z, \theta, \phi) \to (\text{RGB}, \sigma)$; **위치 인코딩**(푸리에 특징)이
-  MLP가 고주파를 표현하게 한다.
+  MLP가 고주파를 표현하게 한다. 그것 없이는 못 하는 이유가 **스펙트럼 편향**이다: 좌표 MLP는 저주파를 고주파보다 훨씬 빨리 맞추므로, 날것의 $(x,y,z)$ 입력으로는 복원된 radiance field가 과하게 매끄럽게 나온다. 입력을 푸리에 기저로 들어올리면 고주파 방향도 저주파만큼 맞추기 쉬워진다.
 - **미분 가능한 볼륨 렌더링**: 광선을 따라 색×밀도를 적분; 손실 = 입력 사진과의 픽셀 MSE.
   거친→세밀 계층 샘플링.
 - 시선 방향 입력이 반사/광택 효과를 담는다.

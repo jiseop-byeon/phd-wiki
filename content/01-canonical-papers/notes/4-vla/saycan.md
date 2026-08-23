@@ -1,9 +1,11 @@
 ---
 title: Do As I Can, Not As I Say — SayCan
 authors: Michael Ahn et al.
+affiliation: Robotics at Google, Everyday Robots
 venue: CoRL
 year: 2022
-pdf: https://arxiv.org/abs/2204.01691
+arxiv: https://arxiv.org/abs/2204.01691
+pdf: https://arxiv.org/pdf/2204.01691
 tags: [paper, robotics, language, planning]
 status: note-complete
 last_verified: 2026-07-23

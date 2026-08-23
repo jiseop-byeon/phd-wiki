@@ -1,9 +1,11 @@
 ---
 title: Proximal Policy Optimization Algorithms
 authors: John Schulman et al.
+affiliation: OpenAI
 venue: arXiv
 year: 2017
-pdf: https://arxiv.org/abs/1707.06347
+arxiv: https://arxiv.org/abs/1707.06347
+pdf: https://arxiv.org/pdf/1707.06347
 tags: [paper, reinforcement-learning]
 status: note-complete
 last_verified: 2026-07-23
