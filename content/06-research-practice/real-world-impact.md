@@ -171,7 +171,7 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 
 ### Sources
 
-- This page is method, not a literature claim. The deployment ladder is this wiki's own standard, applied throughout [[05-construction-robotics/index|Construction Robotics]] and is this page's own construct. Do not confuse it with the **three**-rung ladder in [[05-construction-robotics/construction-manipulation|9. §3]] (simulation / lab-or-mock-up / active site), or with the five-step sim-to-real sequence in [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]. Three different objects share the word *ladder* in this wiki; only the first two grade evidence realism.
+- This page is method, not a literature claim. The deployment ladder is this wiki's own standard, applied throughout [[05-construction-robotics/index|Construction Robotics]] and is this page's own construct. Three different objects share the word *ladder* here, and **all three grade how real the evidence is** — sim-to-real's uses the word *rung* and places ExACT's claim on it explicitly. So the risk is not confusing kinds, it is confusing **scales**: this page's five rungs run from simulation to *use by someone else*; [[05-construction-robotics/construction-manipulation|9. §3]] is a coarser three (simulation / lab-or-mock-up / active site) for sorting the construction literature; and [[05-construction-robotics/sim-to-real|Sim-to-Real §3]] is five *transfer* stages, one of which — adaptation — is a method step rather than a realism level. Name the ladder as well as the rung.
 - [[06-research-practice/research-questions-claims|Research Questions & Claims]] — what makes a claim defensible.
 - [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — the evaluation design the rungs require.
 - [[06-research-practice/venue-strategy|5. Venue Strategy]] — where the resulting papers go.
@@ -320,7 +320,7 @@ flowchart LR
 
 ### 출처
 
-- 이 페이지는 방법이지 문헌 주장이 아니다. 배치 사다리는 이 위키 자신의 기준이며, [[05-construction-robotics/index|건설로봇]] 전반에 적용되고 [[05-construction-robotics/construction-manipulation|9. §3]]에 진술되어 있다.
+- 이 페이지는 방법이지 문헌 주장이 아니다. 배치 사다리는 이 위키 자신의 기준이고 이 페이지 자신의 구성물이며, [[05-construction-robotics/index|건설로봇]] 전반에 적용된다. 이 위키에서 *사다리*라는 단어를 세 대상이 함께 쓰고, **셋 다 증거가 얼마나 실제인지를 등급 매긴다** — sim-to-real 쪽도 "rung"이라는 말을 쓰고 ExACT의 주장을 그 위에 명시적으로 올려놓는다. 그러니 위험한 것은 종류를 혼동하는 것이 아니라 **척도**를 혼동하는 것이다: 이 페이지의 다섯 단은 시뮬레이션에서 *남이 쓰는 것*까지 가고, [[05-construction-robotics/construction-manipulation|9. §3]]은 건설 문헌을 분류하기 위한 더 거친 셋(시뮬레이션 / 실험실·목업 / 가동 중 현장)이며, [[05-construction-robotics/sim-to-real|Sim-to-Real §3]]은 다섯 *전이* 단계인데 그중 하나(적응)는 현실성 수준이 아니라 방법 단계다. 단만이 아니라 어느 사다리인지도 함께 말하라.
 - [[06-research-practice/research-questions-claims|연구 질문과 주장]] — 무엇이 주장을 방어 가능하게 만드는가.
 - [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]] — 각 단계가 요구하는 평가 설계.
 - [[06-research-practice/venue-strategy|5. Venue 전략]] — 그 결과 나온 논문들이 갈 곳.

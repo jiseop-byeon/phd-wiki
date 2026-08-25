@@ -186,7 +186,7 @@ framed on construction — its Section I says the domain is *offsite* constructi
 > construction does not appear in it**. The offsite-construction framing is in the paper
 > body. If you cite RAMP as a construction benchmark, cite the section, not the abstract.
 
-**Two verified absences.** There is **no benchmark for on-site construction manipulation** —
+**Two verified absences in the benchmark landscape** — the third, on the dataset side, is in §7. There is **no benchmark for on-site construction manipulation** —
 nothing for bricklaying, drywall, rebar tying, façade installation or overhead work. What
 exists is vendor throughput figures and one-off papers with bespoke evaluations: no shared
 protocol, no shared artifacts, no leaderboard. And there is **no standardised benchmark or
@@ -593,7 +593,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 > 단어가 초록에 나오지 않는다.** 오프사이트 건설 프레이밍은 본문에 있다. RAMP를 건설
 > 벤치마크로 인용한다면 초록이 아니라 절을 인용하라.
 
-**검증된 부재 둘.** **현장 건설 조작 벤치마크는 없다** — 조적, 드라이월, 철근 결속, 파사드
+**벤치마크 지형에서 검증된 부재 둘** — 셋째는 데이터셋 쪽이고 §7에 있다. **현장 건설 조작 벤치마크는 없다** — 조적, 드라이월, 철근 결속, 파사드
 설치, 머리 위 작업 어느 것에도. 있는 것은 벤더의 처리량 수치와 각자의 평가를 쓰는 일회성
 논문들이다: 공유 프로토콜도, 공유 실물도, 리더보드도 없다. 그리고 **굴착·토공에 대한 표준
 벤치마크나 시험 피트 프로토콜도 없다.** ISO 7546, ISO 6165, ISO 10968과 SAE MTC1 위원회는
