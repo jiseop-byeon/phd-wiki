@@ -1,6 +1,6 @@
 ---
 title: "Dreamer v1–v3 — Learning Behaviors by Latent Imagination"
-authors: Danijar Hafner, Timothy Lillicrap, Jimmy Ba, Mohammad Norouzi, Jurgis Pasukonis, et al.
+authors: "Dreamer: Hafner, Lillicrap, Ba, Norouzi · DreamerV2: Hafner, Lillicrap, Norouzi, Ba · DreamerV3: Hafner, Pasukonis, Ba, Lillicrap"
 affiliation: Google Brain / DeepMind, University of Toronto
 venue: ICLR 2020 → Nature 2025
 year: 2020
