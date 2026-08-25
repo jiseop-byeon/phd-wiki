@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (orthogonality, norms). Trigonometry is enough; no group theory is assumed.
-> [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치) · [[02-foundations/linear-algebra|1. 선형대수 §1]](직교성·노름). 삼각함수면 충분하고 군론은 전제하지 않는다.
+> [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (norms) · [[02-foundations/linear-algebra|1. Linear Algebra §4]] (orthogonal matrices — columns unit-length and mutually orthogonal, which is what $R^\top R = I$ says). Trigonometry is enough; no group theory is assumed.
+> [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치) · [[02-foundations/linear-algebra|1. 선형대수 §1]](노름) · [[02-foundations/linear-algebra|1. 선형대수 §4]](직교행렬 — 열이 단위길이이고 서로 직교, 즉 $R^\top R = I$가 말하는 것). 삼각함수면 충분하고 군론은 전제하지 않는다.
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
