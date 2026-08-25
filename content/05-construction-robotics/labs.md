@@ -54,7 +54,9 @@ roof-inspection robots; Shayan Shayesteh → Appalachian State; M. Habibnezhad �
 | Univ. of Florida | Jing "Eric" Du | haptics-based robot teleoperation, human-robot shared perception, VR/AR HRC |
 | Oregon State (CoRIS) | Joseph Louis | construction teleoperation and earthmoving-operations simulation |
 | USC (legacy) | Behrokh Khoshnevis | **Contour Crafting** — the origin of construction 3D printing |
-| UT Austin (adjacent groups) | Luis Sentis (HCRL), Mitch Pryor (NRG) | humanoid/whole-body control and field robotics — the robotics-side neighbors of a construction program |
+| UT Austin ME/ARL (adjacent groups) | Luis Sentis (HCRL), Mitch Pryor (NRG) | humanoid/whole-body control and field robotics |
+| **UT Austin CS — Texas Robotics** | **Yuke Zhu** ([RPL](https://rpl.cs.utexas.edu/)), **Roberto Martín-Martín** (RobIn Lab) | **manipulation learning — the nearest on-path group to this program.** Both co-authored [[01-canonical-papers/notes/4-vla/robomimic\|robomimic]], whose own affiliation line reads "Stanford, UT Austin, NVIDIA"; Martín-Martín is also on [[01-canonical-papers/notes/4-vla/open-x-embodiment\|Open X-Embodiment]]. Martín-Martín's CS395T *Robot Manipulation and Learning* syllabus and reading list are public |
+| UT Austin ECE | Lillian Chin | tactile sensor design and fabrication — adjacent, but sensor *building* is [[04-robotics/tactile-visuotactile\|out of this program's scope]] |
 
 Note: **CMU and UC Berkeley have no manipulation-focused construction-robotics lab in
 civil engineering** — CMU CEE's strength is construction *sensing/AI* (Tang, Akinci), and
@@ -157,7 +159,9 @@ These groups publish the manipulation/HRC methods construction researchers impor
 | 플로리다대 | Jing "Eric" Du | 햅틱 기반 로봇 원격조작, 인간-로봇 공유 인식, VR/AR HRC |
 | Oregon State (CoRIS) | Joseph Louis | 건설 원격조작과 토공 작업 시뮬레이션 |
 | USC (유산) | Behrokh Khoshnevis | **Contour Crafting** — 건설 3D 프린팅의 기원 |
-| UT Austin (인접 그룹) | Luis Sentis (HCRL), Mitch Pryor (NRG) | 휴머노이드/전신 제어와 필드 로보틱스 |
+| UT Austin ME/ARL (인접 그룹) | Luis Sentis (HCRL), Mitch Pryor (NRG) | 휴머노이드/전신 제어와 필드 로보틱스 |
+| **UT Austin CS — Texas Robotics** | **Yuke Zhu** ([RPL](https://rpl.cs.utexas.edu/)), **Roberto Martín-Martín** (RobIn Lab) | **조작 학습 — 이 프로그램 경로에 가장 가까운 그룹.** 둘 다 [[01-canonical-papers/notes/4-vla/robomimic\|robomimic]] 공저자이고, 그 노트의 affiliation 줄이 "Stanford, UT Austin, NVIDIA"다. Martín-Martín은 [[01-canonical-papers/notes/4-vla/open-x-embodiment\|Open X-Embodiment]]에도 참여. CS395T *Robot Manipulation and Learning* 강의계획서와 읽기 목록이 공개돼 있다 |
+| UT Austin ECE | Lillian Chin | 촉각 센서 설계·제작 — 인접하지만 센서 *제작*은 [[04-robotics/tactile-visuotactile\|이 프로그램 범위 밖]] |
 
 참고: **CMU와 UC 버클리의 토목공학과에는 조작 중심의 건설로봇 랩이 없다** — CMU 토목의
 강점은 건설 *센싱/AI*(Tang, Akinci)이고, 버클리의 physical AI 역량은 전부 토목 밖에
