@@ -1,17 +1,17 @@
 ---
 title: 12. Teleoperation & Demonstration Collection
 tags: [robotics, manipulation, teleoperation]
-study-depth: Working
+study-depth: Mastery
 wiki-support: Working
-depth-goal: "Read a teleoperation or demonstration-collection paper accurately: name the architecture, say what the delay does to it, and judge whether the reported dataset supports the policy claim built on it."
-mastery-when: "Raise to Mastery when the interface, the demonstration pipeline, or the data itself is the contribution."
+depth-goal: "Defend a demonstration-collection design: justify the architecture and the action space against the task's contact requirements, say what the interface records and what it silently discards, and show that the resulting corpus supports the policy claim built on it."
+mastery-when: "Already raised — the research program's contribution is a force-bearing demonstration corpus, which is the interface, the pipeline, and the data at once. This page is now a claim to defend, not a tool to use."
 ---
 
 > [!abstract] Depth target · 깊이 목표
-> **Working** — enough to choose an interface, diagnose why a bilateral loop went unstable,
-> and read a demonstration dataset's description critically.
-> **Working** — 인터페이스를 고르고, 양방향 루프가 왜 불안정해졌는지 진단하고, 시연
-> 데이터셋 설명을 비판적으로 읽을 수 있을 만큼.
+> **Mastery** — enough to defend a collection design: which architecture, which action space,
+> what the interface records and what it throws away, and why the corpus supports the claim.
+> **Mastery** — 수집 설계를 방어할 수 있을 만큼: 어떤 아키텍처, 어떤 행동 공간, 인터페이스가
+> 무엇을 기록하고 무엇을 버리는지, 그리고 그 코퍼스가 왜 주장을 뒷받침하는지.
 
 > [!note] Before you start · 시작 전 점검
 > You need the Jacobian and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]), impedance versus admittance ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]), and feedback stability with delay ([[04-robotics/control-theory-ce397|Control Theory §7]]).
@@ -279,6 +279,26 @@ makes a demonstration dataset worth collecting instead of a single scripted traj
 | Success rate — defined how, on which objects, from which initial states? | "90% success" on demonstrated initial states is not generalization |
 | Was the policy evaluated on the *same* setup that collected the data? | The most common quiet limitation in the area |
 
+### 9. The path to Mastery
+
+This page provides Working depth by itself. Mastery — the depth the research program now
+requires, because the contribution *is* the corpus — needs these:
+
+| Need | Where |
+|---|---|
+| Passivity under delay, in its original form | Anderson & Spong 1989 (the scattering argument), then Niemeyer & Slotine 1991 for wave variables |
+| Why transparency and stability trade against each other | Lawrence 1993 — the four-channel architecture is the frame everything since is stated in |
+| The landscape before choosing | Hokayem & Spong's 2006 survey |
+| What the action space commits the data to | [[04-robotics/force-compliance-control\|13. §6]] — a leader that commands positions records positions, whatever the follower felt |
+| What makes a corpus support a policy claim | robomimic — the ablations are the point, not the benchmark numbers |
+| Hands-on | Build one rig, collect the same task twice under different architectures, and compare what the two datasets contain |
+
+> [!important] The Mastery test for this page
+> Given a task's contact requirements, a delay budget, and a throughput target, say which
+> collection architecture can meet all three — and state precisely what the resulting corpus
+> will **not** contain. The second half is the harder one, and it is the half a reviewer will
+> ask about, because a demonstration dataset's silences are invisible in its statistics.
+
 ### After reading
 
 - [ ] Draw the two-port diagram and mark where the delay enters.
@@ -311,6 +331,7 @@ makes a demonstration dataset worth collecting instead of a single scripted traj
 **Bilateral control theory**
 
 - D. A. Lawrence, "Stability and transparency in bilateral teleoperation," *IEEE Transactions on Robotics and Automation*, vol. 9, no. 5, pp. 624–637, 1993 — the four-channel architecture and the formal statement of transparency.
+- R. J. Anderson, M. W. Spong, "Bilateral control of teleoperators with time delay," *IEEE Transactions on Automatic Control*, vol. 34, no. 5, pp. 494–501, 1989 — the scattering/passivity argument Niemeyer & Slotine build on.
 - G. Niemeyer and J.-J. E. Slotine, "Stable adaptive teleoperation," *IEEE Journal of Oceanic Engineering*, vol. 16, no. 1, pp. 152–162, 1991 — the wave-variable transformation of §3. Note the title does not contain the phrase it is known for, and some bibliographies misfile it under *IEEE Transactions on Automatic Control* (same volume-like number, same page range); the journal is Oceanic Engineering.
 - P. F. Hokayem and M. W. Spong, "Bilateral teleoperation: An historical survey," *Automatica*, vol. 42, no. 12, pp. 2035–2057, 2006 — the survey to read before choosing an architecture.
 
@@ -573,6 +594,25 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 | 성공률 — 무엇으로 정의했고, 어떤 물체, 어떤 초기 상태에서? | 시연된 초기 상태에서의 "90% 성공"은 일반화가 아니다 |
 | 정책을 데이터를 모은 *바로 그* 셋업에서 평가했는가? | 이 분야에서 가장 흔한, 조용한 한계 |
 
+### 9. Mastery로 가는 길
+
+이 페이지가 자체로 주는 것은 Working이다. Mastery — 기여가 *곧 코퍼스*이므로 연구 프로그램이
+이제 요구하는 깊이 — 에는 다음이 필요하다:
+
+| 필요 | 어디서 |
+|---|---|
+| 지연 하의 수동성, 원래 형태로 | Anderson & Spong 1989(산란 논증), 그다음 파동 변수는 Niemeyer & Slotine 1991 |
+| 투명성과 안정성이 상충하는 이유 | Lawrence 1993 — 이후 모든 논의가 진술되는 4채널 프레임 |
+| 고르기 전에 지형 파악 | Hokayem & Spong 2006 서베이 |
+| 행동 공간이 데이터를 무엇에 묶는가 | [[04-robotics/force-compliance-control\|13. §6]] — 위치를 명령하는 리더는 팔로워가 무엇을 느꼈든 위치를 기록한다 |
+| 코퍼스가 정책 주장을 뒷받침한다는 것 | robomimic — 핵심은 벤치마크 수치가 아니라 절제 실험이다 |
+| 직접 해보기 | 리그 하나를 만들어 같은 과제를 서로 다른 아키텍처로 두 번 수집하고, 두 데이터셋이 무엇을 담고 있는지 비교하라 |
+
+> [!important] 이 페이지의 Mastery 시험
+> 과제의 접촉 요구, 지연 예산, 처리량 목표가 주어졌을 때 셋을 모두 만족하는 수집 아키텍처가
+> 무엇인지 말하고 — 그 결과 코퍼스에 **무엇이 담기지 않을지**를 정확히 진술하라. 뒤쪽이 더
+> 어렵고, 리뷰어가 묻는 쪽도 뒤쪽이다. 시연 데이터셋의 침묵은 그 통계에 드러나지 않기 때문이다.
+
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 2포트 도식을 그리고 지연이 들어오는 곳을 표시한다.
@@ -605,6 +645,7 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 **양방향 제어 이론**
 
 - D. A. Lawrence, "Stability and transparency in bilateral teleoperation," *IEEE Transactions on Robotics and Automation*, vol. 9, no. 5, pp. 624–637, 1993 — 4채널 아키텍처와 투명성의 형식적 정의.
+- R. J. Anderson, M. W. Spong, "Bilateral control of teleoperators with time delay," *IEEE Transactions on Automatic Control*, vol. 34, no. 5, pp. 494–501, 1989 — the scattering/passivity argument Niemeyer & Slotine build on.
 - G. Niemeyer and J.-J. E. Slotine, "Stable adaptive teleoperation," *IEEE Journal of Oceanic Engineering*, vol. 16, no. 1, pp. 152–162, 1991 — §3의 wave variable 변환. 제목에 정작 이 논문이 알려진 그 표현이 없다는 점, 그리고 일부 서지가 *IEEE Transactions on Automatic Control*로 잘못 분류한다는 점(권 번호가 비슷하고 페이지가 같다)에 주의. 실제 저널은 Oceanic Engineering이다.
 - P. F. Hokayem and M. W. Spong, "Bilateral teleoperation: An historical survey," *Automatica*, vol. 42, no. 12, pp. 2035–2057, 2006 — 아키텍처를 고르기 전에 읽을 서베이.
 

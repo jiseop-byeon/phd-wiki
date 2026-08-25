@@ -123,6 +123,11 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[04-robotics/mpc|MPC]] — Mayne et al., *Constrained MPC* (Automatica 2000) + study guide
 - [x] ○ [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]] — MIT Cheetah (IROS 2018 + open-access follow-up)
 
+**Field surveys** (분야 서베이)
+
+- ◐ **Trends and challenges in robot manipulation** — Billard & Kragic, *Science* 364(6446), eaat8414, 2019 — 매니퓰레이션 논문 서론이 상대해야 하는 분야 수준 진술 (노트 없음, [[04-robotics/index|4 §H]])
+- ○ **An overview of dexterous manipulation** — Okamura, Smaby & Cutkosky, ICRA 2000, pp. 255–262 — 구르기·미끄러짐·finger gaiting·재파지의 분류 체계 (노트 없음, [[04-robotics/grasping|15 §8]])
+
 **Force control classics** (힘 제어 고전)
 
 - [x] ◐ [[notes/7-robotics/hogan-impedance|Impedance Control]] — Hogan, ASME JDSMC 107(1), 1985 (3부작)

@@ -120,10 +120,10 @@ across physical AI, with one deep column where the contribution lives.
     <text x="280" y="83" font-size="10.5">Working &#8212; select, follow, evaluate, diagnose</text>
     <text x="280" y="95" font-size="9" opacity="0.8">navigation &#183; SLAM &#183; estimation &#183; HRI &#183; optimization &#183; control &#183; tooling</text>
     <text x="280" y="115" font-size="10.5">Working, raised to Mastery if the thesis needs it</text>
-    <text x="280" y="127" font-size="9" opacity="0.8">teleoperation &#183; tactile &#183; 3D perception &#183; VLA &#183; TAMP</text>
+    <text x="280" y="127" font-size="9" opacity="0.8">tactile &#183; 3D perception &#183; VLA &#183; TAMP</text>
     <text x="280" y="148" font-size="10.5">Mastery</text>
     <text x="280" y="161" font-size="9" opacity="0.8">contact-rich manipulation</text>
-    <text x="280" y="173" font-size="9" opacity="0.8">force control &#183; grasping &#183; dynamics</text>
+    <text x="280" y="173" font-size="9" opacity="0.8">force control &#183; grasping &#183; dynamics &#183; demonstration collection</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="30" y="200">The bar narrows as the depth rises. Breadth is not the sacrifice made for depth &#8212; it is what lets</text>
@@ -133,8 +133,8 @@ across physical AI, with one deep column where the contribution lives.
 
 | Depth | Areas | Why it earns that depth |
 |---|---|---|
-| **Mastery** | contact-rich manipulation; force, impedance and admittance control; grasping; manipulator dynamics and the operational-space bridge; imitation learning as used for manipulation | the contribution and its closest dependency — the claims a defense has to survive |
-| **Working, raised to Mastery if the thesis needs it** | teleoperation and demonstration collection; tactile and visuotactile sensing; 3D perception; VLA; task and motion planning; mobile manipulation | each becomes the contribution only if the thesis turns that way; until then, enough to use and diagnose |
+| **Mastery** | contact-rich manipulation; force, impedance and admittance control; grasping; manipulator dynamics and the operational-space bridge; imitation learning as used for manipulation; **teleoperation and demonstration collection** | the contribution and its closest dependency — the claims a defense has to survive |
+| **Working, raised to Mastery if the thesis needs it** | tactile and visuotactile sensing; 3D perception; VLA; task and motion planning; mobile manipulation | each becomes the contribution only if the thesis turns that way; until then, enough to use and diagnose |
 | **Working** | navigation; SLAM and localization; state estimation; HRI; RL; optimization; ROS 2 and simulation tooling | supporting pillars and shared infrastructure — integration matters here, novelty does not |
 | **Literacy, raised to Working on demand** | broader RL theory; generic VLM topics; world models; diffusion internals; autonomy topics outside manipulation | read them accurately, cite them correctly, and notice when one starts to matter |
 
@@ -264,10 +264,10 @@ Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열�
     <text x="280" y="83" font-size="10.5">Working &#8212; 선택하고, 따라가고, 평가하고, 진단한다</text>
     <text x="280" y="95" font-size="9" opacity="0.8">내비게이션 &#183; SLAM &#183; 상태추정 &#183; HRI &#183; 최적화 &#183; 제어 &#183; 도구</text>
     <text x="280" y="115" font-size="10.5">Working, 논문이 요구하면 Mastery로</text>
-    <text x="280" y="127" font-size="9" opacity="0.8">원격조작 &#183; 촉각 &#183; 3D 인식 &#183; VLA &#183; TAMP</text>
+    <text x="280" y="127" font-size="9" opacity="0.8">촉각 &#183; 3D 인식 &#183; VLA &#183; TAMP</text>
     <text x="280" y="148" font-size="10.5">Mastery</text>
     <text x="280" y="161" font-size="9" opacity="0.8">접촉 다량 매니퓰레이션</text>
-    <text x="280" y="173" font-size="9" opacity="0.8">힘 제어 &#183; 파지 &#183; 동역학</text>
+    <text x="280" y="173" font-size="9" opacity="0.8">힘 제어 &#183; 파지 &#183; 동역학 &#183; 시연 수집</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="30" y="200">깊이가 올라갈수록 폭은 좁아진다. 폭은 깊이를 위해 치르는 대가가 아니다 &#8212; 좁은 기둥 안에서도</text>
@@ -277,8 +277,8 @@ Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열�
 
 | 깊이 | 영역 | 왜 그 깊이인가 |
 |---|---|---|
-| **Mastery** | 접촉 다량 매니퓰레이션; 힘·임피던스·어드미턴스 제어; 파지; 매니퓰레이터 동역학과 작업 공간 다리; 조작에 쓰는 모방학습 | 기여와 그 가장 가까운 의존 층 — 디펜스에서 살아남아야 하는 주장들 |
-| **Working, 논문이 요구하면 Mastery로** | 원격조작과 시연 수집; 촉각·시촉각 센싱; 3D 인식; VLA; 과제·모션 계획(TAMP); 모바일 조작 | 논문이 그쪽으로 틀 때만 기여가 된다. 그전까지는 쓰고 진단할 만큼 |
+| **Mastery** | 접촉 다량 매니퓰레이션; 힘·임피던스·어드미턴스 제어; 파지; 매니퓰레이터 동역학과 작업 공간 다리; 조작에 쓰는 모방학습; **원격조작과 시연 수집** | 기여와 그 가장 가까운 의존 층 — 디펜스에서 살아남아야 하는 주장들 |
+| **Working, 논문이 요구하면 Mastery로** | 촉각·시촉각 센싱; 3D 인식; VLA; 과제·모션 계획(TAMP); 모바일 조작 | 논문이 그쪽으로 틀 때만 기여가 된다. 그전까지는 쓰고 진단할 만큼 |
 | **Working** | 내비게이션; SLAM·위치추정; 상태 추정; HRI; RL; 최적화; ROS 2와 시뮬레이션 도구 | 보조 기둥과 공용 인프라 — 여기서는 통합이 중요하고 novelty는 중요하지 않다 |
 | **Literacy, 필요하면 Working으로** | 넓은 RL 이론; 일반 VLM 주제; 월드모델; 디퓨전 내부; 조작 밖의 자율성 주제 | 정확히 읽고, 정확히 인용하고, 그중 하나가 중요해지기 시작하는 순간을 알아차린다 |
 

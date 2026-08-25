@@ -268,6 +268,7 @@ defensible thing to be robust to — and the tactile route to estimating it is
 | Need | Where |
 |---|---|
 | Contact models, closure, internal forces | [[04-robotics/modern-robotics/ch12-grasping\|MR ch.12]], then Bicchi & Kumar's 2000 review |
+| The taxonomy grasping sits inside | Okamura, Smaby & Cutkosky 1999 — what "dexterous manipulation" actually enumerates (rolling, sliding, finger gaiting, regrasping), so you can say which one a paper is claiming |
 | The construction of force-closure grasps | Nguyen 1988 |
 | Quality metrics done properly | Ferrari & Canny 1992, and a task-oriented critique of it |
 | The learned pipeline end to end | Dex-Net 2.0, then Contact-GraspNet |
@@ -308,8 +309,10 @@ grasps are and what would make your answer wrong.
 **Classical**
 
 - V.-D. Nguyen, "Constructing Force-Closure Grasps," *IJRR*, vol. 7, no. 3, pp. 3–16, 1988 (earlier ICRA versions: 1986 pp. 1368–1373; "…in 3D" 1987 pp. 240–245).
+- A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — the taxonomy of manipulation modes a grasp result sits inside.
 - X. Markenscoff, L. Ni, C. H. Papadimitriou, "The Geometry of Grasping," *IJRR*, vol. 9, no. 1, pp. 61–74, 1990 — the source for the frictional finger counts in §3, stated in its own abstract.
 - C. Ferrari and J. F. Canny, "Planning optimal grasps," ICRA **1992**, pp. 2290–2295 — the $\epsilon$ metric. Note the *Springer Handbook of Robotics* bibliography misprints the year as 1986; the correct year is 1992.
+- A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — the taxonomy of manipulation modes a grasp result sits inside.
 - A. Bicchi and V. Kumar, "Robotic grasping and contact: a review," ICRA 2000, pp. 348–353 — the survey to read first. It discusses the frictionless counts only, not the frictional one.
 
 **Learned**
@@ -547,6 +550,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 | 필요한 것 | 어디서 |
 |---|---|
 | 접촉 모델, closure, 내부 힘 | [[04-robotics/modern-robotics/ch12-grasping\|MR 12장]], 그다음 Bicchi & Kumar 2000 리뷰 |
+| 파지가 속한 분류 체계 | Okamura, Smaby & Cutkosky 1999 — "dexterous manipulation"이 실제로 열거하는 것(구르기·미끄러짐·finger gaiting·재파지). 논문이 그중 어느 것을 주장하는지 말할 수 있게 된다 |
 | Force-closure 파지의 구성 | Nguyen 1988 |
 | 품질 지표를 제대로 | Ferrari & Canny 1992, 그리고 그에 대한 과제 지향 비판 |
 | 학습 파이프라인 전체 | Dex-Net 2.0, 그다음 Contact-GraspNet |
