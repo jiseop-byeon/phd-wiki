@@ -152,6 +152,28 @@ tool, which is why a person can feel a drill bit catch — a fact with obvious w
 [[05-construction-robotics/construction-manipulation|construction manipulation]], where the
 contact of interest is usually at the tip of a tool rather than at the skin.
 
+#### "High-resolution" is measured against a number, and the number has a trap in it
+
+Every tactile sensor that calls itself high-resolution is implicitly compared to human skin,
+so it is worth knowing what human skin actually does. Two things matter:
+
+- **It depends entirely on the body site.** Spatial acuity runs from roughly a millimetre at
+  the fingertip to centimetres on the back or thigh. "Human-level tactile resolution" without
+  a named body site is not a claim.
+- **The two measurements disagree, and the popular one is the wrong one.** The traditional
+  **two-point discrimination** test leaks a non-spatial cue, so subjects score better than
+  their actual spatial resolution allows. The rigorous measure is the **grating orientation
+  threshold**, which puts the fingertip near **0.94 mm** (the lip and tongue are finer, near
+  0.5 mm). A paper quoting a two-point number as its human baseline has quoted the inflated
+  one — and it will make the sensor look closer to human than it is.
+
+The design consequence is that resolution is a *task* target, not a virtue. A construction
+gripper handling a panel edge or seating an anchor does not need fingertip acuity across the
+whole finger; it needs enough resolution to resolve the contact patch that decides the task.
+Fix the patch first, then the sensor. And when quoting any sensor's own resolution figure,
+apply [[01-canonical-papers/notes/7-robotics/gelsight|GelSight's]] own caution — know which
+part of the paper the number came from, because that abstract states none.
+
 ### 4. Visuotactile fusion — and what it is really buying
 
 The reference result here is Lee et al.'s *Making Sense of Vision and Touch*, which learns a
@@ -295,6 +317,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 - M. A. Lee, Y. Zhu, K. Srinivasan, et al., "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks," ICRA 2019, pp. 8943–8950 ([arXiv:1810.10191](https://arxiv.org/abs/1810.10191)). The extended journal version has a **different title and author list**: M. A. Lee, Y. Zhu, P. Zachares, et al., "Making Sense of Vision and Touch: Learning Multimodal Representations for Contact-Rich Tasks," *IEEE T-RO*, vol. 36, no. 3, pp. 582–596, 2020 — cite them separately.
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
 - R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
+- J. Tong, O. Mao, D. Goldreich, "Two-Point Orientation Discrimination Versus the Traditional Two-Point Test for Tactile Spatial Acuity Assessment," *Frontiers in Human Neuroscience* 7:579, 2013. DOI 10.3389/fnhum.2013.00579 — why the traditional two-point test overstates acuity, and what to use instead. Fingertip grating-orientation thresholds near 0.94 mm (lip and tongue nearer 0.5 mm) come from the grating-orientation literature this paper sits in.
 - C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
 - J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, E. Adelson, "PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-rich Manipulation Using Tactile-Diffusion Policies," *ICRA 2025* ([arXiv:2504.19341](https://arxiv.org/abs/2504.19341)) — includes an explicit elastomer durability comparison against a commercial GelSight Mini.
 
@@ -435,6 +458,25 @@ belongs to [[04-robotics/force-compliance-control|13]].
 [[05-construction-robotics/construction-manipulation|건설 매니퓰레이션]]에서 관심 있는 접촉이
 대개 피부가 아니라 **도구 끝**에 있다는 점을 생각하면 무게가 분명한 사실이다.
 
+#### "고해상도"는 어떤 수치에 견주는 말이고, 그 수치에 함정이 있다
+
+고해상도를 자처하는 촉각 센서는 전부 암묵적으로 사람 피부에 견주고 있으므로, 사람 피부가 실제로
+어떤지를 알아둘 값이 있다. 둘이 중요하다:
+
+- **몸의 어느 부위냐에 전적으로 달렸다.** 공간 예민도는 손끝의 약 1 mm에서 등이나 허벅지의 수
+  센티미터까지 걸쳐 있다. 부위를 지목하지 않은 "인간 수준의 촉각 해상도"는 주장이 아니다.
+- **두 측정이 서로 다르고, 널리 쓰이는 쪽이 틀린 쪽이다.** 전통적인 **2점 식별** 검사는 공간
+  정보가 아닌 단서가 새어 들어가서, 피험자가 실제 공간 해상도보다 좋은 점수를 낸다. 엄밀한
+  측정은 **격자 방향 판별 역치**이고, 손끝을 **약 0.94 mm**에 놓는다(입술과 혀는 더 미세해서
+  0.5 mm 부근). 인간 기준선으로 2점 수치를 인용한 논문은 **부풀려진 쪽을 인용한 것**이고, 센서를
+  실제보다 인간에 가깝게 보이게 만든다.
+
+설계상의 귀결은 해상도가 미덕이 아니라 *과제* 목표라는 것이다. 패널 모서리를 다루거나 앵커를
+안착시키는 건설 그리퍼는 손가락 전체에 손끝 수준의 예민도가 필요하지 않다. 과제를 가르는 접촉
+패치를 분해할 만큼만 있으면 된다. **패치를 먼저 정하고 센서를 정하라.** 그리고 어떤 센서의 해상도
+수치를 인용하든 [[01-canonical-papers/notes/7-robotics/gelsight|GelSight]] 노트의 경고를 적용하라 —
+그 수치가 논문의 어느 부분에서 왔는지 알고 써라. 그 초록에는 수치가 하나도 없다.
+
 ### 4. 시촉각 융합 — 그리고 그것이 실제로 사는 것
 
 여기서의 기준 결과는 Lee 등의 *Making Sense of Vision and Touch*다. RGB, 힘/토크, 고유수용
@@ -569,6 +611,7 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 - M. A. Lee, Y. Zhu, K. Srinivasan, et al., "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks," ICRA 2019, pp. 8943–8950 ([arXiv:1810.10191](https://arxiv.org/abs/1810.10191)). 확장된 저널판은 **제목과 저자 목록이 다르다**: M. A. Lee, Y. Zhu, P. Zachares, et al., "Making Sense of Vision and Touch: Learning Multimodal Representations for Contact-Rich Tasks," *IEEE T-RO*, vol. 36, no. 3, pp. 582–596, 2020 — 따로 인용하라.
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
 - R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
+- J. Tong, O. Mao, D. Goldreich, "Two-Point Orientation Discrimination Versus the Traditional Two-Point Test for Tactile Spatial Acuity Assessment," *Frontiers in Human Neuroscience* 7:579, 2013. DOI 10.3389/fnhum.2013.00579 — why the traditional two-point test overstates acuity, and what to use instead. Fingertip grating-orientation thresholds near 0.94 mm (lip and tongue nearer 0.5 mm) come from the grating-orientation literature this paper sits in.
 - C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
 - J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, E. Adelson, "PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-rich Manipulation Using Tactile-Diffusion Policies," *ICRA 2025* ([arXiv:2504.19341](https://arxiv.org/abs/2504.19341)) — includes an explicit elastomer durability comparison against a commercial GelSight Mini.
 
