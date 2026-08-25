@@ -42,7 +42,7 @@ By 2021, the pretrain-finetune paradigm ([[01-canonical-papers/notes/1-foundatio
 
 ### Results
 
-- Matches or beats full fine-tuning on GLUE (RoBERTa/DeBERTa) and GPT-2/GPT-3 175B benchmarks while training ~**0.01%** of parameters (GPT-3: 4.7M vs 175B).
+- Matches or beats full fine-tuning on GLUE (RoBERTa/DeBERTa) and GPT-2/GPT-3 175B benchmarks while training a small fraction of the parameters. **Two different figures circulate for that fraction, and they are not the same claim:** the abstract says **10,000× fewer** trainable parameters (≈0.01%), while the GPT-3 table reports **4.7M** at rank $r{=}8$ and 37.7M at $r{=}64$ — and 4.7M against 175B is ≈**37,000×**, or 0.003%. Quote the abstract's round number or the table's exact one, but do not present one as arithmetic for the other.
 - GPU memory for GPT-3 fine-tuning cut ~3×; checkpoint size from ~350GB to ~35MB.
 - Analysis: learned updates strongly amplify directions already latent in $W_0$; very low rank suffices.
 
@@ -81,7 +81,7 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 
 ### 결과
 
-- GLUE(RoBERTa/DeBERTa)와 GPT-2/GPT-3 175B 벤치마크에서 전체 파인튜닝과 대등하거나 상회 — 훈련 파라미터는 약 **0.01%**(GPT-3: 175B 중 470만).
+- GLUE(RoBERTa/DeBERTa)와 GPT-2/GPT-3 175B 벤치마크에서 전체 파인튜닝과 대등하거나 상회 — 훈련 파라미터는 극히 일부다. **그 '일부'를 가리키는 수치가 둘 돌아다니는데 서로 다른 주장이다:** 초록은 훈련 파라미터 **10,000배 감소**(≈0.01%)라 하고, GPT-3 표는 $r{=}8$에서 **470만**, $r{=}64$에서 3,770만을 보고한다 — 470만 대 175B는 약 **37,000배**, 즉 0.003%다. 초록의 어림수든 표의 정확한 수든 하나를 인용하되, 한쪽을 다른 쪽의 산술 근거처럼 붙이지 마라.
 - GPT-3 파인튜닝의 GPU 메모리 약 3배 절감; 체크포인트 크기 약 350GB → 35MB.
 - 분석: 학습된 업데이트는 $W_0$에 이미 잠재된 방향들을 증폭한다; 아주 낮은 랭크로 충분하다.
 
