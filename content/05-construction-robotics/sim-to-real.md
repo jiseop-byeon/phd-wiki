@@ -36,6 +36,22 @@ evaluation practices used to keep a policy useful when its simulator assumptions
 The important question is not “Was simulation photorealistic?” but **which variables
 that affect the policy were represented, varied, or adapted**.
 
+> [!warning] The contact row is not like the others
+> The other four gaps are *parameter* problems: the physics is right and the numbers are
+> wrong, so identification or randomization closes them. Contact is a **model** problem.
+> Rigid-body engines resolve contact as point constraints solved per timestep, and the
+> underlying dynamics are genuinely non-smooth — impacts and stick–slip transitions are
+> discontinuities, and numerical integrators lose both accuracy and stability exactly there.
+> Randomizing the friction coefficient does not fix a contact model that cannot represent
+> the contact patch in the first place.
+>
+> This is why a contact-rich result and a locomotion result are not comparable evidence of
+> sim-to-real maturity, even when both come from the same simulator. Legged locomotion
+> tolerates a crude contact model because the policy is rejecting disturbance at 50 Hz over
+> a foot that only needs to not slip; insertion, drilling and panel seating are *defined* by
+> the contact patch the model is failing to represent. Treat "we transferred from
+> simulation" as a claim whose strength depends on which side of that line the task sits.
+
 ### 2. Main strategies
 
 - **System identification** fits simulator parameters to measured trajectories. It makes
@@ -144,6 +160,19 @@ outside the training range.
 
 핵심 질문은 “그래픽이 사실적인가?”가 아니라 **정책에 영향을 주는 변수를 무엇까지 표현·
 변동·적응했는가**다.
+
+> [!warning] 접촉 행은 나머지와 성격이 다르다
+> 다른 네 격차는 *파라미터* 문제다. 물리는 맞고 숫자가 틀렸으니 동정이나 랜덤화가 메운다. 접촉은
+> **모델** 문제다. 강체 엔진은 접촉을 매 시간 단계마다 푸는 점 구속으로 처리하는데, 바탕 동역학이
+> 실제로 비평활하다 — 충격과 고착–미끄러짐 천이가 불연속이고, 수치 적분기는 정확히 거기서 정확도와
+> 안정성을 함께 잃는다. **마찰 계수를 랜덤화한다고, 접촉 패치를 애초에 표현하지 못하는 접촉 모델이
+> 고쳐지지는 않는다.**
+>
+> 그래서 접촉 다량 결과와 보행 결과는 같은 시뮬레이터에서 나왔더라도 sim-to-real 성숙도의 증거로
+> 비교할 수 없다. 사족보행은 거친 접촉 모델을 견딘다 — 정책이 50 Hz로 외란을 기각하고 있고 발은
+> 미끄러지지만 않으면 되기 때문이다. 반면 삽입·드릴링·패널 안착은 그 모델이 표현하지 못하는 접촉
+> 패치로 *정의되는* 과제다. "시뮬레이션에서 전이했다"는 주장의 강도는 과제가 이 선의 어느 쪽에
+> 있느냐에 달려 있다.
 
 ### 2. 주요 전략
 

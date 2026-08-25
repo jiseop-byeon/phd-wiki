@@ -244,6 +244,17 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > exception, stating "about 6,450 grasping trials" in its abstract. When you quote a number
 > for any of these, know which part of the paper you took it from.
 
+> [!tip] The wear row is the one almost nobody answers — and there is now a paper that does
+> Durability is the standard omission in optical tactile work: a gel that images beautifully
+> for a demo abrades in an afternoon of real contact, and abstracts do not say so.
+> **PolyTouch** (Zhao, Kuppuswamy, Feng, Burchfiel & Adelson, ICRA 2025) is the exception
+> worth citing, because it runs an explicit elastomer durability test — a Franka rubbing and
+> chafing against a fixed tool handle, with a commercial GelSight Mini and a PolyTouch finger
+> mounted opposing each other — rather than asserting robustness. For a research programme
+> aimed at a **construction** task, where the contact is abrasive by nature and a session is
+> measured in hours, this row is not a detail; it decides whether a demonstration corpus can
+> be collected at all.
+
 ### After reading
 
 - [ ] Name three quantities vision cannot supply at the moment they matter.
@@ -285,6 +296,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
 - R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
 - C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
+- J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, E. Adelson, "PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-rich Manipulation Using Tactile-Diffusion Policies," *ICRA 2025* ([arXiv:2504.19341](https://arxiv.org/abs/2504.19341)) — includes an explicit elastomer durability comparison against a commercial GelSight Mini.
 
 **Surveys**
 
@@ -508,6 +520,15 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 > "약 6,450회의 파지 시행"을 적는다. 이들 중 어느 것에 대해 숫자를 인용할 때는, 그것을 논문의
 > 어느 부분에서 가져왔는지 알고 있어야 한다.
 
+> [!tip] 마모 항목은 거의 아무도 답하지 않는다 — 그런데 답한 논문이 생겼다
+> 내구성은 광학 촉각 연구의 표준적 누락이다. 데모에서는 아름답게 찍히는 젤이 실제 접촉 반나절에
+> 마모되는데, 초록은 그 말을 하지 않는다. **PolyTouch**(Zhao, Kuppuswamy, Feng, Burchfiel &
+> Adelson, ICRA 2025)가 인용할 만한 예외다. 강건하다고 주장하는 대신 **명시적인 엘라스토머
+> 내구 시험**을 돌린다 — Franka가 고정된 도구 손잡이에 계속 문지르고 쓸게 하고, 상용 GelSight
+> Mini와 PolyTouch 손가락을 마주 보게 달아 비교한다. **건설** 과제를 겨냥한 연구 프로그램에서는
+> 접촉이 본래 마모성이고 한 세션이 시간 단위이므로, 이 항목은 세부사항이 아니라 **시연 코퍼스를
+> 애초에 모을 수 있느냐를 정하는 조건**이다.
+
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 중요해지는 순간에 비전이 줄 수 없는 양 셋을 댄다.
@@ -549,6 +570,7 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
 - R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
 - C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
+- J. Zhao, N. Kuppuswamy, S. Feng, B. Burchfiel, E. Adelson, "PolyTouch: A Robust Multi-Modal Tactile Sensor for Contact-rich Manipulation Using Tactile-Diffusion Policies," *ICRA 2025* ([arXiv:2504.19341](https://arxiv.org/abs/2504.19341)) — includes an explicit elastomer durability comparison against a commercial GelSight Mini.
 
 **서베이**
 

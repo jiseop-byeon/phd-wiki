@@ -126,6 +126,8 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 **Force control classics** (힘 제어 고전)
 
 - [x] ◐ [[notes/7-robotics/hogan-impedance|Impedance Control]] — Hogan, ASME JDSMC 107(1), 1985 (3부작)
+- ◐ **Variable Impedance Control in End-Effector Space** — Martín-Martín et al., IROS 2019 — 임피던스 파라미터를 RL 행동 공간으로 (노트 없음, [[04-robotics/force-compliance-control|13 §6]]에서 다룸)
+- ○ **Learning Variable Impedance Control for Contact Sensitive Tasks** — Bogdanovic, Khadiv & Righetti, RA-L 5(4), 2020 — 같은 질문을 관절 공간에서, 접촉 불확실성 축으로 (노트 없음, [[04-robotics/force-compliance-control|13 §6]])
 
 **Grasping** (파지)
 
@@ -136,6 +138,9 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 - [x] ◐ [[notes/7-robotics/gelsight|GelSight]] — Yuan, Dong & Adelson, Sensors 2017 — 기하를 재고 힘은 추론한다
 - [x] ★ [[notes/7-robotics/vision-and-touch|Making Sense of Vision and Touch]] — Lee et al., ICRA 2019 — 자기지도 시촉각 표현
+- ◐ **Coding and use of tactile signals from the fingertips** — Johansson & Flanagan, *Nature Reviews Neuroscience* 10, 2009 — SA/FA 수용기 네 종류, 촉각 신호처리가 두 갈래인 이유 (노트 없음, [[04-robotics/tactile-visuotactile|14 §3]])
+- ◐ **Sparsh** — Higuera et al., CoRL 2024 — 촉각 백본과 TacBench; DINO·I-JEPA 위에 선다 (노트 없음, [[04-robotics/tactile-visuotactile|14 §4]])
+- ○ **PolyTouch** — Zhao et al., ICRA 2025 — 내구성을 실제로 시험한 드문 촉각 논문 (노트 없음, [[04-robotics/tactile-visuotactile|14 §6]])
 
 **Real-world reinforcement learning** (실제 환경 RL)
 
