@@ -127,6 +127,10 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 - ◐ **Trends and challenges in robot manipulation** — Billard & Kragic, *Science* 364(6446), eaat8414, 2019 — 매니퓰레이션 논문 서론이 상대해야 하는 분야 수준 진술 (노트 없음, [[04-robotics/index|4 §H]])
 - ○ **An overview of dexterous manipulation** — Okamura, Smaby & Cutkosky, ICRA 2000, pp. 255–262 — 구르기·미끄러짐·finger gaiting·재파지의 분류 체계 (노트 없음, [[04-robotics/grasping|15 §8]])
+- ◐ **A Review of Robot Learning for Manipulation** — Kroemer, Niekum & Konidaris, *JMLR* 22(30), pp. 1–82, **2021** — 학습 쪽 정본 서베이. 2019 프리프린트로 잘못 인용되는 일이 잦다 (노트 없음, [[04-robotics/index|4 §H]])
+- ◐ **End-to-End Training of Deep Visuomotor Policies** — Levine, Finn, Darrell & Abbeel, *JMLR* 17(39), pp. 1–40, **2016** — 픽셀에서 토크까지 한 번에 학습한 조상. 흔히 2015로 인용된다 (노트 없음, [[03-deep-learning/lineage|계보 지도]])
+- ◐ **Learning Complex Dexterous Manipulation with Deep RL and Demonstrations** — Rajeswaran et al., RSS 2018 (DAPG) — 소수 시연이 표본 복잡도를 무너뜨린다 (노트 없음, [[04-robotics/teleoperation-demonstration|12 §6]])
+- ○ **Lessons from the Amazon Picking Challenge** — Eppner, Höfer, Jonschkowski, **Martín-Martín**, Sieverling, Wall & Brock, RSS **2016** — 로봇 시스템 설계의 네 축. 대회는 2015, 논문은 2016 (노트 없음, [[04-robotics/robot-systems-deployment|10 §1]])
 
 **Force control classics** (힘 제어 고전)
 

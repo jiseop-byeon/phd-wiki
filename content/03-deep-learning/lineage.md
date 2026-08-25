@@ -88,6 +88,7 @@ graph TD
 ```mermaid
 graph TD
     BCE["behavior cloning"] --> RT1E["RT-1 2023"]
+    E2EE["end-to-end visuomotor<br/>Levine et al. JMLR 2016"] --> RT1E
     RT1E --> RT2E["RT-2 2023<br/>a VLM put on a robot"]
     DPE["Diffusion Policy 2023"] --> Pi0E2["pi-0 RSS 2025"]
     ACTE["ACT/ALOHA 2023"] --> Pi0E2
@@ -193,6 +194,7 @@ graph TD
 ```mermaid
 graph TD
     BC["행동 복제 (BC)"] --> RT1["RT-1 (2023)"]
+    E2E["end-to-end visuomotor<br/>(Levine 외, JMLR 2016)"] --> RT1
     RT1 --> RT2["RT-2 (2023)<br/>VLM을 로봇에"]
     DP["Diffusion Policy (2023)"] --> Pi0["π0 (RSS 2025)"]
     ACT["ACT/ALOHA (2023)"] --> Pi0

@@ -29,6 +29,24 @@ flowchart LR
 
 The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz motor controller are not inconsistent, but their data age and interfaces must be designed explicitly.
 
+> [!tip] The four axes a robot system is actually designed along
+> The stack above is a data-flow picture. The *design* picture — the one that decides whether
+> a system works on a deadline — is Eppner et al.'s post-mortem of the winning entry to the
+> Amazon Picking Challenge 2015 (RSS 2016). They argue a robotic system is placed along four
+> spectra, and that the placement, not the component quality, is what distinguishes systems
+> that finished from systems that did not:
+>
+> | Axis | The trade |
+> |---|---|
+> | **Modularity vs. integration** | clean interfaces are debuggable; tightly integrated ones exploit information a module boundary would have discarded |
+> | **Generality vs. assumptions** | every assumption you are willing to state buys performance and costs a failure mode when it breaks |
+> | **Computation vs. embodiment** | a compliant gripper or a funnel-shaped fixture solves in mechanics what would otherwise be a perception and control problem |
+> | **Planning vs. feedback** | deliberating in advance versus reacting during execution, and how much of each the task's uncertainty justifies |
+>
+> The third axis is the one most often skipped by a learning-first reader, and it is the same
+> observation [[04-robotics/grasping|15 §5]] makes about extrinsic dexterity: geometry you
+> arrange in advance is capability you do not have to compute.
+
 ### 2. Embodiment and action interfaces
 
 Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful.
@@ -174,6 +192,8 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 
 ### Sources
 
+- C. Eppner, S. Höfer, R. Jonschkowski, R. Martín-Martín, A. Sieverling, V. Wall, O. Brock, "Lessons from the Amazon Picking Challenge: Four Aspects of Building Robotic Systems," *RSS 2016* (journal version: *Autonomous Robots*, 2018, DOI 10.1007/s10514-018-9761-2) — the challenge ran in 2015; the paper is 2016.
+
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
 - [MIT Manipulation (Tedrake) — systems chapters](https://manipulation.csail.mit.edu/)
 - [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)
@@ -205,6 +225,22 @@ flowchart LR
 
 블록들은 서로 다른 주기로 돌 수 있다. 30 Hz 카메라, 10 Hz 정책, 1 kHz 모터 제어기는
 모순이 아니다 — 하지만 데이터의 나이(age)와 인터페이스는 명시적으로 설계해야 한다.
+
+> [!tip] 로봇 시스템이 실제로 설계되는 네 축
+> 위의 스택은 데이터 흐름 그림이다. *설계* 그림 — 마감이 있는 상황에서 시스템이 돌아가느냐를
+> 가르는 그림 — 은 Eppner 등이 Amazon Picking Challenge 2015 우승 시스템을 사후 분석한
+> 것(RSS 2016)이다. 로봇 시스템은 네 개의 스펙트럼 위에 놓이며, 완주한 시스템과 그러지 못한
+> 시스템을 가른 것은 부품 품질이 아니라 그 **위치 선택**이라는 주장이다:
+>
+> | 축 | 무엇과 무엇을 바꾸는가 |
+> |---|---|
+> | **모듈성 대 통합** | 깨끗한 인터페이스는 디버깅이 되고, 촘촘히 통합된 쪽은 모듈 경계가 버렸을 정보를 활용한다 |
+> | **일반성 대 가정** | 기꺼이 명시하는 가정 하나하나가 성능을 사고, 그 가정이 깨질 때의 실패 모드를 지불한다 |
+> | **연산 대 신체화** | 순응형 그리퍼나 깔때기 모양 지그는 원래라면 인식·제어 문제였을 것을 역학으로 푼다 |
+> | **계획 대 피드백** | 미리 숙고할 것인가 실행 중에 반응할 것인가, 그리고 과제의 불확실성이 각각을 얼마나 정당화하는가 |
+>
+> 학습 중심으로 읽는 사람이 가장 자주 건너뛰는 것이 세 번째 축이고, 이는 [[04-robotics/grasping|15 §5]]의
+> extrinsic dexterity와 같은 관찰이다 — **미리 배치해 둔 기하는 계산하지 않아도 되는 능력이다.**
 
 ### 2. Embodiment와 행동 인터페이스
 
@@ -377,6 +413,8 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 > 4. 선택된 하드웨어/소프트웨어 인터페이스와 타이밍은 검증하지만, 실세계 인식·접촉·과제 안전을 그 자체로 검증하지는 않는다.
 
 ### 출처
+
+- C. Eppner, S. Höfer, R. Jonschkowski, R. Martín-Martín, A. Sieverling, V. Wall, O. Brock, "Lessons from the Amazon Picking Challenge: Four Aspects of Building Robotic Systems," *RSS 2016* (journal version: *Autonomous Robots*, 2018, DOI 10.1007/s10514-018-9761-2) — the challenge ran in 2015; the paper is 2016.
 
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
 - [MIT Manipulation (Tedrake) — 시스템 관련 장](https://manipulation.csail.mit.edu/)

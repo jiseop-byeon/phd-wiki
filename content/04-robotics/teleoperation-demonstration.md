@@ -241,6 +241,14 @@ contributes from what the algorithm does. Quantity is the easy axis; the harder 
   seen a recovery cannot perform one, and it will need to, because its own small errors take
   it off the demonstrated distribution — the compounding-error argument in
   [[02-foundations/rl-basics|7. RL Basics §6]].
+- **How few can actually be enough, if RL is allowed to continue.** Demonstrations are not
+  only a dataset for cloning; they are also an initialisation and a shaping signal.
+  Rajeswaran et al. (RSS 2018, the DAPG result) trains a 24-DoF hand on tasks model-free RL
+  can eventually solve from scratch in simulation, and shows that **a small number of human
+  demonstrations collapses the sample complexity**. The design consequence for a collection
+  plan is that "how many demonstrations do I need?" has no answer until you say what happens
+  after them — pure cloning needs coverage, demo-seeded RL needs a foothold, and those are
+  different collection targets from the same rig.
 - **State-action consistency.** If the operator reacts to something the robot's sensors did
   not record — a sound, a glance at their own hand, knowledge of what comes next — the
   dataset contains actions that its own observations cannot explain, and no amount of it
@@ -341,6 +349,7 @@ requires, because the contribution *is* the corpus — needs these:
 - P. Wu, Y. Shentu, Z. Yi, X. Lin, P. Abbeel, "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators," IROS 2024 ([arXiv:2309.13037](https://arxiv.org/abs/2309.13037)) — the 3D-printed kinematically matched leader arm.
 - C. Chi et al., "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots," RSS 2024 ([arXiv:2402.10329](https://arxiv.org/abs/2402.10329)) — the handheld-gripper approach and its latency-matching policy interface.
 - A. Mandlekar et al., "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation," CoRL 2021, PMLR vol. 164 — robomimic. Cited as CoRL 2021 though the PMLR volume is stamped 2022.
+- A. Rajeswaran, V. Kumar, A. Gupta, G. Vezzani, J. Schulman, E. Todorov, S. Levine, "Learning Complex Dexterous Manipulation with Deep Reinforcement Learning and Demonstrations," *RSS 2018*. DOI 10.15607/RSS.2018.XIV.049 ([arXiv:1709.10087](https://arxiv.org/abs/1709.10087)) — demonstrations as an RL initialiser, not only a cloning corpus.
 
 > [!warning] On the hardware costs these papers are known for
 > ALOHA, GELLO, Mobile ALOHA and UMI all carry "low-cost" in their titles or reputations, and none of them state a price in the abstract. The figures that circulate come from paper bodies, project sites, or press coverage — so quote them from those, with that source named, or not at all.
@@ -563,6 +572,13 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 - **상태-행동 일관성.** 조작자가 로봇의 센서가 기록하지 않은 무언가에 반응했다면 — 소리,
   자기 손을 흘깃 본 것, 다음에 무엇이 오는지 아는 것 — 데이터셋은 자기 관측으로 설명할 수
   없는 행동을 담게 되고, 아무리 많아도 그 행동을 정책에 가르치지 못한다.
+- **RL을 이어 붙일 수 있다면 몇 개로도 충분해진다.** 시연은 복제용 데이터셋만이 아니라
+  초기화이자 형태 잡기 신호이기도 하다. Rajeswaran 등(RSS 2018, DAPG)은 24자유도 손을 대상으로,
+  모델 프리 RL이 시뮬레이션에서 결국 맨바닥부터 풀 수 있는 과제들에서 **소수의 인간 시연이 표본
+  복잡도를 크게 무너뜨린다**는 것을 보인다. 수집 계획에 주는 함의는 이렇다 — "시연이 몇 개
+  필요한가"에는 *그다음에 무엇을 할 것인가*를 말하기 전까지 답이 없다. 순수 복제는 커버리지가
+  필요하고, 시연으로 씨를 뿌린 RL은 발판이 필요하며, 같은 리그로 모으더라도 둘은 서로 다른
+  수집 목표다.
 
 ### 7. 건설: 원격조작이 이미 쓰이는 곳, 그리고 쓰일 수 있는 곳
 
@@ -655,6 +671,7 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 - P. Wu, Y. Shentu, Z. Yi, X. Lin, P. Abbeel, "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators," IROS 2024 ([arXiv:2309.13037](https://arxiv.org/abs/2309.13037)) — 3D 프린팅으로 만든, 기구학이 같은 리더 암.
 - C. Chi et al., "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots," RSS 2024 ([arXiv:2402.10329](https://arxiv.org/abs/2402.10329)) — 휴대형 그리퍼 접근과 지연 정합 정책 인터페이스.
 - A. Mandlekar et al., "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation," CoRL 2021, PMLR vol. 164 — robomimic. PMLR 권에는 2022로 찍혀 있지만 CoRL 2021로 인용한다.
+- A. Rajeswaran, V. Kumar, A. Gupta, G. Vezzani, J. Schulman, E. Todorov, S. Levine, "Learning Complex Dexterous Manipulation with Deep Reinforcement Learning and Demonstrations," *RSS 2018*. DOI 10.15607/RSS.2018.XIV.049 ([arXiv:1709.10087](https://arxiv.org/abs/1709.10087)) — demonstrations as an RL initialiser, not only a cloning corpus.
 
 > [!warning] 이 논문들이 유명해진 하드웨어 가격에 대하여
 > ALOHA, GELLO, Mobile ALOHA, UMI는 모두 제목이나 평판에 "low-cost"를 달고 있지만, **어느 것도 초록에 가격을 적지 않는다.** 떠도는 금액은 논문 본문, 프로젝트 사이트, 또는 언론 보도에서 온 것이다 — 그러니 그 출처를 명시해서 인용하거나, 아예 인용하지 마라.
