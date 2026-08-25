@@ -180,17 +180,24 @@ Both are worth reading. Neither has been refereed.
 **Does the paper say what the citation says it says?** Secondary citation drift is the most
 common factual error in this field, and it is cheap to defeat:
 
-1. **Resolve the identifier** — DOI or arXiv ID, not the title. Titles collide; the wiki's own
-   traversability page documents a case where two unrelated papers share a name.
+1. **Resolve the identifier** — DOI or arXiv ID, not the title. Titles collide and **acronyms
+   collide far more**: the traversability page documents *RACER* naming both the DARPA
+   programme (*Robotic Autonomy in Complex Environments with Resiliency*) and an unrelated
+   risk-sensitive RL method demonstrated on a 1/10-scale rally car
+   ([[04-robotics/traversability-off-road|17. Self-check 4]]).
 2. **Find the claim in the source**, not in the paper that cited it. If the citing paper says
    "X showed 30% improvement", the sentence containing 30% should exist in X.
 3. **Match the version** — datasets and models get re-released with different counts. DROID and
    BridgeData V2 each report two different numbers in different versions
    ([[06-research-practice/simulators-benchmarks-datasets|7. §7]]).
 4. **Check the metadata against a primary index** — DBLP or the publisher, not a bibliography
-   you copied. Secondary sources reliably corrupt volume numbers and years; this wiki records
-   three cases it hit ([[04-robotics/force-compliance-control|13. Sources]],
-   [[04-robotics/grasping|15. Sources]]).
+   you copied. Secondary sources corrupt bibliographic details *and* the numbers a paper is
+   quoted for. Three cases recorded here, and they are three different failures: Drake's 1977
+   thesis and Whitney & Nevins 1979 could not be confirmed against any primary index because
+   both predate DOI coverage ([[04-robotics/force-compliance-control|13. Sources]]), and the
+   much-quoted "seven fingers" is the *frictionless form-closure* count circulated as a
+   force-closure one ([[04-robotics/grasping|15. §3]]). The first two are unverifiable, the
+   third is wrong — treat them differently when you cite.
 
 **A verified absence is a finding.** If you cannot find a benchmark, a survey, or a dataset
 that ought to exist, and you searched properly, that is a citable result and belongs in the
@@ -380,15 +387,21 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 **그 논문이 인용문이 말하는 것을 실제로 말하는가?** 2차 인용 드리프트는 이 분야에서 가장 흔한
 사실 오류이고, 막는 비용은 싸다:
 
-1. **식별자로 해석하라** — 제목이 아니라 DOI나 arXiv ID. 제목은 충돌한다. 이 위키의
-   traversability 페이지가 이름이 같은 무관한 두 논문의 사례를 기록하고 있다.
+1. **식별자로 해석하라** — 제목이 아니라 DOI나 arXiv ID. 제목도 충돌하지만 **약어는 훨씬 더
+   충돌한다**: traversability 페이지가 *RACER*라는 이름을 DARPA 프로그램(*Robotic Autonomy in
+   Complex Environments with Resiliency*)과, 1/10 스케일 랠리카에서 실증된 무관한 위험 민감 RL
+   방법이 함께 쓰는 사례로 기록해 두었다([[04-robotics/traversability-off-road|17. 스스로 점검 4]]).
 2. **주장을 원문에서 찾아라**, 그것을 인용한 논문에서가 아니라. 인용하는 쪽이 "X가 30% 개선을
    보였다"고 하면, 30%가 든 문장이 X 안에 있어야 한다.
 3. **판본을 맞춰라** — 데이터셋과 모델은 다른 개수로 다시 공개된다. DROID와 BridgeData V2는
    각각 판본에 따라 서로 다른 숫자를 보고한다([[06-research-practice/simulators-benchmarks-datasets|7. §7]]).
 4. **메타데이터를 1차 색인과 대조하라** — 베껴 온 참고문헌이 아니라 DBLP나 출판사. 2차 자료는
-   권 번호와 연도를 확실하게 망가뜨린다. 이 위키가 걸린 사례가 셋 기록되어 있다([[04-robotics/force-compliance-control|13. 출처]],
-   [[04-robotics/grasping|15. 출처]]).
+   서지 정보만이 아니라 **그 논문이 인용되는 숫자까지** 망가뜨린다. 여기 기록된 세 사례는 성격이
+   서로 다르다: Drake의 1977년 학위논문과 Whitney & Nevins 1979는 둘 다 DOI 이전이라 어떤 1차
+   색인으로도 확인되지 않았고([[04-robotics/force-compliance-control|13. 출처]]), 많이 인용되는
+   "손가락 일곱 개"는 *무마찰 form-closure* 수치가 force-closure 수치처럼 돌아다니는
+   것이다([[04-robotics/grasping|15. §3]]). 앞의 둘은 확인 불가이고 셋째는 틀린 것이다 —
+   인용할 때 다르게 다뤄라.
 
 **검증된 부재는 발견이다.** 있어야 마땅한 벤치마크·서베이·데이터셋을 제대로 찾았는데도 없다면,
 그것은 인용 가능한 결과이고 논문에 들어가야 한다 — 이 위키의 가장 날카로운 주장 몇 개가 정확히

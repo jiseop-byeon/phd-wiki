@@ -130,8 +130,10 @@ themselves (prose only — code blocks and equations excluded):
 Read that number honestly: it is *one pass of the prose in one language*, and it is not the
 study time. Working the self-checks and re-deriving the worked examples typically costs
 **3–5× the reading time** — call it 30–50 hours for the whole wiki — and the ★ papers are
-extra: 23 of them read in the original at a few hours each is another 70–95 hours. The
-notes exist so that the ◐ and ○ papers do *not* need that.
+extra: **17** of them read in the original at a few hours each is another 50–70 hours. (The
+list carries an eighteenth ★ mark, but it is the *Modern Robotics* textbook, which is a
+separate commitment and not a few-hours item.) The notes exist so that the 74 ◐ and 40 ○
+papers do *not* need that.
 
 Two of those tracks are optional, and the total above assumes you read everything.
 Robotics 12–23 are specialization layers — manipulation, navigation, human perception —
@@ -341,8 +343,9 @@ graph LR
 
 이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
 자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로
-30~50시간 — 가 들고, ★ 논문은 별도다: 23편을 원문으로 각각 몇 시간씩 읽으면 70~95시간이
-더 붙는다. ◐·○ 논문은 그럴 필요가 없도록 노트가 존재한다.
+30~50시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50~70시간이
+더 붙는다. (목록에 ★가 하나 더 있지만 그것은 *Modern Robotics* 교재이고, 몇 시간짜리 항목이
+아니라 별도의 약속이다.) ◐ 74편과 ○ 40편은 그럴 필요가 없도록 노트가 존재한다.
 
 이 중 두 트랙은 선택이고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12~23번은
 전문화 층 — 매니퓰레이션·내비게이션·사람 인지 — 이고, 공통 커리큘럼은 11번에서 끝난다.
