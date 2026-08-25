@@ -97,9 +97,13 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   $R_z(90°)(0,0,1) + (2,0,0) = (0,0,1) + (2,0,0) = (2,0,1)$. So the camera is at
   $(2, 0, 1)$ in world coordinates, still turned $90°$.
   Note *why* the translation worked out that way: $T_{BC}$'s offset was expressed in the
-  **base** frame, so it had to be rotated into world before adding. That single rotation of
-  the offset is the step people forget, and it is exactly what the matrix form does for you
-  automatically — which is the entire reason poses are written as $4\times4$ matrices instead
+  **base** frame, so it had to be rotated into world before adding. In *this* example the
+  rotation happens to change nothing — $(0,0,1)$ lies along the $z$ axis it is being turned
+  about — so move the camera to the base's own $x$ axis, $p_{BC} = (1,0,0)$, and the step
+  becomes visible: $R_z(90°)(1,0,0) + (2,0,0) = (0,1,0) + (2,0,0) = (2,1,0)$, whereas adding
+  the offset *without* rotating gives $(3,0,0)$ — a metre away, in the wrong direction.
+  That rotation of the offset is the step people forget, and it is exactly what the matrix
+  form does for you automatically — which is the entire reason poses are written as $4\times4$ matrices instead
   of an $(R, p)$ pair you combine by hand.
 - **Frames discipline** is 90% of not making sign errors: every quantity has a frame
   (world, base, camera, end-effector); write it down. "Where is the camera?" = $T_{world \leftarrow cam}$.
@@ -227,7 +231,11 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
   $R_z(90°)(0,0,1) + (2,0,0) = (0,0,1) + (2,0,0) = (2,0,1)$이다. 즉 카메라는 월드 좌표로
   $(2, 0, 1)$에 있고 여전히 $90°$ 돌아가 있다.
   병진이 *왜* 그렇게 나왔는지에 주목하라: $T_{BC}$의 오프셋은 **베이스** 프레임에서 표현된
-  것이므로, 더하기 전에 월드로 회전시켜야 했다. 사람들이 빼먹는 단계가 바로 그 오프셋 회전이고,
+  것이므로, 더하기 전에 월드로 회전시켜야 했다. 다만 *이* 예제에서는 회전이 아무것도 바꾸지
+  않는다 — $(0,0,1)$이 회전축인 $z$와 나란하기 때문이다. 그러니 카메라를 베이스 자신의 $x$
+  축으로 옮겨 $p_{BC} = (1,0,0)$으로 두면 그 단계가 눈에 보인다:
+  $R_z(90°)(1,0,0) + (2,0,0) = (0,1,0) + (2,0,0) = (2,1,0)$인데, 회전 없이 그냥 더하면
+  $(3,0,0)$ — 1 m 떨어진, 방향이 틀린 자리다. 사람들이 빼먹는 단계가 바로 그 오프셋 회전이고,
   행렬 형태가 자동으로 해주는 일이 정확히 그것이다 — pose를 $(R, p)$ 쌍으로 들고 손으로
   합치는 대신 $4\times4$ 행렬로 쓰는 이유 전부가 이것이다.
 - **프레임 규율**이 부호 실수 안 하기의 90%다: 모든 양에는 프레임(월드, 베이스, 카메라,
