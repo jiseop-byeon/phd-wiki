@@ -126,6 +126,32 @@ Three problems where touch is not one option among several:
 - **In-hand pose.** Where the object is *relative to the fingers* after grasping, which is
   the error a vision-planned grasp leaves behind and the thing an insertion needs.
 
+#### Why the signal splits into two channels
+
+Human skin does not have one touch sense, it has four receptor types, and the split is the
+reason tactile signal processing has two halves. Johansson and Flanagan's review is the
+canonical source:
+
+| Receptor | Adapts | Carries |
+|---|---|---|
+| **SA I** (Merkel) | slowly | sustained pressure, fine spatial detail |
+| **SA II** (Ruffini) | slowly | skin stretch — hand shape, force direction |
+| **FA I** (Meissner) | fast | flutter, low-frequency vibration (~5–50 Hz), **slip onset** |
+| **FA II** (Pacinian) | fast | high-frequency vibration transmitted through a grasped tool |
+
+The engineering consequence is direct, and it is the part most often skipped. **Slowly
+varying quantities and transient events need different signal processing.** Force magnitude
+is a slow signal: baseline-zero it, median-filter the noise, then regress. Slip is a
+*transient*: it lives in the frequency content, so it is found with spectral features — a
+short-time Fourier transform over the tactile stream — not by smoothing. A pipeline that
+only low-pass filters has, by construction, deleted the evidence for the one thing touch is
+uniquely good at.
+
+The same split explains why tool use works at all: FA II carries vibration through a rigid
+tool, which is why a person can feel a drill bit catch — a fact with obvious weight for
+[[05-construction-robotics/construction-manipulation|construction manipulation]], where the
+contact of interest is usually at the tip of a tool rather than at the skin.
+
 ### 4. Visuotactile fusion — and what it is really buying
 
 The reference result here is Lee et al.'s *Making Sense of Vision and Touch*, which learns a
@@ -148,6 +174,35 @@ Calandra et al.'s regrasping work is the other archetype: rather than fusing for
 representation, it learns an **action-conditional outcome predictor** — given the current
 visuotactile reading and a candidate grasp adjustment, will the grasp succeed? — and then
 selects adjustments by search. No analytic contact model, no tactile calibration.
+
+#### From per-task fusion to a touch backbone
+
+The 2019 fusion papers train one representation per task and per sensor. The line since then
+runs the same way vision did: pre-train a general encoder, then attach small task heads.
+**Sparsh** (CoRL 2024) is the reference point — self-supervised pre-training on 460k+ tactile
+images with masking and self-distillation, deliberately built to serve *several* vision-based
+tactile sensors rather than one, and released with **TacBench**, a six-task benchmark so that
+sensors and models can be compared at all.
+
+Two things make it worth reading here rather than filing under "another SSL paper":
+
+- **The backbones are ones this wiki already covers.** Its strongest variants are built on
+  [[01-canonical-papers/notes/2-computer-vision/dino|DINO]] and
+  [[01-canonical-papers/notes/5-world-models/jepa|I-JEPA]] — so the touch story is not a
+  separate lineage, it is the vision self-supervision lineage pointed at a gel.
+- **It attacks the standardisation problem directly.** The reason tactile has no equivalent
+  of the camera is that every lab builds its own sensor; a representation that transfers
+  across sensors is a partial answer to that, and is why the paper ships a benchmark.
+
+> [!warning] Read its headline number carefully
+> The paper reports that self-supervised pre-training beats task- and sensor-specific
+> end-to-end training "by 95.1% on average over TacBench". That is an average of relative
+> improvements across six heterogeneous tasks, not a success rate and not a percentage-point
+> gain — the same reading error that [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA's "up to 90%"]] invites.
+> Go to the per-task table before quoting it.
+
+This is the layer this page's own scope rule admits: a touch-conditioned policy or a fusion
+architecture is in scope, building the sensor is not.
 
 ### 5. Construction framings
 
@@ -228,6 +283,8 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 - M. A. Lee, Y. Zhu, K. Srinivasan, et al., "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks," ICRA 2019, pp. 8943–8950 ([arXiv:1810.10191](https://arxiv.org/abs/1810.10191)). The extended journal version has a **different title and author list**: M. A. Lee, Y. Zhu, P. Zachares, et al., "Making Sense of Vision and Touch: Learning Multimodal Representations for Contact-Rich Tasks," *IEEE T-RO*, vol. 36, no. 3, pp. 582–596, 2020 — cite them separately.
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
+- R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
+- C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
 
 **Surveys**
 
@@ -343,6 +400,29 @@ belongs to [[04-robotics/force-compliance-control|13]].
 - **손 안 자세(in-hand pose).** 파지 이후 물체가 *손가락에 대해* 어디 있는가. 비전으로 계획한
   파지가 남기는 오차이자, 삽입이 필요로 하는 바로 그것이다.
 
+#### 신호가 두 채널로 갈리는 이유
+
+사람 피부에는 촉각이 하나가 아니라 수용기 네 종류가 있고, 그 구분이 촉각 신호처리가 두 갈래인
+이유다. Johansson과 Flanagan의 리뷰가 정본이다:
+
+| 수용기 | 적응 | 실어 나르는 것 |
+|---|---|---|
+| **SA I**(Merkel) | 느림 | 지속 압력, 미세한 공간 해상 |
+| **SA II**(Ruffini) | 느림 | 피부 신장 — 손 모양, 힘의 방향 |
+| **FA I**(Meissner) | 빠름 | 플러터, 저주파 진동(약 5~50 Hz), **미끄러짐 개시** |
+| **FA II**(Pacinian) | 빠름 | 쥔 도구를 타고 전달되는 고주파 진동 |
+
+공학적 귀결이 곧바로 나오고, 가장 자주 건너뛰는 대목이다. **천천히 변하는 양과 순간적 사건은
+서로 다른 신호처리를 요구한다.** 힘의 크기는 느린 신호다 — 베이스라인을 0으로 맞추고, median
+필터로 잡음을 걷어낸 뒤 회귀한다. 미끄러짐은 *과도 현상*이다 — 주파수 성분에 살기 때문에 평활화가
+아니라 스펙트럼 특징(촉각 스트림의 단시간 푸리에 변환)으로 찾는다. 저역 통과만 하는 파이프라인은
+구조적으로 **촉각이 유일하게 잘하는 그 하나의 증거를 지워 버린 것**이다.
+
+같은 구분이 도구 사용이 왜 성립하는지도 설명한다. FA II가 단단한 도구를 통해 진동을 실어 나르기
+때문에 사람은 드릴 비트가 걸리는 것을 느낄 수 있다 —
+[[05-construction-robotics/construction-manipulation|건설 매니퓰레이션]]에서 관심 있는 접촉이
+대개 피부가 아니라 **도구 끝**에 있다는 점을 생각하면 무게가 분명한 사실이다.
+
 ### 4. 시촉각 융합 — 그리고 그것이 실제로 사는 것
 
 여기서의 기준 결과는 Lee 등의 *Making Sense of Vision and Touch*다. RGB, 힘/토크, 고유수용
@@ -361,6 +441,33 @@ belongs to [[04-robotics/force-compliance-control|13]].
 Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합이 아니라 **행동 조건부 결과
 예측기**를 학습한다 — 현재 시촉각 관측과 후보 파지 조정이 주어졌을 때 그 파지가 성공할
 것인가? — 그리고 탐색으로 조정을 고른다. 해석적 접촉 모델도, 촉각 보정도 없이.
+
+#### 과제별 융합에서 촉각 백본으로
+
+2019년의 융합 논문들은 과제마다, 센서마다 표현을 따로 학습한다. 이후의 흐름은 비전이 갔던 길과
+같다 — 범용 인코더를 사전학습하고 작은 과제 헤드를 붙인다. **Sparsh**(CoRL 2024)가 기준점이다.
+촉각 이미지 46만 장 이상에 마스킹과 자기 증류로 자기지도 사전학습을 하되, 하나가 아니라 *여러*
+카메라 기반 촉각 센서를 겨냥해 만들었고, 센서와 모델을 비교할 수 있도록 6개 과제 벤치마크
+**TacBench**를 함께 공개했다.
+
+"또 하나의 SSL 논문"으로 분류하지 않고 여기서 읽어야 하는 이유가 둘이다:
+
+- **백본이 이 위키가 이미 다루는 것들이다.** 가장 강한 변형이
+  [[01-canonical-papers/notes/2-computer-vision/dino|DINO]]와
+  [[01-canonical-papers/notes/5-world-models/jepa|I-JEPA]] 위에 서 있다 — 촉각 이야기가 별개
+  계보가 아니라 **비전 자기지도 계보를 젤에 겨눈 것**이다.
+- **표준화 문제를 정면으로 친다.** 촉각에 카메라에 해당하는 물건이 없는 이유는 랩마다 자기 센서를
+  만들기 때문이고, 센서를 가로질러 전이되는 표현은 그에 대한 부분적 답이다. 벤치마크를 같이 낸
+  이유이기도 하다.
+
+> [!warning] 헤드라인 수치를 조심해서 읽어라
+> 논문은 자기지도 사전학습이 과제·센서 특화 end-to-end 학습을 "TacBench 전체 평균 95.1%"만큼
+> 앞선다고 보고한다. 이질적인 6개 과제에 걸친 **상대 개선의 평균**이지 성공률도 퍼센트 포인트
+> 상승도 아니다 — [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA의 "최대 90%"]]가
+> 유발하는 것과 같은 종류의 오독이다. 인용 전에 과제별 표로 가라.
+
+이것이 이 페이지의 범위 규칙이 허용하는 층이다 — 촉각 조건 정책이나 융합 구조는 범위 안이고,
+센서를 만드는 것은 범위 밖이다.
 
 ### 5. 건설에서의 프레이밍
 
@@ -440,6 +547,8 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 - M. A. Lee, Y. Zhu, K. Srinivasan, et al., "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks," ICRA 2019, pp. 8943–8950 ([arXiv:1810.10191](https://arxiv.org/abs/1810.10191)). 확장된 저널판은 **제목과 저자 목록이 다르다**: M. A. Lee, Y. Zhu, P. Zachares, et al., "Making Sense of Vision and Touch: Learning Multimodal Representations for Contact-Rich Tasks," *IEEE T-RO*, vol. 36, no. 3, pp. 582–596, 2020 — 따로 인용하라.
 - R. Calandra et al., "More Than a Feeling: Learning to Grasp and Regrasp Using Vision and Touch," *IEEE RA-L*, vol. 3, no. 4, pp. 3300–3307, 2018 ([arXiv:1805.11085](https://arxiv.org/abs/1805.11085)).
+- R. S. Johansson, J. R. Flanagan, "Coding and use of tactile signals from the fingertips in object manipulation tasks," *Nature Reviews Neuroscience* 10, pp. 345–359, 2009. DOI 10.1038/nrn2621 — the canonical account of the four mechanoreceptor types and what each carries.
+- C. Higuera, A. Sharma, C. K. Bodduluri, et al., "Sparsh: Self-supervised touch representations for vision-based tactile sensing," *CoRL 2024* ([arXiv:2410.24090](https://arxiv.org/abs/2410.24090)) · [code](https://github.com/facebookresearch/sparsh) — touch backbones plus the TacBench benchmark.
 
 **서베이**
 

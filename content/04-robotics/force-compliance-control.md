@@ -315,6 +315,37 @@ This is also why the action space is the first thing to check in a manipulation-
 paper: end-effector pose, joint position, joint torque, and *impedance parameters* are four
 different claims about which layer the learning is contributing to.
 
+#### The two papers that established this empirically
+
+The claim above is not a stylistic preference — it was measured, twice, in 2019–2020, and
+both papers are worth reading as a pair because they choose *different* spaces and reach the
+same conclusion.
+
+- **Martín-Martín et al., IROS 2019** — *Variable Impedance Control in End-Effector Space*.
+  Treats the **impedance parameters themselves as the RL action space** (VICES), and compares
+  it head-to-head against torque, joint-position, and end-effector-pose action spaces on
+  contact-rich tasks. The finding that matters: the action space, not the algorithm, is what
+  determines whether the policy can learn a contact task at all — and it changes sample
+  efficiency and transfer, not just final score.
+- **Bogdanovic, Khadiv & Righetti, RA-L 2020** — *Learning Variable Impedance Control for
+  Contact Sensitive Tasks*. Same question in **joint space**: the policy outputs desired
+  position *and* impedance gains. Its contribution is the robustness axis — it varies contact
+  uncertainty deliberately and shows where torque control and position control each fail,
+  while a learned variable-impedance action space degrades gracefully.
+
+Read them against §2: choosing an action space *is* choosing where on the impedance–admittance
+causality spectrum the learned layer sits. A policy emitting positions has picked the stiff
+end and cannot express compliance at all; a policy emitting torques has picked the soft end
+and must relearn the inner loop from scratch; a policy emitting impedance parameters is
+asking the classical controller for a behaviour and letting it realise it at 1 kHz — which is
+exactly the division of labour above.
+
+> [!tip] Why this matters for a demonstration-collection thesis
+> If the contribution is force-bearing demonstration data, the action space question arrives
+> twice: once for what the *teleoperator* commands during collection, and once for what the
+> *policy* emits at deployment. They do not have to match, and the mismatch is a design
+> decision that most papers leave implicit.
+
 #### The convergence, and the interface it is settling on
 
 That framing is no longer only this wiki's opinion — it is where the field is moving, and
@@ -407,6 +438,8 @@ tolerance, say which architecture can meet it — and whether any can.
 
 - N. Hogan, "Impedance Control: An Approach to Manipulation: Part I—Theory / Part II—Implementation / Part III—Applications," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 107, no. 1, pp. 1–7, 8–16, 17–24, March 1985. An undivided earlier version appeared at the 1984 American Control Conference, pp. 304–313.
 - M. T. Mason, "Compliance and Force Control for Computer Controlled Manipulators," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-11, no. 6, pp. 418–432, 1981 — natural and artificial constraints.
+- R. Martín-Martín, M. A. Lee, R. Gardner, S. Savarese, J. Bohg, "Variable Impedance Control in End-Effector Space: An Action Space for Reinforcement Learning in Contact-Rich Tasks," *IROS 2019*, pp. 1010–1017. DOI 10.1109/IROS40897.2019.8968201
+- M. Bogdanovic, M. Khadiv, L. Righetti, "Learning Variable Impedance Control for Contact Sensitive Tasks," *IEEE RA-L* 5(4), pp. 6129–6136, 2020. DOI 10.1109/LRA.2020.3011379 · [arXiv:1907.07500](https://arxiv.org/abs/1907.07500)
 - M. H. Raibert and J. J. Craig, "Hybrid Position/Force Control of Manipulators," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. **103**, no. 2, pp. 126–133, June 1981. Widely miscited as vol. 102; the volume is 103.
 - J. K. Salisbury, "Active stiffness control of a manipulator in cartesian coordinates," *IEEE Conference on Decision and Control*, pp. 95–100, 1980 — Cartesian stiffness via $J^\top$, the direct antecedent of impedance control.
 - O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal **on** Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987.
@@ -700,6 +733,32 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 관절 토크, 그리고 *임피던스 파라미터*는 학습이 어느 층에 기여하고 있는가에 대한 네 개의 서로
 다른 주장이다.
 
+#### 이것을 실증적으로 세운 두 편
+
+위 주장은 취향이 아니라 2019~2020년에 두 번 측정된 것이다. 두 편은 *서로 다른* 공간을 고르고
+같은 결론에 도달하므로 짝으로 읽어야 한다.
+
+- **Martín-Martín 외, IROS 2019** — *Variable Impedance Control in End-Effector Space*.
+  **임피던스 파라미터 자체를 RL의 행동 공간으로** 삼고(VICES), 토크·관절 위치·말단 자세 행동
+  공간과 접촉 다량 과제에서 정면 비교한다. 중요한 발견은 이것이다: 정책이 접촉 과제를 애초에
+  학습할 수 있느냐를 정하는 것은 알고리즘이 아니라 **행동 공간**이고, 최종 점수만이 아니라 표본
+  효율과 전이가 함께 바뀐다.
+- **Bogdanovic, Khadiv & Righetti, RA-L 2020** — *Learning Variable Impedance Control for
+  Contact Sensitive Tasks*. 같은 질문을 **관절 공간**에서 던진다: 정책이 목표 위치 *와* 임피던스
+  이득을 함께 낸다. 기여는 강건성 축이다 — 접촉 불확실성을 의도적으로 변화시켜 토크 제어와 위치
+  제어가 각각 어디서 무너지는지를 보이고, 학습된 가변 임피던스 행동 공간은 완만하게 나빠진다.
+
+§2에 비추어 읽어라: 행동 공간을 고르는 일이 곧 **학습 층을 임피던스–어드미턴스 인과 스펙트럼의
+어디에 놓을지 고르는 일**이다. 위치를 내는 정책은 뻣뻣한 끝을 골랐으므로 컴플라이언스를 아예
+표현할 수 없고, 토크를 내는 정책은 무른 끝을 골랐으므로 내부 루프를 처음부터 다시 배워야 하며,
+임피던스 파라미터를 내는 정책은 고전 제어기에게 *거동*을 요청하고 1 kHz에서 실현하게 맡긴다 —
+이것이 바로 위의 분업이다.
+
+> [!tip] 시연 수집이 기여인 논문에 이것이 왜 중요한가
+> 기여가 힘을 담은 시연 데이터라면 행동 공간 질문이 두 번 온다. 수집 중에 *원격조작자*가 무엇을
+> 명령하는가에서 한 번, 배치 시에 *정책*이 무엇을 내는가에서 한 번. 둘이 같을 필요는 없고, 그
+> 불일치는 대부분의 논문이 암묵에 두는 설계 결정이다.
+
 #### 수렴, 그리고 그것이 자리 잡아 가는 인터페이스
 
 이 프레이밍은 더 이상 이 위키의 의견만이 아니다 — 분야가 움직이고 있는 방향이고, 그 방향은
@@ -785,6 +844,8 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 
 - N. Hogan, "Impedance Control: An Approach to Manipulation: Part I—Theory / Part II—Implementation / Part III—Applications," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 107, no. 1, pp. 1–7, 8–16, 17–24, March 1985. 나뉘지 않은 이전 판본이 1984 American Control Conference, pp. 304–313에 있다.
 - M. T. Mason, "Compliance and Force Control for Computer Controlled Manipulators," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-11, no. 6, pp. 418–432, 1981 — 자연 제약과 인공 제약.
+- R. Martín-Martín, M. A. Lee, R. Gardner, S. Savarese, J. Bohg, "Variable Impedance Control in End-Effector Space: An Action Space for Reinforcement Learning in Contact-Rich Tasks," *IROS 2019*, pp. 1010–1017. DOI 10.1109/IROS40897.2019.8968201
+- M. Bogdanovic, M. Khadiv, L. Righetti, "Learning Variable Impedance Control for Contact Sensitive Tasks," *IEEE RA-L* 5(4), pp. 6129–6136, 2020. DOI 10.1109/LRA.2020.3011379 · [arXiv:1907.07500](https://arxiv.org/abs/1907.07500)
 - M. H. Raibert and J. J. Craig, "Hybrid Position/Force Control of Manipulators," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. **103**, no. 2, pp. 126–133, June 1981. vol. 102로 널리 잘못 인용된다. 실제 권은 103이다.
 - J. K. Salisbury, "Active stiffness control of a manipulator in cartesian coordinates," *IEEE Conference on Decision and Control*, pp. 95–100, 1980 — $J^\top$를 통한 카테시안 강성, 임피던스 제어의 직계 선조.
 - O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal **on** Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987.
