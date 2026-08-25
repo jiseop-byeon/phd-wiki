@@ -231,6 +231,44 @@ rather than finger-gaiting. **A dexterous-hand result does not transfer to a con
 by default**, and a paper claiming it should be asked which of the two changes above it
 actually relies on.
 
+#### Extrinsic dexterity — when the environment is part of the grasp
+
+Everything above computes closure over the contacts the *hand* supplies. That is a modelling
+choice, not a law, and dropping it changes the answer. A gripper pressing an object against a
+wall has three contact sets in play — two fingers and the wall — and the wall's contact costs
+nothing, needs no actuator, and never slips out of position.
+
+**Chavan Dafle, Rodriguez et al. (ICRA 2014)** named this *extrinsic dexterity*: reorienting
+an object in the hand using gravity, inertia, and contacts with the environment instead of
+finger motion. The point is an economic one about hardware. The classical argument for a
+many-DoF hand is that in-hand reorientation requires internal degrees of freedom; extrinsic
+dexterity shows that a two-finger gripper plus a table gets a large share of that capability
+for free. **Zhou & Held (CoRL 2022)** is the learned version and the sharper datapoint: on
+*occluded grasping* — where no grasp exists from the object's initial pose — a policy
+discovers pushing the object against a wall to rotate it, then grasps, **with no reward term
+rewarding environmental contact**, and transfers zero-shot from simulation to hardware at 78%
+across objects varying in size, density, friction and shape.
+
+Two consequences for how you read §2–§4:
+
+- **A force-closure verdict is relative to the contact set you chose to model.** "This grasp
+  is not force-closed" may only mean "not force-closed by the fingers alone". Ask what the
+  object is resting on.
+- **Dexterity is not only a property of the hand.** It is a property of hand *and* environment
+  together — which is why the boundary marker above ("a dexterous-hand result does not
+  transfer") cuts both ways: a simple gripper in a rich environment can beat a complex hand in
+  an empty one.
+
+**In construction the environment is unusually rich, and this is under-exploited.** A drill
+braced against the wall it is drilling converts reaction torque into an environmental contact
+instead of a joint load; a panel slid along a track is constrained by the track for free; a
+component lowered into a socket is seated by gravity rather than by force control. These are
+the same manoeuvre as pushing against a table, and the site supplies more fixtures than a
+tabletop does. The framing to carry into
+[[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] is that
+**a construction workpiece is rarely free-floating** — so a grasp analysis that models only
+the gripper is describing a harder problem than the one actually present.
+
 ### 6. Construction changes the object, not the theory
 
 The mathematics above assumes a rigid object of known-enough geometry. Construction
@@ -310,9 +348,13 @@ grasps are and what would make your answer wrong.
 
 - V.-D. Nguyen, "Constructing Force-Closure Grasps," *IJRR*, vol. 7, no. 3, pp. 3–16, 1988 (earlier ICRA versions: 1986 pp. 1368–1373; "…in 3D" 1987 pp. 240–245).
 - A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — the taxonomy of manipulation modes a grasp result sits inside.
+- N. Chavan Dafle, A. Rodriguez, R. Paolini, B. Tang, S. Srinivasa, M. Erdmann, M. T. Mason, et al., "Extrinsic dexterity: In-hand manipulation with external forces," *ICRA 2014*, pp. 1578–1585. DOI 10.1109/ICRA.2014.6907062
+- W. Zhou, D. Held, "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity," *CoRL 2022*, PMLR vol. 205 (published 2023 — cite the conference year, not the proceedings year) ([arXiv:2211.01500](https://arxiv.org/abs/2211.01500))
 - X. Markenscoff, L. Ni, C. H. Papadimitriou, "The Geometry of Grasping," *IJRR*, vol. 9, no. 1, pp. 61–74, 1990 — the source for the frictional finger counts in §3, stated in its own abstract.
 - C. Ferrari and J. F. Canny, "Planning optimal grasps," ICRA **1992**, pp. 2290–2295 — the $\epsilon$ metric. Note the *Springer Handbook of Robotics* bibliography misprints the year as 1986; the correct year is 1992.
 - A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — the taxonomy of manipulation modes a grasp result sits inside.
+- N. Chavan Dafle, A. Rodriguez, R. Paolini, B. Tang, S. Srinivasa, M. Erdmann, M. T. Mason, et al., "Extrinsic dexterity: In-hand manipulation with external forces," *ICRA 2014*, pp. 1578–1585. DOI 10.1109/ICRA.2014.6907062
+- W. Zhou, D. Held, "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity," *CoRL 2022*, PMLR vol. 205 (published 2023 — cite the conference year, not the proceedings year) ([arXiv:2211.01500](https://arxiv.org/abs/2211.01500))
 - A. Bicchi and V. Kumar, "Robotic grasping and contact: a review," ICRA 2000, pp. 348–353 — the survey to read first. It discusses the frictionless counts only, not the frictional one.
 
 **Learned**
@@ -514,6 +556,39 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 중요한 손재주는 손가락 걸음이 아니라 힘 조절([[04-robotics/force-compliance-control|13]])이다.
 **다지 손 결과가 건설 과제로 자동으로 옮겨가지는 않는다.** 옮겨간다고 주장하는 논문에는 위 두
 변화 중 무엇에 실제로 기대고 있는지를 물어야 한다.
+
+#### Extrinsic dexterity — 환경이 파지의 일부일 때
+
+위의 모든 계산은 closure를 *손*이 공급하는 접촉에 대해 구한다. 이것은 법칙이 아니라 **모델링
+선택**이고, 그 선택을 버리면 답이 달라진다. 물체를 벽에 밀어붙이고 있는 그리퍼에는 접촉 집합이
+셋 있다 — 손가락 둘과 벽 — 그리고 벽의 접촉은 비용이 들지 않고, 액추에이터가 필요 없으며,
+자리를 이탈하지도 않는다.
+
+**Chavan Dafle, Rodriguez 등**(ICRA 2014)이 이것을 *extrinsic dexterity*라 이름 붙였다:
+손가락 운동 대신 중력·관성·환경과의 접촉을 써서 손 안의 물체를 재정향하는 것. 요점은 하드웨어에
+관한 경제적 논증이다. 다자유도 손을 옹호하는 고전적 근거는 손 안 재정향에 내부 자유도가 필요하다는
+것인데, extrinsic dexterity는 **두 손가락 그리퍼에 탁자 하나만 있어도 그 능력의 상당 부분이 공짜로
+따라온다**는 것을 보인다. **Zhou & Held**(CoRL 2022)가 학습판이고 더 날카로운 데이터포인트다.
+*가려진 파지(occluded grasping)* — 물체의 초기 자세에서는 가능한 파지가 없는 상황 — 에서 정책이
+물체를 벽에 밀어 회전시킨 뒤 잡는 행동을 발견하는데, **환경 접촉에 보상을 주는 항이 전혀 없이**
+그렇게 되고, 시뮬레이션에서 실기계로 zero-shot 전이해 크기·밀도·마찰·형상이 다른 물체들에서
+78%를 낸다.
+
+§2~§4를 읽는 방식에 두 가지 귀결이 있다:
+
+- **force closure 판정은 당신이 모델링하기로 고른 접촉 집합에 상대적이다.** "이 파지는 force
+  closure가 아니다"가 실은 "손가락만으로는 아니다"일 수 있다. 물체가 무엇에 놓여 있는지를 물어라.
+- **손재주는 손만의 속성이 아니다.** 손 *과* 환경이 함께 갖는 속성이다 — 그래서 위의 경계 표지("다지
+  손 결과는 전이되지 않는다")는 양방향으로 작동한다. 풍부한 환경의 단순한 그리퍼가 텅 빈 환경의
+  복잡한 손을 이길 수 있다.
+
+**건설의 환경은 유난히 풍부한데, 이것이 덜 활용되고 있다.** 뚫고 있는 벽에 지지된 드릴은 반력
+토크를 관절 부하가 아니라 환경 접촉으로 바꾼다. 트랙을 따라 미끄러지는 패널은 트랙에 의해 공짜로
+구속된다. 소켓에 내려놓는 부재는 힘 제어가 아니라 중력이 안착시킨다. 전부 탁자에 밀어붙이는 것과
+같은 기동이고, **현장은 탁자보다 훨씬 많은 지그를 공급한다.**
+[[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]]으로 가져갈 프레이밍은
+이것이다 — **건설 작업물은 자유 부유 상태인 경우가 드물다.** 그러므로 그리퍼만 모델링한 파지 해석은
+실제보다 어려운 문제를 기술하고 있는 것이다.
 
 ### 6. 건설은 이론이 아니라 물체를 바꾼다
 

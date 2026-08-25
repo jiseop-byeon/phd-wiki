@@ -136,6 +136,9 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 **Grasping** (파지)
 
+- ◐ **Extrinsic dexterity: In-hand manipulation with external forces** — Chavan Dafle, Rodriguez et al., ICRA 2014 — 환경을 여분의 접촉으로 쓰기 (노트 없음, [[04-robotics/grasping|15 §5]])
+- ◐ **Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity** — Zhou & Held, CoRL 2022 — 보상 항 없이 창발한 벽 밀기, sim→real 78% (노트 없음, [[04-robotics/grasping|15 §5]])
+
 - [x] ◐ [[notes/7-robotics/dex-net-2|Dex-Net 2.0]] — Mahler et al., RSS 2017 — 해석 지표가 라벨 생성기가 되다
 - [x] ◐ [[notes/7-robotics/anygrasp|AnyGrasp]] — Fang et al., T-RO 2023 — 조밀·시간적으로 매끄러운 7-DoF 파지
 
