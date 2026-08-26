@@ -233,7 +233,7 @@ def _sections_of(rel):
         except OSError:
             _sec_cache[rel] = set()
         else:
-            _sec_cache[rel] = set(re.findall(r"^#{3,4}\s*(\d+(?:\.\d+)?)\.", body, re.M))
+            _sec_cache[rel] = set(re.findall(r"^#{3,4}\s*(\d+(?:\.\d+)?)[.\s]", body, re.M))
     return _sec_cache[rel]
 
 _link_re = re.compile(r"\[\[([^\]|#]+)\|([^\]]*?)\]\]")

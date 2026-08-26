@@ -41,7 +41,13 @@ incompatible formats on incompatible robots. NLP and vision scaled on shared cor
 > spaces, train one policy on everything — and let the model discover what transfers.
 
 - **Dataset**: 60 existing datasets, 22 embodiments (single arms, bimanual, quadrupeds),
-  500+ skills, 1M+ episodes, unified in RLDS.
+  500+ skills, 1M+ episodes, unified in RLDS. **These are the release figures, not the
+  abstract's.** The abstract says "22 different robots collected through a collaboration
+  between **21 institutions**, demonstrating **527 skills (160,266 tasks)**" — only the robot
+  count agrees. The "34 labs" and the episode count come from the project page and the
+  dataset release, which have grown since. This is the same version trap
+  [[01-canonical-papers/how-to-read|how-to-read §4.6]] records for DROID and BridgeData V2;
+  say which set you are quoting.
 - **RT-1-X / RT-2-X**: the [[rt-1|RT-1]] and [[rt-2|RT-2]] architectures retrained on the
   mixture — deliberately *no new method*, isolating the effect of cross-embodiment data.
 
@@ -91,7 +97,7 @@ Common Crawl)로 스케일했는데 로보틱스에는 그런 것이 없었다. 
 > 형식), 카메라 시점과 말단 행동 공간을 거칠게 정렬한 뒤, 전부에 대해 하나의 정책을
 > 학습시켜라 — 무엇이 전이되는지는 모델이 발견하게 두라.
 
-- **데이터셋**: 기존 60개 데이터셋, 22종 로봇(단일 팔, 양팔, 사족), 500+ 기술, 100만+
+- **데이터셋** (아래는 **릴리스 수치이지 초록의 수치가 아니다**. 초록은 "로봇 22종, **21개 기관**의 협업, **527개 기술(160,266 태스크)**"이라 하고 로봇 수만 일치한다. "34개 랩"과 에피소드 수는 프로젝트 페이지와 데이터셋 릴리스에서 온 것이고 그 뒤로 늘었다. [[01-canonical-papers/how-to-read|how-to-read §4.6]]이 DROID·BridgeData V2로 기록한 바로 그 판본 함정이니, 어느 쪽을 인용하는지 밝혀라): 기존 60개 데이터셋, 22종 로봇(단일 팔, 양팔, 사족), 500+ 기술, 100만+
   에피소드를 RLDS로 통일.
 - **RT-1-X / RT-2-X**: [[rt-1|RT-1]]과 [[rt-2|RT-2]] 구조를 혼합 데이터로 재학습 —
   의도적으로 *새 기법 없음*, 교차-신체 데이터의 효과만 분리해서 측정.
