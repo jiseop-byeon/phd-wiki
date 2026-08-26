@@ -78,8 +78,8 @@ WVN is an **online self-supervised** traversability system that **uses only visi
 The headline claim is a **time**, not an accuracy: terrain segmentation in **under 5 minutes of in-field training**, supporting navigation through high grass and a **1.4 km** footpath-following run. Demonstrated on the ANYmal quadruped — and note the abstract's closing claim is stronger than a careful reader expects: the approach "can generalize to **any ground robot**", which sits oddly beside its in-field-adaptation framing ([[04-robotics/traversability-off-road|17. §2]] treats that tension as the thing to check in every paper here).
 
 > [!warning] Reading the claims · 주장 읽는 법
-> The abstract's only quantitative claim is the **five-minute training time**. There are no success rates, no segmentation IoU, no baseline comparison in it. This is a *deployment-cost* result, and it should be cited as one: the contribution is that the adaptation loop is short enough to run when the robot arrives, not that the segmentation is more accurate than an offline model. Do not quote it as an accuracy result.
-> 초록의 유일한 정량 주장은 **5분 학습 시간**이다. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
+> The abstract carries exactly two numbers — **under 5 minutes** of in-field training and the **1.4 km** footpath run — and *both are cost-and-scale figures, not performance figures*. There are no success rates, no segmentation IoU, no baseline comparison in it. This is a *deployment-cost* result, and it should be cited as one: the contribution is that the adaptation loop is short enough to run when the robot arrives, not that the segmentation is more accurate than an offline model. Do not quote it as an accuracy result.
+> 초록에 든 숫자는 정확히 둘 — **5분 미만**의 현장 학습과 **1.4 km** 산책로 주행 — 이고, *둘 다 성능 수치가 아니라 비용·규모 수치다*. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
 
 ### Limitations & critique
 
@@ -161,7 +161,7 @@ WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이�
 대표 주장은 정확도가 아니라 **시간**이다: **현장 학습 5분 미만**의 지형 분할로, 키 큰 풀 사이 주행과 **1.4 km** 산책로 추종을 지원한다. ANYmal 4족 로봇에서 실증했다 — 그리고 초록의 맺음말이 신중한 독자의 예상보다 강하다는 점을 유의하라: 이 접근이 "**어떤 지상 로봇으로도** 일반화될 수 있다"고 한다. 현장 적응이라는 프레이밍과 나란히 놓으면 어색한 주장이고, [[04-robotics/traversability-off-road|17. §2]]가 이 분야 모든 논문에서 확인해야 할 것으로 다루는 긴장이 바로 그것이다.
 
 > [!warning] 주장 읽는 법 · Reading the claim
-> 초록의 유일한 정량 주장은 **5분 학습 시간**이다. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
+> 초록에 든 숫자는 정확히 둘 — **5분 미만**의 현장 학습과 **1.4 km** 산책로 주행 — 이고, *둘 다 성능 수치가 아니라 비용·규모 수치다*. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
 > The only quantitative claim in the abstract is the five-minute training time — a deployment-cost result, not an accuracy result.
 
 ### 한계와 비판
