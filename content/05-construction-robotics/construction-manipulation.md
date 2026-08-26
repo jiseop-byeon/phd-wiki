@@ -102,6 +102,15 @@ manipulator bending and welding rebar in place, in a permitted building that is 
 occupied. Yu et al. (2007) built a curtain-wall installation robot on an excavator base and
 tested it on a construction site — the title says so — but it is nearly twenty years old.
 
+**What that search excludes, so you can disagree with the scope rather than the count.** It
+is a search of the *modern* literature under six task keywords, and it therefore does not
+reach the Japanese **STCR era** — the dozens of single-task construction robots Shimizu,
+Obayashi, Kajima and peers ran on live sites in the 1980s–90s, whose record lives in ISARC
+proceedings and Bock's reference volumes ([[05-construction-robotics/lineage|lineage, Era 1]]). Those machines were on real sites and are deliberately outside this count: they
+are single-task automation without the contact control, force sensing or learning this page
+is about. Read the finding as "three papers in the contact-rich manipulation literature",
+not as "three robots ever".
+
 Everything else that is technically strong stops at the lab or a mock-up. Do not take a
 title as evidence of where the work happened: read the methods section for a sentence that
 names the location. The strongest overhead-drilling result, Kindle et al., is evaluated on
@@ -156,9 +165,12 @@ Sorted by rung rather than by fame, because that is the ordering that matters he
 > [!warning] Two traps in this literature
 > **Press demonstrations get cited as results.** The humanoid widely described as installing
 > drywall has a peer-reviewed paper about its *joint design*; the drywall demonstration
-> itself is a press video. **And commercial systems have no papers.** Jaibot, TyBot, Canvas
-> and Okibo are products; their productivity figures are marketing. Cite them as products
-> and say so — see [[05-construction-robotics/industry-deployment|Industry Deployment]].
+> itself is a press video. **And commercial systems have no papers *of their own*.** Jaibot, TyBot,
+> Canvas and Okibo are products; their productivity figures are vendor marketing that has
+> not been reviewed. Say "of their own" and mean it — the platform in Kindle et al. above is
+> widely identified as the Jaibot, so a peer-reviewed paper *about* one of these machines can
+> exist while the vendor's own numbers remain unreviewed. Cite the product as a product and
+> the paper as a paper — see [[05-construction-robotics/industry-deployment|Industry Deployment]].
 
 ### 5. Choosing a task, concretely
 
@@ -208,8 +220,11 @@ the [[07-research-program/index|research program]] is built on.
 1. Why does hybrid position/force control fail on a construction panel-fitting task that it
    would handle in a factory?
 2. A paper's title contains "on-site". What do you check before believing it?
-3. Rebar tying is the only task in §2 with a site-verified robot. Why is it *still* a weak
-   choice for this dissertation's core contribution?
+3. Rebar tying carries the strongest site-verified evidence of any §2 task — Feng et al.
+   (2024) in the field and Dörfler et al. (2019) welding rebar in place in a permitted
+   building. (Panel / curtain-wall installation has one too, Yu et al. 2007, but it is
+   nearly twenty years old.) Why is rebar tying *still* a weak choice for this
+   dissertation's core contribution?
 4. A vendor reports 300 holes per day for a drilling robot. How should that appear in a
    literature review?
 5. Which two rows of §2 would you cut first if the dissertation needed narrowing, and why?
@@ -332,6 +347,14 @@ Dörfler 등(2019)은 In situ Fabricator로 NEST의 DFAB HOUSE Mesh Mould 벽을
 건물이다. Yu 등(2007)은 굴착기 베이스 위에 커튼월 설치 로봇을 만들어 건설 현장에서
 시험했다 — 제목이 그렇게 말한다 — 그러나 스무 해 가까이 된 연구다.
 
+**그 검색이 무엇을 제외하는지 — 개수가 아니라 범위에 반대할 수 있도록.** 이것은 여섯 개 과제
+키워드로 *현대* 문헌을 훑은 것이라, 일본의 **STCR 시대**에는 닿지 않는다 — Shimizu, Obayashi,
+Kajima 등이 1980~90년대에 실제 현장에서 돌린 수십 대의 단일 작업 건설 로봇이고, 그 기록은
+ISARC 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|계보, 1시대]]). 그 기계들은
+실제 현장에 있었고 의도적으로 이 집계 밖이다 — 이 페이지가 다루는 접촉 제어·힘 센싱·학습이
+없는 단일 작업 자동화이기 때문이다. 이 발견은 "접촉 다량 조작 문헌에서 세 편"으로 읽어야지
+"역사상 세 대"로 읽으면 안 된다.
+
 기술적으로 강한 나머지는 전부 실험실이나 목업에서 멈춘다. 제목을 작업 장소의 증거로
 삼지 마라. 방법 절에서 장소를 지명한 문장을 읽어라. 가장 강한
 천장 드릴링 결과인 Kindle 등은 *모사된* 현장 교란 조건에서 기록한 데이터셋으로 평가된다 —
@@ -381,7 +404,10 @@ Dörfler 등(2019)은 In situ Fabricator로 NEST의 DFAB HOUSE Mesh Mould 벽을
 > [!warning] 이 문헌의 두 가지 함정
 > **보도용 시연이 결과로 인용된다.** 드라이월을 시공한다고 널리 소개된 휴머노이드는
 > *관절 설계*에 관한 심사 논문을 가지고 있고, 드라이월 시연 자체는 보도 영상이다.
-> **그리고 상용 시스템에는 논문이 없다.** Jaibot, TyBot, Canvas, Okibo는 제품이고 그 생산성
+> **그리고 상용 시스템에는 *자기* 논문이 없다.** Jaibot, TyBot, Canvas, Okibo는 제품이고, 위
+> Kindle 등의 플랫폼이 널리 Jaibot으로 지목된다는 점에서 보듯 **그 기계를 *다룬* 심사 논문은
+> 존재할 수 있다** — 없는 것은 업체 자신의 심사된 발표다. 제품은 제품으로, 논문은 논문으로
+> 인용하라. 그 생산성
 > 수치는 마케팅이다. 제품으로 인용하고 그렇다고 밝혀라 —
 > [[05-construction-robotics/industry-deployment|산업 배치]]를 보라.
 
@@ -430,8 +456,9 @@ Dörfler 등(2019)은 In situ Fabricator로 NEST의 DFAB HOUSE Mesh Mould 벽을
 
 1. 공장에서라면 처리했을 패널 끼움 작업에서 하이브리드 위치/힘 제어가 왜 건설에서는 실패하는가?
 2. 어떤 논문의 제목에 "on-site"가 들어 있다. 믿기 전에 무엇을 확인하는가?
-3. 철근 결속은 §2에서 현장 검증 로봇이 있는 유일한 작업이다. 그런데도 왜 이 학위논문의 핵심
-   기여로는 약한 선택인가?
+3. 철근 결속은 §2의 어느 작업보다 현장 검증 근거가 강하다 — Feng 등(2024)의 현장 적용과
+   Dörfler 등(2019)의 허가받은 건물에서의 현장 철근 용접. (패널/커튼월 설치에도 하나 있지만
+   Yu 등 2007로 스무 해 가까이 됐다.) 그런데도 왜 이 학위논문의 핵심 기여로는 약한 선택인가?
 4. 어떤 업체가 드릴링 로봇의 하루 300공을 보고한다. 문헌 검토에 어떻게 실려야 하는가?
 5. 학위논문을 좁혀야 한다면 §2의 어느 두 행을 먼저 잘라내겠는가, 그리고 왜인가?
 
