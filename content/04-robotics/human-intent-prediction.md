@@ -64,7 +64,7 @@ $$\Delta^{*} = \max\{\Delta : \text{performance}(\Delta) \geq \text{threshold}\}
 
 A system whose $\Delta^*$ is shorter than the actuator's stopping time is a detector wearing a predictor's name.
 
-> [!example] Worked example
+> [!example] Worked example — required lead time · 계산 예제 — 필요한 선행 시간
 > A vehicle at 30 km/h ($8.3\,\mathrm{m/s}$) needs 1.2 s to brake plus 0.3 s of pipeline latency: 1.5 s of required lead. Model A reaches AUC 0.85 only at $\Delta = 0.8\,\mathrm{s}$; model B holds AUC 0.78 out to $\Delta = 2.0\,\mathrm{s}$. **Model A cannot be used at all** at this speed, despite the better headline number. The correct comparison is $\Delta^*$ against the required lead, not peak performance.
 
 <svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="performance against time before the event, with a decision threshold and the lead time the platform requires">
@@ -127,7 +127,7 @@ Most pedestrians near a road do not cross in the next two seconds; most workers 
 - **Accuracy is meaningless.** A constant "no" predictor scores 95%+. Report AUC, precision–recall (not ROC alone, which is optimistic under imbalance), and the operating point actually used.
 - **Precision at the deployed threshold is the whole story.** A warning system with 20% precision produces four false alarms per true one, and will be ignored or disabled by the workers it is meant to protect. Alarm fatigue is a system failure mode, not a human failing.
 
-> [!example] Worked example · 계산 예제
+> [!example] Worked example — base rates · 계산 예제 — 기저율
 > **Why a 90% detector gets switched off.** Suppose a crossing-intent detector achieves a 90%
 > true-positive rate at a 5% false-positive rate, and the event it predicts — a worker entering
 > the robot's path within the next 2 s — is true in 2% of the frames it judges. Then
@@ -321,7 +321,7 @@ $$\Delta^{*} = \max\{\Delta : \text{성능}(\Delta) \geq \text{임계값}\}$$
 
 $\Delta^*$가 구동기의 정지 시간보다 짧은 시스템은 **예측기라는 이름을 쓴 검출기다.**
 
-> [!example] 계산 예제
+> [!example] 계산 예제 — 필요한 선행 시간 · Worked example
 > 30 km/h($8.3\,\mathrm{m/s}$) 차량이 제동에 1.2초, 파이프라인 지연 0.3초 → 필요한 선행 1.5초. 모델 A는 AUC 0.85를 $\Delta = 0.8\,\mathrm{s}$에서만 달성하고, 모델 B는 AUC 0.78을 $\Delta = 2.0\,\mathrm{s}$까지 유지한다. **이 속도에서 A는 아예 쓸 수 없다** — 헤드라인 숫자가 더 좋은데도. 올바른 비교는 최고 성능이 아니라 **$\Delta^*$ 대 필요 선행 시간**이다.
 
 <svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="사건 전 남은 시간에 대한 성능, 결정 임계값과 플랫폼이 요구하는 선행 시간과 함께">
@@ -384,7 +384,7 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 - **정확도는 무의미하다.** 무조건 "아니오"가 95% 이상을 받는다. AUC와 **precision–recall**(불균형에서 낙관적인 ROC 단독이 아니라), 그리고 실제 사용한 동작점을 보고하라.
 - **배포 임계값에서의 precision이 전부다.** precision 20%인 경고 시스템은 참 하나당 오경보 넷을 낸다. 보호하려던 작업자가 무시하거나 꺼버린다. **알람 피로는 인간의 결함이 아니라 시스템 실패 양식이다.**
 
-> [!example] 계산 예제 · Worked example
+> [!example] 계산 예제 — 기저율 · Worked example
 > **90%짜리 검출기가 꺼지는 이유.** 횡단 의도 검출기가 오탐률 5%에서 정탐률 90%를 낸다고 하자.
 > 그리고 그것이 예측하는 사건 — 작업자가 앞으로 2초 안에 로봇 경로로 들어오는 것 — 은 판정
 > 프레임의 2%에서 참이다. 그러면
