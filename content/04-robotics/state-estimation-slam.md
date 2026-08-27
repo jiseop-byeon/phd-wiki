@@ -99,7 +99,7 @@ The posterior variance is $(1-K)4=0.8\,\mathrm{m}^2$. The estimate lies closer t
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
 
-A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables. Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
+A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
 
 **The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
 paper names its front end by acronym and assumes you know what the letters buy. They differ
@@ -301,7 +301,9 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 | SLAM | 어느 쪽도 완전히 모름 | 궤적과 지도를 동시에 |
 
 SLAM **front end**는 특징·기하 제약을 추출하고 data association을 수행한다. **back
-end**는 pose, landmark, 때로는 보정 변수까지 최적화한다. Loop closure는 누적 drift를
+end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
+Gauss–Newton이나 Levenberg–Marquardt로 푼다. "Ceres/g2o/GTSAM으로 최적화한다"가 뜻하는 것이
+그것이다 ([[02-foundations/optimization|4. 최적화 §3.5]]). Loop closure는 누적 drift를
 고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기

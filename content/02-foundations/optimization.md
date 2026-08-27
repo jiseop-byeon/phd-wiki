@@ -91,6 +91,102 @@ formulations of the same engineering problem differ wildly in solvability.
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
   momentum + per-coordinate curvature proxy.
 
+### 3.5 Nonlinear least squares — the solver under half the robotics papers
+
+Section 3 gave you gradient descent and Newton on a general objective. A large share of
+robotics never uses either, because its problems all have the same special shape: a stack of
+residuals to be driven toward zero.
+
+$$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\big)$$
+
+Bundle adjustment, pose-graph SLAM, ICP registration, camera and hand–eye calibration,
+inverse kinematics, and IMU–camera time alignment are all this problem with a different
+$f$. Knowing the two algorithms below tells you what those systems are actually doing when
+a paper says "we optimize."
+
+**Gauss–Newton: linearize the residuals, not the objective.** At the current iterate,
+replace $f$ by its first-order Taylor model $f(x_k) + J(x - x_k)$, where $J = Df(x_k)$ is
+the Jacobian. That model is *affine*, so minimizing its squared norm is an ordinary linear
+least squares problem — which you can already solve. Its solution is the next iterate:
+
+$$x_{k+1} = x_k - (J^\top J)^{-1} J^\top f(x_k)$$
+
+Two of the most useful ideas in applied mathematics meet here: calculus builds the affine
+approximation, least squares solves it. Note what is *not* here — the second derivatives of
+$f$. Full Newton would need them; Gauss–Newton gets its curvature for free out of
+$J^\top J$, which is why it is used and Newton is not.
+
+**It has exactly two failure modes, and both are things you will see.**
+
+*It can diverge.* Each step reduces the residual of the **model**, but the model is only
+trustworthy near $x_k$; the true residual can grow. On $f(x) = \tanh x$ (one residual, one
+unknown, a single zero at the origin), Newton from $x_0 = 0.95$ gives
+$0.95 \to -0.684 \to 0.234 \to -0.009$ and lands on the solution. From $x_0 = 1.15$ it gives
+$1.15 \to -1.318 \to 2.156 \to -16.5$ and is gone. **A 0.2 change in initialization flips
+convergence into divergence** — which is why every system above ships with an initializer,
+and why "we use RANSAC/an IMU prior/a coarse alignment first" is load-bearing, not a detail.
+
+*It stops outright when $J$ loses rank.* Take a site-localization problem: three beacons on
+one wall at $a = (0,0), (8,0), (20,0)$, true position $(10, 6)$. Initialize the solver *on
+the wall*, at $(12, 0)$. Each Jacobian row is $(x - a_i)/\lVert x - a_i\rVert$, so with
+$y = 0$ every row's second entry is zero and
+
+$$J = \begin{bmatrix} 1 & 0 \\ 1 & 0 \\ -1 & 0 \end{bmatrix}, \qquad J^\top J = \begin{bmatrix} 3 & 0 \\ 0 & 0 \end{bmatrix}, \qquad \det J^\top J = 0$$
+
+Gauss–Newton asks for the inverse of a singular matrix and halts.
+
+**Levenberg–Marquardt: distrust the model by a tunable amount.** Both failures have one
+cause — the step went somewhere the affine model does not describe. So penalize distance
+from the current iterate:
+
+$$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
+
+which is a regularized least squares problem with the closed form
+
+$$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
+
+The $\lambda I$ fixes both failures at once. In the beacon example it turns
+$\det J^\top J = 0$ into $\det(J^\top J + I) = 4$ — the matrix is now invertible no matter
+what $J$ does. And $\lambda$ interpolates: at $\lambda \to 0$ this is Gauss–Newton, at large
+$\lambda$ it is a short step along the gradient. Adapt it by trial: take the step, and if
+the *true* residual fell, accept it and relax ($\lambda \leftarrow 0.8\lambda$); if it did
+not, reject the step and distrust harder ($\lambda \leftarrow 2\lambda$). On the $\tanh$
+problem from the same $x_0 = 1.15$ that destroyed Newton, this reaches $|x| < 10^{-3}$ in
+eight steps.
+
+**Worked — what initialization is worth.** Same three beacons, ranges
+$\rho = (11.66,\, 6.32,\, 11.66)$, solved by Gauss–Newton from two starts:
+
+| Start | $k=1$ | $k=2$ | $k=3$ | Converged | $\kappa(J)$ at start |
+|---|---|---|---|---|---|
+| $(12,\, 0.5)$ — near the wall | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.15)$ | step 5 | 13.1 |
+| $(12,\, 4)$ | $(10.2,\, 6.61)$ | $(9.99,\, 6.01)$ | $(10.0,\, 6.0)$ | step 3 | 1.8 |
+
+Both reach the same answer, but the near-the-wall start throws the estimate to $y = 32.3$ —
+five times the true value — before recovering. In a real deployment that excursion is a
+robot commanded somewhere impossible, and it is why solvers are given step limits as well as
+a trust parameter.
+
+**Three things this buys you when reading.**
+
+- **Damped least squares inverse kinematics *is* Levenberg–Marquardt.** The IK update
+  $\Delta q = J^\top (JJ^\top + \lambda I)^{-1} e$ and the LM update
+  $\Delta q = (J^\top J + \lambda I)^{-1} J^\top e$ are the same expression, identical to
+  machine precision. The $\lambda$ that stops an arm exploding near a singularity
+  ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]) is a trust parameter,
+  not a hack.
+- **Conditioning is squared.** $\kappa(J^\top J) = \kappa(J)^2$ exactly, so a Jacobian with
+  condition number 100 gives normal equations at $10^4$
+  ([[02-foundations/linear-algebra|1. Linear algebra §4]]). Good implementations never form
+  $J^\top J$; they run QR on the stacked matrix instead. When a paper reports numerical
+  trouble near singular configurations, this is usually the mechanism.
+- **It is a heuristic, and the papers know it.** Levenberg–Marquardt has no guarantee of
+  reaching the global minimum — like $k$-means, it is used everywhere anyway. That is why
+  this literature warm-starts from the previous solve, restarts from several
+  initializations, and reports the best. When a SLAM or calibration paper says "we solve
+  with Ceres / g2o / GTSAM," it has told you it ran this algorithm; it has not told you the
+  answer is the optimum.
+
 ### 4. Constrained optimization — Lagrange, KKT, duality
 
 - **Why add the constraint to the objective at all?** At a constrained optimum, you can't
@@ -289,6 +385,95 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
   좌표별 곡률 대리.
+
+### 3.5 비선형 최소자승 — 로보틱스 논문 절반 아래에 있는 풀이법
+
+3절은 일반 목적함수에 대한 경사하강과 뉴턴을 주었다. 로보틱스의 큰 몫은 둘 중 어느 것도 쓰지
+않는데, 그 문제들이 전부 같은 특별한 모양을 하고 있기 때문이다: 0으로 몰아야 할 잔차 더미.
+
+$$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\big)$$
+
+번들 조정, 포즈그래프 SLAM, ICP 정합, 카메라·손눈 보정, 역기구학, IMU–카메라 시간 정렬이
+전부 $f$만 다른 이 문제다. 아래 두 알고리즘을 알면 논문이 "최적화한다"고 쓸 때 그 시스템들이
+실제로 무엇을 하고 있는지 알 수 있다.
+
+**Gauss–Newton: 목적함수가 아니라 잔차를 선형화한다.** 현재 반복점에서 $f$를 1차 테일러 모델
+$f(x_k) + J(x - x_k)$로 바꾼다. $J = Df(x_k)$는 야코비다. 이 모델은 *아핀*이므로 그 제곱
+노름을 최소화하는 것은 평범한 선형 최소자승 문제이고, 그건 이미 풀 줄 안다. 그 해가 다음
+반복점이다.
+
+$$x_{k+1} = x_k - (J^\top J)^{-1} J^\top f(x_k)$$
+
+응용수학에서 가장 쓸모 있는 두 발상이 여기서 만난다. 미적분이 아핀 근사를 만들고, 최소자승이
+그것을 푼다. 여기에 *없는* 것에 주목하라 — $f$의 2차 도함수다. 완전한 뉴턴이라면 그것이
+필요하다. Gauss–Newton은 곡률을 $J^\top J$에서 공짜로 얻고, 그래서 이것이 쓰이고 뉴턴은
+쓰이지 않는다.
+
+**실패 방식이 정확히 둘 있고, 둘 다 당신이 보게 될 것이다.**
+
+*발산할 수 있다.* 각 스텝은 **모델**의 잔차를 줄이지만, 모델은 $x_k$ 근처에서만 믿을 만하다.
+참 잔차는 커질 수 있다. $f(x) = \tanh x$(잔차 하나, 미지수 하나, 원점에 유일한 영점)에서
+뉴턴은 $x_0 = 0.95$부터 $0.95 \to -0.684 \to 0.234 \to -0.009$로 가서 해에 앉는다.
+$x_0 = 1.15$부터는 $1.15 \to -1.318 \to 2.156 \to -16.5$로 가고 끝이다. **초기화의 0.2 차이가
+수렴을 발산으로 뒤집는다** — 위의 모든 시스템이 초기화기를 함께 싣는 이유이고, "먼저
+RANSAC을/IMU 사전값을/거친 정렬을 쓴다"가 사소한 세부가 아니라 하중을 지고 있는 이유다.
+
+*$J$가 계수를 잃으면 아예 멈춘다.* 현장 위치 추정 문제를 보자. 한 벽면에 비콘 셋이
+$a = (0,0), (8,0), (20,0)$에 있고 참 위치는 $(10, 6)$이다. 솔버를 *벽 위에서*, 즉 $(12, 0)$에서
+초기화한다. 야코비의 각 행은 $(x - a_i)/\lVert x - a_i\rVert$이므로 $y = 0$에서는 모든 행의 둘째
+성분이 0이고
+
+$$J = \begin{bmatrix} 1 & 0 \\ 1 & 0 \\ -1 & 0 \end{bmatrix}, \qquad J^\top J = \begin{bmatrix} 3 & 0 \\ 0 & 0 \end{bmatrix}, \qquad \det J^\top J = 0$$
+
+Gauss–Newton은 특이행렬의 역을 요구하고 멈춰 선다.
+
+**Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 두 실패의 원인은 하나다 — 스텝이
+아핀 모델이 서술하지 못하는 곳으로 갔다. 그러니 현재 반복점에서 멀어지는 것에 벌점을 매긴다.
+
+$$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
+
+이것은 정규화된 최소자승 문제이고 닫힌 형태를 갖는다.
+
+$$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
+
+$\lambda I$가 두 실패를 한 번에 고친다. 비콘 예제에서 그것은 $\det J^\top J = 0$을
+$\det(J^\top J + I) = 4$로 바꾼다 — $J$가 무슨 짓을 하든 이제 행렬은 역을 갖는다. 그리고
+$\lambda$는 보간한다. $\lambda \to 0$이면 Gauss–Newton이고, $\lambda$가 크면 그래디언트 방향의
+짧은 한 걸음이다. 시행으로 조절한다. 스텝을 밟아 보고 *참* 잔차가 줄었으면 받아들이고
+느슨하게 하며($\lambda \leftarrow 0.8\lambda$), 줄지 않았으면 스텝을 물리고 더 불신한다
+($\lambda \leftarrow 2\lambda$). 뉴턴을 파괴했던 바로 그 $x_0 = 1.15$에서 $\tanh$ 문제를 이렇게
+풀면 여덟 스텝 만에 $|x| < 10^{-3}$에 닿는다.
+
+**계산 — 초기화의 값어치.** 같은 비콘 셋, 거리 $\rho = (11.66,\, 6.32,\, 11.66)$, 두 시작점에서
+Gauss–Newton으로:
+
+| 시작점 | $k=1$ | $k=2$ | $k=3$ | 수렴 | 시작점의 $\kappa(J)$ |
+|---|---|---|---|---|---|
+| $(12,\, 0.5)$ — 벽 근처 | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.15)$ | 5스텝 | 13.1 |
+| $(12,\, 4)$ | $(10.2,\, 6.61)$ | $(9.99,\, 6.01)$ | $(10.0,\, 6.0)$ | 3스텝 | 1.8 |
+
+둘 다 같은 답에 닿지만, 벽 근처에서 시작한 쪽은 회복하기 전에 추정치를 $y = 32.3$까지 —
+참값의 다섯 배 — 던져 버린다. 실제 배포에서 그 이탈은 불가능한 곳으로 명령받은 로봇이고,
+솔버에 신뢰 파라미터뿐 아니라 스텝 제한도 함께 주는 이유가 그것이다.
+
+**읽을 때 이것이 사 주는 것 셋.**
+
+- **감쇠 최소자승 역기구학이 *곧* Levenberg–Marquardt다.** IK 갱신식
+  $\Delta q = J^\top (JJ^\top + \lambda I)^{-1} e$와 LM 갱신식
+  $\Delta q = (J^\top J + \lambda I)^{-1} J^\top e$는 같은 식이고, 기계 정밀도까지 일치한다.
+  특이 자세 근처에서 팔이 폭발하는 것을 막는 그 $\lambda$
+  ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]])는 임시방편이 아니라 신뢰
+  파라미터다.
+- **조건수가 제곱된다.** $\kappa(J^\top J) = \kappa(J)^2$이 정확히 성립하므로, 조건수 100인
+  야코비는 정규방정식에서 $10^4$이 된다
+  ([[02-foundations/linear-algebra|1. 선형대수 §4]]). 좋은 구현은 $J^\top J$를 아예 만들지
+  않고 쌓은 행렬에 QR을 돌린다. 논문이 특이 자세 근처의 수치 문제를 보고할 때, 대개 그
+  기전이 이것이다.
+- **이것은 발견적 방법이고, 논문들도 안다.** Levenberg–Marquardt에는 전역 최솟값에 닿는다는
+  보장이 없다 — $k$-평균과 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
+  웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
+  논문이 "Ceres / g2o / GTSAM으로 푼다"고 쓸 때, 그것은 이 알고리즘을 돌렸다고 말한 것이지
+  답이 최적해라고 말한 것이 아니다.
 
 ### 4. 제약 최적화 — 라그랑주, KKT, 쌍대성
 

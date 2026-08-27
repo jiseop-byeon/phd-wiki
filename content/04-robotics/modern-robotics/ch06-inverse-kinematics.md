@@ -100,7 +100,12 @@ $\theta^{(0)} = (45°, 90°)$.
 
 - **Singularities**: near them $J^\dagger$ explodes → **damped least squares**
   $J^\top(JJ^\top + \lambda^2 I)^{-1}$ trades accuracy for stability — ridge regression in
-  disguise.
+  disguise. It is also, exactly, the **Levenberg–Marquardt** step for this residual: the
+  identity $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$ makes the
+  two expressions the same, so $\lambda$ is a trust parameter and damped IK is the same
+  algorithm SLAM and calibration run ([[02-foundations/optimization|4. Optimization §3.5]]).
+  MR writes $\lambda^2$ so that $\lambda$ carries units; the optimization page writes
+  $\lambda$.
 - **Redundancy** ($n > 6$): the null space of $J$ moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
@@ -208,6 +213,11 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
 
 - **특이점**: 근처에서 $J^\dagger$가 폭발 → **감쇠 최소제곱**
   $J^\top(JJ^\top + \lambda^2 I)^{-1}$이 정확도를 안정성과 맞바꾼다 — 변장한 릿지 회귀.
+  그리고 정확히 이 잔차에 대한 **Levenberg–Marquardt** 스텝이기도 하다. 항등식
+  $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$가 두 식을 같게
+  만들므로 $\lambda$는 신뢰 파라미터이고, 감쇠 IK는 SLAM과 보정이 돌리는 바로 그 알고리즘이다
+  ([[02-foundations/optimization|4. 최적화 §3.5]]). MR은 $\lambda$가 단위를 갖도록
+  $\lambda^2$로 쓰고, 최적화 페이지는 $\lambda$로 쓴다.
 - **여유자유도** ($n > 6$): $J$의 영공간은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 

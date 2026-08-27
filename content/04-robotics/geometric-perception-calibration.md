@@ -134,7 +134,10 @@ closest point) alternates: (1) match each point to its nearest neighbor, (2) sol
 least-squares $T$ for those matches, (3) repeat.
 
 - ICP is **local**: it converges to the nearest basin, so it needs a decent initial guess
-  (odometry, a global feature match, or a human).
+  (odometry, a global feature match, or a human). Step (2) is a nonlinear least squares
+  solve, run by Gauss–Newton or Levenberg–Marquardt — which is *why* it is local, and why
+  the initial guess is load-bearing rather than a convenience
+  ([[02-foundations/optimization|4. Optimization §3.5]]).
 - **Degeneracies**: a flat wall slides along itself; a corridor slides lengthwise;
   symmetric objects flip. Papers reporting registration accuracy should say how initial
   poses were chosen and whether degenerate scenes were included.
@@ -333,7 +336,9 @@ point)는 반복한다: (1) 각 점을 최근접 이웃과 짝짓고, (2) 그 �
 풀고, (3) 반복.
 
 - ICP는 **국소적**이다: 가장 가까운 골짜기로 수렴하므로 괜찮은 초기 추정(odometry,
-  전역 특징 매칭, 사람)이 필요하다.
+  전역 특징 매칭, 사람)이 필요하다. (2)단계가 비선형 최소자승 풀이이고 Gauss–Newton이나
+  Levenberg–Marquardt로 돌아간다 — ICP가 국소적인 *이유*이자, 초기 추정이 편의가 아니라 하중을
+  지는 이유다 ([[02-foundations/optimization|4. 최적화 §3.5]]).
 - **퇴화**: 평평한 벽은 스스로를 따라 미끄러지고, 복도는 길이 방향으로 미끄러지고,
   대칭 물체는 뒤집힌다. Registration 정확도를 보고하는 논문은 초기 pose를 어떻게
   골랐고 퇴화 장면이 포함됐는지 말해야 한다.
