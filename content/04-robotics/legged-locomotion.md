@@ -18,6 +18,9 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 
 ## English
 
+*Group I. Stands on [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Dynamics]] and [[02-foundations/rl-basics|7. RL Basics]].
+Privileged teacher–student distillation is the idea to take from here, and the page doubles as practice at correcting over-citation.*
+
 ### 1. Why this page exists
 
 This literature is **systematically over-cited beyond its actual claims**. The famous results
@@ -289,6 +292,9 @@ for the full picture and the licensing traps.
 - [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] — the tooling status in §6
 
 ## 한국어
+
+*I군이다. [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 동역학]]과 [[02-foundations/rl-basics|7. RL 기초]] 위에 선다.
+가져갈 발상은 특권 교사–학생 증류이고, 이 페이지는 동시에 과잉 인용을 교정하는 연습장이다.*
 
 ### 1. 이 페이지가 존재하는 이유
 

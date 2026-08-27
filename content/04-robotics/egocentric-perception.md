@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when egocentric signals are the input to a thesi
 
 ## English
 
+*Group J. Stands on [[04-robotics/geometric-perception-calibration|3.5]], [[04-robotics/human-pose-gaze|21. Pose & Gaze]] and [[04-robotics/video-action-understanding|20. Video]].
+Moving the camera to the head changes what is observable at all — it is a different regime, not a bad camera angle.*
+
 Move the camera from the room to the head and the perception problem changes character. The body that was the object of study disappears from view; the hands and the manipulated object fill the frame; and camera motion — previously noise — becomes the strongest available signal about attention. **Egocentric perception is not third-person perception from a worse angle. It is a different observability regime.**
 
 > [!info] Depth target
@@ -154,6 +157,9 @@ You should be able to:
 - K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — retargets human hand trajectories into a robot hand embodiment, transferring *action* priors rather than visual features. The clean contrast to R3M.
 
 ## 한국어
+
+*J군이다. [[04-robotics/geometric-perception-calibration|3.5]]·[[04-robotics/human-pose-gaze|21. 자세·시선]]·[[04-robotics/video-action-understanding|20. 비디오]] 위에 선다.
+카메라를 머리로 옮기면 무엇이 관측 가능한지 자체가 달라진다 — 나쁜 각도가 아니라 다른 체제다.*
 
 카메라를 방에서 머리로 옮기면 인지 문제의 성격이 바뀐다. 연구 대상이던 몸이 화면에서 사라지고, 손과 조작 대상이 프레임을 채우고, 이전에는 잡음이던 카메라 움직임이 **주의에 대한 가장 강한 신호**가 된다. **자기중심 인지는 나쁜 각도의 3인칭 인지가 아니다. 다른 관측 가능성 체제다.**
 

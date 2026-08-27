@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when a pose, hand, or gaze estimate is an input 
 
 ## English
 
+*Group J. Stands on [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]], [[02-foundations/se3-geometry|SE(3)]] and [[04-robotics/video-action-understanding|20. Video]].
+Intent is not observable and the body is, so every intent claim eventually rests on what this page can and cannot measure.*
+
 A robot that must anticipate a person cannot observe intent. It observes a body. **Pose, hands, and gaze are the measurable channels through which intent leaks before action** — and each channel has a different resolution, a different failure mode, and a different range at which it stops existing.
 
 > [!info] Depth target
@@ -162,6 +165,9 @@ You should be able to:
 > exists for close-range manipulation. That absence is a gap you could measure.
 
 ## 한국어
+
+*J군이다. [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]·[[02-foundations/se3-geometry|SE(3)]]·[[04-robotics/video-action-understanding|20. 비디오]] 위에 선다.
+의도는 관측할 수 없고 몸은 관측할 수 있으므로, 모든 의도 주장이 결국 이 페이지가 잴 수 있는 것과 없는 것 위에 얹힌다.*
 
 사람을 예측해야 하는 로봇은 의도를 관측할 수 없다. 관측하는 건 몸이다. **자세·손·시선은 행동보다 먼저 의도가 새어 나오는 측정 가능한 채널**이고, 각 채널은 해상도도, 실패 방식도, 그리고 그것이 존재하기를 멈추는 거리도 다르다.
 

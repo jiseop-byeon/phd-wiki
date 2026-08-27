@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group B. Stands on linear algebra, probability, optimization, signal processing and [[02-foundations/se3-geometry|SE(3)]].
+A robot never observes its own state directly; groups C and F consume the estimate this page produces.*
+
 Sensors do not reveal the world directly: they provide partial, delayed, and noisy measurements. **State estimation** combines a motion model, control inputs, sensor observations, and uncertainty to infer the variables a robot needs but cannot observe perfectly.
 
 > [!info] Depth target
@@ -186,6 +189,9 @@ You should be able to:
 - [KITTI odometry evaluation](https://www.cvlibs.net/datasets/kitti/eval_odometry.php)
 
 ## 한국어
+
+*B군이다. 선형대수·확률·최적화·신호처리와 [[02-foundations/se3-geometry|SE(3)]] 위에 선다.
+로봇은 자기 상태를 직접 보는 일이 없고, C군과 F군이 이 페이지가 만든 추정값을 소비한다.*
 
 센서는 세계를 직접 알려주지 않는다: 부분적이고, 지연되고, 잡음 섞인 측정을 줄 뿐이다.
 **상태 추정**은 운동 모델, 제어 입력, 센서 관측, 불확실성을 결합해 로봇에 필요하지만

@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group E, and the only page in it, because everything in group H branches from here. Stands on [[02-foundations/linear-algebra|linear algebra]],
+optimization and the [[04-robotics/modern-robotics/index|MR chapters]]. This is where geometry stops being enough, the moment the robot touches something.*
+
 Once a robot touches the world, geometry alone is insufficient. Contact introduces forces, friction, impacts, changing modes, deformation, and uncertainty. These effects are central to grasping, assembly, excavation, wiping, drilling, and handling flexible materials.
 
 > [!info] Depth target
@@ -137,6 +140,9 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 - [Modern Robotics course wiki — ch. 12 videos & software](http://hades.mech.northwestern.edu/index.php/Modern_Robotics)
 
 ## 한국어
+
+*E군이고 그 안의 유일한 페이지다 — H군 전체가 여기서 갈라져 나오기 때문이다. [[02-foundations/linear-algebra|선형대수]]·최적화와
+[[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다. 로봇이 무언가에 닿는 순간 기하만으로는 부족해지는 지점이 여기다.*
 
 로봇이 세계에 닿는 순간 기하만으로는 부족하다. 접촉은 힘, 마찰, 충격, 모드 전환, 변형,
 불확실성을 끌고 들어온다. 이 효과들은 파지, 조립, 굴착, 닦기, 천공, 유연 재료 취급의

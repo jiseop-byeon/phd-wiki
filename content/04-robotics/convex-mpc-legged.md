@@ -10,6 +10,9 @@ mastery-when: "Raise to Working or Mastery when legged control or MPC design is 
 
 ## English
 
+*Last of group D and its worked application. Stands on [[04-robotics/mpc|7. MPC]], [[04-robotics/contact-force-tactile|9. Contact]] and the [[04-robotics/modern-robotics/index|MR chapters]].
+The cleanest case study of the skill the optimization page teaches: choose the approximation that makes the problem convex.*
+
 > [!info] Depth target · 깊이 목표
 > Understand why the problem is convexified and what the simplification costs. This is a representative-application read, not a controller-design guide.
 > 왜 문제를 볼록화했고 그 단순화의 대가가 무엇인지 이해하는 것이 목표다. 대표 응용 읽기이지 제어기 설계 가이드가 아니다.
@@ -37,6 +40,9 @@ locomotion policies (RL) are compared against.
 §III–IV (dynamics simplification + QP) → skim the IROS original for results.
 
 ## 한국어
+
+*D군의 마지막이자 그 응용 사례다. [[04-robotics/mpc|7. MPC]]·[[04-robotics/contact-force-tactile|9. 접촉]]과 [[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다.
+최적화 페이지가 가르치는 기술 — 문제를 볼록하게 만드는 근사를 고르는 것 — 의 가장 깔끔한 사례 연구다.*
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*다:
 로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 현재 요(yaw) 주변에서

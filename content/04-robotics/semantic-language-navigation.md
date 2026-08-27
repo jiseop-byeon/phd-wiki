@@ -19,6 +19,9 @@ mastery-when: "Raise to Mastery only if language-grounded navigation becomes the
 
 ## English
 
+*Group I. Stands on [[04-robotics/planning-decision-making|4. Planning]] and, in practice, on the VLM notes.
+When the goal is a word rather than a coordinate, the hard problem stops being path-finding and becomes deciding where to look.*
+
 ### 1. The shift a classical reader has to make
 
 Classically the goal is a **pose in a known metric space**, and planning is finding a path to
@@ -279,6 +282,9 @@ underneath.
 - [[01-canonical-papers/notes/3-vlm/clip|CLIP]] and [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] — the ingredients §7 assembles
 
 ## 한국어
+
+*I군이다. [[04-robotics/planning-decision-making|4. 계획]] 위에 서고, 실질적으로는 VLM 노트에도 기댄다.
+목표가 좌표가 아니라 단어일 때 어려운 문제는 경로 찾기가 아니라 어디를 볼지 정하는 것이 된다.*
 
 ### 1. 고전적 독자가 해야 하는 전환
 

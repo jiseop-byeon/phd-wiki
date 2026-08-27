@@ -20,6 +20,9 @@ mastery-when: "The research program keeps this at Working — it is a supporting
 
 ## English
 
+*Group H. Stands on the [[04-robotics/modern-robotics/index|MR chapters]], [[04-robotics/state-estimation-slam|3. State Estimation]] and [[04-robotics/planning-decision-making|4. Planning]].
+The goal is not a point on a map but a configuration the arm can work from, and that one sentence is the whole page.*
+
 ### 1. The goal is a pose, not a point
 
 A navigation stack built for a delivery robot answers "get to this location". A mobile
@@ -208,6 +211,9 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 - [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA]] — demonstration collection for mobile manipulation
 
 ## 한국어
+
+*H군이다. [[04-robotics/modern-robotics/index|MR 챕터 요약]]과 [[04-robotics/state-estimation-slam|3. 상태 추정]]·[[04-robotics/planning-decision-making|4. 계획]] 위에 선다.
+목표는 지도 위의 점이 아니라 팔이 일할 수 있는 자세다 — 그 한 문장이 이 페이지의 전부다.*
 
 ### 1. 목표는 점이 아니라 자세다
 

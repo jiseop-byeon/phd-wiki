@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group B. Stands on [[02-foundations/linear-algebra|linear algebra]], optimization and [[02-foundations/se3-geometry|SE(3)]]. This is how pixels and point clouds
+become 3D in the right frame — every perception claim in groups H and J passes through here.*
+
 [[02-foundations/se3-geometry|SE(3)]] is the language for *writing down* poses; geometric
 perception is how a robot *obtains* them — how pixels, depths, and point clouds become
 3D structure expressed in the right coordinate frame. Deep perception
@@ -202,6 +205,9 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 - [KITTI sensor setup — a real calibrated multi-sensor rig](https://www.cvlibs.net/datasets/kitti/setup.php)
 
 ## 한국어
+
+*B군이다. [[02-foundations/linear-algebra|선형대수]]·최적화와 [[02-foundations/se3-geometry|SE(3)]] 위에 선다. 픽셀과 점군이 올바른 좌표계의
+3D가 되는 과정이고, H군과 J군의 인식 주장이 전부 여기를 통과한다.*
 
 [[02-foundations/se3-geometry|SE(3)]]가 pose를 *적는* 언어라면, 기하학적 인식은 로봇이
 pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올바른 좌표계의 3D 구조가 되는

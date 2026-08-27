@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group F. Stands on [[04-robotics/state-estimation-slam|3]], [[04-robotics/planning-decision-making|4]], [[04-robotics/control-theory-ce397|5]] plus signal processing and [[02-foundations/se3-geometry|SE(3)]].
+What an algorithm still needs before it is a robot: clocks, frames, rates, logs, and the failures that live between blocks.*
+
 A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, computers, networks, controllers, actuators, safety logic, and logging work together. Systems literacy lets a reader determine what was actually deployed and where a reported improvement may have originated.
 
 > [!info] Depth target
@@ -199,6 +202,9 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 - [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)
 
 ## 한국어
+
+*F군이다. [[04-robotics/state-estimation-slam|3]]·[[04-robotics/planning-decision-making|4]]·[[04-robotics/control-theory-ce397|5]]번과 신호처리·[[02-foundations/se3-geometry|SE(3)]] 위에 선다.
+알고리즘이 로봇이 되기까지 더 필요한 것 — 클럭, 좌표계, 주기, 로그, 그리고 블록 사이에 사는 실패들.*
 
 논문의 알고리즘은 센서, 클럭, 좌표계, 컴퓨터, 네트워크, 제어기, 액추에이터, 안전 로직,
 로깅이 함께 작동할 때에만 로봇이 된다. 시스템 문해력은 실제로 무엇이 배포됐고, 보고된

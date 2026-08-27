@@ -10,6 +10,9 @@ mastery-when: "Raise the chapters and tools used by the thesis to Working; maste
 
 ## English
 
+*Group A, the root of it. Every word this track uses for geometry and dynamics comes from this
+textbook; the chapter summaries are in [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]], and groups B through J are written in its vocabulary.*
+
 > [!info] Depth target · 깊이 목표
 > Track-level ★: read the summarized chapters alongside the book until screw-theory notation (twists, wrenches, PoE, Jacobians) reads fluently. Full exercise sets are optional.
 > 트랙 수준 ★: 스크류 이론 표기(twist·wrench·PoE·야코비안)가 술술 읽힐 때까지 요약과 원서를 함께 본다. 연습문제 전체 풀이는 선택이다.
@@ -37,6 +40,9 @@ joint commands) and every simulator's dynamics assume this material; SE(3) fluen
 entry ticket to manipulation research.
 
 ## 한국어
+
+*A군의 뿌리다. 이 트랙이 기하와 역학에 쓰는 어휘가 전부 이 교재에서 나온다. 챕터 요약은
+[[04-robotics/modern-robotics/index|2. Modern Robotics 요약]]에 있고, B~J군이 그 어휘로 쓰여 있다.*
 
 **무엇인가**: 로봇 기구학·동역학·플래닝·제어의 현대 표준 교과서 — 고전 D-H 파라미터 대신
 스크류 이론/지수 좌표 정식화를 쓰는데, 이것이 정확히 현대 매니퓰레이션 연구가 쓰는

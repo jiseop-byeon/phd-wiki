@@ -10,6 +10,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group D. Stands on [[04-robotics/control-theory-ce397|5]] and [[04-robotics/lqr-lqg|6]]. Handling input and state constraints natively is its whole reason for existing
+next to LQR, and [[04-robotics/convex-mpc-legged|8. Convex MPC]] is the application that made it standard on legged robots.*
+
 > [!info] Depth target · 깊이 목표
 > Read an MPC formulation (cost, horizon, constraints), identify what is solved online at each step, judge feasibility/stability claims, and recognize the standard failure modes. Solver internals are optional.
 > MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단하고, 표준 실패 모드를 알아볼 수 있으면 된다. 솔버 내부는 선택이다.
@@ -166,6 +169,9 @@ construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-ma
 See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for trajectory optimization, replanning, task planning, and planning under uncertainty.
 
 ## 한국어
+
+*[[04-robotics/control-theory-ce397|5]]·[[04-robotics/lqr-lqg|6]]번 위에 선다. D군이다. 입력·상태 제약을 태생적으로 다루는 것이 LQR 옆에 존재하는 이유이고,
+[[04-robotics/convex-mpc-legged|8. Convex MPC]]가 이것을 보행 로봇의 표준으로 만든 응용이다.*
 
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
 문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학과

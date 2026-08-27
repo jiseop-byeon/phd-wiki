@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when a predictor or its uncertainty is a contrib
 
 ## English
 
+*The end of group J. Stands on [[04-robotics/hri-safety|11. HRI & Safety]], [[04-robotics/human-pose-gaze|21]], [[04-robotics/video-action-understanding|20]] and probability.
+Where timing and calibration matter more than accuracy, because the prediction is an interface to a decision rather than an answer.*
+
 A robot sharing space with a person acts on a guess about what the person will do. That guess is the interface between perception and every downstream decision — and it is worth exactly as much as its *timing* and its *calibration*, not its accuracy.
 
 > [!info] Depth target
@@ -230,6 +233,9 @@ You should be able to:
 - A. N. Angelopoulos and S. Bates, "A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification," [arXiv:2107.07511](https://arxiv.org/abs/2107.07511)
 
 ## 한국어
+
+*J군의 끝이다. [[04-robotics/hri-safety|11. HRI·안전]]·[[04-robotics/human-pose-gaze|21]]·[[04-robotics/video-action-understanding|20]]번과 확률 위에 선다.
+정확도보다 시점과 보정이 더 중요해지는 지점이다 — 예측이 답이 아니라 결정으로 가는 인터페이스이기 때문이다.*
 
 사람과 공간을 공유하는 로봇은 그 사람이 무엇을 할지에 대한 추측 위에서 행동한다. 그 추측은 인지와 모든 하위 결정 사이의 인터페이스이고, 그 값어치는 정확도가 아니라 정확히 **시점(timing)과 보정(calibration)** 만큼이다.
 

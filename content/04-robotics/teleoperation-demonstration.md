@@ -19,6 +19,9 @@ mastery-when: "Already raised — the research program's contribution is a force
 
 ## English
 
+*Group H, and one of the three pages this track raises to Mastery. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/control-theory-ce397|5]] and the [[04-robotics/modern-robotics/index|MR chapters]].
+It reads teleoperation as data generation rather than as driving, which is what makes it a research topic instead of an interface one.*
+
 ### 1. Teleoperation is a data-generation tool
 
 The old reading of teleoperation is "driving a robot from a distance", and it is still
@@ -360,6 +363,9 @@ requires, because the contribution *is* the corpus — needs these:
 - [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — why a stiff inner position loop changes what a force claim means.
 
 ## 한국어
+
+*H군이고, 이 트랙이 Mastery로 올리는 세 페이지 중 하나다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/control-theory-ce397|5]]번과 [[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다.
+원격조작을 조종이 아니라 데이터 생성으로 읽으며, 그것이 이 주제를 인터페이스 문제가 아닌 연구 문제로 만든다.*
 
 ### 1. 원격조작은 데이터 생성 도구다
 

@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group C, and the only page in it. Stands on the [[04-robotics/modern-robotics/index|Modern Robotics chapters]], [[04-robotics/mpc|7. MPC]] and the optimization and RL pages.
+Choosing an executable future; group I specialises this for unstructured environments.*
+
 Planning asks how a robot should choose a feasible sequence of future states and actions to reach a goal. The difficulty is not merely finding a short path: robot geometry, dynamics, contact, uncertainty, computation time, and changing observations constrain what can actually be executed.
 
 > [!info] Depth target
@@ -226,6 +229,9 @@ You should be able to:
 - [OMPL: planning concepts](https://ompl.kavrakilab.org/)
 
 ## 한국어
+
+*C군이고, 그 안에 있는 유일한 페이지다. [[04-robotics/modern-robotics/index|MR 챕터 요약]]과 [[04-robotics/mpc|7. MPC]], 그리고 최적화·RL 기초 위에 선다.
+실행 가능한 미래를 고르는 문제이며, I군이 이것을 비정형 환경으로 특수화한다.*
 
 Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동 시퀀스를 고르는 문제다.
 어려움은 짧은 경로 찾기가 아니다: 로봇 형상, 동역학, 접촉, 불확실성, 계산 시간, 변하는

@@ -20,6 +20,9 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 
 ## English
 
+*Group H and a Mastery page. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] and optimization.
+Half the field is the mathematics of closure and half is predicting it from a depth image without writing any of it down — both are worth reading, because the learned half trains on labels the analytic half produced.*
+
 ### 1. The question a grasp has to answer
 
 A grasp is not "the gripper is touching the object". It is a claim: **whatever the world
@@ -371,6 +374,9 @@ Every quantitative figure quoted in §5 is from the respective paper's own abstr
 - [[04-robotics/tactile-visuotactile|14. Tactile & Visuotactile Sensing]] — how the unknown $\mu$ of §6 might be estimated at the contact.
 
 ## 한국어
+
+*H군이자 Mastery 페이지다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/modern-robotics/ch12-grasping|MR 12장]]·최적화 위에 선다.
+이 분야의 절반은 closure의 수학이고 절반은 그것을 적지 않은 채 깊이 이미지에서 예측하는 방법이다 — 학습된 쪽이 해석적 쪽이 만든 라벨로 학습되므로 둘 다 읽을 값어치가 있다.*
 
 ### 1. 파지가 답해야 하는 질문
 

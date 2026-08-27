@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when a video backbone or anticipation formulatio
 
 ## English
 
+*The entrance to group J. Stands on [[02-foundations/linear-algebra|linear algebra]], probability and [[02-foundations/neural-network-basics|0.7]].
+The questions a single frame cannot answer — what is happening, and what happens next.*
+
 A single image answers *what is here*. Video is required to answer *what is happening* and *what happens next*. The second question is the one human-centered robotics actually needs, and it is the one most video benchmarks measure badly.
 
 > [!info] Depth target
@@ -149,6 +152,9 @@ You should be able to:
 > words. Cite "visual common sense" if you are quoting the paper.
 
 ## 한국어
+
+*J군의 입구다. [[02-foundations/linear-algebra|선형대수]]·확률과 [[02-foundations/neural-network-basics|0.7]] 위에 선다.
+한 장의 이미지로는 답할 수 없는 질문들 — 무슨 일이 일어나는가, 그리고 다음에 무엇이 일어나는가.*
 
 한 장의 이미지는 *무엇이 있는가*에 답한다. *무슨 일이 일어나는가*와 *다음에 무엇이 일어나는가*는 비디오가 있어야 답할 수 있다. 인간 중심 로보틱스가 실제로 필요로 하는 건 두 번째 질문이고, 대부분의 비디오 벤치마크가 제대로 측정하지 못하는 것도 그것이다.
 

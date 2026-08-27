@@ -8,6 +8,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group G, and the only page in it. Stands on [[04-robotics/robot-systems-deployment|10. Robot Systems]] and [[02-foundations/ml-practice|ML Practice]].
+The point where a success rate stops being a sufficient answer, because someone is standing next to the machine.*
+
 When people operate, supervise, share space with, or depend on a robot, task success alone is not enough. Human–robot interaction studies authority, information, workload, trust, and performance; safety analysis asks which hazards can cause harm and how risk is reduced.
 
 > [!info] Depth target
@@ -194,6 +197,9 @@ An automated excavator receives a goal from an operator, plans and executes a di
 - [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — the field's flagship venue; its papers set the de facto standard for human-study design
 
 ## 한국어
+
+*G군이고 그 안의 유일한 페이지다. [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]과 [[02-foundations/ml-practice|ML 실무]] 위에 선다.
+기계 옆에 사람이 서 있기 때문에 성공률이 더는 충분한 답이 아니게 되는 지점이다.*
 
 사람이 로봇을 조작·감독하거나, 공간을 공유하거나, 로봇에 의존할 때 과제 성공만으로는
 부족하다. 인간-로봇 상호작용(HRI)은 권한, 정보, 작업 부하, 신뢰, 성능을 연구하고, 안전

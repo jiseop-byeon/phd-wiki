@@ -21,6 +21,9 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 
 ## English
 
+*The centre of group H and a Mastery page. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/control-theory-ce397|5]] and [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Dynamics]].
+Contact turns position error into force, so control stops being a choice between the two and becomes a choice of the relation between them.*
+
 ### 1. Position control cannot survive contact
 
 A position controller's job is to drive position error to zero, and it does so with whatever
@@ -491,6 +494,9 @@ tolerance, say which architecture can meet it — and whether any can.
 - The impact numbers in §5 were computed here from the stated $\Lambda$, $K$, and $v$ with the linear half-sine impact model; recompute them rather than trusting them.
 
 ## 한국어
+
+*H군의 중심이자 Mastery 페이지다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/control-theory-ce397|5]]번과 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 동역학]] 위에 선다.
+접촉이 위치 오차를 힘으로 바꾸므로, 제어는 둘 중 하나를 고르는 일이 아니라 둘 사이의 관계를 고르는 일이 된다.*
 
 ### 1. 위치 제어는 접촉에서 살아남지 못한다
 

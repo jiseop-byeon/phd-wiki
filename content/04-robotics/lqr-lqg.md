@@ -10,6 +10,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
+*Group D. Stands on [[04-robotics/control-theory-ce397|5. Control Theory]] plus probability and optimization. Instead of placing poles by hand you
+let a cost place them, and the separation principle says when estimator and controller may be designed apart.*
+
 > [!info] Depth target · 깊이 목표
 > State the LQR problem, the role of the Riccati equation, the conditions under which the solution exists and stabilizes, and LQG's estimator–controller separation with its caveat. Deriving or implementing Riccati solvers is optional.
 > LQR 문제, 리카티 방정식의 역할, 해가 존재하고 안정화하는 조건, LQG의 추정기–제어기 분리와 그 단서를 말할 수 있으면 된다. 리카티 해법의 유도·구현은 선택이다.
@@ -156,6 +159,9 @@ Underactuated ch. (geometric intuition, code) → connect to the
 The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
 
 ## 한국어
+
+*[[04-robotics/control-theory-ce397|5. 제어 이론]]과 확률·최적화 위에 선다. D군이다. 극점을 손으로 고르는 대신 비용이 고르게 하고,
+분리 원리가 추정기와 제어기를 따로 설계해도 되는 조건을 말해 준다.*
 
 **무엇인가**: **LQR**은 최적 제어에서 정확히 풀리는 심장부다. 선형 동역학
 $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대해 최적 제어기는
