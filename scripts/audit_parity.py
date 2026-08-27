@@ -55,6 +55,20 @@ def _prose(line):
     return re.sub(r"https?://\S+", "", line)
 
 
+def _is_english_prose(line):
+    """True only for a line carrying real English prose.
+
+    Latin characters alone are not enough. After math and link paths are
+    stripped, a line like "= 79$ ms." leaves " ms." — units, like formulas,
+    are written the same way in both halves, so a units-and-numbers line is
+    language-neutral and must not count as English. Require several actual
+    words instead.
+    """
+    if HAN.search(line):
+        return False
+    return len(re.findall(r"[A-Za-z]{3,}", line)) >= 3
+
+
 def _drop_shared_callouts(half):
     """Remove callout blocks written once for both languages."""
     lines, out, i = half.split("\n"), [], 0
@@ -69,7 +83,7 @@ def _drop_shared_callouts(half):
             # languages the block's body serves. Test the body only.
             body = blk[1:]
             has_kr = any(HAN.search(_prose(l)) for l in body)
-            has_en = any(LAT.search(_prose(l)) and not HAN.search(_prose(l)) for l in body)
+            has_en = any(_is_english_prose(_prose(l)) for l in body)
             if not (has_kr and has_en):   # both languages present ⇒ shared
                 out += blk
             i = j

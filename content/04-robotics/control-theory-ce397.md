@@ -134,6 +134,112 @@ $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta
   settling in ~8 s. A step-response figure that disagrees with these numbers means the
   model in the paper is not the system in the video.
 
+### 5.5 Margins, sensitivity, and what feedback cannot do
+
+Section 5 gave you the poles of a closed loop you already have. This section is about the
+question papers actually argue over: **how close is that loop to not working**, and what is
+provably out of reach no matter how the controller is designed.
+
+**Read the closed loop from the open loop.** Write the loop transfer function
+$L(s) = P(s)C(s)$ — plant times controller, going once around the loop. The closed loop is
+stable when the Nyquist plot of $L(i\omega)$ keeps the right relationship to the point $-1$
+(it is $1 + L = 0$ that makes the closed loop blow up, so $-1$ is where the danger is). This
+is why control papers plot an *open*-loop quantity: changing $C$ moves $L$ directly, while
+its effect on the closed-loop response is tangled.
+
+**Three margins, and they are not interchangeable.** Let $\omega_{pc}$ be the *phase
+crossover* — where $\angle L = -180°$ — and $\omega_{gc}$ the *gain crossover*, where
+$|L| = 1$.
+
+| Margin | Definition | What it answers | Usual range |
+|---|---|---|---|
+| Gain margin $g_m$ | $1/\lvert L(i\omega_{pc})\rvert$ | how much can the loop gain grow before instability | 2–5 |
+| Phase margin $\varphi_m$ | $180° + \angle L(i\omega_{gc})$ | how much extra phase lag is survivable | 30°–60° |
+| Stability margin $s_m$ | shortest distance from the $L$ curve to $-1$ | how close the loop comes to the critical point at *any* frequency | 0.5–0.8 |
+
+The first two constrain the curve along two directions; only $s_m$ constrains the distance
+itself. They are related by $g_m \ge 1/(1-s_m)$ and $\varphi_m \ge 2\arcsin(s_m/2)$ — note
+which way the inequality runs: a good $s_m$ *guarantees* the other two, but not the reverse.
+
+**Why that asymmetry matters when reading.** Åström & Murray give a loop with
+$g_m = 266$ and $\varphi_m = 70°$ — numbers that would pass any review — whose stability
+margin is $s_m = 0.27$. Its step response rings badly, because the closed loop has a mode
+with $\zeta = 0.014$. The Nyquist curve passes close to $-1$ in a direction that is neither
+pure gain nor pure phase, so both classical margins look at it and see nothing. **A paper
+that reports only gain and phase margins has not shown you that its loop is robust.**
+
+**The sensitivity functions are where the claim actually lives.** With $L = PC$, define
+
+$$S = \frac{1}{1+PC}, \qquad T = \frac{PC}{1+PC}$$
+
+$S$ (sensitivity) maps disturbance to output error; $T$ (complementary sensitivity) maps
+reference and measurement noise to output. They satisfy $S + T = 1$ identically, which is
+the whole design problem in one line: **you cannot make both small at the same frequency.**
+Reject a disturbance well there and you pass noise through, and conversely. The peak
+$M_s = \max_\omega |S(i\omega)|$ is a single number for the worst amplification, and it is
+exactly the stability margin: $s_m = 1/M_s$. So $M_s = 2$ and $s_m = 0.5$ are the same
+statement, and a paper reporting either has reported both.
+
+One trap worth knowing: $S$ and $T$ can look fine while the loop is unsafe, if a pole and a
+zero cancel in the product $PC$. Cancel an unstable plant pole with a controller zero and
+$L$ looks clean, but the transfer function from *load disturbance* to output stays unstable —
+a small push produces unbounded motion. Stability of the loop transfer function is not
+stability of the system; all four of $S$, $T$, $PS$, $CS$ have to be stable, a condition
+called **internal stability**.
+
+**Delay is the version of this you will actually hit.** A pure delay $\tau$ contributes
+phase $-\omega\tau$ and no gain change, so it spends phase margin and nothing else. The
+largest delay a loop tolerates is therefore
+
+$$\tau_{\max} = \varphi_m / \omega_{gc}$$
+
+**Worked.** A joint loop closed at $\omega_{gc} = 5$ Hz $= 31.4$ rad/s with a healthy
+$\varphi_m = 45° = 0.785$ rad tolerates $\tau_{\max} = 0.785/31.4 = 25$ ms. The 79 ms
+perception-to-actuation budget computed in
+[[04-robotics/robot-systems-deployment|12. Robot systems §3]] is **three times that**. Run
+it backwards instead: 79 ms of delay caps the crossover at
+$\omega_{gc} = 0.785/0.079 = 9.9$ rad/s, i.e. **1.6 Hz**. Note this is four times stricter
+than the naive bound — the frequency at which the delay alone contributes 180° is 6.3 Hz,
+but you do not get to operate with zero phase margin.
+
+Delay also behaves like a right-half-plane zero, which is the deeper reason it is expensive:
+the first-order Padé approximation $\frac{1-s\tau/2}{1+s\tau/2}$ has a zero at $2/\tau$, so
+79 ms is a zero at 25.3 rad/s (4.0 Hz) sitting right where you wanted bandwidth.
+
+**Bode's integral — the constraint no design escapes.** For an internally stable loop whose
+$sL(s) \to 0$,
+
+$$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
+
+summed over right-half-plane poles of $L$. If the plant is open-loop stable the right side
+is **zero**: on a linear frequency axis, the area where $\log|S|$ is negative (disturbances
+attenuated) must be exactly paid for by area where it is positive (disturbances amplified).
+This is the **waterbed effect** — push sensitivity down in the band you care about and it
+rises somewhere else, always. An unstable plant makes the right side positive, so it starts
+the account in debt. The complementary statement,
+$\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$ over right-half-plane
+zeros, says **slow RHP zeros are worse than fast ones**, while the first says **fast RHP
+poles are worse than slow ones**.
+
+**Worked — a specification that is provably unreachable.** The X-29 aircraft has a
+right-half-plane pole at $p = 6$ rad/s, actuators good to $\omega_a = 40$ rad/s, and a
+desired loop bandwidth $\omega_1 = 3$ rad/s. Ask for the smallest sensitivity peak
+consistent with Bode's integral for a sensitivity shaped as $|S|$ rising linearly to $M_s$
+at $\omega_1$, flat at $M_s$ up to $\omega_a$, and 1 above it. The integral gives
+$-\omega_1 + \omega_a \log M_s = \pi p$, so
+
+$$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
+
+Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$. A requirement of $\varphi_m = 45°$
+is therefore **not achievable by any controller** — not by a better tuning, not by a better
+architecture. The only moves left are physical: faster actuators (raise $\omega_a$), a less
+unstable airframe (lower $p$), or a lower bandwidth demand.
+
+That is the reading skill this section exists for. When a paper reports a control result,
+the interesting question is rarely "is the controller good" but "what did the plant permit."
+Right-half-plane poles, right-half-plane zeros, and delay are properties of the *machine and
+its sensing*, and they bound every controller you could have written.
+
 ### 6. Controllability and observability — can you steer it, can you see it?
 
 **Controllability** asks: can the input reach every state? One step of $u$ moves you along
@@ -414,6 +520,102 @@ $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta
 - **계산 예제**: 우리 시스템은 $\omega_n = 2$, $\zeta = 1/(2\cdot 2) = 0.25$. 따라서
   $t_s \approx 4/0.5 = 8$초, $M_p = e^{-\pi(0.25)/0.968} \approx 0.44$ — **오버슈트 44%**,
   정착 약 8초. 계단 응답 그림이 이 숫자와 어긋나면, 논문의 모델이 영상 속 시스템이 아니라는 뜻이다.
+
+### 5.5 여유, 감도, 그리고 피드백이 할 수 없는 것
+
+5절은 이미 손에 쥔 폐루프의 극점을 주었다. 이 절은 논문이 실제로 다투는 질문에 관한 것이다.
+**그 루프가 작동하지 않는 상태에 얼마나 가까운가**, 그리고 제어기를 어떻게 설계하든 증명
+가능하게 손에 닿지 않는 것은 무엇인가.
+
+**폐루프를 개루프에서 읽는다.** 루프 전달함수 $L(s) = P(s)C(s)$를 쓴다 — 플랜트 곱하기
+제어기, 루프를 한 바퀴 돈 것. 폐루프는 $L(i\omega)$의 나이퀴스트 선도가 점 $-1$과 올바른
+관계를 유지할 때 안정하다(폐루프를 발산시키는 것은 $1 + L = 0$이니, 위험이 있는 곳이
+$-1$이다). 제어 논문이 굳이 *개*루프 양을 그리는 이유가 이것이다. $C$를 바꾸면 $L$이 곧장
+움직이지만, 폐루프 응답에 미치는 영향은 뒤엉켜 있다.
+
+**여유는 셋이고, 서로 대체되지 않는다.** $\omega_{pc}$를 *위상 교차* — $\angle L = -180°$가
+되는 곳 — 로, $\omega_{gc}$를 $|L| = 1$이 되는 *이득 교차*로 두자.
+
+| 여유 | 정의 | 무엇에 답하는가 | 통상 범위 |
+|---|---|---|---|
+| 이득 여유 $g_m$ | $1/\lvert L(i\omega_{pc})\rvert$ | 불안정해지기까지 루프 이득이 얼마나 커질 수 있나 | 2~5 |
+| 위상 여유 $\varphi_m$ | $180° + \angle L(i\omega_{gc})$ | 추가 위상 지연을 얼마나 견디나 | 30°~60° |
+| 감도 여유 $s_m$ | $L$ 곡선에서 $-1$까지의 최단 거리 | *어느 주파수에서든* 임계점에 얼마나 가까워지나 | 0.5~0.8 |
+
+앞의 둘은 곡선을 두 방향으로 제약하고, 거리 자체를 제약하는 것은 $s_m$뿐이다. 셋은
+$g_m \ge 1/(1-s_m)$과 $\varphi_m \ge 2\arcsin(s_m/2)$로 이어진다 — 부등호의 방향을 보라.
+좋은 $s_m$은 나머지 둘을 *보장하지만*, 그 역은 성립하지 않는다.
+
+**그 비대칭이 읽을 때 중요해지는 이유.** Åström & Murray는 $g_m = 266$, $\varphi_m = 70°$인
+루프를 든다 — 어떤 심사도 통과할 숫자다 — 그런데 그 감도 여유는 $s_m = 0.27$이다. 계단
+응답이 심하게 울리는데, 폐루프에 $\zeta = 0.014$인 모드가 있기 때문이다. 나이퀴스트 곡선이
+순수한 이득도 순수한 위상도 아닌 방향에서 $-1$에 가까이 지나가므로, 고전적인 두 여유는 그것을
+쳐다보고도 아무것도 보지 못한다. **이득 여유와 위상 여유만 보고한 논문은 자기 루프가
+강건하다는 것을 보인 적이 없다.**
+
+**주장이 실제로 사는 곳은 감도 함수다.** $L = PC$에 대해 다음을 정의한다.
+
+$$S = \frac{1}{1+PC}, \qquad T = \frac{PC}{1+PC}$$
+
+$S$(감도)는 외란을 출력 오차로 보내고, $T$(상보 감도)는 기준 신호와 측정 잡음을 출력으로
+보낸다. 둘은 항등적으로 $S + T = 1$을 만족하는데, 설계 문제 전체가 이 한 줄에 있다.
+**같은 주파수에서 둘 다 작게 만들 수는 없다.** 거기서 외란을 잘 막으면 잡음을 통과시키고,
+그 반대도 마찬가지다. 최댓값 $M_s = \max_\omega |S(i\omega)|$는 최악의 증폭을 나타내는 숫자
+하나이며, 그것이 정확히 감도 여유다: $s_m = 1/M_s$. 그러므로 $M_s = 2$와 $s_m = 0.5$는 같은
+진술이고, 둘 중 하나를 보고한 논문은 둘 다 보고한 것이다.
+
+알아 둘 함정 하나: 곱 $PC$에서 극점과 영점이 소거되면 루프가 안전하지 않은데도 $S$와 $T$는
+멀쩡해 보일 수 있다. 불안정한 플랜트 극점을 제어기 영점으로 지우면 $L$은 깨끗해 보이지만,
+*부하 외란*에서 출력으로 가는 전달함수는 여전히 불안정하다 — 작게 밀면 무한히 움직인다. 루프
+전달함수의 안정성은 시스템의 안정성이 아니다. $S$, $T$, $PS$, $CS$ 넷이 모두 안정해야 하고,
+그 조건을 **내부 안정성**이라 부른다.
+
+**지연이 당신이 실제로 부딪힐 판본이다.** 순수 지연 $\tau$는 위상 $-\omega\tau$를 더할 뿐
+이득은 바꾸지 않으니, 위상 여유만 깎아 쓴다. 따라서 루프가 견디는 최대 지연은
+
+$$\tau_{\max} = \varphi_m / \omega_{gc}$$
+
+**계산.** $\omega_{gc} = 5$ Hz $= 31.4$ rad/s에서 닫히고 건강한 $\varphi_m = 45° = 0.785$
+rad를 가진 관절 루프가 견디는 지연은 $\tau_{\max} = 0.785/31.4 = 25$ ms다.
+[[04-robotics/robot-systems-deployment|12. 로봇 시스템 §3]]에서 계산한 인식-구동 예산 79 ms는
+**그 세 배**다. 거꾸로 풀어 보자. 79 ms의 지연은 교차 주파수를
+$\omega_{gc} = 0.785/0.079 = 9.9$ rad/s, 즉 **1.6 Hz**로 묶는다. 이것이 순진한 상한보다 네 배
+빡빡하다는 데 주목하라 — 지연 혼자 180°를 만드는 주파수는 6.3 Hz지만, 위상 여유 0으로
+운전할 수는 없다.
+
+지연은 우반평면 영점처럼 굴기도 하는데, 그것이 지연이 비싼 더 깊은 이유다. 1차 파데 근사
+$\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 79 ms는 25.3 rad/s(4.0 Hz)의
+영점이고, 바로 당신이 대역폭을 원하던 자리에 앉는다.
+
+**보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** $sL(s) \to 0$인 내부 안정 루프에 대해
+
+$$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
+
+이고, 합은 $L$의 우반평면 극점에 대해 취한다. 플랜트가 개루프 안정이면 우변은 **0**이다.
+선형 주파수 축 위에서 $\log|S|$가 음수인 넓이(외란이 감쇠되는 구간)는 양수인
+넓이(외란이 증폭되는 구간)로 정확히 값을 치러야 한다. 이것이 **워터베드 효과**다 — 관심
+있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트는 우변을 양수로
+만드니, 시작부터 빚을 지고 들어간다. 상보 진술인 우반평면 영점에 대한
+$\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는 **느린 RHP 영점이
+빠른 것보다 나쁘다**고 말하고, 앞의 것은 **빠른 RHP 극점이 느린 것보다 나쁘다**고 말한다.
+
+**계산 — 증명 가능하게 도달 불가능한 사양.** X-29 항공기는 $p = 6$ rad/s에 우반평면 극점을
+갖고, 구동기는 $\omega_a = 40$ rad/s까지 쓸 만하며, 원하는 루프 대역폭은 $\omega_1 = 3$
+rad/s다. $|S|$가 $\omega_1$까지 선형으로 $M_s$까지 오르고, $\omega_a$까지 $M_s$로 평평하며,
+그 위로는 1인 모양이라 두고, 보드 적분과 양립하는 가장 작은 감도 최댓값을 구하자. 적분은
+$-\omega_1 + \omega_a \log M_s = \pi p$를 주므로
+
+$$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
+
+그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$다. 따라서 $\varphi_m = 45°$라는
+요구는 **어떤 제어기로도 달성 불가능하다** — 더 나은 튜닝으로도, 더 나은 구조로도 안 된다.
+남은 수는 물리적인 것뿐이다. 더 빠른 구동기($\omega_a$를 올린다), 덜 불안정한 기체($p$를
+낮춘다), 아니면 더 낮은 대역폭 요구.
+
+이 절이 존재하는 이유인 읽기 기술이 그것이다. 논문이 제어 결과를 보고할 때 흥미로운 질문은
+"제어기가 좋은가"인 경우가 드물고 "플랜트가 무엇을 허락했는가"인 경우가 대부분이다. 우반평면
+극점, 우반평면 영점, 지연은 *기계와 그 감지*의 성질이고, 당신이 쓸 수 있었을 모든 제어기를
+그것들이 한계 짓는다.
 
 ### 6. 가제어성과 가관측성 — 몰 수 있는가, 볼 수 있는가
 
