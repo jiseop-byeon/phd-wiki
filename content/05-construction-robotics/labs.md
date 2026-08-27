@@ -128,7 +128,7 @@ These groups publish the manipulation/HRC methods construction researchers impor
 
 | 랩 / 그룹 | PI | 대표 분야 |
 |---|---|---|
-| [LIVE Lab](https://live.engin.umich.edu) + SICIS, 미시간대 CEE | Vineet Kamat · Carol Menassa | 건설 조작의 정전(正典)적 진행: 비전 유도 조립(2015) → 적응적 자율성 → 시연 학습 → 폐루프 BIM 디지털 트윈 → 촉각 전달 → 언어 지시 로봇 |
+| [LIVE Lab](https://live.engin.umich.edu) + SICIS, 미시간대 CEE | Vineet Kamat · Carol Menassa | 건설 조작의 정본이라 할 진행: 비전 유도 조립(2015) → 적응적 자율성 → 시연 학습 → 폐루프 BIM 디지털 트윈 → 촉각 전달 → 언어 지시 로봇 |
 | [DPM Lab](https://dpm.engin.umich.edu), 미시간대 CEE | SangHyun Lee | 작업자 중심 자동화: EEG/EDA 웨어러블 바이오센싱, 인간공학 비전, 작업자 생리 상태를 인간-로봇 팀 제어에 피드백 |
 
 **검증된 학술 계보 (자기 랩을 운영하는 제자들):**
