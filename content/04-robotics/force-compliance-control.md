@@ -271,6 +271,20 @@ $K$ at approach speed $v$. The contact is a half-sine, with
 
 $$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
 
+Both follow from the model in one step each, and they are worth deriving because the
+*shape* of the answer is the lesson. All the kinetic energy goes into the spring at maximum
+compression, $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$, so
+$\Delta x = v\sqrt{\Lambda/K}$ and the peak force is
+$F_{\max} = K\Delta x = v\sqrt{\Lambda K}$. The duration is half a period of that same
+mass–spring oscillator: $\omega = \sqrt{K/\Lambda}$, so $T/2 = \pi\sqrt{\Lambda/K}$.
+
+Read the two square roots against each other. Peak force scales as $\sqrt{K}$ and duration
+as $1/\sqrt{K}$, so **making the interface a hundred times stiffer multiplies the force by
+ten and divides the contact time by ten** — the impulse is conserved and only its shape
+changes. That is why adding compliance is not a comfort measure but the one lever that moves
+both numbers the right way at once, and why it is a *mechanical* fix: no control law can
+change $\Lambda$ or $K$ during a 1.4 ms event.
+
 Take the $\Lambda = 2$ kg from [[02-foundations/manipulator-kinematics-dynamics|10. §6]] and
 a gentle approach at $v = 5$ cm/s.
 
@@ -732,6 +746,18 @@ QP를 풀고 있고, 우선순위 계층은 그 안에서 제약 가중치나 QP
 모델링하면, 접촉은 반주기 사인이고
 
 $$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
+
+둘 다 이 모델에서 한 단계씩이면 나오고, 유도해 볼 값어치가 있다. 답의 *모양*이 곧 교훈이기
+때문이다. 최대 압축에서 운동에너지가 전부 스프링으로 간다:
+$\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lambda/K}$이고
+최대 힘은 $F_{\max} = K\Delta x = v\sqrt{\Lambda K}$다. 지속 시간은 같은 질량–스프링
+진동자의 반주기다. $\omega = \sqrt{K/\Lambda}$이므로 $T/2 = \pi\sqrt{\Lambda/K}$.
+
+두 제곱근을 서로 견주어 읽어라. 최대 힘은 $\sqrt{K}$에 비례하고 지속 시간은 $1/\sqrt{K}$에
+비례하므로, **접촉면을 백 배 단단하게 만들면 힘은 열 배가 되고 접촉 시간은 십분의 일이 된다** —
+역적은 보존되고 그 모양만 바뀐다. 유연성을 넣는 것이 편의 조치가 아니라 두 숫자를 동시에 옳은
+방향으로 움직이는 유일한 지렛대인 이유이고, 그것이 *기계적* 해법인 이유다. 1.4 ms짜리 사건
+동안 $\Lambda$나 $K$를 바꿀 수 있는 제어 법칙은 없다.
 
 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 $\Lambda = 2$ kg와 부드러운
 접근 $v = 5$ cm/s를 넣자.

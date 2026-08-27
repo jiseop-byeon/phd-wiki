@@ -55,6 +55,16 @@ flowchart LR
   **advantage** $A^\pi = Q^\pi - V^\pi$ (how much better than my average move).
 - **Bellman expectation** (consistency of $V^\pi$):
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
+- **Where it comes from — it is the return folded once.** The return is a geometric sum,
+  $G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \cdots$. Factor $\gamma$ out of
+  everything after the first term: $G_t = r_t + \gamma(r_{t+1} + \gamma r_{t+2} + \cdots)$,
+  and the bracket is just $G_{t+1}$. So $G_t = r_t + \gamma G_{t+1}$ — the same one-line
+  trick as $1 + x + x^2 + \cdots = 1 + x(1 + x + \cdots)$. Take expectations conditioned on
+  $s_t = s$, and the Markov property lets $E[G_{t+1}]$ collapse to $V^\pi(s')$ because the
+  future depends on $s'$ alone. That is the whole derivation. It is worth doing once,
+  because it shows the Bellman equation is not a new modelling assumption on top of the MDP —
+  it is the *definition of the return*, rewritten so the unknown appears on both sides. Which
+  is exactly what makes it something you can iterate to a fixed point.
 - **Bellman optimality**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   the greedy policy on $Q^*$ is optimal.
 - **A two-state MDP you can solve on paper.** States $A$ (empty bucket) and $B$ (bucket
@@ -611,6 +621,16 @@ flowchart LR
   **어드밴티지** $A^\pi = Q^\pi - V^\pi$ (내 평균 수보다 얼마나 나은가).
 - **벨만 기대 방정식** ($V^\pi$의 일관성):
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
+- **어디서 오는가 — 리턴을 한 번 접은 것이다.** 리턴은 기하급수다.
+  $G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \cdots$. 첫 항 뒤의 모든 것에서 $\gamma$를
+  묶어내면 $G_t = r_t + \gamma(r_{t+1} + \gamma r_{t+2} + \cdots)$이고, 괄호 안이 곧
+  $G_{t+1}$이다. 그러므로 $G_t = r_t + \gamma G_{t+1}$ —
+  $1 + x + x^2 + \cdots = 1 + x(1 + x + \cdots)$과 똑같은 한 줄짜리 수법이다. $s_t = s$로
+  조건부 기댓값을 취하면, 마르코프 성질 덕분에 미래가 $s'$에만 의존하므로 $E[G_{t+1}]$이
+  $V^\pi(s')$로 무너진다. 유도는 그게 전부다. 한 번 해 볼 값어치가 있는데, 벨만 방정식이 MDP
+  위에 얹은 새로운 모델링 가정이 아니라 *리턴의 정의* 자체를 미지수가 양변에 나타나도록 다시
+  쓴 것임을 보여 주기 때문이다. 그리고 바로 그 점이 이것을 고정점까지 반복할 수 있는 대상으로
+  만든다.
 - **벨만 최적성**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   $Q^*$에 대한 탐욕 정책이 최적이다.
 - **종이 위에서 풀 수 있는 2-상태 MDP.** 상태 $A$(빈 버킷)와 $B$(버킷 가득). $A$에서는

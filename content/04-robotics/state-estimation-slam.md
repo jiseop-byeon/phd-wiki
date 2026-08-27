@@ -66,6 +66,25 @@ $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
 Prediction moves the previous belief through the dynamics and normally increases uncertainty. Correction weights that prior by how compatible each state is with the new measurement.
 
+**Where the two lines come from, and what each assumption buys.** Neither is a new principle;
+both are elementary probability plus one assumption used exactly once. For **prediction**,
+introduce the previous state and marginalize it out — that is just the sum rule:
+$p(x_t\mid z_{1:t-1}) = \int p(x_t\mid x_{t-1}, z_{1:t-1})\,p(x_{t-1}\mid z_{1:t-1})\,dx_{t-1}$.
+Then the *Markov assumption on the dynamics* says the next state depends on the previous
+state and input alone, so $z_{1:t-1}$ drops out of the first factor and the process model
+$p(x_t\mid x_{t-1},u_t)$ appears. For **correction**, apply Bayes' rule to the new
+measurement, $p(x_t\mid z_{1:t}) \propto p(z_t\mid x_t, z_{1:t-1})\,p(x_t\mid z_{1:t-1})$.
+Then the *conditional-independence assumption on the sensor* says a measurement depends only
+on the state it was taken from, so $z_{1:t-1}$ drops out again and the observation model
+$p(z_t\mid x_t)$ appears.
+
+That accounting is worth keeping because it tells you what breaks and where. Unmodelled wheel
+slip violates the first assumption, not the second — the filter's *prediction* is wrong while
+its measurement model is fine. A sensor with its own memory, such as a detector applying
+temporal smoothing or a camera with rolling-shutter carryover, violates the second, not the
+first: the filter double-counts evidence it has already used and grows overconfident. Both
+show up as an inconsistent filter, and the fix is different in each case.
+
 ### 5. Method families
 
 | Family | Representation and use | Main caution |
@@ -270,6 +289,24 @@ $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
 **예측**은 이전 belief를 동역학에 통과시키며 보통 불확실성을 키운다. **보정**은 그 prior를
 새 측정과 각 상태의 부합 정도로 가중한다.
+
+**두 줄이 어디서 오고, 각 가정이 무엇을 사 주는가.** 둘 다 새로운 원리가 아니라 기초 확률에
+가정 하나씩을 정확히 한 번 쓴 것이다. **예측**은 직전 상태를 끌어들여 적분해 없애는 것,
+곧 합의 법칙이다:
+$p(x_t\mid z_{1:t-1}) = \int p(x_t\mid x_{t-1}, z_{1:t-1})\,p(x_{t-1}\mid z_{1:t-1})\,dx_{t-1}$.
+그다음 *동역학에 대한 마르코프 가정*이 다음 상태는 직전 상태와 입력에만 의존한다고 말하므로
+첫 인자에서 $z_{1:t-1}$이 떨어져 나가고 과정 모델 $p(x_t\mid x_{t-1},u_t)$가 나타난다.
+**보정**은 새 측정에 베이즈 규칙을 적용하는 것이다:
+$p(x_t\mid z_{1:t}) \propto p(z_t\mid x_t, z_{1:t-1})\,p(x_t\mid z_{1:t-1})$. 그다음
+*센서에 대한 조건부 독립 가정*이 측정은 그것이 취해진 상태에만 의존한다고 말하므로 다시
+$z_{1:t-1}$이 떨어지고 관측 모델 $p(z_t\mid x_t)$가 나타난다.
+
+이 장부를 갖고 있을 값어치가 있는 이유는, 무엇이 어디서 깨지는지 알려 주기 때문이다. 모델에
+없는 바퀴 미끄러짐은 첫 번째 가정을 어기지 두 번째를 어기지 않는다 — 필터의 *예측*이 틀린
+것이지 측정 모델은 멀쩡하다. 자기 기억을 가진 센서, 예를 들어 시간 평활을 적용하는 검출기나
+롤링 셔터의 잔상이 남는 카메라는 두 번째를 어기지 첫 번째를 어기지 않는다. 필터가 이미 쓴
+증거를 두 번 세어 과신하게 된다. 둘 다 필터가 일관되지 않은 것으로 드러나지만, 고치는 방법은
+서로 다르다.
 
 ### 5. 방법 계열
 

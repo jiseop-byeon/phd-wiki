@@ -30,6 +30,16 @@ functions.
 - A system is **LTI** (linear, time-invariant) ⟺ completely characterized by its impulse
   response $h$; the output is **convolution**:
   $$y[n] = (x * h)[n] = \sum_k x[k]\, h[n-k]$$
+- **Where that comes from — convolution is not a definition, it is forced.** Three lines.
+  First, any signal is a sum of shifted impulses, which is a tautology:
+  $x[n] = \sum_k x[k]\,\delta[n-k]$. Push it through the system $T$ and use *linearity* to
+  move $T$ inside the sum: $y[n] = T\{\sum_k x[k]\delta[n-k]\} = \sum_k x[k]\,T\{\delta[n-k]\}$.
+  Now use *time-invariance*: the response to an impulse at $k$ is the response to an impulse
+  at $0$, shifted — $T\{\delta[n-k]\} = h[n-k]$. Substitute and you have the formula above.
+  So the sum is not a modelling choice: **if a system is linear and time-invariant then it
+  convolves, and there is nothing else it could do.** That is also why one measurement — the
+  impulse response — determines the system completely, and why the whole frequency-domain
+  toolkit exists: convolution is the only operation there is to diagonalize.
 - Worked example: $x = [1, 2, 3]$, $h = [1, 1]$ (a running sum):
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — flip, slide, multiply, accumulate.
   Length: $N_x + N_h - 1$.
@@ -178,6 +188,15 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 - **LTI**(선형 시불변) 시스템 ⟺ 임펄스 응답 $h$로 완전히 특성화; 출력은 **합성곱**:
   $$y[n] = (x * h)[n] = \sum_k x[k]\, h[n-k]$$
+- **이것이 어디서 오는가 — 합성곱은 정의가 아니라 강제된 결과다.** 세 줄이면 된다. 첫째,
+  어떤 신호든 옮겨진 임펄스의 합이다. 이건 항등식이다: $x[n] = \sum_k x[k]\,\delta[n-k]$.
+  이것을 시스템 $T$에 통과시키고 *선형성*으로 $T$를 합 안으로 밀어 넣는다:
+  $y[n] = T\{\sum_k x[k]\delta[n-k]\} = \sum_k x[k]\,T\{\delta[n-k]\}$. 이제 *시불변성*을
+  쓴다. $k$에서의 임펄스에 대한 응답은 $0$에서의 응답을 옮긴 것이다 —
+  $T\{\delta[n-k]\} = h[n-k]$. 대입하면 위의 식이 나온다. 그러므로 저 합은 모델링 선택이
+  아니다. **시스템이 선형이고 시불변이면 합성곱을 하며, 다른 것을 할 여지가 없다.** 측정
+  하나 — 임펄스 응답 — 가 시스템을 완전히 결정하는 이유이고, 주파수 영역 도구 전체가
+  존재하는 이유이기도 하다. 대각화할 연산이 합성곱 하나뿐이기 때문이다.
 - 계산 예제: $x = [1, 2, 3]$, $h = [1, 1]$(연속 합):
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — 뒤집고, 밀고, 곱하고, 누적한다.
   길이: $N_x + N_h - 1$.

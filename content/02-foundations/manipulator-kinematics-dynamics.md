@@ -53,6 +53,24 @@ Everything on this page is what happens when you add **mass** to that picture.
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 
+**Where the shape comes from.** This is not three physical effects bolted together — it is
+one derivative of one energy. Write the Lagrangian $L = T - V$ with kinetic energy
+$T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and potential $V(\theta)$, and apply
+Lagrange's equation $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$.
+The first term gives $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$;
+the second contributes $-\frac{\partial T}{\partial\theta}$ and $\frac{\partial V}{\partial\theta}$.
+Collect them: $M\ddot\theta$ is the first piece, the velocity-quadratic leftovers
+$\dot M\dot\theta - \frac{\partial T}{\partial\theta}$ are what gets *named* $C(\theta,\dot\theta)\dot\theta$,
+and $\frac{\partial V}{\partial\theta}$ is $g(\theta)$.
+
+Two things follow that are worth more than the derivation itself. First, **$C$ exists only
+because $M$ depends on $\theta$** — if the inertia matrix were constant, $\dot M = 0$ and
+$\partial T/\partial\theta = 0$, and the Coriolis term would vanish outright. It is not an
+extra force; it is the bookkeeping cost of a configuration-dependent mass. Second, $C$ is
+**not unique**: only the product $C\dot\theta$ is determined, so different books write
+different $C$ matrices for the same robot. Papers pick the factorization that makes
+$\dot M - 2C$ skew-symmetric, because that identity is what most stability proofs use.
+
 Four terms, each with a distinct physical job:
 
 - **$M(\theta)$ — the mass (inertia) matrix.** Symmetric and positive definite, so it is
@@ -347,6 +365,23 @@ whether a contact will feel stiff or soft — and be right.
 ### 2. 매니퓰레이터 방정식
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
+
+**이 모양이 어디서 오는가.** 세 가지 물리 효과를 나사로 붙인 것이 아니라, 에너지 하나를 한 번
+미분한 것이다. 운동에너지 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$와 위치에너지
+$V(\theta)$로 라그랑지안 $L = T - V$를 쓰고, 라그랑주 방정식
+$\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$를
+적용한다. 첫 항이 $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$를 주고,
+둘째 항이 $-\frac{\partial T}{\partial\theta}$와 $\frac{\partial V}{\partial\theta}$를 낸다.
+모으면 $M\ddot\theta$가 첫 조각이고, 속도에 이차인 나머지
+$\dot M\dot\theta - \frac{\partial T}{\partial\theta}$가 $C(\theta,\dot\theta)\dot\theta$라고
+*이름 붙는* 것이며, $\frac{\partial V}{\partial\theta}$가 $g(\theta)$다.
+
+유도 자체보다 값어치 있는 두 가지가 따라 나온다. 첫째, **$C$는 오직 $M$이 $\theta$에 의존하기
+때문에 존재한다** — 관성 행렬이 상수라면 $\dot M = 0$이고 $\partial T/\partial\theta = 0$이라
+코리올리 항은 통째로 사라진다. 추가된 힘이 아니라 *자세에 따라 변하는 질량을 쓰는 장부상의
+대가*다. 둘째, $C$는 **유일하지 않다**. 결정되는 것은 곱 $C\dot\theta$뿐이라서 책마다 같은
+로봇에 다른 $C$ 행렬을 쓴다. 논문들은 $\dot M - 2C$가 반대칭이 되는 분해를 고르는데, 대부분의
+안정성 증명이 그 항등식을 쓰기 때문이다.
 
 네 항이고, 각각 다른 물리적 역할을 한다:
 

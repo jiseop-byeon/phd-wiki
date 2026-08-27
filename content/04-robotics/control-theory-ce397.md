@@ -247,6 +247,12 @@ the columns of $B$; the dynamics then rotate that reach into $AB$, then $A^2B$. 
 
 $$\mathcal{C} = [\,B \;\; AB \;\; \cdots \;\; A^{n-1}B\,], \qquad \text{controllable} \iff \text{rank}\,\mathcal{C} = n$$
 
+Why the stack stops at $A^{n-1}B$ instead of running forever: by the Cayley–Hamilton theorem
+an $n \times n$ matrix satisfies its own characteristic polynomial, so $A^n$ is a linear
+combination of $I, A, \ldots, A^{n-1}$. Then $A^nB$ lies in the span of the columns already
+stacked and adds no new reachable direction — and neither does anything after it. The $n$
+blocks are not a convention or a truncation; they are the whole story.
+
 **Worked, controllable.** $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$,
 $B = \begin{pmatrix}0\\1\end{pmatrix}$: $AB = \begin{pmatrix}1\\-1\end{pmatrix}$, so
 $\mathcal{C} = \begin{pmatrix}0&1\\1&-1\end{pmatrix}$, $\det = -1 \neq 0$ → rank 2 → **controllable**.
@@ -623,6 +629,11 @@ $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$
 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그것들을 쌓으면:
 
 $$\mathcal{C} = [\,B \;\; AB \;\; \cdots \;\; A^{n-1}B\,], \qquad \text{가제어} \iff \text{rank}\,\mathcal{C} = n$$
+
+쌓기가 왜 끝없이 가지 않고 $A^{n-1}B$에서 멈추는가: 케일리–해밀턴 정리에 의해 $n \times n$
+행렬은 자기 특성다항식을 만족하므로 $A^n$은 $I, A, \ldots, A^{n-1}$의 선형결합이다. 그러면
+$A^nB$는 이미 쌓은 열들이 치는 공간 안에 있어 새로운 도달 방향을 더하지 않고, 그 뒤의 어떤
+것도 마찬가지다. $n$개의 블록은 관례도 절단도 아니다. 그것이 이야기의 전부다.
 
 **계산 예제, 가제어.** $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$,
 $B = \begin{pmatrix}0\\1\end{pmatrix}$: $AB = \begin{pmatrix}1\\-1\end{pmatrix}$이므로

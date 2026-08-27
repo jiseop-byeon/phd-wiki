@@ -37,6 +37,22 @@ estimate optimally, then control the estimate optimally, and it is jointly optim
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
 
+**Where it comes from, in four steps.** Guess that the optimal cost-to-go is quadratic,
+$V(x) = x^\top P x$ — a guess justified afterwards by the fact that it closes. Substitute it
+into the optimality condition (the continuous-time Bellman equation, or HJB), which says the
+instantaneous cost plus the rate of change of the cost-to-go is zero at the optimum:
+$0 = \min_u\,[\,x^\top Q x + u^\top R u + \nabla V^\top(Ax + Bu)\,]$, with $\nabla V = 2Px$.
+Third, minimise over $u$ — now an ordinary quadratic: setting the derivative to zero gives
+$2Ru + 2B^\top P x = 0$, so $u^\star = -R^{-1}B^\top P x$. **That is where the LQR gain
+$K = R^{-1}B^\top P$ comes from; it falls out rather than being designed.** Fourth, put
+$u^\star$ back in. Every term carries an $x$ on each side, and what is left between them is
+exactly the equation above.
+
+Reading it that way makes the strange middle term ordinary. $-PBR^{-1}B^\top P$ is not an
+extra modelling choice — it is the optimal feedback substituted back into the cost, which is
+why it is quadratic in $P$ and why it is subtracted: it is the cost the controller *avoids*
+by acting.
+
 (Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
 stabilizing solution $P \succeq 0$ is what makes $V(x)=x^\top P x$ a Lyapunov function for
@@ -179,6 +195,20 @@ $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대�
 ### 1. 리카티 방정식, 구조로 읽기
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
+
+**어디서 오는가, 네 단계로.** 최적 cost-to-go가 이차형식이라고 추측한다,
+$V(x) = x^\top P x$ — 맞아떨어지기 때문에 사후에 정당화되는 추측이다. 그것을 최적성
+조건(연속 시간 벨만 방정식, 즉 HJB)에 대입한다. 최적에서는 순간 비용과 cost-to-go의 변화율의
+합이 0이라는 조건이다: $0 = \min_u\,[\,x^\top Q x + u^\top R u + \nabla V^\top(Ax + Bu)\,]$,
+그리고 $\nabla V = 2Px$다. 셋째, $u$에 대해 최소화하는데 이제 평범한 이차식이다. 미분을 0으로
+두면 $2Ru + 2B^\top P x = 0$, 즉 $u^\star = -R^{-1}B^\top P x$다. **LQR 이득
+$K = R^{-1}B^\top P$가 여기서 나온다. 설계된 것이 아니라 떨어져 나온다.** 넷째, $u^\star$를
+도로 넣는다. 모든 항이 양옆에 $x$를 하나씩 달고 있고, 그 사이에 남는 것이 정확히 위의
+방정식이다.
+
+그렇게 읽으면 이상해 보이던 가운데 항이 평범해진다. $-PBR^{-1}B^\top P$는 덧붙인 모델링 선택이
+아니라 *최적 피드백을 비용에 도로 대입한 것*이다. $P$에 대해 이차인 이유이고, 빼는 이유다 —
+제어기가 행동함으로써 *치르지 않게 된* 비용이다.
 
 (로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해

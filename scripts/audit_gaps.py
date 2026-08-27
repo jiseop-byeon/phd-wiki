@@ -23,6 +23,11 @@ Four detectors, in decreasing order of how much each one has actually found:
                  Forward pointers to later pages are expected and are not
                  dependencies; check the wording rather than the count.
   4. SELFCHECK   self-check questions whose answer block does not cover them.
+  5. UNEXPLAINED a display equation stated with no motivation, derivation or
+                 consequence anywhere near it. Many hits are legitimate --
+                 definitions have nothing to derive, and worked-example steps are
+                 explained by the example around them -- so read each one and ask
+                 whether a textbook would say where the formula comes from.
 
 Exit status is 0 always: these are leads to judge, not failures. Most hits
 in detector 1 are ordinary English words that a book happened to index.
@@ -239,12 +244,46 @@ def selfcheck():
     print(f"  {bad} self-check block(s) missing answers")
 
 
+def unexplained():
+    """Display equations with no explanatory scaffolding nearby.
+
+    A textbook does not only state a formula; it says why it has that shape.
+    This flags equations whose surrounding 500 characters contain none of the
+    words explanation is normally made of. Expect false positives on
+    definitions (a definition has no derivation) and on intermediate steps of
+    a worked example (the example is the explanation) -- the check is a
+    reading list, not a verdict.
+    """
+    why = re.compile(
+        r"(?i)\b(because|why|the reason|comes from|derive|derivation|follows from|"
+        r"which is just|is nothing but|rearrang|substitut|solve for|set .{0,12}= 0|"
+        r"minimi[sz]ing|maximi[sz]ing|expand|taylor|equate|in other words|that is,|"
+        r"read it as|the shape of|says that|means that|so that|falls out|forced)\b")
+    total, bare = 0, []
+    for f in files(["content/02-foundations/*.md", "content/04-robotics/*.md"]):
+        s = read(f)
+        m = re.search(r"^##\s*한국어\s*$", s, re.M)
+        en = re.sub(r"<svg.*?</svg>", "", s[:m.start()] if m else s, flags=re.S)
+        for mm in re.finditer(r"\$\$(.+?)\$\$", en, re.S):
+            eq = mm.group(1).strip()
+            if len(eq) < 12:
+                continue
+            total += 1
+            ctx = en[max(0, mm.start() - 500):mm.start()] + en[mm.end():mm.end() + 500]
+            if not why.search(ctx):
+                bare.append((os.path.basename(f)[:-3], " ".join(eq.split())[:64]))
+    print(f"  {len(bare)} of {total} display equation(s) stated without nearby explanation")
+    for fn, eq in bare:
+        print(f"     {fn}: {eq}")
+
+
 if __name__ == "__main__":
     if "--build-index" in sys.argv:
         build_index()
         sys.exit(0)
     for name, fn in (("UNDEFINED", undefined), ("ARITHMETIC", arithmetic),
-                     ("PREREQ", prereq), ("SELFCHECK", selfcheck)):
+                     ("PREREQ", prereq), ("SELFCHECK", selfcheck),
+                     ("UNEXPLAINED", unexplained)):
         print(f"\n{name}")
         fn()
     print()

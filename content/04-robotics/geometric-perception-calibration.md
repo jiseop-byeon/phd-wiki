@@ -35,6 +35,21 @@ A 3D point $p^{c}=(X,Y,Z)$ in the **camera frame** projects to pixel $(u,v)$:
 
 $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
 
+**Where that comes from — similar triangles, and nothing else.** Put the optical centre at
+the origin and the image plane at distance $f$ in front of it. The ray from the 3D point
+$(X, Y, Z)$ to the centre crosses that plane at height $y$, and the two triangles it forms —
+one from the centre to the plane, one from the centre to the point — are similar. So
+$y/f = Y/Z$, giving $y = fY/Z$. The rest is bookkeeping: divide by the physical pixel pitch
+to get pixels (which is why $f_x$ and $f_y$ differ when pixels are not square, and why focal
+length is quoted *in pixels* rather than millimetres), then add $c_x, c_y$ to move the origin
+from the optical axis to the image corner, where array indices start.
+
+That is the whole model, and its shape carries the two facts everything downstream inherits.
+The map is **not linear** — $Z$ sits in the denominator, which is why perspective needs
+homogeneous coordinates before it can be a matrix at all — and it is **not invertible**,
+since every point along one ray produces the same $(u,v)$. Recovering $Z$ is therefore not a
+matter of a better camera; it needs a second constraint, which is what §2 is about.
+
 - **Intrinsics** $(f_x, f_y, c_x, c_y$, distortion$)$: properties of the camera itself —
   focal lengths in pixels and the principal point. Fixed once calibrated (until the lens
   is touched).
@@ -240,6 +255,20 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 **카메라 프레임**의 3D 점 $p^{c}=(X,Y,Z)$는 픽셀 $(u,v)$로 투영된다:
 
 $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
+
+**이것이 어디서 오는가 — 닮은꼴 삼각형, 그게 전부다.** 광학 중심을 원점에 두고 이미지 평면을
+그 앞 거리 $f$에 둔다. 3D 점 $(X, Y, Z)$에서 중심으로 가는 광선이 그 평면을 높이 $y$에서
+지나는데, 그 광선이 만드는 두 삼각형 — 중심에서 평면까지, 중심에서 점까지 — 이 닮은꼴이다.
+그래서 $y/f = Y/Z$, 즉 $y = fY/Z$다. 나머지는 장부 정리다. 물리적 픽셀 피치로 나눠 픽셀 단위로
+바꾸고(픽셀이 정사각이 아니면 $f_x$와 $f_y$가 달라지는 이유이고, 초점 거리를 밀리미터가 아니라
+*픽셀 단위*로 적는 이유다), $c_x, c_y$를 더해 원점을 광축에서 배열 인덱스가 시작하는 이미지
+모서리로 옮긴다.
+
+모델은 그게 전부이고, 그 모양이 뒤따르는 전부가 물려받는 두 사실을 지고 있다. 이 사상은
+**선형이 아니다** — $Z$가 분모에 있고, 그래서 원근이 행렬이 되려면 먼저 동차 좌표가 필요하다 —
+그리고 **가역이 아니다**. 한 광선 위의 모든 점이 같은 $(u,v)$를 주기 때문이다. 그러므로 $Z$를
+되찾는 것은 더 좋은 카메라의 문제가 아니라 두 번째 제약이 필요한 문제이고, §2가 그것에 관한
+것이다.
 
 - **Intrinsics** $(f_x, f_y, c_x, c_y$, 왜곡$)$: 카메라 자체의 성질 — 픽셀 단위 초점
   거리와 주점. 한 번 보정하면 (렌즈를 건드리기 전까지) 고정.
