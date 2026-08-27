@@ -43,12 +43,15 @@ def halves(text):
 def _prose(line):
     """The line with wikilink targets and URLs removed.
 
-    Language is decided on prose only: a wikilink *path* is always Latin
-    (`04-robotics/contact-force-tactile`), so counting it makes Korean lines
-    full of links look English and defeats the shared-block filter.
+    Language is decided on prose only. A wikilink *path* is always Latin
+    (`04-robotics/contact-force-tactile`), and so is LaTeX ($0.90 \\times 0.02$),
+    so counting either makes Korean lines full of links or arithmetic look
+    English and defeats the shared-block filter.
     """
     line = re.sub(r"\[\[[^\]|]*\\?\|", "", line)     # [[path| → keep the label
     line = re.sub(r"\[\[[^\]]*\]\]", "", line)         # [[path]] → no label at all
+    line = re.sub(r"\$\$.*?\$\$", "", line)             # display math is language-neutral
+    line = re.sub(r"\$[^$]*\$", "", line)                # so is inline math
     return re.sub(r"https?://\S+", "", line)
 
 

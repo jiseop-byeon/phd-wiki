@@ -127,6 +127,29 @@ Most pedestrians near a road do not cross in the next two seconds; most workers 
 - **Accuracy is meaningless.** A constant "no" predictor scores 95%+. Report AUC, precision–recall (not ROC alone, which is optimistic under imbalance), and the operating point actually used.
 - **Precision at the deployed threshold is the whole story.** A warning system with 20% precision produces four false alarms per true one, and will be ignored or disabled by the workers it is meant to protect. Alarm fatigue is a system failure mode, not a human failing.
 
+> [!example] Worked example · 계산 예제
+> **Why a 90% detector gets switched off.** Suppose a crossing-intent detector achieves a 90%
+> true-positive rate at a 5% false-positive rate, and the event it predicts — a worker entering
+> the robot's path within the next 2 s — is true in 2% of the frames it judges. Then
+>
+> $$\text{precision} = \frac{0.90 \times 0.02}{0.90 \times 0.02 + 0.05 \times 0.98} = \frac{0.0180}{0.0670} = \mathbf{26.9\%}$$
+>
+> Seven of every ten stops are false. At one decision per second over an 8-hour shift that is
+> 28,800 judgements, of which $0.98 \times 28{,}800 \times 0.05 = \mathbf{1{,}411}$ are false
+> alarms — roughly three per minute. No crew leaves that system enabled.
+>
+> **What it would take.** To reach 90% precision at the same 2% base rate, solve
+> $0.90 \times 0.02 = 0.90\,(0.90 \times 0.02 + \text{FPR} \times 0.98)$ for FPR: **0.2%**. The
+> false-positive rate has to fall by a factor of 25, and the true-positive rate is nearly
+> irrelevant to that.
+>
+> **The reading this gives you.** ROC curves and AUC hide this completely, because both are
+> independent of the base rate. When an intent paper reports AUC on a balanced dataset and the
+> deployment is 2% positive, the reported number and the operational number are answering
+> different questions. Look for precision at a stated recall, on the deployment base rate — and
+> if the paper does not give one, you can compute it yourself from its ROC point and the rate
+> its own setting implies.
+
 ### 6. Trajectory forecasting, briefly
 
 When the output is a path rather than a decision:
@@ -357,6 +380,27 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 
 - **정확도는 무의미하다.** 무조건 "아니오"가 95% 이상을 받는다. AUC와 **precision–recall**(불균형에서 낙관적인 ROC 단독이 아니라), 그리고 실제 사용한 동작점을 보고하라.
 - **배포 임계값에서의 precision이 전부다.** precision 20%인 경고 시스템은 참 하나당 오경보 넷을 낸다. 보호하려던 작업자가 무시하거나 꺼버린다. **알람 피로는 인간의 결함이 아니라 시스템 실패 양식이다.**
+
+> [!example] 계산 예제 · Worked example
+> **90%짜리 검출기가 꺼지는 이유.** 횡단 의도 검출기가 오탐률 5%에서 정탐률 90%를 낸다고 하자.
+> 그리고 그것이 예측하는 사건 — 작업자가 앞으로 2초 안에 로봇 경로로 들어오는 것 — 은 판정
+> 프레임의 2%에서 참이다. 그러면
+>
+> $$\text{정밀도} = \frac{0.90 \times 0.02}{0.90 \times 0.02 + 0.05 \times 0.98} = \frac{0.0180}{0.0670} = \mathbf{26.9\%}$$
+>
+> 정지 열 번 중 일곱 번이 헛것이다. 8시간 교대 동안 초당 한 번 판정하면 28,800번이고, 그중
+> $0.98 \times 28{,}800 \times 0.05 = \mathbf{1{,}411}$번이 오경보다 — 분당 세 번꼴. 그런
+> 시스템을 켜 두는 작업조는 없다.
+>
+> **필요한 조건.** 같은 2% 기저율에서 정밀도 90%에 닿으려면
+> $0.90 \times 0.02 = 0.90\,(0.90 \times 0.02 + \text{FPR} \times 0.98)$을 FPR에 대해 풀면
+> FPR = 0.2%가 나온다. 오탐률이 **25배** 떨어져야 하고, 거기에 정탐률은 사실상 무관하다.
+>
+> **여기서 얻는 독법.** ROC 곡선과 AUC는 이것을 완전히 가린다. 둘 다 기저율과 무관하기
+> 때문이다. 균형 잡힌 데이터셋에서 AUC를 보고한 의도 논문이 2% 양성인 현장에 놓이면, 보고된
+> 숫자와 운용상의 숫자는 서로 다른 질문에 답하고 있는 것이다. *배포 기저율 위에서, 명시된
+> 재현율에 대한 정밀도*를 찾아라. 논문이 주지 않는다면 그 ROC 점과 논문 자신의 설정이 함축하는
+> 비율로 직접 계산할 수 있다.
 
 ### 6. 궤적 예측, 간단히
 

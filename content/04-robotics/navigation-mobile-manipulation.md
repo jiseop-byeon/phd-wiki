@@ -139,6 +139,29 @@ navigation and manipulation constraints.
 > *Frontiers in Robotics and AI* mini-review scoped to **variable autonomy** in hazardous
 > domains — which is a different subject wearing a similar name.
 
+> [!example] Worked example · 계산 예제
+> **Adding up a mobile grasp.** Independent error sources add in quadrature, so take a
+> representative budget at the moment the gripper closes: base localization $\sigma = 5$ cm,
+> base-to-arm mount 0.3 cm, arm kinematics and joint encoders 0.3 cm, hand–eye extrinsics
+> 1.0 cm, object pose from perception 1.0 cm.
+>
+> $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
+>
+> A parallel jaw opening 60 mm onto a 40 mm object tolerates about $\pm 10$ mm. The budget is
+> **5× the tolerance**, so the grasp fails.
+>
+> Now look at where it went. Base localization contributes $25/27.18 = \mathbf{92\%}$ of the
+> *variance*. Halving the arm's calibration error changes $\sigma_{\text{total}}$ from 5.20 cm
+> to 5.19 cm — nothing. Drop the base term instead, by re-observing the object from the wrist
+> camera once the base has parked, and you are left with
+> $\sqrt{0.3^2 + 0.3^2 + 1.0^2} = 1.1$ cm.
+>
+> **The reading this gives you.** This single calculation is why mobile manipulation is
+> organized the way it is: the base is not required to be accurate, it is required to get the
+> object into a sensor's view, after which the arm closes the loop locally. A paper reporting a
+> mobile-manipulation success rate without saying whether it re-observes at the goal has not
+> told you which of these two systems it built.
+
 ### 5. Localizing on a site that keeps changing
 
 Construction breaks the assumption most localization systems rest on: that the map is
@@ -322,6 +345,26 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 불구하고 여전히 기준 서술이다. 최근 것이 필요하고 좁은 범위를 감수할 수 있다면, **가변
 > 자율성**을 다룬 2025년 *Frontiers in Robotics and AI* 미니 리뷰가 있다 — 비슷한 이름을 쓴
 > 다른 주제다.
+
+> [!example] 계산 예제 · Worked example
+> **모바일 파지의 오차를 더해 보기.** 독립적인 오차원은 제곱합으로 더해지니, 그리퍼가 닫히는
+> 순간의 대표적인 예산을 잡아 보자: 베이스 위치 추정 $\sigma = 5$ cm, 베이스–팔 장착부 0.3 cm,
+> 팔 기구학과 관절 엔코더 0.3 cm, 손–눈 외부 파라미터 1.0 cm, 인식이 준 물체 자세 1.0 cm.
+>
+> $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
+>
+> 60 mm까지 벌어지는 평행 그리퍼가 40 mm 물체를 잡을 때 허용 오차는 약 $\pm 10$ mm다. 예산이
+> **허용 오차의 5배**이니 파지는 실패한다.
+>
+> 이제 그것이 어디서 왔는지 보라. 베이스 위치 추정이 *분산*의 $25/27.18 = \mathbf{92\%}$를
+> 차지한다. 팔의 보정 오차를 절반으로 줄이면 $\sigma_{\text{total}}$은 5.20 cm에서 5.19 cm가
+> 된다 — 아무 일도 일어나지 않는다. 대신 베이스 항을 없애라. 베이스가 선 뒤에 손목 카메라로
+> 물체를 다시 관측하면 $\sqrt{0.3^2 + 0.3^2 + 1.0^2} = 1.1$ cm만 남는다.
+>
+> **여기서 얻는 독법.** 모바일 조작이 지금의 모양인 이유가 이 계산 하나에 다 있다. 베이스에
+> 요구되는 것은 정확도가 아니라 *물체를 센서 시야 안에 넣는 것*이고, 그다음은 팔이 국소적으로
+> 루프를 닫는다. 목표 지점에서 다시 관측하는지 밝히지 않은 채 모바일 조작 성공률을 보고하는
+> 논문은, 둘 중 어느 시스템을 만든 것인지 말하지 않은 것이다.
 
 ### 5. 계속 변하는 현장에서 위치 잡기
 

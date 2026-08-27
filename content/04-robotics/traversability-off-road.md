@@ -162,6 +162,24 @@ CVaR is worth knowing as a modelling choice rather than a detail: optimising the
 outcome and optimising the *worst decile* give different plans, and on terrain where the
 failure is a rollover rather than a delay, the second is the right objective.
 
+> [!example] Worked example · 계산 예제
+> **Why the geometric side runs out at range.** A 64-beam lidar at 1.8 m height with 0.4°
+> vertical spacing puts consecutive rings on flat ground at $r = h/\tan\theta$. Two beams near
+> $\theta = 5.15°$ and $5.55°$ land at $1.8/\tan 5.15° = 20.0$ m and $1.8/\tan 5.55° = 18.5$ m —
+> a ring spacing of **1.5 m**. The same pair of beams near $\theta = 10.2°$ and $10.6°$ land at
+> 10.00 m and 9.62 m: **0.38 m**.
+>
+> So a 0.3 m rock is straddled by roughly one ring at 10 m and by **none** at 20 m. It is not
+> that the geometry is noisy out there; there is no geometry out there.
+>
+> **The reading this gives you.** A vehicle at 5 m/s needing 4 s to stop needs 20 m of
+> assessed terrain, which is precisely the range where ring spacing exceeds obstacle size. That
+> is the structural reason the field moved to learned traversability from images: not because
+> learning is better at classifying rocks, but because at the range where the decision has to be
+> made, appearance is the only signal that still has resolution. When a paper reports lidar-based
+> traversability, its top speed and its lookahead are the two numbers that tell you whether it
+> ever entered this regime.
+
 ### 4. What the field programmes established
 
 **DARPA SubT** (2018–2021) is the largest empirical event in unstructured-environment
@@ -403,6 +421,22 @@ Value-at-Risk(CVaR)를 통한 꼬리 위험 평가**, 그리고 순차 이차 �
 CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: *평균* 결과를 최적화하는 것과 *최악
 10분위*를 최적화하는 것은 다른 계획을 낳고, 실패가 지연이 아니라 전복인 지형에서는 후자가 옳은
 목적함수다.
+
+> [!example] 계산 예제 · Worked example
+> **기하학적 쪽이 원거리에서 바닥나는 이유.** 높이 1.8 m에 수직 간격 0.4°인 64빔 라이다는
+> 평지 위 연속한 링을 $r = h/\tan\theta$에 놓는다. $\theta = 5.15°$와 $5.55°$인 두 빔은
+> $1.8/\tan 5.15° = 20.0$ m와 $1.8/\tan 5.55° = 18.5$ m에 떨어진다 — 링 간격 **1.5 m**. 같은
+> 두 빔이 $\theta = 10.2°$와 $10.6°$일 때는 10.00 m와 9.62 m, 즉 **0.38 m**다.
+>
+> 그러므로 0.3 m짜리 바위는 10 m에서 링 하나에 겨우 걸치고 20 m에서는 **하나도** 걸치지
+> 않는다. 그곳의 기하가 잡음이 많은 것이 아니라, 그곳에는 기하가 없다.
+>
+> **여기서 얻는 독법.** 5 m/s로 달리며 멈추는 데 4초가 필요한 차량은 20 m의 판정된 지형이
+> 필요한데, 그 거리가 바로 링 간격이 장애물 크기를 넘어서는 지점이다. 이 분야가 영상 기반 학습
+> traversability로 옮겨 간 구조적 이유가 이것이다. 학습이 바위를 더 잘 분류해서가 아니라,
+> *결정을 내려야 하는 거리에서 아직 분해능이 남아 있는 신호가 겉모습뿐*이기 때문이다. 라이다
+> 기반 traversability를 보고하는 논문이라면, 최고 속도와 전방 판정 거리 두 숫자가 그 논문이
+> 이 영역에 들어와 보기는 했는지 알려 준다.
 
 ### 4. 필드 프로그램이 확립한 것
 

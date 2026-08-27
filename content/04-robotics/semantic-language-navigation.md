@@ -60,6 +60,26 @@ to the instance nearest the agent's *start*.
 > define the metrics the entire literature reports. That is worth saying out loud when you
 > cite them.
 
+> [!example] Worked example · 계산 예제
+> **What an SPL of 0.47 actually says.** Success weighted by Path Length (Anderson et al. 2018)
+> is $\text{SPL} = \frac{1}{N}\sum_i S_i \frac{\ell_i}{\max(p_i, \ell_i)}$, where $S_i$ is
+> success, $\ell_i$ the shortest path and $p_i$ the path actually walked. Three episodes:
+>
+> | Episode | Success | Shortest $\ell$ | Walked $p$ | Term |
+> |---|---|---|---|---|
+> | 1 | yes | 10 m | 10 m | $1 \times 10/10 = 1.00$ |
+> | 2 | yes | 10 m | 25 m | $1 \times 10/25 = 0.40$ |
+> | 3 | no | 10 m | 8 m | $0$ |
+>
+> $\text{SPL} = (1.00 + 0.40 + 0)/3 = \mathbf{0.47}$, while the success rate is $2/3 = 0.67$.
+>
+> **The reading this gives you.** An agent that succeeds *every single time* but always walks
+> twice the shortest path scores $1 \times 10/20 = 0.50$ — so 0.47 is compatible with a
+> near-perfect navigator that wanders, and equally with a 47% navigator that walks straight
+> lines. SPL alone cannot tell you which. This is why an SPL reported without its success rate
+> is uninterpretable, and why the field now insists on both. When a paper shows only SPL and
+> claims an efficiency improvement, check whether success moved at all.
+
 ### 3. The method arc, in three moves
 
 **Move 1 — modular semantic mapping.** Active Neural SLAM established the skeleton: learned
@@ -320,6 +340,25 @@ underneath.
 > 워킹 그룹 보고서라고 서술한다. 과제 정의는 *ObjectNav Revisited*(2020)에서 온다. **둘 다 심사를
 > 거친 적이 없고**, 그 둘이 문헌 전체가 보고하는 지표를 정의한다. 인용할 때 소리 내어 말할
 > 가치가 있다.
+
+> [!example] 계산 예제 · Worked example
+> **SPL 0.47이 실제로 하는 말.** 경로 길이로 가중한 성공률(Anderson 외 2018)은
+> $\text{SPL} = \frac{1}{N}\sum_i S_i \frac{\ell_i}{\max(p_i, \ell_i)}$이다. $S_i$는 성공 여부,
+> $\ell_i$는 최단 경로, $p_i$는 실제로 걸은 경로다. 에피소드 셋:
+>
+> | 에피소드 | 성공 | 최단 $\ell$ | 실제 $p$ | 항 |
+> |---|---|---|---|---|
+> | 1 | O | 10 m | 10 m | $1 \times 10/10 = 1.00$ |
+> | 2 | O | 10 m | 25 m | $1 \times 10/25 = 0.40$ |
+> | 3 | X | 10 m | 8 m | $0$ |
+>
+> $\text{SPL} = (1.00 + 0.40 + 0)/3 = \mathbf{0.47}$이고, 성공률은 $2/3 = 0.67$이다.
+>
+> **여기서 얻는 독법.** *매번* 성공하지만 늘 최단 경로의 두 배를 걷는 에이전트는
+> $1 \times 10/20 = 0.50$을 받는다. 즉 0.47은 헤매는 거의 완벽한 내비게이터와도, 직선으로
+> 걷는 47%짜리 내비게이터와도 똑같이 들어맞는다. SPL만으로는 둘을 구분할 수 없다. 성공률
+> 없이 보고된 SPL이 해석 불가능한 이유이자, 이 분야가 이제 둘을 함께 요구하는 이유다. SPL만
+> 보이면서 효율 개선을 주장하는 논문이라면, 성공률이 움직이기는 했는지부터 확인하라.
 
 ### 3. 방법의 궤적, 세 수
 

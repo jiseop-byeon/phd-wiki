@@ -63,6 +63,25 @@ It fails in three predictable places:
 2. **Sustained fixation with body motion.** Walking while looking ahead produces head motion driven by gait, not attention. Gait-frequency components must be removed before treating head motion as a signal.
 3. **Habitual action.** Skilled workers execute familiar motions with reduced visual guidance. Expertise systematically weakens the attention–head coupling, which means a model trained on novices degrades on experts — the population you would deploy on.
 
+> [!example] Worked example · 계산 예제
+> **Putting a number on the head-motion problem.** A 1920-pixel image over a 90° horizontal
+> field of view gives $1920/90 = 21.3$ pixels per degree. Grossman et al. (1988) measured median
+> peak head velocity during locomotion at about 90 °/s; a deliberate look-around reaches several
+> hundred. At a 1/60 s exposure, 90 °/s smears the image by $90 \times 0.0167 = 1.5° = 32$
+> pixels; at 300 °/s it is $5.0° = 107$ pixels. A hand at 0.5 m spans roughly 180 pixels, so a
+> turn of the head blurs it across a fifth to more than half its own width.
+>
+> **The same motion in the time domain.** At 90 °/s a 90° field of view replaces itself
+> completely in 1.0 s — 30 frames. At 300 °/s it is 0.3 s, or 9 frames. Any method that assumes
+> half a second of overlapping context has, during a look-around, none.
+>
+> **The reading this gives you.** This is why egocentric benchmarks and deployed headsets
+> disagree so reliably: benchmark clips are dominated by the low-velocity majority, while the
+> moments a system is *for* — the wearer turning to look at what they are about to do — are
+> exactly the high-velocity minority. When a paper reports a single accuracy over a dataset,
+> ask whether it reports anything conditioned on head velocity. Most do not, and that omission is
+> the gap between the table and the helmet.
+
 ### 4. Anticipation from the first person
 
 The egocentric anticipation setting is the same formulation as [[04-robotics/video-action-understanding|20. §4]],
@@ -217,6 +236,24 @@ flowchart TD
 1. **작은 곁눈질.** 거울, 주변 위험, 동료의 손을 확인하는 건 눈만 움직일 수 있다. 짧고, 잦고, 결정에 관련된다 — 머리만 보는 대용이 놓치는 바로 그 사건들이다.
 2. **몸이 움직이는 중의 지속 응시.** 앞을 보며 걸으면 머리 움직임이 주의가 아니라 보행에서 나온다. 머리 움직임을 신호로 쓰기 전에 **보행 주파수 성분을 제거해야 한다.**
 3. **습관화된 동작.** 숙련 작업자는 익숙한 동작을 시각 안내를 줄인 채 수행한다. 숙련도가 주의–머리 결합을 체계적으로 약화시키므로, 초보로 학습한 모델은 숙련자에서 나빠진다 — **배포 대상이 바로 그 집단이다.**
+
+> [!example] 계산 예제 · Worked example
+> **머리 움직임 문제에 숫자를 붙이기.** 수평 화각 90°를 1920픽셀에 담으면
+> $1920/90 = 21.3$ 픽셀/도다. Grossman 외(1988)는 보행 중 머리 속도의 중앙값 최대치를 약
+> 90 °/s로 측정했고, 의도적으로 둘러보면 수백 °/s에 이른다. 노출 1/60초에서 90 °/s는 영상을
+> $90 \times 0.0167 = 1.5° = 32$픽셀만큼 번지게 하고, 300 °/s에서는 $5.0° = 107$픽셀이다.
+> 0.5 m 앞의 손은 대략 180픽셀을 차지하니, 고개 한 번 돌리는 동안 손은 제 폭의 5분의 1에서
+> 절반 넘게까지 번진다.
+>
+> **같은 움직임을 시간 영역에서.** 90 °/s면 90° 화각이 1.0초 만에 완전히 교체된다 — 30프레임.
+> 300 °/s면 0.3초, 9프레임이다. 0.5초의 겹치는 맥락을 전제하는 방법은 둘러보는 동안 그 맥락을
+> 하나도 갖지 못한다.
+>
+> **여기서 얻는 독법.** 1인칭 벤치마크와 실제 배포된 헤드셋이 그토록 어김없이 어긋나는 이유가
+> 이것이다. 벤치마크 클립은 저속도 다수가 지배하는데, 정작 시스템이 *존재하는 이유*인 순간 —
+> 착용자가 이제 하려는 일을 보려고 고개를 돌리는 순간 — 은 바로 그 고속도 소수다. 데이터셋
+> 전체에 대한 정확도 하나를 보고하는 논문이라면, 머리 속도로 조건부한 수치를 무엇이라도
+> 보고하는지 물어라. 대부분은 하지 않고, 그 누락이 표와 헬멧 사이의 간극이다.
 
 ### 4. 1인칭에서의 예측
 

@@ -117,6 +117,26 @@ can claim.
 > stronger hardware claim than papers that use it for state estimation and re-planning, and
 > the two are easy to confuse in an abstract.
 
+> [!example] Worked example · 계산 예제
+> **Why "tactile sees what vision cannot" is an arithmetic claim.** GelSight publishes 0.0634 mm
+> per pixel over an 18 × 24 mm pad for the Mini. A wrist camera with a 90° horizontal field of
+> view at 0.5 m spans $2 \times 0.5 \times \tan 45° = 1.0$ m across 1280 pixels, i.e.
+> **0.78 mm per pixel**. Over the patch that matters, the tactile sensor resolves
+> $0.78/0.0634 = \mathbf{12\times}$ finer — and it does so *while the object is occluded by the
+> fingers*, which is exactly when the camera has nothing.
+>
+> **The same argument in time.** An object slipping at 50 mm/s moves $50/30 = 1.7$ mm between
+> two frames of a 30 Hz camera and $50/1000 = 0.05$ mm between two frames of a 1 kHz tactile
+> signal. A 1.7 mm slip has already changed the grasp; 0.05 mm has not. Slip detection is not a
+> modality preference, it is a sampling-rate result.
+>
+> **The reading this gives you.** These two ratios bound what any tactile paper can honestly
+> claim. Resolution buys you contact geometry over a patch the size of a fingertip and nothing
+> beyond it — a tactile sensor cannot tell you where the object is on the table. Rate buys you
+> events shorter than a camera frame. A paper claiming tactile improved a task should be
+> locating its gain in one of those two, and if it cannot, the gain is probably coming from
+> somewhere else in the system.
+
 ### 3. Slip, contact state, and the things touch is uniquely for
 
 Three problems where touch is not one option among several:
@@ -431,6 +451,24 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > 아니라 **다음에 무엇을 할지 결정하는** 기제다. 촉각 피드백을 폐루프 힘 조절에 쓴다는
 > 논문은 상태 추정과 재계획에 쓴다는 논문보다 훨씬 강한 하드웨어 주장을 하는 것이고, 초록에서
 > 이 둘은 혼동하기 쉽다.
+
+> [!example] 계산 예제 · Worked example
+> **"촉각은 비전이 못 보는 것을 본다"가 산술적 주장인 이유.** GelSight는 Mini의 18 × 24 mm
+> 패드에서 픽셀당 0.0634 mm를 공표한다. 수평 화각 90°인 손목 카메라는 0.5 m에서
+> $2 \times 0.5 \times \tan 45° = 1.0$ m를 1280픽셀에 담으니 **픽셀당 0.78 mm**다. 문제가 되는
+> 그 패치 위에서 촉각 센서는 $0.78/0.0634 = \mathbf{12배}$ 더 곱게 분해하고, 게다가 *손가락에
+> 물체가 가려진 동안* 그렇게 한다 — 카메라에 아무것도 없는 바로 그때다.
+>
+> **같은 논증을 시간으로.** 50 mm/s로 미끄러지는 물체는 30 Hz 카메라의 두 프레임 사이에
+> $50/30 = 1.7$ mm를, 1 kHz 촉각 신호의 두 프레임 사이에 $50/1000 = 0.05$ mm를 간다. 1.7 mm
+> 미끄러짐은 이미 파지를 바꿔 놓았고 0.05 mm는 그렇지 않다. 미끄러짐 감지는 모달리티 취향이
+> 아니라 샘플링 주파수의 결과다.
+>
+> **여기서 얻는 독법.** 이 두 비율이 촉각 논문이 정직하게 주장할 수 있는 범위를 정한다.
+> 분해능은 손끝만 한 패치 위의 접촉 기하를 사 줄 뿐 그 바깥은 사 주지 않는다 — 촉각 센서는
+> 물체가 탁자 위 어디에 있는지 말해 주지 못한다. 주파수는 카메라 한 프레임보다 짧은 사건을
+> 사 준다. 촉각으로 과제가 나아졌다고 주장하는 논문은 그 이득을 이 둘 중 하나에 위치시켜야
+> 하고, 그러지 못한다면 이득은 아마 시스템의 다른 곳에서 오고 있다.
 
 ### 3. 미끄러짐, 접촉 상태, 그리고 촉각만이 할 수 있는 일
 

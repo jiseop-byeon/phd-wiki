@@ -92,6 +92,25 @@ At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect.
 
 
 
+> [!example] Worked example · 계산 예제
+> **Adding up one loop.** Take a representative visuomotor stack: 30 Hz camera (mean sampling
+> latency $\tfrac{1}{2}\times 33.3 = 16.7$ ms), exposure and readout 12 ms, transport to the GPU
+> host 5 ms, policy inference 40 ms, action decoding and IPC 3 ms, and a 500 Hz joint
+> controller (2 ms). Total $16.7 + 12 + 5 + 40 + 3 + 2 = \mathbf{79}$ ms.
+>
+> **What it costs, twice over.** As *staleness*: the end-effector moving at 0.3 m/s has
+> travelled $0.3 \times 0.079 = 24$ mm by the time its own image produces an action. Against a
+> $\pm 10$ mm grasp tolerance you must either slow to $0.010/0.079 = 0.13$ m/s or predict
+> forward. As *dead time in a feedback loop*: a delay $T$ contributes $360 f T$ degrees of phase
+> lag, so 79 ms costs 28° at 1 Hz and reaches 180° at $f = 1/(2T) = 6.3$ Hz. Closed-loop
+> bandwidth is capped near there **no matter how the gains are tuned**.
+>
+> **The reading this gives you.** Halving inference time (40 → 20 ms) moves the total to 59 ms
+> and the 180° frequency to 8.5 Hz — real, but a 1.3× gain, not the 2× the headline suggests,
+> because inference is only half the budget. It also tells you what to ask of any paper
+> reporting a policy frequency: 10 Hz inference is not a 10 Hz loop, and the difference is
+> everything the rest of this table holds.
+
 ### 4. Coordinate frames and TF trees
 
 Common frames include world, map, odom, base, sensor, end-effector, tool, and object. Every transform needs a direction and timestamp. A plausible numeric matrix in the wrong convention can create a systematic failure that learning cannot repair reliably.
@@ -303,6 +322,24 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
  **주파수는 지연이
 아니다**: 30 Hz 시스템도 옛 프레임 위에서 행동할 수 있다. 샘플링 주기, 추론 주기, 지터,
 데드라인 미스, 큐잉, 타임스탬프 정책, 그리고 지연이 끝-끝으로 측정됐는지 확인하라.
+
+> [!example] 계산 예제 · Worked example
+> **루프 하나를 더해 보기.** 대표적인 시각–운동 스택을 잡자: 30 Hz 카메라(평균 샘플링 지연
+> $\tfrac{1}{2}\times 33.3 = 16.7$ ms), 노출과 판독 12 ms, GPU 호스트로의 전송 5 ms, 정책 추론
+> 40 ms, 행동 디코딩과 프로세스 간 통신 3 ms, 500 Hz 관절 제어기(2 ms). 합
+> $16.7 + 12 + 5 + 40 + 3 + 2 = \mathbf{79}$ ms.
+>
+> **대가는 두 번 치른다.** *낡음*으로: 0.3 m/s로 움직이는 엔드이펙터는 자기 이미지가 행동을
+> 만들어 낼 때쯤 이미 $0.3 \times 0.079 = 24$ mm를 갔다. $\pm 10$ mm 파지 허용 오차 앞에서는
+> $0.010/0.079 = 0.13$ m/s로 늦추거나 앞을 예측하는 수밖에 없다. *피드백 루프의 死時間*으로:
+> 지연 $T$는 $360 f T$도의 위상 지연을 만드니, 79 ms는 1 Hz에서 28°를 쓰고
+> $f = 1/(2T) = 6.3$ Hz에서 180°에 닿는다. 폐루프 대역폭은 **게인을 어떻게 잡든** 그 근처에서
+> 막힌다.
+>
+> **여기서 얻는 독법.** 추론 시간을 절반으로(40 → 20 ms) 줄이면 합은 59 ms, 180° 주파수는
+> 8.5 Hz가 된다 — 실질적인 개선이지만 표제가 암시하는 2배가 아니라 1.3배다. 추론이 예산의
+> 절반뿐이기 때문이다. 그리고 정책 주파수를 보고하는 어떤 논문에든 무엇을 물어야 하는지도
+> 알려 준다: 10 Hz 추론은 10 Hz 루프가 아니고, 그 차이가 이 표의 나머지 전부다.
 
 ### 4. 좌표계와 TF 트리
 

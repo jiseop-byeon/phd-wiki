@@ -144,6 +144,28 @@ rather than a tuning knob.
 > stability shown against a **stiff** environment or only against free motion? Free-motion
 > stability is nearly free; contact stability is the claim.
 
+> [!example] Worked example · 계산 예제
+> **What 150 ms of round trip does on contact.** The operator moves the master at 50 mm/s and
+> the tool meets a wall. The contact force cannot reach the operator's hand for a full round
+> trip, so they keep advancing for $0.150$ s: $50 \times 0.150 = \mathbf{7.5}$ mm of commanded
+> penetration before any resistance is felt.
+>
+> Against a stiff environment — the $10^4$ N/m that
+> [[04-robotics/force-compliance-control|10. Force control §1]] uses for its wall — that
+> displacement is $10^4 \times 0.0075 = 75$ N. Against structural steel at $10^7$ N/m it is
+> 75,000 N, which is to say the tool or the wall breaks first.
+>
+> **What the system does about it.** There are only three moves, and every bilateral
+> teleoperation paper is making one of them. Lower the displayed stiffness (the operator feels
+> a soft wall that is not there). Lower the speed — at 5 mm/s the same delay costs 0.75 mm and
+> 7.5 N. Or give up force feedback and close the force loop locally at the slave, which is what
+> a shared-control architecture is for.
+>
+> **The reading this gives you.** "Transparency" and "stability" are not two virtues to
+> balance in the abstract; the product of delay, speed and environment stiffness is what is
+> being traded, and a paper that reports its delay but not the stiffness it rendered has
+> reported half of the result.
+
 ### 4. The interface spectrum
 
 Interfaces trade off along two axes that matter for data collection: how faithfully the
@@ -485,6 +507,25 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 > **상수인가 변동하는가**(패킷 네트워크는 변동한다), **알려져 있는가**, 그리고 안정성이
 > **단단한** 환경에 대해 보여졌는가 아니면 자유 운동에서만인가. 자유 운동 안정성은 거의
 > 공짜다. 접촉 안정성이 주장이다.
+
+> [!example] 계산 예제 · Worked example
+> **왕복 150 ms가 접촉 순간에 하는 일.** 작업자가 마스터를 50 mm/s로 움직이는데 공구가 벽에
+> 닿았다. 접촉력이 작업자의 손에 닿으려면 왕복 시간이 온전히 필요하므로, 그동안 $0.150$초를
+> 계속 밀고 들어간다: 저항이 느껴지기 전에 **7.5 mm**의 침투가 명령된다
+> ($50 \times 0.150$).
+>
+> [[04-robotics/force-compliance-control|10. 힘 제어 §1]]이 벽에 쓰는 $10^4$ N/m짜리 단단한
+> 환경에서 그 변위는 $10^4 \times 0.0075 = 75$ N이다. $10^7$ N/m인 구조용 강재라면 75,000 N,
+> 다시 말해 공구나 벽 중 하나가 먼저 부러진다.
+>
+> **시스템이 이에 대해 하는 일.** 수는 셋뿐이고, 모든 양방향 원격조작 논문이 그중 하나를 두고
+> 있다. 표시하는 강성을 낮춘다(작업자는 실재하지 않는 물렁한 벽을 느낀다). 속도를 낮춘다 —
+> 5 mm/s라면 같은 지연이 0.75 mm와 7.5 N을 쓴다. 아니면 힘 피드백을 포기하고 슬레이브 쪽에서
+> 국소적으로 힘 루프를 닫는다. 공유 제어 구조가 존재하는 이유가 그것이다.
+>
+> **여기서 얻는 독법.** "투명성"과 "안정성"은 추상적으로 저울질할 두 미덕이 아니다. 실제로
+> 거래되는 것은 지연·속도·환경 강성의 곱이고, 지연은 보고하면서 자신이 구현한 강성은 밝히지
+> 않는 논문은 결과의 절반만 보고한 것이다.
 
 ### 4. 인터페이스 스펙트럼
 

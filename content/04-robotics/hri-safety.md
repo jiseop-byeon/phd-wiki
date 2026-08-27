@@ -156,6 +156,26 @@ earth-moving machine** against ISO 17757, an **arm working next to a person** ag
 an unfenced, weather-exposed site whose layout changes week to week — but say that against the
 named standard, not against "safety" in general.
 
+> [!example] Worked example · 계산 예제
+> **What the separation distance costs you.** ISO/TS 15066 sizes speed-and-separation
+> monitoring as $S_p = S_h + S_r + S_s + C + Z_d + Z_r$: the operator's approach, the robot's
+> travel during its reaction time, its stopping distance, the intrusion distance before the
+> sensor sees a limb, and two position uncertainties. Take the standard walking speed
+> $v_h = 1.6$ m/s from ISO 13855, a robot at $v_r = 1.0$ m/s, reaction $T_r = 0.1$ s, stopping
+> $T_s = 0.3$ s, and $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m.
+>
+> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m.
+> Sum: $0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = \mathbf{1.24}$ m.
+>
+> Now halve the robot to 0.5 m/s: $S_r = 0.05$, $S_s = 0.075$, total **1.11 m**. Stop the robot
+> dead — $v_r = 0$ — and it is still **0.99 m**. The operator's own 0.64 m does not move,
+> because it is the human walking in during the robot's 0.4 s of reaction and stopping.
+>
+> **The reading this gives you.** In a 1 m cell, slowing the robot buys almost nothing; the
+> budget is spent on human approach speed and on $T_r + T_s$. That is why papers claiming
+> "safe collaboration by speed scaling" are really claiming a *sensing latency* result, and why
+> a stated cycle-time cost is the honest way to report one.
+
 ### 7. Human-study design
 
 Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review.
@@ -354,6 +374,25 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 일하는 **팔**은 ISO 10218, 공장에서 자재를 나르는 **AMR**은 ISO 3691-4. 그중 어느 것도 울타리
 없이 날씨에 노출되고 배치가 주 단위로 바뀌는 현장을 위해 쓰이지 않았다 — 다만 그것을 "안전"
 일반이 아니라 이름을 댄 표준에 대고 말하라.
+
+> [!example] 계산 예제 · Worked example
+> **분리 거리가 실제로 무엇을 앗아가는가.** ISO/TS 15066은 속도·분리 감시를
+> $S_p = S_h + S_r + S_s + C + Z_d + Z_r$로 계산한다: 작업자의 접근, 로봇이 반응 시간 동안
+> 이동한 거리, 정지 거리, 센서가 팔다리를 보기 전까지의 침입 거리, 그리고 두 위치 불확실성.
+> ISO 13855의 표준 보행 속도 $v_h = 1.6$ m/s, 로봇 $v_r = 1.0$ m/s, 반응 $T_r = 0.1$ s,
+> 정지 $T_s = 0.3$ s, $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m를 넣자.
+>
+> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m.
+> 합: $0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = \mathbf{1.24}$ m.
+>
+> 이제 로봇을 절반인 0.5 m/s로 줄이면 $S_r = 0.05$, $S_s = 0.075$, 합 **1.11 m**. 아예 세워도
+> — $v_r = 0$ — 여전히 **0.99 m**다. 작업자 몫 0.64 m는 꿈쩍하지 않는다. 로봇이 반응하고
+> 멈추는 0.4초 동안 사람이 걸어 들어오는 거리이기 때문이다.
+>
+> **여기서 얻는 독법.** 1 m 셀에서는 로봇을 늦춰 봐야 거의 얻는 것이 없다. 예산은 사람의
+> 접근 속도와 $T_r + T_s$가 다 쓴다. "속도 스케일링으로 안전한 협업"을 주장하는 논문이 사실은
+> *감지 지연* 결과를 주장하고 있는 이유이고, 사이클 타임 손실을 함께 밝히는 것이 그런 결과를
+> 정직하게 보고하는 방법인 이유다.
 
 ### 7. 인간 대상 연구 설계
 
