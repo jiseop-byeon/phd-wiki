@@ -95,6 +95,45 @@ formulations of the same engineering problem differ wildly in solvability.
   $\nabla(f + \lambda g) = 0$ — so minimizing the combined **Lagrangian** finds exactly the
   points where no feasible descent direction remains.
 - **Lagrangian**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$.
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="at a constrained optimum the gradient of the objective and the gradient of the constraint lie on one line pointing opposite ways">
+  <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" fill-opacity="0.07">
+    <polygon points="60,180 360,80 360,190 60,190"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="60" y1="180" x2="360" y2="80"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.5">
+    <circle cx="300" cy="60" r="18"/>
+    <circle cx="300" cy="60" r="37.9"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.28" stroke-dasharray="4 3">
+    <circle cx="300" cy="60" r="58"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opA)">
+    <line x1="312" y1="96" x2="329.4" y2="148.2"/>
+    <line x1="312" y1="96" x2="294.6" y2="43.8"/>
+  </g>
+  <g fill="currentColor"><circle cx="312" cy="96" r="3.6"/><circle cx="300" cy="60" r="2.6" opacity="0.6"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="70" y="164">feasible region &#183; g(x) &#8804; 0</text>
+    <text x="322" y="104">x&#8902;</text>
+    <text x="336" y="152">&#8711;f</text>
+    <text x="266" y="42">&#8711;g</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.8">
+    <text x="366" y="82">g(x) = 0</text>
+    <text x="366" y="120">one line, opposite directions</text>
+    <text x="366" y="58">where f would go if unconstrained</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">At a constrained optimum no feasible direction lowers f any further. That is the same as saying</text>
+    <text x="24" y="228">&#8722;&#8711;f points straight out through the boundary, which is the same as saying &#8711;f and &#8711;g lie on one</text>
+    <text x="24" y="244">line facing opposite ways. &#955; &#8805; 0 is the ratio of their lengths, and &#8711;(f + &#955;g) = 0 is this picture</text>
+    <text x="24" y="260">written on one line &#8212; which is the whole reason the Lagrangian is worth forming.</text>
+  </g>
+</svg>
+
 - **KKT conditions** (first-order optimality with constraints):
   1. Stationarity: $\nabla_x \mathcal{L} = 0$
   2. Primal feasibility: $g_i \le 0,\ h_j = 0$
@@ -244,6 +283,45 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   $\lambda \ge 0$에 대해 $\nabla f = -\lambda\nabla g$(두 그래디언트가 반평행)가 된다.
   정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**을 최소화하면 실행
   가능한 하강 방향이 남지 않는 점을 정확히 찾는다.
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="제약 최적점에서 목적함수의 그래디언트와 제약의 그래디언트가 한 직선 위에서 서로 반대를 향한다">
+  <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" fill-opacity="0.07">
+    <polygon points="60,180 360,80 360,190 60,190"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <line x1="60" y1="180" x2="360" y2="80"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.5">
+    <circle cx="300" cy="60" r="18"/>
+    <circle cx="300" cy="60" r="37.9"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.28" stroke-dasharray="4 3">
+    <circle cx="300" cy="60" r="58"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opA)">
+    <line x1="312" y1="96" x2="329.4" y2="148.2"/>
+    <line x1="312" y1="96" x2="294.6" y2="43.8"/>
+  </g>
+  <g fill="currentColor"><circle cx="312" cy="96" r="3.6"/><circle cx="300" cy="60" r="2.6" opacity="0.6"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="70" y="164">실행 가능 영역 &#183; g(x) &#8804; 0</text>
+    <text x="322" y="104">x&#8902;</text>
+    <text x="336" y="152">&#8711;f</text>
+    <text x="266" y="42">&#8711;g</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.8">
+    <text x="366" y="82">g(x) = 0</text>
+    <text x="366" y="120">한 직선 위, 반대 방향</text>
+    <text x="366" y="58">제약이 없었다면 f가 갈 곳</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">제약 최적점에서는 실행 가능 영역 안으로 f를 더 내리는 방향이 남아 있지 않다. 그 말은 &#8722;&#8711;f가</text>
+    <text x="24" y="228">경계를 똑바로 뚫고 나가려 한다는 뜻이고, 그것은 다시 &#8711;f와 &#8711;g가 한 직선 위에서 반대를 향한다는</text>
+    <text x="24" y="244">뜻이다. &#955; &#8805; 0이 두 벡터의 길이 비이고, &#8711;(f + &#955;g) = 0은 이 그림을 한 줄로 적은 것이다 &#8212;</text>
+    <text x="24" y="260">라그랑지안을 만들 값어치가 있는 이유가 그것이다.</text>
+  </g>
+</svg>
+
 - **라그랑지안**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$
 - **KKT 조건** (제약이 있는 1차 최적성):
   1. 정상성: $\nabla_x \mathcal{L} = 0$

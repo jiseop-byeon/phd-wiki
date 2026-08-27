@@ -150,6 +150,34 @@ where each concept appears in the papers of this wiki.
     people say "the problem is ill-conditioned" rather than "the learning rate is wrong" —
     no single $\alpha$ can serve both directions, which is exactly the gap per-coordinate
     methods try to close.
+<svg viewBox="0 0 560 260" style="max-width:100%;height:auto" role="img" aria-label="gradient descent bouncing across a narrow valley while creeping along its floor">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3" fill="none">
+    <line x1="40" y1="128" x2="240" y2="128"/><line x1="138" y1="24" x2="138" y2="196"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <ellipse cx="138" cy="128" rx="19.0" ry="60.1"/>
+    <ellipse cx="138" cy="128" rx="11.4" ry="36.1"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" opacity="0.9">
+    <polyline points="223.0,43.0 70.0,58.3 192.4,70.8 94.5,81.1 172.8,89.6 110.1,96.5 160.3,102.2 120.2,106.8 152.3,110.6"/>
+  </g>
+  <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="230" y="36">x&#8320; = (1, 1)</text>
+    <text x="256" y="120">steep direction x&#8321;</text>
+    <text x="256" y="134">&#215;0.8 per step, sign flipping</text>
+    <text x="256" y="158">flat direction x&#8322;</text>
+    <text x="256" y="172">&#215;0.82 per step</text>
+    <text x="256" y="190">after 20 steps: (0.012, 0.019)</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="206">H = diag(10, 1) and &#945; = 0.18, the largest stable step. The steep coordinate shrinks slightly</text>
+    <text x="24" y="222">faster but flips sign each step, so the iterates bounce across the valley; the flat coordinate is</text>
+    <text x="24" y="238">the one still holding you back at step 20. Raise &#954; to 1000 and the flat direction needs roughly</text>
+    <text x="24" y="254">100&#215; more steps &#8212; no single &#945; serves both, which is what &#8220;ill-conditioned&#8221; names.</text>
+  </g>
+</svg>
+
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
@@ -460,6 +488,34 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     잘못됐다"가 아니라 *"문제의 조건이 나쁘다"*고 말하는 이유가 이것이다 — 어떤 단일 $\alpha$도
     두 방향을 동시에 만족시킬 수 없고, 좌표별 방법들이 메우려는 격차가 정확히 이것이다.
 - **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
+<svg viewBox="0 0 560 260" style="max-width:100%;height:auto" role="img" aria-label="좁은 골짜기를 가로질러 튀면서 바닥을 따라 천천히 나아가는 경사 하강">
+  <g stroke="currentColor" stroke-width="1" opacity="0.3" fill="none">
+    <line x1="40" y1="128" x2="240" y2="128"/><line x1="138" y1="24" x2="138" y2="196"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <ellipse cx="138" cy="128" rx="19.0" ry="60.1"/>
+    <ellipse cx="138" cy="128" rx="11.4" ry="36.1"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" opacity="0.9">
+    <polyline points="223.0,43.0 70.0,58.3 192.4,70.8 94.5,81.1 172.8,89.6 110.1,96.5 160.3,102.2 120.2,106.8 152.3,110.6"/>
+  </g>
+  <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="230" y="36">x&#8320; = (1, 1)</text>
+    <text x="256" y="120">가파른 방향 x&#8321;</text>
+    <text x="256" y="134">스텝당 &#215;0.8, 부호가 뒤집힌다</text>
+    <text x="256" y="158">평평한 방향 x&#8322;</text>
+    <text x="256" y="172">스텝당 &#215;0.82</text>
+    <text x="256" y="190">20 스텝 뒤: (0.012, 0.019)</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="206">H = diag(10, 1), &#945; = 0.18 &#8212; 안정한 최대 스텝이다. 가파른 좌표가 조금 더 빨리 줄지만 매 스텝</text>
+    <text x="24" y="222">부호가 뒤집혀서 반복점이 골짜기를 가로질러 튄다. 20 스텝째에도 발목을 잡고 있는 것은 평평한</text>
+    <text x="24" y="238">좌표다. &#954;를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 더 필요하다 &#8212; 어떤 단일 &#945;도</text>
+    <text x="24" y="254">둘을 함께 만족시키지 못한다는 것, 그것이 &#8220;조건이 나쁘다&#8221;는 말의 뜻이다.</text>
+  </g>
+</svg>
+
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
   논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻.
 - **$x^\top A x$ 읽는 법 — 정말로 인덱스가 늘어난 $ax^2$이다.** 전치는 내용이 아니라 부기다.

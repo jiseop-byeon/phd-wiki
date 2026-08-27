@@ -56,6 +56,33 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   The model costs $1.280$ bits per symbol where $1.157$ was achievable — an overpayment of
   $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
 - Classification training: $p$ = one-hot label, $q$ = softmax output ⇒
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="two bars of bits per symbol, the entropy floor and the longer cost of coding with the model, with the excess marked as the KL divergence">
+  <g fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2">
+    <rect x="90" y="34" width="231.4" height="26" rx="3"/>
+    <rect x="90" y="76" width="231.4" height="26" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2">
+    <rect x="321.4" y="76" width="24.6" height="26" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="3 3">
+    <line x1="321.4" y1="28" x2="321.4" y2="112"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="24" y="51">H(p) = 1.157 bits</text>
+    <text x="24" y="93">H(p, q) = 1.280 bits</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="356" y="93">KL = 0.123</text>
+    <text x="315" y="126" text-anchor="end">the floor &#8212; no code beats this</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="160">Entropy is a floor set by the data: no code, however clever, gets below 1.157 bits per symbol.</text>
+    <text x="24" y="176">Your model&#8217;s code pays 1.280, and the excess is exactly the KL. So minimising cross-entropy is</text>
+    <text x="24" y="192">minimising KL &#8212; the floor is a constant you do not control, and every bit of training progress is</text>
+    <text x="24" y="208">the dark band getting narrower.</text>
+  </g>
+</svg>
+
   cross-entropy loss $= -\log q(\text{correct class})$. Every other term is multiplied by
   $p(x) = 0$ and vanishes — which is why the loss in code is a *single* log. If the model
   gives the correct class probability $0.5$, the loss is $-\log 0.5 = 0.693$ nats ($=1$ bit);
@@ -232,6 +259,33 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   $1.157$이면 되는 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다.
   이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
 - 분류 학습: $p$ = 원-핫 라벨, $q$ = 소프트맥스 출력 ⇒ 교차 엔트로피 손실
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="심볼당 비트 수를 나타내는 두 막대. 엔트로피 바닥과 모델의 부호가 치르는 더 긴 비용, 그 초과분이 KL로 표시되어 있다">
+  <g fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2">
+    <rect x="90" y="34" width="231.4" height="26" rx="3"/>
+    <rect x="90" y="76" width="231.4" height="26" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2">
+    <rect x="321.4" y="76" width="24.6" height="26" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="3 3">
+    <line x1="321.4" y1="28" x2="321.4" y2="112"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="24" y="51">H(p) = 1.157 비트</text>
+    <text x="24" y="93">H(p, q) = 1.280 비트</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="356" y="93">KL = 0.123</text>
+    <text x="315" y="126" text-anchor="end">바닥 &#8212; 어떤 부호도 이보다 낮출 수 없다</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="160">엔트로피는 데이터가 정하는 바닥이다: 아무리 영리한 부호도 심볼당 1.157비트 아래로 내려가지</text>
+    <text x="24" y="176">못한다. 내 모델의 부호는 1.280을 치르고, 그 초과분이 정확히 KL이다. 그래서 교차 엔트로피를</text>
+    <text x="24" y="192">줄이는 것이 곧 KL을 줄이는 것이다 &#8212; 바닥은 내가 건드릴 수 없는 상수이고, 학습의 진전은 전부</text>
+    <text x="24" y="208">저 짙은 띠가 좁아지는 것이다.</text>
+  </g>
+</svg>
+
   $= -\log q(\text{정답 클래스})$. 나머지 항은 전부 $p(x) = 0$이 곱해져 사라진다 — 코드에서
   보는 손실이 로그 *하나*인 이유가 이것이다. 모델이 정답 클래스에 확률 $0.5$를 주면 손실은
   $-\log 0.5 = 0.693$ 나트($=1$비트), $0.9$면 $0.105$, $0.99$면 $0.010$이다. 손실이 처음엔

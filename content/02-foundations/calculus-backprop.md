@@ -57,6 +57,40 @@ example, plus the gradient pathologies that shaped architecture history.
   (many inputs, one output), and it would reverse if you ever needed the sensitivity of many
   outputs to *one* input.
 - Autodiff mechanics: each primitive supplies a **VJP** (vector-Jacobian product)
+<svg viewBox="0 0 560 244" style="max-width:100%;height:auto" role="img" aria-label="forward mode sweeping left to right once per parameter against reverse mode sweeping right to left once for the single loss">
+  <defs><marker id="cbA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
+    <rect x="70" y="38" width="52" height="26" rx="3"/><rect x="160" y="38" width="52" height="26" rx="3"/><rect x="250" y="38" width="52" height="26" rx="3"/><rect x="340" y="38" width="52" height="26" rx="3"/><circle cx="446" cy="51" r="14"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
+    <rect x="70" y="108" width="52" height="26" rx="3"/><rect x="160" y="108" width="52" height="26" rx="3"/><rect x="250" y="108" width="52" height="26" rx="3"/><rect x="340" y="108" width="52" height="26" rx="3"/><circle cx="446" cy="121" r="14"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+    <line x1="124" y1="51" x2="158" y2="51"/><line x1="214" y1="51" x2="248" y2="51"/><line x1="304" y1="51" x2="338" y2="51"/><line x1="394" y1="51" x2="428" y2="51"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+    <line x1="160" y1="121" x2="124" y2="121"/><line x1="250" y1="121" x2="214" y2="121"/><line x1="340" y1="121" x2="304" y2="121"/><line x1="430" y1="121" x2="394" y2="121"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="24" y="30">forward mode</text>
+    <text x="24" y="100">reverse mode</text>
+    <text x="470" y="56">&#215; 10&#8311; sweeps</text>
+    <text x="470" y="126">&#215; 1 sweep</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.8">
+    <text x="104" y="30">push &#8706;/&#8706;&#952;&#7522; from the inputs &#8212; one sweep per parameter</text>
+    <text x="104" y="100">pull &#8706;L/&#8706;(&#183;) from the output &#8212; one sweep per output</text>
+    <text x="70" y="84">10&#8311; parameters</text>
+    <text x="470" y="154">1 scalar loss</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="190">The asymmetry is not a trick; it falls out of the shape of the problem &#8212; many inputs, one</text>
+    <text x="24" y="206">output. A backward pass costs two to three forward passes, so the real gap is about seven</text>
+    <text x="24" y="222">orders of magnitude, and training large models is possible for that reason alone. Need the</text>
+    <text x="24" y="238">sensitivity of many outputs to one input and the ordering flips.</text>
+  </g>
+</svg>
+
   $v \mapsto J^\top v$; the framework composes them along the recorded graph.
   Cost ≈ 2–3× a forward pass; memory ≈ stored activations (hence gradient checkpointing:
   recompute instead of store).
@@ -251,6 +285,39 @@ bug detector in existence.
 - 자동 미분의 동작: 각 기본 연산이 **VJP**(벡터-야코비안 곱) $v \mapsto J^\top v$를
   제공하고, 프레임워크가 기록된 그래프를 따라 이를 합성한다.
   비용 ≈ 순방향의 2~3배; 메모리 ≈ 저장된 활성값 (gradient checkpointing: 저장 대신 재계산).
+<svg viewBox="0 0 560 228" style="max-width:100%;height:auto" role="img" aria-label="파라미터마다 한 번 왼쪽에서 오른쪽으로 쓸어가는 순방향 모드와, 손실 하나에 대해 한 번 오른쪽에서 왼쪽으로 쓸어오는 역방향 모드">
+  <defs><marker id="cbA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
+    <rect x="70" y="38" width="52" height="26" rx="3"/><rect x="160" y="38" width="52" height="26" rx="3"/><rect x="250" y="38" width="52" height="26" rx="3"/><rect x="340" y="38" width="52" height="26" rx="3"/><circle cx="446" cy="51" r="14"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
+    <rect x="70" y="108" width="52" height="26" rx="3"/><rect x="160" y="108" width="52" height="26" rx="3"/><rect x="250" y="108" width="52" height="26" rx="3"/><rect x="340" y="108" width="52" height="26" rx="3"/><circle cx="446" cy="121" r="14"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+    <line x1="124" y1="51" x2="158" y2="51"/><line x1="214" y1="51" x2="248" y2="51"/><line x1="304" y1="51" x2="338" y2="51"/><line x1="394" y1="51" x2="428" y2="51"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+    <line x1="160" y1="121" x2="124" y2="121"/><line x1="250" y1="121" x2="214" y2="121"/><line x1="340" y1="121" x2="304" y2="121"/><line x1="430" y1="121" x2="394" y2="121"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="24" y="30">순방향 모드</text>
+    <text x="24" y="100">역방향 모드</text>
+    <text x="470" y="56">&#215; 10&#8311;회</text>
+    <text x="470" y="126">&#215; 1회</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.8">
+    <text x="104" y="30">&#8706;/&#8706;&#952;&#7522;를 입력 쪽부터 민다 &#8212; 파라미터마다 한 번</text>
+    <text x="104" y="100">&#8706;L/&#8706;(&#183;)를 출력에서 끌어온다 &#8212; 출력마다 한 번</text>
+    <text x="70" y="84">파라미터 10&#8311;개</text>
+    <text x="470" y="154">스칼라 손실 1개</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="190">이 비대칭은 요령이 아니라 문제의 모양에서 곧장 나온다 &#8212; 입력이 많고 출력이 하나다. 역방향</text>
+    <text x="24" y="206">패스가 순방향의 2~3배 비용이므로 실제 차이는 약 7자릿수이고, 대형 모델 학습이 가능한 이유가</text>
+    <text x="24" y="222">오직 이것이다. 만약 하나의 입력에 대한 다수 출력의 민감도가 필요했다면 우열이 뒤집힌다.</text>
+  </g>
+</svg>
+
 
 ### 3. 계산 예제 — 2층 네트워크를 손으로
 

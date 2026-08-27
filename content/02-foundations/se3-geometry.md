@@ -45,6 +45,47 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   $R_{world}R_{body}$ versus $R_{body}R_{world}$ is describing different motions, and why
   every convention mismatch in robotics is ultimately this.
 - **Checking a matrix is a rotation**, which you should do whenever you build one: columns
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="the same point rotated by z then x lands on the z axis, and by x then z lands on the y axis">
+  <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <line x1="150" y1="110" x2="197.6" y2="137.5"/>
+    <line x1="150" y1="110" x2="102.4" y2="137.5"/>
+    <line x1="150" y1="110" x2="150" y2="55"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7">
+    <text x="201.6" y="147.5">x</text><text x="90.4" y="147.5">y</text><text x="146" y="49">z</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+    <path d="M197.6,137.5 Q150.0,115.5 102.4,137.5"/>
+    <path d="M102.4,137.5 Q126.2,33 150,55"/>
+  </g>
+  <g fill="currentColor"><circle cx="150" cy="110" r="3"/><circle cx="197.6" cy="137.5" r="3.4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="86" y="36">R&#7526; first, then R&#8339;</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85"><text x="86" y="172">(1,0,0) &#8594; (0,1,0) &#8594; (0,0,1)</text></g>
+  <g font-size="9.5" fill="currentColor"><text x="86" y="188">ends on z</text></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <line x1="410" y1="110" x2="457.6" y2="137.5"/>
+    <line x1="410" y1="110" x2="362.4" y2="137.5"/>
+    <line x1="410" y1="110" x2="410" y2="55"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7">
+    <text x="461.6" y="147.5">x</text><text x="350.4" y="147.5">y</text><text x="406" y="49">z</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+    <path d="M457.6,137.5 Q410.0,115.5 362.4,137.5"/>
+  </g>
+  <g fill="currentColor"><circle cx="410" cy="110" r="3"/><circle cx="457.6" cy="137.5" r="3.4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="346" y="36">R&#8339; first, then R&#7526;</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85"><text x="346" y="172">(1,0,0) &#8594; (1,0,0) &#8594; (0,1,0)</text></g>
+  <g font-size="9.5" fill="currentColor"><text x="346" y="188">ends on y</text></g>
+  <g font-size="9" fill="currentColor" opacity="0.75"><text x="346" y="204">R&#8339; leaves a point on the x axis alone</text></g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="224">Same two rotations, different order, different place. The second rotation acts on wherever the</text>
+    <text x="24" y="240">first one left you &#8212; nothing subtler than that is going on. It is why R&#8377;&#8338;&#8341;&#8343;&#8342;R&#8341;&#8338;&#8340;&#8342; and R&#8341;&#8338;&#8340;&#8342;R&#8377;&#8338;&#8341;&#8343;&#8342; describe</text>
+    <text x="24" y="256">different motions, and why every convention mismatch in robotics is ultimately this one.</text>
+  </g>
+</svg>
+
   must have length 1, be mutually perpendicular, and $\det = +1$. For $R_z(90°)$: columns are
   $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ — unit length ✓, pairwise dot products all 0 ✓, and
   $\det = +1$ ✓. A $\det$ of $-1$ means you built a **reflection**, which mirrors the robot
@@ -179,6 +220,47 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 
   같은 회전 둘, 전혀 다른 두 위치. 미묘한 일은 하나도 없다: 두 번째 회전은 첫 번째 회전이
   *남겨둔* 자리에 작용한다. 논문의 $R_{world}R_{body}$와 $R_{body}R_{world}$가 서로 다른 운동을
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="같은 점을 z 다음 x로 돌리면 z축에 도착하고 x 다음 z로 돌리면 y축에 도착한다">
+  <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <line x1="150" y1="110" x2="197.6" y2="137.5"/>
+    <line x1="150" y1="110" x2="102.4" y2="137.5"/>
+    <line x1="150" y1="110" x2="150" y2="55"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7">
+    <text x="201.6" y="147.5">x</text><text x="90.4" y="147.5">y</text><text x="146" y="49">z</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+    <path d="M197.6,137.5 Q150.0,115.5 102.4,137.5"/>
+    <path d="M102.4,137.5 Q126.2,33 150,55"/>
+  </g>
+  <g fill="currentColor"><circle cx="150" cy="110" r="3"/><circle cx="197.6" cy="137.5" r="3.4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="86" y="36">R&#7526; 먼저, 그다음 R&#8339;</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85"><text x="86" y="172">(1,0,0) &#8594; (0,1,0) &#8594; (0,0,1)</text></g>
+  <g font-size="9.5" fill="currentColor"><text x="86" y="188">z축에 도착</text></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
+    <line x1="410" y1="110" x2="457.6" y2="137.5"/>
+    <line x1="410" y1="110" x2="362.4" y2="137.5"/>
+    <line x1="410" y1="110" x2="410" y2="55"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7">
+    <text x="461.6" y="147.5">x</text><text x="350.4" y="147.5">y</text><text x="406" y="49">z</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+    <path d="M457.6,137.5 Q410.0,115.5 362.4,137.5"/>
+  </g>
+  <g fill="currentColor"><circle cx="410" cy="110" r="3"/><circle cx="457.6" cy="137.5" r="3.4"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="346" y="36">R&#8339; 먼저, 그다음 R&#7526;</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85"><text x="346" y="172">(1,0,0) &#8594; (1,0,0) &#8594; (0,1,0)</text></g>
+  <g font-size="9.5" fill="currentColor"><text x="346" y="188">y축에 도착</text></g>
+  <g font-size="9" fill="currentColor" opacity="0.75"><text x="346" y="204">R&#8339;는 x축 위의 점을 움직이지 않는다</text></g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="224">같은 회전 둘, 다른 순서, 다른 자리. 두 번째 회전은 첫 번째가 남겨둔 자리에 작용한다 &#8212; 그보다</text>
+    <text x="24" y="240">미묘한 일은 하나도 일어나지 않는다. 논문의 R&#8377;&#8338;&#8341;&#8343;&#8342;R&#8341;&#8338;&#8340;&#8342;와 R&#8341;&#8338;&#8340;&#8342;R&#8377;&#8338;&#8341;&#8343;&#8342;가 서로 다른 운동을 기술하는</text>
+    <text x="24" y="256">이유이고, 로보틱스의 규약 불일치가 결국 전부 이것인 이유다.</text>
+  </g>
+</svg>
+
   기술하는 이유이고, 로보틱스의 모든 규약 불일치가 결국 이것인 이유다.
 - **어떤 행렬이 회전인지 확인하기** — 회전 행렬을 만들 때마다 해야 한다: 열의 길이가 1이고,
   서로 수직이며, $\det = +1$이어야 한다. $R_z(90°)$라면 열이 $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ —
