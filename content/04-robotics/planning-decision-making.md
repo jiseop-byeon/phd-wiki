@@ -212,6 +212,9 @@ You should be able to:
 - explain why TAMP must test geometric feasibility;
 - identify what a learned trajectory generator does not guarantee.
 
+> [!tip] Going deeper · 더 깊이
+> LaValle's [*Planning Algorithms*](http://lavalle.pl/planning/) is free and is the reference for the sampling-based half; Tedrake's [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) covers the trajectory-optimization half with code you can run.
+
 ### Self-check
 
 1. Why can a collision-free path be dynamically infeasible?
@@ -453,6 +456,9 @@ Direct shooting은 제어를 최적화하고 상태를 시뮬레이션한다. Di
 - 그래프 탐색·샘플링·궤적 최적화를 비교할 수 있다
 - TAMP가 기하학적 실행 가능성을 검사해야 하는 이유를 설명할 수 있다
 - 학습된 궤적 생성기가 보장하지 않는 것을 짚을 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> LaValle의 [*Planning Algorithms*](http://lavalle.pl/planning/)가 무료이고 샘플링 기반 쪽의 참고서다. 궤적 최적화 쪽은 Tedrake의 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 실행 가능한 코드와 함께 다룬다.
 
 ### 스스로 점검
 

@@ -343,6 +343,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   the implicit justification for latent spaces ([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]).
 
+> [!tip] Going deeper · 더 깊이
+> This page is a working set, not a course. If it moves too fast, Boyd and Vandenberghe's free [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/) covers §1–2 at a gentler pace, and Strang's *Introduction to Linear Algebra* is the standard first course for the eigenvalue and SVD half. Come back here for where each idea shows up in the papers.
+
 ### Self-check
 
 1. Why do two stacked linear layers (no nonlinearity) collapse to one? What rank can the
@@ -676,6 +679,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 다양체 가설: 실제 데이터는 픽셀 공간 속 저차원 곡면 위에 산다 —
   잠재 공간([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]])의 암묵적 정당화.
+
+> [!tip] 더 깊이 · Going deeper
+> 이 페이지는 강의가 아니라 작업 세트다. 너무 빠르면 Boyd·Vandenberghe의 무료 교재 [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/)가 §1~2를 더 천천히 가고, 고윳값·SVD 쪽은 Strang의 *Introduction to Linear Algebra*가 표준 첫 강의다. 각 개념이 논문 어디에 나타나는지는 이 페이지로 돌아와 보라.
 
 ### 스스로 점검
 

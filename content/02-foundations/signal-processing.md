@@ -135,6 +135,9 @@ functions.
   for camera-LiDAR-IMU).
 - Check the spectrum before choosing a filter: name the noise before you fight it.
 
+> [!tip] Going deeper · 더 깊이
+> Oppenheim and Schafer's *Discrete-Time Signal Processing* is the standard course this page compresses. If §2 or §3 read as assertion rather than derivation, its sampling and DFT chapters are the fix.
+
 ### Self-check
 
 1. Convolve $x = [1, 0, -1]$ with $h = [1, 2, 1]$ by hand, and give the output length.
@@ -268,6 +271,9 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 - 센서에서 타임스탬프를 찍고, 융합 전에 시계를 동기화(카메라-LiDAR-IMU의 외부 파라미터
   *그리고* 시간 오프셋).
 - 필터를 고르기 전에 스펙트럼부터 봐라: 싸울 노이즈의 이름부터 알아내라.
+
+> [!tip] 더 깊이 · Going deeper
+> 이 페이지가 압축한 표준 강의는 Oppenheim·Schafer의 *Discrete-Time Signal Processing*이다. §2나 §3이 유도가 아니라 단언처럼 읽혔다면 그 책의 샘플링·DFT 장이 답이다.
 
 ### 스스로 점검
 

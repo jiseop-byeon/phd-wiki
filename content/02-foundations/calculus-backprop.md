@@ -229,6 +229,9 @@ bug detector in existence.
 - Frameworks differentiate *programs*, not formulas: control flow, loops, and in-place ops
   all have gradient semantics — most "my loss doesn't decrease" bugs are graph bugs.
 
+> [!tip] Going deeper · 더 깊이
+> For the machinery underneath: Baydin, Pearlmutter, Radul and Siskind, "Automatic Differentiation in Machine Learning: a Survey," *JMLR* 18(153), 2018 — the paper that separates forward and reverse mode carefully. The [*Deep Learning* book](https://www.deeplearningbook.org/) ch.6 treats backprop as an algorithm.
+
 ### Self-check
 
 1. Redo the worked example with an MSE loss replaced by softmax-CE. What changes in step 1?
@@ -451,6 +454,9 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다.
 - 프레임워크는 수식이 아니라 *프로그램*을 미분한다: 제어 흐름, 루프, in-place 연산에 전부
   그래디언트 의미론이 있다 — "손실이 안 줄어요" 버그의 대부분은 그래프 버그다.
+
+> [!tip] 더 깊이 · Going deeper
+> 아래 깔린 기계장치를 보려면: Baydin, Pearlmutter, Radul, Siskind, "Automatic Differentiation in Machine Learning: a Survey," *JMLR* 18(153), 2018 — 순방향과 역방향 모드를 정확히 가른 논문이다. 역전파를 알고리즘으로 다루는 것은 [*Deep Learning* 책](https://www.deeplearningbook.org/) 6장.
 
 ### 스스로 점검
 

@@ -185,6 +185,9 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 - Name the calibrations a camera+LiDAR+arm system needs.
 - Interpret reprojection error without over-trusting it.
 
+> [!tip] Going deeper · 더 깊이
+> Szeliski's [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/) is free and covers this page's whole span; when you need multi-view geometry stated as theorems — essential and fundamental matrices, triangulation, bundle adjustment — Hartley and Zisserman's *Multiple View Geometry in Computer Vision* is the reference the field cites.
+
 ### Self-check
 
 1. With the worked intrinsics, where does $p^{c}=(-0.3, 0.1, 1.5)$ project?
@@ -376,6 +379,9 @@ point)는 반복한다: (1) 각 점을 최근접 이웃과 짝짓고, (2) 그 �
 - ICP의 루프와 초기화가 필요한 이유를 설명할 수 있다
 - 카메라+LiDAR+로봇팔 시스템에 필요한 보정들을 나열할 수 있다
 - reprojection error를 과신하지 않고 해석할 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> Szeliski의 [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)이 무료이고 이 페이지의 범위를 전부 덮는다. 다시점 기하를 정리로 봐야 할 때 — essential·fundamental 행렬, 삼각측량, 번들 조정 — 는 Hartley·Zisserman의 *Multiple View Geometry in Computer Vision*이 이 분야가 인용하는 참고서다.
 
 ### 스스로 점검
 

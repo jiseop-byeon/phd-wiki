@@ -172,6 +172,9 @@ You should be able to:
 - explain front end, back end, drift, and loop closure;
 - identify calibration, synchronization, and evaluation assumptions in a paper.
 
+> [!tip] Going deeper · 더 깊이
+> Barfoot's [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf) is free and is the modern treatment, including estimation on SE(3) rather than in a vector space. Thrun, Burgard and Fox's *Probabilistic Robotics* remains the reference for the filtering and SLAM formulations themselves.
+
 ### Self-check
 
 1. Why can a filter report small covariance and still be wrong?
@@ -366,6 +369,9 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 - odometry·localization·mapping·SLAM을 구분할 수 있다
 - front end·back end·drift·loop closure를 설명할 수 있다
 - 논문에서 보정·동기화·평가 가정을 짚어낼 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> Barfoot의 [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)가 무료이고 현대적 서술이다 — 벡터 공간이 아니라 SE(3) 위에서의 추정을 포함한다. 필터와 SLAM 정식화 자체의 참고서는 여전히 Thrun·Burgard·Fox의 *Probabilistic Robotics*다.
 
 ### 스스로 점검
 

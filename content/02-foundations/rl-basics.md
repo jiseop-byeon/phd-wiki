@@ -437,6 +437,9 @@ RL results depend on protocol more than those of almost any other subfield. What
 > 알고리즘 이름이 그중 가장 정보가 적다. 두 RL 논문을 비교하기 전에 이 여섯이 일치하는지
 > 확인하라 — 일치하지 않으면 방법이 아니라 문제 정의를 비교하는 것이다.
 
+> [!tip] Going deeper · 더 깊이
+> Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is free and is what this page compresses — ch.3–6 for the Bellman machinery, ch.13 for policy gradients. What this page has over it is §6 and §9, the robotics-specific parts the book does not cover.
+
 ### Self-check
 
 1. Derive the Bellman expectation equation from the definition of $V^\pi$ (one line of
@@ -859,6 +862,9 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 - **에피소드 종료와 시간 제한.** 과제가 실패해서 끝난 것과 시계가 다 되어 끝난 것은 다르다:
   후자는 여전히 가치 함수를 부트스트랩해야 하고, 이를 종료로 취급하면 정책에게 "시간 제한에서
   세계가 끝난다"고 조용히 가르치게 된다.
+
+> [!tip] 더 깊이 · Going deeper
+> Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)이 무료이고, 이 페이지가 압축한 것이 그 책이다 — 벨만 기계장치는 3~6장, 정책 경사는 13장. 이 페이지가 그 책보다 나은 부분은 §6과 §9, 즉 그 책이 다루지 않는 로보틱스 쪽이다.
 
 ### 스스로 점검
 

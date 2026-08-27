@@ -207,6 +207,9 @@ non-variational world models take different routes).
 | Perplexity | $e^{H(p,q)}$ | LM evaluation |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/diffusion/world-model training |
 
+> [!tip] Going deeper · 더 깊이
+> MacKay's [*Information Theory, Inference, and Learning Algorithms*](https://www.inference.org.uk/mackay/itila/) is free and unusually readable; Cover and Thomas's *Elements of Information Theory* is what you want when a theorem has to be stated precisely rather than explained.
+
 ### Self-check
 
 1. Compute the entropy of a coin with $P(\text{H}) = 0.99$, and say why it is smaller than the 0.9 coin's.
@@ -407,6 +410,9 @@ matching이나 비변분 월드모델은 다른 길을 간다).
 | 상호 정보량 $I(X;Y)$ | $H(X)-H(X|Y)$ | 대조학습(CLIP), 정보 병목 |
 | Perplexity | $e^{H(p,q)}$ | 언어모델 평가 |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/디퓨전/월드모델 학습 |
+
+> [!tip] 더 깊이 · Going deeper
+> MacKay의 [*Information Theory, Inference, and Learning Algorithms*](https://www.inference.org.uk/mackay/itila/)가 무료이고 드물게 잘 읽힌다. 정리를 설명이 아니라 정확한 진술로 봐야 할 때는 Cover·Thomas의 *Elements of Information Theory*.
 
 ### 스스로 점검 · Self-check
 

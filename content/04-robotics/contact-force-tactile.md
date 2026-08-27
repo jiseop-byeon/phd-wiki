@@ -123,6 +123,9 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 - Identify what tactile sensing adds beyond wrist force and vision.
 - Audit material variation and contact-related failure metrics.
 
+> [!tip] Going deeper · 더 깊이
+> Mason's *Mechanics of Robotic Manipulation* is the compact classical treatment of contact and friction; Tedrake's [*Robotic Manipulation*](https://manipulation.csail.mit.edu/) covers the same ground with simulators you can run — which matters here, because contact is where simulation and reality diverge first.
+
 ### Self-check
 
 1. Why can increasing position gain be dangerous during contact?
@@ -291,6 +294,9 @@ $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 - 힘·임피던스·어드미턴스 제어를 비교할 수 있다
 - 촉각이 손목 힘·비전 너머에 더하는 것을 짚을 수 있다
 - 재료 변동과 접촉 관련 실패 지표를 검사할 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> 접촉과 마찰의 간결한 고전적 서술은 Mason의 *Mechanics of Robotic Manipulation*이다. Tedrake의 [*Robotic Manipulation*](https://manipulation.csail.mit.edu/)이 같은 영역을 돌려 볼 수 있는 시뮬레이터와 함께 다루는데, 접촉은 시뮬레이션과 현실이 가장 먼저 갈라지는 곳이라 그 점이 중요하다.
 
 ### 스스로 점검
 

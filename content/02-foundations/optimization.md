@@ -192,6 +192,9 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 - Diffusion training = minimizing a variational bound; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]'s
   CEM planning = derivative-free optimization in latent space.
 
+> [!tip] Going deeper · 더 깊이
+> The canonical next step is Boyd and Vandenberghe's [*Convex Optimization*](https://web.stanford.edu/~boyd/cvxbook/) — free, and the book every MPC paper is implicitly citing; ch.2–5 do convexity, duality and KKT properly. For the non-convex half, Nocedal and Wright's *Numerical Optimization*.
+
 ### Self-check
 
 1. Show that the max of two convex functions is convex, and use it to argue hinge loss is convex.
@@ -379,6 +382,9 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 - [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]의 KL 페널티 = 부드러운 신뢰 영역 제약.
 - 디퓨전 학습 = 변분 하한 최소화; [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]의 CEM 플래닝 =
   잠재 공간의 미분 불요 최적화.
+
+> [!tip] 더 깊이 · Going deeper
+> 다음 단계의 정본은 Boyd·Vandenberghe의 [*Convex Optimization*](https://web.stanford.edu/~boyd/cvxbook/)이다 — 무료이고, MPC 논문들이 암묵적으로 인용하는 그 책이다. 2~5장이 볼록성·쌍대성·KKT를 제대로 다룬다. 비볼록 쪽은 Nocedal·Wright의 *Numerical Optimization*.
 
 ### 스스로 점검
 

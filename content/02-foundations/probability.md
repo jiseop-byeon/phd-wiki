@@ -225,6 +225,9 @@ flowchart LR
 
  Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
+> [!tip] Going deeper · 더 깊이
+> If the Gaussian toolbox or the Kalman derivation is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
+
 ### Self-check
 
 1. Recompute the crack-detector example with $P(c) = 0.2$ (a suspect structure). What
@@ -448,6 +451,9 @@ flowchart LR
 
  비선형
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
+
+> [!tip] 더 깊이 · Going deeper
+> 가우시안 도구 상자나 칼만 유도가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 가고, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
 
 ### 스스로 점검
 

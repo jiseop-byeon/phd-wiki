@@ -152,6 +152,9 @@ one of them is not comparing what it claims.
 > schedule, optimizer, precision and epoch budget match the proposed method's** before
 > believing a margin — and note that when they do match, the honest papers say so explicitly.
 
+> [!tip] Going deeper · 더 깊이
+> This page is the reading half; the doing half is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]], which is where the same ideas become choices you have to make. For the statistics underneath, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.4–6.
+
 ### Self-check
 
 1. A model picks its best checkpoint by test accuracy. What went wrong, and in which
@@ -308,6 +311,9 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 > 원래 레시피로 재현하는 것이다. 격차를 믿기 전에 **베이스라인의 스케줄·옵티마이저·정밀도·
 > 에폭 예산이 제안 방법과 일치하는지 확인하라** — 그리고 일치할 때는 정직한 논문들이 그렇다고
 > 명시한다는 점도 함께 기억하라.
+
+> [!tip] 더 깊이 · Going deeper
+> 이 페이지는 읽는 쪽 절반이다. 하는 쪽 절반은 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이고, 거기서 같은 개념들이 직접 내려야 하는 결정이 된다. 아래 깔린 통계는 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 4~6장.
 
 ### 스스로 점검
 
