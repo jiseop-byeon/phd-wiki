@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*[[02-foundations/neural-network-basics|0.7]] said a network is stacked matrix multiplications. This page says what a matrix is —
+a map, with a rank, eigenvalues and an SVD. Then [[02-foundations/calculus-backprop|2. Calculus]] differentiates the stack.*
+
 Deep learning *is* linear algebra with nonlinearities between the matrix multiplies.
 This page is a course-depth treatment: definitions, derivations, worked examples, and
 where each concept appears in the papers of this wiki.
@@ -357,6 +360,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 > 4. With $B = 0$ the update is $\Delta W = BA = 0$, so $W_0 + BA = W_0$ at step 0: training starts *exactly* at the pretrained model (a no-op initialization) instead of perturbing it randomly.
 
 ## 한국어
+
+*[[02-foundations/neural-network-basics|0.7]]이 신경망은 행렬곱의 적층이라고 했다. 이 페이지는 그 행렬이 무엇인지 말한다 —
+랭크와 고윳값과 SVD를 가진 사상이다. 그다음 [[02-foundations/calculus-backprop|2. 미적분]]이 그 적층을 미분한다.*
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의
 서술이다: 정의, 유도, 계산 예시, 그리고 각 개념이 이 위키의 논문들 어디에서 나타나는지.

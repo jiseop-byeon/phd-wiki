@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*Until here the dataset was given. This page is the case where your policy produces it — states, actions,
+value, policy gradients. Then [[02-foundations/se3-geometry|8. SE(3)]] says which space a robot's states and actions live in.*
+
 You cannot read [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]], the
 [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] line, or half of modern robot learning without
 the MDP vocabulary. Course-depth treatment: the Bellman machinery, both algorithm families
@@ -469,6 +472,9 @@ RL results depend on protocol more than those of almost any other subfield. What
 MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]]. If your interest is robots, read the [[05-construction-robotics/sim-to-real|Sim-to-Real guide]] next — it is the transfer half of §9.
 
 ## 한국어
+
+*여기까지 데이터셋은 주어진 것이었다. 이 페이지는 내 정책이 그것을 만들어 내는 경우다 — 상태, 행동,
+가치, 정책 경사. 그다음 [[02-foundations/se3-geometry|8. SE(3)]]가 로봇의 상태와 행동이 어느 공간에 사는지 말한다.*
 
 MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]도,
 [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] 계열도, 현대 로봇 학습의 절반도 읽을 수 없다.

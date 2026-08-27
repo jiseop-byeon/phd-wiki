@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*[[02-foundations/calculus-backprop|2. Calculus]] can differentiate any loss you hand it. This page says where losses come from —
+distributions, Bayes, maximum likelihood. Then [[02-foundations/optimization|4. Optimization]] minimizes what you just built.*
+
 Probability is the substrate under estimation, filtering, and many standard objectives in deep
 learning. Course-depth treatment: derivations, the Gaussian toolbox, a worked MLE example,
 and the Kalman filter assembled from parts you'll have proven along the way.
@@ -242,6 +245,9 @@ flowchart LR
 Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
 
 ## 한국어
+
+*[[02-foundations/calculus-backprop|2. 미적분]]은 건네주는 어떤 손실이든 미분할 수 있다. 이 페이지는 그 손실이 어디서 오는지
+말한다 — 분포, 베이즈, 최대우도. 그다음 [[02-foundations/optimization|4. 최적화]]가 방금 세운 그것을 최소화한다.*
 
 확률은 추정, 필터링, 그리고 딥러닝의 많은 표준 목적함수 아래에 깔린 토대다. 교재 수준의 서술:
 유도, 가우시안 도구 상자, MLE 계산 예제, 그리고 이 페이지에서 증명한 부품들로 조립하는

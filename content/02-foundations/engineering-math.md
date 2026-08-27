@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*[[02-foundations/overview|0. Overview]] drew the map; this page closes the mathematics it assumes — derivatives, matrix
+arithmetic, logs, complex numbers. Next, [[02-foundations/neural-network-basics|0.7]] gives those same operations the names machine learning uses.*
+
 The engineering math that pages 1–9 silently assume, self-contained in one place. Each
 section says exactly which foundation page uses it. If all of this reads easily, skip
 straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
@@ -450,6 +453,9 @@ Two definitions used everywhere before they are formally introduced:
 > 6. Pole at $s=-3$ — left half-plane (negative real part), so **stable**; the pole *is* the $a=-3$ of §8 and the eigenvalue of a 1-D state-space $A$.
 
 ## 한국어
+
+*[[02-foundations/overview|0. Overview]]가 지도를 그렸고, 이 페이지는 그 지도가 전제하는 수학 — 미분, 행렬 연산, 로그,
+복소수 — 을 닫는다. 다음 [[02-foundations/neural-network-basics|0.7]]이 같은 연산들에 기계학습이 붙인 이름을 알려 준다.*
 
 1~9 페이지가 말없이 전제하는 공업수학을 한곳에 자체 완결로 정리했다.
 각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 전부 술술 읽히면 바로

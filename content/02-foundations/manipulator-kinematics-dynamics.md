@@ -22,6 +22,9 @@ mastery-when: "This page is on the manipulation track's critical path — Master
 
 ## English
 
+*[[02-foundations/ml-practice|9. ML Practice]] completed the reading tools. This page adds the physics contact needs, and it is the last
+page of the track: from here the thread continues in [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
+
 This page does **not** re-teach forward kinematics, inverse kinematics, or the Jacobian —
 the *Modern Robotics* chapter summaries do that, and they do it with worked 2R examples.
 It exists because those chapters stop at the place the manipulation track most needs to
@@ -308,6 +311,9 @@ whether a contact will feel stiff or soft — and be right.
 - The numeric examples on this page were computed here from the stated masses and lengths, not quoted from a source; recompute them rather than trusting them.
 
 ## 한국어
+
+*[[02-foundations/ml-practice|9. ML 실무]]가 읽기 도구를 완성했다. 이 페이지는 접촉이 요구하는 물리를 더하며 트랙의 마지막이다.
+여기서부터 그 줄기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]로 이어진다.*
 
 이 페이지는 순기구학·역기구학·야코비안을 **다시 가르치지 않는다** — *Modern Robotics* 챕터
 요약이 이미 2R 계산 예제와 함께 그 일을 한다. 이 페이지가 존재하는 이유는, 그 챕터들이

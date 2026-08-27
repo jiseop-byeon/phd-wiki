@@ -8,6 +8,9 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 
 ## English
 
+*This page is the map. Everything after it assumes the undergraduate mathematics that [[02-foundations/engineering-math|0.5 Engineering Math]]
+collects, so start there and come back whenever a page names a prerequisite you are missing.*
+
 How the foundations connect — to each other, to the engineering math beneath them, and to
 the deep learning papers above them. Read this page first; it tells you what you need
 *before* each page and what each page unlocks *after*.
@@ -39,7 +42,7 @@ not have to assume anything beyond the table above.
 
 ### Recommended study order
 
-**0.7 [[02-foundations/neural-network-basics|What a Neural Network Is]]** (skip if the ML vocabulary is already familiar) **→ 1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]]** (domain bridges — order between these two is free) **→ 8. [[02-foundations/se3-geometry|3D Geometry & SE(3)]]** (before the robotics track and VLA papers) **· 9. [[02-foundations/ml-practice|ML Practice & Evaluation]]** (before reading any results table).
+**0.7 [[02-foundations/neural-network-basics|What a Neural Network Is]]** (skip if the ML vocabulary is already familiar) **→ 1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]]** (domain bridges — order between these two is free) **→ 8. [[02-foundations/se3-geometry|3D Geometry & SE(3)]]** (before the robotics track and VLA papers) **· 9. [[02-foundations/ml-practice|ML Practice & Evaluation]]** (before reading any results table) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|Manipulator Kinematics & Dynamics]]** (take it when the manipulation track is next; force control is unreadable without it).
 
 Each page ends with self-check questions; do them. If a page feels too dense on first
 contact, pair it with a first-pass source ([CS231n](https://cs231n.stanford.edu/schedule.html) lectures for 1–4, [Sutton & Barto](http://incompleteideas.net/book/the-book.html) ch.1–6
@@ -66,6 +69,7 @@ graph LR
     RL["RL Basics"]
     SE["3D Geometry · SE(3)"]
     MLP["ML Practice"]
+    MKD["Manipulator Kinematics · Dynamics"]
     end
     subgraph D["Deep learning (papers)"]
     TF["Transformers · ViT · CLIP"]
@@ -101,6 +105,9 @@ graph LR
     SE --> VLA
     MLP -.-> TF
     MLP -.-> VLA
+    MAT --> MKD
+    SE --> MKD
+    MKD --> ROB["Robotics track: force control"]
 ```
 
 Reading the map: **Transformers** need linear algebra (attention = matrix products),
@@ -119,7 +126,7 @@ themselves (prose only — code blocks and equations excluded):
 
 | Track | Pages | One read-through |
 |---|---:|---:|
-| Foundations 0–9 | 13 | ~1.8 h |
+| Foundations 0–10 | 13 | ~1.8 h |
 | Robotics 1–23 (incl. the 11 MR chapters) | 34 | ~3.0 h |
 | Construction robotics | 10 | ~0.8 h |
 | Paper notes (115) | 115 | ~3.8 h |
@@ -184,6 +191,13 @@ each answerable in a few lines. Do them in writing, closed-book. **Nine or more 
 12. A robotics paper reports 90% success on 10 trials. Give the rough uncertainty on that
     number, and name two things the sentence does not tell you that ML Practice says you
     must ask. *(9. §3–5, and 2. Experimental Design §4)*
+13. $f(x) = 5x^2$, starting at $x_0 = 1$. Where does one Newton step land, and roughly how
+    many gradient-descent steps at $\alpha = 0.05$ match it? *(4. §3)*
+14. Apply $R_z(90°)$ then $R_x(90°)$ to the point $(1,0,0)$. Where does it end up, and where
+    does the opposite order put it? *(8. §1)*
+15. For the 2R arm at $\theta = (0°, 90°)$ the operational-space inertia is
+    $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$. In which direction does the tip feel
+    heavier, and by how much? *(10. §6)*
 
 > [!tip]- Answers · 정답
 > 1. $x$ is $128\times1$, $h$ is $256\times1$; parameters $= 256\times128 + 256 = 33{,}024$. Without the nonlinearity the stack collapses: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, a single matrix, whose rank cannot exceed the smallest factor's.
@@ -198,6 +212,9 @@ each answerable in a few lines. Do them in writing, closed-book. **Nine or more 
 > 10. $|170 - 200| = 30$ Hz. An analog anti-alias filter before sampling (or a higher $f_s$); no software filter can undo it afterwards.
 > 11. $1/(1-0.95) = 20$ steps. Weight at 60 steps is $0.95^{60} \approx 0.046$ — about 5%, i.e. three effective horizons out and nearly invisible.
 > 12. 9 of 10 is a wide interval: the standard error of a proportion is $\sqrt{p(1-p)/n} = \pm 9.5$ percentage points, and the exact 95% interval runs roughly **55–100%** — asymmetric, because it cannot exceed 100%. (Do not use $1/\sqrt{n}$ here; that is not the standard error of a proportion.) Not told: whether the trials were seen or unseen conditions, how many seeds/scenes, whether evaluation was open- or closed-loop, and what counted as success (any two of these are enough).
+> 13. Newton divides by the curvature: $1 - f'(1)/f''(1) = 1 - 10/10 = 0$ — exact, in one step, because a quadratic is the model Newton assumes. Gradient descent halves each step, so about 10 steps to reach $10^{-3}$.
+> 14. $R_z$ first: $(1,0,0) \to (0,1,0) \to (0,0,1)$, the z axis. The other order: $R_x$ leaves a point on the x axis alone, so $(1,0,0) \to (1,0,0) \to (0,1,0)$, the y axis. The second rotation acts on wherever the first one left you.
+> 15. Twice as heavy vertically as sideways. $\Lambda$ is the mass the tip *appears* to have in each task-space direction, so the same force buys half the acceleration along the second axis — which is what a force controller has to compensate.
 
 If several answers were shaky, the failures point at pages, not at "the foundations" as a
 whole — reread those pages' worked examples rather than starting over.
@@ -224,6 +241,9 @@ flowchart TD
 - **Research production:** use [[06-research-practice/index|Research Practice]] when designing questions, experiments, failure analysis, and papers.
 
 ## 한국어
+
+*이 페이지는 지도다. 이후의 모든 페이지가 [[02-foundations/engineering-math|0.5 공업수학]]이 모아 둔 학부 수학을
+전제하므로, 거기서 시작해 각 페이지가 부르는 선수 지식이 비었을 때 이리로 돌아오라.*
 
 기초 지식들이 서로, 그 아래의 공업수학과, 그리고 그 위의 딥러닝 논문들과 어떻게
 연결되는지의 지도. 이 페이지를 먼저 읽으면 각 페이지를 공부하기 *전에* 무엇이 필요하고,
@@ -255,7 +275,7 @@ flowchart TD
 
 ### 권장 학습 순서
 
-**0.7 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]]** (도메인 다리 — 이 둘의 순서는 자유) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에).
+**0.7 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]]** (도메인 다리 — 이 둘의 순서는 자유) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|매니퓰레이터 기구학·동역학]]** (매니퓰레이션 트랙으로 갈 때 — 힘 제어가 이것 없이는 읽히지 않는다).
 
 각 페이지 끝의 스스로 점검 문제를 꼭 풀어라. 처음 접했을 때 너무 압축적으로 느껴지는
 페이지는 1차 통과용 자료(1~4번은 [CS231n](https://cs231n.stanford.edu/schedule.html) 강의, 7번은 [Sutton & Barto](http://incompleteideas.net/book/the-book.html) 1~6장)와 병행하고,
@@ -282,6 +302,7 @@ graph LR
     RL["RL Basics"]
     SE["3D Geometry · SE(3)"]
     MLP["ML Practice"]
+    MKD["Manipulator Kinematics · Dynamics"]
     end
     subgraph D["Deep learning (papers)"]
     TF["Transformers · ViT · CLIP"]
@@ -317,6 +338,9 @@ graph LR
     SE --> VLA
     MLP -.-> TF
     MLP -.-> VLA
+    MAT --> MKD
+    SE --> MKD
+    MKD --> ROB["Robotics track: force control"]
 ```
 
 위의 mermaid 지도를 읽는 법: **Transformer**는 선형대수(어텐션 = 행렬곱), 역전파,
@@ -333,7 +357,7 @@ graph LR
 
 | 트랙 | 페이지 | 1회 정독 |
 |---|---:|---:|
-| 기초 0~9 | 13 | 약 1.8시간 |
+| 기초 0~10 | 13 | 약 1.8시간 |
 | 로보틱스 1~23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
 | 논문 노트 (115편) | 115 | 약 3.8시간 |
@@ -387,6 +411,13 @@ graph LR
 12. 어떤 로보틱스 논문이 10회 시행에서 성공률 90%를 보고했다. 그 숫자의 대략적 불확실성을
     말하고, ML 실무가 반드시 물어야 한다고 말하는 것 중 이 문장이 알려주지 않는 것 두 가지를
     대라. *(9. §3–5, 그리고 2. 실험 설계 §4)*
+13. $f(x) = 5x^2$에서 $x_0 = 1$로 출발한다. 뉴턴법 한 스텝은 어디에 도착하고, $\alpha = 0.05$의
+    경사 하강은 대략 몇 스텝이 필요한가? *(4. §3)*
+14. 점 $(1,0,0)$에 $R_z(90°)$를 적용한 뒤 $R_x(90°)$를 적용하면 어디에 도착하는가? 순서를
+    바꾸면 어디인가? *(8. §1)*
+15. 2R 팔의 $\theta = (0°, 90°)$에서 작업공간 관성은
+    $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$다. 말단은 어느 방향으로 더 무겁게
+    느껴지며 몇 배인가? *(10. §6)*
 
 > [!tip]- 정답 · Answers
 > 1. $x$는 $128\times1$, $h$는 $256\times1$; 파라미터 $= 256\times128 + 256 = 33{,}024$개. 비선형성이 없으면 스택이 붕괴한다: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, 행렬 하나이고 그 랭크는 가장 작은 인자를 넘지 못한다.
@@ -401,6 +432,9 @@ graph LR
 > 10. $|170 - 200| = 30$ Hz. 샘플링 전에 아날로그 안티에일리어스 필터를 넣었어야 한다(또는 $f_s$를 올렸어야). 사후의 어떤 소프트웨어 필터도 되돌릴 수 없다.
 > 11. $1/(1-0.95) = 20$ 스텝. 60 스텝의 가중치는 $0.95^{60} \approx 0.046$ — 약 5%, 즉 유효 지평 세 배 밖이라 거의 보이지 않는다.
 > 12. 10회 중 9회는 넓은 구간이다: 비율의 표준오차는 $\sqrt{p(1-p)/n} = \pm 9.5$%p이고, 정확한 95% 구간은 대략 **55~100%** 다 — 100%를 넘을 수 없으므로 비대칭이다. ($1/\sqrt{n}$을 쓰지 마라. 비율의 표준오차가 아니다.) 알려주지 않는 것: 시행이 본 조건인지 못 본 조건인지, 시드·장면이 몇 개인지, 평가가 개루프인지 폐루프인지, 무엇을 성공으로 셌는지(이 중 둘이면 충분).
+> 13. 뉴턴법은 곡률로 나눈다: $1 - f'(1)/f''(1) = 1 - 10/10 = 0$ — 한 스텝에 정확히 도착한다. 이차 함수가 곧 뉴턴법이 가정하는 모델이기 때문이다. 경사 하강은 매 스텝 절반이 되므로 $10^{-3}$에 닿는 데 약 10 스텝이 든다.
+> 14. $R_z$ 먼저: $(1,0,0) \to (0,1,0) \to (0,0,1)$, z축이다. 반대 순서: $R_x$는 x축 위의 점을 움직이지 않으므로 $(1,0,0) \to (1,0,0) \to (0,1,0)$, y축이다. 두 번째 회전은 첫 번째가 남겨둔 자리에 작용한다.
+> 15. 옆 방향보다 위아래로 두 배 무겁다. $\Lambda$는 말단이 각 작업 공간 방향에서 *가진 것처럼 보이는* 질량이므로, 같은 힘이 둘째 축에서는 절반의 가속도만 산다 — 힘 제어기가 보상해야 하는 것이 이것이다.
 
 여러 개가 흔들렸다면, 그 실패는 "기초 전체"가 아니라 특정 페이지를 가리킨다 — 처음부터
 다시 하지 말고 그 페이지들의 계산 예제를 다시 보라.

@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*[[02-foundations/linear-algebra|1. Linear Algebra]] made the matrix a map and the shape a structure. This page differentiates a stack
+of them, which is the whole of backpropagation. Then [[02-foundations/probability|3. Probability]] says where the loss came from.*
+
 The one algorithm every deep learning paper assumes silently: reverse-mode automatic
 differentiation. Course-depth treatment: from Taylor expansion to a fully worked backprop
 example, plus the gradient pathologies that shaped architecture history.
@@ -242,6 +245,9 @@ bug detector in existence.
 > 4. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
 
 ## 한국어
+
+*[[02-foundations/linear-algebra|1. 선형대수]]가 행렬을 사상으로, 모양을 구조로 만들었다. 이 페이지는 그 적층을 미분한다 —
+역전파의 전부가 그것이다. 그다음 [[02-foundations/probability|3. 확률]]이 미분당하는 그 손실이 어디서 왔는지 답한다.*
 
 모든 딥러닝 논문이 말없이 전제하는 단 하나의 알고리즘: 역방향 자동 미분. 교재 수준의
 서술: 테일러 전개에서 손으로 푸는 역전파 예제까지, 그리고 구조 설계의 역사를 만든

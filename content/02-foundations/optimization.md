@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*[[02-foundations/probability|3. Probability]] handed you an objective. This page minimizes it, constraints included, which is where
+convexity and KKT earn their keep. Then [[02-foundations/information-theory|5. Information Theory]] says what those objectives measure.*
+
 Optimization is the shared language of this wiki: training a network
 ([[01-canonical-papers/notes/1-foundations/adam|Adam]]), solving MPC, planning a trajectory, and allocating
 construction tasks are all "minimize an objective subject to constraints." Course-depth
@@ -209,6 +212,9 @@ first input applied. *MPC = the projection example scaled up, a thousand times a
 Constraints and nonlinear optimization become executable robot decisions in [[04-robotics/planning-decision-making|Planning & Decision-Making]] and [[04-robotics/mpc|MPC]].
 
 ## 한국어
+
+*[[02-foundations/probability|3. 확률]]이 목적함수를 건넸다. 이 페이지는 그것을 최소화한다 — 제약이 붙은 경우까지, 볼록성과
+KKT가 값을 하는 자리가 거기다. 그다음 [[02-foundations/information-theory|5. 정보이론]]이 그 목적함수들이 무엇을 재는지 말한다.*
 
 최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/1-foundations/adam|Adam]]),
 MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적함수 최소화"다. 교재 수준의

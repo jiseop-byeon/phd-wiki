@@ -14,6 +14,9 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
+*Pages 1 to 8 were tools for reading a method. This page is the tool for reading the claim that the method
+worked. Then [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Dynamics]] closes the track with the physics the manipulation work needs.*
+
 The craft knowledge every paper assumes: how models are trained, validated, and — above
 all — *measured*. This page is the decoder for every "Results" table in the wiki.
 
@@ -170,6 +173,9 @@ one of them is not comparing what it claims.
 Continue with [[06-research-practice/index|Research Practice]] for research questions, controlled robot experiments, failure diagnosis, reproducibility, and peer review.
 
 ## 한국어
+
+*1~8번은 방법을 읽는 도구였다. 이 페이지는 그 방법이 통했다는 주장을 읽는 도구다.
+그다음 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 동역학]]이 매니퓰레이션에 필요한 물리로 트랙을 닫는다.*
 
 모든 논문이 전제하는 장인적 지식: 모델을 어떻게 학습·검증하고, 무엇보다 어떻게 *재는가*.
 이 페이지는 위키의 모든 "Results" 표를 읽는 해독기다.

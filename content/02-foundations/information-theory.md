@@ -14,6 +14,9 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 
 ## English
 
+*By [[02-foundations/optimization|4. Optimization]] you can build an objective and minimize it. This page names what they all measure:
+cross-entropy is maximum likelihood is KL. Then [[02-foundations/signal-processing|6. Signal Processing]] goes to where the data arrives at all.*
+
 Everything in deep learning that involves a probability distribution eventually speaks
 information theory: cross-entropy loss, KL divergence, the ELBO, contrastive learning,
 even "perplexity." This page is the complete working set for reading modern papers —
@@ -218,6 +221,9 @@ non-variational world models take different routes).
 > 4. $I \ge \log N - \mathcal{L}$, so the bound's ceiling rises by $\log 2 \approx 0.69$ nats (= 1 bit).
 
 ## 한국어
+
+*[[02-foundations/optimization|4. 최적화]]까지로 목적함수를 세우고 최소화할 수 있다. 이 페이지는 그것들이 공통으로 재는 것에
+이름을 붙인다 — 교차 엔트로피가 곧 최대우도이고 곧 KL이다. 그다음 [[02-foundations/signal-processing|6. 신호처리]]가 데이터가 도착하는 길로 내려간다.*
 
 딥러닝에서 확률 분포가 등장하는 모든 것은 결국 정보이론의 언어로 말한다: 교차 엔트로피
 손실, KL divergence, ELBO, 대조학습, 심지어 "perplexity"까지. 이 페이지는 최신 논문을
