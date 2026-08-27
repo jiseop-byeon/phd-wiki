@@ -59,7 +59,7 @@ tracked by exactly these low-level loops; impedance control is why
   배치할 수 있는 선형 오차 동역학만 남긴다. 모델 기반 제어의 가장 순수한 형태 — 그리고 그
   약점: $M, c, g$만큼만 좋다.
 - **힘·임피던스 제어**: 접촉이 중요할 때는 위치만이 아니라 운동과 힘의 *관계*(가상
-  스프링-댐퍼)를 제어한다 — 접촉 많은 조작으로 들어가는 입구.
+  스프링-댐퍼)를 제어한다 — 접촉이 많은 조작으로 들어가는 입구.
 - 현대적 연속: 최적 피드백([[04-robotics/lqr-lqg|LQR]]) → 제약([[04-robotics/mpc|MPC]]) →
   학습된 정책([[02-foundations/rl-basics|RL]], [[01-canonical-papers/notes/4-vla/pi0|VLA]]) —
   층마다 모델링 부담을 더 흡수한다.
