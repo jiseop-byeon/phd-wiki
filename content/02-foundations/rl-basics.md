@@ -93,6 +93,98 @@ flowchart LR
   $V(A) = 1/(1 - 0.81) \approx 5.26$, $V(B) \approx 4.74$. Watch what happened: each
   sweep pushes reward information one step further back — that is all "bootstrapping" means.
 
+### 3.5 The deadly triad — why deep RL needs its patches
+
+Section 3 ended by saying DQN is Q-learning plus a neural $Q$, a replay buffer and a target
+network, without saying why the last two are there. They are there because of a result
+every robot-learning paper is quietly living inside.
+
+**Three ingredients, and only together are they dangerous.** Sutton and Barto name them the
+*deadly triad*:
+
+| Element | What it means | Where §3 introduced it |
+|---|---|---|
+| Function approximation | generalizing from a state space far larger than memory — linear features, or a network | "neural $Q$" |
+| Bootstrapping | updating toward a target that contains your own current estimate | the TD target $r + \gamma V(s')$ |
+| Off-policy training | learning from a distribution of transitions other than the one the target policy produces | Q-learning acting under an exploratory policy |
+
+Combine all three and value estimates can **diverge** — not converge slowly, not converge to
+a poor answer, but grow without bound. Any *two* of the three is safe. Tabular Q-learning is
+safe (no approximation). Monte Carlo with a network is safe (no bootstrapping). Sarsa with a
+network is safe (on-policy).
+
+**Two things this is not.** It is not a control problem: the divergence appears in plain
+*prediction*, with the policy fixed. And it is not about noise or exploration or an unknown
+environment: it happens in dynamic programming, where the model is known exactly and there
+is no sampling at all.
+
+**Worked — divergence with the exact least-squares answer at every step.** Tsitsiklis and
+Van Roy's two-state example. One parameter $w$; the first state's estimated value is $w$ and
+the second's is $2w$. Every reward is zero, so the true value is zero at both states —
+**and that is exactly representable**, at $w = 0$. The first state leads to the second; the
+second repeats, terminating with probability $\varepsilon$. At each sweep, choose $w_{k+1}$
+to be the *best possible least-squares fit* to the expected one-step return. Minimizing
+$(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$ gives
+
+$$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
+
+so the sequence multiplies by a constant each sweep and diverges whenever
+$\gamma > 5/(6-4\varepsilon)$. At $\varepsilon = 0$ that threshold is $\gamma = 0.833$ — so
+the entirely ordinary $\gamma = 0.9$ gives a multiplier of $1.08$:
+
+$$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 46.9 \text{ after 50 sweeps}$$
+
+Set $\gamma = 0.8$ instead and the multiplier is $0.96$ and it converges to zero. Or keep
+$\gamma = 0.9$ and let episodes terminate with $\varepsilon = 0.2$ — multiplier $0.936$,
+converges again, because termination makes the update distribution less off-policy.
+
+Look at what is *not* available as an excuse. There is no learning rate to lower — the fit
+is exact. There is no noise — the model is known. There is no reward to misdesign — they are
+all zero. There is no representation error — the true answer is in the function class. The
+divergence is structural, and it turns on the discount factor.
+
+**Which leg would you give up?** All three are on the table, and the field's answer explains
+its designs.
+
+- *Function approximation*: no. Anything that scales to images or joint states needs it.
+- *Bootstrapping*: possible, and Monte Carlo does it — at real cost. MC must store an
+  episode until it ends before it can learn anything from it, while a bootstrapped update
+  consumes each transition where it is generated and never revisits it. Bootstrapping is
+  also usually more data-efficient. Nobody gives it up entirely; $n$-step returns give it up
+  partially.
+- *Off-policy*: often, yes. Sarsa instead of Q-learning is exactly this trade, and on-policy
+  methods like PPO are stable for the same reason. What you lose is data reuse — an
+  on-policy method must throw away every batch after one update, which is why PPO is
+  sample-hungry and why anything learning from logged demonstrations or a replay buffer is
+  off-policy by construction.
+
+**The patches, read as triad mitigations.** This is the payoff for reading papers:
+
+- **Target network** (DQN): freeze the network that produces the bootstrap target for
+  thousands of steps. That weakens the bootstrapping leg by making the target temporarily a
+  constant rather than a moving self-reference.
+- **Replay buffer**: improves the data but *worsens* the off-policy leg, since old
+  transitions come from older policies. It is bought, not free — which is why buffer size
+  and sampling scheme are tuned rather than maximized.
+- **Clipped double-$Q$** (TD3, [[01-canonical-papers/notes/1-foundations/sac|SAC]]): take the minimum
+  of two critics. Aimed at overestimation bias, which the triad amplifies because an
+  over-large value feeds its own next target.
+- **Pessimism in offline RL**: penalize or avoid evaluating actions the dataset does not
+  support. This attacks the off-policy leg directly, and it is why offline RL is a distinct
+  literature rather than "RL with a fixed buffer."
+
+There is also a clean theoretical escape that nobody uses: function approximators that never
+extrapolate beyond observed targets — nearest neighbour, locally weighted regression, the
+class Sutton and Barto call *averagers* — are provably stable. They are also too weak for
+the problems robotics cares about. Neural networks and tile coding both extrapolate, so both
+forfeit the guarantee.
+
+**What to do with this when reading.** When a value-based or offline-RL paper reports
+instability, a tuning sensitivity, or an ablation where removing one component collapses
+training, check which leg of the triad that component was holding. And when a paper reports
+that its method is stable, ask what it gave up to get there — usually data reuse,
+sometimes discount factor, occasionally the bootstrap.
+
 ### 4. Policy gradients — differentiate the objective itself
 
 - **The log-derivative trick** (the whole derivation in three steps):
@@ -554,6 +646,88 @@ flowchart LR
   $V_1 = (1, 0)$, $V_2 = (1, 0.9)$, $V_3 = (1.81, 0.9)$, … 고정점
   $V(A) = 1/(1-0.81) \approx 5.26$, $V(B) \approx 4.74$로 수렴한다. 무슨 일이 일어났는지
   보라: 스윕마다 보상 정보가 한 스텝씩 뒤로 전파된다 — "부트스트래핑"의 의미가 이것의 전부다.
+
+### 3.5 deadly triad — 심층 RL이 그 패치들을 필요로 하는 이유
+
+3절은 DQN이 Q-러닝에 신경망 $Q$와 리플레이 버퍼, 타깃 네트워크를 더한 것이라고 말하고 끝냈다.
+뒤의 둘이 왜 있는지는 말하지 않았다. 모든 로봇 학습 논문이 조용히 그 안에서 살고 있는 결과
+때문에 있다.
+
+**재료가 셋이고, 셋이 함께일 때만 위험하다.** Sutton과 Barto는 이를 *deadly triad*라 부른다.
+
+| 요소 | 무슨 뜻인가 | §3이 소개한 자리 |
+|---|---|---|
+| 함수 근사 | 기억 용량보다 훨씬 큰 상태 공간에서 일반화하는 것 — 선형 특징이나 신경망 | "신경망 $Q$" |
+| 부트스트랩 | 자신의 현재 추정값이 들어 있는 목표를 향해 갱신하는 것 | TD 목표 $r + \gamma V(s')$ |
+| 오프폴리시 학습 | 목표 정책이 만들어 내는 것과 다른 전이 분포에서 배우는 것 | 탐색 정책으로 행동하는 Q-러닝 |
+
+셋을 합치면 가치 추정이 **발산할 수 있다** — 천천히 수렴하는 것도, 나쁜 답으로 수렴하는 것도
+아니라 한없이 커진다. 셋 중 *둘*까지는 안전하다. 표 기반 Q-러닝은 안전하고(근사 없음),
+신경망을 쓴 몬테카를로도 안전하며(부트스트랩 없음), 신경망을 쓴 Sarsa도 안전하다(온폴리시).
+
+**이것이 아닌 것 둘.** 제어의 문제가 아니다 — 정책을 고정한 순수 *예측*에서 발산이 나타난다.
+잡음이나 탐색이나 모르는 환경의 문제도 아니다 — 모델을 정확히 알고 표집이 전혀 없는 동적
+계획법에서도 일어난다.
+
+**계산 — 매 스텝 최소자승 정답을 구하는데도 발산한다.** Tsitsiklis와 Van Roy의 두 상태 예제.
+파라미터는 $w$ 하나이고, 첫 상태의 추정 가치는 $w$, 둘째는 $2w$다. 모든 보상이 0이므로 두 상태의
+참 가치는 0이고, **그것은 정확히 표현 가능하다** — $w = 0$에서. 첫 상태는 둘째로 가고, 둘째는
+확률 $\varepsilon$로 종료하며 반복한다. 매 스윕에서 $w_{k+1}$을 기대 1스텝 리턴에 대한 *가능한
+최선의 최소자승 적합*으로 고른다. $(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$을
+최소화하면
+
+$$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
+
+이므로 수열은 매 스윕 상수배가 되고, $\gamma > 5/(6-4\varepsilon)$이면 언제나 발산한다.
+$\varepsilon = 0$에서 그 문턱은 $\gamma = 0.833$이니, 지극히 평범한 $\gamma = 0.9$가 배수
+$1.08$을 준다.
+
+$$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.9$$
+
+대신 $\gamma = 0.8$로 두면 배수가 $0.96$이라 0으로 수렴한다. 또는 $\gamma = 0.9$를 유지하되
+에피소드가 $\varepsilon = 0.2$로 종료되게 하면 배수 $0.936$으로 다시 수렴한다. 종료가 갱신
+분포를 덜 오프폴리시하게 만들기 때문이다.
+
+변명거리로 쓸 수 *없는* 것들을 보라. 낮출 학습률이 없다 — 적합이 정확하다. 잡음이 없다 —
+모델을 안다. 잘못 설계할 보상이 없다 — 전부 0이다. 표현 오차가 없다 — 참 답이 함수 집합 안에
+있다. 발산은 구조적이고, 할인 계수에 걸려 있다.
+
+**어느 다리를 포기할 것인가?** 셋 다 논의 대상이고, 이 분야의 답이 그 설계들을 설명한다.
+
+- *함수 근사*: 안 된다. 영상이나 관절 상태로 확장되는 무엇이든 이것이 필요하다.
+- *부트스트랩*: 가능하고, 몬테카를로가 그렇게 한다 — 실질적인 대가를 치르고서. MC는 한
+  에피소드가 끝날 때까지 저장해야 거기서 무엇이든 배울 수 있는 반면, 부트스트랩 갱신은 각
+  전이를 생성된 자리에서 소비하고 다시 찾지 않는다. 부트스트랩은 대개 데이터 효율도 더 좋다.
+  아무도 완전히 포기하지 않고, $n$-스텝 리턴이 부분적으로 포기한다.
+- *오프폴리시*: 자주, 그렇다. Q-러닝 대신 Sarsa가 정확히 이 거래이고, PPO 같은 온폴리시
+  방법이 안정한 것도 같은 이유다. 잃는 것은 데이터 재사용이다 — 온폴리시 방법은 갱신 한 번마다
+  배치를 버려야 하고, 그래서 PPO가 표본을 많이 먹으며, 기록된 시연이나 리플레이 버퍼에서
+  배우는 것은 무엇이든 구조상 오프폴리시다.
+
+**패치들을 triad 완화책으로 읽기.** 논문을 읽을 때의 보상이 이것이다.
+
+- **타깃 네트워크**(DQN): 부트스트랩 목표를 만드는 네트워크를 수천 스텝 동안 얼린다. 목표를
+  움직이는 자기 참조가 아니라 한동안 상수로 만들어 부트스트랩 다리를 약화시킨다.
+- **리플레이 버퍼**: 데이터를 개선하지만 오프폴리시 다리를 *악화*시킨다. 오래된 전이는 더
+  오래된 정책에서 왔기 때문이다. 공짜가 아니라 사는 것이고, 버퍼 크기와 표집 방식을 최대화하지
+  않고 조율하는 이유다.
+- **클리핑된 이중 $Q$**(TD3, [[01-canonical-papers/notes/1-foundations/sac|SAC]]): 두 크리틱의 최솟값을
+  쓴다. 과대추정 편향을 겨냥한 것인데, 과하게 큰 가치가 자기 다음 목표로 다시 들어가므로
+  triad가 그 편향을 증폭시킨다.
+- **오프라인 RL의 비관주의**: 데이터셋이 뒷받침하지 않는 행동을 평가하지 않거나 벌점을 준다.
+  오프폴리시 다리를 정면으로 치는 것이고, 오프라인 RL이 "버퍼를 고정한 RL"이 아니라 별개의
+  문헌인 이유다.
+
+이론적으로 깨끗한 탈출구가 하나 있는데 아무도 쓰지 않는다. 관측된 목표 바깥으로 결코
+외삽하지 않는 함수 근사기 — 최근접 이웃, 국소 가중 회귀, Sutton과 Barto가 *averager*라 부르는
+부류 — 는 안정성이 증명된다. 그리고 로보틱스가 관심 갖는 문제에는 너무 약하다. 신경망과 타일
+코딩은 둘 다 외삽하므로 둘 다 그 보장을 포기한다.
+
+**읽을 때 이것으로 무엇을 할 것인가.** 가치 기반이나 오프라인 RL 논문이 불안정성이나 튜닝
+민감도, 또는 한 구성요소를 빼면 학습이 무너지는 절제 실험을 보고하면, 그 구성요소가 triad의
+어느 다리를 붙들고 있었는지 확인하라. 그리고 논문이 자기 방법이 안정하다고 보고하면, 그것을
+얻으려고 무엇을 내주었는지 물어라 — 대개 데이터 재사용이고, 때로는 할인 계수, 가끔은
+부트스트랩이다.
 
 ### 4. 정책 그래디언트 — 목적함수 자체를 미분하기
 
