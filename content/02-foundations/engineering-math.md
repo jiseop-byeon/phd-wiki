@@ -434,6 +434,9 @@ Two definitions used everywhere before they are formally introduced:
 | $\det A$ | determinant — the factor by which the map scales volume; $0$ means it flattens space, so it has no inverse |
 | $A \succeq 0$, $A \succ 0$ | positive semidefinite / definite — the matrix version of "$\ge 0$" / "$>0$": $x^\top A x \ge 0$ for every $x$ |
 
+> [!tip] Going deeper · 더 깊이
+> The honest route out of this page is not another maths book — it is the foundations pages themselves, which is what each section title points at. If a section here is not a reminder but genuinely new, the underlying course is a standard one and any of the usual engineering-mathematics texts will do; Boas, *Mathematical Methods in the Physical Sciences* and Kreyszig, *Advanced Engineering Mathematics* are the two most likely to be on a shelf near you. Read the one chapter, not the book: nothing on this page needs a term of study, and the rest of the track is where the payoff is.
+
 ### Self-check
 
 1. Differentiate $f(x) = \log(1 + e^x)$ (softplus) using the chain rule; show the result
@@ -843,6 +846,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 | $A^\top$ | 전치 — 대각선을 기준으로 뒤집기 ($A^\top_{ij} = A_{ji}$) |
 | $\det A$ | 행렬식 — 사상이 부피를 몇 배로 만드는가; $0$이면 공간을 납작하게 뭉개므로 역행렬이 없다 |
 | $A \succeq 0$, $A \succ 0$ | 양의 준정부호/정부호 — 행렬판 "$\ge 0$"/"$>0$": 모든 $x$에 대해 $x^\top A x \ge 0$ |
+
+> [!tip] 더 깊이 · Going deeper
+> 이 페이지에서 나가는 정직한 경로는 또 다른 수학책이 아니라 기초 페이지들 자신이고, 각 절 제목이 가리키는 것이 바로 그것이다. 여기 어떤 절이 상기가 아니라 정말로 처음이라면, 그 밑에 깔린 과목은 표준적인 것이라 흔한 공업수학 교재 아무거나로 충분하다. Boas의 *Mathematical Methods in the Physical Sciences*와 Kreyszig의 *Advanced Engineering Mathematics*가 근처 책장에 있을 가능성이 가장 높은 둘이다. 책이 아니라 그 한 장만 읽어라. 이 페이지의 무엇도 한 학기를 필요로 하지 않고, 보상은 트랙의 나머지에 있다.
 
 ### 스스로 점검
 

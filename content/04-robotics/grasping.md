@@ -329,6 +329,9 @@ grasps are and what would make your answer wrong.
 - [ ] Explain where the analytic theory sits inside a learned grasping pipeline.
 - [ ] Name the assumption construction most reliably breaks.
 
+> [!tip] Going deeper · 더 깊이
+> Murray, Li & Sastry, *A Mathematical Introduction to Robotic Manipulation* (CRC, 1994) ch.5 is the source of the vocabulary in §2–§4 — contact models, grasp maps, form and force closure — and it is worth reading precisely because the secondary literature garbles those definitions so often. It is a mathematics book and will not tell you what §5 tells you, which is that most of the field stopped computing closure and started predicting grasps from images. Read ch.5 for the definitions and the [[01-canonical-papers/index|papers track]] for what replaced the method.
+
 ### Self-check
 
 1. A paper says its grasps are "force closure with seven contacts, following the classical
@@ -650,6 +653,9 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 - [ ] $\epsilon$을 정의하고 그것이 의도적으로 무시하는 것을 말한다.
 - [ ] 학습 파지 파이프라인 안에서 해석 이론이 어디에 앉는지 설명한다.
 - [ ] 건설이 가장 어김없이 깨뜨리는 가정을 댄다.
+
+> [!tip] 더 깊이 · Going deeper
+> Murray, Li, Sastry의 *A Mathematical Introduction to Robotic Manipulation*(CRC, 1994) 5장이 §2~§4 어휘의 출처다 — 접촉 모델, 파지 사상, form/force closure. 2차 문헌이 그 정의들을 워낙 자주 뭉개기 때문에 더욱 읽을 값어치가 있다. 수학책이므로 §5가 말하는 것은 말해 주지 않는다. 이 분야 대부분이 closure 계산을 그만두고 영상에서 파지를 예측하기 시작했다는 사실 말이다. 정의는 5장에서, 그 방법을 대체한 것은 [[01-canonical-papers/index|논문 트랙]]에서 읽어라.
 
 ### 스스로 점검
 

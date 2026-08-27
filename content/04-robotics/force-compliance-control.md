@@ -447,6 +447,9 @@ tolerance, say which architecture can meet it — and whether any can.
 - [ ] Compute $F_{\max}$ and contact duration for a given $\Lambda$, $K$, $v$, and say how many control samples land inside.
 - [ ] Explain what Colgate and Hogan's passivity condition forbids.
 
+> [!tip] Going deeper · 더 깊이
+> Siciliano, Sciavicco, Villani & Oriolo, *Robotics: Modelling, Planning and Control* (Springer, 2009) ch.9 is the standard textbook treatment of §2–§4 — impedance, admittance, hybrid force/position and operational-space control, derived rather than described. Tedrake's free [*Robotic Manipulation*](https://manipulation.csail.mit.edu/) covers the same control ideas as they are actually deployed on modern hardware, which is closer to how the papers here are written. Neither covers §6: where a learned policy sits relative to these controllers is a current question, not settled material.
+
 ### Self-check
 
 1. An industrial arm with a wrist force sensor holds 5 N against foam beautifully and
@@ -890,6 +893,9 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 - [ ] 하이브리드 제어의 선택 행렬 형태를 쓰고 적합한 과제를 하나 든다.
 - [ ] 주어진 $\Lambda$, $K$, $v$에 대해 $F_{\max}$와 접촉 지속을 계산하고 제어 샘플이 몇 개 들어가는지 말한다.
 - [ ] Colgate와 Hogan의 수동성 조건이 무엇을 금지하는지 설명한다.
+
+> [!tip] 더 깊이 · Going deeper
+> Siciliano, Sciavicco, Villani, Oriolo의 *Robotics: Modelling, Planning and Control*(Springer, 2009) 9장이 §2~§4의 표준 교과서 판본이다 — 임피던스, 어드미턴스, 하이브리드 힘/위치, 작업공간 제어를 서술이 아니라 유도로 다룬다. Tedrake의 무료 [*Robotic Manipulation*](https://manipulation.csail.mit.edu/)은 같은 제어 발상을 현대 하드웨어에 실제로 올린 형태로 다루는데, 여기 논문들이 쓰인 방식에 더 가깝다. 둘 다 §6은 다루지 않는다. 학습된 정책이 이 제어기들에 대해 어디에 앉는지는 정리된 자료가 아니라 현재 진행 중인 질문이다.
 
 ### 스스로 점검
 

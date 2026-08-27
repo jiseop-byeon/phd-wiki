@@ -259,6 +259,9 @@ point only*. Three consequences you will meet in papers:
 | "we use a Kalman filter / observer" | is the model that generates $\hat x$ the same one the controller assumes? |
 | "outperforms classical control" | against a *tuned* classical controller with feedforward, or a strawman P controller? |
 
+> [!tip] Going deeper · 더 깊이
+> Åström & Murray, [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page) (Princeton, free) is the textbook this page is a compressed reading of, and it is written for exactly this audience — engineers who need the ideas rather than the theorem sequence. Read ch.6–7 for state space and ch.9–10 for frequency domain and PID. Its examples are drawn from across engineering rather than robotics, so keep §9 of this page open beside it: the gap between a linear model and a real machine is the part the book treats lightly and the part your papers live in.
+
 ### Self-check
 
 1. In §1, what closed-loop gain $K$ would you need to attenuate the disturbance 100×, and
@@ -527,6 +530,9 @@ $$\dot{\hat x} = A\hat x + Bu + L(y - C\hat x)$$
 | "PID 베이스라인" | 구조(P/PI/PID), D의 필터, anti-windup, 그리고 누가 튜닝했나 |
 | "칼만 필터/관측기를 쓴다" | $\hat x$를 만드는 모델이 제어기가 가정하는 그 모델과 같은가? |
 | "고전 제어를 능가" | 피드포워드가 붙은 *튜닝된* 고전 제어기 대비인가, 허수아비 P 제어기 대비인가? |
+
+> [!tip] 더 깊이 · Going deeper
+> Åström & Murray의 [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page)(Princeton, 무료)가 이 페이지가 압축해 읽은 그 교과서이고, 정확히 이 독자층을 위해 쓰였다 — 정리의 나열이 아니라 발상이 필요한 공학자. 상태공간은 6~7장, 주파수 영역과 PID는 9~10장을 읽어라. 예제가 로보틱스가 아니라 공학 전반에서 오므로 이 페이지의 §9를 옆에 펴 두어라. 선형 모델과 실제 기계 사이의 간극이 책이 가볍게 다루는 부분이자 당신의 논문들이 사는 부분이다.
 
 ### 스스로 점검
 

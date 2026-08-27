@@ -180,6 +180,9 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 - **Sim & digital twins**: every simulator state and BIM-robot registration is a stack of
   $T$'s ([[05-construction-robotics/index|construction]]).
 
+> [!tip] Going deeper · 더 깊이
+> Lynch & Park's [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) (Cambridge, free PDF) ch.3 is the full treatment of everything on this page, and the wiki's own [[04-robotics/modern-robotics/index|MR chapter notes]] are the guided path through it. Read ch.3 rather than a general geometry text: it develops $SO(3)$ and $SE(3)$ in the order a robotics reader needs them, with screws and twists arriving as the answer to a question rather than as machinery. §4 of this page is deliberately the on-ramp to that chapter and stops where it begins.
+
 ### Self-check
 
 1. Verify $R(\theta)R(-\theta) = I$ in 2D, and explain why $R^{-1} = R^\top$ in general.
@@ -358,6 +361,9 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   카메라 자세가 $T \in SE(3)$; "자세 추정" = 이 행렬의 회귀.
 - **시뮬레이션과 디지털 트윈**: 모든 시뮬레이터 상태와 BIM-로봇 정합이 $T$들의 스택이다
   ([[05-construction-robotics/index|건설]]).
+
+> [!tip] 더 깊이 · Going deeper
+> Lynch & Park의 [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics)(Cambridge, PDF 무료) 3장이 이 페이지 전체의 완전한 판본이고, 이 위키의 [[04-robotics/modern-robotics/index|MR 장별 노트]]가 그것을 통과하는 안내된 길이다. 일반 기하학 책이 아니라 3장을 읽어라. 로보틱스 독자가 필요로 하는 순서대로 $SO(3)$과 $SE(3)$을 전개하고, 스크류와 트위스트가 기계장치가 아니라 어떤 질문의 답으로 도착한다. 이 페이지의 §4는 의도적으로 그 장으로 가는 진입로이고, 그 장이 시작되는 곳에서 멈춘다.
 
 ### 스스로 점검
 

@@ -154,6 +154,9 @@ condensed stays well-behaved.)
 chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-machinery|stream 3]]).
 
+> [!tip] Going deeper · 더 깊이
+> Two free books, and they answer different questions. Rawlings, Mayne & Diehl, [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/) is where the stability and feasibility guarantees are actually proved — read it when a paper claims recursive feasibility and you want to know what it had to assume. Borrelli, Bemporad & Morari, [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf) is the computational side: explicit MPC, the QP structure of §2, and hybrid formulations, which is the half that matters for §4's contact case.
+
 ### Self-check
 
 1. You plug a learned cost matrix $Q$ into an MPC and the solver misbehaves. First thing to check?
@@ -303,6 +306,9 @@ $A$에서는 거듭제곱이 감쇠해 condensed도 얌전하다.)
 
 - 기초: [[02-foundations/optimization|최적화]] (QP, KKT), [[02-foundations/linear-algebra|선형대수]]
 - 이전: [[04-robotics/lqr-lqg|LQR/LQG]] · 다음: [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
+
+> [!tip] 더 깊이 · Going deeper
+> 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 실제로 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 계산 쪽이다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
 
 ### 스스로 점검 · Self-check
 
