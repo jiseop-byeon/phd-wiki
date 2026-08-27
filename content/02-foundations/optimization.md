@@ -22,6 +22,9 @@ Optimization is the shared language of this wiki: training a network
 construction tasks are all "minimize an objective subject to constraints." Course-depth
 treatment: conditions, derivations, and a fully written MPC-as-QP example.
 
+> [!note] First pass · 처음이라면
+> Read §1, then §2 — convexity is the fork everything else hangs on — then §3. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you.
+
 ### 1. Anatomy of a problem
 
 $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x) = 0$$
@@ -222,6 +225,9 @@ Constraints and nonlinear optimization become executable robot decisions in [[04
 최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/1-foundations/adam|Adam]]),
 MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적함수 최소화"다. 교재 수준의
 서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그다음 §3. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다.
 
 ### 1. 문제의 구조
 

@@ -22,6 +22,9 @@ When people operate, supervise, share space with, or depend on a robot, task suc
 > [!note] Prerequisites
 > [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]] — §9 connects onward to [[05-construction-robotics/index|Construction Robotics]] (the next track, not a prerequisite).
 
+> [!note] First pass · 처음이라면
+> Read §1 and §2 — most confusion in this literature is one of these two spectra being collapsed — then §6 for the safety vocabulary, then §10, which works one interpretation end to end.
+
 ### 1. Autonomy is a spectrum
 
 | Mode | Human and robot roles |
@@ -216,6 +219,9 @@ An automated excavator receives a goal from an operator, plans and executes a di
 
 > [!note] 선수 지식
 > [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]] — §9는 [[05-construction-robotics/index|건설로봇]](다음 트랙, 선수 지식 아님)으로 이어진다.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1과 §2 — 이 문헌의 혼란 대부분이 이 두 스펙트럼 중 하나를 뭉갠 것이다 — 그다음 §6의 안전 어휘, 그다음 한 해석을 끝까지 해 보는 §10.
 
 ### 1. 자율성은 스펙트럼이다
 

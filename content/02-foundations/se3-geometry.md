@@ -22,6 +22,9 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 3D vision papers; the full treatment (screws, exponential coordinates) lives in
 [[04-robotics/modern-robotics-book|Modern Robotics ch. 3]].
 
+> [!note] First pass · 처음이라면
+> Read §1 (rotation order, with the coordinates), §3 (poses compose by matrix product), §5 (where this shows up). §2 is a table to consult, and §4 is the on-ramp to Modern Robotics — read it when you get there.
+
 ### 1. Rotations are matrices with rules
 
 - A 3D rotation is a matrix $R \in \mathbb{R}^{3\times 3}$ with $R^\top R = I$ and
@@ -204,6 +207,9 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 이 위키의 모든 로봇 행동, 카메라 자세, 3D 재구성은 SE(3) — 강체 자세의 공간 — 에 산다.
 이 페이지는 VLA 행동 공간과 3D 비전 논문을 읽기 위한 작업 세트다; 완전한 전개(스크류,
 지수 좌표)는 [[04-robotics/modern-robotics-book|Modern Robotics 3장]]의 몫이다.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1(회전 순서, 좌표까지), §3(자세는 행렬곱으로 합성된다), §5(어디에 나타나는가). §2는 찾아보는 표이고, §4는 Modern Robotics로 가는 진입로다 — 거기 도착할 때 읽어라.
 
 ### 1. 회전은 규칙 있는 행렬이다
 

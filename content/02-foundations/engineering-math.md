@@ -21,6 +21,9 @@ The engineering math that pages 1–9 silently assume, self-contained in one pla
 section says exactly which foundation page uses it. If all of this reads easily, skip
 straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 
+> [!note] First pass · 처음이라면
+> This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. The one exception is §10, the notation dictionary: skim it once and the rest of the track costs less.
+
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
 
 - Definition as sensitivity: $f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$ — "nudge the
@@ -460,6 +463,9 @@ Two definitions used everywhere before they are formally introduced:
 1~9 페이지가 말없이 전제하는 공업수학을 한곳에 자체 완결로 정리했다.
 각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 전부 술술 읽히면 바로
 [[02-foundations/linear-algebra|1. 선형대수]]로 건너뛰어라.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 §10 표기법 사전이다: 한 번 훑어 두면 나머지 트랙이 싸진다.
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
 

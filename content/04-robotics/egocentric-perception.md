@@ -19,6 +19,9 @@ Move the camera from the room to the head and the perception problem changes cha
 > [!note] Prerequisites
 > [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]
 
+> [!note] First pass · 처음이라면
+> Read §1 — first-person is a different observability regime, not a worse camera angle — then §3 on head motion as an attention proxy and where it breaks, then §8. §5 and §6 matter when you are judging whether a benchmark result survives a helmet camera.
+
 ### 1. What changes when the camera moves to the head
 
 | Property | Third-person | Egocentric |
@@ -170,6 +173,9 @@ You should be able to:
 
 > [!note] 선수 지식
 > [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 1인칭은 나쁜 카메라 각도가 아니라 다른 관측 가능성 체제다 — 그다음 머리 움직임이 주의의 대용인 이유와 깨지는 지점인 §3, 그다음 §8. §5·§6은 벤치마크 결과가 헬멧 카메라에서 살아남을지 판단할 때 중요해진다.
 
 ### 1. 카메라가 머리로 갈 때 바뀌는 것
 

@@ -24,6 +24,9 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 *The centre of group H and a Mastery page. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/control-theory-ce397|5]] and [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Dynamics]].
 Contact turns position error into force, so control stops being a choice between the two and becomes a choice of the relation between them.*
 
+> [!note] First pass · 처음이라면
+> Read §1 — position control cannot survive contact, with the stiffness numbers — then §2 for impedance versus admittance, then §7. §3 to §5 are what you read when you are actually choosing a controller rather than reading about one.
+
 ### 1. Position control cannot survive contact
 
 A position controller's job is to drive position error to zero, and it does so with whatever
@@ -497,6 +500,9 @@ tolerance, say which architecture can meet it — and whether any can.
 
 *H군의 중심이자 Mastery 페이지다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/control-theory-ce397|5]]번과 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 동역학]] 위에 선다.
 접촉이 위치 오차를 힘으로 바꾸므로, 제어는 둘 중 하나를 고르는 일이 아니라 둘 사이의 관계를 고르는 일이 된다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 위치 제어는 접촉에서 살아남지 못한다, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
 
 ### 1. 위치 제어는 접촉에서 살아남지 못한다
 

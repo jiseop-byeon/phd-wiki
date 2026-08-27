@@ -21,6 +21,9 @@ mastery-when: "Raise to Mastery only if terrain interaction or the traversabilit
 *Group I. Stands on [[04-robotics/mpc|7. MPC]], [[04-robotics/planning-decision-making|4. Planning]] and [[02-foundations/ml-practice|ML Practice]].
 The reframing that reorganised the field: traversability is a learned affordance of a particular robot, not a geometric property of terrain.*
 
+> [!note] First pass · 처음이라면
+> Read §1 — one reframing that reorganised the field — then §2 on where the labels come from, then §6. §4 and §5 are a record of what each field programme established; read them when you need to cite one.
+
 ### 1. The idea that reorganised the field
 
 A classical planner builds an occupancy grid, marks occupied cells as obstacles, and plans
@@ -270,6 +273,9 @@ includes construction machinery is the nearest existing bridge between this page
 
 *I군이다. [[04-robotics/mpc|7. MPC]]·[[04-robotics/planning-decision-making|4. 계획]]과 [[02-foundations/ml-practice|ML 실무]] 위에 선다.
 이 분야를 재편한 재프레이밍: 통과 가능성은 지형의 기하학적 성질이 아니라 특정 로봇이 학습한 어포던스다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 이 분야를 재편한 재프레이밍 하나 — 그다음 라벨이 어디서 오는지인 §2, 그다음 §6. §4·§5는 각 필드 프로그램이 무엇을 확립했는지의 기록이니 인용이 필요할 때 읽어라.
 
 ### 1. 이 분야를 재편한 발상
 

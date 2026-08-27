@@ -20,6 +20,9 @@ this is the tool for reading the claim that the method worked. Read it before an
 The craft knowledge every paper assumes: how models are trained, validated, and — above
 all — *measured*. This page is the decoder for every "Results" table in the wiki.
 
+> [!note] First pass · 처음이라면
+> Read §1 — the one sacred rule — then §5, the traps. §3 is a dictionary: do not read it, keep it open next to a results table. Everything else you will absorb by using it.
+
 ### 1. Data splits — the one sacred rule
 
 - **Train / validation / test**: fit on train; tune hyperparameters and pick checkpoints
@@ -182,6 +185,9 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 
 모든 논문이 전제하는 장인적 지식: 모델을 어떻게 학습·검증하고, 무엇보다 어떻게 *재는가*.
 이 페이지는 위키의 모든 "Results" 표를 읽는 해독기다.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 단 하나의 신성한 규칙 — 그다음 §5의 함정들. §3은 사전이다: 읽지 말고 결과 표 옆에 펴 두라. 나머지는 쓰면서 몸에 붙는다.
 
 ### 1. 데이터 분할 — 단 하나의 신성한 규칙
 

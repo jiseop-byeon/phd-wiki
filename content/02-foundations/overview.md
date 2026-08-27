@@ -45,8 +45,12 @@ not have to assume anything beyond the table above.
 **0.7 [[02-foundations/neural-network-basics|What a Neural Network Is]]** (skip if the ML vocabulary is already familiar) **→ 1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]]** (domain bridges — order between these two is free) **→ 8. [[02-foundations/se3-geometry|3D Geometry & SE(3)]]** (before the robotics track and VLA papers) **· 9. [[02-foundations/ml-practice|ML Practice & Evaluation]]** (before reading any results table) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|Manipulator Kinematics & Dynamics]]** (take it when the manipulation track is next; force control is unreadable without it).
 
 Each page ends with self-check questions; do them. If a page feels too dense on first
-contact, pair it with a first-pass source ([CS231n](https://cs231n.stanford.edu/schedule.html) lectures for 1–4, [Sutton & Barto](http://incompleteideas.net/book/the-book.html) ch.1–6
-for 7) and return to the page as a structured summary.
+contact, do not read it front to back: every page in both study tracks opens with a
+**First pass** callout naming which sections to read first and which to postpone, and a
+**Going deeper** block near the end naming the textbook to graduate to. Between them, the
+same page serves a first reading and a third one. Where a whole subject lands too fast,
+pair it with an outside first-pass source ([CS231n](https://cs231n.stanford.edu/schedule.html) lectures for 1–4, [Sutton & Barto](http://incompleteideas.net/book/the-book.html) ch.1–6
+for 7) and come back to use this wiki as the structured summary.
 
 ### Connection map — math → foundations → papers
 
@@ -278,8 +282,12 @@ flowchart TD
 **0.7 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]]** (도메인 다리 — 이 둘의 순서는 자유) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|매니퓰레이터 기구학·동역학]]** (매니퓰레이션 트랙으로 갈 때 — 힘 제어가 이것 없이는 읽히지 않는다).
 
 각 페이지 끝의 스스로 점검 문제를 꼭 풀어라. 처음 접했을 때 너무 압축적으로 느껴지는
-페이지는 1차 통과용 자료(1~4번은 [CS231n](https://cs231n.stanford.edu/schedule.html) 강의, 7번은 [Sutton & Barto](http://incompleteideas.net/book/the-book.html) 1~6장)와 병행하고,
-이 위키의 페이지는 구조화된 요약본으로 되돌아와 쓰면 된다.
+페이지는 처음부터 끝까지 읽지 마라. 두 학습 트랙의 모든 페이지는 어느 절을 먼저 읽고 어느
+절을 미룰지 지목하는 **처음이라면** 콜아웃으로 시작하고, 끝 부근에는 다음에 넘어갈 교재를
+지목하는 **더 깊이** 블록이 있다. 그 둘 사이에서 같은 페이지가 1회독과 3회독을 함께
+감당한다. 과목 전체가 너무 빠르게 느껴지면 1차 통과용 외부 자료(1~4번은
+[CS231n](https://cs231n.stanford.edu/schedule.html) 강의, 7번은 [Sutton & Barto](http://incompleteideas.net/book/the-book.html) 1~6장)와 병행하고, 이 위키의 페이지는 구조화된 요약본으로
+되돌아와 쓰면 된다.
 
 ### 연결 지도 — 수학 → 기초 → 논문
 

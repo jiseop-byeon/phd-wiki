@@ -26,6 +26,9 @@ perception tells you *where* it is, at *what scale*, in *which frame*.
 > [!note] Prerequisites
 > [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares)
 
+> [!note] First pass · 처음이라면
+> Read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start), §7. §2 to §4 are the machinery; read them when a paper's numbers depend on them.
+
 ### 1. The pinhole camera model
 
 A 3D point $p^{c}=(X,Y,Z)$ in the **camera frame** projects to pixel $(u,v)$:
@@ -225,6 +228,9 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 > [!note] 선수 지식
 > [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[02-foundations/optimization|최적화]] (최소제곱)
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1(핀홀 모델, 투영식까지), §5(보정 — 현장 실패가 실제로 시작되는 곳), §7. §2~§4는 기계장치이고, 논문의 숫자가 거기 기댈 때 읽어라.
 
 ### 1. 핀홀 카메라 모델
 

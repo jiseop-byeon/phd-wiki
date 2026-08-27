@@ -19,6 +19,9 @@ A single image answers *what is here*. Video is required to answer *what is happ
 > [!note] Prerequisites
 > [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
 
+> [!note] First pass · 처음이라면
+> Read §1 — four tasks that get mixed up routinely — then §2 on scene bias, then §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them.
+
 ### 1. Four tasks that are routinely conflated
 
 | Task | Input | Output | Typical metric |
@@ -165,6 +168,9 @@ You should be able to:
 
 > [!note] 선수 지식
 > [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 습관적으로 뒤섞이는 네 과제 — 그다음 장면 편향인 §2, 그다음 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라.
 
 ### 1. 습관적으로 뒤섞이는 네 가지 과제
 

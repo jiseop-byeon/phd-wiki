@@ -19,6 +19,9 @@ A robot sharing space with a person acts on a guess about what the person will d
 > [!note] Prerequisites
 > [[02-foundations/probability|Probability]] · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
+> [!note] First pass · 처음이라면
+> Read §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material.
+
 ### 1. Two different problems
 
 | | Intent prediction | Trajectory forecasting |
@@ -246,6 +249,9 @@ You should be able to:
 
 > [!note] 선수 지식
 > [[02-foundations/probability|확률]] · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다.
 
 ### 1. 서로 다른 두 문제
 

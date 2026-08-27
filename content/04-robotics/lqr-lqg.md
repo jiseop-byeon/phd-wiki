@@ -30,6 +30,9 @@ no iteration at runtime.
 [[02-foundations/probability|Kalman filter]] feeding an LQR (the **separation principle**:
 estimate optimally, then control the estimate optimally, and it is jointly optimal).
 
+> [!note] First pass · 처음이라면
+> A short page; read it through. If you only have ten minutes, §2 is the one that changes how you read papers — "LQR guarantees stability" has two conditions attached, and papers linearising a nonlinear system inherit them only at the linearisation point.
+
 ### 1. The Riccati equation, read structurally
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
@@ -169,6 +172,9 @@ $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대�
 해다 — 실행 시 반복 계산이 없다. **LQG**는 가우시안 노이즈와 부분 관측을 더한 것: 최적해는
 [[02-foundations/probability|칼만 필터]]가 LQR에 추정값을 공급하는 구조다
 (**분리 원리**: 최적으로 추정하고, 그 추정값을 최적으로 제어하면, 그 결합이 전체 최적이다).
+
+> [!note] 처음이라면 · First pass
+> 짧은 페이지이니 통독하라. 10분뿐이라면 §2다 — "LQR은 안정성이 보장된다"에는 조건이 둘 붙어 있고, 비선형계를 선형화해 쓰는 논문은 그 조건을 선형화 지점에서만 물려받는다.
 
 ### 1. 리카티 방정식, 구조로 읽기
 

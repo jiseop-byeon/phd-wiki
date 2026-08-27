@@ -19,6 +19,9 @@ Planning asks how a robot should choose a feasible sequence of future states and
 > [!note] Prerequisites
 > [[02-foundations/optimization|Optimization]] · [[02-foundations/rl-basics|RL Basics]] · [[04-robotics/modern-robotics/ch02-configuration-space|Configuration Space]] · [[04-robotics/modern-robotics/ch10-motion-planning|Motion Planning]] — §6 previews [[04-robotics/mpc|MPC]] (track page 7); read it lightly here and return after that page.
 
+> [!note] First pass · 처음이라면
+> Read §1 — five words the literature uses interchangeably and should not — then §2, then §4's worked example. §5 through §8 are a survey; read the family a paper belongs to rather than all of them.
+
 ### 1. Plan, path, trajectory, policy, controller
 
 | Term | Meaning |
@@ -247,6 +250,9 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 > [!note] 선수 지식
 > [[02-foundations/optimization|최적화]] · [[02-foundations/rl-basics|RL 기초]] · [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]] · [[04-robotics/modern-robotics/ch10-motion-planning|모션 플래닝]] — §6은 [[04-robotics/mpc|MPC]](트랙 7번)를 미리 쓴다; 여기서는 가볍게 읽고 그 페이지 후에 돌아오라.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 문헌이 섞어 쓰지만 섞어 쓰면 안 되는 다섯 단어 — 그다음 §2, 그다음 §4의 계산 예제. §5~§8은 조망이니 전부가 아니라 지금 논문이 속한 계열만 읽어라.
 
 ### 1. Plan, path, trajectory, policy, controller
 

@@ -24,6 +24,9 @@ with their update rules, the policy gradient theorem, and PPO's actual objective
 layer robot papers actually spend their pages on: reward design, exploration, RL
 fine-tuning on real machines, and how to read an RL experimental section.
 
+> [!note] First pass · 처음이라면
+> This is the longest page in the track, so read §6 early. First pass: §1, §2, then jump to §6 — the RL-versus-imitation map tells you which half of the page your papers actually live in. Come back for §3, §4 and §7 with that in hand.
+
 ### 1. The MDP
 
 - **Markov Decision Process** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: states, actions,
@@ -484,6 +487,9 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 교재 수준의 서술: 벨만 기계장치, 갱신 규칙까지 포함한 두 알고리즘 계열, 정책 그래디언트
 정리, PPO의 실제 목적함수 — 그리고 로봇 논문이 실제로 지면을 쓰는 층: 보상 설계, 탐색,
 실기계 위의 RL 파인튜닝, RL 실험 절 읽는 법.
+
+> [!note] 처음이라면 · First pass
+> 트랙에서 가장 긴 페이지이므로 §6을 일찍 읽어라. 1차 통과: §1, §2, 그다음 §6으로 건너뛴다 — RL 대 모방 지도가 당신의 논문들이 이 페이지의 어느 절반에 사는지 알려 준다. §3·§4·§7은 그것을 손에 쥐고 돌아와서 읽어라.
 
 ### 1. MDP
 

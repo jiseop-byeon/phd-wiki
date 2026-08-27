@@ -23,6 +23,9 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 *Group H and a Mastery page. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] and optimization.
 Half the field is the mathematics of closure and half is predicting it from a depth image without writing any of it down — both are worth reading, because the learned half trains on labels the analytic half produced.*
 
+> [!note] First pass · 처음이라면
+> Read §1, then §3 — form closure versus force closure is the distinction the secondary literature keeps getting wrong — then §7. §4 (the epsilon metric) and §5 are for when you are comparing grasp planners rather than reading about them.
+
 ### 1. The question a grasp has to answer
 
 A grasp is not "the gripper is touching the object". It is a claim: **whatever the world
@@ -377,6 +380,9 @@ Every quantitative figure quoted in §5 is from the respective paper's own abstr
 
 *H군이자 Mastery 페이지다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/modern-robotics/ch12-grasping|MR 12장]]·최적화 위에 선다.
 이 분야의 절반은 closure의 수학이고 절반은 그것을 적지 않은 채 깊이 이미지에서 예측하는 방법이다 — 학습된 쪽이 해석적 쪽이 만든 라벨로 학습되므로 둘 다 읽을 값어치가 있다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 다음 §3 — form closure 대 force closure는 2차 문헌이 계속 틀리는 구분이다 — 그다음 §7. §4(엡실론 지표)와 §5는 파지 계획기에 관해 읽는 것이 아니라 비교할 때 본다.
 
 ### 1. 파지가 답해야 하는 질문
 

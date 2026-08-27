@@ -22,6 +22,9 @@ mastery-when: "Raise to Mastery only if language-grounded navigation becomes the
 *Group I. Stands on [[04-robotics/planning-decision-making|4. Planning]] and, in practice, on the VLM notes.
 When the goal is a word rather than a coordinate, the hard problem stops being path-finding and becomes deciding where to look.*
 
+> [!note] First pass · 처음이라면
+> Read §1 — the shift a classically trained reader has to make — then §2, because most confusion here is people arguing about ObjectNav without agreeing on its definition, then §8. §3 to §7 are the history; read it once the definitions are solid.
+
 ### 1. The shift a classical reader has to make
 
 Classically the goal is a **pose in a known metric space**, and planning is finding a path to
@@ -285,6 +288,9 @@ underneath.
 
 *I군이다. [[04-robotics/planning-decision-making|4. 계획]] 위에 서고, 실질적으로는 VLM 노트에도 기댄다.
 목표가 좌표가 아니라 단어일 때 어려운 문제는 경로 찾기가 아니라 어디를 볼지 정하는 것이 된다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 고전적 독자가 해야 하는 전환 — 그다음 §2, 이 분야 혼란 대부분이 ObjectNav의 정의에 합의하지 않은 채 논쟁하는 데서 오기 때문이다 — 그다음 §8. §3~§7은 역사이니 정의가 단단해진 뒤에 읽어라.
 
 ### 1. 고전적 독자가 해야 하는 전환
 

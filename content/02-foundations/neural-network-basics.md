@@ -24,6 +24,9 @@ uses *force*. If you studied engineering mathematics but never machine learning,
 is the twenty minutes that makes the rest readable. **Everything here is arithmetic you
 already know** — matrix multiplication and derivatives — wearing unfamiliar names.
 
+> [!note] First pass · 처음이라면
+> The shortest page in the track, and the one to read straight through. Twenty minutes here is what makes pages 1 to 9 readable at all; there is nothing to defer.
+
 ### 1. A neural network is a stack of matrix multiplies
 
 Start with something familiar: a matrix $W$ maps a vector to another vector, $y = Wx$.
@@ -199,6 +202,9 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 1~9 페이지는 *층*, *손실*, *미니배치* 같은 말을 역학 교과서가 *힘*을 쓰듯 쓴다. 공업수학은
 공부했지만 기계학습은 처음이라면, 이 페이지가 나머지를 읽히게 만드는 20분이다. **여기 있는
 것은 전부 이미 아는 산수** — 행렬곱과 미분 — 가 낯선 이름을 쓰고 있는 것뿐이다.
+
+> [!note] 처음이라면 · First pass
+> 트랙에서 가장 짧고, 순서대로 끝까지 읽으면 되는 유일한 페이지다. 여기 쓰는 20분이 1~9번을 읽히게 만든다. 미뤄 둘 절이 없다.
 
 ### 1. 신경망은 행렬곱을 쌓은 것이다
 

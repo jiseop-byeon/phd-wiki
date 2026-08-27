@@ -19,6 +19,9 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 > [!note] Prerequisites
 > [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/optimization|Optimization]] · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]]
 
+> [!note] First pass · 처음이라면
+> Read §2 — the four words nobody separates — then §4 for the predict/correct loop, then §6 to do the one-dimensional update by hand. §5, §7 and §8 are the reference half; open them against a specific paper.
+
 ### 1. Position in the robot loop
 
 ```mermaid
@@ -207,6 +210,9 @@ You should be able to:
 
 > [!note] 선수 지식
 > [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/optimization|최적화]] · [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §2 — 아무도 구분하지 않는 네 단어 — 그다음 §4의 예측·보정 루프, 그다음 §6에서 1차원 갱신을 손으로. §5·§7·§8은 참고서 쪽 절반이니 특정 논문을 놓고 펴라.
 
 ### 1. 로봇 루프 안에서의 위치
 

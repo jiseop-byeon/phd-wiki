@@ -22,6 +22,9 @@ mastery-when: "Already raised — the research program's contribution is a force
 *Group H, and one of the three pages this track raises to Mastery. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/control-theory-ce397|5]] and the [[04-robotics/modern-robotics/index|MR chapters]].
 It reads teleoperation as data generation rather than as driving, which is what makes it a research topic instead of an interface one.*
 
+> [!note] First pass · 처음이라면
+> Read §1 — the reframing that makes this a research topic rather than an interface one — then §6 on what good demonstration data is, then §8. §2 and §3 (passivity, transparency) are for reading bilateral-control papers specifically.
+
 ### 1. Teleoperation is a data-generation tool
 
 The old reading of teleoperation is "driving a robot from a distance", and it is still
@@ -366,6 +369,9 @@ requires, because the contribution *is* the corpus — needs these:
 
 *H군이고, 이 트랙이 Mastery로 올리는 세 페이지 중 하나다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/control-theory-ce397|5]]번과 [[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다.
 원격조작을 조종이 아니라 데이터 생성으로 읽으며, 그것이 이 주제를 인터페이스 문제가 아닌 연구 문제로 만든다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 이 주제를 인터페이스 문제가 아닌 연구 문제로 만드는 재프레이밍 — 그다음 좋은 시연 데이터가 무엇인지인 §6, 그다음 §8. §2·§3(수동성, 투명성)은 양방향 제어 논문을 읽을 때 특정해서 보라.
 
 ### 1. 원격조작은 데이터 생성 도구다
 

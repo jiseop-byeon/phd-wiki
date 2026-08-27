@@ -25,6 +25,9 @@ either designs one, wraps a learned policy in one, or quietly relies on one — 
 every claim about *stability*, *tracking*, *bandwidth*, or *robustness* is a claim in this
 page's vocabulary.
 
+> [!note] First pass · 처음이라면
+> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
+
 ### 1. What feedback actually buys
 
 Take a heater with a leak: $\dot x = -x + u + d$, where $x$ is temperature error, $u$ your
@@ -310,6 +313,9 @@ examples *are* your domain.
 제어는 물리 시스템이 *의도한 대로* 움직이게 만드는 층이다. 모든 로보틱스 논문은 제어기를
 설계하거나, 학습된 정책을 제어기로 감싸거나, 말없이 제어기에 기대고 있다 — 그리고
 *안정성·추종·대역폭·강건성*에 대한 거의 모든 주장이 이 페이지의 어휘로 쓰여 있다.
+
+> [!note] 처음이라면 · First pass
+> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
 
 ### 1. 피드백이 실제로 사는 것
 

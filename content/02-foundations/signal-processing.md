@@ -22,6 +22,9 @@ sampled, noisy signal. Course-depth treatment: convolution worked by hand, the s
 theorem with its math, DFT/FFT, filter design basics, and the bridge to control's transfer
 functions.
 
+> [!note] First pass · 처음이라면
+> Read §1, §2 — the sampling contract and aliasing are what actually bite — then §6 for the field habits. §3 to §5 are the machinery; open them when a paper does something in the frequency domain.
+
 ### 1. Signals, systems, and convolution
 
 - A system is **LTI** (linear, time-invariant) ⟺ completely characterized by its impulse
@@ -167,6 +170,9 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 건설로봇이 싣고 다니는 모든 센서 — 카메라, LiDAR, IMU, 엔코더 — 는 샘플링된, 노이즈 낀
 신호를 건네준다. 교재 수준의 서술: 손으로 푸는 합성곱, 수식이 있는 샘플링 정리, DFT/FFT,
 필터 설계 기초, 그리고 제어의 전달함수로 가는 다리.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1, §2 — 실제로 무는 것은 샘플링 계약과 에일리어싱이다 — 그다음 §6의 현장 습관. §3~§5는 기계장치이고, 논문이 주파수 영역에서 무언가 할 때 펴라.
 
 ### 1. 신호, 시스템, 합성곱
 

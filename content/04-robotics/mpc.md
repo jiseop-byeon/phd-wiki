@@ -65,6 +65,9 @@ and if the terminal cost decreases like a Lyapunov function under that controlle
 stability follows. Read the survey after the optimization page's example; skim §2–3 for
 the formulation and stability conditions rather than every proof.
 
+> [!note] First pass · 처음이라면
+> Read §1 (when the QP is actually convex), §3 (the failure modes papers gloss), §4. §2 — stacked versus condensed — is for when you implement or when a paper reports solve times.
+
 ### 1. When is the QP actually convex?
 
 The "it's just a QP" claim carries conditions worth checking in any paper:
@@ -213,6 +216,9 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노프 함수처럼 감소하면 폐루프
 안정성이 따라온다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
 §2~3의 정식화와 안정성 조건을 훑는 것을 권한다.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
 
 ### 1. QP는 언제 실제로 볼록한가?
 

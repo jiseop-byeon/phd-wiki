@@ -22,6 +22,9 @@ information theory: cross-entropy loss, KL divergence, the ELBO, contrastive lea
 even "perplexity." This page is the complete working set for reading modern papers —
 no prior background assumed.
 
+> [!note] First pass · 처음이라면
+> Read §0 (three log rules, five minutes), §1, §2, §3 — and do the bit calculations by hand, they are the page. §4 and §5 are for when a paper puts mutual information or an ELBO in its objective.
+
 ### 0. Prerequisite: the three log rules
 
 Everything on this page runs on logarithms. If these three lines are not second nature,
@@ -231,6 +234,9 @@ non-variational world models take different routes).
 딥러닝에서 확률 분포가 등장하는 모든 것은 결국 정보이론의 언어로 말한다: 교차 엔트로피
 손실, KL divergence, ELBO, 대조학습, 심지어 "perplexity"까지. 이 페이지는 최신 논문을
 읽는 데 필요한 전부를 사전지식 없이 따라올 수 있게 담았다.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §0(로그 세 규칙, 5분), §1, §2, §3 — 비트 계산은 손으로 해라, 그것이 이 페이지다. §4·§5는 논문이 목적함수에 상호 정보량이나 ELBO를 넣을 때 보면 된다.
 
 ### 0. 사전 준비: 로그의 세 규칙
 

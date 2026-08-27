@@ -21,6 +21,9 @@ The one algorithm every deep learning paper assumes silently: reverse-mode autom
 differentiation. Course-depth treatment: from Taylor expansion to a fully worked backprop
 example, plus the gradient pathologies that shaped architecture history.
 
+> [!note] First pass · 처음이라면
+> Read §1, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are for when you are reading an architecture paper and want to know why it is shaped that way.
+
 ### 1. Derivatives as local linear models
 
 - **Taylor expansion** is the foundation of all of optimization:
@@ -255,6 +258,9 @@ bug detector in existence.
 모든 딥러닝 논문이 말없이 전제하는 단 하나의 알고리즘: 역방향 자동 미분. 교재 수준의
 서술: 테일러 전개에서 손으로 푸는 역전파 예제까지, 그리고 구조 설계의 역사를 만든
 그래디언트 병리들.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때다.
 
 ### 1. 국소 선형 모델로서의 미분
 

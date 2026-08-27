@@ -19,6 +19,9 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 > [!note] Prerequisites
 > [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/optimization|Optimization]] · [[04-robotics/modern-robotics/ch05-velocity-kinematics|Statics and Jacobians]] · [[04-robotics/modern-robotics/ch08-dynamics|Dynamics]] · [[04-robotics/modern-robotics/ch12-grasping|Grasping]]
 
+> [!note] First pass · 처음이라면
+> Read §1 — why contact changes the problem at all — then §5 (position, force, impedance, admittance), then §6, the wall-wiping scenario that puts all four in one task. §2 to §4 are the mechanics; read them when a paper's friction or closure claims matter.
+
 ### 1. Why contact changes the problem
 
 A contact is typically **unilateral**: objects may push but do not pull through an ordinary surface. Motion can switch among separation, impact, sticking, and sliding. This makes the dynamics hybrid and often nonsmooth.
@@ -158,6 +161,9 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 
 > [!note] 선수 지식
 > [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/optimization|최적화]] · [[04-robotics/modern-robotics/ch05-velocity-kinematics|정역학과 야코비안]] · [[04-robotics/modern-robotics/ch08-dynamics|동역학]] · [[04-robotics/modern-robotics/ch12-grasping|파지]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 접촉이 애초에 문제를 왜 바꾸는가 — 그다음 §5(위치·힘·임피던스·어드미턴스), 그다음 그 넷을 한 과제에 넣어 보는 §6의 벽 닦기. §2~§4는 역학이고, 논문의 마찰이나 closure 주장이 중요해질 때 읽어라.
 
 ### 1. 접촉이 문제를 바꾸는 이유
 

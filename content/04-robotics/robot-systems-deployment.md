@@ -19,6 +19,9 @@ A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, 
 > [!note] Prerequisites
 > [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[04-robotics/state-estimation-slam|State Estimation]] · [[04-robotics/planning-decision-making|Planning]] · [[04-robotics/control-theory-ce397|Control Theory]]
 
+> [!note] First pass · 처음이라면
+> This is a checklist page more than a narrative. First pass: §1 for the loop, §3 for the timing budget — the single most common source of results that do not reproduce — and §10 for the failure taxonomy. The rest is a reference you return to with a specific system in front of you.
+
 ### 1. The closed robot stack
 
 ```mermaid
@@ -217,6 +220,9 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 
 > [!note] 선수 지식
 > [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/state-estimation-slam|상태 추정]] · [[04-robotics/planning-decision-making|계획]] · [[04-robotics/control-theory-ce397|제어 이론]]
+
+> [!note] 처음이라면 · First pass
+> 이 페이지는 서사보다 체크리스트에 가깝다. 1차 통과: §1의 루프, §3의 지연 예산 — 재현되지 않는 결과의 가장 흔한 출처 — 그리고 §10의 실패 분류. 나머지는 특정 시스템을 앞에 놓고 돌아와 보는 참고서다.
 
 ### 1. 닫힌 로봇 스택
 

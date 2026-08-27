@@ -21,6 +21,9 @@ Probability is the substrate under estimation, filtering, and many standard obje
 learning. Course-depth treatment: derivations, the Gaussian toolbox, a worked MLE example,
 and the Kalman filter assembled from parts you'll have proven along the way.
 
+> [!note] First pass · 처음이라면
+> Read §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. Leave §5 until you reach state estimation; it will make more sense there.
+
 ### 1. The core language
 
 - Axioms: $P(\Omega)=1$, $P(A)\ge 0$, additivity over disjoint events. Everything else is
@@ -255,6 +258,9 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 확률은 추정, 필터링, 그리고 딥러닝의 많은 표준 목적함수 아래에 깔린 토대다. 교재 수준의 서술:
 유도, 가우시안 도구 상자, MLE 계산 예제, 그리고 이 페이지에서 증명한 부품들로 조립하는
 칼만 필터까지.
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1, §2, 그다음 §3 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5는 상태 추정에 닿을 때까지 미뤄라 — 거기서 더 잘 읽힌다.
 
 ### 1. 핵심 언어
 

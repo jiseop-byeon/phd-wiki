@@ -21,6 +21,9 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 *Group I. Stands on [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Dynamics]] and [[02-foundations/rl-basics|7. RL Basics]].
 Privileged teacher–student distillation is the idea to take from here, and the page doubles as practice at correcting over-citation.*
 
+> [!note] First pass · 처음이라면
+> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language.
+
 ### 1. Why this page exists
 
 This literature is **systematically over-cited beyond its actual claims**. The famous results
@@ -334,6 +337,9 @@ for the full picture and the licensing traps.
 
 *I군이다. [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 동역학]]과 [[02-foundations/rl-basics|7. RL 기초]] 위에 선다.
 가져갈 발상은 특권 교사–학생 증류이고, 이 페이지는 동시에 과잉 인용을 교정하는 연습장이다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다.
 
 ### 1. 이 페이지가 존재하는 이유
 

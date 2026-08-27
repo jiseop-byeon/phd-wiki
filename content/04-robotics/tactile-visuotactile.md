@@ -22,6 +22,9 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 *Group H. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/force-compliance-control|13. Force Control]] and [[02-foundations/neural-network-basics|0.7]].
 For the tasks where the deciding variable is inside the contact, hidden by the very thing doing the manipulating.*
 
+> [!note] First pass · 처음이라면
+> Read §1 — what vision cannot see, and why that is a short and specific list — then §2 on what a sensor actually transduces, then §6. §3 and §4 are for reading a specific fusion or slip-detection paper.
+
 ### 1. What vision cannot see
 
 The case for touch is not that it is richer than vision. It is that a handful of quantities
@@ -338,6 +341,9 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 *H군이다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/force-compliance-control|13. 힘 제어]]와 [[02-foundations/neural-network-basics|0.7]] 위에 선다.
 결정적 변수가 접촉 안에 있고, 하필 조작을 하고 있는 그것에 가려지는 과제들을 위한 페이지다.*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지 — 그다음 센서가 실제로 변환하는 것인 §2, 그다음 §6. §3·§4는 특정 융합·미끄러짐 논문을 읽을 때다.
 
 ### 1. 비전이 볼 수 없는 것
 

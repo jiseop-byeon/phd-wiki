@@ -34,6 +34,9 @@ space where contact actually happens.
 The whole page is really one question: *when a controller commands a motion or a force at
 the end-effector, what does the arm's own mass do to that command?*
 
+> [!note] First pass · 처음이라면
+> Read §2 for the equation, §3 to compute a mass matrix by hand, §6 for the bridge to force control — that is the reason this page is on the critical path. §4, §5 and §7 are what you read when a paper's dynamics claims start to matter.
+
 ### 1. What kinematics already gave us
 
 Three results are used constantly below, so they are worth stating in one place:
@@ -322,6 +325,9 @@ whether a contact will feel stiff or soft — and be right.
 
 페이지 전체가 사실 하나의 질문이다: *제어기가 말단에서 운동이나 힘을 명령할 때, 팔 자신의
 질량은 그 명령에 무슨 짓을 하는가?*
+
+> [!note] 처음이라면 · First pass
+> 먼저 §2로 방정식을, §3으로 질량 행렬을 손으로, §6으로 힘 제어까지 잇는 다리를 — 이 페이지가 임계 경로에 있는 이유가 §6이다. §4·§5·§7은 논문의 동역학 주장이 중요해지기 시작할 때 읽는다.
 
 ### 1. 기구학이 이미 준 것
 

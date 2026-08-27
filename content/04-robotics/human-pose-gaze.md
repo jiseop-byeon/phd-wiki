@@ -19,6 +19,9 @@ A robot that must anticipate a person cannot observe intent. It observes a body.
 > [!note] Prerequisites
 > [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]]
 
+> [!note] First pass · 처음이라면
+> Read §1 — the representation ladder tells you what any given paper is even outputting — then §3 on reading MPJPE as a physical quantity, then §4, the substitution nobody states. §2 and §5 are for comparing methods.
+
 ### 1. The representation ladder
 
 | Representation | Output | Typical error | What it buys |
@@ -178,6 +181,9 @@ You should be able to:
 
 > [!note] 선수 지식
 > [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]]
+
+> [!note] 처음이라면 · First pass
+> 먼저 §1 — 표현의 사다리가 어떤 논문이 대체 무엇을 출력하는지 알려 준다 — 그다음 MPJPE를 물리량으로 읽는 §3, 그다음 아무도 밝히지 않는 대체인 §4. §2·§5는 방법을 비교할 때다.
 
 ### 1. 표현의 사다리
 
