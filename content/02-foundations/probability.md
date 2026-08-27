@@ -37,6 +37,56 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   not one "accuracy") is right only 16% of the time it fires — base rates dominate. This is why
   perception pipelines calibrate.
 - Independence $P(A,B) = P(A)P(B)$ vs conditional independence $P(A,B|C) = P(A|C)P(B|C)$ —
+<svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="a thousand panels split into ten cracked and nine hundred ninety sound, with the alarms each branch produces, and a bar showing that only sixteen percent of alarms are real">
+  <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
+    <rect x="24" y="76" width="94" height="30" rx="3"/>
+    <rect x="150" y="34" width="86" height="30" rx="3"/>
+    <rect x="150" y="118" width="86" height="30" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.1">
+    <rect x="268" y="34" width="82" height="30" rx="3"/>
+    <rect x="268" y="118" width="82" height="30" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.65">
+    <path d="M118,86 C136,86 136,49 148,49"/>
+    <path d="M118,96 C136,96 136,133 148,133"/>
+    <line x1="236" y1="49" x2="266" y2="49"/>
+    <line x1="236" y1="133" x2="266" y2="133"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="71" y="95">1,000 panels</text>
+    <text x="193" y="53">10 cracked</text>
+    <text x="193" y="137">990 sound</text>
+    <text x="309" y="53">9.5 alarms</text>
+    <text x="309" y="137">49.5 alarms</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="251" y="42">95% of them</text>
+    <text x="251" y="126">5% of them</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="372" y="80">59 alarms in total</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6">
+    <rect x="372" y="88" width="170" height="26" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.34">
+    <rect x="372" y="88" width="27.4" height="26" rx="3"/>
+  </g>
+  <g font-size="9.5" fill="currentColor">
+    <text x="372" y="130">9.5 real</text>
+    <text x="542" y="130" text-anchor="end">49.5 false</text>
+  </g>
+  <g font-size="13" fill="currentColor" font-weight="600">
+    <text x="372" y="152">16%</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">The 95% is used on the thin branch and the 5% on the thick one, so the thick branch produces</text>
+    <text x="24" y="228">five times more alarms than the thin one even though it is the branch with nothing wrong.</text>
+    <text x="24" y="244">That ratio is the posterior. Nothing about the detector changed &#8212; only how rare cracks are.</text>
+  </g>
+</svg>
+
   the factorization assumptions behind graphical models, naive Bayes, and the Markov
   property alike.
 
@@ -215,6 +265,56 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   울렸을 때 실제로는 16%만 맞는다 — 기저율이 지배한다. 인식 파이프라인이
   캘리브레이션을 하는 이유다.
 - 독립 $P(A,B) = P(A)P(B)$ vs 조건부 독립 $P(A,B|C) = P(A|C)P(B|C)$ — 그래프 모델,
+<svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="패널 1000장을 균열 10장과 정상 990장으로 나누고 각 가지가 만드는 경보 수, 그리고 경보 중 16%만 진짜임을 보이는 막대">
+  <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
+    <rect x="24" y="76" width="94" height="30" rx="3"/>
+    <rect x="150" y="34" width="86" height="30" rx="3"/>
+    <rect x="150" y="118" width="86" height="30" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.1">
+    <rect x="268" y="34" width="82" height="30" rx="3"/>
+    <rect x="268" y="118" width="82" height="30" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.65">
+    <path d="M118,86 C136,86 136,49 148,49"/>
+    <path d="M118,96 C136,96 136,133 148,133"/>
+    <line x1="236" y1="49" x2="266" y2="49"/>
+    <line x1="236" y1="133" x2="266" y2="133"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="71" y="95">패널 1,000장</text>
+    <text x="193" y="53">균열 10장</text>
+    <text x="193" y="137">정상 990장</text>
+    <text x="309" y="53">경보 9.5건</text>
+    <text x="309" y="137">경보 49.5건</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="251" y="42">그중 95%</text>
+    <text x="251" y="126">그중 5%</text>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="372" y="80">경보 총 59건</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6">
+    <rect x="372" y="88" width="170" height="26" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.34">
+    <rect x="372" y="88" width="27.4" height="26" rx="3"/>
+  </g>
+  <g font-size="9.5" fill="currentColor">
+    <text x="372" y="130">진짜 9.5</text>
+    <text x="542" y="130" text-anchor="end">오경보 49.5</text>
+  </g>
+  <g font-size="13" fill="currentColor" font-weight="600">
+    <text x="372" y="152">16%</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">95%는 얇은 가지에, 5%는 굵은 가지에 쓰인다. 그래서 아무 이상 없는 굵은 가지가 얇은 가지보다</text>
+    <text x="24" y="228">다섯 배 넘는 경보를 만든다. 그 비율이 곧 사후확률이다. 감지기는 아무것도 바뀌지 않았고,</text>
+    <text x="24" y="244">바뀐 것은 균열이 얼마나 드문가뿐이다.</text>
+  </g>
+</svg>
+
   나이브 베이즈, 마르코프 성질이 공유하는 인수분해 가정.
 
 ### 2. 확률변수와 기댓값

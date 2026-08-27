@@ -67,6 +67,46 @@ where each concept appears in the papers of this wiki.
   The residual really is perpendicular to both columns of $A$, which is exactly what
   "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors.
 - Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
+<svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="a vector b above the plane spanned by the columns of A, its projection inside the plane, and the residual meeting the plane at a right angle">
+  <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
+    <polygon points="40,150 232,106 344,146 152,190"/>
+  </g>
+  <defs><marker id="laA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#laA)">
+    <line x1="112" y1="164" x2="236" y2="58"/>
+    <line x1="112" y1="164" x2="238" y2="140"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="5 4" opacity="0.85">
+    <line x1="244" y1="142" x2="244" y2="62"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.8">
+    <polyline points="232,142 232,130 244,130"/>
+  </g>
+  <g fill="currentColor"><circle cx="112" cy="164" r="3.5"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="46" y="182" opacity="0.85">col(A) &#8212; everything A can reach</text>
+    <text x="200" y="48">b (the data)</text>
+    <text x="184" y="158">A x&#770; (the projection)</text>
+    <text x="254" y="96">residual b &#8722; A x&#770;</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.8">
+    <text x="254" y="110">&#8869; to the plane</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="388" y="40">the worked example</text>
+    <text x="388" y="58">b = (1, 3, 4)</text>
+    <text x="388" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
+    <text x="388" y="90">residual = (&#8722;1/6, 1/3, &#8722;1/6)</text>
+    <text x="400" y="108">&#183; (1,1,1) = 0</text>
+    <text x="400" y="124">&#183; (1,2,3) = 0</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="204">The normal equations A&#7488;A x&#770; = A&#7488;b are this picture written as algebra: A&#7488;(b &#8722; A x&#770;) = 0 says</text>
+    <text x="24" y="220">the residual is perpendicular to every column of A. That is also why least squares is least &#8212;</text>
+    <text x="24" y="236">any other point of the plane is further from b, by Pythagoras on the right angle drawn here.</text>
+  </g>
+</svg>
+
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
 
 ### 3. Eigendecomposition — directions a map only stretches
@@ -338,6 +378,46 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $-\tfrac16 + \tfrac23 - \tfrac12 = 0$이다. 잔차가 정말로 $A$의 두 열 모두에 수직이고,
   그것이 "직교 투영"이 주장하는 바로 그것이다. 이 검산은 10초면 되고 부호 실수의 대부분을
   잡아낸다.
+<svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="A의 열들이 만드는 평면 위로 벡터 b가 떠 있고 그 투영이 평면 안에 있으며 잔차가 평면과 직각으로 만난다">
+  <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
+    <polygon points="40,150 232,106 344,146 152,190"/>
+  </g>
+  <defs><marker id="laA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#laA)">
+    <line x1="112" y1="164" x2="236" y2="58"/>
+    <line x1="112" y1="164" x2="238" y2="140"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="5 4" opacity="0.85">
+    <line x1="244" y1="142" x2="244" y2="62"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.8">
+    <polyline points="232,142 232,130 244,130"/>
+  </g>
+  <g fill="currentColor"><circle cx="112" cy="164" r="3.5"/></g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="46" y="182" opacity="0.85">col(A) &#8212; A가 도달할 수 있는 전부</text>
+    <text x="200" y="48">b (데이터)</text>
+    <text x="184" y="158">A x&#770; (투영)</text>
+    <text x="254" y="96">잔차 b &#8722; A x&#770;</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.8">
+    <text x="254" y="110">평면에 &#8869;</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="388" y="40">예제의 숫자</text>
+    <text x="388" y="58">b = (1, 3, 4)</text>
+    <text x="388" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
+    <text x="388" y="90">잔차 = (&#8722;1/6, 1/3, &#8722;1/6)</text>
+    <text x="400" y="108">&#183; (1,1,1) = 0</text>
+    <text x="400" y="124">&#183; (1,2,3) = 0</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="204">정규방정식 A&#7488;A x&#770; = A&#7488;b는 이 그림을 대수로 쓴 것이다. A&#7488;(b &#8722; A x&#770;) = 0이 곧 잔차가 A의</text>
+    <text x="24" y="220">모든 열에 수직이라는 뜻이다. 최소제곱이 최소인 이유도 이것이다 &#8212; 여기 그린 직각에 피타고라스를</text>
+    <text x="24" y="236">적용하면 평면 위의 다른 어떤 점도 b에서 더 멀다는 것이 바로 나온다.</text>
+  </g>
+</svg>
+
 - 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 가중치
   *업데이트*의 내재 랭크가 낮다고 가정한다($r \ll d$인 $\Delta W = BA$).
 
