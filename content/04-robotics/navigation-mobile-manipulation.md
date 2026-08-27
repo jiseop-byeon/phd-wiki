@@ -14,7 +14,7 @@ mastery-when: "The research program keeps this at Working — it is a supporting
 > **Working** — 통합하고, 진단하고, 평가할 만큼. [[07-research-program/index|연구 프로그램]]은
 > 의도적으로 이것을 Mastery로 올리지 *않는다*: 새 SLAM은 기여가 아니다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need localization and mapping ([[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]]), configuration space and planning ([[04-robotics/planning-decision-making|4. Planning & Decision-Making]]), and the manipulability ellipsoid ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) — which turns out to be the quantity that decides where a base should stop.
 > 위치 추정과 지도 작성([[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]]), 자세 공간과 계획([[04-robotics/planning-decision-making|4. 계획·의사결정]]), 그리고 가조작성 타원체([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]])가 필요하다 — 베이스를 어디에 세울지를 결정하는 양이 결국 그것이다.
 

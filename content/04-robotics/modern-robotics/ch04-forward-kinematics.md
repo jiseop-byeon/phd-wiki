@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.4** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need $e^{[\mathcal{S}]\theta}$ and screw axes from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]], plus fluency multiplying 4×4 homogeneous transforms.
 > [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 $e^{[\mathcal{S}]\theta}$와 스크류 축, 그리고 4×4 동차 변환의 곱을 쓸 수 있어야 한다.
 

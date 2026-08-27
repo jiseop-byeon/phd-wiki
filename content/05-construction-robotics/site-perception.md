@@ -120,7 +120,7 @@ evaluated, and whether the system ran online on the moving platform.
 > 공급하는지, 출력이 보고서인지 로봇 상태인지, 정합 오차가 어디서 시공 편차로 위장할 수
 > 있는지, 이동 플랫폼에서 온라인으로 돌았는지. 인식 스택 구축은 실무/숙달 단계의 주제다.
 
-> [!note] 선수지식
+> [!note] 선수 지식
 > [[04-robotics/geometric-perception-calibration|기하 인식과 보정]] ·
 > [[04-robotics/state-estimation-slam|상태 추정과 SLAM]] ·
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] ·

@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.8** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], positive-definite matrices ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), and mechanics at the level of Newton's second law.
 > [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안, [[02-foundations/linear-algebra|PSD 행렬]], 그리고 뉴턴 제2법칙 수준의 역학이 필요하다.
 

@@ -185,7 +185,7 @@ outside the training range.
 > 예산은 얼마인지, 증거가 배치 사다리의 어느 단에 실제로 도달하는지. 전이 파이프라인
 > 설계는 실무/숙달 단계의 주제다.
 
-> [!note] 선수지식
+> [!note] 선수 지식
 > [[02-foundations/probability|확률]] · [[02-foundations/rl-basics|RL 기초]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[04-robotics/contact-force-tactile|접촉]]
 

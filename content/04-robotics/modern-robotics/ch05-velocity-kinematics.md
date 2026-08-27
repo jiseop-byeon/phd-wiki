@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]).
 > [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK와 [[02-foundations/calculus-backprop|편미분·야코비안]], 그리고 행렬 랭크의 의미([[02-foundations/linear-algebra|선형대수 §2]])를 알고 있어야 한다.
 

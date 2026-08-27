@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.10** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] and the basics of graph search (BFS/Dijkstra).
 > [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념과 그래프 탐색(BFS/다익스트라)의 기초가 필요하다.
 

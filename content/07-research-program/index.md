@@ -13,7 +13,7 @@ mastery-when: "This page is a decision record, not a method; mastery belongs to 
 > **Working** — 연구 질문을 말할 수 있고, 어떤 논문이나 아이디어가 어느 기둥에 속하는지
 > 판단할 수 있으며, 어느 기둥에도 기여하지 않는 주제를 거절할 수 있어야 한다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > Read [[00-study-depth-guide|0. Study Depth Guide]] first — this page assigns depth to
 > topics, and that page defines what the depths mean. No technical prerequisite otherwise.
 > [[00-study-depth-guide|0. Study Depth Guide]]를 먼저 읽어라 — 이 페이지는 주제에 깊이를

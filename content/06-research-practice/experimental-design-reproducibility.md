@@ -10,7 +10,7 @@ mastery-when: "Mastery means consistently producing defensible work, not memoriz
 
 An experiment should distinguish the proposed explanation from plausible alternatives. In robotics, this requires controlling not only models and datasets but scenes, hardware, calibration, operators, resets, timing, and exposure to failures.
 
-> [!note] Prerequisite
+> [!note] Prerequisites
 > Read [[02-foundations/ml-practice|ML Practice & Evaluation]] first. That page teaches how to read results; this page focuses on designing evidence.
 
 ### 1. Variables and units of analysis

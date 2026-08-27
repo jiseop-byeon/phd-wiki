@@ -12,7 +12,7 @@ mastery-when: "This is operational judgement, demonstrated through the work rath
 > that survive being checked.
 > **Working** — 프로젝트의 산출물을 의도적으로 계획하고, 확인을 견디는 임팩트 주장을 할 만큼.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > Read [[07-research-program/index|7. Research Program]] and [[06-research-practice/research-questions-claims|Research Questions & Claims]] first — this page is about what evidence licenses which claim, and those two define the claims.
 > [[07-research-program/index|7. 연구 프로그램]]과 [[06-research-practice/research-questions-claims|연구 질문과 주장]]을 먼저 읽어라 — 이 페이지는 어떤 증거가 어떤 주장을 허락하는가에 관한 것이고, 그 둘이 주장을 정의한다.
 

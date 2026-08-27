@@ -13,7 +13,7 @@ mastery-when: "Raise to Mastery only if language-grounded navigation becomes the
 > **Working** — 이 문헌을 정확히 읽고, 그 리더보드가 왜 더 이상 오를 대상이 아니게 되었는지
 > 알 만큼.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need CLIP-style vision-language grounding ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), frontier-based exploration and costmaps ([[04-robotics/planning-decision-making|4. Planning]]), and what a VLA is ([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]).
 > CLIP식 시각-언어 접지([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), 프런티어 기반 탐색과 costmap([[04-robotics/planning-decision-making|4. 계획]]), 그리고 VLA가 무엇인지([[01-canonical-papers/notes/4-vla/rt-2|RT-2]])가 필요하다.
 

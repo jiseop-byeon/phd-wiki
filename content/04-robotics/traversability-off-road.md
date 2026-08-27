@@ -12,7 +12,7 @@ mastery-when: "Raise to Mastery only if terrain interaction or the traversabilit
 > common overclaim in the area.
 > **Working** — traversability 접근법을 고르고, 이 분야에서 가장 흔한 과잉 주장을 꿰뚫어 볼 만큼.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need occupancy and cost representations ([[04-robotics/planning-decision-making|4. Planning §2]]), MPC ([[04-robotics/mpc|MPC]]), and self-supervision — a training signal built from the data's own structure rather than labels ([[02-foundations/ml-practice|9. ML Practice]]).
 > 점유·비용 표현([[04-robotics/planning-decision-making|4. 계획 §2]]), MPC([[04-robotics/mpc|MPC]]), 그리고 자기지도 — 라벨이 아니라 데이터 자신의 구조에서 만든 학습 신호([[02-foundations/ml-practice|9. ML 실무]]) — 가 필요하다.
 

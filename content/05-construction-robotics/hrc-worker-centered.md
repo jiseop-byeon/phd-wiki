@@ -135,7 +135,7 @@ a small study is not evidence of low operational risk.
 > 실제로 로봇 행동을 바꾸는지, 어떤 인간 결과를 측정하는지, 참가자 표본과 과제 현실성이
 > 주장을 어디까지 지지하는지. 작업자 폐루프 연구 설계는 실무/숙달 단계의 주제다.
 
-> [!note] 선수지식
+> [!note] 선수 지식
 > [[04-robotics/hri-safety|HRI와 안전]] · [[02-foundations/signal-processing|신호처리]] ·
 > [[04-robotics/planning-decision-making|계획]] · [[06-research-practice/experimental-design-reproducibility|실험 설계]]
 

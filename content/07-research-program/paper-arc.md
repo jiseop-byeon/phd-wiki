@@ -13,7 +13,7 @@ mastery-when: "This is a plan, not a method; it is revised by results rather tha
 > **Working** — 후보 프로젝트가 arc의 몇 번째 논문인지, 무엇에 의존하며 무엇을 의도적으로
 > 미루는지 말할 수 있어야 한다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > Read [[07-research-program/index|7. Research Program]] first — the pillars and the
 > admission test defined there are what this page sequences.
 > [[07-research-program/index|7. 연구 프로그램]]을 먼저 읽어라 — 거기서 정의한 기둥과 입장

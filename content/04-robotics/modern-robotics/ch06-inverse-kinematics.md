@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.6** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], least squares / the pseudoinverse ([[02-foundations/linear-algebra|1. Linear Algebra §2]]), and Newton's method ([[02-foundations/optimization|4. Optimization §3]]).
 > [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안과 [[02-foundations/linear-algebra|최소제곱/유사역행렬]], [[02-foundations/optimization|뉴턴법]]을 알고 있어야 한다.
 

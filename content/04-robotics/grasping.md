@@ -14,7 +14,7 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 > **Mastery** — 나쁜 파지에서 시작한 접촉이 많은 작업은 정작 흥미로운 부분과 무관한 이유로
 > 실패한다. 그래서 이것은 인접 분야가 아니라 기여의 의존 층이다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need friction and the friction cone ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]), wrenches and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §3]]), and convexity ([[02-foundations/optimization|4. Optimization §2]]).
 > 마찰과 마찰 원뿔([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]), 렌치와 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §3]]), 볼록성([[02-foundations/optimization|4. 최적화 §2]])이 필요하다.
 

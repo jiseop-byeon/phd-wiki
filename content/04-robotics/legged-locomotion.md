@@ -12,7 +12,7 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 > advance them.
 > **Working** — 정본을 정확히 읽고 이 플랫폼들을 쓸 만큼. 그것을 진전시키기 위해서가 아니라.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need RL and policy gradients ([[02-foundations/rl-basics|7. RL Basics §4]]), the manipulator equation and why actuator models matter ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), and DAgger ([[01-canonical-papers/notes/4-vla/dagger|DAgger]]) — because distillation here is DAgger with a simulator as the expert.
 > RL과 정책 경사([[02-foundations/rl-basics|7. RL 기초 §4]]), 매니퓰레이터 방정식과 액추에이터 모델이 중요한 이유([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), 그리고 DAgger([[01-canonical-papers/notes/4-vla/dagger|DAgger]])가 필요하다 — 여기서의 증류가 시뮬레이터를 전문가로 삼은 DAgger이기 때문이다.
 

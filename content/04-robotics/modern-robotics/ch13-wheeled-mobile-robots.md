@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.13** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > Nonholonomic constraints from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] and trigonometry are enough.
 > [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 비홀로노믹 제약과 삼각함수면 충분하다.
 

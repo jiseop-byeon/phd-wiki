@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.12** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need the wrench (moment + force) concept from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]] and vector cross products.
 > [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 렌치(모멘트+힘) 개념과 벡터 외적이 필요하다.
 

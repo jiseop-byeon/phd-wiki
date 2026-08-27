@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.2** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > An intuition for degrees of freedom plus the rotation representations of [[02-foundations/se3-geometry|SE(3) §2]] is enough — this chapter is the robotics track's real starting point.
 > 자유도(DoF)의 직관과 [[02-foundations/se3-geometry|SE(3)]]의 회전 표현(§2)을 알고 있으면 충분하다 — 이 장이 로보틱스 트랙의 실질적 출발점이다.
 

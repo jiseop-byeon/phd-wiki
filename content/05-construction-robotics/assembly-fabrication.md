@@ -134,7 +134,7 @@ localization become part of manipulation accuracy.
 > 실규모 증거가 배치 주장을 지지하는지. 패브리케이션 시스템 설계는 실무/숙달 단계의
 > 주제다.
 
-> [!note] 선수지식
+> [!note] 선수 지식
 > [[04-robotics/modern-robotics-book|Modern Robotics Summary]] ·
 > [[04-robotics/contact-force-tactile|접촉]] · [[03-deep-learning/index|딥러닝]] ·
 > [[05-construction-robotics/site-perception|현장 인식]]

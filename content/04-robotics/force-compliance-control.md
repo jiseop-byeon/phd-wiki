@@ -15,7 +15,7 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 > [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 쌍이다. 접촉이 많은 조작의
 > 모든 주장이 결국 이 제어기들 중 하나에 관한 주장이기 때문이다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need the manipulator equation and the operational-space inertia $\Lambda$ ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), and closed-loop stability and bandwidth ([[04-robotics/control-theory-ce397|Control Theory §5, §7]]).
 > 매니퓰레이터 방정식과 작업 공간 관성 $\Lambda$([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 폐루프 안정성과 대역폭([[04-robotics/control-theory-ce397|제어 이론 §5, §7]])이 필요하다.
 

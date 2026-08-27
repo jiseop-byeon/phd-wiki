@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Modern Robotics ch.11** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · continues into [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]
 
-> [!note] 시작 전 점검 · Before you start
+> [!note] Prerequisites · 선수 지식
 > You need the equation of motion from [[04-robotics/modern-robotics/ch08-dynamics|ch.8]] and second-order error dynamics ($\zeta, \omega_n$) from [[02-foundations/engineering-math|0.5 §8]]; [[04-robotics/control-theory-ce397|5. Control Theory]] develops the same ideas in state-space form.
 > [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식과 [[02-foundations/engineering-math|0.5 §8]]의 오차 미분방정식($\zeta, \omega_n$)이 필요하다; [[04-robotics/control-theory-ce397|5. 제어 이론]]이 같은 내용을 상태공간으로 전개한다.
 

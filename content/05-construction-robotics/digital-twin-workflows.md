@@ -142,7 +142,7 @@ BIM은 구조화된 설계 모델이다. 디지털 트윈은 **물리 시스템�
 > 상태가 얼마나 신선하고 신뢰할 만한지, 정보가 정말 현장에서 돌아와 다음 행동을 바꾸는지.
 > 트윈 아키텍처 구축은 실무/숙달 단계의 주제다.
 
-> [!note] 선수지식
+> [!note] 선수 지식
 > [[05-construction-robotics/site-perception|현장 인식]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[04-robotics/planning-decision-making|계획]]
 

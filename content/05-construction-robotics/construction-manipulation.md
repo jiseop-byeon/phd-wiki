@@ -13,7 +13,7 @@ mastery-when: "This is the intersection the research program is built on — the
 > **Mastery** — 매니퓰레이션 트랙과 건설 도메인이 만나는 지점이고, 여기서의 선택이 나머지
 > 학위논문이 무엇에 관한 것인지를 결정한다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need the manipulation primitives and their control modes ([[04-robotics/force-compliance-control|13]], [[04-robotics/grasping|15]]), what touch adds ([[04-robotics/tactile-visuotactile|14. §1]]), and the construction assembly lineages ([[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]]).
 > 조작 원시동작과 그 제어 모드([[04-robotics/force-compliance-control|13]], [[04-robotics/grasping|15]]), 촉각이 더하는 것([[04-robotics/tactile-visuotactile|14. §1]]), 건설 조립 계보([[05-construction-robotics/assembly-fabrication|조립·제작]])가 필요하다.
 

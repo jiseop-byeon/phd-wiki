@@ -13,7 +13,7 @@ mastery-when: "Already raised — the research program's contribution is a force
 > **Mastery** — 수집 설계를 방어할 수 있을 만큼: 어떤 아키텍처, 어떤 행동 공간, 인터페이스가
 > 무엇을 기록하고 무엇을 버리는지, 그리고 그 코퍼스가 왜 주장을 뒷받침하는지.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need the Jacobian and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]), impedance versus admittance ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]), and feedback stability with delay ([[04-robotics/control-theory-ce397|Control Theory §7]]).
 > 야코비안과 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]), 임피던스와 어드미턴스의 구분([[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]), 지연이 있는 피드백의 안정성([[04-robotics/control-theory-ce397|제어 이론 §7]])이 필요하다.
 

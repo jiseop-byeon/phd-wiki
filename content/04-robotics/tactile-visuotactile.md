@@ -13,7 +13,7 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 > **Working** — 과제에 맞는 센서를 고르고, 융합 구조가 무엇을 하는지 이해하고, 비전이 한 일을
 > 촉각의 공으로 돌리는 평가를 꿰뚫어 볼 수 있을 만큼.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), the impedance/admittance distinction and the contact-transition timescales ([[04-robotics/force-compliance-control|13. §2, §5]]), and what a learned representation is ([[02-foundations/neural-network-basics|0.7]]).
 > 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 임피던스/어드미턴스 구분과 접촉 천이의 시간 규모([[04-robotics/force-compliance-control|13. §2, §5]]), 그리고 학습된 표현이 무엇인지([[02-foundations/neural-network-basics|0.7]])가 필요하다.
 
