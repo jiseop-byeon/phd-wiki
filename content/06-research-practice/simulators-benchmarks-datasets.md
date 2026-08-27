@@ -503,7 +503,7 @@ checked and contained nothing.
   없어" 접선 방향 컴플라이언스와 짧은 시간 규모의 파동이 빠진다.
 - **PhysX**는 Isaac 아래에서, 처리량에 맞춰 조율된 게임 엔진 계보다.
 
-MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적할 가치가 있다: 3.0이 Flex 변형체를
+MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추적할 가치가 있다: 3.0이 Flex 변형체를
 도입했고, 3.3.0이 네이티브 볼록 충돌을 기본값으로 만들었으며, **3.3.5가 네이티브 SDF 지원과
 함께 접촉 센서와 촉각 센서를 추가했다** — 뒤의 것은 "주어진 점들에서 두 물체 사이의 침투
 깊이를 측정"한다. [[04-robotics/tactile-visuotactile|촉각 조작]] 프로젝트에는 실질적인 변화다.
@@ -551,7 +551,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 
 변형체 작업에 Isaac을 고르기 전에 알아 둘 한계가 하나 더 있다. 문서가
 **"Particles and deformable body do not support contact reports"** 라고 밝히며, 정적 마찰도
-마찰 결합 모드도 지원하지 않는다. 변형체에서 접촉력을 읽어낼 수 없다 — 접촉 다량 조작 연구가
+마찰 결합 모드도 지원하지 않는다. 변형체에서 접촉력을 읽어낼 수 없다 — 접촉이 많은 조작 연구가
 하려는 측정이 바로 그것인데.
 
 > [!warning] Genesis — 인용하기 전에 이력을 읽어라
@@ -577,7 +577,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 | **ManiSkill 3** | RSS 2025 | 시뮬레이션 | 처리량과 과제 범위 | "up to 30,000+ FPS"; "12 distinct domains" |
 | **CALVIN** | RA-L 2022 | 시뮬레이션 | 긴 지평 언어 조건부, zero-shot | **초록에 숫자 없음** |
 | **LIBERO** | NeurIPS 2023 D&B | 시뮬레이션 | **평생 학습** 전이 — 순방향·역방향·과제 순서 | "four task suites (130 tasks in total)" |
-| **FurnitureBench** | RSS 2023 | **둘 다** | 실세계 긴 지평 접촉 다량 **조립** | "200+ hours of pre-collected data (5000+ demonstrations)" |
+| **FurnitureBench** | RSS 2023 | **둘 다** | 실세계 긴 지평 접촉이 많은 **조립** | "200+ hours of pre-collected data (5000+ demonstrations)" |
 | **RoboCasa** | RSS 2024 | 시뮬레이션 | 모방학습의 데이터 스케일링 거동 | "over 150 object categories"; "100 tasks" |
 | **NIST Assembly Task Boards** | RA-L 2020 | **실제만** | **사람 기준선** 대비 완료 시간 | "three task board artifacts" |
 | **RAMP** | RA-L 2024 | **둘 다** | 조립 계획 *과* 실행, 난이도 3등급 | **초록에 숫자 없음** |
@@ -644,7 +644,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 박혀 있는 것이다. Open X-Embodiment 개요 시트의 열은 *로봇, 에피소드, 파일 크기, 형태, 그리퍼,
 행동 공간, RGB 카메라, 깊이 카메라, 손목 카메라, 언어 주석, 수집 방법, 고유수용감각, 장면 유형,
 제어 주파수* 로 이어진다 — **force 열도 tactile 열도 없다.** 지배적인 데이터 형식이
-[[04-robotics/force-compliance-control|접촉 다량 조작]]이 가장 의존하는 모달리티를 표현하지 못한다.
+[[04-robotics/force-compliance-control|접촉이 많은 조작]]이 가장 의존하는 모달리티를 표현하지 못한다.
 
 이 패턴을 깨는 데이터셋들:
 
@@ -706,7 +706,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 > contact 행이 아예 없다.**
 
 > [!important] 이 프로그램이 놓인 공백
-> **실기계의 *접촉 다량* 건설 조작 시연을 담은 공유 데이터셋은 존재하지 않는다.** DROID
+> **실기계의 *접촉이 많은* 건설 조작 시연을 담은 공유 데이터셋은 존재하지 않는다.** DROID
 > 규모도, 10,000도, 1,000도 아니다. 무엇이 없고 무엇이 있는지를 정확히 말해야 한다. 이 위키
 > 안의 논문 셋이 반례처럼 보이지만 아니기 때문이다:
 > [[01-canonical-papers/notes/8-construction/ext|ExT]]는 과제당 15만 에피소드를 갖지만
@@ -729,7 +729,7 @@ MuJoCo 3.x가 접촉 다량 작업 쪽으로 움직이고 있는 것은 추적�
 
 | 하려는 일 | 쓸 것 | 이유 |
 |---|---|---|
-| 접촉 다량 조작 정책 학습 | MuJoCo, 규모가 필요하면 Isaac Lab | 속도와 안정성. 진짜 접촉력이 필요한지 먼저 확인할 것 |
+| 접촉이 많은 조작 정책 학습 | MuJoCo, 규모가 필요하면 Isaac Lab | 속도와 안정성. 진짜 접촉력이 필요한지 먼저 확인할 것 |
 | 접촉 **힘**이 곧 결과인 연구 | Drake(하이드로일래스틱) + 실기계 | 점 힘이 아니라 접촉면과 압력 분포 |
 | 굴착·지형 | 예산이 되면 AGX, 아니면 Chrono::CRM | 인용 가능한 물리를 갖춘 유일한 문서화된 토질 모델들 |
 | 조립 평가 | NIST 태스크 보드 → FurnitureBench → RAMP | 실물, 그다음 실기계, 그다음 건설 프레이밍 |

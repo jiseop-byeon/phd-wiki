@@ -11,7 +11,7 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 > **Mastery** — a contact-rich task that starts from a bad grasp fails for reasons that have
 > nothing to do with the interesting part, so this is a dependency of the contribution
 > rather than an adjacent field.
-> **Mastery** — 나쁜 파지에서 시작한 접촉 다량 작업은 정작 흥미로운 부분과 무관한 이유로
+> **Mastery** — 나쁜 파지에서 시작한 접촉이 많은 작업은 정작 흥미로운 부분과 무관한 이유로
 > 실패한다. 그래서 이것은 인접 분야가 아니라 기여의 의존 층이다.
 
 > [!note] Before you start · 시작 전 점검

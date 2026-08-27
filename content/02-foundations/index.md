@@ -117,7 +117,7 @@ Skip it unless manipulation is your contribution area; read it before
 
 10번은 **공통 커리큘럼이 아니다** — 이 위키의 모든 논문을 읽기 위한 선수 지식은 여전히
 0~9번 전부다. 10번은 [[07-research-program/index|7. 연구 프로그램]]의 매니퓰레이션 우선
-경로에 속하며, *Modern Robotics* 챕터 요약이 기구학에서 멈추는 반면 접촉 다량 조작은
+경로에 속하며, *Modern Robotics* 챕터 요약이 기구학에서 멈추는 반면 접촉이 많은 조작은
 동역학 절반과 그것을 작업 공간으로 옮기는 방정식을 필요로 하기 때문에 존재한다.
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] — 매니퓰레이터 방정식, 코리올리 결합, 계산 토크, 그리고 힘 제어를 읽을 수 있게 만드는 작업 공간 관성 $\Lambda$

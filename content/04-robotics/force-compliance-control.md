@@ -12,7 +12,7 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 > [[07-research-program/index|research program]] promotes past Working, because every
 > contact-rich manipulation claim is ultimately a claim about one of these controllers.
 > **Mastery** — [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]과 함께
-> [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 쌍이다. 접촉 다량 조작의
+> [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 쌍이다. 접촉이 많은 조작의
 > 모든 주장이 결국 이 제어기들 중 하나에 관한 주장이기 때문이다.
 
 > [!note] Before you start · 시작 전 점검
@@ -603,7 +603,7 @@ $S$ 방향에서는 위치 제어가, 나머지 방향에서는 힘 제어가 �
 아닌 방향에 힘 제어를 배정하고 있는 것이다. 건설 현장의 기하가 공장용 제어기를 깨뜨리는
 표준적인 방식이 이것이다.
 
-### 4. 작업 공간 제어
+### 4. 작업공간(operational space) 제어
 
 Khatib의 1987년 정식화가 앞의 두 절을 점질량이 아니라 실제 팔 위에서 구현 가능하게 만든다.
 제어를 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 작업 공간 관성을 써서 과제
@@ -740,7 +740,7 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 
 - **Martín-Martín 외, IROS 2019** — *Variable Impedance Control in End-Effector Space*.
   **임피던스 파라미터 자체를 RL의 행동 공간으로** 삼고(VICES), 토크·관절 위치·말단 자세 행동
-  공간과 접촉 다량 과제에서 정면 비교한다. 중요한 발견은 이것이다: 정책이 접촉 과제를 애초에
+  공간과 접촉이 많은 과제에서 정면 비교한다. 중요한 발견은 이것이다: 정책이 접촉 과제를 애초에
   학습할 수 있느냐를 정하는 것은 알고리즘이 아니라 **행동 공간**이고, 최종 점수만이 아니라 표본
   효율과 전이가 함께 바뀐다.
 - **Bogdanovic, Khadiv & Righetti, RA-L 2020** — *Learning Variable Impedance Control for
@@ -784,7 +784,7 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 
 > [!note] 기록해 둘 예측
 > 그 합류가 완성된다면 **인터페이스는 위치가 아니라 컴플라이언스 파라미터일 것이다.**
-> 그것이 지켜볼 지점이고, 기여가 접촉 다량 조작인 연구 프로그램에서 이 페이지가 Mastery에 있는
+> 그것이 지켜볼 지점이고, 기여가 접촉이 많은 조작인 연구 프로그램에서 이 페이지가 Mastery에 있는
 > 이유다.
 
 ### 7. 논문에서 힘 제어 읽기

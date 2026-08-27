@@ -506,7 +506,7 @@ flowchart TD
 | 1 — 작업자 인지 | ICRA, IROS, 또는 건설 저널 | 인간 대상 연구가 담긴 HRI 결과는 *Automation in Construction*에서도 잘 읽힌다 |
 | 2 — 내비게이션 / 모바일 조작 | ICRA, IROS, RA-L | 시스템 통합 결과. 점진적 결과에는 RA-L의 상시 마감이 맞는다 |
 | 3 — 핵심 건설 조작 | ICRA, RSS, 또는 *Automation in Construction* | 도메인 저널이 그것을 실제로 배치할 사람들에게 닿는다 |
-| 4 — 접촉 다량·학습 | CoRL, RSS, RA-L | 로봇 학습 독자 |
+| 4 — 접촉이 많은 학습 기반 | CoRL, RSS, RA-L | 로봇 학습 독자 |
 | 5 — 통합 시스템 | T-RO, IJRR, 또는 *Automation in Construction* | 통합 결과에는 분량이 필요하고, 저널이 그것을 준다 |
 
 이중 독자는 진짜 자산이고 의도적으로 쓸 가치가 있다: 로보틱스 venue는 방법을 심사하고, 건설

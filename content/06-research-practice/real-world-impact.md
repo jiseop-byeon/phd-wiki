@@ -224,7 +224,7 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 가장 강한 임팩트 증거이며, 거의 전적으로 결과 자체가 아니라 §3의 산출물로 사는 것이다.
 
 그 아래 단계가 이 도메인에 없는 것이다. [[05-construction-robotics/construction-manipulation|9. §3]]이
-찾아냈듯 접촉 다량 건설 조작에는 가동 중 현장 결과가 거의 전무하고 — 그래서 그 단계에
+찾아냈듯 접촉이 많은 건설 조작에는 가동 중 현장 결과가 거의 전무하고 — 그래서 그 단계에
 도달하는 것이 어렵고 동시에 유난히 값어치 있다.
 
 > [!warning] 이 페이지가 막으려고 존재하는 수

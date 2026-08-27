@@ -169,7 +169,7 @@ are exactly the gaps the arc is built around.
 [[04-robotics/force-compliance-control|13. §5]]가 묘사하는 상황 — 삽입, 그리고 실패 모드로
 준비된 wedging과 jamming — 이 커넥터 규모가 아니라 건물 규모에서 벌어지는 것이다.
 
-이 논문은, 이 위키가 조사한 범위에서 **건설에서의 접촉 다량 조작 학습에 가장 가까운 발표된
+이 논문은, 이 위키가 조사한 범위에서 **건설에서의 접촉이 많은 조작 학습에 가장 가까운 발표된
 결과**다. ★인 이유가 그것이다.
 
 ### 방법

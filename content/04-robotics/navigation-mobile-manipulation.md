@@ -214,7 +214,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 배송 로봇용으로 만든 내비게이션 스택은 "이 위치로 가라"에 답한다. 모바일 매니퓰레이터에는
 다른 답이 필요하다: **팔이 그 작업을 할 수 있는 자세(configuration)로 가라.** 이 둘은 곧바로
 갈라진다. 벽에서 1 m 떨어진 베이스는 대상을 팔의 도달 범위 밖에 둘 수 있고, 벽에 바짝 붙인
-베이스는 팔을 작업 공간 가장자리에 두어 가조작성 타원체가 붕괴한
+베이스는 팔을 작업 영역 가장자리에 두어 가조작성 타원체가 붕괴한
 ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]) 자리에서 정작 작업이
 필요로 하는 방향으로 거의 움직이지 못하게 만든다.
 
@@ -231,10 +231,10 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 팔 하나에서 시작하자. 베이스가 고정되어 있을 때 어떤 말단 자세가 달성 가능하고, 얼마나 잘
 달성되는가?
 
-**도달성 지도(reachability map)**: 작업 공간을 복셀로 나누고 각각에 말단이 도달할 수 있는지를
+**도달성 지도(reachability map)**: 팔의 작업 영역(workspace)을 복셀로 나누고 각각에 말단이 도달할 수 있는지를
 기록한다. **능력 지도(capability map)**(Zacharias, Borst, Hirzinger, IROS 2007)는 한 걸음 더
 나아가 *어느 방향에서* 도달 가능한지를 기록한다. 어떤 점에 위에서 닿는 것과 옆에서 닿는 것은
-다른 가능성 문제이고, 팔의 작업 공간은 강하게 비등방적이기 때문이다. 그 방향 구조를 명시적이고
+다른 가능성 문제이고, 팔의 작업 영역은 강하게 비등방적이기 때문이다. 그 방향 구조를 명시적이고
 들여다볼 수 있게 만든 것이 기여이며, §3의 모든 것의 조상이다.
 
 ### 3. Base placement — 질문 뒤집기

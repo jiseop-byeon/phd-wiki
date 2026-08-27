@@ -118,7 +118,7 @@ this field's specific literature.
 - [[05-construction-robotics/industry-deployment|8. Industry & Deployment Map]] — 누가
   무엇을 어떤 자율성 수준으로 상업화하는가 (2026-07 검증)
 - [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 스트림을
-  가로지르는 조작의 렌즈: 작업–원시동작 매트릭스, 접촉 다량 작업에 적용한 시뮬–실험실–현장
+  가로지르는 조작의 렌즈: 작업–원시동작 매트릭스, 접촉이 많은 작업에 적용한 시뮬–실험실–현장
   사다리, 그리고 방어 가능한 핵심 작업 고르기
 - 아래의 **읽기 틀** — 어느 스트림의 논문이든 평가하는 법
 

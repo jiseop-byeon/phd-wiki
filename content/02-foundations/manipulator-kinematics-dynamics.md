@@ -12,7 +12,7 @@ mastery-when: "This page is on the manipulation track's critical path — Master
 > dependency of contact-rich manipulation, so this is one of the few pages the
 > [[07-research-program/index|research program]] promotes past Working. The page itself
 > gets you to Working; Mastery needs the textbook and a simulator, named in §8.
-> **Mastery** — 매니퓰레이터 방정식과 작업 공간 다리는 접촉 다량 조작의 가장 가까운 의존
+> **Mastery** — 매니퓰레이터 방정식과 작업공간(operational space)으로 잇는 다리는 접촉이 많은 조작의 가장 가까운 의존
 > 층이므로, [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 몇 안 되는
 > 페이지다. 이 페이지 자체는 Working까지 데려다주고, Mastery는 §8의 교재와 시뮬레이터가 필요하다.
 
@@ -445,10 +445,14 @@ $$\tau = M(\theta)\,\ddot\theta_{\text{des}} + C(\theta,\dot\theta)\,\dot\theta 
 모델이 틀린 부분은 단순한 선형 제어기가 맡는다. 이것이 이 방법의 정직한 설명이다 — 성능은
 §7의 파라미터가 정확한 만큼만 좋으며, 그래서 실기계에서 날것 그대로 쓰이는 일은 드물다.
 
-### 6. 작업 공간 동역학 — 힘 제어로 가는 다리
+### 6. 작업공간(operational space) 동역학 — 힘 제어로 가는 다리
 
 여기까지는 전부 관절 공간이다. 접촉은 그렇지 않다: 접촉은 말단에서, 작업 공간에서 일어난다.
 그 변환이 이 페이지에서 가장 중요한 방정식이다.
+
+여기서 말하는 **작업 공간**은 Khatib의 *operational space* — 말단의 위치·자세를 좌표로
+삼는 공간 — 이지, 팔이 닿을 수 있는 부피를 뜻하는 *workspace*가 아니다. 이 위키는 후자를
+**작업 영역**이라 부른다.
 
 $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$에서 출발해 $v = J\dot\theta$를 미분하면,
 말단은 자기 자신의 운동 제2법칙을 따르고 그 유효 질량은
