@@ -23,7 +23,7 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 For the tasks where the deciding variable is inside the contact, hidden by the very thing doing the manipulating.*
 
 > [!note] First pass · 처음이라면
-> Read §1 — what vision cannot see, and why that is a short and specific list — then §2 on what a sensor actually transduces, then §6. §3 and §4 are for reading a specific fusion or slip-detection paper.
+> Read §1 — what vision cannot see, and why that is a short and specific list — then §2 on what a sensor actually transduces, then §6. §3 and §4 are for reading a specific fusion or slip-detection paper, and §2.5 is for when you are choosing or building a sensor rather than reading about one.
 
 ### 1. What vision cannot see
 
@@ -136,6 +136,69 @@ can claim.
 > events shorter than a camera frame. A paper claiming tactile improved a task should be
 > locating its gain in one of those two, and if it cannot, the gain is probably coming from
 > somewhere else in the system.
+
+### 2.5 How the signal is made — the transduction families
+
+Section 2 grouped sensors by what comes out, because that is what bounds the claims a paper
+can make. This section groups them by what physically changes, because that is what bounds
+what you can *build* — and because a paper's sensor choice explains failures that look like
+algorithm failures.
+
+| Family | What changes | How it is read | Strong at | Fails at |
+|---|---|---|---|---|
+| **Piezoresistive** | resistance of a doped elastomer or film under strain | Wheatstone bridge; arrays scanned row-by-column | cheapest and fastest to get working | drift, hysteresis, and noise that grows with array size |
+| **Capacitive** | capacitance of a conductor–insulator–conductor sandwich as the gap closes | a dedicated capacitance front end — a multimeter will not do it | sensitivity, and it survives being made of fabric | stray capacitance, including from the human body nearby |
+| **Piezoelectric** | charge that appears when the material is stressed (PVDF, ceramics, ferroelectric crystals) | charge amplifier | vibration, texture, the *onset* of slip | **static load — the charge leaks away**, so it reports change, not weight |
+| **Barometric** | pressure in a sealed cavity over an off-the-shelf MEMS die | the die's own digital output | a clean calibrated signal for \$30–100, because someone else solved the hard part | spatial density; each cavity is a taxel and cavities are bulky |
+| **Magnetic (Hall effect)** | position of a magnet in compliant material relative to the sensor; the Lorentz force on carriers makes a transverse voltage | Hall element, three axes per point | no wear, no electrical contact across the compliant layer | the field-to-contact map is nonlinear and not one-to-one |
+| **Acoustic** | structure-borne sound the contact itself makes | microphone or piezo element plus spectral features | events — impacts, scrapes, texture | telling you *where*, or anything about a contact that is not moving |
+| **Whisker** | deflection of a compliant beam, measured at its base | any of the above, at the root | reaching past the body, and pre-filtering by beam geometry | resolving what it touched, as opposed to that it touched |
+
+**The distinction that decides most of it: static or dynamic.** Half the families above
+measure a *state* and half measure a *change*, and the split is not a matter of degree.
+Piezoelectric charge dissipates through any real input impedance, so a piezoelectric sensor
+holding a 5 N grip reads its way back to zero; it is a slip and texture sensor that cannot
+tell you the grip force. Piezoresistive elements drift, so they report a fast press well and
+a slow one poorly. Barometric and capacitive elements hold a DC reading and can report the
+5 N indefinitely. When a paper says "with tactile feedback" and its task involves *holding*
+something, this is the first question, and it is usually answered in the hardware section
+rather than the method section.
+
+**Why magnetic sensing arrived late.** The physics is old — Hall effect readout is decades
+established — but the inverse problem is not friendly: a three-axis field reading at one
+point is a nonlinear, non-unique function of where and how hard the compliant layer was
+pressed. Fitting that by hand is unpleasant; learning it from data is routine. So this
+family became practical when learned models started doing the inversion, which is a good
+example of a *sensor* becoming viable because of progress in software.
+
+**A calibration point worth carrying.** Human spatial resolution for touch runs roughly
+2 mm at the fingertip to 30 mm across the back. The optical sensors of §2 resolve about
+0.06 mm — some thirty times finer than a fingertip — but only over a patch the size of one
+fingertip, and only where the gel is in contact. Human touch is far coarser and covers the
+entire body continuously. Which of those two numbers matters depends on the task, and a
+paper claiming "human-level tactile sensing" has usually compared one of them and not
+the other.
+
+**And the reason whole-body skin is a different problem.** Everything above is about a
+patch. Covering a robot is a scaling question, and the arithmetic is unkind. Human skin
+carries roughly 240 sensing units per cm² at the fingertip and about 60 per cm² at the palm,
+over a body surface of about 1.8 m² — that is 18,000 cm², so palm density over a whole body
+is $18{,}000 \times 60 \approx \mathbf{1.1}$ **million channels**, and fingertip density is
+4.3 million.
+
+Now try to reach that with the sensor of §2. A GelSight Mini is 76,800 pixels over
+4.32 cm², which is 17,800 channels per cm² — **74 times denser than a human fingertip** —
+but it covers 0.024% of a body. Tiling a body with them takes about **4,200 sensors**: 4,200
+cameras, 0.32 gigapixels, and 9.6 gigasamples per second at 30 Hz.
+
+So the two research directions here are not competing implementations of one idea, they are
+answers to different halves of that calculation. **Tile cheaply**: accept a coarse
+transduction — the piezoresistive or capacitive families above — and solve wiring,
+addressing and per-taxel calibration at the million-channel scale, which is the line the
+iCub skin started. **Probe cleverly**: keep very few transducers and recover a distributed
+signal by inference, which is what acoustic and impedance-style approaches are for. A
+paper's sensor count tells you which half it is working on, and its hardest problem is the
+one that half implies — bandwidth and yield for the first, inverse problems for the second.
 
 ### 3. Slip, contact state, and the things touch is uniquely for
 
@@ -366,7 +429,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 결정적 변수가 접촉 안에 있고, 하필 조작을 하고 있는 그것에 가려지는 과제들을 위한 페이지다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지 — 그다음 센서가 실제로 변환하는 것인 §2, 그다음 §6. §3·§4는 특정 융합·미끄러짐 논문을 읽을 때다.
+> 먼저 §1 — 비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지 — 그다음 센서가 실제로 변환하는 것인 §2, 그다음 §6. §3·§4는 특정 융합·미끄러짐 논문을 읽을 때이고, §2.5는 센서에 관해 읽는 것이 아니라 고르거나 만들 때다.
 
 ### 1. 비전이 볼 수 없는 것
 
@@ -472,6 +535,60 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > 물체가 탁자 위 어디에 있는지 말해 주지 못한다. 주파수는 카메라 한 프레임보다 짧은 사건을
 > 사 준다. 촉각으로 과제가 나아졌다고 주장하는 논문은 그 이득을 이 둘 중 하나에 위치시켜야
 > 하고, 그러지 못한다면 이득은 아마 시스템의 다른 곳에서 오고 있다.
+
+### 2.5 신호는 어떻게 만들어지는가 — 변환 방식의 계열
+
+2절은 센서를 나오는 출력으로 묶었다. 그것이 논문이 할 수 있는 주장을 한정하기 때문이다.
+이 절은 물리적으로 무엇이 변하는지로 묶는다. 그것이 당신이 *만들 수 있는 것*을 한정하기
+때문이고, 논문의 센서 선택이 알고리즘 실패처럼 보이는 실패를 설명해 주기 때문이다.
+
+| 계열 | 무엇이 변하나 | 어떻게 읽나 | 강한 곳 | 실패하는 곳 |
+|---|---|---|---|---|
+| **압전저항(piezoresistive)** | 변형을 받은 도핑 엘라스토머·필름의 저항 | 휘트스톤 브리지, 배열은 행–열로 훑는다 | 가장 싸고 가장 빨리 동작시킬 수 있다 | 드리프트, 이력현상, 배열이 커질수록 자라는 잡음 |
+| **정전용량(capacitive)** | 간격이 좁아질 때 도체–절연체–도체 샌드위치의 정전용량 | 전용 정전용량 프런트엔드 — 멀티미터로는 안 된다 | 감도, 그리고 천으로 만들어도 살아남는다 | 부유 용량, 근처의 사람 몸까지 포함해서 |
+| **압전(piezoelectric)** | 재료에 응력이 걸릴 때 생기는 전하 (PVDF, 세라믹, 강유전 결정) | 전하 증폭기 | 진동, 질감, 미끄러짐의 *시작* | **정적 하중 — 전하가 빠져나간다**. 무게가 아니라 변화를 보고한다 |
+| **기압(barometric)** | 기성 MEMS 다이 위 밀폐 공동의 압력 | 다이 자신의 디지털 출력 | 30~100달러로 얻는 깨끗한 보정 신호. 어려운 부분은 남이 풀어 놨다 | 공간 밀도. 공동 하나가 taxel 하나인데 공동은 부피가 크다 |
+| **자기(홀 효과)** | 유연 재료 속 자석의 센서 대비 위치. 전하에 걸린 로런츠 힘이 횡방향 전압을 만든다 | 홀 소자, 한 점당 3축 | 마모가 없고, 유연층을 가로지르는 전기적 접촉이 없다 | 자기장→접촉 사상이 비선형이고 일대일이 아니다 |
+| **음향(acoustic)** | 접촉 자체가 만드는 구조 전달음 | 마이크나 압전 소자 + 스펙트럼 특징 | 사건 — 충격, 긁힘, 질감 | *어디인지*, 그리고 움직이지 않는 접촉에 관한 것 전부 |
+| **수염(whisker)** | 유연한 보의 휨을 뿌리에서 측정 | 위의 어느 방식이든, 뿌리에서 | 몸 바깥으로 뻗는 것, 그리고 보 기하가 미리 걸러 주는 것 | 닿았다는 사실이 아니라 무엇에 닿았는지를 가려내는 것 |
+
+**대부분을 결정하는 구분: 정적인가 동적인가.** 위 계열의 절반은 *상태*를 재고 절반은
+*변화*를 재는데, 그 갈림은 정도의 문제가 아니다. 압전 전하는 실재하는 어떤 입력 임피던스로도
+빠져나가므로, 5 N으로 쥐고 있는 압전 센서는 스스로 0으로 되돌아 읽는다. 미끄러짐과 질감
+센서일 뿐 파지력을 말해 주지 못한다. 압전저항 소자는 드리프트하므로 빠른 누름은 잘, 느린
+누름은 못 보고한다. 기압식과 정전용량식은 DC 값을 유지하므로 그 5 N을 무한정 보고할 수 있다.
+논문이 "촉각 피드백을 써서"라고 쓰고 그 과제가 무언가를 *들고 있는* 일이라면, 이것이 첫
+질문이고, 답은 대개 방법 절이 아니라 하드웨어 절에 있다.
+
+**자기 방식이 늦게 도착한 이유.** 물리는 오래됐다 — 홀 효과 판독은 수십 년 확립돼 있다 —
+그런데 역문제가 만만치 않다. 한 점의 3축 자기장 값은 유연층이 어디를 얼마나 세게 눌렸는지에
+대한 비선형이고 유일하지도 않은 함수다. 그것을 손으로 맞추는 일은 괴롭고, 데이터로 배우는
+일은 일상이다. 그래서 이 계열은 학습된 모델이 역변환을 맡기 시작하면서 실용화됐다.
+*센서*가 소프트웨어의 진전 덕분에 가능해진 좋은 사례다.
+
+**들고 다닐 만한 기준점 하나.** 사람의 촉각 공간 분해능은 손끝에서 약 2 mm, 등에서 약 30 mm다.
+2절의 광학 센서는 약 0.06 mm를 분해한다 — 손끝보다 서른 배쯤 곱다 — 그러나 손끝 하나만 한
+패치 위에서만, 그것도 젤이 닿아 있는 곳에서만 그렇다. 사람의 촉각은 훨씬 거칠지만 몸 전체를
+끊김 없이 덮는다. 그 두 숫자 중 어느 쪽이 중요한지는 과제가 정하고, "사람 수준의 촉각"을
+주장하는 논문은 대개 둘 중 하나만 비교하고 나머지는 비교하지 않았다.
+
+**그리고 전신 스킨이 다른 문제인 이유.** 위의 이야기는 전부 패치 하나에 관한 것이다. 로봇을
+덮는 것은 규모의 문제이고, 산술이 야박하다. 사람 피부는 손끝에서 cm²당 대략 240개, 손바닥에서
+cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 — 즉 18,000 cm²이므로, 전신을 손바닥
+밀도로 덮으면 $18{,}000 \times 60 \approx \mathbf{1.1}$**백만 채널**이고 손끝 밀도로는 432만
+채널이다.
+
+이제 2절의 센서로 거기에 닿아 보자. GelSight Mini는 4.32 cm²에 76,800픽셀이니 cm²당
+17,800채널 — **사람 손끝보다 74배 조밀하다** — 그런데 덮는 면적은 몸의 0.024%다. 이것으로 몸을
+타일링하려면 약 **4,200개**가 필요하다: 카메라 4,200대, 0.32기가픽셀, 30 Hz에서 초당
+9.6기가샘플.
+
+그러므로 이 분야의 두 연구 방향은 한 발상의 경쟁하는 구현이 아니라, 저 계산의 서로 다른 절반에
+대한 답이다. **싸게 타일링하기**: 거친 변환 방식을 받아들이고 — 위의 압전저항이나 정전용량
+계열 — 백만 채널 규모에서 배선·주소지정·taxel별 보정을 푼다. iCub 스킨이 시작한 계보다.
+**영리하게 탐침하기**: 변환기를 아주 적게 두고 분포된 신호를 추론으로 복원한다. 음향이나
+임피던스 계열 접근이 그것을 위해 있다. 논문의 센서 개수가 어느 절반을 붙들고 있는지 알려 주고,
+가장 어려운 문제도 그 절반이 함의하는 것이다 — 앞쪽은 대역폭과 수율, 뒤쪽은 역문제.
 
 ### 3. 미끄러짐, 접촉 상태, 그리고 촉각만이 할 수 있는 일
 
