@@ -96,8 +96,9 @@ Lay the four counts out:
 - **Recall** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — of the real cracks, you caught
   two-thirds. **20 cracks were missed**, and that is the number a safety engineer cares about.
 - **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — the harmonic mean, which
-  stays low if *either* is low (an arithmetic mean would have hidden it at 0.73 vs a lopsided
-  0.9/0.5 = 0.7).
+  stays low if *either* is low (an arithmetic mean of the same two numbers is 0.73, and it would
+  have scored a lopsided precision 0.9 with recall 0.5 at 0.70 — barely lower, which is
+  exactly the hiding the harmonic mean refuses to do).
 
 The lesson to carry into every Results table: precision and recall trade against each other
 through one threshold knob, so a paper reporting only the flattering one has told you half a

@@ -351,7 +351,8 @@ maths obliges with an infinite answer.
 The fix is to stop inverting the small singular values exactly — replace $1/\sigma$ with
 $\sigma/(\sigma^2 + \lambda)$, which is bounded for every $\sigma$ and equals $1/\sigma$
 when $\sigma \gg \lambda$. That is **damped least squares**, and it is the same $\lambda$
-as the trust parameter in [[02-foundations/optimization|4. Optimization §3.5]]. So the chain
+as the trust parameter you will meet on [[02-foundations/optimization|4. Optimization §3.5]] —
+a forward pointer, not something this page depends on. So the chain
 runs: singular values → pseudo-inverse → what happens when one of them vanishes → damping →
 Levenberg–Marquardt. Four names, one idea.
 
@@ -753,7 +754,8 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
 $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma \gg \lambda$일
 때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이고,
-[[02-foundations/optimization|4. 최적화 §3.5]]의 신뢰 파라미터와 같은 $\lambda$다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
+[[02-foundations/optimization|4. 최적화 §3.5]]에서 만나게 될 신뢰 파라미터와 같은 $\lambda$다 —
+이 페이지가 기대는 것이 아니라 앞을 가리키는 표지다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
 → 그중 하나가 사라지면 벌어지는 일 → 감쇠 → Levenberg–Marquardt. 이름 넷, 발상 하나.
 
 ### 5. 제어이론과의 연결
