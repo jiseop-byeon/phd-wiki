@@ -26,6 +26,50 @@ on action prediction — IK is the classical face of the same problem. **Analyti
 (closed-form, e.g. 6R with spherical wrist) enumerates all branches exactly; when geometry
 doesn't permit it, go numerical.
 
+<svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="one target reached by two joint solutions, and the average of the two overshooting it">
+  <g stroke="currentColor" stroke-width="1" opacity="0.25">
+    <line x1="40" y1="190" x2="250" y2="190"/><line x1="60" y1="200" x2="60" y2="30"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <polyline points="60,190 160,190 160,90"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.45">
+    <polyline points="60,190 60,90 160,90"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="6 4" opacity="0.7">
+    <polyline points="60,190 131,119 201,49"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="60" cy="190" r="4.5"/>
+    <circle cx="160" cy="190" r="3.5" opacity="0.85"/>
+    <circle cx="60" cy="90" r="3.5" opacity="0.45"/>
+    <circle cx="131" cy="119" r="3" opacity="0.7"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="160" cy="90" r="6"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.7">
+    <line x1="196" y1="44" x2="206" y2="54"/>
+    <line x1="196" y1="54" x2="206" y2="44"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="176" y="196">solution 1 &#183; (0&#176;, +90&#176;)</text>
+    <text x="24" y="78" opacity="0.85">solution 2 &#183; (90&#176;, &#8722;90&#176;)</text>
+    <text x="214" y="46" opacity="0.85">lands at (1.41, 1.41)</text>
+    <text x="176" y="94">target (1, 1)</text>
+    <text x="286" y="140" opacity="0.85">average &#183; (45&#176;, 0&#176;)</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.5" fill="none">
+    <line x1="283" y1="136" x2="140" y2="112"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">Two joint pairs put the tip on the same target &#8212; that is what &#8220;several solutions&#8221; means.</text>
+    <text x="24" y="226">Average them and the arm straightens to (1.41, 1.41), missing by 0.59. The mean of two</text>
+    <text x="24" y="240">valid answers is not an answer, which is the classical face of why generative policies</text>
+    <text x="24" y="254">beat regression on multimodal action prediction.</text>
+  </g>
+</svg>
+
 ### 2. Numerical IK = Newton-Raphson on the pose error
 
 Iterate:
@@ -90,6 +134,50 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
 [[01-canonical-papers/notes/4-vla/diffusion-policy|생성형 정책]]이 행동 예측에서 회귀를
 이기는 이유다 — IK는 같은 문제의 고전적 얼굴이다. **해석적 IK**(닫힌 형태, 예: 구면
 손목의 6R)는 모든 가지를 정확히 열거한다; 기하가 허락하지 않으면 수치로 간다.
+
+<svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="같은 목표에 도달하는 두 관절 해와, 그 평균이 목표를 지나쳐 버리는 것">
+  <g stroke="currentColor" stroke-width="1" opacity="0.25">
+    <line x1="40" y1="190" x2="250" y2="190"/><line x1="60" y1="200" x2="60" y2="30"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <polyline points="60,190 160,190 160,90"/>
+  </g>
+  <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.45">
+    <polyline points="60,190 60,90 160,90"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="6 4" opacity="0.7">
+    <polyline points="60,190 131,119 201,49"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="60" cy="190" r="4.5"/>
+    <circle cx="160" cy="190" r="3.5" opacity="0.85"/>
+    <circle cx="60" cy="90" r="3.5" opacity="0.45"/>
+    <circle cx="131" cy="119" r="3" opacity="0.7"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="160" cy="90" r="6"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.7">
+    <line x1="196" y1="44" x2="206" y2="54"/>
+    <line x1="196" y1="54" x2="206" y2="44"/>
+  </g>
+  <g font-size="10.5" fill="currentColor">
+    <text x="176" y="196">해 1 &#183; (0&#176;, +90&#176;)</text>
+    <text x="24" y="78" opacity="0.85">해 2 &#183; (90&#176;, &#8722;90&#176;)</text>
+    <text x="214" y="46" opacity="0.85">(1.41, 1.41)에 도착</text>
+    <text x="176" y="94">목표 (1, 1)</text>
+    <text x="286" y="140" opacity="0.85">두 해의 평균 &#183; (45&#176;, 0&#176;)</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.5" fill="none">
+    <line x1="283" y1="136" x2="140" y2="112"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">관절 각 두 쌍이 끝점을 같은 목표에 놓는다 &#8212; &#8220;해가 여러 개&#8221;라는 말의 뜻이 이것이다.</text>
+    <text x="24" y="226">평균을 내면 팔이 펴져 (1.41, 1.41)에 가고 0.59만큼 빗나간다. 유효한 두 답의 평균은</text>
+    <text x="24" y="240">답이 아니며, 다봉적 행동 예측에서 생성형 정책이 회귀를 이기는 이유의</text>
+    <text x="24" y="254">고전적 얼굴이 바로 이것이다.</text>
+  </g>
+</svg>
 
 ### 2. 수치 IK = 자세 오차에 대한 뉴턴-랩슨
 

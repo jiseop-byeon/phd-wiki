@@ -29,6 +29,54 @@ The correction is the premise of everything on this page:
 > **Traversability is not a geometric predicate. It is a robot-specific, velocity-conditioned
 > affordance learned from the robot's own experience of driving somewhere.**
 
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="the same three terrain patches read two ways: an occupancy grid and a learned affordance">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="40" y="14">one scene, three patches</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="115" y="32" font-size="11" text-anchor="middle">tall grass</text>
+    <text x="280" y="32" font-size="11" text-anchor="middle">smooth concrete</text>
+    <text x="445" y="32" font-size="11" text-anchor="middle">rubble pile</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="52">What geometry says &#8212; occupancy grid</text>
+  </g>
+  <g>
+    <rect x="40" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="205" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="370" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  </g>
+  <g fill="currentColor">
+    <text x="115" y="81" font-size="11" text-anchor="middle">obstacle</text>
+    <text x="280" y="81" font-size="11" text-anchor="middle">free</text>
+    <text x="445" y="81" font-size="11" text-anchor="middle">obstacle</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="122">What driving experience says &#8212; this robot, this speed</text>
+  </g>
+  <g>
+    <rect x="40" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="205" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="370" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  </g>
+  <g fill="currentColor">
+    <text x="115" y="151" font-size="11" text-anchor="middle">passable</text>
+    <text x="280" y="151" font-size="11" text-anchor="middle">preferred</text>
+    <text x="445" y="151" font-size="11" text-anchor="middle">obstacle</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.75" stroke-dasharray="4 3">
+    <path d="M32,76 C14,88 14,116 32,128"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="196" y="106" text-anchor="end">this cell flips</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="178">&#8220;A lidar return is an obstacle&#8221; is the rule that stops the robot in grass.</text>
+    <text x="40" y="193">Cost learned from consequences flips that cell. And the bottom row moves when the</text>
+    <text x="40" y="208">robot or the commanded speed changes &#8212; the top row never does.</text>
+  </g>
+</svg>
+
 BADGR is the canonical statement. It trains a predictive model on **self-supervised
 off-policy real-world data** — no simulator, no human labels — with events like collision
 and bumpiness auto-labelled from onboard sensors, using only RGB and GPS. The result is a
@@ -226,6 +274,54 @@ includes construction machinery is the nearest existing bridge between this page
 
 > **Traversability는 기하학적 술어가 아니다. 로봇마다 다르고 속도에 조건부이며, 로봇 자신이
 > 거기를 주행한 경험에서 학습되는 어포던스다.**
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="같은 지형 세 곳을 점유 격자와 학습된 어포던스 두 방식으로 읽은 것">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="40" y="14">같은 장면, 세 지형</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="115" y="32" font-size="11" text-anchor="middle">키 큰 풀</text>
+    <text x="280" y="32" font-size="11" text-anchor="middle">매끈한 콘크리트</text>
+    <text x="445" y="32" font-size="11" text-anchor="middle">잔해 더미</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="52">기하가 말하는 것 &#8212; 점유 격자</text>
+  </g>
+  <g>
+    <rect x="40" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="205" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="370" y="58" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  </g>
+  <g fill="currentColor">
+    <text x="115" y="81" font-size="11" text-anchor="middle">장애물</text>
+    <text x="280" y="81" font-size="11" text-anchor="middle">자유 공간</text>
+    <text x="445" y="81" font-size="11" text-anchor="middle">장애물</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="122">주행 경험이 말하는 것 &#8212; 이 로봇, 이 속도</text>
+  </g>
+  <g>
+    <rect x="40" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="205" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+    <rect x="370" y="128" width="150" height="36" rx="3" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  </g>
+  <g fill="currentColor">
+    <text x="115" y="151" font-size="11" text-anchor="middle">통과 가능</text>
+    <text x="280" y="151" font-size="11" text-anchor="middle">선호</text>
+    <text x="445" y="151" font-size="11" text-anchor="middle">장애물</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.75" stroke-dasharray="4 3">
+    <path d="M32,76 C14,88 14,116 32,128"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="196" y="106" text-anchor="end">이 칸이 뒤집힌다</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="40" y="178">&#8220;라이다 반사는 곧 장애물&#8221;이라는 규칙이 풀밭에서 로봇을 세운다.</text>
+    <text x="40" y="193">결과에서 배운 비용은 그 칸을 뒤집는다. 그리고 아래 줄은 로봇이나 명령 속도가</text>
+    <text x="40" y="208">바뀌면 함께 바뀐다 &#8212; 위 줄은 결코 바뀌지 않는다.</text>
+  </g>
+</svg>
 
 BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터**로 예측 모델을 학습한다 —
 시뮬레이터도, 사람의 라벨도 없이 — 충돌이나 덜컹거림 같은 사건을 온보드 센서로 자동 라벨링하고,
