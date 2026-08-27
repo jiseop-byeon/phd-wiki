@@ -266,7 +266,7 @@ four-year plan becomes a six-year one.
 #### 2편 — 내비게이션과 모바일 조작
 
 건설 로봇의 내비게이션, base placement, 또는 과제 조건부 접근. 내비게이션 기둥에 기여한다.
-arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 모바일 베이스가 작업 공간에
+arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 모바일 베이스가 작업 구역에
 도달하고 조작 가능한 자세를 유지할 수 있어야 한다.
 
 - 기대는 곳: [[04-robotics/state-estimation-slam|상태 추정·SLAM]], [[04-robotics/geometric-perception-calibration|기하 인식]], [[05-construction-robotics/site-perception|현장 인식]].

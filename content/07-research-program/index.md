@@ -239,7 +239,7 @@ recognize when it starts to matter. Most of this wiki is deliberately Literacy.
 
 도메인은 장식이 아니다. 건설은 공장 로보틱스가 대체로 설계로 없애 버린 조작 문제들을
 만들어낸다: 비정형이며 변하는 기하, 불규칙하고 무거운 부재, 변형되는 재료, 분진과 가림,
-불확실한 접촉, 작업 공간 안의 동료 작업자, 높은 안전 요구, 적은 고정 지그, 그리고 같은
+불확실한 접촉, 작업 구역 안의 동료 작업자, 높은 안전 요구, 적은 고정 지그, 그리고 같은
 작업의 두 사례 사이에서도 달라지는 조건. 이 조건들을 견디는 기여는 점진적이라고 일축하기
 어렵다.
 
@@ -294,7 +294,7 @@ recognize when it starts to matter. Most of this wiki is deliberately Literacy.
   </g>
   <defs><marker id="ar7k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="330" y="126">작업 공간에 도달시킨다</text>
+    <text x="330" y="126">작업 구역에 도달시킨다</text>
     <text x="330" y="144">사람 곁에서의 배치를 가능하게 한다</text>
     <text x="30" y="176">두 보조 기둥은 안쪽을 가리킨다: 병렬적인 novelty 주장이 아니라, 조작 기여가 충족해야 하는</text>
     <text x="30" y="192">조건이다. 백분율은 요구 사항이 아니라 계획의 기준선이다 &#8212; 중요한 것은 매니퓰레이션이</text>

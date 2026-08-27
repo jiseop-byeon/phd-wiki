@@ -53,7 +53,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - 표현: **명시적**(최소 좌표, 특이점 가능) vs **암시적**(고차원에 묻고 제약 추가 —
   $R^\top R = I$인 회전 행렬처럼). MR은 일관되게 암시적을 고른다 — 현대 로봇 학습과 같은
   선택이다.
-- **작업 공간 vs C-space**: 도구가 사는 곳 vs 로봇이 사는 곳; 둘 사이의 사상이
+- **작업 영역(workspace) vs C-space**: 도구가 사는 곳 vs 로봇이 사는 곳; 둘 사이의 사상이
   기구학이다(4~6장).
 - 제약: **홀로노믹**(C-space 차원을 줄임) vs **비홀로노믹**(위치가 아니라 속도를 제한 —
   자동차는 어느 자세든 도달하지만 옆으로 미끄러지지는 못한다).

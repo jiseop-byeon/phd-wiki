@@ -175,7 +175,7 @@ $v_i = -\hat\omega_i \times q_i$ → 지수들 → 곱. 코드로는 Modern Robo
 
 **위키 연결**: FK는 모든 시뮬레이터·디지털 트윈([[05-construction-robotics/index|건설]])
 안의 결정론적 핵심이고, 관절 청크를 출력하는 VLA([[01-canonical-papers/notes/4-vla/pi0|π0]])를
-작업 공간에서 해석하는 데 쓰인다.
+작업공간(operational space)에서 해석하는 데 쓰인다.
 
 ### 스스로 점검
 

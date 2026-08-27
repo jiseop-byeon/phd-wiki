@@ -44,7 +44,7 @@ proposals get filtered through.
 
 **핵심 질문**: C-space를 통과하는 충돌 없는 경로를 어떻게 찾는가?
 
-- **프레이밍**: 작업 공간의 장애물이 **C-space 장애물**이 된다 — 계획은
+- **프레이밍**: 작업 영역(workspace)의 장애물이 **C-space 장애물**이 된다 — 계획은
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
 - **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱)를
