@@ -125,6 +125,14 @@ sections actually report:
 
 $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta = \frac{b}{2\sqrt{km}}$$
 
+Those two expressions are not separate facts to memorize — they are what you get by matching
+coefficients. Divide the physical polynomial by $m$: $ms^2 + bs + k = m\big(s^2 + \tfrac{b}{m}s + \tfrac{k}{m}\big)$.
+Line that up with $s^2 + 2\zeta\omega_n s + \omega_n^2$ and read off $\omega_n^2 = k/m$ and
+$2\zeta\omega_n = b/m$, so $\zeta = b/(2\sqrt{km})$. That is the whole derivation, and it is
+worth doing once because it shows $\zeta$ and $\omega_n$ are a *reparameterization*, not new
+physics: the canonical form exists so that every second-order system, whatever it is made of,
+can be described by one number for speed and one for ringing.
+
 - **$\omega_n$** (natural frequency) sets *speed*; **$\zeta$** (damping ratio) sets
   *ringing*: $\zeta<1$ oscillates, $\zeta=1$ is critically damped, $\zeta>1$ is sluggish.
 - Rules of thumb you can apply to any plot in a paper: 2% **settling time**
@@ -518,6 +526,14 @@ $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 예고 없이 둘을 오가�
 모든 2차 응답은 두 숫자로 기술되고, 실험 섹션이 실제로 보고하는 것이 바로 이 둘이다:
 
 $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta = \frac{b}{2\sqrt{km}}$$
+
+저 두 식은 따로 외울 사실이 아니라 계수를 맞춰 보면 나오는 것이다. 물리 다항식을 $m$으로
+나누자: $ms^2 + bs + k = m\big(s^2 + \tfrac{b}{m}s + \tfrac{k}{m}\big)$. 이것을
+$s^2 + 2\zeta\omega_n s + \omega_n^2$과 나란히 놓고 읽으면 $\omega_n^2 = k/m$이고
+$2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게 전부이고, 한 번 해 볼
+값어치가 있다. $\zeta$와 $\omega_n$이 새로운 물리가 아니라 *다시 매개변수화한 것*임을 보여
+주기 때문이다. 정준형이 존재하는 이유는, 무엇으로 만들어졌든 모든 2차 시스템을 속도를 나타내는
+숫자 하나와 울림을 나타내는 숫자 하나로 서술하기 위해서다.
 
 - **$\omega_n$**(고유 진동수)이 *속도*를, **$\zeta$**(감쇠비)가 *울림*을 정한다:
   $\zeta<1$은 진동, $\zeta=1$은 임계 감쇠, $\zeta>1$은 굼뜸.

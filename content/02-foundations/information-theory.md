@@ -135,6 +135,13 @@ $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
   $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
   Against a standard normal prior ($\mu_2=0, \sigma_2=1$) this is the exact regularizer
   term coded in [[01-canonical-papers/notes/6-diffusion/vae|VAE]] losses.
+  Read the three terms rather than memorizing them: $\log(\sigma_2/\sigma_1)$ charges for
+  having the wrong *width*, the fraction charges for the mismatch in spread and in mean —
+  both measured in units of the **target's** variance, which is why $\sigma_2$ sits in the
+  denominator and why the penalty is asymmetric — and the $-\tfrac12$ is the constant that
+  makes the whole thing vanish when the two distributions coincide. Set
+  $\sigma_1 = \sigma_2$ and $\mu_1 = \mu_2$: the first term is $0$, the fraction is
+  $\tfrac12$, and the total is $0$, as it must be.
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
   - Reverse KL (used in *variational inference* — approximating an intractable distribution
@@ -347,6 +354,11 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   $$D_{KL} = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
   표준 정규 사전($\mu_2=0, \sigma_2=1$)에 대한 이 식이 [[01-canonical-papers/notes/6-diffusion/vae|VAE]]
   손실에 코딩되는 정규화 항 그 자체다.
+  외우지 말고 세 항을 읽어라. $\log(\sigma_2/\sigma_1)$은 *폭*이 틀린 값을 청구하고, 분수는
+  퍼짐과 평균이 어긋난 값을 청구한다 — 둘 다 **목표 분포의** 분산을 단위로 재는데, $\sigma_2$가
+  분모에 앉는 이유이고 이 벌점이 비대칭인 이유다 — 그리고 $-\tfrac12$은 두 분포가 일치할 때
+  전체가 0이 되게 만드는 상수다. $\sigma_1 = \sigma_2$, $\mu_1 = \mu_2$를 넣어 보면 첫 항이
+  $0$, 분수가 $\tfrac12$, 합이 $0$이다. 그래야만 하는 대로.
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
   - Reverse KL(*변분 추론*에서 사용 — 계산 불가능한 분포를, 다루기 쉬운 분포 가족 중
