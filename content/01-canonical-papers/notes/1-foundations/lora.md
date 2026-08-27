@@ -39,6 +39,40 @@ By 2021, the pretrain-finetune paradigm ([[01-canonical-papers/notes/1-foundatio
 - Forward pass: $h = W_0 x + BAx$; $A$ initialized Gaussian, $B$ zero — so training starts from the pretrained model exactly.
 - **Merge at deployment**: $W = W_0 + BA$ — no extra latency, unlike adapters. Task switching = swapping small LoRA weights.
 - Applied to attention projections ($W_q$, $W_v$ suffice in the paper).
+<svg viewBox="0 0 560 224" style="max-width:100%;height:auto" role="img" aria-label="full fine-tuning trains one large weight-update matrix while LoRA freezes it and trains two thin matrices whose product replaces it">
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="20">full fine-tuning</text><text x="285" y="20">LoRA</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.2">
+    <rect x="60" y="34" width="110" height="110" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.2">
+    <rect x="285" y="34" width="100" height="100" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.2">
+    <rect x="416" y="34" width="18" height="100" rx="2"/>
+    <rect x="452" y="76" width="100" height="18" rx="2"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="115" y="86">&#916;W</text>
+    <text x="335" y="80">W&#8320;</text>
+    <text x="401" y="90">+</text>
+    <text x="443" y="90">&#215;</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="115" y="102">d &#215; k, all trained</text>
+    <text x="335" y="96">frozen</text>
+    <text x="425" y="148">d &#215; r</text>
+    <text x="502" y="112">r &#215; k</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="176">The product of the two thin matrices stands in for the large one. Counting a single matrix with</text>
+    <text x="24" y="190">d = k = 4096 and r = 8: 4096&#178; = 16.8M trained values against 2 &#183; 4096 &#183; 8 = 65,536 &#8212; about 256&#215;.</text>
+    <text x="24" y="204">The ratio a paper reports depends on which matrices got an adapter and at what r, which is why</text>
+    <text x="24" y="218">the two figures above disagree; read the box before quoting either.</text>
+  </g>
+</svg>
+
 
 ### Results
 
@@ -78,6 +112,40 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 - 순전파: $h = W_0 x + BAx$; $A$는 가우시안, $B$는 0으로 초기화 — 학습이 정확히 사전학습 모델에서 출발한다.
 - **배포 시 병합**: $W = W_0 + BA$ — 어댑터와 달리 추가 지연이 없다. 과제 전환 = 작은 LoRA 가중치 교체.
 - 어텐션 투영에 적용(논문에서는 $W_q$, $W_v$면 충분).
+<svg viewBox="0 0 560 224" style="max-width:100%;height:auto" role="img" aria-label="전체 파인튜닝은 큰 가중치 갱신 행렬 하나를 학습하고 LoRA는 그것을 얼린 뒤 곱이 그것을 대신하는 얇은 행렬 둘을 학습한다">
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="20">전체 파인튜닝</text><text x="285" y="20">LoRA</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.2">
+    <rect x="60" y="34" width="110" height="110" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.2">
+    <rect x="285" y="34" width="100" height="100" rx="3"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.2">
+    <rect x="416" y="34" width="18" height="100" rx="2"/>
+    <rect x="452" y="76" width="100" height="18" rx="2"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="115" y="86">&#916;W</text>
+    <text x="335" y="80">W&#8320;</text>
+    <text x="401" y="90">+</text>
+    <text x="443" y="90">&#215;</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="115" y="102">d &#215; k, 전부 학습</text>
+    <text x="335" y="96">얼림</text>
+    <text x="425" y="148">d &#215; r</text>
+    <text x="502" y="112">r &#215; k</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="176">얇은 두 행렬의 곱이 큰 행렬을 대신한다. 행렬 하나만 놓고 세어 보면 d = k = 4096, r = 8일 때</text>
+    <text x="24" y="190">4096&#178; = 1,678만 개 대 2 &#183; 4096 &#183; 8 = 65,536개 &#8212; 약 256배다.</text>
+    <text x="24" y="204">논문이 보고하는 비율은 어느 행렬에 얼마의 r로 붙였느냐에 따라 달라지고, 위의 두 수치가</text>
+    <text x="24" y="218">갈리는 이유가 그것이다. 어느 쪽이든 인용하기 전에 그 상자를 읽어라.</text>
+  </g>
+</svg>
+
 
 ### 결과
 

@@ -38,6 +38,39 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 - Architecture details (depth vs. width) matter far less than raw scale.
 - Larger models are more **sample-efficient**; Kaplan's allocation advice: grow N fast, D slowly — and stop training well before convergence.
 
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="a power law drawn as a straight line on log-log axes, and the two competing ways to spend a compute budget on parameters versus tokens">
+  <g font-size="11" fill="currentColor">
+    <text x="46" y="16">a power law is a straight line</text><text x="326" y="16">how to spend the budget</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55" fill="none">
+    <polyline points="50,32 50,160 250,160"/>
+    <polyline points="330,32 330,160 500,160"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.2" fill="none">
+    <line x1="50" y1="58" x2="250" y2="131"/>
+    <line x1="330" y1="160" x2="462" y2="40"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.55" stroke-dasharray="6 4">
+    <line x1="330" y1="160" x2="496" y2="118"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="62" y="46">slope = the exponent, &#8722;0.076</text>
+    <text x="466" y="38">Chinchilla</text>
+    <text x="500" y="121">Kaplan</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.75">
+    <text x="50" y="178">log N (parameters)</text><text x="12" y="28">log L</text>
+    <text x="330" y="178">log N</text><text x="288" y="28">log D (tokens)</text>
+    <text x="50" y="194">7 decades of N &#8594; loss falls about 3.4&#215;</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="216">Left: that is all &#8220;power law&#8221; means &#8212; log against log gives a line whose slope is the exponent.</text>
+    <text x="24" y="230">Right: both rays obey the same law and disagree about where to spend. Kaplan grows N fast and D</text>
+    <text x="24" y="244">slowly; Chinchilla grows them together, about 20 tokens per parameter. Same curve, different</text>
+    <text x="24" y="258">recipe &#8212; which is why Gopher-scale models were undertrained rather than mis-measured.</text>
+  </g>
+</svg>
+
 ### The Chinchilla correction (Hoffmann 2022)
 
 - With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**.
@@ -75,6 +108,39 @@ Turned frontier training into an engineering discipline: every serious lab now f
 - 대략 $L(N) \propto N^{-0.076}$, $L(D) \propto D^{-0.095}$, $L(C_{\min}) \propto C_{\min}^{-0.050}$(계산 *최적* 배분 기준. 배치 크기를 고정하면 지수가 $\approx 0.057$) — 규모 전반에서 놀랍도록 안정적.
 - 구조 세부(깊이 vs 폭)는 순수 규모에 비해 훨씬 덜 중요하다.
 - 큰 모델일수록 **샘플 효율**이 좋다; Kaplan의 배분 조언은 "N을 빨리, D를 천천히 키우고, 수렴 훨씬 전에 학습을 멈춰라"였다.
+
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="로그-로그 축에서 직선으로 그려진 거듭제곱 법칙과, 연산 예산을 파라미터와 토큰에 나누는 두 가지 방식">
+  <g font-size="11" fill="currentColor">
+    <text x="46" y="16">거듭제곱 법칙 = 직선</text><text x="326" y="16">예산을 어디에 쓰는가</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55" fill="none">
+    <polyline points="50,32 50,160 250,160"/>
+    <polyline points="330,32 330,160 500,160"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.2" fill="none">
+    <line x1="50" y1="58" x2="250" y2="131"/>
+    <line x1="330" y1="160" x2="462" y2="40"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.55" stroke-dasharray="6 4">
+    <line x1="330" y1="160" x2="496" y2="118"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="62" y="46">기울기 = 지수, &#8722;0.076</text>
+    <text x="466" y="38">Chinchilla</text>
+    <text x="500" y="121">Kaplan</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.75">
+    <text x="50" y="178">log N (파라미터)</text><text x="12" y="28">log L</text>
+    <text x="330" y="178">log N</text><text x="288" y="28">log D (토큰)</text>
+    <text x="50" y="194">N이 7자릿수 &#8594; 손실 약 3.4배 감소</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="216">왼쪽: &#8220;거듭제곱 법칙&#8221;의 뜻은 이것이 전부다 &#8212; 로그 대 로그가 직선이고 기울기가 지수다.</text>
+    <text x="24" y="230">오른쪽: 두 방향 모두 같은 법칙을 따르면서 예산을 어디에 쓸지에서 갈린다. Kaplan은 N을 빨리</text>
+    <text x="24" y="244">D를 천천히, Chinchilla는 둘을 같은 비율로(파라미터당 약 20 토큰). 같은 곡선, 다른 처방 &#8212;</text>
+    <text x="24" y="258">Gopher 규모 모델들이 잘못 측정된 것이 아니라 덜 학습된 상태였던 이유가 그것이다.</text>
+  </g>
+</svg>
 
 ### Chinchilla의 교정 (Hoffmann 2022)
 

@@ -49,6 +49,39 @@ separates them immediately, because the two cases press *different shapes* into 
 That comparison is the entire argument for the sensor, and it is why the paper's claim is
 about **what is measured** rather than about how accurately.
 
+<svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="a peg seated flat and a peg cocked a few degrees press different shapes into the gel while a taxel pad reads the same force for both">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="155" y="18">seated flat</text><text x="415" y="18">cocked</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1" stroke-opacity="0.45">
+    <rect x="55" y="98" width="200" height="30" rx="2"/>
+    <rect x="315" y="98" width="200" height="30" rx="2"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.3">
+    <rect x="135" y="28" width="40" height="80" rx="2"/>
+    <g transform="rotate(5 415 108)"><rect x="395" y="28" width="40" height="80" rx="2"/></g>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="55,98 135,98 135,110 175,110 175,98 255,98"/>
+    <polyline points="315,98 395,98 396,102 434,116 435,98 515,98"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="155" y="146">gel surface = height map</text><text x="415" y="146">gel surface = height map</text>
+    <text x="155" y="160">symmetric</text><text x="415" y="160">deeper on one edge</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1" stroke-opacity="0.5">
+    <rect x="55" y="174" width="460" height="26" rx="3"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="285" y="191">taxel pad: about 3 N in both &#8212; cannot separate them</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="216">The force is the same; the shape is not. Photometric stereo reads the shape, which is why</text>
+    <text x="24" y="228">the sensor's claim is about *what is measured* rather than about accuracy.</text>
+    <text x="24" y="240">(Tilt exaggerated to be visible &#8212; the angle that matters is around two degrees.)</text>
+  </g>
+</svg>
+
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract contains no numbers.** Its strongest statement is qualitative: the sensor measures geometry "with very high spatial resolution", in contrast to traditional tactile sensors that measure contact force. Every micron figure and sensing-area dimension quoted for GelSight comes from the body or from secondary sources — check there before citing one.
 
@@ -97,6 +130,39 @@ about **what is measured** rather than about how accurately.
 읽힌다. 높이 지도는 그 둘을 즉시 가른다. 두 경우가 젤에 *다른 형상*을 눌러 넣기 때문이다.
 이 비교 하나가 이 센서를 정당화하는 논증 전부이고, 이 논문의 주장이 정확도가 아니라
 **무엇을 재는가**에 관한 것인 이유다.
+
+<svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="반듯이 앉은 peg와 몇 도 기울어진 peg가 젤에 서로 다른 형상을 눌러 넣지만 택셀 패드는 둘 다 같은 힘으로 읽는다">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="155" y="18">반듯이 앉은 peg</text><text x="415" y="18">기울어진 peg</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1" stroke-opacity="0.45">
+    <rect x="55" y="98" width="200" height="30" rx="2"/>
+    <rect x="315" y="98" width="200" height="30" rx="2"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.3">
+    <rect x="135" y="28" width="40" height="80" rx="2"/>
+    <g transform="rotate(5 415 108)"><rect x="395" y="28" width="40" height="80" rx="2"/></g>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="55,98 135,98 135,110 175,110 175,98 255,98"/>
+    <polyline points="315,98 395,98 396,102 434,116 435,98 515,98"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="155" y="146">젤 표면 = 높이 지도</text><text x="415" y="146">젤 표면 = 높이 지도</text>
+    <text x="155" y="160">좌우 대칭</text><text x="415" y="160">한쪽 모서리가 더 깊다</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1" stroke-opacity="0.5">
+    <rect x="55" y="174" width="460" height="26" rx="3"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle">
+    <text x="285" y="191">택셀 패드: 둘 다 약 3 N &#8212; 구분할 수 없다</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="216">힘은 같고 형상은 다르다. 광도 스테레오가 읽는 것이 그 형상이며, 이 센서의 주장이</text>
+    <text x="24" y="228">정확도가 아니라 *무엇을 재는가*에 관한 것인 이유가 이것이다.</text>
+    <text x="24" y="240">(기울기는 보이도록 과장했다 &#8212; 문제가 되는 각도는 2도쯤이다.)</text>
+  </g>
+</svg>
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 하나도 없다.** 가장 강한 진술이 정성적이다: 접촉력을 재는 전통적 촉각 센서와 달리 이 센서는 "매우 높은 공간 해상도로" 기하를 잰다. 인용되는 마이크론 수치와 감지 면적은 전부 본문이나 2차 출처에서 온 것이니, 인용 전에 거기서 확인하라.
