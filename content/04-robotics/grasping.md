@@ -352,9 +352,6 @@ grasps are and what would make your answer wrong.
 - W. Zhou, D. Held, "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity," *CoRL 2022*, PMLR vol. 205 (published 2023 — cite the conference year, not the proceedings year) ([arXiv:2211.01500](https://arxiv.org/abs/2211.01500))
 - X. Markenscoff, L. Ni, C. H. Papadimitriou, "The Geometry of Grasping," *IJRR*, vol. 9, no. 1, pp. 61–74, 1990 — the source for the frictional finger counts in §3, stated in its own abstract.
 - C. Ferrari and J. F. Canny, "Planning optimal grasps," ICRA **1992**, pp. 2290–2295 — the $\epsilon$ metric. Note the *Springer Handbook of Robotics* bibliography misprints the year as 1986; the correct year is 1992.
-- A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — the taxonomy of manipulation modes a grasp result sits inside.
-- N. Chavan Dafle, A. Rodriguez, R. Paolini, B. Tang, S. Srinivasa, M. Erdmann, M. T. Mason, et al., "Extrinsic dexterity: In-hand manipulation with external forces," *ICRA 2014*, pp. 1578–1585. DOI 10.1109/ICRA.2014.6907062
-- W. Zhou, D. Held, "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity," *CoRL 2022*, PMLR vol. 205 (published 2023 — cite the conference year, not the proceedings year) ([arXiv:2211.01500](https://arxiv.org/abs/2211.01500))
 - A. Bicchi and V. Kumar, "Robotic grasping and contact: a review," ICRA 2000, pp. 348–353 — the survey to read first. It discusses the frictionless counts only, not the frictional one.
 
 **Learned**
@@ -676,6 +673,9 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 - H.-S. Fang, C. Wang, H. Fang, et al., "AnyGrasp: Robust and Efficient Grasp Perception in Spatial and Temporal Domains," *IEEE T-RO*, vol. 39, no. 5, pp. 3929–3945, 2023 ([arXiv:2212.08333](https://arxiv.org/abs/2212.08333)).
 - M. Sundermeyer, A. Mousavian, R. Triebel, D. Fox, "Contact-GraspNet: Efficient 6-DoF Grasp Generation in Cluttered Scenes," ICRA 2021, pp. 13438–13444 ([arXiv:2103.14127](https://arxiv.org/abs/2103.14127)).
 - A. Zeng, P. Florence, J. Tompson, et al., "Transporter Networks: Rearranging the Visual World for Robotic Manipulation," CoRL 2020, PMLR vol. 155, pp. 726–747 ([arXiv:2010.14406](https://arxiv.org/abs/2010.14406)). PMLR 판본은 저자 11명, arXiv는 12명이다.
+- A. M. Okamura, N. Smaby, M. R. Cutkosky, "An overview of dexterous manipulation," *ICRA 2000*, pp. 255–262. DOI 10.1109/ROBOT.2000.844067 — 파지 결과가 놓이는 조작 양식의 분류 체계.
+- N. Chavan Dafle, A. Rodriguez, R. Paolini, B. Tang, S. Srinivasa, M. Erdmann, M. T. Mason, et al., "Extrinsic dexterity: In-hand manipulation with external forces," *ICRA 2014*, pp. 1578–1585. DOI 10.1109/ICRA.2014.6907062
+- W. Zhou, D. Held, "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity," *CoRL 2022*, PMLR vol. 205 (2023년 출간 — 학회 연도로 인용하고 proceedings 연도로 인용하지 마라) ([arXiv:2211.01500](https://arxiv.org/abs/2211.01500))
 
 §5에 인용한 모든 수치는 각 논문 자신의 초록에서 가져온 것이다.
 
