@@ -169,10 +169,10 @@ wiki has hit it twice: a humanoid rough-terrain paper cited as published when it
 Both are worth reading. Neither has been refereed.
 
 > [!tip] Check whether the preprint grew up
-> Both fields are **author-supplied** — arXiv does not update them for you, and plenty of
-> published papers never get one. Still, they are the cheapest check available: the
-> **Comments** field usually says "Accepted to CoRL 2024" or similar, and a `journal-ref`
-> appears once an author adds it.
+> An arXiv listing carries two fields worth a glance. The **Comments** field usually says
+> "Accepted to CoRL 2024" or similar, and a **`journal-ref`** appears once the paper is
+> published. Both are **author-supplied** — arXiv does not update them for you, and plenty
+> of published papers never get either one. They are still the cheapest check available.
 > A two-year-old preprint with no such note has probably not been accepted anywhere — which is
 > information, though not proof. And when a conference version exists, **its numbers may differ
 > from the preprint's**; quote the version you actually read and name it.
@@ -334,7 +334,7 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 4. **최소화하는 것**: 전문가가 고른 구간의 음의 로그 확률을 11개 차원에 대해 합한 것.
 5. **학습 vs 추론**: 학습에서만; 추론에서는 차원마다 구간을 하나 고른다.
 
-3번 질문이 방금 값을 했다. "기댓값이 시연자의 상태 위에서 잡힌다"는 것이 곧 복합 오차
+3번 질문이 방금 제 몫을 했다. "기댓값이 시연자의 상태 위에서 잡힌다"는 것이 곧 복합 오차
 문제다([[02-foundations/rl-basics|7. RL 기초 §6]]): 정책이 시연된 상태에서 벗어나는 순간,
 학습에 쓴 손실은 지금 있는 곳에 대해 아무 말도 해주지 않는다. 논문이 알려줄 필요가 없었다.
 수식이 알려줬다.
@@ -377,9 +377,10 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 ★을 달고 있으면서 arXiv 전용인 ExT. 둘 다 읽을 값어치가 있다. 둘 다 심사받지 않았다.
 
 > [!tip] 프리프린트가 자랐는지 확인하라
-> 두 필드 모두 **저자가 직접 채우는** 것이다 — arXiv가 대신 갱신해 주지 않고, 출판되고도
-> 끝내 없는 논문이 흔하다. 그래도 가장 싼 확인 수단이다: **Comments** 필드에 보통
-> "Accepted to CoRL 2024" 같은 문구가 붙고, 저자가 넣으면 `journal-ref`가 나타난다. 2년 된 프리프린트에 그런 표시가
+> arXiv 목록에는 한 번 볼 값어치가 있는 필드가 둘 있다. **Comments**에는 보통
+> "Accepted to CoRL 2024" 같은 문구가 붙고, 출판되고 나면 **`journal-ref`**가 생긴다.
+> 둘 다 **저자가 직접 채우는** 것이다 — arXiv가 대신 갱신해 주지 않고, 출판되고도 끝내
+> 둘 다 비어 있는 논문이 흔하다. 그래도 가장 싼 확인 수단이다. 2년 된 프리프린트에 그런 표시가
 > 없다면 어디에도 통과하지 못했을 가능성이 크다 — 증명은 아니지만 정보는 된다. 그리고 학회
 > 판본이 존재하면 **그 숫자가 프리프린트와 다를 수 있다.** 실제로 읽은 판본을 인용하고 어느
 > 것인지 밝혀라.
