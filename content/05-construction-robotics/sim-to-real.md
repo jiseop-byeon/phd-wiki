@@ -52,6 +52,47 @@ that affect the policy were represented, varied, or adapted**.
 > the contact patch the model is failing to represent. Treat "we transferred from
 > simulation" as a claim whose strength depends on which side of that line the task sits.
 
+<svg viewBox="0 0 560 282" style="max-width:100%;height:auto" role="img" aria-label="a parameter gap where randomization spans the real curve, next to a contact gap where every simulated curve is smooth and the real one has a jump">
+  <g font-size="11" fill="currentColor">
+    <text x="50" y="16">a parameter problem</text><text x="330" y="16">a model problem</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.75">
+    <text x="50" y="29">dynamics &#183; sensing &#183; task distribution &#183; implementation</text><text x="330" y="29">contact &#8212; friction against slip velocity</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.5" fill="none">
+    <polyline points="50,40 50,150 250,150"/>
+    <line x1="330" y1="105" x2="530" y2="105"/>
+    <line x1="430" y1="44" x2="430" y2="154"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.4" stroke-dasharray="5 4">
+    <path d="M50,132 C110,106 180,84 250,72"/>
+    <path d="M50,144 C110,122 180,102 250,92"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <path d="M50,138 C110,114 180,93 250,82"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.45" stroke-dasharray="5 4">
+    <path d="M338,74 C412,74 448,136 522,136"/>
+    <path d="M338,86 C412,86 448,124 522,124"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <polyline points="338,66 428,66"/>
+    <polyline points="432,144 522,144"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="62" y="58">the real system lies inside the spread</text>
+    <text x="330" y="176">every simulated curve is smooth</text>
+    <text x="330" y="190">the real one jumps at the stick&#8211;slip transition</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">Left: the physics is right and a number is wrong, so a distribution over that number covers the</text>
+    <text x="24" y="228">real system. Right: stick becomes slip discontinuously, and a regularized rigid-body contact</text>
+    <text x="24" y="244">passes smoothly through exactly there. Randomizing the friction coefficient slides those curves</text>
+    <text x="24" y="260">up and down; it does not give them a shape they cannot take. That is the whole reason a</text>
+    <text x="24" y="276">locomotion transfer and an insertion transfer are not comparable evidence.</text>
+  </g>
+</svg>
+
 ### 2. Main strategies
 
 - **System identification** fits simulator parameters to measured trajectories. It makes
@@ -173,6 +214,46 @@ outside the training range.
 > 미끄러지지만 않으면 되기 때문이다. 반면 삽입·드릴링·패널 안착은 그 모델이 표현하지 못하는 접촉
 > 패치로 *정의되는* 과제다. "시뮬레이션에서 전이했다"는 주장의 강도는 과제가 이 선의 어느 쪽에
 > 있느냐에 달려 있다.
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="랜덤화가 실제 곡선을 덮는 파라미터 격차와, 시뮬레이션 곡선은 모두 매끄러운데 실제는 도약하는 접촉 격차">
+  <g font-size="11" fill="currentColor">
+    <text x="50" y="16">파라미터 문제</text><text x="330" y="16">모델 문제</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.75">
+    <text x="50" y="29">동역학 &#183; 센싱 &#183; 과제 분포 &#183; 구현</text><text x="330" y="29">접촉 &#8212; 미끄럼 속도에 대한 마찰력</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.5" fill="none">
+    <polyline points="50,40 50,150 250,150"/>
+    <line x1="330" y1="105" x2="530" y2="105"/>
+    <line x1="430" y1="44" x2="430" y2="154"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.4" stroke-dasharray="5 4">
+    <path d="M50,132 C110,106 180,84 250,72"/>
+    <path d="M50,144 C110,122 180,102 250,92"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <path d="M50,138 C110,114 180,93 250,82"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.45" stroke-dasharray="5 4">
+    <path d="M338,74 C412,74 448,136 522,136"/>
+    <path d="M338,86 C412,86 448,124 522,124"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <polyline points="338,66 428,66"/>
+    <polyline points="432,144 522,144"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="62" y="58">실제는 이 퍼짐 안에 있다</text>
+    <text x="330" y="176">시뮬레이션 곡선은 모두 매끄럽다</text>
+    <text x="330" y="190">실제는 고착&#8211;미끄럼 천이에서 도약한다</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="212">왼쪽: 물리는 맞고 숫자가 틀렸으니, 그 숫자에 대한 분포가 실제 시스템을 덮는다. 오른쪽: 고착이</text>
+    <text x="24" y="228">미끄럼으로 넘어가는 순간이 불연속인데, 정규화된 강체 접촉은 하필 그 자리를 매끄럽게 지난다.</text>
+    <text x="24" y="244">마찰 계수를 흔들면 저 곡선들이 위아래로 움직일 뿐, 그들이 가질 수 없는 형태를 만들어 주지는</text>
+    <text x="24" y="260">않는다. 보행 전이와 삽입 전이가 비교 가능한 증거가 아닌 이유가 이것 하나다.</text>
+  </g>
+</svg>
+
 
 ### 2. 주요 전략
 

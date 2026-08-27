@@ -27,6 +27,37 @@ Scientific writing aligns a claim with evidence and makes its boundary inspectab
 
 Do not let the introduction promise general capability while experiments test one narrow condition.
 
+<svg viewBox="0 0 560 226" style="max-width:100%;height:auto" role="img" aria-label="a claim box drawn inside an evidence box, and the same two boxes with the claim spilling outside the evidence">
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="16">defensible</text><text x="310" y="16">the common failure</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.7">
+    <rect x="40" y="30" width="210" height="104" rx="4"/>
+    <rect x="310" y="46" width="150" height="72" rx="4"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.4">
+    <rect x="70" y="52" width="150" height="60" rx="3"/>
+    <rect x="340" y="30" width="200" height="104" rx="3" fill-opacity="0.16"/>
+  </g>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="145" y="46">what the evidence covers</text>
+    <text x="145" y="86">what the paper claims</text>
+    <text x="385" y="86">what the evidence covers</text>
+    <text x="440" y="152">what the paper claims</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none">
+    <line x1="440" y1="144" x2="440" y2="136"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="310" y="170">this overhang is exactly what gets attacked</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="188">A reviewer is not measuring how large the result is. They are measuring whether one box sits</text>
+    <text x="24" y="204">inside the other. Every &#8220;the claim is too strong&#8221; review is a report of the shaded band, and the</text>
+    <text x="24" y="220">cheapest fix is almost never a new experiment &#8212; it is narrowing the sentence until it fits.</text>
+  </g>
+</svg>
+
 ### 2. Claim–method–evidence sentences
 
 Prefer: “Under held-out material layouts, our policy improved closed-loop success from X to Y over matched BC, with Z trials per condition.”
@@ -124,6 +155,37 @@ Paper, appendix, code, data, model, configuration, logs, and video should refer 
 | Limitations | 유효성의 경계와 미해결 위험 |
 
 Introduction이 일반적 능력을 약속하고 실험은 좁은 조건 하나만 시험하게 두지 말라.
+
+<svg viewBox="0 0 560 226" style="max-width:100%;height:auto" role="img" aria-label="증거 상자 안에 들어 있는 주장 상자와, 주장이 증거 밖으로 삐져나온 같은 두 상자">
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="16">방어 가능한 경우</text><text x="310" y="16">흔한 실패</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.7">
+    <rect x="40" y="30" width="210" height="104" rx="4"/>
+    <rect x="310" y="46" width="150" height="72" rx="4"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.4">
+    <rect x="70" y="52" width="150" height="60" rx="3"/>
+    <rect x="340" y="30" width="200" height="104" rx="3" fill-opacity="0.16"/>
+  </g>
+  <g font-size="10" fill="currentColor" text-anchor="middle">
+    <text x="145" y="46">증거가 덮는 범위</text>
+    <text x="145" y="86">논문이 하는 주장</text>
+    <text x="385" y="86">증거가 덮는 범위</text>
+    <text x="440" y="152">논문이 하는 주장</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none">
+    <line x1="440" y1="144" x2="440" y2="136"/>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="310" y="170">이 삐져나온 폭이 정확히 공격받는 지점이다</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="188">심사자가 재는 것은 결과가 얼마나 큰가가 아니다. 두 상자 중 하나가 다른 하나 안에 들어가는가다.</text>
+    <text x="24" y="204">&#8220;주장이 과하다&#8221;는 모든 심사평은 저 음영 띠에 대한 보고이고, 가장 싼 교정은 새 실험이</text>
+    <text x="24" y="220">거의 아니다 &#8212; 문장이 맞을 때까지 좁히는 것이다.</text>
+  </g>
+</svg>
 
 ### 2. 주장–방법–증거 문장
 

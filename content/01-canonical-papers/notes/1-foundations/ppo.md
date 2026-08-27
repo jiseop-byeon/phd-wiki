@@ -36,6 +36,46 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 
 - The clipped surrogate (derived in [[02-foundations/rl-basics|RL 기초 §4]]) is $L^{CLIP}=\mathbb{E}_t[\min(r_t(\theta)A_t,\ \operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)A_t)]$ with ratio $r_t(\theta)=\pi_\theta(a_t|s_t)/\pi_{\theta_{old}}(a_t|s_t)$; typical $\epsilon=0.2$.
 - The $\min$ makes clipping one-sided in the pessimistic direction: the objective is a lower bound on the unclipped surrogate, so unfavorable ratio changes are never hidden.
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="the clipped objective plotted against the probability ratio, flat above one plus epsilon when the advantage is positive and flat below one minus epsilon when it is negative">
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="18">advantage &gt; 0</text><text x="330" y="18">advantage &lt; 0</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07">
+    <rect x="110" y="30" width="100" height="120" rx="2"/>
+    <rect x="380" y="30" width="100" height="120" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55" fill="none">
+    <polyline points="60,30 60,150 260,150"/>
+    <polyline points="330,30 330,150 530,150"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <polyline points="60,136.2 210,53.8 260,53.8"/>
+    <polyline points="330,53.8 380,53.8 530,136.2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4" stroke-dasharray="3 3">
+    <line x1="160" y1="30" x2="160" y2="150"/><line x1="430" y1="30" x2="430" y2="150"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.75" text-anchor="middle">
+    <text x="110" y="164">1&#8722;&#949;</text><text x="160" y="164">1</text><text x="210" y="164">1+&#949;</text>
+    <text x="380" y="164">1&#8722;&#949;</text><text x="430" y="164">1</text><text x="480" y="164">1+&#949;</text>
+    <text x="160" y="178">trust band 1 &#177; &#949;</text><text x="430" y="178">trust band 1 &#177; &#949;</text>
+    <text x="160" y="192">probability ratio r</text><text x="430" y="192">probability ratio r</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="214" y="48">flat above 1+&#949;</text>
+    <text x="334" y="48">flat below 1&#8722;&#949;</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.7">
+    <text x="24" y="26">L&#7580;&#7551;&#7615;&#7510;</text><text x="294" y="26">L&#7580;&#7551;&#7615;&#7510;</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="214">With a positive advantage the objective stops rising once r passes 1 + &#949;; with a negative one</text>
+    <text x="24" y="230">it stops falling once r drops below 1 &#8722; &#949;. Each case is clipped on exactly one side &#8212; the side</text>
+    <text x="24" y="246">that would carry the policy away from the data that produced it &#8212; while the min leaves the</text>
+    <text x="24" y="262">unfavourable direction ungated. That is what &#8220;removes the incentive&#8221; means. Drawn with &#949; = 0.2.</text>
+  </g>
+</svg>
+
 - **This buys data reuse**: collect a batch, then run *multiple epochs* of minibatch SGD on it — the practical speedup over one-step vanilla PG.
 - The paper also proposes an adaptive-KL-penalty variant; clipping won empirically and is what "PPO" means in practice.
 - The full training loss adds a value-function error term and an entropy bonus, optimized jointly when actor and critic share parameters.
@@ -83,6 +123,46 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 
 - clipped surrogate([[02-foundations/rl-basics|RL 기초 §4]]에서 유도)는 $L^{CLIP}=\mathbb{E}_t[\min(r_t(\theta)A_t,\ \operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)A_t)]$, 확률비는 $r_t(\theta)=\pi_\theta(a_t|s_t)/\pi_{\theta_{old}}(a_t|s_t)$; 통상 $\epsilon=0.2$.
 - $\min$이 clip을 비관적 방향으로 한쪽만 작동하게 만든다: 목적함수는 clip 없는 surrogate의 하한이 되어, 불리한 확률비 변화는 절대 가려지지 않는다.
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="확률비에 대한 clip된 목적함수 그래프. advantage가 양수면 1+엡실론 위에서 평평하고 음수면 1-엡실론 아래에서 평평하다">
+  <g font-size="11" fill="currentColor">
+    <text x="60" y="18">advantage &gt; 0</text><text x="330" y="18">advantage &lt; 0</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.07">
+    <rect x="110" y="30" width="100" height="120" rx="2"/>
+    <rect x="380" y="30" width="100" height="120" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55" fill="none">
+    <polyline points="60,30 60,150 260,150"/>
+    <polyline points="330,30 330,150 530,150"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2.4" fill="none">
+    <polyline points="60,136.2 210,53.8 260,53.8"/>
+    <polyline points="330,53.8 380,53.8 530,136.2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4" stroke-dasharray="3 3">
+    <line x1="160" y1="30" x2="160" y2="150"/><line x1="430" y1="30" x2="430" y2="150"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.75" text-anchor="middle">
+    <text x="110" y="164">1&#8722;&#949;</text><text x="160" y="164">1</text><text x="210" y="164">1+&#949;</text>
+    <text x="380" y="164">1&#8722;&#949;</text><text x="430" y="164">1</text><text x="480" y="164">1+&#949;</text>
+    <text x="160" y="178">신뢰 구간 1 &#177; &#949;</text><text x="430" y="178">신뢰 구간 1 &#177; &#949;</text>
+    <text x="160" y="192">확률비 r</text><text x="430" y="192">확률비 r</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.85">
+    <text x="214" y="48">1+&#949; 위로는 평평</text>
+    <text x="334" y="48">1&#8722;&#949; 아래는 평평</text>
+  </g>
+  <g font-size="9.5" fill="currentColor" opacity="0.7">
+    <text x="24" y="26">L&#7580;&#7551;&#7615;&#7510;</text><text x="294" y="26">L&#7580;&#7551;&#7615;&#7510;</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="214">advantage가 양수면 r이 1 + &#949;를 넘는 순간 목적함수가 더 오르지 않고, 음수면 r이 1 &#8722; &#949; 아래로</text>
+    <text x="24" y="230">내려가는 순간 더 내려가지 않는다. 두 경우 모두 잘리는 쪽은 정확히 한쪽 &#8212; 정책을 그 데이터에서</text>
+    <text x="24" y="246">멀어지게 하는 쪽 &#8212; 뿐이고, min이 불리한 방향은 가리지 않고 남겨 둔다.</text>
+    <text x="24" y="262">clip이 변화를 제약하는 것이 아니라 과도하게 변할 *유인*을 없앤다는 말의 뜻이 이것이다. &#949; = 0.2.</text>
+  </g>
+</svg>
+
 - **이것이 데이터 재사용을 산다**: 배치를 모은 뒤 그 위에서 *여러 epoch*의 minibatch SGD를 돌린다 — 1스텝 순수 정책경사 대비 실질적인 효율 향상.
 - 논문은 적응형 KL 페널티 변형도 제안하지만, 실험에서 clip이 이겼고 실무에서 "PPO"는 clip 버전을 뜻한다.
 - 전체 학습 손실에는 가치함수 오차 항과 entropy 보너스가 추가되며, actor와 critic이 파라미터를 공유할 때 함께 최적화된다.
