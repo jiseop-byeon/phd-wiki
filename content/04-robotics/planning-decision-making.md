@@ -145,6 +145,7 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 | Trajectory optimization | shooting, transcription, collocation | Optimize states/inputs under constraints |
 | Task planning | symbolic operators and goals | Choose discrete actions |
 | TAMP | task and motion planning | Couple symbolic choices to geometric feasibility |
+| Feedback / potential field | attractive-to-goal plus repulsive-from-obstacle fields, navigation functions | Produce an action for *every* state rather than one path — cheap and reactive, but a plain potential field has local minima that trap the robot short of the goal |
 | Uncertain planning | MDP, POMDP, belief space | Choose actions while accounting for uncertain state/outcomes |
 
 **Probabilistic completeness** means the probability of finding a solution approaches one with increasing computation when a robust solution exists under the method's assumptions. It does not mean fast success. **Asymptotic optimality** concerns convergence toward an optimum with increasing samples, not the quality available under a real-time budget.
@@ -383,6 +384,7 @@ cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은
 | 궤적 최적화 | shooting, transcription, collocation | 제약 아래 상태/입력 최적화 |
 | 과제 계획 | 기호적 연산자와 목표 | 이산 행동 선택 |
 | TAMP | task and motion planning | 기호적 선택을 기하학적 실행 가능성과 결합 |
+| 피드백 / 퍼텐셜장 | 목표로 끌고 장애물에서 미는 장, 내비게이션 함수 | 경로 하나가 아니라 *모든* 상태에 대해 행동을 만든다 — 값싸고 반응적이지만, 단순한 퍼텐셜장에는 로봇을 목표 앞에서 가두는 국소 최솟값이 있다 |
 | 불확실성 계획 | MDP, POMDP, belief space | 불확실한 상태/결과 아래 행동 선택 |
 
 **Probabilistic completeness**는 방법의 가정 아래 robust한 해가 존재할 때 계산이 늘수록

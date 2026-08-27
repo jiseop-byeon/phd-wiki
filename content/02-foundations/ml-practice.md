@@ -104,6 +104,37 @@ through one threshold knob, so a paper reporting only the flattering one has tol
 sentence. And in construction the asymmetry is real — a false alarm costs an inspection, a
 missed crack can cost a structure.
 
+**ROC and AUC — and the one property that makes them dangerous.** Sweep the threshold and
+each setting gives a *true positive rate* $\text{TPR} = TP/(TP+FN)$ (that is recall) and a
+*false positive rate* $\text{FPR} = FP/(FP+TN)$. Plotting TPR against FPR traces the **ROC
+curve**, and the area under it is the **AUC**. AUC has an exact meaning worth carrying: it
+is the probability that a randomly chosen positive is scored above a randomly chosen
+negative. Score three cracked panels $0.9, 0.8, 0.6$ and four sound ones
+$0.7, 0.5, 0.4, 0.2$; of the $3 \times 4 = 12$ pairs, 11 are ordered correctly, so
+$\text{AUC} = 11/12 = 0.92$ — no threshold involved.
+
+That threshold-independence is why AUC is reported, and the base-rate independence hiding
+behind it is why it misleads. The detector above sits at $\text{TPR} = 40/60 = 0.667$ and
+$\text{FPR} = 10/940 = 0.011$. Move the same detector to a better-built site where only
+**0.6%** of panels are cracked instead of 6%, and out of 1,000 panels it now yields
+$TP = 4.0$, $FP = 10.6$:
+
+| | 6% cracked | 0.6% cracked |
+|---|---|---|
+| TPR | 0.667 | 0.667 — unchanged |
+| FPR | 0.011 | 0.011 — unchanged |
+| ROC point | identical | identical |
+| **Precision** | **0.80** | **0.27** |
+
+The ROC curve and the AUC do not move at all, while precision collapses by a factor of
+three. **ROC and AUC are computed from the columns of the confusion matrix and never see the
+class balance**; precision is computed across the columns and sees nothing else. So an AUC
+measured on a balanced benchmark tells you almost nothing about how a system behaves in a
+deployment where positives are rare — the situation in
+[[04-robotics/human-intent-prediction|23. Intent prediction §5]], and in every alarm system
+on a site. When a paper reports AUC, ask for precision at a stated recall, on the deployment
+base rate.
+
 - Read metrics adversarially: success rate on *what* distribution, of *how many* trials,
   with *what* variance? 9 successes in 10 trials has a wide confidence interval — report
   the counts and the uncertainty, not just "90%".
@@ -266,6 +297,34 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
 모든 Results 표에 들고 갈 교훈: 정밀도와 재현율은 문턱값 하나로 서로 맞바꾸는 값이므로,
 유리한 쪽만 보고한 논문은 문장의 절반만 말한 것이다. 그리고 건설에서는 이 비대칭이 실제다 —
 오경보는 점검 한 번을 낭비하지만, 놓친 균열은 구조물을 대가로 할 수 있다.
+
+**ROC와 AUC — 그리고 이 둘을 위험하게 만드는 성질 하나.** 문턱값을 훑으면 각 설정이
+*참양성률* $\text{TPR} = TP/(TP+FN)$(즉 재현율)과 *거짓양성률*
+$\text{FPR} = FP/(FP+TN)$을 준다. TPR을 FPR에 대해 그린 것이 **ROC 곡선**이고 그 아래 넓이가
+**AUC**다. AUC에는 들고 다닐 만한 정확한 뜻이 있다. *무작위로 고른 양성이 무작위로 고른 음성보다
+높은 점수를 받을 확률*이다. 균열 있는 패널 셋에 $0.9, 0.8, 0.6$, 멀쩡한 넷에
+$0.7, 0.5, 0.4, 0.2$를 매겼다고 하자. $3 \times 4 = 12$쌍 중 11쌍이 옳게 정렬되므로
+$\text{AUC} = 11/12 = 0.92$다 — 문턱값이 개입하지 않는다.
+
+그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는
+이유다. 위의 검출기는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은
+검출기를 더 잘 지어진 현장, 균열이 6%가 아니라 **0.6%** 수준인 곳으로 옮기면 패널 1,000장에서
+$TP = 4.0$, $FP = 10.6$이 된다.
+
+| | 균열 6% | 균열 0.6% |
+|---|---|---|
+| TPR | 0.667 | 0.667 — 그대로 |
+| FPR | 0.011 | 0.011 — 그대로 |
+| ROC 점 | 동일 | 동일 |
+| **정밀도** | **0.80** | **0.27** |
+
+ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무너진다. **ROC와 AUC는 혼동행렬의 각
+열 안에서 계산되므로 클래스 균형을 아예 보지 못하고**, 정밀도는 열을 가로질러 계산되므로 그것만
+본다. 그러므로 균형 잡힌 벤치마크에서 잰 AUC는 양성이 드문 현장에서 시스템이 어떻게 굴지에
+대해 거의 아무것도 말해 주지 않는다 —
+[[04-robotics/human-intent-prediction|23. 의도 예측 §5]]의 상황이고, 현장의 모든 경보
+시스템의 상황이다. 논문이 AUC를 보고하면, 배포 기저율 위에서 명시된 재현율에 대한 정밀도를
+요구하라.
 
 - 지표는 적대적으로 읽어라: *어떤* 분포에서, *몇 번의* 시행으로, *분산은* 얼마인 success
   rate인가? 10회 중 9회 성공은 신뢰구간이 넓다 — "90%"만이 아니라 횟수와 불확실성을

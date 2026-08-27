@@ -292,6 +292,69 @@ where each concept appears in the papers of this wiki.
   eigenvectors = directions of maximal variance = right singular vectors of $X$; project.
   A classical ancestor of learned representations.
 
+### 4.5 The pseudo-inverse — what $J^\dagger$ means
+
+The symbol $A^\dagger$ appears all over the robotics track — $J^\dagger$ for inverse
+kinematics, $J^\dagger$ again in operational-space control — and it is the object that
+connects the SVD above to every solver in this wiki. It exists because most matrices you
+meet are not square, so $A^{-1}$ is not available.
+
+**When is there anything to invert?** $A^\top A$ is invertible exactly when $A$'s columns
+are linearly independent. One line shows it: if $A^\top A x = 0$ then
+$x^\top A^\top A x = \lVert Ax \rVert^2 = 0$, so $Ax = 0$, so $x = 0$ by independence.
+
+**Two formulas, and which one you get depends on the shape.**
+
+| Shape | Pseudo-inverse | It is a | What it computes |
+|---|---|---|---|
+| Tall, independent columns ($m > n$) | $A^\dagger = (A^\top A)^{-1}A^\top$ | left inverse, $A^\dagger A = I$ | the least-squares solution of an *overdetermined* system |
+| Wide, independent rows ($m < n$) | $A^\dagger = A^\top (AA^\top)^{-1}$ | right inverse, $AA^\dagger = I$ | the *minimum-norm* solution of an *underdetermined* system |
+| Square and invertible | both | the inverse | $A^{-1}$ — the two formulas collapse to it |
+
+Those two rows are two different robotics situations. Tall is more measurements than
+unknowns: calibration, bundle adjustment, fitting a plane to a point cloud. Wide is more
+joints than task dimensions: a redundant arm, where infinitely many joint velocities produce
+the tool motion you asked for and you need a rule to pick one.
+
+**Worked — the minimum-norm rule, on a redundant arm.** Take a 3-link planar arm with unit
+links at $\theta = (0°, 90°, 0°)$. Its Jacobian mapping joint rates to tool velocity is
+$2 \times 3$ — wide, hence redundant:
+
+$$J = \begin{bmatrix} -2 & -2 & -1 \\ 1 & 0 & 0 \end{bmatrix}, \qquad JJ^\top = \begin{bmatrix} 9 & -2 \\ -2 & 1 \end{bmatrix}, \qquad \det JJ^\top = 5$$
+
+$$J^\dagger = J^\top (JJ^\top)^{-1} = \begin{bmatrix} 0 & 1 \\ -0.4 & -0.8 \\ -0.2 & -0.4 \end{bmatrix}$$
+
+Ask the tool to move straight up at 1 m/s, $v = (0, 1)$. Then
+$\dot\theta = J^\dagger v = (1,\, -0.8,\, -0.4)$, with $\lVert\dot\theta\rVert = 1.342$.
+
+Now find the redundancy. $J$'s null space is spanned by $n = (0,\, 0.447,\, -0.894)$ — check
+$Jn = 0$. So $\dot\theta + \alpha n$ produces **exactly the same tool velocity** for any
+$\alpha$, and its norm is $\sqrt{1.8 + \alpha^2}$: at $\alpha = 1$ it is 1.673, at
+$\alpha = -1$ also 1.673. Every alternative is longer. That is the whole content of
+"pseudo-inverse": among the infinitely many joint motions that do the job, it returns the
+shortest one, and the null space is the freedom left over — which
+[[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] spends on joint limits and
+obstacle avoidance.
+
+**The SVD view, and why $J^\dagger$ explodes.** Writing $A = U\Sigma V^\top$ from §4, the
+pseudo-inverse is
+
+$$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag}(1/\sigma_1,\, \ldots,\, 1/\sigma_r,\, 0,\, \ldots)$$
+
+— invert the nonzero singular values, leave the zeros alone. This is the definition that
+works for *every* matrix, including rank-deficient ones, and the two formulas above are
+special cases of it. It also explains the failure mode: near a singular configuration one
+$\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity blows up in
+that one direction. The arm is being asked to move in a direction it cannot move, and the
+maths obliges with an infinite answer.
+
+The fix is to stop inverting the small singular values exactly — replace $1/\sigma$ with
+$\sigma/(\sigma^2 + \lambda)$, which is bounded for every $\sigma$ and equals $1/\sigma$
+when $\sigma \gg \lambda$. That is **damped least squares**, and it is the same $\lambda$
+as the trust parameter in [[02-foundations/optimization|4. Optimization §3.5]]. So the chain
+runs: singular values → pseudo-inverse → what happens when one of them vanishes → damping →
+Levenberg–Marquardt. Four names, one idea.
+
 ### 5. The control-theory connection
 
 Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
@@ -634,6 +697,64 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **PCA 네 줄 요약**: 데이터 $X$를 중심화; 공분산 $C = \frac1n X^\top X$; 그 상위
   고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 학습된 표현의 고전적
   조상이다.
+
+### 4.5 유사역행렬 — $J^\dagger$가 무슨 뜻인가
+
+기호 $A^\dagger$는 로보틱스 트랙 곳곳에 나온다 — 역기구학의 $J^\dagger$, 작업공간 제어의
+$J^\dagger$ — 그리고 위의 SVD와 이 위키의 모든 솔버를 잇는 대상이다. 마주치는 행렬 대부분이
+정사각이 아니어서 $A^{-1}$을 쓸 수 없기 때문에 존재한다.
+
+**애초에 뒤집을 것이 있기는 한가?** $A^\top A$는 정확히 $A$의 열이 선형독립일 때 역을 갖는다.
+한 줄이면 보인다. $A^\top A x = 0$이면 $x^\top A^\top A x = \lVert Ax \rVert^2 = 0$이므로
+$Ax = 0$이고, 독립성에 의해 $x = 0$이다.
+
+**공식이 둘이고, 어느 쪽을 얻는지는 모양이 정한다.**
+
+| 모양 | 유사역행렬 | 정체 | 무엇을 계산하는가 |
+|---|---|---|---|
+| 키 크고 열이 독립 ($m > n$) | $A^\dagger = (A^\top A)^{-1}A^\top$ | 왼쪽 역원, $A^\dagger A = I$ | *과결정* 계의 최소자승해 |
+| 넓고 행이 독립 ($m < n$) | $A^\dagger = A^\top (AA^\top)^{-1}$ | 오른쪽 역원, $AA^\dagger = I$ | *부족결정* 계의 *최소 노름* 해 |
+| 정사각이고 가역 | 둘 다 | 역행렬 | $A^{-1}$ — 두 공식이 여기로 무너진다 |
+
+그 두 행이 서로 다른 두 로보틱스 상황이다. 키 큰 쪽은 미지수보다 측정이 많은 경우 — 보정,
+번들 조정, 점군에 평면 맞추기. 넓은 쪽은 과제 차원보다 관절이 많은 경우 — 여유자유도 팔이고,
+요청한 도구 운동을 만드는 관절 속도가 무한히 많으므로 하나를 고르는 규칙이 필요하다.
+
+**계산 — 여유자유도 팔에서의 최소 노름 규칙.** 단위 길이 링크 셋짜리 평면 팔을
+$\theta = (0°, 90°, 0°)$에 두자. 관절 속도를 도구 속도로 보내는 야코비는 $2 \times 3$이다 —
+넓고, 따라서 여유자유도가 있다.
+
+$$J = \begin{bmatrix} -2 & -2 & -1 \\ 1 & 0 & 0 \end{bmatrix}, \qquad JJ^\top = \begin{bmatrix} 9 & -2 \\ -2 & 1 \end{bmatrix}, \qquad \det JJ^\top = 5$$
+
+$$J^\dagger = J^\top (JJ^\top)^{-1} = \begin{bmatrix} 0 & 1 \\ -0.4 & -0.8 \\ -0.2 & -0.4 \end{bmatrix}$$
+
+도구를 위로 1 m/s로 올리라고 하자, 즉 $v = (0, 1)$. 그러면
+$\dot\theta = J^\dagger v = (1,\, -0.8,\, -0.4)$이고 $\lVert\dot\theta\rVert = 1.342$다.
+
+이제 여유자유도를 찾자. $J$의 영공간은 $n = (0,\, 0.447,\, -0.894)$가 친다 — $Jn = 0$을
+확인하라. 그러므로 $\dot\theta + \alpha n$은 어떤 $\alpha$에 대해서도 **정확히 같은 도구
+속도**를 만들고, 그 노름은 $\sqrt{1.8 + \alpha^2}$다. $\alpha = 1$이면 1.673, $\alpha = -1$
+이어도 1.673. 모든 대안이 더 길다. "유사역행렬"의 내용이 그것으로 전부다. 일을 해내는 무한히
+많은 관절 운동 중 가장 짧은 것을 돌려주고, 영공간은 남은 자유다 —
+[[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]이 그것을 관절 한계와 장애물
+회피에 쓴다.
+
+**SVD의 관점, 그리고 $J^\dagger$가 폭발하는 이유.** §4에서 $A = U\Sigma V^\top$로 쓰면
+유사역행렬은
+
+$$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag}(1/\sigma_1,\, \ldots,\, 1/\sigma_r,\, 0,\, \ldots)$$
+
+이다 — 0이 아닌 특이값만 뒤집고 0은 그대로 둔다. 이것이 계수가 모자란 것을 포함해 *모든*
+행렬에서 통하는 정의이고, 위의 두 공식은 그 특수한 경우다. 그리고 실패 방식도 설명한다.
+특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
+관절 속도가 그 한 방향으로 폭발한다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이고,
+수학은 무한대라는 답으로 응한다.
+
+해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
+$\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma \gg \lambda$일
+때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이고,
+[[02-foundations/optimization|4. 최적화 §3.5]]의 신뢰 파라미터와 같은 $\lambda$다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
+→ 그중 하나가 사라지면 벌어지는 일 → 감쇠 → Levenberg–Marquardt. 이름 넷, 발상 하나.
 
 ### 5. 제어이론과의 연결
 

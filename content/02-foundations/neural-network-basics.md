@@ -159,6 +159,12 @@ These are not concepts to master here — just labels, so the word does not stop
 | **frozen** | parameters deliberately not updated |
 | **logits** | raw output scores before they are turned into probabilities |
 | **softmax** | the function that turns scores into probabilities ([[02-foundations/engineering-math\|0.5 §10]]) |
+| **tokenizer** | the step that cuts raw input into tokens — a text tokenizer splits words into sub-word pieces, a vision one cuts an image into patches or maps it to a learned codebook. It is a *choice*, and two models with different tokenizers are not comparable per token |
+| **autoregressive** | producing output one token at a time, each conditioned on the ones already produced. The reason a language model's output length costs time linearly |
+| **language model** | a network trained to predict the next token over a large text corpus. That single objective is what the VLM and VLA track builds on — the "L" in VLM |
+| **autoencoder** | a network trained to reproduce its own input through a narrow middle, so the middle becomes a compressed representation. *Masked* autoencoders hide part of the input and reconstruct it; *variational* ones make the middle a distribution |
+| **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] is the variant that adds no inference cost, which is why it displaced the others |
+| **activation** | the nonlinearity between layers. **ReLU** ($\max(0,x)$) is the default; **GELU** and **SiLU/Swish** are smooth variants used in transformers. Without one, stacked layers collapse to a single matrix (§1) |
 
 With these, the worked attention example on
 [[02-foundations/linear-algebra|1. Linear Algebra §1]] — "$Q = XW_Q$ where $X$ is $T$ token
@@ -335,6 +341,12 @@ flowchart LR
 | **frozen(얼림)** | 의도적으로 갱신하지 않는 파라미터 |
 | **로짓(logits)** | 확률로 바뀌기 전의 날 점수 |
 | **소프트맥스** | 점수를 확률로 바꾸는 함수 ([[02-foundations/engineering-math\|0.5 §10]]) |
+| **토크나이저(tokenizer)** | 날 입력을 토큰으로 자르는 단계 — 텍스트 토크나이저는 단어를 부분 단어로 쪼개고, 비전 쪽은 이미지를 패치로 자르거나 학습된 코드북으로 보낸다. 이것은 *선택*이고, 토크나이저가 다른 두 모델은 토큰 단위로 비교되지 않는다 |
+| **자기회귀(autoregressive)** | 이미 만든 토큰들에 조건부로 한 번에 한 토큰씩 출력을 만드는 것. 언어 모델의 출력 길이가 시간을 선형으로 먹는 이유 |
+| **언어 모델(language model)** | 큰 텍스트 말뭉치에서 다음 토큰을 예측하도록 학습한 신경망. 그 목적함수 하나 위에 VLM·VLA 트랙이 서 있다 — VLM의 "L"이다 |
+| **오토인코더(autoencoder)** | 좁은 가운데를 통과시켜 자기 입력을 재현하도록 학습해서, 그 가운데가 압축된 표현이 되게 하는 신경망. *마스킹* 오토인코더는 입력 일부를 가리고 복원하고, *변분* 오토인코더는 가운데를 분포로 만든다 |
+| **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]가 추론 비용을 더하지 않는 변형이고, 그래서 나머지를 밀어냈다 |
+| **활성함수(activation)** | 층 사이의 비선형성. **ReLU**($\max(0,x)$)가 기본이고, **GELU**와 **SiLU/Swish**가 트랜스포머에서 쓰는 매끄러운 변형이다. 이것이 없으면 쌓은 층이 행렬 하나로 무너진다(§1) |
 
 이것들이 있으면 [[02-foundations/linear-algebra|1. 선형대수 §1]]의 어텐션 계산 예제 —
 "$Q = XW_Q$, $X$는 토큰 $T$개의 임베딩" — 가 있는 그대로 읽힌다: 이름 붙은 부품들의 행렬곱.

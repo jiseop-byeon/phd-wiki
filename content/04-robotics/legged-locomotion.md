@@ -67,6 +67,23 @@ by *pre-specifying* the contact schedule).
 So: expect ZMP and capture point in humanoid, biped and whole-body-control papers, and expect
 their absence in the four results §3 covers. Neither absence is an oversight.
 
+**The third word: limit cycle.** A limit cycle is an isolated closed trajectory in state
+space — a nonlinear system's own preferred oscillation, which it returns to after a small
+push, with no external clock telling it the period. A steady walking gait is exactly this,
+and reading it that way explains two things at once. First, why *passive dynamic walkers* —
+legged machines with no actuators at all, walking down a shallow slope on gravity alone —
+work: the gait is a stable limit cycle of the mechanism, and the slope only pays for the
+energy lost at each foot strike. Second, what "stability" means for a walker: not that the
+state stays near a point (a walker is never at rest) but that the trajectory returns to the
+cycle after a disturbance. That is why gait stability is studied through the *return map* —
+the state at one foot strike as a function of the state at the previous one — and why a
+walker can be stable in this sense while failing every static criterion including ZMP.
+
+The learned policies in §3 never name the concept, but they inherit it: what a locomotion
+reward actually selects for, when it rewards forward velocity without prescribing a gait, is
+a limit cycle the network found on its own. The trotting and bounding patterns that emerge
+unbidden in those papers are that object appearing without being asked for.
+
 - M. Vukobratović and B. Borovac, "Zero-moment point — thirty five years of its life,"
   *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.
 - J. Pratt, J. Carff, S. Drakunov, A. Goswami, "Capture Point: A Step toward Humanoid Push
@@ -381,6 +398,22 @@ for the full picture and the licensing traps.
 
 정리하면: 휴머노이드·이족·전신 제어 논문에서는 ZMP와 capture point를 예상하고, §3이 다루는
 네 결과에서는 그것들의 부재를 예상하라. 어느 쪽 부재도 실수가 아니다.
+
+**세 번째 단어: 극한주기(limit cycle).** 극한주기는 상태 공간 안의 고립된 닫힌 궤적이다 —
+비선형계가 스스로 선호하는 진동이고, 살짝 밀면 그리로 되돌아오며, 주기를 일러 주는 외부 시계가
+없다. 정상적인 보행 걸음새가 정확히 이것이고, 그렇게 읽으면 두 가지가 한꺼번에 설명된다. 첫째,
+*수동 동보행기(passive dynamic walker)* — 구동기가 하나도 없이 완만한 경사를 중력만으로
+걸어 내려가는 다리 기계 — 가 왜 작동하는가. 걸음새가 그 기구의 안정한 극한주기이고, 경사는
+발이 땅에 닿을 때마다 잃는 에너지만큼만 값을 치른다. 둘째, 보행기에게 "안정"이 무슨 뜻인가.
+상태가 한 점 근처에 머무는 것(보행기는 결코 정지해 있지 않다)이 아니라, 교란 뒤에 궤적이 그
+주기로 되돌아오는 것이다. 걸음새 안정성을 *복귀 사상(return map)* — 직전 발 착지의 상태에
+대한 함수로서 이번 발 착지의 상태 — 으로 연구하는 이유이고, ZMP를 포함한 모든 정적 기준을
+어기면서도 이 의미에서는 안정할 수 있는 이유다.
+
+§3의 학습된 정책들은 이 개념을 결코 이름 부르지 않지만 물려받는다. 보행 보상이 걸음새를
+지정하지 않고 전진 속도만 보상할 때 실제로 골라내는 것은, 신경망이 스스로 찾아낸 극한주기다.
+그 논문들에서 시키지 않았는데 나타나는 속보(trot)와 바운드 패턴이 바로 그 대상이 요청 없이
+등장한 것이다.
 
 - M. Vukobratović, B. Borovac, "Zero-moment point — thirty five years of its life,"
   *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.

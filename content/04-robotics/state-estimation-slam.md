@@ -122,7 +122,14 @@ on a fast platform is reporting a map built from distorted scans.
 
 **Keyframes** are the other structural idea: rather than optimize every frame, the back end
 keeps a sparse subset and marginalizes the rest, which is what keeps the problem bounded as
-the session grows.
+the session grows. *Marginalizing* has a specific meaning worth knowing, because it is where
+the cost goes. Split the information matrix into the block $A$ you are dropping and the
+block $C$ you are keeping, with coupling $B$; removing the dropped block leaves the **Schur
+complement** $S = C - B^\top A^{-1} B$. The subtracted term is the evidence the discarded
+poses carried, folded into the survivors — so nothing is thrown away, but $S$ is **denser
+than $C$ was**. That fill-in is why sliding-window estimators cap their window, and why a
+paper's window length is a compute claim rather than a modelling preference
+([[02-foundations/linear-algebra|1. Linear algebra §2]]).
 
 > [!warning] "Drift-free" and "loop closure" are claims about different things
 > Loop closure removes accumulated drift *only along paths that return to a previously visited
@@ -326,6 +333,13 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 
 **Keyframe**이 나머지 한 축이다: 모든 프레임을 최적화하는 대신 성긴 부분집합만 남기고 나머지를
 주변화(marginalize)하며, 그것이 세션이 길어져도 문제 크기를 유한하게 유지하는 방법이다.
+*주변화*에는 알아 둘 만한 구체적인 뜻이 있는데, 비용이 가는 곳이 거기이기 때문이다. 정보
+행렬을 버릴 블록 $A$와 남길 블록 $C$, 그리고 결합항 $B$로 쪼개면, 버린 블록을 없앤 자리에
+**Schur 보수** $S = C - B^\top A^{-1} B$가 남는다. 빼낸 항이 버려진 pose들이 지고 있던
+증거이고 살아남은 것들 안으로 접혀 들어간다 — 그러니 버려지는 정보는 없지만 $S$는 **원래의
+$C$보다 조밀하다**. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
+길이가 모델링 취향이 아니라 계산 비용에 대한 주장인 이유다
+([[02-foundations/linear-algebra|1. 선형대수 §2]]).
 
 > [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
 > Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
