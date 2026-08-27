@@ -246,6 +246,9 @@ includes construction machinery is the nearest existing bridge between this page
 - [ ] Say what CVaR buys over optimising the mean.
 - [ ] Name what SubT and RACER each established, citing DARPA's own published speed and distance figures.
 
+> [!tip] Going deeper · 더 깊이
+> There is no textbook and no survey that has held up, so the substitute is three papers read as a single argument. BADGR (*RA-L* 2021) first, because it states the reframing in its barest form — the robot labels its own terrain by driving on it. Then "How Does It Feel?" (ICRA 2023) for the same idea with proprioception producing a costmap. Then Wild Visual Navigation, cited as RSS 2023 for priority and read as the 2025 *Autonomous Robots* version for the full system. After those three, the field-programme record in §4 is readable as evidence rather than as a list of names.
+
 ### Self-check
 
 1. A paper reports a traversability model trained on one robot and deployed on another with
@@ -498,6 +501,9 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 - [ ] 적응 대 일반화의 분기를 설명하고 왜 중요한지 말한다.
 - [ ] CVaR이 평균 최적화에 비해 무엇을 사는지 말한다.
 - [ ] SubT와 RACER가 각각 확립한 것을, DARPA가 발표한 속도·거리 수치를 인용하며 말한다.
+
+> [!tip] 더 깊이 · Going deeper
+> 교과서도 없고 버텨 낸 서베이도 없으니, 대체물은 세 논문을 하나의 논증으로 읽는 것이다. 먼저 BADGR(*RA-L* 2021) — 재프레이밍을 가장 헐벗은 형태로 진술하기 때문이다: 로봇이 직접 달려 보며 자기 지형에 라벨을 붙인다. 그다음 "How Does It Feel?"(ICRA 2023), 같은 발상을 고유수용 감각으로 비용 지도까지 밀고 간다. 그다음 Wild Visual Navigation — 우선권은 RSS 2023으로 인용하되 전체 시스템은 2025년 *Autonomous Robots* 판으로 읽어라. 이 셋을 지나면 §4의 필드 프로그램 기록이 이름의 나열이 아니라 증거로 읽힌다.
 
 ### 스스로 점검
 

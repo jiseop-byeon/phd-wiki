@@ -122,6 +122,9 @@ You should be able to:
 - write the anticipation objective and explain why one accuracy number is insufficient;
 - identify preprocessing cost hidden inside a "real-time" claim.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook; the backbone lineage in §3 is the reading list, in order. Carreira & Zisserman (CVPR 2017) for inflating 2D filters into 3D and for Kinetics as the pretraining corpus that reorganized everything after it. SlowFast (ICCV 2019) for the two-pathway answer to temporal resolution. TimeSformer (ICML 2021) for the attention formulation. VideoMAE for self-supervised pretraining. Read them for what each one had to give up, not for their headline accuracies — the scene-bias problem in §2 is why those accuracies are hard to compare across the four.
+
 ### Self-check
 
 1. A model reports 92% on an action dataset. What single experiment most efficiently tests whether it uses temporal information?
@@ -262,7 +265,7 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 | long-form | 실제 시간 범위가 얼마인가; 메모리를 맞추려 무엇을 버렸는가 |
 | 일반화된다 | 촬영 설정을 가로질러 평가했는가, 같은 설정의 held-out 클립뿐인가 |
 
-### 읽은 뒤
+### 읽고 나면 말할 수 있어야 하는 것
 
 다음을 할 수 있어야 한다:
 
@@ -272,7 +275,10 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 - anticipation 목적함수를 쓰고 정확도 하나로 부족한 이유를 설명한다;
 - "real-time" 주장 안에 숨은 전처리 비용을 찾아낸다.
 
-### 자가 점검
+> [!tip] 더 깊이 · Going deeper
+> 교과서는 없고, §3의 백본 계보가 곧 읽기 목록이며 순서대로다. Carreira & Zisserman(CVPR 2017)은 2D 필터를 3D로 부풀리는 것과, 이후 전부를 재편한 사전학습 말뭉치로서의 Kinetics를 위해. SlowFast(ICCV 2019)는 시간 해상도에 대한 두 경로 해답을 위해. TimeSformer(ICML 2021)는 어텐션 정식화를 위해. VideoMAE는 자기지도 사전학습을 위해. 표제 정확도가 아니라 *각각이 무엇을 포기해야 했는지*를 보며 읽어라 — §2의 장면 편향 문제가 바로 그 정확도들을 넷 사이에서 비교하기 어렵게 만드는 이유다.
+
+### 스스로 점검
 
 1. 어떤 모델이 행동 데이터셋에서 92%를 보고했다. 시간 정보를 쓰는지 가장 효율적으로 검증하는 실험 하나는?
 2. anticipation이 창을 옮긴 인식이 아닌 이유는?

@@ -264,6 +264,9 @@ underneath.
 - [ ] Say what happened to the Habitat Challenge and where the field went.
 - [ ] Name the map representation that became the default backbone, and Clio's better question.
 
+> [!tip] Going deeper · 더 깊이
+> This field's canon is not a book but two definition papers and a critique, and reading them in order is what keeps you out of its recurring arguments. Anderson et al. (2018) first, for SPL and the evaluation vocabulary — note it is unrefereed and cite it as such. Then "ObjectNav Revisited" (2020), which exists because the first definition was not tight enough. Then the critique in §4, which is what makes the benchmark history in §5–§6 legible. Habitat's papers are infrastructure documentation; read the one matching the version a paper used, not all of them.
+
 ### Self-check
 
 1. Why does the ObjectNav success criterion have two parts?
@@ -528,6 +531,9 @@ LERF식 방사 필드는 레거시다. 그리고 **로보틱스 쪽에서는 장
 - [ ] 모듈형 대 종단간의 실세계 수치와 그 이유를 댄다.
 - [ ] Habitat 챌린지에 무슨 일이 있었고 분야가 어디로 갔는지 말한다.
 - [ ] 기본 중추가 된 지도 표현과, Clio가 던진 더 나은 질문을 댄다.
+
+> [!tip] 더 깊이 · Going deeper
+> 이 분야의 정본은 책이 아니라 정의 논문 둘과 비판 하나이고, 그것을 순서대로 읽는 것이 이 분야가 되풀이하는 논쟁에 휘말리지 않는 방법이다. 먼저 Anderson 외(2018), SPL과 평가 어휘를 위해 — 심사를 거치지 않은 논문이니 그렇게 인용하라. 그다음 "ObjectNav Revisited"(2020), 첫 정의가 충분히 조이지 못했기 때문에 존재하는 논문이다. 그다음 §4의 비판, 이것이 §5~§6의 벤치마크 역사를 읽히게 만든다. Habitat 논문들은 인프라 문서다. 지금 읽는 논문이 쓴 판본에 해당하는 것만 읽고 전부 읽지는 마라.
 
 ### 스스로 점검
 

@@ -297,6 +297,9 @@ for the full picture and the licensing traps.
 - [ ] Describe Miki's gating mechanism and what it is protecting against.
 - [ ] Give the two parkour architectures and say what neither has shown.
 
+> [!tip] Going deeper · 더 깊이
+> The two halves of this page go to different places. For the classical vocabulary of §1.5 — support polygon, ZMP, capture point — Tedrake's free [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) is the textbook treatment. For the learned line there is no book, and the substitute is the four papers in §3 read in publication order: Hwangbo et al. (2019) for the sim-to-real result, Lee et al. (2020) for privileged teacher–student, Kumar et al. (2021) for adaptation without privileged input at test time, Miki et al. (2022) for adding exteroception. Read them as one argument developing, not as four systems.
+
 ### Self-check
 
 1. Why can a blind robot adapt to mud it cannot see?
@@ -583,6 +586,9 @@ for the full picture and the licensing traps.
 - [ ] "몇 분 만에 걷기"가 왜 샘플 효율 주장이 아닌지 설명한다.
 - [ ] Miki의 게이팅 기제와 그것이 무엇을 막는지 서술한다.
 - [ ] 두 파쿠르 아키텍처를 대고, 둘 다 보이지 못한 것을 말한다.
+
+> [!tip] 더 깊이 · Going deeper
+> 이 페이지의 두 절반은 서로 다른 곳으로 간다. §1.5의 고전 어휘 — 지지 다각형, ZMP, capture point — 는 Tedrake의 무료 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 교과서다. 학습 쪽 계보에는 책이 없고, 대체물은 §3의 네 논문을 출판 순서로 읽는 것이다: sim-to-real 결과의 Hwangbo 외(2019), 특권 교사–학생의 Lee 외(2020), 시험 시점에 특권 입력 없이 적응하는 Kumar 외(2021), 외수용 감각을 더한 Miki 외(2022). 네 개의 시스템이 아니라 하나의 논증이 전개되는 것으로 읽어라.
 
 ### 스스로 점검
 

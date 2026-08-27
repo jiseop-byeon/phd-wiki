@@ -147,6 +147,9 @@ You should be able to:
 - name the three regimes where head motion stops being an attention proxy;
 - list the specific domain gaps between a daily-life egocentric benchmark and a work-site helmet camera.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook exists; the datasets are the literature, because each one defined the tasks that followed it. Read EPIC-KITCHENS (ECCV 2018) first — it is small enough to understand completely, and it establishes what unscripted first-person recording even means. Then Ego4D (CVPR 2022) for the benchmark suite that split the field into past, present and future tasks. Only then go to a method paper, and read it against the specific benchmark it reports, because in this field the benchmark carries most of the claim.
+
 ### Self-check
 
 1. Why is the camera wearer's own body pose hard to estimate, and what is usually done instead?
@@ -310,7 +313,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 | 착용자 간 일반화 | held-out **사람**인가, 같은 사람의 held-out 클립인가 |
 | 배포 가능 | 장갑·헬멧·실외 조명, 그리고 동의와 IRB를 다뤘는가 |
 
-### 읽은 뒤
+### 읽고 나면 말할 수 있어야 하는 것
 
 다음을 할 수 있어야 한다:
 
@@ -320,7 +323,10 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 - 머리 움직임이 주의 대용이기를 멈추는 세 영역을 든다;
 - 일상 자기중심 벤치마크와 현장 헬멧 카메라 사이의 구체적 도메인 격차를 나열한다.
 
-### 자가 점검
+> [!tip] 더 깊이 · Going deeper
+> 교과서는 없고, 데이터셋이 곧 문헌이다. 각각이 뒤따르는 과제들을 정의했기 때문이다. EPIC-KITCHENS(ECCV 2018)를 먼저 읽어라 — 완전히 이해할 수 있을 만큼 작고, 대본 없는 1인칭 기록이 대체 무엇인지를 확립한다. 그다음 Ego4D(CVPR 2022), 이 분야를 과거·현재·미래 과제로 갈라놓은 벤치마크 모음이다. 그다음에야 방법 논문으로 가되, 그 논문이 보고하는 특정 벤치마크에 비추어 읽어라. 이 분야에서는 주장의 대부분을 벤치마크가 지고 있다.
+
+### 스스로 점검
 
 1. 착용자 본인의 신체 자세 추정이 어려운 이유는? 대신 보통 무엇을 하나?
 2. 어떤 모델이 동사 정확도는 높고 명사 정확도는 낮다. 의도 활용 측면에서 무엇을 함의하나?

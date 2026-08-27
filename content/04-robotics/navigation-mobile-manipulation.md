@@ -203,6 +203,9 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 - [ ] Name two ways to localize on a site whose map keeps changing.
 - [ ] Say what does not exist in this literature, so you do not cite it.
 
+> [!tip] Going deeper · 더 깊이
+> The nearest thing to a textbook here is a handbook chapter: Brock, Park & Toussaint, "Mobility and Manipulation," ch.40 of the *Springer Handbook of Robotics* (2nd ed., 2016). Read it for the framing, then the two papers that made base placement computable — Zacharias et al. (IROS 2007) for the capability map and Vahrenkamp et al. (ICRA 2013) for inverting reachability into a placement. What no source covers is §4: the error budget is systems folklore, which is why this page computes one rather than citing one.
+
 ### Self-check
 
 1. A team parks the base as close to the wall as possible "to maximise reach". What is wrong?
@@ -404,6 +407,9 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 - [ ] 오차 원천 넷을 대고 건설이 어느 것을 가장 나쁘게 만드는지 말한다.
 - [ ] 지도가 계속 변하는 현장에서 위치를 잡는 두 방법을 댄다.
 - [ ] 이 문헌에 존재하지 않는 것을 말해서, 그것을 인용하지 않는다.
+
+> [!tip] 더 깊이 · Going deeper
+> 여기서 교과서에 가장 가까운 것은 핸드북 한 장이다: Brock, Park, Toussaint, "Mobility and Manipulation," *Springer Handbook of Robotics* (2판, 2016) 40장. 틀을 잡기 위해 이것을 읽고, 그다음 base placement를 계산 가능하게 만든 두 논문을 읽어라 — 능력 지도의 Zacharias 외(IROS 2007), 도달성을 배치로 뒤집은 Vahrenkamp 외(ICRA 2013). 어떤 출처도 다루지 않는 것이 §4다. 오차 예산은 시스템 구전 지식이고, 이 페이지가 인용 대신 직접 계산해 보인 이유가 그것이다.
 
 ### 스스로 점검
 

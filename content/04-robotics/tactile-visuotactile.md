@@ -311,6 +311,9 @@ belongs to [[04-robotics/force-compliance-control|13]].
 - [ ] State what visuotactile fusion usually buys, and what it usually does not.
 - [ ] List the two ablations a fusion paper needs before its claim is readable.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook; the sensors are the literature. Start at the physics: Johnson & Adelson (CVPR 2009) is retrographic sensing, the optical principle, before anyone put it on a robot. Then Yuan, Dong & Adelson (*Sensors* 2017) for GelSight as a robot sensor with geometry and force, and DIGIT (*RA-L* 2020) for the cheap compact form that made the modality common. Then Lee et al. (ICRA 2019) for using touch rather than building it. For the manipulation theory the signal feeds, [[04-robotics/contact-force-tactile|9. Contact §2–§4]] names its textbooks; this page has none of its own.
+
 ### Self-check
 
 1. A paper reports that adding tactile input raised insertion success from 62% to 89%. What
@@ -628,6 +631,9 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 - [ ] 센서 지연 때문에 촉각이 충격 생존 기제가 아니라 결정 신호인 이유를 설명한다.
 - [ ] 시촉각 융합이 보통 사는 것과 사지 못하는 것을 말한다.
 - [ ] 융합 논문의 주장이 읽히려면 필요한 두 ablation을 댄다.
+
+> [!tip] 더 깊이 · Going deeper
+> 교과서는 없고, 센서가 곧 문헌이다. 물리에서 시작하라: Johnson & Adelson(CVPR 2009)의 retrographic sensing이 광학 원리이고, 아직 아무도 로봇에 붙이기 전이다. 그다음 Yuan, Dong, Adelson(*Sensors* 2017)으로 기하와 힘을 재는 로봇 센서로서의 GelSight를, DIGIT(*RA-L* 2020)으로 이 모달리티를 흔하게 만든 값싸고 작은 형태를. 그다음 Lee 외(ICRA 2019)로 촉각을 만드는 것이 아니라 쓰는 쪽을. 이 신호가 먹여 주는 조작 이론 쪽은 [[04-robotics/contact-force-tactile|9. 접촉 §2~§4]]가 자기 교재를 지목한다. 이 페이지에는 자기 것이 없다.
 
 ### 스스로 점검
 

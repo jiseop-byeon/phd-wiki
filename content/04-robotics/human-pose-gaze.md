@@ -145,6 +145,9 @@ You should be able to:
 - state the range at which each gaze method stops working;
 - name three human motion cues that need no keypoints.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook; three papers cover the ladder in §1. Cao et al. (CVPR 2017) for part affinity fields — the bottom-up parse that made multi-person 2D real-time — then the OpenPose TPAMI paper (2021) for the system as released, then HRNet (CVPR 2019) for the representation choice that most later work inherits. Gaze is the weaker half of this page for a reason: there is no equivalent canonical sequence, and §4's substitution of head pose for gaze is the field's working compromise rather than a result.
+
 ### Self-check
 
 1. A system claims gaze-aware pedestrian prediction at 20 m from a vehicle camera. What is it almost certainly measuring?
@@ -313,7 +316,7 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 | in-the-wild | 촬영 조건; 학습 분포에 PPE·쪼그림·야간이 있는가 |
 | 의도 관련 단서 | 그 단서가 배포 거리에서 물리적으로 분해 가능한가 |
 
-### 읽은 뒤
+### 읽고 나면 말할 수 있어야 하는 것
 
 다음을 할 수 있어야 한다:
 
@@ -323,7 +326,10 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 - 각 시선 방법이 작동을 멈추는 거리를 말한다;
 - 키포인트가 필요 없는 사람 움직임 단서 셋을 든다.
 
-### 자가 점검
+> [!tip] 더 깊이 · Going deeper
+> 교과서는 없고, §1의 사다리는 세 논문이 덮는다. Cao 외(CVPR 2017)의 part affinity field — 다인 2D를 실시간으로 만든 상향식 파싱 — 다음 OpenPose TPAMI 논문(2021)으로 공개된 시스템 자체를, 다음 HRNet(CVPR 2019)으로 이후 연구 대부분이 물려받는 표현 선택을 읽어라. 시선이 이 페이지의 약한 절반인 데는 이유가 있다. 그에 상응하는 정본 계열이 없고, §4에서 시선을 머리 자세로 대체하는 것은 결과가 아니라 이 분야의 임시 타협이다.
+
+### 스스로 점검
 
 1. 차량 카메라로 20 m에서 시선 인지 보행자 예측을 한다고 주장한다. 실제로 측정하는 건 거의 확실히 무엇인가?
 2. PA-MPJPE가 개선되는데 의도 판독에는 덜 유용해질 수 있는 이유는?

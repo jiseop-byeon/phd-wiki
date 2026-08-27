@@ -201,6 +201,9 @@ An automated excavator receives a goal from an operator, plans and executes a di
 - Audit human-study population, order effects, and ecological validity.
 - Interpret safety and trust claims from measured evidence.
 
+> [!tip] Going deeper · 더 깊이
+> This field does have a textbook, and it is free: Bartneck, Belpaeme, Eyssel, Kanda, Keijsers and Šabanović, [*Human-Robot Interaction: An Introduction*](https://www.human-robot-interaction.org/) (Cambridge, 2nd ed. 2024), released as per-chapter PDFs. Read it for §4, §5 and §7 — human performance, interfaces and study design are where a book beats a paper trail, because the methods are settled. Do **not** read it for §6: safety vocabulary comes from the standards themselves, and the versions move. For those, go to the ISO catalogue entries named in the table.
+
 ### Self-check
 
 1. Why is “zero collisions in 20 trials” insufficient evidence of safety?
@@ -428,6 +431,9 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 - hazard·risk·fail-safe·fail-operational을 구분할 수 있다
 - 인간 연구의 모집단·순서 효과·생태적 타당성을 검사할 수 있다
 - 안전·신뢰 주장을 측정된 증거로부터 해석할 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> 이 분야에는 교과서가 있고, 무료다: Bartneck, Belpaeme, Eyssel, Kanda, Keijsers, Šabanović, [*Human-Robot Interaction: An Introduction*](https://www.human-robot-interaction.org/) (Cambridge, 2판 2024), 장별 PDF로 공개돼 있다. §4·§5·§7 — 인간 성능, 인터페이스, 연구 설계 — 을 위해 읽어라. 방법론이 정착된 영역이라 책이 논문 더미를 이긴다. §6을 위해서는 읽지 **마라**. 안전 어휘는 표준 문서 자체에서 오고 판본이 계속 움직인다. 그쪽은 표에 적힌 ISO 카탈로그 항목으로 직접 가라.
 
 ### 스스로 점검
 

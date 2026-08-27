@@ -205,6 +205,9 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 - Locate the execution layer (FSM/behavior tree) and what it does on failure.
 - Assign a failure to its likely originating subsystem rather than its final symptom.
 
+> [!tip] Going deeper · 더 깊이
+> There is no robotics-systems textbook, and the absence is itself the field's complaint. The closest substitutes are three, and none of them is about robots exclusively: Eppner et al. (RSS 2016) on what the Amazon Picking Challenge actually taught, which is the rare paper written about integration instead of a method; the [ROS 2 concepts](https://docs.ros.org/en/rolling/Concepts.html) documentation for §5, read as a specification rather than a tutorial; and the [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/) for the vocabulary of §7 and §8, which robotics borrows without citing. Tedrake's [manipulation notes](https://manipulation.csail.mit.edu/) carry the systems chapters closest to this page's framing.
+
 ### Self-check
 
 1. Why can a 50 Hz policy still have 200 ms latency?
@@ -447,6 +450,9 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 - ROS 사용이나 시뮬레이션 성공이 배포 증거가 아닌 이유를 설명할 수 있다
 - 실행 계층(FSM/behavior tree)의 위치와 실패 시 역할을 짚을 수 있다
 - 실패를 최종 증상이 아니라 유력한 발원 하위 시스템에 배정할 수 있다
+
+> [!tip] 더 깊이 · Going deeper
+> 로보틱스 시스템 교과서는 없고, 그 부재 자체가 이 분야의 불평이다. 가장 가까운 대체물이 셋인데 어느 것도 로봇만을 다루지는 않는다: Eppner 외(RSS 2016)는 Amazon Picking Challenge가 실제로 무엇을 가르쳤는지에 관한 글로, 방법이 아니라 통합에 대해 쓰인 드문 논문이다. §5는 [ROS 2 개념 문서](https://docs.ros.org/en/rolling/Concepts.html)를 튜토리얼이 아니라 명세로 읽어라. §7·§8의 어휘는 [NASA 시스템 엔지니어링 핸드북](https://www.nasa.gov/reference/systems-engineering-handbook/)에서 오는데, 로보틱스는 그것을 인용 없이 빌려 쓴다. Tedrake의 [매니퓰레이션 노트](https://manipulation.csail.mit.edu/)에 이 페이지의 틀에 가장 가까운 시스템 장들이 있다.
 
 ### 스스로 점검
 

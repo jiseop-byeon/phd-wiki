@@ -206,6 +206,9 @@ You should be able to:
 - name the human-masked ablation and what it tests;
 - state the feedback-loop difference between road pedestrians and repeat coworkers.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook, and the two halves of §1 go different ways. For intent classification, PIE (ICCV 2019) is the reference dataset and its paper states the problem most cleanly. For trajectory forecasting, read Social LSTM (CVPR 2016) then Social GAN (CVPR 2018) — the second exists because the first predicted one future for a problem with many, and that disagreement is still the field's live question. For §4, calibration is not this field's own topic: [[02-foundations/ml-practice|9. ML practice §3]] and the general calibration literature it points to are where that machinery lives.
+
 ### Self-check
 
 1. A model reports 96% accuracy on crossing prediction. Why is this uninformative, and what should be reported instead?
@@ -447,7 +450,7 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 | 미묘한 행동 단서 사용 | 그 단서가 어느 거리에서 분해됐나; 사람 마스킹 ablation |
 | real-time | 검출·추적 포함 end-to-end 지연, 그리고 그것을 필요 선행에 더했는가 |
 
-### 읽은 뒤
+### 읽고 나면 말할 수 있어야 하는 것
 
 다음을 할 수 있어야 한다:
 
@@ -458,7 +461,10 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 - 사람 마스킹 ablation과 그것이 검증하는 바를 말한다;
 - 도로 보행자와 반복 협업 작업자 사이의 피드백 루프 차이를 말한다.
 
-### 자가 점검
+> [!tip] 더 깊이 · Going deeper
+> 교과서는 없고, §1의 두 절반은 서로 다른 길로 간다. 의도 분류 쪽은 PIE(ICCV 2019)가 기준 데이터셋이고 그 논문이 문제를 가장 깔끔하게 진술한다. 궤적 예측 쪽은 Social LSTM(CVPR 2016) 다음 Social GAN(CVPR 2018)을 읽어라 — 두 번째가 존재하는 이유는 첫 번째가 미래가 여럿인 문제에 하나의 미래를 예측했기 때문이고, 그 이견은 지금도 이 분야의 살아 있는 질문이다. §4의 보정은 이 분야 고유의 주제가 아니다. 그 기계장치는 [[02-foundations/ml-practice|9. ML 실무 §3]]과 그 페이지가 가리키는 일반 보정 문헌에 있다.
+
+### 스스로 점검
 
 1. 어떤 모델이 횡단 예측에서 96% 정확도를 보고했다. 왜 정보가 없고, 대신 무엇을 보고해야 하나?
 2. 로봇이 정지에 0.9초 필요하다. A: $\Delta=0.5$s에서 AUC 0.9, $\Delta=1.0$s에서 0.6. B: $\Delta=1.5$s까지 AUC 0.8 평탄. 어느 쪽이 배포 가능한가?

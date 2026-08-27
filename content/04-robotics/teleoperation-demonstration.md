@@ -343,6 +343,9 @@ requires, because the contribution *is* the corpus — needs these:
 - [ ] Name three properties of a demonstration dataset that a count of episodes does not capture.
 - [ ] Given a paper, extract the seven items in the table above.
 
+> [!tip] Going deeper · 더 깊이
+> No textbook covers this, but the field has a survey that does the same job: Hokayem & Spong, "Bilateral teleoperation: An historical survey," *Automatica* 42(12), 2006. Read it first, then the three papers it organizes, in this order — Anderson & Spong (1989) for why delay destroys passivity, Niemeyer & Slotine (1991) for the wave-variable transform that fixes it, Lawrence (1993) for what "transparency" formally means and why you cannot have all of it. That sequence is the theory half. The demonstration-data half (§6) has no survey at all; the canonical papers on the [[01-canonical-papers/index|papers track]] are the literature.
+
 ### Self-check
 
 1. A bilateral teleoperator is stable in free motion and oscillates on contact with a steel
@@ -689,6 +692,9 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 - [ ] 주어진 과제에 인터페이스를 고르고 충실도–비용 축에서 방어한다.
 - [ ] 에피소드 개수가 담지 못하는 시연 데이터셋의 성질 셋을 댄다.
 - [ ] 논문 하나에서 위 표의 일곱 항목을 뽑아낸다.
+
+> [!tip] 더 깊이 · Going deeper
+> 이것을 다루는 교과서는 없지만, 같은 일을 하는 서베이가 있다: Hokayem & Spong, "Bilateral teleoperation: An historical survey," *Automatica* 42(12), 2006. 이것을 먼저 읽고, 그것이 정리하는 세 논문을 이 순서로 읽어라 — Anderson & Spong(1989)으로 왜 지연이 수동성을 파괴하는지, Niemeyer & Slotine(1991)로 그것을 고치는 파동 변수 변환을, Lawrence(1993)로 "투명성"이 형식적으로 무슨 뜻이고 왜 그것을 다 가질 수 없는지를. 이 순서가 이론 쪽 절반이다. 시연 데이터 쪽 절반(§6)에는 서베이 자체가 없다. [[01-canonical-papers/index|논문 트랙]]의 정본들이 곧 그 문헌이다.
 
 ### 스스로 점검
 
