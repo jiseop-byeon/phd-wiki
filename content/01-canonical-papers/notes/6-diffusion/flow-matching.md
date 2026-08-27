@@ -89,8 +89,9 @@ of the flow itself.
 Now a *dominant training objective* among frontier generators (Stable Diffusion 3, Flux,
 video models) — and for robotics: [[pi0|π0]]'s action expert and [[gr00t-n1|GR00T]]'s
 System 1 generate 50–120 Hz action chunks with exactly this recipe, because few-step
-straight-path inference is what real-time control demands. The MIT tutorial in the local
-reference folder (Holderrieth & Erives) teaches this paper's framework.
+straight-path inference is what real-time control demands. If you want the framework taught rather than
+announced, Holderrieth and Erives' MIT 6.S184 notes, *An Introduction to Flow Matching and
+Diffusion Models*, build it from the ODE up.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > Read two claims separately: (1) the theoretical one — it is a general framework containing diffusion paths as a special case (proved); (2) the empirical one — straight OT paths work better in practice (benchmark-dependent). The first does not automatically guarantee the second, and the real reason for adoption is that the second happened to fit robot real-time control.
@@ -167,8 +168,9 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 이제 프런티어 생성기(Stable Diffusion 3, Flux, 비디오 모델) 사이의 *지배적 학습 목적함수 중 하나*다 —
 그리고 로보틱스에서: [[pi0|π0]]의 행동 전문가와 [[gr00t-n1|GR00T]]의 System 1이 정확히 이
 레시피로 50~120 Hz 행동 청크를 생성한다. 실시간 제어가 요구하는 것이 바로 소수 스텝의
-직선 경로 추론이기 때문이다. 로컬 reference 폴더의 MIT 튜토리얼(Holderrieth & Erives)이
-이 논문의 프레임워크를 가르친다.
+직선 경로 추론이기 때문이다. 이 프레임워크를 선언이 아니라 강의로 받고 싶다면
+Holderrieth와 Erives의 MIT 6.S184 강의 노트 *An Introduction to Flow Matching and Diffusion
+Models*가 ODE에서부터 쌓아 올린다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > 두 주장을 분리해서 읽어라: ① 이론적 주장 — 디퓨전 경로를 특수 사례로 포함하는 일반 프레임이다(증명됨), ② 경험적 주장 — OT 직선 경로가 실용적으로 낫다(벤치마크 의존). ①이 ②를 자동으로 보장하지 않는다 — 채택의 실제 이유는 ②가 로봇 실시간 제어와 맞아떨어졌기 때문이다.
