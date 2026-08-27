@@ -138,6 +138,21 @@ across physical AI, with one deep column where the contribution lives.
 | **Working** | navigation; SLAM and localization; state estimation; HRI; RL; optimization; ROS 2 and simulation tooling | supporting pillars and shared infrastructure — integration matters here, novelty does not |
 | **Literacy, raised to Working on demand** | broader RL theory; generic VLM topics; world models; diffusion internals; autonomy topics outside manipulation | read them accurately, cite them correctly, and notice when one starts to matter |
 
+Which pages those six areas actually are, so the row is something you can act on:
+
+| Mastery area | The page that carries it |
+|---|---|
+| contact-rich manipulation | [[05-construction-robotics/construction-manipulation\|9. Construction Manipulation]] — the task matrix and the evidence ladder |
+| force, impedance and admittance control | [[04-robotics/force-compliance-control\|13. Force & Compliance Control]] |
+| grasping | [[04-robotics/grasping\|15. Grasping]] |
+| manipulator dynamics and the operational-space bridge | [[02-foundations/manipulator-kinematics-dynamics\|10. Manipulator Kinematics & Dynamics]] |
+| teleoperation and demonstration collection | [[04-robotics/teleoperation-demonstration\|12. Teleoperation & Demonstration]] |
+| imitation learning as used for manipulation | **no page of its own** — it is split across [[02-foundations/rl-basics\|7. RL Basics §6]] (compounding error, the BC/DAgger argument), the method notes ([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), and §6 of the teleoperation page (what the data does and does not contain) |
+
+The last row is the honest one: five of the six areas have a page marked `study-depth:
+Mastery`, and imitation learning does not. Promote those three places together when the
+thesis turns that way.
+
 > [!important] Mastery here is narrower than "manipulation"
 > This profile does **not** promote all of manipulation to Mastery. Kinematics, inverse
 > kinematics, and trajectory generation stay at Working: they are prerequisites to use
@@ -281,6 +296,20 @@ Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열�
 | **Working, 논문이 요구하면 Mastery로** | 촉각·시촉각 센싱; 3D 인식; VLA; 과제·모션 계획(TAMP); 모바일 조작 | 논문이 그쪽으로 틀 때만 기여가 된다. 그전까지는 쓰고 진단할 만큼 |
 | **Working** | 내비게이션; SLAM·위치추정; 상태 추정; HRI; RL; 최적화; ROS 2와 시뮬레이션 도구 | 보조 기둥과 공용 인프라 — 여기서는 통합이 중요하고 novelty는 중요하지 않다 |
 | **Literacy, 필요하면 Working으로** | 넓은 RL 이론; 일반 VLM 주제; 월드모델; 디퓨전 내부; 조작 밖의 자율성 주제 | 정확히 읽고, 정확히 인용하고, 그중 하나가 중요해지기 시작하는 순간을 알아차린다 |
+
+저 여섯 영역이 실제로 어느 페이지인가 — 그래야 이 행이 실행 가능한 지시가 된다:
+
+| Mastery 영역 | 그것을 지고 있는 페이지 |
+|---|---|
+| 접촉이 많은 조작 | [[05-construction-robotics/construction-manipulation\|9. 건설 매니퓰레이션]] — 작업 매트릭스와 증거 사다리 |
+| 힘·임피던스·어드미턴스 제어 | [[04-robotics/force-compliance-control\|13. 힘·컴플라이언스 제어]] |
+| 파지 | [[04-robotics/grasping\|15. 파지]] |
+| 매니퓰레이터 동역학과 작업공간으로 잇는 다리 | [[02-foundations/manipulator-kinematics-dynamics\|10. 매니퓰레이터 기구학·동역학]] |
+| 원격조작과 시연 수집 | [[04-robotics/teleoperation-demonstration\|12. 원격조작과 시연 수집]] |
+| 조작에 쓰는 모방학습 | **전용 페이지가 없다** — [[02-foundations/rl-basics\|7. RL 기초 §6]](복합 오차, BC/DAgger 논증), 방법 노트들([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), 그리고 원격조작 페이지 §6(그 데이터에 무엇이 있고 없는지)에 나뉘어 있다 |
+
+마지막 행이 정직한 쪽이다: 여섯 중 다섯은 `study-depth: Mastery`가 붙은 페이지가 있고
+모방학습만 없다. 논문이 그쪽으로 틀면 저 세 곳을 함께 올려라.
 
 > [!important] 여기서의 Mastery는 "매니퓰레이션"보다 좁다
 > 이 프로파일은 매니퓰레이션 전체를 Mastery로 올리지 **않는다**. 기구학, 역기구학, 궤적
