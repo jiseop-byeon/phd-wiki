@@ -48,10 +48,6 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 > [[05-construction-robotics/construction-manipulation|9. §3]] — and it is an honest and
 > well-designed version of that rung, with a public dataset, rather than a paper claiming
 > more than it did.
-> 설정을 정확히 읽어라: 통제된 셋업에서의 **현장 교란을 *모사한* 조건**이지 가동 중인 건설
-> 현장이 아니다. [[05-construction-robotics/construction-manipulation|9. §3]]의 중간
-> 단계이며, 자기가 한 것보다 더 주장하는 논문이 아니라 공개 데이터셋까지 갖춘 정직하고 잘
-> 설계된 판본의 그 단계다.
 
 ### Limitations & critique
 
@@ -96,7 +92,6 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > 설정을 정확히 읽어라: 통제된 셋업에서의 **현장 교란을 *모사한* 조건**이지 가동 중인 건설 현장이 아니다. [[05-construction-robotics/construction-manipulation|9. §3]]의 중간 단계이며, 자기가 한 것보다 더 주장하는 논문이 아니라 공개 데이터셋까지 갖춘 정직하고 잘 설계된 판본의 그 단계다.
-> Conditions *simulating* site disturbances, in a controlled setup — the middle rung, done honestly.
 
 ### 한계와 비판
 

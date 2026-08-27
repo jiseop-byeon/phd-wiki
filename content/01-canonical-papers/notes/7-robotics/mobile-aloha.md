@@ -41,7 +41,6 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > That 90% is neither a 90% success rate nor a 1.9× multiplier: it is an **increase in percentage points**. The paper's own convention is to write a gain as the difference between two rates ("95% vs. 0%" for Call Elevator), and several no-co-training baselines sit at 0%, where a relative increase is undefined. Quote it as *up to a 90-point gain on the best task*, and read the per-task table rather than the headline. The widely circulated hardware cost is **not in the abstract** either; it comes from the body or the project site.
-> 저 90%는 90% 성공률도 1.9배도 아니다. **퍼센트 포인트 증가**다. 논문 자신의 표기가 두 성공률의 차이(엘리베이터 호출 "95% vs. 0%")이고, co-training 없는 기준선 중 몇은 0%여서 상대 증가는 정의되지 않는다. *가장 좋은 과제에서 최대 90포인트 상승*으로 인용하고, 헤드라인 대신 과제별 표를 읽어라. 널리 떠도는 하드웨어 가격도 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
 
 ### Limitations & critique
 
@@ -83,7 +82,6 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 저 90%는 90% 성공률도 1.9배도 아니다. **퍼센트 포인트 증가**다. 논문 자신의 표기가 두 성공률의 차이(엘리베이터 호출 "95% vs. 0%")이고, co-training 없는 기준선 중 몇은 0%여서 상대 증가는 정의되지 않는다. *가장 좋은 과제에서 최대 90포인트 상승*으로 인용하고, 헤드라인 대신 과제별 표를 읽어라. 널리 떠도는 하드웨어 가격도 **초록에 없다** — 본문이나 프로젝트 사이트에서 온 것이다.
-> The 90% is a gain in percentage points, not a success rate and not a multiplier; the cost figure is not in the abstract.
 
 ### 한계와 비판
 

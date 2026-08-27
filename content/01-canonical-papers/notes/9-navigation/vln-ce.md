@@ -42,7 +42,6 @@ Some techniques transfer. But absolute performance is **significantly lower** in
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract states no numbers** — the claim is comparative and qualitative ("significantly lower"). Cite it for the *structure* of the argument, not for a magnitude. And note what the result does not say: it does not say the graph benchmark measured nothing, only that its number does not survive the removal of assumptions the deployment setting also removes.
-> **초록에 숫자가 없다** — 주장은 비교적이고 정성적이다("현저히 낮다"). 크기가 아니라 논증의 *구조*로 인용하라. 결과가 말하지 *않는* 것도 짚어야 한다: 그래프 벤치마크가 아무것도 재지 않았다는 말이 아니라, 배포 환경도 똑같이 제거하는 가정들을 제거하면 그 숫자가 살아남지 않는다는 말이다.
 
 ### Limitations & critique
 
@@ -88,7 +87,6 @@ VLN-CE became the standard VLN setting, and [[01-canonical-papers/notes/9-naviga
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 없다** — 주장은 비교적이고 정성적이다("현저히 낮다"). 크기가 아니라 논증의 *구조*로 인용하라. 결과가 말하지 *않는* 것도 짚어야 한다: 그래프 벤치마크가 아무것도 재지 않았다는 말이 아니라, 배포 환경도 똑같이 제거하는 가정들을 제거하면 그 숫자가 살아남지 않는다는 말이다.
-> The abstract states no numbers; the claim is comparative and qualitative.
 
 ### 한계와 비판
 

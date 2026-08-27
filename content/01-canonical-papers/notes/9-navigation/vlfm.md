@@ -50,7 +50,6 @@ Evaluated in Habitat on **Gibson, HM3D, and MP3D**, reaching state-of-the-art **
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **SPL, not success, is the reported metric** — SPL penalises inefficient paths, so a method can lead on SPL while a competitor finds the object more often. Check which one a comparison uses before repeating it. The real-world result is a demonstration ("we deploy and show"), not a measured success rate; the abstract gives no real-world number.
-> **보고된 지표는 success가 아니라 SPL이다** — SPL은 비효율적 경로에 벌점을 주므로, 어떤 방법이 SPL에서 앞서면서도 물체를 더 자주 찾는 쪽은 경쟁 방법일 수 있다. 비교를 옮기기 전에 어느 지표인지 확인하라. 실제 환경 결과는 측정된 성공률이 아니라 실증("배포해서 보인다")이고, 초록에 실제 환경 숫자는 없다.
 
 ### Limitations & critique
 
@@ -108,7 +107,6 @@ Habitat의 **Gibson, HM3D, MP3D**에서 평가해 물체 목표 내비게이션 
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **보고된 지표는 success가 아니라 SPL이다** — SPL은 비효율적 경로에 벌점을 주므로, 어떤 방법이 SPL에서 앞서면서도 물체를 더 자주 찾는 쪽은 경쟁 방법일 수 있다. 비교를 옮기기 전에 어느 지표인지 확인하라. 실제 환경 결과는 측정된 성공률이 아니라 실증이고, 초록에 실제 환경 숫자는 없다.
-> The reported metric is SPL, not success rate, and the real-world result is a demonstration rather than a measurement.
 
 ### 한계와 비판
 

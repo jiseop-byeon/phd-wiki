@@ -43,7 +43,6 @@ The abstract's claims are capability claims: it navigates real urban and off-roa
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract contains no numbers** — no success rates, no dataset hours, no baseline margins. Every BADGR figure in circulation comes from the body or the project page. It is also worth naming what "self-supervised" means here: the labels are free, but the *data* costs real driving time on real hardware, and the robot must survive collecting it.
-> **초록에 숫자가 하나도 없다** — 성공률도, 데이터 시간도, 베이스라인 대비 폭도 없다. 떠도는 BADGR 수치는 전부 본문이나 프로젝트 페이지에서 온 것이다. "self-supervised"의 의미도 짚어야 한다: 레이블은 공짜지만 *데이터*는 실제 하드웨어의 실제 주행 시간이고, 로봇이 그것을 수집하면서 살아남아야 한다.
 
 ### Limitations & critique
 
@@ -92,7 +91,6 @@ BADGR is the clean statement of the reframing that [[04-robotics/traversability-
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 하나도 없다** — 성공률도, 데이터 시간도, 베이스라인 대비 폭도 없다. 떠도는 BADGR 수치는 전부 본문이나 프로젝트 페이지에서 온 것이다. "자기지도"의 의미도 짚어야 한다: 레이블은 공짜지만 *데이터*는 실제 하드웨어의 실제 주행 시간이고, 로봇이 그것을 모으며 살아남아야 한다.
-> The abstract contains no numbers at all; every BADGR figure in circulation comes from the body or the project page.
 
 ### 한계와 비판
 

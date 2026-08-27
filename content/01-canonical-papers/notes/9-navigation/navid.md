@@ -44,7 +44,6 @@ The paper claims state-of-the-art performance in simulation and the real world, 
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > The quantified claims in the abstract are the **data volumes**, not the performance — 510k navigation samples and 763k web samples are stated exactly, while "state-of-the-art" and "superior transfer" are not. Note also that the 763k web samples are how the model gets its generality, which means the recipe is only reproducible by someone who can assemble comparable web data.
-> 초록에서 정량화된 주장은 성능이 아니라 **데이터 규모**다 — 내비게이션 표본 51만과 웹 데이터 76.3만은 정확히 진술되지만, "state-of-the-art"와 "우수한 전이"는 그렇지 않다. 76.3만 웹 표본이 모델의 일반성을 만든다는 점도 짚어야 한다. 비슷한 웹 데이터를 모을 수 있는 사람만 이 레시피를 재현할 수 있다는 뜻이다.
 
 ### Limitations & critique
 
@@ -94,7 +93,6 @@ NaVid는 **단안 RGB 카메라의 실시간 비디오 스트림**만 받아 다
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 초록에서 정량화된 주장은 성능이 아니라 **데이터 규모**다 — 내비게이션 표본 51만과 웹 데이터 76.3만은 정확히 진술되지만, "state-of-the-art"와 "우수한 전이"는 그렇지 않다. 76.3만 웹 표본이 모델의 일반성을 만든다는 점도 짚어야 한다. 비슷한 웹 데이터를 모을 수 있는 사람만 이 레시피를 재현할 수 있다는 뜻이다.
-> The quantified claims in the abstract are the data volumes, not the performance.
 
 ### 한계와 비판
 

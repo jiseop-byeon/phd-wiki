@@ -79,7 +79,6 @@ The headline claim is a **time**, not an accuracy: terrain segmentation in **und
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > The abstract carries exactly two numbers — **under 5 minutes** of in-field training and the **1.4 km** footpath run — and *both are cost-and-scale figures, not performance figures*. There are no success rates, no segmentation IoU, no baseline comparison in it. This is a *deployment-cost* result, and it should be cited as one: the contribution is that the adaptation loop is short enough to run when the robot arrives, not that the segmentation is more accurate than an offline model. Do not quote it as an accuracy result.
-> 초록에 든 숫자는 정확히 둘 — **5분 미만**의 현장 학습과 **1.4 km** 산책로 주행 — 이고, *둘 다 성능 수치가 아니라 비용·규모 수치다*. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
 
 ### Limitations & critique
 
@@ -162,7 +161,6 @@ WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이�
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 초록에 든 숫자는 정확히 둘 — **5분 미만**의 현장 학습과 **1.4 km** 산책로 주행 — 이고, *둘 다 성능 수치가 아니라 비용·규모 수치다*. 성공률도, 분할 IoU도, 베이스라인 비교도 없다. 이것은 *배포 비용* 결과이고 그렇게 인용해야 한다: 기여는 분할이 오프라인 모델보다 정확하다는 것이 아니라, 적응 루프가 로봇이 도착했을 때 돌릴 수 있을 만큼 짧다는 것이다. 정확도 결과로 인용하지 마라.
-> The only quantitative claim in the abstract is the five-minute training time — a deployment-cost result, not an accuracy result.
 
 ### 한계와 비판
 

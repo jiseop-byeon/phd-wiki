@@ -43,7 +43,6 @@ ViNT: **positive transfer** — outperforming specialist models trained on singu
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Positive transfer" is the paper's real, checkable claim and it is the interesting one — it says pooling across embodiments *helped* rather than merely not hurting. **No percentage appears in either abstract.** Note also what the datasets are: hundreds of hours of *wheeled and legged research platforms in mostly outdoor and campus settings*, which bounds what the "foundation" covers.
-> "positive transfer"가 논문의 실제로 확인 가능한 주장이고 흥미로운 주장이다 — 신체를 가로질러 데이터를 합치는 것이 해가 되지 않은 정도가 아니라 *도움이 되었다*는 말이다. **두 초록 어디에도 퍼센트는 없다.** 데이터셋이 무엇인지도 짚어야 한다: 대체로 야외와 캠퍼스 환경의 *바퀴형·다리형 연구 플랫폼* 수백 시간이고, 그것이 이 "파운데이션"이 덮는 범위를 한정한다.
 
 ### Limitations & critique
 
@@ -92,7 +91,6 @@ ViNT: **positive transfer** — 단일 데이터셋으로 학습한 전문 모�
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "positive transfer"가 논문의 실제로 확인 가능한 주장이고 흥미로운 주장이다 — 신체를 가로질러 데이터를 합치는 것이 해가 되지 않은 정도가 아니라 *도움이 되었다*는 말이다. **두 초록 어디에도 퍼센트는 없다.** 데이터셋이 무엇인지도 짚어야 한다: 대체로 야외와 캠퍼스 환경의 *바퀴형·다리형 연구 플랫폼* 수백 시간이고, 그것이 이 "파운데이션"이 덮는 범위를 한정한다.
-> No percentage appears in either abstract, and the pooled data is mostly outdoor campus-scale research platforms.
 
 ### 한계와 비판
 

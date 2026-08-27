@@ -39,7 +39,6 @@ State-of-the-art performance on comprehensive navigation benchmarks, plus real-w
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > Again the only exact number in the abstract is a **data volume — 3.6 M samples**. "State-of-the-art" is unquantified, "efficiency" is asserted without a rate, and the real-world experiments are described but not sized. Also weigh the claim structure: unification papers can post SOTA on a benchmark suite while being worse than the specialist on any single one. Check the per-task table in the body before repeating the headline.
-> 여기서도 초록의 유일한 정확한 숫자는 **데이터 규모 — 360만 표본**이다. "state-of-the-art"는 정량화되지 않았고, "효율"은 속도 없이 주장되며, 실제 환경 실험은 기술되지만 규모가 밝혀지지 않는다. 주장 구조도 저울질하라: 통합 논문은 벤치마크 묶음에서 SOTA를 찍으면서도 개별 과제에서는 전문 모델보다 나쁠 수 있다. 헤드라인을 옮기기 전에 본문의 과제별 표를 확인하라.
 
 ### Limitations & critique
 
@@ -83,7 +82,6 @@ Uni-NaVid는 다양한 체화 내비게이션 과제를 통합하는 **최초의
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 여기서도 초록의 유일한 정확한 숫자는 **데이터 규모 — 360만 표본**이다. "state-of-the-art"는 정량화되지 않았고, "효율"은 속도 없이 주장되며, 실제 환경 실험은 기술되지만 규모가 밝혀지지 않는다. 주장 구조도 저울질하라: 통합 논문은 벤치마크 묶음에서 SOTA를 찍으면서도 개별 과제에서는 전문 모델보다 나쁠 수 있다. 헤드라인을 옮기기 전에 본문의 과제별 표를 확인하라.
-> The only exact number in the abstract is again a data volume.
 
 ### 한계와 비판
 

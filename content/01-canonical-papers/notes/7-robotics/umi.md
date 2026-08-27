@@ -102,10 +102,6 @@ matters: the same demonstration data drives different arms.
 > project page, or secondary write-ups. That is not a criticism of the paper — it is a
 > warning about how you cite it. When you quote a UMI number, say which part of the paper it
 > came from, and check it there.
-> **이 논문의 초록에는 숫자가 하나도 없다.** UMI에 대해 떠도는 성공률·에피소드 수·수집 속도
-> 수치는 전부 본문, 프로젝트 페이지, 또는 2차 요약에서 온 것이다. 논문에 대한 비판이 아니라
-> *인용 방식*에 대한 경고다. UMI의 숫자를 인용할 때는 논문의 어느 부분에서 왔는지 밝히고
-> 거기서 확인하라.
 
 The demonstrated capability is the paper's real result: dynamic, bimanual, precise and
 long-horizon tasks learned from in-the-wild demonstrations and deployed on real arms, with
@@ -224,8 +220,6 @@ gap a construction adaptation would need to close.
 > **이 논문의 초록에는 숫자가 하나도 없다.** UMI에 대해 떠도는 성공률·에피소드 수·수집 속도
 > 수치는 전부 본문, 프로젝트 페이지, 또는 2차 요약에서 온 것이다. 논문에 대한 비판이 아니라
 > *인용 방식*에 대한 경고다. UMI의 숫자를 인용할 때는 논문의 어느 부분에서 왔는지 밝혀라.
-> **The abstract of this paper contains no numbers at all** — every figure that circulates
-> for UMI comes from the body, the project page, or secondary write-ups.
 
 이 논문의 진짜 결과는 실증된 능력 자체다: 야생에서 모은 시연으로 학습해 실제 팔에 배치한
 동적·양팔·정밀·긴 지평 작업들, 그리고 수집 때 보지 못한 환경과 물체로의 zero-shot 일반화.

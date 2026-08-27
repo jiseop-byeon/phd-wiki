@@ -42,7 +42,6 @@ Verbatim from the abstract: **zero-shot generalization from simulation to natura
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract of this paper reports no numbers.** No success rate, no distance, no speed, no comparison table — the claim is qualitative and environmental. What makes it credible is the *breadth of demonstrated conditions*, not a metric. Cite it for "blind proprioceptive locomotion generalises to natural terrain", never for a percentage. The wiki's canonical-claim discipline exists partly because this paper is so often quoted with numbers it does not contain.
-> **이 논문의 초록에는 숫자가 없다.** 성공률도, 거리도, 속도도, 비교표도 없다. 주장은 정성적이고 환경적이다. 신뢰를 만드는 것은 지표가 아니라 *실증된 조건의 폭*이다. "맹목적 고유수용 로코모션이 자연 지형으로 일반화한다"로 인용하고, 퍼센트로는 절대 인용하지 마라. 위키가 정본 주장 규율을 두는 이유 하나가, 이 논문이 담고 있지도 않은 숫자와 함께 너무 자주 인용되기 때문이다.
 
 ### Limitations & critique
 
@@ -92,7 +91,6 @@ This is the paper that made **teacher–student privileged distillation** the de
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 없다.** 성공률도, 거리도, 속도도, 비교표도 없다. 주장은 정성적이고 환경적이다. 신뢰를 만드는 것은 지표가 아니라 *실증된 조건의 폭*이다. "맹목적 고유수용 로코모션이 자연 지형으로 일반화한다"로 인용하고, 퍼센트로는 절대 인용하지 마라.
-> The abstract reports no numbers at all — the claim is qualitative and environmental, and its credibility comes from the breadth of demonstrated conditions.
 
 ### 한계와 비판
 

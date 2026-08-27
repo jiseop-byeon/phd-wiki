@@ -108,7 +108,7 @@ defined how modern policies output actions.
 
 ## 한국어
 
-**한 줄 요약**: 2천만 원대 오픈소스 양팔 원격조작 장비(ALOHA)와 Action Chunking with Transformers(ACT) — CVAE로 100개 행동을 한 번에 예측 — 로 시연 50개만으로 정밀한 양손 조작을 학습 가능하게 만들었다.
+**한 줄 요약**: 저비용 오픈소스 양팔 원격조작 장비(ALOHA — 논문 §III가 밝힌 예산은 2만 달러, 초록에는 가격이 없다)와 Action Chunking with Transformers(ACT) — CVAE로 100개 행동을 한 번에 예측 — 로 시연 50개만으로 정밀한 양손 조작을 학습 가능하게 만들었다.
 
 ### 배경
 

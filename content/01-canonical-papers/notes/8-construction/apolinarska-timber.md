@@ -106,12 +106,6 @@ method.
 > Compare [[01-canonical-papers/notes/8-construction/ext|ExT]], where the pretrained policy
 > does the hardware transfer and the fine-tuning results are simulation studies — the same
 > distinction, read the same way.
-> 두 가지를 구분해 두어라. **첫째, 이것은 실험실 sim-to-real이지 건설 현장이 아니다** — 실제
-> 하드웨어와 실제 목재를, 통제된 환경에서. [[05-construction-robotics/construction-manipulation|9. §3]]의
-> 중간 단계다. **둘째, "전적으로 시뮬레이션에서 학습"은 보이는 것보다 강한 주장이다**:
-> reality gap을 흡수하는 실기계 파인튜닝 단계가 없으므로 전이가 부하 전체를 지고 있다.
-> 사전학습 정책이 실기계 전이를 하고 파인튜닝 결과는 시뮬 연구인
-> [[01-canonical-papers/notes/8-construction/ext|ExT]]와 비교하라 — 같은 구분, 같은 독법이다.
 
 ### Limitations & critique
 
@@ -231,8 +225,6 @@ are exactly the gaps the arc is built around.
 > 흡수하는 실기계 파인튜닝 단계가 없으므로 전이가 부하 전체를 지고 있다. 사전학습 정책이
 > 실기계 전이를 하고 파인튜닝 결과는 시뮬 연구인 [[01-canonical-papers/notes/8-construction/ext|ExT]]와
 > 비교하라 — 같은 구분, 같은 독법이다.
-> This is laboratory sim-to-real, not a site; and "trained entirely in simulation" means no
-> real-robot fine-tuning absorbed the reality gap.
 
 ### 한계와 비판
 

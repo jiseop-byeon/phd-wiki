@@ -61,8 +61,12 @@ def _drop_shared_callouts(half):
             while j < len(lines) and lines[j].lstrip().startswith(">"):
                 j += 1
             blk = lines[i:j]
-            has_kr = any(HAN.search(_prose(l)) for l in blk)
-            has_en = any(LAT.search(_prose(l)) and not HAN.search(_prose(l)) for l in blk)
+            # The callout's own title is bilingual by convention ("Reading the
+            # claim · 핵심 주장 읽는 법"), so it says nothing about which
+            # languages the block's body serves. Test the body only.
+            body = blk[1:]
+            has_kr = any(HAN.search(_prose(l)) for l in body)
+            has_en = any(LAT.search(_prose(l)) and not HAN.search(_prose(l)) for l in body)
             if not (has_kr and has_en):   # both languages present ⇒ shared
                 out += blk
             i = j

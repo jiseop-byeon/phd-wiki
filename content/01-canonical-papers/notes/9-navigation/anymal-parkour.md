@@ -43,7 +43,6 @@ Trained on **simulated data only**, transferring to hardware, where the robot na
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > The one number is **2 m/s**, and it is a maximum, not an average. "Consecutive obstacles" is the load-bearing word in the results sentence — crossing obstacles one at a time from a reset is a much easier problem than chaining them, and the chaining is where a skill-selection architecture earns its keep. There is no success rate in the abstract.
-> 유일한 숫자는 **2 m/s**이고, 평균이 아니라 최대다. 결과 문장에서 무게를 지는 단어는 "연속된 장애물"이다 — 초기화 후 장애물을 하나씩 넘는 것은 그것들을 이어 붙이는 것보다 훨씬 쉬운 문제이고, 기술 선택 구조가 값을 하는 곳이 바로 이어 붙이기다. 초록에 성공률은 없다.
 
 ### Limitations & critique
 
@@ -90,7 +89,6 @@ The paper is the clearest existing demonstration that **navigation over rough te
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 유일한 숫자는 **2 m/s**이고, 평균이 아니라 최대다. 결과 문장에서 무게를 지는 단어는 "연속된 장애물"이다 — 초기화 후 장애물을 하나씩 넘는 것은 이어 붙이는 것보다 훨씬 쉬운 문제이고, 기술 선택 구조가 값을 하는 곳이 이어 붙이기다. 초록에 성공률은 없다.
-> The single number is a maximum speed, and "consecutive" is the load-bearing word in the results sentence.
 
 ### 한계와 비판
 

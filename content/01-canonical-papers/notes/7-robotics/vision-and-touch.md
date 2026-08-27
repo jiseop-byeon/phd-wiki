@@ -105,10 +105,6 @@ labels for "what a good multimodal representation of contact looks like".
 > "generalizing over different geometry, configurations, and clearances, while being robust
 > to external perturbations" — note the exact wording, which is routinely misquoted as
 > "varying geometries". The insertion success rates commonly quoted for it are body-only. Check them there before citing.
-> **이 논문의 초록에는 숫자가 없다** — 성공률도, 샘플 효율 배수도, 비전만과의 비교도. 초록
-> 수준의 가장 강한 주장은 원문 그대로 "generalizing over different geometry, configurations,
-> and clearances, while being robust to external perturbations"이다 — "varying geometries"로
-> 잘못 인용되는 일이 잦으니 표현을 정확히 옮겨라. 흔히 인용되는 삽입 성공률은 본문에만 있다. 인용 전에 거기서 확인하라.
 
 The claim that matters is the generalisation one: the same learned representation transfers
 across geometries, configurations and clearances rather than being fitted to one peg.
@@ -226,8 +222,6 @@ list differs**. They are two entries, not one.
 > **이 논문의 초록에는 숫자가 없다** — 성공률도, 샘플 효율 배수도, 비전만과의 비교도. 초록
 > 수준의 가장 강한 주장은 표현이 "다양한 기하·구성·공차에 걸쳐 일반화하며 외부 교란에
 > 견고하다"는 것이다. 흔히 인용되는 삽입 성공률은 본문에만 있다.
-> **The abstract states no numbers**; the commonly quoted insertion success rates are
-> body-only. Check them there before citing.
 
 중요한 주장은 일반화 쪽이다: 같은 학습된 표현이 하나의 peg에 맞춰진 것이 아니라 여러 기하·
 구성·공차를 가로질러 이전된다는 것.

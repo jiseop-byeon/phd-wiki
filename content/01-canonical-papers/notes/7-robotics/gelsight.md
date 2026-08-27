@@ -39,7 +39,6 @@ An elastomer slab with a reflective membrane takes on the shape of whatever is p
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract contains no numbers.** Its strongest statement is qualitative: the sensor measures geometry "with very high spatial resolution", in contrast to traditional tactile sensors that measure contact force. Every micron figure and sensing-area dimension quoted for GelSight comes from the body or from secondary sources — check there before citing one.
-> **초록에 숫자가 하나도 없다.** 가장 강한 진술이 정성적이다: 접촉력을 재는 전통적 촉각 센서와 달리 이 센서는 "매우 높은 공간 해상도로" 기하를 잰다. GelSight에 대해 인용되는 마이크론 수치와 감지 면적은 전부 본문이나 2차 출처에서 온 것이다.
 
 ### Limitations & critique
 
@@ -78,7 +77,6 @@ An elastomer slab with a reflective membrane takes on the shape of whatever is p
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 하나도 없다.** 가장 강한 진술이 정성적이다: 접촉력을 재는 전통적 촉각 센서와 달리 이 센서는 "매우 높은 공간 해상도로" 기하를 잰다. 인용되는 마이크론 수치와 감지 면적은 전부 본문이나 2차 출처에서 온 것이니, 인용 전에 거기서 확인하라.
-> **The abstract contains no numbers** — every resolution figure quoted for GelSight is body-only or secondary.
 
 ### 한계와 비판
 

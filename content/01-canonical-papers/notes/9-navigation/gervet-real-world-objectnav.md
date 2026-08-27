@@ -48,7 +48,6 @@ The paper also names two issues that stop today's simulators from being reliable
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > Six homes is a real-world study, and it is still six homes — a small sample chosen by the authors. The comparison is also between *representative* methods, not exhaustive ones, so it bounds a class rather than settling it. What makes the result durable is the size of the gap, not its precision: a 54-point collapse is not a sampling artefact.
-> 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 54포인트의 붕괴는 표집의 우연이 아니다.
 
 ### Limitations & critique
 
@@ -103,7 +102,6 @@ This is the paper to cite whenever a navigation result exists only in simulation
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 54포인트의 붕괴는 표집의 우연이 아니다.
-> Six homes is a small, author-chosen sample; what makes the result durable is the size of the gap, not its precision.
 
 ### 한계와 비판
 
