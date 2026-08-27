@@ -37,6 +37,18 @@ An elastomer slab with a reflective membrane takes on the shape of whatever is p
 
 ### Results
 
+The deliverable is a sensor and a set of demonstrations, not a benchmark table — which is
+why there are no headline numbers to quote. What a contact produces, concretely, is two
+images: a **height map** of the contact patch, recovered by photometric stereo, and a
+**lateral displacement** picture showing how the gel's surface slid sideways under load.
+
+The difference that makes is easiest to see against a taxel array. A pad reporting "3 N,
+somewhere on the fingertip" cannot separate a peg seated flat in its hole from one cocked
+two degrees off axis — both read as a normal force of roughly the same size. The height map
+separates them immediately, because the two cases press *different shapes* into the gel.
+That comparison is the entire argument for the sensor, and it is why the paper's claim is
+about **what is measured** rather than about how accurately.
+
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract contains no numbers.** Its strongest statement is qualitative: the sensor measures geometry "with very high spatial resolution", in contrast to traditional tactile sensors that measure contact force. Every micron figure and sensing-area dimension quoted for GelSight comes from the body or from secondary sources — check there before citing one.
 
@@ -74,6 +86,17 @@ An elastomer slab with a reflective membrane takes on the shape of whatever is p
 반사막을 입힌 엘라스토머 판이 눌린 대상의 형상을 그대로 받는다. 여러 방향의 RGB 조명과 광도 스테레오가 막의 겉모습을 표면 복원으로 바꾼다. 젤의 횡방향 변형이 법선 형상 위에 전단과 미끄러짐 정보를 더한다.
 
 ### 결과
+
+이 논문이 내놓는 것은 벤치마크 표가 아니라 센서와 시연들이다 — 인용할 대표 수치가 없는
+이유가 그것이다. 접촉 한 번이 실제로 만들어 내는 것은 이미지 둘이다: 광도 스테레오로
+복원한 접촉면의 **높이 지도**, 그리고 하중을 받아 젤 표면이 옆으로 얼마나 밀렸는지를 담은
+**횡변형** 그림.
+
+그 차이는 택셀 배열과 견주면 바로 보인다. "손끝 어딘가에 3 N"이라고 보고하는 패드는 구멍에
+반듯이 앉은 peg와 축에서 2도 기울어진 peg를 구분하지 못한다 — 둘 다 비슷한 크기의 법선력으로
+읽힌다. 높이 지도는 그 둘을 즉시 가른다. 두 경우가 젤에 *다른 형상*을 눌러 넣기 때문이다.
+이 비교 하나가 이 센서를 정당화하는 논증 전부이고, 이 논문의 주장이 정확도가 아니라
+**무엇을 재는가**에 관한 것인 이유다.
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 하나도 없다.** 가장 강한 진술이 정성적이다: 접촉력을 재는 전통적 촉각 센서와 달리 이 센서는 "매우 높은 공간 해상도로" 기하를 잰다. 인용되는 마이크론 수치와 감지 면적은 전부 본문이나 2차 출처에서 온 것이니, 인용 전에 거기서 확인하라.

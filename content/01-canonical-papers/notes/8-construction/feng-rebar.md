@@ -33,6 +33,16 @@ The robot drives on the mesh it is working on, which neatly solves mobility and 
 
 ### Results
 
+The paper reports two stages. First, validation "by experiments on a rebar mesh
+demonstration platform" — a controlled mock-up. Then "application of our robot system in the
+field of the Shenyang Hunnan Science and Technology City Phase IV project", where the
+abstract says it "achieved satisfactory performance". That second stage is the whole reason
+this note exists: a manipulator that actually worked on a live project, not a mock-up.
+
+What the paper does *not* report is equally load-bearing. There is no success rate, no ties
+per hour, no failure taxonomy, no comparison against a human crew. The evidence that the
+robot deployed is strong; the evidence for how well it deployed is one adjective.
+
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > This is one of only **three papers** this wiki's survey found that put a manipulator on an **active construction site** — the others are Dörfler et al. (2019), welding rebar in place in the Mesh Mould wall of the DFAB HOUSE, and Yu et al. (2007). The scope of that count matters: it is a search of the *modern* literature under six task keywords and it excludes the Japanese STCR era ([[05-construction-robotics/construction-manipulation|9. §3]]). The abstract states validation "by experiments on a rebar mesh demonstration platform" followed by "application of our robot system in the field of the Shenyang Hunnan Science and Technology City Phase IV project", where it "achieved satisfactory performance". Note the honest weakness of that last phrase: **"satisfactory performance" is not a measurement.** The deployment is the contribution; the quantitative field evidence is thin.
 
@@ -67,6 +77,15 @@ The robot drives on the mesh it is working on, which neatly solves mobility and 
 로봇이 작업 중인 메시 위를 주행하는데, 이것이 이동과 정합을 한 번에 깔끔하게 푼다 — 작업물이 곧 도로다. 교차점 검출에는 깊이 카메라와 산업용 카메라를 결합한 **2단 인식**을 쓴다. 얇고, 금속이고, 반사가 심하고, 도면이 말하는 자리에 있지 않은 대상에 대한 합리적인 대응이다.
 
 ### 결과
+
+논문은 두 단계를 보고한다. 먼저 "철근 메시 실증 플랫폼 실험"에 의한 검증 — 통제된
+목업이다. 그다음 "선양 훈난 과학기술도시 4기 프로젝트 현장에 적용"했고, 초록은 거기서
+"만족스러운 성능을 달성했다"고 말한다. 이 노트가 존재하는 이유가 두 번째 단계다: 목업이
+아니라 실제로 진행 중인 프로젝트에서 돌아간 매니퓰레이터다.
+
+논문이 보고하지 *않은* 것도 그만큼 무게를 진다. 성공률도, 시간당 결속 수도, 실패 분류도,
+사람 작업조와의 비교도 없다. 로봇이 현장에 배치됐다는 증거는 강하고, 얼마나 잘 배치됐는지에
+대한 증거는 형용사 하나다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > 이 위키의 조사에서 **가동 중인 건설 현장**에 매니퓰레이터를 올린 것으로 확인된 단 **세 논문** 중 하나다 — 나머지는 DFAB HOUSE의 Mesh Mould 벽에서 철근을 현장 용접한 Dörfler 등(2019)과 Yu 등(2007)이다. 그 집계의 범위가 중요하다: 현대 문헌을 여섯 개 과제 키워드로 훑은 것이고 일본 STCR 시대는 제외한다([[05-construction-robotics/construction-manipulation|9. §3]]). 초록은 "철근 메시 실증 플랫폼 실험"으로 검증한 뒤 "선양 훈난 과학기술도시 4기 프로젝트 현장에 적용"해 "만족스러운 성능을 달성했다"고 말한다. 마지막 표현의 정직한 약점을 보라: **"만족스러운 성능"은 측정이 아니다.** 배치가 기여이고, 정량적 현장 증거는 얇다.
