@@ -68,6 +68,35 @@ structure** — the force diverges long before the error closes. §5 uses the sa
 compute impact forces, so a claim about "a stiff contact" should always be read back to a row
 of this table.
 
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="a logarithmic stiffness axis from ten squared to ten to the eighth newtons per metre with the force a one centimetre error produces at three of them">
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="24" y="18">force produced by a 1 cm position error</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6">
+    <line x1="70" y1="112" x2="520" y2="112"/>
+    <line x1="70.0" y1="112" x2="70.0" y2="120"/><line x1="145.0" y1="112" x2="145.0" y2="120"/><line x1="220.0" y1="112" x2="220.0" y2="120"/><line x1="295.0" y1="112" x2="295.0" y2="120"/><line x1="370.0" y1="112" x2="370.0" y2="120"/><line x1="445.0" y1="112" x2="445.0" y2="120"/><line x1="520.0" y1="112" x2="520.0" y2="120"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7" text-anchor="middle">
+    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10⁳</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.6">
+    <text x="70" y="150">foam, card</text>
+    <text x="230" y="150">what a force controller identifies</text>
+    <text x="470" y="150">Hertzian</text>
+  </g>
+  <g><line x1="92.6" y1="96" x2="92.6" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="92.6" cy="96" r="4" fill="currentColor"/><line x1="220.0" y1="70" x2="220.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="220.0" cy="70" r="4" fill="currentColor"/><line x1="445.0" y1="44" x2="445.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="445.0" cy="44" r="4" fill="currentColor"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">a compliant controller</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">tool, F/T sensor, arm and part in series</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">steel on steel, local material contact</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.75">
+    <text x="24" y="170">environment stiffness K&#7497; (N/m), log scale</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="200">The controller does not decide to push with 100 N; that is simply what closing a 1 cm error</text>
+    <text x="24" y="216">costs at that stiffness. Six orders of magnitude separate the rows, so the same control law is</text>
+    <text x="24" y="232">safe at one end and impossible at the other &#8212; and a position controller aimed at structure</text>
+    <text x="24" y="248">diverges in force long before the error closes. Read every &#8220;stiff contact&#8221; claim back to a row.</text>
+  </g>
+</svg>
+
 This is the whole subject in one comparison. **Contact turns position error into force**, so
 control in contact is about choosing the *relation* between them rather than eliminating
 either one. Mason's 1981 formalisation of this is still the cleanest way to say it: contact
@@ -503,6 +532,35 @@ $10^7$ N/m에 대한 1 cm 오차는 $10^5$ N을 요구하고, 그것을 낼 수 
 없다. **위치 제어기를 구조체에 겨누지 않는 진짜 이유가 이것이다** — 오차가 닫히기 한참 전에
 힘이 발산한다. §5도 같은 두 행으로 충격력을 계산하므로, "단단한 접촉"이라는 주장은 언제나
 이 표의 어느 행인지로 되읽어야 한다.
+
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="10의 2승부터 8승까지 로그 눈금의 환경 강성 축과, 그중 세 곳에서 1 cm 오차가 만드는 힘">
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="24" y="18">1 cm 위치 오차가 만드는 힘</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6">
+    <line x1="70" y1="112" x2="520" y2="112"/>
+    <line x1="70.0" y1="112" x2="70.0" y2="120"/><line x1="145.0" y1="112" x2="145.0" y2="120"/><line x1="220.0" y1="112" x2="220.0" y2="120"/><line x1="295.0" y1="112" x2="295.0" y2="120"/><line x1="370.0" y1="112" x2="370.0" y2="120"/><line x1="445.0" y1="112" x2="445.0" y2="120"/><line x1="520.0" y1="112" x2="520.0" y2="120"/>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.7" text-anchor="middle">
+    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10⁳</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
+  </g>
+  <g font-size="9" fill="currentColor" opacity="0.6">
+    <text x="70" y="150">폼, 판지</text>
+    <text x="230" y="150">힘 제어기가 식별하는 값</text>
+    <text x="470" y="150">헤르츠 접촉</text>
+  </g>
+  <g><line x1="92.6" y1="96" x2="92.6" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="92.6" cy="96" r="4" fill="currentColor"/><line x1="220.0" y1="70" x2="220.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="220.0" cy="70" r="4" fill="currentColor"/><line x1="445.0" y1="44" x2="445.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="445.0" cy="44" r="4" fill="currentColor"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">유연하게 만든 제어기</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">도구·F/T 센서·팔·환경의 직렬 강성</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">강철 대 강철, 국소 재료 접촉</text></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.75">
+    <text x="24" y="170">환경 강성 K&#7497; (N/m), 로그 눈금</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" opacity="0.9">
+    <text x="24" y="200">제어기가 100 N으로 밀기로 결정한 것이 아니다. 그 강성에서 1 cm 오차를 닫는 비용이 그저</text>
+    <text x="24" y="216">그것일 뿐이다. 행 사이가 여섯 자릿수라서 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽</text>
+    <text x="24" y="232">끝에서는 불가능하다 &#8212; 구조물에 겨눈 위치 제어기는 오차가 닫히기 한참 전에 힘이 발산한다.</text>
+    <text x="24" y="248">&#8220;단단한 접촉&#8221;이라는 주장은 언제나 이 축의 어느 자리인지로 되읽어라.</text>
+  </g>
+</svg>
 
 이 비교 하나가 주제 전체다. **접촉은 위치 오차를 힘으로 바꾼다.** 그러므로 접촉에서의 제어는
 둘 중 하나를 없애는 일이 아니라 둘 사이의 *관계*를 고르는 일이다. Mason이 1981년에 이것을
