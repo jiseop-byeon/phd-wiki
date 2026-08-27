@@ -73,7 +73,7 @@ the two-rate idea re-echoes in [[gr00t-n1|GR00T]]'s slow/fast dual system.
 
 ## 한국어
 
-**한 줄 요약**: "CNN은 비디오를 어떻게 보는가"에 대한 두 가지 정전적 답: 2D 필터를 3D로 부풀려 ImageNet 가중치를 상속하거나(I3D), 시간을 두 속도로 — 느린 의미 경로와 빠른 운동 경로로 — 처리하거나(SlowFast).
+**한 줄 요약**: "CNN은 비디오를 어떻게 보는가"에 대한 두 가지 정본 답: 2D 필터를 3D로 부풀려 ImageNet 가중치를 상속하거나(I3D), 시간을 두 속도로 — 느린 의미 경로와 빠른 운동 경로로 — 처리하거나(SlowFast).
 
 ### 배경
 

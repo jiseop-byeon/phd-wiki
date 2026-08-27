@@ -95,7 +95,7 @@ The canonical "LLM as planner over robot skills" architecture, and the bridge be
 
 ### 영향과 후속 연구
 
-"로봇 skill 위의 planner로서의 LLM"이라는 정전적 아키텍처이자, end-to-end VLA 이전에 언어 계획과 로봇 학습을 잇는 다리. [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]와 [[01-canonical-papers/notes/4-vla/pi0|π0]]는 SayCan이 조심스럽게 유지한 경계를 녹인다: 지각·언어·행동 생성이 점수화된 library 대신 하나의 학습된 모델로 들어간다. SayCan을 먼저 읽으면 VLA가 무엇을 흡수했고 무엇을 포기했는지(명시적 실행가능성 추정, 모듈식 skill 업그레이드)가 선명해진다.
+"로봇 skill 위의 planner로서의 LLM"이라는 정본 아키텍처이자, end-to-end VLA 이전에 언어 계획과 로봇 학습을 잇는 다리. [[01-canonical-papers/notes/4-vla/rt-2|RT-2]]와 [[01-canonical-papers/notes/4-vla/pi0|π0]]는 SayCan이 조심스럽게 유지한 경계를 녹인다: 지각·언어·행동 생성이 점수화된 library 대신 하나의 학습된 모델로 들어간다. SayCan을 먼저 읽으면 VLA가 무엇을 흡수했고 무엇을 포기했는지(명시적 실행가능성 추정, 모듈식 skill 업그레이드)가 선명해진다.
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 접지된 언어 계획이 LM이 새 운동 기술을 배웠다는 뜻은 아니다. 성공은 skill library, affordance 추정기, 지각, 회복 executive에 의해 제한된다 — LM을 칭찬하거나 탓하기 전에 어느 구성요소가 실패했는지 확인하라.

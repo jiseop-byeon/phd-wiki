@@ -143,7 +143,7 @@ flowchart LR
 
 - **위치 추정·매핑**: 먼지, 반복 구조, 변하는 지면, 이동 작업자 속의 SLAM/GNSS — 지상
   로봇에서는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]의 바퀴 베이스
-  기구학과 오도메트리 드리프트 위에서 돈다. 건설의 정전적 진입점은 [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]] —
+  기구학과 오도메트리 드리프트 위에서 돈다. 건설의 정본 진입점은 [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]] —
   현장 포인트 클라우드를 자율적으로 스캔·정합하는 모바일 로봇으로, 이 라인은 UAV+UGV
   팀(2019)과 현장 배치된 적응적 시점 계획(2025)으로 이어졌다.
 - **Scan-to-BIM·공정**: 센서 자료를 설계 모델에 정합하고 설치·누락·편차를 추론한다. 정합
