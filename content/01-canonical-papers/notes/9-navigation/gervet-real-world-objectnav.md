@@ -46,7 +46,7 @@ A large-scale empirical study across **six homes with no prior experience, maps,
 
 The paper also names two issues that stop today's simulators from being reliable evaluation benchmarks: **(A) a large sim-to-real gap in images**, and **(B) a disconnect between simulation and real-world error modes.** (B) is the subtler and more damaging one: even if you accepted a performance drop, the *kinds* of failure differ, so simulation does not tell you what to fix.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > Six homes is a real-world study, and it is still six homes — a small sample chosen by the authors. The comparison is also between *representative* methods, not exhaustive ones, so it bounds a class rather than settling it. What makes the result durable is the size of the gap, not its precision: a 54-point collapse is not a sampling artefact.
 > 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 54포인트의 붕괴는 표집의 우연이 아니다.
 
@@ -101,7 +101,7 @@ This is the paper to cite whenever a navigation result exists only in simulation
 
 논문은 오늘날의 시뮬레이터가 신뢰할 만한 평가 벤치마크가 되지 못하는 두 가지 이유도 지목한다: **(A) 이미지에서의 큰 sim-to-real 격차**, 그리고 **(B) 시뮬레이션과 현실의 실패 양상 사이의 단절.** (B)가 더 미묘하고 더 해롭다: 성능 하락을 받아들인다 해도 실패의 *종류*가 다르므로, 시뮬레이션은 무엇을 고쳐야 하는지를 알려주지 못한다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 54포인트의 붕괴는 표집의 우연이 아니다.
 > Six homes is a small, author-chosen sample; what makes the result durable is the size of the gap, not its precision.
 

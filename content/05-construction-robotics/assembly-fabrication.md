@@ -87,7 +87,7 @@ localization become part of manipulation accuracy.
   — UGV+arm systems connect site localization, seam perception, manipulation, and human
   supervision, with switchable fully-automated and HRI modes.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > “Autonomous construction” may describe autonomous tool motion after humans prepared,
 > localized, and fixtured every part. Count setup, calibration, material feeding,
 > inspection, recovery, and finishing before assigning an autonomy level.

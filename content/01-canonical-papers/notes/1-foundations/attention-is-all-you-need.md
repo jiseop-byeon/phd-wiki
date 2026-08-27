@@ -80,7 +80,6 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
   </g>
 </svg>
 
-
 - **Multi-head attention** — run $h=8$ attention operations in parallel on different learned projections, then concatenate. Different heads learn different relation types (syntax, coreference, …).
 - **Three uses of attention**: encoder self-attention, decoder *masked* self-attention (causal mask preserves autoregression), and encoder-decoder cross-attention.
 - **Position-wise feed-forward** networks, **residual connections + LayerNorm** around every sublayer.
@@ -136,6 +135,9 @@ The whole sequence is processed in parallel; path length between any two tokens 
 ### Impact & follow-ups
 
 Arguably the most influential DL paper of the decade. Direct descendants: BERT (encoder-only), GPT line (decoder-only), ViT (images as token sequences), and every VLM/VLA/world model in this wiki. Reading it is a prerequisite for [[03-deep-learning/index|the entire deep learning track]].
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The title "Attention Is All You Need" does not claim "attention suffices for every task"; it claims that *for sequence transduction*, attention alone — no recurrence, no convolution — reaches state of the art. The verified scope is translation (plus parsing); generalization to vision and robotics was proven years later by other papers. Read the ambition of the title separately from the reach of the experiments.
 
 ### Connections
 
@@ -198,7 +200,6 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
   </g>
 </svg>
 
-
 - **Multi-head attention** — 서로 다른 학습된 투영 위에서 어텐션을 $h=8$개 병렬로 수행한 뒤 이어붙인다. 헤드마다 다른 종류의 관계(문법 구조, 지시 관계 등)를 학습한다.
 - **어텐션의 세 가지 쓰임**: 인코더 self-attention, 디코더의 *마스킹된* self-attention(인과 마스크로 자기회귀 유지), 인코더-디코더 cross-attention.
 - 위치별 feed-forward 네트워크, 모든 서브레이어에 **residual 연결 + LayerNorm**.
@@ -252,15 +253,13 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 
 지난 10년 딥러닝에서 가장 영향력 있는 논문이라 해도 과언이 아니다. 직계 후손: BERT(인코더만), GPT 계열(디코더만), ViT(이미지를 토큰 시퀀스로), 그리고 이 위키에 실릴 모든 VLM·VLA·월드모델. [[03-deep-learning/index|딥러닝 트랙]] 전체의 선수 과목에 해당한다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 제목 "Attention Is All You Need"는 "모든 과제에 어텐션이면 충분"이 아니라 "시퀀스 변환에서 순환·합성곱 없이 어텐션만으로 SOTA가 가능"이라는 주장이다. 검증 범위는 번역(+구문 분석)뿐 — 비전·로봇으로의 일반화는 수년 뒤 다른 논문들이 증명했다. 제목의 야심과 실험의 범위를 분리해서 읽어라.
+
 ### 연결
 
 - 이전: seq2seq + attention (Bahdanau 2015)
 - 다음으로 읽을 것: BERT, GPT-3, ViT
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> The title "Attention Is All You Need" does not claim "attention suffices for every task"; it claims that *for sequence transduction*, attention alone — no recurrence, no convolution — reaches state of the art. The verified scope is translation (plus parsing); generalization to vision and robotics was proven years later by other papers. Read the ambition of the title separately from the reach of the experiments.
->
-> 제목 "Attention Is All You Need"는 "모든 과제에 어텐션이면 충분"이 아니라 "시퀀스 변환에서 순환·합성곱 없이 어텐션만으로 SOTA가 가능"이라는 주장이다. 검증 범위는 번역(+구문 분석)뿐 — 비전·로봇으로의 일반화는 수년 뒤 다른 논문들이 증명했다. 제목의 야심과 실험의 범위를 분리해서 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

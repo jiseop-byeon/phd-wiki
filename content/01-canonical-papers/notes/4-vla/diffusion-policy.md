@@ -69,7 +69,6 @@ complex multimodal distributions with a stable regression loss. The transfer was
   </g>
 </svg>
 
-
 - **Receding-horizon control**: execute the first few actions of the chunk, re-plan —
   MPC's structure with a learned generative "solver" inside.
 - Visual encoder (CNN or Transformer) feeds the conditioning; the denoiser is a 1-D temporal
@@ -97,6 +96,9 @@ complex multimodal distributions with a stable regression loss. The transfer was
 
 Made diffusion the default action head of robot learning. Successors: 3D Diffusion Policy,
 diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the related training formulation]]); together with [[act|ACT]] it established **action chunking** as standard practice.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The "+46.9%" is an average over 12 tasks (the RSS 2023 count; the 2025 *IJRR* version reports 15) with large per-task variance. The substance of the claim is "it can represent multimodal action distributions", not "a general solution to manipulation" — language and cross-task generalization are outside this paper's scope (they arrive when it is combined with VLAs).
 
 ### Connections
 
@@ -151,7 +153,6 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
   </g>
 </svg>
 
-
 - **Receding-horizon 제어**: 청크의 앞부분 몇 개만 실행하고 재계획 — 학습된 생성형
   "솔버"를 안에 품은 MPC의 구조다.
 - 시각 인코더(CNN 또는 Transformer)가 조건을 공급; 노이즈 제거기는 행동 시퀀스 위의
@@ -180,17 +181,15 @@ diffusion heads in Octo, and π0's flow-matching head ([[flow-matching|the relat
 헤드, π0의 flow matching 헤드([[flow-matching|관련 학습 정식화]]); [[act|ACT]]와 함께
 **행동 청킹**을 표준 관행으로 확립했다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "+46.9%"는 12개 과제(RSS 2023 기준. 2025년 *IJRR* 판은 15개)의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
+
 ### 연결
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
 - 이전: [[ddpm|DDPM]] (생성 엔진), [[rt-1|RT-1]] (토큰화 대안)
 - 다음: [[act|ACT]] (병행하는 청킹 접근), Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> The "+46.9%" is an average over 12 tasks (the RSS 2023 count; the 2025 *IJRR* version reports 15) with large per-task variance. The substance of the claim is "it can represent multimodal action distributions", not "a general solution to manipulation" — language and cross-task generalization are outside this paper's scope (they arrive when it is combined with VLAs).
->
-> "+46.9%"는 12개 과제(RSS 2023 기준. 2025년 *IJRR* 판은 15개)의 평균이고 과제별 편차가 크다. 주장의 본질은 "다봉 행동 분포를 표현할 수 있다"이지 "조작 문제의 일반 해"가 아니다 — 언어도, 과제 간 일반화도 이 논문의 범위 밖이다(그건 VLA와의 결합에서 온다).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

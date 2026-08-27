@@ -33,6 +33,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage**: Houtan Jebelli is a SangHyun Lee PhD (UMich 2019) — this is the wearable-sensing/worker-physiology school applied to robot control. Yizhi Liu is now Syracuse faculty, carrying the line forward.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "Hands-free teleoperation" is an interface claim on a testbed — judge it by HCI/human-factors criteria (channel quality, operator burden, safety distance), not as a robot-autonomy contribution. This paper's real value lies less in any single result than in the worker-centered research programme it opened: from command, to collaboration, to intention prediction.
+
 ## 한국어
 
 **한 줄 요약**: 착용형 EEG 헤드셋이 작업자의 뇌파를 로봇 명령으로 해독해 건설 로봇의 핸즈프리 원격조종을 가능하게 한다 — 작업자 중심 BCI 계열의 창립 논문 쌍으로, 기여는 *인터페이스*이고 인간이 계속 제어자로 남는다.
@@ -51,8 +54,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: SangHyun Lee → Jebelli(UIUC) → Yizhi Liu(Syracuse) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> "Hands-free teleoperation" is an interface claim on a testbed — judge it by HCI/human-factors criteria (channel quality, operator burden, safety distance), not as a robot-autonomy contribution. This paper's real value lies less in any single result than in the worker-centered research programme it opened: from command, to collaboration, to intention prediction.
->
 > "hands-free teleoperation"은 테스트베드 위의 인터페이스 주장이다 — 로봇 자율성 기여가 아니라 HCI/인간공학 기여의 기준(채널 품질, 작업자 부담, 안전 거리)으로 평가해야 한다. 이 논문의 진짜 가치는 개별 결과보다 그것이 연 작업자 중심 연구 프로그램 — 명령에서 협업으로, 협업에서 의도 예측으로 — 에 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)

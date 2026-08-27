@@ -30,6 +30,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Evidence and limitations**: the evaluation is on a real wheel loader with materials not directly parameterized for the policy — "unknown material" means outside the policy's identified parameters in the reported evaluation, not all granular materials, pile geometries, weather conditions, or machines. Inspect the variation actually tested before generalizing the claim.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "Unknown material" claims generalization to materials not used in training, not a guarantee for arbitrary materials — the list of materials tested *is* the scope of the claim. And "automatic loading" means automating the short loading cycle, not site operations as a whole.
+
 ## 한국어
 
 **한 줄 요약**: 모방학습으로 사전학습하고 RL로 파인튜닝한 제어기가 실제 휠로더에서 미지의 재료에 대한 버킷 채우기를 수행해, 재료 변동을 가로지르는 학습 기반 접촉 제어를 실제 중장비 과제로 가져왔다.
@@ -41,8 +44,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **증거와 한계**: 평가는 정책에 직접 매개변수화되지 않은 재료로 실제 휠로더에서 이루어졌다 — "unknown material"은 보고된 평가에서 정책의 식별된 매개변수 밖이라는 뜻이지, 모든 입상 재료·더미 기하·날씨·기계를 뜻하지 않는다. 주장을 일반화하기 전에 실제로 시험된 변동 범위를 확인하라.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> "Unknown material" claims generalization to materials not used in training, not a guarantee for arbitrary materials — the list of materials tested *is* the scope of the claim. And "automatic loading" means automating the short loading cycle, not site operations as a whole.
->
 > "unknown material"은 학습에 안 쓴 재료로의 일반화 주장이지 임의 재료 보장이 아니다 — 시험된 재료 목록이 곧 주장의 범위다. 그리고 "automatic loading"은 짧은 적재 사이클(short loading cycle)의 자동화이지 현장 운영 전체가 아니다.
 
 ### 연결

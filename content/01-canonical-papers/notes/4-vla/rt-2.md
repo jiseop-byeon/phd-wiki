@@ -61,7 +61,6 @@ semantic knowledge *and* output motor commands?
   </g>
 </svg>
 
-
 - **Co-fine-tuning**: robot episodes are mixed with the original web VQA-style data during
   fine-tuning — keeping web knowledge alive instead of catastrophically forgetting it.
 - Inference: constrained decoding to valid action tokens, run in the cloud at 1–3 Hz.
@@ -91,6 +90,9 @@ Named and defined the **VLA** category. Every subsequent robot foundation model 
 π0, GR00T — is a descendant of the "pretrained VLM + action output head" template; the
 field's debates (discrete tokens vs continuous heads, co-training ratios) are debates about
 RT-2's design choices.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The title's "transfers web knowledge to robotic control" does not mean the robot learned new motor skills from the web — it means semantic knowledge from web pretraining transferred into action selection. The experiments measure exactly that (semantic generalization) and not the acquisition of new dexterity. Check the gap between the strongest reading the title permits and the reading the experiments support.
 
 ### Connections
 
@@ -135,7 +137,6 @@ RT-2가 답한 질문: 하나의 모델이 웹의 의미 지식을 유지하면�
   </g>
 </svg>
 
-
 - **공동 파인튜닝**: 파인튜닝 중 로봇 에피소드를 원래의 웹 VQA류 데이터와 섞는다 —
   웹 지식을 파국적으로 잊는 대신 살려두는 장치.
 - 추론: 유효한 행동 토큰으로 제약된 디코딩, 클라우드에서 1~3 Hz.
@@ -163,16 +164,14 @@ RT-2가 답한 질문: 하나의 모델이 웹의 의미 지식을 유지하면�
 GR00T — 은 "사전학습 VLM + 행동 출력 헤드" 템플릿의 후손이며, 분야의 논쟁들(이산 토큰
 vs 연속 헤드, 공동 학습 비율)은 곧 RT-2의 설계 선택에 대한 논쟁이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 제목의 "transfers web knowledge to robotic control"은 로봇이 새 운동 기술을 웹에서 배웠다는 뜻이 아니다 — 웹 사전학습의 의미 지식이 행동 선택으로 전이됐다는 뜻이다. 실험도 정확히 그것(semantic generalization)만 재고, 새로운 손재주 획득은 재지 않는다. 제목이 허용하는 가장 강한 독해와 실험이 지지하는 독해의 간극을 확인하라.
+
 ### 연결
 
 - 이전: [[saycan|SayCan]](어포던스에 접지된 언어), [[rt-1|RT-1]] (데이터와 토큰화), [[flamingo|Flamingo]]/[[llava|LLaVA]] (VLM 토대)
 - 다음: OpenVLA, π0, GR00T N1
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> The title's "transfers web knowledge to robotic control" does not mean the robot learned new motor skills from the web — it means semantic knowledge from web pretraining transferred into action selection. The experiments measure exactly that (semantic generalization) and not the acquisition of new dexterity. Check the gap between the strongest reading the title permits and the reading the experiments support.
->
-> 제목의 "transfers web knowledge to robotic control"은 로봇이 새 운동 기술을 웹에서 배웠다는 뜻이 아니다 — 웹 사전학습의 의미 지식이 행동 선택으로 전이됐다는 뜻이다. 실험도 정확히 그것(semantic generalization)만 재고, 새로운 손재주 획득은 재지 않는다. 제목이 허용하는 가장 강한 독해와 실험이 지지하는 독해의 간극을 확인하라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

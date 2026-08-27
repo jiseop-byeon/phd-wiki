@@ -40,7 +40,7 @@ A controlled sweep across algorithms, datasets and design choices, with the whol
 
 From the **abstract**: "an extensive study of **six** offline learning algorithms for robot manipulation on **five** simulated and **three** real-world multi-stage manipulation tasks of varying complexity."
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract reports no success rates** — only the scale of the study. The specific findings people cite from this paper (which choices matter most, what operator variation costs) are in the body. That is appropriate for a study paper, but it means every "robomimic showed that…" claim needs a section number attached.
 > **초록에는 성공률이 없다** — 연구의 규모만 있다. 이 논문에서 사람들이 인용하는 구체적 발견(어떤 선택이 가장 중요한가, 조작자 변동이 얼마나 비싼가)은 본문에 있다. 연구 논문으로서 적절하지만, "robomimic이 보였듯…"이라는 모든 주장에 절 번호를 붙여야 한다는 뜻이다.
 
@@ -81,7 +81,7 @@ From the **abstract**: "an extensive study of **six** offline learning algorithm
 
 **초록**에서: "복잡도가 다양한 시뮬레이션 과제 **다섯** 개와 실세계 다단계 조작 과제 **세** 개에 대한 로봇 조작용 오프라인 학습 알고리즘 **여섯** 개의 광범위한 연구."
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에는 성공률이 없다** — 연구의 규모만 있다. 사람들이 인용하는 구체적 발견은 본문에 있다. "robomimic이 보였듯…"이라는 모든 주장에 절 번호를 붙여야 한다는 뜻이다.
 > The abstract reports only the study's scale, no success rates.
 

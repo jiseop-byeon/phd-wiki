@@ -90,7 +90,7 @@ sensor failure, false alarms, intervention authority, near misses, workload/trus
 instruments, and productivity. Safety outcomes are rare events; absence of collision in
 a small study is not evidence of low operational risk.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > Separate **sensed state**, **inferred construct**, **robot response**, and **measured
 > human outcome**. Many papers establish only the first two links. A complete HRC claim
 > needs the full causal chain—or must label itself as a component study.

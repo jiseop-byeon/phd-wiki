@@ -62,7 +62,6 @@ flowchart LR
 50 Hz; the action expert can, but knows nothing on its own. Splitting the weights while
 sharing the forward pass is what lets each half keep what it is good at.*
 
-
 - **Pretrain → post-train recipe**, explicitly mirroring LLM practice: pretrain on a large
   cross-embodiment mixture (7 robot configurations, 68 tasks, 10k+ hours of the team's own data — **in addition to** [[open-x-embodiment|OXE]], DROID and Bridge, not including them), then post-train on curated high-quality task data.
 - Language interface allows high-level decomposition (a VLM planner can feed subtask
@@ -90,6 +89,9 @@ Set the current VLA design point: **VLM + continuous chunked action expert** is 
 default (π0.5, and [[gr00t-n1|GR00T N1]]'s dual-system echo it). Made "flow matching" a
 robotics vocabulary word and pretrain/post-train the standard framing for robot foundation
 models.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
 
 ### Connections
 
@@ -132,7 +134,6 @@ flowchart LR
 행동 전문가는 제어하지만 혼자서는 아무것도 모른다. 가중치를 나누되 순전파를 공유하는 것이
 각 절반이 잘하는 것을 지키게 하는 장치다.*
 
-
 - **사전학습 → 사후학습 레시피**, LLM 관행을 명시적으로 미러링: 대규모 교차-신체
   혼합물(로봇 구성 7종, 과제 68개, 1만 시간+의 자체 데이터 — [[open-x-embodiment|OXE]]·DROID·Bridge를 **포함한 것이 아니라 그에 더한** 것)로 사전학습 후
   선별된 고품질 과제 데이터로 사후학습.
@@ -160,16 +161,7 @@ flowchart LR
 로보틱스 어휘로 만들었고, 사전학습/사후학습을 로봇 파운데이션 모델의 표준 프레임으로
 만들었다.
 
-### 연결
-
-- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
-- 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[flow-matching|Flow Matching]] (수학)
-- 다음: [[gr00t-n1|GR00T N1]], π0.5
-- 계보: [[03-deep-learning/lineage|논문 계보도]]
-
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
->
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 >
 > **Independent evaluation, added 2026-08.** A third-party study at UPenn ran 300+ trials of
@@ -186,6 +178,13 @@ flowchart LR
 > 완료 0%** 를 보고한다. 극단적인 프롬프트 민감도도 발견했다: *"변기의 흰 뚜껑을 닫아라"* 는
 > 100%, *"변기를 닫아라"* 는 0%였다. 이 계열의 빨래 개기 주장 옆에는 이것을 함께 인용하라 —
 > 1차 결과와 유일한 독립 정량 평가가 크게 어긋나고, 그 격차가 정직한 현재 수준이다.
+
+### 연결
+
+- [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
+- 이전: [[openvla|OpenVLA]]/[[rt-2|RT-2]] (의미론), [[diffusion-policy|Diffusion Policy]]+[[act|ACT]] (제어), [[flow-matching|Flow Matching]] (수학)
+- 다음: [[gr00t-n1|GR00T N1]], π0.5
+- 계보: [[03-deep-learning/lineage|논문 계보도]]
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

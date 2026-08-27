@@ -56,8 +56,6 @@ classical sense-plan-control stack, which is why it is a useful baseline for the
 papers that followed. Second, the arm plans a FORCE trajectory rather than a position one;
 that choice is what makes a dig soil-agnostic, because the soil never has to be modelled.*
 
-
-
 **What it demonstrates, with the evidence character**: autonomous free-form trenching and
 embankment/grading on real outdoor terrain (embankments at 0.03–0.05 m mean error); slope
 operation via active chassis adaptation; tasks specified from geometric files and executed
@@ -79,6 +77,9 @@ out of scope.
 well-instrumented machine has carried a decade of research from classical control to
 learning-based digging. The construction analogue of what ALOHA
 ([[01-canonical-papers/notes/4-vla/act|ACT]]) did for bimanual manipulation research.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> This paper's claim is a demonstration of an autonomous walking-excavator *system*, not a new learning method. It is fair to judge it by system/platform criteria — integration completeness, reusability, whether it enabled follow-up research — and by those criteria it is among the field's best. Be precise about "autonomous" too: autonomous task execution on research worksites, not validation of unsupervised commercial deployment.
 
 ## 한국어
 
@@ -115,8 +116,6 @@ sense-plan-control 스택이고, 그래서 뒤이은 학습 기반 논문들의 
 팔이 계획하는 것은 위치 궤적이 아니라 *힘* 궤적이다. 그 선택이 굴착을 토질에 무관하게 만드는
 장치다 — 흙을 아예 모델링하지 않아도 되기 때문이다.*
 
-
-
 **보여준 것, 증거의 성격과 함께**: 실제 야외 현장에서의 자율 자유 곡선 트렌칭과
 제방/정지 작업(제방 평균 오차 0.03~0.05 m); 능동 섀시 적응을 통한 경사 작업; 기하
 파일로 지정된 과제를 연구 작업지에서 자율 실행. 플랫폼은 원격조작도 지원한다 — 동일한
@@ -139,8 +138,6 @@ sense-plan-control 스택이고, 그래서 뒤이은 학습 기반 논문들의 
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]] (4시대의 기준 시스템) · 스트림: [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> This paper's claim is a demonstration of an autonomous walking-excavator *system*, not a new learning method. It is fair to judge it by system/platform criteria — integration completeness, reusability, whether it enabled follow-up research — and by those criteria it is among the field's best. Be precise about "autonomous" too: autonomous task execution on research worksites, not validation of unsupervised commercial deployment.
->
 > 이 논문의 주장은 "자율 보행 굴착기 시스템의 실증"이다 — 새로운 학습 방법론의 기여가 아니다. 시스템/플랫폼 논문의 기준(통합 완성도, 재사용성, 후속 연구를 가능하게 했는가)으로 평가해야 공정하고, 그 기준으로는 이 분야 최고 수준이다. "autonomous"의 운용적 의미도 정확히: 연구 작업지에서의 과제 자율 실행이지, 상업적 무감독 배치의 검증이 아니다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)

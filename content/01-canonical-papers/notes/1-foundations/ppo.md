@@ -58,7 +58,7 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 
 The default policy-gradient algorithm of the field: simulator locomotion, dexterous manipulation, game-playing, and — via RLHF — language-model alignment ([[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]] runs PPO in its third stage). In construction robotics, PPO-class methods train the simulator experts that pipelines like [[01-canonical-papers/notes/8-construction/ext|ExT]] later distill into deployable transformer policies.
 
-> [!warning] 핵심 주장 읽는 법 · Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "PPO-trained" does not specify observation design, reward, simulator, curriculum, safety constraints, or real transfer. These choices often explain more than the optimizer name — read them before crediting or blaming PPO.
 
 ### Connections

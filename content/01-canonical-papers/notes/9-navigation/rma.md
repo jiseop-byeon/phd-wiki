@@ -39,7 +39,7 @@ Notably, RMA is trained **entirely in simulation without any domain knowledge** 
 
 Deployment across rocky, slippery and deformable surfaces, in environments with grass, long vegetation, concrete, pebbles, stairs, and sand. The abstract's summary claim is **state-of-the-art performance across diverse real-world and simulation experiments**.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "State-of-the-art performance" appears in the abstract **with no accompanying number, baseline, or metric**. The concrete claims are the terrain list, the *fractions of a second* adaptation time, and the absence of fine-tuning. Cite those; treat the SOTA phrase as unquantified.
 > "state-of-the-art performance"가 초록에 **어떤 숫자도, 베이스라인도, 지표도 없이** 등장한다. 구체적인 주장은 지형 목록, *1초의 몇 분의 일*이라는 적응 시간, 그리고 미세조정이 없다는 사실이다. 그것들을 인용하고, SOTA라는 표현은 정량화되지 않은 것으로 다뤄라.
 
@@ -84,7 +84,7 @@ RMA established online latent system identification as a peer of privileged dist
 
 바위·미끄러운 면·변형 지반, 그리고 풀·긴 식생·콘크리트·자갈·계단·모래가 있는 환경에서의 배포. 초록의 요약 주장은 **다양한 실제 및 시뮬레이션 실험에서 state-of-the-art 성능**이다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "state-of-the-art performance"가 초록에 **어떤 숫자도, 베이스라인도, 지표도 없이** 등장한다. 구체적인 주장은 지형 목록, *1초의 몇 분의 일*이라는 적응 시간, 그리고 미세조정이 없다는 사실이다. 그것들을 인용하고, SOTA라는 표현은 정량화되지 않은 것으로 다뤄라.
 > The SOTA phrase in the abstract carries no number, baseline, or metric.
 

@@ -191,7 +191,7 @@ Online replanning incorporates new observations. Reported replanning frequency i
 
 Learned components may provide a heuristic, cost, dynamics/world model, value function, proposal distribution, trajectory generator, or entire policy. A VLA that outputs actions is usually a policy; a world model that rolls out futures supports planning only when a selection or optimization procedure uses those futures.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > “Generates plausible trajectories” does not imply collision-free, dynamically feasible, stable, or safe execution. Check explicit constraints, downstream controllers, replanning, and closed-loop robot results.
 
 ### 9. Evaluation and failure modes
@@ -429,7 +429,7 @@ Direct shooting은 제어를 최적화하고 상태를 시뮬레이션한다. Di
 정책 전체 중 무엇이든 될 수 있다. 행동을 출력하는 VLA는 대개 정책이다; 미래를 롤아웃하는
 월드모델은 그 미래를 *선택·최적화 절차가 사용할 때에만* 계획을 지원한다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "그럴듯한 궤적을 생성한다"는 충돌 없음, 동역학적 실행 가능, 안정, 안전한 실행을
 > 함의하지 않는다. 명시적 제약, 하류 제어기, replanning, 폐루프 로봇 결과를 확인하라.
 

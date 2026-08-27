@@ -58,7 +58,6 @@ flowchart LR
 policy improvement happens entirely inside the model — which is why the sample cost is set
 by how fast the model becomes right, not by how fast the policy does.*
 
-
 - **v2 (ICLR 2021)**: categorical (discrete) latents + KL balancing — first world-model
   agent to reach human-level Atari (55 games) from pixels.
 - **v3 (arXiv 2023 → Nature 2025)**: robustness engineering so *one config fits all* —
@@ -87,6 +86,9 @@ by how fast the model becomes right, not by how fast the policy does.*
 The reference architecture for "learning inside imagination" — the conceptual engine behind
 using [[genie|Genie]]/[[cosmos|Cosmos]]-scale world models as robot training grounds, and
 the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data pyramid).
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> V3's "mastering diverse domains" is a robustness claim — 150+ tasks under a single configuration — not a claim to beat every specialized model on every task. And the validation is simulation-centered; real-robot generalization remains a separate question.
 
 ### Connections
 
@@ -129,7 +131,6 @@ flowchart LR
 개선은 전부 모델 안에서 일어난다 — 샘플 비용을 정하는 것이 정책이 좋아지는 속도가 아니라
 모델이 맞아지는 속도인 이유다.*
 
-
 - **v2 (ICLR 2021)**: 카테고리형(이산) 잠재변수 + KL 균형 — 월드모델 에이전트 최초로
   픽셀 입력 Atari(55개)에서 인간 수준 도달.
 - **v3 (arXiv 2023 → Nature 2025)**: *하나의 설정이 모두에 맞도록* 만드는 강건성 공학 —
@@ -156,16 +157,14 @@ flowchart LR
 쓰려는 발상의 개념적 엔진이자, physical AI 데이터 전략([[gr00t-n1|GR00T]]의 데이터
 피라미드)의 모델 기반 절반이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> v3의 "mastering diverse domains"는 "단일 설정으로 150+ 과제"라는 강건성 주장이지, 각 과제에서 특화 모델을 모두 이긴다는 주장이 아니다. 그리고 검증은 시뮬레이션 중심이다 — 실로봇 일반화는 별도의 질문으로 남아 있다.
+
 ### 연결
 
 - 이전: [[planet|PlaNet]] (RSSM) · 병행 비판: [[jepa|JEPA 계열]]
 - 다음: [[genie|Genie]], [[cosmos|Cosmos]] · 기초: [[02-foundations/rl-basics|RL 기초]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> V3's "mastering diverse domains" is a robustness claim — 150+ tasks under a single configuration — not a claim to beat every specialized model on every task. And the validation is simulation-centered; real-robot generalization remains a separate question.
->
-> v3의 "mastering diverse domains"는 "단일 설정으로 150+ 과제"라는 강건성 주장이지, 각 과제에서 특화 모델을 모두 이긴다는 주장이 아니다. 그리고 검증은 시뮬레이션 중심이다 — 실로봇 일반화는 별도의 질문으로 남아 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

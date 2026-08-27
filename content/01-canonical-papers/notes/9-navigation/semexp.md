@@ -42,7 +42,7 @@ The module boundaries are also a transfer mechanism: **domain-agnostic module de
 
 Outperforms a wide range of baselines including both end-to-end learned and modular map-based methods, and produced **the winning entry of the CVPR 2020 Habitat ObjectNav Challenge**.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > A challenge win is a strong result and a narrow one: it is the winner *on that year's split, in that simulator, under that episode definition*. The wiki's caution about ObjectNav benchmarks ([[04-robotics/semantic-language-navigation|19. §4, §6]]) applies here in full. The abstract's real-robot claim is "similar performance", stated **without a number** — do not quote a real-world success rate from it.
 > 챌린지 우승은 강한 결과이자 좁은 결과다: *그 해의 분할에서, 그 시뮬레이터에서, 그 에피소드 정의 아래* 우승이다. ObjectNav 벤치마크에 대한 위키의 주의([[04-robotics/semantic-language-navigation|19. §4, §6]])가 여기에 그대로 적용된다. 초록의 실로봇 주장은 "비슷한 성능"이고 **숫자 없이** 진술된다 — 여기서 실제 성공률을 인용하지 마라.
 
@@ -91,7 +91,7 @@ end-to-end 정책은 하나의 네트워크로 픽셀을 행동에 대응시킨�
 
 end-to-end 학습 방법과 모듈형 지도 기반 방법을 아우르는 폭넓은 베이스라인을 능가했고, **CVPR 2020 Habitat ObjectNav 챌린지 우승작**을 낳았다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 챌린지 우승은 강한 결과이자 좁은 결과다: *그 해의 분할에서, 그 시뮬레이터에서, 그 에피소드 정의 아래* 우승이다. ObjectNav 벤치마크에 대한 위키의 주의([[04-robotics/semantic-language-navigation|19. §4, §6]])가 그대로 적용된다. 초록의 실로봇 주장은 "비슷한 성능"이고 **숫자 없이** 진술된다 — 여기서 실제 성공률을 인용하지 마라.
 > A challenge win is strong but narrow, and the real-robot claim is stated without a number.
 

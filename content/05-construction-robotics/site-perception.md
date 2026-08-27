@@ -74,7 +74,7 @@ coverage, inspection time, missed hazards/defects, and downstream task effect. A
 train/test sites differ, whether ground truth came from the same BIM alignment being
 evaluated, and whether the system ran online on the moving platform.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > “Autonomous inspection” can mean autonomous navigation with offline human analysis, or
 > automatic detection on manually collected data. Find which sensing, motion, analysis,
 > and reporting steps were autonomous. “Scan-to-BIM accuracy” must separate sensor noise,

@@ -33,6 +33,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: the VR-to-real gap is a cousin of sim-to-real and is not measured against site conditions; task diversity is drywall-shaped; "scalable" refers to the *collection framework* (cloud pooling, reusable demos), not demonstrated scale across trades.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The "scalable" in "Scalable Transfer" is a claim about the *potential* scalability of the collection framework (cloud, reusable VR demonstrations), not a demonstration across trades and sites — the evaluation is a single drywall task. The hidden assumption is how much demonstration fidelity is sacrificed to make VR demos cheap (the VR-reality gap).
+
 ## 한국어
 
 **한 줄 요약**: 작업자가 VR에서 건설 과제를 시연하고, 시연은 재사용 가능한 디지털 자산으로 클라우드에 모이며, 계층적 모방학습이 장인의 기능을 순차적·반응적 하위 스킬로 분해한다 — 모방학습의 시연 비용 문제를 건설 모양으로 공략한 것(석고보드 설치).
@@ -52,8 +55,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: Kamat/Menassa → Yu(Virginia Tech 교수) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> The "scalable" in "Scalable Transfer" is a claim about the *potential* scalability of the collection framework (cloud, reusable VR demonstrations), not a demonstration across trades and sites — the evaluation is a single drywall task. The hidden assumption is how much demonstration fidelity is sacrificed to make VR demos cheap (the VR-reality gap).
->
 > "Scalable Transfer"의 scalable은 수집 프레임워크(클라우드, 재사용 가능한 VR 시연)의 확장 *가능성* 주장이지, 여러 공종·현장에 걸친 실증이 아니다 — 평가는 석고보드 하나다. VR 시연의 값싸짐이 실물 시연의 충실도를 얼마나 희생하는지(VR-실물 간극)가 이 주장의 숨은 가정이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)

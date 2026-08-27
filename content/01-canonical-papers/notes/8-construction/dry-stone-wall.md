@@ -49,7 +49,7 @@ fixture are both known before the robot moves.*
 
 **Limitations**: one platform, one project, one site. The workflow demonstrates integrated material reuse at full scale but not unrestricted autonomous masonry, arbitrary rock supply, or commercial productivity benchmarked against a human mason. Throughput and cost comparisons are not the paper's claim.
 
-> [!question] 핵심 주장 읽는 법 · Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > The result demonstrates an integrated material-reuse workflow — local material becomes sensed state, planned structure, and executed contact — on one instrumented platform and one project. Read it as a system-breadth claim (the closed perception→planning→force-control loop at multi-tonne scale), not as an object-detection benchmark and not as evidence that autonomous masonry is commercially solved.
 
 ## 한국어
@@ -79,7 +79,7 @@ flowchart LR
 
 **한계**: 플랫폼 하나, 프로젝트 하나, 현장 하나. 이 워크플로는 실규모의 통합 재료 재사용을 시연하지만, 무제한 자율 석공, 임의 석재 공급, 인간 석공 대비 상업 생산성을 보여주지는 않는다. 처리량·비용 비교는 이 논문의 주장이 아니다.
 
-> [!question] 핵심 주장 읽는 법
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > 이 결과는 통합 재료 재사용 워크플로 — 현지 재료가 감지된 상태, 계획된 구조, 실행된 접촉이 되는 — 를 계측된 플랫폼 하나와 프로젝트 하나에서 시연한다. 시스템 폭의 주장(수 톤급 규모에서 닫힌 인식→계획→힘 제어 루프)으로 읽어야지, 객체 탐지 벤치마크로도, 자율 석공이 상업적으로 풀렸다는 증거로도 읽으면 안 된다.
 
 ### 연결

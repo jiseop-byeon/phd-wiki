@@ -33,7 +33,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: 2018-era testbed environments, not active production sites; autonomy covers navigation-and-scanning, while scan planning (where to scan next) only becomes adaptive in the later work; drift and registration quality depend on environment geometry; the note's claims about exact accuracy are deliberately withheld because the paper is paywalled.
 
-> [!question] 핵심 주장 읽는 법 · Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > "SLAM-driven" means SLAM supplies the *initialization* for registration — the map quality still rests on fine registration, not on SLAM alone. And keep the evidence ledger straight: the 2018 paper proves the pipeline on testbeds; field deployment is the 2025 descendant's evidence, not this paper's.
 
 ## 한국어

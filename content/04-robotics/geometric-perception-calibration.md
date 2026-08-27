@@ -168,7 +168,7 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 | "calibration-free" | what is actually assumed (often: intrinsics still known) |
 | "real-time reconstruction" | hardware, resolution, drift over long sequences |
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > Sub-pixel reprojection error and beautiful reconstructions do not by themselves mean
 > the *pose is right in the robot's base frame* — that also requires correct extrinsics
 > and time synchronization, which many papers hold fixed and out of scope.
@@ -357,7 +357,7 @@ point)는 반복한다: (1) 각 점을 최근접 이웃과 짝짓고, (2) 그 �
 | "calibration-free" | 실제로 가정하는 것 (대개: intrinsics는 여전히 앎) |
 | "real-time reconstruction" | 하드웨어, 해상도, 긴 시퀀스에서의 drift |
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 서브픽셀 reprojection error와 아름다운 복원이 그 자체로 *로봇 베이스 프레임에서
 > pose가 맞다*는 뜻은 아니다 — 그러려면 올바른 extrinsics와 시간 동기화도 필요한데,
 > 많은 논문이 이를 고정된 범위 밖 가정으로 둔다.

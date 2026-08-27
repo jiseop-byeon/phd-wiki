@@ -37,7 +37,7 @@ Build from **2D foundation models** and fuse their output into 3D by **multi-vie
 
 Utility is demonstrated through downstream planning tasks specified by **abstract language prompts** requiring complex reasoning over spatial and semantic concepts.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract contains no numbers at all** — no map size, no query accuracy, no comparison. It is a representation paper, and its evidence is demonstrated capability on downstream tasks. That is legitimate, but it means there is nothing here to cite as a measurement. When you need one, you need the body.
 > **초록에 숫자가 하나도 없다** — 지도 크기도, 질의 정확도도, 비교도 없다. 표현에 관한 논문이고 증거는 하류 과제에서 실증된 능력이다. 정당한 형태지만, 측정치로 인용할 것이 여기에 없다는 뜻이기도 하다. 필요하면 본문으로 가야 한다.
 
@@ -82,7 +82,7 @@ ConceptGraphs made the object-graph the default for open-vocabulary mapping, and
 
 공간·의미 개념에 걸친 복잡한 추론을 요구하는 **추상적 언어 프롬프트**로 지정된 하류 계획 과제들로 유용성을 실증한다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **초록에 숫자가 하나도 없다** — 지도 크기도, 질의 정확도도, 비교도 없다. 표현에 관한 논문이고 증거는 하류 과제에서 실증된 능력이다. 정당한 형태지만, 측정치로 인용할 것이 여기에 없다는 뜻이기도 하다. 필요하면 본문으로 가야 한다.
 > The abstract contains no numbers at all; the evidence is demonstrated capability on downstream tasks.
 

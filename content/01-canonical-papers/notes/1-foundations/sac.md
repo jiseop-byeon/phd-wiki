@@ -57,7 +57,7 @@ On-policy methods like [[01-canonical-papers/notes/1-foundations/ppo|PPO]] throw
 
 The standard continuous-control off-policy baseline — most model-free comparisons in manipulation and locomotion papers include it, and its machinery (twin critics, squashed Gaussians, auto-temperature) became community defaults. For heavy machinery, replay efficiency is attractive because samples are expensive, but real deployments still route through simulation, constraints, or supervised data rather than raw on-hardware SAC.
 
-> [!warning] 핵심 주장 읽는 법 · Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Off-policy and sample-efficient" is measured in simulators with resets and dense rewards. On a real machine, add reset cost, safety envelopes, and reward instrumentation before the efficiency claim transfers.
 
 ### Connections

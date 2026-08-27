@@ -37,7 +37,7 @@ Build the leader to *be* the follower, smaller. Joint angles then transfer direc
 
 A user study reports it beating VR controllers and 3D spacemice for demonstration collection.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > Despite "Low-Cost" in the title, the **abstract states no dollar figure**, no demonstration counts, and no success rates. Its only number is that the recipe covers **three** commonly used arms — Franka, UR5, and xArm. Comparative claims in the abstract are stated without numbers. If you quote a GELLO price, it is a body or project-site figure; say so.
 > 제목에 "Low-Cost"가 있지만 **초록에는 금액도, 시연 수도, 성공률도 없다.** 유일한 숫자는 이 레시피가 흔히 쓰는 팔 **셋** — Franka, UR5, xArm — 을 다룬다는 것이다. 초록의 비교 주장에는 수치가 붙어 있지 않다. GELLO의 가격을 인용한다면 본문이나 프로젝트 사이트의 수치이니 그렇게 밝혀라.
 
@@ -74,7 +74,7 @@ A user study reports it beating VR controllers and 3D spacemice for demonstratio
 
 사용자 연구에서 시연 수집에 대해 VR 컨트롤러와 3D 스페이스마우스를 앞선다고 보고한다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 제목에 "Low-Cost"가 있지만 **초록에는 금액도, 시연 수도, 성공률도 없다.** 유일한 숫자는 흔히 쓰는 팔 **셋**(Franka, UR5, xArm)을 다룬다는 것이다. GELLO의 가격을 인용한다면 본문이나 프로젝트 사이트의 수치이니 그렇게 밝혀라.
 > Despite "Low-Cost" in the title, the abstract states no price, no demo counts, no success rates.
 

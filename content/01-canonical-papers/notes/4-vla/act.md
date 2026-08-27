@@ -69,7 +69,6 @@ and the algorithmic fragility needed fixing at once.
   </g>
 </svg>
 
-
 - **Temporal ensembling**: at each timestep, average all previously predicted actions for
   that step — smooth control without re-planning jitter.
 - Trained per task from ~50 human demos (~10 minutes of data); runs on a single GPU.
@@ -95,6 +94,9 @@ Twin legacies: (1) **action chunking** became a core VLA design element; (2) **A
 the field's data-collection workhorse — Mobile ALOHA, ALOHA 2, and the bimanual datasets
 behind π0/GR00T-era training all trace here. With [[diffusion-policy|Diffusion Policy]], it
 defined how modern policies output actions.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The scope of "fine manipulation with low-cost hardware" is per-task specialist policies (~50 demonstrations each) — it is not a generality claim. And this paper actually contains two contributions (the ALOHA hardware and the ACT algorithm) — read it while asking what share of the success belongs to each.
 
 ### Connections
 
@@ -143,7 +145,6 @@ defined how modern policies output actions.
   </g>
 </svg>
 
-
 - **Temporal ensembling**: 각 시점에 대해 이전에 예측된 모든 행동을 평균 —
   재계획 떨림 없는 부드러운 제어.
 - 과제당 인간 시연 약 50개(약 10분 분량)로 학습; GPU 한 장에서 구동.
@@ -169,6 +170,9 @@ defined how modern policies output actions.
 양팔 데이터셋들이 모두 여기서 나온다. [[diffusion-policy|Diffusion Policy]]와 함께
 현대 정책이 행동을 출력하는 방식을 정의했다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "fine manipulation with low-cost hardware"의 범위는 과제별 전문 정책(과제당 시연 ~50개)이다 — 범용성 주장이 아니다. 그리고 이 논문은 사실 두 개의 기여(ALOHA 하드웨어, ACT 알고리즘)를 담고 있다 — 성공의 몇 %가 어느 쪽 덕인지 분리해 생각하며 읽어라.
+
 ### 연결
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
@@ -176,11 +180,6 @@ defined how modern policies output actions.
 - 병행: [[diffusion-policy|Diffusion Policy]] (생성형 청킹) · 이전: [[vae|VAE]] (CVAE 기계장치)
 - 다음: Mobile ALOHA, Octo, π0
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> The scope of "fine manipulation with low-cost hardware" is per-task specialist policies (~50 demonstrations each) — it is not a generality claim. And this paper actually contains two contributions (the ALOHA hardware and the ACT algorithm) — read it while asking what share of the success belongs to each.
->
-> "fine manipulation with low-cost hardware"의 범위는 과제별 전문 정책(과제당 시연 ~50개)이다 — 범용성 주장이 아니다. 그리고 이 논문은 사실 두 개의 기여(ALOHA 하드웨어, ACT 알고리즘)를 담고 있다 — 성공의 몇 %가 어느 쪽 덕인지 분리해 생각하며 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

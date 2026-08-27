@@ -97,7 +97,7 @@ differ, and a policy that only worked at the tolerance it trained on would be a 
 curiosity. Generalising over tolerance is the difference between a demonstration and a
 method.
 
-> [!question] Reading the claim · 주장 읽는 법
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > Two things to keep straight. **First, this is laboratory sim-to-real, not a construction
 > site** — real hardware and real timber, in a controlled setting, which is the middle rung
 > of [[05-construction-robotics/construction-manipulation|9. §3]]. **Second, "trained
@@ -223,7 +223,7 @@ are exactly the gaps the arc is built around.
 공차에서만 동작하는 정책은 실험실의 진기한 물건일 뿐이다. 공차를 가로질러 일반화하는 것이
 실증과 방법의 차이다.
 
-> [!question] 주장 읽는 법 · Reading the claim
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > 두 가지를 구분해 두어라. **첫째, 이것은 실험실 sim-to-real이지 건설 현장이 아니다** — 실제
 > 하드웨어와 실제 목재를, 통제된 환경에서.
 > [[05-construction-robotics/construction-manipulation|9. §3]]의 중간 단계다.

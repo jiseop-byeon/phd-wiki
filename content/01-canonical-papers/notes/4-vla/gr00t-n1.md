@@ -60,7 +60,6 @@ flowchart LR
 choosing what to do, a fast layer keeping the body on that decision. The 10 Hz / 120 Hz gap
 is not an implementation detail — it is why a 1.34B VLM can be in the loop at all.*
 
-
 - Trained end-to-end across the pyramid: human videos (latent action learning), synthetic
   Isaac-generated data, neural trajectories, and multi-robot teleop
   ([[open-x-embodiment|OXE]]-style breadth plus humanoid-specific data).
@@ -90,6 +89,9 @@ strategy**: real data is the scarce apex, so simulation and generative world mod
 ([[01-canonical-papers/canonical-list|section 5]]) must fill the base. Successors (GR00T N1.5+,
 Cosmos-integrated pipelines) iterate on exactly that coupling — the direction most relevant
 to data-scarce domains like construction robotics.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The "open" in "open foundation model" means weights and code, not the full data; and the verified scope of "generalist humanoid" is short-horizon, tabletop-adjacent tasks. This paper's strongest contribution is best read as the data-pyramid *strategy statement* rather than the model itself.
 
 ### Connections
 
@@ -134,7 +136,6 @@ flowchart LR
 고르고, 빠른 층이 몸을 그 결정 위에 붙들어 둔다. 10 Hz / 120 Hz의 간격은 구현 디테일이
 아니라, 1.34B짜리 VLM이 애초에 루프 안에 들어올 수 있는 이유다.*
 
-
 - 피라미드 전체에 걸쳐 end-to-end 학습: 인간 비디오(잠재 행동 학습), Isaac 합성 데이터,
   신경 궤적, 다중 로봇 원격조작([[open-x-embodiment|OXE]]식 폭 + 휴머노이드 전용 데이터).
 - 완전 공개: 가중치, 시뮬레이션 벤치마크, 데이터 도구.
@@ -160,16 +161,14 @@ flowchart LR
 희소한 꼭짓점이므로 시뮬레이션과 생성형 월드모델([[01-canonical-papers/canonical-list|5번 섹션]])이 바닥을 채워야 한다. 후속(GR00T N1.5+, Cosmos 통합 파이프라인)이 정확히 그
 결합을 반복 개선 중 — 건설로봇처럼 데이터가 귀한 도메인에 가장 직결되는 방향이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "open foundation model"의 open은 가중치·코드이지 데이터 전체가 아니고, "generalist humanoid"의 검증 범위는 짧은 지평의 탁상 인접 과제다. 이 논문의 가장 강한 기여는 모델 자체보다 데이터 피라미드라는 전략 선언으로 읽는 것이 정확하다.
+
 ### 연결
 
 - 이전: [[pi0|π0]] (행동 전문가), [[open-x-embodiment|OXE]] (데이터 풀링), 월드모델 (데이터 엔진)
 - 다음: GR00T N1.5+, Cosmos 월드모델 파이프라인 · 도메인 연결: [[05-construction-robotics/index|건설로봇]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> The "open" in "open foundation model" means weights and code, not the full data; and the verified scope of "generalist humanoid" is short-horizon, tabletop-adjacent tasks. This paper's strongest contribution is best read as the data-pyramid *strategy statement* rather than the model itself.
->
-> "open foundation model"의 open은 가중치·코드이지 데이터 전체가 아니고, "generalist humanoid"의 검증 범위는 짧은 지평의 탁상 인접 과제다. 이 논문의 가장 강한 기여는 모델 자체보다 데이터 피라미드라는 전략 선언으로 읽는 것이 정확하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

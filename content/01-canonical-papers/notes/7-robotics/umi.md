@@ -96,7 +96,7 @@ matters: the same demonstration data drives different arms.
 
 ### Results
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract of this paper contains no numbers at all.** Every success rate, episode
 > count, and collection-speed figure that circulates for UMI comes from the body, the
 > project page, or secondary write-ups. That is not a criticism of the paper — it is a
@@ -220,7 +220,7 @@ gap a construction adaptation would need to close.
 
 ### 결과
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 하나도 없다.** UMI에 대해 떠도는 성공률·에피소드 수·수집 속도
 > 수치는 전부 본문, 프로젝트 페이지, 또는 2차 요약에서 온 것이다. 논문에 대한 비판이 아니라
 > *인용 방식*에 대한 경고다. UMI의 숫자를 인용할 때는 논문의 어느 부분에서 왔는지 밝혀라.

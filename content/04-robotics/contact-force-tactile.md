@@ -108,7 +108,7 @@ Learning may estimate residual dynamics, contact state, friction/material proper
 
 Measure task success, peak/mean force, force-tracking error, slip/drop rate, object or surface damage, recovery, safety violations, and robustness across materials and friction. “Contact-rich,” “compliant,” and “robust” require explicit task and perturbation definitions.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > A higher task success rate does not identify whether the gain came from tactile sensing, better control, safer force limits, or easier contact conditions. Look for matched baselines and ablations across sensing, controller, material, and initialization.
 
 ### After reading
@@ -272,7 +272,7 @@ $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 재료·마찰에 걸친 강건성을 재라. "Contact-rich", "compliant", "robust"는 명시적 과제·교란
 정의를 요구하는 주장이다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 성공률 상승만으로는 이득이 촉각 센싱, 더 나은 제어, 안전한 힘 한계, 쉬운 접촉 조건 중
 > 어디서 왔는지 알 수 없다. 센싱·제어기·재료·초기화에 걸친 짝지은 베이스라인과 절제
 > 실험을 찾아라.

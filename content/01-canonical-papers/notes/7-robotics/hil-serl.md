@@ -44,7 +44,7 @@ The system integrates demonstrations, human corrections, sample-efficient RL alg
 
 The paper also reports that the learned policies span both **reactive and predictive** control strategies — the policy chooses its own control regime per task rather than being told.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Near-perfect" is the abstract's own word; the exact per-task rates are in the body and should be quoted from there. The 2× and 1.8× are *averages over the task suite*, so they compress a spread — a per-task table will show tasks where the margin is much larger and tasks where it is not. And the training-time figure is per task, on a set-up already built: the hours do not include rig construction, reward design, or the operator's time in the loop.
 > "거의 완벽"은 초록 자신의 표현이고, 과제별 정확한 수치는 본문에 있으니 거기서 인용해야 한다. 2배와 1.8배는 *과제 묶음 전체의 평균*이므로 분산을 압축한다 — 과제별 표를 보면 격차가 훨씬 큰 과제와 그렇지 않은 과제가 있다. 학습 시간 수치도 이미 구축된 설정 위의 과제당 시간이다: 그 시간에는 장비 구성도, 보상 설계도, 루프 안에 있는 조작자의 시간도 포함되지 않는다.
 
@@ -98,7 +98,7 @@ RL에는 오래된 약속 — 복잡한 조작 기술의 자율적 습득 — �
 
 학습된 정책이 **반응적 제어와 예측적 제어 전략을 모두** 아우른다고도 보고한다 — 정책이 지시받는 대신 과제마다 자기 제어 방식을 고른다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "거의 완벽"은 초록 자신의 표현이고, 과제별 정확한 수치는 본문에 있으니 거기서 인용해야 한다. 2배와 1.8배는 *과제 묶음 전체의 평균*이므로 분산을 압축한다 — 과제별 표를 보면 격차가 훨씬 큰 과제와 그렇지 않은 과제가 있다. 학습 시간 수치도 이미 구축된 설정 위의 과제당 시간이다: 그 시간에는 장비 구성도, 보상 설계도, 루프 안에 있는 조작자의 시간도 포함되지 않는다.
 > The 2x and 1.8x figures are averages over the task suite, and the training-time number excludes rig construction, reward design, and operator time.
 

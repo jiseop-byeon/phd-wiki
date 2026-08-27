@@ -55,7 +55,7 @@ By 2022, LLMs could decompose "I spilled my drink, can you help?" into sensible 
 
 The canonical "LLM as planner over robot skills" architecture, and the bridge between language planning and robot learning before end-to-end VLA models. [[01-canonical-papers/notes/4-vla/rt-2|RT-2]] and [[01-canonical-papers/notes/4-vla/pi0|π0]] dissolve the boundary SayCan carefully maintains: perception, language, and action generation move into one learned model instead of a scored library. Reading SayCan first makes clear what VLA models absorbed and what they gave up (explicit feasibility estimates, modular skill upgrades).
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > Grounded language planning does not mean the LM learned new motor skills. Success is bounded by the skill library, the affordance estimator, perception, and the recovery executive — check which component failed before crediting or blaming the LM.
 
 ### Connections

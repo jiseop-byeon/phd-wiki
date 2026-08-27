@@ -99,7 +99,7 @@ labels for "what a good multimodal representation of contact looks like".
 
 ### Results
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **This paper's abstract states no numbers** — not a success rate, not a sample-efficiency
 > multiplier, not a vision-only comparison. Its strongest abstract-level claim is verbatim
 > "generalizing over different geometry, configurations, and clearances, while being robust
@@ -222,7 +222,7 @@ list differs**. They are two entries, not one.
 
 ### 결과
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 없다** — 성공률도, 샘플 효율 배수도, 비전만과의 비교도. 초록
 > 수준의 가장 강한 주장은 표현이 "다양한 기하·구성·공차에 걸쳐 일반화하며 외부 교란에
 > 견고하다"는 것이다. 흔히 인용되는 삽입 성공률은 본문에만 있다.

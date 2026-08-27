@@ -73,7 +73,6 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
   </g>
 </svg>
 
-
 - Trained on **WIT-400M**, a web-collected dataset of 400M image-text pairs.
 - **Zero-shot classification**: embed prompts like "a photo of a {class}" and pick the nearest class embedding — the label set is now free-form text.
 
@@ -114,6 +113,9 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 > a VLA paper says "SigLIP encoder", read it as *a CLIP-style aligned encoder trained with a
 > memory-cheaper, small-batch-friendlier objective* — the alignment idea this paper introduced is unchanged, and
 > everything §Method above says about what the embedding space means still applies.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "Transferable visual models from natural language supervision" — the substance is zero-shot transfer and robustness to distribution shift, not the best performance on every vision task (it is weak on fine-grained classification and counting). And the data condition, 400 million pairs, is built into the claim: data scale is half the result, not the method alone.
 
 ### Connections
 
@@ -171,7 +173,6 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
   </g>
 </svg>
 
-
 - **WIT-400M** — 웹에서 수집한 4억 이미지-텍스트 쌍으로 학습.
 - **Zero-shot 분류**: "a photo of a {class}" 같은 프롬프트를 임베딩해 가장 가까운 클래스를 선택 — 라벨 집합이 자유 텍스트가 된다.
 
@@ -211,15 +212,13 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 > §방법이 임베딩 공간의 의미에 대해 말한 것도 전부 그대로 적용된다. 요약하면 sigmoid가 사는
 > 것은 메모리 효율, 단일 패스 대칭성, 그리고 작은 배치에서의 품질이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "transferable visual models from natural language supervision" — 주장의 핵심은 zero-shot 전이와 분포 이동 강건성이지, 모든 시각 과제의 최고 성능이 아니다(세밀 분류·카운팅에선 약하다). 그리고 "4억 쌍"이라는 데이터 조건이 주장에 내장되어 있다 — 방법만이 아니라 데이터 규모가 결과의 절반이다.
+
 ### 연결
 
 - 이전: [[01-canonical-papers/notes/1-foundations/vit|ViT]], [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] (웹 규모 감독) · 다음: Flamingo, LLaVA → RT-2
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> "Transferable visual models from natural language supervision" — the substance is zero-shot transfer and robustness to distribution shift, not the best performance on every vision task (it is weak on fine-grained classification and counting). And the data condition, 400 million pairs, is built into the claim: data scale is half the result, not the method alone.
->
-> "transferable visual models from natural language supervision" — 주장의 핵심은 zero-shot 전이와 분포 이동 강건성이지, 모든 시각 과제의 최고 성능이 아니다(세밀 분류·카운팅에선 약하다). 그리고 "4억 쌍"이라는 데이터 조건이 주장에 내장되어 있다 — 방법만이 아니라 데이터 규모가 결과의 절반이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

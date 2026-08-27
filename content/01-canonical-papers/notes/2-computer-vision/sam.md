@@ -58,7 +58,6 @@ flowchart LR
 runs per prompt. Emitting three masks is not hedging — it is the model refusing to guess
 which of three valid readings of an ambiguous click you meant.*
 
-
 - **Data engine → SA-1B**: assisted-manual → semi-automatic → fully automatic stages;
   final dataset **11M images, 1.1B masks**, released.
 
@@ -81,6 +80,9 @@ Made segmentation an off-the-shelf capability: in robotics and construction perc
 SAM(+detector) is the default tool for object masks, progress monitoring, and data
 labeling. SAM 2 (2024) extended promptable segmentation to video/streaming — directly
 useful for site monitoring.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "Segment anything" means "find the boundary of anything", not "know what it is" — class-agnosticism is part of the design. And the qualifier *promptable* carries half the claim: this is not a claim to segment everything correctly on its own, without a prompt.
 
 ### Connections
 
@@ -123,7 +125,6 @@ flowchart LR
 돈다. 마스크를 셋 내놓는 것은 얼버무리는 것이 아니라, 모호한 클릭 하나에 대한 세 가지 타당한
 해석 중 무엇을 뜻했는지 모델이 넘겨짚기를 거부하는 것이다.*
 
-
 - **데이터 엔진 → SA-1B**: 보조 수동 → 반자동 → 완전 자동 단계;
   최종 **1,100만 이미지, 11억 마스크** 공개.
 
@@ -145,15 +146,13 @@ flowchart LR
 모니터링, 데이터 라벨링의 기본 도구다. SAM 2(2024)는 프롬프트 분할을 비디오/스트리밍으로
 확장 — 현장 모니터링에 직접 유용하다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "segment anything"은 "무엇이든 경계를 찾는다"이지 "무엇인지 안다"가 아니다 — 클래스 불가지가 설계의 일부다. 그리고 promptable이라는 단서가 주장의 절반이다: 프롬프트 없이 모든 것을 알아서 분할한다는 주장이 아니다.
+
 ### 연결
 
 - 이전: [[mae|MAE]] (인코더), [[detr|DETR]] 시대의 마스크 디코더, [[clip|CLIP]] (조합)
 - 도메인: [[05-construction-robotics/index|현장 인식]] · 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> "Segment anything" means "find the boundary of anything", not "know what it is" — class-agnosticism is part of the design. And the qualifier *promptable* carries half the claim: this is not a claim to segment everything correctly on its own, without a prompt.
->
-> "segment anything"은 "무엇이든 경계를 찾는다"이지 "무엇인지 안다"가 아니다 — 클래스 불가지가 설계의 일부다. 그리고 promptable이라는 단서가 주장의 절반이다: 프롬프트 없이 모든 것을 알아서 분할한다는 주장이 아니다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

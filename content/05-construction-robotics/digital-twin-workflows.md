@@ -94,7 +94,7 @@ handling, recovery after mismatch, and comparison with the existing workflow. A 
 that visualizes sensor data can be useful, but it does not by itself demonstrate a robot
 digital twin.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > “BIM-driven” may mean a human exported waypoints once. “Digital twin” may mean a 3D
 > viewer. Trace one task end to end: design entity → robot instruction → physical result →
 > sensed verification → model update → next decision.

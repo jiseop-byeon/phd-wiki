@@ -33,6 +33,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **What construction borrows, and what does not transfer**: construction borrows the metric vocabulary (fluency, concurrent motion, idle time, separation distance, perceived safety) and the twin finding — motion-level adaptation pays off in productivity *and* comfort at once, so safety and efficiency are not a trade-off. What does not transfer is the setting that made the result cheap to obtain: a fixed workcell, a repeatable task, reliable human tracking, a stable floor. Construction sites are unstructured and tasks are quasi-repetitive, which is why [[05-construction-robotics/hrc-worker-centered|stream 6]] must re-derive these results under site constraints rather than cite them.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The numbers (5.57%, 19.9%, …) come from a controlled laboratory task — what transfers to construction is the direction, not the magnitude: "human-aware planning improves objective fluency and subjective safety *at the same time*." That direction is robust; the magnitudes are task-specific and must be re-measured on unstructured sites. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
+
 ## 한국어
 
 **한 줄 요약**: 로봇이 *인간 동작의 예측을 중심으로* 모션을 계획하면 객관적 유창성과 주관적 경험이 동시에 개선된다 — 건설의 작업자 중심 스트림이 계속 수입하는 제조업 HRC의 결과.
@@ -51,8 +54,6 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 기초: [[04-robotics/hri-safety|11. HRI & Safety]] (인간 인지 계획과 안전 지표의 원류)
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> The numbers (5.57%, 19.9%, …) come from a controlled laboratory task — what transfers to construction is the direction, not the magnitude: "human-aware planning improves objective fluency and subjective safety *at the same time*." That direction is robust; the magnitudes are task-specific and must be re-measured on unstructured sites. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
->
 > 수치(5.57%, 19.9%, ...)는 통제된 실험실 과제의 것이다 — 건설로 가져갈 것은 크기가 아니라 방향이다: "인간 인지 계획은 객관적 유창성과 주관적 안전감을 *동시에* 개선한다." 이 방향은 강건하지만, 크기는 과제 특정적이며 비구조적 현장에서는 재측정되어야 한다. 2018 배치도 제조업 현장이지 건설 현장이 아님을 구분하라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)

@@ -55,7 +55,7 @@ A point cloud is an *unordered set* of 3D samples — permuting the points chang
 
 The grammar of an entire subfield: nearly every point-cloud architecture since either extends the shared-encoder-plus-symmetric-pool pattern or defines itself against it (sparse conv nets, KPConv, Point Transformer). **Construction connection**: LiDAR site segmentation, material and object recognition, and traversability estimation all start from unordered 3D samples — these papers are the literacy anchor for reading that literature, even where modern systems use different backbones.
 
-> [!warning] 핵심 주장 읽는 법 · Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Permutation-invariant" is often read as generic robustness. It is not — a rotated, sparser, or miscalibrated cloud is a different input, and site conditions (dust, rain, reflective surfaces) attack exactly those axes.
 
 ### Connections

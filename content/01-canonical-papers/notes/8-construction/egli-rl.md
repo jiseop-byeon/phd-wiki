@@ -33,7 +33,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: one machine class — everything is on the instrumented M545, and the actuator model must be re-learned per machine; testbed-vs-site: ETH test pits and controlled digging, not production sites; autonomy covers the *arm skill* (trajectory following, bucket filling) — where to dig, task sequencing, and site logistics remain outside; interventions are those of a supervised research trial, not reported field-duty statistics.
 
-> [!question] 핵심 주장 읽는 법 · Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > "a general approach" claims generality across *arm motions and tasks on a hydraulically actuated machine, given its learned actuator model* — read it as a reusable sim-to-real recipe for hydraulics, not as machine-general or site-general autonomy. Likewise "soil-adaptive" means online adaptation across the soils tested without parameter identification — evidence of a mechanism, not proof of all-soil generality.
 
 ## 한국어

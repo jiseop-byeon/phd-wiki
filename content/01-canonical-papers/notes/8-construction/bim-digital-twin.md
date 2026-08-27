@@ -33,7 +33,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: closed-loop in a laboratory task demonstrates the information architecture; it does not by itself validate project-scale BIM semantics, stale-data handling, multi-robot conflicts, or deployment economics. The gap between one lab cell's twin and a live project's federated model is the open problem.
 
-> [!question] Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > "Digital twin" is the most inflated term in construction informatics — most published "twins" are one-way visualizations. This paper's claim is specifically the *closed* loop: observations change the model and the model changes the next action. Audit exactly which observations update which state before crediting it, and keep laboratory-loop evidence distinct from project-scale deployment claims.
 
 ## 한국어
@@ -48,7 +48,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한계**: 실험실 과제의 폐루프는 정보 아키텍처를 시연한다. 그것만으로 프로젝트 규모의 BIM 의미론, 오래된 데이터 처리, 다중 로봇 충돌, 배치 경제성이 검증되지는 않는다. 실험실 셀 하나의 트윈과 실제 프로젝트의 연합 모델 사이의 간극이 열린 문제다.
 
-> [!question] 핵심 주장 읽는 법
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > "디지털 트윈"은 건설 정보학에서 가장 부풀려진 용어다 — 발표된 "트윈" 대부분은 일방향 시각화다. 이 논문의 주장은 구체적으로 *닫힌* 루프다: 관측이 모델을 바꾸고 모델이 다음 행동을 바꾼다. 인정하기 전에 정확히 어떤 관측이 어떤 상태를 갱신하는지 감사하고, 실험실 루프의 증거와 프로젝트 규모 배치 주장을 구분해 두라.
 
 ### 연결

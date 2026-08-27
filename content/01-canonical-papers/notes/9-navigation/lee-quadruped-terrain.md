@@ -40,7 +40,7 @@ The controller acts on **a stream of proprioceptive signals** — no cameras, no
 
 Verbatim from the abstract: **zero-shot generalization from simulation to natural environments**, across **two generations** of ANYmal robots, retaining robustness under conditions **never encountered during training** — deformable terrain such as mud and snow, dynamic footholds such as rubble, and overground impediments such as thick vegetation and gushing water.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract of this paper reports no numbers.** No success rate, no distance, no speed, no comparison table — the claim is qualitative and environmental. What makes it credible is the *breadth of demonstrated conditions*, not a metric. Cite it for "blind proprioceptive locomotion generalises to natural terrain", never for a percentage. The wiki's canonical-claim discipline exists partly because this paper is so often quoted with numbers it does not contain.
 > **이 논문의 초록에는 숫자가 없다.** 성공률도, 거리도, 속도도, 비교표도 없다. 주장은 정성적이고 환경적이다. 신뢰를 만드는 것은 지표가 아니라 *실증된 조건의 폭*이다. "맹목적 고유수용 로코모션이 자연 지형으로 일반화한다"로 인용하고, 퍼센트로는 절대 인용하지 마라. 위키가 정본 주장 규율을 두는 이유 하나가, 이 논문이 담고 있지도 않은 숫자와 함께 너무 자주 인용되기 때문이다.
 
@@ -90,7 +90,7 @@ This is the paper that made **teacher–student privileged distillation** the de
 
 초록 그대로: **시뮬레이션에서 자연 환경으로의 zero-shot 일반화**, ANYmal **두 세대**에 걸쳐, **학습 중 한 번도 마주친 적 없는** 조건에서도 강건함 유지 — 진흙과 눈 같은 변형 지형, 잔해 같은 동적 디딤면, 무성한 식생과 쏟아지는 물 같은 지상 방해물.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 없다.** 성공률도, 거리도, 속도도, 비교표도 없다. 주장은 정성적이고 환경적이다. 신뢰를 만드는 것은 지표가 아니라 *실증된 조건의 폭*이다. "맹목적 고유수용 로코모션이 자연 지형으로 일반화한다"로 인용하고, 퍼센트로는 절대 인용하지 마라.
 > The abstract reports no numbers at all — the claim is qualitative and environmental, and its credibility comes from the breadth of demonstrated conditions.
 

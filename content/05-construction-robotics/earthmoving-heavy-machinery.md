@@ -150,7 +150,7 @@ soil/weather variation, continuous-operation hours without intervention, and —
 learned systems — the sim-to-real gap stated quantitatively. A single dig cycle in one
 soil bin supports almost no claim.
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Autonomous excavation" in a title can mean anything from a single force-controlled dig
 > cycle in a gravel bin to 24 h uncrewed truck loading. The abstract rarely tells you
 > which; the evaluation section always does. Check machine size, site realism,
@@ -318,7 +318,7 @@ flowchart LR
 그리고 학습 시스템이라면 정량적으로 명시된 sim-to-real 격차. 모래통 하나에서의 굴착
 사이클 한 번은 거의 아무 주장도 지지하지 못한다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 제목의 "autonomous excavation"은 자갈통에서의 힘 제어 굴착 사이클 한 번부터 24시간
 > 무인 트럭 적재까지 무엇이든 의미할 수 있다. 초록은 어느 쪽인지 거의 말해 주지 않는다;
 > 평가 섹션은 항상 말해 준다. 두 논문을 비교하기 전에 기계 크기, 현장 현실성, 연속 운영

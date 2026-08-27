@@ -101,7 +101,6 @@ years. DDPM found the parameterization that makes them work.
   </g>
 </svg>
 
-
 - **The key reparameterization**: predict the noise $\epsilon_\theta(x_t, t)$ instead of the mean;
   the (weighted) ELBO becomes $E_{t,x_0,\epsilon}\big[\|\epsilon - \epsilon_\theta(x_t,t)\|^2\big]$ — the "simple loss."
 - U-Net backbone with timestep embedding; ~1000 steps at inference.
@@ -128,6 +127,9 @@ Made diffusion the dominant generative paradigm: Stable Diffusion, Imagen, video
 (Sora), and — critically for this wiki — **robot action generation**: Diffusion Policy denoises
 action trajectories exactly this way, and π0's flow matching is this idea's continuous-time
 descendant. The noise-prediction U-Net/DiT recipe is today's default generative backbone.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "High quality image synthesis" is a claim measured by FID (sample quality) — the paper itself reports that it trails autoregressive models on log-likelihood. And "probabilistic models" means it is trained with a variational bound, not that sampling is practical (1000 steps) — DDIM is what closes that gap.
 
 ### Connections
 
@@ -214,7 +216,6 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
   </g>
 </svg>
 
-
 - **결정적 재매개변수화**: 평균 대신 노이즈 $\epsilon_\theta(x_t, t)$를 예측;
   (가중된) ELBO가 $E_{t,x_0,\epsilon}\big[\|\epsilon - \epsilon_\theta(x_t,t)\|^2\big]$가 된다 — "simple loss".
 - 타임스텝 임베딩을 가진 U-Net 백본; 추론 시 약 1000 스텝.
@@ -241,16 +242,14 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 궤적의 노이즈를 제거하고, π0의 flow matching은 이 아이디어의 연속 시간 후손이다.
 노이즈 예측 U-Net/DiT 레시피는 오늘날 생성 모델의 기본 백본이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "high quality image synthesis"는 FID(샘플 품질) 기준의 주장이다 — 로그 우도로는 자기회귀 모델에 뒤진다는 것을 논문 스스로 보고한다. 또 "probabilistic models"는 변분 하한으로 학습한다는 뜻이지 샘플링이 실용적이라는 뜻이 아니다(1000 스텝) — 그 격차는 DDIM이 메운다.
+
 ### 연결
 
 - 이전: [[u-net|U-Net]](백본), [[vae|VAE]] (변분 기계장치), [[gan|GAN]] (밀어낸 경쟁자)
 - 다음: [[score-sde|Score SDE]] (통합 관점), [[ddim|DDIM]], [[latent-diffusion|Latent Diffusion]] → [[diffusion-policy|Diffusion Policy]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> "High quality image synthesis" is a claim measured by FID (sample quality) — the paper itself reports that it trails autoregressive models on log-likelihood. And "probabilistic models" means it is trained with a variational bound, not that sampling is practical (1000 steps) — DDIM is what closes that gap.
->
-> "high quality image synthesis"는 FID(샘플 품질) 기준의 주장이다 — 로그 우도로는 자기회귀 모델에 뒤진다는 것을 논문 스스로 보고한다. 또 "probabilistic models"는 변분 하한으로 학습한다는 뜻이지 샘플링이 실용적이라는 뜻이 아니다(1000 스텝) — 그 격차는 DDIM이 메운다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

@@ -78,13 +78,14 @@ on hardware, and it comes from the **pretrained** policy; the fine-tuning result
 part that sounds most like the LLM paradigm — are simulation studies. Same paper, two very
 different evidentiary weights ([[05-construction-robotics/sim-to-real|deployment ladder]]).*
 
-
-
 **Placed in the map**: the merge that the
 [[05-construction-robotics/lineage|lineage]] page calls open territory — era-4 robot
 learning (imitation, pretrain→fine-tune) arriving on era-1R heavy machines — now with its
 first occupant. Open questions: task diversity is still excavation-shaped; no language
 conditioning; and the safety story for learned policies on real sites is unwritten.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The "scalable" in "scalable autonomous excavation" is a claim about the framework's scalability (collection → pretraining → fine-tuning), not validation of real site deployment — the safety story and task diversity remain open problems. Read it as a signal that the foundation-model era of excavation has *opened*, not that it has arrived.
 
 ## 한국어
 
@@ -134,8 +135,6 @@ flowchart LR
 **사전학습된** 정책에서 나온다. LLM 패러다임처럼 들리는 파인튜닝 결과 쪽은 시뮬레이션 연구다.
 같은 논문, 매우 다른 두 증거 무게([[05-construction-robotics/sim-to-real|배치 사다리]]).*
 
-
-
 **지도에서의 위치**: [[05-construction-robotics/lineage|계보]] 페이지가 열린 영토라 부르는
 합류 — 4시대의 로봇 학습(모방, 사전학습→파인튜닝)이 1R시대의 중장비에 도착하는 지점 —
 의 첫 입주자다. 열린 질문:
@@ -148,8 +147,6 @@ flowchart LR
 - 계보: [[05-construction-robotics/lineage|건설로봇 계보]]의 4시대×1R시대 합류점
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> The "scalable" in "scalable autonomous excavation" is a claim about the framework's scalability (collection → pretraining → fine-tuning), not validation of real site deployment — the safety story and task diversity remain open problems. Read it as a signal that the foundation-model era of excavation has *opened*, not that it has arrived.
->
 > "scalable autonomous excavation"의 scalable은 프레임워크(수집→사전학습→파인튜닝)의 확장 가능성 주장이지, 실제 현장 배치의 검증이 아니다 — 안전 체계와 과제 다양성은 열린 문제로 남아 있다. "굴착의 파운데이션 모델 시대가 열렸다"는 신호로 읽되, "도착했다"로 읽지 마라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)

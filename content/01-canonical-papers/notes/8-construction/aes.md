@@ -47,7 +47,7 @@ platform and none of them are in the algorithm.*
 
 **Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. Task variety is narrow (loading), the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
 
-> [!question] 핵심 주장 읽는 법 · Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > Continuous operation in a constrained material-handling site is strong deployment evidence, but not proof of general excavation autonomy. Separate three different claims when citing AES: (a) machine-size transfer of one stack, (b) 24-hour uncrewed intervals, and (c) human-level tons/hour — each holds in the reported loading deployment, none automatically extends to arbitrary soils, sites, or tasks.
 
 ## 한국어
@@ -76,7 +76,7 @@ flowchart LR
 
 **한계**: 배치 현장은 제한된 재료 적재 현장이지 개방 환경 토공이 아니다. 과제 다양성이 좁고(적재), 환경이 반구조화되어 있으며, 안전은 온보드 보장이 아니라 현장 통제로 관리된다. 기계 크기 전이, 현장/과제 변동, 누적 생산 시간은 각각 별도의 증거를 가진 별도의 주장으로 읽어야 한다.
 
-> [!question] 핵심 주장 읽는 법
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > 제한된 재료 처리 현장의 연속 운용은 강한 배치 증거이지만 일반 굴착 자율성의 증명은 아니다. AES를 인용할 때 세 주장을 분리하라: (a) 한 스택의 기계 크기 간 전이, (b) 24시간 무인 구간, (c) 인간 수준 tons/hour — 각각은 보고된 적재 배치에서 성립하며, 어느 것도 임의의 토질·현장·과제로 자동 확장되지 않는다.
 
 ### 연결

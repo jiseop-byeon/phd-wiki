@@ -69,7 +69,6 @@ of the flow itself.
   </g>
 </svg>
 
-
   velocity $x_1 - x_0$ — straighter than diffusion's curved paths, which *permits* far fewer inference
   steps; diffusion paths are recovered as a special case.
 - Sampling: integrate the learned ODE from noise to data.
@@ -92,6 +91,9 @@ video models) — and for robotics: [[pi0|π0]]'s action expert and [[gr00t-n1|G
 System 1 generate 50–120 Hz action chunks with exactly this recipe, because few-step
 straight-path inference is what real-time control demands. The MIT tutorial in the local
 reference folder (Holderrieth & Erives) teaches this paper's framework.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Read two claims separately: (1) the theoretical one — it is a general framework containing diffusion paths as a special case (proved); (2) the empirical one — straight OT paths work better in practice (benchmark-dependent). The first does not automatically guarantee the second, and the real reason for adoption is that the second happened to fit robot real-time control.
 
 ### Connections
 
@@ -145,7 +147,6 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
   </g>
 </svg>
 
-
   디퓨전의 굽은 경로보다 곧다 ⇒ 추론 스텝이 훨씬 적어도 된다; 디퓨전 경로는 특수 사례로
   복원된다.
 - 샘플링: 학습된 ODE를 노이즈에서 데이터로 적분.
@@ -169,16 +170,14 @@ reference folder (Holderrieth & Erives) teaches this paper's framework.
 직선 경로 추론이기 때문이다. 로컬 reference 폴더의 MIT 튜토리얼(Holderrieth & Erives)이
 이 논문의 프레임워크를 가르친다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 두 주장을 분리해서 읽어라: ① 이론적 주장 — 디퓨전 경로를 특수 사례로 포함하는 일반 프레임이다(증명됨), ② 경험적 주장 — OT 직선 경로가 실용적으로 낫다(벤치마크 의존). ①이 ②를 자동으로 보장하지 않는다 — 채택의 실제 이유는 ②가 로봇 실시간 제어와 맞아떨어졌기 때문이다.
+
 ### 연결
 
 - 이전: [[ddpm|DDPM]], [[score-sde|Score SDE]], [[ddim|DDIM]] (ODE 계보)
 - 다음: [[pi0|π0]], [[gr00t-n1|GR00T N1]] 행동 헤드, SD3/Flux
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> Read two claims separately: (1) the theoretical one — it is a general framework containing diffusion paths as a special case (proved); (2) the empirical one — straight OT paths work better in practice (benchmark-dependent). The first does not automatically guarantee the second, and the real reason for adoption is that the second happened to fit robot real-time control.
->
-> 두 주장을 분리해서 읽어라: ① 이론적 주장 — 디퓨전 경로를 특수 사례로 포함하는 일반 프레임이다(증명됨), ② 경험적 주장 — OT 직선 경로가 실용적으로 낫다(벤치마크 의존). ①이 ②를 자동으로 보장하지 않는다 — 채택의 실제 이유는 ②가 로봇 실시간 제어와 맞아떨어졌기 때문이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

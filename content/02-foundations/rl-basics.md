@@ -425,7 +425,7 @@ RL results depend on protocol more than those of almost any other subfield. What
   value function, and treating it as terminal quietly teaches the policy that the world
   ends at the time limit.
 
-> [!warning] Reading the claim · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > An RL result is a claim about a *reward, an observation space, a simulator, a curriculum,
 > an exploration scheme, and an evaluation protocol* — the algorithm name is the least
 > informative part of it. Before comparing two RL papers, check that those six match; when

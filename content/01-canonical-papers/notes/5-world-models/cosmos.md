@@ -76,6 +76,9 @@ synthetic data for [[gr00t-n1|GR00T]]-class VLAs, closed-loop policy evaluation,
 Cosmos-Reason/Transfer successors. For data-scarce domains — construction sites included —
 this "pretrain a world model, post-train to your domain" pattern is the one to watch.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "World foundation model platform" is a claim about a platform — reusable infrastructure — not a claim to have achieved accurate physical simulation; the paper itself concedes the physics benchmarks remain approximate. Read it as a declaration of what is being built rather than of what has been achieved.
+
 ### Connections
 
 - Previous: [[sora|Sora]] (the thesis), [[genie|Genie]] (interactivity), [[ddpm|DDPM]]/[[gpt-3|GPT]] (the two generator families)
@@ -134,16 +137,14 @@ VLA를 위한 합성 데이터, 폐루프 정책 평가, Cosmos-Reason/Transfer 
 도메인 — 건설 현장 포함 — 에서 "월드모델을 사전학습하고 내 도메인으로 사후학습"하는 이
 패턴이 주시해야 할 방향이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "world foundation model platform"은 플랫폼(재사용 가능한 인프라) 주장이지 물리 시뮬레이션의 정확성 달성 주장이 아니다 — 물리 벤치마크는 아직 근사 수준임을 논문도 인정한다. "무엇이 됐다"보다 "무엇을 지으려는가"의 선언으로 읽어라.
+
 ### 연결
 
 - 이전: [[sora|Sora]] (명제), [[genie|Genie]] (상호작용성), [[ddpm|DDPM]]/[[gpt-3|GPT]] (두 생성기 계보)
 - 다음: GR00T 데이터 파이프라인, Cosmos-Reason/Transfer · 도메인 연결: [[05-construction-robotics/index|건설로봇]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> "World foundation model platform" is a claim about a platform — reusable infrastructure — not a claim to have achieved accurate physical simulation; the paper itself concedes the physics benchmarks remain approximate. Read it as a declaration of what is being built rather than of what has been achieved.
->
-> "world foundation model platform"은 플랫폼(재사용 가능한 인프라) 주장이지 물리 시뮬레이션의 정확성 달성 주장이 아니다 — 물리 벤치마크는 아직 근사 수준임을 논문도 인정한다. "무엇이 됐다"보다 "무엇을 지으려는가"의 선언으로 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

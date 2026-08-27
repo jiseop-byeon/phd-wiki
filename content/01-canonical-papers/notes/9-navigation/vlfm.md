@@ -48,7 +48,7 @@ The design is deliberately modular, which is the property [[01-canonical-papers/
 
 Evaluated in Habitat on **Gibson, HM3D, and MP3D**, reaching state-of-the-art **SPL** on all three for object-goal navigation. Deployed zero-shot on a **Boston Dynamics Spot** and shown navigating to target objects in a real office building with no prior knowledge of the environment.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > **SPL, not success, is the reported metric** — SPL penalises inefficient paths, so a method can lead on SPL while a competitor finds the object more often. Check which one a comparison uses before repeating it. The real-world result is a demonstration ("we deploy and show"), not a measured success rate; the abstract gives no real-world number.
 > **보고된 지표는 success가 아니라 SPL이다** — SPL은 비효율적 경로에 벌점을 주므로, 어떤 방법이 SPL에서 앞서면서도 물체를 더 자주 찾는 쪽은 경쟁 방법일 수 있다. 비교를 옮기기 전에 어느 지표인지 확인하라. 실제 환경 결과는 측정된 성공률이 아니라 실증("배포해서 보인다")이고, 초록에 실제 환경 숫자는 없다.
 
@@ -106,7 +106,7 @@ VLFM is the cleanest demonstration that **foundation-model priors can replace ta
 
 Habitat의 **Gibson, HM3D, MP3D**에서 평가해 물체 목표 내비게이션 **SPL** 기준 세 데이터셋 모두에서 state-of-the-art. **Boston Dynamics Spot**에 zero-shot으로 배포해, 사전 지식 없는 실제 사무실 건물에서 목표 물체까지 주행하는 것을 보인다.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **보고된 지표는 success가 아니라 SPL이다** — SPL은 비효율적 경로에 벌점을 주므로, 어떤 방법이 SPL에서 앞서면서도 물체를 더 자주 찾는 쪽은 경쟁 방법일 수 있다. 비교를 옮기기 전에 어느 지표인지 확인하라. 실제 환경 결과는 측정된 성공률이 아니라 실증이고, 초록에 실제 환경 숫자는 없다.
 > The reported metric is SPL, not success rate, and the real-world result is a demonstration rather than a measurement.
 

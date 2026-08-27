@@ -47,7 +47,7 @@ replaces the fixture — and step 4 is what makes the claim checkable rather tha
 
 **Limitations**: marker-based metrology and prepared components deliberately remove most site uncertainty — the paper solves registration and closure, not perception in clutter. Component variety, tolerance recovery when parts do not fit, and marker-free localization are all left to successors (Lundeen 2019 addresses as-built geometric adaptation directly).
 
-> [!question] Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > "Autonomous robotic assembly" here means autonomous within a marker-instrumented, prepared-component workflow. Treat the paper as the foundational integrated loop — the first complete design→build→verify cycle on a mobile construction manipulator — not as evidence that unstructured site assembly was solved in 2015. The fiducial markers are the load-bearing assumption: every later paper in this lineage can be read as removing one of them.
 
 ## 한국어
@@ -77,7 +77,7 @@ flowchart LR
 
 **한계**: 마커 기반 계측과 준비된 부품은 현장 불확실성 대부분을 의도적으로 제거한다 — 이 논문이 푸는 것은 정합과 루프 닫기이지, 어수선한 환경에서의 인식이 아니다. 부품 다양성, 부품이 맞지 않을 때의 공차 복구, 마커 없는 정합은 모두 후속 연구의 몫이다(Lundeen 2019가 as-built 기하 적응을 직접 다룬다).
 
-> [!question] 핵심 주장 읽는 법
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > 여기서 "자율 로봇 조립"은 마커가 설치되고 부품이 준비된 워크플로 안에서의 자율을 뜻한다. 이 논문은 기초적 통합 루프 — 모바일 건설 매니퓰레이터에서 최초의 완결된 설계→시공→검증 사이클 — 로 읽어야지, 2015년에 비정형 현장 조립이 풀렸다는 증거로 읽으면 안 된다. 피두셜 마커가 하중을 받는 가정이다: 이 계보의 이후 논문들은 각각 그 가정 하나씩을 제거하는 것으로 읽을 수 있다.
 
 ### 연결

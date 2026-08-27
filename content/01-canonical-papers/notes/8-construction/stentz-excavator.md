@@ -32,7 +32,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Limitations**: it relies on structured task geometry and 1990s sensing; it does not address learning across machines or soils, long-duration unattended operation, or open-site human interaction. Safety is an obstacle-stop protocol, not a certified safety case.
 
-> [!question] 핵심 주장 읽는 법 · Reading the claim
+> [!question] Reading the claim · 핵심 주장 읽는 법
 > "As fast as human operators" refers to the demonstrated loading setup — a localized truck, a prepared soil face, a bounded workspace — not arbitrary excavation, soils, sites, or safety conditions. Read the task boundary and the obstacle protocol before translating this 1999 result into modern autonomy language; the honest modern comparison is against [[01-canonical-papers/notes/8-construction/aes|AES]]'s deployment metrics, not against learned-policy papers.
 
 ## 한국어
@@ -47,7 +47,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한계**: 구조화된 과제 기하와 1990년대 센싱에 의존한다. 기계·토질 간 학습, 장시간 무인 운용, 개방 현장의 인간 상호작용은 다루지 않는다. 안전은 인증된 안전 체계가 아니라 장애물 정지 프로토콜이다.
 
-> [!question] 핵심 주장 읽는 법
+> [!question] 핵심 주장 읽는 법 · Reading the claim
 > "인간 운전자만큼 빠르다"는 시연된 적재 설정 — 정위치화된 트럭, 준비된 토사면, 경계 지어진 작업 공간 — 에 한정되며 임의의 굴착·토질·현장·안전 조건이 아니다. 이 1999년 결과를 현대 자율성 언어로 번역하기 전에 과제 경계와 장애물 프로토콜을 읽어라. 정직한 현대적 비교 대상은 학습 정책 논문이 아니라 [[01-canonical-papers/notes/8-construction/aes|AES]]의 배치 지표다.
 
 ### 연결

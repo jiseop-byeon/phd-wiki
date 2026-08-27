@@ -88,7 +88,7 @@ mean no real-system knowledge was used to build or tune the simulator.
 
 ### 4. Reading the evidence
 
-> [!warning] Reading the claim
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > “Successful sim-to-real transfer” proves transfer only for the reported machine,
 > operating range, and intervention protocol. Find the randomized variables, real-data
 > budget, safety controller, failed trials, and whether evaluation conditions were used

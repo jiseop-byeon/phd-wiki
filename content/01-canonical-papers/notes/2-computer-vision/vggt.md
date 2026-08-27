@@ -68,7 +68,6 @@ training rather than from a solver — which is why the failure mode differs too
 that cannot converge says so; a network off its training distribution just returns a
 confident answer.*
 
-
 - Trained on a large mix of real+synthetic 3D-annotated datasets; purely feed-forward at
   inference (~seconds for hundreds of frames).
 
@@ -94,6 +93,9 @@ ecosystem followed (VGGT-SLAM, LiDAR fusion, VLA integrations feeding 3D tokens 
 policies). For construction: near-real-time as-built reconstruction and progress capture
 from ordinary photos — the classical photogrammetry pipeline compressed into one forward
 pass.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> "Feed-forward replaces SfM" is a speed-accuracy trade claim *inside the training distribution*. On the highest-precision benchmarks optimization pipelines can still win, and the paper concedes this by leaving a BA-refinement option. Read it as "the default has changed", not "the method is replaced".
 
 ### Connections
 
@@ -138,7 +140,6 @@ flowchart LR
 수렴하지 못하는 솔버는 그 사실을 알려주지만, 학습 분포에서 벗어난 신경망은 그냥 자신 있는
 답을 돌려준다.*
 
-
 - 실제+합성 3D 주석 데이터셋의 대규모 혼합으로 학습; 추론은 순수 feed-forward
   (수백 프레임에 약 수 초).
 
@@ -162,16 +163,14 @@ flowchart LR
 일반 사진만으로 준실시간 준공(as-built) 재구성과 공정 캡처 — 고전 사진측량 파이프라인이
 forward pass 하나로 압축된 것이다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> "feed-forward가 SfM을 대체한다"는 학습 분포 안에서의 속도-정확도 교환 주장이다 — 최고 정밀 벤치마크에서는 최적화 파이프라인이 여전히 우세할 수 있고, 논문 스스로 BA 정제 옵션을 남겨 이를 인정한다. "대체"가 아니라 "기본값의 교대"로 읽는 것이 정확하다.
+
 ### 연결
 
 - 이전: [[nerf|NeRF]]/[[3d-gaussian-splatting|3DGS]] (장면별 최적화 시대), [[dino|DINOv2]], DUSt3R
 - 도메인: [[05-construction-robotics/index|준공 캡처와 공정 모니터링]]
 - 계보: [[03-deep-learning/lineage|논문 계보도]]
-
-> [!question] 핵심 주장 읽는 법 · Reading the claim
-> "Feed-forward replaces SfM" is a speed-accuracy trade claim *inside the training distribution*. On the highest-precision benchmarks optimization pipelines can still win, and the paper concedes this by leaving a BA-refinement option. Read it as "the default has changed", not "the method is replaced".
->
-> "feed-forward가 SfM을 대체한다"는 학습 분포 안에서의 속도-정확도 교환 주장이다 — 최고 정밀 벤치마크에서는 최적화 파이프라인이 여전히 우세할 수 있고, 논문 스스로 BA 정제 옵션을 남겨 이를 인정한다. "대체"가 아니라 "기본값의 교대"로 읽는 것이 정확하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

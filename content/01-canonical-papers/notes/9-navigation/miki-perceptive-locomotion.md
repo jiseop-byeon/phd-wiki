@@ -42,7 +42,7 @@ An **attention-based recurrent encoder** integrates proprioceptive and exterocep
 
 The evidence is deployment breadth plus one memorable demonstration: testing across **a variety of challenging natural and urban environments over multiple seasons**, and completion of an **hour-long hike in the Alps in the time recommended for human hikers**.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > The Alpine hike is a *time-budget* result, not a success rate: on the full 2.2 km route the controller took **78 minutes against a 76-minute** hiking-guide time — two minutes *over*, which the paper words as "virtually the same time". It was faster only on the summit leg: 31 min against the 35 min on the signage. That is a genuinely good metric — it is externally defined and not chosen by the authors — but it is a single route, and it is not a distribution over routes. As with [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee et al. 2020]], **the abstract contains no success rates and no comparison numbers.**
 > 알프스 등반은 성공률이 아니라 *시간 예산* 결과다: 2.2 km 전체 경로에서 제어기는 **76분짜리 등산 안내 시간에 대해 78분**이 걸렸다 — 2분 *초과*이고, 논문은 이를 "사실상 같은 시간"이라 표현한다. 더 빨랐던 것은 정상 구간뿐이다: 표지판의 35분에 대해 31분. 외부에서 정의되었고 저자가 고르지 않았다는 점에서 정말 좋은 지표지만, 경로 하나이지 경로의 분포가 아니다. [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee 등 2020]]과 마찬가지로 **초록에 성공률도 비교 수치도 없다.**
 
@@ -94,7 +94,7 @@ Together with [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee
 
 증거는 배포의 폭에 기억할 만한 실증 하나가 더해진 형태다: **여러 계절에 걸쳐 다양한 험한 자연·도시 환경**에서의 시험, 그리고 **알프스에서 사람 등산객에게 권장되는 시간 안에 한 시간짜리 산행 완주**.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > 알프스 산행은 성공률이 아니라 *시간 예산* 결과다: 2.2 km 전체 경로에서 제어기는 **76분짜리 등산 안내 시간에 대해 78분**이 걸렸다 — 2분 *초과*이고, 논문은 이를 "사실상 같은 시간"이라 표현한다. 더 빨랐던 것은 정상 구간뿐이다: 표지판의 35분에 대해 31분. 외부에서 정의되었고 저자가 고르지 않았다는 점에서 정말 좋은 지표지만, 경로 하나이지 경로의 분포가 아니다. [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee 등 2020]]과 마찬가지로 **초록에 성공률도 비교 수치도 없다.**
 > The Alpine hike is a time-budget result against an externally published human recommendation — one route, not a distribution.
 

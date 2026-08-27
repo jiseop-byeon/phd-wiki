@@ -41,7 +41,7 @@ Given a set of natural-language tasks, Clio forms **task-relevant clusters of ob
 
 Real-time construction on onboard compute, with better task execution than granularity-agnostic mapping.
 
-> [!warning] Reading the claims · 주장 읽는 법
+> [!warning] Reading the claim · 핵심 주장 읽는 법
 > "Real-time" and "onboard compute" are the load-bearing systems claims, and they are the ones worth checking against your own hardware before adopting — RA-L papers state them for a specific platform. The accuracy improvement is reported relative to the paper's own baselines; treat it as evidence that task-conditioning helps, not as a portable number.
 > "실시간"과 "온보드 연산"이 무게를 지는 시스템 주장이고, 채택 전에 자기 하드웨어와 대조해 볼 값어치가 있는 것도 그쪽이다 — RA-L 논문은 특정 플랫폼을 기준으로 그것을 진술한다. 정확도 향상은 논문 자신의 베이스라인 대비로 보고된다. 이식 가능한 숫자가 아니라 과제 조건화가 도움이 된다는 증거로 다뤄라.
 
@@ -88,7 +88,7 @@ Clio is the paper that made **granularity a first-class design variable** in rob
 
 온보드 연산 위에서의 실시간 구성, 그리고 입도를 고려하지 않는 매핑보다 나은 과제 수행.
 
-> [!warning] 주장 읽는 법 · Reading the claim
+> [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "실시간"과 "온보드 연산"이 무게를 지는 시스템 주장이고, 채택 전에 자기 하드웨어와 대조해 볼 값어치가 있는 것도 그쪽이다 — RA-L 논문은 특정 플랫폼을 기준으로 그것을 진술한다. 정확도 향상은 논문 자신의 베이스라인 대비로 보고된다. 이식 가능한 숫자가 아니라 과제 조건화가 도움이 된다는 증거로 다뤄라.
 > The systems claims are the ones to re-check on your own hardware; the accuracy gain is relative to the paper's own baselines.
 
