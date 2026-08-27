@@ -262,6 +262,94 @@ for p in md_files:
                 err(p, f"section reference {tgt} §{s} does not exist "
                        f"(that page has §{', §'.join(sorted(have, key=float))})")
 
+# --- 12. self-counts: numbers the wiki states about its own contents ---------
+# These drift silently: a page is added, a mark is changed, and a sentence
+# somewhere else still reports the old total.  Every count below is derived
+# from the files, so the derivation is the authority.  A claim whose pattern
+# no longer matches is also an error — a reworded claim must be re-checked
+# deliberately, not lose its check by accident.
+_notes = [f for f in md_files
+          if "01-canonical-papers/notes/" in f.replace(os.sep, "/")
+          and os.path.basename(f) != "index.md"]
+_n_notes = len(_notes)
+_n_secs = len({os.path.basename(os.path.dirname(f)) for f in _notes})
+
+def _track(d):
+    return len([f for f in md_files
+                if os.path.relpath(f, "content").replace(os.sep, "/").rsplit("/", 1)[0] == d
+                and os.path.basename(f) != "index.md"])
+
+_cl = ""
+try:
+    _cl = open("content/01-canonical-papers/canonical-list.md", encoding="utf-8").read()
+except OSError:
+    err("content/01-canonical-papers/canonical-list.md", "missing: cannot derive ★/◐/○ counts")
+_marks = {m: len(re.findall(r"^- (?:\[.\] )?" + m + " ", _cl, re.M)) for m in "★◐○"}
+# one ★ is the Modern Robotics textbook, which overview.md counts separately
+_star_papers = _marks["★"] - 1
+_total_pages = (_track("02-foundations") + _track("04-robotics")
+                + _track("04-robotics/modern-robotics") + _track("05-construction-robotics")
+                + _track("06-research-practice") + _track("07-research-program") + _n_notes)
+
+_claims = [
+    ("01-canonical-papers/index.md", r"\((\d+) notes across (\d+) sections\)",
+     (_n_notes, _n_secs), "note and section count (EN)"),
+    ("01-canonical-papers/index.md", r"\((\d+)편, (\d+)개 섹션\)",
+     (_n_notes, _n_secs), "note and section count (KR)"),
+    ("02-foundations/overview.md", r"\| Paper notes \((\d+)\) \| (\d+) \|",
+     (_n_notes, _n_notes), "reading-load table, notes row (EN)"),
+    ("02-foundations/overview.md", r"\| 논문 노트 \((\d+)편\) \| (\d+) \|",
+     (_n_notes, _n_notes), "reading-load table, notes row (KR)"),
+    ("02-foundations/overview.md", r"\*\*Total\*\* \| \*\*(\d+)\*\*",
+     (_total_pages,), "reading-load table total (EN)"),
+    ("02-foundations/overview.md", r"\*\*합계\*\* \| \*\*(\d+)\*\*",
+     (_total_pages,), "reading-load table total (KR)"),
+    ("02-foundations/overview.md", r"extra: \*\*(\d+)\*\* of them read in the original",
+     (_star_papers,), "★ paper count (EN)"),
+    ("02-foundations/overview.md", r"★ 논문은 별도다: \*\*(\d+)편\*\*",
+     (_star_papers,), "★ paper count (KR)"),
+    ("02-foundations/overview.md", r"the (\d+) ◐ and (\d+) ○",
+     (_marks["◐"], _marks["○"]), "◐/○ counts (EN)"),
+    ("02-foundations/overview.md", r"◐ (\d+)편과 ○ (\d+)편",
+     (_marks["◐"], _marks["○"]), "◐/○ counts (KR)"),
+]
+for rel, pat, expect, what in _claims:
+    fp = os.path.join("content", rel)
+    try:
+        body = open(fp, encoding="utf-8").read()
+    except OSError:
+        err(fp, f"missing: cannot verify {what}")
+        continue
+    m = re.search(pat, body)
+    if not m:
+        err(fp, f"self-count claim not found — {what}: the wording changed, so "
+                f"its check no longer applies. Update the pattern in check 12.")
+        continue
+    got = tuple(int(g) for g in m.groups())
+    if got != tuple(expect):
+        err(fp, f"self-count mismatch — {what}: page says {got}, "
+                f"the files give {tuple(expect)}")
+
+# --- 13. bilingual parity of section references ------------------------------
+# A correction that reaches only one language half leaves the other half
+# asserting the superseded claim.  Section references are the decidable part
+# of that: the two halves of a page must cite the same sections.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import audit_parity
+except ImportError:
+    err("scripts/audit_parity.py", "missing: bilingual parity cannot be checked")
+else:
+    for p in md_files:
+        h = audit_parity.halves(open(p, encoding="utf-8").read())
+        if not h:
+            continue
+        en, kr = audit_parity.section_refs(h[0]), audit_parity.section_refs(h[1])
+        for side, only in (("English", en - kr), ("Korean", kr - en)):
+            for tgt, sec in sorted(only):
+                err(p, f"section reference {tgt} §{sec} appears in the {side} half "
+                       f"only — the other half was not updated with it")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

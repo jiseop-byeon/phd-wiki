@@ -48,7 +48,19 @@ https://jiseop-byeon.github.io/phd-wiki/.
    (Do not use Node 26 or `npm run build` — the current Quartz/plugin combination is
    verified on Node 24 and can hang or exhaust memory on Node 26.)
 
-Content QA: `python3 scripts/verify_content.py`. Rebuild the global page-depth profile
+Content QA: `python3 scripts/verify_content.py` (run it from the repo root). Besides the
+rendering and link rules, it enforces two classes of consistency that a page-by-page read
+does not reliably catch:
+
+- **self-counts** — every number the wiki states about its own contents (notes, sections,
+  ★/◐/○ marks, the reading-load table) is derived from the files, so the files are the
+  authority. A claim whose wording changes also fails, so a check cannot be lost by accident.
+- **bilingual parity** — the `## English` and `## 한국어` halves of a page must cite the same
+  sections (`scripts/audit_parity.py`, also runnable alone for a readable report). This
+  exists because a correction can reach one language and leave the other asserting the
+  superseded claim.
+
+Rebuild the global page-depth profile
 with `npm run depths`. Refresh the Radar dataset with `npm run radar`; its taxonomy lives
 in `scripts/research_radar_taxonomy.json` and permits one topic to belong to multiple
 research scopes.
