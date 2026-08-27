@@ -8,8 +8,8 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 
 ## English
 
-*This page is the map. Everything after it assumes the undergraduate mathematics that [[02-foundations/engineering-math|0.5 Engineering Math]]
-collects, so start there and come back whenever a page names a prerequisite you are missing.*
+*This page is the map, and the map is a tree rather than a chain: 0.5 and 0.7 are on-ramps, 1, 2 and 3 are the core triangle everything else stands on, 4 and 5 are the applied pillars,
+6 and 7 are the domain bridges, and 8, 9 and 10 are what the robotics track needs next. Read the order below, but know that a page only truly needs what its own prerequisite box names.*
 
 How the foundations connect — to each other, to the engineering math beneath them, and to
 the deep learning papers above them. Read this page first; it tells you what you need
@@ -242,8 +242,8 @@ flowchart TD
 
 ## 한국어
 
-*이 페이지는 지도다. 이후의 모든 페이지가 [[02-foundations/engineering-math|0.5 공업수학]]이 모아 둔 학부 수학을
-전제하므로, 거기서 시작해 각 페이지가 부르는 선수 지식이 비었을 때 이리로 돌아오라.*
+*이 페이지는 지도이고, 그 지도는 사슬이 아니라 나무다: 0.5와 0.7이 진입로, 1·2·3이 나머지 전부가 딛는
+핵심 삼각형, 4·5가 응용 기둥, 6·7이 도메인 다리, 8·9·10이 로보틱스 트랙이 다음으로 요구하는 것이다. 아래 순서대로 읽되, 각 페이지가 진짜로 요구하는 것은 그 페이지의 선수 지식 상자에 적힌 것뿐이다.*
 
 기초 지식들이 서로, 그 아래의 공업수학과, 그리고 그 위의 딥러닝 논문들과 어떻게
 연결되는지의 지도. 이 페이지를 먼저 읽으면 각 페이지를 공부하기 *전에* 무엇이 필요하고,

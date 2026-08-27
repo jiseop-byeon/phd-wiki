@@ -14,8 +14,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
-*[[02-foundations/overview|0. Overview]] drew the map; this page closes the mathematics it assumes — derivatives, matrix
-arithmetic, logs, complex numbers. Next, [[02-foundations/neural-network-basics|0.7]] gives those same operations the names machine learning uses.*
+*[[02-foundations/overview|0. Overview]] drew the map. This page closes the undergraduate mathematics that map assumes —
+derivatives, matrix arithmetic, logs, complex numbers. Nine of the other twelve pages name it as a prerequisite, which is why it comes first.*
 
 The engineering math that pages 1–9 silently assume, self-contained in one place. Each
 section says exactly which foundation page uses it. If all of this reads easily, skip
@@ -454,8 +454,8 @@ Two definitions used everywhere before they are formally introduced:
 
 ## 한국어
 
-*[[02-foundations/overview|0. Overview]]가 지도를 그렸고, 이 페이지는 그 지도가 전제하는 수학 — 미분, 행렬 연산, 로그,
-복소수 — 을 닫는다. 다음 [[02-foundations/neural-network-basics|0.7]]이 같은 연산들에 기계학습이 붙인 이름을 알려 준다.*
+*[[02-foundations/overview|0. Overview]]가 지도를 그렸다. 이 페이지는 그 지도가 말없이 전제하는 학부 수학 — 미분, 행렬 연산,
+로그, 복소수 — 을 닫는다. 나머지 열두 페이지 중 아홉이 여기를 선수 지식으로 지목한다. 그래서 맨 앞이다.*
 
 1~9 페이지가 말없이 전제하는 공업수학을 한곳에 자체 완결로 정리했다.
 각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 전부 술술 읽히면 바로

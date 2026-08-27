@@ -14,8 +14,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
-*[[02-foundations/rl-basics|7. RL Basics]] gave you the grammar of states and actions. This page gives the space a robot's states and
-actions are written in. Then [[02-foundations/ml-practice|9. ML Practice]] is how to read a claim that such a policy works.*
+*Stands on [[02-foundations/linear-algebra|1. Linear Algebra]] alone — it owes nothing to RL or signal processing. It is here because the robotics
+track and the VLA papers need it next: the space a robot's states and actions are actually written in.*
 
 Every robot action, camera pose, and 3D reconstruction in this wiki lives in SE(3) — the
 space of rigid-body poses. This page is the working set for reading VLA action spaces and
@@ -198,8 +198,8 @@ This notation is used verbatim throughout the [[04-robotics/modern-robotics/inde
 
 ## 한국어
 
-*[[02-foundations/rl-basics|7. RL 기초]]가 상태와 행동의 문법을 줬다. 이 페이지는 로봇의 상태와 행동이 적히는 공간을 준다.
-그다음 [[02-foundations/ml-practice|9. ML 실무]]는 그런 정책이 작동한다는 주장을 어떻게 읽을 것인가다.*
+*[[02-foundations/linear-algebra|1. 선형대수]] 하나 위에 선다 — RL이나 신호처리에는 빚진 것이 없다. 여기 놓인 이유는 로보틱스 트랙과
+VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태와 행동이 실제로 적히는 공간.*
 
 이 위키의 모든 로봇 행동, 카메라 자세, 3D 재구성은 SE(3) — 강체 자세의 공간 — 에 산다.
 이 페이지는 VLA 행동 공간과 3D 비전 논문을 읽기 위한 작업 세트다; 완전한 전개(스크류,

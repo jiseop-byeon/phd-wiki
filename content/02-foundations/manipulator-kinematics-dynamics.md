@@ -16,14 +16,14 @@ mastery-when: "This page is on the manipulation track's critical path — Master
 > 층이므로, [[07-research-program/index|연구 프로그램]]이 Working 위로 올리는 몇 안 되는
 > 페이지다. 이 페이지 자체는 Working까지 데려다주고, Mastery는 §8의 교재와 시뮬레이터가 필요하다.
 
-> [!note] Before you start · 시작 전 점검
+> [!note] Prerequisites · 선수 지식
 > You need forward kinematics and the Jacobian — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR ch.4]] and [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], especially $\tau = J^\top\mathcal{F}$ — plus matrix inverses and positive definiteness ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) and partial derivatives ([[02-foundations/calculus-backprop|2. Calculus §1]]).
 > 순기구학과 야코비안이 필요하다 — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR 4장]]과 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]], 특히 $\tau = J^\top\mathcal{F}$ — 그리고 역행렬과 양정치성([[02-foundations/linear-algebra|1. 선형대수 §3]]), 편미분([[02-foundations/calculus-backprop|2. 미적분 §1]]).
 
 ## English
 
-*[[02-foundations/ml-practice|9. ML Practice]] completed the reading tools. This page adds the physics contact needs, and it is the last
-page of the track: from here the thread continues in [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
+*Stands on [[02-foundations/linear-algebra|1. Linear Algebra]] and the Modern Robotics chapter summaries (ch.4 and ch.5), which already teach FK and the Jacobian.
+It adds the one piece of physics contact needs, and closes the track into [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
 
 This page does **not** re-teach forward kinematics, inverse kinematics, or the Jacobian —
 the *Modern Robotics* chapter summaries do that, and they do it with worked 2R examples.
@@ -312,8 +312,8 @@ whether a contact will feel stiff or soft — and be right.
 
 ## 한국어
 
-*[[02-foundations/ml-practice|9. ML 실무]]가 읽기 도구를 완성했다. 이 페이지는 접촉이 요구하는 물리를 더하며 트랙의 마지막이다.
-여기서부터 그 줄기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]로 이어진다.*
+*[[02-foundations/linear-algebra|1. 선형대수]]와 Modern Robotics 챕터 요약(4·5장) 위에 선다 — FK·IK·야코비안은 거기가 이미 가르친다.
+이 페이지는 접촉이 요구하는 물리 한 조각을 더하며, [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]로 트랙을 닫는다.*
 
 이 페이지는 순기구학·역기구학·야코비안을 **다시 가르치지 않는다** — *Modern Robotics* 챕터
 요약이 이미 2R 계산 예제와 함께 그 일을 한다. 이 페이지가 존재하는 이유는, 그 챕터들이

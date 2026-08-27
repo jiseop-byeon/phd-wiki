@@ -14,8 +14,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
-*Pages 1 to 5 worked on distributions over data that had already arrived. This page is how it arrives —
-sampling, aliasing, frequency, filters. Then [[02-foundations/rl-basics|7. RL Basics]] is what changes when your own actions make the data.*
+*Stands on [[02-foundations/probability|3. Probability]] and Euler's formula from [[02-foundations/engineering-math|0.5]]. A domain bridge: from here the data stops being given
+and starts arriving from a sensor. Its order against [[02-foundations/rl-basics|7. RL Basics]] is free.*
 
 Every sensor a construction robot carries — camera, LiDAR, IMU, encoder — hands you a
 sampled, noisy signal. Course-depth treatment: convolution worked by hand, the sampling
@@ -158,8 +158,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 ## 한국어
 
-*1~5번은 이미 도착한 데이터 위의 분포를 다뤘다. 이 페이지는 그 데이터가 도착하는 방식이다 —
-샘플링, 에일리어싱, 주파수, 필터. 그다음 [[02-foundations/rl-basics|7. RL 기초]]는 내 행동이 그 데이터를 만들 때 무엇이 달라지는가다.*
+*[[02-foundations/probability|3. 확률]]과 [[02-foundations/engineering-math|0.5]]의 오일러 공식 위에 선다. 도메인 다리 하나다: 여기서부터 데이터는 주어지는 것이
+아니라 센서에서 도착한다. [[02-foundations/rl-basics|7. RL 기초]]와의 순서는 자유다.*
 
 건설로봇이 싣고 다니는 모든 센서 — 카메라, LiDAR, IMU, 엔코더 — 는 샘플링된, 노이즈 낀
 신호를 건네준다. 교재 수준의 서술: 손으로 푸는 합성곱, 수식이 있는 샘플링 정리, DFT/FFT,

@@ -8,8 +8,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
-*[[02-foundations/engineering-math|0.5]] left you with matrix multiplication and derivatives. This page is only vocabulary: what
-those two operations are called once they are a network. Then [[02-foundations/linear-algebra|1. Linear Algebra]] asks what a matrix actually is.*
+*[[02-foundations/engineering-math|0.5]] left you with matrix multiplication and derivatives. This page is vocabulary only: what
+those two operations are called once they are a network. It is the one page you may skip outright if the ML words are already yours.*
 
 > [!info] Depth target · 깊이 목표
 > Read the words *network, layer, loss, batch, epoch, hyperparameter, pretraining* in a paper without stopping, and see a neural network as an object you already have the mathematics for. Training your own models is not the goal here.
@@ -193,8 +193,8 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 
 ## 한국어
 
-*[[02-foundations/engineering-math|0.5]]가 행렬곱과 미분을 남겼다. 이 페이지는 어휘뿐이다 — 그 두 연산이 신경망이 되면
-어떤 이름으로 불리는가. 그다음 [[02-foundations/linear-algebra|1. 선형대수]]가 행렬이 대체 무엇인지를 묻는다.*
+*[[02-foundations/engineering-math|0.5]]가 행렬곱과 미분을 남겼다. 이 페이지는 어휘뿐이다 — 그 두 연산이 신경망이 되면 어떤
+이름으로 불리는가. ML 용어가 이미 익숙하다면 통째로 건너뛰어도 되는 유일한 페이지다.*
 
 1~9 페이지는 *층*, *손실*, *미니배치* 같은 말을 역학 교과서가 *힘*을 쓰듯 쓴다. 공업수학은
 공부했지만 기계학습은 처음이라면, 이 페이지가 나머지를 읽히게 만드는 20분이다. **여기 있는

@@ -14,8 +14,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 
 ## English
 
-*[[02-foundations/neural-network-basics|0.7]] said a network is stacked matrix multiplications. This page says what a matrix is —
-a map, with a rank, eigenvalues and an SVD. Then [[02-foundations/calculus-backprop|2. Calculus]] differentiates the stack.*
+*Stands on [[02-foundations/engineering-math|0.5]] and [[02-foundations/neural-network-basics|0.7]]. First corner of the core triangle: a matrix is a map, with a rank,
+eigenvalues and an SVD. Four later pages name this one as a prerequisite — calculus, probability, optimization and SE(3).*
 
 Deep learning *is* linear algebra with nonlinearities between the matrix multiplies.
 This page is a course-depth treatment: definitions, derivations, worked examples, and
@@ -361,8 +361,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ## 한국어
 
-*[[02-foundations/neural-network-basics|0.7]]이 신경망은 행렬곱의 적층이라고 했다. 이 페이지는 그 행렬이 무엇인지 말한다 —
-랭크와 고윳값과 SVD를 가진 사상이다. 그다음 [[02-foundations/calculus-backprop|2. 미적분]]이 그 적층을 미분한다.*
+*[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.7]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
+사상이다. 뒤의 네 페이지 — 미적분, 확률, 최적화, SE(3) — 가 이 페이지를 선수로 지목한다.*
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의
 서술이다: 정의, 유도, 계산 예시, 그리고 각 개념이 이 위키의 논문들 어디에서 나타나는지.
