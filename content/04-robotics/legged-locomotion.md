@@ -32,6 +32,45 @@ It also matters directly: legged platforms are what most of
 [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] runs on, and
 the field's single highest-leverage training idea was invented here.
 
+### 1.5 The classical vocabulary this page does not use
+
+Everything below is the learned line, and it does not speak the language most legged papers
+before roughly 2019 were written in. You still need that language to read them, so here it
+is at literacy depth, with the reason it is absent from the rest of this page.
+
+- **Support polygon** — the convex hull of the contact points on the ground. The classical
+  stability question is whether a particular point stays inside it.
+- **ZMP (zero-moment point)** — the point on the ground where the ground reaction force
+  produces no horizontal moment. Keep the ZMP strictly inside the support polygon and the
+  foot cannot rotate about its edge; let it reach the boundary and the foot tips. Almost
+  every walking-pattern generator of that era is a device for producing a ZMP trajectory the
+  robot can track.
+- **Capture point / DCM (divergent component of motion)** — where you would have to place
+  the next footfall to come to a complete stop. From the linear inverted pendulum model with
+  centre-of-mass height $z$, $\;\omega_0 = \sqrt{g/z}\;$ and the capture point sits
+  $\;\dot x/\omega_0\;$ ahead of the centre of mass. **Worked:** a humanoid with
+  $z = 0.9$ m has $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s, so at $\dot x = 0.5$ m/s it
+  must step $0.5/3.30 = 0.15$ m ahead to stop; at $1.0$ m/s, $0.30$ m. DCM is the
+  three-dimensional generalisation used by modern whole-body controllers.
+
+**Why this page does not use any of it.** ZMP assumes a flat, known, co-planar support
+surface and a foot that makes full contact with it. That assumption is what the learned line
+gave up on purpose: on rubble, on a slope, on a toe-only foothold, the support polygon is not
+the object ZMP needs. What replaces it is not a better criterion but a different bargain —
+a policy rejecting disturbance at 50 Hz over a foot that only has to not slip
+([[04-robotics/convex-mpc-legged|8. Convex MPC]] keeps the model-based half of that bargain
+by *pre-specifying* the contact schedule).
+
+So: expect ZMP and capture point in humanoid, biped and whole-body-control papers, and expect
+their absence in the four results §3 covers. Neither absence is an oversight.
+
+- M. Vukobratović and B. Borovac, "Zero-moment point — thirty five years of its life,"
+  *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.
+- J. Pratt, J. Carff, S. Drakunov, A. Goswami, "Capture Point: A Step toward Humanoid Push
+  Recovery," *Humanoids 2006*.
+- J. Englsberger, C. Ott, A. Albu-Schäffer, "Three-Dimensional Bipedal Walking Control Based
+  on Divergent Component of Motion," *IEEE Transactions on Robotics*, vol. 31, no. 2, 2015.
+
 ### 2. The idea worth taking away: privileged teacher-student distillation
 
 If you learn one thing from this page, learn this. It has no analogue in classical robotics,
@@ -304,6 +343,42 @@ for the full picture and the licensing traps.
 
 직접적으로도 중요하다: [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]의
 대부분이 레그드 플랫폼 위에서 돌아가고, 이 분야의 가장 파급력 큰 학습 아이디어가 여기서 나왔다.
+
+### 1.5 이 페이지가 쓰지 않는 고전 어휘
+
+아래는 전부 학습 기반 계열이고, 대략 2019년 이전의 보행 논문 대부분이 쓰던 언어를 쓰지
+않는다. 그 논문들을 읽으려면 그 언어가 여전히 필요하므로, 문해력 수준으로 여기 적어 둔다 —
+그리고 이 페이지의 나머지에서 왜 빠져 있는지도 함께.
+
+- **지지 다각형(support polygon)** — 지면 접촉점들의 볼록 껍질. 고전적 안정성 질문은 어떤
+  점이 그 안에 머무는가다.
+- **ZMP(zero-moment point)** — 지면 반력이 수평 모멘트를 만들지 않는 지면 위의 점. ZMP가
+  지지 다각형 안에 확실히 있으면 발이 모서리를 축으로 회전하지 못하고, 경계에 닿으면 발이
+  들린다. 그 시대의 보행 패턴 생성기는 사실상 로봇이 추종할 수 있는 ZMP 궤적을 만들어 내는
+  장치다.
+- **Capture point / DCM(divergent component of motion)** — 완전히 멈추려면 다음 발을 어디에
+  디뎌야 하는가. 무게중심 높이 $z$의 선형 도립진자 모형에서 $\;\omega_0 = \sqrt{g/z}\;$이고,
+  capture point는 무게중심보다 $\;\dot x/\omega_0\;$만큼 앞에 있다. **계산 예제:**
+  $z = 0.9$ m인 휴머노이드는 $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s이므로
+  $\dot x = 0.5$ m/s에서 멈추려면 $0.5/3.30 = 0.15$ m 앞을 디뎌야 하고, $1.0$ m/s에서는
+  $0.30$ m다. DCM은 현대 전신 제어기가 쓰는 3차원 일반화다.
+
+**이 페이지가 그중 아무것도 쓰지 않는 이유.** ZMP는 평평하고 알려진 동일 평면의 지지면과,
+그 면에 발이 온전히 닿는 상황을 전제한다. 학습 계열이 의도적으로 포기한 것이 바로 그
+전제다: 잔해 위, 경사면, 발끝만 걸친 디딤에서는 지지 다각형이 ZMP가 요구하는 그 대상이
+아니다. 그것을 대신하는 것은 더 나은 기준이 아니라 다른 거래다 — 미끄러지지만 않으면 되는
+발 위에서 50 Hz로 외란을 기각하는 정책이다([[04-robotics/convex-mpc-legged|8. Convex MPC]]는
+접촉 스케줄을 *미리 지정*하는 방식으로 그 거래의 모델 기반 쪽을 유지한다).
+
+정리하면: 휴머노이드·이족·전신 제어 논문에서는 ZMP와 capture point를 예상하고, §3이 다루는
+네 결과에서는 그것들의 부재를 예상하라. 어느 쪽 부재도 실수가 아니다.
+
+- M. Vukobratović, B. Borovac, "Zero-moment point — thirty five years of its life,"
+  *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.
+- J. Pratt, J. Carff, S. Drakunov, A. Goswami, "Capture Point: A Step toward Humanoid Push
+  Recovery," *Humanoids 2006*.
+- J. Englsberger, C. Ott, A. Albu-Schäffer, "Three-Dimensional Bipedal Walking Control Based
+  on Divergent Component of Motion," *IEEE Transactions on Robotics*, vol. 31, no. 2, 2015.
 
 ### 2. 가져갈 발상: privileged teacher-student 증류
 
