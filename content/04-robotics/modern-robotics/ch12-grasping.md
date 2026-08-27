@@ -82,3 +82,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > 1. $45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다.
 > 2. 마찰 원뿔이 주는 여유 방향 없이 기하만으로 모든 방향을 막아야 하기 때문.
 > 3. 두 접촉점이 서로 상대의 마찰 원뿔 안에 있을 것.
+
+### 이 장 다음으로
+
+[[04-robotics/contact-force-tactile|접촉·힘·촉각 상호작용]]이 파지를 접촉 모드, 힘·임피던스
+제어, 촉각 센싱, 변형체, sim-to-real 평가로 확장한다.
