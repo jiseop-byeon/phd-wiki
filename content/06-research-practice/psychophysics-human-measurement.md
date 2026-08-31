@@ -188,6 +188,30 @@ where that vocabulary lives.
 5. A paper reports NASA-TLX improved with haptic feedback and concludes operators
    "perceived contact better." What is wrong?
 
+> [!tip]- Answers
+> 1. Because the subject cannot predict the next level: intensities are presented many times
+> in *random order*, so there is no ascending or descending run to habituate to or anticipate.
+> The methods of limits and adjustment both have a direction of travel, and the bias rides on
+> it. The price is trial count — randomness costs data.
+> 2. $n = 3$. The experimental unit is the participant, not the trial
+> ([[06-research-practice/experimental-design-reproducibility|2. §1]]): the 40 trials within
+> one staircase are made by the same nervous system on the same day and are not independent —
+> they exist to estimate that *one* person's threshold well, not to be counted as 40 samples.
+> 3. Mid-task, no: the JND at 2 N is $0.07 \times 2 = 0.14$ N, and 0.05 N of friction sits
+> well below it. Near reversals, yes: at 0.3 N the JND is $0.07 \times 0.3 = 0.021$ N, and the
+> same 0.05 N is now more than twice the detectable change. One friction spec is imperceptible
+> and salient *in the same task*, which is why Weber's law makes "is it good enough" a question
+> about the operating point, not the device.
+> 4. From §5's channel table: **masking** — the tool in the same hands drives broadband
+> vibration into the very Pacinian band the alert uses, so the signal competes with noise in
+> one channel; and **gating/attenuation** — gloves (anti-vibration gloves by design, ISO 10819)
+> attenuate the band the wristband transmits on. Both predict lab success and site failure with
+> fully working electronics.
+> 5. It measured workload and concluded perception. NASA-TLX is a self-report *cost* measure —
+> §6's third family — and can improve while detection is unchanged (less effort, same
+> percept) or even worsen while detection improves. A perception claim needs a psychophysical
+> measurement: detection or discrimination performance, ideally forced-choice.
+
 ### Sources
 
 - G. A. Gescheider, *Psychophysics: The Fundamentals*, 3rd ed., Erlbaum, 1997 — the
@@ -368,6 +392,28 @@ where that vocabulary lives.
    수준의 설명 둘을 대라.
 5. 논문이 햅틱 피드백으로 NASA-TLX가 개선됐다고 보고하고 조작자가 "접촉을 더 잘
    지각했다"고 결론 내린다. 무엇이 잘못인가?
+
+> [!tip]- 정답 · Answers
+> 1. 피험자가 다음 자극 수준을 예측할 수 없기 때문이다. 강도들을 *무작위 순서*로 여러 번
+> 제시하므로 습관화하거나 기대할 상승·하강 진행이 없다. 극한법과 조정법에는 진행 방향이
+> 있고, 편향은 그 방향에 올라탄다. 대가는 시행 수다 — 무작위성은 데이터로 값을 치른다.
+> 2. $n = 3$. 실험 단위는 시행이 아니라 참가자다
+> ([[06-research-practice/experimental-design-reproducibility|2. §1]]). 한 계단법 안의 40번
+> 시행은 같은 신경계가 같은 날 만든 것이라 독립이 아니다 — 그 *한 사람*의 임계값을 잘
+> 추정하기 위해 존재하는 것이지 표본 40개로 세라고 있는 것이 아니다.
+> 3. 과제 중간에는 아니다: 2 N에서의 JND는 $0.07 \times 2 = 0.14$ N이고 마찰 0.05 N은 그보다
+> 한참 아래다. 힘 반전 근처에서는 지각된다: 0.3 N에서의 JND는 $0.07 \times 0.3 = 0.021$ N이고
+> 같은 0.05 N이 이제 감지 가능한 변화의 두 배가 넘는다. 마찰 사양 하나가 *같은 과제 안에서*
+> 지각 불가능하기도 하고 두드러지기도 하다 — 베버 법칙이 "충분히 좋은가"를 장치가 아니라
+> 동작점에 대한 질문으로 만드는 이유다.
+> 4. §5의 채널 표에서: **차폐(masking)** — 같은 손에 든 공구가 광대역 진동을 알림이 쓰는 바로
+> 그 파치니 대역에 밀어 넣으므로, 신호가 한 채널 안에서 잡음과 경쟁한다. 그리고
+> **차단/감쇠** — 장갑(방진 장갑은 설계상, ISO 10819)이 손목밴드가 송신하는 그 대역을
+> 감쇠시킨다. 둘 다 전자회로가 멀쩡한 채로 실험실 성공과 현장 실패를 예측한다.
+> 5. 작업부하를 재고 지각을 결론 냈다. NASA-TLX는 자기보고식 *비용* 측정 — §6의 세 번째
+> 계열 — 이라, 탐지가 그대로인데도 좋아질 수 있고(덜 힘들고 지각은 같음) 탐지가 좋아지는데도
+> 나빠질 수 있다. 지각 주장에는 심리물리 측정이 필요하다: 탐지나 변별 성능, 이상적으로는
+> 강제선택.
 
 ### 출처
 

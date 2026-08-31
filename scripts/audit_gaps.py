@@ -224,8 +224,11 @@ def prereq():
 
 
 def selfcheck():
+    # 06-research-practice shares the self-check convention, and the psychophysics
+    # page shipped without answers because this scan did not look there.
     bad = 0
-    for f in files(["content/02-foundations/*.md", "content/04-robotics/*.md"]):
+    for f in files(["content/02-foundations/*.md", "content/04-robotics/*.md",
+                    "content/06-research-practice/*.md"]):
         s = read(f)
         m = re.search(r"^##\s*한국어\s*$", s, re.M)
         for lab, half in (("EN", s[:m.start()] if m else s), ("KR", s[m.start():] if m else "")):
