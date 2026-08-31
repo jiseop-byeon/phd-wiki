@@ -25,7 +25,7 @@ layer robot papers actually spend their pages on: reward design, exploration, RL
 fine-tuning on real machines, and how to read an RL experimental section.
 
 > [!note] First pass · 처음이라면
-> This is the longest page in the track, so read §6 early. First pass: §1, §2, then jump to §6 — the RL-versus-imitation map tells you which half of the page your papers actually live in. Come back for §3, §4 and §7 with that in hand.
+> This is the longest page in the track, so read §6 early. First pass: §1, §2, then jump to §6 — the RL-versus-imitation map tells you which half of the page your papers actually live in. Come back for §3, §4 and §7 with that in hand, and read §3.5 — why deep RL needs its patches — right after §3.
 
 ### 1. The MDP
 
@@ -591,7 +591,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 실기계 위의 RL 파인튜닝, RL 실험 절 읽는 법.
 
 > [!note] 처음이라면 · First pass
-> 트랙에서 가장 긴 페이지이므로 §6을 일찍 읽어라. 1차 통과: §1, §2, 그다음 §6으로 건너뛴다 — RL 대 모방 지도가 당신의 논문들이 이 페이지의 어느 절반에 사는지 알려 준다. §3·§4·§7은 그것을 손에 쥐고 돌아와서 읽어라.
+> 트랙에서 가장 긴 페이지이므로 §6을 일찍 읽어라. 1차 통과: §1, §2, 그다음 §6으로 건너뛴다 — RL 대 모방 지도가 당신의 논문들이 이 페이지의 어느 절반에 사는지 알려 준다. §3·§4·§7은 그것을 손에 쥐고 돌아와서 읽고, §3.5 — 심층 RL이 그 패치들을 필요로 하는 이유 — 는 §3 바로 다음에 읽어라.
 
 ### 1. MDP
 

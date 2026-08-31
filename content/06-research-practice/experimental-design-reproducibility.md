@@ -22,6 +22,8 @@ An experiment should distinguish the proposed explanation from plausible alterna
 
 Repeated frames from one robot run are not thousands of independent trials.
 
+When the experimental unit is a *person*, this page's logic still applies but the measurement procedures are their own settled subject — [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] is this page's toolbox for that case.
+
 ### 2. Comparisons
 
 A strong baseline isolates the proposed contribution. Include a practical existing system, a simpler method, and when useful an **oracle** that uses unavailable information to estimate an upper bound. The oracle must be labeled; it is not a deployable competitor.
@@ -120,6 +122,8 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 - **실험 단위:** 조건에 배정되는 독립적 개체 — 시드, 장면, 물체, 참가자, 로봇, 현장.
 
 한 로봇 실행의 반복 프레임들은 수천 개의 독립 시행이 아니다.
+
+실험 단위가 *사람*일 때도 이 페이지의 논리는 그대로 적용되지만, 측정 절차는 그 자체로 정착된 별도 주제다 — [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 그 경우를 위한 이 페이지의 공구함이다.
 
 ### 2. 비교
 

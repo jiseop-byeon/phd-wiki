@@ -22,7 +22,7 @@ This page is a course-depth treatment: definitions, derivations, worked examples
 where each concept appears in the papers of this wiki.
 
 > [!note] First pass · 처음이라면
-> Read §1 for what a matrix is, then the 2×2 worked example in §3, then §6 for the high-dimensional intuition papers assume. Come back for §4 (SVD) when a paper factorises something, and §5 when you reach the control track.
+> Read §1 for what a matrix is, then the 2×2 worked example in §3, then §6 for the high-dimensional intuition papers assume. Come back for §4 (SVD) when a paper factorises something, §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
 
 ### 1. Vectors, matrices, and what multiplication means
 
@@ -438,7 +438,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 서술이다: 정의, 유도, 계산 예시, 그리고 각 개념이 이 위키의 논문들 어디에서 나타나는지.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §5는 제어 트랙에 닿았을 때 돌아오라.
+> 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §4.5는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
 

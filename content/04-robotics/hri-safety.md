@@ -178,7 +178,7 @@ named standard, not against "safety" in general.
 
 ### 7. Human-study design
 
-Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review.
+Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review. When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study.
 
 ### 8. Evaluation
 
@@ -402,7 +402,10 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 Within-subject 연구는 같은 참가자에게 조건들을 비교하고, between-subject 연구는 참가자를
 나눠 배정한다. Counterbalancing은 조건 효과를 연습·피로·순서 효과와 분리하는 데 돕는다.
 참가자 모집단, 전문성, 표본 크기, 제외, 과제 현실성, 객관·주관 지표, 적절한 윤리/IRB
-심의를 보고하라.
+심의를 보고하라. 주장이 *지각*에 관한 것이라면 — 작업자가 느꼈다, 알아챘다 — 측정 절차
+자체가 정착된 공구함이다:
+[[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 임계값,
+고전적 절차들, 그리고 지각 연구와 성능 연구를 구분하는 법을 다룬다.
 
 ### 8. 평가
 

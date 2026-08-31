@@ -23,7 +23,7 @@ construction tasks are all "minimize an objective subject to constraints." Cours
 treatment: conditions, derivations, and a fully written MPC-as-QP example.
 
 > [!note] First pass · 처음이라면
-> Read §1, then §2 — convexity is the fork everything else hangs on — then §3. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you.
+> Read §1, then §2 — convexity is the fork everything else hangs on — then §3. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. §3.5 is for when a SLAM, calibration or IK paper says "we optimize" — read it with such a paper in hand.
 
 ### 1. Anatomy of a problem
 
@@ -323,7 +323,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
 서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그다음 §3. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다.
+> 먼저 §1 다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그다음 §3. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. §3.5는 SLAM·보정·IK 논문이 "최적화한다"고 쓸 때를 위한 것이니, 그런 논문을 손에 들고 읽어라.
 
 ### 1. 문제의 구조
 
