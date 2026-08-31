@@ -68,6 +68,15 @@ the classifier's accuracy.*
   factory deployment. Cite it as lab-plus-industrial-testbed evidence, not as a factory
   deployment result.
 
+- **Haptic and vibrotactile alerting** is the interface family these lines reach for
+  when a warning must land on a gloved worker who is not looking at a screen — and it is
+  governed by channel physics, not electronics: gloves pass the Pacinian vibration band
+  while blocking spatial detail, powered tools mask exactly that band, and
+  vibration-exposed crews carry elevated detection thresholds (HAVS). The three facts
+  and their design consequences are worked out in
+  [[06-research-practice/psychophysics-human-measurement|8. Psychophysics §5]]; the
+  alarm-fatigue caution of [[04-robotics/hri-safety|HRI & Safety §5]] applies on top.
+
 For orientation across the field, the defining taxonomy is the
 [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC survey]] (JCEM
 2021), which classifies collaboration levels and research trends and is the standard map
@@ -179,6 +188,14 @@ flowchart LR
   측정된 인간 반응으로 평가한 인간 인지 모션 계획이며, 이후 최종 조립 작업을 재현한 BMW
   *테스트 환경*으로 이어졌다 — 저자들 스스로 이것이 실제 공장 배치를 대표하지 않는다고
   명시한다. 공장 배치 결과가 아니라 실험실+산업 테스트베드 증거로 인용하라.
+
+- **햅틱·진동촉각 알림**은 화면을 보고 있지 않은, 장갑 낀 작업자에게 경고를 전달해야
+  할 때 이 계보들이 손을 뻗는 인터페이스 계열이다 — 그리고 이것을 지배하는 것은
+  전자회로가 아니라 채널의 물리다: 장갑은 공간적 세부를 막으면서 Pacinian 진동 대역은
+  통과시키고, 동력 공구는 정확히 그 대역을 마스킹하며, 진동에 노출된 작업조는 검출
+  임계값이 올라가 있다(HAVS). 세 사실과 그 설계 귀결은
+  [[06-research-practice/psychophysics-human-measurement|8. 심리물리 §5]]에 정리되어
+  있고, 그 위에 [[04-robotics/hri-safety|HRI와 안전 §5]]의 알람 피로 경고가 얹힌다.
 
 분야 전체의 지도로는
 [[01-canonical-papers/notes/8-construction/liang-hrc-survey|Liang HRC 서베이]](JCEM

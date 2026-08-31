@@ -221,6 +221,50 @@ For construction, the cost axis usually decides. Field data cannot be collected 
 and an interface that needs a calibrated rig is an interface that will not leave the
 building.
 
+### 4.5 What the interface records — and what it silently discards
+
+Between the operator's intent and the logged data sits a chain of hardware conversions,
+and every link either quantizes the signal or pollutes it. For a force-bearing corpus
+this chain **is the instrument** — its numbers belong in the paper's method section, not
+in an appendix:
+
+- **Position resolution.** Encoder counts become a joint angle, the transmission divides
+  that angle down, and a lever arm turns it into end-point position. The transmission
+  ratio $R$ *refines* position: a motor-side step of $\Delta\theta$ appears at the
+  output as $\Delta\theta / R$.
+- **Force floor.** The same ratio *coarsens* force. Motor friction torque $\tau_f$ is
+  amplified right along with the torque you wanted: the operator feels
+  $F_{floor} = \tau_f \cdot R / r_h$ at a handle of lever arm $r_h$, and every force
+  the device records near a motion reversal is smeared by that stick–slip band.
+- **The double role of $R$.** Raising the ratio buys peak force and position resolution;
+  the identical multiplication raises reflected friction and inertia, which is what
+  "poor backdrivability" means. The cable that lets the motor push the operator is the
+  cable through which the operator must push the motor. Choosing $R$ is choosing which
+  end of the corpus to corrupt.
+
+This is also the honest reading of §4's spectrum: GELLO- and ALOHA-class leader arms
+record *positions only*, so the chain above never appears in their papers — and neither
+does the force signal it would have carried. Whether a recorded force variation could
+even have been intentional is a perceptual question, answered with the thresholds of
+[[06-research-practice/psychophysics-human-measurement|8. Psychophysics §3]].
+
+> [!example] Worked example · 계산 예제
+> **The friction a transmission manufactures.** Take the 1-DoF capstan device of
+> [[06-research-practice/psychophysics-human-measurement|8. Psychophysics §3]]: pulley
+> $r_p = 5$ mm, sector $r_s = 75$ mm ($R = 15$), handle lever $r_h = 70$ mm, and a good
+> coreless motor with friction torque $\tau_f = 0.001$ N·m.
+>
+> Reflected friction at the handle: $F_{floor} = 0.001 \times 15 / 0.070 \approx
+> \mathbf{0.21\ N}$. At a 2 N task force the operator's own force JND (≈7%) is
+> 0.14 N — **the friction band exceeds the smallest force change the operator can
+> deliberately produce**, so force wobble recorded inside ±0.21 N of a reversal is the
+> device, not the demonstrator. Meanwhile the ratio is why the device works at all: a
+> 20 N peak needs only $20 \times 0.070 / 15 = 0.093$ N·m of motor torque. Drop to
+> direct drive ($R = 1$) and the friction floor becomes an imperceptible 0.014 N — but
+> the same 20 N now demands 1.4 N·m, a motor an order of magnitude larger. There is no
+> setting of $R$ that fixes both ends; there is only knowing which end your corpus can
+> afford.
+
 ### 5. Retargeting and scaling — the mapping nobody mentions
 
 Unless the leader is kinematically matched to the follower, some map from human motion to
@@ -581,6 +625,45 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 
 건설에서는 대개 비용 축이 결정한다. 현장 데이터는 실험실에서 모을 수 없고, 보정된 리그가
 필요한 인터페이스는 건물 밖으로 나가지 못하는 인터페이스다.
+
+### 4.5 인터페이스가 기록하는 것 — 그리고 조용히 버리는 것
+
+조작자의 의도와 기록된 데이터 사이에는 하드웨어 변환의 사슬이 놓여 있고, 모든 고리가
+신호를 양자화하거나 오염시킨다. force-bearing 코퍼스에서 이 사슬은 **측정 도구 그
+자체다** — 그 숫자들은 부록이 아니라 논문의 방법 절에 들어가야 한다:
+
+- **위치 분해능.** 엔코더 카운트가 관절각이 되고, 전동이 그 각을 나누고, 레버 암이
+  말단 위치로 바꾼다. 전동비 $R$은 위치를 *정밀하게* 만든다: 모터 쪽 한 스텝
+  $\Delta\theta$는 출력에서 $\Delta\theta / R$로 나타난다.
+- **힘 바닥.** 같은 비율이 힘은 *거칠게* 만든다. 모터 마찰 토크 $\tau_f$는 원했던
+  토크와 함께 증폭된다: 레버 암 $r_h$의 핸들에서 조작자는
+  $F_{floor} = \tau_f \cdot R / r_h$를 느끼고, 운동 반전 근처에서 장치가 기록하는
+  모든 힘은 그 스틱-슬립 대역으로 번져 있다.
+- **$R$의 이중 역할.** 비율을 올리면 최대 힘과 위치 분해능을 산다. 똑같은 곱셈이 반사
+  마찰과 관성을 올리는데, "backdrivability가 나쁘다"의 뜻이 그것이다. 모터가 조작자를
+  밀게 해 주는 케이블은 조작자가 모터를 밀 때 통과해야 하는 케이블이다. $R$을 고르는
+  것은 코퍼스의 어느 쪽 끝을 오염시킬지 고르는 것이다.
+
+이것이 §4 스펙트럼의 정직한 독법이기도 하다: GELLO·ALOHA 계열 리더 암은 *위치만*
+기록하므로 위 사슬은 그들의 논문에 등장하지 않는다 — 그 사슬이 날랐을 힘 신호도 함께
+사라진다. 기록된 힘 변동이 애초에 의도적일 수 있었는지는 지각의 질문이고,
+[[06-research-practice/psychophysics-human-measurement|8. 심리물리 §3]]의 임계값으로
+답한다.
+
+> [!example] Worked example · 계산 예제
+> **전동이 제조하는 마찰.**
+> [[06-research-practice/psychophysics-human-measurement|8. 심리물리 §3]]의 1자유도
+> 캡스턴 장치를 보자: 풀리 $r_p = 5$ mm, 섹터 $r_s = 75$ mm($R = 15$), 핸들 레버
+> $r_h = 70$ mm, 마찰 토크 $\tau_f = 0.001$ N·m의 좋은 코어리스 모터.
+>
+> 핸들에 반사된 마찰: $F_{floor} = 0.001 \times 15 / 0.070 \approx \mathbf{0.21\ N}$.
+> 2 N 작업 힘에서 조작자 자신의 힘 JND(≈7%)는 0.14 N — **마찰 대역이 조작자가 의도적으로
+> 만들 수 있는 가장 작은 힘 변화를 초과한다.** 반전 근처 ±0.21 N 안에서 기록된 힘의
+> 흔들림은 시연자가 아니라 장치다. 한편 이 비율이 장치가 작동하는 이유이기도 하다: 20 N
+> 피크에 필요한 모터 토크는 $20 \times 0.070 / 15 = 0.093$ N·m뿐이다. 직결 구동($R = 1$)
+> 으로 내리면 마찰 바닥은 지각 불가능한 0.014 N이 되지만, 같은 20 N에 이제 1.4 N·m —
+> 자릿수가 다른 모터 — 가 필요하다. 양쪽 끝을 다 고치는 $R$의 설정값은 없다. 코퍼스가
+> 어느 쪽 끝을 감당할 수 있는지 아는 것이 있을 뿐이다.
 
 ### 5. 리타게팅과 스케일링 — 아무도 언급하지 않는 사상
 

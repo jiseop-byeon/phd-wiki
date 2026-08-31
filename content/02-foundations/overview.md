@@ -134,9 +134,9 @@ themselves (prose only — code blocks and equations excluded):
 | Robotics 1–23 (incl. the 11 MR chapters) | 34 | ~3.0 h |
 | Construction robotics | 10 | ~0.8 h |
 | Paper notes (115) | 115 | ~3.8 h |
-| Research practice | 7 | ~0.7 h |
+| Research practice | 8 | ~0.8 h |
 | Research program | 1 | ~0.1 h |
-| **Total** | **180** | **~10.2 h** |
+| **Total** | **181** | **~10.3 h** |
 
 Read that number honestly: it is *one pass of the prose in one language*, and it is not the
 study time. Working the self-checks and re-deriving the worked examples typically costs
@@ -369,9 +369,9 @@ graph LR
 | 로보틱스 1~23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
 | 논문 노트 (115편) | 115 | 약 3.8시간 |
-| Research Practice | 7 | 약 0.7시간 |
+| Research Practice | 8 | 약 0.8시간 |
 | Research Program | 1 | 약 0.1시간 |
-| **합계** | **180** | **약 10.2시간** |
+| **합계** | **181** | **약 10.3시간** |
 
 이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
 자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로
