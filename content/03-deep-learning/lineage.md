@@ -100,7 +100,7 @@ graph TD
 ```
 
 > [!note] Where the capability was added · 능력이 더해진 지점
-> Nearly every model on this branch shares one skeleton: a pretrained VLM backbone plus an action expert that turns its output into continuous control. Papers from 2025 onward increasingly advertise "self-correction", and the word covers two different things, so ask which one. CorrectNav ([arXiv:2508.10416](https://arxiv.org/abs/2508.10416)) re-runs its own policy, keeps the trajectories that went wrong, and post-trains on them, so the recovery behaviour ends up compiled into the weights. AdaNav ([arXiv:2509.24387](https://arxiv.org/abs/2509.24387)) leaves the weights alone during a run and instead spends extra reasoning at the steps where its own uncertainty is high. Recovering from a failure and detecting that you are failing are different capabilities, and only the second has to happen while the robot is moving.
+> Nearly every model on this branch shares one skeleton: a pretrained VLM backbone plus an action expert that turns its output into continuous control. Papers from 2025 onward increasingly advertise "self-correction", and the word covers two different things, so ask which one. CorrectNav ([arXiv:2508.10416](https://arxiv.org/abs/2508.10416)) re-runs its own policy, keeps the trajectories that went wrong, and post-trains on them, so the recovery behaviour ends up compiled into the weights. AdaNav ([arXiv:2509.24387](https://arxiv.org/abs/2509.24387)) leaves the weights alone during a run and instead spends extra reasoning at the steps where its own uncertainty is high. Recovering from a failure and detecting that you are failing are different capabilities, and only the second has to happen while the robot is moving. What separates these models more broadly is how they formulate the action they emit at all, which the [[01-canonical-papers/notes/4-vla/index|VLA map]] lays out.
 
 ### World models: learning inside imagination
 
@@ -209,7 +209,7 @@ graph TD
 ```
 
 > [!note] 능력이 더해진 지점 · Where the capability was added
-> 이 가지 위의 모델은 거의 다 같은 골격을 공유한다. 사전학습된 VLM 백본에, 그 출력을 연속 제어로 바꾸는 action expert가 붙는다. 2025년 이후 논문은 self-correction을 점점 자주 내세우는데, 그 한 단어가 서로 다른 두 가지를 덮고 있으니 어느 쪽인지 물어야 한다. CorrectNav([arXiv:2508.10416](https://arxiv.org/abs/2508.10416))는 자기 정책을 다시 돌려 어긋난 궤적을 모으고 그것으로 post-training을 한다. 복구 행동이 가중치 안에 컴파일되어 들어간다. AdaNav([arXiv:2509.24387](https://arxiv.org/abs/2509.24387))는 실행 중 가중치를 건드리지 않고, 대신 자기 불확실성이 높은 스텝에서만 추가 추론에 계산을 쓴다. 실패에서 복구하는 능력과 지금 실패 중임을 알아채는 능력은 서로 다르고, 로봇이 움직이는 동안 일어나야 하는 것은 뒤쪽뿐이다.
+> 이 가지 위의 모델은 거의 다 같은 골격을 공유한다. 사전학습된 VLM 백본에, 그 출력을 연속 제어로 바꾸는 action expert가 붙는다. 2025년 이후 논문은 self-correction을 점점 자주 내세우는데, 그 한 단어가 서로 다른 두 가지를 덮고 있으니 어느 쪽인지 물어야 한다. CorrectNav([arXiv:2508.10416](https://arxiv.org/abs/2508.10416))는 자기 정책을 다시 돌려 어긋난 궤적을 모으고 그것으로 post-training을 한다. 복구 행동이 가중치 안에 컴파일되어 들어간다. AdaNav([arXiv:2509.24387](https://arxiv.org/abs/2509.24387))는 실행 중 가중치를 건드리지 않고, 대신 자기 불확실성이 높은 스텝에서만 추가 추론에 계산을 쓴다. 실패에서 복구하는 능력과 지금 실패 중임을 알아채는 능력은 서로 다르고, 로봇이 움직이는 동안 일어나야 하는 것은 뒤쪽뿐이다. 더 넓게 보면 이 모델들을 가르는 것은 애초에 내놓는 행동을 어떤 형식으로 잡느냐이고, 그것은 [[01-canonical-papers/notes/4-vla/index|VLA 지도]]가 펼쳐 놓았다.
 
 ### World Models: 상상 속에서 배우기
 

@@ -79,6 +79,9 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 
 ## 4. Vision-Language-Action (VLA) / Robot Learning
 
+*이 목록이 설계 공간의 어디에 앉아 있는지는 [[01-canonical-papers/notes/4-vla/index|VLA 지도]]가
+액션 토큰 축으로 보여 준다. 여기 열두 편은 그 축의 한 줄에 몰려 있다.*
+
 - [x] ○ [[notes/4-vla/saycan|SayCan]] — *Do As I Can, Not As I Say* (Ahn et al., CoRL 2022) — 언어 계획과 실행 가능한 skill의 접지
 - [x] ◐ [[notes/4-vla/rt-1|RT-1]] — *Robotics Transformer* (Brohan et al., RSS 2023)
 - [x] ★ [[notes/4-vla/rt-2|RT-2]] — *Vision-Language-Action Models* (Brohan et al., CoRL 2023)
