@@ -40,6 +40,8 @@ An **attention-based recurrent encoder** integrates proprioceptive and exterocep
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2201.08117): The controller completes an hour-long Alpine hike within the time recommended for human hikers. This is a field-duration and route demonstration, not a numerical speed ratio or a per-step failure probability.
+
 The evidence is deployment breadth plus one memorable demonstration: testing across **a variety of challenging natural and urban environments over multiple seasons**, and completion of an **hour-long hike in the Alps in the time recommended for human hikers**.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -90,6 +92,8 @@ Together with [[01-canonical-papers/notes/9-navigation/lee-quadruped-terrain|Lee
 **어텐션 기반 순환 인코더**가 고유수용 입력과 외수용 입력을 통합하고, end-to-end로 학습되며, **휴리스틱에 의존하지 않고** 모달리티를 결합하는 법을 배운다. 순환이 믿음을 시간에 걸쳐 나르고, 어텐션이 외수용 채널에 얼마의 가중치를 줄지 정한다.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2201.08117) 기준: 사람에게 권장하는 소요 시간 안에 알프스의 한 시간 길이 하이킹을 마쳤다. 현장 지속시간·경로 시연이며 속도 비율이나 보행 단계별 실패 확률은 아니다.
 
 증거는 배포의 폭에 기억할 만한 실증 하나가 더해진 형태다: **여러 계절에 걸쳐 다양한 험한 자연·도시 환경**에서의 시험, 그리고 **알프스에서 사람 등산객에게 권장되는 시간 안에 한 시간짜리 산행 완주**.
 

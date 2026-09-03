@@ -46,6 +46,8 @@ The design is deliberately modular, which is the property [[01-canonical-papers/
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2312.03275).
+
 Evaluated in Habitat on **Gibson, HM3D, and MP3D**, reaching state-of-the-art **SPL** on all three for object-goal navigation. Deployed zero-shot on a **Boston Dynamics Spot** and shown navigating to target objects in a real office building with no prior knowledge of the environment.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -102,6 +104,8 @@ VLFM is the cleanest demonstration that **foundation-model priors can replace ta
 설계가 의도적으로 모듈형이고, 그것이 [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등 2023]]이 sim-to-real 기구로 지목한 성질이다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2312.03275).
 
 Habitat의 **Gibson, HM3D, MP3D**에서 평가해 물체 목표 내비게이션 **SPL** 기준 세 데이터셋 모두에서 state-of-the-art. **Boston Dynamics Spot**에 zero-shot으로 배포해, 사전 지식 없는 실제 사무실 건물에서 목표 물체까지 주행하는 것을 보인다.
 

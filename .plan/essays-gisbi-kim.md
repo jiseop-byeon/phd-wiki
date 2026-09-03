@@ -136,6 +136,43 @@ URL: https://gisbi-kim.github.io/aprl-research-vision/
 ## 3. 실행 순서 (권장)
 2.3 → 2.4 → 2.5 (SLAM 묶음, 가장 기계적) → 2.1 → 2.2 (VLA/기억, 논문 확인 필요) → 2.6 → 2.10 (06 묶음) → QA → 빌드 → push → 커밋 메시지는 `git commit -F` 파일로.
 
-## 4. 실행 기록 (실행 세션이 채움)
-- 404/생략 항목:
-- 논문 사실 확인 못 해 "에세이의 해석"으로 표기한 곳:
+## 4. 실행 기록 (2026-09-03, Opus 5 세션에서 실행 완료)
+
+원문은 조사 세션에서 받아 둔 전문 캐시로 읽었다(웹에서 받은 같은 본문). 링크는 모두 실제 URL을 확인했다.
+
+**반영한 곳 (양쪽 반 모두, 총 14개 삽입 지점)**
+
+| 항목 | 위치 | 형태 |
+|---|---|---|
+| 2.1 VLA runtime harnessing | `03-deep-learning/lineage.md` Robot learning 절 | 콜아웃 "Reading the 2024–2026 VLA papers" |
+| 2.1 | `04-robotics/semantic-language-navigation.md` §8 | 문단 (학습 시점 대 실행 시점) |
+| 2.1 | `glossary.md` | `Test-time compute` 항목 |
+| 2.2 지도 대 기억 | `semantic-language-navigation.md` §7 | 콜아웃 "Map or memory?" |
+| 2.2 | `state-estimation-slam.md` §7 | 문단 "What a map does not store" |
+| 2.2 | `glossary.md` | `Spatial memory` 항목 |
+| 2.3 자료 5개 | `state-estimation-slam.md` Going deeper | 둘째 문단 + 읽는 순서 |
+| 2.4 GN==IEKF | `state-estimation-slam.md` §5 | 콜아웃 "Filter and smoother are one update" |
+| 2.4 | `state-estimation-slam.md` §7 | "SLAM = odometry + loop closing" 한 줄 |
+| 2.4 | `02-foundations/optimization.md` §3.5 | 넷째 불릿 (제목 "Three→Four things") |
+| 2.5 베이즈 유도 | `02-foundations/probability.md` Going deeper | 한 문장 |
+| 2.6 데모 소화불량 | `06-research-practice/real-world-impact.md` §2 | 콜아웃 (Goodhart 포함) |
+| 2.7 verification/validation | `experimental-design-reproducibility.md` §1 | 콜아웃 |
+| 2.7 | `failure-analysis-system-evaluation.md` §6 | 문단 (배치 이후 노출) |
+| 2.8 buildability | `real-world-impact.md` §5 | 문단 + 접힌 Going deeper(에세이 5편) |
+| 2.8 | `real-world-impact.md` §3 | "재현 번들" 문단 |
+| 2.9 손자병법 | `research-questions-claims.md` §7 | 콜아웃 "Fill this table before the experiments" |
+| 2.9 | `experimental-design-reproducibility.md` §1 | §7로 가는 한 줄 |
+| 2.10 평가 체제 | `simulators-benchmarks-datasets.md` §11 | 콜아웃 |
+| 2.11 중간 지표 | `state-estimation-slam.md` §9 | 한 문장 |
+
+**논문 사실 확인**
+- CorrectNav = arXiv:2508.10416, AdaNav = arXiv:2509.24387 — arXiv 초록으로 확인하고 본문에 링크. StreamVLN(2507.05240), Alpamayo 관련 논문도 확인했으나 분량 상한 때문에 쓰지 않았다.
+- Churchill & Newman, *Experience-based navigation for long-term localisation*, IJRR 2013 — Crossref로 확인.
+- 에세이의 계산 예시(추론 토큰 비용, 시간당 달러 등)와 DeepSeek·o1 관련 수치는 옮기지 않았다. 에세이가 2차 자료를 인용한 대목이라 위키가 직접 검증할 수 없었다.
+
+**생략한 것**
+- SLAM 자료 5개의 링크는 저자 사이트에 재호스팅된 PDF 사본 대신 arXiv·저자 배포처로 걸었다. Stachniss의 *Graph-Based SLAM and Sparsity* 슬라이드는 안정적인 공개 URL을 찾지 못해 이름만 적었다.
+- 2.3의 조건부 항목(se3-geometry Going deeper에 한 줄)은 불필요했다. 그 콜아웃은 Solà를 인용하지 않는다.
+- B등급 중 aprl-research-vision·situated-spatial-intelligence·slam-root·bayesfiltering 1/2·inside-claude-code와 연구 시스템 5편은 모두 링크로 들어갔다. icra21-radar-ws·yeti-radar·sclidarslam·papers-before-dgist·atlas·gemini 대화 지도·ai-agent-era·ai-university-redesign·claude-code-field-notes는 계획대로 제외했다.
+
+**QA**: `verify_content.py` 210파일 0문제, `audit_parity.py` 0건, `audit_gaps.py` 통과.

@@ -40,6 +40,8 @@ The module boundaries are also a transfer mechanism: **domain-agnostic module de
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2007.00643).
+
 Outperforms a wide range of baselines including both end-to-end learned and modular map-based methods, and produced **the winning entry of the CVPR 2020 Habitat ObjectNav Challenge**.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -87,6 +89,8 @@ end-to-end 정책은 하나의 네트워크로 픽셀을 행동에 대응시킨�
 모듈 경계는 그 자체로 전이 기구이기도 하다: **영역 불가지론적 모듈 설계** 덕분에 저자들이 시스템을 실제 이동 로봇으로 옮겨 현실에서도 비슷한 물체 목표 내비게이션 성능을 얻었다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2007.00643).
 
 end-to-end 학습 방법과 모듈형 지도 기반 방법을 아우르는 폭넓은 베이스라인을 능가했고, **CVPR 2020 Habitat ObjectNav 챌린지 우승작**을 낳았다.
 

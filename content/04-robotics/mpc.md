@@ -23,7 +23,7 @@ next to LQR, and [[04-robotics/convex-mpc-legged|8. Convex MPC]] is the applicat
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
-at the next step (receding horizon). With linear dynamics and quadratic cost it is a
+at the next step (receding horizon). With linear dynamics, convex quadratic cost and convex constraints it is a
 convex QP — written out fully in [[02-foundations/optimization|4. Optimization §5]] —
 and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
@@ -89,8 +89,8 @@ Two standard ways to write the same problem — papers assume you know which one
   variables and add dynamics as equality constraints — a large, *sparse, banded* problem
   that interior-point solvers exploit; cost matrices sit in blocks along the diagonal.
 - **Condensed form**: eliminate the states using $x_k = A^k x_0 + \sum_j A^{k-1-j}Bu_j$,
-  leaving only $u_{0:N-1}$ — a smaller but *dense* QP whose condition number worsens with
-  horizon length (powers of $A$).
+  leaving only $u_{0:N-1}$ — a smaller but *dense* QP whose conditioning can worsen with
+  horizon length (powers of $A$, cost weights and input directions).
 
 **Size it, so "large" and "small" stop being adjectives.** Take a quadruped centroidal MPC
 of the kind [[04-robotics/convex-mpc-legged|convex MPC papers]] run: state $n_x = 13$
@@ -99,12 +99,12 @@ at each of 4 feet), horizon $N = 10$.
 
 | | variables | equality constraints | Hessian |
 |---|---|---|---|
-| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x = 130$ | $263\times263$, **banded** — mostly zeros |
-| **Condensed** | $Nn_u = 120$ | none (dynamics substituted in) | $120\times120$, **dense** — every entry filled |
+| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x+n_x = 130+13 = 143$ | $263\times263$, **banded** — mostly zeros |
+| **Condensed** | $Nn_u = 120$ | none (dynamics substituted in) | $120\times120$, **generally dense** — up to 14,400 entries |
 
 Condensed has under half the variables, which sounds decisive until you notice its Hessian is
-dense: $120^2 = 14{,}400$ nonzeros, against a stacked matrix whose nonzero count grows only
-linearly in $N$. Doubling the horizon roughly doubles stacked work; it *quadruples* the
+dense: $120^2 = 14{,}400$ stored entries in a dense representation, against a stacked matrix whose nonzero count grows only
+linearly in $N$. Doubling the horizon roughly doubles stacked storage at fixed state/input dimensions; it *quadruples* the
 condensed Hessian's entry count and, because dense factorization is cubic in the variable
 count, multiplies condensed solve
 work. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
@@ -112,17 +112,18 @@ estimation already spent — which is why this choice is a real engineering deci
 than a stylistic one.
 
 Rule of thumb when reading: long horizons and state constraints → stacked; short horizons,
-input constraints only → condensed. (The conditioning penalty applies to marginally stable
-or unstable $A$ — the usual robotics case; for strictly stable $A$ the powers decay and
-condensed stays well-behaved.)
+input constraints only → condensed. (Large powers of $A$ can worsen conditioning. Stable dynamics help, but do not alone guarantee good conditioning: weights, controllability and scaling also matter. Storage and dense factorization counts are not guarantees about total solver runtime.)
+
+**Count the initial state explicitly.** In the table, $x_0$ is retained as a variable, so its measured value requires another $n_x=13$ equality constraints in addition to the 130 dynamics equations. If you substitute the measured $x_0$ before forming the QP, remove both its 13 variables and those 13 constraints: the equivalent stacked formulation has 250 variables and 130 dynamics equalities. This bookkeeping changes the matrix dimensions, not the control problem.
+
+**Follow one control step.** Read the current estimate, solve for the full sequence, apply only its first input, and measure again. The rest of the previous sequence is a prediction and perhaps a warm start; it is not a commitment to act open-loop for the whole horizon. A better plan from yesterday's state can be less useful than a modest plan from the current state. That is why timing belongs in the formulation rather than only in a runtime footnote.
 
 ### 3. The failure modes papers gloss over
 
 - **Infeasibility**: a disturbance pushes the state where *no* input sequence satisfies
   the constraints — the solver returns nothing, and the controller must do *something*.
   Standard fix: **constraint softening** — replace hard state constraints with penalized
-  slack variables $\sigma \ge 0$ (cost $+\rho\|\sigma\|$), so the QP always has an answer
-  that violates gracefully rather than crashing. Input (actuator) constraints stay hard.
+  slack variables $\sigma \ge 0$ (cost $+\rho\|\sigma\|$), allowing violations of the relaxed constraints at a cost. This does not guarantee feasibility if the remaining hard constraints conflict. Input (actuator) constraints stay hard, and the controller needs a defined fallback when no usable solution is available.
 - **Model mismatch**: MPC optimizes the *model's* future; bias between model and plant
   turns "optimal" plans into repeated small errors that feedback (the re-solving itself)
   must absorb. Watch for papers quantifying this vs assuming it away.
@@ -180,8 +181,7 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 이것을 보행 로봇의 표준으로 만든 응용이다.*
 
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
-문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학과
-이차 비용이면 볼록 QP가 되고 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써
+문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학, 볼록 이차 비용, 볼록 제약이면 볼록 QP가 되고 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써
 놓았다 — 입력·상태 제약을 *태생적으로* 다루는 것이
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
 
@@ -244,8 +244,8 @@ feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노�
   등식 제약으로 추가 — 크지만 *희소·띠 구조*라 내부점 솔버가 활용한다; 비용 행렬이
   대각 블록으로 놓인다.
 - **Condensed (축약) 형태**: $x_k = A^k x_0 + \sum_j A^{k-1-j}Bu_j$로 상태를 소거해
-  $u_{0:N-1}$만 남긴다 — 작지만 *조밀*하고, 지평이 길수록($A$의 거듭제곱) 조건수가
-  나빠진다.
+  $u_{0:N-1}$만 남긴다 — 작지만 *조밀*하고, 지평이 길어지며($A$의 거듭제곱, 비용 가중치, 입력 방향) 조건수가
+  나빠질 수 있다.
 
 **크기를 재 보자 — 그래야 "크다"와 "작다"가 형용사에서 벗어난다.**
 [[04-robotics/convex-mpc-legged|convex MPC 논문]]들이 돌리는 사족보행 centroidal MPC로 예를
@@ -254,26 +254,28 @@ feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노�
 
 | | 변수 | 등식 제약 | 헤시안 |
 |---|---|---|---|
-| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x = 130$ | $263\times263$, **띠 구조** — 대부분 0 |
-| **Condensed** | $Nn_u = 120$ | 없음(동역학을 대입해 소거) | $120\times120$, **밀집** — 모든 성분이 채워짐 |
+| **Stacked** | $(N{+}1)n_x + Nn_u = 143 + 120 = 263$ | $Nn_x+n_x = 130+13 = 143$ | $263\times263$, **띠 구조** — 대부분 0 |
+| **Condensed** | $Nn_u = 120$ | 없음(동역학을 대입해 소거) | $120\times120$, **일반적으로 밀집** — 최대 14,400개 성분 |
 
 Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
-비영 성분이 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
-지평을 두 배로 하면 stacked는 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 실제 풀이 일은 약 **여덟 배**가 된다. 그리고 50 Hz라면
+조밀하게 저장하면 원소가 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
+고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 실제 풀이 일은 약 **여덟 배**가 된다. 그리고 50 Hz라면
 이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
 이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 
 읽을 때의 어림 규칙: 긴 지평 + 상태 제약 → stacked; 짧은 지평 + 입력 제약만 → condensed.
-(조건수 페널티는 한계 안정/불안정 $A$ — 로봇의 통상 사례 — 에 해당하고, 엄격히 안정한
-$A$에서는 거듭제곱이 감쇠해 condensed도 얌전하다.)
+($A$의 큰 거듭제곱은 조건수를 나쁘게 만들 수 있다. 안정 동역학은 유리하지만 가중치·제어 가능성·스케일도 중요하므로 그것만으로 좋은 조건수를 보장하지는 않는다. 저장량과 조밀 분해 연산량은 전체 솔버 시간의 보장이 아니다.)
+
+**초기 상태를 명시적으로 센다.** 표에서는 $x_0$도 변수이므로 측정값에 고정하는 $n_x=13$개 등식이 동역학 130개 외에 필요하다. QP를 만들기 전에 측정한 $x_0$를 대입하면 변수 13개와 고정 등식 13개를 함께 뺀다. 같은 문제를 변수 250개, 동역학 등식 130개로 쓸 수 있다. 행렬 크기의 장부가 달라질 뿐 제어 문제는 같다.
+
+**한 제어 주기를 따라간다.** 현재 추정값을 읽고, 전체 입력 시퀀스를 풀고, 첫 입력만 적용한 뒤 다시 측정한다. 이전 시퀀스의 나머지는 예측이자 warm start 후보이며, 전체 지평 동안 그대로 실행하겠다는 약속이 아니다. 오래된 상태의 훌륭한 계획보다 현재 상태의 평범한 계획이 유용할 수 있다. 시간이 부록의 실행 속도 수치가 아니라 문제 구성에 들어가는 이유다.
 
 ### 3. 논문이 얼버무리는 실패 모드
 
 - **Infeasibility**: 외란이 상태를 *어떤* 입력 시퀀스로도 제약을 만족할 수 없는 곳으로
   밀면 — 솔버는 아무것도 돌려주지 않고, 제어기는 *뭐라도* 해야 한다. 표준 처방:
   **제약 연화(constraint softening)** — 딱딱한 상태 제약을 벌점 붙은 슬랙 변수
-  $\sigma \ge 0$(비용 $+\rho\|\sigma\|$)로 바꿔, QP가 우아하게 위반하는 답이라도 항상
-  내놓게 한다. 입력(액추에이터) 제약은 딱딱하게 유지한다.
+  $\sigma \ge 0$(비용 $+\rho\|\sigma\|$)로 바꿔, 연화한 제약을 비용을 치르고 위반하도록 허용한다. 남은 경성 제약이 충돌하면 여전히 해가 없을 수 있다. 입력(액추에이터) 제약은 경성으로 유지하며, 쓸 수 있는 해가 없을 때의 대체 동작도 정해야 한다.
 - **모델 불일치**: MPC는 *모델의* 미래를 최적화한다; 모델과 플랜트의 편차는 "최적" 계획을
   피드백(재풀이 자체)이 흡수해야 하는 반복적 소오차로 바꾼다. 이를 정량화하는 논문과
   가정으로 치우는 논문을 구분하라.

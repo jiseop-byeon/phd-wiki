@@ -27,6 +27,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: the moment the robotics literature's mapping stack (odometry, scan matching, registration) crosses into *Automation in Construction* — giving the scan-to-BIM pipeline an autonomous mobile front end. The line continues in the same group: a 2019 UAV+UGV cooperative mapping extension (Automation in Construction 106) and a 2025 adaptive view-planning system (JCCE 40) that is field-deployed.
 
+> [!tip] Key intuition · 핵심 직관
+> SLAM provides a coarse pose that puts successive scans close enough for fine registration to align them. This reduces the manual initialization burden, while leaving the final map dependent on registration quality and informative scene geometry.
+
 **Method** (literacy level): a mobile robot carries a laser scanner; SLAM estimates the robot's pose as it drives between scan positions; those pose estimates serve as coarse initial transforms so that fine registration can lock consecutive dense scans into a common coordinate frame automatically. The contrast class is the surveyor's workflow — tripod stations, artificial targets, and manual registration in post-processing.
 
 **Evidence**: demonstrated on a physical robot scanning construction-like indoor/outdoor environments — a testbed-scale validation that the SLAM-initialized registration pipeline produces a usable unified point cloud without human registration effort. Full-text numbers sit behind the Elsevier paywall (stated openly here); the strongest deployment evidence in this line belongs to the 2025 continuation, which reached real sites.
@@ -41,6 +44,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **한 줄 요약**: 로보틱스의 SLAM이 건설 정보학 쪽에 도착했다 — 지상 로봇이 건설 환경을 스스로 주행하고, SLAM 자세를 초기 정렬로 사용해 레이저 스캔들을 하나의 현장 포인트 클라우드로 자동 정합한다. 재래식 레이저 스캐닝의 수동 스테이션 설치와 타깃 배치를 제거한 것이다.
 
 **계보에서의 위치**: 로보틱스 문헌의 매핑 스택(오도메트리, 스캔 매칭, 정합)이 *Automation in Construction*으로 건너온 순간 — scan-to-BIM 파이프라인에 자율 이동 앞단을 달아 준다. 같은 그룹에서 계보가 이어진다: 2019년 UAV+UGV 협력 매핑 확장(Automation in Construction 106), 그리고 실제 현장에 배치된 2025년 적응형 뷰 플래닝 시스템(JCCE 40).
+
+> [!tip] 핵심 직관 · Key intuition
+> SLAM의 거친 자세가 연속 스캔을 가까이 놓아 정밀 정합이 맞출 수 있게 한다. 수동 초기화 부담을 줄이는 기전이다. 최종 지도는 여전히 정합 품질과 구별 가능한 장면 형상에 의존한다.
 
 **방법** (리터러시 수준): 이동 로봇이 레이저 스캐너를 싣고 다닌다; 스캔 위치 사이를 주행하는 동안 SLAM이 로봇 자세를 추정한다; 그 자세 추정값이 거친 초기 변환이 되어, 정밀 정합이 연속된 고밀도 스캔들을 공통 좌표계에 자동으로 고정할 수 있게 한다. 비교 대상은 측량사의 워크플로 — 삼각대 스테이션, 인공 타깃, 후처리에서의 수동 정합이다.
 

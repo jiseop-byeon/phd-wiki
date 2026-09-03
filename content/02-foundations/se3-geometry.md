@@ -110,6 +110,12 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   *discontinuous* as targets for neural networks — which is why many robot-learning papers
   regress a **6D representation** (first two columns of $R$, then Gram-Schmidt) instead.
 
+**Representation changes coordinates, not the physical orientation.** A rotation matrix stores how the local axes point in the reference frame. Euler angles describe an ordered sequence of rotations, so their order is part of the definition. Axis-angle describes an axis and a turn about it; the table's minimal count refers to its independent degrees of freedom, often stored as a rotation vector. An explicit unit axis plus angle uses redundant stored components.
+
+A unit quaternion is another constrained coordinate system. Its sign ambiguity means q and −q can encode exactly the same orientation, so a raw Euclidean difference between their entries is a poor rotation-error measure. Gimbal lock likewise belongs to an Euler coordinate chart, not a physical loss of the object's ability to rotate.
+
+**Check your understanding.** If a robot's logged Euler angle jumps while the object moves smoothly, first check wrapping and the chosen rotation order. Do not immediately diagnose a mechanical jump. For a learning target, distinguish a discontinuity in coordinates from a discontinuity in the underlying motion.
+
 ### 3. Poses: SE(3) and homogeneous transforms
 
 - A **pose** = rotation + position, packaged as
@@ -166,6 +172,12 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   thus *locally linear*, which is what lets Jacobians ([[02-foundations/calculus-backprop|2. Calculus]])
   map joint rates to end-effector twists, and what the exponential map formalizes
   ([[04-robotics/modern-robotics-book|MR ch. 3]]).
+
+**Pose and velocity answer different questions.** A pose says where a frame is now; a twist says how rigid-body motion changes instantaneously. A finite rotation cannot generally be obtained by simply adding its matrix entries or Euler angles, because successive rotations compose through multiplication and order matters. The small-motion approximation supplies a local linear language in which differentiation becomes possible.
+
+The linear part of a twist also depends on the reference frame and its origin. The same rotating body gives different point velocities at different distances from its axis. Before treating the last components of a twist as tool-tip translation, determine whether the twist is expressed in a body frame or a space frame and where that frame's origin lies. The detailed distinction is developed in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions]].
+
+**Check your understanding.** Changing the reference frame changes the coordinates of the twist without changing the physical motion. This is a coordinate conversion problem, not a new motion command. It is why a velocity vector without its frame is an incomplete robot interface.
 
 ### 5. Where this appears in the wiki
 
@@ -294,6 +306,12 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 - 학습 특화 상식: 3·4개 숫자 표현은 모두 신경망의 회귀 타깃으로서 *불연속*이다 — 많은
   로봇 학습 논문이 대신 **6D 표현**($R$의 앞 두 열 + Gram-Schmidt)을 회귀하는 이유다.
 
+**표현은 좌표를 바꾸지 물리적 방향을 바꾸지 않는다.** 회전행렬은 로컬 축이 기준 좌표에서 향하는 방향을 저장한다. 오일러 각은 순서 있는 회전의 연속이라 순서도 정의의 일부다. 축–각은 축과 그 둘레의 회전을 나타낸다. 표의 최소 개수는 독립 자유도이며 흔히 회전벡터로 저장한다. 단위축과 각도를 따로 저장하면 중복 성분이 생긴다.
+
+단위 쿼터니언도 제약이 있는 좌표다. q와 −q가 정확히 같은 방향을 나타내므로 성분의 단순 유클리드 차이는 회전 오차로 부적절하다. 짐벌락도 오일러 좌표 표현의 문제이지 물체가 회전 능력을 물리적으로 잃는 것은 아니다.
+
+**이해 확인.** 물체는 부드럽게 움직이는데 로그의 오일러 각이 튀면 먼저 각도 감기와 회전 순서를 본다. 곧바로 기계적 점프를 진단하지 않는다. 학습 목표에서도 좌표의 불연속과 실제 동작의 불연속을 구분한다.
+
 ### 3. 자세: SE(3)와 동차 변환
 
 - **자세** = 회전 + 위치를 하나로 포장:
@@ -349,6 +367,12 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   이것이 야코비안([[02-foundations/calculus-backprop|2. 미적분]])이 관절 속도를 말단
   twist로 사상할 수 있는 이유이자, 지수 사상이 정식화하는 내용이다
   ([[04-robotics/modern-robotics-book|MR 3장]]).
+
+**자세와 속도는 다른 질문이다.** 자세는 프레임이 지금 어디에 있는지, 트위스트는 강체 운동이 순간적으로 어떻게 변하는지 말한다. 유한 회전은 보통 행렬 성분이나 오일러 각을 더해 얻지 못한다. 회전은 곱으로 합성하고 순서가 중요하다. 미소 운동 근사는 미분할 수 있는 국소 선형 언어를 제공한다.
+
+트위스트의 선형 성분도 기준 프레임과 원점에 달려 있다. 같은 회전체라도 축에서 떨어진 거리에 따라 점 속도가 다르다. 뒤쪽 성분을 도구 끝의 병진 속도로 읽기 전에 바디·공간 프레임 중 어디서 표현했고 원점이 어디인지 정한다. 자세한 구분은 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동]]에서 다룬다.
+
+**이해 확인.** 기준 프레임을 바꾸면 물리 운동은 같고 트위스트 좌표가 바뀐다. 새 운동 명령이 아니라 좌표 변환이다. 프레임 없는 속도 벡터가 불완전한 로봇 인터페이스인 이유다.
 
 ### 5. 이 위키에서 등장하는 곳
 

@@ -24,6 +24,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on ceiling-tile installation across 60 scenes **in a ROS Gazebo simulator**; the generalized-cylinder trajectory representation arrived in the 2022 JCCE follow-up (82.0% vs 71.3%).
 
+> [!tip] Key intuition · 핵심 직관
+> Demonstrations supply task behavior where programming each geometric variation would be costly. The later trajectory-tube representation allows variation around a demonstrated path; keep that follow-up mechanism separate from what the original construction LfD study established.
+
+**Context.** Quasi-repetitive construction tasks repeat their purpose while varying in geometry. Learning from demonstration offers an alternative to programming each instance, with the original evidence limited to its simulated task.
+
 **Method**: learning from demonstration (LfD) from a mix of virtual (VR) and physical demonstrations. The follow-up (Liang et al., JCCE 2022) added the *generalized cylinder* representation — a tube of admissible trajectories around the demonstrated path — so the robot can vary execution within the tube instead of replaying one trajectory (82.0% vs 71.3% in that paper's comparison). "Quasi-repetitive" names the construction task class this fits: tasks that repeat, but with per-instance geometric variation (each tile, stud, or panel slightly different), too variable for fixed automation yet too repetitive to justify per-instance programming.
 
 **Evidence (with numbers)**: ceiling-tile installation, **78% task success over 60 test scenes in the ROS Gazebo simulator with a KUKA arm emulator** — there is no physical-robot result in the paper. This is **simulation, not a testbed and not a site**; after the demonstration phase the robot executes autonomously, with the human's role reduced to demonstrator.
@@ -38,6 +43,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ## 한국어
 
 **한 줄 요약**: 모방학습이 건설에 들어온다 — 인간 시연(가상 3,000 + 실제 85)이 매니퓰레이터에게 준반복 과제를 가르쳐 ROS Gazebo 시뮬레이터의 60개 장면에서 천장 타일 설치 **78% 성공**에 도달한다; 일반화 원통(generalized cylinder) 궤적 표현은 2022 JCCE 후속에서 도입됐다(82.0% vs 71.3%).
+
+> [!tip] 핵심 직관 · Key intuition
+> 시연은 형상 변동마다 프로그래밍하기 어려운 과제 행동을 제공한다. 후속 연구의 궤적 튜브 표현은 시연 경로 주변의 변동을 허용한다. 그 후속 기전은 원래 건설 LfD 연구가 확립한 것과 구분한다.
+
+**맥락.** 준반복 건설 과제는 목적이 반복되지만 형상이 달라진다. 시연 학습은 개별 프로그래밍의 대안이다. 원래 증거는 해당 시뮬레이션 과제에 한정된다.
 
 **방법**: 가상(VR)과 실제 시연을 혼합한 시연 학습(LfD). 후속 연구(Liang et al., JCCE 2022)가 *일반화 원통* 표현 — 시연 경로 주위의 허용 궤적 튜브 — 을 더해, 로봇이 한 궤적을 재생하는 대신 튜브 안에서 실행을 변주할 수 있게 했다(그 논문의 비교에서 82.0% vs 71.3%). "준반복(quasi-repetitive)"은 이것이 맞는 건설 과제 부류의 이름이다: 반복되지만 개체별 기하 변동이 있는 과제(타일·스터드·패널 하나하나가 조금씩 다름) — 고정 자동화에는 너무 가변적이고, 개체별 프로그래밍에는 너무 반복적이다.
 

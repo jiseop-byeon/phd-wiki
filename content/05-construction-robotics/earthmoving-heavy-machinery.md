@@ -60,6 +60,8 @@ worst case: distributed, history-dependent, and material-parameter-unknown.
 - Reading cue: when a paper claims soil generality, find which of (a)/(b)/(c) it does
   and what soil range the *evaluation* actually covered.
 
+The alternatives exist because the same bucket path can encounter different resistance after the material has been disturbed. A controller that reacts to measured load and a policy that infers useful behavior from terrain are addressing different observable signals. **The reading this gives you.** Ask what changes online when resistance changes. A soil label in the training set is weaker evidence of adaptation than a logged adjustment that preserves useful digging under the tested shift.
+
 ### 3. The pipeline, and where learning sits
 
 A modern autonomous excavator is a [[04-robotics/robot-systems-deployment|closed robot stack]]
@@ -156,6 +158,11 @@ soil bin supports almost no claim.
 > which; the evaluation section always does. Check machine size, site realism,
 > continuous-operation duration, and intervention counts before comparing any two papers.
 
+> [!example] Worked example · 계산 예제
+> **Separate filling from cycle time.** For a hypothetical 1.2 m³ bucket, fill factor 0.85, and 25 s cycle, ideal continuous-cycle productivity is 1.2 × 0.85 × 3600/25 ≈ **146.9 m³/h**. Holding fill fixed and shortening the cycle by 10% to 22.5 s gives **163.2 m³/h**. Holding cycle time fixed and increasing fill by 10% to 0.935 gives **161.6 m³/h**.
+>
+> **The reading this gives you.** Ask which term changed and whether the other stayed fixed. A policy can change both filling and motion; hydraulics constrain achievable cycle time but do not determine it alone. These are ideal cycle figures, excluding downtime, setup, and recovery. A field-productivity claim must include those costs in its time denominator.
+
 ### After reading
 
 - Explain why hydraulic actuation and soil contact make excavators harder than
@@ -237,6 +244,8 @@ soil bin supports almost no claim.
   학습한다.
 - 읽기 단서: 논문이 토질 일반성을 주장하면 (a)/(b)/(c) 중 무엇인지, *평가*가 실제로
   어떤 토질 범위를 덮었는지 찾아라.
+
+버킷 경로가 같아도 흙을 건드린 이력에 따라 저항이 달라져 여러 대응이 필요하다. 측정 부하에 반응하는 제어기와 지형에서 행동을 추론하는 정책은 다른 관측 신호를 쓴다. **여기서 얻는 독법.** 저항이 바뀌면 온라인에서 무엇이 바뀌는지 묻는다. 학습 집합의 토질 이름보다 시험한 변화 아래 굴착을 유지한 조절 로그가 적응의 더 직접적인 증거다.
 
 ### 3. 파이프라인, 그리고 학습의 위치
 
@@ -323,6 +332,11 @@ flowchart LR
 > 무인 트럭 적재까지 무엇이든 의미할 수 있다. 초록은 어느 쪽인지 거의 말해 주지 않는다;
 > 평가 섹션은 항상 말해 준다. 두 논문을 비교하기 전에 기계 크기, 현장 현실성, 연속 운영
 > 시간, 개입 횟수를 확인하라.
+
+> [!example] 계산 예제 · Worked example
+> **충전율과 사이클 시간을 나눈다.** 가상의 버킷 1.2 m³, 충전율 0.85, 사이클 25 s면 연속 사이클의 이상적 생산성은 1.2 × 0.85 × 3600/25 ≈ **146.9 m³/h** 수준이다. 충전율을 고정하고 사이클을 10% 줄여 22.5 s로 만들면 **163.2 m³/h** 수준이다. 사이클을 고정하고 충전율을 10% 올려 0.935로 만들면 **161.6 m³/h** 수준이다.
+>
+> **여기서 얻는 독법.** 어느 항을 바꿨고 다른 항은 유지됐는지 묻는다. 정책은 충전과 동작 모두를 바꿀 수 있다. 유압은 가능한 사이클 시간을 제한하지만 혼자 결정하지는 않는다. 이 값은 중단, 준비, 회복을 제외한 이상적 사이클 수치다. 현장 생산성은 그 비용을 시간 분모에 포함해야 한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

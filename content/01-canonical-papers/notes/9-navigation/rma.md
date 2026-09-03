@@ -31,11 +31,16 @@ mastery-when: "Raise to Working if online adaptation to changing dynamics become
 
 ### Method
 
+> [!tip] Key intuition · 핵심 직관
+> Recent proprioceptive history reveals how the body actually responded to commands under the current conditions. The adapter compresses that evidence into the latent used by the base policy, allowing behavior to change online without requiring a full policy update or explicit terrain label.
+
 Two components. A **base policy** conditioned on a latent describing the environment's dynamics, and an **adaptation module** that estimates that latent online from the recent stream of proprioceptive signals. The two together let the robot adapt to novel situations in fractions of a second.
 
 Notably, RMA is trained **entirely in simulation without any domain knowledge** — no reference trajectories, no predefined foot-trajectory generators — and is deployed on the A1 robot **without any fine-tuning**. The training uses a varied terrain generator with bioenergetics-inspired rewards.
 
 ### Results
+
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2107.04034).
 
 Deployment across rocky, slippery and deformable surfaces, in environments with grass, long vegetation, concrete, pebbles, stairs, and sand. The abstract's summary claim is **state-of-the-art performance across diverse real-world and simulation experiments**.
 
@@ -75,11 +80,16 @@ RMA established online latent system identification as a peer of privileged dist
 
 ### 방법
 
+> [!tip] 핵심 직관 · Key intuition
+> 최근 고유감각 이력에는 현재 조건에서 몸이 명령에 실제로 반응한 방식이 담긴다. 적응기가 이 증거를 기본 정책의 잠재변수로 압축한다. 전체 정책 갱신이나 명시적 지형 라벨 없이 온라인 행동 변경을 가능하게 한다.
+
 구성 요소는 둘이다. 환경 동역학을 기술하는 잠재 변수에 조건부인 **기본 정책**, 그리고 최근 고유수용 신호 흐름에서 그 잠재를 온라인으로 추정하는 **적응 모듈**. 둘이 합쳐져 로봇이 새로운 상황에 1초의 몇 분의 일 만에 적응한다.
 
 특기할 점은 RMA가 **어떤 영역 지식도 없이 전부 시뮬레이션에서** 학습된다는 것이다 — 참조 궤적도, 미리 정의한 발 궤적 생성기도 없다 — 그리고 **미세조정 없이** A1 로봇에 배포된다. 학습에는 다양한 지형 생성기와 생체에너지학에서 착안한 보상을 쓴다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2107.04034).
 
 바위·미끄러운 면·변형 지반, 그리고 풀·긴 식생·콘크리트·자갈·계단·모래가 있는 환경에서의 배포. 초록의 요약 주장은 **다양한 실제 및 시뮬레이션 실험에서 state-of-the-art 성능**이다.
 

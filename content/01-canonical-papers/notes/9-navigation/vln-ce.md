@@ -38,6 +38,8 @@ The authors define the task in a continuous 3D environment where agents must exe
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2004.02857).
+
 Some techniques transfer. But absolute performance is **significantly lower** in the continuous setting, supporting the paper's conclusion: performance in prior nav-graph settings **may be inflated by the strong implicit assumptions**.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -82,6 +84,8 @@ VLN-CE became the standard VLN setting, and [[01-canonical-papers/notes/9-naviga
 저자들은 에이전트가 자연어 지시를 따르기 위해 **저수준 행동**을 실행해야 하는 연속 3D 환경으로 과제를 정의하고, 그래프 설정에서의 진전을 반영한 모델들과 단일 모달리티 베이스라인을 옮겨온다. 단일 모달리티 베이스라인이 중요하다: 언어를 실제로 쓰지 않고도 과제의 얼마가 풀리는지를 재기 때문이다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2004.02857).
 
 일부 기법은 전이된다. 그러나 연속 환경에서 절대 성능이 **현저히 낮고**, 이것이 논문의 결론을 뒷받침한다: 기존 nav-graph 설정의 성능이 **강한 암묵적 가정으로 부풀려져 있을 수 있다**.
 

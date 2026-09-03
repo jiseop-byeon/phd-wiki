@@ -62,6 +62,9 @@ Founded the real-time detection lineage (YOLOv2–v8+, SSD, RetinaNet with focal
 dominates deployed perception — site safety monitoring, equipment tracking, and most
 embedded robot detectors run YOLO descendants.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The original speed–accuracy trade-off belongs to its detector and measurement setup. The family name does not make later YOLO versions the same method. Check resolution, hardware, object scale, and which version produced the reported result.
+
 ### Connections
 
 - Contrast: [[faster-r-cnn|Faster R-CNN]] (accuracy-first) · Next: [[detr|DETR]] (removes NMS/anchors)
@@ -105,6 +108,9 @@ embedded robot detectors run YOLO descendants.
 
 실시간 검출 계보(YOLOv2–v8+, SSD, focal loss의 RetinaNet)를 창시 — 배치된 인식 시스템의
 지배자다. 현장 안전 모니터링, 장비 추적, 임베디드 로봇 검출기 대부분이 YOLO 후손을 돌린다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 원래 속도–정확도 교환 관계는 해당 검출기와 측정 설정의 결과다. 이름이 같아도 후속 YOLO 버전은 같은 방법이 아니다. 해상도, 하드웨어, 물체 크기, 결과의 버전을 확인한다.
 
 ### 연결
 

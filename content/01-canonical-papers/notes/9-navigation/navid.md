@@ -40,6 +40,8 @@ Training data: **510k navigation samples** collected from continuous environment
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2402.15852): Training combines 510k navigation samples with 763k web-data samples. These quantify the training mixture; the abstract gives no numerical navigation-success or transfer advantage.
+
 The paper claims state-of-the-art performance in simulation and the real world, with superior cross-dataset and sim-to-real transfer, and states it is **the first** to reach state-of-the-art navigation without maps, odometers, or depth.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -88,6 +90,8 @@ NaVid는 **단안 RGB 카메라의 실시간 비디오 스트림**만 받아 다
 학습 데이터: 연속 환경에서 모은 **내비게이션 표본 51만** — 행동 계획 표본과 지시 추론 표본으로 나뉜다 — 그리고 **대규모 웹 데이터 76.3만**.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2402.15852) 기준: 학습은 항법 표본 510k개와 웹 데이터 표본 763k개를 결합한다. 학습 혼합의 규모이며 초록에 항법 성공이나 전이 우위의 수치는 없다.
 
 시뮬레이션과 실제 환경 모두에서 state-of-the-art 성능, 우수한 교차 데이터셋·sim-to-real 전이를 주장하고, 지도·오도미터·깊이 없이 state-of-the-art 내비게이션에 도달한 **최초**라고 진술한다.
 

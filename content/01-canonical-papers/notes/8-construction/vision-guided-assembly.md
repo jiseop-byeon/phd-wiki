@@ -26,6 +26,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: this is the anchor paper of the Michigan (Kamat/Menassa) construction-manipulation lineage — the line that continues through [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen's geometrically adaptive task execution (2019)]] and [[01-canonical-papers/notes/8-construction/liang-lfd|Liang's learning-from-demonstration (2020)]], and whose first author Chen Feng now runs NYU's AI4CE lab. It names the structural fact that separates construction robotics from manufacturing: the **reversed spatial relationship** — the manipulator must travel to and register against a large static structure, rather than a fixtured product arriving at a fixed robot.
 
+> [!tip] Key intuition · 핵심 직관
+> On-site registration substitutes for the known robot-to-workpiece relationship supplied by a factory fixture. Scanning the result then makes placement inspectable against design, while the marker-based sensing remains an explicit simplifying assumption.
+
 **Method**: the workflow chains four stages — (1) design model specifies target geometry; (2) the mobile platform localizes at the work face using fiducial-marker-based vision metrology, recovering the robot-to-workpiece transform without factory fixturing; (3) vision-guided manipulation places prepared components against the target geometry; (4) the same sensing scans the assembled result into an as-built model that can be compared against design intent. Every stage is 2015-era classical vision — printed fiducial markers, calibrated cameras — not learned perception.
 
 ```mermaid
@@ -55,6 +58,9 @@ replaces the fixture — and step 4 is what makes the claim checkable rather tha
 **한 줄 요약**: 모바일 건설 매니퓰레이터가 비정형 작업면에서 스스로 위치를 정합하고, 마커 기반 비전으로 부품을 자율 조립한 뒤, 결과를 as-built 모델로 다시 스캔한다 — 2015년에 건설 과제에서 설계→시공→검증 기하 루프를 닫았다.
 
 **계보에서의 위치**: 미시간(Kamat/Menassa) 건설 조작 계보의 앵커 논문이다 — 이 라인은 [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen의 기하 적응형 과제 실행(2019)]]과 [[01-canonical-papers/notes/8-construction/liang-lfd|Liang의 시연 학습(2020)]]으로 이어지고, 제1저자 Chen Feng은 현재 NYU AI4CE 랩을 이끈다. 건설 로봇을 제조업과 가르는 구조적 사실에 이름을 붙였다: **역전된 공간 관계(reversed spatial relationship)** — 고정된 로봇에 지그로 고정된 제품이 오는 것이 아니라, 매니퓰레이터가 크고 정적인 구조물로 이동해 정합해야 한다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 현장 정합이 공장 고정구가 제공하던 로봇–작업물의 알려진 관계를 대신한다. 결과 스캔은 배치를 설계와 대조 가능하게 만든다. 마커 기반 센싱은 명시적인 단순화 가정으로 남는다.
 
 **방법**: 워크플로는 네 단계를 잇는다 — (1) 설계 모델이 목표 기하를 지정한다; (2) 모바일 플랫폼이 피두셜 마커 기반 비전 계측으로 작업면에서 위치를 정합해, 공장식 지그 없이 로봇-작업물 변환을 복원한다; (3) 비전 유도 조작이 준비된 부품을 목표 기하에 맞춰 배치한다; (4) 같은 센싱이 조립 결과를 as-built 모델로 스캔해 설계 의도와 비교할 수 있게 한다. 모든 단계가 2015년대의 고전 비전 — 인쇄된 피두셜 마커, 캘리브레이션된 카메라 — 이며 학습 기반 인식이 아니다.
 

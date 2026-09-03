@@ -49,6 +49,8 @@ Three results are used constantly below, so they are worth stating in one place:
 
 Everything on this page is what happens when you add **mass** to that picture.
 
+The distinction matters because a reachable motion is not necessarily a motion the actuators can produce under load. For example, a pose solver can place a drywall sheet geometrically while ignoring the effort needed to accelerate and hold it. **The reading this gives you.** Identify whether a paper establishes pose feasibility, velocity feasibility, static support, or dynamic execution. Each adds a different condition; solving the earlier problem does not silently solve the later one.
+
 ### 2. The manipulator equation
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
@@ -91,6 +93,13 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau +
 
 That added term is the entire reason contact is a control problem rather than a planning
 problem: the environment gets to inject torques the controller did not command.
+
+**Use the equation in both directions.** In inverse dynamics, you specify a desired acceleration and compute the torque needed at the current position and velocity. In forward dynamics, you specify the torque and solve for the resulting acceleration. A simulator usually needs the latter; a model-based tracking controller often uses the former. The same equation serves both because the unknown changes.
+
+Start by holding the arm still without contact. Both velocity and acceleration vanish, so the ideal model requires $\tau=g(\theta)$. Next imagine motion at constant joint velocity: acceleration is zero but $C\dot\theta$ can remain, because geometry changes as the joints move. Finally add contact: the external wrench may support some of the load or oppose motion, depending on its sign and frame. Gravity compensation alone does not cancel an unknown contact force. These three cases let you check a dynamics implementation before attempting a long trajectory.
+
+> [!question] Read a torque residual · 토크 잔차 읽기
+> If measured torque differs from the model, is that necessarily contact? **Answer:** no. Friction, payload error, motor calibration and timing errors can also produce a residual. Inferring contact from torque requires accounting for these alternatives.
 
 ### 3. Worked example — the 2R arm's mass matrix
 
@@ -255,6 +264,10 @@ manipulability ellipse collapses to a line, and correspondingly $\Lambda$ blows 
 direction — the arm becomes effectively infinitely heavy along the direction it can no
 longer move.
 
+**Read the inverse before the inertia.** Ignore velocity-dependent and gravity terms for this local force-to-acceleration interpretation. A task force becomes joint torque through $J^\top$, joint torque becomes acceleration through $M^{-1}$, and $J$ maps that acceleration back into task coordinates. The product $JM^{-1}J^\top$ therefore answers “how much task acceleration does this force produce here?” Inverting it gives the inertia needed to express force in terms of task acceleration.
+
+The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded; it does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for—differentiating a moving Jacobian introduces $\dot J\dot\theta$.
+
 ### 7. Where the parameters come from — and the sim-to-real gap
 
 Every symbol in §2 hides a number that someone had to measure: link masses, centres of
@@ -362,6 +375,8 @@ whether a contact will feel stiff or soft — and be right.
 
 이 페이지 전체는 그 그림에 **질량**을 더하면 무슨 일이 일어나는가이다.
 
+도달 가능한 동작도 부하 아래 구동기가 만들 수 있는 동작은 아닐 수 있다. 자세 해법은 드라이월 시트를 기하적으로 놓으면서 가속하고 유지할 노력을 무시할 수 있다. **여기서 얻는 독법.** 논문이 자세 가능성, 속도 가능성, 정적 지지, 동적 실행 중 무엇을 확립하는지 본다. 각각 다른 조건을 추가하므로 앞 문제를 풀어도 뒤 문제가 자동으로 풀리지는 않는다.
+
 ### 2. 매니퓰레이터 방정식
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
@@ -400,6 +415,13 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau +
 
 이 추가 항이 접촉을 계획 문제가 아니라 제어 문제로 만드는 이유 전부다: 환경이 제어기가
 명령하지 않은 토크를 주입할 수 있게 된다.
+
+**방정식을 양쪽 방향으로 쓴다.** 역동역학은 원하는 가속도를 정하고 현재 위치·속도에서 필요한 토크를 구한다. 순동역학은 토크를 정하고 생길 가속도를 푼다. 시뮬레이터는 보통 후자를, 모델 기반 추종 제어기는 흔히 전자를 쓴다. 같은 방정식에서 미지수만 달라진다.
+
+먼저 비접촉 상태로 팔을 정지시킨다. 속도·가속도가 모두 0이므로 이상적 모델은 $\tau=g(\theta)$를 요구한다. 다음으로 관절 속도를 일정하게 유지한다. 가속도는 0이어도 기하가 변하므로 $C\dot\theta$는 남을 수 있다. 마지막으로 접촉을 더한다. 외력은 부호와 프레임에 따라 하중을 받치거나 운동을 방해한다. 중력 보상만으로 미지의 접촉력을 없앨 수는 없다. 긴 궤적 전에 이 세 경우로 동역학 구현을 점검할 수 있다.
+
+> [!question] 토크 잔차 읽기 · Read a torque residual
+> 측정 토크와 모델의 차이가 반드시 접촉인가? **답:** 아니다. 마찰, 하중 오차, 모터 보정, 시점 오차도 잔차를 만든다. 토크로 접촉을 추정하려면 이 대안들을 고려해야 한다.
 
 ### 3. 계산 예제 — 2R 팔의 질량 행렬
 
@@ -556,6 +578,10 @@ MR 5장의 가조작성 타원체와의 관계는 정확한 일치가 아니라 
 *움직이기 쉬운* 방향이고, 겉보기 질량 타원의 긴 축은 *움직이기 어려운* 방향이다. 특이점
 근처에서 가조작성 타원은 직선으로 붕괴하고, 대응해서 $\Lambda$는 그 방향으로 발산한다 —
 팔이 더 이상 움직일 수 없는 방향으로 사실상 무한히 무거워진다.
+
+**관성보다 역행렬 안쪽부터 읽는다.** 힘에서 가속도로 가는 국소 해석을 위해 속도 항과 중력을 잠시 분리한다. 작업 힘은 $J^\top$를 통해 관절 토크가 되고, $M^{-1}$을 통해 관절 가속도가 되며, $J$를 통해 다시 작업 좌표의 가속도가 된다. 따라서 $JM^{-1}J^\top$는 “여기서 이 힘이 작업 가속도를 얼마나 만드는가”에 답한다. 이를 뒤집으면 가속도로 힘을 표현할 때의 관성이다.
+
+보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀌며, 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다.
 
 ### 7. 파라미터는 어디서 오는가 — 그리고 sim-to-real 격차
 

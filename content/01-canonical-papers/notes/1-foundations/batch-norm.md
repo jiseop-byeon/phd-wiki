@@ -55,6 +55,9 @@ Training deep nets in 2014 was fragile: it demanded small learning rates and car
 
 Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundations/resnet|ResNet]] uses BN after every convolution and wouldn't train without it. Spawned a normalization family (LayerNorm, InstanceNorm, GroupNorm, RMSNorm); LayerNorm/RMSNorm are structural components of every [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]].
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Faster training is an empirical claim under a batch-dependent normalization scheme. It does not by itself validate the original internal-covariate-shift explanation. Check batch size and how training statistics are used at inference.
+
 ### Connections
 
 - Enables: [[01-canonical-papers/notes/1-foundations/resnet|ResNet]] · Successor in Transformers: LayerNorm
@@ -93,6 +96,9 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 ### 영향과 후속 연구
 
 깊은 네트워크 학습을 일상으로 만들었다 — [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]은 모든 합성곱 뒤에 BN을 쓰며, 원 구성에서는 BN 없이는 학습이 어렵다(정규화 없는 학습은 이후 특수 초기화 — Fixup, NF-Net — 로 가능해졌다). 정규화 계열(LayerNorm, InstanceNorm, GroupNorm, RMSNorm)을 낳았고, LayerNorm/RMSNorm은 모든 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]의 구조적 구성 요소다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 빠른 학습은 배치 의존 정규화 아래의 실험 주장이다. 원래 내부 공변량 이동 설명까지 검증하지는 않는다. 배치 크기와 추론 시 학습 통계의 사용을 확인한다.
 
 ### 연결
 

@@ -117,9 +117,14 @@ flowchart LR
     F -. "at deployment: forward pass only, parameters frozen" .-> I["Inference"]
 ```
 
-**Training** is repeating 1–3 until the loss stops falling. **Inference** is running only
-step 1's forward pass on new data, with the parameters frozen — which is what a deployed
-robot does.
+**Training** repeats forward prediction, loss evaluation, differentiation and updating on data batches. Stop according to a specified budget or validation criterion; a falling training loss alone does not establish generalization. **Inference** normally runs the forward computation on new data with parameters frozen, as in a deployed robot.
+
+**Keep three operations separate.** The forward pass answers “what does this network currently predict?” Backpropagation answers “how would a small change to each parameter change this loss?” The optimizer uses that derivative to choose an update. Backpropagation does not itself choose a learning rate or guarantee that the next loss will be lower: a finite step can overshoot what the local derivative predicted.
+
+The target in the example is 1 and the prediction is 0.5. For the stated squared loss, the derivative with respect to the prediction is therefore −0.5. Its sign says that increasing the prediction locally reduces the loss. To turn that into a weight update, multiply by how that particular weight changes the prediction—the chain rule. Different weights can have different signs, even though they all contribute to the same output error.
+
+> [!question] Separate prediction and learning · 예측과 학습 구분
+> Does a robot need the correct target label to make a prediction? **Answer:** no. A forward pass needs its input and stored parameters. A supervised training loss additionally needs a target. Inference can produce a confident but wrong answer because no target checks that particular prediction during the forward pass.
 
 ### 4. Batch, epoch, iteration — the words in every experimental section
 
@@ -132,12 +137,14 @@ You do not compute the loss over all data at once; you take a **minibatch** (oft
   training for 20 epochs = **2,000 updates**. When a paper reports "trained for 300 epochs"
   or "500k steps," this arithmetic is what it means.
 
+These units matter because equal epoch counts can conceal unequal optimization effort when datasets or batch sizes differ. For example, adding demonstrations changes the amount of data seen in a pass, while changing the batch changes how frequently parameters are updated. **The reading this gives you.** Compare samples processed, update count, and batch size together. An epoch count is meaningful only relative to its dataset; it is not a portable measure of compute or a guarantee that two methods received equal training.
+
 ### 5. Parameter vs hyperparameter — a distinction papers rely on
 
 | | Chosen by | Examples |
 |---|---|---|
 | **Parameter** | gradient descent, from data | every entry of $W$ and $b$ |
-| **Hyperparameter** | a human, before training | learning rate, batch size, number of layers, width, how long to train |
+| **Hyperparameter** | a chosen configuration or search procedure | learning rate, batch size, number of layers, width, how long to train |
 
 An **ablation** changes one hyperparameter or component and reports the effect; that is how
 papers argue a piece mattered ([[02-foundations/ml-practice|9. ML Practice §4]]).
@@ -300,8 +307,14 @@ flowchart LR
     F -. "배포 시: 순전파만, 파라미터 고정" .-> I["추론"]
 ```
 
-**학습**(training)은 손실이 더 안 줄 때까지 1~3을 반복하는 것이고, **추론**(inference)은
-파라미터를 고정한 채 새 데이터에 순전파만 돌리는 것 — 배치된 로봇이 하는 일이 이것이다.
+**학습**(training)은 데이터 배치마다 순전파·손실 계산·미분·갱신을 반복한다. 정한 예산이나 검증 기준으로 종료하며, 학습 손실 감소만으로 일반화를 입증하지는 않는다. **추론**(inference)은 보통 파라미터를 고정한 채 새 데이터에 순전파를 수행한다. 배치된 로봇의 일반적인 동작이다.
+
+**세 연산을 나눈다.** 순전파는 “현재 신경망이 무엇을 예측하는가”에 답한다. 역전파는 “각 파라미터를 조금 바꾸면 이 손실이 어떻게 변하는가”에 답한다. 최적화기는 그 미분으로 갱신을 정한다. 역전파 자체가 학습률을 고르거나 다음 손실의 감소를 보장하지는 않는다. 유한한 보폭은 국소 미분이 예상한 범위를 넘을 수 있다.
+
+예제에서 정답은 1이고 예측은 0.5다. 주어진 제곱 손실을 예측값으로 미분하면 −0.5다. 예측을 조금 키우면 손실이 줄어든다는 부호다. 이를 가중치 갱신으로 바꾸려면 해당 가중치가 예측을 얼마나 바꾸는지도 곱해야 한다. 이것이 연쇄법칙이다. 같은 출력 오차에 기여해도 가중치별 미분 부호는 다를 수 있다.
+
+> [!question] 예측과 학습 구분 · Separate prediction and learning
+> 로봇이 예측하려면 정답 라벨이 필요한가? **답:** 아니다. 순전파에는 입력과 저장한 파라미터가 필요하다. 지도 학습 손실 계산에는 정답도 필요하다. 순전파 중 그 예측을 정답과 대조하지 않으므로 자신 있게 틀린 답도 낼 수 있다.
 
 ### 4. 배치·에포크·이터레이션 — 모든 실험 섹션의 단어들
 
@@ -314,12 +327,14 @@ flowchart LR
   20 에포크 학습 = **갱신 2,000회**. 논문의 "300 에포크 학습", "50만 스텝"이 뜻하는 것이
   이 산수다.
 
+데이터셋이나 배치가 다르면 같은 epoch도 최적화 노력이 달라 이 단위가 중요하다. 시연을 추가하면 한 순회에서 보는 데이터가 바뀌고 배치를 바꾸면 파라미터 갱신 빈도가 달라진다. **여기서 얻는 독법.** 처리 표본 수, 갱신 수, 배치 크기를 함께 비교한다. epoch는 해당 데이터셋에 상대적인 값이다. 어디서나 통하는 연산량 단위도, 동일 학습의 보장도 아니다.
+
 ### 5. 파라미터 vs 하이퍼파라미터 — 논문이 기대는 구분
 
 | | 누가 정하나 | 예 |
 |---|---|---|
 | **파라미터** | 경사 하강이 데이터에서 | $W$와 $b$의 모든 성분 |
-| **하이퍼파라미터** | 사람이, 학습 전에 | 학습률, 배치 크기, 층 수, 너비, 학습 기간 |
+| **하이퍼파라미터** | 설정 선택이나 탐색 절차로 | 학습률, 배치 크기, 층 수, 너비, 학습 기간 |
 
 **절제 실험**(ablation)은 하이퍼파라미터나 구성요소 하나를 바꿔 그 효과를 보고하는 것이고,
 논문이 어떤 부품이 중요했다고 논증하는 방식이다
@@ -362,7 +377,7 @@ flowchart LR
 > 1. 선형 사상의 합성은 선형이다: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, 결국 행렬 하나. 곱 사이에 비선형성이 없으면 깊이가 아무것도 더하지 않는다.
 > 2. 1층: $8\times4 + 8 = 40$; 2층: $8\times8 + 8 = 72$; 3층: $2\times8 + 2 = 18$. 합 **130개**.
 > 3. 에포크당 $50{,}000/250 = 200$ 이터레이션; $200 \times 10 = $ **2,000회**.
-> 4. 학습률·배치 크기·층 수가 하이퍼파라미터(사람이 학습 전에 정한다). $W_1$과 $b_2$는 파라미터로, 경사 하강이 고른다.
+> 4. 학습률·배치 크기·층 수가 하이퍼파라미터(설정 선택이나 탐색 절차로 정한다). $W_1$과 $b_2$는 파라미터로, 경사 하강이 고른다.
 
 ### 다음으로 갈 곳
 

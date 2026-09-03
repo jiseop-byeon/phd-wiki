@@ -27,6 +27,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: this is the merge point of two streams that rarely touch — [[05-construction-robotics/earthmoving-heavy-machinery|heavy-machine autonomy]] and [[05-construction-robotics/assembly-fabrication|robotic assembly/fabrication]] — executed by a four-chair ETH collaboration (Gramazio Kohler Research for digital fabrication, RSL for the machine, the Chli group for vision, and Girot's landscape-architecture chair for the design commission). It is the flagship follow-up that the HEAP platform investment paid for.
 
+> [!tip] Key intuition · 핵심 직관
+> Found stones cannot be treated as interchangeable parts with known poses. Scanning each stone and updating the built-wall state makes the next placement conditional on actual geometry, while force-aware execution handles contact that a fixed placement script would ignore.
+
 **Method (pipeline)**: site and stone scanning → per-stone candidate reconstruction (geometry and mass properties from point clouds) → structural/placement planning that searches stable poses against the as-built wall state → grasping and force-controlled placement with the excavator arm → updated site model that feeds the next placement. The loop is closed: every placed stone changes the wall state the planner sees next. The material is *found* — multi-tonne local boulders and demolition debris, not fabricated units — so nothing about a stone's geometry is known before it is scanned.
 
 ```mermaid
@@ -57,6 +60,9 @@ fixture are both known before the robot moves.*
 **한 줄 요약**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH의 자율 Menzi Muck M545 보행 굴착기 — 가 현장의 불규칙 자연석을 스캔해 사용 가능한 형상·질량 특성을 추정하고 안정적 배치를 계획한 뒤, 수 톤급 돌과 철거 잔해를 조작해 Oberglatt Circularity Park에 높이 6 m·길이 65 m의 건식 돌담을 쌓았다.
 
 **계보에서의 위치**: 이 논문은 좀처럼 만나지 않는 두 스트림 — [[05-construction-robotics/earthmoving-heavy-machinery|중장비 자율성]]과 [[05-construction-robotics/assembly-fabrication|로봇 조립·패브리케이션]] — 의 합류점이며, ETH의 네 석좌 협업(디지털 패브리케이션의 Gramazio Kohler Research, 기계의 RSL, 비전의 Chli 그룹, 조경 설계의 Girot 석좌)으로 실행됐다. HEAP 플랫폼 투자가 지불한 대표 후속 성과다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 현장에서 얻은 돌은 알려진 자세의 교환 가능한 부품이 아니다. 각 돌을 스캔하고 쌓인 벽을 갱신하면 다음 배치가 실제 형상에 따라 정해진다. 힘을 고려한 실행은 고정 배치 스크립트가 놓칠 접촉을 다룬다.
 
 **방법(파이프라인)**: 현장·돌 스캔 → 돌별 후보 재구성(점군에서 형상·질량 특성) → 현재 as-built 벽 상태에 대해 안정적 자세를 탐색하는 구조/배치 계획 → 굴착기 팔의 파지와 힘 제어 배치 → 다음 배치에 입력되는 현장 모델 갱신. 루프는 닫혀 있다: 놓인 돌 하나하나가 계획기가 다음에 보는 벽 상태를 바꾼다. 재료는 *발견된* 것 — 수 톤급 현지 자연석과 철거 잔해이지 제작된 유닛이 아니다 — 이므로 스캔 전에는 돌의 형상에 대해 아무것도 알 수 없다.
 

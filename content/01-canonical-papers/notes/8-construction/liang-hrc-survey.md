@@ -26,9 +26,15 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: the Kamat/Menassa (UMich) group writing the map of the territory their own lab then populates — read it as the entry gate to the [[05-construction-robotics/hrc-worker-centered|HRC and worker-centered stream]]. It pairs with [[01-canonical-papers/notes/8-construction/davila-delgado-2019|Davila Delgado 2019]] as the two orientation surveys: Davila Delgado answers *why adoption fails* (demand side), Liang answers *how the research space is organized* (supply side).
 
+> [!tip] Key intuition · 핵심 직관
+> For a review, the key is a comparison axis: who senses, decides, and executes in human–robot work. Grouping studies by work division exposes differences that a list of robot types would hide; a sparsely populated category is a reading lead, not proof of technical impossibility.
+
 **Method** (literacy level): systematic literature review of construction HRC studies, organized into a classification framework by the form of human-robot work division — from human-operated through collaborative to autonomous arrangements — plus a research-trend analysis showing which categories and tasks the literature crowds into and which sit empty. Evidence: the corpus review itself and the citation record (~283 by 2026) — for a survey, uptake as shared vocabulary *is* the evidence.
 
 **Limitations**: a 2021 snapshot — pre-foundation-model, so language-conditioned and learned generalist robots barely register; classification is by published research, not by deployed practice, so the map can overweight what academics find publishable; taxonomy boundaries will strain as learning-based systems blur the operated/collaborative/autonomous lines. No testbed or site result of its own — it is a survey, and should be judged as one.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The taxonomy organizes published research on human–robot work division. It does not measure deployment prevalence or prove the best allocation of authority. Check corpus boundaries and date before interpreting an empty category as an open technical problem.
 
 ## 한국어
 
@@ -36,9 +42,15 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **계보에서의 위치**: Kamat/Menassa(미시간) 그룹이 자기 연구실이 채워 갈 영토의 지도를 직접 그린 것 — [[05-construction-robotics/hrc-worker-centered|HRC·작업자 중심 스트림]]의 입구로 읽어야 한다. [[01-canonical-papers/notes/8-construction/davila-delgado-2019|Davila Delgado 2019]]와 함께 두 편의 방향 잡기 서베이를 이룬다: Davila Delgado는 *왜 도입이 실패하는가*(수요 측)에 답하고, Liang은 *연구 공간이 어떻게 조직되는가*(공급 측)에 답한다.
 
+> [!tip] 핵심 직관 · Key intuition
+> 리뷰의 핵심은 인간–로봇 작업에서 누가 감지·결정·실행하는가라는 비교축이다. 분업으로 연구를 묶으면 로봇 종류 목록이 숨기는 차이가 드러난다. 연구가 적은 분류는 읽을 단서이지 기술적 불가능성의 증거는 아니다.
+
 **방법** (리터러시 수준): 건설 HRC 연구들의 체계적 문헌 리뷰를, 인간-로봇 작업 분담의 형태 — 인간 조작에서 협업을 거쳐 자율 배치까지 — 에 따른 분류 프레임워크로 조직하고, 문헌이 어느 범주·과제에 몰리고 어디가 비어 있는지 보여주는 연구 동향 분석을 더했다. 증거: 코퍼스 리뷰 자체와 인용 기록(2026년 기준 약 283회) — 서베이에서는 공용 어휘로의 채택이 곧 증거다.
 
 **한계**: 2021년의 스냅숏 — 파운데이션 모델 이전이라 언어 조건화·학습된 범용 로봇은 거의 등장하지 않는다; 분류는 배치된 실무가 아니라 출판된 연구 기준이라, 지도가 학계가 출판하기 좋은 것에 과중될 수 있다; 학습 기반 시스템이 조작/협업/자율의 경계를 흐리면 분류 경계가 압박받을 것이다. 자체 테스트베드·현장 결과는 없다 — 서베이이고, 서베이로 평가해야 한다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 분류는 인간–로봇 분업의 발표 연구를 정리한다. 배포 보급률을 측정하거나 최적 권한 배분을 증명하지 않는다. 빈 분류를 미해결 기술 문제로 읽기 전에 자료 범위와 시점을 확인한다.
 
 ### 연결
 

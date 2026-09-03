@@ -75,9 +75,21 @@ Intervention, approval, takeover, teleoperation recovery, and physical reset are
 
 Shared autonomy combines human command $u_h$ and autonomous command $u_r$ through arbitration, constraints, or role allocation. A simple blend $u=\alpha u_h+(1-\alpha)u_r$ illustrates the idea but can be unsafe or confusing if commands conflict. Check how intent is inferred, authority changes, conflict is communicated, and the human can override.
 
+Blending is attractive because it gives a smooth command, but a smooth command is not necessarily a safe compromise. With α = 0.5, suppose the human steers left around an obstacle while autonomy steers equally far right, and both retain forward motion. The lateral commands cancel; the combined command can continue straight toward the obstacle even though each original path avoids it.
+
+The conflict is about which side to pass, not simply how much assistance to apply. Arbitration can choose a consistent route or constrain the combined motion, but the worker must understand which authority is active and how to change it.
+
+**The reading this gives you.** Ask what happens when both commands are individually reasonable and mutually incompatible. Inspect conflict handling, constraint checking after combination, and the override path. A blending coefficient by itself does not specify a complete shared-control policy.
+
 ### 4. Human performance
 
 Relevant constructs include workload, situation awareness, attention, reaction time, fatigue, skill, mental model, and trust. High trust is not automatically good: **calibrated trust** means reliance matches system capability and uncertainty. Self-reported trust should be paired with behavior and task outcomes.
+
+Trust is useful when it helps a person allocate attention to the system's actual strengths and weaknesses. It becomes harmful when a reassuring interface makes the operator stop noticing failures. For example, an excavator assistant may receive higher trust ratings and fewer overrides while stale localization goes unnoticed. The reduced intervention rate would then reflect missed opportunities to intervene rather than improved autonomy.
+
+Pair ratings with behavior during recoverable system errors. Can the operator detect the error, identify the active mode, and take over before the task boundary is lost? Also record the monitoring effort required during ordinary operation.
+
+**The reading this gives you.** Ask whether reliance changes appropriately when system competence changes. Favorable attitudes alone cannot establish calibrated trust. A useful human-performance result links the subjective measure to task behavior and explains the conditions under which the interface helps or misleads.
 
 ### 5. Interfaces
 
@@ -180,9 +192,21 @@ named standard, not against "safety" in general.
 
 Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review. When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study.
 
+Order matters because people learn the task while they are being measured. Suppose every participant uses interface A before interface B in a bucket-placement study. B may appear easier because the operator has already learned the target geometry and machine response. A worse interface could therefore look better when it always receives the practice benefit.
+
+Counterbalance the order, provide a declared familiarization procedure, and preserve participant-level comparisons. If learning carries over asymmetrically, simply reversing the order may not remove it; the study should explain how carryover is handled. Repeated trials help characterize each participant, but do not create additional independent participants.
+
+**The reading this gives you.** Inspect the sequence a participant actually experiences, including training and rest. Ask whether the favored condition systematically occurs after practice or before fatigue. A within-subject label does not guarantee a fair comparison unless the schedule supports the interpretation.
+
 ### 8. Evaluation
 
 Measure task quality/time, intervention and reset rate, takeover time, workload, situation awareness, trust calibration, safety violations, near misses, productivity, usability, and learning/fatigue. A lower intervention rate may mean better autonomy—or reluctant, overloaded, or poorly informed operators.
+
+A set of measures is needed because improvements can move costs between the robot and the person. For example, an assistant can reduce bucket-placement time while forcing the operator to watch an ambiguous mode indicator continuously. Completion time improves while the monitoring burden grows, and the cost may appear only when an unexpected event occurs.
+
+Choose measures that cover the proposed benefit and its plausible failure mode. If the claim concerns assistance, include the work needed to request, supervise, correct, and reset that assistance. Keep the intervention policy fixed or explain how it differs across conditions.
+
+**The reading this gives you.** Read the evaluation as a ledger of the whole human–robot task. Ask which costs remain outside the reported time and whether a lower event count could result from lower detection. A convincing interpretation connects outcome, operator behavior, and exposure rather than selecting whichever metric improved.
 
 ### 9. Construction and field context
 
@@ -191,6 +215,14 @@ Heavy machinery adds blind spots, momentum, noise, dust, vibration, PPE, remote 
 ### 10. Worked interpretation
 
 An automated excavator receives a goal from an operator, plans and executes a digging cycle, and allows override. This is supervisory or shared autonomy depending on continuous authority—not simply “fully autonomous.” Evaluation should report overrides, planner/controller failures, unsafe approaches, productivity, operator workload, and the operating conditions in which autonomy was enabled.
+
+Consider a hypothetical study in which the operator chooses a trench target, the excavator executes the digging cycle, and the operator monitors for intervention. Classify authority by decision rather than by the word “autonomous.” Goal selection belongs to the operator; trajectory generation and ordinary execution belong to the machine; emergency recognition may still rely on the operator. This is evidence about supervised task execution. If human commands continuously shape motion, describe that additional shared-control role explicitly.
+
+Next define the counting rule before watching the successful runs. An operator stop ends an autonomous attempt under the proposed rule, even if the machine later completes the dig after assistance. Keep that assisted completion in a separate measure. A reset starts another attempt only after the original attempt has been recorded. Automatic recovery can remain within an attempt if that rule is declared consistently. These distinctions prevent selective editing from turning several rescued attempts into one apparently uninterrupted success.
+
+Record productivity together with the time spent specifying goals, monitoring, recovering, and resetting. Include task quality, unsafe approaches, overrides, failed plans, and sensor outages. Pair workload and trust reports with behavior: whether the operator noticed an error, understood the mode, and took over in time. Specify the soil, machine, visibility, operator experience, and permitted operating envelope. A supervised study cannot omit the supervisor from its system boundary.
+
+Finally, state the strongest conclusion that the design could support: under the tested conditions, the supervised excavator completed the declared task with the reported productivity, intervention burden, and observed failures relative to the stated comparator. If a matched baseline is absent, remove the comparative part. If only a demonstration exists, narrow the conclusion to demonstrated capability. Neither a high success fraction nor a favorable workload rating establishes safe unsupervised operation across construction sites. That larger claim requires evidence about the conditions and failure handling that this study kept outside its boundary.
 
 ### After reading
 
@@ -298,11 +330,23 @@ An automated excavator receives a goal from an operator, plans and executes a di
 충돌하면 위험하거나 혼란스러울 수 있다. 의도를 어떻게 추론하고, 권한이 어떻게 바뀌고,
 충돌이 어떻게 전달되고, 사람이 어떻게 override하는지 확인하라.
 
+블렌딩은 부드러운 명령을 주지만 부드러운 명령이 안전한 타협은 아니다. α = 0.5에서 사람은 장애물 왼쪽으로, 자율성은 같은 크기로 오른쪽으로 조향하고 둘 다 전진한다고 하자. 횡방향 명령이 상쇄된다. 원래 경로는 각각 장애물을 피해도 합친 명령은 장애물 정면으로 갈 수 있다.
+
+갈등은 도움의 양보다 어느 쪽으로 지날지에 있다. 중재는 일관된 경로를 선택하거나 합친 동작에 제약을 걸 수 있다. 작업자는 현재 어느 권한이 활성화됐고 어떻게 바꾸는지 알아야 한다.
+
+**여기서 얻는 독법.** 개별적으로 합리적이지만 양립하지 않는 명령이 만나면 어떻게 되는지 묻는다. 갈등 처리, 결합 뒤 제약 검사, 덮어쓰기 경로를 확인한다. 블렌딩 계수만으로 공유 제어 정책 전체가 정해지지는 않는다.
+
 ### 4. 인간 성능
 
 작업 부하, 상황 인식, 주의, 반응 시간, 피로, 숙련, 멘탈 모델, 신뢰가 관련 구성 개념이다.
 높은 신뢰가 자동으로 좋은 것이 아니다: **보정된 신뢰**(calibrated trust)란 의존이 시스템의
 능력과 불확실성에 맞는 상태다. 자기 보고 신뢰는 행동·과제 결과와 짝지어 읽어야 한다.
+
+신뢰는 사람이 시스템의 실제 장단점에 맞춰 주의를 배분할 때 유용하다. 안심시키는 인터페이스 때문에 실패를 알아채지 못하면 해롭다. 굴착기 보조 기능의 신뢰 점수는 오르고 덮어쓰기는 줄었지만 낡은 위치 추정을 놓쳤다고 하자. 개입 감소는 자율성 개선보다 개입 기회를 놓친 결과일 수 있다.
+
+평점을 회복 가능한 시스템 오류 중의 행동과 짝짓는다. 운전자가 오류를 감지하고, 활성 모드를 파악하고, 과제 경계를 잃기 전에 인수할 수 있는가? 정상 운전의 감시 노력도 기록한다.
+
+**여기서 얻는 독법.** 시스템 능력이 달라질 때 의존도도 적절히 달라지는지 묻는다. 호의적인 태도만으로 보정된 신뢰를 확립할 수 없다. 유용한 인간 수행 결과는 주관 지표를 과제 행동과 연결하고 인터페이스가 돕거나 오도하는 조건을 설명한다.
 
 ### 5. 인터페이스
 
@@ -407,11 +451,23 @@ Within-subject 연구는 같은 참가자에게 조건들을 비교하고, betwe
 [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 임계값,
 고전적 절차들, 그리고 지각 연구와 성능 연구를 구분하는 법을 다룬다.
 
+측정 중에도 사람이 과제를 배우므로 순서가 중요하다. 버킷 배치 연구에서 모든 참가자가 A 인터페이스를 먼저, B를 나중에 쓴다고 하자. B는 운전자가 이미 목표 형상과 기계 반응을 익혔기 때문에 쉬워 보일 수 있다. 더 나쁜 인터페이스도 항상 연습 효과를 받으면 더 좋아 보인다.
+
+순서를 균형 배치하고 익숙해지는 절차를 명시하며 참가자별 비교를 보존한다. 학습의 이월 효과가 비대칭이면 순서 반전만으로 사라지지 않을 수 있다. 처리 방법을 설명해야 한다. 반복 시행은 각 참가자를 더 잘 측정하지만 독립 참가자를 늘리지는 않는다.
+
+**여기서 얻는 독법.** 훈련과 휴식을 포함해 참가자가 실제 경험한 순서를 본다. 유리한 조건이 늘 연습 뒤나 피로 전인지 묻는다. 일정이 해석을 뒷받침하지 않으면 within-subject라는 이름만으로 공정한 비교가 보장되지 않는다.
+
 ### 8. 평가
 
 과제 품질/시간, 개입·리셋 빈도, 인수 시간, 작업 부하, 상황 인식, 신뢰 보정, 안전 위반,
 near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입률은 더 나은 자율성을 뜻할
 수도 있고 — 꺼리거나, 과부하거나, 정보가 부족한 운용자를 뜻할 수도 있다.
+
+개선이 로봇과 사람 사이에 비용을 옮길 수 있어 여러 측정이 필요하다. 보조 기능이 버킷 배치 시간을 줄이면서 운전자에게 모호한 모드 표시를 계속 감시하게 할 수 있다. 완료 시간은 좋아져도 감시 부담은 늘고 예상 밖 사건에서야 비용이 드러난다.
+
+제안한 이점과 그럴듯한 실패 방식을 함께 다루는 지표를 고른다. 보조를 주장하면 보조를 요청하고 감독하고 고치고 리셋하는 일도 포함한다. 개입 정책을 고정하거나 조건별 차이를 설명한다.
+
+**여기서 얻는 독법.** 평가를 인간–로봇 과제 전체의 비용 기록으로 읽는다. 보고 시간 밖에 남은 비용과 사건 감소가 감지 감소에서 올 가능성을 묻는다. 설득력 있는 해석은 좋아진 지표만 고르지 않고 결과, 운전자 행동, 노출을 연결한다.
 
 ### 9. 건설·현장 맥락
 
@@ -425,6 +481,14 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 허용한다. 이는 연속적 권한 여부에 따라 감독 제어 또는 공유 자율성이다 — 단순히 "완전
 자율"이 아니다. 평가는 override, 플래너/제어기 실패, 위험 접근, 생산성, 운용자 작업
 부하, 그리고 자율성이 켜져 있던 운용 조건을 보고해야 한다.
+
+가상 연구에서 운전자가 도랑 목표를 고르고, 굴착기가 사이클을 실행하며, 운전자는 개입을 위해 감시한다고 하자. “자율”이라는 단어보다 결정별로 권한을 분류한다. 목표 선택은 사람, 궤적 생성과 정상 실행은 기계, 비상 인지는 여전히 사람에게 의존할 수 있다. 이는 감독하 과제 실행의 증거다. 사람 명령이 동작을 계속 바꾸면 공유 제어 역할도 따로 밝힌다.
+
+성공 영상을 보기 전에 집계 규칙을 정한다. 여기서는 운전자 정지가 자율 시도를 끝낸다. 이후 보조를 받아 굴착을 마쳐도 보조 완료로 별도 집계한다. 리셋은 원래 시도를 기록한 뒤에만 새 시도를 시작한다. 자동 회복은 일관된 사전 규칙이 있으면 같은 시도 안에 남길 수 있다. 이 구분이 있어야 여러 번 구조한 시도를 편집해 중단 없는 성공처럼 만들지 않는다.
+
+생산성과 함께 목표 지정, 감시, 회복, 리셋 시간을 기록한다. 과제 품질, 위험 접근, 덮어쓰기, 계획 실패, 센서 중단도 포함한다. 작업부하·신뢰 평점은 오류 인지, 모드 이해, 제때 인수했는지와 짝짓는다. 토질, 기계, 가시성, 운전자 숙련도, 허용 운용 범위를 밝힌다. 감독 연구에서 감독자를 시스템 경계 밖으로 뺄 수 없다.
+
+마지막으로 설계가 지지할 수 있는 가장 강한 결론을 쓴다. 시험 조건에서 감독하 굴착기가 명시한 비교 대상 대비 보고한 생산성·개입 부담·관찰 실패로 과제를 수행했다는 것이다. 짝지은 베이스라인이 없으면 비교 부분을 뺀다. 시연만 있으면 시연된 능력으로 좁힌다. 높은 성공 비율이나 좋은 작업부하 평점만으로 건설 현장 전반의 안전한 무감독 운용을 확립할 수 없다. 더 큰 주장에는 이번 연구가 경계 밖에 둔 조건과 실패 처리에 관한 증거가 필요하다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

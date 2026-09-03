@@ -46,6 +46,8 @@ flowchart LR
 
 The choice is a runtime contract, not a quality ranking. Top-down cost is $O(N)$ in the number of people; bottom-up is roughly constant but must solve an association problem that degrades exactly where crowds make it hard. For a site with a handful of workers, top-down is usually right; for a crowded intersection, it is not.
 
+Heatmap regression is useful because a hidden joint may have several plausible image locations. Direct coordinate regression compresses the answer into a point; a heatmap can retain spatial alternatives and can be trained with a local target around the annotated joint. For an occluded worker wrist, that spatial structure gives the model a less brittle target than demanding an exact coordinate immediately. It does not guarantee calibrated uncertainty, and taking only the maximum discards much of the map. **The reading this gives you.** Check how heatmaps become coordinates, how occluded joints are labeled, and whether reported confidence has been validated. Heatmaps are a representation choice, not a universal guarantee of higher accuracy.
+
 ### 3. Reading MPJPE honestly
 
 Mean per-joint position error is reported in millimetres:
@@ -229,6 +231,8 @@ flowchart LR
 ```
 
 이 선택은 품질 순위가 아니라 **런타임 계약**이다. Top-down 비용은 사람 수에 $O(N)$이고, bottom-up은 대체로 일정하지만 군중일수록 어려워지는 결합 문제를 풀어야 한다. 작업자 몇 명인 현장이면 보통 top-down이 맞고, 혼잡한 교차로면 아니다.
+
+가려진 관절은 영상에서 여러 위치가 그럴듯하므로 히트맵 회귀가 유용하다. 직접 좌표 회귀는 답을 한 점으로 압축한다. 히트맵은 공간적 대안을 유지하고 표시 관절 주변의 국소 목표로 학습할 수 있다. 가려진 작업자 손목에서는 즉시 정확한 좌표를 요구하는 것보다 덜 경직된 목표가 된다. 보정된 불확실성을 보장하지는 않으며 최댓값만 취하면 지도 정보가 많이 사라진다. **여기서 얻는 독법.** 히트맵을 좌표로 바꾸는 방법, 가림 표기, 신뢰도 검증을 본다. 히트맵은 표현 선택이지 항상 더 높은 정확도의 보장이 아니다.
 
 ### 3. MPJPE를 정직하게 읽기
 

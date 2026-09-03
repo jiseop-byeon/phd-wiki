@@ -44,6 +44,8 @@ biomedical imaging added a constraint: only tens of annotated images.
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/1505.04597): Segmentation of a 512 × 512 image takes less than one second on a GPU described only as recent. The abstract does not identify that GPU, so this latency is not a hardware-normalized comparison.
+
 - Won the ISBI cell tracking and EM segmentation challenges by large margins with ~30
   training images — end-to-end, no sliding windows.
 
@@ -60,6 +62,9 @@ The most re-used architecture diagram in deep learning: medical imaging standard
 crucially — the denoiser backbone of [[ddpm|DDPM]]/[[latent-diffusion|Stable Diffusion]]
 (noise prediction is dense per-pixel prediction). nnU-Net showed a well-tuned U-Net still
 beats most successors.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Efficient use of annotated biomedical images is conditional on the architecture, augmentation, and microscopy tasks. The paper does not validate every later segmentation or diffusion application. Check the image modality and annotation protocol before transferring the evidence.
 
 ### Connections
 
@@ -90,6 +95,8 @@ beats most successors.
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/1505.04597) 기준: 512 × 512 영상의 분할에 1초 미만이 걸린다. GPU는 당시의 최신 장비라고만 적혀 있어 하드웨어를 정규화한 지연 비교로 읽을 수 없다.
+
 - 학습 이미지 약 30장으로 ISBI 세포 추적·EM 분할 챌린지를 큰 차이로 우승 — end-to-end,
   슬라이딩 윈도 없이.
 
@@ -104,6 +111,9 @@ beats most successors.
 [[ddpm|DDPM]]/[[latent-diffusion|Stable Diffusion]]의 노이즈 제거 백본이다(노이즈 예측이
 곧 밀집 픽셀 예측이라서). nnU-Net은 잘 튜닝된 U-Net이 여전히 대부분의 후속을 이긴다는
 것을 보였다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 라벨 생의학 영상의 효율적 사용은 구조, 증강, 현미경 과제에 조건부다. 모든 후속 분할·디퓨전 응용을 검증한 논문은 아니다. 증거를 옮기기 전에 영상 방식과 주석 절차를 본다.
 
 ### 연결
 

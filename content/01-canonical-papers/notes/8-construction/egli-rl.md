@@ -27,6 +27,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: the learning bridge on the [[01-canonical-papers/notes/8-construction/heap|HEAP]] platform — after the platform paper established force-controllable hydraulics and full-state sensing, this pair shows how *learned* control gets onto that iron, and it is the direct methodological ancestor of [[01-canonical-papers/notes/8-construction/ext|ExT]]. It ports RSL's legged-robot actuator-net trick (Hwangbo et al. 2019, ANYmal) to hydraulics.
 
+> [!tip] Key intuition · 핵심 직관
+> The learned actuator model puts measured hydraulic behavior inside the simulator where the policy learns. That targets a specific mismatch between valve commands and motion; the soil-adaptive variant separately uses history to adjust behavior under changing resistance.
+
 **Method** (literacy level): hydraulic valves are the sim-to-real bottleneck — dead bands, delays, and flow nonlinearities that analytic simulators get wrong. So: (1) log real machine data and train a NN actuator model mapping valve commands to joint motion; (2) wrap that model into the training simulator; (3) train an RL policy that outputs **pilot-stage valve commands** directly; (4) deploy on the real machine as-is. The soil-adaptive sibling trains bucket-filling in simulation against an analytic FEE (fundamental equation of earthmoving) soil model, and the policy's recurrent state lets it adapt online to soils it cannot explicitly identify.
 
 **Evidence**: the general-approach policy runs on the real Menzi Muck M545 (HEAP) with **zero fine-tuning** — the headline demonstration that the NN actuator model closes the hydraulic reality gap. The soil-adaptive results (RA-L 7(4):9778–9785 + IROS 2022) show bucket filling transferring from FEE-simulated soil to real digging while adapting across soil conditions; an extended journal version appears in IEEE Transactions on Field Robotics 2024 (pp. 170–191).
@@ -41,6 +44,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **한 줄 요약**: RL 정책이 실제 유압 굴착기 팔을 **파인튜닝 없이** 구동한다 — 학습 시뮬레이션에 기계 데이터로 학습한 *밸브/액추에이터 동역학의 신경망 모델*이 내장되어 있기 때문이다 — 그리고 자매 논문(soil-adaptive)은 이 레시피를, 토질 파라미터를 한 번도 식별하지 않고 토질 간 온라인 적응하는 버킷 채우기로 확장한다.
 
 **계보에서의 위치**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] 플랫폼 위의 학습 다리 — 플랫폼 논문이 힘 제어 가능한 유압과 완전 상태 센싱을 확립한 뒤, 이 두 편은 *학습된* 제어가 그 쇳덩이에 어떻게 올라가는지 보여주며, [[01-canonical-papers/notes/8-construction/ext|ExT]]의 직계 방법론적 조상이다. RSL의 4족 로봇 액추에이터 넷 트릭(Hwangbo et al. 2019, ANYmal)을 유압으로 이식한 것이다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 학습한 구동기 모델이 측정한 유압 행동을 정책 학습 시뮬레이터에 넣는다. 밸브 명령과 동작 사이의 특정 불일치를 겨냥한다. 토질 적응 변형은 별도로 이력을 이용해 변하는 저항에 행동을 조절한다.
 
 **방법** (리터러시 수준): 유압 밸브가 sim-to-real의 병목이다 — 데드밴드, 지연, 유량 비선형성은 해석적 시뮬레이터가 틀리게 만드는 것들이다. 그래서: (1) 실기계 데이터를 기록해 밸브 명령→관절 운동을 매핑하는 NN 액추에이터 모델을 학습하고; (2) 그 모델을 학습 시뮬레이터에 내장하고; (3) **파일럿단 밸브 명령**을 직접 출력하는 RL 정책을 학습하고; (4) 실기계에 그대로 배치한다. 자매 논문은 해석적 FEE(토공 기본 방정식) 토양 모델에 대해 시뮬레이션에서 버킷 채우기를 학습하며, 정책의 순환 상태가 명시적으로 식별할 수 없는 토질에 온라인으로 적응하게 한다.
 

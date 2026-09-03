@@ -114,6 +114,10 @@ modulation, and a policy trained to imitate them is imitating tremor and frictio
 This check belongs in the collection pipeline next to the manipulability check of
 [[04-robotics/teleoperation-demonstration|12. Teleoperation §5]], not in the rebuttal.
 
+The practical reason to check thresholds is to avoid giving sensor detail a stronger interpretation than the experiment supports. For example, in wall wiping, small recorded force fluctuations could reflect pad friction, involuntary motion, or purposeful correction driven by another cue. A published perceptual threshold is a screening reference, not proof of which mechanism generated an individual sample.
+
+**The reading this gives you.** Ask whether deliberate modulation was independently validated under the actual interface and task conditions. Compare synchronized commands, task events, and perceptual evidence before labeling a force channel as intention. Preserve the raw signal, but distinguish measured variation from an inferred human purpose.
+
 ### 5. Perception on a construction site
 
 Lab thresholds assume a bare, rested fingertip. A site removes every one of those
@@ -327,6 +331,10 @@ where that vocabulary lives.
 그것을 모사하도록 학습된 정책은 떨림과 마찰을 모사하고 있는 것이다. 이 점검은
 [[04-robotics/teleoperation-demonstration|12. 원격조작 §5]]의 가조작성 점검 옆, 수집
 파이프라인 안에 있어야 한다 — 리버틀에 있어서는 안 된다.
+
+임계값을 확인하는 실무적 이유는 센서 세부에 실험이 지지하는 것보다 강한 뜻을 붙이지 않기 위해서다. 벽 닦기의 작은 힘 변동은 패드 마찰, 비자발적 움직임, 다른 단서에 따른 의도적 보정에서 올 수 있다. 발표된 지각 임계값은 선별 기준이지 개별 표본의 생성 기전을 증명하지는 않는다.
+
+**여기서 얻는 독법.** 실제 인터페이스와 과제 조건에서 의도적 조절을 독립 검증했는지 묻는다. 힘 채널을 의도로 부르기 전에 동기화된 명령, 과제 사건, 지각 증거를 비교한다. 원신호는 보존하되 측정된 변동과 추론한 사람의 목적을 구분한다.
 
 ### 5. 건설 현장에서의 지각
 

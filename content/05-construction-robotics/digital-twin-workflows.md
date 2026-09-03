@@ -41,6 +41,8 @@ reference closed loop: BIM-generated tasks drive robot execution and as-built sc
 verify completion back into the model — read it against the levels below to see which
 interfaces it actually closes.
 
+The loop matters because completing a motion is not the same as completing a construction activity. An anchor may reach its commanded location while failing an installation check. The twin must preserve that distinction before releasing a dependent task. **The reading this gives you.** Follow one completion signal backward to the physical observation that justified it, then forward to the next robot decision. A manually accepted status should remain visibly different from sensed verification.
+
 ### 2. Levels often called a digital twin
 
 | Level | Capability | What is still missing |
@@ -74,7 +76,7 @@ Do not infer the level from the word “twin”; inspect the data and command pa
   <g font-size="11" fill="currentColor"><text x="24" y="205" opacity="0.9">Each rung adds one path, not a new noun. Ask which path a paper actually closed.</text></g>
 </svg>
 
-
+For example, a scan that updates a wall model creates an observation path. If a person still interprets the update and manually changes every waypoint, the robot action path remains human-mediated. **The reading this gives you.** Classify the demonstrated interface by who translates each update into a decision. Bidirectional arrows in a diagram are insufficient unless the execution and verification records show what crossed them.
 
 ### 3. Robot-facing problems
 
@@ -87,6 +89,11 @@ Do not infer the level from the word “twin”; inspect the data and command pa
 - **Multi-agent coordination**: shared state does not itself solve allocation, conflicts,
   or communication loss.
 
+> [!example] Worked example · 계산 예제
+> **Budget the geometry used for action.** Suppose independent, zero-mean errors along the same relevant direction have standard deviations of 5 mm for scanning, 10 mm for registration, and 20 mm for design-to-built deviation. Root-sum-square uncertainty is √(5² + 10² + 20²) ≈ **22.9 mm**, larger than a hypothetical 10 mm anchor-placement tolerance. The design-to-built term contributes 400/525 ≈ **76%** of the variance.
+>
+> **The reading this gives you.** Better scanning alone leaves the dominant term. Updating to measured as-built geometry can address it, but the update has its own uncertainty. If the terms are systematic offsets or correlated errors, this independent-error calculation is inappropriate; model bias and covariance explicitly. A nominal design coordinate is not automatically an execution-ready robot target.
+
 ### 4. Reading evaluation
 
 Look for a real bidirectional loop, coordinate/semantic error, update latency, stale-state
@@ -98,6 +105,8 @@ digital twin.
 > “BIM-driven” may mean a human exported waypoints once. “Digital twin” may mean a 3D
 > viewer. Trace one task end to end: design entity → robot instruction → physical result →
 > sensed verification → model update → next decision.
+
+A useful evaluation deliberately encounters disagreement because an always-consistent model never tests the update mechanism. For example, observe an installed part at a pose that differs from its design and trace whether verification changes the next action. **The reading this gives you.** Separate detecting mismatch, updating the model, and acting on the update. Success at the first step does not establish the complete feedback claim.
 
 ### After reading
 
@@ -160,6 +169,8 @@ flowchart LR
 기준 폐루프다: BIM에서 생성된 과제가 로봇 실행을 구동하고 as-built 스캔이 완료를 모델로
 되돌려 검증한다 — 아래 수준표에 대조해 실제로 어떤 인터페이스가 닫히는지 읽어라.
 
+동작 완료와 시공 활동 완료가 다르므로 루프가 중요하다. 앵커가 명령 위치에 도달해도 설치 검사에는 실패할 수 있다. 다음 과제를 허용하기 전에 트윈이 이 차이를 보존해야 한다. **여기서 얻는 독법.** 완료 신호를 정당화한 물리 관측까지 거슬러 가고 다음 로봇 결정까지 따라간다. 수동 승인과 센싱 검증을 구분해 표시한다.
+
 ### 2. 디지털 트윈이라 불리는 수준
 
 | 수준 | 기능 | 빠진 것 |
@@ -193,7 +204,7 @@ flowchart LR
   <g font-size="11" fill="currentColor"><text x="24" y="205" opacity="0.9">각 단은 명사가 아니라 경로 하나를 더한다. 논문이 실제로 닫은 경로가 무엇인지 물어라.</text></g>
 </svg>
 
-
+벽 스캔으로 모델을 갱신하면 관측 경로가 생긴다. 여전히 사람이 갱신을 해석하고 모든 웨이포인트를 수동 변경한다면 로봇 행동 경로는 사람이 매개한다. **여기서 얻는 독법.** 누가 갱신을 결정으로 바꾸는지로 인터페이스를 분류한다. 실행·검증 기록이 화살표를 따라 무엇이 이동했는지 보여 주지 않으면 도식의 양방향 화살표만으로는 부족하다.
 
 ### 3. 로봇 관점의 문제
 
@@ -202,6 +213,11 @@ flowchart LR
 - **불확실성·출처**: 측정·추론·계획·수기 입력 상태를 같은 신뢰도로 보면 안 된다.
 - **과제 생성**: 시공 활동을 선행조건·공차·복구가 있는 로봇 skill 순서로 바꿔야 한다.
 - **멀티에이전트**: 공유 상태만으로 할당·충돌·통신 손실이 해결되지는 않는다.
+
+> [!example] 계산 예제 · Worked example
+> **행동에 쓸 형상의 오차 예산.** 같은 관심 방향에서 독립이고 평균이 0인 오차의 표준편차를 스캔 5 mm, 정합 10 mm, 설계–시공 편차 20 mm라고 가정한다. 제곱합의 제곱근은 √(5² + 10² + 20²) ≈ **22.9 mm**로, 가상의 앵커 설치 허용오차 10 mm보다 크다. 설계–시공 항이 분산에서 차지하는 비율은 400/525 ≈ **76%** 수준이다.
+>
+> **여기서 얻는 독법.** 스캐너만 좋아져도 지배적인 항은 남는다. 측정한 as-built 형상으로 갱신하면 이 항을 다룰 수 있지만 갱신에도 불확실성이 있다. 체계적 오프셋이나 상관된 오차라면 이 독립 오차 계산을 쓸 수 없다. 편향과 공분산을 따로 모델링한다. 설계 좌표가 곧바로 로봇의 실행 목표가 되지는 않는다.
 
 ### 4. 평가 읽기
 
@@ -212,6 +228,8 @@ flowchart LR
 > “BIM-driven”은 사람이 waypoint를 한 번 내보낸 것일 수 있고, “digital twin”은 3D viewer일
 > 수 있다. 설계 객체 → 로봇 지시 → 물리 결과 → 센싱 검증 → 모델 갱신 → 다음 결정의 한
 > 과제를 끝까지 추적하라.
+
+항상 맞는 모델로는 갱신 기전을 시험하지 못하므로 불일치를 만나는 평가가 필요하다. 설치 부품이 설계와 다른 자세로 관측됐을 때 검증이 다음 행동을 바꾸는지 추적한다. **여기서 얻는 독법.** 불일치 감지, 모델 갱신, 갱신에 따른 행동을 나눈다. 첫 단계의 성공만으로 전체 피드백 주장이 성립하지는 않는다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

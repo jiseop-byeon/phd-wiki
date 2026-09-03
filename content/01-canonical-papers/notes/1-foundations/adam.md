@@ -41,6 +41,8 @@ SGD needs careful learning-rate tuning, and one global rate fits all parameters 
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/1412.6980).
+
 - Faster, more robust convergence than SGD/AdaGrad/RMSProp across logistic regression, MLPs, and CNNs — with minimal tuning.
 - Normalizing by the running second moment makes the effective step much less sensitive to raw
   gradient scale (roughly $\alpha$-sized in typical regimes — the exact bound depends on $\beta_1, \beta_2, \epsilon$ and moment history).
@@ -54,6 +56,9 @@ SGD needs careful learning-rate tuning, and one global rate fits all parameters 
 ### Impact & follow-ups
 
 Arguably the most-used algorithm in deep learning; virtually every model in this wiki — from [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] to VLAs — was trained with Adam or AdamW. Follow-ups: AMSGrad, AdamW, and recent memory-efficient variants (Adafactor, 8-bit Adam, Lion).
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Adaptive updates describe how optimization uses gradient history; they do not guarantee the best generalization on every task. Check the learning-rate schedule, regularization, and baseline tuning before attributing an advantage to Adam alone.
 
 ### Connections
 
@@ -80,6 +85,8 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/1412.6980).
+
 - 로지스틱 회귀, MLP, CNN 전반에서 SGD/AdaGrad/RMSProp보다 빠르고 안정적인 수렴 — 튜닝은 거의 불필요.
 - 이동 2차 모멘트로 정규화하므로 유효 스텝이 그래디언트의 원래 스케일에 훨씬 덜 민감하다
   (통상적으로 대략 $\alpha$ 크기 — 정확한 상한은 $\beta_1, \beta_2, \epsilon$과 모멘트 이력에 따라 달라진다).
@@ -93,6 +100,9 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 ### 영향과 후속 연구
 
 딥러닝에서 가장 많이 쓰인 알고리즘이라 해도 과언이 아니다. [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]부터 VLA까지 이 위키의 거의 모든 모델이 Adam/AdamW로 학습됐다. 후속: AMSGrad, AdamW, 메모리 효율 변형들(Adafactor, 8-bit Adam, Lion).
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 적응적 갱신은 기울기 이력을 쓰는 방식이다. 모든 과제에서 최상의 일반화를 보장하지 않는다. Adam 자체의 이점으로 돌리기 전에 학습률 일정, 정규화, 베이스라인 튜닝을 확인한다.
 
 ### 연결
 

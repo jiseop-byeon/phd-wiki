@@ -34,6 +34,8 @@ $\log(a^n) = n \log a$; and base 2 vs base $e$ only changes units (**bits** vs *
 a constant factor. Also remember: probabilities live in $[0,1]$, so log-probabilities are
 $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
+Logarithms are useful because they turn the joint support for many observations into an additive score. For example, a classifier can assign plausible labels to most frames yet be strongly penalized for confidently rejecting the correct label on a few. **The reading this gives you.** When a paper reports a log loss, ask which events receive probability and how the score is aggregated. A loss decrease concerns those assigned probabilities; it does not automatically imply a particular improvement in task success.
+
 ### 1. Surprise and entropy
 
 - **Surprise** of an outcome: $-\log p(x)$. Rare events carry more information (a sensor
@@ -253,6 +255,8 @@ $\log(ab) = \log a + \log b$ (확률의 곱이 합이 된다 — 손실이 합�
 $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나트**)만 상수배 바꾼다.
 하나 더: 확률은 $[0,1]$에 살므로 로그 확률은 $\le 0$이다 — "교차 엔트로피가 작다" =
 로그 확률이 0에 가깝다는 뜻.
+
+로그는 여러 관측에 대한 결합 확률을 더할 수 있는 점수로 바꾼다. 분류기가 대부분 프레임을 그럴듯하게 예측해도 일부 정답에 자신 있게 낮은 확률을 주면 큰 벌점을 받을 수 있다. **여기서 얻는 독법.** 로그 손실에서 어떤 사건에 확률을 주고 어떻게 집계하는지 묻는다. 손실 감소는 그 확률 배정에 관한 결과다. 과제 성공이 특정 정도로 개선된다는 뜻은 아니다.
 
 ### 1. 놀라움과 엔트로피
 

@@ -121,6 +121,8 @@ Common frames include world, map, odom, base, sensor, end-effector, tool, and ob
 
 A map frame can jump after global correction while odom remains locally smooth; the base-to-sensor transform should be calibrated; a moving object transform must be time-aligned. [[02-foundations/se3-geometry|SE(3)]] supplies the math, while a TF tree supplies the runtime bookkeeping.
 
+For example, suppose loop closure shifts the map frame by 30 cm while odom remains smooth. A path represented consistently in odom can remain locally usable, while a map-frame goal transformed using a different update can jump. The problem is not necessarily a bad transform matrix; it can be combining correct transforms from incompatible times. **The reading this gives you.** Trace each goal, observation, and command through its frame and timestamp. State where global correction is allowed to change a reference and how the downstream controller handles that change.
+
 ### 5. Middleware literacy
 
 | Concept | Role |
@@ -175,6 +177,8 @@ check who detects failure, who chooses the response, and what counts as terminal
 
 Best-effort average timing is different from deterministic deadline behavior. Safety claims require system-level evidence, not merely a stable policy output.
 
+A dead node can leave a live command because downstream hardware may retain the last accepted setpoint. For example, if a planner stops publishing while the actuator continues its previous motion, absence of new commands is not a stop command. A heartbeat can reveal liveness, but freshness and validity of the actual control data need their own checks. **The reading this gives you.** Ask who detects silence, who owns the timeout, and what command the hardware executes afterward. Test resumption as well as stopping; an old queued command should not silently regain authority when the node returns.
+
 ### 8. Calibration, configuration, and reproducibility
 
 Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, controller gains, firmware, model weights, software commit, hardware revision, and runtime configuration. A random seed does not reproduce an experiment when calibration and physical hardware differ.
@@ -194,6 +198,8 @@ A digital twin is not automatically a validated predictor. Ask what is synchroni
 ### 10. Failure taxonomy
 
 Separate sensor, estimation, planning, policy, control, communication, compute, mechanical, operator, and environment failures. The visible final event may be downstream: a collision can originate from stale sensing, wrong localization, infeasible planning, poor tracking, or actuator saturation.
+
+For example, a collision at t = 12.4 s can originate in a pose stream that stopped refreshing at t = 10.3 s. Accurate tracking of the resulting wrong path is evidence against a tracking-error diagnosis. The complete hypothetical investigation is in [[06-research-practice/failure-analysis-system-evaluation|Failure Analysis §7]]. **The reading this gives you.** Record the earliest observed contract violation separately from the downstream outcome. A missing freshness check can contribute to propagation even after the initiating estimator defect is found, so the fix may need to cross a subsystem boundary.
 
 ### 11. Resource constraints
 
@@ -361,6 +367,8 @@ map 프레임은 전역 보정 후 점프할 수 있고 odom은 국소적으로 
 변환은 보정 대상이고, 움직이는 물체의 변환은 시간 정렬이 필요하다.
 [[02-foundations/se3-geometry|SE(3)]]가 수학을 주고, TF 트리가 런타임 장부를 준다.
 
+루프 폐쇄로 map 프레임이 30 cm 이동하고 odom은 매끄럽게 유지된다고 하자. odom에 일관되게 표현한 경로는 국소적으로 쓸 수 있지만 다른 갱신으로 변환한 map 목표는 튈 수 있다. 행렬이 틀린 것이 아니라 서로 다른 시각의 올바른 변환을 섞은 문제일 수 있다. **여기서 얻는 독법.** 목표·관측·명령의 좌표계와 시각을 추적한다. 전역 보정이 어디서 기준을 바꾸고 하류 제어기가 이를 어떻게 처리하는지 밝힌다.
+
 ### 5. 미들웨어 문해력
 
 | 개념 | 역할 |
@@ -417,6 +425,8 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 평균이 좋은 best-effort 타이밍과 결정론적 데드라인 거동은 다르다. 안전 주장은 안정된
 정책 출력만이 아니라 시스템 수준의 증거를 요구한다.
 
+노드가 죽어도 하류 하드웨어가 마지막 설정값을 유지하면 명령은 살아 있다. 계획기가 발행을 멈췄는데 구동기가 이전 동작을 계속한다면 새 명령의 부재는 정지 명령이 아니다. 하트비트는 생존 여부를 알려 주지만 제어 데이터의 최신성과 유효성은 별도로 검사해야 한다. **여기서 얻는 독법.** 누가 침묵을 감지하고 타임아웃을 소유하며 이후 하드웨어가 어떤 명령을 실행하는지 묻는다. 정지뿐 아니라 복귀도 시험한다. 노드가 돌아올 때 대기열의 옛 명령이 권한을 되찾으면 안 된다.
+
 ### 8. 보정, 설정, 재현성
 
 내부/외부 보정, 영점, 단위, 프레임 관례, 제어기 이득, 펌웨어, 모델 가중치, 소프트웨어
@@ -441,6 +451,8 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 센서, 추정, 계획, 정책, 제어, 통신, 컴퓨트, 기계, 운용자, 환경 실패를 분리하라. 눈에
 보이는 최종 사건은 하류일 수 있다: 충돌은 오래된 센싱, 잘못된 위치 추정, 실행 불가능한
 계획, 나쁜 추종, 액추에이터 포화 어디서든 비롯될 수 있다.
+
+t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에서 시작할 수 있다. 잘못 생성된 경로를 정확히 추종했다면 추종 오차 진단에 반하는 증거다. 가상의 전체 조사는 [[06-research-practice/failure-analysis-system-evaluation|실패 분석 §7]]에 있다. **여기서 얻는 독법.** 처음 관찰한 약속 위반과 하류 결과를 따로 기록한다. 추정기의 시작 결함을 찾았어도 최신성 검사가 없어 전파됐을 수 있다. 수정이 하위 시스템 경계를 넘어야 하는 이유다.
 
 ### 11. 자원 제약
 

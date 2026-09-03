@@ -26,6 +26,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: this is the robotics-side origin of heavy-machine autonomy — the paper every modern excavation-autonomy stack descends from. Its architecture anticipates today's modular stacks, its team fed the CMU/NREC→OEM lineage, and its central question (full-cycle autonomy at human speed) is the one [[01-canonical-papers/notes/8-construction/aes|AES]] answers at industrial scale two decades later.
 
+> [!tip] Key intuition · 핵심 직관
+> The executive turns changing soil-face and truck geometry into successive dig and dump targets. Closing perception, selection, and execution over the whole cycle is what makes loading autonomous within the prepared workspace; automating only the arm trajectory would leave that sequencing to a person.
+
 **Method**: two scanning laser rangefinders sense the workspace — one localizes the truck to be loaded, the other maps the soil face. An executive layer selects dig points on the face and dump points over the truck bed; motion planning and control execute the excavate-swing-dump cycle; obstacle detection stops the machine when something enters the workspace. The contribution is *integrated autonomy* — closing the full cycle on real hardware — not a learned policy or a novel single algorithm.
 
 **Evidence, with numbers**: the system loaded trucks at speeds comparable to expert human operators in its demonstrated setup — a 1998–1999 result reported from real-machine trials, with two laser rangefinders as the entire perception suite. The human-parity throughput claim is the headline; the task boundary (a prepared loading scenario with defined truck and face geometry) is the fine print.
@@ -40,6 +43,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **한 줄 요약**: CMU가 실제 유압 굴착기에서 인식, 굴착/투하점 선택, 모션, 장애물 정지를 포함한 트럭 적재 전체 사이클을 자동화하고, 현대 로봇 학습보다 수십 년 앞서 숙련 운전자 속도의 적재를 시연했다.
 
 **계보에서의 위치**: 중장비 자율성의 로봇공학 쪽 원점이다 — 현대의 모든 굴착 자율성 스택이 여기서 내려온다. 이 아키텍처는 오늘날의 모듈형 스택을 예고했고, 이 팀은 CMU/NREC→OEM 계보를 낳았으며, 중심 질문(인간 속도의 전체 사이클 자율성)은 20년 뒤 [[01-canonical-papers/notes/8-construction/aes|AES]]가 산업 규모에서 답하는 바로 그 질문이다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 상위 실행기가 변하는 토사면·트럭 형상을 다음 굴착·투하 목표로 바꾼다. 전체 사이클의 지각·선택·실행을 닫아 준비된 공간에서 적재를 자율화한다. 팔 궤적만 자동화하면 순서 결정은 사람에게 남는다.
 
 **방법**: 두 대의 스캐닝 레이저 거리계가 작업 구역을 감지한다 — 하나는 적재할 트럭을 정위치화하고, 다른 하나는 토사면을 매핑한다. 실행(executive) 계층이 토사면의 굴착점과 트럭 적재함 위의 투하점을 선택하고, 모션 계획·제어가 굴착-선회-투하 사이클을 실행하며, 장애물 탐지는 무언가 작업 구역에 들어오면 기계를 정지시킨다. 기여는 학습 정책이나 단일 신규 알고리즘이 아니라 *통합 자율성* — 실제 하드웨어에서 전체 사이클을 닫은 것 — 이다.
 

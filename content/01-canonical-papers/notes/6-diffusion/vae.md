@@ -49,6 +49,8 @@ at once, trained jointly with the generator?
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/1312.6114).
+
 - Trained on MNIST/Frey faces: coherent samples, smooth interpolatable latent spaces, and
   likelihood competitive with contemporary methods — with a *single* SGD-trainable objective.
 - Amortized inference: encoding a new datapoint costs one forward pass.
@@ -67,6 +69,9 @@ training objective *is* a VAE-style variational bound over a fixed noising chain
 tokenizers feed autoregressive and diffusion models ([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]
 runs diffusion inside a VAE's latent space); world models (Dreamer line) learn latent
 dynamics with exactly these tools.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The method optimizes a variational bound using an approximate inference model. That is not exact posterior inference or guaranteed sharp reconstruction. Check the likelihood, latent assumptions, and whether evaluation concerns the bound, reconstruction, or generated samples.
 
 ### Connections
 
@@ -101,6 +106,8 @@ dynamics with exactly these tools.
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/1312.6114).
+
 - MNIST/Frey faces에서: 일관된 샘플, 부드럽게 보간되는 잠재 공간, 당대 기법과 경쟁하는
   우도 — *단 하나의* SGD 학습 가능한 목적함수로.
 - 상각된 추론: 새 데이터포인트의 인코딩 비용은 forward pass 한 번.
@@ -117,6 +124,9 @@ ELBO + reparameterization 도구 상자는 하중을 받치는 인프라가 됐�
 목적함수는 고정된 노이즈 체인 위의 VAE식 변분 하한*이고*, VQ-VAE 토크나이저는 자기회귀·
 디퓨전 모델에 공급되며([[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]]은 VAE의 잠재 공간
 안에서 디퓨전을 돌린다), 월드모델(Dreamer 계열)은 정확히 이 도구들로 잠재 동역학을 학습한다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 방법은 근사 추론 모델로 변분 하한을 최적화한다. 정확한 사후 추론이나 선명한 복원의 보장은 아니다. 우도, 잠재변수 가정, 평가가 하한·복원·생성 표본 중 무엇인지 확인한다.
 
 ### 연결
 

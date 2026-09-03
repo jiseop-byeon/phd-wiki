@@ -20,9 +20,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 ### 1. IK is structurally harder than FK
 
 Unlike FK, IK has **zero, one, several, or infinitely many** solutions (elbow-up vs
-elbow-down; a 7-dof arm has a continuum). This multimodality is exactly why
-[[01-canonical-papers/notes/4-vla/diffusion-policy|generative policies]] beat regression
-on action prediction — IK is the classical face of the same problem. **Analytic IK**
+elbow-down; a 7-dof arm has a continuum). This multimodality is a useful analogy for why
+[[01-canonical-papers/notes/4-vla/diffusion-policy|generative policies]] represent alternative actions: averaging distinct valid solutions may give an invalid one. It does not establish that a particular learned policy performs better. **Analytic IK**
 (closed-form, e.g. 6R with spherical wrist) enumerates all branches exactly; when geometry
 doesn't permit it, go numerical.
 
@@ -70,13 +69,25 @@ doesn't permit it, go numerical.
   </g>
 </svg>
 
+**A pose target is not yet a motion plan.** Elbow-up and elbow-down solutions can reach the same tip pose through very different arm configurations. Joint limits or an obstacle can invalidate one branch without invalidating the other. A solver returning a target configuration therefore answers a narrower question than a planner finding a collision-free route to it.
+
+A numerical solver usually follows the branch near its initial guess. If it stops without success, distinguish an unreachable target from a poor initialization, a singular local map, a violated limit, or an iteration budget that expired. One unsuccessful local search does not prove that the robot has no solution.
+
+**Check your understanding.** For successive nearby targets, the previous solution is often a useful starting point because it encourages continuity. It does not guarantee continuity through singularities or changes of feasible branch. The analogy to multimodal learned actions is about representing alternatives; it is not a theorem that every generative policy outperforms regression.
+
 ### 2. Numerical IK = Newton-Raphson on the pose error
 
 Iterate:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(task-space error)}$$
-where in the full SE(3) case $e$ is the error *twist* $\log(T_{now}^{-1} T_{goal})$
+where in the full SE(3) case $e$ is the six-vector error $[\log(T_{now}^{-1} T_{goal})]^\vee$ in body coordinates, paired with the body Jacobian
 ([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]]'s log map), and $J^\dagger$
 is the pseudoinverse ([[02-foundations/linear-algebra|least squares]]).
+
+**Follow one iteration.** Compute the current pose, express the goal error in a chosen frame, and evaluate the matching Jacobian at the current joints. Solve the local relation JΔθ ≈ e, update the joint guess, then recompute both pose and error. Repeating is necessary because the Jacobian describes only local change. A damping or step-size rule can keep the update from trusting that approximation too far.
+
+For the body-frame pose error written above, the matrix logarithm is first a matrix in the Lie algebra; its six coordinates form the error vector. Pair those coordinates with the body Jacobian. Use separate rotation and translation stopping tolerances because radians and length are different units. Also enforce joint limits and check collision separately from numerical convergence.
+
+**Check your understanding.** The pseudoinverse minimizes the local linear residual and selects a minimum-norm update when alternatives remain. It does not directly solve the entire nonlinear pose problem. See the [official numerical IK walkthrough](https://modernrobotics.northwestern.edu/nu-gm-book-resource/6-2-numerical-inverse-kinematics-part-1-of-2/) for the local approximation and update loop.
 
 ### 3. One full iteration, by hand — planar 2R arm
 
@@ -135,9 +146,8 @@ and motor commands.
 ### 1. IK는 구조적으로 FK보다 어렵다
 
 FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있다(팔꿈치 위/아래; 7자유도
-팔은 연속체). 이 다봉성이 정확히
-[[01-canonical-papers/notes/4-vla/diffusion-policy|생성형 정책]]이 행동 예측에서 회귀를
-이기는 이유다 — IK는 같은 문제의 고전적 얼굴이다. **해석적 IK**(닫힌 형태, 예: 구면
+팔은 연속체). 이 다봉성은
+[[01-canonical-papers/notes/4-vla/diffusion-policy|생성형 정책]]이 대안 행동을 표현하는 이유에 대한 비유다. 서로 다른 유효 해를 평균하면 무효 해가 될 수 있다. 특정 학습 정책의 성능 우위를 증명하는 것은 아니다. **해석적 IK**(닫힌 형태, 예: 구면
 손목의 6R)는 모든 가지를 정확히 열거한다; 기하가 허락하지 않으면 수치로 간다.
 
 <svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="같은 목표에 도달하는 두 관절 해와, 그 평균이 목표를 지나쳐 버리는 것">
@@ -184,13 +194,25 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
   </g>
 </svg>
 
+**목표 자세는 아직 운동 계획이 아니다.** 팔꿈치가 위·아래인 해는 말단 자세가 같아도 팔 구성은 크게 다를 수 있다. 관절 한계나 장애물 때문에 한 분기만 불가능할 수 있다. 목표 구성을 반환하는 해법과 그곳까지 충돌 없는 경로를 찾는 계획기는 다른 질문에 답한다.
+
+수치 해법은 대개 초기 추정 근처의 분기를 따라간다. 성공하지 못하면 도달 불가, 나쁜 초기값, 특이한 국소 사상, 한계 위반, 반복 예산 소진을 나눈다. 국소 탐색 한 번의 실패가 로봇에 해가 없다는 증거는 아니다.
+
+**이해 확인.** 가까운 목표를 연속으로 풀 때 이전 해는 연속성을 유도하는 좋은 초기값일 수 있다. 특이점이나 가능 분기 변경을 지나도 연속성을 보장하지는 않는다. 다중모드 학습 행동과의 비유는 대안을 표현하는 문제다. 모든 생성 정책이 회귀보다 낫다는 정리가 아니다.
+
 ### 2. 수치 IK = 자세 오차에 대한 뉴턴-랩슨
 
 반복:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(작업 공간 오차)}$$
-완전한 SE(3)의 경우 $e$는 오차 *twist* $\log(T_{now}^{-1} T_{goal})$
+완전한 SE(3)의 경우 $e$는 바디 좌표의 6차원 오차 $[\log(T_{now}^{-1} T_{goal})]^\vee$이며 바디 자코비안과 짝지어 쓴다
 ([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 로그 사상)이고,
 $J^\dagger$는 유사역행렬([[02-foundations/linear-algebra|최소제곱]])이다.
+
+**반복 한 번을 따라간다.** 현재 자세를 계산하고 목표 오차를 정한 프레임으로 표현한다. 현재 관절에서 그 프레임의 야코비안을 구한다. 국소 관계 JΔθ ≈ e를 풀고 관절 추정을 갱신한 뒤 자세와 오차를 다시 계산한다. 야코비안이 국소 변화만 설명하므로 반복이 필요하다. 감쇠나 보폭 규칙은 근사를 너무 멀리 믿지 않게 한다.
+
+위 바디 프레임 자세 오차에서 행렬 로그의 결과는 먼저 리 대수의 행렬이다. 그 여섯 좌표를 오차 벡터로 뽑아 바디 야코비안과 짝짓는다. 라디안과 길이는 단위가 달라 회전·병진 정지 허용오차를 따로 쓴다. 수치 수렴과 별개로 관절 한계와 충돌도 검사한다.
+
+**이해 확인.** 유사역행렬은 국소 선형 잔차를 최소화하고 대안이 남으면 최소 노름 갱신을 고른다. 전체 비선형 자세 문제를 곧바로 푸는 것은 아니다. 국소 근사와 갱신 루프는 [공식 수치 IK 설명](https://modernrobotics.northwestern.edu/nu-gm-book-resource/6-2-numerical-inverse-kinematics-part-1-of-2/)에서도 따라갈 수 있다.
 
 ### 3. 한 반복을 손으로 끝까지 — 평면 2R 팔
 

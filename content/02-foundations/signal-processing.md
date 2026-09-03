@@ -51,6 +51,8 @@ functions.
 - Key properties: commutative, associative (cascaded LTI systems = one convolved $h$),
   and the delta $\delta[n]$ is the identity.
 
+Convolution is useful because a short physical event can affect several later samples through the sensor and filter response. For example, the force pulse when a tool touches a wall may appear spread out even if contact began abruptly. **The reading this gives you.** Ask whether a broad measured event belongs to the world or to the pipeline impulse response. Cascaded filters change that response together, so evaluating a filter in isolation can miss the timing seen by the controller.
+
 ### 2. Sampling — the contract between continuous and digital
 
 - **Nyquist–Shannon**: a signal with no content above $B$ Hz is *perfectly* recoverable
@@ -104,6 +106,8 @@ functions.
   borrowed from direct current and here just means zero frequency — the constant part); rotating
   machinery = sharp peaks at harmonics (an excavator's engine band is a notch-filter target).
 
+Frequency analysis is useful because visually similar fluctuations can require different interventions. For example, a narrow machinery vibration peak and broad contact transients can overlap in time but occupy different spectral patterns. Removing the peak may help, while indiscriminate smoothing may erase the contact signal. **The reading this gives you.** Relate spectral peaks to operating conditions and preserve the windowing and sampling details. A peak in a finite-window spectrum is evidence to investigate, not automatic identification of a physical source.
+
 ### 4. Filtering — design basics
 
 - **FIR** (finite impulse response, $y = \sum b_k x[n-k]$): always stable, exactly linear
@@ -135,11 +139,13 @@ functions.
 
 - The Laplace transform (continuous) / **Z-transform** (discrete) generalize Fourier:
   convolution ↦ multiplication by a *transfer function* $H(s)$ or $H(z)$.
-- Poles of $H$ = eigenvalues of the state-space $A$
+- For a minimal realization, poles of $H$ = eigenvalues of the state-space $A$
   ([[02-foundations/linear-algebra|control connection]]): stability = poles in the left
   half-plane (continuous) / inside the unit circle (discrete). Filters, plants, and
   controllers all speak this one language — which is why the control-theory course packet
   and this page are two views of the same object.
+
+Transforms help because they expose how a system changes each frequency and how internal dynamics can grow or decay. For example, a smoothing filter may attenuate vibration while introducing delay into the feedback used for contact control. **The reading this gives you.** Inspect both gain and phase before calling a filtered signal better. Also distinguish state-space modes from transfer-function poles: unobservable or uncontrollable modes can disappear through cancellation, so the pole–eigenvalue correspondence needs a minimal realization when used as an equality.
 
 ### 6. Sensor-pipeline habits (field-tested)
 
@@ -150,6 +156,8 @@ functions.
 
 > [!tip] Going deeper · 더 깊이
 > Oppenheim and Schafer's *Discrete-Time Signal Processing* is the standard course this page compresses. If §2 or §3 read as assertion rather than derivation, its sampling and DFT chapters are the fix.
+
+For example, a driver may already smooth force readings before a second filter is applied in the controller. The combined stream looks clean while contact onset arrives late. Keeping the raw stream and documenting both stages makes that delay diagnosable. **The reading this gives you.** Trace the signal from acquisition to decision, including clock conversion and every transformation. A plot without its processing history cannot tell you whether the apparent smoothness came from better sensing or from removing the transient that mattered.
 
 ### Self-check
 
@@ -207,6 +215,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   경계·샘플링 선택지다.
 - 핵심 성질: 교환·결합 법칙(직렬 LTI = 합성곱된 $h$ 하나), $\delta[n]$이 항등원.
 
+짧은 물리 사건도 센서·필터 응답을 통해 뒤의 여러 표본에 영향을 줘 합성곱이 유용하다. 도구가 벽에 닿는 힘 펄스는 접촉이 급격해도 퍼져 보일 수 있다. **여기서 얻는 독법.** 넓게 측정된 사건이 세계의 성질인지 파이프라인 임펄스 응답인지 묻는다. 직렬 필터가 응답을 함께 바꾸므로 필터 하나의 평가로는 제어기가 겪는 시점을 놓칠 수 있다.
+
 ### 2. 샘플링 — 연속과 디지털 사이의 계약
 
 - **나이퀴스트–섀넌**: $B$ Hz 위 성분이 없는 신호는 $f_s > 2B$ 샘플에서 *완벽히* 복원된다.
@@ -256,6 +266,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   ("DC"는 직류에서 온 말이고 여기서는 그냥 주파수 0 — 신호의 상수 성분을 뜻한다);
   회전 기계 = 고조파의 날카로운 피크 (굴착기 엔진 대역은 노치 필터의 표적).
 
+비슷해 보이는 변동도 대응이 달라 주파수 분석이 유용하다. 좁은 기계 진동 피크와 넓은 접촉 과도응답은 시간상 겹쳐도 스펙트럼 모양이 다를 수 있다. 피크 제거는 도움이 되지만 무차별 평활은 접촉 신호를 지울 수 있다. **여기서 얻는 독법.** 피크를 운용 조건과 연결하고 윈도·샘플링 정보를 보존한다. 유한 구간 스펙트럼의 피크는 조사할 증거이지 물리 원인의 자동 식별은 아니다.
+
 ### 4. 필터링 — 설계 기초
 
 - **FIR** (유한 임펄스 응답, $y = \sum b_k x[n-k]$): 항상 안정, 정확한 선형 위상
@@ -285,10 +297,12 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 - 라플라스 변환(연속) / **Z-변환**(이산)은 푸리에의 일반화: 합성곱 ↦ *전달함수*
   $H(s)$ 또는 $H(z)$와의 곱.
-- $H$의 극점 = 상태공간 $A$의 고유값
+- 최소 실현에서 $H$의 극점 = 상태공간 $A$의 고유값
   ([[02-foundations/linear-algebra|제어 연결]]): 안정성 = 극점이 좌반평면(연속) /
   단위원 안(이산). 필터, 플랜트, 제어기가 전부 이 하나의 언어를 쓴다 — 제어이론 교재와
   이 페이지가 같은 대상의 두 시점인 이유다.
+
+변환은 주파수별 변화와 내부 동역학의 성장·감쇠를 드러낸다. 평활 필터는 진동을 줄이면서 접촉 제어 피드백에 지연을 추가할 수 있다. **여기서 얻는 독법.** 필터 신호가 더 좋다고 하기 전에 이득과 위상을 함께 본다. 상태 공간 모드와 전달함수 극점도 구분한다. 관측·제어할 수 없는 모드는 상쇄로 사라질 수 있어 극점과 고유값의 동일성에는 최소 실현 조건이 필요하다.
 
 ### 6. 센서 파이프라인 습관 (현장 검증됨)
 
@@ -299,6 +313,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 > [!tip] 더 깊이 · Going deeper
 > 이 페이지가 압축한 표준 강의는 Oppenheim·Schafer의 *Discrete-Time Signal Processing*이다. §2나 §3이 유도가 아니라 단언처럼 읽혔다면 그 책의 샘플링·DFT 장이 답이다.
+
+드라이버가 힘 측정을 이미 평활한 뒤 제어기에서 다시 필터링할 수 있다. 신호는 깨끗해도 접촉 시작이 늦게 도착한다. 원신호와 두 처리 단계를 남겨야 지연을 진단할 수 있다. **여기서 얻는 독법.** 취득에서 결정까지 시계 변환과 모든 처리를 따라간다. 처리 이력이 없는 그림으로는 부드러움이 더 좋은 센싱에서 왔는지 중요한 과도응답을 없애서 생겼는지 알 수 없다.
 
 ### 스스로 점검
 

@@ -49,6 +49,8 @@ depth from *any* RGB camera without LiDAR. The [[sam|SAM]]-era question: can sca
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2401.10891): About 62M unlabeled images support training, and zero-shot evaluation includes six public datasets. These quantify data and evaluation scope; the abstract gives no numerical depth-error improvement.
+
 - Strong zero-shot relative depth on unseen datasets, surpassing MiDaS variants; SOTA
   fine-tuned metric depth (NYUv2, KITTI) at publication; robust to low light, blur, art.
 
@@ -64,6 +66,9 @@ Made "depth from any camera" a practical commodity — used as geometric conditi
 [[controlnet|ControlNet]]-style generation, robot manipulation pipelines without depth
 sensors, and cheap site-scanning workflows. Feeds the same appetite [[vggt|VGGT]] answers
 with full multi-view geometry.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Broad monocular-depth transfer does not remove scale ambiguity or guarantee metric accuracy on a site. Metric fine-tuning and relative-depth evaluation answer different questions. Check the target domain, calibration, and temporal consistency before using predictions as robot geometry.
 
 ### Connections
 
@@ -98,6 +103,8 @@ with full multi-view geometry.
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2401.10891) 기준: 약 62M 비라벨 영상으로 학습하고 공개 데이터셋 6개에서 제로샷 평가한다. 데이터·평가 범위의 수치다. 초록에는 깊이 오차 개선의 수치가 없다.
+
 - 처음 보는 데이터셋에서 MiDaS 변형들을 능가하는 zero-shot 상대 깊이; 발표 시점 파인튜닝
   절대 깊이 SOTA(NYUv2, KITTI); 저조도·블러·그림에도 강건.
 
@@ -112,6 +119,9 @@ with full multi-view geometry.
 "아무 카메라에서나 깊이"를 실용 상품으로 만들었다 — [[controlnet|ControlNet]]식 생성의
 기하 조건, 깊이 센서 없는 로봇 조작 파이프라인, 저비용 현장 스캐닝 워크플로에 쓰인다.
 [[vggt|VGGT]]가 완전한 다시점 기하로 답하는 것과 같은 수요를 먹는다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 넓은 단안 깊이 전이는 척도 모호성을 없애거나 현장의 미터법 정확도를 보장하지 않는다. 미터법 미세조정과 상대 깊이 평가는 다른 질문이다. 로봇 형상으로 쓰기 전에 대상 도메인, 보정, 시간 일관성을 확인한다.
 
 ### 연결
 

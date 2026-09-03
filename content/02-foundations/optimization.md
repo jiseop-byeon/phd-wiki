@@ -33,6 +33,8 @@ Decision variables, objective, inequality/equality constraints. Formulation is h
 work: *what is a variable, what is a constraint, what is the objective* — and often several
 formulations of the same engineering problem differ wildly in solvability.
 
+The formulation is needed because a preference and a requirement play different roles. For example, a robot may prefer a short path while being required to respect a workspace boundary. Put path cost in the objective and admissibility in constraints, then decide whether the chosen model can represent the actual obstacle and actuation limits. **The reading this gives you.** Before studying a solver, name what it may change and what it must satisfy. A smaller objective value does not establish feasibility, and feasibility in an approximate model does not prove that the physical system meets every requirement.
+
 ### 2. Convexity — the great divide
 
 - A set is convex if it contains all line segments between its points; $f$ is convex if
@@ -167,7 +169,7 @@ five times the true value — before recovering. In a real deployment that excur
 robot commanded somewhere impossible, and it is why solvers are given step limits as well as
 a trust parameter.
 
-**Three things this buys you when reading.**
+**Four things this buys you when reading.**
 
 - **Damped least squares inverse kinematics *is* Levenberg–Marquardt.** The IK update
   $\Delta q = J^\top (JJ^\top + \lambda I)^{-1} e$ and the LM update
@@ -186,6 +188,12 @@ a trust parameter.
   initializations, and reports the best. When a SLAM or calibration paper says "we solve
   with Ceres / g2o / GTSAM," it has told you it ran this algorithm; it has not told you the
   answer is the optimum.
+- **A filter is running this same step.** One Gauss–Newton iteration is algebraically the
+  same update an iterated extended Kalman filter applies — the same weighted residual cost,
+  written in information form rather than covariance form. So the familiar split between
+  "optimisation-based" and "filter-based" state estimators is a choice about which variables
+  to keep, not about which problem is being solved
+  ([[04-robotics/state-estimation-slam|State Estimation & SLAM §5]]).
 
 ### 4. Constrained optimization — Lagrange, KKT, duality
 
@@ -332,6 +340,8 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 결정 변수, 목적함수, 부등식/등식 제약. 정식화가 일의 절반이다: *무엇이 변수이고, 무엇이
 제약이고, 무엇이 목적인가* — 같은 공학 문제라도 정식화에 따라 풀림성이 극적으로 달라진다.
 
+선호와 필수 조건의 역할이 달라 정식화가 필요하다. 로봇은 짧은 경로를 선호하면서 작업 공간 경계를 반드시 지켜야 할 수 있다. 경로 비용은 목적함수에, 허용 조건은 제약에 넣고 모델이 실제 장애물과 구동 한계를 표현하는지 판단한다. **여기서 얻는 독법.** 해법보다 먼저 바꿀 수 있는 것과 반드시 만족할 것을 적는다. 목적값 감소는 실행 가능성의 증거가 아니며 근사 모델의 가능성이 물리 시스템의 모든 요구 충족을 증명하지는 않는다.
+
 ### 2. 볼록성 — 결정적 분기점
 
 - 집합이 볼록 = 두 점 사이 선분을 모두 포함; $f$가 볼록 =
@@ -456,7 +466,7 @@ Gauss–Newton으로:
 참값의 다섯 배 — 던져 버린다. 실제 배포에서 그 이탈은 불가능한 곳으로 명령받은 로봇이고,
 솔버에 신뢰 파라미터뿐 아니라 스텝 제한도 함께 주는 이유가 그것이다.
 
-**읽을 때 이것이 사 주는 것 셋.**
+**읽을 때 이것이 사 주는 것 넷.**
 
 - **감쇠 최소자승 역기구학이 *곧* Levenberg–Marquardt다.** IK 갱신식
   $\Delta q = J^\top (JJ^\top + \lambda I)^{-1} e$와 LM 갱신식
@@ -474,6 +484,11 @@ Gauss–Newton으로:
   웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
   논문이 "Ceres / g2o / GTSAM으로 푼다"고 쓸 때, 그것은 이 알고리즘을 돌렸다고 말한 것이지
   답이 최적해라고 말한 것이 아니다.
+- **필터도 이 같은 스텝을 돌리고 있다.** Gauss–Newton 한 번의 반복은 iterated 확장 칼만
+  필터가 적용하는 갱신과 대수적으로 같다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보
+  형태로 적었을 뿐이다. 그러므로 "최적화 기반"과 "필터 기반" 상태 추정기의 익숙한 구분은
+  어떤 변수를 남길 것인가의 선택이지, 서로 다른 문제를 푸는 것이 아니다
+  ([[04-robotics/state-estimation-slam|상태 추정과 SLAM §5]]).
 
 ### 4. 제약 최적화 — 라그랑주, KKT, 쌍대성
 

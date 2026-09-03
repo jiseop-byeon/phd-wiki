@@ -103,24 +103,17 @@ of this table.
   </g>
 </svg>
 
-This is the whole subject in one comparison. **Contact turns position error into force**, so
-control in contact is about choosing the *relation* between them rather than eliminating
-either one. Mason's 1981 formalisation of this is still the cleanest way to say it: contact
-imposes **natural constraints** (the wall determines the force normal to it, whatever you
-command) and leaves you **artificial constraints** (you choose the motion along it). The
-two sets are complementary, and **you cannot control position and force in the same
-direction** — not because it is hard, but because the task's geometry has already assigned
-one of them to the environment.
+**Contact couples position and force.** For an ideal rigid wall in maintained contact, the natural constraint is zero normal velocity; the controller may choose a normal force target. Tangential motion remains available subject to friction. In compliant contact, normal displacement and force are related by the contact mechanics. Thus independent, arbitrary position and force targets along the same constrained direction can conflict. Hybrid control selects complementary motion and force objectives, while impedance chooses their relation.
+
+The stiffness plot is a simplified local linear comparison, not a prediction that an actuator can generate unlimited force. Real torque limits, structural compliance and contact nonlinearity bound or change the response. A low-gain position-based controller can also render compliance; the danger is demanding an unreachable position with excessive stiffness or integral action.
 
 ### 2. Impedance and admittance — the same idea, opposite causality
 
-Both aim at the same thing: make the robot behave like a chosen mass–spring–damper
+Both describe a desired relation between motion and interaction force. For a fixed reference $x_d$, define displacement $e=x-x_d$ and let $F_{ext}$ be the force **on the robot**. A one-axis target is
 
-$$\mathcal{F} = M_d(\ddot x_d - \ddot x) + D_d(\dot x_d - \dot x) + K_d(x_d - x)$$
+$$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-with $M_d, D_d, K_d$ the *desired* inertia, damping, and stiffness. They differ in which
-variable is measured and which is commanded, and that single difference decides which
-hardware and which environment each one suits.
+Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read the equation as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -164,29 +157,25 @@ hardware and which environment each one suits.
   </g>
 </svg>
 
-- **Impedance control** measures motion and commands force. It needs an arm whose joints can
-  be commanded in torque and are backdrivable. The robot is *soft by default* and its
-  position accuracy in free space is only as good as its model.
-- **Admittance control** measures force and commands motion into a stiff inner position
-  loop. It needs a force sensor, and it works with the industrial arms that only accept
-  position commands. The robot is *stiff by default*.
+The diagram shows **two common implementations**, not hardware requirements for every controller carrying these names:
 
-The rule that follows is not a preference but a consequence:
+- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior; low mechanical friction and backdrivability help, but are not the definition of impedance. Stiffness can be selected for the task rather than being “soft by default.”
+- **Admittance** takes measured or estimated external force and integrates a virtual dynamic model to generate a motion reference. An inner motion controller tracks that reference. This is useful on robots exposing position or velocity commands, but its achievable behavior depends on the inner loop as well as the outer force feedback.
 
-| | Suits | Fails against |
+| Architecture | Useful starting point | What must be checked |
 |---|---|---|
-| **Impedance** | stiff environments — the arm's own compliance absorbs the contact | very soft environments and free space, where "soft by default" means poor positioning |
-| **Admittance** | soft environments and precise free-space motion | stiff environments — a micron of motion makes a large force, the outer loop over-reacts, and the loop oscillates |
+| Torque-based impedance | Shape the arm's response to displacement | Torque bandwidth, dynamics compensation, gains, saturation |
+| Admittance with an inner motion loop | Turn force feedback into a motion reference | Sensor/estimator delay, inner-loop tracking, virtual dynamics, contact stiffness |
 
-The asymmetry is worth internalising, because it inverts the naive expectation. The
-*stiff* robot is the one that cannot handle a *stiff* wall.
+A stiff wall makes small motions produce large force changes. In an admittance loop, delayed force feedback can therefore generate an excessive corrective motion and oscillation. It **can** be stabilized with suitable dynamics, bandwidth and hardware; stiffness alone does not prove failure. Conversely, impedance can track motion in free space. The practical question is which desired behavior the complete robot can render in the operating conditions.
 
-> [!warning] The most common quiet error in reading force-control papers
-> An industrial arm with a wrist force sensor doing "force control" is doing **admittance**
-> control, and the vendor's position loop is in series with the environment. The two
-> stiffnesses add, so a result demonstrated against foam says nothing about steel. Ask what
-> the inner loop is before believing any compliance claim — see
-> [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
+> [!warning] Architecture and stiffness · 구조와 강성
+> A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
+
+> [!question] Check the model · 모델 확인
+> If the robot settles under a steady external force, which terms remain? **Answer:** only the spring term in this fixed-reference model. If the measured response oscillates, inspect inertia, damping, feedback delay and tracking; the static spring equation alone cannot explain it.
+
+For a derivation from a point-mass robot to torque commands, see [MIT's manipulator-control notes](https://manipulation.mit.edu/force.html). Distinguish the desired interaction equation from the implementation that attempts to realize it.
 
 ### 3. Hybrid position/force control
 
@@ -431,7 +420,7 @@ impedance or admittance inner loop, and reaches for the toolbox on this page.
 
 | Question | What a wrong answer hides |
 |---|---|
-| Impedance or admittance? What is the inner loop? | Admittance on a stiff vendor loop cannot claim contact compliance |
+| Impedance or admittance? What is the inner loop? | Identify the rendered compliance and its tested stiffness/bandwidth range |
 | Was it tested against a **stiff** environment? | Foam and free space hide the instability entirely |
 | Are $M_d, D_d, K_d$ reported, with units? | "Compliant" without numbers is not a specification |
 | Contact **transition** shown, or only steady contact? | The transition is where §5 says the difficulty lives |
@@ -456,7 +445,7 @@ tolerance, say which architecture can meet it — and whether any can.
 ### After reading
 
 - [ ] State why position and force cannot be controlled in the same direction.
-- [ ] Say which of impedance and admittance suits a stiff environment, and why it is the opposite of the naive guess.
+- [ ] Explain how impedance and admittance generate commands, and what limits their behavior in stiff contact.
 - [ ] Write the selection-matrix form of hybrid control and give a task for it.
 - [ ] Compute $F_{\max}$ and contact duration for a given $\Lambda$, $K$, $v$, and say how many control samples land inside.
 - [ ] Explain what Colgate and Hogan's passivity condition forbids.
@@ -478,7 +467,7 @@ tolerance, say which architecture can meet it — and whether any can.
    specifically in construction?
 
 > [!tip]- Answers
-> 1. It is admittance control — the force sensor drives an outer loop that commands positions into the vendor's stiff inner loop. Against foam a large motion produces a small force, so the loop gain is low and it behaves. Against steel, micrometres of motion produce large forces, so the effective loop gain is enormous; the outer loop over-reacts, and the sensor and inner-loop delays turn that into oscillation. The stiff robot is the one that cannot handle the stiff wall.
+> 1. The hardware and symptom alone do not determine the architecture. If force feedback generates position references, it is an admittance implementation. Higher contact stiffness can amplify the effect of delay and insufficient damping; check the actual loops, gains and timing before assigning the cause. Stable behavior on foam does not establish stable behavior on steel.
 > 2. $F_{\max} = v\sqrt{\Lambda K}$ is linear in $v$, so the peak force doubles to about 450 N in the stiff case. The duration $\pi\sqrt{\Lambda/K}$ does not contain $v$ at all, so it stays at 1.4 ms. Approaching faster buys you nothing in reaction time and costs you proportionally in force — which is why approach-speed limits, not better control, are the usual fix.
 > 3. Because it places the compliance centre at the tip of the peg, so a lateral misalignment produces lateral compliance and an angular misalignment produces rotation about the tip, instead of each error generating the other. The correction is mechanical, so it happens at the speed of the material rather than the speed of a control loop — and §5 shows the control loop is too slow to have helped anyway.
 > 4. That the policy chose good *positions*. Every compliance in the system belongs to the arm's inner loop and whatever passive give exists in the tool and part; the policy at 10 Hz cannot be regulating contact force, since the contact events of §5 are three orders of magnitude faster. It may well be a good result — it is a result about trajectory selection, not about compliance.
@@ -591,22 +580,17 @@ $10^7$ N/m에 대한 1 cm 오차는 $10^5$ N을 요구하고, 그것을 낼 수 
   </g>
 </svg>
 
-이 비교 하나가 주제 전체다. **접촉은 위치 오차를 힘으로 바꾼다.** 그러므로 접촉에서의 제어는
-둘 중 하나를 없애는 일이 아니라 둘 사이의 *관계*를 고르는 일이다. Mason이 1981년에 이것을
-형식화한 방식이 여전히 가장 깔끔하다: 접촉은 **자연 제약**(natural constraint)을 부과하고
-— 무엇을 명령하든 벽이 자기에 수직한 힘을 결정한다 — **인공 제약**(artificial constraint)을
-남긴다 — 표면을 따라가는 운동은 당신이 고른다. 두 집합은 상보적이며, **같은 방향에서 위치와
-힘을 동시에 제어할 수 없다**. 어려워서가 아니라, 과제의 기하가 둘 중 하나를 이미 환경에
-배정해 버렸기 때문이다.
+**접촉은 위치와 힘을 결합한다.** 이상적인 강체 벽과 접촉을 유지하면 자연 제약은 법선 속도가 0이라는 것이다. 제어기는 법선 힘의 목표를 고를 수 있다. 접선 운동은 마찰의 제약 아래 가능하다. 유연한 접촉에서는 법선 변위와 힘이 접촉 역학으로 연결된다. 따라서 같은 구속 방향에 독립적이고 임의적인 위치·힘 목표를 동시에 주면 충돌할 수 있다. 하이브리드 제어는 상보적인 운동·힘 목표를 고르고, 임피던스는 둘의 관계를 정한다.
+
+강성 그림은 단순한 국소 선형 비교다. 액추에이터가 무한한 힘을 낸다는 예측이 아니다. 실제 토크 한계·구조 유연성·접촉 비선형성이 반응을 제한하거나 바꾼다. 낮은 게인의 위치 기반 제어기도 컴플라이언스를 구현할 수 있다. 위험은 도달할 수 없는 위치를 과도한 강성이나 적분 동작으로 요구할 때 생긴다.
 
 ### 2. 임피던스와 어드미턴스 — 같은 발상, 반대 인과
 
-둘 다 같은 것을 노린다: 로봇이 선택된 질량–스프링–감쇠기처럼 거동하게 만드는 것
+둘 다 운동과 상호작용 힘 사이의 원하는 관계를 정한다. 고정 기준 $x_d$에 대해 변위 $e=x-x_d$를 정의하고, $F_{ext}$를 **로봇에 가해지는** 외력이라 하자. 한 축의 목표 거동은 다음과 같다.
 
-$$\mathcal{F} = M_d(\ddot x_d - \ddot x) + D_d(\dot x_d - \dot x) + K_d(x_d - x)$$
+$$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-($M_d, D_d, K_d$는 *원하는* 관성·감쇠·강성). 차이는 어느 변수를 측정하고 어느 것을 명령하는가
-뿐이며, 그 하나의 차이가 어떤 하드웨어와 어떤 환경에 맞는지를 결정한다.
+$M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 가상 기계로 읽으면 쉽다. 외력이 질량을 가속하고, 감쇠가 운동을 억제하며, 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 이 식은 원하는 폐루프 거동이며, 실제 팔에 보낼 토크 명령 자체는 아니다.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -650,27 +634,25 @@ $$\mathcal{F} = M_d(\ddot x_d - \ddot x) + D_d(\dot x_d - \dot x) + K_d(x_d - x)
   </g>
 </svg>
 
-- **임피던스 제어**는 운동을 재고 힘을 명령한다. 관절을 토크로 명령할 수 있고 역구동 가능한
-  팔이 필요하다. 로봇은 *기본적으로 무르고*, 자유 공간에서의 위치 정확도는 모델이 정확한
-  만큼만이다.
-- **어드미턴스 제어**는 힘을 재고 뻣뻣한 내부 위치 루프에 운동을 명령한다. 힘 센서가
-  필요하고, 위치 명령만 받는 산업용 팔에서도 동작한다. 로봇은 *기본적으로 뻣뻣하다*.
+그림은 **흔한 두 구현**이다. 같은 이름을 쓰는 모든 제어기의 필수 하드웨어 조건은 아니다.
 
-여기서 따라 나오는 규칙은 취향이 아니라 귀결이다:
+- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성도 도움이 되지만 임피던스의 정의는 아니다. 강성은 과제에 맞게 고르며, 항상 “기본적으로 무른” 것은 아니다.
+- **어드미턴스**는 측정·추정한 외력을 가상 동역학에 넣고 적분해 운동 기준을 만든다. 내부 운동 제어기가 그 기준을 추종한다. 위치·속도 명령을 받는 로봇에 유용하지만, 실제 거동은 외부 힘 피드백과 내부 루프 양쪽에 달렸다.
 
-| | 맞는 곳 | 무너지는 곳 |
+| 구조 | 유용한 출발점 | 확인할 조건 |
 |---|---|---|
-| **임피던스** | 단단한 환경 — 팔 자신의 유연성이 접촉을 흡수한다 | 매우 무른 환경과 자유 공간. "기본적으로 무르다"가 곧 위치 정확도 부족이다 |
-| **어드미턴스** | 무른 환경과 정밀한 자유 공간 운동 | 단단한 환경 — 마이크로미터의 운동이 큰 힘을 만들고, 외부 루프가 과반응하며, 루프가 진동한다 |
+| 토크 기반 임피던스 | 변위에 대한 팔의 반응을 설계 | 토크 대역폭, 동역학 보상, 게인, 포화 |
+| 내부 운동 루프를 둔 어드미턴스 | 힘 피드백을 운동 기준으로 변환 | 센서·추정 지연, 내부 추종, 가상 동역학, 접촉 강성 |
 
-이 비대칭은 몸에 새겨 둘 가치가 있다. 소박한 예상을 뒤집기 때문이다: **뻣뻣한** 로봇이야말로
-**단단한** 벽을 감당하지 못하는 쪽이다.
+단단한 벽에서는 작은 운동이 큰 힘 변화를 만든다. 어드미턴스 루프의 힘 피드백이 늦으면 보정 운동이 과해져 진동할 수 있다. 그러나 적절한 동역학·대역폭·하드웨어로 안정화할 수 있다. 강성만으로 실패를 단정할 수 없다. 반대로 임피던스도 자유 공간의 운동을 추종할 수 있다. 핵심은 전체 로봇이 해당 조건에서 어떤 거동을 실제로 구현할 수 있느냐다.
 
-> [!warning] 힘 제어 논문을 읽을 때 가장 흔한, 조용한 오독
-> 손목 힘 센서를 단 산업용 팔이 하는 "힘 제어"는 **어드미턴스** 제어이고, 벤더의 위치 루프가
-> 환경과 직렬로 끼어 있다. 두 강성이 더해지므로, 폼(foam)에 대해 보인 결과는 강철에 대해
-> 아무것도 말해 주지 않는다. 어떤 컴플라이언스 주장이든 믿기 전에 내부 루프가 무엇인지
-> 물어라 — [[02-foundations/manipulator-kinematics-dynamics|10. §8]]을 보라.
+> [!warning] 구조와 강성 · Architecture and stiffness
+> 손목 힘 센서만으로 제어 구조를 판정하지 않는다. 신호가 어디에 들어가며 무엇을 명령하는지 본다. 또한 수동 선형 스프링 두 개가 **직렬**이면 $1/K_{eq}=1/K_1+1/K_2$다. 강성을 더하는 것이 아니다. 피드백 안정성은 이 정적 등가식만으로 판단할 수 없고 동적 모델이 필요하다. 제어 블록을 [[02-foundations/manipulator-kinematics-dynamics|10. §8]]과 연결한다.
+
+> [!question] 모델 확인 · Check the model
+> 일정 외력 아래 로봇이 정지하면 어떤 항이 남는가? **답:** 고정 기준 모델의 스프링 항만 남는다. 실제 반응이 진동하면 관성·감쇠·피드백 지연·추종을 살펴본다. 정적 스프링 식만으로 진동을 설명할 수 없다.
+
+점질량 로봇에서 토크 명령까지의 유도는 [MIT 매니퓰레이터 제어 노트](https://manipulation.mit.edu/force.html)를 보라. 원하는 상호작용 식과 그것을 실현하려는 구현을 나눠 읽는다.
 
 ### 3. 하이브리드 위치/힘 제어
 
@@ -890,7 +872,7 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 
 | 질문 | 틀린 답이 감추는 것 |
 |---|---|
-| 임피던스인가 어드미턴스인가? 내부 루프는 무엇인가? | 뻣뻣한 벤더 루프 위의 어드미턴스는 접촉 컴플라이언스를 주장할 수 없다 |
+| 임피던스인가 어드미턴스인가? 내부 루프는 무엇인가? | 구현한 컴플라이언스와 시험한 강성·대역폭 범위를 확인한다 |
 | **단단한** 환경에서 검증했는가? | 폼과 자유 공간은 불안정을 통째로 감춘다 |
 | $M_d, D_d, K_d$를 단위와 함께 보고했는가? | 숫자 없는 "유연함"은 명세가 아니다 |
 | 접촉 **천이**를 보였는가, 정상 접촉만인가? | §5에 따르면 어려움은 천이에 산다 |
@@ -915,7 +897,7 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 같은 방향에서 위치와 힘을 동시에 제어할 수 없는 이유를 말한다.
-- [ ] 임피던스와 어드미턴스 중 단단한 환경에 맞는 쪽과, 그것이 왜 소박한 예상과 반대인지 말한다.
+- [ ] 임피던스·어드미턴스가 명령을 만드는 방식과 단단한 접촉에서의 구현 한계를 설명한다.
 - [ ] 하이브리드 제어의 선택 행렬 형태를 쓰고 적합한 과제를 하나 든다.
 - [ ] 주어진 $\Lambda$, $K$, $v$에 대해 $F_{\max}$와 접촉 지속을 계산하고 제어 샘플이 몇 개 들어가는지 말한다.
 - [ ] Colgate와 Hogan의 수동성 조건이 무엇을 금지하는지 설명한다.
@@ -934,7 +916,7 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 5. 하이브리드 위치/힘 제어는 기하를 알 때 정확하다. 왜 그것이 하필 건설에서 문제인가?
 
 > [!tip]- 정답 · Answers
-> 1. 어드미턴스 제어다 — 힘 센서가 외부 루프를 구동해 벤더의 뻣뻣한 내부 루프에 위치를 명령한다. 폼에서는 큰 운동이 작은 힘을 만들어 루프 게인이 낮고 얌전하다. 강철에서는 마이크로미터의 운동이 큰 힘을 만들어 실효 루프 게인이 거대해지고, 센서와 내부 루프의 지연이 그것을 진동으로 바꾼다. 뻣뻣한 로봇이야말로 단단한 벽을 감당하지 못하는 쪽이다.
+> 1. 하드웨어와 증상만으로 구조를 확정할 수 없다. 힘 피드백이 위치 기준을 만든다면 어드미턴스 구현이다. 높은 접촉 강성은 지연과 부족한 감쇠의 영향을 키울 수 있다. 실제 루프·게인·시점을 확인한 뒤 원인을 판정한다. 폼에서 안정적이었다고 강철에서도 안정적이라는 뜻은 아니다.
 > 2. $F_{\max} = v\sqrt{\Lambda K}$는 $v$에 선형이므로 단단한 경우 최대 힘은 약 450 N으로 두 배가 된다. 지속 시간 $\pi\sqrt{\Lambda/K}$에는 $v$가 아예 없으므로 1.4 ms 그대로다. 빨리 접근해도 반응 시간은 하나도 벌지 못하고 힘만 비례해서 치른다 — 더 나은 제어가 아니라 접근 속도 제한이 통상적인 처방인 이유다.
 > 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
 > 4. 정책이 좋은 *위치*를 골랐다는 것. 시스템의 모든 컴플라이언스는 팔의 내부 루프와 공구·부재에 있는 수동적 여유의 몫이다. 10 Hz의 정책이 접촉력을 조절하고 있을 수는 없다. §5의 접촉 사건은 세 자릿수 더 빠르기 때문이다. 좋은 결과일 수는 있다 — 다만 컴플라이언스가 아니라 궤적 선택에 관한 결과다.

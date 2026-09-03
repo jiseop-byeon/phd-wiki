@@ -38,6 +38,8 @@ The controller acts on **a stream of proprioceptive signals** — no cameras, no
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2010.11251).
+
 Verbatim from the abstract: **zero-shot generalization from simulation to natural environments**, across **two generations** of ANYmal robots, retaining robustness under conditions **never encountered during training** — deformable terrain such as mud and snow, dynamic footholds such as rubble, and overground impediments such as thick vegetation and gushing water.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -86,6 +88,8 @@ This is the paper that made **teacher–student privileged distillation** the de
 제어기는 **고유수용 신호의 흐름** 위에서 동작한다 — 카메라도 라이다도 없다. 이것이 사는 것을 논문 자신은 *radical robustness*(근본적 강건함)라 부르고, 배포되는 곳보다 훨씬 단순한 영역에서 학습하는 것으로 그것을 달성한다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2010.11251).
 
 초록 그대로: **시뮬레이션에서 자연 환경으로의 zero-shot 일반화**, ANYmal **두 세대**에 걸쳐, **학습 중 한 번도 마주친 적 없는** 조건에서도 강건함 유지 — 진흙과 눈 같은 변형 지형, 잔해 같은 동적 디딤면, 무성한 식생과 쏟아지는 물 같은 지상 방해물.
 

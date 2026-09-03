@@ -49,6 +49,8 @@ video, making the whole internet a training ground for interactive environments?
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2402.15391): The model has 11B parameters. That is model size, not a behavioral score; the abstract reports no quantitative result for controllability or physical fidelity.
+
 - The learned 8-action space is consistent across prompts (maps to left/right/jump-like
   controls) — semantics of control emerge without supervision.
 - Generalizes to out-of-distribution prompts: real photos and hand drawings become
@@ -71,6 +73,9 @@ Founded the *foundation world model* category: world models trained on internet 
 rather than an agent's own experience. Genie 2 and [[cosmos|Cosmos]] compete to be the
 simulator that generates embodied training data at scale — the base of
 [[gr00t-n1|GR00T]]'s data pyramid.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Action-controllable generated video demonstrates a learned interactive representation. It does not establish physically accurate dynamics or alignment between latent actions and robot controls. Check what an action changes and how consistency is evaluated across time.
 
 ### Connections
 
@@ -104,6 +109,8 @@ simulator that generates embodied training data at scale — the base of
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2402.15391) 기준: 모델 크기는 11B 파라미터다. 행동 점수가 아니다. 초록에 제어 가능성이나 물리적 충실도의 정량 결과는 없다.
+
 - 학습된 8개 행동 공간이 프롬프트를 가로질러 일관된다(좌/우/점프류 조작에 대응) —
   감독 없이 제어의 의미론이 창발.
 - 분포 밖 프롬프트로 일반화: 실사진과 손그림이 플레이 가능한 세계가 된다.
@@ -124,6 +131,9 @@ simulator that generates embodied training data at scale — the base of
 *파운데이션 월드모델* 범주를 창시했다: 에이전트 자신의 경험이 아니라 인터넷 비디오로
 학습되는 월드모델. Genie 2와 [[cosmos|Cosmos]]가 체화 학습 데이터를 대규모로 생성하는
 시뮬레이터 자리를 두고 경쟁 중 — [[gr00t-n1|GR00T]] 데이터 피라미드의 바닥이다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 행동으로 제어하는 생성 영상은 학습한 상호작용 표현을 보여 준다. 물리적으로 정확한 동역학이나 잠재 행동과 로봇 제어의 정렬을 확립하지 않는다. 행동이 바꾸는 것과 시간 일관성의 평가를 확인한다.
 
 ### 연결
 

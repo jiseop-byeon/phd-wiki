@@ -26,6 +26,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: AES is the industrial-deployment answer to the question [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz's 1999 CMU excavator]] opened — can a machine run the full loading cycle without a person in the cab? Where CMU demonstrated the integrated cycle, AES demonstrates *duration and productivity at industrial scale*, and it is the deployment counterweight to simulation-heavy learning papers like [[01-canonical-papers/notes/8-construction/ext|ExT]].
 
+> [!tip] Key intuition · 핵심 직관
+> Each dig changes the terrain, so perception must refresh the state used for the next loading decision. The modular loop makes that changing geometry actionable through task planning and hydraulic control; the system claim depends on all of those interfaces continuing to work together.
+
 **Method (system level)**: LiDAR and camera perception reconstruct the terrain, the material pile, and the work zone; a task planner selects loading targets and a motion planner generates dig/dump trajectories; robust low-level control executes them on hydraulic machines. The architecture is modular, not end-to-end learned — the lesson is system engineering and operational robustness, not a single foundation-model component. Porting one stack across machine sizes (compact through 49-tonne) is itself a major engineering claim: sensing geometry, hydraulic dynamics, and workspace scale all change with the platform.
 
 ```mermaid
@@ -55,6 +58,9 @@ platform and none of them are in the algorithm.*
 **한 줄 요약**: Baidu의 AES는 인식·과제/모션 계획·제어를 완전한 자율 굴착 스택으로 통합해 컴팩트급부터 49톤급까지의 굴착기에 배치했고, 인간 개입당 24시간의 무인 운용과 숙련 운전자에 가까운 처리량(tons/hour)을 보고했다.
 
 **계보에서의 위치**: AES는 [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz의 1999 CMU 굴착기]]가 연 질문 — 기계가 사람 없이 전체 적재 사이클을 돌릴 수 있는가 — 에 대한 산업 배치 쪽의 답이다. CMU가 통합 사이클을 시연했다면, AES는 *산업 규모의 지속 시간과 생산성*을 시연한다. [[01-canonical-papers/notes/8-construction/ext|ExT]] 같은 시뮬레이션 중심 학습 논문의 배치 측 대응물이다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 한 번 굴착할 때마다 지형이 바뀌므로 다음 적재 결정의 상태를 지각으로 갱신해야 한다. 모듈식 루프가 변하는 형상을 과제 계획과 유압 제어로 연결한다. 시스템 주장은 이 인터페이스들이 계속 함께 작동하는가에 달려 있다.
 
 **방법(시스템 수준)**: LiDAR와 카메라 인식이 지형·재료 더미·작업 구역을 재구성하고, 과제 계획기가 적재 목표를 선택하며, 모션 계획기가 굴착/투하 궤적을 생성하고, 강건한 저수준 제어가 유압 기계에서 이를 실행한다. 아키텍처는 엔드투엔드 학습이 아니라 모듈형이다 — 교훈은 단일 파운데이션 모델 요소가 아니라 시스템 엔지니어링과 운용 강건성이다. 하나의 스택을 기계 크기(컴팩트급~49톤급)에 걸쳐 이식한 것 자체가 큰 엔지니어링 주장이다: 센싱 기하, 유압 동역학, 작업 영역 규모가 플랫폼마다 모두 달라진다.
 

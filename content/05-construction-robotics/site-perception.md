@@ -37,6 +37,11 @@ flowchart LR
 The output may be a report for a manager or state for a robot. Only the latter closes a
 physical-AI loop, and it imposes stricter latency, uncertainty, and failure requirements.
 
+> [!example] Worked example · 계산 예제
+> **Distance changes what reaches the detector.** With hypothetical LiDAR angular resolution 0.1°, adjacent-ray spacing on a perpendicular surface at 20 m is 20 × tan(0.1°) ≈ **34.9 mm**. At 5 m it is about **8.7 mm**. A 10 mm crack can fall between samples at the longer distance.
+>
+> **The reading this gives you.** Detection accuracy needs a distance and sampling protocol. Closer spacing alone does not guarantee detection: beam footprint, angle of incidence, occlusion, and the crack's geometry also matter. If the sensor never sampled the defect, changing the classifier cannot reconstruct missing evidence. Report coverage alongside accuracy on the observations that actually arrived.
+
 ### 2. Four recurring problems
 
 - **Robot localization and mapping**: SLAM/GNSS in dust, repetitive geometry, changing
@@ -67,6 +72,8 @@ per-point features symmetrically; PointNet++ adds local hierarchical neighborhoo
 Modern sparse voxel and transformer models may outperform them, but these papers explain
 why point clouds are not ordinary images.
 
+The integration is necessary because a plausible shape and an actionable coordinate are different outputs. For example, a mask can identify a pipe in an image without locating its axis in the robot frame. **The reading this gives you.** Follow the prediction through metric calibration, registration, and uncertainty propagation to the actual task tolerance. A visually convincing model output is only one input to that chain.
+
 ### 4. Reading evaluation
 
 Report localization/registration error in physical units, detection/segmentation quality,
@@ -79,6 +86,8 @@ evaluated, and whether the system ran online on the moving platform.
 > automatic detection on manually collected data. Find which sensing, motion, analysis,
 > and reporting steps were autonomous. “Scan-to-BIM accuracy” must separate sensor noise,
 > calibration, registration, model tolerance, and true construction deviation.
+
+Evaluation needs an independent reference because alignment can hide the error being measured. For example, checking detected anchor positions against the same model used to register the scan can reward agreement with the model rather than agreement with the built site. **The reading this gives you.** Identify which reference was independently measured, how unobserved regions enter the denominator, and whether the final robot action stayed within its required tolerance.
 
 ### After reading
 
@@ -139,6 +148,11 @@ flowchart LR
 출력은 관리자용 보고서일 수도, 로봇용 상태일 수도 있다. 후자만이 physical-AI 루프를
 닫으며, 지연·불확실성·실패 조건이 훨씬 엄격하다.
 
+> [!example] 계산 예제 · Worked example
+> **거리가 검출기에 도착하는 정보를 바꾼다.** 각분해능 0.1°인 가상 LiDAR에서 수직 표면의 인접 광선 간격은 20 m일 때 20 × tan(0.1°) ≈ **34.9 mm** 수준이다. 5 m에서는 약 **8.7 mm** 수준이다. 10 mm 균열은 먼 거리에서 샘플 사이로 빠질 수 있다.
+>
+> **여기서 얻는 독법.** 검출 정확도에는 거리와 표집 절차가 필요하다. 촘촘한 간격만으로 검출이 보장되지는 않는다. 빔 크기, 입사각, 가림, 균열 형상도 중요하다. 센서가 결함을 표집하지 않았다면 분류기를 바꿔도 빠진 증거를 복원할 수 없다. 도착한 관측의 정확도와 함께 관측 범위를 보고한다.
+
 ### 2. 네 가지 반복 문제
 
 - **위치 추정·매핑**: 먼지, 반복 구조, 변하는 지면, 이동 작업자 속의 SLAM/GNSS — 지상
@@ -163,6 +177,8 @@ PointNet은 점별 특징을 대칭 집계하고, PointNet++는 국소 계층을
 voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우드가 일반 이미지와 다른
 이유를 이해하는 역사적 진입점이다.
 
+그럴듯한 형상과 행동에 쓸 좌표는 달라 통합이 필요하다. 마스크는 영상의 파이프를 찾아도 로봇 좌표계의 축 위치는 알려 주지 않을 수 있다. **여기서 얻는 독법.** 예측에서 미터법 보정, 정합, 불확실성 전파를 거쳐 실제 과제 허용오차까지 따라간다. 시각적으로 설득력 있는 출력은 그 사슬의 입력 하나다.
+
 ### 4. 평가 읽기
 
 위치·정합 오차를 물리 단위로, 검출·분할 품질, 커버리지, 점검 시간, 놓친 결함·위험,
@@ -173,6 +189,8 @@ voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우
 > “자율 점검”은 자율 주행+사람의 오프라인 분석일 수도, 사람이 모은 데이터의 자동 검출일
 > 수도 있다. 센싱·이동·분석·보고 중 무엇이 자율인지 분해하라. Scan-to-BIM 정확도는 센서,
 > 보정, 정합, 모델 공차, 실제 시공 편차를 구분해야 한다.
+
+정렬이 측정할 오차를 가릴 수 있어 독립 기준이 필요하다. 스캔 정합에 쓴 모델로 검출 앵커 위치를 검사하면 실제 현장보다 모델과의 일치를 보상할 수 있다. **여기서 얻는 독법.** 어떤 기준을 독립 측정했는지, 미관측 영역을 분모에 어떻게 넣었는지, 최종 로봇 행동이 요구 허용오차 안에 있었는지 확인한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

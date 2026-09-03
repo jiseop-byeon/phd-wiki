@@ -50,6 +50,9 @@ From the paper's **own abstract**: a **93.3% success rate** clearing bins with *
 - Mean picks per hour is a throughput figure from a specific cell; it does not transfer to a different arm or a different reachability situation.
 - Rigid, graspable objects. The construction cases of [[04-robotics/grasping|15. §6]] — flexible panels, rebar bundles, unknown $\mu$ — are outside the setting.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Grasp perception and tracking are contributions at the grasp-selection interface. They do not establish forceful manipulation after grasping or throughput on another machine. Check object type, workspace, and the conditions attached to human comparisons.
+
 ### Connections
 
 - [[04-robotics/grasping|15. Grasping]] — the concept page, whose §5 places this in the lineage
@@ -88,6 +91,9 @@ From the paper's **own abstract**: a **93.3% success rate** clearing bins with *
 - 파지 *인식*이지 파지 *사용*이 아니다: 좋은 파지 자세는 조작 작업의 시작이고, 물체를 쥔 다음에 무슨 일이 일어나는지에 대해서는 여기서 아무 말도 하지 않는다([[04-robotics/force-compliance-control|13]]).
 - 시간당 평균 집기 수는 특정 셀의 처리량 수치다. 다른 팔이나 다른 도달성 상황으로 이전되지 않는다.
 - 강체이고 잡을 수 있는 물체들. [[04-robotics/grasping|15. §6]]의 건설 사례 — 휘는 패널, 철근 다발, 알 수 없는 $\mu$ — 는 이 설정 밖이다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 파지 지각·추적은 파지 선택 인터페이스의 기여다. 잡은 뒤의 힘 조작이나 다른 기계의 처리량을 확립하지 않는다. 물체 종류, 작업 공간, 사람과의 비교 조건을 확인한다.
 
 ### 연결
 

@@ -39,6 +39,8 @@ The system is trained on **self-supervised off-policy data gathered in the real 
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2002.05700).
+
 The abstract's claims are capability claims: it navigates real urban and off-road environments containing *geometrically distracting obstacles*, incorporates terrain preferences, generalises to novel environments, and keeps improving by collecting more data.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -86,6 +88,8 @@ BADGR is the clean statement of the reframing that [[04-robotics/traversability-
 시스템은 **실제 환경에서 모은 자기지도 off-policy 데이터**로 학습하며, 시뮬레이션도 사람 감독도 쓰지 않는다. 학습된 모델은 후보 행동열에 조건부로 미래 주행 사건을 예측하고, 계획기는 사용자가 지정한 선호 아래 예측 사건이 가장 좋은 행동열을 고른다. 그 선호 채널이 같은 모델로 "포장면 선호"와 "풀밭은 괜찮음"을 모두 표현하게 해준다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2002.05700).
 
 초록의 주장은 능력 주장이다: *기하학적으로 헷갈리게 하는 장애물*이 있는 실제 도시·오프로드 환경을 주행하고, 지형 선호를 반영하며, 새로운 환경으로 일반화하고, 데이터를 더 모아 계속 개선된다.
 

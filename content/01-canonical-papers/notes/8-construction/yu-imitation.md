@@ -25,7 +25,14 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: Workers demonstrate construction tasks in VR, the demonstrations pool in the cloud as reusable digital assets, and hierarchical imitation learning decomposes the craft skill into sequential and reactive sub-skills — an attack on IL's demonstration-cost problem shaped for construction (drywall installation).
 
+> [!tip] Key intuition · 핵심 직관
+> Hierarchy separates choosing the next sub-skill from reacting within it, so task order and local correction need not be learned as one undifferentiated sequence. Reusable virtual demonstrations address collection effort, while their physical fidelity still limits what the learned reactions can represent.
+
+**Context.** Repeated full-scale demonstrations can make construction skill collection burdensome. Virtual collection and hierarchical skill reuse target that bottleneck, while leaving physical transfer as a separate evaluation question.
+
 **Method**: a cloud-robotics virtual demonstration framework digitalizes the demonstration process, so workers need not repeatedly perform the task at full physical scale, and demonstrations become reusable across similar tasks. A Hierarchical Imitation Learning model built on deep generative models splits the skill into high-level *sequential* sub-skills (what to do next) and low-level *reactive* sub-skills (how to respond to contact and variation). In the vocabulary of [[02-foundations/rl-basics|RL 기초 §6]]: plain behavioral cloning compounds errors once the robot drifts from demonstrated states (covariate shift); this paper attacks the problem from both sides — hierarchy plus reactive sub-skills to absorb drift, and cheap VR demonstrations to widen state coverage.
+
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2309.11619).
 
 **Evidence**: validated on a drywall installation task with VR-collected demonstrations — a **virtual/lab testbed, not a site**. The abstract claims methodology, not deployment. The 2023 sibling (Yu et al., "mutual physical-state-aware object handover," AutCon 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104829)) supplies the line's hardest number: haptic-glove-based handover with **1-ms grip-state adaptation**, making the robot respond to the human's grip within a millisecond during worker-robot object handover. A 2025 follow-up ([arXiv:2509.02876](https://arxiv.org/abs/2509.02876)) pushes the skill library toward LLM-driven composition.
 
@@ -40,7 +47,14 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한 줄 요약**: 작업자가 VR에서 건설 과제를 시연하고, 시연은 재사용 가능한 디지털 자산으로 클라우드에 모이며, 계층적 모방학습이 장인의 기능을 순차적·반응적 하위 스킬로 분해한다 — 모방학습의 시연 비용 문제를 건설 모양으로 공략한 것(석고보드 설치).
 
+> [!tip] 핵심 직관 · Key intuition
+> 계층은 다음 하위 스킬의 선택과 그 안의 반응을 나눈다. 과제 순서와 국소 보정을 구분 없는 시퀀스로 학습할 필요가 줄어든다. 재사용 가상 시연은 수집 노력을 줄이지만 물리적 충실도가 학습 반응의 범위를 제한한다.
+
+**맥락.** 실물 크기의 반복 시연은 건설 스킬 수집 부담을 키운다. 가상 수집과 계층적 재사용이 그 병목을 겨냥한다. 물리적 전이는 별도의 평가 질문으로 남는다.
+
 **방법**: 클라우드 로보틱스 기반 가상 시연 프레임워크가 시연 과정을 디지털화해, 작업자가 과제를 실물 규모로 반복 수행할 필요가 없고 시연이 유사 과제 간에 재사용된다. 심층 생성 모델 위에 지은 계층적 모방학습 모델이 스킬을 상위의 *순차적* 하위 스킬(다음에 무엇을 할지)과 하위의 *반응적* 하위 스킬(접촉과 변동에 어떻게 반응할지)로 나눈다. [[02-foundations/rl-basics|RL 기초 §6]]의 어휘로 말하면: 순수 행동 복제(BC)는 로봇이 시연된 상태에서 벗어나는 순간 오차가 누적된다(공변량 이동); 이 논문은 양쪽에서 공략한다 — 이탈을 흡수하는 계층 + 반응적 하위 스킬, 그리고 상태 커버리지를 넓히는 값싼 VR 시연.
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2309.11619).
 
 **증거**: VR로 수집한 시연으로 석고보드 설치 과제에서 검증 — **현장이 아니라 가상/실험실 테스트베드**다. 초록의 주장은 방법론이지 배치가 아니다. 2023년 자매 논문(Yu et al., "mutual physical-state-aware object handover," AutCon 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104829))이 이 계열의 가장 단단한 수치를 제공한다: 햅틱 장갑 기반 핸드오버에서 **1 ms 그립 상태 적응** — 작업자-로봇 물체 핸드오버 중 로봇이 인간의 그립에 밀리초 안에 반응한다. 2025년 후속([arXiv:2509.02876](https://arxiv.org/abs/2509.02876))은 스킬 라이브러리를 LLM 기반 조합 쪽으로 밀고 간다.
 

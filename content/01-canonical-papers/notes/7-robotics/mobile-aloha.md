@@ -31,6 +31,9 @@ mastery-when: "Raise to Mastery when mobile manipulation data collection is part
 
 ### Method
 
+> [!tip] Key intuition · 핵심 직관
+> Whole-body demonstrations preserve the coordination between base motion and both arms that separate control streams can lose. Co-training adds reusable manipulation experience from the static dataset, giving the mobile policy more supervision than its newly collected demonstrations alone.
+
 The operator is physically attached to the mobile base, so walking the base and puppeteering the arms happen in one coordinated motion — whole-body teleoperation without a separate base controller to think about.
 
 The learning contribution is **co-training**: train on the new mobile-manipulation demonstrations together with the existing static ALOHA dataset, rather than on the new data alone.
@@ -71,6 +74,9 @@ From the **abstract**: "With **50 demonstrations** for each task, co-training ca
 [[01-canonical-papers/notes/4-vla/act|ALOHA]]는 고정된 작업 영역에서의 양팔 시연 수집을 풀었다. 쓸모 있는 작업 대부분은 고정된 작업 영역 안에 있지 않다: 수납장 열기, 조리대 닦기, 방을 가로질러 무언가 옮기기 — 전부 베이스와 팔이 *함께* 움직여야 하고, 그것을 시연하려면 조작자가 둘을 동시에 몰 수 있는 인터페이스가 필요하다.
 
 ### 방법
+
+> [!tip] 핵심 직관 · Key intuition
+> 전신 시연은 기저와 양팔을 따로 제어할 때 잃기 쉬운 협응을 보존한다. 공동 학습은 정적 데이터셋의 조작 경험을 더한다. 새 이동 시연만 쓸 때보다 많은 감독으로 이동 정책을 학습한다.
 
 조작자가 모바일 베이스에 물리적으로 붙어 있어서, 베이스를 걸어 옮기는 것과 팔을 조종하는 것이 하나의 협응된 운동으로 일어난다 — 따로 생각할 베이스 컨트롤러 없는 전신 원격조작이다.
 

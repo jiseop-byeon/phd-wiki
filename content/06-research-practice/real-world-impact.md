@@ -27,6 +27,10 @@ with its own evidence requirements, exactly like a performance claim. The questi
 That reframing does real work, because it turns an unbounded ambition into a checklist you
 can act on this month.
 
+For example, a robot fitting drywall in a prepared mock-up may establish that its contact strategy handles realistic geometry. It does not yet show that a crew can integrate the robot into a changing work schedule. Those claims require different evidence because task completion and workflow adoption have different failure modes.
+
+Describe the benefit, its recipient, and the counterfactual: what would the worker or researcher otherwise do? Then identify which costs the experiment actually includes, such as setup and recovery, and which remain outside it. **The reading this gives you.** Translate “impact” into a sentence with a beneficiary and an observable change. That makes the next evaluation concrete and prevents a compelling demonstration from carrying an unsupported adoption claim.
+
 ### 2. The evidence ladder, and what each rung licenses
 
 <svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="five rungs of deployment evidence, each paired with the strongest claim it supports">
@@ -75,6 +79,25 @@ that rung both hard and unusually valuable.
 > the evidence is a mock-up, say mock-up and claim what a mock-up licenses — which is
 > plenty.
 
+> [!warning] Demo indigestion · 데모 소화불량
+> The ladder assumes that producing evidence is the expensive step. That assumption is
+> weakening. Policies, simulated rollouts, benchmark entries, synthetic data and successful
+> demonstration videos can now be generated far faster than anyone can check them, while a
+> real hardware trial still takes days and long-term reliability still takes months. Terence
+> Tao named the version of this that mathematics faces, *proof indigestion*: proofs arriving
+> faster than the community can verify, explain and absorb them. Giseop Kim's essay
+> [증명 소화불량에서 데모 소화불량으로](https://gisbi-kim.github.io/tao-ai-math-for-physical-ai/)
+> carries the argument into physical AI, where it is sharper, because a proof has a checker
+> and a robot behaviour does not.
+>
+> Two consequences for this ladder. First, an unverified demonstration occupies no rung at
+> all — the questions that place it are how many trials the video was drawn from, where the
+> failures clustered, when a human intervened, and what the denominator of that success rate
+> was. Second, when the same group builds the simulator, the evaluator and the benchmark, an
+> optimiser will find their shared blind spots without anyone intending it. That is Goodhart's
+> law with a specific mechanism: errors the evaluator cannot see are treated by the
+> optimisation as though they do not exist.
+
 ### 3. Artifacts, and what each actually costs
 
 Outputs that keep working after the paper is published. Each is listed with its real cost,
@@ -96,6 +119,13 @@ insertion — and no sign of one forming
 construction task is disproportionately valuable — possibly more citable than the method
 trained on it.
 
+In robotics one artifact is worth naming separately, because releasing code alone rarely
+achieves it: a **reproduction bundle** — sensor configuration, calibration parameters, a
+recorded log, the simulator setup and the hardware specification alongside the code. It is
+what decides whether another group can actually build on the work, which §5 argues is the
+property that separates papers that generate a literature from papers that are cited once as
+a baseline.
+
 ### 4. The pipeline, run deliberately
 
 The ladder of §2 is also a plan, and the useful discipline is to decide **in advance** which
@@ -114,6 +144,10 @@ Reading that chain backwards is the common failure: running the experiment that 
 convenient, then choosing the strongest claim it can bear. That produces defensible papers
 and no program.
 
+For example, if the intended outcome is independent use of a panel-fitting dataset, plan a release that another group can interpret without the collectors present. That requires task definitions, calibration records, failed attempts, and a runnable evaluation. A beautiful policy video answers a different question and cannot reveal whether the data are usable.
+
+Build a small handoff into the project schedule: ask a colleague unfamiliar with collection to trace a record through the protocol. Their questions identify missing artifacts before the original context is forgotten. **The reading this gives you.** Evaluate the pipeline by whether its planned evidence reaches its chosen claim. Milestones should name the uncertainty being resolved, not merely the next file or demonstration being produced.
+
 ### 5. Designing so the outputs compound
 
 The [[07-research-program/paper-arc|arc]] already does this for publications — each paper
@@ -130,6 +164,23 @@ artifacts:
 The test for whether a project is designed or merely executed: **name what will still be
 used in three years.** If the honest answer is "the paper", the project was a paper.
 
+There is a second reason to design this way, visible only years later. Papers accepted at the
+same conference diverge enormously in what they generate: some become the starting point
+hundreds of others build from, while equally sound neighbours are cited a few times as a
+baseline and then forgotten. The property that separates them is not review score. It is
+whether a later researcher can pick something up and carry it away — a method, a problem
+definition, a dataset, a metric, a name — and how cheaply they can get it running. In
+robotics that cost is unusually high, because released code is not the same as a reproducible
+result: without the sensor configuration, the calibration parameters, a rosbag, the simulator
+setup and the hardware specification, another group cannot follow. Bundle those together and
+you are not being generous, you are buying the thing that compounds. Researchers rarely adopt
+the best available method; they adopt the good-enough method that runs today, and once a few
+groups build on it, it becomes the baseline everyone else compares against. Synthesised from
+Giseop Kim's essay [왜 어떤 ICRA 논문은 대성하는가](https://gisbi-kim.github.io/why-some-icra-papers-thrive/).
+
+> [!tip]- Going deeper: research as a system · 더 깊이 — 시스템으로서의 연구
+> Five further essays by the same author, each on one part of making outputs compound. [논문을 쓰는 사람에서 연구 시스템을 만드는 사람으로](https://gisbi-kim.github.io/from-paper-writer-to-research-system-builder/) argues that a graduate education is about designing a research system, not producing a document. [첫 1,000회의 인용](https://gisbi-kim.github.io/first-1000-citations/) treats early citations as the point where a researcher stops starting from zero each time, and locates the cause in reusable assets rather than paper count. [이상적인 연구주제란?](https://gisbi-kim.github.io/ideal-research-topic-roic/) borrows return-on-invested-capital to ask which topics turn one result into cheaper next results, with a professor's attention and a student-year as the costly capital. [승률을 설계하는 연구실](https://gisbi-kim.github.io/lab-management-designing-win-rate/) makes the case that a lab wins by being decisive on the few questions that settle things rather than average at everything — the same principle as this wiki's own inclusion rule. [손안에 든 새 한마리](https://gisbi-kim.github.io/bird-in-hand-lab-management/) is the counterweight: existing data, a working codebase and a student who understands the problem are assets whose future value is systematically underrated against an exciting new topic.
+
 ### 6. What not to optimise
 
 Two failure modes, stated plainly because they are tempting.
@@ -143,6 +194,8 @@ decides whether you split a result into two papers or make one good one.
 test in [[07-research-program/paper-arc|7.1]] applies here too — if it cannot state what is
 now possible that was not before, with an evaluation that could have come out the other
 way, it is a demo. Demos are useful for funding and for morale; they are not evidence.
+
+For example, polishing a successful drywall sequence can improve communication, but it leaves the research question unchanged if failed contacts remain unlogged. Spend effort on the record that would distinguish a better policy from easier setup. **The reading this gives you.** Ask which next action would change a skeptical reader's conclusion. A reusable failure protocol may do more for that purpose than another visually different demonstration of the same already-established behavior.
 
 ### After reading
 
@@ -186,6 +239,10 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 
 이 재프레이밍은 실제로 일을 한다. 끝이 없는 포부를 이번 달에 행동에 옮길 수 있는 체크리스트로
 바꾸기 때문이다.
+
+예를 들어 준비한 모형 현장에서 드라이월을 맞추는 로봇은 실제 크기의 형상에서 접촉 전략이 작동함을 보일 수 있다. 작업반이 변하는 공정 일정에 로봇을 통합할 수 있는지는 아직 모른다. 과제 완료와 작업 흐름의 채택은 실패 방식이 달라 필요한 증거도 다르다.
+
+이점, 수혜자, 대안을 적는다. 로봇이 없으면 작업자나 연구자는 무엇을 하는가? 설치와 회복 같은 비용 중 무엇이 실험에 포함되고 무엇이 빠졌는지도 정한다. **여기서 얻는 독법.** 임팩트를 수혜자와 관찰 가능한 변화가 있는 문장으로 바꾼다. 다음 평가가 구체화되고 인상적인 시연이 입증하지 않은 채택 주장까지 떠맡지 않게 된다.
 
 ### 2. 증거의 사다리와, 각 단계가 허락하는 것
 
@@ -232,6 +289,23 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 > 전부를 불신하게 만드는 유일한 것이다. 증거가 목업이면 목업이라고 말하고 목업이 허락하는
 > 것을 주장하라 — 충분히 많다.
 
+> [!warning] 데모 소화불량 · Demo indigestion
+> 이 사다리는 증거를 만드는 일이 비싼 단계라고 전제한다. 그 전제가 약해지고 있다. 정책,
+> 시뮬레이션 롤아웃, 벤치마크 기록, 합성 데이터, 성공 영상은 이제 누구도 검토를 따라갈 수 없는
+> 속도로 생산되는데, 실기계 시험은 여전히 며칠이 걸리고 장기 신뢰성은 여전히 몇 달이 걸린다.
+> 테렌스 타오는 수학이 맞은 같은 현상을 *증명 소화불량*이라 불렀다. 공동체가 검증하고 설명하고
+> 흡수하는 속도보다 증명이 빨리 도착하는 상태다. 김기섭의 에세이
+> [증명 소화불량에서 데모 소화불량으로](https://gisbi-kim.github.io/tao-ai-math-for-physical-ai/)가
+> 그 논증을 물리 AI로 옮긴다. 여기서는 더 날카롭다. 증명에는 검증기가 있지만 로봇의 행동에는
+> 없기 때문이다.
+>
+> 이 사다리에 주는 귀결이 둘이다. 첫째, 검증되지 않은 데모는 어느 단에도 놓이지 않는다.
+> 그것을 자리에 앉히는 질문은 이렇다. 그 영상은 몇 번의 시행에서 골랐는가, 실패는 어디에
+> 몰렸는가, 사람은 언제 개입했는가, 그 성공률의 분모는 무엇인가. 둘째, 같은 집단이 시뮬레이터와
+> 평가기와 벤치마크를 함께 만들면, 최적화는 아무도 의도하지 않아도 그들의 공통 사각지대를 찾아
+> 간다. 기전이 분명한 굿하트의 법칙이다. 평가기가 보지 못하는 오류는 최적화 과정에서 존재하지
+> 않는 것으로 취급된다.
+
 ### 3. 산출물과, 각각의 실제 비용
 
 논문이 나온 뒤에도 계속 작동하는 산출물들. 유지할 수 없는 산출물은 없느니만 못하므로 실제
@@ -250,6 +324,11 @@ way, it is a demo. Demos are useful for funding and for morale; they are not evi
 없을 것이므로([[04-robotics/teleoperation-demonstration|12. §7]]), 실제 건설 작업의 잘
 큐레이션된 데이터셋은 불균형하게 값어치가 크다 — 그것으로 학습한 방법보다 더 인용될 수도 있다.
 
+로보틱스에서는 따로 이름을 붙일 산출물이 하나 더 있다. 코드만 공개해서는 좀처럼 달성되지 않기
+때문이다. **재현 번들** — 센서 구성, 보정 파라미터, 기록 로그, 시뮬레이터 설정, 하드웨어 사양을
+코드와 함께 내는 것이다. 다른 팀이 이 연구 위에 실제로 쌓을 수 있는지를 이것이 정한다. §5는 그
+성질이 하나의 문헌을 생성하는 논문과 baseline으로 한 번 인용되고 마는 논문을 가른다고 말한다.
+
 ### 4. 파이프라인을 의도적으로 돌리기
 
 §2의 사다리는 계획이기도 하다. 쓸모 있는 규율은 주어진 프로젝트가 어느 단계를 겨냥하는지를
@@ -267,6 +346,10 @@ flowchart LR
 그 사슬을 거꾸로 읽는 것이 흔한 실패다: 편한 실험을 돌리고, 그것이 견딜 수 있는 가장 강한
 주장을 고르는 것. 그렇게 하면 방어 가능한 논문들은 나오고 프로그램은 나오지 않는다.
 
+예를 들어 패널 맞춤 데이터셋을 다른 집단이 독립적으로 쓰는 것이 목표라면 수집자가 없어도 해석할 수 있는 공개를 계획한다. 과제 정의, 보정 기록, 실패 시도, 실행 가능한 평가가 필요하다. 멋진 정책 영상은 다른 질문에 답하며 데이터의 사용 가능성을 보여 주지 못한다.
+
+수집을 모르는 동료가 기록 하나를 절차 끝까지 따라가 보는 작은 인계를 일정에 넣는다. 질문을 받으면 원래 맥락을 잊기 전에 빠진 산출물을 찾는다. **여기서 얻는 독법.** 계획한 증거가 선택한 주장에 도달하는지로 흐름을 평가한다. 이정표는 다음 파일이나 시연의 이름보다 해소할 불확실성을 밝혀야 한다.
+
 ### 5. 산출물이 복리로 쌓이도록 설계하기
 
 [[07-research-program/paper-arc|arc]]는 출판에 대해 이미 이것을 한다 — 각 논문이 앞 논문의
@@ -282,6 +365,23 @@ flowchart LR
 프로젝트가 설계된 것인지 그냥 수행된 것인지를 가르는 시험: **3년 뒤에도 여전히 쓰이고 있을
 것의 이름을 대라.** 정직한 답이 "논문"이라면 그 프로젝트는 논문이었다.
 
+이렇게 설계할 두 번째 이유가 있는데, 몇 해가 지나야 보인다. 같은 학회에 함께 실린 논문들이
+생성해 내는 후속 연구의 양은 극단적으로 갈린다. 어떤 논문은 수백 편이 당연하게 출발하는
+기준점이 되고, 못지않게 튼튼한 이웃 논문은 baseline으로 몇 번 인용된 뒤 잊힌다. 둘을 가르는
+성질은 심사 점수가 아니다. 뒤에 오는 연구자가 무언가를 집어 들고 갈 수 있는가다 — 방법이든,
+문제 정의든, 데이터셋이든, 지표든, 이름이든 — 그리고 그것을 돌리는 데 얼마나 드는가다.
+로보틱스에서는 그 비용이 유난히 크다. 코드를 공개했다는 것과 결과가 재현된다는 것이 같지 않기
+때문이다. 센서 구성, 보정 파라미터, rosbag, 시뮬레이터 설정, 하드웨어 사양이 함께 있지 않으면
+다른 팀은 따라올 수 없다. 그것들을 한 묶음으로 내는 것은 관대한 처신이 아니라 복리로 불어나는
+것을 사는 일이다. 연구자는 구할 수 있는 최선의 방법을 채택하지 않는다. 충분히 좋으면서 오늘
+돌아가는 방법을 채택하고, 몇 팀이 그 위에 쌓기 시작하면 그것이 나머지 전부가 비교하는
+baseline이 된다. 김기섭의 에세이
+[왜 어떤 ICRA 논문은 대성하는가](https://gisbi-kim.github.io/why-some-icra-papers-thrive/)를
+요약·재구성한 것이다.
+
+> [!tip]- 더 깊이 — 시스템으로서의 연구 · Going deeper: research as a system
+> 같은 저자의 에세이 다섯 편이 각각 산출물을 복리로 만드는 한 부분을 다룬다. [논문을 쓰는 사람에서 연구 시스템을 만드는 사람으로](https://gisbi-kim.github.io/from-paper-writer-to-research-system-builder/)는 대학원이 문서를 생산하는 법이 아니라 자기 연구 시스템을 설계하는 법을 배우는 곳이라고 주장한다. [첫 1,000회의 인용](https://gisbi-kim.github.io/first-1000-citations/)은 초기 인용을 연구자가 매번 0에서 출발하지 않게 되는 지점으로 보고, 그 원인을 논문 편수가 아니라 재사용 가능한 자산에서 찾는다. [이상적인 연구주제란?](https://gisbi-kim.github.io/ideal-research-topic-roic/)은 투하자본 대비 이익률을 빌려, 한 결과가 다음 결과를 싸게 만들어 주는 주제가 무엇인지 묻는다. 여기서 비싼 자본은 교수의 주의와 학생의 1년이다. [승률을 설계하는 연구실](https://gisbi-kim.github.io/lab-management-designing-win-rate/)은 연구실이 모든 것을 평균적으로 잘해서가 아니라 승부를 가르는 소수의 질문에서 압도적이어서 이긴다고 말한다 — 이 위키 자신의 포함 규칙과 같은 원리다. [손안에 든 새 한마리](https://gisbi-kim.github.io/bird-in-hand-lab-management/)는 그 반대 추다. 이미 가진 데이터, 돌아가는 코드베이스, 문제를 깊이 아는 학생은 새롭고 매력적인 주제에 견주어 미래 가치가 체계적으로 과소평가되는 자산이다.
+
 ### 6. 최적화하지 말아야 할 것
 
 두 실패 모드를, 유혹적이기 때문에 분명히 적는다.
@@ -293,6 +393,8 @@ flowchart LR
 **실연을 최적화하기.** 로봇이 무언가를 하는 영상은 결과가 아니다. [[07-research-program/paper-arc|7.1]]의
 시험이 여기에도 적용된다 — 전에는 불가능했고 지금은 가능한 것을, 반대 결과가 나올 수도 있었던
 평가와 함께 말하지 못하면 그것은 데모다. 데모는 연구비와 사기에 쓸모 있다. 증거는 아니다.
+
+예를 들어 성공한 드라이월 영상을 다듬으면 전달력은 좋아진다. 하지만 실패 접촉을 기록하지 않으면 연구 질문은 그대로다. 더 좋은 정책과 더 쉬운 준비 조건을 구분할 기록에 힘을 쓴다. **여기서 얻는 독법.** 다음 행동 중 무엇이 회의적인 독자의 결론을 바꿀지 묻는다. 이미 확인한 행동을 다른 모습으로 시연하는 것보다 재사용 가능한 실패 기록 절차가 더 유용할 수 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

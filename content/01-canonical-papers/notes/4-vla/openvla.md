@@ -72,6 +72,9 @@ studies (including construction/manufacturing task adaptations) and the baseline
 VLA reports against. OpenVLA-OFT and successors revisit its action head with chunked,
 continuous outputs — converging toward the [[pi0|π0]]/[[gr00t-n1|GR00T]] design point.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> A better benchmark result supports the evaluated manipulation setting and adaptation recipe. Model size and open weights do not guarantee deployable control latency or construction-task transfer. Check sensing inputs, action decoding, and target fine-tuning data.
+
 ### Connections
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
@@ -124,6 +127,9 @@ continuous outputs — converging toward the [[pi0|π0]]/[[gr00t-n1|GR00T]] desi
 기준 오픈 VLA가 됐다: 학계 파인튜닝 연구(건설·제조 과제 적응 포함)의 표준 시작
 체크포인트이자 모든 새 VLA가 비교 보고하는 베이스라인. OpenVLA-OFT 등 후속은 행동
 헤드를 청크·연속 출력으로 재설계 — [[pi0|π0]]/[[gr00t-n1|GR00T]]의 설계 지점으로 수렴 중.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 좋은 벤치마크 결과는 평가한 조작 설정과 적응 방식을 지지한다. 모델 크기와 공개 가중치가 배포 제어 지연이나 건설 과제 전이를 보장하지 않는다. 센싱 입력, 행동 복호화, 목표 미세조정 데이터를 확인한다.
 
 ### 연결
 

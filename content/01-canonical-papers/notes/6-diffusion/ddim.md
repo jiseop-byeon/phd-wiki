@@ -73,6 +73,9 @@ Made diffusion *deployable*: every practical system (Stable Diffusion samplers,
 [[diffusion-policy|Diffusion Policy]]'s ~10-step inference) rides DDIM or its ODE-solver
 descendants; DDIM inversion underpins image/trajectory editing methods.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The claim concerns a sampling process compatible with the trained denoiser. Fewer steps change the speed–quality trade-off rather than preserving every property automatically. Check the schedule, stochasticity setting, and equal-quality or equal-time comparison.
+
 ### Connections
 
 - Previous: [[ddpm|DDPM]] · Theory: [[score-sde|Score SDE]] (the ODE view) · Next: DPM-Solver, [[flow-matching|Flow Matching]]
@@ -128,6 +131,9 @@ descendants; DDIM inversion underpins image/trajectory editing methods.
 디퓨전을 *배포 가능*하게 만들었다: 모든 실용 시스템(Stable Diffusion 샘플러,
 [[diffusion-policy|Diffusion Policy]]의 ~10 스텝 추론)이 DDIM 또는 그 ODE 솔버 후손 위를
 달린다; DDIM 역변환은 이미지/궤적 편집 기법들의 토대다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 주장은 학습된 잡음 제거기와 호환되는 표집 과정에 관한 것이다. 단계 감소는 속도–품질 교환 관계를 바꾸며 모든 성질을 자동 보존하지 않는다. 일정, 확률성 설정, 동일 품질·시간 비교를 본다.
 
 ### 연결
 

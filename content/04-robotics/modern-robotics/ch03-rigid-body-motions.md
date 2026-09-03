@@ -29,6 +29,12 @@ exactly the first component of $\omega \times v$. Why bother? Because once cross
 are matrices, *linear algebra applies to rotation dynamics* — including the matrix
 exponential below.
 
+**What the bracket operation does.** The vector ω contains the angular-velocity coordinates. The brackets package those same coordinates into a matrix that performs “cross with ω” on any input vector. The matrix is not an extra physical object and its entries are not independent parameters. Its signs encode the right-hand-rule orientation of the cross product.
+
+For a point displaced from a rotation axis, the cross product gives the part of its velocity perpendicular to both the angular-velocity axis and the displacement. A point on the axis has no such rotational velocity; a point farther from the axis has a larger one at the same angular speed. This physical picture helps you reconstruct the sign pattern rather than memorizing it without meaning.
+
+**Check your understanding.** Swapping the operands reverses the cross product, so [ω]v and [v]ω are generally opposites. Matrix notation makes composition easier, but it does not make cross products commutative. Check operand order when converting a geometric formula into code.
+
 ### 2. Why an exponential? Rotation is a linear ODE
 
 A frame spinning at constant angular velocity $\omega$ obeys $\dot R = [\omega]\,R$.
@@ -49,12 +55,15 @@ This exp/log pair is the door between the Lie group (rotations) and the Lie alge
 ### 3. Twists: body velocity is six numbers — but read $v$ carefully
 
 A moving body's velocity is a **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$.
-The most common misconception in the whole book: **$v$ is *not* "the velocity of the
-end-effector point."** It is the velocity of *the point of the (imagined, infinitely
-large) body that currently coincides with the frame origin*. That is why a body rotating
-about a distant axis has a nonzero $v$ even if "its center" barely moves. Every twist is a
+**The meaning of $v$ depends on the reference frame and origin.** A space twist describes a velocity field relative to the fixed space origin; a body twist uses the moving body origin. Do not identify their linear components without specifying those choices. Every nonzero twist is a
 **screw**: rotate about an axis while translating along it; pure translation is the
 **infinite**-pitch limit, and pure rotation is the zero-pitch case (MR Def. 3.24: $h = 0$ for a pure rotation; $h \to \infty$ when $\omega = 0$).
+
+**Distinguish the body origin from the space origin.** Let p locate the body origin in space coordinates. The space-twist linear component is v_s = ṗ − ω_s × p; recovering the velocity of the body origin therefore requires adding the rotational term. The body-twist linear component is v_b = Rᵀṗ: it is the velocity of the body origin expressed in body coordinates. Thus “v is not the tool-tip velocity” needs the frame qualification; it can be exactly that point velocity when the body origin is chosen at the tool tip.
+
+Imagine a tool rotating about its own fixed tip. That tip has no translational motion, while points farther along the tool move. A space-origin description must encode enough information to reproduce that whole velocity field, not just the tip's trajectory. Changing origins changes the linear component required to describe the same motion.
+
+**Check your understanding.** Always name both the expression frame and the point whose velocity you want. The [official twist explanation](https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-3-2-twists-part-1-of-2/) develops this distinction. A mismatch here can make a numerically correct Jacobian appear to command the wrong translation.
 
 ### 4. One motion, two descriptions: space frame vs body frame
 
@@ -127,6 +136,12 @@ $$[\omega] = \begin{pmatrix}0&-\omega_3&\omega_2\\ \omega_3&0&-\omega_1\\ -\omeg
 정확히 $\omega \times v$의 첫 성분이다. 왜 이렇게 하나? 외적이 행렬이 되는 순간
 *회전 동역학에 선형대수가 통째로 적용*되기 때문이다 — 아래의 행렬 지수를 포함해서.
 
+**대괄호가 하는 일.** 벡터 ω에는 각속도 좌표가 있다. 대괄호는 같은 좌표를 “ω와 외적하기” 연산을 수행하는 행렬로 포장한다. 새로운 물리 물체도 아니고 성분들이 독립 파라미터도 아니다. 부호는 외적의 오른손 법칙 방향을 담는다.
+
+회전축에서 떨어진 점에서는 외적이 각속도 축과 변위 모두에 수직인 속도 성분을 준다. 축 위의 점에는 이 회전 속도가 없다. 같은 각속도라면 축에서 먼 점이 더 빠르다. 이 그림을 떠올리면 뜻 없이 외우는 대신 부호 배열을 복원할 수 있다.
+
+**이해 확인.** 피연산자를 바꾸면 외적 부호가 반대가 되므로 [ω]v와 [v]ω는 일반적으로 서로 반대다. 행렬 표기는 합성을 쉽게 만들지만 외적을 교환 가능하게 만들지는 않는다. 기하 식을 코드로 옮길 때 순서를 확인한다.
+
 ### 2. 왜 지수함수인가? 회전은 선형 미분방정식이다
 
 일정한 각속도 $\omega$로 도는 프레임은 $\dot R = [\omega]\,R$을 따른다.
@@ -146,11 +161,14 @@ $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{
 ### 3. Twist: 강체의 속도는 여섯 숫자 — 단, $v$를 조심해서 읽어라
 
 움직이는 강체의 속도는 **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$이다.
-이 책 전체에서 가장 흔한 오해: **$v$는 "말단 점의 속도"가 아니다.** $v$는 *(무한히
-크다고 상상한) 몸체에서 지금 프레임 원점과 겹쳐 있는 점*의 속도다. 그래서 멀리 있는 축
-둘레로 도는 몸체는 "중심"이 거의 안 움직여도 $v$가 0이 아니다. 모든 twist는
-**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동; 순수 병진은 피치가 **무한대**인 극한이고, 순수 회전이 피치 0인 경우다(MR 정의 3.24: 순수 회전이면 $h = 0$, $\omega = 0$이면 $h \to \infty$). 이는 피치 0의
-극한이다.
+**$v$의 뜻은 기준 프레임과 원점에 달렸다.** 공간 트위스트는 고정 공간 원점을 기준으로 속도장을 나타내고, 바디 트위스트는 움직이는 바디 원점을 쓴다. 이 선택 없이 두 선형 성분을 같은 것으로 읽으면 안 된다. 0이 아닌 모든 twist는
+**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동; 순수 병진은 피치가 **무한대**인 극한이고, 순수 회전이 피치 0인 경우다(MR 정의 3.24: 순수 회전이면 $h = 0$, $\omega = 0$이면 $h \to \infty$).
+
+**바디 원점과 공간 원점을 나눈다.** p가 공간 좌표에서 바디 원점의 위치라 하자. 공간 트위스트의 선형 성분은 v_s = ṗ − ω_s × p다. 바디 원점의 속도를 얻으려면 회전 항을 다시 더해야 한다. 바디 트위스트의 선형 성분은 v_b = Rᵀṗ로, 바디 원점의 속도를 바디 좌표로 표현한 것이다. 따라서 “v는 도구 끝 속도가 아니다”에는 프레임 조건이 필요하다. 바디 원점이 도구 끝이면 바로 그 점의 속도일 수 있다.
+
+고정된 자기 끝점을 축으로 도는 도구를 상상한다. 끝점은 병진하지 않아도 도구의 다른 점들은 움직인다. 공간 원점 기준 표현은 끝점 궤적뿐 아니라 전체 속도장을 복원할 정보를 담아야 한다. 원점을 옮기면 같은 운동을 설명하는 데 필요한 선형 성분도 바뀐다.
+
+**이해 확인.** 표현 프레임과 속도를 알고 싶은 점을 모두 말한다. [공식 트위스트 설명](https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-3-2-twists-part-1-of-2/)이 이 차이를 다룬다. 이를 섞으면 수치적으로 올바른 야코비안도 잘못된 병진을 명령하는 것처럼 보인다.
 
 ### 4. 하나의 운동, 두 개의 기술: space 프레임 vs body 프레임
 

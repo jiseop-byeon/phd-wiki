@@ -29,6 +29,9 @@ Rebar tying is one of construction's largest repetitive manual tasks: thousands 
 
 ### Method
 
+> [!tip] Key intuition · 핵심 직관
+> Using the mesh as the driving surface keeps locomotion tied to the workpiece that must be detected. The recognition stages then localize intersections for tying, turning a large repetitive task into repeated perception-and-coverage decisions within that planar setting.
+
 The robot drives on the mesh it is working on, which neatly solves mobility and registration at once — the workpiece is the road. Intersection detection uses a **two-stage recognition** combining a depth camera and an industrial camera, which is the sensible response to a target that is thin, metallic, specular, and not where the drawing says.
 
 ### Results
@@ -73,6 +76,9 @@ robot deployed is strong; the evidence for how well it deployed is one adjective
 철근 결속은 건설에서 가장 큰 반복 수작업 중 하나다: 똑같은 교차점 수천 개를, 지면에서, 사람을 다치게 하는 자세로. 그리고 [[05-construction-robotics/construction-manipulation|9. §2]]에 따르면 접촉이 *가벼운* 축에 든다 — 어려운 부분이 힘이 아니라 인식과 커버리지다.
 
 ### 방법
+
+> [!tip] 핵심 직관 · Key intuition
+> 철근망을 주행면으로 쓰면 이동이 검출할 작업물에 묶인다. 인식 단계가 결속할 교차점을 찾는다. 평면 조건에서 큰 반복 과제를 지각과 작업 범위 선택의 반복으로 바꾸는 구조다.
 
 로봇이 작업 중인 메시 위를 주행하는데, 이것이 이동과 정합을 한 번에 깔끔하게 푼다 — 작업물이 곧 도로다. 교차점 검출에는 깊이 카메라와 산업용 카메라를 결합한 **2단 인식**을 쓴다. 얇고, 금속이고, 반사가 심하고, 도면이 말하는 자리에 있지 않은 대상에 대한 합리적인 대응이다.
 

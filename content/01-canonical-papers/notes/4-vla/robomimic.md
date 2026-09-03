@@ -38,6 +38,8 @@ A controlled sweep across algorithms, datasets and design choices, with the whol
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2108.03298): The study compares six offline algorithms on five simulated and three real-world multi-stage tasks. These are study-design counts, not a quantified success improvement or proof that every algorithm won on every task.
+
 From the **abstract**: "an extensive study of **six** offline learning algorithms for robot manipulation on **five** simulated and **three** real-world multi-stage manipulation tasks of varying complexity."
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -77,6 +79,8 @@ From the **abstract**: "an extensive study of **six** offline learning algorithm
 알고리즘·데이터셋·설계 선택을 가로지르는 통제된 스윕. 다른 사람들이 같은 비교를 돌릴 수 있도록 전체 장치를 공개했다.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2108.03298) 기준: 오프라인 알고리즘 6개를 시뮬레이션 과제 5개와 실세계 다단계 과제 3개에서 비교한다. 연구 설계의 수치이지 성공 개선량이나 모든 알고리즘의 전 과제 승리를 뜻하지 않는다.
 
 **초록**에서: "복잡도가 다양한 시뮬레이션 과제 **다섯** 개와 실세계 다단계 조작 과제 **세** 개에 대한 로봇 조작용 오프라인 학습 알고리즘 **여섯** 개의 광범위한 연구."
 

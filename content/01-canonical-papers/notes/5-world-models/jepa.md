@@ -78,6 +78,9 @@ of choice inside them (latent prediction backbones in robot models). The
 generative-vs-latent debate ([[sora|Sora]]/[[cosmos|Cosmos]] vs JEPA) is one of the live
 questions of physical AI.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Representation prediction is an architectural idea instantiated in different image, video, and robotics studies. Their evidence is not interchangeable. Identify the version, training observations, and downstream procedure before treating a prediction result as a planning capability.
+
 ### Connections
 
 - Previous: [[mae|MAE]] (the generative cousin it critiques), [[dreamer|Dreamer]] (latent-space kin)
@@ -134,6 +137,9 @@ questions of physical AI.
 생성형 월드모델에 대한 가장 강력한 대항 프로그램 — 그리고 점점 그 생성형 모델들 *안의*
 인코더로 채택되는 중(로봇 모델의 잠재 예측 백본). 생성 vs 잠재
 논쟁([[sora|Sora]]/[[cosmos|Cosmos]] vs JEPA)은 physical AI의 살아 있는 쟁점 중 하나다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 표현 예측은 영상·비디오·로봇 연구에서 서로 다르게 구현된 구조 아이디어다. 증거를 서로 바꿔 쓸 수 없다. 예측 결과를 계획 능력으로 읽기 전에 버전, 학습 관측, 후속 절차를 확인한다.
 
 ### 연결
 

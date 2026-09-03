@@ -51,6 +51,8 @@ wiki tracks as the exemplar (peers: InternVL, PaliGemma).
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2308.12966).
+
 - Qwen2.5-VL-72B matches or beats closed frontier models (GPT-4o-class) on document/OCR,
   grounding, and video benchmarks at publication; the small variants (3B/7B) became default
   open VLM backbones for downstream research.
@@ -68,6 +70,9 @@ The de-facto open VLM backbone family of 2024–25: robotics stacks and VLA rese
 increasingly initialize from Qwen2/2.5-VL checkpoints (as [[openvla|OpenVLA]] did from
 Prismatic/Llama-2, and [[pi0|π0]] from PaliGemma). Tracking this line ≈ tracking what
 production VLMs can do.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> A model-family overview combines distinct versions with different inputs and training. Do not transfer a later version’s video or resolution claim to the original model. Identify the exact checkpoint, benchmark, and adaptation setting behind each comparison.
 
 ### Connections
 
@@ -104,6 +109,8 @@ production VLMs can do.
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2308.12966).
+
 - Qwen2.5-VL-72B는 발표 시점 문서/OCR, 그라운딩, 비디오 벤치마크에서 폐쇄형 프런티어
   (GPT-4o급)와 대등하거나 우세; 소형(3B/7B)은 다운스트림 연구의 기본 오픈 VLM 백본이 됐다.
 
@@ -120,6 +127,9 @@ production VLMs can do.
 Qwen2/2.5-VL 체크포인트에서 출발한다 ([[openvla|OpenVLA]]가 Prismatic/Llama-2에서,
 [[pi0|π0]]가 PaliGemma에서 출발했듯이). 이 계열을 추적하는 것 ≈ 프로덕션 VLM이 무엇을 할
 수 있는지를 추적하는 것.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 모델 계열 개요에는 입력·학습이 다른 버전이 묶인다. 후속 버전의 영상·해상도 주장을 원래 모델로 옮기지 않는다. 비교마다 정확한 체크포인트, 벤치마크, 적응 설정을 확인한다.
 
 ### 연결
 

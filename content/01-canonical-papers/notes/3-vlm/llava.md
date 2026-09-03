@@ -56,6 +56,9 @@ By early 2023, [[instructgpt|instruction tuning]] had turned LLMs into assistant
 
 Set off the open-VLM explosion: the "encoder + projection + open LLM + synthetic instructions" recipe underlies LLaVA-NeXT, Qwen-VL-style lines, and countless domain VLMs. Crucially for robotics, VLA models are structurally LLaVA-like — OpenVLA literally fine-tunes a Prismatic/LLaVA-style backbone to emit robot actions.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Instruction-following behavior supports a claim about the trained visual assistant, not guaranteed visual truth or grounded robot action. Check synthetic-data construction and the independence of the evaluation judge. Fluent descriptions can still misidentify the scene.
+
 ### Connections
 
 - Previous: [[clip|CLIP]] + [[instructgpt|InstructGPT]] (the two ingredients), [[blip-2|BLIP-2]]
@@ -95,6 +98,9 @@ Set off the open-VLM explosion: the "encoder + projection + open LLM + synthetic
 ### 영향과 후속 연구
 
 오픈 VLM 폭발의 기폭제: "인코더 + 투영 + 오픈 LLM + 합성 지시 데이터" 레시피가 LLaVA-NeXT, Qwen-VL 계열, 무수한 도메인 VLM의 밑바탕이다. 로보틱스에 결정적인 점: VLA 모델은 구조적으로 LLaVA와 같다 — OpenVLA는 말 그대로 Prismatic(LLaVA풍) 백본을 파인튜닝해 로봇 행동을 출력한다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 지시 수행 행동은 학습한 시각 비서에 관한 주장이다. 시각적 진실이나 근거 있는 로봇 행동을 보장하지 않는다. 합성 데이터 생성과 평가자의 독립성을 확인한다. 유창한 설명도 장면을 잘못 식별할 수 있다.
 
 ### 연결
 

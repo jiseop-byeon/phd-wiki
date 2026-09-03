@@ -31,9 +31,14 @@ The previous generation of semantic maps attached a feature vector to every poin
 
 ### Method
 
+> [!tip] Key intuition · 핵심 직관
+> Object nodes collect observations that belong to the same entity, while graph edges make spatial relations queryable. Reusing semantic features from image models avoids requiring a separate labeled 3D corpus for every class, but mistaken cross-view association can merge the wrong evidence.
+
 Build from **2D foundation models** and fuse their output into 3D by **multi-view association**. Nodes are objects; edges are relations. Because the semantics come from 2D models that already generalise, the representation **generalises to novel semantic classes without collecting large 3D datasets or finetuning** — that clause is the practical heart of the paper.
 
 ### Results
+
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2309.16650).
 
 Utility is demonstrated through downstream planning tasks specified by **abstract language prompts** requiring complex reasoning over spatial and semantic concepts.
 
@@ -75,9 +80,14 @@ ConceptGraphs made the object-graph the default for open-vocabulary mapping, and
 
 ### 방법
 
+> [!tip] 핵심 직관 · Key intuition
+> 물체 노드가 같은 대상의 관측을 모으고 그래프 간선이 공간 관계를 질의 가능하게 한다. 영상 모델의 의미 특징을 재사용해 클래스마다 별도 라벨 3D 자료를 요구하지 않는다. 시점 간 대응이 틀리면 잘못된 증거가 합쳐질 수 있다.
+
 **2D 파운데이션 모델**에서 출발해 그 출력을 **다중 시점 결합**으로 3D에 융합한다. 노드는 물체, 간선은 관계다. 의미가 이미 일반화되는 2D 모델에서 오기 때문에, 이 표현은 **큰 3D 데이터셋을 모으거나 미세조정하지 않고도 새로운 의미 범주로 일반화된다** — 그 구절이 이 논문의 실용적 핵심이다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2309.16650).
 
 공간·의미 개념에 걸친 복잡한 추론을 요구하는 **추상적 언어 프롬프트**로 지정된 하류 계획 과제들로 유용성을 실증한다.
 

@@ -93,14 +93,13 @@ claims a paper can make.
 
 - **Wrist force/torque sensors** give one six-axis wrench, calibrated, at high rate. They
   are the workhorse of [[04-robotics/force-compliance-control|force control]] and they tell
-  you *how hard*, never *where*. Everything distal to the sensor — the gripper's own weight
+  you the net force and moment, not a full spatial pressure map. Under a single-contact model, the wrench can constrain a line of action; locating a unique contact needs further geometry or assumptions. Everything distal to the sensor — the gripper's own weight
   and inertia — is in the reading and must be compensated.
 - **Taxel arrays** (capacitive, piezoresistive) give a coarse pressure map. Cheap,
   robust, low resolution, and they drift.
 - **Optical (vision-based) tactile sensors** — GelSight, DIGIT — put a camera behind a
   deformable gel and read the gel's deformed surface as an image. This is the key point that
-  papers state and readers skip: **they measure geometry, and force is inferred from
-  deformation rather than transduced.** They give remarkable spatial detail about the shape
+  papers state and readers skip: **their raw measurement is an image; geometry and force require reconstruction or calibration from gel appearance and deformation.** They give remarkable spatial detail about the shape
   pressed into the gel, at camera frame rates and camera latency.
 - **Soft pin arrays** — the TacTip family — track internal pins that mimic dermal papillae,
   giving shear as well as normal information from a 3D-printable, robust structure.
@@ -496,14 +495,13 @@ belongs to [[04-robotics/force-compliance-control|13]].
 </svg>
 
 - **손목 힘/토크 센서**는 보정된 6축 렌치 하나를 높은 주기로 준다.
-  [[04-robotics/force-compliance-control|힘 제어]]의 주력이고, *얼마나 세게*는 말해 주되
-  *어디서*는 결코 말해 주지 않는다. 센서보다 말단 쪽에 있는 모든 것 — 그리퍼 자신의 무게와
+  [[04-robotics/force-compliance-control|힘 제어]]의 주력이고, 합력과 합모멘트를 주지만 공간적인 압력 분포 전체는 주지 않는다. 단일 접촉 모델이면 렌치에서 힘의 작용선을 제약할 수 있다. 접촉점 하나를 특정하려면 추가 기하나 가정이 필요하다. 센서보다 말단 쪽에 있는 모든 것 — 그리퍼 자신의 무게와
   관성 — 이 측정값에 들어 있으므로 보상해야 한다.
 - **택셀 배열**(정전용량식, 압저항식)은 거친 압력 지도를 준다. 싸고 튼튼하며, 해상도가 낮고
   드리프트한다.
 - **광학(비전 기반) 촉각 센서** — GelSight, DIGIT — 는 변형되는 젤 뒤에 카메라를 두고 젤의
   변형된 표면을 이미지로 읽는다. 논문은 밝히지만 독자가 건너뛰는 핵심이 이것이다:
-  **이들은 기하를 재고, 힘은 변환되는 것이 아니라 변형에서 추론된다.** 젤에 눌린 형상에 대해
+  **원시 측정은 이미지이며, 기하와 힘을 얻으려면 젤의 외관·변형에서 복원하거나 보정해야 한다.** 젤에 눌린 형상에 대해
   놀라운 공간적 세부를, 카메라의 프레임률과 카메라의 지연으로 준다.
 - **연성 핀 배열** — TacTip 계열 — 은 진피 유두를 모사한 내부 핀을 추적해, 3D 프린팅 가능하고
   튼튼한 구조에서 법선뿐 아니라 전단 정보까지 준다.
@@ -522,7 +520,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > **"촉각은 비전이 못 보는 것을 본다"가 산술적 주장인 이유.** GelSight는 Mini의 18 × 24 mm
 > 패드에서 픽셀당 0.0634 mm를 공표한다. 수평 화각 90°인 손목 카메라는 0.5 m에서
 > $2 \times 0.5 \times \tan 45° = 1.0$ m를 1280픽셀에 담으니 **픽셀당 0.78 mm**다. 문제가 되는
-> 그 패치 위에서 촉각 센서는 $0.78/0.0634 = \mathbf{12배}$ 더 곱게 분해하고, 게다가 *손가락에
+> 그 패치 위에서 촉각 센서는 $0.78/0.0634 = \mathbf{12}\text{배}$ 더 곱게 분해하고, 게다가 *손가락에
 > 물체가 가려진 동안* 그렇게 한다 — 카메라에 아무것도 없는 바로 그때다.
 >
 > **같은 논증을 시간으로.** 50 mm/s로 미끄러지는 물체는 30 Hz 카메라의 두 프레임 사이에

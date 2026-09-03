@@ -87,10 +87,15 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 
 Turned frontier training into an engineering discipline: every serious lab now fits scaling curves before committing compute. Chinchilla-optimality reshaped model sizing (LLaMA's small-but-long-trained recipe). The same methodology now guides vision and robot-policy scaling studies.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The laws fit language-model loss over the studied data and compute regime. They do not directly predict every downstream capability or physical skill. Keep the original scaling study and the later compute-optimal training study separate, including their data assumptions.
+
 ### Connections
 
 - Motivated: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] · Applied everywhere from LLMs to VLAs
 - Lineage: [[03-deep-learning/lineage|논문 계보도]]
+
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2001.08361): The original study reports trends spanning more than seven orders of magnitude; this describes the span of fitted loss scaling, not a downstream accuracy gain.
 
 ## 한국어
 
@@ -158,6 +163,9 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 프런티어 학습을 공학 분야로 만들었다: 이제 모든 주요 랩이 연산을 투입하기 전에 스케일링 곡선부터 적합한다. Chinchilla 최적성은 모델 크기 관행을 재편했고(LLaMA의 "작지만 오래 학습" 레시피), 같은 방법론이 비전과 로봇 정책의 스케일링 연구에도 적용되고 있다.
 
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 법칙은 연구한 데이터·연산 범위의 언어모델 손실을 적합한다. 모든 후속 능력이나 물리 스킬을 직접 예측하지 않는다. 원래 규모 연구와 후속 연산 최적 학습 연구의 데이터 가정을 구분한다.
+
 ### 연결
 
 - 동기가 된 것: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] · LLM부터 VLA까지 어디에나 적용
@@ -169,3 +177,5 @@ Turned frontier training into an engineering discipline: every serious lab now f
 - [ ] State the difference between Kaplan's and Chinchilla's allocation conclusions (~20 tokens per parameter) · Kaplan과 Chinchilla의 배분 결론 차이(파라미터당 ~20토큰)를 말할 수 있다
 - [ ] Say what it means engineering-wise that a small pilot can now size a huge training run · 작은 파일럿에서 거대 학습을 설계할 수 있게 된 것의 공학적 의미를 말할 수 있다
 - [ ] State the gap between predicting pretraining loss and predicting downstream capability · 사전학습 손실 예측과 다운스트림 능력 예측의 간극을 말할 수 있다
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2001.08361) 기준: 원래 연구는 일부 경향이 7자릿수 규모 이상에 걸친다고 보고한다. 손실 규모 법칙을 적합한 범위이지 후속 정확도 개선량이 아니다.

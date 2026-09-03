@@ -73,6 +73,8 @@ confident answer.*
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2503.11651): Reconstruction is reported to take under one second. The abstract does not specify the image-count and hardware conditions for that timing, so do not treat it as a fixed per-frame control rate.
+
 - State of the art on camera pose estimation, multi-view depth, dense reconstruction, and
   point tracking — *without* per-scene optimization; optional bundle-adjustment refinement
   pushes accuracy further.
@@ -144,6 +146,8 @@ flowchart LR
   (수백 프레임에 약 수 초).
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2503.11651) 기준: 복원에 1초 미만이 걸린다고 보고한다. 그 시간의 영상 수와 하드웨어 조건은 초록에 없다. 고정된 프레임당 제어 주기로 읽지 않는다.
 
 - 카메라 자세 추정, 다시점 깊이, 조밀 재구성, 포인트 트래킹에서 SOTA — *장면별 최적화
   없이*; 선택적 번들 조정 정제로 정확도를 더 끌어올릴 수 있다.

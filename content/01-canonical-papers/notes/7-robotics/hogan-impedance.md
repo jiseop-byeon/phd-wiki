@@ -45,6 +45,9 @@ The result is conceptual rather than numerical: a control objective, a justifica
 - The framework says *what* to regulate, not what values to choose; the achievable range is bounded, and Colgate and Hogan's 1988 passivity result is where that bound gets stated.
 - Rendering a desired impedance depends on the dynamic model, so it inherits the parameter problem of [[02-foundations/manipulator-kinematics-dynamics|10. §7]].
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Impedance specifies the dynamic relation to regulate at contact; it is not a universal choice of gains or a guarantee on arbitrary hardware. Check actuation, model compensation, environment interaction, and achievable impedance before interpreting an implementation.
+
 ### Connections
 
 - [[04-robotics/force-compliance-control|13. Force & Compliance Control]] — the concept page this anchors
@@ -80,6 +83,9 @@ Part I이 물리 시스템과 포트 논증을 전개하며, 정독할 부분이
 - 임피던스 제어는 **토크 제어되고 역구동 가능한 팔을 요구한다.** 위치 제어 산업용 팔에서는 벤더의 강성이 직렬로 낀 어드미턴스 제어를 얻게 된다([[04-robotics/force-compliance-control|13. §2]]) — 실패 모드가 서로 다른 시스템이다.
 - 이 틀은 *무엇을* 조절할지 말하지 어떤 값을 고를지는 말하지 않는다. 구현 가능한 범위에는 한계가 있고, 그 한계를 진술하는 것이 Colgate와 Hogan의 1988년 수동성 결과다.
 - 원하는 임피던스를 구현하는 것이 동역학 모델에 의존하므로, [[02-foundations/manipulator-kinematics-dynamics|10. §7]]의 파라미터 문제를 그대로 물려받는다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 임피던스는 접촉에서 조절할 동적 관계다. 보편적인 이득 선택이나 임의 하드웨어의 보장은 아니다. 구현을 읽기 전에 구동, 모델 보상, 환경 상호작용, 실현 가능한 임피던스를 확인한다.
 
 ### 연결
 

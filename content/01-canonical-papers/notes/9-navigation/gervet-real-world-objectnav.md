@@ -31,6 +31,9 @@ Learned visual navigation policies had been evaluated almost entirely in simulat
 
 ### Method
 
+> [!tip] Key intuition · 핵심 직관
+> The proposed explanation is that modular interfaces can isolate visual domain shift from geometric planning and control. Comparing representative systems in real homes probes that explanation, but a family-level performance gap does not uniquely identify every causal benefit of modularity.
+
 A large-scale empirical study across **six homes with no prior experience, maps, or instrumentation**, comparing representative methods from three families:
 
 | Family | What it is | Real-world result |
@@ -84,6 +87,9 @@ This is the paper to cite whenever a navigation result exists only in simulation
 학습 기반 시각 내비게이션 정책은 거의 전적으로 시뮬레이션에서만 평가되어 왔다. 문헌에는 순위가 있었고, 그 순위가 실제 집과의 접촉에서 살아남는지는 아무도 확인하지 않았다. 이 논문이 확인한다.
 
 ### 방법
+
+> [!tip] 핵심 직관 · Key intuition
+> 제안한 설명은 모듈 인터페이스가 시각 도메인 이동을 기하 계획·제어와 분리할 수 있다는 것이다. 실제 주택의 대표 시스템 비교가 이 설명을 살핀다. 계열별 성능 차이만으로 모듈성의 모든 인과적 이점을 유일하게 식별하지는 못한다.
 
 **사전 경험도, 지도도, 계측 설비도 없는 주택 여섯 곳**에서의 대규모 경험 연구로, 세 계열의 대표 방법을 비교한다:
 

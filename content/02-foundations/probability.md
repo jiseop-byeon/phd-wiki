@@ -158,9 +158,11 @@ default to it; and the Gaussian is the max-entropy distribution for fixed mean/v
   </g>
 </svg>
 
+**Decode the density before memorizing it.** μ locates the center. Σ describes spread and how coordinates vary together. The inverse covariance inside the exponent measures how surprising a displacement is relative to that spread: the same physical displacement is less surprising along an uncertain direction than along a tightly constrained one. The factor outside the exponential normalizes the total probability; the density at a point is not itself the probability of that exact continuous value.
 
+For sensor fusion, the conditioning formula says: start from the expected value of the unobserved quantity, inspect how the observed quantity differs from its expectation, and transfer that discrepancy through their covariance relationship. If the quantities have no covariance and are jointly Gaussian, observing one does not shift the conditional mean of the other.
 
-
+**Check your understanding.** A small covariance reports a narrow model distribution. It does not certify calibration or rule out bias. A sensor can be consistently wrong with very little random scatter. This distinction is essential when a robot claims high-confidence localization from an incorrect calibration.
 
 ### 4. Estimation — where loss functions come from
 
@@ -229,7 +231,7 @@ flowchart LR
  Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
 > [!tip] Going deeper · 더 깊이
-> If the Gaussian toolbox or the Kalman derivation is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
+> If the Gaussian toolbox or the Kalman derivation is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job. For the specific path from Bayes' rule through the product of two Gaussians and the matrix inversion lemma to the Kalman gain, worked in Korean, see Giseop Kim's two posts on [Bayes filtering](https://gisbi-kim.github.io/post/bayesfiltering-1/) and [its Gaussian case](https://gisbi-kim.github.io/post/bayesfiltering-2/).
 
 ### Self-check
 
@@ -393,7 +395,11 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   </g>
 </svg>
 
+**밀도식을 외우기 전에 해독한다.** μ는 중심, Σ는 퍼짐과 좌표들이 함께 변하는 방식을 나타낸다. 지수 안의 역공분산은 변위가 그 퍼짐에 비해 얼마나 뜻밖인지 잰다. 같은 물리 변위도 불확실한 방향에서는 덜 뜻밖이고 좁게 묶인 방향에서는 더 뜻밖이다. 지수 밖의 계수는 전체 확률을 정규화한다. 한 점의 밀도 자체가 그 연속값이 나올 확률은 아니다.
 
+센서 융합에서 조건부 평균 식은 다음처럼 읽는다. 보지 못한 양의 기대값에서 시작한다. 관측한 양이 예상에서 얼마나 벗어났는지 본다. 두 양의 공분산 관계로 그 차이를 전달한다. 공동 가우시안이고 공분산이 없으면 하나의 관찰이 다른 것의 조건부 평균을 움직이지 않는다.
+
+**이해 확인.** 작은 공분산은 모델 분포가 좁다는 보고다. 보정이 맞거나 편향이 없다는 인증은 아니다. 센서는 무작위 산포가 작으면서 일관되게 틀릴 수 있다. 잘못된 보정으로 높은 신뢰도의 위치를 보고할 때 꼭 필요한 구분이다.
 
 ### 4. 추정 — 손실함수의 출생지
 
@@ -459,7 +465,7 @@ flowchart LR
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
 
 > [!tip] 더 깊이 · Going deeper
-> 가우시안 도구 상자나 칼만 유도가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 가고, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
+> 가우시안 도구 상자나 칼만 유도가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 가고, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다. 베이즈 규칙에서 두 가우시안의 곱과 역행렬 보조정리를 거쳐 칼만 이득까지 가는 유도 경로만 따로 보고 싶다면, 김기섭의 글 [베이즈 필터링](https://gisbi-kim.github.io/post/bayesfiltering-1/)과 [그 가우시안 경우](https://gisbi-kim.github.io/post/bayesfiltering-2/)가 한국어로 그 길을 밟는다.
 
 ### 스스로 점검
 

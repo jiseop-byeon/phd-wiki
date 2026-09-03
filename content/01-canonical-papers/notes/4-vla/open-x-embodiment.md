@@ -74,6 +74,9 @@ pretraining mixtures of [[pi0|π0]]/[[gr00t-n1|GR00T]]-class models all build on
 and its RLDS convention. For construction robotics, it is the template such a corpus
 would need to follow.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Positive transfer asks whether pooling helps on the tested embodiments and tasks. Dataset breadth alone does not establish transfer to a new contact regime. Inspect action standardization, mixture composition, and per-robot comparisons before generalizing the result.
+
 ### Connections
 
 - Previous: [[rt-1|RT-1]], [[rt-2|RT-2]] · Next: [[octo|Octo]], [[openvla|OpenVLA]]
@@ -124,6 +127,9 @@ Common Crawl)로 스케일했는데 로보틱스에는 그런 것이 없었다. 
 로봇 학습의 ImageNet 모먼트: [[octo|Octo]], [[openvla|OpenVLA]], 그리고 [[pi0|π0]]/[[gr00t-n1|GR00T]]급
 모델의 사전학습 혼합물이 모두 OXE 데이터와 RLDS 규약 위에 서 있다. 건설로봇에게는
 그런 코퍼스를 만들 때 따라야 할 템플릿이다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 긍정적 전이는 시험한 embodiment와 과제에서 통합이 도움이 되는가다. 자료의 폭만으로 새로운 접촉 조건의 전이를 확립하지 않는다. 행동 표준화, 혼합 구성, 로봇별 비교를 본다.
 
 ### 연결
 

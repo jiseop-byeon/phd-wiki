@@ -33,6 +33,11 @@ sources beat purity), and fine-tuning offers both supervised and RL variants (th
 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]]-shaped choice). Transfer across sim/real
 and machine configurations is a design goal, not an afterthought.
 
+> [!tip] Key intuition · 핵심 직관
+> Pretraining shares one policy across excavation subtasks before task-specific adaptation. Starting supervised and reinforcement-learning fine-tuning from that shared policy can reuse earlier behavior, while the note distinguishes this adaptation evidence from real-machine execution of the pretrained policy.
+
+**Context.** Task-specific excavation controllers require separate engineering for new behaviors. This framework asks how much of that work can be shared through a pretrained multitask policy and later adaptation.
+
 **The pipeline, concretely** (what a Working-level read should extract):
 
 - **Demonstration generation**: 150,000 episodes *per task* collected in **GPU-parallel
@@ -84,6 +89,8 @@ learning (imitation, pretrain→fine-tune) arriving on era-1R heavy machines —
 first occupant. Open questions: task diversity is still excavation-shaped; no language
 conditioning; and the safety story for learned policies on real sites is unwritten.
 
+**Limitations.** Keep hardware evidence for the pretrained policy separate from simulation evidence for fine-tuning. The framework does not establish unrestricted site deployment, language-conditioned operation, or general safety across machines.
+
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > The "scalable" in "scalable autonomous excavation" is a claim about the framework's scalability (collection → pretraining → fine-tuning), not validation of real site deployment — the safety story and task diversity remain open problems. Read it as a signal that the foundation-model era of excavation has *opened*, not that it has arrived.
 
@@ -97,6 +104,11 @@ LLM/VLA 학습의 바로 그 구조 — 를 실물 크기 유압 굴착기(약 1
 순수함을 이긴다), 파인튜닝은 지도·RL 두 변형을 제공한다
 ([[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]] 모양의 선택지). 시뮬레이션/실기계와 기계
 구성 간 전이가 사후 고려가 아니라 설계 목표다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 과제별 적응 전에 사전학습으로 굴착 하위 과제들이 정책 하나를 공유한다. 그 정책에서 지도·강화학습 미세조정을 시작하면 기존 행동을 재사용할 수 있다. 이 노트는 적응 증거와 사전학습 정책의 실기계 실행을 구분한다.
+
+**맥락.** 과제별 굴착 제어기는 새 행동마다 별도 공학 작업이 필요하다. 이 프레임워크는 사전학습 다중 과제 정책과 후속 적응으로 얼마나 공유할 수 있는지 묻는다.
 
 **파이프라인, 구체적으로** (Working 수준의 읽기가 뽑아내야 할 것):
 
@@ -140,6 +152,8 @@ flowchart LR
 의 첫 입주자다. 열린 질문:
 과제 다양성이 아직 굴착 모양이고, 언어 조건화가 없으며, 실제 현장에서 학습 정책의 안전
 서사는 쓰이지 않았다.
+
+**한계.** 사전학습 정책의 하드웨어 증거와 미세조정의 시뮬레이션 증거를 나눈다. 제한 없는 현장 배포, 언어 조건부 운용, 기계 전반의 안전성을 확립하지 않는다.
 
 ### 연결
 

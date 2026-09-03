@@ -75,6 +75,8 @@ WVN is an **online self-supervised** traversability system that **uses only visi
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2305.08510): Traversable-terrain segmentation bootstraps in less than 5 minutes of field training, and the demonstrations include following a 1.4 km footpath. Training time and route length are different measures, not a universal collision-free distance guarantee.
+
 The headline claim is a **time**, not an accuracy: terrain segmentation in **under 5 minutes of in-field training**, supporting navigation through high grass and a **1.4 km** footpath-following run. Demonstrated on the ANYmal quadruped — and note the abstract's closing claim is stronger than a careful reader expects: the approach "can generalize to **any ground robot**", which sits oddly beside its in-field-adaptation framing ([[04-robotics/traversability-off-road|17. §2]] treats that tension as the thing to check in every paper here).
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -156,6 +158,8 @@ WVN made "learn traversability during deployment" a normal design point rather t
 WVN은 **비전만 쓰는** 온라인 자기지도 traversability 시스템이다. 현장에서의 짧은 사람 시연으로부터 적응하고, 무거운 일은 **자기지도 시각 트랜스포머 모델의 고차원 특징** — 동결된 범용 표현 — 이 맡으며, 현장에서 학습되는 것은 작은 헤드뿐이다. 5분이면 충분한 이유가 그 분업에 있다: 배워야 할 것이 거의 없고, 고르기만 하면 된다.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2305.08510) 기준: 현장 학습 5분 미만으로 통과 가능 지형 분할을 시작하고, 시연에 1.4 km 보행로 추종이 포함된다. 학습 시간과 경로 길이는 다른 측정이며 보편적인 무충돌 거리 보장은 아니다.
 
 대표 주장은 정확도가 아니라 **시간**이다: **현장 학습 5분 미만**의 지형 분할로, 키 큰 풀 사이 주행과 **1.4 km** 산책로 추종을 지원한다. ANYmal 4족 로봇에서 실증했다 — 그리고 초록의 맺음말이 신중한 독자의 예상보다 강하다는 점을 유의하라: 이 접근이 "**어떤 지상 로봇으로도** 일반화될 수 있다"고 한다. 현장 적응이라는 프레이밍과 나란히 놓으면 어색한 주장이고, [[04-robotics/traversability-off-road|17. §2]]가 이 분야 모든 논문에서 확인해야 할 것으로 다루는 긴장이 바로 그것이다.
 

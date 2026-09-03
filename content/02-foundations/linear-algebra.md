@@ -47,6 +47,13 @@ where each concept appears in the papers of this wiki.
 - Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
   (sparsity-inducing — its "corners" touch axes first), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
+**Follow one input through the map.** Before calculating, say what each axis means. In a robot velocity map, the input entries may be joint speeds and the output entries tip-velocity components. In a neural layer, they are feature coordinates. The arithmetic is the same, but units and interpretation come from the application. A row asks which combination of inputs creates one output; a column asks what happens if only one input changes. Neither view requires imagining the whole matrix at once.
+
+In the attention example above, select one row of the score matrix. That row contains one query's comparison with every key. Softmax normalizes across those keys, and multiplying by V combines their value vectors into one output row. Repeat for the other queries. This explains why the score matrix is token-by-token while the result is token-by-feature: the operation mixes information between tokens without turning the token index into a feature coordinate.
+
+> [!question] Pause and explain · 잠깐 설명해 보기
+> If you double one input coordinate while holding the others fixed, which column controls the change? The corresponding column of the matrix. It describes that input's contribution; the other columns' contributions remain unchanged. Use this test whenever a matrix looks like an opaque block of numbers.
+
 ### 2. Linear systems, rank, column space and null space
 
 - $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ — the **column space**, i.e. everything you can
@@ -114,6 +121,12 @@ where each concept appears in the papers of this wiki.
 </svg>
 
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
+
+**Separate three questions before reaching for an inverse.** Can the columns produce the requested b at all? If yes, is there only one input that does so? If not, what criterion chooses among approximations? These are existence, uniqueness, and selection. A rectangular matrix is not automatically a failed problem: it may describe more measurements than unknowns, or more available controls than the task needs.
+
+For the line-fitting example, the first column says how changing the intercept moves every prediction together; the second says how changing the slope moves predictions in proportion to their x-coordinate. The observed data do not lie in the plane of predictions those columns can generate. Least squares chooses a point in that plane. At the optimum, the remaining residual is perpendicular to both available directions, so neither an intercept nudge nor a slope nudge can reduce squared error to first order.
+
+**Check your understanding.** A zero residual means the chosen model fits these observations exactly. It does not mean the data are noiseless, the parameters are unique, or future predictions are correct. Conversely, a nonzero residual may simply reflect measurement noise in an overdetermined problem. This is why rank and residual answer different questions.
 
 ### 3. Eigendecomposition — directions a map only stretches
 
@@ -292,6 +305,12 @@ where each concept appears in the papers of this wiki.
   eigenvectors = directions of maximal variance = right singular vectors of $X$; project.
   A classical ancestor of learned representations.
 
+**Read the multiplication from right to left.** Vᵀ first expresses an input in special input directions. Σ stretches or suppresses each of those coordinates. U then expresses the result in the output frame. The input and output spaces can have different dimensions, which is why SVD applies even when an eigenvector interpretation of A itself is unavailable.
+
+Return to the singular example above. Its zero singular value means a component along the destroyed direction leaves no trace in the output. No inverse can recover information that never appears there. A very small nonzero singular value creates a related problem: recovering that input component requires dividing by a small number, amplifying measurement error as well as signal. This is the reason to care about conditioning before solving an inverse problem.
+
+**Check your understanding.** When truncated SVD discards a weak direction, it accepts reconstruction error in exchange for a simpler or more stable representation. It does not prove that the discarded direction is unimportant for your task. A low-variance feature can still carry the distinction a classifier or robot needs; the matrix approximation objective and the downstream objective must be kept separate.
+
 ### 4.5 The pseudo-inverse — what $J^\dagger$ means
 
 The symbol $A^\dagger$ appears all over the robotics track — $J^\dagger$ for inverse
@@ -369,7 +388,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $AB$, then $A^2B$, and so on. Stack those reachable directions —
   $[B, AB, \ldots, A^{n-1}B]$ — and if together they span all $n$ dimensions
   ($\text{rank} = n$), *every* state is reachable; if they miss a direction, no input
-  sequence ever drives the state there. 
+  sequence ever drives the state there.
 <svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="controllable versus uncontrollable reachable directions">
   <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.35">
@@ -463,6 +482,13 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - 노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
   "모서리"가 축에 먼저 닿는다), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
 
+**입력 하나를 사상 끝까지 따라간다.** 계산 전에 각 축의 뜻을 말해 본다. 로봇 속도 사상에서는 입력이 관절 속도이고 출력이 말단 속도 성분일 수 있다. 신경망 층에서는 특징 좌표다. 계산은 같지만 단위와 해석은 응용이 정한다. 행은 한 출력을 만드는 입력 조합을 묻는다. 열은 입력 하나만 바뀌면 무슨 일이 생기는지 묻는다. 행렬 전체를 한꺼번에 상상할 필요가 없다.
+
+위 어텐션 예제에서는 점수 행렬의 행 하나를 고른다. 한 쿼리를 모든 키와 비교한 값이다. Softmax는 그 키들에 걸쳐 정규화하고, V를 곱하면 키에 대응하는 값 벡터를 섞어 출력 행 하나를 만든다. 나머지 쿼리에서도 반복한다. 그래서 점수는 토큰×토큰이지만 결과는 토큰×특징이다. 토큰 사이의 정보를 섞지, 토큰 번호를 특징 좌표로 바꾸는 것이 아니다.
+
+> [!question] 잠깐 설명해 보기 · Pause and explain
+> 다른 입력을 고정하고 입력 좌표 하나를 두 배로 만들면 어느 열이 변화를 결정하는가? 그 좌표에 대응하는 열이다. 그 입력의 기여가 바뀌고 다른 열의 기여는 그대로다. 행렬이 불투명한 숫자 덩어리처럼 보이면 이 질문부터 한다.
+
 ### 2. 선형계, 랭크, 열공간과 영공간
 
 - $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$ — **열공간(column space)**, 즉 $A$의 열들을
@@ -527,6 +553,12 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 - 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 가중치
   *업데이트*의 내재 랭크가 낮다고 가정한다($r \ll d$인 $\Delta W = BA$).
+
+**역행렬을 찾기 전에 세 질문을 나눈다.** 열들로 원하는 b를 만들 수 있는가? 만들 수 있다면 입력이 하나뿐인가? 만들 수 없다면 어떤 기준으로 근사를 고르는가? 존재성, 유일성, 선택의 문제다. 직사각 행렬이라고 문제가 실패한 것은 아니다. 미지수보다 측정이 많거나, 과제가 요구하는 것보다 제어 수단이 많을 수 있다.
+
+직선 적합 예제의 첫 열은 절편을 바꾸면 모든 예측이 함께 움직인다는 뜻이다. 둘째 열은 기울기를 바꾸면 x좌표에 비례해 움직인다는 뜻이다. 관측 자료는 두 열이 만드는 예측의 평면 안에 없다. 최소자승은 그 평면 위의 점을 고른다. 최적점에서는 남은 잔차가 두 방향 모두에 수직이므로 절편이나 기울기를 조금 바꿔도 제곱 오차를 일차적으로 줄이지 못한다.
+
+**이해 확인.** 잔차가 0이면 선택한 모델이 이 관측을 정확히 맞춘다는 뜻이다. 잡음이 없거나 파라미터가 유일하거나 미래 예측이 맞는다는 뜻은 아니다. 반대로 과결정 문제의 0이 아닌 잔차는 측정 잡음 때문일 수 있다. 랭크와 잔차가 다른 질문에 답하는 이유다.
 
 ### 3. 고유분해 — 사상이 늘이기만 하는 방향
 
@@ -699,6 +731,12 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 학습된 표현의 고전적
   조상이다.
 
+**곱은 오른쪽에서 왼쪽으로 읽는다.** Vᵀ가 입력을 특별한 입력 방향들의 성분으로 바꾼다. Σ가 각 성분을 늘이거나 지운다. U가 결과를 출력 좌표로 표현한다. 입력·출력 공간의 차원이 달라도 된다. A 자체의 고유벡터 해석을 쓸 수 없는 경우에도 SVD가 가능한 이유다.
+
+위 특이 행렬의 0인 특이값은 사라지는 방향의 성분이 출력에 흔적을 남기지 않는다는 뜻이다. 출력에 없는 정보는 역행렬로 복원할 수 없다. 0은 아니지만 아주 작은 특이값도 관련 문제를 만든다. 입력 성분을 복원하려면 작은 수로 나눠야 하므로 신호와 함께 측정 오차도 증폭한다. 역문제를 풀기 전에 조건수를 보는 이유다.
+
+**이해 확인.** 절단 SVD가 약한 방향을 버리면 복원 오차를 받아들이는 대신 더 단순하거나 안정적인 표현을 얻는다. 버린 방향이 내 과제에 중요하지 않다는 증거는 아니다. 분산이 작은 특징도 분류기나 로봇이 필요한 구분을 담을 수 있다. 행렬 근사 목적과 후속 과제 목적을 나눠야 한다.
+
 ### 4.5 유사역행렬 — $J^\dagger$가 무슨 뜻인가
 
 기호 $A^\dagger$는 로보틱스 트랙 곳곳에 나온다 — 역기구학의 $J^\dagger$, 작업공간 제어의
@@ -770,7 +808,7 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
   방향으로 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그 도달
   방향들을 쌓아 —$[B, AB, \ldots, A^{n-1}B]$— 함께 $n$차원 전체를 생성하면($\text{rank}=n$)
   *모든* 상태에 도달 가능하고, 한 방향이라도 빠지면 어떤 입력 시퀀스도 상태를 그리로
-  몰지 못한다. 
+  몰지 못한다.
 <svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="가제어 vs 비가제어: 도달 가능한 방향">
   <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.35">

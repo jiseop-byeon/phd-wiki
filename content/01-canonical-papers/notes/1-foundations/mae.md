@@ -53,6 +53,9 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 Closed the pretraining-paradigm gap between vision and language, making self-supervised ViT pretraining routine. Its latent-space successor I-JEPA feeds directly into the world-model line (V-JEPA), and masked-reconstruction pretraining now appears in robot learning on visual encoders and action sequences alike.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Masked reconstruction is a pretraining task, while downstream recognition measures transfer after a specified evaluation procedure. Strong fine-tuning does not imply equally strong frozen features. Check the mask policy, data, and whether the encoder is updated during evaluation.
+
 ### Connections
 
 - Previous: [[01-canonical-papers/notes/1-foundations/bert|BERT]] (the idea), [[01-canonical-papers/notes/1-foundations/vit|ViT]] (the substrate)
@@ -90,6 +93,9 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 ### 영향과 후속 연구
 
 비전과 언어 사이의 사전학습 패러다임 격차를 닫고, 자기지도 ViT 사전학습을 일상으로 만들었다. 잠재 공간 버전의 후계자 I-JEPA는 월드모델 계열(V-JEPA)로 직결되고, 마스크-복원 사전학습은 로봇 학습에서도 시각 인코더와 행동 시퀀스 양쪽에 등장한다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 마스킹 복원은 사전학습 과제이고 후속 인식은 정해진 평가 절차의 전이다. 좋은 미세조정 성능이 고정 특징의 성능까지 뜻하지 않는다. 마스크 정책, 데이터, 평가 중 인코더 갱신 여부를 확인한다.
 
 ### 연결
 

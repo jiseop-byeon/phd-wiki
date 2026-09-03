@@ -66,6 +66,8 @@ flowchart LR
 
 The practical consequence for a robotics application is temporal receptive field. Most of these models reason over **2–10 seconds**. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
 
+Space-time attention works because tokens carry both image-patch content and a position in the clip. Query–key similarity weights let a patch depicting a hand draw information from a tool or from another time, rather than treating each frame in isolation. Full attention compares all token pairs; factorized variants restrict or separate the spatial and temporal comparisons. The underlying weighted aggregation is the same operation illustrated in [[02-foundations/linear-algebra|Linear Algebra §1]]. **The reading this gives you.** Ask which frames and patches can exchange information, and whether future frames enter a supposedly online prediction. Attention can connect evidence across a clip; it does not by itself establish action causality.
+
 ### 4. Anticipation, formally
 
 Let observations run to time $t$ and let the anticipation horizon be $\tau$. The model estimates
@@ -218,6 +220,8 @@ flowchart LR
 | 마스킹 사전학습 | 마스킹된 시공간 패치 복원 후 미세조정 | 사전학습 비용 큼, 미세조정은 저렴 | 사전학습 데이터 분포가 결과에 스며듦 |
 
 로보틱스 응용에서 실질적 귀결은 **시간 수용 영역**이다. 위 모델 대부분이 **2–10초**를 추론한다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
+
+시공간 어텐션의 토큰에는 영상 패치 내용과 클립 안의 위치가 담긴다. 쿼리–키 유사도 가중치로 손 패치가 도구나 다른 시각의 정보를 가져와 프레임을 따로 보지 않게 한다. 전체 어텐션은 모든 토큰 쌍을 비교한다. 분해형은 공간·시간 비교를 제한하거나 분리한다. 가중 집계 자체는 [[02-foundations/linear-algebra|선형대수 §1]]의 연산과 같다. **여기서 얻는 독법.** 어떤 프레임·패치가 정보를 교환하며 온라인 예측에 미래 프레임이 들어가는지 묻는다. 어텐션은 클립의 증거를 연결하지만 행동의 인과성을 자동으로 확립하지는 않는다.
 
 ### 4. Anticipation의 정식화
 

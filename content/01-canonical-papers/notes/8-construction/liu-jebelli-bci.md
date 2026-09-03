@@ -25,6 +25,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: A wearable EEG headset decodes a worker's brainwaves into robot commands, giving hands-free teleoperation of a construction robot — the founding pair of the worker-centered BCI line, where the *interface* is the contribution and the human stays the controller.
 
+> [!tip] Key intuition · 핵심 직관
+> The interface converts selected EEG patterns into a restricted command channel while the worker remains the decision maker. Its value comes from providing a hands-free way to issue those commands, so decoding and operator burden matter as much as the robot’s eventual motion.
+
+**Context.** This is a worker-interface question: how can a person issue robot commands when their hands are occupied? Read it through command-channel quality and operator burden before interpreting it as autonomous robotics.
+
 **Method**: EEG signals from a wearable headset are filtered, features extracted, and classified into discrete robot commands, so a worker whose hands are occupied (or who must keep distance from a hazard) can still direct the machine. The sibling paper ([AutCon 124, 2021](https://doi.org/10.1016/j.autcon.2021.103556)) extends the channel from one-way command to *collaboration*: brainwave-derived worker states feed back into how the robot behaves. The current front of the line is Liu & Jebelli's intention-aware robot motion planning ([CACAIE 39(15), 2024](https://doi.org/10.1111/mice.13129), paywalled) — the robot begins to *anticipate* the worker rather than merely obey.
 
 **Evidence**: laboratory testbed demonstrations — human subjects wearing EEG headsets teleoperating a robot in controlled conditions. This is explicitly a **testbed, not a site**: no field deployment, and no claim of one. On the autonomy spectrum this is the *opposite* pole from autonomous excavation — the human is always in the loop, and the research question is the quality of the channel, not the removal of the human.
@@ -39,6 +44,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ## 한국어
 
 **한 줄 요약**: 착용형 EEG 헤드셋이 작업자의 뇌파를 로봇 명령으로 해독해 건설 로봇의 핸즈프리 원격조종을 가능하게 한다 — 작업자 중심 BCI 계열의 창립 논문 쌍으로, 기여는 *인터페이스*이고 인간이 계속 제어자로 남는다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 인터페이스는 작업자가 결정권을 가진 상태에서 선택한 EEG 패턴을 제한된 명령 채널로 바꾼다. 손을 쓰지 않고 명령할 수 있다는 데 가치가 있다. 최종 로봇 동작만큼 해독과 운전자 부담이 중요하다.
+
+**맥락.** 손을 쓰기 어려운 사람이 어떻게 로봇에 명령할지 묻는 작업자 인터페이스 연구다. 자율 로보틱스로 해석하기 전에 명령 채널의 품질과 운전자 부담으로 읽는다.
 
 **방법**: 착용형 헤드셋의 EEG 신호를 필터링하고 특징을 추출해 이산적 로봇 명령으로 분류한다 — 손이 자유롭지 않거나 위험 요소와 거리를 유지해야 하는 작업자도 기계를 지시할 수 있다. 자매 논문([AutCon 124, 2021](https://doi.org/10.1016/j.autcon.2021.103556))은 이 채널을 일방향 명령에서 *협업*으로 확장한다: 뇌파에서 유도한 작업자 상태가 로봇의 행동 방식에 피드백된다. 이 계열의 현재 최전선은 Liu & Jebelli의 의도 인지 로봇 모션 계획([CACAIE 39(15), 2024](https://doi.org/10.1111/mice.13129), 유료) — 로봇이 단순히 복종하는 것을 넘어 작업자를 *예측*하기 시작한다.
 

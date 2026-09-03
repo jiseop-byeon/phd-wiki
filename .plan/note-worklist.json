@@ -2,10 +2,9 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/adam.md",
   "tier": "◐",
-  "words": 343,
+  "words": 398,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -23,7 +22,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/attention-is-all-you-need.md",
   "tier": "★",
-  "words": 1093,
+  "words": 1111,
   "missing": [
    "numbers"
   ],
@@ -44,10 +43,8 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/batch-norm.md",
   "tier": "◐",
-  "words": 373,
-  "missing": [
-   "claim"
-  ],
+  "words": 416,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -85,10 +82,8 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/lora.md",
   "tier": "◐",
-  "words": 430,
-  "missing": [
-   "claim"
-  ],
+  "words": 482,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -106,17 +101,15 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/mae.md",
   "tier": "◐",
-  "words": 356,
-  "missing": [
-   "claim"
-  ],
+  "words": 405,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/1-foundations/ppo.md",
   "tier": "◐",
-  "words": 620,
+  "words": 631,
   "missing": [
    "numbers"
   ],
@@ -126,10 +119,8 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/resnet.md",
   "tier": "◐",
-  "words": 430,
-  "missing": [
-   "claim"
-  ],
+  "words": 478,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -146,10 +137,9 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/scaling-laws.md",
   "tier": "◐",
-  "words": 386,
+  "words": 467,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -178,20 +168,17 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/vit.md",
   "tier": "◐",
-  "words": 343,
-  "missing": [
-   "claim"
-  ],
+  "words": 390,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/2-computer-vision/3d-gaussian-splatting.md",
   "tier": "◐",
-  "words": 336,
+  "words": 417,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -199,10 +186,9 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/depth-anything.md",
   "tier": "◐",
-  "words": 314,
+  "words": 394,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -210,10 +196,9 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/detr.md",
   "tier": "◐",
-  "words": 279,
+  "words": 335,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -221,11 +206,8 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/dino.md",
   "tier": "◐",
-  "words": 305,
-  "missing": [
-   "numbers",
-   "claim"
-  ],
+  "words": 391,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -242,10 +224,9 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/nerf.md",
   "tier": "◐",
-  "words": 342,
+  "words": 400,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -281,18 +262,15 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/u-net.md",
   "tier": "◐",
-  "words": 254,
-  "missing": [
-   "numbers",
-   "claim"
-  ],
+  "words": 342,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/2-computer-vision/vggt.md",
   "tier": "◐",
-  "words": 493,
+  "words": 531,
   "missing": [
    "numbers"
   ],
@@ -312,10 +290,8 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/yolo.md",
   "tier": "◐",
-  "words": 297,
-  "missing": [
-   "claim"
-  ],
+  "words": 343,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -351,20 +327,16 @@
  {
   "note": "01-canonical-papers/notes/3-vlm/llava.md",
   "tier": "◐",
-  "words": 392,
-  "missing": [
-   "claim"
-  ],
+  "words": 438,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/3-vlm/paligemma.md",
   "tier": "○",
-  "words": 224,
+  "words": 333,
   "missing": [
-   "intuition",
-   "context",
    "numbers"
   ],
   "arxiv": true,
@@ -373,10 +345,9 @@
  {
   "note": "01-canonical-papers/notes/3-vlm/qwen-vl.md",
   "tier": "◐",
-  "words": 353,
+  "words": 411,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -419,10 +390,9 @@
  {
   "note": "01-canonical-papers/notes/4-vla/octo.md",
   "tier": "◐",
-  "words": 409,
+  "words": 491,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -430,20 +400,16 @@
  {
   "note": "01-canonical-papers/notes/4-vla/open-x-embodiment.md",
   "tier": "◐",
-  "words": 440,
-  "missing": [
-   "claim"
-  ],
+  "words": 487,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/4-vla/openvla.md",
   "tier": "◐",
-  "words": 414,
-  "missing": [
-   "claim"
-  ],
+  "words": 460,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -458,7 +424,7 @@
  {
   "note": "01-canonical-papers/notes/4-vla/robomimic.md",
   "tier": "◐",
-  "words": 395,
+  "words": 433,
   "missing": [
    "numbers"
   ],
@@ -468,10 +434,8 @@
  {
   "note": "01-canonical-papers/notes/4-vla/rt-1.md",
   "tier": "◐",
-  "words": 452,
-  "missing": [
-   "claim"
-  ],
+  "words": 501,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -494,7 +458,7 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/cosmos.md",
   "tier": "◐",
-  "words": 465,
+  "words": 476,
   "missing": [
    "numbers"
   ],
@@ -504,7 +468,7 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/dreamer.md",
   "tier": "◐",
-  "words": 487,
+  "words": 527,
   "missing": [
    "numbers"
   ],
@@ -514,10 +478,9 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/genie.md",
   "tier": "◐",
-  "words": 412,
+  "words": 488,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -525,10 +488,8 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/jepa.md",
   "tier": "◐",
-  "words": 445,
-  "missing": [
-   "claim"
-  ],
+  "words": 492,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -556,10 +517,9 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/world-models.md",
   "tier": "◐",
-  "words": 354,
+  "words": 416,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -567,10 +527,8 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/classifier-free-guidance.md",
   "tier": "◐",
-  "words": 302,
-  "missing": [
-   "claim"
-  ],
+  "words": 352,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -587,10 +545,8 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/ddim.md",
   "tier": "◐",
-  "words": 406,
-  "missing": [
-   "claim"
-  ],
+  "words": 450,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -605,11 +561,8 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/dit.md",
   "tier": "◐",
-  "words": 293,
-  "missing": [
-   "numbers",
-   "claim"
-  ],
+  "words": 379,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -655,10 +608,9 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/vae.md",
   "tier": "◐",
-  "words": 344,
+  "words": 402,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -666,20 +618,16 @@
  {
   "note": "01-canonical-papers/notes/7-robotics/anygrasp.md",
   "tier": "◐",
-  "words": 405,
-  "missing": [
-   "claim"
-  ],
+  "words": 450,
+  "missing": [],
   "arxiv": true,
   "doi": true
  },
  {
   "note": "01-canonical-papers/notes/7-robotics/dex-net-2.md",
   "tier": "◐",
-  "words": 408,
-  "missing": [
-   "claim"
-  ],
+  "words": 457,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
@@ -713,10 +661,9 @@
  {
   "note": "01-canonical-papers/notes/7-robotics/hogan-impedance.md",
   "tier": "◐",
-  "words": 455,
+  "words": 502,
   "missing": [
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -724,17 +671,15 @@
  {
   "note": "01-canonical-papers/notes/7-robotics/mobile-aloha.md",
   "tier": "◐",
-  "words": 477,
-  "missing": [
-   "intuition"
-  ],
+  "words": 523,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/7-robotics/umi.md",
   "tier": "★",
-  "words": 789,
+  "words": 800,
   "missing": [
    "numbers"
   ],
@@ -744,7 +689,7 @@
  {
   "note": "01-canonical-papers/notes/7-robotics/vision-and-touch.md",
   "tier": "★",
-  "words": 713,
+  "words": 724,
   "missing": [
    "numbers"
   ],
@@ -765,9 +710,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/aes.md",
   "tier": "◐",
-  "words": 464,
+  "words": 516,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -786,9 +730,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/bim-digital-twin.md",
   "tier": "◐",
-  "words": 340,
+  "words": 403,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": true,
@@ -797,11 +740,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/bock-2015.md",
   "tier": "◐",
-  "words": 163,
+  "words": 247,
   "missing": [
-   "intuition",
-   "numbers",
-   "limits"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -809,9 +750,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/cho-slam.md",
   "tier": "◐",
-  "words": 327,
+  "words": 371,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -820,11 +760,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/davila-delgado-2019.md",
   "tier": "◐",
-  "words": 167,
+  "words": 243,
   "missing": [
-   "intuition",
-   "numbers",
-   "limits"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -832,9 +770,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/dry-stone-wall.md",
   "tier": "★",
-  "words": 445,
+  "words": 492,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -843,9 +780,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/egli-rl.md",
   "tier": "◐",
-  "words": 398,
+  "words": 443,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -854,11 +790,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/exact-2024.md",
   "tier": "○",
-  "words": 252,
+  "words": 359,
   "missing": [
-   "intuition",
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -866,21 +800,16 @@
  {
   "note": "01-canonical-papers/notes/8-construction/ext.md",
   "tier": "★",
-  "words": 537,
-  "missing": [
-   "intuition",
-   "context",
-   "limits"
-  ],
+  "words": 640,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/8-construction/feng-rebar.md",
   "tier": "◐",
-  "words": 574,
+  "words": 620,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -889,11 +818,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/han-welding.md",
   "tier": "○",
-  "words": 181,
+  "words": 278,
   "missing": [
-   "intuition",
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -901,10 +828,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/heap.md",
   "tier": "★",
-  "words": 517,
+  "words": 597,
   "missing": [
-   "intuition",
-   "context",
    "numbers"
   ],
   "arxiv": false,
@@ -921,23 +846,17 @@
  {
   "note": "01-canonical-papers/notes/8-construction/lasota-shah.md",
   "tier": "◐",
-  "words": 425,
-  "missing": [
-   "intuition",
-   "context",
-   "limits"
-  ],
+  "words": 534,
+  "missing": [],
   "arxiv": false,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/8-construction/liang-hrc-survey.md",
   "tier": "○",
-  "words": 232,
+  "words": 333,
   "missing": [
-   "intuition",
-   "numbers",
-   "claim"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -945,21 +864,16 @@
  {
   "note": "01-canonical-papers/notes/8-construction/liang-lfd.md",
   "tier": "◐",
-  "words": 388,
-  "missing": [
-   "intuition",
-   "context"
-  ],
+  "words": 461,
+  "missing": [],
   "arxiv": false,
   "doi": true
  },
  {
   "note": "01-canonical-papers/notes/8-construction/liu-jebelli-bci.md",
   "tier": "◐",
-  "words": 359,
+  "words": 442,
   "missing": [
-   "intuition",
-   "context",
    "numbers"
   ],
   "arxiv": false,
@@ -968,12 +882,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/lundeen-2019.md",
   "tier": "○",
-  "words": 156,
+  "words": 281,
   "missing": [
-   "intuition",
-   "numbers",
-   "claim",
-   "limits"
+   "numbers"
   ],
   "arxiv": false,
   "doi": true
@@ -981,12 +892,9 @@
  {
   "note": "01-canonical-papers/notes/8-construction/park-nl.md",
   "tier": "○",
-  "words": 182,
+  "words": 307,
   "missing": [
-   "intuition",
-   "numbers",
-   "claim",
-   "limits"
+   "numbers"
   ],
   "arxiv": true,
   "doi": false
@@ -994,9 +902,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/stentz-excavator.md",
   "tier": "◐",
-  "words": 331,
+  "words": 383,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -1005,9 +912,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/vision-guided-assembly.md",
   "tier": "★",
-  "words": 429,
+  "words": 468,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -1016,9 +922,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/wheel-loader-rl.md",
   "tier": "◐",
-  "words": 260,
+  "words": 310,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": false,
@@ -1027,10 +932,8 @@
  {
   "note": "01-canonical-papers/notes/8-construction/yu-imitation.md",
   "tier": "◐",
-  "words": 360,
+  "words": 449,
   "missing": [
-   "intuition",
-   "context",
    "numbers"
   ],
   "arxiv": true,
@@ -1049,7 +952,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/badgr.md",
   "tier": "◐",
-  "words": 627,
+  "words": 638,
   "missing": [
    "numbers"
   ],
@@ -1069,9 +972,8 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/conceptgraphs.md",
   "tier": "◐",
-  "words": 531,
+  "words": 592,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": true,
@@ -1080,17 +982,15 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav.md",
   "tier": "★",
-  "words": 703,
-  "missing": [
-   "intuition"
-  ],
+  "words": 751,
+  "missing": [],
   "arxiv": true,
   "doi": false
  },
  {
   "note": "01-canonical-papers/notes/9-navigation/lee-quadruped-terrain.md",
   "tier": "★",
-  "words": 649,
+  "words": 660,
   "missing": [
    "numbers"
   ],
@@ -1100,7 +1000,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/miki-perceptive-locomotion.md",
   "tier": "◐",
-  "words": 730,
+  "words": 767,
   "missing": [
    "numbers"
   ],
@@ -1110,7 +1010,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/navid.md",
   "tier": "◐",
-  "words": 554,
+  "words": 583,
   "missing": [
    "numbers"
   ],
@@ -1120,9 +1020,8 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/rma.md",
   "tier": "◐",
-  "words": 519,
+  "words": 581,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": true,
@@ -1131,7 +1030,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/semexp.md",
   "tier": "◐",
-  "words": 592,
+  "words": 603,
   "missing": [
    "numbers"
   ],
@@ -1152,9 +1051,8 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/vint-nomad.md",
   "tier": "◐",
-  "words": 617,
+  "words": 706,
   "missing": [
-   "intuition",
    "numbers"
   ],
   "arxiv": true,
@@ -1163,7 +1061,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/vlfm.md",
   "tier": "◐",
-  "words": 629,
+  "words": 640,
   "missing": [
    "numbers"
   ],
@@ -1173,7 +1071,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/vln-ce.md",
   "tier": "◐",
-  "words": 498,
+  "words": 509,
   "missing": [
    "numbers"
   ],
@@ -1183,7 +1081,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/wild-visual-navigation.md",
   "tier": "★",
-  "words": 849,
+  "words": 889,
   "missing": [
    "numbers"
   ],

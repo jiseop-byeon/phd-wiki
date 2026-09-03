@@ -90,6 +90,9 @@ By 2021, the pretrain-finetune paradigm ([[01-canonical-papers/notes/1-foundatio
 
 Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way individuals adapt LLMs, diffusion models (style LoRAs), and robot policies — fine-tuning [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]-scale VLAs like OpenVLA on a single GPU. Huge ecosystem: QLoRA, DoRA, AdaLoRA, and merged-LoRA model sharing.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Low-rank adaptation concerns the trainable update, not the total size of the pretrained model. No added inference layer assumes the update can be merged appropriately. Check rank, target matrices, and matched fine-tuning budgets before extending the result to a new domain.
+
 ### Connections
 
 - Enables cheap adaptation of: [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]-class models, VLAs (OpenVLA fine-tuning)
@@ -162,6 +165,9 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 ### 영향과 후속 연구
 
 파인튜닝을 민주화했다: LoRA(+양자화 버전 QLoRA)는 개인이 LLM, 디퓨전 모델(스타일 LoRA), 로봇 정책을 적응시키는 표준 방법이다 — OpenVLA 같은 VLA를 GPU 한 장으로 파인튜닝하는 것도 LoRA 덕분. QLoRA, DoRA, AdaLoRA와 병합 LoRA 공유 생태계가 형성됐다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 저계수 적응은 학습할 갱신에 관한 것으로 사전학습 모델 전체 크기는 그대로다. 추론 층을 추가하지 않는다는 말에는 갱신을 적절히 합칠 수 있다는 조건이 있다. 새 도메인에 적용하기 전에 계수, 대상 행렬, 미세조정 예산을 확인한다.
 
 ### 연결
 

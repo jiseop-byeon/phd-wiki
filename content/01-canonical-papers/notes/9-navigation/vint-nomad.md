@@ -31,6 +31,9 @@ Navigation had no foundation model. Every dataset was collected on one platform,
 
 ### Method — ViNT
 
+> [!tip] Key intuition · 핵심 직관
+> A common goal-reaching objective makes navigation experience from different platforms share a training interface. NoMaD’s goal masking then teaches the action model to handle both present and absent goals, so exploration is part of the learned conditioning scheme rather than an entirely separate controller.
+
 A Transformer trained with a general goal-reaching objective on a number of existing navigation datasets — **hundreds of hours of robotic navigation from a variety of robotic platforms**. The architecture is chosen for adaptability: it is meant to be adapted efficiently to downstream navigational tasks rather than used as-is. Two augmentations extend it: **diffusion-based subgoal proposals** for exploring novel environments, and long-range heuristics that let it solve **kilometre-scale** navigation.
 
 ### Method — NoMaD
@@ -38,6 +41,8 @@ A Transformer trained with a general goal-reaching objective on a number of exis
 Navigation needs two behaviours that are usually built separately: task-oriented navigation to a located goal, and task-agnostic exploration when the goal has not been found. NoMaD unifies them in a **single diffusion policy** — a Transformer encoder with a diffusion decoder — by **masking the goal** during training, so the absence of a goal is a normal input rather than a different mode. Real-world results report better navigation in unseen environments than the alternatives, with **smaller models and lower collision rates**.
 
 ### Results
+
+**What it measured.** The abstract reports no quantitative result as an exact comparative performance score for either [ViNT](https://arxiv.org/abs/2306.14846) or [NoMaD](https://arxiv.org/abs/2310.07896). Their descriptions of data scale, navigation extent, and comparator count are not numerical success or collision rates.
 
 ViNT: **positive transfer** — outperforming specialist models trained on singular datasets. NoMaD: improved unseen-environment navigation, smaller model, fewer collisions.
 
@@ -79,6 +84,9 @@ Together these two are the reference for **navigation foundation models**, and N
 
 ### 방법 — ViNT
 
+> [!tip] 핵심 직관 · Key intuition
+> 공통 목표 도달 목적이 다른 플랫폼의 항법 경험을 같은 학습 인터페이스로 묶는다. NoMaD의 목표 마스킹은 목표가 있거나 없는 경우를 행동 모델에 가르친다. 탐색이 완전히 별도 제어기보다 학습한 조건화 방식의 일부가 된다.
+
 일반적 목표 도달 목적함수로, 기존의 여러 내비게이션 데이터셋 — **다양한 로봇 플랫폼에서 온 수백 시간의 로봇 주행** — 위에서 학습한 Transformer다. 구조는 적응성을 보고 골랐다: 그대로 쓰는 것이 아니라 하류 내비게이션 과제에 효율적으로 적응시키도록 만들어졌다. 두 가지 증강이 이를 확장한다: 새로운 환경 탐색을 위한 **확산 기반 부분 목표 제안**, 그리고 **킬로미터 규모** 내비게이션을 풀게 해주는 장거리 휴리스틱.
 
 ### 방법 — NoMaD
@@ -86,6 +94,8 @@ Together these two are the reference for **navigation foundation models**, and N
 내비게이션에는 보통 따로 만드는 두 행동이 필요하다: 위치를 찾은 목표로 가는 과제 지향 주행, 그리고 목표를 아직 찾지 못했을 때의 과제 불가지론적 탐색. NoMaD는 학습 중에 **목표를 가림으로써** 둘을 **하나의 확산 정책** — Transformer 인코더에 확산 디코더 — 으로 통합한다. 목표의 부재가 다른 모드가 아니라 정상적인 입력이 되는 것이다. 실제 환경 결과는 처음 보는 환경에서 대안들보다 나은 주행을, **더 작은 모델과 더 낮은 충돌률**과 함께 보고한다.
 
 ### 결과
+
+**무엇을 쟀는가.** [ViNT](https://arxiv.org/abs/2306.14846)와 [NoMaD](https://arxiv.org/abs/2310.07896) 초록에 정확한 비교 성능 점수는 없다. 데이터 규모, 이동 범위, 비교 방법 수를 설명하지만 성공률이나 충돌률의 수치는 제시하지 않는다.
 
 ViNT: **positive transfer** — 단일 데이터셋으로 학습한 전문 모델을 능가한다. NoMaD: 처음 보는 환경에서의 주행 개선, 더 작은 모델, 더 적은 충돌.
 

@@ -21,13 +21,6 @@
   "why": 0
  },
  {
-  "file": "02-foundations/calculus-backprop.md",
-  "section": "1. Derivatives as local linear models",
-  "words": 136,
-  "bullet_frac": 0.23,
-  "why": 0
- },
- {
   "file": "02-foundations/engineering-math.md",
   "section": "10. Notation dictionary (all pages)",
   "words": 369,
@@ -36,23 +29,9 @@
  },
  {
   "file": "02-foundations/information-theory.md",
-  "section": "0. Prerequisite: the three log rules",
-  "words": 88,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "02-foundations/information-theory.md",
   "section": "6. Quick reference table",
   "words": 126,
   "bullet_frac": 0.73,
-  "why": 0
- },
- {
-  "file": "02-foundations/manipulator-kinematics-dynamics.md",
-  "section": "1. What kinematics already gave us",
-  "words": 98,
-  "bullet_frac": 0.62,
   "why": 0
  },
  {
@@ -64,13 +43,6 @@
  },
  {
   "file": "02-foundations/ml-practice.md",
-  "section": "2. Overfitting and the regularization umbrella",
-  "words": 80,
-  "bullet_frac": 0.33,
-  "why": 0
- },
- {
-  "file": "02-foundations/ml-practice.md",
   "section": "5. Evaluation pitfalls to watch for in papers",
   "words": 165,
   "bullet_frac": 0.86,
@@ -79,29 +51,15 @@
  {
   "file": "02-foundations/ml-practice.md",
   "section": "From reading experiments to designing them",
-  "words": 23,
+  "words": 96,
   "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "02-foundations/neural-network-basics.md",
-  "section": "4. Batch, epoch, iteration — the words in every experimental section",
-  "words": 98,
-  "bullet_frac": 0.38,
-  "why": 1
+  "why": 2
  },
  {
   "file": "02-foundations/neural-network-basics.md",
   "section": "5. Parameter vs hyperparameter — a distinction papers rely on",
-  "words": 103,
+  "words": 105,
   "bullet_frac": 0.56,
-  "why": 0
- },
- {
-  "file": "02-foundations/optimization.md",
-  "section": "1. Anatomy of a problem",
-  "words": 56,
-  "bullet_frac": 0.0,
   "why": 0
  },
  {
@@ -119,13 +77,6 @@
   "why": 1
  },
  {
-  "file": "02-foundations/probability.md",
-  "section": "3. The Gaussian toolbox (why Gaussians run robotics)",
-  "words": 136,
-  "bullet_frac": 0.0,
-  "why": 2
- },
- {
   "file": "02-foundations/rl-basics.md",
   "section": "1. The MDP",
   "words": 105,
@@ -133,39 +84,11 @@
   "why": 0
  },
  {
-  "file": "02-foundations/rl-basics.md",
-  "section": "5. Model-based RL — the world-model connection",
-  "words": 79,
-  "bullet_frac": 0.33,
-  "why": 0
- },
- {
   "file": "02-foundations/se3-geometry.md",
   "section": "2. The four ways papers write rotations",
-  "words": 124,
-  "bullet_frac": 0.8,
+  "words": 295,
+  "bullet_frac": 0.77,
   "why": 1
- },
- {
-  "file": "02-foundations/se3-geometry.md",
-  "section": "4. Velocity and small motions (the on-ramp to Modern Robotics)",
-  "words": 122,
-  "bullet_frac": 0.2,
-  "why": 2
- },
- {
-  "file": "02-foundations/signal-processing.md",
-  "section": "5. Bridge to control: transforms",
-  "words": 79,
-  "bullet_frac": 0.25,
-  "why": 1
- },
- {
-  "file": "02-foundations/signal-processing.md",
-  "section": "6. Sensor-pipeline habits (field-tested)",
-  "words": 87,
-  "bullet_frac": 0.43,
-  "why": 0
  },
  {
   "file": "04-robotics/contact-force-tactile.md",
@@ -173,27 +96,6 @@
   "words": 84,
   "bullet_frac": 0.0,
   "why": 1
- },
- {
-  "file": "04-robotics/contact-force-tactile.md",
-  "section": "2. Normal force and friction",
-  "words": 85,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/contact-force-tactile.md",
-  "section": "3. Rigid and compliant models",
-  "words": 89,
-  "bullet_frac": 0.71,
-  "why": 0
- },
- {
-  "file": "04-robotics/contact-force-tactile.md",
-  "section": "4. Grasp and wrench language",
-  "words": 66,
-  "bullet_frac": 0.0,
-  "why": 0
  },
  {
   "file": "04-robotics/contact-force-tactile.md",
@@ -282,7 +184,7 @@
  {
   "file": "04-robotics/force-compliance-control.md",
   "section": "7. Reading force control in a paper",
-  "words": 162,
+  "words": 161,
   "bullet_frac": 0.9,
   "why": 0
  },
@@ -305,13 +207,6 @@
   "section": "3. Point clouds and frames",
   "words": 60,
   "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/geometric-perception-calibration.md",
-  "section": "4. Registration and ICP",
-  "words": 135,
-  "bullet_frac": 0.23,
   "why": 0
  },
  {
@@ -372,35 +267,7 @@
  },
  {
   "file": "04-robotics/hri-safety.md",
-  "section": "3. Shared control and authority",
-  "words": 54,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/hri-safety.md",
-  "section": "4. Human performance",
-  "words": 44,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/hri-safety.md",
   "section": "5. Interfaces",
-  "words": 39,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/hri-safety.md",
-  "section": "7. Human-study design",
-  "words": 87,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/hri-safety.md",
-  "section": "8. Evaluation",
   "words": 39,
   "bullet_frac": 0.0,
   "why": 0
@@ -411,13 +278,6 @@
   "words": 45,
   "bullet_frac": 0.0,
   "why": 0
- },
- {
-  "file": "04-robotics/hri-safety.md",
-  "section": "10. Worked interpretation",
-  "words": 55,
-  "bullet_frac": 0.0,
-  "why": 1
  },
  {
   "file": "04-robotics/human-intent-prediction.md",
@@ -470,13 +330,6 @@
  },
  {
   "file": "04-robotics/human-pose-gaze.md",
-  "section": "2. Top-down versus bottom-up",
-  "words": 61,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/human-pose-gaze.md",
   "section": "5. Motion cues below the pose layer",
   "words": 107,
   "bullet_frac": 0.57,
@@ -519,17 +372,10 @@
  },
  {
   "file": "04-robotics/modern-robotics/ch03-rigid-body-motions.md",
-  "section": "1. The skew-symmetric bridge: cross products become matrices",
-  "words": 71,
-  "bullet_frac": 0.0,
-  "why": 2
- },
- {
-  "file": "04-robotics/modern-robotics/ch03-rigid-body-motions.md",
   "section": "3. Twists: body velocity is six numbers — but read $v$ carefully",
-  "words": 126,
-  "bullet_frac": 0.25,
-  "why": 1
+  "words": 292,
+  "bullet_frac": 0.62,
+  "why": 0
  },
  {
   "file": "04-robotics/modern-robotics/ch04-forward-kinematics.md",
@@ -540,38 +386,10 @@
  },
  {
   "file": "04-robotics/modern-robotics/ch05-velocity-kinematics.md",
-  "section": "1. The Jacobian — with its frame written down",
-  "words": 72,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/modern-robotics/ch05-velocity-kinematics.md",
-  "section": "3. Statics duality — derived in three lines",
-  "words": 92,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/modern-robotics/ch05-velocity-kinematics.md",
   "section": "4. Singularities and the manipulability ellipsoid",
   "words": 123,
   "bullet_frac": 0.27,
   "why": 1
- },
- {
-  "file": "04-robotics/modern-robotics/ch06-inverse-kinematics.md",
-  "section": "1. IK is structurally harder than FK",
-  "words": 69,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/modern-robotics/ch06-inverse-kinematics.md",
-  "section": "2. Numerical IK = Newton-Raphson on the pose error",
-  "words": 43,
-  "bullet_frac": 0.0,
-  "why": 0
  },
  {
   "file": "04-robotics/modern-robotics/ch06-inverse-kinematics.md",
@@ -610,13 +428,6 @@
  },
  {
   "file": "04-robotics/planning-decision-making.md",
-  "section": "3. Graph search",
-  "words": 63,
-  "bullet_frac": 0.43,
-  "why": 0
- },
- {
-  "file": "04-robotics/planning-decision-making.md",
   "section": "4. Worked example: what a heuristic changes",
   "words": 75,
   "bullet_frac": 0.0,
@@ -627,13 +438,6 @@
   "section": "5. Major method families",
   "words": 194,
   "bullet_frac": 0.91,
-  "why": 0
- },
- {
-  "file": "04-robotics/planning-decision-making.md",
-  "section": "6. Trajectory optimization and MPC",
-  "words": 86,
-  "bullet_frac": 0.5,
   "why": 0
  },
  {
@@ -666,13 +470,6 @@
  },
  {
   "file": "04-robotics/robot-systems-deployment.md",
-  "section": "4. Coordinate frames and TF trees",
-  "words": 82,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/robot-systems-deployment.md",
   "section": "5. Middleware literacy",
   "words": 88,
   "bullet_frac": 0.82,
@@ -684,13 +481,6 @@
   "words": 138,
   "bullet_frac": 0.0,
   "why": 1
- },
- {
-  "file": "04-robotics/robot-systems-deployment.md",
-  "section": "7. Reliability and safety mechanisms",
-  "words": 72,
-  "bullet_frac": 0.75,
-  "why": 0
  },
  {
   "file": "04-robotics/robot-systems-deployment.md",
@@ -709,9 +499,9 @@
  {
   "file": "04-robotics/robot-systems-deployment.md",
   "section": "10. Failure taxonomy",
-  "words": 40,
+  "words": 127,
   "bullet_frac": 0.0,
-  "why": 0
+  "why": 1
  },
  {
   "file": "04-robotics/robot-systems-deployment.md",
@@ -750,31 +540,10 @@
  },
  {
   "file": "04-robotics/state-estimation-slam.md",
-  "section": "2. Four quantities that must not be conflated",
-  "words": 113,
-  "bullet_frac": 0.75,
-  "why": 0
- },
- {
-  "file": "04-robotics/state-estimation-slam.md",
-  "section": "3. Process and observation models",
-  "words": 74,
-  "bullet_frac": 0.57,
-  "why": 0
- },
- {
-  "file": "04-robotics/state-estimation-slam.md",
   "section": "5. Method families",
   "words": 192,
   "bullet_frac": 0.64,
   "why": 0
- },
- {
-  "file": "04-robotics/state-estimation-slam.md",
-  "section": "6. Worked example: one-dimensional update",
-  "words": 57,
-  "bullet_frac": 0.0,
-  "why": 1
  },
  {
   "file": "04-robotics/state-estimation-slam.md",
@@ -828,9 +597,9 @@
  {
   "file": "04-robotics/video-action-understanding.md",
   "section": "3. Backbone families",
-  "words": 185,
-  "bullet_frac": 0.78,
-  "why": 0
+  "words": 291,
+  "bullet_frac": 0.7,
+  "why": 1
  },
  {
   "file": "04-robotics/video-action-understanding.md",
@@ -868,102 +637,18 @@
   "why": 0
  },
  {
-  "file": "05-construction-robotics/assembly-fabrication.md",
-  "section": "1. Why construction assembly is not factory assembly",
-  "words": 73,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "05-construction-robotics/assembly-fabrication.md",
-  "section": "2. Three technical lineages",
-  "words": 131,
-  "bullet_frac": 0.16,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/assembly-fabrication.md",
-  "section": "3. What to extract from a paper",
-  "words": 113,
-  "bullet_frac": 0.89,
-  "why": 1
- },
- {
-  "file": "05-construction-robotics/construction-manipulation.md",
-  "section": "2. The task matrix",
-  "words": 368,
-  "bullet_frac": 0.63,
-  "why": 0
- },
- {
   "file": "05-construction-robotics/construction-manipulation.md",
   "section": "5. Choosing a task, concretely",
-  "words": 204,
-  "bullet_frac": 0.67,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/digital-twin-workflows.md",
-  "section": "1. The closed workflow",
-  "words": 77,
-  "bullet_frac": 0.0,
-  "why": 0
+  "words": 269,
+  "bullet_frac": 0.62,
+  "why": 1
  },
  {
   "file": "05-construction-robotics/digital-twin-workflows.md",
   "section": "2. Levels often called a digital twin",
-  "words": 98,
-  "bullet_frac": 0.75,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/digital-twin-workflows.md",
-  "section": "3. Robot-facing problems",
-  "words": 73,
-  "bullet_frac": 0.56,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/digital-twin-workflows.md",
-  "section": "4. Reading evaluation",
-  "words": 96,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/earthmoving-heavy-machinery.md",
-  "section": "2. Terrain and material interaction",
-  "words": 135,
-  "bullet_frac": 0.2,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/earthmoving-heavy-machinery.md",
-  "section": "6. Evaluation: what convinces",
-  "words": 131,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/hrc-worker-centered.md",
-  "section": "1. The worker-in-the-loop stack",
-  "words": 128,
-  "bullet_frac": 0.08,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/hrc-worker-centered.md",
-  "section": "3. Claims that require care",
-  "words": 91,
-  "bullet_frac": 0.62,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/hrc-worker-centered.md",
-  "section": "4. Evaluation",
-  "words": 90,
-  "bullet_frac": 0.0,
-  "why": 0
+  "words": 163,
+  "bullet_frac": 0.67,
+  "why": 1
  },
  {
   "file": "05-construction-robotics/industry-deployment.md",
@@ -1058,310 +743,37 @@
  },
  {
   "file": "05-construction-robotics/lineage.md",
-  "section": "4. Reading this map as a new researcher",
-  "words": 84,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/lineage.md",
   "section": "Reading list — the anchors",
   "words": 107,
   "bullet_frac": 0.54,
   "why": 1
  },
  {
-  "file": "05-construction-robotics/sim-to-real.md",
-  "section": "3. A deployment ladder",
-  "words": 89,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/sim-to-real.md",
-  "section": "4. Reading the evidence",
-  "words": 85,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/site-perception.md",
-  "section": "1. The site-perception stack",
-  "words": 35,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "05-construction-robotics/site-perception.md",
-  "section": "3. Geometry and foundation models",
-  "words": 89,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "05-construction-robotics/site-perception.md",
-  "section": "4. Reading evaluation",
-  "words": 102,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "1. Variables and units of analysis",
-  "words": 87,
-  "bullet_frac": 0.57,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "2. Comparisons",
-  "words": 69,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "3. Variation and splits",
-  "words": 40,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "5. Ablations and budgets",
-  "words": 40,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "6. Reproducibility vocabulary",
-  "words": 46,
-  "bullet_frac": 0.6,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "7. Artifact checklist",
-  "words": 41,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/experimental-design-reproducibility.md",
-  "section": "8. Worked design",
-  "words": 46,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "1. First failure and downstream symptom",
-  "words": 28,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "2. Failure taxonomy",
-  "words": 34,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "3. Instrumentation and synchronized replay",
-  "words": 44,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "4. Isolation and fault injection",
-  "words": 47,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "5. Recovery, intervention, and reset",
-  "words": 62,
-  "bullet_frac": 0.67,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "6. Reliability and field exposure",
-  "words": 42,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "7. Worked diagnosis",
-  "words": 60,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "06-research-practice/failure-analysis-system-evaluation.md",
-  "section": "8. Reporting negative results",
-  "words": 38,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/psychophysics-human-measurement.md",
-  "section": "4. Thresholds validate data",
-  "words": 108,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/real-world-impact.md",
-  "section": "1. Impact is a claim, and claims need evidence",
-  "words": 73,
-  "bullet_frac": 0.0,
-  "why": 1
- },
- {
-  "file": "06-research-practice/real-world-impact.md",
-  "section": "4. The pipeline, run deliberately",
-  "words": 83,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/real-world-impact.md",
-  "section": "6. What not to optimise",
-  "words": 131,
-  "bullet_frac": 0.2,
-  "why": 1
- },
- {
   "file": "06-research-practice/research-questions-claims.md",
   "section": "1. Topic → problem → question",
-  "words": 76,
-  "bullet_frac": 0.71,
-  "why": 0
- },
- {
-  "file": "06-research-practice/research-questions-claims.md",
-  "section": "2. A gap is not merely “nobody has done this”",
-  "words": 49,
-  "bullet_frac": 0.0,
+  "words": 229,
+  "bullet_frac": 0.8,
   "why": 0
  },
  {
   "file": "06-research-practice/research-questions-claims.md",
   "section": "3. Hypotheses and contributions",
-  "words": 76,
-  "bullet_frac": 0.71,
+  "words": 219,
+  "bullet_frac": 0.7,
   "why": 0
- },
- {
-  "file": "06-research-practice/research-questions-claims.md",
-  "section": "4. Claim types",
-  "words": 99,
-  "bullet_frac": 0.8,
-  "why": 1
- },
- {
-  "file": "06-research-practice/research-questions-claims.md",
-  "section": "5. Scope and assumptions",
-  "words": 28,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/research-questions-claims.md",
-  "section": "6. Worked rewrite",
-  "words": 60,
-  "bullet_frac": 0.0,
-  "why": 1
  },
  {
   "file": "06-research-practice/research-questions-claims.md",
   "section": "7. Claim–evidence table",
-  "words": 75,
-  "bullet_frac": 0.71,
+  "words": 208,
+  "bullet_frac": 0.7,
   "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "1. Paper-level argument",
-  "words": 92,
-  "bullet_frac": 0.82,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "2. Claim–method–evidence sentences",
-  "words": 46,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "3. Related work as a taxonomy",
-  "words": 42,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "4. Figures and tables",
-  "words": 49,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "5. Results versus discussion",
-  "words": 36,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "6. Limitations",
-  "words": 33,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "7. Peer review",
-  "words": 80,
-  "bullet_frac": 0.57,
-  "why": 1
- },
- {
-  "file": "06-research-practice/scientific-writing-peer-review.md",
-  "section": "9. Artifact alignment",
-  "words": 32,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/simulators-benchmarks-datasets.md",
-  "section": "1. What this page is for",
-  "words": 89,
-  "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "06-research-practice/simulators-benchmarks-datasets.md",
-  "section": "9. Choosing, for this program",
-  "words": 155,
-  "bullet_frac": 0.89,
-  "why": 1
  },
  {
   "file": "06-research-practice/simulators-benchmarks-datasets.md",
   "section": "10. Reading someone else's tooling section",
-  "words": 130,
-  "bullet_frac": 0.89,
+  "words": 197,
+  "bullet_frac": 0.9,
   "why": 0
  },
  {

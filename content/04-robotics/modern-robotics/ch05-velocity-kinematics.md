@@ -27,6 +27,12 @@ related by $J_s = [\text{Ad}_{T}]\,J_b$ ([[04-robotics/modern-robotics/ch03-rigi
 This is the same Jacobian as in [[02-foundations/calculus-backprop|calculus]] — here its
 columns happen to be transformed screw axes.
 
+**Build the idea column by column.** Freeze the current configuration and imagine moving only one joint. Record the instantaneous rigid-body motion of the tool in the declared frame. That response is one Jacobian column. Do the same for each joint; simultaneous joint motion is the weighted sum of those columns because this velocity relationship is linear at the fixed configuration.
+
+The qualification “at the fixed configuration” matters. Once the joints move, their axes and lever arms relative to the tool may change, so the Jacobian must be recomputed. A constant Jacobian can predict a small local displacement but is not generally a finite-motion map. Forward kinematics updates the pose; the Jacobian describes its local sensitivity.
+
+**Check your understanding.** If joint rates have n entries and the chosen task velocity has m entries, J has m rows and n columns. A full rigid-body twist uses the spatial or body Jacobian, while a position-only task may use a different reduced Jacobian. Never remove angular rows blindly without checking which point the remaining linear components describe.
+
 ### 2. Worked example — the planar 2R arm's tip Jacobian
 
 For the tip position (planar case, so a 2×2 suffices), differentiate the FK:
@@ -48,6 +54,12 @@ $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top
 The *same* matrix maps velocities out and wrenches back in — gravity compensation, force
 control, and contact reasoning all run on this one line. (Frames must match: $J_b$ pairs
 with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.)
+
+**Read the equality as an accounting rule.** A wrench does work through the motion it acts on. The Jacobian tells how a joint motion appears at the tool, so the transpose tells how that same tool wrench loads each joint. For each column, ask how strongly the wrench acts along the motion that column produces. That dot product is the corresponding joint effort.
+
+This is different from inverting a velocity equation. No inverse is needed to map a known wrench to joint loads, and the map remains meaningful at a singularity. However, solving backward for an unknown wrench from measured torques may be ambiguous or noise-sensitive. It also requires separating contact loads from gravity, inertia, friction, and other contributions to measured effort.
+
+**Check your understanding.** If a force produces no work along a joint's permitted instantaneous motion, its contribution to that joint's generalized effort is zero. That does not mean the force is absent: the mechanism can carry reaction loads in constrained directions. Match wrench and twist conventions, units, and frames before using the power identity.
 
 ### 4. Singularities and the manipulability ellipsoid
 
@@ -105,6 +117,12 @@ $J_s = [\text{Ad}_{T}]\,J_b$로 연결된다
 [[02-foundations/calculus-backprop|미적분]]의 야코비안과 같은 대상이며 — 여기서는 그
 열들이 변환된 스크류 축일 뿐이다.
 
+**열 하나씩 개념을 만든다.** 현재 구성을 고정하고 관절 하나만 움직인다고 상상한다. 선언한 프레임에서 도구의 순간 강체 운동을 기록하면 야코비안의 열 하나다. 관절마다 반복한다. 고정 구성의 속도 관계는 선형이므로 여러 관절의 동시 운동은 열들의 가중합이다.
+
+“고정 구성에서”가 중요하다. 관절이 움직이면 도구에 대한 축과 지레팔이 달라질 수 있어 야코비안을 다시 계산한다. 상수 야코비안은 작은 국소 변위를 예측하지만 일반적인 유한 운동 사상은 아니다. 순기구학은 자세를 갱신하고 야코비안은 국소 민감도를 말한다.
+
+**이해 확인.** 관절 속도가 n성분이고 과제 속도가 m성분이면 J는 m행 n열이다. 전체 강체 트위스트에는 공간·바디 야코비안을 쓰고 위치만의 과제에는 다른 축소 야코비안을 쓸 수 있다. 남은 선형 성분이 어느 점을 설명하는지 확인하지 않고 각속도 행만 지우면 안 된다.
+
 ### 2. 계산 예제 — 평면 2R 팔의 끝점 야코비안
 
 끝점 위치(평면이므로 2×2면 충분)에 대해 FK를 미분하면:
@@ -126,6 +144,12 @@ $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top
 *같은* 행렬이 속도를 내보내고 렌치를 되받는다 — 중력 보상, 힘 제어, 접촉 추론이 전부 이
 한 줄 위에서 돈다. (프레임은 맞춰야 한다: $J_b$는 body 렌치 $\mathcal{F}_b$와, $J_s$는
 $\mathcal{F}_s$와 짝이다.)
+
+**등식을 일률의 회계 규칙으로 읽는다.** 렌치는 작용하는 운동을 통해 일을 한다. 야코비안이 관절 운동이 도구에서 어떻게 보이는지 알려 주므로 전치는 도구 렌치가 각 관절에 주는 부하를 알려 준다. 열마다 그 열이 만드는 운동에 렌치가 얼마나 작용하는지 묻는다. 그 내적이 해당 관절의 노력이다.
+
+속도 식을 역으로 푸는 것과 다르다. 알려진 렌치를 관절 부하로 바꾸는 데 역행렬은 필요 없고 특이점에서도 뜻이 있다. 반면 측정 토크에서 모르는 렌치를 찾는 역문제는 모호하거나 잡음에 민감할 수 있다. 측정 노력에서 중력, 관성, 마찰 등도 분리해야 한다.
+
+**이해 확인.** 힘이 관절의 허용된 순간 운동을 따라 일을 하지 않으면 그 관절의 일반화 힘 기여는 0이다. 힘이 없다는 뜻은 아니다. 기구는 구속 방향의 반력을 지탱할 수 있다. 일률 등식을 쓰기 전에 렌치·트위스트의 표기, 단위, 프레임을 맞춘다.
 
 ### 4. 특이점과 가조작성 타원체
 

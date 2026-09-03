@@ -74,6 +74,9 @@ Proved robot-side scaling works and defined the VLA data flywheel. Direct line t
 [[rt-2|RT-2]] (swap the from-scratch backbone for a VLM) and Open X-Embodiment/RT-X
 (cross-robot data pooling). Its action-tokenization scheme persists in OpenVLA and beyond.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> A shared policy across collected tasks demonstrates the value of the tested robot-data mixture. It does not establish unrestricted instruction understanding or recovery outside demonstration coverage. Check embodiment, task split, and the control interface behind the generalist label.
+
 ### Connections
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
@@ -130,6 +133,9 @@ Proved robot-side scaling works and defined the VLA data flywheel. Direct line t
 로봇 쪽 스케일링이 작동함을 증명하고 VLA 데이터 플라이휠을 정의했다. [[rt-2|RT-2]]
 (백본을 VLM으로 교체)와 Open X-Embodiment/RT-X(로봇 간 데이터 풀링)로 직결. 행동
 토큰화 방식은 OpenVLA 등에 그대로 이어진다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 수집 과제의 공유 정책은 시험한 로봇 데이터 혼합의 가치를 보여 준다. 무제한 지시 이해나 시연 범위 밖 회복을 확립하지 않는다. 범용이라는 이름 뒤의 embodiment, 과제 분할, 제어 인터페이스를 본다.
 
 ### 연결
 

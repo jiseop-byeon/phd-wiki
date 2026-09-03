@@ -27,7 +27,12 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: this is the Michigan (Kamat/Menassa) lineage arriving at the workflow layer — where [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]] closed the geometry loop for a single assembly cell, Wang et al. close the *information* loop at process level: BIM entities become executable robot tasks, and executed reality flows back into the model. Co-author Hongrui Yu carries the lineage's imitation-learning thread (now Virginia Tech faculty).
 
+> [!tip] Key intuition · 핵심 직관
+> A design entity becomes useful to the robot only after it is translated into an executable task. Verification sends the physical result back into the task model, so the next decision can respond to what was actually built rather than blindly repeating the design.
+
 **Method**: the framework's cycle is BIM task generation → robot execution → as-built verification → model update. The design model is not a static drawing but the source from which robot task specifications are generated; onboard sensing verifies the as-built state against design intent; discrepancies update the twin, which changes the next task decision. The key reading question is whether the twin is truly bidirectional — which physical observations actually update task state, how BIM entities are translated into executable motions, and how a detected mismatch alters the subsequent plan.
+
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2306.09639).
 
 **Evidence**: the loop is demonstrated on laboratory-scale human–robot construction tasks, with the full chain — model-derived task, physical execution, sensed verification, model update — running end to end. The contribution is the workflow interface between BIM semantics and robot autonomy, not a new low-level controller.
 
@@ -42,7 +47,12 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **계보에서의 위치**: 미시간(Kamat/Menassa) 계보가 워크플로 계층에 도달한 논문이다 — [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]]가 단일 조립 셀의 기하 루프를 닫았다면, Wang 등은 공정 수준의 *정보* 루프를 닫는다: BIM 객체가 실행 가능한 로봇 과제가 되고, 실행된 현실이 모델로 되돌아온다. 공저자 Hongrui Yu는 이 계보의 모방학습 갈래를 잇는다(현 Virginia Tech 교수).
 
+> [!tip] 핵심 직관 · Key intuition
+> 설계 요소를 실행 가능한 과제로 번역해야 로봇이 쓸 수 있다. 검증이 물리 결과를 과제 모델로 돌려보낸다. 다음 결정은 설계의 반복이 아니라 실제 시공 상태에 반응할 수 있다.
+
 **방법**: 프레임워크의 사이클은 BIM 과제 생성 → 로봇 실행 → as-built 검증 → 모델 갱신이다. 설계 모델은 정적 도면이 아니라 로봇 과제 명세가 생성되는 원천이고, 온보드 센싱이 as-built 상태를 설계 의도와 대조해 검증하며, 불일치는 트윈을 갱신해 다음 과제 결정을 바꾼다. 핵심 독해 질문은 트윈이 정말 양방향인가다 — 어떤 물리 관측이 실제로 과제 상태를 갱신하는지, BIM 객체가 어떻게 실행 가능한 모션으로 번역되는지, 탐지된 불일치가 이후 계획을 어떻게 바꾸는지.
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2306.09639).
 
 **증거**: 루프는 실험실 규모의 인간–로봇 시공 과제에서 시연되며, 전체 사슬 — 모델 유도 과제, 물리 실행, 센싱 검증, 모델 갱신 — 이 끝에서 끝까지 돌아간다. 기여는 BIM 의미론과 로봇 자율성 사이의 워크플로 인터페이스이지, 새로운 저수준 제어기가 아니다.
 

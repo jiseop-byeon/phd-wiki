@@ -53,6 +53,8 @@ not the product but the **infrastructure** other robot models train on.
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2501.03575).
+
 - Competitive video generation focused on *physical plausibility* benchmarks (3D
   consistency, physics alignment) rather than aesthetics.
 - Demonstrated post-trained variants for robotics and autonomous driving downstream tasks;
@@ -114,6 +116,8 @@ this "pretrain a world model, post-train to your domain" pattern is the one to w
   가드레일 모델 포함; 가중치와 코드 공개.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2501.03575).
 
 - 미적 품질보다 *물리적 그럴듯함* 벤치마크(3D 일관성, 물리 정합)에 집중한 경쟁력 있는
   비디오 생성.

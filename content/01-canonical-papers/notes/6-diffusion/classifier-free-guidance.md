@@ -63,6 +63,9 @@ systems), and robot policies (goal-conditioned [[diffusion-policy|Diffusion Poli
 variants use CFG to sharpen goal-following). Follow-ups: distilled guidance, interval
 guidance, autoguidance.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Guidance changes the sampling trade-off between conditioning and diversity. Stronger guidance is not an unconditional quality improvement, and image fidelity does not establish safe robot actions. Check the guidance setting and the metrics that may worsen as it increases.
+
 ### Connections
 
 - Previous: classifier guidance (Dhariwal & Nichol 2021 — no note here), [[score-sde|Score SDE]], [[ddpm|DDPM]] · Used by: [[latent-diffusion|Stable Diffusion]], [[sora|Sora]]-class models
@@ -108,6 +111,9 @@ guidance, autoguidance.
 생성 AI의 보편 조건화 트릭 — 텍스트-이미지, 비디오([[sora|Sora]]급 시스템), 로봇
 정책(목표 조건 [[diffusion-policy|Diffusion Policy]] 변형이 목표 추종을 날카롭게 하는 데
 CFG를 쓴다). 후속: 증류된 가이던스, 구간 가이던스, autoguidance.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 가이던스는 조건 충실도와 다양성의 표집 교환 관계를 바꾼다. 강하게 한다고 무조건 품질이 좋아지지 않고 영상 충실도가 안전한 로봇 행동을 확립하지도 않는다. 강도를 높일 때 나빠질 지표도 확인한다.
 
 ### 연결
 

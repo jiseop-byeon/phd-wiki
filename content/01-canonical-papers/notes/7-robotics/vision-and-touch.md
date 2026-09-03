@@ -99,6 +99,8 @@ labels for "what a good multimodal representation of contact looks like".
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/1810.10191).
+
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **This paper's abstract states no numbers** — not a success rate, not a sample-efficiency
 > multiplier, not a vision-only comparison. Its strongest abstract-level claim is verbatim
@@ -217,6 +219,8 @@ list differs**. They are two entries, not one.
   [[04-robotics/force-compliance-control|13. §5]].
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/1810.10191).
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 없다** — 성공률도, 샘플 효율 배수도, 비전만과의 비교도. 초록

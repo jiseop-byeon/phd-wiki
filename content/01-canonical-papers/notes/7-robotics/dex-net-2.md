@@ -53,6 +53,9 @@ All figures below are **from the paper's own abstract**:
 - Isolated objects, not dense clutter.
 - "99% precision" is a precision figure on classified-robust grasps, not a success rate — read the two numbers as answering different questions.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The network predicts a robustness label defined by the analytic training model. It does not remove that model’s contact assumptions. Check the friction and grasp family, and distinguish precision among accepted grasps from success across all attempted tasks.
+
 ### Connections
 
 - [[04-robotics/grasping|15. Grasping]] — the concept page, whose §5 is this pipeline
@@ -94,6 +97,9 @@ All figures below are **from the paper's own abstract**:
 - 강체 물체에 대한 평면·평행 조·위에서 내려오는 파지. 이후의 6자유도 연구([[01-canonical-papers/notes/7-robotics/anygrasp|AnyGrasp]], Contact-GraspNet)가 존재하는 이유가 이 범위의 좁음이다.
 - 조밀한 잡동사니가 아니라 고립된 물체.
 - "99% 정밀도"는 robust로 분류된 파지에 대한 정밀도이지 성공률이 아니다 — 두 숫자를 서로 다른 질문에 답하는 것으로 읽어라.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 망은 해석적 학습 모델이 정의한 강건성 라벨을 예측한다. 그 모델의 접촉 가정을 없애지는 않는다. 마찰과 파지 종류를 확인하고 채택한 파지의 정밀도와 전체 시도 과제의 성공을 구분한다.
 
 ### 연결
 

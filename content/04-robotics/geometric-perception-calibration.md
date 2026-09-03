@@ -143,19 +143,16 @@ plausible-looking cloud in the wrong frame produces systematic, learning-resista
 
 ### 4. Registration and ICP
 
-**Registration** aligns two geometries (cloud-to-cloud, cloud-to-model, scan-to-BIM):
-find $T \in SE(3)$ minimizing distances between corresponding points. **ICP** (iterative
-closest point) alternates: (1) match each point to its nearest neighbor, (2) solve the
-least-squares $T$ for those matches, (3) repeat.
+**Registration** aligns two geometries: a scan with another scan, a point cloud with a part model, or a site scan with BIM. The unknown is a rigid transform $T\in SE(3)$. Before optimizing it, ask which points are supposed to represent the same surface.
 
-- ICP is **local**: it converges to the nearest basin, so it needs a decent initial guess
-  (odometry, a global feature match, or a human). Step (2) is a nonlinear least squares
-  solve, run by Gauss–Newton or Levenberg–Marquardt — which is *why* it is local, and why
-  the initial guess is load-bearing rather than a convenience
-  ([[02-foundations/optimization|4. Optimization §3.5]]).
-- **Degeneracies**: a flat wall slides along itself; a corridor slides lengthwise;
-  symmetric objects flip. Papers reporting registration accuracy should say how initial
-  poses were chosen and whether degenerate scenes were included.
+**ICP** (iterative closest point) alternates two problems: match points under the current transform, then update the transform while holding those matches fixed. For ordinary rigid **point-to-point** least squares, the fixed-correspondence update has a closed-form SVD solution. **Point-to-plane** variants commonly use linearized least squares. Gauss–Newton or Levenberg–Marquardt is therefore not a defining requirement of every ICP update ([[02-foundations/optimization|4. Optimization §3.5]]).
+
+Imagine aligning a scan of one wall panel to a model containing several similar panels. A bad initial transform may match the scan to the neighboring panel. Even an exact least-squares solution for those matches can reinforce the wrong alignment. **This is why ICP is local:** correspondence selection and pose depend on each other, and alternating improvements do not search every assignment. Use an initial estimate from odometry or global matching and inspect overlap and outliers. See the [MIT geometric pose-estimation derivation](https://manipulation.mit.edu/pose.html).
+
+Degeneracy depends on the measured geometry and objective. Point-to-plane residuals on a featureless planar patch cannot constrain translation along the plane or rotation about its normal. Distinct boundaries or point correspondences can supply additional information. Thus “a wall is degenerate” is shorthand for an insufficient measurement model, not a universal statement about every wall scan.
+
+> [!question] Check the correspondence · 대응점 확인
+> Does a small ICP residual prove the pose is correct? **Answer:** no. Repeated panels may fit well at the wrong location. Check initialization, independent landmarks and the unconstrained directions, not only the final residual.
 
 ### 5. Calibration
 
@@ -359,18 +356,16 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 
 ### 4. Registration과 ICP
 
-**Registration**은 두 기하(클라우드-클라우드, 클라우드-모델, 스캔-BIM)를 정렬한다:
-대응점 사이 거리를 최소화하는 $T \in SE(3)$를 찾는다. **ICP**(iterative closest
-point)는 반복한다: (1) 각 점을 최근접 이웃과 짝짓고, (2) 그 짝에 대한 최소제곱 $T$를
-풀고, (3) 반복.
+**Registration**은 두 기하를 정렬한다. 스캔끼리, 점군과 부품 모델, 현장 스캔과 BIM이 대상이다. 미지수는 강체 변환 $T\in SE(3)$다. 최적화하기 전에 어떤 점끼리 같은 표면을 나타내는지부터 물어야 한다.
 
-- ICP는 **국소적**이다: 가장 가까운 골짜기로 수렴하므로 괜찮은 초기 추정(odometry,
-  전역 특징 매칭, 사람)이 필요하다. (2)단계가 비선형 최소자승 풀이이고 Gauss–Newton이나
-  Levenberg–Marquardt로 돌아간다 — ICP가 국소적인 *이유*이자, 초기 추정이 편의가 아니라 하중을
-  지는 이유다 ([[02-foundations/optimization|4. 최적화 §3.5]]).
-- **퇴화**: 평평한 벽은 스스로를 따라 미끄러지고, 복도는 길이 방향으로 미끄러지고,
-  대칭 물체는 뒤집힌다. Registration 정확도를 보고하는 논문은 초기 pose를 어떻게
-  골랐고 퇴화 장면이 포함됐는지 말해야 한다.
+**ICP**(iterative closest point)는 현재 변환으로 대응점을 고른 뒤, 그 대응을 고정하고 변환을 갱신한다. 일반적인 강체 **점대점** 최소제곱의 고정 대응 갱신은 SVD로 닫힌 형태의 해를 구한다. **점대평면** 방식은 흔히 선형화한 최소제곱을 쓴다. 따라서 모든 ICP 갱신에 Gauss–Newton이나 Levenberg–Marquardt가 필수인 것은 아니다([[02-foundations/optimization|4. 최적화 §3.5]]).
+
+비슷한 패널이 반복되는 벽 모델에 스캔을 맞춘다고 하자. 초기 변환이 틀리면 옆 패널의 점과 짝지을 수 있다. 그 대응에 대해 최소제곱을 정확히 풀어도 잘못된 정렬을 강화할 수 있다. **ICP가 국소적인 이유**는 대응 선택과 자세가 서로 의존하며, 번갈아 개선한다고 모든 대응을 탐색하지는 않기 때문이다. odometry나 전역 매칭으로 초기값을 얻고 겹치는 영역과 이상점을 확인한다. [MIT 기하 자세 추정 유도](https://manipulation.mit.edu/pose.html)를 함께 보라.
+
+퇴화는 기하와 목적함수에 달렸다. 특징 없는 평면의 점대평면 잔차로는 평면을 따르는 병진과 법선 둘레 회전을 제약할 수 없다. 뚜렷한 경계나 점 대응은 추가 정보를 줄 수 있다. “벽은 퇴화한다”는 말은 측정 모델의 정보 부족을 줄여 부르는 것이지, 모든 벽 스캔의 보편적 성질은 아니다.
+
+> [!question] 대응점 확인 · Check the correspondence
+> ICP 잔차가 작으면 자세도 맞는가? **답:** 아니다. 반복 패널은 틀린 위치에서도 잘 맞는다. 최종 잔차뿐 아니라 초기값, 독립 랜드마크, 제약되지 않는 방향을 확인한다.
 
 ### 5. 보정
 

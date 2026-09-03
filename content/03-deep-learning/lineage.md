@@ -99,6 +99,11 @@ graph TD
     OpenVLAE -.-> GR00TE
 ```
 
+> [!note] Reading the 2024–2026 VLA papers · 2024–2026 VLA 논문 읽기
+> Nearly every model on that branch shares one skeleton: a pretrained VLM backbone plus an action expert that turns its output into continuous control. Once you see the skeleton, a single question separates most recent papers. *Does this work add capability at training time or at run time?* CorrectNav ([arXiv:2508.10416](https://arxiv.org/abs/2508.10416)) is the first kind — it re-runs its own policy, keeps the trajectories that went wrong, and post-trains on the recovery data, so recovery ends up compiled into the weights. AdaNav ([arXiv:2509.24387](https://arxiv.org/abs/2509.24387)) is the second — it treats uncertainty as a signal and spends extra reasoning only at the steps that need it.
+>
+> The distinction is worth holding onto, because *recovering from* a failure and *knowing that you are failing* are different capabilities, and a policy trained on recovery data can have the first without the second. Giseop Kim's essay [로봇은 더 배워야 하는가, 더 생각해야 하는가](https://gisbi-kim.github.io/vla-runtime-harnessing/) develops this into a claim worth arguing with: that VLA sits where language models sat before inference-time compute became a scaling axis of its own, and that the run-time half — monitoring, memory retrieval, planning, verification, backtracking wrapped around a learned policy — is structural rather than a stopgap. Read it as a live position, not settled history. The counter-pressure is real too: a harness built around this year's weaknesses is scaffolding, and the next backbone may simply absorb it.
+
 ### World models: learning inside imagination
 
 ```mermaid
@@ -204,6 +209,11 @@ graph TD
     OXE --> GR00T
     OpenVLA -.-> GR00T
 ```
+
+> [!note] 2024–2026 VLA 논문 읽기 · Reading the 2024–2026 VLA papers
+> 이 가지 위의 모델은 거의 다 같은 골격을 공유한다. 사전학습된 VLM 백본에, 그 출력을 연속 제어로 바꾸는 action expert가 붙는다. 골격이 보이고 나면 최근 논문 대부분을 가르는 질문 하나가 남는다. *이 논문이 능력을 더한 지점은 학습 시점인가, 실행 시점인가?* CorrectNav([arXiv:2508.10416](https://arxiv.org/abs/2508.10416))는 앞쪽이다 — 자기 정책을 다시 돌려 어긋난 궤적을 모으고, 그 복구 데이터로 post-training을 해서 복구를 가중치 안에 컴파일해 넣는다. AdaNav([arXiv:2509.24387](https://arxiv.org/abs/2509.24387))는 뒤쪽이다 — 불확실성을 신호로 삼아 필요한 스텝에서만 추가 추론에 계산을 쓴다.
+>
+> 이 구분은 붙들고 있을 값어치가 있다. 실패에서 *복구하는* 능력과 지금 실패 중임을 *아는* 능력은 서로 다르고, 복구 데이터로 학습한 정책은 앞의 것만 갖고 뒤의 것은 없을 수 있기 때문이다. 김기섭의 에세이 [로봇은 더 배워야 하는가, 더 생각해야 하는가](https://gisbi-kim.github.io/vla-runtime-harnessing/)는 이 구분을 논쟁할 만한 주장으로 밀고 간다. VLA가 지금 서 있는 자리는 언어모델에서 추론 시 연산이 독자적인 확장 축이 되기 직전의 자리이며, 실행 시점의 절반 — 학습된 정책을 감싸는 monitor, 기억 검색, 계획, 검증, 되돌아가기 — 은 임시방편이 아니라 구조적으로 필요한 것이라는 주장이다. 정설이 아니라 살아 있는 입장으로 읽어라. 반대 압력도 실재한다. 올해의 약점에 맞춰 지은 하네스는 비계이고, 다음 백본이 그것을 그냥 흡수해 버릴 수 있다.
 
 ### World Models: 상상 속에서 배우기
 

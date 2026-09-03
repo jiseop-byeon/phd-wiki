@@ -48,7 +48,7 @@ worker-centered **robotics** only where the arrow from 2 to 3 exists, i.e. where
 actually changes what the robot does, and only when step 5 evaluates that loop rather than
 the classifier's accuracy.*
 
-
+The decision link matters because recognizing a worker state does not guarantee useful assistance. For example, an uncertain intent estimate might make a robot pause during a handover rather than move toward the wrong destination. **The reading this gives you.** Trace the estimate through the robot response to the worker outcome. If the experiment stops at classification accuracy, its contribution remains a sensing component even when the motivating story concerns collaboration.
 
 ### 2. Main research lines
 
@@ -92,6 +92,8 @@ for placing any construction-HRC paper.
 - “Shared autonomy” must state who has authority, how conflicts are resolved, and how the
   worker stops or overrides the robot.
 
+For example, a worker may report lower workload because they stopped monitoring an unreliable system. The questionnaire can be valid while the favorable interpretation is wrong. **The reading this gives you.** Pair self-report with task behavior: noticed failures, intervention timing, and recovery burden. The question is whether the claimed human benefit survives when the worker must recognize and handle the failures that the deployment actually permits.
+
 ### 4. Evaluation
 
 Report participant population, task realism, counterbalancing, learning/order effects,
@@ -103,6 +105,11 @@ a small study is not evidence of low operational risk.
 > Separate **sensed state**, **inferred construct**, **robot response**, and **measured
 > human outcome**. Many papers establish only the first two links. A complete HRC claim
 > needs the full causal chain—or must label itself as a component study.
+
+> [!example] Worked example · 계산 예제
+> **Read an alert as an interruption to a shift.** The hypothetical base-rate example in [[04-robotics/human-intent-prediction|Human Intent Prediction §5]] yields **26.9% precision** and **1,411 false alarms per shift** under its stated assumptions. Reuse that example's event frequency and threshold; these are not measurements of a deployed worker interface.
+>
+> **The reading this gives you.** A worker-facing evaluation must count interruptions and responses, not only classifier recall. Repeated false alarms can consume attention and change later compliance. Check whether alerts are grouped, suppressed, or acknowledged, and report the resulting workload and missed hazards under the actual interaction policy.
 
 ### After reading
 
@@ -173,7 +180,7 @@ flowchart LR
 있을 때, 즉 그 추정이 실제로 로봇의 행동을 바꿀 때 비로소 작업자 중심 **로보틱스**가 되고,
 5단계가 분류기의 정확도가 아니라 그 루프를 평가할 때만 그렇다.*
 
-
+작업자 상태를 알아도 유용한 보조가 보장되지 않으므로 결정 연결이 중요하다. 불확실한 의도 추정 때문에 로봇이 잘못된 목적지로 움직이는 대신 인계 중 멈출 수 있다. **여기서 얻는 독법.** 추정에서 로봇 반응을 거쳐 작업자 결과까지 추적한다. 실험이 분류 정확도에서 끝나면 동기가 협업이어도 기여는 센싱 구성요소에 머문다.
 
 ### 2. 연구 계보
 
@@ -210,6 +217,8 @@ flowchart LR
 - 작은 실험실 표본은 모든 직종·숙련도·PPE·소음·날씨로 일반화되지 않는다.
 - Shared autonomy는 권한, 충돌 해결, 정지·override 주체를 명시해야 한다.
 
+작업자가 신뢰성이 낮은 시스템의 감시를 포기해 작업부하를 낮게 보고할 수 있다. 설문은 유효해도 긍정적 해석은 틀릴 수 있다. **여기서 얻는 독법.** 자기보고를 실패 인지, 개입 시점, 회복 부담과 함께 읽는다. 실제 운용에서 허용되는 실패를 작업자가 알아채고 처리해야 할 때도 이점이 남는지 묻는다.
+
 ### 4. 평가
 
 참가자 집단, 과제 현실성, 순서 효과, 센서 실패, 오경보, 개입 권한, near miss, 작업부하·
@@ -220,6 +229,11 @@ flowchart LR
 > **측정 상태 → 추론 구성개념 → 로봇 반응 → 인간 결과**를 분리하라. 많은 논문은 첫 두
 > 연결만 보인다. 완전한 HRC 주장은 전체 사슬이 필요하며, 아니면 구성요소 연구라고 범위를
 > 제한해야 한다.
+
+> [!example] 계산 예제 · Worked example
+> **경보를 한 교대의 중단으로 읽는다.** [[04-robotics/human-intent-prediction|사람 의도 예측 §5]]의 가상 기저율 예제는 명시한 가정에서 **정밀도 26.9%**, **교대당 오경보 1,411회**를 얻는다. 해당 예제의 사건 빈도와 문턱값을 함께 읽는다. 배포된 작업자 인터페이스의 측정값은 아니다.
+>
+> **여기서 얻는 독법.** 작업자 대상 평가는 분류기 재현율뿐 아니라 중단과 대응을 세야 한다. 반복 오경보는 주의를 소비하고 이후 순응 행동을 바꿀 수 있다. 경보의 묶음, 억제, 확인 응답 규칙을 확인하고 실제 상호작용 정책의 작업부하와 놓친 위험을 보고한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

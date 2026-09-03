@@ -52,6 +52,8 @@ generalist policy maximally *modular*?
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2405.12213): Training uses 800k Open X-Embodiment trajectories and experiments cover 9 robotic platforms. These numbers describe training and evaluation coverage; the abstract gives no numerical success-rate advantage.
+
 - Positive transfer out of the box across 9 evaluation setups (WidowX, Franka, bimanual
   ALOHA-style rigs); outperforms RT-1-X on zero-shot multi-robot evaluations.
 - Effective fine-tuning to *new observation and action spaces* (e.g., joint-space bimanual
@@ -71,6 +73,9 @@ generalist policy maximally *modular*?
 Defined the open-generalist-policy category and normalized two designs now everywhere:
 diffusion action heads and token-modular multi-embodiment interfaces. The direct baseline
 against which [[openvla|OpenVLA]] and later open VLAs measure themselves.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Generalist here includes a reusable policy initialization that can be adapted to new interfaces. It does not imply every robot can execute every task unchanged. Check what was fine-tuned, what target data were supplied, and which platforms were evaluated.
 
 ### Connections
 
@@ -107,6 +112,8 @@ against which [[openvla|OpenVLA]] and later open VLAs measure themselves.
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2405.12213) 기준: Open X-Embodiment 궤적 800k개로 학습하고 로봇 플랫폼 9개에서 실험한다. 학습·평가 범위의 수치이며 초록에 성공률 우위의 수치는 없다.
+
 - 9개 평가 셋업(WidowX, Franka, ALOHA식 양팔)에서 그대로 양의 전이; zero-shot 다중 로봇
   평가에서 RT-1-X 상회.
 - *새로운 관측·행동 공간*(예: 관절 공간 양팔 제어)으로의 파인튜닝이 실제로 통한다 —
@@ -126,6 +133,9 @@ against which [[openvla|OpenVLA]] and later open VLAs measure themselves.
 오픈 범용 정책이라는 범주를 정의했고, 지금은 어디에나 있는 두 설계 — 디퓨전 행동 헤드,
 토큰 모듈식 다중-신체 인터페이스 — 를 표준화했다. [[openvla|OpenVLA]]와 이후 오픈 VLA들이
 자신을 재는 직접 베이스라인.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 범용에는 새 인터페이스에 적응시킬 재사용 정책 초기값이라는 뜻이 포함된다. 모든 로봇이 모든 과제를 변경 없이 실행한다는 뜻은 아니다. 미세조정 대상, 제공한 목표 데이터, 평가 플랫폼을 확인한다.
 
 ### 연결
 

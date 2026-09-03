@@ -132,6 +132,12 @@ $$f(n)=g(n)+h(n)$$
 
 Dijkstra uses no informative heuristic. A* is optimal on a graph under the appropriate admissibility/consistency conditions; this theorem does not guarantee that a discretized graph represents every feasible continuous robot motion.
 
+**Think of the frontier as unfinished routes.** Each queued node represents a route that has reached somewhere but has not yet been explored onward. g records what that route has already cost. h estimates the remaining work, and f decides which unfinished route deserves attention next. Expanding a node means considering its outgoing edges; it does not mean the robot physically moves there.
+
+If a cheaper route reaches an already encountered node, its best-known cost and parent may need updating. This bookkeeping is part of the algorithm, not a detail that can be ignored when quoting optimality. For nonnegative edge costs, consistency makes heuristic values cooperate with the graph's edges; admissibility alone requires appropriate handling of revisits.
+
+**Check your understanding.** The heuristic is a lower-bound estimate for the graph problem, not permission to ignore obstacles in the final route. A straight-line distance can be useful precisely because it is optimistic, while collision checking still decides which graph connections are allowed. Search efficiency and physical feasibility are separate checks.
+
 ### 4. Worked example: what a heuristic changes
 
 Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities are $9$ and $10$, so the first is expanded even though it has a larger cost-to-come. The heuristic directs effort toward states estimated to be closer to the goal. An *underestimating* heuristic remains admissible — though if it is too weak, A* gains little speed over Dijkstra; an *overestimating* heuristic can lose the usual optimality guarantee.
@@ -185,6 +191,12 @@ $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text
 - **Caveat:** nonlinear dynamics and obstacle constraints usually create local, initialization-sensitive problems.
 
 Direct shooting optimizes controls and simulates states. Direct transcription treats states and controls as variables. Collocation enforces dynamics at selected points. None automatically proves global optimality in a nonconvex robot problem.
+
+**Unpack the subscripts as a proposed future.** x₀ is fixed by the current estimated state. Later x values describe predicted states, and u values are the inputs that would produce them under the model. Stage costs judge each part of the future, while the terminal cost values where the horizon ends. The dynamics constraints tie this imagined sequence together so the optimizer cannot choose attractive states disconnected from achievable motion.
+
+MPC makes this formulation into feedback: execute the first input, observe the new state, and solve again. The unexecuted future still mattered because it influenced the first decision. Replanning then corrects discrepancies instead of assuming the entire prediction came true. An offline trajectory optimizer may solve a similar mathematical problem without performing this repeated feedback loop.
+
+**Check your understanding.** A solver's feasible output is conditional on its initial state, model, discretization, and constraints. If state estimates are stale or a collision occurs between checked points, solving the optimization accurately is not enough. See the [trajectory-optimization notes](https://underactuated.mit.edu/trajopt.html) for the distinction between representing a trajectory and executing it with feedback.
 
 ### 7. Task planning, uncertainty, and replanning
 
@@ -368,6 +380,12 @@ Dijkstra는 정보성 휴리스틱이 없는 경우다. A*는 적절한 admissib
 다만 이 정리는 이산화된 그래프가 모든 실행 가능한 연속 로봇
 운동을 대표한다는 것까지 보장하지 않는다.
 
+**프런티어를 아직 끝나지 않은 경로로 생각한다.** 대기 중인 노드는 어느 곳까지 도달했지만 그 뒤를 아직 탐색하지 않은 경로다. g는 이미 쓴 비용, h는 남은 일의 추정, f는 다음으로 볼 경로의 우선순위다. 노드를 확장한다는 것은 나가는 간선을 검토한다는 뜻이다. 로봇이 실제로 그곳으로 움직이는 것은 아니다.
+
+이미 본 노드에 더 싼 경로가 도달하면 알려진 최저 비용과 부모를 갱신해야 할 수 있다. 최적성을 말할 때 생략해도 되는 구현 세부가 아니라 알고리즘의 일부다. 음수가 아닌 간선 비용에서 일관성은 휴리스틱과 간선 비용이 맞물리게 한다. 허용성만 있으면 재방문을 적절히 처리해야 한다.
+
+**이해 확인.** 휴리스틱은 그래프 문제의 하한 추정이지 최종 경로에서 장애물을 무시할 허가가 아니다. 직선 거리는 낙관적이어서 유용할 수 있고, 실제 허용 연결은 충돌 검사가 정한다. 탐색 효율과 물리적 가능성은 별도 검사다.
+
 ### 4. 계산 예제: 휴리스틱이 바꾸는 것
 
 프런티어의 두 노드가 $(g,h)=(6,3)$과 $(4,6)$이라 하자. A* 우선순위는 $9$와 $10$이므로,
@@ -426,6 +444,12 @@ $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text
 Direct shooting은 제어를 최적화하고 상태를 시뮬레이션한다. Direct transcription은
 상태·제어를 모두 변수로 둔다. Collocation은 선택한 점들에서 동역학을 강제한다. 어느
 것도 비볼록 로봇 문제의 전역 최적성을 자동으로 증명하지 않는다.
+
+**아래첨자를 제안한 미래로 풀어 읽는다.** x₀는 현재 추정 상태로 고정된다. 뒤의 x들은 예측 상태이고 u들은 모델상 그 상태를 만드는 입력이다. 단계 비용은 미래의 각 구간을 평가하고 종단 비용은 지평 끝의 위치를 평가한다. 동역학 제약이 상상한 시퀀스를 묶어, 실제 움직임으로 이어지지 않는 매력적인 상태만 고르지 못하게 한다.
+
+MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 상태를 관측한 뒤 다시 푼다. 실행하지 않은 미래도 첫 결정을 바꿨으므로 의미가 있다. 재계획은 예측이 모두 맞았다고 가정하는 대신 차이를 고친다. 오프라인 궤적 최적화는 비슷한 수학 문제를 풀어도 이 반복 피드백은 하지 않을 수 있다.
+
+**이해 확인.** 해법의 실행 가능 출력은 초기 상태, 모델, 이산화, 제약에 조건부다. 상태 추정이 낡거나 검사 지점 사이에서 충돌하면 최적화를 정확히 푸는 것만으로 부족하다. 궤적 표현과 피드백 실행의 구분은 [궤적 최적화 강의](https://underactuated.mit.edu/trajopt.html)에서도 다룬다.
 
 ### 7. 과제 계획, 불확실성, replanning
 

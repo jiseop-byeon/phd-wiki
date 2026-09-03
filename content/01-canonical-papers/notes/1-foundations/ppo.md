@@ -84,6 +84,8 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/1707.06347).
+
 - On MuJoCo continuous control, clipped PPO beats or matches TRPO, A2C, and vanilla PG variants on most tasks with a far simpler implementation.
 - Scales to harder settings in the paper — Roboschool humanoid running/steering and Atari — with the same recipe.
 - The clipping limits the *incentive* for excessive change; it is not a hard bound on parameter distance and carries no monotonic-improvement guarantee.
@@ -170,6 +172,8 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 **GAE — 논문의 나머지 절반.** Advantage $A_t$는 **generalized advantage estimation**(실전에서는 롤아웃 지평 $T$에서 절단)으로 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향, 저분산)와 Monte Carlo 수익($\lambda=1$: 무편향, 고분산) 사이를 λ로 보간한다. 제대로 된 PPO 구현은 전부 clip과 GAE를 짝지어 쓴다(보통 $\lambda\approx 0.95$); GAE 없이 "PPO"만 읽으면 알고리즘의 절반을 놓친 것이다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/1707.06347).
 
 - MuJoCo 연속 제어에서 clipped PPO는 대부분의 과제에서 TRPO, A2C, 순수 정책경사 변형을 이기거나 대등하다 — 훨씬 단순한 구현으로.
 - 같은 레시피로 논문 내 더 어려운 설정 — Roboschool humanoid 달리기/조향, Atari — 까지 확장된다.

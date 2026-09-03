@@ -48,6 +48,8 @@ architecture that scales best.
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2212.09748): The largest DiT-XL/2 achieves FID 2.27 on class-conditional ImageNet at 256 × 256 resolution. Keep that resolution and conditioning attached to the number; it is not a text-to-image or robot-policy metric.
+
 - DiT-XL/2: FID **2.27** on class-conditional ImageNet 256² — beating U-Net diffusion
   (ADM, LDM) at better compute efficiency; the correlation "more Gflops → better FID"
   held with no signs of saturation.
@@ -64,6 +66,9 @@ The default backbone of current *diffusion-family* generators: [[sora|Sora]] (sp
 Stable Diffusion 3 / Flux (MM-DiT), and — for this wiki — robot action experts:
 [[pi0|π0]] and [[gr00t-n1|GR00T]]'s flow/diffusion modules are DiT-style transformers
 denoising action sequences.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> The scaling evidence concerns latent image diffusion in the reported class-conditional setting. It does not directly measure text-to-video quality or robot control. Check compute, token count, and evaluation conditions rather than treating the Transformer label as the explanation.
 
 ### Connections
 
@@ -95,6 +100,8 @@ denoising action sequences.
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2212.09748) 기준: 가장 큰 DiT-XL/2가 256 × 256 클래스 조건부 ImageNet에서 FID 2.27을 기록한다. 해상도와 조건을 함께 적는다. 텍스트–영상이나 로봇 정책 지표가 아니다.
+
 - DiT-XL/2: 클래스 조건부 ImageNet 256²에서 FID **2.27** — U-Net 디퓨전(ADM, LDM)을 더
   나은 연산 효율로 추월; "Gflops가 늘면 FID가 좋아진다"는 상관이 포화 기미 없이 유지됐다.
 
@@ -110,6 +117,9 @@ denoising action sequences.
 Flux(MM-DiT), 그리고 이 위키에 중요한 — 로봇 행동 전문가: [[pi0|π0]]와
 [[gr00t-n1|GR00T]]의 flow/디퓨전 모듈이 행동 시퀀스의 노이즈를 제거하는 DiT식
 트랜스포머다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 규모 증거는 보고한 클래스 조건부 설정의 잠재 영상 디퓨전에 관한 것이다. 텍스트–비디오 품질이나 로봇 제어를 직접 측정하지 않는다. Transformer라는 이름보다 연산량, 토큰 수, 평가 조건을 확인한다.
 
 ### 연결
 

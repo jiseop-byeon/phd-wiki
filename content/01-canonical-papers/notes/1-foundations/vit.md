@@ -55,6 +55,9 @@ CNNs owned vision because their inductive biases (locality, translation equivari
 
 Ended the CNN monopoly and unified modalities: one token-based architecture for text and images made [[01-canonical-papers/notes/3-vlm/clip|CLIP]]-style multimodal training natural, and ViT is now the default vision encoder inside VLMs and VLAs (SigLIP, DINOv2 backbones). Successors: DeiT, Swin, [[01-canonical-papers/notes/1-foundations/mae|MAE]], DINO/DINOv2.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> A plain Transformer can be effective for image recognition with the reported pretraining and transfer recipe. This is not proof that removing visual inductive biases always helps. Compare pretraining data and resolution as well as architecture.
+
 ### Connections
 
 - Previous: [[01-canonical-papers/notes/1-foundations/resnet|ResNet]] (the baseline it dethroned), [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]
@@ -93,6 +96,9 @@ CNN이 비전을 지배한 것은 그 귀납 편향(지역성, 평행이동 등�
 ### 영향과 후속 연구
 
 CNN 독점을 끝내고 모달리티를 통일했다: 텍스트와 이미지가 같은 토큰 기반 구조를 쓰게 되면서 [[01-canonical-papers/notes/3-vlm/clip|CLIP]]식 멀티모달 학습이 자연스러워졌고, ViT는 현재 VLM·VLA의 기본 비전 인코더다(SigLIP, DINOv2 백본). 후속: DeiT, Swin, [[01-canonical-papers/notes/1-foundations/mae|MAE]], DINO/DINOv2.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 단순 Transformer도 보고한 사전학습·전이 방식으로 영상 인식에 효과적일 수 있다. 시각적 귀납 편향을 없애면 항상 좋다는 증거는 아니다. 구조뿐 아니라 사전학습 데이터와 해상도를 비교한다.
 
 ### 연결
 

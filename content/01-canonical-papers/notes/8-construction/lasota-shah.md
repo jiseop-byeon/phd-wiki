@@ -25,6 +25,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: When a robot plans its motion *around a prediction of the human's motion*, both objective fluency and subjective experience improve simultaneously — the manufacturing-HRC result that construction's worker-centered stream keeps importing.
 
+> [!tip] Key intuition · 핵심 직관
+> Predicting a coworker’s motion lets the planner avoid future interference rather than waiting for an immediate conflict. This can reduce waiting and awkward encounters together in the tested shared workspace; whether it helps depends on prediction quality and the task arrangement.
+
+**Context.** A robot can avoid immediate collision yet repeatedly interrupt a coworker. Human-aware planning asks whether anticipating motion improves the shared task, motivating both behavioral and subjective measures.
+
 **Method**: a controlled shared-workspace experiment — human and robot performing a collaborative placement task in close proximity, with the robot running either a standard or a human-aware motion planner (one that adapts trajectories to predicted human actions). Motion capture provides objective fluency metrics; questionnaires provide subjective ones.
 
 **Evidence (with numbers)**: with the human-aware planner, tasks completed **5.57% faster**, concurrent human-robot motion rose **19.9%**, human idle time fell **2.96%**, robot idle time fell **17.3%**, and human-robot separation distance grew **15.1%**. Subjectively, participants agreed significantly more strongly that the robot stayed out of their way, that they felt safer and more comfortable, and that they trusted it as a teammate. The 2018 RA-L companion (Lasota, Unhelkar, ..., Shah, "Human-Aware Robotic Assistant for Collaborative Assembly," RA-L 3(3)) carried the idea toward practice: a human-aware robotic assistant **fielded in a BMW test environment replicating final-assembly work** — the authors themselves note the demonstration is *not* representative of a real factory deployment.
@@ -33,12 +38,19 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **What construction borrows, and what does not transfer**: construction borrows the metric vocabulary (fluency, concurrent motion, idle time, separation distance, perceived safety) and the twin finding — motion-level adaptation pays off in productivity *and* comfort at once, so safety and efficiency are not a trade-off. What does not transfer is the setting that made the result cheap to obtain: a fixed workcell, a repeatable task, reliable human tracking, a stable floor. Construction sites are unstructured and tasks are quasi-repetitive, which is why [[05-construction-robotics/hrc-worker-centered|stream 6]] must re-derive these results under site constraints rather than cite them.
 
+**Limitations.** The controlled shared task depends on its tracking and workspace assumptions. Benefits in that setting do not guarantee either their magnitude or direction under site noise, occlusion, and different worker routines.
+
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > The numbers (5.57%, 19.9%, …) come from a controlled laboratory task — what transfers to construction is the direction, not the magnitude: "human-aware planning improves objective fluency and subjective safety *at the same time*." That direction is robust; the magnitudes are task-specific and must be re-measured on unstructured sites. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
 
 ## 한국어
 
 **한 줄 요약**: 로봇이 *인간 동작의 예측을 중심으로* 모션을 계획하면 객관적 유창성과 주관적 경험이 동시에 개선된다 — 건설의 작업자 중심 스트림이 계속 수입하는 제조업 HRC의 결과.
+
+> [!tip] 핵심 직관 · Key intuition
+> 동료의 동작을 예측하면 당장의 충돌을 기다리지 않고 미래 간섭을 피하도록 계획할 수 있다. 시험한 공유 작업 공간에서 대기와 불편한 마주침을 함께 줄일 수 있다. 효과는 예측 품질과 과제 배치에 달려 있다.
+
+**맥락.** 로봇은 당장 충돌을 피하면서도 동료 작업을 반복해서 방해할 수 있다. 사람 인지 계획은 동작 예상이 공동 과제를 개선하는지 묻는다. 행동·주관 지표가 모두 필요한 이유다.
 
 **방법**: 통제된 공유 작업공간 실험 — 인간과 로봇이 근접 거리에서 협업 배치 과제를 수행하며, 로봇은 표준 모션 플래너 또는 인간 인지 모션 플래너(예측된 인간 행동에 궤적을 적응시키는 플래너)를 사용한다. 모션 캡처가 객관적 유창성 지표를, 설문이 주관적 지표를 제공한다.
 
@@ -47,6 +59,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **테스트베드 대 현장, 자율성**: 2015는 실험실 실험이고, 2018은 최종 조립을 모사한 BMW *테스트 환경*으로 옮겨간다 — 저자들 스스로 배치된 라인을 대표하지 **않는다**고 밝히고 있고, 둘 중 어느 것도 건설 현장은 아니다. 로봇은 협업 셀 안에서 모션 수준의 자율성을 갖고, 인간은 운전자가 아니라 공유 작업공간의 동료다.
 
 **건설이 빌려오는 것과 이전되지 않는 것**: 건설이 빌려오는 것은 지표 어휘(유창성, 동시 동작, 유휴 시간, 이격 거리, 체감 안전)와 쌍둥이 발견 — 모션 수준 적응이 생산성*과* 편안함에 동시에 이득이 되므로 안전과 효율이 트레이드오프가 아니라는 것이다. 이전되지 않는 것은 이 결과를 값싸게 만든 환경이다: 고정된 워크셀, 반복 가능한 과제, 신뢰할 수 있는 인간 추적, 안정된 바닥. 건설 현장은 비구조적이고 과제는 준반복적이라, [[05-construction-robotics/hrc-worker-centered|stream 6]]은 이 결과를 인용하는 대신 현장 제약 아래서 다시 유도해야 한다.
+
+**한계.** 통제된 공동 과제는 추적과 작업 공간 가정에 의존한다. 그 이점의 크기나 방향 모두 현장 잡음, 가림, 다른 작업 방식에서 보장되지는 않는다.
 
 ### 연결
 

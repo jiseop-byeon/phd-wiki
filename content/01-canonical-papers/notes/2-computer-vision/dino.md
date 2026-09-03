@@ -50,6 +50,8 @@ pretrained LM.
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2104.14294): The original DINO paper reports ImageNet top-1 accuracy of 78.3% for a small ViT with k-NN evaluation and 80.1% for ViT-Base with linear evaluation. These are different model/evaluation settings, not a single before–after comparison.
+
 - DINOv2 frozen features rival or beat weakly-supervised models across classification,
   depth, segmentation — *without fine-tuning*; the strongest "features that just work" of
   the open ecosystem.
@@ -65,6 +67,9 @@ pretrained LM.
 The de-facto frozen vision encoder of embodied AI: [[openvla|OpenVLA]] fuses DINOv2+SigLIP
 exactly because DINOv2 contributes spatial/geometric detail that CLIP-style features lack.
 Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictors.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> No-label self-distillation describes pretraining supervision, not a guarantee of language grounding or accurate segmentation for every object. Distinguish nearest-neighbor and linear evaluation from dense prediction. DINO and DINOv2 also have different data and scale assumptions.
 
 ### Connections
 
@@ -98,6 +103,8 @@ Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictor
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2104.14294) 기준: 원래 DINO 논문은 ImageNet에서 작은 ViT의 k-NN 평가 top-1 78.3%, ViT-Base의 선형 평가 80.1%를 보고한다. 서로 다른 모델·평가 설정이며 한 모델의 전후 비교가 아니다.
+
 - DINOv2 고정 특징이 분류·깊이·분할 전반에서 약지도 모델과 대등하거나 우세 —
   *파인튜닝 없이*; 오픈 생태계에서 가장 강한 "그냥 되는 특징".
 
@@ -112,6 +119,9 @@ Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictor
 체화 AI의 사실상 표준 고정 시각 인코더: [[openvla|OpenVLA]]가 DINOv2+SigLIP을 융합하는
 이유가 정확히 CLIP류 특징에 없는 공간/기하 디테일을 DINOv2가 보태기 때문이다.
 [[depth-anything|Depth Anything]]류 밀집 예측기의 백본이기도 하다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 라벨 없는 자기 증류는 사전학습 감독 방식이다. 모든 물체의 언어 연결이나 정확한 분할을 보장하지 않는다. 최근접 이웃·선형 평가와 밀집 예측을 구분한다. DINO와 DINOv2의 데이터·규모 가정도 다르다.
 
 ### 연결
 

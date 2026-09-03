@@ -68,6 +68,8 @@ by how fast the model becomes right, not by how fast the policy does.*
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2301.04104): DreamerV3 evaluates a single configuration across more than 150 tasks. This count describes benchmark breadth and belongs to V3; it is not an average performance gain or a measurement from the earlier Dreamer versions.
+
 - v3 matches or outperforms specialized model-free and model-based methods across many domains with fixed
   hyperparameters — among the strongest single-configuration general RL results of its era.
 - Sample efficiency inherited from the model-based recipe: most learning happens in
@@ -139,6 +141,8 @@ flowchart LR
   다이아몬드를 얻은 최초의 에이전트. 성능이 모델 크기에 따라 예측 가능하게 스케일.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2301.04104) 기준: DreamerV3는 단일 설정으로 150개가 넘는 과제를 평가한다. V3의 벤치마크 범위이며 평균 성능 개선량이나 앞선 Dreamer 버전의 측정값은 아니다.
 
 - v3는 고정 하이퍼파라미터로 여러 도메인에서 특화된 모델 프리/기반 기법들과 대등하거나 능가 —
   당대 가장 강한 축에 드는 단일 구성 범용 RL 결과.

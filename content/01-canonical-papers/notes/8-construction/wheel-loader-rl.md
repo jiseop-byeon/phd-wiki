@@ -26,6 +26,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Lineage position**: alongside [[01-canonical-papers/notes/8-construction/egli-rl|Egli's RL excavation work at ETH]], this is the RL-on-real-heavy-machines strand — the wheel-loader counterpart of learned bucket–pile interaction, and one of the few real-machine (not simulator-only) results in the [[05-construction-robotics/sim-to-real|sim-to-real]] stream.
 
+> [!tip] Key intuition · 핵심 직관
+> Imitation gives the controller an initial loading behavior, while reinforcement learning adjusts coordinated vehicle and bucket actions under interaction with the pile. The useful mechanism is coordination under changing resistance, not a universal advantage of one learning label over every classical controller.
+
 **Method**: the policy is pretrained by imitation from demonstrations and fine-tuned with reinforcement learning, then evaluated on a real wheel loader across materials. Bucket filling couples vehicle motion (traction into the pile) with boom/bucket motion under uncertain granular contact — the coordination problem that makes scripted controllers brittle. Read the observation/action space, the simulator's material model, the safety envelope, and the real-machine test protocol together; the contribution is not "RL beats classical control everywhere" but that one learned policy coordinates vehicle and bucket motion during uncertain pile interaction.
 
 **Evidence and limitations**: the evaluation is on a real wheel loader with materials not directly parameterized for the policy — "unknown material" means outside the policy's identified parameters in the reported evaluation, not all granular materials, pile geometries, weather conditions, or machines. Inspect the variation actually tested before generalizing the claim.
@@ -38,6 +41,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **한 줄 요약**: 모방학습으로 사전학습하고 RL로 파인튜닝한 제어기가 실제 휠로더에서 미지의 재료에 대한 버킷 채우기를 수행해, 재료 변동을 가로지르는 학습 기반 접촉 제어를 실제 중장비 과제로 가져왔다.
 
 **계보에서의 위치**: [[01-canonical-papers/notes/8-construction/egli-rl|ETH Egli의 RL 굴착 연구]]와 나란히, 실제 중장비 위의 RL 갈래다 — 학습된 버킷–더미 상호작용의 휠로더 판이며, [[05-construction-robotics/sim-to-real|sim-to-real]] 스트림에서 시뮬레이터 전용이 아닌 몇 안 되는 실기계 결과 중 하나다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 모방은 초기 적재 행동을 주고 강화학습은 더미와의 상호작용 아래 차량·버킷 협응을 조절한다. 유용한 기전은 변하는 저항 아래 협응이다. 특정 학습 방식이 모든 고전 제어기보다 낫다는 뜻은 아니다.
 
 **방법**: 정책은 시연으로부터 모방 사전학습된 뒤 강화학습으로 파인튜닝되고, 실제 휠로더에서 여러 재료에 걸쳐 평가된다. 버킷 채우기는 불확실한 입상 접촉 아래에서 차량 운동(더미로의 견인)과 붐/버킷 운동을 결합한다 — 스크립트 제어기를 취약하게 만드는 바로 그 조정 문제다. 관측/행동 공간, 시뮬레이터의 재료 모델, 안전 영역, 실기계 시험 프로토콜을 함께 읽어야 한다. 기여는 "RL이 어디서나 고전 제어를 이긴다"가 아니라, 하나의 학습 정책이 불확실한 더미 상호작용 중에 차량과 버킷 운동을 조정한다는 것이다.
 

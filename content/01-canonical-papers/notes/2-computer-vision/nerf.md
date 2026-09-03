@@ -50,6 +50,8 @@ implicit-function idea was in the air (occupancy networks); NeRF made it *photor
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2003.08934).
+
 - Novel-view synthesis of unprecedented quality on real scenes from ~20–100 posed photos;
   an entire scene compressed into ~5MB of MLP weights.
 
@@ -66,6 +68,9 @@ Launched neural rendering as a field (Instant-NGP's hash grids, Mip-NeRF, Zip-Ne
 dynamic/large-scale variants) and made *differentiable rendering* a standard tool.
 In robotics/construction: photorealistic digital twins of sites and simulation assets for
 data generation ([[cosmos|world-model data engines]]).
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Novel-view synthesis evaluates images of a scene optimized from posed observations. Photorealism does not guarantee a metrically correct surface or transfer to unseen scenes. Check camera-pose assumptions and distinguish per-scene fitting from a general-purpose perception model.
 
 ### Connections
 
@@ -98,6 +103,8 @@ data generation ([[cosmos|world-model data engines]]).
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2003.08934).
+
 - 자세를 아는 사진 20~100장으로 실제 장면의 전례 없는 품질의 새 시점 합성;
   장면 전체가 약 5MB의 MLP 가중치로 압축된다.
 
@@ -113,6 +120,9 @@ data generation ([[cosmos|world-model data engines]]).
 신경 렌더링이라는 분야를 출범시켰고(Instant-NGP의 해시 그리드, Mip-NeRF, Zip-NeRF,
 동적/대규모 변형), *미분 가능 렌더링*을 표준 도구로 만들었다. 로보틱스/건설에서는: 현장의
 사진 수준 디지털 트윈과 데이터 생성용 시뮬레이션 자산([[cosmos|월드모델 데이터 엔진]]).
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 새 시점 합성은 자세가 알려진 관측으로 최적화한 장면의 영상을 평가한다. 사실적인 영상이 미터법 표면 정확도나 새 장면 전이를 보장하지 않는다. 카메라 자세 가정과 장면별 적합·범용 지각의 차이를 본다.
 
 ### 연결
 

@@ -122,6 +122,8 @@ The whole sequence is processed in parallel; path length between any two tokens 
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/1706.03762): WMT 2014 translation: 28.4 BLEU for English→German and 41.8 BLEU for English→French.
+
 - WMT14 English→German: **28.4 BLEU**, beating all prior single models and ensembles by >2 BLEU.
 - WMT14 English→French: **41.8 BLEU**, new single-model SOTA at a fraction of prior training cost (3.5 days on 8 GPUs).
 - Generalizes beyond translation: strong results on English constituency parsing with little tuning.
@@ -238,6 +240,8 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 시퀀스 전체가 병렬로 처리되고, 임의의 두 토큰 사이 경로 길이가 $O(n)$에서 $O(1)$로 줄어든다.
 
 ### 결과
+
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/1706.03762) 기준: WMT 2014 번역에서 영어→독일어 28.4 BLEU, 영어→프랑스어 41.8 BLEU다.
 
 - WMT14 영→독: **BLEU 28.4** — 기존 단일 모델과 앙상블을 모두 2점 이상 앞섬.
 - WMT14 영→불: **BLEU 41.8** — 기존 대비 훨씬 적은 학습 비용(8 GPU, 3.5일)으로 단일 모델 최고 기록.

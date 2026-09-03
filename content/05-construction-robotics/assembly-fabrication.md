@@ -38,6 +38,8 @@ flowchart LR
 Read where uncertainty is corrected. A system that plans once from perfect BIM has not
 solved site assembly; it has demonstrated execution under a fixture-like assumption.
 
+A drywall sheet can be placed at the correct nominal pose and still bind against an uneven opening. Feedback exists because nominal geometry leaves this contact uncertainty unresolved. Track whether the robot observes the mismatch, changes its motion, and verifies the final fit. **The reading this gives you.** Read a successful placement as evidence for the entire correction loop only if the paper shows where that loop closed.
+
 ### 2. Three technical lineages
 
 **Construction manipulation — Michigan and descendants.** Vision-guided assembly
@@ -61,6 +63,8 @@ reachability and tolerance rather than copied from a human workflow.
 additive manufacturing trade factory precision for workspace. Navigation and base
 localization become part of manipulation accuracy.
 
+The lineages differ because they place the burden of adaptation in different places. A robot-oriented timber joint may simplify insertion through design, whereas a robot fitting an existing panel must accommodate the geometry it encounters. **The reading this gives you.** Before comparing success, identify which difficulty was removed by co-design and which was handled during execution. This makes the transferable contribution visible without treating every assembly demonstration as the same problem.
+
 ### 3. What to extract from a paper
 
 | Question | Why it matters |
@@ -71,6 +75,8 @@ localization become part of manipulation accuracy.
 | What is mobile? | Base error couples into end-effector accuracy |
 | What does the human do? | Handover, task specification, recovery, and safety are system components |
 | What is full scale? | One joint or coupon does not validate structure-level tolerance accumulation |
+
+For example, trace a panel from initial localization through contact to acceptance. If an operator manually aligns it before the recorded motion, that preparation is part of the tested system. **The reading this gives you.** Use the table to reconstruct one complete attempt, including setup and recovery. A missing step indicates the boundary of the evidence, not permission to assume that the robot performed it.
 
 ### 4. Anchor systems
 
@@ -153,6 +159,8 @@ flowchart LR
 불확실성이 어디서 보정되는지 읽어라. 완벽한 BIM에서 한 번 계획하는 시스템은 현장 조립
 전체가 아니라 지그에 가까운 가정 아래 실행을 보인 것이다.
 
+드라이월 시트는 명목 자세에 정확히 놓여도 고르지 않은 개구부에 걸릴 수 있다. 명목 형상으로 해소되지 않는 접촉 불확실성 때문에 피드백이 필요하다. 불일치 관찰, 동작 변경, 최종 맞춤 검증을 추적한다. **여기서 얻는 독법.** 어느 지점에서 루프가 닫혔는지 보여 줄 때만 성공한 배치를 전체 보정 루프의 증거로 읽는다.
+
 ### 2. 세 기술 계보
 
 - **미시간과 제자들의 건설 조작**: 비전 유도 조립
@@ -170,6 +178,8 @@ flowchart LR
 - **모바일/현장 생산**: 이동 용접·조적·콘크리트 프린팅·공중 적층 제조. 작업 공간을 얻는
   대신 기지 위치 오차가 말단 정확도에 결합한다.
 
+계보마다 적응의 부담을 놓는 위치가 다르다. 로봇 지향 목재 이음은 설계로 삽입을 단순화할 수 있다. 기존 패널을 맞추는 로봇은 마주친 형상에 적응해야 한다. **여기서 얻는 독법.** 성공을 비교하기 전에 공동 설계가 없앤 어려움과 실행 중 다룬 어려움을 구분한다. 조립 시연을 모두 같은 문제로 취급하지 않아야 전이 가능한 기여가 보인다.
+
 ### 3. 논문에서 추출할 것
 
 | 질문 | 의미 |
@@ -180,6 +190,8 @@ flowchart LR
 | 무엇이 이동하나 | 기지 오차가 말단 정확도에 들어간다 |
 | 인간이 무엇을 하나 | 전달·과제 지정·복구·안전도 시스템 구성요소다 |
 | 실규모는 무엇을 뜻하나 | 한 접합부는 구조물 전체의 공차 누적을 검증하지 않는다 |
+
+예를 들어 패널의 최초 위치 추정부터 접촉과 합격 판정까지 추적한다. 기록된 동작 전에 운전자가 수동 정렬했다면 그 준비도 시험한 시스템의 일부다. **여기서 얻는 독법.** 표로 준비·회복을 포함한 시도 하나를 복원한다. 빠진 단계는 증거의 경계이지 로봇이 수행했다고 가정할 근거가 아니다.
 
 ### 4. 앵커 시스템
 

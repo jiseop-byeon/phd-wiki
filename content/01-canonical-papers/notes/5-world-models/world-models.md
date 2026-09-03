@@ -49,6 +49,8 @@ of the world and act inside it. Could an agent *train* inside its own learned si
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/1803.10122).
+
 - Solved CarRacing-v0 (first agent to do so) with the world-model features.
 - The dream-trained VizDoom policy *transfers to the real game*; raising dream temperature
   regularizes against exploiting model errors.
@@ -67,6 +69,9 @@ Named the field. The V/M/C decomposition — learn dynamics in latent space, act
 states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 "train in imagination" idea returns at scale in [[genie|Genie]] and
 [[cosmos|Cosmos]]-style synthetic data engines.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Learning inside a model demonstrates that its predictions can support a policy in the tested environments. It does not show that imagined trajectories stay physically valid under arbitrary actions. Inspect model exploitation and transfer back to the actual evaluation environment.
 
 ### Connections
 
@@ -101,6 +106,8 @@ states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/1803.10122).
+
 - CarRacing-v0을 (최초로) 해결.
 - 꿈에서 훈련된 VizDoom 정책이 *실제 게임으로 전이*; 꿈의 온도를 높이면 모델 오류를
   악용하는 것을 막는 정규화가 된다.
@@ -118,6 +125,9 @@ states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 분야에 이름을 붙였다. V/M/C 분해 — 잠재 공간에서 동역학을 배우고 잠재 상태 위에서
 행동하기 — 는 [[planet|PlaNet]]과 [[dreamer|Dreamer]]의 골격이고, "상상 속 훈련"은
 [[genie|Genie]]와 [[cosmos|Cosmos]]류 합성 데이터 엔진에서 규모를 갖춰 되돌아온다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 모델 안의 학습은 시험 환경에서 예측이 정책 학습을 지원함을 보여 준다. 임의 행동에서도 상상 궤적이 물리적으로 유효하다는 뜻은 아니다. 모델 오류의 악용과 실제 평가 환경으로의 전이를 확인한다.
 
 ### 연결
 

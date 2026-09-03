@@ -66,6 +66,8 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] onward), early stopping, and — the modern twist —
   *more data instead of more constraints* ([[01-canonical-papers/notes/1-foundations/scaling-laws|scaling laws]]).
 
+Regularization helps because fitting every training detail can make a model depend on accidental cues. A crack detector may learn a particular site’s lighting rather than the defect pattern. Augmentation can discourage that shortcut only if its transformations preserve the intended label and resemble meaningful variation. **The reading this gives you.** Read the learning curves together with the split and augmentation policy. Better validation loss on neighboring frames cannot demonstrate generalization to a new site, regardless of how many regularizers the method lists.
+
 ### 3. The metrics dictionary (read any Results table)
 
 | Task | Metric | What it means |
@@ -210,6 +212,8 @@ one of them is not comparing what it claims.
 
 Continue with [[06-research-practice/index|Research Practice]] for research questions, controlled robot experiments, failure diagnosis, reproducibility, and peer review.
 
+The transition matters because recognizing an unfair comparison after publication is easier than preventing one before collection. For example, turn a concern about shared scenes into a site-level split, and a concern about hidden resets into a declared intervention rule. **The reading this gives you.** Carry one concrete uncertainty into the research-practice pages and design the record that would answer it. The next step is an experiment whose outcome could change your claim.
+
 ## 한국어
 
 *[[02-foundations/neural-network-basics|0.7]]과 [[02-foundations/probability|3. 확률]] 위에 선다. 앞의 페이지들이 방법을 읽는 도구였다면,
@@ -261,6 +265,8 @@ Continue with [[06-research-practice/index|Research Practice]] for research ques
   dropout([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), 데이터 증강
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] 이후), early stopping, 그리고 현대적 반전 —
   *제약 대신 더 많은 데이터*([[01-canonical-papers/notes/1-foundations/scaling-laws|스케일링 법칙]]).
+
+학습 자료의 세부를 모두 맞추면 우연한 단서에 의존할 수 있어 정규화가 필요하다. 균열 검출기가 결함보다 특정 현장의 조명을 배울 수 있다. 증강은 변환이 정답을 보존하고 의미 있는 변동을 닮을 때 그 지름길을 억제한다. **여기서 얻는 독법.** 학습 곡선을 분할·증강 정책과 함께 본다. 정규화 목록이 길어도 이웃 프레임의 검증 손실 개선만으로 새 현장 일반화를 보이지는 못한다.
 
 ### 3. 지표 사전 (어떤 Results 표든 읽기)
 
@@ -399,3 +405,5 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 ### 실험을 읽는 것에서 설계하는 것으로
 
 연구 질문·통제된 로봇 실험·실패 진단·재현성·peer review는 [[06-research-practice/index|Research Practice]]로 이어진다.
+
+논문이 나온 뒤 불공정한 비교를 찾는 것보다 수집 전에 막는 것이 어려워 이 전환이 필요하다. 장면 공유의 우려를 현장 단위 분할로, 숨은 리셋의 우려를 사전 개입 규칙으로 바꾼다. **여기서 얻는 독법.** 구체적 불확실성 하나를 연구실무로 가져가 답할 기록을 설계한다. 다음 단계는 결과에 따라 내 주장이 바뀔 수 있는 실험이다.

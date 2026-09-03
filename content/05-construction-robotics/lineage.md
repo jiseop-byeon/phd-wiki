@@ -121,6 +121,8 @@ twins) and machine policies. The 2024–25 signals of that merge: ExACT (Baidu �
 excavation). The [[05-construction-robotics/index|stream pages]] organize the literature
 this map locates.
 
+For example, start with a panel-fitting failure you can reproduce, then use the map to find which lineage already supplies its necessary interface: geometric correction, contact feedback, or human demonstration. Read an anchor paper for that interface before selecting a fashionable model. **The reading this gives you.** The useful research opening is a transferable assumption that breaks in your task. Write what you inherit, what condition changes, and what experiment could demonstrate the difference. A lineage then becomes a tool for choosing a defensible question rather than a ranking of laboratories.
+
 ### Reading list — the anchors
 
 - Bock, *The future of construction automation* (Automation in Construction, 2015) — the
@@ -239,6 +241,8 @@ Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park
 [[01-canonical-papers/notes/8-construction/ext|ExT]](ETH — 굴착의 사전학습→파인튜닝)다.
 이 지도가 위치를 잡아 주는 문헌은 [[05-construction-robotics/index|스트림 페이지]]들이
 조직한다.
+
+재현 가능한 패널 맞춤 실패에서 시작해 형상 보정, 접촉 피드백, 사람 시연 중 필요한 인터페이스를 제공하는 계보를 찾는다. 유행하는 모델을 고르기 전에 그 인터페이스의 기준 논문을 읽는다. **여기서 얻는 독법.** 쓸모 있는 연구 기회는 내 과제에서 깨지는 전이 가능한 가정이다. 무엇을 이어받고 어떤 조건이 바뀌며 어떤 실험으로 차이를 보일지 적는다. 계보는 연구실 순위가 아니라 방어 가능한 질문을 고르는 도구가 된다.
 
 ### 읽기 목록 — 앵커들
 

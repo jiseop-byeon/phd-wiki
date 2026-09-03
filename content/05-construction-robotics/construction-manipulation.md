@@ -65,6 +65,8 @@ and most placement tasks are solved geometry with a payload problem attached; th
 the domain but not to this dissertation's core, by the admission test in
 [[07-research-program/index|7. §7]].
 
+The matrix is useful because a task label hides the variable that determines failure. For example, pipe insertion and brick placement can both look like pick-and-place in a video, while only the former may require detecting a jam during contact. **The reading this gives you.** Choose the row by the failure mechanism and required feedback, not by the visual similarity of the arm motion. Then ask whether the proposed sensor actually observes that mechanism.
+
 ### 3. The ladder — and the finding that should shape a topic choice
 
 This wiki insists on distinguishing **simulation**, **laboratory or mock-up**, and **active
@@ -191,6 +193,8 @@ scale criterion by a wide margin but is only lightly contact-rich, which makes i
 *deployment* target and a weak *contact-manipulation* contribution — and note that it is
 also the one task with a site-verified result, which is not a coincidence.
 
+A good starting task exposes the uncertainty you want to study while keeping repeated evaluation feasible. For example, a pipe-fitting setup can deliberately vary alignment while preserving a recoverable failed attempt. **The reading this gives you.** Write the failure you need to reproduce before selecting hardware. If the available setup makes that failure impossible, it may be convenient but cannot test the intended contact-adaptation claim.
+
 ### 6. What this domain gives back to the manipulation literature
 
 The relationship runs both ways, and this is the part to say in an introduction. Construction
@@ -312,6 +316,8 @@ the [[07-research-program/index|research program]] is built on.
 놓기 작업은 페이로드 문제가 붙은 풀린 기하다. 도메인에는 속하지만 [[07-research-program/index|7. §7]]의
 입장 시험에 따르면 이 학위논문의 핵심에는 속하지 않는다.
 
+과제 이름에 실패를 결정하는 변수가 숨기 때문에 행렬이 필요하다. 예를 들어 파이프 삽입과 벽돌 배치는 영상에서 모두 집어 놓기로 보이지만 전자는 접촉 중 끼임 감지가 필요할 수 있다. **여기서 얻는 독법.** 팔 동작의 시각적 유사성보다 실패 기전과 필요한 피드백으로 행을 고른다. 제안 센서가 그 기전을 실제 관측하는지도 묻는다.
+
 ### 3. 사다리 — 그리고 주제 선택을 바꿔야 할 발견
 
 이 위키는 **시뮬레이션**, **실험실 또는 목업**, **가동 중인 건설 현장**을 구분할 것을 고수한다.
@@ -428,6 +434,8 @@ ISARC 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|�
 패널 끼움, 드라이월 마감, 배관 삽입이 다섯 기준을 모두 통과한다. 철근 결속은 규모 기준을
 압도적으로 통과하지만 접촉이 가벼워서, 훌륭한 *배치* 목표이자 약한 *접촉 조작* 기여가 된다 —
 그리고 그것이 현장 검증 결과를 가진 유일한 작업이라는 점은 우연이 아니다.
+
+좋은 출발 과제는 연구할 불확실성을 드러내면서 반복 평가가 가능하다. 파이프 맞춤 장치는 정렬을 의도적으로 바꾸면서 실패를 회복 가능하게 만들 수 있다. **여기서 얻는 독법.** 장비를 고르기 전에 재현할 실패를 적는다. 장치가 그 실패를 불가능하게 만든다면 편리해도 의도한 접촉 적응 주장은 시험하지 못한다.
 
 ### 6. 이 도메인이 매니퓰레이션 문헌에 되돌려주는 것
 

@@ -25,6 +25,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: A Menzi Muck M545 walking excavator rebuilt for autonomy — force-controllable hydraulics, full-state sensing (GNSS-RTK/IMU/LiDAR), and chassis adaptation to arbitrary terrain — the reference *system* for research-grade heavy-machine autonomy.
 
+**Context.** Heavy-machine autonomy needs a controllable and observable platform before algorithms can be compared. HEAP supplies that experimental infrastructure for terrain adaptation and arm tasks on a walking excavator.
+
+> [!tip] Key intuition · 핵심 직관
+> Hydraulic instrumentation makes state and interaction forces available to the planning-and-control stack. Active chassis adaptation supports a usable base on terrain while the arm executes the task; the platform makes these coupled problems experimentally accessible rather than solving them with a single policy.
+
 **The system, concretely** (what a Working-level read should extract):
 
 - **Base machine**: Menzi Muck M545, a ~12 t *walking* excavator — four individually
@@ -84,6 +89,11 @@ learning-based digging. The construction analogue of what ALOHA
 ## 한국어
 
 **한 줄 요약**: 자율화를 위해 개조된 Menzi Muck M545 보행 굴착기 — 힘 제어 가능한 유압, 완전 상태 센싱(GNSS-RTK/IMU/LiDAR), 임의 지형에의 섀시 적응 — 연구급 중장비 자율성의 기준 *시스템*.
+
+**맥락.** 중장비 자율성은 알고리즘 비교 전에 제어·관측 가능한 플랫폼이 필요하다. HEAP는 보행 굴착기의 지형 적응과 팔 과제에 실험 기반을 제공한다.
+
+> [!tip] 핵심 직관 · Key intuition
+> 유압 계측이 상태와 상호작용 힘을 계획·제어에 제공한다. 능동 차체 적응이 지형에서 기저를 지지하고 팔이 과제를 실행한다. 플랫폼은 결합된 문제를 정책 하나로 해결하기보다 실험할 수 있게 만든다.
 
 **시스템, 구체적으로** (Working 수준의 읽기가 뽑아내야 할 것):
 

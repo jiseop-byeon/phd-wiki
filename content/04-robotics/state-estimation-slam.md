@@ -47,6 +47,8 @@ The controller rarely receives the true state $x_t$. It acts on an estimate $\ha
 
 State is a modeling choice, not a synonym for all physical reality. Covariance describes uncertainty **under the assumed model**; a small covariance can still be overconfident when calibration, association, or noise assumptions are wrong.
 
+The distinction is needed because the controller acts on an estimate while the world evolves according to the actual state. For example, an excavator can receive a precise-looking pose after a localization outage; the small reported covariance may simply omit the unmodeled motion. **The reading this gives you.** Ask what the observation directly measured, what inference produced the estimate, and which alternatives the belief still represents. A point estimate and its timestamp should never be read as a complete account of uncertainty merely because they arrived in the same message.
+
 ### 3. Process and observation models
 
 $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
@@ -57,6 +59,8 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 - **Runtime:** the estimate is updated online as measurements arrive.
 
 Model error and sensor noise are different. Wheel slip violates a motion model; noisy range readings perturb measurements. Treating both as the same Gaussian noise can make a filter inconsistent.
+
+The process model predicts because measurements do not continuously reveal the whole state. The observation model connects a proposed state to what the sensor should see. For example, slipping wheels can make odometry predict motion that a range sensor does not support. That disagreement can reflect a wrong motion assumption rather than merely a noisy range. **The reading this gives you.** Trace a residual back through both models before enlarging a noise parameter. Ask whether the filter can represent the mismatch, whether measurements arrive in time, and whether a calibration error is being disguised as random uncertainty.
 
 ### 4. Bayes filtering: predict, then correct
 
@@ -109,6 +113,12 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 
 The posterior variance is $(1-K)4=0.8\,\mathrm{m}^2$. The estimate lies closer to the more precise measurement. This conclusion is valid only if the variances and model are credible.
 
+**Read the numbers in their causal order.** The predicted position comes from previous information and motion propagation. The sensor supplies new evidence. Their discrepancy, 12 − 10, is the innovation: how surprising this measurement is relative to the prediction. The gain determines how much of that discrepancy to use as a correction. It is not the probability that the sensor is right.
+
+Here the measurement variance is smaller than the prediction variance, so the correction moves the estimate toward the measurement. The remaining posterior variance describes uncertainty after combining the independent information under this scalar linear-Gaussian model. Variance has squared-distance units; standard deviation would have distance units. Mixing those two quantities in the gain changes the weighting incorrectly.
+
+**Try changing an assumption without recalculating.** If the measurement were much less precise, the gain should decrease and the estimate stay nearer the prediction. If the measurement reused information already inside the prediction, this formula would overcount evidence unless the correlation were modeled. Being able to predict those directions is a stronger first-pass check than memorizing 0.8 and 11.6.
+
 ### 7. Odometry, localization, mapping, and SLAM
 
 | Problem | What is treated as known | What is inferred |
@@ -118,7 +128,7 @@ The posterior variance is $(1-K)4=0.8\,\mathrm{m}^2$. The estimate lies closer t
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
 
-A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
+A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map. Compressed to one line, [SLAM is odometry plus loop closing](https://gisbi-kim.github.io/post/slam-root/): odometry is locally accurate and globally drifting, and loop closing smooths the error it accumulated.
 
 **The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
 paper names its front end by acronym and assumes you know what the letters buy. They differ
@@ -168,6 +178,14 @@ real-time reconstruction pipelines are built on. Its planning cousin is the **ES
 giving a planner both a clearance value and its gradient for free, which is why
 trajectory-optimization planners want one.
 
+**What a map does not store.** Every representation on this page converges on one estimate of
+the present. That is the right target for localisation and planning, and the wrong one for a
+robot that returns to the same building for a year: folding each change into a single map
+update discards *when* something was observed, under what conditions, what the robot did next
+and how that turned out — the evidence a later failure has to be explained with. Keeping those
+records alongside the map, rather than inside it, is the distinction between a map and a
+spatial memory ([[04-robotics/semantic-language-navigation|19. Semantic Navigation §7]]).
+
 ### 8. Sensor fusion and systems details
 
 - IMU: high-rate acceleration/angular velocity; bias causes drift.
@@ -188,7 +206,7 @@ trajectory-optimization planners want one.
 | tightly coupled | which raw measurements and states are jointly optimized |
 | consistent | whether reported uncertainty matches actual estimation error |
 
-Common metrics include Absolute Trajectory Error, Relative Pose Error, drift per distance/time, relocalization success, map accuracy, latency, and failure rate. A low average trajectory error can hide rare catastrophic tracking losses.
+Common metrics include Absolute Trajectory Error, Relative Pose Error, drift per distance/time, relocalization success, map accuracy, latency, and failure rate. A low average trajectory error can hide rare catastrophic tracking losses. One question sits above the whole table: lowering trajectory error is never the point, not getting lost is. Ask which physical outcome each metric stands in for, and whether the paper measures that outcome anywhere ([Giseop Kim on intermediate versus final metrics](https://gisbi-kim.github.io/aprl-research-vision/)).
 
 ### After reading
 
@@ -203,6 +221,8 @@ You should be able to:
 
 > [!tip] Going deeper · 더 깊이
 > Barfoot's [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf) is free and is the modern treatment, including estimation on SE(3) rather than in a vector space. Thrun, Burgard and Fox's *Probabilistic Robotics* remains the reference for the filtering and SLAM formulations themselves.
+>
+> For the optimisation back end specifically, Giseop Kim's [reading list](https://gisbi-kim.github.io/post/slam-textbooks/) makes the useful argument that only three things need to be understood — how rotation is parameterised, how iterative least squares works, and why the system matrix is sparse — and names a free document for each. In his suggested order: Solà's [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508) for rotation and its Jacobians; the ICRA 2016 SLAM tutorial slides *From Least-Squares to ICP*, extended by Grisetti et al.'s [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051), for the update itself; Solà's [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf) as the connective tissue; Dellaert and Kaess's [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf) for the Square Root SAM to iSAM2 line, where QR decomposition, fill-in and variable ordering come from; the sparsity half of the same tutorial, *Graph-Based SLAM and Sparsity*; and Triggs et al.'s [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document) for the photogrammetry roots this all grew from.
 
 ### Self-check
 
@@ -268,6 +288,8 @@ flowchart LR
 아래의** 불확실성이다 — 보정·association·잡음 가정이 틀리면 covariance가 작아도 과신일 수
 있다.
 
+제어기는 추정값으로 행동하지만 세계는 실제 상태에 따라 변하므로 구분이 필요하다. 위치 추정 중단 뒤 굴착기에 정밀해 보이는 자세가 들어와도 작은 공분산이 모델 밖 움직임을 빠뜨린 것일 수 있다. **여기서 얻는 독법.** 관측이 직접 측정한 것, 추정값을 만든 추론, 믿음이 아직 표현하는 대안을 묻는다. 점 추정과 시각이 같은 메시지에 도착했다고 불확실성 전체를 설명하는 것은 아니다.
+
 ### 3. 과정 모델과 관측 모델
 
 $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
@@ -280,6 +302,8 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 모델 오차와 센서 잡음은 다르다. 바퀴 미끄럼은 운동 모델을 *위반*하고, 잡음 낀 거리
 측정은 관측을 *교란*한다. 둘을 같은 가우시안 잡음으로 뭉뚱그리면 필터가 비일관해질 수
 있다.
+
+측정이 상태 전체를 연속적으로 알려 주지 못하므로 과정 모델이 예측한다. 관측 모델은 가정한 상태를 센서가 볼 값과 연결한다. 바퀴가 미끄러지면 오도메트리가 예측한 움직임을 거리 센서가 지지하지 않을 수 있다. 이는 거리 잡음보다 운동 가정의 오류일 수 있다. **여기서 얻는 독법.** 잡음 파라미터를 키우기 전에 잔차를 두 모델로 거슬러 간다. 필터가 불일치를 표현하는지, 측정이 제때 오는지, 보정 오차를 무작위 불확실성으로 숨기는지 묻는다.
 
 ### 4. 베이즈 필터: 예측하고, 보정한다
 
@@ -325,6 +349,9 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$, 센서 공분산 $R$, 관측 기하
 $H$에서 *따라 나온다*.
 
+> [!note] 필터와 스무더는 같은 갱신 · Filter and smoother are one update
+> 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 그 풀이의 Gauss–Newton 한 스텝은 iterated EKF의 보정과 대수적으로 같은 갱신이다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 그러므로 최적화 기반 시스템이 필터 기반보다 낫다는 결과가 나왔다면, 공은 대개 solver 선택이 아니라 더 나은 문제 구조, 즉 더 나은 $A$에 있다. 김기섭의 글 [SLAM은 Ax=b 를 푸는 것이다](https://gisbi-kim.github.io/post/slambackend-1/)와 [Gauss-Newton Opt == IEKF update?](https://gisbi-kim.github.io/post/gn-iekf-same/)를 요약·재구성한 것이다.
+
 ### 6. 계산 예제: 1차원 갱신
 
 예측 위치가 $10$ m, 분산 $4\,\mathrm{m}^2$이고 센서가 $12$ m, 분산 $1\,\mathrm{m}^2$를
@@ -334,6 +361,12 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 
 사후 분산은 $(1-K)4=0.8\,\mathrm{m}^2$. 추정값이 더 정밀한 측정 쪽으로 끌려간다 — 단
 이 결론은 분산과 모델이 믿을 만할 때에만 유효하다.
+
+**숫자를 인과 순서로 읽는다.** 예측 위치는 이전 정보와 운동 전파에서 온다. 센서는 새 증거를 준다. 차이 12 − 10은 innovation, 즉 예측에 비해 측정이 얼마나 뜻밖인지다. 이득은 그 차이 중 얼마를 보정에 쓸지 정한다. 센서가 맞을 확률이 아니다.
+
+여기서는 측정 분산이 예측 분산보다 작아 추정이 측정 쪽으로 이동한다. 사후 분산은 스칼라 선형 가우시안 모델에서 독립 정보를 결합한 뒤의 불확실성이다. 분산은 거리 제곱 단위이고 표준편차는 거리 단위다. 이득에 둘을 섞으면 가중치가 틀린다.
+
+**계산 없이 가정 하나를 바꿔 본다.** 측정이 훨씬 부정확하면 이득이 줄고 추정은 예측에 가까이 남아야 한다. 측정이 이미 예측에 들어간 정보를 재사용한다면 상관을 모델링하지 않은 이 식은 증거를 중복 계산한다. 0.8과 11.6을 외우기보다 변화 방향을 예측하는 것이 더 좋은 첫 이해 확인이다.
 
 ### 7. Odometry, localization, mapping, SLAM
 
@@ -348,7 +381,9 @@ SLAM **front end**는 특징·기하 제약을 추출하고 data association을 
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
 Gauss–Newton이나 Levenberg–Marquardt로 푼다. "Ceres/g2o/GTSAM으로 최적화한다"가 뜻하는 것이
 그것이다 ([[02-foundations/optimization|4. 최적화 §3.5]]). Loop closure는 누적 drift를
-고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
+고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다. 한 줄로 줄이면 [SLAM은 odometry + loop
+closing](https://gisbi-kim.github.io/post/slam-root/)이다 — odometry는 국소적으로 정확하고 전역적으로
+표류하며, loop closing은 그렇게 쌓인 오차를 펴 준다.
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
 front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
@@ -393,6 +428,13 @@ $C$보다 조밀하다**. 그 fill-in 때문에 슬라이딩 윈도우 추정기
 field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저장한다 — 계획기에게 여유 간격 값과
 그 그래디언트를 공짜로 주고, 궤적 최적화 계획기가 이것을 원하는 이유가 그것이다.
 
+**지도가 저장하지 않는 것.** 이 페이지의 모든 표현은 현재에 대한 추정 하나로 수렴한다. localization과
+계획에는 그것이 옳은 목표지만, 같은 건물로 1년간 돌아오는 로봇에게는 아니다. 변화를 매번 하나의 지도
+갱신에 접어 넣으면 *언제* 관측했는지, 어떤 조건에서였는지, 로봇이 다음에 무엇을 했고 그 결과가
+어땠는지가 사라진다 — 나중의 실패를 설명할 때 필요한 바로 그 증거다. 그 기록들을 지도 *안*이 아니라
+지도 *옆*에 두는 것이 지도와 공간 기억을 가르는 구분이다
+([[04-robotics/semantic-language-navigation|19. 의미 기반 내비게이션 §7]]).
+
 ### 8. 센서 융합과 시스템 세부
 
 - IMU: 고주기 가속도/각속도; bias가 drift를 만든다.
@@ -418,7 +460,10 @@ field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저
 
 흔한 지표: Absolute Trajectory Error, Relative Pose Error, 거리/시간당 drift,
 relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* ATE가 드문 파국적 추적
-손실을 가릴 수 있다.
+손실을 가릴 수 있다. 표 전체 위에 놓이는 질문이 하나 있다. 궤적 오차를 낮추는 것 자체가
+목적인 적은 없고, 로봇이 길을 잃지 않는 것이 목적이다. 각 지표가 어떤 물리적 결과를 대신하고 있는지, 그리고
+논문이 그 결과를 어디선가 직접 재기는 하는지 물어라 ([중간 지표와 최종 목적에 관한
+김기섭의 글](https://gisbi-kim.github.io/aprl-research-vision/)).
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
@@ -431,6 +476,8 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 
 > [!tip] 더 깊이 · Going deeper
 > Barfoot의 [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)가 무료이고 현대적 서술이다 — 벡터 공간이 아니라 SE(3) 위에서의 추정을 포함한다. 필터와 SLAM 정식화 자체의 참고서는 여전히 Thrun·Burgard·Fox의 *Probabilistic Robotics*다.
+>
+> 최적화 back end만 놓고 보면, 김기섭의 [자료 추천 글](https://gisbi-kim.github.io/post/slam-textbooks/)이 유용한 주장을 한다. 이해해야 할 것은 세 가지뿐이라는 것이다 — 회전을 어떻게 매개변수화하는가, 반복 최소자승은 어떻게 도는가, 시스템 행렬은 왜 희소한가. 그리고 각각에 무료 자료를 하나씩 붙인다. 그가 권하는 순서로: 회전과 그 야코비안은 Solà의 [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508); 갱신 자체는 ICRA 2016 SLAM 튜토리얼 슬라이드 *From Least-Squares to ICP*와 이를 확장한 Grisetti 외의 [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051); 그 사이를 잇는 조직으로 Solà의 [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf); QR 분해·fill-in·변수 순서가 나오는 Square Root SAM에서 iSAM2까지의 계보는 Dellaert·Kaess의 [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf); 같은 튜토리얼의 희소성 편 *Graph-Based SLAM and Sparsity*; 마지막으로 이 모든 것이 자라 나온 photogrammetry 뿌리로 Triggs 외의 [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document).
 
 ### 스스로 점검
 

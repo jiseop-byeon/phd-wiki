@@ -236,6 +236,11 @@ substrate, so LERF-style radiance fields are legacy; and **scene graphs won on t
 side and absorbed splats** — the graph is the queryable interface, splats are the geometry
 underneath.
 
+> [!note] Map or memory? · 지도인가 기억인가
+> Every representation above is still a *map*: one coherent estimate of where things currently are. A robot that works the same building for a year needs something more, because a map converges on a single canonical present. Move a chair, change the lighting, and the new observation overwrites the old one as an error — which is exactly the evidence you would need later to explain why a run failed. Experience-based navigation takes the other road: Churchill and Newman (IJRR 2013) kept many visual experiences of the same place, captured across three months of different times, weather and lighting, and matched the present against the right past rather than against an average of all pasts.
+>
+> The useful framing is that a spatial memory is a map plus an indexed set of experience records, each one holding not only geometry, topology and semantics but also *when* it was observed, under what context, what action followed, how it turned out, how certain it was, and which robot and model produced it. That last field, provenance, is what makes a record auditable at all. One practical consequence for reading retrieval papers: nearest-neighbour search over caption embeddings finds records that are semantically similar, which is not the same as records that are still valid here and now — a plausible match can be yesterday's meeting room on another floor, or this corridor before the renovation. Synthesised from Giseop Kim's essay [로봇은 지도를 기억해야 하는가, 경험을 기억해야 하는가](https://gisbi-kim.github.io/spatial-experience-memory/); which spatial information a robot even needs is itself task-dependent, argued in his [Situated Spatial Intelligence](https://gisbi-kim.github.io/situated-spatial-intelligence/).
+
 > [!important] This is where the wiki's perception notes were heading
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]],
 > [[01-canonical-papers/notes/3-vlm/clip|CLIP]],
@@ -255,6 +260,14 @@ underneath.
 | Which HM3D/MP3D split, and how many categories? | 6-category ObjectNav is saturated; 379-category is not |
 | Is the language actually load-bearing? | Rephrase-sensitivity is the standard failure |
 | SPL or bare success rate? | Success alone rewards inefficient wandering |
+
+One more question has become worth asking of any 2025–2026 paper that advertises
+self-correction or reasoning. *Where does the extra capability live?* A model post-trained on
+its own recovery data has learned to act correctly in situations resembling failures seen
+during training; a system that estimates its own uncertainty and then spends more computation
+— re-observing, retrieving, verifying, backtracking — is doing something different at run
+time. Both are legitimate, and papers routinely describe both as "self-correction", so read
+for the mechanism rather than the word ([[03-deep-learning/lineage|Lineage — Robot learning]]).
 
 ### After reading
 
@@ -505,6 +518,11 @@ ObjectNav는 아니었다.
 LERF식 방사 필드는 레거시다. 그리고 **로보틱스 쪽에서는 장면 그래프가 이겼고 스플랫을 흡수했다** —
 그래프가 질의 가능한 인터페이스이고 스플랫이 그 밑의 기하다.
 
+> [!note] 지도인가 기억인가 · Map or memory?
+> 위의 표현은 모두 여전히 *지도*다. 무엇이 지금 어디 있는지에 대한 일관된 추정 하나다. 같은 건물에서 1년을 일하는 로봇에게는 그것만으로 모자란다. 지도는 하나의 정본 현재로 수렴하기 때문이다. 의자가 옮겨지고 조명이 달라지면 새 관측이 옛 관측을 오류로 덮어쓴다. 그런데 그 덮어쓰인 것이야말로 나중에 왜 실패했는지 설명하려 할 때 필요한 증거다. 경험 기반 내비게이션은 다른 길을 간다. Churchill과 Newman(IJRR 2013)은 석 달간 서로 다른 시각·날씨·조명에서 모은 같은 장소의 여러 시각 경험을 그대로 남겼고, 현재를 모든 과거의 평균이 아니라 *맞는* 과거에 정합시켰다.
+>
+> 쓸 만한 틀은 이것이다. 공간 기억은 지도에 색인된 경험 기록 집합을 더한 것이다. 기록 하나는 기하·위상·의미만이 아니라 *언제* 관측했는지, 어떤 맥락에서였는지, 뒤이어 어떤 행동을 했고 결과가 어땠는지, 얼마나 확실했는지, 어떤 로봇과 모델이 만들었는지를 함께 담는다. 마지막 항목인 출처(provenance)가 있어야 기록을 나중에 따져 볼 수 있다. 검색 논문을 읽을 때 곧바로 쓰이는 귀결이 하나 있다. 캡션 임베딩의 최근접 이웃 검색은 *의미가 비슷한* 기록을 찾아 주지, 지금 여기서 *아직 유효한* 기록을 찾아 주지 않는다. 그럴듯한 매치가 어제 다른 층에서 찍힌 회의실이거나 공사 전의 이 복도일 수 있다. 김기섭의 에세이 [로봇은 지도를 기억해야 하는가, 경험을 기억해야 하는가](https://gisbi-kim.github.io/spatial-experience-memory/)를 요약·재구성한 것이다. 애초에 어떤 공간 정보가 필요한가부터 과제에 달렸다는 논의는 그의 [Situated Spatial Intelligence](https://gisbi-kim.github.io/situated-spatial-intelligence/)에 있다.
+
 > [!important] 위키의 인식 노트들이 향하던 곳이 여기다
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]],
 > [[01-canonical-papers/notes/3-vlm/clip|CLIP]],
@@ -523,6 +541,13 @@ LERF식 방사 필드는 레거시다. 그리고 **로보틱스 쪽에서는 장
 | 어느 HM3D/MP3D 분할이며 범주가 몇 개인가? | 6범주 ObjectNav는 포화, 379범주는 아니다 |
 | 언어가 실제로 부하를 지고 있는가? | 재구성 문장에 대한 민감성이 표준적 실패다 |
 | SPL인가 맨 성공률인가? | 성공률만으로는 비효율적 배회가 보상된다 |
+
+2025~26년 논문이 self-correction이나 reasoning을 내세운다면 물어 볼 값어치가 있는 질문이 하나 더
+있다. *추가된 능력은 어디에 사는가?* 자기 복구 데이터로 post-training한 모델은 학습 중 본 실패와
+닮은 상황에서 올바로 행동하도록 배운 것이다. 반면 스스로 불확실성을 추정하고 그때 계산을 더 쓰는
+시스템 — 다시 관측하고, 검색하고, 검증하고, 되돌아가는 — 은 실행 시점에 다른 일을 하고 있다. 둘 다
+정당하고, 논문들은 둘 다 self-correction이라 부른다. 그러니 단어가 아니라 기전을 읽어라
+([[03-deep-learning/lineage|계보 — Robot Learning]]).
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

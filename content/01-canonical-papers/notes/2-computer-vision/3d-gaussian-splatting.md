@@ -49,6 +49,8 @@ them soft, differentiable, and optimizable.
 
 ### Results
 
+**What it measured.** Per the [abstract](https://arxiv.org/abs/2308.04079): Novel-view rendering reaches at least 30 fps at 1080p in the reported scene-rendering setting. This is rendering speed after scene optimization, not a measurement of robot mapping latency.
+
 - Matches or beats Mip-NeRF360 quality with **~27–42 min training** (30K iterations: 41m33s / 26m54s / 36m02s on the three benchmark sets) and, per the results table, **100+ fps 1080p** — note the abstract itself claims only **≥30 fps 1080p
   rendering** (vs days/seconds-per-frame for NeRF-class methods).
 
@@ -65,6 +67,9 @@ Displaced NeRF as the default radiance-field method almost overnight; spawned dy
 (4D), SLAM-integrated, and semantic variants. For construction: fast photorealistic site
 digital twins, and — via [[vggt|VGGT]]-style feed-forward geometry — a path toward
 real-time as-built capture.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Real-time refers to rendering an optimized scene under the reported setup. It does not mean online mapping, metric reconstruction, or collision-ready geometry is solved at that rate. Separate scene optimization from rendering and inspect sparse-view artifacts.
 
 ### Connections
 
@@ -96,6 +101,8 @@ real-time as-built capture.
 
 ### 결과
 
+**무엇을 쟀는가.** [초록](https://arxiv.org/abs/2308.04079) 기준: 보고한 장면 렌더링 설정에서 1080p 새 시점 합성이 최소 30 fps다. 장면 최적화 뒤 렌더링 속도이며 로봇 매핑 지연의 측정값은 아니다.
+
 - Mip-NeRF360급 품질을 **학습 약 27~42분**(30K 반복 기준 세 벤치마크 집합에서 각각
   41분 33초 / 26분 54초 / 36분 2초)에, 그리고 결과 표 기준 **1080p 100 fps 이상**으로 —
   다만 **초록 자신은 1080p에서 30 fps 이상이라고만 주장한다**(NeRF류의 수 일 학습,
@@ -113,6 +120,9 @@ real-time as-built capture.
 거의 하룻밤 사이에 radiance field의 기본 기법 자리에서 NeRF를 밀어냈다; 동적(4D),
 SLAM 통합, 의미론 변형들을 낳았다. 건설에서는: 빠른 사진 수준 현장 디지털 트윈, 그리고
 [[vggt|VGGT]]식 feed-forward 기하를 거쳐 실시간 준공(as-built) 캡처로 가는 길.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 실시간은 보고한 설정에서 최적화된 장면을 렌더링하는 속도다. 같은 속도의 온라인 매핑, 미터법 복원, 충돌 판단용 형상이 해결됐다는 뜻은 아니다. 장면 최적화와 렌더링을 나누고 드문 시점의 아티팩트를 본다.
 
 ### 연결
 

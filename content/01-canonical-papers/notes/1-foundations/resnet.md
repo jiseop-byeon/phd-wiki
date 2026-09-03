@@ -55,6 +55,9 @@ After [[01-canonical-papers/notes/1-foundations/vgg|VGG]], deeper should have me
 
 The default vision backbone for nearly a decade, and still the standard baseline. More importantly, the residual connection became a universal ingredient: every [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] block is `x + Sublayer(x)` — ResNet's idea, applied twice per layer, in every LLM, VLM, and VLA today.
 
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> Residual connections enable effective optimization of the tested deep networks; depth alone is not a universal improvement rule. Check the architecture and training comparison. Recognition results do not automatically establish the usefulness of every later residual design.
+
 ### Connections
 
 - Previous: [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] → [[01-canonical-papers/notes/1-foundations/vgg|VGG]]
@@ -94,6 +97,9 @@ The default vision backbone for nearly a decade, and still the standard baseline
 ### 영향과 후속 연구
 
 이후 거의 10년간 비전의 기본 백본이었고 지금도 표준 베이스라인이다. 더 중요한 유산은 residual 연결이 보편 재료가 됐다는 것: 모든 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 블록이 `x + Sublayer(x)` 구조다 — ResNet의 아이디어가 오늘날 모든 LLM·VLM·VLA의 층마다 두 번씩 쓰이고 있다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 잔차 연결은 시험한 깊은 망의 효과적인 최적화를 돕는다. 깊이 자체가 보편적 개선 규칙은 아니다. 구조와 학습 비교를 확인한다. 인식 결과가 모든 후속 잔차 설계의 유용성까지 확립하지는 않는다.
 
 ### 연결
 

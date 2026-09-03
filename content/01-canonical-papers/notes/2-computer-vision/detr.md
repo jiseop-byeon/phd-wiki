@@ -49,6 +49,8 @@ end-to-end mapping from image to a set of boxes?
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2005.12872).
+
 - Matches tuned Faster R-CNN on COCO (~42 AP) with a conceptually minimal pipeline;
   notably better on large objects (global attention), weaker on small ones.
 
@@ -64,6 +66,9 @@ Made "queries + bipartite matching" the modern detection/segmentation grammar
 (Mask2Former, DINO-DETR — COCO leaders) and exported *learned queries* everywhere:
 [[blip-2|BLIP-2]]'s Q-Former and [[octo|Octo]]'s readout tokens are DETR queries in new
 clothes.
+
+> [!question] Reading the claim · 핵심 주장 읽는 법
+> End-to-end set prediction removes specific detection post-processing and assignment machinery; it does not eliminate all design choices. Check the query budget, training schedule, and object-size distribution. Detection quality is conditional on that complete recipe.
 
 ### Connections
 
@@ -96,6 +101,8 @@ clothes.
 
 ### 결과
 
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2005.12872).
+
 - 개념적으로 최소인 파이프라인으로 COCO에서 튜닝된 Faster R-CNN과 대등(~42 AP);
   큰 물체에서 특히 강하고(전역 어텐션), 작은 물체에서 약하다.
 
@@ -110,6 +117,9 @@ clothes.
 "쿼리 + 이분 매칭"을 현대 검출/분할의 문법으로 만들었고(Mask2Former, DINO-DETR — COCO
 선두), *학습된 쿼리*를 도처에 수출했다: [[blip-2|BLIP-2]]의 Q-Former와 [[octo|Octo]]의
 readout 토큰은 새 옷을 입은 DETR 쿼리다.
+
+> [!question] 핵심 주장 읽는 법 · Reading the claim
+> 종단간 집합 예측은 특정 검출 후처리·할당 장치를 제거한다. 모든 설계 선택이 사라지는 것은 아니다. 쿼리 수, 학습 일정, 물체 크기 분포를 확인한다. 검출 품질은 그 전체 방식에 조건부다.
 
 ### 연결
 

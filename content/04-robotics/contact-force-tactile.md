@@ -62,7 +62,7 @@ where $f_n$ is normal force, $f_t$ tangential force, and $\mu$ the friction coef
   </g>
 </svg>
 
-
+The inequality is useful because increasing tangential demand without enough normal support can exceed the assumed sticking region. For example, dust on a grasped panel can change the usable friction while its visual pose stays nearly unchanged. A planner that treats μ as known may therefore overestimate the contact margin. **The reading this gives you.** Ask how μ was obtained and whether slip feedback can correct a mistaken assumption before the object is lost. The force bound explains a possible failure mechanism; it does not substitute for observing the actual contact state.
 
 ### 3. Rigid and compliant models
 
@@ -74,9 +74,18 @@ where $f_n$ is normal force, $f_t$ tangential force, and $\mu$ the friction coef
 
 Simulator contact parameters are often numerical compromises. Success under one simulator setting is not evidence of robustness to real material variation.
 
+The model choice matters because an apparent controller improvement may come from a more forgiving simulated contact. For example, a compliant wall can absorb a wiping path error that would produce a force spike against a stiffer surface. A learned residual can correct repeatable mismatch, but only where its training observations constrain that correction. **The reading this gives you.** Separate the contact law, its parameter identification, and numerical settings. Then look for validation against the relevant physical response rather than success under one convenient simulator configuration.
+
 ### 4. Grasp and wrench language
 
 A contact force produces a force and moment—a **wrench**—on the object. The grasp map combines contact forces into an object wrench. **Form closure** immobilizes an object through geometry under a specified contact model; **force closure** uses admissible contact forces, commonly including friction, to resist arbitrary external wrenches. Required contact counts depend on dimension, friction and contact assumptions, and general-position conditions.
+
+**Build the wrench from one contact first.** A force $f$ applied at displacement $r$ from the chosen object origin creates moment $r\times f$. Moving the origin changes the moment coordinates even though the physical push is unchanged. Express every contact in a common frame before summing forces and moments; otherwise the grasp map combines incompatible quantities.
+
+Now imagine two fingers squeezing a panel. The two opposing forces may have zero net object wrench while maintaining a compressive preload at the contacts. That preload can make friction available against a later disturbance. Thus a zero net wrench does not mean “no contact forces,” and a large squeeze does not by itself establish force closure. The allowable contact forces must collectively resist disturbances in every required direction, under the stated friction and unilateral-contact constraints. With finite actuator limits, they resist a bounded set rather than literally unbounded external loads.
+
+> [!question] Check what closure promises · 닫힘의 보장 확인
+> Does force closure guarantee that the selected grip will hold a heavy panel? **Answer:** no. Closure is a capability under a contact model. The particular load must also fit within friction, actuator and material limits at the selected forces.
 
 ### 5. Position, force, impedance, and admittance
 
@@ -212,7 +221,7 @@ $$\lVert f_t\rVert\le \mu f_n$$
   </g>
 </svg>
 
-
+법선 지지가 부족한 상태에서 접선 요구가 커지면 가정한 고착 영역을 벗어날 수 있어 이 부등식이 유용하다. 잡은 패널의 먼지는 시각적 자세를 거의 바꾸지 않고 마찰을 바꿀 수 있다. μ를 안다고 취급하는 계획기는 접촉 여유를 과대평가할 수 있다. **여기서 얻는 독법.** μ를 어떻게 얻고 물체를 놓치기 전에 미끄러짐 피드백으로 잘못된 가정을 고칠 수 있는지 묻는다. 힘 경계는 가능한 실패 기전을 설명하지만 실제 접촉 상태의 관찰을 대신하지는 않는다.
 
 ### 3. 강체 모델과 유연 모델
 
@@ -225,12 +234,21 @@ $$\lVert f_t\rVert\le \mu f_n$$
 시뮬레이터의 접촉 파라미터는 대개 수치적 타협이다. 한 시뮬레이터 설정에서의 성공이
 실제 재료 변동에 대한 강건성의 증거는 아니다.
 
+겉보기 제어 개선이 더 관대한 시뮬레이션 접촉에서 올 수 있어 모델 선택이 중요하다. 순응적인 벽은 단단한 표면에서 힘 급증을 만들 닦기 경로 오차를 흡수할 수 있다. 학습 잔차는 반복 불일치를 고치지만 학습 관측이 보정을 제약하는 범위 안에서만 근거가 있다. **여기서 얻는 독법.** 접촉 법칙, 파라미터 식별, 수치 설정을 나눈다. 편한 설정 하나의 성공보다 관련 물리 반응과의 검증을 찾는다.
+
 ### 4. 파지와 렌치의 언어
 
 접촉력은 물체에 힘과 모멘트 — **렌치(wrench)** — 를 만든다. Grasp map은 접촉력들을
 물체 렌치로 결합한다. **Form closure**는 명시된 접촉 모델 아래 기하만으로 물체를
 고정하고, **force closure**는 허용 접촉력(대개 마찰 포함)으로 임의 외부 렌치에
 저항한다. 필요한 접촉 수는 차원, 마찰·접촉 가정, 일반 위치 조건에 의존한다.
+
+**접촉 하나의 렌치부터 만든다.** 물체 원점에서 변위 $r$인 곳에 힘 $f$가 가해지면 모멘트는 $r\times f$다. 원점을 옮기면 같은 물리적 밀기라도 모멘트 좌표가 달라진다. 힘과 모멘트를 더하기 전에 모든 접촉을 같은 프레임으로 표현해야 한다. 그렇지 않으면 파지 사상이 서로 맞지 않는 양을 합친다.
+
+두 손가락이 패널을 조이는 상황을 보자. 반대 방향 힘은 합성 물체 렌치가 0이어도 접촉의 압축 예압을 유지할 수 있다. 그 예압이 이후 외란에 대한 마찰력을 제공한다. 따라서 합성 렌치가 0이라고 접촉력이 없는 것은 아니다. 세게 조인다고 힘 닫힘이 성립하는 것도 아니다. 허용 접촉력들이 마찰과 단방향 접촉 조건 아래 필요한 모든 방향의 외란에 대응해야 한다. 액추에이터 한계가 유한하면 실제로 버틸 하중 집합도 유한하다.
+
+> [!question] 닫힘의 보장 확인 · Check what closure promises
+> 힘 닫힘이면 선택한 파지로 무거운 패널을 들 수 있는가? **답:** 그것만으로는 부족하다. 닫힘은 접촉 모델 아래의 능력이다. 선택한 힘에서 실제 하중이 마찰·액추에이터·재료 한계 안에도 들어야 한다.
 
 ### 5. 위치, 힘, 임피던스, 어드미턴스
 

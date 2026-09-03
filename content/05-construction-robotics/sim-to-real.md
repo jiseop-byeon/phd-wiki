@@ -127,6 +127,8 @@ that affect the policy were represented, varied, or adapted**.
 Zero-shot transfer means no target-domain training update before deployment; it does not
 mean no real-system knowledge was used to build or tune the simulator.
 
+The ladder separates uncertainties because a physically plausible policy can still fail through timing or saturation on hardware. For example, a digging command that works with immediate simulated actuation may arrive too late through the real control interface. **The reading this gives you.** Name what each transition validates and keep later tuning out of the held-out evaluation. Moving up the ladder means adding evidence about a boundary, not simply filming the same behavior on a larger machine.
+
 ### 4. Reading the evidence
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
@@ -138,6 +140,11 @@ mean no real-system knowledge was used to build or tune the simulator.
 Useful measures include real/sim performance ratio, interventions per hour, constraint
 violations, performance across parameter shifts, adaptation data/time, and degradation
 outside the training range.
+
+> [!example] Worked example · 계산 예제
+> **Marginal coverage is not joint coverage.** Suppose each of 6 randomized parameters covers 80% of its real marginal distribution. If the real parameters are independent, the chance of a real condition lying inside every range is 0.8⁶ ≈ **26%**. Covering 90% per parameter gives 0.9⁶ ≈ **53%**.
+>
+> **The reading this gives you.** Ask for variables, ranges, and dependencies before accepting a robustness claim. In the first hypothetical setting, about 74% of joint real conditions lie outside the randomization box. That is not a predicted failure rate, nor proof that all points inside were adequately sampled. Real parameter correlations also change the coverage; separate training support from actual transfer evaluation.
 
 ### After reading
 
@@ -287,6 +294,8 @@ outside the training range.
 Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없다는 뜻이지, 시뮬레이터를
 만드는 데 실제 시스템 지식을 전혀 쓰지 않았다는 뜻이 아니다.
 
+물리적으로 그럴듯한 정책도 하드웨어의 지연·포화로 실패할 수 있어 단계별 불확실성을 나눈다. 즉시 구동하는 시뮬레이션의 굴착 명령이 실제 제어 인터페이스에서는 늦게 도착할 수 있다. **여기서 얻는 독법.** 단계 이동이 검증하는 것을 밝히고 후속 튜닝을 미관측 평가에서 분리한다. 단계 상승은 큰 기계에서 같은 동작을 촬영하는 것보다 경계에 대한 증거를 추가하는 일이다.
+
 ### 4. 증거 읽기
 
 > [!warning] 주장 읽기
@@ -296,6 +305,11 @@ Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없�
 
 유용한 측정값은 현실/시뮬 성능 비율, 시간당 개입, 제약 위반, 파라미터 변화별 성능, 적응
 데이터·시간, 학습 범위 밖의 성능 저하다.
+
+> [!example] 계산 예제 · Worked example
+> **개별 범위의 포함률과 동시 포함률은 다르다.** 무작위화한 파라미터 6개가 각각 실제 주변분포의 80%를 덮는다고 하자. 실제 파라미터들이 독립이면 모든 범위 안에 실제 조건이 들어갈 확률은 0.8⁶ ≈ **26%** 수준이다. 각각 90%를 덮으면 0.9⁶ ≈ **53%** 수준이다.
+>
+> **여기서 얻는 독법.** 강건성 주장을 읽기 전에 변수, 범위, 의존 관계를 확인한다. 첫 가상 설정에서는 실제 결합 조건의 약 74%가 무작위화 상자 밖에 있다. 이는 예상 실패율이 아니며 상자 안을 충분히 표집했다는 증거도 아니다. 실제 파라미터의 상관도 포함률을 바꾼다. 학습 범위와 실제 전이 평가를 구분한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

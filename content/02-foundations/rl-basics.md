@@ -256,8 +256,7 @@ sometimes discount factor, occasionally the bootstrap.
 
 ### 5. Model-based RL — the world-model connection
 
-- Model-free RL asks the *real world* for every gradient — untenable for robots (time,
-  wear, safety). Model-based RL learns $\hat p(s'|s,a)$ and trains the policy on
+- Model-free RL updates a policy or value function without planning through an explicit transition model. Its experience may come from hardware, simulation, or a stored dataset; off-policy methods can reuse it for many updates. Collecting new hardware experience can be expensive in time, wear and safety. The learned-model approach here learns $\hat p(s'|s,a)$ and trains the policy on
   *imagined* rollouts: [[01-canonical-papers/notes/5-world-models/world-models|World Models]] →
   [[01-canonical-papers/notes/5-world-models/planet|PlaNet]] (plan through the model) →
   [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] (backprop through the model).
@@ -276,6 +275,8 @@ flowchart TD
     MB --> PL["plan through the model<br/>PlaNet"]
     MB --> BP["backprop through the model<br/>Dreamer"]
 ```
+
+A world model is useful because imagined consequences let learning reuse collected experience. For example, an excavation policy can compare predicted outcomes before trying every action on hardware. The model can also reward actions whose apparent advantage is only a prediction error, especially beyond observed conditions. **The reading this gives you.** Ask where real observations correct the model and how imagined horizons are limited. Model-free methods can also reuse stored experience; the defining distinction is using an explicit predictive model for planning or learning, not whether every update requires a fresh physical trial.
 
 ### 6. RL vs imitation in robot learning (orientation map)
 
@@ -807,8 +808,7 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
 
 ### 5. 모델 기반 RL — 월드모델과의 연결
 
-- 모델 프리 RL은 그래디언트 하나하나를 *실제 세계*에 묻는다 — 로봇에게는 지속 불가능
-  (시간, 마모, 안전). 모델 기반 RL은 $\hat p(s'|s,a)$를 배우고 *상상된* 롤아웃으로 정책을
+- 모델 프리 RL은 명시적인 전이 모델을 통한 계획 없이 정책이나 가치 함수를 갱신한다. 경험은 하드웨어·시뮬레이션·저장 데이터에서 올 수 있고, off-policy 방법은 여러 갱신에 재사용한다. 새 하드웨어 경험 수집은 시간·마모·안전 비용이 클 수 있다. 여기의 학습 모델 기반 접근은 $\hat p(s'|s,a)$를 배우고 *상상된* 롤아웃으로 정책을
   학습한다: [[01-canonical-papers/notes/5-world-models/world-models|World Models]] →
   [[01-canonical-papers/notes/5-world-models/planet|PlaNet]](모델을 통해 계획) →
   [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]](모델을 통해 역전파).
@@ -828,7 +828,7 @@ flowchart TD
     MB --> BP["모델을 통해 역전파<br/>Dreamer"]
 ```
 
-
+월드모델은 상상한 결과로 수집 경험을 재사용하게 한다. 굴착 정책은 모든 행동을 장비에서 시도하기 전에 예측 결과를 비교할 수 있다. 하지만 관찰 범위 밖에서는 예측 오차로만 좋아 보이는 행동을 보상할 수도 있다. **여기서 얻는 독법.** 실제 관측이 어디서 모델을 고치고 상상 지평을 어떻게 제한하는지 묻는다. 모델프리도 저장 경험을 재사용할 수 있다. 핵심 구분은 매 갱신의 새 물리 시행 여부보다 계획·학습에 명시적 예측 모델을 쓰는가다.
 
 ### 6. 로봇 학습에서 RL vs 모방 (지도)
 

@@ -24,15 +24,48 @@ Repeated frames from one robot run are not thousands of independent trials.
 
 When the experimental unit is a *person*, this page's logic still applies but the measurement procedures are their own settled subject — [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] is this page's toolbox for that case.
 
+For example, a tactile grasping study may assign surface conditions to objects while training several policy seeds. Repeated attempts on the same object help estimate performance on that object; they do not create new independent materials. Decide whether the intended claim concerns new objects, new surfaces, or training variability before choosing an aggregation. **The reading this gives you.** Look for the entity that could have been independently assigned to another condition. That entity determines which observations are clustered and what population the uncertainty can reasonably describe.
+
+> [!note] Verification is not validation · 검증과 타당성 확인은 다르다
+> Two different questions hide under the word "testing", and a design that answers one does
+> not answer the other. *Verification* asks whether the system was built the way it was
+> specified: does the code match the spec, are the interlocks wired as documented, is the
+> model version the one reported. *Validation* asks whether the specification is the right
+> one: does the benchmark's definition of success match the behaviour a user actually wants,
+> does the test environment represent the deployment environment. A robot can pass every
+> verification test and still be validated against the wrong target — and the failure will
+> look like a modelling problem rather than a design one.
+>
+> Deciding which of the two a study is producing belongs in the design, before the runs
+> start. Two further consequences. The variables and units above serve verification claims
+> naturally, while validation usually needs a comparison the experiment was not built for.
+> And neither ends at publication: a deployed system meets changing environments and ageing
+> hardware, so staying inside acceptable risk is something to keep checking, not something
+> established once. Synthesised from Giseop Kim's essay
+> [AI가 만든 결과를 검증하는 능력](https://gisbi-kim.github.io/ai-verification-for-robotics/).
+
 ### 2. Comparisons
 
 A strong baseline isolates the proposed contribution. Include a practical existing system, a simpler method, and when useful an **oracle** that uses unavailable information to estimate an upper bound. The oracle must be labeled; it is not a deployable competitor.
 
 Use paired comparisons when the same scenes/tasks can be evaluated under both conditions. Randomize or counterbalance order to reduce learning, battery, wear, weather, and operator effects.
 
+A comparison is explanatory only when the changed factors match the question. Suppose a new tactile architecture also receives additional demonstrations and a different pretrained encoder, while the baseline is trained from scratch. A higher score could come from the architecture, data, representation, or their interaction. This is the confound identified in the self-check; putting it in the design prevents an ambiguous headline result.
+
+For a system-level comparison, the complete packages can still be useful competitors if their resources are disclosed. For an architecture claim, add a comparison with matched data, initialization, tuning opportunity, and control interface.
+
+**The reading this gives you.** Read the baseline description as a list of information and resources available to each method. Ask which difference the reported outcome can isolate. An oracle answers how much headroom better information might offer; it cannot establish that a deployable method actually obtains that information.
+
 ### 3. Variation and splits
 
 Separate training/tuning/test data and document the unit of split. Random frames from the same trajectory leak scene, object, and temporal information. Test across relevant variation: tasks, layouts, materials, lighting/weather, hardware, operators, speed, and failure perturbations.
+
+> [!example] Worked example · 계산 예제
+> **A small reported gain needs a variability context.** In a hypothetical experiment, seed-to-seed standard deviation is 4 percentage points. With 3 independent seeds, the standard error of the mean is 4/√3 ≈ 2.3 percentage points; with 5 it is about 1.8, and with 10 about 1.3.
+>
+> A 3 percentage point improvement is of a similar scale to this uncertainty. Standard error is not a confidence interval, and the uncertainty of a difference also depends on the baseline and whether the design is paired. These values alone therefore establish neither significance nor its absence.
+>
+> **The reading this gives you.** Ask for seed count, variation, and the comparison design before interpreting a small improvement. Additional seeds measure training variability; they do not repair leakage from splitting neighboring frames across training and test, or substitute for testing genuinely new surfaces.
 
 ### 4. Trials and uncertainty
 
@@ -65,6 +98,12 @@ Predeclare primary outcomes when many metrics and conditions make cherry-picking
 
 An ablation may remove or change architecture, objective, data, sensing, controller, or hyperparameter. Hold the rest constant enough to isolate interpretation. Compare data, compute, tuning effort, pretrained assets, sensors, and control interface—not architecture names alone.
 
+Budget matching matters because removing a component may also remove resources. If the tactile model receives more optimization steps than its ablation, the comparison changes both information and training effort. Conversely, forcing an ablation to use an unsuitable inherited hyperparameter can make a useful simpler method look artificially weak.
+
+For example, evaluate the full and reduced grasping policies with declared training budgets and comparable tuning opportunities. Keep demonstrations, test conditions, and the downstream controller fixed for the question about tactile information. If additional compute is required to exploit touch, report that trade-off explicitly rather than hiding it in the component label.
+
+**The reading this gives you.** Ask what remained matched and what was retuned. An ablation supports a conclusion under that resource allocation. A separate equal-compute comparison may be needed to ask which system is preferable under a deployment budget. Neither comparison automatically answers the other's question.
+
 ### 6. Reproducibility vocabulary
 
 Terminology differs across communities, so define it. A useful convention is:
@@ -73,13 +112,37 @@ Terminology differs across communities, so define it. A useful convention is:
 - **Reproducibility:** independent team uses provided artifacts/procedure and obtains compatible results.
 - **Replicability:** independent implementation or study tests the same claim.
 
+The distinction is useful because a repeated number can come from very different evidence. Your own team rerunning a saved grasping configuration checks internal consistency. Another team using the released checkpoint checks whether the provided artifacts and instructions transfer. A separate implementation testing the same friction hypothesis probes dependence on the original code and engineering choices.
+
+Report what was actually repeated: data, implementation, hardware, protocol, or the scientific claim. Do not rely on the label alone, especially when a venue defines these words differently.
+
+**The reading this gives you.** Inspect the shared and changed ingredients behind a reproduction statement. A successful rerun on the original logs establishes less about new physical conditions than a study on independently prepared surfaces, even if both are described with the same convenient word.
+
 ### 7. Artifact checklist
 
 Record code commit, dependencies/container, model and data versions, splits, seeds, training commands, configurations, calibration, frame conventions, controller gains, firmware, hardware revision, trial protocol, raw logs, exclusions, and analysis scripts. Provide enough detail to reconstruct what physically happened.
 
+A checklist becomes useful when its entries reconstruct a specific attempt. For example, a tactile grasp can fail because the saved sensor calibration no longer matches the mounted pad. Releasing training code does not reveal that discrepancy. The trial record must connect the calibration and hardware state to the checkpoint and command stream used that day.
+
+Link each reported run to a configuration snapshot and a raw log, and preserve the analysis command that produced its result. Record exclusions with reasons so another reader can recover the denominator. Also document the reset procedure: a carefully prepared starting pose may be an essential experimental condition.
+
+**The reading this gives you.** Choose one result and ask whether its complete path back to a physical attempt is recoverable. Missing entries identify a reproducibility limitation more precisely than a general statement that the code is available.
+
 ### 8. Worked design
 
 Claim: tactile sensing improves insertion recovery. Use the same robot, controller, demonstrations, objects, initial offsets, and failure perturbations. Compare vision-only and vision+tactile in randomized paired trials. Report insertion success, peak force, recovery time, damage, interventions, latency, and failure taxonomy across held-out clearances/materials.
+
+Which of these choices to make is settled by the claim–evidence table in [[06-research-practice/research-questions-claims|Research Questions §7]], filled before any run. For a complete design of the friction question in [[06-research-practice/research-questions-claims|Research Questions §1]], start with the uncertainty: does contact-time estimation of μ recover grasp success lost when the planner assumes incorrect friction? This is a proposed experiment, not a report of an advantage already observed.
+
+Define the intervention as enabling friction updates from the available tactile stream. Use the same planner with fixed μ as the comparator, and keep grasp candidates, demonstrations, control interface, and sensing opportunities comparable. A reference-friction condition can diagnose headroom if its privileged information is labeled. It must not be presented as an equally deployable policy.
+
+Define units before counting trials. Objects and independently prepared surface conditions support claims about physical variation; training seeds support claims about optimization variability. Attempts within one object-condition group are repeated observations. Record their grouping rather than treating every sensor frame as independent evidence. Hold out the surface conditions needed for the transfer claim and keep them out of tuning.
+
+Randomize or counterbalance method order within matched conditions. Record surface preparation, contact timing, failed grasps, operator stops, and resets. Predeclare whether an intervention ends the autonomous attempt. Otherwise one method can receive more rescue and appear better without making better decisions.
+
+Choose the sample size from the required precision and the claim, using §4's uncertainty tools as planning guides. Do not select a convenient count and declare reliability afterward; a rare-failure claim needs a different exposure argument from an average-performance comparison. Use appropriate intervals and preserve clustering in the analysis.
+
+Report success with uncertainty, recovery behavior, estimation timing, and failure categories for each condition. Include the cost of unnecessary corrections and the effect of compute latency. A finding that updates arrive after the decisive contact would locate a useful sensing boundary even without a success-rate gain. The final claim should distinguish this mechanistic evidence from the broader question of transfer across construction tasks.
 
 ### After reading
 
@@ -125,6 +188,24 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 
 실험 단위가 *사람*일 때도 이 페이지의 논리는 그대로 적용되지만, 측정 절차는 그 자체로 정착된 별도 주제다 — [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 그 경우를 위한 이 페이지의 공구함이다.
 
+예를 들어 촉각 파지 연구는 물체별 표면 조건을 배정하고 여러 정책 시드를 학습할 수 있다. 같은 물체의 반복 시도는 그 물체의 성능 추정을 돕지만 새로운 독립 재료를 만들지는 않는다. 새 물체, 새 표면, 학습 변동 중 무엇을 주장할지 먼저 정하고 집계한다. **여기서 얻는 독법.** 독립적으로 다른 조건에 배정될 수 있었던 대상을 찾는다. 그 대상에 따라 관측의 군집과 불확실성이 설명할 모집단이 정해진다.
+
+> [!note] 검증과 타당성 확인은 다르다 · Verification is not validation
+> "테스트"라는 한 단어 아래 서로 다른 두 질문이 숨어 있고, 한쪽에 답하는 설계가 다른 쪽에는
+> 답하지 못한다. *Verification*(검증)은 시스템이 명세대로 만들어졌는지 묻는다. 코드가 명세와
+> 맞는가, 인터록이 문서대로 배선됐는가, 모델 버전이 보고된 그것인가. *Validation*(타당성 확인)은
+> 그 명세 자체가 옳은지 묻는다. 벤치마크의 성공 정의가 사용자가 실제로 원하는 행동과 같은가,
+> 시험 환경이 배치 환경을 대표하는가. 로봇은 모든 verification 시험을 통과하고도 틀린 목표에
+> validation될 수 있다. 그리고 그 실패는 설계 문제가 아니라 모델링 문제처럼 보인다.
+>
+> 이 연구가 둘 중 무엇을 생산하는지 정하는 일은 실행 전 설계 단계에 속한다. 귀결이 둘 더 있다.
+> 위의 변수와 단위는 verification 주장을 자연스럽게 받쳐 주지만, validation은 대개 그 실험이
+> 만들어지지 않은 비교를 요구한다. 그리고 둘 다 출판에서 끝나지 않는다. 배치된 시스템은 변하는
+> 환경과 늙어 가는 하드웨어를 만나므로, 허용 가능한 위험 안에 머무는지는 한 번 확립하는 것이
+> 아니라 계속 확인하는 일이다. 김기섭의 에세이
+> [AI가 만든 결과를 검증하는 능력](https://gisbi-kim.github.io/ai-verification-for-robotics/)을
+> 요약·재구성한 것이다.
+
 ### 2. 비교
 
 강한 베이스라인은 제안된 기여를 분리한다. 실용적인 기존 시스템, 더 단순한 방법,
@@ -134,11 +215,24 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 같은 장면/과제를 두 조건에서 평가할 수 있으면 짝지은 비교를 써라. 학습·배터리·마모·
 날씨·운용자 효과를 줄이도록 순서를 무작위화하거나 counterbalance하라.
 
+바꾼 요인이 질문과 맞아야 설명력 있는 비교가 된다. 새 촉각 구조에 시연과 사전학습 인코더도 추가하고 베이스라인은 처음부터 학습했다고 하자. 점수 차이는 구조, 데이터, 표현 또는 상호작용에서 올 수 있다. 자가점검에서 지적한 혼입을 설계 단계에서 막아야 대표 결과의 의미가 흐려지지 않는다.
+
+시스템 수준 비교라면 자원을 공개한 전체 패키지끼리의 경쟁도 유익하다. 구조에 대한 주장이면 데이터, 초기화, 튜닝 기회, 제어 인터페이스를 맞춘 비교를 추가한다.
+
+**여기서 얻는 독법.** 베이스라인 설명을 각 방법이 가진 정보와 자원 목록으로 읽는다. 결과가 어느 차이를 분리할 수 있는지 묻는다. 오라클은 더 좋은 정보가 줄 여지를 보여 준다. 배포 가능한 방법이 그 정보를 실제 얻는다는 증거는 아니다.
+
 ### 3. 변동과 분할
 
 학습/튜닝/시험 데이터를 분리하고 분할의 단위를 문서화하라. 같은 궤적의 무작위 프레임은
 장면·물체·시간 정보를 누출한다. 관련 변동 전반 — 과제, 배치, 재료, 조명/날씨, 하드웨어,
 운용자, 속도, 실패 교란 — 에 걸쳐 시험하라.
+
+> [!example] 계산 예제 · Worked example
+> **작은 개선에는 변동 정보가 필요하다.** 가상 실험에서 시드 간 표준편차가 4%p다. 독립 시드 3개면 평균의 표준오차는 4/√3 ≈ 2.3%p다. 5개면 약 1.8%p, 10개면 약 1.3%p다.
+>
+> 3%p 개선은 이 불확실성과 비슷한 규모다. 표준오차는 신뢰구간이 아니다. 차이의 불확실성은 베이스라인의 변동과 짝지은 설계 여부에도 달려 있다. 이 값만으로 유의하거나 유의하지 않다고 판정할 수 없다.
+>
+> **여기서 얻는 독법.** 작은 개선을 읽기 전에 시드 수, 변동, 비교 설계를 확인한다. 시드를 늘리면 학습 변동을 측정한다. 이웃 프레임을 학습과 시험으로 나눈 누수를 고치거나 새로운 표면의 시험을 대신하지는 못한다.
 
 ### 4. 시행 수와 불확실성
 
@@ -179,6 +273,12 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 해석을 분리할 만큼 나머지를 고정하라. 구조 이름만이 아니라 데이터, 컴퓨트, 튜닝 노력,
 사전학습 자산, 센서, 제어 인터페이스를 비교하라.
 
+구성요소를 빼면서 자원도 뺄 수 있으므로 예산 정렬이 중요하다. 촉각 모델을 절제 모델보다 더 오래 학습하면 정보와 학습 노력이 함께 바뀐다. 반대로 절제 모델에 맞지 않는 하이퍼파라미터를 그대로 강요해도 단순한 방법을 부당하게 약화할 수 있다.
+
+전체·축소 파지 정책에 학습 예산과 대등한 튜닝 기회를 명시한다. 촉각 정보의 가치를 묻는 비교에서는 시연, 시험 조건, 하류 제어기를 고정한다. 촉각을 활용하려면 연산이 더 필요할 경우 그 교환 관계를 드러낸다. 부품 이름 안에 숨기지 않는다.
+
+**여기서 얻는 독법.** 무엇을 맞추고 무엇을 재튜닝했는지 묻는다. 절제는 해당 자원 배분 아래의 결론을 지지한다. 배포 예산에서 어느 시스템이 더 나은지는 별도의 동일 연산 비교가 필요할 수 있다. 두 비교가 서로의 질문에 자동으로 답하지는 않는다.
+
 ### 6. 재현성 어휘
 
 용어가 커뮤니티마다 다르므로 정의하고 써라. 유용한 관례:
@@ -187,11 +287,23 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 - **Reproducibility:** 독립 팀이 제공된 산출물·절차로 양립 가능한 결과를 얻는다.
 - **Replicability:** 독립 구현·연구가 같은 주장을 시험한다.
 
+같은 숫자의 반복도 서로 다른 증거에서 올 수 있어 이 구분이 유용하다. 자기 팀이 저장한 파지 설정을 다시 돌리면 내부 일관성을 확인한다. 다른 팀이 공개 체크포인트를 쓰면 산출물과 설명의 이전 가능성을 확인한다. 별도 구현으로 같은 마찰 가설을 시험하면 원래 코드와 공학적 선택에 대한 의존성을 살핀다.
+
+데이터, 구현, 하드웨어, 절차, 과학적 주장 중 무엇을 반복했는지 적는다. 학회마다 용어 정의가 다를 수 있으므로 명칭에만 기대지 않는다.
+
+**여기서 얻는 독법.** 재현 주장 뒤에서 공유한 것과 바꾼 것을 본다. 원래 로그의 재실행은 독립적으로 준비한 표면에서의 연구보다 새 물리 조건에 대해 적은 것을 말한다. 편의상 같은 단어를 쓰더라도 그렇다.
+
 ### 7. 산출물 체크리스트
 
 코드 커밋, 의존성/컨테이너, 모델·데이터 버전, 분할, 시드, 학습 명령, 설정, 보정, 프레임
 관례, 제어기 이득, 펌웨어, 하드웨어 리비전, 시행 프로토콜, 원시 로그, 제외, 분석
 스크립트를 기록하라. 물리적으로 무슨 일이 있었는지 재구성할 수 있을 만큼 상세해야 한다.
+
+목록은 특정 시도를 재구성할 때 유용해진다. 예를 들어 저장된 센서 보정이 장착한 패드와 맞지 않아 촉각 파지가 실패할 수 있다. 학습 코드 공개만으로는 이 차이를 알 수 없다. 시행 기록이 그날의 보정·하드웨어 상태를 체크포인트와 명령 스트림으로 연결해야 한다.
+
+보고한 시행마다 설정 스냅샷과 원본 로그를 연결하고 결과를 만든 분석 명령을 보존한다. 제외 이유도 남겨 다른 독자가 분모를 복원하게 한다. 리셋 절차도 기록한다. 정성껏 준비한 시작 자세가 핵심 실험 조건일 수 있다.
+
+**여기서 얻는 독법.** 결과 하나를 골라 실제 시도까지의 전체 경로를 복원할 수 있는지 묻는다. 빠진 항목은 코드가 공개됐다는 일반 문구보다 재현성 한계를 정확히 알려 준다.
 
 ### 8. 설계 예제
 
@@ -199,6 +311,18 @@ Claim: tactile sensing improves insertion recovery. Use the same robot, controll
 실패 교란을 쓰라. vision-only와 vision+tactile을 무작위 짝지은 시행으로 비교하라. 삽입
 성공, 최대 힘, 회복 시간, 손상, 개입, 지연, 실패 분류를 held-out 공차/재료에 걸쳐
 보고하라.
+
+이 선택들 중 무엇을 할지는 [[06-research-practice/research-questions-claims|연구 질문 §7]]의 주장–증거 표가 결판내며, 그 표는 어떤 실행보다 먼저 채운다. [[06-research-practice/research-questions-claims|연구 질문 §1]]의 마찰 질문을 끝까지 설계하자. 불확실성은 접촉 중 μ 추정이 잘못된 마찰 가정 때문에 잃은 파지 성공을 회복하는가다. 이점이 이미 관찰됐다는 보고가 아니라 제안 실험이다.
+
+개입은 주어진 촉각 스트림으로 마찰 갱신을 켜는 것이다. 비교 대상은 고정 μ를 쓰는 같은 계획기다. 파지 후보, 시연, 제어 인터페이스, 센싱 기회를 대등하게 유지한다. 기준 마찰을 아는 조건은 특권 정보를 표시하면 개선 여지를 진단할 수 있다. 똑같이 배포 가능한 정책으로 제시하지 않는다.
+
+시행을 세기 전에 단위를 정한다. 물체와 독립적으로 준비한 표면 조건은 물리적 변동의 주장을 지지한다. 학습 시드는 최적화 변동을 다룬다. 같은 물체·조건의 시도는 반복 관측이다. 센서 프레임을 독립 증거로 세지 말고 군집을 남긴다. 전이 주장에 필요한 표면 조건은 튜닝에서 제외한다.
+
+짝지은 조건 안에서 방법 순서를 무작위화하거나 균형 배치한다. 표면 준비, 접촉 시점, 파지 실패, 운전자 정지, 리셋을 기록한다. 개입이 자율 시도를 끝내는지 미리 선언한다. 그렇지 않으면 한 방법이 더 많은 구조를 받고도 더 좋은 결정을 한 것처럼 보인다.
+
+표본 수는 필요한 정밀도와 주장에 맞춰 정하고 §4의 도구를 계획 지침으로 쓴다. 편한 시행 수를 고른 뒤 신뢰성을 선언하지 않는다. 희귀 실패의 노출 논증은 평균 성능 비교와 다르다. 적절한 구간을 쓰고 분석에서 군집 구조를 보존한다.
+
+조건별 성공과 불확실성, 회복 행동, 추정 시점, 실패 분류를 보고한다. 불필요한 보정의 비용과 연산 지연도 포함한다. 갱신이 결정적 접촉 뒤에 도착한다는 결과는 성공률 개선이 없어도 유용한 센싱 경계다. 최종 주장은 이 기전 증거와 건설 과제 전반의 전이 질문을 구분해야 한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

@@ -96,6 +96,8 @@ matters: the same demonstration data drives different arms.
 
 ### Results
 
+**What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2402.10329).
+
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > **The abstract of this paper contains no numbers at all.** Every success rate, episode
 > count, and collection-speed figure that circulates for UMI comes from the body, the
@@ -215,6 +217,8 @@ gap a construction adaptation would need to close.
 데이터가 서로 다른 팔을 구동한다.
 
 ### 결과
+
+**무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2402.10329).
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > **이 논문의 초록에는 숫자가 하나도 없다.** UMI에 대해 떠도는 성공률·에피소드 수·수집 속도

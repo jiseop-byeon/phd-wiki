@@ -39,6 +39,13 @@ example, plus the gradient pathologies that shaped architecture history.
   word for the same object: joint velocities → end-effector velocities,
   [[04-robotics/index|Modern Robotics]].)
 
+**A derivative predicts a change; it is not the changed value.** In the Taylor expression, f(x) is the current output, δ is the proposed input change, the gradient term predicts its first-order effect, and the Hessian term corrects for curvature. If δ is too large, omitted terms can matter. That is why knowing a downhill direction does not tell you how far to step.
+
+For a vector output, read the Jacobian one column at a time: perturb one input while holding the rest fixed, then collect how every output responds. For a scalar loss, collect one sensitivity per parameter into the gradient. The symbols are different shapes of the same local question. A derivative can be negative even when the loss itself is positive; the sign describes direction of change, not the value's sign.
+
+> [!question] Pause and explain · 잠깐 설명해 보기
+> If a parameter's derivative is positive, which small change does gradient descent propose? Decrease the parameter, because the local model predicts that increasing it would raise the loss. This is a local prediction; the step size and curvature determine whether the actual update behaves as predicted.
+
 ### 2. The chain rule, and why backprop runs backwards
 
 - Composition $L = f_3(f_2(f_1(x)))$:
@@ -100,6 +107,12 @@ example, plus the gradient pathologies that shaped architecture history.
   $v \mapsto J^\top v$; the framework composes them along the recorded graph.
   Cost ≈ 2–3× a forward pass; memory ≈ stored activations (hence gradient checkpointing:
   recompute instead of store).
+
+**Backward does not mean undoing the forward pass.** The forward pass carries values; the backward pass carries sensitivity of the final loss to those values. At each operation, multiply the arriving sensitivity by that operation's local derivative. If a value affects the loss through several branches, add the contributions from those branches. Shared use creates a sum of effects, not permission to count only the last branch visited.
+
+The transpose in Jᵀv is therefore not an inverse. You can backpropagate through a rectangular or information-losing map because you are asking how its output loss would change with its input, not reconstructing the input from the output. Keeping this distinction clear connects backpropagation to the Jacobian's mechanical use without confusing either with inverse kinematics.
+
+**Try the existing forward-pass example again.** Label each intermediate with its shape, then place one loss-sensitivity variable beside it. Walk backward and check that each sensitivity has the same shape as the value it belongs to. A shape mismatch catches many mistakes before any numerical calculation is needed.
 
 ### 3. Worked example — a 2-layer network, by hand
 
@@ -276,6 +289,13 @@ bug detector in existence.
   *연쇄되는* 대상. (로보틱스도 같은 대상에 같은 이름을 쓴다: 관절 속도 → 말단 속도,
   [[04-robotics/index|Modern Robotics]].)
 
+**미분은 변화량을 예측하지 바뀐 값 자체가 아니다.** 테일러 식에서 f(x)는 현재 출력, δ는 제안한 입력 변화, 기울기 항은 그 일차 효과, 헤시안 항은 곡률 보정이다. δ가 크면 생략한 항이 중요해진다. 내려가는 방향을 안다고 얼마나 움직일지까지 아는 것은 아니다.
+
+벡터 출력의 야코비안은 열 하나씩 읽는다. 나머지를 고정하고 입력 하나를 조금 바꾼 뒤 모든 출력의 반응을 모은다. 스칼라 손실에서는 파라미터별 민감도를 기울기 벡터로 모은다. 서로 다른 모양으로 같은 국소 질문을 하는 것이다. 손실이 양수여도 미분은 음수일 수 있다. 미분의 부호는 값의 부호가 아니라 변화 방향이다.
+
+> [!question] 잠깐 설명해 보기 · Pause and explain
+> 파라미터의 미분이 양수면 경사하강은 어느 쪽의 작은 변화를 제안하는가? 파라미터를 줄인다. 국소 모델상 늘리면 손실이 올라가기 때문이다. 이는 국소 예측이다. 실제 갱신이 예측대로 움직일지는 보폭과 곡률에 달려 있다.
+
 ### 2. 연쇄 법칙, 그리고 역전파가 뒤로 도는 이유
 
 - 합성 $L = f_3(f_2(f_1(x)))$:
@@ -333,6 +353,11 @@ bug detector in existence.
   </g>
 </svg>
 
+**뒤로 간다는 것은 순전파를 되돌린다는 뜻이 아니다.** 순전파는 값을 전달한다. 역전파는 그 값에 대한 최종 손실의 민감도를 전달한다. 연산마다 도착한 민감도에 국소 미분을 곱한다. 값 하나가 여러 분기를 통해 손실에 영향을 주면 분기별 기여를 더한다. 공유 사용의 효과를 합해야지 마지막 분기만 세면 안 된다.
+
+따라서 Jᵀv의 전치는 역행렬이 아니다. 출력에서 입력을 복원하는 것이 아니라 입력 변화가 출력 손실에 미칠 영향을 묻는다. 직사각 사상이나 정보를 잃는 사상도 역전파할 수 있는 이유다. 이 구분이 있어야 야코비안의 역학적 쓰임과 연결하면서 역기구학과 혼동하지 않는다.
+
+**기존 순전파 예제를 다시 해 본다.** 중간값마다 모양을 적고 그 옆에 손실 민감도 변수를 둔다. 뒤로 걸으며 민감도의 모양이 해당 값과 같은지 확인한다. 숫자를 계산하기 전에도 많은 오류를 잡을 수 있다.
 
 ### 3. 계산 예제 — 2층 네트워크를 손으로
 
