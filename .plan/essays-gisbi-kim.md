@@ -176,3 +176,23 @@ URL: https://gisbi-kim.github.io/aprl-research-vision/
 - B등급 중 aprl-research-vision·situated-spatial-intelligence·slam-root·bayesfiltering 1/2·inside-claude-code와 연구 시스템 5편은 모두 링크로 들어갔다. icra21-radar-ws·yeti-radar·sclidarslam·papers-before-dgist·atlas·gemini 대화 지도·ai-agent-era·ai-university-redesign·claude-code-field-notes는 계획대로 제외했다.
 
 **QA**: `verify_content.py` 210파일 0문제, `audit_parity.py` 0건, `audit_gaps.py` 통과.
+
+## 5. 되돌림 (2026-09-03, 같은 날)
+
+사용자 판단: 이 저자를 전적으로 신뢰하지 않으므로 그의 의견·틀이 들어간 곳은 모두 빼고 1차 출처만 남긴다. 위키에 남은 `gisbi-kim.github.io` 링크는 0개다.
+
+**1차 출처로 바꿔 남긴 것**
+
+| 내용 | 새 근거 |
+|---|---|
+| GN 한 스텝 == IEKF 갱신 | Bell & Cathey, IEEE TAC 1993 (doi 10.1109/9.250476); 스무더는 Bell, SIAM J. Optim. 1994 (doi 10.1137/0804035) |
+| SLAM back-end 자료 경로 | 위키 자신의 목소리로 재작성. 회전·반복 최소자승·희소성 세 주제에 Solà, Grisetti 외, Dellaert·Kaess, Triggs 외를 각각 배정 |
+| 지도 대 경험 | Churchill & Newman, IJRR 2013 초록에서 확인한 사실만 (석 달, 시간대·날씨·조명, 37 km, 13만 6천 프레임, 경험 수가 상수로 수렴) |
+| 학습 시점 대 실행 시점 | CorrectNav(arXiv:2508.10416)와 AdaNav(arXiv:2509.24387) 초록만 |
+| 검증되지 않은 데모 / 굿하트 | 타오·에세이 인용 없이 이 페이지 자신의 논증으로 재작성 |
+| verification 대 validation | 표준적 구분이므로 그대로 두고 출처 문장만 삭제 |
+| 재현 번들, 배치 이후 노출 | 원래 블로그 인용이 없었음. 유지 |
+
+**통째로 뺀 것**: 손자병법 콜아웃(연구 질문 §7), 평가 체제 콜아웃(시뮬레이터 §11), buildability 문단과 연구 시스템 5편 접힌 콜아웃(임팩트 §5), SLAM §7의 "SLAM = odometry + loop closing" 한 줄, SLAM §9의 중간 지표 문장, 확률 페이지의 베이즈 유도 링크, 계보 콜아웃의 harnessing 주장과 하네스=비계 문장.
+
+**같이 고친 결함**: SLAM §5 콜아웃의 영어 절반이 최초 실행 때 삽입되지 않았다. 치환 문자열 앞의 공백 하나 때문에 조용히 실패했고, 검사문이 잘린 문자열만 확인해 통과했다. 한국어 절반만 있는 상태로 커밋·배포됐다. 이번에 영어 절반을 넣어 맞췄다. 교훈: 치환 검사는 반드시 치환 대상 전체 문자열로 하고, 이중언어 페이지는 `## 한국어` 기준으로 반을 갈라 각각 확인해야 한다. `audit_parity.py`는 §참조만 보므로 이런 누락을 잡지 못한다.

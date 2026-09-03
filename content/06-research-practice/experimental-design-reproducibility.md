@@ -41,8 +41,7 @@ For example, a tactile grasping study may assign surface conditions to objects w
 > naturally, while validation usually needs a comparison the experiment was not built for.
 > And neither ends at publication: a deployed system meets changing environments and ageing
 > hardware, so staying inside acceptable risk is something to keep checking, not something
-> established once. Synthesised from Giseop Kim's essay
-> [AI가 만든 결과를 검증하는 능력](https://gisbi-kim.github.io/ai-verification-for-robotics/).
+> established once.
 
 ### 2. Comparisons
 
@@ -202,9 +201,7 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 > 위의 변수와 단위는 verification 주장을 자연스럽게 받쳐 주지만, validation은 대개 그 실험이
 > 만들어지지 않은 비교를 요구한다. 그리고 둘 다 출판에서 끝나지 않는다. 배치된 시스템은 변하는
 > 환경과 늙어 가는 하드웨어를 만나므로, 허용 가능한 위험 안에 머무는지는 한 번 확립하는 것이
-> 아니라 계속 확인하는 일이다. 김기섭의 에세이
-> [AI가 만든 결과를 검증하는 능력](https://gisbi-kim.github.io/ai-verification-for-robotics/)을
-> 요약·재구성한 것이다.
+> 아니라 계속 확인하는 일이다.
 
 ### 2. 비교
 

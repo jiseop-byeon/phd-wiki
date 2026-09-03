@@ -117,23 +117,6 @@ Before experiments, make this table:
 
 Use the table before data collection to discover evidence you cannot currently obtain. **The reading this gives you.** A missing comparison is a design decision: add it, narrow the claim, or leave that question explicitly unanswered. Filling the table after writing can hide this choice behind an attractive but irrelevant metric.
 
-> [!tip] Fill this table before the experiments · 실험 전에 표를 채워라
-> The reason to fill it early is stronger than tidiness. A study is largely decided before
-> the first run, by three choices this table forces: which claim is worth making, which
-> single comparison is hardest for a sceptic to escape, and where the work will be judged.
-> Sun Tzu's version of the principle is that battle is won before it is fought; the research
-> version is that one experiment a competing explanation cannot survive is worth more than
-> ten that are merely consistent with your story.
->
-> The third choice is the one people skip. Choosing where to be evaluated — which dataset,
-> which failure conditions, which metric — is choosing the ground you fight on, and it is
-> legitimate as long as you say plainly what that ground excludes. A strong problem statement
-> makes this concrete by naming a *structural* reason existing methods fail, in the form
-> "existing methods assume X → deployment violates X → the failure is therefore systematic",
-> rather than the weaker "existing methods score lower". The first turns your work into a
-> missing layer; the second turns it into an increment. Synthesised from Giseop Kim's essay
-> [이기는 연구의 설계](https://gisbi-kim.github.io/notes/winning-research-design-sun-tzu/).
-
 ### After reading
 
 - Convert a topic into a falsifiable question.
@@ -276,22 +259,6 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 **수정 전:** “주장: 촉각 마찰 추정이 원인. 증거: 전체 모델과 구형 시스템 비교.” **문제:** 통제하지 않은 축도 달라진다. **수정 후:** “주장: 접촉 중 갱신의 이점. 증거: 같은 계획기에서 갱신을 켜고 끈 비교, 대등한 센싱·연산, 갱신이 결정으로 이어지는 진단.”
 
 수집 전에 표를 쓰면 지금 얻을 수 없는 증거가 드러난다. **여기서 얻는 독법.** 빠진 비교는 설계상의 선택이다. 비교를 추가하거나, 주장을 줄이거나, 답하지 못한 질문으로 남긴다. 글을 쓴 뒤 표를 채우면 보기 좋지만 무관한 지표가 이 선택을 가릴 수 있다.
-
-> [!tip] 실험 전에 표를 채워라 · Fill this table before the experiments
-> 일찍 채워야 할 이유는 정돈보다 강하다. 연구는 첫 실행 이전에 대체로 결정되며, 그 결정을 이 표가
-> 강제하는 세 선택이 만든다. 어떤 주장을 할 값어치가 있는가, 회의적인 독자가 가장 빠져나가기
-> 어려운 비교 하나는 무엇인가, 그리고 이 연구는 어디서 평가받을 것인가. 손자의 표현으로는 싸우기
-> 전에 이겨 놓는 것이고, 연구의 표현으로는 경쟁 설명이 살아남을 수 없는 실험 하나가 당신의 서사와
-> 그저 모순되지 않는 실험 열 개보다 값지다는 것이다.
->
-> 사람들이 건너뛰는 것은 세 번째 선택이다. 어디서 평가받을지를 고르는 것 — 어느 데이터셋, 어떤
-> 실패 조건, 어떤 지표 — 은 싸울 땅을 고르는 일이고, 그 땅이 무엇을 제외하는지 분명히 밝히는 한
-> 정당하다. 강한 문제 정의는 기존 방법이 실패하는 *구조적* 이유를 대면서 이것을 구체화한다.
-> "기존 방법은 X를 가정한다 → 배치 조건이 X를 위반한다 → 그러므로 실패는 체계적이다"의 꼴이지,
-> "기존 방법은 점수가 낮다"의 꼴이 아니다. 앞의 형태는 연구를 빠져 있던 한 계층으로 만들고, 뒤의
-> 형태는 증분으로 만든다. 김기섭의 에세이
-> [이기는 연구의 설계](https://gisbi-kim.github.io/notes/winning-research-design-sun-tzu/)를
-> 요약·재구성한 것이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

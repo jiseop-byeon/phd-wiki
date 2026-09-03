@@ -105,6 +105,9 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 
 $K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$.
 
+> [!note] Filter and smoother are one update · 필터와 스무더는 같은 갱신
+> The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and one Gauss–Newton step of that solve is the same update an iterated extended Kalman filter applies — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
+
 ### 6. Worked example: one-dimensional update
 
 Suppose the predicted position is $10$ m with variance $4\,\mathrm{m}^2$, and a sensor reports $12$ m with variance $1\,\mathrm{m}^2$. With $H=1$,
@@ -128,7 +131,7 @@ Here the measurement variance is smaller than the prediction variance, so the co
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
 
-A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map. Compressed to one line, [SLAM is odometry plus loop closing](https://gisbi-kim.github.io/post/slam-root/): odometry is locally accurate and globally drifting, and loop closing smooths the error it accumulated.
+A SLAM **front end** extracts features or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
 
 **The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
 paper names its front end by acronym and assumes you know what the letters buy. They differ
@@ -206,7 +209,7 @@ spatial memory ([[04-robotics/semantic-language-navigation|19. Semantic Navigati
 | tightly coupled | which raw measurements and states are jointly optimized |
 | consistent | whether reported uncertainty matches actual estimation error |
 
-Common metrics include Absolute Trajectory Error, Relative Pose Error, drift per distance/time, relocalization success, map accuracy, latency, and failure rate. A low average trajectory error can hide rare catastrophic tracking losses. One question sits above the whole table: lowering trajectory error is never the point, not getting lost is. Ask which physical outcome each metric stands in for, and whether the paper measures that outcome anywhere ([Giseop Kim on intermediate versus final metrics](https://gisbi-kim.github.io/aprl-research-vision/)).
+Common metrics include Absolute Trajectory Error, Relative Pose Error, drift per distance/time, relocalization success, map accuracy, latency, and failure rate. A low average trajectory error can hide rare catastrophic tracking losses.
 
 ### After reading
 
@@ -222,7 +225,7 @@ You should be able to:
 > [!tip] Going deeper · 더 깊이
 > Barfoot's [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf) is free and is the modern treatment, including estimation on SE(3) rather than in a vector space. Thrun, Burgard and Fox's *Probabilistic Robotics* remains the reference for the filtering and SLAM formulations themselves.
 >
-> For the optimisation back end specifically, Giseop Kim's [reading list](https://gisbi-kim.github.io/post/slam-textbooks/) makes the useful argument that only three things need to be understood — how rotation is parameterised, how iterative least squares works, and why the system matrix is sparse — and names a free document for each. In his suggested order: Solà's [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508) for rotation and its Jacobians; the ICRA 2016 SLAM tutorial slides *From Least-Squares to ICP*, extended by Grisetti et al.'s [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051), for the update itself; Solà's [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf) as the connective tissue; Dellaert and Kaess's [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf) for the Square Root SAM to iSAM2 line, where QR decomposition, fill-in and variable ordering come from; the sparsity half of the same tutorial, *Graph-Based SLAM and Sparsity*; and Triggs et al.'s [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document) for the photogrammetry roots this all grew from.
+> For the optimisation back end specifically, three topics carry most of the load and one free document covers each. Rotation has to be parameterised before anything can be optimised over it — Solà's [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508) does that, and its Jacobians. The update itself is iterative least squares, taken from theory to running code in Grisetti et al.'s [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051). Sparsity is what makes the problem tractable at scale, and Dellaert and Kaess's [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf) follows the Square Root SAM to iSAM2 line, where QR decomposition, fill-in and variable ordering come from. Solà's [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf) connects the three, and Triggs et al.'s [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document) is the photogrammetry work all of it grew out of.
 
 ### Self-check
 
@@ -350,7 +353,7 @@ $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$
 $H$에서 *따라 나온다*.
 
 > [!note] 필터와 스무더는 같은 갱신 · Filter and smoother are one update
-> 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 그 풀이의 Gauss–Newton 한 스텝은 iterated EKF의 보정과 대수적으로 같은 갱신이다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 그러므로 최적화 기반 시스템이 필터 기반보다 낫다는 결과가 나왔다면, 공은 대개 solver 선택이 아니라 더 나은 문제 구조, 즉 더 나은 $A$에 있다. 김기섭의 글 [SLAM은 Ax=b 를 푸는 것이다](https://gisbi-kim.github.io/post/slambackend-1/)와 [Gauss-Newton Opt == IEKF update?](https://gisbi-kim.github.io/post/gn-iekf-same/)를 요약·재구성한 것이다.
+> 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 그 풀이의 Gauss–Newton 한 스텝은 iterated EKF의 보정과 대수적으로 같은 갱신이다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
 
 ### 6. 계산 예제: 1차원 갱신
 
@@ -381,9 +384,7 @@ SLAM **front end**는 특징·기하 제약을 추출하고 data association을 
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
 Gauss–Newton이나 Levenberg–Marquardt로 푼다. "Ceres/g2o/GTSAM으로 최적화한다"가 뜻하는 것이
 그것이다 ([[02-foundations/optimization|4. 최적화 §3.5]]). Loop closure는 누적 drift를
-고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다. 한 줄로 줄이면 [SLAM은 odometry + loop
-closing](https://gisbi-kim.github.io/post/slam-root/)이다 — odometry는 국소적으로 정확하고 전역적으로
-표류하며, loop closing은 그렇게 쌓인 오차를 펴 준다.
+고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
 front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
@@ -460,10 +461,7 @@ field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저
 
 흔한 지표: Absolute Trajectory Error, Relative Pose Error, 거리/시간당 drift,
 relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* ATE가 드문 파국적 추적
-손실을 가릴 수 있다. 표 전체 위에 놓이는 질문이 하나 있다. 궤적 오차를 낮추는 것 자체가
-목적인 적은 없고, 로봇이 길을 잃지 않는 것이 목적이다. 각 지표가 어떤 물리적 결과를 대신하고 있는지, 그리고
-논문이 그 결과를 어디선가 직접 재기는 하는지 물어라 ([중간 지표와 최종 목적에 관한
-김기섭의 글](https://gisbi-kim.github.io/aprl-research-vision/)).
+손실을 가릴 수 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
@@ -477,7 +475,7 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 > [!tip] 더 깊이 · Going deeper
 > Barfoot의 [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)가 무료이고 현대적 서술이다 — 벡터 공간이 아니라 SE(3) 위에서의 추정을 포함한다. 필터와 SLAM 정식화 자체의 참고서는 여전히 Thrun·Burgard·Fox의 *Probabilistic Robotics*다.
 >
-> 최적화 back end만 놓고 보면, 김기섭의 [자료 추천 글](https://gisbi-kim.github.io/post/slam-textbooks/)이 유용한 주장을 한다. 이해해야 할 것은 세 가지뿐이라는 것이다 — 회전을 어떻게 매개변수화하는가, 반복 최소자승은 어떻게 도는가, 시스템 행렬은 왜 희소한가. 그리고 각각에 무료 자료를 하나씩 붙인다. 그가 권하는 순서로: 회전과 그 야코비안은 Solà의 [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508); 갱신 자체는 ICRA 2016 SLAM 튜토리얼 슬라이드 *From Least-Squares to ICP*와 이를 확장한 Grisetti 외의 [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051); 그 사이를 잇는 조직으로 Solà의 [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf); QR 분해·fill-in·변수 순서가 나오는 Square Root SAM에서 iSAM2까지의 계보는 Dellaert·Kaess의 [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf); 같은 튜토리얼의 희소성 편 *Graph-Based SLAM and Sparsity*; 마지막으로 이 모든 것이 자라 나온 photogrammetry 뿌리로 Triggs 외의 [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document).
+> 최적화 back end만 놓고 보면 대부분의 하중을 세 주제가 지고, 각각에 무료 자료가 하나씩 있다. 회전은 그 위에서 최적화하기 전에 먼저 매개변수화되어야 한다 — Solà의 [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508)가 그것과 그 야코비안을 다룬다. 갱신 자체는 반복 최소자승이고, Grisetti 외의 [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051)가 이론에서 돌아가는 코드까지 데려간다. 희소성은 이 문제를 규모에서 풀 수 있게 만드는 것으로, Dellaert·Kaess의 [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf)이 QR 분해·fill-in·변수 순서가 나오는 Square Root SAM에서 iSAM2까지의 계보를 따라간다. Solà의 [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf)이 셋을 잇고, Triggs 외의 [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document)가 이 모든 것이 자라 나온 photogrammetry 작업이다.
 
 ### 스스로 점검
 

@@ -409,21 +409,6 @@ cite a comparison, say whose evaluation it was.**
 > measurement — which is a legitimate contribution, but a different one, and it should not be
 > compared against a table that does.
 
-> [!note] The evaluation regime can be the contribution · 평가 체제 자체가 기여일 수 있다
-> Everything above reads a benchmark as a measuring instrument. It is also worth reading as a
-> claim, because someone chose what counts as success and what the test distribution
-> contains, and that choice declares which failures the field will treat as important. Once
-> writing code and running experiments get cheap, proposing another method gets cheaper too,
-> while deciding *what should be measured* does not — which is why defining an evaluation
-> regime that existing scores were hiding can be a stronger contribution than a new model.
-> Concretely: showing that a standard retrieval metric collapses under seasonal change or
-> under distractors, or that single-session evaluation cannot see the forgetting a long-lived
-> system suffers, defines a problem rather than incrementing a number. Read a benchmark
-> paper, then, for the failure it declares to matter, not only for the leaderboard it
-> produced. Synthesised from Giseop Kim's essay
-> [구현이 쉬워진 시대, 연구자는 무엇으로 경쟁하는가](https://gisbi-kim.github.io/notes/implementation-context-evaluation/),
-> itself a summary of a keynote and a conference report it links.
-
 ### After reading
 
 - [ ] Name the four status traps in §2 and why each one produces a wrong sentence.
@@ -818,19 +803,6 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 > 테스트베드인가, 배포 환경인가?** **3. 누구의 평가인가?** 이 셋에 답할 수 없게 만드는 결과
 > 표는 측정이 아니라 실증을 보고하고 있는 것이다 — 그것도 정당한 기여이지만 다른 종류의
 > 기여이고, 답할 수 있는 표와 나란히 비교되어서는 안 된다.
-
-> [!note] 평가 체제 자체가 기여일 수 있다 · The evaluation regime can be the contribution
-> 위의 모든 것은 벤치마크를 측정 도구로 읽는다. 벤치마크는 주장으로도 읽을 값어치가 있다.
-> 무엇을 성공으로 셀지, 시험 분포에 무엇을 담을지를 누군가 골랐고, 그 선택이 이 분야가 어떤
-> 실패를 중요하다고 볼지를 선언하기 때문이다. 코드를 쓰고 실험을 돌리는 일이 싸지면 방법을 하나 더
-> 제안하는 일도 함께 싸진다. 반면 *무엇을 측정해야 하는가*를 정하는 일은 싸지지 않는다. 기존
-> 점수가 감추고 있던 평가 체제를 정의하는 편이 새 모델보다 강한 기여가 될 수 있는 이유다.
-> 구체적으로는 이렇다. 표준 검색 지표가 계절 변화나 distractor 앞에서 무너진다는 것을 보이거나,
-> 단일 세션 평가로는 오래 사는 시스템의 망각을 볼 수 없다는 것을 보이는 일은 숫자를 올리는 것이
-> 아니라 문제를 정의하는 것이다. 그러니 벤치마크 논문은 그것이 만든 리더보드만이 아니라 그것이
-> 중요하다고 선언한 실패를 보고 읽어라. 김기섭의 에세이
-> [구현이 쉬워진 시대, 연구자는 무엇으로 경쟁하는가](https://gisbi-kim.github.io/notes/implementation-context-evaluation/)를
-> 요약·재구성한 것이다. 그 글 자체가 링크된 키노트와 학회 후기를 정리한 것이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

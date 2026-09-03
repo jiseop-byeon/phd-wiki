@@ -79,24 +79,21 @@ that rung both hard and unusually valuable.
 > the evidence is a mock-up, say mock-up and claim what a mock-up licenses — which is
 > plenty.
 
-> [!warning] Demo indigestion · 데모 소화불량
-> The ladder assumes that producing evidence is the expensive step. That assumption is
+> [!warning] An unverified demonstration occupies no rung · 검증되지 않은 데모는 어느 단에도 놓이지 않는다
+> The ladder assumes that producing evidence is the expensive step, and that assumption is
 > weakening. Policies, simulated rollouts, benchmark entries, synthetic data and successful
-> demonstration videos can now be generated far faster than anyone can check them, while a
-> real hardware trial still takes days and long-term reliability still takes months. Terence
-> Tao named the version of this that mathematics faces, *proof indigestion*: proofs arriving
-> faster than the community can verify, explain and absorb them. Giseop Kim's essay
-> [증명 소화불량에서 데모 소화불량으로](https://gisbi-kim.github.io/tao-ai-math-for-physical-ai/)
-> carries the argument into physical AI, where it is sharper, because a proof has a checker
-> and a robot behaviour does not.
+> demonstration videos can be generated far faster than anyone can check them, while a real
+> hardware trial still takes days and long-term reliability still takes months. The scarce
+> resource moves from generation to verification — which is a reason to be strict about what
+> actually places a result on this ladder: how many trials the video was drawn from, where
+> the failures clustered, when a human intervened, and what the denominator of the success
+> rate was.
 >
-> Two consequences for this ladder. First, an unverified demonstration occupies no rung at
-> all — the questions that place it are how many trials the video was drawn from, where the
-> failures clustered, when a human intervened, and what the denominator of that success rate
-> was. Second, when the same group builds the simulator, the evaluator and the benchmark, an
-> optimiser will find their shared blind spots without anyone intending it. That is Goodhart's
-> law with a specific mechanism: errors the evaluator cannot see are treated by the
-> optimisation as though they do not exist.
+> A second consequence appears when one group builds the simulator, the evaluator and the
+> benchmark. An optimisation will find their shared blind spots without anyone intending it,
+> because an error the evaluator cannot see is treated as though it does not exist. That is
+> Goodhart's law with a mechanism attached: a measure that becomes a target stops being a
+> good measure.
 
 ### 3. Artifacts, and what each actually costs
 
@@ -121,10 +118,8 @@ trained on it.
 
 In robotics one artifact is worth naming separately, because releasing code alone rarely
 achieves it: a **reproduction bundle** — sensor configuration, calibration parameters, a
-recorded log, the simulator setup and the hardware specification alongside the code. It is
-what decides whether another group can actually build on the work, which §5 argues is the
-property that separates papers that generate a literature from papers that are cited once as
-a baseline.
+recorded log, the simulator setup and the hardware specification alongside the code. It is what decides whether another group can
+actually build on the work rather than merely cite it.
 
 ### 4. The pipeline, run deliberately
 
@@ -163,23 +158,6 @@ artifacts:
 
 The test for whether a project is designed or merely executed: **name what will still be
 used in three years.** If the honest answer is "the paper", the project was a paper.
-
-There is a second reason to design this way, visible only years later. Papers accepted at the
-same conference diverge enormously in what they generate: some become the starting point
-hundreds of others build from, while equally sound neighbours are cited a few times as a
-baseline and then forgotten. The property that separates them is not review score. It is
-whether a later researcher can pick something up and carry it away — a method, a problem
-definition, a dataset, a metric, a name — and how cheaply they can get it running. In
-robotics that cost is unusually high, because released code is not the same as a reproducible
-result: without the sensor configuration, the calibration parameters, a rosbag, the simulator
-setup and the hardware specification, another group cannot follow. Bundle those together and
-you are not being generous, you are buying the thing that compounds. Researchers rarely adopt
-the best available method; they adopt the good-enough method that runs today, and once a few
-groups build on it, it becomes the baseline everyone else compares against. Synthesised from
-Giseop Kim's essay [왜 어떤 ICRA 논문은 대성하는가](https://gisbi-kim.github.io/why-some-icra-papers-thrive/).
-
-> [!tip]- Going deeper: research as a system · 더 깊이 — 시스템으로서의 연구
-> Five further essays by the same author, each on one part of making outputs compound. [논문을 쓰는 사람에서 연구 시스템을 만드는 사람으로](https://gisbi-kim.github.io/from-paper-writer-to-research-system-builder/) argues that a graduate education is about designing a research system, not producing a document. [첫 1,000회의 인용](https://gisbi-kim.github.io/first-1000-citations/) treats early citations as the point where a researcher stops starting from zero each time, and locates the cause in reusable assets rather than paper count. [이상적인 연구주제란?](https://gisbi-kim.github.io/ideal-research-topic-roic/) borrows return-on-invested-capital to ask which topics turn one result into cheaper next results, with a professor's attention and a student-year as the costly capital. [승률을 설계하는 연구실](https://gisbi-kim.github.io/lab-management-designing-win-rate/) makes the case that a lab wins by being decisive on the few questions that settle things rather than average at everything — the same principle as this wiki's own inclusion rule. [손안에 든 새 한마리](https://gisbi-kim.github.io/bird-in-hand-lab-management/) is the counterweight: existing data, a working codebase and a student who understands the problem are assets whose future value is systematically underrated against an exciting new topic.
 
 ### 6. What not to optimise
 
@@ -289,22 +267,17 @@ For example, polishing a successful drywall sequence can improve communication, 
 > 전부를 불신하게 만드는 유일한 것이다. 증거가 목업이면 목업이라고 말하고 목업이 허락하는
 > 것을 주장하라 — 충분히 많다.
 
-> [!warning] 데모 소화불량 · Demo indigestion
-> 이 사다리는 증거를 만드는 일이 비싼 단계라고 전제한다. 그 전제가 약해지고 있다. 정책,
-> 시뮬레이션 롤아웃, 벤치마크 기록, 합성 데이터, 성공 영상은 이제 누구도 검토를 따라갈 수 없는
-> 속도로 생산되는데, 실기계 시험은 여전히 며칠이 걸리고 장기 신뢰성은 여전히 몇 달이 걸린다.
-> 테렌스 타오는 수학이 맞은 같은 현상을 *증명 소화불량*이라 불렀다. 공동체가 검증하고 설명하고
-> 흡수하는 속도보다 증명이 빨리 도착하는 상태다. 김기섭의 에세이
-> [증명 소화불량에서 데모 소화불량으로](https://gisbi-kim.github.io/tao-ai-math-for-physical-ai/)가
-> 그 논증을 물리 AI로 옮긴다. 여기서는 더 날카롭다. 증명에는 검증기가 있지만 로봇의 행동에는
-> 없기 때문이다.
+> [!warning] 검증되지 않은 데모는 어느 단에도 놓이지 않는다 · An unverified demonstration occupies no rung
+> 이 사다리는 증거를 만드는 일이 비싼 단계라고 전제하는데, 그 전제가 약해지고 있다. 정책,
+> 시뮬레이션 롤아웃, 벤치마크 기록, 합성 데이터, 성공 영상은 누구도 검토를 따라갈 수 없는 속도로
+> 생산되는 반면, 실기계 시험은 여전히 며칠이 걸리고 장기 신뢰성은 여전히 몇 달이 걸린다. 희소한
+> 자원이 생산에서 검증으로 옮겨 간다. 그러니 무엇이 결과를 실제로 이 사다리에 올리는지 엄격해질
+> 이유가 있다. 그 영상은 몇 번의 시행에서 골랐는가, 실패는 어디에 몰렸는가, 사람은 언제
+> 개입했는가, 그 성공률의 분모는 무엇인가.
 >
-> 이 사다리에 주는 귀결이 둘이다. 첫째, 검증되지 않은 데모는 어느 단에도 놓이지 않는다.
-> 그것을 자리에 앉히는 질문은 이렇다. 그 영상은 몇 번의 시행에서 골랐는가, 실패는 어디에
-> 몰렸는가, 사람은 언제 개입했는가, 그 성공률의 분모는 무엇인가. 둘째, 같은 집단이 시뮬레이터와
-> 평가기와 벤치마크를 함께 만들면, 최적화는 아무도 의도하지 않아도 그들의 공통 사각지대를 찾아
-> 간다. 기전이 분명한 굿하트의 법칙이다. 평가기가 보지 못하는 오류는 최적화 과정에서 존재하지
-> 않는 것으로 취급된다.
+> 두 번째 귀결은 한 집단이 시뮬레이터와 평가기와 벤치마크를 함께 만들 때 나타난다. 최적화는 아무도
+> 의도하지 않아도 그들의 공통 사각지대를 찾아간다. 평가기가 보지 못하는 오류는 존재하지 않는 것으로
+> 취급되기 때문이다. 기전이 붙은 굿하트의 법칙이다. 목표가 된 척도는 좋은 척도이기를 그친다.
 
 ### 3. 산출물과, 각각의 실제 비용
 
@@ -326,8 +299,8 @@ For example, polishing a successful drywall sequence can improve communication, 
 
 로보틱스에서는 따로 이름을 붙일 산출물이 하나 더 있다. 코드만 공개해서는 좀처럼 달성되지 않기
 때문이다. **재현 번들** — 센서 구성, 보정 파라미터, 기록 로그, 시뮬레이터 설정, 하드웨어 사양을
-코드와 함께 내는 것이다. 다른 팀이 이 연구 위에 실제로 쌓을 수 있는지를 이것이 정한다. §5는 그
-성질이 하나의 문헌을 생성하는 논문과 baseline으로 한 번 인용되고 마는 논문을 가른다고 말한다.
+코드와 함께 내는 것이다. 다른 팀이 이 연구 위에 그저 인용하는 것을 넘어 실제로 쌓을 수
+있는지를 이것이 정한다.
 
 ### 4. 파이프라인을 의도적으로 돌리기
 
@@ -364,23 +337,6 @@ flowchart LR
 
 프로젝트가 설계된 것인지 그냥 수행된 것인지를 가르는 시험: **3년 뒤에도 여전히 쓰이고 있을
 것의 이름을 대라.** 정직한 답이 "논문"이라면 그 프로젝트는 논문이었다.
-
-이렇게 설계할 두 번째 이유가 있는데, 몇 해가 지나야 보인다. 같은 학회에 함께 실린 논문들이
-생성해 내는 후속 연구의 양은 극단적으로 갈린다. 어떤 논문은 수백 편이 당연하게 출발하는
-기준점이 되고, 못지않게 튼튼한 이웃 논문은 baseline으로 몇 번 인용된 뒤 잊힌다. 둘을 가르는
-성질은 심사 점수가 아니다. 뒤에 오는 연구자가 무언가를 집어 들고 갈 수 있는가다 — 방법이든,
-문제 정의든, 데이터셋이든, 지표든, 이름이든 — 그리고 그것을 돌리는 데 얼마나 드는가다.
-로보틱스에서는 그 비용이 유난히 크다. 코드를 공개했다는 것과 결과가 재현된다는 것이 같지 않기
-때문이다. 센서 구성, 보정 파라미터, rosbag, 시뮬레이터 설정, 하드웨어 사양이 함께 있지 않으면
-다른 팀은 따라올 수 없다. 그것들을 한 묶음으로 내는 것은 관대한 처신이 아니라 복리로 불어나는
-것을 사는 일이다. 연구자는 구할 수 있는 최선의 방법을 채택하지 않는다. 충분히 좋으면서 오늘
-돌아가는 방법을 채택하고, 몇 팀이 그 위에 쌓기 시작하면 그것이 나머지 전부가 비교하는
-baseline이 된다. 김기섭의 에세이
-[왜 어떤 ICRA 논문은 대성하는가](https://gisbi-kim.github.io/why-some-icra-papers-thrive/)를
-요약·재구성한 것이다.
-
-> [!tip]- 더 깊이 — 시스템으로서의 연구 · Going deeper: research as a system
-> 같은 저자의 에세이 다섯 편이 각각 산출물을 복리로 만드는 한 부분을 다룬다. [논문을 쓰는 사람에서 연구 시스템을 만드는 사람으로](https://gisbi-kim.github.io/from-paper-writer-to-research-system-builder/)는 대학원이 문서를 생산하는 법이 아니라 자기 연구 시스템을 설계하는 법을 배우는 곳이라고 주장한다. [첫 1,000회의 인용](https://gisbi-kim.github.io/first-1000-citations/)은 초기 인용을 연구자가 매번 0에서 출발하지 않게 되는 지점으로 보고, 그 원인을 논문 편수가 아니라 재사용 가능한 자산에서 찾는다. [이상적인 연구주제란?](https://gisbi-kim.github.io/ideal-research-topic-roic/)은 투하자본 대비 이익률을 빌려, 한 결과가 다음 결과를 싸게 만들어 주는 주제가 무엇인지 묻는다. 여기서 비싼 자본은 교수의 주의와 학생의 1년이다. [승률을 설계하는 연구실](https://gisbi-kim.github.io/lab-management-designing-win-rate/)은 연구실이 모든 것을 평균적으로 잘해서가 아니라 승부를 가르는 소수의 질문에서 압도적이어서 이긴다고 말한다 — 이 위키 자신의 포함 규칙과 같은 원리다. [손안에 든 새 한마리](https://gisbi-kim.github.io/bird-in-hand-lab-management/)는 그 반대 추다. 이미 가진 데이터, 돌아가는 코드베이스, 문제를 깊이 아는 학생은 새롭고 매력적인 주제에 견주어 미래 가치가 체계적으로 과소평가되는 자산이다.
 
 ### 6. 최적화하지 말아야 할 것
 

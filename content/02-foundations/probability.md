@@ -231,7 +231,7 @@ flowchart LR
  Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
 > [!tip] Going deeper · 더 깊이
-> If the Gaussian toolbox or the Kalman derivation is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job. For the specific path from Bayes' rule through the product of two Gaussians and the matrix inversion lemma to the Kalman gain, worked in Korean, see Giseop Kim's two posts on [Bayes filtering](https://gisbi-kim.github.io/post/bayesfiltering-1/) and [its Gaussian case](https://gisbi-kim.github.io/post/bayesfiltering-2/).
+> If the Gaussian toolbox or the Kalman derivation is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
 
 ### Self-check
 
@@ -465,7 +465,7 @@ flowchart LR
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
 
 > [!tip] 더 깊이 · Going deeper
-> 가우시안 도구 상자나 칼만 유도가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 가고, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다. 베이즈 규칙에서 두 가우시안의 곱과 역행렬 보조정리를 거쳐 칼만 이득까지 가는 유도 경로만 따로 보고 싶다면, 김기섭의 글 [베이즈 필터링](https://gisbi-kim.github.io/post/bayesfiltering-1/)과 [그 가우시안 경우](https://gisbi-kim.github.io/post/bayesfiltering-2/)가 한국어로 그 길을 밟는다.
+> 가우시안 도구 상자나 칼만 유도가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 가고, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
 
 ### 스스로 점검
 
