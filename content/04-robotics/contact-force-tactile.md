@@ -96,7 +96,7 @@ Now imagine two fingers squeezing a panel. The two opposing forces may have zero
 | Impedance control | desired relationship from motion error to force |
 | Admittance control | desired motion response to measured force |
 
-Impedance does not simply “control both position and force.” It shapes interaction behavior, often as a virtual mass–spring–damper — written out, the controller commands
+Impedance does not simply “control both position and force.” It shapes interaction behavior, often as a virtual mass–spring–damper — written out, that is, a spring and a damper anchored at the reference with the inertia term dropped as most implementations do, the controller commands
 
 $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 
@@ -260,7 +260,7 @@ $$\lVert f_t\rVert\le \mu f_n$$
 | 어드미턴스 제어 | 측정 힘 → 운동 응답의 원하는 관계 |
 
 임피던스는 단순히 "위치와 힘을 동시에 제어"하는 것이 아니다. 상호작용 거동을 — 대개
-가상 질량-스프링-댐퍼로 — *형성*한다. 풀어 쓰면 제어기가 명령하는 것은
+가상 질량-스프링-댐퍼로 — *형성*한다. 풀어 쓰면 — 즉 기준점에 매단 스프링과 댐퍼이고, 관성 항은 대부분의 구현처럼 뺀 것 — 제어기가 명령하는 것은
 
 $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 

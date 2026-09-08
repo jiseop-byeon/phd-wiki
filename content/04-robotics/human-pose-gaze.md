@@ -54,7 +54,7 @@ Mean per-joint position error is reported in millimetres:
 
 $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_2$$
 
-Three qualifications change its meaning entirely:
+Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that one badly wrong joint is diluted by the rest — and three qualifications change its meaning entirely:
 
 - **Root-relative.** Most benchmarks align the pelvis to the origin first. The number therefore says nothing about *where the person is*, only about limb configuration. Absolute 3D localisation is a separate, harder problem.
 - **PA-MPJPE.** Procrustes alignment additionally removes rotation and scale. A good PA-MPJPE with a poor MPJPE means the shape is right and the orientation is not — and orientation is what intent reading needs.
@@ -240,7 +240,7 @@ Mean per-joint position error는 mm로 보고된다:
 
 $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_2$$
 
-의미를 통째로 바꾸는 단서가 셋 있다:
+관절 $J$개에 걸쳐 평균 낸 관절별 유클리드 거리로 읽어라. 그래서 하나가 크게 틀려도 나머지에 희석된다 — 그리고 의미를 통째로 바꾸는 단서가 셋 있다:
 
 - **루트 상대.** 대부분의 벤치마크가 골반을 원점에 먼저 정렬한다. 그래서 이 숫자는 *사람이 어디 있는지*에 대해 아무 말도 안 하고 사지 배치만 말한다. 절대 3D 위치추정은 별개의 더 어려운 문제다.
 - **PA-MPJPE.** Procrustes 정렬은 회전과 스케일까지 제거한다. PA-MPJPE는 좋은데 MPJPE가 나쁘면 형상은 맞고 방향이 틀린 것이고, **의도 판독이 필요로 하는 건 방향이다.**

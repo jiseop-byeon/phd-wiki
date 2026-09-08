@@ -85,7 +85,7 @@ into the Riccati equation. Its three distinct entries give three scalar equation
 
 $$q - \frac{p_{12}^2}{r} = 0, \qquad p_{11} - \frac{p_{12}p_{22}}{r} = 0, \qquad 2p_{12} - \frac{p_{22}^2}{r} = 0$$
 
-Solve in that order: $p_{12} = \sqrt{qr}$, then $p_{22} = \sqrt{2r\sqrt{qr}}$, then $p_{11}$
+They are triangular, which is why you can solve for $p_{12}$ first and let the rest follow: $p_{12} = \sqrt{qr}$, then $p_{22} = \sqrt{2r\sqrt{qr}}$, then $p_{11}$
 follows. The gain $K = R^{-1}B^\top P$ is the bottom row of $P$ divided by $r$:
 
 $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \text{where } \rho = q/r$$
@@ -239,7 +239,7 @@ $P = \begin{pmatrix}p_{11}&p_{12}\\p_{12}&p_{22}\end{pmatrix}$로 놓고 리카�
 
 $$q - \frac{p_{12}^2}{r} = 0, \qquad p_{11} - \frac{p_{12}p_{22}}{r} = 0, \qquad 2p_{12} - \frac{p_{22}^2}{r} = 0$$
 
-순서대로 풀면 $p_{12} = \sqrt{qr}$, 이어서 $p_{22} = \sqrt{2r\sqrt{qr}}$, 그리고 $p_{11}$이
+세 식은 삼각 구조라 $p_{12}$부터 풀고 나머지를 따라오게 할 수 있다: $p_{12} = \sqrt{qr}$, 이어서 $p_{22} = \sqrt{2r\sqrt{qr}}$, 그리고 $p_{11}$이
 따라 나온다. 이득 $K = R^{-1}B^\top P$는 $P$의 아랫줄을 $r$로 나눈 것이다:
 
 $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$

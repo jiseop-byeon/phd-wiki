@@ -34,6 +34,8 @@ A **neural network** is that, repeated, with a simple nonlinear function squeeze
 
 $$h_1 = \sigma(W_1x + b_1), \qquad h_2 = \sigma(W_2h_1 + b_2), \qquad \hat y = W_3h_2 + b_3$$
 
+The nonlinearity is there because a stack of plain matrix multiplies collapses to a single matrix, $W_3W_2W_1$, and could only ever draw a straight line through the data.
+
 - Each $(W, b)$ pair with its nonlinearity is one **layer**. $W$ holds the **weights**,
   $b$ the **bias**. Together they are the **parameters** — the numbers that get learned.
 - The nonlinear $\sigma$ is the **activation function**. The common one is
@@ -100,6 +102,7 @@ The parameters start random and are *fitted to data*. Three pieces:
 3. **Update**: compute $\partial L/\partial W$ for every parameter and nudge each one
    against its gradient:
    $$W \leftarrow W - \alpha\,\frac{\partial L}{\partial W}$$
+   The minus sign is the reason this works: the gradient points uphill in loss, so stepping against it makes the loss fall.
    The small number $\alpha$ is the **learning rate** — how far to step each time (typical
    values $10^{-4}$ to $10^{-2}$; too large and training diverges, too small and it crawls).
    That is ordinary multivariable calculus
@@ -226,6 +229,8 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 
 $$h_1 = \sigma(W_1x + b_1), \qquad h_2 = \sigma(W_2h_1 + b_2), \qquad \hat y = W_3h_2 + b_3$$
 
+비선형 함수가 끼어 있는 이유는, 행렬곱만 쌓으면 $W_3W_2W_1$이라는 행렬 하나로 무너져서 데이터에 직선밖에 그을 수 없기 때문이다.
+
 - $(W, b)$ 한 쌍과 그 비선형성이 **층(layer)** 하나다. $W$가 **가중치**, $b$가 **편향**.
   둘을 합쳐 **파라미터**(학습되는 숫자들)라고 부른다.
 - 비선형 $\sigma$가 **활성함수**다. 흔한 것은 **ReLU**: $\sigma(z) = \max(0, z)$ —
@@ -291,6 +296,7 @@ $b_2$가 1개 — **13개**. 논문의 "7B 파라미터"는 정확히 이렇게 
 3. **갱신**: 모든 파라미터에 대해 $\partial L/\partial W$를 구해 그래디언트 반대로 조금씩
    민다:
    $$W \leftarrow W - \alpha\,\frac{\partial L}{\partial W}$$
+   빼기 부호가 이것이 작동하는 이유다. 그래디언트는 손실이 오르는 쪽을 가리키므로, 그 반대로 딛는 것이 손실을 내린다.
    작은 수 $\alpha$가 **학습률**(learning rate) — 매번 얼마나 멀리 갈 것인가다(보통
    $10^{-4}$~$10^{-2}$; 너무 크면 발산하고 너무 작으면 기어간다). 평범한 다변수 미적분이고
    ([[02-foundations/calculus-backprop|2. 미적분과 역전파]]가 이것을 효율적으로 조직하는

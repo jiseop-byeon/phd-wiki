@@ -38,7 +38,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   orders to feel it).
 - 2D worked example: $R(\theta) = \begin{pmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{pmatrix}$
   — check $R(90°)\,(1,0)^\top = (0,1)^\top$. All of SO(3) is this idea, three axes at once.
-- **Order matters — with numbers, so you never have to trust the phone demo.** Let
+- **Order matters — with numbers, so you never have to trust the phone demo.** Take the two axis rotations — each comes from the 2D rotation above, placed in the plane perpendicular to its axis:
   $$R_z(90°) = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}, \qquad R_x(90°) = \begin{pmatrix}1&0&0\\0&0&-1\\0&1&0\end{pmatrix}$$
   and track the point $p = (1,0,0)$ — the tip of the x-axis.
   - $R_z$ **first**, then $R_x$: $R_z p = (0,1,0)$, and $R_x(0,1,0) = (0,0,1)$. The point
@@ -240,7 +240,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   순서 바꿔 돌려보면 몸으로 느껴진다).
 - 2D 계산 예제: $R(\theta) = \begin{pmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{pmatrix}$
   — $R(90°)\,(1,0)^\top = (0,1)^\top$ 검산. SO(3) 전체가 이 아이디어를 세 축으로 한 것이다.
-- **순서가 중요하다 — 숫자로, 폰 시연을 믿지 않아도 되게.**
+- **순서가 중요하다 — 숫자로, 폰 시연을 믿지 않아도 되게.** 두 축 회전을 잡자 — 각각 위의 2D 회전을 그 축에 수직인 평면에 놓은 것이다:
   $$R_z(90°) = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}, \qquad R_x(90°) = \begin{pmatrix}1&0&0\\0&0&-1\\0&1&0\end{pmatrix}$$
   로 두고, 점 $p = (1,0,0)$ — x축의 끝 — 을 따라가 보자.
   - $R_z$를 **먼저**, 그다음 $R_x$: $R_z p = (0,1,0)$, 그리고 $R_x(0,1,0) = (0,0,1)$.

@@ -113,7 +113,7 @@ Both describe a desired relation between motion and interaction force. For a fix
 
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read the equation as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
+Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read it as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -204,7 +204,7 @@ operational-space inertia from [[02-foundations/manipulator-kinematics-dynamics|
 
 $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
 
-with $\mu$ and $p$ the task-space Coriolis and gravity terms. Two consequences that matter:
+with $\mu$ and $p$ the task-space Coriolis and gravity terms. Read it as the arm's equation of motion rewritten in tip coordinates and then solved for the force that would produce the desired tip acceleration; $J^\top$ maps that force back to joint torques. Two consequences that matter:
 
 - The arm's configuration-dependent inertia is **compensated**, so a commanded task-space
   behaviour is the same in every pose. Without this, the factor-of-five inertia change from
@@ -675,7 +675,7 @@ Khatib의 1987년 정식화가 앞의 두 절을 점질량이 아니라 실제 �
 
 $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
 
-($\mu$와 $p$는 작업 공간의 코리올리·중력 항). 중요한 귀결 둘:
+($\mu$와 $p$는 작업 공간의 코리올리·중력 항). 팔의 운동방정식을 말단 좌표로 다시 쓰고, 원하는 말단 가속도를 만들 힘에 대해 푼 것으로 읽어라. $J^\top$이 그 힘을 관절 토크로 되돌린다. 중요한 귀결 둘:
 
 - 팔의 자세 의존적 관성이 **보상된다.** 그래서 명령한 작업 공간 거동이 모든 자세에서 같아진다.
   이것이 없으면 [[02-foundations/manipulator-kinematics-dynamics|10. §3]]의 5배 관성 변화가

@@ -121,7 +121,7 @@ but it is not an arbitrary-delay guarantee.
 
 The classical repair is the **scattering transformation**, or equivalently the **wave
 variables** of Niemeyer and Slotine (1991). Instead of sending velocity and force across the channel, send the
-combinations
+combinations — chosen so that the difference of their squares is exactly the transmitted power, which is what lets a delay be shown to store energy but never create it:
 
 $$u = \frac{b\,\dot x + F}{\sqrt{2b}}, \qquad v = \frac{b\,\dot x - F}{\sqrt{2b}}$$
 
@@ -536,7 +536,7 @@ Lawrence의 4채널 분석(1993)이 이것을 직관이 아니라 설계 목표�
 
 고전적 처방은 **산란 변환**(scattering transformation), 동등하게 Niemeyer와 Slotine(1991)의
 **wave variable**이다.
-채널에 속도와 힘을 보내는 대신 다음 조합을 보낸다:
+채널에 속도와 힘을 보내는 대신 다음 조합을 보낸다 — 두 제곱의 차가 정확히 전달 일률이 되도록 고른 것이라, 지연이 에너지를 저장할 수는 있어도 만들 수는 없음을 보일 수 있다:
 
 $$u = \frac{b\,\dot x + F}{\sqrt{2b}}, \qquad v = \frac{b\,\dot x - F}{\sqrt{2b}}$$
 

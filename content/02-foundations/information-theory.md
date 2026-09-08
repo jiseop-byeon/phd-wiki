@@ -105,7 +105,7 @@ Logarithms are useful because they turn the joint support for many observations 
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — the *extra* bits paid for using $q$ when the truth is $p$.
-- **Same numbers as §2, computed directly:**
+- **Same numbers as §2, computed directly** — substitute $p = (0.7, 0.2, 0.1)$ and $q = (0.5, 0.3, 0.2)$ into the sum term by term:
   $$D_{KL} = 0.7\log_2\tfrac{0.7}{0.5} + 0.2\log_2\tfrac{0.2}{0.3} + 0.1\log_2\tfrac{0.1}{0.2} = 0.340 - 0.117 - 0.100 = 0.123\ \text{bits}$$
   — exactly $H(p,q) - H(p) = 1.280 - 1.157$. Two things become visible: individual terms
   **can be negative** (the middle one is), yet the total never is; and the total is zero only
@@ -129,7 +129,7 @@ Logarithms are useful because they turn the joint support for many observations 
 </svg>
 
 
-- **Non-negativity, proved in two lines** (Jensen's inequality — $\log$ is concave):
+- **Non-negativity, proved in two lines** (Jensen's inequality — $\log$ is concave, so that the expectation of a log is at most the log of the expectation):
   $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
   Equality iff $p = q$. This tiny proof powers the ELBO's validity and half of learning theory.
 - **Gaussian KL, closed form** (the formula inside every VAE implementation): for
@@ -326,7 +326,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 - $D_{KL}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p,q) - H(p)$
   — 진실이 $p$인데 $q$를 썼을 때 *추가로* 내는 비트.
-- **2절과 같은 숫자를, 이번엔 직접 계산:**
+- **2절과 같은 숫자를, 이번엔 직접 계산** — $p = (0.7, 0.2, 0.1)$과 $q = (0.5, 0.3, 0.2)$를 합의 각 항에 대입하면:
   $$D_{KL} = 0.7\log_2\tfrac{0.7}{0.5} + 0.2\log_2\tfrac{0.2}{0.3} + 0.1\log_2\tfrac{0.1}{0.2} = 0.340 - 0.117 - 0.100 = 0.123\ \text{비트}$$
   — 정확히 $H(p,q) - H(p) = 1.280 - 1.157$이다. 두 가지가 눈에 보인다: 개별 항은 **음수가 될
   수 있지만**(가운데 항이 그렇다) 총합은 결코 음수가 되지 않으며, 총합이 0이 되는 것은 모든
@@ -350,7 +350,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 </svg>
 
 
-- **비음수성, 두 줄 증명** (옌센 부등식 — $\log$는 오목):
+- **비음수성, 두 줄 증명** (옌센 부등식 — $\log$는 오목이므로 로그의 기댓값이 기댓값의 로그를 넘지 못한다):
   $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
   등호는 $p = q$일 때만. 이 작은 증명이 ELBO의 유효성과 학습 이론의 절반을 떠받친다.
 - **가우시안 KL의 닫힌 형태** (모든 VAE 구현 속의 그 공식):

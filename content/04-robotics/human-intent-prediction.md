@@ -58,7 +58,7 @@ Let $T$ be the event time. Performance must be reported as a function of time-to
 
 $$\text{AUC}(\Delta), \qquad \text{Recall}_{\mathrm{FPR}=\alpha}(\Delta)$$
 
-Reporting one number at one $\Delta$, or averaging over all $\Delta$, hides the deployment tradeoff. AUC summarizes ranking across thresholds; an action needs a chosen operating point, calibration, and costs. For a deployed operating metric, define the usable horizon $\Delta^\*$:
+Read it as a curve rather than a score, because reporting one number at one $\Delta$, or averaging over all $\Delta$, hides the deployment tradeoff. AUC summarizes ranking across thresholds; an action needs a chosen operating point, calibration, and costs. For a deployed operating metric, define the usable horizon $\Delta^\*$ — in other words, the longest lead time at which the chosen metric still clears its requirement:
 
 $$\Delta^{*} = \max\{\Delta : \text{operating-metric}(\Delta) \geq \text{requirement}\}$$
 
@@ -315,7 +315,7 @@ You should be able to:
 
 $$\text{AUC}(\Delta), \qquad \text{Recall}_{\mathrm{FPR}=\alpha}(\Delta)$$
 
-한 $\Delta$에서의 숫자 하나나 모든 $\Delta$의 평균은 배포 절충을 가린다. AUC는 여러 임계값에서의 순위 판별력을 요약하지만 실제 행동에는 정해진 동작점, 보정, 비용이 필요하다. 배포 동작점의 지표에 대해 가용 지평 $\Delta^*$를 정의하자:
+점수가 아니라 곡선으로 읽어라. 한 $\Delta$에서의 숫자 하나나 모든 $\Delta$의 평균은 배포 절충을 가리기 때문이다. AUC는 여러 임계값에서의 순위 판별력을 요약하지만 실제 행동에는 정해진 동작점, 보정, 비용이 필요하다. 배포 동작점의 지표에 대해 가용 지평 $\Delta^*$를 정의하자 — 다시 말해, 고른 지표가 요구조건을 아직 넘기는 가장 긴 선행 시간이다:
 
 $$\Delta^{*} = \max\{\Delta : \text{동작점 지표}(\Delta) \geq \text{요구조건}\}$$
 

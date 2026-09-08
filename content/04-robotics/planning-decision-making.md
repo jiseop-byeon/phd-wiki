@@ -181,7 +181,7 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 
 ### 6. Trajectory optimization and MPC
 
-A common formulation is
+A common formulation is the trajectory-optimization program of [[02-foundations/optimization|4. Optimization]] — read it as a running cost paid at every step plus a terminal cost at the end, with the physics and the obstacles as constraints:
 
 $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text{s.t. dynamics, bounds, and collision constraints.}$$
 
@@ -432,7 +432,7 @@ optimality**도 표본이 늘 때의 수렴 성질이지, 실시간 예산에서
 
 ### 6. 궤적 최적화와 MPC
 
-흔한 정식화는
+흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다:
 
 $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text{s.t. 동역학, 한계, 충돌 제약}$$
 

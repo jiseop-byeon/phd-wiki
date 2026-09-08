@@ -64,6 +64,8 @@ The process model predicts because measurements do not continuously reveal the w
 
 ### 4. Bayes filtering: predict, then correct
 
+Both lines come from basic probability with one modelling assumption each — total probability plus the Markov assumption on the dynamics for the first, Bayes' rule plus measurement-depends-only-on-the-current-state for the second; the paragraph after them says what each assumption buys.
+
 $$p(x_t\mid z_{1:t-1},u_{1:t})=\int p(x_t\mid x_{t-1},u_t)p(x_{t-1}\mid z_{1:t-1},u_{1:t-1})\,dx_{t-1}$$
 
 $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
@@ -309,6 +311,8 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 측정이 상태 전체를 연속적으로 알려 주지 못하므로 과정 모델이 예측한다. 관측 모델은 가정한 상태를 센서가 볼 값과 연결한다. 바퀴가 미끄러지면 오도메트리가 예측한 움직임을 거리 센서가 지지하지 않을 수 있다. 이는 거리 잡음보다 운동 가정의 오류일 수 있다. **여기서 얻는 독법.** 잡음 파라미터를 키우기 전에 잔차를 두 모델로 거슬러 간다. 필터가 불일치를 표현하는지, 측정이 제때 오는지, 보정 오차를 무작위 불확실성으로 숨기는지 묻는다.
 
 ### 4. 베이즈 필터: 예측하고, 보정한다
+
+두 줄 다 기초 확률에 모델링 가정 하나씩을 더한 것이다 — 첫째는 전확률 법칙에 동역학의 마르코프 가정, 둘째는 베이즈 규칙에 측정이 현재 상태에만 의존한다는 가정. 뒤의 문단이 각 가정이 무엇을 사 주는지 말한다.
 
 $$p(x_t\mid z_{1:t-1},u_{1:t})=\int p(x_t\mid x_{t-1},u_t)p(x_{t-1}\mid z_{1:t-1},u_{1:t-1})\,dx_{t-1}$$
 
