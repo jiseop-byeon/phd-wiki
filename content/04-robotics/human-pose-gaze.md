@@ -91,7 +91,7 @@ Gaze is the strongest single predictor of near-future action in humans, and the 
 | Appearance-based gaze | eye region resolvable | ~3–6° | a few metres |
 | **Head pose as gaze proxy** | face or head visible | coarse — see below | tens of metres |
 
-At any realistic street or site distance, **only head pose survives.** Nearly every deployed "gaze-aware" system is in fact head-pose-aware, and almost none of them says so.
+At any realistic street or site distance, **only head pose survives.** The table says why: appearance-based gaze needs a resolvable eye region, which is gone beyond a few metres, so a system that reports "gaze" at site range is necessarily estimating head pose. Check which one a paper measured before you read its accuracy figure.
 
 The approximation is defensible, and there is one number worth knowing: in seated four-person meetings, head orientation accounts for roughly **two-thirds** of gaze direction (68.9%), and attention estimation from head orientation alone reaches 88.7% (Stiefelhagen & Zhu 2002). The residual is what makes the map many-to-one, and it gets worse as candidate targets multiply (Ba & Odobez 2009).
 
@@ -276,7 +276,7 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 | 외형 기반 시선 추정 | 눈 영역이 분해 가능 | 약 3–6° | 수 미터 |
 | **머리 자세를 시선 대용으로** | 얼굴·머리가 보임 | 거칠다 — 아래 참조 | 수십 미터 |
 
-현실적인 도로·현장 거리에서는 **머리 자세만 살아남는다.** 배포된 거의 모든 "시선 인지" 시스템은 실제로는 머리 자세 인지이고, 그렇다고 밝히는 경우는 거의 없다.
+현실적인 도로·현장 거리에서는 **머리 자세만 살아남는다.** 이유는 표에 있다. 외형 기반 시선 추정은 눈 영역이 분해되어야 하는데 몇 미터를 넘으면 사라지므로, 현장 거리에서 "시선"을 보고하는 시스템은 필연적으로 머리 자세를 추정하고 있다. 정확도 수치를 읽기 전에 논문이 둘 중 무엇을 쟀는지 확인하라.
 
 이 근사는 방어 가능하고, 알아둘 만한 숫자가 하나 있다. 앉은 4인 회의에서 머리 방향이 시선 방향의 약 **2/3**(68.9%)를 설명하고, 머리 방향만으로 주의 대상을 추정해도 88.7%에 이른다(Stiefelhagen & Zhu 2002). 나머지가 이 사상을 다대일로 만들고, 후보 대상이 늘어날수록 나빠진다(Ba & Odobez 2009).
 

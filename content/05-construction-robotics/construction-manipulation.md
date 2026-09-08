@@ -119,6 +119,16 @@ title as evidence of where the work happened: read the methods section for a sen
 names the location. The strongest overhead-drilling result, Kindle et al., is evaluated on
 datasets recorded under *simulated* site disturbances — not on a site.
 
+**When and where that count was made, so it can be rerun.** The six-keyword search was run in
+August 2026 against arXiv and Crossref, and rerun in September 2026. The rerun surfaced two
+2025 papers under the same keywords that are not in the count and should not be added until
+the location test above is applied to them: a hexapod curtain-wall installation robot
+([arXiv:2509.13595](https://arxiv.org/abs/2509.13595)), whose abstract describes experiments
+on the robot and names site deployment as future work, so it reads as a laboratory result; and
+an ISARC 2025 drywall-panel installation robot (doi:10.22260/isarc2025/0058), whose abstract
+could not be retrieved, so where its experiments happened is unverified. A count that is not
+dated cannot be disagreed with, and this one is meant to be.
+
 > [!important] What to do with that finding
 > Read it as a research opportunity, not as permission to skip the rung. The reason the top
 > rung is empty is that it is genuinely hard — access, safety, schedule, and a building that
@@ -367,6 +377,14 @@ ISARC 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|�
 삼지 마라. 방법 절에서 장소를 지명한 문장을 읽어라. 가장 강한
 천장 드릴링 결과인 Kindle 등은 *모사된* 현장 교란 조건에서 기록한 데이터셋으로 평가된다 —
 현장이 아니다.
+
+**이 집계를 언제 어디서 했는지 — 다시 돌릴 수 있도록.** 여섯 키워드 검색은 2026년 8월에
+arXiv와 Crossref에서 했고, 2026년 9월에 다시 돌렸다. 재검색에서 같은 키워드 아래 집계에 없는
+2025년 논문 둘이 나왔는데, 위의 장소 시험을 적용하기 전에는 더하면 안 된다. 육각보행
+커튼월 설치 로봇([arXiv:2509.13595](https://arxiv.org/abs/2509.13595))은 초록이 로봇 위의 실험을
+서술하고 현장 배치는 향후 과제로 두므로 실험실 결과로 읽힌다. ISARC 2025의 드라이월 패널 설치
+로봇(doi:10.22260/isarc2025/0058)은 초록을 구하지 못해 실험 장소가 미확인이다. 날짜 없는
+집계에는 반대할 수 없고, 이 집계는 반대받으려고 있는 것이다.
 
 > [!important] 이 발견을 어떻게 쓸 것인가
 > 연구 기회로 읽되, 단계를 건너뛰어도 된다는 허가로 읽지 마라. 맨 위 칸이 비어 있는 이유는
