@@ -59,7 +59,8 @@ flowchart LR
 *Two things to notice. First, nothing here is learned — the 2021 platform paper is a
 classical sense-plan-control stack, which is why it is a useful baseline for the learned
 papers that followed. Second, the arm plans a FORCE trajectory rather than a position one;
-that choice is what makes a dig soil-agnostic, because the soil never has to be modelled.*
+that reduces dependence on an explicit, precise soil model by reacting to measured interaction.
+Feasibility, saturation, bucket fill, and task outcome still depend on the material.*
 
 **What it demonstrates, with the evidence character**: autonomous free-form trenching and
 embankment/grading on real outdoor terrain (embankments at 0.03–0.05 m mean error); slope
@@ -123,8 +124,8 @@ flowchart LR
 
 *두 가지를 눈여겨보라. 첫째, 여기에 학습된 것은 하나도 없다 — 2021년 플랫폼 논문은 고전적
 sense-plan-control 스택이고, 그래서 뒤이은 학습 기반 논문들의 유용한 기준선이 된다. 둘째,
-팔이 계획하는 것은 위치 궤적이 아니라 *힘* 궤적이다. 그 선택이 굴착을 토질에 무관하게 만드는
-장치다 — 흙을 아예 모델링하지 않아도 되기 때문이다.*
+팔이 계획하는 것은 위치 궤적이 아니라 *힘* 궤적이다. 이 선택은 측정된 상호작용에 반응하게 해
+명시적 정밀 토질 모델 의존을 줄인다. 실행 가능성·포화·버킷 충전·작업 성과는 여전히 재료에 좌우된다.*
 
 **보여준 것, 증거의 성격과 함께**: 실제 야외 현장에서의 자율 자유 곡선 트렌칭과
 제방/정지 작업(제방 평균 오차 0.03~0.05 m); 능동 섀시 적응을 통한 경사 작업; 기하

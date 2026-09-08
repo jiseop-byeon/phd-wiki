@@ -138,7 +138,7 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
 - 인코더 둘: 이미지(ResNet 또는 [[01-canonical-papers/notes/1-foundations/vit|ViT]])와 텍스트(Transformer), 각각 공유 공간으로 투영.
 - **대조 목적함수**: N쌍 배치에서 올바른 N쌍의 코사인 유사도를 나머지 N²−N개의 잘못된 쌍 대비 최대화(대칭 InfoNCE, 학습된 온도).
 
-<svg viewBox="0 0 620 236" style="max-width:100%;height:auto" role="img" aria-label="CLIP 배치를 유사도 행렬로 본 것: 대각선의 N개가 정답, 나머지는 전부 음성">
+<svg viewBox="0 0 620 236" style="max-width:100%;height:auto" role="img" aria-label="CLIP 배치를 유사도 행렬로 본 것: 대각선의 N개가 정답, 나머지는 전부 불일치 쌍">
   <rect x="150" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
   <rect x="188" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
   <rect x="226" y="46" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
@@ -168,7 +168,7 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
     <text x="338" y="96">틀린 N&#178; &#8722; N쌍 &#8212; 내린다</text>
     <text x="338" y="132">손실 = 각 행에 대한 softmax</text>
     <text x="338" y="150">+ 각 열에 대한 softmax</text>
-    <text x="30" y="212" opacity="0.9">배치 크기 N 하나가 정답 N개와 음성 N&#178; &#8722; N개를 공짜로 만든다 &#8212; 배치 크기가 학습 디테일이 아니라</text>
+    <text x="30" y="212" opacity="0.9">배치 크기 N 하나가 정답 N개와 음의 쌍(불일치) N&#178; &#8722; N개를 만든다 &#8212; 배치 크기가 학습 디테일이 아니라</text>
     <text x="30" y="228" opacity="0.9">방법의 일부인 이유다. N = 4면 4 대 12, CLIP의 32,768이면 3만 2천 대 10억이다.</text>
   </g>
 </svg>

@@ -47,7 +47,7 @@ per hour, no failure taxonomy, no comparison against a human crew. The evidence 
 robot deployed is strong; the evidence for how well it deployed is one adjective.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
-> This is one of only **three papers** this wiki's survey found that put a manipulator on an **active construction site** — the others are Dörfler et al. (2019), welding rebar in place in the Mesh Mould wall of the DFAB HOUSE, and Yu et al. (2007). The scope of that count matters: it is a search of the *modern* literature under six task keywords and it excludes the Japanese STCR era ([[05-construction-robotics/construction-manipulation|9. §3]]). The abstract states validation "by experiments on a rebar mesh demonstration platform" followed by "application of our robot system in the field of the Shenyang Hunnan Science and Technology City Phase IV project", where it "achieved satisfactory performance". Note the honest weakness of that last phrase: **"satisfactory performance" is not a measurement.** The deployment is the contribution; the quantitative field evidence is thin.
+> This is one of **three cases identified by this wiki's targeted search** that put a manipulator on an **active construction site** — the others are Dörfler et al. (2019), welding rebar in place in the Mesh Mould wall of the DFAB HOUSE, and Yu et al. (2007). This is not an exhaustive literature count: the search covers the *modern* literature under six task keywords and excludes the Japanese STCR era ([[05-construction-robotics/construction-manipulation|9. §3]]). The abstract states validation "by experiments on a rebar mesh demonstration platform" followed by "application of our robot system in the field of the Shenyang Hunnan Science and Technology City Phase IV project", where it "achieved satisfactory performance". Note the honest weakness of that last phrase: **"satisfactory performance" is not a measurement.** The deployment is the contribution; the quantitative field evidence is thin.
 
 ### Limitations & critique
 
@@ -94,7 +94,7 @@ robot deployed is strong; the evidence for how well it deployed is one adjective
 대한 증거는 형용사 하나다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 이 위키의 조사에서 **가동 중인 건설 현장**에 매니퓰레이터를 올린 것으로 확인된 단 **세 논문** 중 하나다 — 나머지는 DFAB HOUSE의 Mesh Mould 벽에서 철근을 현장 용접한 Dörfler 등(2019)과 Yu 등(2007)이다. 그 집계의 범위가 중요하다: 현대 문헌을 여섯 개 과제 키워드로 훑은 것이고 일본 STCR 시대는 제외한다([[05-construction-robotics/construction-manipulation|9. §3]]). 초록은 "철근 메시 실증 플랫폼 실험"으로 검증한 뒤 "선양 훈난 과학기술도시 4기 프로젝트 현장에 적용"해 "만족스러운 성능을 달성했다"고 말한다. 마지막 표현의 정직한 약점을 보라: **"만족스러운 성능"은 측정이 아니다.** 배치가 기여이고, 정량적 현장 증거는 얇다.
+> 이 위키의 **표적 검색에서 확인한 세 사례** 중 하나로, **가동 중인 건설 현장**에 매니퓰레이터를 올렸다 — 나머지는 DFAB HOUSE의 Mesh Mould 벽에서 철근을 현장 용접한 Dörfler 등(2019)과 Yu 등(2007)이다. 이는 문헌 전체의 완전 집계가 아니다: 현대 문헌을 여섯 개 과제 키워드로 훑었고 일본 STCR 시대는 제외했다([[05-construction-robotics/construction-manipulation|9. §3]]). 초록은 "철근 메시 실증 플랫폼 실험"으로 검증한 뒤 "선양 훈난 과학기술도시 4기 프로젝트 현장에 적용"해 "만족스러운 성능을 달성했다"고 말한다. 마지막 표현의 정직한 약점을 보라: **"만족스러운 성능"은 측정이 아니다.** 배치가 기여이고, 정량적 현장 증거는 얇다.
 
 ### 한계와 비판
 

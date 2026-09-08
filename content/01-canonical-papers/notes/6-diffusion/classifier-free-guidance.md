@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Ho & Salimans, 2022** — [arXiv](https://arxiv.org/abs/2207.12598) · [PDF](https://arxiv.org/pdf/2207.12598)
 
 > [!note] Math on-ramp · 수학 준비물
-> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] first. The whole trick is one line of arithmetic on the predicted noise: $\hat\epsilon = \epsilon_u + w(\epsilon_c - \epsilon_u)$ — an extrapolation *away* from the unconditional prediction. Write that line out and note that $w = 1$ recovers ordinary conditional sampling.
-> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]을 먼저. 요령 전체가 예측된 노이즈에 대한 산수 한 줄이다: $\hat\epsilon = \epsilon_u + w(\epsilon_c - \epsilon_u)$ — 무조건 예측에서 *멀어지는* 외삽. 이 줄을 직접 써 보고, $w = 1$이면 평범한 조건부 샘플링으로 되돌아온다는 점을 확인하라.
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]] first. The whole trick is one line of arithmetic on the predicted noise: $\epsilon_{cfg} = \epsilon_u + s(\epsilon_c - \epsilon_u)$. Here $s = 1$ recovers ordinary conditional sampling and $s>1$ extrapolates away from the unconditional prediction.
+> [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]을 먼저. 요령 전체가 예측된 노이즈에 대한 산수 한 줄이다: $\epsilon_{cfg} = \epsilon_u + s(\epsilon_c - \epsilon_u)$. 여기서 $s = 1$은 평범한 조건부 샘플링이고, $s>1$은 무조건 예측에서 멀어지는 외삽이다.
 
 ## English
 
@@ -40,15 +40,14 @@ their conditioning. A guidance signal without any external model was needed.
 > "images matching the condition"; step further along that direction than either predicts.
 
 - Training: randomly replace condition $c$ with null token ∅.
-- Sampling: $\tilde\epsilon = (1+w)\,\epsilon_\theta(x_t, c) - w\,\epsilon_\theta(x_t, \varnothing)$
-  — guidance scale $w$ interpolates (and extrapolates) between unconditional and conditional scores.
+- Sampling: $\epsilon_{cfg}=\epsilon_u+s(\epsilon_c-\epsilon_u)$; $s=1$ is ordinary conditional sampling and $s>1$ extrapolates. Some papers instead write $w=s-1$, giving $(1+w)\epsilon_c-w\epsilon_u$.
 - Two forward passes per step; no classifier, works with any conditioning modality.
 
 ### Results
 
 - Sweeps the fidelity-diversity frontier with one scalar: higher $w$ → sharper,
   more condition-faithful, less diverse. Became the quality lever behind GLIDE, Imagen,
-  [[latent-diffusion|Stable Diffusion]] (typical $w\sim$5–7.5).
+  [[latent-diffusion|Stable Diffusion]] (in this notation, typical $s\sim$5–7.5).
 
 ### Limitations & critique
 
@@ -90,21 +89,20 @@ guidance, autoguidance.
 > 어느 예측보다도 더 멀리 내딛어라.
 
 - 학습: 조건 $c$를 확률적으로 널 토큰 ∅로 교체.
-- 샘플링: $\tilde\epsilon = (1+w)\,\epsilon_\theta(x_t, c) - w\,\epsilon_\theta(x_t, \varnothing)$
-  — 가이던스 스케일 $w$가 무조건부와 조건부 score 사이를 보간(그리고 외삽)한다.
+- 샘플링: $\epsilon_{cfg}=\epsilon_u+s(\epsilon_c-\epsilon_u)$; $s=1$은 보통의 조건부 샘플링이고 $s>1$은 외삽한다. 일부 논문은 $w=s-1$로 두어 $(1+w)\epsilon_c-w\epsilon_u$로 쓴다.
 - 스텝당 forward pass 두 번; 분류기 없음, 어떤 조건 모달리티와도 작동.
 
 ### 결과
 
-- 스칼라 하나로 충실도-다양성 프런티어를 쓸어 담는다: $w$가 클수록 선명하고 조건에
+- 스칼라 하나로 충실도-다양성 프런티어를 쓸어 담는다: $s$가 클수록 선명하고 조건에
   충실하며 덜 다양하다. GLIDE, Imagen, [[latent-diffusion|Stable Diffusion]]의 품질
-  레버가 됐다(보통 $w\sim$5~7.5).
+  레버가 됐다(이 표기에서는 보통 $s\sim$5~7.5).
 
 ### 한계와 비판
 
 - 높은 가이던스는 과포화와 모드 탈락 아티팩트를 만든다; 추론 비용 2배; "왜 외삽이 이렇게
   잘 되는가"의 이론은 한참 뒤에야 나왔다.
-- $w$ 튜닝은 도메인별로 경험적 — 로보틱스 사용처에서도 마찬가지.
+- $s$ 튜닝은 도메인별로 경험적 — 로보틱스 사용처에서도 마찬가지.
 
 ### 영향과 후속 연구
 
@@ -124,5 +122,5 @@ CFG를 쓴다). 후속: 증류된 가이던스, 구간 가이던스, autoguidanc
 
 - [ ] Name the two predictors created by dropping the condition during training (conditional and unconditional) · 학습 중 조건 드롭이 만드는 두 예측기(조건부/무조건부)를 말할 수 있다
 - [ ] Explain what direction the extrapolation formula points along · 외삽 공식의 방향이 가리키는 것을 설명할 수 있다
-- [ ] State what $w$ trades off (fidelity vs diversity) and its typical range · $w$가 맞바꾸는 것(충실도 vs 다양성)과 전형적 값 범위를 말할 수 있다
+- [ ] State what $s$ trades off (fidelity vs diversity) and its typical range · $s$가 맞바꾸는 것(충실도 vs 다양성)과 전형적 값 범위를 말할 수 있다
 - [ ] Say why inference costs twice as much · 추론 비용 2배의 이유를 말할 수 있다

@@ -51,8 +51,8 @@ worst case: distributed, history-dependent, and material-parameter-unknown.
   resistive force from blade geometry, depth, and soil parameters — good enough to build
   training simulators, too crude for precise force prediction.
 - **The practical responses**: (a) control on *forces, not positions* — the RSL line's
-  founding move (2017) treats a dig as a force–torque trajectory, making it
-  soil-agnostic; (b) **learn adaptively** — soil-adaptive RL (RA-L 2022 —
+  founding move (2017) treats a dig as a force–torque trajectory, reducing dependence on
+  an explicit, precise soil model; (b) **learn adaptively** — soil-adaptive RL (RA-L 2022 —
   [[01-canonical-papers/notes/8-construction/egli-rl|note]]) trains across
   randomized soil parameters and adapts online without ever identifying the soil;
   (c) **learn residuals/geometry** — Baidu's line learns from terrain geometry
@@ -184,7 +184,7 @@ soil bin supports almost no claim.
    the research autonomy exists?
 
 > [!tip]- Answers
-> 1. Position trajectories fail when soil resistance varies — the same path meets wildly different forces. Commanding force–torque profiles makes the dig soil-agnostic: the machine presses until the interaction, not the position, is right.
+> 1. Position trajectories fail when soil resistance varies — the same path meets wildly different forces. Commanding force–torque profiles reduces dependence on precise soil parameters because the machine regulates measured interaction, but material-dependent feasibility, saturation, fill, and outcome remain.
 > 2. Cheap: unlimited, labeled, resettable demonstrations across randomized tasks — exactly what real machines cannot provide. Unaddressed: the sim's soil/hydraulics/site diversity bounds what pretraining can know; real-site distribution shift remains.
 > 3. Hydraulic dynamics scale nonlinearly (valve/pump saturation); soil forces scale with bucket geometry differently than inertia; real sites add slopes, mixed material, obstacles, weather, and safety constraints absent from a bin.
 > 4. Liability and safety cases require a responsible human; failure recovery is unsolved (reset is human labor); and sites are shared spaces — the certification and insurance path for unsupervised heavy machinery does not yet exist.
@@ -237,7 +237,7 @@ soil bin supports almost no claim.
 - **고전 토질역학**(기본 토공 방정식 — FEE)은 날 기하·깊이·토질 파라미터로 저항력을
   예측한다 — 학습 시뮬레이터를 만들 만큼은 좋지만 정밀한 힘 예측에는 조악하다.
 - **실전의 대응**: (a) *위치가 아니라 힘으로* 제어 — RSL 라인의 창립 수(2017)는 굴착을
-  힘-토크 궤적으로 취급해 토질 불가지론적으로 만들었다; (b) **적응적으로 학습** —
+  힘-토크 궤적으로 취급해 명시적 정밀 토질 모델 의존을 줄였다; (b) **적응적으로 학습** —
   soil-adaptive RL(RA-L 2022 — [[01-canonical-papers/notes/8-construction/egli-rl|노트]])은
   무작위화된 토질 파라미터에 걸쳐 학습하고 토질을 식별하지
   않은 채 온라인 적응한다; (c) **잔차/기하 학습** — Baidu 라인은 지형 기하 표현에서
@@ -358,7 +358,7 @@ flowchart LR
    이유는?
 
 > [!tip]- 정답 · Answers
-> 1. 위치 궤적은 토양 저항이 변하면 실패한다 — 같은 경로가 완전히 다른 힘과 만난다. 힘-토크 프로파일을 명령하면 굴착이 토질 불가지론적이 된다: 기계는 위치가 아니라 상호작용이 맞을 때까지 누른다.
+> 1. 위치 궤적은 토양 저항이 변하면 실패한다 — 같은 경로가 완전히 다른 힘과 만난다. 힘-토크 프로파일은 측정된 상호작용을 조절해 정밀 토질 파라미터 의존을 줄이지만, 실행 가능성·포화·버킷 충전·성과는 여전히 재료에 좌우된다.
 > 2. 싸지는 것: 무작위화된 과제 전반의 무제한·라벨된·리셋 가능한 시연 — 실기계가 줄 수 없는 바로 그것. 미해결: 시뮬레이션의 토질/유압/현장 다양성이 사전학습이 알 수 있는 것의 상한이다; 실제 현장의 분포 이동은 남는다.
 > 3. 유압 동역학이 비선형으로 스케일한다(밸브/펌프 포화); 토양력은 버킷 기하에 대해 관성과 다르게 스케일한다; 실제 현장에는 통에 없는 경사, 혼합 재료, 장애물, 날씨, 안전 제약이 있다.
 > 4. 책임과 안전 사례가 책임지는 인간을 요구한다; 실패 복구가 미해결이다(리셋은 인간 노동); 현장은 공유 공간이다 — 무감독 중장비의 인증·보험 경로가 아직 없다.

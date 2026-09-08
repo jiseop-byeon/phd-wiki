@@ -55,7 +55,7 @@ The two devices are the **leader** (what the human moves; historically "master")
 **follower** ("slave"). Two architectures:
 
 - **Unilateral**: motion flows from leader to follower; nothing comes back except what the
-  operator can see. Simple, unconditionally stable, and blind to contact.
+  operator can see. Removing the remote force-feedback loop reduces channel-induced instability risk, but does not guarantee every local controller is stable; the operator is blind to contact force.
 - **Bilateral**: force flows back from the follower to the leader, so the operator feels
   the environment. This is what makes insertion and fitting teleoperable — and it is what
   can go unstable.
@@ -112,11 +112,12 @@ wholesale. The system is a chain of springs, masses, and dampers, all of which a
 **passive**: they store and dissipate energy but never create it. Interconnecting passive
 systems keeps them passive, so the whole thing is stable.
 
-A communication delay breaks that. Force computed from a position the follower held
+A communication delay can break that passivity argument. Force computed from a position the follower held
 $T$ seconds ago is applied to a leader that has since moved somewhere else, and the product
-of the two can transfer energy *into* the system. The interconnection is no longer passive,
-and for a large enough $T$ the loop oscillates no matter how small the gains are — which is
-why "just lower the gain" is not a fix.
+of the two can transfer energy *into* the system. The direct interconnection loses an
+arbitrary-delay passivity guarantee, and larger delay worsens the stability–transparency
+tradeoff. Lower gain or bandwidth can stabilize some models at the cost of transparency,
+but it is not an arbitrary-delay guarantee.
 
 The classical repair is the **scattering transformation**, or equivalently the **wave
 variables** of Niemeyer and Slotine (1991). Instead of sending velocity and force across the channel, send the
@@ -471,7 +472,8 @@ flowchart LR
 두 아키텍처가 있다:
 
 - **단방향**: 운동이 리더에서 팔로워로만 흐르고, 조작자가 볼 수 있는 것 외에는 아무것도
-  돌아오지 않는다. 단순하고 무조건 안정하며, 접촉에 대해 눈이 멀었다.
+  돌아오지 않는다. 원격 힘 피드백 루프가 없어 채널 유발 불안정 위험은 작지만 모든 로컬
+  제어기의 안정성을 자동 보장하지는 않으며, 접촉력에 대해 눈이 멀었다.
 - **양방향**: 힘이 팔로워에서 리더로 되돌아와 조작자가 환경을 느낀다. 삽입과 끼움을
   원격조작 가능하게 만드는 것이 이것이고, 불안정해질 수 있는 것도 이것이다.
 
@@ -526,10 +528,11 @@ Lawrence의 4채널 분석(1993)이 이것을 직관이 아니라 설계 목표�
 저장하고 소산하지만 만들어내지는 않는다. 수동 시스템끼리 연결하면 수동성이 유지되므로
 전체가 안정하다.
 
-통신 지연이 그것을 깬다. 팔로워가 $T$초 전에 있던 위치로 계산된 힘이, 그사이 다른 곳으로
+통신 지연은 그 수동성 논증을 깰 수 있다. 팔로워가 $T$초 전에 있던 위치로 계산된 힘이, 그사이 다른 곳으로
 움직인 리더에 가해진다. 그 둘의 곱이 시스템 *안으로* 에너지를 전달할 수 있다. 연결은 더
-이상 수동적이지 않고, $T$가 충분히 크면 게인을 아무리 줄여도 루프가 진동한다 — "게인을
-낮춰라"가 해결책이 아닌 이유다.
+이상 임의 지연에 대한 수동성 기반 안정 보장을 갖지 않으며, 지연이 커질수록 안정성–투명성
+절충이 악화된다. 특정 모델에서는 게인이나 대역폭을 낮춰 안정화할 수 있지만 성능을 희생하며,
+임의 지연을 보장하는 해법은 아니다.
 
 고전적 처방은 **산란 변환**(scattering transformation), 동등하게 Niemeyer와 Slotine(1991)의
 **wave variable**이다.

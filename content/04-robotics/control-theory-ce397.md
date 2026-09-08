@@ -90,9 +90,9 @@ eigenvector direction decaying or growing like $e^{\lambda_i t}$.
 **Worked eigenvalues.** For $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$:
 $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm j1.94$.
 Read it off directly: negative real part → decaying; nonzero imaginary part → oscillating
-at ~1.94 rad/s while it decays. **Complex eigenvalues are ringing; real ones are monotone —
-decaying if negative, growing if positive.** You now know the qualitative response without
-simulating anything.
+at ~1.94 rad/s while it decays. For an individual mode, the real part sets growth or decay
+and the imaginary part sets oscillation. A full output can still be non-monotone with real
+poles because modal coefficients, zeros, and output choice also matter.
 
 ### 4. Stability, and the two half-stories
 
@@ -108,7 +108,7 @@ $e^{-0.1} = 0.905 < 1$. ✓ Papers switch between the two without warning; the c
 always discrete.
 
 > [!warning] Stability is not performance
-> "Stable" only says the error eventually goes to zero. It says nothing about *how long*,
+> For the autonomous system above, "stable" says the state returns to the origin. It does not by itself guarantee zero tracking error, and says nothing about *how long*,
 > how much overshoot, how large the control effort, or whether the linear model was valid
 > that far from the operating point. A paper that reports only "the closed loop is stable"
 > has reported the weakest possible claim.
@@ -120,8 +120,7 @@ becomes algebra: for the mass–spring–damper,
 $G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. Its **poles** (denominator roots) are
 exactly the eigenvalues of $A$ — one object, two languages.
 
-Any second-order response is described by two numbers, and these are the ones experimental
-sections actually report:
+For a standard or dominant second-order mode with negligible zero effects, the denominator is described by two numbers experimental sections often report:
 
 $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta = \frac{b}{2\sqrt{km}}$$
 
@@ -238,9 +237,7 @@ $-\omega_1 + \omega_a \log M_s = \pi p$, so
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$. A requirement of $\varphi_m = 45°$
-is therefore **not achievable by any controller** — not by a better tuning, not by a better
-architecture. The only moves left are physical: faster actuators (raise $\omega_a$), a less
+Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$. This lower bound constrains the sensitivity peak but does not by itself prove that a 45° phase margin is impossible. Physical moves include faster actuators (raise $\omega_a$), a less
 unstable airframe (lower $p$), or a lower bandwidth demand.
 
 That is the reading skill this section exists for. When a paper reports a control result,
@@ -498,7 +495,7 @@ $u=0$이면 해는 $x_0e^{at}$의 행렬판이다: $x(t) = e^{At}x_0$. $A = Q\La
 **고유값 계산 예제.** $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$에서
 $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm j1.94$.
 바로 읽힌다: 실수부 음수 → 감쇠; 허수부 0 아님 → 감쇠하면서 약 1.94 rad/s로 진동.
-**복소 고유값은 울림이고, 실수 고유값은 순수 감쇠다.** 시뮬레이션 없이 정성적 응답을 안 것이다.
+개별 모드에서는 실수부가 성장·감쇠를, 허수부가 진동을 정한다. 그러나 전체 출력은 모드 계수·영점·출력 선택 때문에 실수 극점만 있어도 비단조일 수 있다.
 
 ### 4. 안정성, 그리고 한 이야기의 두 반쪽
 
@@ -513,7 +510,7 @@ $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 예고 없이 둘을 오가�
 이산이다.
 
 > [!warning] 안정성은 성능이 아니다
-> "안정"은 오차가 결국 0으로 간다는 말뿐이다. *얼마나 걸리는지*, 오버슈트가 얼마인지,
+> 위 자율계에서 "안정"은 상태가 원점으로 돌아간다는 뜻이다. 추종 오차 0을 그 자체로 보장하지 않으며, *얼마나 걸리는지*, 오버슈트가 얼마인지,
 > 제어 입력이 얼마나 큰지, 운용점에서 그만큼 멀어져도 선형 모델이 유효한지에 대해 아무
 > 말도 하지 않는다. "폐루프가 안정하다"만 보고한 논문은 가능한 가장 약한 주장을 한 것이다.
 
@@ -523,7 +520,7 @@ $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 예고 없이 둘을 오가�
 질량-스프링-댐퍼는 $G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. 그 **극점**(분모의
 근)이 정확히 $A$의 고유값이다 — 하나의 대상, 두 개의 언어.
 
-모든 2차 응답은 두 숫자로 기술되고, 실험 섹션이 실제로 보고하는 것이 바로 이 둘이다:
+영점 영향이 작고 표준 또는 우세 2차 모드가 지배할 때, 분모는 실험 절이 자주 보고하는 두 숫자로 기술된다:
 
 $$s^2 + 2\zeta\omega_n s + \omega_n^2, \qquad \omega_n = \sqrt{k/m}, \quad \zeta = \frac{b}{2\sqrt{km}}$$
 
@@ -629,9 +626,8 @@ $-\omega_1 + \omega_a \log M_s = \pi p$를 주므로
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$다. 따라서 $\varphi_m = 45°$라는
-요구는 **어떤 제어기로도 달성 불가능하다** — 더 나은 튜닝으로도, 더 나은 구조로도 안 된다.
-남은 수는 물리적인 것뿐이다. 더 빠른 구동기($\omega_a$를 올린다), 덜 불안정한 기체($p$를
+그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$다. 이 하한은 감도 피크를 제약하지만,
+그 자체로 45° 위상여유가 불가능하다고 증명하지는 않는다. 물리적으로 조정할 수 있는 값에는 더 빠른 구동기($\omega_a$를 올린다), 덜 불안정한 기체($p$를
 낮춘다), 아니면 더 낮은 대역폭 요구.
 
 이 절이 존재하는 이유인 읽기 기술이 그것이다. 논문이 제어 결과를 보고할 때 흥미로운 질문은

@@ -4,7 +4,7 @@ authors: Doyun Lee, Kevin Han
 affiliation: NC State University, Construction Automation and Robotics Lab (CARL)
 venue: Automation in Construction 168, 105782
 year: 2024
-doi: https://doi.org/10.1016/j.autcon.2024.105782
+doi: 10.1016/j.autcon.2024.105782
 tags: [paper, construction]
 status: note-complete
 last_verified: 2026-07-23
@@ -14,7 +14,7 @@ depth-goal: "Read the method and evaluation closely enough to select, adapt, or 
 mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
 ---
 
-**Lee & Han, Automation in Construction 2024** — [DOI](https://doi.org/10.1016/j.autcon.2024.105699)
+**Lee & Han, Automation in Construction 168 (2024), 105782** — [DOI](https://doi.org/10.1016/j.autcon.2024.105782) · [institutional record](https://digitalcommons.georgiasouthern.edu/civil-eng-facpubs/184/)
 
 > [!note] Math on-ramp · 수학 준비물
 > [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]] (seam detection is a perception problem) and [[04-robotics/hri-safety|11. HRI & Safety §1]] — the paper ships *two operating modes*, so its autonomy claim is a spectrum position, not a binary.

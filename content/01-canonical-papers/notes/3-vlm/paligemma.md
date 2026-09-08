@@ -38,7 +38,7 @@ vision-language trunk that a robotics action expert can attach to).
 **How it works (literacy level)**: SigLIP-So400m encodes the image into tokens; Gemma-2B
 consumes image tokens + text prompt with **prefix-LM attention** (full bidirectional
 attention over the image+prompt prefix, causal only over the generated answer) — so the
-"question" can see the whole image, unlike a purely causal LM. Pretraining runs in stages
+image-and-prompt prefix can interact bidirectionally; generated answer tokens remain causal. A purely causal prefix can still see all preceding image tokens, so the distinction is the prefix-internal attention pattern, not image visibility itself. Pretraining runs in stages
 of increasing image resolution (224→448→896) on broad multimodal mixtures; the released
 checkpoint is deliberately *not* instruction-tuned — you fine-tune it per task with a
 provided recipe.
@@ -71,7 +71,7 @@ PaliGemma가 무엇을 제공하는지(로봇 행동 전문가를 붙일 수 있
 **작동 방식 (문해력 수준)**: SigLIP-So400m이 이미지를 토큰으로 인코딩하고, Gemma-2B가
 이미지 토큰 + 텍스트 프롬프트를 **prefix-LM 어텐션**으로 소비한다(이미지+프롬프트
 접두부에는 완전 양방향 어텐션, 생성되는 답변에만 인과 어텐션) — 순수 인과 LM과 달리
-"질문"이 이미지 전체를 볼 수 있다. 사전학습은 해상도를 키워 가는 단계(224→448→896)로
+이미지와 프롬프트 접두부는 내부에서 양방향으로 상호작용하고 생성 답변만 인과적으로 본다. 순수 인과 접두부도 앞선 이미지 토큰 전체를 볼 수 있으므로, 차이는 이미지 가시성 자체가 아니라 접두부 내부 attention pattern이다. 사전학습은 해상도를 키워 가는 단계(224→448→896)로
 넓은 멀티모달 혼합에서 진행되며, 공개 체크포인트는 의도적으로 지시 튜닝을 *하지 않은*
 상태다 — 제공된 레시피로 과제마다 파인튜닝한다.
 

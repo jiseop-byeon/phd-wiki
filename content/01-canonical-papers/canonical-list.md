@@ -9,14 +9,15 @@ mastery-when: "Working and Mastery are assigned on the individual concept or pap
 ## English
 
 The reading backbone of this wiki: bible-tier and milestone papers per subarea, in rough
-reading order. Check off as notes are written (one note per paper in `notes/`).
+reading order. A checked box means that this wiki has a note; it is **not the reader's
+progress**. Personal progress belongs in the local reading widget.
 Recent-trend papers get appended over time via the tracking workflow.
 
 ## 한국어
 
 이 위키의 중심이 되는 논문 목록: 분야별로 꼭 읽어야 할 기념비적 논문들을
-대략적인 읽기 순서로 정리했다. 논문 노트를 작성하면 체크 표시를 남긴다
-(`notes/`에 논문 하나당 노트 하나). 최신 논문은 트렌드를 따라가며 계속 추가한다.
+대략적인 읽기 순서로 정리했다. 체크 표시는 **위키에 노트가 있다는 뜻**이지 독자의
+학습 진도가 아니다. 개인 진도는 로컬 읽기 위젯에서 관리한다. 최신 논문은 트렌드를 따라가며 계속 추가한다.
 
 ---
 
@@ -24,8 +25,15 @@ Recent-trend papers get appended over time via the tracking workflow.
 ★ 원문 정독 (방법·실험까지) · ◐ 노트 후 원문 훑기 · ○ 노트로 충분 (계보 이해)
 — 이 기호는 **권장 읽기 분량**이지 숙련 수준이 아니다: ★를 정독해도 mastery(가정 비판·변형 설계)에 도달한 것은 아니다.
 (EN: ★ read the original in full · ◐ read the note, then skim the original · ○ the note is enough. These marks are the *recommended reading amount*, not a mastery level.)
-— Reading depths are tuned to the **construction physical-AI profile** (2026-07): the NLP-ancestor line (BERT, GPT-3, InstructGPT) and the deep generative-image papers (Score-SDE, LDM) are one-line citations in this field's papers, so they are ○; visual perception, VLA, and diffusion-policy mathematics keep their depth.
-— 깊이 배정은 **건설 physical AI 프로필** 기준으로 조정했다(2026-07): NLP 조상 계열(BERT·GPT-3·InstructGPT)과 생성 이미지 심화(Score-SDE·LDM)는 이 분야 논문에서 한 줄 인용 수준이라 ○, 시각 인식·VLA·디퓨전 정책 수학은 유지.
+— Reading depths are tuned to the **construction physical-AI profile** (last policy review: 2026-08-21): the NLP-ancestor line (BERT, GPT-3, InstructGPT) and the deep generative-image papers (Score-SDE, LDM) are one-line citations in this field's papers, so they are ○; visual perception, VLA, and diffusion-policy mathematics keep their depth.
+— 깊이 배정은 **건설 physical AI 프로필** 기준이다(마지막 정책 검토: 2026-08-21): NLP 조상 계열(BERT·GPT-3·InstructGPT)과 생성 이미지 심화(Score-SDE·LDM)는 이 분야 논문에서 한 줄 인용 수준이라 ○, 시각 인식·VLA·디퓨전 정책 수학은 유지.
+
+> [!note] When a ◐ item has no dedicated note · ◐인데 전용 노트가 없을 때
+> Use its linked concept page as the on-ramp, then read the original in this order: abstract
+> → the named section or figure → experiments → conclusion. `◐` still means partial original
+> reading; it never means that a missing note is required. · 연결된 개념 페이지를 먼저 읽고,
+> 원문은 초록 → 지정 절·그림 → 실험 → 결론 순서로 읽는다. ◐의 핵심은 원문 일부 읽기이며,
+> 존재하지 않는 노트를 찾으라는 뜻이 아니다.
 
 ## 1. Deep Learning Foundations
 

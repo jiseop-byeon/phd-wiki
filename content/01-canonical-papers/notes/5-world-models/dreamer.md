@@ -44,6 +44,7 @@ study in making one idea actually robust.
 - **v1 (ICLR 2020)**: RSSM world model + actor-critic trained on imagined latent
   trajectories; value bootstrapping (TD-λ) extends the effective horizon beyond the
   imagination length; gradients flow through dynamics.
+  In the [[planet|PlaNet]] RSSM, $h_t$ is deterministic recurrent memory that carries history, while $z_t$ is a stochastic state updated by observations and represents uncertainty or multiple possible futures.
 
 ```mermaid
 flowchart LR
@@ -117,6 +118,7 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 > 곧장 통과시켜라. 실제 스텝은 모델 갱신에만 쓴다.
 
 - **v1 (ICLR 2020)**: RSSM 월드모델 + 상상된 잠재 궤적으로 학습되는 actor-critic;
+  [[planet|PlaNet]]의 RSSM에서 $h_t$는 이력을 보존하는 결정론적 순환 기억이고, $z_t$는 관측으로 갱신되며 불확실성이나 가능한 여러 미래를 표현하는 확률적 상태다.
   가치 부트스트래핑(TD-λ)이 유효 지평을 상상 길이 너머로 확장; 그래디언트가 동역학을
   통과해 흐른다.
 

@@ -67,10 +67,10 @@ at the other:
 > ($\approx 10^6$), so a single scalar $K_e$ for it is a simplification that fails for a
 > straight-in push.
 
-The example above sits in the second row. Run the same arithmetic in the fourth and it stops
-being survivable: a 1 cm error against $10^7$ N/m asks for $10^5$ N, which no arm produces and
-no tool survives. **That is the real reason a position controller is never pointed at
-structure** — the force diverges long before the error closes. §5 uses the same two rows to
+The example above sits in the second row. The following is a local-linearization risk scale,
+not a force prediction at 1 cm: extrapolating $10^7$ N/m gives $10^5$ N. Actual force is limited
+by the series-equivalent controller, robot, tool, and environment stiffnesses and by saturation.
+**Commanding an unreachable penetration with high closed-loop stiffness is dangerous.** §5 uses the same two rows to
 compute impact forces, so a claim about "a stiff contact" should always be read back to a row
 of this table.
 
@@ -255,8 +255,7 @@ drive closer or reach further.
 Steady contact is the easy part. The hard part is the microsecond the robot arrives, and
 the argument here is quantitative rather than rhetorical.
 
-Model the impact as the end-effector's apparent mass $\Lambda$ meeting a spring of stiffness
-$K$ at approach speed $v$. The contact is a half-sine, with
+Assume an undamped one-axis linear impact, constant apparent mass, a linear spring, and fully stored-and-returned energy. The end-effector's apparent mass $\Lambda$ meets stiffness $K$ at approach speed $v$, giving a half-sine contact with
 
 $$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
 
@@ -269,10 +268,8 @@ mass–spring oscillator: $\omega = \sqrt{K/\Lambda}$, so $T/2 = \pi\sqrt{\Lambd
 
 Read the two square roots against each other. Peak force scales as $\sqrt{K}$ and duration
 as $1/\sqrt{K}$, so **making the interface a hundred times stiffer multiplies the force by
-ten and divides the contact time by ten** — the impulse is conserved and only its shape
-changes. That is why adding compliance is not a comfort measure but the one lever that moves
-both numbers the right way at once, and why it is a *mechanical* fix: no control law can
-change $\Lambda$ or $K$ during a 1.4 ms event.
+ten and divides the contact time by ten** — in this model the impulse is conserved and only its shape
+changes. Mechanical compliance moves both numbers directly; pre-impact control can most directly reduce $v$. For measured impacts, check the force-time trace and identified equivalent $\Lambda,K,D$.
 
 Take the $\Lambda = 2$ kg from [[02-foundations/manipulator-kinematics-dynamics|10. §6]] and
 a gentle approach at $v = 5$ cm/s.
@@ -386,10 +383,10 @@ exactly the division of labour above.
 
 #### The convergence, and the interface it is settling on
 
-That framing is no longer only this wiki's opinion — it is where the field is moving, and
-the direction is one-way. **The VLA is being demoted from motor controller to a slow
-semantic layer that parameterises a classical inner loop.** That is a classical-control idea
-winning an architectural argument.
+Several recent systems point in the same direction, although it is not yet a settled or
+one-way convergence: **a VLA can act as a slower semantic layer that parameterises a
+classical high-rate inner loop.** This is one increasingly visible way to combine learned
+task reasoning with established contact-control machinery.
 
 - **ForceVLA** (NeurIPS 2025) treats 6-axis force/torque as a **primary** input channel
   rather than an auxiliary one, fused through a force-aware mixture of experts during action
@@ -407,9 +404,9 @@ winning an architectural argument.
 The honest counterweight: this is convergence of **practice**, not of community. The
 classical contact line — Tedrake's group on contact-mode explosion and non-smooth contact
 gradients — goes largely uncited by the frontier VLA papers, and the flagship releases remain
-position-controlled and largely force-blind. What is happening is that every group trying to
-deploy a VLA on a contact-rich task independently rediscovers that it needs an
-impedance or admittance inner loop, and reaches for the toolbox on this page.
+position-controlled and largely force-blind. The cited systems show that some groups
+deploying VLAs on contact-rich tasks have found impedance, admittance, or passivity layers
+useful; they do not establish that every system needs the same interface.
 
 > [!note] The prediction worth recording
 > If the merge completes, **the interface will be compliance parameters, not positions.**
@@ -545,10 +542,8 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 > 유연하고($\approx 10^4$) 축 방향으로는 단단하다($\approx 10^6$). 그래서 스칼라 $K_e$ 하나로
 > 적는 것은 곧장 밀어 넣는 경우에는 성립하지 않는 단순화다.
 
-위 예는 둘째 행에 있다. 같은 계산을 넷째 행에서 하면 더 이상 견딜 수 있는 값이 아니다:
-$10^7$ N/m에 대한 1 cm 오차는 $10^5$ N을 요구하고, 그것을 낼 수 있는 팔도 견딜 수 있는 도구도
-없다. **위치 제어기를 구조체에 겨누지 않는 진짜 이유가 이것이다** — 오차가 닫히기 한참 전에
-힘이 발산한다. §5도 같은 두 행으로 충격력을 계산하므로, "단단한 접촉"이라는 주장은 언제나
+위 예는 둘째 행에 있다. 다음 계산은 1 cm에서의 실제 힘 예측이 아니라 국소 선형화를 외삽한 위험 규모다:
+$10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·로봇·툴·환경의 직렬 등가강성과 포화로 제한된다. **도달 불가능한 침투 위치를 높은 폐루프 강성으로 명령하면 위험하다.** §5도 같은 두 행으로 충격력을 계산하므로, "단단한 접촉"이라는 주장은 언제나
 이 표의 어느 행인지로 되읽어야 한다.
 
 <svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="10의 2승부터 8승까지 로그 눈금의 환경 강성 축과, 그중 세 곳에서 1 cm 오차가 만드는 힘">
@@ -724,8 +719,7 @@ QP를 풀고 있고, 우선순위 계층은 그 안에서 제약 가중치나 QP
 정상 접촉은 쉬운 부분이다. 어려운 것은 로봇이 도착하는 그 순간이고, 여기서의 논증은 수사가
 아니라 정량적이다.
 
-충돌을 말단의 겉보기 질량 $\Lambda$가 접근 속도 $v$로 강성 $K$인 스프링을 만나는 것으로
-모델링하면, 접촉은 반주기 사인이고
+무감쇠 1축 선형 충돌, 일정한 겉보기 질량, 선형 스프링, 완전한 에너지 저장·반환을 가정하자. 말단의 겉보기 질량 $\Lambda$가 접근 속도 $v$로 강성 $K$를 만나면 접촉은 반주기 사인이고
 
 $$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$$
 
@@ -737,9 +731,7 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 
 두 제곱근을 서로 견주어 읽어라. 최대 힘은 $\sqrt{K}$에 비례하고 지속 시간은 $1/\sqrt{K}$에
 비례하므로, **접촉면을 백 배 단단하게 만들면 힘은 열 배가 되고 접촉 시간은 십분의 일이 된다** —
-역적은 보존되고 그 모양만 바뀐다. 유연성을 넣는 것이 편의 조치가 아니라 두 숫자를 동시에 옳은
-방향으로 움직이는 유일한 지렛대인 이유이고, 그것이 *기계적* 해법인 이유다. 1.4 ms짜리 사건
-동안 $\Lambda$나 $K$를 바꿀 수 있는 제어 법칙은 없다.
+이 모델에서는 역적이 보존되고 모양만 바뀐다. 기계적 유연성은 두 숫자를 직접 움직이고, 충돌 전 제어가 가장 직접적으로 줄일 수 있는 값은 $v$다. 실제 충돌에서는 힘-시간 파형과 식별한 등가 $\Lambda,K,D$를 확인해야 한다.
 
 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 $\Lambda = 2$ kg와 부드러운
 접근 $v = 5$ cm/s를 넣자.

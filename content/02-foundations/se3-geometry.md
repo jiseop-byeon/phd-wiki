@@ -106,9 +106,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 | Axis-angle $(\hat\omega, \theta)$ | 3 | minimal, geometric | composition is awkward |
 | **Quaternion** $(w, x, y, z)$ | 4 | no singularities, cheap composition, interpolation (slerp) | double cover: $q$ and $-q$ are the same rotation |
 
-- Learning-specific fact worth knowing: all 3- and 4-number representations are
-  *discontinuous* as targets for neural networks — which is why many robot-learning papers
-  regress a **6D representation** (first two columns of $R$, then Gram-Schmidt) instead.
+- Learning-specific fact worth knowing: if a regression target must be globally single-valued
+  and continuous in a Euclidean output space, low-dimensional coordinates for $SO(3)$ face
+  topological obstructions. Many robot-learning papers therefore use a **6D representation**
+  (first two columns of $R$, then Gram-Schmidt) to avoid the relevant discontinuities.
 
 **Representation changes coordinates, not the physical orientation.** A rotation matrix stores how the local axes point in the reference frame. Euler angles describe an ordered sequence of rotations, so their order is part of the definition. Axis-angle describes an axis and a turn about it; the table's minimal count refers to its independent degrees of freedom, often stored as a rotation vector. An explicit unit axis plus angle uses redundant stored components.
 
@@ -188,7 +189,9 @@ The linear part of a twist also depends on the reference frame and its origin. T
   ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]), whose many-solutions
   structure is the classical face of the same multimodality generative policies handle.
 - **3D vision**: camera pose in [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]
-  is $T \in SE(3)$; "pose estimation" = regressing this matrix.
+  is $T \in SE(3)$. Pose estimation is the task of estimating this transform; a method may
+  regress a matrix or rotation representation directly, or recover it through correspondences,
+  geometric optimization, filtering, or a distributional estimate.
 - **Sim & digital twins**: every simulator state and BIM-robot registration is a stack of
   $T$'s ([[05-construction-robotics/index|construction]]).
 
@@ -303,8 +306,9 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 | 축-각 $(\hat\omega, \theta)$ | 3 | 최소, 기하적 | 합성이 어색 |
 | **쿼터니언** $(w, x, y, z)$ | 4 | 특이점 없음, 싼 합성, 보간(slerp) | 이중 덮개: $q$와 $-q$가 같은 회전 |
 
-- 학습 특화 상식: 3·4개 숫자 표현은 모두 신경망의 회귀 타깃으로서 *불연속*이다 — 많은
-  로봇 학습 논문이 대신 **6D 표현**($R$의 앞 두 열 + Gram-Schmidt)을 회귀하는 이유다.
+- 학습 특화 상식: 유클리드 출력공간에서 전역 단일값·연속 회귀 타깃을 요구하면 $SO(3)$의
+  저차원 좌표에는 위상적 장애가 있다. 많은 로봇 학습 논문은 관련 불연속을 피하려고
+  **6D 표현**($R$의 앞 두 열 + Gram-Schmidt)을 쓴다.
 
 **표현은 좌표를 바꾸지 물리적 방향을 바꾸지 않는다.** 회전행렬은 로컬 축이 기준 좌표에서 향하는 방향을 저장한다. 오일러 각은 순서 있는 회전의 연속이라 순서도 정의의 일부다. 축–각은 축과 그 둘레의 회전을 나타낸다. 표의 최소 개수는 독립 자유도이며 흔히 회전벡터로 저장한다. 단위축과 각도를 따로 저장하면 중복 성분이 생긴다.
 
@@ -382,7 +386,8 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   [[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이고, 그 다해(多解)
   구조가 생성형 정책이 다루는 바로 그 다봉성의 고전적 얼굴이다.
 - **3D 비전**: [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]/[[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]의
-  카메라 자세가 $T \in SE(3)$; "자세 추정" = 이 행렬의 회귀.
+  카메라 자세가 $T \in SE(3)$다. 자세 추정은 이 변환을 추정하는 과제이며, 행렬·회전 표현을
+  직접 회귀할 수도 있고 대응점 풀이, 기하 최적화, 필터링, 분포 추정으로 얻을 수도 있다.
 - **시뮬레이션과 디지털 트윈**: 모든 시뮬레이터 상태와 BIM-로봇 정합이 $T$들의 스택이다
   ([[05-construction-robotics/index|건설]]).
 

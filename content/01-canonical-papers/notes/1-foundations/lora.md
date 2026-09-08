@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 > [!note] 수학 준비물 · Math on-ramp
 > [[02-foundations/linear-algebra|1. Linear Algebra §2 and §4]] — rank and the SVD (Eckart–Young) are the whole mathematics here. Note the honest distinction that page draws: LoRA does not SVD-approximate a finished update, it *parameterizes* the update as low-rank from the start.
-> [[02-foundations/linear-algebra|선형대수 §2·§4]]의 랭크와 SVD(Eckart–Young)가 이 논문의 수학 전부다: "업데이트가 저랭크"라는 가설은 $\Delta W$를 얇은 행렬 둘의 곱으로 근사해도 된다는 뜻이다.
+> [[02-foundations/linear-algebra|선형대수 §2·§4]]의 랭크와 SVD(Eckart–Young)가 핵심 배경이다. 다만 완성된 $\Delta W$를 사후 SVD 근사하는 것이 아니라, 처음부터 $\Delta W=BA$로 저랭크 파라미터화해 $A,B$를 직접 학습한다.
 
 ## English
 
@@ -167,7 +167,7 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
 파인튜닝을 민주화했다: LoRA(+양자화 버전 QLoRA)는 개인이 LLM, 디퓨전 모델(스타일 LoRA), 로봇 정책을 적응시키는 표준 방법이다 — OpenVLA 같은 VLA를 GPU 한 장으로 파인튜닝하는 것도 LoRA 덕분. QLoRA, DoRA, AdaLoRA와 병합 LoRA 공유 생태계가 형성됐다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 저계수 적응은 학습할 갱신에 관한 것으로 사전학습 모델 전체 크기는 그대로다. 추론 층을 추가하지 않는다는 말에는 갱신을 적절히 합칠 수 있다는 조건이 있다. 새 도메인에 적용하기 전에 계수, 대상 행렬, 미세조정 예산을 확인한다.
+> 저랭크 적응은 학습할 갱신에 관한 것으로 사전학습 모델 전체 크기는 그대로다. 추론 층을 추가하지 않는다는 말에는 갱신을 적절히 합칠 수 있다는 조건이 있다. 새 도메인에 적용하기 전에 랭크, 대상 행렬, 미세조정 예산을 확인한다.
 
 ### 연결
 

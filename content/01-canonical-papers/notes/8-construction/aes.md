@@ -51,11 +51,11 @@ platform and none of them are in the algorithm.*
 **Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. Task variety is narrow (loading), the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
-> Continuous operation in a constrained material-handling site is strong deployment evidence, but not proof of general excavation autonomy. Separate three different claims when citing AES: (a) machine-size transfer of one stack, (b) 24-hour uncrewed intervals, and (c) human-level tons/hour — each holds in the reported loading deployment, none automatically extends to arbitrary soils, sites, or tasks.
+> Continuous operation in a constrained material-handling site is strong deployment evidence, but not proof of general excavation autonomy. Separate three different claims when citing AES: (a) machine-size transfer of one stack, (b) 24-hour uncrewed intervals, and (c) parity with an experienced operator's hourly material throughput, with no unit or figure reported — each holds in the reported loading deployment, none automatically extends to arbitrary soils, sites, or tasks.
 
 ## 한국어
 
-**한 줄 요약**: Baidu의 AES는 인식·과제/모션 계획·제어를 완전한 자율 굴착 스택으로 통합해 컴팩트급부터 49톤급까지의 굴착기에 배치했고, 인간 개입당 24시간의 무인 운용과 숙련 운전자에 가까운 처리량(tons/hour)을 보고했다.
+**한 줄 요약**: Baidu의 AES는 인식·과제/모션 계획·제어를 완전한 자율 굴착 스택으로 통합해 컴팩트급부터 49톤급까지의 굴착기에 배치했고, 인간 개입당 24시간의 무인 운용과 숙련 운전자 대비 시간당 자재 처리량의 대등성(단위·수치 미제시)을 보고했다.
 
 **계보에서의 위치**: AES는 [[01-canonical-papers/notes/8-construction/stentz-excavator|Stentz의 1999 CMU 굴착기]]가 연 질문 — 기계가 사람 없이 전체 적재 사이클을 돌릴 수 있는가 — 에 대한 산업 배치 쪽의 답이다. CMU가 통합 사이클을 시연했다면, AES는 *산업 규모의 지속 시간과 생산성*을 시연한다. [[01-canonical-papers/notes/8-construction/ext|ExT]] 같은 시뮬레이션 중심 학습 논문의 배치 측 대응물이다.
 
@@ -83,7 +83,7 @@ flowchart LR
 **한계**: 배치 현장은 제한된 재료 적재 현장이지 개방 환경 토공이 아니다. 과제 다양성이 좁고(적재), 환경이 반구조화되어 있으며, 안전은 온보드 보장이 아니라 현장 통제로 관리된다. 기계 크기 전이, 현장/과제 변동, 누적 생산 시간은 각각 별도의 증거를 가진 별도의 주장으로 읽어야 한다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 제한된 재료 처리 현장의 연속 운용은 강한 배치 증거이지만 일반 굴착 자율성의 증명은 아니다. AES를 인용할 때 세 주장을 분리하라: (a) 한 스택의 기계 크기 간 전이, (b) 24시간 무인 구간, (c) 인간 수준 tons/hour — 각각은 보고된 적재 배치에서 성립하며, 어느 것도 임의의 토질·현장·과제로 자동 확장되지 않는다.
+> 제한된 재료 처리 현장의 연속 운용은 강한 배치 증거이지만 일반 굴착 자율성의 증명은 아니다. AES를 인용할 때 세 주장을 분리하라: (a) 한 스택의 기계 크기 간 전이, (b) 24시간 무인 구간, (c) 숙련 운전자 대비 시간당 자재 처리량의 대등성(단위·수치 미제시) — 각각은 보고된 적재 배치에서 성립하며, 어느 것도 임의의 토질·현장·과제로 자동 확장되지 않는다.
 
 ### 연결
 
@@ -94,6 +94,6 @@ flowchart LR
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] Reconstruct the AES stack module by module (perception → task/motion planning → control) and say which sensors and outputs each module uses · AES 스택의 모듈 구성(인식 → 과제/모션 계획 → 제어)을 단계별로 재구성하고, 각 모듈이 어떤 센서/출력을 쓰는지 말할 수 있다
-- [ ] Explain the three evidence axes — transfer from compact to 49-tonne machines, 24 h uncrewed per intervention, expert-operator hourly throughput (a parity claim, with no unit in the paper) — with their numbers and within their evaluation scope · 세 가지 증거 축(컴팩트급~49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자급 tons/hour)을 숫자와 함께 각각의 평가 범위 안에서 설명할 수 있다
+- [ ] Explain the three evidence axes — transfer from compact to 49-tonne machines, 24 h uncrewed per intervention, expert-operator hourly throughput (a parity claim, with no unit or figure in the paper) — within their evaluation scope · 세 가지 증거 축(컴팩트급–49톤급 기계 전이, 개입당 24시간 무인 운용, 숙련 운전자 대비 시간당 자재 처리량의 대등성 주장—단위·수치 미제시)을 각각의 평가 범위 안에서 설명할 수 있다
 - [ ] Say exactly what "24 hours uncrewed" is a measure of (an interval between interventions, not unbounded autonomy) and the role site control plays in safety · "24시간 무인"이 정확히 무엇의 지표인지(개입 간격이지 무한 자율이 아님)와 현장 통제가 안전에서 맡는 역할을 말할 수 있다
 - [ ] Separate method novelty from system completeness, and place AES on the deployment side between Stentz and modern learned excavation · 학습 신규성과 시스템 완결성을 구분하고, AES가 Stentz→현대 학습 기반 굴착 사이에서 차지하는 배치 측 위치를 설명할 수 있다

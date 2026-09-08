@@ -27,7 +27,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ### Context
 
-Vanilla policy gradients allow exactly one gradient step per batch of environment interaction — take more and the data is off-policy, and performance can collapse. TRPO (2015) fixed this with a KL-constrained update, but needed second-order machinery (conjugate gradient, line search) that is awkward to implement and does not compose with common architectures. The question PPO answers: can we get TRPO-like stability with nothing but SGD on a modified objective?
+Vanilla policy-gradient methods are commonly used for one update per batch of environment interaction; repeated updates make the data increasingly off-policy and can degrade performance. PPO was designed to support several minibatch epochs over the same batch while limiting harmful policy change. TRPO (2015) pursued a related goal with a KL-constrained update, but needed second-order machinery (conjugate gradient and line search) that is awkward to implement. The question PPO answers: can we obtain a practical trust-region-like update with SGD on a modified objective?
 
 ### Method
 
@@ -80,7 +80,7 @@ Vanilla policy gradients allow exactly one gradient step per batch of environmen
 - The paper also proposes an adaptive-KL-penalty variant; clipping won empirically and is what "PPO" means in practice.
 - The full training loss adds a value-function error term and an entropy bonus, optimized jointly when actor and critic share parameters.
 
-**GAE — not PPO's own, but the estimator it runs on.** (Generalized advantage estimation is Schulman et al. 2015, [arXiv:1506.02438](https://arxiv.org/abs/1506.02438); PPO cites and truncates it.) The advantage $A_t$ is estimated with **generalized advantage estimation** (truncated at the rollout horizon $T$ in practice): with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: biased, low variance) and Monte Carlo returns ($\lambda=1$: unbiased, high variance). Every serious PPO implementation pairs clipping with GAE (typically $\lambda\approx 0.95$); reading "PPO" without reading GAE misses half the algorithm.
+**GAE — not PPO's own, but the estimator commonly paired with it.** (Generalized advantage estimation is Schulman et al. 2015, [arXiv:1506.02438](https://arxiv.org/abs/1506.02438); PPO cites and truncates it.) The advantage $A_t$ is estimated with **generalized advantage estimation** (truncated at the rollout horizon $T$ in practice): with TD residual $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$, GAE takes $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — a λ-interpolation between one-step TD ($\lambda=0$: more bias, lower variance) and a Monte-Carlo-like return ($\lambda=1$: lower bias, higher variance). Exact unbiasedness at $\lambda=1$ additionally depends on complete returns or correct terminal/bootstrap handling. Most standard PPO implementations pair clipping with GAE (often $\lambda\approx 0.95$); the estimator is not PPO's original contribution, but it is part of the usual recipe.
 
 ### Results
 
@@ -116,7 +116,7 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 
 ### 배경
 
-순수 정책경사는 환경 상호작용 한 배치당 정확히 한 번의 그래디언트 스텝만 허용한다 — 더 밟으면 데이터가 off-policy가 되어 성능이 무너질 수 있다. TRPO(2015)는 KL 제약 업데이트로 이를 고쳤지만 2차 최적화 장치(conjugate gradient, line search)가 필요해 구현이 번거롭고 일반적인 아키텍처와 잘 결합되지 않았다. PPO가 답하는 질문: 수정된 목적함수에 SGD만 돌려서 TRPO급 안정성을 얻을 수 있는가?
+순수 정책경사법은 보통 환경 상호작용 한 배치당 한 번 갱신한다. 같은 배치를 반복해서 쓰면 점점 off-policy가 되어 성능이 나빠질 수 있다. PPO는 해로운 정책 변화를 제한하면서 같은 배치에 여러 minibatch epoch를 수행하도록 설계됐다. TRPO(2015)는 비슷한 목표를 KL 제약 업데이트로 다뤘지만 conjugate gradient와 line search가 필요해 구현이 번거로웠다. PPO가 답하는 질문은 수정된 목적함수와 SGD로 실용적인 trust-region식 갱신을 만들 수 있는가다.
 
 ### 방법
 
@@ -169,7 +169,7 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 - 논문은 적응형 KL 페널티 변형도 제안하지만, 실험에서 clip이 이겼고 실무에서 "PPO"는 clip 버전을 뜻한다.
 - 전체 학습 손실에는 가치함수 오차 항과 entropy 보너스가 추가되며, actor와 critic이 파라미터를 공유할 때 함께 최적화된다.
 
-**GAE — 논문의 나머지 절반.** Advantage $A_t$는 **generalized advantage estimation**(실전에서는 롤아웃 지평 $T$에서 절단)으로 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향, 저분산)와 Monte Carlo 수익($\lambda=1$: 무편향, 고분산) 사이를 λ로 보간한다. 제대로 된 PPO 구현은 전부 clip과 GAE를 짝지어 쓴다(보통 $\lambda\approx 0.95$); GAE 없이 "PPO"만 읽으면 알고리즘의 절반을 놓친 것이다.
+**GAE — PPO와 흔히 함께 쓰지만 PPO 자체의 기여는 아니다.** GAE는 Schulman et al. 2015의 추정량이다. Advantage $A_t$는 실전에서 롤아웃 지평 $T$에서 절단해 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향이 더 크고 분산이 작음)와 Monte-Carlo형 수익($\lambda=1$: 편향이 더 작고 분산이 큼) 사이를 보간한다. $\lambda=1$의 엄밀한 무편향성은 완결된 수익이나 올바른 종단·bootstrap 처리 같은 조건이 더 필요하다. 표준 PPO 구현은 대개 clip과 GAE를 짝지어 쓴다(흔히 $\lambda\approx 0.95$).
 
 ### 결과
 

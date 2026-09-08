@@ -60,12 +60,11 @@ and the algorithmic fragility needed fixing at once.
   <g fill="currentColor" opacity="0.85"><circle cx="60" cy="130" r="4"/><circle cx="180" cy="130" r="4"/><circle cx="300" cy="130" r="4"/><circle cx="420" cy="130" r="4"/><circle cx="540" cy="130" r="4"/></g>
   <g font-size="11" fill="currentColor">
     <text x="60" y="32">single-step policy &#8212; one decision every tick</text>
-    <text x="60" y="106">action chunking &#8212; one decision per chunk</text>
+    <text x="60" y="106">ACT &#8212; predict a new action chunk every tick</text>
     <text x="60" y="88" font-size="10.5" opacity="0.85">21 decisions across the window; each one can drift a little further from the demonstrated states</text>
-    <text x="60" y="166" font-size="10.5" opacity="0.85">5 decisions - but ACT still queries every timestep and ensembles overlapping chunks</text>
-    <text x="30" y="186" opacity="0.9">Chunking does not make each prediction better &#8212; it makes fewer of them,</text>
-    <text x="30" y="200" opacity="0.9">so compounding error has fewer chances to accumulate.</text>
-    <text x="30" y="216" opacity="0.9">What it spends is reactivity: nothing that happens mid-chunk can change the plan until the next decision.</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">every tick: predict a chunk; execute one action by averaging overlapping forecasts</text>
+    <text x="30" y="186" opacity="0.9">The long prediction horizon shortens the supervised error-compounding horizon.</text>
+    <text x="30" y="200" opacity="0.9">Temporal ensembling smooths overlapping forecasts but can also delay rapid changes.</text>
   </g>
 </svg>
 
@@ -137,11 +136,11 @@ defined how modern policies output actions.
   <g fill="currentColor" opacity="0.85"><circle cx="60" cy="130" r="4"/><circle cx="180" cy="130" r="4"/><circle cx="300" cy="130" r="4"/><circle cx="420" cy="130" r="4"/><circle cx="540" cy="130" r="4"/></g>
   <g font-size="11" fill="currentColor">
     <text x="60" y="32">단일 스텝 정책 &#8212; 매 틱마다 결정 하나</text>
-    <text x="60" y="106">행동 청킹 &#8212; 청크당 결정 하나</text>
+    <text x="60" y="106">ACT &#8212; 매 틱 새 행동 청크 예측</text>
     <text x="60" y="88" font-size="10.5" opacity="0.85">이 구간에서 결정 21번; 하나하나가 시연된 상태에서 조금씩 더 벗어날 수 있다</text>
-    <text x="60" y="166" font-size="10.5" opacity="0.85">결정 5번 - 다만 ACT는 매 스텝 질의하고 겹치는 청크를 앙상블한다</text>
-    <text x="30" y="192" opacity="0.9">청킹은 예측 하나하나를 더 좋게 만들지 않는다 &#8212; 예측 횟수를 줄여서 복합 오차가 쌓일 기회를 줄인다.</text>
-    <text x="30" y="207" opacity="0.9">그 대가로 내주는 것은 반응성이다: 청크 도중에 일어난 일은 다음 결정 지점까지 계획을 바꿀 수 없다.</text>
+    <text x="60" y="166" font-size="10.5" opacity="0.85">매 틱 청크를 예측하고, 겹치는 예측을 평균해 현재 행동 하나를 실행한다</text>
+    <text x="30" y="192" opacity="0.9">긴 예측 지평은 지도학습의 오차 누적 지평을 줄인다.</text>
+    <text x="30" y="207" opacity="0.9">시간 앙상블은 겹친 예측을 평활화하지만 급격한 변화에는 지연을 만들 수 있다.</text>
   </g>
 </svg>
 

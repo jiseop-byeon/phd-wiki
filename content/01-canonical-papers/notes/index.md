@@ -5,7 +5,16 @@ depth-goal: "Use this map or guide to choose reading order, reading volume, and 
 mastery-when: "Working and Mastery are assigned on the individual concept or paper pages."
 ---
 
-논문 노트 전체 — 섹션별 폴더로 정리되어 있다. 읽기 순서와 체크 현황은
+## English
+
+Paper notes are grouped into nine sections below. The counts describe the current corpus,
+not the reader's progress. Use the [[01-canonical-papers/canonical-list|Canonical Paper List]]
+for reading order and the [[03-deep-learning/lineage|lineage map]] for relationships.
+
+## 한국어
+
+논문 노트 전체 — 섹션별 폴더로 정리되어 있다. 괄호의 편수는 현재 콘텐츠 규모이지
+독자의 진도가 아니다. 읽기 순서와 노트 현황은
 [[01-canonical-papers/canonical-list|핵심 논문 리스트]], 논문 사이의 관계는
 [[03-deep-learning/lineage|계보도]]를 보라.
 

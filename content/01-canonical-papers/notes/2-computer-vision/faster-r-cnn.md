@@ -22,7 +22,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ## English
 
-**One-line summary**: Replace hand-crafted region proposals with a learned Region Proposal Network sharing the backbone — making detection fully end-to-end learnable and defining the two-stage paradigm.
+**One-line summary**: Replace hand-crafted region proposals with a learned Region Proposal Network sharing the backbone — jointly learning proposal and detection features and defining the two-stage paradigm.
 
 ### Context
 
@@ -66,7 +66,7 @@ remain the choice when precision beats latency.
 
 ## 한국어
 
-**한 줄 요약**: 수작업 영역 제안을 백본을 공유하는 학습된 Region Proposal Network로 교체 — 검출을 완전히 end-to-end 학습 가능하게 만들고 2단계 패러다임을 정의했다.
+**한 줄 요약**: 수작업 영역 제안을 백본을 공유하는 학습된 Region Proposal Network로 교체 — 제안과 검출 특징을 함께 학습하고 2단계 패러다임을 정의했다. 원 논문에는 alternating/approximate joint training과 NMS가 남아 있으므로 DETR식 완전한 set prediction과는 다르다.
 
 ### 배경
 

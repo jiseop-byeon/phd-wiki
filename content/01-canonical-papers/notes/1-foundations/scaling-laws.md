@@ -75,7 +75,7 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 
 - With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**.
 - Most large models of 2020–22 (GPT-3 175B, Gopher 280B) were substantially **undertrained** for their size.
-- Proof: Chinchilla 70B, trained on 1.4T tokens with Gopher's compute, beats Gopher 280B across the board.
+- Key experimental evidence: under the reported compute-matched setup, Chinchilla 70B trained on 1.4T tokens outperformed Gopher 280B across the evaluated tasks.
 
 ### Limitations & critique
 
@@ -151,7 +151,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 - 더 나은 실험 설계(토큰 예산별 학습률 스케줄)로 다시 재보니 최적 지점이 달라진다: **N과 D는 같은 비율로** — 대략 **파라미터당 20 토큰**.
 - 2020~22년의 대형 모델들(GPT-3 175B, Gopher 280B)은 크기에 비해 상당히 **덜 학습된** 상태였다.
-- 증명: Gopher와 같은 연산량으로 1.4조 토큰을 학습한 Chinchilla 70B가 Gopher 280B를 전면적으로 이겼다.
+- 핵심 실험 증거: 보고된 compute-matched 설정에서 1.4조 토큰을 학습한 Chinchilla 70B가 평가된 과제 전반에서 Gopher 280B를 앞섰다.
 
 ### 한계와 비판
 

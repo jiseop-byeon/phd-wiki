@@ -37,9 +37,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   ([[04-robotics/mpc|MPC]]) → learned policies ([[02-foundations/rl-basics|RL]],
   [[01-canonical-papers/notes/4-vla/pi0|VLA]]) — each layer absorbing more of the modeling burden.
 
-**Wiki connections**: every VLA demo secretly rides on this chapter — policy outputs are
-tracked by exactly these low-level loops; impedance control is why
-[[01-canonical-papers/notes/4-vla/act|ALOHA]]-class contact tasks don't destroy their hardware.
+**Wiki connections**: VLA outputs ultimately pass through platform-specific position,
+velocity, torque, or impedance interfaces and their low-level loops. Contact safety depends
+on that whole stack — actuators, limits, passive compliance, speed, task setup, and control —
+not on impedance control alone.
 
 ## 한국어
 
@@ -64,9 +65,9 @@ tracked by exactly these low-level loops; impedance control is why
   학습된 정책([[02-foundations/rl-basics|RL]], [[01-canonical-papers/notes/4-vla/pi0|VLA]]) —
   층마다 모델링 부담을 더 흡수한다.
 
-**위키 연결**: 모든 VLA 데모가 몰래 이 장 위에 올라타 있다 — 정책 출력은 정확히 이 저수준
-루프들이 추종한다; 임피던스 제어는 [[01-canonical-papers/notes/4-vla/act|ALOHA]]급 접촉 과제가
-하드웨어를 부수지 않는 이유다.
+**위키 연결**: VLA 출력은 플랫폼마다 위치·속도·토크·임피던스 인터페이스와 저수준 루프를
+거친다. 접촉 안전은 임피던스 제어 하나가 아니라 액추에이터, 제한기, 수동 순응성, 속도,
+과제 설정과 제어를 포함한 전체 스택이 결정한다.
 
 ### Self-check · 스스로 점검
 

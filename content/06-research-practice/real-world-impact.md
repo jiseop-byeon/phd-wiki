@@ -63,10 +63,12 @@ Describe the benefit, its recipient, and the counterfactual: what would the work
   </g>
 </svg>
 
-The top rung is the one people forget, and it is the only one that does not depend on you
-being present. A method someone else runs — on their robot, for their problem, without
-asking you — is the strongest impact evidence there is, and it is bought almost entirely by
-the artifacts of §3 rather than by the result itself.
+Independent use is the evidence people often forget, and it is the only item here that does
+not depend on you being present. It sits on a second axis rather than strictly above field
+realism: another group can independently reproduce a simulation-only method, while a site
+trial can be realistic but still depend entirely on its authors. The strongest impact case
+combines both axes — realistic deployment and independent use — and is enabled largely by
+the artifacts of §3.
 
 The rung below it is the one this domain lacks. As
 [[05-construction-robotics/construction-manipulation|9. §3]] found, contact-rich
@@ -254,9 +256,11 @@ For example, polishing a successful drywall sequence can improve communication, 
   </g>
 </svg>
 
-맨 위 단계가 사람들이 잊는 것이고, 당신이 그 자리에 있는지에 의존하지 않는 유일한 단계다.
-다른 사람이 자기 로봇에서, 자기 문제에 대해, 당신에게 묻지 않고 돌리는 방법 — 그것이 존재하는
-가장 강한 임팩트 증거이며, 거의 전적으로 결과 자체가 아니라 §3의 산출물로 사는 것이다.
+독립적 사용은 사람들이 자주 잊는 증거이며, 여기서 당신이 그 자리에 있는지에 의존하지 않는
+유일한 항목이다. 다만 이는 현장 현실성 사다리의 맨 위가 아니라 **별도의 축**이다. 다른 연구실이
+시뮬레이션 방법을 독립 재현할 수도 있고, 반대로 현실적인 현장 실험이 저자에게 전적으로 의존할
+수도 있다. 가장 강한 임팩트는 두 축 — 현실적인 배치와 독립적 사용 — 을 함께 만족할 때 생기며,
+그 가능성은 결과 자체뿐 아니라 §3의 산출물이 만든다.
 
 그 아래 단계가 이 도메인에 없는 것이다. [[05-construction-robotics/construction-manipulation|9. §3]]이
 찾아냈듯 접촉이 많은 건설 조작에는 가동 중 현장 결과가 거의 전무하고 — 그래서 그 단계에

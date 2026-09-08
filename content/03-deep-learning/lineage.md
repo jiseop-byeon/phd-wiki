@@ -21,7 +21,7 @@ per-area maps.
 
 ```mermaid
 graph TD
-    A["2012 AlexNet<br/>scale beats hand-design"] --> B["2017 Transformer<br/>everything becomes tokens"]
+    A["2012 AlexNet<br/>scale beats hand-design"] -. modern scale/compute precedent .-> B["2017 Transformer<br/>attention-based sequence modeling"]
     B --> C["2020-21 the pretraining era<br/>GPT-3 · ViT · CLIP"]
     C --> D["2020-23 the generative turn<br/>DDPM to Stable Diffusion to Flow Matching"]
     C --> E["2023- VLA<br/>RT-2 to OpenVLA to pi-0 to GR00T"]
@@ -33,7 +33,7 @@ graph TD
     F -.-> G
 ```
 
-In one sentence: **scale (2012) met tokenization (2017) and became pretraining (2020),
+In one sentence: **scale (2012) met attention-based sequence modeling (2017) and became pretraining (2020),
 which split into generation (diffusion), action (VLA) and imagination (world models) — and
 those three are now meeting again in the physical world.** That last confluence is this
 wiki's research direction.
@@ -131,7 +131,7 @@ Related: [[01-canonical-papers/canonical-list|Canonical Paper List]] · [[03-dee
 
 ```mermaid
 graph TD
-    A["2012 AlexNet<br/>규모가 설계를 이긴다"] --> B["2017 Transformer<br/>모든 것이 토큰이 된다"]
+    A["2012 AlexNet<br/>규모가 설계를 이긴다"] -. 현대 규모·연산의 선례 .-> B["2017 Transformer<br/>어텐션 기반 시퀀스 모델링"]
     B --> C["2020~21 사전학습 시대<br/>GPT-3 · ViT · CLIP"]
     C --> D["2020~23 생성모델 혁명<br/>DDPM → Stable Diffusion → Flow Matching"]
     C --> E["2023~ VLA<br/>RT-2 → OpenVLA → π0 → GR00T"]

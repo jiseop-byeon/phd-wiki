@@ -110,12 +110,12 @@ number is a common error.
 > | Model | Each contact transmits | Two-finger force closure in 3D? |
 > |---|---|---|
 > | **Point contact, frictionless** | force along the normal only | no |
-> | **Hard finger** (point contact with friction) | force inside the friction cone, **no moment** | no — **three** non-collinear contacts is the 3D minimum |
+> | **Hard finger** (point contact with friction) | force inside the friction cone, **no moment** | no — some particular geometries admit **three** non-collinear contacts |
 > | **Soft finger** | force inside the cone **plus a moment about the contact normal** (torsional friction) | yes — this is the antipodal case |
 >
 > A parallel-jaw gripper on a real box is a soft-finger contact: the pads deform, so each
 > contact resists twisting about its own normal, and two of them suffice. Under hard finger
-> the 3D minimum is **three** non-collinear contacts (Springer Handbook ch. 38).
+> some particular 3D geometries admit **three** non-collinear contacts (Springer Handbook ch. 38).
 >
 > Markenscoff's four is a **third** kind of statement and the easiest to misuse: it is a
 > *universal* bound — how many fingers suffice for **any** object — not the minimum for the
@@ -138,6 +138,7 @@ origin. Ferrari and Canny's 1992 metric is then disarmingly geometric:
 
 > $\epsilon$ = the radius of the largest ball centred at the wrench-space origin that fits
 > inside the grasp wrench space.
+> Its numerical value is meaningful only after fixing the wrench origin, contact-force budget, and a characteristic length that puts forces and moments on a common scale.
 
 Read what that buys. $\epsilon$ is the magnitude of the **worst-case** external wrench the
 grasp can resist — worst-case over direction, because a ball is direction-agnostic. It is
@@ -198,7 +199,7 @@ you will meet:
 | Representation | What is fed in | Buys | Costs |
 |---|---|---|---|
 | **RGB images** | one or more camera views | the pretrained-backbone ecosystem (SigLIP, DINO) and web-scale priors | no metric scale; viewpoint changes are out-of-distribution |
-| **Point clouds** | depth back-projected into the robot frame, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | metric geometry, and camera extrinsics stop mattering because the points are already in a fixed frame — the argument behind 3D policy variants | the *encoder* is permutation-invariant, **not** rotation- or viewpoint-invariant, and self-occlusion still changes the visible set; depth fails on the glossy, dark and transparent |
+| **Point clouds** | calibrated depth back-projected into the robot frame, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | explicit metric geometry when depth and extrinsics are accurate | extrinsic error shifts the cloud; the encoder is **not** rotation- or viewpoint-invariant; occlusion changes the visible set |
 | **Keypoints** | a sparse set of task-relevant points on the object | a low-dimensional, interpretable state that generalizes across instances of a category | someone must define what the keypoints *are*, and a novel category has none |
 | **Affordances** | a per-pixel or per-point map of where an action can be applied | directly language- and task-conditionable, and composes with open-vocabulary models | supervision is expensive, and "graspable" is not a property of the object alone but of the object *and the gripper* |
 
@@ -241,8 +242,7 @@ actually relies on.
 
 Everything above computes closure over the contacts the *hand* supplies. That is a modelling
 choice, not a law, and dropping it changes the answer. A gripper pressing an object against a
-wall has three contact sets in play — two fingers and the wall — and the wall's contact costs
-nothing, needs no actuator, and never slips out of position.
+wall has three contact sets in play — two fingers and the wall. It can supply support without an extra finger actuator, but its normal force, friction cone $|f_t|\leq\mu f_n$, stiffness, and contact-maintenance conditions must be included.
 
 **Chavan Dafle, Rodriguez et al. (ICRA 2014)** named this *extrinsic dexterity*: reorienting
 an object in the hand using gravity, inertia, and contacts with the environment instead of
@@ -466,12 +466,11 @@ Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 
 > | 모델 | 각 접촉이 전달하는 것 | 3D에서 두 손가락 force closure? |
 > |---|---|---|
 > | **점 접촉, 마찰 없음** | 법선 방향 힘만 | 불가 |
-> | **hard finger**(마찰 있는 점 접촉) | 마찰 원뿔 안의 힘, **모멘트 없음** | 불가 — 이것이 Markenscoff의 넷 |
+> | **hard finger**(마찰 있는 점 접촉) | 마찰 원뿔 안의 힘, **모멘트 없음** | 불가 — 특정 형상에서는 비공선 접촉 셋이 가능할 수 있음 |
 > | **soft finger** | 원뿔 안의 힘 **+ 접촉 법선 둘레의 모멘트**(비틀림 마찰) | 가능 — 이것이 antipodal의 경우 |
 >
 > 실제 상자를 잡는 평행 조 그리퍼는 soft finger 접촉이다: 패드가 변형되므로 각 접촉이 자기
-> 법선 둘레의 비틀림에 저항하고, 그래서 둘이면 충분하다. Markenscoff의 개수는 hard finger
-> 정리다. **논문이 force closure를 주장하면 첫 질문은 어느 행에 서 있느냐다** — 학습 기반
+> 법선 둘레의 비틀림에 저항하고, 그래서 둘이면 충분하다. Markenscoff의 넷은 모든 물체에 대한 보편 bound로, 특정 물체의 최소와 구분해야 한다. **논문이 force closure를 주장하면 접촉 모델과 특정/보편 양화를 함께 물어야 한다** — 학습 기반
 > 파지 계획기는 대개 유연한 패드가 달린 그리퍼로 학습하면서 soft finger를 암묵적으로 가정한다.
 
 접촉이 둘일 때의 실용적 판정은 **antipodal** 조건이다: 두 접촉점을 잇는 선이 두 마찰 원뿔
@@ -485,6 +484,7 @@ Closure는 이분법이고, 계획기에는 순위가 필요하다. **파지 렌
 Ferrari와 Canny의 1992년 지표는 놀랄 만큼 기하적이다:
 
 > $\epsilon$ = 렌치 공간의 원점을 중심으로 파지 렌치 공간 안에 들어가는 가장 큰 공의 반지름.
+> 수치는 렌치 원점과 접촉력 예산을 고정하고, 특성 길이로 힘과 모멘트의 스케일을 맞춘 뒤에만 의미가 있다.
 
 무엇을 사는지 읽어라. $\epsilon$은 파지가 저항할 수 있는 **최악의** 외부 렌치의 크기다 —
 방향에 대해 최악인데, 공은 방향을 가리지 않기 때문이다. 파지가 closure를 가질 때 정확히
@@ -538,7 +538,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 | 표현 | 무엇을 넣는가 | 사는 것 | 치르는 것 |
 |---|---|---|---|
 | **RGB 이미지** | 카메라 시점 하나 이상 | 사전학습 백본 생태계(SigLIP, DINO)와 웹 규모 사전지식 | 미터 스케일이 없다. 시점 변화가 분포 밖이다 |
-| **포인트 클라우드** | 깊이를 역투영해 PointNet 계열 순열 불변 네트워크로 부호화([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | 미터 기하와 시점 불변성을 거의 공짜로 — 3D 정책 변형들의 논거 | 깊이 센서가 광택·어두움·투명에서 실패한다. 융합하지 않으면 색 의미가 없다 |
+| **포인트 클라우드** | 보정된 깊이를 로봇 프레임으로 역투영해 PointNet 계열 순열 불변 네트워크로 부호화([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | 깊이와 extrinsic이 정확할 때 명시적 미터 기하 | extrinsic 오차가 점군을 옮긴다. 회전·시점 불변이 아니며 가림이 보이는 점 집합을 바꾼다 |
 | **키포인트** | 물체 위 과제 관련 점들의 성긴 집합 | 저차원이고 해석 가능하며 범주 내 개체를 가로질러 일반화되는 상태 | 키포인트가 *무엇인지*를 누군가 정의해야 하고, 새로운 범주에는 그것이 없다 |
 | **어포던스** | 행동을 적용할 수 있는 곳의 픽셀별·점별 지도 | 언어와 과제로 직접 조건화되고 개방 어휘 모델과 결합된다 | 지도 신호가 비싸고, "잡을 수 있음"은 물체만의 성질이 아니라 물체 *와 그리퍼*의 성질이다 |
 
@@ -573,8 +573,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 
 위의 모든 계산은 closure를 *손*이 공급하는 접촉에 대해 구한다. 이것은 법칙이 아니라 **모델링
 선택**이고, 그 선택을 버리면 답이 달라진다. 물체를 벽에 밀어붙이고 있는 그리퍼에는 접촉 집합이
-셋 있다 — 손가락 둘과 벽 — 그리고 벽의 접촉은 비용이 들지 않고, 액추에이터가 필요 없으며,
-자리를 이탈하지도 않는다.
+셋 있다 — 손가락 둘과 벽. 추가 손가락 액추에이터 없이 지지를 얻을 수 있지만, 법선력·마찰 원뿔 $|f_t|\leq\mu f_n$·환경 강성·접촉 유지 조건을 포함해야 한다.
 
 **Chavan Dafle, Rodriguez 등**(ICRA 2014)이 이것을 *extrinsic dexterity*라 이름 붙였다:
 손가락 운동 대신 중력·관성·환경과의 접촉을 써서 손 안의 물체를 재정향하는 것. 요점은 하드웨어에
@@ -649,7 +648,7 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 마찰 원뿔을 그리고 $\mu = 0.5$와 $\mu = 1$에서의 반각을 댄다.
-- [ ] Form closure와 force closure의 차이를 말하고, 마찰 있는 3D 손가락 개수를 출처와 함께 댄다.
+- [ ] Form closure와 force closure의 차이를 말하고, 마찰 있는 3D 접촉 수에서 특정 형상과 보편 bound를 구분한다.
 - [ ] $\epsilon$을 정의하고 그것이 의도적으로 무시하는 것을 말한다.
 - [ ] 학습 파지 파이프라인 안에서 해석 이론이 어디에 앉는지 설명한다.
 - [ ] 건설이 가장 어김없이 깨뜨리는 가정을 댄다.
@@ -669,7 +668,7 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
    무엇에 기대겠는가?
 
 > [!tip]- 정답 · Answers
-> 1. 일곱은 3D에서의 *마찰 없는 form closure* 개수이지 force closure 개수가 아니다. 쿨롱 마찰이 있으면 Markenscoff, Ni, Papadimitriou의 1990년 초록이 3차원에서 손가락 넷이 필요충분이라고 말한다. 그 논문은 서로 다른 두 정리를 합쳐 버린 것이고, 이 분야에서 가장 흔한 오류다.
+> 1. 일곱은 3D에서의 *마찰 없는 form closure* 개수이지 force closure 개수가 아니다. 마찰 있는 hard-finger에서는 접촉 모델뿐 아니라 그 수가 특정 형상의 최소인지 모든 물체에 대한 보편 bound인지도 밝혀야 한다.
 > 2. 원뿔의 반각이 $\arctan 0.6 \approx 31.0°$에서 $\arctan 0.3 \approx 16.7°$로 — 대략 절반의 각폭으로 — 줄어든다. Antipodal 조건은 두 접촉을 잇는 선이 *두* 원뿔 안에 모두 들어갈 것을 요구하므로, 두 원뿔이 모두 좁아지면 유효한 접촉 쌍의 집합이 급격히 줄고, 아슬아슬하던 파지들이 무효가 된다. 더 나쁜 것은, 여전히 $\mu = 0.6$이라고 믿는 계획기는 그것들을 계속 제안한다는 점이다.
 > 3. $\epsilon$이 *모든* 렌치 방향에 대한 최악의 경우이고, 과제가 결코 만들지 않을 방향까지 동등하게 가중하기 때문이다. 균일한 공에 대해 최적화된 파지가, 실제 과제에서는 무관한 방향으로는 약하고 정작 중요한 한 방향 — 이를테면 드라이버 축 둘레의 토크 저항 — 으로는 강한 파지에 질 수 있다. 품질은 과제의 렌치 분포에 상대적으로만 의미가 있다.
 > 4. 해석적 지표가 실제 파지 성공의 충분히 좋은 대리라는 것 — 즉 라벨 생성기 안의 물리가 실제 접촉의 물리와 충분히 가까워서 순위가 살아남는다는 것이다. 깊이 이미지의 사실성도 중요하지만 가정을 지는 것은 *라벨*이다: 네트워크는 자기가 본 품질 함수만 배울 수 있다.

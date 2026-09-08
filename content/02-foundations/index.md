@@ -51,16 +51,18 @@ paper in this wiki** (individual papers may require deeper references): math cor
 - [[02-foundations/ml-practice|9. ML Practice & Evaluation]] — data splits, overfitting, and the metrics dictionary for reading results tables
 
 When the eleven pages (0.5–9) are done, take the **gate check** at the end of
-[[02-foundations/overview|0. Overview]]: twelve cumulative questions that decide whether to
-start the paper track. Nine or more is a pass.
+[[02-foundations/overview|0. Overview]]: fourteen common cumulative questions that decide
+whether to start the paper track. Eleven or more is a pass; question 15 is an optional
+manipulation check.
 
 ### Specialization track
 
-Page 10 is **not part of the common curriculum** — pages 0–9 remain the whole prerequisite
-for reading every paper in this wiki. It belongs to the manipulation-first path in
-[[07-research-program/index|7. Research Program]], and exists because the *Modern Robotics*
-chapter summaries stop at kinematics, while contact-rich manipulation needs the dynamics
-half and the equation that carries it into task space.
+Page 10 is **not part of the common curriculum**. Pages 0–9 are the common introductory
+map; for a specific paper or optional path, follow that page's prerequisite box. Page 10
+belongs to the manipulation-first path in [[07-research-program/index|7. Research Program]].
+The *Modern Robotics* notes cover [[04-robotics/modern-robotics/ch08-dynamics|ch.8 dynamics]]
+and [[04-robotics/modern-robotics/ch11-robot-control|ch.11 control]]; page 10 reorganizes the
+ch.5, ch.8, and ch.11 ideas into one path through operational-space inertia and force control.
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — the manipulator equation, Coriolis coupling, computed torque, and the operational-space inertia $\Lambda$ that makes force control readable
 
@@ -111,14 +113,17 @@ Skip it unless manipulation is your contribution area; read it before
 - [[02-foundations/ml-practice|9. ML 실무와 평가]] — 데이터 분할, 과적합, 결과 표를 읽는 지표 사전
 
 열한 페이지(0.5~9)를 마쳤으면 [[02-foundations/overview|0. Overview]] 끝의 **통과 점검**을 보라:
-논문 트랙으로 넘어갈지를 판정하는 누적 12문항이고, 9개 이상이면 통과다.
+논문 트랙으로 넘어갈지를 판정하는 공통 누적 14문항이고, 11개 이상이면 통과다. 15번은
+매니퓰레이션 경로의 선택 점검이다.
 
 ### 전문화 트랙
 
-10번은 **공통 커리큘럼이 아니다** — 이 위키의 모든 논문을 읽기 위한 선수 지식은 여전히
-0~9번 전부다. 10번은 [[07-research-program/index|7. 연구 프로그램]]의 매니퓰레이션 우선
-경로에 속하며, *Modern Robotics* 챕터 요약이 기구학에서 멈추는 반면 접촉이 많은 조작은
-동역학 절반과 그것을 작업 공간으로 옮기는 방정식을 필요로 하기 때문에 존재한다.
+10번은 **공통 커리큘럼이 아니다**. 0~9번은 공통 입문 지도이고, 개별 논문과 선택 경로의
+선수 지식은 해당 페이지의 선수 상자를 따른다. 10번은 [[07-research-program/index|7. 연구 프로그램]]의
+매니퓰레이션 우선 경로에 속한다. *Modern Robotics* 노트도
+[[04-robotics/modern-robotics/ch08-dynamics|8장 동역학]]과
+[[04-robotics/modern-robotics/ch11-robot-control|11장 제어]]를 다루지만, 10번은 5·8·11장의
+핵심을 작업공간 관성과 힘 제어까지 한 흐름으로 재구성한다.
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] — 매니퓰레이터 방정식, 코리올리 결합, 계산 토크, 그리고 힘 제어를 읽을 수 있게 만드는 작업 공간 관성 $\Lambda$
 

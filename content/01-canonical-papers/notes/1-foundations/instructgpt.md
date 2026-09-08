@@ -17,8 +17,8 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 **Ouyang et al., NeurIPS 2022** — [arXiv](https://arxiv.org/abs/2203.02155) · [PDF](https://arxiv.org/pdf/2203.02155)
 
 > [!note] 수학 준비물 · Math on-ramp
-> Read the policy-gradient-to-PPO stretch of [[02-foundations/rl-basics|7. RL Basics §4]] first — the last of this paper's three stages is exactly that PPO, with a reward model standing in for the environment.
-> [[02-foundations/rl-basics|RL 기초 §4]]의 정책 그래디언트→PPO 구간을 먼저 읽어라 — 이 논문의 3단계 중 마지막이 정확히 그 PPO이고, KL 페널티는 [[02-foundations/information-theory|정보이론 §3]]의 언어로 쓰여 있다.
+> Read the policy-gradient-to-PPO stretch of [[02-foundations/rl-basics|7. RL Basics §4]] first — the last of this paper's three stages uses a reward model as the PPO reward signal. Read its KL penalty through [[02-foundations/information-theory|Information Theory §3]].
+> [[02-foundations/rl-basics|RL 기초 §4]]의 정책 그래디언트→PPO 구간을 먼저 읽어라 — 세 번째 단계는 보상 모델의 출력을 PPO 보상 신호로 쓴다. KL 페널티는 [[02-foundations/information-theory|정보이론 §3]]의 언어로 읽는다.
 
 ## English
 

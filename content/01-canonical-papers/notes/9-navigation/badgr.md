@@ -69,7 +69,7 @@ BADGR is the clean statement of the reframing that [[04-robotics/traversability-
 
 - [ ] State what BADGR predicts, and why predicting that instead of geometry solves the tall-grass failure.
 - [ ] Name where the training labels come from and what they cost.
-- [ ] Say what the preference channel buys you that a cost map does not.
+- [ ] Explain how separating a learned event predictor from user-specified costs or preferences lets the objective change without retraining the predictor.
 - [ ] Say where a BADGR success rate you want to quote actually comes from.
 
 ## 한국어
@@ -119,5 +119,5 @@ BADGR은 [[04-robotics/traversability-off-road|17]]이 딛고 선 재프레이�
 
 - [ ] BADGR이 무엇을 예측하며, 기하 대신 그것을 예측하는 것이 왜 키 큰 풀 실패를 푸는지 말한다.
 - [ ] 학습 레이블이 어디서 오고 무엇을 대가로 치르는지 댄다.
-- [ ] 선호 채널이 비용 지도가 주지 못하는 무엇을 주는지 말한다.
+- [ ] 학습된 사건 예측기와 사용자가 정한 비용·선호를 분리하면 예측기를 재학습하지 않고 목적을 어떻게 바꿀 수 있는지 설명한다.
 - [ ] 인용하려는 BADGR 성공률이 실제로 어디서 왔는지 말한다.

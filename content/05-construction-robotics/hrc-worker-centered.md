@@ -24,14 +24,18 @@ communicate, allocate, and recover without increasing cognitive or physical burd
 
 ### 1. The worker-in-the-loop stack
 
+This page focuses on **sensed-state-adaptive HRC**, one branch of worker-centered robotics.
+Teleoperation/interfaces and augmentation/exoskeletons are other branches and do not require
+an inferred worker state to change autonomous robot behavior.
+
 1. **Sense** motion, gaze, speech, EEG/EDA/EMG, workload, or proximity.
 2. **Infer** intent, fatigue, stress, trust, or task phase—with uncertainty.
 3. **Decide** robot speed, path, task allocation, assistance, or handover.
 4. **Communicate** prediction and intent in a form the worker can understand.
 5. **Evaluate** safety, productivity, workload, trust, and adaptation over time.
 
-Wearable classification alone is worker sensing. It becomes worker-centered robotics
-only when the estimate changes robot behavior and that closed loop is evaluated.
+Wearable classification alone is worker sensing. For it to become **closed-loop adaptive HRC**,
+the estimate must change robot behavior and that loop must be evaluated.
 
 ```mermaid
 flowchart LR
@@ -43,10 +47,8 @@ flowchart LR
     D -. "5 EVALUATE over time" .-> E["safety, productivity,<br/>workload, trust"]
 ```
 
-*Steps 1–2 alone are worker **sensing** — a classifier with a paper attached. It becomes
-worker-centered **robotics** only where the arrow from 2 to 3 exists, i.e. where the estimate
-actually changes what the robot does, and only when step 5 evaluates that loop rather than
-the classifier's accuracy.*
+*Steps 1–2 alone are worker **sensing**. They become closed-loop **adaptive HRC** where the
+arrow from 2 to 3 exists and step 5 evaluates that loop rather than only classifier accuracy.*
 
 The decision link matters because recognizing a worker state does not guarantee useful assistance. For example, an uncertain intent estimate might make a robot pause during a handover rather than move toward the wrong destination. **The reading this gives you.** Trace the estimate through the robot response to the worker outcome. If the experiment stops at classification accuracy, its contribution remains a sensing component even when the motivating story concerns collaboration.
 
@@ -157,14 +159,17 @@ a small study is not evidence of low operational risk.
 
 ### 1. 작업자 폐루프
 
+이 페이지의 핵심 하위 범위는 **센싱 상태 적응형 HRC**다. 원격조작·인터페이스와 외골격·증강도
+작업자 중심 로보틱스의 다른 갈래이며, 추론한 작업자 상태가 자율 행동을 바꿀 필요는 없다.
+
 1. 움직임·시선·말·EEG/EDA/EMG·작업부하·근접을 **센싱**한다.
 2. 의도·피로·스트레스·신뢰·작업 단계를 불확실성과 함께 **추론**한다.
 3. 로봇 속도·경로·과제 배분·지원·전달을 **결정**한다.
 4. 작업자가 이해할 수 있게 로봇의 예측과 의도를 **소통**한다.
 5. 안전·생산성·부하·신뢰·장기 적응을 **평가**한다.
 
-웨어러블 분류만 하면 작업자 센싱이다. 추정값이 로봇 행동을 바꾸고 폐루프를 평가해야 작업자
-중심 로보틱스가 된다.
+웨어러블 분류만 하면 작업자 센싱이다. 이것이 **폐루프 적응형 HRC**가 되려면 추정값이 로봇
+행동을 바꾸고 그 루프를 평가해야 한다.
 
 ```mermaid
 flowchart LR
@@ -176,9 +181,8 @@ flowchart LR
     D -. "5 시간에 걸친 평가" .-> E["안전, 생산성,<br/>작업부하, 신뢰"]
 ```
 
-*1~2단계만 있으면 그것은 작업자 **센싱**이다 — 논문이 붙은 분류기. 2에서 3으로 가는 화살표가
-있을 때, 즉 그 추정이 실제로 로봇의 행동을 바꿀 때 비로소 작업자 중심 **로보틱스**가 되고,
-5단계가 분류기의 정확도가 아니라 그 루프를 평가할 때만 그렇다.*
+*1–2단계만 있으면 작업자 **센싱**이다. 2에서 3으로 가는 화살표가 있고 5단계가 분류 정확도만이
+아니라 그 루프를 평가할 때 폐루프 **적응형 HRC**가 된다.*
 
 작업자 상태를 알아도 유용한 보조가 보장되지 않으므로 결정 연결이 중요하다. 불확실한 의도 추정 때문에 로봇이 잘못된 목적지로 움직이는 대신 인계 중 멈출 수 있다. **여기서 얻는 독법.** 추정에서 로봇 반응을 거쳐 작업자 결과까지 추적한다. 실험이 분류 정확도에서 끝나면 동기가 협업이어도 기여는 센싱 구성요소에 머문다.
 

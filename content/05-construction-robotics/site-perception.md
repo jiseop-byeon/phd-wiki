@@ -20,9 +20,9 @@ the geometry and workflow assumptions.
 
 > [!note] Prerequisites
 > [[04-robotics/geometric-perception-calibration|Geometric Perception & Calibration]] ·
-> [[04-robotics/state-estimation-slam|State Estimation & SLAM]] ·
-> [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] ·
-> [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]
+> [[04-robotics/state-estimation-slam|State Estimation & SLAM]]. Follow: frames/rigid transforms →
+> calibration → registration → uncertainty. Optional when a paper uses learned proposals/depth:
+> [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] · [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]].
 
 ### 1. The site-perception stack
 
@@ -131,9 +131,10 @@ Evaluation needs an independent reference because alignment can hide the error b
 
 > [!note] 선수 지식
 > [[04-robotics/geometric-perception-calibration|기하 인식과 보정]] ·
-> [[04-robotics/state-estimation-slam|상태 추정과 SLAM]] ·
-> [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] ·
-> [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]
+> [[04-robotics/state-estimation-slam|상태 추정과 SLAM]]이 공통 기초다.
+> 의미 분할이나 단안 깊이를 쓰는 연구라면 그때
+> [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]과
+> [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]을 추가한다.
 
 ### 1. 현장 인식 스택
 

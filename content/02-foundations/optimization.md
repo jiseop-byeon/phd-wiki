@@ -43,7 +43,8 @@ The formulation is needed because a preference and a requirement play different 
   semidefinite", the matrix version of $\ge 0$: $x^\top H x \ge 0$ for every direction $x$,
   i.e. the surface curves upward (or at worst is flat) whichever way you walk.
 - Convex problem = convex $f$ over a convex feasible set ⇒ **every local minimum is
-  global**, and polynomial-time reliable solvers exist.
+  global**. Many standard finite-dimensional convex problems have efficient solvers with
+  global-solution guarantees under their stated assumptions.
 
 <svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="convex versus non-convex landscape">
   <g fill="none" stroke="currentColor" stroke-width="1.8">
@@ -118,7 +119,7 @@ approximation, least squares solves it. Note what is *not* here — the second d
 $f$. Full Newton would need them; Gauss–Newton gets its curvature for free out of
 $J^\top J$, which is why it is used and Newton is not.
 
-**It has exactly two failure modes, and both are things you will see.**
+**It has two representative failure modes that you will see.**
 
 *It can diverge.* Each step reduces the residual of the **model**, but the model is only
 trustworthy near $x_k$; the true residual can grow. On $f(x) = \tanh x$ (one residual, one
@@ -137,9 +138,9 @@ $$J = \begin{bmatrix} 1 & 0 \\ 1 & 0 \\ -1 & 0 \end{bmatrix}, \qquad J^\top J = 
 
 Gauss–Newton asks for the inverse of a singular matrix and halts.
 
-**Levenberg–Marquardt: distrust the model by a tunable amount.** Both failures have one
-cause — the step went somewhere the affine model does not describe. So penalize distance
-from the current iterate:
+**Levenberg–Marquardt: distrust the model by a tunable amount.** A poor local model calls
+for trust-region-style accept/reject and shorter steps; a rank-deficient Jacobian instead
+signals an unobserved or degenerate direction. Penalize distance from the current iterate:
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
@@ -147,7 +148,8 @@ which is a regularized least squares problem with the closed form
 
 $$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
 
-The $\lambda I$ fixes both failures at once. In the beacon example it turns
+The $\lambda I$ makes the linear system invertible and limits explosive steps; it does not
+restore information in an unobserved direction or guarantee convergence. In the beacon example it turns
 $\det J^\top J = 0$ into $\det(J^\top J + I) = 4$ — the matrix is now invertible no matter
 what $J$ does. And $\lambda$ interpolates: at $\lambda \to 0$ this is Gauss–Newton, at large
 $\lambda$ it is a short step along the gradient. Adapt it by trial: take the step, and if
@@ -186,8 +188,9 @@ a trust parameter.
   reaching the global minimum — like $k$-means, it is used everywhere anyway. That is why
   this literature warm-starts from the previous solve, restarts from several
   initializations, and reports the best. When a SLAM or calibration paper says "we solve
-  with Ceres / g2o / GTSAM," it has told you it ran this algorithm; it has not told you the
-  answer is the optimum.
+  with Ceres / g2o / GTSAM," that only signals a nonlinear least-squares framework. Check
+  the actual linearization, trust-region or line-search method, linear solver, and robust-loss
+  settings; the library name alone identifies neither this algorithm nor a global optimum.
 - **A filter is running this same step.** One Gauss–Newton iteration is algebraically the
   same update an iterated extended Kalman filter applies — the same weighted residual cost,
   written in information form rather than covariance form. So the familiar split between
@@ -285,9 +288,9 @@ $x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-Substituting the dynamics (condensing) leaves a convex QP in the $u$'s — solved in
-milliseconds by interior-point/active-set solvers, re-solved every control step with the
-first input applied. *MPC = the projection example scaled up, a thousand times a second.*
+Substituting the dynamics (condensing) leaves a convex QP in the $u$'s. Small, structured
+QPs can run at millisecond scale with an appropriate solver and implementation; report the
+deadline and worst-case solve time. MPC re-solves each control step and applies the first input.
 
 ### 6. Reading this wiki through optimization
 
@@ -349,8 +352,8 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   모든 곳에서 $H \succeq 0$과 동치 — $\succeq 0$은 "양의 준정부호"로 읽고, $\ge 0$의 행렬판이다:
   모든 방향 $x$에 대해 $x^\top H x \ge 0$, 즉 어느 방향으로 걸어도 표면이 위로 휘거나
   (최악의 경우) 평평하다는 뜻.
-- 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이고,
-  다항 시간의 신뢰할 수 있는 솔버가 존재한다.
+- 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이다. 많은 표준
+  유한차원 볼록 문제에는 명시된 가정 아래 전역해 보장과 효율적인 솔버가 있다.
 
 <svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="볼록 지형과 비볼록 지형">
   <g fill="none" stroke="currentColor" stroke-width="1.8">
@@ -419,7 +422,7 @@ $$x_{k+1} = x_k - (J^\top J)^{-1} J^\top f(x_k)$$
 필요하다. Gauss–Newton은 곡률을 $J^\top J$에서 공짜로 얻고, 그래서 이것이 쓰이고 뉴턴은
 쓰이지 않는다.
 
-**실패 방식이 정확히 둘 있고, 둘 다 당신이 보게 될 것이다.**
+**대표적인 실패 방식 둘은 모두 자주 보게 된다.**
 
 *발산할 수 있다.* 각 스텝은 **모델**의 잔차를 줄이지만, 모델은 $x_k$ 근처에서만 믿을 만하다.
 참 잔차는 커질 수 있다. $f(x) = \tanh x$(잔차 하나, 미지수 하나, 원점에 유일한 영점)에서
@@ -437,8 +440,9 @@ $$J = \begin{bmatrix} 1 & 0 \\ 1 & 0 \\ -1 & 0 \end{bmatrix}, \qquad J^\top J = 
 
 Gauss–Newton은 특이행렬의 역을 요구하고 멈춰 선다.
 
-**Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 두 실패의 원인은 하나다 — 스텝이
-아핀 모델이 서술하지 못하는 곳으로 갔다. 그러니 현재 반복점에서 멀어지는 것에 벌점을 매긴다.
+**Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 나쁜 국소모델에는 trust-region식
+수락·거부와 짧은 스텝이 필요하지만, 랭크 결손 야코비안은 관측되지 않거나 퇴화한 방향을 뜻한다.
+현재 반복점에서 멀어지는 것에 벌점을 매긴다.
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
@@ -446,7 +450,8 @@ $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert
 
 $$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
 
-$\lambda I$가 두 실패를 한 번에 고친다. 비콘 예제에서 그것은 $\det J^\top J = 0$을
+$\lambda I$는 선형계를 가역으로 만들고 폭발적인 스텝을 제한하지만, 관측되지 않은 방향의
+정보를 복원하거나 수렴을 보장하지는 않는다. 비콘 예제에서 그것은 $\det J^\top J = 0$을
 $\det(J^\top J + I) = 4$로 바꾼다 — $J$가 무슨 짓을 하든 이제 행렬은 역을 갖는다. 그리고
 $\lambda$는 보간한다. $\lambda \to 0$이면 Gauss–Newton이고, $\lambda$가 크면 그래디언트 방향의
 짧은 한 걸음이다. 시행으로 조절한다. 스텝을 밟아 보고 *참* 잔차가 줄었으면 받아들이고
@@ -482,8 +487,9 @@ Gauss–Newton으로:
 - **이것은 발견적 방법이고, 논문들도 안다.** Levenberg–Marquardt에는 전역 최솟값에 닿는다는
   보장이 없다 — $k$-평균과 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
   웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
-  논문이 "Ceres / g2o / GTSAM으로 푼다"고 쓸 때, 그것은 이 알고리즘을 돌렸다고 말한 것이지
-  답이 최적해라고 말한 것이 아니다.
+  논문이 "Ceres / g2o / GTSAM으로 푼다"고 써도 비선형 최소자승 프레임워크를 썼다는 단서일
+  뿐이다. 실제 선형화, trust-region/line-search 방법, 선형 솔버, 강건 손실 설정을 확인해야
+  하며, 라이브러리 이름만으로 이 알고리즘이나 전역 최적해를 알 수는 없다.
 - **필터도 이 같은 스텝을 돌리고 있다.** Gauss–Newton 한 번의 반복은 iterated 확장 칼만
   필터가 적용하는 갱신과 대수적으로 같다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보
   형태로 적었을 뿐이다. 그러므로 "최적화 기반"과 "필터 기반" 상태 추정기의 익숙한 구분은
@@ -576,9 +582,9 @@ $x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-동역학을 대입(응축)하면 $u$들에 대한 볼록 QP만 남는다 — 내부점/active-set 솔버가 수
-밀리초에 풀고, 매 제어 주기 첫 입력만 적용하며 다시 푼다. *MPC = 위의 투영 예제를
-초당 천 번 규모로 키운 것.*
+동역학을 대입(응축)하면 $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
+구현에서 ms급도 가능하므로 deadline과 최악 실행시간을 함께 보고해야 한다. MPC는 매 제어
+주기에 다시 풀고 첫 입력만 적용한다.
 
 ### 6. 최적화의 눈으로 이 위키 읽기
 

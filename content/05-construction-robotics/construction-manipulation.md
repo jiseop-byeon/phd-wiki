@@ -38,9 +38,10 @@ It is specific, and each item removes an assumption that factory robotics is all
 | No one is inside the workspace | Trades are working alongside, and safety is regulated |
 | $\mu$, mass, and geometry are known | Dust, moisture, and tolerance make all three uncertain |
 
-Row 1 alone breaks hybrid position/force control, whose selection matrix assumes you know
-which direction is normal to the surface ([[04-robotics/force-compliance-control|13. §3]]).
-That is not a small caveat; it is why a factory controller does not transfer.
+Row 1 makes pure hybrid position/force control **with a fixed, presumed contact normal**
+fragile: its selection matrix depends on that frame ([[04-robotics/force-compliance-control|13. §3]]).
+Check when the paper estimates or updates the normal and how it switches control modes around contact;
+online frame updates, compliant control, and low approach stiffness can mitigate the error.
 
 ### 2. The task matrix
 
@@ -91,8 +92,8 @@ produces a striking result.
     <text x="372" y="82" font-size="9.5" opacity="0.75">nearly empty</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="208">Across a targeted search of drilling, drywall, rebar, facade, timber and welding, only three papers put</text>
-    <text x="20" y="224">a manipulator on an active construction site, the oldest from 2007. That thin record is the opportunity.</text>
+    <text x="20" y="208">A targeted search of drilling, drywall, rebar, facade, timber and welding identified three papers that put</text>
+    <text x="20" y="224">a manipulator on an active construction site, the oldest from 2007. Treat this as a candidate gap, not an exhaustive count.</text>
   </g>
 </svg>
 
@@ -215,7 +216,7 @@ the [[07-research-program/index|research program]] is built on.
 
 - [ ] Map a named construction task to its primitive, sensing, and control mode.
 - [ ] Place any paper in this area on the simulation–lab–site ladder, and say what evidence put it there.
-- [ ] Name the two site-verified contact-rich results and what they did.
+- [ ] Name the three site-verified manipulation cases and distinguish their contact and deployment evidence.
 - [ ] Apply the five task-selection criteria and reject at least one tempting task.
 - [ ] State two things construction gives back to general manipulation research.
 
@@ -234,7 +235,7 @@ the [[07-research-program/index|research program]] is built on.
 5. Which two rows of §2 would you cut first if the dissertation needed narrowing, and why?
 
 > [!tip]- Answers
-> 1. Because its selection matrix assigns force control to the direction it believes is normal to the surface, and that belief comes from a model. In a fixture the part is where the model says; on site it is within a centimetre or two of there, so force control ends up acting partly along the surface and position control partly into it — the exact fighting the architecture exists to prevent ([[04-robotics/force-compliance-control|13. §3]]).
+> 1. A controller that keeps a model-derived contact normal fixed can assign force partly along the surface and position partly into it when the on-site pose differs from the model. The architecture is therefore vulnerable unless the system estimates or updates the contact frame, switches modes around contact, or adds compliance ([[04-robotics/force-compliance-control|13. §3]]).
 > 2. The methods and experiments sections, for a sentence naming where the work actually happened. Several papers in this area carry "on-site" in the title and state in their own text that the development and validation were done in a controlled laboratory. The title describes the ambition; the experimental section describes the evidence.
 > 3. Because the contact is light. The hard parts of rebar tying are perception (finding intersections on a shifting non-rigid mesh), coverage planning, and doing it thousands of times reliably — which makes it an excellent deployment and autonomy result, but the contribution would not be about contact. Under the admission test it serves the program's *navigation and deployment* pillars more than its manipulation core.
 > 4. As a product claim with its source named, never as a result. Jaibot, TyBot, Canvas and Okibo have no peer-reviewed papers of their own, so their productivity figures are marketing that has not been through review. They are legitimate evidence that a market exists and that the task is worth automating — which is a different claim from a measured one.
@@ -290,9 +291,10 @@ the [[07-research-program/index|research program]] is built on.
 | 작업 구역 안에 아무도 없다 | 다른 공종이 옆에서 일하고, 안전이 규제된다 |
 | $\mu$, 질량, 기하를 안다 | 분진·습기·공차가 셋 다 불확실하게 만든다 |
 
-1행 하나만으로도 하이브리드 위치/힘 제어가 깨진다. 그 선택 행렬은 어느 방향이 표면에
-수직인지 안다고 가정하기 때문이다([[04-robotics/force-compliance-control|13. §3]]).
-작은 단서가 아니라, 공장 제어기가 이전되지 않는 이유다.
+1행은 **접촉 법선을 고정해 둔 순수 하이브리드 위치/힘 제어**를 취약하게 만든다. 선택 행렬이
+그 좌표계에 의존하기 때문이다([[04-robotics/force-compliance-control|13. §3]]). 논문이 법선을 언제
+추정·갱신하고 접촉 전후 제어 모드를 어떻게 전환하는지 확인하라. 온라인 좌표계 갱신,
+컴플라이언스, 낮은 접근 강성은 이 오차를 완화할 수 있다.
 
 ### 2. 작업 매트릭스
 
@@ -456,7 +458,7 @@ ISARC 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|�
 
 - [ ] 지명된 건설 작업을 원시동작·센싱·제어 모드로 대응시킨다.
 - [ ] 이 분야의 논문을 시뮬레이션–실험실–현장 사다리에 놓고, 어떤 근거로 거기 놓았는지 말한다.
-- [ ] 현장 검증된 접촉 결과 둘을 대고 무엇을 했는지 말한다.
+- [ ] 현장 검증된 매니퓰레이션 사례 셋을 대고 접촉·배치 증거의 차이를 말한다.
 - [ ] 작업 선정 다섯 기준을 적용해, 끌리는 작업 하나를 최소한 탈락시킨다.
 - [ ] 건설이 일반 조작 연구에 되돌려주는 것 둘을 말한다.
 

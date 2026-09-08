@@ -24,7 +24,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: A monocular depth foundation model built by pseudo-labeling 62M unlabeled images with a teacher and forcing the student to survive harder augmentations — robust metric/relative depth for any image, from one camera.
+**One-line summary**: A monocular depth foundation model built by pseudo-labeling 62M unlabeled images with a teacher and forcing the student to survive harder augmentations — robust relative depth across broad imagery; metric depth still needs a task/domain-specific head and scale calibration.
 
 ### Context
 
@@ -78,7 +78,7 @@ with full multi-view geometry.
 
 ## 한국어
 
-**한 줄 요약**: 교사 모델로 6,200만 장의 무라벨 이미지에 의사 라벨을 붙이고, 학생에게 더 어려운 증강을 버티게 해 만든 단안 깊이 파운데이션 모델 — 카메라 한 대로 어떤 이미지에서든 강건한 상대/절대 깊이를 얻는다.
+**한 줄 요약**: 교사 모델로 6,200만 장의 무라벨 이미지에 의사 라벨을 붙이고, 학생에게 더 어려운 증강을 버티게 해 만든 단안 깊이 파운데이션 모델 — 광범위한 이미지에서 강건한 상대 깊이를 제공하지만, 미터 깊이는 과제·도메인별 head와 스케일 보정이 필요하다.
 
 ### 배경
 

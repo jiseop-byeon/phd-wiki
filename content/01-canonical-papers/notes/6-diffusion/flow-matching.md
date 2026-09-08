@@ -61,16 +61,15 @@ of the flow itself.
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="175" y="26">a curved path</text><text x="445" y="26">a straight (OT-style) path</text>
-    <text x="175" y="172">many small Euler steps to stay on it</text><text x="445" y="172">a few large steps suffice</text>
+    <text x="175" y="172">curvature can require smaller steps</text><text x="445" y="172">low curvature can permit larger steps</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="30" y="198" opacity="0.9">Sampling is Euler integration either way. The number of steps is not a property of the model but of the path's</text>
-    <text x="30" y="212" opacity="0.9">curvature &#8212; which is why choosing a straighter path is a design decision that pays at runtime.</text>
+    <text x="30" y="198" opacity="0.9">Lower curvature can permit larger solver steps, but NFE also depends on learned-field error,</text>
+    <text x="30" y="212" opacity="0.9">smoothness or stiffness, solver order, and tolerance; few-step sampling must be checked empirically.</text>
   </g>
 </svg>
 
-  velocity $x_1 - x_0$ — straighter than diffusion's curved paths, which *permits* far fewer inference
-  steps; diffusion paths are recovered as a special case.
+  velocity $x_1 - x_0$. This is a conditional path construction; the learned marginal velocity field need not remain sample-wise straight. Lower curvature can permit fewer steps, but does not guarantee them.
 - Sampling: integrate the learned ODE from noise to data.
 
 ### Results
@@ -140,15 +139,15 @@ Diffusion Models*, build it from the ODE up.
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="175" y="26">휘어진 경로</text><text x="445" y="26">곧은 (OT식) 경로</text>
-    <text x="175" y="172">경로를 벗어나지 않으려면 작은 스텝이 많이 필요</text><text x="445" y="172">큰 스텝 몇 번이면 충분</text>
+    <text x="175" y="172">곡률이 크면 작은 스텝이 필요할 수 있음</text><text x="445" y="172">곡률이 작으면 큰 스텝이 가능할 수 있음</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="30" y="198" opacity="0.9">어느 쪽이든 샘플링은 오일러 적분이다. 스텝 수는 모델의 성질이 아니라 경로의 곡률이 정한다 &#8212;</text>
-    <text x="30" y="212" opacity="0.9">더 곧은 경로를 고르는 것이 실행 시간의 이득으로 돌아오는 설계 결정인 이유다.</text>
+    <text x="30" y="198" opacity="0.9">작은 곡률은 큰 솔버 스텝을 허용할 수 있지만 NFE는 학습된 장의 오차·강성,</text>
+    <text x="30" y="212" opacity="0.9">솔버 차수와 허용 오차에도 좌우된다. 소수 스텝 성능은 실험으로 확인해야 한다.</text>
   </g>
 </svg>
 
-  디퓨전의 굽은 경로보다 곧다 ⇒ 추론 스텝이 훨씬 적어도 된다; 디퓨전 경로는 특수 사례로
+  조건부 경로를 이룬다. 학습된 주변 속도장이 샘플별로 계속 직선일 필요는 없다. 작은 곡률은 적은 추론 스텝을 허용할 수 있지만 보장하지는 않는다; 디퓨전 경로는 특수 사례로
   복원된다.
 - 샘플링: 학습된 ODE를 노이즈에서 데이터로 적분.
 

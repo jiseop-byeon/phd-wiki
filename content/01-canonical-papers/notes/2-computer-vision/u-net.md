@@ -18,7 +18,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 > [!note] Math on-ramp · 수학 준비물
 > [[02-foundations/signal-processing|6. Signal Processing §1]] (convolution) and [[02-foundations/calculus-backprop|2. Calculus §5]] (why a skip connection helps the gradient). The skip connections here carry *resolution* rather than gradient — the same wiring, a different purpose from [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]'s.
-> 합성곱은 [[02-foundations/signal-processing|6. 신호처리 §1]], 스킵 연결이 그래디언트에 도움이 되는 이유는 [[02-foundations/calculus-backprop|2. 미적분 §5]]. 다만 여기서의 스킵은 그래디언트가 아니라 *해상도*를 나른다 — 같은 배선, [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]과는 다른 목적이다.
+> 합성곱은 [[02-foundations/signal-processing|6. 신호처리 §1]], 스킵 연결이 그래디언트에 도움이 되는 이유는 [[02-foundations/calculus-backprop|2. 미적분 §5]]. 여기서 스킵의 주된 설계 목적은 ResNet의 residual optimization과 달리 고해상도 localization feature를 전달하는 것이다. 물론 이 경로로 그래디언트도 흐른다.
 
 ## English
 

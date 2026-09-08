@@ -83,7 +83,7 @@ Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictor
 
 ### 배경
 
-대조 자기지도(MoCo/SimCLR)는 큰 배치의 음성 쌍이 필요했고, [[mae|마스크 복원]]은 고정
+대조 자기지도(MoCo/SimCLR)는 큰 배치의 음의 쌍(negative pair, 불일치 쌍)이 필요했고, [[mae|마스크 복원]]은 고정
 특징이 아니라 파인튜닝에 최적화됐다. 상금은: 라벨 없이, 얼려서 바로 쓸 수 있는
 *범용 시각 특징* — 비전판 사전학습 LM이다.
 
@@ -95,7 +95,7 @@ Also the backbone behind [[depth-anything|Depth Anything]]-class dense predictor
 > 답으로 붕괴하는 것은 centering+sharpening으로 막는다.
 
 - **DINO (2021)**: 학생/EMA 교사 ViT, 멀티크롭 뷰, softmax 출력에 대한 교차 엔트로피;
-  음성 쌍도 대조 쌍도 없음. 발견: self-attention 맵이 *아무 감독 없이* 물체를 분할하고,
+  음의 쌍도 대조 쌍도 없음. 발견: self-attention 맵이 *아무 감독 없이* 물체를 분할하고,
   k-NN 분류가 놀랍게 잘 된다.
 - **DINOv2 (2023)**: 레시피의 산업화 — 검색 기반 큐레이션의 1.42억 장 데이터셋(LVD-142M),
   DINO + iBOT(마스크 토큰) 목적함수, ViT-g까지 스케일 후 증류; 여러 크기의 고정 백본으로

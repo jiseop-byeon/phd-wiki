@@ -41,7 +41,7 @@ The result is conceptual rather than numerical: a control objective, a justifica
 
 ### Limitations & critique
 
-- Impedance control **needs a torque-controlled, backdrivable arm**. On a position-controlled industrial arm you get admittance control instead, with the vendor's stiffness in series ([[04-robotics/force-compliance-control|13. §2]]) — a different system with different failure modes.
+- Direct, high-bandwidth impedance control generally needs torque access and suitable backdrivability. Stiff position-controlled arms often use admittance or an inner-loop approximation ([[04-robotics/force-compliance-control|13. §2]]), with a narrower renderable range and different failure modes.
 - The framework says *what* to regulate, not what values to choose; the achievable range is bounded, and Colgate and Hogan's 1988 passivity result is where that bound gets stated.
 - Rendering a desired impedance depends on the dynamic model, so it inherits the parameter problem of [[02-foundations/manipulator-kinematics-dynamics|10. §7]].
 
@@ -80,7 +80,7 @@ Part I이 물리 시스템과 포트 논증을 전개하며, 정독할 부분이
 
 ### 한계와 비판
 
-- 임피던스 제어는 **토크 제어되고 역구동 가능한 팔을 요구한다.** 위치 제어 산업용 팔에서는 벤더의 강성이 직렬로 낀 어드미턴스 제어를 얻게 된다([[04-robotics/force-compliance-control|13. §2]]) — 실패 모드가 서로 다른 시스템이다.
+- 직접적이고 고대역폭인 임피던스 제어에는 일반적으로 토크 접근과 적절한 역구동성이 필요하다. 강성이 큰 위치 제어 팔은 흔히 어드미턴스나 내부 루프 근사([[04-robotics/force-compliance-control|13. §2]])를 쓰며, 구현 가능한 범위가 더 좁고 실패 모드도 다르다.
 - 이 틀은 *무엇을* 조절할지 말하지 어떤 값을 고를지는 말하지 않는다. 구현 가능한 범위에는 한계가 있고, 그 한계를 진술하는 것이 Colgate와 Hogan의 1988년 수동성 결과다.
 - 원하는 임피던스를 구현하는 것이 동역학 모델에 의존하므로, [[02-foundations/manipulator-kinematics-dynamics|10. §7]]의 파라미터 문제를 그대로 물려받는다.
 

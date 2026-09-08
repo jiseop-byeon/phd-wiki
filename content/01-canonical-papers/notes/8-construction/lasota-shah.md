@@ -41,7 +41,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Limitations.** The controlled shared task depends on its tracking and workspace assumptions. Benefits in that setting do not guarantee either their magnitude or direction under site noise, occlusion, and different worker routines.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
-> The numbers (5.57%, 19.9%, …) come from a controlled laboratory task — what transfers to construction is the direction, not the magnitude: "human-aware planning improves objective fluency and subjective safety *at the same time*." That direction is robust; the magnitudes are task-specific and must be re-measured on unstructured sites. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
+> The numbers (5.57%, 19.9%, …) come from a controlled laboratory task. What construction carries forward is a hypothesis and metric bundle to retest: human-aware planning may improve objective fluency and subjective safety *at the same time*. Neither direction nor magnitude is guaranteed on an unstructured site. Keep the 2018 fielding distinct as well: a manufacturing test environment, not a construction site.
 
 ## 한국어
 
@@ -68,7 +68,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 기초: [[04-robotics/hri-safety|11. HRI & Safety]] (인간 인지 계획과 안전 지표의 원류)
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 수치(5.57%, 19.9%, ...)는 통제된 실험실 과제의 것이다 — 건설로 가져갈 것은 크기가 아니라 방향이다: "인간 인지 계획은 객관적 유창성과 주관적 안전감을 *동시에* 개선한다." 이 방향은 강건하지만, 크기는 과제 특정적이며 비구조적 현장에서는 재측정되어야 한다. 2018 배치도 제조업 현장이지 건설 현장이 아님을 구분하라.
+> 수치(5.57%, 19.9%, ...)는 통제된 실험실 과제의 것이다. 건설로 가져갈 것은 방향이 아니라 현장에서 다시 검정할 가설과 지표 묶음이다: 인간 인지 계획은 객관적 유창성과 주관적 안전감을 *동시에* 개선할 수 있다. 방향과 크기 모두 비구조적 현장에서 보장되지 않는다. 2018 배치도 제조업 테스트 환경이지 건설 현장이 아님을 구분하라.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 

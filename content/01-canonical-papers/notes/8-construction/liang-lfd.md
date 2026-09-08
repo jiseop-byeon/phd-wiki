@@ -33,12 +33,12 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Evidence (with numbers)**: ceiling-tile installation, **78% task success over 60 test scenes in the ROS Gazebo simulator with a KUKA arm emulator** — there is no physical-robot result in the paper. This is **simulation, not a testbed and not a site**; after the demonstration phase the robot executes autonomously, with the human's role reduced to demonstrator.
 
-**Reading it with [[02-foundations/rl-basics|RL 기초 §6]]**: this is behavioral-cloning territory, and the 78% ceiling is what compounding error looks like in practice — states outside the demonstrated tube carry no supervision, so drift goes uncorrected (covariate shift). The line's next move, [[yu-imitation|Yu]]'s cloud/VR hierarchical IL, attacks exactly these two walls: demonstration cost and brittleness off the demonstrated states.
+**Reading it with [[02-foundations/rl-basics|RL 기초 §6]]**: this is behavioral-cloning territory, so covariate shift and compounding error are plausible explanations for failures outside demonstrated states. The aggregate 78% success rate does not identify that mechanism by itself; confirm it from failure trajectories, state-distribution analysis, or ablations. The line's next move, [[yu-imitation|Yu]]'s cloud/VR hierarchical IL, targets demonstration cost and brittleness away from demonstrated states.
 
 **Limitations**: a single task family; trajectory-level imitation without a visual policy; the evaluation never leaves simulation, so the 78% carries none of the contact, calibration or perception error a real ceiling grid would impose. It is a proof of feasibility, not deployment readiness. Ci-Jyun Liang now leads the CROSS Lab at Stony Brook, continuing the line as faculty.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
-> 78% is an entry proof **in simulation**, not deployment readiness — read it as "LfD is feasible for this class of construction task", and read the gap to 100% as a miniature lecture on covariate shift. This paper's historical weight is in its position rather than its number: it is the first term of the construction robot-learning line (demonstration to hierarchy to skill library).
+> 78% is an entry proof **in simulation**, not deployment readiness — read it as "LfD is feasible for this class of construction task." Treat covariate shift as one hypothesis for the gap to 100%, not as an identified cause without failure trajectories or ablation. This paper's historical weight is in its position rather than its number: it is the first term of the construction robot-learning line (demonstration to hierarchy to skill library).
 
 ## 한국어
 
@@ -53,7 +53,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **증거 (수치와 함께)**: 천장 타일 설치, **ROS Gazebo 시뮬레이터에서 KUKA 팔 에뮬레이터로 60개 장면, 과제 성공률 78%** — 논문에 실제 로봇 결과는 없다. 이것은 **테스트베드도 현장도 아니라 시뮬레이션**이다; 시연 단계 이후 로봇은 자율적으로 실행하며, 인간의 역할은 시연자로 줄어든다.
 
-**[[02-foundations/rl-basics|RL 기초 §6]]으로 읽기**: 이것은 행동 복제(BC)의 영토이고, 78%라는 천장은 오차 누적이 실전에서 어떤 모습인지 보여준다 — 시연된 튜브 밖의 상태에는 감독이 없으므로 이탈이 교정되지 않는다(공변량 이동). 계열의 다음 수인 [[yu-imitation|Yu]]의 클라우드/VR 계층적 모방학습은 정확히 이 두 벽 — 시연 비용과 시연 상태 밖의 취약성 — 을 공략한다.
+**[[02-foundations/rl-basics|RL 기초 §6]]으로 읽기**: 이것은 행동 복제(BC)의 영토이므로 시연 상태 밖의 공변량 이동과 오차 누적은 가능한 실패 설명이다. 그러나 집계 성공률 78%만으로 그 기전을 식별할 수는 없다. 실패 궤적·상태분포 분석·ablation에서 확인하라. 계열의 다음 수인 [[yu-imitation|Yu]]의 클라우드/VR 계층적 모방학습은 시연 비용과 시연 상태 밖의 취약성을 공략한다.
 
 **한계**: 단일 과제 부류; 시각 정책 없는 궤적 수준 모방; 평가가 시뮬레이션을 벗어나지 않으므로 78%는 실제 천장 그리드가 부과하는 접촉·캘리브레이션·인식 오차를 전혀 포함하지 않는다. 실현 가능성의 증명이지 배치 준비가 아니다. Ci-Jyun Liang은 현재 Stony Brook의 CROSS Lab을 이끌며 교수로서 이 계열을 잇고 있다.
 
@@ -64,11 +64,11 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - 계보: Kamat/Menassa → Liang(Stony Brook CROSS Lab) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 78%는 **시뮬레이션 안의** 진입 증명이지 배치 준비도가 아니다 — "건설 과제 부류에 LfD가 실현 가능하다"로 읽고, 100%와의 간극은 공변량 이동 강의의 축소판으로 읽어라. 이 논문의 역사적 의미는 수치보다 위치에 있다: 건설 로봇 학습 계열(시연 → 계층 → 스킬 라이브러리)의 첫 항이다.
+> 78%는 **시뮬레이션 안의** 진입 증명이지 배치 준비도가 아니다 — "건설 과제 부류에 LfD가 실현 가능하다"로 읽어라. 100%와의 간극에는 공변량 이동도 가능한 설명이지만, 실패 궤적이나 ablation 없이는 원인으로 단정하지 않는다. 이 논문의 역사적 의미는 수치보다 위치에 있다: 건설 로봇 학습 계열(시연 → 계층 → 스킬 라이브러리)의 첫 항이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (◐)
 
 - [ ] Explain what a "quasi-repetitive task" is and why it is the right task class for LfD · "준반복 과제"가 무엇이고 왜 LfD에 맞는 과제 부류인지 설명할 수 있다
 - [ ] Say how the generalized-cylinder representation differs from simple trajectory replay · 일반화 원통 표현이 단순 궤적 재생과 어떻게 다른지 말할 수 있다
-- [ ] Interpret the 78% success rate in the vocabulary of BC and covariate shift · 78% 성공률을 BC/공변량 이동의 어휘로 해석할 수 있다
+- [ ] Explain why covariate shift is a hypothesis—not an identified cause—for the 78% result · 78% 결과에서 공변량 이동이 확인된 원인이 아니라 해석 가설인 이유를 설명할 수 있다
 - [ ] Say why this paper is the *entry point of learning* in the Michigan line (Feng → Lundeen → Liang → Yu) · 미시간 계열(Feng → Lundeen → Liang → Yu)에서 이 논문이 "학습의 진입점"인 이유를 말할 수 있다

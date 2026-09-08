@@ -44,8 +44,8 @@ Research depth belongs to the pages themselves, not to this dashboard. Use the
 > - **Single denominator**: shares normalize by each year's total across all indexed
 >   venues, so changes in venue mix or indexing completeness can masquerade as topic
 >   trends. Treat cross-year momentum as a lead to investigate, not a measurement.
-> - **Ontology mixing**: in the current dataset the Transformer topic also matched
->   state-space/Mamba terms (separated in the taxonomy going forward), and broad topics
+> - **Ontology mixing**: Transformer and state-space/Mamba are separated in the current
+>   taxonomy, but broad topics
 >   like Foundation Models absorb general LLM vocabulary — a "rise" can be a naming shift.
 > - Use the Radar to *generate* questions and find representative papers — not as the
 >   final basis for choosing a research topic.
@@ -92,8 +92,8 @@ Deep Learning·Physical AI·Robot Learning에 동시에 나타날 수 있으며,
 > - **단일 분모**: 점유율이 그해 색인된 전체 학회 합계로 정규화되므로, 학회 구성이나 수집
 >   완전성의 변화가 주제 추세처럼 보일 수 있다. 연도 간 momentum은 측정값이 아니라 조사할
 >   단서로 취급하라.
-> - **온톨로지 혼합**: 현 데이터셋에서 Transformer 토픽이 state-space/Mamba 용어와도
->   매칭됐고(향후 분리), Foundation Models 같은 넓은 토픽은 일반 LLM 어휘를 흡수한다 —
+> - **온톨로지 혼합**: 현 taxonomy에서는 Transformer와 state-space/Mamba를 분리했지만,
+>   Foundation Models 같은 넓은 토픽은 일반 LLM 어휘를 흡수한다 —
 >   "상승"이 명명 변화일 수 있다.
 > - Radar는 질문을 *생성*하고 대표 논문을 찾는 용도로 쓰라 — 연구 주제 선정의 최종 근거가
 >   아니다.

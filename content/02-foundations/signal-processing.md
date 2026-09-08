@@ -129,11 +129,13 @@ Frequency analysis is useful because visually similar fluctuations can require d
 - Choosing: low-pass for sensor noise, high-pass for drift removal, notch at known
   vibration harmonics, complementary filters to fuse IMU accel (low-passed) + gyro
   (high-passed).
-- **Phase lag is the price of causal smoothing**: every causal low-pass delays the signal —
+- **Phase lag is the price of causal smoothing**: realizable causal smoothing generally
+  introduces frequency-dependent phase or group delay over the passband —
   aggressive filtering *fights your controller* (a lagged velocity estimate destabilizes a
   D-term). This is the practical reason to prefer model-based estimation:
-  the **Kalman filter** ([[02-foundations/probability|derived here]]) is the optimal
-  time-varying filter once signal + noise are written as a state-space model.
+  under an accurate linear-Gaussian state-space model and noise covariances, the
+  **Kalman filter** ([[02-foundations/probability|derived here]]) minimizes mean-square
+  estimation error. Model mismatch removes that guarantee.
 
 ### 5. Bridge to control: transforms
 
@@ -288,10 +290,12 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   ([[04-robotics/control-theory-ce397|제어 이론 §7]]).
 - 선택: 센서 노이즈엔 저역통과, 드리프트 제거엔 고역통과, 알려진 진동 고조파엔 노치,
   IMU 융합엔 상보 필터(가속도 저역 + 자이로 고역).
-- **위상 지연은 인과적 평활화의 대가다**: 모든 인과적 저역통과는 신호를 늦춘다 — 과한
+- **위상 지연은 인과적 평활화의 대가다**: 구현 가능한 인과적 평활화는 일반적으로 통과대역에
+  주파수 의존 위상·군지연을 만든다 — 과한
   필터링은 *제어기와 싸운다*(지연된 속도 추정이 D항을 불안정하게 만든다). 모델 기반
-  추정을 선호하는 실전적 이유가 이것이다: 신호+노이즈를 상태공간 모델로 쓰면
-  **칼만 필터**([[02-foundations/probability|여기서 유도]])가 최적 시변 필터다.
+  추정을 선호하는 실전적 이유가 이것이다: 정확한 선형-가우시안 상태공간 모델과 잡음
+  공분산 아래에서는 **칼만 필터**([[02-foundations/probability|여기서 유도]])가 평균제곱
+  추정 오차를 최소화한다. 모델이 어긋나면 이 보장은 사라진다.
 
 ### 5. 제어로 가는 다리: 변환
 

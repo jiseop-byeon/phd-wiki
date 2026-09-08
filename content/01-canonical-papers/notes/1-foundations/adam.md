@@ -32,7 +32,7 @@ SGD needs careful learning-rate tuning, and one global rate fits all parameters 
 ### Method
 
 > [!tip] Key intuition
-> Track a running mean of gradients (where to go) and a running mean of squared gradients (how noisy/steep each direction is), then step each parameter by mean/√(variance) — every parameter gets its own effective learning rate.
+> Track a running mean of gradients (where to go) and a running mean of squared gradients (an RMS-like scale for each direction), then divide the first moment by the square root of the **uncentered second moment** — not the variance. Every parameter gets its own effective learning rate.
 
 - First moment: $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$; second moment: $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$.
 - **Bias correction** $\hat{m}_t = m_t/(1-\beta_1^t)$, $\hat{v}_t = v_t/(1-\beta_2^t)$ — fixes the zero-initialization bias early in training (the paper's key technical contribution over RMSProp+momentum).
@@ -76,7 +76,7 @@ SGD는 학습률 튜닝에 민감하고, 그래디언트 스케일이 파라미�
 ### 방법
 
 > [!tip] 핵심 직관
-> 그래디언트의 이동 평균(어디로 갈지)과 그래디언트 제곱의 이동 평균(각 방향이 얼마나 가파르고 시끄러운지)을 추적한 뒤, 평균/√(분산)으로 스텝을 밟는다 — 파라미터마다 사실상 자기만의 학습률을 갖게 된다.
+> 그래디언트의 이동 평균(어디로 갈지)과 그래디언트 제곱의 이동 평균(각 방향의 RMS형 스케일)을 추적한 뒤, 1차 모멘트를 **비중심 2차 모멘트**의 제곱근으로 나눈다 — 평균을 뺀 분산이 아니다. 파라미터마다 사실상 자기만의 학습률을 갖게 된다.
 
 - 1차 모멘트: $m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$; 2차 모멘트: $v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$
 - **편향 보정** $\hat{m}_t = m_t/(1-\beta_1^t)$, $\hat{v}_t = v_t/(1-\beta_2^t)$ — 0으로 초기화된 모멘트가 학습 초반에 과소평가되는 문제를 교정 (RMSProp+모멘텀 대비 이 논문의 핵심 기여).

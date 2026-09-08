@@ -45,6 +45,10 @@ The loop matters because completing a motion is not the same as completing a con
 
 ### 2. Levels often called a digital twin
 
+This is the wiki's **synthesized reading rubric** for robot workflows, not a universal standard
+or a claim that a higher row is always better. Verify only the data and command paths required
+by the research question.
+
 | Level | Capability | What is still missing |
 |---|---|---|
 | Digital model | static BIM/CAD | live state and synchronization |
@@ -172,6 +176,9 @@ flowchart LR
 동작 완료와 시공 활동 완료가 다르므로 루프가 중요하다. 앵커가 명령 위치에 도달해도 설치 검사에는 실패할 수 있다. 다음 과제를 허용하기 전에 트윈이 이 차이를 보존해야 한다. **여기서 얻는 독법.** 완료 신호를 정당화한 물리 관측까지 거슬러 가고 다음 로봇 결정까지 따라간다. 수동 승인과 센싱 검증을 구분해 표시한다.
 
 ### 2. 디지털 트윈이라 불리는 수준
+
+아래 표는 로봇 워크플로를 읽기 위한 이 위키의 **합성 루브릭**이지 보편 표준이나 우열 등급이
+아니다. 연구 질문에 필요한 데이터·명령 경로만 검증하면 된다.
 
 | 수준 | 기능 | 빠진 것 |
 |---|---|---|

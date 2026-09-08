@@ -192,8 +192,8 @@ twice:
   typically considered not substantial," and requires an ≤80-word novelty statement plus
   upload of the conference PDF.
 
-**More experiments is not an extension.** Both journals name that specific move as
-insufficient, which is worth knowing before spending a month on it.
+**More experiments supporting the same claim are not, by themselves, a substantive extension.**
+Explain the significance of new questions, methods, or results against the target journal's guidance.
 
 Two structural rules on top:
 
@@ -451,8 +451,8 @@ flowchart LR
 - **IJRR**는 "세부, 실험, 논의를 더 넣는 것만으로는 통상 실질적이라고 보지 않는다"고 말하며,
   80단어 이하의 novelty statement와 학회 PDF 업로드를 요구한다.
 
-**실험을 더 하는 것은 확장이 아니다.** 두 저널 모두 그 특정한 수를 불충분하다고 지목하며,
-거기에 한 달을 쓰기 전에 알아 둘 가치가 있다.
+**같은 주장을 뒷받침하는 실험을 더하는 것만으로는 실질적 확장이 아니다.**
+새 질문·방법·결과의 연구 의의를 목표 저널 지침에 맞춰 설명해야 한다.
 
 그 위의 구조적 규칙 둘:
 

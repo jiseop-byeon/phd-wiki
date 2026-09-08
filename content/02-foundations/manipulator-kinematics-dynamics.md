@@ -279,10 +279,10 @@ observations:
    they matter most.
 2. **Friction is the worst-modelled term** and it is not in the ideal equation at all. Real
    controllers carry a friction model that is fitted, not derived.
-3. **This equation is the sim-to-real gap.** When a policy trained in simulation fails on
-   hardware, the mismatch is usually not in the perception; it is in these parameters. That
-   is what [[05-construction-robotics/sim-to-real|sim-to-real]] work is largely about, and
-   why domain randomization randomizes *these* quantities.
+3. **These parameter mismatches are one major dynamics-side source of the sim-to-real gap.**
+   Perception, timing, interfaces, contact, actuators, and task distributions can also dominate.
+   Use synchronized logs and ablations to isolate the first failing layer
+   ([[06-research-practice/failure-analysis-system-evaluation|Failure Analysis & System Evaluation]]).
 
 For construction manipulation there is a fourth: the **payload is unknown and large**.
 A grasped panel or bolt changes $M(\theta)$ and $g(\theta)$ by an amount comparable to the
@@ -294,7 +294,8 @@ When a manipulation paper mentions dynamics, these are the questions that separa
 claim from decoration:
 
 - Is the controller **torque-level** or does it command positions to a vendor controller?
-  Most claims about compliance are meaningless in the second case.
+  For a position interface, evaluate compliance over the whole closed loop, including the
+  inner loop's stiffness, bandwidth, delay, and the environment stiffness.
 - Are $M$, $C$, $g$ **modelled, learned, or ignored**? "Gravity compensation" alone is a
   much weaker statement than full inverse dynamics.
 - At what **speed** were the results collected? Section 4 says the hard terms are quadratic
@@ -592,9 +593,9 @@ MR 5장의 가조작성 타원체와의 관계는 정확한 일치가 아니라 
    그것들이 관절에서 가장 먼 곳 — 가장 크게 작용하는 곳 — 에 있다.
 2. **마찰이 가장 나쁘게 모델링된 항**이며 이상적인 방정식에는 아예 없다. 실제 제어기는
    유도된 것이 아니라 피팅된 마찰 모델을 들고 다닌다.
-3. **이 방정식이 곧 sim-to-real 격차다.** 시뮬레이션에서 학습한 정책이 실기계에서 실패할 때,
-   불일치는 대개 인식이 아니라 이 파라미터들에 있다. [[05-construction-robotics/sim-to-real|sim-to-real]]
-   연구가 대체로 다루는 것이 이것이고, 도메인 랜덤화가 *이* 양들을 무작위화하는 이유다.
+3. **이 파라미터 불일치는 동역학 쪽의 주요 sim-to-real 원인 중 하나다.** 인식, 시간 동기화,
+   제어 인터페이스, 접촉, 액추에이터, 과제 분포가 지배적일 수도 있다. 동기화 로그와 절제로
+   최초 실패 층을 분리한다([[06-research-practice/failure-analysis-system-evaluation|실패 분석·시스템 평가]]).
 
 건설 조작에는 네 번째가 있다: **페이로드가 알려져 있지 않고 크다.** 잡은 패널이나 볼트는
 $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, 공장과 달리 그 질량을
@@ -604,8 +605,8 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 
 매니퓰레이션 논문이 동역학을 언급할 때, 실제 주장과 장식을 가르는 질문들:
 
-- 제어기가 **토크 수준**인가, 아니면 벤더 제어기에 위치를 명령하는가? 후자라면 컴플라이언스에
-  관한 주장 대부분은 의미가 없다.
+- 제어기가 **토크 수준**인가, 아니면 벤더 제어기에 위치를 명령하는가? 위치 인터페이스라면
+  내측 루프의 강성·대역폭·지연과 환경 강성을 포함한 전체 폐루프에서 컴플라이언스 주장을 평가한다.
 - $M$, $C$, $g$가 **모델링되었나, 학습되었나, 무시되었나**? "중력 보상"만으로는 완전한
   역동역학보다 훨씬 약한 진술이다.
 - 결과를 어떤 **속도**에서 얻었나? §4에 따르면 어려운 항들은 속도의 이차식이므로, 느린

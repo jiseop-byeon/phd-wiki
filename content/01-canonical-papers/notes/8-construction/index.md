@@ -25,10 +25,10 @@ alongside.
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
 
-**Construction manipulation (the on-site contact papers)**:
-[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska timber joints 2021]] ·
-[[01-canonical-papers/notes/8-construction/feng-rebar|Feng rebar-tying 2024]] ·
-[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle drilling robot 2025]]
+**Construction manipulation (contact and deployment evidence)**:
+[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska timber joints 2021 (lab sim-to-real)]] ·
+[[01-canonical-papers/notes/8-construction/feng-rebar|Feng rebar-tying 2024 (active site)]] ·
+[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle drilling robot 2025 (simulated site disturbances)]]
 
 **Assembly & fabrication (the Michigan line + ETH)**:
 [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]] →

@@ -256,7 +256,7 @@ underneath.
 |---|---|
 | Nav-graph or continuous? | Nav-graph numbers are not comparable to VLN-CE numbers |
 | Simulation or real robot? | Sim ranking does not preserve real ranking |
-| Was any ObjectNav training data used? | The strong modern results train nothing |
+| What data was used: ObjectNav-specific, other embodied data, or none? | Strong zero-shot modular methods may use no ObjectNav-specific training; end-to-end video/VLA methods can use large embodied datasets |
 | Which HM3D/MP3D split, and how many categories? | 6-category ObjectNav is saturated; 379-category is not |
 | Is the language actually load-bearing? | Rephrase-sensitivity is the standard failure |
 | SPL or bare success rate? | Success alone rewards inefficient wandering |
@@ -536,7 +536,7 @@ LERF식 방사 필드는 레거시다. 그리고 **로보틱스 쪽에서는 장
 |---|---|
 | 내비 그래프인가 연속인가? | 내비 그래프 수치는 VLN-CE 수치와 비교 불가다 |
 | 시뮬레이션인가 실기계인가? | 시뮬 순위는 실제 순위를 보존하지 않는다 |
-| ObjectNav 학습 데이터를 썼는가? | 강한 현대 결과들은 아무것도 학습하지 않는다 |
+| 어떤 데이터를 썼는가: ObjectNav 전용, 다른 embodied 데이터, 또는 없음? | 강한 zero-shot 모듈형 방법은 ObjectNav 전용 학습을 쓰지 않을 수 있지만 종단간 비디오/VLA는 대규모 embodied 데이터를 학습할 수 있다 |
 | 어느 HM3D/MP3D 분할이며 범주가 몇 개인가? | 6범주 ObjectNav는 포화, 379범주는 아니다 |
 | 언어가 실제로 부하를 지고 있는가? | 재구성 문장에 대한 민감성이 표준적 실패다 |
 | SPL인가 맨 성공률인가? | 성공률만으로는 비효율적 배회가 보상된다 |

@@ -119,9 +119,10 @@ every robot-learning paper is quietly living inside.
 | Off-policy training | learning from a distribution of transitions other than the one the target policy produces | Q-learning acting under an exploratory policy |
 
 Combine all three and value estimates can **diverge** — not converge slowly, not converge to
-a poor answer, but grow without bound. Any *two* of the three is safe. Tabular Q-learning is
-safe (no approximation). Monte Carlo with a network is safe (no bootstrapping). Sarsa with a
-network is safe (on-policy).
+a poor answer, but grow without bound. Removing one leg is a representative mitigation, not
+a general safety theorem for arbitrary neural approximators and optimizers. Classical tabular
+or linear cases have convergence results under explicit assumptions; neural Monte Carlo or
+Sarsa does not become generally safe merely because one leg is absent.
 
 **Two things this is not.** It is not a control problem: the divergence appears in plain
 *prediction*, with the policy fixed. And it is not about noise or exploration or an unknown
@@ -163,10 +164,10 @@ its designs.
   also usually more data-efficient. Nobody gives it up entirely; $n$-step returns give it up
   partially.
 - *Off-policy*: often, yes. Sarsa instead of Q-learning is exactly this trade, and on-policy
-  methods like PPO are stable for the same reason. What you lose is data reuse — an
-  on-policy method must throw away every batch after one update, which is why PPO is
-  sample-hungry and why anything learning from logged demonstrations or a replay buffer is
-  off-policy by construction.
+  methods like PPO mitigate the same source of mismatch. A PPO rollout is normally reused
+  for several minibatch epochs; after the policy has moved sufficiently, it is discarded and
+  a fresh rollout is collected. Long-term replay of old rollouts can violate the assumptions
+  behind the importance ratio and trust-region-style update.
 
 **The patches, read as triad mitigations.** This is the payoff for reading papers:
 
@@ -372,14 +373,14 @@ the price of value-extrapolation instability BC never has.
 > assembly. Demonstrations do not contain the corrective micro-adjustments needed when you
 > are 2 mm off, and averaging over human demos actively destroys reactive behaviour.
 >
-> But the honest headline is not "RL beat imitation". Every one of these results —
+> But the honest headline for the contact-rich precision cases discussed here is not "RL beat imitation". These results —
 > HIL-SERL, ConRFT, RECAP — puts a **human correcting the policy on-distribution during
 > learning**, which is closer to [[01-canonical-papers/notes/4-vla/dagger|DAgger]]'s lineage
 > than to classical RL. **Interactive learning beat offline learning, and reward is one of
 > several ways to close that loop.** Two riders: every RL success above needed a hand-built
-> binary reward classifier — a per-task cost invisible in a table of 100% success rates — and
-> **nobody has shown RL producing a generalist.** RL is currently a finishing process, not a
-> training paradigm.
+> binary reward classifier — a per-task cost invisible in a table of 100% success rates. In
+> these cases, RL is best read as an interactive finishing stage rather than a demonstrated
+> general-purpose training paradigm.
 >
 > On the imitation side the sharpest recent result is a scaling law: generalization follows
 > a power law in the **number of environments and objects, not the number of demonstrations**
@@ -683,8 +684,9 @@ flowchart LR
 | 오프폴리시 학습 | 목표 정책이 만들어 내는 것과 다른 전이 분포에서 배우는 것 | 탐색 정책으로 행동하는 Q-러닝 |
 
 셋을 합치면 가치 추정이 **발산할 수 있다** — 천천히 수렴하는 것도, 나쁜 답으로 수렴하는 것도
-아니라 한없이 커진다. 셋 중 *둘*까지는 안전하다. 표 기반 Q-러닝은 안전하고(근사 없음),
-신경망을 쓴 몬테카를로도 안전하며(부트스트랩 없음), 신경망을 쓴 Sarsa도 안전하다(온폴리시).
+아니라 한없이 커진다. 한 다리를 제거하는 것은 대표적 완화책이지 임의의 신경망 근사기와
+옵티마이저에 대한 일반 안전 정리는 아니다. 고전적 표형·선형 사례에는 명시적 가정 아래 수렴
+결과가 있지만, 한 다리가 없다는 이유만으로 신경망 몬테카를로나 Sarsa가 일반적으로 안전해지지는 않는다.
 
 **이것이 아닌 것 둘.** 제어의 문제가 아니다 — 정책을 고정한 순수 *예측*에서 발산이 나타난다.
 잡음이나 탐색이나 모르는 환경의 문제도 아니다 — 모델을 정확히 알고 표집이 전혀 없는 동적
@@ -721,9 +723,9 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   전이를 생성된 자리에서 소비하고 다시 찾지 않는다. 부트스트랩은 대개 데이터 효율도 더 좋다.
   아무도 완전히 포기하지 않고, $n$-스텝 리턴이 부분적으로 포기한다.
 - *오프폴리시*: 자주, 그렇다. Q-러닝 대신 Sarsa가 정확히 이 거래이고, PPO 같은 온폴리시
-  방법이 안정한 것도 같은 이유다. 잃는 것은 데이터 재사용이다 — 온폴리시 방법은 갱신 한 번마다
-  배치를 버려야 하고, 그래서 PPO가 표본을 많이 먹으며, 기록된 시연이나 리플레이 버퍼에서
-  배우는 것은 무엇이든 구조상 오프폴리시다.
+  방법은 같은 불일치 원인을 완화한다. PPO는 수집한 롤아웃을 보통 여러 minibatch epoch 동안
+  재사용하지만, 정책이 충분히 바뀌면 버리고 새 롤아웃을 모은다. 오래된 롤아웃을 장기 replay하면
+  importance ratio와 trust-region식 갱신의 가정을 깨뜨릴 수 있다.
 
 **패치들을 triad 완화책으로 읽기.** 논문을 읽을 때의 보상이 이것이다.
 
@@ -917,13 +919,12 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 > 대시보드 조립 **18%** 를 낸다. 시연에는 2 mm 어긋났을 때 필요한 교정적 미세 조정이 담겨 있지
 > 않고, 사람 시연들에 대해 평균을 내는 것이 반응적 거동을 적극적으로 파괴한다.
 >
-> 그러나 정직한 표제는 "RL이 모방을 이겼다"가 아니다. 이 결과들 — HIL-SERL, ConRFT, RECAP —
+> 그러나 여기서 다루는 접촉 정밀 사례의 정직한 표제는 "RL이 모방을 이겼다"가 아니다. 이 결과들 — HIL-SERL, ConRFT, RECAP —
 > 하나하나가 **학습 도중 사람이 정책을 온-분포로 교정하게** 하고, 그것은 고전 RL보다
 > [[01-canonical-papers/notes/4-vla/dagger|DAgger]]의 계보에 가깝다. **상호작용적 학습이 오프라인
 > 학습을 이겼고, 보상은 그 루프를 닫는 여러 방법 중 하나다.** 단서 둘: 위의 모든 RL 성공이 손으로
-> 만든 이진 보상 분류기를 필요로 했고 — 100% 성공률 표에는 보이지 않는 과제별 비용이다 —
-> **아무도 RL이 일반가를 만들어내는 것을 보이지 못했다.** RL은 현재 학습 패러다임이 아니라
-> 마감 공정이다.
+> 만든 이진 보상 분류기를 필요로 했다 — 100% 성공률 표에는 보이지 않는 과제별 비용이다.
+> 이 사례들에서 RL은 입증된 범용 학습 패러다임이라기보다 상호작용적 마무리 단계로 읽는 편이 안전하다.
 >
 > 모방 쪽의 가장 날카로운 최근 결과는 스케일링 법칙이다: 일반화가 **시연의 수가 아니라 환경과
 > 물체의 수**에 대한 거듭제곱 법칙을 따른다(ICLR 2025, 시연 4만+와 실기계 시행 1.5만+에서).

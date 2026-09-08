@@ -33,7 +33,7 @@ CNNs owned vision because their inductive biases (locality, translation equivari
 ### Method
 
 > [!tip] Key intuition
-> Convolution is a hard-coded prior about images. A Transformer has to *learn* locality — expensive in data, but strictly more flexible. Below a data threshold CNNs win; above it, the learned prior wins.
+> Convolution hard-codes locality and translation structure. A Transformer hard-codes less of that structure and can learn more from data, but may require more data and optimization. In this paper's large-scale pretraining settings, that tradeoff favored ViT; it is not a universal data threshold or a strict function-class ordering.
 
 - Split image into fixed 16×16 patches → linear projection per patch → add learned position embeddings → prepend a `[class]` token → standard Transformer encoder, unchanged.
 - Supervised pretraining at scale (ImageNet-21k, then JFT-300M internal dataset), fine-tuned at higher resolution downstream.
@@ -75,7 +75,7 @@ CNN이 비전을 지배한 것은 그 귀납 편향(지역성, 평행이동 등�
 ### 방법
 
 > [!tip] 핵심 직관
-> 합성곱은 이미지에 대한 하드코딩된 사전 지식이다. Transformer는 지역성을 *배워야* 한다 — 데이터는 더 들지만 엄격히 더 유연하다. 데이터가 문턱 아래면 CNN이 이기고, 그 위면 학습된 사전 지식이 이긴다.
+> 합성곱은 지역성과 평행이동 구조를 하드코딩한다. Transformer는 그 구조를 덜 하드코딩해 더 많은 것을 데이터에서 배울 수 있지만, 데이터와 최적화가 더 필요할 수 있다. 이 논문의 대규모 사전학습 설정에서는 그 절충이 ViT에 유리했으며, 보편적인 데이터 문턱이나 엄밀한 함수 클래스 순서를 뜻하지 않는다.
 
 - 이미지를 고정 16×16 패치로 분할 → 패치별 선형 투영 → 학습된 위치 임베딩 추가 → `[class]` 토큰을 앞에 붙임 → 표준 Transformer 인코더를 그대로 사용.
 - 대규모 지도 사전학습(ImageNet-21k, 이후 내부 데이터셋 JFT-300M), 다운스트림에서는 더 높은 해상도로 파인튜닝.

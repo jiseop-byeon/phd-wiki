@@ -107,10 +107,10 @@ bound its useful resolution from below and its required fidelity from above. Two
 
 The same numbers police a demonstration corpus. If a dataset's stated value is that
 operators *modulated force with intent* — the premise of a force-bearing corpus — then
-recorded force variation smaller than what the operator could perceive or reliably
-produce is not intent; it is noise wearing intent's clothing. Concretely: at a 2 N task
-force with a 7% JND, variations under ~0.14 N cannot be attributed to deliberate
-modulation, and a policy trained to imitate them is imitating tremor and friction.
+recorded force variation smaller than what the operator could perceive does not, by itself,
+establish tactilely guided intent. Concretely: at a 2 N task force with a 7% JND, ~0.14 N is
+a screening reference, not an exclusion boundary for deliberate modulation. A smaller
+variation may reflect tremor or friction, but also visually guided or learned feed-forward control.
 This check belongs in the collection pipeline next to the manipulability check of
 [[04-robotics/teleoperation-demonstration|12. Teleoperation §5]], not in the rebuttal.
 
@@ -325,10 +325,10 @@ where that vocabulary lives.
 ### 4. 임계값은 데이터를 검증한다
 
 같은 숫자가 시연 코퍼스를 감시한다. 데이터셋의 선언된 가치가 조작자가 *의도를 갖고 힘을
-조절했다*는 것이라면 — force-bearing 코퍼스의 전제 — 조작자가 지각하거나 신뢰성 있게
-만들어낼 수 있는 것보다 작은 힘 변동은 의도가 아니다. 의도의 옷을 입은 잡음이다.
-구체적으로: 2 N 작업 힘에서 JND 7%면 약 0.14 N 아래의 변동은 의도적 조절로 볼 수 없고,
-그것을 모사하도록 학습된 정책은 떨림과 마찰을 모사하고 있는 것이다. 이 점검은
+조절했다*는 것이라면 — force-bearing 코퍼스의 전제 — 조작자가 지각할 수 있는 것보다
+작은 힘 변동만으로는 촉각적으로 유도된 의도를 입증할 수 없다. 구체적으로 2 N 작업 힘에서
+JND 7%에 해당하는 약 0.14 N은 선별 참고값이지 의도적 조절의 배제 기준이 아니다. 더 작은 변동은
+떨림·마찰에서 올 수도, 시각 단서나 학습된 피드포워드 제어에서 올 수도 있다. 이 점검은
 [[04-robotics/teleoperation-demonstration|12. 원격조작 §5]]의 가조작성 점검 옆, 수집
 파이프라인 안에 있어야 한다 — 리버틀에 있어서는 안 된다.
 

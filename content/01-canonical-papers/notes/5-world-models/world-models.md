@@ -65,7 +65,7 @@ of the world and act inside it. Could an agent *train* inside its own learned si
 
 ### Impact & follow-ups
 
-Named the field. The V/M/C decomposition — learn dynamics in latent space, act on latent
+Popularized the modern deep-learning V/M/C formulation of world-model agents. The V/M/C decomposition — learn dynamics in latent space, act on latent
 states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 "train in imagination" idea returns at scale in [[genie|Genie]] and
 [[cosmos|Cosmos]]-style synthetic data engines.
@@ -122,7 +122,7 @@ states — is the skeleton of [[planet|PlaNet]] and [[dreamer|Dreamer]], and the
 
 ### 영향과 후속 연구
 
-분야에 이름을 붙였다. V/M/C 분해 — 잠재 공간에서 동역학을 배우고 잠재 상태 위에서
+현대 딥러닝 기반 V/M/C 월드모델 에이전트 구성을 대중화했다. V/M/C 분해 — 잠재 공간에서 동역학을 배우고 잠재 상태 위에서
 행동하기 — 는 [[planet|PlaNet]]과 [[dreamer|Dreamer]]의 골격이고, "상상 속 훈련"은
 [[genie|Genie]]와 [[cosmos|Cosmos]]류 합성 데이터 엔진에서 규모를 갖춰 되돌아온다.
 

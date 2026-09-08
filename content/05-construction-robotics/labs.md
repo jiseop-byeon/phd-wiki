@@ -16,8 +16,8 @@ for how these groups' work fits the field's history, see [[05-construction-robot
 
 ### The Michigan hub
 
-One structural fact organizes the US map: **the University of Michigan CEE cluster is the
-field's faculty-producing engine.** Eight of its PhD alumni now run their own
+One structural fact organizes this survey's US map: **the University of Michigan CEE cluster
+contains the densest faculty-descendant cluster identified in this wiki's corpus.** Eight of its PhD alumni now run their own
 construction-robotics or robot-perception labs, and its two internal groups anchor two
 complementary research programs.
 
@@ -30,7 +30,7 @@ complementary research programs.
 
 | Descendant | Advisor(s) | Now at | Direction |
 |---|---|---|---|
-| Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | the strongest robot-learning lab natively in a civil-engineering orbit — DeepMapping, collaborative perception, NSF CAREER on construction-site robot navigation |
+| Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | a group directly overlapping this wiki's civil-engineering robot-learning path — DeepMapping, collaborative perception, NSF CAREER on construction-site robot navigation |
 | Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | physiological computing → robot control: BCI teleoperation, intention-aware motion planning, legged/aerial inspection robots |
 | Daeho Kim | S. Lee | [Construction Vision Lab](https://cvl.civmin.utoronto.ca/), Univ. of Toronto | co-robotic vision safety, synthetic training data (BlendCon) |
 | Francis Baek | S. Lee | [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech CEE | nervous-system-based HRC (EEG/wearables in the robot loop); new line: LMM agents on quadrupeds |
@@ -109,9 +109,9 @@ These groups publish the manipulation/HRC methods construction researchers impor
   the methods and evaluation style.
 - **Venue watch**: Automation in Construction, J. Computing in Civil Engineering, ISARC,
   and increasingly ICRA/IROS/Science Robotics.
-- **For this wiki's direction**: ETH RSL defines the heavy-machine-learning frontier; the
-  Michigan cluster defines the manipulation/HRC progression; BAIR/MIT-Shah supply learning
-  and HRC methods; RAAMAC/RICAL define the perception baseline.
+- **For this wiki's direction**: ETH RSL anchors the selected heavy-machine-learning line; the
+  Michigan cluster anchors the manipulation/HRC progression; BAIR/MIT-Shah supply learning
+  and HRC methods; RAAMAC/RICAL provide the selected perception baselines.
 
 ## 한국어
 
@@ -122,8 +122,8 @@ These groups publish the manipulation/HRC methods construction researchers impor
 
 ### 미시간 허브
 
-미국 지도를 조직하는 구조적 사실 하나: **미시간대 CEE 클러스터가 이 분야의 교수 배출
-엔진이다.** 박사 졸업생 8명이 자기 건설로봇/로봇인식 랩을 운영하고, 내부의 두 그룹이
+이 조사 코퍼스의 미국 지도를 조직하는 구조적 사실 하나: **미시간대 CEE 클러스터에서 이 위키가
+확인한 교수 계보가 가장 조밀하다.** 박사 졸업생 8명이 자기 건설로봇/로봇인식 랩을 운영하고, 내부의 두 그룹이
 상호보완적인 두 연구 프로그램을 이끈다.
 
 | 랩 / 그룹 | PI | 대표 분야 |
@@ -135,7 +135,7 @@ These groups publish the manipulation/HRC methods construction researchers impor
 
 | 제자 | 지도교수 | 현 소속 | 방향 |
 |---|---|---|---|
-| Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | 토목 궤도에서 가장 강한 로봇러닝 랩 — DeepMapping, 협력 인식, 건설 현장 로봇 항법 NSF CAREER |
+| Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | 이 위키의 토목 기반 로봇러닝 경로와 직접 겹치는 그룹 — DeepMapping, 협력 인식, 건설 현장 로봇 항법 NSF CAREER |
 | Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | 생리 신호 컴퓨팅 → 로봇 제어: BCI 원격조작, 의도 인식 모션 계획, 보행/비행 점검 로봇 |
 | Daeho Kim | S. Lee | [Construction Vision Lab](https://cvl.civmin.utoronto.ca/), 토론토대 | 협동 로봇 비전 안전, 합성 학습 데이터(BlendCon) |
 | Francis Baek | S. Lee | [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech CEE | 신경계 기반 HRC (EEG/웨어러블을 로봇 루프에); 신규: 사족보행 로봇 위의 LMM 에이전트 |
@@ -213,6 +213,6 @@ These groups publish the manipulation/HRC methods construction researchers impor
   평가 스타일이 예측된다.
 - **학회 감시**: Automation in Construction, J. Computing in Civil Engineering, ISARC,
   그리고 점점 ICRA/IROS/Science Robotics.
-- **이 위키의 방향에서**: ETH RSL이 중장비 학습의 최전선을, 미시간 클러스터가 조작/HRC
-  진행을 정의한다; BAIR/MIT-Shah가 학습·HRC 기법을 공급하고, RAAMAC/RICAL이 인식
-  베이스라인을 정의한다.
+- **이 위키의 방향에서**: ETH RSL은 선택한 중장비 학습 계열을, 미시간 클러스터는 조작/HRC
+  진행을 대표한다; BAIR/MIT-Shah가 학습·HRC 기법을 공급하고, RAAMAC/RICAL은 선택한 인식
+  베이스라인을 제공한다.

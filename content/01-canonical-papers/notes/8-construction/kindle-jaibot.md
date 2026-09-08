@@ -29,7 +29,7 @@ mastery-when: "Raise to Mastery if end-effector accuracy under load becomes the 
 
 Overhead drilling is the construction task with the clearest business case and, mechanically, one of the least forgiving: the robot pushes hard along the bit axis, and everything between the motors and the drill bit bends. A hole in the wrong place is not a soft failure — it is a hole in the wrong place.
 
-This is where the abstraction of [[02-foundations/manipulator-kinematics-dynamics|10]] meets its limit. Forward kinematics maps *commanded* joint angles to an end-effector pose. Under thrust, the achieved angles are not the commanded ones, and gear backlash means the error is not even a fixed function of load.
+This is where the abstraction of [[02-foundations/manipulator-kinematics-dynamics|10]] meets its limit. Forward kinematics maps a given joint configuration—usually estimated from encoders—to the rigid-model end-effector pose. Under thrust, command–actual joint error and structural compliance separate that model pose from the actual tool pose; gear backlash makes the discrepancy load- and history-dependent.
 
 ### Method
 
@@ -77,7 +77,7 @@ The reported improvement is a **50% reduction in the 95% xy error threshold** ag
 
 천장 드릴링은 사업성이 가장 분명하면서 역학적으로는 가장 관대하지 않은 건설 작업 중 하나다: 로봇이 비트 축을 따라 세게 밀고, 모터와 드릴 비트 사이의 모든 것이 휜다. 잘못된 자리의 구멍은 부드러운 실패가 아니다 — 잘못된 자리에 뚫린 구멍이다.
 
-[[02-foundations/manipulator-kinematics-dynamics|10번]]의 추상이 한계를 만나는 지점이 여기다. 순기구학은 *명령한* 관절각을 말단 자세로 사상한다. 추력이 걸리면 실제 각도가 명령한 각도가 아니고, 감속기 백래시 때문에 그 오차는 하중의 고정된 함수조차 아니다.
+[[02-foundations/manipulator-kinematics-dynamics|10번]]의 추상이 한계를 만나는 지점이 여기다. 순기구학은 주어진 관절 구성(보통 엔코더로 추정한 $q$)을 강체 모델의 말단 자세로 사상한다. 추력이 걸리면 명령–실제 관절 오차와 구조 변형 때문에 모델 자세와 실제 공구 자세가 어긋나고, 감속기 백래시는 그 차이를 하중과 이력에 의존하게 만든다.
 
 ### 방법
 

@@ -99,15 +99,13 @@ Now read what that says — three separate facts fall out at once.
 | 1 | 100 | 0.01 | $(0.10,\ 0.45)$ | 0.32 | 0.707 | 17.9 s |
 | 10 | 10 | 1 | $(1.00,\ 1.41)$ | 1.00 | 0.707 | 5.7 s |
 
-- **Only the ratio matters.** Rows 1 and 4 have identical gains: scaling $Q$ and $R$ together
-  multiplies the cost but moves nothing about its argmin. This is why papers quote $Q/R$
-  ratios rather than absolute weights — and it answers self-check 2 before you try it.
-- **The damping is not yours to choose.** Every row has $\zeta = 1/\sqrt2 = 0.707$. The
+- **A common scalar scale does not matter.** Rows 1 and 4 have identical gains: multiplying
+  every entry of $Q$ and $R$ by the same positive scalar changes the cost scale, not its
+  argmin. Relative weights within the matrices still matter.
+- **For this position-only $Q=\operatorname{diag}(q,0)$, the damping is fixed.** Every row has $\zeta = 1/\sqrt2 = 0.707$. The
   closed-loop characteristic polynomial is
   $\lambda^2 + \sqrt2\rho^{1/4}\lambda + \sqrt\rho$, so $\omega_n = \rho^{1/4}$ and
-  $2\zeta\omega_n = \sqrt2\rho^{1/4}$ force $\zeta = 0.707$ for *any* weights. LQR on a
-  double integrator always lands on the textbook-optimal damping: the weights buy speed, not
-  shape. That is the general claim "LQR picks the poles by optimization instead of by hand"
+  $2\zeta\omega_n = \sqrt2\rho^{1/4}$ force $\zeta = 0.707$ for any $q/r$ **under this special choice of $Q$**. Adding a velocity-state weight changes the Riccati solution and can change damping. Here the weights buy speed, not shape. This makes the claim "LQR picks the poles by optimization instead of by hand"
   made concrete — [[04-robotics/control-theory-ce397|control theory §7]] placed poles at
   $\zeta = 0.7$ by hand, and LQR arrived at essentially the same place without being told.
 - **Speed is a fourth root, which is brutal.** $\omega_n = \rho^{1/4}$ means doubling the
@@ -169,7 +167,7 @@ Underactuated ch. (geometric intuition, code) → connect to the
 
 > [!tip]- Answers
 > 1. No feedback can catch the unstable mode, so no stabilizing solution $P$ exists — the problem itself is ill-posed.
-> 2. Unchanged — only the overall cost scale changes; the minimizing gain is the same. Only the ratio $Q/R$ determines $K$.
+> 2. Unchanged — multiplying all of $Q$ and $R$ by the same positive scalar changes only the overall cost scale. Relative weights within matrix-valued $Q$ and $R$ still determine $K$.
 > 3. Optimality is with respect to the nominal model, and LQG is proven to have no guaranteed margins against model error (Doyle 1978).
 > 4. $x^\top P x$ summarizes the exact unconstrained cost-to-go beyond the horizon, so a short horizon still supports the stability argument — Mayne 2000's terminal ingredient.
 
@@ -255,14 +253,14 @@ $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$
 | 1 | 100 | 0.01 | $(0.10,\ 0.45)$ | 0.32 | 0.707 | 17.9초 |
 | 10 | 10 | 1 | $(1.00,\ 1.41)$ | 1.00 | 0.707 | 5.7초 |
 
-- **비(ratio)만 의미가 있다.** 1행과 4행의 이득이 완전히 같다: $Q$와 $R$을 함께 스케일하면
-  비용값은 커지지만 그 argmin은 움직이지 않는다. 논문이 절대 가중치가 아니라 $Q/R$ 비를
-  인용하는 이유이고, 스스로 점검 2번의 답이 여기 미리 나와 있다.
-- **감쇠는 당신이 고르는 값이 아니다.** 모든 행에서 $\zeta = 1/\sqrt2 = 0.707$이다. 폐루프
+- **공통 스칼라 배율은 의미가 없다.** 1행과 4행의 이득이 완전히 같다. $Q$와 $R$의 모든
+  원소에 같은 양의 스칼라를 곱하면 비용의 크기만 바뀌고 argmin은 움직이지 않는다. 행렬 내부의
+  상태·입력 사이 상대 가중치는 여전히 중요하다.
+- **이 위치-only $Q=\operatorname{diag}(q,0)$에서는 감쇠가 고정된다.** 모든 행에서 $\zeta = 1/\sqrt2 = 0.707$이다. 폐루프
   특성 다항식이 $\lambda^2 + \sqrt2\rho^{1/4}\lambda + \sqrt\rho$이므로
-  $\omega_n = \rho^{1/4}$, $2\zeta\omega_n = \sqrt2\rho^{1/4}$가 되어 *어떤* 가중치에서도
-  $\zeta = 0.707$이 강제된다. 이중 적분기 위의 LQR은 언제나 교과서적 최적 감쇠에 착륙한다:
-  가중치가 사는 것은 속도이지 모양이 아니다. "LQR은 극점을 손이 아니라 최적화가 고른다"는
+  $\omega_n = \rho^{1/4}$, $2\zeta\omega_n = \sqrt2\rho^{1/4}$가 되어 **이 특수한 $Q$에서**
+  어떤 $q/r$을 써도 $\zeta = 0.707$이다. 속도 상태 가중치를 추가하면 Riccati 해와 감쇠가
+  달라질 수 있다. 이 예에서는 가중치가 사는 것이 속도이지 모양이 아니다. "LQR은 극점을 손이 아니라 최적화가 고른다"는
   일반론이 구체화된 것이다 — [[04-robotics/control-theory-ce397|제어 이론 §7]]은 손으로
   $\zeta = 0.7$에 놓았고, LQR은 시키지 않아도 사실상 같은 자리에 도착했다.
 - **속도는 네제곱근이고, 이건 가혹하다.** $\omega_n = \rho^{1/4}$이므로 대역폭을 두 배로
@@ -324,7 +322,7 @@ $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$
 
 > [!tip]- 정답 · Answers
 > 1. 불안정 모드를 어떤 피드백도 못 잡으므로 안정화 해 $P$가 존재하지 않는다 — 문제 자체가 불량이다.
-> 2. 불변 — 비용 전체의 스케일만 바뀌고 최소화 지점(이득)은 같다. 비율 $Q/R$만이 $K$를 정한다.
+> 2. 불변 — $Q$와 $R$ 전체에 같은 양의 스칼라를 곱하면 비용 스케일만 바뀐다. 행렬형 $Q,R$ 내부의 상대 가중치는 여전히 $K$를 정한다.
 > 3. 최적성은 공칭 모델에 대한 것이고, LQG는 모델 오차에 대한 보장된 여유가 없음이 증명되어 있다(Doyle 1978).
 > 4. 지평 끝 이후의 "남은 최적 비용"을 LQR의 $x^\top P x$가 정확히(비제약 영역에서) 요약해 주므로, 짧은 지평으로도 안정성 논증이 성립한다 — Mayne 2000의 종단 재료.
 

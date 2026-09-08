@@ -3,6 +3,12 @@ title: 9. Study Log
 tags: [log]
 ---
 
+> [!warning] Historical record · 역사 기록
+> This log records what was true, planned, or believed on each dated entry. It is not the
+> current backlog or the authoritative source for time-sensitive claims; follow the linked
+> content pages for the current state. · 각 항목은 해당 날짜에 확인·계획·판단한 내용이다.
+> 현재 백로그나 변동성 있는 사실의 정본이 아니므로 최신 상태는 연결된 본문에서 확인한다.
+
 무엇을 읽고 공부했는지 기록하는 일지. 일주일에 한 번이라도 좋으니 꾸준히 남긴다.
 나중에 다시 보면 "그때 내가 뭘 몰랐는지"가 보여서 복습 지점을 찾기 좋다.
 

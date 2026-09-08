@@ -135,13 +135,13 @@ themselves (prose only — code blocks and equations excluded):
 
 | Track | Pages | One read-through |
 |---|---:|---:|
-| Foundations 0–10 | 13 | ~1.8 h |
-| Robotics 1–23 (incl. the 11 MR chapters) | 34 | ~3.0 h |
-| Construction robotics | 10 | ~0.8 h |
-| Paper notes (115) | 115 | ~3.8 h |
-| Research practice | 8 | ~0.8 h |
-| Research program | 1 | ~0.1 h |
-| **Total** | **181** | **~10.3 h** |
+| Foundations 0–10 | 13 | about 1.8 h |
+| Robotics 1–23 (incl. the 11 MR chapters) | 34 | about 3.0 h |
+| Construction robotics | 10 | about 0.8 h |
+| Paper notes (115) | 115 | about 3.8 h |
+| Research practice | 8 | about 0.8 h |
+| Research program | 1 | about 0.1 h |
+| **Total** | **181** | **about 10.3 h** |
 
 Read that number honestly: it is *one pass of the prose in one language*, and it is not the
 study time. Working the self-checks and re-deriving the worked examples typically costs
@@ -164,8 +164,9 @@ tell whether you are on a two-month path or a two-year one, and adjust the
 ### Gate check — are the foundations done?
 
 The per-page self-checks test one page each. This one is cumulative: it is the test for
-whether you can start the paper track. Twelve questions, each combining at least two pages,
-each answerable in a few lines. Do them in writing, closed-book. **Nine or more means go.**
+whether you can start the paper track. Questions 1–14 form the common gate; question 15 is
+an optional manipulation check. Each is answerable in a few lines. Do them in writing,
+closed-book. **Eleven or more of the fourteen common questions means go.**
 
 1. A layer computes $h = \text{ReLU}(Wx + b)$ with $W$ of shape $256\times128$. Give the
    shape of $x$, of $h$, and the number of parameters in this layer. Then say why removing
@@ -204,7 +205,7 @@ each answerable in a few lines. Do them in writing, closed-book. **Nine or more 
     many gradient-descent steps at $\alpha = 0.05$ match it? *(4. §3)*
 14. Apply $R_z(90°)$ then $R_x(90°)$ to the point $(1,0,0)$. Where does it end up, and where
     does the opposite order put it? *(8. §1)*
-15. For the 2R arm at $\theta = (0°, 90°)$ the operational-space inertia is
+15. **Optional — manipulation path.** For the 2R arm at $\theta = (0°, 90°)$ the operational-space inertia is
     $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$. In which direction does the tip feel
     heavier, and by how much? *(10. §6)*
 
@@ -375,8 +376,8 @@ graph LR
 
 | 트랙 | 페이지 | 1회 정독 |
 |---|---:|---:|
-| 기초 0~10 | 13 | 약 1.8시간 |
-| 로보틱스 1~23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
+| 기초 0–10 | 13 | 약 1.8시간 |
+| 로보틱스 1–23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
 | 논문 노트 (115편) | 115 | 약 3.8시간 |
 | Research Practice | 8 | 약 0.8시간 |
@@ -384,12 +385,12 @@ graph LR
 | **합계** | **181** | **약 10.3시간** |
 
 이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
-자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3~5배** — 위키 전체로
-30~50시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50~70시간이
+자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3–5배** — 위키 전체로
+30–50시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50–70시간이
 더 붙는다. (목록에 ★가 하나 더 있지만 그것은 *Modern Robotics* 교재이고, 몇 시간짜리 항목이
 아니라 별도의 약속이다.) ◐ 74편과 ○ 40편은 그럴 필요가 없도록 노트가 존재한다.
 
-이 중 두 트랙은 선택이고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12~23번은
+이 중 두 트랙은 선택이고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12–23번은
 전문화 층 — 매니퓰레이션·내비게이션·사람 인지 — 이고, 공통 커리큘럼은 11번에서 끝난다.
 
 통하는 페이스: **기초 2주**(평일 하루 한 페이지, 자가점검은 그날 안에), 그다음 로보틱스
@@ -400,8 +401,8 @@ graph LR
 ### 통과 점검 — 기초는 끝났는가
 
 페이지별 자가점검은 한 페이지씩 검사한다. 이것은 누적 시험이다: 논문 트랙으로 넘어가도
-되는지를 판정한다. 열두 문항, 각각 최소 두 페이지를 엮고, 각각 몇 줄이면 답할 수 있다.
-책을 덮고 글로 써서 풀어라. **9개 이상이면 넘어가도 된다.**
+되는지를 판정한다. 1~14번은 공통 통과 점검이고, 15번은 매니퓰레이션 선택 점검이다. 각각
+몇 줄이면 답할 수 있다. 책을 덮고 글로 써서 풀어라. **공통 14문항 중 11개 이상이면 넘어가도 된다.**
 
 1. 어떤 층이 $h = \text{ReLU}(Wx + b)$를 계산하고 $W$의 모양이 $256\times128$이다. $x$와 $h$의
    모양, 그리고 이 층의 파라미터 수를 말하라. 그다음 ReLU를 없애면 10층 스택이 왜 1층보다
@@ -433,7 +434,7 @@ graph LR
     경사 하강은 대략 몇 스텝이 필요한가? *(4. §3)*
 14. 점 $(1,0,0)$에 $R_z(90°)$를 적용한 뒤 $R_x(90°)$를 적용하면 어디에 도착하는가? 순서를
     바꾸면 어디인가? *(8. §1)*
-15. 2R 팔의 $\theta = (0°, 90°)$에서 작업공간 관성은
+15. **선택 — 매니퓰레이션 경로.** 2R 팔의 $\theta = (0°, 90°)$에서 작업공간 관성은
     $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$다. 말단은 어느 방향으로 더 무겁게
     느껴지며 몇 배인가? *(10. §6)*
 

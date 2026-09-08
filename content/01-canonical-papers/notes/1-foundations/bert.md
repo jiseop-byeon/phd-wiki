@@ -46,7 +46,7 @@ After the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Tr
 
 ### Limitations & critique
 
-- Encoder-only: cannot generate text — the paradigm that scaled (GPT) eventually dominated for that reason.
+- Encoder-only: not natively a left-to-right autoregressive generator — one reason decoder-only GPT-style models became dominant for open-ended generation.
 - MLM wastes computation (predicts only 15% of positions per pass); NSP proved nearly useless (RoBERTa dropped it and improved).
 - Fixed 512-token context; fine-tuning per task means one specialized model per task, unlike the in-context learning of [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]].
 
@@ -84,7 +84,7 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 
 ### 한계와 비판
 
-- 인코더 전용이라 텍스트 생성 불가 — 결국 생성이 되는 GPT 계열이 스케일 경쟁에서 승리한 이유.
+- 인코더 전용이라 좌→우 자유 생성에 직접 맞지 않는다 — 개방형 생성에서 decoder-only GPT 계열이 우세해진 이유 중 하나다.
 - MLM은 연산 낭비가 있다(한 번에 15% 위치만 예측); NSP는 거의 무용지물로 판명(RoBERTa는 빼고 더 좋아짐).
 - 512 토큰 고정 문맥; 과제마다 파인튜닝 = 과제마다 전용 모델 — [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]의 in-context learning과 대비된다.
 
@@ -102,4 +102,4 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 - [ ] Explain why next-word prediction cannot be bidirectional, and how MLM solves that · 다음 단어 예측으로는 양방향이 불가능한 이유와 MLM이 그것을 푸는 방식을 말할 수 있다
 - [ ] Say what the 80/10/10 trick within 15% masking mitigates · 15% 마스킹의 80/10/10 트릭이 무엇을 완화하는지 말할 수 있다
 - [ ] Explain how the pretrain–fine-tune paradigm changed applied NLP · 사전학습-파인튜닝 패러다임이 응용 NLP를 어떻게 바꿨는지 말할 수 있다
-- [ ] State the limit of an encoder-only architecture (it cannot generate) and its historical consequence · 인코더 전용 구조의 한계(생성 불가)와 그 역사적 결과를 말할 수 있다
+- [ ] Explain why a bidirectional encoder is not natively a left-to-right generator, without calling string generation impossible · 양방향 인코더가 좌→우 생성에 직접 맞지 않는 이유를 설명하되 문자열 생성 자체가 불가능하다고 말하지 않는다

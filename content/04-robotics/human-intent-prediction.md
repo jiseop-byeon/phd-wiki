@@ -56,16 +56,16 @@ This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen 
 
 Let $T$ be the event time. Performance must be reported as a function of time-to-event $\Delta = T - t$:
 
-$$\text{AUC}(\Delta), \qquad \text{Acc}(\Delta)$$
+$$\text{AUC}(\Delta), \qquad \text{Recall}_{\mathrm{FPR}=\alpha}(\Delta)$$
 
-Reporting a single number at one $\Delta$, or worse averaged over all $\Delta$, hides the only property that matters for deployment: **the largest $\Delta$ at which the predictor still clears the decision threshold.** Call it the usable horizon $\Delta^\*$:
+Reporting one number at one $\Delta$, or averaging over all $\Delta$, hides the deployment tradeoff. AUC summarizes ranking across thresholds; an action needs a chosen operating point, calibration, and costs. For a deployed operating metric, define the usable horizon $\Delta^\*$:
 
-$$\Delta^{*} = \max\{\Delta : \text{performance}(\Delta) \geq \text{threshold}\}$$
+$$\Delta^{*} = \max\{\Delta : \text{operating-metric}(\Delta) \geq \text{requirement}\}$$
 
 A system whose $\Delta^*$ is shorter than the actuator's stopping time is a detector wearing a predictor's name.
 
 > [!example] Worked example — required lead time · 계산 예제 — 필요한 선행 시간
-> A vehicle at 30 km/h ($8.3\,\mathrm{m/s}$) needs 1.2 s to brake plus 0.3 s of pipeline latency: 1.5 s of required lead. Model A reaches AUC 0.85 only at $\Delta = 0.8\,\mathrm{s}$; model B holds AUC 0.78 out to $\Delta = 2.0\,\mathrm{s}$. **Model A cannot be used at all** at this speed, despite the better headline number. The correct comparison is $\Delta^*$ against the required lead, not peak performance.
+> A vehicle at 30 km/h ($8.3\,\mathrm{m/s}$) needs 1.2 s to brake plus 0.3 s of pipeline latency: 1.5 s of required lead. At the same allowed false-positive rate, suppose model A meets the required recall only to 0.8 s while model B meets it to 2.0 s. A does not meet **this braking requirement at this operating point**, despite a better peak AUC. Compare operating-point $\Delta^*$ with required lead time; AUC alone cannot make the braking decision.
 
 <svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="performance against time before the event, with a decision threshold and the lead time the platform requires">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
@@ -116,7 +116,7 @@ Among all cases where the model said 0.7, did the event occur 70% of the time? D
 | Temperature scaling | recalibrated probabilities from a held-out set | one parameter |
 | **Conformal prediction** | a set/interval with a **distribution-free coverage guarantee** under exchangeability | a held-out calibration set |
 
-Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability plus a quantile — and the output is exactly what a safety decision needs: not "probably crossing" but "crossing is in the 90%-coverage prediction set." This is also the machinery behind ask-for-help policies in [[04-robotics/hri-safety|11. HRI & Safety]]: a robot that knows its prediction set is ambiguous is a robot that knows when to defer to a human.
+Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability plus a quantile — and its set-valued output can support a defer policy. The usual guarantee is **marginal coverage over exchangeable cases**, not a 90% probability for this individual scene or every subgroup. A set containing both `crossing` and `not crossing` still needs an explicit action rule, such as slow down or ask for help. See [[04-robotics/hri-safety|11. HRI & Safety]].
 
 **A calibrated 0.7 supports a decision rule. An uncalibrated 0.9 does not.**
 
@@ -212,13 +212,13 @@ You should be able to:
 ### Self-check
 
 1. A model reports 96% accuracy on crossing prediction. Why is this uninformative, and what should be reported instead?
-2. A robot needs 0.9 s to stop. Model A: AUC 0.9 at $\Delta=0.5$ s, 0.6 at $\Delta=1.0$ s. Model B: AUC 0.8 flat to $\Delta=1.5$ s. Which is deployable?
+2. A robot needs 0.9 s to stop. At a fixed allowed FPR, model A meets the required recall only to $\Delta=0.5$ s; model B meets it to $\Delta=1.5$ s. Which meets this operating requirement, and what does AUC alone fail to decide?
 3. Why can a model win on minADE$_{20}$ and still be unusable by a planner?
 4. What single ablation tests whether an intent model is actually reading the human?
 5. Why is a worksite intent model's training distribution non-stationary in a way a road dataset's is not?
 
 > [!tip]- Answers
-> 1. Base rate — a constant "no" scores similarly. Report AUC and precision–recall at the deployed operating point, as a function of time-to-event. 2. B. A's performance collapses before the 0.9 s the actuator needs; B clears threshold out to 1.5 s. 3. minADE rewards one lucky sample among twenty; the planner needs a probability distribution over futures, which the metric does not require the model to provide. 4. Mask or remove the pedestrian and re-evaluate; near-equal performance means the model learned scene priors. 5. The worker adapts to the deployed robot, so deployment changes the data-generating process — a feedback loop absent from passive road recordings.
+> 1. Base rate — a constant "no" scores similarly. Report AUC for ranking and precision–recall plus the chosen deployed operating point as functions of time-to-event. 2. B meets this stated requirement; A does not provide enough lead at that operating point. AUC alone does not choose the threshold, encode braking cost, or establish calibration. 3. minADE rewards one lucky sample among twenty; the planner needs a probability distribution over futures, which the metric does not require the model to provide. 4. Mask or remove the pedestrian and re-evaluate; near-equal performance means the model learned scene priors. 5. The worker adapts to the deployed robot, so deployment changes the data-generating process — a feedback loop absent from passive road recordings.
 
 ### Sources
 
@@ -313,16 +313,16 @@ You should be able to:
 
 사건 시각을 $T$라 하면, 성능은 time-to-event $\Delta = T - t$의 함수로 보고돼야 한다:
 
-$$\text{AUC}(\Delta), \qquad \text{Acc}(\Delta)$$
+$$\text{AUC}(\Delta), \qquad \text{Recall}_{\mathrm{FPR}=\alpha}(\Delta)$$
 
-한 $\Delta$에서의 숫자 하나, 더 나쁘게는 모든 $\Delta$에 대한 평균은 배포에 유일하게 중요한 성질을 가린다: **예측기가 결정 임계값을 여전히 넘기는 가장 큰 $\Delta$.** 이를 가용 지평 $\Delta^*$라 하자:
+한 $\Delta$에서의 숫자 하나나 모든 $\Delta$의 평균은 배포 절충을 가린다. AUC는 여러 임계값에서의 순위 판별력을 요약하지만 실제 행동에는 정해진 동작점, 보정, 비용이 필요하다. 배포 동작점의 지표에 대해 가용 지평 $\Delta^*$를 정의하자:
 
-$$\Delta^{*} = \max\{\Delta : \text{성능}(\Delta) \geq \text{임계값}\}$$
+$$\Delta^{*} = \max\{\Delta : \text{동작점 지표}(\Delta) \geq \text{요구조건}\}$$
 
 $\Delta^*$가 구동기의 정지 시간보다 짧은 시스템은 **예측기라는 이름을 쓴 검출기다.**
 
 > [!example] 계산 예제 — 필요한 선행 시간 · Worked example
-> 30 km/h($8.3\,\mathrm{m/s}$) 차량이 제동에 1.2초, 파이프라인 지연 0.3초 → 필요한 선행 1.5초. 모델 A는 AUC 0.85를 $\Delta = 0.8\,\mathrm{s}$에서만 달성하고, 모델 B는 AUC 0.78을 $\Delta = 2.0\,\mathrm{s}$까지 유지한다. **이 속도에서 A는 아예 쓸 수 없다** — 헤드라인 숫자가 더 좋은데도. 올바른 비교는 최고 성능이 아니라 **$\Delta^*$ 대 필요 선행 시간**이다.
+> 30 km/h($8.3\,\mathrm{m/s}$) 차량이 제동에 1.2초, 파이프라인 지연 0.3초 → 필요한 선행 1.5초. 같은 허용 오경보율에서 모델 A가 요구 recall을 0.8초까지만, 모델 B가 2.0초까지 만족한다고 하자. A는 peak AUC가 더 좋아도 **이 동작점의 제동 요구조건**을 만족하지 못한다. 동작점의 $\Delta^*$와 필요 선행 시간을 비교해야 하며 AUC만으로 제동 결정을 내릴 수 없다.
 
 <svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="사건 전 남은 시간에 대한 성능, 결정 임계값과 플랫폼이 요구하는 선행 시간과 함께">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
@@ -373,7 +373,7 @@ $$\mathbb{P}\big(y = 1 \mid \hat{p} = p\big) \;\overset{?}{=}\; p$$
 | Temperature scaling | held-out으로 재보정된 확률 | 파라미터 1개 |
 | **Conformal prediction** | 교환가능성 하에 **분포 무관 커버리지 보장**이 붙은 집합/구간 | held-out 보정 집합 |
 
-Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환가능성 + 분위수) 출력이 정확히 안전 결정이 필요로 하는 형태이기 때문이다 — "아마 건널 것"이 아니라 "90% 커버리지 예측 집합 안에 횡단이 있다". 이건 [[04-robotics/hri-safety|11. HRI & Safety]]의 ask-for-help 정책을 떠받치는 기계장치이기도 하다: **자기 예측 집합이 모호하다는 걸 아는 로봇이 사람에게 넘길 때를 아는 로봇이다.**
+Conformal prediction의 수학은 교환가능성 + 분위수이며, 집합 출력은 defer 정책에 유용하다. 다만 보통의 보장은 교환가능한 사례 전체에 대한 **주변적 coverage**이지 이 한 장면이나 모든 하위집단의 90% 확률이 아니다. `횡단`과 `비횡단`이 모두 든 집합에는 감속이나 사람에게 질문하기 같은 별도 행동 규칙이 필요하다. [[04-robotics/hri-safety|11. HRI & Safety]]로 이어진다.
 
 **보정된 0.7은 결정 규칙을 지지한다. 보정 안 된 0.9는 그러지 못한다.**
 
@@ -467,13 +467,13 @@ Conformal prediction을 강조하는 이유는 수학이 초등적이고(교환�
 ### 스스로 점검
 
 1. 어떤 모델이 횡단 예측에서 96% 정확도를 보고했다. 왜 정보가 없고, 대신 무엇을 보고해야 하나?
-2. 로봇이 정지에 0.9초 필요하다. A: $\Delta=0.5$s에서 AUC 0.9, $\Delta=1.0$s에서 0.6. B: $\Delta=1.5$s까지 AUC 0.8 평탄. 어느 쪽이 배포 가능한가?
+2. 로봇이 정지에 0.9초 필요하다. 같은 허용 FPR에서 A는 요구 recall을 $\Delta=0.5$s까지만, B는 $\Delta=1.5$s까지 만족한다. 어느 쪽이 이 운용 요구를 만족하며, AUC만으로는 무엇을 결정하지 못하는가?
 3. minADE$_{20}$에서 이기고도 플래너가 못 쓰는 이유는?
 4. 의도 모델이 실제로 사람을 읽는지 검증하는 단일 ablation은?
 5. 현장 의도 모델의 학습 분포가 도로 데이터셋과 달리 비정상(non-stationary)인 이유는?
 
 > [!tip]- 정답
-> 1. 기저율 때문 — 무조건 "아니오"가 비슷한 점수를 받는다. 배포 동작점에서의 AUC와 precision–recall을 time-to-event의 함수로 보고해야 한다. 2. B. A는 구동기가 필요로 하는 0.9초 전에 성능이 무너지고, B는 1.5초까지 임계값을 넘긴다. 3. minADE는 스무 개 중 운 좋은 하나를 보상한다; 플래너는 미래에 대한 확률분포가 필요한데 지표가 그것을 요구하지 않는다. 4. 보행자를 마스킹·제거하고 재평가한다; 성능이 비슷하면 장면 사전확률을 학습한 것이다. 5. 작업자가 배포된 로봇에 적응하므로 배포 자체가 데이터 생성 과정을 바꾼다 — 수동적 도로 녹화에는 없는 피드백 루프다.
+> 1. 기저율 때문 — 무조건 "아니오"가 비슷한 점수를 받는다. 순위 판별용 AUC와 precision–recall, 선택한 배포 동작점을 time-to-event의 함수로 보고해야 한다. 2. B가 이 요구를 만족하고 A는 해당 동작점에서 선행 시간이 부족하다. AUC만으로는 임계값·제동 비용·보정을 결정하지 못한다. 3. minADE는 스무 개 중 운 좋은 하나를 보상한다; 플래너는 미래에 대한 확률분포가 필요한데 지표가 그것을 요구하지 않는다. 4. 보행자를 마스킹·제거하고 재평가한다; 성능이 비슷하면 장면 사전확률을 학습한 것이다. 5. 작업자가 배포된 로봇에 적응하므로 배포 자체가 데이터 생성 과정을 바꾼다 — 수동적 도로 녹화에는 없는 피드백 루프다.
 
 ### 출처
 

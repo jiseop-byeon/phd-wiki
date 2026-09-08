@@ -100,6 +100,7 @@ models.
 > toilet"* succeeded 100% of the time while *"Close the toilet"* succeeded 0%. Cite that
 > alongside any laundry-folding claim from this line — the first-party results and the only
 > independent quantified evaluation disagree by a wide margin, and the gap is the honest
+> picture of the current capability level.
 
 ### Connections
 
