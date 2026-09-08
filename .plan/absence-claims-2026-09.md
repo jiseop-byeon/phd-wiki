@@ -62,3 +62,11 @@
 전체: 35 → 20 (100개 중). 남은 20건 분포: state-estimation-slam·rl-basics·neural-network-basics·lqr-lqg·information-theory·human-intent-prediction·force-compliance-control 각 2, teleoperation-demonstration·se3-geometry·planning-decision-making·human-pose-gaze·egocentric-perception·contact-force-tactile 각 1.
 
 작업 요령(재발 방지): 앵커는 반드시 repr로 확인한 원문 그대로 쓴다(줄바꿈 위치). 같은 LaTeX가 양쪽 반에 있으므로 파일을 `## 한국어`에서 갈라 각 반 안에서만 치환한다. 치환 후 검출기 로직을 해당 페이지에 재현해 0을 확인한 뒤 커밋한다.
+
+| 3 | 13페이지 (state-estimation-slam, rl-basics, neural-network-basics, lqr-lqg, information-theory, human-intent-prediction, force-compliance-control 각 2; teleoperation-demonstration, se3-geometry, planning-decision-making, human-pose-gaze, egocentric-perception, contact-force-tactile 각 1) | 20 → 0 | 25f11ad + 003ff5c |
+
+**최종: UNEXPLAINED 0 / 100.** (35 → 20 → 0, 커밋 4개)
+
+3회차에서 생긴 결함 둘과 원인:
+- 25f11ad는 검출기 재현이 3건 잔여로 실패했는데도 커밋·푸시됐다. 원인은 이 도구의 셸이 zsh 5.9이고 `set -e`가 무효라는 것(`set -o`가 errexit off 보고; `bash -c` 안에서는 정상 중단). 이후 단계마다 `&&`/`|| exit 1`로 명시 게이트. 003ff5c에서 3건 해결.
+- 검출기 정규식의 단어 경계 함정: `that is,` 뒤에 공백이 오면 `\b`가 성립하지 않아 사실상 죽은 패턴. `comes from`·`follows from`은 단수형만. 어간+`\b` 때문에 활용형(Rearranging, Substituting)도 불일치. 대응: 정규식을 맞추려 하지 말고 이유를 직접 말하는 문장(because / so that / solve for / read it as)을 쓴다 — 그게 어차피 더 잘 읽힌다.
