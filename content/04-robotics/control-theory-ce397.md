@@ -63,6 +63,8 @@ Any linear system is written
 
 $$\dot x = Ax + Bu, \qquad y = Cx + Du$$
 
+No robot is linear, so ask where this shape comes from. It is the first-order Taylor expansion of the true dynamics $\dot x = f(x,u)$ about the operating point you intend to hold: $A$ and $B$ are the Jacobians $\partial f/\partial x$ and $\partial f/\partial u$ evaluated there, which is why a paper's $A$ matrix changes when its operating point does. $D$ is usually zero because a sensor rarely sees the command directly.
+
 - $x$ = **state**: the minimum set of numbers that, with future inputs, determines the future.
 - $u$ = **input** (what you command), $y$ = **output** (what you measure), $A$ = internal
   dynamics, $B$ = how input enters, $C$ = what the sensor sees.
@@ -73,7 +75,7 @@ $\dot x_1 = x_2$ (definition) and $\dot x_2 = (u - bx_2 - kx_1)/m$ (the physics)
 
 $$A = \begin{pmatrix} 0 & 1 \\ -k/m & -b/m\end{pmatrix}, \quad B = \begin{pmatrix}0 \\ 1/m\end{pmatrix}, \quad C = \begin{pmatrix}1 & 0\end{pmatrix}$$
 
-with $m=1, b=1, k=4$: $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$. That trick —
+Read the two rows of $A$ as the two sentences they came from: the top row says that velocity is the derivative of position, the bottom row is Newton's law solved for acceleration. With $m=1, b=1, k=4$: $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$. That trick —
 *n*-th order scalar ODE → *n*-dimensional first-order system — is how every robot joint,
 suspension, and hydraulic cylinder enters a paper's equations. A robot arm is the same
 structure with $M(\theta)$ in place of $m$
@@ -195,8 +197,7 @@ stability of the system; all four of $S$, $T$, $PS$, $CS$ have to be stable, a c
 called **internal stability**.
 
 **Delay is the version of this you will actually hit.** A pure delay $\tau$ contributes
-phase $-\omega\tau$ and no gain change, so it spends phase margin and nothing else. The
-largest delay a loop tolerates is therefore
+phase $-\omega\tau$ and no gain change, so it spends phase margin and nothing else. At the gain-crossover frequency the margin is used up exactly when $\omega_{gc}\tau = \varphi_m$; solve for $\tau$ and the largest delay a loop tolerates falls out:
 
 $$\tau_{\max} = \varphi_m / \omega_{gc}$$
 
@@ -218,7 +219,7 @@ $sL(s) \to 0$,
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-summed over right-half-plane poles of $L$. If the plant is open-loop stable the right side
+summed over right-half-plane poles of $L$. Read it as a conservation law: the right-hand side is fixed by the plant before any controller is designed, and the controller only decides *where* on the frequency axis that fixed area sits. If the plant is open-loop stable the right side
 is **zero**: on a linear frequency axis, the area where $\log|S|$ is negative (disturbances
 attenuated) must be exactly paid for by area where it is positive (disturbances amplified).
 This is the **waterbed effect** — push sensitivity down in the band you care about and it
@@ -233,7 +234,7 @@ right-half-plane pole at $p = 6$ rad/s, actuators good to $\omega_a = 40$ rad/s,
 desired loop bandwidth $\omega_1 = 3$ rad/s. Ask for the smallest sensitivity peak
 consistent with Bode's integral for a sensitivity shaped as $|S|$ rising linearly to $M_s$
 at $\omega_1$, flat at $M_s$ up to $\omega_a$, and 1 above it. The integral gives
-$-\omega_1 + \omega_a \log M_s = \pi p$, so
+$-\omega_1 + \omega_a \log M_s = \pi p$. Solve for $M_s$ and substitute $p = 6$, $\omega_1 = 3$, $\omega_a = 40$, so that every number on the next line is traceable — the $18.85$ is $\pi \times 6$:
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
@@ -312,6 +313,8 @@ chosen by an optimization instead of by hand.
 **PID**, the controller that actually runs on most hardware:
 
 $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
+
+Read it as three corrections drawn from three views of the same error — its present value, its accumulated history, and its trend. The three exist because each fixes a failure of the one before it: proportional action alone leaves a steady offset against a constant load, the integral removes that offset, and the derivative anticipates where the error is heading so the loop can be made fast without ringing.
 
 - **P** pushes proportional to error (raises $\omega_n$ — faster, but too much causes ringing).
 - **D** pushes against the error's *rate* (adds damping, raises $\zeta$) — and amplifies
@@ -470,6 +473,8 @@ flowchart LR
 
 $$\dot x = Ax + Bu, \qquad y = Cx + Du$$
 
+선형인 로봇은 없으니 이 모양이 어디서 오는지 물어야 한다. 참 동역학 $\dot x = f(x,u)$를 유지하려는 작동점 근처에서 1차 테일러 전개한 것이다. $A$와 $B$는 그 점에서 계산한 야코비안 $\partial f/\partial x$, $\partial f/\partial u$이고, 그래서 논문의 작동점이 바뀌면 $A$ 행렬도 바뀐다. $D$는 보통 0인데, 센서가 명령을 직접 보는 일이 드물기 때문이다.
+
 - $x$ = **상태**: 미래 입력과 함께 미래를 결정하는 최소 숫자 집합.
 - $u$ = **입력**(명령하는 것), $y$ = **출력**(측정하는 것), $A$ = 내부 동역학,
   $B$ = 입력이 들어오는 방식, $C$ = 센서가 보는 것.
@@ -480,7 +485,7 @@ $\dot x_2 = (u - bx_2 - kx_1)/m$(물리)이므로
 
 $$A = \begin{pmatrix} 0 & 1 \\ -k/m & -b/m\end{pmatrix}, \quad B = \begin{pmatrix}0 \\ 1/m\end{pmatrix}, \quad C = \begin{pmatrix}1 & 0\end{pmatrix}$$
 
-$m=1, b=1, k=4$이면 $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$. *n*차 스칼라 미분방정식
+$A$의 두 행을 그것이 나온 두 문장으로 읽어라. 윗행은 속도가 위치의 도함수라는 말이고, 아랫행은 뉴턴 법칙을 가속도에 대해 푼 것이다. $m=1, b=1, k=4$이면 $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$. *n*차 스칼라 미분방정식
 → *n*차원 1차 시스템이라는 이 요령이, 모든 로봇 관절·서스펜션·유압 실린더가 논문의 수식에
 들어오는 방식이다. 로봇 팔은 $m$ 자리에 $M(\theta)$가 오는 같은 구조다
 ([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]).
@@ -590,7 +595,7 @@ $S$(감도)는 외란을 출력 오차로 보내고, $T$(상보 감도)는 기�
 그 조건을 **내부 안정성**이라 부른다.
 
 **지연이 당신이 실제로 부딪힐 판본이다.** 순수 지연 $\tau$는 위상 $-\omega\tau$를 더할 뿐
-이득은 바꾸지 않으니, 위상 여유만 깎아 쓴다. 따라서 루프가 견디는 최대 지연은
+이득은 바꾸지 않으니, 위상 여유만 깎아 쓴다. 이득 교차 주파수에서 여유가 정확히 바닥나는 조건은 $\omega_{gc}\tau = \varphi_m$이고, 이것을 $\tau$에 대해 풀면 루프가 견디는 최대 지연이 나온다:
 
 $$\tau_{\max} = \varphi_m / \omega_{gc}$$
 
@@ -610,7 +615,7 @@ $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 7
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-이고, 합은 $L$의 우반평면 극점에 대해 취한다. 플랜트가 개루프 안정이면 우변은 **0**이다.
+이고, 합은 $L$의 우반평면 극점에 대해 취한다. 보존 법칙으로 읽어라. 우변은 제어기를 설계하기도 전에 플랜트가 정해 놓은 값이고, 제어기가 정하는 것은 그 고정된 넓이가 주파수 축의 *어디에* 놓이는가뿐이다. 플랜트가 개루프 안정이면 우변은 **0**이다.
 선형 주파수 축 위에서 $\log|S|$가 음수인 넓이(외란이 감쇠되는 구간)는 양수인
 넓이(외란이 증폭되는 구간)로 정확히 값을 치러야 한다. 이것이 **워터베드 효과**다 — 관심
 있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트는 우변을 양수로
@@ -622,7 +627,7 @@ $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는 **느�
 갖고, 구동기는 $\omega_a = 40$ rad/s까지 쓸 만하며, 원하는 루프 대역폭은 $\omega_1 = 3$
 rad/s다. $|S|$가 $\omega_1$까지 선형으로 $M_s$까지 오르고, $\omega_a$까지 $M_s$로 평평하며,
 그 위로는 1인 모양이라 두고, 보드 적분과 양립하는 가장 작은 감도 최댓값을 구하자. 적분은
-$-\omega_1 + \omega_a \log M_s = \pi p$를 주므로
+$-\omega_1 + \omega_a \log M_s = \pi p$를 준다. $M_s$에 대해 풀고 $p = 6$, $\omega_1 = 3$, $\omega_a = 40$을 대입하라. 다음 줄의 숫자가 전부 추적되도록 — $18.85$는 $\pi \times 6$이다:
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
@@ -699,6 +704,8 @@ $k_2 = 4.6$, $k_1 = 12$. 새 정착 시간 $\approx 4/(0.7\cdot4) = 1.4$초, 오
 **PID**, 실제 하드웨어에서 대부분 돌아가는 제어기:
 
 $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
+
+같은 오차를 세 방향에서 본 세 가지 보정으로 읽어라 — 지금 값, 쌓인 이력, 그리고 추세다. 항이 셋인 이유는 각각이 앞 항의 실패를 고치기 때문이다. 비례 항만으로는 일정한 부하에 대해 정상 상태 오프셋이 남고, 적분 항이 그 오프셋을 없애며, 미분 항은 오차가 어디로 가는지를 앞질러 읽어 루프를 울리지 않고 빠르게 만든다.
 
 - **P**는 오차에 비례해 민다($\omega_n$을 올린다 — 빨라지지만 과하면 울린다).
 - **D**는 오차의 *변화율*에 맞선다(감쇠를 더해 $\zeta$를 올린다) — 그리고 센서 잡음을
