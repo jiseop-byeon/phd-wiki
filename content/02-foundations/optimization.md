@@ -140,7 +140,7 @@ Gauss–Newton asks for the inverse of a singular matrix and halts.
 
 **Levenberg–Marquardt: distrust the model by a tunable amount.** A poor local model calls
 for trust-region-style accept/reject and shorter steps; a rank-deficient Jacobian instead
-signals an unobserved or degenerate direction. Penalize distance from the current iterate — because the affine model is only trustworthy near $x_k$, the second term charges for leaving that neighbourhood, and $\lambda_k$ sets the price:
+signals an unobserved or degenerate direction. Penalize distance from the current iterate — the divergence example above is the reason: the second term charges for leaving the neighbourhood where the affine model held, and $\lambda_k$ sets the price:
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
@@ -442,7 +442,7 @@ Gauss–Newton은 특이행렬의 역을 요구하고 멈춰 선다.
 
 **Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 나쁜 국소모델에는 trust-region식
 수락·거부와 짧은 스텝이 필요하지만, 랭크 결손 야코비안은 관측되지 않거나 퇴화한 방향을 뜻한다.
-현재 반복점에서 멀어지는 것에 벌점을 매긴다. 아핀 모델은 $x_k$ 근처에서만 믿을 만하기 때문이고, 둘째 항이 그 이웃을 벗어나는 데 값을 물리며 $\lambda_k$가 그 값을 정한다.
+현재 반복점에서 멀어지는 것에 벌점을 매긴다. 위의 발산 예제가 그 이유다. 둘째 항이 아핀 모델이 유효하던 이웃을 벗어나는 데 값을 물리고, $\lambda_k$가 그 값을 정한다.
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
