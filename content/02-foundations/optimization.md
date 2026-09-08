@@ -140,11 +140,11 @@ Gauss–Newton asks for the inverse of a singular matrix and halts.
 
 **Levenberg–Marquardt: distrust the model by a tunable amount.** A poor local model calls
 for trust-region-style accept/reject and shorter steps; a rank-deficient Jacobian instead
-signals an unobserved or degenerate direction. Penalize distance from the current iterate:
+signals an unobserved or degenerate direction. Penalize distance from the current iterate — because the affine model is only trustworthy near $x_k$, the second term charges for leaving that neighbourhood, and $\lambda_k$ sets the price:
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
-which is a regularized least squares problem with the closed form
+which is a regularized least squares problem. Its closed form follows from setting the gradient of that objective to zero — the Gauss–Newton normal equations with $\lambda_k I$ added to $J^\top J$:
 
 $$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
 
@@ -288,7 +288,7 @@ $x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-Substituting the dynamics (condensing) leaves a convex QP in the $u$'s. Small, structured
+Read it as the LQR cost with a finite horizon and hard constraints reattached. The dynamics enter as equality constraints; substitute them out (condensing) and what remains is a convex QP in the $u$'s alone. Small, structured
 QPs can run at millisecond scale with an appropriate solver and implementation; report the
 deadline and worst-case solve time. MPC re-solves each control step and applies the first input.
 
@@ -442,11 +442,11 @@ Gauss–Newton은 특이행렬의 역을 요구하고 멈춰 선다.
 
 **Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 나쁜 국소모델에는 trust-region식
 수락·거부와 짧은 스텝이 필요하지만, 랭크 결손 야코비안은 관측되지 않거나 퇴화한 방향을 뜻한다.
-현재 반복점에서 멀어지는 것에 벌점을 매긴다.
+현재 반복점에서 멀어지는 것에 벌점을 매긴다. 아핀 모델은 $x_k$ 근처에서만 믿을 만하기 때문이고, 둘째 항이 그 이웃을 벗어나는 데 값을 물리며 $\lambda_k$가 그 값을 정한다.
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
-이것은 정규화된 최소자승 문제이고 닫힌 형태를 갖는다.
+이것은 정규화된 최소자승 문제다. 닫힌 형태는 그 목적함수의 그래디언트를 0으로 놓으면 따라 나온다 — Gauss–Newton의 정규방정식에서 $J^\top J$에 $\lambda_k I$를 더한 것이다.
 
 $$x_{k+1} = x_k - (J^\top J + \lambda_k I)^{-1} J^\top f(x_k)$$
 
@@ -582,7 +582,7 @@ $x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-동역학을 대입(응축)하면 $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
+유한 지평에 경성 제약을 다시 붙인 LQR 비용으로 읽어라. 동역학은 등식 제약으로 들어오고, 그것을 대입해 없애면(응축) $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
 구현에서 ms급도 가능하므로 deadline과 최악 실행시간을 함께 보고해야 한다. MPC는 매 제어
 주기에 다시 풀고 첫 입력만 적용한다.
 

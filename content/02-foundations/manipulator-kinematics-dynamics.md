@@ -109,7 +109,9 @@ $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and collecting terms gives
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
 
-With the numbers above, $M$ depends on $\theta_2$ alone:
+Read the entries. The diagonal terms are each link's own inertia about its joint; the off-diagonal $\cos\theta_2$ term is coupling, and it exists because link 2's mass moves when joint 1 turns — so the inertia one joint feels depends on where the other joint is.
+
+With the numbers above, substitute $m_1 = m_2 = 1$ and $L_1 = L_2 = 1$ and $M$ depends on $\theta_2$ alone:
 
 $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
 
@@ -222,6 +224,8 @@ $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ with $\det M = 2$, so
 $$M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}, \qquad JM^{-1} = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}$$
 
 $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\\-1&0\end{pmatrix} = \begin{pmatrix}1&0\\0&0.5\end{pmatrix} \quad\Longrightarrow\quad \Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$$
+
+Read it as the inverse of the mass a push at the tip feels: the product is $\mathrm{diag}(1, 0.5)$, so the apparent masses are its reciprocals.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="the arm at elbow ninety degrees with an apparent-mass ellipse at the tip, one kilogram sideways and two kilograms vertically">
   <ellipse cx="130" cy="92" rx="26" ry="52" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/>
@@ -431,7 +435,9 @@ MR 4~5장의 평면 2R 팔에 각 링크 끝의 점질량을 둔다: $m_1 = m_2 
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
 
-위 숫자를 넣으면 $M$은 $\theta_2$에만 의존한다:
+원소를 읽어라. 대각 항은 각 링크가 자기 관절에 대해 갖는 고유 관성이고, 비대각의 $\cos\theta_2$ 항은 결합이다. 관절 1이 돌면 링크 2의 질량이 움직이기 때문에 생기고, 그래서 한 관절이 느끼는 관성은 다른 관절이 어디 있는지에 달린다.
+
+위 숫자 $m_1 = m_2 = 1$, $L_1 = L_2 = 1$을 대입하면 $M$은 $\theta_2$에만 의존한다:
 
 $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
 
@@ -543,6 +549,8 @@ $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$, $\det M = 2$이므로
 $$M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}, \qquad JM^{-1} = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}$$
 
 $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\\-1&0\end{pmatrix} = \begin{pmatrix}1&0\\0&0.5\end{pmatrix} \quad\Longrightarrow\quad \Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$$
+
+말단을 미는 힘이 느끼는 질량의 역으로 읽어라. 곱은 $\mathrm{diag}(1, 0.5)$이고, 그래서 겉보기 질량은 그 역수들이다.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="팔꿈치 90도 자세의 팔과 끝점의 겉보기 질량 타원, 옆으로 1 kg 위로 2 kg">
   <ellipse cx="130" cy="92" rx="26" ry="52" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/>

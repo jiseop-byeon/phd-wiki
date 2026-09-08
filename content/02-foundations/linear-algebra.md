@@ -203,10 +203,9 @@ For the line-fitting example, the first column says how changing the intercept m
 - **Reading $x^\top A x$ — it really is $ax^2$ with more indices.** The transposes are
   bookkeeping, not content. $x$ is a column ($n\times1$), so $x^\top$ is $1\times n$, and
   $(1\times n)(n\times n)(n\times 1) = 1\times 1$: you need an $x$ on *each* side or the
-  answer would not be a number. Written out,
+  answer would not be a number. Expand the product and every term is a coefficient times two coordinates:
   $$x^\top A x = \sum_i\sum_j A_{ij}\,x_i x_j$$
-  — every term is a coefficient times a product of two coordinates, which is exactly what
-  "quadratic" means. In one dimension it collapses to $a x^2$, as you would hope.
+  — which is exactly what "quadratic" means. In one dimension it collapses to $a x^2$, as you would hope.
   - *Diagonal $A$ = independent parabolas.* $A = \begin{pmatrix}2&0\\0&3\end{pmatrix}$ gives
     $x^\top A x = 2x_1^2 + 3x_2^2$ — a bowl, steeper along $x_2$.
   - *Off-diagonal entries are the cross-terms that tilt it.*
@@ -336,10 +335,12 @@ joints than task dimensions: a redundant arm, where infinitely many joint veloci
 the tool motion you asked for and you need a rule to pick one.
 
 **Worked — the minimum-norm rule, on a redundant arm.** Take a 3-link planar arm with unit
-links at $\theta = (0°, 90°, 0°)$. Its Jacobian mapping joint rates to tool velocity is
+links at $\theta = (0°, 90°, 0°)$. Its Jacobian mapping joint rates to tool velocity comes from the column rule (MR ch.5) — each column is the tip velocity produced by unit rate at that joint alone — and it is
 $2 \times 3$ — wide, hence redundant:
 
 $$J = \begin{bmatrix} -2 & -2 & -1 \\ 1 & 0 & 0 \end{bmatrix}, \qquad JJ^\top = \begin{bmatrix} 9 & -2 \\ -2 & 1 \end{bmatrix}, \qquad \det JJ^\top = 5$$
+
+The minimum-norm rule follows from minimising $\lVert\dot\theta\rVert$ subject to $J\dot\theta = v$, and the answer is the right pseudoinverse:
 
 $$J^\dagger = J^\top (JJ^\top)^{-1} = \begin{bmatrix} 0 & 1 \\ -0.4 & -0.8 \\ -0.2 & -0.4 \end{bmatrix}$$
 
@@ -632,9 +633,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **$x^\top A x$ 읽는 법 — 정말로 인덱스가 늘어난 $ax^2$이다.** 전치는 내용이 아니라 부기다.
   $x$가 열벡터($n\times1$)이므로 $x^\top$은 $1\times n$이고,
   $(1\times n)(n\times n)(n\times 1) = 1\times 1$ — 즉 답이 숫자가 되려면 $x$가 *양쪽에*
-  하나씩 있어야 한다. 풀어 쓰면
+  하나씩 있어야 한다. 곱을 전개하면 모든 항이 계수 곱하기 좌표 둘이다:
   $$x^\top A x = \sum_i\sum_j A_{ij}\,x_i x_j$$
-  — 모든 항이 계수 × 좌표 두 개의 곱이고, 그것이 정확히 "이차"의 뜻이다. 1차원으로 줄이면
+  — 그것이 정확히 "이차"의 뜻이다. 1차원으로 줄이면
   기대대로 $a x^2$가 된다.
   - *대각 $A$ = 서로 독립인 포물선들.* $A = \begin{pmatrix}2&0\\0&3\end{pmatrix}$이면
     $x^\top A x = 2x_1^2 + 3x_2^2$ — 그릇 모양이고 $x_2$ 방향이 더 가파르다.
@@ -760,10 +761,12 @@ $Ax = 0$이고, 독립성에 의해 $x = 0$이다.
 요청한 도구 운동을 만드는 관절 속도가 무한히 많으므로 하나를 고르는 규칙이 필요하다.
 
 **계산 — 여유자유도 팔에서의 최소 노름 규칙.** 단위 길이 링크 셋짜리 평면 팔을
-$\theta = (0°, 90°, 0°)$에 두자. 관절 속도를 도구 속도로 보내는 야코비는 $2 \times 3$이다 —
+$\theta = (0°, 90°, 0°)$에 두자. 관절 속도를 도구 속도로 보내는 야코비는 열 규칙(MR 5장)에서 나온다 — 각 열은 그 관절만 단위 속도로 돌릴 때 생기는 말단 속도다 — 그리고 $2 \times 3$이다 —
 넓고, 따라서 여유자유도가 있다.
 
 $$J = \begin{bmatrix} -2 & -2 & -1 \\ 1 & 0 & 0 \end{bmatrix}, \qquad JJ^\top = \begin{bmatrix} 9 & -2 \\ -2 & 1 \end{bmatrix}, \qquad \det JJ^\top = 5$$
+
+최소 노름 규칙은 $J\dot\theta = v$를 만족하면서 $\lVert\dot\theta\rVert$를 최소화하는 데서 따라 나온다. 답이 오른쪽 유사역행렬이다:
 
 $$J^\dagger = J^\top (JJ^\top)^{-1} = \begin{bmatrix} 0 & 1 \\ -0.4 & -0.8 \\ -0.2 & -0.4 \end{bmatrix}$$
 
