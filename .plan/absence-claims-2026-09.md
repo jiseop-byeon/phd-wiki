@@ -47,3 +47,18 @@
 - CRC 2026 벤치마크 초록 (ASCE 봇 차단)
 - OXE 개요 스프레드시트 열 목록
 이 셋은 위키 본문에 "미확인"으로 적어 두었거나(앞의 둘) 보류했다(OXE).
+
+---
+
+# 설명 없는 표시 수식 — 2026-09-08 회차
+
+`audit_gaps.py` UNEXPLAINED 검출기 기준. 규칙: 검출기용 단어를 넣는 게 아니라 "왜 이 모양인가"를 말하는 문장을 넣는다. 검출기의 어간 뒤 `\b` 때문에 활용형(Rearranging, Substituting)은 걸리지 않으므로, 어차피 더 나은 명령형·명사형(Solve for, substitute, Expand)으로 쓴다.
+
+| 회차 | 페이지 | 건수 변화 | 커밋 |
+|---|---|---|---|
+| 1 | control-theory-ce397 | 6 → 0 | 3f997d2 |
+| 2 | optimization, manipulator-kinematics-dynamics, linear-algebra | 각 3 → 0 | 2adf82b |
+
+전체: 35 → 20 (100개 중). 남은 20건 분포: state-estimation-slam·rl-basics·neural-network-basics·lqr-lqg·information-theory·human-intent-prediction·force-compliance-control 각 2, teleoperation-demonstration·se3-geometry·planning-decision-making·human-pose-gaze·egocentric-perception·contact-force-tactile 각 1.
+
+작업 요령(재발 방지): 앵커는 반드시 repr로 확인한 원문 그대로 쓴다(줄바꿈 위치). 같은 LaTeX가 양쪽 반에 있으므로 파일을 `## 한국어`에서 갈라 각 반 안에서만 치환한다. 치환 후 검출기 로직을 해당 페이지에 재현해 0을 확인한 뒤 커밋한다.
