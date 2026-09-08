@@ -64,13 +64,13 @@ The process model predicts because measurements do not continuously reveal the w
 
 ### 4. Bayes filtering: predict, then correct
 
-Both lines come from basic probability with one modelling assumption each — total probability plus the Markov assumption on the dynamics for the first, Bayes' rule plus measurement-depends-only-on-the-current-state for the second; the paragraph after them says what each assumption buys.
+Neither line is a new principle. The first is the law of total probability, and it has this shape because the dynamics are assumed Markov; the second is Bayes' rule, and it has this shape because the measurement is assumed to depend only on the current state. The paragraph after them spells out what each assumption buys.
 
 $$p(x_t\mid z_{1:t-1},u_{1:t})=\int p(x_t\mid x_{t-1},u_t)p(x_{t-1}\mid z_{1:t-1},u_{1:t-1})\,dx_{t-1}$$
 
 $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
-Prediction moves the previous belief through the dynamics and normally increases uncertainty. Correction weights that prior by how compatible each state is with the new measurement.
+Read it as two moves. Prediction moves the previous belief through the dynamics and normally increases uncertainty. Correction weights that prior by how compatible each state is with the new measurement.
 
 **Where the two lines come from, and what each assumption buys.** Neither is a new principle;
 both are elementary probability plus one assumption used exactly once. For **prediction**,
@@ -312,13 +312,13 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 
 ### 4. 베이즈 필터: 예측하고, 보정한다
 
-두 줄 다 기초 확률에 모델링 가정 하나씩을 더한 것이다 — 첫째는 전확률 법칙에 동역학의 마르코프 가정, 둘째는 베이즈 규칙에 측정이 현재 상태에만 의존한다는 가정. 뒤의 문단이 각 가정이 무엇을 사 주는지 말한다.
+어느 줄도 새 원리가 아니다. 첫째는 전확률 법칙이고, 동역학을 마르코프로 가정하기 때문에 이 모양이다. 둘째는 베이즈 규칙이고, 측정이 현재 상태에만 의존한다고 가정하기 때문에 이 모양이다. 뒤의 문단이 각 가정이 무엇을 사 주는지 풀어 쓴다.
 
 $$p(x_t\mid z_{1:t-1},u_{1:t})=\int p(x_t\mid x_{t-1},u_t)p(x_{t-1}\mid z_{1:t-1},u_{1:t-1})\,dx_{t-1}$$
 
 $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
-**예측**은 이전 belief를 동역학에 통과시키며 보통 불확실성을 키운다. **보정**은 그 prior를
+두 동작으로 읽어라. **예측**은 이전 belief를 동역학에 통과시키며 보통 불확실성을 키운다. **보정**은 그 prior를
 새 측정과 각 상태의 부합 정도로 가중한다.
 
 **두 줄이 어디서 오고, 각 가정이 무엇을 사 주는가.** 둘 다 새로운 원리가 아니라 기초 확률에
