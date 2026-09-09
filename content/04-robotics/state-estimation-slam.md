@@ -83,8 +83,9 @@ on the state it was taken from, so $z_{1:t-1}$ drops out again and the observati
 $p(z_t\mid x_t)$ appears.
 
 That accounting is worth keeping because it tells you what breaks and where. Unmodelled wheel
-slip violates the first assumption, not the second — the filter's *prediction* is wrong while
-its measurement model is fine. A sensor with its own memory, such as a detector applying
+slip first means the chosen transition model is wrong; it does not automatically make the
+physical process non-Markov. Augmenting the state with slip or terrain variables may restore
+a useful Markov model. A sensor with its own memory, such as a detector applying
 temporal smoothing or a camera with rolling-shutter carryover, violates the second, not the
 first: the filter double-counts evidence it has already used and grows overconfident. Both
 show up as an inconsistent filter, and the fix is different in each case.
@@ -157,9 +158,10 @@ keeps a sparse subset and marginalizes the rest, which is what keeps the problem
 the session grows. *Marginalizing* has a specific meaning worth knowing, because it is where
 the cost goes. Split the information matrix into the block $A$ you are dropping and the
 block $C$ you are keeping, with coupling $B$; removing the dropped block leaves the **Schur
-complement** $S = C - B^\top A^{-1} B$. The subtracted term is the evidence the discarded
-poses carried, folded into the survivors — so nothing is thrown away, but $S$ is **denser
-than $C$ was**. That fill-in is why sliding-window estimators cap their window, and why a
+complement** $S = C - B^\top A^{-1} B$. In a linear-Gaussian problem this exactly folds the
+dropped variables' information into the survivors, but $S$ is **denser than $C$ was**. In
+nonlinear estimators the resulting prior is tied to a linearization point and later
+relinearization or approximation can lose information. That fill-in is why sliding-window estimators cap their window, and why a
 paper's window length is a compute claim rather than a modelling preference
 ([[02-foundations/linear-algebra|1. Linear algebra §2]]).
 
@@ -173,8 +175,10 @@ paper's window length is a compute claim rather than a modelling preference
 
 **Distance-field maps.** Beyond the occupancy grid of
 [[04-robotics/planning-decision-making|4. Planning §2]], mapping systems commonly store a
-**TSDF** (truncated signed distance field): each voxel holds the signed distance to the
-nearest surface, truncated near zero, so the surface itself is the zero crossing. That
+**TSDF** (truncated signed distance field): in common depth-fusion systems each voxel stores
+a truncated **projective** signed distance along a sensor ray, whose zero crossing estimates
+the surface. It is not generally the Euclidean nearest-surface distance; that is the role of
+the ESDF below. This
 representation fuses many noisy depth images into one smooth surface and is what most
 real-time reconstruction pipelines are built on. Its planning cousin is the **ESDF**
 (Euclidean signed distance field), which stores distance-to-nearest-obstacle everywhere —
@@ -329,8 +333,9 @@ $p(x_t\mid z_{1:t}) \propto p(z_t\mid x_t, z_{1:t-1})\,p(x_t\mid z_{1:t-1})$. �
 $z_{1:t-1}$이 떨어지고 관측 모델 $p(z_t\mid x_t)$가 나타난다.
 
 이 장부를 갖고 있을 값어치가 있는 이유는, 무엇이 어디서 깨지는지 알려 주기 때문이다. 모델에
-없는 바퀴 미끄러짐은 첫 번째 가정을 어기지 두 번째를 어기지 않는다 — 필터의 *예측*이 틀린
-것이지 측정 모델은 멀쩡하다. 자기 기억을 가진 센서, 예를 들어 시간 평활을 적용하는 검출기나
+없는 바퀴 미끄러짐은 우선 선택한 전이 모델이 틀렸다는 뜻이지 물리 과정이 자동으로 비마르코프가
+된다는 뜻은 아니다. 미끄럼이나 지형 변수를 상태에 넣으면 유용한 마르코프 모델을 복원할 수 있다.
+자기 기억을 가진 센서, 예를 들어 시간 평활을 적용하는 검출기나
 롤링 셔터의 잔상이 남는 카메라는 두 번째를 어기지 첫 번째를 어기지 않는다. 필터가 이미 쓴
 증거를 두 번 세어 과신하게 된다. 둘 다 필터가 일관되지 않은 것으로 드러나지만, 고치는 방법은
 서로 다르다.
@@ -408,9 +413,9 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 주변화(marginalize)하며, 그것이 세션이 길어져도 문제 크기를 유한하게 유지하는 방법이다.
 *주변화*에는 알아 둘 만한 구체적인 뜻이 있는데, 비용이 가는 곳이 거기이기 때문이다. 정보
 행렬을 버릴 블록 $A$와 남길 블록 $C$, 그리고 결합항 $B$로 쪼개면, 버린 블록을 없앤 자리에
-**Schur 보수** $S = C - B^\top A^{-1} B$가 남는다. 빼낸 항이 버려진 pose들이 지고 있던
-증거이고 살아남은 것들 안으로 접혀 들어간다 — 그러니 버려지는 정보는 없지만 $S$는 **원래의
-$C$보다 조밀하다**. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
+**Schur 보수** $S = C - B^\top A^{-1} B$가 남는다. 선형-가우시안 문제에서는 버린 변수의
+정보가 살아남은 변수에 정확히 접히지만 $S$는 **원래의 $C$보다 조밀하다**. 비선형 추정에서는
+이 prior가 선형화점에 묶이고, 뒤의 재선형화나 근사에서 정보가 손실될 수 있다. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
 길이가 모델링 취향이 아니라 계산 비용에 대한 주장인 이유다
 ([[02-foundations/linear-algebra|1. 선형대수 §2]]).
 
@@ -422,9 +427,10 @@ $C$보다 조밀하다**. 그 fill-in 때문에 슬라이딩 윈도우 추정기
 > 자릿수 바꿔 놓을 수 있다.
 
 **거리장 지도.** [[04-robotics/planning-decision-making|4. 계획·의사결정 §2]]의 점유 격자
-너머로, 매핑 시스템은 흔히 **TSDF**(truncated signed distance field)를 쓴다: 각 복셀이 가장
-가까운 표면까지의 부호 있는 거리를 담되 0 근처에서 잘라내므로, 표면 자체가 0을 지나는 자리가
-된다. 이 표현은 잡음 많은 깊이 이미지 여럿을 하나의 매끄러운 표면으로 융합하고, 대부분의
+너머로, 매핑 시스템은 흔히 **TSDF**(truncated signed distance field)를 쓴다: 일반적인 깊이
+융합에서는 각 복셀이 센서 ray를 따른 잘린 **투영** 부호 거리를 담고, 그 0-crossing이 표면을
+추정한다. 일반적으로 최근접 표면까지의 유클리드 거리는 아니며, 그것은 아래 ESDF의 역할이다.
+이 표현은 잡음 많은 깊이 이미지 여럿을 하나의 매끄러운 표면으로 융합하고, 대부분의
 실시간 재구성 파이프라인이 그 위에 서 있다. 계획 쪽 사촌이 **ESDF**(Euclidean signed distance
 field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저장한다 — 계획기에게 여유 간격 값과
 그 그래디언트를 공짜로 주고, 궤적 최적화 계획기가 이것을 원하는 이유가 그것이다.

@@ -23,8 +23,11 @@ next to LQR, and [[04-robotics/convex-mpc-legged|8. Convex MPC]] is the applicat
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
-at the next step (receding horizon). With linear dynamics, convex quadratic cost and convex constraints it is a
-convex QP — written out fully in [[02-foundations/optimization|4. Optimization §5]] —
+at the next step (receding horizon). With linear dynamics, positive-semidefinite quadratic
+state/terminal costs, a positive-definite input cost, and affine equality plus linear
+inequality constraints, it is a convex QP — written out fully in
+[[02-foundations/optimization|4. Optimization §5]]. More general convex constraints can
+produce a convex program that is not a QP —
 and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
@@ -168,7 +171,7 @@ construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-ma
 > [!tip]- Answers
 > 1. Whether $Q \succeq 0$ — if indefinite, the QP is non-convex and solver behavior is undefined.
 > 2. Stacked — at long horizons the condensed form becomes dense and ill-conditioned via powers of $A$, and state constraints are natural in the stacked form.
-> 3. Hard: infeasible — the solver returns nothing and a separate fallback must act. Soft: slacks activate and it returns a penalized, gracefully violating solution — control continues.
+> 3. Hard: infeasible — the solver returns no usable command and a separate fallback must act. Soft: slacks can return a penalized violation **if the remaining hard constraints are feasible**; softening selected constraints does not guarantee that control can continue.
 > 4. ① Warm-started or cold? ② Problem size (horizon, state dimension) and solver? ③ Is 200 Hz solve time or end-to-end latency ([[04-robotics/robot-systems-deployment|frequency ≠ latency]])?
 
 ### Continue beyond this guide
@@ -181,8 +184,10 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 이것을 보행 로봇의 표준으로 만든 응용이다.*
 
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
-문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학, 볼록 이차 비용, 볼록 제약이면 볼록 QP가 되고 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써
-놓았다 — 입력·상태 제약을 *태생적으로* 다루는 것이
+문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학,
+양의 준정부호 상태·종단 비용, 양의 정부호 입력 비용, 아핀 등식과 선형 부등식 제약이면 볼록
+QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써 놓았다. 더 일반적인 볼록
+제약은 볼록 최적화 문제를 만들 수 있지만 반드시 QP인 것은 아니다. 입력·상태 제약을 *태생적으로* 다루는 것이
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
 
 <svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: 지평 전체를 계획하고 한 스텝만 실행한 뒤 다시 계획">
@@ -322,12 +327,12 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 > [!tip]- 정답 · Answers
 > 1. $Q \succeq 0$인지 — 부정부호면 QP가 비볼록이 되어 솔버 거동이 정의되지 않는다.
 > 2. Stacked — 긴 지평에서 condensed는 $A$의 거듭제곱으로 조밀·악조건이 되고, 상태 제약은 stacked에서 자연스럽다.
-> 3. 하드: infeasible — 솔버가 해를 반환하지 않아 별도의 폴백이 필요. 소프트: 슬랙이 켜져 벌점을 내며 위반하는 해를 반환 — 제어는 계속된다.
+> 3. 하드: infeasible — 솔버가 쓸 수 있는 명령을 반환하지 않아 별도의 폴백이 필요. 소프트: **남은 하드 제약이 feasible할 때** 슬랙으로 벌점 있는 위반 해를 반환할 수 있다. 일부 제약을 연화한다고 제어 지속이 보장되지는 않는다.
 > 4. ① warm start 여부 ② 문제 크기(지평·상태 차원)와 솔버 ③ 그 200 Hz가 풀이 시간인지 끝-끝 지연인지 ([[04-robotics/robot-systems-deployment|주파수 ≠ 지연]]).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] Describe the receding-horizon procedure (solve → apply the first input → re-solve) · receding horizon 절차를 말할 수 있다
-- [ ] State the conditions for QP convexity ($Q,R,P$ definiteness, convex constraints) and where obstacle constraints break them · QP 볼록성의 조건과 장애물 제약이 깨뜨리는 지점을 말할 수 있다
+- [ ] State the conditions for a convex QP ($Q,R,P$ definiteness and affine/polyhedral constraints), distinguish it from a general convex program, and say where obstacle constraints break convexity · 볼록 QP의 조건과 일반 볼록 최적화의 차이, 장애물 제약이 볼록성을 깨뜨리는 지점을 말할 수 있다
 - [ ] Explain the stacked vs condensed trade-off, and infeasibility, constraint softening, and warm starting · stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
 - [ ] Name Mayne 2000's stability ingredients (terminal cost, terminal set, horizon) and where PlaNet and Diffusion Policy borrow MPC's structure · Mayne 2000의 안정성 재료와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다

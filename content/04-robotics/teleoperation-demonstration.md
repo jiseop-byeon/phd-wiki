@@ -109,8 +109,10 @@ compromise, and a paper that reports only one of the two is reporting half its r
 
 Delay is the reason this field has its own theory rather than borrowing control theory
 wholesale. The system is a chain of springs, masses, and dampers, all of which are
-**passive**: they store and dissipate energy but never create it. Interconnecting passive
-systems keeps them passive, so the whole thing is stable.
+**passive**: they cannot deliver more energy than they initially stored plus what enters
+through their ports. Under compatible interconnection and well-posedness assumptions,
+passivity is preserved and provides a route to stability; passivity alone does not
+automatically mean asymptotic convergence or good performance.
 
 A communication delay can break that passivity argument. Force computed from a position the follower held
 $T$ seconds ago is applied to a leader that has since moved somewhere else, and the product
@@ -238,7 +240,9 @@ in an appendix:
   $F_{floor} = \tau_f \cdot R / r_h$ at a handle of lever arm $r_h$, and every force
   the device records near a motion reversal is smeared by that stick–slip band.
 - **The double role of $R$.** Raising the ratio buys peak force and position resolution;
-  the identical multiplication raises reflected friction and inertia, which is what
+  motor-side friction torque is reflected roughly in proportion to $R$, while motor inertia
+  is reflected roughly as $R^2$ in an ideal rigid transmission. Both reduce backdrivability,
+  which is what
   "poor backdrivability" means. The cable that lets the motor push the operator is the
   cable through which the operator must push the motor. Choosing $R$ is choosing which
   end of the corpus to corrupt.
@@ -404,7 +408,7 @@ requires, because the contribution *is* the corpus — needs these:
    the same scaling do to the force the operator feels, if force is scaled to match?
 
 > [!tip]- Answers
-> 1. It tells you the instability is contact-driven, not a general gain problem: a stiff environment raises the loop gain seen by the force channel, so the compromise point of §2 was chosen too far toward transparency. Check the force-feedback gain and any filtering on the force signal first, and whether the follower is torque-controlled or has a stiff position loop underneath ([[02-foundations/manipulator-kinematics-dynamics|10. §8]]) — the latter makes the environment stiffness and the controller stiffness add.
+> 1. It suggests a contact-dependent loop interaction, not a diagnosis by itself. Check force-feedback gain, filtering, delay, and whether the follower has a stiff position loop underneath ([[02-foundations/manipulator-kinematics-dynamics|10. §8]]). Do not add controller and environment stiffness as two passive springs: series stiffness obeys $1/K_{eq}=1/K_1+1/K_2$, while closed-loop interaction stability requires the full dynamic model.
 > 2. It removes inverse kinematics (joint angles map across directly) and it removes retargeting (the human is moving a device with the robot's own kinematics, so there is no correspondence problem). Both of those are sources of ill-conditioned or unreachable commands, so eliminating them improves the *data*, not just the operator's experience.
 > 3. Because passivity buys stability, not performance. The transformation deliberately discards high-frequency fidelity, so the operator feels a soft, drifting version of the environment — and for tasks where the point of force feedback is to detect a crisp contact transition, that softness removes the signal the operator needed. Guaranteeing you cannot go unstable is not the same as being useful.
 > 4. How long the 50 demonstrations took to collect, and how the 92% was measured — specifically, whether the evaluation initial states were drawn from the same distribution the expert demonstrated. One expert also means the policy learned one strategy, so nothing is known about robustness to operator variation.
@@ -524,9 +528,10 @@ Lawrence의 4채널 분석(1993)이 이것을 직관이 아니라 설계 목표�
 ### 3. 지연이 단지 "느린 것"이 아닌 이유 — 수동성
 
 지연이야말로 이 분야가 제어 이론을 통째로 빌려 오는 대신 자기 이론을 갖게 된 이유다.
-시스템은 스프링·질량·감쇠기의 사슬이고, 이들은 전부 **수동적(passive)** 이다: 에너지를
-저장하고 소산하지만 만들어내지는 않는다. 수동 시스템끼리 연결하면 수동성이 유지되므로
-전체가 안정하다.
+시스템은 스프링·질량·감쇠기의 사슬이고, 이들은 **수동적(passive)** 이다: 처음 저장한 에너지와
+포트로 들어온 에너지보다 더 많이 내보낼 수 없다. 호환되는 연결과 well-posedness 가정 아래
+수동성은 보존되어 안정성을 보이는 길을 주지만, 그 자체가 점근 수렴이나 좋은 성능을 자동으로
+뜻하지는 않는다.
 
 통신 지연은 그 수동성 논증을 깰 수 있다. 팔로워가 $T$초 전에 있던 위치로 계산된 힘이, 그사이 다른 곳으로
 움직인 리더에 가해진다. 그 둘의 곱이 시스템 *안으로* 에너지를 전달할 수 있다. 연결은 더
@@ -642,8 +647,9 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
   토크와 함께 증폭된다: 레버 암 $r_h$의 핸들에서 조작자는
   $F_{floor} = \tau_f \cdot R / r_h$를 느끼고, 운동 반전 근처에서 장치가 기록하는
   모든 힘은 그 스틱-슬립 대역으로 번져 있다.
-- **$R$의 이중 역할.** 비율을 올리면 최대 힘과 위치 분해능을 산다. 똑같은 곱셈이 반사
-  마찰과 관성을 올리는데, "backdrivability가 나쁘다"의 뜻이 그것이다. 모터가 조작자를
+- **$R$의 이중 역할.** 비율을 올리면 최대 힘과 위치 분해능을 산다. 이상적인 강체 전동에서
+  모터 쪽 마찰 토크는 대략 $R$에 비례해, 모터 관성은 대략 $R^2$로 출력에 반사된다. 둘 다
+  역구동성을 떨어뜨리는데, "backdrivability가 나쁘다"의 뜻이 그것이다. 모터가 조작자를
   밀게 해 주는 케이블은 조작자가 모터를 밀 때 통과해야 하는 케이블이다. $R$을 고르는
   것은 코퍼스의 어느 쪽 끝을 오염시킬지 고르는 것이다.
 
@@ -795,7 +801,7 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
    스케일한다면 조작자가 느끼는 힘에는 무슨 일이 일어나는가?
 
 > [!tip]- 정답 · Answers
-> 1. 불안정이 일반적인 게인 문제가 아니라 접촉에서 비롯됐다는 뜻이다: 단단한 환경은 힘 채널이 보는 루프 게인을 높이므로, §2의 타협점을 투명성 쪽으로 너무 멀리 잡은 것이다. 힘 피드백 게인과 힘 신호의 필터링을 먼저 확인하고, 팔로워가 토크 제어인지 아니면 그 아래에 뻣뻣한 위치 루프가 있는지를 확인하라([[02-foundations/manipulator-kinematics-dynamics|10. §8]]) — 후자라면 환경 강성과 제어기 강성이 더해진다.
+> 1. 접촉 의존적인 루프 상호작용을 시사하지만 그 자체가 진단은 아니다. 힘 피드백 게인·필터·지연과 팔로워 아래에 뻣뻣한 위치 루프가 있는지를 확인한다([[02-foundations/manipulator-kinematics-dynamics|10. §8]]). 제어기와 환경을 수동 스프링 둘처럼 단순히 더하면 안 된다. 직렬 강성은 $1/K_{eq}=1/K_1+1/K_2$이고, 폐루프 상호작용 안정성에는 전체 동적 모델이 필요하다.
 > 2. 역기구학을 없애고(관절각이 그대로 넘어간다) 리타게팅을 없앤다(사람이 로봇 자신의 기구학을 가진 장치를 움직이므로 대응 문제가 없다). 둘 다 조건이 나쁘거나 도달 불가능한 명령의 원천이므로, 없애면 조작자의 경험만이 아니라 *데이터*가 좋아진다.
 > 3. 수동성이 사는 것은 안정성이지 성능이 아니기 때문이다. 이 변환은 고주파 충실도를 의도적으로 버리므로 조작자는 환경의 무르고 표류하는 판본을 느낀다 — 힘 피드백의 요점이 분명한 접촉 천이를 감지하는 것인 과제에서는, 그 무름이 조작자가 필요로 했던 신호를 지운다. 불안정해질 수 없음을 보장하는 것과 쓸모 있는 것은 같지 않다.
 > 4. 시연 50개를 모으는 데 걸린 시간, 그리고 92%를 어떻게 측정했는가 — 특히 평가 초기 상태가 전문가가 시연한 것과 같은 분포에서 뽑혔는가. 전문가 한 명이라는 것은 정책이 하나의 전략을 배웠다는 뜻이므로, 조작자 변동에 대한 견고성은 아무것도 알 수 없다.

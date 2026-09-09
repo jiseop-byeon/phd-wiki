@@ -121,10 +121,13 @@ Frequency analysis is useful because visually similar fluctuations can require d
 - **The smoother, traced step by step.** Run $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$ on a step: the
   input jumps from $0$ to $1$ and stays. Starting at $y = 0$ the output goes
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$ — reaching 90% of the new value takes about
-  **22 samples**, since $0.9^{22} \approx 0.1$. At 100 Hz that is $0.22$ s of lag you just
-  added to your feedback loop. Set $\alpha = 0.5$ instead and it arrives in 3 samples but
-  smooths about 2.5× less (noise *variance* gain is $\alpha/(2-\alpha)$: 0.053 vs 0.333, a factor of 6.3 in variance and 2.5 in standard deviation). That one trade — noise rejection bought with delay — is the whole
-  of filter design, and the reason a control engineer always asks what your filter cost you
+  **22 samples**, since $0.9^{22} \approx 0.1$. At 100 Hz its step response therefore needs
+  about $0.22$ s to traverse 90% of the change. This is not a pure $0.22$ s dead time: the
+  filter has frequency-dependent phase and group delay. Set $\alpha = 0.5$ instead and the
+  first discrete sample above 90% is sample 4. For independent white input noise, this
+  coefficient convention gives variance gain $(1-\alpha)/(1+\alpha)$: 0.053 versus 0.333,
+  a factor of 6.3 in variance and 2.5 in standard deviation. This trade — noise rejection
+  bought with slower response and phase lag — is central to filter design, and the reason a control engineer always asks what your filter cost you
   in phase ([[04-robotics/control-theory-ce397|control theory §7]]).
 - Choosing: low-pass for sensor noise, high-pass for drift removal, notch at known
   vibration harmonics, complementary filters to fuse IMU accel (low-passed) + gyro
@@ -283,9 +286,12 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 - **평활기를 한 스텝씩 따라가 보면.** $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$을 계단 입력에 돌려
   보자 — 입력이 $0$에서 $1$로 뛰어 그대로 유지된다. $y = 0$에서 시작하면 출력은
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$으로 가고, 새 값의 90%에 닿는 데 약
-  **22 샘플**이 걸린다($0.9^{22} \approx 0.1$이므로). 100 Hz라면 방금 피드백 루프에 $0.22$초의
-  지연을 더한 셈이다. $\alpha = 0.5$로 두면 약 3.3 샘플 만에 도달하지만 평활 효과는 약 2.5배 나빠진다(잡음 *분산* 이득이 $\alpha/(2-\alpha)$로 0.053 대 0.333 — 분산으로 6.3배, 표준편차로 2.5배).
-  이 거래 하나 — 지연을 치르고 사는 잡음 제거 — 가 필터 설계의 전부이고, 제어 엔지니어가
+  **22 샘플**이 걸린다($0.9^{22} \approx 0.1$이므로). 100 Hz라면 계단 변화의 90%를 따라가는 데
+  약 $0.22$초가 필요하다. 이것은 순수한 $0.22$초 dead time이 아니라 주파수에 따라 달라지는
+  위상·군지연이다. $\alpha = 0.5$로 두면 90%를 처음 넘는 이산 샘플은 4번째다. 독립 백색 입력
+  잡음에 대해 이 계수 정의의 *분산* 이득은 $(1-\alpha)/(1+\alpha)$이므로 0.053 대 0.333 —
+  분산으로 6.3배, 표준편차로 2.5배 차이다.
+  이 거래 — 느린 응답과 위상 지연을 치르고 사는 잡음 제거 — 는 필터 설계의 핵심이고, 제어 엔지니어가
   언제나 "그 필터가 위상에서 얼마를 앗아갔나"를 묻는 이유다
   ([[04-robotics/control-theory-ce397|제어 이론 §7]]).
 - 선택: 센서 노이즈엔 저역통과, 드리프트 제거엔 고역통과, 알려진 진동 고조파엔 노치,

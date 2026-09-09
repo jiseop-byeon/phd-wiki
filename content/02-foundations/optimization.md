@@ -179,11 +179,14 @@ a trust parameter.
   machine precision. The $\lambda$ that stops an arm exploding near a singularity
   ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]) is a trust parameter,
   not a hack.
-- **Conditioning is squared.** $\kappa(J^\top J) = \kappa(J)^2$ exactly, so a Jacobian with
+- **Conditioning is squared.** For full-column-rank $J$ in the 2-norm,
+  $\kappa(J^\top J) = \kappa(J)^2$, so a Jacobian with
   condition number 100 gives normal equations at $10^4$
-  ([[02-foundations/linear-algebra|1. Linear algebra §4]]). Good implementations never form
-  $J^\top J$; they run QR on the stacked matrix instead. When a paper reports numerical
-  trouble near singular configurations, this is usually the mechanism.
+  ([[02-foundations/linear-algebra|1. Linear algebra §4]]). QR avoids explicitly squaring
+  the condition number and is often the safer dense choice. Sparse normal-Cholesky methods
+  do form the normal equations because they can be faster and exploit sparsity; their
+  numerical tradeoff must be managed. When a paper reports trouble near singular
+  configurations, this conditioning mechanism is one place to look.
 - **It is a heuristic, and the papers know it.** Levenberg–Marquardt has no guarantee of
   reaching the global minimum — like $k$-means, it is used everywhere anyway. That is why
   this literature warm-starts from the previous solve, restarts from several
@@ -284,7 +287,9 @@ a trust parameter.
 | Global | non-convex, certified | rarely needed directly; underneath MIP solvers |
 
 **MPC as a QP, written out** ([[04-robotics/index|control track]]): linear dynamics
-$x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$:
+$x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$,
+$Q,P\succeq0$, $R\succ0$, and a polyhedral state set
+$\mathcal X=\{x:Hx\le h\}$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
@@ -479,11 +484,13 @@ Gauss–Newton으로:
   특이 자세 근처에서 팔이 폭발하는 것을 막는 그 $\lambda$
   ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]])는 임시방편이 아니라 신뢰
   파라미터다.
-- **조건수가 제곱된다.** $\kappa(J^\top J) = \kappa(J)^2$이 정확히 성립하므로, 조건수 100인
+- **조건수가 제곱된다.** 열 랭크가 가득 찬 $J$의 2-노름에서는
+  $\kappa(J^\top J) = \kappa(J)^2$이므로, 조건수 100인
   야코비는 정규방정식에서 $10^4$이 된다
-  ([[02-foundations/linear-algebra|1. 선형대수 §4]]). 좋은 구현은 $J^\top J$를 아예 만들지
-  않고 쌓은 행렬에 QR을 돌린다. 논문이 특이 자세 근처의 수치 문제를 보고할 때, 대개 그
-  기전이 이것이다.
+  ([[02-foundations/linear-algebra|1. 선형대수 §4]]). QR은 조건수를 명시적으로 제곱하지 않아
+  조밀 문제에서 흔히 더 안전하다. 반면 희소 normal-Cholesky는 $J^\top J$를 만들더라도
+  희소성과 속도 때문에 실제 솔버에서 쓰이며, 수치적 대가를 관리해야 한다. 논문이 특이 자세
+  근처의 수치 문제를 보고할 때 이 조건수 기전을 먼저 확인한다.
 - **이것은 발견적 방법이고, 논문들도 안다.** Levenberg–Marquardt에는 전역 최솟값에 닿는다는
   보장이 없다 — $k$-평균과 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
   웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
@@ -578,7 +585,8 @@ Gauss–Newton으로:
 | 전역 | 비볼록, 보증 | 직접 쓸 일은 드묾; MIP 솔버의 밑바닥 |
 
 **MPC를 QP로 완전히 써보기** ([[04-robotics/index|제어 트랙]]): 선형 동역학
-$x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$:
+$x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$,
+$Q,P\succeq0$, $R\succ0$, 다면체 상태 집합 $\mathcal X=\{x:Hx\le h\}$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 

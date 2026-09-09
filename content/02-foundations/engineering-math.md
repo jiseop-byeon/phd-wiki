@@ -101,11 +101,12 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
     $E[X^2] = \int_0^1 x^2\,dx = \tfrac13$. Note $E[X^2] = \tfrac13 \ne (E[X])^2 = \tfrac14$ —
     the gap between them *is* the variance, $\tfrac13 - \tfrac14 = \tfrac{1}{12}$
     ([[02-foundations/probability|3. Probability §2]]).
-  - *In code, always a sample mean.* You never integrate: you draw $N$ samples and average,
-    $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. Roll a die 10,000 times and the average
-    lands near 3.5. Every "expected return", "expected reward", and "expected loss" in the
-    paper list is computed exactly this way — which is also why they all come with error
-    bars ([[02-foundations/ml-practice|9. ML Practice §4]]).
+  - *In code, often a sample mean.* When an expectation is not summed or integrated
+    analytically, draw $N$ samples and average,
+    $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. A finite discrete distribution may be
+    summed exactly, and some models permit analytic integration or dynamic programming.
+    Many expected losses and returns are nevertheless estimated from samples, so report
+    sampling uncertainty ([[02-foundations/ml-practice|9. ML Practice §4]]).
 - $\int p(x)\,dx = 1$ (probabilities sum to one) is the identity used in half the proofs
   (e.g., KL non-negativity in [[02-foundations/information-theory|5. Information Theory]]).
 
@@ -207,7 +208,8 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   number: $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. One nat $\approx 1.44$ bits.
 - Numbers to internalize: $\log 1 = 0$; $\log x < 0$ for $x<1$ (log-probs are negative!);
   $\log$ grows painfully slowly.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the denominator of softmax),
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the log of softmax's
+  normalizing denominator),
   and computed literally it overflows — $e^{800}$ is already $\infty$ in float64. The fix,
   with $x_{max} = \max_i x_i$:
 
@@ -218,8 +220,9 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   $\log(ab) = \log a + \log b$ from the table above. It is an *exact* identity, not an
   approximation. Why it fixes the problem: every exponent $x_i - x_{max}$ is now $\le 0$,
   so every $e^{(\cdot)}$ is between $0$ and $1$ — nothing can overflow, and the largest term
-  is exactly $1$, so nothing underflows to an all-zero sum either. This is why
-  softmax+cross-entropy code never blows up
+  is exactly $1$, so this particular sum cannot underflow to all zeros. This stabilizes the
+  normalization step; NaNs can still arise elsewhere from invalid inputs, extreme arithmetic,
+  or unrelated operations. Stable softmax+cross-entropy implementations use this identity
   ([[02-foundations/calculus-backprop|2. Calculus §4]]).
 
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
@@ -542,10 +545,10 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
     $E[X^2] = \int_0^1 x^2\,dx = \tfrac13$. $E[X^2] = \tfrac13$이 $(E[X])^2 = \tfrac14$과
     다르다는 점에 주목하라 — 그 차이가 곧 분산이다: $\tfrac13 - \tfrac14 = \tfrac{1}{12}$
     ([[02-foundations/probability|3. 확률 §2]]).
-  - *코드에서는 언제나 샘플 평균.* 적분하지 않는다. $N$개를 뽑아 평균 낸다:
-    $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. 주사위를 1만 번 굴리면 평균이 3.5 근처에
-    앉는다. 논문 목록의 모든 "기대 리턴", "기대 보상", "기대 손실"이 정확히 이렇게 계산되고,
-    그래서 전부 오차 막대를 달고 다닌다([[02-foundations/ml-practice|9. ML 실무 §4]]).
+  - *코드에서는 흔히 샘플 평균.* 기댓값을 해석적으로 합하거나 적분하지 못할 때 $N$개를 뽑아
+    평균 낸다: $E[g(X)] \approx \frac1N\sum_{i=1}^N g(x_i)$. 유한 이산분포는 정확히 합할 수 있고,
+    어떤 모델은 해석적 적분이나 동적계획법도 가능하다. 그래도 많은 기대 손실과 리턴은 표본으로
+    추정하므로 표본 불확실성을 보고한다([[02-foundations/ml-practice|9. ML 실무 §4]]).
 - $\int p(x)\,dx = 1$ (확률의 합은 1) — 증명의 절반에 쓰이는 항등식이다
   (예: [[02-foundations/information-theory|5. 정보이론]]의 KL 비음수성).
 
@@ -638,7 +641,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. 1 나트 $\approx 1.44$ 비트.
 - 몸에 익힐 숫자 감각: $\log 1 = 0$; $x<1$이면 $\log x < 0$ (로그 확률은 음수다!);
   $\log$는 고통스럽게 천천히 자란다.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오고(softmax의 분모가 이것이다),
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오며(softmax 정규화 분모의 로그다),
   식 그대로 계산하면 넘친다 — float64에서 $e^{800}$은 이미 $\infty$다. $x_{max} = \max_i x_i$로
   두면 해법은:
 
@@ -648,8 +651,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $\sum_i e^{x_i} = e^{x_{max}}\sum_i e^{x_i - x_{max}}$이고, 여기에 $\log$를 취한 뒤 위 표의
   $\log(ab) = \log a + \log b$를 쓴 것이다. 근사가 아니라 *정확한* 항등식이다. 왜 문제가
   풀리나: 이제 모든 지수 $x_i - x_{max}$가 $\le 0$이므로 각 $e^{(\cdot)}$가 $0$과 $1$ 사이에
-  있다 — 넘칠 수가 없고, 가장 큰 항이 정확히 $1$이므로 합 전체가 0으로 가라앉지도 않는다.
-  softmax+교차 엔트로피 코드가 터지지 않는 이유가 이것이다
+  있다 — 이 정규화에서는 넘칠 수 없고, 가장 큰 항이 정확히 $1$이므로 합 전체가 0으로
+  가라앉지도 않는다. 다른 잘못된 입력·극단 연산·별도 연산은 여전히 NaN을 만들 수 있지만,
+  안정적인 softmax+교차 엔트로피 구현이 이 항등식을 쓰는 이유가 이것이다
   ([[02-foundations/calculus-backprop|2. 미적분 §4]]).
 
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)

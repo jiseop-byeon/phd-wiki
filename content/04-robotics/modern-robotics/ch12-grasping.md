@@ -27,10 +27,12 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Force closure**: with friction, the contacts can resist *any* external wrench —
   the contact friction cones must positively span the whole wrench space. Practical grasps
   are usually force closures with 2–3 fingers.
-- **The antipodal intuition** (worked): two fingers gripping opposite sides of an object
-  give force closure iff each contact point lies inside the *other* contact's friction
-  cone — "the fingers can see each other through their cones." This one picture explains
-  why parallel-jaw grippers work on so much of the world.
+- **The antipodal intuition** (worked): for a **planar body with two frictional point
+  contacts**, the line joining the contacts must lie inside both friction cones — "the
+  fingers can see each other through their cones." In spatial grasping, two hard point
+  contacts cannot resist torque about their connecting axis; at least three point contacts
+  are needed. Two **soft-finger** contacts can add torsional moments and achieve spatial
+  force closure. Always name the contact model before claiming closure.
 - **Learning-era continuation**: grasp synthesis is now largely learned (grasp-detection
   networks, dexterous-hand policies), but the *verification* language — cones, wrenches,
   closure — is still how failures are analyzed. Construction case in this wiki:
@@ -46,7 +48,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > [!tip]- Answers
 > 1. $\alpha = \tan^{-1}1.0 = 45°$: the contact force may tilt up to 45° away from the surface normal before the model says it slips. A friction coefficient is an *angle*, which is why doubling $\mu$ from 0.5 to 1.0 widens the cone from ~26.6° to 45° rather than doubling anything.
 > 2. Form closure must block every direction using geometry alone, without the "free" tangential directions that friction cones supply — so it needs more contacts (at least 4 in the plane, 7 in space for frictionless point contacts in general position).
-> 3. Each contact point must lie inside the *other* contact's friction cone — the two cones must be able to "see" each other along the line joining the contacts.
+> 3. For the planar two-point model, the line joining the contacts lies inside both friction cones. This is not by itself a spatial force-closure test for two hard point contacts; a spatial parallel-jaw argument needs a soft-finger contact model or another source of torsional resistance.
 
 ### Continue beyond this chapter
 
@@ -64,9 +66,11 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Force closure**: 마찰이 있으면 접촉들이 *임의의* 외부 렌치를 버틸 수 있다 — 접촉
   마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다. 실용적 파지는 대개 손가락
   2~3개의 force closure다.
-- **대척 파지의 직관** (예제): 물체의 반대편을 잡는 두 손가락이 force closure가 되는
-  조건은 각 접촉점이 *상대* 접촉의 마찰 원뿔 안에 있는 것 — "두 손가락이 원뿔을 통해
-  서로를 본다." 평행 그리퍼가 세상 대부분에 통하는 이유가 이 그림 하나로 설명된다.
+- **대척 파지의 직관** (예제): **평면 물체와 마찰 점접촉 둘**의 모델에서는 두 접촉점을
+  잇는 선이 두 마찰 원뿔 안에 있어야 한다 — "두 손가락이 원뿔을 통해 서로를 본다."
+  공간에서는 hard point 접촉 둘만으로 두 점을 잇는 축 둘레의 토크를 막을 수 없어 최소 세
+  점접촉이 필요하다. **Soft-finger** 접촉 둘은 비틀림 모멘트를 더해 공간 force closure가
+  가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다.
 - **학습 시대의 연속**: 파지 생성은 이제 대부분 학습된다(파지 검출 네트워크, 정밀 손
   정책) — 하지만 *검증*의 언어(원뿔, 렌치, closure)는 여전히 실패 분석의 도구다. 이
   위키의 건설 사례: [[01-canonical-papers/notes/8-construction/heap|HEAP의 돌담]]이 불규칙한
@@ -81,7 +85,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > [!tip]- 정답 · Answers
 > 1. $45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다.
 > 2. 마찰 원뿔이 주는 여유 방향 없이 기하만으로 모든 방향을 막아야 하기 때문.
-> 3. 두 접촉점이 서로 상대의 마찰 원뿔 안에 있을 것.
+> 3. 평면 2점 모델에서는 두 접촉점을 잇는 선이 두 마찰 원뿔 안에 있어야 한다. 이것만으로
+> 공간의 hard point 접촉 둘이 force closure인 것은 아니다. 공간 평행 그리퍼에는 soft-finger
+> 모델이나 다른 비틀림 저항이 필요하다.
 
 ### 이 장 다음으로
 

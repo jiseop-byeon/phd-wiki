@@ -109,7 +109,11 @@ $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and collecting terms gives
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
 
-Read the entries. The diagonal terms are each link's own inertia about its joint; the off-diagonal $\cos\theta_2$ term is coupling, and it exists because link 2's mass moves when joint 1 turns — so the inertia one joint feels depends on where the other joint is.
+Read the entries. A diagonal term is the effective inertia associated with one joint's
+velocity while the other is held fixed; it can include the masses and inertias of several
+downstream links, not only that joint's "own" link. The off-diagonal $\cos\theta_2$ term is
+coupling, and it exists because link 2's mass moves when joint 1 turns — so the inertia one
+joint feels depends on where the other joint is.
 
 With the numbers above, substitute $m_1 = m_2 = 1$ and $L_1 = L_2 = 1$ and $M$ depends on $\theta_2$ alone:
 
@@ -244,8 +248,8 @@ Read it as the inverse of the mass a push at the tip feels: the product is $\mat
     <text x="198" y="144" opacity="0.85">actual mass on the arm: 2 kg total</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="190">The long axis of an apparent-mass ellipse is the HARD direction &#8212; the opposite reading from the</text>
-    <text x="20" y="206">manipulability ellipse of MR ch.5, whose long axis is the easy one. They are reciprocal views.</text>
+    <text x="20" y="190">The long axis of an apparent-mass ellipse is the HARD direction; MR ch.5 uses a different</text>
+    <text x="20" y="206">joint-velocity norm. Compare lost directions, not axis lengths, unless the metric is stated.</text>
   </g>
 </svg>
 
@@ -261,12 +265,13 @@ assumes you have absorbed:
   impedance controller depends on $\Lambda$, so identical gains give different effective
   dynamics in different directions and different poses.
 
-The relationship to MR ch.5's manipulability ellipsoid is qualitative, not exact — $\Lambda^{-1} = JM^{-1}J^\top$ is the reciprocal of the *dynamic* manipulability ellipsoid, which coincides with ch.5's kinematic $JJ^\top$ only when $M \propto I$. The direction of the statement still holds: that
-ellipsoid's long axis is the direction that is *easy to move*, and an apparent-mass
-ellipse's long axis is the direction that is *hard to move*. Near a singularity the
-manipulability ellipse collapses to a line, and correspondingly $\Lambda$ blows up in that
-direction — the arm becomes effectively infinitely heavy along the direction it can no
-longer move.
+The relationship to MR ch.5's manipulability ellipsoid is qualitative, not a matrix
+reciprocal. Kinematic manipulability uses $JJ^\top$ under a unit joint-velocity norm.
+Operational inertia uses $JM^{-1}J^\top$ to map a task wrench to task acceleration after
+dynamic compensation. If instead you define a dynamic acceleration ellipsoid under a unit
+**Euclidean joint-torque** norm, its shape matrix is $JM^{-2}J^\top$. These coincide only
+under special inertia and metric choices. Near a singularity all three reveal a lost task
+direction, but do not call their axis lengths exact reciprocals without stating the norm.
 
 **Read the inverse before the inertia.** Ignore velocity-dependent and gravity terms for this local force-to-acceleration interpretation. A task force becomes joint torque through $J^\top$, joint torque becomes acceleration through $M^{-1}$, and $J$ maps that acceleration back into task coordinates. The product $JM^{-1}J^\top$ therefore answers “how much task acceleration does this force produce here?” Inverting it gives the inertia needed to express force in terms of task acceleration.
 
@@ -322,7 +327,7 @@ whether a contact will feel stiff or soft — and be right.
 - [ ] Write the manipulator equation from memory and say what each term does.
 - [ ] Explain why $M$ has an argument, with the factor-of-five example.
 - [ ] Compute $\Lambda$ from $J$ and $M$ and interpret the result physically.
-- [ ] State why the manipulability and apparent-mass ellipses are reciprocal.
+- [ ] Distinguish kinematic manipulability, unit-torque dynamic manipulability, and operational inertia by the norm each assumes.
 - [ ] Name the term most responsible for sim-to-real failure and say why.
 
 > [!tip] Going deeper · 더 깊이
@@ -435,7 +440,10 @@ MR 4~5장의 평면 2R 팔에 각 링크 끝의 점질량을 둔다: $m_1 = m_2 
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
 
-원소를 읽어라. 대각 항은 각 링크가 자기 관절에 대해 갖는 고유 관성이고, 비대각의 $\cos\theta_2$ 항은 결합이다. 관절 1이 돌면 링크 2의 질량이 움직이기 때문에 생기고, 그래서 한 관절이 느끼는 관성은 다른 관절이 어디 있는지에 달린다.
+원소를 읽어라. 대각 항은 다른 관절을 고정했을 때 한 관절 속도에 대응하는 유효 관성으로,
+그 관절의 "자기" 링크뿐 아니라 여러 하류 링크의 질량과 관성을 포함할 수 있다. 비대각의
+$\cos\theta_2$ 항은 결합이다. 관절 1이 돌면 링크 2의 질량이 움직이기 때문에 생기고, 그래서
+한 관절이 느끼는 관성은 다른 관절이 어디 있는지에 달린다.
 
 위 숫자 $m_1 = m_2 = 1$, $L_1 = L_2 = 1$을 대입하면 $M$은 $\theta_2$에만 의존한다:
 
@@ -569,8 +577,8 @@ $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\
     <text x="198" y="144" opacity="0.85">팔에 실린 실제 질량: 합쳐서 2 kg</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="190">겉보기 질량 타원의 긴 축은 &#8216;어려운&#8217; 방향이다 &#8212; 긴 축이 쉬운 방향인 MR 5장의 가조작성</text>
-    <text x="20" y="206">타원과 정반대로 읽는다. 둘은 서로 역수인 두 관점이다.</text>
+    <text x="20" y="190">겉보기 질량 타원의 긴 축은 어려운 방향이다. MR 5장은 다른 관절속도 노름을 쓴다.</text>
+    <text x="20" y="206">메트릭을 밝히지 않았다면 축 길이의 역수가 아니라 잃어버린 방향만 비교한다.</text>
   </g>
 </svg>
 
@@ -583,10 +591,12 @@ $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\
 - **하나의 강성 게인이 모든 방향에서 옳을 수 없다.** 임피던스 제어기의 폐루프 거동은
   $\Lambda$에 의존하므로, 같은 게인이 방향과 자세에 따라 다른 유효 동역학을 준다.
 
-MR 5장의 가조작성 타원체와의 관계는 정확한 일치가 아니라 정성적이다 — $\Lambda^{-1} = JM^{-1}J^\top$은 *동역학* 가조작성 타원체의 역이고, 5장의 기구학적 $JJ^\top$과는 $M \propto I$일 때만 일치한다. 진술의 방향은 그대로다: 그 타원체의 긴 축은
-*움직이기 쉬운* 방향이고, 겉보기 질량 타원의 긴 축은 *움직이기 어려운* 방향이다. 특이점
-근처에서 가조작성 타원은 직선으로 붕괴하고, 대응해서 $\Lambda$는 그 방향으로 발산한다 —
-팔이 더 이상 움직일 수 없는 방향으로 사실상 무한히 무거워진다.
+MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정확한 역수 관계는 아니다. 기구학적
+가조작성은 단위 관절속도 노름 아래 $JJ^\top$을 쓴다. 작업공간 관성은 동역학 보상 뒤 과제 렌치를
+과제 가속도로 보내는 $JM^{-1}J^\top$을 쓴다. 반면 단위 **유클리드 관절토크** 아래 동적 가속도
+타원체를 정의하면 형상 행렬은 $JM^{-2}J^\top$이다. 관성과 노름을 특별하게 고를 때만 서로
+일치한다. 특이점 근처에서 셋 모두 잃어버린 과제 방향을 드러내지만, 노름을 밝히지 않고 축 길이가
+정확한 역수라고 부르면 안 된다.
 
 **관성보다 역행렬 안쪽부터 읽는다.** 힘에서 가속도로 가는 국소 해석을 위해 속도 항과 중력을 잠시 분리한다. 작업 힘은 $J^\top$를 통해 관절 토크가 되고, $M^{-1}$을 통해 관절 가속도가 되며, $J$를 통해 다시 작업 좌표의 가속도가 된다. 따라서 $JM^{-1}J^\top$는 “여기서 이 힘이 작업 가속도를 얼마나 만드는가”에 답한다. 이를 뒤집으면 가속도로 힘을 표현할 때의 관성이다.
 
@@ -637,7 +647,7 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 - [ ] 매니퓰레이터 방정식을 외워서 쓰고 각 항이 하는 일을 말한다.
 - [ ] $M$에 왜 인자가 붙는지 5배 예제로 설명한다.
 - [ ] $J$와 $M$에서 $\Lambda$를 계산하고 물리적으로 해석한다.
-- [ ] 가조작성 타원과 겉보기 질량 타원이 왜 서로 역수인지 말한다.
+- [ ] 기구학적 가조작성, 단위 토크 동적 가조작성, 작업공간 관성을 각각 어떤 노름 아래 정의하는지 구분한다.
 - [ ] sim-to-real 실패에 가장 크게 책임 있는 항을 대고 이유를 말한다.
 
 > [!tip] 더 깊이 · Going deeper

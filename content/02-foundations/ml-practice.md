@@ -130,8 +130,10 @@ $TP = 4.0$, $FP = 10.6$:
 | **Precision** | **0.80** | **0.27** |
 
 The ROC curve and the AUC do not move at all, while precision collapses by a factor of
-three. **ROC and AUC are computed from the columns of the confusion matrix and never see the
-class balance**; precision is computed across the columns and sees nothing else. So an AUC
+three. **TPR and FPR are conditional rates within the actual-positive and actual-negative
+groups**, so preserving the two class-conditional score distributions preserves the ROC
+curve even when the positive prevalence changes. Precision instead conditions on a positive
+prediction and therefore depends on prevalence. So an AUC
 measured on a balanced benchmark tells you almost nothing about how a system behaves in a
 deployment where positives are rare — the situation in
 [[04-robotics/human-intent-prediction|23. Intent prediction §5]], and in every alarm system
@@ -325,9 +327,10 @@ $TP = 4.0$, $FP = 10.6$이 된다.
 | ROC 점 | 동일 | 동일 |
 | **정밀도** | **0.80** | **0.27** |
 
-ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무너진다. **ROC와 AUC는 혼동행렬의 각
-열 안에서 계산되므로 클래스 균형을 아예 보지 못하고**, 정밀도는 열을 가로질러 계산되므로 그것만
-본다. 그러므로 균형 잡힌 벤치마크에서 잰 AUC는 양성이 드문 현장에서 시스템이 어떻게 굴지에
+ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무너진다. **TPR과 FPR은 실제 양성군과
+실제 음성군 안에서 각각 계산되는 조건부 비율**이므로 두 클래스의 조건부 점수분포가 그대로라면
+양성 비율이 바뀌어도 ROC 곡선은 유지된다. 반면 정밀도는 양성으로 예측된 표본에 조건화하므로
+기저율에 의존한다. 그러므로 균형 잡힌 벤치마크에서 잰 AUC는 양성이 드문 현장에서 시스템이 어떻게 굴지에
 대해 거의 아무것도 말해 주지 않는다 —
 [[04-robotics/human-intent-prediction|23. 의도 예측 §5]]의 상황이고, 현장의 모든 경보
 시스템의 상황이다. 논문이 AUC를 보고하면, 배포 기저율 위에서 명시된 재현율에 대한 정밀도를

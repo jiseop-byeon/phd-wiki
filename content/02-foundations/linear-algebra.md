@@ -225,9 +225,10 @@ For the line-fitting example, the first column says how changing the intercept m
 - **Where you will actually meet it.** Two places, and both make the abstraction concrete:
   - *Taylor's second-order term* ([[02-foundations/engineering-math|0.5 §2]]) is
     $\tfrac12\,\delta^\top H \delta$ — the curvature you feel when stepping $\delta$ away
-    from a point. $H \succeq 0$ says the surface curves upward *whichever direction you
-    walk*, which is precisely the condition for a local minimum
-    ([[02-foundations/optimization|4. Optimization §3]]).
+    from a point. At a stationary point, $H \succ 0$ is sufficient for a strict local
+    minimum; $H \succeq 0$ is necessary but not sufficient. For example,
+    $f(x,y)=x^4-y^4$ has zero gradient and the zero (hence PSD) Hessian at the origin, but
+    the origin is a saddle. See [[02-foundations/optimization|4. Optimization §3]].
   - *Variance of any linear readout*: for a random vector $x$ with covariance $\Sigma$,
     $\text{Var}(w^\top x) = w^\top \Sigma w$. A variance cannot be negative — and that,
     with no further argument, is **why every covariance matrix is PSD**. When a paper says
@@ -656,8 +657,10 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **실제로 만나게 되는 자리.** 두 곳이고, 둘 다 이 추상을 구체로 만든다:
   - *테일러의 2차 항*([[02-foundations/engineering-math|0.5 §2]])이
     $\tfrac12\,\delta^\top H \delta$다 — 어떤 점에서 $\delta$만큼 움직일 때 느끼는 곡률.
-    $H \succeq 0$은 *어느 방향으로 걸어도* 표면이 위로 휜다는 뜻이고, 그것이 정확히 지역
-    최솟값의 조건이다([[02-foundations/optimization|4. 최적화 §3]]).
+    정상점에서 $H \succ 0$이면 엄격한 지역 최솟값이라는 충분조건이고, $H \succeq 0$은
+    필요하지만 충분하지 않다. 예를 들어 $f(x,y)=x^4-y^4$는 원점에서 그래디언트와 헤시안이
+    모두 0(따라서 PSD)이지만 원점은 안장점이다
+    ([[02-foundations/optimization|4. 최적화 §3]]).
   - *임의의 선형 판독값의 분산*: 공분산이 $\Sigma$인 확률벡터 $x$에 대해
     $\text{Var}(w^\top x) = w^\top \Sigma w$. 분산은 음수가 될 수 없고 — 더 이상의 논증 없이
     이것이 **모든 공분산 행렬이 PSD인 이유**다. 논문의 "$\Sigma \succeq 0$"은 그 이상 별난

@@ -61,7 +61,10 @@ Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that 
 - **Monocular depth ambiguity.** From one camera, scale and depth are recoverable only through priors. A 40 mm MPJPE from a calibrated multi-camera rig and a 40 mm MPJPE from a phone are not the same result.
 
 > [!example] Worked interpretation
-> A paper reports PA-MPJPE $= 42$ mm. A shoulder-to-shoulder width is roughly 400 mm. The error is about 10% of torso width — enough to tell facing direction coarsely, not enough to distinguish a 10° torso rotation. If the intent cue you need *is* a 10° rotation, this model does not supply it, regardless of how good the number looks.
+> A paper reports PA-MPJPE $= 42$ mm. Because Procrustes alignment has removed global
+> rotation and scale, that number alone says nothing about absolute facing direction or the
+> ability to distinguish a 10° torso rotation. If orientation is the intent cue, require an
+> unaligned rotation error or a task-specific orientation metric.
 
 > [!example] Worked example · 계산 예제
 > **Turning 40 mm MPJPE into a decision.** Standard anthropometry (Drillis & Contini) puts
@@ -70,15 +73,17 @@ Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that 
 > the segment it terminates.
 >
 > Now ask the question the downstream page actually asks. Two objects sit 100 mm apart and you
-> want to know which one the wrist is reaching for. A 40 mm error against a 50 mm half-separation
-> decides it, but barely: it is a $50/40 = 1.25\sigma$ margin, so a plain nearest-object rule is
-> wrong a noticeable fraction of the time. Move the objects to 50 mm apart and the margin is
-> $25/40 = 0.63\sigma$ — the estimator can no longer separate them at all.
+> want to know which one the wrist is reaching for. **MPJPE alone cannot answer this.** It is a
+> mean Euclidean distance across joints and examples, not the wrist's directional standard
+> deviation; writing $50/40=1.25\sigma$ would invent a noise model. You need the wrist-error
+> distribution projected onto the line separating the objects, together with bias and temporal
+> correlation, then evaluate the actual nearest-object decision.
 >
-> **The reading this gives you.** MPJPE is not a score, it is a length, and it only means
+> **The reading this gives you.** MPJPE is not a complete uncertainty model; it is an average
+> length, and it only means
 > something once you name the length it has to beat. That is also why "state of the art by 3 mm"
-> is usually not a claim about capability: 3 mm is 1% of a forearm and moves no decision
-> boundary that a real task cares about. Ask instead which error the task needs, then read the
+> is not yet a claim about capability: 3 mm is about 1% of a forearm, but whether it changes
+> a task decision cannot be inferred from aggregate MPJPE. Ask which error the task needs, then read the
 > table to see whether anything crosses it.
 
 ### 4. Gaze, and the substitution nobody flags
@@ -247,22 +252,24 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 - **단안 깊이 모호성.** 카메라 하나에서 스케일과 깊이는 사전지식으로만 복원된다. 교정된 다중 카메라의 40 mm와 휴대폰의 40 mm는 같은 결과가 아니다.
 
 > [!example] 해석 예제
-> 어떤 논문이 PA-MPJPE $= 42$ mm를 보고했다. 어깨 너비는 대략 400 mm다. 오차가 몸통 너비의 약 10% — 향하는 방향을 거칠게 아는 데는 충분하고, 몸통 10° 회전을 구분하기엔 부족하다. 네가 필요한 의도 단서가 *바로 그 10° 회전*이면, 숫자가 아무리 좋아 보여도 이 모델은 그걸 주지 못한다.
+> 어떤 논문이 PA-MPJPE $= 42$ mm를 보고했다. Procrustes 정렬이 전역 회전과 스케일을 제거한
+> 뒤의 평균 관절 거리이므로, 이 숫자만으로 절대 facing direction이나 10° 몸통 회전의 구분
+> 능력을 판단할 수 없다. 방향이 의도 단서라면 정렬 전 회전 오차나 과제별 방향 지표가 필요하다.
 
 > [!example] 계산 예제 · Worked example
 > **MPJPE 40 mm를 결정으로 바꾸기.** 표준 인체 측정(Drillis & Contini)은 아래팔 길이를
 > $0.146H$로 잡는다. 키 1.75 m 성인이면 256 mm다. 따라서 Human3.6M의 MPJPE 40 mm는 아래팔의
 > $40/256 = \mathbf{16\%}$다 — 관절이 자신이 끝맺는 분절의 6분의 1 안쪽에 놓인다는 뜻이다.
 >
-> 이제 뒷단 페이지가 실제로 던지는 질문을 해 보자. 물체 둘이 100 mm 떨어져 있고, 손목이 그중
-> 어느 쪽으로 뻗고 있는지 알고 싶다. 50 mm의 절반 간격에 대해 40 mm 오차는 판정을 해 내지만
-> 아슬아슬하다. $50/40 = 1.25\sigma$ 여유이니 단순한 최근접 물체 규칙은 눈에 띄는 비율로
-> 틀린다. 물체를 50 mm 간격으로 옮기면 여유는 $25/40 = 0.63\sigma$ — 이 추정기는 더 이상 둘을
-> 구분하지 못한다.
+> 이제 뒷단 페이지가 실제로 던지는 질문을 해 보자. 물체 둘이 100 mm 떨어져 있고 손목이 어느
+> 쪽으로 가는지 알고 싶어도 **MPJPE만으로는 답할 수 없다.** MPJPE는 관절과 사례에 걸친 평균
+> 유클리드 거리이지 손목의 특정 방향 표준편차가 아니다. $50/40=1.25\sigma$라 쓰면 없던 잡음
+> 모델을 만든다. 물체를 잇는 방향으로 투영한 손목 오차의 분포, 편향, 시간 상관을 구한 뒤 실제
+> 최근접 물체 결정을 평가해야 한다.
 >
-> **여기서 얻는 독법.** MPJPE는 점수가 아니라 길이이고, 그것이 이겨야 할 길이를 지목해야만
+> **여기서 얻는 독법.** MPJPE는 완전한 불확실성 모델이 아니라 평균 길이이고, 그것이 이겨야 할 길이를 지목해야만
 > 비로소 뜻을 갖는다. "3 mm 차이로 최고 성능"이 대개 능력에 관한 주장이 아닌 이유이기도 하다.
-> 3 mm는 아래팔의 1%이고, 실제 과제가 신경 쓰는 어떤 결정 경계도 움직이지 않는다. 대신 그
+> 3 mm는 아래팔의 약 1%이지만, 실제 결정이 바뀌는지는 집계 MPJPE만으로 알 수 없다. 대신 그
 > 과제가 요구하는 오차가 얼마인지를 먼저 묻고, 그다음에 표에서 그 선을 넘는 것이 있는지를
 > 읽어라.
 

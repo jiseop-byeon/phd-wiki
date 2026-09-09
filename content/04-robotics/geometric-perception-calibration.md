@@ -194,6 +194,20 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 > the *pose is right in the robot's base frame* — that also requires correct extrinsics
 > and time synchronization, which many papers hold fixed and out of scope.
 
+### 7.5 From seeing an error to correcting it: visual servoing
+
+Perception does not close a robot loop until an image or pose error becomes a velocity
+command. **PBVS** estimates two poses, forms a pose error such as
+$\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$, and commands a twist that reduces
+$\xi$. Its accuracy inherits calibration and pose-estimation errors. **IBVS** stays in the
+image: for image features $s$, $\dot s=L_s v_c$, where the image Jacobian $L_s$ depends on
+feature depth; a local law such as $v_c=-\lambda L_s^+(s-s^*)$ reduces pixel error. IBVS can
+be less sensitive to full pose reconstruction but still needs depth estimates and a
+well-conditioned feature geometry. Neither equation alone guarantees visibility, actuator
+limits, global convergence, or collision avoidance. Read a "closed-loop perception" claim
+by identifying the error, Jacobian, control rate, depth source, and recovery outside the
+local basin.
+
 ### After reading
 
 - Project a 3D point through a pinhole model by hand.
@@ -202,6 +216,7 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 - Explain ICP's loop and why it needs initialization.
 - Name the calibrations a camera+LiDAR+arm system needs.
 - Interpret reprojection error without over-trusting it.
+- Distinguish PBVS from IBVS and identify where pose, calibration, depth and the image Jacobian enter the loop.
 
 > [!tip] Going deeper · 더 깊이
 > Szeliski's [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/) is free and covers this page's whole span; when you need multi-view geometry stated as theorems — essential and fundamental matrices, triangulation, bundle adjustment — Hartley and Zisserman's *Multiple View Geometry in Computer Vision* is the reference the field cites.
@@ -406,6 +421,17 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 > pose가 맞다*는 뜻은 아니다 — 그러려면 올바른 extrinsics와 시간 동기화도 필요한데,
 > 많은 논문이 이를 고정된 범위 밖 가정으로 둔다.
 
+### 7.5 오차를 보고 고치는 명령으로: visual servoing
+
+이미지나 pose 오차가 속도 명령이 되어야 인식이 로봇 루프를 닫는다. **PBVS**는 두 자세를
+추정해 $\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$ 같은 pose error를 만들고,
+$\xi$를 줄이는 twist를 명령한다. 정확도는 보정과 pose 추정 오차를 물려받는다. **IBVS**는
+이미지에 남는다. 특징 $s$에 대해 $\dot s=L_s v_c$이고 image Jacobian $L_s$는 특징 깊이에
+의존한다. $v_c=-\lambda L_s^+(s-s^*)$ 같은 국소 법칙이 픽셀 오차를 줄인다. IBVS는 완전한
+pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 좋은 특징 기하가 필요하다. 어느 식도
+시야 유지, 구동기 한계, 전역 수렴, 충돌 회피를 혼자 보장하지 않는다. "closed-loop perception"
+주장은 오차·야코비안·제어 주기·깊이 출처와 국소 수렴 영역 밖의 회복을 확인해 읽는다.
+
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - 핀홀 모델로 3D 점을 손으로 투영할 수 있다
@@ -414,6 +440,7 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 - ICP의 루프와 초기화가 필요한 이유를 설명할 수 있다
 - 카메라+LiDAR+로봇팔 시스템에 필요한 보정들을 나열할 수 있다
 - reprojection error를 과신하지 않고 해석할 수 있다
+- PBVS와 IBVS를 구분하고 pose·보정·깊이·image Jacobian이 루프 어디에 들어가는지 말할 수 있다
 
 > [!tip] 더 깊이 · Going deeper
 > Szeliski의 [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)이 무료이고 이 페이지의 범위를 전부 덮는다. 다시점 기하를 정리로 봐야 할 때 — essential·fundamental 행렬, 삼각측량, 번들 조정 — 는 Hartley·Zisserman의 *Multiple View Geometry in Computer Vision*이 이 분야가 인용하는 참고서다.

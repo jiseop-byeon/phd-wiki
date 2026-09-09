@@ -25,9 +25,11 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 Contact turns position error into force, so control stops being a choice between the two and becomes a choice of the relation between them.*
 
 > [!note] First pass · 처음이라면
-> Read §1 — position control cannot survive contact, with the stiffness numbers — then §2 for impedance versus admittance, then §7. §3 to §5 are what you read when you are actually choosing a controller rather than reading about one.
+> Read §1 — why stiff position tracking becomes dangerous in contact, with the stiffness
+> numbers — then §2 for impedance versus admittance, then §7. §3 to §5 are what you read
+> when you are actually choosing a controller rather than reading about one.
 
-### 1. Position control cannot survive contact
+### 1. Why stiff position tracking becomes dangerous in contact
 
 A position controller's job is to drive position error to zero, and it does so with whatever
 force that requires. In free space this is exactly right. In contact it is a specification
@@ -185,16 +187,22 @@ Craig's 1981 architecture is how you act on that: choose a task frame, and a dia
 
 $$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
 
-Position control runs in the $S$ directions, force control in the complementary ones, and
-the two never fight because they never address the same axis. For sliding a tool along a
+This means that $S$ keeps the task-wrench components assigned to position control, $I-S$ keeps the
+complementary force-controlled components, and $J^\top$ maps their combined task wrench to
+joint torque. The symbols describe the ideal task-space split; an implementation still has
+to handle dynamics, saturation, and model error.
+
+Position control runs in the $S$ directions and force control in the complementary ones. In
+the ideal model those projected objectives do not address the same axis. For sliding a tool along a
 surface: position control in the two tangential directions, force control along the normal.
 
 This is the architecture that made constrained-manipulation tasks *specifiable*, and its
 limitation is the same as its premise — it assumes you know the task frame and the contact
-geometry. When the surface is where you thought it was, hybrid control is exact and easy to
-tune. When the part is 3 mm from where the model says, the selection matrix is assigning
-force control to a direction that is no longer normal to anything, which is the standard
-way construction geometry breaks a factory controller.
+geometry. When the task frame is accurate and the model is adequate, the split is clean and
+comparatively easy to tune. A 3 mm **translation** error makes contact occur early, late, or at the wrong point; it
+does not by itself rotate the surface normal. An orientation or local-shape error rotates the
+true normal, so the nominal selection matrix mixes tangential motion and normal force. Both
+errors are common ways construction geometry breaks a factory controller, but their mechanisms differ.
 
 ### 4. Operational-space control
 
@@ -368,12 +376,14 @@ same conclusion.
   uncertainty deliberately and shows where torque control and position control each fail,
   while a learned variable-impedance action space degrades gracefully.
 
-Read them against §2: choosing an action space *is* choosing where on the impedance–admittance
-causality spectrum the learned layer sits. A policy emitting positions has picked the stiff
-end and cannot express compliance at all; a policy emitting torques has picked the soft end
-and must relearn the inner loop from scratch; a policy emitting impedance parameters is
-asking the classical controller for a behaviour and letting it realise it at 1 kHz — which is
-exactly the division of labour above.
+Read them against §2: choosing an action space helps determine where on the
+impedance–admittance causality spectrum the learned layer sits. A policy that emits positions
+inherits whatever compliance, gains and force feedback its lower-level controller and
+hardware provide; position commands alone do not identify a stiff interface. A torque policy
+has more direct authority but must either learn or be wrapped by stabilising inner-loop
+behaviour. A policy that emits impedance parameters asks a classical controller to render a
+specified relation at high rate. These are architectural choices, not three universal points
+on a single soft-to-stiff scale.
 
 > [!tip] Why this matters for a demonstration-collection thesis
 > If the contribution is force-bearing demonstration data, the action space question arrives
@@ -421,7 +431,7 @@ useful; they do not establish that every system needs the same interface.
 | Was it tested against a **stiff** environment? | Foam and free space hide the instability entirely |
 | Are $M_d, D_d, K_d$ reported, with units? | "Compliant" without numbers is not a specification |
 | Contact **transition** shown, or only steady contact? | The transition is where §5 says the difficulty lives |
-| Control rate, and sensor rate? | Below about 500 Hz, contact regulation is mostly the mechanics, not the controller |
+| Control rate, sensor rate, contact duration and task bandwidth? | Millisecond impact peaks may be dominated by mechanics before feedback reacts; sustained contact can still be regulated at much lower rates. Compare rates with the phenomenon being claimed. |
 | Any passive compliance in the hardware? | If yes, part of the result belongs to the spring, not the algorithm |
 | Position accuracy in free space *and* force accuracy in contact? | Each architecture is bad at one of them; reporting one is reporting half |
 
@@ -467,7 +477,7 @@ tolerance, say which architecture can meet it — and whether any can.
 > 1. The hardware and symptom alone do not determine the architecture. If force feedback generates position references, it is an admittance implementation. Higher contact stiffness can amplify the effect of delay and insufficient damping; check the actual loops, gains and timing before assigning the cause. Stable behavior on foam does not establish stable behavior on steel.
 > 2. $F_{\max} = v\sqrt{\Lambda K}$ is linear in $v$, so the peak force doubles to about 450 N in the stiff case. The duration $\pi\sqrt{\Lambda/K}$ does not contain $v$ at all, so it stays at 1.4 ms. Approaching faster buys you nothing in reaction time and costs you proportionally in force — which is why approach-speed limits, not better control, are the usual fix.
 > 3. Because it places the compliance centre at the tip of the peg, so a lateral misalignment produces lateral compliance and an angular misalignment produces rotation about the tip, instead of each error generating the other. The correction is mechanical, so it happens at the speed of the material rather than the speed of a control loop — and §5 shows the control loop is too slow to have helped anyway.
-> 4. That the policy chose good *positions*. Every compliance in the system belongs to the arm's inner loop and whatever passive give exists in the tool and part; the policy at 10 Hz cannot be regulating contact force, since the contact events of §5 are three orders of magnitude faster. It may well be a good result — it is a result about trajectory selection, not about compliance.
+> 4. At minimum, that the policy chose useful position references. The system may still realise compliance through a lower-level impedance/admittance or force loop and passive hardware, so inspect that stack. A 10 Hz outer policy cannot react to the millisecond impact peak itself, but it can adapt references for slower sustained contact. The strongest supported claim depends on which layer produced the measured force behaviour.
 > 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres or a couple of degrees of error means force control is now acting partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
 
 ### Sources
@@ -505,9 +515,9 @@ tolerance, say which architecture can meet it — and whether any can.
 접촉이 위치 오차를 힘으로 바꾸므로, 제어는 둘 중 하나를 고르는 일이 아니라 둘 사이의 관계를 고르는 일이 된다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 위치 제어는 접촉에서 살아남지 못한다, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
+> 먼저 §1 — 뻣뻣한 위치 추종이 접촉에서 왜 위험해지는지, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
 
-### 1. 위치 제어는 접촉에서 살아남지 못한다
+### 1. 뻣뻣한 위치 추종이 접촉에서 위험해지는 이유
 
 위치 제어기의 일은 위치 오차를 0으로 모는 것이고, 그러기 위해 필요한 힘이 얼마든 그것을 쓴다.
 자유 공간에서는 정확히 옳다. 접촉에서는 물건을 부수라는 명세가 된다. 이제 위치 오차가 무엇을
@@ -657,15 +667,20 @@ Mason의 제약 분석이 어느 방향이 환경의 것인지를 말해 준다.
 
 $$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
 
-$S$ 방향에서는 위치 제어가, 나머지 방향에서는 힘 제어가 돈다. 같은 축을 건드리는 일이 없으므로
-둘이 싸우지 않는다. 표면을 따라 공구를 미끄러뜨린다면: 접선 두 방향은 위치 제어, 법선 방향은
+$S$는 위치 제어에 배정된 작업공간 렌치 성분만 남기고, $I-S$는 상보적인 힘 제어 성분을
+남긴다. $J^\top$은 합쳐진 작업공간 렌치를 관절 토크로 옮긴다. 이 식은 이상적인 작업공간
+분할을 나타내며, 실제 구현은 동역학·포화·모델 오차를 별도로 처리해야 한다.
+
+$S$ 방향에서는 위치 제어가, 나머지 방향에서는 힘 제어가 돈다. 이상적인 모델에서는 두 투영
+목표가 같은 축을 건드리지 않는다. 표면을 따라 공구를 미끄러뜨린다면: 접선 두 방향은 위치 제어, 법선 방향은
 힘 제어.
 
 구속 조작 과제를 *명세 가능하게* 만든 아키텍처이고, 그 한계는 그 전제와 같다 — 과제 프레임과
-접촉 기하를 안다고 가정한다. 표면이 생각한 자리에 있으면 하이브리드 제어는 정확하고 튜닝도
-쉽다. 부재가 모델이 말하는 곳에서 3 mm 벗어나 있으면, 선택 행렬은 더 이상 아무것에도 수직이
-아닌 방향에 힘 제어를 배정하고 있는 것이다. 건설 현장의 기하가 공장용 제어기를 깨뜨리는
-표준적인 방식이 이것이다.
+접촉 기하를 안다고 가정한다. 과제 프레임이 정확하고 모델이 충분하면 분할이 깔끔하고 비교적
+쉽게 튜닝할 수 있다. 3 mm **병진** 오차는 접촉을 너무 일찍·늦게 또는 잘못된 점에서 일으키지만 그 자체로
+표면 법선을 회전시키지는 않는다. 자세나 국소 형상 오차가 실제 법선을 돌리면 명목 선택 행렬이
+접선 운동과 법선 힘을 섞는다. 둘 다 건설 기하가 공장용 제어기를 깨뜨리는 흔한 방식이지만
+기전은 다르다.
 
 ### 4. 작업공간(operational space) 제어
 
@@ -821,11 +836,12 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
   이득을 함께 낸다. 기여는 강건성 축이다 — 접촉 불확실성을 의도적으로 변화시켜 토크 제어와 위치
   제어가 각각 어디서 무너지는지를 보이고, 학습된 가변 임피던스 행동 공간은 완만하게 나빠진다.
 
-§2에 비추어 읽어라: 행동 공간을 고르는 일이 곧 **학습 층을 임피던스–어드미턴스 인과 스펙트럼의
-어디에 놓을지 고르는 일**이다. 위치를 내는 정책은 뻣뻣한 끝을 골랐으므로 컴플라이언스를 아예
-표현할 수 없고, 토크를 내는 정책은 무른 끝을 골랐으므로 내부 루프를 처음부터 다시 배워야 하며,
-임피던스 파라미터를 내는 정책은 고전 제어기에게 *거동*을 요청하고 1 kHz에서 실현하게 맡긴다 —
-이것이 바로 위의 분업이다.
+§2에 비추어 읽어라. 행동 공간은 학습 층이 임피던스–어드미턴스 인과 구조의 어디에 놓이는지를
+정하는 요소다. 위치를 내는 정책의 실제 컴플라이언스는 하위 제어기의 게인·힘 피드백과 하드웨어에
+달려 있으므로 위치 명령만으로 뻣뻣하다고 판정할 수 없다. 토크 정책은 더 직접적인 권한을 갖지만
+안정화 거동을 배우거나 별도 내부 루프로 둘러싸야 한다. 임피던스 파라미터를 내는 정책은 고전
+제어기에 원하는 관계를 고속으로 구현하도록 요청한다. 셋은 단일한 soft-to-stiff 축의 보편적 세
+점이 아니라 서로 다른 아키텍처 선택이다.
 
 > [!tip] 시연 수집이 기여인 논문에 이것이 왜 중요한가
 > 기여가 힘을 담은 시연 데이터라면 행동 공간 질문이 두 번 온다. 수집 중에 *원격조작자*가 무엇을
@@ -834,9 +850,9 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 
 #### 수렴, 그리고 그것이 자리 잡아 가는 인터페이스
 
-이 프레이밍은 더 이상 이 위키의 의견만이 아니다 — 분야가 움직이고 있는 방향이고, 그 방향은
-일방향이다. **VLA가 운동 제어기에서, 고전적 내부 루프를 매개변수화하는 느린 의미 층으로 강등되고
-있다.** 고전 제어의 발상이 아키텍처 논쟁에서 이기고 있는 것이다.
+최근 여러 시스템은 한 방향을 보여 주지만 아직 합의나 일방향 수렴은 아니다. **VLA를 고전적
+고속 내부 루프를 매개변수화하는 느린 의미 층으로 쓰는 설계가 늘고 있다.** 다음 사례는 이 선택이
+유용할 수 있음을 보이지만 모든 접촉 시스템의 유일한 인터페이스를 확정하지는 않는다.
 
 - **ForceVLA**(NeurIPS 2025)는 6축 힘/토크를 부차가 아니라 **주** 입력 채널로 다루고, 행동
   디코딩 중에 힘 인지 mixture of experts로 융합한다 — 평균 성공률 +23.2%, 플러그 삽입에서 최대
@@ -852,8 +868,8 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 정직한 균형추: 이것은 **실무**의 수렴이지 공동체의 수렴이 아니다. 고전적 접촉 계열 — 접촉 모드
 폭발과 비평활 접촉 그래디언트에 관한 Tedrake 그룹의 작업 — 은 프런티어 VLA 논문들에 거의 인용되지
 않고, 대표 릴리스들은 여전히 위치 제어되고 대체로 힘에 눈이 멀어 있다. 실제로 일어나는 일은,
-접촉이 많은 과제에 VLA를 배치하려는 모든 그룹이 임피던스나 어드미턴스 내부 루프가 필요하다는
-것을 독립적으로 재발견하고, 이 페이지의 도구상자로 손을 뻗는 것이다.
+접촉이 많은 과제에 VLA를 배치하는 일부 그룹이 임피던스·어드미턴스·수동성 계층을 유용하게
+사용하고 있다는 것이다. 모든 시스템에 같은 인터페이스가 필요하다는 근거는 아니다.
 
 > [!note] 기록해 둘 예측
 > 그 합류가 완성된다면 **인터페이스는 위치가 아니라 컴플라이언스 파라미터일 것이다.**
@@ -868,7 +884,7 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 | **단단한** 환경에서 검증했는가? | 폼과 자유 공간은 불안정을 통째로 감춘다 |
 | $M_d, D_d, K_d$를 단위와 함께 보고했는가? | 숫자 없는 "유연함"은 명세가 아니다 |
 | 접촉 **천이**를 보였는가, 정상 접촉만인가? | §5에 따르면 어려움은 천이에 산다 |
-| 제어 주기와 센서 주기는? | 약 500 Hz 아래에서는 접촉 조절의 대부분이 제어기가 아니라 역학이다 |
+| 제어·센서 주기, 접촉 지속 시간과 과제 대역폭은? | 밀리초 충격 첨두는 피드백 전 역학이 지배할 수 있지만 지속 접촉은 훨씬 낮은 주기에서도 조절할 수 있다. 주장하는 현상의 시간척도와 비교한다. |
 | 하드웨어에 수동 컴플라이언스가 있는가? | 있다면 결과의 일부는 알고리즘이 아니라 스프링의 몫이다 |
 | 자유 공간의 위치 정확도 *그리고* 접촉의 힘 정확도를 함께 보고했는가? | 각 아키텍처는 둘 중 하나에 약하다. 하나만 보고하는 것은 절반만 보고하는 것이다 |
 
@@ -911,7 +927,7 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 > 1. 하드웨어와 증상만으로 구조를 확정할 수 없다. 힘 피드백이 위치 기준을 만든다면 어드미턴스 구현이다. 높은 접촉 강성은 지연과 부족한 감쇠의 영향을 키울 수 있다. 실제 루프·게인·시점을 확인한 뒤 원인을 판정한다. 폼에서 안정적이었다고 강철에서도 안정적이라는 뜻은 아니다.
 > 2. $F_{\max} = v\sqrt{\Lambda K}$는 $v$에 선형이므로 단단한 경우 최대 힘은 약 450 N으로 두 배가 된다. 지속 시간 $\pi\sqrt{\Lambda/K}$에는 $v$가 아예 없으므로 1.4 ms 그대로다. 빨리 접근해도 반응 시간은 하나도 벌지 못하고 힘만 비례해서 치른다 — 더 나은 제어가 아니라 접근 속도 제한이 통상적인 처방인 이유다.
 > 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
-> 4. 정책이 좋은 *위치*를 골랐다는 것. 시스템의 모든 컴플라이언스는 팔의 내부 루프와 공구·부재에 있는 수동적 여유의 몫이다. 10 Hz의 정책이 접촉력을 조절하고 있을 수는 없다. §5의 접촉 사건은 세 자릿수 더 빠르기 때문이다. 좋은 결과일 수는 있다 — 다만 컴플라이언스가 아니라 궤적 선택에 관한 결과다.
+> 4. 최소한 정책이 유용한 위치 기준을 골랐다는 것. 시스템은 하위 임피던스·어드미턴스·힘 루프와 수동 하드웨어로 컴플라이언스를 만들 수도 있으므로 그 스택을 확인해야 한다. 10 Hz 외부 정책은 밀리초 충격 첨두 자체에 반응할 수 없지만 더 느린 지속 접촉을 위한 기준은 바꿀 수 있다. 측정된 힘 거동을 어느 층이 만들었는지에 따라 가장 강한 주장이 달라진다.
 > 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터나 몇 도의 오차는 힘 제어가 이제 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용한다는 뜻이고, 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
 
 ### 출처

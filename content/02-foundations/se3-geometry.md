@@ -176,6 +176,18 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
 
 **Pose and velocity answer different questions.** A pose says where a frame is now; a twist says how rigid-body motion changes instantaneously. A finite rotation cannot generally be obtained by simply adding its matrix entries or Euler angles, because successive rotations compose through multiplication and order matters. The small-motion approximation supplies a local linear language in which differentiation becomes possible.
 
+> [!example] From an axis to $T$, and back
+> Let a revolute joint rotate about the world $z$ axis through the point
+> $q=(1,0,0)$, with $\omega=(0,0,1)$. Its screw axis is
+> $S=(\omega,v)$ with $v=-\omega\times q=(0,-1,0)$, and
+> $[S]=\begin{pmatrix}[\omega]_\times&v\\0&0\end{pmatrix}$.
+> At $\theta=\pi/2$,
+> $e^{[S]\theta}=\begin{pmatrix}R_z(90°)&(I-R_z)q\\0&1\end{pmatrix}$,
+> whose translation is $(1,-1,0)$. The motion is rotation about a line displaced from the
+> origin, not rotation plus an arbitrary translation. Conversely, away from branch
+> ambiguities such as rotations near $\pi$, $\log T=[S]\theta$; the vee operator reads its
+> six coordinates. This is the exact bridge used by PoE forward kinematics and pose-error IK.
+
 The linear part of a twist also depends on the reference frame and its origin. The same rotating body gives different point velocities at different distances from its axis. Before treating the last components of a twist as tool-tip translation, determine whether the twist is expressed in a body frame or a space frame and where that frame's origin lies. The detailed distinction is developed in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions]].
 
 **Check your understanding.** Changing the reference frame changes the coordinates of the twist without changing the physical motion. This is a coordinate conversion problem, not a new motion command. It is why a velocity vector without its frame is an incomplete robot interface.
@@ -373,6 +385,17 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   ([[04-robotics/modern-robotics-book|MR 3장]]).
 
 **자세와 속도는 다른 질문이다.** 자세는 프레임이 지금 어디에 있는지, 트위스트는 강체 운동이 순간적으로 어떻게 변하는지 말한다. 유한 회전은 보통 행렬 성분이나 오일러 각을 더해 얻지 못한다. 회전은 곱으로 합성하고 순서가 중요하다. 미소 운동 근사는 미분할 수 있는 국소 선형 언어를 제공한다.
+
+> [!example] 축에서 $T$로, 다시 축으로
+> 월드 $z$축과 평행하고 $q=(1,0,0)$을 지나는 회전 관절을 잡자.
+> $\omega=(0,0,1)$이면 screw axis는 $S=(\omega,v)$,
+> $v=-\omega\times q=(0,-1,0)$이고
+> $[S]=\begin{pmatrix}[\omega]_\times&v\\0&0\end{pmatrix}$다.
+> $\theta=\pi/2$에서
+> $e^{[S]\theta}=\begin{pmatrix}R_z(90°)&(I-R_z)q\\0&1\end{pmatrix}$이고 병진은
+> $(1,-1,0)$이다. 원점에서 벗어난 선 둘레의 회전이지, 회전과 임의 병진을 따로 붙인 것이 아니다.
+> 반대로 $\pi$ 근처 회전 같은 branch 모호성을 피하면 $\log T=[S]\theta$이고 vee 연산이 여섯
+> 좌표를 읽는다. 이것이 PoE 순기구학과 pose-error IK가 쓰는 정확한 다리다.
 
 트위스트의 선형 성분도 기준 프레임과 원점에 달려 있다. 같은 회전체라도 축에서 떨어진 거리에 따라 점 속도가 다르다. 뒤쪽 성분을 도구 끝의 병진 속도로 읽기 전에 바디·공간 프레임 중 어디서 표현했고 원점이 어디인지 정한다. 자세한 구분은 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동]]에서 다룬다.
 

@@ -111,8 +111,9 @@ Two practical points the figure is making:
 
 ### 4. The error budget is where mobile manipulation actually differs
 
-A fixed arm has one source of end-effector error: the arm. A mobile manipulator has at least
-four, and they add at the contact:
+A fixed arm already has several sources of end-effector error — calibration, sensing,
+compliance, and workpiece uncertainty. A mobile base adds localization, settling, and a
+base-to-arm transform, so more uncertain transforms meet at the contact:
 
 | Source | Typical scale | Notes |
 |---|---|---|
@@ -121,9 +122,9 @@ four, and they add at the contact:
 | Arm kinematic error | sub-millimetre to millimetres | plus deflection under load ([[01-canonical-papers/notes/8-construction/kindle-jaibot\|Kindle et al.]]) |
 | Workpiece position | centimetres | the part is where someone put it |
 
-Two consequences. First, **a task with a millimetre tolerance cannot be met open-loop by a
-mobile manipulator** — the budget does not close, which is why contact and vision servoing
-are not optional extras but the mechanism. Second, the honest way to read a mobile
+Two consequences. First, **a centimetre-scale open-loop error budget does not support a
+millimetre-tolerance claim** — such systems usually need tighter metrology, task-level
+vision/contact feedback, or both. Second, the honest way to read a mobile
 manipulation paper is to ask which of these four it measured and which it assumed away.
 
 The reference treatment of why mobility and manipulation do not simply concatenate is
@@ -140,15 +141,20 @@ navigation and manipulation constraints.
 > domains — which is a different subject wearing a similar name.
 
 > [!example] Worked example · 계산 예제
-> **Adding up a mobile grasp.** Independent error sources add in quadrature, so take a
+> **Adding up a mobile grasp.** As a first-order illustration, treat the listed errors as
+> independent, zero-mean scalar uncertainties and add their standard deviations in
+> quadrature. (Correlated errors, bias, orientation error, and non-Gaussian tails require a
+> covariance propagation or empirical task-space distribution.) Take a
 > representative budget at the moment the gripper closes: base localization $\sigma = 5$ cm,
 > base-to-arm mount 0.3 cm, arm kinematics and joint encoders 0.3 cm, hand–eye extrinsics
 > 1.0 cm, object pose from perception 1.0 cm.
 >
 > $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
 >
-> A parallel jaw opening 60 mm onto a 40 mm object tolerates about $\pm 10$ mm. The budget is
-> **5× the tolerance**, so the grasp fails.
+> A parallel jaw opening 60 mm onto a 40 mm object has only about $\pm 10$ mm of lateral
+> geometric clearance. A $5.2$ cm **one-standard-deviation** budget is far larger than that
+> clearance, so this open-loop design would have a high failure risk; the calculation alone
+> is not a deterministic success/failure proof.
 >
 > Now look at where it went. Base localization contributes $25/27.18 = \mathbf{92\%}$ of the
 > *variance*. Halving the arm's calibration error changes $\sigma_{\text{total}}$ from 5.20 cm
@@ -158,7 +164,8 @@ navigation and manipulation constraints.
 >
 > **The reading this gives you.** This single calculation is why mobile manipulation is
 > organized the way it is: the base is not required to be accurate, it is required to get the
-> object into a sensor's view, after which the arm closes the loop locally. A paper reporting a
+> object into a sensor's view accurately enough for the next sensing stage, after which the arm
+> closes the loop locally. A paper reporting a
 > mobile-manipulation success rate without saying whether it re-observes at the goal has not
 > told you which of these two systems it built.
 
@@ -324,8 +331,9 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 
 ### 4. 모바일 조작이 실제로 달라지는 곳은 오차 예산이다
 
-고정된 팔은 말단 오차의 원천이 하나다: 팔. 모바일 매니퓰레이터는 최소 넷이고, 그것들이 접촉
-지점에서 더해진다:
+고정된 팔에도 보정·센싱·유연성·작업물 불확실성처럼 말단 오차원이 여럿 있다. 모바일 베이스는
+위치 추정·기계적 정착·베이스–팔 변환 오차를 더하므로, 접촉 지점에서 만나는 불확실한 변환이
+더 많아진다:
 
 | 원천 | 통상 규모 | 비고 |
 |---|---|---|
@@ -334,8 +342,8 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 | 팔의 기구학 오차 | 밀리미터 이하~밀리미터 | 여기에 하중 하의 변형([[01-canonical-papers/notes/8-construction/kindle-jaibot\|Kindle 등]]) |
 | 작업물 위치 | 센티미터 | 부재는 누군가 놓은 자리에 있다 |
 
-귀결 둘. 첫째, **밀리미터 공차의 작업을 모바일 매니퓰레이터가 개루프로 맞출 수 없다** — 예산이
-닫히지 않는다. 접촉과 비전 서보잉이 선택적 부가물이 아니라 기제인 이유가 그것이다. 둘째, 모바일
+귀결 둘. 첫째, **센티미터급 개루프 오차 예산은 밀리미터 공차 주장을 뒷받침하지 못한다** — 이런
+시스템은 보통 더 정밀한 계측, 작업 수준의 비전·접촉 피드백, 또는 둘 다가 필요하다. 둘째, 모바일
 조작 논문을 읽는 정직한 방법은 이 넷 중 무엇을 측정했고 무엇을 가정으로 없앴는지 묻는 것이다.
 
 이동과 조작이 그냥 이어 붙는 것이 아닌 이유에 대한 기준 서술은 Brock, Park, Toussaint의
@@ -350,14 +358,17 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 다른 주제다.
 
 > [!example] 계산 예제 · Worked example
-> **모바일 파지의 오차를 더해 보기.** 독립적인 오차원은 제곱합으로 더해지니, 그리퍼가 닫히는
-> 순간의 대표적인 예산을 잡아 보자: 베이스 위치 추정 $\sigma = 5$ cm, 베이스–팔 장착부 0.3 cm,
+> **모바일 파지의 오차를 더해 보기.** 우선 아래 오차들을 서로 독립인 영평균 스칼라 불확실성으로
+> 근사하고 표준편차를 제곱합으로 더해 보자. 상관된 오차·편향·방향 오차·비가우시안 꼬리는 공분산
+> 전파나 실측 작업공간 분포가 필요하다. 그리퍼가 닫히는 순간의 대표적인 예산은 베이스 위치 추정
+> $\sigma = 5$ cm, 베이스–팔 장착부 0.3 cm,
 > 팔 기구학과 관절 엔코더 0.3 cm, 손–눈 외부 파라미터 1.0 cm, 인식이 준 물체 자세 1.0 cm.
 >
 > $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
 >
-> 60 mm까지 벌어지는 평행 그리퍼가 40 mm 물체를 잡을 때 허용 오차는 약 $\pm 10$ mm다. 예산이
-> **허용 오차의 5배**이니 파지는 실패한다.
+> 60 mm까지 벌어지는 평행 그리퍼가 40 mm 물체를 잡을 때 횡방향 기하 여유는 약 $\pm 10$ mm다.
+> $5.2$ cm는 **1 표준편차**만으로도 그 여유보다 훨씬 크므로 이 개루프 설계는 실패 위험이 높다.
+> 이 계산만으로 개별 시도의 성공·실패가 결정된다는 뜻은 아니다.
 >
 > 이제 그것이 어디서 왔는지 보라. 베이스 위치 추정이 *분산*의 $25/27.18 = \mathbf{92\%}$를
 > 차지한다. 팔의 보정 오차를 절반으로 줄이면 $\sigma_{\text{total}}$은 5.20 cm에서 5.19 cm가
@@ -365,7 +376,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 물체를 다시 관측하면 $\sqrt{0.3^2 + 0.3^2 + 1.0^2} = 1.1$ cm만 남는다.
 >
 > **여기서 얻는 독법.** 모바일 조작이 지금의 모양인 이유가 이 계산 하나에 다 있다. 베이스에
-> 요구되는 것은 정확도가 아니라 *물체를 센서 시야 안에 넣는 것*이고, 그다음은 팔이 국소적으로
+> 요구되는 것은 다음 감지 단계가 작동할 만큼 *물체를 센서 시야 안에 넣는 것*이고, 그다음은 팔이 국소적으로
 > 루프를 닫는다. 목표 지점에서 다시 관측하는지 밝히지 않은 채 모바일 조작 성공률을 보고하는
 > 논문은, 둘 중 어느 시스템을 만든 것인지 말하지 않은 것이다.
 

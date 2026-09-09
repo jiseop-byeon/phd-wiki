@@ -96,9 +96,9 @@ at ~1.94 rad/s while it decays. For an individual mode, the real part sets growt
 and the imaginary part sets oscillation. A full output can still be non-monotone with real
 poles because modal coefficients, zeros, and output choice also matter.
 
-### 4. Stability, and the two half-stories
+### 4. Asymptotic stability, and the two half-stories
 
-| System | Stable iff | Mnemonic |
+| System | Asymptotically stable iff | Mnemonic |
 |---|---|---|
 | Continuous $\dot x = Ax$ | all $\text{Re}(\lambda_i) < 0$ | left half-plane |
 | Discrete $x_{t+1} = A_dx_t$ | all $\lvert\lambda_i\rvert < 1$ | inside the unit circle |
@@ -106,14 +106,25 @@ poles because modal coefficients, zeros, and output choice also matter.
 These are the same statement in two clocks: discretizing with step $T$ maps
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
-$e^{-0.1} = 0.905 < 1$. ✓ Papers switch between the two without warning; the code is
-always discrete.
+$e^{-0.1} = 0.905 < 1$. ✓ Papers switch between continuous models and discrete
+implementations without warning; inspect which clock each equation uses.
 
 > [!warning] Stability is not performance
 > For the autonomous system above, "stable" says the state returns to the origin. It does not by itself guarantee zero tracking error, and says nothing about *how long*,
 > how much overshoot, how large the control effort, or whether the linear model was valid
 > that far from the operating point. A paper that reports only "the closed loop is stable"
 > has reported the weakest possible claim.
+
+> [!example] Energy, stability and passivity in one line of reasoning
+> For $m\ddot x+b\dot x+kx=u$, choose stored energy
+> $V=\tfrac12m\dot x^2+\tfrac12kx^2$. Then
+> $\dot V=\dot x(m\ddot x+kx)=u\dot x-b\dot x^2$.
+> With $u=0$ and $b>0$, energy decreases; under the usual $m,k>0$ assumptions,
+> LaSalle's argument gives convergence to the equilibrium. With input $u$ and output
+> $\dot x$, $\dot V\le u\dot x$: the system is passive because it cannot release more
+> energy than it stored plus what entered through the port. Stability is a property of an
+> autonomous equilibrium; passivity is an input–output energy inequality. They connect,
+> but they are not synonyms.
 
 ### 5. Transfer functions, poles, and the numbers papers quote
 
@@ -197,18 +208,26 @@ stability of the system; all four of $S$, $T$, $PS$, $CS$ have to be stable, a c
 called **internal stability**.
 
 **Delay is the version of this you will actually hit.** A pure delay $\tau$ contributes
-phase $-\omega\tau$ and no gain change, so it spends phase margin and nothing else. At the gain-crossover frequency the margin is used up exactly when $\omega_{gc}\tau = \varphi_m$; solve for $\tau$ and the largest delay a loop tolerates falls out:
+phase $-\omega\tau$ and no gain change. Let $\varphi_0$ be the loop's phase margin before
+that delay and $\varphi_{req}$ the margin the design must retain. If crossover does not move
+much, the usable delay budget is
 
-$$\tau_{\max} = \varphi_m / \omega_{gc}$$
+$$\tau \le \frac{\varphi_0-\varphi_{req}}{\omega_{gc}}.$$
 
-**Worked.** A joint loop closed at $\omega_{gc} = 5$ Hz $= 31.4$ rad/s with a healthy
-$\varphi_m = 45° = 0.785$ rad tolerates $\tau_{\max} = 0.785/31.4 = 25$ ms. The 79 ms
-perception-to-actuation budget computed in
-[[04-robotics/robot-systems-deployment|12. Robot systems §3]] is **three times that**. Run
-it backwards instead: 79 ms of delay caps the crossover at
-$\omega_{gc} = 0.785/0.079 = 9.9$ rad/s, i.e. **1.6 Hz**. Note this is four times stricter
-than the naive bound — the frequency at which the delay alone contributes 180° is 6.3 Hz,
-but you do not get to operate with zero phase margin.
+Read it as follows: the numerator is the phase that the added delay is allowed to consume, in radians;
+dividing by crossover frequency converts that phase budget into seconds. This is a
+first-order design check, not an exact delay bound when the crossover itself shifts.
+
+Setting $\varphi_{req}=0$ gives the approximate delay margin to instability,
+$\tau_{dm}\approx\varphi_0/\omega_{gc}$. The plant and controller determine
+$\varphi_0$; delay alone does not determine a universal bandwidth cap.
+
+**Worked.** Suppose a joint loop crosses at $\omega_{gc}=5$ Hz $=31.4$ rad/s and has
+$\varphi_0=90°$ before the perception delay. Retaining $\varphi_{req}=45°$ permits about
+$(1.571-0.785)/31.4=25$ ms. Conversely, a 79 ms delay permits a 1.6 Hz crossover **under
+those same 90°-before/45°-after assumptions**. A loop with more lead can tolerate a higher
+crossover; one with less initial margin tolerates less. Recompute crossover after adding
+the delay rather than treating this first-order budget as an exact redesign.
 
 Delay also behaves like a right-half-plane zero, which is the deeper reason it is expensive:
 the first-order Padé approximation $\frac{1-s\tau/2}{1+s\tau/2}$ has a zero at $2/\tau$, so
@@ -502,22 +521,31 @@ $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm 
 바로 읽힌다: 실수부 음수 → 감쇠; 허수부 0 아님 → 감쇠하면서 약 1.94 rad/s로 진동.
 개별 모드에서는 실수부가 성장·감쇠를, 허수부가 진동을 정한다. 그러나 전체 출력은 모드 계수·영점·출력 선택 때문에 실수 극점만 있어도 비단조일 수 있다.
 
-### 4. 안정성, 그리고 한 이야기의 두 반쪽
+### 4. 점근 안정성, 그리고 한 이야기의 두 반쪽
 
-| 시스템 | 안정 조건 | 기억법 |
+| 시스템 | 점근 안정 조건 | 기억법 |
 |---|---|---|
 | 연속 $\dot x = Ax$ | 모든 $\text{Re}(\lambda_i) < 0$ | 좌반평면 |
 | 이산 $x_{t+1} = A_dx_t$ | 모든 $\lvert\lambda_i\rvert < 1$ | 단위원 안 |
 
 같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
-$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 예고 없이 둘을 오가지만, 코드는 언제나
-이산이다.
+$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 연속 모델과 이산 구현을 예고 없이
+오가므로 각 식이 어느 시계를 쓰는지 확인한다.
 
 > [!warning] 안정성은 성능이 아니다
 > 위 자율계에서 "안정"은 상태가 원점으로 돌아간다는 뜻이다. 추종 오차 0을 그 자체로 보장하지 않으며, *얼마나 걸리는지*, 오버슈트가 얼마인지,
 > 제어 입력이 얼마나 큰지, 운용점에서 그만큼 멀어져도 선형 모델이 유효한지에 대해 아무
 > 말도 하지 않는다. "폐루프가 안정하다"만 보고한 논문은 가능한 가장 약한 주장을 한 것이다.
+
+> [!example] 에너지·안정성·수동성을 한 줄로 잇기
+> $m\ddot x+b\dot x+kx=u$에서 저장 에너지를
+> $V=\tfrac12m\dot x^2+\tfrac12kx^2$로 두면
+> $\dot V=\dot x(m\ddot x+kx)=u\dot x-b\dot x^2$다.
+> $u=0$, $b>0$이면 에너지가 줄고, 통상적인 $m,k>0$ 가정 아래 LaSalle 논증으로 평형점
+> 수렴을 보인다. 입력 $u$, 출력 $\dot x$로 보면 $\dot V\le u\dot x$이므로 포트로 받은 것과
+> 저장한 것보다 더 많은 에너지를 내지 않는 수동계다. 안정성은 자율계 평형점의 성질이고,
+> 수동성은 입력–출력 에너지 부등식이다. 둘은 연결되지만 같은 말은 아니다.
 
 ### 5. 전달함수, 극점, 그리고 논문이 인용하는 숫자들
 
@@ -594,18 +622,24 @@ $S$(감도)는 외란을 출력 오차로 보내고, $T$(상보 감도)는 기�
 전달함수의 안정성은 시스템의 안정성이 아니다. $S$, $T$, $PS$, $CS$ 넷이 모두 안정해야 하고,
 그 조건을 **내부 안정성**이라 부른다.
 
-**지연이 당신이 실제로 부딪힐 판본이다.** 순수 지연 $\tau$는 위상 $-\omega\tau$를 더할 뿐
-이득은 바꾸지 않으니, 위상 여유만 깎아 쓴다. 이득 교차 주파수에서 여유가 정확히 바닥나는 조건은 $\omega_{gc}\tau = \varphi_m$이고, 이것을 $\tau$에 대해 풀면 루프가 견디는 최대 지연이 나온다:
+**지연이 실제로 부딪힐 판본이다.** 순수 지연 $\tau$는 위상 $-\omega\tau$를 더할 뿐 이득은
+바꾸지 않는다. $\varphi_0$를 지연을 넣기 전 루프의 위상 여유, $\varphi_{req}$를 설계가 남겨야
+할 위상 여유라 하자. 교차 주파수가 크게 움직이지 않는다는 근사 아래 지연 예산은
 
-$$\tau_{\max} = \varphi_m / \omega_{gc}$$
+$$\tau \le \frac{\varphi_0-\varphi_{req}}{\omega_{gc}}.$$
 
-**계산.** $\omega_{gc} = 5$ Hz $= 31.4$ rad/s에서 닫히고 건강한 $\varphi_m = 45° = 0.785$
-rad를 가진 관절 루프가 견디는 지연은 $\tau_{\max} = 0.785/31.4 = 25$ ms다.
-[[04-robotics/robot-systems-deployment|12. 로봇 시스템 §3]]에서 계산한 인식-구동 예산 79 ms는
-**그 세 배**다. 거꾸로 풀어 보자. 79 ms의 지연은 교차 주파수를
-$\omega_{gc} = 0.785/0.079 = 9.9$ rad/s, 즉 **1.6 Hz**로 묶는다. 이것이 순진한 상한보다 네 배
-빡빡하다는 데 주목하라 — 지연 혼자 180°를 만드는 주파수는 6.3 Hz지만, 위상 여유 0으로
-운전할 수는 없다.
+분자는 새 지연이 써도 되는 위상량(라디안)이고, 이를 교차 주파수로 나누면 시간 예산(초)이
+된다. 지연 때문에 교차 주파수 자체가 움직이면 정확한 경계가 아니라 1차 설계 점검값이다.
+
+$\varphi_{req}=0$이면 불안정에 이르는 근사 delay margin
+$\tau_{dm}\approx\varphi_0/\omega_{gc}$가 된다. $\varphi_0$는 플랜트와 제어기가 정하며,
+지연만으로 보편적인 대역폭 상한이 정해지지는 않는다.
+
+**계산.** $\omega_{gc}=5$ Hz $=31.4$ rad/s에서 교차하고, 인식 지연을 넣기 전
+$\varphi_0=90°$인 관절 루프가 $\varphi_{req}=45°$를 남기려면 허용 지연은 약
+$(1.571-0.785)/31.4=25$ ms다. 거꾸로 79 ms가 주어지면 **지연 전 90°/지연 후 45°라는 같은
+가정 아래에서만** 1.6 Hz가 나온다. 위상 선행이 더 크면 더 높은 교차 주파수를 견딜 수 있고,
+초기 여유가 작으면 더 낮아진다. 실제 설계에서는 지연을 넣은 뒤 교차 주파수도 다시 계산한다.
 
 지연은 우반평면 영점처럼 굴기도 하는데, 그것이 지연이 비싼 더 깊은 이유다. 1차 파데 근사
 $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 79 ms는 25.3 rad/s(4.0 Hz)의

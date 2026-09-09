@@ -143,9 +143,11 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. Backward, one line per step above:
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
 Three things to notice, and they generalize to every network you will read about:
-- **The sign says what to do.** $\delta_2 = -0.5$ is negative because the prediction was
-  *too low*; gradient descent subtracts the gradient, so every weight feeding a positive
-  activation goes **up**. The arithmetic is doing the obvious thing.
+- **The sign says what to do — locally.** $\delta_2 = -0.5$ is negative because the
+  prediction was *too low*, so all three output weights in step 2 increase under gradient
+  descent. Earlier layers also inherit downstream signs: the second row of $W_1$ decreases
+  here because its path through $W_2$ is negative. A low prediction does not mean every
+  weight in the network must increase.
 - **Bigger activation, bigger gradient.** In step 2 the third weight gets $-1.5$ while the
   first gets $-0.5$, purely because $h_3 = 3$ was the loudest input. Credit is assigned in
   proportion to who spoke.
@@ -235,9 +237,10 @@ bug detector in existence.
 
 ### 6. Reading equations like an implementer
 
-- Every $E[\cdot]$ in a loss becomes a minibatch mean. In deep learning, expectations you
-  cannot differentiate through are typically handled with a bound ([[02-foundations/information-theory|ELBO]]),
-  a Monte Carlo estimator, or a trick
+- Expectations over training data are commonly estimated by minibatch means; finite sums,
+  analytic expectations and dynamic programs can sometimes be evaluated directly. In deep
+  learning, intractable or non-reparameterizable expectations are often handled with a bound
+  ([[02-foundations/information-theory|ELBO]]), a Monte Carlo estimator, or a gradient-estimation technique
   (reparameterization; likelihood-ratio/policy gradients — [[02-foundations/rl-basics|RL basics]]).
 - $\arg\max$ is not differentiable; softmax is its smooth stand-in (temperature controls
   the sharpness). Sampling is not differentiable; Gumbel-softmax / straight-through
@@ -387,9 +390,10 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. 역전파는 위 단계마다 한 줄씩:
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
 눈여겨볼 것 셋, 그리고 이 셋은 앞으로 읽을 모든 신경망에 그대로 적용된다:
-- **부호가 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이 *너무 낮았기*
-  때문이다. 경사 하강은 그래디언트를 빼므로, 양의 활성값을 받는 가중치는 전부 **올라간다**.
-  산수가 당연한 일을 하고 있다.
+- **부호는 국소적으로 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이
+  *너무 낮았기* 때문이며, 경사 하강에서 2단계의 출력층 가중치 셋은 모두 증가한다. 앞쪽 층은
+  뒤쪽 가중치의 부호도 물려받는다. 여기서는 $W_2$의 음수 경로 때문에 $W_1$의 두 번째 행이
+  감소한다. 예측이 낮다고 네트워크의 모든 가중치가 증가하는 것은 아니다.
 - **활성값이 클수록 그래디언트가 크다.** 2단계에서 세 번째 가중치가 $-1.5$를 받고 첫 번째가
   $-0.5$를 받는 이유는 오직 $h_3 = 3$이 가장 크게 말했기 때문이다. 책임이 발언량에 비례해
   배분된다.
@@ -477,9 +481,10 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 ### 6. 구현자의 눈으로 수식 읽기
 
-- 손실의 모든 $E[\cdot]$는 미니배치 평균이 된다. 딥러닝에서는 통과해 미분할 수 없는
-  기댓값을 대개 하한([[02-foundations/information-theory|ELBO]]), 몬테카를로 추정, 또는
-  트릭(reparameterization;
+- 학습 데이터에 대한 기댓값은 흔히 미니배치 평균으로 추정하지만, 유한 합·해석적 기댓값·
+  동적계획법으로 직접 계산할 수 있는 경우도 있다. 딥러닝에서는 계산하기 어렵거나
+  reparameterize할 수 없는 기댓값을 흔히 하한([[02-foundations/information-theory|ELBO]]),
+  몬테카를로 추정, 또는 그래디언트 추정 기법(reparameterization;
   우도비/정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])이 된다.
 - $\arg\max$는 미분 불가능하다; softmax가 그 매끄러운 대역이다(온도가 날카로움을 조절).
   샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다.

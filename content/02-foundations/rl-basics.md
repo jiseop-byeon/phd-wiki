@@ -198,11 +198,16 @@ sometimes discount factor, occasionally the bootstrap.
 
 ### 4. Policy gradients — differentiate the objective itself
 
-- **The log-derivative trick** (the whole derivation in three steps):
+- **The log-derivative trick** (shown first for the finite-horizon **undiscounted**
+  objective $G(\tau)=\sum_t r_t$):
   $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
   (dynamics terms vanish from $\nabla\log p_\theta(\tau)$ because they don't depend on
   $\theta$). Interpretation: *raise the log-probability of actions in proportion to the
-  return that followed*.
+  return that followed*. For the discounted objective defined in §1, the exact theorem can
+  instead be written with discounted state visitation (or an explicit $\gamma^t$ under a
+  trajectory-sampling convention). Papers often use discounted return-to-go inside an
+  undiscounted finite-horizon estimator, so check which objective and sampling distribution
+  their equality assumes.
 - **REINFORCE** is exactly this — unbiased, catastrophically high variance. Variance
   reductions, in order of importance: subtract a **baseline** $b(s)$ (unbiased for any
   state-only baseline; best choice ≈ $V(s)$, making the weight the advantage $A$);
@@ -754,10 +759,13 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
 
 ### 4. 정책 그래디언트 — 목적함수 자체를 미분하기
 
-- **로그 미분 트릭** (유도 전체가 세 단계):
+- **로그 미분 트릭** (먼저 $G(\tau)=\sum_t r_t$인 유한 지평 **비할인** 목적함수로 보인다):
   $$\nabla_\theta J = \nabla_\theta \int p_\theta(\tau) G(\tau)\,d\tau = \int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\, G(\tau)\,d\tau = E_\tau\Big[\sum_t \nabla_\theta \log \pi_\theta(a_t|s_t)\, G_t\Big]$$
   (동역학 항은 $\theta$에 의존하지 않아 $\nabla\log p_\theta(\tau)$에서 사라진다.)
-  해석: *뒤따른 리턴에 비례해 행동의 로그 확률을 올려라*.
+  해석: *뒤따른 리턴에 비례해 행동의 로그 확률을 올려라*. §1에서 정의한 할인 목적함수의
+  정확한 정리는 할인된 상태 방문분포로 쓰거나, trajectory sampling 관례에 따라 바깥쪽
+  $\gamma^t$를 명시할 수 있다. 실제 논문은 비할인 유한 지평 추정기 안에 할인된 reward-to-go를
+  넣기도 하므로, 등호가 가정하는 목적함수와 표본분포를 확인한다.
 - **REINFORCE**가 정확히 이것 — 불편이지만 분산이 파국적으로 크다. 분산 감소책, 중요한
   순서로: **베이스라인** $b(s)$ 빼기(상태만의 베이스라인이면 무편향; 최선은 ≈ $V(s)$,
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를

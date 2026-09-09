@@ -217,7 +217,7 @@ non-variational world models take different routes).
 | KL $D_{KL}(p\|q)$ | $E_p[\log p/q]$ | VAE regularizer, RLHF penalty, distillation |
 | Mutual info $I(X;Y)$ | $H(X)-H(X|Y)$ | contrastive learning (CLIP), info bottleneck |
 | Perplexity | $e^{H(p,q)}$ | LM evaluation |
-| ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/diffusion/world-model training |
+| ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAEs and variational diffusion/world-model formulations |
 
 > [!tip] Going deeper · 더 깊이
 > MacKay's [*Information Theory, Inference, and Learning Algorithms*](https://www.inference.org.uk/mackay/itila/) is free and unusually readable; Cover and Thomas's *Elements of Information Theory* is what you want when a theorem has to be stated precisely rather than explained.
@@ -431,7 +431,7 @@ matching이나 비변분 월드모델은 다른 길을 간다).
 | KL $D_{KL}(p\|q)$ | $E_p[\log p/q]$ | VAE 정규화, RLHF 페널티, 증류 |
 | 상호 정보량 $I(X;Y)$ | $H(X)-H(X|Y)$ | 대조학습(CLIP), 정보 병목 |
 | Perplexity | $e^{H(p,q)}$ | 언어모델 평가 |
-| ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE/디퓨전/월드모델 학습 |
+| ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE와 변분형 디퓨전·월드모델 정식화 |
 
 > [!tip] 더 깊이 · Going deeper
 > MacKay의 [*Information Theory, Inference, and Learning Algorithms*](https://www.inference.org.uk/mackay/itila/)가 무료이고 드물게 잘 읽힌다. 정리를 설명이 아니라 정확한 진술로 봐야 할 때는 Cover·Thomas의 *Elements of Information Theory*.
