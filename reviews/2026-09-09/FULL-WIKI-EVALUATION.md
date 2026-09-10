@@ -219,10 +219,12 @@ signal.
 
 The rule in the plan file has been narrowed to match what was measured.
 
-### 4.6 ME384R benchmark, Lecture 5 (2026-09-10)
+### 4.6 Haptics course benchmark, Lecture 5 (2026-09-10)
 
-The course releases decks one lecture at a time; five are out, and the teleoperation lectures
-the study log is waiting for (9/28 through 10/19) have not been given. Lecture 5 was swept
+The haptics course the owner is taking releases decks one lecture at a time; five are out, and
+the teleoperation lectures the study log is waiting for (9/28 through 10/19) have not been
+given. The course, its instructor and its materials stay unnamed in anything this repo
+publishes; only the private reference archive identifies them. Lecture 5 was swept
 against the wiki. Device-specific content — the pantograph, the Geomagic Touch, the Hapkit
 board — stays out under the admission rule, which is the same call that dropped the Hapkit
 page. Two items cleared it, both because they complete something the wiki already teaches
