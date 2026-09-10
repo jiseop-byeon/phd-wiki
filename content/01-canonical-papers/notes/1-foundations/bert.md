@@ -41,7 +41,7 @@ After the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Tr
 
 ### Results
 
-- New state of the art on **11 NLP tasks** at once: GLUE +7.7%p absolute, SQuAD v1.1 F1 93.2 (surpassing human performance), etc.
+- New state of the art on **11 NLP tasks** at once: GLUE +7.7%p absolute, SQuAD v1.1 F1 93.2, all three of which the abstract states; that 93.2 passes the 91.2 human baseline is a leaderboard comparison the abstract does not make.
 - Large gains even for small downstream datasets — pre-training is doing most of the work.
 
 ### Limitations & critique
@@ -79,7 +79,7 @@ Made "download pretrained weights, fine-tune on your data" the default workflow 
 
 ### 결과
 
-- **11개 NLP 과제**에서 동시에 신기록: GLUE +7.7%p, SQuAD v1.1 F1 93.2(인간 성능 상회) 등.
+- **11개 NLP 과제**에서 동시에 신기록: GLUE +7.7%p, SQuAD v1.1 F1 93.2. 여기까지는 초록의 것이고, 93.2가 인간 기준선 91.2를 넘는다는 비교는 초록이 하지 않는다.
 - 다운스트림 데이터가 작아도 큰 이득 — 일의 대부분을 사전학습이 하고 있다는 뜻.
 
 ### 한계와 비판

@@ -96,9 +96,9 @@ Three consequences worth stating, because they are what a textbook does not prep
 - **Cost depends on commanded speed.** Terrain that is fine at 1 m/s is not fine at 10 m/s,
   so a costmap conditioned on velocity is a different object from a static one.
 - **Terrain that a planner calls impassable is often passable.** The Verti-Wheelers line
-  makes this its thesis: boulders, fallen trunks and rocky outcrops that classical planners
+  makes this its thesis: the ICRA 2024 paper names "irregular boulders and fallen trees" that classical planners
   label non-traversable are crossable by *ordinary wheeled robots with **little** hardware
-  modification* — the paper's own hedge — given a 6-DoF kinodynamic model. That reframes traversability as a
+  modification* — the paper's own hedge. The rocky outcroppings and the "3D, 6-DoF vehicle-terrain dynamics model in SE(3)" come from the group's companion paper, [arXiv:2306.11611](https://arxiv.org/abs/2306.11611), not from this one. That reframes traversability as a
   **modelling** problem rather than a segmentation problem.
 
 ### 2. Where the supervision comes from
@@ -368,8 +368,9 @@ RGB와 GPS만 쓴다. 결과는 풀을 *통과해* 주행하고 매끈한 콘크
 - **비용이 명령 속도에 의존한다.** 1 m/s에서 괜찮은 지형이 10 m/s에서는 괜찮지 않으므로, 속도를
   조건으로 하는 costmap은 정적인 것과 다른 대상이다.
 - **계획기가 통과 불가라고 부르는 지형이 흔히 통과 가능하다.** Verti-Wheelers 계열이 이것을 자기
-  주장으로 삼는다: 고전적 계획기가 비주행 가능으로 표시하는 바위, 쓰러진 줄기, 노두를 *하드웨어를
-  하드웨어를 **거의 개조하지 않은** 평범한 바퀴 로봇이* — 논문 자신의 유보다 — 6자유도 기구·동역학 모델만 있으면 넘는다. Traversability를
+  주장으로 삼는다: ICRA 2024 논문이 부르는 "불규칙한 바위와 쓰러진 나무"를 *하드웨어를
+  **거의 개조하지 않은** 평범한 바퀴 로봇이* 넘는다 — 논문 자신의 유보다. 바위 노두와 "SE(3)의
+  3D 6자유도 차량-지형 동역학 모델"은 같은 그룹의 자매 논문([arXiv:2306.11611](https://arxiv.org/abs/2306.11611))의 것이지 이 논문의 것이 아니다. Traversability를
   분할(segmentation) 문제가 아니라 **모델링** 문제로 재프레이밍한다.
 
 ### 2. 지도 신호는 어디서 오는가

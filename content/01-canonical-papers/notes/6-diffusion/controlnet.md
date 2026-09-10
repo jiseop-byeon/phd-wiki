@@ -48,7 +48,7 @@ spatial control to a frozen 860M-parameter model with maybe 50k condition-image 
 
 ### Results
 
-- Faithful spatial control across a dozen condition types, robust even with <50k training
+- Faithful spatial control across a dozen condition types, robust even with <50k training pairs (the abstract's claim). Separately, one body experiment reached quality comparable to a fully fine-tuned alternative using 200k samples on a single RTX 3090 over five days — not the <50k setting. Robust even with <50k training
   pairs and on a single consumer GPU; quality comparable to fully fine-tuned alternatives.
 
 ### Limitations & critique

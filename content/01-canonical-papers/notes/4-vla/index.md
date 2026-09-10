@@ -14,7 +14,7 @@ in the [[01-canonical-papers/canonical-list|canonical list]].
 ### 1. The axis the papers actually differ on
 
 Read the notes below in date order and they look like a sequence of bigger models. That is not
-what separates them. Chen et al.'s survey ([arXiv:2507.01925](https://arxiv.org/abs/2507.01925))
+what separates them. Zhong et al.'s survey ([arXiv:2507.01925](https://arxiv.org/abs/2507.01925))
 argues that current VLA models share one shape — vision and language go through a series of
 modules that emit a chain of **action tokens**, each stage more grounded and more actionable
 than the last — and that the primary design choice distinguishing one model from another is how
@@ -53,8 +53,8 @@ read it:
 | Survey | Axis it organises the field on |
 |---|---|
 | Ma et al. ([2405.14093](https://arxiv.org/abs/2405.14093)) | components, low-level control policies, high-level task planners |
-| Chen et al. ([2507.01925](https://arxiv.org/abs/2507.01925)) | how action tokens are formulated |
-| Zhong et al. ([2509.19012](https://arxiv.org/abs/2509.19012)) | generation paradigm — autoregressive, diffusion, reinforcement, hybrid, specialised |
+| Zhong et al. ([2507.01925](https://arxiv.org/abs/2507.01925)) | how action tokens are formulated |
+| Zhang et al. ([2509.19012](https://arxiv.org/abs/2509.19012)) | generation paradigm — autoregressive, diffusion, reinforcement, hybrid, specialised |
 | Yu et al. ([2510.24795](https://arxiv.org/abs/2510.24795)) | efficiency across model, training and data |
 | Xu et al. ([2512.11362](https://arxiv.org/abs/2512.11362)) | open challenges — representation, execution, generalisation, safety, data and evaluation |
 
@@ -89,7 +89,7 @@ and the comparison is about deployability rather than capability.
 ### 1. 논문들이 실제로 갈리는 축
 
 아래 노트를 연도순으로 읽으면 모델이 점점 커지는 수열처럼 보인다. 그것은 이들을 가르는 것이
-아니다. Chen 외의 서베이([arXiv:2507.01925](https://arxiv.org/abs/2507.01925))는 지금의 VLA가
+아니다. Zhong 외의 서베이([arXiv:2507.01925](https://arxiv.org/abs/2507.01925))는 지금의 VLA가
 하나의 형태를 공유한다고 본다. 시각과 언어가 일련의 모듈을 지나며 **액션 토큰**의 사슬을
 내놓고, 뒤로 갈수록 더 접지되고 더 실행 가능해진다는 것이다. 그리고 한 모델을 다른 모델과
 가르는 첫 번째 설계 선택은 그 액션 토큰을 어떤 형식으로 잡느냐라고 말한다. 여덟 가지로 나눈다.

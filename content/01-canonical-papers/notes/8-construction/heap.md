@@ -35,8 +35,9 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 - **Base machine**: Menzi Muck M545, a ~12 t *walking* excavator — four individually
   articulated wheeled legs, so the chassis itself is a legged robot that must balance on
   slopes before the arm does anything.
-- **Actuation retrofit**: the stock hydraulic pilot stage is replaced with electrically
-  driven pilot valves; **servo valves + pressure sensors on the leg cylinders** enable
+- **Actuation retrofit**: proportional pressure-reducing valves are installed "in parallel to
+  the joysticks in the pilot stage" to drive the manufacturer's own main valves — the stock
+  stage is augmented, not replaced, so manual operation survives; **servo valves + pressure sensors on the leg cylinders** enable
   *force* control of the chassis (active terrain adaptation), and the arm's cylinders get
   pressure sensing for end-effector force estimation — this is the hardware fact that
   makes force-based digging (the RSL line's founding move) possible at all.
@@ -100,7 +101,7 @@ learning-based digging. The construction analogue of what ALOHA
 
 - **베이스 기계**: Menzi Muck M545, 약 12톤 *보행* 굴착기 — 개별 관절이 있는 바퀴 달린
   다리 넷, 즉 섀시 자체가 팔이 무언가 하기 전에 경사에서 균형을 잡아야 하는 다리 로봇이다.
-- **구동 개조**: 순정 유압 파일럿단을 전기 구동 파일럿 밸브로 교체; **다리 실린더의 서보
+- **구동 개조**: 순정 파일럿단을 교체하는 것이 아니라 조이스틱과 **병렬로** 전기 구동 비례 감압 밸브를 달아, 제조사 순정 메인 밸브를 그대로 제어한다. 수동 조작은 살아 있다; **다리 실린더의 서보
   밸브 + 압력 센서**가 섀시의 *힘* 제어(능동 지형 적응)를 가능하게 하고, 팔의 실린더에도
   압력 센싱이 붙어 말단 힘 추정이 된다 — 힘 기반 굴착(RSL 라인의 창립 수)을 애초에
   가능하게 한 하드웨어 사실이다.

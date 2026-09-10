@@ -41,7 +41,7 @@ By 2022, LLMs could decompose "I spilled my drink, can you help?" into sensible 
 
 ### Results
 
-- Evaluated on 101 instructions in a kitchen/office setting with a mobile manipulator over a library of pretrained skills — in the **mock kitchen**, **84% planning and 74% execution** in the PaLM-SayCan configuration; the same system scores **81% planning and 60% execution in a real kitchen** (the paper's strongest LM).
+- Evaluated on 101 instructions in a kitchen/office setting with a mobile manipulator over a library of pretrained skills — in the **mock kitchen**, **84% planning and 74% execution (body figures; the abstract quantifies only the 101 real-world tasks)** in the PaLM-SayCan configuration; the same system scores **81% planning and 60% execution in a real kitchen** (the paper's strongest LM).
 - Affordance grounding is the differentiator: language-only ranking picks infeasible steps that affordances filter out, and planning quality scales with the underlying LM (the move to PaLM is what produced those headline numbers).
 - Handles long-horizon, temporally extended instructions ("bring the apple, then throw away the bag") by chaining scored skill selections.
 

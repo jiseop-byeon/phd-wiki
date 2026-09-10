@@ -1,5 +1,5 @@
 ---
-title: "ExACT — End-to-End Autonomous Excavation via Action Chunking with Transformers (Chen et al., 2024)"
+title: "ExACT — An End-to-End Autonomous Excavator System Using Action Chunking With Transformers (Chen et al., 2024)"
 authors: Liangliang Chen, Shiyu Jin, Haoyu Wang, Liangjun Zhang
 affiliation: Baidu Research, Robotics and Auto-Driving Lab (RAL)
 venue: ICRA 2024 Workshop (3rd Workshop on Future of Construction)

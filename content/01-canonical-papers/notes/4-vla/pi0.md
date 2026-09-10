@@ -93,13 +93,19 @@ models.
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
 >
-> **Independent evaluation, added 2026-08 — source not located, do not cite from here.** These
-> figures were recorded without a citation and a September 2026 arXiv search did not recover the
-> study. Treat them as a lead to verify, not as evidence to quote. A third-party study at UPenn ran 300+ trials of
-> π0-FAST-DROID on a Franka and reports **~24% overall success**, with **fabric manipulation
-> at 19.4%** and **t-shirt folding at 80% progress on individual folds but 0% task
-> completion**. It also found extreme prompt sensitivity: *"Close the white lid of the
-> toilet"* succeeded 100% of the time while *"Close the toilet"* succeeded 0%. If the study can be sourced it is the right thing to read
+> **Independent evaluation.** The source is Wang, Leonard, Daniilidis, Jayaraman and Hu,
+> ["Evaluating π₀ in the Wild"](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/),
+> GRASP Lab, University of Pennsylvania. It is a lab project page, not an arXiv paper, which is
+> why earlier searches missed it. They ran **300+ trials** of π0-FAST-DROID on a Franka Panda
+> with side and wrist cameras and headline **average progress of 42.3%**. Read their two metrics
+> apart: *progress* is partial credit, *success* is the completed task. Per category the success
+> rates are 24% for pick-and-place, pour, YCB and human interaction, 28.5% for articulated
+> objects and **19.4% for fabric**. On folding, "fold up the T-shirt from right to left" reaches
+> 80% progress while "finish the task of folding up the T-shirt" reaches 0% — both progress
+> scores on differently worded prompts, not a completion rate. Their prompt-sensitivity table
+> does report success: *"Close the white lid of the toilet"* 100%, *"Close the toilet"* 0%. The
+> authors call it a "vibe-check style evaluation, not a rigorous benchmark", so hold it at that
+> weight. It is the right thing to read
 > alongside any laundry-folding claim from this line, because first-party results and an
 > independent evaluation would then disagree by a wide margin. Until then the gap is a
 > hypothesis about the current capability level, not a measured one.
@@ -175,14 +181,17 @@ flowchart LR
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 >
-> **독립 평가, 2026-08 추가 — 출처 미확인, 여기서 인용하지 말 것.** 이 수치들은 인용 없이
-> 기록됐고, 2026년 9월 arXiv 검색으로도 해당 연구를 찾지 못했다. 인용할 증거가 아니라 확인할
-> 단서로 다뤄라. UPenn의 제3자 연구가 Franka에서 π0-FAST-DROID로 300회 이상을
-> 돌려 **전체 성공률 약 24%**, **천 조작 19.4%**, **티셔츠 접기는 개별 접힘 진행률 80%인데 과제
-> 완료 0%** 를 보고한다. 극단적인 프롬프트 민감도도 발견했다: *"변기의 흰 뚜껑을 닫아라"* 는
-> 100%, *"변기를 닫아라"* 는 0%였다. 출처를 찾을 수 있다면 이 계열의 빨래 개기 주장 옆에
-> 함께 읽을 값어치가 있다. 그때 비로소 1차 결과와 독립 평가가 크게 어긋난다고 말할 수 있다.
-> 그 전까지 이 격차는 측정된 것이 아니라 현재 수준에 대한 가설이다.
+> **독립 평가.** 출처는 Wang, Leonard, Daniilidis, Jayaraman, Hu의
+> ["Evaluating π₀ in the Wild"](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/),
+> UPenn GRASP Lab이다. arXiv 논문이 아니라 연구실 프로젝트 페이지여서 이전 검색이 놓쳤다.
+> 측면·손목 카메라를 단 Franka Panda에서 π0-FAST-DROID로 **300회 이상**을 돌렸고 대표 수치는
+> 대표 수치는 **평균 진행률 42.3퍼센트**. 두 지표를 구분해서 읽어야 한다. *progress*는 부분 점수이고
+> *success*는 과제 완수다. 범주별 성공률은 pick-and-place·pour·YCB·인간 상호작용이 24%,
+> 관절 물체가 28.5%, 그리고 **천 조작이 19.4퍼센트**. 접기에서는 "티셔츠를 오른쪽에서 왼쪽으로 접어라"가
+> 진행률 80%, "티셔츠 접기를 끝내라"가 0%인데, 둘 다 문구가 다른 프롬프트의 진행률이지 완료율이
+> 아니다. 프롬프트 민감도 표는 성공률로 보고한다: *"변기의 흰 뚜껑을 닫아라"* 100%,
+> *"변기를 닫아라"* 0%. 저자들 스스로 "엄밀한 벤치마크가 아니라 vibe-check 식 평가"라고
+> 적었으므로 그 무게로 다뤄라. 이 계열의 빨래 개기 주장 옆에 함께 읽을 값어치가 있다.
 
 ### 연결
 

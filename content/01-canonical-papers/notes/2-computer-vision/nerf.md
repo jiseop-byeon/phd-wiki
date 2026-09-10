@@ -52,7 +52,7 @@ implicit-function idea was in the air (occupancy networks); NeRF made it *photor
 
 **What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2003.08934).
 
-- Novel-view synthesis of unprecedented quality on real scenes from ~20–100 posed photos;
+- Novel-view synthesis of unprecedented quality on real scenes from 20 to 62 posed photos (the ~100 figure is the synthetic dataset);
   an entire scene compressed into ~5MB of MLP weights.
 
 ### Limitations & critique
@@ -105,7 +105,7 @@ data generation ([[cosmos|world-model data engines]]).
 
 **무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2003.08934).
 
-- 자세를 아는 사진 20~100장으로 실제 장면의 전례 없는 품질의 새 시점 합성;
+- 자세를 아는 사진 20~62장으로 실제 장면의 전례 없는 품질의 새 시점 합성(약 100장은 합성 데이터셋 쪽 수치다);
   장면 전체가 약 5MB의 MLP 가중치로 압축된다.
 
 ### 한계와 비판

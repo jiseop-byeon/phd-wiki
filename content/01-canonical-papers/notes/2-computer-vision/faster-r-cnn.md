@@ -44,7 +44,7 @@ image) and capped quality. The last non-learned component had to go.
 
 ### Results
 
-- SOTA on PASCAL VOC and COCO at 5 fps — proposals now cost ~10 ms; learned proposals also
+- SOTA on PASCAL VOC and COCO at 5 fps — proposals now cost ~10 ms. The abstract gives only the 5 fps and the 300 proposals; the 10 ms, the mAP, Selective Search's 2 s and the 2000-proposal baseline are body figures. Learned proposals also
   *improved* accuracy (mAP ~70%+ VOC07).
 
 ### Limitations & critique

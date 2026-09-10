@@ -24,7 +24,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ## English
 
-**One-line summary**: Train an actor-critic entirely inside the RSSM's imagination, backpropagating through the learned dynamics — refined over three versions into one agent that masters 150+ domains with a single configuration, up to collecting Minecraft diamonds from scratch.
+**One-line summary**: Train an actor-critic entirely inside the RSSM's imagination, backpropagating through the learned dynamics — refined over three versions into one agent that masters 150+ tasks with a single configuration, up to collecting Minecraft diamonds from scratch.
 
 ### Context
 
@@ -101,7 +101,7 @@ the model-based half of the physical-AI data strategy ([[gr00t-n1|GR00T]]'s data
 
 ## 한국어
 
-**한 줄 요약**: RSSM의 상상 속에서 actor-critic을 통째로 학습하고 학습된 동역학을 통해 역전파 — 세 버전에 걸쳐 다듬어져, 단일 설정으로 150개+ 도메인을 정복하고 마인크래프트 다이아몬드까지 캐는 에이전트가 됐다.
+**한 줄 요약**: RSSM의 상상 속에서 actor-critic을 통째로 학습하고 학습된 동역학을 통해 역전파 — 세 버전에 걸쳐 다듬어져, 단일 설정으로 150개+ 과제를 정복하고 마인크래프트 다이아몬드까지 캐는 에이전트가 됐다.
 
 ### 배경
 

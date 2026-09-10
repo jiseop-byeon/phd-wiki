@@ -94,8 +94,10 @@ still the backbone.
 **vision-language similarity to the goal text**, choosing where to explore next. No ObjectNav
 training data at all, and it deployed on a real Spot. **ESC** does the same job with LLM
 commonsense — object-and-room co-occurrence — compiled into soft logic predicates over a
-frontier scorer. And **CoWs** established that zero-shot approaches match or beat trained
-state of the art, while being weak at exploiting complex language.
+frontier scorer. And **CoWs** established that a zero-shot pipeline "matches the navigation
+efficiency of a state-of-the-art ZSON method trained for 500M steps" — parity on SPL, not on
+success, where the paper says its own comparison "indicates that there can be benefits to
+in-domain learning over CoW baselines". It is also weak at exploiting complex language.
 
 **Move 3 — throw the modular apparatus away.** See §5.
 
@@ -196,7 +198,7 @@ while graph-based and modular VLN research continues in parallel.
   </g>
 </svg>
 
-**Uni-NaVid** is the merge: one video-VLA trained on 3.6M samples spanning **VLN, object
+**Uni-NaVid** is the merge: one video-VLA trained on 3.6M samples (the four sub-task names and the 5 Hz rate are body figures) spanning **VLN, object
 search, embodied question answering and person-following**, reporting state of the art across
 all of them at 5 Hz. In 2020 those were separate communities with separate simulators and
 separate challenges.
@@ -388,7 +390,9 @@ RL을 이긴다는 것이다. **SemExp**가 그 골격에 의미 지도를 넣�
 만들고 프런티어를 뽑은 뒤, 각 프런티어를 **목표 텍스트와의 시각-언어 유사도**로 채점해 다음에
 어디를 탐색할지 고른다. ObjectNav 학습 데이터가 하나도 없고, 실제 Spot에 배치되었다. **ESC**는
 같은 일을 LLM 상식 — 물체-방 동시 출현 — 을 프런티어 채점기 위의 소프트 논리 술어로 컴파일해
-한다. 그리고 **CoWs**가, zero-shot 접근이 학습된 SOTA와 대등하거나 낫되 복잡한 언어를 활용하는
+한다. 그리고 **CoWs**가, zero-shot 파이프라인이 "5억 스텝을 학습한 최신 ZSON 방법의 주행 효율과
+대등하다"는 것을 보였다 — 대등한 것은 SPL이지 성공률이 아니다. 성공률에서는 논문 스스로 그
+비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을 시사한다"고 적는다. 복잡한 언어를 활용하는
 데는 약하다는 것을 확립했다.
 
 **3수 — 모듈형 장치를 통째로 버리기.** §5를 보라.

@@ -76,8 +76,10 @@ about "ICRA is single-blind" is describing the world up to that flip.
 paper rejected from ICRA 2026 may be submitted to IROS 2026 as an "ICRA-IROS transfer" with
 an **author response file**, and the reverse path exists for IROS 2026 into ICRA 2027. That
 is the only place in either conference where you get to answer reviewers. (The RAS transfer
-that runs the other way is journal → conference: T-RO, RA-M, RA-L and T-RL papers can be
-transferred into ICRA. There is no automated ICRA → journal path.)
+that runs the other way is journal → conference. The ICRA 2026 call names RA-L, RA-M,
+T-ASE, T-RO and T-FR as eligible for presentation, and T-ASE, T-FR and RA-P transfers need a
+code from the journal's editor-in-chief while T-RO, RA-M and RA-L do not. T-RL is not on the
+list. There is no automated ICRA → journal path.)
 
 Two things surprise people arriving from machine learning. **ICRA and IROS have no rebuttal
 at all** — the reviews are the decision, and a reviewer who misread your paper cannot be
@@ -95,7 +97,7 @@ reader has calibration for, and a systems paper reads differently there:
 |---|---|---|---|
 | ***Automation in Construction*** | Elsevier | **single-anonymized**; editor screens, then ≥2 reviewers | the domain's flagship. Scope is the whole construction life cycle — design, build, operate, dismantle — so a robotics result is judged on **whether the construction problem is real**, not on method novelty |
 | ***J. Computing in Civil Engineering*** (JCCE) | ASCE | single-anonymized | computing/AI/BIM/sensing across civil subdomains; a US civil-engineering readership rather than a robotics one |
-| ***Computer-Aided Civil and Infrastructure Engineering*** (CACAIE) | **moved from Wiley to Elsevier in January 2026** — and the ISSN changes with it (Wiley 1467-8667 / Elsevier 1093-9687) | **double**-anonymized | computational-method novelty, framed as a bridge from computing to civil engineering |
+| ***Computer-Aided Civil and Infrastructure Engineering*** (CACAIE) | **moved from Wiley to Elsevier in January 2026**; the ISSN does not change with it — 1093-9687 is the print ISSN and 1467-8667 the online one, for the same title | **double**-anonymized | computational-method novelty, framed as a bridge from computing to civil engineering |
 | **ISARC** (IAARC) | IAARC, **free to read**; publication is gated by paid registration, not an APC | peer-refereed (≥2 reviewers) with a per-paper DOI and Scopus indexing — but ~76% acceptance, so refereed ≠ selective | the field's annual symposium — where to find what is being tried before it reaches a journal |
 | ***Science Robotics*** | AAAS | a hard editorial triage rejects most submissions in 1–2 weeks; survivors go to ≥2 external referees | a **general-science** audience: the claim must matter outside robotics. Two construction landmarks are here — [[01-canonical-papers/notes/8-construction/aes\|AES]] and the [[01-canonical-papers/notes/8-construction/dry-stone-wall\|dry-stone wall]]. Note that [[01-canonical-papers/notes/8-construction/heap\|HEAP]] itself is *Automation in Construction*, two rows up |
 
@@ -353,7 +355,7 @@ ICRA와 IROS *학회*는 한 주기 늦은 2026년판부터 따라갔다. 그러
 **그리고 "반박문 없음"의 예외 하나.** ICRA와 IROS는 이제 **이관 카테고리**를 둔다 — ICRA
 2026에서 떨어진 논문은 "ICRA-IROS transfer"로 IROS 2026에 낼 수 있고 **저자 응답 파일**을
 첨부한다. 반대 경로(IROS 2026 → ICRA 2027)도 있다. 두 학회에서 심사자에게 답할 수 있는
-자리는 그곳뿐이다. (반대 방향의 RAS 이관은 저널 → 학회다: T-RO·RA-M·RA-L·T-RL 논문을 ICRA로
+자리는 그곳뿐이다. (반대 방향의 RAS 이관은 저널 → 학회다: ICRA 2026 요강이 발표 자격으로 부르는 것은 RA-L·RA-M·T-ASE·T-RO·T-FR이고, T-ASE·T-FR·RA-P는 저널 편집장이 주는 코드가 필요하지만 T-RO·RA-M·RA-L은 필요 없다. T-RL은 목록에 없다. 그 논문들을 ICRA로
 이관할 수 있다. ICRA에서 저널로 가는 자동 경로는 없다.)
 
 기계학습에서 오는 사람을 놀라게 하는 것이 둘 있다. **ICRA와 IROS에는 반박문이 아예 없다** —
@@ -371,7 +373,7 @@ IJRR의 단측 익명이 또 다른 예외다: 심사자가 당신이 누구인�
 |---|---|---|---|
 | ***Automation in Construction*** | Elsevier | **단측 익명**. 편집자 선별 후 심사자 2인 이상 | 이 분야의 대표 저널. 범위가 설계·시공·운영·해체의 건설 생애주기 전체이므로, 로보틱스 결과는 방법의 새로움이 아니라 **건설 문제가 진짜인가**로 판정된다 |
 | ***J. Computing in Civil Engineering***(JCCE) | ASCE | 단측 익명 | 토목 하위 분야 전반의 컴퓨팅·AI·BIM·센싱. 로보틱스가 아니라 미국 토목 독자층 |
-| ***Computer-Aided Civil and Infrastructure Engineering***(CACAIE) | **2026년 1월 Wiley에서 Elsevier로 이관** — ISSN도 함께 바뀐다(Wiley 1467-8667 / Elsevier 1093-9687) | **양측** 익명 | 컴퓨팅에서 토목으로 잇는 다리로서의 계산 방법론적 새로움 |
+| ***Computer-Aided Civil and Infrastructure Engineering***(CACAIE) | **2026년 1월 Wiley에서 Elsevier로 이관**. ISSN이 함께 바뀌는 것은 아니다 — 1093-9687은 인쇄판, 1467-8667은 온라인판이며 같은 저널이다 | **양측** 익명 | 컴퓨팅에서 토목으로 잇는 다리로서의 계산 방법론적 새로움 |
 | **ISARC**(IAARC) | IAARC, **읽기는 무료**. 게재는 APC가 아니라 유료 등록비로 게이트된다 | 동료 심사(심사자 2인 이상), 논문별 DOI, Scopus 색인 — 다만 게재율 약 76%이므로 심사받았다는 것이 선별적이라는 뜻은 아니다 | 이 분야의 연례 심포지엄 — 저널에 닿기 전에 무엇이 시도되고 있는지를 찾을 곳 |
 | ***Science Robotics*** | AAAS | 강한 편집자 트리아지가 1~2주 안에 대부분을 걸러내고, 통과한 것은 외부 심사자 2인 이상에게 간다 | **일반 과학** 독자 — 주장이 로보틱스 바깥에서도 중요해야 한다. 건설 쪽 이정표 둘이 여기 있다 — [[01-canonical-papers/notes/8-construction/aes\|AES]]와 [[01-canonical-papers/notes/8-construction/dry-stone-wall\|돌담]]. [[01-canonical-papers/notes/8-construction/heap\|HEAP]] 자체는 두 행 위의 *Automation in Construction*이다 |
 

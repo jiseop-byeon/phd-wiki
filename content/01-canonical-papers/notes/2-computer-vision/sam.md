@@ -41,7 +41,7 @@ dataset had to be built *by* the model.
 > annotate, annotations improve the model, until annotation is fully automatic.
 
 - Architecture: heavy **ViT image encoder** ([[mae|MAE]]-pretrained) run once per image +
-  light prompt encoder + fast mask decoder (~50 ms) — interactive by design; outputs 3 masks
+  light prompt encoder + fast mask decoder (~50 ms, a body figure) — interactive by design; outputs 3 masks
   to resolve prompt ambiguity.
 
 ```mermaid

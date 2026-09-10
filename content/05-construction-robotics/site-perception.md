@@ -116,7 +116,7 @@ Evaluation needs an independent reference because alignment can hide the error b
 ### Sources
 
 - [Szeliski, *Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)
-- [Tang et al., *Automatic Reconstruction of As-Built Building Information Models from Laser-Scanned Point Clouds*](https://doi.org/10.1016/j.autcon.2010.06.007)
+- [Tang et al., *Automatic reconstruction of as-built building information models from laser-scanned point clouds: A review of related techniques*](https://doi.org/10.1016/j.autcon.2010.06.007)
 - [PointNet](https://arxiv.org/abs/1612.00593) · [PointNet++](https://arxiv.org/abs/1706.02413)
 
 ## 한국어

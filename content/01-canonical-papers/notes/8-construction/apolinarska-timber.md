@@ -109,10 +109,14 @@ method.
 
 ### Limitations & critique
 
-- **The sources consulted here do not state the robot platform.** Whether the arm is
-  torque-controlled or position-controlled changes what "force-guided" means
-  ([[04-robotics/force-compliance-control|13. §2]]). Check it in the paper before building
-  on this.
+- **The platform is a position-streamed industrial arm, not a torque-controlled one.**
+  Appendix A.2: "We use ABB IRB4600 – 40/2.55 robot mounted to a large, overhead gantry …
+  We use ROS and roslibpy to communicate with the robot and the sensor at a rate of 50 Hz.
+  For real-time control, we use ABB Externally Guided Motion (EGM) … We use a prototypical
+  BOTA Systems FT sensor." So "force-guided" here means an external force-torque sensor
+  shaping a streamed pose command, not joint-torque control
+  ([[04-robotics/force-compliance-control|13. §2]]) — and the FT sensor's range is what
+  bounds the tight-fitting joints the paper could assemble.
 - **One joint family.** Timber joinery has a specific geometry; the method's reach across
   other construction insertions — pipe, panel, bolted connections — is an open question,
   not a demonstrated one.
@@ -228,7 +232,7 @@ are exactly the gaps the arc is built around.
 
 ### 한계와 비판
 
-- 여기서 확인한 출처들에는 **로봇 플랫폼이 명시되어 있지 않다.** 팔이 토크 제어인지 위치
+- **플랫폼은 토크 제어가 아니라 위치 스트리밍 방식의 산업용 팔이다.** 부록 A.2: "대형 오버헤드 갠트리에 장착한 ABB IRB4600 – 40/2.55를 쓴다 … ROS와 roslibpy로 로봇과 센서를 50 Hz로 통신한다. 실시간 제어에는 ABB Externally Guided Motion(EGM)을 쓴다 … BOTA Systems의 시제품 FT 센서를 쓴다." 따라서 여기서 "힘으로 안내되는"은 관절 토크 제어가 아니라 외부 힘-토크 센서가 스트리밍되는 자세 명령을 다듬는다는 뜻이다. 팔이 토크 제어인지 위치
   제어인지가 "힘으로 안내되는"의 의미를 바꾸므로 중요하다([[04-robotics/force-compliance-control|13. §2]]).
   이 위에 무언가를 쌓기 전에 논문에서 확인하라.
 - **접합 계열 하나.** 목재 접합에는 특정한 기하가 있다. 다른 건설 삽입 — 배관, 패널, 볼트

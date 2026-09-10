@@ -120,7 +120,7 @@ theorems; always say which one you mean.
 >
 > A parallel-jaw gripper on a real box is a soft-finger contact: the pads deform, so each
 > contact resists twisting about its own normal, and two of them suffice. Under hard finger
-> some particular 3D geometries admit **three** non-collinear contacts (Springer Handbook ch. 38).
+> some particular 3D geometries admit **three** non-collinear contacts (Springer Handbook ch. 38 — the Handbook is not open access and this attribution was not read at source, though Modern Robotics ch. 12 corroborates the result itself).
 >
 > Markenscoff's four is a **third** kind of statement and the easiest to misuse: it is a
 > *universal* bound — how many fingers suffice for **any** object — not the minimum for the
@@ -317,7 +317,7 @@ defensible thing to be robust to — and the tactile route to estimating it is
 | Need | Where |
 |---|---|
 | Contact models, closure, internal forces | [[04-robotics/modern-robotics/ch12-grasping\|MR ch.12]], then Bicchi & Kumar's 2000 review |
-| The taxonomy grasping sits inside | Okamura, Smaby & Cutkosky 1999 — what "dexterous manipulation" actually enumerates (rolling, sliding, finger gaiting, regrasping), so you can say which one a paper is claiming |
+| The taxonomy grasping sits inside | Okamura, Smaby & Cutkosky, ICRA 2000 — what "dexterous manipulation" actually enumerates (rolling, sliding, finger gaiting, regrasping), so you can say which one a paper is claiming |
 | The construction of force-closure grasps | Nguyen 1988 |
 | Quality metrics done properly | Ferrari & Canny 1992, and a task-oriented critique of it |
 | The learned pipeline end to end | Dex-Net 2.0, then Contact-GraspNet |
@@ -652,7 +652,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 | 필요한 것 | 어디서 |
 |---|---|
 | 접촉 모델, closure, 내부 힘 | [[04-robotics/modern-robotics/ch12-grasping\|MR 12장]], 그다음 Bicchi & Kumar 2000 리뷰 |
-| 파지가 속한 분류 체계 | Okamura, Smaby & Cutkosky 1999 — "dexterous manipulation"이 실제로 열거하는 것(구르기·미끄러짐·finger gaiting·재파지). 논문이 그중 어느 것을 주장하는지 말할 수 있게 된다 |
+| 파지가 속한 분류 체계 | Okamura, Smaby & Cutkosky, ICRA 2000 — "dexterous manipulation"이 실제로 열거하는 것(구르기·미끄러짐·finger gaiting·재파지). 논문이 그중 어느 것을 주장하는지 말할 수 있게 된다 |
 | Force-closure 파지의 구성 | Nguyen 1988 |
 | 품질 지표를 제대로 | Ferrari & Canny 1992, 그리고 그에 대한 과제 지향 비판 |
 | 학습 파이프라인 전체 | Dex-Net 2.0, 그다음 Contact-GraspNet |

@@ -31,7 +31,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Method**: two scanning laser rangefinders sense the workspace — one localizes the truck to be loaded, the other maps the soil face. An executive layer selects dig points on the face and dump points over the truck bed; motion planning and control execute the excavate-swing-dump cycle; obstacle detection stops the machine when something enters the workspace. The contribution is *integrated autonomy* — closing the full cycle on real hardware — not a learned policy or a novel single algorithm.
 
-**Evidence, with numbers**: the system loaded trucks at speeds comparable to expert human operators in its demonstrated setup — a 1998–1999 result reported from real-machine trials, with two laser rangefinders as the entire perception suite. The human-parity throughput claim is the headline; the task boundary (a prepared loading scenario with defined truck and face geometry) is the fine print.
+**Evidence, with numbers**: the system loaded trucks at speeds comparable to expert human operators in its demonstrated setup — "expert" is the body's word, and both abstracts say only "as fast as human operators" — a 1998–1999 result reported from real-machine trials, with two laser rangefinders as the entire perception suite. The human-parity throughput claim is the headline; the task boundary (a prepared loading scenario with defined truck and face geometry) is the fine print.
 
 **Limitations**: it relies on structured task geometry and 1990s sensing; it does not address learning across machines or soils, long-duration unattended operation, or open-site human interaction. Safety is an obstacle-stop protocol, not a certified safety case.
 

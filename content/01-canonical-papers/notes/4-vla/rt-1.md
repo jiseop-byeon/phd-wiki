@@ -53,7 +53,7 @@ expensive, slow, and closed-loop at real-time rates?
 
 ### Results
 
-- **97%** success on seen instructions; **76%** on never-seen instructions; **83%/59%**
+- **97%** success on seen instructions (all figures on this page are body figures; the RT-1 abstract carries no numbers); **76%** on never-seen instructions; **83%/59%**
   robustness to distractors/new backgrounds — all far above prior imitation baselines (e.g., Gato, BC-Z).
 - Performance scales with data *diversity* more than data quantity — the paper's most
   consequential ablation.

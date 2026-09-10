@@ -94,7 +94,7 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
 >
 > | 2017 | LLM backbone now | Why it changed |
 > |---|---|---|
-> | LayerNorm **after** the sublayer (post-norm) | **pre-norm**: normalize *before*, add the residual after | post-norm is unstable at large learning rates without warmup and loses most of its quality if you remove it — Xiong et al. (ICML 2020) measure BLEU 8.45 against ~34. Pre-norm trains without relying on it |
+> | LayerNorm **after** the sublayer (post-norm) | **pre-norm**: normalize *before*, add the residual after | post-norm is unstable at large learning rates without warmup and loses most of its quality if you remove it — Xiong et al. (ICML 2020) measure BLEU 8.45 against ~34 in a §4 ablation, not in that paper's abstract. Pre-norm trains without relying on it |
 > | **LayerNorm** — subtract the mean, divide by the standard deviation, scale and shift | **RMSNorm** — divide by the root-mean-square only, no mean subtraction, no shift | one fewer statistic and one fewer parameter per feature, at comparable quality |
 > | **ReLU** in the feed-forward | **GELU**, **SiLU/Swish**, or **SwiGLU** (a gated variant adding a third matrix) | SwiGLU is only parameter-neutral because the hidden width is cut by 2/3 to pay for that matrix — which is why LLaMA-family FFNs are $\tfrac{8}{3}d$ rather than $4d$. Shazeer offers no mechanism for the gain |
 > | **Sinusoidal absolute** position encoding added to the input | **RoPE** — rotate the query and key vectors by an angle proportional to position | attention then depends on *relative* position, and the encoding is defined for any length |
@@ -215,7 +215,7 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
 >
 > | 2017 | 지금의 LLM 백본 | 바뀐 이유 |
 > |---|---|---|
-> | 서브레이어 **뒤**의 LayerNorm(post-norm) | **pre-norm**: *먼저* 정규화하고 residual을 뒤에 더한다 | post-norm은 큰 학습률에서 warmup 없이 불안정하고, warmup을 빼면 품질 대부분을 잃는다 — Xiong 등(ICML 2020)이 BLEU 8.45 대 약 34로 측정했다. pre-norm은 그것에 의존하지 않고 학습된다 |
+> | 서브레이어 **뒤**의 LayerNorm(post-norm) | **pre-norm**: *먼저* 정규화하고 residual을 뒤에 더한다 | post-norm은 큰 학습률에서 warmup 없이 불안정하고, warmup을 빼면 품질 대부분을 잃는다 — Xiong 등(ICML 2020)이 BLEU 8.45 대 약 34로 측정했다. 그 논문의 초록이 아니라 §4 ablation의 수치다. pre-norm은 그것에 의존하지 않고 학습된다 |
 > | **LayerNorm** — 평균을 빼고 표준편차로 나눈 뒤 스케일·시프트 | **RMSNorm** — 제곱평균제곱근으로 나누기만, 평균 차감도 시프트도 없음 | 통계량 하나와 특징당 파라미터 하나가 줄고 품질은 비슷하다 |
 > | feed-forward의 **ReLU** | **GELU**, **SiLU/Swish**, 또는 **SwiGLU**(행렬을 하나 더 쓰는 게이팅 변형) | SwiGLU가 파라미터 중립인 것은 그 행렬 값을 치르려고 은닉 폭을 2/3로 줄였기 때문이다 — LLaMA 계열 FFN이 $4d$가 아니라 $\tfrac{8}{3}d$인 이유가 그것이다. Shazeer는 이득의 기제를 설명하지 않는다 |
 > | 입력에 더하는 **정현파 절대** 위치 부호화 | **RoPE** — query와 key 벡터를 위치에 비례하는 각도만큼 회전 | 그러면 어텐션이 *상대* 위치에 의존하고, 부호화가 임의 길이에 대해 정의된다 |

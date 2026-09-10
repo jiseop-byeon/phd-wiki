@@ -40,7 +40,7 @@ seq2seq (Sutskever et al., 2014) translated by compressing the entire source sen
 
 ### Results
 
-- Approached the phrase-based SMT system (Moses) on English→French (WMT14) — matching it only on the no-unknown-words subset (36.15 vs 35.63 BLEU); on all sentences Moses still led (33.3 vs 28.45).
+- Approached the phrase-based SMT system (Moses) on English→French (WMT14) — matching it only on the no-unknown-words subset (36.15 vs 35.63 BLEU — Table 1, not the abstract, which says only "comparable to the existing state-of-the-art phrase-based system"); on all sentences Moses still led (33.3 vs 28.45).
 - Crucially, performance no longer collapsed with sentence length — the fixed-vector bottleneck was gone.
 - Attention heatmaps showed linguistically sensible alignments, learned without supervision.
 

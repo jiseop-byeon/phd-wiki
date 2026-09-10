@@ -43,7 +43,7 @@ After [[01-canonical-papers/notes/1-foundations/vgg|VGG]], deeper should have me
 
 - ILSVRC-2015 classification winner: **top-5 error 3.57%** (ensemble) with 152 layers — deeper *and* less compute than VGG-19.
 - Also won ImageNet detection/localization and COCO detection/segmentation the same year — evidence that better backbones transfer everywhere.
-- On CIFAR-10, trained a **1202-layer** net with training error under 0.1% — so the *optimization* difficulty is gone. But its test error is **7.93% against ResNet-110's 6.43%**: deeper stopped helping, and the paper attributes the gap to overfitting on a small dataset, not to degradation.
+- On CIFAR-10 — a body result; the abstract mentions only "100 and 1000 layers" — trained a **1202-layer** net with training error under 0.1% — so the *optimization* difficulty is gone. But its test error is **7.93% against ResNet-110's 6.43%**: deeper stopped helping, and the paper attributes the gap to overfitting on a small dataset, not to degradation.
 
 ### Limitations & critique
 
