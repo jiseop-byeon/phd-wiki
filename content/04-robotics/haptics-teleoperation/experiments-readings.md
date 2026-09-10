@@ -71,28 +71,58 @@ The packet covers the first half of a full haptics course particularly well. It 
 
 ### 1. 아이디어에서 주장까지
 
-제작 전에 **actuator command → 실제 전달 자극 → 지각/행동 → 과제 결과**의 인과 사슬을 쓴다. 각 화살표에 측정이 필요하다. 모터 명령은 피부 자극 측정값이 아니고, 설문은 제어기 성능이 아니며, 수행시간 감소만으로 어떤 cue가 원인인지 알 수 없다.
+인터페이스를 만들기 전에 인과 사슬을 먼저 쓴다.
+
+$$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\rightarrow\text{지각·행동}\rightarrow\text{과제 결과}.$$
+
+화살표마다 측정이 필요하다. 모터 명령은 측정된 피부 자극이 아니고, 설문은 제어기 성능이 아니며, 수행 시간이 줄었다는 것만으로 어떤 cue가 그 개선을 일으켰는지 알 수 없다. 강한 연구는 물리적 보정, 행동 결과, 주관 보고 셋을 함께 놓는다.
 
 ### 2. 최소 프로토콜
 
-구체적인 estimand, 참가자 집단과 제외 기준, feedback/delay/gain 조건, counterbalanced design, 사전 지정 primary outcome, clock가 맞는 로그, 올바른 분석 단위, 동의·철회·privacy·fatigue·hardware stop을 정한다. Trial은 participant 안에 nested되므로 반복 trial 수를 독립 참가자 수처럼 세면 안 된다.
+1. **질문과 estimand:** "전단 cue A가 초보 운전자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다.
+2. **참가자와 제외:** 모집단, 필요하면 손잡이, 감각운동 조건, 사전 경험, 중단 기준.
+3. **조건:** 피드백 방식, 지연, 이득, 과제 난이도, 부가 workload.
+4. **설계:** within-subject는 사람 간 분산을 줄인다. 순서를 counterbalance하고, 학습을 처치와 분리할 만큼 연습을 넣는다.
+5. **주 결과 지표:** 결과를 보기 전에 고른다 — 최대 힘, 경로 오차, 성공, 시간, 검출 임계값, 또는 보정된 확신도.
+6. **계측:** 햅틱 상태, 명령, 측정된 힘, 이벤트, 영상, 설문 식별자를 동기화한다. 시계와 유실 패킷을 문서화한다.
+7. **분석 단위:** 참가자 안에 nested된 trial은 독립 참가자가 아니다. 참가자 수, 반복 수, 제외, 불확실성, 효과 크기를 보고한다.
+8. **윤리와 안전:** 사전 동의, 자발적 철회, 개인정보 비식별, 피로 휴식, 하드웨어 정지, 사고 처리는 나중에 붙이는 부록이 아니라 설계에 속한다.
 
-NASA-TLX는 mental·physical·temporal demand, perceived performance, effort, frustration의 여섯 자기보고 차원이다. 객관 데이터의 보완물이며 workload의 물리 원인을 직접 밝히지 않는다. Raw/weighted 중 어떤 절차를 썼는지 보고한다.
+NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, 좌절의 여섯 자기보고 workload 차원을 잰다. 객관 데이터를 보완할 뿐 workload의 물리적 원인을 드러내지는 않는다. raw와 weighted 중 해당하는 공식 채점 절차를 쓰고 어느 쪽을 썼는지 보고한다.
 
-### 3. 증거의 단계
+### 3. 증거의 사다리
 
-Bench response는 장치 동역학, psychophysical threshold는 특정 조건의 검출 가능성, controlled task는 해당 protocol의 인과 효과, representative workload는 더 가까운 맥락의 성능, field/longitudinal study는 시간에 따른 운용 행동을 지지한다. 각 단계가 다음 단계의 일반화를 자동으로 보장하지 않는다.
+| 증거 | 지지하는 것 | 아직 지지하지 못하는 것 |
+|---|---|---|
+| 액추에이터 벤치 응답 | 전달된 장치 동역학 | 사람의 검출 가능성이나 유용성 |
+| 심리물리 임계값 | 시험한 조건에서 cue의 검출 가능성 | 더 나은 과제 제어 |
+| 통제된 과제 개선 | 그 프로토콜 안에서의 인과 효과 | 현장 배치로의 일반화 |
+| 대표성 있는 workload 연구 | 더 가까운 맥락에서의 수행 | 장기 채택이나 안전 |
+| 현장·종단 연구 | 시간에 걸친 운용 행동 | 추가 통제 없이는 기전 |
 
-### 4. 읽기 순서
+### 4. 주석 달린 읽기 순서
 
-위 영어 목록의 7개 자료를 순서대로 읽는다. Hannaford–Okamura로 전체 지도를 잡고, Hayward–MacLean으로 hardware/software를 연결하고, MacLean으로 인간 중심 설계를 익힌다. 그 뒤 Weir–Colgate → Gillespie–Cutkosky → Hannaford–Ryu로 virtual wall과 passivity를 깊게 읽고, Raju–Verghese–Sheridan으로 2-port 원격조작을 연결한다.
+1. **Hannaford & Okamura, "Haptics," Springer Handbook of Robotics 2판, 2016.** 압축된 분야 지도다. 인간 감각 → 장치 설계 → 렌더링 → 안정성 → 촉각 디스플레이. [공식 장 페이지](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
+2. **Hayward & MacLean, "Do It Yourself Haptics: Part I," IEEE RAM 14(4), 2007.** 하드웨어와 소프트웨어를 잇는 최고의 다리다. 변환기, 임피던스/어드미턴스, DC 모터, 기구, 양자화, 실시간 루프, 그리고 실제 한계. [DOI](https://doi.org/10.1109/M-RA.2007.907921).
+3. **MacLean, "Haptic Interaction Design for Everyday Interfaces," RHFE 4(1), 2008.** 능동적 촉각, 다감각 주의, haptic icon, shared control, 그리고 기술적 사실성이 유용성과 같지 않은 이유를 읽어라. [DOI](https://doi.org/10.1518/155723408X342826).
+4. **Weir & Colgate, "Stability of Haptic Displays."** 가상 벽의 에너지 유도, Z-width, 양자화, virtual coupling, PO/PC 절을 읽어라. 뒤의 회로 구현은 전문 심화로 다룬다.
+5. **Gillespie & Cutkosky, "Stable User-Specific Haptic Rendering of the Virtual Wall," ASME IMECE, 1996.** 샘플링되고 스위칭되는 벽은 그냥 LTI 스프링이 아니다. 반 샘플 예측기와 임계 통과 보정은 제한된 고주파 인간·장치 모델에 기대며, 초기 실험은 정성적이었다. [DOI](https://doi.org/10.1115/IMECE1996-0362).
+6. **Hannaford & Ryu, "Time-Domain Passivity Control of Haptic Interfaces," IEEE TRA 18(1), 2002.** 일률의 부호, 에너지 관측기, 적응적 소산 요소를 따라가라. 이 방법은 정확한 환경 모델을 피하지만 잡음, 영속도, 포화, 성능 절충은 여전히 남는다. [DOI](https://doi.org/10.1109/70.988969).
+7. **Raju, Verghese & Sheridan, "Design Issues in 2-Port Network Models of Bilateral Remote Manipulation," ICRA 1989.** 원하는 포트 임피던스와 인간·과제 모델에서 안정한 이득 선택으로 가는 고전적 다리다. 그 보장은 명시한 수동적 termination 부류와 모델 가정 위에서만 성립한다. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
 
-### 5. 과목 자료 선별 원칙
+### 5. 제공된 과목 자료를 어떻게 선별했는가
 
-강의·syllabus는 개념과 범위, MATLAB과 과제는 필요한 역량과 흔한 오류, Hapkit 자료는 24.3의 장치 구조와 보정 논리, 프로젝트·설문·동의서는 연구 설계와 윤리, 논문은 핵심 개념과 공식 출처에 사용했다. 학생 답안·개인 연락처·출입 정보·저작권 원본은 공개하지 않는다.
+| 로컬 자료 부류 | 공개 학습 용도 |
+|---|---|
+| syllabus와 강의 슬라이드 | 트랙 범위, 선수 지식 지도, 개념, 판본 단서 |
+| MATLAB 템플릿과 야코비안 스크립트 | 독자적 유도와 구현 체크리스트. 제출 답안은 옮기지 않음 |
+| Hapkit 슬라이드와 기구 파일 | 24.3의 장치 구조와 보정 논리. 제작 지침과 원본 파일은 공개하지 않음 |
+| 과제와 학생 초안 | 필요한 역량과 흔한 오류 식별. 정답지나 개인 작업물은 공개하지 않음 |
+| 프로젝트 선택지와 평가표 | 이전 가능한 프로젝트 설계·평가 기준. 사적 연락처와 미검증 주장은 제외 |
+| 동의서, 모집 자료, 사전·사후 설문 | 윤리, 참가 자격, workload, 개인정보, 측정 설계. 양식을 옮기거나 재사용 가능한 승인으로 취급하지 않음 |
+| 라이선스 읽기 자료 | 주석 단 개념과 공식 DOI·출판사 링크. PDF는 비공개 |
 
-과목 폴더에는 syllabus가 예고한 후반 CHAI3D·고급 teleoperation·ROS 강의/실습 전체가 들어 있지 않다. 이 페이지는 공개 공식 문서로 구현 진입로를 보완하지만 보지 못한 강의를 복원했다고 주장하지 않는다.
+이 자료 묶음은 햅틱 과목 전반부를 특히 잘 덮는다. syllabus가 예고한 후반 강의·실습 자료 전부 — 완전한 CHAI3D, 고급 원격조작, ROS 순서 같은 것 — 를 담고 있지는 않다. 그래서 이 안내는 빠진 구현 진입로를 공개 공식 문서로 잇되, 보지 못한 강의를 복원했다고 주장하지 않는다.
 
 > [!question]- 스스로 점검 · 정답
-> **20명이 각 30 trial을 수행하면 $n=600$인가?** 참가자 수준의 treatment claim에서는 아니다. Trial은 참가자 안의 반복 관측이다. Participant summary나 hierarchical/mixed model로 의존성을 처리하고 20 participants와 600 trials를 모두 보고한다.
-
+> **within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?** 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.

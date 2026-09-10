@@ -179,7 +179,16 @@ page to write:
 
 If yes, it can be promoted toward Working or Mastery. If no, it stays at Literacy, which
 is not a demotion: Literacy is exactly enough to read the field, cite it correctly, and
-recognize when it starts to matter. Most of this wiki is deliberately Literacy.
+recognize when it starts to matter.
+
+**Where the test has actually landed, as of 2026-09-09.** 136 pages sit at Working, 72 at
+Literacy, 7 at Mastery. That is the opposite of what this page used to claim, and the reason
+is that all three pillars count as serving the question, so anything inside them passes.
+Literacy is now concentrated where it belongs — 52 of the 72 are paper notes in
+[[01-canonical-papers/index|1. Canonical Papers]] — while the concept pages that carry a
+pillar are nearly all Working. Treat those three numbers as an instrument: the test only
+filters while Working is a decision. If it becomes the default for everything, the honest
+move is to demote, not to restate the rule.
 
 ### After reading
 
@@ -364,7 +373,15 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
 
 그렇다면 Working이나 Mastery로 승격할 수 있다. 아니라면 Literacy에 남는다. 이것은 강등이
 아니다: Literacy는 분야를 읽고, 정확히 인용하고, 그것이 중요해지기 시작하는 순간을 알아보는
-데 정확히 충분한 깊이다. 이 위키의 대부분은 의도적으로 Literacy다.
+데 정확히 충분한 깊이다.
+
+**이 시험이 실제로 어디에 도달했는가, 2026-09-09 기준.** Working이 136쪽, Literacy가 72쪽,
+Mastery가 7쪽이다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
+기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 이제 있어야
+할 곳에 몰려 있다 — 72쪽 중 52쪽이 [[01-canonical-papers/index|1. 핵심 논문]]의 논문 노트다 —
+반면 기둥을 지는 개념 페이지는 거의 다 Working이다. 이 세 숫자를 계기판으로 다뤄라. 시험은
+Working이 판단인 동안에만 거르는 기능을 한다. 그것이 모든 것의 기본값이 되면, 정직한 수는 규칙을
+고쳐 쓰는 것이 아니라 강등하는 것이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

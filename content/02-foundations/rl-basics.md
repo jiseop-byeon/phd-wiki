@@ -373,14 +373,16 @@ the price of value-extrapolation instability BC never has.
 > The framing above — imitation is stable but capped, RL can exceed the demonstrator — is
 > right, and the last two years sharpened it in a way worth carrying. On **contact-rich
 > precision** tasks the gap is not narrow: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]** (*Science Robotics*, 2025) reports
-> 100% success on around thirteen such tasks after **1–2.5 hours of real-robot training**,
-> while diffusion-policy baselines score **27%** on RAM insertion and **18%** on dashboard
-> assembly. Demonstrations do not contain the corrective micro-adjustments needed when you
+> 100% success on around thirteen such tasks after **1–2.5 hours of real-robot training** — the
+> hours are the abstract's, the success rate and the task count are body figures, as are the
+> diffusion-policy baselines it beats (**27%** on RAM insertion, **18%** on dashboard assembly).
+> The abstract's own headline is a 2× average over imitation and prior RL. Demonstrations do not contain the corrective micro-adjustments needed when you
 > are 2 mm off, and averaging over human demos actively destroys reactive behaviour.
 >
 > But the honest headline for the contact-rich precision cases discussed here is not "RL beat imitation". These results —
-> HIL-SERL, ConRFT, RECAP — puts a **human correcting the policy on-distribution during
-> learning**, which is closer to [[01-canonical-papers/notes/4-vla/dagger|DAgger]]'s lineage
+> HIL-SERL, ConRFT ([arXiv:2502.05450](https://arxiv.org/abs/2502.05450)) and RECAP
+> ([arXiv:2511.14759](https://arxiv.org/abs/2511.14759)) — each put a **human correcting the
+> policy on-distribution during learning**, which is closer to [[01-canonical-papers/notes/4-vla/dagger|DAgger]]'s lineage
 > than to classical RL. **Interactive learning beat offline learning, and reward is one of
 > several ways to close that loop.** Two riders: every RL success above needed a hand-built
 > binary reward classifier — a per-task cost invisible in a table of 100% success rates. In
@@ -389,7 +391,9 @@ the price of value-extrapolation instability BC never has.
 >
 > On the imitation side the sharpest recent result is a scaling law: generalization follows
 > a power law in the **number of environments and objects, not the number of demonstrations**
-> (ICLR 2025, from 40,000+ demos and 15,000+ real trials). Past a threshold, extra demos per
+> (Lin et al., [arXiv:2410.18647](https://arxiv.org/abs/2410.18647); the abstract's own words are
+> a "roughly power-law relationship", from over 40,000 demonstrations and more than 15,000 real
+> rollouts). Past a threshold, extra demos per
 > environment do almost nothing. The two paradigms are therefore not competing for the same
 > resource — **RL buys precision with interaction time, imitation buys generality with scene
 > diversity.**
@@ -923,19 +927,23 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 > 위의 프레이밍 — 모방은 안정적이지만 상한이 있고, RL은 시연자를 넘어설 수 있다 — 은 옳고,
 > 지난 2년이 그것을 가져갈 만한 방식으로 날카롭게 만들었다. **접촉이 많은 정밀** 과제에서 격차는
 > 좁지 않다: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]**(*Science Robotics*, 2025)이 그런 과제 약 열세 개에서 **실기계 학습
-> 1~2.5시간** 후 100% 성공을 보고하는 동안, diffusion policy 베이스라인은 RAM 삽입 **27%**,
-> 대시보드 조립 **18%** 를 낸다. 시연에는 2 mm 어긋났을 때 필요한 교정적 미세 조정이 담겨 있지
+> 1~2.5시간** 후 약 열세 개 과제에서 100% 성공을 보고한다 — 시간은 초록의 것이고, 성공률과 과제
+> 수는 본문 수치이며, 그것이 이긴 diffusion policy 베이스라인(RAM 삽입 **27%**, 대시보드 조립
+> **18%**)도 마찬가지다. 초록 자신의 표제는 모방과 기존 RL 대비 2배 평균이다. 시연에는 2 mm 어긋났을 때 필요한 교정적 미세 조정이 담겨 있지
 > 않고, 사람 시연들에 대해 평균을 내는 것이 반응적 거동을 적극적으로 파괴한다.
 >
-> 그러나 여기서 다루는 접촉 정밀 사례의 정직한 표제는 "RL이 모방을 이겼다"가 아니다. 이 결과들 — HIL-SERL, ConRFT, RECAP —
-> 하나하나가 **학습 도중 사람이 정책을 온-분포로 교정하게** 하고, 그것은 고전 RL보다
+> 그러나 여기서 다루는 접촉 정밀 사례의 정직한 표제는 "RL이 모방을 이겼다"가 아니다. 이 결과들 — HIL-SERL, ConRFT([arXiv:2502.05450](https://arxiv.org/abs/2502.05450)),
+> RECAP([arXiv:2511.14759](https://arxiv.org/abs/2511.14759)) — 하나하나가 **학습 도중 사람이
+> 정책을 온-분포로 교정하게** 하고, 그것은 고전 RL보다
 > [[01-canonical-papers/notes/4-vla/dagger|DAgger]]의 계보에 가깝다. **상호작용적 학습이 오프라인
 > 학습을 이겼고, 보상은 그 루프를 닫는 여러 방법 중 하나다.** 단서 둘: 위의 모든 RL 성공이 손으로
 > 만든 이진 보상 분류기를 필요로 했다 — 100% 성공률 표에는 보이지 않는 과제별 비용이다.
 > 이 사례들에서 RL은 입증된 범용 학습 패러다임이라기보다 상호작용적 마무리 단계로 읽는 편이 안전하다.
 >
 > 모방 쪽의 가장 날카로운 최근 결과는 스케일링 법칙이다: 일반화가 **시연의 수가 아니라 환경과
-> 물체의 수**에 대한 거듭제곱 법칙을 따른다(ICLR 2025, 시연 4만+와 실기계 시행 1.5만+에서).
+> 물체의 수**에 대한 거듭제곱 법칙을 따른다(Lin 외,
+> [arXiv:2410.18647](https://arxiv.org/abs/2410.18647). 초록 자신의 표현은 "대략적인 거듭제곱
+> 관계"이고, 시연 4만 개 이상과 실기계 롤아웃 1만 5천 회 이상에서 나온 결과다).
 > 임계를 넘으면 환경당 시연을 더 모아도 거의 아무 일도 일어나지 않는다. 그러므로 두 패러다임은
 > 같은 자원을 놓고 경쟁하지 않는다 — **RL은 상호작용 시간으로 정밀도를 사고, 모방은 장면
 > 다양성으로 일반성을 산다.**

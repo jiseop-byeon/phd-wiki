@@ -93,14 +93,16 @@ models.
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
 >
-> **Independent evaluation, added 2026-08.** A third-party study at UPenn ran 300+ trials of
+> **Independent evaluation, added 2026-08 — source not located, do not cite from here.** These
+> figures were recorded without a citation and a September 2026 arXiv search did not recover the
+> study. Treat them as a lead to verify, not as evidence to quote. A third-party study at UPenn ran 300+ trials of
 > π0-FAST-DROID on a Franka and reports **~24% overall success**, with **fabric manipulation
 > at 19.4%** and **t-shirt folding at 80% progress on individual folds but 0% task
 > completion**. It also found extreme prompt sensitivity: *"Close the white lid of the
-> toilet"* succeeded 100% of the time while *"Close the toilet"* succeeded 0%. Cite that
-> alongside any laundry-folding claim from this line — the first-party results and the only
-> independent quantified evaluation disagree by a wide margin, and the gap is the honest
-> picture of the current capability level.
+> toilet"* succeeded 100% of the time while *"Close the toilet"* succeeded 0%. If the study can be sourced it is the right thing to read
+> alongside any laundry-folding claim from this line, because first-party results and an
+> independent evaluation would then disagree by a wide margin. Until then the gap is a
+> hypothesis about the current capability level, not a measured one.
 
 ### Connections
 
@@ -173,11 +175,14 @@ flowchart LR
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 >
-> **독립 평가, 2026-08 추가.** UPenn의 제3자 연구가 Franka에서 π0-FAST-DROID로 300회 이상을
+> **독립 평가, 2026-08 추가 — 출처 미확인, 여기서 인용하지 말 것.** 이 수치들은 인용 없이
+> 기록됐고, 2026년 9월 arXiv 검색으로도 해당 연구를 찾지 못했다. 인용할 증거가 아니라 확인할
+> 단서로 다뤄라. UPenn의 제3자 연구가 Franka에서 π0-FAST-DROID로 300회 이상을
 > 돌려 **전체 성공률 약 24%**, **천 조작 19.4%**, **티셔츠 접기는 개별 접힘 진행률 80%인데 과제
 > 완료 0%** 를 보고한다. 극단적인 프롬프트 민감도도 발견했다: *"변기의 흰 뚜껑을 닫아라"* 는
-> 100%, *"변기를 닫아라"* 는 0%였다. 이 계열의 빨래 개기 주장 옆에는 이것을 함께 인용하라 —
-> 1차 결과와 유일한 독립 정량 평가가 크게 어긋나고, 그 격차가 정직한 현재 수준이다.
+> 100%, *"변기를 닫아라"* 는 0%였다. 출처를 찾을 수 있다면 이 계열의 빨래 개기 주장 옆에
+> 함께 읽을 값어치가 있다. 그때 비로소 1차 결과와 독립 평가가 크게 어긋난다고 말할 수 있다.
+> 그 전까지 이 격차는 측정된 것이 아니라 현재 수준에 대한 가설이다.
 
 ### 연결
 

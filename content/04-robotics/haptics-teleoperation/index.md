@@ -51,6 +51,13 @@ After this track, you should be able to trace one full haptic cycle, distinguish
 
 햅틱은 사람을 포함해 닫히는 피드백 루프다. 센서가 운동이나 힘을 측정하고, 모델이 반응을 계산하고, 액추에이터가 기계적 에너지를 돌려주면 사람의 손이 다음 입력을 바꾼다. 따라서 햅틱은 지각·메카트로닉스·샘플드데이터 제어 문제를 동시에 다룬다.
 
+```mermaid
+flowchart LR
+    H["사람의 지각<br/>과 동작"] --> S["센서와<br/>기구학"] --> R["렌더링 또는<br/>원격 로봇"] --> A["구동과<br/>전달"] --> H
+    T["샘플링 · 지연 · 양자화"] -.-> R
+    T -.-> A
+```
+
 ### 권장 학습 순서
 
 1. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 Human Haptics & Psychophysics]] — 무엇을 느낄 수 있고 어떻게 측정하는가.
@@ -64,7 +71,16 @@ After this track, you should be able to trace one full haptic cycle, distinguish
 
 ### 선수 지식
 
-벡터·행렬·좌표계, 야코비안과 $\tau=J^\top F$, 질량–스프링–댐퍼, 피드백 안정성, 샘플링과 필터링이 필요하다. 위 영어 표의 링크가 각각의 복습 진입점이다. 모든 공식을 먼저 숙달할 필요는 없지만, 각 페이지에서 **입력·출력·에너지 흐름·가정**을 표시하며 읽어야 한다.
+| 여기서 필요한 것 | 먼저 복습할 곳 |
+|---|---|
+| 벡터, 행렬, 좌표계 | [[02-foundations/linear-algebra\|Linear Algebra]], [[02-foundations/se3-geometry\|3D Geometry & SE(3)]] |
+| $\dot q$, 야코비안, $\tau=J^\top F$ | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR ch.5]] |
+| 질량–스프링–댐퍼와 피드백 | [[04-robotics/control-theory-ce397\|Control Theory]] |
+| 샘플링, 필터링, 주파수 응답 | [[02-foundations/signal-processing\|Signal Processing]] |
+| 힘/임피던스/어드미턴스 제어 | [[04-robotics/force-compliance-control\|Force & Compliance Control]] |
+| 실험 설계와 불확실성 | [[06-research-practice/experimental-design-reproducibility\|Experiment Design]], [[06-research-practice/psychophysics-human-measurement\|Psychophysics]] |
+
+모든 공식을 먼저 숙달할 필요는 없지만, 각 페이지에서 **입력·출력·에너지 흐름·가정**을 표시하며 읽어야 한다.
 
 > [!warning] 범위와 자료 상태
 > 로컬 과목 자료에는 저작권 강의안·라이선스 논문·과제·하드웨어 파일·인간대상연구 문서가 포함되어 있어 공개하지 않는다. 이 디렉토리는 그 자료와 공개 출처를 바탕으로 새로 쓴 학습 노트다. 자료 버전에 따라 배선 핀과 일정이 다르므로 실제 제작에서는 현재 보드 문서와 담당 교수 안내를 따른다.

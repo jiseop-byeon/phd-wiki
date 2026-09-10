@@ -4,13 +4,24 @@ tags: [reference]
 study-depth: Literacy
 depth-goal: "Use the map to locate a method historically and explain how neighboring research streams connect."
 mastery-when: "Raise the specific downstream method pages—not the whole map—to Working or Mastery."
+last_verified: 2026-09-09
 ---
 
 ## English
 
 Papers tell you the *ideas*; this page tracks the *players and platforms* — who builds
-what, and which hardware the papers actually run on. Updated occasionally; for exhaustive
+what, and which hardware the papers actually run on. For exhaustive
 frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI knowledge hub).
+
+> [!warning] Rosters go stale · 명단은 낡는다
+> Companies, products and "who runs what" change faster than anything else in this wiki, and
+> nothing on this page is load-bearing for a claim. The tables were last reviewed on
+> **2026-09-09**; treat every row as a pointer to check, not as a current fact. Where a row
+> matters to an argument, cite the paper note it links to rather than this page.
+> 회사·제품·"누가 무엇을 돌리는가"는 이 위키에서 가장 빨리 바뀌고, 이 페이지의 어떤 항목도
+> 주장의 근거가 되지 않는다. 표는 **2026-09-09**에 마지막으로 훑었다. 각 줄을 현재 사실이 아니라
+> 확인할 포인터로 다뤄라. 어떤 줄이 논증에 걸린다면 이 페이지가 아니라 그 줄이 가리키는 논문
+> 노트를 인용하라.
 
 ### Key players
 

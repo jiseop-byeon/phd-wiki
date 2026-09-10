@@ -102,6 +102,21 @@ traceable.
 "quick overview" route, lists companies and humanoid hardware, and carries no verification
 date, while comparable pages carry a prominent one.
 
+### 4.1 Actions taken (2026-09-09)
+
+All four weaknesses above were addressed after this report was written.
+
+| # | Weakness | Action |
+|---|---|---|
+| 1 | Korean half thinner | Seven haptics pages rewritten. Restored display equations the Korean text referred to as "위 식" without showing, two Mermaid diagrams, the prerequisite and reading tables collapsed into prose, the seven-item annotated reading list with its DOIs, and the missing zero-order-hold caveat in 24.4 §3. Track ratios now 0.69–0.90, previously 0.32–0.49. |
+| 2 | Depth drift | The research-program §7 claim replaced in both halves with the measured distribution (136 Working / 72 Literacy / 7 Mastery), the note that 52 of the 72 Literacy pages are paper notes, and the instruction to read the counts as an instrument rather than a target. |
+| 3 | Untraceable numbers | Scaling law identified as Lin et al., arXiv:2410.18647, with its abstract wording checked. ConRFT (arXiv:2502.05450) and RECAP (arXiv:2511.14759) cited. HIL-SERL's 27%/18%/100% marked body figures, since its abstract carries only the 1–2.5 h and 2x claims. The π0 UPenn figures could not be traced through arXiv search and are now marked "source not located, do not cite from here" in both halves. |
+| 4 | Volatile page undated | `physical-ai-ecosystem` given `last_verified: 2026-09-09` and a bilingual staleness warning. |
+
+Weakness 1 was fixed only for the haptics track, which was the acute case. The wider finding
+stands: 91 of 201 bilingual pages remain below 0.75, and that census has not been re-run
+page by page.
+
 ## 5. One reported finding downgraded
 
 A reader flagged the earthmoving page's "24 h ... per human intervention" as a misattribution,
