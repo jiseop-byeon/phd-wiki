@@ -54,6 +54,19 @@ export default (() => {
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" />
             <link rel="stylesheet" href={googleFontHref(cfg.theme)} />
+            {/* Half this wiki is Korean and none of the three configured faces
+                carries a Hangul glyph, so every Korean paragraph was being set in
+                whatever the reader's OS happened to substitute. */}
+            <link
+              rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap"
+            />
+            {/* Paper only. Loaded at print priority so screen readers never wait on it. */}
+            <link
+              rel="stylesheet"
+              media="print"
+              href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Noto+Serif+KR:wght@400;600&display=swap"
+            />
             {cfg.theme.typography.title && (
               <link rel="stylesheet" href={googleFontSubsetHref(cfg.theme, cfg.pageTitle)} />
             )}
@@ -121,7 +134,7 @@ export default (() => {
                   if (el.tagName === "H2") {
                     var t = (el.textContent || "").trim();
                     if (t === "English") { lang = "en"; el.classList.add("lang-heading"); }
-                    else if (t === "\\ud55c\\uad6d\\uc5b4") { lang = "ko"; el.classList.add("lang-heading"); }
+                    else if (t === "\\ud55c\\uad6d\\uc5b4") { lang = "ko"; el.classList.add("lang-heading"); el.classList.add("lang-heading-ko"); }
                   }
                   if (lang) {
                     var tag = lang;
@@ -175,10 +188,22 @@ export default (() => {
                 __applyLang(lang);
               }
 
+              function __addRunningHead() {
+                var h = document.getElementById("print-running-head");
+                if (!h) {
+                  h = document.createElement("div");
+                  h.id = "print-running-head";
+                  document.body.insertBefore(h, document.body.firstChild);
+                }
+                var t = document.querySelector("article h1");
+                h.textContent = (t ? t.textContent : document.title).trim();
+              }
+
               function __addPdfBtn() {
                 var old = document.getElementById("pdf-controls");
                 if (old) old.remove();
                 var bilingual = __tagLangs();
+                __addRunningHead();
                 var box = document.createElement("div");
                 box.id = "pdf-controls";
                 if (bilingual) {

@@ -250,3 +250,148 @@ body[data-slug="08-research-radar/index"] {
     padding: 0 0.5rem;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Reading typography
+//
+// Measured before changing anything: body copy was 16px on a 790px column, so
+// an English line ran to about 105 characters where 65-75 is the range reading
+// research keeps landing on. And none of the three configured faces carries a
+// Hangul glyph, so every Korean paragraph fell back to whatever the reader's OS
+// substituted - Apple SD Gothic Neo here, Malgun Gothic on Windows. The Latin
+// and the substituted Hangul do not share metrics, which is why mixed
+// paragraphs looked uneven.
+// ---------------------------------------------------------------------------
+
+:root {
+  --krFont: "Noto Sans KR";
+  --krSerif: "Noto Serif KR";
+}
+
+body,
+p,
+li,
+td,
+th,
+blockquote,
+figcaption {
+  font-family: var(--bodyFont), var(--krFont), system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--headerFont), var(--krFont), system-ui, sans-serif;
+}
+
+// Cap the measure on running text only. Tables, diagrams, equations and code
+// keep the full column, because narrowing those costs more than it gains.
+// Quartz nests the rendered body one level down, in .markdown-preview-view.
+article .markdown-preview-view {
+  & > p,
+  & > ul,
+  & > ol,
+  & > h1,
+  & > h2,
+  & > h3,
+  & > h4,
+  & > h5,
+  & > h6 {
+    max-width: 34em;
+  }
+
+  & > .callout > .callout-title,
+  & > .callout > .callout-content > p,
+  & > .callout > .callout-content > ul,
+  & > .callout > .callout-content > ol {
+    max-width: 32em;
+  }
+
+  & > ul ul,
+  & > ol ol {
+    max-width: none;
+  }
+}
+
+// Hangul is a square-framed script: at the leading that suits Latin it reads
+// denser than it should. Applies once the language tagger has run.
+[data-lang="ko"],
+[data-lang="ko"] p,
+[data-lang="ko"] li,
+[data-lang="ko"] blockquote {
+  line-height: 1.85;
+}
+
+// ---------------------------------------------------------------------------
+// Paper
+// ---------------------------------------------------------------------------
+
+@media print {
+  body {
+    font-family: "Source Serif 4", var(--krSerif), Georgia, serif !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+
+  p,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption {
+    font-family: "Source Serif 4", var(--krSerif), Georgia, serif !important;
+    // base.scss sets a rem line-height on paragraphs, which would otherwise
+    // survive the rule on body.
+    line-height: 1.5 !important;
+  }
+
+  // Headings stay sans: on paper that is what separates structure from prose.
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--headerFont), var(--krFont), system-ui, sans-serif !important;
+  }
+
+  [data-lang="ko"],
+  [data-lang="ko"] p,
+  [data-lang="ko"] li,
+  [data-lang="ko"] blockquote {
+    line-height: 1.7 !important;
+  }
+
+  // The measure cap is a screen device. On a 16mm margin the page is already
+  // the right width, and keeping the cap would waste half the sheet.
+  article .markdown-preview-view > *,
+  article .markdown-preview-view > .callout > .callout-title,
+  article .markdown-preview-view > .callout > .callout-content > * {
+    max-width: none !important;
+  }
+
+  p, li, blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  // Both halves printed together should not run into each other mid-page.
+  h2.lang-heading-ko {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  // A fixed element repeats on every printed sheet, which is the only way to
+  // get a running head: Chrome does not implement @page margin boxes. Page
+  // numbers come from the browser's own print footer.
+  #print-running-head {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-family: var(--headerFont), var(--krFont), system-ui, sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.04em;
+    color: #6b6b6b;
+    border-bottom: 0.5pt solid #d8d8d8;
+    padding-bottom: 2mm;
+  }
+}
+
+#print-running-head {
+  display: none;
+}
