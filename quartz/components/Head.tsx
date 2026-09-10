@@ -128,7 +128,9 @@ export default (() => {
                     if (lang === "en" && !el.classList.contains("lang-heading")) {
                       // Bilingual callouts and embedded widgets are authored once, in the
                       // English half. Mark them "both" so neither filter hides them.
-                      if (/[\uac00-\ud7a3]/.test(el.textContent || "") || el.matches("iframe") || el.querySelector("iframe")) {
+                      var isCallout = el.matches("blockquote") || el.classList.contains("callout");
+                      var isWidget = el.matches("iframe") || !!el.querySelector("iframe");
+                      if (isWidget || (isCallout && /[\uac00-\ud7a3]/.test(el.textContent || ""))) {
                         tag = "both";
                       }
                     }
