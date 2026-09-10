@@ -200,6 +200,46 @@ spaces ignored. Under that key two entries had slipped — `Spatial memory` befo
 and `Visuotactile` before `Virtual coupling`. Fixed, and the ordering is now check 15, since
 the wiki had held this rule by hand across 229 entries with nothing enforcing it.
 
+### 4.5 The terse-section rule, tested by reading (2026-09-10)
+
+The executor worklist in `.plan/README-easier-and-fuller.md` tells a smaller model to leave
+the remaining terse sections alone, because "most of them are sections designed as tables".
+Measured, that holds for **55 of 136**. Another 26 are bullet lists. The remaining **55 are
+short prose with no table and no list**, and for those the rule was never tested.
+
+They were read in full, both halves, by two readers. **Three genuine defects, all repaired**;
+52 of 55 were short and complete, which is the useful half of the result — brevity is not the
+signal.
+
+| Page | Defect | Repair |
+|---|---|---|
+| `rendering-sampling-stability` §3 | The quantization bound $K\le2f_c/\Delta$ used $f_c$ with no definition anywhere in the wiki, so the bound could not be applied | $f_c$ defined as the device's Coulomb friction force in newtons, with the units read off the bound and the consequence stated: friction *raises* the stiffness ceiling, and is the same friction a transparency claim must subtract |
+| `device-design-kinematics` §2 | The Korean half closed the worked example with a units-and-frames caveat the English half did not have, and the Korean heading named the Jacobian while the English one did not | Both taken into the English half |
+| `modern-robotics/ch03` §3 | Twists classified by screw pitch $h$, with pitch defined nowhere — `grep` found the word only in this line, a roll-pitch-yaw row and a camera pixel pitch | Pitch defined as advance along the axis per radian of rotation, m/rad, with the thread analogy and the two limits read off it |
+
+The rule in the plan file has been narrowed to match what was measured.
+
+### 4.6 ME384R benchmark, Lecture 5 (2026-09-10)
+
+The course releases decks one lecture at a time; five are out, and the teleoperation lectures
+the study log is waiting for (9/28 through 10/19) have not been given. Lecture 5 was swept
+against the wiki. Device-specific content — the pantograph, the Geomagic Touch, the Hapkit
+board — stays out under the admission rule, which is the same call that dropped the Hapkit
+page. Two items cleared it, both because they complete something the wiki already teaches
+one-sidedly:
+
+- **Velocity estimation at low speed.** The page taught finite differencing and averaging and
+  stopped. At low enough speed a fixed window contains no encoder transition, the estimate
+  reads exactly zero, and rendered damping disappears exactly when a wall is approached
+  gently. The inverse measurement — timing the interval between ticks — is accurate there and
+  fails at high speed. Both halves now carry the pair and the reading it gives.
+- **A source for the quantization claim.** Colonnese & Okamura, IJRR 35(9):1103–1120, 2016
+  (online 2015), model device and human dynamics, sampling, quantization, delay and the
+  velocity filter together. Added to the reading list as item 8 and cited inline in §3, which
+  had been asserting the quantization result unsourced. The DOI was resolved against Crossref
+  and the abstract read: it states no numerical result, and the year is pinned by volume
+  because online and print disagree.
+
 ## 5. One reported finding downgraded
 
 A reader flagged the earthmoving page's "24 h ... per human intervention" as a misattribution,

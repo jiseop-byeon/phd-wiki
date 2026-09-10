@@ -15,7 +15,7 @@ An **impedance display** measures motion and commands force: $x,\dot x\mapsto F$
 
 Only one member of an effort–flow pair can be independently imposed at a port. In mechanics the pair is force and velocity, and instantaneous power is $P=F^\top v$. This energy view will reappear in passivity and bilateral teleoperation.
 
-### 2. The device chain
+### 2. The device chain and the Jacobian
 
 ```mermaid
 flowchart LR
@@ -31,6 +31,9 @@ This mapping does not require $J^{-1}$ and remains valid for non-square Jacobian
 Worked example: for $J=\begin{bmatrix}0.2&0.1\\0&0.15\end{bmatrix}$ m/rad and $F=[5,-2]^\top$ N,
 
 $$\tau=J^\top F=\begin{bmatrix}0.2&0\\0.1&0.15\end{bmatrix}\begin{bmatrix}5\\-2\end{bmatrix}=\begin{bmatrix}1.0\\0.2\end{bmatrix}\ \mathrm{N\,m}.$$
+
+The computation only means anything if the units and the coordinate frames line up on both
+sides.
 
 ### 3. Actuation is not “PWM equals force”
 

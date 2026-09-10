@@ -41,13 +41,17 @@ The integrator you simulate this with is part of the claim. Explicit Euler advan
 
 ### 3. Sampling and quantization are different
 
-Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a simple Coulomb-friction model, another bound is $K\le2f_c/\Delta$. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
+Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a simple Coulomb-friction model, another bound is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons — read the units and the shape of the bound follows: N divided by m is a stiffness, so the coarser the encoder the lower the wall you can render, and friction *raises* the ceiling rather than lowering it. That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
 
 Velocity estimation exposes the tradeoff:
 
 $$\hat v_k=\frac{x_k-x_{k-1}}{T}.$$
 
 Small $T$ increases the velocity jump caused by one encoder count. Averaging over $n$ samples, $(x_k-x_{k-n})/(nT)$, reduces variance but increases effective delay. A low-pass filter should therefore be evaluated by both noise attenuation and phase at the contact frequencies.
+
+The failure is worst where it is least expected. Move slowly enough and a fixed window may contain **no** encoder transition at all, so the estimate reads exactly zero and the rendered damping vanishes at the moment a wall is being approached gently. The alternative is to invert the measurement — time the interval between successive encoder ticks instead of counting ticks in a fixed interval — which is accurate at low speed for the same reason, and degrades at high speed where the ticks arrive faster than the timer resolves. Neither estimator is good everywhere, so a paper that reports a stiffness ceiling owes you the velocity estimator and the speed at which it was measured.
+
+Colonnese and Okamura put all of this into one model — device and human dynamics, sampling, position quantization, delay, and the velocity filter together — and derive the tradeoffs between the resulting stability and quantization-error regions, including when limit cycles are ruled out. Read it as the reference treatment for this section; it is in the reading list in [[04-robotics/haptics-teleoperation/experiments-readings|Experiments & Readings]].
 
 ### 4. Passivity, stability, and Z-width
 
@@ -113,13 +117,17 @@ $$K\le\frac{2b}{T}$$
 
 ### 3. 샘플링과 양자화는 서로 다른 문제다
 
-샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. 단순한 Coulomb 마찰 모델 아래에서는 또 다른 경계 $K\le2f_c/\Delta$가 나온다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
+샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. 단순한 Coulomb 마찰 모델 아래에서는 또 다른 경계 $K\le2f_c/\Delta$가 나온다. 여기서 $f_c$는 장치의 Coulomb 마찰력이고 단위는 N이다. 단위를 읽으면 경계의 모양이 따라 나온다 — N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아지고, 마찰은 천장을 낮추는 것이 아니라 *올린다*. 불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
 
 속도 추정에서 이 상충이 드러난다.
 
 $$\hat v_k=\frac{x_k-x_{k-1}}{T}.$$
 
 $T$가 작을수록 encoder 한 count가 만드는 속도 도약이 커진다. $n$개 샘플에 대한 평균 $(x_k-x_{k-n})/(nT)$는 분산을 줄이지만 실효 지연을 늘린다. 따라서 저역통과 필터는 noise 감쇠와 접촉 주파수에서의 위상, 두 가지로 함께 평가해야 한다.
+
+이 고장은 예상하기 가장 어려운 곳에서 가장 심하다. 충분히 느리게 움직이면 고정된 창 안에 encoder 전이가 **하나도** 안 들어올 수 있다. 그러면 추정값이 정확히 0이 되고, 벽에 조심스럽게 다가가는 바로 그 순간에 렌더링된 감쇠가 사라진다. 대안은 측정을 뒤집는 것이다. 고정 구간의 tick 수를 세는 대신 연속한 tick 사이의 시간을 재면, 같은 이유로 저속에서 정확하고, tick이 타이머 분해능보다 빨리 도착하는 고속에서 나빠진다. 어느 추정기도 전 구간에서 좋지 않다. 그러니 강성 한계를 보고하는 논문이라면 속도 추정기와 그것을 측정한 속도를 함께 내놓아야 한다.
+
+Colonnese와 Okamura는 이것을 전부 한 모델에 넣었다 — 장치와 인간의 동역학, 샘플링, 위치 양자화, 지연, 속도 필터를 함께 놓고, 그 결과로 생기는 안정성 영역과 양자화 오차 영역 사이의 절충을 유도한다. 극한 주기가 배제되는 조건도 함께 다룬다. 이 절의 기준 문헌으로 읽어라. [[04-robotics/haptics-teleoperation/experiments-readings|실험과 읽을거리]]의 읽기 목록에 있다.
 
 ### 4. 수동성, 안정성, Z-width
 

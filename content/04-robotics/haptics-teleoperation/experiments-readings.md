@@ -49,6 +49,7 @@ NASA-TLX measures six self-reported workload dimensions—mental, physical, temp
 5. **Gillespie & Cutkosky, “Stable User-Specific Haptic Rendering of the Virtual Wall,” ASME IMECE, 1996.** A sampled, switched wall is not merely an LTI spring. The half-sample predictor and threshold-crossing correction depend on a limited high-frequency human/device model; the early experiment was qualitative. [DOI](https://doi.org/10.1115/IMECE1996-0362).
 6. **Hannaford & Ryu, “Time-Domain Passivity Control of Haptic Interfaces,” IEEE TRA 18(1), 2002.** Follow the power sign, energy observer, and adaptive dissipative element. The method avoids an exact environment model but still faces noise, zero velocity, saturation, and performance tradeoffs. [DOI](https://doi.org/10.1109/70.988969).
 7. **Raju, Verghese & Sheridan, “Design Issues in 2-Port Network Models of Bilateral Remote Manipulation,” ICRA 1989.** A classic bridge from desired port impedances and human/task models to stable gain selection. Its guarantee is over the specified passive termination class and model assumptions. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
+8. **Colonnese & Okamura, “Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping,” IJRR 35(9):1103–1120, 2016** (online 2015). The one paper that puts sampling, position quantization, time delay, and the velocity-estimate low-pass filter into a single one-DOF model and derives the tradeoffs between them, including conditions for quantization-error passivity and for the absence of limit cycles. Verified on a Phantom Premium 1.5; the abstract states no numerical result. Cite the volume, not the year alone — it appeared online in 2015 and in print in 2016. [DOI](https://doi.org/10.1177/0278364915596234).
 
 ### 5. How the supplied course materials were selected
 
@@ -109,6 +110,7 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 5. **Gillespie & Cutkosky, "Stable User-Specific Haptic Rendering of the Virtual Wall," ASME IMECE, 1996.** 샘플링되고 스위칭되는 벽은 그냥 LTI 스프링이 아니다. 반 샘플 예측기와 임계 통과 보정은 제한된 고주파 인간·장치 모델에 기대며, 초기 실험은 정성적이었다. [DOI](https://doi.org/10.1115/IMECE1996-0362).
 6. **Hannaford & Ryu, "Time-Domain Passivity Control of Haptic Interfaces," IEEE TRA 18(1), 2002.** 일률의 부호, 에너지 관측기, 적응적 소산 요소를 따라가라. 이 방법은 정확한 환경 모델을 피하지만 잡음, 영속도, 포화, 성능 절충은 여전히 남는다. [DOI](https://doi.org/10.1109/70.988969).
 7. **Raju, Verghese & Sheridan, "Design Issues in 2-Port Network Models of Bilateral Remote Manipulation," ICRA 1989.** 원하는 포트 임피던스와 인간·과제 모델에서 안정한 이득 선택으로 가는 고전적 다리다. 그 보장은 명시한 수동적 termination 부류와 모델 가정 위에서만 성립한다. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
+8. **Colonnese & Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," IJRR 35(9):1103–1120, 2016**(온라인 2015). 샘플링, 위치 양자화, 시간 지연, 속도 추정용 저역통과 필터를 1자유도 모델 하나에 함께 넣고 그 사이의 절충을 유도한 논문이다. 양자화 오차의 수동성 조건과 극한 주기가 생기지 않을 조건을 함께 제시한다. Phantom Premium 1.5로 검증했고, 초록에는 수치 결과가 없다. 연도만 쓰지 말고 권호를 써라 — 2015년에 온라인, 2016년에 지면으로 나왔다. [DOI](https://doi.org/10.1177/0278364915596234).
 
 ### 5. 제공된 과목 자료를 어떻게 선별했는가
 

@@ -56,8 +56,12 @@ This exp/log pair is the door between the Lie group (rotations) and the Lie alge
 
 A moving body's velocity is a **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$.
 **The meaning of $v$ depends on the reference frame and origin.** A space twist describes a velocity field relative to the fixed space origin; a body twist uses the moving body origin. Do not identify their linear components without specifying those choices. Every nonzero twist is a
-**screw**: rotate about an axis while translating along it; pure translation is the
-**infinite**-pitch limit, and pure rotation is the zero-pitch case (MR Def. 3.24: $h = 0$ for a pure rotation; $h \to \infty$ when $\omega = 0$).
+**screw**: rotate about an axis while translating along it. The **pitch** $h$ is how far the
+body advances along the axis per radian it turns about it, in metres per radian, so a screw
+with $h = 0.01$ m/rad moves 1 cm along its axis for every radian of rotation — the same
+quantity a machinist means by the pitch of a thread. Reading it that way makes the two limits
+obvious: pure translation is the **infinite**-pitch case (turn nothing, still advance) and
+pure rotation is the zero-pitch case (MR Def. 3.24: $h = 0$ for a pure rotation; $h \to \infty$ when $\omega = 0$).
 
 **Distinguish the body origin from the space origin.** Let p locate the body origin in space coordinates. The space-twist linear component is v_s = ṗ − ω_s × p; recovering the velocity of the body origin therefore requires adding the rotational term. The body-twist linear component is v_b = Rᵀṗ: it is the velocity of the body origin expressed in body coordinates. Thus “v is not the tool-tip velocity” needs the frame qualification; it can be exactly that point velocity when the body origin is chosen at the tool tip.
 
@@ -162,7 +166,11 @@ $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{
 
 움직이는 강체의 속도는 **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$이다.
 **$v$의 뜻은 기준 프레임과 원점에 달렸다.** 공간 트위스트는 고정 공간 원점을 기준으로 속도장을 나타내고, 바디 트위스트는 움직이는 바디 원점을 쓴다. 이 선택 없이 두 선형 성분을 같은 것으로 읽으면 안 된다. 0이 아닌 모든 twist는
-**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동; 순수 병진은 피치가 **무한대**인 극한이고, 순수 회전이 피치 0인 경우다(MR 정의 3.24: 순수 회전이면 $h = 0$, $\omega = 0$이면 $h \to \infty$).
+**스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동이다. **피치** $h$는 축 둘레로
+1라디안 도는 동안 그 축 방향으로 얼마나 나아가는가이고 단위는 m/rad다. 즉 $h = 0.01$ m/rad인
+스크류는 1라디안 회전마다 축 방향으로 1 cm 나아간다. 나사산의 피치와 같은 뜻이다. 이렇게 읽으면
+두 극한이 바로 보인다. 순수 병진은 피치가 **무한대**인 경우이고(돌지 않는데도 나아간다), 순수
+회전이 피치 0인 경우다(MR 정의 3.24: 순수 회전이면 $h = 0$, $\omega = 0$이면 $h \to \infty$).
 
 **바디 원점과 공간 원점을 나눈다.** p가 공간 좌표에서 바디 원점의 위치라 하자. 공간 트위스트의 선형 성분은 v_s = ṗ − ω_s × p다. 바디 원점의 속도를 얻으려면 회전 항을 다시 더해야 한다. 바디 트위스트의 선형 성분은 v_b = Rᵀṗ로, 바디 원점의 속도를 바디 좌표로 표현한 것이다. 따라서 “v는 도구 끝 속도가 아니다”에는 프레임 조건이 필요하다. 바디 원점이 도구 끝이면 바로 그 점의 속도일 수 있다.
 
