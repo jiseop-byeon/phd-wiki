@@ -388,6 +388,31 @@ else:
     for _f, _msg in audit_depth.audit():
         err(_f, _msg)
 
+# --- 15. glossary ordering ---------------------------------------------------
+# The four alphabetical sections are sorted case-insensitively with punctuation
+# and spaces ignored, so Anti-windup precedes Antipodal grasp and k-means
+# precedes KL divergence. Nothing enforced it until 2026-09-10, and two entries
+# had slipped. The "Confusable pairs" section is grouped by theme, not sorted.
+_gloss = os.path.join("content", "glossary.md")
+try:
+    _g = open(_gloss, encoding="utf-8").read()
+except OSError:
+    err(_gloss, "missing: glossary ordering cannot be checked")
+else:
+    _key = lambda s: re.sub(r"[^a-z0-9]", "", s.casefold())
+    _sections = re.split(r"^## ", _g, flags=re.M)[1:]
+    if len(_sections) < 2:
+        err(_gloss, "no '## ' sections found — glossary ordering check no longer applies")
+    for _s in _sections:
+        _name = _s.split("\n")[0]
+        if "Confusable" in _name:
+            continue
+        _names = [m.group(1) for m in re.finditer(r"^- \*\*(.+?)\*\*", _s, re.M)]
+        for _a, _b in zip(_names, _names[1:]):
+            if _key(_a) > _key(_b):
+                err(_gloss, f"glossary section {_name!r} out of order: "
+                            f"{_a!r} is listed before {_b!r}")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

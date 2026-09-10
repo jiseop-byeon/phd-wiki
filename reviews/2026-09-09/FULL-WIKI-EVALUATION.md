@@ -172,6 +172,34 @@ covers, and on a wording change to either table — so the check cannot be silen
 Check 12 now also verifies the four self-counts the research program states (135 / 73 / 7,
 and 53 of the 73 in chapter 01). Seven regressions were re-introduced and caught.
 
+### 4.4 The undefined-term detector, run and triaged (2026-09-10)
+
+§7 lists this detector as not run. Run: **172 concepts used but not taught, 0 indexed by two
+or more books**, which is the only signal the detector printed, so the headline number was
+unreadable. All 172 were classified by hand against the wiki's own admission rule — frequency
+of encounter.
+
+The list was almost entirely artifacts. The four most frequent hits (`critic`, `statistic`,
+`dream`, `adopt`) are morphology and ordinary English; the wiki teaches *critics* and
+*statistics* and the detector compared surface forms. Below them sat place names, one-off
+paper vocabulary, and generic phrases (`design of`, `advantages of`, `in psychology`).
+
+**One term survived**: `encoder-decoder`, used in six files — the lineage page and the
+seq2seq, Transformer, MAE, U-Net and DETR notes — and taught in neither study chapter nor
+the glossary. Added as a glossary entry, one clause, per the standing rule that glossing a
+term the wiki's own prose already uses is always in scope.
+
+Rather than record the triage as prose, the detector now performs it. Inflections are folded
+to a stem to a fixpoint, and hits are ranked by how many files use the phrase and cut at
+`FREQ_FLOOR = 5` — the admission rule made mechanical. The report is now 149 raw hits, 0 above
+the floor, and reading it takes seconds.
+
+**A second finding, from the same work.** Inserting one glossary entry required knowing the
+sort order, and measuring it showed the convention is case-insensitive with punctuation *and*
+spaces ignored. Under that key two entries had slipped — `Spatial memory` before `SNR · dB`,
+and `Visuotactile` before `Virtual coupling`. Fixed, and the ordering is now check 15, since
+the wiki had held this rule by hand across 229 entries with nothing enforcing it.
+
 ## 5. One reported finding downgraded
 
 A reader flagged the earthmoving page's "24 h ... per human intervention" as a misattribution,

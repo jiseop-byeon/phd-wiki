@@ -8,7 +8,11 @@ leaves the reader stuck.
 
 Four detectors, in decreasing order of how much each one has actually found:
 
-  1. UNDEFINED   a concept the wiki uses but chapters 2 and 4 never teach.
+  1. UNDEFINED   a concept the wiki uses often but chapters 2 and 4 never teach.
+                 Ranked by how many files use it and cut at FREQ_FLOOR, because
+                 frequency of encounter is this wiki's admission rule; inflections
+                 are folded to a stem so convolutional does not read as a gap when
+                 convolution is taught.
                  The concept dictionary is the union of the index entries of
                  the canonical texts under reference/canonical-texts/ (run
                  with --build-index once to extract them). A term is exempt
@@ -62,6 +66,45 @@ NOISE = {
     # and linked back to the probability page
     "euler integration", "random walk",
 }
+
+
+# A term used in fewer than this many of the wiki's files is below the frequency
+# bar the wiki admits topics on. See the note in undefined().
+FREQ_FLOOR = 5
+
+_SUFFIXES = ("ization", "isation", "ation", "ising", "izing", "ize", "ise",
+             "ing", "ers", "est", "ies", "er", "ed", "es", "al", "s")
+
+
+def _stem(phrase):
+    """Fold the inflections that made this detector report morphology as gaps.
+
+    Half of the 2026-09-10 triage was one word in two shapes -- the wiki teaches
+    convolution while the books index convolutional, it teaches statistics while
+    they index statistic. Comparing stems instead of surface forms removes that
+    class without a hand-maintained list.
+
+    Stripping is repeated to a fixpoint, because one pass gets the two shapes of
+    a word to different places: convolutional needs -al then stops, while
+    generalizations needs -s and then -ization to reach the same stem as
+    generalization."""
+    out = []
+    for w in phrase.split():
+        while True:
+            for suf in _SUFFIXES:
+                if len(w) > len(suf) + 3 and w.endswith(suf):
+                    w = w[:-len(suf)]
+                    break
+            else:
+                break
+        out.append(w)
+    return " ".join(out)
+
+
+def _spread(phrase, corpus):
+    """How many of the wiki's files use the phrase, matched on word boundaries."""
+    pat = re.compile(r"(?<![a-z])" + re.escape(phrase) + r"(?![a-z])")
+    return sum(1 for body in corpus.values() if pat.search(body))
 
 
 def read(p):
@@ -121,13 +164,22 @@ def undefined():
                    "content/05-*/**/*.md", "content/06-*/**/*.md", "content/*.md"])
     notes = {os.path.basename(f)[:-3].replace("-", " ")
              for f in files(["content/01-canonical-papers/notes/**/*.md"])}
-    hits = [(len(b), t) for t, b in concepts.items()
-            if t in (teach | rest) and t not in teach and t not in notes and t not in NOISE]
-    hits.sort(key=lambda r: -r[0])
-    strong = [h for h in hits if h[0] >= 2]
-    print(f"  {len(hits)} concept(s) used but not taught; {len(strong)} indexed by 2+ books")
-    for n, t in strong[:25]:
-        print(f"     {n} books  {t}")
+    teach_stems = {_stem(g) for g in teach}
+    hits = [t for t, b in concepts.items()
+            if t in (teach | rest) and t not in teach and t not in notes and t not in NOISE
+            and _stem(t) not in teach_stems]
+    corpus = {f: read(f).lower() for f in files(["content/**/*.md"])}
+    scored = sorted(((_spread(t, corpus), t) for t in hits), reverse=True)
+    # The wiki's own admission rule is frequency of encounter, so apply it here
+    # rather than by hand: a term the corpus uses in fewer than FREQ_FLOOR files
+    # is not frequent enough to be worth a page or a glossary entry, whatever a
+    # book chose to index. The 2026-09-10 triage of all 172 raw hits found this
+    # cut leaves exactly the terms worth reading.
+    strong = [(n, t) for n, t in scored if n >= FREQ_FLOOR]
+    print(f"  {len(hits)} concept(s) used but not taught; "
+          f"{len(strong)} used in {FREQ_FLOOR}+ files")
+    for n, t in strong:
+        print(f"     {n} files  {t}")
 
 
 def arithmetic():
