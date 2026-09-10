@@ -109,15 +109,53 @@ export default (() => {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              function __addPdfBtn() {
-                if (document.getElementById("pdf-btn")) return;
-                var btn = document.createElement("button");
-                btn.id = "pdf-btn";
-                btn.title = "Save this page as PDF";
-                btn.textContent = "PDF \\u2913";
-                btn.addEventListener("click", function () { window.print(); });
-                document.body.appendChild(btn);
+              function __tagLangHalves() {
+                var host = document.querySelector("article .markdown-preview-view") ||
+                           document.querySelector("article > div");
+                if (!host) return false;
+                var kids = host.children, lang = null, seen = {};
+                for (var i = 0; i < kids.length; i++) {
+                  var el = kids[i];
+                  if (el.tagName === "H2") {
+                    var t = (el.textContent || "").trim();
+                    if (t === "English") lang = "en";
+                    else if (t === "\\ud55c\\uad6d\\uc5b4") lang = "ko";
+                  }
+                  if (lang) { el.setAttribute("data-print-lang", lang); seen[lang] = true; }
+                }
+                return !!(seen.en && seen.ko);
               }
+
+              function __print(mode) {
+                document.body.classList.remove("print-en", "print-ko");
+                if (mode) document.body.classList.add("print-" + mode);
+                window.print();
+              }
+
+              function __addPdfBtn() {
+                var old = document.getElementById("pdf-controls");
+                if (old) old.remove();
+                var bilingual = __tagLangHalves();
+                var box = document.createElement("div");
+                box.id = "pdf-controls";
+                var items = bilingual
+                  ? [["PDF \\u2913", "", "Save the whole page as PDF"],
+                     ["EN", "en", "Save the English half only"],
+                     ["\\ud55c", "ko", "Save the Korean half only"]]
+                  : [["PDF \\u2913", "", "Save this page as PDF"]];
+                items.forEach(function (it) {
+                  var b = document.createElement("button");
+                  b.textContent = it[0];
+                  b.title = it[2];
+                  b.addEventListener("click", function () { __print(it[1]); });
+                  box.appendChild(b);
+                });
+                document.body.appendChild(box);
+              }
+
+              window.addEventListener("afterprint", function () {
+                document.body.classList.remove("print-en", "print-ko");
+              });
               window.addEventListener("DOMContentLoaded", __addPdfBtn);
               document.addEventListener("nav", __addPdfBtn);
             `,

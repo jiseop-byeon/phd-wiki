@@ -38,29 +38,47 @@ ul.section-ul .meta {
   display: none;
 }
 
-// Floating "save as PDF" button (uses the browser's print-to-PDF)
-#pdf-btn {
+// Floating "save as PDF" control (uses the browser's print-to-PDF).
+// One pill; the language segments appear only on bilingual pages.
+#pdf-controls {
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
   z-index: 999;
-  padding: 0.45rem 0.9rem;
+  display: flex;
+  align-items: stretch;
   border-radius: 8px;
   border: 1px solid var(--lightgray);
   background: var(--light);
-  color: var(--darkgray);
-  font-size: 0.85rem;
-  font-family: inherit;
-  cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 
-  &:hover {
-    background: var(--lightgray);
-    color: var(--dark);
+  button {
+    padding: 0.45rem 0.7rem;
+    border: 0;
+    border-left: 1px solid var(--lightgray);
+    background: transparent;
+    color: var(--darkgray);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:first-child {
+      border-left: 0;
+    }
+
+    &:hover {
+      background: var(--lightgray);
+      color: var(--dark);
+    }
   }
 }
 
 // Clean print layout: article only, full width
+@page {
+  margin: 16mm 14mm;
+}
+
 @media print {
   .sidebar,
   .left,
@@ -74,7 +92,7 @@ ul.section-ul .meta {
   .breadcrumb-container,
   .page-header,
   footer,
-  #pdf-btn {
+  #pdf-controls {
     display: none !important;
   }
 
@@ -86,8 +104,23 @@ ul.section-ul .meta {
     width: 100% !important;
   }
 
+  // Paper is always light. Without this, printing in dark mode puts a
+  // near-white body colour on a white sheet.
+  :root,
+  html[saved-theme="dark"] {
+    --light: #ffffff;
+    --lightgray: #e5e5e5;
+    --gray: #b8b8b8;
+    --darkgray: #4e4e4e;
+    --dark: #2b2b2b;
+    --secondary: #284b63;
+    --tertiary: #84a59d;
+    --highlight: rgba(0, 0, 0, 0.05);
+  }
+
   body {
-    background: white !important;
+    background: #ffffff !important;
+    color: #2b2b2b !important;
   }
 
   a {
@@ -95,10 +128,48 @@ ul.section-ul .meta {
     color: inherit;
   }
 
+  // A folded callout is zero-height on screen. Most of them hold the
+  // answers to a self-check, so printing must open them. The fold is an
+  // inline `grid-template-rows: 0fr`, which only an !important rule beats.
+  .callout.is-collapsed > .callout-content {
+    grid-template-rows: 1fr !important;
+  }
+
+  .callout.is-collapsed > .callout-content,
+  .callout.is-collapsed > .callout-content > * {
+    height: auto !important;
+    overflow: visible !important;
+    margin-top: revert !important;
+    margin-bottom: revert !important;
+    padding-top: revert !important;
+    padding-bottom: revert !important;
+  }
+
+  .fold-callout-icon {
+    display: none !important;
+  }
+
+  // Print one language half when asked.
+  body.print-en [data-print-lang="ko"],
+  body.print-ko [data-print-lang="en"] {
+    display: none !important;
+  }
+
   pre,
   blockquote,
-  table {
+  table,
+  svg,
+  .mermaid,
+  figure {
     break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 }
 // Research Radar is an immersive, full-width decision-support page. Removing the
