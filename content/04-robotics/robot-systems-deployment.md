@@ -69,7 +69,10 @@ When a paper says “action,” identify whether it means joint position, veloci
 | Command processing | 5 ms |
 | **Observation-to-action** | **70 ms** |
 
-At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end.
+At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Budgets tighten by three
+orders of magnitude when a person is inside the loop: a haptic device closes at about 1 kHz,
+so the millisecond is the unit rather than the frame
+([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]).
 
 <svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="the 70 ms observation-to-action budget drawn to scale">
   <rect x="60.0" y="60" width="69.0" height="30" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.1"/><rect x="129.0" y="60" width="184.0" height="30" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.1"/><rect x="313.0" y="60" width="46.0" height="30" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.1"/><rect x="359.0" y="60" width="23.0" height="30" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.1"/>
@@ -193,6 +196,10 @@ Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, 
 | shadow mode | observe live inputs without commanding the robot |
 | staged deployment | increase speed, autonomy, and environment difficulty gradually |
 
+For a worked instance of this ladder on one small machine — bring-up in safe layers, and a
+diagnostic table that separates wiring from calibration from timing from rendering — see
+[[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit Lab & Real-Time Software]].
+
 A digital twin is not automatically a validated predictor. Ask what is synchronized, calibrated, and experimentally checked. Domain randomization covers only the factors and ranges that were randomized.
 
 ### 10. Failure taxonomy
@@ -312,7 +319,9 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | 명령 처리 | 5 ms |
 | **관측→행동** | **70 ms** |
 
-1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다.
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 사람이 루프 안에 들어오면
+예산이 세 자릿수만큼 빡빡해진다. 햅틱 장치는 약 1 kHz로 닫히므로 단위가 프레임이 아니라
+밀리초다 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 
 <svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="70 ms 관측&#8594;행동 예산을 실제 비율로 그린 그림">
   <rect x="60.0" y="60" width="69.0" height="30" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.1"/><rect x="129.0" y="60" width="184.0" height="30" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.1"/><rect x="313.0" y="60" width="46.0" height="30" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="1.1"/><rect x="359.0" y="60" width="23.0" height="30" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.1"/>
@@ -440,6 +449,10 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 | hardware-in-the-loop | 실제 컴퓨트/제어기·하드웨어 인터페이스 포함 |
 | shadow mode | 로봇에 명령하지 않고 라이브 입력 관찰 |
 | 단계적 배포 | 속도·자율성·환경 난이도를 점진적으로 상승 |
+
+이 사다리를 작은 기계 하나에서 실제로 밟아 본 사례 — 안전한 층으로 나눈 기동, 그리고 배선과
+보정과 타이밍과 렌더링을 갈라 주는 진단표 — 는
+[[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit 실습과 실시간 소프트웨어]]에 있다.
 
 디지털 트윈이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
 물어라. Domain randomization은 무작위화한 요인과 범위만 커버한다.

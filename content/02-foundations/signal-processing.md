@@ -81,6 +81,10 @@ Convolution is useful because a short physical event can affect several later sa
   signal-to-noise ratio, signal power divided by noise power; *dB* (decibel) is the log scale
   it is quoted on, where +6 dB ≈ 2× in amplitude. So each extra bit of an ADC roughly halves
   the quantization noise. This is the *other* half of digitization.
+- Where this contract becomes a stability problem: a haptic loop rendering a virtual wall
+  must close on a human hand every millisecond, and there sampling and quantization stop
+  being accuracy questions and start deciding whether the device buzzes
+  ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]).
 
 ### 3. Frequency domain — the diagonalizing basis
 
@@ -248,6 +252,10 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   신호 대 잡음비(신호 전력 ÷ 잡음 전력)이고, *dB*(데시벨)는 그것을 표기하는 로그 척도로
   +6 dB가 진폭 약 2배다. 즉 ADC의 비트 하나가 늘 때마다 양자화 잡음이 대략 절반이 된다.
   디지털화의 나머지 절반이 이것이다.
+- 이 계약이 안정성 문제로 바뀌는 자리: 가상 벽을 렌더링하는 햅틱 루프는 사람 손을 상대로
+  매 밀리초 닫혀야 하고, 거기서 샘플링과 양자화는 정확도 문제이기를 그치고 장치가 떨지
+  말지를 정하는 요인이 된다
+  ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 
 ### 3. 주파수 영역 — 대각화하는 기저
 

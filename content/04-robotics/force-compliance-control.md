@@ -115,7 +115,7 @@ Both describe a desired relation between motion and interaction force. For a fix
 
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read it as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
+Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read it as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. Which of the two causalities you can build is decided by the hardware — transmission friction, reflected inertia and whether force is sensed or commanded — and [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] traces that chain from Cartesian force to motor current. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -595,7 +595,7 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
 
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-$M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 가상 기계로 읽으면 쉽다. 외력이 질량을 가속하고, 감쇠가 운동을 억제하며, 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 이 식은 원하는 폐루프 거동이며, 실제 팔에 보낼 토크 명령 자체는 아니다.
+$M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 가상 기계로 읽으면 쉽다. 외력이 질량을 가속하고, 감쇠가 운동을 억제하며, 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 두 인과 중 무엇을 만들 수 있는지는 하드웨어가 정한다 — 전동 마찰, 반사 관성, 그리고 힘을 재는지 명령하는지다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 햅틱 장치 설계와 기구학]]이 직교 힘에서 모터 전류까지 그 사슬을 따라간다. 이 식은 원하는 폐루프 거동이며, 실제 팔에 보낼 토크 명령 자체는 아니다.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">
   <g font-size="11" fill="currentColor" font-weight="600">

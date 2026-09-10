@@ -107,7 +107,10 @@ These are the same statement in two clocks: discretizing with step $T$ maps
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
 $e^{-0.1} = 0.905 < 1$. ✓ Papers switch between continuous models and discrete
-implementations without warning; inspect which clock each equation uses.
+implementations without warning; inspect which clock each equation uses. The place where the
+discrete clock is felt rather than read is haptic rendering, where a spring that is passive on
+paper injects energy once it is sampled
+([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]).
 
 > [!warning] Stability is not performance
 > For the autonomous system above, "stable" says the state returns to the origin. It does not by itself guarantee zero tracking error, and says nothing about *how long*,
@@ -531,7 +534,9 @@ $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm 
 같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
 $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 연속 모델과 이산 구현을 예고 없이
-오가므로 각 식이 어느 시계를 쓰는지 확인한다.
+오가므로 각 식이 어느 시계를 쓰는지 확인한다. 이산 시계를 읽는 것이 아니라 몸으로 느끼는
+자리가 햅틱 렌더링이다. 종이 위에서는 수동적인 스프링이 샘플링되는 순간 에너지를 주입한다
+([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 
 > [!warning] 안정성은 성능이 아니다
 > 위 자율계에서 "안정"은 상태가 원점으로 돌아간다는 뜻이다. 추종 오차 0을 그 자체로 보장하지 않으며, *얼마나 걸리는지*, 오버슈트가 얼마인지,
