@@ -113,9 +113,39 @@ All four weaknesses above were addressed after this report was written.
 | 3 | Untraceable numbers | Scaling law identified as Lin et al., arXiv:2410.18647, with its abstract wording checked. ConRFT (arXiv:2502.05450) and RECAP (arXiv:2511.14759) cited. HIL-SERL's 27%/18%/100% marked body figures, since its abstract carries only the 1–2.5 h and 2x claims. The π0 UPenn figures could not be traced through arXiv search and are now marked "source not located, do not cite from here" in both halves. |
 | 4 | Volatile page undated | `physical-ai-ecosystem` given `last_verified: 2026-09-09` and a bilingual staleness warning. |
 
-Weakness 1 was fixed only for the haptics track, which was the acute case. The wider finding
-stands: 91 of 201 bilingual pages remain below 0.75, and that census has not been re-run
-page by page.
+### 4.2 Full bilingual parity audit (2026-09-09)
+
+Weakness 1 was then re-opened and settled across the whole wiki. Two corrections to §4 first.
+
+**The "91 of 201" census does not reproduce.** By word ratio, 23 of 208 bilingual pages fall
+below 0.75. The figure near 91 appears only when Korean is measured by character count, which
+returns 136 — and character count is not a defect signal, because Korean says the same thing
+in fewer characters. Word ratio is a weak proxy too. The instrument that actually works is a
+section-by-section comparison of the two halves.
+
+**Method.** Eight readers compared both halves of all 208 bilingual pages in full, looking for
+five defect classes: a Korean sentence pointing at an equation or table that exists only in
+English, a missing artifact, a table or list collapsed into prose, a lost caveat, and a
+contradiction between the halves. A mechanical pass counted artifacts per half beforehand.
+
+**Result: 22 defects across 19 files, all repaired.** The commonest were dropped citations
+(GAE's arXiv id, four article titles in the legged-locomotion source list, the authors of the
+Nature aerial-manufacturing paper) and self-check answers reduced to the bare result, losing
+the verification step the answer exists to teach. Two were contradictions. The navigation note
+told Korean readers not to extrapolate a 23% figure while the English half told them to assume
+it until shown otherwise. The PlaNet note's Korean topic marker reversed which system leads.
+One repair went the other way: the Apolinarska note asserted in English that the platform's
+control mode is in the paper's appendix, while the Korean half said, more carefully, that the
+sources consulted do not name it. The Korean statement is now used in both.
+
+**A larger defect surfaced underneath.** Bilingual callouts are authored once, in the English
+half, so the language toggle hid them from every Korean-mode reader. That affected 145 pages,
+including prerequisite lists and depth targets. It also hid the research radar dashboard.
+Fixed in the toggle rather than in the content: an English-half block containing Hangul, or an
+embedded widget, is now tagged so neither filter hides it. Verified in a browser with no
+leakage in either direction.
+
+
 
 ## 5. One reported finding downgraded
 
