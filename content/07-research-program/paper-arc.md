@@ -151,7 +151,13 @@ core task is one where:
 5. **Failure is not catastrophic**, so real-robot experiments can actually be run.
 
 Panel fitting, anchor-bolt fastening, drywall installation, pipe insertion, and rebar
-tying all satisfy most of these; overhead drilling and cutting fail criterion 5 in most
+tying are the usual candidates, but the criteria are applied task by task in
+[[05-construction-robotics/construction-manipulation|9. Construction Manipulation §5]], and that
+table is the one to defer to. It clears only **panel fitting, drywall finishing and pipe
+insertion** on all five; anchor-bolt setting is flagged on criterion 5 as overhead work, and
+rebar tying is only lightly contact-rich — a superb deployment target and a weak *contact*
+contribution. Note also that the table says drywall *finishing*, not installation; §2 shows
+they have different primitives. Overhead drilling and cutting fail criterion 5 in most
 university lab settings.
 
 ### 5. Year-by-year focus
@@ -327,8 +333,13 @@ arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 �
    고수하는 시뮬→실험실→현장 사다리가 바로 이것이다.
 5. **실패가 파국적이지 않다** — 그래야 실기계 실험을 실제로 돌릴 수 있다.
 
-패널 끼움, 앵커 볼트 체결, 드라이월 설치, 배관 삽입, 철근 결속은 대체로 이 기준들을 만족한다.
-천장 드릴링과 절단은 대학 실험실 환경에서 대체로 5번에서 걸린다.
+패널 끼움, 앵커 볼트 체결, 드라이월 마감, 배관 삽입, 철근 결속이 통상적인 후보지만, 기준을
+과제별로 적용한 것은 [[05-construction-robotics/construction-manipulation|9. 건설 조작 §5]]의
+표이고 그쪽을 따라야 한다. 다섯 기준을 모두 통과하는 것은 **패널 끼움, 드라이월 마감, 배관
+삽입** 셋뿐이다. 앵커 볼트 체결은 천장 작업이라 5번에서 단서가 붙고, 철근 결속은 접촉이
+가벼워서 뛰어난 배포 대상이지만 약한 *접촉* 기여다. 표가 말하는 것은 드라이월 *설치*가 아니라
+*마감*이라는 점도 유의하라. §2가 둘의 기본 동작이 다름을 보인다. 천장 드릴링과 절단은 대학
+실험실 환경에서 대체로 5번에서 걸린다.
 
 ### 5. 연도별 초점
 

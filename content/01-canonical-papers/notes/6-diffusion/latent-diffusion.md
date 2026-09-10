@@ -42,8 +42,9 @@ obvious-in-hindsight move: separate compression from generation.
 - Stage 1: KL- or VQ-regularized autoencoder (with perceptual + patch-GAN losses) maps
   images to latents (e.g., 512²×3 → 64²×4).
 - Stage 2: [[u-net|U-Net]] diffusion in latent space; **cross-attention** layers inject
-  conditioning (text via CLIP/T5 encoders, layouts, depth) — the general conditioning
-  interface.
+  conditioning (layouts, depth, and text — in *this paper* through a transformer text
+  encoder over a BERT tokenizer, not CLIP; the CLIP text encoder arrives with the Stable
+  Diffusion release, and T5 only much later) — the general conditioning interface.
 - Stable Diffusion = this recipe trained on LAION-5B subsets and *released openly* with weights.
 
 ### Results
@@ -93,7 +94,9 @@ latent world models).
 - 1단계: KL 또는 VQ 정규화 오토인코더(지각 손실 + 패치 GAN 손실)가 이미지를 잠재로 사상
   (예: 512²×3 → 64²×4).
 - 2단계: 잠재 공간에서 [[u-net|U-Net]] 디퓨전; **cross-attention** 층이 조건을
-  주입(CLIP/T5 인코더의 텍스트, 레이아웃, 깊이) — 범용 조건화 인터페이스.
+  주입(레이아웃, 깊이, 그리고 텍스트 — *이 논문*에서는 CLIP이 아니라 BERT 토크나이저 위의
+  트랜스포머 텍스트 인코더다. CLIP 텍스트 인코더는 Stable Diffusion 릴리스에서 들어오고, T5는
+  훨씬 뒤다) — 범용 조건화 인터페이스.
 - Stable Diffusion = 이 레시피를 LAION-5B 부분집합으로 학습해 가중치까지 *공개*한 것.
 
 ### 결과

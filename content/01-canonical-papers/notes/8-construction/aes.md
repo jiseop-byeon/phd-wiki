@@ -48,7 +48,7 @@ platform and none of them are in the algorithm.*
 
 **Evidence, with numbers**: (1) *machine range* — the same stack ran on multiple excavator sizes, from compact class to 49-tonne class; (2) *duration* — 24 hours of continuous uncrewed operation per human intervention in deployed material-loading work; (3) *throughput* — the abstract's exact claim is that "the amount of material handled by AES per hour is closely equivalent to an experienced human operator". It states no unit and no figure, so cite it as a parity claim, not as a tons/hour or m³/h number. These three axes (transfer across machines, autonomy duration, human-parity productivity) are exactly the ones most academic excavation papers cannot report.
 
-**Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. Task variety is narrow (loading), the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
+**Limitations**: the deployment is a constrained material-loading site, not open-world earthmoving. The *long-duration* evidence is material loading — the abstract's evaluation additionally names waste material handling, rock capturing, pile removal and trenching, none of which carry the 24-hour figure — the environment is semi-structured, and safety is managed by site control rather than onboard guarantees. Machine-size transfer, site/task variation, and accumulated production hours should each be read as separate claims with separate evidence.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > Continuous operation in a constrained material-handling site is strong deployment evidence, but not proof of general excavation autonomy. Separate three different claims when citing AES: (a) machine-size transfer of one stack, (b) 24-hour uncrewed intervals, and (c) parity with an experienced operator's hourly material throughput, with no unit or figure reported — each holds in the reported loading deployment, none automatically extends to arbitrary soils, sites, or tasks.
@@ -80,7 +80,7 @@ flowchart LR
 
 **증거, 숫자와 함께**: (1) *기계 범위* — 같은 스택이 컴팩트급부터 49톤급까지 여러 크기의 굴착기에서 돌아갔다; (2) *지속 시간* — 실제 재료 적재 작업에서 인간 개입당 24시간의 연속 무인 운용; (3) *처리량* — 초록의 정확한 주장은 "AES가 시간당 처리하는 자재의 양이 숙련 운전자와 거의 동등하다"이다. 단위도 수치도 제시하지 않으므로 tons/hour나 m³/h 수치가 아니라 대등성 주장으로 인용하라. 이 세 축(기계 간 전이, 자율 지속 시간, 인간 대등 생산성)이 바로 대부분의 학술 굴착 논문이 보고하지 못하는 것들이다.
 
-**한계**: 배치 현장은 제한된 재료 적재 현장이지 개방 환경 토공이 아니다. 과제 다양성이 좁고(적재), 환경이 반구조화되어 있으며, 안전은 온보드 보장이 아니라 현장 통제로 관리된다. 기계 크기 전이, 현장/과제 변동, 누적 생산 시간은 각각 별도의 증거를 가진 별도의 주장으로 읽어야 한다.
+**한계**: 배치 현장은 제한된 재료 적재 현장이지 개방 환경 토공이 아니다. *장기* 운용 증거는 재료 적재다 — 초록의 평가는 폐자재 처리, 암석 포획, 더미 제거, 트렌칭도 함께 이름을 대지만 24시간 수치가 붙는 것은 그중 어느 것도 아니다 — 환경이 반구조화되어 있으며, 안전은 온보드 보장이 아니라 현장 통제로 관리된다. 기계 크기 전이, 현장/과제 변동, 누적 생산 시간은 각각 별도의 증거를 가진 별도의 주장으로 읽어야 한다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > 제한된 재료 처리 현장의 연속 운용은 강한 배치 증거이지만 일반 굴착 자율성의 증명은 아니다. AES를 인용할 때 세 주장을 분리하라: (a) 한 스택의 기계 크기 간 전이, (b) 24시간 무인 구간, (c) 숙련 운전자 대비 시간당 자재 처리량의 대등성(단위·수치 미제시) — 각각은 보고된 적재 배치에서 성립하며, 어느 것도 임의의 토질·현장·과제로 자동 확장되지 않는다.

@@ -46,7 +46,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ### Limitations & critique
 
-- Learned features are optimized for fine-tuning, not linear probing — frozen-feature quality lags DINO-style methods (which is why DINOv2, not MAE, became the frozen backbone of choice for VLMs).
+- Learned features are optimized for fine-tuning, not linear probing — frozen-feature quality lags DINO-style methods (which is why DINO-style features, not MAE's, are what gets reached for when a backbone is frozen — OpenVLA fuses DINOv2 with SigLIP, while most VLMs still run a CLIP- or SigLIP-family encoder).
 - Pixel targets bias toward low-level fidelity; follow-ups replaced them with tokenized or feature targets (BEiT, MaskFeat, I-JEPA's latent prediction).
 
 ### Impact & follow-ups
@@ -87,7 +87,7 @@ Closed the pretraining-paradigm gap between vision and language, making self-sup
 
 ### 한계와 비판
 
-- 특징이 파인튜닝에 최적화되어 있고 linear probing에는 약하다 — 고정 백본으로는 DINO 계열이 선호되는 이유(VLM의 고정 비전 인코더로 DINOv2가 쓰이는 배경).
+- 특징이 파인튜닝에 최적화되어 있고 linear probing에는 약하다 — 고정 백본으로는 DINO 계열이 선호되는 이유(백본을 얼릴 때 MAE가 아니라 DINO 계열을 집는 이유. OpenVLA는 DINOv2를 SigLIP과 융합하고, 대부분의 VLM은 여전히 CLIP·SigLIP 계열 인코더를 쓴다).
 - 픽셀 목표는 저수준 충실도로 치우친다; 후속 연구는 토큰화된 목표나 특징 목표로 대체(BEiT, MaskFeat, I-JEPA의 잠재 공간 예측).
 
 ### 영향과 후속 연구

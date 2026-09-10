@@ -103,9 +103,11 @@ that ExT later attacked.
 
 **AES (Baidu, Science Robotics 2021 — [[01-canonical-papers/notes/8-construction/aes|note]]).**
 The industrial-scale counterpoint: standard
-(non-walking) excavators from compact to 49 t, 24 h of uncrewed material-loading
-per human intervention
-deployment at human-parity hourly throughput (the paper states no unit). Method: modular perception (LiDAR+camera) +
+(non-walking) excavators, on which the abstract reports **24 hours per intervention** — its own
+phrase for continuous operation without human intervention — in deployed material-loading
+work, at hourly throughput the abstract calls closely equivalent to an experienced operator
+(it states no unit). The compact-to-49-t range is a body figure; the abstract says only
+"compact and standard excavators." Method: modular perception (LiDAR+camera) +
 planning + control, engineered for robustness rather than learning novelty. Autonomy:
 uncrewed continuous operation in a constrained waste-handling site. Read it as the
 existence proof that the *systems integration* problem is solvable at industrial scale.
@@ -284,8 +286,10 @@ flowchart LR
 일반성이 열린 질문이었고 ExT가 나중에 공략했다.
 
 **AES (Baidu, Science Robotics 2021 — [[01-canonical-papers/notes/8-construction/aes|노트]]).**
-산업 규모의 대응점: 소형부터 49톤까지의 표준
-(비보행) 굴착기, 사람 개입 1회당 24시간 무인 자재 적재 배치, 시간당 처리량은 숙련 운전자와 대등(논문은 단위를 명시하지 않는다). 방법: 학습의 신규성보다
+산업 규모의 대응점: 표준(비보행) 굴착기에서 초록이 보고하는 것은 **개입당 24시간** — 사람
+개입 없는 연속 운용을 가리키는 초록 자신의 표현이다 — 이고, 배치된 자재 적재 작업에서
+시간당 처리량이 숙련 운전자와 대등하다고 말한다(단위는 명시하지 않는다). 소형부터 49톤까지의
+범위는 본문 수치이고, 초록은 "compact and standard excavators"라고만 쓴다. 방법: 학습의 신규성보다
 강건함을 위해 엔지니어링된 모듈식 인식(LiDAR+카메라) + 계획 + 제어. 자율성: 제한된
 폐기물 처리 현장에서의 무인 연속 운영. *시스템 통합* 문제가 산업 규모에서 풀린다는 존재
 증명으로 읽어라.

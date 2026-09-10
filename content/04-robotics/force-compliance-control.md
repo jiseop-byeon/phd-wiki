@@ -284,8 +284,9 @@ a gentle approach at $v = 5$ cm/s.
 
 | Interface | $K$ (N/m) | $F_{\max}$ | contact duration | 1 kHz samples inside the contact |
 |---|---:|---:|---:|---:|
-| bare tool on a stiff structure | $10^7$ | **224 N** | **1.4 ms** | about 1 |
+| bare tool on a real arm — the series stiffness §1 says a controller identifies | $10^5$ | **22 N** | **14 ms** | about 14 |
 | compliant wrist in series | $10^4$ | **7.1 N** | **44 ms** | about 44 |
+| local material contact alone, arm structure removed — §1's fourth row | $10^7$ | **224 N** | **1.4 ms** | about 1 |
 
 <svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="the stiff contact drawn to scale as a needle-thin spike between two control samples, against the compliant contact as a broad flat bump">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
@@ -311,14 +312,18 @@ a gentle approach at $v = 5$ cm/s.
   </g>
 </svg>
 
-Read the table rather than the picture. Against the bare structure the entire impact is over
-in 1.4 ms, so a 1 kHz controller sees roughly **one sample** of it, arriving as late as
-1 ms in — possibly after the peak has already passed. No control law fixes this, because
-the information arrives after the event.
+Read the table rather than the picture, and read the last row against §1. The arm's own
+structure sits in series with the material and the softer element wins: $10^5$ against $10^7$
+gives $9.9\times10^4$. So a bare tool on a real arm gets about **fourteen** samples inside the
+contact, not one — regulable, but barely, at three times the compliant wrist's peak force.
+The bottom row is the idealisation you would approach only with a bare indenter on a rigid
+fixture; there a 1 kHz controller sees roughly **one sample**, arriving as late as 1 ms in,
+possibly after the peak has passed, and no control law fixes that because the information
+arrives after the event. The figure draws those two extremes, not the middle row.
 
 Put a compliant element in series and both numbers move, in opposite directions and by the
 same factor: $F_{\max} \propto \sqrt{K}$ and $t_{\text{contact}} \propto 1/\sqrt{K}$, so
-softening by $1000\times$ buys $\sqrt{1000} \approx 32\times$ in each. The force becomes
+softening from the structural $10^5$ to $10^4$ buys $\sqrt{10} \approx 3.2\times$ in each, and against the bottom row's idealisation $\sqrt{1000} \approx 32\times$. The force becomes
 something the arm can survive *and* the event becomes long enough to regulate.
 
 The lesson generalises past the arithmetic: **passive compliance is not a cheap substitute
@@ -753,8 +758,9 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 
 | 접촉면 | $K$ (N/m) | $F_{\max}$ | 접촉 지속 | 접촉 중 1 kHz 샘플 수 |
 |---|---:|---:|---:|---:|
-| 맨 공구가 단단한 구조물에 | $10^7$ | **224 N** | **1.4 ms** | 약 1개 |
+| 맨 공구가 실제 팔에 — §1이 말한, 제어기가 식별하는 직렬 강성 | $10^5$ | **22 N** | **14 ms** | 약 14개 |
 | 유연 손목을 직렬로 | $10^4$ | **7.1 N** | **44 ms** | 약 44개 |
+| 재료 접촉만, 팔 구조를 뺀 경우 — §1의 넷째 줄 | $10^7$ | **224 N** | **1.4 ms** | 약 1개 |
 
 <svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="단단한 접촉이 제어 샘플 두 개 사이에 들어가는 바늘 같은 스파이크로, 유연한 접촉이 넓고 평평한 봉우리로 실제 비례로 그려져 있다">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
@@ -780,13 +786,18 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
   </g>
 </svg>
 
-그림보다 표를 읽어라. 맨 구조물에 대해서는 충돌 전체가 1.4 ms 안에 끝나므로, 1 kHz 제어기는
-그중 **샘플 하나** 정도를 보고, 그마저 최대 1 ms 늦게 — 정점이 이미 지나간 뒤에 — 도착할 수
-있다. 어떤 제어 법칙도 이것을 고치지 못한다. 정보가 사건 뒤에 오기 때문이다.
+그림보다 표를 읽되, 마지막 줄은 §1에 비추어 읽어라. 팔의 구조가 재료와 직렬로 놓이고 더 무른
+쪽이 이긴다. $10^5$과 $10^7$을 직렬로 두면 $9.9\times10^4$이다. 그래서 맨 공구가 실제 팔에
+닿을 때 접촉 안에 들어오는 샘플은 하나가 아니라 **열넷** 정도다. 조절할 수는 있지만 아슬아슬하고,
+정점 힘은 유연 손목의 세 배다. 맨 아래 줄은 강체 지그 위의 맨 압자로나 근접할 이상화다. 거기서는
+1 kHz 제어기가 **샘플 하나** 정도를 보고 그마저 최대 1 ms 늦게, 정점이 지나간 뒤에 도착할 수
+있으며, 어떤 제어 법칙도 그것을 고치지 못한다. 정보가 사건 뒤에 오기 때문이다. 그림이 그린 것은
+그 두 극단이지 가운데 줄이 아니다.
 
 유연 요소를 직렬로 넣으면 두 숫자가 반대 방향으로, 같은 배수만큼 움직인다:
-$F_{\max} \propto \sqrt{K}$이고 $t_{\text{contact}} \propto 1/\sqrt{K}$이므로 $1000\times$
-무르게 하면 각각 $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되고, *동시에*
+$F_{\max} \propto \sqrt{K}$이고 $t_{\text{contact}} \propto 1/\sqrt{K}$이므로 구조 강성 $10^5$에서
+$10^4$으로 무르게 하면 각각 $\sqrt{10} \approx 3.2\times$를, 맨 아래 줄의 이상화에 대해서는
+$\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되고, *동시에*
 사건이 조절할 수 있을 만큼 길어진다.
 
 교훈은 산수 너머로 일반화된다: **수동 컴플라이언스는 능동 제어의 값싼 대체품이 아니라, 접촉
