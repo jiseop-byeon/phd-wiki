@@ -71,7 +71,27 @@ ul.section-ul .meta {
       background: var(--lightgray);
       color: var(--dark);
     }
+
+    &[aria-pressed="true"] {
+      background: var(--secondary);
+      color: var(--light);
+    }
   }
+}
+
+// Language filter. Applies on screen and on paper, so the PDF button simply
+// prints whatever is currently shown.
+body.lang-en [data-lang="ko"],
+body.lang-ko [data-lang="en"] {
+  display: none !important;
+}
+
+// With one language showing, the "English" / "한국어" dividers are noise.
+body.lang-en .lang-heading,
+body.lang-ko .lang-heading,
+body.lang-en .toc-content li.lang-heading-item,
+body.lang-ko .toc-content li.lang-heading-item {
+  display: none !important;
 }
 
 // Clean print layout: article only, full width
@@ -146,12 +166,6 @@ ul.section-ul .meta {
   }
 
   .fold-callout-icon {
-    display: none !important;
-  }
-
-  // Print one language half when asked.
-  body.print-en [data-print-lang="ko"],
-  body.print-ko [data-print-lang="en"] {
     display: none !important;
   }
 

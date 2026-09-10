@@ -109,53 +109,91 @@ export default (() => {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              function __tagLangHalves() {
+              var __LANG_KEY = "wiki-read-lang";
+
+              function __tagLangs() {
                 var host = document.querySelector("article .markdown-preview-view") ||
                            document.querySelector("article > div");
                 if (!host) return false;
-                var kids = host.children, lang = null, seen = {};
+                var kids = host.children, lang = null, seen = {}, ids = {};
                 for (var i = 0; i < kids.length; i++) {
                   var el = kids[i];
                   if (el.tagName === "H2") {
                     var t = (el.textContent || "").trim();
-                    if (t === "English") lang = "en";
-                    else if (t === "\\ud55c\\uad6d\\uc5b4") lang = "ko";
+                    if (t === "English") { lang = "en"; el.classList.add("lang-heading"); }
+                    else if (t === "\\ud55c\\uad6d\\uc5b4") { lang = "ko"; el.classList.add("lang-heading"); }
                   }
-                  if (lang) { el.setAttribute("data-print-lang", lang); seen[lang] = true; }
+                  if (lang) {
+                    el.setAttribute("data-lang", lang);
+                    seen[lang] = true;
+                    var hs = el.matches("h1,h2,h3,h4,h5,h6") ? [el] : el.querySelectorAll("h1,h2,h3,h4,h5,h6");
+                    for (var j = 0; j < hs.length; j++) {
+                      if (hs[j].id) ids[hs[j].id] = { lang: lang, divider: hs[j].classList.contains("lang-heading") };
+                    }
+                  }
+                }
+                var links = document.querySelectorAll(".toc-content a[data-for]");
+                for (var k = 0; k < links.length; k++) {
+                  var info = ids[links[k].getAttribute("data-for")];
+                  var li = links[k].closest("li");
+                  if (info && li) {
+                    li.setAttribute("data-lang", info.lang);
+                    if (info.divider) li.classList.add("lang-heading-item");
+                  }
                 }
                 return !!(seen.en && seen.ko);
               }
 
-              function __print(mode) {
-                document.body.classList.remove("print-en", "print-ko");
-                if (mode) document.body.classList.add("print-" + mode);
-                window.print();
+              function __applyLang(lang) {
+                document.body.classList.remove("lang-en", "lang-ko");
+                if (lang) document.body.classList.add("lang-" + lang);
+                var box = document.getElementById("pdf-controls");
+                if (box) {
+                  var bs = box.querySelectorAll("button[data-lang-btn]");
+                  for (var i = 0; i < bs.length; i++) {
+                    bs[i].setAttribute("aria-pressed", bs[i].getAttribute("data-lang-btn") === lang ? "true" : "false");
+                  }
+                }
+              }
+
+              function __readLang() {
+                try { return localStorage.getItem(__LANG_KEY) || ""; } catch (e) { return ""; }
+              }
+
+              function __setLang(lang) {
+                try { lang ? localStorage.setItem(__LANG_KEY, lang) : localStorage.removeItem(__LANG_KEY); } catch (e) {}
+                __applyLang(lang);
               }
 
               function __addPdfBtn() {
                 var old = document.getElementById("pdf-controls");
                 if (old) old.remove();
-                var bilingual = __tagLangHalves();
+                var bilingual = __tagLangs();
                 var box = document.createElement("div");
                 box.id = "pdf-controls";
-                var items = bilingual
-                  ? [["PDF \\u2913", "", "Save the whole page as PDF"],
-                     ["EN", "en", "Save the English half only"],
-                     ["\\ud55c", "ko", "Save the Korean half only"]]
-                  : [["PDF \\u2913", "", "Save this page as PDF"]];
-                items.forEach(function (it) {
-                  var b = document.createElement("button");
-                  b.textContent = it[0];
-                  b.title = it[2];
-                  b.addEventListener("click", function () { __print(it[1]); });
-                  box.appendChild(b);
-                });
+                if (bilingual) {
+                  [["EN", "en", "Show the English half only"],
+                   ["\\ud55c", "ko", "Show the Korean half only"]].forEach(function (it) {
+                    var b = document.createElement("button");
+                    b.textContent = it[0];
+                    b.title = it[2] + " \\u2014 click again for both";
+                    b.setAttribute("data-lang-btn", it[1]);
+                    b.setAttribute("aria-pressed", "false");
+                    b.addEventListener("click", function () {
+                      __setLang(__readLang() === it[1] ? "" : it[1]);
+                    });
+                    box.appendChild(b);
+                  });
+                }
+                var pdf = document.createElement("button");
+                pdf.textContent = "PDF \\u2913";
+                pdf.title = bilingual ? "Save what is shown as PDF" : "Save this page as PDF";
+                pdf.addEventListener("click", function () { window.print(); });
+                box.appendChild(pdf);
                 document.body.appendChild(box);
+                __applyLang(bilingual ? __readLang() : "");
               }
 
-              window.addEventListener("afterprint", function () {
-                document.body.classList.remove("print-en", "print-ko");
-              });
               window.addEventListener("DOMContentLoaded", __addPdfBtn);
               document.addEventListener("nav", __addPdfBtn);
             `,
