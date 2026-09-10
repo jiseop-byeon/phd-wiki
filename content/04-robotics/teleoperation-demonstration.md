@@ -26,9 +26,9 @@ It reads teleoperation as data generation rather than as driving, which is what 
 > Read §1 — the reframing that makes this a research topic rather than an interface one — then §6 on what good demonstration data is, then §8. §2 and §3 (passivity, transparency) are for reading bilateral-control papers specifically.
 
 > [!tip] Device-and-human companion track · 장치·사람 보충 트랙
-> This page treats teleoperation chiefly as a research and data-collection system. For the physical device, sampled virtual-contact stability, human touch, tactile displays, Hapkit implementation, and study design, use [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]. Its [[04-robotics/haptics-teleoperation/bilateral-teleoperation|bilateral teleoperation]] page supplies the two-port foundation assumed in §2–3.
+> This page treats teleoperation chiefly as a research and data-collection system. For the physical device, sampled virtual-contact stability, human touch, tactile displays, and study design, use [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]. Its [[04-robotics/haptics-teleoperation/bilateral-teleoperation|bilateral teleoperation]] page supplies the two-port foundation assumed in §2–3.
 >
-> 이 페이지는 원격조작을 주로 연구·데이터 수집 시스템으로 다룬다. 물리 장치, 샘플링된 가상 접촉의 안정성, 인간 촉각, 촉각 디스플레이, Hapkit 구현과 실험 설계는 [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]에서 공부한다. 그중 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|양방향 원격조작]] 페이지가 §2–3이 전제하는 two-port 기반을 제공한다.
+> 이 페이지는 원격조작을 주로 연구·데이터 수집 시스템으로 다룬다. 물리 장치, 샘플링된 가상 접촉의 안정성, 인간 촉각, 촉각 디스플레이, 실험 설계는 [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]에서 공부한다. 그중 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|양방향 원격조작]] 페이지가 §2–3이 전제하는 two-port 기반을 제공한다.
 
 ### 1. Teleoperation is a data-generation tool
 

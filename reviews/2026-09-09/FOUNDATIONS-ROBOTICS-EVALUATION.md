@@ -208,3 +208,29 @@ Every haptics subpage now has at least one inbound link from outside the track; 
 that had none no longer do, and `rendering-sampling-stability` went from two to five.
 No other finding in this report was acted on. Verified after the edit: `verify_content.py`
 218 files 0 problems, `audit_parity.py` 0 mismatches.
+
+## 11. Second change: the Hapkit lab page removed
+
+The user asked whether the Hapkit lab belonged in a research-literacy wiki and then ruled that
+the lab material was not needed. Assessment and action:
+
+- Measured against the wiki's stated purpose, `24.6 Hapkit Lab & Real-Time Software` was the
+  only page whose centre of gravity was building rather than reading — the sole page using
+  `Arduino`, and about half of it (kit parts list, board revision, an H-bridge pin conflict
+  between two supplied documents, a CHAI3D/ROS 2 onboarding route) was semester-bound lab
+  manual. Hapkit does not appear in papers, so it failed the wiki's own inclusion rule.
+- Most of the rest was already in `24.4`, which carries the hard-real-time loop path in §1 and
+  a debugging order in §6 that subsumes the bring-up ladder and the diagnostic table.
+- Two items were genuinely orphaned and were rehomed rather than lost: the low-pass filter
+  α-convention trap went to `02-foundations/signal-processing` §4, where filters live and
+  where it serves paper reading directly; the explicit-versus-semi-implicit Euler point went
+  to `24.4` §2 alongside the sampled-spring energy argument.
+- The track is now six steps; Experiments & Reading Map moved from 24.7 to 24.6 and the fast
+  route is 24.1 → 24.3 → 24.4. The `robot-systems` §9 link added earlier was repointed to
+  `24.4` §6. Residual Hapkit mentions in the two index pages, the teleoperation scope note and
+  the provenance table were corrected. The study log was appended to, not rewritten, because
+  it is a dated historical record.
+- Course originals remain in `reference/`, untracked.
+
+Verified after the change: `verify_content.py` 217 files 0 problems, `audit_parity.py` 0
+mismatches.

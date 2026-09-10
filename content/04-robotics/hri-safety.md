@@ -190,7 +190,7 @@ named standard, not against "safety" in general.
 
 ### 7. Human-study design
 
-Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review. When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study. [[04-robotics/haptics-teleoperation/experiments-readings|24.7 Experiments & Reading Map]] works the same design through for a haptic study, including the statistical unit and the safety controls a force-producing device needs.
+Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review. When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] works the same design through for a haptic study, including the statistical unit and the safety controls a force-producing device needs.
 
 Order matters because people learn the task while they are being measured. Suppose every participant uses interface A before interface B in a bucket-placement study. B may appear easier because the operator has already learned the target geometry and machine response. A worse interface could therefore look better when it always receives the practice benefit.
 
@@ -450,7 +450,7 @@ Within-subject 연구는 같은 참가자에게 조건들을 비교하고, betwe
 자체가 정착된 공구함이다:
 [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 임계값,
 고전적 절차들, 그리고 지각 연구와 성능 연구를 구분하는 법을 다룬다.
-[[04-robotics/haptics-teleoperation/experiments-readings|24.7 실험과 읽기 지도]]는 같은 설계를
+[[04-robotics/haptics-teleoperation/experiments-readings|24.6 실험과 읽기 지도]]는 같은 설계를
 햅틱 연구에서 끝까지 밟는다. 통계 단위와, 힘을 내는 장치에 필요한 안전 통제까지 포함한다.
 
 측정 중에도 사람이 과제를 배우므로 순서가 중요하다. 버킷 배치 연구에서 모든 참가자가 A 인터페이스를 먼저, B를 나중에 쓴다고 하자. B는 운전자가 이미 목표 형상과 기계 반응을 익혔기 때문에 쉬워 보일 수 있다. 더 나쁜 인터페이스도 항상 연습 효과를 받으면 더 좋아 보인다.

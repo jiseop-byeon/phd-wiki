@@ -122,6 +122,12 @@ Frequency analysis is useful because visually similar fluctuations can require d
   tradeoff: longer window ⇒ narrower passband *and* more delay.
 - **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
   smoother): cheap and sharp, but can ring and go unstable; phase is nonlinear.
+- **The $\alpha$ in that formula is a convention, not a quantity.** Written as above, a
+  large $\alpha$ trusts the *previous output* and filters more. Many papers and lecture
+  notes instead write $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$, where a large $\alpha$
+  trusts the *new sample* and filters less. The two are the same filter with $\alpha$
+  replaced by $1-\alpha$, so the symbol alone tells you nothing — read the equation
+  before you read the number.
 - **The smoother, traced step by step.** Run $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$ on a step: the
   input jumps from $0$ to $1$ and stays. Starting at $y = 0$ the output goes
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$ — reaching 90% of the new value takes about
@@ -291,6 +297,10 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   대역이 좁아지고 *그리고* 지연이 커진다.
 - **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고
   날카롭지만 링잉·불안정 가능; 위상이 비선형.
+- **그 식의 $\alpha$는 양이 아니라 규약이다.** 위처럼 쓰면 큰 $\alpha$가 *직전 출력*을
+  더 믿어 더 많이 거른다. 많은 논문과 강의안은 반대로 $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$로
+  써서, 큰 $\alpha$가 *새 측정*을 더 믿어 덜 거른다. 둘은 $\alpha$를 $1-\alpha$로 바꾼 같은
+  필터이므로 기호만으로는 아무것도 알 수 없다. 숫자를 읽기 전에 식을 읽어라.
 - **평활기를 한 스텝씩 따라가 보면.** $y[n] = 0.9\,y[n-1] + 0.1\,x[n]$을 계단 입력에 돌려
   보자 — 입력이 $0$에서 $1$로 뛰어 그대로 유지된다. $y = 0$에서 시작하면 출력은
   $0.1,\ 0.19,\ 0.271,\ 0.344,\ 0.410,\ \ldots$으로 가고, 새 값의 90%에 닿는 데 약

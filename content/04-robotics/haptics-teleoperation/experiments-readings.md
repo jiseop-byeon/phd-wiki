@@ -1,5 +1,5 @@
 ---
-title: 24.7 Experiments & Reading Map
+title: 24.6 Experiments & Reading Map
 tags: [haptics, research-practice, reading-guide]
 study-depth: Working
 wiki-support: Working
@@ -56,7 +56,7 @@ NASA-TLX measures six self-reported workload dimensions—mental, physical, temp
 |---|---|
 | syllabus and lecture decks | track scope, prerequisite map, concepts, and version caveats |
 | MATLAB templates and Jacobian script | original derivations and implementation checklist; no submitted solution copied |
-| Hapkit slides and seven STL parts | device architecture, assembly reasoning, calibration and safety; original files remain private |
+| Hapkit slides and mechanical files | the device-architecture and calibration reasoning behind 24.3; build instructions and original files are not published |
 | assignments and student drafts | identify required competencies and common mistakes; no answer key or personal work published |
 | project options/rubric | transferable project-design and evaluation criteria; private contacts and unverified claims excluded |
 | consent, recruitment, pre/post surveys | ethics, eligibility, workload, privacy, and measurement design; no form copied or treated as a reusable approval |
@@ -89,7 +89,7 @@ Bench response는 장치 동역학, psychophysical threshold는 특정 조건의
 
 ### 5. 과목 자료 선별 원칙
 
-강의·syllabus는 개념과 범위, MATLAB과 과제는 필요한 역량과 흔한 오류, Hapkit 자료는 제작·보정·안전, 프로젝트·설문·동의서는 연구 설계와 윤리, 논문은 핵심 개념과 공식 출처에 사용했다. 학생 답안·개인 연락처·출입 정보·저작권 원본은 공개하지 않는다.
+강의·syllabus는 개념과 범위, MATLAB과 과제는 필요한 역량과 흔한 오류, Hapkit 자료는 24.3의 장치 구조와 보정 논리, 프로젝트·설문·동의서는 연구 설계와 윤리, 논문은 핵심 개념과 공식 출처에 사용했다. 학생 답안·개인 연락처·출입 정보·저작권 원본은 공개하지 않는다.
 
 과목 폴더에는 syllabus가 예고한 후반 CHAI3D·고급 teleoperation·ROS 강의/실습 전체가 들어 있지 않다. 이 페이지는 공개 공식 문서로 구현 진입로를 보완하지만 보지 못한 강의를 복원했다고 주장하지 않는다.
 

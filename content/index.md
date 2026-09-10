@@ -85,7 +85,7 @@ one's own research area.
 > - [Holderrieth & Erives, *An Introduction to Flow Matching and Diffusion Models*](https://arxiv.org/abs/2506.02070) — 디퓨전/flow matching 수학의 참고 튜토리얼
 > - [Modern Robotics (Lynch & Park)](http://modernrobotics.org) — 로보틱스 트랙의 교과서 (공식 무료 PDF)
 > - [Matthew Bartos, *Control Theory for Smart Infrastructure* (UT Austin CE397)](https://future-water.org/teaching/) · [공개 course packet PDF](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) — 상태공간·안정성·가제어성/가관측성과 피드백 제어 트랙의 주교재
-> - **Ann Majewicz Fey, UT Austin ME384R Haptics and Teleoperated Systems** — [[04-robotics/haptics-teleoperation/index|햅틱·원격조작 트랙]]의 강의 구조와 실습 출발점. 제공된 강의·과제·Hapkit 자료는 비공개로 보존하고, 위키에는 독립적으로 재서술한 학습 노트만 공개한다.
+> - **Ann Majewicz Fey, UT Austin ME384R Haptics and Teleoperated Systems** — [[04-robotics/haptics-teleoperation/index|햅틱·원격조작 트랙]]의 강의 구조와 개념 출발점. 제공된 강의·과제·Hapkit 자료는 비공개로 보존하고, 위키에는 독립적으로 재서술한 학습 노트만 공개한다.
 > - [Hannaford & Okamura, “Haptics,” *Springer Handbook of Robotics*](https://handbookofrobotics.org/view-chapter/42) · [CHAI3D documentation](https://chai3d.org/documentation/) — 햅틱 장치, 렌더링, 원격조작 이론과 소프트웨어 실습의 공식 보충 자료
 > - [Underactuated Robotics (Tedrake)](https://underactuated.csail.mit.edu/) · [Stanford EE363](https://web.stanford.edu/class/ee363/) — 제어 학습 자료
 >

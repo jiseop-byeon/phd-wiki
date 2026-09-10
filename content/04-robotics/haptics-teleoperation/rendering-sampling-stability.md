@@ -37,6 +37,8 @@ With backward-difference virtual damping $B$, a classic one-DOF passivity condit
 
 Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bound gives $K\le200$ N/m. Halving $T$ doubles that bound; adding digital damping does not substitute freely for physical dissipation because its estimate is delayed.
 
+The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result.
+
 ### 3. Sampling and quantization are different
 
 Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a simple Coulomb-friction model, another bound is $K\le2f_c/\Delta$. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
@@ -88,6 +90,8 @@ Impedance display는 관절 위치 측정 → 순기구학 → 충돌 검출 →
 ### 2. 디지털 스프링의 에너지 누출
 
 주기 $T$ 동안 속도 $v$로 $\Delta x=vT$만큼 움직일 때 zero-order hold의 지연이 만드는 에너지를 대략 $E_{\text{leak}}=K(vT)^2/2$로, 물리 댐핑의 소산을 $E_{\text{diss}}=bv^2T$로 볼 수 있다. 둘을 비교하면 $K\le2b/T$가 나온다. 예를 들어 $b=0.1$ N·s/m, $T=1$ ms이면 단순 모델의 상한은 200 N/m다. 이것은 보편적인 장치 정격이 아니라 특정 가정 아래의 직관적 경계다.
+
+이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다.
 
 ### 3. 샘플링과 양자화
 

@@ -196,9 +196,10 @@ Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, 
 | shadow mode | observe live inputs without commanding the robot |
 | staged deployment | increase speed, autonomy, and environment difficulty gradually |
 
-For a worked instance of this ladder on one small machine — bring-up in safe layers, and a
-diagnostic table that separates wiring from calibration from timing from rendering — see
-[[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit Lab & Real-Time Software]].
+For a worked instance of this ladder on a force-producing device — bring-up in safe layers,
+then a debugging order that separates numerical instability from mechanical resonance from a
+friction limit cycle — see
+[[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability §6]].
 
 A digital twin is not automatically a validated predictor. Ask what is synchronized, calibrated, and experimentally checked. Domain randomization covers only the factors and ranges that were randomized.
 
@@ -450,9 +451,9 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 | shadow mode | 로봇에 명령하지 않고 라이브 입력 관찰 |
 | 단계적 배포 | 속도·자율성·환경 난이도를 점진적으로 상승 |
 
-이 사다리를 작은 기계 하나에서 실제로 밟아 본 사례 — 안전한 층으로 나눈 기동, 그리고 배선과
-보정과 타이밍과 렌더링을 갈라 주는 진단표 — 는
-[[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit 실습과 실시간 소프트웨어]]에 있다.
+이 사다리를 힘을 내는 장치에서 실제로 밟아 본 사례 — 안전한 층으로 나눈 기동, 그리고 수치
+불안정과 기계 공진과 마찰 한계주기를 갈라 주는 디버깅 순서 — 는
+[[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성 §6]]에 있다.
 
 디지털 트윈이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
 물어라. Domain randomization은 무작위화한 요인과 범위만 커버한다.

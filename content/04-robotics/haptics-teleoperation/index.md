@@ -25,10 +25,9 @@ flowchart LR
 3. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] — impedance/admittance causality, motors, sensors, transmissions, Jacobians, and workspace.
 4. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]] — virtual walls, Z-width, energy leaks, virtual coupling, and time-domain passivity.
 5. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]] — two-port models, transparency, scaling, delay, and passivity.
-6. [[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit Lab & Real-Time Software]] — a safe implementation path from a one-DOF simulation to CHAI3D and ROS 2.
-7. [[04-robotics/haptics-teleoperation/experiments-readings|24.7 Experiments & Reading Map]] — human studies, workload, evidence, and an annotated source sequence.
+6. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] — human studies, workload, evidence, and an annotated source sequence.
 
-The fastest useful route is **24.1 → 24.3 → 24.4 → 24.6**. Add 24.2 for tactile-display work and 24.5 for force-reflecting teleoperation. The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
+The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-display work and 24.5 for force-reflecting teleoperation. The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
 
 ### Prerequisite map
 
@@ -59,10 +58,9 @@ After this track, you should be able to trace one full haptic cycle, distinguish
 3. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] — 임피던스/어드미턴스 인과성, 모터, 센서, 전달장치, 야코비안, 작업공간.
 4. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]] — 가상 벽, Z-width, 에너지 누출, 가상 결합, 시간영역 수동성.
 5. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]] — 2-port 모델, 투명성, 스케일링, 지연, 수동성.
-6. [[04-robotics/haptics-teleoperation/hapkit-lab-software|24.6 Hapkit Lab & Real-Time Software]] — 1자유도 시뮬레이션에서 CHAI3D·ROS 2로 가는 안전한 구현 경로.
-7. [[04-robotics/haptics-teleoperation/experiments-readings|24.7 Experiments & Reading Map]] — 인간 실험, workload, 증거, 주석 달린 원문 순서.
+6. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] — 인간 실험, workload, 증거, 주석 달린 원문 순서.
 
-가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4 → 24.6**이다. 촉각 디스플레이 연구에는 24.2를, 힘 반영 원격조작에는 24.5를 더한다. 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
+가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4**다. 촉각 디스플레이 연구에는 24.2를, 힘 반영 원격조작에는 24.5를 더한다. 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
 
 ### 선수 지식
 
