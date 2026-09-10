@@ -19,6 +19,7 @@ Exit code 1 on any failure, with a per-file report.
 
 import os
 import re
+import collections
 import unicodedata
 import sys
 
@@ -291,6 +292,16 @@ _total_pages = (_track("02-foundations") + _track("04-robotics")
                 + _track("04-robotics/modern-robotics") + _track("05-construction-robotics")
                 + _track("06-research-practice") + _track("07-research-program") + _n_notes)
 
+_depths = collections.Counter()
+_ch01_literacy = 0
+for _f in md_files:
+    _m = re.search(r"^study-depth:\s*(\S+)", open(_f, encoding="utf-8").read(), re.M)
+    if not _m:
+        continue
+    _depths[_m.group(1)] += 1
+    if _m.group(1) == "Literacy" and "01-canonical-papers" in _f.replace(os.sep, "/"):
+        _ch01_literacy += 1
+
 _claims = [
     ("01-canonical-papers/index.md", r"\((\d+) notes across (\d+) sections\)",
      (_n_notes, _n_secs), "note and section count (EN)"),
@@ -312,6 +323,20 @@ _claims = [
      (_marks["◐"], _marks["○"]), "◐/○ counts (EN)"),
     ("02-foundations/overview.md", r"◐ (\d+)편과 ○ (\d+)편",
      (_marks["◐"], _marks["○"]), "◐/○ counts (KR)"),
+    ("07-research-program/index.md",
+     r"(\d+) pages sit at Working, (\d+) at\nLiteracy, (\d+) at Mastery",
+     (_depths["Working"], _depths["Literacy"], _depths["Mastery"]),
+     "study-depth distribution (EN)"),
+    ("07-research-program/index.md",
+     r"Working이 (\d+)쪽, Literacy가 (\d+)쪽,\nMastery가 (\d+)쪽이다",
+     (_depths["Working"], _depths["Literacy"], _depths["Mastery"]),
+     "study-depth distribution (KR)"),
+    ("07-research-program/index.md", r"— (\d+) of the (\d+) sit in",
+     (_ch01_literacy, _depths["Literacy"]),
+     "Literacy pages inside chapter 01 (EN)"),
+    ("07-research-program/index.md", r"(\d+)쪽 중 (\d+)쪽이 \[\[01-canonical-papers",
+     (_depths["Literacy"], _ch01_literacy),
+     "Literacy pages inside chapter 01 (KR)"),
 ]
 for rel, pat, expect, what in _claims:
     fp = os.path.join("content", rel)
@@ -349,6 +374,19 @@ else:
             for tgt, sec in sorted(only):
                 err(p, f"section reference {tgt} §{sec} appears in the {side} half "
                        f"only — the other half was not updated with it")
+
+# --- 14. depth assignments against the study guide's own defaults ----------
+# The guide states a default depth per area, and a sharper one in the
+# construction-manipulation profile.  A page may sit below its default; sitting
+# above it without a documented reason is the drift the 2026-09-09 evaluation
+# suspected.  audit_depth also fails if a table row's wording changes.
+try:
+    import audit_depth
+except ImportError:
+    err("scripts/audit_depth.py", "missing: depth conformance cannot be checked")
+else:
+    for _f, _msg in audit_depth.audit():
+        err(_f, _msg)
 
 errors = list(dict.fromkeys(errors))
 if errors:

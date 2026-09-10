@@ -10,10 +10,10 @@ code: https://github.com/danijar/dreamerv3
 tags: [paper, world-models, rl]
 status: note-complete
 last_verified: 2026-07-22
-study-depth: Working
+study-depth: Literacy
 wiki-support: Literacy
-depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
-mastery-when: "Raise to Mastery only when this method or its assumptions become part of the thesis contribution."
+depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
+mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
 ---
 
 **Hafner et al., ICLR 2020 → Nature 2025 (v3)** — [arXiv (v3)](https://arxiv.org/abs/2301.04104) · [PDF](https://arxiv.org/pdf/2301.04104) · [Code](https://github.com/danijar/dreamerv3) · v1: [1912.01603](https://arxiv.org/abs/1912.01603) · v2: [2010.02193](https://arxiv.org/abs/2010.02193)

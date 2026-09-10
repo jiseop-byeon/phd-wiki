@@ -147,6 +147,31 @@ leakage in either direction.
 
 
 
+### 4.3 The depth-drift finding, settled (2026-09-09)
+
+Weakness 2 was recorded as a measurement and left as a judgement call. It is now decided,
+and the judgement in §4 was **wrong in its conclusion though right in its numbers**.
+
+"Working has become the default, which blunts the filter" compares the distribution against
+the research program's rhetoric. The operative instrument is the study guide, and its own
+area table prescribes Working in **nine of twelve rows**. Applying the guide honestly
+produces a Working majority; the majority is therefore not evidence of anything.
+
+The decidable question is narrower: does any page sit *deeper* than its area allows? Mapping
+all 204 pages that fall under a guide row against both the generic area table and the sharper
+construction-manipulation profile gives **one** such page — the Dreamer note, still at Working
+after the paper was re-marked ◐, and its own `wiki-support` already read Literacy. Demoted.
+The other **40** deviations all run the opposite way: Literacy where the guide would permit
+Working, mostly historical foundations notes (AlexNet, VGG, LSTM, BERT, GPT-3) and index
+pages. The filter is conservative, not blunt.
+
+Made standing rather than reported. `scripts/audit_depth.py` is check 14: it reads both
+tables out of the guide and fails on any page deeper than its area allows, on a documented
+promotion set for the eight methods the guide's own "directly used methods at Working" clause
+covers, and on a wording change to either table — so the check cannot be silently retired.
+Check 12 now also verifies the four self-counts the research program states (135 / 73 / 7,
+and 53 of the 73 in chapter 01). Seven regressions were re-introduced and caught.
+
 ## 5. One reported finding downgraded
 
 A reader flagged the earthmoving page's "24 h ... per human intervention" as a misattribution,

@@ -2,7 +2,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/adam.md",
   "tier": "◐",
-  "words": 398,
+  "words": 410,
   "missing": [
    "numbers"
   ],
@@ -51,7 +51,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/bert.md",
   "tier": "○",
-  "words": 372,
+  "words": 375,
   "missing": [
    "claim"
   ],
@@ -101,7 +101,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/mae.md",
   "tier": "◐",
-  "words": 405,
+  "words": 424,
   "missing": [],
   "arxiv": true,
   "doi": false
@@ -109,7 +109,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/ppo.md",
   "tier": "◐",
-  "words": 631,
+  "words": 666,
   "missing": [
    "numbers"
   ],
@@ -137,7 +137,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/scaling-laws.md",
   "tier": "◐",
-  "words": 467,
+  "words": 472,
   "missing": [
    "numbers"
   ],
@@ -168,7 +168,7 @@
  {
   "note": "01-canonical-papers/notes/1-foundations/vit.md",
   "tier": "◐",
-  "words": 390,
+  "words": 405,
   "missing": [],
   "arxiv": true,
   "doi": false
@@ -186,7 +186,7 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/depth-anything.md",
   "tier": "◐",
-  "words": 394,
+  "words": 401,
   "missing": [
    "numbers"
   ],
@@ -214,7 +214,7 @@
  {
   "note": "01-canonical-papers/notes/2-computer-vision/faster-r-cnn.md",
   "tier": "○",
-  "words": 262,
+  "words": 263,
   "missing": [
    "claim"
   ],
@@ -335,7 +335,7 @@
  {
   "note": "01-canonical-papers/notes/3-vlm/paligemma.md",
   "tier": "○",
-  "words": 333,
+  "words": 355,
   "missing": [
    "numbers"
   ],
@@ -416,7 +416,7 @@
  {
   "note": "01-canonical-papers/notes/4-vla/pi0.md",
   "tier": "★",
-  "words": 682,
+  "words": 744,
   "missing": [],
   "arxiv": true,
   "doi": true
@@ -468,7 +468,7 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/dreamer.md",
   "tier": "◐",
-  "words": 527,
+  "words": 555,
   "missing": [
    "numbers"
   ],
@@ -517,7 +517,7 @@
  {
   "note": "01-canonical-papers/notes/5-world-models/world-models.md",
   "tier": "◐",
-  "words": 416,
+  "words": 422,
   "missing": [
    "numbers"
   ],
@@ -569,7 +569,7 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/flow-matching.md",
   "tier": "◐",
-  "words": 454,
+  "words": 461,
   "missing": [],
   "arxiv": true,
   "doi": false
@@ -588,7 +588,7 @@
  {
   "note": "01-canonical-papers/notes/6-diffusion/latent-diffusion.md",
   "tier": "○",
-  "words": 318,
+  "words": 346,
   "missing": [
    "claim"
   ],
@@ -661,7 +661,7 @@
  {
   "note": "01-canonical-papers/notes/7-robotics/hogan-impedance.md",
   "tier": "◐",
-  "words": 502,
+  "words": 501,
   "missing": [
    "numbers"
   ],
@@ -710,7 +710,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/aes.md",
   "tier": "◐",
-  "words": 516,
+  "words": 552,
   "missing": [
    "numbers"
   ],
@@ -720,7 +720,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/apolinarska-timber.md",
   "tier": "★",
-  "words": 841,
+  "words": 832,
   "missing": [
    "numbers"
   ],
@@ -808,7 +808,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/feng-rebar.md",
   "tier": "◐",
-  "words": 620,
+  "words": 619,
   "missing": [
    "numbers"
   ],
@@ -828,7 +828,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/heap.md",
   "tier": "★",
-  "words": 597,
+  "words": 607,
   "missing": [
    "numbers"
   ],
@@ -838,7 +838,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/kindle-jaibot.md",
   "tier": "◐",
-  "words": 578,
+  "words": 583,
   "missing": [],
   "arxiv": true,
   "doi": true
@@ -846,7 +846,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/lasota-shah.md",
   "tier": "◐",
-  "words": 534,
+  "words": 531,
   "missing": [],
   "arxiv": false,
   "doi": false
@@ -864,7 +864,7 @@
  {
   "note": "01-canonical-papers/notes/8-construction/liang-lfd.md",
   "tier": "◐",
-  "words": 461,
+  "words": 473,
   "missing": [],
   "arxiv": false,
   "doi": true
@@ -952,7 +952,7 @@
  {
   "note": "01-canonical-papers/notes/9-navigation/badgr.md",
   "tier": "◐",
-  "words": 638,
+  "words": 645,
   "missing": [
    "numbers"
   ],

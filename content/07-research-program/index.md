@@ -181,14 +181,23 @@ If yes, it can be promoted toward Working or Mastery. If no, it stays at Literac
 is not a demotion: Literacy is exactly enough to read the field, cite it correctly, and
 recognize when it starts to matter.
 
-**Where the test has actually landed, as of 2026-09-09.** 136 pages sit at Working, 72 at
+**Where the test has actually landed, as of 2026-09-09.** 135 pages sit at Working, 73 at
 Literacy, 7 at Mastery. That is the opposite of what this page used to claim, and the reason
 is that all three pillars count as serving the question, so anything inside them passes.
-Literacy is now concentrated where it belongs — 52 of the 72 are paper notes in
+Literacy is concentrated where it belongs — 53 of the 73 sit in
 [[01-canonical-papers/index|1. Canonical Papers]] — while the concept pages that carry a
-pillar are nearly all Working. Treat those three numbers as an instrument: the test only
-filters while Working is a decision. If it becomes the default for everything, the honest
-move is to demote, not to restate the rule.
+pillar are nearly all Working.
+
+A Working majority is not by itself evidence that the filter has stopped working, because
+[[00-study-depth-guide|0. Study Depth Guide]] prescribes Working in nine of its twelve area
+rows: applying the guide honestly *produces* these numbers. The decidable question is the
+narrower one — does any page sit **deeper** than its own area allows? `audit_depth.py` reads
+both of the guide's tables and answers it on every build. It found exactly one: the Dreamer
+note, left at Working after the paper itself was re-marked ◐, and now Literacy. All forty of
+the remaining deviations run the other way, sitting at Literacy where the guide would permit
+Working. So the filter is conservative rather than blunt — but read the three numbers as an
+instrument, and if Working ever does become the default for everything, the honest move is to
+demote, not to restate the rule.
 
 ### After reading
 
@@ -375,13 +384,21 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
 아니다: Literacy는 분야를 읽고, 정확히 인용하고, 그것이 중요해지기 시작하는 순간을 알아보는
 데 정확히 충분한 깊이다.
 
-**이 시험이 실제로 어디에 도달했는가, 2026-09-09 기준.** Working이 136쪽, Literacy가 72쪽,
+**이 시험이 실제로 어디에 도달했는가, 2026-09-09 기준.** Working이 135쪽, Literacy가 73쪽,
 Mastery가 7쪽이다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
-기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 이제 있어야
-할 곳에 몰려 있다 — 72쪽 중 52쪽이 [[01-canonical-papers/index|1. 핵심 논문]]의 논문 노트다 —
-반면 기둥을 지는 개념 페이지는 거의 다 Working이다. 이 세 숫자를 계기판으로 다뤄라. 시험은
-Working이 판단인 동안에만 거르는 기능을 한다. 그것이 모든 것의 기본값이 되면, 정직한 수는 규칙을
-고쳐 쓰는 것이 아니라 강등하는 것이다.
+기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 있어야 할
+곳에 몰려 있다 — 73쪽 중 53쪽이 [[01-canonical-papers/index|1. 핵심 논문]]에 있다 — 반면
+기둥을 지는 개념 페이지는 거의 다 Working이다.
+
+Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증거가 못 된다.
+[[00-study-depth-guide|깊이 가이드]]의 영역 표 열두 행 중 아홉 행이 기본값을 Working으로
+정해 두었기 때문이다. 가이드를 정직하게 적용하면 이 숫자가 나온다. 판정할 수 있는 질문은 더
+좁다 — 자기 영역이 허용하는 것보다 **깊게** 앉은 페이지가 있는가? `audit_depth.py`가 가이드의
+두 표를 읽어 빌드마다 이 질문에 답한다. 걸린 것은 정확히 하나, Dreamer 노트다. 논문 자체가
+◐로 재표시된 뒤에도 Working에 남아 있었고 지금은 Literacy다. 나머지 마흔 건의 이탈은 전부
+반대 방향이다. 가이드가 Working을 허용하는 자리에 Literacy로 앉아 있다. 즉 이 필터는 무뎌진
+것이 아니라 보수적이다. 다만 세 숫자는 계기판으로 읽어라. 언젠가 Working이 정말 모든 것의
+기본값이 되면, 정직한 수는 규칙을 고쳐 쓰는 것이 아니라 강등하는 것이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

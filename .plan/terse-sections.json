@@ -30,7 +30,7 @@
  {
   "file": "02-foundations/information-theory.md",
   "section": "6. Quick reference table",
-  "words": 126,
+  "words": 129,
   "bullet_frac": 0.73,
   "why": 0
  },
@@ -86,9 +86,9 @@
  {
   "file": "02-foundations/se3-geometry.md",
   "section": "2. The four ways papers write rotations",
-  "words": 295,
-  "bullet_frac": 0.77,
-  "why": 1
+  "words": 306,
+  "bullet_frac": 0.64,
+  "why": 0
  },
  {
   "file": "04-robotics/contact-force-tactile.md",
@@ -121,9 +121,9 @@
  {
   "file": "04-robotics/control-theory-ce397.md",
   "section": "3. Solving it: modes and the matrix exponential",
-  "words": 121,
+  "words": 133,
   "bullet_frac": 0.08,
-  "why": 1
+  "why": 2
  },
  {
   "file": "04-robotics/control-theory-ce397.md",
@@ -156,7 +156,7 @@
  {
   "file": "04-robotics/egocentric-perception.md",
   "section": "4. Anticipation from the first person",
-  "words": 133,
+  "words": 149,
   "bullet_frac": 0.64,
   "why": 0
  },
@@ -184,7 +184,7 @@
  {
   "file": "04-robotics/force-compliance-control.md",
   "section": "7. Reading force control in a paper",
-  "words": 161,
+  "words": 180,
   "bullet_frac": 0.9,
   "why": 0
  },
@@ -231,6 +231,13 @@
   "why": 1
  },
  {
+  "file": "04-robotics/geometric-perception-calibration.md",
+  "section": "7.5 From seeing an error to correcting it: visual servoing",
+  "words": 135,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
   "file": "04-robotics/grasping.md",
   "section": "1. The question a grasp has to answer",
   "words": 83,
@@ -250,6 +257,188 @@
   "words": 150,
   "bullet_frac": 0.73,
   "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "1. Two ports and four signals",
+  "words": 75,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "2. Transparency is a target impedance",
+  "words": 95,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "3. Scaling must preserve the intended power relation",
+  "words": 57,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "4. Why delay is hard",
+  "words": 112,
+  "bullet_frac": 0.62,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "5. Reading a two-port model",
+  "words": 126,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/bilateral-teleoperation.md",
+  "section": "6. Evidence checklist",
+  "words": 90,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/device-design-kinematics.md",
+  "section": "1. Impedance and admittance causality",
+  "words": 117,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/device-design-kinematics.md",
+  "section": "2. The device chain",
+  "words": 81,
+  "bullet_frac": 0.0,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/device-design-kinematics.md",
+  "section": "3. Actuation is not “PWM equals force”",
+  "words": 112,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/device-design-kinematics.md",
+  "section": "4. Sensing and differentiation",
+  "words": 52,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/device-design-kinematics.md",
+  "section": "5. Design from two ends",
+  "words": 100,
+  "bullet_frac": 0.0,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/experiments-readings.md",
+  "section": "1. From an idea to a claim",
+  "words": 62,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/experiments-readings.md",
+  "section": "3. Evidence ladder",
+  "words": 88,
+  "bullet_frac": 0.88,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/experiments-readings.md",
+  "section": "5. How the supplied course materials were selected",
+  "words": 244,
+  "bullet_frac": 0.69,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/human-haptics-psychophysics.md",
+  "section": "1. Touch is an active sensing loop",
+  "words": 184,
+  "bullet_frac": 0.7,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/human-haptics-psychophysics.md",
+  "section": "3. Choosing an experiment",
+  "words": 113,
+  "bullet_frac": 0.75,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/human-haptics-psychophysics.md",
+  "section": "4. Multisensory and workload claims",
+  "words": 120,
+  "bullet_frac": 0.0,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/rendering-sampling-stability.md",
+  "section": "1. Haptic rendering is a hard real-time feedback loop",
+  "words": 115,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/rendering-sampling-stability.md",
+  "section": "3. Sampling and quantization are different",
+  "words": 95,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/rendering-sampling-stability.md",
+  "section": "4. Passivity, stability, and Z-width",
+  "words": 102,
+  "bullet_frac": 0.2,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/rendering-sampling-stability.md",
+  "section": "6. Debugging order",
+  "words": 121,
+  "bullet_frac": 0.0,
+  "why": 1
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/tactile-display-design.md",
+  "section": "1. Start from the information, not the actuator",
+  "words": 206,
+  "bullet_frac": 0.82,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/tactile-display-design.md",
+  "section": "2. A waveform is not a percept",
+  "words": 109,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/tactile-display-design.md",
+  "section": "3. Spatial and temporal design",
+  "words": 70,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/tactile-display-design.md",
+  "section": "4. Contact, slip, and material cues",
+  "words": 106,
+  "bullet_frac": 0.0,
+  "why": 0
+ },
+ {
+  "file": "04-robotics/haptics-teleoperation/tactile-display-design.md",
+  "section": "5. Design checklist",
+  "words": 115,
+  "bullet_frac": 0.0,
+  "why": 1
  },
  {
   "file": "04-robotics/hri-safety.md",
@@ -492,9 +681,9 @@
  {
   "file": "04-robotics/robot-systems-deployment.md",
   "section": "9. Simulation and staged deployment",
-  "words": 92,
-  "bullet_frac": 0.78,
-  "why": 0
+  "words": 132,
+  "bullet_frac": 0.54,
+  "why": 1
  },
  {
   "file": "04-robotics/robot-systems-deployment.md",
@@ -525,24 +714,10 @@
   "why": 0
  },
  {
-  "file": "04-robotics/semantic-language-navigation.md",
-  "section": "8. Reading a paper in this area",
-  "words": 104,
-  "bullet_frac": 0.89,
-  "why": 0
- },
- {
   "file": "04-robotics/state-estimation-slam.md",
   "section": "1. Position in the robot loop",
   "words": 37,
   "bullet_frac": 0.0,
-  "why": 0
- },
- {
-  "file": "04-robotics/state-estimation-slam.md",
-  "section": "5. Method families",
-  "words": 192,
-  "bullet_frac": 0.64,
   "why": 0
  },
  {
@@ -644,13 +819,6 @@
   "why": 1
  },
  {
-  "file": "05-construction-robotics/digital-twin-workflows.md",
-  "section": "2. Levels often called a digital twin",
-  "words": 163,
-  "bullet_frac": 0.67,
-  "why": 1
- },
- {
   "file": "05-construction-robotics/industry-deployment.md",
   "section": "1. Deployment archetypes",
   "words": 129,
@@ -688,7 +856,7 @@
  {
   "file": "05-construction-robotics/labs.md",
   "section": "The Michigan hub",
-  "words": 358,
+  "words": 364,
   "bullet_frac": 0.68,
   "why": 0
  },
@@ -723,7 +891,7 @@
  {
   "file": "05-construction-robotics/labs.md",
   "section": "How to use this map",
-  "words": 113,
+  "words": 115,
   "bullet_frac": 0.33,
   "why": 0
  },
