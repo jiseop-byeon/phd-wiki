@@ -313,6 +313,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 - 기초: [[02-foundations/optimization|최적화]] (QP, KKT), [[02-foundations/linear-algebra|선형대수]]
 - 이전: [[04-robotics/lqr-lqg|LQR/LQG]] · 다음: [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
+- 이 안내 너머로: 궤적 최적화, 재계획, 과제 계획, 불확실성 하의 계획은 [[04-robotics/planning-decision-making|계획과 의사결정]]에서 다룬다.
 
 > [!tip] 더 깊이 · Going deeper
 > 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 실제로 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 계산 쪽이다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.

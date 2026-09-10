@@ -65,10 +65,10 @@ alongside.
 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]] →
 [[01-canonical-papers/notes/8-construction/ext|ExT]]
 
-**건설 매니퓰레이션 (현장 접촉 논문들)**:
-[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska 목재 접합 2021]] ·
-[[01-canonical-papers/notes/8-construction/feng-rebar|Feng 철근 결속 2024]] ·
-[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle 드릴링 로봇 2025]]
+**건설 매니퓰레이션 (접촉과 배치 근거)**:
+[[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska 목재 접합 2021 (실험실 sim-to-real)]] ·
+[[01-canonical-papers/notes/8-construction/feng-rebar|Feng 철근 결속 2024 (가동 중인 현장)]] ·
+[[01-canonical-papers/notes/8-construction/kindle-jaibot|Kindle 드릴링 로봇 2025 (현장 교란을 모사한 조건)]]
 
 **조립·패브리케이션 (미시간 라인 + ETH)**:
 [[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 2015]] →

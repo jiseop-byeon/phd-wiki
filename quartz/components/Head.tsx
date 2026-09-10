@@ -124,7 +124,15 @@ export default (() => {
                     else if (t === "\\ud55c\\uad6d\\uc5b4") { lang = "ko"; el.classList.add("lang-heading"); }
                   }
                   if (lang) {
-                    el.setAttribute("data-lang", lang);
+                    var tag = lang;
+                    if (lang === "en" && !el.classList.contains("lang-heading")) {
+                      // Bilingual callouts and embedded widgets are authored once, in the
+                      // English half. Mark them "both" so neither filter hides them.
+                      if (/[\uac00-\ud7a3]/.test(el.textContent || "") || el.matches("iframe") || el.querySelector("iframe")) {
+                        tag = "both";
+                      }
+                    }
+                    el.setAttribute("data-lang", tag);
                     seen[lang] = true;
                     var hs = el.matches("h1,h2,h3,h4,h5,h6") ? [el] : el.querySelectorAll("h1,h2,h3,h4,h5,h6");
                     for (var j = 0; j < hs.length; j++) {

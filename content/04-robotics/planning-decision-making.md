@@ -56,7 +56,7 @@ appendix.
   which is why implementations add an explicit **clamping** range (OctoMap's contribution) so
   the map can still adapt when the world changes. A cell reads as *free*, *occupied*, or
   **unknown**, and the third is the one beginners drop: unknown is not free, and the difference is what exploration is about.
-- **Inflation** — a planner that treats the robot as a point (the figure above) has to grow
+- **Inflation** — a planner that treats the robot as a point (the figure below) has to grow
   the obstacles instead. Inflating occupied cells by the robot radius produces a C-space
   obstacle directly on the grid **for a circular robot** — for any other footprint it is an
   approximation, which is why a stack like Nav2 still runs a separate footprint collision
@@ -306,7 +306,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
   적응할 수 있게 하려는 것이다. 칸은 *비어 있음*, *점유됨*, 그리고
   **미지**의 셋 중 하나이고, 초심자가 빠뜨리는 것이 셋째다. 미지는 비어 있음이 아니며,
   그 차이가 곧 탐색이 존재하는 이유다.
-- **팽창(inflation)** — 로봇을 점으로 다루는 계획기(위 그림)는 대신 장애물을 키워야 한다.
+- **팽창(inflation)** — 로봇을 점으로 다루는 계획기(아래 그림)는 대신 장애물을 키워야 한다.
   점유 칸을 로봇 반경만큼 팽창시키면 **원형 로봇에 한해** 격자 위에서 바로 C-공간 장애물이
   된다 — 다른 형상에서는 근사이고, 그래서 Nav2 같은 스택은 별도의 footprint 충돌 검사를 따로
   돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다.
@@ -342,8 +342,10 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 이름이 가리키는 시간 간격을 더한 후손이다. **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr|BADGR]]이
 쓰는 계열)는 running estimate 주변에서 많은 행동열을 표본으로 뽑아 모델로 굴린 뒤, 가장 좋은
 하나를 고르는 대신 **보상 가중 평균**으로 추정을 갱신하고 그 첫 행동을 실행한다.
-§6이 같은 층을 최적화 관점에서 다룬다. **"계획기를 대체했다"는 논문은 거의 언제나 지역
-계획기를 뜻하고**, 전역 탐색과 비용 지도는 건드리지 않는다 — 그것이 그 결과가 주장할 수 있는
+§6이 같은 층을 최적화 관점에서 다룬다. 고전적인 내비게이션 스택에서 학습되는 부분은 보통 지역 층이고 전역 탐색과 비용 지도는
+건드리지 않는다. 다만 항상 그런 것은 아니다. 학습된 전역 계획기와 학습된 탐색 휴리스틱이
+존재하고, [[04-robotics/semantic-language-navigation|19. §3]]의 end-to-end 계열은 스택 전체를
+대체한다. **논문이 실제로 어느 층을 대체했는지 확인하라** — 그것이 그 결과가 주장할 수 있는
 범위를 한정한다.
 
 <svg viewBox="0 0 460 216" style="max-width:100%;height:auto" role="img" aria-label="작업 공간 장애물과 부풀려진 배위 공간 장애물">

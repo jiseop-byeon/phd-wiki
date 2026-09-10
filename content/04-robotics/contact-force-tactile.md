@@ -162,6 +162,10 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 *E군이고 그 안의 유일한 페이지다 — H군 전체가 여기서 갈라져 나오기 때문이다. [[02-foundations/linear-algebra|선형대수]]·최적화와
 [[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다. 로봇이 무언가에 닿는 순간 기하만으로는 부족해지는 지점이 여기다.*
 
+> [!tip] 접촉을 감지하는 것에서 표현하는 것으로
+> 이 페이지는 로봇 쪽의 접촉을 다룬다. 그 접촉 cue를 사람에게 표현해야 할 때는 [[04-robotics/haptics-teleoperation/tactile-display-design|Tactile Display Design]]으로, 가상 벽이나 힘 반영 루프가 안정해야 할 때는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|Rendering, Sampling & Stability]]로 이어 읽는다.
+
+
 로봇이 세계에 닿는 순간 기하만으로는 부족하다. 접촉은 힘, 마찰, 충격, 모드 전환, 변형,
 불확실성을 끌고 들어온다. 이 효과들은 파지, 조립, 굴착, 닦기, 천공, 유연 재료 취급의
 중심에 있다.

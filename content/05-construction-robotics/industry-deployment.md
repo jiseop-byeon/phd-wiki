@@ -88,7 +88,7 @@ deployment evidence, and economic value** should not be collapsed into one score
 
 ### 2. 연구에서 산업으로
 
-- **CMU RI/NREC → Caterpillar**: 자율 굴착·오프로드 로보틱스가 OEM 광산 자율화로.
+- **CMU RI/NREC → Caterpillar**: 자율 굴착·오프로드 로보틱스가 OEM 광산 자율화로. 새로운 AI 물결이 아니라 오래된 시스템 통합의 계보다.
 - **ETH RSL/GKR → Gravis**: HEAP의 센싱·제어·필드 배치 지식이 retrofit으로.
 - **UIUC D4AR → Reconstruct**: 비전+BIM 공정 모니터링이 로봇 제어가 아닌 현장 정보 공정으로.
 - **건축 패브리케이션 연구소 → 전문 생산 기업**: 범용 로봇보다 공정·설계 전문성이 먼저 상품화된다.

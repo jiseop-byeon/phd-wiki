@@ -132,6 +132,7 @@ Evaluation needs an independent reference because alignment can hide the error b
 > [!note] 선수 지식
 > [[04-robotics/geometric-perception-calibration|기하 인식과 보정]] ·
 > [[04-robotics/state-estimation-slam|상태 추정과 SLAM]]이 공통 기초다.
+> 좌표계와 강체 변환 → 보정 → 정합 → 불확실성 순으로 따라간다.
 > 의미 분할이나 단안 깊이를 쓰는 연구라면 그때
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]과
 > [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]을 추가한다.
@@ -165,8 +166,8 @@ flowchart LR
   오차가 시공 편차처럼 보일 수 있다.
 - **점검**: 시점을 계획하고, 커버리지를 확보하고, 결함을 검출해 자산에 연결한다. 검출
   벤치마크만으로 자율 점검은 검증되지 않는다.
-- **로봇용 장면 이해**: 하류 제어에 필요한 미터 단위 좌표·해상도·갱신률로 주행 가능성,
-  재료, 사람, 작업 객체를 제공한다.
+- **로봇용 장면 이해**: 하류 제어에 필요한 미터 단위 좌표·해상도·갱신률로 자유 공간,
+  주행 가능성, 재료, 사람, 작업 객체를 제공한다.
 
 ### 3. 기하와 파운데이션 모델
 

@@ -64,6 +64,10 @@ proposals get filtered through.
 실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.
 
+### 이 장 너머로
+
+[[04-robotics/planning-decision-making|계획과 의사결정]]이 이 장을 A*, 표본 기반 계획, 궤적 최적화, TAMP, 불확실성, MPC, 학습된 계획기로 이어 준다.
+
 ### Self-check · 스스로 점검
 
 1. Discretize a 7-dof arm's C-space at 100 cells per axis — how many cells? What does that explain about sampling-based planning? · 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 크기는? 이것이 샘플링 기반 계획의 존재 이유를 어떻게 설명하는가?

@@ -109,10 +109,10 @@ method.
 
 ### Limitations & critique
 
-- **Check the platform's control mode in the paper's appendix** before building on this:
-  whether the arm is torque-controlled or position-controlled changes what "force-guided"
-  means ([[04-robotics/force-compliance-control|13. §2]]), and the policy was trained
-  entirely in simulation, so the transfer story depends on it.
+- **The sources consulted here do not state the robot platform.** Whether the arm is
+  torque-controlled or position-controlled changes what "force-guided" means
+  ([[04-robotics/force-compliance-control|13. §2]]). Check it in the paper before building
+  on this.
 - **One joint family.** Timber joinery has a specific geometry; the method's reach across
   other construction insertions — pipe, panel, bolted connections — is an open question,
   not a demonstrated one.

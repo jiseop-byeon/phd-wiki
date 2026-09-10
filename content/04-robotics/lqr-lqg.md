@@ -313,6 +313,10 @@ $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$
 - 기초: [[02-foundations/linear-algebra|선형대수]] (리카티, 고유값), [[02-foundations/probability|확률]] (칼만), [[02-foundations/optimization|최적화]]
 - 다음: [[04-robotics/mpc|MPC]]
 
+### 이 안내 너머로
+
+LQG의 추정기 쪽은 [[04-robotics/state-estimation-slam|상태 추정, 위치 인식, SLAM]]에서 전개한다.
+
 ### 스스로 점검 · Self-check
 
 1. $(A,B)$가 안정화 가능하지 않으면 리카티 접근에 무슨 일이 생기나?

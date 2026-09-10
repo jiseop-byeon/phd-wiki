@@ -72,6 +72,9 @@ mastery-when: "Raise only when this paper becomes a baseline, dependency, or con
 
 ### 방법
 
+> [!tip] 핵심 직관
+> <!-- 세부에 들어가기 전, 한 문단짜리 직관 -->
+
 <!-- 핵심 아이디어와 작동 방식 — 내 언어로 정리, 필요하면 핵심 그림/수식 포함 -->
 
 **방법의 입출력**: <!-- 입력·출력, 학습/고정 모듈, 학습과 추론의 차이 -->

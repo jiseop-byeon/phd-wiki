@@ -100,7 +100,7 @@ bridge between learned world models and classical [[04-robotics/index|MPC]].
 ### 결과
 
 - 픽셀 입력 DeepMind Control Suite 6개 과제에서 **환경 상호작용 약 200분의 1**로 D4PG에
-  필적; A3C는 큰 폭으로 앞선다.
+  필적하고, A3C보다는 큰 폭으로 앞선다.
 - 과제 전반에 단일 에이전트·단일 하이퍼파라미터 — 잠재 모델이 제어 문제를 가로질러
   일반화한다는 이른 증거.
 

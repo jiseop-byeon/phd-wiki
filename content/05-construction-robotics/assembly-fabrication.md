@@ -195,12 +195,12 @@ flowchart LR
 
 ### 4. 앵커 시스템
 
-- **In situ Fabricator / Mesh Mould** — 모바일 제작과 robot-oriented design.
+- **In situ Fabricator / Mesh Mould** — 모바일 제작과 robot-oriented design. 건축과 로보틱스가 어떻게 함께 설계되는지를 보여 준다는 점에서 중요하다.
 - **HEAP 돌담** ([[01-canonical-papers/notes/8-construction/dry-stone-wall|돌담 노트]]) —
-  현장 재료 인식, 배치 계획, 굴착기의 힘 제어 조작.
+  현장 재료 인식, 배치 계획, 굴착기의 힘 제어 조작. [[05-construction-robotics/earthmoving-heavy-machinery|중장비 흐름]]을 함께 본다.
 - **Aerial Additive Manufacturing**(Nature 2022 —
   [[01-canonical-papers/notes/8-construction/aerial-am-2022|aerial AM]]) — 비행 중 재료를
-  적층·검사하는 협력 드론.
+  적층·검사하는 협력 드론. 탑재 중량, 재료, 규모에 한계가 있는 존재 증명이다.
 - **이동 로봇 용접** ([[01-canonical-papers/notes/8-construction/han-welding|Han 용접]]) —
   UGV+팔이 현장 정합, 용접선 인식, 조작, 감독을 연결하며 완전 자동과 HRI 모드를 전환한다.
 
@@ -236,4 +236,4 @@ flowchart LR
 
 - [ETH Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/)
 - [NCCR Digital Fabrication](https://dfab.ch/)
-- [Aerial Additive Manufacturing](https://doi.org/10.1038/s41586-022-04988-4), Nature 2022
+- [Zhang et al., *Aerial Additive Manufacturing with Multiple Autonomous Robots*](https://doi.org/10.1038/s41586-022-04988-4), Nature 2022

@@ -169,7 +169,7 @@ The default policy-gradient algorithm of the field: simulator locomotion, dexter
 - 논문은 적응형 KL 페널티 변형도 제안하지만, 실험에서 clip이 이겼고 실무에서 "PPO"는 clip 버전을 뜻한다.
 - 전체 학습 손실에는 가치함수 오차 항과 entropy 보너스가 추가되며, actor와 critic이 파라미터를 공유할 때 함께 최적화된다.
 
-**GAE — PPO와 흔히 함께 쓰지만 PPO 자체의 기여는 아니다.** GAE는 Schulman et al. 2015의 추정량이다. Advantage $A_t$는 실전에서 롤아웃 지평 $T$에서 절단해 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향이 더 크고 분산이 작음)와 Monte-Carlo형 수익($\lambda=1$: 편향이 더 작고 분산이 큼) 사이를 보간한다. $\lambda=1$의 엄밀한 무편향성은 완결된 수익이나 올바른 종단·bootstrap 처리 같은 조건이 더 필요하다. 표준 PPO 구현은 대개 clip과 GAE를 짝지어 쓴다(흔히 $\lambda\approx 0.95$).
+**GAE — PPO와 흔히 함께 쓰지만 PPO 자체의 기여는 아니다.** GAE는 Schulman et al. 2015, [arXiv:1506.02438](https://arxiv.org/abs/1506.02438)의 추정량이고, PPO는 이를 인용해 절단해 쓴다. Advantage $A_t$는 실전에서 롤아웃 지평 $T$에서 절단해 추정한다: TD 잔차 $\delta_t=r_t+\gamma V(s_{t+1})-V(s_t)$에 대해 $A_t^{GAE}=\sum_{l\ge 0}(\gamma\lambda)^l\delta_{t+l}$ — 1스텝 TD($\lambda=0$: 편향이 더 크고 분산이 작음)와 Monte-Carlo형 수익($\lambda=1$: 편향이 더 작고 분산이 큼) 사이를 보간한다. $\lambda=1$의 엄밀한 무편향성은 완결된 수익이나 올바른 종단·bootstrap 처리 같은 조건이 더 필요하다. 표준 PPO 구현은 대개 clip과 GAE를 짝지어 쓴다(흔히 $\lambda\approx 0.95$).
 
 ### 결과
 
