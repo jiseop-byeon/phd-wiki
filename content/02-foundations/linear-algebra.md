@@ -190,7 +190,7 @@ For the line-fitting example, the first column says how changing the intercept m
     <text x="256" y="190">after 20 steps: (0.012, 0.019)</text>
   </g>
   <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="206">H = diag(10, 1) and &#945; = 0.18, the largest stable step. The steep coordinate shrinks slightly</text>
+    <text x="24" y="206">H = diag(10, 1) and &#945; = 0.18, just under the stability limit. The steep coordinate shrinks slightly</text>
     <text x="24" y="222">faster but flips sign each step, so the iterates bounce across the valley; the flat coordinate is</text>
     <text x="24" y="238">the one still holding you back at step 20. Raise &#954; to 1000 and the flat direction needs roughly</text>
     <text x="24" y="254">100&#215; more steps &#8212; no single &#945; serves both, which is what &#8220;ill-conditioned&#8221; names.</text>
@@ -432,7 +432,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]).
 
 > [!tip] Going deeper · 더 깊이
-> This page is a working set, not a course. If it moves too fast, Boyd and Vandenberghe's free [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/) covers §1–2 at a gentler pace, and Strang's *Introduction to Linear Algebra* is the standard first course for the eigenvalue and SVD half. Come back here for where each idea shows up in the papers.
+> This page is a working set, not a course. If it moves too fast, Boyd and Vandenberghe's free [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/) covers §1 and the least-squares half of §2 at a gentler pace — it builds everything from linear independence and QR, and never uses the words rank, column space or null space, and Strang's *Introduction to Linear Algebra* is the standard first course for the eigenvalue and SVD half. Come back here for where each idea shows up in the papers.
 
 ### Self-check
 
@@ -622,7 +622,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     <text x="256" y="190">20 스텝 뒤: (0.012, 0.019)</text>
   </g>
   <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="206">H = diag(10, 1), &#945; = 0.18 &#8212; 안정한 최대 스텝이다. 가파른 좌표가 조금 더 빨리 줄지만 매 스텝</text>
+    <text x="24" y="206">H = diag(10, 1), &#945; = 0.18 &#8212; 안정 한계 바로 아래다. 가파른 좌표가 조금 더 빨리 줄지만 매 스텝</text>
     <text x="24" y="222">부호가 뒤집혀서 반복점이 골짜기를 가로질러 튄다. 20 스텝째에도 발목을 잡고 있는 것은 평평한</text>
     <text x="24" y="238">좌표다. &#954;를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 더 필요하다 &#8212; 어떤 단일 &#945;도</text>
     <text x="24" y="254">둘을 함께 만족시키지 못한다는 것, 그것이 &#8220;조건이 나쁘다&#8221;는 말의 뜻이다.</text>
@@ -854,7 +854,7 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]])의 암묵적 정당화.
 
 > [!tip] 더 깊이 · Going deeper
-> 이 페이지는 강의가 아니라 작업 세트다. 너무 빠르면 Boyd·Vandenberghe의 무료 교재 [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/)가 §1~2를 더 천천히 가고, 고윳값·SVD 쪽은 Strang의 *Introduction to Linear Algebra*가 표준 첫 강의다. 각 개념이 논문 어디에 나타나는지는 이 페이지로 돌아와 보라.
+> 이 페이지는 강의가 아니라 작업 세트다. 너무 빠르면 Boyd·Vandenberghe의 무료 교재 [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/)가 §1과 §2의 최소제곱 쪽을 더 천천히 간다. 다만 그 책은 모든 것을 일차독립과 QR로 세우고 랭크·열공간·영공간이라는 말을 쓰지 않는다, 고윳값·SVD 쪽은 Strang의 *Introduction to Linear Algebra*가 표준 첫 강의다. 각 개념이 논문 어디에 나타나는지는 이 페이지로 돌아와 보라.
 
 ### 스스로 점검
 

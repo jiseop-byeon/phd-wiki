@@ -260,7 +260,7 @@ $-\omega_1 + \omega_a \log M_s = \pi p$. Solve for $M_s$ and substitute $p = 6$,
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$. This lower bound constrains the sensitivity peak but does not by itself prove that a 45° phase margin is impossible. Physical moves include faster actuators (raise $\omega_a$), a less
+Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$. (Åström & Murray's Example 14.2 prints $M_s = 1.75$ and $33°$; $e^{0.546}$ is 1.727, so the book has rounded up and this page keeps its own arithmetic.) This lower bound constrains the sensitivity peak but does not by itself prove that a 45° phase margin is impossible. Physical moves include faster actuators (raise $\omega_a$), a less
 unstable airframe (lower $p$), or a lower bandwidth demand.
 
 That is the reading skill this section exists for. When a paper reports a control result,
@@ -406,7 +406,7 @@ point only*. Three consequences you will meet in papers:
 | "outperforms classical control" | against a *tuned* classical controller with feedforward, or a strawman P controller? |
 
 > [!tip] Going deeper · 더 깊이
-> Åström & Murray, [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page) (Princeton, free) is the textbook this page is a compressed reading of, and it is written for exactly this audience — engineers who need the ideas rather than the theorem sequence. Read ch.6–7 for state space and ch.9–10 for frequency domain and PID. Its examples are drawn from across engineering rather than robotics, so keep §9 of this page open beside it: the gap between a linear model and a real machine is the part the book treats lightly and the part your papers live in.
+> Åström & Murray, [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page) (Princeton, free) is the textbook this page is a compressed reading of, and it is written for exactly this audience — engineers who need the ideas rather than the theorem sequence. Read ch.6–8 for state space and output feedback, ch.9–10 for the frequency domain, and ch.11 for PID and integrator windup. Its examples are drawn from across engineering rather than robotics, so keep §9 of this page open beside it: the gap between a linear model and a real machine is the part the book treats lightly and the part your papers live in.
 
 ### Self-check
 
@@ -601,14 +601,14 @@ $-1$이다). 제어 논문이 굳이 *개*루프 양을 그리는 이유가 이�
 |---|---|---|---|
 | 이득 여유 $g_m$ | $1/\lvert L(i\omega_{pc})\rvert$ | 불안정해지기까지 루프 이득이 얼마나 커질 수 있나 | 2~5 |
 | 위상 여유 $\varphi_m$ | $180° + \angle L(i\omega_{gc})$ | 추가 위상 지연을 얼마나 견디나 | 30°~60° |
-| 감도 여유 $s_m$ | $L$ 곡선에서 $-1$까지의 최단 거리 | *어느 주파수에서든* 임계점에 얼마나 가까워지나 | 0.5~0.8 |
+| 안정 여유 $s_m$ | $L$ 곡선에서 $-1$까지의 최단 거리 | *어느 주파수에서든* 임계점에 얼마나 가까워지나 | 0.5~0.8 |
 
 앞의 둘은 곡선을 두 방향으로 제약하고, 거리 자체를 제약하는 것은 $s_m$뿐이다. 셋은
 $g_m \ge 1/(1-s_m)$과 $\varphi_m \ge 2\arcsin(s_m/2)$로 이어진다 — 부등호의 방향을 보라.
 좋은 $s_m$은 나머지 둘을 *보장하지만*, 그 역은 성립하지 않는다.
 
 **그 비대칭이 읽을 때 중요해지는 이유.** Åström & Murray는 $g_m = 266$, $\varphi_m = 70°$인
-루프를 든다 — 어떤 심사도 통과할 숫자다 — 그런데 그 감도 여유는 $s_m = 0.27$이다. 계단
+루프를 든다 — 어떤 심사도 통과할 숫자다 — 그런데 그 안정 여유는 $s_m = 0.27$이다. 계단
 응답이 심하게 울리는데, 폐루프에 $\zeta = 0.014$인 모드가 있기 때문이다. 나이퀴스트 곡선이
 순수한 이득도 순수한 위상도 아닌 방향에서 $-1$에 가까이 지나가므로, 고전적인 두 여유는 그것을
 쳐다보고도 아무것도 보지 못한다. **이득 여유와 위상 여유만 보고한 논문은 자기 루프가
@@ -622,7 +622,7 @@ $S$(감도)는 외란을 출력 오차로 보내고, $T$(상보 감도)는 기�
 보낸다. 둘은 항등적으로 $S + T = 1$을 만족하는데, 설계 문제 전체가 이 한 줄에 있다.
 **같은 주파수에서 둘 다 작게 만들 수는 없다.** 거기서 외란을 잘 막으면 잡음을 통과시키고,
 그 반대도 마찬가지다. 최댓값 $M_s = \max_\omega |S(i\omega)|$는 최악의 증폭을 나타내는 숫자
-하나이며, 그것이 정확히 감도 여유다: $s_m = 1/M_s$. 그러므로 $M_s = 2$와 $s_m = 0.5$는 같은
+하나이며, 그것이 정확히 안정 여유다: $s_m = 1/M_s$. 그러므로 $M_s = 2$와 $s_m = 0.5$는 같은
 진술이고, 둘 중 하나를 보고한 논문은 둘 다 보고한 것이다.
 
 알아 둘 함정 하나: 곱 $PC$에서 극점과 영점이 소거되면 루프가 안전하지 않은데도 $S$와 $T$는
@@ -674,7 +674,7 @@ $-\omega_1 + \omega_a \log M_s = \pi p$를 준다. $M_s$에 대해 풀고 $p = 6
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 33°$다. 이 하한은 감도 피크를 제약하지만,
+그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$다. (Åström과 Murray의 예제 14.2는 $M_s = 1.75$와 $33°$를 싣는다. $e^{0.546}$은 1.727이므로 책이 올림한 것이고, 이 페이지는 자기 계산을 유지한다.) 이 하한은 감도 피크를 제약하지만,
 그 자체로 45° 위상여유가 불가능하다고 증명하지는 않는다. 물리적으로 조정할 수 있는 값에는 더 빠른 구동기($\omega_a$를 올린다), 덜 불안정한 기체($p$를
 낮춘다), 아니면 더 낮은 대역폭 요구.
 
@@ -809,7 +809,7 @@ $$\dot{\hat x} = A\hat x + Bu + L(y - C\hat x)$$
 | "고전 제어를 능가" | 피드포워드가 붙은 *튜닝된* 고전 제어기 대비인가, 허수아비 P 제어기 대비인가? |
 
 > [!tip] 더 깊이 · Going deeper
-> Åström & Murray의 [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page)(Princeton, 무료)가 이 페이지가 압축해 읽은 그 교과서이고, 정확히 이 독자층을 위해 쓰였다 — 정리의 나열이 아니라 발상이 필요한 공학자. 상태공간은 6~7장, 주파수 영역과 PID는 9~10장을 읽어라. 예제가 로보틱스가 아니라 공학 전반에서 오므로 이 페이지의 §9를 옆에 펴 두어라. 선형 모델과 실제 기계 사이의 간극이 책이 가볍게 다루는 부분이자 당신의 논문들이 사는 부분이다.
+> Åström & Murray의 [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page)(Princeton, 무료)가 이 페이지가 압축해 읽은 그 교과서이고, 정확히 이 독자층을 위해 쓰였다 — 정리의 나열이 아니라 발상이 필요한 공학자. 상태공간과 출력 피드백은 6~8장, 주파수 영역은 9~10장, PID와 적분기 와인드업은 11장을 읽어라. 예제가 로보틱스가 아니라 공학 전반에서 오므로 이 페이지의 §9를 옆에 펴 두어라. 선형 모델과 실제 기계 사이의 간극이 책이 가볍게 다루는 부분이자 당신의 논문들이 사는 부분이다.
 
 ### 스스로 점검
 

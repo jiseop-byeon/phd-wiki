@@ -140,7 +140,7 @@ $(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$ gives
 $$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
 
 so the sequence multiplies by a constant each sweep and diverges whenever
-$\gamma > 5/(6-4\varepsilon)$. At $\varepsilon = 0$ that threshold is $\gamma = 0.833$ — so
+$\gamma > 5/(6-4\varepsilon)$ and $w_0 \neq 0$. At $\varepsilon = 0$ that threshold is $\gamma = 0.833$ — so
 the entirely ordinary $\gamma = 0.9$ gives a multiplier of $1.08$:
 
 $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 46.9 \text{ after 50 sweeps}$$
@@ -554,7 +554,7 @@ RL results depend on protocol more than those of almost any other subfield. What
 > 확인하라 — 일치하지 않으면 방법이 아니라 문제 정의를 비교하는 것이다.
 
 > [!tip] Going deeper · 더 깊이
-> Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is free and is what this page compresses — ch.3–6 for the Bellman machinery, ch.13 for policy gradients. What this page has over it is §6 and §9, the robotics-specific parts the book does not cover.
+> Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is free and is what this page compresses — ch.3–6 for the Bellman machinery, ch.11 for the deadly triad and the divergence counterexample of §3.5, ch.13 for policy gradients. What this page has over it is §6 and §9, the robotics-specific parts the book does not cover.
 
 ### Self-check
 
@@ -710,7 +710,7 @@ flowchart LR
 
 $$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
 
-이므로 수열은 매 스윕 상수배가 되고, $\gamma > 5/(6-4\varepsilon)$이면 언제나 발산한다.
+이므로 수열은 매 스윕 상수배가 되고, $\gamma > 5/(6-4\varepsilon)$이고 $w_0 \neq 0$이면 발산한다.
 $\varepsilon = 0$에서 그 문턱은 $\gamma = 0.833$이니, 지극히 평범한 $\gamma = 0.9$가 배수
 $1.08$을 준다.
 
@@ -927,7 +927,7 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 > 위의 프레이밍 — 모방은 안정적이지만 상한이 있고, RL은 시연자를 넘어설 수 있다 — 은 옳고,
 > 지난 2년이 그것을 가져갈 만한 방식으로 날카롭게 만들었다. **접촉이 많은 정밀** 과제에서 격차는
 > 좁지 않다: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]**(*Science Robotics*, 2025)이 그런 과제 약 열세 개에서 **실기계 학습
-> 1~2.5시간** 후 약 열세 개 과제에서 100% 성공을 보고한다 — 시간은 초록의 것이고, 성공률과 과제
+> 1~2.5시간** 후 100% 성공을 보고한다 — 시간은 초록의 것이고, 성공률과 과제
 > 수는 본문 수치이며, 그것이 이긴 diffusion policy 베이스라인(RAM 삽입 **27%**, 대시보드 조립
 > **18%**)도 마찬가지다. 초록 자신의 표제는 모방과 기존 RL 대비 2배 평균이다. 시연에는 2 mm 어긋났을 때 필요한 교정적 미세 조정이 담겨 있지
 > 않고, 사람 시연들에 대해 평균을 내는 것이 반응적 거동을 적극적으로 파괴한다.
@@ -1081,7 +1081,7 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
   세계가 끝난다"고 조용히 가르치게 된다.
 
 > [!tip] 더 깊이 · Going deeper
-> Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)이 무료이고, 이 페이지가 압축한 것이 그 책이다 — 벨만 기계장치는 3~6장, 정책 경사는 13장. 이 페이지가 그 책보다 나은 부분은 §6과 §9, 즉 그 책이 다루지 않는 로보틱스 쪽이다.
+> Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)이 무료이고, 이 페이지가 압축한 것이 그 책이다 — 벨만 기계장치는 3~6장, §3.5의 치명적 삼요소와 발산 반례는 11장, 정책 경사는 13장. 이 페이지가 그 책보다 나은 부분은 §6과 §9, 즉 그 책이 다루지 않는 로보틱스 쪽이다.
 
 ### 스스로 점검
 

@@ -108,7 +108,7 @@ so the millisecond is the unit rather than the frame
 > phase lag. If the loop had 90° margin before the delay and must retain 45°, then 79 ms
 > gives the illustrative crossover budget $(90°-45°)/(360T)=\mathbf{1.6}$ Hz. This is not
 > a universal cap: the plant and controller determine the pre-delay margin, and adding delay
-> can move the crossover. [[04-robotics/control-theory-ce397|6. Control §5.5]] derives this
+> can move the crossover. [[04-robotics/control-theory-ce397|5. Control §5.5]] derives this
 > conditional budget and explains when it applies.
 >
 > **The reading this gives you.** Halving inference time (40 → 20 ms) moves the total to 59 ms
@@ -358,7 +358,7 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 > 지연 $T$는 $360 fT$도의 위상 지연을 더한다. 지연 전 여유가 90°이고 45°를 남겨야 한다고
 > 가정하면 79 ms에서 예시 교차 주파수 예산은 $(90°-45°)/(360T)=\mathbf{1.6}$ Hz다. 이것은
 > 보편 상한이 아니다. 지연 전 여유는 플랜트와 제어기가 정하고, 지연을 넣으면 교차 주파수도
-> 움직일 수 있다. [[04-robotics/control-theory-ce397|6. 제어 §5.5]]가 이 조건부 예산을 유도한다.
+> 움직일 수 있다. [[04-robotics/control-theory-ce397|5. 제어 §5.5]]가 이 조건부 예산을 유도한다.
 >
 > **여기서 얻는 독법.** 추론 시간을 절반으로(40 → 20 ms) 줄이면 합은 59 ms이고, 위와 같은
 > 90°/45° 가정의 예시 예산은 $0.785/0.059 = 13.3$ rad/s, 즉 2.1 Hz가 된다 — 실질적인 개선이지만 표제가 암시하는

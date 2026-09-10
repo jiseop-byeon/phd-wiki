@@ -107,9 +107,24 @@ def _spread(phrase, corpus):
     return sum(1 for body in corpus.values() if pat.search(body))
 
 
+# PDF extraction leaves two kinds of debris that make a search silently return
+# nothing rather than fail: typographic ligatures, which hide every word
+# containing fi/fl/ff, and NUL bytes, which make grep treat the file as binary.
+# Both were found in the shelf, so normalise on the way in and never trust a
+# zero-hit search against a raw extract.
+_DEBRIS = {"\ufb00": "ff", "\ufb01": "fi", "\ufb02": "fl",
+           "\ufb03": "ffi", "\ufb04": "ffl", "\x00": ""}
+
+
+def normalize(text):
+    for bad, good in _DEBRIS.items():
+        text = text.replace(bad, good)
+    return text
+
+
 def read(p):
-    with open(p, encoding="utf-8") as fh:
-        return fh.read()
+    with open(p, encoding="utf-8", errors="replace") as fh:
+        return normalize(fh.read())
 
 
 def files(pats):

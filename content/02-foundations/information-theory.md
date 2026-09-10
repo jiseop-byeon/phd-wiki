@@ -34,7 +34,7 @@ $\log(a^n) = n \log a$; and base 2 vs base $e$ only changes units (**bits** vs *
 a constant factor. Also remember: probabilities live in $[0,1]$, so log-probabilities are
 $\le 0$ — a "smaller cross-entropy" means log-probs closer to zero.
 
-Logarithms are useful because they turn the joint support for many observations into an additive score. For example, a classifier can assign plausible labels to most frames yet be strongly penalized for confidently rejecting the correct label on a few. **The reading this gives you.** When a paper reports a log loss, ask which events receive probability and how the score is aggregated. A loss decrease concerns those assigned probabilities; it does not automatically imply a particular improvement in task success.
+Logarithms are useful because they turn the joint probability of many observations into an additive score. For example, a classifier can assign plausible labels to most frames yet be strongly penalized for confidently rejecting the correct label on a few. **The reading this gives you.** When a paper reports a log loss, ask which events receive probability and how the score is aggregated. A loss decrease concerns those assigned probabilities; it does not automatically imply a particular improvement in task success.
 
 ### 1. Surprise and entropy
 
@@ -44,7 +44,7 @@ Logarithms are useful because they turn the joint support for many observations 
   $H(p) = -\sum_x p(x)\log p(x)$
   — how unpredictable a source is, in bits (log base 2) or nats (log base e).
   Uniform distribution = maximum entropy; deterministic = zero.
-- Intuition anchor: entropy is the average number of yes/no questions needed to identify
+- Intuition anchor: entropy is the smallest possible average number of yes/no questions needed to identify
   an outcome — the *compression limit* of the source (Shannon).
 - **Worked numbers** — a coin with $P(\text{H}) = 0.9$:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ bits —
@@ -61,8 +61,12 @@ Logarithms are useful because they turn the joint support for many observations 
 - **Worked, in bits.** True $p = (0.7,\,0.2,\,0.1)$, model $q = (0.5,\,0.3,\,0.2)$.
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{bits}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{bits}$$
-  The model costs $1.280$ bits per symbol where $1.157$ was achievable — an overpayment of
-  $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
+  The model costs $1.280$ bits per symbol where $1.157$ is the floor — an overpayment of
+  $0.123$ bits. Hold that number; §3 shows it is exactly the KL. Both figures are expected
+  costs, not code lengths. Entropy bounds the *expected* length, and a per-symbol code reaches
+  it only when every probability is a power of two, because a symbol's code length has to be a
+  whole number of bits: the best symbol code here is Huffman at $1.3$ bits. The floor is approached by coding long blocks, which is what Shannon's source
+  coding theorem says.
 - Classification training: $p$ = one-hot label, $q$ = softmax output ⇒
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="two bars of bits per symbol, the entropy floor and the longer cost of coding with the model, with the excess marked as the KL divergence">
   <g fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2">
@@ -98,7 +102,7 @@ Logarithms are useful because they turn the joint support for many observations 
   moves — most of the training signal comes from examples the model still gets wrong.
   **Minimizing cross-entropy = MLE** (see [[02-foundations/probability|probability]]).
 - Language models: per-token cross-entropy is *the* pretraining objective
-  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "the model is as
+  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= 2^{H(p,q)}$ when $H$ is in bits, $e^{H(p,q)}$ when it is in nats — "the model is as
   confused as if choosing among perplexity-many options."
 
 ### 3. KL divergence — the distance-that-isn't
@@ -216,7 +220,7 @@ non-variational world models take different routes).
 | Cross-entropy $H(p,q)$ | $-E_p[\log q]$ | the classification/LM loss |
 | KL $D_{KL}(p\|q)$ | $E_p[\log p/q]$ | VAE regularizer, RLHF penalty, distillation |
 | Mutual info $I(X;Y)$ | $H(X)-H(X|Y)$ | contrastive learning (CLIP), info bottleneck |
-| Perplexity | $e^{H(p,q)}$ | LM evaluation |
+| Perplexity | $2^{H(p,q)}$ in bits, $e^{H(p,q)}$ in nats | LM evaluation |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAEs and variational diffusion/world-model formulations |
 
 > [!tip] Going deeper · 더 깊이
@@ -266,7 +270,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   $H(p) = -\sum_x p(x)\log p(x)$
   — 소스가 얼마나 예측 불가능한가를 비트(밑 2) 또는 나트(밑 e)로 잰 것.
   균등 분포 = 최대 엔트로피; 결정론적 = 0.
-- 직관의 닻: 엔트로피는 결과 하나를 알아내는 데 필요한 예/아니오 질문의 평균 개수 —
+- 직관의 닻: 엔트로피는 결과 하나를 알아내는 데 필요한 예/아니오 질문 평균 개수의 최솟값 —
   그 소스의 *압축 한계*다 (섀넌).
 - **숫자로 한 번** — $P(\text{앞}) = 0.9$인 동전:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 \approx 0.47$ 비트 — 공정 동전(1비트)의 절반 이하다.
@@ -282,7 +286,12 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 - **비트 단위 계산 예제.** 참분포 $p = (0.7,\,0.2,\,0.1)$, 모델 $q = (0.5,\,0.3,\,0.2)$.
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
-  $1.157$이면 되는 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다.
+  바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다.
+  두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
+  단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
+  정수 비트여야 하기 때문이다. 여기서 최선의 심볼
+  부호는 허프만이고 $1.3$비트다. 바닥에 다가가는 길은 긴 블록을 부호화하는 것이며, 그것이
+  섀넌의 원천 부호화 정리다.
   이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
 - 분류 학습: $p$ = 원-핫 라벨, $q$ = 소프트맥스 출력 ⇒ 교차 엔트로피 손실
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="심볼당 비트 수를 나타내는 두 막대. 엔트로피 바닥과 모델의 부호가 치르는 더 긴 비용, 그 초과분이 KL로 표시되어 있다">
@@ -319,7 +328,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   예제에서 온다. **교차 엔트로피 최소화 = MLE**
   ([[02-foundations/probability|확률]] 참고).
 - 언어모델: 토큰별 교차 엔트로피가 사전학습 목적함수 *그 자체*다
-  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity** $= e^{H(p,q)}$ — "모델이
+  ([[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]); **perplexity**는 $H$가 비트면 $2^{H(p,q)}$, nat이면 $e^{H(p,q)}$다 — "모델이
   perplexity개의 선택지 사이에서 고민하는 것만큼 헷갈려 한다."
 
 ### 3. KL divergence — 거리 같지만 거리가 아닌 것
@@ -430,7 +439,7 @@ matching이나 비변분 월드모델은 다른 길을 간다).
 | 교차 엔트로피 $H(p,q)$ | $-E_p[\log q]$ | 분류/언어모델 손실 |
 | KL $D_{KL}(p\|q)$ | $E_p[\log p/q]$ | VAE 정규화, RLHF 페널티, 증류 |
 | 상호 정보량 $I(X;Y)$ | $H(X)-H(X|Y)$ | 대조학습(CLIP), 정보 병목 |
-| Perplexity | $e^{H(p,q)}$ | 언어모델 평가 |
+| Perplexity | 비트면 $2^{H(p,q)}$, nat이면 $e^{H(p,q)}$ | 언어모델 평가 |
 | ELBO | $E_q[\log p(x|z)] - D_{KL}(q\|p)$ | VAE와 변분형 디퓨전·월드모델 정식화 |
 
 > [!tip] 더 깊이 · Going deeper

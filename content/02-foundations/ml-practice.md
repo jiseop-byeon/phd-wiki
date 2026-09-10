@@ -77,7 +77,7 @@ Regularization helps because fitting every training detail can make a model depe
 | Detection | **IoU**, **mAP** | box overlap ratio; mean average precision over classes & IoU thresholds |
 | Segmentation | mIoU | IoU averaged over classes |
 | Generation (image) | **FID** | distribution distance between generated and real features — lower is better |
-| Language modeling | perplexity | $e^{\text{cross-entropy}}$ ([[02-foundations/information-theory\|5. Info Theory §2]]) |
+| Language modeling | perplexity | $2^{\text{cross-entropy}}$ in bits ([[02-foundations/information-theory\|5. Info Theory §2]]) |
 | Translation/captioning | BLEU | n-gram overlap with references |
 | Robotics | **success rate** | fraction of trials achieving the goal — plus *which* trials (seen/unseen) matters more than the number |
 | Retrieval | recall@k | truth within top-k results |
@@ -279,7 +279,7 @@ The transition matters because recognizing an unfair comparison after publicatio
 | 검출 | **IoU**, **mAP** | 박스 겹침 비율; 클래스·IoU 문턱에 걸친 평균 정밀도 |
 | 분할 | mIoU | 클래스 평균 IoU |
 | 생성 (이미지) | **FID** | 생성/실제 특징 분포 사이 거리 — 낮을수록 좋다 |
-| 언어모델 | perplexity | $e^{\text{교차 엔트로피}}$ ([[02-foundations/information-theory\|5. 정보이론 §2]]) |
+| 언어모델 | perplexity | 비트 기준 $2^{\text{교차 엔트로피}}$ ([[02-foundations/information-theory\|5. 정보이론 §2]]) |
 | 번역/캡셔닝 | BLEU | 참조문과의 n-gram 겹침 |
 | 로보틱스 | **success rate** | 목표 달성 시행 비율 — 숫자보다 *어떤* 시행(seen/unseen)인지가 더 중요 |
 | 검색 | recall@k | 정답이 상위 k개 안 |

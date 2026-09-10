@@ -88,7 +88,7 @@ The formulation is needed because a preference and a requirement play different 
   invert $H$ — which is why nobody runs it on a neural network.
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
-  $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum, $O(n^3)$ per
+  $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian, $O(n^3)$ per
   step; quasi-Newton (BFGS/L-BFGS) builds $H^{-1}$ estimates from gradient differences.
 - Stochastic gradients: unbiased but noisy estimates from minibatches; noise ~ helps escape
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
@@ -256,6 +256,11 @@ a trust parameter.
   3. Dual feasibility: $\lambda_i \ge 0$
   4. **Complementary slackness**: $\lambda_i\, g_i = 0$ — a constraint either binds
      ($g_i=0$, price $\lambda_i>0$) or is free ($\lambda_i = 0$).
+
+  These are **necessary** at an optimum when strong duality holds, which for a convex problem
+  follows from a constraint qualification such as Slater's condition. They are **sufficient**
+  only when the problem is convex. On a non-convex problem — nonlinear MPC, trajectory
+  optimization, the classes §5 lists — a KKT point need not be a minimum at all.
 - Worked example — project a point onto a half-space: $\min \tfrac12\|x - p\|^2$ s.t.
   $a^\top x \le b$. Stationarity: $x = p - \lambda a$. If $a^\top p \le b$: $\lambda = 0$,
   $x^* = p$ (constraint free). Else the constraint binds:
@@ -398,7 +403,7 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   최적점 근처에서만 이 거동이 나오고, 매 스텝 $H$를 만들고 역행렬을 구하는 데 $O(n^3)$을 낸다 —
   아무도 신경망에 이걸 돌리지 않는 이유다.
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
-  모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 최적점 근처 이차 수렴, 스텝당
+  모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
@@ -490,7 +495,7 @@ Gauss–Newton으로:
   ([[02-foundations/linear-algebra|1. 선형대수 §4]]). QR은 조건수를 명시적으로 제곱하지 않아
   조밀 문제에서 흔히 더 안전하다. 반면 희소 normal-Cholesky는 $J^\top J$를 만들더라도
   희소성과 속도 때문에 실제 솔버에서 쓰이며, 수치적 대가를 관리해야 한다. 논문이 특이 자세
-  근처의 수치 문제를 보고할 때 이 조건수 기전을 먼저 확인한다.
+  근처의 수치 문제를 보고할 때 이 조건수 기전이 살펴볼 곳 중 하나다.
 - **이것은 발견적 방법이고, 논문들도 안다.** Levenberg–Marquardt에는 전역 최솟값에 닿는다는
   보장이 없다 — $k$-평균과 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
   웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
@@ -557,6 +562,10 @@ Gauss–Newton으로:
   3. 쌍대 가능성: $\lambda_i \ge 0$
   4. **상보 여유성**: $\lambda_i\, g_i = 0$ — 제약은 구속되거나($g_i=0$, 가격
      $\lambda_i>0$) 놀거나($\lambda_i = 0$) 둘 중 하나다.
+
+  이 조건들은 강쌍대성이 성립할 때 최적점에서 **필요**하고, 볼록 문제에서는 Slater 조건 같은
+  제약 자격 조건이 그것을 준다. **충분**해지는 것은 문제가 볼록할 때뿐이다. 비볼록 문제 —
+  비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
 - 계산 예제 — 반공간으로의 투영: $\min \tfrac12\|x - p\|^2$ s.t. $a^\top x \le b$.
   정상성: $x = p - \lambda a$. $a^\top p \le b$이면: $\lambda = 0$, $x^* = p$(제약이 논다).
   아니면 제약이 구속되어: $\lambda = (a^\top p - b)/\|a\|^2$, $x^* = p - \lambda a$ —

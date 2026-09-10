@@ -163,7 +163,7 @@ dropped variables' information into the survivors, but $S$ is **denser than $C$ 
 nonlinear estimators the resulting prior is tied to a linearization point and later
 relinearization or approximation can lose information. That fill-in is why sliding-window estimators cap their window, and why a
 paper's window length is a compute claim rather than a modelling preference
-([[02-foundations/linear-algebra|1. Linear algebra §2]]).
+([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the Schur complement itself is Boyd, *Convex Optimization*, appendix C.4).
 
 > [!warning] "Drift-free" and "loop closure" are claims about different things
 > Loop closure removes accumulated drift *only along paths that return to a previously visited
@@ -417,7 +417,7 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 정보가 살아남은 변수에 정확히 접히지만 $S$는 **원래의 $C$보다 조밀하다**. 비선형 추정에서는
 이 prior가 선형화점에 묶이고, 뒤의 재선형화나 근사에서 정보가 손실될 수 있다. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
 길이가 모델링 취향이 아니라 계산 비용에 대한 주장인 이유다
-([[02-foundations/linear-algebra|1. 선형대수 §2]]).
+([[02-foundations/linear-algebra|1. 선형대수 §4.5]]. Schur 보수 자체는 Boyd, *Convex Optimization* 부록 C.4다).
 
 > [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
 > Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가

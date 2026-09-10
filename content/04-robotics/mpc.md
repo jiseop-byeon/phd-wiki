@@ -61,11 +61,15 @@ MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 is stable* — the roles of the terminal cost, terminal constraint set, and horizon length —
 turning a practical heuristic into a theory. The mechanism, in one paragraph: if the
 horizon ends inside a **terminal set** that is *invariant* under a known local controller
-(invariant = once the state is inside that set, the controller keeps it inside forever),
-then a feasible plan today implies a feasible plan tomorrow (append one step of that
-controller) — this is **recursive feasibility**, the property MPC papers invoke by name;
-and if the terminal cost decreases like a Lyapunov function under that controller, closed-loop
-stability follows. Read the survey after the optimization page's example; skim §2–3 for
+(invariant = once the state is inside that set, the controller keeps it inside forever, and
+the set lies inside the state constraints while that appended control stays inside the input
+constraints), then a feasible plan today implies a feasible plan tomorrow (append one step of
+that controller) — this is **recursive feasibility**, the property MPC papers invoke by name;
+and if the terminal cost decreases by **at least the stage cost** under that controller, so
+that $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$, the optimal cost becomes a Lyapunov function and
+the origin is **asymptotically** stable, with the feasible set as its domain of attraction.
+Merely decreasing is not enough; the decrease has to dominate the stage cost, and the
+conclusion holds only from states that were feasible to begin with. Read the survey after the optimization page's example; skim §2–3 for
 the formulation and stability conditions rather than every proof.
 
 > [!note] First pass · 처음이라면
@@ -159,7 +163,7 @@ chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-machinery|stream 3]]).
 
 > [!tip] Going deeper · 더 깊이
-> Two free books, and they answer different questions. Rawlings, Mayne & Diehl, [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/) is where the stability and feasibility guarantees are actually proved — read it when a paper claims recursive feasibility and you want to know what it had to assume. Borrelli, Bemporad & Morari, [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf) is the computational side: explicit MPC, the QP structure of §2, and hybrid formulations, which is the half that matters for §4's contact case.
+> Two free books, and they answer different questions. Rawlings, Mayne & Diehl, [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/) is where the stability and feasibility guarantees are proved in the most general setting — read it when a paper claims recursive feasibility and you want to know what it had to assume. Borrelli proves them too, and more compactly for the linear polytopic case this page uses (persistent feasibility in §12.3.1, asymptotic stability in §12.3.2, on four assumptions). Borrelli, Bemporad & Morari, [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf) is the computational side: explicit MPC, the QP structure of §2, and hybrid formulations, which is the half that matters for §4's contact case.
 
 ### Self-check
 
@@ -219,10 +223,14 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 **Mayne et al. 2000 서베이**는 이 분야의 정본이다: *MPC가 언제 안정한가* — 종단 비용,
 종단 제약 집합, 지평 길이의 역할 — 를 정리해 실용적 휴리스틱을 이론으로 만들었다.
 메커니즘을 한 단락으로: 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합** 안에
-떨어지면(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에 잡아둔다), 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한
-스텝을 이어 붙이면 된다) — 이것이 MPC 논문들이 이름으로 부르는 **recursive
-feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노프 함수처럼 감소하면 폐루프
-안정성이 따라온다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
+떨어지면(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에 잡아두고,
+그 집합이 상태 제약 안에 있으며 이어 붙이는 입력도 입력 제약 안에 있다는 뜻), 오늘의 실행
+가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한 스텝을 이어 붙이면 된다) —
+이것이 MPC 논문들이 이름으로 부르는 **recursive feasibility**다. 그리고 종단 비용이 그
+제어기 아래 **최소한 단계 비용만큼** 감소하면, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$이면,
+최적 비용이 리아푸노프 함수가 되고 원점이 **점근적으로** 안정해진다. 그 흡인 영역은 실행
+가능 집합이다. 그냥 감소하는 것으로는 부족하고 감소가 단계 비용을 압도해야 하며, 결론은
+애초에 실행 가능했던 상태에서만 성립한다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
 §2~3의 정식화와 안정성 조건을 훑는 것을 권한다.
 
 > [!note] 처음이라면 · First pass
@@ -264,7 +272,7 @@ feasibility**다; 그리고 종단 비용이 그 제어기 아래 리아푸노�
 
 Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
 조밀하게 저장하면 원소가 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
-고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 실제 풀이 일은 약 **여덟 배**가 된다. 그리고 50 Hz라면
+고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 조밀 분해 연산량은 약 여덟 배가 된다. 다만 이것은 알고리즘 선택에 달렸다 — Axehill과 Morari(2012)의 condensing 기반 Cholesky는 지평에 대해 2차다. 그리고 50 Hz라면
 이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
 이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 
@@ -316,7 +324,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 - 이 안내 너머로: 궤적 최적화, 재계획, 과제 계획, 불확실성 하의 계획은 [[04-robotics/planning-decision-making|계획과 의사결정]]에서 다룬다.
 
 > [!tip] 더 깊이 · Going deeper
-> 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 실제로 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 계산 쪽이다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
+> 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 가장 일반적인 설정에서 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli도 같은 것을 증명하며, 이 페이지가 쓰는 선형 폴리토프 경우에는 더 짧다(지속 실현가능성 §12.3.1, 점근 안정성 §12.3.2, 가정 네 개). Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 계산 쪽이다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
 
 ### 스스로 점검 · Self-check
 

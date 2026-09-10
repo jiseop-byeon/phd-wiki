@@ -130,7 +130,7 @@ $$f(n)=g(n)+h(n)$$
 - $h(n)$: estimated cost from $n$ to the goal.
 - $f(n)$: priority used for expansion.
 
-Dijkstra uses no informative heuristic. A* is optimal on a graph under the appropriate admissibility/consistency conditions; this theorem does not guarantee that a discretized graph represents every feasible continuous robot motion.
+Dijkstra uses no informative heuristic. A* is optimal on a graph under the appropriate admissibility/consistency conditions. *Admissible* means $h$ never **over**estimates the true remaining cost, so the estimate is optimistic; *consistent* means it additionally never drops by more than the cost of the edge just traversed, so the estimates agree with each other along a path. This theorem does not guarantee that a discretized graph represents every feasible continuous robot motion.
 
 **Think of the frontier as unfinished routes.** Each queued node represents a route that has reached somewhere but has not yet been explored onward. g records what that route has already cost. h estimates the remaining work, and f decides which unfinished route deserves attention next. Expanding a node means considering its outgoing edges; it does not mean the robot physically moves there.
 
@@ -229,7 +229,7 @@ You should be able to:
 - identify what a learned trajectory generator does not guarantee.
 
 > [!tip] Going deeper · 더 깊이
-> LaValle's [*Planning Algorithms*](http://lavalle.pl/planning/) is free and is the reference for the sampling-based half; Tedrake's [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) covers the trajectory-optimization half with code you can run.
+> LaValle's [*Planning Algorithms*](http://lavalle.pl/planning/) is free and is the reference for the sampling-based half, though it is a 2006 book: it stops at probabilistic completeness and has neither RRT\* nor asymptotic optimality, which are Karaman and Frazzoli (2011); Tedrake's [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) covers the trajectory-optimization half with code you can run.
 
 ### Self-check
 
@@ -278,7 +278,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 | Controller | 기준을 추종하거나 거동을 조절하는 피드백 시스템 |
 
 플래너가 path를 내면 궤적 생성기가 시간을 매기고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]
-— 시간 스케일링, 경유점, 시간 최적 스케일링) 제어기가 추종한다. 계획은 작업 영역에 있는데
+— 시간 스케일링, 경유점, 시간 최적 스케일링) 제어기가 추종한다. 계획은 과제 공간에 있는데
 로봇은 관절 공간으로 명령받는다면 그 사이에
 [[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이 앉고, 그 다봉성은
 축소판 계획 문제다. 학습 시스템에서는 정책이 이 경계들을 합칠 수 있지만, 물리적 요구 사항이
@@ -492,7 +492,7 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 - 학습된 궤적 생성기가 보장하지 않는 것을 짚을 수 있다
 
 > [!tip] 더 깊이 · Going deeper
-> LaValle의 [*Planning Algorithms*](http://lavalle.pl/planning/)가 무료이고 샘플링 기반 쪽의 참고서다. 궤적 최적화 쪽은 Tedrake의 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 실행 가능한 코드와 함께 다룬다.
+> LaValle의 [*Planning Algorithms*](http://lavalle.pl/planning/)가 무료이고 샘플링 기반 쪽의 참고서다. 다만 2006년 책이라 확률적 완전성까지만 다루고 RRT\*와 점근적 최적성은 없다 — 그쪽은 Karaman과 Frazzoli(2011)다. 궤적 최적화 쪽은 Tedrake의 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 실행 가능한 코드와 함께 다룬다.
 
 ### 스스로 점검
 
