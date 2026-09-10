@@ -22,7 +22,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on ceiling-tile installation across 60 scenes **in a ROS Gazebo simulator**; the generalized-cylinder trajectory representation arrived in the 2022 JCCE follow-up (82.0% vs 71.3%).
+**One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on ceiling-tile installation across 60 scenes **in a ROS Gazebo simulator**; the generalized-cylinder trajectory representation arrived in the 2022 JCCE follow-up (82.0% vs 71.3% — that journal is paywalled and neither figure was checked in the source).
 
 > [!tip] Key intuition · 핵심 직관
 > Demonstrations supply task behavior where programming each geometric variation would be costly. The later trajectory-tube representation allows variation around a demonstrated path; keep that follow-up mechanism separate from what the original construction LfD study established.
@@ -33,7 +33,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Evidence (with numbers)**: ceiling-tile installation, **78% task success over 60 test scenes in the ROS Gazebo simulator with a KUKA arm emulator** — there is no physical-robot result in the paper. This is **simulation, not a testbed and not a site**; after the demonstration phase the robot executes autonomously, with the human's role reduced to demonstrator.
 
-**Reading it with [[02-foundations/rl-basics|RL 기초 §6]]**: this is behavioral-cloning territory, so covariate shift and compounding error are plausible explanations for failures outside demonstrated states. The aggregate 78% success rate does not identify that mechanism by itself; confirm it from failure trajectories, state-distribution analysis, or ablations. The line's next move, [[yu-imitation|Yu]]'s cloud/VR hierarchical IL, targets demonstration cost and brittleness away from demonstrated states.
+**Reading it with [[02-foundations/rl-basics|RL 기초 §6]]**: the demonstrations are cloned, but the paper states that "the Reinforcement Learning method is then applied to generate the control policy", so this is not pure behavioural cloning. Covariate shift and compounding error remain plausible explanations for failures outside demonstrated states, not certain ones. The aggregate 78% success rate does not identify that mechanism by itself; confirm it from failure trajectories, state-distribution analysis, or ablations. The line's next move, [[yu-imitation|Yu]]'s cloud/VR hierarchical IL, targets demonstration cost and brittleness away from demonstrated states.
 
 **Limitations**: a single task family; trajectory-level imitation without a visual policy; the evaluation never leaves simulation, so the 78% carries none of the contact, calibration or perception error a real ceiling grid would impose. It is a proof of feasibility, not deployment readiness. Ci-Jyun Liang now leads the CROSS Lab at Stony Brook, continuing the line as faculty.
 
@@ -42,7 +42,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## 한국어
 
-**한 줄 요약**: 모방학습이 건설에 들어온다 — 인간 시연(가상 3,000 + 실제 85)이 매니퓰레이터에게 준반복 과제를 가르쳐 ROS Gazebo 시뮬레이터의 60개 장면에서 천장 타일 설치 **78% 성공**에 도달한다; 일반화 원통(generalized cylinder) 궤적 표현은 2022 JCCE 후속에서 도입됐다(82.0% vs 71.3%).
+**한 줄 요약**: 모방학습이 건설에 들어온다 — 인간 시연(가상 3,000 + 실제 85)이 매니퓰레이터에게 준반복 과제를 가르쳐 ROS Gazebo 시뮬레이터의 60개 장면에서 천장 타일 설치 **78% 성공**에 도달한다; 일반화 원통(generalized cylinder) 궤적 표현은 2022 JCCE 후속에서 도입됐다(82.0% vs 71.3% — 그 저널은 페이월 뒤이고 두 수치 모두 원문에서 확인하지 못했다).
 
 > [!tip] 핵심 직관 · Key intuition
 > 시연은 형상 변동마다 프로그래밍하기 어려운 과제 행동을 제공한다. 후속 연구의 궤적 튜브 표현은 시연 경로 주변의 변동을 허용한다. 그 후속 기전은 원래 건설 LfD 연구가 확립한 것과 구분한다.
@@ -53,7 +53,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **증거 (수치와 함께)**: 천장 타일 설치, **ROS Gazebo 시뮬레이터에서 KUKA 팔 에뮬레이터로 60개 장면, 과제 성공률 78%** — 논문에 실제 로봇 결과는 없다. 이것은 **테스트베드도 현장도 아니라 시뮬레이션**이다; 시연 단계 이후 로봇은 자율적으로 실행하며, 인간의 역할은 시연자로 줄어든다.
 
-**[[02-foundations/rl-basics|RL 기초 §6]]으로 읽기**: 이것은 행동 복제(BC)의 영토이므로 시연 상태 밖의 공변량 이동과 오차 누적은 가능한 실패 설명이다. 그러나 집계 성공률 78%만으로 그 기전을 식별할 수는 없다. 실패 궤적·상태분포 분석·ablation에서 확인하라. 계열의 다음 수인 [[yu-imitation|Yu]]의 클라우드/VR 계층적 모방학습은 시연 비용과 시연 상태 밖의 취약성을 공략한다.
+**[[02-foundations/rl-basics|RL 기초 §6]]으로 읽기**: 시연을 복제하기는 하지만, 논문은 "이후 강화학습 방법을 적용해 제어 정책을 생성한다"고 적는다. 순수한 행동 복제가 아니다. 시연 상태 밖의 공변량 이동과 오차 누적은 확정된 설명이 아니라 가능한 설명이다. 그러나 집계 성공률 78%만으로 그 기전을 식별할 수는 없다. 실패 궤적·상태분포 분석·ablation에서 확인하라. 계열의 다음 수인 [[yu-imitation|Yu]]의 클라우드/VR 계층적 모방학습은 시연 비용과 시연 상태 밖의 취약성을 공략한다.
 
 **한계**: 단일 과제 부류; 시각 정책 없는 궤적 수준 모방; 평가가 시뮬레이션을 벗어나지 않으므로 78%는 실제 천장 그리드가 부과하는 접촉·캘리브레이션·인식 오차를 전혀 포함하지 않는다. 실현 가능성의 증명이지 배치 준비가 아니다. Ci-Jyun Liang은 현재 Stony Brook의 CROSS Lab을 이끌며 교수로서 이 계열을 잇고 있다.
 

@@ -37,7 +37,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 - **Q-Former**: a small Transformer with **32 learned query vectors** that cross-attend to frozen image features — the image becomes a fixed 32-token summary regardless of resolution.
 - **Stage 1 (representation learning)**: with the frozen image encoder, train on image-text contrastive, image-text matching, and image-grounded text generation objectives — forcing queries to extract text-relevant visual content.
 - **Stage 2 (generative pretraining)**: plug the 32 tokens (via a linear projection) into a frozen LLM (OPT or FlanT5) as soft visual prompts; train the Q-Former so the LLM can caption from them.
-- Trainable parameters: ~188M — **~54× fewer than Flamingo's** trainable footprint.
+- Trainable parameters: ~188M — **~54× fewer than Flamingo's** trainable footprint. The 54× is the abstract's; the 188M is a body figure.
 
 ### Results
 

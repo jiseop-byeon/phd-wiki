@@ -41,7 +41,7 @@ CNNs owned vision because their inductive biases (locality, translation equivari
 
 ### Results
 
-- Pretrained on JFT-300M, **ViT beats ResNet-based SOTA (BiT) on ImageNet — ViT-L/16 87.8%, ViT-H/14 88.55% top-1** with substantially less pretraining compute.
+- Pretrained on JFT-300M, **ViT beats ResNet-based SOTA (BiT) on ImageNet — ViT-L/16 87.8%, ViT-H/14 88.55% top-1** with substantially less pretraining compute. The accuracies are Table 2; the abstract carries no numbers.
 - On small data (ImageNet-1k only), ViT *loses* to comparable CNNs — cleanly demonstrating the data-vs-inductive-bias tradeoff.
 - Attention maps show the model learns local-to-global attention patterns by itself.
 
@@ -83,7 +83,7 @@ CNN이 비전을 지배한 것은 그 귀납 편향(지역성, 평행이동 등�
 
 ### 결과
 
-- JFT-300M 사전학습 시 **ViT가 ResNet 계열 SOTA(BiT)를 ImageNet에서 추월 — ViT-L/16 87.8%, ViT-H/14 88.55% top-1**, 사전학습 연산은 오히려 훨씬 적다.
+- JFT-300M 사전학습 시 **ViT가 ResNet 계열 SOTA(BiT)를 ImageNet에서 추월 — ViT-L/16 87.8%, ViT-H/14 88.55% top-1**, 사전학습 연산은 오히려 훨씬 적다. 정확도는 표 2의 수치이고 초록에는 숫자가 없다.
 - 작은 데이터(ImageNet-1k만)에서는 동급 CNN에 *진다* — 데이터 vs 귀납 편향의 트레이드오프를 깔끔하게 실증.
 - 어텐션 맵을 보면 지역→전역 어텐션 패턴을 스스로 학습한다.
 

@@ -73,7 +73,7 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 
 ### The Chinchilla correction (Hoffmann 2022)
 
-- With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**.
+- With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**. The abstract says only that "for every doubling of model size the number of training tokens should also be doubled"; the 20:1 ratio and the 1.4T-token Chinchilla run are body figures.
 - Most large models of 2020–22 (GPT-3 175B, Gopher 280B) were substantially **undertrained** for their size.
 - Key experimental evidence: under the reported compute-matched setup, Chinchilla 70B trained on 1.4T tokens outperformed Gopher 280B across the evaluated tasks.
 

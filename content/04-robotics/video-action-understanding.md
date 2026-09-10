@@ -141,7 +141,7 @@ You should be able to:
 
 **Backbones — verified citations**
 
-- J. Carreira and A. Zisserman, "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset," *CVPR 2017*, pp. 4724–4733. [arXiv:1705.07750](https://arxiv.org/abs/1705.07750) — inflates 2D ImageNet filters into 3D (I3D) and introduces Kinetics-400 as the pretraining corpus. Note the title does not contain "I3D".
+- J. Carreira and A. Zisserman, "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset," *CVPR 2017*, pp. 4724–4733. [arXiv:1705.07750](https://arxiv.org/abs/1705.07750) — inflates 2D ImageNet filters into 3D (I3D) and evaluates on Kinetics, which Kay et al. ([arXiv:1705.06950](https://arxiv.org/abs/1705.06950)) introduce in their own paper. Note the title does not contain "I3D", and that "Kinetics-400" is a later name for that dataset.
 - C. Feichtenhofer, H. Fan, J. Malik, and K. He, "SlowFast Networks for Video Recognition," *ICCV 2019*, pp. 6202–6211. [arXiv:1812.03982](https://arxiv.org/abs/1812.03982) — a slow spatial pathway and a fast, low-capacity temporal pathway with lateral fusion.
 - G. Bertasius, H. Wang, and L. Torresani, "Is Space-Time Attention All You Need for Video Understanding?", *ICML 2021*. [arXiv:2102.05095](https://arxiv.org/abs/2102.05095) — the paper the community calls TimeSformer; "divided space-time attention" is the winning variant. The name appears nowhere in the title.
 - Z. Tong, Y. Song, J. Wang, and L. Wang, "VideoMAE: Masked Autoencoders are Data-Efficient Learners for Self-Supervised Video Pre-Training," *NeurIPS 2022*. [arXiv:2203.12602](https://arxiv.org/abs/2203.12602) — tube masking at 90–95% works on 3k–4k-video datasets with no extra data.
@@ -296,7 +296,7 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 
 **백본 — 검증된 인용**
 
-- J. Carreira and A. Zisserman, "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset," *CVPR 2017*, pp. 4724–4733. [arXiv:1705.07750](https://arxiv.org/abs/1705.07750) — 2D ImageNet 필터를 3D로 부풀려(inflate) I3D를 만들고, 사전학습 코퍼스로 Kinetics-400을 함께 낸다. 제목에 "I3D"는 없다.
+- J. Carreira and A. Zisserman, "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset," *CVPR 2017*, pp. 4724–4733. [arXiv:1705.07750](https://arxiv.org/abs/1705.07750) — 2D ImageNet 필터를 3D로 부풀려(inflate) I3D를 만들고 Kinetics에서 평가한다. 데이터셋 자체는 Kay 외의 별도 논문([arXiv:1705.06950](https://arxiv.org/abs/1705.06950))이 낸 것이다. 제목에 "I3D"는 없고, "Kinetics-400"은 나중에 붙은 이름이다.
 - C. Feichtenhofer, H. Fan, J. Malik, and K. He, "SlowFast Networks for Video Recognition," *ICCV 2019*, pp. 6202–6211. [arXiv:1812.03982](https://arxiv.org/abs/1812.03982) — 공간 의미를 담는 느린 경로와 용량이 작고 빠른 시간 경로를 측면 융합한다.
 - G. Bertasius, H. Wang, and L. Torresani, "Is Space-Time Attention All You Need for Video Understanding?", *ICML 2021*. [arXiv:2102.05095](https://arxiv.org/abs/2102.05095) — 흔히 TimeSformer로 불리는 논문. "divided space-time attention"이 가장 좋은 변형이다. 그 이름은 제목에 등장하지 않는다.
 - Z. Tong, Y. Song, J. Wang, and L. Wang, "VideoMAE: Masked Autoencoders are Data-Efficient Learners for Self-Supervised Video Pre-Training," *NeurIPS 2022*. [arXiv:2203.12602](https://arxiv.org/abs/2203.12602) — 90–95% 비율의 tube masking이 추가 데이터 없이 3k–4k 규모 데이터셋에서 작동한다.

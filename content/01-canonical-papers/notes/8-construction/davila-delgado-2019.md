@@ -21,7 +21,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ## English
 
-**One-line summary**: Surveys industry stakeholders to answer why construction robots aren't adopted — ranking barriers (high capital cost first) across four technology categories: off-site prefabrication robots, on-site automation, drones/autonomous vehicles, and exoskeletons.
+**One-line summary**: Surveys industry stakeholders to answer why construction robots aren't adopted — ranking barriers across four technology categories: off-site prefabrication robots, on-site automation, drones/autonomous vehicles, and exoskeletons. Both the taxonomy and the item-level barrier ranking are body material — the abstract instead groups the challenges as contractor-side economic, client-side economic, technical and work-culture, and weak business case, in that order of importance.
 
 > [!tip] Key intuition · 핵심 직관
 > The survey separates a robot being technically possible from someone being willing and able to adopt it. Grouping stakeholder barriers makes cost and workflow constraints visible alongside capability; these are adoption explanations, not a robot-control mechanism.

@@ -42,7 +42,7 @@ complexity* and *where the data comes from*.
 > base, simulation and *neural trajectories* (video-generation-augmented data) in the
 > middle, expensive real demos only at the top.
 
-- **System 2**: NVIDIA Eagle-2 VLM (**1.34B**; the whole dual-system model is 2.2B, which is what "N1-2B" names), processes vision + language at ~10 Hz.
+- **System 2**: NVIDIA Eagle-2 VLM (**1.34B**; the whole dual-system model is 2.2B, which is what "N1-2B" names), processes vision + language at ~10 Hz on an NVIDIA L40 GPU.
 - **System 1**: a **flow-matching diffusion transformer** ([[pi0|π0]]-style action expert,
   [[act|ACT]]-style chunks) generating whole-body continuous actions at up to 120 Hz;
   embodiment-specific encoders/decoders handle different robots in one model.

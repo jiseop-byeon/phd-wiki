@@ -40,8 +40,9 @@ and machine configurations is a design goal, not an afterthought.
 
 **The pipeline, concretely** (what a Working-level read should extract):
 
-- **Demonstration generation**: 150,000 episodes *per task* collected in **GPU-parallel
-  simulation** (the [[05-construction-robotics/sim-to-real|Isaac-Gym-lineage]] recipe) —
+- **Demonstration generation**: 150,000 episodes each for Dig, Dump and Move Arm, but only
+  2,000 for Abort Digging & Reset, "requiring approximately three hours of wall-clock time".
+  Collected in **GPU-parallel simulation** (the [[05-construction-robotics/sim-to-real|Isaac-Gym-lineage]] recipe) —
   from **heterogeneous sources** (per-task RL expert policies, scripted controllers,
   teleoperation). Read the two headline figures with their scope attached: the
   **scripted** Dump and Move Arm data is "roughly 30 days of continuous real-world
@@ -69,7 +70,7 @@ and machine configurations is a design goal, not an afterthought.
 
 ```mermaid
 flowchart LR
-    RL["RL experts in simulation"] --> D["150,000 episodes PER TASK<br/>GPU-parallel - the demonstrations are generated, not human"]
+    RL["RL experts in simulation"] --> D["150,000 episodes for three tasks, 2,000 for the fourth<br/>GPU-parallel - the demonstrations are generated, not human"]
     D --> PT["pretrain one transformer policy<br/>behaviour cloning across the task mixture"]
     PT ==>|"REAL M545 - centimetre-level - no fine-tuning"| REAL["complete excavation cycles on hardware"]
     PT --> SFT["SFT on task demos"]
@@ -112,7 +113,7 @@ LLM/VLA 학습의 바로 그 구조 — 를 실물 크기 유압 굴착기(약 1
 
 **파이프라인, 구체적으로** (Working 수준의 읽기가 뽑아내야 할 것):
 
-- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 과제당 **15만 에피소드** 수집.
+- **시연 생성**: **GPU 병렬 시뮬레이션**([[05-construction-robotics/sim-to-real|Isaac Gym 계열]] 레시피)에서 Dig·Dump·Move Arm은 각각 **15만 에피소드**, Abort Digging & Reset은 **2,000 에피소드**("벽시계 시간 약 3시간")를 수집한다.
   소스는 이질적이다(과제별 RL 전문가 정책, 스크립트 제어기, 원격조작). 두 헤드라인 수치는
   범위와 함께 읽어라: **스크립트** 기반 Dump·Move Arm 데이터가 "실기계 연속 운영 약 30일
   상당, RTX 3090 한 장으로 2시간 이내 생성"이고, Dig의 15만 에피소드는 *학습된* RL
@@ -134,7 +135,7 @@ LLM/VLA 학습의 바로 그 구조 — 를 실물 크기 유압 굴착기(약 1
 
 ```mermaid
 flowchart LR
-    RL["시뮬레이션 속 RL 전문가"] --> D["과제당 15만 에피소드<br/>GPU 병렬 - 시연은 사람이 아니라 생성된 것"]
+    RL["시뮬레이션 속 RL 전문가"] --> D["세 과제는 15만 에피소드, 네 번째는 2,000<br/>GPU 병렬 - 시연은 사람이 아니라 생성된 것"]
     D --> PT["트랜스포머 정책 하나를 사전학습<br/>과제 혼합물 전체에 대한 행동 복제"]
     PT ==>|"실제 M545 - 센티미터 수준 - 파인튜닝 없이"| REAL["실기계에서 완전한 굴착 사이클"]
     PT --> SFT["과제 시연으로 SFT"]
@@ -165,7 +166,7 @@ flowchart LR
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] Walk through the pipeline stage by stage (150k simulated episodes per task → BC pretraining → SFT/RLFT, with the *pretrained* policy doing the real-machine transfer) · 파이프라인(과제당 15만 시뮬 에피소드 → BC 사전학습 → SFT/RLFT, 실기계 전이는 사전학습 정책)을 단계별로 말할 수 있다
+- [ ] Walk through the pipeline stage by stage (150k simulated episodes for three tasks and 2k for the fourth → BC pretraining → SFT/RLFT, with the *pretrained* policy doing the real-machine transfer) · 파이프라인(세 과제 15만 + 네 번째 2천 시뮬 에피소드 → BC 사전학습 → SFT/RLFT, 실기계 전이는 사전학습 정책)을 단계별로 말할 수 있다
 - [ ] Say what the pretrain → SFT/RLFT structure imports from the LLM/VLA recipe, and which OXE lesson the "mixture of experts" repeats · 사전학습→SFT/RLFT 구조가 LLM/VLA 레시피의 무엇을 가져왔고, "전문가 혼합"이 OXE의 어떤 교훈을 반복하는지 말할 수 있다
 - [ ] Name what makes excavation harder than tabletop manipulation (contact forces, machine scale, safety) · 굴착이 탁상 조작과 다른 난점(접촉력, 기계 규모, 안전)을 말할 수 있다
 - [ ] Explain why this paper is the meeting point of robot learning (era 4) and heavy-machine autonomy (era 1R) · 이 논문이 왜 로봇 학습(4시대)과 중장비 자율성(1R시대)의 합류점인지 설명할 수 있다

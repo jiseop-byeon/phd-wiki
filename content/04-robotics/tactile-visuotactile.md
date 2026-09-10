@@ -118,7 +118,7 @@ can claim.
 
 > [!example] Worked example · 계산 예제
 > **Why "tactile sees what vision cannot" is an arithmetic claim.** GelSight publishes 0.0634 mm
-> per pixel over an 18 × 24 mm pad for the Mini. A wrist camera with a 90° horizontal field of
+> per pixel for the Mini, over a field of view its datasheet gives as 18.6 × 14.3 mm. A wrist camera with a 90° horizontal field of
 > view at 0.5 m spans $2 \times 0.5 \times \tan 45° = 1.0$ m across 1280 pixels, i.e.
 > **0.78 mm per pixel**. Over the patch that matters, the tactile sensor resolves
 > $0.78/0.0634 = \mathbf{12\times}$ finer — and it does so *while the object is occluded by the
@@ -186,9 +186,12 @@ is $18{,}000 \times 60 \approx \mathbf{1.1}$ **million channels**, and fingertip
 4.3 million.
 
 Now try to reach that with the sensor of §2. A GelSight Mini is 76,800 pixels over
-4.32 cm², which is 17,800 channels per cm² — **74 times denser than a human fingertip** —
-but it covers 0.024% of a body. Tiling a body with them takes about **4,200 sensors**: 4,200
-cameras, 0.32 gigapixels, and 9.6 gigasamples per second at 30 Hz.
+the datasheet's 18.6 × 14.3 mm, or 2.66 cm². That is about 29,000 channels per cm² —
+**120 times denser than a human fingertip** — covering 0.015% of a body. Tiling a body with
+them takes roughly **6,800 sensors**: 6,800 cameras, 0.52 gigapixels, and 16 gigasamples per
+second at 30 Hz. Treat the area as approximate: 0.0634 mm per pixel across 320 pixels implies
+20.3 mm, wider than the datasheet's 18.6, so GelSight's two published numbers do not quite
+agree. The order of magnitude is what the argument needs.
 
 So the two research directions here are not competing implementations of one idea, they are
 answers to different halves of that calculation. **Tile cheaply**: accept a coarse
@@ -517,8 +520,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > 이 둘은 혼동하기 쉽다.
 
 > [!example] 계산 예제 · Worked example
-> **"촉각은 비전이 못 보는 것을 본다"가 산술적 주장인 이유.** GelSight는 Mini의 18 × 24 mm
-> 패드에서 픽셀당 0.0634 mm를 공표한다. 수평 화각 90°인 손목 카메라는 0.5 m에서
+> **"촉각은 비전이 못 보는 것을 본다"가 산술적 주장인 이유.** GelSight는 Mini에 대해 픽셀당 0.0634 mm를 공표하고, 데이터시트의 시야는 18.6 × 14.3 mm다. 수평 화각 90°인 손목 카메라는 0.5 m에서
 > $2 \times 0.5 \times \tan 45° = 1.0$ m를 1280픽셀에 담으니 **픽셀당 0.78 mm**다. 문제가 되는
 > 그 패치 위에서 촉각 센서는 $0.78/0.0634 = \mathbf{12}\text{배}$ 더 곱게 분해하고, 게다가 *손가락에
 > 물체가 가려진 동안* 그렇게 한다 — 카메라에 아무것도 없는 바로 그때다.
@@ -576,10 +578,12 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
 밀도로 덮으면 $18{,}000 \times 60 \approx \mathbf{1.1}$**백만 채널**이고 손끝 밀도로는 432만
 채널이다.
 
-이제 2절의 센서로 거기에 닿아 보자. GelSight Mini는 4.32 cm²에 76,800픽셀이니 cm²당
-17,800채널 — **사람 손끝보다 74배 조밀하다** — 그런데 덮는 면적은 몸의 0.024%다. 이것으로 몸을
-타일링하려면 약 **4,200개**가 필요하다: 카메라 4,200대, 0.32기가픽셀, 30 Hz에서 초당
-9.6기가샘플.
+이제 2절의 센서로 거기에 닿아 보자. GelSight Mini는 데이터시트의 18.6 × 14.3 mm, 즉 2.66 cm²에
+76,800픽셀이니 cm²당 약 29,000채널 — **사람 손끝보다 120배 조밀하다** — 그런데 덮는 면적은
+몸의 0.015%다. 이것으로 몸을 타일링하려면 약 **6,800개**가 필요하다: 카메라 6,800대,
+0.52기가픽셀, 30 Hz에서 초당 16기가샘플. 면적은 근사로 다루라. 픽셀당 0.0634 mm에 320픽셀이면
+20.3 mm가 되어 데이터시트의 18.6 mm와 어긋난다. GelSight가 공표한 두 숫자가 딱 맞지 않는다.
+이 논증에 필요한 것은 자릿수다.
 
 그러므로 이 분야의 두 연구 방향은 한 발상의 경쟁하는 구현이 아니라, 저 계산의 서로 다른 절반에
 대한 답이다. **싸게 타일링하기**: 거친 변환 방식을 받아들이고 — 위의 압전저항이나 정전용량

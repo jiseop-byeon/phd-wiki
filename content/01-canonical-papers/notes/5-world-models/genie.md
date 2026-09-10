@@ -43,7 +43,7 @@ video, making the whole internet a training ground for interactive environments?
   **video tokenizer** (VQ) → **latent action model** (infers the discrete action between
   frames, 8-code codebook) → **dynamics model** (MaskGIT-style, predicts next frame tokens
   given history + latent action).
-- Trained on ~30k hours of 2D-platformer internet video (filtered down from ~244k crawled hours), *no labels of any kind*.
+- Trained on ~30k hours of 2D-platformer internet video (filtered down from ~244k crawled hours), *no labels of any kind*. Both hour counts and the codebook size are body figures; the abstract gives only the architecture and the 11B parameter count.
 - At inference: prompt with any image (photo, sketch), then *play* it frame by frame by
   choosing latent actions.
 

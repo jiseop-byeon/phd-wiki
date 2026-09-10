@@ -46,7 +46,7 @@ all boxes* as one function.
 
 ### Results
 
-- **45 fps** (155 fps for Fast YOLO) at competitive VOC mAP (63.4) — an order of magnitude
+- **45 fps** (155 fps for Fast YOLO; both in the abstract) at competitive VOC mAP (63.4 — Table 1, not the abstract) — an order of magnitude
   faster than contemporaries; generalizes better to artwork/new domains.
 
 ### Limitations & critique
@@ -94,7 +94,7 @@ embedded robot detectors run YOLO descendants.
 
 ### 결과
 
-- 경쟁력 있는 VOC mAP(63.4)를 **45 fps**로 (Fast YOLO는 155 fps) — 동시대 대비 한 자릿수
+- 경쟁력 있는 VOC mAP(63.4 — 표 1이고 초록에는 없다)을 **45 fps**로 (Fast YOLO는 155 fps. 두 속도는 초록의 것이다) — 동시대 대비 한 자릿수
   빠름; 그림 등 새 도메인으로의 일반화도 더 좋다.
 
 ### 한계와 비판

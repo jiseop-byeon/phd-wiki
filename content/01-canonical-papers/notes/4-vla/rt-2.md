@@ -68,8 +68,10 @@ semantic knowledge *and* output motor commands?
 
 ### Results
 
-- On unseen objects/backgrounds/instructions: roughly **2–3× RT-1's generalization**
-  (~62% vs ~32–35% on the hardest unseen splits), while matching RT-1 on seen tasks.
+- On unseen objects/backgrounds/environments: about **2× RT-1's generalization** — the paper
+  says "∼2x improvement over the next two baselines, RT-1 and MOO", with unseen averages of 62
+  for RT-2-PaLI-X-55B against 32 for RT-1 — while matching RT-1 on seen tasks. The larger ~3×
+  figure belongs to the emergent-capability evaluations, not to these splits.
 - **Emergent capabilities** absent from robot data: symbol understanding (place object on
   "3"), semantic reasoning (pick the drink for a tired person), relational grounding
   (smallest/largest, "animal that is extinct" → toy dinosaur).
@@ -144,8 +146,9 @@ RT-2가 답한 질문: 하나의 모델이 웹의 의미 지식을 유지하면�
 
 ### 결과
 
-- 처음 보는 물체/배경/지시에서 **RT-1의 약 2~3배 일반화** (최난이도 미학습 분할에서
-  ~62% vs ~32–35%), 본 과제에서는 RT-1과 대등.
+- 처음 보는 물체/배경/환경에서 **RT-1의 약 2배 일반화** — 논문의 표현은 "RT-1과 MOO 대비 약
+  2배"이고 미학습 평균은 RT-2-PaLI-X-55B 62 대 RT-1 32다 — 본 과제에서는 RT-1과 대등. 더 큰
+  3배 수치는 이 분할이 아니라 창발 능력 평가의 것이다.
 - 로봇 데이터에 없던 **창발 능력**: 기호 이해(물체를 숫자 "3" 위에 놓기), 의미 추론
   (피곤한 사람에게 줄 음료 고르기), 관계 접지(가장 작은/큰 것, "멸종한 동물" → 공룡 인형).
 - 능력이 VLM 크기에 따라 스케일 — 웹 사전학습 투자가 제어로 전이된다.

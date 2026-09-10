@@ -302,7 +302,9 @@ soil-tool interaction exists.**
 
 > [!important] The sharpest way to state the gap
 > Two of these datasets were recorded **from real construction machines** — the Hilti SLAM
-> Challenge 2023 used a drilling-robot platform drawing on the Jaibot, and **ETHcavation**
+> Challenge 2023 used a drilling-robot platform drawing on the Jaibot (the challenge paper's
+> abstract says only "an off-the-shelf LiDAR mounted on a robot", so the platform identity
+> comes from elsewhere), and **ETHcavation**
 > was recorded from a Menzi Muck M545 walking excavator, releasing "502 hand-labeled sample
 > images with panoptic annotations from construction sites". Neither releases an actuator,
 > joint, hydraulic-pressure or force channel. **The machines were instrumented; the forces
@@ -317,7 +319,7 @@ soil-tool interaction exists.**
 > **No shared dataset of *real-robot, contact-rich* construction manipulation demonstrations
 > exists.** Not at DROID scale, not at 10,000, not at 1,000. Be exact about what is and is
 > not missing, because three papers in this wiki look like counter-examples and are not:
-> [[01-canonical-papers/notes/8-construction/ext|ExT]] has 150,000 episodes per task, but
+> [[01-canonical-papers/notes/8-construction/ext|ExT]] has 150,000 episodes for three of its four tasks and 2,000 for the fourth, but
 > they are generated in simulation and carry no real contact;
 > [[01-canonical-papers/notes/8-construction/liang-lfd|Liang]] uses 3,000 virtual plus 85
 > real demonstration *videos* and evaluates in Gazebo; and
@@ -707,7 +709,8 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 
 > [!important] 공백을 가장 날카롭게 진술하는 법
 > 이 데이터셋 중 둘은 **실제 건설 기계에서** 기록되었다 — Hilti SLAM Challenge 2023은 Jaibot을
-> 참조한 드릴링 로봇 플랫폼을 썼고, **ETHcavation**은 Menzi Muck M545 보행 굴착기에서 기록해
+> 참조한 드릴링 로봇 플랫폼을 썼고(다만 그 챌린지 논문 초록은 "로봇에 장착한 기성 LiDAR"라고만
+> 적으므로 플랫폼 이름은 다른 출처에서 온 것이다), **ETHcavation**은 Menzi Muck M545 보행 굴착기에서 기록해
 > "502 hand-labeled sample images with panoptic annotations from construction sites"를 공개한다.
 > **어느 쪽도 액추에이터·관절·유압·힘 채널을 공개하지 않는다. 기계는 계측되어 있었고, 힘은
 > 공유되지 않았다.**

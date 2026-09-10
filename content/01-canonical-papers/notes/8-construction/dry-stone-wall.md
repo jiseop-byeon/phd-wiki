@@ -23,7 +23,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH's autonomous Menzi Muck M545 walking excavator — scanned irregular on-site stones, estimated usable geometry and mass properties, planned stable placements, and manipulated multi-tonne boulders and demolition debris into a 6 m-high, 65 m-long dry-stone wall at the Oberglatt Circularity Park.
+**One-line summary**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH's autonomous Menzi Muck M545 walking excavator — scanned irregular on-site stones, estimated usable geometry (the abstract says "robotic grasping and textured 3D scanning of individual stones and rubble elements"; whether mass or inertia is estimated per stone is not in the accessible text), planned stable placements, and manipulated multi-tonne boulders and demolition debris into two structures at the Oberglatt Circularity Park: a freestanding wall 10 × 1.7 × 4 m, and a permanent retaining wall 65.5 × 1.8 × 6 m integrated with 665 m² of robotically contoured terraces.
 
 **Lineage position**: this is the merge point of two streams that rarely touch — [[05-construction-robotics/earthmoving-heavy-machinery|heavy-machine autonomy]] and [[05-construction-robotics/assembly-fabrication|robotic assembly/fabrication]] — executed by a four-chair ETH collaboration (Gramazio Kohler Research for digital fabrication, RSL for the machine, the Chli group for vision, and Girot's landscape-architecture chair for the design commission). It is the flagship follow-up that the HEAP platform investment paid for.
 
@@ -48,7 +48,7 @@ fixture are both known before the robot moves.*
 
 
 
-**Evidence, with numbers**: the built artifact is the evidence — a dry-stone wall 6 m high and 65 m long, built from multi-tonne on-site stones and recycled demolition debris at the Oberglatt Circularity Park (Switzerland), by a single ~12-tonne-class walking excavator platform (the Menzi Muck M545 that HEAP instruments). This is a full-scale, permanent civil structure, not a lab mock-up: the placement planner had to guarantee static stability under real masses, and the manipulation had to be force-controlled because irregular multi-tonne stones cannot be position-placed blindly.
+**Evidence, with numbers**: the built artifact is the evidence — the abstract reports "a freestanding stone wall (10 meters by 1.7 meters by 4 meters) and a permanent retaining wall (65.5 meters by 1.8 meters by 6 meters) that is integrated with robotically contoured terraces (665 square meters)", built from multi-tonne on-site stones and recycled demolition debris at the Oberglatt Circularity Park (Switzerland), by a single ~12-tonne-class walking excavator platform (the Menzi Muck M545 that HEAP instruments). The press coverage's "six-metre-high, sixty-five-metre-long wall" names the retaining wall alone. This is a full-scale, permanent civil structure, not a lab mock-up: the placement planner had to guarantee static stability under real masses. This page previously said the manipulation was force-controlled; the abstract describes geometry only — "constrained registration and signed-distance-field classification to determine how these should be positioned" — and the full text is paywalled, so treat the control mode as unverified here.
 
 **Limitations**: one platform, one project, one site. The workflow demonstrates integrated material reuse at full scale but not unrestricted autonomous masonry, arbitrary rock supply, or commercial productivity benchmarked against a human mason. Throughput and cost comparisons are not the paper's claim.
 
@@ -57,7 +57,7 @@ fixture are both known before the robot moves.*
 
 ## 한국어
 
-**한 줄 요약**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH의 자율 Menzi Muck M545 보행 굴착기 — 가 현장의 불규칙 자연석을 스캔해 사용 가능한 형상·질량 특성을 추정하고 안정적 배치를 계획한 뒤, 수 톤급 돌과 철거 잔해를 조작해 Oberglatt Circularity Park에 높이 6 m·길이 65 m의 건식 돌담을 쌓았다.
+**한 줄 요약**: [[01-canonical-papers/notes/8-construction/heap|HEAP]] — ETH의 자율 Menzi Muck M545 보행 굴착기 — 가 현장의 불규칙 자연석을 스캔해 사용 가능한 형상을 추정하고(초록의 표현은 "개별 자연석과 잔해의 로봇 파지와 텍스처 3D 스캔"이다. 돌마다 질량이나 관성까지 추정하는지는 공개된 본문에 없다) 안정적 배치를 계획한 뒤, 수 톤급 돌과 철거 잔해를 조작해 Oberglatt Circularity Park에 두 구조물을 쌓았다: 10 × 1.7 × 4 m의 독립 석벽과, 665 m²의 로봇 성형 테라스와 통합된 65.5 × 1.8 × 6 m의 영구 옹벽이다.
 
 **계보에서의 위치**: 이 논문은 좀처럼 만나지 않는 두 스트림 — [[05-construction-robotics/earthmoving-heavy-machinery|중장비 자율성]]과 [[05-construction-robotics/assembly-fabrication|로봇 조립·패브리케이션]] — 의 합류점이며, ETH의 네 석좌 협업(디지털 패브리케이션의 Gramazio Kohler Research, 기계의 RSL, 비전의 Chli 그룹, 조경 설계의 Girot 석좌)으로 실행됐다. HEAP 플랫폼 투자가 지불한 대표 후속 성과다.
 
@@ -81,7 +81,7 @@ flowchart LR
 
 
 
-**증거, 숫자와 함께**: 지어진 구조물 자체가 증거다 — 스위스 Oberglatt Circularity Park에서 수 톤급 현장 자연석과 재활용 철거 잔해로 쌓은 높이 6 m·길이 65 m의 건식 돌담을, 약 12톤급 보행 굴착기 플랫폼 한 대(HEAP이 계측한 Menzi Muck M545)가 만들었다. 실험실 목업이 아니라 실규모의 영구 토목 구조물이다: 배치 계획기는 실제 질량 하에서 정적 안정성을 보장해야 했고, 불규칙한 수 톤급 돌은 눈감고 위치 배치할 수 없기 때문에 조작은 힘 제어여야 했다.
+**증거, 숫자와 함께**: 지어진 구조물 자체가 증거다 — 초록은 "10 m × 1.7 m × 4 m의 독립 석벽과, 로봇이 성형한 테라스(665 m²)와 통합된 65.5 m × 1.8 m × 6 m의 영구 옹벽"을 보고한다. 스위스 Oberglatt Circularity Park에서 수 톤급 현장 자연석과 재활용 철거 잔해로, 약 12톤급 보행 굴착기 플랫폼 한 대(HEAP이 계측한 Menzi Muck M545)가 만들었다. 보도자료의 "높이 6 m·길이 65 m 돌담"은 그중 옹벽 하나를 가리킨다. 실험실 목업이 아니라 실규모의 영구 토목 구조물이다: 배치 계획기는 실제 질량 하에서 정적 안정성을 보장해야 했다. 이 페이지는 전에 조작이 힘 제어라고 적었으나, 초록은 기하만 말하고("constrained registration과 signed-distance-field 분류로 어떻게 놓을지 정한다") 본문은 페이월 뒤에 있다. 제어 방식은 미확인으로 둔다.
 
 **한계**: 플랫폼 하나, 프로젝트 하나, 현장 하나. 이 워크플로는 실규모의 통합 재료 재사용을 시연하지만, 무제한 자율 석공, 임의 석재 공급, 인간 석공 대비 상업 생산성을 보여주지는 않는다. 처리량·비용 비교는 이 논문의 주장이 아니다.
 
@@ -97,6 +97,6 @@ flowchart LR
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
 - [ ] Reconstruct the closed loop (scan → per-stone reconstruction → placement planning → force-controlled placement → model update) and say why each stage needs the previous stage's output · 스캔 → 돌별 재구성 → 배치 계획 → 힘 제어 배치 → 모델 갱신의 폐루프를 단계별로 재구성하고, 왜 각 단계가 이전 단계의 출력을 필요로 하는지 말할 수 있다
-- [ ] Say what each headline number is evidence *of* — 6 m tall × 65 m long, multi-tonne natural stone and demolition debris, one Menzi Muck M545 walking excavator, Oberglatt Circularity Park · 핵심 숫자 — 6 m 높이 × 65 m 길이, 수 톤급 자연석·철거 잔해, Menzi Muck M545 보행 굴착기 한 대, Oberglatt Circularity Park — 를 각각 무엇의 증거로 읽어야 하는지 말할 수 있다
+- [ ] Say what each headline number is evidence *of* — two walls (10 × 1.7 × 4 m freestanding, 65.5 × 1.8 × 6 m retaining) plus 665 m² of terraces, multi-tonne natural stone and demolition debris, one Menzi Muck M545 walking excavator, Oberglatt Circularity Park · 핵심 숫자 — 벽 둘(독립 10 × 1.7 × 4 m, 옹벽 65.5 × 1.8 × 6 m)과 테라스 665 m², 수 톤급 자연석·철거 잔해, Menzi Muck M545 보행 굴착기 한 대, Oberglatt Circularity Park — 를 각각 무엇의 증거로 읽어야 하는지 말할 수 있다
 - [ ] Explain why this task requires force-controlled rather than position-controlled manipulation (irregular shapes, multi-tonne mass, contact-based seating) · 왜 이 과제에서 위치 제어가 아니라 힘 제어 조작이 필수인지(불규칙 형상, 수 톤 질량, 접촉 기반 안착)를 설명할 수 있다
 - [ ] Say why this paper is the confluence of the earthmoving and the assembly/fabrication streams, and separate what the full-scale demonstration proved from the generalization gaps it left (stone supply, commercial productivity) · 이 논문이 굴착(중장비) 스트림과 조립(패브리케이션) 스트림의 합류점인 이유와, 실규모 시연이 증명한 것과 남긴 일반화 공백(석재 공급, 상업 생산성)을 구분해 말할 수 있다

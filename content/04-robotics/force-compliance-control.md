@@ -236,7 +236,8 @@ already **statically consistent** — in steady state the secondary torque produ
 force at all. What it does not do is prevent the task from *accelerating* during the
 transient, because $JM^{-1}\tau_0 \neq 0$ when $M^{-1} \neq I$. **Dynamic consistency buys
 the transient, not the static force**: only $\bar J$ makes $JM^{-1}N^\top = 0$
-(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015).
+(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015 — a standard result, but that article is paywalled
+and the identity was not read in the source).
 
 **Task priority, and whole-body control.** Stack more than two objectives and this becomes a
 hierarchy: each level is projected into the null space of all levels above it, so a lower
@@ -716,7 +717,7 @@ $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}
 정상 상태에서 부차 토크는 작업 힘을 전혀 만들지 않는다. 그것이 막지 못하는 것은 과도 구간에서
 작업이 *가속되는* 것이다. $M^{-1} \neq I$이면 $JM^{-1}\tau_0 \neq 0$이기 때문이다.
 **동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**: $JM^{-1}N^\top = 0$을
-만드는 것은 $\bar J$뿐이다(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015).
+만드는 것은 $\bar J$뿐이다(Dietrich, Ott, Albu-Schäffer, *IJRR* 2015 — 표준적인 결과이지만 그 논문은 페이월 뒤에 있고 이 항등식을 원문에서 확인하지는 못했다).
 
 **과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
 층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이

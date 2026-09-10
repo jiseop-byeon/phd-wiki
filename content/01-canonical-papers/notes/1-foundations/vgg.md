@@ -40,7 +40,7 @@ After [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], everyone knew
 
 ### Results
 
-- ILSVRC-2014: **top-5 error 7.3%** (2nd place in classification behind GoogLeNet; 1st in localization).
+- ILSVRC-2014: **top-5 error 7.3%** (2nd place in classification behind GoogLeNet; 1st in localization). Body figures — the abstract reports the placings and the 16–19 layer depth, no numbers.
 - Features transferred exceptionally well: VGG became the default backbone for detection, segmentation, and perceptual losses for years.
 
 ### Limitations & critique

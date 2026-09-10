@@ -334,7 +334,7 @@ whether a contact will feel stiff or soft — and be right.
 - [ ] Name the term most responsible for sim-to-real failure and say why.
 
 > [!tip] Going deeper · 더 깊이
-> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) ch.8 is the derivation this page compresses, and ch.11.6 is where operational-space control (§6) is done properly. Read ch.8 for the Newton–Euler recursion, which is how the manipulator equation is actually computed rather than how it is written. What the book does not give you is §7 — where the parameters come from, and why identified ones and CAD ones disagree — because that is an experimental question, not a derivation.
+> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) ch.8 is the derivation this page compresses, and operational-space control (§6) is the book's task-space motion control, §11.3.3 and §11.4.3 — §11.6 is hybrid motion–force control, a different thing. Read ch.8 for the Newton–Euler recursion, which is how the manipulator equation is actually computed rather than how it is written. What the book does not give you is §7 — where the parameters come from, and why identified ones and CAD ones disagree — because that is an experimental question, not a derivation.
 
 ### Self-check
 
@@ -656,7 +656,7 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 - [ ] sim-to-real 실패에 가장 크게 책임 있는 항을 대고 이유를 말한다.
 
 > [!tip] 더 깊이 · Going deeper
-> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) 8장이 이 페이지가 압축한 유도이고, 작업공간 제어(§6)를 제대로 하는 곳은 11.6절이다. 8장은 뉴턴–오일러 재귀를 위해 읽어라. 매니퓰레이터 방정식이 *쓰이는* 방식이 아니라 실제로 *계산되는* 방식이 그것이다. 책이 주지 않는 것은 §7이다 — 파라미터가 어디서 오는지, 식별한 값과 CAD 값이 왜 어긋나는지. 그것은 유도가 아니라 실험의 문제이기 때문이다.
+> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) 8장이 이 페이지가 압축한 유도이고, 작업공간 제어(§6)에 해당하는 것은 책의 task-space motion control, 즉 11.3.3절과 11.4.3절이다. 11.6절은 hybrid motion–force control로 다른 주제다. 8장은 뉴턴–오일러 재귀를 위해 읽어라. 매니퓰레이터 방정식이 *쓰이는* 방식이 아니라 실제로 *계산되는* 방식이 그것이다. 책이 주지 않는 것은 §7이다 — 파라미터가 어디서 오는지, 식별한 값과 CAD 값이 왜 어긋나는지. 그것은 유도가 아니라 실험의 문제이기 때문이다.
 
 ### 스스로 점검
 

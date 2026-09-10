@@ -29,7 +29,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 Action recognition lagged image recognition for years: video architectures couldn't decide
 between frame-wise 2D CNNs (+LSTM/optical flow) and data-starved 3D CNNs, and no video
-dataset played ImageNet's role. Kinetics (300k clips) + these two architectures closed the
+dataset played ImageNet's role. Kinetics (~300k clips, a body figure — the abstract states only 400 classes with at least 400 clips each) + these two architectures closed the
 gap — and video understanding matters for robotics because *demonstrations, ego-video, and
 site monitoring are all video*.
 
