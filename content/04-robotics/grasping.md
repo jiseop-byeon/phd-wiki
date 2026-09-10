@@ -100,7 +100,12 @@ their sources attached. Markenscoff, Ni and Papadimitriou's 1990 analysis gives,
 abstract, that with Coulomb friction **three fingers are necessary and sufficient in two
 dimensions and four in three dimensions**. The much-quoted **seven** is a different result —
 it is the *frictionless* form-closure count in 3D, and quoting it as the force-closure
-number is a common error.
+number is a common error. It carries a second qualifier that is dropped just as often: it is
+a **first-order** bound, derived by linearizing the contact constraints, so it sees only the
+contact normals. Allow curvature and the second-order analysis immobilizes a planar body with
+two contacts, against a first-order bound of four
+([[04-robotics/modern-robotics/ch12-grasping|MR ch.12]]). Three numbers, three different
+theorems; always say which one you mean.
 
 > [!warning] Two fingers or four? Name the contact model
 > Those two statements — "a two-finger grasp of a box achieves force closure" and "four
@@ -457,6 +462,10 @@ Form closure가 더 강하고 더 드문 조건이다. Force closure가 상자�
 Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 때 **2차원에서는 손가락 셋,
 3차원에서는 넷이 필요충분**이라고 말한다. 널리 인용되는 **일곱**은 다른 결과다 — 3D에서의
 *마찰 없는* form closure 개수이고, 이것을 force closure 개수로 인용하는 것이 흔한 오류다.
+여기에는 그만큼 자주 빠지는 두 번째 단서가 붙는다. 이것은 접촉 구속을 선형화해서 얻은
+**1차** 경계라 접촉 법선만 본다. 곡률을 허용하면 2차 해석은 평면 물체를 접촉 둘로 가두고,
+이는 1차 경계인 넷보다 적다([[04-robotics/modern-robotics/ch12-grasping|MR 12장]]).
+숫자 셋이 서로 다른 정리 셋이다. 어느 것을 말하는지 항상 밝혀라.
 
 > [!warning] 손가락 둘인가 넷인가 — 접촉 모델을 밝혀라
 > 두 진술 — "상자를 두 손가락으로 잡으면 force closure다"와 "3D에서는 넷이 필요하다" — 은

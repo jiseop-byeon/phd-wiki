@@ -115,8 +115,11 @@ $\theta^{(0)} = (45°, 90°)$.
   identity $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$ makes the
   two expressions the same, so $\lambda$ is a trust parameter and damped IK is the same
   algorithm SLAM and calibration run ([[02-foundations/optimization|4. Optimization §3.5]]).
-  MR writes $\lambda^2$ so that $\lambda$ carries units; the optimization page writes
-  $\lambda$.
+  Note where this comes from: **MR itself does not present damped least squares.** At a
+  singularity chapter 6 offers the bare pseudo-inverse and sends the damped and redundant-arm
+  family to its notes and references. The $\lambda^2$ form written here is the convention of
+  that outside literature, chosen so that $\lambda$ carries units; the optimization page
+  writes $\lambda$. Do not go looking for it in the chapter.
 - **Redundancy** ($n > 6$): the null space of $J$ moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
@@ -238,8 +241,11 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
   그리고 정확히 이 잔차에 대한 **Levenberg–Marquardt** 스텝이기도 하다. 항등식
   $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$가 두 식을 같게
   만들므로 $\lambda$는 신뢰 파라미터이고, 감쇠 IK는 SLAM과 보정이 돌리는 바로 그 알고리즘이다
-  ([[02-foundations/optimization|4. 최적화 §3.5]]). MR은 $\lambda$가 단위를 갖도록
-  $\lambda^2$로 쓰고, 최적화 페이지는 $\lambda$로 쓴다.
+  ([[02-foundations/optimization|4. 최적화 §3.5]]). 출처를 분명히 해 두자. **MR 자체는
+  damped least squares를 다루지 않는다.** 6장은 특이점에서 그냥 유사역행렬을 주고, 감쇠와
+  여유자유도 계열은 참고문헌으로 넘긴다. 여기 쓴 $\lambda^2$ 표기는 그 바깥 문헌의 관례이고,
+  $\lambda$가 단위를 갖게 하려는 것이다. 최적화 페이지는 $\lambda$로 쓴다. 6장에서 이
+  표기를 찾지 마라.
 - **여유자유도** ($n > 6$): $J$의 영공간은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 

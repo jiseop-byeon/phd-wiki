@@ -29,7 +29,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   opposite speeds → turn in place.
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
   parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
-  car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no smooth time-invariant feedback can stabilize
+  car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no **continuous** time-invariant feedback can stabilize
   such systems to a point — why practical controllers track *trajectories* instead.
 - **Odometry and its decay**: integrating wheel encoders gives pose, but slip and
   quantization make the error grow without bound — the concrete reason mobile robots fuse
@@ -52,7 +52,7 @@ fused localization.
 
 > [!tip]- Answers
 > 1. Spinning in place means $v = 0$, i.e. $\omega_R = -\omega_L$. Then $\omega = r(2\omega_R)/(2d) = r\omega_R/d = 0.5\,\omega_R = 1$, so $\omega_R = 2$ and $\omega_L = -2$ rad/s.
-> 2. Because the system has no sideways velocity, its reachable directions at a point are restricted, and Brockett's condition shows no smooth time-invariant feedback can asymptotically stabilize it to an arbitrary pose — which is why practical controllers track *trajectories* instead of regulating to a point.
+> 2. Because the system has no sideways velocity, its reachable directions at a point are restricted, and Brockett's condition shows no *continuous* time-invariant feedback can asymptotically stabilize it to an arbitrary pose — continuous, not merely smooth, so no amount of relaxing differentiability rescues it — which is why practical controllers track *trajectories* instead of regulating to a point.
 > 3. Short-term precision (odometry, smooth and high-rate but drifting) plus a drift-free absolute reference (GNSS — though on site, multipath and occlusion add bias, not just noise). Kalman fusion takes the strengths of both timescales: locally smooth *and* globally bounded, which neither has alone. See [[04-robotics/state-estimation-slam|State Estimation §8]].
 
 ## 한국어
@@ -71,7 +71,7 @@ fused localization.
 - **비홀로노미 ≠ 도달 불가**: 자동차는 *순간적으로* 옆으로 못 가지만 평행 주차로 어떤
   자세든 도달한다 — 이상적 구름 모델(외바퀴·차동 구동·자동차)에서 속도 제약은 *경로*를
   제한할 뿐 도달 집합을 제한하지 않는다. 깊은
-  귀결(Brockett): 이런 시스템은 매끄러운 시불변 피드백으로 점에 안정화할 수 없다 —
+  귀결(Brockett): 이런 시스템은 **연속** 시불변 피드백으로 점에 안정화할 수 없다 —
   실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다.
 - **오도메트리와 그 붕괴**: 바퀴 엔코더 적분으로 자세를 얻지만, 미끄럼과 양자화로 오차가
   무한정 자란다 — 모바일 로봇이 오도메트리를 외부 센싱과
@@ -93,7 +93,7 @@ fused localization.
 
 > [!tip]- 정답 · Answers
 > 1. $v = 0$이 되도록 $\omega_R = -\omega_L$; $\omega = r\omega_R/d = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
-> 2. 옆 방향 속도가 없어 연속 시불변 피드백으로는 점 안정화가 불가능하다(Brockett) — 궤적 추종으로 우회한다.
+> 2. 옆 방향 속도가 없어 *연속* 시불변 피드백으로는 점 안정화가 불가능하다(Brockett). 매끄러운 것만이 아니라 연속인 것 전체가 안 되므로 미분가능성을 낮춰도 빠져나갈 수 없다 — 그래서 궤적 추종으로 우회한다.
 > 3. 단기 정밀(오도메트리 — 부드럽고 빠르지만 드리프트한다)에 드리프트 없는 절대
 >    기준(GNSS — 다만 현장에서는 멀티패스와 차폐가 잡음이 아니라 *편향*을 얹는다)을
 >    더한다. 칼만 융합은 두 시간 척도의 장점을 각각 취한다: 국소적으로 부드럽고

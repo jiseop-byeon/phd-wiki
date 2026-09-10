@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Configuration** = a complete specification of every point of the robot; the minimum
   number of coordinates needed = **degrees of freedom (dof)**. C-space = the set of all
   configurations.
-- **Grübler's formula**: for a mechanism of $N$ links and $J$ joints with joint freedoms $f_i$:
+- **Grübler's formula**: for a mechanism of $N$ links **counting the ground link** and $J$ joints with joint freedoms $f_i$:
   $\text{dof} = m(N - 1 - J) + \sum_i f_i$ ($m = 3$ planar, $6$ spatial). Worked: the planar
   four-bar → $3(4-1-4)+4 = 1$ dof — one number describes the whole mechanism.
 - **Topology matters**: a 2R arm's C-space is a torus ($T^2 = S^1 \times S^1$), not a plane —
@@ -31,7 +31,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   $R^\top R = I$). MR consistently chooses implicit — the same choice modern robot
   learning makes.
 - **Task space vs C-space**: where the tool lives vs where the robot lives; the map
-  between them is kinematics (ch.4–6).
+  between them is kinematics (ch.4–6). Keep *task space* apart from *workspace*: the task
+  chooses the first, the robot's structure fixes the second, and points of the task space
+  can lie outside the workspace entirely — which is exactly what makes a task infeasible
+  for a given arm.
 - Constraints: **holonomic** (reduce C-space dimension) vs **nonholonomic** (restrict
   velocities, not positions — a car can reach any pose but can't slide sideways).
 
@@ -44,7 +47,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 - **컨피규레이션** = 로봇 모든 점의 완전한 지정; 필요한 최소 좌표 수 = **자유도(dof)**.
   C-space = 모든 컨피규레이션의 집합.
-- **그뤼블러 공식**: 링크 $N$개, 관절 $J$개, 관절 자유도 $f_i$인 기구에서
+- **그뤼블러 공식**: **접지 링크를 포함해** 링크 $N$개, 관절 $J$개, 관절 자유도 $f_i$인 기구에서
   $\text{dof} = m(N - 1 - J) + \sum_i f_i$ ($m = 3$ 평면, $6$ 공간). 계산 예: 평면 4절
   링크 → $3(4-1-4)+4 = 1$ 자유도 — 숫자 하나가 기구 전체를 기술한다.
 - **위상이 중요하다**: 2R 팔의 C-space는 평면이 아니라 원환면($T^2 = S^1 \times S^1$) —
@@ -53,8 +56,10 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - 표현: **명시적**(최소 좌표, 특이점 가능) vs **암시적**(고차원에 묻고 제약 추가 —
   $R^\top R = I$인 회전 행렬처럼). MR은 일관되게 암시적을 고른다 — 현대 로봇 학습과 같은
   선택이다.
-- **작업 영역(workspace) vs C-space**: 도구가 사는 곳 vs 로봇이 사는 곳; 둘 사이의 사상이
-  기구학이다(4~6장).
+- **작업 공간(task space) vs C-space**: 도구가 사는 곳 vs 로봇이 사는 곳; 둘 사이의 사상이
+  기구학이다(4~6장). *작업 공간*과 *작업 영역(workspace)*을 구별하라. 앞의 것은 과제가
+  정하고, 뒤의 것은 로봇 구조가 정한다. 작업 공간의 점이 작업 영역 밖에 있을 수 있고, 그것이
+  바로 그 팔로는 그 과제를 못 한다는 뜻이다.
 - 제약: **홀로노믹**(C-space 차원을 줄임) vs **비홀로노믹**(위치가 아니라 속도를 제한 —
   자동차는 어느 자세든 도달하지만 옆으로 미끄러지지는 못한다).
 

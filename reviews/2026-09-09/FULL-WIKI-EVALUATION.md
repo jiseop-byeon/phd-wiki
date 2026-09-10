@@ -242,6 +242,46 @@ one-sidedly:
   and the abstract read: it states no numerical result, and the year is pinned by volume
   because online and print disagree.
 
+### 4.7 The textbook was opened (2026-09-10)
+
+§7 lists "No textbook was opened" as a limit. It is now closed for *Modern Robotics*, and it
+turned out to be the most productive limit in the report.
+
+**Why it had stayed open.** The book's text extraction contained typographic ligatures, so
+`grep definition` returned nothing and `grep coefficient` returned nothing. Seven of the
+eleven books on the reference shelf had the same problem — **21,606 ligatures** — which means
+every grep-based check against that shelf, and the concept index the gap detector is built
+on, had been silently blind to any term spelling `fi`, `fl` or `ff`. Normalizing them took the
+index from 6,944 entries to **7,753**: 809 index terms had never been visible. Nothing newly
+visible clears the gap detector's frequency floor, so the earlier gap conclusions stand — but
+they now rest on the whole shelf instead of the part `grep` could see.
+
+**The check.** Three readers went through all eleven MR chapter pages and the book-overview
+page, both halves, against the book text, quoting the book and its `<<<PAGE n>>>` marker for
+every claimed discrepancy. About **200 substantive claims** were checked. **Six discrepancies,
+every one re-verified by the coordinator against the book text before it was applied**, and
+all six repaired in both halves.
+
+| Page | The wiki said | The book says | Why it matters |
+|---|---|---|---|
+| `ch11` | velocity-input error dynamics are *first order*, so §11.3 gives P and PI; second-order dynamics belong to §11.4 | §11.3's own subsection is "PI Control and Second-Order Error Dynamics"; PI there gives $\ddot\theta_e+K_p\dot\theta_e+K_i\theta_e=0$ with $\omega_n=\sqrt{K_i}$, $\zeta=K_p/(2\sqrt{K_i})$ (p. 433–434), and §11.4's PID is *third* order (p. 442) | Under velocity inputs $K_p$ is the **damping** and $K_i$ the stiffness — the reverse of the torque-input intuition. The old text taught a wrong regime boundary and hid the reason gains do not transfer |
+| `ch12` | 4 in the plane, 7 in space "for frictionless point contacts **in general position**" | Theorem 12.6 says those counts are for **first-order** form closure, and its own Figure 12.14(f) is immobilized by **two** fingers through curvature (p. 497) | The qualifier was wrong, not missing: the counts are falsified by the book's own figure unless "first-order" is named |
+| `ch13` | no **smooth** time-invariant feedback can stabilize a nonholonomic base to a point | Theorem 13.1 says **continuous** (p. 546) | The book's result is strictly stronger. The page also disagreed with itself — three places said smooth, the Korean self-check answer said continuous |
+| `ch06` | "MR writes $\lambda^2$ so that $\lambda$ carries units" | MR never presents damped least squares. Chapter 6 offers the bare pseudo-inverse (p. 247) and defers the damped and redundant-arm family to §6.7 Notes and References (p. 254); no `damp` appears anywhere in the chapter | The mathematics was right and the sourcing was invented. A reader sent to ch.6 for $\lambda^2$ would not find it |
+| `ch02` (KR) | 작업 영역(**workspace**) vs C-space, where the English half said *task space* | §2.5 separates them explicitly: the task chooses the task space, the robot's structure fixes the workspace, and "the task space and the workspace are distinct from the robot's C-space" (p. 51–52) | The wiki's own glossary separates them too, so the Korean half taught the wrong member of a pair the book takes a paragraph to distinguish |
+| `ch02` | Grübler's formula "for a mechanism of $N$ links" | "N is the number of links (**including the ground link**)" (p. 55) | Without the convention the formula is unusable: counting moving links only gives $3(3-1-4)+4=-2$ for the four-bar |
+
+**Corpus sweep.** Following the standing rule that a corrected claim must be grepped across
+the corpus, `grasping.md` was found to state the seven-contact result correctly — it already
+separates frictional force closure from frictionless form closure, the error this wiki made
+once before — but without the first-order qualifier ch.12 now carries. Both pages now name it,
+and the page states plainly that the three circulating numbers are three different theorems.
+
+**What the pattern says.** Five of the six are qualifier or attribution errors, not reasoning
+errors: a real theorem with the wrong precondition, a real method credited to the wrong source,
+a real distinction collapsed in one language. That is the same shape as every other defect
+class this wiki has found in itself, and it is only detectable against the primary source.
+
 ## 5. One reported finding downgraded
 
 A reader flagged the earthmoving page's "24 h ... per human intervention" as a misattribution,
@@ -274,9 +314,18 @@ All nine, in both halves, in `19e27f5`. Verified after the edit: `verify_content
 - Readers read the wiki, not the literature. Where a page attributes a number to a paper, that
   was checked against the paper only when a reader fetched it; roughly thirty abstracts were
   fetched across the eight groups, and each report lists which.
-- No textbook was opened. Modern Robotics citations were checked against derivation and recall,
-  not against the book.
+- ~~No textbook was opened. Modern Robotics citations were checked against derivation and
+  recall, not against the book.~~ **Closed 2026-09-10 — see §4.7.** All eleven MR chapter
+  pages were checked against the book text; six discrepancies found and repaired. The other
+  ten books on the reference shelf have not had the same treatment.
 - Paywalled sources were not read: HEAP's embankment error, Lasota & Shah's percentages,
   Apolinarska's algorithm details, ExT's body figures, among others.
-- Rendering was not exercised for most findings. SVG defects are source-level readings.
-- The undefined-term detector in `audit_gaps.py` was not run.
+- ~~The undefined-term detector in `audit_gaps.py` was not run.~~ **Closed 2026-09-10 — see
+  §4.4.** Run, all 172 hits triaged, one real gap found, and the triage rule moved into the
+  detector.
+- ~~Rendering was not exercised for most findings; SVG defects are source-level readings.~~
+  **Closed for this report's own repairs
+  (2026-09-10)**: every page edited on 09-09 and 09-10 was checked in a browser — 0 KaTeX
+  errors, no raw wikilinks or unrendered bold in prose, and the language toggle verified to
+  show and hide the new content correctly in all three of its modes. Findings elsewhere in the
+  wiki remain source-level readings.

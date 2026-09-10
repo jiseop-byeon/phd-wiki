@@ -20,11 +20,18 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Error dynamics thinking**: design the controller so the *error* obeys a stable
   differential equation ([[02-foundations/engineering-math|0.5 §8]]) — e.g.,
   $\ddot e + K_d \dot e + K_p e = 0$ with gains picking damping/frequency.
-- **PI** (velocity-input regime, MR §11.3): with velocity inputs the error dynamics are
-  *first order*, $\dot\theta_e + K_p\theta_e = 0$, so this section gives P and PI. I kills
-  steady-state offset (and brings windup — hence anti-windup wherever the actuator can saturate).
-  **PID and the second-order $\ddot e + K_d\dot e + K_p e = 0$ belong to the torque-input
-  regime of §11.4** — that is where $K_d$ buys damping.
+- **P and PI** (velocity-input regime, MR §11.3): with velocity inputs, **P alone** gives
+  *first-order* error dynamics, $\dot\theta_e + K_p\theta_e = c$, where $c$ is zero for a
+  setpoint and nonzero for a constant-velocity target — which is the steady-state offset.
+  Adding I removes that offset, and differentiating once shows what it costs:
+  $\ddot\theta_e + K_p\dot\theta_e + K_i\theta_e = 0$. **PI in this same section is second
+  order**, with $\omega_n=\sqrt{K_i}$ and $\zeta = K_p/(2\sqrt{K_i})$. Read the roles off
+  those two expressions: under velocity inputs $K_p$ is the *damping* and $K_i$ is the
+  stiffness — the opposite of the intuition carried over from §11.4, where $K_p$ is the
+  spring and $K_d$ the damper. The same symbol, a different job in each regime, which is
+  why gains do not transfer between them. (I also brings windup — hence anti-windup wherever
+  the actuator can saturate.) In §11.4's torque-input regime, PID goes one order further
+  still: its setpoint error dynamics are *third* order.
 - **Computed torque / feedback linearization** — the chapter's centerpiece:
   $$\tau = M(\theta)\big(\ddot\theta_d + K_p e + K_d \dot e\big) + c(\theta,\dot\theta) + g(\theta)$$
   Use the [[04-robotics/modern-robotics/ch08-dynamics|dynamics model]] to cancel the
@@ -49,11 +56,16 @@ not on impedance control alone.
 - **오차 동역학 사고**: *오차*가 안정한 미분방정식([[02-foundations/engineering-math|0.5 §8]])을
   따르도록 제어기를 설계한다 — 예: $\ddot e + K_d \dot e + K_p e = 0$, 이득이 감쇠/주파수를
   고른다.
-- **PI**(속도 입력 영역, MR §11.3): 속도 입력에서는 오차 동역학이 *1차*
-  ($\dot\theta_e + K_p\theta_e = 0$)여서 이 절은 P와 PI를 다룬다. I는 정상 상태 오프셋을
-  없앤다(그리고 와인드업을 데려온다 — 액추에이터가 포화할 수 있는 곳이면 anti-windup이 필요한 이유).
-  **PID와 2차 형태 $\ddot e + K_d\dot e + K_p e = 0$은 §11.4의 토크 입력 영역에 속한다** —
-  $K_d$로 감쇠를 사는 곳이 거기다.
+- **P와 PI**(속도 입력 영역, MR §11.3): 속도 입력에서 **P만** 쓰면 오차 동역학이 *1차*다
+  ($\dot\theta_e + K_p\theta_e = c$). 여기서 $c$는 설정점 추종이면 0이고 등속 목표면 0이
+  아니다. 그 0이 아닌 값이 곧 정상 상태 오프셋이다. I를 더하면 그 오프셋이 사라지고, 한 번
+  미분해 보면 대가가 보인다: $\ddot\theta_e + K_p\dot\theta_e + K_i\theta_e = 0$.
+  **같은 절의 PI가 이미 2차다.** $\omega_n=\sqrt{K_i}$, $\zeta = K_p/(2\sqrt{K_i})$다.
+  이 두 식에서 역할을 그대로 읽어라. 속도 입력에서는 $K_p$가 *감쇠*이고 $K_i$가 강성이다 —
+  $K_p$가 스프링이고 $K_d$가 댐퍼인 §11.4의 직관과 정반대다. 같은 기호가 영역마다 다른 일을
+  하므로 이득은 두 영역 사이에서 옮겨 쓸 수 없다. (I는 와인드업도 데려온다 — 액추에이터가
+  포화할 수 있는 곳이면 anti-windup이 필요한 이유다.) §11.4의 토크 입력 영역에서 PID는 한
+  차수 더 간다. 설정점 오차 동역학이 *3차*다.
 - **계산 토크 / 피드백 선형화** — 이 장의 중심:
   $$\tau = M(\theta)\big(\ddot\theta_d + K_p e + K_d \dot e\big) + c(\theta,\dot\theta) + g(\theta)$$
   [[04-robotics/modern-robotics/ch08-dynamics|동역학 모델]]로 비선형성을 상쇄해, 마음대로
