@@ -348,8 +348,8 @@ Read it as three corrections drawn from three views of the same error — its pr
   [[02-foundations/signal-processing|signal processing §4]]).
 - **I** integrates residual error to kill steady-state offset — and introduces
   **integral windup**: while an actuator is saturated the integral keeps growing, then
-  overshoots badly on release. Every real implementation has anti-windup; if a paper's PID
-  baseline does not, the baseline is unfairly weak
+  overshoots badly on release. Wherever integral action and actuator saturation coexist,
+  anti-windup is needed; if a paper's PID baseline does not have it, the baseline is unfairly weak
   ([[02-foundations/ml-practice|ML practice §4]]).
 - **Feedforward** (compute the input the model says you need, then let feedback fix the
   residue) is why computed-torque control
@@ -364,8 +364,12 @@ $$\dot{\hat x} = A\hat x + Bu + L(y - C\hat x)$$
 
 The error $\tilde x = x - \hat x$ obeys $\dot{\tilde x} = (A - LC)\tilde x$, so choosing
 $L$ to place *those* eigenvalues is the same algebra as pole placement, transposed — this
-is why observability is controllability's dual. Practice: make the observer 2–5× faster
-than the controller so estimation transients do not masquerade as control transients.
+is why observability is controllability's dual. A common rule of thumb is to make the observer
+2–5× faster than the controller so estimation transients do not masquerade as control
+transients. It is a starting point rather than a law: measurement noise, unmodelled
+high-frequency dynamics, the sampling rate and sensor bandwidth all bound how fast an observer
+can usefully be, and past that bound a faster observer amplifies noise instead of settling
+sooner.
 
 Then feed $\hat x$ to the controller: $u = -K\hat x$. The **separation principle** says you
 may design $K$ and $L$ independently and the combination still works (for the linear model).
@@ -754,8 +758,8 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
   ([[02-foundations/signal-processing|신호처리 §4]]).
 - **I**는 잔여 오차를 적분해 정상 상태 오프셋을 없앤다 — 그리고 **적분 와인드업**을
   데려온다: 액추에이터가 포화된 동안 적분값이 계속 자라고, 풀리는 순간 크게 오버슈트한다.
-  모든 실전 구현에 anti-windup이 있다; 논문의 PID 베이스라인에 그것이 없다면 그 베이스라인은
-  부당하게 약한 것이다([[02-foundations/ml-practice|ML 실무 §4]]).
+  적분 동작과 액추에이터 포화가 함께 있는 곳이면 anti-windup이 필요하다; 논문의 PID
+  베이스라인에 그것이 없다면 그 베이스라인은 부당하게 약한 것이다([[02-foundations/ml-practice|ML 실무 §4]]).
 - **피드포워드**(모델이 말하는 입력을 먼저 넣고 피드백이 잔차를 고치게 하기)가 팔에서
   계산 토크 제어([[04-robotics/modern-robotics/ch11-robot-control|MR 11장]])가 순수 PID를
   이기는 이유다.
@@ -768,8 +772,10 @@ $$\dot{\hat x} = A\hat x + Bu + L(y - C\hat x)$$
 
 오차 $\tilde x = x - \hat x$는 $\dot{\tilde x} = (A - LC)\tilde x$를 따르므로, *그* 고유값을
 배치하도록 $L$을 고르는 것은 극점 배치를 전치한 같은 대수다 — 가관측성이 가제어성의 쌍대인
-이유가 이것이다. 실전: 추정 과도 응답이 제어 과도 응답으로 오인되지 않도록 관측기를
-제어기보다 2~5배 빠르게 만든다.
+이유가 이것이다. 흔한 어림 규칙은 추정 과도 응답이 제어 과도 응답으로 오인되지 않도록
+관측기를 제어기보다 2~5배 빠르게 만드는 것이다. 법칙이 아니라 출발점이다. 측정 잡음,
+모델링되지 않은 고주파 동역학, 샘플링 주기, 센서 대역폭이 관측기를 얼마나 빠르게 만들 수
+있는지를 묶고, 그 한계를 넘으면 더 빠른 관측기는 빨리 수렴하는 대신 잡음을 증폭한다.
 
 그다음 $\hat x$를 제어기에 먹인다: $u = -K\hat x$. **분리 원리**는 $K$와 $L$을 독립적으로
 설계해도 (선형 모델에서는) 결합이 작동한다고 말한다. $L$의 확률적 버전이

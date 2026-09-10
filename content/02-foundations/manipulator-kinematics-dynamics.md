@@ -287,7 +287,10 @@ observations:
    rarely in the CAD model, and they are exactly what sits farthest from the joints, where
    they matter most.
 2. **Friction is the worst-modelled term** and it is not in the ideal equation at all. Real
-   controllers carry a friction model that is fitted, not derived.
+   controllers carry a friction model that is fitted, not derived. Where that fitting is named
+   and its failure mode stated is
+   [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]: system identification fits simulator
+   parameters to measured trajectories, and can overfit one machine and one operating condition.
 3. **These parameter mismatches are one major dynamics-side source of the sim-to-real gap.**
    Perception, timing, interfaces, contact, actuators, and task distributions can also dominate.
    Use synchronized logs and ablations to isolate the first failing layer
@@ -610,7 +613,9 @@ MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정
 1. **CAD 값은 가장자리에서 틀린다.** 케이블, 커버, 실제 공구는 CAD 모델에 거의 없고, 하필
    그것들이 관절에서 가장 먼 곳 — 가장 크게 작용하는 곳 — 에 있다.
 2. **마찰이 가장 나쁘게 모델링된 항**이며 이상적인 방정식에는 아예 없다. 실제 제어기는
-   유도된 것이 아니라 피팅된 마찰 모델을 들고 다닌다.
+   유도된 것이 아니라 피팅된 마찰 모델을 들고 다닌다. 그 피팅에 이름을 붙이고 실패 방식까지
+   말하는 곳이 [[05-construction-robotics/sim-to-real|Sim-to-Real §2]]다. 시스템 식별은 측정
+   궤적에 시뮬레이터 파라미터를 맞추는 일이고, 기계 하나와 운전 조건 하나에 과적합될 수 있다.
 3. **이 파라미터 불일치는 동역학 쪽의 주요 sim-to-real 원인 중 하나다.** 인식, 시간 동기화,
    제어 인터페이스, 접촉, 액추에이터, 과제 분포가 지배적일 수도 있다. 동기화 로그와 절제로
    최초 실패 층을 분리한다([[06-research-practice/failure-analysis-system-evaluation|실패 분석·시스템 평가]]).

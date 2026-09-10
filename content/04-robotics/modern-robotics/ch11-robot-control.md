@@ -22,7 +22,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   $\ddot e + K_d \dot e + K_p e = 0$ with gains picking damping/frequency.
 - **PI** (velocity-input regime, MR §11.3): with velocity inputs the error dynamics are
   *first order*, $\dot\theta_e + K_p\theta_e = 0$, so this section gives P and PI. I kills
-  steady-state offset (and brings windup — hence anti-windup in every real implementation).
+  steady-state offset (and brings windup — hence anti-windup wherever the actuator can saturate).
   **PID and the second-order $\ddot e + K_d\dot e + K_p e = 0$ belong to the torque-input
   regime of §11.4** — that is where $K_d$ buys damping.
 - **Computed torque / feedback linearization** — the chapter's centerpiece:
@@ -51,7 +51,7 @@ not on impedance control alone.
   고른다.
 - **PI**(속도 입력 영역, MR §11.3): 속도 입력에서는 오차 동역학이 *1차*
   ($\dot\theta_e + K_p\theta_e = 0$)여서 이 절은 P와 PI를 다룬다. I는 정상 상태 오프셋을
-  없앤다(그리고 와인드업을 데려온다 — 모든 실전 구현에 anti-windup이 있는 이유).
+  없앤다(그리고 와인드업을 데려온다 — 액추에이터가 포화할 수 있는 곳이면 anti-windup이 필요한 이유).
   **PID와 2차 형태 $\ddot e + K_d\dot e + K_p e = 0$은 §11.4의 토크 입력 영역에 속한다** —
   $K_d$로 감쇠를 사는 곳이 거기다.
 - **계산 토크 / 피드백 선형화** — 이 장의 중심:

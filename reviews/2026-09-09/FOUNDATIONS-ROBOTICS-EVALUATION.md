@@ -234,3 +234,29 @@ the lab material was not needed. Assessment and action:
 
 Verified after the change: `verify_content.py` 217 files 0 problems, `audit_parity.py` 0
 mismatches.
+
+## 12. Third change: the last two recommendations applied
+
+**Finding 2.2 — the dynamics page now says where its parameters come from.** Item 2 of the
+parameter-honesty list said that real controllers carry a friction model that is "fitted, not
+derived" and stopped there. It now names the fitting and its failure mode, with a link to
+`05-construction-robotics/sim-to-real` §2. This closes the chain from sensor data through
+identified parameters to control and sim-to-real, which §1 of this report argued was the only
+thing missing about system identification — a link, not a chapter.
+
+**Finding 7 — the two over-absolute control statements corrected, in all six places.**
+
+| Statement | Now reads |
+|---|---|
+| "Every real implementation has anti-windup" | "Wherever integral action and actuator saturation coexist, anti-windup is needed" |
+| "anti-windup in every real implementation" (MR ch.11) | "anti-windup wherever the actuator can saturate" |
+| observer "2–5× faster" as practice | "a common rule of thumb", qualified by noise, unmodelled high-frequency dynamics, sampling rate and sensor bandwidth, and the note that past that bound a faster observer amplifies noise instead of settling sooner |
+
+The surrounding reading advice was kept: a PID baseline without anti-windup is still called
+unfairly weak, which holds under the weaker claim. The separate and correct "2–5" gain-margin
+range at line 176 was not touched.
+
+Verified: `verify_content.py` 217 files 0 problems, `audit_parity.py` 0 mismatches.
+
+Every finding in this report has now been either acted on or explicitly left as optional
+specialization. Nothing remains open.
