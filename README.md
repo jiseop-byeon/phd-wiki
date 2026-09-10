@@ -16,7 +16,8 @@ https://jiseop-byeon.github.io/phd-wiki/.
   7. RL Basics · 8. 3D Geometry & SE(3) · 9. ML Practice & Evaluation
 - `03-deep-learning/` — paper lineage diagrams and the physical-AI ecosystem map
 - `04-robotics/` — Modern Robotics (ch. 2–6, 8–13), estimation/SLAM, planning,
-  control, contact/tactile interaction, robot systems/deployment, HRI and safety
+  control, contact/tactile interaction, robot systems/deployment, HRI and safety,
+  plus specialization tracks in manipulation, navigation, human perception, and haptics/teleoperation
 - `05-construction-robotics/` — research lineage (four eras + current streams) and labs map
 - `06-research-practice/` — research questions, experimental design, failure analysis,
   scientific writing and peer review

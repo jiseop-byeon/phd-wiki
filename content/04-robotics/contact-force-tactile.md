@@ -22,6 +22,9 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 > [!note] First pass · 처음이라면
 > Read §1 — why contact changes the problem at all — then §5 (position, force, impedance, admittance), then §6, the wall-wiping scenario that puts all four in one task. §2 to §4 are the mechanics; read them when a paper's friction or closure claims matter.
 
+> [!tip] From sensing contact to displaying it
+> This page explains robot-side contact. Continue to [[04-robotics/haptics-teleoperation/tactile-display-design|Tactile Display Design]] when the contact cue must be rendered to a person, and to [[04-robotics/haptics-teleoperation/rendering-sampling-stability|Rendering, Sampling & Stability]] when a virtual wall or force-feedback loop must remain stable.
+
 ### 1. Why contact changes the problem
 
 A contact is typically **unilateral**: objects may push but do not pull through an ordinary surface. Motion can switch among separation, impact, sticking, and sliding. This makes the dynamics hybrid and often nonsmooth.

@@ -23,7 +23,7 @@ one's own research area.
 ### Maps of Content
 
 - [[03-deep-learning/index|Deep Learning]] — foundations, computer vision, VLM, VLA, world models, diffusion
-- [[04-robotics/index|Robotics & Physical Systems]] — geometry, estimation, planning, control, contact, embodiment, deployment, HRI and safety (sections A–G), then three optional specialization layers: manipulation, unstructured-environment navigation, and human perception (H–J)
+- [[04-robotics/index|Robotics & Physical Systems]] — geometry, estimation, planning, control, contact, embodiment, deployment, HRI and safety (sections A–G), then four optional specialization layers: manipulation, unstructured-environment navigation, human perception, and haptics/teleoperation (H–K)
 - [[05-construction-robotics/index|Construction Robotics]] — construction & manufacturing robotics literature
 
 ### Reference
@@ -56,7 +56,7 @@ one's own research area.
 ### 콘텐츠 지도
 
 - [[03-deep-learning/index|딥러닝]] — 기초 이론, 컴퓨터비전, VLM, VLA, 월드모델, 디퓨전
-- [[04-robotics/index|로보틱스 & Physical Systems]] — 기하, 추정, 계획, 제어, 접촉, embodiment, 배포, HRI와 안전(A–G절), 그다음 선택 전문화 층 셋: 매니퓰레이션, 비정형 환경 내비게이션, 사람 인지(H–J절)
+- [[04-robotics/index|로보틱스 & Physical Systems]] — 기하, 추정, 계획, 제어, 접촉, embodiment, 배포, HRI와 안전(A–G절), 그다음 선택 전문화 층 넷: 매니퓰레이션, 비정형 환경 내비게이션, 사람 인지, 햅틱·원격조작(H–K절)
 - [[05-construction-robotics/index|건설로봇]] — 건설·제조 분야 로봇 연구 논문 정리
 
 ### 참고 자료
@@ -85,6 +85,8 @@ one's own research area.
 > - [Holderrieth & Erives, *An Introduction to Flow Matching and Diffusion Models*](https://arxiv.org/abs/2506.02070) — 디퓨전/flow matching 수학의 참고 튜토리얼
 > - [Modern Robotics (Lynch & Park)](http://modernrobotics.org) — 로보틱스 트랙의 교과서 (공식 무료 PDF)
 > - [Matthew Bartos, *Control Theory for Smart Infrastructure* (UT Austin CE397)](https://future-water.org/teaching/) · [공개 course packet PDF](https://future-water-website.s3.amazonaws.com/docs/teaching/ce397/ce397_course_packet.pdf) — 상태공간·안정성·가제어성/가관측성과 피드백 제어 트랙의 주교재
+> - **Ann Majewicz Fey, UT Austin ME384R Haptics and Teleoperated Systems** — [[04-robotics/haptics-teleoperation/index|햅틱·원격조작 트랙]]의 강의 구조와 실습 출발점. 제공된 강의·과제·Hapkit 자료는 비공개로 보존하고, 위키에는 독립적으로 재서술한 학습 노트만 공개한다.
+> - [Hannaford & Okamura, “Haptics,” *Springer Handbook of Robotics*](https://handbookofrobotics.org/view-chapter/42) · [CHAI3D documentation](https://chai3d.org/documentation/) — 햅틱 장치, 렌더링, 원격조작 이론과 소프트웨어 실습의 공식 보충 자료
 > - [Underactuated Robotics (Tedrake)](https://underactuated.csail.mit.edu/) · [Stanford EE363](https://web.stanford.edu/class/ee363/) — 제어 학습 자료
 >
 > **Wiki structure (위키 구조 참고)**

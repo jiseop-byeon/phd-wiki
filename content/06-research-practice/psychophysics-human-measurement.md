@@ -18,6 +18,11 @@ mastery-when: "Raise to Mastery when a human-subjects evaluation is itself the c
 > [[06-research-practice/experimental-design-reproducibility|2. 실험 설계와 재현성]]을 먼저 —
 > 이 페이지는 측정 대상이 사람인 특수 사례를 위한 그 페이지의 공구함이다.
 
+> [!tip] Haptics application path · 햅틱 응용 경로
+> For touch physiology, psychometric functions, and a compact threshold worked example, continue with [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|Human Haptics & Psychophysics]]. For the complete device → rendering → teleoperation → evidence sequence, use [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]].
+>
+> 촉각 생리, psychometric function, 임계값 계산 예제는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|Human Haptics & Psychophysics]]로 이어진다. 장치 → 렌더링 → 원격조작 → 증거의 전체 순서는 [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]을 따른다.
+
 ## English
 
 A robot that works with or for people eventually makes a claim about a person: the
