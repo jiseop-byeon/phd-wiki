@@ -79,6 +79,27 @@ ul.section-ul .meta {
   }
 }
 
+// On a phone the article fills the width, so the floating control sits on top
+// of body text. The footer padding is what stops it from permanently covering
+// the last lines; given that, the buttons are sized for a fingertip rather
+// than shrunk to cover less.
+@media all and ($mobile) {
+  #pdf-controls {
+    bottom: 0.75rem;
+    right: 0.75rem;
+
+    button {
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  footer {
+    padding-bottom: 4.5rem;
+  }
+}
+
 // Language filter. Applies on screen and on paper, so the PDF button simply
 // prints whatever is currently shown.
 body.lang-en [data-lang="ko"],
