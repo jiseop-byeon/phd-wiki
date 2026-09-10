@@ -26,7 +26,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 > [!tip] Key intuition · 핵심 직관
 > Measuring as-built geometry reveals the mismatch that a fixed design-based path would ignore. Updating the plan from that observation makes execution respond to the encountered instance, with adaptation bounded by the engineered task and sensing model.
 
-**Why read it**: it is the middle step of the Michigan line. [[vision-guided-assembly|Feng 2015]] showed marker-based vision guidance; Lundeen replaces "detect a fiducial" with "sense the actual as-built geometry and re-plan," so the robot handles per-instance variability autonomously instead of replaying fixed trajectories; [[liang-lfd|Liang 2020]] then replaces the remaining task scripting with human demonstration. Evidence is lab-testbed demonstration of sensor-driven adaptive execution — a **testbed, not a site** — with autonomy at the task-execution level inside a structured experiment.
+**Why read it**: it is the middle step of the Michigan line. [[vision-guided-assembly|Feng 2015]] showed marker-based vision guidance; Lundeen replaces "detect a fiducial" with "sense the actual as-built geometry and re-plan," so the robot handles per-instance variability autonomously instead of replaying fixed trajectories; [[liang-lfd|Liang 2020]] then replaces the remaining task scripting with human demonstration. Evidence is a demonstration of sensor-driven adaptive execution with autonomy at the task-execution level inside a structured experiment. This page has read it as a **testbed rather than a site**; the abstract does not state the venue and the article is paywalled, so treat that as inference, not as the paper's claim.
 
 **Critique through this wiki's lens**: the adaptation is model-based and sensor-driven, not learned — every new task class still needs engineering. That is precisely the gap the next step in the line (demonstration, then hierarchical imitation) exists to close.
 
@@ -42,7 +42,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 > [!tip] 핵심 직관 · Key intuition
 > 시공 형상을 측정하면 고정 설계 경로가 놓칠 불일치가 드러난다. 그 관측으로 계획을 갱신해 마주친 개별 상황에 실행을 맞춘다. 적응 범위는 공학적으로 만든 과제·센싱 모델에 묶인다.
 
-**읽는 이유**: 미시간 계열의 중간 단계다. [[vision-guided-assembly|Feng 2015]]가 마커 기반 비전 유도를 보였다면, Lundeen은 "마커를 검출한다"를 "실제 시공 기하를 감지하고 다시 계획한다"로 바꿔, 로봇이 고정 궤적을 재생하는 대신 개체별 변동을 자율적으로 처리하게 한다; 이어서 [[liang-lfd|Liang 2020]]이 남은 과제 스크립팅을 인간 시연으로 대체한다. 증거는 센서 기반 적응 실행의 실험실 테스트베드 시연 — **현장이 아니라 테스트베드** — 이고, 자율성은 구조화된 실험 안의 과제 실행 수준이다.
+**읽는 이유**: 미시간 계열의 중간 단계다. [[vision-guided-assembly|Feng 2015]]가 마커 기반 비전 유도를 보였다면, Lundeen은 "마커를 검출한다"를 "실제 시공 기하를 감지하고 다시 계획한다"로 바꿔, 로봇이 고정 궤적을 재생하는 대신 개체별 변동을 자율적으로 처리하게 한다; 이어서 [[liang-lfd|Liang 2020]]이 남은 과제 스크립팅을 인간 시연으로 대체한다. 증거는 센서 기반 적응 실행의 시연이고, 자율성은 구조화된 실험 안의 과제 실행 수준이다. 이 페이지는 그것을 **현장이 아니라 테스트베드**로 읽어 왔다. 다만 초록은 실험 장소를 밝히지 않고 논문은 페이월 뒤에 있으므로, 이는 논문의 주장이 아니라 추론으로 다루라.
 
 **이 위키의 렌즈로 본 비판**: 이 적응은 모델 기반·센서 기반이지 학습된 것이 아니다 — 새로운 과제 부류마다 여전히 엔지니어링이 필요하다. 바로 그 간극을 메우려고 계열의 다음 단계(시연, 그다음 계층적 모방)가 존재한다.
 

@@ -41,7 +41,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ### Results
 
-- Few-shot SOTA on 16 multimodal benchmarks (VQA, captioning, video QA); with 32 shots, **beats fine-tuned SOTA on 6 of them** — without any task-specific training.
+- Few-shot SOTA on 16 multimodal benchmarks (VQA, captioning, video QA); with 32 shots, **beats fine-tuned SOTA on 6 of them** — without any task-specific training. All of these counts are body figures; the abstract says only that Flamingo "outperforms models fine-tuned on thousands of times more task-specific data".
 - Performance scales with LM size and shot count, mirroring GPT-3's scaling behavior in the multimodal domain.
 
 ### Limitations & critique

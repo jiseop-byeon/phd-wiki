@@ -140,7 +140,7 @@ how the body has just been moving** — which is why a blind robot can adapt to 
 see, after it has stepped in it.
 
 **RMA** is the same family arrived at independently, with a sharper deployment story:
-compress a 17-dimensional privileged environment vector into an **8-dimensional latent**,
+compress a 17-dimensional privileged environment vector into an **8-dimensional latent** (these dimensions, the 0.5 s history and both rates are body figures, not abstract ones),
 estimate that latent from 0.5 s of proprioceptive history by supervised regression trained
 purely in simulation, and run it **asynchronously — base policy at 100 Hz, adaptation module
 at 10 Hz — on a cheap robot's onboard CPU.**
@@ -218,7 +218,8 @@ reading practice lives.
 physics and replace the part nobody models well — the series-elastic actuator and its control
 software — with a small network regressing joint torque from a history of position errors
 and velocities, trained on **under four minutes of robot data**. The payoff is roughly
-1000× real-time simulation on one workstation. The durable idea is "learn the component you
+1000× real-time simulation on one workstation. Both figures are from the body; the abstract
+carries neither. The durable idea is "learn the component you
 cannot model, keep the physics you can" — and it is the ancestor of every sim-to-real
 actuator-modelling result since.
 
@@ -293,7 +294,7 @@ Rudin-2021 stature. Saying so is more useful than naming a preprint.
 
 - **Isaac Gym Preview is formally deprecated** — NVIDIA's own page calls it legacy software
   that is no longer supported, and the `IsaacGymEnvs` / `OmniIsaacGymEnvs` repositories were
-  archived read-only in April 2026. A 2026 paper saying "we use Isaac Gym" is on a dead
+  archived read-only (GitHub exposes no archive date, so do not quote a month). A 2026 paper saying "we use Isaac Gym" is on a dead
   preview release.
 - **Isaac Lab** is the successor; as of August 2026 the stable line is 2.3.x with 3.0 in beta.
 - **MuJoCo Playground / MJX** is the credible vendor-neutral alternative and the reason MJX
@@ -328,7 +329,7 @@ for the full picture and the licensing traps.
 
 > [!tip]- Answers
 > 1. Because the student was distilled from a teacher that *could* see the friction coefficient and terrain profile, and it learned to infer those quantities from a short history of proprioception — how the body actually moved over the last fraction of a second. It cannot anticipate the mud, but once a foot is in it the recent motion history is informative about what changed, and the policy was trained on exactly that inference. Blindness is why it must make contact first; distillation is why contact is enough.
-> 2. That Isaac Gym Preview is deprecated — NVIDIA's own page calls it legacy and unsupported, and the associated env repositories were archived read-only in April 2026. It does not invalidate the result, but it dates the work and makes reproduction harder, and a current project should be on Isaac Lab or MuJoCo MJX instead.
+> 2. That Isaac Gym Preview is deprecated — NVIDIA's own page calls it legacy and unsupported, and the associated env repositories are archived read-only. It does not invalidate the result, but it dates the work and makes reproduction harder, and a current project should be on Isaac Lab or MuJoCo MJX instead.
 > 3. The comparison was **one instrumented alpine route** — 2.2 km, 120 m of elevation gain — completed in 78 minutes against a **76-minute guidebook estimate** for that route. That is a single route against a published time, not a benchmark against human hikers, and the robot was slightly slower overall. The result is genuinely impressive; the claim it supports is narrower than the one usually attributed to it.
 > 4. Adaptation *across* episodes rather than within one. With a context window spanning episode boundaries, the policy can condition on what happened in earlier attempts — including falls — so it improves within a deployment without any weight update. That is a different mechanism from RMA-style latent estimation, which adapts within an episode from proprioceptive history and resets when the episode does.
 > 5. **ANYmal parkour**, because it is the only one whose high-level policy reasons about what a piece of terrain affords, which is what a mobile manipulator needs to reach a workspace. What it does not give you is the manipulator: it is a navigation-among-obstacles result on a curated course, with no arm, no payload, and no account of how carrying one changes the dynamics. The error-budget consequences of adding an arm are in [[04-robotics/navigation-mobile-manipulation|16. §4]].
@@ -533,7 +534,7 @@ for the full picture and the licensing traps.
 
 **Hwangbo 2019의 기여는 걸음걸이가 아니라 시뮬레이터다.** 해석적 강체 물리를 유지하고, 아무도
 잘 모델링하지 못하는 부분 — 직렬 탄성 액추에이터와 그 제어 소프트웨어 — 을 위치 오차와 속도의
-이력에서 관절 토크를 회귀하는 작은 네트워크로 대체한다. **4분 미만의 로봇 데이터**로 학습한다.
+이력에서 관절 토크를 회귀하는 작은 네트워크로 대체한다. **4분 미만의 로봇 데이터**로 학습한다. 이 수치와 실시간 대비 1000배 배속은 초록이 아니라 본문의 것이다.
 대가는 워크스테이션 한 대에서 실시간의 약 1000배 시뮬레이션이다. 남는 발상은 "모델링할 수 없는
 구성 요소는 배우고, 할 수 있는 물리는 지켜라"이며, 이후 모든 sim-to-real 액추에이터 모델링 결과의
 조상이다.
@@ -601,7 +602,7 @@ for the full picture and the licensing traps.
 ### 6. 도구, 논문의 연대를 정하기 때문에
 
 - **Isaac Gym Preview는 공식 지원 종료다** — NVIDIA 자신의 페이지가 더 이상 지원되지 않는 레거시
-  소프트웨어라 부르고, `IsaacGymEnvs`·`OmniIsaacGymEnvs` 저장소는 2026년 4월 읽기 전용으로 보관
+  소프트웨어라 부르고, `IsaacGymEnvs`·`OmniIsaacGymEnvs` 저장소는 읽기 전용으로 보관(GitHub이 보관 날짜를 공개하지 않으므로 월을 인용하지 마라)
   처리되었다. 2026년 논문이 "Isaac Gym을 썼다"고 하면 죽은 프리뷰 릴리스 위에 있는 것이다.
 - **Isaac Lab**이 후속이고, 2026년 8월 기준 안정 라인은 2.3.x, 3.0은 베타다.
 - **MuJoCo Playground / MJX**가 신뢰할 만한 벤더 중립 대안이며 MJX가 학계 기본값이 된 이유다.
@@ -634,7 +635,7 @@ for the full picture and the licensing traps.
 
 > [!tip]- 정답 · Answers
 > 1. 학생이, 마찰계수와 지형 프로파일을 *볼 수 있었던* 교사로부터 증류되었고, 그 양들을 짧은 고유수용감각 이력 — 지난 몇 분의 일 초 동안 몸이 실제로 어떻게 움직였는가 — 에서 추론하는 법을 배웠기 때문이다. 진흙을 미리 예상할 수는 없지만 발이 한 번 들어가고 나면 최근 운동 이력이 무엇이 달라졌는지에 대해 정보를 담고, 정책은 정확히 그 추론으로 학습되었다. 눈이 멀었다는 것이 먼저 접촉해야 하는 이유이고, 증류가 접촉만으로 충분한 이유다.
-> 2. Isaac Gym Preview가 지원 종료라는 점 — NVIDIA 자신의 페이지가 레거시이며 지원되지 않는다고 하고, 관련 환경 저장소들은 2026년 4월 읽기 전용으로 보관되었다. 결과를 무효화하지는 않지만 작업의 연대를 정하고 재현을 어렵게 만들며, 지금 시작하는 프로젝트는 Isaac Lab이나 MuJoCo MJX에 있어야 한다.
+> 2. Isaac Gym Preview가 지원 종료라는 점 — NVIDIA 자신의 페이지가 레거시이며 지원되지 않는다고 하고, 관련 환경 저장소들은 읽기 전용으로 보관되었다. 결과를 무효화하지는 않지만 작업의 연대를 정하고 재현을 어렵게 만들며, 지금 시작하는 프로젝트는 Isaac Lab이나 MuJoCo MJX에 있어야 한다.
 > 3. 비교 대상은 **단일 계측 알프스 경로** — 2.2 km, 고도 120 m — 를 그 경로의 **76분 가이드북 추정치**에 대해 78분에 완주한 것이다. 사람 등산객에 대한 벤치마크가 아니라 발표된 시간에 대한 한 경로이고, 로봇이 전체적으로는 조금 더 느렸다. 결과는 진심으로 인상적이고, 그것이 뒷받침하는 주장은 통상 귀속되는 것보다 좁다.
 > 4. 에피소드 *안*이 아니라 에피소드를 *가로지르는* 적응. 컨텍스트 창이 에피소드 경계를 넘으면 정책이 앞선 시도에서 일어난 일 — 넘어짐을 포함해 — 을 조건으로 삼을 수 있어, 가중치 갱신 없이 한 배치 안에서 개선된다. 에피소드 안에서 고유수용감각 이력으로 적응하고 에피소드가 끝나면 초기화되는 RMA식 잠재 추정과는 다른 기제다.
 > 5. **ANYmal parkour.** 상위 정책이 어떤 지형이 무엇을 허용하는지 추론하는 유일한 결과이고, 그것이 모바일 매니퓰레이터가 작업 공간에 도달하는 데 필요한 것이기 때문이다. 그것이 주지 않는 것은 매니퓰레이터 자체다: 팔도, 페이로드도, 팔을 실었을 때 동역학이 어떻게 달라지는지에 대한 설명도 없는, 정돈된 코스 위의 장애물 사이 내비게이션 결과다. 팔을 더할 때의 오차 예산 귀결은 [[04-robotics/navigation-mobile-manipulation|16. §4]]에 있다.

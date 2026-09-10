@@ -113,10 +113,12 @@ uncrewed continuous operation in a constrained waste-handling site. Read it as t
 existence proof that the *systems integration* problem is solvable at industrial scale.
 
 **ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|note]]).** The
-paradigm signal: one transformer policy pretrained on **150,000 GPU-parallel simulated
-episodes per task** (RL experts + scripted + teleop) — a corpus worth roughly 30 days of
-continuous real-machine operation, generated in under two hours on a single RTX 3090 —
-then SFT/RLFT fine-tuned to new tasks. The *pretrained* policy is the one that transfers
+paradigm signal: one transformer policy pretrained on **GPU-parallel simulated
+demonstrations** (RL experts + scripted + teleop) — 150,000 episodes each for Dig, Dump and
+Move Arm, 2,000 for the teleoperated Abort & Reset — then SFT/RLFT fine-tuned to new tasks.
+Read the headline bargain with its scope attached: "roughly 30 days of continuous real-world
+operation … generated in under two hours on a single RTX 3090" describes the two scripted
+tasks, while Dig's 150,000 RL-expert episodes are worth "about 15 days". The *pretrained* policy is the one that transfers
 to the real M545 at centimeter-level accuracy; the fine-tuning results are simulation
 studies. The [[02-foundations/rl-basics|pretrain→fine-tune]] recipe, on hydraulics.
 Limitation to notice: demonstrations are sim-generated; the diversity of *real* sites
@@ -295,9 +297,11 @@ flowchart LR
 증명으로 읽어라.
 
 **ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|노트]]).** 패러다임
-신호: **과제당 15만 에피소드**의 GPU 병렬 시뮬레이션 시연(RL 전문가 + 스크립트 +
-원격조작)으로 사전학습한 하나의 트랜스포머 정책 — 실기계 연속 운용 약 30일 상당의
-코퍼스를 RTX 3090 한 장으로 2시간 안에 생성했다 — 을 SFT/RLFT로 새 과제에 파인튜닝한다.
+신호: GPU 병렬 시뮬레이션 시연(RL 전문가 + 스크립트 + 원격조작)으로 사전학습한 하나의
+트랜스포머 정책 — Dig·Dump·Move Arm은 각각 15만 에피소드, 원격조작으로 모은 Abort & Reset은
+2,000 에피소드다 — 을 SFT/RLFT로 새 과제에 파인튜닝한다. 대표 수치는 범위를 붙여 읽어야 한다.
+"실기계 연속 운용 약 30일 상당을 RTX 3090 한 장으로 2시간 안에"는 스크립트 기반 두 과제의
+이야기이고, Dig의 15만 RL 전문가 에피소드는 "약 15일" 상당이다.
 실제 M545에 센티미터급으로 전이하는 것은 *사전학습된* 정책이고, 파인튜닝 결과는
 시뮬레이션 연구다. [[02-foundations/rl-basics|사전학습→파인튜닝]] 레시피를 유압 위에 얹은
 것. 주목할 한계: 시연이 시뮬레이션 생성이다; *실제* 현장의 다양성은 학습 분포 밖에 남아

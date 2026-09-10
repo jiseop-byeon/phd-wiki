@@ -56,7 +56,8 @@ details, and build hierarchical world models for planning.
 
 ### Results
 
-- I-JEPA: better linear probes than pixel-reconstruction methods with ~10× less pretraining
+- I-JEPA: better linear probes with ~10× less pretraining compute than MAE specifically, a body
+  comparison — the abstract gives only the absolute cost, 16 A100 GPUs in under 72 hours. Less pretraining
   compute on ViT-H.
 - V-JEPA 2: state-of-the-art motion understanding and video QA among video encoders;
   planning by optimizing actions against latent predictions works on real robots without

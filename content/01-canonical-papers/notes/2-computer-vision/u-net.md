@@ -46,8 +46,9 @@ biomedical imaging added a constraint: only tens of annotated images.
 
 **What it measured.** Per the [abstract](https://arxiv.org/abs/1505.04597): Segmentation of a 512 × 512 image takes less than one second on a GPU described only as recent. The abstract does not identify that GPU, so this latency is not a hardware-normalized comparison.
 
-- Won the ISBI cell tracking and EM segmentation challenges by large margins with ~30
-  training images — end-to-end, no sliding windows.
+- Won the ISBI cell tracking challenge "by a large margin"; on the EM segmentation challenge
+  the abstract claims only that it "outperforms the prior best method". Trained on ~30 images,
+  a body figure — the abstract says "very few images". End-to-end, no sliding windows.
 
 ### Limitations & critique
 
@@ -97,7 +98,7 @@ beats most successors.
 
 **무엇을 쟀는가.** [초록](https://arxiv.org/abs/1505.04597) 기준: 512 × 512 영상의 분할에 1초 미만이 걸린다. GPU는 당시의 최신 장비라고만 적혀 있어 하드웨어를 정규화한 지연 비교로 읽을 수 없다.
 
-- 학습 이미지 약 30장으로 ISBI 세포 추적·EM 분할 챌린지를 큰 차이로 우승 — end-to-end,
+- ISBI 세포 추적 챌린지를 "큰 차이로" 우승했고, EM 분할 챌린지에 대해 초록이 주장하는 것은 "기존 최고 방법을 능가한다"까지다. 학습 이미지 약 30장은 본문 수치이고 초록의 표현은 "아주 적은 이미지"다. End-to-end,
   슬라이딩 윈도 없이.
 
 ### 한계와 비판

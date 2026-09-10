@@ -35,8 +35,8 @@ By 2014, [[01-canonical-papers/notes/1-foundations/lstm|LSTMs]] handled sequence
 
 - **Encoder LSTM** consumes the source sequence; its final hidden state becomes a fixed-length representation.
 - **Decoder LSTM** is conditioned on that vector and generates the target autoregressively until an end-of-sequence token.
-- 4-layer deep LSTMs, ~380M parameters; beam search decoding.
-- Killer trick: **reversing the source sentence** — puts early source words near early target words, creating short-range dependencies that make optimization much easier (+4~5 BLEU).
+- 4-layer deep LSTMs, 384M parameters; beam search decoding. Body figures — the abstract carries only the two BLEU scores.
+- Killer trick: **reversing the source sentence** — puts early source words near early target words, creating short-range dependencies that make optimization much easier (25.9 to 30.6 BLEU in the body; the abstract says only that it "improved the LSTM's performance markedly").
 
 ### Results
 
