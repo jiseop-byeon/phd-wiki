@@ -126,7 +126,7 @@ Macros take parameters, and a parameter prefixed with `*` is an XML *block* that
 ```
 
 > [!warning] The silent Xacro failure
-> If a `<xacro:something/>` tag names a macro that does not exist, xacro does **not** raise an error — it leaves the tag unexpanded and carries on. A typo in a macro name therefore produces a URDF with a link quietly missing. This is why you expand to a file and read it when something is absent.
+> A typo in a macro name is loud, not silent: `handle_macro_call` raises `XacroException("unknown macro name: ...")`, xacro exits non-zero and produces no output at all. What *is* silent is a typo in a property or an argument name, which expands to an empty string and leaves you with a link at the origin or a joint with a zero-length offset. Expand to a file and read it whenever a number looks wrong rather than whenever something is missing.
 
 Xacro is a preprocessor: nothing downstream understands it. Expansion happens one of two ways.
 
@@ -266,7 +266,7 @@ ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
 
 RViz answers "does this look like my robot". Start it, set **Fixed Frame** to a frame that actually exists (with `Fixed Frame` set to something unpublished, every display fails at once and the errors point everywhere but the cause), then add two displays:
 
-- **RobotModel**, whose *Description Source* is `Topic` by default and whose *Description Topic* is the transient-local `/robot_description` — so it needs no file path if `robot_state_publisher` is running. Its *Visual Enabled* and *Collision Enabled* checkboxes draw the two geometries separately, which is how you see that your collision shape is the 50,000-triangle mesh. *Mass* and *Inertia* draw the inertial properties.
+- **RobotModel**, whose *Description Source* is `Topic` by default. The *Description Topic* field has **no default** — RViz renames the inherited topic property but sets no value — so pick `/robot_description` from its dropdown. Until you do, the display is simply empty and says nothing, which is the commonest "my robot does not show up" report. The topic is transient-local, so it needs no file path once `robot_state_publisher` is running. Its *Visual Enabled* and *Collision Enabled* checkboxes draw the two geometries separately, which is how you see that your collision shape is the 50,000-triangle mesh. *Mass* and *Inertia* draw the inertial properties.
 - **TF**, which draws every frame with axes, names, and arrows from child to parent. *Frames* lists them all with checkboxes, *Tree* shows the parent–child structure, and *Frame Timeout* controls how long a frame that has stopped updating stays drawn before fading to grey and disappearing — a frame fading out in RViz means its publisher died.
 
 ### 11. REP 105: map, odom and base_link
@@ -397,16 +397,17 @@ In RViz set **Fixed Frame** to `base_link`, add a **RobotModel** display and a *
 2. `ros2 topic echo /joint_states` — two names, two positions, changing as you drag.
 3. `ros2 topic echo /tf_static --once` — nothing. Every joint here is movable, so there are no static transforms. Add a `fixed` joint for a sensor mount and it appears.
 4. `ros2 run tf2_ros tf2_echo base_link link2` with both sliders at zero. The translation should be `[0, 0, 0.4]` — `link2`'s origin sits at the *end* of `link1`, which is what the elbow joint's `<origin>` says. Move the shoulder to 1.57 and watch x and z swap.
-5. `ros2 run tf2_tools view_frames`, then open the generated PDF. Three frames, two edges, each labelled with `robot_state_publisher` as broadcaster and a rate near 20 Hz — the `publish_frequency` default.
+5. `ros2 run tf2_tools view_frames`, then open the generated PDF. Three frames, two edges, each labelled with `robot_state_publisher` as broadcaster and a rate near 10 Hz. That 10 is `joint_state_publisher`'s `rate` default — `robot_state_publisher` only republishes what it receives, and its own `publish_frequency` default of 20 Hz is a *maximum*, not a target.
 
 You are done when you can predict, before looking, what `tf2_echo base_link link2` will print for a given pair of slider values.
 
 ### 13. The failure to diagnose: two publishers on one edge
 
-Leave the exercise running and add a second owner of `base_link` → `link1`:
+Leave the exercise running and add a second owner of `base_link` → `link1`. Use a second `robot_state_publisher`, not a `static_transform_publisher`: the static one publishes once onto a latched `/tf_static` and then only spins, which produces a single glitch rather than the continuous fight, and none of the tells below appear.
 
 ```bash
-ros2 run tf2_ros static_transform_publisher --x 0 --y 0 --z 0 --roll 0 --pitch 0 --yaw 0 --frame-id base_link --child-frame-id link1
+# a SECOND robot_state_publisher on the same description, so both write /tf continuously
+ros2 run robot_state_publisher robot_state_publisher --ros-args -p robot_description:="$(xacro two_link_arm.urdf.xacro)"
 ```
 
 **Symptom.** In RViz, `link1` and everything below it — `link2`, the whole rest of the arm — jitters or snaps between two poses. Moving the shoulder slider moves the arm but it keeps flicking back towards the static pose. A listener node computing a grasp from this tree gets a different answer each cycle, and averaging makes it worse, not better. Nothing logs an error. Both publishers are behaving exactly as told.
@@ -468,7 +469,7 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 
 ### 1. 로봇에 기계가 읽을 수 있는 기술(description)이 필요한 이유
 
-이 페이지 이후의 모든 것은 물건이 어디에 있는지를 알아야 한다. 플래너는 팔꿈치가 1.2 rad일 때 그리퍼가 바닥에서 0.8 m라는 것을 알아야 하고, 충돌 검사기는 형상을, 물리 엔진은 질량과 관성을 필요로 한다. 카메라 프레임의 점을 받은 인식 노드는 팔이 뻗기 전에 그것을 base 프레임으로 옮겨야 한다. RViz는 무엇을 어디에 그릴지 알아야 한다.
+이 페이지 이후의 모든 것은 물건이 어디에 있는지를 알아야 한다. 플래너는 팔꿈치가 1.2 rad일 때 그리퍼가 베이스에서 0.8 m라는 것을 알아야 하고, 충돌 검사기는 형상을, 물리 엔진은 질량과 관성을 필요로 한다. 카메라 프레임의 점을 받은 인식 노드는 팔이 뻗기 전에 그것을 base 프레임으로 옮겨야 한다. RViz는 무엇을 어디에 그릴지 알아야 한다.
 
 이걸 노드마다 하드코딩할 수는 있다. 그러면 누군가 전완 길이를 2 cm 늘린 날 여섯 개 노드가 틀리고 그중 셋은 조용히 실패한다.
 
@@ -575,7 +576,7 @@ check_urdf my_robot.urdf
 ```
 
 > [!warning] 조용한 Xacro 실패
-> `<xacro:something/>` 태그가 존재하지 않는 매크로를 가리키면 xacro는 에러를 **내지 않는다**. 태그를 전개하지 않은 채 그냥 넘어간다. 그래서 매크로 이름 오타는 링크 하나가 조용히 빠진 URDF를 만든다. 무언가 없을 때 파일로 전개해서 읽어야 하는 이유다.
+> 매크로 이름 오타는 조용하지 않고 시끄럽다. `handle_macro_call`이 `XacroException("unknown macro name: ...")`을 던지고, xacro는 0이 아닌 값으로 종료하며 출력물을 아예 내지 않는다. 정작 조용한 것은 property나 인자 이름의 오타다. 빈 문자열로 전개되어 링크가 원점에 놓이거나 조인트 오프셋이 0이 된 URDF가 남는다. 무언가 없을 때가 아니라 숫자가 이상할 때 파일로 전개해서 읽어라.
 
 Xacro는 전처리기다. 하류의 어떤 것도 이해하지 못한다. 전개는 두 방식 중 하나다.
 
@@ -715,7 +716,7 @@ ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
 
 RViz는 "이게 내 로봇처럼 보이나"에 답한다. 띄우고 **Fixed Frame**을 실제로 존재하는 프레임으로 맞춘 뒤(존재하지 않는 프레임을 넣으면 모든 display가 한꺼번에 실패하고 에러가 원인 아닌 곳을 가리킨다) display 둘을 추가한다.
 
-- **RobotModel**. *Description Source*가 기본 `Topic`이고 *Description Topic*이 transient local인 `/robot_description`이라서, `robot_state_publisher`가 돌고 있으면 파일 경로가 필요 없다. *Visual Enabled*와 *Collision Enabled* 체크박스가 두 형상을 따로 그리며, 충돌 형상이 삼각형 5만 개짜리 메시라는 사실을 이걸로 본다. *Mass*와 *Inertia*는 관성 특성을 그린다.
+- **RobotModel**. *Description Source*는 기본이 `Topic`이다. 다만 *Description Topic* 필드에는 **기본값이 없다.** RViz가 상속받은 토픽 속성의 이름만 바꿀 뿐 값을 넣지 않는다. 그러니 드롭다운에서 `/robot_description`을 직접 고르라. 고르기 전까지 디스플레이는 그냥 비어 있고 아무 말도 하지 않는데, "로봇이 안 보인다"는 신고의 가장 흔한 원인이 이것이다. 그 토픽은 transient local이라 `robot_state_publisher`만 돌고 있으면 파일 경로는 필요 없다. *Visual Enabled*와 *Collision Enabled* 체크박스가 두 형상을 따로 그리며, 충돌 형상이 삼각형 5만 개짜리 메시라는 사실을 이걸로 본다. *Mass*와 *Inertia*는 관성 특성을 그린다.
 - **TF**. 모든 프레임을 축, 이름, 자식에서 부모로 가는 화살표로 그린다. *Frames*가 전체를 체크박스로 나열하고, *Tree*가 부모–자식 구조를 보여 주며, *Frame Timeout*은 갱신이 멈춘 프레임이 회색으로 바랬다가 사라지기까지의 시간을 정한다. RViz에서 프레임이 바래면 그 퍼블리셔가 죽은 것이다.
 
 ### 11. REP 105: map, odom, base_link
@@ -846,16 +847,17 @@ RViz에서 **Fixed Frame**을 `base_link`로 두고 **RobotModel**과 **TF** dis
 2. `ros2 topic echo /joint_states` — 이름 둘, 위치 둘, 끌 때마다 변한다.
 3. `ros2 topic echo /tf_static --once` — 아무것도 없다. 여기 조인트는 전부 가동이라 정적 변환이 없다. 센서 마운트용 `fixed` 조인트를 하나 넣으면 나타난다.
 4. 슬라이더 둘을 0에 두고 `ros2 run tf2_ros tf2_echo base_link link2`. 병진이 `[0, 0, 0.4]`여야 한다. `link2`의 원점은 `link1`의 *끝*에 있고, 이는 elbow 조인트의 `<origin>`이 말하는 바다. shoulder를 1.57로 옮기고 x와 z가 뒤바뀌는 것을 보라.
-5. `ros2 run tf2_tools view_frames` 후 생성된 PDF를 연다. 프레임 셋, 간선 둘, 각 간선에 브로드캐스터로 `robot_state_publisher`와 20 Hz 근처의 주기 — `publish_frequency` 기본값이다.
+5. `ros2 run tf2_tools view_frames` 후 생성된 PDF를 연다. 프레임 셋, 간선 둘, 각 간선에 브로드캐스터로 `robot_state_publisher`와 10 Hz 근처의 주기가 보인다. 그 10은 `joint_state_publisher`의 `rate` 기본값이다. `robot_state_publisher`는 받은 것을 다시 낼 뿐이고, 자기 `publish_frequency` 기본값 20 Hz는 목표치가 아니라 *상한*이다.
 
 주어진 슬라이더 값에 대해 `tf2_echo base_link link2`가 무엇을 찍을지 보기 전에 예측할 수 있으면 끝이다.
 
 ### 13. 진단할 고장: 한 간선에 퍼블리셔 둘
 
-실습을 띄워 둔 채 `base_link` → `link1`의 두 번째 소유자를 추가한다.
+실습을 띄워 둔 채 `base_link` → `link1`의 두 번째 소유자를 추가한다. `static_transform_publisher`가 아니라 두 번째 `robot_state_publisher`를 써야 한다. static 쪽은 latched `/tf_static`에 한 번만 발행하고 이후로는 spin만 하므로, 지속적인 충돌이 아니라 한 번의 글리치로 끝나고 아래의 신호들이 나타나지 않는다.
 
 ```bash
-ros2 run tf2_ros static_transform_publisher --x 0 --y 0 --z 0 --roll 0 --pitch 0 --yaw 0 --frame-id base_link --child-frame-id link1
+# a SECOND robot_state_publisher on the same description, so both write /tf continuously
+ros2 run robot_state_publisher robot_state_publisher --ros-args -p robot_description:="$(xacro two_link_arm.urdf.xacro)"
 ```
 
 **증상.** RViz에서 `link1`과 그 아래 전부 — `link2`, 팔의 나머지 — 가 두 자세 사이에서 떨거나 튄다. shoulder 슬라이더를 움직이면 팔이 움직이긴 하지만 자꾸 정적 자세 쪽으로 튕겨 돌아온다. 이 트리로 파지 자세를 계산하는 리스너 노드는 주기마다 다른 답을 받고, 평균을 내면 나아지는 게 아니라 나빠진다. 에러 로그는 없다. 두 퍼블리셔 모두 시킨 대로 정확히 동작하고 있다.

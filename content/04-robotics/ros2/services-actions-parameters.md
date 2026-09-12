@@ -208,6 +208,15 @@ class FibonacciActionServer(Node):
         result = Fibonacci.Result()
         result.sequence = feedback_msg.partial_sequence
         return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    rclpy.spin(FibonacciActionServer())
+
+
+if __name__ == '__main__':
+    main()
 ```
 
 `goal_handle.succeed()` is not optional decoration. If the execute callback never sets the state, the goal is assumed **aborted**, and you will get a warning and a puzzled client.
@@ -343,7 +352,7 @@ Each transition runs a callback you override: `on_configure` (allocate, open the
 
 The payoff is that publishing is gated by state. A lifecycle publisher created in `on_configure` exists in `inactive` but transfers nothing; `publish()` is a no-op until the node is `active`. Nothing downstream sees half-initialised data.
 
-Every managed node exposes five interfaces for free: a `<node_name>/transition_event` topic, and services `get_state`, `change_state`, `get_available_states`, `get_available_transitions`. The CLI wraps them:
+Every managed node exposes six interfaces for free: a `<node_name>/transition_event` topic, and services `get_state`, `change_state`, `get_available_states`, `get_available_transitions`. The CLI wraps them:
 
 ```bash
 ros2 lifecycle nodes
@@ -388,7 +397,7 @@ ros2 action send_goal fibonacci custom_action_interfaces/action/Fibonacci "{orde
 ros2 action send_goal --feedback fibonacci custom_action_interfaces/action/Fibonacci "{order: 5}"
 ```
 
-The first prints the goal ID, waits five seconds in silence, then prints the result and `SUCCEEDED`. The second prints a `Feedback:` block per second as `partial_sequence` grows. That difference *is* the argument for actions: same computation, but the caller can see inside it.
+The first prints the goal ID, waits about four seconds in silence, then prints the result and `SUCCEEDED`. The loop is `range(1, order)`, so `order: 5` gives four iterations of one second each. The second prints one `Feedback:` block per iteration — four of them — as `partial_sequence` grows. That difference *is* the argument for actions: same computation, but the caller can see inside it.
 
 5. In a third terminal, watch the graph while a goal runs: `ros2 action list -t`, then `ros2 action info /fibonacci`.
 
@@ -643,6 +652,15 @@ class FibonacciActionServer(Node):
         result = Fibonacci.Result()
         result.sequence = feedback_msg.partial_sequence
         return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    rclpy.spin(FibonacciActionServer())
+
+
+if __name__ == '__main__':
+    main()
 ```
 
 `goal_handle.succeed()`는 장식이 아니다. execute 콜백이 상태를 설정하지 않으면 목표는 **중단(aborted)** 으로 간주되고, 경고와 어리둥절한 클라이언트를 얻는다.
@@ -778,7 +796,7 @@ ros2 param load /turtlesim turtlesim.yaml
 
 이득은 발행이 상태로 게이팅된다는 것이다. `on_configure`에서 만든 라이프사이클 퍼블리셔는 `inactive`에 존재하지만 아무것도 전달하지 않는다. 노드가 `active`가 되기 전까지 `publish()`는 아무 일도 하지 않는다. 하류의 누구도 반쯤 초기화된 데이터를 보지 않는다.
 
-모든 관리형 노드는 다섯 가지 인터페이스를 공짜로 노출한다. `<node_name>/transition_event` 토픽, 그리고 `get_state`, `change_state`, `get_available_states`, `get_available_transitions` 서비스. CLI가 그것을 감싼다.
+모든 관리형 노드는 여섯 가지 인터페이스를 공짜로 노출한다. `<node_name>/transition_event` 토픽, 그리고 `get_state`, `change_state`, `get_available_states`, `get_available_transitions` 서비스. CLI가 그것을 감싼다.
 
 ```bash
 ros2 lifecycle nodes
@@ -823,7 +841,7 @@ ros2 action send_goal fibonacci custom_action_interfaces/action/Fibonacci "{orde
 ros2 action send_goal --feedback fibonacci custom_action_interfaces/action/Fibonacci "{order: 5}"
 ```
 
-첫 번째는 목표 ID를 찍고, 5초간 조용히 기다리다가, 결과와 `SUCCEEDED`를 찍는다. 두 번째는 `partial_sequence`가 자랄 때마다 초당 `Feedback:` 블록을 찍는다. 그 차이가 액션을 쓰는 논거 자체다. 계산은 같은데, 호출자가 이제 그 안을 볼 수 있다.
+첫 번째는 목표 ID를 찍고, 약 4초간 조용히 기다리다가, 결과와 `SUCCEEDED`를 찍는다. 루프가 `range(1, order)`라서 `order: 5`면 1초짜리 반복이 네 번이다. 두 번째는 반복마다 `Feedback:` 블록을 하나씩, 그러니까 넷을 찍는다. 그 차이가 액션을 쓰는 논거 자체다. 계산은 같은데, 호출자가 이제 그 안을 볼 수 있다.
 
 5. 세 번째 터미널에서 목표가 도는 동안 그래프를 본다. `ros2 action list -t`, 그다음 `ros2 action info /fibonacci`.
 

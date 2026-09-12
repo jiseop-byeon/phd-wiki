@@ -87,7 +87,7 @@ ros2 interface show geometry_msgs/msg/Twist
 
 The companions are worth knowing the day you need them: `ros2 interface list` (every interface on the system), `ros2 interface package geometry_msgs` (everything one package defines), and `ros2 interface proto geometry_msgs/msg/Twist`, which prints a filled-in prototype you can paste into a `ros2 topic pub`.
 
-One trap that this command will not warn you about. `std_msgs/msg/Float64` looks like the obvious way to publish a number, and its own definition says otherwise:
+One trap that this command will not warn you about. `std_msgs/msg/Float64` looks like the obvious way to publish a number, and its own definition says otherwise. So does `std_msgs/msg/String`, which carries the identical notice and which the worked examples below still use — because the tutorials do, and you will meet it everywhere:
 
 ```bash
 ros2 interface show std_msgs/msg/Float64
@@ -533,7 +533,7 @@ Reproduce it deliberately. Launch your republisher into a namespace so its relat
 ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch
 ```
 
-`ros2 topic echo /turtle1/speed` now prints nothing forever, and says nothing about why. Diagnose it in this order.
+`ros2 topic echo /turtle1/speed` does not hang here — with the publisher moved into `/watch` the topic has no endpoints at all, so echo prints `WARNING: topic [/turtle1/speed] does not appear to be published yet` and then fails with "Could not determine the type for the passed topic". That is the *lucky* version. The silent one is a name that still exists because something else publishes it, or a type mismatch on a live name, where echo sits there printing nothing. Diagnose both in this order.
 
 **1. Are both nodes actually alive?**
 
@@ -581,7 +581,7 @@ This prints each node's publishers and subscribers as fully-resolved names with 
 **Fixing it.** You do not need to rebuild to test a hypothesis. Remapping at launch settles it in seconds:
 
 ```bash
-ros2 run turtle_watch speed_watch --ros-args --remap turtle1/speed:=/turtle1/speed
+ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle1/speed:=/turtle1/speed
 ```
 
 If that makes data flow, the bug was the name. Then fix it properly — in the code if the name was wrong, or in the launch file if the namespace was, which is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]].
@@ -638,7 +638,7 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 
 **노드**(node)는 클라이언트 라이브러리를 써서 다른 노드와 통신하는 ROS 2 그래프의 참여자다. 입자성에 대한 공식 지침은 한 문장이고 문자 그대로 받아들일 값어치가 있다. *각 노드는 논리적으로 한 가지 일을 해야 한다.*
 
-"논리적으로 한 가지"는 "파일 하나"도 "클래스 하나"도 아니다. 쓸 만한 판별법은 재시작 테스트다. A를 B와 무관하게 재시작·교체·재튜닝·재배포하고 싶은 순간이 조금이라도 있다면 A와 B는 다른 노드다. 카메라 드라이버와 검출기는 이 테스트를 정반대 방향으로 통과한다. 검출기는 매주 갈아 끼우고 드라이버는 건드리지 않을 테니 둘은 두 노드다. 검출기와 그 안의 non-maximum suppression 단계는 항상 함께 살고 함께 죽으니 하나다.
+"논리적으로 한 가지"는 "파일 하나"도 "클래스 하나"도 아니다. 쓸 만한 판별법은 재시작 테스트다. A를 B와 무관하게 재시작·교체·재튜닝·재배포하고 싶은 순간이 조금이라도 있다면 A와 B는 다른 노드다. 카메라 드라이버와 검출기는 이 테스트에 정반대 방향에서 걸린다. 검출기는 매주 갈아 끼우고 드라이버는 건드리지 않을 테니 둘은 두 노드다. 검출기와 그 안의 non-maximum suppression 단계는 항상 함께 살고 함께 죽으니 하나다.
 
 초심자용 그림에 붙일 보정 둘.
 
@@ -688,7 +688,7 @@ ros2 interface show geometry_msgs/msg/Twist
 
 곁의 명령들도 필요한 날을 위해 알아 두라. `ros2 interface list`(시스템의 모든 인터페이스), `ros2 interface package geometry_msgs`(한 패키지가 정의하는 전부), 그리고 `ros2 interface proto geometry_msgs/msg/Twist`는 `ros2 topic pub`에 그대로 붙여 넣을 수 있는 프로토타입을 찍는다.
 
-이 명령이 경고해 주지 않는 함정 하나. `std_msgs/msg/Float64`는 숫자를 publish하는 뻔한 방법처럼 보이는데, 정작 자기 정의가 반대로 말한다.
+이 명령이 경고해 주지 않는 함정 하나. `std_msgs/msg/Float64`는 숫자를 publish하는 뻔한 방법처럼 보이는데, 정작 자기 정의가 반대로 말한다. `std_msgs/msg/String`도 똑같은 문구를 달고 있다. 아래 예제가 그래도 그것을 쓰는 이유는 튜토리얼들이 그렇게 하고 있어 어디서든 마주치게 되기 때문이다.
 
 ```bash
 ros2 interface show std_msgs/msg/Float64
@@ -1134,7 +1134,7 @@ self.timer = self.create_timer(0.1, self.publish_report)
 ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch
 ```
 
-`ros2 topic echo /turtle1/speed`는 이제 영원히 아무것도 찍지 않고, 이유도 말하지 않는다. 이 순서로 진단한다.
+`ros2 topic echo /turtle1/speed`는 여기서 매달리지 않는다. 퍼블리셔가 `/watch` 안으로 들어가 버려 이 토픽에는 엔드포인트가 하나도 없고, 그래서 echo는 `WARNING: topic [/turtle1/speed] does not appear to be published yet`을 찍은 뒤 "Could not determine the type for the passed topic"으로 실패한다. 이건 *운이 좋은* 쪽이다. 조용한 쪽은 다른 무언가가 발행하고 있어 이름은 살아 있는 경우, 또는 살아 있는 이름에서 타입이 어긋난 경우다. 그때는 echo가 아무것도 찍지 않고 앉아 있는다. 둘 다 이 순서로 진단한다.
 
 **1. 두 노드가 실제로 살아 있는가?**
 
@@ -1182,7 +1182,7 @@ ros2 node info /turtlesim
 **고치기.** 가설을 시험하는 데 다시 빌드할 필요는 없다. 실행 시점 remapping이면 몇 초에 끝난다.
 
 ```bash
-ros2 run turtle_watch speed_watch --ros-args --remap turtle1/speed:=/turtle1/speed
+ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle1/speed:=/turtle1/speed
 ```
 
 이걸로 데이터가 흐르면 버그는 이름이었다. 그다음 제대로 고친다. 이름이 틀렸으면 코드에서, 네임스페이스가 문제였으면 launch 파일에서. 후자는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]다.

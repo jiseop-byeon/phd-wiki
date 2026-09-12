@@ -184,7 +184,7 @@ ros2 lifecycle get /controller_server
 
 Sometimes the constraint is not physical. A corridor is fine to drive through but you do not want robots in it during working hours; a lab bay is off limits; a stretch near a loading dock needs a speed cap.
 
-A **costmap filter** encodes that as a second annotated image — a **filter mask**, the same format as a map, not necessarily the same size or pose — published by a `map_server` instance alongside a `nav2_costmap_2d::CostmapFilterInfo` message from the **Costmap Filter Info Server** that says how mask pixel values map into the filter's own space. Filters are costmap plugins, but they go in a separate `filters:` list rather than `plugins:`:
+A **costmap filter** encodes that as a second annotated image — a **filter mask**, the same format as a map, not necessarily the same size or pose — published by a `map_server` instance alongside a `nav2_msgs/msg/CostmapFilterInfo` message from the **Costmap Filter Info Server** that says how mask pixel values map into the filter's own space. Filters are costmap plugins, but they go in a separate `filters:` list rather than `plugins:`:
 
 ```yaml
 global_costmap:
@@ -326,7 +326,7 @@ ros2 run tf2_ros tf2_monitor map base_link
 
 **Second, the costmap content.** Look at `/local_costmap/costmap` in RViz. Two diagnostic pictures:
 
-- *The robot is sitting inside lethal or inflated cost.* No trajectory is valid, so it spins, backs up and spins again. Causes: the laser is mounted with the wrong transform and sees the robot's own chassis; `max_obstacle_height` is letting the ground plane in; the obstacle layer marked a transient and never cleared it because `raytrace_max_range` (3.0 m) is too short to clear what `obstacle_max_range` (2.5 m) marked.
+- *The robot is sitting inside lethal or inflated cost.* No trajectory is valid, so it spins, backs up and spins again. Causes: the laser is mounted with the wrong transform and sees the robot's own chassis; `max_obstacle_height` is letting the ground plane in; the obstacle layer marked a transient and never cleared it because `raytrace_max_range` was configured below `obstacle_max_range`, so the sensor marks farther than it clears. Check your own values before chasing this: the stock defaults are the other way round, 3.0 m raytrace against 2.5 m obstacle, and cannot produce it.
 - *The costmap is empty or not updating.* Check the source topic arrives — `ros2 topic hz /scan` — and that `observation_sources` names it.
 
 Clear it by hand to test the hypothesis:
@@ -583,7 +583,7 @@ ros2 lifecycle get /controller_server
 
 제약이 물리적이지 않을 때가 있다. 어떤 복도는 주행에 문제가 없지만 업무 시간에는 로봇이 들어가지 않았으면 하고, 어떤 실험 구역은 출입 금지이고, 하역장 근처 구간은 속도 제한이 필요하다.
 
-**costmap 필터** 는 그것을 두 번째 주석 이미지 — 지도와 같은 형식이지만 크기나 자세가 같을 필요는 없는 **filter mask** — 로 인코딩한다. 이 마스크는 `map_server` 인스턴스가 발행하고, 마스크 픽셀 값이 필터 자체의 공간으로 어떻게 매핑되는지 알려 주는 `nav2_costmap_2d::CostmapFilterInfo` 메시지를 **Costmap Filter Info Server** 가 함께 발행한다. 필터는 costmap 플러그인이지만 `plugins:`가 아니라 별도의 `filters:` 목록에 들어간다.
+**costmap 필터** 는 그것을 두 번째 주석 이미지 — 지도와 같은 형식이지만 크기나 자세가 같을 필요는 없는 **filter mask** — 로 인코딩한다. 이 마스크는 `map_server` 인스턴스가 발행하고, 마스크 픽셀 값이 필터 자체의 공간으로 어떻게 매핑되는지 알려 주는 `nav2_msgs/msg/CostmapFilterInfo` 메시지를 **Costmap Filter Info Server** 가 함께 발행한다. 필터는 costmap 플러그인이지만 `plugins:`가 아니라 별도의 `filters:` 목록에 들어간다.
 
 ```yaml
 global_costmap:
@@ -730,7 +730,7 @@ ros2 run tf2_ros tf2_monitor map base_link
 
 **둘째, costmap의 내용.** RViz에서 `/local_costmap/costmap`을 보라. 진단이 되는 그림은 둘이다.
 
-- *로봇이 치명 비용 또는 팽창 비용 안에 앉아 있다.* 그러면 유효한 궤적이 없고 로봇은 돌고, 후진하고, 또 돈다. 원인: 레이저가 잘못된 변환으로 장착되어 자기 차체를 보고 있다, `max_obstacle_height`가 지면을 들여보내고 있다, obstacle 계층이 일시적 물체를 표시했는데 `raytrace_max_range`(기본 3.0 m)가 `obstacle_max_range`(2.5 m)를 소거하기에 충분히 길지 않아 지워지지 않았다.
+- *로봇이 치명 비용 또는 팽창 비용 안에 앉아 있다.* 그러면 유효한 궤적이 없고 로봇은 돌고, 후진하고, 또 돈다. 원인: 레이저가 잘못된 변환으로 장착되어 자기 차체를 보고 있다, `max_obstacle_height`가 지면을 들여보내고 있다, obstacle 계층이 일시적 물체를 표시했는데 `raytrace_max_range`가 `obstacle_max_range`보다 작게 설정되어 센서가 지우는 거리보다 멀리까지 표시했다. 다만 이것을 쫓기 전에 자기 설정값을 확인하라. 기본값은 반대로 raytrace 3.0 m에 obstacle 2.5 m라서 이 현상이 생길 수 없다.
 - *costmap이 비어 있거나 갱신되지 않는다.* 소스 토픽이 실제로 도착하는지(`ros2 topic hz /scan`), 그리고 `observation_sources`가 그것을 지명하는지 확인하라. 갱신되지 않는 costmap은 로봇이 확신에 차서 물체로 돌진하게 만들거나, 전역 쪽이 빈 경우 아예 계획을 거부하게 만든다.
 
 가설을 시험하려면 손으로 지워 보라.
