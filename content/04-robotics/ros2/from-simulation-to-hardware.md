@@ -89,8 +89,73 @@ Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activat
 
 The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as jitter rather than as an error.
 
-> [!warning] The interface-export API is mid-migration on the Jazzy branch
-> Older components implement `export_state_interfaces()` returning `std::vector<StateInterface>` and `export_command_interfaces()` returning `std::vector<CommandInterface>`. On the current `jazzy` branch of `ros-controls/ros2_control` both are marked deprecated in favour of `on_export_state_interfaces()` / `on_export_command_interfaces()` returning vectors of shared pointers, and `on_init` has gained a second overload. Read the header of the version you actually have installed rather than copying a class skeleton out of a blog post; this is exactly the kind of detail that moves between patch releases.
+#### The skeleton, read off the installed header
+
+Checked against `hardware_interface` **4.48.0**, which is what `apt` installs for Jazzy today.
+At this version `SystemInterface` is a thin subclass of `HardwareComponentInterface` that makes
+`write()` pure virtual; everything else you override comes from the base. Three things you
+override, and one large thing you do not:
+
+```cpp
+#include "hardware_interface/system_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
+
+namespace my_robot
+{
+class MyRobotHardware : public hardware_interface::SystemInterface
+{
+public:
+  // Parse the <ros2_control> block. params.hardware_info carries it.
+  hardware_interface::CallbackReturn on_init(
+    const hardware_interface::HardwareComponentInterfaceParams & params) override;
+
+  // Open and close the connection. Nothing may move here.
+  hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State &) override;
+  hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State &) override;
+
+  // Energise and de-energise. Only ACTIVE may move the machine.
+  hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State &) override;
+  hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State &) override;
+
+  // The loop, at controller_manager's update_rate.
+  hardware_interface::return_type read(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
+  hardware_interface::return_type write(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
+};
+}  // namespace my_robot
+```
+
+Inside `read()` you publish what the machine reports, and inside `write()` you send what the
+controller asked for, both addressed by the interface names your URDF declared:
+
+```cpp
+hardware_interface::return_type MyRobotHardware::read(
+  const rclcpp::Time &, const rclcpp::Duration &)
+{
+  set_state("joint_1/position", encoder_radians_);
+  return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type MyRobotHardware::write(
+  const rclcpp::Time &, const rclcpp::Duration &)
+{
+  const double target = get_command("joint_1/position");
+  send_to_drive(target);
+  return hardware_interface::return_type::OK;
+}
+```
+
+The large thing you do not write is the interface export. At 4.48.0 the framework builds the
+state and command interfaces from the `<ros2_control>` block in the URDF, and the header says so
+in the deprecation itself: `export_state_interfaces()` and `export_command_interfaces()` are
+marked *"Replaced by ... on_export_state_interfaces() ... Exporting is handled by the
+Framework."* You override `on_export_state_interfaces()` only to add interfaces that the URDF
+does not declare. In the ordinary case you declare them in the URDF and reach them by name, as
+above.
+
+> [!warning] This API moved inside the Jazzy line, so check your own version
+> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1, and the header was refactored within that line — `system_interface.hpp` is now three lines that include `hardware_component_interface.hpp`, where the declarations actually live. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
 
 ### 4. Drivers, and what to check before trusting one
 
@@ -327,8 +392,72 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 
 주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 오류가 아니라 지터로 나타난다.
 
-> [!warning] Jazzy 브랜치에서 인터페이스 export API는 이전 중이다
-> 오래된 컴포넌트는 `std::vector<StateInterface>`를 반환하는 `export_state_interfaces()`와 `std::vector<CommandInterface>`를 반환하는 `export_command_interfaces()`를 구현한다. `ros-controls/ros2_control`의 현재 `jazzy` 브랜치에서는 둘 다 deprecated로 표시되어 있고, 공유 포인터 벡터를 반환하는 `on_export_state_interfaces()` / `on_export_command_interfaces()`가 대신 쓰이며, `on_init`에는 두 번째 오버로드가 생겼다. 블로그 글에서 클래스 뼈대를 복사하지 말고 실제로 설치된 버전의 헤더를 읽어라. 패치 릴리스 사이에서 움직이는 종류의 디테일이다.
+#### 뼈대, 설치된 헤더에서 읽어 온 것
+
+`hardware_interface` **4.48.0** 기준이다. 오늘 Jazzy에서 `apt`가 설치하는 버전이다. 이
+버전에서 `SystemInterface`는 `HardwareComponentInterface`의 얇은 하위 클래스이고 `write()`를
+순수 가상으로 만든다. 나머지 재정의 대상은 모두 기반 클래스에서 온다. 재정의하는 것이 셋,
+그리고 재정의하지 *않는* 큰 것이 하나다.
+
+```cpp
+#include "hardware_interface/system_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
+
+namespace my_robot
+{
+class MyRobotHardware : public hardware_interface::SystemInterface
+{
+public:
+  // <ros2_control> 블록을 파싱한다. params.hardware_info가 그것을 담는다.
+  hardware_interface::CallbackReturn on_init(
+    const hardware_interface::HardwareComponentInterfaceParams & params) override;
+
+  // 연결을 열고 닫는다. 여기서는 아무것도 움직여서는 안 된다.
+  hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State &) override;
+  hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State &) override;
+
+  // 전원을 넣고 끈다. ACTIVE에서만 기계가 움직일 수 있다.
+  hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State &) override;
+  hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State &) override;
+
+  // 루프. controller_manager의 update_rate로 돈다.
+  hardware_interface::return_type read(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
+  hardware_interface::return_type write(
+    const rclcpp::Time & time, const rclcpp::Duration & period) override;
+};
+}  // namespace my_robot
+```
+
+`read()` 안에서는 기계가 보고하는 값을 싣고, `write()` 안에서는 제어기가 요청한 값을 내보낸다.
+둘 다 URDF가 선언한 인터페이스 이름으로 주소를 붙인다.
+
+```cpp
+hardware_interface::return_type MyRobotHardware::read(
+  const rclcpp::Time &, const rclcpp::Duration &)
+{
+  set_state("joint_1/position", encoder_radians_);
+  return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type MyRobotHardware::write(
+  const rclcpp::Time &, const rclcpp::Duration &)
+{
+  const double target = get_command("joint_1/position");
+  send_to_drive(target);
+  return hardware_interface::return_type::OK;
+}
+```
+
+작성하지 *않는* 큰 것은 인터페이스 export다. 4.48.0에서는 프레임워크가 URDF의
+`<ros2_control>` 블록에서 상태·명령 인터페이스를 만든다. 헤더의 deprecation 문구가 그렇게
+적고 있다. `export_state_interfaces()`와 `export_command_interfaces()`에 *"Replaced by ...
+on_export_state_interfaces() ... Exporting is handled by the Framework."* 라고 붙어 있다.
+`on_export_state_interfaces()`를 재정의하는 것은 URDF가 선언하지 않은 인터페이스를 더할 때뿐이다.
+보통은 URDF에 선언하고 위처럼 이름으로 접근한다.
+
+> [!warning] 이 API는 Jazzy 계열 *안에서* 움직였으니 자기 버전을 확인하라
+> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 그 사이에 헤더가 재편됐다. `system_interface.hpp`는 이제 세 줄짜리이고 선언은 `hardware_component_interface.hpp`에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
 
 ### 4. 드라이버, 그리고 믿기 전에 확인할 것
 
