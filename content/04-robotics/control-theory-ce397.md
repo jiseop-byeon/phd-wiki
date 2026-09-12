@@ -236,8 +236,9 @@ Delay also behaves like a right-half-plane zero, which is the deeper reason it i
 the first-order Padé approximation $\frac{1-s\tau/2}{1+s\tau/2}$ has a zero at $2/\tau$, so
 79 ms is a zero at 25.3 rad/s (4.0 Hz) sitting right where you wanted bandwidth.
 
-**Bode's integral — the constraint no design escapes.** For an internally stable loop whose
-$sL(s) \to 0$,
+**Bode's integral — the constraint no design escapes.** For an internally stable loop with
+$sL(s) \to 0$ **as $s \to \infty$** — the book calls that assumption essential, and without it the
+sensitivity can be made arbitrarily small —
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
@@ -251,7 +252,7 @@ $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$ over righ
 zeros, says **slow RHP zeros are worse than fast ones**, while the first says **fast RHP
 poles are worse than slow ones**.
 
-**Worked — a specification that is provably unreachable.** The X-29 aircraft has a
+**Worked — a specification the margins say may not be reachable.** The X-29 aircraft has a
 right-half-plane pole at $p = 6$ rad/s, actuators good to $\omega_a = 40$ rad/s, and a
 desired loop bandwidth $\omega_1 = 3$ rad/s. Ask for the smallest sensitivity peak
 consistent with Bode's integral for a sensitivity shaped as $|S|$ rising linearly to $M_s$
@@ -340,10 +341,11 @@ Read it as three corrections drawn from three views of the same error — its pr
 
 - **P** pushes proportional to error (raises $\omega_n$ — faster, but too much causes ringing).
 - **D** pushes against the error's *rate* (adds damping, raises $\zeta$) — and amplifies
-  sensor noise, so it is always used with a filter (whose lag then eats into **phase margin**
-  — the extra phase lag, in degrees at the gain-crossover frequency, the loop can absorb
-  before its correction reinforces the error instead of cancelling it. Divide it by that
-  frequency and you get the *delay* margin in seconds; the two are related but not
+  sensor noise, so it is nearly always used with a filter (whose lag then eats into **phase
+  margin** — the extra phase lag the loop can absorb at the gain-crossover frequency before its
+  correction reinforces the error instead of cancelling it. Divide it **in radians** by that
+  frequency and you get the *delay* margin in seconds, as §5.5 does; degrees divided by rad/s
+  is 57.3 times too large; the two are related but not
   interchangeable across controllers of different bandwidth,
   [[02-foundations/signal-processing|signal processing §4]]).
 - **I** integrates residual error to kill steady-state offset — and introduces
@@ -406,7 +408,7 @@ point only*. Three consequences you will meet in papers:
 | "outperforms classical control" | against a *tuned* classical controller with feedforward, or a strawman P controller? |
 
 > [!tip] Going deeper · 더 깊이
-> Åström & Murray, [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page) (Princeton, free) is the textbook this page is a compressed reading of, and it is written for exactly this audience — engineers who need the ideas rather than the theorem sequence. Read ch.6–8 for state space and output feedback, ch.9–10 for the frequency domain, and ch.11 for PID and integrator windup. Its examples are drawn from across engineering rather than robotics, so keep §9 of this page open beside it: the gap between a linear model and a real machine is the part the book treats lightly and the part your papers live in.
+> Åström & Murray, [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page) (Princeton, free) is the textbook this page is a compressed reading of, and it is written for exactly this audience — engineers who need the ideas rather than the theorem sequence. Read ch.6–8 for state space and output feedback, ch.9–10 for the frequency domain, and ch.11 for PID and integrator windup. Its examples are drawn from across engineering rather than robotics, so keep §9 of this page open beside it: the gap between a linear model and a real machine is where your papers live — the book does cover it, in §8.5 on gain scheduling, §10.5 on describing functions for saturation, §11.4 on integral windup and §14.6 on nonlinear effects, so read those alongside §9 rather than instead of it.
 
 ### Self-check
 
@@ -654,7 +656,7 @@ $(1.571-0.785)/31.4=25$ ms다. 거꾸로 79 ms가 주어지면 **지연 전 90°
 $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 79 ms는 25.3 rad/s(4.0 Hz)의
 영점이고, 바로 당신이 대역폭을 원하던 자리에 앉는다.
 
-**보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** $sL(s) \to 0$인 내부 안정 루프에 대해
+**보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** $s \to \infty$에서 $sL(s) \to 0$인 내부 안정 루프에 대해(책은 이 가정을 필수라고 부르고, 이것이 없으면 감도를 얼마든지 작게 만들 수 있다고 적는다)
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
@@ -666,7 +668,7 @@ $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는 **느린 RHP 영점이
 빠른 것보다 나쁘다**고 말하고, 앞의 것은 **빠른 RHP 극점이 느린 것보다 나쁘다**고 말한다.
 
-**계산 — 증명 가능하게 도달 불가능한 사양.** X-29 항공기는 $p = 6$ rad/s에 우반평면 극점을
+**계산 — 여유가 도달 불가능할 수 있다고 말하는 사양.** X-29 항공기는 $p = 6$ rad/s에 우반평면 극점을
 갖고, 구동기는 $\omega_a = 40$ rad/s까지 쓸 만하며, 원하는 루프 대역폭은 $\omega_1 = 3$
 rad/s다. $|S|$가 $\omega_1$까지 선형으로 $M_s$까지 오르고, $\omega_a$까지 $M_s$로 평평하며,
 그 위로는 1인 모양이라 두고, 보드 적분과 양립하는 가장 작은 감도 최댓값을 구하자. 적분은
@@ -752,8 +754,8 @@ $$u = K_p e + K_i\int e\,dt + K_d\dot e, \qquad e = x_{des} - x$$
 
 - **P**는 오차에 비례해 민다($\omega_n$을 올린다 — 빨라지지만 과하면 울린다).
 - **D**는 오차의 *변화율*에 맞선다(감쇠를 더해 $\zeta$를 올린다) — 그리고 센서 잡음을
-  증폭하므로 항상 필터와 함께 쓰이고, 그 필터의 지연이 다시 **위상 여유**(phase margin)를
-  깎는다 — 위상 여유란 이득 교차 주파수에서 루프가 더 견딜 수 있는 위상 지연을 도(度)로 잰 값이다. 그것을 그 주파수로 나누면 초 단위의 *지연* 여유가 되는데, 대역폭이 다른 제어기 사이에서는 둘을 바꿔 쓸 수 없다. 보정이
+  증폭하므로 거의 언제나 필터와 함께 쓰이고, 그 필터의 지연이 다시 **위상 여유**(phase margin)를
+  깎는다 — 위상 여유란 이득 교차 주파수에서 루프가 더 견딜 수 있는 위상 지연이다. 그것을 **라디안으로** 그 주파수로 나누면 초 단위의 *지연* 여유가 된다. §5.5가 그렇게 한다. 도(度)를 rad/s로 나누면 57.3배 크게 나온다. 둘은 대역폭이 다른 제어기 사이에서는 둘을 바꿔 쓸 수 없다. 보정이
   너무 늦게 도착하면 오차를 상쇄하는 대신 되레 키운다
   ([[02-foundations/signal-processing|신호처리 §4]]).
 - **I**는 잔여 오차를 적분해 정상 상태 오프셋을 없앤다 — 그리고 **적분 와인드업**을
@@ -809,7 +811,7 @@ $$\dot{\hat x} = A\hat x + Bu + L(y - C\hat x)$$
 | "고전 제어를 능가" | 피드포워드가 붙은 *튜닝된* 고전 제어기 대비인가, 허수아비 P 제어기 대비인가? |
 
 > [!tip] 더 깊이 · Going deeper
-> Åström & Murray의 [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page)(Princeton, 무료)가 이 페이지가 압축해 읽은 그 교과서이고, 정확히 이 독자층을 위해 쓰였다 — 정리의 나열이 아니라 발상이 필요한 공학자. 상태공간과 출력 피드백은 6~8장, 주파수 영역은 9~10장, PID와 적분기 와인드업은 11장을 읽어라. 예제가 로보틱스가 아니라 공학 전반에서 오므로 이 페이지의 §9를 옆에 펴 두어라. 선형 모델과 실제 기계 사이의 간극이 책이 가볍게 다루는 부분이자 당신의 논문들이 사는 부분이다.
+> Åström & Murray의 [*Feedback Systems*](https://fbswiki.org/wiki/index.php/Main_Page)(Princeton, 무료)가 이 페이지가 압축해 읽은 그 교과서이고, 정확히 이 독자층을 위해 쓰였다 — 정리의 나열이 아니라 발상이 필요한 공학자. 상태공간과 출력 피드백은 6~8장, 주파수 영역은 9~10장, PID와 적분기 와인드업은 11장을 읽어라. 예제가 로보틱스가 아니라 공학 전반에서 오므로 이 페이지의 §9를 옆에 펴 두어라. 선형 모델과 실제 기계 사이의 간극이 당신의 논문들이 사는 곳이다. 책도 그것을 다룬다. 게인 스케줄링은 §8.5, 포화에 대한 describing function은 §10.5, 적분기 와인드업은 §11.4, 비선형 효과는 §14.6이다. §9 대신이 아니라 §9와 나란히 읽어라.
 
 ### 스스로 점검
 

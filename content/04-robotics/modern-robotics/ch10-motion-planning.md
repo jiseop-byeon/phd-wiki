@@ -20,13 +20,16 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **The framing**: obstacles in the workspace become **C-space obstacles** — planning is
   navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration space]], where the robot is a point.
 - **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic)
-  — complete and optimal on the grid, but the grid explodes exponentially with dof.
+  — complete on the grid, and optimal there given an admissible heuristic plus the revisit
+  bookkeeping a closed set needs (see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3), but the grid explodes exponentially with dof.
 - **Sampling-based planning** — the high-dof workhorses:
   - **RRT**: grow a tree by sampling random configurations and extending toward them;
     RRT\* adds rewiring for asymptotic optimality.
   - **PRM**: sample many configurations, connect neighbors into a roadmap, then query.
-  - Guarantee: **probabilistic completeness** — if a solution exists, you'll find it
-    eventually (no promise about when, or how ugly; hence post-smoothing).
+  - Guarantee: **probabilistic completeness** — the probability of finding an existing solution
+    tends to one as sampling continues. That is weaker than *resolution* completeness, which
+    finds an existing solution in finite time. No promise about when, or how ugly; hence
+    post-smoothing.
 - Nonholonomic/kinodynamic planning: sample *controls* instead of configurations when
   velocity constraints bind (cars, [[04-robotics/convex-mpc-legged|legged machines]]).
 
@@ -48,12 +51,12 @@ proposals get filtered through.
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
 - **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱)를
-  돌린다 — 격자 위에서 완전하고 최적이지만, 격자가 자유도에 지수적으로 폭발한다.
+  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3). 다만 격자가 자유도에 지수적으로 폭발한다.
 - **샘플링 기반 계획** — 고자유도의 주력:
   - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
     재배선을 더해 점근적 최적성을 얻는다.
   - **PRM**: 많이 샘플링해 이웃을 로드맵으로 연결한 뒤 질의한다.
-  - 보장: **확률적 완전성** — 해가 존재하면 언젠가는 찾는다 (언제인지, 얼마나 못생겼는지는
+  - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. 유한 시간 안에 찾아내는 *해상도* 완전성보다 약한 보장이다. (언제인지, 얼마나 못생겼는지는
     약속 없음; 그래서 사후 평활화를 한다).
 - 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때는 컨피규레이션 대신 *제어*를
   샘플링한다(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).

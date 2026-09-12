@@ -30,7 +30,7 @@ fine-tuning on real machines, and how to read an RL experimental section.
 ### 1. The MDP
 
 - **Markov Decision Process** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: states, actions,
-  transition kernel $p(s'|s,a)$, reward $r(s,a)$, discount $\gamma \in [0,1)$.
+  transition kernel $p(s'|s,a)$, reward $r(s,a)$, discount $\gamma \in [0,1]$ — Sutton and Barto write "$0 \le \gamma \le 1$", and $\gamma = 1$ is admissible once episodes terminate, which is why §4 below can derive the policy gradient for an undiscounted finite-horizon return.
   Markov = the state summarizes the past ([[02-foundations/probability|probability]]).
 - **Policy** $\pi(a|s)$; **return** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; objective
   $J(\pi) = E_\pi[G_0]$. Discounting makes infinite sums finite and encodes impatience;
@@ -147,7 +147,7 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 46.9 \text{ after 50 swe
 
 Set $\gamma = 0.8$ instead and the multiplier is $0.96$ and it converges to zero. Or keep
 $\gamma = 0.9$ and let episodes terminate with $\varepsilon = 0.2$ — multiplier $0.936$,
-converges again, because termination makes the update distribution less off-policy.
+converges again. Note what $\varepsilon$ changes: it enters the least-squares objective through the *bootstrap target*, the expected one-step return, not through the update distribution — the sweep stays a uniform pass over both states either way. Off-policy-ness is a separate leg of the triad.
 
 Look at what is *not* available as an excuse. There is no learning rate to lower — the fit
 is exact. There is no noise — the model is known. There is no reward to misdesign — they are
@@ -607,7 +607,7 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 ### 1. MDP
 
 - **마르코프 결정 과정** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: 상태, 행동, 전이 커널
-  $p(s'|s,a)$, 보상 $r(s,a)$, 할인율 $\gamma \in [0,1)$.
+  $p(s'|s,a)$, 보상 $r(s,a)$, 할인율 $\gamma \in [0,1]$ — Sutton과 Barto는 "$0 \le \gamma \le 1$"로 쓰고, 에피소드가 종료하면 $\gamma = 1$도 허용된다. 아래 §4가 할인 없는 유한 지평 수익으로 정책 경사를 유도할 수 있는 이유다.
   마르코프 = 상태가 과거를 요약한다 ([[02-foundations/probability|확률]]).
 - **정책** $\pi(a|s)$; **리턴** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; 목표
   $J(\pi) = E_\pi[G_0]$. 할인은 무한 합을 유한하게 만들고 조급함을 인코딩한다;
@@ -717,8 +717,10 @@ $1.08$을 준다.
 $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.9$$
 
 대신 $\gamma = 0.8$로 두면 배수가 $0.96$이라 0으로 수렴한다. 또는 $\gamma = 0.9$를 유지하되
-에피소드가 $\varepsilon = 0.2$로 종료되게 하면 배수 $0.936$으로 다시 수렴한다. 종료가 갱신
-분포를 덜 오프폴리시하게 만들기 때문이다.
+에피소드가 $\varepsilon = 0.2$로 종료되게 하면 배수 $0.936$으로 다시 수렴한다. $\varepsilon$이
+무엇을 바꾸는지 보라. 최소제곱 목적함수에 들어가되 갱신 분포가 아니라 *부트스트랩 타깃*, 즉
+기대 1스텝 수익을 통해 들어간다. 스윕은 어느 쪽이든 두 상태를 균일하게 도는 것 그대로다.
+오프폴리시성은 삼요소의 별개 다리다.
 
 변명거리로 쓸 수 *없는* 것들을 보라. 낮출 학습률이 없다 — 적합이 정확하다. 잡음이 없다 —
 모델을 안다. 잘못 설계할 보상이 없다 — 전부 0이다. 표현 오차가 없다 — 참 답이 함수 집합 안에

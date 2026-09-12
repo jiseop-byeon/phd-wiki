@@ -69,8 +69,9 @@ When a paper says “action,” identify whether it means joint position, veloci
 | Command processing | 5 ms |
 | **Observation-to-action** | **70 ms** |
 
-At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Budgets tighten by three
-orders of magnitude when a person is inside the loop: a haptic device closes at about 1 kHz,
+At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Budgets tighten by more than an
+order of magnitude when a person is inside the loop: a haptic device closes at about 1 kHz
+against this page's 70 ms observation-to-action budget,
 so the millisecond is the unit rather than the frame
 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]).
 
@@ -321,7 +322,7 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | **관측→행동** | **70 ms** |
 
 1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 사람이 루프 안에 들어오면
-예산이 세 자릿수만큼 빡빡해진다. 햅틱 장치는 약 1 kHz로 닫히므로 단위가 프레임이 아니라
+예산이 한 자릿수 넘게 빡빡해진다. 이 페이지의 관측-행동 예산 70 ms에 견주어 햅틱 장치는 약 1 kHz로 닫히므로 단위가 프레임이 아니라
 밀리초다 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 
 <svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="70 ms 관측&#8594;행동 예산을 실제 비율로 그린 그림">

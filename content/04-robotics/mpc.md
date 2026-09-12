@@ -69,7 +69,11 @@ and if the terminal cost decreases by **at least the stage cost** under that con
 that $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$, the optimal cost becomes a Lyapunov function and
 the origin is **asymptotically** stable, with the feasible set as its domain of attraction.
 Merely decreasing is not enough; the decrease has to dominate the stage cost, and the
-conclusion holds only from states that were feasible to begin with. Read the survey after the optimization page's example; skim §2–3 for
+conclusion holds only from states that were feasible to begin with. That inequality is one
+assumption of four, not the whole hypothesis: Borrelli's Theorem 12.2 also requires the stage
+and terminal costs to be continuous and positive definite, the sets to be closed and to contain
+the origin in their interior, and the terminal set to be control invariant inside the state
+constraints. Rawlings adds a lower bound on the stage cost and a weak-controllability condition. Read the survey after the optimization page's example; skim §2–3 for
 the formulation and stability conditions rather than every proof.
 
 > [!note] First pass · 처음이라면
@@ -227,7 +231,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 그 집합이 상태 제약 안에 있으며 이어 붙이는 입력도 입력 제약 안에 있다는 뜻), 오늘의 실행
 가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한 스텝을 이어 붙이면 된다) —
 이것이 MPC 논문들이 이름으로 부르는 **recursive feasibility**다. 그리고 종단 비용이 그
-제어기 아래 **최소한 단계 비용만큼** 감소하면, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$이면,
+제어기 아래 **최소한 단계 비용만큼** 감소하면, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$이면(이것은 가정 넷 중 하나일 뿐이다. Borrelli의 정리 12.2는 단계 비용과 종단 비용이 연속이고 양정부호일 것, 집합들이 닫혀 있고 원점을 내부에 포함할 것, 종단 집합이 상태 제약 안에서 제어 불변일 것도 함께 요구하고, Rawlings는 단계 비용의 하한과 약한 제어가능성 조건을 더한다),
 최적 비용이 리아푸노프 함수가 되고 원점이 **점근적으로** 안정해진다. 그 흡인 영역은 실행
 가능 집합이다. 그냥 감소하는 것으로는 부족하고 감소가 단계 비용을 압도해야 하며, 결론은
 애초에 실행 가능했던 상태에서만 성립한다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는

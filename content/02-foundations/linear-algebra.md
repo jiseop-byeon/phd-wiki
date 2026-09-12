@@ -67,7 +67,8 @@ In the attention example above, select one row of the score matrix. That row con
 - **Least squares** — the most-used derivation in applied math. Overdetermined $Ax \approx b$:
   minimize $\|Ax - b\|^2$. Setting the gradient to zero:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (the **normal equations**). Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
+  (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS makes that
+  assumption explicitly, and it is what makes $A^\top A$ invertible. Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. Linear regression,
   calibration, and the Kalman filter's update all live here.
   **Worked, three points and a line.** Fit $y = c + mx$ to $(1,1), (2,3), (3,4)$ — three
@@ -502,7 +503,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **최소제곱** — 응용수학에서 가장 많이 쓰는 유도. 과결정 $Ax \approx b$:
   $\|Ax - b\|^2$ 최소화. 그래디언트를 0으로 놓으면:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (**정규방정식**). 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
+  (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
   **계산 예제 — 점 셋에 직선 하나.** $(1,1), (2,3), (3,4)$에 $y = c + mx$를 맞춰 보자 —
   식 셋, 미지수 둘, 정확한 해는 없다. 쌓으면

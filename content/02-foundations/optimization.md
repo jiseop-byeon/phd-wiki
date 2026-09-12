@@ -182,7 +182,7 @@ a trust parameter.
 - **Conditioning is squared.** For full-column-rank $J$ in the 2-norm,
   $\kappa(J^\top J) = \kappa(J)^2$, so a Jacobian with
   condition number 100 gives normal equations at $10^4$
-  ([[02-foundations/linear-algebra|1. Linear algebra §4]]). QR avoids explicitly squaring
+  ([[02-foundations/linear-algebra|1. Linear Algebra §3]], where the singular-value ratio is defined). QR avoids explicitly squaring
   the condition number and is often the safer dense choice. Sparse normal-Cholesky methods
   do form the normal equations because they can be faster and exploit sparsity; their
   numerical tradeoff must be managed. When a paper reports trouble near singular
@@ -492,7 +492,7 @@ Gauss–Newton으로:
 - **조건수가 제곱된다.** 열 랭크가 가득 찬 $J$의 2-노름에서는
   $\kappa(J^\top J) = \kappa(J)^2$이므로, 조건수 100인
   야코비는 정규방정식에서 $10^4$이 된다
-  ([[02-foundations/linear-algebra|1. 선형대수 §4]]). QR은 조건수를 명시적으로 제곱하지 않아
+  ([[02-foundations/linear-algebra|1. 선형대수 §3]]. 특이값 비로 정의하는 곳이다). QR은 조건수를 명시적으로 제곱하지 않아
   조밀 문제에서 흔히 더 안전하다. 반면 희소 normal-Cholesky는 $J^\top J$를 만들더라도
   희소성과 속도 때문에 실제 솔버에서 쓰이며, 수치적 대가를 관리해야 한다. 논문이 특이 자세
   근처의 수치 문제를 보고할 때 이 조건수 기전이 살펴볼 곳 중 하나다.

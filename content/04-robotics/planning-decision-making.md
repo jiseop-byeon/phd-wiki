@@ -65,9 +65,10 @@ appendix.
 - **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
   Cost combines inflation with whatever else the robot should avoid: unknown space, rough
   terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
-  being a plan and becomes geometry** — this is the representation
-  [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy §1]] argues is
-  the wrong place to encode a learned affordance, and you need to know what it is to see why.
+  being a plan and becomes geometry** — and it is the representation
+  [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy §1]] argues *is*
+  the right carrier for a learned affordance, since the same scene yields different costmaps for
+  different robots. What that page rejects is the plain occupancy grid, the geometric predicate.
 - **Layered costmaps** — production stacks keep several layers (static map, obstacles, inflation,
   sensor-specific) and compose them, so that clearing a stale obstacle does not erase the map.
 - **Frontier** — a boundary cell between *known free* and *unknown*. **Frontier exploration**
@@ -314,7 +315,8 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
   팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
   진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
   [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성 §1]]이 학습된
-  어포던스를 넣기에 잘못된 자리라고 논하는 바로 그 표현이고, 왜 그런지 보려면 이것이
+  어포던스를 담기에 *맞는* 그릇이라고 논하는 바로 그 표현이다. 같은 장면이 로봇마다 다른
+  costmap을 내놓기 때문이다. 그 페이지가 거부하는 것은 기하 술어인 점유 격자 쪽이고, 그것을 보려면 이것이
   무엇인지 알아야 한다.
 - **계층형 비용 지도** — 실제 스택은 여러 층(정적 지도, 장애물, 팽창, 센서별)을 두고 합성한다.
   그래야 낡은 장애물 하나를 지우는 일이 지도를 지워버리지 않는다.

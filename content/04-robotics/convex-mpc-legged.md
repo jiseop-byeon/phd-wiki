@@ -23,11 +23,11 @@ The cleanest case study of the skill the optimization page teaches: choose the a
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*: approximate the robot as a single rigid body (ignore leg
-dynamics), linearize the rotation dynamics around the current yaw, and treat ground
+dynamics), linearize the rotation dynamics around the *average* yaw over the reference trajectory — not the current one — under a small roll-and-pitch assumption, and treat ground
 reaction forces as the decision variables and approximate each circular friction cone by
 linear facets (a friction pyramid). Those linear inequalities keep the problem a **convex
 QP** that solved in under a millisecond in the reported implementation and was re-run at
-tens of Hz (Di Carlo et al. report 20–30 Hz; [[04-robotics/mpc|7. MPC §2]] sizes the same model at 50 Hz) — exactly the machinery of
+tens of Hz (Di Carlo et al.'s abstract says 20–30 Hz while their experiments ran at 25 to 50 Hz depending on gait, so the 50 Hz [[04-robotics/mpc|7. MPC §2]] sizes is the top of the paper's own range, not a disagreement) — exactly the machinery of
 [[02-foundations/optimization|4. Optimization §5]]. Cheetah 3 galloped on this; the
 follow-up (Kim et al., open access) pairs the MPC with whole-body impulse control — the
 standard two-level stack (slow MPC plans forces, fast WBC tracks them) that echoes
@@ -47,10 +47,10 @@ locomotion policies (RL) are compared against.
 최적화 페이지가 가르치는 기술 — 문제를 볼록하게 만드는 근사를 고르는 것 — 의 가장 깔끔한 사례 연구다.*
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*다:
-로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 현재 요(yaw) 주변에서
+로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 현재 요가 아니라 기준 궤적 전체의 *평균* 요 주변에서, 롤과 피치가 작다는 가정 아래
 선형화하고, 지면 반력을 결정 변수로 삼되 원형 마찰 원뿔을 선형 면들로 이루어진 마찰 피라미드로
 근사한다. 이 선형 부등식 덕분에 보고된 구현에서 1밀리초 안에 풀리고 수십 Hz로 다시 도는
-(Di Carlo 등은 20~30 Hz, [[04-robotics/mpc|7. MPC §2]]는 같은 모델을 50 Hz로 잡는다)
+(Di Carlo 등의 초록은 20~30 Hz지만 실험은 보행 방식에 따라 25~50 Hz로 돌았다. 그러니 [[04-robotics/mpc|7. MPC §2]]가 잡는 50 Hz는 논문 자신의 범위 상단이지 불일치가 아니다)
 **볼록 QP**가 된다. 정확히 [[02-foundations/optimization|4. 최적화 §5]]의
 기계장치다. Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를 전신 임펄스
 제어와 결합한다 — 느린 MPC가 힘을 계획하고 빠른 WBC가 추종하는 표준 2단 스택으로,
@@ -60,7 +60,7 @@ locomotion policies (RL) are compared against.
 만드는 근사를 고르고, 정확도는 재풀이 속도로 되산다* — 의 가장 깔끔한 사례 연구다.
 학습 기반 보행 정책(RL)이 비교당하는 고전 베이스라인이기도 하다.
 
-**권장 경로**: [[02-foundations/optimization|최적화 페이지]] → arXiv 논문의 §III~IV
+**권장 경로**: [[02-foundations/optimization|최적화 페이지]] → Di Carlo IROS 논문의 §III~IV(동역학 단순화 + MPC)
 (동역학 단순화 + QP) → IROS 원문은 결과 위주로 훑기.
 
 ### 연결

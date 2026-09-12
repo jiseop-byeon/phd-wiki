@@ -127,7 +127,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
 Three **closure** properties make the Gaussian the workhorse — "closure" meaning the answer
-is still a Gaussian, so you never leave the family and never need a harder distribution:
+is still a Gaussian, so **affine** operations never leave the family:
 
 1. **Affine maps**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$.
 2. **Sums** of independent Gaussians are Gaussian (variances add).
@@ -136,7 +136,7 @@ is still a Gaussian, so you never leave the family and never need a harder distr
    — the conditional mean is a *linear* correction weighted by correlation-to-variance.
    Memorize the shape of this formula: it *is* the Kalman gain.
 
-Also: CLT says sums of many independent effects → Gaussian, which is why noise models
+Also: CLT says sums of many i.i.d. effects *of finite variance* → Gaussian, which is why noise models
 default to it; and the Gaussian is the max-entropy distribution for fixed mean/variance
 ([[02-foundations/information-theory|information theory]]) — the "least presumptuous" choice.
 
@@ -177,11 +177,11 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   **median** ($2.0$ here too, but it would differ if the $2.1$ reading were $9.0$ — the mean
   would jump to $3.38$ and the median would not move at all). *Many likelihood-based losses
   encode a noise or observation-model assumption; not every learning objective is a likelihood.*
-  **MSE regression is MLE under Gaussian noise; cross-entropy is MLE for categorical
+  **MSE regression is MLE under Gaussian noise of fixed variance; cross-entropy is MLE for categorical
   outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
   are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
   though not all: contrastive and some self-supervised objectives are not simple MLE.
-- **MAP**: add $\log p(\theta)$. A Gaussian prior on weights ⇒ $+\lambda\|\theta\|^2$ —
+- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $+\lambda\|\theta\|^2$ — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
   **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
@@ -364,7 +364,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
 세 가지 **닫힘(closure)** 성질이 가우시안을 주력으로 만든다 — "닫힘"이란 결과가 여전히
-가우시안이라는 뜻이다. 즉 이 가족을 벗어날 일이 없고, 더 어려운 분포가 필요해지지 않는다:
+가우시안이라는 뜻이다. 즉 **아핀** 연산은 이 가족을 벗어나지 않는다:
 
 1. **아핀 사상**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$
 2. 독립 가우시안의 **합**은 가우시안 (분산이 더해진다).
@@ -373,7 +373,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
    — 조건부 평균은 상관/분산으로 가중된 *선형* 보정이다. 이 공식의 모양을 기억하라:
    이것이 *곧* 칼만 이득이다.
 
-또한: CLT는 많은 독립 효과의 합이 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유);
+또한: CLT는 *분산이 유한한* i.i.d. 효과 여럿의 합이 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유. 코시 분포처럼 분산이 없으면 성립하지 않는다);
 그리고 가우시안은 평균·분산이 고정일 때 최대 엔트로피 분포다
 ([[02-foundations/information-theory|정보이론]]) — "가장 덜 주제넘은" 선택.
 
@@ -413,11 +413,11 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   가정하면 MLE는 **중앙값**이 된다(여기서는 $2.0$으로 같지만, $2.1$ 측정값이 $9.0$이었다면
   평균은 $3.38$로 튀고 중앙값은 전혀 움직이지 않는다). *많은 회귀·분류 손실은 확률적 관측
   가정으로 해석할 수 있지만, 모든 학습 목적함수가 잡음 모델인 것은 아니다.*
-  **MSE 회귀는 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
+  **MSE 회귀는 분산이 고정된 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
-- **MAP**: $\log p(\theta)$를 더한다. 가중치의 가우시안 사전 ⇒ $+\lambda\|\theta\|^2$ —
+- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ $+\lambda\|\theta\|^2$ — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
   **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
