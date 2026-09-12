@@ -354,6 +354,35 @@ ros2 param dump /controller_server
 
 The ordering is the point. A parameter you change before checking TF is a parameter you will have to change back.
 
+### 13.5 The route server, and when a graph beats free space
+
+Everything above plans through free space: give it a goal pose and it searches the costmap for
+a path. The **route server** (`nav2_route`, in the Jazzy binaries as `ros-jazzy-nav2-route`)
+does the other thing. You hand it a **route graph** — nodes and directed edges you defined —
+and it searches that graph instead. Its own description is "a Route Graph planner to
+compliment the Planner Server", and it is used either to replace free-space planning where a
+route must be followed closely, or to do the long-distance routing while the ordinary planner
+handles the immediate neighbourhood.
+
+Three properties make it a different tool rather than a worse planner. Edges are **directed**,
+so one-way lanes are expressible. **Edge scoring is a plugin**, so the cost of traversing an
+edge can encode whatever the site knows — a penalty for a dangerous stretch, a preference for a
+main haul road, an edge marked invalid because another machine is on it. And **operations** fire
+on entering or leaving an edge or on reaching a node: wait for clearance, change the speed
+limit, switch mode, check for a future collision. The graph carries arbitrary metadata that
+those plugins read.
+
+That last paragraph is why this matters more on a construction site than in a corridor. A site
+already has haul roads, one-way loops, restricted zones, and things that must happen at
+particular points rather than anywhere. Expressing that as a graph with per-edge semantics is
+closer to how the work is actually organised than asking a free-space planner to rediscover it
+from an occupancy grid every replan. If your thesis involves a machine moving between defined
+stations on a site, read this server before writing a custom planner.
+
+It is not a beginner's component. Learn the planner, the controller and the costmap first,
+because the route server sits beside them rather than replacing them, and its graph has to come
+from somewhere — annotated by hand on a SLAM map, or generated.
+
 ### 14. What this page does not cover
 
 Building the map in the first place — SLAM Toolbox, and the `map_server` save cycle — is a separate exercise; the Nav2 first-time robot setup guide covers it. Writing your own planner, controller or costmap layer plugin is the next step past this page and has its own Nav2 tutorials. The waypoint follower, the collision monitor, the velocity smoother and the docking server are all part of the stack and none of them appear here. Multi-robot bringup with namespaces is in `nav2_bringup` but not in this page.
@@ -728,6 +757,32 @@ ros2 param dump /controller_server
 ```
 
 순서가 요점이다. TF를 확인하기 전에 바꾼 파라미터는 결국 되돌리게 될 파라미터다.
+
+### 13.5 route server, 그리고 그래프가 자유공간을 이기는 경우
+
+위의 모든 것은 자유공간에서 계획한다. 목표 자세를 주면 costmap을 탐색해 경로를 찾는다.
+**route server**(`nav2_route`, Jazzy 바이너리에 `ros-jazzy-nav2-route`로 있다)는 다른 일을
+한다. 직접 정의한 노드와 방향성 간선으로 된 **route graph**를 건네면 그 그래프를 탐색한다.
+패키지 자신의 설명은 "Planner Server를 보완하는 Route Graph 플래너"이고, 경로를 바짝 따라야
+할 때 자유공간 계획을 대체하거나, 장거리 경로는 이쪽이 맡고 당장의 근방은 일반 플래너가 맡는
+식으로 쓴다.
+
+이것을 더 나쁜 플래너가 아니라 다른 도구로 만드는 성질이 셋이다. 간선이 **방향성**이라
+일방통행 차선을 표현할 수 있다. **간선 점수 매기기가 플러그인**이라 현장이 아는 것을 비용에
+담을 수 있다. 위험한 구간에 벌점을 주거나, 주요 운반로를 선호하게 하거나, 다른 기계가 있어서
+지금은 못 쓰는 간선을 무효로 표시하는 식이다. 그리고 **operation**이 간선에 들어가고 나갈 때,
+또는 노드에 도달할 때 발동한다. 통행 허가를 기다리고, 속도 제한을 바꾸고, 모드를 전환하고,
+앞으로의 충돌을 확인한다. 그래프는 그 플러그인들이 읽는 임의의 메타데이터를 담는다.
+
+마지막 문단이 이것이 복도보다 건설 현장에서 더 중요한 이유다. 현장에는 이미 운반로와 일방향
+순환로와 제한 구역이 있고, 아무 데서나가 아니라 특정 지점에서 일어나야 하는 일들이 있다. 그것을
+간선별 의미를 가진 그래프로 표현하는 편이, 자유공간 플래너가 재계획할 때마다 점유 격자에서
+그것을 다시 발견하게 시키는 것보다 실제 작업 조직에 가깝다. 논문이 현장의 정해진 지점들 사이를
+오가는 기계를 다룬다면, 직접 플래너를 짜기 전에 이 서버를 먼저 읽어라.
+
+초심자용 구성요소는 아니다. 플래너와 제어기와 costmap을 먼저 배워라. route server는 그것들을
+대체하는 것이 아니라 옆에 서는 것이고, 그래프도 어딘가에서 와야 한다. SLAM 지도 위에 손으로
+주석을 달거나 생성하는 식이다.
 
 ### 14. 이 페이지가 다루지 않는 것
 
