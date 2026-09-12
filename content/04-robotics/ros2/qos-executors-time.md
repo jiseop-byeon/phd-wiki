@@ -198,7 +198,7 @@ Node name: my_subscriber
 
 Read the two `Reliability` lines against the table in section 3 and you have your answer in one screen. Do this *before* you read any source code: the profile printed here is the one actually in force, which is not always the one you believe you wrote.
 
-One CLI behaviour will mislead you. `ros2 topic echo` defaults to the sensor-data profile but then *inspects the publishers and adapts*: if every publisher offers reliable it requests reliable, if any is best effort it falls back to best effort, and the same for transient local, printing a note when it falls back. So **`ros2 topic echo` will usually show you data on a topic your own node cannot receive** — a feature for inspection, a trap for diagnosis. To make `echo` behave like your node, pin the policy yourself:
+One CLI behaviour will mislead you. `ros2 topic echo` defaults to the sensor-data profile but then *inspects the publishers and adapts*: if every publisher offers reliable it requests reliable, if any is best effort it falls back to best effort, and the same for transient local. It prints a note only in the *mixed* case — "Some, but not all, publishers are offering…" — so when every publisher is best effort it adapts in silence. Absence of a note is not evidence that it did not adapt. So **`ros2 topic echo` will usually show you data on a topic your own node cannot receive** — a feature for inspection, a trap for diagnosis. To make `echo` behave like your node, pin the policy yourself:
 
 ```bash
 ros2 topic echo /image --qos-reliability reliable   # now it fails the same way your node does
@@ -358,17 +358,17 @@ ros2 topic echo /demo_qos --qos-reliability best_effort
 
 Messages appear immediately. Re-run `ros2 topic info /demo_qos --verbose` and confirm both ends now read `BEST_EFFORT`.
 
-5. Now the durability half. Publish one latched message and leave it:
+5. Now the durability half. Publish one latched message and **leave the publisher running** — transient local is held in the publisher's own history, so when the process exits the retained sample goes with it. `--once` would exit; use a repeating publish and keep the terminal open:
 
 ```bash
-ros2 topic pub /demo_latched std_msgs/msg/String "{data: the-map}" --qos-durability transient_local --qos-depth 1 --once -w 0
+ros2 topic pub /demo_latched std_msgs/msg/String "{data: the-map}" --qos-durability transient_local --qos-depth 1 --rate 0.2
 ```
 
-Then subscribe *after* it has exited, first with the default volatile request and then with transient local:
+Then, from another terminal *while that one is still running*, subscribe first with the default volatile request and then with transient local. The volatile subscriber sees only messages published after it joins; the transient local one is handed the retained sample immediately:
 
 ```bash
-ros2 topic echo /demo_latched --qos-durability volatile          # nothing: the message is in the past
-ros2 topic echo /demo_latched --qos-durability transient_local   # the message arrives
+ros2 topic echo /demo_latched --qos-durability volatile          # waits for the next one
+ros2 topic echo /demo_latched --qos-durability transient_local   # the retained message arrives at once
 ```
 
 You are done when you can say, without looking, which of the four reliability combinations and which of the four durability combinations fail to connect.
@@ -634,7 +634,7 @@ Node name: my_subscriber
 
 두 `Reliability` 줄을 3절의 표에 대조하면 한 화면에서 답이 나온다. 소스를 읽기 *전에* 이것을 하라. 여기 찍히는 프로파일이 실제로 적용 중인 프로파일이고, 그것이 당신이 썼다고 믿는 프로파일과 늘 같지는 않다.
 
-사람을 속이는 CLI 동작이 하나 있다. `ros2 topic echo`는 기본값이 sensor data 프로파일이지만 *퍼블리셔들을 조사해 스스로를 맞춘다*. 모두 reliable이면 reliable을 요청하고, 하나라도 best effort면 best effort로 물러서며, transient local도 마찬가지이고 물러설 때는 안내 문구를 찍는다. 그래서 **`ros2 topic echo`는 당신 노드가 받지 못하는 토픽에서도 대개 데이터를 보여 준다.** 관측에는 기능이고 진단에는 함정이다. `echo`를 당신 노드처럼 굴게 하려면 정책을 직접 고정하라.
+사람을 속이는 CLI 동작이 하나 있다. `ros2 topic echo`는 기본값이 sensor data 프로파일이지만 *퍼블리셔들을 조사해 스스로를 맞춘다*. 모두 reliable이면 reliable을 요청하고, 하나라도 best effort면 best effort로 물러서며, transient local도 마찬가지다. 다만 안내 문구는 *섞인* 경우에만 찍는다. "Some, but not all, publishers are offering…"이라는 문구이고, 발행자가 전부 best effort이면 아무 말 없이 물러선다. 문구가 없다는 것이 맞춰 가지 않았다는 증거는 아니다. 그래서 **`ros2 topic echo`는 당신 노드가 받지 못하는 토픽에서도 대개 데이터를 보여 준다.** 관측에는 기능이고 진단에는 함정이다. `echo`를 당신 노드처럼 굴게 하려면 정책을 직접 고정하라.
 
 ```bash
 ros2 topic echo /image --qos-reliability reliable   # 이제 당신 노드와 똑같이 실패한다
@@ -794,17 +794,17 @@ ros2 topic echo /demo_qos --qos-reliability best_effort
 
 즉시 메시지가 나온다. `ros2 topic info /demo_qos --verbose`를 다시 돌려 양쪽이 `BEST_EFFORT`인지 확인한다.
 
-5. 이제 durability 쪽. latched 메시지 하나를 발행하고 둔다.
+5. 이제 durability 쪽. latched 메시지를 발행하고 **발행자를 켜 둔 채로** 둔다. transient local은 발행자 자신의 이력에 보관되므로 프로세스가 끝나면 보관본도 함께 사라진다. `--once`는 종료해 버리니 반복 발행으로 터미널을 열어 둔다.
 
 ```bash
-ros2 topic pub /demo_latched std_msgs/msg/String "{data: the-map}" --qos-durability transient_local --qos-depth 1 --once -w 0
+ros2 topic pub /demo_latched std_msgs/msg/String "{data: the-map}" --qos-durability transient_local --qos-depth 1 --rate 0.2
 ```
 
-그것이 끝난 *뒤에* 구독한다. 먼저 기본 volatile 요청으로, 다음에 transient local로.
+그 터미널이 *살아 있는 동안* 다른 터미널에서 구독한다. 먼저 기본 volatile 요청으로, 다음에 transient local로. volatile 구독자는 자기가 합류한 뒤에 발행된 것만 보고, transient local 구독자는 보관본을 즉시 받는다.
 
 ```bash
-ros2 topic echo /demo_latched --qos-durability volatile          # 없음: 메시지는 과거에 있다
-ros2 topic echo /demo_latched --qos-durability transient_local   # 메시지가 온다
+ros2 topic echo /demo_latched --qos-durability volatile          # 다음 것을 기다린다
+ros2 topic echo /demo_latched --qos-durability transient_local   # 보관본이 즉시 온다
 ```
 
 reliability 네 조합과 durability 네 조합 중 어느 것이 연결에 실패하는지 보지 않고 말할 수 있으면 끝난 것이다.

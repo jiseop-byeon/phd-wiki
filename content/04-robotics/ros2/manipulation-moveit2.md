@@ -100,13 +100,13 @@ response_adapters:
 What each stage buys you:
 
 - `ResolveConstraintFrames` rewrites constraints expressed in an object's subframe into a frame the planner knows.
-- `ValidateWorkspaceBounds` supplies a default workspace (a 10 m cube) when the request omits one, so a sampling planner has somewhere bounded to sample.
-- `CheckStartStateBounds` nudges a start state that is *just* outside a joint limit back inside. Real encoders report values slightly past limits; without this the plan fails before it starts.
-- `CheckStartStateCollision` perturbs a start state reported as in collision to a nearby free one.
+- `ValidateWorkspaceBounds` supplies a default workspace when the request omits one, so a sampling planner has somewhere bounded to sample. In Jazzy that default is the `default_workspace_bounds` parameter, whose value is `1000000000000.0` — a cube edge of 1e12 m, effectively unbounded, with the source carrying a TODO saying it should have been infinity. If you need a real bound, set it yourself; do not assume the 10 m cube that older MoveIt hardcoded.
+- `CheckStartStateBounds` **rejects** a start state outside a joint limit — `START_STATE_INVALID`, and the planner never runs. It does not nudge a revolute joint back inside. The one thing it will rewrite is the *rotation* of continuous, planar and floating joints, and only when `fix_start_state` is true, which defaults to false. Real encoders do report values slightly past limits, and this adapter is what turns that into a failure rather than what absorbs it.
+- `CheckStartStateCollision` reports a start state in collision and stops there — `START_STATE_IN_COLLISION`, with the contacts in the message. It does not sample a nearby free state. The plugin description still advertises the ROS 1 behaviour, which was not carried over; the source only sets the error code. Fix the scene or the start state yourself.
 - `AddTimeOptimalParameterization` is the stage that turns a geometric path into a trajectory obeying joint velocity and acceleration limits. **The planner does not produce timing.** Path and trajectory are different objects, and this is where the difference is made.
 - `ValidateSolution` re-checks the finished trajectory. `DisplayMotionPath` publishes it for RViz.
 
-Two consequences. First, a failure message naming an adapter (`CheckStartStateBounds`) is not a planner failure — the planner never ran. Second, the order in that list *is* the execution order, so adding `default_planning_request_adapters/AddRuckigTrajectorySmoothing` for jerk-limited smoothing is a question of where in the list you put it.
+Two consequences. First, a failure message naming an adapter (`CheckStartStateBounds`) is not a planner failure — the planner never ran. Second, the order in that list *is* the execution order, so where you put an adapter matters. But put it in the right list: `AddRuckigTrajectorySmoothing` is registered as `default_planning_response_adapters/AddRuckigTrajectorySmoothing`, a **response** adapter, and belongs under `response_adapters` after `AddTimeOptimalParameterization`. Under `request_adapters` it fails to load at `move_group` startup. Some upstream config comments still show the old request-adapter spelling.
 
 ### 5. The planner families, and which one you actually want
 
@@ -403,13 +403,13 @@ response_adapters:
 각 단계가 사 주는 것:
 
 - `ResolveConstraintFrames` — 물체의 subframe으로 표현된 제약을 플래너가 아는 프레임으로 다시 쓴다.
-- `ValidateWorkspaceBounds` — 요청에 작업 공간이 없으면 기본값(10 m 정육면체)을 넣는다. 샘플링 플래너가 샘플링할 유계 영역이 있어야 한다.
-- `CheckStartStateBounds` — 관절 한계를 *아주 조금* 벗어난 시작 상태를 안쪽으로 밀어 넣는다. 실제 엔코더는 한계를 살짝 넘은 값을 보고하고, 이것이 없으면 계획은 시작 전에 실패한다.
-- `CheckStartStateCollision` — 충돌로 보고된 시작 상태를 근처의 자유 상태로 섭동시킨다.
+- `ValidateWorkspaceBounds` — 요청에 작업 공간이 없으면 기본값을 넣는다. 샘플링 플래너가 샘플링할 유계 영역이 있어야 하기 때문이다. Jazzy에서 그 기본값은 `default_workspace_bounds` 파라미터이고 값이 `1000000000000.0`, 즉 한 변 1e12 m의 사실상 무한한 정육면체다. 소스에도 원래 무한대여야 한다는 TODO가 붙어 있다. 실제 경계가 필요하면 직접 설정하라. 예전 MoveIt이 박아 두었던 10 m 정육면체를 가정하지 마라.
+- `CheckStartStateBounds` — 관절 한계를 벗어난 시작 상태를 **거부한다**. `START_STATE_INVALID`가 뜨고 플래너는 돌지 않는다. 회전 관절을 한계 안으로 밀어 넣어 주지 않는다. 이 어댑터가 고쳐 쓰는 것은 연속·평면·부유 관절의 *회전값*뿐이고, 그것도 `fix_start_state`가 참일 때만인데 기본값은 거짓이다. 실제 엔코더가 한계를 살짝 넘은 값을 보고하는 것은 맞지만, 이 어댑터는 그것을 흡수하는 장치가 아니라 실패로 바꾸는 장치다.
+- `CheckStartStateCollision` — 시작 상태가 충돌이라고 보고하고 거기서 멈춘다. `START_STATE_IN_COLLISION`과 접촉 정보가 메시지에 담긴다. 근처의 자유 상태를 표본으로 찾아 주지 않는다. 플러그인 설명문은 아직 ROS 1 시절 동작을 광고하고 있지만 그 동작은 옮겨 오지 않았고, 소스는 오류 코드만 설정한다. 장면이나 시작 상태는 직접 고쳐야 한다.
 - `AddTimeOptimalParameterization` — 기하 경로를 관절 속도·가속도 한계를 지키는 궤적으로 바꾸는 단계다. **플래너는 시간을 만들지 않는다.** 경로와 궤적은 다른 물건이고, 그 차이가 여기서 생긴다.
 - `ValidateSolution`은 완성된 궤적을 다시 검사하고, `DisplayMotionPath`는 RViz용으로 발행한다.
 
-귀결 둘. 첫째, 어댑터 이름(`CheckStartStateBounds`)이 뜬 실패는 플래너 실패가 아니다. 플래너는 돌지도 않았다. 둘째, 그 목록의 순서가 곧 실행 순서라서, jerk 제한 평활화를 위해 `default_planning_request_adapters/AddRuckigTrajectorySmoothing`을 넣는 일은 "목록의 어디에 넣느냐"의 문제다.
+귀결 둘. 첫째, 어댑터 이름(`CheckStartStateBounds`)이 뜬 실패는 플래너 실패가 아니다. 플래너는 돌지도 않았다. 둘째, 그 목록의 순서가 곧 실행 순서라서, 어댑터를 어디에 넣느냐가 중요하다. 다만 올바른 목록에 넣어야 한다. `AddRuckigTrajectorySmoothing`은 `default_planning_response_adapters/AddRuckigTrajectorySmoothing`으로 등록된 **response** 어댑터이고, `response_adapters`의 `AddTimeOptimalParameterization` 뒤에 들어간다. `request_adapters`에 넣으면 `move_group` 시작 시점에 로드가 실패한다. 상류의 일부 설정 주석에는 아직 옛 request 어댑터 표기가 남아 있다.
 
 ### 5. 플래너 계열과 실제로 필요한 것
 
