@@ -408,7 +408,7 @@ ros2 pkg create --build-type ament_cmake  --license Apache-2.0 --node-name filte
     alpha: 0.1
 ```
 
-4. In `temp_sim`, create `launch/bringup_launch.py` that declares a `namespace` argument defaulting to `demo`, pushes that namespace, and starts both nodes with `parameters=[PathJoinSubstitution([FindPackageShare('temp_sim'), 'config', 'params.yaml'])]`. Add the `launch/` and `config/` entries to `data_files` in `setup.py`.
+4. In `temp_sim`, create `launch/bringup_launch.py` that declares a `namespace` argument defaulting to `demo`, pushes that namespace, and starts both nodes with `parameters=[PathJoinSubstitution([FindPackageShare('temp_sim'), 'config', 'params.yaml'])]` **and `name='sensor'` / `name='filter'` on the two `Node` actions**. Those names matter: `sensor` and `filter` are the *executable* names you passed to `--node-name`, while the node name comes from the string in `super().__init__(...)`. Without the `name=` override the graph shows whatever the code calls itself, the YAML keys above match nothing, and step 6 fails for a reason unrelated to the one it is meant to teach. Add the `launch/` and `config/` entries to `data_files` in `setup.py`.
 
 5. Resolve, build, source in a *new* terminal, run:
 
@@ -466,7 +466,7 @@ python3 -c "import temp_sim.sensor as m; print(m.__file__)"
 /home/you/ros2_ws/install/temp_sim/lib/python3.12/site-packages/temp_sim/sensor.py
 ```
 
-A path under `install/` is a **copy**. A path under `src/` means the symlink install is in effect and your edits are live. Compare it against the file you edited; `diff` settles the argument in one line:
+A path under `install/` is a **copy**. A path under `build/` means the symlink install is in effect: colcon runs `setup.py develop` in the build space on purpose — its own comment reads "invoke `setup.py develop` step in build space / to avoid placing any files in the source space" — and symlinks your module there, so the path is `build/<pkg>/<pkg>/...` and your edits are live. Compare it against the file you edited; `diff` settles the argument in one line:
 
 ```bash
 diff ~/ros2_ws/src/temp_sim/temp_sim/sensor.py \
@@ -491,7 +491,7 @@ rm -rf build install log
 colcon build --symlink-install
 ```
 
-Rerun the `python3 -c` check and the path now points into `src/`. Edit, restart the node, and the change takes effect with no build at all.
+Rerun the `python3 -c` check and the path now points into `build/`, not `src/`, because that is where colcon puts the development install. The file there is a symlink to your source, so edit, restart the node, and the change takes effect with no build at all.
 
 **And now the asymmetry.** Do the same experiment with the C++ node in `temp_filter`. Change a constant in `src/filter.cpp`, restart the node without rebuilding, and nothing happens — correctly. `--symlink-install` changed nothing for it, because what runs is `install/temp_filter/lib/temp_filter/filter`, an ELF binary produced by the compiler, not a link to a source file. Confirm it directly:
 
@@ -500,7 +500,7 @@ ls -l $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 ```
 
-A regular file, `ELF 64-bit LSB executable`. Meanwhile the launch file and the YAML in the same package *are* symlinks under `share/`, so editing `params.yaml` and relaunching does take effect. That is the rule in one sentence: **`--symlink-install` makes installed files track their sources, and a compiled binary is not one of its source files.**
+It is a symlink, pointing into `build/` — `ament_cmake` reimplements `install(TARGETS)` to symlink rather than copy, as its own header says: *"Reimplement CMake install(TARGETS) command to use symlinks instead of copying resources."* So the symlink is there; what it points at is a **compiled artefact**, and no amount of symlinking recompiles it. Editing `filter.cpp` still requires `colcon build`, while editing `params.yaml` in the same package takes effect on relaunch. That is the rule in one sentence: **`--symlink-install` makes installed files track their sources, and a binary tracks its object code, not the `.cpp` you edited.**
 
 The C++ loop is therefore `colcon build --packages-select temp_filter` every time, and that is why the selective-build flags in section 8 matter more to C++ developers than to Python ones.
 
@@ -925,7 +925,7 @@ ros2 pkg create --build-type ament_cmake  --license Apache-2.0 --node-name filte
     alpha: 0.1
 ```
 
-4. `temp_sim`에 `launch/bringup_launch.py`를 만든다. 기본값 `demo`인 `namespace` 인자를 선언하고, 그 네임스페이스를 push하고, 두 노드를 `parameters=[PathJoinSubstitution([FindPackageShare('temp_sim'), 'config', 'params.yaml'])]`로 띄운다. `setup.py`의 `data_files`에 `launch/`와 `config/` 항목을 추가한다.
+4. `temp_sim`에 `launch/bringup_launch.py`를 만든다. 기본값 `demo`인 `namespace` 인자를 선언하고, 그 네임스페이스를 push하고, 두 노드를 `parameters=[PathJoinSubstitution([FindPackageShare('temp_sim'), 'config', 'params.yaml'])]`와 함께 **두 `Node` 액션에 `name='sensor'`, `name='filter'`를 붙여** 띄운다. 이 이름이 중요하다. `sensor`와 `filter`는 `--node-name`에 넘긴 *실행 파일* 이름이고, 노드 이름은 `super().__init__(...)`의 문자열에서 온다. `name=` 덮어쓰기가 없으면 그래프에는 코드가 스스로를 부르는 이름이 뜨고, 위 YAML 키는 아무것도 맞히지 못하며, 6단계가 가르치려는 것과 무관한 이유로 실패한다. `setup.py`의 `data_files`에 `launch/`와 `config/` 항목을 추가한다.
 
 5. 해결하고, 빌드하고, *새* 터미널에서 source하고, 실행한다.
 
@@ -983,7 +983,7 @@ python3 -c "import temp_sim.sensor as m; print(m.__file__)"
 /home/you/ros2_ws/install/temp_sim/lib/python3.12/site-packages/temp_sim/sensor.py
 ```
 
-`install/` 아래 경로면 **사본**이다. `src/` 아래 경로면 symlink 설치가 걸려 있고 편집이 살아 있다는 뜻이다. 편집한 파일과 비교하라. `diff` 한 줄이면 논쟁이 끝난다.
+`install/` 아래 경로면 **사본**이다. `build/` 아래 경로면 symlink 설치가 걸려 있다는 뜻이다. colcon은 `setup.py develop`을 일부러 build space에서 돌린다. 자기 주석이 "invoke `setup.py develop` step in build space / to avoid placing any files in the source space"라고 적고 있다. 모듈을 그쪽에 심볼릭 링크로 걸어 두므로 경로는 `build/<패키지>/<패키지>/...`가 되고 편집이 살아 있다. 편집한 파일과 비교하라. `diff` 한 줄이면 논쟁이 끝난다.
 
 ```bash
 diff ~/ros2_ws/src/temp_sim/temp_sim/sensor.py \
@@ -1008,7 +1008,7 @@ rm -rf build install log
 colcon build --symlink-install
 ```
 
-`python3 -c` 확인을 다시 하면 경로가 이제 `src/`를 가리킨다. 고치고 노드만 재시작하면 빌드 없이 반영된다.
+`python3 -c` 확인을 다시 하면 경로가 `src/`가 아니라 `build/`를 가리킨다. colcon이 개발용 설치를 거기에 두기 때문이다. 그 파일이 소스를 가리키는 심볼릭 링크이므로, 고치고 노드만 재시작하면 빌드 없이 반영된다.
 
 **그리고 여기서 비대칭이 나온다.** `temp_filter`의 C++ 노드로 같은 실험을 해 보라. `src/filter.cpp`의 상수를 고치고 다시 빌드하지 않은 채 노드를 재시작하면 아무 일도 일어나지 않는다 — 그게 맞다. `--symlink-install`은 그쪽에 아무것도 바꾸지 않았다. 실행되는 것은 `install/temp_filter/lib/temp_filter/filter`, 컴파일러가 만든 ELF 바이너리이지 소스 파일로 가는 링크가 아니기 때문이다. 직접 확인하라.
 
@@ -1017,7 +1017,7 @@ ls -l $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 ```
 
-일반 파일, `ELF 64-bit LSB executable`. 반면 같은 패키지의 launch 파일과 YAML은 `share/` 아래 심볼릭 링크*다*. 그래서 `params.yaml`을 고치고 다시 launch하면 반영된다. 한 문장으로 된 규칙: **`--symlink-install`은 설치된 파일이 자기 소스를 따라가게 만들고, 컴파일된 바이너리는 그 소스 파일 중 하나가 아니다.**
+심볼릭 링크이고 `build/` 안을 가리킨다. `ament_cmake`가 `install(TARGETS)`를 복사 대신 심볼릭 링크로 다시 구현하기 때문이다. 그 헤더가 *"Reimplement CMake install(TARGETS) command to use symlinks instead of copying resources."* 라고 적고 있다. 즉 링크는 걸려 있고, 그 링크가 가리키는 것이 **컴파일 산출물**이다. 심볼릭 링크를 아무리 걸어도 그것이 다시 컴파일되지는 않는다. `filter.cpp`를 고치면 여전히 `colcon build`가 필요하고, 같은 패키지의 `params.yaml`은 다시 launch하면 반영된다. 한 문장으로 된 규칙: **`--symlink-install`은 설치된 파일이 자기 소스를 따라가게 만들지만, 바이너리가 따라가는 것은 목적 코드이지 당신이 고친 `.cpp`가 아니다.**
 
 따라서 C++ 루프는 매번 `colcon build --packages-select temp_filter`이고, 8절의 선택 빌드 플래그가 Python 개발자보다 C++ 개발자에게 더 중요한 이유가 이것이다.
 

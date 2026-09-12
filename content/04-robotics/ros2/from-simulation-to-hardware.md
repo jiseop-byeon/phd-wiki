@@ -150,12 +150,17 @@ The large thing you do not write is the interface export. At 4.48.0 the framewor
 state and command interfaces from the `<ros2_control>` block in the URDF, and the header says so
 in the deprecation itself: `export_state_interfaces()` and `export_command_interfaces()` are
 marked *"Replaced by ... on_export_state_interfaces() ... Exporting is handled by the
-Framework."* You override `on_export_state_interfaces()` only to add interfaces that the URDF
-does not declare. In the ordinary case you declare them in the URDF and reach them by name, as
-above.
+Framework."* Leave both alone. `on_export_state_interfaces()` is the framework's *default
+implementation* — it builds the interfaces from the descriptions the URDF produced — so
+overriding it replaces the whole export and loses every URDF-declared interface. The hook for
+an interface the URDF does not declare is a different method,
+`export_unlisted_state_interface_descriptions()`, whose own comment reads *"Override this
+method to export custom StateInterfaces which are not defined in the URDF file."* In the
+ordinary case you override none of them: declare the interfaces in the URDF and reach them by
+name, as above.
 
 > [!warning] This API moved inside the Jazzy line, so check your own version
-> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1, and the header was refactored within that line — `system_interface.hpp` is now three lines that include `hardware_component_interface.hpp`, where the declarations actually live. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
+> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1, and the header was refactored within that line — `system_interface.hpp` is now a 73-line file that includes `hardware_component_interface.hpp` and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
 
 ### 4. Drivers, and what to check before trusting one
 
@@ -453,11 +458,15 @@ hardware_interface::return_type MyRobotHardware::write(
 `<ros2_control>` 블록에서 상태·명령 인터페이스를 만든다. 헤더의 deprecation 문구가 그렇게
 적고 있다. `export_state_interfaces()`와 `export_command_interfaces()`에 *"Replaced by ...
 on_export_state_interfaces() ... Exporting is handled by the Framework."* 라고 붙어 있다.
-`on_export_state_interfaces()`를 재정의하는 것은 URDF가 선언하지 않은 인터페이스를 더할 때뿐이다.
-보통은 URDF에 선언하고 위처럼 이름으로 접근한다.
+둘 다 건드리지 마라. `on_export_state_interfaces()`는 프레임워크의 *기본 구현*이고 URDF가 만든
+설명(description)에서 인터페이스를 생성한다. 그래서 이것을 재정의하면 export 전체를 갈아치우게
+되어 URDF가 선언한 인터페이스를 전부 잃는다. URDF가 선언하지 않은 인터페이스를 더하는 자리는
+다른 메서드인 `export_unlisted_state_interface_descriptions()`이고, 그 주석이 *"Override this
+method to export custom StateInterfaces which are not defined in the URDF file."* 라고 적고
+있다. 보통은 셋 중 아무것도 재정의하지 않는다. URDF에 선언하고 위처럼 이름으로 접근한다.
 
 > [!warning] 이 API는 Jazzy 계열 *안에서* 움직였으니 자기 버전을 확인하라
-> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 그 사이에 헤더가 재편됐다. `system_interface.hpp`는 이제 세 줄짜리이고 선언은 `hardware_component_interface.hpp`에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
+> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 그 사이에 헤더가 재편됐다. `system_interface.hpp`는 이제 73줄짜리로 `hardware_component_interface.hpp`를 포함하고, `SystemInterface`가 더하는 단 하나, 즉 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
 
 ### 4. 드라이버, 그리고 믿기 전에 확인할 것
 

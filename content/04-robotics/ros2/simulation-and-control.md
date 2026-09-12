@@ -178,7 +178,7 @@ ros2 control list_controller_types                  # what is installed and load
 ```
 
 ```bash
-ros2 control load_controller joint_trajectory_controller --param-file controllers.yaml
+ros2 control load_controller joint_trajectory_controller controllers.yaml
 ros2 control set_controller_state joint_trajectory_controller active
 ros2 control switch_controllers --deactivate a --activate b --strict
 ros2 control unload_controller joint_trajectory_controller
@@ -229,7 +229,7 @@ The `<gazebo>` block loads the system plugin into the simulator and hands it the
 ```xml
 <gazebo>
   <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find my_arm_description)/config/controllers.yaml</parameters>
+    <parameters>/absolute/path/to/config/controllers.yaml</parameters>
   </plugin>
 </gazebo>
 ```
@@ -279,7 +279,7 @@ and give `base_link` an `<inertial>` with the `default_inertial` macro you alrea
 
 <gazebo>
   <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find my_arm_description)/config/controllers.yaml</parameters>
+    <parameters>/absolute/path/to/config/controllers.yaml</parameters>
   </plugin>
 </gazebo>
 ```
@@ -362,7 +362,7 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers
 ```
 
-You want both controllers `active`, four command interfaces listed (two `position`, two `[claimed]`), and `/joint_states` echoing at the broadcaster's rate.
+You want both controllers `active`, the exercise's two `position` command interfaces each listed as `[available] [claimed]`, and `/joint_states` echoing at the broadcaster's rate.
 
 **Step 6 — command a trajectory.**
 
@@ -392,7 +392,7 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers --claimed-interfaces
 ```
 
-The first prints every interface and marks each command interface `[available]` or `[claimed]`. An active controller holding nothing is the clearest possible signal: it started, but it is writing to nowhere. An interface that is listed but never claimed, or an interface that does not appear at all, sends you to step 3.
+The first prints every interface with two independent markers: `[available]` or `[unavailable]` says whether the hardware offers it, and `[claimed]` or `[unclaimed]` says whether an active controller holds it. A healthy interface reads `[available] [claimed]`, so the tell is `[available] [unclaimed]` — offered, and nobody writing to it. An active controller holding nothing is the clearest possible signal: it started, but it is writing to nowhere. An interface that reads `[unavailable]`, or that does not appear at all, sends you to step 3.
 
 **3. Do the joint names agree?**
 
@@ -438,7 +438,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 
 > [!question]- Self-check · Answer
 > **1. Why does `ros2_control` put a named-interface seam between the controller and the hardware, rather than letting the controller write to the motor?** Because the seam is what makes the controller portable. A controller asks for `shoulder/position` and neither knows nor cares whether a physics engine or an EtherCAT drive provides it, so the same controller and the same YAML run in Gazebo and on the real arm. Moving to hardware changes one `<plugin>` line in the URDF. It also enforces exclusivity: a command interface can be claimed by at most one active controller, which is why two writers on one joint is a failed activation rather than a fight.
-> **2. Your controller is `active`, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?** `ros2 control list_hardware_interfaces` — if the command interfaces are `[available]` rather than `[claimed]`, the active controller is writing nowhere. The most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML. That mismatch produces no error at any stage.
+> **2. Your controller is `active`, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?** `ros2 control list_hardware_interfaces` — if the command interfaces read `[available] [unclaimed]`, the active controller is writing nowhere. The two markers are independent, so a healthy interface is `[available] [claimed]` and `[available]` on its own tells you nothing. The most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML. That mismatch produces no error at any stage.
 > **3. Why does a `/clock` bridge matter, when nothing in the exercise reads the clock explicitly?** The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes have no simulated clock, so a trajectory stamped from a wall-clock shell has a start time unrelated to the controller's notion of now — the motion is silently in the past or the far future. Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
 > **4. A tutorial tells you to add `<plugin filename="libgazebo_ros_control.so">` to your URDF. What is wrong with it?** It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
 > **5. You get a manipulation policy working in Gazebo. What can you claim?** That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
@@ -614,7 +614,7 @@ ros2 control list_controller_types                  # 설치되어 적재 가능
 ```
 
 ```bash
-ros2 control load_controller joint_trajectory_controller --param-file controllers.yaml
+ros2 control load_controller joint_trajectory_controller controllers.yaml
 ros2 control set_controller_state joint_trajectory_controller active
 ros2 control switch_controllers --deactivate a --activate b --strict
 ros2 control unload_controller joint_trajectory_controller
@@ -665,7 +665,7 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 ```xml
 <gazebo>
   <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find my_arm_description)/config/controllers.yaml</parameters>
+    <parameters>/absolute/path/to/config/controllers.yaml</parameters>
   </plugin>
 </gazebo>
 ```
@@ -715,7 +715,7 @@ sudo apt install ros-jazzy-ros-gz ros-jazzy-ros2-control ros-jazzy-ros2-controll
 
 <gazebo>
   <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find my_arm_description)/config/controllers.yaml</parameters>
+    <parameters>/absolute/path/to/config/controllers.yaml</parameters>
   </plugin>
 </gazebo>
 ```
@@ -798,7 +798,7 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers
 ```
 
-제어기 둘이 `active`, 명령 인터페이스 넷(`position` 둘과 `[claimed]` 표시), 그리고 브로드캐스터 주기로 `/joint_states`가 나와야 한다.
+제어기 둘이 `active`, 이 실습이 만든 `position` 명령 인터페이스 둘이 각각 `[available] [claimed]`, 그리고 브로드캐스터 주기로 `/joint_states`가 나와야 한다.
 
 **6단계 — 궤적 명령.**
 
@@ -828,7 +828,7 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers --claimed-interfaces
 ```
 
-첫 명령은 모든 인터페이스를 찍고 명령 인터페이스마다 `[available]` 또는 `[claimed]`를 표시한다. 아무것도 쥐지 않은 활성 제어기는 가장 명확한 신호다. 시작은 했는데 아무 데도 쓰고 있지 않다. 목록에는 있는데 끝내 점유되지 않는 인터페이스, 또는 아예 나타나지 않는 인터페이스는 3단계로 보낸다.
+첫 명령은 모든 인터페이스를 찍으면서 서로 독립적인 표시 둘을 붙인다. `[available]`과 `[unavailable]`은 하드웨어가 그것을 제공하는지를, `[claimed]`와 `[unclaimed]`는 활성 제어기가 쥐고 있는지를 말한다. 정상 인터페이스는 `[available] [claimed]`이므로 찾아야 할 신호는 `[available] [unclaimed]`다. 제공은 되는데 아무도 쓰지 않는 상태다. 아무것도 쥐지 않은 활성 제어기는 가장 명확한 신호다. 시작은 했는데 아무 데도 쓰고 있지 않다. `[unavailable]`로 나오거나 아예 나타나지 않는 인터페이스는 3단계로 보낸다.
 
 **3. 관절 이름이 일치하는가?**
 
@@ -874,7 +874,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 
 > [!question]- 스스로 점검 · 정답
 > **1. `ros2_control`은 왜 제어기가 모터에 직접 쓰게 두지 않고 이름 붙은 인터페이스 이음매를 두는가?** 그 이음매가 제어기를 이식 가능하게 만들기 때문이다. 제어기는 `shoulder/position`을 요구할 뿐 그것을 물리 엔진이 주는지 EtherCAT 드라이브가 주는지 알지도 신경 쓰지도 않는다. 그래서 같은 제어기와 같은 YAML이 Gazebo에서도 실제 팔에서도 돈다. 하드웨어로 옮기는 것은 URDF의 `<plugin>` 한 줄을 바꾸는 일이다. 배타성도 여기서 나온다. 명령 인터페이스는 활성 제어기 하나만 점유할 수 있고, 그래서 한 관절에 writer 둘이 붙는 상황은 싸움이 아니라 활성화 실패가 된다.
-> **2. 제어기는 `active`, 시뮬레이션은 돌고, 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?** `ros2 control list_hardware_interfaces` — 명령 인터페이스가 `[claimed]`가 아니라 `[available]`이면 활성 제어기가 아무 데도 쓰고 있지 않은 것이다. 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 그 불일치는 어느 단계에서도 에러를 내지 않는다.
+> **2. 제어기는 `active`, 시뮬레이션은 돌고, 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?** `ros2 control list_hardware_interfaces` — 명령 인터페이스가 `[available] [unclaimed]`로 나오면 활성 제어기가 아무 데도 쓰고 있지 않은 것이다. 두 표시는 독립이라 정상 인터페이스는 `[available] [claimed]`이고 `[available]`만으로는 아무것도 알 수 없다. 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 그 불일치는 어느 단계에서도 에러를 내지 않는다.
 > **3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?** 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 ROS 쪽 노드에는 시뮬레이션 시계가 없고, 벽시계 셸에서 찍힌 궤적의 시작 시각은 제어기의 "지금"과 무관해진다. 동작은 조용히 과거나 먼 미래에 놓인다. 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
 > **4. 어떤 튜토리얼이 URDF에 `<plugin filename="libgazebo_ros_control.so">`를 넣으라고 한다. 무엇이 잘못됐나?** Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
 > **5. Gazebo에서 매니퓰레이션 정책이 동작한다. 무엇을 주장할 수 있나?** 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.

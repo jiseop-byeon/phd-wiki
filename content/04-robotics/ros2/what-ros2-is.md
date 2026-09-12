@@ -106,10 +106,11 @@ curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-a
 sudo dpkg -i /tmp/ros2-apt-source.deb
 ```
 
-Then the distribution itself. `desktop` includes RViz, the demos and the tutorials; `ros-base` is the same communication layer without GUI tools, which is what goes on a robot:
+Then the distribution itself. The official page interposes an upgrade between the update and the install, and it is not decoration: installing a large ROS package set against a stale Ubuntu produces exactly the dependency conflicts the `noble-updates` note above warns about. `desktop` includes RViz, the demos and the tutorials; `ros-base` is the same communication layer without GUI tools, which is what goes on a robot:
 
 ```bash
 sudo apt update
+sudo apt upgrade
 sudo apt install ros-jazzy-desktop
 sudo apt install ros-dev-tools    # colcon, rosdep, build tooling — needed from 25.4 onward
 ```
@@ -431,10 +432,11 @@ curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-a
 sudo dpkg -i /tmp/ros2-apt-source.deb
 ```
 
-그리고 배포판 본체. `desktop`은 RViz와 데모, 튜토리얼을 포함하고, `ros-base`는 GUI 도구 없는 같은 통신 계층으로 로봇에 올리는 쪽이다.
+그리고 배포판 본체. 공식 문서는 update와 install 사이에 upgrade를 끼워 넣는데, 장식이 아니다. 낡은 우분투 위에 큰 ROS 패키지 묶음을 설치하면 위의 `noble-updates` 주의가 말하는 바로 그 의존성 충돌이 난다. `desktop`은 RViz와 데모, 튜토리얼을 포함하고, `ros-base`는 GUI 도구 없는 같은 통신 계층으로 로봇에 올리는 쪽이다.
 
 ```bash
 sudo apt update
+sudo apt upgrade
 sudo apt install ros-jazzy-desktop
 sudo apt install ros-dev-tools    # colcon, rosdep 등 — 25.4부터 필요
 ```
