@@ -66,12 +66,12 @@ The three rate tools answer three different questions and are constantly confuse
 ```bash
 ros2 topic hz /scan              # message rate, averaged over a window
 ros2 topic hz /scan -w 1000      # longer window: less jitter in the number
-ros2 topic hz /scan --use-wall-time
+ros2 topic hz /scan --wall-time
 ros2 topic bw /scan              # bandwidth in bytes/s — is this topic the reason the network is full
 ros2 topic delay /scan           # age of the header stamp on arrival
 ```
 
-`hz` measures how often messages arrive. `bw` measures how much they cost. `delay` measures **latency**: the difference between the stamp inside the message and the time it was received, which requires the message type to have a `std_msgs/Header`. A system where `hz` is perfect and `delay` grows without bound is a system with a queue filling up somewhere, and only `delay` shows it. `--use-wall-time` on `hz` matters under simulation: without it you are measuring simulated rate, which is what you usually want, and with it you are measuring what the CPU actually did.
+`hz` measures how often messages arrive. `bw` measures how much they cost. `delay` measures **latency**: the difference between the stamp inside the message and the time it was received, which requires the message type to have a `std_msgs/Header`. A system where `hz` is perfect and `delay` grows without bound is a system with a queue filling up somewhere, and only `delay` shows it. `--wall-time` on `hz` — that is the spelling, and it exists only on `hz`, not on `bw` or `delay` — matters under simulation. The default is the other way round from what people assume: the CLI node runs on wall time unless you pass `-s`/`--use-sim-time`, so plain `ros2 topic hz` already measures what the CPU did. Pass `-s` to measure simulated rate, and `--wall-time` to force wall time back when the clock is unreliable.
 
 ```bash
 ros2 param dump /my_node > my_node_params.yaml
@@ -164,11 +164,11 @@ Turn this on in the nodes you write. The cost is one constructor argument and th
 ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
-`--topics` takes a space-separated list; `-o` names the output directory. (The bare positional form and `-t` still work but are marked deprecated in Jazzy — use `--topics`.) A bag is a **directory** containing `metadata.yaml` and one or more storage files, not a single file.
+`--topics` takes a space-separated list; `-o` names the output directory. (The bare positional form still works and prints a deprecation notice; use `--topics`. There is no `-t` short option on `record` — `-t` belongs to `ros2 bag info`, so `record -t /scan` is an error rather than a deprecation.) A bag is a **directory** containing `metadata.yaml` and one or more storage files, not a single file.
 
 `-a` records everything, and it is the wrong default for almost every research recording:
 
-- **Disk and bandwidth.** One uncompressed 1080p camera topic is of the order of a hundred megabytes per second. You will fill the robot's disk mid-experiment.
+- **Disk and bandwidth.** One uncompressed 1080p camera topic at 30 Hz is about 190 MB/s — 1920 × 1080 × 3 bytes × 30. You will fill the robot's disk mid-experiment.
 - **Dropped messages.** The recorder has to serialise and write everything you asked for. Ask for too much and it falls behind, and the bag you take home is missing the messages you cared about — silently.
 - **Unusability.** A 400 GB bag cannot be shared with a collaborator, cannot be put in CI, and cannot be opened quickly enough to iterate.
 
@@ -555,12 +555,12 @@ ros2 doctor --report-failed   # 실패한 점검만
 ```bash
 ros2 topic hz /scan              # 메시지 도착률, 윈도 평균
 ros2 topic hz /scan -w 1000      # 긴 윈도: 숫자의 흔들림이 줄어든다
-ros2 topic hz /scan --use-wall-time
+ros2 topic hz /scan --wall-time
 ros2 topic bw /scan              # 초당 바이트 — 이 토픽이 네트워크를 채우는 원인인가
 ros2 topic delay /scan           # 도착 시점 기준 header 스탬프의 나이
 ```
 
-`hz`는 얼마나 자주 오는지, `bw`는 얼마나 비싼지, `delay`는 **지연**을 잰다. 메시지 안의 스탬프와 수신 시각의 차이이고, 따라서 메시지 타입에 `std_msgs/Header`가 있어야 한다. `hz`는 완벽한데 `delay`가 끝없이 커지는 시스템은 어딘가 큐가 차오르는 시스템이고, 그것을 보여 주는 것은 `delay`뿐이다. 시뮬레이션에서는 `--use-wall-time`이 의미를 갖는다. 없으면 시뮬레이션 기준 속도(대개 원하는 것)를, 있으면 CPU가 실제로 한 일을 잰다.
+`hz`는 얼마나 자주 오는지, `bw`는 얼마나 비싼지, `delay`는 **지연**을 잰다. 메시지 안의 스탬프와 수신 시각의 차이이고, 따라서 메시지 타입에 `std_msgs/Header`가 있어야 한다. `hz`는 완벽한데 `delay`가 끝없이 커지는 시스템은 어딘가 큐가 차오르는 시스템이고, 그것을 보여 주는 것은 `delay`뿐이다. 시뮬레이션에서는 `--wall-time`이 의미를 갖는다. 철자가 그것이고, `bw`나 `delay`가 아니라 `hz`에만 있다. 기본값은 흔한 짐작과 반대다. CLI 노드는 `-s`/`--use-sim-time`을 주지 않는 한 wall time으로 도니, 그냥 `ros2 topic hz`는 이미 CPU가 실제로 한 일을 재고 있다. 시뮬레이션 기준 속도를 재려면 `-s`를, 시계를 믿을 수 없을 때 wall time으로 되돌리려면 `--wall-time`을 준다.
 
 ```bash
 ros2 param dump /my_node > my_node_params.yaml
@@ -653,11 +653,11 @@ ros2 service call /NodeWithLoggerService/get_logger_levels rcl_interfaces/srv/Ge
 ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
-`--topics`는 공백으로 구분된 목록을 받고 `-o`는 출력 디렉터리 이름을 정한다. (맨 위치 인자와 `-t` 형태는 아직 동작하지만 Jazzy에서 deprecated로 표시돼 있다. `--topics`를 써라.) bag은 파일 하나가 아니라 `metadata.yaml`과 하나 이상의 저장 파일을 담은 **디렉터리**다.
+`--topics`는 공백으로 구분된 목록을 받고 `-o`는 출력 디렉터리 이름을 정한다. (맨 위치 인자는 아직 동작하고 deprecation 안내를 찍는다. `--topics`를 써라. `record`에는 `-t` 단축 옵션이 없다. `-t`는 `ros2 bag info`의 것이라, `record -t /scan`은 deprecation이 아니라 오류다.) bag은 파일 하나가 아니라 `metadata.yaml`과 하나 이상의 저장 파일을 담은 **디렉터리**다.
 
 `-a`는 전부 기록한다. 연구용 녹화의 기본값으로는 거의 항상 틀렸다.
 
-- **디스크와 대역폭.** 압축하지 않은 1080p 카메라 토픽 하나가 초당 수백 메가바이트 규모다. 실험 도중 로봇의 디스크가 찬다.
+- **디스크와 대역폭.** 압축하지 않은 1080p 카메라 토픽 하나가 30 Hz면 초당 약 190 MB다. 1920 × 1080 × 3바이트 × 30이다. 실험 도중 로봇의 디스크가 찬다.
 - **메시지 유실.** 기록기는 요청받은 것을 전부 직렬화해서 써야 한다. 너무 많이 요청하면 뒤처지고, 집에 가져온 bag에는 정작 필요한 메시지가 빠져 있다. 조용히.
 - **쓸 수 없음.** 400 GB짜리 bag은 공유할 수도, CI에 넣을 수도, 빠르게 열어 반복할 수도 없다.
 
