@@ -235,9 +235,13 @@ commonly stated backwards: a projector built from the plain Moore–Penrose pseu
 already **statically consistent** — in steady state the secondary torque produces no task
 force at all. What it does not do is prevent the task from *accelerating* during the
 transient, because $JM^{-1}\tau_0 \neq 0$ when $M^{-1} \neq I$. **Dynamic consistency buys
-the transient, not the static force**: only $\bar J$ makes $JM^{-1}N^\top = 0$
-(Dietrich, Ott & Albu-Schäffer, *IJRR* 2015 — a standard result, but that article is paywalled
-and the identity was not read in the source).
+the transient, not the static force**. Among projectors of this form, only the inertia-weighted
+inverse $\bar J$ makes $JM^{-1}N^\top = 0$ (Khatib 1987, restated in Dietrich, Ott &
+Albu-Schäffer, *IJRR* 2015, §3.3.1). That survey defines static consistency as no interfering
+force in any static equilibrium and shows every weighting matrix has it (§3.2); dynamic consistency
+adds no interfering acceleration at any time (§3.3). It also gives a differently structured
+projector, $M(I - J^{+}J)M^{-1}$, that is dynamically consistent too but not load-independent
+(§3.3.2).
 
 **Task priority, and whole-body control.** Stack more than two objectives and this becomes a
 hierarchy: each level is projected into the null space of all levels above it, so a lower
@@ -716,8 +720,12 @@ $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}
 일이 흔하다: 평범한 Moore–Penrose 유사역행렬로 만든 투영자도 이미 **정적으로 일관되다** —
 정상 상태에서 부차 토크는 작업 힘을 전혀 만들지 않는다. 그것이 막지 못하는 것은 과도 구간에서
 작업이 *가속되는* 것이다. $M^{-1} \neq I$이면 $JM^{-1}\tau_0 \neq 0$이기 때문이다.
-**동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**: $JM^{-1}N^\top = 0$을
-만드는 것은 $\bar J$뿐이다(Dietrich, Ott, Albu-Schäffer, *IJRR* 2015 — 표준적인 결과이지만 그 논문은 페이월 뒤에 있고 이 항등식을 원문에서 확인하지는 못했다).
+**동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**. 이 형태의 투영자 가운데
+$JM^{-1}N^\top = 0$을 만드는 것은 관성으로 가중한 역 $\bar J$뿐이다(Khatib 1987, Dietrich,
+Ott, Albu-Schäffer, *IJRR* 2015 §3.3.1에서 재진술). 이 서베이는 정적 일관성을 어떤 정적 평형에서도
+간섭하는 힘이 없는 것으로 정의하고 모든 가중 행렬이 이를 갖는다고 보인다(§3.2). 동역학적 일관성은
+어느 시점에도 간섭하는 가속이 없다는 조건을 더한다(§3.3). 구조가 다른 투영자
+$M(I - J^{+}J)M^{-1}$도 동역학적으로 일관되지만 하중 독립성은 없다(§3.3.2).
 
 **과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
 층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이

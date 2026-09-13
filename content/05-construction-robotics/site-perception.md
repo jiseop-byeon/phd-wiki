@@ -50,7 +50,7 @@ physical-AI loop, and it imposes stricter latency, uncertainty, and failure requ
   [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]]. The canonical construction entry is
   [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]] — a mobile robot
   that autonomously scans and registers site point clouds, a line that continued into
-  UAV+UGV teams (2019) and field-deployed adaptive view planning (2025).
+  UAV+UGV teams (2019) and adaptive view planning tested at a disaster site (JCCE 40(5), online June 2026).
 - **Scan-to-BIM / progress**: register point clouds or images to a design model, then
   infer installed, missing, or deviating components. Registration error can masquerade
   as construction deviation.
@@ -161,7 +161,7 @@ flowchart LR
   로봇에서는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]의 바퀴 베이스
   기구학과 오도메트리 드리프트 위에서 돈다. 건설의 정본 진입점은 [[01-canonical-papers/notes/8-construction/cho-slam|Cho SLAM 2018]] —
   현장 포인트 클라우드를 자율적으로 스캔·정합하는 모바일 로봇으로, 이 라인은 UAV+UGV
-  팀(2019)과 현장 배치된 적응적 시점 계획(2025)으로 이어졌다.
+  팀(2019)과 재난 현장에서 시험한 적응적 시점 계획(JCCE 40(5), 2026년 6월 온라인)으로 이어졌다.
 - **Scan-to-BIM·공정**: 센서 자료를 설계 모델에 정합하고 설치·누락·편차를 추론한다. 정합
   오차가 시공 편차처럼 보일 수 있다.
 - **점검**: 시점을 계획하고, 커버리지를 확보하고, 결함을 검출해 자산에 연결한다. 검출

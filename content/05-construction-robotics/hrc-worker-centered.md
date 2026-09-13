@@ -67,9 +67,11 @@ The decision link matters because recognizing a worker state does not guarantee 
   human-aware motion planning evaluated on measured human responses in close-proximity
   collaboration, later carried toward practice in a BMW *test environment* replicating
   final-assembly work. The paper carrying that BMW work is Unhelkar, Lasota et al., RA-L 3(3),
-  2018, whose authors note the demonstration is not representative of a real factory
-  deployment. Cite it as lab-plus-industrial-testbed evidence, not as a factory deployment
-  result.
+  2018. Its authors say the physical demonstration, one robot assisting a single worker in a
+  small work cell, is not representative of how a robotic assistant would be deployed in a
+  real factory, so their quantitative safety and fluency results come from simulation of a
+  larger cell (§VII). Cite it as lab-plus-industrial-testbed evidence, not as a factory
+  deployment result.
 
 - **Haptic and vibrotactile alerting** is the interface family these lines reach for
   when a warning must land on a gloved worker who is not looking at a screen — and it is
@@ -199,8 +201,10 @@ flowchart LR
   [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]]: 근접 협업에서
   측정된 인간 반응으로 평가한 인간 인지 모션 계획이며, 이후 최종 조립 작업을 재현한 BMW
   *테스트 환경*으로 이어졌다. 그 BMW 작업을 담은 논문은 Unhelkar, Lasota 외의 RA-L 3(3),
-  2018이고, 저자들 스스로 이 시연이 실제 공장 배치를 대표하지 않는다고 밝힌다. 공장 배치
-  결과가 아니라 실험실+산업 테스트베드 증거로 인용하라.
+  2018이다. 저자들은 로봇 한 대가 작업자 한 명을 돕는 작은 작업 셀의 물리 시연이 실제
+  공장에서 로봇 보조자를 배치하는 방식을 대표하지 않는다고 밝히며, 그래서 안전·유창성의
+  정량 결과는 더 큰 셀을 시뮬레이션해서 얻었다(§VII). 공장 배치 결과가 아니라 실험실+산업
+  테스트베드 증거로 인용하라.
 
 - **햅틱·진동촉각 알림**은 화면을 보고 있지 않은, 장갑 낀 작업자에게 경고를 전달해야
   할 때 이 계보들이 손을 뻗는 인터페이스 계열이다 — 그리고 이것을 지배하는 것은

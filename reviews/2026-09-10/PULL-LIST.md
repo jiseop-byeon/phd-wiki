@@ -50,3 +50,48 @@ These need a browser session, not a subscription.
 - HEAP's embankment errors — "0.03 m average error" and "0.05 m average error" confirmed verbatim in the ETH copy.
 - Apolinarska's robot platform — appendix A.2 names an ABB IRB4600-40/2.55 on an overhead gantry, driven through Externally Guided Motion at 50 Hz with a BOTA force-torque sensor. The paper is open access; no fetch needed.
 - The π0 third-party evaluation — located at the Penn GRASP Lab project page, and the note now cites it.
+
+## Library session, 2026-09-12
+
+Read through UT Libraries EZproxy in a browser the user signed into. ASCE, IEEE Xplore, SAGE,
+SpringerLink and science.org information pages opened; ScienceDirect refused the automated
+browser, and UT has no *Science Robotics* subscription.
+
+Cleared, with what changed in the wiki:
+
+- **Dietrich, Ott & Albu-Schäffer 2015** — static consistency holds for every weighting matrix
+  (§3.2); only the inertia-weighted pseudoinverse satisfies $JM^{-1}N=0$ within that form
+  (Khatib 1987, §3.3.1), but a differently structured projector $M(I-J^{+}J)M^{-1}$ is also
+  dynamically consistent (§3.3.2). The force-control page now says so.
+- **Liang et al. 2022, JCCE** — 82.0% and 71.3% are both in the paper but come from different
+  tables: same-condition comparisons are 75.3 vs 71.3 (Table 1, 150 trials) and 82.0 vs 66.0
+  (Table 3, 100 trials at new locations). Generalized cylinders come from Ahmadzadeh & Chernova
+  2018; this paper adds orientation. Note corrected.
+- **Egli et al. 2022, soil-adaptive** — adapts without explicit soil parameters, confirmed; ranges
+  from Table I now in the note. **The note was wrong on two points**: the policy is a memoryless
+  128-128 MLP, not recurrent, and it does not reuse the learned actuator model (joint-velocity
+  commands tracked by PID + feed-forward valve-flow controllers). Also checked the sibling
+  general-approach paper: pilot-stage commands, no fine-tuning, M545 12 t — all confirmed.
+- **Kim & Cho, JCCE** — Volume 40, Issue 5, published online 2 June 2026, print September 2026;
+  tested in simulation and at a disaster site. Every "2025" mention of it changed to 2026.
+- **Liang, Wang, Kamat & Menassa 2021** — five levels (Preprogramming 135, Adaptive
+  Manipulation 72, Imitation Learning 3, Improvisatory Control 18, Full Autonomy 31; 259 total).
+  The note's "which sit empty" was wrong; none is empty. Citation count left as index-named.
+- **Unhelkar, Lasota et al. 2018** — confirmed in §VII: one robot, one worker, small cell, "not
+  representative"; quantitative results from simulation. Detail added.
+- **Springer Handbook ch. 38** — §38.4.2 gives two soft-finger or three non-collinear hard-finger
+  contacts for force closure (seven for form closure); reference [38.44] does misdate Ferrari &
+  Canny as 1986. Attribution now marked read.
+- **IJRR guidelines** — "not substantial" sentence, ≤80-word novelty statement, conference
+  version upload, single-anonymized, ≥2 referees: all confirmed verbatim.
+- **Science Robotics information for authors** — ~1–2 weeks for papers not selected, ≥2 outside
+  referees, 4-week reviewer deadline. The wiki's "rejects most" was not on the page and was removed.
+- **ASCE journals (JCCE)** — ASCE-wide single anonymous peer review with a chief-editor scope
+  check, confirmed.
+
+Still open — need the PDFs saved from a normal browser:
+
+- Johns et al. 2023 and Zhang et al. 2021 (*Science Robotics*, no UT subscription).
+- Lundeen 2019, Davila Delgado 2019, Liu 2021, Feng 2015, Axehill & Morari 2012 (ScienceDirect).
+- *Automation in Construction* guide for authors (ScienceDirect).
+- ISO/TS 15066:2016 §5.5.4 (not attempted).

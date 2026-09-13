@@ -25,7 +25,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **One-line summary**: Robotics SLAM arrives on the construction-informatics side — a ground robot navigates a construction environment on its own, uses SLAM poses as the initial alignment, and automatically registers its laser scans into one site point cloud, removing the manual station setup and target placement of conventional laser scanning.
 
-**Lineage position**: the moment the robotics literature's mapping stack (odometry, scan matching, registration) crosses into *Automation in Construction* — giving the scan-to-BIM pipeline an autonomous mobile front end. The line continues in the same group: a 2019 UAV+UGV cooperative mapping extension (Automation in Construction 106) and a 2025 adaptive view-planning system (JCCE 40) that is field-deployed.
+**Lineage position**: the moment the robotics literature's mapping stack (odometry, scan matching, registration) crosses into *Automation in Construction* — giving the scan-to-BIM pipeline an autonomous mobile front end. The line continues in the same group: a 2019 UAV+UGV cooperative mapping extension (Automation in Construction 106) and an adaptive view-planning system (JCCE 40(5), published online June 2026) tested in simulation and at a disaster site.
 
 > [!tip] Key intuition · 핵심 직관
 > SLAM provides a coarse pose that puts successive scans close enough for fine registration to align them. This reduces the manual initialization burden, while leaving the final map dependent on registration quality and informative scene geometry.
@@ -43,7 +43,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **한 줄 요약**: 로보틱스의 SLAM이 건설 정보학 쪽에 도착했다 — 지상 로봇이 건설 환경을 스스로 주행하고, SLAM 자세를 초기 정렬로 사용해 레이저 스캔들을 하나의 현장 포인트 클라우드로 자동 정합한다. 재래식 레이저 스캐닝의 수동 스테이션 설치와 타깃 배치를 제거한 것이다.
 
-**계보에서의 위치**: 로보틱스 문헌의 매핑 스택(오도메트리, 스캔 매칭, 정합)이 *Automation in Construction*으로 건너온 순간 — scan-to-BIM 파이프라인에 자율 이동 앞단을 달아 준다. 같은 그룹에서 계보가 이어진다: 2019년 UAV+UGV 협력 매핑 확장(Automation in Construction 106), 그리고 실제 현장에 배치된 2025년 적응형 뷰 플래닝 시스템(JCCE 40).
+**계보에서의 위치**: 로보틱스 문헌의 매핑 스택(오도메트리, 스캔 매칭, 정합)이 *Automation in Construction*으로 건너온 순간 — scan-to-BIM 파이프라인에 자율 이동 앞단을 달아 준다. 같은 그룹에서 계보가 이어진다: 2019년 UAV+UGV 협력 매핑 확장(Automation in Construction 106), 그리고 시뮬레이션과 재난 현장에서 시험한 적응형 뷰 플래닝 시스템(JCCE 40(5), 2026년 6월 온라인 출판).
 
 > [!tip] 핵심 직관 · Key intuition
 > SLAM의 거친 자세가 연속 스캔을 가까이 놓아 정밀 정합이 맞출 수 있게 한다. 수동 초기화 부담을 줄이는 기전이다. 최종 지도는 여전히 정합 품질과 구별 가능한 장면 형상에 의존한다.
@@ -66,5 +66,5 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 - [ ] Describe the pipeline structure in which the SLAM pose estimate serves as the initial guess for fine registration · SLAM 자세 추정이 정밀 정합의 초기값으로 쓰이는 파이프라인 구조를 말할 수 있다
 - [ ] Say what was automated relative to conventional station scanning (station setup, targets, manual registration) · 재래식 스테이션 스캐닝 대비 무엇이 자동화되었는지(스테이션 설치·타깃·수동 정합) 말할 수 있다
-- [ ] Distinguish the evidence level of the 2018 testbed from the 2019/2025 follow-ups (UAV+UGV, field-deployed view planning) · 2018 테스트베드 증거와 2019/2025 후속(UAV+UGV, 현장 배치 뷰 플래닝)의 증거 수준을 구분할 수 있다
+- [ ] Distinguish the evidence level of the 2018 testbed from the 2019/2026 follow-ups (UAV+UGV, view planning tested at a disaster site) · 2018 테스트베드 증거와 2019/2026 후속(UAV+UGV, 재난 현장에서 시험한 뷰 플래닝)의 증거 수준을 구분할 수 있다
 - [ ] Explain this paper's position at the front end (acquisition automation) of the scan-to-BIM pipeline · scan-to-BIM 파이프라인에서 이 논문이 차지하는 앞단(데이터 수집 자동화) 위치를 설명할 수 있다

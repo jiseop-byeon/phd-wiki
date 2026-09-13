@@ -238,7 +238,7 @@ Maps: [[05-construction-robotics/lineage|Construction Robotics Lineage]] · [[05
 ### Site perception, HRC & workflow layers
 
 - [ ] ○ [Tang et al. — automatic reconstruction of as-built BIM from laser scans](https://doi.org/10.1016/j.autcon.2010.06.007) (Automation in Construction 2010) — scan-to-BIM 기준 서베이
-- [x] ◐ [[notes/8-construction/cho-slam|Kim, Chen & Cho — SLAM-driven robotic site mapping]] (Automation in Construction 2018) — RICAL 자율 스캔 계보의 앵커 (2019 UAV+UGV, 2025 view planning으로 이어짐)
+- [x] ◐ [[notes/8-construction/cho-slam|Kim, Chen & Cho — SLAM-driven robotic site mapping]] (Automation in Construction 2018) — RICAL 자율 스캔 계보의 앵커 (2019 UAV+UGV, 2026 view planning으로 이어짐)
 - [x] ◐ [[notes/8-construction/liu-jebelli-bci|Liu & Jebelli — BCI teleoperation → intention-aware planning]] (AutCon 2021 / CACAIE 2024) — 생리 신호를 로봇 루프에 연결한 계보
 - [x] ○ [[notes/8-construction/park-nl|Park et al. — natural-language robot instructions]] (Automation in Construction 2024) — 언어 기반 HRC 인터페이스
 - [x] ◐ [[notes/8-construction/bim-digital-twin|Wang et al. — BIM-driven closed-loop digital twins]] (Computers in Industry 2024) — 공정 수준 인터페이스

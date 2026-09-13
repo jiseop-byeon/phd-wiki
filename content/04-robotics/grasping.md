@@ -120,7 +120,7 @@ theorems; always say which one you mean.
 >
 > A parallel-jaw gripper on a real box is a soft-finger contact: the pads deform, so each
 > contact resists twisting about its own normal, and two of them suffice. Under hard finger
-> some particular 3D geometries admit **three** non-collinear contacts (Springer Handbook ch. 38 — the Handbook is not open access and this attribution was not read at source, though Modern Robotics ch. 12 corroborates the result itself).
+> some particular 3D geometries admit **three** non-collinear contacts. *Springer Handbook of Robotics* §38.4.2 gives these as minimum counts: a 3D object needs seven contacts for form closure, but force closure needs only two soft-finger contacts or three non-collinear hard-finger contacts. A minimum is not a guarantee; whether a given three-contact grasp is force-closed still depends on the geometry and the friction.
 >
 > Markenscoff's four is a **third** kind of statement and the easiest to misuse: it is a
 > *universal* bound — how many fingers suffice for **any** object — not the minimum for the
@@ -480,7 +480,7 @@ Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 
 >
 > 실제 상자를 잡는 평행 조 그리퍼는 soft finger 접촉이다: 패드가 변형되므로 각 접촉이 자기
 > 법선 둘레의 비틀림에 저항하고, 그래서 둘이면 충분하다. Hard finger에서는 특정 3D 형상에
-> 한해 비공선 접촉 셋이 가능하다(Springer Handbook ch. 38). Markenscoff의 넷은 **세 번째**
+> 한해 비공선 접촉 셋이 가능하다. *Springer Handbook of Robotics* §38.4.2는 이를 최소 개수로 제시한다: 3D 물체의 form closure에는 접촉 일곱 개가 필요하지만, force closure에는 soft finger 접촉 둘, 또는 비공선 hard finger 접촉 셋이면 된다. 최소 개수는 보장이 아니다. 주어진 세 접촉 파지가 force closure인지는 여전히 형상과 마찰에 달려 있다. Markenscoff의 넷은 **세 번째**
 > 종류의 진술이고 오용하기 가장 쉽다. 그것은 *보편* bound, 즉 **어떤** 물체에도 충분한
 > 손가락 수이지 눈앞의 물체에 대한 최소가 아니다. 따라서 조정해야 할 축은 접촉 모델과
 > 개수의 양화, 둘이다. **논문이 force closure를 주장하면 접촉 모델과 특정/보편 양화를 함께 물어야 한다** — 학습 기반

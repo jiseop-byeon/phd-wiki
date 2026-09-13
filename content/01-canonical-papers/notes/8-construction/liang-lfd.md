@@ -22,14 +22,14 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on ceiling-tile installation across 60 scenes **in a ROS Gazebo simulator**; the generalized-cylinder trajectory representation arrived in the 2022 JCCE follow-up (82.0% vs 71.3% — that journal is paywalled and neither figure was checked in the source).
+**One-line summary**: Imitation learning enters construction — human demonstrations (3,000 virtual + 85 real) teach a manipulator quasi-repetitive tasks, reaching **78% success** on ceiling-tile installation across 60 scenes **in a ROS Gazebo simulator**; the 2022 JCCE follow-up adapted generalized cylinders (Ahmadzadeh & Chernova 2018) and added orientation constraints. Its abstract's 82.0% vs 71.3% compares two different test conditions; on the same conditions the paper reports 75.3% vs 71.3% and 82.0% vs 66.0%.
 
 > [!tip] Key intuition · 핵심 직관
 > Demonstrations supply task behavior where programming each geometric variation would be costly. The later trajectory-tube representation allows variation around a demonstrated path; keep that follow-up mechanism separate from what the original construction LfD study established.
 
 **Context.** Quasi-repetitive construction tasks repeat their purpose while varying in geometry. Learning from demonstration offers an alternative to programming each instance, with the original evidence limited to its simulated task.
 
-**Method**: learning from demonstration (LfD) from a mix of virtual (VR) and physical demonstrations. The follow-up (Liang et al., JCCE 2022) added the *generalized cylinder* representation — a tube of admissible trajectories around the demonstrated path — so the robot can vary execution within the tube instead of replaying one trajectory (82.0% vs 71.3% in that paper's comparison). "Quasi-repetitive" names the construction task class this fits: tasks that repeat, but with per-instance geometric variation (each tile, stud, or panel slightly different), too variable for fixed automation yet too repetitive to justify per-instance programming.
+**Method**: learning from demonstration (LfD) from a mix of virtual (VR) and physical demonstrations. The follow-up (Liang et al., JCCE 2022) took the *generalized cylinder* representation from Ahmadzadeh & Chernova (2018) — a tube of admissible trajectories around the demonstrated path — so the robot can vary execution within the tube instead of replaying one trajectory. It added orientation constraints (GCO), because the original GC sampled position inside the tube but left orientation to chance. **Read its headline carefully**: the abstract sets 82.0% against 71.3%, but those come from different tables. On 150 trials at the original locations, GCO scored 75.3% against 71.3% for the earlier CTRL method (Table 1). On 100 trials at new start and target locations, GCO with trajectory adaptation scored 82.0% against 66.0% for CTRL (Table 3). All of it ran in simulation. "Quasi-repetitive" names the construction task class this fits: tasks that repeat, but with per-instance geometric variation (each tile, stud, or panel slightly different), too variable for fixed automation yet too repetitive to justify per-instance programming.
 
 **Evidence (with numbers)**: ceiling-tile installation, **78% task success over 60 test scenes in the ROS Gazebo simulator with a KUKA arm emulator** — there is no physical-robot result in the paper. This is **simulation, not a testbed and not a site**; after the demonstration phase the robot executes autonomously, with the human's role reduced to demonstrator.
 
@@ -42,14 +42,14 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## 한국어
 
-**한 줄 요약**: 모방학습이 건설에 들어온다 — 인간 시연(가상 3,000 + 실제 85)이 매니퓰레이터에게 준반복 과제를 가르쳐 ROS Gazebo 시뮬레이터의 60개 장면에서 천장 타일 설치 **78% 성공**에 도달한다; 일반화 원통(generalized cylinder) 궤적 표현은 2022 JCCE 후속에서 도입됐다(82.0% vs 71.3% — 그 저널은 페이월 뒤이고 두 수치 모두 원문에서 확인하지 못했다).
+**한 줄 요약**: 모방학습이 건설에 들어온다 — 인간 시연(가상 3,000 + 실제 85)이 매니퓰레이터에게 준반복 과제를 가르쳐 ROS Gazebo 시뮬레이터의 60개 장면에서 천장 타일 설치 **78% 성공**에 도달한다; 2022 JCCE 후속은 일반화 원통(generalized cylinder, Ahmadzadeh & Chernova 2018)을 가져와 방향 제약을 더했다. 초록의 82.0% 대 71.3%는 서로 다른 시험 조건을 비교한 것이다. 같은 조건끼리는 75.3% 대 71.3%, 82.0% 대 66.0%다.
 
 > [!tip] 핵심 직관 · Key intuition
 > 시연은 형상 변동마다 프로그래밍하기 어려운 과제 행동을 제공한다. 후속 연구의 궤적 튜브 표현은 시연 경로 주변의 변동을 허용한다. 그 후속 기전은 원래 건설 LfD 연구가 확립한 것과 구분한다.
 
 **맥락.** 준반복 건설 과제는 목적이 반복되지만 형상이 달라진다. 시연 학습은 개별 프로그래밍의 대안이다. 원래 증거는 해당 시뮬레이션 과제에 한정된다.
 
-**방법**: 가상(VR)과 실제 시연을 혼합한 시연 학습(LfD). 후속 연구(Liang et al., JCCE 2022)가 *일반화 원통* 표현 — 시연 경로 주위의 허용 궤적 튜브 — 을 더해, 로봇이 한 궤적을 재생하는 대신 튜브 안에서 실행을 변주할 수 있게 했다(그 논문의 비교에서 82.0% vs 71.3%). "준반복(quasi-repetitive)"은 이것이 맞는 건설 과제 부류의 이름이다: 반복되지만 개체별 기하 변동이 있는 과제(타일·스터드·패널 하나하나가 조금씩 다름) — 고정 자동화에는 너무 가변적이고, 개체별 프로그래밍에는 너무 반복적이다.
+**방법**: 가상(VR)과 실제 시연을 혼합한 시연 학습(LfD). 후속 연구(Liang et al., JCCE 2022)가 Ahmadzadeh & Chernova(2018)의 *일반화 원통* 표현 — 시연 경로 주위의 허용 궤적 튜브 — 을 가져와, 로봇이 한 궤적을 재생하는 대신 튜브 안에서 실행을 변주할 수 있게 했다. 원래 GC는 튜브 안에서 위치만 샘플링하고 방향은 무작위로 두었기 때문에, 이 논문은 방향 제약(GCO)을 더했다. **머리기사 수치는 조심해서 읽어야 한다**: 초록은 82.0%와 71.3%를 맞세우지만 두 수치는 서로 다른 표에서 나왔다. 원래 위치에서 150회 시행하면 GCO 75.3%, 이전 CTRL 방법 71.3%다(표 1). 새 시작·목표 위치에서 100회 시행하면 궤적 적응을 더한 GCO 82.0%, CTRL 66.0%다(표 3). 모두 시뮬레이션에서 수행했다. "준반복(quasi-repetitive)"은 이것이 맞는 건설 과제 부류의 이름이다: 반복되지만 개체별 기하 변동이 있는 과제(타일·스터드·패널 하나하나가 조금씩 다름) — 고정 자동화에는 너무 가변적이고, 개체별 프로그래밍에는 너무 반복적이다.
 
 **증거 (수치와 함께)**: 천장 타일 설치, **ROS Gazebo 시뮬레이터에서 KUKA 팔 에뮬레이터로 60개 장면, 과제 성공률 78%** — 논문에 실제 로봇 결과는 없다. 이것은 **테스트베드도 현장도 아니라 시뮬레이션**이다; 시연 단계 이후 로봇은 자율적으로 실행하며, 인간의 역할은 시연자로 줄어든다.
 
