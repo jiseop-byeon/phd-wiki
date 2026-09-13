@@ -27,7 +27,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   angle $\theta$ from vertical) has $\tau = \underbrace{ml^2}_{M}\,\ddot\theta +
   \underbrace{mgl\sin\theta}_{g(\theta)}$ — here $M=ml^2$ is the (constant) inertia and
   $g(\theta)=mgl\sin\theta$ is the configuration-dependent gravity torque; the Coriolis
-  term $c$ is *zero* because a single link has no velocity-coupling between joints. Add a
+  term $c$ is *zero* because $M = ml^2$ does not depend on $\theta$ (a one-joint system with configuration-dependent inertia would still have $c = \tfrac12 M'(\theta)\dot\theta^2$). Add a
   second link and $M$ becomes $\theta$-dependent and $c$ turns on — that is the whole jump
   from "one equation" to "why multi-link dynamics are hard.
 - Two derivations, one answer: **Lagrangian** (energy-based, clean for analysis) vs
@@ -57,7 +57,7 @@ to buy solvability.
 - **세 항이 어디서 오는지, 1링크로**: 진자(질량 $m$, 길이 $l$, 연직에서의 각 $\theta$)는
   $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$ —
   여기서 $M=ml^2$가 (상수) 관성, $g(\theta)=mgl\sin\theta$가 자세 의존 중력 토크다;
-  코리올리 항 $c$는 *0*인데 단일 링크는 관절 간 속도 결합이 없기 때문이다. 링크를 하나
+  코리올리 항 $c$는 *0*인데 $M = ml^2$가 $\theta$에 의존하지 않기 때문이다(관성이 자세에 의존하는 1관절 계라면 $c = \tfrac12 M'(\theta)\dot\theta^2$가 남는다). 링크를 하나
   더 붙이면 $M$이 $\theta$ 의존이 되고 $c$가 켜진다 — 그것이 "한 방정식"에서 "다링크
   동역학이 왜 어려운가"로 가는 도약 전부다.
 - 유도는 둘, 답은 하나: **라그랑주**(에너지 기반, 해석에 깔끔) vs **재귀

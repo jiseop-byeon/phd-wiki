@@ -24,7 +24,7 @@ $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\, e^{[\mathcal{S}_2]\theta_2} \cdots e
 Read right-to-left: start at the home pose $M$ (all joints zero), then each joint screws
 everything downstream of it. Two ingredients only: the home pose, and one screw axis per
 joint *written in the fixed frame at the home position*. No intermediate link frames —
-which is the advantage over Denavit-Hartenberg and why modern software is PoE-native.
+which is the advantage over Denavit-Hartenberg and why MR's software library uses PoE (mainstream robot formats such as URDF still chain parent-to-child link frames).
 (The **body form** $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots$ expresses the same thing
 with axes in the end-effector frame.)
 
@@ -112,7 +112,7 @@ $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\, e^{[\mathcal{S}_2]\theta_2} \cdots e
 오른쪽에서 왼쪽으로 읽어라: 홈 자세 $M$(모든 관절 0)에서 시작해, 각 관절이 자기 하류
 전체를 스크류로 돌린다. 재료는 둘뿐이다: 홈 자세, 그리고 관절마다 *홈 위치에서 고정
 프레임 기준으로 쓴* 스크류 축 하나. 중간 링크 프레임이 필요 없다 — 이것이 D-H 대비
-장점이고 현대 소프트웨어가 PoE 네이티브인 이유다. (**바디 형식**
+장점이고 MR의 소프트웨어 라이브러리가 PoE를 쓰는 이유다(URDF 같은 주류 로봇 형식은 여전히 부모–자식 링크 프레임을 잇는다). (**바디 형식**
 $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots$은 축을 말단 프레임에서 쓴 같은 내용이다.)
 
 ### 처음부터 끝까지 계산 예제 — 평면 2R 팔

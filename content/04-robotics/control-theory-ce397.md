@@ -103,10 +103,10 @@ poles because modal coefficients, zeros, and output choice also matter.
 | Continuous $\dot x = Ax$ | all $\text{Re}(\lambda_i) < 0$ | left half-plane |
 | Discrete $x_{t+1} = A_dx_t$ | all $\lvert\lambda_i\rvert < 1$ | inside the unit circle |
 
-These are the same statement in two clocks: discretizing with step $T$ maps
+These are the same statement in two clocks: exact (zero-order-hold) discretization with step $T$ maps
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
-$e^{-0.1} = 0.905 < 1$. ✓ Papers switch between continuous models and discrete
+$e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Papers switch between continuous models and discrete
 implementations without warning; inspect which clock each equation uses. The place where the
 discrete clock is felt rather than read is haptic rendering, where a spring that is passive on
 paper injects energy once it is sampled
@@ -134,7 +134,7 @@ paper injects energy once it is sampled
 Laplace-transform the system ([[02-foundations/engineering-math|0.5 §9]]) and the ODE
 becomes algebra: for the mass–spring–damper,
 $G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. Its **poles** (denominator roots) are
-exactly the eigenvalues of $A$ — one object, two languages.
+exactly the eigenvalues of $A$ — one object, two languages. (That equality holds here because nothing cancels; in general every pole is an eigenvalue, but a pole–zero cancellation can hide an eigenvalue, even an unstable one, from $G(s)$ — Åström & Murray Example 9.7.)
 
 For a standard or dominant second-order mode with negligible zero effects, the denominator is described by two numbers experimental sections often report:
 
@@ -242,14 +242,14 @@ sensitivity can be made arbitrarily small —
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-summed over right-half-plane poles of $L$. Read it as a conservation law: the right-hand side is fixed by the plant before any controller is designed, and the controller only decides *where* on the frequency axis that fixed area sits. If the plant is open-loop stable the right side
+summed over right-half-plane poles of $L$. Read it as a conservation law: if the controller is itself stable, the right-hand side is fixed by the plant before any controller is designed, and the controller only decides *where* on the frequency axis that fixed area sits. If $L$ has no right-half-plane poles (a stable plant *and* a stable controller) the right side
 is **zero**: on a linear frequency axis, the area where $\log|S|$ is negative (disturbances
 attenuated) must be exactly paid for by area where it is positive (disturbances amplified).
 This is the **waterbed effect** — push sensitivity down in the band you care about and it
-rises somewhere else, always. An unstable plant makes the right side positive, so it starts
+rises somewhere else, always. An unstable plant or controller makes the right side positive, so it starts
 the account in debt. The complementary statement,
 $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$ over right-half-plane
-zeros, says **slow RHP zeros are worse than fast ones**, while the first says **fast RHP
+zeros (as printed this needs integral action so that $T(0)=1$; otherwise the integral diverges at $\omega \to 0$), says **slow RHP zeros are worse than fast ones**, while the first says **fast RHP
 poles are worse than slow ones**.
 
 **Worked — a specification the margins say may not be reachable.** The X-29 aircraft has a
@@ -537,9 +537,9 @@ $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm 
 | 연속 $\dot x = Ax$ | 모든 $\text{Re}(\lambda_i) < 0$ | 좌반평면 |
 | 이산 $x_{t+1} = A_dx_t$ | 모든 $\lvert\lambda_i\rvert < 1$ | 단위원 안 |
 
-같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
+같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 정확히(영차 유지로) 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
-$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 연속 모델과 이산 구현을 예고 없이
+$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 논문은 연속 모델과 이산 구현을 예고 없이
 오가므로 각 식이 어느 시계를 쓰는지 확인한다. 이산 시계를 읽는 것이 아니라 몸으로 느끼는
 자리가 햅틱 렌더링이다. 종이 위에서는 수동적인 스프링이 샘플링되는 순간 에너지를 주입한다
 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
@@ -562,7 +562,7 @@ $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 논문은 연속 모델과 이산 구�
 
 라플라스 변환하면([[02-foundations/engineering-math|0.5 §9]]) 미분방정식이 대수가 된다:
 질량-스프링-댐퍼는 $G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. 그 **극점**(분모의
-근)이 정확히 $A$의 고유값이다 — 하나의 대상, 두 개의 언어.
+근)이 정확히 $A$의 고유값이다 — 하나의 대상, 두 개의 언어. (여기서 등식이 성립하는 것은 상쇄가 없기 때문이다. 일반적으로 모든 극점은 고유값이지만, 극점–영점 상쇄는 고유값을, 불안정한 것까지도 $G(s)$에서 숨길 수 있다 — Åström & Murray 예제 9.7.)
 
 영점 영향이 작고 표준 또는 우세 2차 모드가 지배할 때, 분모는 실험 절이 자주 보고하는 두 숫자로 기술된다:
 
@@ -660,12 +660,12 @@ $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 7
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-이고, 합은 $L$의 우반평면 극점에 대해 취한다. 보존 법칙으로 읽어라. 우변은 제어기를 설계하기도 전에 플랜트가 정해 놓은 값이고, 제어기가 정하는 것은 그 고정된 넓이가 주파수 축의 *어디에* 놓이는가뿐이다. 플랜트가 개루프 안정이면 우변은 **0**이다.
+이고, 합은 $L$의 우반평면 극점에 대해 취한다. 보존 법칙으로 읽어라. 제어기 자체가 안정하다면 우변은 제어기를 설계하기도 전에 플랜트가 정해 놓은 값이고, 제어기가 정하는 것은 그 고정된 넓이가 주파수 축의 *어디에* 놓이는가뿐이다. $L$에 우반평면 극점이 없으면(플랜트*와* 제어기가 모두 안정하면) 우변은 **0**이다.
 선형 주파수 축 위에서 $\log|S|$가 음수인 넓이(외란이 감쇠되는 구간)는 양수인
 넓이(외란이 증폭되는 구간)로 정확히 값을 치러야 한다. 이것이 **워터베드 효과**다 — 관심
-있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트는 우변을 양수로
+있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트나 제어기는 우변을 양수로
 만드니, 시작부터 빚을 지고 들어간다. 상보 진술인 우반평면 영점에 대한
-$\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는 **느린 RHP 영점이
+$\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는(이렇게 쓴 식은 $T(0)=1$이 되도록 적분 동작이 있어야 하고, 아니면 $\omega \to 0$에서 발산한다) **느린 RHP 영점이
 빠른 것보다 나쁘다**고 말하고, 앞의 것은 **빠른 RHP 극점이 느린 것보다 나쁘다**고 말한다.
 
 **계산 — 여유가 도달 불가능할 수 있다고 말하는 사양.** X-29 항공기는 $p = 6$ rad/s에 우반평면 극점을

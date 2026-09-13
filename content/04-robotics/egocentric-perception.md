@@ -14,7 +14,7 @@ Moving the camera to the head changes what is observable at all — it is a diff
 Move the camera from the room to the head and the perception problem changes character. The body that was the object of study disappears from view; the hands and the manipulated object fill the frame; and camera motion — previously noise — becomes the strongest available signal about attention. **Egocentric perception is not third-person perception from a worse angle. It is a different observability regime.**
 
 > [!info] Depth target
-> State how the first-person viewpoint changes observability; distinguish the main egocentric task families and what each is scored on; explain why head motion is an attention proxy and where that breaks; and judge whether an egocentric benchmark result would survive on a helmet camera at a work site.
+> State how the first-person viewpoint changes observability; distinguish the main egocentric task families; explain why head motion is an attention proxy and where that breaks; and judge whether an egocentric benchmark result would survive on a helmet camera at a work site.
 
 > [!note] Prerequisites
 > [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]
@@ -65,14 +65,13 @@ It fails in three predictable places:
 
 > [!example] Worked example · 계산 예제
 > **Putting a number on the head-motion problem.** A 1920-pixel image over a 90° horizontal
-> field of view gives $1920/90 = 21.3$ pixels per degree. Grossman et al. (1988) measured median
-> peak head velocity during locomotion at about 90 °/s; a deliberate look-around reaches several
-> hundred. At a 1/60 s exposure, 90 °/s smears the image by $90 \times 0.0167 = 1.5° = 32$
+> field of view gives $1920/90 = 21.3$ pixels per degree. Grossman et al. (1988) found the group-median
+> peak head velocity while walking or running did not exceed 90 °/s, while vigorous voluntary head rotation reached a median peak of about 780 °/s; a moderate look-around of 300 °/s sits between. At a 1/60 s exposure, 90 °/s smears the image by $90 \times 0.0167 = 1.5° = 32$
 > pixels; at 300 °/s it is $5.0° = 107$ pixels. A hand at 0.5 m spans roughly 180 pixels, so a
 > turn of the head blurs it across a fifth to more than half its own width.
 >
 > **The same motion in the time domain.** At 90 °/s a 90° field of view replaces itself
-> completely in 1.0 s — 30 frames. At 300 °/s it is 0.3 s, or 9 frames. Any method that assumes
+> completely in 1.0 s — 30 frames at 30 fps. At 300 °/s it is 0.3 s, or 9 frames. Any method that assumes
 > half a second of overlapping context has, during a look-around, none.
 >
 > **The reading this gives you.** This is why egocentric benchmarks and deployed headsets
@@ -104,7 +103,7 @@ but the observable evidence is different and, for short horizons, better. Hands 
 - **EPIC-KITCHENS** — unscripted kitchen activity, verb+noun labels, strong long-tail; the reference benchmark for fine-grained egocentric action and anticipation.
 - **Ego4D** — a massive multi-site egocentric corpus (thousands of hours) with a benchmark suite spanning episodic memory, hands and objects, social interaction, and forecasting. Kristen Grauman led this effort, which is why the topic appears in [[04-robotics/index|CS 381V]]-style syllabi.
 
-- **Ego-Exo4D** — the same skilled activity captured *simultaneously* from the wearer's view and from several third-person cameras, with expert commentary as language annotation. This is the dataset that makes the ego–exo correspondence learnable, which is why it matters for turning third-person demonstration video into a first-person policy. Its headline numbers differ between the CVPR 2024 paper and the expanded v2 manuscript — see Sources.
+- **Ego-Exo4D** — the same skilled activity captured *simultaneously* from the wearer's view and from several third-person cameras, with expert commentary as language annotation. This is the dataset that makes the ego–exo correspondence learnable, which is why it matters for turning third-person demonstration video into a first-person policy. Its headline numbers differ between the first arXiv preprint and the CVPR 2024 paper — see Sources.
 
 All three are daily-life or skill datasets. None contains PPE, industrial tools, exclusion zones, or safety-critical decisions. Treat a number from either as evidence that a method *can* work on egocentric video, not that it will work on a helmet camera.
 
@@ -142,7 +141,7 @@ The last row is not a technical detail. Egocentric recording of workers is human
 You should be able to:
 
 - state three ways observability changes when the camera moves to the head;
-- name the egocentric task families and the metric each uses;
+- name the egocentric task families and what each asks the model to produce;
 - explain the gaze → head → hand → contact cue cascade and the lead-time/reliability trade;
 - name the three regimes where head motion stops being an attention proxy;
 - list the specific domain gaps between a daily-life egocentric benchmark and a work-site helmet camera.
@@ -170,16 +169,16 @@ You should be able to:
 - K. Grauman, A. Westbury, L. Torresani, et al., "Ego-Exo4D: Understanding Skilled Human Activity from First- and Third-Person Perspectives," *CVPR 2024* (Oral). [arXiv:2311.18259](https://arxiv.org/abs/2311.18259) — simultaneous ego and multiple exo views of the same activity, skilled rather than undirected activity, and expert commentary as language annotation.
 
 > [!warning] Ego-Exo4D has two sets of numbers
-> The CVPR 2024 paper reports over 800 participants in 13 cities, 131 scene contexts, and 1,422
-> hours. The expanded arXiv manuscript covering the v2 release reports 740 participants, 123
-> scene contexts, and 1,286 hours. Neither is wrong; they describe different releases. State
+> The first arXiv preprint (v1, November 2023) reports over 800 participants in 13 cities, 131 scene contexts, and 1,422
+> hours. The CVPR 2024 paper and the expanded arXiv manuscript report 740 participants from 13 cities, 123
+> scene contexts, and 1,286 hours. Neither is wrong; they describe different versions of the release. State
 > which version you took the number from.
 
 **Egocentric video as a manipulation prior**
 
 - D. Shan, J. Geng, M. Shu, and D. F. Fouhey, "Understanding Human Hands in Contact at Internet Scale," *CVPR 2020* (Oral) — introduces 100DOH (131 days of footage) and a detector predicting hand location, handedness, *contact state*, and the box of the object in contact. The de facto tool for mining contact events out of human video.
 - S. Nair, A. Rajeswaran, V. Kumar, C. Finn, and A. Gupta, "R3M: A Universal Visual Representation for Robot Manipulation," *CoRL 2022*. [arXiv:2203.12601](https://arxiv.org/abs/2203.12601) — pretrains on Ego4D with time-contrastive learning and video-language alignment, then freezes the representation; a Franka learns real cluttered-apartment tasks from about 20 demonstrations.
-- K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — retargets human hand trajectories into a robot hand embodiment, transferring *action* priors rather than visual features. The clean contrast to R3M.
+- K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — retargets human hand trajectories into a robot hand embodiment, adding *action* and physical priors on top of visual priors. The contrast to R3M, which transfers only a visual representation.
 
 ## 한국어
 
@@ -189,8 +188,8 @@ You should be able to:
 카메라를 방에서 머리로 옮기면 인지 문제의 성격이 바뀐다. 연구 대상이던 몸이 화면에서 사라지고, 손과 조작 대상이 프레임을 채우고, 이전에는 잡음이던 카메라 움직임이 **주의에 대한 가장 강한 신호**가 된다. **자기중심 인지는 나쁜 각도의 3인칭 인지가 아니다. 다른 관측 가능성 체제다.**
 
 > [!info] 깊이 목표
-> 1인칭 시점이 관측 가능성을 어떻게 바꾸는지 말한다; 주요 자기중심 과제군과 각각의 채점
-> 기준을 구분한다; 머리 움직임이 주의의 대용인 이유와 그것이 깨지는 지점을 설명한다;
+> 1인칭 시점이 관측 가능성을 어떻게 바꾸는지 말한다; 주요 자기중심 과제군을
+> 구분한다; 머리 움직임이 주의의 대용인 이유와 그것이 깨지는 지점을 설명한다;
 > 자기중심 벤치마크 결과가 현장 헬멧 카메라에서 살아남을지 판단한다.
 
 > [!note] 선수 지식
@@ -242,13 +241,13 @@ flowchart TD
 
 > [!example] 계산 예제 · Worked example
 > **머리 움직임 문제에 숫자를 붙이기.** 수평 화각 90°를 1920픽셀에 담으면
-> $1920/90 = 21.3$ 픽셀/도다. Grossman 외(1988)는 보행 중 머리 속도의 중앙값 최대치를 약
-> 90 °/s로 측정했고, 의도적으로 둘러보면 수백 °/s에 이른다. 노출 1/60초에서 90 °/s는 영상을
+> $1920/90 = 21.3$ 픽셀/도다. Grossman 외(1988)는 걷거나 뛸 때 머리 최대 속도의 집단 중앙값이
+> 90 °/s를 넘지 않았고, 힘껏 의도적으로 고개를 돌리면 중앙값 최대 약 780 °/s에 이른다고 보고했다. 적당히 둘러보는 300 °/s는 그 사이다. 노출 1/60초에서 90 °/s는 영상을
 > $90 \times 0.0167 = 1.5° = 32$픽셀만큼 번지게 하고, 300 °/s에서는 $5.0° = 107$픽셀이다.
 > 0.5 m 앞의 손은 대략 180픽셀을 차지하니, 고개 한 번 돌리는 동안 손은 제 폭의 5분의 1에서
 > 절반 넘게까지 번진다.
 >
-> **같은 움직임을 시간 영역에서.** 90 °/s면 90° 화각이 1.0초 만에 완전히 교체된다 — 30프레임.
+> **같은 움직임을 시간 영역에서.** 90 °/s면 90° 화각이 1.0초 만에 완전히 교체된다 — 30 fps로 30프레임.
 > 300 °/s면 0.3초, 9프레임이다. 0.5초의 겹치는 맥락을 전제하는 방법은 둘러보는 동안 그 맥락을
 > 하나도 갖지 못한다.
 >
@@ -280,7 +279,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 - **EPIC-KITCHENS** — 대본 없는 주방 활동, 동사+명사 레이블, 강한 롱테일. 세밀한 자기중심 행동·예측의 기준 벤치마크.
 - **Ego4D** — 다지역 대규모 자기중심 코퍼스(수천 시간)에 에피소드 기억·손과 물체·사회적 상호작용·예측을 아우르는 벤치마크 묶음. Kristen Grauman이 주도했고, 그래서 [[04-robotics/index|CS 381V]] 계열 강의계획서에 이 주제가 등장한다.
 
-- **Ego-Exo4D** — 같은 숙련 활동을 착용자 시점과 여러 3인칭 카메라에서 *동시에* 촬영하고, 전문가 해설을 언어 주석으로 붙였다. ego–exo 대응을 학습 가능하게 만드는 데이터셋이고, 3인칭 시연 영상을 1인칭 정책으로 바꾸는 문제에서 중요한 이유가 그것이다. 대표 숫자가 CVPR 2024 논문과 확장 v2 원고에서 다르다 — 출처를 보라.
+- **Ego-Exo4D** — 같은 숙련 활동을 착용자 시점과 여러 3인칭 카메라에서 *동시에* 촬영하고, 전문가 해설을 언어 주석으로 붙였다. ego–exo 대응을 학습 가능하게 만드는 데이터셋이고, 3인칭 시연 영상을 1인칭 정책으로 바꾸는 문제에서 중요한 이유가 그것이다. 대표 숫자가 첫 arXiv 프리프린트와 CVPR 2024 논문에서 다르다 — 출처를 보라.
 
 셋 다 일상생활 또는 숙련 활동 데이터셋이다. **PPE도, 산업 공구도, 통제구역도, 안전 필수 결정도 없다.** 여기서 나온 숫자는 그 방법이 자기중심 영상에서 *작동할 수 있다*는 증거지 헬멧 카메라에서 작동한다는 증거가 아니다.
 
@@ -318,7 +317,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 다음을 할 수 있어야 한다:
 
 - 카메라가 머리로 갈 때 관측 가능성이 바뀌는 방식 셋을 말한다;
-- 자기중심 과제군과 각 지표를 든다;
+- 자기중심 과제군과 각 과제가 모델에게 무엇을 내놓으라고 하는지 든다;
 - 시선 → 머리 → 손 → 접촉 단서 사슬과 선행 시간/신뢰도 교환을 설명한다;
 - 머리 움직임이 주의 대용이기를 멈추는 세 영역을 든다;
 - 일상 자기중심 벤치마크와 현장 헬멧 카메라 사이의 구체적 도메인 격차를 나열한다.
@@ -346,12 +345,12 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 - K. Grauman, A. Westbury, L. Torresani, et al., "Ego-Exo4D: Understanding Skilled Human Activity from First- and Third-Person Perspectives," *CVPR 2024* (Oral). [arXiv:2311.18259](https://arxiv.org/abs/2311.18259) — 같은 활동의 1인칭과 다수 3인칭 시점을 동시 촬영했고, 방향 없는 일상이 아니라 숙련된 활동을 다루며, 전문가 해설을 언어 주석으로 붙였다.
 
 > [!warning] Ego-Exo4D의 숫자는 두 벌이다
-> CVPR 2024 논문은 13개 도시 800명 이상, 장면 맥락 131개, 1,422시간을 보고한다. v2 릴리스를
-> 다루는 확장 arXiv 원고는 740명, 123개, 1,286시간을 보고한다. 어느 쪽도 틀리지 않았고 서로
-> 다른 릴리스를 기술한 것이다. 어느 판본에서 가져온 숫자인지 밝혀라.
+> 첫 arXiv 프리프린트(v1, 2023년 11월)는 13개 도시 800명 이상, 장면 맥락 131개, 1,422시간을 보고한다. CVPR 2024 논문과
+> 확장 arXiv 원고는 13개 도시 740명, 123개, 1,286시간을 보고한다. 어느 쪽도 틀리지 않았고 서로
+> 다른 판본을 기술한 것이다. 어느 판본에서 가져온 숫자인지 밝혀라.
 
 **조작을 위한 사전지식으로서의 1인칭 비디오**
 
 - D. Shan, J. Geng, M. Shu, and D. F. Fouhey, "Understanding Human Hands in Contact at Internet Scale," *CVPR 2020* (Oral) — 100DOH(영상 131일치)를 내놓고, 손 위치·좌우·*접촉 상태*·접촉 중인 물체 상자를 예측하는 검출기를 함께 공개했다. 사람 비디오에서 접촉 사건을 캐내는 사실상의 표준 도구다.
 - S. Nair, A. Rajeswaran, V. Kumar, C. Finn, and A. Gupta, "R3M: A Universal Visual Representation for Robot Manipulation," *CoRL 2022*. [arXiv:2203.12601](https://arxiv.org/abs/2203.12601) — Ego4D에서 시간 대조 학습과 비디오-언어 정렬로 사전학습한 뒤 표현을 동결한다. Franka가 어질러진 실제 아파트 과제를 시연 20개 남짓으로 학습한다.
-- K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — 사람 손 궤적을 로봇 손 신체로 재타깃해서, 시각 특징이 아니라 *행동* 사전지식을 옮긴다. R3M과 깔끔하게 대비된다.
+- K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — 사람 손 궤적을 로봇 손 신체로 재타깃해서, 시각 사전지식 위에 *행동*과 물리 사전지식을 더한다. 시각 표현만 옮기는 R3M과 대비된다.

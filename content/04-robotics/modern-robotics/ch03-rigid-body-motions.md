@@ -37,7 +37,7 @@ For a point displaced from a rotation axis, the cross product gives the part of 
 
 ### 2. Why an exponential? Rotation is a linear ODE
 
-A frame spinning at constant angular velocity $\omega$ obeys $\dot R = [\omega]\,R$.
+A frame spinning at constant angular velocity obeys $\dot R = [\omega_s]\,R$ with $\omega_s$ expressed in the space frame (equivalently $\dot R = R\,[\omega_b]$ in the body frame; MR §3.2.2).
 This is the matrix version of $\dot x = ax$ — so its solution is the matrix version of
 $e^{at}$: rotating about unit axis $\hat\omega$ for "time" $\theta$ gives
 $$R = e^{[\hat\omega]\theta} = I + \sin\theta\,[\hat\omega] + (1-\cos\theta)\,[\hat\omega]^2 \quad \text{(Rodrigues' formula)}.$$
@@ -148,7 +148,7 @@ $$[\omega] = \begin{pmatrix}0&-\omega_3&\omega_2\\ \omega_3&0&-\omega_1\\ -\omeg
 
 ### 2. 왜 지수함수인가? 회전은 선형 미분방정식이다
 
-일정한 각속도 $\omega$로 도는 프레임은 $\dot R = [\omega]\,R$을 따른다.
+일정한 각속도로 도는 프레임은 공간 프레임에서 표현한 $\omega_s$로 $\dot R = [\omega_s]\,R$을 따른다(바디 프레임으로는 $\dot R = R\,[\omega_b]$; MR §3.2.2).
 $\dot x = ax$의 행렬판이다 — 그러므로 해도 $e^{at}$의 행렬판이다: 단위축 $\hat\omega$
 둘레로 "시간" $\theta$만큼 돌면
 $$R = e^{[\hat\omega]\theta} = I + \sin\theta\,[\hat\omega] + (1-\cos\theta)\,[\hat\omega]^2 \quad \text{(로드리게스 공식)}.$$

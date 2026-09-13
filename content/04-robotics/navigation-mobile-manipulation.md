@@ -55,7 +55,7 @@ end-effector can reach it. **Capability map** (Zacharias, Borst and Hirzinger, I
 goes further and records *from which directions* — because reaching a point from above and
 reaching it from the side are different feasibility questions, and an arm's workspace is
 strongly anisotropic. Making that directional structure explicit and inspectable is the
-contribution, and it is the ancestor of everything in §3.
+contribution, and it is the direct ancestor of the inverse-reachability methods in §3 (reachability-based base placement itself goes back at least to Seraji 1995).
 
 ### 3. Base placement — inverting the question
 
@@ -87,7 +87,7 @@ question.
     <text x="330" y="190">cannot fold that far</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="238">The valid set is an annulus, not a disc &#8212; and the useful part of it is narrower still. Every metre of</text>
+    <text x="20" y="238">The valid set is an annulus, not a disc &#8212; and the useful part of it is narrower still. Every centimetre of</text>
     <text x="20" y="254">base-pose uncertainty eats into a band that was only a few tens of centimetres wide to begin with.</text>
   </g>
 </svg>
@@ -157,10 +157,10 @@ navigation and manipulation constraints.
 > is not a deterministic success/failure proof.
 >
 > Now look at where it went. Base localization contributes $25/27.18 = \mathbf{92\%}$ of the
-> *variance*. Halving the arm's calibration error changes $\sigma_{\text{total}}$ from 5.20 cm
-> to 5.19 cm — nothing. Drop the base term instead, by re-observing the object from the wrist
+> *variance*. Halving the arm's calibration error changes $\sigma_{\text{total}}$ from 5.213 cm
+> to 5.207 cm — nothing. Drop the base term instead, by re-observing the object from the wrist
 > camera once the base has parked, and you are left with
-> $\sqrt{0.3^2 + 0.3^2 + 1.0^2} = 1.1$ cm.
+> $\sqrt{0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = 1.5$ cm, now dominated by hand–eye and perception error.
 >
 > **The reading this gives you.** This single calculation is why mobile manipulation is
 > organized the way it is: the base is not required to be accurate, it is required to get the
@@ -280,7 +280,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 기록한다. **능력 지도(capability map)**(Zacharias, Borst, Hirzinger, IROS 2007)는 한 걸음 더
 나아가 *어느 방향에서* 도달 가능한지를 기록한다. 어떤 점에 위에서 닿는 것과 옆에서 닿는 것은
 다른 가능성 문제이고, 팔의 작업 영역은 강하게 비등방적이기 때문이다. 그 방향 구조를 명시적이고
-들여다볼 수 있게 만든 것이 기여이며, §3의 모든 것의 조상이다.
+들여다볼 수 있게 만든 것이 기여이며, §3의 역도달성 방법들의 직계 조상이다(도달성에 기반한 베이스 배치 자체는 적어도 Seraji 1995까지 거슬러 올라간다).
 
 ### 3. Base placement — 질문 뒤집기
 
@@ -311,7 +311,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
     <text x="330" y="190">팔이 그만큼 접히지 못한다</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="238">유효 집합은 원판이 아니라 고리이고 &#8212; 쓸 만한 부분은 그보다도 좁다. 베이스 자세 불확실성 1 m마다,</text>
+    <text x="20" y="238">유효 집합은 원판이 아니라 고리이고 &#8212; 쓸 만한 부분은 그보다도 좁다. 베이스 자세 불확실성 1 cm마다,</text>
     <text x="20" y="254">애초에 수십 센티미터밖에 안 되던 띠를 그만큼씩 갉아먹는다.</text>
   </g>
 </svg>
@@ -371,9 +371,9 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 이 계산만으로 개별 시도의 성공·실패가 결정된다는 뜻은 아니다.
 >
 > 이제 그것이 어디서 왔는지 보라. 베이스 위치 추정이 *분산*의 $25/27.18 = \mathbf{92\%}$를
-> 차지한다. 팔의 보정 오차를 절반으로 줄이면 $\sigma_{\text{total}}$은 5.20 cm에서 5.19 cm가
+> 차지한다. 팔의 보정 오차를 절반으로 줄이면 $\sigma_{\text{total}}$은 5.213 cm에서 5.207 cm가
 > 된다 — 아무 일도 일어나지 않는다. 대신 베이스 항을 없애라. 베이스가 선 뒤에 손목 카메라로
-> 물체를 다시 관측하면 $\sqrt{0.3^2 + 0.3^2 + 1.0^2} = 1.1$ cm만 남는다.
+> 물체를 다시 관측하면 $\sqrt{0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = 1.5$ cm만 남고, 이제는 핸드–아이와 인식 오차가 지배한다.
 >
 > **여기서 얻는 독법.** 모바일 조작이 지금의 모양인 이유가 이 계산 하나에 다 있다. 베이스에
 > 요구되는 것은 다음 감지 단계가 작동할 만큼 *물체를 센서 시야 안에 넣는 것*이고, 그다음은 팔이 국소적으로

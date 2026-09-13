@@ -97,8 +97,8 @@ of a box achieves and what almost every grasp paper means when it says "stable".
 
 The finger counts are a place where secondary sources reliably go wrong, so state them with
 their sources attached. Markenscoff, Ni and Papadimitriou's 1990 analysis gives, in its own
-abstract, that with Coulomb friction **three fingers are necessary and sufficient in two
-dimensions and four in three dimensions**. The much-quoted **seven** is a different result —
+abstract, that with Coulomb friction and *under its most relaxed assumptions* **three fingers are necessary and sufficient in two
+dimensions and four in three dimensions** — bounds over all objects; a particular object may need fewer (two frictional contacts can force-close a planar body, MR §12.2.3.1). The much-quoted **seven** is a different result —
 it is the *frictionless* form-closure count in 3D, and quoting it as the force-closure
 number is a common error. It carries a second qualifier that is dropped just as often: it is
 a **first-order** bound, derived by linearizing the contact constraints, so it sees only the
@@ -153,7 +153,7 @@ deserves.
 
 The weakness is the same as the strength: by treating all wrench directions as equally
 likely, $\epsilon$ ignores the task. A screwdriver grasp that must resist torque about the
-shaft is not well served by a metric that averages over directions it will never see —
+shaft is not well served by a metric whose value is set by the weakest direction, even one the task will never load —
 which is the motivation for task-oriented quality measures, and worth remembering when a
 paper reports "grasp quality" without saying quality *for what*.
 
@@ -329,7 +329,7 @@ grasps are and what would make your answer wrong.
 ### After reading
 
 - [ ] Draw a friction cone and give its half-angle for $\mu = 0.5$ and $\mu = 1$.
-- [ ] State the difference between form closure and force closure, and give the frictional 3D finger count with its source.
+- [ ] State the difference between form closure and force closure, and state the frictional 3D counts — the Springer §38.4.2 minimums (two soft-finger / three non-collinear hard-finger) versus Markenscoff's universal four — with their sources.
 - [ ] Define $\epsilon$ and say what it deliberately ignores.
 - [ ] Explain where the analytic theory sits inside a learned grasping pipeline.
 - [ ] Name the assumption construction most reliably breaks.
@@ -350,7 +350,7 @@ grasps are and what would make your answer wrong.
    would you reach for instead?
 
 > [!tip]- Answers
-> 1. Seven is the *frictionless form-closure* count in 3D, not a force-closure count. With Coulomb friction, Markenscoff, Ni and Papadimitriou's 1990 abstract gives four fingers as necessary and sufficient in three dimensions. The paper has merged two different theorems, which is the single most common error in this area.
+> 1. Seven is the *frictionless form-closure* count in 3D, not a force-closure count. With Coulomb friction, Markenscoff, Ni and Papadimitriou's 1990 abstract gives four fingers as necessary and sufficient in three dimensions, under its most relaxed assumptions and as a bound over all objects. The paper has merged two different theorems, which is the single most common error in this area.
 > 2. The cone's half-angle falls from $\arctan 0.6 \approx 31.0°$ to $\arctan 0.3 \approx 16.7°$ — roughly half the angular width. The antipodal condition requires the line joining two contacts to lie inside *both* cones, so narrowing both cones shrinks the set of valid contact pairs sharply, and grasps that were marginal become invalid. Worse, a planner that still believes $\mu = 0.6$ will keep proposing them.
 > 3. Because $\epsilon$ is the worst case over *all* wrench directions, weighting equally the directions the task will never produce. A grasp optimised against a uniform ball can be beaten, on the actual task, by one that is weak in irrelevant directions and strong in the one direction that matters — resisting torque about a screwdriver's shaft, say. Quality is only meaningful relative to a task wrench distribution.
 > 4. That the analytic metric is a good enough proxy for real grasp success — that is, that the physics in the label generator matches the physics of the real contact closely enough for the ranking to survive. Depth-image realism matters too, but it is the *label* that carries the assumption: the network can only learn the quality function it was shown.
@@ -459,8 +459,8 @@ Form closure가 더 강하고 더 드문 조건이다. Force closure가 상자�
 달성되는 것이고, 거의 모든 파지 논문이 "안정적"이라고 할 때 뜻하는 것이다.
 
 손가락 개수는 2차 출처가 어김없이 틀리는 지점이므로, 출처를 붙여서 말한다. Markenscoff, Ni,
-Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 때 **2차원에서는 손가락 셋,
-3차원에서는 넷이 필요충분**이라고 말한다. 널리 인용되는 **일곱**은 다른 결과다 — 3D에서의
+Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 때 *가장 느슨한 가정 아래에서* **2차원에서는 손가락 셋,
+3차원에서는 넷이 필요충분**이라고 말한다 — 모든 물체에 대한 bound이고, 특정 물체는 더 적게 필요할 수 있다(마찰 접촉 둘로 평면 물체를 force closure할 수 있다, MR §12.2.3.1). 널리 인용되는 **일곱**은 다른 결과다 — 3D에서의
 *마찰 없는* form closure 개수이고, 이것을 force closure 개수로 인용하는 것이 흔한 오류다.
 여기에는 그만큼 자주 빠지는 두 번째 단서가 붙는다. 이것은 접촉 구속을 선형화해서 얻은
 **1차** 경계라 접촉 법선만 본다. 곡률을 허용하면 2차 해석은 평면 물체를 접촉 둘로 가두고,
@@ -505,7 +505,7 @@ Ferrari와 Canny의 1992년 지표는 놀랄 만큼 기하적이다:
 낮은 점수를 받는다.
 
 약점은 강점과 같다: 모든 렌치 방향을 동등하게 취급하므로 $\epsilon$은 과제를 무시한다. 축
-둘레의 토크에 저항해야 하는 드라이버 파지는, 결코 마주칠 일 없는 방향들까지 평균 내는 지표로
+둘레의 토크에 저항해야 하는 드라이버 파지는, 과제가 결코 힘을 걸지 않을 방향이라도 가장 약한 방향이 값을 정하는 지표로
 잘 다뤄지지 않는다 — 과제 지향 품질 지표의 동기이고, 어떤 논문이 무엇을 *위한* 품질인지 밝히지
 않은 채 "파지 품질"을 보고할 때 기억할 것이다.
 
@@ -664,7 +664,7 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 마찰 원뿔을 그리고 $\mu = 0.5$와 $\mu = 1$에서의 반각을 댄다.
-- [ ] Form closure와 force closure의 차이를 말하고, 마찰 있는 3D 접촉 수에서 특정 형상과 보편 bound를 구분한다.
+- [ ] Form closure와 force closure의 차이를 말하고, 마찰 있는 3D 접촉 수 — Springer §38.4.2의 최소 개수(soft finger 둘 / 비공선 hard finger 셋)와 Markenscoff의 보편 bound 넷 — 를 출처와 함께 말한다.
 - [ ] $\epsilon$을 정의하고 그것이 의도적으로 무시하는 것을 말한다.
 - [ ] 학습 파지 파이프라인 안에서 해석 이론이 어디에 앉는지 설명한다.
 - [ ] 건설이 가장 어김없이 깨뜨리는 가정을 댄다.
@@ -684,7 +684,7 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
    무엇에 기대겠는가?
 
 > [!tip]- 정답 · Answers
-> 1. 일곱은 3D에서의 *마찰 없는 form closure* 개수이지 force closure 개수가 아니다. Coulomb 마찰이 있으면 Markenscoff, Ni, Papadimitriou의 1990년 초록이 3D에서 손가락 넷을 필요충분으로 제시한다. 그 논문은 서로 다른 두 정리를 합쳐 버렸고, 이것이 이 영역에서 가장 흔한 오류다.
+> 1. 일곱은 3D에서의 *마찰 없는 form closure* 개수이지 force closure 개수가 아니다. Coulomb 마찰이 있으면 Markenscoff, Ni, Papadimitriou의 1990년 초록이 가장 느슨한 가정 아래, 모든 물체에 대한 bound로서 3D에서 손가락 넷을 필요충분으로 제시한다. 그 논문은 서로 다른 두 정리를 합쳐 버렸고, 이것이 이 영역에서 가장 흔한 오류다.
 > 2. 원뿔의 반각이 $\arctan 0.6 \approx 31.0°$에서 $\arctan 0.3 \approx 16.7°$로 — 대략 절반의 각폭으로 — 줄어든다. Antipodal 조건은 두 접촉을 잇는 선이 *두* 원뿔 안에 모두 들어갈 것을 요구하므로, 두 원뿔이 모두 좁아지면 유효한 접촉 쌍의 집합이 급격히 줄고, 아슬아슬하던 파지들이 무효가 된다. 더 나쁜 것은, 여전히 $\mu = 0.6$이라고 믿는 계획기는 그것들을 계속 제안한다는 점이다.
 > 3. $\epsilon$이 *모든* 렌치 방향에 대한 최악의 경우이고, 과제가 결코 만들지 않을 방향까지 동등하게 가중하기 때문이다. 균일한 공에 대해 최적화된 파지가, 실제 과제에서는 무관한 방향으로는 약하고 정작 중요한 한 방향 — 이를테면 드라이버 축 둘레의 토크 저항 — 으로는 강한 파지에 질 수 있다. 품질은 과제의 렌치 분포에 상대적으로만 의미가 있다.
 > 4. 해석적 지표가 실제 파지 성공의 충분히 좋은 대리라는 것 — 즉 라벨 생성기 안의 물리가 실제 접촉의 물리와 충분히 가까워서 순위가 살아남는다는 것이다. 깊이 이미지의 사실성도 중요하지만 가정을 지는 것은 *라벨*이다: 네트워크는 자기가 본 품질 함수만 배울 수 있다.

@@ -14,8 +14,8 @@ mastery-when: "Already raised — the research program's contribution is a force
 > 무엇을 기록하고 무엇을 버리는지, 그리고 그 코퍼스가 왜 주장을 뒷받침하는지.
 
 > [!note] Prerequisites · 선수 지식
-> You need the Jacobian and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]), impedance versus admittance ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]), and feedback stability with delay ([[04-robotics/control-theory-ce397|Control Theory §7]]).
-> 야코비안과 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]), 임피던스와 어드미턴스의 구분([[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]), 지연이 있는 피드백의 안정성([[04-robotics/control-theory-ce397|제어 이론 §7]])이 필요하다.
+> You need the Jacobian and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]), impedance versus admittance ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]]), and feedback stability with delay ([[04-robotics/control-theory-ce397|Control Theory §5.5]]).
+> 야코비안과 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]), 임피던스와 어드미턴스의 구분([[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]), 지연이 있는 피드백의 안정성([[04-robotics/control-theory-ce397|제어 이론 §5.5]])이 필요하다.
 
 ## English
 
@@ -158,10 +158,10 @@ rather than a tuning knob.
 > trip, so they keep advancing for $0.150$ s: $50 \times 0.150 = \mathbf{7.5}$ mm of commanded
 > penetration before any resistance is felt.
 >
-> Against a stiff environment — the $10^4$ N/m that
-> [[04-robotics/force-compliance-control|10. Force control §1]] uses for its wall — that
-> displacement is $10^4 \times 0.0075 = 75$ N. Against structural steel at $10^7$ N/m it is
-> 75,000 N, which is to say the tool or the wall breaks first.
+> Against the compliantly mounted $10^4$ N/m wall of
+> [[04-robotics/force-compliance-control|13. Force control §1]], that
+> displacement is $10^4 \times 0.0075 = 75$ N. Against a bare steel fixture as a force loop actually sees it (about $10^5$ N/m) it is
+> about 750 N, and the real peak is limited by the series stiffness of follower, tool and wall and by actuator saturation — a force the tool or the part may not survive.
 >
 > **What the system does about it.** There are only three moves, and every bilateral
 > teleoperation paper is making one of them. Lower the displayed stiffness (the operator feels
@@ -266,9 +266,9 @@ even have been intentional is a perceptual question, answered with the threshold
 >
 > Reflected friction at the handle: $F_{floor} = 0.001 \times 15 / 0.070 \approx
 > \mathbf{0.21\ N}$. At a 2 N task force the operator's own force JND (≈7%) is
-> 0.14 N — **the friction band exceeds the smallest force change the operator can
-> deliberately produce**, so force wobble recorded inside ±0.21 N of a reversal is the
-> device, not the demonstrator. Meanwhile the ratio is why the device works at all: a
+> 0.14 N — **the friction band exceeds the force change the operator can
+> reliably detect at that force**, so force variation recorded inside ±0.21 N near a reversal cannot be
+> attributed to the demonstrator's felt intent without further evidence (and near a reversal the task force, and so the JND, is smaller still). Meanwhile the ratio is why the device works at all: a
 > 20 N peak needs only $20 \times 0.070 / 15 = 0.093$ N·m of motor torque. Drop to
 > direct drive ($R = 1$) and the friction floor becomes an imperceptible 0.014 N — but
 > the same 20 N now demands 1.4 N·m, a motor an order of magnitude larger. There is no
@@ -574,9 +574,9 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 > 계속 밀고 들어간다: 저항이 느껴지기 전에 **7.5 mm**의 침투가 명령된다
 > ($50 \times 0.150$).
 >
-> [[04-robotics/force-compliance-control|10. 힘 제어 §1]]이 벽에 쓰는 $10^4$ N/m짜리 단단한
-> 환경에서 그 변위는 $10^4 \times 0.0075 = 75$ N이다. $10^7$ N/m인 구조용 강재라면 75,000 N,
-> 다시 말해 공구나 벽 중 하나가 먼저 부러진다.
+> [[04-robotics/force-compliance-control|13. 힘 제어 §1]]의 유연하게 장착한 $10^4$ N/m 벽에서
+> 그 변위는 $10^4 \times 0.0075 = 75$ N이다. 힘 루프가 실제로 보는 맨 강철 지그(약 $10^5$ N/m)라면 약 750 N이고,
+> 실제 첨두는 팔로워·공구·벽의 직렬 강성과 액추에이터 포화가 제한한다 — 공구나 부재가 버티지 못할 수 있는 힘이다.
 >
 > **시스템이 이에 대해 하는 일.** 수는 셋뿐이고, 모든 양방향 원격조작 논문이 그중 하나를 두고
 > 있다. 표시하는 강성을 낮춘다(작업자는 실재하지 않는 물렁한 벽을 느낀다). 속도를 낮춘다 —
@@ -671,9 +671,9 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 > $r_h = 70$ mm, 마찰 토크 $\tau_f = 0.001$ N·m의 좋은 코어리스 모터.
 >
 > 핸들에 반사된 마찰: $F_{floor} = 0.001 \times 15 / 0.070 \approx \mathbf{0.21\ N}$.
-> 2 N 작업 힘에서 조작자 자신의 힘 JND(≈7%)는 0.14 N — **마찰 대역이 조작자가 의도적으로
-> 만들 수 있는 가장 작은 힘 변화를 초과한다.** 반전 근처 ±0.21 N 안에서 기록된 힘의
-> 흔들림은 시연자가 아니라 장치다. 한편 이 비율이 장치가 작동하는 이유이기도 하다: 20 N
+> 2 N 작업 힘에서 조작자 자신의 힘 JND(≈7%)는 0.14 N — **마찰 대역이 그 힘에서 조작자가 확실히
+> 감지할 수 있는 힘 변화를 초과한다.** 그래서 반전 근처 ±0.21 N 안에서 기록된 힘의
+> 흔들림을 추가 증거 없이 시연자가 느낀 의도로 돌릴 수는 없다(반전 근처에서는 작업 힘도, 따라서 JND도 더 작다). 한편 이 비율이 장치가 작동하는 이유이기도 하다: 20 N
 > 피크에 필요한 모터 토크는 $20 \times 0.070 / 15 = 0.093$ N·m뿐이다. 직결 구동($R = 1$)
 > 으로 내리면 마찰 바닥은 지각 불가능한 0.014 N이 되지만, 같은 20 N에 이제 1.4 N·m —
 > 자릿수가 다른 모터 — 가 필요하다. 양쪽 끝을 다 고치는 $R$의 설정값은 없다. 코퍼스가

@@ -40,6 +40,8 @@ The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-dis
 | force/impedance/admittance control | [[04-robotics/force-compliance-control\|Force & Compliance Control]] |
 | experimental design and uncertainty | [[06-research-practice/experimental-design-reproducibility\|Experiment Design]], [[06-research-practice/psychophysics-human-measurement\|Psychophysics]] |
 
+You need not master every formula first, but mark the inputs, outputs, energy flow and assumptions on each page as you read.
+
 > [!warning] Scope and source status
 > The local course packet contains copyrighted lectures, licensed papers, assignments, hardware files, and human-subject documents. Those originals remain outside the public site. These pages are original study notes synthesized from them and from linked public sources. Hardware pin assignments and deadlines differ across packet versions; the current board documentation and instructor instructions are authoritative.
 

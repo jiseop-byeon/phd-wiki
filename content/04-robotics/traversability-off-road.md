@@ -85,7 +85,7 @@ The correction is the premise of everything on this page:
 
 BADGR is the canonical statement. It trains a predictive model on **self-supervised
 off-policy real-world data** — no simulator, no human labels — with events like collision
-and bumpiness auto-labelled from onboard sensors, using only RGB and GPS. The result is a
+and bumpiness auto-labelled from the IMU, LIDAR and wheel odometry, and a model that takes only the RGB image and the planned actions (GPS supplies the goal). The result is a
 robot that drives *through* the grass and prefers smooth concrete, having learned both
 preferences from consequences rather than from geometry.
 
@@ -166,14 +166,14 @@ failure is a rollover rather than a delay, the second is the right objective.
 > **Why the geometric side runs out at range.** A 64-beam lidar at 1.8 m height with 0.4°
 > vertical spacing puts consecutive rings on flat ground at $r = h/\tan\theta$. Two beams near
 > $\theta = 5.15°$ and $5.55°$ land at $1.8/\tan 5.15° = 20.0$ m and $1.8/\tan 5.55° = 18.5$ m —
-> a ring spacing of **1.5 m**. The same pair of beams near $\theta = 10.2°$ and $10.6°$ land at
+> a ring spacing of **1.4 m**. The same pair of beams near $\theta = 10.2°$ and $10.6°$ land at
 > 10.00 m and 9.62 m: **0.38 m**.
 >
-> So a 0.3 m rock is straddled by roughly one ring at 10 m and by **none** at 20 m. It is not
-> that the geometry is noisy out there; there is no geometry out there.
+> So a flat 0.3 m hazard — a rut or a hole — gets roughly one ring at 10 m and usually **none** at 20 m; ring spacing already exceeds 0.3 m beyond about 9 m. (A rock 0.3 m *tall* still catches about two returns on its face at 20 m: enough to detect, not to characterise.) It is not
+> that the geometry is noisy out there; there is almost no geometry out there.
 >
-> **The reading this gives you.** A vehicle at 5 m/s needing 4 s to stop needs 20 m of
-> assessed terrain, which is precisely the range where ring spacing exceeds obstacle size. That
+> **The reading this gives you.** A vehicle at 5 m/s that spends 4 s reacting and braking at near-full speed needs about 20 m of
+> assessed terrain (braking uniformly to rest in 4 s would need 10 m), which is well past the range where ring spacing exceeds hazard size. That
 > is the structural reason the field moved to learned traversability from images: not because
 > learning is better at classifying rocks, but because at the range where the decision has to be
 > made, appearance is the only signal that still has resolution. When a paper reports lidar-based
@@ -220,7 +220,7 @@ cites retraining for a new environment dropping from weeks to a day.
 | **RUGD** (IROS 2019) | made off-road **semantic segmentation** a measurable task — images only |
 | **RELLIS-3D** (ICRA 2021) | forced **LiDAR** into the conversation; its diagnostic finding is that **models designed for urban segmentation fail on it** |
 | **TartanDrive** (ICRA 2022) | ~200k off-road interactions across 7 modalities — reframed off-road learning around **dynamics** rather than segmentation |
-| **GOOSE** (ICRA 2024) | 10,000 labelled image + point-cloud pairs, and — the real contribution — a **published ontology** that made cross-dataset off-road labelling comparable. Now a standing ICRA benchmark |
+| **GOOSE** (ICRA 2024) | 10,000 labelled image + point-cloud pairs, and — the real contribution — a **published ontology** that made cross-dataset off-road labelling comparable |
 | **GOOSE-Ex** (ICRA 2025) | adds 5,000 frames from a **robotic excavator** and a quadruped, for cross-embodiment |
 
 GOOSE-Ex is the one to notice from this wiki's angle: an off-road perception dataset that
@@ -263,8 +263,8 @@ includes construction machinery is the nearest existing bridge between this page
 
 > [!tip]- Answers
 > 1. Whether the paper claims *adaptation* or *generalization*, and whether the second robot's dynamics are close enough for the first robot's learned consequences to be valid. Traversability is robot-specific by construction — a rubble pile a tracked vehicle crosses easily may roll a quadruped — so cross-robot transfer is a strong claim needing its own evidence, not a free consequence of the visual features being general.
-> 2. Because traversability is a function of what the robot is trying to do, not only of what the terrain is. Ruts that are comfortable at 1 m/s can pitch a vehicle at 10 m/s, so a single static cost is wrong at one end of the speed range. Conditioning on commanded velocity is what lets one map serve a whole speed envelope — and it is why *How Does It Feel?* and SALON both do it.
-> 3. **Interventions per kilometre**, plus the distance itself. Success rate on a fixed course conflates "drove it cleanly" with "drove it after three operator rescues", and the intervention count is the number that tracks deployability. *How Does It Feel?*'s headline is exactly this — a 57% reduction in interventions — rather than a success percentage.
+> 2. Because traversability is a function of what the robot is trying to do, not only of what the terrain is. Ruts that are comfortable at 1 m/s can pitch a vehicle at 10 m/s, so a single static cost is wrong at one end of the speed range. Conditioning on commanded velocity is what lets one map serve a whole speed envelope — which is why *How Does It Feel?* conditions its cost on velocity, and SALON predicts a speed map alongside its cost map.
+> 3. **Interventions per kilometre**, plus the distance itself. Success rate on a fixed course conflates "drove it cleanly" with "drove it after three operator rescues", and the intervention count is the number that tracks deployability. *How Does It Feel?*'s headline is exactly this — an up-to-57% reduction in interventions — rather than a success percentage.
 > 4. A name collision. The DARPA programme is *Robotic Autonomy in Complex Environments with Resiliency*; a separate, unrelated paper uses RACER for an epistemic risk-sensitive RL method on a 1/10-scale rally car. Both are real; citing one for the other is a common error.
 > 5. **GOOSE-Ex**, because it is the only off-road perception dataset here containing a robotic excavator, and it was built for cross-embodiment generalization. What is still missing is everything about the machine's own state — no actuator, joint, hydraulic-pressure or force channel is released, which is the same gap [[06-research-practice/simulators-benchmarks-datasets|7. §8]] documents across the whole construction dataset landscape.
 
@@ -357,8 +357,8 @@ includes construction machinery is the nearest existing bridge between this page
 </svg>
 
 BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터**로 예측 모델을 학습한다 —
-시뮬레이터도, 사람의 라벨도 없이 — 충돌이나 덜컹거림 같은 사건을 온보드 센서로 자동 라벨링하고,
-RGB와 GPS만 쓴다. 결과는 풀을 *통과해* 주행하고 매끈한 콘크리트를 선호하는 로봇이며, 두 선호를
+시뮬레이터도, 사람의 라벨도 없이 — 충돌이나 덜컹거림 같은 사건을 IMU·LIDAR·바퀴 오도메트리로 자동 라벨링하고,
+모델 입력은 RGB 영상과 계획된 행동뿐이다(GPS는 목표를 준다). 결과는 풀을 *통과해* 주행하고 매끈한 콘크리트를 선호하는 로봇이며, 두 선호를
 기하가 아니라 결과에서 배운 것이다.
 
 교과서가 대비시켜 주지 않는 귀결 셋:
@@ -429,14 +429,14 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 > [!example] 계산 예제 · Worked example
 > **기하학적 쪽이 원거리에서 바닥나는 이유.** 높이 1.8 m에 수직 간격 0.4°인 64빔 라이다는
 > 평지 위 연속한 링을 $r = h/\tan\theta$에 놓는다. $\theta = 5.15°$와 $5.55°$인 두 빔은
-> $1.8/\tan 5.15° = 20.0$ m와 $1.8/\tan 5.55° = 18.5$ m에 떨어진다 — 링 간격 **1.5 m**. 같은
+> $1.8/\tan 5.15° = 20.0$ m와 $1.8/\tan 5.55° = 18.5$ m에 떨어진다 — 링 간격 **1.4 m**. 같은
 > 두 빔이 $\theta = 10.2°$와 $10.6°$일 때는 10.00 m와 9.62 m, 즉 **0.38 m**다.
 >
-> 그러므로 0.3 m짜리 바위는 10 m에서 링 하나에 겨우 걸치고 20 m에서는 **하나도** 걸치지
-> 않는다. 그곳의 기하가 잡음이 많은 것이 아니라, 그곳에는 기하가 없다.
+> 그러므로 길이 0.3 m의 평평한 위험 — 바퀴 자국이나 구멍 — 은 10 m에서 링 하나에 겨우 걸치고 20 m에서는 대개 **하나도** 걸치지
+> 않는다. 링 간격은 약 9 m부터 이미 0.3 m를 넘는다. (높이 0.3 m인 바위라면 20 m에서도 앞면에 반사점이 두 개쯤 찍힌다: 검출은 되지만 특성을 파악할 만큼은 아니다.) 그곳의 기하가 잡음이 많은 것이 아니라, 그곳에는 기하가 거의 없다.
 >
-> **여기서 얻는 독법.** 5 m/s로 달리며 멈추는 데 4초가 필요한 차량은 20 m의 판정된 지형이
-> 필요한데, 그 거리가 바로 링 간격이 장애물 크기를 넘어서는 지점이다. 이 분야가 영상 기반 학습
+> **여기서 얻는 독법.** 5 m/s로 달리며 반응과 제동에 4초를 거의 전속으로 쓰는 차량은 약 20 m의 판정된 지형이
+> 필요한데(4초 동안 균일하게 감속해 멈춘다면 10 m), 그 거리는 링 간격이 위험 크기를 넘어서는 지점을 한참 지난다. 이 분야가 영상 기반 학습
 > traversability로 옮겨 간 구조적 이유가 이것이다. 학습이 바위를 더 잘 분류해서가 아니라,
 > *결정을 내려야 하는 거리에서 아직 분해능이 남아 있는 신호가 겉모습뿐*이기 때문이다. 라이다
 > 기반 traversability를 보고하는 논문이라면, 최고 속도와 전방 판정 거리 두 숫자가 그 논문이
@@ -477,7 +477,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 | **RUGD** (IROS 2019) | 오프로드 **의미 분할**을 측정 가능한 과제로 만들었다 — 이미지만 |
 | **RELLIS-3D** (ICRA 2021) | **LiDAR**를 대화에 끌어들였다. 진단적 발견은 **도심 분할용으로 설계된 모델이 여기서 실패한다**는 것 |
 | **TartanDrive** (ICRA 2022) | 7개 모달리티에 걸친 약 20만 오프로드 상호작용 — 오프로드 학습을 분할이 아니라 **동역학** 중심으로 재편 |
-| **GOOSE** (ICRA 2024) | 라벨된 이미지+포인트 클라우드 쌍 1만 개, 그리고 진짜 기여인 **공개된 온톨로지** — 데이터셋을 가로지르는 오프로드 라벨링을 비교 가능하게 만들었다. 지금은 상설 ICRA 벤치마크 |
+| **GOOSE** (ICRA 2024) | 라벨된 이미지+포인트 클라우드 쌍 1만 개, 그리고 진짜 기여인 **공개된 온톨로지** — 데이터셋을 가로지르는 오프로드 라벨링을 비교 가능하게 만들었다 |
 | **GOOSE-Ex** (ICRA 2025) | **로봇 굴착기**와 4족에서 5,000 프레임을 추가, 교차 embodiment용 |
 
 이 위키의 각도에서 눈여겨볼 것은 GOOSE-Ex다: 건설 기계를 포함한 오프로드 인식 데이터셋이,
@@ -518,7 +518,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 
 > [!tip]- 정답 · Answers
 > 1. 그 논문이 *적응*을 주장하는지 *일반화*를 주장하는지, 그리고 두 번째 로봇의 동역학이 첫 로봇이 학습한 결과가 유효할 만큼 가까운지. Traversability는 구조적으로 로봇마다 다르다 — 궤도 차량이 쉽게 넘는 잔해 더미가 4족을 굴릴 수 있다 — 그러니 로봇 간 이전은 시각 특징이 일반적이라는 데서 공짜로 따라 나오는 것이 아니라 자기 증거가 필요한 강한 주장이다.
-> 2. Traversability가 지형이 무엇인가만이 아니라 로봇이 무엇을 하려 하는가의 함수이기 때문이다. 1 m/s에서 편안한 골이 10 m/s에서는 차량을 튀어 오르게 할 수 있으므로, 단일 정적 비용은 속도 범위의 한쪽 끝에서 틀린다. 명령 속도에 조건화하는 것이 지도 하나로 속도 포락선 전체를 감당하게 만들고, *How Does It Feel?* 과 SALON이 둘 다 그렇게 하는 이유다.
+> 2. Traversability가 지형이 무엇인가만이 아니라 로봇이 무엇을 하려 하는가의 함수이기 때문이다. 1 m/s에서 편안한 골이 10 m/s에서는 차량을 튀어 오르게 할 수 있으므로, 단일 정적 비용은 속도 범위의 한쪽 끝에서 틀린다. 명령 속도에 조건화하는 것이 지도 하나로 속도 포락선 전체를 감당하게 만들고, *How Does It Feel?* 가 비용을 속도에 조건화하고 SALON이 비용 지도와 함께 속도 지도를 예측하는 이유다.
 > 3. **킬로미터당 개입 횟수**, 그리고 거리 그 자체. 고정 코스의 성공률은 "깨끗하게 주행했다"와 "조작자가 세 번 구해 준 뒤 주행했다"를 뭉뚱그리고, 배치 가능성을 추적하는 숫자는 개입 횟수다. *How Does It Feel?* 의 대표 수치가 성공률이 아니라 정확히 이것 — 개입 **최대** 57% 감소 — 이다.
 > 4. 이름 충돌이다. DARPA 프로그램은 *Robotic Autonomy in Complex Environments with Resiliency*이고, 별개의 무관한 논문이 1/10 스케일 랠리카의 epistemic risk-sensitive RL 방법에 RACER를 쓴다. 둘 다 실재하며, 하나를 다른 하나로 인용하는 것이 흔한 오류다.
 > 5. **GOOSE-Ex.** 여기서 로봇 굴착기를 담은 유일한 오프로드 인식 데이터셋이고 교차 embodiment 일반화를 위해 만들어졌기 때문이다. 여전히 없는 것은 기계 자신의 상태 전부다 — 액추에이터·관절·유압·힘 채널이 하나도 공개되지 않으며, 이는 [[06-research-practice/simulators-benchmarks-datasets|7. §8]]이 건설 데이터셋 전반에 대해 기록한 바로 그 공백이다.

@@ -65,7 +65,7 @@ a policy rejecting disturbance at 50 Hz over a foot that only has to not slip
 by *pre-specifying* the contact schedule).
 
 So: expect ZMP and capture point in humanoid, biped and whole-body-control papers, and expect
-their absence in the four results §3 covers. Neither absence is an oversight.
+their absence in the learned results §3 covers. Neither absence is an oversight.
 
 **The third word: limit cycle.** A limit cycle is an isolated closed trajectory in state
 space — a nonlinear system's own preferred oscillation, which it returns to after a small
@@ -77,7 +77,7 @@ energy lost at each foot strike. Second, what "stability" means for a walker: no
 state stays near a point (a walker is never at rest) but that the trajectory returns to the
 cycle after a disturbance. That is why gait stability is studied through the *return map* —
 the state at one foot strike as a function of the state at the previous one — and why a
-walker can be stable in this sense while failing every static criterion including ZMP.
+walker can be stable in this sense while violating both the static criterion (CoM projection inside the support polygon) and the dynamic ZMP criterion.
 
 The learned policies in §3 never name the concept, but they inherit it: what a locomotion
 reward actually selects for, when it rewards forward velocity without prescribing a gait, is
@@ -139,7 +139,7 @@ The student does not learn to perceive. It learns to **infer the privileged quan
 how the body has just been moving** — which is why a blind robot can adapt to mud it cannot
 see, after it has stepped in it.
 
-**RMA** is the same family arrived at independently, with a sharper deployment story:
+**RMA** is a close relative that positions itself explicitly against Lee 2020 — no predefined trajectory generator and no actuator model — with a sharper deployment story:
 compress a 17-dimensional privileged environment vector into an **8-dimensional latent** (these dimensions, the 0.5 s history and both rates are body figures, not abstract ones),
 estimate that latent from 0.5 s of proprioceptive history by supervised regression trained
 purely in simulation, and run it **asynchronously — base policy at 100 Hz, adaptation module
@@ -158,11 +158,10 @@ contribution; the four things below are the *recipe*, assumed without explanatio
   *trot* (diagonal pairs), *bound*, *pace*, *crawl*. Model-based controllers are handed this
   as a **contact schedule** and solve for forces within it, which is what
   [[04-robotics/convex-mpc-legged|8. Convex MPC]] assumes. Learned controllers split on this,
-  and the split runs through the canon below. In the **terrain-traversal quadruped** line
-  (Rudin, Miki, the parkour work) no schedule is imposed and the gait emerges from the reward.
-  But Hwangbo 2019 and Lee 2020 — rows 1 and 2 of that same table — build on a **foot
-  trajectory generator** with a per-leg phase, and the policy outputs frequencies and
-  residuals on top of it. The bipedal and humanoid lines almost always condition on a gait
+  and the split runs through the canon below. Rudin 2021 and the parkour work impose no schedule, and the gait emerges from the reward.
+  Lee 2020 and Miki 2022 build on a **foot
+  trajectory generator** with a per-leg phase, and the policy outputs frequency offsets and
+  residuals on top of it. Hwangbo 2019 outputs joint position targets directly, with no gait prior. The bipedal and humanoid lines almost always condition on a gait
   phase or a reference motion. So **check whether a schedule is imposed**; "learned
   locomotion" covers both.
 - **Reward terms.** Locomotion reward is a weighted sum, and the weights are the method. The
@@ -205,7 +204,7 @@ randomization also cannot fix an effect the simulator never models
 
 | Work | What it is famous for | What it actually claimed |
 |---|---|---|
-| **Hwangbo et al. 2019** | "RL locomotion" | the **actuator net** — a hybrid simulator. Demonstrated skills are flat-ground command following and **fall recovery**. Rough terrain is not the claim |
+| **Hwangbo et al. 2019** | "RL locomotion" | the **actuator net** — a hybrid simulator. Demonstrated skills are flat-ground command following, record high-speed running, and **fall recovery**. Rough terrain is not the claim |
 | **Lee et al. 2020** | rough-terrain locomotion | **blind** robustness via privileged distillation; mud, snow, rubble, vegetation, running water. Speed gains modest and terrain-specific |
 | **Rudin et al. 2021** | "walk in minutes" | **wall-clock training time on one GPU** — not sample efficiency. Matters as infrastructure |
 | **Miki et al. 2022** | "beat a human hiker" | perceptive locomotion with a **learned gate** on how much to trust the height map |
@@ -237,9 +236,9 @@ tall grass, water, reflective surfaces) the controller degrades gracefully back 
 proprioceptive locomotion, with no hand-designed rule for when to stop believing it.
 
 > [!warning] Three over-citations to avoid
-> - **The Alps hike is one instrumented route against a guidebook time**, not a benchmarked
->   comparison against human hikers. 2.2 km, 120 m of gain, 78 minutes against a 76-minute
->   guidebook estimate.
+> - **The Alps hike is one instrumented route against a planner time**, not a benchmarked
+>   comparison against human hikers. 2.2 km, 120 m of gain, 78 minutes against a hiking planner's
+>   76-minute estimate (the summit took 31 minutes against 35 signposted).
 > - **"Walk in minutes" is wall-clock on one GPU.** It consumes vastly *more* simulated
 >   experience than prior work, and it is not real-robot learning time.
 > - **The humanoid rough-terrain paper is a preprint.** Radosavovic et al.'s peer-reviewed
@@ -316,7 +315,7 @@ for the full picture and the licensing traps.
 - [ ] Give the two parkour architectures and say what neither has shown.
 
 > [!tip] Going deeper · 더 깊이
-> The two halves of this page go to different places. For the classical vocabulary of §1.5 — support polygon, ZMP, capture point — Tedrake's free [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) is the textbook treatment. For the learned line there is no book, and the substitute is the four papers in §3 read in publication order: Hwangbo et al. (2019) for the sim-to-real result, Lee et al. (2020) for privileged teacher–student, Kumar et al. (2021) for adaptation without privileged input at test time, Miki et al. (2022) for adding exteroception. Read them as one argument developing, not as four systems.
+> The two halves of this page go to different places. For the classical vocabulary of §1.5 — support polygon, ZMP, capture point — Tedrake's free [*Underactuated Robotics*](https://underactuated.csail.mit.edu/) is the textbook treatment. For the learned line there is no book, and the substitute is four papers from §2–§3 read in publication order: Hwangbo et al. (2019) for the sim-to-real result, Lee et al. (2020) for privileged teacher–student, Kumar et al. (2021) for adaptation without privileged input at test time, Miki et al. (2022) for adding exteroception. Read them as one argument developing, not as four systems.
 
 ### Self-check
 
@@ -330,7 +329,7 @@ for the full picture and the licensing traps.
 > [!tip]- Answers
 > 1. Because the student was distilled from a teacher that *could* see the friction coefficient and terrain profile, and it learned to infer those quantities from a short history of proprioception — how the body actually moved over the last fraction of a second. It cannot anticipate the mud, but once a foot is in it the recent motion history is informative about what changed, and the policy was trained on exactly that inference. Blindness is why it must make contact first; distillation is why contact is enough.
 > 2. That Isaac Gym Preview is deprecated — NVIDIA's own page calls it legacy and unsupported, and the associated env repositories are archived read-only. It does not invalidate the result, but it dates the work and makes reproduction harder, and a current project should be on Isaac Lab or MuJoCo MJX instead.
-> 3. The comparison was **one instrumented alpine route** — 2.2 km, 120 m of elevation gain — completed in 78 minutes against a **76-minute guidebook estimate** for that route. That is a single route against a published time, not a benchmark against human hikers, and the robot was slightly slower overall. The result is genuinely impressive; the claim it supports is narrower than the one usually attributed to it.
+> 3. The comparison was **one instrumented alpine route** — 2.2 km, 120 m of elevation gain — completed in 78 minutes against a hiking planner's **76-minute estimate** for that route (summit in 31 minutes against 35 signposted). That is a single route against a published time, not a benchmark against human hikers, and the robot was slightly slower overall. The result is genuinely impressive; the claim it supports is narrower than the one usually attributed to it.
 > 4. Adaptation *across* episodes rather than within one. With a context window spanning episode boundaries, the policy can condition on what happened in earlier attempts — including falls — so it improves within a deployment without any weight update. That is a different mechanism from RMA-style latent estimation, which adapts within an episode from proprioceptive history and resets when the episode does.
 > 5. **ANYmal parkour**, because it is the only one whose high-level policy reasons about what a piece of terrain affords, which is what a mobile manipulator needs to reach a workspace. What it does not give you is the manipulator: it is a navigation-among-obstacles result on a curated course, with no arm, no payload, and no account of how carrying one changes the dynamics. The error-budget consequences of adding an arm are in [[04-robotics/navigation-mobile-manipulation|16. §4]].
 
@@ -398,7 +397,7 @@ for the full picture and the licensing traps.
 접촉 스케줄을 *미리 지정*하는 방식으로 그 거래의 모델 기반 쪽을 유지한다).
 
 정리하면: 휴머노이드·이족·전신 제어 논문에서는 ZMP와 capture point를 예상하고, §3이 다루는
-네 결과에서는 그것들의 부재를 예상하라. 어느 쪽 부재도 실수가 아니다.
+학습 기반 결과들에서는 그것들의 부재를 예상하라. 어느 쪽 부재도 실수가 아니다.
 
 **세 번째 단어: 극한주기(limit cycle).** 극한주기는 상태 공간 안의 고립된 닫힌 궤적이다 —
 비선형계가 스스로 선호하는 진동이고, 살짝 밀면 그리로 되돌아오며, 주기를 일러 주는 외부 시계가
@@ -408,7 +407,7 @@ for the full picture and the licensing traps.
 발이 땅에 닿을 때마다 잃는 에너지만큼만 값을 치른다. 둘째, 보행기에게 "안정"이 무슨 뜻인가.
 상태가 한 점 근처에 머무는 것(보행기는 결코 정지해 있지 않다)이 아니라, 교란 뒤에 궤적이 그
 주기로 되돌아오는 것이다. 걸음새 안정성을 *복귀 사상(return map)* — 직전 발 착지의 상태에
-대한 함수로서 이번 발 착지의 상태 — 으로 연구하는 이유이고, ZMP를 포함한 모든 정적 기준을
+대한 함수로서 이번 발 착지의 상태 — 으로 연구하는 이유이고, 정적 기준(지지 다각형 안의 무게중심 투영)과 동적 ZMP 기준을 모두
 어기면서도 이 의미에서는 안정할 수 있는 이유다.
 
 §3의 학습된 정책들은 이 개념을 결코 이름 부르지 않지만 물려받는다. 보행 보상이 걸음새를
@@ -468,8 +467,8 @@ for the full picture and the licensing traps.
 학생은 지각하는 법을 배우지 않는다. **몸이 방금 어떻게 움직였는가로부터 특권적 양들을 추론하는
 법**을 배운다 — 눈이 먼 로봇이 보지 못하는 진흙에, 한 번 밟은 뒤에는 적응할 수 있는 이유다.
 
-**RMA**는 같은 계열에 독립적으로 도달한 것이고 배치 이야기가 더 날카롭다: 17차원 특권적 환경
-벡터를 **8차원 잠재**로 압축하고, 그 잠재를 0.5초의 고유수용감각 이력에서 지도 회귀로 추정하되
+**RMA**는 Lee 2020에 맞서 자신을 명시적으로 위치시킨 가까운 친척이고 — 미리 정한 궤적 생성기도 액추에이터 모델도 없다 — 배치 이야기가 더 날카롭다: 17차원 특권적 환경
+벡터를 **8차원 잠재**로 압축하고(이 차원·0.5초 이력·두 주기는 초록이 아니라 본문 수치다), 그 잠재를 0.5초의 고유수용감각 이력에서 지도 회귀로 추정하되
 전적으로 시뮬레이션에서 학습하며, **비동기로 — 기본 정책 100 Hz, 적응 모듈 10 Hz — 저가 로봇의
 온보드 CPU에서** 돌린다.
 
@@ -484,10 +483,10 @@ for the full picture and the licensing traps.
 - **보행 양식과 접촉 스케줄.** 보행 양식은 어느 발이 언제 땅에 있는지의 패턴이다 —
   *trot*(대각쌍), *bound*, *pace*, *crawl*. 모델 기반 제어기는 이것을 **접촉 스케줄**로 받아
   그 안에서 힘을 푸는데, [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 전제하는 것이 그것이다.
-  학습 제어기는 여기서 갈리고, 그 갈림이 아래 정본 표를 관통한다. **험지 주행 4족**
-  계열(Rudin, Miki, 파쿠르 연구)은 스케줄을 부과하지 않고 보행 양식이 보상에서 창발한다.
-  그러나 같은 표의 1·2행인 Hwangbo 2019와 Lee 2020은 다리별 위상을 갖는 **발 궤적 생성기**
-  위에 세워져 있고, 정책은 그 위에서 주파수와 잔차를 낸다. 2족과 휴머노이드 계열은 거의 언제나
+  학습 제어기는 여기서 갈리고, 그 갈림이 아래 정본 표를 관통한다. Rudin 2021과
+  파쿠르 연구는 스케줄을 부과하지 않고 보행 양식이 보상에서 창발한다.
+  Lee 2020과 Miki 2022는 다리별 위상을 갖는 **발 궤적 생성기**
+  위에 세워져 있고, 정책은 그 위에서 주파수 오프셋과 잔차를 낸다. Hwangbo 2019는 보행 사전 없이 관절 위치 목표를 직접 낸다. 2족과 휴머노이드 계열은 거의 언제나
   보행 위상이나 참조 동작에 조건화한다. 그러니 **스케줄이 부과되었는지 확인하라.**
   "학습된 로코모션"이 둘 다 덮는다.
 - **보상 항.** 로코모션 보상은 가중합이고, 그 가중치가 곧 방법이다. 반복되는 묶음: **과제** 항
@@ -524,7 +523,7 @@ for the full picture and the licensing traps.
 
 | 연구 | 무엇으로 유명한가 | 실제로 무엇을 주장했나 |
 |---|---|---|
-| **Hwangbo 등 2019** | "RL 로코모션" | **액추에이터 넷** — 하이브리드 시뮬레이터. 실증된 기술은 평지 명령 추종과 **넘어짐 복구**. 거친 지형은 주장이 아니다 |
+| **Hwangbo 등 2019** | "RL 로코모션" | **액추에이터 넷** — 하이브리드 시뮬레이터. 실증된 기술은 평지 명령 추종, 기록적인 고속 달리기, **넘어짐 복구**. 거친 지형은 주장이 아니다 |
 | **Lee 등 2020** | 거친 지형 로코모션 | privileged 증류를 통한 **눈먼** 견고성. 진흙·눈·잔해·초목·흐르는 물. 속도 이득은 완만하고 지형에 특정적 |
 | **Rudin 등 2021** | "몇 분 만에 걷기" | **GPU 하나에서의 벽시계 학습 시간** — 샘플 효율이 아니다. 인프라로서 중요 |
 | **Miki 등 2022** | "사람 등산객을 이겼다" | 높이 지도를 얼마나 믿을지에 대한 **학습된 게이트**를 가진 지각 로코모션 |
@@ -551,8 +550,8 @@ for the full picture and the licensing traps.
 로코모션으로 우아하게 후퇴하며, 언제 믿기를 멈출지에 대한 손으로 만든 규칙이 없다.
 
 > [!warning] 피해야 할 과잉 인용 셋
-> - **알프스 등반은 가이드북 시간에 대한 단일 계측 경로**이지 사람 등산객에 대한 벤치마크 비교가
->   아니다. 2.2 km, 고도 120 m, 76분 가이드북 추정치에 대해 78분.
+> - **알프스 등반은 플래너 시간에 대한 단일 계측 경로**이지 사람 등산객에 대한 벤치마크 비교가
+>   아니다. 2.2 km, 고도 120 m, 하이킹 플래너의 76분 추정치에 대해 78분(정상까지는 표지판 35분에 대해 31분).
 > - **"몇 분 만에 걷기"는 GPU 하나에서의 벽시계 시간이다.** 선행 연구보다 시뮬레이션 경험을 훨씬
 >   *더 많이* 소모하며, 실기계 학습 시간도 아니다.
 > - **휴머노이드 거친 지형 논문은 프리프린트다.** Radosavovic 등의 심사 통과 *Science Robotics*
@@ -590,7 +589,7 @@ for the full picture and the licensing traps.
   단일 확장 가능 정책으로 무너뜨린다.
 - **이산 지형에서의 고속 제어**(Science Robotics, 2025)는 **계획기 + 학습기 하이브리드**다:
   휴리스틱·신경망 필터링을 곁들인 표본 기반 발디딤 최적화 + RL 추종기. 4 m/s의 디딤돌, 1.3 m 간극
-  점프. 정밀 지형에 대해 추가 부분적으로 하이브리드 쪽으로 되돌아가는 증거로 인용할 만하다.
+  점프. 정밀 지형에서는 진자가 부분적으로 하이브리드 쪽으로 되돌아가고 있다는 증거로 인용할 만하다.
 - **LocoFormer**(CoRL 2025, 최우수 논문 최종 후보)가 로코모션 파운데이션 모델에 가장 가깝다:
   정밀한 기구학 없이 처음 보는 레그드 *그리고 바퀴* 로봇을 위한 단일 정책. 절차적으로 생성된
   형태들에서 학습하며, 실제 새로움은 **에피소드 경계를 가로지르도록** 늘린 컨텍스트 창이다 —
@@ -622,7 +621,7 @@ for the full picture and the licensing traps.
 - [ ] 두 파쿠르 아키텍처를 대고, 둘 다 보이지 못한 것을 말한다.
 
 > [!tip] 더 깊이 · Going deeper
-> 이 페이지의 두 절반은 서로 다른 곳으로 간다. §1.5의 고전 어휘 — 지지 다각형, ZMP, capture point — 는 Tedrake의 무료 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 교과서다. 학습 쪽 계보에는 책이 없고, 대체물은 §3의 네 논문을 출판 순서로 읽는 것이다: sim-to-real 결과의 Hwangbo 외(2019), 특권 교사–학생의 Lee 외(2020), 시험 시점에 특권 입력 없이 적응하는 Kumar 외(2021), 외수용 감각을 더한 Miki 외(2022). 네 개의 시스템이 아니라 하나의 논증이 전개되는 것으로 읽어라.
+> 이 페이지의 두 절반은 서로 다른 곳으로 간다. §1.5의 고전 어휘 — 지지 다각형, ZMP, capture point — 는 Tedrake의 무료 [*Underactuated Robotics*](https://underactuated.csail.mit.edu/)가 교과서다. 학습 쪽 계보에는 책이 없고, 대체물은 §2~§3의 네 논문을 출판 순서로 읽는 것이다: sim-to-real 결과의 Hwangbo 외(2019), 특권 교사–학생의 Lee 외(2020), 시험 시점에 특권 입력 없이 적응하는 Kumar 외(2021), 외수용 감각을 더한 Miki 외(2022). 네 개의 시스템이 아니라 하나의 논증이 전개되는 것으로 읽어라.
 
 ### 스스로 점검
 
@@ -636,7 +635,7 @@ for the full picture and the licensing traps.
 > [!tip]- 정답 · Answers
 > 1. 학생이, 마찰계수와 지형 프로파일을 *볼 수 있었던* 교사로부터 증류되었고, 그 양들을 짧은 고유수용감각 이력 — 지난 몇 분의 일 초 동안 몸이 실제로 어떻게 움직였는가 — 에서 추론하는 법을 배웠기 때문이다. 진흙을 미리 예상할 수는 없지만 발이 한 번 들어가고 나면 최근 운동 이력이 무엇이 달라졌는지에 대해 정보를 담고, 정책은 정확히 그 추론으로 학습되었다. 눈이 멀었다는 것이 먼저 접촉해야 하는 이유이고, 증류가 접촉만으로 충분한 이유다.
 > 2. Isaac Gym Preview가 지원 종료라는 점 — NVIDIA 자신의 페이지가 레거시이며 지원되지 않는다고 하고, 관련 환경 저장소들은 읽기 전용으로 보관되었다. 결과를 무효화하지는 않지만 작업의 연대를 정하고 재현을 어렵게 만들며, 지금 시작하는 프로젝트는 Isaac Lab이나 MuJoCo MJX에 있어야 한다.
-> 3. 비교 대상은 **단일 계측 알프스 경로** — 2.2 km, 고도 120 m — 를 그 경로의 **76분 가이드북 추정치**에 대해 78분에 완주한 것이다. 사람 등산객에 대한 벤치마크가 아니라 발표된 시간에 대한 한 경로이고, 로봇이 전체적으로는 조금 더 느렸다. 결과는 진심으로 인상적이고, 그것이 뒷받침하는 주장은 통상 귀속되는 것보다 좁다.
+> 3. 비교 대상은 **단일 계측 알프스 경로** — 2.2 km, 고도 120 m — 를 그 경로의 **하이킹 플래너 76분 추정치**에 대해 78분에 완주한 것이다(정상까지는 표지판 35분에 대해 31분). 사람 등산객에 대한 벤치마크가 아니라 발표된 시간에 대한 한 경로이고, 로봇이 전체적으로는 조금 더 느렸다. 결과는 진심으로 인상적이고, 그것이 뒷받침하는 주장은 통상 귀속되는 것보다 좁다.
 > 4. 에피소드 *안*이 아니라 에피소드를 *가로지르는* 적응. 컨텍스트 창이 에피소드 경계를 넘으면 정책이 앞선 시도에서 일어난 일 — 넘어짐을 포함해 — 을 조건으로 삼을 수 있어, 가중치 갱신 없이 한 배치 안에서 개선된다. 에피소드 안에서 고유수용감각 이력으로 적응하고 에피소드가 끝나면 초기화되는 RMA식 잠재 추정과는 다른 기제다.
 > 5. **ANYmal parkour.** 상위 정책이 어떤 지형이 무엇을 허용하는지 추론하는 유일한 결과이고, 그것이 모바일 매니퓰레이터가 작업 공간에 도달하는 데 필요한 것이기 때문이다. 그것이 주지 않는 것은 매니퓰레이터 자체다: 팔도, 페이로드도, 팔을 실었을 때 동역학이 어떻게 달라지는지에 대한 설명도 없는, 정돈된 코스 위의 장애물 사이 내비게이션 결과다. 팔을 더할 때의 오차 예산 귀결은 [[04-robotics/navigation-mobile-manipulation|16. §4]]에 있다.
 

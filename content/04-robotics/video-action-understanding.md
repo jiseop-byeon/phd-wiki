@@ -61,7 +61,7 @@ flowchart LR
 | Two-stream | appearance stream + precomputed optical flow stream | flow computation dominates | flow is expensive and brittle at low texture |
 | 3D CNN (I3D) | inflate 2D kernels to 3D, pretrain on a large clip dataset | $O(T)$ memory over frames | fixed short temporal window |
 | SlowFast | slow high-capacity pathway for semantics + fast low-capacity pathway for motion | cheaper than uniform 3D | two-pathway design is hand-set |
-| Video transformer | attention over space-time tokens; often factorized into spatial then temporal | attention is $O(N^2)$ in tokens | data-hungry; long video is still hard |
+| Video transformer | attention over space-time tokens; often factorized into separate temporal and spatial attention (TimeSformer: temporal then spatial within each block) | attention is $O(N^2)$ in tokens | data-hungry; long video is still hard |
 | Masked video pretraining | reconstruct masked spacetime patches, then fine-tune | large pretraining cost, cheap fine-tune | pretraining data distribution leaks into results |
 
 The practical consequence for a robotics application is temporal receptive field. Most of these models reason over **2–10 seconds**. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
@@ -89,7 +89,7 @@ Two anticipation models are reported at $\tau = 1\,\mathrm{s}$:
 | A | 0.86 | **0.71** | 0.42 |
 | B | 0.74 | **0.70** | 0.63 |
 
-Reported at $\tau = 1\,\mathrm{s}$ alone, A "wins" by one point. But B degrades far more slowly, and for any system that must act on the prediction, the useful operating point is the largest $\tau$ that still clears a decision threshold. At threshold 0.6, A is usable to about $\tau \approx 1.3\,\mathrm{s}$ and B to about $\tau \approx 2.1\,\mathrm{s}$. B is the better model for deployment and the worse model in the table.
+Reported at $\tau = 1\,\mathrm{s}$ alone, A "wins" by one point. But B degrades far more slowly, and for any system that must act on the prediction, the useful operating point is the largest $\tau$ that still clears a decision threshold. At threshold 0.6, A is usable to about $\tau \approx 1.4\,\mathrm{s}$ (interpolating between 1 s and 2 s), while B is still above 0.6 at the longest horizon measured (0.63 at 2 s) and extrapolates to about $\tau \approx 2.4\,\mathrm{s}$. B is the better model for deployment and the worse model in the table.
 
 ### 6. Long-form video
 
@@ -216,7 +216,7 @@ flowchart LR
 | Two-stream | 외형 스트림 + 미리 계산한 optical flow 스트림 | flow 계산이 지배적 | flow가 비싸고 저텍스처에서 불안정 |
 | 3D CNN (I3D) | 2D 커널을 3D로 팽창, 대규모 클립 데이터로 사전학습 | 프레임 수에 $O(T)$ 메모리 | 고정된 짧은 시간 창 |
 | SlowFast | 의미용 느린 고용량 경로 + 움직임용 빠른 저용량 경로 | 균일 3D보다 저렴 | 두 경로 설계가 수작업 |
-| 비디오 트랜스포머 | 시공간 토큰에 대한 어텐션, 보통 공간→시간으로 분해 | 토큰 수에 $O(N^2)$ | 데이터 요구량 큼, 긴 영상은 여전히 난제 |
+| 비디오 트랜스포머 | 시공간 토큰에 대한 어텐션, 보통 시간 어텐션과 공간 어텐션으로 분해(TimeSformer는 블록마다 시간 다음 공간) | 토큰 수에 $O(N^2)$ | 데이터 요구량 큼, 긴 영상은 여전히 난제 |
 | 마스킹 사전학습 | 마스킹된 시공간 패치 복원 후 미세조정 | 사전학습 비용 큼, 미세조정은 저렴 | 사전학습 데이터 분포가 결과에 스며듦 |
 
 로보틱스 응용에서 실질적 귀결은 **시간 수용 영역**이다. 위 모델 대부분이 **2–10초**를 추론한다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
@@ -244,7 +244,7 @@ $$p\big(y_{t+\tau} \mid x_{1:t}\big)$$
 | A | 0.86 | **0.71** | 0.42 |
 | B | 0.74 | **0.70** | 0.63 |
 
-$\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천히 나빠지고, 예측을 근거로 **행동해야 하는** 시스템에서 유용한 동작점은 결정 임계값을 넘기는 가장 큰 $\tau$다. 임계값 0.6에서 A는 $\tau \approx 1.3\,\mathrm{s}$까지, B는 $\tau \approx 2.1\,\mathrm{s}$까지 쓸 수 있다. **B가 배포에 더 나은 모델이고 표에서는 더 나쁜 모델이다.**
+$\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천히 나빠지고, 예측을 근거로 **행동해야 하는** 시스템에서 유용한 동작점은 결정 임계값을 넘기는 가장 큰 $\tau$다. 임계값 0.6에서 A는 $\tau \approx 1.4\,\mathrm{s}$까지(1초와 2초 사이 보간) 쓸 수 있고, B는 측정한 가장 긴 지평에서도 0.6을 넘으며(2초에서 0.63) 외삽하면 약 $\tau \approx 2.4\,\mathrm{s}$까지 간다. **B가 배포에 더 나은 모델이고 표에서는 더 나쁜 모델이다.**
 
 ### 6. 롱폼 비디오
 

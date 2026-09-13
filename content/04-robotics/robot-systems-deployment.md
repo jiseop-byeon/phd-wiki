@@ -39,8 +39,7 @@ The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz m
 > The stack above is a data-flow picture. The *design* picture — the one that decides whether
 > a system works on a deadline — is Eppner et al.'s post-mortem of the winning entry to the
 > Amazon Picking Challenge 2015 (RSS 2016). They argue a robotic system is placed along four
-> spectra, and that the placement, not the component quality, is what distinguishes systems
-> that finished from systems that did not:
+> spectra, and that the winning system's placement along each of them differed from most other entries:
 >
 > | Axis | The trade |
 > |---|---|
@@ -70,7 +69,7 @@ When a paper says “action,” identify whether it means joint position, veloci
 | **Observation-to-action** | **70 ms** |
 
 At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Budgets tighten by more than an
-order of magnitude when a person is inside the loop: a haptic device closes at about 1 kHz
+order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
 against this page's 70 ms observation-to-action budget,
 so the millisecond is the unit rather than the frame
 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]).
@@ -282,8 +281,8 @@ flowchart LR
 > [!tip] 로봇 시스템이 실제로 설계되는 네 축
 > 위의 스택은 데이터 흐름 그림이다. *설계* 그림 — 마감이 있는 상황에서 시스템이 돌아가느냐를
 > 가르는 그림 — 은 Eppner 등이 Amazon Picking Challenge 2015 우승 시스템을 사후 분석한
-> 것(RSS 2016)이다. 로봇 시스템은 네 개의 스펙트럼 위에 놓이며, 완주한 시스템과 그러지 못한
-> 시스템을 가른 것은 부품 품질이 아니라 그 **위치 선택**이라는 주장이다:
+> 것(RSS 2016)이다. 로봇 시스템은 네 개의 스펙트럼 위에 놓이며, 우승 시스템은 각 스펙트럼 위에서
+> 대부분의 다른 참가작과 다른 **위치**를 골랐다는 주장이다:
 >
 > | 축 | 무엇과 무엇을 바꾸는가 |
 > |---|---|
@@ -321,8 +320,8 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | 명령 처리 | 5 ms |
 | **관측→행동** | **70 ms** |
 
-1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 사람이 루프 안에 들어오면
-예산이 한 자릿수 넘게 빡빡해진다. 이 페이지의 관측-행동 예산 70 ms에 견주어 햅틱 장치는 약 1 kHz로 닫히므로 단위가 프레임이 아니라
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 루프가 단단한 접촉을 렌더링하면
+예산이 한 자릿수 넘게 빡빡해진다. 이 페이지의 관측-행동 예산 70 ms에 견주어 햅틱 서보는 유계 지터로 약 1 ms 안에 닫혀야 하므로 단위가 프레임이 아니라
 밀리초다 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 
 <svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="70 ms 관측&#8594;행동 예산을 실제 비율로 그린 그림">

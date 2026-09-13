@@ -6,7 +6,7 @@ depth-goal: "Follow the formulation, frames, assumptions, and failure modes well
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
-**Study links** — [Underactuated Robotics, LQR chapter (Tedrake, MIT)](https://underactuated.csail.mit.edu/lqr.html) · [Stanford EE363 lecture notes (Boyd)](https://web.stanford.edu/class/ee363/)
+**Study links** — [Underactuated Robotics, LQR chapter (Tedrake, MIT)](https://underactuated.csail.mit.edu/lqr.html) · [Stanford EE363 lecture slides](https://web.stanford.edu/class/ee363/)
 
 ## English
 
@@ -23,7 +23,7 @@ let a cost place them, and the separation principle says when estimator and cont
 
 **What it is**: the **Linear Quadratic Regulator** is the exactly-solvable heart of optimal
 control. For linear dynamics $\dot x = Ax + Bu$ and quadratic cost
-$\int (x^\top Q x + u^\top R u)\,dt$, the optimal controller is a constant linear feedback
+$\int (x^\top Q x + u^\top R u)\,dt$ with $Q \succeq 0$ and $R \succ 0$ (so $R^{-1}$ exists), the optimal controller is a constant linear feedback
 $u = -Kx$, with $K = R^{-1}B^\top P$ where $P$ solves the **algebraic Riccati equation** —
 no iteration at runtime.
 **LQG** adds Gaussian noise and partial observation: the optimal solution is a
@@ -55,18 +55,18 @@ by acting.
 
 (Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
-stabilizing solution $P \succeq 0$ is what makes $V(x)=x^\top P x$ a Lyapunov function for
-the closed loop. When a paper says "we solve a Riccati equation," it means this constant
+stabilizing solution $P$ — positive definite when $(A,Q^{1/2})$ is observable — is what makes $V(x)=x^\top P x$ a Lyapunov function for
+the closed loop (under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step). When a paper says "we solve a Riccati equation," it means this constant
 $P$, computed once offline (or once per linearization in iterative/time-varying LQR).
 
 ### 2. When does this actually work? Two conditions
 
-- **Stabilizability** of $(A,B)$: every unstable mode of $A$ must be influenceable by $u$ —
+- **Stabilizability** of $(A,B)$: every mode of $A$ with $\text{Re}\,\lambda \ge 0$ — including the double integrator's modes at $\lambda = 0$ — must be influenceable by $u$ —
   the exact (necessary and sufficient) condition for a stabilizing feedback to exist,
   weaker than the full controllability rank test in
   [[02-foundations/linear-algebra|page 1's control section]]. Otherwise no feedback can
   stabilize, Riccati or not.
-- **Detectability** of $(A,Q^{1/2})$: every unstable mode must show up in the cost —
+- **Detectability** of $(A,Q^{1/2})$: every mode with $\text{Re}\,\lambda \ge 0$ must show up in the cost —
   otherwise the optimizer can "not care" about a mode that is quietly diverging, and the
   optimal-cost controller is not stabilizing.
 
@@ -150,11 +150,11 @@ shown*.
 
 **Why study it**: LQR is the reference point everything else is measured against —
 [[04-robotics/mpc|MPC]] is "LQR + constraints, re-solved online" (its terminal cost $P$
-is typically the LQR Riccati solution); RL policy evaluation on
-linear-Gaussian problems recovers LQR; and time-varying LQR around a trajectory is the
+is typically the LQR Riccati solution); RL policy iteration or policy optimization on
+linear-quadratic problems recovers LQR (evaluation alone only prices a fixed gain); and time-varying LQR around a trajectory is the
 standard tracking controller that learned planners hand their outputs to.
 
-**Suggested path**: EE363 notes 1–4 (LQR derivation via dynamic programming) →
+**Suggested path**: EE363's LQR lectures (discrete-time finite horizon, via Lagrange multipliers, infinite horizon, continuous time — lectures 16–19 in the Spring 2026 list) →
 Underactuated ch. (geometric intuition, code) → connect to the
 [[02-foundations/optimization|MPC-as-QP example]].
 
@@ -169,7 +169,7 @@ Underactuated ch. (geometric intuition, code) → connect to the
 > 1. No feedback can catch the unstable mode, so no stabilizing solution $P$ exists — the problem itself is ill-posed.
 > 2. Unchanged — multiplying all of $Q$ and $R$ by the same positive scalar changes only the overall cost scale. Relative weights within matrix-valued $Q$ and $R$ still determine $K$.
 > 3. Optimality is with respect to the nominal model, and LQG is proven to have no guaranteed margins against model error (Doyle 1978).
-> 4. $x^\top P x$ summarizes the exact unconstrained cost-to-go beyond the horizon, so a short horizon still supports the stability argument — Mayne 2000's terminal ingredient.
+> 4. $x^\top P x$ is the exact cost-to-go inside a terminal set where the LQR law satisfies the constraints and keeps the state in the set. With that terminal constraint added, a short horizon still supports the stability argument — the terminal cost and terminal set together are the ingredients [[04-robotics/mpc|MPC §1]] lists (Borrelli Theorem 12.2).
 
 ### Continue beyond this guide
 
@@ -181,7 +181,7 @@ The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|St
 분리 원리가 추정기와 제어기를 따로 설계해도 되는 조건을 말해 준다.*
 
 **무엇인가**: **LQR**은 최적 제어에서 정확히 풀리는 심장부다. 선형 동역학
-$\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$에 대해 최적 제어기는
+$\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$($Q \succeq 0$, $R \succ 0$이라 $R^{-1}$이 존재)에 대해 최적 제어기는
 상수 선형 피드백 $u = -Kx$이고, $K = R^{-1}B^\top P$에서 $P$는 **대수 리카티 방정식**의
 해다 — 실행 시 반복 계산이 없다. **LQG**는 가우시안 노이즈와 부분 관측을 더한 것: 최적해는
 [[02-foundations/probability|칼만 필터]]가 LQR에 추정값을 공급하는 구조다
@@ -210,17 +210,17 @@ $K = R^{-1}B^\top P$가 여기서 나온다. 설계된 것이 아니라 떨어�
 
 (로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해
-$P \succeq 0$가 $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. 논문이 "리카티
+$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다(검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다). 논문이 "리카티
 방정식을 푼다"고 하면 이 상수 $P$를 오프라인에서 한 번(반복/시변 LQR에서는 선형화마다
 한 번) 계산한다는 뜻이다.
 
 ### 2. 언제 실제로 통하는가? 두 조건
 
-- **$(A,B)$의 안정화 가능성(stabilizability)**: $A$의 모든 불안정 모드가 $u$의 영향을
+- **$(A,B)$의 안정화 가능성(stabilizability)**: $\text{Re}\,\lambda \ge 0$인 $A$의 모든 모드가 — 이중 적분기의 $\lambda = 0$ 모드도 포함해 — $u$의 영향을
   받아야 한다 — 안정화 피드백이 존재하기 위한 정확한(필요충분) 조건이며,
   [[02-foundations/linear-algebra|1페이지 제어 섹션]]의 완전한 가제어성 랭크 검정보다
   약하다. 아니면 리카티든 뭐든 어떤 피드백도 안정화할 수 없다.
-- **$(A,Q^{1/2})$의 검출 가능성(detectability)**: 모든 불안정 모드가 비용에 나타나야
+- **$(A,Q^{1/2})$의 검출 가능성(detectability)**: $\text{Re}\,\lambda \ge 0$인 모든 모드가 비용에 나타나야
   한다 — 아니면 최적화기가 조용히 발산하는 모드를 "신경 안 쓰는" 것이 허용되어, 최적
   비용의 제어기가 안정화 제어기가 아니게 된다.
 
@@ -302,10 +302,10 @@ $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$
 
 **왜 공부하나**: LQR은 다른 모든 것을 재는 기준점이다 — [[04-robotics/mpc|MPC]]는 "제약을
 더해 온라인으로 다시 푸는 LQR"이고(그 종단 비용 $P$가 보통 LQR 리카티 해다),
-선형-가우시안 문제의 RL 정책 평가는 LQR을 복원하며, 궤적 주변의 시변 LQR은 학습된
+선형-이차 문제의 RL 정책 반복이나 정책 최적화는 LQR을 복원하며(평가만으로는 고정된 이득의 값만 매긴다), 궤적 주변의 시변 LQR은 학습된
 플래너가 출력을 넘기는 표준 추종 제어기다.
 
-**권장 경로**: EE363 노트 1~4 (동적 계획법으로 LQR 유도) → Underactuated 해당 장(기하적
+**권장 경로**: EE363의 LQR 강의(이산 유한 지평, 라그랑주 승수, 무한 지평, 연속 시간 — 2026년 봄 목록의 16~19강) → Underactuated 해당 장(기하적
 직관, 코드) → [[02-foundations/optimization|MPC-QP 예제]]로 연결.
 
 ### 연결
@@ -328,7 +328,7 @@ LQG의 추정기 쪽은 [[04-robotics/state-estimation-slam|상태 추정, 위�
 > 1. 불안정 모드를 어떤 피드백도 못 잡으므로 안정화 해 $P$가 존재하지 않는다 — 문제 자체가 불량이다.
 > 2. 불변 — $Q$와 $R$ 전체에 같은 양의 스칼라를 곱하면 비용 스케일만 바뀐다. 행렬형 $Q,R$ 내부의 상대 가중치는 여전히 $K$를 정한다.
 > 3. 최적성은 공칭 모델에 대한 것이고, LQG는 모델 오차에 대한 보장된 여유가 없음이 증명되어 있다(Doyle 1978).
-> 4. 지평 끝 이후의 "남은 최적 비용"을 LQR의 $x^\top P x$가 정확히(비제약 영역에서) 요약해 주므로, 짧은 지평으로도 안정성 논증이 성립한다 — Mayne 2000의 종단 재료.
+> 4. LQR 법칙이 제약을 지키고 상태를 그 안에 머물게 하는 종단 집합 안에서는 $x^\top P x$가 남은 비용을 정확히 준다. 그 종단 제약을 함께 두어야 짧은 지평으로도 안정성 논증이 성립한다 — 종단 비용과 종단 집합이 함께 [[04-robotics/mpc|MPC §1]]이 나열하는 재료다(Borrelli 정리 12.2).
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

@@ -67,5 +67,5 @@ on real hardware for safety/limits.
 
 > [!tip]- Answers · 정답
 > 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement. · 양 끝에서 정지한다.
-> 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay. · 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 최대 속도가 커지는 것(최대 가속도는 오히려 작다).
+> 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay. · 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 같은 시간에서 최대 속도가 커지는 것이다($1.875/T$ vs $1.5/T$). 최대 가속도는 오히려 작다($5.77/T^2$ vs $6/T^2$). 치르는 것은 토크가 아니라 속도다.
 > 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything. · 최대 속도·가속도 한계를 직접 파라미터로 가져 액추에이터 스펙과 1:1로 대응되기 때문.

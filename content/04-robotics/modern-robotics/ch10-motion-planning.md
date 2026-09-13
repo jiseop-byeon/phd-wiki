@@ -27,10 +27,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
     RRT\* adds rewiring for asymptotic optimality.
   - **PRM**: sample many configurations, connect neighbors into a roadmap, then query.
   - Guarantee: **probabilistic completeness** — the probability of finding an existing solution
-    tends to one as sampling continues. That is weaker than *resolution* completeness, which
-    finds an existing solution in finite time. No promise about when, or how ugly; hence
+    tends to one as sampling continues. *Resolution* completeness is a different, grid-relative guarantee: it finds a solution if one exists at the chosen discretization resolution (MR §10.1), so a passage narrower than the grid can be missed. Both are weaker than full completeness. No promise about when, or how ugly; hence
     post-smoothing.
-- Nonholonomic/kinodynamic planning: sample *controls* instead of configurations when
+- Nonholonomic/kinodynamic planning: keep sampling configurations or states, but replace the straight-line local planner with one that respects the constraints — integrate a discrete set of controls, or use Reeds–Shepp curves for cars (MR §10.5.1.3) — when
   velocity constraints bind (cars, [[04-robotics/convex-mpc-legged|legged machines]]).
 
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —
@@ -56,10 +55,9 @@ proposals get filtered through.
   - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
     재배선을 더해 점근적 최적성을 얻는다.
   - **PRM**: 많이 샘플링해 이웃을 로드맵으로 연결한 뒤 질의한다.
-  - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. 유한 시간 안에 찾아내는 *해상도* 완전성보다 약한 보장이다. (언제인지, 얼마나 못생겼는지는
+  - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. *해상도* 완전성은 격자에 상대적인 다른 보장이다: 선택한 이산화 해상도에서 해가 존재하면 찾는다(MR §10.1). 그래서 격자보다 좁은 통로는 놓칠 수 있다. 둘 다 완전한 완전성보다 약하다. (언제인지, 얼마나 못생겼는지는
     약속 없음; 그래서 사후 평활화를 한다).
-- 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때는 컨피규레이션 대신 *제어*를
-  샘플링한다(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
+- 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때도 컨피규레이션이나 상태는 계속 샘플링하되, 직선 국소 계획기를 제약을 지키는 것으로 바꾼다 — 이산 제어 집합을 적분하거나 자동차라면 Reeds–Shepp 곡선을 쓴다(MR §10.5.1.3)(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
 
 **위키 연결**: 학습된 정책이 점점 *흡수*하는 고전 계층 —
 [[01-canonical-papers/notes/4-vla/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,
@@ -80,4 +78,4 @@ proposals get filtered through.
 > [!tip]- Answers · 정답
 > 1. $100^7 = 10^{14}$ cells. Grid search explodes exponentially in dof, so beyond a few dimensions only sampling is tractable — you cannot even enumerate the space, let alone search it. · 격자 탐색은 자유도에 지수적으로 폭발하므로 고차원에서는 샘플링만이 실용적이다.
 > 2. Guaranteed: if a solution exists (under the method's assumptions), the probability of finding it tends to 1 as computation grows. Not guaranteed: *when* it is found, or the quality of the path — plain RRT paths are typically far from optimal, which is what RRT\* and post-smoothing address. · 언제 찾는지와 경로 품질은 보장하지 않는다.
-> 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. You must sample *controls* and integrate the dynamics (kinodynamic planning) instead. · 비홀로노믹 제약 때문에 직선 확장이 실행 불가능한 운동일 수 있다 — 제어 샘플링이 필요하다. ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]])
+> 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. Keep sampling states, but extend with a constraint-respecting local planner — integrate discretized controls or use Reeds–Shepp curves (kinodynamic planning). · 비홀로노믹 제약 때문에 직선 확장이 실행 불가능한 운동일 수 있다 — 상태 샘플링은 그대로 두고, 이산 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 제약 준수 국소 계획기로 확장해야 한다. ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]])

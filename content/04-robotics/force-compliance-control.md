@@ -46,7 +46,7 @@ against that stiffness costs. A compliant controller rendering $K = 200$ N/m in 
 situation produces $200 \times 0.01 = 2$ N and holds a 1 cm error it never resolves — which
 in contact is the correct behaviour, not a failure.
 
-Environment stiffness spans six orders of magnitude, and papers name the contact rather than
+Environment stiffness spans five orders of magnitude, and papers name the contact rather than
 the number — so keep a scale, because the same control law is safe at one end and impossible
 at the other:
 
@@ -85,7 +85,7 @@ of this table.
     <line x1="70.0" y1="112" x2="70.0" y2="120"/><line x1="145.0" y1="112" x2="145.0" y2="120"/><line x1="220.0" y1="112" x2="220.0" y2="120"/><line x1="295.0" y1="112" x2="295.0" y2="120"/><line x1="370.0" y1="112" x2="370.0" y2="120"/><line x1="445.0" y1="112" x2="445.0" y2="120"/><line x1="520.0" y1="112" x2="520.0" y2="120"/>
   </g>
   <g font-size="9" fill="currentColor" opacity="0.7" text-anchor="middle">
-    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10⁳</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
+    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10³</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
   </g>
   <g font-size="9" fill="currentColor" opacity="0.6">
     <text x="70" y="150">foam, card</text>
@@ -93,13 +93,13 @@ of this table.
     <text x="470" y="150">Hertzian</text>
   </g>
   <g><line x1="92.6" y1="96" x2="92.6" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="92.6" cy="96" r="4" fill="currentColor"/><line x1="220.0" y1="70" x2="220.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="220.0" cy="70" r="4" fill="currentColor"/><line x1="445.0" y1="44" x2="445.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="445.0" cy="44" r="4" fill="currentColor"/></g>
-  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">a compliant controller</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">tool, F/T sensor, arm and part in series</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">steel on steel, local material contact</text></g>
+  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">a compliant controller</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">compliantly mounted tool (row 2)</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">steel on steel, local material contact</text></g>
   <g font-size="9.5" fill="currentColor" opacity="0.75">
     <text x="24" y="170">environment stiffness K&#7497; (N/m), log scale</text>
   </g>
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="200">The controller does not decide to push with 100 N; that is simply what closing a 1 cm error</text>
-    <text x="24" y="216">costs at that stiffness. Six orders of magnitude separate the rows, so the same control law is</text>
+    <text x="24" y="216">costs at that stiffness. Five orders of magnitude separate the rows, so the same control law is</text>
     <text x="24" y="232">safe at one end and impossible at the other &#8212; and a position controller aimed at structure</text>
     <text x="24" y="248">diverges in force long before the error closes. Read every &#8220;stiff contact&#8221; claim back to a row.</text>
   </g>
@@ -234,7 +234,7 @@ where $\tau_0$ is whatever the secondary objective asks for. The projector's job
 commonly stated backwards: a projector built from the plain Moore–Penrose pseudo-inverse is
 already **statically consistent** — in steady state the secondary torque produces no task
 force at all. What it does not do is prevent the task from *accelerating* during the
-transient, because $JM^{-1}\tau_0 \neq 0$ when $M^{-1} \neq I$. **Dynamic consistency buys
+transient, because $JM^{-1}N^\top\tau_0 \neq 0$ for the Moore–Penrose $N^\top$ when $M \neq I$. **Dynamic consistency buys
 the transient, not the static force**. Among projectors of this form, only the inertia-weighted
 inverse $\bar J$ makes $JM^{-1}N^\top = 0$ (Khatib 1987, restated in Dietrich, Ott &
 Albu-Schäffer, *IJRR* 2015, §3.3.1). That survey defines static consistency as no interfering
@@ -260,8 +260,7 @@ hierarchy survives inside it as constraint weights or as a cascade of QPs.
 
 For the mobile-manipulation case — where the "arm" includes a driveable base — the same QP
 absorbs base and arm degrees of freedom into one problem, which is the formal version of the
-choice [[04-robotics/navigation-mobile-manipulation|16. §4]] describes as deciding whether to
-drive closer or reach further.
+base-placement choice in [[04-robotics/navigation-mobile-manipulation|16. §3]].
 
 ### 5. Contact transitions — where the theory earns its keep
 
@@ -293,7 +292,7 @@ a gentle approach at $v = 5$ cm/s.
 | compliant wrist in series | $10^4$ | **7.1 N** | **44 ms** | about 44 |
 | local material contact alone, arm structure removed — §1's fourth row | $10^7$ | **224 N** | **1.4 ms** | about 1 |
 
-<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="the stiff contact drawn to scale as a needle-thin spike between two control samples, against the compliant contact as a broad flat bump">
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="the idealised material-only contact drawn to scale as a needle-thin spike about one control sample wide, against the compliant contact as a broad flat bump">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
     <line x1="55" y1="170" x2="512" y2="170"/><line x1="55" y1="170" x2="55" y2="40"/>
   </g>
@@ -311,8 +310,8 @@ a gentle approach at $v = 5$ cm/s.
     <text x="512" y="164" font-size="10" opacity="0.85" text-anchor="end">time (50 ms shown)</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="218">Both axes are to scale. The bare-tool contact is the needle at the left &#8212; taller than the plot</text>
-    <text x="20" y="234">can hold, and narrower than the gap between two control samples. The compliant contact is</text>
+    <text x="20" y="218">Both axes are to scale. The idealised material-only contact (the table's last row) is the needle</text>
+    <text x="20" y="234">at the left: 1.4 ms wide, so a 1 kHz loop gets about one sample inside it. The compliant contact is</text>
     <text x="20" y="250">the broad bump: barely visible on that force axis, long enough for about 44 samples.</text>
   </g>
 </svg>
@@ -324,7 +323,7 @@ contact, not one — regulable, but barely, at three times the compliant wrist's
 The bottom row is the idealisation you would approach only with a bare indenter on a rigid
 fixture; there a 1 kHz controller sees roughly **one sample**, arriving as late as 1 ms in,
 possibly after the peak has passed, and no control law fixes that because the information
-arrives after the event. The figure draws those two extremes, not the middle row.
+arrives after the event. The figure draws the idealised row and the compliant wrist, not the bare-tool row.
 
 Put a compliant element in series and both numbers move, in opposite directions and by the
 same factor: $F_{\max} \propto \sqrt{K}$ and $t_{\text{contact}} \propto 1/\sqrt{K}$, so
@@ -343,11 +342,10 @@ and an angular error produces rotation about the tip, and the two errors stop fe
 other. It solves the insertion problem in aluminium, with no sensor and no latency.
 
 Colgate and Hogan's 1988 result is the theoretical boundary of the active alternative: for
-a manipulator coupled to an arbitrary passive but unknown environment, coupled stability
-holds if and only if the manipulator's driving-point impedance is passive. That converts
+linear time-invariant systems, a manipulator is stable when coupled to *every* passive
+environment if and only if its driving-point impedance is passive. That converts
 contact stability from a per-experiment tuning question into a frequency-domain test, and
-it says something uncomfortable — there is a **limit** to how light an apparent inertia or
-how high a stiffness a controller can render stably. The controller cannot pretend the
+it says something uncomfortable — with non-collocated or unmodelled dynamics there is a **limit** to how far a controller can reduce the apparent inertia. The ceiling on renderable stiffness is a separate limit, set by sampling, delay and quantization ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The controller cannot pretend the
 arm's mass away.
 
 ### 6. Where learned policies sit
@@ -377,9 +375,8 @@ same conclusion.
 - **Martín-Martín et al., IROS 2019** — *Variable Impedance Control in End-Effector Space*.
   Treats the **impedance parameters themselves as the RL action space** (VICES), and compares
   it head-to-head against torque, joint-position, and end-effector-pose action spaces on
-  contact-rich tasks. The finding that matters: the action space, not the algorithm, is what
-  determines whether the policy can learn a contact task at all — and it changes sample
-  efficiency and transfer, not just final score.
+  contact-rich tasks. The finding that matters: with the learning setup held fixed, the action space changed
+  sample efficiency, energy use, safety and transfer, not just final score.
 - **Bogdanovic, Khadiv & Righetti, RA-L 2020** — *Learning Variable Impedance Control for
   Contact Sensitive Tasks*. Same question in **joint space**: the policy outputs desired
   position *and* impedance gains. Its contribution is the robustness axis — it varies contact
@@ -485,10 +482,10 @@ tolerance, say which architecture can meet it — and whether any can.
 
 > [!tip]- Answers
 > 1. The hardware and symptom alone do not determine the architecture. If force feedback generates position references, it is an admittance implementation. Higher contact stiffness can amplify the effect of delay and insufficient damping; check the actual loops, gains and timing before assigning the cause. Stable behavior on foam does not establish stable behavior on steel.
-> 2. $F_{\max} = v\sqrt{\Lambda K}$ is linear in $v$, so the peak force doubles to about 450 N in the stiff case. The duration $\pi\sqrt{\Lambda/K}$ does not contain $v$ at all, so it stays at 1.4 ms. Approaching faster buys you nothing in reaction time and costs you proportionally in force — which is why approach-speed limits, not better control, are the usual fix.
+> 2. $F_{\max} = v\sqrt{\Lambda K}$ is linear in $v$, so the peak force doubles in every row: 22 → 45 N for the bare tool on a real arm, 224 → 447 N for the idealised material contact. The duration $\pi\sqrt{\Lambda/K}$ does not contain $v$ at all, so it stays at 14 ms and 1.4 ms respectively. Approaching faster buys you nothing in reaction time and costs you proportionally in force — which is why approach-speed limits, not better control, are the usual fix.
 > 3. Because it places the compliance centre at the tip of the peg, so a lateral misalignment produces lateral compliance and an angular misalignment produces rotation about the tip, instead of each error generating the other. The correction is mechanical, so it happens at the speed of the material rather than the speed of a control loop — and §5 shows the control loop is too slow to have helped anyway.
 > 4. At minimum, that the policy chose useful position references. The system may still realise compliance through a lower-level impedance/admittance or force loop and passive hardware, so inspect that stack. A 10 Hz outer policy cannot react to the millisecond impact peak itself, but it can adapt references for slower sustained contact. The strongest supported claim depends on which layer produced the measured force behaviour.
-> 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres or a couple of degrees of error means force control is now acting partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
+> 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres of position error makes contact early, late or at the wrong point, and a couple of degrees of orientation or surface-shape error rotates the true normal, so force control now acts partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
 
 ### Sources
 
@@ -542,7 +539,7 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 그것일 뿐이다. 같은 상황에서 $K = 200$ N/m를 구현하는 유연한 제어기는 $200 \times 0.01 = 2$ N을
 내고 끝내 해소하지 않는 1 cm 오차를 유지한다 — 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
 
-환경 강성은 여섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을 이름으로 부른다 — 그러니 눈금을
+환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을 이름으로 부른다 — 그러니 눈금을
 갖고 있어야 한다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하기 때문이다:
 
 | 접촉 | $K_e$ (N/m) |
@@ -575,7 +572,7 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
     <line x1="70.0" y1="112" x2="70.0" y2="120"/><line x1="145.0" y1="112" x2="145.0" y2="120"/><line x1="220.0" y1="112" x2="220.0" y2="120"/><line x1="295.0" y1="112" x2="295.0" y2="120"/><line x1="370.0" y1="112" x2="370.0" y2="120"/><line x1="445.0" y1="112" x2="445.0" y2="120"/><line x1="520.0" y1="112" x2="520.0" y2="120"/>
   </g>
   <g font-size="9" fill="currentColor" opacity="0.7" text-anchor="middle">
-    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10⁳</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
+    <text x="70.0" y="134">10²</text><text x="145.0" y="134">10³</text><text x="220.0" y="134">10⁴</text><text x="295.0" y="134">10⁵</text><text x="370.0" y="134">10⁶</text><text x="445.0" y="134">10⁷</text><text x="520.0" y="134">10⁸</text>
   </g>
   <g font-size="9" fill="currentColor" opacity="0.6">
     <text x="70" y="150">폼, 판지</text>
@@ -583,13 +580,13 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
     <text x="470" y="150">헤르츠 접촉</text>
   </g>
   <g><line x1="92.6" y1="96" x2="92.6" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="92.6" cy="96" r="4" fill="currentColor"/><line x1="220.0" y1="70" x2="220.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="220.0" cy="70" r="4" fill="currentColor"/><line x1="445.0" y1="44" x2="445.0" y2="112" stroke="currentColor" stroke-width="1" opacity="0.45"/><circle cx="445.0" cy="44" r="4" fill="currentColor"/></g>
-  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">유연하게 만든 제어기</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">도구·F/T 센서·팔·환경의 직렬 강성</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">강철 대 강철, 국소 재료 접촉</text></g>
+  <g font-size="10.5" fill="currentColor"><text x="101.6" y="100">2 N</text><text x="101.6" y="112" font-size="9" opacity="0.75">유연하게 만든 제어기</text><text x="229.0" y="74">100 N</text><text x="229.0" y="86" font-size="9" opacity="0.75">유연하게 장착한 공구(둘째 행)</text><text x="436.0" y="48" text-anchor="end">100,000 N</text><text x="436.0" y="60" font-size="9" opacity="0.75" text-anchor="end">강철 대 강철, 국소 재료 접촉</text></g>
   <g font-size="9.5" fill="currentColor" opacity="0.75">
     <text x="24" y="170">환경 강성 K&#7497; (N/m), 로그 눈금</text>
   </g>
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="200">제어기가 100 N으로 밀기로 결정한 것이 아니다. 그 강성에서 1 cm 오차를 닫는 비용이 그저</text>
-    <text x="24" y="216">그것일 뿐이다. 행 사이가 여섯 자릿수라서 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽</text>
+    <text x="24" y="216">그것일 뿐이다. 행 사이가 다섯 자릿수라서 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽</text>
     <text x="24" y="232">끝에서는 불가능하다 &#8212; 구조물에 겨눈 위치 제어기는 오차가 닫히기 한참 전에 힘이 발산한다.</text>
     <text x="24" y="248">&#8220;단단한 접촉&#8221;이라는 주장은 언제나 이 축의 어느 자리인지로 되읽어라.</text>
   </g>
@@ -719,7 +716,7 @@ $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}
 교란할 수 없게** 하는 것이다. 다만 *어떤* 교란인지를 정확히 해야 한다. 이 부분은 거꾸로 서술되는
 일이 흔하다: 평범한 Moore–Penrose 유사역행렬로 만든 투영자도 이미 **정적으로 일관되다** —
 정상 상태에서 부차 토크는 작업 힘을 전혀 만들지 않는다. 그것이 막지 못하는 것은 과도 구간에서
-작업이 *가속되는* 것이다. $M^{-1} \neq I$이면 $JM^{-1}\tau_0 \neq 0$이기 때문이다.
+작업이 *가속되는* 것이다. $M \neq I$이면 Moore–Penrose $N^\top$에 대해 $JM^{-1}N^\top\tau_0 \neq 0$이기 때문이다.
 **동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**. 이 형태의 투영자 가운데
 $JM^{-1}N^\top = 0$을 만드는 것은 관성으로 가중한 역 $\bar J$뿐이다(Khatib 1987, Dietrich,
 Ott, Albu-Schäffer, *IJRR* 2015 §3.3.1에서 재진술). 이 서베이는 정적 일관성을 어떤 정적 평형에서도
@@ -740,8 +737,8 @@ $M(I - J^{+}J)M^{-1}$도 동역학적으로 일관되지만 하중 독립성은 
 QP를 풀고 있고, 우선순위 계층은 그 안에서 제약 가중치나 QP의 종속 연쇄로 살아남는다.
 
 모바일 매니퓰레이션의 경우 — "팔"에 주행 가능한 베이스가 포함될 때 — 같은 QP가 베이스와 팔의
-자유도를 하나의 문제로 흡수하고, 그것이 [[04-robotics/navigation-mobile-manipulation|16. §4]]가
-더 다가갈지 더 뻗을지를 정하는 선택이라고 기술한 것의 형식적 판본이다.
+자유도를 하나의 문제로 흡수하고, 그것이 [[04-robotics/navigation-mobile-manipulation|16. §3]]의
+베이스 배치 선택의 형식적 판본이다.
 
 ### 5. 접촉 천이 — 이론이 값을 하는 지점
 
@@ -771,7 +768,7 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 | 유연 손목을 직렬로 | $10^4$ | **7.1 N** | **44 ms** | 약 44개 |
 | 재료 접촉만, 팔 구조를 뺀 경우 — §1의 넷째 줄 | $10^7$ | **224 N** | **1.4 ms** | 약 1개 |
 
-<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="단단한 접촉이 제어 샘플 두 개 사이에 들어가는 바늘 같은 스파이크로, 유연한 접촉이 넓고 평평한 봉우리로 실제 비례로 그려져 있다">
+<svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="이상화한 재료만의 접촉이 제어 샘플 하나 폭의 바늘 같은 스파이크로, 유연한 접촉이 넓고 평평한 봉우리로 실제 비례로 그려져 있다">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
     <line x1="55" y1="170" x2="512" y2="170"/><line x1="55" y1="170" x2="55" y2="40"/>
   </g>
@@ -789,8 +786,8 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
     <text x="512" y="164" font-size="10" opacity="0.85" text-anchor="end">시간 (50 ms 구간)</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
-    <text x="20" y="218">두 축 모두 실제 비례다. 맨 공구의 접촉이 왼쪽의 바늘이다 &#8212; 그림이 담기 버거울 만큼</text>
-    <text x="20" y="234">높고, 제어 샘플 두 개 사이보다 좁다. 유연한 접촉은 넓은 봉우리다: 같은 힘 축에서는</text>
+    <text x="20" y="218">두 축 모두 실제 비례다. 이상화한 재료만의 접촉(표의 마지막 줄)이 왼쪽의 바늘이다:</text>
+    <text x="20" y="234">폭 1.4 ms라 1 kHz 루프는 그 안에서 샘플을 약 하나 얻는다. 유연한 접촉은 넓은 봉우리다: 같은 힘 축에서는</text>
     <text x="20" y="250">거의 보이지 않고, 샘플이 약 44개 들어올 만큼 길다.</text>
   </g>
 </svg>
@@ -818,11 +815,11 @@ $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되
 회전을 만들게 하고 두 오차가 서로를 먹여 살리지 못하게 한다. 알루미늄으로, 센서 없이, 지연
 없이 삽입 문제를 푼다.
 
-Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: 임의의 수동적이지만 알려지지 않은
-환경에 결합된 매니퓰레이터에 대해, 결합 안정성은 매니퓰레이터의 구동점 임피던스가 수동적일 때
-그리고 오직 그때만 성립한다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
-바꾸고, 불편한 것을 하나 말해 준다 — 제어기가 안정하게 구현할 수 있는 겉보기 관성의 가벼움과
-강성의 높음에는 **한계가 있다.** 제어기가 팔의 질량을 없는 척할 수는 없다.
+Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: 선형 시불변 시스템에서, 매니퓰레이터가
+*모든* 수동적 환경과 결합해도 안정한 것은 구동점 임피던스가 수동적일 때
+그리고 오직 그때뿐이다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
+바꾸고, 불편한 것을 하나 말해 준다 — 비동위치(non-collocated) 동역학이나 모델링되지 않은 동역학이 있으면 제어기가 겉보기 관성을
+줄일 수 있는 데에는 **한계가 있다.** 구현 가능한 강성의 상한은 이와 별개로 샘플링·지연·양자화가 정한다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 제어기가 팔의 질량을 없는 척할 수는 없다.
 
 ### 6. 학습된 정책이 앉는 자리
 
@@ -848,9 +845,8 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 
 - **Martín-Martín 외, IROS 2019** — *Variable Impedance Control in End-Effector Space*.
   **임피던스 파라미터 자체를 RL의 행동 공간으로** 삼고(VICES), 토크·관절 위치·말단 자세 행동
-  공간과 접촉이 많은 과제에서 정면 비교한다. 중요한 발견은 이것이다: 정책이 접촉 과제를 애초에
-  학습할 수 있느냐를 정하는 것은 알고리즘이 아니라 **행동 공간**이고, 최종 점수만이 아니라 표본
-  효율과 전이가 함께 바뀐다.
+  공간과 접촉이 많은 과제에서 정면 비교한다. 중요한 발견은 이것이다: 학습 설정을 고정한 채 **행동 공간**만 바꿔도
+  최종 점수만이 아니라 표본 효율, 에너지 사용, 안전성, 전이가 함께 바뀌었다.
 - **Bogdanovic, Khadiv & Righetti, RA-L 2020** — *Learning Variable Impedance Control for
   Contact Sensitive Tasks*. 같은 질문을 **관절 공간**에서 던진다: 정책이 목표 위치 *와* 임피던스
   이득을 함께 낸다. 기여는 강건성 축이다 — 접촉 불확실성을 의도적으로 변화시켜 토크 제어와 위치
@@ -945,10 +941,10 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 
 > [!tip]- 정답 · Answers
 > 1. 하드웨어와 증상만으로 구조를 확정할 수 없다. 힘 피드백이 위치 기준을 만든다면 어드미턴스 구현이다. 높은 접촉 강성은 지연과 부족한 감쇠의 영향을 키울 수 있다. 실제 루프·게인·시점을 확인한 뒤 원인을 판정한다. 폼에서 안정적이었다고 강철에서도 안정적이라는 뜻은 아니다.
-> 2. $F_{\max} = v\sqrt{\Lambda K}$는 $v$에 선형이므로 단단한 경우 최대 힘은 약 450 N으로 두 배가 된다. 지속 시간 $\pi\sqrt{\Lambda/K}$에는 $v$가 아예 없으므로 1.4 ms 그대로다. 빨리 접근해도 반응 시간은 하나도 벌지 못하고 힘만 비례해서 치른다 — 더 나은 제어가 아니라 접근 속도 제한이 통상적인 처방인 이유다.
+> 2. $F_{\max} = v\sqrt{\Lambda K}$는 $v$에 선형이므로 모든 행에서 최대 힘이 두 배가 된다: 실제 팔의 맨 공구는 22 → 45 N, 이상화한 재료 접촉은 224 → 447 N. 지속 시간 $\pi\sqrt{\Lambda/K}$에는 $v$가 아예 없으므로 각각 14 ms와 1.4 ms 그대로다. 빨리 접근해도 반응 시간은 하나도 벌지 못하고 힘만 비례해서 치른다 — 더 나은 제어가 아니라 접근 속도 제한이 통상적인 처방인 이유다.
 > 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
 > 4. 최소한 정책이 유용한 위치 기준을 골랐다는 것. 시스템은 하위 임피던스·어드미턴스·힘 루프와 수동 하드웨어로 컴플라이언스를 만들 수도 있으므로 그 스택을 확인해야 한다. 10 Hz 외부 정책은 밀리초 충격 첨두 자체에 반응할 수 없지만 더 느린 지속 접촉을 위한 기준은 바꿀 수 있다. 측정된 힘 거동을 어느 층이 만들었는지에 따라 가장 강한 주장이 달라진다.
-> 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터나 몇 도의 오차는 힘 제어가 이제 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용한다는 뜻이고, 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
+> 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터의 위치 오차는 접촉을 이르게, 늦게, 혹은 엉뚱한 점에서 일으키고, 몇 도의 자세나 표면 형상 오차는 실제 법선을 돌려 힘 제어가 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용하게 만든다. 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
 
 ### 출처
 

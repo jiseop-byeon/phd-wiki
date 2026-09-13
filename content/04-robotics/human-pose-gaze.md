@@ -57,7 +57,8 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that one badly wrong joint is diluted by the rest — and three qualifications change its meaning entirely:
 
 - **Root-relative.** Most benchmarks align the pelvis to the origin first. The number therefore says nothing about *where the person is*, only about limb configuration. Absolute 3D localisation is a separate, harder problem.
-- **PA-MPJPE.** Procrustes alignment additionally removes rotation and scale. A good PA-MPJPE with a poor MPJPE means the shape is right and the orientation is not — and orientation is what intent reading needs.
+- **PA-MPJPE.** Procrustes alignment additionally removes rotation and scale. A good PA-MPJPE with a poor MPJPE means the articulated shape is right and the global rotation and/or scale is not — and orientation is what intent reading needs.
+- **PCK.** Percentage of correct keypoints: the fraction of joints whose error falls under a threshold (e.g. 150 mm in 3D, or half the head size in 2D). It reports a hit rate at one tolerance, not an average distance.
 - **Monocular depth ambiguity.** From one camera, scale and depth are recoverable only through priors. A 40 mm MPJPE from a calibrated multi-camera rig and a 40 mm MPJPE from a phone are not the same result.
 
 > [!example] Worked interpretation
@@ -93,7 +94,7 @@ Gaze is the strongest single predictor of near-future action in humans, and the 
 | Method | Requires | Accuracy | Range |
 |---|---|---|---|
 | Eye-tracker (worn) | instrumented subject | ~1° | any |
-| Appearance-based gaze | eye region resolvable | ~3–6° | a few metres |
+| Appearance-based gaze | eyes or at least the head visible | ~4–6° near-frontal under 1 m; ~11–14° unconstrained at 1–3 m (Gaze360) | a few metres, falling back on head appearance when the eyes are not visible |
 | **Head pose as gaze proxy** | face or head visible | coarse — see below | tens of metres |
 
 At any realistic street or site distance, **only head pose survives.** The table says why: appearance-based gaze needs a resolvable eye region, which is gone beyond a few metres, so a system that reports "gaze" at site range is necessarily estimating head pose. Check which one a paper measured before you read its accuracy figure.
@@ -163,7 +164,7 @@ You should be able to:
 4. Why does a bottom-up pose estimator degrade in exactly the scenario that motivates it?
 
 > [!tip]- Answers
-> 1. Head pose, not eye gaze — the eye region is not resolvable at that distance. 2. Procrustes alignment removes global rotation; orientation error is precisely the intent-relevant quantity, so the metric can improve while the useful signal is discarded. 3. Body orientation from a tracked box or coarse 2D keypoints; full 3D mesh is unnecessary. 4. Its constant cost is attractive for crowds, but crowding is what makes keypoint-to-person grouping ambiguous.
+> 1. Head pose, not eye gaze — the eye region is not resolvable at that distance. 2. Procrustes alignment removes global rotation; orientation error is precisely the intent-relevant quantity, so the metric can improve while the useful signal is discarded. 3. Torso orientation from coarse 2D keypoints (the shoulder and hip lines); a tracked box alone gives heading only while the person is moving. A full 3D mesh is unnecessary. 4. Its constant cost is attractive for crowds, but crowding is what makes keypoint-to-person grouping ambiguous.
 
 ### Sources
 
@@ -218,7 +219,7 @@ You should be able to:
 | 표현 | 출력 | 통상 오차 | 얻는 것 |
 |---|---|---|---|
 | 2D 키포인트 | 관절별 이미지 좌표 $(u,v)$ | 픽셀 | 싸고 강건, 시점 의존 |
-| 3D 키포인트 | 관절별 $(x,y,z)$, 보통 **루트 상대** | MPJPE (mm) | 사지 기하, 다만 절대 위치는 없음 |
+| 3D 키포인트 | 관절별 $(x,y,z)$, 보통 **루트 상대** | MPJPE (mm) | 사지 기하, 다만 절대 위치가 없는 경우가 많음 |
 | 파라메트릭 신체 (SMPL 계열) | 형상 $\beta$ + 자세 $\theta$ → 메시 | mm + 형상 오차 | 표면·부피·접촉·가림 추론 |
 | 손 자세 (MANO 계열) | 약 21 키포인트 또는 손 메시 | 작은 스케일의 mm | 파지 유형, 물체 상호작용 |
 | 시선 | 3D 시선 광선 또는 응시점 | 도(degree) | 주의, 따라서 의도 |
@@ -248,7 +249,8 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 관절 $J$개에 걸쳐 평균 낸 관절별 유클리드 거리로 읽어라. 그래서 하나가 크게 틀려도 나머지에 희석된다 — 그리고 의미를 통째로 바꾸는 단서가 셋 있다:
 
 - **루트 상대.** 대부분의 벤치마크가 골반을 원점에 먼저 정렬한다. 그래서 이 숫자는 *사람이 어디 있는지*에 대해 아무 말도 안 하고 사지 배치만 말한다. 절대 3D 위치추정은 별개의 더 어려운 문제다.
-- **PA-MPJPE.** Procrustes 정렬은 회전과 스케일까지 제거한다. PA-MPJPE는 좋은데 MPJPE가 나쁘면 형상은 맞고 방향이 틀린 것이고, **의도 판독이 필요로 하는 건 방향이다.**
+- **PA-MPJPE.** Procrustes 정렬은 회전과 스케일까지 제거한다. PA-MPJPE는 좋은데 MPJPE가 나쁘면 관절 형상은 맞고 전역 회전이나 스케일이 틀린 것이고, **의도 판독이 필요로 하는 건 방향이다.**
+- **PCK.** 올바른 키포인트 비율: 오차가 문턱(예: 3D에서 150 mm, 2D에서 머리 크기의 절반) 아래인 관절의 비율이다. 평균 거리가 아니라 한 허용치에서의 적중률을 보고한다.
 - **단안 깊이 모호성.** 카메라 하나에서 스케일과 깊이는 사전지식으로만 복원된다. 교정된 다중 카메라의 40 mm와 휴대폰의 40 mm는 같은 결과가 아니다.
 
 > [!example] 해석 예제
@@ -280,7 +282,7 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 | 방법 | 필요 조건 | 정확도 | 범위 |
 |---|---|---|---|
 | 착용형 아이트래커 | 피험자 계측 | 약 1° | 무관 |
-| 외형 기반 시선 추정 | 눈 영역이 분해 가능 | 약 3–6° | 수 미터 |
+| 외형 기반 시선 추정 | 눈, 최소한 머리가 보임 | 1 m 이내 정면에서 약 4–6°; 1–3 m 비제약 환경에서 약 11–14°(Gaze360) | 수 미터, 눈이 안 보이면 머리 외형에 기댐 |
 | **머리 자세를 시선 대용으로** | 얼굴·머리가 보임 | 거칠다 — 아래 참조 | 수십 미터 |
 
 현실적인 도로·현장 거리에서는 **머리 자세만 살아남는다.** 이유는 표에 있다. 외형 기반 시선 추정은 눈 영역이 분해되어야 하는데 몇 미터를 넘으면 사라지므로, 현장 거리에서 "시선"을 보고하는 시스템은 필연적으로 머리 자세를 추정하고 있다. 정확도 수치를 읽기 전에 논문이 둘 중 무엇을 쟀는지 확인하라.
@@ -348,7 +350,7 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 4. Bottom-up 자세 추정기가 자기를 정당화하는 바로 그 상황에서 나빠지는 이유는?
 
 > [!tip]- 정답
-> 1. 눈 시선이 아니라 머리 자세 — 그 거리에서 눈 영역은 분해되지 않는다. 2. Procrustes 정렬이 전역 회전을 제거하는데, 방향 오차가 바로 의도 관련 양이므로 지표는 좋아지면서 유용한 신호는 버려진다. 3. 추적 박스나 거친 2D 키포인트에서 얻은 몸 방향; 3D 메시는 불필요하다. 4. 일정한 비용이 군중에 매력적이지만, 군중이야말로 키포인트–사람 그룹핑을 모호하게 만드는 조건이다.
+> 1. 눈 시선이 아니라 머리 자세 — 그 거리에서 눈 영역은 분해되지 않는다. 2. Procrustes 정렬이 전역 회전을 제거하는데, 방향 오차가 바로 의도 관련 양이므로 지표는 좋아지면서 유용한 신호는 버려진다. 3. 거친 2D 키포인트(어깨선과 엉덩이선)에서 얻은 몸통 방향. 추적 박스만으로는 사람이 움직이는 동안의 진행 방향만 알 수 있다. 3D 메시는 불필요하다. 4. 일정한 비용이 군중에 매력적이지만, 군중이야말로 키포인트–사람 그룹핑을 모호하게 만드는 조건이다.
 
 ### 출처
 

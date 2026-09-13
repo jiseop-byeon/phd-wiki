@@ -65,9 +65,9 @@ $$\Delta^{*} = \max\{\Delta : \text{operating-metric}(\Delta) \geq \text{require
 A system whose $\Delta^*$ is shorter than the actuator's stopping time is a detector wearing a predictor's name.
 
 > [!example] Worked example — required lead time · 계산 예제 — 필요한 선행 시간
-> A vehicle at 30 km/h ($8.3\,\mathrm{m/s}$) needs 1.2 s to brake plus 0.3 s of pipeline latency: 1.5 s of required lead. At the same allowed false-positive rate, suppose model A meets the required recall only to 0.8 s while model B meets it to 2.0 s. A does not meet **this braking requirement at this operating point**, despite a better peak AUC. Compare operating-point $\Delta^*$ with required lead time; AUC alone cannot make the braking decision.
+> A vehicle at 30 km/h ($8.3\,\mathrm{m/s}$) needs 1.2 s to brake plus 0.3 s of pipeline latency: 1.5 s of required lead. At the same allowed false-positive rate, suppose model A meets the required recall only to 1.15 s while model B meets it to 2.15 s (the figure below). A does not meet **this braking requirement at this operating point**, despite a better peak AUC. Compare operating-point $\Delta^*$ with required lead time; AUC alone cannot make the braking decision.
 
-<svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="performance against time before the event, with a decision threshold and the lead time the platform requires">
+<svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="recall at a fixed false-positive rate against time before the event, with the required recall and the lead time the platform requires">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
     <line x1="60" y1="190" x2="504" y2="190"/><line x1="60" y1="190" x2="60" y2="36"/>
   </g>
@@ -86,19 +86,19 @@ A system whose $\Delta^*$ is shorter than the actuator's stopping time is a dete
   <g font-size="10.5" fill="currentColor">
     <text x="150" y="58">model A</text>
     <text x="150" y="96">model B</text>
-    <text x="64" y="137" font-size="9.5" opacity="0.85">decision threshold</text>
+    <text x="64" y="137" font-size="9.5" opacity="0.85">required recall</text>
     <text x="330" y="42" font-size="9.5" opacity="0.85">required lead, 1.5 s</text>
     <text x="258" y="147" text-anchor="end" font-size="10">&#916;*&#7488;</text>
     <text x="446" y="115" font-size="10">&#916;*&#7495;</text>
     <text x="54" y="44" text-anchor="end" font-size="9.5">1.0</text><text x="54" y="127" text-anchor="end" font-size="9.5">0.75</text><text x="54" y="177" text-anchor="end" font-size="9.5">0.6</text>
     <text x="60" y="206" text-anchor="middle" font-size="9.5">0</text><text x="148" y="206" text-anchor="middle" font-size="9.5">0.5</text><text x="236" y="206" text-anchor="middle" font-size="9.5">1.0</text><text x="324" y="206" text-anchor="middle" font-size="9.5">1.5</text><text x="412" y="206" text-anchor="middle" font-size="9.5">2.0</text><text x="500" y="206" text-anchor="middle" font-size="9.5">2.5</text>
     <text x="282" y="222" text-anchor="middle" font-size="9.5">time before the event &#916; (s)</text>
-    <text x="14" y="112" font-size="9.5">AUC</text>
+    <text x="14" y="112" font-size="9.5">recall @ FPR=α</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="20" y="243">Model A has the better headline number and cannot be used here: its usable</text>
     <text x="20" y="259">horizon &#916;* = 1.15 s falls short of the 1.5 s this platform needs, while model B</text>
-    <text x="20" y="275">holds the threshold out to 2.15 s. Compare &#916;*, not peak performance.</text>
+    <text x="20" y="275">holds the required recall out to 2.15 s. Compare &#916;*, not peak performance.</text>
   </g>
 </svg>
 
@@ -140,8 +140,8 @@ Most pedestrians near a road do not cross in the next two seconds; most workers 
 >
 > **What it would take.** To reach 90% precision at the same 2% base rate, solve
 > $0.90 \times 0.02 = 0.90\,(0.90 \times 0.02 + \text{FPR} \times 0.98)$ for FPR: **0.2%**. The
-> false-positive rate has to fall by a factor of 25, and the true-positive rate is nearly
-> irrelevant to that.
+> false-positive rate has to fall by a factor of 25, and within realistic true-positive rates (0.8–1.0) the TPR shifts that requirement only proportionally —
+> the false-positive rate is the lever.
 >
 > **The reading this gives you.** ROC curves and AUC hide this completely, because both are
 > independent of the base rate. When an intent paper reports AUC on a balanced dataset and the
@@ -207,7 +207,7 @@ You should be able to:
 - state the feedback-loop difference between road pedestrians and repeat coworkers.
 
 > [!tip] Going deeper · 더 깊이
-> No textbook, and the two halves of §1 go different ways. For intent classification, PIE (ICCV 2019) is the reference dataset and its paper states the problem most cleanly. For trajectory forecasting, read Social LSTM (CVPR 2016) then Social GAN (CVPR 2018) — the second exists because the first predicted one future for a problem with many, and that disagreement is still the field's live question. For §4, calibration is not this field's own topic: [[02-foundations/ml-practice|9. ML practice §3]] and the general calibration literature it points to are where that machinery lives.
+> No textbook, and the two halves of §1 go different ways. For intent classification, PIE (ICCV 2019) is the reference dataset and its paper states the problem most cleanly. For trajectory forecasting, read Social LSTM (CVPR 2016) then Social GAN (CVPR 2018) — the second exists because the first predicted one future for a problem with many, and that disagreement is still the field's live question. For §4, calibration is not this field's own topic: Guo et al. (ICML 2017) for calibration of neural networks and Angelopoulos & Bates for conformal prediction, both in Sources below, are where that machinery lives.
 
 ### Self-check
 
@@ -322,7 +322,7 @@ $$\Delta^{*} = \max\{\Delta : \text{동작점 지표}(\Delta) \geq \text{요구�
 $\Delta^*$가 구동기의 정지 시간보다 짧은 시스템은 **예측기라는 이름을 쓴 검출기다.**
 
 > [!example] 계산 예제 — 필요한 선행 시간 · Worked example
-> 30 km/h($8.3\,\mathrm{m/s}$) 차량이 제동에 1.2초, 파이프라인 지연 0.3초 → 필요한 선행 1.5초. 같은 허용 오경보율에서 모델 A가 요구 recall을 0.8초까지만, 모델 B가 2.0초까지 만족한다고 하자. A는 peak AUC가 더 좋아도 **이 동작점의 제동 요구조건**을 만족하지 못한다. 동작점의 $\Delta^*$와 필요 선행 시간을 비교해야 하며 AUC만으로 제동 결정을 내릴 수 없다.
+> 30 km/h($8.3\,\mathrm{m/s}$) 차량이 제동에 1.2초, 파이프라인 지연 0.3초 → 필요한 선행 1.5초. 같은 허용 오경보율에서 모델 A가 요구 recall을 1.15초까지만, 모델 B가 2.15초까지 만족한다고 하자(아래 그림). A는 peak AUC가 더 좋아도 **이 동작점의 제동 요구조건**을 만족하지 못한다. 동작점의 $\Delta^*$와 필요 선행 시간을 비교해야 하며 AUC만으로 제동 결정을 내릴 수 없다.
 
 <svg viewBox="0 0 560 285" style="max-width:100%;height:auto" role="img" aria-label="사건 전 남은 시간에 대한 성능, 결정 임계값과 플랫폼이 요구하는 선행 시간과 함께">
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.55">
@@ -343,19 +343,19 @@ $\Delta^*$가 구동기의 정지 시간보다 짧은 시스템은 **예측기�
   <g font-size="10.5" fill="currentColor">
     <text x="150" y="58">모델 A</text>
     <text x="150" y="96">모델 B</text>
-    <text x="64" y="137" font-size="9.5" opacity="0.85">결정 임계값</text>
+    <text x="64" y="137" font-size="9.5" opacity="0.85">요구 recall</text>
     <text x="330" y="42" font-size="9.5" opacity="0.85">필요 선행 1.5초</text>
     <text x="258" y="147" text-anchor="end" font-size="10">&#916;*&#7488;</text>
     <text x="446" y="115" font-size="10">&#916;*&#7495;</text>
     <text x="54" y="44" text-anchor="end" font-size="9.5">1.0</text><text x="54" y="127" text-anchor="end" font-size="9.5">0.75</text><text x="54" y="177" text-anchor="end" font-size="9.5">0.6</text>
     <text x="60" y="206" text-anchor="middle" font-size="9.5">0</text><text x="148" y="206" text-anchor="middle" font-size="9.5">0.5</text><text x="236" y="206" text-anchor="middle" font-size="9.5">1.0</text><text x="324" y="206" text-anchor="middle" font-size="9.5">1.5</text><text x="412" y="206" text-anchor="middle" font-size="9.5">2.0</text><text x="500" y="206" text-anchor="middle" font-size="9.5">2.5</text>
     <text x="282" y="222" text-anchor="middle" font-size="9.5">사건까지 남은 시간 &#916; (초)</text>
-    <text x="14" y="112" font-size="9.5">AUC</text>
+    <text x="14" y="112" font-size="9.5">recall @ FPR=α</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="20" y="243">모델 A가 헤드라인 숫자는 더 좋지만 여기서는 쓸 수 없다: 가용 지평</text>
     <text x="20" y="259">&#916;* = 1.15초가 이 플랫폼에 필요한 1.5초에 못 미치고, 모델 B는 2.15초까지</text>
-    <text x="20" y="275">임계값을 유지한다. 최고 성능이 아니라 &#916;*를 필요 선행과 비교하라.</text>
+    <text x="20" y="275">요구 recall을 유지한다. 최고 성능이 아니라 &#916;*를 필요 선행과 비교하라.</text>
   </g>
 </svg>
 
@@ -397,7 +397,7 @@ Conformal prediction의 수학은 교환가능성 + 분위수이며, 집합 출�
 >
 > **필요한 조건.** 같은 2% 기저율에서 정밀도 90%에 닿으려면
 > $0.90 \times 0.02 = 0.90\,(0.90 \times 0.02 + \text{FPR} \times 0.98)$을 FPR에 대해 풀면
-> FPR = 0.2%가 나온다. 오탐률이 **25배** 떨어져야 하고, 거기에 정탐률은 사실상 무관하다.
+> FPR = 0.2%가 나온다. 오탐률이 **25배** 떨어져야 하고, 현실적인 정탐률(0.8–1.0) 안에서 정탐률은 그 요구를 비례적으로만 옮긴다 — 지렛대는 오탐률이다.
 >
 > **여기서 얻는 독법.** ROC 곡선과 AUC는 이것을 완전히 가린다. 둘 다 기저율과 무관하기
 > 때문이다. 균형 잡힌 데이터셋에서 AUC를 보고한 의도 논문이 2% 양성인 현장에 놓이면, 보고된
@@ -462,7 +462,7 @@ Conformal prediction의 수학은 교환가능성 + 분위수이며, 집합 출�
 - 도로 보행자와 반복 협업 작업자 사이의 피드백 루프 차이를 말한다.
 
 > [!tip] 더 깊이 · Going deeper
-> 교과서는 없고, §1의 두 절반은 서로 다른 길로 간다. 의도 분류 쪽은 PIE(ICCV 2019)가 기준 데이터셋이고 그 논문이 문제를 가장 깔끔하게 진술한다. 궤적 예측 쪽은 Social LSTM(CVPR 2016) 다음 Social GAN(CVPR 2018)을 읽어라 — 두 번째가 존재하는 이유는 첫 번째가 미래가 여럿인 문제에 하나의 미래를 예측했기 때문이고, 그 이견은 지금도 이 분야의 살아 있는 질문이다. §4의 보정은 이 분야 고유의 주제가 아니다. 그 기계장치는 [[02-foundations/ml-practice|9. ML 실무 §3]]과 그 페이지가 가리키는 일반 보정 문헌에 있다.
+> 교과서는 없고, §1의 두 절반은 서로 다른 길로 간다. 의도 분류 쪽은 PIE(ICCV 2019)가 기준 데이터셋이고 그 논문이 문제를 가장 깔끔하게 진술한다. 궤적 예측 쪽은 Social LSTM(CVPR 2016) 다음 Social GAN(CVPR 2018)을 읽어라 — 두 번째가 존재하는 이유는 첫 번째가 미래가 여럿인 문제에 하나의 미래를 예측했기 때문이고, 그 이견은 지금도 이 분야의 살아 있는 질문이다. §4의 보정은 이 분야 고유의 주제가 아니다. 그 기계장치는 아래 출처의 Guo 외(ICML 2017, 신경망 보정)와 Angelopoulos & Bates(conformal prediction)에 있다.
 
 ### 스스로 점검
 

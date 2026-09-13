@@ -52,8 +52,8 @@ appendix.
   is occupied. Updates are done in **log-odds** so that accumulating evidence is an addition
   rather than a multiplication, and to avoid the numerical trouble of probabilities pressed
   against 0 or 1. Note the direction of the remaining hazard: log-odds is *unbounded*, so a
-  cell observed occupied a thousand times needs a thousand contrary observations to flip —
-  which is why implementations add an explicit **clamping** range (OctoMap's contribution) so
+  cell observed occupied a thousand times needs on the order of a thousand contrary observations to flip (about 2,100 with OctoMap's default +0.85/−0.4 log-odds increments) —
+  which is why implementations add an explicit **clamping** range (proposed by Yguel et al. 2007 and adopted by OctoMap) so
   the map can still adapt when the world changes. A cell reads as *free*, *occupied*, or
   **unknown**, and the third is the one beginners drop: unknown is not free, and the difference is what exploration is about.
 - **Inflation** — a planner that treats the robot as a point (the figure below) has to grow
@@ -302,8 +302,8 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 - **점유 격자(occupancy grid)** — 지도를 격자로 두고 각 칸이 점유되어 있을 확률을 담는다.
   갱신은 **로그 승산(log-odds)** 으로 하는데, 그래야 증거 누적이 곱셈이 아니라 덧셈이 되고,
   확률이 0이나 1에 바짝 붙었을 때의 수치 문제를 피할 수 있다. 남는 위험의 방향을 짚어야 한다:
-  로그 승산은 *유계가 아니어서*, 점유로 천 번 관측된 칸은 뒤집으려면 반대 관측 천 번이 필요하다 —
-  그래서 구현들은 명시적 **클램핑** 범위를 둔다(OctoMap의 기여). 세상이 바뀌었을 때 지도가
+  로그 승산은 *유계가 아니어서*, 점유로 천 번 관측된 칸은 뒤집으려면 반대 관측이 천 번 단위로 필요하다(OctoMap 기본 로그 승산 증분 +0.85/−0.4이면 약 2,100번) —
+  그래서 구현들은 명시적 **클램핑** 범위를 둔다(Yguel 외 2007이 제안하고 OctoMap이 채택). 세상이 바뀌었을 때 지도가
   적응할 수 있게 하려는 것이다. 칸은 *비어 있음*, *점유됨*, 그리고
   **미지**의 셋 중 하나이고, 초심자가 빠뜨리는 것이 셋째다. 미지는 비어 있음이 아니며,
   그 차이가 곧 탐색이 존재하는 이유다.

@@ -53,9 +53,8 @@ matter of a better camera; it needs a second constraint, which is what §2 is ab
 - **Intrinsics** $(f_x, f_y, c_x, c_y$, distortion$)$: properties of the camera itself —
   focal lengths in pixels and the principal point. Fixed once calibrated (until the lens
   is touched).
-- **Extrinsics** $(R, t)$: the camera's pose relative to another frame (robot base,
-  world) — the [[02-foundations/se3-geometry|SE(3)]] transform that moves points into the
-  camera frame before projection.
+- **Extrinsics** $(R, t)$: the [[02-foundations/se3-geometry|SE(3)]] transform $T_{cw}$ that moves points from another frame (robot base,
+  world) into the camera frame before projection, $p^c = Rp^w + t$. The camera's *pose* in that frame is its inverse, $T_{wc}$, with the camera centre at $-R^\top t$ — check which one a calibration file stores.
 - Division by $Z$ is the whole story of perspective: farther points move less in the
   image, and **absolute scale is lost** — a single image cannot tell a large-far object
   from a small-near one.
@@ -96,7 +95,7 @@ $v = 600\cdot 0.2/2.0+240=300$. Move the point twice as far
 | Stereo | disparity $d$ between two views: $Z = f\,b/d$ (baseline $b$) | textureless/repetitive surfaces; error grows as $Z^2$ |
 | RGB-D / ToF / structured light | sensor measures $Z$ per pixel | range limits, sunlight, reflective/dark materials |
 | LiDAR | direct time-of-flight ranges | sparsity, motion distortion, weather |
-| Learned monocular depth | network predicts $Z$ (often up to scale) | scale ambiguity; distribution shift — check the [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]] claim scope |
+| Learned monocular depth | network predicts $Z$ (often only up to an unknown scale and shift, frequently in inverse depth) | scale ambiguity; distribution shift — check the [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]] claim scope |
 | Triangulation | intersect rays from two known poses | needs baseline; degenerate for distant points and small baselines |
 
 **Stereo worked example**: $f=600$ px, baseline $b=0.12$ m, disparity $d=9$ px
@@ -284,8 +283,8 @@ $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
 
 - **Intrinsics** $(f_x, f_y, c_x, c_y$, 왜곡$)$: 카메라 자체의 성질 — 픽셀 단위 초점
   거리와 주점. 한 번 보정하면 (렌즈를 건드리기 전까지) 고정.
-- **Extrinsics** $(R, t)$: 다른 프레임(로봇 베이스, 월드)에 대한 카메라의 pose —
-  투영 전에 점을 카메라 프레임으로 옮기는 [[02-foundations/se3-geometry|SE(3)]] 변환.
+- **Extrinsics** $(R, t)$: 투영 전에 다른 프레임(로봇 베이스, 월드)의 점을 카메라 프레임으로 옮기는 [[02-foundations/se3-geometry|SE(3)]] 변환 $T_{cw}$, $p^c = Rp^w + t$다.
+  그 프레임에서의 카메라 *pose*는 그 역 $T_{wc}$이고 카메라 중심은 $-R^\top t$다 — 보정 파일이 어느 쪽을 저장하는지 확인하라.
 - $Z$로 나누는 것이 원근의 전부다: 먼 점일수록 이미지에서 덜 움직이고, **절대
   스케일이 사라진다** — 이미지 한 장으로는 크고 먼 물체와 작고 가까운 물체를 구분할
   수 없다.
@@ -326,7 +325,7 @@ $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, 
 | 스테레오 | 두 시점 간 시차 $d$: $Z = f\,b/d$ (기선 $b$) | 무늬 없는/반복 표면; 오차가 $Z^2$로 증가 |
 | RGB-D / ToF / 구조광 | 센서가 픽셀별 $Z$ 측정 | 거리 한계, 햇빛, 반사/어두운 재질 |
 | LiDAR | 직접 time-of-flight 거리 | 희소성, 운동 왜곡, 날씨 |
-| 학습된 단안 깊이 | 네트워크가 $Z$ 예측 (대개 스케일 모호) | 스케일 모호성; 분포 이동 — [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]]의 주장 범위 확인 |
+| 학습된 단안 깊이 | 네트워크가 $Z$ 예측 (대개 스케일과 오프셋이 미정, 흔히 역깊이 공간) | 스케일 모호성; 분포 이동 — [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]]의 주장 범위 확인 |
 | 삼각측량 | 알려진 두 pose에서 광선 교차 | 기선 필요; 먼 점·짧은 기선에서 퇴화 |
 
 **스테레오 계산 예제**: $f=600$ px, 기선 $b=0.12$ m, 시차 $d=9$ px

@@ -73,6 +73,6 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 3. Why does the 2R arm's C-space being a torus $T^2$ rather than the plane $\mathbb{R}^2$ cause trouble for learned angle regression? · 2R 팔의 C-space가 평면 $\mathbb{R}^2$가 아니라 원환면 $T^2$라는 사실이 학습(각도 회귀)에서 왜 문제가 되는가?
 
 > [!tip]- Answers · 정답
-> 1. Three: $(x, y, \theta)$. The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable configurations — the robot can still reach any pose, just not by any path. · $(x, y, \theta)$ 세 개; 비홀로노믹 제약(옆 미끄럼 불가)이 속도를 제한하지만 도달 가능한 자세는 제한하지 않는다.
+> 1. Three for the chassis: $(x, y, \theta)$ (five if the two wheel rolling angles are included, as MR §13.3 does). The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable chassis configurations — the robot can still reach any pose, just not by any path. · 차체만 보면 $(x, y, \theta)$ 세 개(MR §13.3처럼 두 바퀴의 회전각까지 넣으면 다섯); 비홀로노믹 제약(옆 미끄럼 불가)이 속도를 제한하지만 도달 가능한 차체 자세는 제한하지 않는다.
 > 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. · $3(4-1-4) + 4 = 1$ 자유도.
 > 3. $359°$ and $1°$ are neighbours on the circle but far apart in Euclidean distance, so a naive MSE regression is penalized enormously at the wrap point and learns a discontinuous target ([[02-foundations/se3-geometry|SE(3) §2]]). · $359°$와 $1°$는 실제로 이웃인데 유클리드 거리로는 멀다 — 순진한 MSE 회귀가 감긴 지점에서 깨진다.

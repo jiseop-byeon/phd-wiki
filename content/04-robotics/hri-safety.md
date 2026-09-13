@@ -118,7 +118,7 @@ but you cannot check a safety claim without knowing which document defines the t
 |---|---|---|
 | **ISO 10218-1 / -2:2025** | industrial robots (part 1: the robot; part 2: applications and robot cells) | the base requirements; **published February 2025**, first revision since 2011 |
 | **ISO/TS 15066:2016** | collaborative applications, biomechanical thresholds | the origin of the force and pressure limits — still a current ISO publication; see below |
-| **ISO 13482:2014** | personal care robots | service robots in physical contact with people. Already at FDIS revision, so the `:2014` pin will go stale |
+| **ISO 13482:2014** | personal care robots | service robots in physical contact with people. Its revision, ISO/FDIS 13482 *Safety requirements for service robots*, widens the scope to personal and professional service robots and is referenced in Europe as EN ISO 13482:2026 — check ISO's catalogue for the published edition before citing either |
 | **ISO 3691-4:2023** | driverless industrial trucks — AGVs and AMRs, owned by the industrial-truck committee | the **warehouse and plant** mobile-base standard |
 | **ISO 17757:2019** | **autonomous and semi-autonomous earth-moving and mining machines** | the standard for an autonomous excavator or loader — the ISO 6165 machine classes, outdoors |
 
@@ -182,10 +182,10 @@ named standard, not against "safety" in general.
 > $v_h = 1.6$ m/s from ISO 13855, a robot at $v_r = 1.0$ m/s, reaction $T_r = 0.1$ s, stopping
 > $T_s = 0.3$ s, and $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m.
 >
-> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m.
+> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m (assuming constant deceleration over $T_s$).
 > Sum: $0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = \mathbf{1.24}$ m.
 >
-> Now halve the robot to 0.5 m/s: $S_r = 0.05$, $S_s = 0.075$, total **1.11 m**. Stop the robot
+> Now halve the robot to 0.5 m/s: $S_r = 0.05$, $S_s = 0.075$, total **1.115 m**. Stop the robot
 > dead — $v_r = 0$ — and it is still **0.99 m**. The operator's own 0.64 m does not move,
 > because it is the human walking in during the robot's 0.4 s of reaction and stopping.
 >
@@ -250,7 +250,7 @@ Finally, state the strongest conclusion that the design could support: under the
 4. What information is missing from the phrase “fully autonomous construction robot”?
 
 > [!tip]- Answers
-> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials is still consistent with a true failure rate as high as $3/20 = 15\%$ — one collision every seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling.
+> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials still leaves a 95% upper confidence bound on the failure rate of about 14% (exact; the rule-of-three shortcut $3/20 = 15\%$ is rough below $n \approx 30$) — about one collision in seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling.
 
 ### Sources
 
@@ -384,7 +384,7 @@ Finally, state the strongest conclusion that the design could support: under the
 |---|---|---|
 | **ISO 10218-1 / -2:2025** | 산업용 로봇(1부: 로봇, 2부: 응용과 로봇 셀) | 기본 요구사항. **2025년 2월 발행**, 2011년 이후 첫 개정 |
 | **ISO/TS 15066:2016** | 협동 응용, 생체역학 임계값 | 힘·압력 한계의 출처. 여전히 유효한 ISO 발행물이다 — 아래를 보라 |
-| **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇. 이미 FDIS 단계 개정 중이라 `:2014` 표기는 곧 낡는다 |
+| **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇. 개정판 ISO/FDIS 13482 *Safety requirements for service robots*는 범위를 개인·전문 서비스 로봇으로 넓히며, 유럽에서는 EN ISO 13482:2026으로 인용된다 — 어느 쪽이든 인용 전에 ISO 카탈로그에서 발행판을 확인하라 |
 | **ISO 3691-4:2023** | 무인 산업 차량 — AGV·AMR, 산업차량 위원회 소관 | **창고와 공장**의 이동 베이스 표준 |
 | **ISO 17757:2019** | **자율·반자율 토공 및 광산 기계** | 자율 굴착기나 로더의 표준 — ISO 6165 기계 분류, 옥외 |
 
@@ -441,10 +441,10 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 > ISO 13855의 표준 보행 속도 $v_h = 1.6$ m/s, 로봇 $v_r = 1.0$ m/s, 반응 $T_r = 0.1$ s,
 > 정지 $T_s = 0.3$ s, $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m를 넣자.
 >
-> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m.
+> $S_h = 1.6(0.1 + 0.3) = 0.64$ m · $S_r = 1.0 \times 0.1 = 0.10$ m · $S_s = \tfrac{1}{2}(1.0)(0.3) = 0.15$ m($T_s$ 동안 일정하게 감속한다고 가정).
 > 합: $0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = \mathbf{1.24}$ m.
 >
-> 이제 로봇을 절반인 0.5 m/s로 줄이면 $S_r = 0.05$, $S_s = 0.075$, 합 **1.11 m**. 아예 세워도
+> 이제 로봇을 절반인 0.5 m/s로 줄이면 $S_r = 0.05$, $S_s = 0.075$, 합 **1.115 m**. 아예 세워도
 > — $v_r = 0$ — 여전히 **0.99 m**다. 작업자 몫 0.64 m는 꿈쩍하지 않는다. 로봇이 반응하고
 > 멈추는 0.4초 동안 사람이 걸어 들어오는 거리이기 때문이다.
 >
@@ -524,7 +524,7 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 4. "완전 자율 건설로봇"이라는 문구에 빠진 정보는?
 
 > [!tip]- 정답 · Answers
-> 1. 노출이 작고 희귀 위험, 분포 이동, 심각도, 시스템 실패를 놓칠 수 있다. 숫자로 말하면: rule of three([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]])에 따라 20회에서 실패 0은 참 실패율이 $3/20 = 15\%$ — 일곱 번에 한 번꼴의 충돌 — 까지와도 양립한다.
+> 1. 노출이 작고 희귀 위험, 분포 이동, 심각도, 시스템 실패를 놓칠 수 있다. 숫자로 말하면: rule of three([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]])에 따라 20회에서 실패 0이어도 실패율의 95% 신뢰 상한은 약 14%다(정확한 값. rule of three의 $3/20 = 15\%$는 $n \approx 30$ 미만에서 거칠다) — 일곱 번에 한 번꼴의 충돌이다.
 > 2. 운용자가 위험을 놓치거나, 인터페이스를 불신하거나, 과부하이거나, 권한이 없을 때.
 > 3. 숙련, 멘탈 모델, 속도, 작업 부하, 위험 반응이 다르다.
 > 4. 과제, 운용 도메인, 인간 역할, 개입/리셋, 안전 폴백, 지속 시간, 실패 처리.

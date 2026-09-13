@@ -73,8 +73,8 @@ conclusion holds only from states that were feasible to begin with. That inequal
 assumption of four, not the whole hypothesis: Borrelli's Theorem 12.2 also requires the stage
 and terminal costs to be continuous and positive definite, the sets to be closed and to contain
 the origin in their interior, and the terminal set to be control invariant inside the state
-constraints. Rawlings adds a lower bound on the stage cost and a weak-controllability condition. Read the survey after the optimization page's example; skim §2–3 for
-the formulation and stability conditions rather than every proof.
+constraints. Rawlings adds a lower bound on the stage cost and a weak-controllability condition. Read the survey after the optimization page's example; skim its
+formulation and stability sections rather than every proof.
 
 > [!note] First pass · 처음이라면
 > Read §1 (when the QP is actually convex), §3 (the failure modes papers gloss), §4. §2 — stacked versus condensed — is for when you implement or when a paper reports solve times.
@@ -120,7 +120,7 @@ condensed Hessian's entry count and, because generic dense Cholesky factorizatio
 count, multiplies that factorization work by about eight. The cubic growth is not forced by the
 dense form: Axehill & Morari (*Systems & Control Letters* 61, 2012, Theorem 3) build a Cholesky
 factor of the condensed Hessian from the Riccati recursion's quantities in $O(N^2)$, and note that
-adding the eliminated states back as variables recovers the classical $O(N)$ Riccati solve. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
+adding the eliminated states back as variables recovers the classical $O(N)$ Riccati solve. Rawlings, Mayne & Diehl §8.8.4 surveys condensing methods with this quadratic horizon dependence. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
 estimation already spent — which is why this choice is a real engineering decision rather
 than a stylistic one.
 
@@ -169,7 +169,7 @@ chunks borrow MPC's structure; learned-dynamics MPC for excavators is an active
 construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-machinery|stream 3]]).
 
 > [!tip] Going deeper · 더 깊이
-> Two free books, and they answer different questions. Rawlings, Mayne & Diehl, [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/) is where the stability and feasibility guarantees are proved in the most general setting — read it when a paper claims recursive feasibility and you want to know what it had to assume. Borrelli proves them too, and more compactly for the linear polytopic case this page uses (persistent feasibility in §12.3.1, asymptotic stability in §12.3.2, on four assumptions). Borrelli, Bemporad & Morari, [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf) is the computational side: explicit MPC, the QP structure of §2, and hybrid formulations, which is the half that matters for §4's contact case.
+> Two free books, and they answer different questions. Rawlings, Mayne & Diehl, [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/) is where the stability and feasibility guarantees are proved in the most general setting — read it when a paper claims recursive feasibility and you want to know what it had to assume. Borrelli, Bemporad & Morari, [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf) proves the same guarantees more compactly for the linear polytopic case this page uses (persistent feasibility in §12.3.1, asymptotic stability in §12.3.2, Theorem 12.2 on four assumptions), and the same book is also the computational reference: explicit MPC, the QP structure of §2, and hybrid formulations, which is the half that matters for §4's contact case.
 
 ### Self-check
 
@@ -180,7 +180,7 @@ construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-ma
 
 > [!tip]- Answers
 > 1. Whether $Q \succeq 0$ — if indefinite, the QP is non-convex and solver behavior is undefined.
-> 2. Stacked — at long horizons the condensed form becomes dense and ill-conditioned via powers of $A$, and state constraints are natural in the stacked form.
+> 2. Stacked — its structured (Riccati or sparse) solve grows linearly in $N$, while generic dense factorization of the condensed form grows as $N^3$ (or $N^2$ with Axehill–Morari); the condensed Hessian is dense at every horizon and its conditioning can degrade through powers of $A$; and state constraints stay sparse in the stacked form.
 > 3. Hard: infeasible — the solver returns no usable command and a separate fallback must act. Soft: slacks can return a penalized violation **if the remaining hard constraints are feasible**; softening selected constraints does not guarantee that control can continue.
 > 4. ① Warm-started or cold? ② Problem size (horizon, state dimension) and solver? ③ Is 200 Hz solve time or end-to-end latency ([[04-robotics/robot-systems-deployment|frequency ≠ latency]])?
 
@@ -237,7 +237,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 최적 비용이 리아푸노프 함수가 되고 원점이 **점근적으로** 안정해진다. 그 흡인 영역은 실행
 가능 집합이다. 그냥 감소하는 것으로는 부족하고 감소가 단계 비용을 압도해야 하며, 결론은
 애초에 실행 가능했던 상태에서만 성립한다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
-§2~3의 정식화와 안정성 조건을 훑는 것을 권한다.
+정식화와 안정성 조건을 다룬 절들을 훑는 것을 권한다.
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
@@ -278,7 +278,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 
 Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
 조밀하게 저장하면 원소가 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
-고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 조밀 분해 연산량은 약 여덟 배가 된다. 다만 3제곱은 범용 Cholesky 분해의 경우이고, 조밀 형태가 강제하는 것은 아니다: Axehill과 Morari(*Systems & Control Letters* 61, 2012, 정리 3)는 Riccati 재귀의 양들로 condensed 헤시안의 Cholesky 인자를 $O(N^2)$에 만들고, 소거한 상태를 다시 변수로 넣으면 고전적인 $O(N)$ Riccati 풀이로 돌아간다고 적는다. Rawlings도 더 나은 지평 의존도를 노리는 condensing 알고리즘 계열을 언급한다. 그리고 50 Hz라면
+고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 조밀 분해 연산량은 약 여덟 배가 된다. 다만 3제곱은 범용 Cholesky 분해의 경우이고, 조밀 형태가 강제하는 것은 아니다: Axehill과 Morari(*Systems & Control Letters* 61, 2012, 정리 3)는 Riccati 재귀의 양들로 condensed 헤시안의 Cholesky 인자를 $O(N^2)$에 만들고, 소거한 상태를 다시 변수로 넣으면 고전적인 $O(N)$ Riccati 풀이로 돌아간다고 적는다. Rawlings, Mayne, Diehl §8.8.4도 이런 이차 지평 의존도의 condensing 방법들을 정리한다. 그리고 50 Hz라면
 이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
 이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 
@@ -330,7 +330,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 - 이 안내 너머로: 궤적 최적화, 재계획, 과제 계획, 불확실성 하의 계획은 [[04-robotics/planning-decision-making|계획과 의사결정]]에서 다룬다.
 
 > [!tip] 더 깊이 · Going deeper
-> 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 가장 일반적인 설정에서 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli도 같은 것을 증명하며, 이 페이지가 쓰는 선형 폴리토프 경우에는 더 짧다(지속 실현가능성 §12.3.1, 점근 안정성 §12.3.2, 가정 네 개). Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 계산 쪽이다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
+> 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 가장 일반적인 설정에서 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 이 페이지가 쓰는 선형 폴리토프 경우에 같은 보장을 더 짧게 증명하고(지속 실현가능성 §12.3.1, 점근 안정성 §12.3.2, 가정 네 개의 정리 12.2), 같은 책이 계산 쪽 참고서이기도 하다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
 
 ### 스스로 점검 · Self-check
 
@@ -341,7 +341,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 > [!tip]- 정답 · Answers
 > 1. $Q \succeq 0$인지 — 부정부호면 QP가 비볼록이 되어 솔버 거동이 정의되지 않는다.
-> 2. Stacked — 긴 지평에서 condensed는 $A$의 거듭제곱으로 조밀·악조건이 되고, 상태 제약은 stacked에서 자연스럽다.
+> 2. Stacked — 구조화된(리카티 또는 희소) 풀이는 $N$에 선형으로 늘지만, condensed 형태의 범용 조밀 분해는 $N^3$(Axehill–Morari를 쓰면 $N^2$)으로 는다. condensed 헤시안은 지평과 무관하게 조밀하고, $A$의 거듭제곱 때문에 조건수가 나빠질 수 있으며, 상태 제약은 stacked에서 희소하게 남는다.
 > 3. 하드: infeasible — 솔버가 쓸 수 있는 명령을 반환하지 않아 별도의 폴백이 필요. 소프트: **남은 하드 제약이 feasible할 때** 슬랙으로 벌점 있는 위반 해를 반환할 수 있다. 일부 제약을 연화한다고 제어 지속이 보장되지는 않는다.
 > 4. ① warm start 여부 ② 문제 크기(지평·상태 차원)와 솔버 ③ 그 200 Hz가 풀이 시간인지 끝-끝 지연인지 ([[04-robotics/robot-systems-deployment|주파수 ≠ 지연]]).
 

@@ -41,7 +41,7 @@ The integrator you simulate this with is part of the claim. Explicit Euler advan
 
 ### 3. Sampling and quantization are different
 
-Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a simple Coulomb-friction model, another bound is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons — read the units and the shape of the bound follows: N divided by m is a stiffness, so the coarser the encoder the lower the wall you can render, and friction *raises* the ceiling rather than lowering it. That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
+Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a Coulomb-plus-viscous friction model with quantization, passivity requires both bounds at once, $K\le\min(2b/T,\,2f_c/\Delta)$ (Abbott & Okamura 2005), and whichever is smaller limits the wall; the second one is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons — read the units and the shape of the bound follows: N divided by m is a stiffness, so the coarser the encoder the lower the wall you can render, and friction *raises* that second ceiling rather than lowering it (it helps only when the quantization term is the binding one). That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
 
 Velocity estimation exposes the tradeoff:
 
@@ -51,7 +51,7 @@ Small $T$ increases the velocity jump caused by one encoder count. Averaging ove
 
 The failure is worst where it is least expected. Move slowly enough and a fixed window may contain **no** encoder transition at all, so the estimate reads exactly zero and the rendered damping vanishes at the moment a wall is being approached gently. The alternative is to invert the measurement — time the interval between successive encoder ticks instead of counting ticks in a fixed interval — which is accurate at low speed for the same reason, and degrades at high speed where the ticks arrive faster than the timer resolves. Neither estimator is good everywhere, so a paper that reports a stiffness ceiling owes you the velocity estimator and the speed at which it was measured.
 
-Colonnese and Okamura put all of this into one model — device and human dynamics, sampling, position quantization, delay, and the velocity filter together — and derive the tradeoffs between the resulting stability and quantization-error regions, including when limit cycles are ruled out. Read it as the reference treatment for this section; it is in the reading list in [[04-robotics/haptics-teleoperation/experiments-readings|Experiments & Readings]].
+Colonnese and Okamura put all of this into one model — device and human dynamics, sampling, position quantization, delay, and the velocity filter together — and derive the tradeoffs between the resulting stability and quantization-error regions, including necessary conditions for avoiding limit cycles and sufficient conditions for quantization-error passivity. Read it as the reference treatment for this section; it is in the reading list in [[04-robotics/haptics-teleoperation/experiments-readings|Experiments & Readings]].
 
 ### 4. Passivity, stability, and Z-width
 
@@ -117,7 +117,7 @@ $$K\le\frac{2b}{T}$$
 
 ### 3. 샘플링과 양자화는 서로 다른 문제다
 
-샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. 단순한 Coulomb 마찰 모델 아래에서는 또 다른 경계 $K\le2f_c/\Delta$가 나온다. 여기서 $f_c$는 장치의 Coulomb 마찰력이고 단위는 N이다. 단위를 읽으면 경계의 모양이 따라 나온다 — N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아지고, 마찰은 천장을 낮추는 것이 아니라 *올린다*. 불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
+샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. Coulomb에 점성 마찰을 더하고 양자화를 넣은 모델에서는 수동성이 두 경계를 동시에 요구한다: $K\le\min(2b/T,\,2f_c/\Delta)$(Abbott & Okamura 2005)이고, 더 작은 쪽이 벽을 제한한다. 둘째 경계가 $K\le2f_c/\Delta$다. 여기서 $f_c$는 장치의 Coulomb 마찰력이고 단위는 N이다. 단위를 읽으면 경계의 모양이 따라 나온다 — N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아지고, 마찰은 그 둘째 천장을 낮추는 것이 아니라 *올린다*(양자화 항이 더 작은 쪽일 때만 도움이 된다). 불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
 
 속도 추정에서 이 상충이 드러난다.
 
@@ -127,7 +127,7 @@ $T$가 작을수록 encoder 한 count가 만드는 속도 도약이 커진다. $
 
 이 고장은 예상하기 가장 어려운 곳에서 가장 심하다. 충분히 느리게 움직이면 고정된 창 안에 encoder 전이가 **하나도** 안 들어올 수 있다. 그러면 추정값이 정확히 0이 되고, 벽에 조심스럽게 다가가는 바로 그 순간에 렌더링된 감쇠가 사라진다. 대안은 측정을 뒤집는 것이다. 고정 구간의 tick 수를 세는 대신 연속한 tick 사이의 시간을 재면, 같은 이유로 저속에서 정확하고, tick이 타이머 분해능보다 빨리 도착하는 고속에서 나빠진다. 어느 추정기도 전 구간에서 좋지 않다. 그러니 강성 한계를 보고하는 논문이라면 속도 추정기와 그것을 측정한 속도를 함께 내놓아야 한다.
 
-Colonnese와 Okamura는 이것을 전부 한 모델에 넣었다 — 장치와 인간의 동역학, 샘플링, 위치 양자화, 지연, 속도 필터를 함께 놓고, 그 결과로 생기는 안정성 영역과 양자화 오차 영역 사이의 절충을 유도한다. 극한 주기가 배제되는 조건도 함께 다룬다. 이 절의 기준 문헌으로 읽어라. [[04-robotics/haptics-teleoperation/experiments-readings|실험과 읽을거리]]의 읽기 목록에 있다.
+Colonnese와 Okamura는 이것을 전부 한 모델에 넣었다 — 장치와 인간의 동역학, 샘플링, 위치 양자화, 지연, 속도 필터를 함께 놓고, 그 결과로 생기는 안정성 영역과 양자화 오차 영역 사이의 절충을 유도한다. 극한 주기를 피하기 위한 필요조건과 양자화 오차 수동성의 충분조건도 함께 다룬다. 이 절의 기준 문헌으로 읽어라. [[04-robotics/haptics-teleoperation/experiments-readings|실험과 읽을거리]]의 읽기 목록에 있다.
 
 ### 4. 수동성, 안정성, Z-width
 
@@ -143,7 +143,7 @@ $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 
 - **Virtual coupling:** 장치 proxy와 시뮬레이션된 도구 사이에 가상 스프링–댐퍼를 넣는다. 수동적인 환경을 분리해 주지만 투명성을 상시로 무디게 만든다.
 - **Passivity observer/controller (PO/PC):** 이산 일률/에너지를 추적하다가 에너지 예산이 깨질 때만 댐핑을 넣는다. 적응적이지만 burst, 속도가 0에 가까울 때의 나눗셈 문제, 포화, 축적된 "에너지 credit" 뒤의 늦은 개입을 만들 수 있다.
-- **하드웨어·지각 설계:** 샘플링 주기와 센서 해상도를 높이고, 물리적/전기적 고주파 댐핑을 더하고, 관성을 줄이거나, 충돌 시점에 event-triggered 진동을 더해 적당한 안정 강성이 더 단단하게 느껴지게 한다.
+- **하드웨어·지각 설계:** 샘플링 주파수와 센서 해상도를 높이고, 물리적/전기적 고주파 댐핑을 더하고, 관성을 줄이거나, 충돌 시점에 event-triggered 진동을 더해 적당한 안정 강성이 더 단단하게 느껴지게 한다.
 
 이산 샘플에서 흔히 쓰는 observer는 부호 규약을 명시한 뒤 $\Delta E_k=T F_k^\top v_k$를 쓴다. 누적 예산이 음수가 되면, impedance 인과성의 제어기는 부족분을 상쇄하도록 고른 $d_k$로 $F_{pc}=-d_kv_k$를 더할 수 있다. $\|v_k\|=0$ 근처에서는 이 법칙을 clamp하고 정규화해야 한다. 액추에이터 한계를 빼고 이 식을 해석해서는 안 된다.
 

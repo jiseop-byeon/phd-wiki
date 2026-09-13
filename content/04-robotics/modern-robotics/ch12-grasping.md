@@ -51,7 +51,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 3. State the antipodal grasp condition for a parallel-jaw gripper.
 
 > [!tip]- Answers
-> 1. $\alpha = \tan^{-1}1.0 = 45°$: the contact force may tilt up to 45° away from the surface normal before the model says it slips. A friction coefficient is an *angle*, which is why doubling $\mu$ from 0.5 to 1.0 widens the cone from ~26.6° to 45° rather than doubling anything.
+> 1. $\alpha = \tan^{-1}1.0 = 45°$: the contact force may tilt up to 45° away from the surface normal before the model says it slips. A friction coefficient is an *angle*, which is why doubling $\mu$ from 0.5 to 1.0 widens the cone from ~26.6° to 45°: the allowed tangential-to-normal force ratio doubles, but the cone angle does not.
 > 2. Form closure must block every direction using geometry alone, without the "free" tangential directions that friction cones supply — so it needs more contacts (at least 4 in the plane, 7 in space for frictionless point contacts). Those bounds are first-order results; curvature is a second-order effect and can immobilize a planar body with two contacts.
 > 3. For the planar two-point model, the line joining the contacts lies inside both friction cones. This is not by itself a spatial force-closure test for two hard point contacts; a spatial parallel-jaw argument needs a soft-finger contact model or another source of torsional resistance.
 

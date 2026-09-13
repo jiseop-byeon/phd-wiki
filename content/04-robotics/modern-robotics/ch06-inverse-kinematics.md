@@ -64,8 +64,8 @@ doesn't permit it, go numerical.
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="212">Two joint pairs put the tip on the same target &#8212; that is what &#8220;several solutions&#8221; means.</text>
     <text x="24" y="226">Average them and the arm straightens to (1.41, 1.41), missing by 0.59. The mean of two</text>
-    <text x="24" y="240">valid answers is not an answer, which is the classical face of why generative policies</text>
-    <text x="24" y="254">beat regression on multimodal action prediction.</text>
+    <text x="24" y="240">valid answers is not an answer, which is the classical picture of why multimodal action</text>
+    <text x="24" y="254">prediction needs a representation that can hold alternatives.</text>
   </g>
 </svg>
 
@@ -123,8 +123,7 @@ $\theta^{(0)} = (45°, 90°)$.
 - **Redundancy** ($n > 6$): the null space of $J$ moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
-**Wiki connections**: every teleop stack ([[01-canonical-papers/notes/4-vla/act|ALOHA]])
-and end-effector-space VLA runs IK (or its velocity-level cousin) between policy output
+**Wiki connections**: end-effector-space teleop stacks and VLAs run IK (joint-space rigs such as [[01-canonical-papers/notes/4-vla/act|ALOHA]] skip it) (or its velocity-level cousin) between policy output
 and motor commands.
 
 ### Self-check
@@ -192,8 +191,8 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="212">관절 각 두 쌍이 끝점을 같은 목표에 놓는다 &#8212; &#8220;해가 여러 개&#8221;라는 말의 뜻이 이것이다.</text>
     <text x="24" y="226">평균을 내면 팔이 펴져 (1.41, 1.41)에 가고 0.59만큼 빗나간다. 유효한 두 답의 평균은</text>
-    <text x="24" y="240">답이 아니며, 다봉적 행동 예측에서 생성형 정책이 회귀를 이기는 이유의</text>
-    <text x="24" y="254">고전적 얼굴이 바로 이것이다.</text>
+    <text x="24" y="240">답이 아니다. 다봉적 행동 예측에 대안을 담을 수 있는 표현이 필요한 이유의</text>
+    <text x="24" y="254">고전적 그림이 바로 이것이다.</text>
   </g>
 </svg>
 
@@ -249,8 +248,7 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
 - **여유자유도** ($n > 6$): $J$의 영공간은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 
-**위키 연결**: 모든 원격조작 스택([[01-canonical-papers/notes/4-vla/act|ALOHA]])과 말단
-공간 VLA가 정책 출력과 모터 명령 사이에서 IK(또는 그 속도 수준 사촌)를 돌린다.
+**위키 연결**: 말단 공간 원격조작 스택과 말단 공간 VLA가([[01-canonical-papers/notes/4-vla/act|ALOHA]] 같은 관절 공간 장비는 건너뛴다) 정책 출력과 모터 명령 사이에서 IK(또는 그 속도 수준 사촌)를 돌린다.
 
 ### 스스로 점검
 

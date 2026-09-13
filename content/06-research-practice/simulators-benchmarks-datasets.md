@@ -56,7 +56,7 @@ Four things in that table need saying out loud, because each is a way to be wron
 > [!warning] Four status traps
 > - **Isaac Gym is deprecated.** NVIDIA's own page says: "This is legacy software. Developers
 >   may download and continue to use it, but it is no longer supported." `IsaacGymEnvs` and
->   `OmniIsaacGymEnvs` were both archived read-only in April 2026. Use Isaac Lab.
+>   `OmniIsaacGymEnvs` are both archived read-only (GitHub does not expose the archive date). Use Isaac Lab.
 > - **"Isaac Sim is Apache 2.0" is not safe to write unqualified.** The same LICENSE file
 >   states that building or using it requires additional components — the Omniverse Kit SDK
 >   and 3D assets — governed by a separate NVIDIA agreement.
@@ -488,7 +488,7 @@ checked and contained nothing.
 > [!warning] 상태에 관한 함정 넷
 > - **Isaac Gym은 지원 종료되었다.** NVIDIA 자신의 페이지가 말한다: "This is legacy software.
 >   Developers may download and continue to use it, but it is no longer supported."
->   `IsaacGymEnvs`와 `OmniIsaacGymEnvs`는 2026년 4월 읽기 전용으로 보관 처리되었다. Isaac Lab을 쓰라.
+>   `IsaacGymEnvs`와 `OmniIsaacGymEnvs`는 둘 다 읽기 전용으로 보관되었다(GitHub은 보관 날짜를 공개하지 않는다). Isaac Lab을 쓰라.
 > - **"Isaac Sim은 Apache 2.0"이라고 단서 없이 쓰면 안 된다.** 같은 LICENSE 파일이, 빌드하거나
 >   사용하려면 별도의 NVIDIA 계약이 적용되는 추가 구성 요소 — Omniverse Kit SDK와 3D 자산 —
 >   가 필요하다고 밝힌다.

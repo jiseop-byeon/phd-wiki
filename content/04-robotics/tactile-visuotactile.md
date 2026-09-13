@@ -14,8 +14,8 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 > 촉각의 공으로 돌리는 평가를 꿰뚫어 볼 수 있을 만큼.
 
 > [!note] Prerequisites · 선수 지식
-> You need friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), the impedance/admittance distinction and the contact-transition timescales ([[04-robotics/force-compliance-control|13. §2, §5]]), and what a learned representation is ([[02-foundations/neural-network-basics|0.7]]).
-> 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 임피던스/어드미턴스 구분과 접촉 천이의 시간 규모([[04-robotics/force-compliance-control|13. §2, §5]]), 그리고 학습된 표현이 무엇인지([[02-foundations/neural-network-basics|0.7]])가 필요하다.
+> You need friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §1–2]]), the impedance/admittance distinction and the contact-transition timescales ([[04-robotics/force-compliance-control|13. §2, §5]]), and what a learned representation is ([[02-foundations/neural-network-basics|0.7]]).
+> 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §1–2]]), 임피던스/어드미턴스 구분과 접촉 천이의 시간 규모([[04-robotics/force-compliance-control|13. §2, §5]]), 그리고 학습된 표현이 무엇인지([[02-foundations/neural-network-basics|0.7]])가 필요하다.
 
 ## English
 
@@ -101,16 +101,16 @@ claims a paper can make.
   deformable gel and read the gel's deformed surface as an image. This is the key point that
   papers state and readers skip: **their raw measurement is an image; geometry and force require reconstruction or calibration from gel appearance and deformation.** They give remarkable spatial detail about the shape
   pressed into the gel, at camera frame rates and camera latency.
-- **Soft pin arrays** — the TacTip family — track internal pins that mimic dermal papillae,
-  giving shear as well as normal information from a 3D-printable, robust structure.
+- **Soft pin arrays** — the TacTip family — are a marker-based variant of optical tactile sensing: a camera tracks internal pins that mimic dermal papillae,
+  inferring shear as well as normal information from a 3D-printable, robust structure, at camera rate.
 
 The right question for any of them is not "how sensitive is it" but **"what does it output
 at what rate, and what has to be inferred?"** The answer bounds what the paper on top of it
 can claim.
 
 > [!important] The latency point that §5 of the force-control page already made
-> An optical tactile sensor runs at camera rate. A hard contact transition is over in a
-> millisecond or two ([[04-robotics/force-compliance-control|13. §5]]), so touch is not a
+> An optical tactile sensor runs at camera rate. A hard contact transition lasts roughly 1–15 ms depending on series compliance —
+> about 14 ms for a bare tool on a real arm ([[04-robotics/force-compliance-control|13. §5]]) — and even the stiff end is well under one 33 ms camera frame, so touch is not a
 > mechanism for *surviving* impact — it is a mechanism for **deciding what to do next**.
 > Papers that use tactile feedback for closed-loop force regulation are making a much
 > stronger hardware claim than papers that use it for state estimation and re-planning, and
@@ -125,9 +125,9 @@ can claim.
 > fingers*, which is exactly when the camera has nothing.
 >
 > **The same argument in time.** An object slipping at 50 mm/s moves $50/30 = 1.7$ mm between
-> two frames of a 30 Hz camera and $50/1000 = 0.05$ mm between two frames of a 1 kHz tactile
+> two frames of a 30 Hz camera and $50/1000 = 0.05$ mm between two samples of a 1 kHz tactile
 > signal. A 1.7 mm slip has already changed the grasp; 0.05 mm has not. Slip detection is not a
-> modality preference, it is a sampling-rate result.
+> modality preference, it is a sampling-rate result — but note that an *optical* tactile sensor runs at camera rate and gets the same 1.7 mm. The kilohertz rate needs a different transducer family (piezoelectric, taxel or acoustic), so the resolution advantage above and this rate advantage come from different sensors.
 >
 > **The reading this gives you.** These two ratios bound what any tactile paper can honestly
 > claim. Resolution buys you contact geometry over a patch the size of a fingertip and nothing
@@ -170,9 +170,9 @@ pressed. Fitting that by hand is unpleasant; learning it from data is routine. S
 family became practical when learned models started doing the inversion, which is a good
 example of a *sensor* becoming viable because of progress in software.
 
-**A calibration point worth carrying.** Human spatial resolution for touch runs roughly
-2 mm at the fingertip to 30 mm across the back. The optical sensors of §2 resolve about
-0.06 mm — some thirty times finer than a fingertip — but only over a patch the size of one
+**A calibration point worth carrying.** Human spatial acuity for touch runs from about
+0.94 mm at the fingertip (grating orientation threshold, §4) to centimetres across the back. The optical sensors of §2 have a pixel pitch of about
+0.06 mm — some fifteen times finer in pitch than the fingertip threshold, though resolving a feature takes at least two pixels plus gel blur — but only over a patch the size of one
 fingertip, and only where the gel is in contact. Human touch is far coarser and covers the
 entire body continuously. Which of those two numbers matters depends on the task, and a
 paper claiming "human-level tactile sensing" has usually compared one of them and not
@@ -210,9 +210,9 @@ Three problems where touch is not one option among several:
   its edges while the centre still sticks. That partial-slip signature is visible in a
   dense tactile signal and in nothing else — by the time vision sees motion, the object is
   already falling. This is the single clearest case for a high-resolution sensor.
-- **Contact-state estimation.** Which of the discrete contact modes
-  ([[04-robotics/contact-force-tactile|Contact §3]]) the system is in — no contact, one-point,
-  two-point, line, seated — is a *classification* problem whose evidence is largely tactile.
+- **Contact-state estimation.** Which contact state
+  (sticking, sliding or separated per [[04-robotics/contact-force-tactile|Contact §1–§2]], and task-level states such as no contact, one-point,
+  two-point, line, seated) the system is in is a *classification* problem whose evidence is largely tactile.
   It is also the state a task-level planner actually needs.
 - **In-hand pose.** Where the object is *relative to the fingers* after grasping, which is
   the error a vision-planned grasp leaves behind and the thing an insertion needs.
@@ -255,8 +255,8 @@ so it is worth knowing what human skin actually does. Two things matter:
   **two-point discrimination** test leaks a non-spatial cue, so subjects score better than
   their actual spatial resolution allows. The rigorous measure is the **grating orientation
   threshold**, which puts the fingertip near **0.94 mm** (the lip and tongue are finer, near
-  0.5 mm). A paper quoting a two-point number as its human baseline has quoted the inflated
-  one — and it will make the sensor look closer to human than it is.
+  0.5 mm). A paper quoting a two-point number as its human baseline has quoted a contaminated
+  measure, and its sensor–human comparison can be off in either direction (van Boven & Johnson 1994 give the grating thresholds: fingertip 0.94 mm, lip 0.51 mm, tongue 0.58 mm).
 
 The design consequence is that resolution is a *task* target, not a virtue. A construction
 gripper handling a panel edge or seating an anchor does not need fingertip acuity across the
@@ -269,8 +269,7 @@ part of the paper the number came from, because that abstract states none.
 
 The reference result here is Lee et al.'s *Making Sense of Vision and Touch*, which learns a
 single compact latent representation from RGB, force/torque, and proprioception using
-**self-supervised** objectives — predicting optical flow and predicting whether contact
-occurs — and then does reinforcement learning in that latent space rather than on raw
+**self-supervised** objectives — action-conditional optical flow, whether contact will occur at the next control step, and whether the vision and force streams are time-aligned — and then does reinforcement learning in that latent space rather than on raw
 inputs. The claim structure is worth internalising because it recurs:
 
 1. Raw multimodal input is high-dimensional and badly conditioned for policy learning.
@@ -309,9 +308,9 @@ Two things make it worth reading here rather than filing under "another SSL pape
 
 > [!warning] Read its headline number carefully
 > The paper reports that self-supervised pre-training beats task- and sensor-specific
-> end-to-end training "by 95.1% on average over TacBench". That is an average of relative
+> end-to-end training "by 95.1% on average over TacBench" when every model sees only 33–50% of each task's labelled data. That is an average of relative
 > improvements across six heterogeneous tasks, not a success rate and not a percentage-point
-> gain — the same reading error that [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA's "up to 90%"]] invites.
+> gain — unlike [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA's "up to 90%"]], which *is* a percentage-point gain; both get misread as success rates.
 > Go to the per-task table before quoting it.
 
 This is the layer this page's own scope rule admits: a touch-conditioned policy or a fusion
@@ -377,7 +376,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 - [ ] List the two ablations a fusion paper needs before its claim is readable.
 
 > [!tip] Going deeper · 더 깊이
-> No textbook; the sensors are the literature. Start at the physics: Johnson & Adelson (CVPR 2009) is retrographic sensing, the optical principle, before anyone put it on a robot. Then Yuan, Dong & Adelson (*Sensors* 2017) for GelSight as a robot sensor with geometry and force, and DIGIT (*RA-L* 2020) for the cheap compact form that made the modality common. Then Lee et al. (ICRA 2019) for using touch rather than building it. For the manipulation theory the signal feeds, [[04-robotics/contact-force-tactile|9. Contact §2–§4]] names its textbooks; this page has none of its own.
+> No textbook; the sensors are the literature. Start at the physics: Johnson & Adelson (CVPR 2009) is retrographic sensing, the optical principle, before anyone put it on a robot. Then Yuan, Dong & Adelson (*Sensors* 2017) for GelSight as a robot sensor with geometry and force, and DIGIT (*RA-L* 2020) for the cheap compact form that made the modality common. Then Lee et al. (ICRA 2019) for using touch rather than building it. For the manipulation theory the signal feeds, [[04-robotics/contact-force-tactile|9. Contact, Going deeper]] names its textbooks; this page has none of its own.
 
 ### Self-check
 
@@ -394,7 +393,7 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > [!tip]- Answers
 > 1. A vision-only ablation and a touch-only ablation, on the same tasks and the same policy architecture. Without the first, the gain may come from the extra network capacity or the extra training signal rather than from touch; without the second, you do not know whether touch is carrying the task or merely trimming its tail. A change in success rate between two differently-shaped models is an architecture comparison until those are run.
 > 2. Because incipient slip is defined by the object *not having moved yet* — the contact patch is partially slipping at its edges while its centre still sticks. Any sensor that reports object motion is by construction too late, so this is a case where a dense contact signal supplies information no other modality has, rather than supplying the same information more conveniently.
-> 3. At 30 fps a sample arrives every 33 ms, while a hard contact transition is complete in one or two milliseconds ([[04-robotics/force-compliance-control|13. §5]]) — the entire event occurs between two frames. The sensor can report what the contact *was*, which is useful for deciding the next action, but it cannot participate in regulating the impact itself. That job belongs to passive compliance and a kilohertz torque loop.
+> 3. At 30 fps a sample arrives every 33 ms, while a hard contact transition lasts about 14 ms for a bare tool on a real arm, and about 1.4 ms in the idealised rigid case ([[04-robotics/force-compliance-control|13. §5]]) — the entire event occurs between two frames. The sensor can report what the contact *was*, which is useful for deciding the next action, but it cannot participate in regulating the impact itself. That job belongs to passive compliance and a kilohertz torque loop.
 > 4. The gripper's own weight and any payload, projected into the sensor frame — which depends on the arm's orientation, since gravity is fixed in the world frame and the sensor rotates with the wrist. The same held part produces a different raw reading in every pose, so gravity compensation needs the current kinematics ([[02-foundations/manipulator-kinematics-dynamics|10. §5]]). Inertial terms matter too during acceleration.
 > 5. In scope: using an existing tactile sensor to make fastening robust — the contact-state classification, the policy that acts on it, and the evaluation against real fasteners. Out of scope: designing or fabricating a new sensor, which [[07-research-program/index|§7]] excludes because it is a separate contribution with its own literature and its own failure modes.
 
@@ -506,15 +505,15 @@ belongs to [[04-robotics/force-compliance-control|13]].
   변형된 표면을 이미지로 읽는다. 논문은 밝히지만 독자가 건너뛰는 핵심이 이것이다:
   **원시 측정은 이미지이며, 기하와 힘을 얻으려면 젤의 외관·변형에서 복원하거나 보정해야 한다.** 젤에 눌린 형상에 대해
   놀라운 공간적 세부를, 카메라의 프레임률과 카메라의 지연으로 준다.
-- **연성 핀 배열** — TacTip 계열 — 은 진피 유두를 모사한 내부 핀을 추적해, 3D 프린팅 가능하고
-  튼튼한 구조에서 법선뿐 아니라 전단 정보까지 준다.
+- **연성 핀 배열** — TacTip 계열 — 은 광학 촉각의 마커 기반 변형이다: 카메라가 진피 유두를 모사한 내부 핀을 추적해, 3D 프린팅 가능하고
+  튼튼한 구조에서 법선뿐 아니라 전단 정보까지 카메라 주기로 추정한다.
 
 어느 것에 대해서든 옳은 질문은 "얼마나 민감한가"가 아니라 **"무엇을 어떤 주기로 출력하고,
 무엇이 추론되어야 하는가"** 다. 그 답이 그 위에 얹힌 논문이 주장할 수 있는 범위를 정한다.
 
 > [!important] 힘 제어 페이지 §5가 이미 한 지연 이야기
-> 광학 촉각 센서는 카메라 주기로 돈다. 단단한 접촉 천이는 1~2 밀리초에 끝나므로
-> ([[04-robotics/force-compliance-control|13. §5]]), 촉각은 충격에서 *살아남는* 기제가
+> 광학 촉각 센서는 카메라 주기로 돈다. 단단한 접촉 천이는 직렬 컴플라이언스에 따라 대략 1~15 ms — 실제 팔의 맨 공구는 약 14 ms
+> ([[04-robotics/force-compliance-control|13. §5]]) — 이고, 단단한 쪽 끝도 카메라 한 프레임 33 ms보다 훨씬 짧으므로, 촉각은 충격에서 *살아남는* 기제가
 > 아니라 **다음에 무엇을 할지 결정하는** 기제다. 촉각 피드백을 폐루프 힘 조절에 쓴다는
 > 논문은 상태 추정과 재계획에 쓴다는 논문보다 훨씬 강한 하드웨어 주장을 하는 것이고, 초록에서
 > 이 둘은 혼동하기 쉽다.
@@ -526,9 +525,9 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > 물체가 가려진 동안* 그렇게 한다 — 카메라에 아무것도 없는 바로 그때다.
 >
 > **같은 논증을 시간으로.** 50 mm/s로 미끄러지는 물체는 30 Hz 카메라의 두 프레임 사이에
-> $50/30 = 1.7$ mm를, 1 kHz 촉각 신호의 두 프레임 사이에 $50/1000 = 0.05$ mm를 간다. 1.7 mm
+> $50/30 = 1.7$ mm를, 1 kHz 촉각 신호의 두 샘플 사이에 $50/1000 = 0.05$ mm를 간다. 1.7 mm
 > 미끄러짐은 이미 파지를 바꿔 놓았고 0.05 mm는 그렇지 않다. 미끄러짐 감지는 모달리티 취향이
-> 아니라 샘플링 주파수의 결과다.
+> 아니라 샘플링 주파수의 결과다 — 다만 *광학* 촉각 센서는 카메라 주기로 돌아 똑같이 1.7 mm를 얻는다. 킬로헤르츠 속도에는 다른 변환기 계열(압전, 택셀, 음향)이 필요하므로, 위의 해상도 이점과 이 속도 이점은 서로 다른 센서에서 온다.
 >
 > **여기서 얻는 독법.** 이 두 비율이 촉각 논문이 정직하게 주장할 수 있는 범위를 정한다.
 > 분해능은 손끝만 한 패치 위의 접촉 기하를 사 줄 뿐 그 바깥은 사 주지 않는다 — 촉각 센서는
@@ -566,8 +565,8 @@ belongs to [[04-robotics/force-compliance-control|13]].
 일은 일상이다. 그래서 이 계열은 학습된 모델이 역변환을 맡기 시작하면서 실용화됐다.
 *센서*가 소프트웨어의 진전 덕분에 가능해진 좋은 사례다.
 
-**들고 다닐 만한 기준점 하나.** 사람의 촉각 공간 분해능은 손끝에서 약 2 mm, 등에서 약 30 mm다.
-2절의 광학 센서는 약 0.06 mm를 분해한다 — 손끝보다 서른 배쯤 곱다 — 그러나 손끝 하나만 한
+**들고 다닐 만한 기준점 하나.** 사람의 촉각 공간 예민도는 손끝의 약 0.94 mm(격자 방향 역치, 4절)에서 등의 수 센티미터까지다.
+2절의 광학 센서는 픽셀 간격이 약 0.06 mm다 — 손끝 역치보다 간격으로 열다섯 배쯤 곱지만, 특징 하나를 분해하려면 최소 두 픽셀과 젤 번짐이 더 든다 — 그러나 손끝 하나만 한
 패치 위에서만, 그것도 젤이 닿아 있는 곳에서만 그렇다. 사람의 촉각은 훨씬 거칠지만 몸 전체를
 끊김 없이 덮는다. 그 두 숫자 중 어느 쪽이 중요한지는 과제가 정하고, "사람 수준의 촉각"을
 주장하는 논문은 대개 둘 중 하나만 비교하고 나머지는 비교하지 않았다.
@@ -601,7 +600,7 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
   무엇에도 보이지 않는다 — 비전이 움직임을 볼 때쯤이면 물체는 이미 떨어지고 있다. 고해상도
   센서를 쓸 가장 분명한 근거다.
 - **접촉 상태 추정.** 시스템이 어떤 이산 접촉 모드에
-  ([[04-robotics/contact-force-tactile|접촉 §3]]) 있는가 — 비접촉, 1점, 2점, 선, 안착 —
+  있는가 — [[04-robotics/contact-force-tactile|접촉 §1~§2]]의 고착·미끄럼·분리, 그리고 비접촉, 1점, 2점, 선, 안착 같은 과제 수준 상태 —
   는 증거가 대체로 촉각인 *분류* 문제다. 그리고 과제 수준 계획기가 실제로 필요로 하는
   상태이기도 하다.
 - **손 안 자세(in-hand pose).** 파지 이후 물체가 *손가락에 대해* 어디 있는가. 비전으로 계획한
@@ -640,8 +639,8 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
 - **두 측정이 서로 다르고, 널리 쓰이는 쪽이 틀린 쪽이다.** 전통적인 **2점 식별** 검사는 공간
   정보가 아닌 단서가 새어 들어가서, 피험자가 실제 공간 해상도보다 좋은 점수를 낸다. 엄밀한
   측정은 **격자 방향 판별 역치**이고, 손끝을 **약 0.94 mm**에 놓는다(입술과 혀는 더 미세해서
-  0.5 mm 부근). 인간 기준선으로 2점 수치를 인용한 논문은 **부풀려진 쪽을 인용한 것**이고, 센서를
-  실제보다 인간에 가깝게 보이게 만든다.
+  0.5 mm 부근). 인간 기준선으로 2점 수치를 인용한 논문은 **오염된 측정을 인용한 것**이고, 센서와 인간의
+  비교가 어느 쪽으로든 틀어질 수 있다(격자 역치는 van Boven & Johnson 1994: 손끝 0.94 mm, 입술 0.51 mm, 혀 0.58 mm).
 
 설계상의 귀결은 해상도가 미덕이 아니라 *과제* 목표라는 것이다. 패널 모서리를 다루거나 앵커를
 안착시키는 건설 그리퍼는 손가락 전체에 손끝 수준의 예민도가 필요하지 않다. 과제를 가르는 접촉
@@ -652,8 +651,7 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
 ### 4. 시촉각 융합 — 그리고 그것이 실제로 사는 것
 
 여기서의 기준 결과는 Lee 등의 *Making Sense of Vision and Touch*다. RGB, 힘/토크, 고유수용
-감각으로부터 하나의 압축된 잠재 표현을 **자기지도** 목적함수 — 광학 흐름 예측과 접촉 발생
-여부 예측 — 로 학습하고, 원 입력이 아니라 그 잠재 공간에서 강화학습을 돌린다. 주장의 구조를
+감각으로부터 하나의 압축된 잠재 표현을 **자기지도** 목적함수 — 행동 조건부 광학 흐름, 다음 제어 단계의 접촉 여부, 그리고 시각과 힘 스트림의 시간 정렬 여부 예측 — 로 학습하고, 원 입력이 아니라 그 잠재 공간에서 강화학습을 돌린다. 주장의 구조를
 몸에 새겨 둘 가치가 있다. 반복해서 나오기 때문이다:
 
 1. 원 멀티모달 입력은 고차원이고 정책 학습에 조건이 나쁘다.
@@ -688,9 +686,9 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 > [!warning] 헤드라인 수치를 조심해서 읽어라
 > 논문은 자기지도 사전학습이 과제·센서 특화 end-to-end 학습을 "TacBench 전체 평균 95.1%"만큼
-> 앞선다고 보고한다. 이질적인 6개 과제에 걸친 **상대 개선의 평균**이지 성공률도 퍼센트 포인트
-> 상승도 아니다 — [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA의 "최대 90%"]]가
-> 유발하는 것과 같은 종류의 오독이다. 인용 전에 과제별 표로 가라.
+> 앞선다고 보고하며, 이는 모든 모델이 과제별 라벨 데이터의 33~50%만 볼 때의 결과다. 이질적인 6개 과제에 걸친 **상대 개선의 평균**이지 성공률도 퍼센트 포인트
+> 상승도 아니다 — 퍼센트 포인트 상승*인* [[01-canonical-papers/notes/7-robotics/mobile-aloha|Mobile ALOHA의 "최대 90%"]]와는 다르고,
+> 둘 다 성공률로 오독되기 쉽다. 인용 전에 과제별 표로 가라.
 
 이것이 이 페이지의 범위 규칙이 허용하는 층이다 — 촉각 조건 정책이나 융합 구조는 범위 안이고,
 센서를 만드는 것은 범위 밖이다.
@@ -752,7 +750,7 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 - [ ] 융합 논문의 주장이 읽히려면 필요한 두 ablation을 댄다.
 
 > [!tip] 더 깊이 · Going deeper
-> 교과서는 없고, 센서가 곧 문헌이다. 물리에서 시작하라: Johnson & Adelson(CVPR 2009)의 retrographic sensing이 광학 원리이고, 아직 아무도 로봇에 붙이기 전이다. 그다음 Yuan, Dong, Adelson(*Sensors* 2017)으로 기하와 힘을 재는 로봇 센서로서의 GelSight를, DIGIT(*RA-L* 2020)으로 이 모달리티를 흔하게 만든 값싸고 작은 형태를. 그다음 Lee 외(ICRA 2019)로 촉각을 만드는 것이 아니라 쓰는 쪽을. 이 신호가 먹여 주는 조작 이론 쪽은 [[04-robotics/contact-force-tactile|9. 접촉 §2~§4]]가 자기 교재를 지목한다. 이 페이지에는 자기 것이 없다.
+> 교과서는 없고, 센서가 곧 문헌이다. 물리에서 시작하라: Johnson & Adelson(CVPR 2009)의 retrographic sensing이 광학 원리이고, 아직 아무도 로봇에 붙이기 전이다. 그다음 Yuan, Dong, Adelson(*Sensors* 2017)으로 기하와 힘을 재는 로봇 센서로서의 GelSight를, DIGIT(*RA-L* 2020)으로 이 모달리티를 흔하게 만든 값싸고 작은 형태를. 그다음 Lee 외(ICRA 2019)로 촉각을 만드는 것이 아니라 쓰는 쪽을. 이 신호가 먹여 주는 조작 이론 쪽은 [[04-robotics/contact-force-tactile|9. 접촉의 '더 깊이']]가 자기 교재를 지목한다. 이 페이지에는 자기 것이 없다.
 
 ### 스스로 점검
 
@@ -769,7 +767,7 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 > [!tip]- 정답 · Answers
 > 1. 같은 과제·같은 정책 구조에서의 비전만 ablation과 촉각만 ablation. 앞의 것이 없으면 이득이 촉각이 아니라 늘어난 네트워크 용량이나 늘어난 학습 신호에서 왔을 수 있고, 뒤의 것이 없으면 촉각이 과제를 지고 있는지 아니면 꼬리만 다듬고 있는지 알 수 없다. 모양이 다른 두 모델 사이의 성공률 차이는, 그 둘을 돌리기 전까지는 구조 비교다.
 > 2. 초기 미끄러짐은 물체가 *아직 움직이지 않았다*는 것으로 정의되기 때문이다 — 접촉면의 중심은 아직 붙어 있고 가장자리만 부분적으로 미끄러진다. 물체의 운동을 보고하는 센서는 구조적으로 이미 늦었으므로, 조밀한 접촉 신호가 다른 모달리티에는 없는 정보를 주는 경우다. 같은 정보를 더 편하게 주는 것이 아니다.
-> 3. 30 fps면 샘플이 33 ms마다 오는데, 단단한 접촉 천이는 1~2 밀리초에 끝난다([[04-robotics/force-compliance-control|13. §5]]) — 사건 전체가 두 프레임 사이에서 일어난다. 센서는 접촉이 *어땠는지*를 보고할 수 있고 그것은 다음 행동을 정하는 데 유용하지만, 충격 자체를 조절하는 데 참여할 수는 없다. 그 일은 수동 컴플라이언스와 킬로헤르츠 토크 루프의 몫이다.
+> 3. 30 fps면 샘플이 33 ms마다 오는데, 단단한 접촉 천이는 실제 팔의 맨 공구에서 약 14 ms, 이상화한 강체 경우 약 1.4 ms에 끝난다([[04-robotics/force-compliance-control|13. §5]]) — 사건 전체가 두 프레임 사이에서 일어난다. 센서는 접촉이 *어땠는지*를 보고할 수 있고 그것은 다음 행동을 정하는 데 유용하지만, 충격 자체를 조절하는 데 참여할 수는 없다. 그 일은 수동 컴플라이언스와 킬로헤르츠 토크 루프의 몫이다.
 > 4. 그리퍼 자신의 무게와 페이로드를 센서 프레임으로 사영해서 빼야 한다 — 그리고 그것은 팔의 방향에 의존한다. 중력은 월드 프레임에 고정되어 있고 센서는 손목과 함께 회전하기 때문이다. 같은 부재를 잡아도 자세마다 원 측정값이 다르므로, 중력 보상에는 현재 기구학이 필요하다([[02-foundations/manipulator-kinematics-dynamics|10. §5]]). 가속 중에는 관성 항도 들어온다.
 > 5. 범위 안: 기존 촉각 센서를 써서 체결을 견고하게 만드는 것 — 접촉 상태 분류, 그것에 따라 행동하는 정책, 실제 체결구에 대한 평가. 범위 밖: 새 센서를 설계하거나 제작하는 것. [[07-research-program/index|§7]]이 이를 제외하는 이유는 그것이 자기 문헌과 자기 실패 모드를 가진 별개의 기여이기 때문이다.
 

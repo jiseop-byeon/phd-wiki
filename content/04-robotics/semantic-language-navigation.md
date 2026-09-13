@@ -3,7 +3,7 @@ title: 19. Semantic & Language-Driven Navigation
 tags: [robotics, navigation, vlm]
 study-depth: Working
 wiki-support: Working
-depth-goal: "State the ObjectNav and VLN task definitions and metrics, explain why the nav-graph formulation was abandoned, and say what happened to the field's benchmarks."
+depth-goal: "State the ObjectNav and VLN task definitions and metrics, explain what the nav-graph formulation assumes and why continuous (VLN-CE) results are not comparable to it, and say what happened to the field's benchmarks."
 mastery-when: "Raise to Mastery only if language-grounded navigation becomes the contribution."
 ---
 
@@ -89,15 +89,15 @@ complexity. **SemExp** put a semantic map in that skeleton and let a learned glo
 pick long-term exploration goals on it. It won the 2020 challenge and its architecture is
 still the backbone.
 
-**Move 2 — replace the learned scorer with a pretrained VLM, and train nothing.**
+**Move 2 — replace the learned scorer with a pretrained VLM, and train nothing ObjectNav-specific.**
 **VLFM** builds an occupancy map, extracts frontiers, and scores each frontier by
 **vision-language similarity to the goal text**, choosing where to explore next. No ObjectNav
-training data at all, and it deployed on a real Spot. **ESC** does the same job with LLM
+training data at all (it still follows waypoints with a PointNav policy trained for 2.5B steps on HM3D), and it deployed on a real Spot. **ESC** does the same job with LLM
 commonsense — object-and-room co-occurrence — compiled into soft logic predicates over a
 frontier scorer. And **CoWs** established that a zero-shot pipeline "matches the navigation
 efficiency of a state-of-the-art ZSON method trained for 500M steps" — parity on SPL, not on
-success, where the paper says its own comparison "indicates that there can be benefits to
-in-domain learning over CoW baselines". It is also weak at exploiting complex language.
+success, on Habitat MP3D (SPL 4.9 vs 4.8, success 9.2 vs 15.3), where the paper says its own comparison "indicates that there can be benefits to
+in-domain learning over CoW baselines". On RoboTHOR the same CoW beats the prior zero-shot model by 15.6 points in success. It is also weak at exploiting complex language.
 
 **Move 3 — throw the modular apparatus away.** See §5.
 
@@ -113,13 +113,13 @@ Gervet et al. tested classical, modular-learning and end-to-end approaches on re
 
 | Approach | Result |
 |---|---|
-| **Modular learning** | **90% real-world success** |
+| **Classical** | 78% in simulation → 80% in the real world |
+| **Modular learning** | 81% in simulation → **90% in the real world** |
 | **End-to-end learning** | **77% in simulation → 23% in the real world** |
 
 The load-bearing conclusion is not the gap itself but its explanation: simulators fail as
 evaluation benchmarks for **two** reasons — the visual sim-to-real gap, and **misaligned
-error patterns**. Simulation and reality fail in *different ways*, so **simulation ranking
-does not preserve real-world ranking.** A leaderboard can be climbed without the thing it
+error patterns**. All three families sat near 80% in simulation, so simulation could not tell them apart, and because simulation and reality fail in *different ways* it cannot tell you which bottleneck to fix. Among end-to-end design variants, **the choices that raised simulation scores lowered real-world scores.** A leaderboard can be climbed without the thing it
 measures improving.
 
 ### 5. VLN, and the paper that admitted the benchmark was cheating
@@ -198,7 +198,7 @@ while graph-based and modular VLN research continues in parallel.
   </g>
 </svg>
 
-**Uni-NaVid** is the merge: one video-VLA trained on 3.6M samples (the four sub-task names and the 5 Hz rate are body figures) spanning **VLN, object
+**Uni-NaVid** is the merge: one video-VLA trained on 3.6M samples spanning **VLN, object
 search, embodied question answering and person-following**, reporting state of the art across
 all of them at 5 Hz. In 2020 those were separate communities with separate simulators and
 separate challenges.
@@ -296,7 +296,7 @@ something different. Both are called self-correction, so read for the mechanism
 > [!tip]- Answers
 > 1. Because proximity alone is not the task. Without the oracle-visibility clause an agent could stop 0.9 m from the target with a wall between them and be scored correct — which would reward reaching a *coordinate* rather than finding an *object*. The two-part criterion is what makes ObjectNav a perception problem rather than a metric-navigation problem in disguise.
 > 2. That it is not directly comparable to continuous embodied results. A pre-built graph can provide known topology, discrete viewpoints and localization assumptions absent from VLN-CE. But graph-based VLN remains an active formulation; compare results only within a stated action space and oracle-access protocol.
-> 3. That its real-world ranking will follow. Their finding is not merely that performance drops but that **simulation and reality fail in different ways**, so the ordering between methods is not preserved. End-to-end went 77% sim → 23% real while modular learning reached 90% real — a reversal, not a uniform discount. Sim results are evidence about sim.
+> 3. That its real-world ranking will follow. Their finding is not merely that performance drops but that **simulation and reality fail in different ways**, so simulation cannot separate methods or show what to fix. All three families sat near 80% in simulation (classical 78, modular 81, end-to-end 77) and spread to 80 / 90 / 23 in the real world; among end-to-end variants, real-world performance was inversely related to simulation performance. Sim results are evidence about sim.
 > 4. No. Ending a challenge or saturating one configuration is not evidence that the underlying task is solved. Open-vocabulary and lifelong variants (HM3D-OVON, GOAT-Bench), continuous control, sim-to-real transfer and mobile manipulation test different unresolved capabilities.
 > 5. That granularity should be **task-derived rather than fixed** — Clio's Information Bottleneck formulation exists precisely because navigation wants a coarse map and manipulation wants a fine one of the same scene. Architecturally, build an object-centric scene graph (the ConceptGraphs lineage) as the queryable interface, over whatever geometric substrate you use, and let the task list set the level of detail.
 
@@ -386,13 +386,13 @@ something different. Both are called self-correction, so read for the mechanism
 RL을 이긴다는 것이다. **SemExp**가 그 골격에 의미 지도를 넣고, 학습된 전역 정책이 그 위에서
 장기 탐색 목표를 고르게 했다. 2020년 챌린지를 우승했고 그 아키텍처가 여전히 중추다.
 
-**2수 — 학습된 채점기를 사전학습 VLM으로 갈고, 아무것도 학습하지 않기.** **VLFM**은 점유 지도를
+**2수 — 학습된 채점기를 사전학습 VLM으로 갈고, ObjectNav 전용으로는 아무것도 학습하지 않기.** **VLFM**은 점유 지도를
 만들고 프런티어를 뽑은 뒤, 각 프런티어를 **목표 텍스트와의 시각-언어 유사도**로 채점해 다음에
-어디를 탐색할지 고른다. ObjectNav 학습 데이터가 하나도 없고, 실제 Spot에 배치되었다. **ESC**는
+어디를 탐색할지 고른다. ObjectNav 학습 데이터가 하나도 없고(웨이포인트 추종에는 HM3D에서 25억 스텝 학습한 PointNav 정책을 쓴다), 실제 Spot에 배치되었다. **ESC**는
 같은 일을 LLM 상식 — 물체-방 동시 출현 — 을 프런티어 채점기 위의 소프트 논리 술어로 컴파일해
 한다. 그리고 **CoWs**가, zero-shot 파이프라인이 "5억 스텝을 학습한 최신 ZSON 방법의 주행 효율과
-대등하다"는 것을 보였다 — 대등한 것은 SPL이지 성공률이 아니다. 성공률에서는 논문 스스로 그
-비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을 시사한다"고 적는다. 복잡한 언어를 활용하는
+대등하다"는 것을 보였다 — Habitat MP3D에서 대등한 것은 SPL이지 성공률이 아니다(SPL 4.9 vs 4.8, 성공률 9.2 vs 15.3). 성공률에서는 논문 스스로 그
+비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을 시사한다"고 적는다. RoboTHOR에서는 같은 CoW가 이전 zero-shot 모델보다 성공률이 15.6포인트 높다. 복잡한 언어를 활용하는
 데는 약하다는 것을 확립했다.
 
 **3수 — 모듈형 장치를 통째로 버리기.** §5를 보라.
@@ -407,12 +407,13 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 
 | 접근 | 결과 |
 |---|---|
-| **모듈형 학습** | **실세계 성공률 90%** |
+| **고전** | 시뮬레이션 78% → 실세계 80% |
+| **모듈형 학습** | 시뮬레이션 81% → **실세계 90%** |
 | **종단간 학습** | **시뮬레이션 77% → 실세계 23%** |
 
 부하를 지는 결론은 격차 자체가 아니라 그 설명이다: 시뮬레이터가 평가 벤치마크로서 실패하는
-이유가 **둘**이라는 것 — 시각적 sim-to-real 격차, 그리고 **어긋난 실패 패턴**. 시뮬레이션과
-현실이 *다른 방식으로* 실패하므로 **시뮬레이션 순위가 실세계 순위를 보존하지 않는다.** 재는
+이유가 **둘**이라는 것 — 시각적 sim-to-real 격차, 그리고 **어긋난 실패 패턴**. 세 계열 모두 시뮬레이션에서 80% 근처라
+시뮬레이션으로는 서로를 가를 수 없었고, 시뮬레이션과 현실이 *다른 방식으로* 실패하므로 무엇을 고쳐야 할지도 알려 주지 못한다. 종단간 설계 변형들 사이에서는 **시뮬레이션 점수를 올린 선택이 실세계 점수를 낮췄다.** 재는
 대상이 나아지지 않은 채로 리더보드를 오를 수 있다.
 
 ### 5. VLN, 그리고 벤치마크가 부정행위였음을 인정한 논문
@@ -578,7 +579,7 @@ ObjectNav는 아니었다.
 > [!tip]- 정답 · Answers
 > 1. 근접만으로는 과제가 아니기 때문이다. 오라클 가시성 조항이 없으면 에이전트가 목표에서 0.9 m 떨어진, 그 사이에 벽이 있는 곳에 멈춰서 정답 처리를 받을 수 있고, 그것은 *물체*를 찾은 것이 아니라 *좌표*에 도달한 것을 보상하는 셈이다. 두 부분 기준이 ObjectNav를 변장한 계량 내비게이션 문제가 아니라 인식 문제로 만든다.
 > 2. 연속 embodied 결과와 직접 비교할 수 없다는 것. 사전 구축 그래프는 VLN-CE에 없는 알려진 위상·이산 viewpoint·위치추정 가정을 제공할 수 있다. 그러나 그래프 기반 VLN도 계속 연구되므로, 명시한 행동 공간과 오라클 접근 프로토콜 안에서만 비교한다.
-> 3. 실세계 순위가 따라올 것이라는 점. 그들의 발견은 성능이 떨어진다는 것만이 아니라 **시뮬레이션과 현실이 다른 방식으로 실패한다**는 것이고, 그래서 방법 사이의 순서가 보존되지 않는다. 종단간이 시뮬 77% → 실제 23%인 동안 모듈형 학습은 실제 90%에 도달했다 — 균일한 할인이 아니라 역전이다. 시뮬 결과는 시뮬에 관한 증거다.
+> 3. 실세계 순위가 따라올 것이라는 점. 그들의 발견은 성능이 떨어진다는 것만이 아니라 **시뮬레이션과 현실이 다른 방식으로 실패한다**는 것이고, 그래서 시뮬레이션은 방법을 가르지도, 무엇을 고칠지 보여 주지도 못한다. 세 계열은 시뮬에서 모두 80% 근처(고전 78, 모듈형 81, 종단간 77)였다가 실세계에서 80 / 90 / 23으로 벌어졌고, 종단간 변형들 사이에서는 실세계 성능이 시뮬 성능과 반비례했다. 시뮬 결과는 시뮬에 관한 증거다.
 > 4. 아니다. 챌린지가 끝났거나 한 설정이 포화됐다는 사실은 바탕 과제가 해결됐다는 증거가 아니다. Open-vocabulary·평생 변형(HM3D-OVON, GOAT-Bench), 연속 제어, sim-to-real, 모바일 조작은 서로 다른 미해결 능력을 시험한다.
 > 5. Granularity가 **고정이 아니라 과제에서 유도되어야 한다**는 것 — Clio의 정보 병목 정식화가 존재하는 이유가 정확히, 같은 장면에 대해 내비게이션은 거친 지도를 원하고 조작은 세밀한 지도를 원하기 때문이다. 아키텍처로는, 어떤 기하 substrate를 쓰든 그 위에 물체 중심 장면 그래프(ConceptGraphs 계보)를 질의 가능한 인터페이스로 세우고, 상세도는 과제 목록이 정하게 하라.
 

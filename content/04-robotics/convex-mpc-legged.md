@@ -23,10 +23,10 @@ The cleanest case study of the skill the optimization page teaches: choose the a
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*: approximate the robot as a single rigid body (ignore leg
-dynamics), linearize the rotation dynamics around the *average* yaw over the reference trajectory — not the current one — under a small roll-and-pitch assumption, and treat ground
+dynamics), linearize the rotation dynamics under a small roll-and-pitch assumption — the single state matrix uses the *average* reference yaw over the horizon, while each step's input matrix uses that step's reference yaw and footholds (the first step uses the current robot state) — and treat ground
 reaction forces as the decision variables and approximate each circular friction cone by
 linear facets (a friction pyramid). Those linear inequalities keep the problem a **convex
-QP** that solved in under a millisecond in the reported implementation and was re-run at
+QP**, solved in the condensed form of [[04-robotics/mpc|7. MPC §2]], that solved in under a millisecond in the reported implementation and was re-run at
 tens of Hz (Di Carlo et al.'s abstract says 20–30 Hz while their experiments ran at 25 to 50 Hz depending on gait, so the 50 Hz [[04-robotics/mpc|7. MPC §2]] sizes is the top of the paper's own range, not a disagreement) — exactly the machinery of
 [[02-foundations/optimization|4. Optimization §5]]. Cheetah 3 galloped on this; the
 follow-up (Kim et al., open access) pairs the MPC with whole-body impulse control — the
@@ -38,8 +38,8 @@ optimization page teaches — *choose the approximation that makes the problem c
 buy back accuracy with re-solving speed*. Also the classical baseline that learned
 locomotion policies (RL) are compared against.
 
-**Suggested path**: [[02-foundations/optimization|optimization page]] → the arXiv paper's
-§III–IV (dynamics simplification + QP) → skim the IROS original for results.
+**Suggested path**: [[02-foundations/optimization|optimization page]] → Di Carlo et al. (IROS 2018; open copy on MIT DSpace)
+§III–IV (simplified dynamics + QP), skimming §V for results → Kim et al. (arXiv 1909.06586) §III–IV for the MPC + whole-body impulse control stack.
 
 ## 한국어
 
@@ -47,11 +47,10 @@ locomotion policies (RL) are compared against.
 최적화 페이지가 가르치는 기술 — 문제를 볼록하게 만드는 근사를 고르는 것 — 의 가장 깔끔한 사례 연구다.*
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*다:
-로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 현재 요가 아니라 기준 궤적 전체의 *평균* 요 주변에서, 롤과 피치가 작다는 가정 아래
-선형화하고, 지면 반력을 결정 변수로 삼되 원형 마찰 원뿔을 선형 면들로 이루어진 마찰 피라미드로
+로봇을 단일 강체로 근사하고(다리 동역학 무시), 회전 동역학을 롤과 피치가 작다는 가정 아래 선형화하되 — 상태 행렬 하나는 지평 전체 기준 궤적의 *평균* 요를 쓰고, 단계별 입력 행렬은 그 단계의 기준 요와 발 위치를 쓴다(첫 단계는 현재 로봇 상태) — 지면 반력을 결정 변수로 삼되 원형 마찰 원뿔을 선형 면들로 이루어진 마찰 피라미드로
 근사한다. 이 선형 부등식 덕분에 보고된 구현에서 1밀리초 안에 풀리고 수십 Hz로 다시 도는
 (Di Carlo 등의 초록은 20~30 Hz지만 실험은 보행 방식에 따라 25~50 Hz로 돌았다. 그러니 [[04-robotics/mpc|7. MPC §2]]가 잡는 50 Hz는 논문 자신의 범위 상단이지 불일치가 아니다)
-**볼록 QP**가 된다. 정확히 [[02-foundations/optimization|4. 최적화 §5]]의
+**볼록 QP**가 되며, [[04-robotics/mpc|7. MPC §2]]의 condensed 형태로 푼다. 정확히 [[02-foundations/optimization|4. 최적화 §5]]의
 기계장치다. Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를 전신 임펄스
 제어와 결합한다 — 느린 MPC가 힘을 계획하고 빠른 WBC가 추종하는 표준 2단 스택으로,
 [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 System 2/System 1 분할과 공명한다.
@@ -60,8 +59,7 @@ locomotion policies (RL) are compared against.
 만드는 근사를 고르고, 정확도는 재풀이 속도로 되산다* — 의 가장 깔끔한 사례 연구다.
 학습 기반 보행 정책(RL)이 비교당하는 고전 베이스라인이기도 하다.
 
-**권장 경로**: [[02-foundations/optimization|최적화 페이지]] → Di Carlo IROS 논문의 §III~IV(동역학 단순화 + MPC)
-(동역학 단순화 + QP) → IROS 원문은 결과 위주로 훑기.
+**권장 경로**: [[02-foundations/optimization|최적화 페이지]] → Di Carlo 외(IROS 2018; MIT DSpace 공개본) §III~IV(단순화 동역학 + QP), 결과는 §V를 훑기 → Kim 외(arXiv 1909.06586) §III~IV에서 MPC + 전신 임펄스 제어 스택.
 
 ### 연결
 

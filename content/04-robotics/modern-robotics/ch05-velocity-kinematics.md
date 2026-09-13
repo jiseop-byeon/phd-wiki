@@ -72,8 +72,8 @@ This is different from inverting a velocity equation. No inverse is needed to ma
   to hold force against, and vice versa.
 
 <svg viewBox="0 0 560 220" style="max-width:100%;height:auto" role="img" aria-label="the 2R arm's manipulability ellipse well away from and close to a singularity">
-  <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(-31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
-  <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(-80.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
+  <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
+  <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(78.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="115" y="26">&#952;&#8322; = 90&#176; &#8212; well conditioned</text><text x="355" y="26">&#952;&#8322; = 20&#176; &#8212; nearing a singularity</text>
     <text x="115" y="42" font-size="10" opacity="0.8">det J = 1.00 &#183; &#963; = 1.62, 0.62 &#183; ratio 2.6</text><text x="355" y="42" font-size="10" opacity="0.8">det J = 0.34 &#183; &#963; = 2.20, 0.16 &#183; ratio 14</text>
@@ -84,8 +84,8 @@ This is different from inverting a velocity equation. No inverse is needed to ma
   </g>
 </svg>
 
-**Wiki connections**: teleoperation ([[01-canonical-papers/notes/4-vla/act|ALOHA]]) and
-compliant control live on $\tau = J^\top \mathcal{F}$; singularity awareness is why raw
+**Wiki connections**: force-feedback teleoperation, gravity compensation and
+compliant control live on $\tau = J^\top \mathcal{F}$ ([[01-canonical-papers/notes/4-vla/act|ALOHA]] itself mirrors leader joints to follower joints directly); singularity awareness is why raw
 VLA outputs pass through safety filters on real arms.
 
 ### Self-check
@@ -161,8 +161,8 @@ $\mathcal{F}_s$와 짝이다.)
   어려운 방향일수록 힘을 버티기는 쉽고, 그 반대도 성립한다.
 
 <svg viewBox="0 0 560 220" style="max-width:100%;height:auto" role="img" aria-label="특이점에서 멀 때와 가까울 때의 2R 팔 가조작성 타원">
-  <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(-31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
-  <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(-80.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
+  <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
+  <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(78.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="115" y="26">&#952;&#8322; = 90&#176; &#8212; 조건이 좋다</text><text x="355" y="26">&#952;&#8322; = 20&#176; &#8212; 특이점에 접근</text>
     <text x="115" y="42" font-size="10" opacity="0.8">det J = 1.00 &#183; &#963; = 1.62, 0.62 &#183; 비 2.6</text><text x="355" y="42" font-size="10" opacity="0.8">det J = 0.34 &#183; &#963; = 2.20, 0.16 &#183; 비 14</text>
@@ -175,8 +175,8 @@ $\mathcal{F}_s$와 짝이다.)
 
 
 
-**위키 연결**: 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]])과 유연 제어가
-$\tau = J^\top \mathcal{F}$ 위에 살고, 특이점 인지가 실제 팔에서 VLA 원출력에 안전
+**위키 연결**: 힘 피드백 원격조작, 중력 보상, 유연 제어가
+$\tau = J^\top \mathcal{F}$ 위에 살고([[01-canonical-papers/notes/4-vla/act|ALOHA]] 자체는 리더 관절을 팔로워 관절로 곧바로 옮긴다), 특이점 인지가 실제 팔에서 VLA 원출력에 안전
 필터를 거는 이유다.
 
 ### 스스로 점검
@@ -190,5 +190,5 @@ $\tau = J^\top \mathcal{F}$ 위에 살고, 특이점 인지가 실제 팔에서 
 > [!tip]- 정답 · Answers
 > 1. $s_1 = 1, c_1 = 0, s_{12} = 0, c_{12} = -1$ → $J = \begin{pmatrix} -1 & 0 \\ -1 & -1 \end{pmatrix}$, $\det J = 1$.
 > 2. $\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$에 $\mathcal{V} = J\dot\theta$ 대입, 모든 $\dot\theta$에 대해 성립 ⇒ $\tau = J^\top \mathcal{F}$.
-> 3. 축 방향은 거의 특이 방향이라 거대한 관절 속도가 필요; 수직 방향은 정상 동작.
+> 3. 팔 자신의 축 방향이 거의 특이 방향이다: $\det J = \sin 5° \approx 0.087$, 최소 특이값 ≈ 0.04라 정상 자세보다 한 자릿수 이상 큰 관절 속도가 필요하고 관절 한계를 넘기 쉽다. 수직 방향은 정상 동작.
 > 4. 속도는 특이값 $\sigma$배로 증폭되고, 같은 방향의 힘은 $\tau = J^\top \mathcal{F}$에 의해 $1/\sigma$로 스케일되기 때문.

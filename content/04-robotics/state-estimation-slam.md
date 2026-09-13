@@ -107,7 +107,7 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 $K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$.
 
 > [!note] Filter and smoother are one update · 필터와 스무더는 같은 갱신
-> The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and one Gauss–Newton step of that solve is the same update an iterated extended Kalman filter applies — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
+> The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and a Gauss–Newton step on that cost started from the prior mean is the EKF update, while iterating it is exactly the iterated EKF — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
 
 ### 6. Worked example: one-dimensional update
 
@@ -163,7 +163,7 @@ dropped variables' information into the survivors, but $S$ is **denser than $C$ 
 nonlinear estimators the resulting prior is tied to a linearization point and later
 relinearization or approximation can lose information. That fill-in is why sliding-window estimators cap their window, and why a
 paper's window length is a compute claim rather than a modelling preference
-([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the Schur complement itself is Boyd, *Convex Optimization*, appendix C.4).
+(the Schur complement is defined in Boyd & Vandenberghe, *Convex Optimization*, appendix A.5.5, and block elimination with it is appendix C.4).
 
 > [!warning] "Drift-free" and "loop closure" are claims about different things
 > Loop closure removes accumulated drift *only along paths that return to a previously visited
@@ -227,7 +227,7 @@ You should be able to:
 - identify calibration, synchronization, and evaluation assumptions in a paper.
 
 > [!tip] Going deeper · 더 깊이
-> Barfoot's [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf) is free and is the modern treatment, including estimation on SE(3) rather than in a vector space. Thrun, Burgard and Fox's *Probabilistic Robotics* remains the reference for the filtering and SLAM formulations themselves.
+> Barfoot's [*State Estimation for Robotics*, 2nd ed., 2024](https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser24.pdf) is free and is the modern treatment, including estimation on SE(3) rather than in a vector space. Thrun, Burgard and Fox's *Probabilistic Robotics* remains the reference for the filtering and SLAM formulations themselves.
 >
 > For the optimisation back end specifically, three topics carry most of the load and one free document covers each. Rotation has to be parameterised before anything can be optimised over it — Solà's [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508) does that, and its Jacobians. The update itself is iterative least squares, taken from theory to running code in Grisetti et al.'s [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051). Sparsity is what makes the problem tractable at scale, and Dellaert and Kaess's [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf) follows the Square Root SAM to iSAM2 line, where QR decomposition, fill-in and variable ordering come from. Solà's [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf) connects the three, and Triggs et al.'s [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document) is the photogrammetry work all of it grew out of.
 
@@ -358,7 +358,7 @@ $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$
 $H$에서 *따라 나온다*.
 
 > [!note] 필터와 스무더는 같은 갱신 · Filter and smoother are one update
-> 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 그 풀이의 Gauss–Newton 한 스텝은 iterated EKF의 보정과 대수적으로 같은 갱신이다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
+> 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 사전 평균에서 시작한 그 비용의 Gauss–Newton 한 스텝이 EKF 갱신이고, 그것을 반복하면 정확히 iterated EKF다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
 
 ### 6. 계산 예제: 1차원 갱신
 
@@ -417,7 +417,7 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 정보가 살아남은 변수에 정확히 접히지만 $S$는 **원래의 $C$보다 조밀하다**. 비선형 추정에서는
 이 prior가 선형화점에 묶이고, 뒤의 재선형화나 근사에서 정보가 손실될 수 있다. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
 길이가 모델링 취향이 아니라 계산 비용에 대한 주장인 이유다
-([[02-foundations/linear-algebra|1. 선형대수 §4.5]]. Schur 보수 자체는 Boyd, *Convex Optimization* 부록 C.4다).
+(Schur 보수의 정의는 Boyd & Vandenberghe, *Convex Optimization* 부록 A.5.5, 그것을 쓴 블록 소거는 부록 C.4다).
 
 > [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
 > Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
@@ -479,7 +479,7 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 - 논문에서 보정·동기화·평가 가정을 짚어낼 수 있다
 
 > [!tip] 더 깊이 · Going deeper
-> Barfoot의 [*State Estimation for Robotics*](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)가 무료이고 현대적 서술이다 — 벡터 공간이 아니라 SE(3) 위에서의 추정을 포함한다. 필터와 SLAM 정식화 자체의 참고서는 여전히 Thrun·Burgard·Fox의 *Probabilistic Robotics*다.
+> Barfoot의 [*State Estimation for Robotics*, 2판, 2024](https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser24.pdf)가 무료이고 현대적 서술이다 — 벡터 공간이 아니라 SE(3) 위에서의 추정을 포함한다. 필터와 SLAM 정식화 자체의 참고서는 여전히 Thrun·Burgard·Fox의 *Probabilistic Robotics*다.
 >
 > 최적화 back end만 놓고 보면 대부분의 하중을 세 주제가 지고, 각각에 무료 자료가 하나씩 있다. 회전은 그 위에서 최적화하기 전에 먼저 매개변수화되어야 한다 — Solà의 [*Quaternion kinematics for the error-state Kalman filter*](https://arxiv.org/abs/1711.02508)가 그것과 그 야코비안을 다룬다. 갱신 자체는 반복 최소자승이고, Grisetti 외의 [*Least Squares Optimization: from Theory to Practice*](https://arxiv.org/abs/2002.11051)가 이론에서 돌아가는 코드까지 데려간다. 희소성은 이 문제를 규모에서 풀 수 있게 만드는 것으로, Dellaert·Kaess의 [*Factor Graphs for Robot Perception*](https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.pdf)이 QR 분해·fill-in·변수 순서가 나오는 Square Root SAM에서 iSAM2까지의 계보를 따라간다. Solà의 [*Course on SLAM*](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/curs_SLAM/SLAM2D/SLAM%20course.pdf)이 셋을 잇고, Triggs 외의 [*Bundle Adjustment — A Modern Synthesis*](https://hal.science/inria-00548290/document)가 이 모든 것이 자라 나온 photogrammetry 작업이다.
 
