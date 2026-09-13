@@ -79,8 +79,8 @@ Convolution is useful because a short physical event can affect several later sa
   with margin — a 10 Hz perception loop cannot even see, let alone damp, a 50 Hz vibration.
 - Quantization: finite bits add ~uniform noise — roughly **6 dB of SNR per bit**. *SNR* =
   signal-to-noise ratio, signal power divided by noise power; *dB* (decibel) is the log scale
-  it is quoted on, where +6 dB ≈ 2× in amplitude. So each extra bit of an ADC roughly halves
-  the quantization noise. This is the *other* half of digitization.
+  it is quoted on, where +6 dB ≈ 2× in amplitude. So each extra bit of an ADC halves
+  the RMS quantization noise, which quarters its power — that factor of 4 is the 6 dB. This is the *other* half of digitization.
 - Where this contract becomes a stability problem: a haptic loop rendering a virtual wall
   must close on a human hand every millisecond, and there sampling and quantization stop
   being accuracy questions and start deciding whether the device buzzes
@@ -90,7 +90,7 @@ Convolution is useful because a short physical event can affect several later sa
 
 - Fourier's claim: signals = sums of sinusoids. Deeper claim: **complex exponentials are
   the eigenfunctions of LTI systems** ([[02-foundations/linear-algebra|eigen-thinking]]) —
-  a sinusoid in gives the same sinusoid out, scaled by $H(f)$. That is why frequency
+  for a stable LTI system, a complex exponential comes out multiplied by $H(f)$, so a real sinusoid comes out at the same frequency, scaled by $|H(f)|$ and phase-shifted by $\angle H(f)$. That is why frequency
   analysis diagonalizes filtering.
 - **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — correlation of the signal
   with each basis frequency ([[02-foundations/engineering-math|0.5 §7]] unpacks *why* that
@@ -101,8 +101,7 @@ Convolution is useful because a short physical event can affect several later sa
   $$X[2] = 0, \qquad X[3] = 2$$
   Read it off: $X[0] = 0$ says the signal has **no DC** — it averages to zero, which it
   visibly does. All the energy sits in $k = 1$ and its mirror $k = 3$ (the same frequency
-  seen as negative — real signals always produce this symmetry, which is why an FFT plot only
-  ever shows you the first half). One bin lit up, and it is the bin whose rotation completes
+  seen as negative — for a real signal the magnitude spectrum is always symmetric, which is why one-sided FFT plots show only the first half). One frequency lit up, and it is the bin whose rotation completes
   exactly one turn across the window. That is the entire DFT.
 - **Convolution theorem**: $x * h \leftrightarrow X \cdot H$ — filtering is multiplication
   in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first).
@@ -121,7 +120,7 @@ Frequency analysis is useful because visually similar fluctuations can require d
   simplest FIR; its frequency response $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$ shows the
   tradeoff: longer window ⇒ narrower passband *and* more delay.
 - **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
-  smoother): cheap and sharp, but can ring and go unstable; phase is nonlinear.
+  smoother): cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$, so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
 - **The $\alpha$ in that formula is a convention, not a quantity.** Written as above, a
   large $\alpha$ trusts the *previous output* and filters more. Many papers and lecture
   notes instead write $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$, where a large $\alpha$
@@ -256,7 +255,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   10 Hz 인식 루프는 50 Hz 진동을 감쇠는커녕 보지도 못한다.
 - 양자화: 유한 비트는 거의 균일한 노이즈를 더한다 — 대략 **비트당 6 dB의 SNR**. *SNR*은
   신호 대 잡음비(신호 전력 ÷ 잡음 전력)이고, *dB*(데시벨)는 그것을 표기하는 로그 척도로
-  +6 dB가 진폭 약 2배다. 즉 ADC의 비트 하나가 늘 때마다 양자화 잡음이 대략 절반이 된다.
+  +6 dB가 진폭 약 2배다. 즉 ADC의 비트 하나가 늘 때마다 양자화 잡음의 RMS가 절반, 전력은 4분의 1이 되고, 그 4배가 6 dB다.
   디지털화의 나머지 절반이 이것이다.
 - 이 계약이 안정성 문제로 바뀌는 자리: 가상 벽을 렌더링하는 햅틱 루프는 사람 손을 상대로
   매 밀리초 닫혀야 하고, 거기서 샘플링과 양자화는 정확도 문제이기를 그치고 장치가 떨지
@@ -266,8 +265,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 ### 3. 주파수 영역 — 대각화하는 기저
 
 - 푸리에의 주장: 신호 = 사인파들의 합. 더 깊은 주장: **복소 지수함수는 LTI 시스템의
-  고유함수다** ([[02-foundations/linear-algebra|고유값적 사고]]) — 사인파가 들어가면 같은
-  사인파가 $H(f)$배 되어 나온다. 주파수 분석이 필터링을 대각화하는 이유가 이것이다.
+  고유함수다** ([[02-foundations/linear-algebra|고유값적 사고]]) — 안정한 LTI 시스템에서 복소 지수함수는
+  $H(f)$배 되어 나오므로, 실수 사인파는 같은 주파수로 $|H(f)|$배 커지고 $\angle H(f)$만큼 위상이 밀려 나온다. 주파수 분석이 필터링을 대각화하는 이유가 이것이다.
 - **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — 신호와 각 기저 주파수의
   상관(그 합이 *왜* 투영인지는 [[02-foundations/engineering-math|0.5 §7]]에서 푼다);
   **FFT**가 $N$개 전부를 $O(N\log N)$에 계산.
@@ -276,8 +275,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   $$X[0] = 1 + 0 - 1 + 0 = 0, \qquad X[1] = 1(1) + 0(-j) + (-1)(-1) + 0(j) = 2$$
   $$X[2] = 0, \qquad X[3] = 2$$
   읽어보면: $X[0] = 0$은 이 신호에 **DC가 없다**는 뜻이고, 실제로 평균이 0이다. 에너지 전부가
-  $k = 1$과 그 거울상 $k = 3$(같은 주파수를 음수 쪽에서 본 것 — 실수 신호는 항상 이 대칭을
-  만들고, 그래서 FFT 플롯이 앞쪽 절반만 보여준다)에 앉는다. 켜진 빈은 하나이고, 그 빈의 회전이
+  $k = 1$과 그 거울상 $k = 3$(같은 주파수를 음수 쪽에서 본 것 — 실수 신호의 크기 스펙트럼은 항상 이렇게
+  대칭이라, 단측 FFT 플롯은 앞쪽 절반만 보여준다)에 앉는다. 켜진 주파수는 하나이고, 빈 1의 회전이
   창 전체에서 정확히 한 바퀴를 돈다. DFT의 전부가 이것이다.
 - **합성곱 정리**: $x * h \leftrightarrow X \cdot H$ — 필터링은 주파수 영역의 곱;
   신경망의 스펙트럼 편향(저주파부터 맞춘다)을 이해하는 렌즈이기도 하다.
@@ -296,7 +295,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$이 트레이드오프를 보여준다: 창이 길수록 통과
   대역이 좁아지고 *그리고* 지연이 커진다.
 - **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고
-  날카롭지만 링잉·불안정 가능; 위상이 비선형.
+  위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라 $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
 - **그 식의 $\alpha$는 양이 아니라 규약이다.** 위처럼 쓰면 큰 $\alpha$가 *직전 출력*을
   더 믿어 더 많이 거른다. 많은 논문과 강의안은 반대로 $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$로
   써서, 큰 $\alpha$가 *새 측정*을 더 믿어 덜 거른다. 둘은 $\alpha$를 $1-\alpha$로 바꾼 같은

@@ -89,7 +89,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="212">The 95% is used on the thin branch and the 5% on the thick one, so the thick branch produces</text>
     <text x="24" y="228">five times more alarms than the thin one even though it is the branch with nothing wrong.</text>
-    <text x="24" y="244">That ratio is the posterior. Nothing about the detector changed &#8212; only how rare cracks are.</text>
+    <text x="24" y="244">That ratio sets the posterior: 9.5 of 59 alarms, 16%. Nothing about the detector changed &#8212; only how rare cracks are.</text>
   </g>
 </svg>
 
@@ -112,7 +112,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   the same face give $X_1 + X_2 = 2X_1$ and
   $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — double. Means always add; spreads add only
   when things are uncorrelated. That is exactly why averaging $N$ *independent* runs shrinks
-  an error bar by $\sqrt N$ and averaging $N$ correlated runs does not
+  the standard error of the mean by $\sqrt N$ and averaging $N$ correlated runs does not
   ([[02-foundations/ml-practice|9. ML Practice §4]]).
 - Variance $\text{Var}(X) = E[X^2] - E[X]^2$; covariance
   $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$; for vectors, the covariance matrix
@@ -133,12 +133,11 @@ is still a Gaussian, so **affine** operations never leave the family:
 2. **Sums** of independent Gaussians are Gaussian (variances add).
 3. **Conditioning**: if $(x_1, x_2)$ jointly Gaussian,
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
-   — the conditional mean is a *linear* correction weighted by correlation-to-variance.
+   — the conditional mean is a *linear* correction weighted by covariance-to-variance.
    Memorize the shape of this formula: it *is* the Kalman gain.
 
-Also: CLT says sums of many i.i.d. effects *of finite variance* → Gaussian, which is why noise models
-default to it; and the Gaussian is the max-entropy distribution for fixed mean/variance
-([[02-foundations/information-theory|information theory]]) — the "least presumptuous" choice.
+Also: the CLT says the centred, $\sqrt N$-scaled sum of many i.i.d. effects *of finite variance* → Gaussian (it fails without finite variance, e.g. Cauchy), which is why noise models
+default to it; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="the Gaussian: one shape, width set by sigma, area always one">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
@@ -181,7 +180,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
   are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
   though not all: contrastive and some self-supervised objectives are not simple MLE.
-- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $+\lambda\|\theta\|^2$ — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
+- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
   **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
@@ -201,14 +200,14 @@ For sensor fusion, the conditioning formula says: start from the expected value 
 - **Markov property**: future ⟂ past | present. The modeling assumption of MDPs
   ([[02-foundations/rl-basics|RL]]), world models, and diffusion chains.
 - **Kalman filter, assembled from this page**: model
-  $x_{t+1} = Ax_t + w$, $y_t = Cx_t + v$ with Gaussian $w \sim \mathcal{N}(0,Q)$,
-  $v \sim \mathcal{N}(0,R)$.
+  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$ with Gaussian $w_t \sim \mathcal{N}(0,Q)$,
+  $v_t \sim \mathcal{N}(0,R)$, white, independent of each other and of a Gaussian initial state $x_0$.
   - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
     the **estimate covariance** (uncertainty of $\hat x$) and $Q$ the process-noise covariance.
   - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
-  Nothing new was needed: affine closure + conditioning formula = optimal recursive
-  estimation.
+  Nothing new was needed: affine closure + conditioning formula = the optimal (minimum mean-square error) recursive
+  estimator, under exactly those assumptions.
 - **The gain, in one scalar example.** You believe a wall is $10$ cm away with variance
   $P^- = 4$ (so $\pm2$ cm), and a sensor with variance $R = 1$ (so $\pm1$ cm) reads $12$.
   Then $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$, so
@@ -231,7 +230,7 @@ flowchart LR
  Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
 > [!tip] Going deeper · 더 깊이
-> If the Gaussian toolbox is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version — but not for the Kalman derivation, which that book explicitly defers to its sequel, *Advanced Topics* and Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
+> If the Gaussian toolbox is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version — but not for the Kalman derivation, which that book explicitly defers to its sequel, *Advanced Topics*. Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
 
 ### Self-check
 
@@ -327,7 +326,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   </g>
   <g font-size="10.5" fill="currentColor" opacity="0.9">
     <text x="24" y="212">95%는 얇은 가지에, 5%는 굵은 가지에 쓰인다. 그래서 아무 이상 없는 굵은 가지가 얇은 가지보다</text>
-    <text x="24" y="228">다섯 배 넘는 경보를 만든다. 그 비율이 곧 사후확률이다. 감지기는 아무것도 바뀌지 않았고,</text>
+    <text x="24" y="228">다섯 배 넘는 경보를 만든다. 그 비율이 사후확률을 정한다: 경보 59건 중 9.5건, 16%다. 감지기는 아무것도 바뀌지 않았고,</text>
     <text x="24" y="244">바뀐 것은 균열이 얼마나 드문가뿐이다.</text>
   </g>
 </svg>
@@ -348,7 +347,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   $\text{Var} = \tfrac{91}{6} - 3.5^2 = \tfrac{35}{12}$), 항상 같은 눈이 나오게
   묶인 두 주사위는 $X_1 + X_2 = 2X_1$이라
   $\text{Var}(2X_1) = 4\,\text{Var}(X_1) = 11.67$ — 두 배다. 평균은 언제나 더해지지만, 퍼짐은
-  서로 무관할 때만 더해진다. *독립인* 실행 $N$번을 평균 내면 오차 막대가 $\sqrt N$배로 줄고
+  서로 무관할 때만 더해진다. *독립인* 실행 $N$번을 평균 내면 평균의 표준오차가 $\sqrt N$배로 줄고
   상관된 실행 $N$번은 그렇지 않은 이유가 정확히 이것이다
   ([[02-foundations/ml-practice|9. ML 실무 §4]]).
 - 분산 $\text{Var}(X) = E[X^2] - E[X]^2$; 공분산 $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$;
@@ -370,12 +369,11 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
 2. 독립 가우시안의 **합**은 가우시안 (분산이 더해진다).
 3. **조건화**: $(x_1, x_2)$가 결합 가우시안이면
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
-   — 조건부 평균은 상관/분산으로 가중된 *선형* 보정이다. 이 공식의 모양을 기억하라:
+   — 조건부 평균은 공분산/분산으로 가중된 *선형* 보정이다. 이 공식의 모양을 기억하라:
    이것이 *곧* 칼만 이득이다.
 
-또한: CLT는 *분산이 유한한* i.i.d. 효과 여럿의 합이 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유. 코시 분포처럼 분산이 없으면 성립하지 않는다);
-그리고 가우시안은 평균·분산이 고정일 때 최대 엔트로피 분포다
-([[02-foundations/information-theory|정보이론]]) — "가장 덜 주제넘은" 선택.
+또한: CLT는 *분산이 유한한* i.i.d. 효과 여럿의 합을 중심화하고 $\sqrt N$으로 나누면 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유. 코시 분포처럼 분산이 없으면 성립하지 않는다);
+그리고 평균과 분산이 주어진 연속 분포 중 가우시안의 미분 엔트로피가 가장 크다(Murphy PML1 §2.6.4, 증명은 §3.4.4) — "가장 덜 주제넘은" 선택.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="가우시안: 모양은 하나, 폭은 sigma가 정하고, 넓이는 언제나 1">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
@@ -417,7 +415,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
-- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ $+\lambda\|\theta\|^2$ — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
+- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$ — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
   **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
@@ -437,13 +435,13 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
 - **마르코프 성질**: 미래 ⟂ 과거 | 현재. MDP([[02-foundations/rl-basics|RL]]), 월드모델,
   디퓨전 체인의 모델링 가정.
 - **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
-  $x_{t+1} = Ax_t + w$, $y_t = Cx_t + v$, 가우시안 $w \sim \mathcal{N}(0,Q)$,
-  $v \sim \mathcal{N}(0,R)$.
+  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$, 가우시안 $w_t \sim \mathcal{N}(0,Q)$,
+  $v_t \sim \mathcal{N}(0,R)$이고, 둘은 백색이며 서로, 그리고 가우시안 초기 상태 $x_0$와 독립이다.
   - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
     **추정 공분산**($\hat x$의 불확실성), $Q$는 과정 잡음 공분산이다
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
-  새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 최적 재귀 추정.
+  새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 바로 그 가정 아래 최적(최소 평균제곱오차) 재귀 추정기.
 - **이득(gain)을 스칼라 예제 하나로.** 벽이 $10$ cm 앞에 있다고 믿고 그 분산이 $P^- = 4$
   ($\pm2$ cm), 분산 $R = 1$($\pm1$ cm)짜리 센서가 $12$를 읽었다고 하자. 그러면
   $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$이므로 $\hat x = 10 + 0.8(12-10) = 11.6$,
@@ -466,7 +464,7 @@ flowchart LR
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
 
 > [!tip] 더 깊이 · Going deeper
-> 가우시안 도구 상자가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 간다. 다만 칼만 유도는 거기 없다 — 그 책은 그것을 속편 *Advanced Topics*로 넘긴다, Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
+> 가우시안 도구 상자가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 간다. 다만 칼만 유도는 거기 없다 — 그 책은 그것을 속편 *Advanced Topics*로 넘긴다. Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
 
 ### 스스로 점검
 

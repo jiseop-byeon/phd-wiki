@@ -366,13 +366,12 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 — invert the nonzero singular values, leave the zeros alone. This is the definition that
 works for *every* matrix, including rank-deficient ones, and the two formulas above are
 special cases of it. It also explains the failure mode: near a singular configuration one
-$\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity blows up in
-that one direction. The arm is being asked to move in a direction it cannot move, and the
-maths obliges with an infinite answer.
+$\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity grows without bound in
+that one direction as the arm approaches the singularity. The arm is being asked to move in a direction it cannot move; at the singular pose itself the pseudo-inverse leaves that zero alone, so the answer jumps discontinuously when the rank actually drops.
 
 The fix is to stop inverting the small singular values exactly — replace $1/\sigma$ with
 $\sigma/(\sigma^2 + \lambda)$, which is bounded for every $\sigma$ and equals $1/\sigma$
-when $\sigma \gg \lambda$. That is **damped least squares**, and it is the same $\lambda$
+when $\sigma^2 \gg \lambda$. That is **damped least squares**, and it is the same $\lambda$
 as the trust parameter you will meet on [[02-foundations/optimization|4. Optimization §3.5]] —
 a forward pointer, not something this page depends on. So the chain
 runs: singular values → pseudo-inverse → what happens when one of them vanishes → damping →
@@ -383,7 +382,7 @@ Levenberg–Marquardt. Four names, one idea.
 Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
 
 - **State-space model** $\dot{x} = Ax + Bu$, $y = Cx$: the system is a matrix; simulating
-  is repeated matrix multiplication; the matrix exponential $e^{At}$ solves it exactly.
+  is repeated matrix multiplication; the matrix exponential $e^{At}$ solves the unforced system exactly, and with the convolution $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$ the forced one.
 - **Stability = eigenvalues of $A$** (poles): continuous-time stable iff all
   $\text{Re}(\lambda_i) < 0$; discrete-time iff all $|\lambda_i| < 1$.
 - **Controllability**: which directions can the input actually push the state? One step
@@ -417,17 +416,15 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
   Observability is the transpose twin — can the
   output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
-- LQR gains, Kalman filters, and MPC condensing all reduce to solving structured linear
-  systems (Riccati equations) — numerical linear algebra is the control engineer's daily tool.
+- LQR gains, Kalman filters, and MPC all reduce to structured matrix computations — Riccati recursions (one linear solve per step) for LQR and Kalman, and a dense QP after MPC condensing — numerical linear algebra is the control engineer's daily tool.
 
 ### 6. Geometry of high dimensions (paper-reading intuition)
 
-- Random high-dim vectors are nearly orthogonal ($E[\cos\theta] \to 0$) — one reason
+- Random zero-mean (isotropic) high-dim vectors are nearly orthogonal: $\cos\theta$ concentrates around 0 with spread $\approx 1/\sqrt d$ (its mean is already 0 in any dimension; vectors with a non-zero mean do not become orthogonal) — one reason
   dot-product retrieval over millions of embeddings is *possible*: unrelated items score
   near zero. (That relevant pairs score high is a property of the *learned* embedding, not
   of geometry.)
-- Distances concentrate: nearest and farthest neighbors differ by little — why cosine
-  similarity and *learned* metrics replace raw Euclidean distance.
+- Distances concentrate: nearest and farthest neighbors differ by little — one reason *learned* embeddings and metrics replace raw distances on raw features. (Cosine similarity does not escape concentration: for unit vectors $\|a-b\|^2 = 2 - 2\cos\theta$, so it ranks neighbours exactly as Euclidean distance does; what it adds is ignoring vector norms.)
 - Manifold hypothesis: real data occupies a low-dimensional surface inside pixel space —
   the implicit justification for latent spaces ([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]).
@@ -793,11 +790,10 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 이다 — 0이 아닌 특이값만 뒤집고 0은 그대로 둔다. 이것이 계수가 모자란 것을 포함해 *모든*
 행렬에서 통하는 정의이고, 위의 두 공식은 그 특수한 경우다. 그리고 실패 방식도 설명한다.
 특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
-관절 속도가 그 한 방향으로 폭발한다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이고,
-수학은 무한대라는 답으로 응한다.
+관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 계수가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
 
 해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
-$\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma \gg \lambda$일
+$\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma^2 \gg \lambda$일
 때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이고,
 [[02-foundations/optimization|4. 최적화 §3.5]]에서 만나게 될 신뢰 파라미터와 같은 $\lambda$다 —
 이 페이지가 기대는 것이 아니라 앞을 가리키는 표지다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
@@ -808,7 +804,7 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
 선형대수는 제어의 언어 *그 자체*다 ([[04-robotics/index|제어 트랙]]):
 
 - **상태공간 모델** $\dot{x} = Ax + Bu$, $y = Cx$: 시스템이 곧 행렬이다; 시뮬레이션은
-  반복된 행렬곱이고, 행렬 지수 $e^{At}$가 정확한 해를 준다.
+  반복된 행렬곱이고, 행렬 지수 $e^{At}$가 입력이 없는 시스템의 정확한 해를 주고, 입력이 있으면 합성곱 $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$가 해다.
 - **안정성 = $A$의 고유값** (극점): 연속 시간은 모든 $\text{Re}(\lambda_i) < 0$일 때,
   이산 시간은 모든 $|\lambda_i| < 1$일 때 안정.
 - **가제어성**: 입력이 상태를 실제로 어느 방향으로 밀 수 있나? 입력 한 스텝은 $B$의 열
@@ -840,16 +836,14 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
 *왼쪽: $B$와 $AB$가 다른 방향을 가리켜 둘이 평면을 생성한다. 오른쪽: 동역학이 $B$를 자기 자신 위로만 돌려놓아, $u$를 어떻게 써도 상태 공간의 한 방향 전체에 닿지 못한다.*
 
   가관측성은 전치 쌍둥이다 — 출력 $y$가 결국 모든 상태를 드러낼 수 있는가? — 행렬은 $[C^\top, A^\top C^\top, \ldots]$이다.
-- LQR 이득, 칼만 필터, MPC의 응축(condensing)이 전부 구조화된 선형계(리카티 방정식)
-  풀이로 환원된다 — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
+- LQR 이득, 칼만 필터, MPC가 전부 구조화된 행렬 계산으로 환원된다 — LQR과 칼만은 리카티 재귀(단계마다 선형 풀이 한 번), MPC는 응축(condensing) 뒤의 조밀한 QP — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
 
 ### 6. 고차원의 기하 (논문 읽기용 직관)
 
-- 무작위 고차원 벡터들은 거의 직교한다($E[\cos\theta] \to 0$) — 수백만 임베딩에 대한
+- 평균이 0인(등방) 무작위 고차원 벡터들은 거의 직교한다: $\cos\theta$가 0 근처에 퍼짐 $\approx 1/\sqrt d$로 모인다(평균은 어느 차원에서나 이미 0이고, 평균이 0이 아닌 벡터들은 직교해지지 않는다) — 수백만 임베딩에 대한
   내적 검색이 *가능한* 이유 중 하나다: 무관한 항목의 점수가 0 근처로 깔린다. (관련 쌍의
   점수가 높은 것은 기하가 아니라 *학습된* 임베딩의 성질이다.)
-- 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다 — 코사인 유사도와
-  *학습된* 거리가 유클리드 거리를 대체하는 이유.
+- 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다 — 원시 특징 위의 거리 대신 *학습된* 임베딩과 거리를 쓰는 이유 중 하나다. (코사인 유사도도 집중을 피하지 못한다: 단위 벡터에서 $\|a-b\|^2 = 2 - 2\cos\theta$이므로 이웃 순위는 유클리드 거리와 똑같다. 코사인이 더하는 것은 벡터 크기를 무시하는 것이다.)
 - 다양체 가설: 실제 데이터는 픽셀 공간 속 저차원 곡면 위에 산다 —
   잠재 공간([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]])의 암묵적 정당화.

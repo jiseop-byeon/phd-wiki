@@ -74,7 +74,7 @@ Regularization helps because fitting every training detail can make a model depe
 |---|---|---|
 | Classification | accuracy, top-5 | fraction correct (top-5: truth within 5 guesses — ImageNet convention) |
 | Classification (imbalanced) | precision / recall / F1 | of flagged, how many real / of real, how many caught / their harmonic mean |
-| Detection | **IoU**, **mAP** | box overlap ratio; mean average precision over classes & IoU thresholds |
+| Detection | **IoU**, **mAP** | box overlap ratio; mean over classes of average precision — at IoU 0.5 (PASCAL VOC) or averaged over IoU 0.50–0.95 (COCO); check which before comparing |
 | Segmentation | mIoU | IoU averaged over classes |
 | Generation (image) | **FID** | distribution distance between generated and real features — lower is better |
 | Language modeling | perplexity | $2^{\text{cross-entropy}}$ in bits ([[02-foundations/information-theory\|5. Info Theory §2]]) |
@@ -206,7 +206,7 @@ one of them is not comparing what it claims.
 
 > [!tip]- Answers
 > 1. The test set was used as a validation set — the reported number is biased upward (optimistic); true generalization is lower.
-> 2. It misses 70% of real cracks (recall 0.3). Acceptable as a first-pass screen where false positives are costly and a detailed inspection follows; unacceptable if this detector alone drives safety decisions.
+> 2. It misses 70% of real cracks (recall 0.3). It is unacceptable as a first-pass screen or as the sole safety gate, because anything it does not flag never reaches inspection. It is acceptable only as a prioritisation aid on top of an inspection regime that still covers every panel: its flags are trustworthy (precision 0.9), so they can be fast-tracked while misses are caught by the regular inspection.
 > 3. Pixel distance ignores perceptual quality (a one-pixel shift is punished heavily) — Inception feature space reflects semantic similarity, so distribution distance is measured there.
 > 4. ① How many trials, with what variance? ② What does "unseen" mean (new objects? new instructions? new scenes?) ③ Against which baseline, and is there failure analysis?
 
@@ -276,7 +276,7 @@ The transition matters because recognizing an unfair comparison after publicatio
 |---|---|---|
 | 분류 | accuracy, top-5 | 맞춘 비율 (top-5: 정답이 5개 후보 안 — ImageNet 관례) |
 | 분류 (불균형) | precision / recall / F1 | 표시한 것 중 진짜 비율 / 진짜 중 잡아낸 비율 / 둘의 조화평균 |
-| 검출 | **IoU**, **mAP** | 박스 겹침 비율; 클래스·IoU 문턱에 걸친 평균 정밀도 |
+| 검출 | **IoU**, **mAP** | 박스 겹침 비율; 클래스별 평균 정밀도의 평균 — IoU 0.5 기준(PASCAL VOC)이거나 IoU 0.50–0.95에 걸친 평균(COCO); 비교 전에 어느 쪽인지 확인 |
 | 분할 | mIoU | 클래스 평균 IoU |
 | 생성 (이미지) | **FID** | 생성/실제 특징 분포 사이 거리 — 낮을수록 좋다 |
 | 언어모델 | perplexity | 비트 기준 $2^{\text{교차 엔트로피}}$ ([[02-foundations/information-theory\|5. 정보이론 §2]]) |
@@ -300,8 +300,8 @@ The transition matters because recognizing an unfair comparison after publicatio
 - **재현율(recall)** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — 실제 균열 중 3분의 2를
   잡았다. **균열 20개를 놓쳤고**, 이것이 안전 담당자가 신경 쓰는 숫자다.
 - **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — 조화평균이라 *둘 중
-  하나만* 낮아도 낮게 유지된다(산술평균이었다면 0.9와 0.5처럼 한쪽으로 쏠린 경우도 0.7로
-  가려줬을 것이다).
+  하나만* 낮아도 낮게 유지된다(같은 두 수의 산술평균은 0.73이고, 정밀도 0.9·재현율 0.5처럼 한쪽으로 쏠린 경우도
+  산술평균은 0.70으로 매겨 겨우 조금 낮을 뿐이다 — 조화평균(0.64)은 그렇게 가려 주지 않는다).
 
 모든 Results 표에 들고 갈 교훈: 정밀도와 재현율은 문턱값 하나로 서로 맞바꾸는 값이므로,
 유리한 쪽만 보고한 논문은 문장의 절반만 말한 것이다. 그리고 건설에서는 이 비대칭이 실제다 —
@@ -401,7 +401,7 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 테스트가 검증 집합 역할을 해버렸다 — 보고 수치는 위로(낙관적으로) 편향되고, 실제 일반화 성능은 그보다 낮다.
-> 2. 진짜 균열의 70%를 놓친다(재현율 0.3). 오탐 처리 비용이 크고 뒤에 정밀 점검이 따로 있는 1차 스크리닝이면 용인 가능; 이 감지기 하나로 안전 결정을 내린다면 불가.
+> 2. 진짜 균열의 70%를 놓친다(재현율 0.3). 1차 스크리닝이나 유일한 안전 관문으로는 불가하다. 표시하지 않은 것은 점검에 아예 올라가지 않기 때문이다. 모든 패널을 여전히 점검하는 체계 위에서 우선순위를 정하는 보조 수단으로만 용인 가능하다: 표시는 믿을 만하므로(정밀도 0.9) 먼저 처리하고, 놓친 것은 정규 점검이 잡는다.
 > 3. 픽셀 거리는 지각 품질과 무관하다(한 픽셀 평행이동에도 크게 벌점) — Inception 특징 공간이 의미적 유사성을 반영하기 때문에 특징 분포 거리로 잰다.
 > 4. ① 몇 회 시행이고 분산은 얼마인가 ② "unseen"의 정의는(새 물체? 새 지시문? 새 장면?) ③ 어떤 베이스라인 대비이며 실패 사례 분석이 있는가.
 

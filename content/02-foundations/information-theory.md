@@ -46,8 +46,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   Uniform distribution = maximum entropy; deterministic = zero.
 - Intuition anchor: entropy is a **lower bound** on the average number of yes/no questions needed to
   identify an outcome — the *compression limit* of the source. No code beats it, and a per-symbol
-  code generally does not reach it: MacKay's Theorem 5.1 gives $H(X) \le L(C,X) < H(X)+1$ for a
-  prefix code, with equality only when every code length equals its Shannon information content.
+  code generally does not reach it: every uniquely decodable code has $L(C,X) \ge H(X)$, with equality only when every code length equals its Shannon information content (MacKay eq. 5.17), and MacKay's Theorem 5.1 guarantees that *some* prefix code achieves $L(C,X) < H(X)+1$.
 - **Worked numbers** — a coin with $P(\text{H}) = 0.9$:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ bits —
   less than half the fair coin's 1 bit, because the outcome is mostly predictable.
@@ -139,7 +138,7 @@ Logarithms are useful because they turn the joint probability of many observatio
 
 
 - **Non-negativity, proved in two lines** (Jensen's inequality — $\log$ is concave, so that the expectation of a log is at most the log of the expectation):
-  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
+  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_{x:\,p(x)>0} q(x) \le \log 1 = 0$$
   Equality iff $p = q$. This tiny proof powers the ELBO's validity and half of learning theory.
 - **Gaussian KL, closed form** (the formula inside every VAE implementation): for
   $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$:
@@ -187,8 +186,8 @@ Logarithms are useful because they turn the joint probability of many observatio
   similarity $s(\cdot,\cdot)$ and temperature $\tau$:
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — cross-entropy where "the classes" are the other samples in the batch; it satisfies
-  $I(X;Y) \ge \log N - \mathcal{L}$, so bigger batches permit tighter bounds (why CLIP
-  used batch size 32k). Caveat: how tight this MI bound is depends on the negative-sampling
+  $I(X;Y) \ge \log N - \mathcal{L}$, so bigger batches permit tighter bounds (CLIP used a batch of 32,768, though the paper
+  states no information-theoretic reason for it). Caveat: how tight this MI bound is depends on the negative-sampling
   scheme and distributional assumptions — treat it as guiding intuition, not a guarantee.
 - Representation learning framings (information bottleneck): keep what predicts the label,
   discard the rest — compression as a theory of generalization.
@@ -235,13 +234,13 @@ non-variational world models take different routes).
 
 1. Compute the entropy of a coin with $P(\text{H}) = 0.99$, and say why it is smaller than the 0.9 coin's.
 2. A classifier assigns probability 0.25 to the correct class. What is this sample's cross-entropy loss in nats?
-3. How does using reverse KL (instead of forward KL) in a VAE connect to blurry samples?
+3. Which KL direction appears where in a VAE, and which one relates to blurry samples?
 4. In CLIP's InfoNCE, how much can doubling the batch size improve the mutual-information bound?
 
 > [!tip]- Answers
 > 1. $H = -0.99\log_2 0.99 - 0.01\log_2 0.01 \approx 0.08$ bits — the more predictable, the smaller the average surprise.
 > 2. $-\ln 0.25 = \ln 4 \approx 1.39$ nats.
-> 3. Reverse KL is mode-seeking — $q$ latches onto one mode. VAE blur is *primarily* the Gaussian likelihood (pixel averaging); the KL asymmetry pushes the latent toward covering only part of the posterior — together they yield conservative (average-like) samples.
+> 3. Reverse KL, $KL(q(z|x)\|p(z|x))$, sits in the posterior fit: being mode-seeking, it tends to under-disperse $q$, which is a statement about the latent, not about blur. Blur comes from the data-level side: maximum likelihood minimises the *forward* $KL(p_{data}\|p_\theta)$, which is mass-covering, and a Gaussian pixel likelihood turns uncertainty into averaged pixels.
 > 4. $I \ge \log N - \mathcal{L}$, so the bound's ceiling rises by $\log 2 \approx 0.69$ nats (= 1 bit).
 
 ## 한국어
@@ -277,8 +276,8 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   균등 분포 = 최대 엔트로피; 결정론적 = 0.
 - 직관의 닻: 엔트로피는 결과 하나를 알아내는 데 필요한 예/아니오 질문 평균 개수의 **하한**이다.
   그 소스의 *압축 한계*이고, 어떤 부호도 이보다 잘하지 못하며, 심볼 단위 부호는 보통 여기에
-  닿지도 못한다. MacKay의 정리 5.1이 접두 부호에 대해 $H(X) \le L(C,X) < H(X)+1$을 주고,
-  등호는 모든 부호 길이가 자기 Shannon 정보량과 같을 때만 성립한다.
+  닿지도 못한다. 유일 복호 가능한 모든 부호는 $L(C,X) \ge H(X)$이고, 등호는 모든 부호 길이가 자기 Shannon 정보량과
+  같을 때만 성립한다(MacKay 식 5.17). MacKay의 정리 5.1은 $L(C,X) < H(X)+1$을 만족하는 접두 부호가 *존재함*을 보장한다.
 - **숫자로 한 번** — $P(\text{앞}) = 0.9$인 동전:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ 비트 — 공정 동전(1비트)의 절반 이하다.
   결과가 대부분 예측 가능하기 때문. 이 동전과 공정 동전 사이의 KL:
@@ -293,7 +292,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 - **비트 단위 계산 예제.** 참분포 $p = (0.7,\,0.2,\,0.1)$, 모델 $q = (0.5,\,0.3,\,0.2)$.
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
-  바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다.
+  바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다. 이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
   두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
   단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
   정수 비트여야 하기 때문이다. 여기서 최선의 심볼
@@ -301,7 +300,6 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   정리다. $N$개의 i.i.d. 변수는 $N\to\infty$에서 약 $NH(X)$비트로 압축된다. 이 전제가 다음
   항목에서 중요해진다. 언어 토큰은 서로 강하게 의존하므로 그쪽의 바닥은 방금 계산한 단일 심볼
   $H(p)$가 아니라 엔트로피 *율*이다.
-  이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
 - 분류 학습: $p$ = 원-핫 라벨, $q$ = 소프트맥스 출력 ⇒ 교차 엔트로피 손실
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="심볼당 비트 수를 나타내는 두 막대. 엔트로피 바닥과 모델의 부호가 치르는 더 긴 비용, 그 초과분이 KL로 표시되어 있다">
   <g fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2">
@@ -369,7 +367,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
 
 
 - **비음수성, 두 줄 증명** (옌센 부등식 — $\log$는 오목이므로 로그의 기댓값이 기댓값의 로그를 넘지 못한다):
-  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_x q(x) = 0$$
+  $$-D_{KL}(p\|q) = E_p\Big[\log\frac{q}{p}\Big] \le \log E_p\Big[\frac{q}{p}\Big] = \log \sum_{x:\,p(x)>0} q(x) \le \log 1 = 0$$
   등호는 $p = q$일 때만. 이 작은 증명이 ELBO의 유효성과 학습 이론의 절반을 떠받친다.
 - **가우시안 KL의 닫힌 형태** (모든 VAE 구현 속의 그 공식):
   $\mathcal{N}(\mu_1,\sigma_1^2)$ vs $\mathcal{N}(\mu_2,\sigma_2^2)$에 대해:
@@ -413,7 +411,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   유사도 $s(\cdot,\cdot)$와 온도 $\tau$, $N$쌍 배치에 대해 써보면:
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — "클래스"가 배치 안의 다른 샘플들인 교차 엔트로피다; $I(X;Y) \ge \log N - \mathcal{L}$을
-  만족하므로 배치가 클수록 더 빡빡한 하한이 가능하다 (CLIP이 배치 32k를 쓴 이유).
+  만족하므로 배치가 클수록 더 빡빡한 하한이 가능하다 (CLIP은 배치 32,768을 썼지만, 논문은 그 이유로 정보이론을 들지 않는다).
   단서: 이 상호 정보량 하한이 얼마나 빡빡한지는 음성 샘플링 방식과 분포 가정에 의존한다 —
   보장이 아니라 안내하는 직관으로 읽어라.
 - 표현 학습의 틀(information bottleneck): 라벨을 예측하는 것만 남기고 버려라 —
@@ -458,11 +456,11 @@ matching이나 비변분 월드모델은 다른 길을 간다).
 
 1. $P(\text{H}) = 0.99$인 동전의 엔트로피를 계산하고, 0.9 동전보다 작은 이유를 말하라.
 2. 분류기가 정답 클래스에 확률 0.25를 줬다. 이 샘플의 교차 엔트로피 손실(나트)은?
-3. VAE에서 forward KL 대신 reverse KL을 쓰는 것이 흐릿한 샘플과 어떻게 연결되는가?
+3. VAE에서 어느 방향의 KL이 어디에 나타나고, 그중 무엇이 흐릿한 샘플과 관계되는가?
 4. CLIP의 InfoNCE에서 배치를 2배로 키우면 상호 정보량 하한은 얼마나 좋아질 수 있는가?
 
 > [!tip]- 정답 · Answers
 > 1. $H = -0.99\log_2 0.99 - 0.01\log_2 0.01 \approx 0.08$ 비트 — 더 예측 가능할수록 놀라움의 평균이 작다.
 > 2. $-\ln 0.25 = \ln 4 \approx 1.39$ 나트.
-> 3. reverse KL은 모드 시킹 — $q$가 한 모드에 들러붙는다. VAE의 흐릿함은 주로 가우시안 우도(픽셀 평균화) 때문이고, KL의 비대칭은 잠재 분포가 사후분포의 일부만 덮는 쪽으로 작동한다 — 둘이 합쳐져 보수적(평균적) 샘플이 나온다.
+> 3. reverse KL $KL(q(z|x)\|p(z|x))$은 사후분포 근사에 있다. 모드 시킹이라 $q$를 좁게 잡는 경향이 있지만, 이것은 잠재 변수에 대한 이야기이지 흐릿함의 원인이 아니다. 흐릿함은 데이터 쪽에서 온다: 최대우도는 *forward* $KL(p_{data}\|p_\theta)$을 최소화해 질량을 덮으려 하고, 가우시안 픽셀 우도가 그 불확실성을 평균된 픽셀로 바꾼다.
 > 4. $I \ge \log N - \mathcal{L}$이므로 하한의 천장이 $\log 2 \approx 0.69$ 나트(= 1비트)만큼 올라간다.

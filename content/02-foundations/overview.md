@@ -111,6 +111,7 @@ graph LR
     GEN --> WM
     IT --> WM
     MAT --> SE
+    LA --> SE
     SE --> VLA
     MLP -.-> TF
     MLP -.-> VLA
@@ -124,7 +125,7 @@ backprop, and optimization (Adam). **Generative models** add probability (MLE) a
 information theory (ELBO/KL). **World models** are generative models + RL. **VLA** sits on
 top of everything — plus signal processing on the sensor side. This is why the study order
 above exists. Two pages sit slightly apart from that chain and are drawn accordingly:
-**SE(3)** branches off matrix arithmetic and feeds the robot-action side of VLA, and
+**SE(3)** branches off linear algebra and feeds the robot-action side of VLA, and
 **ML Practice** attaches to everything with dashed arrows — it is not a prerequisite for
 understanding a method, but it is a prerequisite for believing any of their results tables.
 
@@ -136,23 +137,24 @@ themselves (prose only — code blocks and equations excluded):
 | Track | Pages | One read-through |
 |---|---:|---:|
 | Foundations 0–10 | 13 | about 1.8 h |
-| Robotics 1–23 (incl. the 11 MR chapters) | 34 | about 3.0 h |
+| Robotics 1–23 (incl. the 11 MR chapters) | 34 | about 3.6 h |
+| Robotics 24–25 (haptics & teleoperation, ROS 2) | 17 | about 2.8 h |
 | Construction robotics | 10 | about 0.8 h |
-| Paper notes (115) | 115 | about 3.8 h |
-| Research practice | 8 | about 0.8 h |
+| Paper notes (115) | 115 | about 3.6 h |
+| Research practice | 8 | about 1.1 h |
 | Research program | 1 | about 0.1 h |
-| **Total** | **181** | **about 10.3 h** |
+| **Total** | **198** | **about 13.8 h** |
 
 Read that number honestly: it is *one pass of the prose in one language*, and it is not the
 study time. Working the self-checks and re-deriving the worked examples typically costs
-**3–5× the reading time** — call it 30–50 hours for the whole wiki — and the ★ papers are
+**3–5× the reading time** — call it 40–70 hours for the whole wiki — and the ★ papers are
 extra: **17** of them read in the original at a few hours each is another 50–70 hours. (The
 list carries an eighteenth ★ mark, but it is the *Modern Robotics* textbook, which is a
 separate commitment and not a few-hours item.) The notes exist so that the 74 ◐ and 40 ○
 papers do *not* need that.
 
-Two of those tracks are optional, and the total above assumes you read everything.
-Robotics 12–23 are specialization layers — manipulation, navigation, human perception —
+Not every row is required, and the total above assumes you read everything.
+Robotics 12–25 are specialization layers — manipulation, navigation, human perception, haptics and teleoperation, and the hands-on ROS 2 build track —
 and the common curriculum stops at 11.
 
 A pace that works: **foundations in two weeks** (one page per weekday, self-checks done
@@ -354,6 +356,7 @@ graph LR
     GEN --> WM
     IT --> WM
     MAT --> SE
+    LA --> SE
     SE --> VLA
     MLP -.-> TF
     MLP -.-> VLA
@@ -366,7 +369,7 @@ graph LR
 최적화(Adam)가 필요하다. **생성모델**은 거기에 확률(MLE)과 정보이론(ELBO/KL)을 더한다.
 **월드모델** = 생성모델 + RL. **VLA**는 이 전부의 꼭대기에 앉아 있다 — 센서 쪽에서는
 신호처리까지. 위의 학습 순서가 존재하는 이유가 이것이다. 두 페이지는 이 사슬에서 살짝 비켜 있고 지도에도
-그렇게 그려져 있다: **SE(3)** 페이지는 행렬 연산에서 갈라져 나와 VLA의 로봇 행동 쪽으로 들어가고,
+그렇게 그려져 있다: **SE(3)** 페이지는 선형대수에서 갈라져 나와 VLA의 로봇 행동 쪽으로 들어가고,
 **ML 실무**는 점선으로 모든 것에 붙는다 — 방법을 *이해*하는 데 필요한 선수 지식이 아니라,
 그 방법들의 결과 표를 *믿는* 데 필요한 선수 지식이기 때문이다.
 
@@ -377,21 +380,22 @@ graph LR
 | 트랙 | 페이지 | 1회 정독 |
 |---|---:|---:|
 | 기초 0–10 | 13 | 약 1.8시간 |
-| 로보틱스 1–23 (MR 11개 장 포함) | 34 | 약 3.0시간 |
+| 로보틱스 1–23 (MR 11개 장 포함) | 34 | 약 3.6시간 |
+| 로보틱스 24–25 (햅틱·원격조작, ROS 2) | 17 | 약 2.8시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
-| 논문 노트 (115편) | 115 | 약 3.8시간 |
-| Research Practice | 8 | 약 0.8시간 |
+| 논문 노트 (115편) | 115 | 약 3.6시간 |
+| Research Practice | 8 | 약 1.1시간 |
 | Research Program | 1 | 약 0.1시간 |
-| **합계** | **181** | **약 10.3시간** |
+| **합계** | **198** | **약 13.8시간** |
 
 이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
 자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3–5배** — 위키 전체로
-30–50시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50–70시간이
+40–70시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50–70시간이
 더 붙는다. (목록에 ★가 하나 더 있지만 그것은 *Modern Robotics* 교재이고, 몇 시간짜리 항목이
 아니라 별도의 약속이다.) ◐ 74편과 ○ 40편은 그럴 필요가 없도록 노트가 존재한다.
 
-이 중 두 트랙은 선택이고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12–23번은
-전문화 층 — 매니퓰레이션·내비게이션·사람 인지 — 이고, 공통 커리큘럼은 11번에서 끝난다.
+모든 행이 필수는 아니고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12–25번은
+전문화 층 — 매니퓰레이션·내비게이션·사람 인지·햅틱과 원격조작, 그리고 손으로 만드는 ROS 2 트랙 — 이고, 공통 커리큘럼은 11번에서 끝난다.
 
 통하는 페이스: **기초 2주**(평일 하루 한 페이지, 자가점검은 그날 안에), 그다음 로보틱스
 트랙 3주, 그다음부터 주당 ★ 2편 또는 ◐ 4편을 병행. 여기 어떤 것도 마감이 아니다 — 이

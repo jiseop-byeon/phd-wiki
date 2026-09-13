@@ -34,7 +34,7 @@ A **neural network** is that, repeated, with a simple nonlinear function squeeze
 
 $$h_1 = \sigma(W_1x + b_1), \qquad h_2 = \sigma(W_2h_1 + b_2), \qquad \hat y = W_3h_2 + b_3$$
 
-The nonlinearity is there because a stack of plain matrix multiplies collapses to a single matrix, $W_3W_2W_1$, and could only ever draw a straight line through the data.
+The nonlinearity is there because a stack of plain matrix multiplies collapses to one affine map, $(W_3W_2W_1)x + b'$, and could only ever draw a straight line (a hyperplane) through the data.
 
 - Each $(W, b)$ pair with its nonlinearity is one **layer**. $W$ holds the **weights**,
   $b$ the **bias**. Together they are the **parameters** — the numbers that get learned.
@@ -170,7 +170,7 @@ These are not concepts to master here — just labels, so the word does not stop
 | **logits** | raw output scores before they are turned into probabilities |
 | **softmax** | the function that turns scores into probabilities ([[02-foundations/engineering-math\|0.5 §10]]) |
 | **tokenizer** | the step that cuts raw input into tokens — a text tokenizer splits words into sub-word pieces, a vision one cuts an image into patches or maps it to a learned codebook. It is a *choice*, and two models with different tokenizers are not comparable per token |
-| **autoregressive** | producing output one token at a time, each conditioned on the ones already produced. The reason a language model's output length costs time linearly |
+| **autoregressive** | producing output one token at a time, each conditioned on the ones already produced. Generating $n$ tokens takes $n$ sequential forward passes, which is why long outputs are slow |
 | **language model** | a network trained to predict the next token over a large text corpus. That single objective is what the VLM and VLA track builds on — the "L" in VLM |
 | **autoencoder** | a network trained to reproduce its own input through a narrow middle, so the middle becomes a compressed representation. *Masked* autoencoders hide part of the input and reconstruct it; *variational* ones make the middle a distribution |
 | **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] can remove its extra matrix-multiplication cost when its update is merged into the base weights before inference, which helps explain its broad use |
@@ -193,7 +193,7 @@ embeddings" — reads as what it is: a matrix multiplication with named parts.
 > 1. Composition of linear maps is linear: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, a single matrix. Depth adds nothing without a nonlinearity between the multiplies.
 > 2. Layer 1: $8\times4 + 8 = 40$; layer 2: $8\times8 + 8 = 72$; layer 3: $2\times8 + 2 = 18$. Total **130**.
 > 3. $50{,}000/250 = 200$ iterations per epoch; $200 \times 10 = $ **2,000 updates**.
-> 4. Learning rate, batch size, and number of layers are hyperparameters (a human sets them before training). $W_1$ and $b_2$ are parameters — gradient descent chooses them.
+> 4. Learning rate, batch size, and number of layers are hyperparameters (set by a chosen configuration or search procedure, not by gradient descent). $W_1$ and $b_2$ are parameters — gradient descent chooses them.
 
 ### Where to go next
 
@@ -229,7 +229,7 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 
 $$h_1 = \sigma(W_1x + b_1), \qquad h_2 = \sigma(W_2h_1 + b_2), \qquad \hat y = W_3h_2 + b_3$$
 
-비선형 함수가 끼어 있는 이유는, 행렬곱만 쌓으면 $W_3W_2W_1$이라는 행렬 하나로 무너져서 데이터에 직선밖에 그을 수 없기 때문이다.
+비선형 함수가 끼어 있는 이유는, 행렬곱만 쌓으면 $(W_3W_2W_1)x + b'$라는 아핀 사상 하나로 무너져서 데이터에 직선(초평면)밖에 그을 수 없기 때문이다.
 
 - $(W, b)$ 한 쌍과 그 비선형성이 **층(layer)** 하나다. $W$가 **가중치**, $b$가 **편향**.
   둘을 합쳐 **파라미터**(학습되는 숫자들)라고 부른다.
@@ -363,7 +363,7 @@ flowchart LR
 | **로짓(logits)** | 확률로 바뀌기 전의 날 점수 |
 | **소프트맥스** | 점수를 확률로 바꾸는 함수 ([[02-foundations/engineering-math\|0.5 §10]]) |
 | **토크나이저(tokenizer)** | 날 입력을 토큰으로 자르는 단계 — 텍스트 토크나이저는 단어를 부분 단어로 쪼개고, 비전 쪽은 이미지를 패치로 자르거나 학습된 코드북으로 보낸다. 이것은 *선택*이고, 토크나이저가 다른 두 모델은 토큰 단위로 비교되지 않는다 |
-| **자기회귀(autoregressive)** | 이미 만든 토큰들에 조건부로 한 번에 한 토큰씩 출력을 만드는 것. 언어 모델의 출력 길이가 시간을 선형으로 먹는 이유 |
+| **자기회귀(autoregressive)** | 이미 만든 토큰들에 조건부로 한 번에 한 토큰씩 출력을 만드는 것. $n$개 토큰을 만들려면 순전파를 $n$번 차례로 해야 하므로 긴 출력이 느린 이유 |
 | **언어 모델(language model)** | 큰 텍스트 말뭉치에서 다음 토큰을 예측하도록 학습한 신경망. 그 목적함수 하나 위에 VLM·VLA 트랙이 서 있다 — VLM의 "L"이다 |
 | **오토인코더(autoencoder)** | 좁은 가운데를 통과시켜 자기 입력을 재현하도록 학습해서, 그 가운데가 압축된 표현이 되게 하는 신경망. *마스킹* 오토인코더는 입력 일부를 가리고 복원하고, *변분* 오토인코더는 가운데를 분포로 만든다 |
 | **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]는 추론 전에 갱신을 기본 가중치에 병합할 수 있을 때 추가 행렬곱 비용을 없앨 수 있어 널리 쓰인다 |

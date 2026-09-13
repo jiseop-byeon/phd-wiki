@@ -289,7 +289,8 @@ _marks = {m: len(re.findall(r"^- (?:\[.\] )?" + m + " ", _cl, re.M)) for m in "�
 # one ★ is the Modern Robotics textbook, which overview.md counts separately
 _star_papers = _marks["★"] - 1
 _total_pages = (_track("02-foundations") + _track("04-robotics")
-                + _track("04-robotics/modern-robotics") + _track("05-construction-robotics")
+                + _track("04-robotics/modern-robotics") + _track("04-robotics/haptics-teleoperation")
+                + _track("04-robotics/ros2") + _track("05-construction-robotics")
                 + _track("06-research-practice") + _track("07-research-program") + _n_notes)
 
 _depths = collections.Counter()

@@ -143,7 +143,7 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   "nothing was lost, so it is reversible."
 - **A shape check you will do constantly.** A batch of 32 samples with 512 features is
   $(32 \times 512)$; a linear layer to 10 classes is $(512 \times 10)$; the output is
-  $(32 \times 10)$ — one score vector per sample. Reading shapes like this *is* reading an
+  $(32 \times 10)$ (row-vector convention, output $= XW$; in the column convention $y = Wx$ used on pages 0.7 and 2, the same layer's $W$ is $10 \times 512$) — one score vector per sample. Reading shapes like this *is* reading an
   architecture ([[02-foundations/linear-algebra|1. Linear Algebra §1]]).
 
 ### 5. Series and the geometric sum (→ 7. RL Basics)
@@ -332,15 +332,15 @@ Physical systems are described by ODEs — this is the modeling language of all 
   and $e^{at}$ becomes the matrix exponential $e^{At}$ with eigenvalues playing the role of $a$.
 - **Second order**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — the
   mass-spring-damper. Two numbers describe every response: natural frequency $\omega_n$
-  (how fast it oscillates) and damping ratio $\zeta$ (whether it rings: $\zeta<1$
-  oscillates, $\zeta \ge 1$ doesn't). Robot arms and suspension systems are tuned in this
+  (the undamped frequency scale) and damping ratio $\zeta$ (whether it rings: $0<\zeta<1$
+  oscillates while decaying, at $\omega_d = \omega_n\sqrt{1-\zeta^2}$; $\zeta \ge 1$ doesn't; $\zeta = 0$ oscillates forever and $\zeta<0$ grows). Robot arms and suspension systems are tuned in this
   vocabulary.
 - Discrete time (what code runs): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — stable iff
   $|a| < 1$. The continuous and discrete conditions ($\text{Re}(a) < 0$ vs $|a_d| < 1$) are
   the same statement, and here is the bridge: sampling $\dot x = ax$ every $\Delta t$ gives
   $x_{t+1} = e^{a\Delta t}x_t$, so the discrete factor is $a_d = e^{a\Delta t}$. Since
   $|e^{a\Delta t}| = e^{\text{Re}(a)\Delta t}$, that magnitude is below $1$ exactly when
-  $\text{Re}(a) < 0$. The left half-plane *maps onto* the unit disc — one story, two
+  $\text{Re}(a) < 0$. The left half-plane *maps into* the open unit disc — one story, two
   coordinate systems.
 
 ### 9. Laplace transform and the s-plane (→ control track, 6. Signal Processing §5)
@@ -360,7 +360,7 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   of $s$ that breaks the division, $s = a$, is the **pole** — the same $a$ whose sign decided
   stability back in §8. Poles are not a new idea; they are §8's exponents, relabelled.
 - **Poles** = roots of the denominator = the $a$'s of section 8 = eigenvalues of the
-  state-space $A$. Plotted in the complex **s-plane**:
+  state-space $A$ — every pole is an eigenvalue, and every eigenvalue appears as a pole only when no pole–zero cancellation hides it (a minimal realization; Åström & Murray Example 9.7). A cancelled unstable eigenvalue is invisible in $G(s)$. Plotted in the complex **s-plane**:
   - left half-plane (negative real part) → decaying → **stable**
   - right half-plane → growing → **unstable**
   - imaginary part → oscillation frequency; distance from axis → decay speed
@@ -369,9 +369,9 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
   <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
   <g fill="currentColor">
-    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,142 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,136 l6,6 l-6,6 l-6,-6 z"/>
     <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,129 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,123 l6,6 l-6,6 l-6,-6 z"/>
   </g>
   <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
     <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
@@ -434,8 +434,8 @@ Two definitions used everywhere before they are formally introduced:
 | $\odot$ | element-wise product |
 | $:=$ | defined as |
 | $A^\top$ | transpose — flip the matrix across its diagonal ($A^\top_{ij} = A_{ji}$) |
-| $\det A$ | determinant — the factor by which the map scales volume; $0$ means it flattens space, so it has no inverse |
-| $A \succeq 0$, $A \succ 0$ | positive semidefinite / definite — the matrix version of "$\ge 0$" / "$>0$": $x^\top A x \ge 0$ for every $x$ |
+| $\det A$ | determinant — $\lvert\det A\rvert$ is the factor by which the map scales volume (the sign records an orientation flip); $0$ means it flattens space, so it has no inverse |
+| $A \succeq 0$, $A \succ 0$ | positive semidefinite / definite — the matrix version of "$\ge 0$" / "$>0$": for symmetric $A$, $x^\top A x \ge 0$ for every $x$ ($\succeq$) and $x^\top A x > 0$ for every $x \ne 0$ ($\succ$) |
 
 > [!tip] Going deeper · 더 깊이
 > The honest route out of this page is not another maths book — it is the foundations pages themselves, which is what each section title points at. If a section here is not a reminder but genuinely new, the underlying course is a standard one and any of the usual engineering-mathematics texts will do; Boas, *Mathematical Methods in the Physical Sciences* and Kreyszig, *Advanced Engineering Mathematics* are the two most likely to be on a shelf near you. Read the one chapter, not the book: nothing on this page needs a term of study, and the rest of the track is where the payoff is.
@@ -581,7 +581,7 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   [[02-foundations/linear-algebra|1. 선형대수 §2]]에 있다. 여기서는 "풀랭크" = "잃어버린 것이
   없어 되돌릴 수 있다"로 읽으면 된다.
 - **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개짜리 샘플 32개 배치는 $(32 \times 512)$,
-  10개 클래스로 가는 선형 층은 $(512 \times 10)$, 출력은 $(32 \times 10)$ — 샘플당 점수
+  10개 클래스로 가는 선형 층은 $(512 \times 10)$, 출력은 $(32 \times 10)$(행벡터 관례, 출력 $= XW$. 0.7과 2 페이지의 열벡터 관례 $y = Wx$에서는 같은 층의 $W$가 $10 \times 512$다) — 샘플당 점수
   벡터 하나. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
   ([[02-foundations/linear-algebra|1. 선형대수 §1]]).
 
@@ -754,14 +754,14 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수
   $e^{At}$가 되며 고유값이 $a$의 역할을 한다.
 - **2차**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — 질량-스프링-댐퍼.
-  모든 응답을 두 숫자가 기술한다: 고유 진동수 $\omega_n$(얼마나 빨리 진동하나)과 감쇠비
-  $\zeta$(울리는가: $\zeta<1$이면 진동, $\zeta \ge 1$이면 안 함). 로봇 팔과 서스펜션이
+  모든 응답을 두 숫자가 기술한다: 고유 진동수 $\omega_n$(감쇠 없을 때의 진동수 척도)과 감쇠비
+  $\zeta$(울리는가: $0<\zeta<1$이면 $\omega_d = \omega_n\sqrt{1-\zeta^2}$로 진동하며 감쇠, $\zeta \ge 1$이면 안 함; $\zeta = 0$이면 영원히 진동하고 $\zeta<0$이면 커진다). 로봇 팔과 서스펜션이
   이 어휘로 튜닝된다.
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
   때만 안정. 연속과 이산의 조건($\text{Re}(a) < 0$ vs $|a_d| < 1$)은 같은 말이고, 다리는
   이것이다: $\dot x = ax$를 $\Delta t$마다 샘플링하면 $x_{t+1} = e^{a\Delta t}x_t$이므로 이산
   계수가 $a_d = e^{a\Delta t}$다. 그런데 $|e^{a\Delta t}| = e^{\text{Re}(a)\Delta t}$이므로, 이
-  크기가 $1$보다 작을 조건이 정확히 $\text{Re}(a) < 0$이다. 좌반평면이 단위원 *안으로
+  크기가 $1$보다 작을 조건이 정확히 $\text{Re}(a) < 0$이다. 좌반평면이 열린 단위원 *안으로
   사상된다* — 하나의 이야기를 두 좌표계로 쓴 것이다.
 
 ### 9. 라플라스 변환과 s-평면 (→ 제어 트랙, 6. 신호처리 §5)
@@ -779,7 +779,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   방금 무슨 일이 일어났는지 보라: 미분방정식이 *나눗셈*이 되었다. 그리고 그 나눗셈을 깨뜨리는
   단 하나의 $s$ 값, $s = a$가 **극점**이다 — 8절에서 부호로 안정성을 결정하던 바로 그 $a$다.
   극점은 새 개념이 아니라, 8절의 지수를 다른 이름으로 부른 것이다.
-- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값. 복소 **s-평면**에 그리면:
+- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값 — 모든 극점은 고유값이지만, 모든 고유값이 극점으로 보이는 것은 극점–영점 상쇄가 없을 때(최소 실현)뿐이다(Åström & Murray 예제 9.7). 상쇄된 불안정 고유값은 $G(s)$에 보이지 않는다. 복소 **s-평면**에 그리면:
   - 좌반평면(실수부 음수) → 감쇠 → **안정**
   - 우반평면 → 성장 → **불안정**
   - 허수부 → 진동 주파수; 축에서의 거리 → 감쇠 속도
@@ -788,9 +788,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
   <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
   <g fill="currentColor">
-    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,142 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,136 l6,6 l-6,6 l-6,-6 z"/>
     <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,129 l6,6 l-6,6 l-6,-6 z"/>
+    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,123 l6,6 l-6,6 l-6,-6 z"/>
   </g>
   <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
     <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
@@ -848,8 +848,8 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 | $\odot$ | 원소별 곱 |
 | $:=$ | ~로 정의함 |
 | $A^\top$ | 전치 — 대각선을 기준으로 뒤집기 ($A^\top_{ij} = A_{ji}$) |
-| $\det A$ | 행렬식 — 사상이 부피를 몇 배로 만드는가; $0$이면 공간을 납작하게 뭉개므로 역행렬이 없다 |
-| $A \succeq 0$, $A \succ 0$ | 양의 준정부호/정부호 — 행렬판 "$\ge 0$"/"$>0$": 모든 $x$에 대해 $x^\top A x \ge 0$ |
+| $\det A$ | 행렬식 — $\lvert\det A\rvert$가 사상이 부피를 몇 배로 만드는가다(부호는 방향 뒤집힘); $0$이면 공간을 납작하게 뭉개므로 역행렬이 없다 |
+| $A \succeq 0$, $A \succ 0$ | 양의 준정부호/정부호 — 행렬판 "$\ge 0$"/"$>0$": 대칭 $A$에 대해 모든 $x$에서 $x^\top A x \ge 0$($\succeq$), 모든 $x \ne 0$에서 $x^\top A x > 0$($\succ$) |
 
 > [!tip] 더 깊이 · Going deeper
 > 이 페이지에서 나가는 정직한 경로는 또 다른 수학책이 아니라 기초 페이지들 자신이고, 각 절 제목이 가리키는 것이 바로 그것이다. 여기 어떤 절이 상기가 아니라 정말로 처음이라면, 그 밑에 깔린 과목은 표준적인 것이라 흔한 공업수학 교재 아무거나로 충분하다. Boas의 *Mathematical Methods in the Physical Sciences*와 Kreyszig의 *Advanced Engineering Mathematics*가 근처 책장에 있을 가능성이 가장 높은 둘이다. 책이 아니라 그 한 장만 읽어라. 이 페이지의 무엇도 한 학기를 필요로 하지 않고, 보상은 트랙의 나머지에 있다.

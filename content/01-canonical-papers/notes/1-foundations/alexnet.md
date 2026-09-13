@@ -17,7 +17,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 **Krizhevsky et al., NeurIPS 2012** — [PDF](https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf) · [Official](https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html)
 
 > [!note] Math on-ramp · 수학 준비물
-> Two things: [[02-foundations/signal-processing|6. Signal Processing §1]] for what a convolution actually computes (flip, slide, multiply, accumulate — worked by hand there), and [[02-foundations/calculus-backprop|2. Calculus §4]] for why ReLU's mask gradient beat sigmoid's $\le 1/4$ factor. Those two facts are the whole technical core of this paper.
+> Two things: [[02-foundations/signal-processing|6. Signal Processing §1]] for what a convolution actually computes (flip, slide, multiply, accumulate — worked by hand there), and [[02-foundations/calculus-backprop|2. Calculus §4]] for why ReLU's mask gradient avoids the saturation that shrinks sigmoid and tanh gradients. Those two facts are the whole technical core of this paper.
 > 두 가지: 합성곱이 실제로 무엇을 계산하는지는 [[02-foundations/signal-processing|6. 신호처리 §1]](뒤집고·밀고·곱하고·더하기를 손으로 해 둔다), ReLU의 마스크 그래디언트가 시그모이드의 $\le 1/4$를 이긴 이유는 [[02-foundations/calculus-backprop|2. 미적분 §4]]. 이 논문의 기술적 핵심은 이 두 사실이 전부다.
 
 ## English
@@ -34,7 +34,7 @@ Through the 2000s, computer vision meant hand-engineered features (SIFT, HOG) fe
 > Nothing conceptually new — LeNet scaled up ~1000×. The contribution is proving that scale (data + compute + depth) beats hand-crafted engineering, plus the tricks that made scale trainable.
 
 - 8 learned layers: 5 convolutional + 3 fully connected, ~60M parameters.
-- **ReLU** activation — trains several times faster than tanh/sigmoid; arguably the paper's most durable technical legacy.
+- **ReLU** activation — trains several times faster than tanh (the paper's comparison); arguably the paper's most durable technical legacy.
 - **Dropout** (0.5) in FC layers to fight overfitting; aggressive **data augmentation** (crops, flips, color jitter).
 - **GPU training** — model split across two GTX 580s (3GB each); training took 5–6 days.
 - Local response normalization and overlapping pooling (both later abandoned).
@@ -73,7 +73,7 @@ Started the modern era: within two years every vision benchmark was CNN-dominate
 > 개념적으로 새로운 건 없다 — LeNet을 1000배쯤 키운 것이다. 기여는 "규모(데이터+연산+깊이)가 수작업 설계를 이긴다"는 증명과, 그 규모를 학습 가능하게 만든 기법들이다.
 
 - 학습 레이어 8층: 합성곱 5층 + 완전연결 3층, 약 6천만 파라미터.
-- **ReLU** 활성함수 — tanh/sigmoid보다 몇 배 빠르게 수렴. 이 논문이 남긴 가장 오래가는 기술 유산.
+- **ReLU** 활성함수 — tanh보다 몇 배 빠르게 수렴(논문의 비교 대상). 이 논문이 남긴 가장 오래가는 기술 유산.
 - 완전연결층에 **Dropout**(0.5), 공격적인 **데이터 증강**(크롭, 좌우반전, 색상 변형).
 - **GPU 학습** — 모델을 GTX 580 두 장(각 3GB)에 나눠 싣고 5~6일 학습.
 - Local response normalization과 overlapping pooling (둘 다 이후 폐기됨).

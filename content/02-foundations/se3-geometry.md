@@ -155,7 +155,7 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
   rotation happens to change nothing — $(0,0,1)$ lies along the $z$ axis it is being turned
   about — so move the camera to the base's own $x$ axis, $p_{BC} = (1,0,0)$, and the step
   becomes visible: $R_z(90°)(1,0,0) + (2,0,0) = (0,1,0) + (2,0,0) = (2,1,0)$, whereas adding
-  the offset *without* rotating gives $(3,0,0)$ — a metre away, in the wrong direction.
+  the offset *without* rotating gives $(3,0,0)$ — about 1.4 m ($\sqrt 2$) away, in the wrong direction.
   That rotation of the offset is the step people forget, and it is exactly what the matrix
   form does for you automatically — which is the entire reason poses are written as $4\times4$ matrices instead
   of an $(R, p)$ pair you combine by hand.
@@ -177,7 +177,7 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
 **Pose and velocity answer different questions.** A pose says where a frame is now; a twist says how rigid-body motion changes instantaneously. A finite rotation cannot generally be obtained by simply adding its matrix entries or Euler angles, because successive rotations compose through multiplication and order matters. The small-motion approximation supplies a local linear language in which differentiation becomes possible.
 
 > [!example] From an axis to $T$, and back
-> Let a revolute joint rotate about the world $z$ axis through the point
+> Let a revolute joint rotate about an axis parallel to world $z$ through the point
 > $q=(1,0,0)$, with $\omega=(0,0,1)$. Its screw axis is
 > $S=(\omega,v)$ with $v=-\omega\times q=(0,-1,0)$, and
 > $[S]=\begin{pmatrix}[\omega]_\times&v\\0&0\end{pmatrix}$.
@@ -194,8 +194,8 @@ The linear part of a twist also depends on the reference frame and its origin. T
 
 ### 5. Where this appears in the wiki
 
-- **VLA action spaces**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]'s 7-DoF action = end-effector
-  position (3) + rotation (3) + gripper (1); [[01-canonical-papers/notes/4-vla/pi0|π0]] outputs
+- **VLA action spaces**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]'s arm action is 7-D = end-effector
+  position (3) + rotation (3) + gripper (1), inside an 11-D action that also carries base motion (3) and a mode switch (1); [[01-canonical-papers/notes/4-vla/pi0|π0]] outputs
   joint-space chunks — reading these requires exactly this page. Turning an end-effector
   pose back into joint commands is inverse kinematics
   ([[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]), whose many-solutions
@@ -366,7 +366,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   않는다 — $(0,0,1)$이 회전축인 $z$와 나란하기 때문이다. 그러니 카메라를 베이스 자신의 $x$
   축으로 옮겨 $p_{BC} = (1,0,0)$으로 두면 그 단계가 눈에 보인다:
   $R_z(90°)(1,0,0) + (2,0,0) = (0,1,0) + (2,0,0) = (2,1,0)$인데, 회전 없이 그냥 더하면
-  $(3,0,0)$ — 1 m 떨어진, 방향이 틀린 자리다. 사람들이 빼먹는 단계가 바로 그 오프셋 회전이고,
+  $(3,0,0)$ — 약 1.4 m($\sqrt 2$) 떨어진, 방향이 틀린 자리다. 사람들이 빼먹는 단계가 바로 그 오프셋 회전이고,
   행렬 형태가 자동으로 해주는 일이 정확히 그것이다 — pose를 $(R, p)$ 쌍으로 들고 손으로
   합치는 대신 $4\times4$ 행렬로 쓰는 이유 전부가 이것이다.
 - **프레임 규율**이 부호 실수 안 하기의 90%다: 모든 양에는 프레임(월드, 베이스, 카메라,
@@ -403,8 +403,8 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 ### 5. 이 위키에서 등장하는 곳
 
-- **VLA 행동 공간**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]의 7자유도 행동 = 말단 위치(3) +
-  회전(3) + 그리퍼(1); [[01-canonical-papers/notes/4-vla/pi0|π0]]는 관절 공간 청크를 출력 —
+- **VLA 행동 공간**: [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]의 팔 행동은 7차원 = 말단 위치(3) +
+  회전(3) + 그리퍼(1)이고, 이것은 베이스 이동(3)과 모드 전환(1)까지 담은 11차원 행동의 일부다; [[01-canonical-papers/notes/4-vla/pi0|π0]]는 관절 공간 청크를 출력 —
   이들을 읽는 데 정확히 이 페이지가 필요하다. 말단 pose를 다시 관절 명령으로 바꾸는 것이
   [[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이고, 그 다해(多解)
   구조가 생성형 정책이 다루는 바로 그 다봉성의 고전적 얼굴이다.

@@ -208,11 +208,11 @@ bug detector in existence.
   (Derivation: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
   [[02-foundations/engineering-math|0.5 §6]].
-- **ReLU**: mask gradient — cheap, non-saturating; the reason it beat sigmoid
-  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). Dead units = permanently zero mask.
-- **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every saturating layer multiplies the
-  backward signal by ≤ 0.25 — from the sigmoid derivatives alone, ten saturated layers
-  attenuate gradients roughly a million-fold (the full gradient also carries weight
+- **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
+  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
+- **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every sigmoid layer multiplies the
+  backward signal by at most 0.25, and 0.25 is the *best* case, at $z=0$ — from the sigmoid derivatives alone, ten layers
+  attenuate gradients at least a million-fold ($0.25^{10} \approx 9.5\times10^{-7}$), far more once units saturate ($\sigma'(4) \approx 0.018$) (the full gradient also carries weight
   Jacobians). This single inequality explains a decade of architecture history.
 
 ### 5. The pathologies that shaped architectures
@@ -253,15 +253,15 @@ bug detector in existence.
 
 ### Self-check
 
-1. Redo the worked example with an MSE loss replaced by softmax-CE. What changes in step 1?
-2. Show $\partial(x + F(x))/\partial x = I + J_F$ and explain why depth stops hurting.
+1. Redo the worked example with a $K$-class output ($W_2 \in \mathbb{R}^{K\times 3}$) and softmax-CE in place of MSE. What changes? (Softmax over the example's single scalar output is always 1, so a one-output softmax would give zero gradient.)
+2. Show $\partial(x + F(x))/\partial x = I + J_F$ and explain why depth no longer forces the gradient to decay.
 3. Why does forward-mode autodiff cost one pass *per input parameter*, and why is that
    fatal for a 7B-parameter model?
 4. In the [[01-canonical-papers/notes/6-diffusion/vae|VAE]], why can't you backprop through
    $z \sim \mathcal{N}(\mu, \sigma^2)$ directly, and how does $z = \mu + \sigma\epsilon$ fix it?
 
 > [!tip]- Answers
-> 1. Only step 1 changes: $\delta_2$ becomes $p - y$ (the softmax + cross-entropy gradient) instead of $\hat y - y$. Steps 2–5 are identical — the backward pattern does not care which loss produced the incoming delta.
+> 1. $\delta_2$ becomes $p - y$, a $K$-vector (the softmax + cross-entropy gradient), instead of the scalar $\hat y - y$. Steps 2–5 keep the same formulas with $W_2$ now $K\times 3$ — the backward pattern does not care which loss produced the incoming delta.
 > 2. The derivative of a sum is the sum of derivatives: $\partial(x + F(x))/\partial x = I + \partial F/\partial x = I + J_F$. The identity term gives the backward signal one path that is never multiplied down, so depth stops *forcing* decay — it mitigates vanishing rather than guaranteeing the total gradient never shrinks.
 > 3. Forward mode propagates sensitivities with respect to *one* input direction per pass, so covering 7B parameters would need 7B passes. Reverse mode propagates from a *scalar* loss, so a single backward pass yields every parameter gradient — the asymmetry is why training is possible at all.
 > 4. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
@@ -451,11 +451,11 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   (유도: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
   [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다.
-- **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 시그모이드를 이긴 이유다
-  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]). 죽은 유닛 = 영원히 0인 마스크.
-- **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 포화 층 하나가 역방향 신호에 0.25
-  이하를 곱한다 — 시그모이드 도함수만 따져도 포화 층 열 개면 그래디언트가 대략 백만 배
-  준다(실제 그래디언트에는 가중치 야코비안도 함께 곱해진다). 이 부등식 하나가 구조
+- **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
+  ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
+- **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드 층 하나가 역방향 신호에 많아야 0.25를
+  곱하고, 0.25는 $z=0$에서의 *최선*이다 — 시그모이드 도함수만 따져도 층 열 개면 그래디언트가 최소 백만 배
+  준다($0.25^{10} \approx 9.5\times10^{-7}$). 유닛이 포화하면 훨씬 더 준다($\sigma'(4) \approx 0.018$)(실제 그래디언트에는 가중치 야코비안도 함께 곱해진다). 이 부등식 하나가 구조
   설계사(史) 10년을 설명한다.
 
 ### 5. 구조를 만든 병리들
@@ -496,8 +496,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 ### 스스로 점검
 
-1. 계산 예제의 MSE를 softmax-CE로 바꾸면 1번 단계가 어떻게 바뀌는가?
-2. $\partial(x + F(x))/\partial x = I + J_F$를 보이고, 깊이가 더는 해가 안 되는 이유를
+1. 계산 예제를 $K$-클래스 출력($W_2 \in \mathbb{R}^{K\times 3}$)과 MSE 대신 softmax-CE로 바꾸면 무엇이 바뀌는가? (예제의 스칼라 출력 하나에 softmax를 걸면 항상 1이라 그래디언트가 0이 된다.)
+2. $\partial(x + F(x))/\partial x = I + J_F$를 보이고, 깊이가 더는 감쇠를 강제하지 않는 이유를
    설명하라.
 3. 순방향 모드 자동 미분은 왜 *입력 파라미터마다* 한 패스가 들고, 그것이 7B 모델에 왜
    치명적인가?
@@ -505,7 +505,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
    역전파할 수 없는 이유는, 그리고 $z = \mu + \sigma\epsilon$이 이를 고치는 방식은?
 
 > [!tip]- 스스로 점검 정답 · Answers
-> 1. 1단계가 $\delta_2 = p - y$(softmax+CE의 결과)로 바뀌고 나머지 패턴은 동일하다.
+> 1. $\delta_2$가 스칼라 $\hat y - y$ 대신 $K$-벡터 $p - y$(softmax+CE의 결과)가 된다. 2~5단계는 $W_2$가 $K\times 3$이 된 채로 같은 공식을 쓴다.
 > 2. 합의 미분 = 미분의 합: $I + \partial F/\partial x$ — 항등 항 덕분에 역방향 신호가 아무리 깊어도 곱해 줄어들지 않는 경로를 하나 갖는다. 즉 깊이가 감쇠를 *강제하지* 않게 될 뿐이고, 전체 gradient가 절대 줄지 않는다는 보장은 아니다.
 > 3. 순방향 모드는 입력 방향 하나당 전체 패스 한 번 — 7B 파라미터면 패스 7B번이 필요해 불가능; 역방향은 스칼라 손실(출력 1개) 기준 한 번이면 된다.
 > 4. 샘플링은 미분 불가능한 확률적 분기다; $z = \mu + \sigma\epsilon$으로 쓰면 무작위성이 외부 입력 $\epsilon$으로 밀려나 $\mu, \sigma$에 그래디언트가 흐른다.

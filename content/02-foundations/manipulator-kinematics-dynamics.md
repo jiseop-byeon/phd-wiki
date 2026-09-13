@@ -170,7 +170,7 @@ $\dot\theta_2 = 2$ rad/s. The first row gives
 
 $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
-Joint 1 must supply $-4$ N·m *just to stay where it is*. Nothing is touching the robot;
+With joint 2 swinging at a constant rate ($\ddot\theta_2 = 0$), joint 1 must supply an extra $-4$ N·m *just to stay where it is*, on top of whatever gravity needs (in the vertical plane of §5 the total at this pose is $19.62 - 4 = 15.62$ N·m). Nothing is touching the robot;
 this is the arm's own moving mass pushing back through the linkage. Double the speed and
 it quadruples to $-16$ N·m, because the term is quadratic in velocity.
 
@@ -210,6 +210,8 @@ parameters in §7, which is why it is rarely used raw on real hardware.
 Everything so far lives in joint space. Contact does not: contact happens at the
 end-effector, in task space. The transformation is the single most important equation on
 this page.
+
+Task space here means Khatib's *operational space* — coordinates of the end-effector pose — not the *workspace*, the volume the arm can reach.
 
 Starting from $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$ and differentiating
 $v = J\dot\theta$, the end-effector obeys its own second law with an effective mass
@@ -331,10 +333,10 @@ whether a contact will feel stiff or soft — and be right.
 - [ ] Explain why $M$ has an argument, with the factor-of-five example.
 - [ ] Compute $\Lambda$ from $J$ and $M$ and interpret the result physically.
 - [ ] Distinguish kinematic manipulability, unit-torque dynamic manipulability, and operational inertia by the norm each assumes.
-- [ ] Name the term most responsible for sim-to-real failure and say why.
+- [ ] Name the worst-modelled term in the manipulator equation (friction) and say why, and name two non-dynamics sources that can dominate the sim-to-real gap.
 
 > [!tip] Going deeper · 더 깊이
-> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) ch.8 is the derivation this page compresses, and operational-space control (§6) is the book's task-space motion control, §11.3.3 and §11.4.3 — §11.6 is hybrid motion–force control, a different thing. Read ch.8 for the Newton–Euler recursion, which is how the manipulator equation is actually computed rather than how it is written. What the book does not give you is §7 — where the parameters come from, and why identified ones and CAD ones disagree — because that is an experimental question, not a derivation.
+> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) ch.8 is the derivation this page compresses, and the task-space inertia of §6 is the book's §8.6 (eq. 8.90), where its chapter notes credit Khatib's operational-space formulation. Control built on it is §11.4.3 (task-space motion control with torque inputs); §11.3.3 is the kinematic, velocity-input version, and §11.6 is hybrid motion–force control, a different thing. Read ch.8 for the Newton–Euler recursion, which is how the manipulator equation is actually computed rather than how it is written. What the book does not give you is §7 — where the parameters come from, and why identified ones and CAD ones disagree — because that is an experimental question, not a derivation.
 
 ### Self-check
 
@@ -502,7 +504,7 @@ $$C(\theta,\dot\theta)\,\dot\theta = \begin{pmatrix} h\,\dot\theta_2^2 + 2h\,\do
 
 $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
-1번 관절은 *제자리에 있기 위해서만* $-4$ N·m를 내야 한다. 로봇에 닿은 것은 아무것도 없다.
+2번 관절이 일정한 속도로 휘두른다면($\ddot\theta_2 = 0$), 1번 관절은 중력에 필요한 토크에 더해 *제자리에 있기 위해서만* $-4$ N·m를 더 내야 한다(§5의 수직 평면이라면 이 자세에서 합계는 $19.62 - 4 = 15.62$ N·m다). 로봇에 닿은 것은 아무것도 없다.
 이것은 팔 자신의 움직이는 질량이 링크를 통해 되미는 힘이다. 속도를 두 배로 하면 항이 속도의
 이차식이므로 $-16$ N·m로 네 배가 된다.
 
@@ -653,10 +655,10 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 - [ ] $M$에 왜 인자가 붙는지 5배 예제로 설명한다.
 - [ ] $J$와 $M$에서 $\Lambda$를 계산하고 물리적으로 해석한다.
 - [ ] 기구학적 가조작성, 단위 토크 동적 가조작성, 작업공간 관성을 각각 어떤 노름 아래 정의하는지 구분한다.
-- [ ] sim-to-real 실패에 가장 크게 책임 있는 항을 대고 이유를 말한다.
+- [ ] 매니퓰레이터 방정식에서 가장 부정확하게 모델링되는 항(마찰)을 대고 이유를 말하며, sim-to-real 격차를 지배할 수 있는 동역학 밖의 원인 두 가지를 댄다.
 
 > [!tip] 더 깊이 · Going deeper
-> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) 8장이 이 페이지가 압축한 유도이고, 작업공간 제어(§6)에 해당하는 것은 책의 task-space motion control, 즉 11.3.3절과 11.4.3절이다. 11.6절은 hybrid motion–force control로 다른 주제다. 8장은 뉴턴–오일러 재귀를 위해 읽어라. 매니퓰레이터 방정식이 *쓰이는* 방식이 아니라 실제로 *계산되는* 방식이 그것이다. 책이 주지 않는 것은 §7이다 — 파라미터가 어디서 오는지, 식별한 값과 CAD 값이 왜 어긋나는지. 그것은 유도가 아니라 실험의 문제이기 때문이다.
+> [*Modern Robotics*](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) 8장이 이 페이지가 압축한 유도이고, §6의 작업공간 관성은 책의 8.6절(식 8.90)이며, 8장 주석이 이를 Khatib의 operational space formulation으로 소개한다. 그 위에 세운 제어는 11.4.3절(토크 입력의 task-space motion control)이고, 11.3.3절은 속도 입력의 기구학적 판본이며, 11.6절은 hybrid motion–force control로 다른 주제다. 8장은 뉴턴–오일러 재귀를 위해 읽어라. 매니퓰레이터 방정식이 *쓰이는* 방식이 아니라 실제로 *계산되는* 방식이 그것이다. 책이 주지 않는 것은 §7이다 — 파라미터가 어디서 오는지, 식별한 값과 CAD 값이 왜 어긋나는지. 그것은 유도가 아니라 실험의 문제이기 때문이다.
 
 ### 스스로 점검
 

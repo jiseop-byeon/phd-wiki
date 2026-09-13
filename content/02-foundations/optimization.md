@@ -74,7 +74,7 @@ The formulation is needed because a preference and a requirement play different 
 - **Gradient descent** from Taylor: minimizing the first-order model within a step-size
   trust gives $x_{k+1} = x_k - \alpha\nabla f(x_k)$. On a quadratic with Hessian $H$, the
   per-eigendirection contraction is $|1 - \alpha\lambda_i|$; stability needs
-  $\alpha < 2/\lambda_{max}$, so the slow direction converges like
+  $\alpha < 2/\lambda_{max}$; with the common choice $\alpha = 1/\lambda_{max}$ the slow direction converges like
   $(1 - \lambda_{min}/\lambda_{max})^k$ — **the condition number $\kappa$ is the pain**
   ([[02-foundations/linear-algebra|linear algebra]]).
 - **Gradient descent vs Newton, in one line of arithmetic.** Take $f(x) = 5x^2$, so
@@ -155,8 +155,8 @@ what $J$ does. And $\lambda$ interpolates: at $\lambda \to 0$ this is Gauss–Ne
 $\lambda$ it is a short step along the gradient. Adapt it by trial: take the step, and if
 the *true* residual fell, accept it and relax ($\lambda \leftarrow 0.8\lambda$); if it did
 not, reject the step and distrust harder ($\lambda \leftarrow 2\lambda$). On the $\tanh$
-problem from the same $x_0 = 1.15$ that destroyed Newton, this reaches $|x| < 10^{-3}$ in
-eight steps.
+problem from the same $x_0 = 1.15$ that destroyed Newton, starting from $\lambda_0 = 1$, this reaches $|x| < 10^{-3}$ in
+eight steps (a smaller $\lambda_0$ is faster here, a larger one slower).
 
 **Worked — what initialization is worth.** Same three beacons, ranges
 $\rho = (11.66,\, 6.32,\, 11.66)$, solved by Gauss–Newton from two starts:
@@ -208,8 +208,8 @@ a trust parameter.
   straight into the active constraint's forbidden side, so $\nabla f$ itself points back into
   the feasible region, anti-parallel to $\nabla g$: $\nabla f = -\lambda\nabla g$ for some
   $\lambda \ge 0$ (the two gradients are anti-parallel). Rearranged, that is
-  $\nabla(f + \lambda g) = 0$ — so minimizing the combined **Lagrangian** finds exactly the
-  points where no feasible descent direction remains.
+  $\nabla(f + \lambda g) = 0$ — so setting the gradient of the combined **Lagrangian** to zero picks out exactly the
+  candidate points where no feasible descent direction remains (on a non-convex problem such a point can be a saddle of the Lagrangian rather than its minimum).
 - **Lagrangian**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$.
 <svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="at a constrained optimum the gradient of the objective and the gradient of the constraint lie on one line pointing opposite ways">
   <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
@@ -257,9 +257,8 @@ a trust parameter.
   4. **Complementary slackness**: $\lambda_i\, g_i = 0$ — a constraint either binds
      ($g_i=0$, price $\lambda_i>0$) or is free ($\lambda_i = 0$).
 
-  These are **necessary** at an optimum when strong duality holds, which for a convex problem
-  follows from a constraint qualification such as Slater's condition. They are **sufficient**
-  only when the problem is convex. On a non-convex problem — nonlinear MPC, trajectory
+  With differentiable functions they are **necessary** at any optimum where strong duality holds, which for a convex problem
+  follows from a constraint qualification such as Slater's condition (Boyd & Vandenberghe §5.5.3). At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ, which is what SQP and interior-point NLP solvers rely on. For a convex problem they are **also sufficient**. On a non-convex problem — nonlinear MPC, trajectory
   optimization, the classes §5 lists — a KKT point need not be a minimum at all.
 - Worked example — project a point onto a half-space: $\min \tfrac12\|x - p\|^2$ s.t.
   $a^\top x \le b$. Stationarity: $x = p - \lambda a$. If $a^\top p \le b$: $\lambda = 0$,
@@ -391,7 +390,7 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   지배한다.
 - 테일러에서 나오는 **경사 하강**: 1차 모델을 신뢰 반경 안에서 최소화하면
   $x_{k+1} = x_k - \alpha\nabla f(x_k)$. 헤시안 $H$의 이차 함수에서 고유방향별 수축률은
-  $|1 - \alpha\lambda_i|$; 안정성엔 $\alpha < 2/\lambda_{max}$가 필요해 느린 방향은
+  $|1 - \alpha\lambda_i|$; 안정성엔 $\alpha < 2/\lambda_{max}$가 필요하고, 흔히 쓰는 $\alpha = 1/\lambda_{max}$를 고르면 느린 방향은
   $(1 - \lambda_{min}/\lambda_{max})^k$처럼 수렴한다 — **조건수 $\kappa$가 곧 고통이다**
   ([[02-foundations/linear-algebra|선형대수]]).
 - **경사 하강 vs 뉴턴법, 산수 한 줄로.** $f(x) = 5x^2$이면 $f'(x) = 10x$, $f''(x) = 10$이다.
@@ -467,7 +466,7 @@ $\lambda$는 보간한다. $\lambda \to 0$이면 Gauss–Newton이고, $\lambda$
 짧은 한 걸음이다. 시행으로 조절한다. 스텝을 밟아 보고 *참* 잔차가 줄었으면 받아들이고
 느슨하게 하며($\lambda \leftarrow 0.8\lambda$), 줄지 않았으면 스텝을 물리고 더 불신한다
 ($\lambda \leftarrow 2\lambda$). 뉴턴을 파괴했던 바로 그 $x_0 = 1.15$에서 $\tanh$ 문제를 이렇게
-풀면 여덟 스텝 만에 $|x| < 10^{-3}$에 닿는다.
+$\lambda_0 = 1$에서 시작해 풀면 여덟 스텝 만에 $|x| < 10^{-3}$에 닿는다(여기서는 $\lambda_0$가 작을수록 빠르고 클수록 느리다).
 
 **계산 — 초기화의 값어치.** 같은 비콘 셋, 거리 $\rho = (11.66,\, 6.32,\, 11.66)$, 두 시작점에서
 Gauss–Newton으로:
@@ -514,8 +513,8 @@ Gauss–Newton으로:
   수 없다 — *하강* 방향 $-\nabla f$가 활성 제약의 금지 영역 쪽을 정면으로 가리키므로,
   $\nabla f$ 자신은 실행 가능 영역 쪽을 향한다. 어떤
   $\lambda \ge 0$에 대해 $\nabla f = -\lambda\nabla g$(두 그래디언트가 반평행)가 된다.
-  정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**을 최소화하면 실행
-  가능한 하강 방향이 남지 않는 점을 정확히 찾는다.
+  정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**의 그래디언트를 0으로 놓으면 실행
+  가능한 하강 방향이 남지 않는 후보점을 정확히 찾는다(비볼록 문제에서는 그 점이 라그랑지안의 최소가 아니라 안장점일 수도 있다).
 <svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="제약 최적점에서 목적함수의 그래디언트와 제약의 그래디언트가 한 직선 위에서 서로 반대를 향한다">
   <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.07">
@@ -563,8 +562,8 @@ Gauss–Newton으로:
   4. **상보 여유성**: $\lambda_i\, g_i = 0$ — 제약은 구속되거나($g_i=0$, 가격
      $\lambda_i>0$) 놀거나($\lambda_i = 0$) 둘 중 하나다.
 
-  이 조건들은 강쌍대성이 성립할 때 최적점에서 **필요**하고, 볼록 문제에서는 Slater 조건 같은
-  제약 자격 조건이 그것을 준다. **충분**해지는 것은 문제가 볼록할 때뿐이다. 비볼록 문제 —
+  함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요**하고, 볼록 문제에서는 Slater 조건 같은
+  제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3). 일반 비볼록 문제의 국소 최소에서도 LICQ 같은 제약 자격 조건 아래에서는 여전히 필요하며, SQP와 내점법 NLP 솔버가 기대는 것이 이것이다. 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
   비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
 - 계산 예제 — 반공간으로의 투영: $\min \tfrac12\|x - p\|^2$ s.t. $a^\top x \le b$.
   정상성: $x = p - \lambda a$. $a^\top p \le b$이면: $\lambda = 0$, $x^* = p$(제약이 논다).
@@ -626,9 +625,9 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $\max(f,g)$의 에피그래프는 두 볼록 에피그래프의 교집합 — 볼록. 힌지 $\max(0, 1-yx)$는 아핀 함수 둘의 max라 볼록이다.
-> 2. 안정 조건 $\alpha < 2/\lambda_{max} = 0.02$. 실전 관례대로 한계의 절반 $\alpha = 0.01$을 잡으면(경계 근처는 빠른 모드가 진동한다) 느린 모드는 $(1-0.01)^k = 0.99^k$로 수축; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$회.
+> 2. 안정 조건 $\alpha < 2/\lambda_{max} = 0.02$. 실전 관례대로 한계의 절반 $\alpha = 0.01$을 잡으면(경계 근처는 빠른 모드가 진동한다) 느린 모드는 $(1-0.01)^k = 0.99^k$로 수축; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$회. 조건수 $\kappa = 100$이 *곧* 그 대가다.
 > 3. 구속 케이스: 정상성은 $x^* = p - \lambda a$로 성립; $a^\top x^* = b$(원 가능·구속); $\lambda = (a^\top p - b)/\|a\|^2 > 0$(쌍대 가능); $\lambda g = \lambda \cdot 0 = 0$(상보 여유성).
-> 4. 목적은 볼록 이차, 제약은 선형(동역학 등식 + 박스) — 볼록 QP. 장애물 회피(비볼록 여집합)나 정수 결정(작업 순서)이 들어오면 비볼록이 된다.
+> 4. 목적은 볼록 이차, 제약은 선형(동역학 등식 + 박스) — 볼록 QP. 장애물 회피(비볼록 여집합)나 정수 결정(작업 순서, 접촉 모드 선택)이 들어오면 비볼록이 된다.
 
 ### 로보틱스 다리
 
