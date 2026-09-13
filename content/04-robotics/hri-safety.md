@@ -171,8 +171,14 @@ named standard, not against "safety" in general.
 > [!example] Worked example · 계산 예제
 > **What the separation distance costs you.** ISO/TS 15066 sizes speed-and-separation
 > monitoring as $S_p = S_h + S_r + S_s + C + Z_d + Z_r$: the operator's approach, the robot's
-> travel during its reaction time, its stopping distance, the intrusion distance before the
-> sensor sees a limb, and two position uncertainties. Take the standard walking speed
+> travel during its reaction time, its stopping distance, the intrusion distance $C$ as defined
+> in ISO 13855, the operator's position uncertainty $Z_d$ as measured by the presence-sensing
+> device, and the robot's position uncertainty $Z_r$. The standard was not read here (UT Libraries
+> does not collect ISO standards); the equation and term definitions are as quoted in
+> [Himmelsbach et al., *Sensors* 21(21):7144, 2021](https://pmc.ncbi.nlm.nih.gov/articles/PMC8587097/), an open-access paper, which
+> also gives the constant-speed form $S_h = 1.6\,(T_r + T_s)$. A 2026 comparative review
+> ([Hartmann et al., arXiv 2602.17822](https://arxiv.org/abs/2602.17822)) places this in TS 15066 clause 5.5.4 and
+> reports that ISO 10218-2:2025 moves the formulas into its normative Annex L, with SSM in §5.14.5. Take the standard walking speed
 > $v_h = 1.6$ m/s from ISO 13855, a robot at $v_r = 1.0$ m/s, reaction $T_r = 0.1$ s, stopping
 > $T_s = 0.3$ s, and $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m.
 >
@@ -425,7 +431,13 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 > [!example] 계산 예제 · Worked example
 > **분리 거리가 실제로 무엇을 앗아가는가.** ISO/TS 15066은 속도·분리 감시를
 > $S_p = S_h + S_r + S_s + C + Z_d + Z_r$로 계산한다: 작업자의 접근, 로봇이 반응 시간 동안
-> 이동한 거리, 정지 거리, 센서가 팔다리를 보기 전까지의 침입 거리, 그리고 두 위치 불확실성.
+> 이동한 거리, 정지 거리, ISO 13855에서 정의한 침입 거리 $C$, 존재 감지 장치로 측정한 작업자
+> 위치 불확실성 $Z_d$, 로봇 위치 불확실성 $Z_r$이다. 여기서 표준 원문을 읽지는 못했다(UT 도서관은
+> ISO 표준을 소장하지 않는다). 식과 항 정의는
+> 공개 논문 [Himmelsbach 외, *Sensors* 21(21):7144, 2021](https://pmc.ncbi.nlm.nih.gov/articles/PMC8587097/)이 인용한 그대로이며, 이 논문은
+> 속도 일정 형태 $S_h = 1.6\,(T_r + T_s)$도 준다. 2026년 비교 리뷰
+> ([Hartmann 외](https://arxiv.org/abs/2602.17822))는 이 내용을 TS 15066 5.5.4절에 두고,
+> ISO 10218-2:2025가 이 식들을 규범 부속서 L로 옮기고 SSM을 §5.14.5에 두었다고 보고한다.
 > ISO 13855의 표준 보행 속도 $v_h = 1.6$ m/s, 로봇 $v_r = 1.0$ m/s, 반응 $T_r = 0.1$ s,
 > 정지 $T_s = 0.3$ s, $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m를 넣자.
 >

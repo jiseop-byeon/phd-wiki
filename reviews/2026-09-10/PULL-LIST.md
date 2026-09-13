@@ -118,4 +118,10 @@ Still open — need the PDFs saved from a normal browser:
     placement; "first complete loop" removed.
   - **Automation in Construction guide** — single anonymized; editors assess first, then
     typically at least two reviewers. Matches the venue page.
-- ISO/TS 15066:2016 §5.5.4 (not attempted).
+- ~~ISO/TS 15066:2016 §5.5.4~~ — UT Libraries' standards guide states that international
+  standards (ISO, IEC, ITU, DIN) are not collected; ILL may try, or it must be bought. Checked
+  instead against two open sources on 2026-09-12: Himmelsbach et al., *Sensors* 21(21):7144
+  (2021) quotes $S_p = S_h + S_r + S_s + C + Z_d + Z_r$ with the term definitions and
+  $S_h = 1.6(T_r+T_s)$; Hartmann et al. (arXiv 2602.17822, 2026 review) places SSM in TS 15066
+  clause 5.5.4 and reports the formulas moved to ISO 10218-2:2025 normative Annex L. The page
+  now says the standard itself was not read and cites both.
