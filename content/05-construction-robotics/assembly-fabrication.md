@@ -83,8 +83,8 @@ For example, trace a panel from initial localization through contact to acceptan
 - **In situ Fabricator / Mesh Mould** — mobile fabrication and robot-oriented design;
   important for how architecture and robotics are co-designed.
 - **HEAP dry-stone wall** ([[01-canonical-papers/notes/8-construction/dry-stone-wall|dry-stone wall]])
-  — on-site material perception, placement planning, and force-controlled manipulation on
-  an excavator; see the [[05-construction-robotics/earthmoving-heavy-machinery|heavy-machine stream]].
+  — on-site stone detection and scanning, geometric placement planning, and grasping and
+  placement with a gripper-equipped excavator; see the [[05-construction-robotics/earthmoving-heavy-machinery|heavy-machine stream]].
 - **Aerial Additive Manufacturing** (Nature, 2022 —
   [[01-canonical-papers/notes/8-construction/aerial-am-2022|aerial AM]]) — cooperating
   drones deposit and inspect material in flight; an existence proof with payload,
@@ -197,7 +197,7 @@ flowchart LR
 
 - **In situ Fabricator / Mesh Mould** — 모바일 제작과 robot-oriented design. 건축과 로보틱스가 어떻게 함께 설계되는지를 보여 준다는 점에서 중요하다.
 - **HEAP 돌담** ([[01-canonical-papers/notes/8-construction/dry-stone-wall|돌담 노트]]) —
-  현장 재료 인식, 배치 계획, 굴착기의 힘 제어 조작. [[05-construction-robotics/earthmoving-heavy-machinery|중장비 흐름]]을 함께 본다.
+  현장 돌 검출과 스캔, 기하 배치 계획, 그리퍼를 단 굴착기의 파지와 배치. [[05-construction-robotics/earthmoving-heavy-machinery|중장비 흐름]]을 함께 본다.
 - **Aerial Additive Manufacturing**(Nature 2022 —
   [[01-canonical-papers/notes/8-construction/aerial-am-2022|aerial AM]]) — 비행 중 재료를
   적층·검사하는 협력 드론. 탑재 중량, 재료, 규모에 한계가 있는 존재 증명이다.

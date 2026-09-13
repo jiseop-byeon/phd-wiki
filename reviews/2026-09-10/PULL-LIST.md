@@ -91,7 +91,14 @@ Cleared, with what changed in the wiki:
 
 Still open — need the PDFs saved from a normal browser:
 
-- Johns et al. 2023 and Zhang et al. 2021 (*Science Robotics*, no UT subscription).
+- ~~Johns et al. 2023 and Zhang et al. 2021~~ — *Science Robotics*; UT's catalogue has no
+  holding (title and ISSN 2470-9476 both return nothing). Resolved without the full text on
+  2026-09-12: the notes now say only what the abstracts, ETH's November 2023 announcement and
+  the AES arXiv preprint state. ETH's announcement supplies per-stone approximate weight and
+  centre of gravity; no open source names a force-controlled placement, so that claim was
+  removed from the dry-stone note, the assembly stream and MR ch. 12. AES's 24-hour figure is
+  no longer tied to material loading, and its throughput and machine sizes are cited as the
+  preprint's. Reopen if the full texts arrive through ILL.
 - Lundeen 2019, Davila Delgado 2019, Liu 2021, Feng 2015, Axehill & Morari 2012 (ScienceDirect).
 - *Automation in Construction* guide for authors (ScienceDirect).
 - ISO/TS 15066:2016 §5.5.4 (not attempted).

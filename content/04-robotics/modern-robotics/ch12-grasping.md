@@ -40,8 +40,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Learning-era continuation**: grasp synthesis is now largely learned (grasp-detection
   networks, dexterous-hand policies), but the *verification* language — cones, wrenches,
   closure — is still how failures are analyzed. Construction case in this wiki:
-  [[01-canonical-papers/notes/8-construction/heap|HEAP's dry-stone wall]] is force-closure
-  reasoning on irregular, heavy objects.
+  [[01-canonical-papers/notes/8-construction/heap|HEAP's dry-stone wall]] grasps irregular,
+  multi-tonne stones, exactly where closure analysis matters, though its open sources
+  describe the gripper and the scans rather than a closure analysis.
 
 ### Self-check
 
@@ -81,8 +82,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다.
 - **학습 시대의 연속**: 파지 생성은 이제 대부분 학습된다(파지 검출 네트워크, 정밀 손
   정책) — 하지만 *검증*의 언어(원뿔, 렌치, closure)는 여전히 실패 분석의 도구다. 이
-  위키의 건설 사례: [[01-canonical-papers/notes/8-construction/heap|HEAP의 돌담]]이 불규칙한
-  무거운 물체에 대한 force-closure 추론이다.
+  위키의 건설 사례: [[01-canonical-papers/notes/8-construction/heap|HEAP의 돌담]]은 불규칙한
+  수 톤급 돌을 파지하므로 closure 분석이 중요한 바로 그 자리다. 다만 공개 출처는 closure
+  분석이 아니라 그리퍼와 스캔을 기술한다.
 
 ### 스스로 점검
 
