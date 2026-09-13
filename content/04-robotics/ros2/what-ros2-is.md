@@ -106,7 +106,7 @@ curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-a
 sudo dpkg -i /tmp/ros2-apt-source.deb
 ```
 
-Then the distribution itself. The official page interposes an upgrade between the update and the install, and it is not decoration: installing a large ROS package set against a stale Ubuntu produces exactly the dependency conflicts the `noble-updates` note above warns about. `desktop` includes RViz, the demos and the tutorials; `ros-base` is the same communication layer without GUI tools, which is what goes on a robot:
+Then the distribution itself. The official page interposes an upgrade between the update and the install, and it is not decoration: installing a large ROS package set against a stale Ubuntu invites dependency conflicts. (The separate `noble-updates` note below is about installing `ros-dev-tools`.) `desktop` includes RViz, the demos and the tutorials; `ros-base` is the same communication layer without GUI tools, which is what goes on a robot:
 
 ```bash
 sudo apt update
@@ -248,14 +248,15 @@ ros2 interface show geometry_msgs/msg/Twist
 
 ```text
 # This expresses velocity in free space broken into its linear and angular parts.
-    Vector3  linear
-            float64 x
-            float64 y
-            float64 z
-    Vector3  angular
-            float64 x
-            float64 y
-            float64 z
+
+Vector3  linear
+	float64 x
+	float64 y
+	float64 z
+Vector3  angular
+	float64 x
+	float64 y
+	float64 z
 ```
 
 This is the contract. `Twist` is a general-purpose velocity in a frame: a real differential-drive robot uses `linear.x` and `angular.z` exactly as the turtle does, which is why this toy transfers.
@@ -284,7 +285,7 @@ ros2 topic pub /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.
 The turtle circles. You replaced a driver with a command line, because the subscriber never knew who was publishing.
 
 5. Open `rqt_graph`, uncheck **Debug**, and find your `topic pub` and `topic echo` nodes in the picture.
-6. Stop turtlesim with Ctrl+C while `echo` and `hz` keep running. They do not crash; they go quiet. Restart turtlesim and they resume. That is item 3 of section 1, demonstrated.
+6. Put terminal 4 back on `ros2 topic hz /turtle1/pose`, then stop turtlesim with Ctrl+C while `echo` and `hz` keep running. Neither crashes: `hz` on the pose goes quiet (turtlesim published it), while `echo` on `/turtle1/cmd_vel` keeps working because teleop, not turtlesim, publishes that topic. Restart turtlesim and `hz` resumes. That is item 3 of section 1, demonstrated.
 
 You are done when you can state, without looking: which node publishes `/turtle1/pose`, what type it carries, and roughly at what rate.
 
@@ -311,7 +312,7 @@ The nastier variant is the *partially* wrong environment, and it is worth recogn
 | `ros2: command not found` | setup file never sourced in this shell | `echo $AMENT_PREFIX_PATH` — empty |
 | `ros2` works, `ros2 node list` is empty while nodes run | different `ROS_DOMAIN_ID` in the two shells | `echo $ROS_DOMAIN_ID` in both |
 | `Package 'turtlesim' not found` | package not installed, or a workspace overlay sourced without the underlay | `ros2 pkg executables turtlesim`, then `ros2 pkg prefix turtlesim` |
-| Your rebuilt node runs the old code | workspace `install/setup.bash` not re-sourced after the build | `ros2 pkg prefix <pkg>` — points at `/opt/ros/jazzy` rather than your workspace |
+| Your rebuilt node runs the old code | workspace overlay not sourced in this shell (or the package was first built after this shell sourced `install/setup.bash`) | `ros2 pkg prefix <pkg>` — points at `/opt/ros/jazzy` rather than your workspace |
 
 The habit worth forming: when a ROS 2 system behaves impossibly, check the environment of the shell that is behaving impossibly *before* you read any source code. `printenv | grep -i ros` takes two seconds and settles it. The overlay cases in rows three and four are the subject of [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]].
 
@@ -432,7 +433,7 @@ curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-a
 sudo dpkg -i /tmp/ros2-apt-source.deb
 ```
 
-그리고 배포판 본체. 공식 문서는 update와 install 사이에 upgrade를 끼워 넣는데, 장식이 아니다. 낡은 우분투 위에 큰 ROS 패키지 묶음을 설치하면 위의 `noble-updates` 주의가 말하는 바로 그 의존성 충돌이 난다. `desktop`은 RViz와 데모, 튜토리얼을 포함하고, `ros-base`는 GUI 도구 없는 같은 통신 계층으로 로봇에 올리는 쪽이다.
+그리고 배포판 본체. 공식 문서는 update와 install 사이에 upgrade를 끼워 넣는데, 장식이 아니다. 낡은 우분투 위에 큰 ROS 패키지 묶음을 설치하면 의존성 충돌을 부른다. (아래의 `noble-updates` 주의는 별개로 `ros-dev-tools` 설치에 관한 것이다.) `desktop`은 RViz와 데모, 튜토리얼을 포함하고, `ros-base`는 GUI 도구 없는 같은 통신 계층으로 로봇에 올리는 쪽이다.
 
 ```bash
 sudo apt update
@@ -574,14 +575,15 @@ ros2 interface show geometry_msgs/msg/Twist
 
 ```text
 # This expresses velocity in free space broken into its linear and angular parts.
-    Vector3  linear
-            float64 x
-            float64 y
-            float64 z
-    Vector3  angular
-            float64 x
-            float64 y
-            float64 z
+
+Vector3  linear
+	float64 x
+	float64 y
+	float64 z
+Vector3  angular
+	float64 x
+	float64 y
+	float64 z
 ```
 
 이것이 계약이다. `Twist`는 어떤 프레임에서의 범용 속도다. 실제 차동 구동 로봇도 거북이와 똑같이 `linear.x`와 `angular.z`를 쓴다. 이 장난감이 그대로 이전되는 이유다.
@@ -610,7 +612,7 @@ ros2 topic pub /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.
 거북이가 원을 그린다. 드라이버를 커맨드라인으로 갈아 끼운 셈이다. 서브스크라이버는 누가 publish하는지 애초에 몰랐기 때문이다.
 
 5. `rqt_graph`를 열고 **Debug** 체크를 푼 뒤 그림에서 `topic pub`과 `topic echo` 노드를 찾아라.
-6. `echo`와 `hz`를 살려 둔 채 turtlesim을 Ctrl+C로 끈다. 둘은 죽지 않고 조용해진다. turtlesim을 다시 띄우면 재개된다. 1절의 세 번째 항목이 눈앞에서 증명된 것이다.
+6. 터미널 4를 `ros2 topic hz /turtle1/pose`로 되돌린 뒤, `echo`와 `hz`를 살려 둔 채 turtlesim을 Ctrl+C로 끈다. 둘 다 죽지 않는다: pose를 보던 `hz`는 조용해지고(turtlesim이 내던 토픽), `/turtle1/cmd_vel`을 보던 `echo`는 계속 돈다(그 토픽은 turtlesim이 아니라 teleop이 낸다). turtlesim을 다시 띄우면 `hz`가 재개된다. 1절의 세 번째 항목이 눈앞에서 증명된 것이다.
 
 보지 않고 이렇게 말할 수 있으면 끝이다: `/turtle1/pose`를 누가 publish하는가, 타입은 무엇인가, 대략 몇 Hz인가.
 
@@ -637,7 +639,7 @@ ros2: command not found
 | `ros2: command not found` | 이 셸에서 setup 파일을 source하지 않음 | `echo $AMENT_PREFIX_PATH` — 비어 있음 |
 | `ros2`는 되는데 노드가 도는 중에도 `ros2 node list`가 빔 | 두 셸의 `ROS_DOMAIN_ID`가 다름 | 양쪽에서 `echo $ROS_DOMAIN_ID` |
 | `Package 'turtlesim' not found` | 미설치, 또는 언더레이 없이 워크스페이스 오버레이만 source | `ros2 pkg executables turtlesim`, 그다음 `ros2 pkg prefix turtlesim` |
-| 다시 빌드한 노드가 옛 코드로 돎 | 빌드 후 워크스페이스 `install/setup.bash`를 다시 source하지 않음 | `ros2 pkg prefix <pkg>` — 워크스페이스가 아니라 `/opt/ros/jazzy`를 가리킴 |
+| 다시 빌드한 노드가 옛 코드로 돎 | 이 셸에서 워크스페이스 overlay를 source하지 않음(또는 이 셸이 `install/setup.bash`를 source한 뒤에야 패키지를 처음 빌드함) | `ros2 pkg prefix <pkg>` — 워크스페이스가 아니라 `/opt/ros/jazzy`를 가리킴 |
 
 들일 습관: ROS 2 시스템이 불가능한 동작을 하면, 소스를 읽기 *전에* 그 불가능한 동작을 하는 셸의 환경부터 확인한다. `printenv | grep -i ros`는 2초면 끝난다. 셋째·넷째 행의 오버레이 사례는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]]의 주제다.
 

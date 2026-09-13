@@ -15,8 +15,8 @@ mastery-when: "Raise to Mastery when a ROS 2 stack you wrote is the artifact a p
 > 이 위키의 다른 장은 분야를 *읽는* 법을 가르친다. 이 장은 그 안에서 *만드는* 법을 가르친다. 목표는 로봇을 기술(description)에서 과제 수행까지 데려가고, 실패했을 때 왜 실패했는지 말할 수 있는 엔지니어다.
 
 > [!note] Prerequisites · 선수 지식
-> Python, a Linux terminal, and Git. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
-> Python, 리눅스 터미널, Git. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
+> Python, enough C++ to read a class, a Linux terminal, and Git. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
+> Python, 클래스를 읽을 만큼의 C++, 리눅스 터미널, Git. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
 
 Most of this wiki exists so that a paper can be read accurately. This track exists for the
 other half of the work. A research claim in robotics is usually carried by a running system,
@@ -59,7 +59,7 @@ flowchart LR
 
 **The shortest useful route** is 25.1 → 25.2 → 25.4 → 25.6 → 25.7. That is enough to have a
 robot of your own description moving under a controller, which is the point at which the rest
-stops being abstract. Add 25.8 for manipulation work and 25.9 for mobile work. Read 25.5 and
+stops being abstract. Add 25.8 for manipulation work, and 25.3 then 25.9 for mobile work. Read 25.5 and
 25.10 when something breaks, which will be soon.
 
 ### 3. Which distribution to install
@@ -94,7 +94,7 @@ commands rather than guesses.
 > [!question]- Self-check · Answer
 > **Why is a middleware needed at all, when one program could do everything?** Because the parts have different rates, languages, owners and failure modes. Separate processes can be restarted, replaced and tested independently, and can run on different machines. The cost is that the connections are now something you have to reason about, which is what 25.5 is about.
 >
-> **Why does this track spend a whole page on things that fail silently?** Because they do not stop the program. A stale install, a second publisher on a transform edge and a wrong clock all present as "nothing happens". A reliability mismatch is the partial exception — the client libraries log one warning at discovery, which is easy to miss in a busy launch — while a durability mismatch really does say nothing, because the connection itself is legitimate. An engineer is distinguished by having an ordered set of checks for that case.
+> **Why does this track spend a whole page on things that fail silently?** Because they do not stop the program. A stale install, a second publisher on a transform edge and a wrong clock all present as "nothing happens". A QoS *incompatibility*, in reliability or durability, is the partial exception — the client libraries log one warning at discovery, which is easy to miss in a busy launch — while the truly silent QoS case is a volatile subscriber on a transient-local topic, which connects legitimately and simply never receives the message published before it started. An engineer is distinguished by having an ordered set of checks for that case.
 >
 > **What would make this track's work count as research evidence rather than practice?** Reproducibility: a pinned environment, a recorded bag, a launch file that starts the whole system, and a written account of what failed. [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] sets that bar.
 
@@ -140,7 +140,7 @@ flowchart LR
 
 **가장 짧은 유용한 경로**는 25.1 → 25.2 → 25.4 → 25.6 → 25.7이다. 여기까지면 자기가 기술한
 로봇이 제어기 아래 움직인다. 나머지가 추상적이기를 그만두는 지점이 거기다. 매니퓰레이션 작업에는
-25.8을, 이동 로봇 작업에는 25.9를 더한다. 25.5와 25.10은 무언가 고장 났을 때 읽어라. 곧 고장 난다.
+25.8을, 이동 로봇 작업에는 25.3 다음 25.9를 더한다. 25.5와 25.10은 무언가 고장 났을 때 읽어라. 곧 고장 난다.
 
 ### 3. 어떤 배포판을 설치할 것인가
 
@@ -171,6 +171,6 @@ Python, C++, 리눅스, Git은 가르치지 않는다. 위키의 나머지가 �
 > [!question]- 스스로 점검 · 정답
 > **프로그램 하나가 다 하면 될 것을 왜 미들웨어가 필요한가?** 부분마다 주기도, 언어도, 소유자도, 실패 양상도 다르기 때문이다. 프로세스를 나누면 각각을 따로 재시작하고 교체하고 시험할 수 있고, 서로 다른 기계에서 돌릴 수도 있다. 대가는 그 연결 자체가 이제 따져야 할 대상이 된다는 것이고, 25.5가 그 이야기다.
 >
-> **이 트랙은 왜 조용히 실패하는 것들에 한 쪽을 통째로 쓰는가?** 프로그램을 멈추지 않기 때문이다. stale install, 변환 간선의 중복 발행자, 잘못된 시계는 모두 "아무 일도 안 일어남"으로 나타난다. 신뢰성(reliability) 불일치는 부분적인 예외다. 클라이언트 라이브러리가 발견 시점에 경고를 한 줄 남기는데, 바쁜 런치 로그에서는 놓치기 쉽다. 반면 내구성(durability) 불일치는 정말로 아무 말도 하지 않는다. 연결 자체는 정당하기 때문이다. 엔지니어를 가르는 것은 그 경우를 위한 순서 있는 점검 목록을 갖고 있는지다.
+> **이 트랙은 왜 조용히 실패하는 것들에 한 쪽을 통째로 쓰는가?** 프로그램을 멈추지 않기 때문이다. stale install, 변환 간선의 중복 발행자, 잘못된 시계는 모두 "아무 일도 안 일어남"으로 나타난다. 신뢰성(reliability)이나 내구성(durability)의 QoS *비호환*은 부분적인 예외다. 클라이언트 라이브러리가 발견 시점에 경고를 한 줄 남기는데, 바쁜 런치 로그에서는 놓치기 쉽다. 정말로 조용한 QoS 경우는 transient-local 토픽에 붙은 volatile 구독자다. 연결은 정당하게 성립하지만, 구독자가 뜨기 전에 발행된 메시지를 끝내 받지 못한다. 엔지니어를 가르는 것은 그 경우를 위한 순서 있는 점검 목록을 갖고 있는지다.
 >
 > **이 트랙의 작업이 연습이 아니라 연구 증거가 되려면 무엇이 필요한가?** 재현성이다. 고정된 환경, 기록된 bag, 시스템 전체를 띄우는 런치 파일, 그리고 무엇이 실패했는지에 대한 기록. 그 기준은 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계와 재현성]]이 정한다.

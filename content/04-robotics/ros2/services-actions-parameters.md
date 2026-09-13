@@ -91,7 +91,7 @@ class MinimalClientAsync(Node):
 
 and in `main`, `rclpy.spin_until_future_complete(minimal_client, future)` before reading `future.result()`. The `wait_for_service` loop matters: unlike a publisher, a client with no server is not merely quiet, it is broken, and you would rather say so than hang.
 
-C++ has **no synchronous service API at all** — `rclcpp` gives you `async_send_request` only. That is not an omission; it is the library refusing to hand you the gun that section 10 is about. The server is the same shape:
+C++ has **no synchronous `call()`** — `rclcpp` gives you `async_send_request` only. That does not make C++ safe from section 10: blocking on the returned future (`.get()` or `.wait_for()`) inside a callback deadlocks in exactly the same way. The server is the same shape:
 
 ```cpp
 #include "rclcpp/rclcpp.hpp"
@@ -294,7 +294,7 @@ this->declare_parameter("my_parameter", "world", param_desc);
 // later: std::string p = this->get_parameter("my_parameter").as_string();
 ```
 
-A read-only parameter can be set at startup and not afterwards. You will meet these without meaning to: every node's `qos_overrides.*` parameters are read-only, which is why `ros2 param load` prints failures for them and succeeds on the rest. Not a bug — the documentation says so explicitly.
+A read-only parameter can be set at startup and not afterwards. You will meet these without meaning to: every C++ (rclcpp) node's automatically declared `qos_overrides./parameter_events.*` parameters are read-only (rclpy nodes do not declare them), which is why `ros2 param load` prints failures for them and succeeds on the rest. Not a bug — the documentation says so explicitly.
 
 To react to changes rather than poll, a node registers a **set-parameters callback** (`add_on_set_parameters_callback`), which inspects a proposed change and may reject it; a **pre-set** callback can amend it, and a **post-set** callback runs once it is accepted. The set callback must have no side effects — several can be chained, and none of them knows whether a later one will reject the update. Do the reacting in the post-set callback.
 
@@ -346,13 +346,13 @@ Two traps in `ros2 param set`. The value is parsed as YAML, so `off` becomes a b
 
 An ordinary node starts working the moment it is constructed. For a laser, a camera or a motor driver that is wrong: the device takes seconds to boot, and a node that publishes nonsense while it warms up — or opens hardware before the rest of the system is ready — produces failures that look like sensor faults.
 
-A **managed node** (`LifecycleNode`) adds a state machine with four steady **primary states** — `unconfigured`, `inactive`, `active`, `finalized` — and intermediate **transition states** (`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`) that report whether a transition succeeded. The transitions you invoke are `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`.
+A **managed node** (`LifecycleNode`) adds a state machine with four steady **primary states** — `unconfigured`, `inactive`, `active`, `finalized` — and intermediate **transition states** (`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`) that report whether a transition succeeded. The transitions you invoke are `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`.
 
-Each transition runs a callback you override: `on_configure` (allocate, open the device, create publishers and timers), `on_activate` (start publishing), `on_deactivate` (stop), `on_cleanup` (release), `on_shutdown`. All default to success, so a node can be managed without overriding anything. `on_error` is the exception: it runs when a transition throws, and **only** if it returns success does the machine fall back to `unconfigured` — by default it returns failure and the node goes to `finalized`. A node that keeps ending up finalized after a hiccup is telling you it has no error handler.
+Each transition runs a callback you override: `on_configure` (allocate, open the device, create publishers and timers), `on_activate` (start publishing), `on_deactivate` (stop), `on_cleanup` (release), `on_shutdown`. All default to success, so a node can be managed without overriding anything. `on_error` runs in the `errorprocessing` state when a transition callback returns ERROR or throws. If it returns SUCCESS — the default in both rclcpp and rclpy — the node falls back to `unconfigured`; if it returns FAILURE the node goes to `finalized`. (The demos README still says the default is failure; the source says otherwise.)
 
 The payoff is that publishing is gated by state. A lifecycle publisher created in `on_configure` exists in `inactive` but transfers nothing; `publish()` is a no-op until the node is `active`. Nothing downstream sees half-initialised data.
 
-Every managed node exposes six interfaces for free: a `<node_name>/transition_event` topic, and services `get_state`, `change_state`, `get_available_states`, `get_available_transitions`. The CLI wraps them:
+Every managed node exposes six interfaces for free: a `<node_name>/transition_event` topic, and services `get_state`, `change_state`, `get_available_states`, `get_available_transitions`, `get_transition_graph`. The CLI wraps them:
 
 ```bash
 ros2 lifecycle nodes
@@ -366,7 +366,7 @@ Run `ros2 launch lifecycle lifecycle_demo_launch.py`, or the executables `lifecy
 
 In Python the node subclasses `rclpy.lifecycle.Node` (an alias for `LifecycleNode`), overrides `on_configure` and friends to return `TransitionCallbackReturn.SUCCESS`, and creates its publisher with `create_lifecycle_publisher`. In C++ it derives from `rclcpp_lifecycle::LifecycleNode` and the callbacks return `LifecycleNodeInterface::CallbackReturn`.
 
-This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via a `lifecycle_manager/manage_nodes` service. It also holds a **bond** with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
+This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
 
 ### 9. Exercise: an action server that reports feedback
 
@@ -401,7 +401,7 @@ The first prints the goal ID, waits about four seconds in silence, then prints t
 
 5. In a third terminal, watch the graph while a goal runs: `ros2 action list -t`, then `ros2 action info /fibonacci`.
 
-6. Raise `order` to 30 and press Ctrl+C in the client mid-goal. The server keeps computing. Cancellation is a request the *server* must handle, not something a client can impose — which is why the full server form in section 5 exists.
+6. Raise `order` to 30 and press Ctrl+C in the client mid-goal. The CLI sends a cancel request (`Canceling goal...`), but this server cannot service it while `execute_callback` blocks its only thread, and its default cancel callback would reject it anyway — so the client waits for the goal to finish and then reports `Failed to cancel goal`. Cancellation is a request the *server* must handle, not something a client can impose — which is why the full server form in section 5 exists.
 
 You are done when you can say what each of the three parts of the `.action` file does, and why `--feedback` changes nothing on the server side.
 
@@ -413,7 +413,7 @@ The symptom is the worst kind: **no error**. The official documentation states i
 
 ```python
 def trigger_request(msg):
-    response = minimal_client.send_request()  # This will cause deadlock
+    response = minimal_client.cli.call(minimal_client.req)  # synchronous call inside a callback: deadlock
 ```
 
 The mechanism: `call()` blocks the thread until the response arrives, but the response can only be delivered by the executor spinning on *that same thread* — and that thread is inside your callback. The executor cannot preempt a running callback. The client waits for a response that only the waiter could deliver.
@@ -429,7 +429,7 @@ ros2 service list | grep add_two_ints   # the server exists and is fine
 
 Alive in the graph, producing nothing, with a healthy server on the other end — that combination is the signature. Distinguish it from a QoS mismatch (also silent) by checking whether the node produced output *before* the trigger arrived: a deadlocked node worked until the first trigger, a mismatched one never worked at all.
 
-Three fixes, in order of preference. Use `call_async` and handle the future in a callback, which is safe from anywhere. Keep the call synchronous but put the service work in a different **callback group** and run a multi-threaded executor. Or follow the documented pattern: spin in a separate thread and call from `main`, never from a callback. The executor and callback-group machinery behind all three is [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. C++ gets this for free — `rclcpp` has no synchronous service API to misuse.
+Three fixes, in order of preference. Use `call_async` and handle the future in a callback, which is safe from anywhere. Keep the call synchronous but put the *client* in a different **callback group** from the calling callback (or use a reentrant group) and run a multi-threaded executor. Or follow the documented pattern: spin in a separate thread and call from `main`, never from a callback. The executor and callback-group machinery behind all three is [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. C++ is not exempt: blocking on the future from `async_send_request` inside a callback deadlocks the same way, and the official callback-groups guide uses exactly that as its example.
 
 ### 11. What this page does not cover
 
@@ -440,14 +440,14 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 - ROS 2 Jazzy documentation — Concepts: Services; Actions; Parameters.
 - ROS 2 Jazzy documentation — Tutorials: Understanding services; Understanding parameters; Understanding actions; Writing a simple service and client (Python and C++); Creating an action; Writing an action server and client (Python and C++); Using parameters in a class (Python and C++); Managing node lifecycles.
 - ROS 2 Jazzy documentation — How-to guides: Synchronous vs. asynchronous service clients; Using the `ros2 param` command-line tool; Passing ROS arguments to nodes via the command-line.
-- ros2/demos — `lifecycle` package README (primary and transition states, transition callbacks, the five lifecycle interfaces); `lifecycle_py/lifecycle_py/talker.py`.
+- ros2/demos — `lifecycle` package README (primary and transition states, transition callbacks, the lifecycle interfaces — the README says five, the source creates six); `lifecycle_py/lifecycle_py/talker.py`.
 - ros2/examples — `rclpy/actions/minimal_action_server` (goal, cancel and accepted callbacks).
 - ros2/ros2cli — `ros2lifecycle` verbs (`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README and `lifecycle_manager.cpp` (ordered bringup, `manage_nodes` service, `bond_timeout` default).
 
 > [!question]- Self-check · Answer
 > **1. You need a node to run a 30-second global plan on request. Service or action, and why?** Action. A service blocks the caller and cannot be preempted, and on a single-threaded executor a 30-second service callback stops every other callback in that node — timers, subscriptions, other services. Official guidance is that services return quickly and long work belongs in an action, which also gives you feedback and a cancellation path.
-> **2. `ros2 param load /my_node params.yaml` reports "successful" for some parameters and "cannot be set because it is read-only" for others. Is something broken?** No. Read-only parameters can only be set at startup, and `qos_overrides.*` are read-only on every node, so a dump-then-load round trip always prints those failures. To apply them, pass the same file at startup with `--ros-args --params-file`, which does update read-only parameters.
+> **2. `ros2 param load /my_node params.yaml` reports "successful" for some parameters and "cannot be set because it is read-only" for others. Is something broken?** No. Read-only parameters can only be set at startup, and every C++ node declares read-only `qos_overrides./parameter_events.*` parameters, so a dump-then-load round trip on an rclcpp node prints those failures. To apply them, pass the same file at startup with `--ros-args --params-file`, which does update read-only parameters.
 > **3. A node you wrote is in `ros2 node list`, its service client and subscription show in `ros2 node info`, the server it calls is running, and it emits nothing after the first input. What is your first hypothesis?** A synchronous service call from inside a callback. The executor cannot preempt the running callback to deliver the response, so the call waits forever — no exception, no warning, no failure. Confirm by checking that the node produced output before the first trigger; fix with `call_async`, or a separate callback group plus a multi-threaded executor.
 > **4. Why does Nav2 use lifecycle nodes instead of ordinary ones?** Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation brings the stack down deterministically. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
 
@@ -535,7 +535,7 @@ class MinimalClientAsync(Node):
 
 `main`에서는 `future.result()`를 읽기 전에 `rclpy.spin_until_future_complete(minimal_client, future)`를 호출한다. `wait_for_service` 루프가 중요하다. 퍼블리셔와 달리 서버 없는 클라이언트는 조용한 것이 아니라 고장 난 것이고, 매달리는 것보다 그렇게 말하는 편이 낫다.
 
-C++에는 **동기 서비스 API가 아예 없다.** `rclcpp`는 `async_send_request`만 준다. 빠뜨린 것이 아니라, 10절이 다루는 총을 건네기를 거부한 것이다. C++ 서버는 모양이 같다.
+C++에는 **동기 `call()`이 없다.** `rclcpp`는 `async_send_request`만 준다. 그렇다고 C++가 10절의 문제에서 안전한 것은 아니다. 콜백 안에서 돌려받은 future를 기다리면(`.get()`이나 `.wait_for()`) 똑같이 교착된다. C++ 서버는 모양이 같다.
 
 ```cpp
 #include "rclcpp/rclcpp.hpp"
@@ -738,7 +738,7 @@ this->declare_parameter("my_parameter", "world", param_desc);
 // 나중에: std::string p = this->get_parameter("my_parameter").as_string();
 ```
 
-읽기 전용 파라미터는 기동 시에만 설정할 수 있고 그 뒤에는 안 된다. 의도하지 않아도 만나게 된다. 모든 노드의 `qos_overrides.*` 파라미터가 읽기 전용이고, 그래서 `ros2 param load`가 그것들에 대해 실패를 찍고 나머지는 성공한다. 버그가 아니며 문서에 그렇게 적혀 있다.
+읽기 전용 파라미터는 기동 시에만 설정할 수 있고 그 뒤에는 안 된다. 의도하지 않아도 만나게 된다. 모든 C++(rclcpp) 노드가 자동으로 선언하는 `qos_overrides./parameter_events.*` 파라미터가 읽기 전용이고(rclpy 노드는 선언하지 않는다), 그래서 `ros2 param load`가 그것들에 대해 실패를 찍고 나머지는 성공한다. 버그가 아니며 문서에 그렇게 적혀 있다.
 
 폴링 대신 변경에 반응하려면, 제안된 변경을 검사하고 거부할 수 있는 **set-parameters 콜백**(`add_on_set_parameters_callback`), 변경을 수정할 수 있는 **pre-set** 콜백, 변경이 수락된 *뒤에* 도는 **post-set** 콜백을 등록할 수 있다. set 콜백에는 부작용이 없어야 한다. 여러 개가 사슬로 이어질 수 있고, 개별 콜백은 뒤의 콜백이 갱신을 거부할지 알 수 없다. 반응은 post-set 콜백에서 하라.
 
@@ -790,13 +790,13 @@ ros2 param load /turtlesim turtlesim.yaml
 
 보통 노드는 생성되는 순간부터 제 일을 시작한다. 레이저, 카메라, 모터 드라이버에는 그것이 틀렸다. 장치는 부팅에 몇 초가 걸리고, 예열 중에 헛소리를 발행하거나 시스템의 나머지가 준비되기 전에 하드웨어를 여는 노드는 센서 고장처럼 보이는 실패를 만든다.
 
-**관리형 노드**(`LifecycleNode`)는 상태 기계를 더한다. 네 개의 안정적인 **주 상태** — `unconfigured`, `inactive`, `active`, `finalized` — 와, 전이 성공 여부를 알리는 **전이 상태**(`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`). 호출하는 전이는 `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`이다.
+**관리형 노드**(`LifecycleNode`)는 상태 기계를 더한다. 네 개의 안정적인 **주 상태** — `unconfigured`, `inactive`, `active`, `finalized` — 와, 전이 성공 여부를 알리는 **전이 상태**(`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`). 호출하는 전이는 `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`이다.
 
-전이마다 재정의할 콜백이 돈다. `on_configure`(할당, 장치 열기, 퍼블리셔와 타이머 생성), `on_activate`(발행 시작), `on_deactivate`(중지), `on_cleanup`(해제), `on_shutdown`. 전부 기본 반환이 성공이라, 아무것도 재정의하지 않아도 관리형 노드가 된다. `on_error`만 예외다. 전이가 예외를 던지면 호출되고, 그것이 성공을 반환할 때에만 상태 기계가 `unconfigured`로 돌아간다. 기본값은 실패이고 그러면 노드는 `finalized`로 간다. 한 번 삐끗한 뒤 자꾸 finalized에 머무는 노드는 오류 처리기가 없다고 말하는 중이다.
+전이마다 재정의할 콜백이 돈다. `on_configure`(할당, 장치 열기, 퍼블리셔와 타이머 생성), `on_activate`(발행 시작), `on_deactivate`(중지), `on_cleanup`(해제), `on_shutdown`. 전부 기본 반환이 성공이라, 아무것도 재정의하지 않아도 관리형 노드가 된다. `on_error`는 전이 콜백이 ERROR를 반환하거나 예외를 던질 때 `errorprocessing` 상태에서 호출된다. SUCCESS를 반환하면 — rclcpp와 rclpy 모두 기본값 — 노드는 `unconfigured`로 돌아가고, FAILURE를 반환하면 `finalized`로 간다. (demos README는 아직 기본값이 실패라고 적지만, 소스는 그렇지 않다.)
 
 이득은 발행이 상태로 게이팅된다는 것이다. `on_configure`에서 만든 라이프사이클 퍼블리셔는 `inactive`에 존재하지만 아무것도 전달하지 않는다. 노드가 `active`가 되기 전까지 `publish()`는 아무 일도 하지 않는다. 하류의 누구도 반쯤 초기화된 데이터를 보지 않는다.
 
-모든 관리형 노드는 여섯 가지 인터페이스를 공짜로 노출한다. `<node_name>/transition_event` 토픽, 그리고 `get_state`, `change_state`, `get_available_states`, `get_available_transitions` 서비스. CLI가 그것을 감싼다.
+모든 관리형 노드는 여섯 가지 인터페이스를 공짜로 노출한다. `<node_name>/transition_event` 토픽, 그리고 `get_state`, `change_state`, `get_available_states`, `get_available_transitions`, `get_transition_graph` 서비스. CLI가 그것을 감싼다.
 
 ```bash
 ros2 lifecycle nodes
@@ -810,7 +810,7 @@ ros2 lifecycle set /lc_talker activate
 
 Python에서는 `rclpy.lifecycle.Node`(`LifecycleNode`의 별칭)를 상속하고, `on_configure` 등을 재정의해 `TransitionCallbackReturn.SUCCESS`를 반환하고, 퍼블리셔를 `create_lifecycle_publisher`로 만든다. C++에서는 `rclcpp_lifecycle::LifecycleNode`를 상속하고 콜백은 `LifecycleNodeInterface::CallbackReturn`을 반환한다.
 
-학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 `lifecycle_manager/manage_nodes` 서비스를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
+학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
 
 ### 9. 실습: 피드백을 보고하는 액션 서버
 
@@ -845,7 +845,7 @@ ros2 action send_goal --feedback fibonacci custom_action_interfaces/action/Fibon
 
 5. 세 번째 터미널에서 목표가 도는 동안 그래프를 본다. `ros2 action list -t`, 그다음 `ros2 action info /fibonacci`.
 
-6. `order`를 30으로 올리고 목표 중간에 클라이언트에서 Ctrl+C를 누른다. 서버는 계속 계산한다. 취소는 *서버가* 처리해야 하는 요청이지 클라이언트가 강제할 수 있는 것이 아니다. 5절의 완전한 서버 형태가 존재하는 이유다.
+6. `order`를 30으로 올리고 목표 중간에 클라이언트에서 Ctrl+C를 누른다. CLI는 취소 요청을 보내지만(`Canceling goal...`), 이 서버는 `execute_callback`이 유일한 스레드를 막고 있어 처리할 수 없고, 기본 취소 콜백은 어차피 거부한다 — 그래서 클라이언트는 목표가 끝날 때까지 기다린 뒤 `Failed to cancel goal`을 보고한다. 취소는 *서버가* 처리해야 하는 요청이지 클라이언트가 강제할 수 있는 것이 아니다. 5절의 완전한 서버 형태가 존재하는 이유다.
 
 `.action` 파일의 세 부분이 각각 무엇을 하는지, 그리고 `--feedback`이 서버 쪽에서는 왜 아무것도 바꾸지 않는지 말할 수 있으면 끝난 것이다.
 
@@ -857,7 +857,7 @@ ros2 action send_goal --feedback fibonacci custom_action_interfaces/action/Fibon
 
 ```python
 def trigger_request(msg):
-    response = minimal_client.send_request()  # This will cause deadlock
+    response = minimal_client.cli.call(minimal_client.req)  # synchronous call inside a callback: deadlock
 ```
 
 기전은 이렇다. `call()`은 응답이 올 때까지 스레드를 막는데, 응답을 전달할 수 있는 것은 *바로 그 스레드* 위에서 도는 executor뿐이고, 그 스레드는 지금 당신의 콜백 안에 있다. executor는 실행 중인 콜백을 선점하지 못한다. 클라이언트는 기다리는 자만이 전달할 수 있는 응답을 기다린다.
@@ -873,7 +873,7 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 
 그래프에 살아 있고, 아무것도 생산하지 않고, 반대편 서버는 건강하다. 이 조합이 서명이다. 역시 조용한 QoS 불일치와 구별하려면 트리거가 오기 *전에* 노드가 출력을 냈는지 보라. 데드락 난 노드는 첫 트리거까지는 동작했고, 불일치 난 노드는 처음부터 한 번도 동작하지 않았다.
 
-고치는 방법 셋, 선호 순서대로. `call_async`를 쓰고 future를 콜백에서 처리한다. 어디서 불러도 안전하다. 호출을 동기로 두되 서비스 작업을 다른 **콜백 그룹**에 넣고 다중 스레드 executor를 돌린다. 정 필요하면 문서화된 패턴을 따른다. 별도 스레드에서 spin하고 `main`에서 호출하되, 콜백에서는 절대 부르지 않는다. 셋 모두의 바탕인 executor와 콜백 그룹 기계는 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]에 있다. C++ 사용자는 공짜로 안전하다. `rclcpp`에는 오용할 동기 서비스 API가 없다.
+고치는 방법 셋, 선호 순서대로. `call_async`를 쓰고 future를 콜백에서 처리한다. 어디서 불러도 안전하다. 호출을 동기로 두되 *클라이언트*를 호출하는 콜백과 다른 **콜백 그룹**에 넣고(또는 재진입 그룹을 쓰고) 다중 스레드 executor를 돌린다. 정 필요하면 문서화된 패턴을 따른다. 별도 스레드에서 spin하고 `main`에서 호출하되, 콜백에서는 절대 부르지 않는다. 셋 모두의 바탕인 executor와 콜백 그룹 기계는 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]에 있다. C++도 예외가 아니다. 콜백 안에서 `async_send_request`의 future를 기다리면 똑같이 교착되고, 공식 콜백 그룹 안내서가 바로 그것을 예로 든다.
 
 ### 11. 이 페이지가 다루지 않는 것
 
@@ -884,13 +884,13 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 - ROS 2 Jazzy 문서 — Concepts: Services; Actions; Parameters.
 - ROS 2 Jazzy 문서 — Tutorials: Understanding services; Understanding parameters; Understanding actions; Writing a simple service and client (Python, C++); Creating an action; Writing an action server and client (Python, C++); Using parameters in a class (Python, C++); Managing node lifecycles.
 - ROS 2 Jazzy 문서 — How-to guides: Synchronous vs. asynchronous service clients; `ros2 param` 커맨드라인 도구 사용; 커맨드라인으로 노드에 ROS 인자 넘기기.
-- ros2/demos — `lifecycle` 패키지 README(주 상태와 전이 상태, 전이 콜백, 라이프사이클 인터페이스 다섯 가지); `lifecycle_py/lifecycle_py/talker.py`.
+- ros2/demos — `lifecycle` 패키지 README(주 상태와 전이 상태, 전이 콜백, 라이프사이클 인터페이스 — README는 다섯이라 하지만 소스는 여섯을 만든다); `lifecycle_py/lifecycle_py/talker.py`.
 - ros2/examples — `rclpy/actions/minimal_action_server`(goal, cancel, accepted 콜백).
 - ros2/ros2cli — `ros2lifecycle` 동사(`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README와 `lifecycle_manager.cpp`(순서 지어진 기동, `manage_nodes` 서비스, `bond_timeout` 기본값).
 
 > [!question]- 스스로 점검 · 정답
 > **1. 요청을 받아 30초짜리 전역 계획을 도는 노드가 필요하다. 서비스인가 액션인가, 왜인가?** 액션이다. 서비스는 호출자를 막고 선점할 수 없으며, 단일 스레드 executor에서 30초짜리 서비스 콜백은 그 노드의 다른 모든 콜백 — 타이머, 구독, 다른 서비스 — 도 함께 멈춘다. 공식 지침은 서비스가 빨리 반환해야 하고 장시간 작업은 액션의 몫이라는 것이다. 액션은 덤으로 피드백과 취소 경로를 준다.
-> **2. `ros2 param load /my_node params.yaml`이 일부는 "successful", 일부는 "cannot be set because it is read-only"를 찍는다. 뭔가 고장 났나?** 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. `qos_overrides.*`는 모든 노드에서 읽기 전용이고, 그래서 dump 후 load를 왕복하면 항상 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
+> **2. `ros2 param load /my_node params.yaml`이 일부는 "successful", 일부는 "cannot be set because it is read-only"를 찍는다. 뭔가 고장 났나?** 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. 모든 C++ 노드가 읽기 전용 `qos_overrides./parameter_events.*`를 선언하므로, rclcpp 노드에서 dump 후 load를 왕복하면 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
 > **3. 직접 쓴 노드가 `ros2 node list`에 있고, `ros2 node info`에 서비스 클라이언트와 구독이 다 보이고, 호출하는 서버도 돌고 있는데, 첫 입력 이후 아무것도 내보내지 않는다. 첫 가설은?** 콜백 안에서 한 동기 서비스 호출. executor가 실행 중인 콜백을 선점해 응답을 전달할 수 없어서 호출이 영원히 기다린다. 예외도, 경고도, 실패도 없다. 첫 트리거 이전에는 출력이 있었는지 확인해 확증하고, `call_async`나 별도 콜백 그룹 + 다중 스레드 executor로 고친다.
 > **4. Nav2는 왜 보통 노드 대신 라이프사이클 노드를 쓰는가?** 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌이 스택을 반쯤 살아 있는 상태로 남기지 않고 결정론적으로 내리게 한다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.

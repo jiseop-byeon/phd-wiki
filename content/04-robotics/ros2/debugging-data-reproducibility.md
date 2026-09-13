@@ -53,7 +53,7 @@ Write this table on something near your desk. Then, when a system breaks, run it
 ```bash
 ros2 doctor
 ros2 doctor --include-warnings
-ros2 doctor --report          # NETWORK CONFIGURATION, PLATFORM INFORMATION, RMW MIDDLEWARE, ROS 2 INFORMATION, TOPIC LIST
+ros2 doctor --report          # e.g. NETWORK CONFIGURATION, PLATFORM INFORMATION, ROS 2 INFORMATION, TOPIC LIST, QOS COMPATIBILITY LIST, PACKAGE VERSIONS
 ros2 doctor --report-failed   # only the checks that failed
 ```
 
@@ -65,7 +65,7 @@ The three rate tools answer three different questions and are constantly confuse
 
 ```bash
 ros2 topic hz /scan              # message rate, averaged over a window
-ros2 topic hz /scan -w 1000      # longer window: less jitter in the number
+ros2 topic hz /scan -w 100       # shorter window (default 10000): reacts faster, noisier
 ros2 topic hz /scan --wall-time
 ros2 topic bw /scan              # bandwidth in bytes/s — is this topic the reason the network is full
 ros2 topic delay /scan           # age of the header stamp on arrival
@@ -193,12 +193,14 @@ ros2 bag info run_042
 ```
 
 ```text
+# shape of the output, from the turtlesim tutorial bag; your topics and numbers will differ
 Files:             run_042_0.mcap
 Bag size:          228.5 KiB
 Storage id:        mcap
+ROS Distro:        jazzy
 Duration:          48.47s
 Start:             Oct 11 2019 06:09:09.12 (1570799349.12)
-End                Oct 11 2019 06:09:57.60 (1570799397.60)
+End:               Oct 11 2019 06:09:57.60 (1570799397.60)
 Messages:          3013
 Topic information: Topic: /turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Count: 9 | Serialization Format: cdr
                    Topic: /turtle1/pose | Type: turtlesim/msg/Pose | Count: 3004 | Serialization Format: cdr
@@ -370,14 +372,13 @@ The thing to actually check is that CI runs on a **pinned base image**. A pipeli
 ```dockerfile
 FROM osrf/ros:jazzy-desktop
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ros-jazzy-rosbag2-storage-mcap \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /ws
 COPY src/ /ws/src/
-RUN . /opt/ros/jazzy/setup.sh \
-    && rosdep install --from-paths src --ignore-src -r -y \
+# rosdep calls apt, so the package index must exist in the same layer
+RUN apt-get update \
+    && . /opt/ros/jazzy/setup.sh \
+    && rosdep install --from-paths src --ignore-src -y \
+    && rm -rf /var/lib/apt/lists/* \
     && colcon build --symlink-install
 ```
 
@@ -393,7 +394,7 @@ And when a run fails rather than succeeds, the discipline for turning that into 
 
 One sitting, using any simulated robot from this track — turtlesim is enough if a simulator is not yet running.
 
-1. Start the simulated system. In another terminal, record a short run of the topics one downstream node consumes, plus the transforms:
+1. Start the simulated system. In another terminal, record a short run of the topics one downstream node consumes (turtlesim has no transforms; on a real system add `/tf /tf_static`):
 
 ```bash
 ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
@@ -402,10 +403,10 @@ ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
 2. While recording, capture the live behaviour of the node under test. Log its output topic to a file so you have something to compare against:
 
 ```bash
-ros2 topic echo /your_node_output > live_output.txt
+ros2 topic echo /my_node_output > live_output.txt
 ```
 
-Also capture its configuration: `ros2 param dump /your_node > live_params.yaml`.
+Also capture its configuration: `ros2 param dump /my_node > live_params.yaml`.
 
 3. Stop the recording and inspect it. Check the Count of each topic against what you expected:
 
@@ -434,7 +435,7 @@ You are done when the replayed output matches the live output within timing tole
 
 The symptom. `ros2 bag play` runs, prints its startup lines, counts down its duration and exits normally. The downstream node produces nothing. `ros2 bag info` shows healthy message counts. Nothing errors.
 
-There are two usual causes, and one command separates them.
+There are two usual causes, and three commands separate them.
 
 **Cause A: the clock.** Either playback is publishing `/clock` and the node is not on simulated time, or the node is on simulated time and nothing is publishing `/clock`. The second is the silent-hang shape: the node's clock sits at zero, its timers never fire, and every TF lookup fails.
 
@@ -447,7 +448,7 @@ The separation, in order:
 ros2 topic hz /scan
 ```
 
-If `hz` reports a rate, the player is publishing and the data is moving — go to cause A. If `hz` reports nothing, either the player is not publishing that name or nobody can receive it — go to cause B, and check the name first:
+`hz` subscribes with the best-effort, volatile sensor-data profile, which connects to any publisher, so it cannot see a QoS problem. If `hz` reports nothing, the player is not publishing that name — check the name (step 2). If `hz` reports a rate, the player is publishing; whether *your node* can receive it is step 3, and if the profiles are compatible the problem is the clock (cause A):
 
 ```bash
 # 2. Is it the name? Compare what the bag holds with what the node subscribes to.
@@ -486,7 +487,7 @@ A third cause, rarer but worth knowing: the bag recorded a namespaced topic name
 
 ### 16. What this page does not cover
 
-Tracing — instrumenting the middleware itself with LTTng to see callback-level timing — is the ROS 2 tracing documentation, and it is the right tool when the question is "where did the 40 ms go" rather than "why is nothing arriving". Getting backtraces from a crashing node under GDB is its own how-to guide. DDS-level packet inspection belongs to your middleware vendor's tooling. Formal coverage, mutation testing and the ROS build farm are beyond this track. Hardware-in-the-loop testing and what changes when replay meets a real robot are [[04-robotics/ros2/index|25. ROS 2]]. The experimental standard this page's tooling is meant to satisfy — units of analysis, comparisons, uncertainty, the artifact checklist — is [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]].
+Tracing — instrumenting the middleware itself with LTTng to see callback-level timing — is the ROS 2 tracing documentation, and it is the right tool when the question is "where did the 40 ms go" rather than "why is nothing arriving". Getting backtraces from a crashing node under GDB is its own how-to guide. DDS-level packet inspection belongs to your middleware vendor's tooling. Formal coverage, mutation testing and the ROS build farm are beyond this track. Hardware-in-the-loop testing and what changes when replay meets a real robot are [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]]. The experimental standard this page's tooling is meant to satisfy — units of analysis, comparisons, uncertainty, the artifact checklist — is [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]].
 
 ### Sources
 
@@ -502,7 +503,7 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 > **1. Your node produces no output. You are certain the publisher is fine. Which check do you run first, and why not the one you think is the problem?** Check 0: the environment of the shell, then down the list in order. The point of the order is that certainty is exactly what is wrong — the cases where you are sure are the cases you skip and then spend an hour on. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, `--verbose` for QoS, `tf2_echo`, `/clock`. Stop at the first failure.
 > **2. `ros2 topic hz /scan` reports a healthy 30 Hz and `ros2 topic delay /scan` reports a delay growing by a second every second. What is happening, and why does `hz` not show it?** Something upstream is falling behind and its output is queued: messages arrive at the right rate but each one is older than the last. `hz` measures the interval between arrivals, which is unchanged by a constant backlog; only `delay`, which compares the header stamp with the arrival time, sees the accumulating age. A bounded delay is latency, a growing delay is a queue you will eventually lose.
 > **3. Why is `ros2 bag record -a` a bad default for a research recording, beyond disk space?** Because the recorder must serialise and write everything it subscribed to, and when it cannot keep up it drops messages — so the topic you actually cared about comes home incomplete, with no error. `ros2 bag info`'s Count column is where you find out, usually too late. A 400 GB bag also cannot be shared, put in CI, or iterated on.
-> **4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and the one command that tells them apart.** The clock (the node is not on `use_sim_time`, or is on it with nothing publishing `/clock`) and QoS durability or reliability (the subscriber requests more than the player offers, so no connection is made). `ros2 topic hz /scan` during playback separates them: a reported rate means data is on the wire and the problem is time; silence means the problem is the connection, so compare names with `ros2 node info` and then profiles with `ros2 topic info /scan --verbose`.
+> **4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and how you tell them apart.** The clock (the node is not on `use_sim_time`, or is on it with nothing publishing `/clock`) and QoS durability or reliability (the subscriber requests more than the player offers, so no connection is made). `ros2 topic hz /scan` only tells you the player publishes that name — it uses a best-effort profile that connects to anything, so it cannot see QoS. `ros2 topic info /scan --verbose` then compares the player's offer with your node's request: incompatible profiles are cause B; compatible ones leave `/clock` and `use_sim_time` (cause A).
 
 ## 한국어
 
@@ -542,7 +543,7 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 ```bash
 ros2 doctor
 ros2 doctor --include-warnings
-ros2 doctor --report          # NETWORK CONFIGURATION, PLATFORM INFORMATION, RMW MIDDLEWARE, ROS 2 INFORMATION, TOPIC LIST
+ros2 doctor --report          # e.g. NETWORK CONFIGURATION, PLATFORM INFORMATION, ROS 2 INFORMATION, TOPIC LIST, QOS COMPATIBILITY LIST, PACKAGE VERSIONS
 ros2 doctor --report-failed   # 실패한 점검만
 ```
 
@@ -682,12 +683,14 @@ ros2 bag info run_042
 ```
 
 ```text
+# shape of the output, from the turtlesim tutorial bag; your topics and numbers will differ
 Files:             run_042_0.mcap
 Bag size:          228.5 KiB
 Storage id:        mcap
+ROS Distro:        jazzy
 Duration:          48.47s
 Start:             Oct 11 2019 06:09:09.12 (1570799349.12)
-End                Oct 11 2019 06:09:57.60 (1570799397.60)
+End:               Oct 11 2019 06:09:57.60 (1570799397.60)
 Messages:          3013
 Topic information: Topic: /turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Count: 9 | Serialization Format: cdr
                    Topic: /turtle1/pose | Type: turtlesim/msg/Pose | Count: 3004 | Serialization Format: cdr
@@ -859,14 +862,13 @@ CI는 "모든 테스트를 돌리기"가 아니다. 변경이 병합되기 전�
 ```dockerfile
 FROM osrf/ros:jazzy-desktop
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ros-jazzy-rosbag2-storage-mcap \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /ws
 COPY src/ /ws/src/
-RUN . /opt/ros/jazzy/setup.sh \
-    && rosdep install --from-paths src --ignore-src -r -y \
+# rosdep calls apt, so the package index must exist in the same layer
+RUN apt-get update \
+    && . /opt/ros/jazzy/setup.sh \
+    && rosdep install --from-paths src --ignore-src -y \
+    && rm -rf /var/lib/apt/lists/* \
     && colcon build --symlink-install
 ```
 
@@ -882,7 +884,7 @@ RUN . /opt/ros/jazzy/setup.sh \
 
 한 자리에서. 이 트랙의 어떤 시뮬레이션 로봇이든 좋고, 시뮬레이터가 아직 없다면 turtlesim으로 충분하다.
 
-1. 시뮬레이션 시스템을 띄운다. 다른 터미널에서 하류 노드 하나가 소비하는 토픽과 변환을 짧게 기록한다.
+1. 시뮬레이션 시스템을 띄운다. 다른 터미널에서 하류 노드 하나가 소비하는 토픽을 짧게 기록한다(turtlesim에는 변환이 없다. 실제 시스템이라면 `/tf /tf_static`을 더한다).
 
 ```bash
 ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
@@ -891,10 +893,10 @@ ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
 2. 기록하는 동안 테스트 대상 노드의 라이브 동작을 잡아 둔다. 비교 대상이 있도록 출력 토픽을 파일로 남긴다.
 
 ```bash
-ros2 topic echo /your_node_output > live_output.txt
+ros2 topic echo /my_node_output > live_output.txt
 ```
 
-설정도 잡는다: `ros2 param dump /your_node > live_params.yaml`.
+설정도 잡는다: `ros2 param dump /my_node > live_params.yaml`.
 
 3. 기록을 멈추고 들여다본다. 각 토픽의 Count를 기대치와 대조한다.
 
@@ -923,7 +925,7 @@ ros2 bag play live_run --clock
 
 증상. `ros2 bag play`는 돌고, 기동 줄을 찍고, 길이를 세고, 정상 종료한다. 하류 노드는 아무것도 내지 않는다. `ros2 bag info`는 멀쩡한 메시지 개수를 보여 준다. 에러는 없다.
 
-흔한 원인은 둘이고, 명령 하나가 갈라 준다.
+흔한 원인은 둘이고, 명령 셋이 갈라 준다.
 
 **원인 A: 시계.** 재생이 `/clock`을 발행하는데 노드가 시뮬레이션 시간이 아니거나, 노드는 시뮬레이션 시간인데 아무도 `/clock`을 발행하지 않는다. 후자가 조용히 멈추는 모양이다. 노드 시계가 0에 머물고, 타이머가 안 돌고, 모든 TF 조회가 실패한다.
 
@@ -936,7 +938,7 @@ ros2 bag play live_run --clock
 ros2 topic hz /scan
 ```
 
-`hz`가 주기를 보고하면 플레이어는 발행 중이고 데이터는 움직인다. 원인 A로 간다. `hz`가 아무것도 보고하지 않으면 플레이어가 그 이름으로 발행하지 않거나 아무도 받을 수 없는 것이다. 원인 B로 가되 이름부터 본다.
+`hz`는 어떤 퍼블리셔와도 연결되는 best-effort·volatile 센서 데이터 프로파일로 구독하므로 QoS 문제를 볼 수 없다. `hz`가 아무것도 보고하지 않으면 플레이어가 그 이름으로 발행하지 않는 것이니 이름을 본다(2단계). 주기가 보고되면 플레이어는 발행 중이다. *내 노드*가 받을 수 있는지는 3단계이고, 프로파일이 호환된다면 문제는 시계다(원인 A).
 
 ```bash
 # 2. 이름 문제인가? bag이 가진 것과 노드가 구독하는 것을 비교.
@@ -975,7 +977,7 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 
 ### 16. 이 페이지가 다루지 않는 것
 
-트레이싱 — LTTng로 미들웨어 자체를 계측해 콜백 수준 타이밍을 보는 것 — 은 ROS 2 tracing 문서에 있고, 질문이 "왜 아무것도 안 오나"가 아니라 "그 40 ms가 어디로 갔나"일 때 맞는 도구다. GDB로 죽는 노드의 백트레이스를 얻는 것은 별도의 how-to 가이드다. DDS 수준 패킷 검사는 미들웨어 벤더의 도구 영역이다. 형식적 커버리지, 뮤테이션 테스팅, ROS build farm은 이 트랙 밖이다. 하드웨어 인 더 루프 테스트와 재생이 실물 로봇을 만날 때 달라지는 것은 [[04-robotics/ros2/index|25. ROS 2]]에 있다. 이 페이지의 도구가 충족하려는 실험 기준 — 분석 단위, 비교, 불확실성, 산출물 체크리스트 — 은 [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]]다.
+트레이싱 — LTTng로 미들웨어 자체를 계측해 콜백 수준 타이밍을 보는 것 — 은 ROS 2 tracing 문서에 있고, 질문이 "왜 아무것도 안 오나"가 아니라 "그 40 ms가 어디로 갔나"일 때 맞는 도구다. GDB로 죽는 노드의 백트레이스를 얻는 것은 별도의 how-to 가이드다. DDS 수준 패킷 검사는 미들웨어 벤더의 도구 영역이다. 형식적 커버리지, 뮤테이션 테스팅, ROS build farm은 이 트랙 밖이다. 하드웨어 인 더 루프 테스트와 재생이 실물 로봇을 만날 때 달라지는 것은 [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]]에 있다. 이 페이지의 도구가 충족하려는 실험 기준 — 분석 단위, 비교, 불확실성, 산출물 체크리스트 — 은 [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]]다.
 
 ### 출처
 
@@ -991,4 +993,4 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 > **1. 노드가 출력을 내지 않는다. 퍼블리셔는 확실히 멀쩡하다. 무엇부터 점검하고, 왜 짐작한 지점부터 보지 않는가?** 0번, 셸의 환경부터 시작해 목록을 순서대로 내려간다. 순서의 요점은 바로 그 확신이 틀렸다는 것이다. 확신하는 항목이 건너뛰는 항목이고, 그다음 한 시간을 거기서 잃는다. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, QoS는 `--verbose`, `tf2_echo`, `/clock`. 처음 실패에서 멈춘다.
 > **2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 1초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?** 상류 어딘가가 뒤처져 출력이 큐에 쌓이고 있다. 메시지는 제 주기로 오지만 하나하나가 앞의 것보다 오래됐다. `hz`는 도착 간격을 재고, 일정한 적체는 그 간격을 바꾸지 않는다. header 스탬프와 수신 시각을 비교하는 `delay`만 쌓이는 나이를 본다. 유계한 지연은 지연이고, 자라는 지연은 결국 잃게 될 큐다.
 > **3. 연구용 녹화에서 `ros2 bag record -a`가 나쁜 기본값인 이유를 디스크 용량 말고 대라.** 기록기가 구독한 모든 것을 직렬화해서 써야 하고, 따라가지 못하면 메시지를 흘리기 때문이다. 그래서 정작 필요한 토픽이 불완전한 채로 돌아오고 에러는 없다. 알게 되는 곳은 `ros2 bag info`의 Count 열이고 보통 이미 늦었다. 400 GB짜리 bag은 공유도, CI 투입도, 반복도 불가능하다.
-> **4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 명령 하나를 대라.** 시계(노드가 `use_sim_time`이 아니거나, `use_sim_time`인데 `/clock`을 발행하는 것이 없음)와 QoS durability/reliability(구독자가 플레이어의 제공보다 많이 요구해 연결이 성립하지 않음). 재생 중의 `ros2 topic hz /scan`이 가른다. 주기가 보고되면 데이터는 선로 위에 있고 문제는 시간이다. 아무것도 안 나오면 문제는 연결이니 `ros2 node info`로 이름을, 그다음 `ros2 topic info /scan --verbose`로 프로파일을 비교한다.
+> **4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 방법을 대라.** 시계(노드가 `use_sim_time`이 아니거나, `use_sim_time`인데 `/clock`을 발행하는 것이 없음)와 QoS durability/reliability(구독자가 플레이어의 제공보다 많이 요구해 연결이 성립하지 않음). `ros2 topic hz /scan`은 플레이어가 그 이름으로 발행한다는 것만 알려 준다 — 무엇과도 연결되는 best-effort 프로파일을 쓰므로 QoS를 보지 못한다. 그다음 `ros2 topic info /scan --verbose`로 플레이어의 제공과 내 노드의 요청을 비교한다. 비호환이면 원인 B, 호환이면 남는 것은 `/clock`과 `use_sim_time`(원인 A)이다.

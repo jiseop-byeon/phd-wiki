@@ -37,7 +37,7 @@ The naming history is worth thirty seconds because search results are full of al
 - **Ignition Gazebo** was the ground-up rewrite, a set of versioned libraries with `ign` commands and `ignition::` namespaces.
 - In **April 2022** the project retired the Ignition name and moved everything back to **Gazebo**: `ign gazebo` became `gz sim`, `ign-gazebo` became `gz-sim`, `ros_ign` became `ros_gz`. Garden (2022) was the first release carrying the new name; Fortress, the older LTS, still uses `ign`.
 
-The consequence for you: **do not start new work on Gazebo Classic.** It is out of support, and every tutorial that tells you to write `<gazebo><plugin filename="libgazebo_ros_control.so">` is describing a dead system. The current releases are **Harmonic** (Sep 2023 – May 2029, LTS) and **Jetty** (Sep 2025 – May 2031, LTS).
+The consequence for you: **do not start new work on Gazebo Classic.** It is out of support, and every tutorial that tells you to write `<gazebo><plugin filename="libgazebo_ros_control.so">` is describing a dead system. The current LTS releases are **Harmonic** (Sep 2023 – May 2029) and **Jetty** (Sep 2025 – May 2031); Fortress (LTS, to May 2027) and Ionic (to Dec 2026) are still supported but not for new work.
 
 This page uses **Gazebo Harmonic**, because that is the pairing with ROS 2 Jazzy that has binary packages — `ros-jazzy-ros-gz` and `ros-jazzy-gz-ros2-control`. Lyrical Luth pairs with Jetty in the same way; the structure of everything below is unchanged, only the package names shift.
 
@@ -207,7 +207,7 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 Their surfaces, which are what you actually type against:
 
 - **Joint trajectory controller** — topic `<name>/joint_trajectory` (`trajectory_msgs/msg/JointTrajectory`) and action `<name>/follow_joint_trajectory` (`control_msgs/action/FollowJointTrajectory`). Use the action when you need to know whether the motion finished; the topic is fire-and-forget. Parameters: `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces` must include `position`, and must include `velocity` when the command interface is `velocity` or `effort` alone.
-- **Forward command controllers** — topic `<name>/commands` (`std_msgs/msg/Float64MultiArray`), parameters `joints` and `interface_name`. The array is positional: element *i* goes to joint *i* of the `joints` list. Nothing validates that you meant that ordering.
+- **Forward command controllers** — topic `<name>/commands` (`std_msgs/msg/Float64MultiArray`), parameter `joints` (plus `interface_name` for the generic `forward_command_controller/ForwardCommandController`; the position/velocity/effort variants fix the interface). The array is positional: element *i* goes to joint *i* of the `joints` list. Nothing validates that you meant that ordering.
 - **Differential drive controller** — subscribes `<name>/cmd_vel` as `geometry_msgs/msg/TwistStamped` in Jazzy (not plain `Twist`; this is a frequent version trap), publishes `<name>/odom` and, when `enable_odom_tf` is true, the `odom` → `base_link` edge on `/tf`. Parameters: `left_wheel_names`, `right_wheel_names`, `wheel_separation`, `wheel_radius`.
 
 ### 10. gz_ros2_control: the simulation hardware interface
@@ -383,7 +383,7 @@ The symptom that eats an evening: `list_controllers` says `active`, no node logs
 ros2 control list_controllers
 ```
 
-`inactive` means configuration succeeded and activation did not — usually a missing interface. `unconfigured` means the parameters never arrived; the commonest cause is a `--param-file` path that was wrong, or a YAML whose top-level key is not the controller's name. A controller that activated and then fell back to `inactive` has had its hardware component go into an error state; check `ros2 control list_hardware_components -v`.
+`inactive` means configuration succeeded and activation did not — usually a missing interface, including a joint-name mismatch (step 3); the controller manager logs "Unable to activate controller … command interface … is not available" once, easy to lose in launch output. A controller that is *absent* from the list failed to load: for the joint trajectory controller, parameters that never arrived — a wrong `--param-file` path, or a YAML whose top-level key is not the controller's name — make `on_init` fail, and the spawner reports the error. A controller that activated and then fell back to `inactive` has had its hardware component go into an error state; check `ros2 control list_hardware_components -v`.
 
 **2. Is it claiming the command interfaces?**
 
@@ -392,17 +392,17 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers --claimed-interfaces
 ```
 
-The first prints every interface with two independent markers: `[available]` or `[unavailable]` says whether the hardware offers it, and `[claimed]` or `[unclaimed]` says whether an active controller holds it. A healthy interface reads `[available] [claimed]`, so the tell is `[available] [unclaimed]` — offered, and nobody writing to it. An active controller holding nothing is the clearest possible signal: it started, but it is writing to nowhere. An interface that reads `[unavailable]`, or that does not appear at all, sends you to step 3.
+The first prints every command interface with two independent markers (state interfaces are listed without markers): `[available]` or `[unavailable]` says whether the hardware offers it, and `[claimed]` or `[unclaimed]` says whether an active controller holds it. A healthy interface reads `[available] [claimed]`. An active controller always holds its command interfaces — the controller manager refuses to activate one that cannot — so if yours read `[claimed]`, the chain up to the hardware is intact and the problem is downstream (step 4). `[available] [unclaimed]` means no active controller holds it: the controller you think is active is not the one you configured. An interface that reads `[unavailable]`, or that does not appear at all, sends you to step 3.
 
 **3. Do the joint names agree?**
 
-This is the single most common cause, and it produces exactly this symptom. Three places name the same joints and all three must match character for character:
+This is the most common reason a controller never becomes active. Three places name the same joints and all three must match character for character:
 
 - the `<joint name="...">` elements of the URDF itself,
 - the `<joint name="...">` entries inside the `<ros2_control>` block,
 - the `joints:` list in the controller YAML.
 
-`shoulder` in the URDF and `shoulder_joint` in the YAML gives you a controller that loads, configures, activates, claims nothing, and reports no error. Diff the three lists explicitly:
+`shoulder` in the URDF and `shoulder_joint` in the YAML gives you a controller that loads and configures but will not activate: `list_controllers` shows it `inactive`, and the only report is one "Unable to activate controller … command interface 'shoulder_joint/position' is not available" warning. Diff the three lists explicitly:
 
 ```bash
 xacro two_link_arm.urdf.xacro | grep -E '<joint name=|<command_interface|<state_interface'
@@ -419,7 +419,7 @@ ros2 topic info /joint_trajectory_controller/joint_trajectory --verbose
 
 Subscription count zero means you are publishing to a topic the controller is not listening on — almost always because the controller's *spawned name* is not `joint_trajectory_controller`, or because the controller manager is in a namespace and the real topic is `/my_robot/joint_trajectory_controller/joint_trajectory`. `ros2 topic list | grep trajectory` settles it in one line.
 
-If the subscription exists and the message is arriving, look at time. The controller manager inside Gazebo runs on simulated time; a `ros2 topic pub` from a shell where `use_sim_time` is not set stamps the message with wall-clock time, and the trajectory's start is then either years in the past or years in the future. Check that the `/clock` bridge is running (`ros2 topic hz /clock`) and that `time_from_start` is nonzero — a trajectory whose single point is at `t=0` is a command to be there instantly, which a position interface may satisfy so fast you see nothing.
+If the subscription exists and the message is arriving, look at time. The controller manager inside Gazebo runs on simulated time. `ros2 topic pub` leaves `header.stamp` at zero unless you write `now`, and the joint trajectory controller reads a zero stamp as "start now" — which is why step 6 works. A *non-zero* stamp is read on the controller's sim-time clock, so a wall-clock stamp puts the start far in the future and the arm waits. Check that the `/clock` bridge is running (`ros2 topic hz /clock`) and that `time_from_start` is nonzero — a trajectory whose single point is at `t=0` is a command to be there instantly, which a position interface may satisfy so fast you see nothing.
 
 Last, confirm the simulator is stepping at all: `ros2 topic hz /joint_states` against a paused Gazebo reports a rate of zero, and a world started without `-r` is paused. Press play, or add `-r`.
 
@@ -438,8 +438,8 @@ Writing a hardware component of your own — a real driver behind the same inter
 
 > [!question]- Self-check · Answer
 > **1. Why does `ros2_control` put a named-interface seam between the controller and the hardware, rather than letting the controller write to the motor?** Because the seam is what makes the controller portable. A controller asks for `shoulder/position` and neither knows nor cares whether a physics engine or an EtherCAT drive provides it, so the same controller and the same YAML run in Gazebo and on the real arm. Moving to hardware changes one `<plugin>` line in the URDF. It also enforces exclusivity: a command interface can be claimed by at most one active controller, which is why two writers on one joint is a failed activation rather than a fight.
-> **2. Your controller is `active`, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?** `ros2 control list_hardware_interfaces` — if the command interfaces read `[available] [unclaimed]`, the active controller is writing nowhere. The two markers are independent, so a healthy interface is `[available] [claimed]` and `[available]` on its own tells you nothing. The most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML. That mismatch produces no error at any stage.
-> **3. Why does a `/clock` bridge matter, when nothing in the exercise reads the clock explicitly?** The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes have no simulated clock, so a trajectory stamped from a wall-clock shell has a start time unrelated to the controller's notion of now — the motion is silently in the past or the far future. Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
+> **2. Your controller was spawned, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?** `ros2 control list_controllers` — if it reads `inactive`, activation failed, and the most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML; the controller manager logged one "Unable to activate controller … is not available" warning. If it reads `active`, its command interfaces are necessarily `[available] [claimed]` in `list_hardware_interfaces`, so look downstream: the topic name, the trajectory's stamp and `time_from_start`, and whether the simulation is paused.
+> **3. Why does a `/clock` bridge matter, when nothing in the exercise reads the clock explicitly?** The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes that set `use_sim_time` — robot_state_publisher, TF consumers, anything stamping or looking up transforms — have no time source and stall, and a trajectory given a wall-clock stamp is read on the controller's sim clock as starting far in the future. (A zero stamp, which `ros2 topic pub` sends by default, means "start now" and dodges this.) Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
 > **4. A tutorial tells you to add `<plugin filename="libgazebo_ros_control.so">` to your URDF. What is wrong with it?** It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
 > **5. You get a manipulation policy working in Gazebo. What can you claim?** That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
 
@@ -473,7 +473,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 - **Ignition Gazebo** 는 바닥부터 다시 쓴 버전이다. `ign` 명령과 `ignition::` 네임스페이스를 쓰는 버전별 라이브러리 묶음이었다.
 - **2022년 4월** 프로젝트는 Ignition이라는 이름을 폐기하고 전부 **Gazebo** 로 되돌렸다. `ign gazebo`는 `gz sim`이 되고, `ign-gazebo`는 `gz-sim`, `ros_ign`은 `ros_gz`가 됐다. 새 이름을 단 첫 릴리스는 Garden(2022)이고, 구 LTS인 Fortress는 여전히 `ign`을 쓴다.
 
-당신에게 오는 귀결: **새 작업을 Gazebo Classic에서 시작하지 마라.** 지원이 끝났고, `<gazebo><plugin filename="libgazebo_ros_control.so">`를 쓰라는 모든 튜토리얼은 죽은 시스템을 설명하고 있다. 현행 릴리스는 **Harmonic**(2023년 9월 – 2029년 5월, LTS)과 **Jetty**(2025년 9월 – 2031년 5월, LTS)다.
+당신에게 오는 귀결: **새 작업을 Gazebo Classic에서 시작하지 마라.** 지원이 끝났고, `<gazebo><plugin filename="libgazebo_ros_control.so">`를 쓰라는 모든 튜토리얼은 죽은 시스템을 설명하고 있다. 현행 LTS 릴리스는 **Harmonic**(2023년 9월 – 2029년 5월)과 **Jetty**(2025년 9월 – 2031년 5월)다. Fortress(LTS, 2027년 5월까지)와 Ionic(2026년 12월까지)도 아직 지원되지만 새 작업용은 아니다.
 
 이 페이지는 **Gazebo Harmonic** 을 쓴다. ROS 2 Jazzy와 바이너리 패키지가 있는 짝이기 때문이다 — `ros-jazzy-ros-gz`, `ros-jazzy-gz-ros2-control`. Lyrical Luth는 같은 방식으로 Jetty와 짝을 이룬다. 아래 구조는 그대로이고 패키지 이름만 바뀐다.
 
@@ -643,7 +643,7 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 실제로 손으로 치게 되는 표면.
 
 - **관절 궤적 제어기** — 토픽 `<name>/joint_trajectory`(`trajectory_msgs/msg/JointTrajectory`), 액션 `<name>/follow_joint_trajectory`(`control_msgs/action/FollowJointTrajectory`). 동작이 끝났는지 알아야 하면 액션을 쓴다. 토픽은 보내고 잊는 쪽이다. 파라미터는 `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces`에는 `position`이 반드시 있어야 하고, 명령 인터페이스가 `velocity`나 `effort` 단독일 때는 `velocity`도 있어야 한다.
-- **Forward command 제어기** — 토픽 `<name>/commands`(`std_msgs/msg/Float64MultiArray`), 파라미터 `joints`와 `interface_name`. 배열은 위치 기반이다. *i* 번째 원소가 `joints` 목록의 *i* 번째 관절로 간다. 그 순서를 의도했는지 검증하는 것은 아무것도 없다.
+- **Forward command 제어기** — 토픽 `<name>/commands`(`std_msgs/msg/Float64MultiArray`), 파라미터 `joints`(범용 `forward_command_controller/ForwardCommandController`에는 `interface_name`도 있고, position/velocity/effort 변형은 인터페이스가 고정이다). 배열은 위치 기반이다. *i* 번째 원소가 `joints` 목록의 *i* 번째 관절로 간다. 그 순서를 의도했는지 검증하는 것은 아무것도 없다.
 - **차동 구동 제어기** — Jazzy에서는 `<name>/cmd_vel`을 `geometry_msgs/msg/TwistStamped`로 구독한다(평범한 `Twist`가 아니다. 버전 함정으로 자주 걸린다). `<name>/odom`을 publish하고, `enable_odom_tf`가 true면 `/tf`에 `odom` → `base_link` 간선을 낸다. 파라미터는 `left_wheel_names`, `right_wheel_names`, `wheel_separation`, `wheel_radius`.
 
 ### 10. gz_ros2_control: 시뮬레이션용 하드웨어 인터페이스
@@ -819,7 +819,7 @@ ros2 topic pub -1 /joint_trajectory_controller/joint_trajectory trajectory_msgs/
 ros2 control list_controllers
 ```
 
-`inactive`는 설정은 됐고 활성화가 안 됐다는 뜻이고, 보통 인터페이스가 없어서다. `unconfigured`는 파라미터가 도착하지 않은 것이고, 가장 흔한 원인은 `--param-file` 경로가 틀렸거나 YAML의 최상위 키가 제어기 이름이 아닌 경우다. 활성화됐다가 `inactive`로 떨어진 제어기는 하드웨어 컴포넌트가 에러 상태로 간 것이다. `ros2 control list_hardware_components -v`로 확인한다.
+`inactive`는 설정은 됐고 활성화가 안 됐다는 뜻이고, 보통 인터페이스가 없어서다 — 관절 이름 불일치(3단계)도 여기에 속한다. 컨트롤러 매니저는 "Unable to activate controller … command interface … is not available"을 한 번 찍는데, launch 출력에 묻히기 쉽다. 목록에 아예 *없는* 제어기는 적재에 실패한 것이다. joint trajectory controller라면 파라미터가 도착하지 않았을 때 — `--param-file` 경로가 틀렸거나 YAML의 최상위 키가 제어기 이름이 아닐 때 — `on_init`이 실패하고 spawner가 오류를 보고한다. 활성화됐다가 `inactive`로 떨어진 제어기는 하드웨어 컴포넌트가 에러 상태로 간 것이다. `ros2 control list_hardware_components -v`로 확인한다.
 
 **2. 명령 인터페이스를 점유하고 있는가?**
 
@@ -828,17 +828,17 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers --claimed-interfaces
 ```
 
-첫 명령은 모든 인터페이스를 찍으면서 서로 독립적인 표시 둘을 붙인다. `[available]`과 `[unavailable]`은 하드웨어가 그것을 제공하는지를, `[claimed]`와 `[unclaimed]`는 활성 제어기가 쥐고 있는지를 말한다. 정상 인터페이스는 `[available] [claimed]`이므로 찾아야 할 신호는 `[available] [unclaimed]`다. 제공은 되는데 아무도 쓰지 않는 상태다. 아무것도 쥐지 않은 활성 제어기는 가장 명확한 신호다. 시작은 했는데 아무 데도 쓰고 있지 않다. `[unavailable]`로 나오거나 아예 나타나지 않는 인터페이스는 3단계로 보낸다.
+첫 명령은 모든 명령 인터페이스를 찍으면서 서로 독립적인 표시 둘을 붙인다(상태 인터페이스는 표시 없이 나열된다). `[available]`과 `[unavailable]`은 하드웨어가 그것을 제공하는지를, `[claimed]`와 `[unclaimed]`는 활성 제어기가 쥐고 있는지를 말한다. 정상 인터페이스는 `[available] [claimed]`다. 활성 제어기는 언제나 자기 명령 인터페이스를 쥐고 있다 — 쥘 수 없는 제어기는 컨트롤러 매니저가 활성화를 거부한다 — 그러니 `[claimed]`로 나오면 하드웨어까지의 사슬은 멀쩡하고 문제는 그 아래(4단계)다. `[available] [unclaimed]`는 어떤 활성 제어기도 쥐고 있지 않다는 뜻이다. 활성이라고 믿는 제어기가 내가 설정한 그 제어기가 아니다. `[unavailable]`로 나오거나 아예 나타나지 않는 인터페이스는 3단계로 보낸다.
 
 **3. 관절 이름이 일치하는가?**
 
-가장 흔한 원인이고, 정확히 이 증상을 만든다. 같은 관절을 세 곳이 이름 부르며, 셋이 글자 하나까지 같아야 한다.
+제어기가 끝내 활성화되지 않는 가장 흔한 원인이다. 같은 관절을 세 곳이 이름 부르며, 셋이 글자 하나까지 같아야 한다.
 
 - URDF 자체의 `<joint name="...">` 요소,
 - `<ros2_control>` 블록 안의 `<joint name="...">` 항목,
 - 제어기 YAML의 `joints:` 목록.
 
-URDF에는 `shoulder`, YAML에는 `shoulder_joint`이면 적재되고 설정되고 활성화되고 아무것도 점유하지 않으며 에러도 없는 제어기가 나온다. 세 목록을 명시적으로 비교하라.
+URDF에는 `shoulder`, YAML에는 `shoulder_joint`이면 적재되고 설정되지만 활성화되지 않는 제어기가 나온다. `list_controllers`에는 `inactive`로 보이고, 보고는 "Unable to activate controller … command interface 'shoulder_joint/position' is not available" 경고 한 줄뿐이다. 세 목록을 명시적으로 비교하라.
 
 ```bash
 xacro two_link_arm.urdf.xacro | grep -E '<joint name=|<command_interface|<state_interface'
@@ -855,7 +855,7 @@ ros2 topic info /joint_trajectory_controller/joint_trajectory --verbose
 
 Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고 있는 것이다. 거의 항상 제어기의 *spawn된 이름* 이 `joint_trajectory_controller`가 아니거나, 컨트롤러 매니저가 네임스페이스 안에 있어서 실제 토픽이 `/my_robot/joint_trajectory_controller/joint_trajectory`인 경우다. `ros2 topic list | grep trajectory` 한 줄이면 끝난다.
 
-구독이 있고 메시지도 도착한다면 시간을 보라. Gazebo 안의 컨트롤러 매니저는 시뮬레이션 시간으로 돈다. `use_sim_time`이 설정되지 않은 셸에서 보낸 `ros2 topic pub`은 메시지에 벽시계 시각을 찍고, 그러면 궤적의 시작이 몇 년 전이거나 몇 년 뒤가 된다. `/clock` 브리지가 돌고 있는지(`ros2 topic hz /clock`), 그리고 `time_from_start`가 0이 아닌지 확인하라. 점 하나가 `t=0`인 궤적은 "지금 당장 거기 있어라"라는 명령이고, position 인터페이스는 그것을 눈에 보이지 않을 만큼 빨리 만족시킬 수 있다.
+구독이 있고 메시지도 도착한다면 시간을 보라. Gazebo 안의 컨트롤러 매니저는 시뮬레이션 시간으로 돈다. `ros2 topic pub`은 `now`를 쓰지 않는 한 `header.stamp`를 0으로 두고, joint trajectory controller는 0 스탬프를 "지금 시작"으로 읽는다 — 6단계가 되는 이유다. 0이 *아닌* 스탬프는 제어기의 시뮬레이션 시계로 읽히므로, 벽시계 스탬프는 시작을 먼 미래에 놓고 팔은 기다린다. `/clock` 브리지가 돌고 있는지(`ros2 topic hz /clock`), 그리고 `time_from_start`가 0이 아닌지 확인하라. 점 하나가 `t=0`인 궤적은 "지금 당장 거기 있어라"라는 명령이고, position 인터페이스는 그것을 눈에 보이지 않을 만큼 빨리 만족시킬 수 있다.
 
 마지막으로 시뮬레이터가 진행 중인지 확인한다. 일시정지된 Gazebo에 대해 `ros2 topic hz /joint_states`는 0을 보고하고, `-r` 없이 시작한 world는 일시정지 상태다. 재생을 누르거나 `-r`을 붙여라.
 
@@ -874,7 +874,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 
 > [!question]- 스스로 점검 · 정답
 > **1. `ros2_control`은 왜 제어기가 모터에 직접 쓰게 두지 않고 이름 붙은 인터페이스 이음매를 두는가?** 그 이음매가 제어기를 이식 가능하게 만들기 때문이다. 제어기는 `shoulder/position`을 요구할 뿐 그것을 물리 엔진이 주는지 EtherCAT 드라이브가 주는지 알지도 신경 쓰지도 않는다. 그래서 같은 제어기와 같은 YAML이 Gazebo에서도 실제 팔에서도 돈다. 하드웨어로 옮기는 것은 URDF의 `<plugin>` 한 줄을 바꾸는 일이다. 배타성도 여기서 나온다. 명령 인터페이스는 활성 제어기 하나만 점유할 수 있고, 그래서 한 관절에 writer 둘이 붙는 상황은 싸움이 아니라 활성화 실패가 된다.
-> **2. 제어기는 `active`, 시뮬레이션은 돌고, 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?** `ros2 control list_hardware_interfaces` — 명령 인터페이스가 `[available] [unclaimed]`로 나오면 활성 제어기가 아무 데도 쓰고 있지 않은 것이다. 두 표시는 독립이라 정상 인터페이스는 `[available] [claimed]`이고 `[available]`만으로는 아무것도 알 수 없다. 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 그 불일치는 어느 단계에서도 에러를 내지 않는다.
-> **3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?** 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 ROS 쪽 노드에는 시뮬레이션 시계가 없고, 벽시계 셸에서 찍힌 궤적의 시작 시각은 제어기의 "지금"과 무관해진다. 동작은 조용히 과거나 먼 미래에 놓인다. 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
+> **2. 제어기를 spawn했고 시뮬레이션은 돌고 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?** `ros2 control list_controllers` — `inactive`면 활성화가 실패한 것이고, 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 컨트롤러 매니저는 "Unable to activate controller … is not available" 경고를 한 번 찍었을 것이다. `active`라면 그 명령 인터페이스는 `list_hardware_interfaces`에서 반드시 `[available] [claimed]`이므로, 그 아래를 본다: 토픽 이름, 궤적의 스탬프와 `time_from_start`, 시뮬레이션이 일시정지됐는지.
+> **3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?** 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 `use_sim_time`을 켠 ROS 쪽 노드 — robot_state_publisher, TF 소비자, 스탬프를 찍거나 변환을 조회하는 모든 것 — 에 시간 원천이 없어 멈추고, 벽시계 스탬프를 준 궤적은 제어기의 시뮬레이션 시계에서 먼 미래에 시작하는 것으로 읽힌다. (`ros2 topic pub`이 기본으로 보내는 0 스탬프는 "지금 시작"이라 이 문제를 비켜 간다.) 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
 > **4. 어떤 튜토리얼이 URDF에 `<plugin filename="libgazebo_ros_control.so">`를 넣으라고 한다. 무엇이 잘못됐나?** Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
 > **5. Gazebo에서 매니퓰레이션 정책이 동작한다. 무엇을 주장할 수 있나?** 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.

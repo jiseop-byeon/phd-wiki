@@ -39,7 +39,7 @@ source /opt/ros/jazzy/setup.bash
 ros2 launch moveit_resources_panda_moveit_config demo.launch.py
 ```
 
-That launch starts `move_group`, RViz with the MotionPlanning display, `robot_state_publisher`, and a ros2_control stack whose hardware is `mock_components` — the same mock hardware interface from 25.7, which is why a plan executes on a machine with no robot attached. In another sourced terminal:
+That launch starts `move_group`, RViz with the MotionPlanning display, `robot_state_publisher`, and a ros2_control stack whose hardware is `mock_components/GenericSystem`, which loops commands back as states ([[04-robotics/ros2/from-simulation-to-hardware|25.11]]) — which is why a plan executes on a machine with no robot attached. In another sourced terminal:
 
 ```bash
 ros2 node info /move_group
@@ -131,7 +131,7 @@ The **planning scene** is `move_group`'s model of the robot state plus the world
 - **Attached collision objects.** When the gripper closes, the object stops being an obstacle and becomes part of the robot: `attachObject(id, link, touch_links)` moves it from the world into the robot's collision model, attached to a link, with `touch_links` listing the gripper links permitted to touch it. Forgetting this is the classic bug — you grasp a brick and every subsequent plan fails because the hand is inside an obstacle.
 - **The octomap.** Depth sensors feed the occupancy map monitor, which builds a voxel occupancy grid that the collision checker treats as obstacles. Configured in `sensors_3d.yaml` with `occupancy_map_monitor/PointCloudOctomapUpdater` or `occupancy_map_monitor/DepthImageOctomapUpdater`, plus `octomap_frame` and `octomap_resolution`. Self-filtering (the `padding_scale`/`padding_offset` parameters) is what stops the robot's own arm, seen by its own camera, from becoming an obstacle to itself.
 
-In Python, the scene is edited through the planning scene monitor:
+In Python, the scene is edited through the planning scene monitor. These snippets need the MoveIt configuration (URDF, SRDF, kinematics, planning pipelines) as parameters, so run them from a launch file built with `MoveItConfigsBuilder`, or pass `MoveItPy(..., config_dict=...)`; a bare `python3` invocation has no robot model:
 
 ```python
 from moveit.planning import MoveItPy
@@ -210,7 +210,7 @@ Underneath, `joint_trajectory_controller` applies its *own* tolerances — `cons
 
 ### 9. MoveIt Servo: when planning is the wrong shape
 
-Planning takes hundreds of milliseconds and assumes a static goal. Visual servoing onto a moving target, or teleoperating a tool by hand, does not fit that. `moveit_servo` (`ros-jazzy-moveit-servo`) is the other mode: it converts a streaming command into joint commands at control rate, with no planning at all. It accepts joint jog (individual joint velocities), twist (a desired end-effector velocity) and pose commands, and it outputs a `KinematicState` — joint names, positions, velocities, accelerations — or a trajectory/float-array topic through the ROS interface. It scales velocity down near singularities and near collisions, both on by default and both disableable.
+Planning takes hundreds of milliseconds and assumes a static goal. Visual servoing onto a moving target, or teleoperating a tool by hand, does not fit that. `moveit_servo` (`ros-jazzy-moveit-servo`) is the other mode: it converts a streaming command into joint commands at control rate, with no planning at all. It accepts joint jog (individual joint velocities), twist (a desired end-effector velocity) and pose commands, and it outputs a `KinematicState` — joint names, positions, velocities, accelerations — or a trajectory/float-array topic through the ROS interface. It scales velocity down near singularities and near collisions, both on by default; collision checking can be turned off with `check_collisions`, while singularity slowdown has no switch and is tuned through its thresholds.
 
 The trade is explicit: Servo is reactive and has no lookahead, so it cannot route around an obstacle — it can only slow down as it approaches one. Use planning for getting somewhere, Servo for tracking something.
 
@@ -342,7 +342,7 @@ source /opt/ros/jazzy/setup.bash
 ros2 launch moveit_resources_panda_moveit_config demo.launch.py
 ```
 
-이 런치는 `move_group`, MotionPlanning 디스플레이가 붙은 RViz, `robot_state_publisher`, 그리고 하드웨어가 `mock_components`인 ros2_control 스택을 띄운다. 25.7의 그 모의 하드웨어 인터페이스이고, 로봇이 없는 머신에서도 계획이 실행되는 이유다. source된 다른 터미널에서:
+이 런치는 `move_group`, MotionPlanning 디스플레이가 붙은 RViz, `robot_state_publisher`, 그리고 하드웨어가 `mock_components/GenericSystem`인 ros2_control 스택을 띄운다. 명령을 그대로 상태로 되돌려 주는 모의 하드웨어이고([[04-robotics/ros2/from-simulation-to-hardware|25.11]]), 로봇이 없는 머신에서도 계획이 실행되는 이유다. source된 다른 터미널에서:
 
 ```bash
 ros2 node info /move_group
@@ -434,7 +434,7 @@ Jazzy는 넷을 제공하고, 전부 별도 패키지이며, 요청마다 `plann
 - **Attached collision object.** 그리퍼가 닫히면 물체는 장애물이기를 그치고 로봇의 일부가 된다. `attachObject(id, link, touch_links)`가 물체를 세계에서 로봇 충돌 모형으로 옮겨 링크에 붙이고, `touch_links`는 물체에 닿아도 되는 그리퍼 링크들을 나열한다. 이걸 잊는 것이 고전적인 버그다. 벽돌을 잡은 뒤 손이 장애물 안에 들어가 있어서 이후 모든 계획이 실패한다.
 - **Octomap.** 깊이 센서가 occupancy map monitor에 들어가면 복셀 점유 격자가 만들어지고 충돌 검사기가 이를 장애물로 취급한다. `sensors_3d.yaml`에서 `occupancy_map_monitor/PointCloudOctomapUpdater` 또는 `occupancy_map_monitor/DepthImageOctomapUpdater`, 그리고 `octomap_frame`과 `octomap_resolution`으로 설정한다. 자기 필터링(`padding_scale`/`padding_offset` 파라미터)이 자기 카메라에 찍힌 자기 팔이 자신의 장애물이 되는 것을 막는다.
 
-Python에서는 planning scene monitor를 통해 편집한다.
+Python에서는 planning scene monitor를 통해 편집한다. 이 코드 조각들은 MoveIt 설정(URDF, SRDF, kinematics, 계획 파이프라인)을 파라미터로 받아야 하므로, `MoveItConfigsBuilder`로 만든 launch 파일에서 돌리거나 `MoveItPy(..., config_dict=...)`로 넘겨라. 맨 `python3`로 실행하면 로봇 모델이 없다.
 
 ```python
 from moveit.planning import MoveItPy
@@ -513,7 +513,7 @@ moveit_simple_controller_manager:
 
 ### 9. MoveIt Servo: 계획이 맞지 않는 모양일 때
 
-계획은 수백 밀리초가 걸리고 목표가 정지해 있다고 가정한다. 움직이는 대상에 대한 비주얼 서보잉이나 손으로 하는 원격 조작은 거기에 맞지 않는다. `moveit_servo`(`ros-jazzy-moveit-servo`)가 다른 모드다. 스트리밍 명령을 제어 주기로 관절 명령으로 바꾸며, 계획은 전혀 하지 않는다. joint jog(개별 관절 속도), twist(원하는 말단 속도), pose 명령을 받고, 관절 이름·위치·속도·가속도를 담은 `KinematicState`를 내거나 ROS 인터페이스로 궤적/실수 배열 토픽을 낸다. 특이점 근처와 충돌 근처에서 속도를 줄이며, 둘 다 기본으로 켜져 있고 둘 다 끌 수 있다.
+계획은 수백 밀리초가 걸리고 목표가 정지해 있다고 가정한다. 움직이는 대상에 대한 비주얼 서보잉이나 손으로 하는 원격 조작은 거기에 맞지 않는다. `moveit_servo`(`ros-jazzy-moveit-servo`)가 다른 모드다. 스트리밍 명령을 제어 주기로 관절 명령으로 바꾸며, 계획은 전혀 하지 않는다. joint jog(개별 관절 속도), twist(원하는 말단 속도), pose 명령을 받고, 관절 이름·위치·속도·가속도를 담은 `KinematicState`를 내거나 ROS 인터페이스로 궤적/실수 배열 토픽을 낸다. 특이점 근처와 충돌 근처에서 속도를 줄이며 둘 다 기본으로 켜져 있다. 충돌 검사는 `check_collisions`로 끌 수 있지만, 특이점 감속에는 스위치가 없고 문턱값으로 조정한다.
 
 교환 조건은 명시적이다. Servo는 반응적이고 선행 예측이 없어서 장애물을 우회할 수 없다. 다가가면서 느려질 뿐이다. 어딘가로 가는 데는 계획을, 무언가를 따라가는 데는 Servo를 쓴다.
 

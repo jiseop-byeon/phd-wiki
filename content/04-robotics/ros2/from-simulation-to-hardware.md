@@ -68,7 +68,7 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers
 ```
 
-The first prints each component, its plugin type and its lifecycle state. The second prints every state and command interface by name — `joint_1/position`, `joint_1/velocity` — and, crucially, whether each command interface is **claimed** by a controller. The third prints controllers and whether they are `active`. Those three commands answer almost every "why doesn't it move" question, and they are in section 11 for that reason.
+The first prints each component, its plugin type and its lifecycle state. The second prints every state and command interface by name — `joint_1/position`, `joint_1/velocity` — and, crucially, whether each command interface is **claimed** by a controller. The third prints controllers and whether they are `active`. Those three commands answer almost every "why doesn't it move" question, and they are in section 10 for that reason.
 
 ### 3. read, update, write
 
@@ -87,14 +87,14 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 
 Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activate` (release brakes, enable power stage), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. The states mean what they say — in `INACTIVE` states can be read but command interfaces are not available; only in `ACTIVE` can the machine move. A driver that enables the motors in `on_configure` instead of `on_activate` is a driver that energises an arm the moment the launch file starts, which is a bug with physical consequences.
 
-The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as jitter rather than as an error.
+The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as a throttled `Overrun detected!` warning while the loop quietly runs slower than `update_rate` (overrun handling, `overruns.manage`, is on by default) — a warning, not an error, and easy to miss.
 
 #### The skeleton, read off the installed header
 
 Checked against `hardware_interface` **4.48.0**, which is what `apt` installs for Jazzy today.
 At this version `SystemInterface` is a thin subclass of `HardwareComponentInterface` that makes
-`write()` pure virtual; everything else you override comes from the base. Three things you
-override, and one large thing you do not:
+`write()` pure virtual; everything else you override comes from the base. Four groups you
+override (init, configure/cleanup, activate/deactivate, read/write), and one large thing you do not:
 
 ```cpp
 #include "hardware_interface/system_interface.hpp"
@@ -157,10 +157,10 @@ an interface the URDF does not declare is a different method,
 `export_unlisted_state_interface_descriptions()`, whose own comment reads *"Override this
 method to export custom StateInterfaces which are not defined in the URDF file."* In the
 ordinary case you override none of them: declare the interfaces in the URDF and reach them by
-name, as above.
+name, as above. One caveat on that by-name form: the header marks `set_state(name, value)` and `get_command(name)` as *not real-time safe*, since each call builds a string and does a map lookup. For a hard loop, look the handles up once in `on_configure` and use the handle overloads, e.g. `set_state(handle, value, false)`.
 
 > [!warning] This API moved inside the Jazzy line, so check your own version
-> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1, and the header was refactored within that line — `system_interface.hpp` is now a 73-line file that includes `hardware_component_interface.hpp` and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
+> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1; both have the same headers. The refactor came earlier in the Jazzy 4.x line — `hardware_component_interface.hpp` first appears in 4.36.0 — and `system_interface.hpp` is now a 73-line file that includes `hardware_component_interface.hpp` and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
 
 ### 4. Drivers, and what to check before trusting one
 
@@ -180,8 +180,8 @@ The moment the robot is one machine and your laptop is another, discovery stops 
 The rules, in the order they bite:
 
 - **`ROS_DOMAIN_ID` must match.** It is an integer; choose between 0 and 101 inclusive on Linux, which is the range that avoids the default ephemeral port range 32768–60999. Different domain on the two hosts means two systems that cannot see each other at all, with no error.
-- **The hosts must be on the same subnet and multicast must work**, because default discovery is multicast. Jazzy also gives you `ROS_AUTOMATIC_DISCOVERY_RANGE`, with values `SUBNET` (the default), `LOCALHOST`, `OFF` and `SYSTEM_DEFAULT`, and `ROS_STATIC_PEERS`, a semicolon-separated list of addresses to discover on directly. Use the pair of them when multicast is blocked or the two machines are not on one subnet.
-- **The RMW implementation must match** on both hosts. `rmw_fastrtps_cpp` on one and `rmw_cyclonedds_cpp` on the other will not interoperate.
+- **The hosts must be on the same subnet and multicast must work**, because default discovery is multicast (with the DDS RMWs, Fast DDS or Cyclone DDS; `rmw_zenoh_cpp` instead needs a reachable Zenoh router, and the multicast test does not apply). Jazzy also gives you `ROS_AUTOMATIC_DISCOVERY_RANGE`, with values `SUBNET` (the default), `LOCALHOST`, `OFF` and `SYSTEM_DEFAULT`, and `ROS_STATIC_PEERS`, a semicolon-separated list of addresses to discover on directly. Use the pair of them when multicast is blocked or the two machines are not on one subnet.
+- **The RMW implementation must match** on both hosts. Mixed RMW implementations often communicate but are not guaranteed to (and `rmw_zenoh_cpp` does not interoperate with any DDS RMW), so use the same one on both hosts.
 - **Clocks must be disciplined.** Run `chrony` on both machines against the same source — or PTP if you need sub-millisecond — and verify it, rather than assuming that two machines that both said "NTP" agree.
 
 Test multicast directly, one command per machine:
@@ -203,7 +203,7 @@ sudo ufw allow in proto udp to 224.0.0.0/4
 sudo ufw allow in proto udp from 224.0.0.0/4
 ```
 
-**The characteristic multi-machine failure is that both hosts see each other's nodes and no data flows.** `ros2 node list` is complete on both sides, `ros2 topic list` is complete on both sides, `ros2 topic echo` on the remote topic prints nothing. This is not mysterious once you know that *discovery and data take different paths*: discovery is multicast to a well-known port, data is unicast to per-participant ports. A firewall rule that allows the multicast range and nothing else produces exactly this symptom. So does a VPN or Docker bridge that carries multicast but NATs unicast, and so does a QoS mismatch — which produces the same silence on one machine, so rule out the network before you blame QoS, or you will spend the afternoon in the wrong file.
+**The characteristic multi-machine failure is that both hosts see each other's nodes and no data flows.** `ros2 node list` is complete on both sides, `ros2 topic list` is complete on both sides, `ros2 topic echo` on the remote topic prints nothing. This is not mysterious once you know that *discovery and data take different paths*: discovery is multicast to a well-known port, data is unicast to per-participant ports. A firewall rule that allows the multicast range and nothing else produces exactly this symptom. So does a VPN or Docker bridge that carries multicast but NATs unicast, A QoS mismatch does *not* explain a silent `ros2 topic echo`, because echo inspects the publishers and adapts its own profile to them; it explains *your node* being silent while echo works. So a silent echo points at the network.
 
 The second characteristic failure appears only with large messages on WiFi: a camera topic that hangs for roughly 30 seconds at a time. That is IP fragment reassembly. A UDP datagram larger than the MTU is fragmented; one lost fragment leaves the rest occupying the kernel's reassembly buffer until `net.ipv4.ipfrag_time` (default 30 s) expires, and while that buffer is full nothing else gets through. The documented mitigations are best-effort QoS for that topic, lowering `net.ipv4.ipfrag_time`, and raising `net.ipv4.ipfrag_high_thresh`. The better fix is usually to not send raw images over WiFi at all.
 
@@ -215,7 +215,7 @@ What a real-time kernel (RT_PREEMPT) gives you: bounded scheduling latency, so a
 
 `controller_manager` does what can be done at this layer, and it is worth knowing what it is doing on your behalf:
 
-- its update thread attempts `SCHED_FIFO` at priority 50, which requires your user to have an `rtprio` limit granted in `/etc/security/limits.conf` — without that the attempt fails and you silently get ordinary scheduling;
+- its update thread attempts `SCHED_FIFO` at priority 50, which requires your user to have an `rtprio` limit granted in `/etc/security/limits.conf` — without that the attempt fails, a single `Could not enable FIFO RT scheduling policy` warning is logged at startup, and the thread runs under ordinary scheduling;
 - the `lock_memory` parameter locks the node's memory into physical RAM at startup to avoid page faults, defaulting to false on a normal kernel and true on a real-time one.
 
 And the part that matters most for how you design the system: **hard timing lives below ROS, not in it.** The current loop that keeps a motor from cooking itself runs in the motor controller at tens of kilohertz. The safety-rated stop runs in a safety relay. ROS 2 sends setpoints at 100–1000 Hz to a device that is already closing a faster loop around them. If your architecture requires ROS 2 to meet a hard deadline, the architecture is wrong before the tuning is.
@@ -272,7 +272,7 @@ You may not have hardware yet, so the exercise is the artefact that comes before
 10. The first controller you intend to activate is a low-authority one — a joint state broadcaster first, then position at reduced speed. Write the exact `ros2 control switch_controllers` invocation now, so you are not composing it while the arm is live.
 11. `chronyc tracking` on both machines, and the offset is small enough for your timestamps to mean anything.
 12. `ros2 multicast send` / `ros2 multicast receive` passes between robot and laptop, and `ROS_DOMAIN_ID` and the RMW implementation are printed and identical on both.
-13. You can record a bag of the first run: `ros2 bag record -a` is started before power-on, not after something interesting happens. [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] is why.
+13. You can record a bag of the first run: `ros2 bag record --topics <inputs, joint states, commands, /tf, /tf_static> -o first_run` is started before power-on, not after something interesting happens. [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] is why.
 
 **The last line, which is not a technical one:** you can describe, out loud, what the machine will do in the next thirty seconds, and what you will do if it does something else.
 
@@ -310,7 +310,7 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 
 > [!question]- Self-check · Answer
 > **1. Which single line in your configuration is the difference between driving a simulator and driving a real arm, and why does that make the rest of the stack transfer?** The `<plugin>` line inside the URDF's `<ros2_control>` tag — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, or the vendor's component. It transfers because the controller, its YAML, the joint names and everything above them talk to the controller manager's interfaces, not to the hardware, so they cannot tell which plugin is loaded.
-> **2. Two machines both list each other's nodes and topics, and `ros2 topic echo` prints nothing. What is the first thing to suspect, and why is it not a QoS mismatch?** Discovery and data take different paths: discovery is multicast, data is unicast to per-participant ports. A firewall or NAT that permits the multicast range and blocks unicast produces exactly this. Rule out the network first, because a QoS mismatch gives the identical symptom and is much slower to diagnose.
+> **2. Two machines both list each other's nodes and topics, and `ros2 topic echo` prints nothing. What is the first thing to suspect, and why is it not a QoS mismatch?** Discovery and data take different paths: discovery is multicast, data is unicast to per-participant ports. A firewall or NAT that permits the multicast range and blocks unicast produces exactly this. It is not QoS because `ros2 topic echo` adapts its profile to the publishers it finds, so a QoS mismatch cannot silence echo — only your own node's subscription.
 > **3. Your supervisor asks whether an RT_PREEMPT kernel will make the control loop deterministic. What is the accurate answer?** It bounds scheduling latency — a runnable thread runs within a known time — and does nothing about what the thread does. Page faults, dynamic allocation and unbounded blocking in the execution path still destroy determinism, which is why `controller_manager` also offers `lock_memory` and attempts `SCHED_FIFO`. And hard deadlines should not be in ROS at all; they belong in the motor controller.
 > **4. A grasp succeeded in Gazebo and fails on the real object. Why is "tune the friction coefficient" usually the wrong first move?** Because contact failures are commonly model-form errors rather than parameter errors. The rigid-body engine resolves contact as per-timestep point constraints and cannot represent the real contact patch, so no value of the parameter recovers the behaviour. Free-space motion transfers far better than contact, which is why the first real experiments should be free-space ones.
 > **5. What is wrong with an emergency stop implemented as a topic?** It shares failure modes with the system it is meant to protect against: if the executor has hung, the DDS link has dropped or the machine has been unplugged from the network, the message is never delivered. An E-stop must remove power or engage brakes through hard-wired circuitry, latch, and work with the computer switched off.
@@ -395,13 +395,13 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 
 여기에 생명주기가 붙는다: `on_init`, `on_configure`(연결을 연다), `on_activate`(브레이크를 풀고 파워 스테이지를 켠다), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. 상태의 의미는 말 그대로다. `INACTIVE`에서는 상태를 읽을 수 있지만 명령 인터페이스는 제공되지 않고, `ACTIVE`에서만 기계가 움직일 수 있다. 모터를 `on_activate`가 아니라 `on_configure`에서 켜는 드라이버는 런치 파일이 시작되는 순간 팔에 전원을 넣는 드라이버이고, 이것은 물리적 결과를 갖는 버그다.
 
-주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 오류가 아니라 지터로 나타난다.
+주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 쓰로틀된 `Overrun detected!` 경고로 나타나고 루프는 `update_rate`보다 조용히 느리게 돈다(초과 처리 `overruns.manage`가 기본으로 켜져 있다) — 오류가 아니라 경고이고, 놓치기 쉽다.
 
 #### 뼈대, 설치된 헤더에서 읽어 온 것
 
 `hardware_interface` **4.48.0** 기준이다. 오늘 Jazzy에서 `apt`가 설치하는 버전이다. 이
 버전에서 `SystemInterface`는 `HardwareComponentInterface`의 얇은 하위 클래스이고 `write()`를
-순수 가상으로 만든다. 나머지 재정의 대상은 모두 기반 클래스에서 온다. 재정의하는 것이 셋,
+순수 가상으로 만든다. 나머지 재정의 대상은 모두 기반 클래스에서 온다. 재정의하는 것이 네 묶음(init, configure/cleanup, activate/deactivate, read/write),
 그리고 재정의하지 *않는* 큰 것이 하나다.
 
 ```cpp
@@ -463,10 +463,10 @@ on_export_state_interfaces() ... Exporting is handled by the Framework."* 라고
 되어 URDF가 선언한 인터페이스를 전부 잃는다. URDF가 선언하지 않은 인터페이스를 더하는 자리는
 다른 메서드인 `export_unlisted_state_interface_descriptions()`이고, 그 주석이 *"Override this
 method to export custom StateInterfaces which are not defined in the URDF file."* 라고 적고
-있다. 보통은 셋 중 아무것도 재정의하지 않는다. URDF에 선언하고 위처럼 이름으로 접근한다.
+있다. 보통은 셋 중 아무것도 재정의하지 않는다. URDF에 선언하고 위처럼 이름으로 접근한다. 이름으로 접근하는 형태에는 단서가 하나 있다. 헤더는 `set_state(name, value)`와 `get_command(name)`을 *실시간 안전하지 않다*고 표시한다. 호출마다 문자열을 만들고 맵을 조회하기 때문이다. 엄격한 루프라면 `on_configure`에서 핸들을 한 번 찾아 두고 핸들 오버로드, 예컨대 `set_state(handle, value, false)`를 쓴다.
 
 > [!warning] 이 API는 Jazzy 계열 *안에서* 움직였으니 자기 버전을 확인하라
-> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 그 사이에 헤더가 재편됐다. `system_interface.hpp`는 이제 73줄짜리로 `hardware_component_interface.hpp`를 포함하고, `SystemInterface`가 더하는 단 하나, 즉 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
+> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 둘의 헤더는 같다. 재편은 Jazzy 4.x 계열의 더 이른 시점에 있었고 — `hardware_component_interface.hpp`가 4.36.0에서 처음 나온다 — `system_interface.hpp`는 이제 73줄짜리로 `hardware_component_interface.hpp`를 포함하고, `SystemInterface`가 더하는 단 하나, 즉 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
 
 ### 4. 드라이버, 그리고 믿기 전에 확인할 것
 
@@ -486,8 +486,8 @@ method to export custom StateInterfaces which are not defined in the URDF file."
 물리는 순서대로의 규칙:
 
 - **`ROS_DOMAIN_ID`가 같아야 한다.** 정수이고, 리눅스에서는 0에서 101 사이를 고르라. 기본 임시 포트 범위 32768–60999를 피하는 구간이다. 두 호스트의 도메인이 다르면 두 시스템은 서로를 전혀 보지 못하고, 오류는 없다.
-- **같은 서브넷에 있고 멀티캐스트가 되어야 한다.** 기본 탐색이 멀티캐스트이기 때문이다. Jazzy에는 `ROS_AUTOMATIC_DISCOVERY_RANGE`(값은 `SUBNET`이 기본, `LOCALHOST`, `OFF`, `SYSTEM_DEFAULT`)와 세미콜론으로 구분된 주소 목록 `ROS_STATIC_PEERS`도 있다. 멀티캐스트가 막혀 있거나 두 머신이 한 서브넷이 아닐 때 이 둘을 함께 쓴다.
-- **RMW 구현이 양쪽에서 같아야 한다.** 한쪽 `rmw_fastrtps_cpp`, 다른 쪽 `rmw_cyclonedds_cpp`는 상호 운용되지 않는다.
+- **같은 서브넷에 있고 멀티캐스트가 되어야 한다.** 기본 탐색이 멀티캐스트이기 때문이다(DDS RMW, 즉 Fast DDS나 Cyclone DDS의 경우. `rmw_zenoh_cpp`는 대신 도달 가능한 Zenoh 라우터가 필요하고 멀티캐스트 시험은 해당되지 않는다). Jazzy에는 `ROS_AUTOMATIC_DISCOVERY_RANGE`(값은 `SUBNET`이 기본, `LOCALHOST`, `OFF`, `SYSTEM_DEFAULT`)와 세미콜론으로 구분된 주소 목록 `ROS_STATIC_PEERS`도 있다. 멀티캐스트가 막혀 있거나 두 머신이 한 서브넷이 아닐 때 이 둘을 함께 쓴다.
+- **RMW 구현이 양쪽에서 같아야 한다.** 서로 다른 RMW 구현은 통신되는 경우가 많지만 보장되지 않으므로(그리고 `rmw_zenoh_cpp`는 어떤 DDS RMW와도 상호 운용되지 않는다) 양쪽에 같은 것을 쓴다.
 - **시계가 규율되어야 한다.** 두 머신에서 같은 소스를 향해 `chrony`를 돌리고(1 ms 미만이 필요하면 PTP), 둘 다 "NTP"라고 말했으니 일치할 것이라고 가정하지 말고 확인하라.
 
 멀티캐스트는 머신마다 한 명령으로 직접 시험한다.
@@ -509,7 +509,7 @@ sudo ufw allow in proto udp to 224.0.0.0/4
 sudo ufw allow in proto udp from 224.0.0.0/4
 ```
 
-**다중 머신의 전형적 실패는 두 호스트가 서로의 노드를 다 보면서 데이터가 하나도 흐르지 않는 것이다.** 양쪽에서 `ros2 node list`가 완전하고, 양쪽에서 `ros2 topic list`가 완전하고, 원격 토픽에 `ros2 topic echo`를 걸면 아무것도 안 나온다. *탐색과 데이터가 서로 다른 경로를 탄다*는 것을 알면 신비롭지 않다. 탐색은 잘 알려진 포트로 가는 멀티캐스트이고, 데이터는 참여자마다의 포트로 가는 유니캐스트다. 멀티캐스트 범위만 허용하고 나머지를 막은 방화벽 규칙이 정확히 이 증상을 만든다. 멀티캐스트는 나르면서 유니캐스트를 NAT하는 VPN이나 Docker 브리지도 그렇다. QoS 불일치도 그렇다 — 한쪽에서 같은 침묵을 만드니, QoS를 탓하기 전에 네트워크부터 배제하라. 아니면 오후를 엉뚱한 파일에서 보낸다.
+**다중 머신의 전형적 실패는 두 호스트가 서로의 노드를 다 보면서 데이터가 하나도 흐르지 않는 것이다.** 양쪽에서 `ros2 node list`가 완전하고, 양쪽에서 `ros2 topic list`가 완전하고, 원격 토픽에 `ros2 topic echo`를 걸면 아무것도 안 나온다. *탐색과 데이터가 서로 다른 경로를 탄다*는 것을 알면 신비롭지 않다. 탐색은 잘 알려진 포트로 가는 멀티캐스트이고, 데이터는 참여자마다의 포트로 가는 유니캐스트다. 멀티캐스트 범위만 허용하고 나머지를 막은 방화벽 규칙이 정확히 이 증상을 만든다. 멀티캐스트는 나르면서 유니캐스트를 NAT하는 VPN이나 Docker 브리지도 그렇다. QoS 불일치는 조용한 `ros2 topic echo`를 설명하지 *못한다*. echo는 퍼블리셔를 살펴 자기 프로파일을 맞추기 때문이다. QoS 불일치가 설명하는 것은 echo는 되는데 *내 노드*가 조용한 경우다. 그러니 echo가 조용하면 네트워크를 가리킨다.
 
 두 번째 전형적 실패는 WiFi에서 큰 메시지에만 나타난다. 카메라 토픽이 한 번에 30초쯤 멈춘다. IP 단편 재조립이다. MTU보다 큰 UDP 데이터그램은 단편화되고, 단편 하나가 유실되면 나머지가 `net.ipv4.ipfrag_time`(기본 30초)이 만료될 때까지 커널 재조립 버퍼를 차지하며, 그 버퍼가 가득 찬 동안에는 다른 무엇도 통과하지 못한다. 문서화된 완화책은 그 토픽에 best-effort QoS, `net.ipv4.ipfrag_time` 낮추기, `net.ipv4.ipfrag_high_thresh` 올리기다. 더 나은 해법은 보통 원본 이미지를 WiFi로 아예 보내지 않는 것이다.
 
@@ -521,7 +521,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 
 `controller_manager`는 이 계층에서 할 수 있는 일을 하며, 그것이 무엇인지 알아 둘 값어치가 있다.
 
-- 업데이트 스레드가 우선순위 50의 `SCHED_FIFO`를 시도한다. 이를 위해서는 `/etc/security/limits.conf`에서 사용자에게 `rtprio` 한도가 부여되어 있어야 한다. 없으면 시도가 실패하고 조용히 보통 스케줄링이 된다.
+- 업데이트 스레드가 우선순위 50의 `SCHED_FIFO`를 시도한다. 이를 위해서는 `/etc/security/limits.conf`에서 사용자에게 `rtprio` 한도가 부여되어 있어야 한다. 없으면 시도가 실패하고, 기동 시 `Could not enable FIFO RT scheduling policy` 경고가 한 번 찍힌 뒤 스레드는 보통 스케줄링으로 돈다.
 - `lock_memory` 파라미터는 페이지 폴트를 피하려고 시작 시 노드 메모리를 물리 RAM에 고정한다. 일반 커널에서는 기본 false, 실시간 커널에서는 true다.
 
 그리고 시스템 설계에 가장 중요한 부분: **경성 타이밍은 ROS 위가 아니라 아래에 산다.** 모터가 타지 않게 지키는 전류 루프는 모터 제어기 안에서 수십 kHz로 돈다. 안전 등급 정지는 안전 릴레이에서 돈다. ROS 2는 이미 더 빠른 루프를 닫고 있는 장치에 100–1000 Hz로 설정값을 보낼 뿐이다. 아키텍처가 ROS 2에게 경성 마감을 지키라고 요구한다면, 튜닝 이전에 아키텍처가 틀린 것이다.
@@ -578,7 +578,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 10. 처음 활성화할 제어기가 권한이 낮은 것이다 — 먼저 joint state broadcaster, 그다음 감속된 위치 제어. 팔에 전원이 들어간 상태에서 명령을 조립하지 않도록 정확한 `ros2 control switch_controllers` 호출을 지금 적어 두라.
 11. 양쪽 머신에서 `chronyc tracking`을 돌렸고, 오프셋이 타임스탬프가 의미를 가질 만큼 작다.
 12. 로봇과 노트북 사이에서 `ros2 multicast send` / `ros2 multicast receive`가 통과하고, `ROS_DOMAIN_ID`와 RMW 구현을 양쪽에서 출력해 동일함을 확인했다.
-13. 첫 주행의 bag을 기록할 수 있다. `ros2 bag record -a`는 흥미로운 일이 벌어진 뒤가 아니라 전원 투입 전에 시작한다. 이유는 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]에 있다.
+13. 첫 주행의 bag을 기록할 수 있다. `ros2 bag record --topics <입력, 관절 상태, 명령, /tf, /tf_static> -o first_run`은 흥미로운 일이 벌어진 뒤가 아니라 전원 투입 전에 시작한다. 이유는 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]에 있다.
 
 **기술적이지 않은 마지막 줄:** 앞으로 30초 동안 기계가 무엇을 할지, 그리고 그것이 다른 일을 하면 당신이 무엇을 할지를 소리 내어 말할 수 있다.
 
@@ -616,7 +616,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 
 > [!question]- 스스로 점검 · 정답
 > **1. 설정에서 시뮬레이터를 모는 것과 실제 팔을 모는 것을 가르는 단 한 줄은 무엇이고, 왜 그것이 나머지 스택을 이전시키는가?** URDF의 `<ros2_control>` 태그 안에 있는 `<plugin>` 줄 — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, 또는 벤더 컴포넌트. 제어기와 그 YAML, 관절 이름, 그 위의 모든 것이 하드웨어가 아니라 controller manager의 인터페이스에 말을 걸기 때문에 어떤 플러그인이 로드됐는지 알 수 없고, 그래서 그대로 이전된다.
-> **2. 두 머신이 서로의 노드와 토픽을 다 나열하는데 `ros2 topic echo`는 아무것도 찍지 않는다. 무엇을 먼저 의심하고, 왜 QoS 불일치가 아닌가?** 탐색과 데이터는 경로가 다르다. 탐색은 멀티캐스트, 데이터는 참여자별 포트로 가는 유니캐스트다. 멀티캐스트 범위는 허용하고 유니캐스트를 막는 방화벽이나 NAT가 정확히 이것을 만든다. QoS 불일치도 같은 증상을 주지만 진단이 훨씬 느리므로 네트워크를 먼저 배제한다.
+> **2. 두 머신이 서로의 노드와 토픽을 다 나열하는데 `ros2 topic echo`는 아무것도 찍지 않는다. 무엇을 먼저 의심하고, 왜 QoS 불일치가 아닌가?** 탐색과 데이터는 경로가 다르다. 탐색은 멀티캐스트, 데이터는 참여자별 포트로 가는 유니캐스트다. 멀티캐스트 범위는 허용하고 유니캐스트를 막는 방화벽이나 NAT가 정확히 이것을 만든다. QoS가 아닌 이유는 `ros2 topic echo`가 찾은 퍼블리셔에 자기 프로파일을 맞추므로 QoS 불일치로는 echo가 조용해질 수 없기 때문이다. 조용해지는 것은 내 노드의 구독뿐이다.
 > **3. 지도교수가 RT_PREEMPT 커널을 쓰면 제어 루프가 결정적이 되느냐고 묻는다. 정확한 답은?** 스케줄링 지연을 유계로 만든다 — 실행 준비된 스레드가 알려진 시간 안에 실행된다 — 그리고 그 스레드가 무엇을 하는지에 대해서는 아무것도 하지 않는다. 실행 경로의 페이지 폴트, 동적 할당, 무한 블로킹은 여전히 결정성을 파괴하고, 그래서 `controller_manager`가 `lock_memory`를 제공하고 `SCHED_FIFO`를 시도한다. 그리고 경성 마감은 애초에 ROS에 있으면 안 되고 모터 제어기에 속한다.
 > **4. Gazebo에서 성공한 파지가 실물에서 실패한다. "마찰 계수를 튜닝한다"가 왜 보통 틀린 첫수인가?** 접촉 실패는 파라미터 오류가 아니라 모델 형식 오류인 경우가 많기 때문이다. 강체 엔진은 접촉을 시간 스텝마다의 점 구속으로 풀고 실제 접촉 면적을 표현하지 못하므로, 파라미터를 어떤 값으로 해도 그 거동은 복원되지 않는다. 자유 공간 운동은 접촉보다 훨씬 잘 이전되고, 그래서 첫 실기 실험은 자유 공간이어야 한다.
 > **5. 토픽으로 구현한 비상정지의 무엇이 잘못됐나?** 그것이 막아야 할 시스템과 실패 모드를 공유한다. executor가 멈췄거나 DDS 링크가 끊겼거나 기계가 네트워크에서 뽑혔다면 메시지는 영영 전달되지 않는다. E-stop은 하드와이어 회로로 전원을 끊거나 브레이크를 걸어야 하고, 래치되어야 하며, 컴퓨터가 꺼진 상태에서도 동작해야 한다.

@@ -185,8 +185,8 @@ Logarithms are useful because they turn the joint probability of many observatio
   embedding tells you about the text embedding." Written out for a batch of $N$ pairs with
   similarity $s(\cdot,\cdot)$ and temperature $\tau$:
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
-  — cross-entropy where "the classes" are the other samples in the batch; it satisfies
-  $I(X;Y) \ge \log N - \mathcal{L}$, so bigger batches permit tighter bounds (CLIP used a batch of 32,768, though the paper
+  — cross-entropy where "the classes" are the other samples in the batch; because it satisfies
+  $I(X;Y) \ge \log N - \mathcal{L}$, bigger batches permit tighter bounds (CLIP used a batch of 32,768, though the paper
   states no information-theoretic reason for it). Caveat: how tight this MI bound is depends on the negative-sampling
   scheme and distributional assumptions — treat it as guiding intuition, not a guarantee.
 - Representation learning framings (information bottleneck): keep what predicts the label,

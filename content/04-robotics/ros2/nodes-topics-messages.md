@@ -97,6 +97,9 @@ ros2 interface show std_msgs/msg/Float64
 # This was originally provided as an example message.
 # It is deprecated as of Foxy
 # It is recommended to create your own semantically meaningful message.
+# However if you would like to continue using this please use the equivalent in example_msgs.
+
+float64 data
 ```
 
 A bare `float64 data` on a topic carries no units, no frame, no timestamp, and no name for what the number is. Two years later nobody can tell whether it was metres per second or a normalised throttle. Read the definition, not just the field list — the comments in a `.msg` file *are* the semantic contract, and section 7 is how you write your own.
@@ -191,7 +194,7 @@ if __name__ == '__main__':
     main()
 ```
 
-Note that the topic name and the message type are identical on both sides. They have to be. That is the entire connection condition, and section 10 is what happens when one of them is off by a character.
+Note that the topic name and the message type are identical on both sides. They have to be. Matching name and type are necessary — compatible QoS is the third condition (section 10's box) — and section 10 is what happens when one of them is off by a character.
 
 Two files of plumbing make these runnable. In `package.xml`, after the description and licence tags:
 
@@ -317,7 +320,7 @@ Structurally identical: subclass `Node`, name yourself in the constructor, creat
 
 **The type is a template parameter.** `create_publisher<std_msgs::msg::String>` fixes the type at compile time, so publishing the wrong type is a build error. In Python, `self.publisher_.publish(msg)` with a wrong-typed `msg` is a runtime error inside a callback, in a process that is otherwise running normally. Neither language catches the cross-process mismatch of section 10; the compiler protects one process, not the contract between two.
 
-**Endpoints are owned objects with lifetimes.** `rclcpp::Publisher<T>::SharedPtr publisher_` is a member because it must outlive the constructor. Let a publisher, subscription or timer go out of scope in C++ and the endpoint is destroyed — the node keeps running, quietly, with nothing attached. The Python tutorial's odd-looking `self.subscription  # prevent unused variable warning` line is the same concern wearing a disguise.
+**Endpoints are owned objects with lifetimes.** `rclcpp::Publisher<T>::SharedPtr publisher_` is a member because it must outlive the constructor. Let a publisher, subscription or timer go out of scope in C++ and the endpoint is destroyed — the node keeps running, quietly, with nothing attached. Python is different: the rclpy node keeps its own reference to every endpoint, so dropping yours does not destroy it, and the tutorial's odd-looking `self.subscription  # prevent unused variable warning` line only silences a linter. C++ has no such safety net.
 
 **The callback signature names the ownership.** `const std_msgs::msg::String & msg` says the message arrives by reference and the callback will not modify it. rclcpp also accepts `std_msgs::msg::String::UniquePtr`, which is the form that makes zero-copy intra-process delivery possible. Python has one calling convention and no way to express the distinction, so the cost of a message is invisible there.
 
@@ -533,7 +536,7 @@ Reproduce it deliberately. Launch your republisher into a namespace so its relat
 ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch
 ```
 
-`ros2 topic echo /turtle1/speed` does not hang here — with the publisher moved into `/watch` the topic has no endpoints at all, so echo prints `WARNING: topic [/turtle1/speed] does not appear to be published yet` and then fails with "Could not determine the type for the passed topic". That is the *lucky* version. The silent one is a name that still exists because something else publishes it, or a type mismatch on a live name, where echo sits there printing nothing. Diagnose both in this order.
+`ros2 topic echo /turtle1/speed` does not hang here — with the publisher moved into `/watch` the topic has no endpoints at all, so echo prints `WARNING: topic [/turtle1/speed] does not appear to be published yet` and then fails with "Could not determine the type for the passed topic". That is the *lucky* version. The silent one is a name that still exists because something else publishes it, where echo sits there printing nothing. A type mismatch on a live name is not silent for echo: it refuses with "contains more than one type", and `ros2 topic list -t` shows both types on that one name. Diagnose both in this order.
 
 **1. Are both nodes actually alive?**
 
@@ -550,6 +553,7 @@ ros2 topic list -t
 ```
 
 ```text
+# excerpt — /parameter_events, /rosout, /turtle1/cmd_vel and /turtle1/color_sensor are also listed
 /turtle1/pose [turtlesim/msg/Pose]
 /watch/turtle1/speed [turtle_watch_interfaces/msg/SpeedReport]
 ```
@@ -562,9 +566,10 @@ Two similar names where you expected one is the name mismatch, and it is usually
 ros2 topic info /turtle1/speed --verbose
 ```
 
-`--verbose` prints, for every endpoint, the node name and namespace, the `Endpoint type` (`PUBLISHER` or `SUBSCRIPTION`), the `Topic type`, the `Topic type hash`, and the full QoS profile. Two readings:
+`--verbose` prints, for every endpoint, the node name and namespace, the `Endpoint type` (`PUBLISHER` or `SUBSCRIPTION`), the `Topic type`, the `Topic type hash`, and the full QoS profile. Three readings:
 
-- `Publisher count: 1`, `Subscription count: 0` — nothing is listening on this name. Name mismatch.
+- `Unknown topic '/turtle1/speed'` — nothing at all is on this name, which is what the reproduction above gives. Look for the similar name from step 2.
+- One side's count is 0 — publisher count 0 when you query the subscriber's intended name, or subscription count 0 when you query the publisher's. Name mismatch.
 - Both endpoints present but their `Topic type` and `Topic type hash` differ between the `PUBLISHER` block and the `SUBSCRIPTION` block — type mismatch. The hash is the useful part: it changes when the *definition* changes, so it also catches the nastier case where both sides name the same type but were built against different versions of the `.msg` file.
 
 **4. What did each node actually register?**
@@ -603,7 +608,7 @@ Request–response, long-running cancellable goals, runtime configuration and ma
 - `rclpy` API — `Node.create_timer` clock argument.
 
 > [!question]- Self-check · Answer
-> **1. Your publisher and your subscriber both start, both log normally, and no data moves. Name the three causes and the one command that distinguishes them.** Topic-name mismatch, message-type mismatch, QoS incompatibility. `ros2 topic info <name> --verbose` shows all three: subscription count zero means the name is wrong, differing `Topic type` or type hash between the publisher and subscriber blocks means the type is wrong, and the QoS profile block is where the third lives. Start from `ros2 node list` and `ros2 topic list -t` to narrow it, and use `ros2 node info` for the authoritative per-node answer.
+> **1. Your publisher and your subscriber both start, both log normally, and no data moves. Name the three causes and the one command that distinguishes them.** Topic-name mismatch, message-type mismatch, QoS incompatibility. `ros2 topic info <name> --verbose` shows all three: `Unknown topic`, or a zero count on one side, means the name is wrong, differing `Topic type` or type hash between the publisher and subscriber blocks means the type is wrong, and the QoS profile block is where the third lives. Start from `ros2 node list` and `ros2 topic list -t` to narrow it, and use `ros2 node info` for the authoritative per-node answer.
 > **2. Why is a custom message defined in its own package rather than in the node that publishes it?** Because every consumer of the topic must depend on the type. Putting it in the node's package forces anyone who wants to read the topic to build the node and its whole dependency tree, makes mutual dependencies between two nodes circular, and widens the rebuild radius. Interfaces can also only be defined in `ament_cmake` packages, and using a type inside the package that defines it needs extra `rosidl_get_typesupport_target` plumbing that cross-package use does not.
 > **3. Your republisher subscribes at 60 Hz and publishes from the subscription callback. A colleague changes it to publish from a 10 Hz timer. What changed, and when would each be right?** Callback-driven gives exactly one output per input, so the output rate is the input rate and you do not control it. Timer-driven gives a fixed output rate, dropping inputs when they arrive faster and republishing stale data when they arrive slower. Callback-driven is right when every input must be seen and downstream can keep up; timer-driven is right when a fast source feeds a slower fixed-rate consumer, or when the output rate is part of the contract.
 > **4. What does the C++ version make explicit that the Python version hides?** The message type is a compile-time template parameter, so an in-process type error is a build failure. Endpoints are explicitly owned `SharedPtr` members that die if you let them go out of scope. The callback signature states how the message is passed and whether it is modifiable, which is what makes zero-copy intra-process delivery expressible. And the clock is named: `create_wall_timer` is the wall clock, while rclpy's `create_timer` silently defaults to the node's clock, which follows simulated time.
@@ -698,6 +703,9 @@ ros2 interface show std_msgs/msg/Float64
 # This was originally provided as an example message.
 # It is deprecated as of Foxy
 # It is recommended to create your own semantically meaningful message.
+# However if you would like to continue using this please use the equivalent in example_msgs.
+
+float64 data
 ```
 
 토픽 위의 맨 `float64 data`는 단위도, 프레임도, 타임스탬프도, 그 숫자가 무엇인지에 대한 이름도 나르지 않는다. 2년 뒤에는 그것이 초속 미터였는지 정규화된 스로틀이었는지 아무도 모른다. 필드 목록만 보지 말고 정의를 읽어라. `.msg` 파일의 주석이 곧 의미론적 계약이고, 자기 것을 쓰는 법은 7절이다.
@@ -792,7 +800,7 @@ if __name__ == '__main__':
     main()
 ```
 
-양쪽의 토픽 이름과 메시지 타입이 똑같다는 점을 보라. 그래야만 한다. 그것이 연결 조건의 전부이고, 한 글자가 어긋났을 때 무슨 일이 나는지가 10절이다.
+양쪽의 토픽 이름과 메시지 타입이 똑같다는 점을 보라. 그래야만 한다. 이름과 타입의 일치는 필요조건이고 — 호환되는 QoS가 세 번째 조건이다(10절의 상자) — 한 글자가 어긋났을 때 무슨 일이 나는지가 10절이다.
 
 실행 가능하게 만드는 배관은 파일 둘이다. `package.xml`의 description과 license 태그 뒤에:
 
@@ -918,7 +926,7 @@ int main(int argc, char * argv[])
 
 **타입이 템플릿 인자다.** `create_publisher<std_msgs::msg::String>`은 타입을 컴파일 시점에 고정하므로 잘못된 타입을 publish하면 빌드 오류다. Python에서는 타입이 틀린 `msg`로 `self.publisher_.publish(msg)`를 하면 멀쩡히 돌아가던 프로세스의 콜백 안에서 런타임 오류가 난다. 두 언어 모두 10절의 프로세스 간 불일치는 잡지 못한다. 컴파일러는 한 프로세스를 지키지, 두 프로세스 사이의 계약을 지키지 않는다.
 
-**엔드포인트는 수명을 가진 소유 객체다.** `rclcpp::Publisher<T>::SharedPtr publisher_`가 멤버인 이유는 생성자보다 오래 살아야 하기 때문이다. C++에서 퍼블리셔나 구독, 타이머를 스코프 밖으로 흘려보내면 엔드포인트가 파괴된다. 노드는 계속 돌아가고, 조용하고, 아무것도 붙어 있지 않다. Python 튜토리얼의 어색한 `self.subscription  # prevent unused variable warning` 줄은 같은 걱정이 변장한 것이다.
+**엔드포인트는 수명을 가진 소유 객체다.** `rclcpp::Publisher<T>::SharedPtr publisher_`가 멤버인 이유는 생성자보다 오래 살아야 하기 때문이다. C++에서 퍼블리셔나 구독, 타이머를 스코프 밖으로 흘려보내면 엔드포인트가 파괴된다. 노드는 계속 돌아가고, 조용하고, 아무것도 붙어 있지 않다. Python은 다르다. rclpy 노드가 모든 엔드포인트의 참조를 스스로 쥐고 있어 내 참조를 버려도 파괴되지 않고, 튜토리얼의 어색한 `self.subscription  # prevent unused variable warning` 줄은 린터 경고를 끌 뿐이다. C++에는 그런 안전망이 없다.
 
 **콜백 시그니처가 소유권을 명시한다.** `const std_msgs::msg::String & msg`는 메시지가 참조로 도착하고 콜백이 그것을 수정하지 않는다고 말한다. rclcpp는 `std_msgs::msg::String::UniquePtr` 형태도 받는데, 프로세스 내 zero-copy 전달을 가능하게 하는 형태가 그것이다. Python에는 호출 규약이 하나뿐이고 그 구분을 표현할 방법이 없으므로 메시지의 비용이 보이지 않는다.
 
@@ -1134,7 +1142,7 @@ self.timer = self.create_timer(0.1, self.publish_report)
 ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch
 ```
 
-`ros2 topic echo /turtle1/speed`는 여기서 매달리지 않는다. 퍼블리셔가 `/watch` 안으로 들어가 버려 이 토픽에는 엔드포인트가 하나도 없고, 그래서 echo는 `WARNING: topic [/turtle1/speed] does not appear to be published yet`을 찍은 뒤 "Could not determine the type for the passed topic"으로 실패한다. 이건 *운이 좋은* 쪽이다. 조용한 쪽은 다른 무언가가 발행하고 있어 이름은 살아 있는 경우, 또는 살아 있는 이름에서 타입이 어긋난 경우다. 그때는 echo가 아무것도 찍지 않고 앉아 있는다. 둘 다 이 순서로 진단한다.
+`ros2 topic echo /turtle1/speed`는 여기서 매달리지 않는다. 퍼블리셔가 `/watch` 안으로 들어가 버려 이 토픽에는 엔드포인트가 하나도 없고, 그래서 echo는 `WARNING: topic [/turtle1/speed] does not appear to be published yet`을 찍은 뒤 "Could not determine the type for the passed topic"으로 실패한다. 이건 *운이 좋은* 쪽이다. 조용한 쪽은 다른 무언가가 발행하고 있어 이름은 살아 있는 경우이고, 그때 echo는 아무것도 찍지 않고 앉아 있는다. 살아 있는 이름에서 타입이 어긋나면 echo에게는 조용하지 않다. "contains more than one type"으로 거부하고, `ros2 topic list -t`는 그 한 이름에 타입 둘을 보여 준다. 둘 다 이 순서로 진단한다.
 
 **1. 두 노드가 실제로 살아 있는가?**
 
@@ -1151,6 +1159,7 @@ ros2 topic list -t
 ```
 
 ```text
+# excerpt — /parameter_events, /rosout, /turtle1/cmd_vel and /turtle1/color_sensor are also listed
 /turtle1/pose [turtlesim/msg/Pose]
 /watch/turtle1/speed [turtle_watch_interfaces/msg/SpeedReport]
 ```
@@ -1163,9 +1172,10 @@ ros2 topic list -t
 ros2 topic info /turtle1/speed --verbose
 ```
 
-`--verbose`는 엔드포인트마다 노드 이름과 네임스페이스, `Endpoint type`(`PUBLISHER` 또는 `SUBSCRIPTION`), `Topic type`, `Topic type hash`, 그리고 전체 QoS 프로파일을 찍는다. 읽는 법 둘.
+`--verbose`는 엔드포인트마다 노드 이름과 네임스페이스, `Endpoint type`(`PUBLISHER` 또는 `SUBSCRIPTION`), `Topic type`, `Topic type hash`, 그리고 전체 QoS 프로파일을 찍는다. 읽는 법 셋.
 
-- `Publisher count: 1`, `Subscription count: 0` — 이 이름을 아무도 듣고 있지 않다. 이름 불일치.
+- `Unknown topic '/turtle1/speed'` — 이 이름에는 아무것도 없다. 위의 재현이 주는 결과이고, 2단계에서 본 비슷한 이름을 찾아라.
+- 한쪽 수가 0 — 서브스크라이버가 의도한 이름을 조회하면 퍼블리셔 수가 0, 퍼블리셔의 이름을 조회하면 구독 수가 0. 이름 불일치.
 - 엔드포인트가 둘 다 있는데 `PUBLISHER` 블록과 `SUBSCRIPTION` 블록의 `Topic type`이나 `Topic type hash`가 다르다 — 타입 불일치. 해시가 쓸모 있는 부분이다. 해시는 *정의*가 바뀌면 바뀌므로, 양쪽이 같은 타입 이름을 대면서 서로 다른 판본의 `.msg` 파일로 빌드된 더 고약한 경우까지 잡아낸다.
 
 **4. 각 노드가 실제로 등록한 것은 무엇인가?**
@@ -1204,7 +1214,7 @@ ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle
 - `rclpy` API — `Node.create_timer`의 clock 인자.
 
 > [!question]- 스스로 점검 · 정답
-> **1. 퍼블리셔와 서브스크라이버가 둘 다 뜨고 둘 다 정상 로그를 찍는데 데이터가 안 움직인다. 원인 셋과 그것을 구분하는 명령 하나를 대라.** 토픽 이름 불일치, 메시지 타입 불일치, QoS 비호환. `ros2 topic info <이름> --verbose`가 셋 다 보여 준다. 구독 수가 0이면 이름이 틀린 것이고, 퍼블리셔 블록과 서브스크라이버 블록의 `Topic type`이나 타입 해시가 다르면 타입이 틀린 것이며, QoS 프로파일 블록에 세 번째가 산다. 범위를 좁히는 데는 `ros2 node list`와 `ros2 topic list -t`부터 시작하고, 노드별 최종 판정에는 `ros2 node info`를 쓴다.
+> **1. 퍼블리셔와 서브스크라이버가 둘 다 뜨고 둘 다 정상 로그를 찍는데 데이터가 안 움직인다. 원인 셋과 그것을 구분하는 명령 하나를 대라.** 토픽 이름 불일치, 메시지 타입 불일치, QoS 비호환. `ros2 topic info <이름> --verbose`가 셋 다 보여 준다. `Unknown topic`이거나 한쪽 수가 0이면 이름이 틀린 것이고, 퍼블리셔 블록과 서브스크라이버 블록의 `Topic type`이나 타입 해시가 다르면 타입이 틀린 것이며, QoS 프로파일 블록에 세 번째가 산다. 범위를 좁히는 데는 `ros2 node list`와 `ros2 topic list -t`부터 시작하고, 노드별 최종 판정에는 `ros2 node info`를 쓴다.
 > **2. 커스텀 메시지를 publish하는 노드 안이 아니라 별도 패키지에 정의하는 이유는?** 토픽의 모든 소비자가 그 타입에 의존해야 하기 때문이다. 노드 패키지에 넣으면 토픽을 읽고 싶을 뿐인 사람도 그 노드와 의존성 트리 전체를 빌드해야 하고, 두 노드가 서로의 타입을 쓰면 의존이 순환하며, 재빌드 파급 범위가 넓어진다. 인터페이스는 `ament_cmake` 패키지에서만 정의할 수 있고, 정의한 패키지 안에서 그 타입을 쓰려면 패키지 간 사용에는 필요 없는 `rosidl_get_typesupport_target` 배관이 추가로 필요하다.
 > **3. republisher가 60 Hz로 subscribe하고 구독 콜백에서 publish한다. 동료가 10 Hz 타이머에서 publish하도록 바꿨다. 무엇이 바뀌었고 각각 언제 옳은가?** 콜백 구동은 입력 하나당 출력 하나이므로 출력 주기가 입력 주기이고 제어할 수 없다. 타이머 구동은 출력 주기가 고정이며, 입력이 더 빨리 오면 버리고 더 늦게 오면 낡은 데이터를 다시 낸다. 모든 입력을 봐야 하고 하류가 따라올 수 있으면 콜백 구동이 맞다. 빠른 소스가 느린 고정 주기 소비자에 들어가거나 출력 주기가 계약의 일부라면 타이머 구동이 맞다.
 > **4. C++ 판본이 Python 판본이 감추는 무엇을 드러내는가?** 메시지 타입이 컴파일 시점 템플릿 인자라서 프로세스 내 타입 오류가 빌드 실패가 된다. 엔드포인트가 명시적으로 소유되는 `SharedPtr` 멤버라서 스코프 밖으로 흘리면 죽는다. 콜백 시그니처가 메시지를 어떻게 넘기고 수정 가능한지를 말하고, 그것이 프로세스 내 zero-copy 전달을 표현 가능하게 만든다. 그리고 시계에 이름이 붙어 있다. `create_wall_timer`는 벽시계이고, rclpy의 `create_timer`는 말없이 노드의 시계를 기본값으로 쓰며 그것은 시뮬레이션 시간을 따라간다.

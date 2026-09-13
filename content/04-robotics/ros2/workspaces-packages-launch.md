@@ -301,7 +301,7 @@ The YAML file is **not** a launch file. It is a parameter file, and its structur
     background_r: 150
 ```
 
-The top-level key is the node's *fully qualified name* — namespace and all — and the parameters sit under a literal `ros__parameters` key (two underscores). Get either wrong and the file loads without complaint and sets nothing: a node launched into the `turtlesim3` namespace does not match the block above, so it runs with its defaults.
+The top-level key is the node's *fully qualified name* — namespace and all — and the parameters sit under a literal `ros__parameters` key (two underscores). A wrong name is silent — the file loads and sets nothing: a node launched into the `turtlesim3` namespace does not match the block above, so it runs with its defaults. A misspelled `ros__parameters` is not silent: the rcl YAML parser keeps reading keys as part of the node name until it meets a value, then fails with "Cannot have a value before ros__parameters", and the node dies at startup.
 
 When the same parameters should reach several nodes regardless of name or namespace, use the wildcard:
 
@@ -521,8 +521,8 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 > [!question]- Self-check · Answer
 > **1. You edit a Python node, run `colcon build`, relaunch, and nothing changes. Name three causes and the single command that distinguishes them.** The build did not cover this package (`--packages-select` on the wrong one), the shell is resolving the package from `/opt/ros/jazzy` rather than your workspace, or the build failed and you read only the summary. `python3 -c "import <pkg>.<module> as m; print(m.__file__)"` in the running shell tells you which file is actually loaded; `ros2 pkg prefix <pkg>` tells you which workspace won.
 > **2. Why does `--symlink-install` fix the Python case but not the C++ case?** For an `ament_python` package colcon runs setuptools' `develop` step, so the installed module path resolves back into `src/`. A C++ package's installed artefact is a compiled binary; there is no source file for it to point at, so a new binary requires a compile. Data files installed by a CMake package — launch, YAML, URDF — *are* symlinked and do track their sources.
-> **3. Your YAML parameter file loads without error and no parameter is set. What are the two things to check first?** The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), and the parameters must sit under `ros__parameters` with two underscores. Both mistakes are silent. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
-> **4. Why should a pure Python package use `<exec_depend>` rather than `<depend>`?** `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have makes the workspace build order more constrained than it needs to be and misrepresents what an installed binary of the package actually requires.
+> **3. Your YAML parameter file loads without error and no parameter is set. What are the two things to check first?** The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), That mistake is silent. A misspelled `ros__parameters` would not have loaded without error — it is a parse error that stops the node — so if the file truly loaded, the name (or whether the file was passed at all) is the suspect. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
+> **4. Why should a pure Python package use `<exec_depend>` rather than `<depend>`?** `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have misinforms rosdep and the release tooling, which will install and require them at build time, and misrepresents what the package actually needs. (It does not change colcon's build order: colcon orders by run dependencies too.)
 
 ## 한국어
 
@@ -818,7 +818,7 @@ Node(
     background_r: 150
 ```
 
-최상위 키는 노드의 *완전 수식 이름*, 즉 네임스페이스까지 포함한 이름이고, 파라미터는 문자 그대로 `ros__parameters`(밑줄 두 개) 키 아래에 놓인다. 둘 중 하나만 틀려도 파일은 불평 없이 로드되고 아무것도 설정되지 않는다. `turtlesim3` 네임스페이스로 띄운 노드는 위 블록과 맞지 않아 기본값으로 돈다.
+최상위 키는 노드의 *완전 수식 이름*, 즉 네임스페이스까지 포함한 이름이고, 파라미터는 문자 그대로 `ros__parameters`(밑줄 두 개) 키 아래에 놓인다. 이름이 틀리면 조용하다 — 파일은 로드되고 아무것도 설정되지 않는다. `turtlesim3` 네임스페이스로 띄운 노드는 위 블록과 맞지 않아 기본값으로 돈다. `ros__parameters`의 오타는 조용하지 않다. rcl YAML 파서가 값을 만날 때까지 키를 노드 이름의 일부로 읽다가 "Cannot have a value before ros__parameters"로 실패하고, 노드는 기동하다 죽는다.
 
 같은 파라미터를 이름·네임스페이스와 무관하게 여러 노드에 주려면 와일드카드를 쓴다.
 
@@ -1038,5 +1038,5 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 > [!question]- 스스로 점검 · 정답
 > **1. Python 노드를 고치고 `colcon build` 후 다시 launch했는데 아무것도 안 바뀐다. 원인 셋과, 그것들을 가르는 명령 하나를 대라.** 빌드가 이 패키지를 포함하지 않았거나(`--packages-select`를 다른 패키지에 걸었거나), 셸이 워크스페이스가 아니라 `/opt/ros/jazzy`에서 패키지를 해석하고 있거나, 빌드가 실패했는데 요약 줄만 읽었다. 실행 셸에서 `python3 -c "import <pkg>.<module> as m; print(m.__file__)"`가 실제로 로드되는 파일을 알려 주고, `ros2 pkg prefix <pkg>`가 어느 워크스페이스가 이겼는지 알려 준다.
 > **2. `--symlink-install`은 왜 Python은 고치고 C++은 못 고치나?** `ament_python` 패키지에서는 colcon이 setuptools의 `develop` 단계를 돌리므로 설치된 모듈 경로가 `src/`로 되돌아 해석된다. C++ 패키지의 설치 산출물은 컴파일된 바이너리이고, 가리킬 소스 파일이 없으므로 새 바이너리에는 컴파일이 필요하다. CMake 패키지가 설치하는 데이터 파일 — launch, YAML, URDF — 은 링크되고 소스를 따라간다.
-> **3. YAML 파라미터 파일이 에러 없이 로드되는데 아무 파라미터도 설정되지 않는다. 먼저 확인할 두 가지는?** 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 그리고 파라미터가 밑줄 두 개짜리 `ros__parameters` 아래에 있어야 한다. 둘 다 조용히 실패한다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
-> **4. 순수 Python 패키지는 왜 `<depend>`가 아니라 `<exec_depend>`를 써야 하나?** `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 워크스페이스 빌드 순서가 필요 이상으로 제약되고, 설치된 패키지가 실제로 무엇을 요구하는지도 잘못 표현한다.
+> **3. YAML 파라미터 파일이 에러 없이 로드되는데 아무 파라미터도 설정되지 않는다. 먼저 확인할 두 가지는?** 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 이 실수는 조용하다. `ros__parameters` 오타였다면 에러 없이 로드될 수 없다 — 노드를 멈추는 파싱 오류다 — 그러니 파일이 정말 로드됐다면 의심할 것은 이름(또는 파일이 아예 전달됐는지)이다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
+> **4. 순수 Python 패키지는 왜 `<depend>`가 아니라 `<exec_depend>`를 써야 하나?** `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 rosdep과 릴리스 도구가 그것을 빌드 시점에 설치·요구하도록 잘못 알리고, 패키지가 실제로 무엇을 필요로 하는지도 잘못 표현한다. (colcon의 빌드 순서는 바뀌지 않는다. colcon은 실행 의존성으로도 순서를 정한다.)

@@ -14,8 +14,8 @@ mastery-when: "Go deeper when you are writing a planner, controller or costmap l
 > **Working** — 직접 작성하지 않은 로봇 위에서 스택을 설정하고 띄우고 디버깅할 정도. 플래너나 제어기 플러그인을 새로 짤 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> The transform tree and RViz from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], a simulated base that accepts velocity commands and publishes odometry from [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], and actions and managed nodes from [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Baseline for every command here: **ROS 2 Jazzy Jalisco on Ubuntu 24.04 with Gazebo Harmonic**.
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
+> The transform tree and RViz from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], a simulated base that accepts velocity commands and publishes odometry from [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], and actions and managed nodes from [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. One join to make: Jazzy Nav2 publishes plain `Twist` by default, while the 25.7 `diff_drive_controller` subscribes to `TwistStamped` on `<controller>/cmd_vel` — set `enable_stamped_cmd_vel: true` on Nav2's velocity publishers and remap `cmd_vel` to the controller's topic, or the commands never arrive. Baseline for every command here: **ROS 2 Jazzy Jalisco on Ubuntu 24.04 with Gazebo Harmonic**.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
 
 ### 1. The problem Nav2 solves
 
@@ -107,11 +107,11 @@ Your robot's shape enters here, as either `robot_radius` (a circle) or `footprin
 
 Beginners read `inflation_radius` as a safety margin: "keep the robot this far from walls." That is not what it is, and reading it that way produces the single most common misconfiguration in the ecosystem.
 
-Two distinct things are happening in the inflation layer. It writes a **lethal** cost within the robot's fully inscribed radius of an obstacle — that is the collision-avoidance part, and it is derived from your footprint, not from `inflation_radius`. Then, out to `inflation_radius`, it writes an **exponentially decaying** cost with `cost_scaling_factor` as the decay rate. Defaults are `inflation_radius: 0.55` and `cost_scaling_factor: 10.0` in the plugin, and `0.7` / `3.0` in the Jazzy TurtleBot configuration.
+Two distinct things are happening in the inflation layer. It writes the **inscribed** cost (253, which planners treat as collision; lethal 254 is the obstacle cell itself) within the robot's fully inscribed radius of an obstacle — that is the collision-avoidance part, and it is derived from your footprint, not from `inflation_radius`. Then, out to `inflation_radius`, it writes an **exponentially decaying** cost with `cost_scaling_factor` as the decay rate. Defaults are `inflation_radius: 0.55` and `cost_scaling_factor: 10.0` in the plugin, and `0.7` / `3.0` in the Jazzy TurtleBot configuration.
 
 That decaying skirt is not a safety margin. It is a **potential field that steers search**. NavFn, Theta\* and the Smac planners are cost-aware: given a smooth gradient they will run down the middle of a corridor and give obstacles a wide berth long before the search ever touches them. Given a thin inflation ring around the walls and a large zero-cost void in between, they have nothing to prefer inside the void, and produce paths that hug one wall or cut corners for no reason.
 
-The maintainers say this directly in the tuning guide: most configuration files they see miss the point of the inflation layer, and the recommendation is to *increase* the cost scale and radius until there is a smooth potential across the whole traversable width. Large open rooms may keep a zero-cost middle; halls and aisles should not. So the practical rule is the inverse of the beginner's: if your robot is clipping corners or riding a wall, your inflation is probably too *small*, not too large.
+The maintainers say this directly in the tuning guide: most configuration files they see miss the point of the inflation layer, and the recommendation is to spread the inflation until there is a smooth potential across the whole traversable width — in parameter terms, a larger `inflation_radius` and a *lower* `cost_scaling_factor`, since that factor is the decay rate and raising it makes the cost fall off faster. Large open rooms may keep a zero-cost middle; halls and aisles should not. So the practical rule is the inverse of the beginner's: if your robot is clipping corners or riding a wall, your inflation is probably too *small*, not too large.
 
 The cost of over-inflating is real and worth naming: inflate further than the narrowest gap the robot must pass and that gap fills with high cost or becomes unplannable, and the robot refuses doorways it physically fits through. Section 13 uses exactly that symptom.
 
@@ -134,7 +134,7 @@ The dividing question is not "which is best" but "can my robot drive the path th
 Controllers:
 
 - **DWB** (`dwb_core`, the ROS 2 rewrite of DWA) samples forward trajectories within velocity and acceleration limits and scores each against **critic** plugins — `PathAlign`, `GoalDist`, `BaseObstacle`, `Oscillation`, `PreferForward` and others, each with a tunable weight. Differential and omnidirectional bases. Right when you need to know exactly why a trajectory was chosen, because the score decomposes; costly because its behaviour is a function of about a dozen weights you must tune.
-- **MPPI** (`nav2_mppi_controller::MPPIController`) is the Jazzy default and optimisation-based: it perturbs the previous optimal trajectory with noise, rolls out a batch (2000 samples over 56 steps at `model_dt: 0.05` by default), and weights them against critic objective functions. Handles dynamic agents considerably better than DWB's constant-action rollouts, usually works untuned, costs moderately more compute. Differential, omnidirectional, Ackermann and legged.
+- **MPPI** (`nav2_mppi_controller::MPPIController`) is the Jazzy default and optimisation-based: it perturbs the previous optimal trajectory with noise, rolls out a batch (2000 samples over 56 steps at `model_dt: 0.05` in the Jazzy `nav2_params.yaml`; the plugin's own `batch_size` default is 1000), and weights them against critic objective functions. Handles dynamic agents considerably better than DWB's constant-action rollouts, usually works untuned, costs moderately more compute. Differential, omnidirectional, Ackermann and legged.
 - **Regulated Pure Pursuit** is geometric: pick a lookahead point on the path and steer at it, with regulation that slows the robot near obstacles and in sharp turns. It does *not* deviate from the path to avoid dynamic obstacles. Use it when you want exact path following and you trust the path — so pair it with a feasible planner, or with a differential base that can pivot onto any heading.
 
 A fourth worth knowing: the **Rotation Shim** controller wraps another and rotates the robot in place toward the new path's heading before handing over. It exists because holonomic planners produce paths whose initial heading differs sharply from the robot's, and a controller tuned for accurate tracking handles that badly — spiralling out, or whipping around. Unnecessary with a feasible planner, which already starts from your current heading.
@@ -294,7 +294,7 @@ ros2 action list -t
 ros2 topic hz /local_costmap/costmap
 ```
 
-3. **Set up the displays.** The four that matter, and they are in the default RViz config: `/global_costmap/costmap` (Map display), `/local_costmap/costmap`, `/plan` (Path), `/local_plan` (Path). Toggle the two costmaps on and off and note that the local one is a small square that follows the robot.
+3. **Set up the displays.** The four that matter, and they are in the default RViz config: `/global_costmap/costmap` (Map display), `/local_costmap/costmap`, `/plan` (Path), and the controller's trajectory — with MPPI, the Jazzy default, add `/optimal_trajectory` (Path); the default config's `/local_plan` display stays empty, because only DWB and RPP publish that topic. Toggle the two costmaps on and off and note that the local one is a small square that follows the robot.
 4. **Send the goal from the command line**, not the RViz button, so you see the feedback:
 
 ```bash
@@ -304,7 +304,7 @@ ros2 action send_goal --feedback /navigate_to_pose nav2_msgs/action/NavigateToPo
 
 Watch `distance_remaining` fall and `number_of_recoveries` stay at zero.
 
-5. **Watch the replanning.** `/plan` is recomputed roughly once a second while the robot drives — the whole path twitches. `/local_plan` is the controller's short trajectory, updating at 20 Hz.
+5. **Watch the replanning.** `/plan` is recomputed roughly once a second while the robot drives — the whole path twitches. `/optimal_trajectory` is the controller's short trajectory, updating at the controller rate (20 Hz).
 6. **Make it recover on purpose.** In Gazebo, drag a box into the corridor ahead of the robot while it is driving. The voxel layer marks it, the local costmap changes, and MPPI deviates around it. Now box the robot in completely. The controller fails, the tree clears the local costmap, retries, then falls into the recovery subtree — you will see the robot spin and back up, and `number_of_recoveries` increment in your feedback stream.
 7. **Cancel.** Ctrl+C the `send_goal` command mid-run and confirm the robot stops. That is the action's cancel path, not a crash.
 
@@ -326,7 +326,7 @@ ros2 run tf2_ros tf2_monitor map base_link
 
 **Second, the costmap content.** Look at `/local_costmap/costmap` in RViz. Two diagnostic pictures:
 
-- *The robot is sitting inside lethal or inflated cost.* No trajectory is valid, so it spins, backs up and spins again. Causes: the laser is mounted with the wrong transform and sees the robot's own chassis; `max_obstacle_height` is letting the ground plane in; the obstacle layer marked a transient and never cleared it because `raytrace_max_range` was configured below `obstacle_max_range`, so the sensor marks farther than it clears. Check your own values before chasing this: the stock defaults are the other way round, 3.0 m raytrace against 2.5 m obstacle, and cannot produce it.
+- *The robot is sitting inside lethal or inflated cost.* No trajectory is valid, so it spins, backs up and spins again. Causes: the laser is mounted with the wrong transform and sees the robot's own chassis; `min_obstacle_height` is too low (default 0.0), letting ground returns in; the obstacle layer marked a transient and never cleared it because `raytrace_max_range` was configured below `obstacle_max_range`, so the sensor marks farther than it clears. Check your own values before chasing this: the stock defaults are the other way round, 3.0 m raytrace against 2.5 m obstacle, and cannot produce it.
 - *The costmap is empty or not updating.* Check the source topic arrives — `ros2 topic hz /scan` — and that `observation_sources` names it.
 
 Clear it by hand to test the hypothesis:
@@ -338,11 +338,11 @@ ros2 service call /local_costmap/clear_entirely_local_costmap nav2_msgs/srv/Clea
 
 If clearing makes the robot move, the problem is what is writing into the costmap, not the planner.
 
-**Third, the footprint.** Display `/local_costmap/published_footprint` in RViz and compare it with the robot. A `robot_radius` that is too large — or a `footprint` polygon in the wrong units or centred on the wrong frame — makes the inscribed-radius lethal region swallow the robot's own cell, so the robot believes it is in collision standing still. That is exactly the spin-forever symptom. Section 5's over-inflation case lands here too: if the robot refuses a doorway it fits through, check `inflation_radius` against half the door width minus the inscribed radius.
+**Third, the footprint.** Display `/local_costmap/published_footprint` in RViz and compare it with the robot. A `robot_radius` that is too large — or a `footprint` polygon in the wrong units or centred on the wrong frame — makes the inscribed-radius lethal region swallow the robot's own cell, so the robot believes it is in collision standing still. That is exactly the spin-forever symptom. Section 5's over-inflation case lands here too: if the robot refuses a doorway it fits through, compare `inflation_radius` with half the door width, the centre-to-jamb distance. Inflation raises the cost through the doorway but makes it impassable only when half the width is at most the inscribed radius; below that, a high centre cost can still push a cost-aware planner to route around.
 
 **Fourth, the controller parameters.** Only now:
 
-- `min_x_velocity_threshold` / `min_theta_velocity_threshold` set so high the computed command is treated as zero.
+- `min_x_velocity_threshold` / `min_theta_velocity_threshold` set so high that the measured odometry velocity is zeroed before the controller sees it, so the controller acts as if the robot were standing still.
 - Velocity limits (`vx_max`, `wz_max` for MPPI) that cannot achieve the required turn, so no sampled trajectory reaches the goal region.
 - `xy_goal_tolerance` / `yaw_goal_tolerance` too tight — the robot arrives, cannot satisfy the yaw tolerance, and oscillates around the goal forever.
 - A holonomic planner feeding a controller with no rotation shim, so the robot whips or spirals at every new path.
@@ -402,7 +402,7 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 
 > [!question]- Self-check · Answer
 > **1. Why is the local costmap in the `odom` frame when the global one is in `map`?** Because `map` → `odom` is published by AMCL and is allowed to jump when localisation corrects. A controller running at 20 Hz on top of a frame that teleports would produce discontinuous commands. `odom` drifts but is smooth, which is what short-horizon control needs; the planner, which cares about global consistency and replans once a second, takes the jumpy frame instead.
-> **2. Your robot clips corners and hugs walls, though it never collides. What is the likely cause and which direction do you change it?** Inflation that is too small, not too large. The decaying inflation cost is a potential field that steers cost-aware planners toward the middle of free space; a thin ring around walls leaves a large zero-cost void the planner has no reason to prefer any part of. Increase `inflation_radius` and `cost_scaling_factor` until there is a smooth gradient across the traversable width — while checking that the narrowest gap the robot must pass is still plannable.
+> **2. Your robot clips corners and hugs walls, though it never collides. What is the likely cause and which direction do you change it?** Inflation that is too small, not too large. The decaying inflation cost is a potential field that steers cost-aware planners toward the middle of free space; a thin ring around walls leaves a large zero-cost void the planner has no reason to prefer any part of. Increase `inflation_radius` and *lower* `cost_scaling_factor` (a slower decay) until there is a smooth gradient across the traversable width — while checking that the narrowest gap the robot must pass is still plannable.
 > **3. The robot spins in place and never departs. What do you check first, and why not the controller parameters?** The transform tree: `ros2 run tf2_tools view_frames` and `ros2 run tf2_ros tf2_monitor map base_link`. A missing `map` → `odom` or a transform older than `transform_tolerance` makes every trajectory invalid, and it produces exactly this symptom with no error that names TF. Costmap content and footprint come next; controller parameters are fourth because a parameter changed before TF is verified is a parameter you will change back.
 > **4. Why a behaviour tree rather than a state machine, given that the nominal path is just "plan, then follow"?** Because the nominal path is not the hard part. Recovery is, and in an FSM every recovery rule is a transition that must be duplicated for every state it can fire from. The tree scopes recovery: a `RecoveryNode` around the planner clears the global costmap, one around the controller clears the local costmap, and only a system-level failure reaches the shared spin/wait/back-up subtree. It is also editable as data — a different XML per goal, via the action's `behavior_tree` field — rather than as compiled control flow.
 
@@ -413,7 +413,7 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 > **Working** — enough to configure, launch and debug the stack; not to author a planner or controller plugin.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
 > TF and RViz from 25.6, a simulated base from 25.7, actions and managed nodes from 25.3. Baseline: ROS 2 Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
 
 ### 1. Nav2가 푸는 문제
@@ -506,11 +506,11 @@ Jazzy 기본값은 전역이 `["static_layer", "obstacle_layer", "inflation_laye
 
 초심자는 `inflation_radius`를 안전 여유로 읽는다. "벽에서 이만큼 떨어뜨려라." 그건 이 값의 정체가 아니고, 그렇게 읽는 것이 생태계에서 가장 흔한 오설정을 만든다.
 
-inflation layer 안에서는 서로 다른 두 가지가 벌어진다. 장애물로부터 로봇의 **내접 반지름(fully inscribed radius)** 안쪽에는 치명 비용을 쓴다 — 이것이 충돌 회피 부분이고, `inflation_radius`가 아니라 당신의 발자국에서 유도된다. 그다음 `inflation_radius`까지는 `cost_scaling_factor`를 감쇠율로 하는 **지수 감쇠** 비용을 쓴다. 플러그인 기본값은 `inflation_radius: 0.55`, `cost_scaling_factor: 10.0`이고, Jazzy TurtleBot 설정에서는 `0.7` / `3.0`이다.
+inflation layer 안에서는 서로 다른 두 가지가 벌어진다. 장애물로부터 로봇의 **내접 반지름(fully inscribed radius)** 안쪽에는 내접 비용(253, 플래너가 충돌로 취급한다. 치명 254는 장애물 칸 자체다)을 쓴다 — 이것이 충돌 회피 부분이고, `inflation_radius`가 아니라 당신의 발자국에서 유도된다. 그다음 `inflation_radius`까지는 `cost_scaling_factor`를 감쇠율로 하는 **지수 감쇠** 비용을 쓴다. 플러그인 기본값은 `inflation_radius: 0.55`, `cost_scaling_factor: 10.0`이고, Jazzy TurtleBot 설정에서는 `0.7` / `3.0`이다.
 
 그 감쇠하는 자락은 안전 여유가 아니다. **탐색을 조종하는 퍼텐셜 필드**다. NavFn, Theta\*, Smac 플래너는 비용을 인식한다. 매끄러운 경사가 주어지면 복도 한가운데로 달리고, 탐색이 장애물에 닿기 훨씬 전부터 장애물에 넓은 여유를 준다. 벽 주변에 얇은 팽창 고리만 있고 그 사이가 넓은 0 비용 공백이면, 플래너는 공백 안에서 어느 지점을 선호할 근거가 없고, 이유 없이 한쪽 벽에 붙거나 모서리를 깎는 경로를 낸다.
 
-관리자들은 튜닝 가이드에서 이를 직접 말한다. 자신들이 보는 설정 파일 대부분이 inflation layer의 요점을 놓치고 있으며, 권고는 주행 가능한 폭 전체에 매끄러운 퍼텐셜이 생길 때까지 비용 스케일과 반지름을 *키우라*는 것이다. 아주 넓은 방은 가운데가 0 비용이어도 되지만, 복도와 통로는 그러면 안 된다. 그러니 실무 규칙은 초심자의 직관과 반대다. 로봇이 모서리를 깎거나 벽에 붙는다면 inflation은 큰 게 아니라 아마 *작다*.
+관리자들은 튜닝 가이드에서 이를 직접 말한다. 자신들이 보는 설정 파일 대부분이 inflation layer의 요점을 놓치고 있으며, 권고는 주행 가능한 폭 전체에 매끄러운 퍼텐셜이 생길 때까지 팽창을 넓게 펴라는 것이다 — 파라미터로는 더 큰 `inflation_radius`와 *더 작은* `cost_scaling_factor`다. 이 계수가 감쇠율이라 키우면 비용이 더 빨리 떨어진다. 아주 넓은 방은 가운데가 0 비용이어도 되지만, 복도와 통로는 그러면 안 된다. 그러니 실무 규칙은 초심자의 직관과 반대다. 로봇이 모서리를 깎거나 벽에 붙는다면 inflation은 큰 게 아니라 아마 *작다*.
 
 과도한 팽창의 대가도 실재하니 명시해 둔다. 로봇이 반드시 통과해야 하는 가장 좁은 틈보다 더 멀리 팽창시키면 그 틈이 높은 비용으로 채워지거나 계획 불가능해지고, 로봇은 물리적으로 들어가는 문을 거부한다. 13절이 바로 그 증상을 쓴다.
 
@@ -533,7 +533,7 @@ Jazzy에서 쓸 수 있는 플래너와 관리자들의 로봇 유형 지침.
 제어기.
 
 - **DWB** (`dwb_core`, DWA의 ROS 2 재작성)는 속도·가속도 한계 안에서 전방 궤적 집합을 표본으로 뽑고, 각각을 **critic** 플러그인들 — `PathAlign`, `GoalDist`, `BaseObstacle`, `Oscillation`, `PreferForward` 등, 각각 조정 가능한 가중치를 가진다 — 로 채점한다. 차동 구동과 전방향에 적합하다. 어떤 궤적이 왜 뽑혔는지 정확히 알아야 할 때 옳은 선택이다. 점수가 분해되기 때문이다. 대가는 동작이 열몇 개 가중치의 함수이고 그것들을 직접 튜닝해야 한다는 점이다.
-- **MPPI** (`nav2_mppi_controller::MPPIController`)가 Jazzy 기본값이다. 최적화 기반이다. 직전의 최적 궤적에 무작위 잡음을 섞어 배치를 롤아웃하고(기본 설정에서 `model_dt: 0.05`로 56 스텝, 2000 표본), critic이라 불리는 목적 함수 플러그인들로 가중한다. DWB의 고정 행동 모델 롤아웃보다 동적 객체를 훨씬 잘 다루고 보통 튜닝 없이도 동작한다. 대신 연산 비용이 다소 높다. 차동 구동, 전방향, Ackermann, 다리형에 적합하다.
+- **MPPI** (`nav2_mppi_controller::MPPIController`)가 Jazzy 기본값이다. 최적화 기반이다. 직전의 최적 궤적에 무작위 잡음을 섞어 배치를 롤아웃하고(Jazzy `nav2_params.yaml`에서 `model_dt: 0.05`로 56 스텝, 2000 표본. 플러그인 자체의 `batch_size` 기본값은 1000), critic이라 불리는 목적 함수 플러그인들로 가중한다. DWB의 고정 행동 모델 롤아웃보다 동적 객체를 훨씬 잘 다루고 보통 튜닝 없이도 동작한다. 대신 연산 비용이 다소 높다. 차동 구동, 전방향, Ackermann, 다리형에 적합하다.
 - **Regulated Pure Pursuit** (`nav2_regulated_pure_pursuit_controller`)는 기하학적이다. 경로 위 lookahead 점을 골라 그쪽으로 조향하고, 장애물 근처와 급회전에서 속도를 줄이는 규제가 붙는다. 동적 장애물을 피하려고 경로를 *벗어나지 않는다*. 경로를 정확히 따르게 하고 싶고 그 경로를 신뢰할 때 쓴다. 즉 기구학적으로 실현 가능한 플래너와 짝지어야 하거나, 어떤 헤딩으로든 제자리 회전할 수 있는 차동 구동 베이스여야 한다.
 
 알아 둘 네 번째: **Rotation Shim** 제어기는 다른 제어기를 감싸고, 넘기기 전에 새 경로의 헤딩 쪽으로 로봇을 제자리 회전시킨다. 홀로노믹 플래너가 로봇의 현재 헤딩과 크게 다른 시작 헤딩의 경로를 만들고, 정확한 추종에 맞춰 튜닝한 제어기가 그 상황을 잘 못 다루기 때문에 — 나선형으로 빠져나가거나 휙 돌아버린다 — 존재한다. 현재 헤딩에서 출발하는 실현 가능 플래너를 쓰면 필요 없다.
@@ -698,7 +698,7 @@ ros2 action list -t
 ros2 topic hz /local_costmap/costmap
 ```
 
-3. **디스플레이를 설정한다.** 중요한 넷이고 기본 RViz 설정에 이미 들어 있다: `/global_costmap/costmap`(Map 디스플레이), `/local_costmap/costmap`, `/plan`(Path), `/local_plan`(Path). 두 costmap을 번갈아 켜고 끄면서, 지역 쪽이 로봇을 따라다니는 작은 정사각형임을 확인하라.
+3. **디스플레이를 설정한다.** 중요한 넷이고 기본 RViz 설정에 이미 들어 있다: `/global_costmap/costmap`(Map 디스플레이), `/local_costmap/costmap`, `/plan`(Path), 그리고 제어기의 궤적 — Jazzy 기본인 MPPI라면 `/optimal_trajectory`(Path)를 추가하라. 기본 설정의 `/local_plan` 디스플레이는 비어 있는데, 그 토픽은 DWB와 RPP만 발행하기 때문이다. 두 costmap을 번갈아 켜고 끄면서, 지역 쪽이 로봇을 따라다니는 작은 정사각형임을 확인하라.
 4. **RViz 버튼이 아니라 커맨드라인으로 목표를 보낸다.** 그래야 피드백이 보인다.
 
 ```bash
@@ -708,7 +708,7 @@ ros2 action send_goal --feedback /navigate_to_pose nav2_msgs/action/NavigateToPo
 
 `distance_remaining`이 줄어들고 `number_of_recoveries`가 0에 머무는 것을 보라.
 
-5. **재계획을 관찰한다.** `/plan`은 로봇이 달리는 동안 대략 1초에 한 번 다시 계산된다 — 경로 전체가 꿈틀거린다. `/local_plan`은 제어기의 짧은 궤적이고 20 Hz로 갱신된다.
+5. **재계획을 관찰한다.** `/plan`은 로봇이 달리는 동안 대략 1초에 한 번 다시 계산된다 — 경로 전체가 꿈틀거린다. `/optimal_trajectory`는 제어기의 짧은 궤적이고 제어 주기(20 Hz)로 갱신된다.
 6. **일부러 복구시킨다.** 로봇이 달리는 동안 Gazebo에서 상자를 앞 복도에 끌어다 놓아라. voxel 계층이 그것을 표시하고, 지역 costmap이 바뀌고, MPPI가 돌아간다. 이제 로봇을 완전히 가둬라. 제어기가 실패하고, 트리가 지역 costmap을 지우고 재시도하고, 그다음 복구 서브트리로 떨어진다 — 로봇이 제자리 회전하고 후진하는 것이 보이고, 피드백 스트림의 `number_of_recoveries`가 올라간다.
 7. **취소한다.** 주행 중에 `send_goal` 명령을 Ctrl+C로 끊고 로봇이 서는지 확인하라. 그것은 크래시가 아니라 액션의 취소 경로다.
 
@@ -730,8 +730,8 @@ ros2 run tf2_ros tf2_monitor map base_link
 
 **둘째, costmap의 내용.** RViz에서 `/local_costmap/costmap`을 보라. 진단이 되는 그림은 둘이다.
 
-- *로봇이 치명 비용 또는 팽창 비용 안에 앉아 있다.* 그러면 유효한 궤적이 없고 로봇은 돌고, 후진하고, 또 돈다. 원인: 레이저가 잘못된 변환으로 장착되어 자기 차체를 보고 있다, `max_obstacle_height`가 지면을 들여보내고 있다, obstacle 계층이 일시적 물체를 표시했는데 `raytrace_max_range`가 `obstacle_max_range`보다 작게 설정되어 센서가 지우는 거리보다 멀리까지 표시했다. 다만 이것을 쫓기 전에 자기 설정값을 확인하라. 기본값은 반대로 raytrace 3.0 m에 obstacle 2.5 m라서 이 현상이 생길 수 없다.
-- *costmap이 비어 있거나 갱신되지 않는다.* 소스 토픽이 실제로 도착하는지(`ros2 topic hz /scan`), 그리고 `observation_sources`가 그것을 지명하는지 확인하라. 갱신되지 않는 costmap은 로봇이 확신에 차서 물체로 돌진하게 만들거나, 전역 쪽이 빈 경우 아예 계획을 거부하게 만든다.
+- *로봇이 치명 비용 또는 팽창 비용 안에 앉아 있다.* 그러면 유효한 궤적이 없고 로봇은 돌고, 후진하고, 또 돈다. 원인: 레이저가 잘못된 변환으로 장착되어 자기 차체를 보고 있다, `min_obstacle_height`가 너무 낮아(기본 0.0) 지면 반사를 들여보내고 있다, obstacle 계층이 일시적 물체를 표시했는데 `raytrace_max_range`가 `obstacle_max_range`보다 작게 설정되어 센서가 지우는 거리보다 멀리까지 표시했다. 다만 이것을 쫓기 전에 자기 설정값을 확인하라. 기본값은 반대로 raytrace 3.0 m에 obstacle 2.5 m라서 이 현상이 생길 수 없다.
+- *costmap이 비어 있거나 갱신되지 않는다.* 소스 토픽이 실제로 도착하는지(`ros2 topic hz /scan`), 그리고 `observation_sources`가 그것을 지명하는지 확인하라.
 
 가설을 시험하려면 손으로 지워 보라.
 
@@ -742,11 +742,11 @@ ros2 service call /local_costmap/clear_entirely_local_costmap nav2_msgs/srv/Clea
 
 지웠더니 로봇이 움직인다면 문제는 플래너가 아니라 costmap에 쓰고 있는 무언가다.
 
-**셋째, 발자국.** RViz에서 `/local_costmap/published_footprint`를 띄우고 로봇과 비교하라. 너무 큰 `robot_radius`, 또는 단위가 틀렸거나 엉뚱한 프레임 기준으로 중심이 잡힌 `footprint` 다각형은 내접 반지름 치명 영역이 로봇 자신의 칸을 삼키게 만든다. 그러면 로봇은 가만히 서 있으면서 자기가 충돌 중이라고 믿는다. 정확히 영원히 도는 증상이다. 5절의 과팽창 사례도 여기서 잡힌다. 로봇이 물리적으로 들어가는 문을 거부한다면 `inflation_radius`를 문 너비 절반에서 내접 반지름을 뺀 값과 비교해 보라.
+**셋째, 발자국.** RViz에서 `/local_costmap/published_footprint`를 띄우고 로봇과 비교하라. 너무 큰 `robot_radius`, 또는 단위가 틀렸거나 엉뚱한 프레임 기준으로 중심이 잡힌 `footprint` 다각형은 내접 반지름 치명 영역이 로봇 자신의 칸을 삼키게 만든다. 그러면 로봇은 가만히 서 있으면서 자기가 충돌 중이라고 믿는다. 정확히 영원히 도는 증상이다. 5절의 과팽창 사례도 여기서 잡힌다. 로봇이 물리적으로 들어가는 문을 거부한다면 `inflation_radius`를 문 너비의 절반, 즉 중심에서 문틀까지의 거리와 비교하라. 팽창은 문을 지나는 비용을 올리지만, 통과 불가능하게 만드는 것은 너비의 절반이 내접 반지름 이하일 때뿐이다. 그보다 넓어도 중심 비용이 높으면 비용 인식 플래너가 돌아가는 길을 고를 수 있다.
 
 **넷째, 제어기 파라미터.** 이제서야. 이 증상을 만드는 것들:
 
-- `min_x_velocity_threshold` / `min_theta_velocity_threshold`가 너무 높아 계산된 명령이 0으로 취급된다.
+- `min_x_velocity_threshold` / `min_theta_velocity_threshold`가 너무 높아, 측정된 오도메트리 속도가 제어기에 들어가기 전에 0으로 잘리고 제어기는 로봇이 서 있는 것처럼 행동한다.
 - 속도 한계(MPPI의 `vx_max`, `wz_max`)가 필요한 회전을 낼 수 없어, 표본 궤적 중 어느 것도 목표 영역에 닿지 못한다.
 - `xy_goal_tolerance` / `yaw_goal_tolerance`가 너무 빡빡하다. 로봇이 도착했는데 yaw 허용 오차를 만족하지 못하고 목표 주변에서 영원히 진동한다.
 - 홀로노믹 플래너가 rotation shim 없는 제어기에 경로를 먹여, 새 경로마다 로봇이 휙 돌거나 나선을 그린다.
@@ -803,6 +803,6 @@ ros2 param dump /controller_server
 
 > [!question]- 스스로 점검 · 정답
 > **1. 전역 costmap은 `map` 프레임인데 지역 costmap은 왜 `odom` 프레임인가?** `map` → `odom`은 AMCL이 발행하고, 위치가 보정될 때 튀어도 되는 변환이기 때문이다. 순간이동하는 프레임 위에서 20 Hz로 도는 제어기는 불연속한 명령을 낸다. `odom`은 표류하지만 매끄럽고, 그것이 짧은 시평의 제어가 필요로 하는 성질이다. 전역 일관성이 중요하고 1초에 한 번 재계획하는 플래너가 대신 튀는 프레임을 받는다.
-> **2. 로봇이 모서리를 깎고 벽에 붙는데 충돌은 한 번도 하지 않는다. 유력한 원인은 무엇이고 어느 방향으로 바꾸는가?** 팽창이 너무 큰 게 아니라 너무 작다. 감쇠하는 팽창 비용은 비용 인식 플래너를 자유 공간 한가운데로 이끄는 퍼텐셜 필드다. 벽 주변의 얇은 고리만 있으면 그 사이의 넓은 0 비용 공백 안에서 플래너가 어느 지점을 선호할 근거가 없다. 주행 가능한 폭 전체에 매끄러운 경사가 생길 때까지 `inflation_radius`와 `cost_scaling_factor`를 키워라. 단, 반드시 통과해야 하는 가장 좁은 틈이 여전히 계획 가능한지 확인하면서.
+> **2. 로봇이 모서리를 깎고 벽에 붙는데 충돌은 한 번도 하지 않는다. 유력한 원인은 무엇이고 어느 방향으로 바꾸는가?** 팽창이 너무 큰 게 아니라 너무 작다. 감쇠하는 팽창 비용은 비용 인식 플래너를 자유 공간 한가운데로 이끄는 퍼텐셜 필드다. 벽 주변의 얇은 고리만 있으면 그 사이의 넓은 0 비용 공백 안에서 플래너가 어느 지점을 선호할 근거가 없다. 주행 가능한 폭 전체에 매끄러운 경사가 생길 때까지 `inflation_radius`는 키우고 `cost_scaling_factor`는 *낮춰라*(더 느린 감쇠). 단, 반드시 통과해야 하는 가장 좁은 틈이 여전히 계획 가능한지 확인하면서.
 > **3. 로봇이 제자리에서 돌기만 하고 출발하지 않는다. 무엇을 먼저 확인하고, 제어기 파라미터는 왜 먼저가 아닌가?** 변환 트리다. `ros2 run tf2_tools view_frames`와 `ros2 run tf2_ros tf2_monitor map base_link`. `map` → `odom`이 없거나 변환이 `transform_tolerance`보다 오래됐으면 모든 궤적이 무효가 되고, TF를 지목하는 오류 한 줄 없이 정확히 이 증상이 나온다. 그다음이 costmap 내용과 발자국이다. 제어기 파라미터가 넷째인 이유는, TF를 확인하기 전에 바꾼 파라미터는 결국 되돌리게 되기 때문이다.
 > **4. 정상 경로는 "계획하고 따라간다"뿐인데 왜 상태 기계가 아니라 행동 트리인가?** 어려운 부분이 정상 경로가 아니기 때문이다. 어려운 것은 복구이고, FSM에서는 복구 규칙 하나하나가 그것이 발동할 수 있는 모든 상태마다 복제되어야 하는 전이다. 트리는 복구에 범위를 준다. 플래너를 감싼 `RecoveryNode`는 전역 costmap을 지우고, 제어기를 감싼 것은 지역 costmap을 지우며, 시스템 수준 실패만이 공유되는 회전/대기/후진 서브트리에 도달한다. 또한 컴파일된 제어 흐름이 아니라 데이터로 편집된다 — 액션의 `behavior_tree` 필드를 통해 목표마다 다른 XML을 쓸 수 있다.

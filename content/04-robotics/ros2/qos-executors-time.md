@@ -46,7 +46,7 @@ A QoS *profile* is a set of *policies*, applied independently to each publisher,
 
 Every non-duration policy also accepts *system default*, which defers to the middleware, and every duration policy accepts *default*, an unspecified duration that middleware usually treats as infinite.
 
-Deadline, lifespan and liveliness are the three most people never set, and they are the only policies that can tell you a stream has *stopped*: a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical.
+Deadline, lifespan and liveliness are the three most people never set, and deadline and liveliness are the only policies that can tell you a stream has *stopped* (lifespan expires stale samples but raises no event): a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical.
 
 ### 3. Compatibility: the request-versus-offered rule
 
@@ -84,11 +84,13 @@ The canonical case. A camera driver publishes at 30 Hz and is written sensibly: 
 
 The result: `ros2 node list` shows both nodes. `ros2 topic list` shows the topic. `ros2 topic info` shows one publisher and one subscription. Your callback never runs.
 
-One correction to the folklore, because it matters when you are hunting: this failure is not *completely* invisible. Both rclcpp and rclpy register a default handler for the incompatible-QoS event, and it logs a warning once, at discovery, on the node's own logger:
+One correction to the folklore, because it matters when you are hunting: this failure is not *completely* invisible. Both rclcpp and rclpy register a default handler for the incompatible-QoS event, and it logs a warning once, at discovery, on the node's own logger. The wording differs by client library; this is rclpy's:
 
 ```text
 [WARN] [...] [my_subscriber]: New publisher discovered on topic '/image', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
 ```
+
+An rclcpp subscriber says "No messages will be sent to it" and names the policy `RELIABILITY_QOS_POLICY`, so grep for `incompatible QoS` rather than the whole sentence.
 
 The publisher side has the mirror-image warning about a subscription requesting incompatible QoS. So why does everyone still lose an afternoon to this?
 
@@ -210,7 +212,7 @@ ros2 topic echo /image --qos-reliability reliable   # now it fails the same way 
 
 Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it.
 
-rclcpp offers three: `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which scans the node's structure only once when the node is added — faster, but only correct for nodes that create all their subscriptions and timers during initialisation. rclpy offers the first two.
+rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
 
 Two consequences that beginners get wrong:
 
@@ -482,7 +484,7 @@ QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션
 
 기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다.
 
-deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이지만, 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책들이다. deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다.
+deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그중 deadline과 liveliness가 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책이다(lifespan은 낡은 샘플을 만료시킬 뿐 이벤트를 내지 않는다). deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다.
 
 ### 3. 호환성: request 대 offered 규칙
 
@@ -520,11 +522,13 @@ deadline과 lease duration은 기간에 대해 같은 모양을 따른다. 퍼�
 
 결과: `ros2 node list`에 두 노드가 다 있다. `ros2 topic list`에 토픽이 있다. `ros2 topic info`는 퍼블리셔 1, 서브스크립션 1을 보고한다. 콜백은 한 번도 실행되지 않는다.
 
-통설에 한 가지 정정이 필요하다. 추적할 때 중요하다. 이 실패는 *완전히* 보이지 않는 것은 아니다. rclcpp와 rclpy 모두 incompatible-QoS 이벤트의 기본 핸들러를 등록하고, 그것이 탐색 시점에 노드 자신의 로거로 경고를 한 번 찍는다.
+통설에 한 가지 정정이 필요하다. 추적할 때 중요하다. 이 실패는 *완전히* 보이지 않는 것은 아니다. rclcpp와 rclpy 모두 incompatible-QoS 이벤트의 기본 핸들러를 등록하고, 그것이 탐색 시점에 노드 자신의 로거로 경고를 한 번 찍는다. 문구는 클라이언트 라이브러리마다 다르다. 아래는 rclpy의 것이다.
 
 ```text
 [WARN] [...] [my_subscriber]: New publisher discovered on topic '/image', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
 ```
+
+rclcpp 서브스크립션은 "No messages will be sent to it"이라고 쓰고 정책 이름을 `RELIABILITY_QOS_POLICY`로 적으므로, 문장 전체가 아니라 `incompatible QoS`로 grep하라.
 
 퍼블리셔 쪽에는 비호환 요청을 하는 서브스크립션에 대한 대칭적인 경고가 있다. 그런데도 왜 다들 반나절을 잃는가.
 
@@ -646,7 +650,7 @@ ros2 topic echo /image --qos-reliability reliable   # 이제 당신 노드와 �
 
 콜백은 저절로 돌지 않는다. **Executor**가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다.
 
-rclcpp는 셋을 제공한다. `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드를 붙일 때 구조를 한 번만 훑는 `StaticSingleThreadedExecutor`다. 마지막 것은 더 빠르지만 모든 서브스크립션과 타이머를 초기화 때 만드는 노드에서만 옳다. rclpy는 앞의 둘을 제공한다.
+rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
 
 초심자가 틀리는 귀결 둘:
 
