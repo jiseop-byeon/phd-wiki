@@ -116,9 +116,11 @@ at each of 4 feet), horizon $N = 10$.
 Condensed has under half the variables, which sounds decisive until you notice its Hessian is
 dense: $120^2 = 14{,}400$ stored entries in a dense representation, against a stacked matrix whose nonzero count grows only
 linearly in $N$. Doubling the horizon roughly doubles stacked storage at fixed state/input dimensions; it *quadruples* the
-condensed Hessian's entry count and, because dense factorization is cubic in the variable
-count, multiplies condensed solve
-work. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
+condensed Hessian's entry count and, because generic dense Cholesky factorization is cubic in the variable
+count, multiplies that factorization work by about eight. The cubic growth is not forced by the
+dense form: Axehill & Morari (*Systems & Control Letters* 61, 2012, Theorem 3) build a Cholesky
+factor of the condensed Hessian from the Riccati recursion's quantities in $O(N^2)$, and note that
+adding the eliminated states back as variables recovers the classical $O(N)$ Riccati solve. And at 50 Hz the entire solve must finish inside **20 ms**, minus whatever state
 estimation already spent — which is why this choice is a real engineering decision rather
 than a stylistic one.
 
@@ -276,7 +278,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 
 Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안이 밀집이라는 점을 보면 달라진다:
 조밀하게 저장하면 원소가 $120^2 = 14{,}400$개인 반면 stacked의 비영 성분은 $N$에 대해 선형으로만 늘어난다.
-고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 조밀 분해 연산량은 약 여덟 배가 된다. 다만 이것은 알고리즘 선택에 달렸다. 더 나은 지평 의존도를 노리는 condensing 알고리즘들이 있고, Rawlings도 그런 계열을 언급한다. 그리고 50 Hz라면
+고정 상태·입력 차원에서 지평을 두 배로 하면 stacked 저장량은 대략 두 배가 되고, condensed는 헤시안 *원소 수*가 네 배가 되며, 조밀 분해가 변수 수의 3제곱이므로 조밀 분해 연산량은 약 여덟 배가 된다. 다만 3제곱은 범용 Cholesky 분해의 경우이고, 조밀 형태가 강제하는 것은 아니다: Axehill과 Morari(*Systems & Control Letters* 61, 2012, 정리 3)는 Riccati 재귀의 양들로 condensed 헤시안의 Cholesky 인자를 $O(N^2)$에 만들고, 소거한 상태를 다시 변수로 넣으면 고전적인 $O(N)$ Riccati 풀이로 돌아간다고 적는다. Rawlings도 더 나은 지평 의존도를 노리는 condensing 알고리즘 계열을 언급한다. 그리고 50 Hz라면
 이 풀이 전체가 **20 ms** 안에 끝나야 하고, 거기서 상태 추정이 이미 쓴 시간을 빼야 한다 —
 이 선택이 취향이 아니라 실제 엔지니어링 결정인 이유다.
 

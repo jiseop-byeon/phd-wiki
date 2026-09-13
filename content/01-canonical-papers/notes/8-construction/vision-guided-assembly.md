@@ -22,69 +22,67 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 ## English
 
-**One-line summary**: A mobile construction manipulator localizes itself at an unstructured work face, uses marker-based vision to assemble components autonomously, and scans the result back into an as-built model — closing the design→build→verify geometry loop on a construction task in 2015.
+**One-line summary**: A construction manipulator localizes itself against fiducial markers, assembles marker-tagged blocks into a computationally designed wall, and, in a separate experiment, registers 3D scans into the same marker frame for as-built modelling — the design → marker registration → assembly → as-built scan architecture, demonstrated in parts in 2015.
 
-**Lineage position**: this is the anchor paper of the Michigan (Kamat/Menassa) construction-manipulation lineage — the line that continues through [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen's geometrically adaptive task execution (2019)]] and [[01-canonical-papers/notes/8-construction/liang-lfd|Liang's learning-from-demonstration (2020)]], and whose first author Chen Feng now runs NYU's AI4CE lab. It names the structural fact that separates construction robotics from manufacturing: the **reversed spatial relationship** — the manipulator must travel to and register against a large static structure, rather than a fixtured product arriving at a fixed robot.
+**Lineage position**: this is the anchor paper of the Michigan (Kamat/Menassa) construction-manipulation lineage — the line that continues through [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen's geometrically adaptive task execution (2019)]] and [[01-canonical-papers/notes/8-construction/liang-lfd|Liang's learning-from-demonstration (2020)]], and whose first author Chen Feng now runs NYU's AI4CE lab. Its abstract states the structural fact that separates construction robotics from manufacturing, the **reversed spatial relationship** (the same group had framed it in Feng et al., ISARC 2014, which Lundeen 2019 cites for the idea) — the manipulator must travel to and register against a large static structure, rather than a fixtured product arriving at a fixed robot.
 
 > [!tip] Key intuition · 핵심 직관
 > On-site registration substitutes for the known robot-to-workpiece relationship supplied by a factory fixture. Scanning the result then makes placement inspectable against design, while the marker-based sensing remains an explicit simplifying assumption.
 
-**Method**: the workflow chains four stages — (1) design model specifies target geometry; (2) the mobile platform localizes at the work face using fiducial-marker-based vision metrology, recovering the robot-to-workpiece transform without factory fixturing; (3) vision-guided manipulation places prepared components against the target geometry; (4) the same sensing scans the assembled result into an as-built model that can be compared against design intent. Every stage is 2015-era classical vision — printed fiducial markers, calibrated cameras — not learned perception.
+**Method**: the workflow chains four stages — (1) design model specifies target geometry; (2) the mobile platform localizes at the work face using fiducial-marker-based vision metrology, recovering the robot-to-workpiece transform without factory fixturing; (3) vision-guided manipulation places prepared components against the target geometry; (4) a 3D camera on the arm captures point clouds that the marker frame and the arm's encoders register into one building reference frame, for as-built BIM after construction or documentation during it. Every stage is 2015-era classical vision — printed AprilTag markers, a camera calibrated on a 3D AprilTag rig — not learned perception. The assembly sequence is generated automatically from the Grasshopper/Rhino design.
 
 ```mermaid
 flowchart LR
     D["design model<br/>target geometry"] --> L["localize at the work face<br/>fiducial-marker vision metrology"]
     L --> M["vision-guided placement<br/>component against target"]
     M --> S["scan the result<br/>as-built model"]
-    S --> CMP["compare against design intent"]
-    CMP -.->|"deviation feeds the next placement"| L
+    S --> BIM["as-built BIM or construction record"]
 ```
 
 *Step 2 is the whole contribution: a factory bolts the workpiece into a known fixture, and
 a construction site cannot. Recovering the robot-to-workpiece transform on the spot is what
-replaces the fixture — and step 4 is what makes the claim checkable rather than asserted.*
+replaces the fixture — and step 4 reuses that same frame to put scans where the design is. The paper does not feed scan deviations back into placement.*
 
 
 
-**Evidence**: the demonstration is a physical mobile-manipulator assembly cell executing the full loop — mobile localization, autonomous component placement, and as-built scanning — on real hardware with prepared components. The contribution the field kept is the *architecture*: it is the earliest complete instance of the design → mobile registration → manipulation → as-built verification cycle that later Michigan work (and today's [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM-driven digital-twin workflows]]) elaborates.
+**Evidence** (§3): a 7-axis KUKA KR100 arm with a two-finger gripper, a Point Grey Firefly MV camera and a laptop running ROS. It assembled a three-layer curved wall about 1.5 m long and a three-layer circular wall from 170 × 70 × 20 mm MDF blocks, each carrying two 56 mm AprilTags, in a building frame set by four 276 mm tags. Calibration validated to under 1 mm, but the small block tags limited block localization to about 2 cm, which the gripper's tolerance absorbed; when a block was moved, the arm picked it up at its new pose. The scanning experiment was separate: the same arm with a Microsoft Kinect scanned the University of Michigan's architecture FabLab into one registered point cloud. The paper describes a mobile manipulator, but no base motion is shown in these experiments. The contribution the field kept is the *architecture*: design → marker registration → manipulation → as-built scanning in one reference frame, which later Michigan work (and today's [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM-driven digital-twin workflows]]) elaborates.
 
-**Limitations**: marker-based metrology and prepared components deliberately remove most site uncertainty — the paper solves registration and closure, not perception in clutter. Component variety, tolerance recovery when parts do not fit, and marker-free localization are all left to successors (Lundeen 2019 addresses as-built geometric adaptation directly).
+**Limitations**: marker-based metrology and prepared components deliberately remove most site uncertainty — the paper solves registration, not perception in clutter. The authors list six limits themselves (§3.3): marker robustness under changing light, occlusion, the survey effort to register many markers on site, tagging every component, marker durability outdoors, and no quantitative comparison with manual methods. Component variety, tolerance recovery when parts do not fit, and marker-free localization are all left to successors (Lundeen 2019 addresses as-built geometric adaptation directly).
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
-> "Autonomous robotic assembly" here means autonomous within a marker-instrumented, prepared-component workflow. Treat the paper as the foundational integrated loop — the first complete design→build→verify cycle on a mobile construction manipulator — not as evidence that unstructured site assembly was solved in 2015. The fiducial markers are the load-bearing assumption: every later paper in this lineage can be read as removing one of them.
+> "Autonomous robotic assembly" here means autonomous within a marker-instrumented, prepared-component workflow. Treat the paper as the lineage's foundational architecture, with assembly and scanning shown as separate experiments on a stationary arm, not as evidence that unstructured site assembly was solved in 2015. The fiducial markers are the load-bearing assumption: every later paper in this lineage can be read as removing one of them.
 
 ## 한국어
 
-**한 줄 요약**: 모바일 건설 매니퓰레이터가 비정형 작업면에서 스스로 위치를 정합하고, 마커 기반 비전으로 부품을 자율 조립한 뒤, 결과를 as-built 모델로 다시 스캔한다 — 2015년에 건설 과제에서 설계→시공→검증 기하 루프를 닫았다.
+**한 줄 요약**: 건설 매니퓰레이터가 피두셜 마커에 대해 스스로 위치를 정합하고, 마커를 붙인 블록을 전산 설계된 벽으로 조립하며, 별도 실험에서 3D 스캔을 같은 마커 좌표계에 정합해 as-built 모델을 만든다 — 설계 → 마커 정합 → 조립 → as-built 스캔의 구조를 2015년에 부분별로 시연했다.
 
-**계보에서의 위치**: 미시간(Kamat/Menassa) 건설 조작 계보의 앵커 논문이다 — 이 라인은 [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen의 기하 적응형 과제 실행(2019)]]과 [[01-canonical-papers/notes/8-construction/liang-lfd|Liang의 시연 학습(2020)]]으로 이어지고, 제1저자 Chen Feng은 현재 NYU AI4CE 랩을 이끈다. 건설 로봇을 제조업과 가르는 구조적 사실에 이름을 붙였다: **역전된 공간 관계(reversed spatial relationship)** — 고정된 로봇에 지그로 고정된 제품이 오는 것이 아니라, 매니퓰레이터가 크고 정적인 구조물로 이동해 정합해야 한다.
+**계보에서의 위치**: 미시간(Kamat/Menassa) 건설 조작 계보의 앵커 논문이다 — 이 라인은 [[01-canonical-papers/notes/8-construction/lundeen-2019|Lundeen의 기하 적응형 과제 실행(2019)]]과 [[01-canonical-papers/notes/8-construction/liang-lfd|Liang의 시연 학습(2020)]]으로 이어지고, 제1저자 Chen Feng은 현재 NYU AI4CE 랩을 이끈다. 초록이 건설 로봇을 제조업과 가르는 구조적 사실을 밝힌다: **역전된 공간 관계(reversed spatial relationship)**(같은 그룹이 Feng 외, ISARC 2014에서 이미 이 틀을 제시했고, Lundeen 2019가 그 논문을 인용한다) — 고정된 로봇에 지그로 고정된 제품이 오는 것이 아니라, 매니퓰레이터가 크고 정적인 구조물로 이동해 정합해야 한다.
 
 > [!tip] 핵심 직관 · Key intuition
 > 현장 정합이 공장 고정구가 제공하던 로봇–작업물의 알려진 관계를 대신한다. 결과 스캔은 배치를 설계와 대조 가능하게 만든다. 마커 기반 센싱은 명시적인 단순화 가정으로 남는다.
 
-**방법**: 워크플로는 네 단계를 잇는다 — (1) 설계 모델이 목표 기하를 지정한다; (2) 모바일 플랫폼이 피두셜 마커 기반 비전 계측으로 작업면에서 위치를 정합해, 공장식 지그 없이 로봇-작업물 변환을 복원한다; (3) 비전 유도 조작이 준비된 부품을 목표 기하에 맞춰 배치한다; (4) 같은 센싱이 조립 결과를 as-built 모델로 스캔해 설계 의도와 비교할 수 있게 한다. 모든 단계가 2015년대의 고전 비전 — 인쇄된 피두셜 마커, 캘리브레이션된 카메라 — 이며 학습 기반 인식이 아니다.
+**방법**: 워크플로는 네 단계를 잇는다 — (1) 설계 모델이 목표 기하를 지정한다; (2) 모바일 플랫폼이 피두셜 마커 기반 비전 계측으로 작업면에서 위치를 정합해, 공장식 지그 없이 로봇-작업물 변환을 복원한다; (3) 비전 유도 조작이 준비된 부품을 목표 기하에 맞춰 배치한다; (4) 팔에 단 3D 카메라가 점군을 찍고, 마커 좌표계와 팔의 엔코더가 이를 하나의 건물 기준 좌표계에 정합한다. 시공 후 as-built BIM이나 시공 중 기록에 쓴다. 모든 단계가 2015년대의 고전 비전 — 인쇄된 AprilTag 마커, 3D AprilTag 리그로 캘리브레이션한 카메라 — 이며 학습 기반 인식이 아니다. 조립 순서는 Grasshopper/Rhino 설계에서 자동 생성한다.
 
 ```mermaid
 flowchart LR
     D["설계 모델<br/>목표 기하"] --> L["작업면에서 위치 정합<br/>피두셜 마커 비전 계측"]
     L --> M["비전 유도 배치<br/>부품을 목표 기하에 맞춰"]
     M --> S["결과 스캔<br/>as-built 모델"]
-    S --> CMP["설계 의도와 비교"]
-    CMP -.->|"편차가 다음 배치로 되먹임"| L
+    S --> BIM["as-built BIM 또는 시공 기록"]
 ```
 
 *2단계가 기여 전부다: 공장은 작업물을 알려진 지그에 볼트로 고정하지만 건설 현장은 그럴 수
-없다. 현장에서 로봇-작업물 변환을 그 자리에서 복원하는 것이 지그를 대신한다 — 그리고 4단계가
-그 주장을 단정이 아니라 검증 가능한 것으로 만든다.*
+없다. 현장에서 로봇-작업물 변환을 그 자리에서 복원하는 것이 지그를 대신한다 — 그리고 4단계는
+같은 좌표계를 다시 써서 스캔을 설계와 같은 자리에 놓는다. 논문은 스캔 편차를 배치로 되먹이지 않는다.*
 
 
 
-**증거**: 시연은 실제 하드웨어에서 준비된 부품으로 전체 루프 — 모바일 정합, 자율 부품 배치, as-built 스캔 — 를 실행하는 물리적 모바일 매니퓰레이터 조립 셀이다. 분야가 간직한 기여는 *아키텍처*다: 설계 → 이동 정합 → 조작 → as-built 검증 사이클의 최초 완결 사례이며, 이후 미시간 연구(그리고 오늘날의 [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM 기반 디지털 트윈 워크플로]])가 이를 정교화한다.
+**증거**(§3): 두 손가락 그리퍼를 단 7축 KUKA KR100 팔, Point Grey Firefly MV 카메라, ROS를 돌리는 노트북이다. 170 × 70 × 20 mm MDF 블록(블록마다 56 mm AprilTag 두 개)으로 길이 약 1.5 m의 3단 곡면 벽과 3단 원형 벽을 조립했고, 건물 좌표계는 276 mm 태그 네 개로 정했다. 캘리브레이션 검증 잔차는 1 mm 미만이었지만 블록의 작은 태그 때문에 블록 위치 추정은 약 2 cm 수준이었고, 그리퍼의 공차가 이를 흡수했다. 블록을 옮기면 팔이 새 자세에서 집어 올렸다. 스캔 실험은 별도였다: 같은 팔에 Microsoft Kinect를 달아 미시간 대학 건축대학 FabLab을 하나의 정합된 점군으로 스캔했다. 논문은 모바일 매니퓰레이터를 전제하지만, 이 실험들에서 베이스가 움직이는 장면은 없다. 분야가 간직한 기여는 *아키텍처*다: 하나의 기준 좌표계 안에서 설계 → 마커 정합 → 조작 → as-built 스캔을 잇는 구조이며, 이후 미시간 연구(그리고 오늘날의 [[01-canonical-papers/notes/8-construction/bim-digital-twin|BIM 기반 디지털 트윈 워크플로]])가 이를 정교화한다.
 
-**한계**: 마커 기반 계측과 준비된 부품은 현장 불확실성 대부분을 의도적으로 제거한다 — 이 논문이 푸는 것은 정합과 루프 닫기이지, 어수선한 환경에서의 인식이 아니다. 부품 다양성, 부품이 맞지 않을 때의 공차 복구, 마커 없는 정합은 모두 후속 연구의 몫이다(Lundeen 2019가 as-built 기하 적응을 직접 다룬다).
+**한계**: 마커 기반 계측과 준비된 부품은 현장 불확실성 대부분을 의도적으로 제거한다 — 이 논문이 푸는 것은 정합이지, 어수선한 환경에서의 인식이 아니다. 저자들 스스로 여섯 한계를 든다(§3.3): 조명 변화에서의 마커 강건성, 가림, 현장에서 많은 마커를 측량·등록하는 수고, 모든 부품에 태그를 붙이는 수고, 실외에서의 마커 내구성, 수작업 대비 정량 비교의 부재. 부품 다양성, 부품이 맞지 않을 때의 공차 복구, 마커 없는 정합은 모두 후속 연구의 몫이다(Lundeen 2019가 as-built 기하 적응을 직접 다룬다).
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
-> 여기서 "자율 로봇 조립"은 마커가 설치되고 부품이 준비된 워크플로 안에서의 자율을 뜻한다. 이 논문은 기초적 통합 루프 — 모바일 건설 매니퓰레이터에서 최초의 완결된 설계→시공→검증 사이클 — 로 읽어야지, 2015년에 비정형 현장 조립이 풀렸다는 증거로 읽으면 안 된다. 피두셜 마커가 하중을 받는 가정이다: 이 계보의 이후 논문들은 각각 그 가정 하나씩을 제거하는 것으로 읽을 수 있다.
+> 여기서 "자율 로봇 조립"은 마커가 설치되고 부품이 준비된 워크플로 안에서의 자율을 뜻한다. 이 논문은 계보의 기초 구조 — 조립과 스캔을 고정된 팔에서 별도 실험으로 보인 — 로 읽어야지, 2015년에 비정형 현장 조립이 풀렸다는 증거로 읽으면 안 된다. 피두셜 마커가 하중을 받는 가정이다: 이 계보의 이후 논문들은 각각 그 가정 하나씩을 제거하는 것으로 읽을 수 있다.
 
 ### 연결
 
@@ -94,7 +92,7 @@ flowchart LR
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading (★)
 
-- [ ] Reconstruct the four-stage loop (design → mobile registration → vision-guided manipulation → as-built scan) and say which transform or model is estimated at each stage · 설계 → 모바일 정합 → 비전 유도 조작 → as-built 스캔의 4단계 루프를 재구성하고, 각 단계에서 어떤 변환/모델이 추정되는지 말할 수 있다
+- [ ] Reconstruct the four-stage loop (design → marker registration → vision-guided manipulation → as-built scan) and say which transform or model is estimated at each stage · 설계 → 마커 정합 → 비전 유도 조작 → as-built 스캔의 4단계 루프를 재구성하고, 각 단계에서 어떤 변환/모델이 추정되는지 말할 수 있다
 - [ ] Explain the reversed spatial relationship between manufacturing and construction, and why it breaks the assumptions of fixed-cell robotics · 제조와 건설의 역전된 공간 관계(reversed spatial relationship)가 무엇이고, 왜 이것이 고정 셀 로봇 공학의 가정을 무너뜨리는지 설명할 수 있다
 - [ ] Say what conditions fiducial-marker instrumentation attaches to the autonomy claim, and exactly which uncertainty the markers remove · 피두셜 마커 기반 계측이 자율성 주장에 어떤 조건을 다는지, 그리고 마커가 제거하는 불확실성이 정확히 무엇인지 말할 수 있다
 - [ ] Explain on the genealogy why this paper is the origin of the Michigan line (Lundeen, Liang, Yu) and of today's BIM digital-twin workflows · 이 논문이 미시간 계보(Lundeen, Liang, Yu)와 오늘날 BIM 디지털 트윈 워크플로의 출발점인 이유를 계보 위에서 설명할 수 있다

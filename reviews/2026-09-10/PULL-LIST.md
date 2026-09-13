@@ -99,6 +99,23 @@ Still open — need the PDFs saved from a normal browser:
   removed from the dry-stone note, the assembly stream and MR ch. 12. AES's 24-hour figure is
   no longer tied to material loading, and its throughput and machine sizes are cited as the
   preprint's. Reopen if the full texts arrive through ILL.
-- Lundeen 2019, Davila Delgado 2019, Liu 2021, Feng 2015, Axehill & Morari 2012 (ScienceDirect).
-- *Automation in Construction* guide for authors (ScienceDirect).
+- ~~Lundeen 2019, Davila Delgado 2019, Liu 2021, Feng 2015, Axehill & Morari 2012, and the
+  *Automation in Construction* guide~~ — the user saved the PDFs from their own browser into
+  `reference/papers/` (gitignored). Read on 2026-09-12:
+  - **Axehill & Morari** — Theorem 3: Cholesky factor of the dense Hessian in $O(N^2)$; adding
+    variables back recovers $O(N)$. Now on the MPC page.
+  - **Lundeen** — testbed confirmed: two KUKA KR120 arms, specimens on a frame, five
+    experiments, 0.11 mm / 1.1°. The hedge was replaced with the setup.
+  - **Davila Delgado** — Table 4 ranks high initial capital investment first (4.33 of 5; 36
+    respondents). The English half had dropped this; both halves now carry the ranking.
+  - **Liu, Habibnezhad & Jebelli** — 12 subjects offline, Emotiv Flex, classifier 79.1%; the
+    abstract's "90%" is post-screening reliability (93.5%). Online: HUSKY A200 while laying
+    bricks, success 90.0 / 83.3 / 85%. "Per-user calibration is required" was not in the paper
+    and was replaced.
+  - **Feng et al. 2015** — AprilTag markers confirmed; the term appears in the abstract but the
+    group used it in ISARC 2014. **Corrected**: experiments used a stationary KUKA KR100 arm;
+    assembly and scanning were separate experiments; nothing fed scan deviations back into
+    placement; "first complete loop" removed.
+  - **Automation in Construction guide** — single anonymized; editors assess first, then
+    typically at least two reviewers. Matches the venue page.
 - ISO/TS 15066:2016 §5.5.4 (not attempted).

@@ -119,7 +119,7 @@ For example, trace a panel from initial localization through contact to acceptan
 
 > [!tip]- Answers
 > 1. Co-design can remove the difficulty (tolerance, reachability, fixturing) at the design stage rather than solving it in perception or control. The two systems then answer different questions: one shows what a robot-aware design enables, the other shows robustness to geometry the robot did not choose. Claims must be scoped accordingly.
-> 2. Feng 2015 localizes parts with marker/fiducial-era vision and executes against that estimate; Lundeen 2019 adapts motion planning and task execution to the *as-built* geometry sensed on site — uncertainty moves from a one-shot localization problem into a sensor-driven adaptation loop.
+> 2. Feng 2015 tracks AprilTags on the building frame and on every block, and places each block at its marker-estimated pose against the design; Lundeen 2019 needs no tags on the workpiece — it scans the actual joint with a laser profiler, registers the BIM geometry to that scan, and adapts the fill plan — so uncertainty moves from where a tagged part sits to what shape the untagged work actually has.
 > 3. The end-effector pose is the composition of base pose and arm kinematics, so base localization error adds (often dominantly) to tool error. Evaluations must report accuracy in the site frame after base motion — not only arm repeatability from a fixed base.
 > 4. Structure-level tolerance accumulation: errors compound across many placements, access and support conditions change as the structure grows, and thermal/material effects interact across joints. One good coupon bounds none of these.
 
@@ -228,7 +228,7 @@ flowchart LR
 
 > [!tip]- 정답 · Answers
 > 1. 공동설계는 난도(공차·도달성·고정)를 제어나 인식이 아니라 설계 단계에서 제거할 수 있다. 두 시스템은 다른 질문에 답한다: 하나는 로봇 인지적 설계가 가능케 하는 것을, 다른 하나는 로봇이 선택하지 않은 형상에 대한 강건성을 보인다. 주장의 범위를 그에 맞게 한정해야 한다.
-> 2. Feng 2015는 마커/피두셜 시대의 비전으로 부품을 위치 추정하고 그 추정값에 대해 실행한다; Lundeen 2019는 현장에서 센싱한 *as-built* 형상에 모션 계획과 과제 실행을 적응시킨다 — 불확실성이 일회성 위치 추정 문제에서 센서 기반 적응 루프로 옮겨 간다.
+> 2. Feng 2015는 건물 좌표계와 모든 블록에 붙인 AprilTag를 추적해, 마커로 추정한 자세에서 각 블록을 설계대로 놓는다; Lundeen 2019는 작업물에 태그가 필요 없다 — 실제 조인트를 레이저 프로파일러로 스캔하고 BIM 형상을 그 스캔에 정합해 충전 계획을 적응시킨다. 불확실성이 태그 붙은 부품이 어디 있는가에서, 태그 없는 작업물이 실제로 어떤 모양인가로 옮겨 간다.
 > 3. 말단 자세는 기지 자세와 팔 기구학의 합성이므로 기지 위치 오차가 (종종 지배적으로) 공구 오차에 더해진다. 평가는 고정 기지에서의 팔 반복 정밀도가 아니라 기지 이동 후 현장 좌표계 정확도를 보고해야 한다.
 > 4. 구조물 수준의 공차 누적: 오차는 많은 배치에 걸쳐 복합되고, 구조물이 자라며 접근·지지 조건이 바뀌고, 열·재료 효과가 접합부들 사이에서 상호작용한다. 좋은 시편 하나는 이 중 무엇도 한정하지 못한다.
 

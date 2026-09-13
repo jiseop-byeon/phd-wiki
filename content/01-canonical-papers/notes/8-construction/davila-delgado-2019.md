@@ -21,7 +21,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 
 ## English
 
-**One-line summary**: Surveys industry stakeholders to answer why construction robots aren't adopted — ranking barriers across four technology categories: off-site prefabrication robots, on-site automation, drones/autonomous vehicles, and exoskeletons. Both the taxonomy and the item-level barrier ranking are body material — the abstract instead groups the challenges as contractor-side economic, client-side economic, technical and work-culture, and weak business case, in that order of importance.
+**One-line summary**: Asks experts why construction robots aren't adopted. The paper first sorts the technology into four categories (off-site prefabrication, on-site automated systems, drones and autonomous vehicles, exoskeletons; Table 1), then draws eleven barrier factors from three focus groups with 28 experts and rates them in an online questionnaire: 36 of 70 invited experts from contractors, consultancies, design firms and academia replied (51.4%), on a 1–5 scale. The ranking covers robotics and automation as a whole, not each technology category. **High initial capital investment ranks first** (mean 4.33), then no strong need to improve productivity (4.11) and low R&D budgets (3.86); the fragmented nature of the industry ranks last (3.19) (Table 4). Principal component analysis groups the factors into the abstract's four categories: contractor-side economic (six factors), client-side economic, technical and work-culture, and weak business case.
 
 > [!tip] Key intuition · 핵심 직관
 > The survey separates a robot being technically possible from someone being willing and able to adopt it. Grouping stakeholder barriers makes cost and workflow constraints visible alongside capability; these are adoption explanations, not a robot-control mechanism.
@@ -43,7 +43,7 @@ climb," not a verdict.
 
 ## 한국어
 
-**한 줄 요약**: 업계 이해관계자 설문으로 건설 로봇이 왜 도입되지 않는가에 답한다 — 네 가지 기술 범주(오프사이트 프리팹 로봇, 현장 자동화, 드론/자율주행, 외골격)에 걸쳐 장벽의 순위를 매겼고, 높은 초기 자본 비용이 1위다.
+**한 줄 요약**: 건설 로봇이 왜 도입되지 않는지 전문가들에게 묻는다. 논문은 먼저 기술을 네 범주(오프사이트 프리팹, 현장 자동화 시스템, 드론·자율주행차, 외골격; 표 1)로 나눈 뒤, 전문가 28명이 참여한 포커스 그룹 세 번에서 장벽 요인 열한 개를 뽑아 온라인 설문으로 평가했다. 시공사·엔지니어링 컨설팅·설계사·학계에서 초청한 70명 중 36명(51.4%)이 1~5점 척도로 응답했다. 순위는 기술 범주별이 아니라 로봇·자동화 전체에 대한 것이다. **높은 초기 자본 투자가 1위**(평균 4.33)이고, 생산성을 높일 절박한 필요가 없음(4.11), 낮은 R&D 예산(3.86)이 뒤를 잇는다. 산업의 파편화는 꼴찌(3.19)다(표 4). 주성분 분석은 요인들을 초록의 네 범주로 묶는다: 시공사 측 경제 요인(여섯 개), 발주자 측 경제 요인, 기술·작업 문화 요인, 약한 사업성.
 
 > [!tip] 핵심 직관 · Key intuition
 > 설문은 로봇의 기술적 가능성과 실제 도입할 의사·능력을 나눈다. 이해관계자의 장벽을 묶으면 기능뿐 아니라 비용과 작업 흐름의 제약이 보인다. 이는 도입의 설명이지 로봇 제어 기전은 아니다.
