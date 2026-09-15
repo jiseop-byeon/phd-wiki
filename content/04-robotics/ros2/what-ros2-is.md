@@ -38,7 +38,7 @@ Three misreadings cost beginners weeks.
 
 - **It is not an operating system.** The name is historical. ROS 2 runs *on* Linux (Ubuntu 24.04 for Jazzy); it is a set of libraries, message definitions, build tooling and command-line tools.
 - **It is not a framework you must write your whole robot inside.** A ROS 2 node is an ordinary process that links a library. Your perception code, your solver, your learned policy can be plain Python or C++ with a thin ROS 2 edge that publishes and subscribes. Keeping that edge thin is good practice: it is what lets you unit-test the algorithm without a running graph.
-- **It is not a real-time system by itself.** Nothing about installing ROS 2 gives you deadline guarantees. The official position is that ROS 2 is *designed with* real-time constraints in mind; achieving hard real time additionally requires an RT kernel (for example RT_PREEMPT), avoiding nondeterministic operations such as dynamic allocation and unbounded blocking in the execution path, and a middleware configuration that supports it. The ROS 2 real-time demo is documented as needing a source build against a static DDS API. Treat "ROS 2 is real-time" as a claim that needs its conditions stated, not a property you get from `apt install`.
+- **It is not a real-time system by itself.** Nothing about installing ROS 2 gives you deadline guarantees. The official position is that ROS 2 is *designed with* real-time constraints in mind; achieving hard real time additionally requires an RT kernel (for example RT_PREEMPT, which bounds how long a ready thread waits to be scheduled; see [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]]), avoiding nondeterministic operations such as dynamic allocation and unbounded blocking in the execution path, and a middleware configuration that supports it. The ROS 2 real-time demo is documented as needing a source build against a static DDS API (DDS is the communication standard ROS 2 sits on, explained in Section 5). Treat "ROS 2 is real-time" as a claim that needs its conditions stated, not a property you get from `apt install`.
 
 ### 3. The computation graph
 
@@ -56,8 +56,8 @@ The practical consequence: *you debug a ROS 2 system by interrogating the runnin
 ROS 1 worked, and much of the robotics literature you will read ran on it. ROS 2 is a rewrite, not a version bump, for reasons that are all visible in the architecture:
 
 - **Multi-robot systems.** ROS 1 discovery runs through a central `roscore` master. One master is a single point of failure and an awkward fit for fleets. ROS 2 uses distributed discovery with no master: nodes advertise themselves to the network and respond to each other's advertisements, and they announce when they go offline.
-- **Security.** ROS 1 had no authentication, encryption, or access control on the wire. ROS 2 inherits the DDS security plugins — encryption in transit, authentication of participants, data integrity, and domain-wide access control — configured per *security enclave*.
-- **Embedded and small platforms.** ROS 2's layered design (client library → `rcl` → `rmw` → middleware) was built so that constrained targets and microcontroller-oriented middleware variants are reachable, rather than assuming a full desktop Linux.
+- **Security.** ROS 1 had no authentication, encryption, or access control on the wire. ROS 2 inherits the DDS security plugins — encryption in transit, authentication of participants, data integrity, and domain-wide access control — configured per *security enclave* (a named set of keys, certificates and permissions that the nodes using it share).
+- **Embedded and small platforms.** ROS 2's layered design (client library → `rcl`, the shared C core that `rclcpp` and `rclpy` both wrap → `rmw`, the thin interface to whichever middleware is installed, detailed in Section 5 → middleware) was built so that constrained targets and microcontroller-oriented middleware variants are reachable, rather than assuming a full desktop Linux.
 - **Real-time intent.** The official documentation states plainly that real-time performance was not considered in ROS 1's early stages and that retrofitting it is intractable; ROS 2 was prototyped with those constraints in mind from the start.
 
 And the decisive practical fact: **ROS 1 is over.** Noetic Ninjemys, the final ROS 1 distribution, reached end of life on 31 May 2025. New work starts on ROS 2. When you read a 2016–2021 paper whose code is ROS 1, you are reading an archive.
@@ -66,12 +66,19 @@ Which ROS 2, then. Jazzy Jalisco (May 2024) is supported until May 2029 and is t
 
 ### 5. DDS underneath: what it buys and what it costs
 
-ROS 2 does not implement its own wire protocol. It sits on **DDS** (Data Distribution Service), an OMG industry standard, using the DDSI-RTPS wire protocol. The ROS layer that adapts to a specific DDS product is the `rmw` (ROS middleware) interface, and several are supported: `rmw_fastrtps_cpp` (eProsima Fast DDS — the default, packaged with binary releases), `rmw_cyclonedds_cpp` (Eclipse Cyclone DDS, also packaged), `rmw_connextdds` (RTI Connext, commercial, installed separately), and `rmw_gurumdds_cpp` (community support).
+ROS 2 does not implement its own wire protocol, meaning the byte-level format that travels over the network. It borrows one.
+
+That borrowed layer is **DDS** (Data Distribution Service), an OMG industry standard, and its wire protocol is called DDSI-RTPS. Several vendors ship DDS implementations. The ROS layer that adapts to a specific DDS product is the `rmw` (ROS middleware) interface, and several are supported:
+
+- `rmw_fastrtps_cpp` — eProsima Fast DDS; the default, packaged with binary releases.
+- `rmw_cyclonedds_cpp` — Eclipse Cyclone DDS; also packaged.
+- `rmw_connextdds` — RTI Connext; commercial, installed separately.
+- `rmw_gurumdds_cpp` — community support.
 
 What that buys:
 
 - Distributed discovery with no master.
-- Per-connection **Quality of Service** policies — reliability, history depth, durability, deadline, liveliness — so a lossy 30 Hz camera stream and a must-not-drop command channel can have different delivery semantics on the same system.
+- Per-connection **Quality of Service** policies — reliability (retransmit lost messages or not), history depth (how many messages to queue), durability (whether a late joiner receives past messages), deadline (the longest allowed gap between messages), liveliness (how a dead publisher is detected), each explained in 25.5 — so a lossy 30 Hz camera stream and a must-not-drop command channel can have different delivery semantics on the same system.
 - Security plugins that come from the standard rather than from ROS.
 - A vendor choice, so no single implementation is a dependency of the project.
 
@@ -365,7 +372,7 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 
 - **운영체제가 아니다.** 이름은 역사적 유물이다. ROS 2는 Linux 위에서 돈다(Jazzy는 Ubuntu 24.04). 라이브러리, 메시지 정의, 빌드 도구, 커맨드라인 도구의 묶음이다.
 - **로봇 전체를 그 안에 작성해야 하는 프레임워크가 아니다.** ROS 2 노드는 라이브러리를 링크한 평범한 프로세스다. 인식 코드, 솔버, 학습된 정책은 평범한 Python이나 C++로 두고, publish/subscribe 하는 얇은 ROS 2 경계만 붙이면 된다. 그 경계를 얇게 유지하는 것이 좋은 습관이다. 그래야 그래프를 띄우지 않고 알고리즘을 단위 테스트할 수 있다.
-- **그 자체로 실시간 시스템이 아니다.** ROS 2를 설치한다고 마감 시한 보장이 생기지는 않는다. 공식 문서의 입장은 ROS 2가 실시간 제약을 *염두에 두고 설계되었다*는 것이다. 경성 실시간을 얻으려면 RT 커널(예: RT_PREEMPT), 실행 경로에서 동적 할당과 무한 블로킹 같은 비결정적 연산 제거, 그리고 그것을 지원하는 미들웨어 구성이 함께 필요하다. 공식 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다. "ROS 2는 실시간"이라는 말은 조건을 명시해야 하는 주장이지 `apt install`로 얻는 성질이 아니다.
+- **그 자체로 실시간 시스템이 아니다.** ROS 2를 설치한다고 마감 시한 보장이 생기지는 않는다. 공식 문서의 입장은 ROS 2가 실시간 제약을 *염두에 두고 설계되었다*는 것이다. 경성 실시간을 얻으려면 RT 커널(예: RT_PREEMPT. 실행 준비된 스레드가 스케줄되기까지 기다리는 시간을 유계로 만든다. [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]] 참고), 실행 경로에서 동적 할당과 무한 블로킹 같은 비결정적 연산 제거, 그리고 그것을 지원하는 미들웨어 구성이 함께 필요하다. 공식 실시간 데모 자체가 정적 DDS API(DDS는 ROS 2가 올라타는 통신 표준으로, 5절에서 설명한다)에 대한 소스 빌드를 요구한다고 문서화되어 있다. "ROS 2는 실시간"이라는 말은 조건을 명시해야 하는 주장이지 `apt install`로 얻는 성질이 아니다.
 
 ### 3. 계산 그래프(computation graph)
 
@@ -383,8 +390,8 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 ROS 1은 잘 돌아갔고, 당신이 읽을 로보틱스 문헌의 상당수가 그 위에서 실행됐다. ROS 2는 버전 업이 아니라 재작성이며, 이유는 모두 구조에 드러난다.
 
 - **다중 로봇.** ROS 1의 탐색은 중앙 `roscore` 마스터를 거친다. 마스터 하나는 단일 장애점이고 군집에 어울리지 않는다. ROS 2는 마스터 없는 분산 탐색을 쓴다. 노드가 네트워크에 자신을 알리고 서로의 광고에 응답하며, 종료할 때도 알린다.
-- **보안.** ROS 1에는 전송 구간의 인증·암호화·접근 제어가 없었다. ROS 2는 DDS 보안 플러그인을 물려받는다 — 전송 암호화, 참여자 인증, 무결성, 도메인 전역 접근 제어. 설정 단위는 *security enclave*다.
-- **임베디드·소형 플랫폼.** 계층 설계(클라이언트 라이브러리 → `rcl` → `rmw` → 미들웨어)는 데스크톱 Linux를 전제하지 않고 제약된 대상에 닿을 수 있도록 만들어졌다.
+- **보안.** ROS 1에는 전송 구간의 인증·암호화·접근 제어가 없었다. ROS 2는 DDS 보안 플러그인을 물려받는다 — 전송 암호화, 참여자 인증, 무결성, 도메인 전역 접근 제어. 설정 단위는 *security enclave*(그것을 쓰는 노드들이 공유하는 키·인증서·권한의 이름 붙은 묶음)다.
+- **임베디드·소형 플랫폼.** 계층 설계(클라이언트 라이브러리 → `rcl`: `rclcpp`와 `rclpy`가 함께 감싸는 공용 C 코어 → `rmw`: 설치된 미들웨어에 닿는 얇은 인터페이스, 5절에서 설명 → 미들웨어)는 데스크톱 Linux를 전제하지 않고 제약된 대상에 닿을 수 있도록 만들어졌다.
 - **실시간 의도.** 공식 문서는 ROS 1 초기 설계에서 실시간이 고려되지 않았고 이제 와서 개조하는 것은 불가능에 가깝다고 분명히 적는다. ROS 2는 그 제약을 처음부터 염두에 두고 시제품화됐다.
 
 그리고 결정적인 실무 사실: **ROS 1은 끝났다.** 마지막 ROS 1 배포판 Noetic Ninjemys는 2025년 5월 31일 지원이 종료됐다. 새 작업은 ROS 2에서 시작한다. 코드가 ROS 1인 2016–2021년 논문을 읽는다면 그것은 아카이브를 읽는 것이다.
@@ -393,12 +400,19 @@ ROS 1은 잘 돌아갔고, 당신이 읽을 로보틱스 문헌의 상당수가 
 
 ### 5. 아래에 깔린 DDS: 무엇을 사고 무엇을 치르는가
 
-ROS 2는 자체 와이어 프로토콜을 구현하지 않는다. OMG 산업 표준인 **DDS**(Data Distribution Service) 위에, DDSI-RTPS 와이어 프로토콜로 올라탄다. 특정 DDS 제품에 맞추는 계층이 `rmw`(ROS middleware) 인터페이스이고, 여럿이 지원된다: `rmw_fastrtps_cpp`(eProsima Fast DDS — 기본값, 바이너리 배포에 포함), `rmw_cyclonedds_cpp`(Eclipse Cyclone DDS, 역시 포함), `rmw_connextdds`(RTI Connext, 상용, 별도 설치), `rmw_gurumdds_cpp`(커뮤니티 지원).
+ROS 2는 자체 와이어 프로토콜, 즉 네트워크를 오가는 바이트 수준 형식을 구현하지 않는다. 빌려 쓴다.
+
+빌려 쓰는 계층이 OMG 산업 표준인 **DDS**(Data Distribution Service)이고, 그 와이어 프로토콜 이름이 DDSI-RTPS다. 여러 벤더가 DDS 구현을 내놓는다. 특정 DDS 제품에 맞추는 ROS 계층이 `rmw`(ROS middleware) 인터페이스이고, 여럿이 지원된다.
+
+- `rmw_fastrtps_cpp` — eProsima Fast DDS. 기본값, 바이너리 배포에 포함.
+- `rmw_cyclonedds_cpp` — Eclipse Cyclone DDS. 역시 포함.
+- `rmw_connextdds` — RTI Connext. 상용, 별도 설치.
+- `rmw_gurumdds_cpp` — 커뮤니티 지원.
 
 사는 것:
 
 - 마스터 없는 분산 탐색.
-- 연결 단위의 **QoS** 정책 — reliability, history depth, durability, deadline, liveliness. 손실을 감수하는 30 Hz 카메라 스트림과 떨어뜨리면 안 되는 명령 채널이 같은 시스템에서 다른 전달 의미를 가질 수 있다.
+- 연결 단위의 **QoS** 정책 — reliability(잃은 메시지를 재전송할지), history depth(메시지를 몇 개 쌓을지), durability(늦게 합류한 쪽이 지난 메시지를 받을지), deadline(메시지 사이 허용 최대 간격), liveliness(죽은 퍼블리셔를 어떻게 감지할지). 각각 25.5에서 설명한다. 손실을 감수하는 30 Hz 카메라 스트림과 떨어뜨리면 안 되는 명령 채널이 같은 시스템에서 다른 전달 의미를 가질 수 있다.
 - ROS가 아니라 표준에서 오는 보안 플러그인.
 - 벤더 선택권 — 특정 구현이 프로젝트의 의존성이 되지 않는다.
 

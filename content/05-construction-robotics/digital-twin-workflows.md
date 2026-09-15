@@ -38,6 +38,7 @@ assigning coordinate frames and tolerances, deciding when observations are suffi
 declare completion, and propagating failure back to the process plan.
 [[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang 2024]] is the stream's
 reference closed loop: BIM-generated tasks drive robot execution and as-built scans
+(scans of what was actually built, which can differ from the design geometry)
 verify completion back into the model — read it against the levels below to see which
 interfaces it actually closes.
 
@@ -170,8 +171,8 @@ flowchart LR
 어려운 인터페이스는 의미론이다: BIM의 벽·용접을 로봇 행동으로 바꾸고, 좌표계·공차를
 주고, 완료를 판정하며, 실패를 공정 계획에 되돌려야 한다.
 [[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang 2024]]가 이 스트림의
-기준 폐루프다: BIM에서 생성된 과제가 로봇 실행을 구동하고 as-built 스캔이 완료를 모델로
-되돌려 검증한다 — 아래 수준표에 대조해 실제로 어떤 인터페이스가 닫히는지 읽어라.
+기준 폐루프다: BIM에서 생성된 과제가 로봇 실행을 구동하고 as-built 스캔(설계 형상과 다를 수
+있는, 실제로 지어진 상태를 찍은 스캔)이 완료를 모델로 되돌려 검증한다 — 아래 수준표에 대조해 실제로 어떤 인터페이스가 닫히는지 읽어라.
 
 동작 완료와 시공 활동 완료가 다르므로 루프가 중요하다. 앵커가 명령 위치에 도달해도 설치 검사에는 실패할 수 있다. 다음 과제를 허용하기 전에 트윈이 이 차이를 보존해야 한다. **여기서 얻는 독법.** 완료 신호를 정당화한 물리 관측까지 거슬러 가고 다음 로봇 결정까지 따라간다. 수동 승인과 센싱 검증을 구분해 표시한다.
 

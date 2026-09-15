@@ -39,8 +39,10 @@ track pays off most directly — everything here is
 - **The working tool changes the world**: digging *removes the terrain the planner
   planned over*. State includes the soil, and the soil has no reliable model.
 - **Underactuation appears in odd places**: walking excavators balance on legged chassis;
-  material handlers swing passive grapples — some of the field's best RL papers exist
-  precisely to handle these (throwing with passive joints, IROS 2024).
+  material handlers swing passive grapples (hydraulic claws that hang from the boom on
+  unpowered joints). With no motor at the swinging joint, the controller cannot command
+  where and when the load leaves the claw directly — some of the field's best RL papers
+  exist precisely to handle these (throwing with passive joints, IROS 2024).
 
 ### 2. Terrain and material interaction
 
@@ -65,7 +67,9 @@ The alternatives exist because the same bucket path can encounter different resi
 ### 3. The pipeline, and where learning sits
 
 A modern autonomous excavator is a [[04-robotics/robot-systems-deployment|closed robot stack]]
-with stream-specific blocks:
+with stream-specific blocks. In the first box, GNSS-RTK is satellite positioning (GNSS)
+with real-time kinematic (RTK) corrections from a nearby base station, which brings the
+position error from metre level down to centimetre level:
 
 ```mermaid
 flowchart LR
@@ -112,21 +116,24 @@ planning + control, engineered for robustness rather than learning novelty. Auto
 uncrewed continuous operation in a constrained waste-handling site. Read it as the
 existence proof that the *systems integration* problem is solvable at industrial scale.
 
-**ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|note]]).** The
+**ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|note]]).** Hold one
+fact first: only the pretrained policy ran on the real machine, and every fine-tuning result
+below is a simulation study. The
 paradigm signal: one transformer policy pretrained on **GPU-parallel simulated
 demonstrations** (RL experts + scripted + teleop) — 150,000 episodes each for Dig, Dump and
-Move Arm, 2,000 for the teleoperated Abort & Reset — then SFT/RLFT fine-tuned to new tasks.
+Move Arm, 2,000 for the teleoperated Abort & Reset — then fine-tuned to new tasks by SFT/RLFT (supervised fine-tuning on demonstrations, or
+RL fine-tuning on reward).
 Read the headline bargain with its scope attached: "roughly 30 days of continuous real-world
 operation … generated in under two hours on a single RTX 3090" describes the two scripted
 tasks, while Dig's 150,000 RL-expert episodes are worth "about 15 days". The *pretrained* policy is the one that transfers
-to the real M545 at centimeter-level accuracy; the fine-tuning results are simulation
-studies. The [[02-foundations/rl-basics|pretrain→fine-tune]] recipe, on hydraulics.
+to the real M545 at centimeter-level accuracy. The [[02-foundations/rl-basics|pretrain→fine-tune]] recipe, on hydraulics.
 Limitation to notice: demonstrations are sim-generated; the diversity of *real* sites
 remains outside the training distribution.
 
 **The wheel-loader cluster (Tampere/Luleå/Umeå, ICRA 2024– —
 [[01-canonical-papers/notes/8-construction/wheel-loader-rl|note]]).** Short-loading-cycle
-automation with IL pretraining + RL fine-tuning on real loaders, zero-shot sim-to-real
+automation (the short, repeated fill–reverse–drive–dump cycle a loader runs between a pile
+and a nearby truck or hopper; §6's worked example computes the productivity of such a cycle) with IL pretraining + RL fine-tuning on real loaders, zero-shot sim-to-real
 approaches, world-model simulation with OEM partners (Komatsu, Epiroc). Read alongside
 the excavator work to see which conclusions are machine-specific.
 
@@ -230,8 +237,9 @@ soil bin supports almost no claim.
 - **작업 도구가 세계를 바꾼다**: 굴착은 *플래너가 계획한 지형 자체를 제거한다*. 상태에
   흙이 포함되고, 흙에는 믿을 만한 모델이 없다.
 - **부족구동이 뜻밖의 곳에 나타난다**: 보행 굴착기는 다리 달린 섀시로 균형을 잡고, 자재
-  핸들러는 수동 그래플을 흔든다 — 이 분야 최고의 RL 논문 몇 편이 정확히 이를 다루기
-  위해 존재한다(수동 관절 던지기, IROS 2024).
+  핸들러는 수동 그래플(붐 끝에 동력 없는 관절로 매달린 유압 집게)을 흔든다. 흔들리는 관절에
+  모터가 없으니 제어기가 짐이 집게를 떠나는 위치와 시점을 직접 명령할 수 없다 — 이 분야
+  최고의 RL 논문 몇 편이 정확히 이를 다루기 위해 존재한다(수동 관절 던지기, IROS 2024).
 
 ### 2. 지반·재료 상호작용
 
@@ -254,7 +262,9 @@ soil bin supports almost no claim.
 ### 3. 파이프라인, 그리고 학습의 위치
 
 현대 자율 굴착기는 스트림 특유의 블록을 가진
-[[04-robotics/robot-systems-deployment|닫힌 로봇 스택]]이다:
+[[04-robotics/robot-systems-deployment|닫힌 로봇 스택]]이다. 첫 상자의 GNSS-RTK는 위성 측위(GNSS)에
+근처 기준국의 실시간 이동측위(RTK, real-time kinematic) 보정을 더한 것으로, 위치 오차를 미터 수준에서
+센티미터 수준으로 줄인다:
 
 ```mermaid
 flowchart LR
@@ -296,19 +306,21 @@ flowchart LR
 폐기물 처리 현장에서의 무인 연속 운영. *시스템 통합* 문제가 산업 규모에서 풀린다는 존재
 증명으로 읽어라.
 
-**ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|노트]]).** 패러다임
-신호: GPU 병렬 시뮬레이션 시연(RL 전문가 + 스크립트 + 원격조작)으로 사전학습한 하나의
+**ExT (ETH RSL, 2025 — [[01-canonical-papers/notes/8-construction/ext|노트]]).** 먼저 하나를
+붙잡아 두자: 실기계에서 돌린 것은 사전학습 정책뿐이고, 아래의 파인튜닝 결과는 모두 시뮬레이션
+연구다. 패러다임 신호: GPU 병렬 시뮬레이션 시연(RL 전문가 + 스크립트 + 원격조작)으로 사전학습한 하나의
 트랜스포머 정책 — Dig·Dump·Move Arm은 각각 15만 에피소드, 원격조작으로 모은 Abort & Reset은
-2,000 에피소드다 — 을 SFT/RLFT로 새 과제에 파인튜닝한다. 대표 수치는 범위를 붙여 읽어야 한다.
+2,000 에피소드다 — 을 SFT/RLFT(시연에 대한 지도 파인튜닝, 또는 보상에 대한 RL 파인튜닝)로 새 과제에 파인튜닝한다. 대표 수치는 범위를 붙여 읽어야 한다.
 "실기계 연속 운용 약 30일 상당을 RTX 3090 한 장으로 2시간 안에"는 스크립트 기반 두 과제의
 이야기이고, Dig의 15만 RL 전문가 에피소드는 "약 15일" 상당이다.
-실제 M545에 센티미터급으로 전이하는 것은 *사전학습된* 정책이고, 파인튜닝 결과는
-시뮬레이션 연구다. [[02-foundations/rl-basics|사전학습→파인튜닝]] 레시피를 유압 위에 얹은
+실제 M545에 센티미터급으로 전이하는 것은 *사전학습된* 정책이다. [[02-foundations/rl-basics|사전학습→파인튜닝]] 레시피를 유압 위에 얹은
 것. 주목할 한계: 시연이 시뮬레이션 생성이다; *실제* 현장의 다양성은 학습 분포 밖에 남아
 있다.
 
 **휠로더 클러스터 (Tampere/Luleå/Umeå, ICRA 2024– —
-[[01-canonical-papers/notes/8-construction/wheel-loader-rl|노트]]).** 실제 로더에서의 IL 사전학습 + RL
+[[01-canonical-papers/notes/8-construction/wheel-loader-rl|노트]]).** 단거리 적재 사이클(더미에서
+버킷을 채우고 후진해 가까운 트럭이나 호퍼까지 가서 붓는 짧은 반복 사이클. 이런 사이클의 생산성은 §6 계산
+예제에서 계산한다) 자동화를 다룬다. 실제 로더에서의 IL 사전학습 + RL
 파인튜닝, zero-shot sim-to-real 접근, OEM 파트너(Komatsu, Epiroc)와의 월드모델
 시뮬레이션. 굴착기 연구와 나란히 읽으며 어떤 결론이 기계 특수적인지 보라.
 

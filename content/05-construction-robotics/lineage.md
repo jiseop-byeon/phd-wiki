@@ -29,9 +29,13 @@ Bock's STCR taxonomy and reference volumes are the standard record.
 
 **Era 1R — the parallel robotics-side lineage (1990s).** Independently of the
 construction industry, **CMU's Robotics Institute formulated heavy-machine autonomy as a
-robotics problem**: Sanjiv Singh's planning thesis (1995), Stentz–Bares–Singh–Rowe's
-autonomous excavator loading trucks *at expert-operator speed* (1998–99), and Howard
-Cannon's Caterpillar-embedded excavation work (1999). This line never stopped — it
+robotics problem**:
+
+- Sanjiv Singh's planning thesis (1995);
+- Stentz–Bares–Singh–Rowe's autonomous excavator loading trucks *at expert-operator speed* (1998–99);
+- Howard Cannon's Caterpillar-embedded excavation work (1999).
+
+This line never stopped — it
 commercialized through CMU's NREC into Caterpillar's MineStar Command (today's
 operator-free mining fleets) and re-surfaced in quarry autonomy in 2024–25. **Heavy-machine
 autonomy is a ~30-year robotics lineage that the construction-research community
@@ -50,15 +54,20 @@ Shimizu's Shimz Smart Site robots. Narrow tasks, structured slices of the site, 
 supervisors close by.
 
 **Era 4 — learning enters the machine (2020–).** Three clusters carried robot learning
-onto real heavy machines: **ETH RSL** (force-based digging 2017 → HEAP platform 2021 →
-sim-to-real RL hydraulics 2020–22 → the Science Robotics dry-stone wall 2023 → ExT
-multitask pretraining 2025), **Baidu RAL** (the Science Robotics 2021 AES excavator
-running 24 h uncrewed *per human intervention* at human-level throughput; ExACT bringing
-[[01-canonical-papers/notes/4-vla/act|ACT]]-style imitation to excavators in 2024,
-sim-validated), and the **Nordic wheel-loader groups** (Tampere, Luleå/Örebro,
-Umeå+Algoryx — real-machine RL loading at ICRA). In parallel the **UMich manipulation
-line** walked the same arc indoors: vision-guided assembly (2015) → adaptive autonomy →
-learning-from-demonstration → digital-twin-grounded, language-instructable collaboration.
+onto real heavy machines, and a fourth line walked the same arc indoors:
+
+- **ETH RSL**: force-based digging 2017 → HEAP platform 2021 → sim-to-real RL hydraulics
+  2020–22 → the Science Robotics dry-stone wall 2023 → ExT multitask pretraining 2025.
+- **Baidu RAL**: the Science Robotics 2021 AES excavator (Autonomous Excavator System,
+  [[01-canonical-papers/notes/8-construction/aes|note]]), which ran 24 hours between human
+  interventions, with hourly material throughput close to an experienced human operator's;
+  ExACT bringing [[01-canonical-papers/notes/4-vla/act|ACT]]-style imitation to excavators
+  in 2024, sim-validated.
+- **Nordic wheel-loader groups** (Tampere, Luleå/Örebro, Umeå+Algoryx): real-machine RL
+  loading at ICRA.
+- In parallel, the **UMich manipulation line** indoors: vision-guided assembly (2015) →
+  adaptive autonomy → learning-from-demonstration → digital-twin-grounded,
+  language-instructable collaboration.
 
 ### 2. The academic genealogy — who trained whom
 
@@ -121,7 +130,7 @@ twins) and machine policies. The 2024–25 signals of that merge: ExACT (Baidu �
 excavation). The [[05-construction-robotics/index|stream pages]] organize the literature
 this map locates.
 
-For example, start with a panel-fitting failure you can reproduce, then use the map to find which lineage already supplies its necessary interface: geometric correction, contact feedback, or human demonstration. Read an anchor paper for that interface before selecting a fashionable model. **The reading this gives you.** The useful research opening is a transferable assumption that breaks in your task. Write what you inherit, what condition changes, and what experiment could demonstrate the difference. A lineage then becomes a tool for choosing a defensible question rather than a ranking of laboratories.
+For example, start with a panel-fitting failure you can reproduce (panel fitting means seating a large, flexible building panel such as drywall into place; the task is treated in [[05-construction-robotics/construction-manipulation|construction manipulation]]), then use the map to find which lineage already supplies its necessary interface: geometric correction, contact feedback, or human demonstration. Read an anchor paper for that interface before selecting a fashionable model. **The reading this gives you.** The useful research opening is a transferable assumption that breaks in your task. Write what you inherit, what condition changes, and what experiment could demonstrate the difference. A lineage then becomes a tool for choosing a defensible question rather than a ranking of laboratories.
 
 ### Reading list — the anchors
 
@@ -157,9 +166,13 @@ For example, start with a panel-fitting failure you can reproduce, then use the 
 모든 것을 규정했다. Thomas Bock의 STCR 분류와 참고서가 표준 기록이다.
 
 **1R시대 — 병렬의 로보틱스 쪽 계보 (1990년대).** 건설 산업과 독립적으로, **CMU 로보틱스
-연구소가 중장비 자율성을 로보틱스 문제로 정식화했다**: Sanjiv Singh의 계획 학위논문(1995),
-Stentz–Bares–Singh–Rowe의 *숙련 운전자 속도로* 트럭에 적재하는 자율 굴착기(1998–99),
-Caterpillar 파견 엔지니어 Howard Cannon의 굴착 연구(1999). 이 라인은 멈춘 적이 없다 —
+연구소가 중장비 자율성을 로보틱스 문제로 정식화했다**:
+
+- Sanjiv Singh의 계획 학위논문(1995);
+- Stentz–Bares–Singh–Rowe의 *숙련 운전자 속도로* 트럭에 적재하는 자율 굴착기(1998–99);
+- Caterpillar 파견 엔지니어 Howard Cannon의 굴착 연구(1999).
+
+이 라인은 멈춘 적이 없다 —
 CMU NREC를 거쳐 Caterpillar MineStar Command(오늘날의 무인 광산 선단)로 상업화됐고
 2024–25년 채석장 자율화로 재부상했다. **중장비 자율성은 건설 연구 커뮤니티가 2015년
 이후 재진입한 ~30년 된 로보틱스 계보다.**
@@ -176,13 +189,17 @@ Robotics 개조, SAM100 조적, Kajima A4CSEL 선단 자동화, Shimizu Shimz Sm
 좁은 작업, 현장의 구조화된 조각, 가까이 있는 인간 감독자.
 
 **4시대 — 학습이 기계에 들어오다 (2020~).** 세 클러스터가 로봇 학습을 실제 중장비에
-실었다: **ETH RSL**(힘 기반 굴착 2017 → HEAP 플랫폼 2021 → sim-to-real RL 유압 2020–22 →
-Science Robotics 돌담 2023 → ExT 멀티태스크 사전학습 2025), **Baidu RAL**(사람 개입 1회당 24시간 무인·
-인간급 처리량의 Science Robotics 2021 AES 굴착기; 2024년 ExACT가
-[[01-canonical-papers/notes/4-vla/act|ACT]]식 모방학습을 굴착기에 이식 — 시뮬레이션 검증),
-그리고 **북유럽 휠로더 그룹**(Tampere, Luleå/Örebro, Umeå+Algoryx — ICRA의 실기계 RL
-적재). 병행하여 **미시간 조작 라인**이 실내에서 같은 궤적을 걸었다: 비전 유도 조립(2015)
-→ 적응적 자율성 → 시연 학습 → 디지털 트윈에 접지된 언어 지시 협업.
+실었고, 네 번째 라인이 실내에서 같은 궤적을 걸었다:
+
+- **ETH RSL**: 힘 기반 굴착 2017 → HEAP 플랫폼 2021 → sim-to-real RL 유압 2020–22 →
+  Science Robotics 돌담 2023 → ExT 멀티태스크 사전학습 2025.
+- **Baidu RAL**: Science Robotics 2021 AES 굴착기(Autonomous Excavator System, 자율 굴착
+  시스템, [[01-canonical-papers/notes/8-construction/aes|노트]]) — 사람의 개입 사이에 24시간
+  무인으로 돌았고, 시간당 자재 처리량은 숙련 운전자와 거의 같았다; 2024년 ExACT가
+  [[01-canonical-papers/notes/4-vla/act|ACT]]식 모방학습을 굴착기에 이식 — 시뮬레이션 검증.
+- **북유럽 휠로더 그룹**(Tampere, Luleå/Örebro, Umeå+Algoryx): ICRA의 실기계 RL 적재.
+- 병행하여 실내의 **미시간 조작 라인**: 비전 유도 조립(2015) → 적응적 자율성 → 시연 학습 →
+  디지털 트윈에 접지된 언어 지시 협업.
 
 ### 2. 학술 계보 — 누가 누구를 길렀나
 
@@ -242,7 +259,7 @@ Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park
 이 지도가 위치를 잡아 주는 문헌은 [[05-construction-robotics/index|스트림 페이지]]들이
 조직한다.
 
-재현 가능한 패널 맞춤 실패에서 시작해 형상 보정, 접촉 피드백, 사람 시연 중 필요한 인터페이스를 제공하는 계보를 찾는다. 유행하는 모델을 고르기 전에 그 인터페이스의 기준 논문을 읽는다. **여기서 얻는 독법.** 쓸모 있는 연구 기회는 내 과제에서 깨지는 전이 가능한 가정이다. 무엇을 이어받고 어떤 조건이 바뀌며 어떤 실험으로 차이를 보일지 적는다. 계보는 연구실 순위가 아니라 방어 가능한 질문을 고르는 도구가 된다.
+예를 들어 재현 가능한 패널 맞춤 실패에서 시작해(패널 맞춤은 석고보드 같은 크고 휘는 건축 패널을 제자리에 안착시키는 과제로, [[05-construction-robotics/construction-manipulation|건설 조작]] 페이지에서 다룬다) 형상 보정, 접촉 피드백, 사람 시연 중 필요한 인터페이스를 제공하는 계보를 찾는다. 유행하는 모델을 고르기 전에 그 인터페이스의 기준 논문을 읽는다. **여기서 얻는 독법.** 쓸모 있는 연구 기회는 내 과제에서 깨지는 전이 가능한 가정이다. 무엇을 이어받고 어떤 조건이 바뀌며 어떤 실험으로 차이를 보일지 적는다. 계보는 연구실 순위가 아니라 방어 가능한 질문을 고르는 도구가 된다.
 
 ### 읽기 목록 — 앵커들
 

@@ -37,11 +37,11 @@ The cost is stated just as plainly in section 10: with no list of consumers, not
 
 A **node** is a participant in the ROS 2 graph that uses a client library to talk to other nodes. The official guidance on granularity is one sentence long and worth taking literally: *each node should do one logical thing.*
 
-"One logical thing" is not "one file" and not "one class". A useful test is the restart test: if you would ever want to restart, replace, re-tune or re-deploy piece A without disturbing piece B, A and B are different nodes. A camera driver and a detector fail that test in opposite directions — you will swap detectors weekly and never touch the driver — so they are two nodes. A detector and the non-maximum-suppression step inside it will always live and die together, so they are one.
+"One logical thing" is not "one file" and not "one class". A useful test is the restart test: if you would ever want to restart, replace, re-tune or re-deploy piece A without disturbing piece B, A and B are different nodes. A camera driver and a detector fail that test in opposite directions — you will swap detectors weekly and never touch the driver — so they are two nodes. A detector and the non-maximum-suppression step inside it (the post-processing that deletes duplicate, overlapping boxes around one object) will always live and die together, so they are one.
 
 Two refinements on top of the beginner picture:
 
-- A node is not exactly a process. One process can host several nodes; ROS 2 calls this composition, and it is how a real stack avoids paying serialisation costs between nodes that happen to run on the same machine. Composition is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]].
+- A node is not exactly a process. One process can host several nodes; ROS 2 calls this composition, and it is how a real stack avoids paying serialisation costs (converting a message to bytes and back) between nodes that happen to run on the same machine: nodes sharing one process's memory can hand a message over directly when intra-process communication is enabled. Composition is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]].
 - A node's name is not its executable's name. You saw this in 25.1: `turtlesim_node` names itself `/turtlesim`, and `--ros-args --remap __node:=my_turtle` renames it at launch without touching the code.
 
 ### 3. Topics, and the anonymity that is the point
@@ -50,7 +50,7 @@ A topic is a name. Any number of publishers and any number of subscribers may at
 
 The word the documentation uses for the relationship is **anonymous**: when a subscriber receives a message, it does not generally know or care which publisher sent it. This is not a missing feature. It is the property that makes substitution work. The subscriber has no handle on the producer, so there is nothing in the subscriber to change when the producer is replaced.
 
-The other property is **strongly typed**, and it has two halves. The mechanical half: each field has a declared type, enforced by generated code in every language. The semantic half, which has no enforcement at all: the core message types carry agreed meanings — an IMU's angular velocity is in radians per second, and nothing else belongs in that field. Nothing will stop you from publishing degrees. The type checker cannot help you; the convention is the only thing holding.
+The other property is **strongly typed**, and it has two halves. The mechanical half: each field has a declared type, enforced by generated code in every language. The semantic half, which has no enforcement at all: the core message types carry agreed meanings — the angular velocity from an IMU (inertial measurement unit, the accelerometer-plus-gyroscope sensor) is in radians per second, and nothing else belongs in that field. Nothing will stop you from publishing degrees. The type checker cannot help you; the convention is the only thing holding.
 
 Names follow rules worth internalising now, because section 10's bug lives here:
 
@@ -58,7 +58,7 @@ Names follow rules worth internalising now, because section 10's bug lives here:
 |---|---|---|
 | Absolute | `/turtle1/pose` | `/turtle1/pose`, ignoring the node's namespace |
 | Relative | `turtle1/pose` | namespace + name — in namespace `/watch`, `/watch/turtle1/pose` |
-| Private | `~/pose` | node's namespace + node name + `/pose` |
+| Private | `~/pose` | node's namespace + node name + `/pose` — node `monitor` in namespace `/watch` gives `/watch/monitor/pose` |
 
 Names may contain alphanumerics, underscores and forward slashes; they must not start with a digit, and must not contain repeated slashes or repeated underscores. A tilde must appear at the start and must be separated from the rest by a slash — `~/foo`, never `~foo`.
 
@@ -377,7 +377,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 ```
 
-`rosidl_generate_interfaces` is the whole point of the package: it runs the code generators that turn one `.msg` file into a C++ header, a Python module, and the type support the middleware needs. `DEPENDENCIES` lists the packages whose types you referenced — `std_msgs` here, for `Header`. Its first argument must start with the package name, so use `${PROJECT_NAME}`.
+`rosidl_generate_interfaces` is the whole point of the package: it runs the code generators that turn one `.msg` file into a C++ header, a Python module, and the type support the middleware needs (generated per-type code that tells the middleware how to serialise and deserialise that message). `DEPENDENCIES` lists the packages whose types you referenced — `std_msgs` here, for `Header`. Its first argument must start with the package name, so use `${PROJECT_NAME}`.
 
 In `turtle_watch_interfaces/package.xml`:
 
@@ -401,7 +401,7 @@ ros2 interface show turtle_watch_interfaces/msg/SpeedReport
 - **Every consumer depends on it.** If the type lives beside your perception node, anyone who merely wants to *read* your topic must build your perception node — and its solver, its CUDA dependency, its model weights.
 - **Circular dependencies become impossible to avoid.** Two nodes that exchange each other's types cannot each depend on the other's package. With one interface package below both, the graph stays acyclic.
 - **Rebuild blast radius.** Generated code is a build-time dependency of every consumer. Keeping interfaces in a small package that changes rarely keeps that radius small.
-- **Using a type in the package that defines it needs extra CMake.** Cross-package, `find_package(turtle_watch_interfaces REQUIRED)` is enough. Same-package, you must additionally call `rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)` and `target_link_libraries` your executable against it. The plumbing is telling you which arrangement is the normal one.
+- **Using a type in the package that defines it needs extra CMake.** Cross-package, `find_package(turtle_watch_interfaces REQUIRED)` is enough. Same-package, you must additionally call `rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)` and `target_link_libraries` your executable against it. The reason: `find_package` locates packages that are already installed, and a package is not installed while it is still being built, so the executable must link the generated target by name. The plumbing is telling you which arrangement is the normal one.
 
 The naming convention you will see everywhere is `<something>_msgs` or `<something>_interfaces`. Follow it; people grep for it.
 
@@ -643,11 +643,11 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 
 **노드**(node)는 클라이언트 라이브러리를 써서 다른 노드와 통신하는 ROS 2 그래프의 참여자다. 입자성에 대한 공식 지침은 한 문장이고 문자 그대로 받아들일 값어치가 있다. *각 노드는 논리적으로 한 가지 일을 해야 한다.*
 
-"논리적으로 한 가지"는 "파일 하나"도 "클래스 하나"도 아니다. 쓸 만한 판별법은 재시작 테스트다. A를 B와 무관하게 재시작·교체·재튜닝·재배포하고 싶은 순간이 조금이라도 있다면 A와 B는 다른 노드다. 카메라 드라이버와 검출기는 이 테스트에 정반대 방향에서 걸린다. 검출기는 매주 갈아 끼우고 드라이버는 건드리지 않을 테니 둘은 두 노드다. 검출기와 그 안의 non-maximum suppression 단계는 항상 함께 살고 함께 죽으니 하나다.
+"논리적으로 한 가지"는 "파일 하나"도 "클래스 하나"도 아니다. 쓸 만한 판별법은 재시작 테스트다. A를 B와 무관하게 재시작·교체·재튜닝·재배포하고 싶은 순간이 조금이라도 있다면 A와 B는 다른 노드다. 카메라 드라이버와 검출기는 이 테스트에 정반대 방향에서 걸린다. 검출기는 매주 갈아 끼우고 드라이버는 건드리지 않을 테니 둘은 두 노드다. 검출기와 그 안의 non-maximum suppression 단계(한 물체 주위에 겹쳐 나온 중복 박스를 지우는 후처리)는 항상 함께 살고 함께 죽으니 하나다.
 
 초심자용 그림에 붙일 보정 둘.
 
-- 노드는 정확히 프로세스가 아니다. 한 프로세스가 여러 노드를 담을 수 있고, ROS 2는 이것을 composition이라 부른다. 실제 스택이 같은 머신에 있는 노드들 사이의 직렬화 비용을 피하는 방법이 이것이다. Composition은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에 있다.
+- 노드는 정확히 프로세스가 아니다. 한 프로세스가 여러 노드를 담을 수 있고, ROS 2는 이것을 composition이라 부른다. 실제 스택이 같은 머신에 있는 노드들 사이의 직렬화(메시지를 바이트로 바꿨다가 되돌리는 것) 비용을 피하는 방법이 이것이다. 한 프로세스의 메모리를 공유하는 노드들은 intra-process 통신을 켜면 메시지를 직접 넘겨줄 수 있다. Composition은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에 있다.
 - 노드 이름은 실행 파일 이름이 아니다. 25.1에서 봤다. `turtlesim_node`는 스스로를 `/turtlesim`이라 부르고, `--ros-args --remap __node:=my_turtle`은 코드를 건드리지 않고 실행 시점에 이름을 바꾼다.
 
 ### 3. 토픽, 그리고 익명성이라는 핵심
@@ -656,7 +656,7 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 
 문서가 이 관계를 부르는 말은 **익명(anonymous)** 이다. 구독자가 데이터를 받을 때 그것을 누가 보냈는지 대체로 모르고 신경 쓰지 않는다는 뜻이다. 빠진 기능이 아니다. 교체를 가능하게 하는 바로 그 성질이다. 구독자는 생산자에 대한 손잡이를 쥐고 있지 않으므로, 생산자가 바뀔 때 구독자에서 고칠 것이 없다.
 
-다른 성질은 **강한 타입(strongly typed)** 이고 절반이 둘이다. 기계적인 절반은 각 필드에 선언된 타입이 있고 모든 언어의 생성 코드가 그것을 강제한다는 것이다. 의미론적인 절반은 강제 장치가 전혀 없다. 핵심 메시지 타입들은 합의된 의미를 지닌다. IMU의 각속도는 라디안 매 초이고 다른 것이 그 필드에 들어가서는 안 된다. 하지만 당신이 각도(degree)를 publish하는 것을 아무도 막지 않는다. 타입 검사기는 도와줄 수 없고, 관례만이 유일한 버팀목이다.
+다른 성질은 **강한 타입(strongly typed)** 이고 절반이 둘이다. 기계적인 절반은 각 필드에 선언된 타입이 있고 모든 언어의 생성 코드가 그것을 강제한다는 것이다. 의미론적인 절반은 강제 장치가 전혀 없다. 핵심 메시지 타입들은 합의된 의미를 지닌다. IMU(관성 측정 장치, 가속도계와 자이로스코프를 묶은 센서)의 각속도는 라디안 매 초이고 다른 것이 그 필드에 들어가서는 안 된다. 하지만 당신이 각도(degree)를 publish하는 것을 아무도 막지 않는다. 타입 검사기는 도와줄 수 없고, 관례만이 유일한 버팀목이다.
 
 이름 규칙은 지금 몸에 익혀 두라. 10절의 버그가 여기 산다.
 
@@ -664,7 +664,7 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 |---|---|---|
 | 절대 | `/turtle1/pose` | `/turtle1/pose`. 노드 네임스페이스를 무시한다 |
 | 상대 | `turtle1/pose` | 네임스페이스 + 이름. 네임스페이스가 `/watch`면 `/watch/turtle1/pose` |
-| 비공개 | `~/pose` | 노드 네임스페이스 + 노드 이름 + `/pose` |
+| 비공개 | `~/pose` | 노드 네임스페이스 + 노드 이름 + `/pose`. 네임스페이스 `/watch`의 노드 `monitor`라면 `/watch/monitor/pose` |
 
 이름에는 영숫자, 밑줄, 슬래시가 들어갈 수 있다. 숫자로 시작하면 안 되고, 슬래시나 밑줄이 연달아 반복되면 안 된다. 물결표는 맨 앞에 와야 하고 나머지와 슬래시로 구분되어야 한다 — `~/foo`이지 `~foo`가 아니다.
 
@@ -983,7 +983,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 ```
 
-`rosidl_generate_interfaces`가 이 패키지의 존재 이유다. 코드 생성기를 돌려 `.msg` 파일 하나를 C++ 헤더와 Python 모듈, 그리고 미들웨어가 필요로 하는 type support로 바꾼다. `DEPENDENCIES`에는 참조한 타입이 있는 패키지를 적는다. 여기서는 `Header` 때문에 `std_msgs`다. 첫 인자는 패키지 이름으로 시작해야 하므로 `${PROJECT_NAME}`을 쓴다.
+`rosidl_generate_interfaces`가 이 패키지의 존재 이유다. 코드 생성기를 돌려 `.msg` 파일 하나를 C++ 헤더와 Python 모듈, 그리고 미들웨어가 필요로 하는 type support(그 메시지를 어떻게 직렬화·역직렬화할지 미들웨어에 알려 주는 타입별 생성 코드)로 바꾼다. `DEPENDENCIES`에는 참조한 타입이 있는 패키지를 적는다. 여기서는 `Header` 때문에 `std_msgs`다. 첫 인자는 패키지 이름으로 시작해야 하므로 `${PROJECT_NAME}`을 쓴다.
 
 `turtle_watch_interfaces/package.xml`에:
 
@@ -1007,7 +1007,7 @@ ros2 interface show turtle_watch_interfaces/msg/SpeedReport
 - **모든 소비자가 그것에 의존한다.** 타입이 당신의 인식 노드 옆에 살면, 당신의 토픽을 그저 *읽고* 싶은 사람도 당신의 인식 노드를 빌드해야 한다. 솔버와 CUDA 의존성과 모델 가중치까지 함께.
 - **순환 의존을 피할 수 없게 된다.** 서로의 타입을 주고받는 두 노드는 서로의 패키지에 의존할 수 없다. 인터페이스 패키지 하나를 둘 아래에 두면 그래프가 비순환으로 남는다.
 - **재빌드 파급 범위.** 생성된 코드는 모든 소비자의 빌드 시점 의존성이다. 인터페이스를 거의 바뀌지 않는 작은 패키지에 두면 그 범위가 작게 유지된다.
-- **정의한 패키지 안에서 타입을 쓰려면 CMake가 더 필요하다.** 패키지가 다르면 `find_package(turtle_watch_interfaces REQUIRED)`로 끝난다. 같은 패키지라면 추가로 `rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)`를 부르고 실행 파일을 거기에 `target_link_libraries` 해야 한다. 배관 자체가 어느 쪽이 정상 배치인지 말해 주고 있다.
+- **정의한 패키지 안에서 타입을 쓰려면 CMake가 더 필요하다.** 패키지가 다르면 `find_package(turtle_watch_interfaces REQUIRED)`로 끝난다. 같은 패키지라면 추가로 `rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} rosidl_typesupport_cpp)`를 부르고 실행 파일을 거기에 `target_link_libraries` 해야 한다. 이유는 `find_package`가 이미 설치된 패키지를 찾는 명령인데 패키지는 빌드 도중에는 아직 설치되지 않았으므로, 실행 파일이 생성된 타깃을 이름으로 직접 링크해야 하기 때문이다. 배관 자체가 어느 쪽이 정상 배치인지 말해 주고 있다.
 
 어디서나 보게 될 작명 관례는 `<something>_msgs` 또는 `<something>_interfaces`다. 따르라. 사람들이 그걸로 grep한다.
 

@@ -43,7 +43,7 @@ This page uses **Gazebo Harmonic**, because that is the pairing with ROS 2 Jazzy
 
 ### 3. Two message systems, and why a bridge exists
 
-Gazebo is not a ROS program. It has its own transport layer (Gazebo Transport) and its own message definitions (`gz.msgs.*`, Protobuf), and it runs perfectly well with no ROS installed. ROS 2 has DDS and `sensor_msgs/msg/*`. Neither speaks the other's wire format or type system.
+Gazebo is not a ROS program. It has its own transport layer (Gazebo Transport) and its own message definitions (`gz.msgs.*`, Protobuf), and it runs perfectly well with no ROS installed. ROS 2 has DDS (its transport standard, see [[04-robotics/ros2/what-ros2-is#5. DDS underneath: what it buys and what it costs|25.1 §5]]) and `sensor_msgs/msg/*`. Neither speaks the other's wire format or type system.
 
 That separation is deliberate — Gazebo is used outside ROS — and the cost is `ros_gz_bridge`, a node that subscribes on one side and republishes on the other, per topic, per type pair.
 
@@ -105,7 +105,7 @@ ros2 launch ros_gz_sim gz_sim.launch.py gz_args:='-r -v 1 empty.sdf'
 ros2 run ros_gz_sim create -topic robot_description -name two_link_arm -allow_renaming true
 ```
 
-Gazebo parses URDF by converting it to SDF internally. Most of what you wrote survives; the parts that beginners lose are the ones URDF has no concept of, which is why extra information goes in `<gazebo>` tags that the URDF parser ignores and the SDF converter reads.
+Gazebo parses URDF by converting it to SDF (Simulation Description Format, Gazebo's native format for robots and worlds) internally. Most of what you wrote survives; the parts that beginners lose are the ones URDF has no concept of, which is why extra information goes in `<gazebo>` tags that the URDF parser ignores and the SDF converter reads.
 
 ### 5. ros2_control: the seam
 
@@ -113,8 +113,8 @@ You could write a Gazebo plugin that reads a topic and sets joint forces. People
 
 `ros2_control` exists to put a defined seam in the middle of that path, with a stable interface on both sides:
 
-- On one side, **controllers** — a joint trajectory follower, a differential drive kinematic layer, a PID. A controller is an object derived from `ControllerInterface` whose `update()` reads state and writes commands. It never knows what the hardware is.
-- On the other, **hardware components** — the thing that actually talks to a motor driver, a CAN bus, an EtherCAT slave, or a simulator. Three kinds exist: `System` (multi-DOF with coupling), `Actuator` (single-DOF, read and write), `Sensor` (read only).
+- On one side, **controllers** — a joint trajectory follower, a differential drive kinematic layer, a PID (proportional–integral–derivative feedback on the error, derived in [[04-robotics/control-theory-ce397#7. Designing the feedback: pole placement and PID|5. Control Theory §7]]). A controller is an object derived from `ControllerInterface` whose `update()` reads state and writes commands. It never knows what the hardware is.
+- On the other, **hardware components** — the thing that actually talks to a motor driver, a CAN bus (a two-wire serial bus common on motor drives), an EtherCAT slave (one device on EtherCAT, an Ethernet-based real-time fieldbus), or a simulator. Three kinds exist: `System` (multi-DOF with coupling), `Actuator` (single-DOF, read and write), `Sensor` (read only).
 
 Between them sits a set of named interfaces, and *that* is the contract. The controller asks for `shoulder/position` as a command interface; something provides it. Whether that something is a servo drive or a physics engine is not the controller's problem.
 
@@ -155,9 +155,9 @@ The `<hardware><plugin>` line is the only part of this block that differs betwee
 
 ### 7. The controller manager
 
-The **controller manager** is the process that holds both halves together. It loads hardware components through `pluginlib`, loads controllers through `pluginlib`, matches required interfaces against provided ones, and runs the loop: `read()` from hardware, `update()` every active controller, `write()` to hardware. Its `update_rate` parameter is that loop's frequency in Hz, default 100. It gets the robot description by subscribing to the `robot_description` topic.
+The **controller manager** is the process that holds both halves together. It loads hardware components through `pluginlib` (the ROS library that loads a C++ class from a shared library at runtime by its registered name), loads controllers through `pluginlib`, matches required interfaces against provided ones, and runs the loop: `read()` from hardware, `update()` every active controller, `write()` to hardware. Its `update_rate` parameter is that loop's frequency in Hz, default 100. It gets the robot description by subscribing to the `robot_description` topic.
 
-A controller is a lifecycle object with three states that matter:
+A controller is a lifecycle object (the managed-node state machine of [[04-robotics/ros2/services-actions-parameters#8. Managed (lifecycle) nodes|25.3 §8]]) with three states that matter:
 
 - **unconfigured** — loaded, parameters not read.
 - **inactive** — configured, interfaces resolved, `update()` not running.
@@ -206,7 +206,7 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 
 Their surfaces, which are what you actually type against:
 
-- **Joint trajectory controller** — topic `<name>/joint_trajectory` (`trajectory_msgs/msg/JointTrajectory`) and action `<name>/follow_joint_trajectory` (`control_msgs/action/FollowJointTrajectory`). Use the action when you need to know whether the motion finished; the topic is fire-and-forget. Parameters: `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces` must include `position`, and must include `velocity` when the command interface is `velocity` or `effort` alone.
+- **Joint trajectory controller** — topic `<name>/joint_trajectory` (`trajectory_msgs/msg/JointTrajectory`) and action `<name>/follow_joint_trajectory` (`control_msgs/action/FollowJointTrajectory`). Use the action when you need to know whether the motion finished; the topic is fire-and-forget. Parameters: `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces` must include `position`, and must include `velocity` when the command interface is `velocity` or `effort` alone, because in that case the controller closes a PID loop on the tracking error and that loop needs the measured joint velocity as well as the position.
 - **Forward command controllers** — topic `<name>/commands` (`std_msgs/msg/Float64MultiArray`), parameter `joints` (plus `interface_name` for the generic `forward_command_controller/ForwardCommandController`; the position/velocity/effort variants fix the interface). The array is positional: element *i* goes to joint *i* of the `joints` list. Nothing validates that you meant that ordering.
 - **Differential drive controller** — subscribes `<name>/cmd_vel` as `geometry_msgs/msg/TwistStamped` in Jazzy (not plain `Twist`; this is a frequent version trap), publishes `<name>/odom` and, when `enable_odom_tf` is true, the `odom` → `base_link` edge on `/tf`. Parameters: `left_wheel_names`, `right_wheel_names`, `wheel_separation`, `wheel_radius`.
 
@@ -419,7 +419,12 @@ ros2 topic info /joint_trajectory_controller/joint_trajectory --verbose
 
 Subscription count zero means you are publishing to a topic the controller is not listening on — almost always because the controller's *spawned name* is not `joint_trajectory_controller`, or because the controller manager is in a namespace and the real topic is `/my_robot/joint_trajectory_controller/joint_trajectory`. `ros2 topic list | grep trajectory` settles it in one line.
 
-If the subscription exists and the message is arriving, look at time. The controller manager inside Gazebo runs on simulated time. `ros2 topic pub` leaves `header.stamp` at zero unless you write `now`, and the joint trajectory controller reads a zero stamp as "start now" — which is why step 6 works. A *non-zero* stamp is read on the controller's sim-time clock, so a wall-clock stamp puts the start far in the future and the arm waits. Check that the `/clock` bridge is running (`ros2 topic hz /clock`) and that `time_from_start` is nonzero — a trajectory whose single point is at `t=0` is a command to be there instantly, which a position interface may satisfy so fast you see nothing.
+If the subscription exists and the message is arriving, look at time. Four facts decide whether a received trajectory moves the arm:
+
+- **Sim time.** The controller manager inside Gazebo runs on simulated time, not the wall clock.
+- **Zero versus non-zero stamp.** `ros2 topic pub` leaves `header.stamp` at zero unless you write `now`, and the joint trajectory controller reads a zero stamp as "start now" — which is why step 6 works. A *non-zero* stamp is read on the controller's sim-time clock, so a wall-clock stamp puts the start far in the future and the arm waits.
+- **The clock bridge.** Sim time only advances if the `/clock` bridge is running; check with `ros2 topic hz /clock`.
+- **`time_from_start`.** It must be nonzero. A trajectory whose single point is at `t=0` is a command to be there instantly, which a position interface may satisfy so fast you see nothing.
 
 Last, confirm the simulator is stepping at all: `ros2 topic hz /joint_states` against a paused Gazebo reports a rate of zero, and a world started without `-r` is paused. Press play, or add `-r`.
 
@@ -479,7 +484,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 
 ### 3. 메시지 체계가 둘인 이유, 그리고 브리지
 
-Gazebo는 ROS 프로그램이 아니다. 자체 전송 계층(Gazebo Transport)과 자체 메시지 정의(`gz.msgs.*`, Protobuf)를 갖고, ROS가 없어도 멀쩡히 돈다. ROS 2는 DDS와 `sensor_msgs/msg/*`를 쓴다. 둘은 서로의 와이어 포맷도 타입 체계도 모른다.
+Gazebo는 ROS 프로그램이 아니다. 자체 전송 계층(Gazebo Transport)과 자체 메시지 정의(`gz.msgs.*`, Protobuf)를 갖고, ROS가 없어도 멀쩡히 돈다. ROS 2는 DDS(ROS 2의 전송 표준, [[04-robotics/ros2/what-ros2-is#5. 아래에 깔린 DDS: 무엇을 사고 무엇을 치르는가|25.1 §5]] 참고)와 `sensor_msgs/msg/*`를 쓴다. 둘은 서로의 와이어 포맷도 타입 체계도 모른다.
 
 그 분리는 의도된 것이고 — Gazebo는 ROS 밖에서도 쓰인다 — 대가가 `ros_gz_bridge`다. 한쪽에서 구독해 다른 쪽으로 다시 publish하는 노드이고, 토픽마다 타입 쌍마다 하나씩 필요하다.
 
@@ -541,7 +546,7 @@ ros2 launch ros_gz_sim gz_sim.launch.py gz_args:='-r -v 1 empty.sdf'
 ros2 run ros_gz_sim create -topic robot_description -name two_link_arm -allow_renaming true
 ```
 
-Gazebo는 URDF를 내부적으로 SDF로 변환해 파싱한다. 쓴 것 대부분은 살아남는다. 초심자가 잃는 부분은 URDF에 개념이 없는 것들이고, 그래서 추가 정보는 URDF 파서가 무시하고 SDF 변환기가 읽는 `<gazebo>` 태그에 들어간다.
+Gazebo는 URDF를 내부적으로 SDF(Simulation Description Format, 로봇과 world를 기술하는 Gazebo 고유 형식)로 변환해 파싱한다. 쓴 것 대부분은 살아남는다. 초심자가 잃는 부분은 URDF에 개념이 없는 것들이고, 그래서 추가 정보는 URDF 파서가 무시하고 SDF 변환기가 읽는 `<gazebo>` 태그에 들어간다.
 
 ### 5. ros2_control: 이음매
 
@@ -549,8 +554,8 @@ Gazebo는 URDF를 내부적으로 SDF로 변환해 파싱한다. 쓴 것 대부�
 
 `ros2_control`은 그 경로 한가운데에 정의된 이음매를 놓고 양쪽에 안정된 인터페이스를 두려고 존재한다.
 
-- 한쪽에는 **제어기(controller)** — 관절 궤적 추종기, 차동 구동 기구학 계층, PID. 제어기는 `ControllerInterface`에서 파생된 객체이고, `update()`가 상태를 읽고 명령을 쓴다. 하드웨어가 무엇인지는 전혀 모른다.
-- 다른 쪽에는 **하드웨어 컴포넌트** — 모터 드라이버, CAN 버스, EtherCAT 슬레이브, 또는 시뮬레이터와 실제로 대화하는 것. 세 종류가 있다: `System`(결합이 있는 다자유도), `Actuator`(1자유도, 읽기·쓰기), `Sensor`(읽기 전용).
+- 한쪽에는 **제어기(controller)** — 관절 궤적 추종기, 차동 구동 기구학 계층, PID(오차에 대한 비례·적분·미분 피드백, [[04-robotics/control-theory-ce397#7. 피드백 설계: 극점 배치와 PID|5. 제어 이론 §7]]에서 유도). 제어기는 `ControllerInterface`에서 파생된 객체이고, `update()`가 상태를 읽고 명령을 쓴다. 하드웨어가 무엇인지는 전혀 모른다.
+- 다른 쪽에는 **하드웨어 컴포넌트** — 모터 드라이버, CAN 버스(모터 드라이브에 흔한 2선 직렬 버스), EtherCAT 슬레이브(이더넷 기반 실시간 필드버스인 EtherCAT 위의 장치 하나), 또는 시뮬레이터와 실제로 대화하는 것. 세 종류가 있다: `System`(결합이 있는 다자유도), `Actuator`(1자유도, 읽기·쓰기), `Sensor`(읽기 전용).
 
 둘 사이에 이름 붙은 인터페이스 집합이 있고, *그것이* 계약이다. 제어기는 `shoulder/position`을 명령 인터페이스로 요구하고, 무언가가 그것을 제공한다. 그 무언가가 서보 드라이브인지 물리 엔진인지는 제어기의 문제가 아니다.
 
@@ -591,9 +596,9 @@ URDF 안, 링크·관절 옆에 놓이는 `<ros2_control>` 블록에서 선언�
 
 ### 7. 컨트롤러 매니저
 
-**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주기(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
+**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주기(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
 
-제어기는 상태 셋이 중요한 lifecycle 객체다.
+제어기는 상태 셋이 중요한 lifecycle 객체다([[04-robotics/ros2/services-actions-parameters#8. 관리형(라이프사이클) 노드|25.3 §8]]의 관리형 노드 상태 기계).
 
 - **unconfigured** — 적재됨, 파라미터는 아직 안 읽음.
 - **inactive** — 설정 완료, 인터페이스 해결됨, `update()`는 돌지 않음.
@@ -642,7 +647,7 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 
 실제로 손으로 치게 되는 표면.
 
-- **관절 궤적 제어기** — 토픽 `<name>/joint_trajectory`(`trajectory_msgs/msg/JointTrajectory`), 액션 `<name>/follow_joint_trajectory`(`control_msgs/action/FollowJointTrajectory`). 동작이 끝났는지 알아야 하면 액션을 쓴다. 토픽은 보내고 잊는 쪽이다. 파라미터는 `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces`에는 `position`이 반드시 있어야 하고, 명령 인터페이스가 `velocity`나 `effort` 단독일 때는 `velocity`도 있어야 한다.
+- **관절 궤적 제어기** — 토픽 `<name>/joint_trajectory`(`trajectory_msgs/msg/JointTrajectory`), 액션 `<name>/follow_joint_trajectory`(`control_msgs/action/FollowJointTrajectory`). 동작이 끝났는지 알아야 하면 액션을 쓴다. 토픽은 보내고 잊는 쪽이다. 파라미터는 `joints`, `command_interfaces`, `state_interfaces`. `state_interfaces`에는 `position`이 반드시 있어야 하고, 명령 인터페이스가 `velocity`나 `effort` 단독일 때는 `velocity`도 있어야 한다. 그 경우 제어기가 추종 오차에 PID 루프를 닫는데, 그 루프가 위치뿐 아니라 측정된 관절 속도도 쓰기 때문이다.
 - **Forward command 제어기** — 토픽 `<name>/commands`(`std_msgs/msg/Float64MultiArray`), 파라미터 `joints`(범용 `forward_command_controller/ForwardCommandController`에는 `interface_name`도 있고, position/velocity/effort 변형은 인터페이스가 고정이다). 배열은 위치 기반이다. *i* 번째 원소가 `joints` 목록의 *i* 번째 관절로 간다. 그 순서를 의도했는지 검증하는 것은 아무것도 없다.
 - **차동 구동 제어기** — Jazzy에서는 `<name>/cmd_vel`을 `geometry_msgs/msg/TwistStamped`로 구독한다(평범한 `Twist`가 아니다. 버전 함정으로 자주 걸린다). `<name>/odom`을 publish하고, `enable_odom_tf`가 true면 `/tf`에 `odom` → `base_link` 간선을 낸다. 파라미터는 `left_wheel_names`, `right_wheel_names`, `wheel_separation`, `wheel_radius`.
 
@@ -855,7 +860,12 @@ ros2 topic info /joint_trajectory_controller/joint_trajectory --verbose
 
 Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고 있는 것이다. 거의 항상 제어기의 *spawn된 이름* 이 `joint_trajectory_controller`가 아니거나, 컨트롤러 매니저가 네임스페이스 안에 있어서 실제 토픽이 `/my_robot/joint_trajectory_controller/joint_trajectory`인 경우다. `ros2 topic list | grep trajectory` 한 줄이면 끝난다.
 
-구독이 있고 메시지도 도착한다면 시간을 보라. Gazebo 안의 컨트롤러 매니저는 시뮬레이션 시간으로 돈다. `ros2 topic pub`은 `now`를 쓰지 않는 한 `header.stamp`를 0으로 두고, joint trajectory controller는 0 스탬프를 "지금 시작"으로 읽는다 — 6단계가 되는 이유다. 0이 *아닌* 스탬프는 제어기의 시뮬레이션 시계로 읽히므로, 벽시계 스탬프는 시작을 먼 미래에 놓고 팔은 기다린다. `/clock` 브리지가 돌고 있는지(`ros2 topic hz /clock`), 그리고 `time_from_start`가 0이 아닌지 확인하라. 점 하나가 `t=0`인 궤적은 "지금 당장 거기 있어라"라는 명령이고, position 인터페이스는 그것을 눈에 보이지 않을 만큼 빨리 만족시킬 수 있다.
+구독이 있고 메시지도 도착한다면 시간을 보라. 수신된 궤적이 팔을 움직이는지는 네 가지로 정해진다.
+
+- **시뮬레이션 시간.** Gazebo 안의 컨트롤러 매니저는 벽시계가 아니라 시뮬레이션 시간으로 돈다.
+- **0 스탬프와 0이 아닌 스탬프.** `ros2 topic pub`은 `now`를 쓰지 않는 한 `header.stamp`를 0으로 두고, joint trajectory controller는 0 스탬프를 "지금 시작"으로 읽는다 — 6단계가 되는 이유다. 0이 *아닌* 스탬프는 제어기의 시뮬레이션 시계로 읽히므로, 벽시계 스탬프는 시작을 먼 미래에 놓고 팔은 기다린다.
+- **시계 브리지.** 시뮬레이션 시간은 `/clock` 브리지가 돌 때만 흐른다. `ros2 topic hz /clock`으로 확인한다.
+- **`time_from_start`.** 0이 아니어야 한다. 점 하나가 `t=0`인 궤적은 "지금 당장 거기 있어라"라는 명령이고, position 인터페이스는 그것을 눈에 보이지 않을 만큼 빨리 만족시킬 수 있다.
 
 마지막으로 시뮬레이터가 진행 중인지 확인한다. 일시정지된 Gazebo에 대해 `ros2 topic hz /joint_states`는 0을 보고하고, `-r` 없이 시작한 world는 일시정지 상태다. 재생을 누르거나 `-r`을 붙여라.
 

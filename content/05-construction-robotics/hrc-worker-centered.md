@@ -54,14 +54,23 @@ The decision link matters because recognizing a worker state does not guarantee 
 
 ### 2. Main research lines
 
+Read the lines below through §1's loop rather than as a list of names. The first leans toward
+SENSE and INFER: *physiological computing* estimates a worker's state (stress, fatigue,
+attention) from body signals such as EEG or heart rate, and *intention-aware planning* plans
+robot motion around the worker's predicted next action. The second and third lean toward DECIDE
+and COMMUNICATE: *adaptive autonomy* changes how much the robot does on its own, *role
+allocation* decides who does which subtask, and *legible motion* is robot motion whose goal an
+observer can read early. On a first pass, keep one anchor paper per line rather than every topic.
+
 - The **Michigan DPM → UIUC/Georgia Tech/Toronto diaspora** connects physiological
   computing to intention-aware planning,
   [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI teleoperation]]
   (EEG-decoded commands driving a construction robot hands-free), co-robotic safety, and
-  LMM-mediated field robots.
+  LMM-mediated field robots (instructed through a large multimodal model).
 - The **Michigan LIVE/SICIS → VT/Stony Brook/TAMU** line connects adaptive autonomy,
   learning from demonstration, tactile handover, digital twins, and multi-robot supervision.
-- The **MIT Shah manufacturing line** supplies cross-training, role allocation, legible
+- The **MIT Shah manufacturing line** supplies cross-training (human and robot practise each
+  other's roles), role allocation, legible
   motion, and human-aware planning methods that construction imports —
   [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]] is the anchor:
   human-aware motion planning evaluated on measured human responses in close-proximity
@@ -191,12 +200,19 @@ flowchart LR
 
 ### 2. 연구 계보
 
+아래 계보는 이름 목록이 아니라 §1의 루프에 비춰 읽는다. 첫째는 SENSE와 INFER 쪽에 가깝다.
+*생리 컴퓨팅*은 EEG나 심박 같은 신체 신호로 작업자의 상태(스트레스, 피로, 주의)를 추정하고,
+*의도 인식 계획*은 작업자의 예측된 다음 행동에 맞춰 로봇 동작을 계획한다. 둘째와 셋째는 DECIDE와
+COMMUNICATE 쪽에 가깝다. *적응적 자율성*은 로봇이 스스로 하는 몫을 바꾸고, *역할 배분*은 누가 어느
+하위 작업을 맡을지 정하며, *읽기 쉬운 움직임*은 보는 사람이 목표를 일찍 알아챌 수 있는 로봇
+동작이다. 처음 읽을 때는 모든 주제보다 계보마다 앵커 논문 하나를 기억한다.
+
 - **미시간 DPM → UIUC·GT·토론토**: 생리 컴퓨팅에서 의도 인식 계획,
   [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI 원격조작]](EEG 해독
-  명령으로 건설 로봇을 핸즈프리 구동), co-robotic 안전, LMM 필드 로봇으로.
+  명령으로 건설 로봇을 핸즈프리 구동), co-robotic 안전, LMM(대형 멀티모달 모델)으로 지시하는 필드 로봇으로.
 - **미시간 LIVE/SICIS → VT·Stony Brook·TAMU**: 적응적 자율성, 시연 학습, 촉각 전달,
   디지털 트윈, 멀티로봇 감독으로.
-- **MIT Shah 제조 HRC**: 교차 훈련, 역할 배분, 읽기 쉬운 움직임, 인간 인지 계획을
+- **MIT Shah 제조 HRC**: 교차 훈련(사람과 로봇이 서로의 역할을 연습), 역할 배분, 읽기 쉬운 움직임, 인간 인지 계획을
   공급한다 — 앵커는
   [[01-canonical-papers/notes/8-construction/lasota-shah|Lasota & Shah]]: 근접 협업에서
   측정된 인간 반응으로 평가한 인간 인지 모션 계획이며, 이후 최종 조립 작업을 재현한 BMW

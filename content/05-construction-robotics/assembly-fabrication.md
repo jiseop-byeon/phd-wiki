@@ -35,10 +35,15 @@ flowchart LR
     P --> E["Contact-rich execution"] --> V["Scan / force verification"] --> D
 ```
 
+Here BIM (Building Information Modeling) is the structured digital design model of the
+building — its components, geometry, and properties; see
+[[05-construction-robotics/digital-twin-workflows|Digital Twins & BIM]] for how it differs from a
+digital twin.
+
 Read where uncertainty is corrected. A system that plans once from perfect BIM has not
 solved site assembly; it has demonstrated execution under a fixture-like assumption.
 
-A drywall sheet can be placed at the correct nominal pose and still bind against an uneven opening. Feedback exists because nominal geometry leaves this contact uncertainty unresolved. Track whether the robot observes the mismatch, changes its motion, and verifies the final fit. **The reading this gives you.** Read a successful placement as evidence for the entire correction loop only if the paper shows where that loop closed.
+A drywall sheet can be placed at the correct nominal pose and still bind against an uneven opening: the rigid sheet touches the out-of-square or uneven frame before it reaches its planned pose, so it jams instead of seating. Feedback exists because nominal geometry leaves this contact uncertainty unresolved. Track whether the robot observes the mismatch, changes its motion, and verifies the final fit. **The reading this gives you.** Read a successful placement as evidence for the entire correction loop only if the paper shows where that loop closed.
 
 ### 2. Three technical lineages
 
@@ -54,9 +59,10 @@ task interfaces ([[01-canonical-papers/notes/8-construction/park-nl|Park 2024]])
 BIM/digital-twin-grounded collaboration. The transferable idea is not one arm task but
 the perception–human–execution loop.
 
-**Architectural fabrication — ETH GKR and descendants.** In situ Fabricator, Mesh Mould,
-DFAB HOUSE, cooperative assembly, timber/fiber fabrication, and shotcrete printing treat
-robot motion as part of design. Here the artifact is often co-designed for robotic
+**Architectural fabrication — ETH GKR and descendants.** This line spans a mobile on-site
+robot (In situ Fabricator), fabrication techniques (Mesh Mould, cooperative assembly,
+timber/fiber fabrication, and shotcrete printing, where shotcrete is sprayed concrete), and
+full-scale demonstrations such as DFAB HOUSE. All of them treat robot motion as part of design. Here the artifact is often co-designed for robotic
 reachability and tolerance rather than copied from a human workflow.
 
 **Mobile/on-site production.** Mobile welding, bricklaying, concrete printing, and aerial
@@ -156,10 +162,14 @@ flowchart LR
     P --> E["접촉 집약 실행"] --> V["스캔 / 힘 검증"] --> D
 ```
 
+여기서 BIM(Building Information Modeling)은 건물의 부재·형상·속성을 담은 구조화된 디지털
+설계 모델이다. 디지털 트윈과의 차이는
+[[05-construction-robotics/digital-twin-workflows|디지털 트윈과 BIM]]에서 다룬다.
+
 불확실성이 어디서 보정되는지 읽어라. 완벽한 BIM에서 한 번 계획하는 시스템은 현장 조립
 전체가 아니라 지그에 가까운 가정 아래 실행을 보인 것이다.
 
-드라이월 시트는 명목 자세에 정확히 놓여도 고르지 않은 개구부에 걸릴 수 있다. 명목 형상으로 해소되지 않는 접촉 불확실성 때문에 피드백이 필요하다. 불일치 관찰, 동작 변경, 최종 맞춤 검증을 추적한다. **여기서 얻는 독법.** 어느 지점에서 루프가 닫혔는지 보여 줄 때만 성공한 배치를 전체 보정 루프의 증거로 읽는다.
+드라이월 시트는 명목 자세에 정확히 놓여도 고르지 않은 개구부에 걸릴 수 있다. 단단한 시트가 계획한 자세에 이르기 전에 직각이 맞지 않거나 울퉁불퉁한 틀에 먼저 닿아, 제자리에 앉지 못하고 끼어 버린다는 뜻이다. 명목 형상으로 해소되지 않는 접촉 불확실성 때문에 피드백이 필요하다. 불일치 관찰, 동작 변경, 최종 맞춤 검증을 추적한다. **여기서 얻는 독법.** 어느 지점에서 루프가 닫혔는지 보여 줄 때만 성공한 배치를 전체 보정 루프의 증거로 읽는다.
 
 ### 2. 세 기술 계보
 
@@ -172,8 +182,9 @@ flowchart LR
   ([[01-canonical-papers/notes/8-construction/yu-imitation|Yu 2024]]) → 자연어 과제
   인터페이스 ([[01-canonical-papers/notes/8-construction/park-nl|Park 2024]]) → BIM/디지털
   트윈 기반 협업. 핵심은 단일 팔 과제가 아니라 인식–인간–실행 루프다.
-- **ETH GKR와 제자들의 건축 패브리케이션**: In situ Fabricator, Mesh Mould, DFAB HOUSE,
-  협력 조립, 목재·섬유 제작, 숏크리트. 사람 공정을 복제하기보다 로봇 도달성과 공차에 맞게
+- **ETH GKR와 제자들의 건축 패브리케이션**: 현장 이동 로봇(In situ Fabricator), 제작 기법(Mesh
+  Mould, 협력 조립, 목재·섬유 제작, 숏크리트 — 숏크리트는 뿜어 붙이는 콘크리트), 그리고 DFAB HOUSE
+  같은 실규모 시연을 아우른다. 사람 공정을 복제하기보다 로봇 도달성과 공차에 맞게
   설계와 제작을 함께 바꾼다.
 - **모바일/현장 생산**: 이동 용접·조적·콘크리트 프린팅·공중 적층 제조. 작업 공간을 얻는
   대신 기지 위치 오차가 말단 정확도에 결합한다.

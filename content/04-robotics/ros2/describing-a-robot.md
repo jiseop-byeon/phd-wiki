@@ -36,9 +36,9 @@ URDF (Unified Robot Description Format) is XML. It has exactly two structural el
 
 A **link** is a rigid body. It carries appearance, collision shape and mass properties, and it defines a coordinate frame.
 
-A **joint** connects exactly two links — a `parent` and a `child` — and says how the child may move relative to the parent. Its `<origin xyz="..." rpy="..."/>` is the fixed offset from the parent link's frame to the joint, and it is where most of the geometry of a robot actually lives.
+A **joint** connects exactly two links — a `parent` and a `child` — and says how the child may move relative to the parent. Its `<origin xyz="..." rpy="..."/>` (`xyz` a translation in metres, `rpy` roll, pitch and yaw: rotations about x, y and z in radians) is the fixed offset from the parent link's frame to the joint, and it is where most of the geometry of a robot actually lives.
 
-The constraint that follows: **the links and joints must form a tree.** Every link has at most one parent joint; there is exactly one root link; no cycles. A parallel mechanism — a delta robot, a four-bar linkage — cannot be expressed as URDF, and that is a real limitation, not a beginner's misunderstanding. The common workarounds are to model the open chain and close the loop in the physics engine, or to use SDF instead.
+The constraint that follows: **the links and joints must form a tree.** Every link has at most one parent joint; there is exactly one root link; no cycles. A parallel mechanism — a delta robot, a four-bar linkage — cannot be expressed as URDF, and that is a real limitation, not a beginner's misunderstanding. The common workarounds are to model the open chain and close the loop in the physics engine, or to use SDF (Simulation Description Format, the format Gazebo reads natively) instead.
 
 Units are SI throughout, per REP 103: metres, radians, kilograms. Frames are right-handed, and the body convention is x forward, y left, z up.
 
@@ -113,7 +113,7 @@ The file must declare the namespace; without it xacro refuses to parse the file 
 
 `${...}` substitutes a property or evaluates an expression; `+ - * /`, unary minus, parentheses, `sin`, `cos` and the constant `pi` are available. Substitution works inside any attribute and composes with literal text, so `<link name="${prefix}_leg"/>` is how you get two similarly named links from one macro.
 
-Macros take parameters, and a parameter prefixed with `*` is an XML *block* that the caller supplies and `<xacro:insert_block>` inserts:
+Macros take parameters. In the simplest case a parameter is a value, used inside the macro with `${...}` exactly like a property:
 
 ```xml
 <xacro:macro name="default_inertial" params="mass">
@@ -125,8 +125,12 @@ Macros take parameters, and a parameter prefixed with `*` is an XML *block* that
 <xacro:default_inertial mass="10"/>
 ```
 
+A second kind exists: a parameter prefixed with `*` is an XML *block* that the caller supplies and `<xacro:insert_block>` inserts. You will meet it in larger descriptions; the value form above is enough to start.
+
 > [!warning] The silent Xacro failure
-> A typo in a macro name is loud, not silent: `handle_macro_call` raises `XacroException("unknown macro name: ...")`, xacro exits non-zero and produces no output at all. Typos in property and parameter names are loud too: an undefined property in `${...}` raises "name ... is not defined", and a misspelled macro parameter raises "Invalid parameter". What *is* silent is a typo in a URDF attribute xacro does not check — `xzy=` for `xyz=` — which urdfdom ignores, leaving you with a joint at a zero offset. Expand to a file and read it whenever a number looks wrong rather than whenever something is missing.
+> A typo in a macro name is loud, not silent: `handle_macro_call` raises `XacroException("unknown macro name: ...")`, xacro exits non-zero and produces no output at all. Typos in property and parameter names are loud too: an undefined property in `${...}` raises "name ... is not defined", and a misspelled macro parameter raises "Invalid parameter".
+>
+> What *is* silent is a typo in a URDF attribute xacro does not check — `xzy=` for `xyz=` — which urdfdom ignores, leaving you with a joint at a zero offset. Expand to a file and read it whenever a number looks wrong rather than whenever something is missing.
 
 Xacro is a preprocessor: nothing downstream understands it. Expansion happens one of two ways.
 
@@ -263,7 +267,7 @@ ros2 run tf2_tools view_frames
 ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
 ```
 
-`tf2_echo` prints one edge or chain repeatedly: translation, rotation as quaternion and as RPY in radians and degrees, and the full 4×4 matrix. Use it to answer "is this number right", and to catch a sign or axis error that looks fine in a picture.
+`tf2_echo` prints one edge or chain repeatedly: translation, rotation as quaternion and as RPY in radians and degrees, and the full 4×4 matrix. A quaternion is a four-number encoding of a rotation; if it is unfamiliar, read the RPY line first, and see [[02-foundations/se3-geometry|3D Geometry & SE(3)]] §2 for how the two relate. Use it to answer "is this number right", and to catch a sign or axis error that looks fine in a picture.
 
 RViz answers "does this look like my robot". Start it, set **Fixed Frame** to a frame that actually exists (with `Fixed Frame` set to something unpublished, every display fails at once and the errors point everywhere but the cause), then add two displays:
 
@@ -492,9 +496,9 @@ URDF(Unified Robot Description Format)는 XML이다. 구조 요소는 정확히 
 
 **링크(link)** 는 강체다. 외형, 충돌 형상, 질량 특성을 담고, 좌표 프레임을 정의한다.
 
-**조인트(joint)** 는 정확히 두 링크 — `parent`와 `child` — 를 잇고, 자식이 부모에 대해 어떻게 움직일 수 있는지 말한다. `<origin xyz="..." rpy="..."/>`는 부모 링크 프레임에서 조인트까지의 고정 오프셋이며, 로봇 기하의 대부분이 실제로 여기에 들어 있다.
+**조인트(joint)** 는 정확히 두 링크 — `parent`와 `child` — 를 잇고, 자식이 부모에 대해 어떻게 움직일 수 있는지 말한다. `<origin xyz="..." rpy="..."/>`(`xyz`는 미터 단위 병진, `rpy`는 roll·pitch·yaw, 즉 x·y·z축에 대한 라디안 단위 회전)는 부모 링크 프레임에서 조인트까지의 고정 오프셋이며, 로봇 기하의 대부분이 실제로 여기에 들어 있다.
 
-여기서 따라오는 제약: **링크와 조인트는 트리를 이루어야 한다.** 모든 링크는 부모 조인트를 최대 하나 갖고, 루트 링크는 정확히 하나이며, 순환은 없다. 델타 로봇이나 4절 링크 같은 병렬 기구는 URDF로 표현할 수 없다. 이것은 초심자의 오해가 아니라 실제 한계다. 흔한 우회는 열린 사슬로 모델링하고 물리 엔진에서 루프를 닫거나, SDF를 쓰는 것이다.
+여기서 따라오는 제약: **링크와 조인트는 트리를 이루어야 한다.** 모든 링크는 부모 조인트를 최대 하나 갖고, 루트 링크는 정확히 하나이며, 순환은 없다. 델타 로봇이나 4절 링크 같은 병렬 기구는 URDF로 표현할 수 없다. 이것은 초심자의 오해가 아니라 실제 한계다. 흔한 우회는 열린 사슬로 모델링하고 물리 엔진에서 루프를 닫거나, SDF(Simulation Description Format, Gazebo가 기본으로 읽는 형식)를 쓰는 것이다.
 
 단위는 REP 103에 따라 전부 SI다: 미터, 라디안, 킬로그램. 프레임은 오른손 좌표계이고, 본체 관례는 x 전방, y 좌측, z 상방이다.
 
@@ -569,7 +573,7 @@ check_urdf my_robot.urdf
 
 `${...}`는 property를 치환하거나 식을 계산한다. `+ - * /`, 단항 마이너스, 괄호, `sin`, `cos`, 상수 `pi`를 쓸 수 있다. 치환은 어떤 속성 안에서든 되고 리터럴 문자열과 합쳐지므로, `<link name="${prefix}_leg"/>`가 매크로 하나로 비슷한 이름의 링크 둘을 얻는 방법이다.
 
-매크로는 파라미터를 받고, 이름 앞에 `*`를 붙인 파라미터는 호출자가 넘기는 XML *블록*이며 `<xacro:insert_block>`이 삽입한다.
+매크로는 파라미터를 받는다. 가장 단순한 경우 파라미터는 값이고, 매크로 안에서 property와 똑같이 `${...}`로 쓴다.
 
 ```xml
 <xacro:macro name="default_inertial" params="mass">
@@ -581,8 +585,12 @@ check_urdf my_robot.urdf
 <xacro:default_inertial mass="10"/>
 ```
 
+두 번째 종류도 있다. 이름 앞에 `*`를 붙인 파라미터는 호출자가 넘기는 XML *블록*이며 `<xacro:insert_block>`이 삽입한다. 큰 로봇 기술에서 만나게 되며, 시작할 때는 위의 값 형태로 충분하다.
+
 > [!warning] 조용한 Xacro 실패
-> 매크로 이름 오타는 조용하지 않고 시끄럽다. `handle_macro_call`이 `XacroException("unknown macro name: ...")`을 던지고, xacro는 0이 아닌 값으로 종료하며 출력물을 아예 내지 않는다. property나 파라미터 이름의 오타도 시끄럽다. `${...}` 안의 정의되지 않은 property는 "name ... is not defined"를, 틀린 매크로 파라미터 이름은 "Invalid parameter"를 낸다. 정작 조용한 것은 xacro가 검사하지 않는 URDF 속성의 오타다 — `xyz=` 대신 `xzy=` — urdfdom이 무시하므로 오프셋이 0인 조인트가 남는다. 무언가 없을 때가 아니라 숫자가 이상할 때 파일로 전개해서 읽어라.
+> 매크로 이름 오타는 조용하지 않고 시끄럽다. `handle_macro_call`이 `XacroException("unknown macro name: ...")`을 던지고, xacro는 0이 아닌 값으로 종료하며 출력물을 아예 내지 않는다. property나 파라미터 이름의 오타도 시끄럽다. `${...}` 안의 정의되지 않은 property는 "name ... is not defined"를, 틀린 매크로 파라미터 이름은 "Invalid parameter"를 낸다.
+>
+> 정작 조용한 것은 xacro가 검사하지 않는 URDF 속성의 오타다 — `xyz=` 대신 `xzy=` — urdfdom이 무시하므로 오프셋이 0인 조인트가 남는다. 무언가 없을 때가 아니라 숫자가 이상할 때 파일로 전개해서 읽어라.
 
 Xacro는 전처리기다. 하류의 어떤 것도 이해하지 못한다. 전개는 두 방식 중 하나다.
 
@@ -719,7 +727,7 @@ ros2 run tf2_tools view_frames
 ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
 ```
 
-`tf2_echo`는 간선 하나 또는 사슬을 반복 출력한다. 병진, 쿼터니언과 RPY(라디안·도) 회전, 그리고 4×4 행렬 전체. "이 숫자가 맞나"에 답하고, 그림으로는 멀쩡해 보이는 부호·축 오류를 잡는 데 쓴다.
+`tf2_echo`는 간선 하나 또는 사슬을 반복 출력한다. 병진, 쿼터니언과 RPY(라디안·도) 회전, 그리고 4×4 행렬 전체. 쿼터니언은 회전을 숫자 네 개로 표현한 것이다. 낯설다면 RPY 줄부터 읽고, 둘의 관계는 [[02-foundations/se3-geometry|3D Geometry & SE(3)]] §2를 보라. "이 숫자가 맞나"에 답하고, 그림으로는 멀쩡해 보이는 부호·축 오류를 잡는 데 쓴다.
 
 RViz는 "이게 내 로봇처럼 보이나"에 답한다. 띄우고 **Fixed Frame**을 실제로 존재하는 프레임으로 맞춘 뒤(존재하지 않는 프레임을 넣으면 모든 display가 한꺼번에 실패하고 에러가 원인 아닌 곳을 가리킨다) display 둘을 추가한다.
 

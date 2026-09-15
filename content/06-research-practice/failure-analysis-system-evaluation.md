@@ -33,7 +33,7 @@ For example, consider a hypothetical collision at t = 12.4 s. The pose stream st
 
 ### 2. Failure taxonomy
 
-Use task-specific categories such as sensing, calibration/synchronization, estimation, data association ([[04-robotics/state-estimation-slam|3. State Estimation §8.5]]), planning, policy, control, communication/compute, actuator/mechanical, environment/material, human interaction, and procedure. Categories should be mutually interpretable and linked to observable evidence.
+Use task-specific categories such as sensing, calibration/synchronization, estimation, data association ([[04-robotics/state-estimation-slam|3. State Estimation §8.5]]), planning, policy, control, communication/compute, actuator/mechanical, environment/material, human interaction, and procedure. Define each category clearly enough that two annotators looking at the same evidence assign the same label, and link it to observable evidence.
 
 A useful taxonomy separates initiating faults from propagation and consequences because these require different fixes. Otherwise the same event appears under several labels and the aggregate chart depends on whoever annotated the video. Define what observation qualifies an event for each category and retain uncertainty when the necessary logs are absent.
 
@@ -43,7 +43,7 @@ In the stale-pose example, estimation receives the first-failure label because t
 
 ### 3. Instrumentation and synchronized replay
 
-Log raw sensors, timestamps, frame transforms, estimates and uncertainty, candidate and selected plans, policy outputs, safety filters, commands, actuator feedback, watchdogs, interventions, configuration, and video. A synchronized timeline enables causal reconstruction; a final camera clip often does not.
+Log raw sensors, timestamps, frame transforms, estimates and uncertainty, candidate and selected plans, policy outputs, safety filters, commands, actuator feedback, watchdogs (timers that flag or reset a process that stops responding), interventions, configuration, and video. A synchronized timeline enables causal reconstruction; a final camera clip often does not.
 
 Synchronization is needed because log order is not necessarily event order. A camera at 30 Hz, control at 1 kHz, and estimation at 20 Hz produce different numbers of records. Aligning their row indices would compare different physical moments. Message arrival time can also hide the age of a measurement if a queued packet is mistaken for a new observation.
 
@@ -175,8 +175,8 @@ flowchart LR
 ### 2. 실패 분류 체계
 
 센싱, 보정/동기화, 추정, data association([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5]]), 계획, 정책, 제어, 통신/컴퓨트, 액추에이터/기계,
-환경/재료, 인간 상호작용, 절차 같은 과제 맞춤 범주를 써라. 범주는 상호 해석 가능해야
-하고 관찰 가능한 증거와 연결돼야 한다.
+환경/재료, 인간 상호작용, 절차 같은 과제 맞춤 범주를 써라. 각 범주는 같은 증거를 본 두 판독자가 같은
+분류를 붙일 만큼 명확히 정의하고, 관찰 가능한 증거와 연결해야 한다.
 
 시작 결함, 전파 경로, 결과는 고치는 방법이 다르다. 이를 섞으면 같은 사건이 여러 분류에 중복 집계되고, 영상 판독자에 따라 실패 분포도 달라진다. 각 분류에 필요한 관찰을 정하고 로그가 없으면 불확실성을 남긴다.
 
@@ -187,7 +187,7 @@ flowchart LR
 ### 3. 계측과 동기화 재생
 
 원시 센서, 타임스탬프, 프레임 변환, 추정값과 불확실성, 후보·선택된 계획, 정책 출력, 안전
-필터, 명령, 액추에이터 피드백, watchdog, 개입, 설정, 비디오를 기록하라. 동기화된
+필터, 명령, 액추에이터 피드백, watchdog(응답이 멈춘 프로세스를 표시하거나 재시작하는 타이머), 개입, 설정, 비디오를 기록하라. 동기화된
 타임라인이 인과적 재구성을 가능하게 한다 — 마지막 카메라 클립 하나로는 대개 안 된다.
 
 로그에 적힌 순서가 사건이 일어난 순서와 같지는 않다. 카메라 30 Hz, 제어 1 kHz, 위치 추정 20 Hz는 서로 다른 수의 기록을 만든다. 같은 행 번호끼리 맞추면 다른 시각을 비교하게 된다. 대기열을 거친 메시지의 도착 시각을 측정 시각으로 쓰면 오래된 관측도 새것처럼 보인다.

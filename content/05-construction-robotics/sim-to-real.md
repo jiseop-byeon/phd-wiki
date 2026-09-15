@@ -41,7 +41,9 @@ that affect the policy were represented, varied, or adapted**.
 > Diagnose whether the range is wrong or whether a phenomenon, state, event, or task case is
 > missing before choosing identification or randomization. Contact is where model-form error
 > is especially likely to dominate.
-> Rigid-body engines resolve contact as point constraints solved per timestep, and the
+> Rigid-body engines resolve contact as point constraints solved per timestep: at each small
+> time step the engine picks a few contact points and computes the forces that keep the
+> bodies from passing through each other, then moves everything forward. The
 > underlying dynamics are genuinely non-smooth — impacts and stick–slip transitions are
 > discontinuities, and numerical integrators lose both accuracy and stability exactly there.
 > Randomizing the friction coefficient does not fix a contact model that cannot represent
@@ -123,7 +125,7 @@ that affect the policy were represented, varied, or adapted**.
    only, so its claim stops at this rung.
 2. Hardware-in-the-loop and timing/saturation tests.
 3. Slow, supervised real trials inside a safety envelope.
-4. Adaptation without changing the evaluation cases.
+4. Adaptation without changing the evaluation cases: the policy may be updated on real data, but the test tasks, sites, and conditions used to score it stay fixed and are never used for tuning.
 5. Repeated operation across materials, machines, sites, and days.
 
 Zero-shot transfer means no target-domain training update before deployment; it does not
@@ -214,7 +216,7 @@ outside the training range.
 > [!warning] 접촉 행은 나머지와 성격이 다르다
 > 모든 격차에는 *파라미터* 오차와 **모델 형식·커버리지** 오차가 함께 있을 수 있다. 동정이나
 > 랜덤화를 고르기 전에 범위가 틀린 것인지, 현상·상태·사건·과제 사례가 빠진 것인지 진단하라.
-> 접촉은 모델 형식 오차가 특히 지배적이기 쉬운 경우다. 강체 엔진은 접촉을 매 시간 단계마다 푸는 점 구속으로 처리하는데, 바탕 동역학이
+> 접촉은 모델 형식 오차가 특히 지배적이기 쉬운 경우다. 강체 엔진은 접촉을 매 시간 단계마다 푸는 점 구속으로 처리한다. 즉 짧은 시간 단계마다 몇 개의 접촉점을 골라 물체가 서로 뚫고 들어가지 않게 하는 힘을 계산한 뒤 모든 것을 앞으로 진행시킨다. 그런데 바탕 동역학이
 > 실제로 비평활하다 — 충격과 고착–미끄러짐 천이가 불연속이고, 수치 적분기는 정확히 거기서 정확도와
 > 안정성을 함께 잃는다. **마찰 계수를 랜덤화한다고, 접촉 패치를 애초에 표현하지 못하는 접촉 모델이
 > 고쳐지지는 않는다.**
@@ -291,7 +293,7 @@ outside the training range.
    주장은 이 단에서 멈춘다
 2. hardware-in-the-loop와 지연·포화 시험
 3. 안전 영역 안의 저속·감독 실제 시험
-4. 평가 사례를 보며 튜닝하지 않는 적응
+4. 평가 사례를 보며 튜닝하지 않는 적응: 정책은 실데이터로 갱신해도 되지만, 점수를 매기는 시험 과제·현장·조건은 고정되고 튜닝에 쓰이지 않는다
 5. 재료·기계·현장·날짜를 바꾼 반복 운용
 
 Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없다는 뜻이지, 시뮬레이터를

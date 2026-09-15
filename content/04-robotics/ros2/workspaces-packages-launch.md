@@ -21,7 +21,7 @@ mastery-when: "Go deeper when you are packaging for release, writing CMake for a
 
 Python does not need to be compiled. So a reasonable first question is why a Python ROS 2 node cannot just be run with `python3 my_node.py`.
 
-It can, for one file in one terminal. What it will not do is let `ros2 run` find the executable by package name, let a launch file in another package refer to it, let `rosdep` know what to install, let a C++ node find the message type it publishes, or let anyone else build it from a clone.
+It can, for one file in one terminal. What it will not do is let `ros2 run` find the executable by package name, let a launch file in another package refer to it, let `rosdep` (the dependency installer of section 5) know what to install, let a C++ node find the message type it publishes, or let anyone else build it from a clone.
 
 All of that comes from one idea: a **package** declares what it is and what it needs, and a **build** turns that declaration into a fixed directory layout that the ROS 2 tooling knows how to search. The cost is that there is now a copy of your code somewhere other than where you edit it. Section 13 is about the day that copy goes stale.
 
@@ -84,7 +84,7 @@ ros2 pkg create --build-type ament_python --license Apache-2.0 temp_sim
 ros2 pkg create --build-type ament_cmake  --license Apache-2.0 temp_filter
 ```
 
-An `ament_python` package is a setuptools package with ROS metadata bolted on. Its minimum contents are `package.xml`, `setup.py`, `setup.cfg`, `resource/<package_name>` (a marker file that makes the package discoverable through the ament index), and a directory named after the package containing `__init__.py`. Executables come from `entry_points`:
+An `ament_python` package is a setuptools package with ROS metadata bolted on. Its minimum contents are `package.xml`, `setup.py`, `setup.cfg`, `resource/<package_name>` (a marker file that makes the package discoverable through the ament index, the directory of such markers under `share/ament_index` that ROS 2 tools scan to list installed packages), and a directory named after the package containing `__init__.py`. Executables come from `entry_points`:
 
 ```python
 entry_points={
@@ -171,7 +171,7 @@ There are two setup files in an install directory and the difference matters. `l
 Two rules that are not obvious and cost real time:
 
 - **Do not build in a terminal that has an overlay sourced, and do not source an overlay in the terminal you built in.** The official tutorial is explicit that this creates complex problems. The mechanism is that a build inherits an environment that already points at its own previous output, so a package can be built against a stale copy of itself. Use one terminal to build and other terminals to run.
-- **Overriding a package that other packages depend on is a trap.** Packages in the underlay were compiled against the underlay's version and will be run against yours; if the override changes an ABI, the failure is a crash with no sensible message. Overlays are safest on leaf packages.
+- **Overriding a package that other packages depend on is a trap.** Packages in the underlay were compiled against the underlay's version and will be run against yours; if the override changes an ABI (application binary interface: the compiled layout of functions and data structures that other binaries were linked against), the failure is a crash with no sensible message. Overlays are safest on leaf packages.
 
 To ask which one won, use:
 
@@ -233,7 +233,13 @@ A **launch description** is what the file returns: a function named `generate_la
 
 **Actions** are the entries in the list — things to do. `Node` (from `launch_ros.actions`) starts a ROS node. `DeclareLaunchArgument` declares an argument the file accepts. `IncludeLaunchDescription` pulls in another launch file. `GroupAction` scopes a set of actions.
 
-**Substitutions** are values resolved at execution rather than when the file is written. This is the part that surprises people: a launch file is evaluated in two phases, so ordinary Python string operations do not work on a launch argument. `LaunchConfiguration('target_frame')` is not a string, it is an object that will become one; `FindPackageShare('temp_sim')` resolves to that package's `share` directory in whichever workspace won, and `PathJoinSubstitution([...])` joins paths made of such objects.
+**Substitutions** are values resolved at execution rather than when the file is written. This is the part that surprises people, and it comes from the two phases a launch file goes through. First, Python runs `generate_launch_description()` and builds the list of actions; no action has run yet, so no launch argument has a value. Second, the launch system executes the actions, and only then are the values filled in. So ordinary Python string operations do not work on a launch argument. The three substitutions you will meet first:
+
+- `LaunchConfiguration('target_frame')` is not a string; it is an object that becomes the value of the `target_frame` argument in the second phase.
+- `FindPackageShare('temp_sim')` resolves to that package's `share` directory in whichever workspace won.
+- `PathJoinSubstitution([...])` joins paths made of such objects.
+
+A tiny example: to put a node under `/robot/<ns>`, an f-string or `+` on `LaunchConfiguration('ns')` does not produce the argument's value, because that value does not exist yet in the first phase. Write the list `['/robot/', LaunchConfiguration('ns')]` instead; the launch system concatenates its pieces in the second phase.
 
 The minimal shape:
 
@@ -395,6 +401,8 @@ ros2 pkg create --build-type ament_python --license Apache-2.0 --node-name senso
 ros2 pkg create --build-type ament_cmake  --license Apache-2.0 --node-name filter temp_filter
 ```
 
+`--node-name` makes `ros2 pkg create` also generate a hello-world executable with that name inside the package, already registered in `setup.py` or `CMakeLists.txt` so `ros2 run` can find it; steps 2 onward replace its body.
+
 2. Make `sensor` publish a `std_msgs/msg/Float64` on `raw` at a rate taken from a declared parameter `publish_hz`, and `filter` subscribe to `raw`, apply an exponential filter with a declared parameter `alpha`, and publish `filtered`. Declare the dependencies honestly: `<exec_depend>rclpy</exec_depend>` and `<exec_depend>std_msgs</exec_depend>` in the Python package, `<depend>rclcpp</depend>` and `<depend>std_msgs</depend>` in the C++ one.
 
 3. In `temp_sim`, create `config/params.yaml`:
@@ -493,7 +501,7 @@ colcon build --symlink-install
 
 Rerun the `python3 -c` check and the path now points into `build/`, not `src/`, because that is where colcon puts the development install. The file there is a symlink to your source, so edit, restart the node, and the change takes effect with no build at all.
 
-**And now the asymmetry.** Do the same experiment with the C++ node in `temp_filter`. Change a constant in `src/filter.cpp`, restart the node without rebuilding, and nothing happens — correctly. `--symlink-install` changed nothing for it, because what runs is `install/temp_filter/lib/temp_filter/filter`, an ELF binary produced by the compiler, not a link to a source file. Confirm it directly:
+**And now the asymmetry.** Do the same experiment with the C++ node in `temp_filter`. Change a constant in `src/filter.cpp`, restart the node without rebuilding, and nothing happens — correctly. `--symlink-install` changed nothing for it, because what runs is `install/temp_filter/lib/temp_filter/filter`, an ELF binary (the Linux format for compiled executables) produced by the compiler, not a link to a source file. Confirm it directly:
 
 ```bash
 ls -l $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
@@ -538,7 +546,7 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 
 Python은 컴파일이 필요 없다. 그러면 왜 Python 노드를 `python3 my_node.py`로 그냥 돌리면 안 되는가.
 
-파일 하나, 터미널 하나라면 돌아간다. 다만 이런 것들은 되지 않는다. `ros2 run`이 패키지 이름으로 실행 파일을 찾는 것, 다른 패키지의 launch 파일이 그 노드를 가리키는 것, `rosdep`이 무엇을 설치할지 아는 것, C++ 노드가 그 메시지 타입을 찾는 것, 남이 clone해서 빌드하는 것.
+파일 하나, 터미널 하나라면 돌아간다. 다만 이런 것들은 되지 않는다. `ros2 run`이 패키지 이름으로 실행 파일을 찾는 것, 다른 패키지의 launch 파일이 그 노드를 가리키는 것, `rosdep`(5절의 의존성 설치 도구)이 무엇을 설치할지 아는 것, C++ 노드가 그 메시지 타입을 찾는 것, 남이 clone해서 빌드하는 것.
 
 전부 하나의 발상에서 나온다. **패키지**가 자기가 무엇이고 무엇을 필요로 하는지 선언하고, **빌드**가 그 선언을 ROS 2 도구가 탐색할 줄 아는 고정된 디렉터리 구조로 바꾼다. 대가는, 편집하는 곳이 아닌 다른 곳에 코드 사본이 생긴다는 것이다. 13절은 그 사본이 낡는 날에 관한 것이다.
 
@@ -601,7 +609,7 @@ ros2 pkg create --build-type ament_python --license Apache-2.0 temp_sim
 ros2 pkg create --build-type ament_cmake  --license Apache-2.0 temp_filter
 ```
 
-`ament_python` 패키지는 ROS 메타데이터를 붙인 setuptools 패키지다. 최소 구성은 `package.xml`, `setup.py`, `setup.cfg`, `resource/<package_name>`(ament 인덱스에서 패키지를 찾게 해 주는 마커 파일), 그리고 패키지와 같은 이름에 `__init__.py`가 든 디렉터리. 실행 파일은 `entry_points`에서 나온다.
+`ament_python` 패키지는 ROS 메타데이터를 붙인 setuptools 패키지다. 최소 구성은 `package.xml`, `setup.py`, `setup.cfg`, `resource/<package_name>`(ament 인덱스에서 패키지를 찾게 해 주는 마커 파일. ament 인덱스는 ROS 2 도구가 설치된 패키지 목록을 얻으려고 훑는, `share/ament_index` 아래 마커 파일들의 디렉터리다), 그리고 패키지와 같은 이름에 `__init__.py`가 든 디렉터리. 실행 파일은 `entry_points`에서 나온다.
 
 ```python
 entry_points={
@@ -688,7 +696,7 @@ install 디렉터리에는 setup 파일이 둘이고 차이가 중요하다. `lo
 당연해 보이지 않으면서 실제로 시간을 잡아먹는 규칙 둘.
 
 - **오버레이가 source된 터미널에서 빌드하지 말고, 빌드한 터미널에서 오버레이를 source하지 말라.** 공식 튜토리얼이 복잡한 문제를 만든다고 명시한다. 원리는, 빌드가 이미 자기 이전 출력을 가리키는 환경을 물려받아, 패키지가 자기 자신의 낡은 사본에 대해 빌드될 수 있다는 것이다. 빌드용 터미널 하나, 실행용 터미널 따로.
-- **다른 패키지가 의존하는 패키지를 덮어쓰는 것은 함정이다.** 언더레이의 패키지들은 언더레이 버전에 대해 컴파일되었는데 실행은 당신 버전과 하게 된다. ABI가 바뀌면 결과는 아무 말도 안 되는 크래시다. 오버레이는 leaf 패키지에 가장 안전하다.
+- **다른 패키지가 의존하는 패키지를 덮어쓰는 것은 함정이다.** 언더레이의 패키지들은 언더레이 버전에 대해 컴파일되었는데 실행은 당신 버전과 하게 된다. ABI(application binary interface: 다른 바이너리가 링크할 때 기대한, 함수와 자료구조의 컴파일된 배치)가 바뀌면 결과는 아무 말도 안 되는 크래시다. 오버레이는 leaf 패키지에 가장 안전하다.
 
 어느 쪽이 이겼는지는 이렇게 묻는다.
 
@@ -750,7 +758,13 @@ launch 파일은 시스템의 *기술(description)*이고, `launch_ros`의 ROS �
 
 **액션**(action)은 그 리스트의 항목, 즉 할 일이다. `Node`(`launch_ros.actions`)는 ROS 노드를 띄운다. `DeclareLaunchArgument`는 이 파일이 받는 인자를 선언한다. `IncludeLaunchDescription`은 다른 launch 파일을 끌어온다. `GroupAction`은 액션 묶음의 범위를 정한다.
 
-**치환**(substitution)은 파일을 쓸 때가 아니라 실행할 때 결정되는 값이다. launch 파일은 두 국면으로 평가되므로 launch 인자에 평범한 Python 문자열 연산을 쓸 수 없다. `LaunchConfiguration('target_frame')`은 문자열이 아니라 나중에 문자열이 될 객체다. `FindPackageShare('temp_sim')`은 이긴 워크스페이스에서 그 패키지의 `share` 디렉터리로 해석되고, `PathJoinSubstitution([...])`은 그런 객체들로 된 경로를 잇는다.
+**치환**(substitution)은 파일을 쓸 때가 아니라 실행할 때 결정되는 값이다. 사람들이 놀라는 부분이고, launch 파일이 거치는 두 국면에서 나온다. 첫째, Python이 `generate_launch_description()`을 실행해 액션 리스트를 만든다. 아직 어떤 액션도 실행되지 않았으므로 launch 인자에는 값이 없다. 둘째, launch 시스템이 액션을 실행하고, 그때서야 값이 채워진다. 그래서 launch 인자에 평범한 Python 문자열 연산을 쓸 수 없다. 먼저 만나게 될 치환 셋:
+
+- `LaunchConfiguration('target_frame')`은 문자열이 아니다. 둘째 국면에서 `target_frame` 인자의 값이 될 객체다.
+- `FindPackageShare('temp_sim')`은 이긴 워크스페이스에서 그 패키지의 `share` 디렉터리로 해석된다.
+- `PathJoinSubstitution([...])`은 그런 객체들로 된 경로를 잇는다.
+
+작은 예: 노드를 `/robot/<ns>` 아래에 두려고 `LaunchConfiguration('ns')`에 f-string이나 `+`를 쓰면 인자 값이 나오지 않는다. 첫째 국면에는 그 값이 아직 없기 때문이다. 대신 리스트 `['/robot/', LaunchConfiguration('ns')]`를 쓰면 launch 시스템이 둘째 국면에서 조각들을 이어 붙인다.
 
 최소 형태:
 
@@ -912,6 +926,8 @@ ros2 pkg create --build-type ament_python --license Apache-2.0 --node-name senso
 ros2 pkg create --build-type ament_cmake  --license Apache-2.0 --node-name filter temp_filter
 ```
 
+`--node-name`을 주면 `ros2 pkg create`가 패키지 안에 그 이름의 hello-world 실행 파일도 만들고, `ros2 run`이 찾을 수 있도록 `setup.py`나 `CMakeLists.txt`에 이미 등록해 둔다. 2단계부터 그 본문을 바꾼다.
+
 2. `sensor`는 선언된 파라미터 `publish_hz`의 주기로 `raw`에 `std_msgs/msg/Float64`를 publish하게, `filter`는 `raw`를 구독해 선언된 파라미터 `alpha`의 지수 필터를 적용하고 `filtered`를 publish하게 만든다. 의존성은 정직하게 선언한다. Python 패키지에는 `<exec_depend>rclpy</exec_depend>`와 `<exec_depend>std_msgs</exec_depend>`, C++ 패키지에는 `<depend>rclcpp</depend>`와 `<depend>std_msgs</depend>`.
 
 3. `temp_sim`에 `config/params.yaml`을 만든다.
@@ -1010,7 +1026,7 @@ colcon build --symlink-install
 
 `python3 -c` 확인을 다시 하면 경로가 `src/`가 아니라 `build/`를 가리킨다. colcon이 개발용 설치를 거기에 두기 때문이다. 그 파일이 소스를 가리키는 심볼릭 링크이므로, 고치고 노드만 재시작하면 빌드 없이 반영된다.
 
-**그리고 여기서 비대칭이 나온다.** `temp_filter`의 C++ 노드로 같은 실험을 해 보라. `src/filter.cpp`의 상수를 고치고 다시 빌드하지 않은 채 노드를 재시작하면 아무 일도 일어나지 않는다 — 그게 맞다. `--symlink-install`은 그쪽에 아무것도 바꾸지 않았다. 실행되는 것은 `install/temp_filter/lib/temp_filter/filter`, 컴파일러가 만든 ELF 바이너리이지 소스 파일로 가는 링크가 아니기 때문이다. 직접 확인하라.
+**그리고 여기서 비대칭이 나온다.** `temp_filter`의 C++ 노드로 같은 실험을 해 보라. `src/filter.cpp`의 상수를 고치고 다시 빌드하지 않은 채 노드를 재시작하면 아무 일도 일어나지 않는다 — 그게 맞다. `--symlink-install`은 그쪽에 아무것도 바꾸지 않았다. 실행되는 것은 `install/temp_filter/lib/temp_filter/filter`, 컴파일러가 만든 ELF 바이너리(컴파일된 실행 파일의 Linux 형식)이지 소스 파일로 가는 링크가 아니기 때문이다. 직접 확인하라.
 
 ```bash
 ls -l $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter

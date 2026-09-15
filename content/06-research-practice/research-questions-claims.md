@@ -69,6 +69,8 @@ These are proposed statements, not results. The contribution sentence must event
 | Mechanistic | evidence must isolate why the method works |
 | Safety/reliability | exposure, severity, rare failures, and system boundaries matter |
 
+In the last row, **exposure** means how much operating time, distance, or how many trials could have produced the failure: zero collisions in 10 trials and zero collisions in 10,000 trials are very different evidence.
+
 “Performance drops when component X is removed” supports a scoped dependency; it does not prove the author's complete causal story.
 
 **Before:** “Touch explains the improvement because the full system scored higher.” **Problem:** a comparative result does not isolate a mechanism when training data or control logic also changed. **After:** “The complete system outperformed the baseline in the tested conditions; a matched tactile ablation is needed to attribute the difference to touch.”
@@ -93,7 +95,7 @@ Weak: **Can world models improve construction robots?**
 
 Stronger: **For autonomous excavation in variable soil, does a learned latent dynamics model reduce bucket-path tracking error and recovery interventions relative to model-free behavior cloning when both use the same demonstrations and MPC safety constraints?**
 
-This still needs operational definitions for soil variation, intervention, and the world-model planning procedure.
+(MPC is model predictive control, which re-solves a short-horizon constrained optimization every cycle; see [[04-robotics/mpc|MPC]].) This still needs operational definitions for soil variation, intervention, and the world-model planning procedure.
 
 **Before, as a proposed abstract:** “Construction robots need robust manipulation. We introduce a tactile intelligence framework for reliable grasping in challenging environments.” It names a motivation and a tool, but a reader cannot identify the assumption being tested or imagine a result that would contradict the promise.
 
@@ -209,6 +211,8 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 | 기전적(mechanistic) | 방법이 *왜* 통하는지 분리하는 증거 |
 | 안전/신뢰성 | 노출, 심각도, 희귀 실패, 시스템 경계가 중요 |
 
+마지막 행의 **노출**(exposure)은 그 실패를 낳을 수 있었던 운용 시간, 거리, 시행 수의 양이다. 10회 시행에서 충돌 0과 10,000회 시행에서 충돌 0은 전혀 다른 증거다.
+
 "구성요소 X를 빼면 성능이 떨어진다"는 범위가 한정된 의존성을 지지할 뿐,
 저자의 완전한 인과 이야기를 증명하지 않는다.
 
@@ -236,7 +240,7 @@ Topic은 영역의 이름이고, research question은 증거가 해소할 수 �
 더 강함: **가변 토질의 자율 굴착에서, 학습된 잠재 동역학 모델이 같은 시연과 MPC 안전
 제약을 쓰는 model-free 행동 복제 대비 버킷 경로 추종 오차와 회복 개입을 줄이는가?**
 
-이것도 토질 변동, 개입, 월드모델 계획 절차의 조작적 정의가 더 필요하다.
+(MPC는 모델 예측 제어로, 매 주기 짧은 지평의 제약 최적화를 다시 푼다. [[04-robotics/mpc|MPC]] 참고.) 이것도 토질 변동, 개입, 월드모델 계획 절차의 조작적 정의가 더 필요하다.
 
 **수정 전, 제안 단계의 초록:** “건설로봇에는 강건한 조작이 필요하다. 어려운 환경에서 신뢰성 있는 파지를 위한 촉각 지능 프레임워크를 제안한다.” 동기와 도구는 있지만 시험할 가정이 없다. 독자는 약속에 반하는 결과를 상상하기 어렵다.
 

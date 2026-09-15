@@ -76,9 +76,12 @@ citation]", not a fabricated venue.
 For this program the interesting difference between simulators is not speed. It is what
 each one *means* by a contact.
 
-- **MuJoCo** solves a soft convex optimisation with elliptic or pyramidal friction cones,
+- **MuJoCo** solves a soft convex optimisation with elliptic or pyramidal friction cones
+  (the set of contact forces Coulomb friction allows, see
+  [[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]),
   and its documentation is explicit that constraint violations are permitted by design — it
-  is not a complementarity solver. That is what makes it fast and stable, and it is also why
+  is not a complementarity solver (one that enforces "gap zero or contact force zero"
+  exactly, see [[04-robotics/contact-force-tactile|Contact, Force & Tactile §1]]). That is what makes it fast and stable, and it is also why
   a MuJoCo contact force is not the force a load cell would read.
 - **Drake's hydroelastic contact** goes the other way: rigid bodies "penetrate slightly, as
   if the rigid body had a slightly deformable layer", producing an approximate contact
@@ -103,7 +106,9 @@ genuinely mature.
 - **AGX Dynamics** (Algoryx) is the strongest documented option. Its `agxTerrain` module
   models a 3D voxel grid carrying mass, compaction and soil type under a height-field
   surface; a digging tool creates failure zones that convert solid terrain mass into dynamic
-  mass, parameterised by **angle of internal friction and cohesion**, with solid cells
+  mass, parameterised by **angle of internal friction and cohesion** (the two soil-strength
+  parameters: how much shear resistance grows with the pressure on the soil, and how much it
+  has at zero pressure), with solid cells
   becoming 6-DoF particles and a mass-aggregate body supplying inertial resistance through
   the failure plane. Penetration resistance and digging resistance are separate. It models
   compaction, swell factor, and angle of repose.
@@ -119,9 +124,13 @@ genuinely mature.
   no retrievable vendor theory document for its soil model — the best descriptions are
   third-party — and, in CM Labs' own words, **"An academic License is not offered anymore."**
 - **Project Chrono** is the best open option (BSD-3) and the only one offering a *ladder* of
-  soil fidelity in one framework: **SCM** (Bekker-Wong semi-empirical), granular **DEM**,
-  **FEA**, and **CRM**, an SPH continuum model whose paper explicitly covers "digging,
-  grading" and validates against a real digging robot. **Chrono DEM-Engine** is the
+  soil fidelity in one framework: **SCM** (Soil Contact Model, a deformable ground mesh driven
+  by the Bekker-Wong semi-empirical pressure–sinkage relations), granular **DEM** (discrete
+  element method, which simulates individual grains), **FEA** (finite element analysis of the
+  soil as a continuous material), and **CRM**, a continuum model solved with SPH (smoothed
+  particle hydrodynamics, a mesh-free particle method). Moving from an empirical law toward
+  modelling the material and its grains adds detail and computational cost. CRM's paper
+  explicitly covers "digging, grading" and validates against a real digging robot. **Chrono DEM-Engine** is the
   high-fidelity reference to validate against rather than to run policies in.
 
 > [!note] The honest recommendation
@@ -507,8 +516,10 @@ checked and contained nothing.
 이 프로그램에서 시뮬레이터 사이의 흥미로운 차이는 속도가 아니다. 각각이 접촉을 *무엇으로
 여기는가*다.
 
-- **MuJoCo**는 타원 또는 각뿔 마찰 원뿔로 부드러운 볼록 최적화를 푼다. 그리고 문서가 명시적으로
-  제약 위반이 설계상 허용된다고 밝힌다 — 상보성 해법(complementarity solver)이 아니다. 그것이
+- **MuJoCo**는 타원 또는 각뿔 마찰 원뿔(쿨롱 마찰이 허용하는 접촉력의 집합.
+  [[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]] 참고)로 부드러운 볼록 최적화를 푼다. 그리고 문서가 명시적으로
+  제약 위반이 설계상 허용된다고 밝힌다 — 상보성 해법(complementarity solver, "간극이 0이거나 접촉력이 0"을 정확히 강제하는 해법.
+  [[04-robotics/contact-force-tactile|접촉·힘·촉각 §1]] 참고)이 아니다. 그것이
   빠르고 안정적인 이유이자, MuJoCo의 접촉력이 로드셀이 읽을 힘이 아닌 이유다.
 - **Drake의 하이드로일래스틱 접촉**은 반대로 간다: 강체가 "약간의 변형 가능한 층을 가진 것처럼
   살짝 파고들어", 점 힘이 아니라 근사적인 접촉 *면*과 *압력 분포*를 만들고, 비볼록 기하에서도
@@ -528,7 +539,8 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 
 - **AGX Dynamics**(Algoryx)가 가장 잘 문서화된 선택지다. `agxTerrain` 모듈은 높이장 표면 아래에
   질량·다짐도·토질을 담은 3D 복셀 격자를 모델링한다. 굴착 도구가 실패 영역(failure zone)을
-  만들어 고체 지형 질량을 동적 질량으로 바꾸고, **내부 마찰각과 점착력**으로 매개변수화되며,
+  만들어 고체 지형 질량을 동적 질량으로 바꾸고, **내부 마찰각과 점착력**(흙에 가해진 압력에 따라 전단 저항이 얼마나 커지는지와, 압력이 0일 때
+  전단 저항이 얼마인지를 정하는 두 강도 매개변수)으로 매개변수화되며,
   고체 셀이 6자유도 입자가 되고, 질량 집합체가 실패면을 통해 관성 저항을 공급한다. 관입 저항과
   굴착 저항이 분리되어 있다. 다짐, 팽창률(swell factor), 안식각도 모델링한다.
   - 독특하게도 벤더의 매개변수 수준 문서 **와** 심사받은 오픈 액세스 물리 논문을 **둘 다**
@@ -541,9 +553,12 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
   이론 문서가 없어 최선의 서술이 제3자의 것이고, CM Labs 자신의 표현으로
   **"An academic License is not offered anymore."**
 - **Project Chrono**가 최선의 오픈 선택지(BSD-3)이며, 하나의 프레임워크에 토질 충실도의
-  *사다리*를 제공하는 유일한 것이다: **SCM**(Bekker-Wong 준경험적), 입상 **DEM**, **FEA**,
-  그리고 논문이 "digging, grading"을 명시적으로 다루고 실제 굴착 로봇에 대해 검증한 SPH 연속체
-  모델 **CRM**. **Chrono DEM-Engine**은 정책을 돌릴 곳이 아니라 검증의 기준으로 쓸 고충실도 모델이다.
+  *사다리*를 제공하는 유일한 것이다: **SCM**(Soil Contact Model. Bekker-Wong 준경험적
+  압력–침하 관계로 변형되는 지면 메시), 입상 **DEM**(이산요소법. 흙 알갱이 하나하나를 시뮬레이션),
+  **FEA**(흙을 연속 재료로 보는 유한요소해석), 그리고 논문이 "digging, grading"을 명시적으로
+  다루고 실제 굴착 로봇에 대해 검증한, SPH(smoothed particle hydrodynamics, 메시 없는 입자 기법)로
+  푸는 연속체 모델 **CRM**. 경험 법칙에서 재료와 알갱이를 모델링하는 쪽으로 갈수록 세부와 계산
+  비용이 함께 늘어난다. **Chrono DEM-Engine**은 정책을 돌릴 곳이 아니라 검증의 기준으로 쓸 고충실도 모델이다.
 
 > [!note] 정직한 권고
 > **살 수 있으면 AGX, 열려 있고 인용 가능해야 하면 Chrono::CRM**, 그리고 DEM-Engine을 기준

@@ -33,16 +33,18 @@ Run these top to bottom. Stop at the first one that fails; do not skip ahead bec
 
 | # | Question | Command | What a failure means |
 |---|---|---|---|
-| 0 | Is this shell the environment I think it is? | `printenv \| grep -i ros` | Unsourced shell, wrong overlay, or a stray `ROS_DOMAIN_ID`. See 25.4. |
+| 0 | Is this shell the environment I think it is? | `printenv \| grep -i ros` | Unsourced shell, wrong overlay, or a stray `ROS_DOMAIN_ID` (the integer that picks which network partition this shell's nodes can see; 25.1 §5). See 25.4. |
 | 1 | Is the node running at all? | `ros2 node list` | It crashed at startup, or it is on another domain, or launch never started it. |
 | 2 | Does the node have the endpoint I expect? | `ros2 node info /my_node` | A remap you forgot, or a subscription created on a different name than you read in the source. |
 | 3 | Is anything actually published on the topic? | `ros2 topic hz /my_topic` | The upstream node is alive but silent — its own input is missing, or its timer never fires. |
 | 4 | Is anyone subscribed? | `ros2 topic info /my_topic` | Publisher-without-subscriber: the consumer is on a different name. |
 | 5 | Do the QoS profiles match? | `ros2 topic info /my_topic --verbose` | Reliability or durability incompatibility. Endpoints exist, count is nonzero, no data moves. |
-| 6 | Is the frame present, and recent? | `ros2 run tf2_ros tf2_echo map base_link` | Missing publisher, a disconnected tree, or stamps too old to interpolate. |
-| 7 | Is the clock right? | `ros2 topic hz /clock` and `ros2 param get /my_node use_sim_time` | Half the graph on simulated time and half on wall time. |
+| 6 | Is the frame present, and recent? | `ros2 run tf2_ros tf2_echo map base_link` | Missing publisher, a disconnected tree, or stamps too old to interpolate. See 25.6. |
+| 7 | Is the clock right? | `ros2 topic hz /clock` and `ros2 param get /my_node use_sim_time` | Half the graph on simulated time and half on wall time. See §8 for how that happens. |
 
-Steps 3 and 4 together are the single most useful pair: they split "nobody is sending" from "nobody is listening", which are opposite bugs with identical symptoms. Step 5 catches the case where both of those pass and data still does not move, which is the failure mode DDS introduced and which 25.5 dissects.
+Steps 3 and 4 together are the single most useful pair: they split "nobody is sending" from "nobody is listening", which are opposite bugs with identical symptoms. Step 5 catches the case where both of those pass and data still does not move, which is the failure mode DDS introduced and which 25.5 dissects. DDS (Data Distribution Service) is the middleware standard ROS 2 sends its messages over, and `ROS_DOMAIN_ID` is its partitioning knob; both are introduced in [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5.
+
+Check 6 leans on the transform tree from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot: URDF, TF2 and RViz]]: `map` and `base_link` are two named coordinate frames, and a disconnected tree means no chain of published transforms connects them, so the lookup fails.
 
 Write this table on something near your desk. Then, when a system breaks, run it — including the checks you are sure about.
 
@@ -131,9 +133,9 @@ ros2 run demo_nodes_cpp talker --ros-args --log-level talker:=DEBUG    # one nam
 ros2 run my_pkg my_node --ros-args --disable-rosout-logs               # saves real bandwidth on a robot
 ```
 
-The second form is the one that matters in a system of twenty nodes: raise one logger to `DEBUG` and leave the rest at `INFO`, instead of drowning. Logger names are hierarchical — setting `abc` also affects `abc.def` unless that was set explicitly.
+The second form is the one that matters in a system of twenty nodes: raise one logger to `DEBUG` and leave the rest at `INFO`, instead of drowning. Logger names are hierarchical — setting `abc` also affects `abc.def` unless that was set explicitly. The hierarchy is split at dots, so `abc.def` is a child of `abc` but `abcd` is not.
 
-Changing a level **at runtime**, without restarting, is possible but off by default. The node must opt in:
+Why you want this: a rare fault on a running robot can be diagnosed by raising one logger's level in place, without restarting the run that produced it. Changing a level **at runtime** is possible but off by default. The node must opt in:
 
 ```python
 node = Node('NodeWithLoggerService', enable_logger_service=True)
@@ -382,7 +384,7 @@ RUN apt-get update \
     && colcon build --symlink-install
 ```
 
-Official images are published as `ros:jazzy` (base) and `osrf/ros:jazzy-desktop` (with the desktop tools). Pin the distribution in the tag, and for anything you will cite, record the image **digest** as well — tags are mutable.
+Official images are published as `ros:jazzy` (base) and `osrf/ros:jazzy-desktop` (with the desktop tools). Pin the distribution in the tag, and for anything you will cite, record the image **digest** as well — a hash of the image's exact contents. Tags are mutable: the same tag can later be repointed to an image with a different digest.
 
 The reason this matters is not tidiness. "I ran this on my laptop and got 87%" is a story. "Here is the image digest, the commit, the bag, the parameter dump and the command" is a result, because someone else can obtain it. Those two things look identical in a paper and are different kinds of object.
 
@@ -523,16 +525,18 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 
 | # | 질문 | 명령 | 실패의 의미 |
 |---|---|---|---|
-| 0 | 이 셸의 환경이 내가 생각하는 그것인가? | `printenv \| grep -i ros` | source 안 한 셸, 잘못된 오버레이, 엉뚱한 `ROS_DOMAIN_ID`. 25.4 참고. |
+| 0 | 이 셸의 환경이 내가 생각하는 그것인가? | `printenv \| grep -i ros` | source 안 한 셸, 잘못된 오버레이, 엉뚱한 `ROS_DOMAIN_ID`(이 셸의 노드가 어느 네트워크 구획을 보는지 정하는 정수, 25.1 §5). 25.4 참고. |
 | 1 | 노드가 떠 있기는 한가? | `ros2 node list` | 기동 중 죽었거나, 다른 도메인에 있거나, launch가 아예 띄우지 않았다. |
 | 2 | 노드에 내가 기대한 엔드포인트가 있는가? | `ros2 node info /my_node` | 잊은 remap, 또는 소스에서 읽은 이름과 다른 이름으로 만든 구독. |
 | 3 | 토픽에 실제로 뭔가 발행되는가? | `ros2 topic hz /my_topic` | 상류 노드는 살아 있으나 조용하다. 자기 입력이 없거나 타이머가 안 돈다. |
 | 4 | 구독자가 있는가? | `ros2 topic info /my_topic` | 구독자 없는 퍼블리셔. 소비자가 다른 이름에 붙어 있다. |
 | 5 | QoS 프로파일이 맞는가? | `ros2 topic info /my_topic --verbose` | reliability 또는 durability 불일치. 엔드포인트는 있고 개수도 0이 아닌데 데이터가 안 간다. |
-| 6 | 프레임이 있고, 충분히 최신인가? | `ros2 run tf2_ros tf2_echo map base_link` | 퍼블리셔 누락, 끊어진 트리, 또는 보간하기엔 너무 오래된 스탬프. |
-| 7 | 시계가 맞는가? | `ros2 topic hz /clock`, `ros2 param get /my_node use_sim_time` | 그래프의 절반은 시뮬레이션 시간, 절반은 벽시계. |
+| 6 | 프레임이 있고, 충분히 최신인가? | `ros2 run tf2_ros tf2_echo map base_link` | 퍼블리셔 누락, 끊어진 트리, 또는 보간하기엔 너무 오래된 스탬프. 25.6 참고. |
+| 7 | 시계가 맞는가? | `ros2 topic hz /clock`, `ros2 param get /my_node use_sim_time` | 그래프의 절반은 시뮬레이션 시간, 절반은 벽시계. 어떻게 그렇게 되는지는 §8. |
 
-3번과 4번의 조합이 가장 쓸모 있다. "아무도 안 보낸다"와 "아무도 안 듣는다"를 가른다. 증상은 같고 원인은 반대다. 5번은 그 둘을 통과하고도 데이터가 안 움직이는 경우를 잡는다. DDS가 들여온 실패 양식이고 25.5가 해부한다.
+3번과 4번의 조합이 가장 쓸모 있다. "아무도 안 보낸다"와 "아무도 안 듣는다"를 가른다. 증상은 같고 원인은 반대다. 5번은 그 둘을 통과하고도 데이터가 안 움직이는 경우를 잡는다. DDS가 들여온 실패 양식이고 25.5가 해부한다. DDS(Data Distribution Service)는 ROS 2가 메시지를 실어 나르는 미들웨어 표준이고, `ROS_DOMAIN_ID`는 그 구획을 나누는 설정이다. 둘 다 [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5에서 소개한다.
+
+6번 점검은 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot: URDF, TF2 and RViz]]의 변환 트리를 전제한다. `map`과 `base_link`는 이름 붙은 좌표 프레임 두 개이고, 트리가 끊어졌다는 것은 둘을 잇는 발행된 변환의 사슬이 없다는 뜻이라 조회가 실패한다.
 
 이 표를 책상 근처에 붙여 두어라. 그리고 고장이 나면 확신하는 항목까지 포함해 전부 돌려라.
 
@@ -621,9 +625,9 @@ ros2 run demo_nodes_cpp talker --ros-args --log-level talker:=DEBUG    # 지정�
 ros2 run my_pkg my_node --ros-args --disable-rosout-logs               # 로봇에서 대역폭을 실제로 아낀다
 ```
 
-노드가 스무 개인 시스템에서 의미 있는 것은 두 번째 형태다. 하나만 `DEBUG`로 올리고 나머지는 `INFO`로 둔다. 로거 이름은 계층이라, `abc`를 바꾸면 명시적으로 설정하지 않은 `abc.def`도 함께 바뀐다.
+노드가 스무 개인 시스템에서 의미 있는 것은 두 번째 형태다. 하나만 `DEBUG`로 올리고 나머지는 `INFO`로 둔다. 로거 이름은 계층이라, `abc`를 바꾸면 명시적으로 설정하지 않은 `abc.def`도 함께 바뀐다. 계층은 점(`.`)으로 나뉘므로 `abc.def`는 `abc`의 자식이지만 `abcd`는 아니다.
 
-재시작 없이 **런타임에** 바꾸는 것도 가능하지만 기본은 꺼져 있다. 노드가 켜 줘야 한다.
+왜 필요한가: 돌아가는 로봇의 드문 결함을, 그 현상을 만든 실행을 재시작하지 않고 로거 하나의 수준만 올려 진단할 수 있다. 재시작 없이 **런타임에** 바꾸는 것은 가능하지만 기본은 꺼져 있다. 노드가 켜 줘야 한다.
 
 ```python
 node = Node('NodeWithLoggerService', enable_logger_service=True)
@@ -872,7 +876,7 @@ RUN apt-get update \
     && colcon build --symlink-install
 ```
 
-공식 이미지는 `ros:jazzy`(기본)와 `osrf/ros:jazzy-desktop`(데스크톱 도구 포함)으로 배포된다. 태그에 배포판을 고정하고, 인용할 결과라면 이미지 **다이제스트**까지 기록하라. 태그는 변한다.
+공식 이미지는 `ros:jazzy`(기본)와 `osrf/ros:jazzy-desktop`(데스크톱 도구 포함)으로 배포된다. 태그에 배포판을 고정하고, 인용할 결과라면 이미지 **다이제스트**(이미지 내용 전체의 해시)까지 기록하라. 태그는 변한다. 같은 태그가 나중에 다른 다이제스트의 이미지를 가리키도록 바뀔 수 있다.
 
 이게 중요한 이유는 단정함이 아니다. "내 노트북에서 돌려서 87퍼센트가 나왔다"는 이야기다. "이미지 다이제스트, 커밋, bag, 파라미터 덤프, 명령이 여기 있다"는 결과다. 남이 얻어낼 수 있기 때문이다. 논문에서는 둘이 똑같아 보이지만 서로 다른 종류의 물건이다.
 

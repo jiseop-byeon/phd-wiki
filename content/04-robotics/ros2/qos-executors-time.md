@@ -14,8 +14,8 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
 > **Working** — 돌아가는 시스템에서 세 가지 조용한 실패를 알아보고 고칠 정도. Executor의 형식적 타이밍 분석을 할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] and [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — you should have written a publisher, a subscriber and a service client. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, the exercises run from the command line and from plain Python files.
-> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (where middleware, DDS and `rmw` are defined), [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] and [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — you should have written a publisher, a subscriber and a service client. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, the exercises run from the command line and from plain Python files.
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
 
 ### 1. Why this page exists
 
@@ -46,7 +46,7 @@ A QoS *profile* is a set of *policies*, applied independently to each publisher,
 
 Every non-duration policy also accepts *system default*, which defers to the middleware, and every duration policy accepts *default*, an unspecified duration that middleware usually treats as infinite.
 
-Deadline, lifespan and liveliness are the three most people never set, and deadline and liveliness are the only policies that can tell you a stream has *stopped* (lifespan expires stale samples but raises no event): a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical.
+Deadline, lifespan and liveliness are the three most people never set, and deadline and liveliness are the only policies that can tell you a stream has *stopped* (lifespan expires stale samples but raises no event): a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical. A concrete case: a 30 Hz camera sends a frame every 33 ms; if the publisher offers and the subscription requests a 40 ms deadline, the subscription gets a *requested deadline missed* event whenever more than 40 ms pass without a frame.
 
 ### 3. Compatibility: the request-versus-offered rule
 
@@ -162,7 +162,7 @@ The design habit worth forming: **write the QoS of every publisher and subscript
 
 ### 7. Seeing a mismatch: `ros2 topic info --verbose`
 
-This is the command. Plain `ros2 topic info` gives you counts; `--verbose` (or `-v`) prints, for every publisher and every subscription on the topic, the node name, namespace, type, type hash, GID and the full QoS profile:
+This is the command. Plain `ros2 topic info` gives you counts; `--verbose` (or `-v`) prints, for every publisher and every subscription on the topic, the node name, namespace, type, type hash, GID (the globally unique ID the middleware gives each publisher and subscription) and the full QoS profile:
 
 ```bash
 ros2 topic info /image --verbose
@@ -212,11 +212,11 @@ ros2 topic echo /image --qos-reliability reliable   # now it fails the same way 
 
 Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it.
 
-rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
+rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list (its publishers, subscriptions, timers, services and clients — everything that can have a callback) and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
 
 Two consequences that beginners get wrong:
 
-- **One thread means one callback at a time, and a long callback delays everything.** A 200 ms callback on a node whose control timer fires at 100 Hz does not "run in the background"; it stalls the timer. Incoming messages are not queued at the client-library level — they stay in the middleware until a callback takes them, which is a deliberate difference from ROS 1, and means QoS depth (not some ROS-side buffer) decides what survives the stall.
+- **One thread means one callback at a time, and a long callback delays everything.** A 200 ms callback on a node whose control timer fires at 100 Hz does not "run in the background"; it stalls the timer. Incoming messages are not queued at the client-library level — they stay in the middleware until a callback takes them, which is a deliberate difference from ROS 1, and means QoS depth (not some ROS-side buffer) decides what survives the stall: under *keep last*, the middleware holds only the newest N samples and each new arrival pushes out the oldest.
 - **The order is round-robin, not FIFO.** The wait set reports only *whether* a topic has messages, not how many or how old, so an overloaded executor processes topics in rotation rather than in arrival order.
 
 ### 9. Callback groups, and the deadlock 25.3 left open
@@ -241,7 +241,13 @@ def _timer_cb(self):
 
 You see `Sending request` once. You never see `Received response`, and the timer never fires again. The server logs that it received the request and responded.
 
-The mechanism: a synchronous call is not the absence of callbacks, it is a *hidden* callback. The client hands its callback group to the future whose done-callback must run for the result to become available. That done-callback and the timer callback are in the same mutually exclusive group, and the timer callback is still on the stack waiting — so the done-callback can never be scheduled. The stuck timer callback also blocks its own next firing, which is why the node goes completely quiet rather than merely missing one response.
+The mechanism: a synchronous call is not the absence of callbacks, it is a *hidden* callback. Step by step:
+
+1. The timer callback starts running and calls `client.call()`, which waits for the result.
+2. The client hands its callback group to the future, and the result becomes available only when that future's done-callback runs.
+3. That done-callback and the timer callback are in the same mutually exclusive group, so the done-callback cannot start while the timer callback is still running.
+4. The timer callback is still on the stack waiting for the result — so the done-callback can never be scheduled, and the wait never ends.
+5. The stuck timer callback also blocks its own next firing, which is why the node goes completely quiet rather than merely missing one response.
 
 The rule:
 
@@ -452,8 +458,8 @@ Per-topic QoS overrides for recording and replay, and the ordered set of checks 
 > **Working** — enough to recognise and fix all three silent failures, not to do formal timing analysis.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
-> 25.2 and 25.3 are assumed; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
+> 25.1, 25.2 and 25.3 are assumed; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -484,7 +490,7 @@ QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션
 
 기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다.
 
-deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그중 deadline과 liveliness가 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책이다(lifespan은 낡은 샘플을 만료시킬 뿐 이벤트를 내지 않는다). deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다.
+deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그중 deadline과 liveliness가 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책이다(lifespan은 낡은 샘플을 만료시킬 뿐 이벤트를 내지 않는다). deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다. 구체적인 예: 30 Hz 카메라는 33 ms마다 프레임을 보낸다. 퍼블리셔가 40 ms deadline을 제공하고 서브스크립션도 40 ms를 요청하면, 프레임 없이 40 ms가 넘게 지날 때마다 서브스크립션이 *requested deadline missed* 이벤트를 받는다.
 
 ### 3. 호환성: request 대 offered 규칙
 
@@ -600,7 +606,7 @@ sub_ = this->create_subscription<sensor_msgs::msg::Image>(
 
 ### 7. 불일치 보기: `ros2 topic info --verbose`
 
-이것이 그 명령이다. 그냥 `ros2 topic info`는 개수만 주지만, `--verbose`(또는 `-v`)는 토픽의 퍼블리셔와 서브스크립션마다 노드 이름, 네임스페이스, 타입, 타입 해시, GID, 그리고 전체 QoS 프로파일을 찍는다.
+이것이 그 명령이다. 그냥 `ros2 topic info`는 개수만 주지만, `--verbose`(또는 `-v`)는 토픽의 퍼블리셔와 서브스크립션마다 노드 이름, 네임스페이스, 타입, 타입 해시, GID(미들웨어가 퍼블리셔와 서브스크립션마다 붙이는 전역 고유 ID), 그리고 전체 QoS 프로파일을 찍는다.
 
 ```bash
 ros2 topic info /image --verbose
@@ -650,11 +656,11 @@ ros2 topic echo /image --qos-reliability reliable   # 이제 당신 노드와 �
 
 콜백은 저절로 돌지 않는다. **Executor**가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다.
 
-rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
+rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록(퍼블리셔, 서브스크립션, 타이머, 서비스, 클라이언트 — 콜백을 가질 수 있는 모든 것)을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
 
 초심자가 틀리는 귀결 둘:
 
-- **스레드 하나는 한 번에 콜백 하나를 뜻하고, 긴 콜백은 모든 것을 지연시킨다.** 100 Hz 제어 타이머를 가진 노드에서 200 ms짜리 콜백은 "뒤에서 도는" 것이 아니라 타이머를 세운다. 도착한 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 콜백이 가져갈 때까지 미들웨어에 남는다. ROS 1과의 의도적인 차이이고, 그 정체 구간에서 무엇이 살아남는지는 ROS 쪽 버퍼가 아니라 QoS depth가 정한다는 뜻이다.
+- **스레드 하나는 한 번에 콜백 하나를 뜻하고, 긴 콜백은 모든 것을 지연시킨다.** 100 Hz 제어 타이머를 가진 노드에서 200 ms짜리 콜백은 "뒤에서 도는" 것이 아니라 타이머를 세운다. 도착한 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 콜백이 가져갈 때까지 미들웨어에 남는다. ROS 1과의 의도적인 차이이고, 그 정체 구간에서 무엇이 살아남는지는 ROS 쪽 버퍼가 아니라 QoS depth가 정한다는 뜻이다. *keep last*에서는 미들웨어가 가장 최근 샘플 N개만 들고 있고, 새 샘플이 올 때마다 가장 오래된 것이 밀려난다.
 - **순서는 FIFO가 아니라 라운드 로빈이다.** wait set은 어떤 토픽에 메시지가 *있는지*만 보고할 뿐 몇 개인지, 얼마나 오래됐는지는 보고하지 않는다. 그래서 과부하된 executor는 도착 순서가 아니라 토픽을 돌아가며 처리한다.
 
 ### 9. 콜백 그룹, 그리고 25.3이 남겨 둔 교착
@@ -679,7 +685,13 @@ def _timer_cb(self):
 
 `Sending request`가 한 번 보인다. `Received response`는 영영 없고, 타이머는 다시 울리지 않는다. 서버 쪽 터미널에는 요청을 받아 응답했다고 찍힌다.
 
-기전: 동기 호출은 콜백이 없는 것이 아니라 콜백이 *숨어 있는* 것이다. 클라이언트는 자기 콜백 그룹을 future에 넘기고, 결과가 나오려면 그 future의 done-callback이 실행되어야 한다. 그 done-callback과 타이머 콜백이 같은 mutually exclusive 그룹에 있는데 타이머 콜백은 기다리며 스택에 남아 있으므로, done-callback은 영영 스케줄되지 못한다. 막힌 타이머 콜백은 자기 다음 발화도 막으므로 노드는 응답 하나를 놓치는 정도가 아니라 완전히 조용해진다.
+기전: 동기 호출은 콜백이 없는 것이 아니라 콜백이 *숨어 있는* 것이다. 단계별로:
+
+1. 타이머 콜백이 실행을 시작하고 `client.call()`을 부르며, 이 호출은 결과를 기다린다.
+2. 클라이언트는 자기 콜백 그룹을 future에 넘기고, 결과는 그 future의 done-callback이 실행되어야만 나온다.
+3. 그 done-callback과 타이머 콜백은 같은 mutually exclusive 그룹에 있으므로, 타이머 콜백이 실행 중인 동안 done-callback은 시작할 수 없다.
+4. 타이머 콜백은 결과를 기다리며 여전히 스택에 남아 있다. 그래서 done-callback은 영영 스케줄되지 못하고, 기다림은 끝나지 않는다.
+5. 막힌 타이머 콜백은 자기 다음 발화도 막으므로, 노드는 응답 하나를 놓치는 정도가 아니라 완전히 조용해진다.
 
 규칙:
 

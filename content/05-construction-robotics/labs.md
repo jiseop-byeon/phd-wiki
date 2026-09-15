@@ -24,14 +24,14 @@ complementary research programs.
 | Lab / group | PI | Known for |
 |---|---|---|
 | [LIVE Lab](https://live.engin.umich.edu) + SICIS, Univ. of Michigan CEE | Vineet Kamat · Carol Menassa | the canonical manipulation-for-construction progression: vision-guided assembly (2015) → adaptive autonomy → learning-from-demonstration → closed-loop BIM digital twins → tactile handover → language-instructable robots |
-| [DPM Lab](https://dpm.engin.umich.edu), Univ. of Michigan CEE | SangHyun Lee | worker-centered automation: EEG/EDA wearable biosensing, ergonomics vision, and feeding worker physiological state back into human-robot team control |
+| [DPM Lab](https://dpm.engin.umich.edu), Univ. of Michigan CEE | SangHyun Lee | worker-centered automation: EEG (brain electrical activity) / EDA (electrodermal activity, i.e. skin conductance) wearable biosensing, ergonomics vision, and feeding worker physiological state back into human-robot team control |
 
 **Verified academic descendants running their own labs:**
 
 | Descendant | Advisor(s) | Now at | Direction |
 |---|---|---|---|
 | Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | a group directly overlapping this wiki's civil-engineering robot-learning path — DeepMapping, collaborative perception, NSF CAREER on construction-site robot navigation |
-| Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | physiological computing → robot control: BCI teleoperation, intention-aware motion planning, legged/aerial inspection robots |
+| Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | physiological computing → robot control: BCI (brain–computer interface) teleoperation, intention-aware motion planning, legged/aerial inspection robots |
 | Daeho Kim | S. Lee | [Construction Vision Lab](https://cvl.civmin.utoronto.ca/), Univ. of Toronto | co-robotic vision safety, synthetic training data (BlendCon) |
 | Francis Baek | S. Lee | [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech CEE | nervous-system-based HRC (EEG/wearables in the robot loop); new line: LMM agents on quadrupeds |
 | Hongrui Yu | Kamat · Menassa | [Virginia Tech CEE](https://mlsoc.vt.edu/about/faculty-and-staff/hongrui-yu.html) | cloud-based imitation learning of construction skills, tactile handover |
@@ -40,7 +40,7 @@ complementary research programs.
 | Somin Park | Kamat · Menassa | UT Arlington | natural-language / LLM+VR interfaces for worker-robot communication |
 
 (Jebelli's own students continue the tree: Yizhi Liu → Syracuse — NSF-funded flying+legged
-roof-inspection robots; Shayan Shayesteh → Appalachian State; M. Habibnezhad → LSU, postdoc edge.)
+roof-inspection robots; Shayan Shayesteh → Appalachian State; M. Habibnezhad → LSU, postdoc edge — a postdoc-mentorship link, unlike the PhD-advisor links elsewhere in this tree.)
 
 ### Other US groups
 
@@ -69,7 +69,7 @@ excavation lineage at CMU (Stentz/Singh, 1990s) lives in the
 | Lab | PI | Known for |
 |---|---|---|
 | [Robotic Systems Lab](https://rsl.ethz.ch/), ETH Zurich | Marco Hutter | **the HEAP autonomous excavation line** — force-based digging (2017) → trenching → HEAP (2021) → sim-to-real RL hydraulics → the [6 m autonomous dry-stone wall](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html) (Science Robotics 2023) → ExT multitask pretraining (2025); spun out **Gravis Robotics** (Johns CEO, Jud CTO) |
-| [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/), ETH Zurich | Fabio Gramazio · Matthias Kohler | robotic fabrication in architecture (In situ Fabricator, Mesh Mould, DFAB HOUSE, Semiramis); NCCR Digital Fabrication; the field's densest faculty tree: Dörfler → TUM, Parascho → EPFL, Hack → TU Braunschweig, Lloret-Fritschi → USI |
+| [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/) (GKR), ETH Zurich | Fabio Gramazio · Matthias Kohler | robotic fabrication in architecture (In situ Fabricator, Mesh Mould, DFAB HOUSE, Semiramis); NCCR Digital Fabrication; the field's densest faculty tree: Dörfler → TUM, Parascho → EPFL, Hack → TU Braunschweig, Lloret-Fritschi → USI |
 | [Professorship of Digital Fabrication](https://www.arc.ed.tum.de/en/df/professorship/), TUM | Kathrin Dörfler | collaborative on-site fabrication, AR-mediated timber assembly, mobile robots (GKR alumna); TUM's current center of gravity — Thomas Bock (STCR taxonomy, the field's standard reference books) emeritus since 2023 |
 | [CRCL](https://www.crclcrclcrcl.org/), EPFL | Stefana Parascho | cooperative multi-robot assembly of full-scale structures (LightVault); GKR → Princeton → EPFL |
 | [ICD](https://www.icd.uni-stuttgart.de/) + IntCDC, Univ. of Stuttgart | Achim Menges · Jan Knippers | the other German heavyweight: robotic timber/fiber fabrication pavilions, cyber-physical prefab (Cluster of Excellence IntCDC) |
@@ -101,7 +101,14 @@ These groups publish the manipulation/HRC methods construction researchers impor
 
 ### What separates these groups
 
-The groups differ less by country than by what they put on the site. RICAL and RSL/HEAP build field-deployed mobile or heavy-machine systems, from site scanning to an autonomous dry-stone wall. The Michigan LIVE Lab line, the manufacturing labs, and Texas Robotics develop manipulation and learning methods. DPM, RAISE, HARMONIC, and the Florida and Oregon State groups study the human side — biosensing, teleoperation, and interfaces — rather than autonomy itself. RAAMAC, CMU CEE, and the fabrication institutes (GKR, ICD, TUM, CRCL) sit at the ends of the pipeline: monitoring what was built, or designing robotic production of a structure.
+The groups differ less by country than by what they put on the site:
+
+| What they put on the site | Groups |
+|---|---|
+| field-deployed mobile or heavy-machine systems, from site scanning to an autonomous dry-stone wall | RICAL, RSL/HEAP |
+| manipulation and learning methods | Michigan LIVE Lab line, the manufacturing labs, Texas Robotics |
+| the human side — biosensing, teleoperation, and interfaces — rather than autonomy itself | DPM, RAISE, HARMONIC, the Florida and Oregon State groups |
+| the ends of the pipeline: monitoring what was built, or designing robotic production of a structure | RAAMAC, CMU CEE, the fabrication institutes (GKR, ICD, TUM, CRCL) |
 
 ### Self-check
 
@@ -144,14 +151,14 @@ The groups differ less by country than by what they put on the site. RICAL and R
 | 랩 / 그룹 | PI | 대표 분야 |
 |---|---|---|
 | [LIVE Lab](https://live.engin.umich.edu) + SICIS, 미시간대 CEE | Vineet Kamat · Carol Menassa | 건설 조작의 정본이라 할 진행: 비전 유도 조립(2015) → 적응적 자율성 → 시연 학습 → 폐루프 BIM 디지털 트윈 → 촉각 전달 → 언어 지시 로봇 |
-| [DPM Lab](https://dpm.engin.umich.edu), 미시간대 CEE | SangHyun Lee | 작업자 중심 자동화: EEG/EDA 웨어러블 바이오센싱, 인간공학 비전, 작업자 생리 상태를 인간-로봇 팀 제어에 피드백 |
+| [DPM Lab](https://dpm.engin.umich.edu), 미시간대 CEE | SangHyun Lee | 작업자 중심 자동화: EEG(뇌 전기 활동)/EDA(피부 전기 활동, 즉 피부 전도도) 웨어러블 바이오센싱, 인간공학 비전, 작업자 생리 상태를 인간-로봇 팀 제어에 피드백 |
 
 **검증된 학술 계보 (자기 랩을 운영하는 제자들):**
 
 | 제자 | 지도교수 | 현 소속 | 방향 |
 |---|---|---|---|
 | Chen Feng | Kamat | [AI4CE Lab](https://ai4ce.github.io/), NYU Tandon | 이 위키의 토목 기반 로봇러닝 경로와 직접 겹치는 그룹 — DeepMapping, 협력 인식, 건설 현장 로봇 항법 NSF CAREER |
-| Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | 생리 신호 컴퓨팅 → 로봇 제어: BCI 원격조작, 의도 인식 모션 계획, 보행/비행 점검 로봇 |
+| Houtan Jebelli | S. Lee | [RAISE Lab](https://raiselab.cee.illinois.edu/), UIUC CEE | 생리 신호 컴퓨팅 → 로봇 제어: BCI(뇌–컴퓨터 인터페이스) 원격조작, 의도 인식 모션 계획, 보행/비행 점검 로봇 |
 | Daeho Kim | S. Lee | [Construction Vision Lab](https://cvl.civmin.utoronto.ca/), 토론토대 | 협동 로봇 비전 안전, 합성 학습 데이터(BlendCon) |
 | Francis Baek | S. Lee | [HARMONIC Lab](https://harmoniclab.ce.gatech.edu/), Georgia Tech CEE | 신경계 기반 HRC (EEG/웨어러블을 로봇 루프에); 신규: 사족보행 로봇 위의 LMM 에이전트 |
 | Hongrui Yu | Kamat · Menassa | [Virginia Tech CEE](https://mlsoc.vt.edu/about/faculty-and-staff/hongrui-yu.html) | 건설 기능의 클라우드 모방학습, 촉각 전달 |
@@ -160,7 +167,7 @@ The groups differ less by country than by what they put on the site. RICAL and R
 | Somin Park | Kamat · Menassa | UT Arlington | 작업자-로봇 소통을 위한 자연어/LLM+VR 인터페이스 |
 
 (Jebelli의 제자들이 나무를 잇는다: Yizhi Liu → Syracuse — NSF 지원 비행+보행 지붕 점검
-로봇; Shayan Shayesteh → Appalachian State; M. Habibnezhad → LSU, 포스닥 관계.)
+로봇; Shayan Shayesteh → Appalachian State; M. Habibnezhad → LSU, 포스닥 관계 — 이 나무의 다른 간선인 박사 지도 관계와 달리 포스닥 지도 관계다.)
 
 ### 그 외 미국 그룹
 
@@ -188,7 +195,7 @@ The groups differ less by country than by what they put on the site. RICAL and R
 | 랩 | PI | 대표 분야 |
 |---|---|---|
 | [Robotic Systems Lab](https://rsl.ethz.ch/), ETH 취리히 | Marco Hutter | **HEAP 자율 굴착 라인** — 힘 기반 굴착(2017) → 트렌칭 → HEAP(2021) → sim-to-real RL 유압 → [6m 자율 돌담](https://ethz.ch/en/news-and-events/eth-news/news/2023/11/autonomous-excavator-constructs-a-six-metre-high-dry-stone-wall.html)(Science Robotics 2023) → ExT 멀티태스크 사전학습(2025); **Gravis Robotics** 스핀아웃 (Johns CEO, Jud CTO) |
-| [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/), ETH 취리히 | Fabio Gramazio · Matthias Kohler | 건축 로봇 패브리케이션 (In situ Fabricator, Mesh Mould, DFAB HOUSE, Semiramis); NCCR Digital Fabrication; 분야에서 가장 조밀한 교수 계보: Dörfler → TUM, Parascho → EPFL, Hack → TU Braunschweig, Lloret-Fritschi → USI |
+| [Gramazio Kohler Research](https://gramaziokohler.arch.ethz.ch/) (GKR), ETH 취리히 | Fabio Gramazio · Matthias Kohler | 건축 로봇 패브리케이션 (In situ Fabricator, Mesh Mould, DFAB HOUSE, Semiramis); NCCR Digital Fabrication; 분야에서 가장 조밀한 교수 계보: Dörfler → TUM, Parascho → EPFL, Hack → TU Braunschweig, Lloret-Fritschi → USI |
 | [Professorship of Digital Fabrication](https://www.arc.ed.tum.de/en/df/professorship/), TUM | Kathrin Dörfler | 협업 현장 패브리케이션, AR 매개 목조 조립, 모바일 로봇 (GKR 출신); TUM의 현재 중심 — Thomas Bock(STCR 분류, 표준 참고서)은 2023년 은퇴 |
 | [CRCL](https://www.crclcrclcrcl.org/), EPFL | Stefana Parascho | 실규모 구조물의 협력 멀티로봇 조립 (LightVault); GKR → Princeton → EPFL |
 | [ICD](https://www.icd.uni-stuttgart.de/) + IntCDC, 슈투트가르트대 | Achim Menges · Jan Knippers | 독일의 다른 한 축: 로봇 목조/섬유 파빌리온, 사이버-물리 프리팹 (IntCDC 엑설런스 클러스터) |
@@ -220,7 +227,14 @@ The groups differ less by country than by what they put on the site. RICAL and R
 
 ### 그룹을 가르는 것
 
-그룹들은 나라보다 현장에 무엇을 내놓는지로 갈린다. RICAL과 RSL/HEAP은 현장 스캔부터 자율 돌담까지 현장 배치형 이동·중장비 시스템을 만든다. 미시간 LIVE Lab 계열, 제조 로봇 랩, Texas Robotics는 조작·학습 기법을 개발한다. DPM, RAISE, HARMONIC, 플로리다대·Oregon State 그룹은 자율성 자체보다 인간 쪽 — 바이오센싱, 원격조작, 인터페이스 — 을 연구한다. RAAMAC, CMU CEE, 패브리케이션 연구소(GKR, ICD, TUM, CRCL)는 파이프라인의 양 끝에 있다: 지어진 것을 모니터링하거나 구조물의 로봇 생산을 설계한다.
+그룹들은 나라보다 현장에 무엇을 내놓는지로 갈린다:
+
+| 현장에 내놓는 것 | 그룹 |
+|---|---|
+| 현장 스캔부터 자율 돌담까지, 현장 배치형 이동·중장비 시스템 | RICAL, RSL/HEAP |
+| 조작·학습 기법 | 미시간 LIVE Lab 계열, 제조 로봇 랩, Texas Robotics |
+| 자율성 자체보다 인간 쪽 — 바이오센싱, 원격조작, 인터페이스 | DPM, RAISE, HARMONIC, 플로리다대·Oregon State 그룹 |
+| 파이프라인의 양 끝: 지어진 것을 모니터링하거나 구조물의 로봇 생산을 설계 | RAAMAC, CMU CEE, 패브리케이션 연구소(GKR, ICD, TUM, CRCL) |
 
 ### Self-check
 

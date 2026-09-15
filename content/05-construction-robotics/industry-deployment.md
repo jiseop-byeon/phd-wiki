@@ -16,9 +16,9 @@ autonomous. Company status changes quickly; entries are a verification snapshot
 
 | Archetype | Examples | Typical human role | Main evidence to seek |
 |---|---|---|---|
-| OEM-integrated autonomy | Caterpillar Command, Komatsu/EarthBrain, Kajima A4CSEL | fleet supervision, exception handling | operating hours, fleet size, intervention rate |
-| Retrofit autonomy | Gravis RACK, Built Robotics, Bedrock | setup, geofence, remote supervision/recovery | supported machines/tasks, installation and support burden |
-| Teleoperation/assistance | Cat Command stations, haptic/shared-control systems | continuous or exception-based operator | latency, staffing ratio, productivity and safety |
+| OEM-integrated autonomy (OEM = original equipment manufacturer, the company that builds the machine) | Caterpillar Command, Komatsu/EarthBrain, Kajima A4CSEL | fleet supervision, exception handling | operating hours, fleet size, intervention rate |
+| Retrofit autonomy (autonomy kit added to an existing machine) | Gravis RACK, Built Robotics, Bedrock | setup, geofence (a virtual boundary the machine may not leave), remote supervision/recovery | supported machines/tasks, installation and support burden |
+| Teleoperation/assistance | Cat Command stations, haptic/[[04-robotics/hri-safety#3. Shared control and authority\|shared-control]] systems | continuous or exception-based operator | latency, staffing ratio, productivity and safety |
 | Task-specific robot | Canvas drywall, robotic layout/welding/bricklaying systems | material feeding, setup, finishing | complete workflow labor and throughput |
 | Data/workflow platform | Smart Construction, Reconstruct | model setup and decisions remain human | whether data changes machine action or only reporting |
 
@@ -65,10 +65,10 @@ mean a paid pilot; “AI-powered” may describe perception while motion is scri
 
 1. A vendor says its excavator is "deployed". Which checklist questions distinguish a paid pilot from continuous operation?
 2. Why can a robot be faster per wall and still not reduce total labor?
-3. A product has a strong peer-reviewed paper but no named customer. Which of the four axes in §4 does that evidence support?
+3. A product has a strong peer-reviewed paper but no named customer. Which of the four axes in §4 below (method novelty, system completeness, deployment evidence, economic value) does that evidence support?
 
 > [!tip]- Answers
-> 1. Q2 (machines, sites, customers, continuous operating hours) and Q3 (remote operators and interventions per hour).
+> 1. §3 Q2 (machines, sites, customers, continuous operating hours) and §3 Q3 (remote operators and interventions per hour).
 > 2. Setup, calibration, material handling, maintenance, and recovery (Q4) can move labor elsewhere; only a complete-workflow comparison (Q5) shows the net effect.
 > 3. Method novelty and possibly system completeness — not deployment evidence or economic value, which need operational and customer sources.
 
@@ -102,9 +102,9 @@ deployment evidence, and economic value** should not be collapsed into one score
 
 | 유형 | 예 | 보통의 인간 역할 | 확인할 증거 |
 |---|---|---|---|
-| OEM 통합 자율성 | Caterpillar Command, Komatsu/EarthBrain, Kajima A4CSEL | 선단 감독·예외 처리 | 운용 시간·선단 규모·개입률 |
-| Retrofit 자율성 | Gravis RACK, Built Robotics, Bedrock | 설정·geofence·원격 감독/복구 | 지원 장비·과제, 설치·지원 부담 |
-| 원격조작/보조 | Cat Command station, 햅틱·공유제어 | 지속 또는 예외 기반 운전자 | 지연, 운전자:기계 비율, 생산성·안전 |
+| OEM(원 장비 제조사, 기계를 만드는 회사) 통합 자율성 | Caterpillar Command, Komatsu/EarthBrain, Kajima A4CSEL | 선단 감독·예외 처리 | 운용 시간·선단 규모·개입률 |
+| Retrofit(기존 기계에 자율 키트를 덧붙임) 자율성 | Gravis RACK, Built Robotics, Bedrock | 설정·geofence(기계가 벗어나면 안 되는 가상 경계)·원격 감독/복구 | 지원 장비·과제, 설치·지원 부담 |
+| 원격조작/보조 | Cat Command station, 햅틱·[[04-robotics/hri-safety#3. 공유 제어와 권한\|공유제어]] | 지속 또는 예외 기반 운전자 | 지연, 운전자:기계 비율, 생산성·안전 |
 | 과제 전용 로봇 | Canvas drywall, 레이아웃·용접·조적 | 재료 공급·준비·마감 | 전체 공정 노동과 처리량 |
 | 데이터·공정 플랫폼 | Smart Construction, Reconstruct | 모델 설정·판단은 인간 | 데이터가 행동을 바꾸는지 보고만 하는지 |
 
@@ -142,10 +142,10 @@ deployment evidence, and economic value** should not be collapsed into one score
 
 1. 업체가 굴착기가 "배치됐다"고 한다. 유료 pilot과 연속 운용을 가르는 질문은 어느 것인가?
 2. 로봇이 벽 하나당 더 빨라도 전체 노동이 줄지 않을 수 있는 이유는?
-3. 제품에 강한 동료평가 논문은 있지만 실명 고객은 없다. 4절의 네 축 중 이 증거가 지지하는 것은?
+3. 제품에 강한 동료평가 논문은 있지만 실명 고객은 없다. 아래 4절의 네 축(방법 신규성, 시스템 완결성, 배치 증거, 경제성) 중 이 증거가 지지하는 것은?
 
 > [!tip]- Answers
-> 1. 2번(기계·현장·고객·연속 운용 시간)과 3번(원격 운전자 비율과 시간당 개입).
+> 1. 3절 체크리스트의 2번(기계·현장·고객·연속 운용 시간)과 3번(원격 운전자 비율과 시간당 개입).
 > 2. 준비·보정·재료 취급·유지·복구(4번)가 노동을 다른 곳으로 옮길 수 있고, 전체 공정 비교(5번)만이 순효과를 보여준다.
 > 3. 방법 신규성과, 경우에 따라 시스템 완결성 — 배치 증거와 경제성은 운용·고객 출처가 필요하다.
 

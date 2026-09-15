@@ -31,7 +31,7 @@ The distinction beginners get wrong: they reach for a service because it looks s
 
 ### 2. Services: request and response
 
-A service is a remote procedure call. Its contract lives in a `.srv` file: request fields, then `---`, then response fields. The one used throughout the official tutorials is `example_interfaces/srv/AddTwoInts`:
+One node sends a request and waits; another node computes an answer and sends it back. That is a service: a remote procedure call, meaning a function call whose body runs in a different process. Its contract lives in a `.srv` file: request fields, then `---`, then response fields. The one used throughout the official tutorials is `example_interfaces/srv/AddTwoInts`:
 
 ```text
 int64 a
@@ -91,7 +91,7 @@ class MinimalClientAsync(Node):
 
 and in `main`, `rclpy.spin_until_future_complete(minimal_client, future)` before reading `future.result()`. The `wait_for_service` loop matters: unlike a publisher, a client with no server is not merely quiet, it is broken, and you would rather say so than hang.
 
-C++ has **no synchronous `call()`** — `rclcpp` gives you `async_send_request` only. That does not make C++ safe from section 10: blocking on the returned future (`.get()` or `.wait_for()`) inside a callback deadlocks in exactly the same way. The server is the same shape:
+C++ has **no synchronous `call()`** — `rclcpp` gives you `async_send_request` only. That does not make C++ safe from section 10: blocking on the returned future (`.get()` or `.wait_for()`) inside a callback deadlocks in exactly the same way (the thread waits forever for a response that only that same thread could deliver; section 10 walks through it). The server is the same shape:
 
 ```cpp
 #include "rclcpp/rclcpp.hpp"
@@ -121,7 +121,7 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
 
 ### 3. Why a service must be fast
 
-The official concept documentation is blunt: services are expected to return quickly, because the client is generally waiting, and they should *never* be used for long-running processes — especially ones that might need to be preempted.
+The official concept documentation is blunt: services are expected to return quickly, because the client is generally waiting, and they should *never* be used for long-running processes — especially ones that might need to be preempted (stopped partway because a newer request or a cancel arrives).
 
 There is a mechanical reason as well as a design one. By default a node runs on a **single-threaded executor**: one thread pulls one ready callback at a time and runs it to completion. A service callback that takes eight seconds is eight seconds in which that node processes no subscriptions, no timers, and no other service requests. The control loop in the same process stops. Nothing logs a warning; the node simply goes deaf. The executor mechanism, and the callback groups that change this behaviour, are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]].
 
@@ -259,7 +259,7 @@ That comment is section 3, restated by the library's own authors. Python's simpl
 
 ### 6. Parameters: configuring a node
 
-A parameter is a node setting, owned by that node, living exactly as long as it does. Each is a key, a value, and a **descriptor**. The value is one of nine types and no others: `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. No dictionary, no nested struct — `some_lists.some_integers` is a dotted *name*, not a nesting.
+A parameter is a node setting, owned by that node, living exactly as long as it does. Each is a key, a value, and a **descriptor** (metadata about the parameter, such as its description, allowed range and whether it is read-only). The value is one of nine types and no others: `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. No dictionary, no nested struct — `some_lists.some_integers` is a dotted *name*, not a nesting.
 
 A node must **declare** every parameter it will accept, so names and types are fixed at startup rather than discovered by a typo six months later:
 
@@ -348,7 +348,11 @@ An ordinary node starts working the moment it is constructed. For a laser, a cam
 
 A **managed node** (`LifecycleNode`) adds a state machine with four steady **primary states** — `unconfigured`, `inactive`, `active`, `finalized` — and intermediate **transition states** (`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`) that report whether a transition succeeded. The transitions you invoke are `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`.
 
-Each transition runs a callback you override: `on_configure` (allocate, open the device, create publishers and timers), `on_activate` (start publishing), `on_deactivate` (stop), `on_cleanup` (release), `on_shutdown`. All default to success, so a node can be managed without overriding anything. `on_error` runs in the `errorprocessing` state when a transition callback returns ERROR or throws. If it returns SUCCESS — the default in both rclcpp and rclpy — the node falls back to `unconfigured`; if it returns FAILURE the node goes to `finalized`. (The demos README still says the default is failure; the source says otherwise.)
+Each transition runs a callback you override: `on_configure` (allocate, open the device, create publishers and timers), `on_activate` (start publishing), `on_deactivate` (stop), `on_cleanup` (release), `on_shutdown`. All default to success, so a node can be managed without overriding anything.
+
+`on_error` is the fallback for a failed transition. It runs in the `errorprocessing` state when a transition callback returns ERROR or throws. If it returns SUCCESS — the default in both rclcpp and rclpy — the node falls back to `unconfigured`; if it returns FAILURE the node goes to `finalized`.
+
+One documentation trap: the demos README still says the default is failure; the source says otherwise.
 
 The payoff is that publishing is gated by state. A lifecycle publisher created in `on_configure` exists in `inactive` but transfers nothing; `publish()` is a no-op until the node is `active`. Nothing downstream sees half-initialised data.
 
@@ -366,7 +370,7 @@ Run `ros2 launch lifecycle lifecycle_demo_launch.py`, or the executables `lifecy
 
 In Python the node subclasses `rclpy.lifecycle.Node` (an alias for `LifecycleNode`), overrides `on_configure` and friends to return `TransitionCallbackReturn.SUCCESS`, and creates its publisher with `create_lifecycle_publisher`. In C++ it derives from `rclcpp_lifecycle::LifecycleNode` and the callbacks return `LifecycleNodeInterface::CallbackReturn`.
 
-This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
+This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** (a periodic heartbeat exchanged between the manager and a server) with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
 
 ### 9. Exercise: an action server that reports feedback
 
@@ -475,7 +479,7 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 
 ### 2. 서비스: 요청과 응답
 
-서비스는 원격 프로시저 호출이다. 계약은 `.srv` 파일에 있다. 요청 필드, `---`, 응답 필드. 공식 튜토리얼 전체가 쓰는 `example_interfaces/srv/AddTwoInts`:
+한 노드가 요청을 보내고 기다리면, 다른 노드가 답을 계산해 돌려보낸다. 이것이 서비스다. 원격 프로시저 호출, 즉 몸체가 다른 프로세스에서 실행되는 함수 호출이다. 계약은 `.srv` 파일에 있다. 요청 필드, `---`, 응답 필드. 공식 튜토리얼 전체가 쓰는 `example_interfaces/srv/AddTwoInts`:
 
 ```text
 int64 a
@@ -535,7 +539,7 @@ class MinimalClientAsync(Node):
 
 `main`에서는 `future.result()`를 읽기 전에 `rclpy.spin_until_future_complete(minimal_client, future)`를 호출한다. `wait_for_service` 루프가 중요하다. 퍼블리셔와 달리 서버 없는 클라이언트는 조용한 것이 아니라 고장 난 것이고, 매달리는 것보다 그렇게 말하는 편이 낫다.
 
-C++에는 **동기 `call()`이 없다.** `rclcpp`는 `async_send_request`만 준다. 그렇다고 C++가 10절의 문제에서 안전한 것은 아니다. 콜백 안에서 돌려받은 future를 기다리면(`.get()`이나 `.wait_for()`) 똑같이 교착된다. C++ 서버는 모양이 같다.
+C++에는 **동기 `call()`이 없다.** `rclcpp`는 `async_send_request`만 준다. 그렇다고 C++가 10절의 문제에서 안전한 것은 아니다. 콜백 안에서 돌려받은 future를 기다리면(`.get()`이나 `.wait_for()`) 똑같이 교착된다(스레드가 바로 그 스레드만 전달할 수 있는 응답을 영원히 기다린다. 10절에서 자세히 본다). C++ 서버는 모양이 같다.
 
 ```cpp
 #include "rclcpp/rclcpp.hpp"
@@ -565,7 +569,7 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
 
 ### 3. 서비스가 빨라야 하는 이유
 
-공식 개념 문서는 단호하다. 클라이언트가 대개 기다리고 있으므로 서비스는 빨리 반환해야 하고, 장시간 프로세스에는 *절대* 쓰지 말아야 한다. 특히 선점이 필요할 수 있는 작업에는 그렇다.
+공식 개념 문서는 단호하다. 클라이언트가 대개 기다리고 있으므로 서비스는 빨리 반환해야 하고, 장시간 프로세스에는 *절대* 쓰지 말아야 한다. 특히 선점(새 요청이나 취소가 와서 도중에 멈추는 것)이 필요할 수 있는 작업에는 그렇다.
 
 설계상의 이유만이 아니라 기계적인 이유도 있다. 기본적으로 노드는 **단일 스레드 executor** 위에서 돈다. 스레드 하나가 준비된 콜백을 하나씩 꺼내 끝까지 실행한다. 8초 걸리는 서비스 콜백은 그 노드가 구독도, 타이머도, 다른 서비스 요청도 처리하지 않는 8초다. 같은 프로세스의 제어 루프가 멈춘다. 경고 로그는 없다. 노드가 그냥 귀를 닫는다. executor 기전과 이 동작을 바꾸는 콜백 그룹은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]에 있다.
 
@@ -703,7 +707,7 @@ auto handle_accepted = [this](const std::shared_ptr<GoalHandleFibonacci> goal_ha
 
 ### 6. 파라미터: 노드 설정하기
 
-파라미터는 노드의 설정값이고, 그 노드가 소유하며, 정확히 그 노드만큼 산다. 각각은 키, 값, **디스크립터**로 이루어진다. 값의 타입은 아홉 가지뿐이다. `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. 사전도 중첩 구조체도 없다. `some_lists.some_integers`는 점이 들어간 *이름*이지 중첩이 아니다.
+파라미터는 노드의 설정값이고, 그 노드가 소유하며, 정확히 그 노드만큼 산다. 각각은 키, 값, **디스크립터**(설명, 허용 범위, 읽기 전용 여부 같은 파라미터 메타데이터)로 이루어진다. 값의 타입은 아홉 가지뿐이다. `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. 사전도 중첩 구조체도 없다. `some_lists.some_integers`는 점이 들어간 *이름*이지 중첩이 아니다.
 
 노드는 받아들일 모든 파라미터를 **선언(declare)** 해야 한다. 그래야 이름과 타입이 반년 뒤 오타로 발견되지 않고 기동 시점에 고정된다.
 
@@ -792,7 +796,11 @@ ros2 param load /turtlesim turtlesim.yaml
 
 **관리형 노드**(`LifecycleNode`)는 상태 기계를 더한다. 네 개의 안정적인 **주 상태** — `unconfigured`, `inactive`, `active`, `finalized` — 와, 전이 성공 여부를 알리는 **전이 상태**(`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`). 호출하는 전이는 `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`이다.
 
-전이마다 재정의할 콜백이 돈다. `on_configure`(할당, 장치 열기, 퍼블리셔와 타이머 생성), `on_activate`(발행 시작), `on_deactivate`(중지), `on_cleanup`(해제), `on_shutdown`. 전부 기본 반환이 성공이라, 아무것도 재정의하지 않아도 관리형 노드가 된다. `on_error`는 전이 콜백이 ERROR를 반환하거나 예외를 던질 때 `errorprocessing` 상태에서 호출된다. SUCCESS를 반환하면 — rclcpp와 rclpy 모두 기본값 — 노드는 `unconfigured`로 돌아가고, FAILURE를 반환하면 `finalized`로 간다. (demos README는 아직 기본값이 실패라고 적지만, 소스는 그렇지 않다.)
+전이마다 재정의할 콜백이 돈다. `on_configure`(할당, 장치 열기, 퍼블리셔와 타이머 생성), `on_activate`(발행 시작), `on_deactivate`(중지), `on_cleanup`(해제), `on_shutdown`. 전부 기본 반환이 성공이라, 아무것도 재정의하지 않아도 관리형 노드가 된다.
+
+`on_error`는 실패한 전이의 뒤처리다. 이 콜백은 전이 콜백이 ERROR를 반환하거나 예외를 던질 때 `errorprocessing` 상태에서 호출된다. SUCCESS를 반환하면 — rclcpp와 rclpy 모두 기본값 — 노드는 `unconfigured`로 돌아가고, FAILURE를 반환하면 `finalized`로 간다.
+
+문서 함정 하나: demos README는 아직 기본값이 실패라고 적지만, 소스는 그렇지 않다.
 
 이득은 발행이 상태로 게이팅된다는 것이다. `on_configure`에서 만든 라이프사이클 퍼블리셔는 `inactive`에 존재하지만 아무것도 전달하지 않는다. 노드가 `active`가 되기 전까지 `publish()`는 아무 일도 하지 않는다. 하류의 누구도 반쯤 초기화된 데이터를 보지 않는다.
 
@@ -810,7 +818,7 @@ ros2 lifecycle set /lc_talker activate
 
 Python에서는 `rclpy.lifecycle.Node`(`LifecycleNode`의 별칭)를 상속하고, `on_configure` 등을 재정의해 `TransitionCallbackReturn.SUCCESS`를 반환하고, 퍼블리셔를 `create_lifecycle_publisher`로 만든다. C++에서는 `rclcpp_lifecycle::LifecycleNode`를 상속하고 콜백은 `LifecycleNodeInterface::CallbackReturn`을 반환한다.
 
-학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
+학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**(관리자와 서버가 주기적으로 주고받는 heartbeat)를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
 
 ### 9. 실습: 피드백을 보고하는 액션 서버
 

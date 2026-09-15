@@ -87,9 +87,12 @@ that rung both hard and unusually valuable.
 > demonstration videos can be generated far faster than anyone can check them, while a real
 > hardware trial still takes days and long-term reliability still takes months. The scarce
 > resource moves from generation to verification — which is a reason to be strict about what
-> actually places a result on this ladder: how many trials the video was drawn from, where
-> the failures clustered, when a human intervened, and what the denominator of the success
-> rate was.
+> actually places a result on this ladder. Check four things:
+>
+> - how many trials the video was drawn from;
+> - where the failures clustered;
+> - when a human intervened;
+> - what the denominator of the success rate was.
 >
 > A second consequence appears when one group builds the simulator, the evaluator and the
 > benchmark. An optimisation will find their shared blind spots without anyone intending it,
@@ -276,8 +279,12 @@ For example, polishing a successful drywall sequence can improve communication, 
 > 시뮬레이션 롤아웃, 벤치마크 기록, 합성 데이터, 성공 영상은 누구도 검토를 따라갈 수 없는 속도로
 > 생산되는 반면, 실기계 시험은 여전히 며칠이 걸리고 장기 신뢰성은 여전히 몇 달이 걸린다. 희소한
 > 자원이 생산에서 검증으로 옮겨 간다. 그러니 무엇이 결과를 실제로 이 사다리에 올리는지 엄격해질
-> 이유가 있다. 그 영상은 몇 번의 시행에서 골랐는가, 실패는 어디에 몰렸는가, 사람은 언제
-> 개입했는가, 그 성공률의 분모는 무엇인가.
+> 이유가 있다. 네 가지를 확인한다.
+>
+> - 그 영상은 몇 번의 시행에서 골랐는가;
+> - 실패는 어디에 몰렸는가;
+> - 사람은 언제 개입했는가;
+> - 그 성공률의 분모는 무엇인가.
 >
 > 두 번째 귀결은 한 집단이 시뮬레이터와 평가기와 벤치마크를 함께 만들 때 나타난다. 최적화는 아무도
 > 의도하지 않아도 그들의 공통 사각지대를 찾아간다. 평가기가 보지 못하는 오류는 존재하지 않는 것으로

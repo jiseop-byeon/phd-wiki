@@ -32,11 +32,11 @@ It is specific, and each item removes an assumption that factory robotics is all
 | Factory assumption | What construction supplies instead |
 |---|---|
 | The part is in a fixture, at a known pose | The part is where someone put it, within centimetres |
-| The workpiece is rigid and dimensioned | Panels flex, rebar bundles shift, membranes drape |
+| The workpiece is rigid and dimensioned | Panels flex, bundles of rebar (steel reinforcing bars) shift, membranes drape |
 | The environment is the same every cycle | Two instances of the same task differ; the building changes as it is built |
 | The robot is bolted down | The base moved to get here, and its pose is part of the error budget |
 | No one is inside the workspace | Trades are working alongside, and safety is regulated |
-| $\mu$, mass, and geometry are known | Dust, moisture, and tolerance make all three uncertain |
+| $\mu$ (the friction coefficient, [[04-robotics/grasping\|15. §2]]), mass, and geometry are known | Dust, moisture, and tolerance make all three uncertain |
 
 Row 1 makes pure hybrid position/force control **with a fixed, presumed contact normal**
 fragile: its selection matrix depends on that frame ([[04-robotics/force-compliance-control|13. §3]]).
@@ -60,6 +60,11 @@ as a specification: it says which pages a project on that task will need at dept
 | **Timber joint assembly** | insert with interference | force/torque | learned or compliant insertion | tolerance and shape vary piece to piece |
 | **Bricklaying, block placement** | grasp, place | vision | position | mostly a weight and cycle-time problem, not a contact problem |
 | **Welding structural steel** | track a seam | vision + seam tracking | position along a tracked path | joint geometry varies; the work is hot and the standards are strict |
+
+The table uses two construction terms worth saying plainly. *Rebar tying* joins steel reinforcing
+bars into a grid by wrapping wire around each crossing, before concrete is poured around
+them. A *curtain wall* is a building's non-structural outer skin of glass and metal panels
+hung from the structure, so installing one means moving large, heavy modules into place.
 
 Two rows in that table are not contact-rich, and saying so is part of the point. Bricklaying
 and most placement tasks are solved geometry with a payload problem attached; they belong to
@@ -108,8 +113,8 @@ tested it on a construction site — the title says so — but it is nearly twen
 **What that search excludes, so you can disagree with the scope rather than the count.** It
 is a search of the *modern* literature under six task keywords, and it therefore does not
 reach the Japanese **STCR era** — the dozens of single-task construction robots Shimizu,
-Obayashi, Kajima and peers ran on live sites in the 1980s–90s, whose record lives in ISARC
-proceedings and Bock's reference volumes ([[05-construction-robotics/lineage|lineage, Era 1]]). Those machines were on real sites and are deliberately outside this count: they
+Obayashi, Kajima and peers ran on live sites in the 1980s–90s, whose record lives in the proceedings of ISARC (the International Symposium on Automation
+and Robotics in Construction) and Bock's reference volumes ([[05-construction-robotics/lineage|lineage, Era 1]]). Those machines were on real sites and are deliberately outside this count: they
 are single-task automation without the contact control, force sensing or learning this page
 is about. Read the finding as "three papers in the contact-rich manipulation literature",
 not as "three robots ever".
@@ -213,8 +218,10 @@ supplies problems that general manipulation research has no clean way to pose:
 
 - **Unknown, drifting friction** — the $\mu$ that every grasp result in
   [[04-robotics/grasping|15. §2–§4]] takes as given.
-- **Non-rigid parts at structural scale** — a 2.4 m sheet is not a rigid body, so closure is
-  not even defined on it.
+- **Non-rigid parts at structural scale** — form and force closure
+  ([[04-robotics/grasping|15. §3]]) are defined for a rigid body, whose contact points keep
+  fixed positions relative to each other; a 2.4 m sheet is not a rigid body, since it flexes
+  and its contact geometry changes under load, so closure is not even defined on it.
 - **A workspace that changes because the robot changed it** — the building is the workpiece.
 - **Tolerance stacks that no fixture absorbs** — base pose error, part placement error, and
   as-built deviation all land on the same contact.
@@ -295,11 +302,11 @@ the [[07-research-program/index|research program]] is built on.
 | 공장의 가정 | 건설이 대신 주는 것 |
 |---|---|
 | 부재가 지그에 알려진 자세로 있다 | 부재는 누군가 놓은 자리에, 센티미터 오차로 있다 |
-| 작업물은 강체이고 치수가 정해져 있다 | 패널은 휘고, 철근 다발은 어긋나고, 멤브레인은 늘어진다 |
+| 작업물은 강체이고 치수가 정해져 있다 | 패널은 휘고, 철근(콘크리트 속에 넣는 보강용 강봉) 다발은 어긋나고, 멤브레인은 늘어진다 |
 | 환경이 매 사이클 같다 | 같은 작업의 두 사례가 다르고, 건물은 지어지면서 변한다 |
 | 로봇이 바닥에 볼트로 고정되어 있다 | 베이스가 여기까지 이동해 왔고, 그 자세가 오차 예산의 일부다 |
 | 작업 구역 안에 아무도 없다 | 다른 공종이 옆에서 일하고, 안전이 규제된다 |
-| $\mu$, 질량, 기하를 안다 | 분진·습기·공차가 셋 다 불확실하게 만든다 |
+| $\mu$(마찰 계수, [[04-robotics/grasping\|15. §2]]), 질량, 기하를 안다 | 분진·습기·공차가 셋 다 불확실하게 만든다 |
 
 1행은 **접촉 법선을 고정해 둔 순수 하이브리드 위치/힘 제어**를 취약하게 만든다. 선택 행렬이
 그 좌표계에 의존하기 때문이다([[04-robotics/force-compliance-control|13. §3]]). 논문이 법선을 언제
@@ -323,6 +330,10 @@ the [[07-research-program/index|research program]] is built on.
 | **목재 접합 조립** | 억지 끼움 삽입 | 힘/토크 | 학습 또는 유연 삽입 | 공차와 형상이 부재마다 다르다 |
 | **조적, 블록 쌓기** | 파지, 놓기 | 비전 | 위치 | 접촉 문제라기보다 무게와 사이클 타임 문제 |
 | **강구조 용접** | 이음선 추적 | 비전 + seam tracking | 추적된 경로를 따르는 위치 | 이음 기하가 변하고, 뜨겁고, 기준이 엄격하다 |
+
+표의 건설 용어 둘을 쉬운 말로 풀면 이렇다. *철근 결속*은 콘크리트를 붓기 전에 철근이 교차하는
+점마다 철사를 감아 격자로 묶는 일이다. *커튼월*은 구조체에 매다는, 하중을 받지 않는 유리·금속
+패널 외피이므로, 설치란 크고 무거운 모듈을 제자리로 옮겨 맞추는 일이다.
 
 그 표의 두 행은 접촉이 많지 않고, 그렇게 말하는 것 자체가 요점의 일부다. 조적과 대부분의
 놓기 작업은 페이로드 문제가 붙은 풀린 기하다. 도메인에는 속하지만 [[07-research-program/index|7. §7]]의
@@ -368,7 +379,7 @@ Dörfler 등(2019)은 In situ Fabricator로 NEST의 DFAB HOUSE Mesh Mould 벽을
 **그 검색이 무엇을 제외하는지 — 개수가 아니라 범위에 반대할 수 있도록.** 이것은 여섯 개 과제
 키워드로 *현대* 문헌을 훑은 것이라, 일본의 **STCR 시대**에는 닿지 않는다 — Shimizu, Obayashi,
 Kajima 등이 1980~90년대에 실제 현장에서 돌린 수십 대의 단일 작업 건설 로봇이고, 그 기록은
-ISARC 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|계보, 1시대]]). 그 기계들은
+ISARC(International Symposium on Automation and Robotics in Construction) 회보와 Bock의 참고서에 있다([[05-construction-robotics/lineage|계보, 1시대]]). 그 기계들은
 실제 현장에 있었고 의도적으로 이 집계 밖이다 — 이 페이지가 다루는 접촉 제어·힘 센싱·학습이
 없는 단일 작업 자동화이기 때문이다. 이 발견은 "접촉이 많은 조작 문헌에서 세 편"으로 읽어야지
 "역사상 세 대"로 읽으면 안 된다.
@@ -464,7 +475,9 @@ arXiv와 Crossref에서 했고, 2026년 9월에 다시 돌렸다. 재검색에�
 
 - **알 수 없고 변하는 마찰** — [[04-robotics/grasping|15. §2~§4]]의 모든 파지 결과가 주어진
   것으로 놓는 그 $\mu$.
-- **구조 규모의 비강체 부재** — 2.4 m 시트는 강체가 아니므로 closure가 정의조차 되지 않는다.
+- **구조 규모의 비강체 부재** — form closure와 force closure([[04-robotics/grasping|15. §3]])는
+  접촉점끼리의 상대 위치가 고정된 강체에 대해 정의된다. 2.4 m 시트는 휘어서 하중을 받으면 접촉
+  기하가 바뀌므로 강체가 아니고, 따라서 closure가 정의조차 되지 않는다.
 - **로봇이 바꿔 놓아서 변한 작업 구역** — 건물이 곧 작업물이다.
 - **어떤 지그도 흡수하지 않는 공차 누적** — 베이스 자세 오차, 부재 배치 오차, 시공 편차가
   모두 같은 접촉 위에 떨어진다.

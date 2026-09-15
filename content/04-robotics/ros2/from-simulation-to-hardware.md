@@ -37,7 +37,7 @@ Nothing in your launch file changes. Almost everything under it does.
 
 The reason any of the simulation work transfers is that `ros2_control` puts a plugin boundary between *the controller* and *the thing being controlled*, and simulation sits on the same side of that boundary as a real robot does.
 
-Three kinds of hardware component exist, all loaded as `pluginlib` plugins:
+Three kinds of hardware component exist, all loaded as `pluginlib` plugins (`pluginlib` is the ROS library that loads a C++ class chosen by name at runtime, rather than compiled into the program):
 
 | Type | Base class | Use |
 |---|---|---|
@@ -85,7 +85,7 @@ hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Du
 hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 ```
 
-Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activate` (release brakes, enable power stage), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. The states mean what they say — in `INACTIVE` states can be read but command interfaces are not available; only in `ACTIVE` can the machine move. A driver that enables the motors in `on_configure` instead of `on_activate` is a driver that energises an arm the moment the launch file starts, which is a bug with physical consequences.
+Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activate` (release brakes, enable power stage), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. The states mean what they say — in `INACTIVE` states can be read but command interfaces are not available; only in `ACTIVE` can the machine move. The split exists so a driver can be connected and its readings inspected before it is given authority to move anything. A driver that enables the motors in `on_configure` instead of `on_activate` is a driver that energises an arm the moment the launch file starts, which is a bug with physical consequences.
 
 The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as a throttled `Overrun detected!` warning while the loop quietly runs slower than `update_rate` (overrun handling, `overruns.manage`, is on by default) — a warning, not an error, and easy to miss.
 
@@ -157,7 +157,9 @@ an interface the URDF does not declare is a different method,
 `export_unlisted_state_interface_descriptions()`, whose own comment reads *"Override this
 method to export custom StateInterfaces which are not defined in the URDF file."* In the
 ordinary case you override none of them: declare the interfaces in the URDF and reach them by
-name, as above. One caveat on that by-name form: the header marks `set_state(name, value)` and `get_command(name)` as *not real-time safe*, since each call builds a string and does a map lookup. For a hard loop, look the handles up once in `on_configure` and use the handle overloads, e.g. `set_state(handle, value, false)`.
+name, as above.
+
+One caveat on that by-name form: the header marks `set_state(name, value)` and `get_command(name)` as *not real-time safe*, since each call builds a string and does a map lookup. For a hard loop, look the handles up once in `on_configure` and use the handle overloads, e.g. `set_state(handle, value, false)`.
 
 > [!warning] This API moved inside the Jazzy line, so check your own version
 > `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1; both have the same headers. The refactor came earlier in the Jazzy 4.x line — `hardware_component_interface.hpp` first appears in 4.36.0 — and `system_interface.hpp` is now a 73-line file that includes `hardware_component_interface.hpp` and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
@@ -177,9 +179,11 @@ Most of the time you will not write the hardware component — the vendor or a c
 
 The moment the robot is one machine and your laptop is another, discovery stops being invisible.
 
+Two terms recur below. `ROS_DOMAIN_ID` is the integer that partitions discovery, and the RMW (ROS middleware) implementation is the layer that adapts ROS 2 to one specific middleware product such as Fast DDS; both are introduced in [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5.
+
 The rules, in the order they bite:
 
-- **`ROS_DOMAIN_ID` must match.** It is an integer; choose between 0 and 101 inclusive on Linux, which is the range that avoids the default ephemeral port range 32768–60999. Different domain on the two hosts means two systems that cannot see each other at all, with no error.
+- **`ROS_DOMAIN_ID` must match.** It is an integer; choose between 0 and 101 inclusive on Linux, which is the range that avoids the default ephemeral port range 32768–60999. The cutoff comes from how DDS picks UDP ports: the ports for domain *d* start at 7400 + 250·*d*, so domain 101 starts at 32650, just below 32768, while domain 102 would start at 32900, inside the ephemeral range. Different domain on the two hosts means two systems that cannot see each other at all, with no error.
 - **The hosts must be on the same subnet and multicast must work**, because default discovery is multicast (with the DDS RMWs, Fast DDS or Cyclone DDS; `rmw_zenoh_cpp` instead needs a reachable Zenoh router, and the multicast test does not apply). Jazzy also gives you `ROS_AUTOMATIC_DISCOVERY_RANGE`, with values `SUBNET` (the default), `LOCALHOST`, `OFF` and `SYSTEM_DEFAULT`, and `ROS_STATIC_PEERS`, a semicolon-separated list of addresses to discover on directly. Use the pair of them when multicast is blocked or the two machines are not on one subnet.
 - **The RMW implementation must match** on both hosts. Mixed RMW implementations often communicate but are not guaranteed to (and `rmw_zenoh_cpp` does not interoperate with any DDS RMW), so use the same one on both hosts.
 - **Clocks must be disciplined.** Run `chrony` on both machines against the same source — or PTP if you need sub-millisecond — and verify it, rather than assuming that two machines that both said "NTP" agree.
@@ -243,7 +247,7 @@ The classes, and what each actually teaches:
 | Class | What it genuinely teaches | What it does not |
 |---|---|---|
 | A low-cost arm | the whole stack end to end — URDF, controllers, calibration, the hardware seam, safety habits — on a machine whose failures are cheap | stiffness, repeatability, payload, or any result that depends on accurate force control |
-| A teleoperation rig (leader–follower, in the manner of [[01-canonical-papers/notes/7-robotics/gello\|GELLO]]) | demonstration collection, the ergonomics of data volume, and what a dataset costs in human hours | autonomy of any kind; and note that such rigs are typically unilateral, so the data carries no force channel |
+| A teleoperation rig (leader–follower, in the manner of [[01-canonical-papers/notes/7-robotics/gello\|GELLO]]) | demonstration collection, the ergonomics of data volume, and what a dataset costs in human hours | autonomy of any kind; and note that such rigs are typically unilateral (motion flows from leader to follower but no force is fed back; contrast [[04-robotics/haptics-teleoperation/bilateral-teleoperation\|24.5 Bilateral Teleoperation]]), so the data carries no force channel |
 | A mobile base | odometry drift, localisation, the Nav2 stack against a real floor, and power budgeting over a run | manipulation, contact, or anything about an arm |
 
 And the thing nobody puts in the purchase justification: **none of them teaches you whether your method works at the scale the paper claims.** A result on a low-cost arm is a result on a low-cost arm. That can be enough — plenty of good papers are exactly that, honestly scoped — but it has to be scoped that way in writing from the start rather than defended later.
@@ -345,7 +349,7 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 
 시뮬레이션 작업이 이전되는 이유는 `ros2_control`이 *제어기*와 *제어 대상* 사이에 플러그인 경계를 두고, 시뮬레이션이 실제 로봇과 같은 쪽에 앉기 때문이다.
 
-하드웨어 컴포넌트는 세 종류이고 모두 `pluginlib` 플러그인으로 로드된다.
+하드웨어 컴포넌트는 세 종류이고 모두 `pluginlib` 플러그인으로 로드된다(`pluginlib`은 프로그램에 컴파일해 넣지 않고 런타임에 이름으로 고른 C++ 클래스를 로드하는 ROS 라이브러리다).
 
 | 종류 | 기반 클래스 | 용도 |
 |---|---|---|
@@ -393,7 +397,7 @@ hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Du
 hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 ```
 
-여기에 생명주기가 붙는다: `on_init`, `on_configure`(연결을 연다), `on_activate`(브레이크를 풀고 파워 스테이지를 켠다), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. 상태의 의미는 말 그대로다. `INACTIVE`에서는 상태를 읽을 수 있지만 명령 인터페이스는 제공되지 않고, `ACTIVE`에서만 기계가 움직일 수 있다. 모터를 `on_activate`가 아니라 `on_configure`에서 켜는 드라이버는 런치 파일이 시작되는 순간 팔에 전원을 넣는 드라이버이고, 이것은 물리적 결과를 갖는 버그다.
+여기에 생명주기가 붙는다: `on_init`, `on_configure`(연결을 연다), `on_activate`(브레이크를 풀고 파워 스테이지를 켠다), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. 상태의 의미는 말 그대로다. `INACTIVE`에서는 상태를 읽을 수 있지만 명령 인터페이스는 제공되지 않고, `ACTIVE`에서만 기계가 움직일 수 있다. 이렇게 나눈 것은 드라이버를 연결해 읽은 값을 먼저 살펴본 뒤에야 무언가를 움직일 권한을 주기 위해서다. 모터를 `on_activate`가 아니라 `on_configure`에서 켜는 드라이버는 런치 파일이 시작되는 순간 팔에 전원을 넣는 드라이버이고, 이것은 물리적 결과를 갖는 버그다.
 
 주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 쓰로틀된 `Overrun detected!` 경고로 나타나고 루프는 `update_rate`보다 조용히 느리게 돈다(초과 처리 `overruns.manage`가 기본으로 켜져 있다) — 오류가 아니라 경고이고, 놓치기 쉽다.
 
@@ -463,7 +467,9 @@ on_export_state_interfaces() ... Exporting is handled by the Framework."* 라고
 되어 URDF가 선언한 인터페이스를 전부 잃는다. URDF가 선언하지 않은 인터페이스를 더하는 자리는
 다른 메서드인 `export_unlisted_state_interface_descriptions()`이고, 그 주석이 *"Override this
 method to export custom StateInterfaces which are not defined in the URDF file."* 라고 적고
-있다. 보통은 셋 중 아무것도 재정의하지 않는다. URDF에 선언하고 위처럼 이름으로 접근한다. 이름으로 접근하는 형태에는 단서가 하나 있다. 헤더는 `set_state(name, value)`와 `get_command(name)`을 *실시간 안전하지 않다*고 표시한다. 호출마다 문자열을 만들고 맵을 조회하기 때문이다. 엄격한 루프라면 `on_configure`에서 핸들을 한 번 찾아 두고 핸들 오버로드, 예컨대 `set_state(handle, value, false)`를 쓴다.
+있다. 보통은 셋 중 아무것도 재정의하지 않는다. URDF에 선언하고 위처럼 이름으로 접근한다.
+
+이름으로 접근하는 형태에는 단서가 하나 있다. 헤더는 `set_state(name, value)`와 `get_command(name)`을 *실시간 안전하지 않다*고 표시한다. 호출마다 문자열을 만들고 맵을 조회하기 때문이다. 엄격한 루프라면 `on_configure`에서 핸들을 한 번 찾아 두고 핸들 오버로드, 예컨대 `set_state(handle, value, false)`를 쓴다.
 
 > [!warning] 이 API는 Jazzy 계열 *안에서* 움직였으니 자기 버전을 확인하라
 > `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 둘의 헤더는 같다. 재편은 Jazzy 4.x 계열의 더 이른 시점에 있었고 — `hardware_component_interface.hpp`가 4.36.0에서 처음 나온다 — `system_interface.hpp`는 이제 73줄짜리로 `hardware_component_interface.hpp`를 포함하고, `SystemInterface`가 더하는 단 하나, 즉 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
@@ -483,9 +489,11 @@ method to export custom StateInterfaces which are not defined in the URDF file."
 
 로봇이 한 머신이고 노트북이 다른 머신이 되는 순간, 탐색은 더 이상 보이지 않는 존재가 아니다.
 
+아래에 두 용어가 반복된다. `ROS_DOMAIN_ID`는 탐색을 구획으로 나누는 정수이고, RMW(ROS middleware) 구현은 ROS 2를 Fast DDS 같은 특정 미들웨어 제품에 맞추는 계층이다. 둘 다 [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5에서 소개한다.
+
 물리는 순서대로의 규칙:
 
-- **`ROS_DOMAIN_ID`가 같아야 한다.** 정수이고, 리눅스에서는 0에서 101 사이를 고르라. 기본 임시 포트 범위 32768–60999를 피하는 구간이다. 두 호스트의 도메인이 다르면 두 시스템은 서로를 전혀 보지 못하고, 오류는 없다.
+- **`ROS_DOMAIN_ID`가 같아야 한다.** 정수이고, 리눅스에서는 0에서 101 사이를 고르라. 기본 임시 포트 범위 32768–60999를 피하는 구간이다. 경계는 DDS가 UDP 포트를 고르는 방식에서 나온다. 도메인 *d*의 포트는 7400 + 250·*d*에서 시작하므로, 도메인 101은 32768 바로 아래인 32650에서 시작하고 도메인 102는 임시 범위 안인 32900에서 시작하게 된다. 두 호스트의 도메인이 다르면 두 시스템은 서로를 전혀 보지 못하고, 오류는 없다.
 - **같은 서브넷에 있고 멀티캐스트가 되어야 한다.** 기본 탐색이 멀티캐스트이기 때문이다(DDS RMW, 즉 Fast DDS나 Cyclone DDS의 경우. `rmw_zenoh_cpp`는 대신 도달 가능한 Zenoh 라우터가 필요하고 멀티캐스트 시험은 해당되지 않는다). Jazzy에는 `ROS_AUTOMATIC_DISCOVERY_RANGE`(값은 `SUBNET`이 기본, `LOCALHOST`, `OFF`, `SYSTEM_DEFAULT`)와 세미콜론으로 구분된 주소 목록 `ROS_STATIC_PEERS`도 있다. 멀티캐스트가 막혀 있거나 두 머신이 한 서브넷이 아닐 때 이 둘을 함께 쓴다.
 - **RMW 구현이 양쪽에서 같아야 한다.** 서로 다른 RMW 구현은 통신되는 경우가 많지만 보장되지 않으므로(그리고 `rmw_zenoh_cpp`는 어떤 DDS RMW와도 상호 운용되지 않는다) 양쪽에 같은 것을 쓴다.
 - **시계가 규율되어야 한다.** 두 머신에서 같은 소스를 향해 `chrony`를 돌리고(1 ms 미만이 필요하면 PTP), 둘 다 "NTP"라고 말했으니 일치할 것이라고 가정하지 말고 확인하라.
@@ -549,7 +557,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 | 부류 | 정말로 가르치는 것 | 가르치지 않는 것 |
 |---|---|---|
 | 저가형 팔 | 스택 전체 — URDF, 제어기, 캘리브레이션, 하드웨어 이음매, 안전 습관 — 을 고장이 싼 기계 위에서 | 강성, 반복 정밀도, 가반하중, 정확한 힘 제어에 의존하는 어떤 결과도 |
-| 원격조작 리그(리더–팔로워, [[01-canonical-papers/notes/7-robotics/gello\|GELLO]]가 기술하는 방식) | 시연 수집, 데이터 양의 인간공학, 데이터셋이 사람 시간으로 얼마인지 | 어떤 종류의 자율성도. 게다가 그런 리그는 보통 단방향이라 데이터에 힘 채널이 없다 |
+| 원격조작 리그(리더–팔로워, [[01-canonical-papers/notes/7-robotics/gello\|GELLO]]가 기술하는 방식) | 시연 수집, 데이터 양의 인간공학, 데이터셋이 사람 시간으로 얼마인지 | 어떤 종류의 자율성도. 게다가 그런 리그는 보통 단방향이라(움직임은 리더에서 팔로워로 가지만 힘은 되돌아오지 않는다. [[04-robotics/haptics-teleoperation/bilateral-teleoperation\|24.5 Bilateral Teleoperation]]과 대비) 데이터에 힘 채널이 없다 |
 | 이동 베이스 | 오도메트리 드리프트, 위치 추정, 실제 바닥 위의 Nav2 스택, 한 주행 동안의 전력 예산 | 매니퓰레이션, 접촉, 팔에 관한 어떤 것도 |
 
 그리고 구매 사유서에 아무도 적지 않는 것: **그중 어느 것도 당신의 방법이 논문이 주장하는 규모에서 통하는지를 가르쳐 주지 않는다.** 저가형 팔에서의 결과는 저가형 팔에서의 결과다. 그것으로 충분할 수 있고 — 정직하게 범위를 밝힌 좋은 논문이 많다 — 다만 나중에 방어하는 대신 처음부터 글로 그렇게 범위가 정해져 있어야 한다.

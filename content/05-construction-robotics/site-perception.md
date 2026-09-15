@@ -26,6 +26,8 @@ the geometry and workflow assumptions.
 
 ### 1. The site-perception stack
 
+BIM (Building Information Modeling) is the structured 3D design model of a building, in which each component is an object with an ID and properties; the [[05-construction-robotics/digital-twin-workflows|digital-twin workflows]] page treats it in depth.
+
 ```mermaid
 flowchart LR
     S["Camera · LiDAR · IMU · GNSS"] --> L["Localization + calibration"]
@@ -55,20 +57,21 @@ physical-AI loop, and it imposes stricter latency, uncertainty, and failure requ
   infer installed, missing, or deviating components. Registration error can masquerade
   as construction deviation.
 - **Inspection**: plan viewpoints, acquire coverage, detect defects, and attach findings
-  to assets. A detection benchmark does not validate autonomous inspection.
+  to assets (tracked building components, each with its own ID in the BIM or facility records). A detection benchmark does not validate autonomous inspection.
 - **Robot-ready scene understanding**: free space, traversability, materials, people,
   and task objects at the metric resolution and update rate needed downstream.
 
 ### 3. Geometry and foundation models
 
-SAM supplies promptable masks, Depth Anything supplies monocular depth cues, and VGGT-
-class models predict geometry. None automatically supplies a calibrated site coordinate,
+SAM supplies promptable masks, Depth Anything supplies monocular depth cues, and [[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]]-class
+models predict geometry. None automatically supplies a calibrated site coordinate,
 metric scale, temporal consistency, safety certification, or BIM identity. A practical
 system often combines learned proposals with geometric calibration, registration, and
 tracking.
 
 PointNet/PointNet++ are historical on-ramps for unordered point sets: PointNet aggregates
-per-point features symmetrically; PointNet++ adds local hierarchical neighborhoods.
+per-point features symmetrically (with an order-independent pooling), because a point cloud
+lists its points in no meaningful order and shuffling them must not change the output; PointNet++ adds local hierarchical neighborhoods.
 Modern sparse voxel and transformer models may outperform them, but these papers explain
 why point clouds are not ordinary images.
 
@@ -102,7 +105,7 @@ Evaluation needs an independent reference because alignment can hide the error b
    the error sources that must be separated before calling this construction deviation.
 2. What distinguishes perception output that feeds a manager's report from perception
    output that feeds a robot, and why does only the latter close a physical-AI loop?
-3. SAM segments a rebar cage perfectly in an image. What does the downstream robot still
+3. SAM segments a rebar cage (steel reinforcing bars tied into a grid before concrete is poured) perfectly in an image. What does the downstream robot still
    lack before it can act on that mask?
 4. In Cho SLAM 2018, what makes the mapping "robotic" rather than a scan-processing
    pipeline, and what would you check before crediting it as autonomous inspection?
@@ -139,6 +142,8 @@ Evaluation needs an independent reference because alignment can hide the error b
 
 ### 1. 현장 인식 스택
 
+BIM(Building Information Modeling)은 건물의 구조화된 3D 설계 모델로, 각 부재가 ID와 속성을 가진 객체로 들어 있다. 자세한 내용은 [[05-construction-robotics/digital-twin-workflows|디지털 트윈 워크플로]]에서 다룬다.
+
 ```mermaid
 flowchart LR
     S["카메라 · LiDAR · IMU · GNSS"] --> L["위치 추정 + 보정"]
@@ -164,18 +169,18 @@ flowchart LR
   팀(2019)과 재난 현장에서 시험한 적응적 시점 계획(JCCE 40(5), 2026년 6월 온라인)으로 이어졌다.
 - **Scan-to-BIM·공정**: 센서 자료를 설계 모델에 정합하고 설치·누락·편차를 추론한다. 정합
   오차가 시공 편차처럼 보일 수 있다.
-- **점검**: 시점을 계획하고, 커버리지를 확보하고, 결함을 검출해 자산에 연결한다. 검출
+- **점검**: 시점을 계획하고, 커버리지를 확보하고, 결함을 검출해 자산(BIM이나 시설 기록에서 고유 ID로 추적되는 건물 부재)에 연결한다. 검출
   벤치마크만으로 자율 점검은 검증되지 않는다.
 - **로봇용 장면 이해**: 하류 제어에 필요한 미터 단위 좌표·해상도·갱신률로 자유 공간,
   주행 가능성, 재료, 사람, 작업 객체를 제공한다.
 
 ### 3. 기하와 파운데이션 모델
 
-SAM은 promptable mask, Depth Anything은 단안 깊이 단서, VGGT 계열은 기하 예측을 준다.
+SAM은 promptable mask, Depth Anything은 단안 깊이 단서, [[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]] 계열은 기하 예측을 준다.
 그러나 보정된 현장 좌표, metric scale, 시간 일관성, 안전성, BIM 객체 ID를 자동 보장하지
 않는다. 실제 시스템은 학습 제안과 기하 보정·정합·추적을 결합한다.
 
-PointNet은 점별 특징을 대칭 집계하고, PointNet++는 국소 계층을 추가한다. 최신 sparse
+PointNet은 점별 특징을 순서와 무관한 풀링으로 대칭 집계하고(포인트 클라우드의 점에는 의미 있는 순서가 없어 순서를 섞어도 출력이 같아야 하기 때문이다), PointNet++는 국소 계층을 추가한다. 최신 sparse
 voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우드가 일반 이미지와 다른
 이유를 이해하는 역사적 진입점이다.
 
@@ -207,7 +212,7 @@ voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우
    부르기 전에 분리해야 하는 오차 원천들을 나열하라.
 2. 관리자 보고서로 가는 인식 출력과 로봇으로 가는 인식 출력은 무엇이 다르며, 왜 후자만
    physical-AI 루프를 닫는가?
-3. SAM이 이미지에서 철근망을 완벽하게 분할했다. 하류 로봇이 그 마스크로 행동하기 전에
+3. SAM이 이미지에서 철근망(콘크리트 타설 전에 강철 보강근을 격자로 묶은 것)을 완벽하게 분할했다. 하류 로봇이 그 마스크로 행동하기 전에
    여전히 부족한 것은?
 4. Cho SLAM 2018에서 매핑을 스캔 처리 파이프라인이 아니라 “로봇적”으로 만드는 것은
    무엇이며, 자율 점검으로 인정하기 전에 무엇을 확인해야 하는가?

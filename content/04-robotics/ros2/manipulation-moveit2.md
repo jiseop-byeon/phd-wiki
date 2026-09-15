@@ -19,7 +19,7 @@ mastery-when: "Go deeper when you are writing a planner, a collision checker or 
 
 ### 1. What MoveIt 2 is, and three things it is not
 
-You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics, then searching a seven-dimensional configuration space for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
+You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics, then searching a seven-dimensional configuration space (the space of all joint-angle vectors, one axis per joint; see [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]]) for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
 
 What it is not, stated early because each misreading costs weeks:
 
@@ -61,7 +61,7 @@ The two ends are worth saying plainly. Upstream, `move_group` is a consumer of t
 
 ### 3. Why the URDF is not enough: the SRDF and planning groups
 
-The URDF says the robot has joints named `panda_joint1` through `panda_joint7` and a hand. It does not say which of those constitute "the arm", what "home" means, which link is the tip you are planning the pose of, or which link pairs can never collide because they are adjacent. A planner cannot start without all four. That semantic layer is the **SRDF** (`robot_description_semantic`), and its central concept is the **planning group**: a named set of joints that a request can target.
+The URDF says the robot has joints named `panda_joint1` through `panda_joint7` and a hand. It does not say which of those constitute "the arm", what "home" means, which link is the tip you are planning the pose of, or which link pairs can never collide because they are adjacent. A planner cannot start without all four. That semantic layer is the **SRDF** (Semantic Robot Description Format; `robot_description_semantic`), and its central concept is the **planning group**: a named set of joints that a request can target.
 
 ```xml
 <group name="panda_arm">
@@ -97,12 +97,15 @@ response_adapters:
   - default_planning_response_adapters/DisplayMotionPath
 ```
 
-What each stage buys you:
+What each stage buys you. The first four are request-side checks, which run before the planner and can stop it from running at all:
 
 - `ResolveConstraintFrames` rewrites constraints expressed in an object's subframe into a frame the planner knows.
 - `ValidateWorkspaceBounds` supplies a default workspace when the request omits one, so a sampling planner has somewhere bounded to sample. In Jazzy that default is the `default_workspace_bounds` parameter, whose value is `1000000000000.0` — a cube edge of 1e12 m, effectively unbounded, with the source carrying a TODO saying it should have been infinity. If you need a real bound, set it yourself; do not assume the 10 m cube that older MoveIt hardcoded.
 - `CheckStartStateBounds` **rejects** a start state outside a joint limit — `START_STATE_INVALID`, and the planner never runs. It does not nudge a revolute joint back inside. The one thing it will rewrite is the *rotation* of continuous, planar and floating joints, and only when `fix_start_state` is true, which defaults to false. Real encoders do report values slightly past limits, and this adapter is what turns that into a failure rather than what absorbs it.
 - `CheckStartStateCollision` reports a start state in collision and stops there — `START_STATE_IN_COLLISION`, with the contacts in the message. It does not sample a nearby free state. The plugin description still advertises the ROS 1 behaviour, which was not carried over; the source only sets the error code. Fix the scene or the start state yourself.
+
+The remaining stages are response-side processing, which runs on the planner's output:
+
 - `AddTimeOptimalParameterization` is the stage that turns a geometric path into a trajectory obeying joint velocity and acceleration limits. **The planner does not produce timing.** Path and trajectory are different objects, and this is where the difference is made.
 - `ValidateSolution` re-checks the finished trajectory. `DisplayMotionPath` publishes it for RViz.
 
@@ -114,7 +117,7 @@ Jazzy ships four, all separately packaged, all selectable per request by `planni
 
 | Family | Package | What it is for |
 |---|---|---|
-| **OMPL** (sampling) | `moveit_planners_ompl` | The default. RRTConnect and relatives: fast in high dimensions and cluttered scenes, probabilistically complete, **not deterministic** — the same request gives a different path each run |
+| **OMPL** (sampling) | `moveit_planners_ompl` | The default. RRTConnect and relatives: fast in high dimensions and cluttered scenes, probabilistically complete (if a path exists, the chance of finding it approaches 1 as it runs longer, but it cannot prove that none exists), **not deterministic** — the same request gives a different path each run |
 | **Pilz industrial motion** | `pilz_industrial_motion_planner` | Deterministic point-to-point (`PTP`), straight-line (`LIN`) and circular (`CIRC`) motions, plus a sequence capability. What industrial programmers expect, and repeatable |
 | **STOMP** | `moveit_planners_stomp` | Stochastic trajectory optimisation: samples noisy rollouts around a seed trajectory and updates it by cost |
 | **CHOMP** | `moveit_planners_chomp` | Gradient-based trajectory optimisation against a signed-distance field |
@@ -175,7 +178,7 @@ const double eef_step = 0.01;   // metres between interpolated EE poses
 double fraction = move_group.computeCartesianPath(waypoints, eef_step, trajectory);
 ```
 
-It interpolates the end-effector pose at `eef_step` intervals and solves IK at each one. **The return value is the fraction of the requested path it achieved, between 0.0 and 1.0, or -1.0 on error**, and you must check it. A partial result is the normal outcome, for reasons that are all geometric rather than algorithmic: the straight line leaves the reachable workspace; it passes through or near a singularity where the IK solution degenerates; the interpolation crosses a branch of the IK solution and the nearest solution is a wrist flip; or an interpolated pose is in collision. (In Jazzy the older `jump_threshold` argument is deprecated and dropped from the current overload.)
+It interpolates the end-effector pose at `eef_step` intervals and solves IK at each one. **The return value is the fraction of the requested path it achieved, between 0.0 and 1.0, or -1.0 on error**, and you must check it. A partial result is the normal outcome, for reasons that are all geometric rather than algorithmic: the straight line leaves the reachable workspace; it passes through or near a singularity where the IK solution degenerates (a configuration where the arm loses the ability to move its tip in some direction, so nearby poses demand very large joint motions; see [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 — Velocity Kinematics & Statics]] §4); the interpolation crosses a branch of the IK solution and the nearest solution is a wrist flip; or an interpolated pose is in collision. (In Jazzy the older `jump_threshold` argument is deprecated and dropped from the current overload.)
 
 So the honest rule is: never execute a Cartesian result without a test on `fraction`, and decide your policy deliberately. Executing a 70 % path means stopping the tool in mid-air somewhere you did not choose. Also note that `computeCartesianPath` returns a path whose timing you may still need to fix, and that Pilz `LIN` is the alternative that either gives you the whole line or fails cleanly.
 
@@ -322,7 +325,7 @@ Where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]]; what hap
 
 ### 1. MoveIt 2는 무엇이고, 아닌 것 세 가지
 
-관절 궤적을 보내면 움직이는 팔은 이미 있다([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). 이제 기둥 반대편의 어떤 자세로, 기둥도 비계도 자기 몸도 치지 않고 가야 한다. 그 궤적을 손으로 쓰려면 역기구학을 풀고, 7차원 배치 공간에서 충돌 없는 경로를 탐색하고, 어느 관절의 속도·가속도 한계도 어기지 않는 시간을 그 경로에 붙여야 한다. MoveIt 2는 정확히 그 문제에 대한 조립된 플러그인 기반 답이고, ROS 2의 표준이다.
+관절 궤적을 보내면 움직이는 팔은 이미 있다([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). 이제 기둥 반대편의 어떤 자세로, 기둥도 비계도 자기 몸도 치지 않고 가야 한다. 그 궤적을 손으로 쓰려면 역기구학을 풀고, 7차원 배치 공간(관절마다 축이 하나씩인, 가능한 모든 관절각 벡터의 공간. [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]] 참고)에서 충돌 없는 경로를 탐색하고, 어느 관절의 속도·가속도 한계도 어기지 않는 시간을 그 경로에 붙여야 한다. MoveIt 2는 정확히 그 문제에 대한 조립된 플러그인 기반 답이고, ROS 2의 표준이다.
 
 아닌 것 세 가지. 각각의 오해가 몇 주를 잡아먹는다.
 
@@ -364,7 +367,7 @@ ros2 node info /move_group
 
 ### 3. URDF만으로 부족한 이유: SRDF와 planning group
 
-URDF는 `panda_joint1`부터 `panda_joint7`까지의 관절과 손이 있다고 말한다. 그중 무엇이 "팔"인지, "home"이 무엇인지, 자세를 계획할 끝점 링크가 어느 것인지, 어떤 링크 쌍이 인접해 있어 절대 충돌하지 않는지는 말하지 않는다. 플래너는 이 넷 없이 시작할 수 없다. 그 의미론 계층이 **SRDF**(`robot_description_semantic`)이고, 중심 개념은 요청이 대상으로 삼을 수 있는 관절 집합에 이름을 붙인 **planning group**이다.
+URDF는 `panda_joint1`부터 `panda_joint7`까지의 관절과 손이 있다고 말한다. 그중 무엇이 "팔"인지, "home"이 무엇인지, 자세를 계획할 끝점 링크가 어느 것인지, 어떤 링크 쌍이 인접해 있어 절대 충돌하지 않는지는 말하지 않는다. 플래너는 이 넷 없이 시작할 수 없다. 그 의미론 계층이 **SRDF**(Semantic Robot Description Format, `robot_description_semantic`)이고, 중심 개념은 요청이 대상으로 삼을 수 있는 관절 집합에 이름을 붙인 **planning group**이다.
 
 ```xml
 <group name="panda_arm">
@@ -400,12 +403,15 @@ response_adapters:
   - default_planning_response_adapters/DisplayMotionPath
 ```
 
-각 단계가 사 주는 것:
+각 단계가 사 주는 것. 앞의 넷은 요청 쪽 점검으로, 플래너보다 먼저 돌며 플래너가 아예 돌지 못하게 막을 수 있다.
 
 - `ResolveConstraintFrames` — 물체의 subframe으로 표현된 제약을 플래너가 아는 프레임으로 다시 쓴다.
 - `ValidateWorkspaceBounds` — 요청에 작업 공간이 없으면 기본값을 넣는다. 샘플링 플래너가 샘플링할 유계 영역이 있어야 하기 때문이다. Jazzy에서 그 기본값은 `default_workspace_bounds` 파라미터이고 값이 `1000000000000.0`, 즉 한 변 1e12 m의 사실상 무한한 정육면체다. 소스에도 원래 무한대여야 한다는 TODO가 붙어 있다. 실제 경계가 필요하면 직접 설정하라. 예전 MoveIt이 박아 두었던 10 m 정육면체를 가정하지 마라.
 - `CheckStartStateBounds` — 관절 한계를 벗어난 시작 상태를 **거부한다**. `START_STATE_INVALID`가 뜨고 플래너는 돌지 않는다. 회전 관절을 한계 안으로 밀어 넣어 주지 않는다. 이 어댑터가 고쳐 쓰는 것은 연속·평면·부유 관절의 *회전값*뿐이고, 그것도 `fix_start_state`가 참일 때만인데 기본값은 거짓이다. 실제 엔코더가 한계를 살짝 넘은 값을 보고하는 것은 맞지만, 이 어댑터는 그것을 흡수하는 장치가 아니라 실패로 바꾸는 장치다.
 - `CheckStartStateCollision` — 시작 상태가 충돌이라고 보고하고 거기서 멈춘다. `START_STATE_IN_COLLISION`과 접촉 정보가 메시지에 담긴다. 근처의 자유 상태를 표본으로 찾아 주지 않는다. 플러그인 설명문은 아직 ROS 1 시절 동작을 광고하고 있지만 그 동작은 옮겨 오지 않았고, 소스는 오류 코드만 설정한다. 장면이나 시작 상태는 직접 고쳐야 한다.
+
+나머지 단계는 응답 쪽 처리로, 플래너의 출력에 대해 돈다.
+
 - `AddTimeOptimalParameterization` — 기하 경로를 관절 속도·가속도 한계를 지키는 궤적으로 바꾸는 단계다. **플래너는 시간을 만들지 않는다.** 경로와 궤적은 다른 물건이고, 그 차이가 여기서 생긴다.
 - `ValidateSolution`은 완성된 궤적을 다시 검사하고, `DisplayMotionPath`는 RViz용으로 발행한다.
 
@@ -417,7 +423,7 @@ Jazzy는 넷을 제공하고, 전부 별도 패키지이며, 요청마다 `plann
 
 | 계열 | 패키지 | 용도 |
 |---|---|---|
-| **OMPL**(샘플링) | `moveit_planners_ompl` | 기본값. RRTConnect 계열: 고차원·혼잡 씬에서 빠르고 확률적 완전성을 갖지만 **결정적이지 않다** — 같은 요청이 실행마다 다른 경로를 준다 |
+| **OMPL**(샘플링) | `moveit_planners_ompl` | 기본값. RRTConnect 계열: 고차원·혼잡 씬에서 빠르고 확률적 완전성을 갖지만(경로가 있다면 오래 돌릴수록 찾을 확률이 1에 가까워지지만, 경로가 없음을 증명하지는 못한다) **결정적이지 않다** — 같은 요청이 실행마다 다른 경로를 준다 |
 | **Pilz industrial motion** | `pilz_industrial_motion_planner` | 결정적인 점대점(`PTP`), 직선(`LIN`), 원호(`CIRC`) 동작과 시퀀스 기능. 산업 프로그래머가 기대하는 것이고 재현된다 |
 | **STOMP** | `moveit_planners_stomp` | 확률적 궤적 최적화. 시드 궤적 주변으로 잡음 롤아웃을 뽑아 비용으로 갱신한다 |
 | **CHOMP** | `moveit_planners_chomp` | 부호 있는 거리장에 대한 경사 기반 궤적 최적화 |
@@ -478,7 +484,7 @@ const double eef_step = 0.01;   // 보간된 EE 자세 사이 간격(m)
 double fraction = move_group.computeCartesianPath(waypoints, eef_step, trajectory);
 ```
 
-`eef_step` 간격으로 말단 자세를 보간하고 각 지점에서 IK를 푼다. **반환값은 요청한 경로 중 달성한 비율로 0.0에서 1.0 사이이고, 오류일 때는 -1.0**이다. 반드시 검사해야 한다. 부분 결과는 정상적인 결과이고, 이유는 알고리즘이 아니라 전부 기하적이다: 직선이 도달 가능 작업 공간을 벗어난다, 특이점을 지나거나 근처를 스쳐 IK 해가 퇴화한다, 보간이 IK 해의 다른 분기를 넘어가 가장 가까운 해가 손목 뒤집기가 된다, 보간된 자세 하나가 충돌한다. (Jazzy에서 예전의 `jump_threshold` 인자는 deprecated이고 현재 오버로드에서 빠졌다.)
+`eef_step` 간격으로 말단 자세를 보간하고 각 지점에서 IK를 푼다. **반환값은 요청한 경로 중 달성한 비율로 0.0에서 1.0 사이이고, 오류일 때는 -1.0**이다. 반드시 검사해야 한다. 부분 결과는 정상적인 결과이고, 이유는 알고리즘이 아니라 전부 기하적이다: 직선이 도달 가능 작업 공간을 벗어난다, 특이점(팔이 끝점을 어떤 방향으로 움직일 능력을 잃는 자세라서, 그 근처의 자세는 매우 큰 관절 운동을 요구한다. [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 — Velocity Kinematics & Statics]] §4 참고)을 지나거나 근처를 스쳐 IK 해가 퇴화한다, 보간이 IK 해의 다른 분기를 넘어가 가장 가까운 해가 손목 뒤집기가 된다, 보간된 자세 하나가 충돌한다. (Jazzy에서 예전의 `jump_threshold` 인자는 deprecated이고 현재 오버로드에서 빠졌다.)
 
 그래서 정직한 규칙은 이렇다. `fraction` 검사 없이 Cartesian 결과를 실행하지 마라. 70 % 경로를 실행한다는 것은 당신이 고르지 않은 어딘가의 허공에서 공구를 멈춘다는 뜻이다. 또한 `computeCartesianPath`가 돌려준 경로는 시간 부여를 따로 손봐야 할 수 있고, 전부 아니면 깔끔한 실패를 주는 대안이 Pilz `LIN`이다.
 

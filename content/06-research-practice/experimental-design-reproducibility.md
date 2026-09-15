@@ -49,7 +49,7 @@ A strong baseline isolates the proposed contribution. Include a practical existi
 
 Use paired comparisons when the same scenes/tasks can be evaluated under both conditions. Randomize or counterbalance order to reduce learning, battery, wear, weather, and operator effects.
 
-A comparison is explanatory only when the changed factors match the question. Suppose a new tactile architecture also receives additional demonstrations and a different pretrained encoder, while the baseline is trained from scratch. A higher score could come from the architecture, data, representation, or their interaction. This is the confound identified in the self-check; putting it in the design prevents an ambiguous headline result.
+A comparison is explanatory only when the changed factors match the question. Suppose a new tactile architecture also receives additional demonstrations and a different pretrained encoder, while the baseline is trained from scratch. A higher score could come from the architecture, data, representation, or their interaction. Such an uncontrolled difference is a **confound**: something other than the proposed factor that offers an alternative explanation for the result. This is the confound identified in the self-check; putting it in the design prevents an ambiguous headline result.
 
 For a system-level comparison, the complete packages can still be useful competitors if their resources are disclosed. For an architecture claim, add a comparison with matched data, initialization, tuning opportunity, and control interface.
 
@@ -70,7 +70,11 @@ Separate training/tuning/test data and document the unit of split. Random frames
 
 Report trial count, independent runs, failures, exclusions, aggregation, and an uncertainty measure appropriate to the design. A seed captures only software randomness; physical trials vary through calibration, wear, temperature, material, timing, and people.
 
-Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Which test fits is decided by what number each trial yields and whether both methods ran on the same trials ([[02-foundations/probability|3. Probability §6]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a 95% CI half-width of **at most** $\pm 1/\sqrt{n}$ (10 trials → ±32%p; 100 → ±10%p). **That bound is the widest the interval ever gets, and it is reached only at $p = 0.5$** — near 0 or 1 it is far too pessimistic (at $p = 0.9$, $n = 10$, the true half-width is ±19%p), and it produces impossible bounds above 100%, so at high success rates use a Wilson or exact interval instead. Second: if zero failures are observed in $n$ trials, the rule of three puts the 95% **upper confidence bound** on the true failure rate at $\approx 3/n$ — an approximation that only holds for $n \gtrsim 30$; at $n = 10$ the exact bound is 26%, not 30%, and at $n = 5$ it is 45%, not 60%.
+Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Which test fits is decided by what number each trial yields and whether both methods ran on the same trials ([[02-foundations/probability|3. Probability §6]]). Two literacy-level tools for reasoning about n.
+
+First: a success rate from $n$ trials has a 95% CI half-width of **at most** $\pm 1/\sqrt{n}$ (10 trials → ±32%p; 100 → ±10%p). It comes from the normal-approximation half-width $1.96\sqrt{p(1-p)/n}$: the product $p(1-p)$ is largest, 0.25, at $p = 0.5$, and $1.96\sqrt{0.25} = 0.98 \approx 1$. **That bound is the widest the interval ever gets, and it is reached only at $p = 0.5$** — near 0 or 1 it is far too pessimistic (at $p = 0.9$, $n = 10$, the true half-width is ±19%p), and it produces impossible bounds above 100%, so at high success rates use a Wilson or exact interval instead (both are listed in the test-choice table of [[02-foundations/probability|3. Probability §6]]).
+
+Second: if zero failures are observed in $n$ trials, the rule of three puts the 95% **upper confidence bound** on the true failure rate at $\approx 3/n$ — an approximation that only holds for $n \gtrsim 30$; at $n = 10$ the exact bound is 26%, not 30%, and at $n = 5$ it is 45%, not 60%.
 
 <svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="how the uncertainty of a success rate shrinks with the number of trials">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
@@ -212,7 +216,7 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 같은 장면/과제를 두 조건에서 평가할 수 있으면 짝지은 비교를 써라. 학습·배터리·마모·
 날씨·운용자 효과를 줄이도록 순서를 무작위화하거나 counterbalance하라.
 
-바꾼 요인이 질문과 맞아야 설명력 있는 비교가 된다. 새 촉각 구조에 시연과 사전학습 인코더도 추가하고 베이스라인은 처음부터 학습했다고 하자. 점수 차이는 구조, 데이터, 표현 또는 상호작용에서 올 수 있다. 자가점검에서 지적한 혼입을 설계 단계에서 막아야 대표 결과의 의미가 흐려지지 않는다.
+바꾼 요인이 질문과 맞아야 설명력 있는 비교가 된다. 새 촉각 구조에 시연과 사전학습 인코더도 추가하고 베이스라인은 처음부터 학습했다고 하자. 점수 차이는 구조, 데이터, 표현 또는 상호작용에서 올 수 있다. 이렇게 통제되지 않은 차이를 **혼입**(confound)이라 한다. 제안한 요인이 아닌데 결과를 달리 설명할 수 있는 차이라는 뜻이다. 자가점검에서 지적한 혼입을 설계 단계에서 막아야 대표 결과의 의미가 흐려지지 않는다.
 
 시스템 수준 비교라면 자원을 공개한 전체 패키지끼리의 경쟁도 유익하다. 구조에 대한 주장이면 데이터, 초기화, 튜닝 기회, 제어 인터페이스를 맞춘 비교를 추가한다.
 
@@ -240,8 +244,12 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 지표와 조건이 많아 체리피킹이 쉬울 때는 주요 결과(primary outcome)를 미리 선언하라.
 통계적 유의성과 실질적 중요성은 다르다([[02-foundations/ml-practice|ML 실무 §5]]).
 어떤 검정이 맞는지는 시행마다 어떤 수가 나오는지와 두 방법이 같은 시행에서 돌았는지로 정해진다([[02-foundations/probability|3. 확률 §6]]).
-시행 수를 가늠하는 문해력 수준의 도구 둘: $n$회 시행의 성공률 신뢰구간은 대략
-**최대** $\pm 1/\sqrt{n}$이다(10회 → ±32%p; 100회 → ±10%p). **이 값은 구간이 가장 넓어질 때의 크기이고 $p = 0.5$에서만 도달한다** — 0이나 1 근처에서는 지나치게 비관적이고($p = 0.9$, $n = 10$이면 실제 반폭은 ±19%p), 100%를 넘는 불가능한 상한을 만든다. 그러니 성공률이 높을 때는 Wilson이나 정확 구간을 써라. 둘째, $n$회에서 실패 0이면 3의
+시행 수를 가늠하는 문해력 수준의 도구 둘.
+
+첫째, $n$회 시행의 성공률 신뢰구간은 대략
+**최대** $\pm 1/\sqrt{n}$이다(10회 → ±32%p; 100회 → ±10%p). 이 값은 정규근사 반폭 $1.96\sqrt{p(1-p)/n}$에서 나온다. 곱 $p(1-p)$는 $p = 0.5$에서 최대 0.25이고, $1.96\sqrt{0.25} = 0.98 \approx 1$이기 때문이다. **이 값은 구간이 가장 넓어질 때의 크기이고 $p = 0.5$에서만 도달한다** — 0이나 1 근처에서는 지나치게 비관적이고($p = 0.9$, $n = 10$이면 실제 반폭은 ±19%p), 100%를 넘는 불가능한 상한을 만든다. 그러니 성공률이 높을 때는 Wilson이나 정확 구간을 써라(두 구간 모두 [[02-foundations/probability|3. 확률 §6]]의 검정 선택 표에 있다).
+
+둘째, $n$회에서 실패 0이면 3의
 법칙(rule of three)은 참 실패율의 95% **상한**을 $\approx 3/n$으로 준다 — $n \gtrsim 30$에서만 성립하는 근사이고, $n = 10$이면 정확한 상한이 30%가 아니라 26%, $n = 5$면 60%가 아니라 45%다.
 
 <svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="시행 횟수에 따라 성공률의 불확실성이 줄어드는 방식">

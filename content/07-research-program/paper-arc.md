@@ -87,7 +87,7 @@ the end, a mobile base can reach a workspace and hold a manipulation-ready pose.
 
 - Leans on: [[04-robotics/state-estimation-slam|State Estimation & SLAM]], [[04-robotics/geometric-perception-calibration|Geometric Perception]], [[05-construction-robotics/site-perception|Site Perception]].
 - Anchor reading: [[01-canonical-papers/notes/8-construction/cho-slam|Cho — construction SLAM]], [[01-canonical-papers/notes/8-construction/heap|HEAP]] as the extreme case of a mobile manipulator on a site.
-- Postpones: new SLAM. The contribution is integration and task-conditioning, per the scope rule.
+- Postpones: new SLAM. The contribution is integration and task-conditioning, per the scope rule of [[07-research-program/index|7. Research Program §7]] (new SLAM is a navigation contribution the program does not claim, so it fails the admission test there).
 
 #### Paper 3 — Core construction manipulation
 
@@ -277,7 +277,7 @@ arc에서의 실제 기능은 **플랫폼을 사는 것**이다: 끝날 무렵 �
 
 - 기대는 곳: [[04-robotics/state-estimation-slam|상태 추정·SLAM]], [[04-robotics/geometric-perception-calibration|기하 인식]], [[05-construction-robotics/site-perception|현장 인식]].
 - 앵커 읽기: [[01-canonical-papers/notes/8-construction/cho-slam|Cho — 건설 SLAM]], 현장 모바일 매니퓰레이터의 극단 사례로서 [[01-canonical-papers/notes/8-construction/heap|HEAP]].
-- 미루는 것: 새 SLAM. 범위 규칙에 따라 기여는 통합과 과제 조건부화다.
+- 미루는 것: 새 SLAM. [[07-research-program/index|7. 연구 프로그램 §7]]의 범위 규칙에 따라 기여는 통합과 과제 조건부화다(새 SLAM은 프로그램이 주장하지 않는 내비게이션 기여이므로 거기서 정의한 입장 시험을 통과하지 못한다).
 
 #### 3편 — 핵심 건설 조작
 

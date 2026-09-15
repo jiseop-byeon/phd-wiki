@@ -77,8 +77,9 @@ Four procedures measure the same thresholds with different bias/cost tradeoffs:
 
 Two cautions transfer straight from [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §1]]:
 the experimental unit is the **participant**, not the trial — a thousand staircase
-trials from three people is n = 3 — and yes/no procedures confound sensitivity with
-response bias, which is why forced-choice designs ("which interval contained it?")
+trials from three people is n = 3 — and yes/no procedures confound sensitivity (how well the person
+actually tells stimulus from no stimulus) with response bias (a tendency to answer "yes" or
+"no" regardless of the stimulus), which is why forced-choice designs ("which interval contained it?")
 are preferred when the claim matters.
 
 ### 3. Thresholds are hardware specs
@@ -170,9 +171,10 @@ questions, and papers routinely blur them:
 
 A claim of the form "haptic feedback improved teleoperation" should say which of the
 three it measured. One that measured workload and concludes perception has changed
-lanes mid-paper — the reviewer's phrase is *construct validity*, and
-[[06-research-practice/research-questions-claims|1. Research Questions & Claims]] is
-where that vocabulary lives.
+lanes mid-paper — the reviewer's phrase is *construct validity*: whether the
+measurement actually measures the thing the claim names. Matching each claim to the
+evidence it needs is the subject of
+[[06-research-practice/research-questions-claims|1. Research Questions & Claims §7]].
 
 ### After reading
 
@@ -300,7 +302,8 @@ where that vocabulary lives.
 
 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §1]]에서 두
 경고가 그대로 넘어온다: 실험 단위는 시행이 아니라 **참가자**다 — 세 명에게서 나온 계단법
-시행 천 번은 n = 3이다 — 그리고 예/아니오 절차는 민감도와 응답 편향을 뒤섞으므로, 주장이
+시행 천 번은 n = 3이다 — 그리고 예/아니오 절차는 민감도(자극이 있을 때와 없을 때를 실제로 얼마나 잘 구별하는가)와
+응답 편향(자극과 상관없이 "예"나 "아니오"로 답하는 경향)을 뒤섞으므로, 주장이
 중요할수록 강제선택 설계("어느 구간에 있었는가?")를 쓴다.
 
 ### 3. 임계값은 하드웨어 사양이다
@@ -382,8 +385,9 @@ JND 7%에 해당하는 약 0.14 N은 선별 참고값이지 의도적 조절의 
 
 "햅틱 피드백이 원격조작을 개선했다" 형태의 주장은 셋 중 무엇을 쟀는지 말해야 한다.
 작업부하를 재고 지각을 결론 내린 논문은 중간에 차선을 바꾼 것이다 — 심사자의 용어로는
-*구성 타당도*이고, 그 어휘는
-[[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]에 있다.
+*구성 타당도*(construct validity), 곧 측정이 주장이 이름 붙인 대상을 실제로 재는가다.
+주장마다 필요한 증거를 맞추는 일은
+[[06-research-practice/research-questions-claims|1. 연구 질문과 주장 §7]]에서 다룬다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

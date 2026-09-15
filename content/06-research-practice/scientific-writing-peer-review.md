@@ -147,6 +147,8 @@ same demonstrations, encoder, and a 12-configuration hyperparameter sweep identi
 ours (App. C); we now state this in §5.1. We have narrowed the abstract's claim from
 'robust manipulation' to 'consistent success across three tabletop scenes.'"
 
+The SE in the response is the binomial standard error $\sqrt{p(1-p)/n}$ for one scene: with $p = 0.85$ and $n = 20$ it is $\sqrt{0.1275/20} \approx 0.080$, and with $p = 0.80$ it is $\sqrt{0.16/20} \approx 0.089$, so about 8 %p. The same kind of bound is worked through in [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §4]].
+
 Every element is traceable: the concern is restated, the evidence is located, the
 comparison protocol is specified, and the claim is renegotiated to match the data.
 
@@ -335,6 +337,8 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 동일한 12개 구성 하이퍼파라미터 탐색을 사용했습니다(부록 C); §5.1에 명시했습니다.
 초록의 주장을 'robust manipulation'에서 '세 탁상 장면에 걸친 일관된 성공'으로
 좁혔습니다."
+
+응답의 표준오차는 장면 하나의 이항 표준오차 $\sqrt{p(1-p)/n}$이다. $p = 0.85$, $n = 20$이면 $\sqrt{0.1275/20} \approx 0.080$이고, $p = 0.80$이면 $\sqrt{0.16/20} \approx 0.089$이므로 약 8%p다. 같은 종류의 한계는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §4]]에서 따라가 볼 수 있다.
 
 모든 요소가 추적 가능하다: 우려를 재진술하고, 증거의 위치를 밝히고, 비교 프로토콜을
 명시하고, 주장을 데이터에 맞게 재협상했다.
