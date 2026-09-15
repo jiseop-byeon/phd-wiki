@@ -138,12 +138,13 @@ themselves (prose only — code blocks and equations excluded):
 |---|---:|---:|
 | Foundations 0–10 | 13 | about 1.8 h |
 | Robotics 1–23 (incl. the 11 MR chapters) | 34 | about 3.6 h |
+| Algorithms 11 (interview track) | 8 | about 2.0 h |
 | Robotics 24–25 (haptics & teleoperation, ROS 2) | 18 | about 2.9 h |
 | Construction robotics | 10 | about 0.8 h |
 | Paper notes (115) | 115 | about 3.6 h |
 | Research practice | 8 | about 1.1 h |
 | Research program | 1 | about 0.1 h |
-| **Total** | **199** | **about 13.9 h** |
+| **Total** | **207** | **about 15.9 h** |
 
 Read that number honestly: it is *one pass of the prose in one language*, and it is not the
 study time. Working the self-checks and re-deriving the worked examples typically costs
@@ -381,12 +382,13 @@ graph LR
 |---|---:|---:|
 | 기초 0–10 | 13 | 약 1.8시간 |
 | 로보틱스 1–23 (MR 11개 장 포함) | 34 | 약 3.6시간 |
+| 알고리즘 11 (인터뷰 트랙) | 8 | 약 2.0시간 |
 | 로보틱스 24–25 (햅틱·원격조작, ROS 2) | 18 | 약 2.9시간 |
 | 건설로봇 | 10 | 약 0.8시간 |
 | 논문 노트 (115편) | 115 | 약 3.6시간 |
 | Research Practice | 8 | 약 1.1시간 |
 | Research Program | 1 | 약 0.1시간 |
-| **합계** | **199** | **약 13.9시간** |
+| **합계** | **207** | **약 15.9시간** |
 
 이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
 자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3–5배** — 위키 전체로

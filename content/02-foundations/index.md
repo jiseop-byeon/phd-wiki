@@ -66,6 +66,12 @@ ch.5, ch.8, and ch.11 ideas into one path through operational-space inertia and 
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — the manipulator equation, Coriolis coupling, computed torque, and the operational-space inertia $\Lambda$ that makes force control readable
 
+### Interview track
+
+Track 11 is also outside the common curriculum. It prepares coding interviews and research-lab implementation interviews: complexity, data structures, sorting, greedy algorithms, dynamic programming, graph search, interview-ready Python and C++, and ten robotics and AI problems written from a blank editor.
+
+- [[02-foundations/algorithms/index|11. Algorithms & Data Structures]] — eight pages, each algorithm with its invariant, complexity, tested code, and interview pitfalls
+
 Skip it unless manipulation is your contribution area; read it before
 [[04-robotics/contact-force-tactile|Contact, Force & Tactile]] if it is.
 
@@ -126,6 +132,12 @@ Skip it unless manipulation is your contribution area; read it before
 핵심을 작업공간 관성과 힘 제어까지 한 흐름으로 재구성한다.
 
 - [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] — 매니퓰레이터 방정식, 코리올리 결합, 계산 토크, 그리고 힘 제어를 읽을 수 있게 만드는 작업 공간 관성 $\Lambda$
+
+### 인터뷰 트랙
+
+11번 트랙도 공통 교과과정 밖에 있다. 코딩 인터뷰와 연구실 구현 인터뷰를 준비한다: 복잡도, 자료구조, 정렬, 그리디 알고리즘, 동적 계획법, 그래프 탐색, 인터뷰용 Python·C++, 그리고 빈 편집기에서 쓰는 로봇·AI 문제 열 개.
+
+- [[02-foundations/algorithms/index|11. 알고리즘과 자료구조]] — 여덟 페이지, 알고리즘마다 불변식·복잡도·검증된 코드·인터뷰 함정
 
 매니퓰레이션이 기여 영역이 아니라면 건너뛰고, 맞다면
 [[04-robotics/contact-force-tactile|접촉·힘·촉각]]보다 먼저 읽어라.
