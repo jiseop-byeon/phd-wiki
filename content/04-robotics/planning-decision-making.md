@@ -194,19 +194,21 @@ A robot that cannot move in every direction at every speed needs a planner whose
 
 **Exact shortest paths for a car in free space.**
 
-- **Dubins (1957):** a forward-only car at constant speed with minimum turning radius $\rho$. Between any two poses $(x,y,\theta)$ the shortest path has at most three segments, each a full-lock left arc $L$, a full-lock right arc $R$, or a straight $S$. Only six *words* can be optimal: $LSL, LSR, RSL, RSR, LRL, RLR$. In the $CCC$ words the middle arc turns through more than $\pi$.
+- **Dubins (1957):** a forward-only car at constant speed with minimum turning radius $\rho$. Between any two poses $(x,y,\theta)$ the shortest path has at most three segments, each a full-lock left arc $L$, a full-lock right arc $R$, or a straight $S$. Only six *words* can be optimal: $LSL, LSR, RSL, RSR, LRL, RLR$. In the $CCC$ words the middle arc turns through more than $\pi$. The intuition is a shortest route around a bend: turn as tightly as allowed, drive straight, turn as tightly as allowed again — a gentler arc only adds length — and Dubins proved that three such pieces always suffice.
 - **Reeds–Shepp (1990):** the same car allowed to reverse. The shortest path is one of a fixed list of fewer than fifty words, each at most five segments long with at most two gear changes (cusps).
 
 Both are closed-form, so planners use them as a **steering function**, meaning an exact connection between two states. They also serve as the obstacle-free, turning-radius-aware half of the lattice heuristic in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §8. Two limits come with them. They ignore obstacles. And curvature jumps at every segment joint, so a real steering wheel cannot follow the corner exactly.
 
 **Search over motion primitives.** A* itself is [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §6; what changes here is what an edge is.
 
-- **State lattice** (Pivtoraiko, Knepper & Kelly 2009). Discretize $(x,y,\theta)$, sometimes with curvature or speed, on a regular grid. Offline, solve boundary-value problems for a small set of feasible primitives that start and end exactly on lattice states. The set is translation-invariant, so the same primitives are reused everywhere. Any completeness or optimality claim is relative to that primitive set, not to the continuous problem.
-- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). Expand a node by integrating the car model for a few steering values. Keep one *continuous* pose per discrete $(x,y,\theta)$ cell and prune later arrivals in the same cell. Try an analytic Reeds–Shepp shot to the goal as the search nears it, then smooth the result. The path is drivable, but the cell pruning gives up completeness and optimality even on the lattice.
+- **State lattice** (Pivtoraiko, Knepper & Kelly 2009). Discretize $(x,y,\theta)$, sometimes with curvature or speed, on a regular grid. Offline, solve boundary-value problems — find an input that drives the model from one given state to exactly another — for a small set of feasible primitives that start and end exactly on lattice states. The set is translation-invariant, so the same primitives are reused everywhere.
+- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). Expand a node by integrating the car model for a few steering values. Keep one *continuous* pose per discrete $(x,y,\theta)$ cell and prune later arrivals in the same cell. Try an analytic Reeds–Shepp shot to the goal as the search nears it, then smooth the result.
+
+Their guarantees differ. A lattice planner's completeness or optimality claim is relative to its primitive set, not to the continuous problem. Hybrid A\*'s path is drivable, but the cell pruning gives up completeness and optimality even on the lattice.
 
 [[04-robotics/ros2/navigation-nav2|Nav2]] ships both as its "feasible" planners.
 
-**Sampling with dynamics.** *Kinodynamic RRT* (LaValle & Kuffner 2001) samples a state, finds the nearest tree node under a chosen metric, and extends it by integrating $\dot x = f(x,u)$ for some input and duration. That forward propagation needs no boundary-value solver, but new nodes never land exactly on the sampled state, and the metric choice matters. Karaman & Frazzoli (2011) showed that plain RRT converges to a suboptimal path with probability one; RRT\* and PRM\* restore asymptotic optimality by connecting each sample to neighbours within a radius that shrinks like $(\log n / n)^{1/d}$. FMT\* (Janson et al. 2015) reaches the same guarantee with a lazy dynamic-programming pass over a batch of samples that postpones collision checks. The asymptotically optimal versions for dynamical systems need an exact steering function plus its cost — Dubins or Reeds–Shepp for cars, a precomputed lattice, or flatness below.
+**Sampling with dynamics.** *Kinodynamic RRT* (LaValle & Kuffner 2001) samples a state, finds the nearest tree node under a chosen metric, and extends it by integrating $\dot x = f(x,u)$ for some input and duration. That forward propagation needs no boundary-value solver, but new nodes never land exactly on the sampled state, and the metric choice matters. Karaman & Frazzoli (2011) showed that plain RRT converges to a suboptimal path with probability one; RRT\* and PRM\* restore asymptotic optimality by connecting each sample to neighbours within a radius that shrinks like $(\log n / n)^{1/d}$. That rate keeps on the order of $\log n$ samples in each ball, because the ball's volume scales as $r^d \propto \log n/n$ and there are $n$ samples: few enough that rewiring stays cheap, yet enough that the graph stays connected as samples multiply. FMT\* (Janson et al. 2015) reaches the same guarantee with a lazy dynamic-programming pass over a batch of samples that postpones collision checks. The asymptotically optimal versions for dynamical systems need an exact steering function plus its cost — Dubins or Reeds–Shepp for cars, a precomputed lattice, or flatness below.
 
 **Differential flatness.** Some systems let you plan a few output curves freely and read every state and input off them. Fliess, Lévine, Martin & Rouchon (1995) call a system $\dot x = f(x,u)$ *flat* when there are outputs $z$ (as many as there are inputs) such that
 
@@ -216,9 +218,9 @@ for a finite $q$, so any smooth curve $z(t)$ yields a state and input trajectory
 
 $$\theta=\operatorname{atan2}(\dot y,\dot x),\qquad v=\sqrt{\dot x^2+\dot y^2},\qquad \omega=\frac{\dot x\ddot y-\dot y\ddot x}{\dot x^2+\dot y^2}$$
 
-These hold because the velocity $(\dot x,\dot y)$ points along the heading with length $v$, so heading and speed are its angle and norm, and $\omega$ is the rate of that angle. The kinematic car adds a steering angle $\phi=\arctan(L\kappa)$, where $L$ is the wheelbase and $\kappa=\omega/v$ is the path curvature. A turning-radius limit is therefore a bound on the geometry of $z$, not on its timing.
+These hold because the velocity $(\dot x,\dot y)$ points along the heading with length $v$, so heading and speed are its angle and norm, and $\omega$ is the rate of that angle. The kinematic car adds a steering angle $\phi=\arctan(L\kappa)$, where $L$ is the wheelbase and $\kappa=\omega/v$ is the path curvature. That comes from the bicycle model: with the front wheel steered by $\phi$, the rear axle circles a centre at radius $R$ with $\tan\phi = L/R$, and $\kappa = 1/R$. A turning-radius limit is therefore a bound on the geometry of $z$, not on its timing.
 
-For a quadrotor, Mellinger & Kumar (2011) use position and yaw as flat outputs. Thrust and attitude follow from acceleration, body rates from jerk, and torques from snap, which is why they minimise snap.
+For a quadrotor, Mellinger & Kumar (2011) use position and yaw as flat outputs. The rotors can push only along the body $z$ axis, so the acceleration the curve demands (plus gravity) fixes both the thrust magnitude and the direction that axis must point, which with yaw is the attitude. Differentiating once more says how fast the attitude must turn, so body rates come from jerk; once more gives angular acceleration, so torques come from snap. That is why they minimise snap.
 
 **Why flatness turns planning into curve fitting.** Write $z(t)$ as polynomials. Boundary conditions on $z$ and its derivatives are then *linear* in the coefficients, so one linear solve gives a dynamically feasible trajectory. What remains are the inequality constraints — speed, curvature, obstacles. They are checked afterwards, fixed by time scaling ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]]), or handed to the optimisation of §6 with the polynomial coefficients as decision variables. Flatness removes the dynamics constraint from §6's program, not the obstacle constraints.
 
@@ -541,19 +543,21 @@ optimality**도 표본이 늘 때의 수렴 성질이지, 실시간 예산에서
 
 **자유 공간에서 자동차의 정확한 최단 경로.**
 
-- **Dubins (1957):** 일정 속도로 전진만 하고 최소 회전 반경이 $\rho$인 차. 임의의 두 pose $(x,y,\theta)$ 사이 최단 경로는 최대 세 구간이고, 각 구간은 최대 조향 좌회전 호 $L$, 최대 조향 우회전 호 $R$, 직진 $S$ 중 하나다. 최적일 수 있는 *단어*는 여섯 개뿐이다: $LSL, LSR, RSL, RSR, LRL, RLR$. $CCC$ 단어에서 가운데 호는 $\pi$보다 크게 돈다.
+- **Dubins (1957):** 일정 속도로 전진만 하고 최소 회전 반경이 $\rho$인 차. 임의의 두 pose $(x,y,\theta)$ 사이 최단 경로는 최대 세 구간이고, 각 구간은 최대 조향 좌회전 호 $L$, 최대 조향 우회전 호 $R$, 직진 $S$ 중 하나다. 최적일 수 있는 *단어*는 여섯 개뿐이다: $LSL, LSR, RSL, RSR, LRL, RLR$. $CCC$ 단어에서 가운데 호는 $\pi$보다 크게 돈다. 직관은 굽은 길을 가장 짧게 도는 방법이다: 허용되는 만큼 최대로 꺾고, 곧게 달리고, 다시 최대로 꺾는다 — 더 완만한 호는 길이만 늘린다 — 그리고 Dubins는 이런 조각 세 개면 언제나 충분함을 증명했다.
 - **Reeds–Shepp (1990):** 같은 차에 후진을 허용한다. 최단 경로는 쉰 개가 안 되는 고정된 단어 목록 중 하나이고, 각 단어는 최대 다섯 구간, 기어 변환(cusp)은 최대 두 번이다.
 
 둘 다 닫힌 형태라서 계획기는 이것을 **조향 함수(steering function)**, 즉 두 상태 사이의 정확한 연결로 쓴다. 또한 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §8의 격자 휴리스틱에서 장애물을 무시하되 회전 반경은 지키는 쪽 절반이 된다. 한계도 둘 따라온다. 장애물을 무시한다. 그리고 구간 이음매마다 곡률이 점프하므로 실제 핸들은 그 모서리를 정확히 따라갈 수 없다.
 
 **모션 프리미티브 위의 탐색.** A* 자체는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §6에 있다. 여기서 바뀌는 것은 간선이 무엇이냐다.
 
-- **상태 격자(state lattice)** (Pivtoraiko, Knepper & Kelly 2009). $(x,y,\theta)$를, 때로는 곡률이나 속도까지 규칙적인 격자로 이산화한다. 오프라인에서 경계값 문제를 풀어, 격자 상태에서 정확히 시작해 격자 상태에서 정확히 끝나는 실행 가능한 프리미티브의 작은 집합을 만든다. 이 집합은 평행이동에 불변이라 어디서나 같은 프리미티브를 재사용한다. 완전성이나 최적성 주장은 연속 문제가 아니라 그 프리미티브 집합에 대한 것이다.
-- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). 몇 개의 조향값으로 차 모델을 적분해 노드를 확장한다. 이산 $(x,y,\theta)$ 칸마다 *연속* pose를 하나만 두고, 같은 칸에 나중에 도착한 것은 가지친다. 목표에 가까워지면 목표까지 해석적 Reeds–Shepp 연결을 시도하고, 결과를 평활화한다. 경로는 운전 가능하지만, 칸 단위 가지치기 때문에 격자 위에서조차 완전성과 최적성을 포기한다.
+- **상태 격자(state lattice)** (Pivtoraiko, Knepper & Kelly 2009). $(x,y,\theta)$를, 때로는 곡률이나 속도까지 규칙적인 격자로 이산화한다. 오프라인에서 경계값 문제 — 주어진 한 상태에서 다른 한 상태로 모델을 정확히 옮기는 입력을 찾는 문제 — 를 풀어, 격자 상태에서 정확히 시작해 격자 상태에서 정확히 끝나는 실행 가능한 프리미티브의 작은 집합을 만든다. 이 집합은 평행이동에 불변이라 어디서나 같은 프리미티브를 재사용한다.
+- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). 몇 개의 조향값으로 차 모델을 적분해 노드를 확장한다. 이산 $(x,y,\theta)$ 칸마다 *연속* pose를 하나만 두고, 같은 칸에 나중에 도착한 것은 가지친다. 목표에 가까워지면 목표까지 해석적 Reeds–Shepp 연결을 시도하고, 결과를 평활화한다.
+
+둘의 보장은 다르다. 격자 계획기의 완전성이나 최적성 주장은 연속 문제가 아니라 그 프리미티브 집합에 대한 것이다. Hybrid A\*의 경로는 운전 가능하지만, 칸 단위 가지치기 때문에 격자 위에서조차 완전성과 최적성을 포기한다.
 
 [[04-robotics/ros2/navigation-nav2|Nav2]]는 둘 다 "실현 가능(feasible)" 계획기로 제공한다.
 
-**동역학을 넣은 표본 기반 계획.** *Kinodynamic RRT*(LaValle & Kuffner 2001)는 상태를 표본으로 뽑고, 정한 거리 척도로 가장 가까운 트리 노드를 찾은 뒤, 어떤 입력과 지속 시간으로 $\dot x = f(x,u)$를 적분해 뻗는다. 이 전방 전파에는 경계값 문제 풀이기가 필요 없지만, 새 노드는 뽑은 상태에 정확히 닿지 않고 거리 척도의 선택이 결과를 좌우한다. Karaman & Frazzoli(2011)는 단순 RRT가 확률 1로 준최적 경로에 수렴함을 보였고, RRT\*와 PRM\*는 각 표본을 $(\log n / n)^{1/d}$처럼 줄어드는 반경 안의 이웃과 연결해 점근적 최적성을 되찾는다. FMT\*(Janson 외 2015)는 표본 묶음 위에서 충돌 검사를 미루는 게으른 동적 계획법으로 같은 보장을 얻는다. 동역학 시스템용 점근 최적 판본에는 정확한 조향 함수와 그 비용이 필요하다 — 자동차라면 Dubins나 Reeds–Shepp, 아니면 미리 계산한 격자, 아니면 아래의 평탄성.
+**동역학을 넣은 표본 기반 계획.** *Kinodynamic RRT*(LaValle & Kuffner 2001)는 상태를 표본으로 뽑고, 정한 거리 척도로 가장 가까운 트리 노드를 찾은 뒤, 어떤 입력과 지속 시간으로 $\dot x = f(x,u)$를 적분해 뻗는다. 이 전방 전파에는 경계값 문제 풀이기가 필요 없지만, 새 노드는 뽑은 상태에 정확히 닿지 않고 거리 척도의 선택이 결과를 좌우한다. Karaman & Frazzoli(2011)는 단순 RRT가 확률 1로 준최적 경로에 수렴함을 보였고, RRT\*와 PRM\*는 각 표본을 $(\log n / n)^{1/d}$처럼 줄어드는 반경 안의 이웃과 연결해 점근적 최적성을 되찾는다. 이 속도면 공 하나에 표본이 $\log n$에 비례하는 개수만큼 들어간다. 공의 부피가 $r^d \propto \log n/n$이고 표본이 $n$개이기 때문이다. 재연결이 싸게 유지될 만큼 적으면서, 표본이 늘어도 그래프가 연결된 채로 남을 만큼은 많다. FMT\*(Janson 외 2015)는 표본 묶음 위에서 충돌 검사를 미루는 게으른 동적 계획법으로 같은 보장을 얻는다. 동역학 시스템용 점근 최적 판본에는 정확한 조향 함수와 그 비용이 필요하다 — 자동차라면 Dubins나 Reeds–Shepp, 아니면 미리 계산한 격자, 아니면 아래의 평탄성.
 
 **미분 평탄성(differential flatness).** 어떤 시스템은 몇 개의 출력 곡선을 자유롭게 계획하면 모든 상태와 입력을 거기서 읽어낼 수 있다. Fliess, Lévine, Martin & Rouchon(1995)은 시스템 $\dot x = f(x,u)$가 (입력 개수만큼의) 출력 $z$를 가져
 
@@ -563,9 +567,9 @@ $$x=\beta(z,\dot z,\dots,z^{(q)}),\qquad u=\gamma(z,\dot z,\dots,z^{(q)})$$
 
 $$\theta=\operatorname{atan2}(\dot y,\dot x),\qquad v=\sqrt{\dot x^2+\dot y^2},\qquad \omega=\frac{\dot x\ddot y-\dot y\ddot x}{\dot x^2+\dot y^2}$$
 
-이것이 성립하는 이유는 속도 $(\dot x,\dot y)$가 길이 $v$로 heading 방향을 가리키기 때문이다. 그래서 heading과 속력은 그 벡터의 각도와 크기이고, $\omega$는 그 각도의 변화율이다. 기구학적 자동차는 조향각 $\phi=\arctan(L\kappa)$를 더한다. 여기서 $L$은 축간 거리, $\kappa=\omega/v$는 경로 곡률이다. 따라서 회전 반경 한계는 $z$의 시간 배분이 아니라 기하에 대한 한계다.
+이것이 성립하는 이유는 속도 $(\dot x,\dot y)$가 길이 $v$로 heading 방향을 가리키기 때문이다. 그래서 heading과 속력은 그 벡터의 각도와 크기이고, $\omega$는 그 각도의 변화율이다. 기구학적 자동차는 조향각 $\phi=\arctan(L\kappa)$를 더한다. 여기서 $L$은 축간 거리, $\kappa=\omega/v$는 경로 곡률이다. 이는 자전거 모델에서 나온다: 앞바퀴를 $\phi$만큼 조향하면 뒤축은 반경 $R$인 원을 돌고 $\tan\phi = L/R$이며, $\kappa = 1/R$이다. 따라서 회전 반경 한계는 $z$의 시간 배분이 아니라 기하에 대한 한계다.
 
-쿼드로터에 대해 Mellinger & Kumar(2011)는 위치와 yaw를 평탄 출력으로 쓴다. 추력과 자세는 가속도에서, 몸체 각속도는 저크에서, 토크는 스냅에서 나오고, 그래서 이들은 스냅을 최소화한다.
+쿼드로터에 대해 Mellinger & Kumar(2011)는 위치와 yaw를 평탄 출력으로 쓴다. 로터는 몸체 $z$축 방향으로만 밀 수 있으므로, 곡선이 요구하는 가속도(에 중력을 더한 것)가 추력의 크기와 그 축이 가리켜야 할 방향을 함께 정하고, 거기에 yaw를 더하면 자세가 된다. 한 번 더 미분하면 자세가 얼마나 빨리 돌아야 하는지가 나오므로 몸체 각속도는 저크에서 나온다. 또 한 번 미분하면 각가속도, 곧 토크가 스냅에서 나온다. 그래서 이들은 스냅을 최소화한다.
 
 **평탄성이 계획을 곡선 맞추기로 바꾸는 이유.** $z(t)$를 다항식으로 쓴다. 그러면 $z$와 그 도함수에 대한 경계 조건이 계수에 대해 *선형*이 되고, 선형 풀이 한 번으로 동역학적으로 실행 가능한 궤적이 나온다. 남는 것은 부등식 제약 — 속도, 곡률, 장애물 — 이다. 이것들은 나중에 검사하거나, 시간 스케일링([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]])으로 고치거나, 다항식 계수를 결정 변수로 삼아 §6의 최적화에 넘긴다. 평탄성이 §6 프로그램에서 없애는 것은 동역학 제약이지 장애물 제약이 아니다.
 

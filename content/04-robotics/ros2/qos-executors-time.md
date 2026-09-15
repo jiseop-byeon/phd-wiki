@@ -427,7 +427,7 @@ Practise this one deliberately, because no command hands you the answer: there i
 
 ### 13. What this page does not cover
 
-Per-topic QoS overrides for recording and replay, and the ordered set of checks to run when a system misbehaves, are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. Real-time execution — RT kernels, memory locking, response-time analysis of callback chains, and the rclc executor with its explicit execution order — is beyond this track; the Casini et al. ECRTS 2019 analysis of ROS 2 processing chains is the entry point. DDS vendor tuning (buffer sizes, multicast, shared-memory transports) is in the vendor's documentation, not in ROS 2's. How `/clock` actually gets published by a simulator, and what `use_sim_time` does to a controller, arrive with Gazebo in [[04-robotics/ros2/index|25. ROS 2]]. Intra-process communication and composition, which change the executor picture substantially, are the ROS 2 composition documentation.
+Per-topic QoS overrides for recording and replay, and the ordered set of checks to run when a system misbehaves, are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. Real-time execution — RT kernels, memory locking, response-time analysis of callback chains, and the rclc executor with its explicit execution order — is beyond this track; the Casini et al. ECRTS 2019 analysis of ROS 2 processing chains is the entry point. The code-level half of the same concern — keeping heap allocation, locks and exceptions out of a callback that runs every cycle — is [[02-foundations/algorithms/interview-code|11.7 §6]]. DDS vendor tuning (buffer sizes, multicast, shared-memory transports) is in the vendor's documentation, not in ROS 2's. How `/clock` actually gets published by a simulator, and what `use_sim_time` does to a controller, arrive with Gazebo in [[04-robotics/ros2/index|25. ROS 2]]. Intra-process communication and composition, which change the executor picture substantially, are the ROS 2 composition documentation.
 
 ### Sources
 
@@ -865,7 +865,7 @@ executor.spin()
 
 ### 13. 이 페이지가 다루지 않는 것
 
-기록과 재생 시의 토픽별 QoS 오버라이드, 그리고 시스템이 이상할 때 돌릴 순서 있는 점검 목록은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 디버깅, 데이터, 재현성]]에 있다. 실시간 실행 — RT 커널, 메모리 고정, 콜백 체인의 응답 시간 분석, 실행 순서를 명시하는 rclc executor — 는 이 트랙 밖이다. 시작점은 Casini 외의 ECRTS 2019 분석이다. DDS 벤더 튜닝(버퍼 크기, 멀티캐스트, 공유 메모리 전송)은 ROS 2가 아니라 벤더 문서에 있다. 시뮬레이터가 `/clock`을 실제로 어떻게 발행하는지, `use_sim_time`이 제어기에 무엇을 하는지는 Gazebo와 함께 [[04-robotics/ros2/index|25. ROS 2]]에서 온다. Executor 그림을 크게 바꾸는 프로세스 내 통신과 composition은 ROS 2 composition 문서를 보라.
+기록과 재생 시의 토픽별 QoS 오버라이드, 그리고 시스템이 이상할 때 돌릴 순서 있는 점검 목록은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 디버깅, 데이터, 재현성]]에 있다. 실시간 실행 — RT 커널, 메모리 고정, 콜백 체인의 응답 시간 분석, 실행 순서를 명시하는 rclc executor — 는 이 트랙 밖이다. 시작점은 Casini 외의 ECRTS 2019 분석이다. 같은 문제의 코드 쪽 절반 — 매 주기 도는 콜백에서 힙 할당, 락, 예외를 빼내는 것 — 은 [[02-foundations/algorithms/interview-code|11.7 §6]]에 있다. DDS 벤더 튜닝(버퍼 크기, 멀티캐스트, 공유 메모리 전송)은 ROS 2가 아니라 벤더 문서에 있다. 시뮬레이터가 `/clock`을 실제로 어떻게 발행하는지, `use_sim_time`이 제어기에 무엇을 하는지는 Gazebo와 함께 [[04-robotics/ros2/index|25. ROS 2]]에서 온다. Executor 그림을 크게 바꾸는 프로세스 내 통신과 composition은 ROS 2 composition 문서를 보라.
 
 ### 출처
 

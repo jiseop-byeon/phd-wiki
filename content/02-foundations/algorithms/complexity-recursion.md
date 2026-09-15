@@ -40,7 +40,7 @@ Almost every coding interview ends with "what is the time and space complexity?"
 | $\Theta(n \log n)$ | a little over ×2 |
 | $\Theta(n^2)$ | ×4 |
 | $\Theta(n^3)$ | ×8 |
-| $\Theta(2^n)$ | squared — already ×2 when $n$ grows by one |
+| $\Theta(2^n)$ | squared, since $2^{2n} = (2^n)^2$ — the ratio is no longer a constant, and time already doubles when $n$ grows by one |
 
 For polynomial growth $n^k$, $\log_2(\text{ratio}) \approx k$. This is the fastest way to find out whether code you did not write is secretly quadratic.
 
@@ -75,6 +75,21 @@ print(doubling_ratios(all_pairs, [800, 1600, 3200]))  # each ratio roughly 4 (ti
 
 Pure-Python loops with realistic bodies (indexing, dictionary lookups, function calls) are roughly 10 to 100 times slower — even a bare `for` loop doing one addition manages only about $2 \times 10^7$ iterations per second on a current laptop — so divide those limits accordingly; NumPy operations that stay inside compiled code are closer to the compiled row. Read the table backwards in an interview: a constraint "$n \le 10^5$" is telling you that $O(n^2)$ will not pass and $O(n \log n)$ will.
 
+#### P, NP, NP-hard, and pseudo-polynomial time
+
+You need these four terms the first time a later page, such as [[02-foundations/algorithms/greedy-mst|11.4]] or [[02-foundations/algorithms/dynamic-programming|11.5]], calls a problem "NP-hard". They rest on one precise meaning of input size: the number of bits needed to write the input down. For a list of $n$ small numbers that is proportional to $n$. For a single number $W$ it is only about $\log_2 W$ bits, and that gap is why the last term below exists.
+
+- **P** is the class of yes/no problems that some algorithm solves in time polynomial in the input size, $O(n^k)$ for a fixed $k$. "Is there a path from $s$ to $t$ in this graph?" is in P, because breadth-first search answers it in $O(V + E)$.
+- **NP** is the class of yes/no problems where a "yes" answer comes with a certificate that can be *checked* in polynomial time. The name stands for "nondeterministic polynomial", not "not polynomial". Every problem in P is also in NP. Whether P = NP is open, and most researchers expect the answer to be no.
+- **NP-hard** means at least as hard as every problem in NP: every NP problem can be translated into this one in polynomial time (a *reduction*), so a polynomial-time algorithm for it would give one for all of NP. A problem that is NP-hard and also in NP is **NP-complete**. Optimization problems such as 0/1 knapsack, the travelling salesman problem and set cover are called NP-hard. In practice the label means: do not look for an exact algorithm that is polynomial on every input. Use exponential exact search when $n$ is small (backtracking, §6), a pseudo-polynomial algorithm when the numbers are small, or an approximation with a proven factor.
+- **Pseudo-polynomial** means polynomial in the numeric *value* of a number in the input rather than in its bit length. The $O(nW)$ knapsack table is the standard example. Since $W$ is written in about $\log_2 W$ bits, $O(nW)$ is exponential in the input length, so the algorithm is fast only while the numbers stay small.
+
+> [!example] Worked example · 계산 예제
+> **Subset sum** (NP-complete; Karp 1972): do some of the numbers $\{3, 34, 4, 12, 5, 2\}$ add up to exactly $T = 9$?
+> - *Why it is in NP.* The certificate $\{4, 5\}$ is checked with one addition, $4 + 5 = 9$. Finding a certificate is the hard part: trying every subset means $2^6 = 64$ candidates here, and $2^n$ in general.
+> - *A pseudo-polynomial algorithm.* A DP in the style of the knapsack table in 11.5 fills a yes/no table with one row per number and one column per target $0, 1, \dots, T$. That is $6 \times 10 = 60$ cells, $O(nT)$ time, and it answers yes ($\{4, 5\}$ and $\{3, 4, 2\}$ both work).
+> - *Why that does not prove P = NP.* Change the target to $T = 10^9$. The input barely grows, since $10^9$ needs 30 bits where $9$ needed 4, but the table grows to $6 \times (10^9 + 1) \approx 6 \times 10^9$ cells, while brute force is still 64 subsets. The DP is fast when $T$ is small, not when the input is short.
+
 ### 2. Big-O, Ω, Θ precisely, and reading loops
 
 The three symbols are statements about eventual growth, each with a constant you get to choose. We say $f = O(g)$ when $f$ is eventually at most a constant multiple of $g$, written out because the definition is what you fall back on when intuition fails:
@@ -89,7 +104,7 @@ Example: $3n^2 + 10n + 5 = \Theta(n^2)$. For $n \ge 1$, $3n^2 \le 3n^2 + 10n + 5
 
 Two distinctions that interviewers probe:
 
-- **Bound versus case.** O/Ω/Θ describe functions; worst/best/average case says *which* function you are describing. Insertion sort's worst-case time is $\Theta(n^2)$ and its best-case time is $\Theta(n)$. "Insertion sort is $O(n^2)$" is true for every input; "insertion sort is $\Theta(n^2)$" is false as a claim about every input.
+- **Bound versus case.** O/Ω/Θ describe functions; worst/best/average case says *which* function you are describing. Insertion sort (take each element in turn and slide it left into the already-sorted prefix) has worst-case time $\Theta(n^2)$, on reversed input, and best-case time $\Theta(n)$, on already-sorted input where nothing slides. "Insertion sort is $O(n^2)$" is true for every input; "insertion sort is $\Theta(n^2)$" is false as a claim about every input.
 - **Log bases do not matter; exponential bases do.** $\log_2 n$ and $\log_{10} n$ differ by a constant factor, so we write $O(\log n)$. But $4^n = (2^n)^2$ is not $O(2^n)$.
 
 **Reading loops.** Three rules cover most interview code:
@@ -149,7 +164,7 @@ print(triangle(10), halvings(1024), longest_window([2, 1, 3, 1, 1, 4], 5))  # 45
 
 ### 3. Recurrences: the recursion tree and the master method
 
-A recursive function's cost is described by a **recurrence**: the cost for size $n$ in terms of the cost of its recursive calls plus the work done outside them. The universal way to solve one is the **recursion tree**: draw one node per call, write the non-recursive work in each node, add up each level, then add up the levels.
+Start with merge sort ([[02-foundations/algorithms/sorting-divide-conquer|11.3 §2]] builds it in full): to sort $n$ elements it sorts two halves recursively and then spends about $n$ steps merging them, so its cost satisfies $T(n) = 2T(n/2) + n$. An equation like this, giving the cost for size $n$ in terms of the cost of the recursive calls plus the work done outside them, is a **recurrence**. The universal way to solve one is the **recursion tree**: draw one node per call, write the non-recursive work in each node, add up each level, then add up the levels.
 
 For divide-and-conquer with equal-sized pieces, the tree has a regular shape. Suppose each call on size $n$ makes $a$ recursive calls on size $n/b$ and does $O(n^d)$ work to split and combine, which in symbols is
 
@@ -194,9 +209,9 @@ for k in (4, 10, 20):
 
 **When the master method does not apply**, go back to the tree or unroll the recurrence by hand:
 
-- **Subtract-one recurrences.** $T(n) = T(n-1) + n$ sums to $n + (n-1) + \dots + 1 = \Theta(n^2)$ — quicksort with a bad pivot, selection sort. $T(n) = 2T(n-1) + 1$ doubles at each step and gives $\Theta(2^n)$.
+- **Subtract-one recurrences.** $T(n) = T(n-1) + n$ sums to $n + (n-1) + \dots + 1 = \Theta(n^2)$ — quicksort with a bad pivot, or selection sort (repeatedly find the minimum of the unsorted part and swap it to the front, which scans $n$, then $n-1$, … elements). $T(n) = 2T(n-1) + 1$ doubles at each step and gives $\Theta(2^n)$.
 - **Overlapping calls.** Naive Fibonacci, $T(n) = T(n-1) + T(n-2) + 1$, grows like the Fibonacci numbers themselves, $\Theta(\varphi^n)$ with $\varphi \approx 1.618$. Memoization (§5) removes the overlap.
-- **Unequal pieces**, such as a split into $n/3$ and $2n/3$: draw the tree; every level still costs at most $n$, and the deepest path has $\log_{3/2} n$ levels, so $\Theta(n \log n)$.
+- **Unequal pieces**, such as a split into $n/3$ and $2n/3$: draw the tree; the pieces on any one level are disjoint parts of the original $n$ elements, so every level still costs at most $n$, and the deepest path has $\log_{3/2} n$ levels, so $\Theta(n \log n)$.
 
 ### 4. Amortized cost: why `append` is O(1)
 
@@ -468,6 +483,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 5. `fib` is decorated with `@lru_cache(maxsize=None)`. Why does calling `fib(5000)` on a fresh interpreter raise `RecursionError`, and what are two fixes?
 6. In `subsets`, someone writes `out.append(path)` instead of `out.append(path[:])`. What does `subsets([1, 2])` return, and why?
 7. For N-Queens, why does placing exactly one queen per row shrink the search space from $\binom{n^2}{n}$ placements to at most $n^n$, and what further bound do the column sets give?
+8. The subset-sum DP in §1 runs in $O(nT)$ time, which looks polynomial. Why does it not show that P = NP, and which term describes it?
 
 > [!tip]- Answers
 > 1. The ratio is $3.3/0.8 \approx 4.1$, and $\log_2 4.1 \approx 2$: quadratic. Doubling again multiplies by about 4, so about 13 s.
@@ -477,6 +493,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 > 5. On an empty cache, `fib(5000)` must call `fib(4999)` before anything is stored, which calls `fib(4998)`, and so on: the stack reaches depth 5000, above the default limit of 1000. Fixes: compute bottom-up in a loop (or warm the cache by calling `fib(i)` for increasing `i`), or use an explicit stack. Raising `sys.setrecursionlimit` works only while the C stack holds out.
 > 6. A list of four empty lists, `[ [], [], [], [] ]`. Every entry is a reference to the same list object; each `append` is later undone by `pop`, so after the search ends that single list is empty and all four entries show it.
 > 7. Two queens in the same row attack, so any valid placement has exactly one queen per row; choosing a column for each of $n$ rows gives $n^n$ candidates. Two queens in the same column also attack, so the columns must all differ — a permutation — giving at most $n!$ leaves. The diagonal sets prune further, but no simple closed form is known for the nodes actually visited.
+> 8. Polynomial time is measured against the input length in bits. $T$ is written in about $\log_2 T$ bits, so $T$ itself can be exponential in that length (a $b$-bit number can be as large as $2^b - 1$), and $O(nT)$ is exponential in the input length. The DP is pseudo-polynomial; subset sum stays NP-complete, and whether P = NP stays open.
 
 ### Sources
 
@@ -487,6 +504,8 @@ A complete complexity answer has five parts, and saying them in order sounds org
 - J. L. Bentley, D. Haken, J. B. Saxe, "A general method for solving divide-and-conquer recurrences," *ACM SIGACT News* 12(3), 1980 — the origin of the master theorem.
 - R. E. Tarjan, "Amortized computational complexity," *SIAM Journal on Algebraic and Discrete Methods* 6(2), 1985. DOI: 10.1137/0606031 — amortized analysis named and systematized.
 - S. W. Golomb, L. D. Baumert, "Backtrack programming," *Journal of the ACM* 12(4), 1965 — the early systematic treatment of backtracking search.
+- R. M. Karp, "Reducibility among combinatorial problems," in *Complexity of Computer Computations*, Plenum, 1972, pp. 85–103 — the 21 NP-complete problems, including the knapsack problem in the subset-sum form used in §1.
+- M. R. Garey, D. S. Johnson, *Computers and Intractability: A Guide to the Theory of NP-Completeness*, W. H. Freeman, 1979 — NP-hardness and pseudo-polynomial algorithms (§1).
 
 ## 한국어
 
@@ -515,7 +534,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 | $\Theta(n \log n)$ | ×2보다 조금 더 |
 | $\Theta(n^2)$ | ×4 |
 | $\Theta(n^3)$ | ×8 |
-| $\Theta(2^n)$ | 제곱 — $n$이 1만 늘어도 이미 ×2 |
+| $\Theta(2^n)$ | 제곱. $2^{2n} = (2^n)^2$이므로 비율이 더는 상수가 아니고, $n$이 1만 늘어도 이미 ×2 |
 
 다항 증가 $n^k$에서는 $\log_2(\text{비율}) \approx k$다. 남이 쓴 코드가 몰래 이차인지 알아내는 가장 빠른 방법이다.
 
@@ -550,6 +569,21 @@ print(doubling_ratios(all_pairs, [800, 1600, 3200]))  # each ratio roughly 4 (ti
 
 현실적인 본문(인덱싱, 딕셔너리 조회, 함수 호출)을 가진 순수 Python 반복문은 대략 10~100배 느리다 — 덧셈 하나만 하는 `for` 루프조차 요즘 노트북에서 초당 약 $2 \times 10^7$회에 그친다. 그러니 위 한계를 그만큼 나눠라. 컴파일된 코드 안에서 도는 NumPy 연산은 컴파일 언어 쪽에 가깝다. 인터뷰에서는 표를 거꾸로 읽는다. "$n \le 10^5$"라는 제약은 $O(n^2)$은 통과하지 못하고 $O(n \log n)$은 통과한다는 신호다.
 
+#### P, NP, NP-난해, 의사 다항 시간
+
+뒤 페이지, 예컨대 [[02-foundations/algorithms/greedy-mst|11.4]]나 [[02-foundations/algorithms/dynamic-programming|11.5]]가 어떤 문제를 "NP-난해"라고 부르는 순간 이 네 용어가 필요하다. 네 용어는 모두 입력 크기의 정확한 뜻 하나에 기대고 있다. 입력을 적는 데 필요한 비트 수다. 작은 수 $n$개의 리스트라면 이것은 $n$에 비례한다. 하지만 수 하나 $W$는 약 $\log_2 W$비트밖에 되지 않고, 이 차이 때문에 마지막 용어가 따로 있다.
+
+- **P**(polynomial)는 어떤 알고리즘이 입력 크기에 대한 다항 시간, 즉 고정된 $k$에 대해 $O(n^k)$에 푸는 예/아니오 문제의 모임이다. "이 그래프에 $s$에서 $t$로 가는 경로가 있는가?"는 너비 우선 탐색이 $O(V + E)$에 답하므로 P에 속한다.
+- **NP**(nondeterministic polynomial)는 "예"라는 답에 다항 시간에 *검사*할 수 있는 증거(certificate)가 딸려 오는 예/아니오 문제의 모임이다. 이름은 "비결정적 다항"의 약자이지 "다항이 아님"이 아니다. P에 속한 문제는 모두 NP에도 속한다. P = NP인지는 풀리지 않은 문제이고, 대부분의 연구자는 답이 아니오일 것으로 본다.
+- **NP-난해**(NP-hard)는 NP의 모든 문제만큼은 어렵다는 뜻이다. NP의 어떤 문제든 다항 시간에 이 문제로 옮길 수 있으므로(*환원*, reduction), 이 문제의 다항 시간 알고리즘이 있으면 NP 전체의 다항 시간 알고리즘이 생긴다. NP-난해이면서 NP에도 속하는 문제를 **NP-완전**(NP-complete)이라 한다. 0/1 배낭, 외판원 문제, 집합 덮개 같은 최적화 문제를 NP-난해라고 부른다. 실무에서 이 딱지의 뜻은 이렇다. 모든 입력에서 다항 시간인 정확한 알고리즘을 찾지 마라. $n$이 작으면 지수 시간 정확 탐색(백트래킹, §6)을, 수가 작으면 의사 다항 알고리즘을, 그 밖에는 근사 비율이 증명된 근사를 쓴다.
+- **의사 다항**(pseudo-polynomial)은 입력에 든 수의 비트 길이가 아니라 그 수의 *값*에 대해 다항이라는 뜻이다. $O(nW)$ 배낭 표가 대표적인 예다. $W$는 약 $\log_2 W$비트로 적히므로 $O(nW)$는 입력 길이에 대해 지수적이고, 그래서 이 알고리즘은 수가 작은 동안에만 빠르다.
+
+> [!example] 계산 예제 · Worked example
+> **부분집합 합**(NP-완전; Karp 1972): 수 $\{3, 34, 4, 12, 5, 2\}$ 중 몇 개를 골라 합이 정확히 $T = 9$가 되게 할 수 있는가?
+> - *NP에 속하는 이유.* 증거 $\{4, 5\}$는 덧셈 한 번 $4 + 5 = 9$로 검사된다. 어려운 것은 증거를 찾는 일이다. 모든 부분집합을 시도하면 여기서는 $2^6 = 64$개, 일반적으로는 $2^n$개다.
+> - *의사 다항 알고리즘.* 11.5의 배낭 표와 같은 방식의 DP가 수마다 행 하나, 목표값 $0, 1, \dots, T$마다 열 하나인 예/아니오 표를 채운다. $6 \times 10 = 60$칸, $O(nT)$ 시간이고, 답은 예다($\{4, 5\}$와 $\{3, 4, 2\}$ 둘 다 된다).
+> - *그래도 P = NP가 증명되지 않는 이유.* 목표를 $T = 10^9$로 바꾸자. $9$는 4비트, $10^9$는 30비트이므로 입력은 거의 늘지 않지만, 표는 $6 \times (10^9 + 1) \approx 6 \times 10^9$칸으로 커진다. 전수 조사는 여전히 부분집합 64개다. DP가 빠른 조건은 입력이 짧은 것이 아니라 $T$가 작은 것이다.
+
 ### 2. Big-O, Ω, Θ의 정확한 뜻과 반복문 읽기
 
 세 기호는 결국의 증가에 대한 진술이고, 각각 고를 수 있는 상수가 붙는다. $f$가 결국 $g$의 상수 배 이하일 때 $f = O(g)$라고 쓴다. 직관이 흔들릴 때 돌아갈 곳이 정의이기 때문에 그대로 적어 둔다:
@@ -564,7 +598,7 @@ $$f(n) = O(g(n)) \iff \exists\, c > 0,\ n_0 \text{ such that } 0 \le f(n) \le c\
 
 인터뷰어가 파고드는 구분 두 가지:
 
-- **상한·하한 대 경우.** O/Ω/Θ는 함수를 묘사하고, 최악/최선/평균 경우는 *어떤* 함수를 묘사하는지를 말한다. 삽입 정렬의 최악 경우 시간은 $\Theta(n^2)$, 최선 경우 시간은 $\Theta(n)$이다. "삽입 정렬은 $O(n^2)$"는 모든 입력에 참이지만, "삽입 정렬은 $\Theta(n^2)$"는 모든 입력에 대한 주장으로는 거짓이다.
+- **상한·하한 대 경우.** O/Ω/Θ는 함수를 묘사하고, 최악/최선/평균 경우는 *어떤* 함수를 묘사하는지를 말한다. 삽입 정렬(원소를 하나씩 꺼내 이미 정렬된 앞부분 속으로 왼쪽으로 밀어 넣는 정렬)의 최악 경우 시간은 뒤집힌 입력에서 $\Theta(n^2)$, 최선 경우 시간은 아무것도 밀 필요가 없는 이미 정렬된 입력에서 $\Theta(n)$이다. "삽입 정렬은 $O(n^2)$"는 모든 입력에 참이지만, "삽입 정렬은 $\Theta(n^2)$"는 모든 입력에 대한 주장으로는 거짓이다.
 - **로그의 밑은 상관없고, 지수의 밑은 상관있다.** $\log_2 n$과 $\log_{10} n$은 상수 배만 다르므로 $O(\log n)$으로 쓴다. 하지만 $4^n = (2^n)^2$은 $O(2^n)$이 아니다.
 
 **반복문 읽기.** 인터뷰 코드는 대부분 세 규칙으로 해결된다.
@@ -624,7 +658,7 @@ print(triangle(10), halvings(1024), longest_window([2, 1, 3, 1, 1, 4], 5))  # 45
 
 ### 3. 점화식: 재귀 트리와 마스터 방법
 
-재귀 함수의 비용은 점화식(**recurrence**)으로 표현된다. 크기 $n$의 비용을, 재귀 호출들의 비용과 그 바깥에서 하는 일의 합으로 쓴 것이다. 점화식을 푸는 만능 방법은 재귀 트리(**recursion tree**)다. 호출마다 노드를 하나 그리고, 각 노드에 재귀가 아닌 일의 양을 적고, 층마다 더한 뒤 층들을 더한다.
+병합 정렬부터 보자([[02-foundations/algorithms/sorting-divide-conquer|11.3 §2]]에서 완전히 만든다). $n$개 원소를 정렬하려고 두 절반을 재귀로 정렬한 뒤 병합하는 데 약 $n$단계를 쓰므로, 비용은 $T(n) = 2T(n/2) + n$을 만족한다. 이처럼 크기 $n$의 비용을 재귀 호출들의 비용과 그 바깥에서 하는 일의 합으로 쓴 식이 점화식(**recurrence**)이다. 점화식을 푸는 만능 방법은 재귀 트리(**recursion tree**)다. 호출마다 노드를 하나 그리고, 각 노드에 재귀가 아닌 일의 양을 적고, 층마다 더한 뒤 층들을 더한다.
 
 크기가 같은 조각으로 나누는 분할정복에서는 트리 모양이 규칙적이다. 크기 $n$의 호출이 크기 $n/b$의 재귀 호출을 $a$번 하고, 나누고 합치는 데 $O(n^d)$ 일을 한다고 하자. 기호로 쓰면 다음과 같다:
 
@@ -669,9 +703,9 @@ for k in (4, 10, 20):
 
 **마스터 방법이 적용되지 않을 때:** 트리로 돌아가거나 점화식을 손으로 펼친다.
 
-- **1씩 줄어드는 점화식.** $T(n) = T(n-1) + n$은 $n + (n-1) + \dots + 1 = \Theta(n^2)$ — 피벗이 나쁜 퀵정렬, 선택 정렬. $T(n) = 2T(n-1) + 1$은 단계마다 두 배가 되어 $\Theta(2^n)$.
+- **1씩 줄어드는 점화식.** $T(n) = T(n-1) + n$은 $n + (n-1) + \dots + 1 = \Theta(n^2)$ — 피벗이 나쁜 퀵정렬, 또는 선택 정렬(정렬되지 않은 부분에서 최솟값을 찾아 맨 앞과 바꾸기를 반복하므로 원소를 $n$개, $n-1$개, … 훑는다). $T(n) = 2T(n-1) + 1$은 단계마다 두 배가 되어 $\Theta(2^n)$.
 - **겹치는 호출.** 순진한 피보나치 $T(n) = T(n-1) + T(n-2) + 1$은 피보나치 수 자체처럼 자라서 $\Theta(\varphi^n)$, $\varphi \approx 1.618$. 메모이제이션(§5)이 겹침을 없앤다.
-- **크기가 다른 조각**, 예컨대 $n/3$과 $2n/3$으로 나누기: 트리를 그린다. 모든 층의 비용은 여전히 $n$ 이하이고 가장 깊은 경로가 $\log_{3/2} n$층이므로 $\Theta(n \log n)$.
+- **크기가 다른 조각**, 예컨대 $n/3$과 $2n/3$으로 나누기: 트리를 그린다. 한 층의 조각들은 원래 $n$개 원소를 겹치지 않게 나눈 것이므로 모든 층의 비용은 여전히 $n$ 이하이고 가장 깊은 경로가 $\log_{3/2} n$층이므로 $\Theta(n \log n)$.
 
 ### 4. 분할상환 비용: `append`가 O(1)인 이유
 
@@ -943,6 +977,7 @@ print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3
 5. `fib`에 `@lru_cache(maxsize=None)`가 붙어 있다. 새 인터프리터에서 `fib(5000)`을 부르면 왜 `RecursionError`가 나고, 해법 두 가지는 무엇인가?
 6. `subsets`에서 누군가 `out.append(path[:])` 대신 `out.append(path)`라고 썼다. `subsets([1, 2])`는 무엇을 반환하고, 왜 그런가?
 7. N-Queens에서 행마다 퀸을 정확히 하나 놓으면 왜 탐색 공간이 $\binom{n^2}{n}$가지 배치에서 최대 $n^n$으로 줄고, 열 집합은 어떤 상한을 더 주는가?
+8. §1의 부분집합 합 DP는 $O(nT)$ 시간이라 다항 시간처럼 보인다. 왜 이것이 P = NP를 보여 주지 못하고, 이 알고리즘을 부르는 용어는 무엇인가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 비율은 $3.3/0.8 \approx 4.1$이고 $\log_2 4.1 \approx 2$: 이차다. 한 번 더 두 배면 약 4배이므로 약 13초.
@@ -952,6 +987,7 @@ print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3
 > 5. 빈 캐시에서 `fib(5000)`은 아무것도 저장되기 전에 `fib(4999)`를 불러야 하고, 그것은 `fib(4998)`을 부르고, 계속 이어진다. 스택 깊이가 5000에 이르러 기본 한계 1000을 넘는다. 해법: 반복문으로 아래에서부터 계산하기(또는 `i`를 늘려 가며 `fib(i)`를 불러 캐시를 데우기), 또는 명시적 스택 쓰기. `sys.setrecursionlimit`를 올리는 것은 C 스택이 버티는 동안만 통한다.
 > 6. 빈 리스트 네 개로 된 리스트, `[ [], [], [], [] ]`. 모든 항목이 같은 리스트 객체를 가리키는 참조다. 각 `append`는 나중에 `pop`으로 되돌려지므로, 탐색이 끝나면 그 리스트 하나는 비어 있고 네 항목 모두 그것을 보여 준다.
 > 7. 같은 행의 두 퀸은 서로 공격하므로 유효한 배치는 행마다 퀸이 정확히 하나다. $n$개 행 각각에 열을 고르면 후보는 $n^n$개다. 같은 열의 두 퀸도 공격하므로 열이 모두 달라야 한다 — 순열이다 — 그래서 잎은 최대 $n!$개다. 대각선 집합이 더 가지치기하지만, 실제로 방문하는 노드 수에 대한 간단한 닫힌 식은 알려져 있지 않다.
+> 8. 다항 시간은 비트로 잰 입력 길이를 기준으로 한다. $T$는 약 $\log_2 T$비트로 적히므로 $T$ 자체는 그 길이에 대해 지수적으로 클 수 있고($b$비트 수는 $2^b - 1$까지 커진다), 따라서 $O(nT)$는 입력 길이에 대해 지수적이다. 이 DP는 의사 다항 알고리즘이다. 부분집합 합은 여전히 NP-완전이고, P = NP인지도 여전히 열린 문제다.
 
 ### 출처
 
@@ -962,3 +998,5 @@ print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3
 - J. L. Bentley, D. Haken, J. B. Saxe, "A general method for solving divide-and-conquer recurrences," *ACM SIGACT News* 12(3), 1980 — 마스터 정리의 기원.
 - R. E. Tarjan, "Amortized computational complexity," *SIAM Journal on Algebraic and Discrete Methods* 6(2), 1985. DOI: 10.1137/0606031 — 분할상환 분석에 이름을 붙이고 체계화한 논문.
 - S. W. Golomb, L. D. Baumert, "Backtrack programming," *Journal of the ACM* 12(4), 1965 — 백트래킹 탐색의 초기 체계적 서술.
+- R. M. Karp, "Reducibility among combinatorial problems," in *Complexity of Computer Computations*, Plenum, 1972, pp. 85–103 — §1에서 쓴 부분집합 합 형태의 배낭 문제를 포함한 NP-완전 문제 21개.
+- M. R. Garey, D. S. Johnson, *Computers and Intractability: A Guide to the Theory of NP-Completeness*, W. H. Freeman, 1979 — NP-난해성과 의사 다항 알고리즘(§1).

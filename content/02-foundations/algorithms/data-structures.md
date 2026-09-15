@@ -35,7 +35,7 @@ List the operations the problem repeats, then pick the **smallest** structure th
 | Binary heap | min O(1); any other key O(n) | push / pop O(log n); build O(n) | repeated minimum: Dijkstra, A*, top-k, event queues | `heapq` (a min-heap on a list) | `std::priority_queue` (a max-heap) |
 | Balanced BST | key, min / max, predecessor / successor O(log n) | O(log n) | ordered keys, range queries, floor / ceiling | none in stdlib; `sortedcontainers` (third party) | `std::map`, `std::set` |
 | Trie | word or prefix O(L), L = key length | O(L) | prefix queries, autocomplete, longest-prefix match | nested `dict` | none; hand-rolled |
-| Union-find | find O(α(n)) amortized | union O(α(n)) amortized; no delete | incremental connectivity, Kruskal, clustering | none; about 20 lines | none in std (Boost `disjoint_sets`) |
+| Union-find | find O(α(n)) amortized, where α(n) ≤ 4 in practice, so effectively constant (§7) | union O(α(n)) amortized; no delete | incremental connectivity, Kruskal, clustering | none; about 20 lines | none in std (Boost `disjoint_sets`) |
 
 A quick way to choose:
 
@@ -43,8 +43,8 @@ A quick way to choose:
 - **Only "give me the smallest (or largest) now"** → heap.
 - **Order matters: "smallest key ≥ x", ranges, sorted iteration with inserts** → balanced BST (or a sorted list if inserts are rare).
 - **"Do these two belong to the same group?" while groups merge** → union-find.
-- **Prefixes of strings** → trie, or a sorted list plus binary search.
-- **Nearest point in low-dimensional space** → KD-tree or a voxel hash (§8).
+- **Prefixes of strings** → trie, or a sorted list plus binary search ([[02-foundations/algorithms/sorting-divide-conquer|11.3 §6]]).
+- **Nearest point in low-dimensional space** → KD-tree (a binary tree that splits space one coordinate at a time) or a voxel hash (a hash map keyed by integer grid cell); both are in §8.
 
 Two Python traps appear in almost every review: `list.pop(0)` and `list.insert(0, x)` are O(n), so use `deque`; and `x in some_list` is O(n), so convert to a `set` when you test membership inside a loop.
 
@@ -114,9 +114,16 @@ Pitfalls: storing values instead of indices (then you cannot tell when the front
 - **Separate chaining:** each bucket holds a small list, and operations scan the list in bucket `h(k)`. Deletion is easy. `std::unordered_map` works this way.
 - **Open addressing:** one key per slot. On a collision, follow a *probe sequence* (linear probing tries the next slot, and so on) until an empty slot appears. This is cache-friendly with no per-node allocation. But deletion needs *tombstones*, because simply emptying a slot would break the probe chain of keys stored after it, and performance collapses as the table fills. CPython's `dict` uses open addressing with a pseudo-random probe order.
 
-**Load factor and resizing.** The load factor is $\alpha = n/m$ (keys per bucket). With chaining, a lookup scans a list of expected length about $\alpha$. With open addressing under an idealized uniform-probing assumption, an unsuccessful search takes about $1/(1-\alpha)$ probes: 10 at $\alpha = 0.9$. Linear probing is worse because occupied slots clump together; Knuth's analysis gives about $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$ probes at $\alpha = 0.9$. So implementations keep $\alpha$ bounded. Java's `HashMap` resizes above 0.75, CPython's `dict` above about 2/3, and `std::unordered_map` above `max_load_factor()` (default 1.0). Resizing doubles $m$ and **re-inserts every key**, because `h(k) % m` changes when $m$ changes. You cannot just copy the old array. Because the table doubles, the resize cost averages out to O(1) per insert, by the same argument as for dynamic arrays.
+**Load factor and resizing.** The load factor is $\alpha = n/m$ (keys per bucket). With chaining, a lookup scans a list of expected length about $\alpha$. With open addressing under an idealized uniform-probing assumption, an unsuccessful search takes about $1/(1-\alpha)$ probes: 10 at $\alpha = 0.9$. Linear probing is worse because occupied slots clump together: a key that hashes anywhere into a run of filled slots lands at the end of that run and makes it one longer, so long runs grow faster than short ones and a search must walk the whole run. Knuth's analysis gives about $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$ probes at $\alpha = 0.9$. So implementations keep $\alpha$ bounded. Java's `HashMap` resizes above 0.75, CPython's `dict` above about 2/3, and `std::unordered_map` above `max_load_factor()` (default 1.0). Resizing doubles $m$ and **re-inserts every key**, because `h(k) % m` changes when $m$ changes. You cannot just copy the old array. Because the table doubles, the resize cost averages out to O(1) per insert, by the same argument as for dynamic arrays.
 
-**Why "expected O(1)" needs a good hash — universal hashing.** For any *fixed* hash function there is a bad input. By the pigeonhole principle, some bucket receives at least $\lvert U\rvert/m$ keys of the universe $U$, and an input drawn only from those keys puts everything in one chain, so every operation is O(n). The fix is to randomize the *function* instead of hoping the *data* are random. A family $H$ of hash functions is **universal** if, for every pair of distinct keys $x \ne y$, a function drawn at random from $H$ makes them collide with probability at most $1/m$ (Carter & Wegman 1979). Then, for *any* fixed set of $n$ stored keys, the expected length of the chain an unsuccessful lookup scans is the sum of $n$ collision probabilities, at most $n/m = \alpha$. So operations run in O(1 + α) expected time, and the expectation is over the random choice of function, not over the data. A classic universal family is $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$ with $p$ a prime larger than every key and $a \ne 0$, $b$ chosen at random. The same principle is the reason Python randomizes string hashing per process (SipHash, `PYTHONHASHSEED`).
+**Why "expected O(1)" needs a good hash — universal hashing.** For any *fixed* hash function there is a bad input. By the pigeonhole principle, some bucket receives at least $\lvert U\rvert/m$ keys of the universe $U$, and an input drawn only from those keys puts everything in one chain, so every operation is O(n). The fix is to randomize the *function* instead of hoping the *data* are random.
+
+> [!note] Definition · 정의
+> A family $H$ of hash functions is **universal** if, for every pair of distinct keys $x \ne y$, a function drawn at random from $H$ makes them collide with probability at most $1/m$ (Carter & Wegman 1979).
+
+Why that is enough: for *any* fixed set of $n$ stored keys, the expected length of the chain an unsuccessful lookup scans is the sum of $n$ collision probabilities (one per stored key, by linearity of expectation), at most $n/m = \alpha$. So operations run in O(1 + α) expected time, and the expectation is over the random choice of function, not over the data.
+
+A classic universal family is $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$ with $p$ a prime larger than every key and $a \ne 0$, $b$ chosen at random. The same principle is the reason Python randomizes string hashing per process (SipHash, `PYTHONHASHSEED`).
 
 **Adversarial worst case.** Crosby & Wallach (2003) showed that real servers could be stalled by sending keys crafted to collide under a known, fixed hash function. The defences are a keyed or randomized hash, or a structure with a worst-case guarantee (Java's `HashMap` turns a long chain into a balanced tree). In CPython, `int` hashes are *not* randomized (`hash(n) == n` for small `n`), so a hostile set of integer keys can still degrade a `dict`. This almost never matters in robotics code, but it is the complete answer to "is a dict lookup always O(1)?": expected O(1), worst case O(n).
 
@@ -199,7 +206,7 @@ A Bloom filter (Bloom 1970) answers "have I seen x?" in a small, fixed number of
 
 $$p \approx \left(1 - e^{-kn/m}\right)^{k}$$
 
-This treats the hashes as independent and uniform, which is a heuristic. For a fixed budget of $m/n$ bits per item, $p$ is minimized at $k^* = (m/n)\ln 2$, where half the bits are set and $p^* \approx 2^{-k^*} \approx 0.6185^{\,m/n}$. The error falls exponentially in the bits per item, so each extra 4.8 bits per item cuts the false-positive rate by 10×.
+This treats the hashes as independent and uniform, which is a heuristic. For a fixed budget of $m/n$ bits per item, $p$ is minimized at $k^* = (m/n)\ln 2$. The trade-off: more hash functions give an absent item more bits that must all be set, but they also fill the array faster. To see where the balance falls, let $q = e^{-kn/m}$ be the fraction of bits still 0, so $k = -(m/n)\ln q$ and $\ln p = k\ln(1-q) = -(m/n)\ln q\,\ln(1-q)$. That expression is unchanged when $q$ and $1-q$ swap, and it is smallest at $q = 1/2$. So at the optimum half the bits are set and $p^* \approx 2^{-k^*} \approx 0.6185^{\,m/n}$. The error falls exponentially in the bits per item, so each extra 4.8 bits per item cuts the false-positive rate by 10×.
 
 > [!example] Worked example · 계산 예제
 > **8 bits per item:** $k^* = 8 \ln 2 = 5.55$. Using $k = 5$ or $6$ gives $p \approx 2.17\%$ or $2.16\%$.
@@ -651,7 +658,7 @@ The data-structure question a robotics lab most often asks is not about any of t
 | 이진 힙 | 최솟값 O(1); 다른 키 O(n) | push / pop O(log n); 구축 O(n) | 반복되는 최솟값: Dijkstra, A*, top-k, 이벤트 큐 | `heapq`(리스트 위의 최소 힙) | `std::priority_queue`(최대 힙) |
 | 균형 BST | 키, 최소 / 최대, 선행자 / 후속자 O(log n) | O(log n) | 순서 있는 키, 범위 질의, floor / ceiling | 표준 라이브러리에 없음; `sortedcontainers`(서드파티) | `std::map`, `std::set` |
 | 트라이 | 단어나 접두사 O(L), L = 키 길이 | O(L) | 접두사 질의, 자동완성, 최장 접두사 일치 | 중첩 `dict` | 없음; 직접 구현 |
-| Union-find | find 분할상환 O(α(n)) | union 분할상환 O(α(n)); 삭제 없음 | 점진적 연결성, Kruskal, 군집화 | 없음; 약 20줄 | 표준에 없음(Boost `disjoint_sets`) |
+| Union-find | find 분할상환 O(α(n)), 실제로 α(n) ≤ 4라서 사실상 상수(§7) | union 분할상환 O(α(n)); 삭제 없음 | 점진적 연결성, Kruskal, 군집화 | 없음; 약 20줄 | 표준에 없음(Boost `disjoint_sets`) |
 
 빨리 고르는 법:
 
@@ -659,8 +666,8 @@ The data-structure question a robotics lab most often asks is not about any of t
 - **"지금 가장 작은(큰) 것"만** 필요하면 힙.
 - **순서가 중요하면**("x 이상인 가장 작은 키", 범위, 삽입하면서 정렬 순회) 균형 BST. 삽입이 드물면 정렬 리스트.
 - **그룹이 합쳐지는 동안 "이 둘이 같은 그룹인가?"를** 물으면 union-find.
-- **문자열 접두사는** 트라이, 또는 정렬 리스트와 이진 탐색.
-- **저차원 공간의 최근접점은** KD-tree나 복셀 해시(§8).
+- **문자열 접두사는** 트라이, 또는 정렬 리스트와 이진 탐색([[02-foundations/algorithms/sorting-divide-conquer|11.3 §6]]).
+- **저차원 공간의 최근접점은** KD-tree(좌표 하나씩 공간을 나누는 이진 트리)나 복셀 해시(정수 격자 셀을 키로 쓰는 해시 맵). 둘 다 §8에 있다.
 
 거의 모든 코드 리뷰에서 나오는 Python 함정 두 가지가 있다. `list.pop(0)`과 `list.insert(0, x)`는 O(n)이므로 `deque`를 쓴다. `x in some_list`는 O(n)이므로 루프 안에서 소속을 검사할 때는 `set`으로 바꾼다.
 
@@ -730,9 +737,16 @@ print(next_greater([2, 1, 5, 3, 4]))                     # [5, 5, None, 4, None]
 - **분리 체이닝:** 버킷마다 작은 리스트를 두고, 연산은 버킷 `h(k)`의 리스트를 훑는다. 삭제가 쉽다. `std::unordered_map`이 이 방식이다.
 - **개방 주소법:** 칸마다 키 하나. 충돌하면 빈칸이 나올 때까지 *탐사 순서*를 따른다(선형 탐사는 다음 칸, 그다음 칸…). 캐시에 유리하고 노드 할당이 없다. 대신 삭제에는 *묘비(tombstone)* 표시가 필요하다. 칸을 그냥 비우면 그 뒤에 저장된 키의 탐사 사슬이 끊기기 때문이다. 또 테이블이 찰수록 성능이 급격히 무너진다. CPython `dict`는 의사난수 탐사 순서를 쓰는 개방 주소법이다.
 
-**적재율과 리사이즈.** 적재율은 $\alpha = n/m$(버킷당 키 수)이다. 체이닝에서 조회는 기대 길이 약 $\alpha$인 리스트를 훑는다. 개방 주소법에서는 이상화된 균일 탐사 가정 아래 실패하는 탐색이 약 $1/(1-\alpha)$번 탐사한다. $\alpha = 0.9$면 10번이다. 선형 탐사는 차 있는 칸이 뭉치므로 더 나쁘다. Knuth의 분석으로는 $\alpha = 0.9$에서 약 $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$번이다. 그래서 구현들은 $\alpha$를 묶어 둔다. Java `HashMap`은 0.75, CPython `dict`는 약 2/3, `std::unordered_map`은 `max_load_factor()`(기본 1.0)를 넘으면 리사이즈한다. 리사이즈는 $m$을 두 배로 하고 **모든 키를 다시 넣는다.** $m$이 바뀌면 `h(k) % m`이 바뀌므로 옛 배열을 그냥 복사할 수 없다. 테이블이 두 배씩 커지므로 동적 배열과 같은 논리로 리사이즈 비용은 삽입당 O(1)로 평균된다.
+**적재율과 리사이즈.** 적재율은 $\alpha = n/m$(버킷당 키 수)이다. 체이닝에서 조회는 기대 길이 약 $\alpha$인 리스트를 훑는다. 개방 주소법에서는 이상화된 균일 탐사 가정 아래 실패하는 탐색이 약 $1/(1-\alpha)$번 탐사한다. $\alpha = 0.9$면 10번이다. 선형 탐사는 차 있는 칸이 뭉치므로 더 나쁘다. 차 있는 칸들의 연속 구간 어디에 해시되든 키는 그 구간 끝에 놓여 구간을 한 칸 늘리므로, 긴 구간일수록 더 빨리 자라고 탐색은 구간 전체를 걸어야 한다. Knuth의 분석으로는 $\alpha = 0.9$에서 약 $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$번이다. 그래서 구현들은 $\alpha$를 묶어 둔다. Java `HashMap`은 0.75, CPython `dict`는 약 2/3, `std::unordered_map`은 `max_load_factor()`(기본 1.0)를 넘으면 리사이즈한다. 리사이즈는 $m$을 두 배로 하고 **모든 키를 다시 넣는다.** $m$이 바뀌면 `h(k) % m`이 바뀌므로 옛 배열을 그냥 복사할 수 없다. 테이블이 두 배씩 커지므로 동적 배열과 같은 논리로 리사이즈 비용은 삽입당 O(1)로 평균된다.
 
-**"기대 O(1)"에 좋은 해시가 필요한 이유 — 범용 해싱.** *고정된* 해시 함수에는 반드시 나쁜 입력이 있다. 비둘기집 원리에 따라 어떤 버킷에는 전체 키 공간 $U$의 키가 적어도 $\lvert U\rvert/m$개 몰린다. 입력을 그 키들로만 고르면 모두 한 사슬에 들어가 모든 연산이 O(n)이 된다. 해법은 *데이터*가 무작위이기를 바라는 대신 *함수*를 무작위로 고르는 것이다. 해시 함수족 $H$가 **범용(universal)이라는** 것은, 서로 다른 모든 키 쌍 $x \ne y$에 대해 $H$에서 무작위로 뽑은 함수로 두 키가 충돌할 확률이 $1/m$ 이하라는 뜻이다(Carter & Wegman 1979). 그러면 저장된 $n$개 키의 집합이 *무엇이든*, 실패하는 조회가 훑는 사슬의 기대 길이는 충돌 확률 $n$개의 합이므로 $n/m = \alpha$ 이하다. 따라서 연산은 기대 O(1 + α)이고, 기댓값은 데이터가 아니라 함수를 고르는 무작위성에 대한 것이다. 고전적인 범용 함수족은 $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$이다. 여기서 $p$는 모든 키보다 큰 소수이고, $a \ne 0$과 $b$를 무작위로 고른다. Python이 문자열 해시를 프로세스마다 무작위화하는 것(SipHash, `PYTHONHASHSEED`)도 같은 원리다.
+**"기대 O(1)"에 좋은 해시가 필요한 이유 — 범용 해싱.** *고정된* 해시 함수에는 반드시 나쁜 입력이 있다. 비둘기집 원리에 따라 어떤 버킷에는 전체 키 공간 $U$의 키가 적어도 $\lvert U\rvert/m$개 몰린다. 입력을 그 키들로만 고르면 모두 한 사슬에 들어가 모든 연산이 O(n)이 된다. 해법은 *데이터*가 무작위이기를 바라는 대신 *함수*를 무작위로 고르는 것이다.
+
+> [!note] 정의 · Definition
+> 해시 함수족 $H$가 **범용(universal)이라는** 것은, 서로 다른 모든 키 쌍 $x \ne y$에 대해 $H$에서 무작위로 뽑은 함수로 두 키가 충돌할 확률이 $1/m$ 이하라는 뜻이다(Carter & Wegman 1979).
+
+이것으로 충분한 이유: 저장된 $n$개 키의 집합이 *무엇이든*, 실패하는 조회가 훑는 사슬의 기대 길이는 기댓값의 선형성에 따라 저장된 키마다 하나씩인 충돌 확률 $n$개의 합이므로 $n/m = \alpha$ 이하다. 따라서 연산은 기대 O(1 + α)이고, 기댓값은 데이터가 아니라 함수를 고르는 무작위성에 대한 것이다.
+
+고전적인 범용 함수족은 $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$이다. 여기서 $p$는 모든 키보다 큰 소수이고, $a \ne 0$과 $b$를 무작위로 고른다. Python이 문자열 해시를 프로세스마다 무작위화하는 것(SipHash, `PYTHONHASHSEED`)도 같은 원리다.
 
 **적대적 최악의 경우.** Crosby & Wallach(2003)는 알려진 고정 해시에서 충돌하도록 만든 키를 보내 실제 서버를 멈출 수 있음을 보였다. 방어법은 키가 있거나 무작위화된 해시, 또는 최악의 경우를 보장하는 구조다(Java `HashMap`은 긴 사슬을 균형 트리로 바꾼다). CPython에서 `int` 해시는 무작위화되지 *않으므로*(작은 `n`에서 `hash(n) == n`), 악의적인 정수 키 집합은 여전히 `dict`를 느리게 만들 수 있다. 로봇 코드에서는 거의 문제가 되지 않지만, "dict 조회는 언제나 O(1)인가?"에 대한 완전한 답은 이렇다: 기대 O(1), 최악 O(n).
 
@@ -815,7 +829,7 @@ print(m.get("cell42"), m.size, len(m.buckets))  # 42 100 256
 
 $$p \approx \left(1 - e^{-kn/m}\right)^{k}$$
 
-해시들이 독립이고 균일하다고 보는 휴리스틱 계산이다. 원소당 비트 수 $m/n$이 고정되어 있을 때 $p$는 $k^* = (m/n)\ln 2$에서 최소가 된다. 이때 비트의 절반이 켜져 있고 $p^* \approx 2^{-k^*} \approx 0.6185^{\,m/n}$이다. 오류는 원소당 비트 수에 대해 지수적으로 줄어서, 원소당 4.8비트를 더할 때마다 거짓 양성률이 10분의 1이 된다.
+해시들이 독립이고 균일하다고 보는 휴리스틱 계산이다. 원소당 비트 수 $m/n$이 고정되어 있을 때 $p$는 $k^* = (m/n)\ln 2$에서 최소가 된다. 줄다리기는 이렇다. 해시 함수가 많을수록 없는 원소가 통과하려면 켜져 있어야 할 비트가 늘지만, 배열도 더 빨리 찬다. 균형점을 보려면 아직 0인 비트의 비율을 $q = e^{-kn/m}$라 두자. 그러면 $k = -(m/n)\ln q$이고 $\ln p = k\ln(1-q) = -(m/n)\ln q\,\ln(1-q)$이다. 이 식은 $q$와 $1-q$를 바꿔도 그대로이고 $q = 1/2$에서 가장 작다. 그래서 최적점에서는 비트의 절반이 켜져 있고 $p^* \approx 2^{-k^*} \approx 0.6185^{\,m/n}$이다. 오류는 원소당 비트 수에 대해 지수적으로 줄어서, 원소당 4.8비트를 더할 때마다 거짓 양성률이 10분의 1이 된다.
 
 > [!example] 계산 예제 · Worked example
 > **원소당 8비트:** $k^* = 8 \ln 2 = 5.55$. $k = 5$나 $6$이면 $p \approx 2.17\%$ 또는 $2.16\%$.

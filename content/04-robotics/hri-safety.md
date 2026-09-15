@@ -89,7 +89,7 @@ The blend of §3 sets by hand how much the human is trusted; the methods below p
 
 $$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
 
-$Q_g(x,u)$ is the value of command $u$ for someone heading to $g$ (a negative cost-to-go), and $\beta$ is how rational the user is assumed to be. It is the exponential noisy-expert model of [[02-foundations/rl-basics|RL Basics §11]] applied to one command, and since better commands are exponentially more likely but never certain, one sloppy input moves the belief without flipping it.
+$Q_g(x,u)$ is the value of command $u$ for someone heading to $g$ (a negative cost-to-go), and $\beta$ is how rational the user is assumed to be. This noisy-rational model is the same exponential model that [[02-foundations/rl-basics|RL Basics §11]] calls a noisy expert, here applied to one command, and since better commands are exponentially more likely but never certain, one sloppy input moves the belief without flipping it.
 
 Exact planning over beliefs is intractable, so the paper uses **hindsight optimisation**, the QMDP approximation:
 
@@ -115,7 +115,7 @@ Each robot action $a$ is scored as if the goal would be revealed right after it.
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
 
-The robot leads because the human is assumed to see its planned controls over the horizon; $R_H$ is learned from driving data by inverse RL and treated as a deterministic best response. To optimise with gradients, note that $\partial R_H/\partial u_H = 0$ holds at $u_H^*$ for every $u_R$. Differentiating that identity gives
+The robot leads because the human is assumed to see its planned controls over the horizon: the human can then only respond to them, while the robot picks its controls knowing that response is coming. $R_H$ is learned from driving data by inverse RL, which recovers a reward from demonstrated behaviour ([[02-foundations/rl-basics|RL Basics §11]]), and treated as a deterministic best response. To optimise with gradients, note that $\partial R_H/\partial u_H = 0$ holds at $u_H^*$ for every $u_R$. Differentiating that identity in $u_R$, with the chain rule running through $u_H^*(u_R)$, gives $\frac{\partial^2 R_H}{\partial u_H^2}\frac{\partial u_H^*}{\partial u_R} + \frac{\partial^2 R_H}{\partial u_H\,\partial u_R} = 0$; solving for the slope, and feeding it into the robot's total derivative, gives
 
 $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
 
@@ -420,7 +420,7 @@ Finally, state the strongest conclusion that the design could support: under the
 
 $$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
 
-$Q_g(x,u)$는 $g$로 가려는 사람에게 명령 $u$가 갖는 가치(음의 cost-to-go)이고, $\beta$는 사용자가 얼마나 합리적이라고 가정하는지다. [[02-foundations/rl-basics|RL 기초 §11]]의 지수형 noisy-expert 모델을 명령 하나에 적용한 것이다. 더 좋은 명령일수록 지수적으로 더 그럴듯하지만 확실하지는 않기 때문에, 엉성한 입력 하나는 믿음을 움직일 뿐 뒤집지 않는다.
+$Q_g(x,u)$는 $g$로 가려는 사람에게 명령 $u$가 갖는 가치(음의 cost-to-go)이고, $\beta$는 사용자가 얼마나 합리적이라고 가정하는지다. 이 noisy-rational 모델은 [[02-foundations/rl-basics|RL 기초 §11]]이 noisy expert라고 부르는 바로 그 지수형 모델을 명령 하나에 적용한 것이다. 더 좋은 명령일수록 지수적으로 더 그럴듯하지만 확실하지는 않기 때문에, 엉성한 입력 하나는 믿음을 움직일 뿐 뒤집지 않는다.
 
 믿음 위의 정확한 계획은 계산 불가능하므로 이 논문은 **hindsight optimization**, 곧 QMDP 근사를 쓴다:
 
@@ -446,7 +446,7 @@ $$Q(b, a) \approx \sum_g b(g)\,Q_g(x, a)$$
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
 
-사람이 horizon 동안 로봇의 계획된 제어를 본다고 가정하기 때문에 로봇이 선도자다. $R_H$는 주행 데이터에서 역강화학습으로 배우고, 결정론적 최적 반응으로 취급한다. 경사로 최적화하려면, $u_H^*$에서 $\partial R_H/\partial u_H = 0$이 모든 $u_R$에 대해 성립한다는 점을 쓴다. 그 항등식을 미분하면
+사람이 horizon 동안 로봇의 계획된 제어를 본다고 가정하기 때문에 로봇이 선도자다: 그러면 사람은 그 제어에 반응할 수밖에 없고, 로봇은 그 반응이 올 것을 알고 제어를 고른다. $R_H$는 주행 데이터에서 역강화학습 — 시연된 행동으로부터 보상을 복원하는 방법([[02-foundations/rl-basics|RL 기초 §11]]) — 으로 배우고, 결정론적 최적 반응으로 취급한다. 경사로 최적화하려면, $u_H^*$에서 $\partial R_H/\partial u_H = 0$이 모든 $u_R$에 대해 성립한다는 점을 쓴다. 그 항등식을 $u_R$로 미분하면, 연쇄 법칙이 $u_H^*(u_R)$를 거쳐 $\frac{\partial^2 R_H}{\partial u_H^2}\frac{\partial u_H^*}{\partial u_R} + \frac{\partial^2 R_H}{\partial u_H\,\partial u_R} = 0$을 주고, 이를 기울기에 대해 풀고 로봇의 전미분에 넣으면 다음과 같다.
 
 $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
 

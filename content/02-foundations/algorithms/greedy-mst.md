@@ -13,7 +13,7 @@ mastery-when: "Raise to Mastery only if coverage, view planning or sensor select
 
 ## English
 
-A greedy algorithm builds its answer one irrevocable choice at a time, always taking whatever looks best right now. Greedy algorithms are easy to invent and their running time is usually just the cost of one sort or one heap. What makes them hard is that most of them are wrong. So interviews test two skills. The first is choosing the right rule, for example which key to sort by. The second is knowing why that rule works, or finding the small input where it fails. This page covers the standard problems where greedy is exactly optimal: interval scheduling, weighted scheduling, fractional knapsack, Huffman codes and minimum spanning trees. It then covers the NP-hard problems where greedy is the best practical tool and comes with a proven approximation factor, which is how sensor placement and view planning papers use it.
+A greedy algorithm builds its answer one irrevocable choice at a time, always taking whatever looks best right now. Greedy algorithms are easy to invent and their running time is usually just the cost of one sort or one heap. What makes them hard is that most of them are wrong: in §1, paying 6 with coins $\{1, 3, 4\}$ by always taking the largest coin uses three coins when two suffice. So interviews test two skills. The first is choosing the right rule, for example which key to sort by. The second is knowing why that rule works, or finding the small input where it fails. This page covers the standard problems where greedy is exactly optimal: interval scheduling, weighted scheduling, fractional knapsack, Huffman codes and minimum spanning trees. It then covers the NP-hard problems (roughly, problems for which no polynomial-time exact algorithm is known; [[02-foundations/algorithms/complexity-recursion#P, NP, NP-hard, and pseudo-polynomial time|11.1 §1]] defines the term) where greedy is the best practical tool and comes with a proven approximation factor, which is how sensor placement and view planning papers use it.
 
 What interviews ask: "maximum non-overlapping intervals", "minimum meeting rooms", "merge intervals", Huffman coding, Prim or Kruskal from scratch, and "prove it" or "why doesn't greedy work here". Robotics labs add Euclidean clustering of point clouds (§6) and greedy sensor or viewpoint selection (§7).
 
@@ -202,7 +202,7 @@ def fractional_knapsack(items, capacity):
 print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 ```
 
-**0/1 knapsack.** Each item must be taken whole or left. The exchange step above fails, because you cannot trade $\varepsilon$ of one item for $\varepsilon$ of another. §1's instance shows the damage: the density rule gets $9$, while the optimum is $14$. The problem is NP-hard. The standard exact method is the $O(nW)$ dynamic program in [[02-foundations/algorithms/dynamic-programming|11.5 §4]], which is pseudo-polynomial. Two facts connect the two versions and appear in research code:
+**0/1 knapsack.** Each item must be taken whole or left. The exchange step above fails, because you cannot trade $\varepsilon$ of one item for $\varepsilon$ of another. §1's instance shows the damage: the density rule gets $9$, while the optimum is $14$. The problem is NP-hard. The standard exact method is the $O(nW)$ dynamic program in [[02-foundations/algorithms/dynamic-programming|11.5 §4]], which is pseudo-polynomial: its running time grows with the numeric value of the capacity $W$, not with the number of bits used to write $W$ ([[02-foundations/algorithms/complexity-recursion#P, NP, NP-hard, and pseudo-polynomial time|11.1 §1]]). Two facts connect the two versions and appear in research code:
 
 - **The fractional optimum is an upper bound on the 0/1 optimum.** Here $14.6 \ge 14$. Branch-and-bound solvers use this bound to prune subtrees that cannot beat the best solution found so far.
 - **A cheap 1/2-approximation.** Assume every item fits on its own. Take the density-ordered items while they fit, compare that value with the single most valuable item, and keep the better. The result is at least half the 0/1 optimum, because the greedy prefix plus the first item that did not fit is worth at least the fractional optimum.
@@ -257,7 +257,7 @@ print(sum(p * len(code[s]) for s, p in freq.items()))  # 2.2 (up to float roundi
 
 $$H(p) \le L_{\text{Huffman}} < H(p) + 1,$$
 
-because every prefix code satisfies the Kraft inequality $\sum_i 2^{-\ell_i} \le 1$, which forces $L \ge H(p)$, and the lengths $\ell_i = \lceil \log_2 (1/p_i) \rceil$ satisfy Kraft, so a prefix code with those lengths exists, its expected length is below $H(p) + 1$, and an optimal code does at least that well.
+because of three facts. First, every prefix code satisfies the Kraft inequality $\sum_i 2^{-\ell_i} \le 1$, because in the code tree a leaf at depth $\ell_i$ owns a $2^{-\ell_i}$ share of the positions at the bottom level and no two leaves share a position. Second, Kraft forces $L \ge H(p)$, because $L - H(p) = \sum_i p_i \log_2 \bigl(p_i / 2^{-\ell_i}\bigr) \ge -\log_2 \sum_i 2^{-\ell_i} \ge 0$, where the first step is Jensen's inequality (the same step that makes KL divergence non-negative) and the second is Kraft. Third, the lengths $\ell_i = \lceil \log_2 (1/p_i) \rceil$ give $2^{-\ell_i} \le p_i$, so they satisfy Kraft and some prefix code has exactly those lengths; each is less than $\log_2(1/p_i) + 1$, so that code's expected length is below $H(p) + 1$, and Huffman, being optimal, does at least as well.
 
 > [!example] Worked example · 계산 예제
 > Frequencies $A{:}\,0.4$, $B{:}\,0.2$, $C{:}\,0.2$, $D{:}\,0.1$, $E{:}\,0.1$. Merge $D$ and $E$ into $0.2$. Now there are three trees of weight $0.2$, and which two are merged next is a tie. One tie-break produces lengths $A{:}\,1$, $B{:}\,2$, $C{:}\,3$, $D{:}\,4$, $E{:}\,4$. Another produces $A{:}\,2$, $B{:}\,2$, $C{:}\,2$, $D{:}\,3$, $E{:}\,3$. Both have $L = 2.2$ bits, so the codes differ but both are optimal. A fixed-length code needs $3$ bits for five symbols. The entropy is $H = 0.4 \log_2 2.5 + 2 \cdot 0.2 \log_2 5 + 2 \cdot 0.1 \log_2 10 \approx 2.12$ bits, so Huffman is within $0.08$ bits of the floor.
@@ -519,7 +519,7 @@ print(first_counterexample())  # ([1, 3, 4], 6)
 
 ## 한국어
 
-그리디(탐욕) 알고리즘은 되돌릴 수 없는 선택을 하나씩 쌓아 답을 만든다. 매번 지금 당장 가장 좋아 보이는 것을 고른다. 그리디 알고리즘은 떠올리기 쉽고, 실행 시간도 대개 정렬 한 번이나 힙 하나의 비용이면 끝난다. 어려운 점은 대부분이 틀렸다는 데 있다. 그래서 면접은 두 가지를 본다. 하나는 올바른 규칙, 예컨대 어떤 키로 정렬할지를 고르는 능력이다. 다른 하나는 그 규칙이 왜 맞는지 설명하거나, 틀리게 만드는 작은 입력을 찾아내는 능력이다. 이 페이지는 그리디가 정확히 최적인 표준 문제들, 즉 구간 스케줄링, 가중 스케줄링, 분할 가능 배낭, 허프만 부호, 최소 신장 트리를 다룬다. 이어서 NP-난해 문제에서 그리디가 가장 실용적인 도구이면서 증명된 근사 비율까지 갖는 경우를 다룬다. 센서 배치와 시점 계획(view planning) 논문이 그리디를 쓰는 방식이 바로 이것이다.
+그리디(탐욕) 알고리즘은 되돌릴 수 없는 선택을 하나씩 쌓아 답을 만든다. 매번 지금 당장 가장 좋아 보이는 것을 고른다. 그리디 알고리즘은 떠올리기 쉽고, 실행 시간도 대개 정렬 한 번이나 힙 하나의 비용이면 끝난다. 어려운 점은 대부분이 틀렸다는 데 있다. §1에서 동전 $\{1, 3, 4\}$로 6을 낼 때 늘 가장 큰 동전부터 고르면 두 개로 될 것을 세 개 쓴다. 그래서 면접은 두 가지를 본다. 하나는 올바른 규칙, 예컨대 어떤 키로 정렬할지를 고르는 능력이다. 다른 하나는 그 규칙이 왜 맞는지 설명하거나, 틀리게 만드는 작은 입력을 찾아내는 능력이다. 이 페이지는 그리디가 정확히 최적인 표준 문제들, 즉 구간 스케줄링, 가중 스케줄링, 분할 가능 배낭, 허프만 부호, 최소 신장 트리를 다룬다. 이어서 NP-난해 문제(대략, 다항 시간 정확 알고리즘이 알려져 있지 않은 문제. 정의는 [[02-foundations/algorithms/complexity-recursion#P, NP, NP-난해, 의사 다항 시간|11.1 §1]])에서 그리디가 가장 실용적인 도구이면서 증명된 근사 비율까지 갖는 경우를 다룬다. 센서 배치와 시점 계획(view planning) 논문이 그리디를 쓰는 방식이 바로 이것이다.
 
 면접이 묻는 것: "겹치지 않는 구간의 최대 개수", "최소 회의실 수", "구간 병합", 허프만 부호, 백지에서 Prim이나 Kruskal 구현, 그리고 "증명해 보라" 또는 "여기서는 왜 그리디가 안 되는가". 로봇 연구실은 여기에 점군의 유클리드 군집화(§6)와 그리디 센서·시점 선택(§7)을 더한다.
 
@@ -708,7 +708,7 @@ def fractional_knapsack(items, capacity):
 print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 ```
 
-**0/1 배낭.** 물건은 통째로 담거나 두고 가야 한다. 위의 교환 단계가 실패한다. 한 물건의 $\varepsilon$을 다른 물건의 $\varepsilon$과 바꿀 수 없기 때문이다. §1의 사례가 그 피해를 보여 준다. 밀도 규칙은 $9$를 얻지만 최적은 $14$다. 이 문제는 NP-난해다. 표준적인 정확한 방법은 [[02-foundations/algorithms/dynamic-programming|11.5 §4]]의 $O(nW)$ 동적 계획법이며, 의사 다항 시간이다. 두 버전을 잇는 사실 두 가지가 연구 코드에 등장한다.
+**0/1 배낭.** 물건은 통째로 담거나 두고 가야 한다. 위의 교환 단계가 실패한다. 한 물건의 $\varepsilon$을 다른 물건의 $\varepsilon$과 바꿀 수 없기 때문이다. §1의 사례가 그 피해를 보여 준다. 밀도 규칙은 $9$를 얻지만 최적은 $14$다. 이 문제는 NP-난해다. 표준적인 정확한 방법은 [[02-foundations/algorithms/dynamic-programming|11.5 §4]]의 $O(nW)$ 동적 계획법이며, 의사 다항 시간이다. 실행 시간이 $W$를 적는 비트 수가 아니라 용량 $W$의 값에 따라 늘어난다는 뜻이다([[02-foundations/algorithms/complexity-recursion#P, NP, NP-난해, 의사 다항 시간|11.1 §1]]). 두 버전을 잇는 사실 두 가지가 연구 코드에 등장한다.
 
 - **분할 가능 최적값은 0/1 최적값의 상한이다.** 여기서는 $14.6 \ge 14$다. 분기 한정법 솔버는 이 상한으로 지금까지 찾은 최선을 이길 수 없는 부분 트리를 가지치기한다.
 - **값싼 1/2 근사.** 모든 물건이 혼자서는 배낭에 들어간다고 가정한다. 밀도 순서로 들어가는 동안 담은 값과 가장 가치 큰 물건 하나의 값을 비교해 더 나은 쪽을 택한다. 결과는 0/1 최적값의 절반 이상이다. 그리디 접두부에 처음 들어가지 못한 물건 하나를 더한 값이 분할 가능 최적값 이상이기 때문이다.
@@ -763,7 +763,7 @@ print(sum(p * len(code[s]) for s, p in freq.items()))  # 2.2 (up to float roundi
 
 $$H(p) \le L_{\text{Huffman}} < H(p) + 1$$
 
-을 만족한다. 모든 접두사 없는 부호는 크래프트 부등식 $\sum_i 2^{-\ell_i} \le 1$을 만족하고 이것이 $L \ge H(p)$를 강제하기 때문이다. 또 길이 $\ell_i = \lceil \log_2 (1/p_i) \rceil$는 크래프트 부등식을 만족하므로 그 길이의 접두사 없는 부호가 존재하고, 그 기대 길이는 $H(p) + 1$ 미만이며, 최적 부호는 적어도 그만큼 좋다.
+을 만족한다. 이유는 세 가지 사실이다. 첫째, 모든 접두사 없는 부호는 크래프트 부등식 $\sum_i 2^{-\ell_i} \le 1$을 만족한다. 부호 트리에서 깊이 $\ell_i$인 잎은 맨 아래 층 자리의 $2^{-\ell_i}$만큼을 차지하고, 두 잎이 같은 자리를 나눠 갖지 않기 때문이다. 둘째, 크래프트 부등식이 $L \ge H(p)$를 강제한다. $L - H(p) = \sum_i p_i \log_2 \bigl(p_i / 2^{-\ell_i}\bigr) \ge -\log_2 \sum_i 2^{-\ell_i} \ge 0$이기 때문인데, 첫 부등호는 젠센 부등식(KL divergence가 음수가 아니게 만드는 바로 그 단계)이고 둘째는 크래프트 부등식이다. 셋째, 길이 $\ell_i = \lceil \log_2 (1/p_i) \rceil$는 $2^{-\ell_i} \le p_i$를 주므로 크래프트 부등식을 만족하고, 정확히 그 길이를 갖는 접두사 없는 부호가 존재한다. 각 길이는 $\log_2(1/p_i) + 1$보다 작으므로 그 부호의 기대 길이는 $H(p) + 1$ 미만이고, 최적인 허프만은 적어도 그만큼 좋다.
 
 > [!example] 계산 예제 · Worked example
 > 빈도 $A{:}\,0.4$, $B{:}\,0.2$, $C{:}\,0.2$, $D{:}\,0.1$, $E{:}\,0.1$. $D$와 $E$를 합쳐 $0.2$를 만든다. 이제 무게 $0.2$인 트리가 셋이라 다음에 어느 둘을 합칠지는 동점이다. 한 가지 동점 처리는 길이 $A{:}\,1$, $B{:}\,2$, $C{:}\,3$, $D{:}\,4$, $E{:}\,4$를, 다른 처리는 $A{:}\,2$, $B{:}\,2$, $C{:}\,2$, $D{:}\,3$, $E{:}\,3$을 만든다. 둘 다 $L = 2.2$비트라서, 부호는 달라도 둘 다 최적이다. 기호 다섯 개의 고정 길이 부호는 $3$비트가 필요하다. 엔트로피는 $H = 0.4 \log_2 2.5 + 2 \cdot 0.2 \log_2 5 + 2 \cdot 0.1 \log_2 10 \approx 2.12$비트이므로, 허프만은 하한에서 $0.08$비트 이내다.

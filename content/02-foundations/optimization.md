@@ -94,13 +94,13 @@ The formulation is needed because a preference and a requirement play different 
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
   momentum + per-coordinate curvature proxy.
 
-**Adaptive step sizes, in three steps.** Each coordinate gets its own step size, set by how large its gradients have been. The three methods share one update and differ only in the scale $s$:
+**Adaptive step sizes, in three steps.** These attack the condition-number problem above one coordinate at a time. A single $\alpha$ must be small enough for the steepest direction, which starves the flat ones. So each coordinate gets its own step size, set by how large its gradients have been: a steep coordinate with large gradients gets a small step, a flat one gets a large step. Because the scaling is per coordinate (a diagonal preconditioner), it fixes ill-conditioning aligned with the axes but not a valley tilted between them. The three methods share one update and differ only in the scale $s$:
 
 $$x_{k+1,i} = x_{k,i} - \frac{\alpha}{\sqrt{s_{k,i}} + \epsilon}\, g_{k,i}$$
 
-so a coordinate with a large $s$ takes small steps, because $\alpha/(\sqrt{s}+\epsilon)$ is its effective step size.
+so a coordinate with a large $s$ takes small steps, because $\alpha/(\sqrt{s}+\epsilon)$ is its effective step size. The $\epsilon$ is a tiny constant (Adam's default is $10^{-8}$) that only keeps the division finite when a coordinate has seen almost no gradient.
 
-- **AdaGrad** (Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. Rarely-updated coordinates (a rare feature) keep a small sum and so keep large steps. But the sum only grows, so every step size decays and never recovers.
+- **AdaGrad** (Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. Rarely-updated coordinates keep a small sum and so keep large steps. For example, the embedding of a rare word gets a nonzero gradient only in the few batches that contain that word, so AdaGrad lets it move far on each of those rare chances. But the sum only grows, so every step size decays and never recovers.
 - **RMSProp** (Tieleman & Hinton 2012, unpublished lecture slides): $s_k = \beta s_{k-1} + (1-\beta) g_k^2$. The exponential average forgets old gradients, so the step can grow back.
 - **Adam** adds momentum to the numerator and bias correction for the zero-initialized averages — see the [[01-canonical-papers/notes/1-foundations/adam|Adam note]].
 
@@ -432,13 +432,13 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
   좌표별 곡률 대리.
 
-**적응형 스텝 크기, 세 단계로.** 좌표마다 그동안 그래디언트가 얼마나 컸는지에 따라 자기만의 스텝 크기를 받는다. 세 방법은 같은 업데이트를 공유하고 척도 $s$만 다르다:
+**적응형 스텝 크기, 세 단계로.** 위의 조건수 문제를 좌표 하나씩 공략하는 방법이다. $\alpha$ 하나는 가장 가파른 방향에 맞춰 작아야 하므로 평평한 방향은 거의 움직이지 못한다. 그래서 좌표마다 그동안 그래디언트가 얼마나 컸는지에 따라 자기만의 스텝 크기를 받는다: 그래디언트가 큰 가파른 좌표는 작은 스텝을, 평평한 좌표는 큰 스텝을 받는다. 스케일링이 좌표별(대각 전처리기)이므로 축에 정렬된 나쁜 조건은 고치지만, 축 사이로 비스듬히 놓인 골짜기는 고치지 못한다. 세 방법은 같은 업데이트를 공유하고 척도 $s$만 다르다:
 
 $$x_{k+1,i} = x_{k,i} - \frac{\alpha}{\sqrt{s_{k,i}} + \epsilon}\, g_{k,i}$$
 
-$\alpha/(\sqrt{s}+\epsilon)$가 그 좌표의 유효 스텝 크기이기 때문에, $s$가 큰 좌표는 작은 스텝을 밟는다.
+$\alpha/(\sqrt{s}+\epsilon)$가 그 좌표의 유효 스텝 크기이기 때문에, $s$가 큰 좌표는 작은 스텝을 밟는다. $\epsilon$은 아주 작은 상수(Adam의 기본값은 $10^{-8}$)로, 그래디언트를 거의 받지 못한 좌표에서 나눗셈이 발산하지 않게 할 뿐이다.
 
-- **AdaGrad**(Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. 드물게 갱신되는 좌표(드문 특징)는 합이 작게 유지되므로 큰 스텝을 유지한다. 그러나 합은 커지기만 하므로 모든 스텝 크기가 줄어들고 다시 회복되지 않는다.
+- **AdaGrad**(Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. 드물게 갱신되는 좌표는 합이 작게 유지되므로 큰 스텝을 유지한다. 예를 들어 드문 단어의 임베딩은 그 단어가 들어 있는 몇 안 되는 배치에서만 0이 아닌 그래디언트를 받으므로, AdaGrad는 그 드문 기회마다 크게 움직이게 해 준다. 그러나 합은 커지기만 하므로 모든 스텝 크기가 줄어들고 다시 회복되지 않는다.
 - **RMSProp**(Tieleman & Hinton 2012, 미출간 강의 슬라이드): $s_k = \beta s_{k-1} + (1-\beta) g_k^2$. 지수 평균은 오래된 그래디언트를 잊으므로 스텝이 다시 커질 수 있다.
 - **Adam**은 분자에 모멘텀을, 0으로 초기화된 평균에 편향 보정을 더한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam 노트]] 참고.
 

@@ -138,7 +138,7 @@ a 12.5% jump at this range: depth error grows quadratically with distance.
 
 Why sparse points instead of every pixel? Stereo depth in §2 needs to know which right-image pixel shows the same point as a left-image pixel. Calibration in §5 needs target corners located to sub-pixel accuracy. Visual odometry and SLAM ([[04-robotics/state-estimation-slam|state estimation]]) track the same points across frames to constrain pose. A point is useful only if it is **repeatable** (detected again after the view changes) and **distinctive** (its neighbourhood does not resemble many others). The pipeline has three stages, and a paper can change any one of them.
 
-**Detect: where the image changes in every direction.** Shift a small window by $(u,v)$ and measure how much its content changes. Expanding the shifted image to first order turns that change into a quadratic form:
+**Detect: where the image changes in every direction.** Shift a small window by $(u,v)$ and measure how much its content changes. A first-order Taylor step gives $I(x+u,y+v)\approx I(x,y)+I_x u+I_y v$, so each pixel's difference is $I_x u+I_y v$ and its square $I_x^2u^2+2I_xI_y\,uv+I_y^2v^2$ is quadratic in $(u,v)$. Summing over the window therefore turns the change into a quadratic form:
 
 $$E(u,v)=\sum_{x,y} w(x,y)\,\big(I(x+u,y+v)-I(x,y)\big)^2 \approx (u,v)\,M\,(u,v)^\top$$
 
@@ -158,9 +158,19 @@ $$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)
 
 which works because the determinant and trace are the product and sum of the eigenvalues: $R$ is large and positive at a corner, negative on an edge and near zero in a flat region. $k$ is an empirical constant, commonly 0.04–0.06. Shi and Tomasi ("Good Features to Track", CVPR 1994) score the window by $\min(\lambda_1,\lambda_2)$ directly, which removes $k$. Either way, keep only local maxima above a threshold (non-maximum suppression).
 
-**Scale: SIFT.** Harris is invariant to rotation but not to scale: a corner at one zoom level is a rounded curve at another. Lowe's SIFT (IJCV 2004) also searches over scale. It blurs the image with Gaussians of increasing $\sigma$, subtracts neighbouring levels (the difference of Gaussians, a cheap approximation of the scale-normalized Laplacian), and keeps points that are extrema among their 26 neighbours in space and scale. Low-contrast points and edge-like points are discarded; the edge test uses a 2×2 Hessian eigenvalue ratio, the same logic as above. Each keypoint receives a dominant gradient orientation, and the descriptor is computed in that rotated, scaled frame: a 4×4 grid of cells around the point, each holding an 8-bin histogram of gradient orientations, gives 4·4·8 = 128 numbers. The vector is normalized to reduce illumination effects and compared by Euclidean distance.
+**Scale: SIFT.** Harris is invariant to rotation but not to scale: a corner at one zoom level is a rounded curve at another. Lowe's SIFT (IJCV 2004) also searches over scale, in three steps.
 
-**Binary: ORB.** SIFT descriptors are floating-point and comparatively costly. ORB (Rublee et al., ICCV 2011) combines the FAST corner test (a quick comparison of pixels on a circle around the candidate), ranked by the Harris score, with an orientation from the patch's intensity centroid and a rotated ("steered") BRIEF descriptor: 256 pairwise intensity comparisons stored as bits. Two descriptors are compared by **Hamming distance** — XOR, then count the set bits — which costs a few CPU instructions. ORB-SLAM (Mur-Artal et al., IEEE T-RO 2015) uses ORB for tracking, mapping, relocalization and loop closing because it can be extracted and matched at frame rate on a CPU, is rotation-invariant and tolerates moderate viewpoint change. ORB itself is not scale-invariant, so it is extracted over an image pyramid.
+- *Detect across scale.* It blurs the image with Gaussians of increasing $\sigma$, subtracts neighbouring levels (the difference of Gaussians, a cheap approximation of the scale-normalized Laplacian — a blob detector whose response peaks when the blur width is comparable to the blob's size), and keeps points that are extrema among their 26 neighbours in space and scale.
+- *Reject.* Low-contrast points and edge-like points are discarded; the edge test uses a 2×2 Hessian eigenvalue ratio, the same logic as above.
+- *Describe.* Each keypoint receives a dominant gradient orientation, and the descriptor is computed in that rotated, scaled frame: a 4×4 grid of cells around the point, each holding an 8-bin histogram of gradient orientations, gives 4·4·8 = 128 numbers. The vector is normalized to reduce illumination effects and compared by Euclidean distance.
+
+**Binary: ORB.** SIFT descriptors are floating-point and comparatively costly. ORB (Rublee et al., ICCV 2011) replaces each stage with a cheaper one.
+
+- *Detect:* the FAST corner test (a quick comparison of pixels on a circle around the candidate), ranked by the Harris score.
+- *Orient:* an angle from the patch's intensity centroid.
+- *Describe:* a rotated ("steered") BRIEF descriptor, 256 pairwise intensity comparisons stored as bits.
+
+Two descriptors are compared by **Hamming distance** — XOR, then count the set bits — which costs a few CPU instructions. ORB-SLAM (Mur-Artal et al., IEEE T-RO 2015) uses ORB for tracking, mapping, relocalization and loop closing because it can be extracted and matched at frame rate on a CPU, is rotation-invariant and tolerates moderate viewpoint change. ORB itself is not scale-invariant, so it is extracted over an image pyramid.
 
 **Match: nearest neighbour, then filter.** For each descriptor in image A, find the nearest descriptor in image B. Raw nearest neighbours contain many wrong pairs, so three filters follow:
 
@@ -456,7 +466,7 @@ $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, 
 
 왜 모든 픽셀이 아니라 드문드문한 점인가? §2의 스테레오 깊이는 왼쪽 이미지의 픽셀이 오른쪽 어느 픽셀과 같은 점인지 알아야 한다. §5의 보정은 타깃 모서리를 서브픽셀 정확도로 찾아야 한다. Visual odometry와 SLAM([[04-robotics/state-estimation-slam|상태 추정]])은 같은 점을 프레임마다 추적해 pose를 제약한다. 점이 쓸모 있으려면 **반복성**(시점이 바뀌어도 다시 검출됨)과 **변별성**(주변이 다른 많은 곳과 닮지 않음)을 갖춰야 한다. 파이프라인은 세 단계이고, 논문은 그중 어느 단계든 바꿀 수 있다.
 
-**검출: 모든 방향으로 변하는 곳.** 작은 창을 $(u,v)$만큼 옮기고 내용이 얼마나 바뀌는지 잰다. 옮긴 이미지를 1차까지 전개하면 그 변화가 이차 형식이 된다.
+**검출: 모든 방향으로 변하는 곳.** 작은 창을 $(u,v)$만큼 옮기고 내용이 얼마나 바뀌는지 잰다. 1차 테일러 전개로 $I(x+u,y+v)\approx I(x,y)+I_x u+I_y v$이므로 픽셀마다 차이는 $I_x u+I_y v$이고, 그 제곱 $I_x^2u^2+2I_xI_y\,uv+I_y^2v^2$은 $(u,v)$의 이차식이다. 따라서 창 전체에서 더하면 변화가 이차 형식이 된다.
 
 $$E(u,v)=\sum_{x,y} w(x,y)\,\big(I(x+u,y+v)-I(x,y)\big)^2 \approx (u,v)\,M\,(u,v)^\top$$
 
@@ -476,9 +486,19 @@ $$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)
 
 행렬식과 대각합이 고윳값의 곱과 합이기 때문에 이 식이 통한다. $R$은 코너에서 크고 양수, 에지에서 음수, 평탄한 영역에서 0 근처다. $k$는 경험적 상수로 흔히 0.04–0.06을 쓴다. Shi와 Tomasi("Good Features to Track", CVPR 1994)는 $\min(\lambda_1,\lambda_2)$를 직접 점수로 써서 $k$를 없앤다. 어느 쪽이든 문턱값을 넘는 국소 최댓값만 남긴다(non-maximum suppression).
 
-**스케일: SIFT.** Harris는 회전에는 불변이지만 스케일에는 불변이 아니다. 한 배율의 코너가 다른 배율에서는 둥근 곡선이다. Lowe의 SIFT(IJCV 2004)는 스케일 방향으로도 탐색한다. $\sigma$를 키워 가며 가우시안으로 흐리게 한 뒤 이웃 단계끼리 빼고(difference of Gaussians, 스케일 정규화 라플라시안의 값싼 근사), 공간과 스케일의 이웃 26개 가운데 극값인 점을 남긴다. 대비가 낮은 점과 에지 같은 점은 버리는데, 에지 판정은 위와 같은 논리로 2×2 헤시안의 고윳값 비를 쓴다. 키포인트마다 지배적인 기울기 방향을 붙이고, 그 회전·스케일 좌표계에서 기술자를 계산한다. 점 주위를 4×4 칸으로 나누고 칸마다 기울기 방향의 8구간 히스토그램을 만들면 4·4·8 = 128개의 수가 된다. 조명 영향을 줄이도록 정규화하고 유클리드 거리로 비교한다.
+**스케일: SIFT.** Harris는 회전에는 불변이지만 스케일에는 불변이 아니다. 한 배율의 코너가 다른 배율에서는 둥근 곡선이다. Lowe의 SIFT(IJCV 2004)는 스케일 방향으로도 탐색하며, 세 단계로 이루어진다.
 
-**이진: ORB.** SIFT 기술자는 실수 벡터이고 계산이 비교적 무겁다. ORB(Rublee 외, ICCV 2011)는 FAST 코너 검사(후보 주위 원 위의 픽셀을 빠르게 비교)를 Harris 점수로 순위를 매겨 쓰고, 패치의 밝기 중심(intensity centroid)으로 방향을 정하고, 회전시킨(steered) BRIEF 기술자를 붙인다. 이 기술자는 픽셀 쌍의 밝기 비교 256개를 비트로 저장한 것이다. 두 기술자는 **해밍 거리**, 곧 XOR 후 켜진 비트 수로 비교하며 CPU 명령 몇 개면 계산된다. ORB-SLAM(Mur-Artal 외, IEEE T-RO 2015)이 추적·지도 작성·재위치 추정·루프 닫기에 모두 ORB를 쓰는 이유는 CPU에서 프레임 속도로 추출·매칭할 수 있고, 회전에 불변이며, 적당한 시점 변화를 견디기 때문이다. ORB 자체는 스케일 불변이 아니어서 이미지 피라미드 위에서 추출한다.
+- *스케일에 걸쳐 검출.* $\sigma$를 키워 가며 가우시안으로 흐리게 한 뒤 이웃 단계끼리 빼고(difference of Gaussians, 스케일 정규화 라플라시안의 값싼 근사 — 흐림 폭이 덩어리 크기와 비슷할 때 응답이 가장 커지는 blob 검출기), 공간과 스케일의 이웃 26개 가운데 극값인 점을 남긴다.
+- *버리기.* 대비가 낮은 점과 에지 같은 점은 버리는데, 에지 판정은 위와 같은 논리로 2×2 헤시안의 고윳값 비를 쓴다.
+- *기술.* 키포인트마다 지배적인 기울기 방향을 붙이고, 그 회전·스케일 좌표계에서 기술자를 계산한다. 점 주위를 4×4 칸으로 나누고 칸마다 기울기 방향의 8구간 히스토그램을 만들면 4·4·8 = 128개의 수가 된다. 조명 영향을 줄이도록 정규화하고 유클리드 거리로 비교한다.
+
+**이진: ORB.** SIFT 기술자는 실수 벡터이고 계산이 비교적 무겁다. ORB(Rublee 외, ICCV 2011)는 각 단계를 더 값싼 것으로 바꾼다.
+
+- *검출:* FAST 코너 검사(후보 주위 원 위의 픽셀을 빠르게 비교)를 Harris 점수로 순위를 매겨 쓴다.
+- *방향:* 패치의 밝기 중심(intensity centroid)으로 각도를 정한다.
+- *기술:* 회전시킨(steered) BRIEF 기술자, 곧 픽셀 쌍의 밝기 비교 256개를 비트로 저장한 것이다.
+
+두 기술자는 **해밍 거리**, 곧 XOR 후 켜진 비트 수로 비교하며 CPU 명령 몇 개면 계산된다. ORB-SLAM(Mur-Artal 외, IEEE T-RO 2015)이 추적·지도 작성·재위치 추정·루프 닫기에 모두 ORB를 쓰는 이유는 CPU에서 프레임 속도로 추출·매칭할 수 있고, 회전에 불변이며, 적당한 시점 변화를 견디기 때문이다. ORB 자체는 스케일 불변이 아니어서 이미지 피라미드 위에서 추출한다.
 
 **매칭: 최근접 이웃, 그다음 거르기.** 이미지 A의 기술자마다 이미지 B에서 가장 가까운 기술자를 찾는다. 날것의 최근접 짝에는 틀린 쌍이 많아서 세 가지 거르기가 뒤따른다.
 

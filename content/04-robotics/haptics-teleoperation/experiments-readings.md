@@ -55,6 +55,8 @@ NASA-TLX measures six self-reported workload dimensions—mental, physical, temp
 11. **Kuchenbecker, Fiene & Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** Read with its WHC 2005 conference version, which carries the nine-subject realism study; note that realism was rated, not measured by task. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
 12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** The Karnopp implementation plus a twenty-subject Fitts study showing moderate friction helps and high stiction hurts. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
 
+The algorithms in items 9–12 — penalty and proxy rendering, event-based transients and friction display — are worked through in [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]].
+
 ### 5. How the supplied course materials were selected
 
 | Local material class | Public learning use |
@@ -119,6 +121,8 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 10. **Ruspini, Kolarov, Khatib, "The haptic display of complex graphical environments," SIGGRAPH 1997; Zilles & Salisbury, "A constraint-based god-object method for haptic display," IROS 1995.** proxy 논문 둘이다. Ruspini는 벌점 렌더링의 세 실패에 이름을 붙였고, Zilles와 Salisbury는 2년 앞서 제약된 점을 도입했다. [DOI](https://doi.org/10.1145/258734.258878) · [DOI](https://doi.org/10.1109/IROS.1995.525876).
 11. **Kuchenbecker, Fiene, Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** 피험자 9명의 현실감 연구를 담은 WHC 2005 학회 판본과 함께 읽어라. 현실감은 과제로 잰 것이 아니라 평가 점수였다는 점을 기억하라. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
 12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** Karnopp 구현과, 적당한 마찰은 돕고 높은 정지 마찰은 해친다는 피험자 20명의 Fitts 연구. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
+
+9–12번의 알고리즘 — 벌점·proxy 렌더링, 사건 기반 과도 신호, 마찰 표시 — 은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]]에서 계산 예제와 함께 풀어 둔다.
 
 ### 5. 제공된 과목 자료를 어떻게 선별했는가
 

@@ -240,7 +240,7 @@ flowchart LR
 
 > [!example] Worked example · 계산 예제
 > **Contact or not, from one force reading.** With no contact the wrist sensor reads pure noise, $y \sim \mathcal{N}(0,\,0.4^2)$ N. In contact it reads $y \sim \mathcal{N}(1.0,\,0.4^2)$ N.
-> - *The test becomes a threshold on $y$.* Both hypotheses share one variance, so $\log\Lambda(y) = (y - 0.5)/0.4^2$ grows with $y$ and "$\Lambda > \eta$" is the same as "$y > \tau$" with $\tau = 0.5 + 0.16\ln\eta$. Write $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$ for the Gaussian upper tail.
+> - *The test becomes a threshold on $y$.* Both hypotheses share one variance, so the normalizing constants cancel and $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$. The $y^2$ terms cancel too, leaving $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$, which grows with $y$, and "$\Lambda > \eta$" is the same as "$y > \tau$" with $\tau = 0.5 + 0.16\ln\eta$. Write $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$ for the Gaussian upper tail.
 > - *Equal priors* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
 > - *Contact is rare*, $P(H_1) = 0.1$, so $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. This is the base-rate effect of §1 again, now moving a threshold.
 > - *Neyman–Pearson at $\alpha = 0.01$*: $Q^{-1}(0.01) = 2.326$, so $\tau = 0.4 \times 2.326 = 0.931$ N and $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
@@ -251,8 +251,8 @@ flowchart LR
   1. It is **not** $P(H_0 \mid \text{data})$. That needs a prior, exactly as in the crack example of §1.
   2. It is **not** the size of the effect. A negligible improvement measured over enough trials still gets a tiny p.
   3. $p > 0.05$ is **not** evidence of no difference. With few trials the test may simply be unable to see one.
-- **Compare two methods on the same trials, pair by pair.** When A and B run on the same 10 objects (or seeds, or scenes), object-to-object difficulty cancels in the per-trial differences $d_i = s_i^{B} - s_i^{A}$.
-  - The **paired t-test** uses $t = \bar d / (s_d/\sqrt{n})$, which follows a $t$ distribution with $n-1$ degrees of freedom under $H_0$ if the differences are roughly normal.
+- **Compare two methods on the same trials, pair by pair.** When A and B run on the same 10 objects (or seeds, or scenes), object-to-object difficulty cancels in the per-trial differences $d_i = s_i^{B} - s_i^{A}$. Four tools work on these differences. Use the paired t-test when the $d_i$ look roughly normal, the sign test when only "who won" is trustworthy, a permutation test when you want to use the sizes of the $d_i$ without assuming normality, and the bootstrap when you want an interval rather than a p-value.
+  - The **paired t-test** uses $t = \bar d / (s_d/\sqrt{n})$, where $\bar d$ and $s_d$ are the mean and standard deviation of the $d_i$. Under $H_0$ it follows a $t$ distribution with $n-1$ degrees of freedom if the differences are roughly normal. The degrees of freedom are $n-1$ rather than $n$ because one is used up estimating $\bar d$; with fewer of them the $t$ distribution has heavier tails than a Gaussian, so small samples need a larger $t$.
   - The **sign test** only counts who won each pair. A **permutation test** randomly flips the signs of the $d_i$ to build the null distribution. Neither needs normality.
   - *Example:* B beats A on 9 of 10 objects, with no ties. Under $H_0$ each win is a fair coin flip, so the two-sided sign test gives $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$.
   - A **bootstrap CI** resamples the $n$ differences with replacement thousands of times and reports the 2.5th and 97.5th percentiles of the resampled mean. For how many trials to run and which interval to report, see [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
@@ -266,6 +266,8 @@ flowchart LR
 | Success or failure, two methods | McNemar exact test on the discordant pairs | Fisher exact test on the 2×2 table | Only pairs where the methods disagree carry evidence |
 | Continuous metric (error, time) | Paired t-test; Wilcoxon signed-rank; sign-flip permutation or bootstrap of the $d_i$ | Welch t-test; Mann–Whitney U; label-permutation test | t: differences roughly normal, no heavy outliers. Wilcoxon: differences symmetric, robust to outliers. Bootstrap: unreliable with very few pairs |
 | Many seeds or tasks | Per-seed scores, CI across seeds; across tasks, stratified bootstrap | Same, per method | The seed is the unit; episodes within one seed are not independent samples |
+
+- **The table's rank and unpaired tests, in one clause each.** The **Wilcoxon signed-rank** test ranks the $|d_i|$ and asks whether the positive differences hold far more or far less than half the total rank, so it uses sizes but a single huge outlier counts only as the top rank. **Welch's t-test** compares two independent group means without assuming the two groups have equal variance. **Mann–Whitney U** pools both groups, ranks everything, and asks whether one group's ranks run systematically higher.
 
 - **McNemar is the sign test above, applied to discordant pairs.** A pair where both succeed or both fail says nothing about which method is better. So under $H_0$ each of the $m$ pairs where they disagree is a fair coin flip.
 - **Many seeds or tasks.** Agarwal et al. (NeurIPS 2021) showed that point estimates from the few runs per task common in deep RL can mislead. Their fix is the **stratified bootstrap**: resample runs with replacement separately within each task, recompute the aggregate score (they favour the interquartile mean over the mean or median), repeat, and read off percentiles.
@@ -282,7 +284,7 @@ flowchart LR
 
 - **Whitening turns a correlated Gaussian into an isotropic one.** Factor the covariance with Cholesky, $\Sigma = LL^\top$, with $L$ lower triangular (it exists since $\Sigma$ is positive definite). Then
   $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
-  by the affine rule of §3, so every direction of $z$ has unit variance and no correlation. Run it backwards, $x = \mu + Lz$ with $z \sim \mathcal{N}(0, I)$, and you have **coloring**, the standard way to sample a correlated Gaussian. Any square root of $\Sigma$ works (the eigendecomposition gives one too); Cholesky is the cheapest.
+  by the affine rule of §3: substitute $\Sigma = LL^\top$, and $L^{-1}L$ and $L^\top L^{-\top}$ each collapse to $I$. So every direction of $z$ has unit variance and no correlation. Run it backwards, $x = \mu + Lz$ with $z \sim \mathcal{N}(0, I)$, and you have **coloring**, the standard way to sample a correlated Gaussian. Any square root of $\Sigma$ works (the eigendecomposition gives one too); Cholesky is the cheapest.
 - **Mahalanobis distance is Euclidean distance after whitening.**
   $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
   This holds because $\Sigma^{-1} = L^{-\top}L^{-1}$. For Gaussian $x$ in $k$ dimensions, $z$ has $k$ independent standard-normal entries, so $d^2$ is a sum of $k$ squared standard normals, which is a $\chi^2_k$ variable.
@@ -304,7 +306,7 @@ flowchart LR
   $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
   A distribution that satisfies this is unchanged by one more step, so it is where the chain settles if it settles at all.
   - For a finite chain, **irreducible** (every state can reach every other) plus **aperiodic** (no forced cycle such as "odd steps in A, even steps in B") guarantees exactly one such $\pi$, and $\pi_n \to \pi$ from any start. Then $\pi_i$ is also the long-run fraction of time spent in state $i$.
-  - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually in total variation), starting from the worst initial state.
+  - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually total variation distance, the largest difference the two distributions assign to any single event), starting from the worst initial state.
 - **Why it matters here.** *MCMC* runs the idea in reverse: design a chain whose stationary distribution is the posterior you cannot sample directly, run it past its mixing time, and use its states as samples. The *forward noising process* of [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$, is a Markov chain on images whose distribution approaches $\mathcal{N}(0, I)$; the learned model runs the chain backwards.
 
 > [!example] Worked example · 계산 예제
@@ -314,7 +316,7 @@ flowchart LR
 > - *Normalize:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$, so $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. Over the long run the machine is broken one hour in seven.
 > - *Power iteration from "broken"*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, and $\pi_{10}$ matches $\pi$ to four decimals.
 >
-> Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$, here $0.3$: the gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
+> Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$ ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), here $0.3$. The reason: $\pi$ is the part of $\pi_n$ with eigenvalue 1, and the gap $\pi_n - \pi$ is made of the other eigen-directions, each multiplied by its eigenvalue (here $0.3$ and $0.2$) at every step, so the largest of them sets the decay. The gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
 
 - **Hidden Markov model (HMM).** The chain $X_t$ is not observed. At each step the current state $j$ emits an observation $y_t$ with probability $B_j(y_t) = p(y_t \mid X_t = j)$. Two questions, each answered by a pass over a $T \times S$ table:
   - **Filtering: where is it now?** The **forward algorithm** carries $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$:
@@ -349,7 +351,7 @@ print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
 
 - **Output:** `[0, 0, 1, 1, 1, 1, 1]`, worn from hour 3 onward, including the quiet hour 6. The function was checked against brute-force enumeration of all $S^T$ paths on 300 random small models.
 - **Filter and decoder disagree, and both are right.** The forward filter puts $P(\text{worn})$ at only $0.229$ at hour 3 and $0.481$ at hour 6. The filter may use only readings up to now. Viterbi picks the whole sequence at once, so the later loud readings pull hour 3 toward "worn", and one quiet hour between loud ones is cheaper to explain as a quiet worn machine than as two switches ($0.10$, then $0.05$). Drop the final loud reading and Viterbi returns all six hours as working: the last hour of evidence rewrote the whole story.
-- **Learning the parameters.** When $P$, $B$ and the initial distribution are unknown, Baum–Welch fits them by EM (expectation–maximization): forward–backward gives each step's state probabilities given the whole sequence, and re-estimating the parameters from those expected counts never lowers the likelihood (Baum et al. 1970).
+- **Learning the parameters.** When $P$, $B$ and the initial distribution are unknown, Baum–Welch fits them by EM (expectation–maximization), alternating two steps. The *E-step* runs forward–backward (the forward pass above plus a mirror-image pass from the end of the sequence) under the current parameters, which gives each step's state probabilities given the whole sequence and hence the expected number of times each transition and each emission occurred. The *M-step* re-estimates the parameters from those expected counts; for example, $P_{ij}$ becomes the expected number of $i \to j$ transitions divided by the expected number of departures from $i$. Repeating the two never lowers the likelihood (Baum et al. 1970).
 
 #### Metropolis–Hastings
 
@@ -363,7 +365,7 @@ Metropolis–Hastings is the MCMC of the "Why it matters" bullet made concrete: 
   This holds since, for $x' \ne x$, both sides equal $\min\big(p(x)\,q(x' \mid x),\ p(x')\,q(x \mid x')\big)$. Sum both sides over $x$: the right side becomes $p(x')$ because $T(x' \to \cdot)$ sums to 1, so $\sum_x p(x)T(x \to x') = p(x')$. That is $\pi P = \pi$ from above with $\pi = p$ (integrals replace sums for continuous $x$). Detailed balance only makes $p$ stationary; convergence to it from any start still needs the irreducible-and-aperiodic condition.
 - **Burn-in.** Early states reflect the starting point rather than $p$, so discard them.
 - **Autocorrelation.** Consecutive states are correlated, because each is a small move from the previous state or a repeat of it.
-- **Effective sample size (ESS).** $N$ correlated samples estimate a mean as well as $N/\tau$ independent ones, where $\tau = 1 + 2\sum_{k\ge 1}\rho_k$ sums the autocorrelations $\rho_k$ at lag $k$.
+- **Effective sample size (ESS).** $N$ correlated samples estimate a mean as well as $N/\tau$ independent ones, where $\tau = 1 + 2\sum_{k\ge 1}\rho_k$ sums the autocorrelations $\rho_k$ at lag $k$. Read $\tau$ as the number of steps per independent sample's worth of information: each state partly repeats its neighbours on both sides, hence the factor 2. If $\rho_k = 0.9^k$, then $\sum_{k\ge1} 0.9^k = 9$ and $\tau = 19$.
 - **Proposal width.** Too narrow and nearly every move is accepted but barely goes anywhere; too wide and most proposals land where $p$ is tiny and get rejected. Either way ESS collapses, so tune the width by ESS rather than by acceptance rate.
 
 Target: $\tilde p(x) = x^2 e^{-x}$ on $x > 0$, an unnormalized Gamma(3, 1) whose mean and variance are both 3. The chain deliberately starts far out at $x_0 = 20$. It works in log space for the same underflow reason as Viterbi.
@@ -655,7 +657,7 @@ flowchart LR
 
 > [!example] 계산 예제 · Worked example
 > **힘 측정값 하나로 접촉 여부 판단.** 접촉이 없으면 손목 센서는 순수 잡음 $y \sim \mathcal{N}(0,\,0.4^2)$ N을 읽는다. 접촉 중이면 $y \sim \mathcal{N}(1.0,\,0.4^2)$ N을 읽는다.
-> - *검정이 $y$에 대한 문턱값이 된다.* 두 가설의 분산이 같으므로 $\log\Lambda(y) = (y - 0.5)/0.4^2$는 $y$에 대해 증가하고, "$\Lambda > \eta$"는 $\tau = 0.5 + 0.16\ln\eta$인 "$y > \tau$"와 같다. 가우시안 위쪽 꼬리를 $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$로 쓴다.
+> - *검정이 $y$에 대한 문턱값이 된다.* 두 가설의 분산이 같으므로 정규화 상수가 약분되어 $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$이다. $y^2$ 항도 약분되어 $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$만 남고, 이것은 $y$에 대해 증가하므로 "$\Lambda > \eta$"는 $\tau = 0.5 + 0.16\ln\eta$인 "$y > \tau$"와 같다. 가우시안 위쪽 꼬리를 $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$로 쓴다.
 > - *사전확률이 같을 때* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
 > - *접촉이 드물 때*, $P(H_1) = 0.1$이므로 $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. §1의 기저율 효과가 이번에는 문턱값을 움직인다.
 > - *$\alpha = 0.01$인 네이만–피어슨*: $Q^{-1}(0.01) = 2.326$이므로 $\tau = 0.4 \times 2.326 = 0.931$ N, $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
@@ -666,8 +668,8 @@ flowchart LR
   1. $P(H_0 \mid \text{데이터})$가 **아니다**. 그것을 구하려면 사전확률이 필요하다. §1의 균열 예제와 똑같다.
   2. 효과의 크기가 **아니다**. 무시할 만한 개선도 시행을 충분히 많이 하면 아주 작은 p를 받는다.
   3. $p > 0.05$는 차이가 없다는 증거가 **아니다**. 시행이 적으면 검정이 차이를 볼 능력이 없을 수 있다.
-- **두 방법은 같은 시행에서, 쌍으로 비교한다.** A와 B를 같은 물체 10개(또는 시드, 장면)에서 돌리면, 시행별 차이 $d_i = s_i^{B} - s_i^{A}$에서 물체마다 다른 난이도가 상쇄된다.
-  - **대응 t-검정은** $t = \bar d / (s_d/\sqrt{n})$를 쓰고, 차이가 대략 정규분포이면 $H_0$ 아래에서 자유도 $n-1$인 $t$ 분포를 따른다.
+- **두 방법은 같은 시행에서, 쌍으로 비교한다.** A와 B를 같은 물체 10개(또는 시드, 장면)에서 돌리면, 시행별 차이 $d_i = s_i^{B} - s_i^{A}$에서 물체마다 다른 난이도가 상쇄된다. 이 차이에 쓰는 도구는 넷이다. $d_i$가 대략 정규로 보이면 대응 t-검정, "누가 이겼는지"만 믿을 만하면 부호 검정, 정규성을 가정하지 않고 $d_i$의 크기를 쓰고 싶으면 순열 검정, p-값 대신 구간을 원하면 부트스트랩을 쓴다.
+  - **대응 t-검정은** $t = \bar d / (s_d/\sqrt{n})$를 쓰며, $\bar d$와 $s_d$는 $d_i$의 평균과 표준편차다. 차이가 대략 정규분포이면 $H_0$ 아래에서 자유도 $n-1$인 $t$ 분포를 따른다. 자유도가 $n$이 아니라 $n-1$인 것은 $\bar d$를 추정하는 데 하나를 쓰기 때문이고, 자유도가 적을수록 $t$ 분포의 꼬리가 가우시안보다 두꺼워서 표본이 작으면 더 큰 $t$가 필요하다.
   - **부호 검정은** 각 쌍에서 누가 이겼는지만 센다. **순열 검정은** $d_i$의 부호를 무작위로 뒤집어 귀무분포를 만든다. 둘 다 정규성이 필요 없다.
   - *예:* B가 물체 10개 중 9개에서 A를 이겼고 동률은 없다. $H_0$ 아래에서 각 승리는 공정한 동전 던지기이므로, 양측 부호 검정은 $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$을 준다.
   - **부트스트랩 CI는** $n$개의 차이를 복원추출로 수천 번 다시 뽑아, 재표본 평균의 2.5와 97.5 백분위수를 보고한다. 시행을 몇 번 할지, 어떤 구간을 보고할지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]를 보라.
@@ -681,6 +683,8 @@ flowchart LR
 | 두 방법의 성공/실패 | 불일치 쌍에 대한 McNemar 정확 검정 | 2×2 표에 대한 Fisher 정확 검정 | 두 방법이 엇갈린 쌍만 증거를 준다 |
 | 연속 지표(오차, 시간) | 대응 t-검정; Wilcoxon 부호순위 검정; $d_i$의 부호 뒤집기 순열 또는 부트스트랩 | Welch t-검정; Mann–Whitney U; 라벨 순열 검정 | t: 차이가 대략 정규이고 큰 이상치가 없음. Wilcoxon: 차이가 대칭, 이상치에 강함. 부트스트랩: 쌍이 아주 적으면 믿기 어려움 |
 | 시드나 과제가 많을 때 | 시드별 점수, 시드에 걸친 CI; 과제에 걸쳐서는 층화 부트스트랩 | 같음, 방법별로 | 단위는 시드다; 한 시드 안의 에피소드들은 독립 표본이 아니다 |
+
+- **표에 나온 순위 검정과 비대응 검정, 한 줄씩.** **Wilcoxon 부호순위 검정은** $|d_i|$에 순위를 매기고 양의 차이가 가져간 순위합이 전체의 절반에서 크게 벗어나는지 묻는다. 그래서 크기를 쓰지만, 엄청난 이상치 하나도 가장 높은 순위 하나로만 친다. **Welch t-검정은** 두 집단의 분산이 같다고 가정하지 않고 독립인 두 집단의 평균을 비교한다. **Mann–Whitney U는** 두 집단을 합쳐 전부 순위를 매기고, 한 집단의 순위가 체계적으로 더 높은지 묻는다.
 
 - **McNemar는 위의 부호 검정을 불일치 쌍에 적용한 것이다.** 둘 다 성공하거나 둘 다 실패한 쌍은 어느 방법이 나은지 아무것도 말하지 않는다. 그래서 $H_0$ 아래에서 두 방법이 엇갈린 $m$개 쌍 각각이 공정한 동전 던지기다.
 - **시드나 과제가 많을 때.** Agarwal 등(NeurIPS 2021)은 딥 RL에서 흔한, 과제당 몇 번 안 되는 실행에서 얻은 점추정이 오도할 수 있음을 보였다. 그들의 처방은 **층화 부트스트랩이다**: 과제마다 따로 실행을 복원추출하고, 종합 점수를 다시 계산하고(평균이나 중앙값보다 사분위 평균 IQM을 권한다), 이를 반복해 백분위수를 읽는다.
@@ -697,7 +701,7 @@ flowchart LR
 
 - **백색화는 상관된 가우시안을 등방 가우시안으로 바꾼다.** 공분산을 촐레스키로 분해한다: $\Sigma = LL^\top$, $L$은 하삼각행렬이다($\Sigma$가 양의 정부호이므로 존재한다). 그러면
   $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
-  §3의 아핀 규칙에 따라 이 식이 성립하므로, $z$의 모든 방향은 분산이 1이고 상관이 없다. 거꾸로 $z \sim \mathcal{N}(0, I)$에서 $x = \mu + Lz$를 만들면 **채색**(coloring)이 되는데, 상관된 가우시안을 샘플링하는 표준 방법이다. $\Sigma$의 어떤 제곱근이든 되지만(고유분해로도 하나 얻는다) 촐레스키가 가장 싸다.
+  §3의 아핀 규칙에 따라 이 식이 성립한다: $\Sigma = LL^\top$를 대입하면 $L^{-1}L$과 $L^\top L^{-\top}$이 각각 $I$로 줄어든다. 그래서 $z$의 모든 방향은 분산이 1이고 상관이 없다. 거꾸로 $z \sim \mathcal{N}(0, I)$에서 $x = \mu + Lz$를 만들면 **채색**(coloring)이 되는데, 상관된 가우시안을 샘플링하는 표준 방법이다. $\Sigma$의 어떤 제곱근이든 되지만(고유분해로도 하나 얻는다) 촐레스키가 가장 싸다.
 - **마할라노비스 거리는 백색화한 뒤의 유클리드 거리다.**
   $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
   $\Sigma^{-1} = L^{-\top}L^{-1}$이기 때문에 성립한다. $k$차원 가우시안 $x$라면 $z$는 서로 독립인 표준정규 성분 $k$개를 가지므로, $d^2$는 표준정규의 제곱 $k$개의 합, 즉 $\chi^2_k$ 확률변수다.
@@ -719,7 +723,7 @@ flowchart LR
   $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
   이 식을 만족하는 분포는 한 스텝을 더 가도 바뀌지 않으므로, 체인이 어딘가에 자리 잡는다면 바로 여기다.
   - 유한 체인에서 **기약**(모든 상태가 다른 모든 상태에 도달 가능)과 **비주기**("홀수 스텝엔 A, 짝수 스텝엔 B" 같은 강제 순환이 없음)가 함께 성립하면 그런 $\pi$가 정확히 하나이고, 어디서 시작해도 $\pi_n \to \pi$다. 이때 $\pi_i$는 장기적으로 상태 $i$에 머무는 시간의 비율이기도 하다.
-  - **혼합 시간은** 가장 나쁜 초기 상태에서 출발해 $\pi_n$이 $\pi$에서 정한 거리 안(보통 전변동 거리)으로 들어올 때까지 걸리는 스텝 수다.
+  - **혼합 시간은** 가장 나쁜 초기 상태에서 출발해 $\pi_n$이 $\pi$에서 정한 거리 안(보통 전변동 거리, 즉 두 분포가 어떤 한 사건에 매기는 확률 차이의 최댓값)으로 들어올 때까지 걸리는 스텝 수다.
 - **여기서 왜 중요한가.** *MCMC*는 이 생각을 거꾸로 쓴다: 직접 샘플링할 수 없는 사후분포를 정상 분포로 갖는 체인을 설계하고, 혼합 시간 너머까지 돌린 뒤, 그 상태들을 샘플로 쓴다. [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]의 *순방향 노이즈 과정* $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$는 분포가 $\mathcal{N}(0, I)$에 다가가는 이미지 위의 마르코프 체인이고, 학습된 모델은 그 체인을 거꾸로 돌린다.
 
 > [!example] 계산 예제 · Worked example
@@ -729,7 +733,7 @@ flowchart LR
 > - *정규화:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$이므로 $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. 장기적으로 기계는 일곱 시간에 한 시간꼴로 고장 나 있다.
 > - *"고장"에서 시작하는 거듭제곱 반복*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, 그리고 $\pi_{10}$은 소수 넷째 자리까지 $\pi$와 같다.
 >
-> 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기, 여기서는 $0.3$이 정한다: $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
+> 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기([[02-foundations/linear-algebra|1. 선형대수 §3]]), 여기서는 $0.3$이 정한다. 이유: $\pi$는 $\pi_n$ 중 고유값 1인 부분이고, 차이 $\pi_n - \pi$는 나머지 고유방향들로 이루어져 매 스텝 각자의 고유값(여기서는 $0.3$과 $0.2$)이 곱해지므로, 그중 가장 큰 것이 감쇠 속도를 정한다. $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
 
 - **은닉 마르코프 모델(HMM).** 체인 $X_t$는 관측되지 않는다. 각 스텝에서 현재 상태 $j$가 확률 $B_j(y_t) = p(y_t \mid X_t = j)$로 관측 $y_t$를 내보낸다. 질문 둘, 각각 $T \times S$ 표를 한 번 훑어서 답한다:
   - **필터링: 지금 어디에 있나?** **순방향 알고리즘은** $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$를 들고 간다:
@@ -764,7 +768,7 @@ print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
 
 - **출력:** `[0, 0, 1, 1, 1, 1, 1]`, 3시간째부터 마모이고 조용했던 6시간째도 포함한다. 이 함수는 작은 무작위 모델 300개에서 $S^T$개 경로를 전부 나열하는 방식과 대조해 검사했다.
 - **필터와 디코더가 다르게 말하고, 둘 다 옳다.** 순방향 필터는 3시간째의 $P(\text{마모})$를 $0.229$, 6시간째를 $0.481$로만 본다. 필터는 지금까지의 측정만 쓸 수 있다. 비터비는 수열 전체를 한꺼번에 고르므로, 뒤의 시끄러운 측정이 3시간째를 "마모" 쪽으로 끌어당기고, 시끄러운 시간 사이의 조용한 한 시간은 두 번의 전환($0.10$, 그다음 $0.05$)보다 조용했던 마모 기계로 설명하는 편이 싸다. 마지막 시끄러운 측정을 빼면 비터비는 여섯 시간 전부를 작동으로 돌려준다: 마지막 한 시간의 증거가 이야기 전체를 다시 썼다.
-- **파라미터 학습.** $P$, $B$, 초기 분포를 모를 때 Baum–Welch는 EM(기댓값 최대화)으로 이것들을 맞춘다: 순방향–역방향 알고리즘이 수열 전체가 주어졌을 때 각 스텝의 상태 확률을 주고, 그 기대 횟수로 파라미터를 다시 추정하면 우도가 결코 줄지 않는다(Baum 등 1970).
+- **파라미터 학습.** $P$, $B$, 초기 분포를 모를 때 Baum–Welch는 EM(기댓값 최대화)으로 이것들을 맞추며, 두 단계를 번갈아 한다. *E-단계는* 현재 파라미터로 순방향–역방향 알고리즘(위의 순방향 패스에 수열 끝에서 거꾸로 오는 대칭 패스를 더한 것)을 돌려, 수열 전체가 주어졌을 때 각 스텝의 상태 확률을 얻고, 그로부터 각 전이와 각 방출이 일어난 기대 횟수를 얻는다. *M-단계는* 그 기대 횟수로 파라미터를 다시 추정한다. 예를 들어 $P_{ij}$는 $i \to j$ 전이의 기대 횟수를 $i$에서 떠난 기대 횟수로 나눈 값이 된다. 두 단계를 반복하면 우도가 결코 줄지 않는다(Baum 등 1970).
 
 #### Metropolis–Hastings
 
@@ -778,7 +782,7 @@ Metropolis–Hastings는 "여기서 왜 중요한가"의 MCMC를 구체화한 �
   $x' \ne x$이면 양변이 모두 $\min\big(p(x)\,q(x' \mid x),\ p(x')\,q(x \mid x')\big)$와 같기 때문에 성립한다. 양변을 $x$에 대해 더하면, $T(x' \to \cdot)$의 합이 1이므로 우변은 $p(x')$가 되어 $\sum_x p(x)T(x \to x') = p(x')$다. 이것이 위의 $\pi P = \pi$에서 $\pi = p$인 경우다(연속 $x$면 합 대신 적분). 상세 균형은 $p$를 정상 분포로 만들 뿐이고, 어디서 시작해도 $p$로 수렴하려면 여전히 기약·비주기 조건이 필요하다.
 - **번인(burn-in).** 초기 상태들은 $p$가 아니라 시작점을 반영하므로 버린다.
 - **자기상관.** 각 상태가 직전 상태에서 조금 움직인 것이거나 그 반복이므로, 연속한 상태들은 상관되어 있다.
-- **유효 표본 크기(ESS).** 상관된 표본 $N$개는 평균을 추정하는 데 독립 표본 $N/\tau$개만큼의 값어치가 있고, 여기서 $\tau = 1 + 2\sum_{k\ge 1}\rho_k$는 시차 $k$의 자기상관 $\rho_k$를 더한 것이다.
+- **유효 표본 크기(ESS).** 상관된 표본 $N$개는 평균을 추정하는 데 독립 표본 $N/\tau$개만큼의 값어치가 있고, 여기서 $\tau = 1 + 2\sum_{k\ge 1}\rho_k$는 시차 $k$의 자기상관 $\rho_k$를 더한 것이다. $\tau$는 독립 표본 하나만큼의 정보를 얻는 데 드는 스텝 수로 읽으면 된다: 각 상태가 앞뒤 양쪽 이웃의 정보를 일부 반복하므로 2가 붙는다. $\rho_k = 0.9^k$이면 $\sum_{k\ge1} 0.9^k = 9$이므로 $\tau = 19$다.
 - **제안 폭.** 너무 좁으면 거의 모든 이동이 받아들여지지만 거의 나아가지 못하고, 너무 넓으면 대부분의 제안이 $p$가 아주 작은 곳에 떨어져 기각된다. 어느 쪽이든 ESS가 무너지므로, 폭은 수락률이 아니라 ESS로 조정한다.
 
 목표: $x > 0$에서 $\tilde p(x) = x^2 e^{-x}$, 평균과 분산이 모두 3인 정규화 안 된 Gamma(3, 1)이다. 체인은 일부러 멀리 떨어진 $x_0 = 20$에서 시작한다. 비터비와 같은 언더플로 이유로 로그 공간에서 계산한다.

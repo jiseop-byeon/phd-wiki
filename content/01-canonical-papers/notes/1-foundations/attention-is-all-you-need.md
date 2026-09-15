@@ -44,7 +44,8 @@ The Transformer is an encoder-decoder built from stacked identical blocks (6 eac
   **Reading the equation, axis by axis**: $QK^\top$ = a $T{\times}T$ table of "who should
   look at whom" scores; softmax turns each row into weights summing to 1; multiplying by
   $V$ mixes the value vectors with those weights; $\sqrt{d_k}$ keeps scores from growing
-  with dimension. Output shape: (number of queries) × (value dimension).
+  with dimension. Output shape: (number of queries) × (value dimension). A batched, causally
+  masked version in NumPy, with every tensor shape stated, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §10]].
 
 <svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="one attention head as a chain of shapes">
   <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -166,7 +167,8 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
   모든 토큰이 다른 모든 토큰을 한 번에 참조한다. $\sqrt{d_k}$로 나누는 것은 차원이 클 때 softmax가 포화되는 것을 막기 위함.
   **수식을 축 단위로 읽기**: $QK^\top$ = "누가 누구를 볼지"의 $T{\times}T$ 점수표;
   softmax가 각 행을 합 1의 가중치로 바꾸고; $V$를 곱해 그 가중치로 값 벡터들을 섞는다;
-  $\sqrt{d_k}$는 점수가 차원과 함께 자라는 것을 막는다. 출력 모양: (쿼리 수) × (값 차원).
+  $\sqrt{d_k}$는 점수가 차원과 함께 자라는 것을 막는다. 출력 모양: (쿼리 수) × (값 차원). 배치와 인과 마스크를
+  넣고 텐서 모양을 모두 적어 NumPy로 짠 버전은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §10]]에 있다.
 
 <svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="어텐션 헤드 하나를 모양의 연쇄로 본 것">
   <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>

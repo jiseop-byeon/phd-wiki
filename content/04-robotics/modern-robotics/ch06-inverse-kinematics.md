@@ -119,7 +119,8 @@ $\theta^{(0)} = (45°, 90°)$.
   singularity chapter 6 offers the bare pseudo-inverse and sends the damped and redundant-arm
   family to its notes and references. The $\lambda^2$ form written here is the convention of
   that outside literature, chosen so that $\lambda$ carries units; the optimization page
-  writes $\lambda$. Do not go looking for it in the chapter.
+  writes $\lambda$. Do not go looking for it in the chapter. For a two-link arm coded end to
+  end — analytic IK with both elbow branches, then one damped step — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]].
 - **Redundancy** ($n > 6$): the null space of $J$ moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
@@ -244,7 +245,8 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
   damped least squares를 다루지 않는다.** 6장은 특이점에서 그냥 유사역행렬을 주고, 감쇠와
   여유자유도 계열은 참고문헌으로 넘긴다. 여기 쓴 $\lambda^2$ 표기는 그 바깥 문헌의 관례이고,
   $\lambda$가 단위를 갖게 하려는 것이다. 최적화 페이지는 $\lambda$로 쓴다. 6장에서 이
-  표기를 찾지 마라.
+  표기를 찾지 마라. 2링크 팔을 처음부터 끝까지 코드로 옮긴 것 — 두 팔꿈치 해를 모두 주는
+  해석적 IK와 감쇠 스텝 한 번 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]]에 있다.
 - **여유자유도** ($n > 6$): $J$의 영공간은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 

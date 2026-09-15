@@ -207,7 +207,8 @@ bug detector in existence.
   $\dfrac{\partial L}{\partial z} = p - y$ — *predicted minus true*, and nothing else.
   (Derivation: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
-  [[02-foundations/engineering-math|0.5 §6]].
+  [[02-foundations/engineering-math|0.5 §6]]. The same loss coded in NumPy, with the $1/N$ of a
+  mean loss and a finite-difference gradient check, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]].
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: stacked sigmoids shrink the gradient geometrically.
@@ -450,7 +451,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   $\dfrac{\partial L}{\partial z} = p - y$ — *예측에서 정답을 뺀 것*, 그게 전부다.
   (유도: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
   실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
-  [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다.
+  [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다. 같은 손실을 평균 손실의 $1/N$과
+  유한 차분 그래디언트 검사까지 넣어 NumPy로 짠 것은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]에 있다.
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드를 쌓으면 그래디언트가 기하급수적으로 줄어든다.

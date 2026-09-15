@@ -169,7 +169,7 @@ The formulation transfers to human–robot collaboration with three substitution
 | vehicle plans a stop | robot slows, yields, re-plans, or asks |
 | pedestrian is a stranger | worker is trained, repeated, and adapts to the robot |
 
-That last row is the substantive difference and a genuine research opening. **A worker who interacts with the same robot daily changes their behaviour in response to it,** so the predictor's training distribution shifts because the predictor is deployed. Road-crossing datasets contain no such feedback loop. Anyone claiming a road-trained intent model transfers to a worksite has to address it.
+That last row is the substantive difference and a genuine research opening. **A worker who interacts with the same robot daily changes their behaviour in response to it,** so the predictor's training distribution shifts because the predictor is deployed. Road-crossing datasets contain no such feedback loop. Anyone claiming a road-trained intent model transfers to a worksite has to address it. Two formal ways to put the prediction inside the robot's decision — goal inference with a QMDP action choice, and a Stackelberg game in which the human responds to the robot, the same feedback loop — are [[04-robotics/hri-safety|11. HRI & Safety §3.5]].
 
 ### 8. Evaluation traps specific to this literature
 
@@ -424,7 +424,7 @@ Conformal prediction의 수학은 교환가능성 + 분위수이며, 집합 출�
 | 차량이 정지를 계획 | 로봇이 감속·양보·재계획하거나 **묻는다** |
 | 보행자는 낯선 사람 | 작업자는 훈련됐고 반복되며 **로봇에 적응한다** |
 
-마지막 행이 실질적 차이이자 진짜 연구 개구부다. **매일 같은 로봇과 일하는 작업자는 그 로봇에 반응해 행동을 바꾼다.** 그래서 예측기가 배포됐다는 사실 때문에 학습 분포가 이동한다. 도로 횡단 데이터셋에는 이런 피드백 루프가 없다. 도로에서 학습한 의도 모델이 현장에 전이된다고 주장하려면 이걸 다뤄야 한다.
+마지막 행이 실질적 차이이자 진짜 연구 개구부다. **매일 같은 로봇과 일하는 작업자는 그 로봇에 반응해 행동을 바꾼다.** 그래서 예측기가 배포됐다는 사실 때문에 학습 분포가 이동한다. 도로 횡단 데이터셋에는 이런 피드백 루프가 없다. 도로에서 학습한 의도 모델이 현장에 전이된다고 주장하려면 이걸 다뤄야 한다. 예측을 로봇의 결정 안에 넣는 두 형식 — QMDP로 행동을 고르는 목표 추론, 그리고 사람이 로봇에 반응하는 Stackelberg 게임(바로 이 피드백 루프) — 은 [[04-robotics/hri-safety|11. HRI·안전 §3.5]]에 있다.
 
 ### 8. 이 문헌 특유의 평가 함정
 

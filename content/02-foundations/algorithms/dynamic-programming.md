@@ -52,7 +52,11 @@ cache would sit unused.
 **When optimal substructure fails.** Take the *longest simple path* between two vertices of a
 graph with cycles. Split it at a middle vertex $v$: the two halves need not be longest simple paths
 themselves, because the longest path from $s$ to $v$ and the longest from $v$ to $t$ may reuse the
-same vertices, and gluing them breaks simplicity. The subproblem "longest path from $s$ to $v$" is
+same vertices, and gluing them breaks simplicity. Concretely, take unit-length edges
+$s\text{–}a$, $s\text{–}v$, $a\text{–}v$, $a\text{–}t$, $v\text{–}t$: the longest simple $s \to v$ path is
+$s, a, t, v$ (3 edges) and the longest $v \to t$ path is $v, s, a, t$ (3 edges), but their glue
+revisits $s$, $a$ and $t$, while the true longest $s \to t$ path through $v$ is $s, a, v, t$ with only 3
+edges. The subproblem "longest path from $s$ to $v$" is
 not self-contained — it needs to know which vertices are already used. Held–Karp in §6 is exactly
 what you get when you add that missing information to the state, and it is why the state becomes
 exponential.
@@ -255,7 +259,7 @@ def knapsack_01(items, W):            # items: list of (weight, value), integer 
 **Why $O(nW)$ is pseudo-polynomial.** "Polynomial" means polynomial in the *length of the input*.
 The capacity $W$ is written in about $\log_2 W$ bits, so $W = 2^{\text{bits}}$ is exponential in its
 own encoding. With $n = 100$ and $W = 10^9$ the input is a few kilobytes but the table has $10^{11}$
-cells. This is consistent with 0/1 knapsack being NP-hard: the DP is fast only when the numbers are
+cells. This is consistent with 0/1 knapsack being NP-hard ([[02-foundations/algorithms/complexity-recursion#P, NP, NP-hard, and pseudo-polynomial time|11.1 §1]] defines these terms): the DP is fast only when the numbers are
 small. Two practical consequences: dividing all weights by their greatest common divisor shrinks
 $W$ for free, and when values are small but weights are huge, swap roles — index the table by
 *value* and store the minimum weight that achieves it.
@@ -491,7 +495,9 @@ $$C(S, j) = \min_{k \in S \setminus \{j\}} \big[ C(S \setminus \{j\}, k) + d(k, 
 
 and the tour cost is $\min_j [C(\text{all}, j) + d(j, 0)]$. The state records *which* cities were
 visited but not in *what order*, and that is exactly what cuts $n!$ down. Subsets are processed by
-increasing size, since each one reads only subsets one element smaller.
+increasing size, since each one reads only subsets one element smaller. The code stores a subset
+$S$ as an integer `mask` whose bit $j$ is 1 exactly when city $j \in S$, so $\{1, 3\}$ is `0b1010` = 10
+and $S \setminus \{j\}$ is `mask & ~(1 << j)`.
 
 ```python
 from itertools import combinations
@@ -520,6 +526,17 @@ def held_karp(dist):                  # dist[i][j]: cost i -> j; the tour starts
     return cost, tour[::-1]
 ```
 
+> [!example] Worked example · 계산 예제
+> Four cities with symmetric costs $d(0,1)=2$, $d(0,2)=9$, $d(0,3)=10$, $d(1,2)=6$, $d(1,3)=4$, $d(2,3)=8$.
+> Size 1: $C(\{1\},1)=2$, $C(\{2\},2)=9$, $C(\{3\},3)=10$.
+> Size 2 (one predecessor each): $C(\{1,2\},2)=2+6=8$, $C(\{1,2\},1)=9+6=15$, $C(\{1,3\},3)=2+4=6$,
+> $C(\{1,3\},1)=10+4=14$, $C(\{2,3\},3)=9+8=17$, $C(\{2,3\},2)=10+8=18$.
+> Size 3 (two predecessors): $C(\{1,2,3\},1)=\min(18+6,\ 17+4)=21$, $C(\{1,2,3\},2)=\min(14+6,\ 6+8)=14$,
+> $C(\{1,2,3\},3)=\min(15+4,\ 8+8)=16$.
+> Closing the tour: $\min(21+2,\ 14+9,\ 16+10)=23$, the tour $0 \to 1 \to 3 \to 2 \to 0$ ($2+4+8+9$) or its
+> reverse, which is what `held_karp` returns: `(23, [0, 2, 3, 1, 0])`. Brute force over all $3! = 6$
+> orders gives the same 23.
+
 **Complexity and limits.** There are $O(n\,2^n)$ states and each takes $O(n)$ to evaluate, so the
 time is $O(n^2 2^n)$ and the memory is $O(n\,2^n)$. For $n = 20$: about $4 \times 10^8$ basic steps
 and $2 \times 10^7$ table entries (roughly 160 MB as 8-byte floats) — feasible in C++ with a flat
@@ -547,7 +564,9 @@ The evaluation order is backward in time; the reconstruction is the policy $\pi_
 stored per cell like the coin in `min_coins`. One backward sweep costs $O(T\,\lvert S\rvert^2\lvert A\rvert)$
 with dense transitions. For an infinite discounted horizon there is no final row to start from, so
 you apply the same backup repeatedly until the values stop changing — **value iteration**, which
-converges because the backup is a $\gamma$-contraction ([[02-foundations/rl-basics|7. RL Basics §3]]).
+converges because the backup is a $\gamma$-contraction ([[02-foundations/rl-basics|7. RL Basics §3]]): one backup
+shrinks the largest gap between any two value estimates by at least the factor $\gamma < 1$, so repeated
+backups squeeze every starting guess onto the same fixed point.
 
 ```python
 def backward_induction(states, actions, step, reward, T):
@@ -724,7 +743,10 @@ DP에는 두 성질이 필요하다.
 **최적 부분 구조가 깨지는 경우.** 사이클이 있는 그래프에서 두 정점 사이의 *가장 긴 단순 경로*를
 생각하자. 중간 정점 $v$에서 자르면 두 반쪽이 각각 가장 긴 단순 경로일 필요가 없다. $s$에서
 $v$까지의 최장 경로와 $v$에서 $t$까지의 최장 경로가 같은 정점을 쓸 수 있고, 이어 붙이면 단순성이
-깨지기 때문이다. "$s$에서 $v$까지의 최장 경로"라는 부분 문제는 자기완결적이지 않다. 어떤
+깨지기 때문이다. 구체적으로 길이 1인 간선 $s\text{–}a$, $s\text{–}v$, $a\text{–}v$, $a\text{–}t$,
+$v\text{–}t$를 생각하자. $s \to v$ 최장 단순 경로는 $s, a, t, v$(간선 3개), $v \to t$ 최장 경로는
+$v, s, a, t$(간선 3개)인데, 둘을 이어 붙이면 $s$, $a$, $t$를 다시 지난다. 반면 $v$를 지나는 실제
+$s \to t$ 최장 경로는 간선 3개짜리 $s, a, v, t$다. "$s$에서 $v$까지의 최장 경로"라는 부분 문제는 자기완결적이지 않다. 어떤
 정점이 이미 쓰였는지 알아야 한다. §6의 Held–Karp가 바로 그 빠진 정보를 상태에 넣은 결과이고,
 그래서 상태 수가 지수적으로 커진다.
 
@@ -919,7 +941,7 @@ def knapsack_01(items, W):            # items: list of (weight, value), integer 
 
 **$O(nW)$가 의사 다항식인 이유.** "다항 시간"은 *입력 길이*에 대한 다항식이라는 뜻이다. 용량 $W$는
 약 $\log_2 W$비트로 적히므로 $W = 2^{\text{bits}}$는 자기 표현 길이에 대해 지수적이다. $n = 100$,
-$W = 10^9$이면 입력은 몇 킬로바이트인데 표는 $10^{11}$칸이다. 이는 0/1 배낭이 NP-난해라는 사실과
+$W = 10^9$이면 입력은 몇 킬로바이트인데 표는 $10^{11}$칸이다. 이는 0/1 배낭이 NP-난해([[02-foundations/algorithms/complexity-recursion#P, NP, NP-난해, 의사 다항 시간|용어 정의는 11.1 §1]])라는 사실과
 모순되지 않는다. DP는 수가 작을 때만 빠르다. 실용적 결과 두 가지. 모든 무게를 최대공약수로
 나누면 $W$가 공짜로 줄어든다. 가치는 작고 무게가 거대하면 역할을 바꿔, 표를 *가치*로 인덱싱하고
 그 가치를 달성하는 최소 무게를 저장한다.
@@ -1149,7 +1171,8 @@ $$C(S, j) = \min_{k \in S \setminus \{j\}} \big[ C(S \setminus \{j\}, k) + d(k, 
 
 이고 순회 비용은 $\min_j [C(\text{all}, j) + d(j, 0)]$이다. 상태는 *어느* 도시를 방문했는지는
 기록하지만 *어떤 순서*였는지는 기록하지 않으며, 바로 그것이 $n!$을 줄인다. 각 부분집합은 원소가
-하나 적은 부분집합만 읽으므로 크기 순서로 처리한다.
+하나 적은 부분집합만 읽으므로 크기 순서로 처리한다. 코드는 부분집합 $S$를 정수 `mask`로 저장한다. 도시 $j \in S$일 때에만 $j$번
+비트가 1이므로 $\{1, 3\}$은 `0b1010` = 10이고 $S \setminus \{j\}$는 `mask & ~(1 << j)`다.
 
 ```python
 from itertools import combinations
@@ -1178,6 +1201,17 @@ def held_karp(dist):                  # dist[i][j]: cost i -> j; the tour starts
     return cost, tour[::-1]
 ```
 
+> [!example] 계산 예제 · Worked example
+> 대칭 비용 $d(0,1)=2$, $d(0,2)=9$, $d(0,3)=10$, $d(1,2)=6$, $d(1,3)=4$, $d(2,3)=8$인 도시 네 개.
+> 크기 1: $C(\{1\},1)=2$, $C(\{2\},2)=9$, $C(\{3\},3)=10$.
+> 크기 2(직전 도시가 하나뿐): $C(\{1,2\},2)=2+6=8$, $C(\{1,2\},1)=9+6=15$, $C(\{1,3\},3)=2+4=6$,
+> $C(\{1,3\},1)=10+4=14$, $C(\{2,3\},3)=9+8=17$, $C(\{2,3\},2)=10+8=18$.
+> 크기 3(직전 도시 후보 둘): $C(\{1,2,3\},1)=\min(18+6,\ 17+4)=21$, $C(\{1,2,3\},2)=\min(14+6,\ 6+8)=14$,
+> $C(\{1,2,3\},3)=\min(15+4,\ 8+8)=16$.
+> 순회 닫기: $\min(21+2,\ 14+9,\ 16+10)=23$이고, 순회는 $0 \to 1 \to 3 \to 2 \to 0$($2+4+8+9$) 또는 그
+> 역순이다. `held_karp`도 `(23, [0, 2, 3, 1, 0])`을 돌려준다. $3! = 6$가지 순서를 모두 따져 봐도
+> 같은 23이 나온다.
+
 **복잡도와 한계.** 상태가 $O(n\,2^n)$개이고 각각 $O(n)$에 계산하므로 시간은 $O(n^2 2^n)$, 메모리는
 $O(n\,2^n)$이다. $n = 20$이면 기본 연산 약 $4 \times 10^8$번, 표 항목 $2 \times 10^7$개(8바이트
 실수로 약 160 MB)다. 평탄한 배열 `dp[1 << n][n]`을 쓰는 C++에서는 가능하지만, 이 딕셔너리 기반
@@ -1201,7 +1235,9 @@ $$V_t(s) = \max_a \Big[ r(s,a) + \sum_{s'} p(s' \mid s, a)\, V_{t+1}(s') \Big], 
 계산 순서는 시간을 거꾸로 가는 것이고, 복원은 정책 $\pi_t(s) = \arg\max_a$이며 `min_coins`의
 동전처럼 칸마다 저장한다. 조밀한 전이에서 역방향 한 번 훑기는 $O(T\,\lvert S\rvert^2\lvert A\rvert)$다.
 무한 할인 지평에는 시작할 마지막 행이 없으므로 값이 변하지 않을 때까지 같은 백업을 반복 적용한다.
-이것이 **가치 반복**이며, 백업이 $\gamma$-축약이라 수렴한다([[02-foundations/rl-basics|7. RL 기초 §3]]).
+이것이 **가치 반복**이며, 백업이 $\gamma$-축약이라 수렴한다([[02-foundations/rl-basics|7. RL 기초 §3]]). 백업 한 번이 두 가치
+추정 사이의 최대 차이를 적어도 $\gamma < 1$배로 줄이므로, 반복하면 어떤 초기 추정이든 같은 고정점으로
+모인다.
 
 ```python
 def backward_induction(states, actions, step, reward, T):

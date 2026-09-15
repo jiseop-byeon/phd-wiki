@@ -114,7 +114,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 **Representation changes coordinates, not the physical orientation.** A rotation matrix stores how the local axes point in the reference frame. Euler angles describe an ordered sequence of rotations, so their order is part of the definition. Axis-angle describes an axis and a turn about it; the table's minimal count refers to its independent degrees of freedom, often stored as a rotation vector. An explicit unit axis plus angle uses redundant stored components.
 
-A unit quaternion is another constrained coordinate system. Its sign ambiguity means q and −q can encode exactly the same orientation, so a raw Euclidean difference between their entries is a poor rotation-error measure. Gimbal lock likewise belongs to an Euler coordinate chart, not a physical loss of the object's ability to rotate.
+A unit quaternion is another constrained coordinate system. Its sign ambiguity means q and −q can encode exactly the same orientation, so a raw Euclidean difference between their entries is a poor rotation-error measure. Converting a rotation matrix to a quaternion has its own trap — the textbook formula divides by $4w$, which vanishes near 180° — and [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]] codes the stable version. Gimbal lock likewise belongs to an Euler coordinate chart, not a physical loss of the object's ability to rotate.
 
 **Check your understanding.** If a robot's logged Euler angle jumps while the object moves smoothly, first check wrapping and the chosen rotation order. Do not immediately diagnose a mechanical jump. For a learning target, distinguish a discontinuity in coordinates from a discontinuity in the underlying motion.
 
@@ -327,7 +327,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 **표현은 좌표를 바꾸지 물리적 방향을 바꾸지 않는다.** 회전행렬은 로컬 축이 기준 좌표에서 향하는 방향을 저장한다. 오일러 각은 순서 있는 회전의 연속이라 순서도 정의의 일부다. 축–각은 축과 그 둘레의 회전을 나타낸다. 표의 최소 개수는 독립 자유도이며 흔히 회전벡터로 저장한다. 단위축과 각도를 따로 저장하면 중복 성분이 생긴다.
 
-단위 쿼터니언도 제약이 있는 좌표다. q와 −q가 정확히 같은 방향을 나타내므로 성분의 단순 유클리드 차이는 회전 오차로 부적절하다. 짐벌락도 오일러 좌표 표현의 문제이지 물체가 회전 능력을 물리적으로 잃는 것은 아니다.
+단위 쿼터니언도 제약이 있는 좌표다. q와 −q가 정확히 같은 방향을 나타내므로 성분의 단순 유클리드 차이는 회전 오차로 부적절하다. 회전 행렬을 쿼터니언으로 바꾸는 데도 함정이 있다 — 교과서 식은 $4w$로 나누는데 180° 근처에서 이 값이 0으로 간다 — [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]]이 안정적인 버전을 코드로 보인다. 짐벌락도 오일러 좌표 표현의 문제이지 물체가 회전 능력을 물리적으로 잃는 것은 아니다.
 
 **이해 확인.** 물체는 부드럽게 움직이는데 로그의 오일러 각이 튀면 먼저 각도 감기와 회전 순서를 본다. 곧바로 기계적 점프를 진단하지 않는다. 학습 목표에서도 좌표의 불연속과 실제 동작의 불연속을 구분한다.
 

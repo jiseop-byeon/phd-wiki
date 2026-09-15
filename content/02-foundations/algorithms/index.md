@@ -12,7 +12,7 @@ mastery-when: "Raise to Mastery only if algorithm design itself becomes the rese
 Two kinds of interview test this material, and they reward different preparation.
 
 - **A general coding interview** gives an unfamiliar problem and 30–45 minutes. It checks whether you can pick the right data structure, state the complexity, and write correct code with the edge cases handled. It is mostly pattern recognition, and it comes only from solving many problems.
-- **A research-lab interview** is more likely to say "implement A* on this grid", "write one Kalman filter step", or "why is your nearest-neighbour query slow". It checks whether you understand the algorithms your research code already calls.
+- **A research-lab interview** is more likely to say "implement A* on this grid", "write one Kalman filter step", or "why is your nearest-neighbour query slow" (A* is covered in 11.6; the Kalman step and nearest-neighbour search are problems in 11.8). It checks whether you understand the algorithms your research code already calls.
 
 This track teaches the ideas behind both. It is not a problem bank. Pair each page with timed practice on a public problem set, and after each solved problem write one line: *which structure, why, what complexity.*
 
@@ -35,13 +35,13 @@ flowchart LR
 1. [[02-foundations/algorithms/complexity-recursion|11.1 Complexity, Recursion & Backtracking]] — Big-O read off real code, recurrences, amortized cost, and the backtracking template.
 2. [[02-foundations/algorithms/data-structures|11.2 Core Data Structures]] — choose by operation: hash maps, heaps, balanced trees, tries, union-find, and where KD-trees fit.
 3. [[02-foundations/algorithms/sorting-divide-conquer|11.3 Sorting & Divide-and-Conquer]] — merge sort, randomized quicksort, binary search on answers, selection.
-4. [[02-foundations/algorithms/greedy-mst|11.4 Greedy Algorithms & Spanning Trees]] — the exchange argument, scheduling, Huffman codes, Prim and Kruskal.
+4. [[02-foundations/algorithms/greedy-mst|11.4 Greedy Algorithms & Spanning Trees]] — the exchange argument, scheduling, Huffman codes, and the minimum spanning tree (MST) algorithms of Prim and Kruskal.
 5. [[02-foundations/algorithms/dynamic-programming|11.5 Dynamic Programming]] — the four-step recipe, knapsack, edit distance, and the bridge to the Bellman equation.
 6. [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms & Search]] — BFS/DFS, topological order, Dijkstra, Bellman–Ford, A*.
 7. [[02-foundations/algorithms/interview-code|11.7 Interview-Ready Code in Python & C++]] — the solving routine, testing and stress testing, and each language's traps.
 8. [[02-foundations/algorithms/robotics-ai-problems|11.8 Robotics & AI Implementation Problems]] — ten from-scratch problems a research lab asks, each linked to the theory page.
 
-If time is short, do **11.1 → 11.2 → 11.6 → 11.8**. Those four cover what a robotics lab asks most. Add 11.5 before any general coding interview: dynamic programming is the topic people most often fail to recognize under time pressure.
+If time is short, do **11.1 → 11.2 → 11.6 → 11.8**. Those four cover what a robotics lab asks most. Add 11.5 before any general coding interview: dynamic programming is the topic people most often fail to recognize under time pressure, because the problem statement never says "DP"; you have to notice that the same subproblem repeats.
 
 ### How to practise
 
@@ -70,7 +70,7 @@ You are done with a page when you can do three things with nothing open: write t
 이 내용을 시험하는 인터뷰는 두 종류이고, 준비 방법이 다르다.
 
 - **일반 코딩 인터뷰**는 처음 보는 문제를 30–45분 동안 준다. 알맞은 자료구조를 고르는지, 복잡도를 말하는지, 경계 사례까지 처리한 올바른 코드를 쓰는지를 본다. 대부분 패턴 인식이고, 그것은 문제를 많이 풀어야만 생긴다.
-- **연구실 인터뷰**는 "이 격자에서 A*를 구현하라", "칼만 필터 한 스텝을 써 보라", "최근접점 질의가 왜 느린가"를 묻는 경우가 많다. 이미 연구 코드가 호출하고 있는 알고리즘을 이해하는지를 본다.
+- **연구실 인터뷰**는 "이 격자에서 A*를 구현하라", "칼만 필터 한 스텝을 써 보라", "최근접점 질의가 왜 느린가"를 묻는 경우가 많다(A*는 11.6에서, 칼만 필터 한 스텝과 최근접점 탐색은 11.8의 문제로 다룬다). 이미 연구 코드가 호출하고 있는 알고리즘을 이해하는지를 본다.
 
 이 트랙은 두 가지 모두의 바탕이 되는 개념을 가르친다. 문제 은행은 아니다. 각 페이지를 공개 문제 세트의 시간 제한 연습과 짝지어라. 문제를 하나 풀 때마다 한 줄을 적는다: *어떤 자료구조를, 왜, 복잡도는 얼마.*
 
@@ -93,13 +93,13 @@ flowchart LR
 1. [[02-foundations/algorithms/complexity-recursion|11.1 복잡도, 재귀, 백트래킹]] — 실제 코드에서 Big-O 읽기, 점화식, 분할상환 비용, 백트래킹 틀.
 2. [[02-foundations/algorithms/data-structures|11.2 핵심 자료구조]] — 필요한 연산으로 고른다: 해시 맵, 힙, 균형 트리, 트라이, union-find, 그리고 KD-tree의 자리.
 3. [[02-foundations/algorithms/sorting-divide-conquer|11.3 정렬과 분할정복]] — 병합 정렬, 무작위 퀵정렬, 답에 대한 이진 탐색, 선택 알고리즘.
-4. [[02-foundations/algorithms/greedy-mst|11.4 그리디 알고리즘과 신장 트리]] — 교환 논증, 스케줄링, 허프만 부호, Prim과 Kruskal.
+4. [[02-foundations/algorithms/greedy-mst|11.4 그리디 알고리즘과 신장 트리]] — 교환 논증, 스케줄링, 허프만 부호, 그리고 최소 신장 트리(MST)를 만드는 Prim과 Kruskal.
 5. [[02-foundations/algorithms/dynamic-programming|11.5 동적 계획법]] — 네 단계 요령, 배낭 문제, 편집 거리, 벨만 방정식으로 가는 다리.
 6. [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘과 탐색]] — BFS/DFS, 위상 순서, Dijkstra, Bellman–Ford, A*.
 7. [[02-foundations/algorithms/interview-code|11.7 Python·C++ 인터뷰용 코드]] — 푸는 순서, 테스트와 스트레스 테스트, 언어별 함정.
 8. [[02-foundations/algorithms/robotics-ai-problems|11.8 로봇·AI 구현 문제]] — 연구실이 묻는 백지 구현 문제 열 개, 각각 이론 페이지와 연결.
 
-시간이 부족하면 **11.1 → 11.2 → 11.6 → 11.8**만 하라. 로봇 연구실이 가장 많이 묻는 내용이 이 넷에 있다. 일반 코딩 인터뷰 전에는 11.5를 더하라. 시간 압박 속에서 사람들이 가장 자주 알아보지 못하는 주제가 동적 계획법이다.
+시간이 부족하면 **11.1 → 11.2 → 11.6 → 11.8**만 하라. 로봇 연구실이 가장 많이 묻는 내용이 이 넷에 있다. 일반 코딩 인터뷰 전에는 11.5를 더하라. 시간 압박 속에서 사람들이 가장 자주 알아보지 못하는 주제가 동적 계획법이다. 문제 설명에 "DP"라는 말은 나오지 않고, 같은 부분 문제가 되풀이된다는 것을 스스로 알아채야 하기 때문이다.
 
 ### 연습 방법
 

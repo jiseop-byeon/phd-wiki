@@ -83,7 +83,9 @@ flowchart LR
 ### 3. Dynamic programming and TD learning
 
 - **Value iteration**: apply the optimality operator repeatedly (needs the model $p$).
-  **Policy iteration**: evaluate $\pi$, then act greedily; repeat.
+  **Policy iteration**: evaluate $\pi$, then act greedily; repeat. The same backup read as
+  algorithm design — finite-horizon backward induction, the table-size curse of dimensionality,
+  LQR as DP with a closed-form value — is [[02-foundations/algorithms/dynamic-programming|11.5 §7]].
 - Without a model, sample: **TD(0)** update
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{target}} - V(s)]$
   — bootstrap from your own estimate. The bracket is the **TD error** $\delta$, RL's
@@ -586,7 +588,9 @@ $$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
 The return factors this way because the reward is linear, so $w$ comes out of the
 expectation. The useful consequence: if a learner's $\mu$ is within $\epsilon$ of the
 expert's, then for *every* $w$ with $\lVert w\rVert \le 1$ its return is within $\epsilon$
-of the expert's (Cauchy–Schwarz). Matching features guarantees expert-level return without
+of the expert's. Writing $\mu_L$ and $\mu_E$ for the learner's and the expert's feature
+expectations, Cauchy–Schwarz gives
+$|w^\top\mu_L - w^\top\mu_E| \le \lVert w\rVert\,\lVert\mu_L - \mu_E\rVert \le 1 \cdot \epsilon$. Matching features guarantees expert-level return without
 ever recovering the true $w$. Concretely: instead of memorizing "turn right at this
 intersection" (useless at an intersection the expert never drove through), notice that the
 expert's routes avoid stop signs and favour high speed limits, and seek routes with the same
@@ -600,26 +604,37 @@ leaves ambiguity one level up: many trajectory distributions share the same feat
 expectations, and some of them prefer particular paths for no reason the features give.
 MaxEnt's principle is to commit to nothing the features do not demand — among all
 distributions that match the expert's feature counts, take the one with maximum entropy
-([[02-foundations/information-theory|information theory]]). The solution is exponential in
+([[02-foundations/information-theory|information theory]]).
+
+*The model.* Maximizing entropy subject to matching an expected feature count is a
+Lagrange-multiplier problem ([[02-foundations/optimization|4. Optimization §4]]), and its
+solution is always exponential in the constrained features, with the multiplier on the
+feature constraint playing the role of $w$. So the solution is exponential in
 the reward, with $f(\tau) = \sum_t \phi(s_t,a_t)$ the trajectory's feature count:
 
 $$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
 
 Read it as a noisy expert: since probability grows exponentially with reward, better
-trajectories are exponentially more likely, but worse ones are never impossible. Fit $w$ by
+trajectories are exponentially more likely, but worse ones are never impossible.
+
+*Fitting.* Fit $w$ by
 maximum likelihood on $N$ demonstrations $\tau_1,\dots,\tau_N$:
 
 $$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
 
 The second term appears because the derivative of $\log Z(w)$ is the model's own expected
 feature count, so the gradient is *expert feature counts minus what the current model
-expects*, and it vanishes exactly when the features match. **The cost is in that second
+expects*, and it vanishes exactly when the features match.
+
+*The cost.* **It is all in that second
 term.** It is an expectation over every trajectory the current reward makes likely, so each
 gradient step needs a full planning pass under the current $w$. Ziebart et al. compute it
 with a backward pass (a soft, log-sum-exp form of value iteration) and a forward pass for
 state-visitation frequencies; with a sampler instead, it is a forward RL run. The outer loop
 learns the reward, and the inner loop solves an RL problem every time — tractable in small
-discrete worlds, expensive anywhere larger. **GAIL** (Ho & Ermon, NeurIPS 2016) is the
+discrete worlds, expensive anywhere larger.
+
+*The adversarial version.* **GAIL** (Ho & Ermon, NeurIPS 2016) is the
 adversarial descendant: a discriminator that tells expert state-action pairs from the
 policy's plays the role of the learned reward, and the policy is trained against it with RL,
 without recovering an explicit reward first.
@@ -653,7 +668,10 @@ $$P(A \succ B) = \sigma\big(R(A) - R(B)\big) = \frac{1}{1 + e^{-(R(A) - R(B))}}$
 Only the difference enters, so adding the same constant to every reward changes nothing —
 the ambiguity again, this time as a shift. Fitting it means maximizing
 $\log\sigma(R(A) - R(B))$ over labelled pairs, which is **logistic regression on reward
-differences**. With a linear reward, $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$, so each
+differences**. Logistic regression is the basic yes/no classifier: it predicts a probability
+as the sigmoid of a linear score and fits the weights by maximizing exactly this kind of
+log-likelihood (equivalently, minimizing cross-entropy; see
+[[02-foundations/information-theory|5. Information Theory]]). With a linear reward, $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$, so each
 comparison is one logistic-regression example whose input is the feature difference, and a
 noise-free answer cuts the space of possible $w$ in half along the hyperplane
 $w^\top(\phi(A) - \phi(B)) = 0$.
@@ -668,6 +686,17 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
 - **DPO** (Rafailov et al., NeurIPS 2023) removes the explicit reward model: for the
   KL-regularized objective the optimal policy determines the reward, so the Bradley–Terry loss
   can be written directly in policy log-probability ratios and trained without an RL loop.
+  The derivation takes three lines.
+  - For one prompt, the policy that maximizes
+    $E_{y\sim\pi}[r(y)] - \beta\,\mathrm{KL}(\pi \Vert \pi_{\text{ref}})$ is
+    $\pi^*(y) = \pi_{\text{ref}}(y)\,e^{r(y)/\beta}/Z$, with $Z$ the normalizer. This is the
+    same exponential form as MaxEnt above, for the same Lagrange-multiplier reason.
+  - Take logs and solve for the reward:
+    $r(y) = \beta\log\big(\pi^*(y)/\pi_{\text{ref}}(y)\big) + \beta\log Z$.
+  - Substitute into Bradley–Terry. $A$ and $B$ answer the same prompt, so they share $Z$, and
+    $\beta\log Z$ cancels in $r(A) - r(B)$. What remains,
+    $\sigma\big(\beta\log\frac{\pi(A)}{\pi_{\text{ref}}(A)} - \beta\log\frac{\pi(B)}{\pi_{\text{ref}}(B)}\big)$,
+    involves only the policy being trained and the frozen reference.
 - **Active queries for robots** (Sadigh et al., RSS 2017, "Active Preference-Based Learning
   of Reward Functions"): since each answer is only one bit, choose the pair to show so that
   the answer removes as much as possible of the remaining plausible reward weights.
@@ -816,7 +845,9 @@ flowchart LR
 ### 3. 동적 계획법과 TD 학습
 
 - **가치 반복**: 최적성 연산자를 반복 적용 (모델 $p$ 필요).
-  **정책 반복**: $\pi$를 평가하고 탐욕적으로 개선; 반복.
+  **정책 반복**: $\pi$를 평가하고 탐욕적으로 개선; 반복. 같은 backup을 알고리즘 설계로
+  읽은 것 — 유한 지평 역방향 귀납, 표 크기가 곧 차원의 저주라는 점, 닫힌 형태 가치를 갖는 DP로서의
+  LQR — 은 [[02-foundations/algorithms/dynamic-programming|11.5 §7]]에 있다.
 - 모델이 없으면 샘플링: **TD(0)** 갱신
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{타깃}} - V(s)]$
   — 자기 자신의 추정으로 부트스트랩. 괄호 안이 **TD 오차** $\delta$, RL의 만능 학습 신호다.
@@ -1269,7 +1300,9 @@ $$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
 
 리턴이 이렇게 인수분해되는 것은 보상이 선형이어서 $w$가 기댓값 밖으로 나오기 때문이다. 쓸모
 있는 귀결: 학습자의 $\mu$가 전문가의 것과 $\epsilon$ 이내이면, $\lVert w\rVert \le 1$인
-*모든* $w$에 대해 리턴도 $\epsilon$ 이내다(코시–슈바르츠). 참 $w$를 복원하지 않고도 특징을
+*모든* $w$에 대해 리턴도 $\epsilon$ 이내다. 학습자와 전문가의 특징 기댓값을 $\mu_L$, $\mu_E$로 쓰면
+코시–슈바르츠 부등식이
+$|w^\top\mu_L - w^\top\mu_E| \le \lVert w\rVert\,\lVert\mu_L - \mu_E\rVert \le 1 \cdot \epsilon$을 준다. 참 $w$를 복원하지 않고도 특징을
 맞추면 전문가 수준의 리턴이 보장된다. 구체적으로: "이 교차로에서 우회전"을 외우는 대신(전문가가
 지나가 본 적 없는 교차로에서는 쓸모없다), 전문가의 경로가 정지 표지판을 피하고 제한 속도가 높은
 길을 좋아한다는 것을 알아채고 같은 특징 합을 내는 경로를 찾는다. **최대 마진 계획**(Maximum
@@ -1281,24 +1314,33 @@ $w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다.
 모호성이 남는다: 특징 기댓값이 같은 궤적 분포는 많고, 그중 일부는 특징이 주지 않는 이유로 특정
 경로를 편애한다. MaxEnt의 원리는 특징이 요구하지 않는 것에는 아무것도 걸지 않는 것이다 — 전문가의
 특징 합을 맞추는 모든 분포 가운데 엔트로피가 최대인 것을 택한다
-([[02-foundations/information-theory|정보이론]]). 해는 보상에 대해 지수형이며,
+([[02-foundations/information-theory|정보이론]]).
+
+*모델.* 기대 특징 합을 맞춘다는 제약 아래 엔트로피를 최대화하는 것은 라그랑주 승수 문제이고
+([[02-foundations/optimization|4. 최적화 §4]]), 그 해는 언제나 제약된 특징에 대해 지수형이며
+특징 제약에 붙은 승수가 $w$ 역할을 한다. 그래서 해는 보상에 대해 지수형이며,
 $f(\tau) = \sum_t \phi(s_t,a_t)$는 궤적의 특징 합이다:
 
 $$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
 
 잡음 있는 전문가로 읽으면 된다: 확률이 보상에 지수적으로 커지므로 좋은 궤적일수록 지수적으로
-더 자주 나오지만, 나쁜 궤적도 불가능하지는 않다. 시연 $N$개 $\tau_1,\dots,\tau_N$에 최대우도로
+더 자주 나오지만, 나쁜 궤적도 불가능하지는 않다.
+
+*적합.* 시연 $N$개 $\tau_1,\dots,\tau_N$에 최대우도로
 $w$를 맞추면:
 
 $$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
 
 둘째 항은 $\log Z(w)$의 미분이 모델 자신의 기대 특징 합이기 때문에 생긴다. 그래서 그래디언트는
 *전문가의 특징 합 빼기 현재 모델이 기대하는 특징 합*이고, 특징이 맞는 바로 그때 0이 된다.
-**비용은 그 둘째 항에 있다.** 현재 보상이 그럴듯하게 만드는 모든 궤적에 대한 기댓값이므로,
+
+*비용.* **비용은 전부 그 둘째 항에 있다.** 현재 보상이 그럴듯하게 만드는 모든 궤적에 대한 기댓값이므로,
 그래디언트 한 스텝마다 현재 $w$ 아래의 계획을 한 번 통째로 풀어야 한다. Ziebart 등은 이를
 역방향 패스(log-sum-exp 형태의 soft 가치 반복)와 상태 방문 빈도를 구하는 순방향 패스로 계산하고,
 샘플러로 대신하면 순방향 RL 실행 한 번이 된다. 바깥 루프가 보상을 배우고 안쪽 루프가 매번 RL
-문제를 푼다 — 작은 이산 세계에서는 다룰 만하지만 그보다 크면 비싸다. **GAIL**(Ho & Ermon,
+문제를 푼다 — 작은 이산 세계에서는 다룰 만하지만 그보다 크면 비싸다.
+
+*적대적 버전.* **GAIL**(Ho & Ermon,
 NeurIPS 2016)이 적대적 후손이다: 전문가의 상태-행동 쌍과 정책의 것을 구별하는 판별기가 학습된
 보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다.
 
@@ -1327,7 +1369,9 @@ $$P(A \succ B) = \sigma\big(R(A) - R(B)\big) = \frac{1}{1 + e^{-(R(A) - R(B))}}$
 
 차이만 들어가므로 모든 보상에 같은 상수를 더해도 아무것도 바뀌지 않는다 — 이번에는 평행이동의
 형태로 돌아온 모호성이다. 적합은 라벨된 쌍에 대해 $\log\sigma(R(A) - R(B))$를 최대화하는 것이고,
-이는 **보상 차이에 대한 로지스틱 회귀다.** 선형 보상이면 $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$이므로
+이는 **보상 차이에 대한 로지스틱 회귀다.** 로지스틱 회귀는 가장 기본적인 예/아니오 분류기로,
+선형 점수에 시그모이드를 씌워 확률을 예측하고 바로 이런 로그우도를 최대화해(교차 엔트로피를
+최소화하는 것과 같다; [[02-foundations/information-theory|5. 정보이론]] 참고) 가중치를 맞춘다. 선형 보상이면 $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$이므로
 비교 하나가 특징 차이를 입력으로 하는 로지스틱 회귀 예제 하나이고, 잡음 없는 답 하나는 가능한
 $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 자른다.
 
@@ -1339,7 +1383,16 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
   정책을 그것에 대해 최적화한다.
 - **DPO**(Rafailov et al., NeurIPS 2023)는 명시적 보상 모델을 없앤다: KL 정규화 목적에서는 최적
   정책이 보상을 결정하므로, Bradley–Terry 손실을 정책의 로그 확률 비로 직접 쓰고 RL 루프 없이
-  학습할 수 있다.
+  학습할 수 있다. 유도는 세 줄이다.
+  - 프롬프트 하나에 대해 $E_{y\sim\pi}[r(y)] - \beta\,\mathrm{KL}(\pi \Vert \pi_{\text{ref}})$를
+    최대화하는 정책은 $\pi^*(y) = \pi_{\text{ref}}(y)\,e^{r(y)/\beta}/Z$이고, $Z$는 정규화 상수다.
+    위의 MaxEnt와 같은 지수형이며, 이유도 같은 라그랑주 승수 논리다.
+  - 로그를 취해 보상에 대해 풀면
+    $r(y) = \beta\log\big(\pi^*(y)/\pi_{\text{ref}}(y)\big) + \beta\log Z$.
+  - 이를 Bradley–Terry에 대입한다. $A$와 $B$는 같은 프롬프트에 대한 답이므로 $Z$를 공유하고,
+    $r(A) - r(B)$에서 $\beta\log Z$가 약분된다. 남는 것은
+    $\sigma\big(\beta\log\frac{\pi(A)}{\pi_{\text{ref}}(A)} - \beta\log\frac{\pi(B)}{\pi_{\text{ref}}(B)}\big)$로,
+    학습 중인 정책과 고정된 기준 정책만 들어 있다.
 - **로봇을 위한 능동 질의**(Sadigh et al., RSS 2017, "Active Preference-Based Learning of Reward
   Functions"): 답 하나가 1비트뿐이므로, 그 답이 남은 그럴듯한 보상 가중치를 최대한 많이 지우도록
   보여 줄 쌍을 고른다.

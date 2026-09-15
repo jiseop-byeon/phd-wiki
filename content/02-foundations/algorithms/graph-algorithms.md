@@ -260,7 +260,7 @@ Variants worth knowing: replace Kahn's queue by a min-heap to get the lexicograp
 order; relax edges in topological order to get **shortest or longest paths in a DAG** in
 $O(n + m)$, even with negative weights. The longest-path version is the critical-path method of
 project scheduling, and Viterbi decoding of a hidden Markov model is the same relaxation over a
-trellis.
+trellis ([[02-foundations/probability|3. Probability §7]]).
 
 **Strongly connected components** (SCCs) are the maximal sets of vertices in which every vertex
 can reach every other. Contracting each SCC to a single node always leaves a DAG, the
@@ -270,6 +270,9 @@ new DFS tree is exactly one SCC. **Tarjan's** does it in one DFS by tracking, fo
 earliest discovery time its subtree can reach among vertices still on the stack (its *low-link*). In a directed state lattice
 or a roadmap with one-way edges, a state outside the goal's SCC can reach the goal but cannot
 come back, which is how dead-end regions are found before a planner walks into them.
+
+> [!example] Worked example · 계산 예제
+> Edges $0 \to 1$, $1 \to 2$, $2 \to 0$, $2 \to 3$, $3 \to 4$, $4 \to 3$. The cycle $0 \to 1 \to 2 \to 0$ makes $\{0, 1, 2\}$ one SCC and $3 \leftrightarrow 4$ makes $\{3, 4\}$ another; the condensation is the single edge $\{0,1,2\} \to \{3,4\}$. Kosaraju: a DFS from 0 finishes vertices in the order $4, 3, 2, 1, 0$. On the reversed graph, the DFS from 0 (latest finish) reaches $2$ and $1$ but not $3$, because $2 \to 3$ now points into $\{0,1,2\}$, so the first tree is $\{0, 1, 2\}$; the next unvisited vertex, 3, gives $\{3, 4\}$. If 4 is the goal, states 0, 1, 2 can reach it, but once a planner is in $\{3, 4\}$ it can never return to them.
 
 ### 4. Dijkstra's algorithm
 
@@ -454,6 +457,8 @@ stays optimal only if it reopens closed vertices.
 > - Pop $m$ with $g = 3$ and close it. Push $t$ with $f = 6$.
 > - Pop $a$ ($f = 5$). It offers $m$ a cost of 2, but $m$ is closed.
 > - Without reopening, pop $t$ with cost 6, which is not optimal. With reopening, $m$ returns with $g = 2$, then $t$ with $g = 5$.
+>
+> **Consistent, same graph.** Take $h(s) = 2$, $h(a) = 2$, $h(m) = 1$, $h(t) = 0$; every edge passes $h(u) \le c(u,v) + h(v)$. The reduced costs are $c'(s,a) = 1$, $c'(a,m) = 0$, $c'(s,m) = 2$, $c'(m,t) = 2$, all $\ge 0$, whereas the inconsistent $h$ above gave $c'(a,m) = 1 - 4 + 0 = -3$. The optimal path's reduced cost is $1 + 0 + 2 = 3 = 5 - h(s)$, as the telescoping predicts. A* pops $s$ ($f = 2$), $a$ ($f = 3$), $m$ with $g = 2$ ($f = 3$), then $t$ with $g = 5$: each vertex once, and each first pop already optimal.
 
 **Grid heuristics.** On a grid, the right heuristic is the exact cost of the move set with the
 obstacles removed:
@@ -550,7 +555,11 @@ Every algorithm above is the same loop with a different rule for which open vert
 next. LaValle's *Planning Algorithms* (ch. 2) presents BFS, DFS, Dijkstra, best-first and A* as
 one forward-search template whose only real difference is how the open list $Q$ is sorted, and
 then generalizes it to the **label-correcting** algorithm (the same family appears in Bertsekas's
-*Dynamic Programming and Optimal Control*, Vol. I, ch. 2):
+*Dynamic Programming and Optimal Control*, Vol. I, ch. 2). In plain words the loop keeps a to-do
+list of vertices, starting with just the start vertex: take any vertex off the list, check whether
+going through it gives a neighbour a cheaper cost than that neighbour already has, and if so lower
+the neighbour's cost and put the neighbour on the list (a goal neighbour instead just updates the best
+answer so far); stop when the list is empty. With symbols:
 
 1. Every vertex has a label $C(x)$, the best cost-to-come found so far; $C(s) = 0$, all others $\infty$. Keep $U$, the best cost to the goal found so far.
 2. Remove some $x$ from $Q$. For each edge $x \to x'$: if $C(x) + c(x, x') + h(x') < \min(C(x'), U)$ (with $h$ admissible, or $h = 0$), lower $C(x')$ and record the parent. If $x'$ is the goal, update $U$; otherwise put $x'$ back in $Q$ if it is not there.
@@ -935,7 +944,7 @@ print(topo_kahn(deps), topo_dfs(deps))
 알아 둘 변형: Kahn의 큐를 최소 힙으로 바꾸면 사전순으로 가장 앞선 순서가 나온다. 위상 순서로
 간선을 완화하면 DAG의 최단·최장 경로(**DAG shortest/longest path**)를 음수 가중치가 있어도 $O(n + m)$에 구한다. 최장 경로
 버전이 공정 관리의 주공정법(critical path method)이고, 은닉 마르코프 모델의 Viterbi 복호도
-트렐리스 위에서의 같은 완화다.
+트렐리스 위에서의 같은 완화다([[02-foundations/probability|3. 확률 §7]]).
 
 **강연결 요소**(SCC)는 모든 정점이 서로에게 도달할 수 있는 극대 정점 집합이다. 각 SCC를 한
 노드로 축약하면 항상 DAG, 즉 *응축 그래프*가 남는다. 두 고전 알고리즘이 $O(n + m)$에 구한다.
@@ -944,6 +953,9 @@ Kosaraju(**Kosaraju's**)는 DFS를 두 번 돈다. 한 번은 종료 시각을 �
 아직 스택에 있는 정점 중에서 닿을 수 있는 가장 이른 발견 시각(*low-link*)을 추적해 DFS 한 번으로 해낸다. 방향이 있는 상태
 래티스나 일방통행 간선이 있는 로드맵에서, 목표의 SCC 밖에 있는 상태는 목표에 갈 수는 있어도
 돌아올 수 없다. 플래너가 막다른 영역에 들어가기 전에 그런 영역을 찾는 방법이 이것이다.
+
+> [!example] 계산 예제 · Worked example
+> 간선 $0 \to 1$, $1 \to 2$, $2 \to 0$, $2 \to 3$, $3 \to 4$, $4 \to 3$. 사이클 $0 \to 1 \to 2 \to 0$ 때문에 $\{0, 1, 2\}$가 SCC 하나, $3 \leftrightarrow 4$ 때문에 $\{3, 4\}$가 또 하나이고, 응축 그래프는 간선 하나 $\{0,1,2\} \to \{3,4\}$다. Kosaraju: 0에서 시작한 DFS는 정점을 $4, 3, 2, 1, 0$ 순서로 종료한다. 역방향 그래프에서 (가장 늦게 종료한) 0부터 DFS를 돌면 $2$와 $1$에는 닿지만 $3$에는 닿지 않는다. $2 \to 3$이 이제 $\{0,1,2\}$ 쪽을 가리키기 때문이다. 그래서 첫 트리는 $\{0, 1, 2\}$이고, 방문하지 않은 다음 정점 3이 $\{3, 4\}$를 준다. 4가 목표라면 상태 0, 1, 2는 목표에 갈 수 있지만, 플래너가 일단 $\{3, 4\}$에 들어가면 다시는 돌아올 수 없다.
 
 ### 4. Dijkstra 알고리즘
 
@@ -1124,6 +1136,8 @@ $c'$ 위의 Dijkstra는 A*와 정확히 같은 순서로 정점을 꺼내고, $c
 > - $m$을 $g = 3$으로 꺼내 닫는다. $t$를 $f = 6$으로 넣는다.
 > - $a$($f = 5$)를 꺼낸다. $m$에 비용 2를 제시하지만 $m$은 닫혀 있다.
 > - 다시 열지 않으면 $t$를 비용 6으로 꺼내며, 최적이 아니다. 다시 열면 $m$이 $g = 2$로 돌아오고, 이어서 $t$가 $g = 5$로 나온다.
+>
+> **같은 그래프, 일관적.** $h(s) = 2$, $h(a) = 2$, $h(m) = 1$, $h(t) = 0$으로 잡으면 모든 간선이 $h(u) \le c(u,v) + h(v)$를 만족한다. 축소 비용은 $c'(s,a) = 1$, $c'(a,m) = 0$, $c'(s,m) = 2$, $c'(m,t) = 2$로 모두 $\ge 0$이다. 위의 비일관적 $h$에서는 $c'(a,m) = 1 - 4 + 0 = -3$이었다. 최적 경로의 축소 비용은 $1 + 0 + 2 = 3 = 5 - h(s)$로, 소거(telescoping)가 예측한 대로다. A*는 $s$($f = 2$), $a$($f = 3$), $g = 2$인 $m$($f = 3$), 그리고 $g = 5$인 $t$ 순서로 꺼낸다. 정점마다 한 번씩이며, 처음 꺼낼 때 이미 최적이다.
 
 **격자 휴리스틱.** 격자에서 올바른 휴리스틱은 장애물을 없앤 상태에서 이동 집합의 정확한 비용이다.
 
@@ -1214,7 +1228,10 @@ print(astar_grid(grid, (2, 0), (0, 0)))  # cost 8: around the wall on the right
 위의 모든 알고리즘은 다음에 어떤 열린 정점을 꺼낼지의 규칙만 다른 같은 루프다. LaValle의
 *Planning Algorithms*(2장)는 BFS, DFS, Dijkstra, best-first, A*를 열린 목록 $Q$를 어떻게 정렬하느냐만
 실질적으로 다른 하나의 전방 탐색 틀로 제시하고, 이를 **레이블 수정**(label-correcting) 알고리즘으로
-일반화한다(같은 계열이 Bertsekas의 *Dynamic Programming and Optimal Control* 1권 2장에도 나온다).
+일반화한다(같은 계열이 Bertsekas의 *Dynamic Programming and Optimal Control* 1권 2장에도 나온다). 말로 하면 이 루프는 시작 정점 하나로
+시작하는 할 일 목록을 유지한다. 목록에서 아무 정점이나 꺼내, 그 정점을 거치면 이웃에게 지금보다 싼
+비용이 생기는지 확인하고, 그렇다면 이웃의 비용을 낮춘 뒤 이웃을 목록에 넣는다(이웃이 목표라면 대신 지금까지의 최선 답만 갱신한다). 목록이 비면 멈춘다.
+기호로 쓰면 다음과 같다.
 
 1. 모든 정점은 지금까지 찾은 최선의 도달 비용인 레이블 $C(x)$를 가진다. $C(s) = 0$, 나머지는 $\infty$. 지금까지 찾은 목표까지의 최선 비용 $U$를 유지한다.
 2. $Q$에서 어떤 $x$를 꺼낸다. 각 간선 $x \to x'$에 대해 $C(x) + c(x, x') + h(x') < \min(C(x'), U)$이면($h$는 허용적이거나 $h = 0$) $C(x')$을 낮추고 부모를 기록한다. $x'$이 목표면 $U$를 갱신하고, 아니면 $Q$에 없을 때 $x'$을 다시 넣는다.

@@ -76,7 +76,7 @@ $f''(x) = -\frac{1}{4x^{3/2}}$, so $f''(4) = -\frac{1}{32} = -0.03125$. With $\d
 about two more correct decimal digits *for a small step*. That trade is the entire argument
 between gradient descent and Newton's method in
 [[02-foundations/optimization|4. Optimization §3]]: Newton uses the second derivative to take
-a far better step, and pays $O(n^3)$ per step for it.
+a far better step, and pays $O(n^3)$ per step for it — the cost of solving an $n\times n$ linear system (the notation is [[02-foundations/algorithms/complexity-recursion|11.1 §2]]).
 
 **Two first-order expansions worth memorizing**, because papers use them silently:
 $e^\delta \approx 1 + \delta$ and $\log(1+\delta) \approx \delta$ for small $\delta$. (Check at
@@ -522,7 +522,7 @@ $f''(4) = -\frac{1}{32} = -0.03125$. $\delta = 0.1$로 두면:
 (참값 $\sqrt{4.1} = 2.0248456\ldots$) 차수를 하나 올릴 때마다 도함수 하나를 더 치르고,
 *작은 스텝에 한해* 소수점 두 자리쯤을 더 얻는다. 이 거래가 곧
 [[02-foundations/optimization|4. 최적화 §3]]에서 경사 하강과 뉴턴법이 벌이는 논쟁 전부다:
-뉴턴법은 2차 도함수로 훨씬 나은 스텝을 밟고, 그 대가로 스텝당 $O(n^3)$을 낸다.
+뉴턴법은 2차 도함수로 훨씬 나은 스텝을 밟고, 그 대가로 스텝당 $O(n^3)$을 낸다 — $n\times n$ 선형계를 푸는 비용이다(표기는 [[02-foundations/algorithms/complexity-recursion|11.1 §2]]).
 
 **외워둘 만한 1차 전개 둘** — 논문이 말없이 쓴다: 작은 $\delta$에 대해
 $e^\delta \approx 1 + \delta$, $\log(1+\delta) \approx \delta$. ($\delta = 0.01$에서 검산:

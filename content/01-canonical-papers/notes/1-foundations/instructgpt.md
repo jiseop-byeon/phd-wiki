@@ -34,7 +34,7 @@ mastery-when: "Raise to Working when the paper becomes a baseline, dependency, o
 > Humans can't write the reward function, but they *can* compare two outputs. So learn the reward function from comparisons, then optimize the policy against it with RL — human judgment becomes the training signal.
 
 1. **SFT**: fine-tune GPT-3 on ~13k labeler-written demonstrations of instruction-following.
-2. **Reward model**: labelers rank multiple model outputs per prompt; train a 6B model to predict these preferences (pairwise ranking loss).
+2. **Reward model**: labelers rank multiple model outputs per prompt; train a 6B model to predict these preferences (pairwise ranking loss — the Bradley–Terry model derived in [[02-foundations/rl-basics|7. RL Basics §11]]).
 3. **PPO**: optimize the SFT policy to maximize the reward model's score, with a per-token KL penalty against the SFT policy to prevent reward over-optimization, plus mixed-in pretraining gradients ("PPO-ptx") to limit capability regression.
 
 ### Results
@@ -72,7 +72,7 @@ The direct blueprint of ChatGPT and the template for aligning every modern assis
 > 인간은 보상 함수를 써줄 수는 없지만 두 출력 중 어느 쪽이 나은지 *비교*는 할 수 있다. 그러니 비교 데이터로 보상 함수를 학습하고, 그 보상을 RL로 최적화하자 — 인간의 판단이 학습 신호가 된다.
 
 1. **SFT**: 라벨러가 작성한 약 1.3만 개의 지시-수행 시연으로 GPT-3를 파인튜닝.
-2. **보상 모델**: 프롬프트마다 여러 출력을 라벨러가 순위 매김; 이 선호를 예측하는 6B 모델을 학습(쌍별 랭킹 손실).
+2. **보상 모델**: 프롬프트마다 여러 출력을 라벨러가 순위 매김; 이 선호를 예측하는 6B 모델을 학습(쌍별 랭킹 손실 — [[02-foundations/rl-basics|7. RL 기초 §11]]에서 유도하는 Bradley–Terry 모델).
 3. **PPO**: 보상 모델 점수를 최대화하도록 SFT 정책을 최적화. 보상 과최적화를 막는 토큰별 KL 페널티(SFT 정책 기준) + 능력 퇴행을 막는 사전학습 그래디언트 혼합("PPO-ptx").
 
 ### 결과

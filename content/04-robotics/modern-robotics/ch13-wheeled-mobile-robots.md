@@ -30,7 +30,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
   parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
   car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no **continuous** time-invariant feedback can stabilize
-  such systems to a point — why practical controllers track *trajectories* instead.
+  such systems to a point — why practical controllers track *trajectories* instead. Planning
+  has the matching consequence: search edges must be drivable curves — Reeds–Shepp shots,
+  state lattices, Hybrid A\* ([[04-robotics/planning-decision-making|4. Planning §5.5]]).
 - **Odometry and its decay**: integrating wheel encoders gives pose, but slip and
   quantization make the error grow without bound — the concrete reason mobile robots fuse
   odometry with external sensing via the
@@ -72,7 +74,9 @@ fused localization.
   자세든 도달한다 — 이상적 구름 모델(외바퀴·차동 구동·자동차)에서 속도 제약은 *경로*를
   제한할 뿐 도달 집합을 제한하지 않는다. 깊은
   귀결(Brockett): 이런 시스템은 **연속** 시불변 피드백으로 점에 안정화할 수 없다 —
-  실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다.
+  실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다. 계획 쪽의 짝이 되는 귀결은, 탐색의
+  간선이 주행 가능한 곡선이어야 한다는 것이다 — Reeds–Shepp 연결, 상태 격자, Hybrid A\*
+  ([[04-robotics/planning-decision-making|4. 계획 §5.5]]).
 - **오도메트리와 그 붕괴**: 바퀴 엔코더 적분으로 자세를 얻지만, 미끄럼과 양자화로 오차가
   무한정 자란다 — 모바일 로봇이 오도메트리를 외부 센싱과
   [[02-foundations/probability|칼만 필터 기계장치]]로 융합하는(그리고 규모가 커지면 SLAM으로

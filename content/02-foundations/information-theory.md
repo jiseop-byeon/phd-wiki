@@ -66,7 +66,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   $0.123$ bits. Hold that number; §3 shows it is exactly the KL. Both figures are expected
   costs, not code lengths. Entropy bounds the *expected* length, and a per-symbol code reaches
   it only when every probability is a power of two, because a symbol's code length has to be a
-  whole number of bits: the best symbol code here is Huffman at $1.3$ bits. The floor is approached by coding long blocks of **i.i.d.**
+  whole number of bits: the best symbol code here is Huffman at $1.3$ bits (built and proved optimal in [[02-foundations/algorithms/greedy-mst|11.4 §5]]). The floor is approached by coding long blocks of **i.i.d.**
   symbols, which is what Shannon's source coding theorem says — $N$ i.i.d. variables compress into
   about $NH(X)$ bits as $N\to\infty$. That hypothesis matters for the next bullet: language tokens
   are strongly dependent, so their floor is the entropy *rate*, not the single-symbol $H(p)$ just
@@ -296,7 +296,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
   단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
   정수 비트여야 하기 때문이다. 여기서 최선의 심볼
-  부호는 허프만이고 $1.3$비트다. 바닥에 다가가는 길은 **i.i.d.** 심볼의 긴 블록을 부호화하는 것이며, 그것이 섀넌의 원천 부호화
+  부호는 허프만이고 $1.3$비트다(만드는 법과 최적성 증명은 [[02-foundations/algorithms/greedy-mst|11.4 §5]]). 바닥에 다가가는 길은 **i.i.d.** 심볼의 긴 블록을 부호화하는 것이며, 그것이 섀넌의 원천 부호화
   정리다. $N$개의 i.i.d. 변수는 $N\to\infty$에서 약 $NH(X)$비트로 압축된다. 이 전제가 다음
   항목에서 중요해진다. 언어 토큰은 서로 강하게 의존하므로 그쪽의 바닥은 방금 계산한 단일 심볼
   $H(p)$가 아니라 엔트로피 *율*이다.

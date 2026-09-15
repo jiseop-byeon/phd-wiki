@@ -231,7 +231,7 @@ assert list(recent) == [6, 7, 8]
 assert recent.popleft() == 6                             # O(1); list.pop(0) is O(n)
 ```
 
-**heapq.** It is a min-heap stored in a plain list. For a max-heap, push negated keys (Python 3.14 added `heappush_max` and related functions, but interview environments are often older). Entries are usually tuples, compared element by element, so put a counter before any payload that cannot be compared.
+**heapq.** It is a min-heap stored in a plain list. For a max-heap, push negated keys, since a > b exactly when −a < −b, so the smallest negated key belongs to the largest original (Python 3.14 added `heappush_max` and related functions, but interview environments are often older). Entries are usually tuples, compared element by element, so put a counter before any payload that cannot be compared.
 
 ```python
 import heapq
@@ -399,7 +399,7 @@ C++ interviews check the same algorithms plus whether you know what the language
 | `heapq` | `std::priority_queue` | push and pop O(log n) | **max**-heap by default |
 | tuples | `std::pair`, `std::tuple`, a small `struct` | — | `first` and `second` say nothing about meaning |
 
-**Containers, heaps, and structured bindings.** `std::priority_queue<T>` keeps the *largest* element on top; pass `std::greater<>` as the comparator for a min-heap. Structured bindings (C++17) unpack pairs and tuples by name. `std::map` and `std::set` have their own `lower_bound`, which is O(log n); the free function `std::lower_bound` on their iterators makes only O(log n) comparisons but must step through the tree one node at a time, which is O(n).
+**Containers, heaps, and structured bindings.** `std::priority_queue<T>` keeps the *largest* element on top; pass `std::greater<>` as the comparator for a min-heap. Structured bindings (C++17) unpack pairs and tuples by name. `std::map` and `std::set` have their own `lower_bound`, which is O(log n); the free function `std::lower_bound` on their iterators makes only O(log n) comparisons, but those iterators are bidirectional rather than random access, so each jump to the middle of a range must step through the tree one node at a time, which is O(n).
 
 ```cpp
 #include <algorithm>
@@ -506,7 +506,7 @@ int main() {
 }
 ```
 
-**`unordered_map`: worst case and custom hashes.** Average O(1) assumes keys spread over the buckets. If many keys land in the same bucket — a weak hash on structured keys, or inputs chosen against a known hash — every operation degrades toward O(n). The standard library provides no `std::hash` for `std::pair`, so a grid-cell key needs your own hash; combine the two coordinates into one 64-bit value and mix its bits (below, the finalizer of the SplitMix64 generator). When inputs may be adversarial, some programmers also add a random per-run offset to the key; in research code, reproducibility usually matters more. Call `reserve` before a large insert loop to avoid repeated rehashing, which also invalidates iterators (but not references to elements).
+**`unordered_map`: worst case and custom hashes.** Average O(1) assumes keys spread over the buckets. If many keys land in the same bucket — a weak hash on structured keys, or inputs chosen against a known hash — every operation degrades toward O(n). The standard library provides no `std::hash` for `std::pair`, so a grid-cell key needs your own hash; combine the two coordinates into one 64-bit value and mix its bits (below, the finalizer of the SplitMix64 generator). Its multiply–xor–shift steps let every input bit change about half of the output bits, so neighbouring cells such as `{0, 0}` and `{0, 1}`, whose raw keys differ in one bit, land in unrelated buckets instead of clustering in adjacent ones. When inputs may be adversarial, some programmers also add a random per-run offset to the key; in research code, reproducibility usually matters more. Call `reserve` before a large insert loop to avoid repeated rehashing, which also invalidates iterators (but not references to elements).
 
 ```cpp
 #include <cassert>
@@ -602,7 +602,7 @@ A research-lab interviewer reads your code the way a labmate will: will it be ob
 - **Small functions, one job each.** Keep reading input, computing, and printing in separate functions. The computing function can then be called from a stress test or a unit test without faking input files.
 - **Assertions for invariants.** An `assert` states something that must be true if *your* code is correct: a probability sums to 1, an index is in range, a quaternion has unit norm. It documents the reasoning and turns a silent wrong answer into an immediate failure. Do not use `assert` to validate *inputs* from callers or files — `python -O` strips assertions — and raise `ValueError` instead.
 - **Shapes and units in comments for numeric code.** Write the shape of every array argument and result, such as `(N, 3) points in metres, world frame`. Most bugs in numeric code are shape and frame bugs, and NumPy broadcasting will silently turn a wrong shape into a wrong answer.
-- **Vectorize when asked, and say what it costs.** Loops in Python run at interpreter speed; one NumPy expression runs the loop in compiled code. Broadcasting aligns shapes from the right and stretches axes of length 1, so an `(N, 1, D)` array minus a `(1, M, D)` array gives every pairwise difference as `(N, M, D)`. That array uses N·M·D floats of memory; the expanded form ‖a‖² + ‖b‖² − 2a·b needs only `(N, M)`, but rounding can make a tiny true distance slightly negative, so clamp at zero before the square root.
+- **Vectorize when asked, and say what it costs.** Loops in Python run at interpreter speed; one NumPy expression runs the loop in compiled code. Broadcasting aligns shapes from the right and stretches axes of length 1, so an `(N, 1, D)` array minus a `(1, M, D)` array gives every pairwise difference as `(N, M, D)`. That array uses N·M·D floats of memory; multiplying out (a − b)·(a − b) gives the expanded form ‖a‖² + ‖b‖² − 2a·b, which needs only `(N, M)`, but rounding can make a tiny true distance slightly negative, so clamp at zero before the square root.
 - **Determinism.** Seed every random source and pass generators explicitly, so a failure can be replayed. Iteration order over a `set` of strings changes between interpreter runs (string hashing is randomised per process), so sort before iterating when order affects the output.
 
 ```python
@@ -971,7 +971,7 @@ assert list(recent) == [6, 7, 8]
 assert recent.popleft() == 6                             # O(1); list.pop(0) is O(n)
 ```
 
-**heapq.** 평범한 리스트에 저장된 최소 힙이다. 최대 힙이 필요하면 키를 음수로 바꿔 넣는다(Python 3.14에서 `heappush_max` 등의 함수가 추가되었지만, 인터뷰 환경은 더 오래된 버전인 경우가 많다). 항목은 보통 원소별로 비교되는 튜플이므로, 비교할 수 없는 데이터 앞에는 카운터를 넣어라.
+**heapq.** 평범한 리스트에 저장된 최소 힙이다. 최대 힙이 필요하면 키를 음수로 바꿔 넣는다. a > b일 때에만 −a < −b이므로, 음수로 바꾼 키 중 가장 작은 것이 원래 가장 큰 키다(Python 3.14에서 `heappush_max` 등의 함수가 추가되었지만, 인터뷰 환경은 더 오래된 버전인 경우가 많다). 항목은 보통 원소별로 비교되는 튜플이므로, 비교할 수 없는 데이터 앞에는 카운터를 넣어라.
 
 ```python
 import heapq
@@ -1139,7 +1139,7 @@ C++ 인터뷰는 같은 알고리즘에 더해, 언어가 지켜 주지 않는 �
 | `heapq` | `std::priority_queue` | push와 pop O(log n) | 기본이 **최대** 힙 |
 | 튜플 | `std::pair`, `std::tuple`, 작은 `struct` | — | `first`와 `second`는 의미를 말해 주지 않는다 |
 
-**컨테이너, 힙, 구조적 바인딩.** `std::priority_queue<T>`는 *가장 큰* 원소를 맨 위에 둔다. 최소 힙이 필요하면 비교자로 `std::greater<>`를 넘긴다. 구조적 바인딩(C++17)은 pair와 tuple을 이름으로 풀어 준다. `std::map`과 `std::set`에는 O(log n)인 자체 `lower_bound`가 있다. 이들의 반복자에 자유 함수 `std::lower_bound`를 쓰면 비교는 O(log n)번뿐이지만 트리를 한 노드씩 걸어가야 하므로 O(n)이다.
+**컨테이너, 힙, 구조적 바인딩.** `std::priority_queue<T>`는 *가장 큰* 원소를 맨 위에 둔다. 최소 힙이 필요하면 비교자로 `std::greater<>`를 넘긴다. 구조적 바인딩(C++17)은 pair와 tuple을 이름으로 풀어 준다. `std::map`과 `std::set`에는 O(log n)인 자체 `lower_bound`가 있다. 이들의 반복자에 자유 함수 `std::lower_bound`를 쓰면 비교는 O(log n)번뿐이지만, 그 반복자는 임의 접근이 아니라 양방향이라 범위 가운데로 갈 때마다 트리를 한 노드씩 걸어가야 하므로 O(n)이다.
 
 ```cpp
 #include <algorithm>
@@ -1246,7 +1246,7 @@ int main() {
 }
 ```
 
-**`unordered_map`: 최악의 경우와 사용자 정의 해시.** 평균 O(1)은 키가 버킷에 고르게 퍼진다는 가정이다. 많은 키가 같은 버킷에 떨어지면 — 구조가 있는 키에 약한 해시를 썼거나, 알려진 해시를 노린 입력이 들어오면 — 모든 연산이 O(n) 쪽으로 나빠진다. 표준 라이브러리는 `std::pair`용 `std::hash`를 제공하지 않으므로, 격자 칸 키에는 해시를 직접 만들어야 한다. 두 좌표를 64비트 값 하나로 합치고 비트를 섞는다(아래는 SplitMix64 생성기의 마무리 함수). 입력이 적대적일 수 있으면 실행마다 무작위 오프셋을 키에 더하는 프로그래머도 있지만, 연구 코드에서는 보통 재현성이 더 중요하다. 큰 삽입 루프 전에는 `reserve`를 불러 반복적인 재해싱을 피하라. 재해싱은 반복자도 무효화한다(원소에 대한 참조는 아니다).
+**`unordered_map`: 최악의 경우와 사용자 정의 해시.** 평균 O(1)은 키가 버킷에 고르게 퍼진다는 가정이다. 많은 키가 같은 버킷에 떨어지면 — 구조가 있는 키에 약한 해시를 썼거나, 알려진 해시를 노린 입력이 들어오면 — 모든 연산이 O(n) 쪽으로 나빠진다. 표준 라이브러리는 `std::pair`용 `std::hash`를 제공하지 않으므로, 격자 칸 키에는 해시를 직접 만들어야 한다. 두 좌표를 64비트 값 하나로 합치고 비트를 섞는다(아래는 SplitMix64 생성기의 마무리 함수). 곱셈·xor·시프트 단계가 입력 비트 하나가 출력 비트의 절반가량을 바꾸게 하므로, 원래 키가 한 비트만 다른 `{0, 0}`과 `{0, 1}` 같은 이웃 칸이 인접한 버킷에 몰리지 않고 서로 무관한 버킷으로 흩어진다. 입력이 적대적일 수 있으면 실행마다 무작위 오프셋을 키에 더하는 프로그래머도 있지만, 연구 코드에서는 보통 재현성이 더 중요하다. 큰 삽입 루프 전에는 `reserve`를 불러 반복적인 재해싱을 피하라. 재해싱은 반복자도 무효화한다(원소에 대한 참조는 아니다).
 
 ```cpp
 #include <cassert>
@@ -1342,7 +1342,7 @@ int main() {
 - **작은 함수, 함수마다 일 하나.** 입력 읽기, 계산, 출력을 서로 다른 함수에 둔다. 그러면 계산 함수를 입력 파일을 흉내 내지 않고도 스트레스 테스트나 단위 테스트에서 부를 수 있다.
 - **불변식에는 단언문(assertion).** `assert`는 *내* 코드가 옳다면 반드시 참이어야 하는 것을 적는다. 확률의 합은 1이다, 인덱스는 범위 안이다, 쿼터니언의 노름은 1이다. 추론을 문서로 남기고, 조용히 틀린 답을 즉시 실패로 바꾼다. 호출자나 파일에서 온 *입력*을 검증하는 데 `assert`를 쓰지는 마라. `python -O`가 단언문을 없앤다. 대신 `ValueError`를 던져라.
 - **수치 코드에는 형상과 단위를 주석으로.** 모든 배열 인자와 결과의 형상을 `(N, 3) points in metres, world frame`처럼 적는다. 수치 코드 버그의 대부분은 형상과 좌표계 버그이고, NumPy 브로드캐스팅은 틀린 형상을 조용히 틀린 답으로 바꾼다.
-- **요청받으면 벡터화하고, 그 비용을 말하라.** Python 루프는 인터프리터 속도로 돈다. NumPy 식 하나는 그 루프를 컴파일된 코드에서 돌린다. 브로드캐스팅은 형상을 오른쪽부터 맞추고 길이 1인 축을 늘리므로, `(N, 1, D)` 배열에서 `(1, M, D)` 배열을 빼면 모든 쌍의 차이가 `(N, M, D)`로 나온다. 그 배열은 N·M·D개의 float 메모리를 쓴다. 전개한 형태 ‖a‖² + ‖b‖² − 2a·b는 `(N, M)`만 필요하지만, 반올림 때문에 아주 작은 실제 거리가 살짝 음수가 될 수 있으니 제곱근 전에 0으로 자른다.
+- **요청받으면 벡터화하고, 그 비용을 말하라.** Python 루프는 인터프리터 속도로 돈다. NumPy 식 하나는 그 루프를 컴파일된 코드에서 돌린다. 브로드캐스팅은 형상을 오른쪽부터 맞추고 길이 1인 축을 늘리므로, `(N, 1, D)` 배열에서 `(1, M, D)` 배열을 빼면 모든 쌍의 차이가 `(N, M, D)`로 나온다. 그 배열은 N·M·D개의 float 메모리를 쓴다. (a − b)·(a − b)를 전개한 형태 ‖a‖² + ‖b‖² − 2a·b는 `(N, M)`만 필요하지만, 반올림 때문에 아주 작은 실제 거리가 살짝 음수가 될 수 있으니 제곱근 전에 0으로 자른다.
 - **결정성.** 모든 난수원에 시드를 주고 생성기를 명시적으로 넘겨서 실패를 재현할 수 있게 하라. 문자열 `set`의 순회 순서는 인터프리터 실행마다 바뀐다(문자열 해싱이 프로세스마다 무작위화된다). 순서가 출력에 영향을 주면 순회 전에 정렬하라.
 
 ```python

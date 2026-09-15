@@ -42,7 +42,9 @@ years. DDPM found the parameterization that makes them work.
 
 - **Forward process** (fixed, no learning): $q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\,x_{t-1}, \beta_t I)$;
   closed form allows jumping to any $t$: $x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$.
-- **Reverse process**: learn $p_\theta(x_{t-1}|x_t)$, Gaussian with predicted mean.
+- **Reverse process**: learn $p_\theta(x_{t-1}|x_t)$, Gaussian with predicted mean. Both are
+  Markov chains — each step depends only on the previous state — and the forward one converges to
+  $\mathcal{N}(0, I)$ the way a chain settles into its stationary distribution ([[02-foundations/probability|3. Probability §7]]).
 
 <svg viewBox="0 0 620 208" style="max-width:100%;height:auto" role="img" aria-label="the fixed forward noising chain and the learned reverse chain">
   <defs><marker id="ddA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -157,7 +159,9 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
 
 - **순방향 과정** (고정, 학습 없음): $q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t}\,x_{t-1}, \beta_t I)$;
   닫힌 형태 덕에 임의의 $t$로 점프 가능: $x_t = \sqrt{\bar\alpha_t}\,x_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$
-- **역방향 과정**: 예측된 평균을 갖는 가우시안 $p_\theta(x_{t-1}|x_t)$를 학습.
+- **역방향 과정**: 예측된 평균을 갖는 가우시안 $p_\theta(x_{t-1}|x_t)$를 학습. 둘 다
+  마르코프 체인이고 — 각 스텝이 직전 상태에만 의존한다 — 순방향 체인은 체인이 정상 분포에
+  자리 잡듯 $\mathcal{N}(0, I)$로 수렴한다([[02-foundations/probability|3. 확률 §7]]).
 
 <svg viewBox="0 0 620 208" style="max-width:100%;height:auto" role="img" aria-label="고정된 순방향 노이즈 사슬과 학습되는 역방향 사슬">
   <defs><marker id="ddA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>

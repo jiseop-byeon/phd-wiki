@@ -108,7 +108,7 @@ Split the inversions into those inside the left half, those inside the right hal
 
 $$\tau = \frac{C - D}{n(n-1)/2} = 1 - \frac{4D}{n(n-1)}$$
 
-The second form follows because, without ties, every pair is one or the other, so $C + D = n(n-1)/2$. $\tau = 1$ means identical order, $\tau = -1$ means reversed. The key observation is that $D$ is an inversion count: list the items in the first ranking's order, write down each item's position in the second ranking, and the discordant pairs are exactly the inversions of that list. So Kendall's tau costs $O(n \log n)$ instead of $O(n^2)$ (Knight, 1966). With ties, use the tau-b correction, which is the default in `scipy.stats.kendalltau`.
+The second form follows because, without ties, every pair is one or the other, so $C + D = n(n-1)/2$. $\tau = 1$ means identical order, $\tau = -1$ means reversed. The key observation is that $D$ is an inversion count: list the items in the first ranking's order, write down each item's position in the second ranking, and the discordant pairs are exactly the inversions of that list. For example, take four items A, B, C, D in the first ranking's order, and suppose the second ranking puts them at positions 3, 1, 4, 2. The discordant pairs are the three inversions of $[3, 1, 4, 2]$ counted above, so $D = 3$, $C = 6 - 3 = 3$, and $\tau = (3 - 3)/6 = 0$: the two rankings agree on as many pairs as they disagree on. So Kendall's tau costs $O(n \log n)$ instead of $O(n^2)$ (Knight, 1966). With ties, use the tau-b correction, which is the default in `scipy.stats.kendalltau`.
 
 ```python
 def sort_and_count(a):
@@ -214,7 +214,7 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 
 $$E[C] = \sum_{i<j} \frac{2}{j-i+1} \le \sum_{i=1}^{n} \sum_{k=2}^{n} \frac{2}{k} \le 2n \ln n$$
 
-The last step holds because $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$. So randomized quicksort makes at most $2n \ln n \approx 1.39\, n \log_2 n$ comparisons in expectation. The exact value is $2(n+1)H_n - 4n$, and the simulation below matches it.
+The last step holds because $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$. So randomized quicksort makes at most $2n \ln n \approx 1.39\, n \log_2 n$ comparisons in expectation. Evaluating the same double sum exactly, instead of bounding it, gives $2(n+1)H_n - 4n$, and the simulation below matches it.
 
 ```python
 import math
@@ -484,7 +484,7 @@ Finding the median, a percentile, or the $k$ smallest items does not require a f
 
 After a three-way partition, the positions `lt..gt` hold copies of the pivot. If `k` falls among them, the pivot is the answer. If `k < lt`, the answer is on the left; if `k > gt`, it is on the right. The position `k` stays the same because the array is not copied.
 
-**Expected O(n).** A partition of $m$ elements costs $O(m)$. With probability at least 1/2 the random pivot lands in the middle half of the current range, and then the side we keep has at most $3m/4$ elements. Group the rounds into *phases*, where phase $j$ covers the time the range size is between $(3/4)^{j+1} n$ and $(3/4)^j n$. Each round ends the phase with probability at least 1/2, so a phase lasts at most 2 rounds in expectation (a coin flip until heads), and each round in phase $j$ costs at most $c(3/4)^j n$. So the expected total is
+**Expected O(n).** A partition of $m$ elements costs $O(m)$. With probability at least 1/2 the random pivot lands in the middle half of the current range, and then the side we keep has at most $3m/4$ elements. Group the rounds into *phases*, where phase $j$ covers the time the range size is between $(3/4)^{j+1} n$ and $(3/4)^j n$. Each round ends the phase with probability at least 1/2, so a phase lasts at most 2 rounds in expectation (flipping a coin until heads: if each try succeeds with probability $p$, the expected number of tries is $1/p$, here $1/(1/2) = 2$), and each round in phase $j$ costs at most $c(3/4)^j n$. So the expected total is
 
 $$E[T(n)] \le \sum_{j \ge 0} 2c \left(\frac{3}{4}\right)^j n = 8cn$$
 
@@ -718,7 +718,7 @@ print(merge_sort(events, key=lambda e: e[1])) # equal times keep input order
 
 $$\tau = \frac{C - D}{n(n-1)/2} = 1 - \frac{4D}{n(n-1)}$$
 
-동점이 없으면 모든 쌍이 둘 중 하나이므로 $C + D = n(n-1)/2$이고, 그래서 두 번째 형태가 나온다. $\tau = 1$이면 순서가 같고, $\tau = -1$이면 정반대다. 핵심 관찰은 $D$가 역순쌍 개수라는 점이다. 항목들을 첫 번째 순위 순서로 늘어놓고 각 항목의 두 번째 순위 위치를 적으면, 불일치 쌍이 정확히 그 리스트의 역순쌍이다. 그러므로 Kendall tau는 $O(n^2)$이 아니라 $O(n \log n)$에 계산된다(Knight, 1966). 동점이 있으면 tau-b 보정을 쓴다. `scipy.stats.kendalltau`의 기본값이 그것이다.
+동점이 없으면 모든 쌍이 둘 중 하나이므로 $C + D = n(n-1)/2$이고, 그래서 두 번째 형태가 나온다. $\tau = 1$이면 순서가 같고, $\tau = -1$이면 정반대다. 핵심 관찰은 $D$가 역순쌍 개수라는 점이다. 항목들을 첫 번째 순위 순서로 늘어놓고 각 항목의 두 번째 순위 위치를 적으면, 불일치 쌍이 정확히 그 리스트의 역순쌍이다. 예를 들어 항목 A, B, C, D를 첫 번째 순위 순서로 두고, 두 번째 순위가 이들을 위치 3, 1, 4, 2에 놓는다고 하자. 불일치 쌍은 위에서 센 $[3, 1, 4, 2]$의 역순쌍 세 개이므로 $D = 3$, $C = 6 - 3 = 3$, $\tau = (3 - 3)/6 = 0$이다. 두 순위가 일치하는 쌍과 어긋나는 쌍의 수가 같다는 뜻이다. 그러므로 Kendall tau는 $O(n^2)$이 아니라 $O(n \log n)$에 계산된다(Knight, 1966). 동점이 있으면 tau-b 보정을 쓴다. `scipy.stats.kendalltau`의 기본값이 그것이다.
 
 ```python
 def sort_and_count(a):
@@ -824,7 +824,7 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 
 $$E[C] = \sum_{i<j} \frac{2}{j-i+1} \le \sum_{i=1}^{n} \sum_{k=2}^{n} \frac{2}{k} \le 2n \ln n$$
 
-마지막 단계는 $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$이기 때문에 성립한다. 따라서 무작위 퀵정렬의 기대 비교 횟수는 많아야 $2n \ln n \approx 1.39\, n \log_2 n$이다. 정확한 값은 $2(n+1)H_n - 4n$이고, 아래 시뮬레이션이 그것과 맞는다.
+마지막 단계는 $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$이기 때문에 성립한다. 따라서 무작위 퀵정렬의 기대 비교 횟수는 많아야 $2n \ln n \approx 1.39\, n \log_2 n$이다. 같은 이중합을 부등식으로 누르지 않고 정확히 계산하면 $2(n+1)H_n - 4n$이고, 아래 시뮬레이션이 그것과 맞는다.
 
 ```python
 import math
@@ -1094,7 +1094,7 @@ print(min_capacity([3, 2, 2, 4, 1, 4], days=3))   # 6
 
 삼분할 파티션 후 위치 `lt..gt`에는 피벗의 복사본이 있다. `k`가 그 안에 있으면 피벗이 답이다. `k < lt`이면 답은 왼쪽에, `k > gt`이면 오른쪽에 있다. 배열을 복사하지 않으므로 위치 `k`는 그대로다.
 
-**기대 O(n).** 원소 $m$개의 파티션은 $O(m)$이다. 확률 1/2 이상으로 무작위 피벗이 현재 범위의 가운데 절반에 떨어지고, 그러면 남기는 쪽은 많아야 $3m/4$개다. 라운드를 *단계*로 묶어, 단계 $j$를 범위 크기가 $(3/4)^{j+1} n$과 $(3/4)^j n$ 사이인 동안으로 정하자. 각 라운드는 확률 1/2 이상으로 단계를 끝내므로 한 단계는 기댓값으로 많아야 2라운드이고(앞면이 나올 때까지 동전 던지기), 단계 $j$의 각 라운드 비용은 많아야 $c(3/4)^j n$이다. 그러므로 기대 총비용은
+**기대 O(n).** 원소 $m$개의 파티션은 $O(m)$이다. 확률 1/2 이상으로 무작위 피벗이 현재 범위의 가운데 절반에 떨어지고, 그러면 남기는 쪽은 많아야 $3m/4$개다. 라운드를 *단계*로 묶어, 단계 $j$를 범위 크기가 $(3/4)^{j+1} n$과 $(3/4)^j n$ 사이인 동안으로 정하자. 각 라운드는 확률 1/2 이상으로 단계를 끝내므로 한 단계는 기댓값으로 많아야 2라운드이고(앞면이 나올 때까지 동전 던지기: 매번 성공 확률이 $p$이면 기대 시도 횟수는 $1/p$, 여기서는 $1/(1/2) = 2$), 단계 $j$의 각 라운드 비용은 많아야 $c(3/4)^j n$이다. 그러므로 기대 총비용은
 
 $$E[T(n)] \le \sum_{j \ge 0} 2c \left(\frac{3}{4}\right)^j n = 8cn$$
 

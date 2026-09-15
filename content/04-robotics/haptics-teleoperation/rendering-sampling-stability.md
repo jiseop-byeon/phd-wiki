@@ -17,7 +17,7 @@ A point-penetration wall is commonly written
 
 $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
-where positive $x$ denotes penetration. The nearest geometric point is not always the correct proxy: near an edge it may jump to another face and eject the user sideways. Contact rendering therefore needs state/memory as well as collision detection.
+where positive $x$ denotes penetration. The nearest geometric point is not always the correct proxy: near an edge it may jump to another face and eject the user sideways. Contact rendering therefore needs state/memory as well as collision detection; the penalty wall's failure modes and the proxy that supplies that memory are [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §2]] and [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §3]].
 
 **Model the loop before tuning it.** For a one-DOF impedance device the standard model is a mass–damper, $m\ddot x+b\dot x=F_a$, where $F_a$ is the actuator force and $b$ is the physical damping that §2 will need. The hand is commonly modelled as a spring–damper attached to the handle, and the virtual environment closes the loop by turning measured position into $F_a$. That block diagram is linear only on paper. The wall is a unilateral switch, the encoder quantizes, the amplifier saturates, and the person changes grip and stiffness during the task. That is why the rest of this page reasons with energy and passivity rather than with the poles of a linear model; the linear tools are in [[04-robotics/control-theory-ce397|5. Control Theory]]. The full nonlinear hybrid model, with non-volitional human dynamics, quantization, delay and the velocity filter, is Colonnese & Okamura (§3).
 
@@ -112,7 +112,7 @@ Impedance display는 관절 위치 측정 → 순기구학 → 충돌 검출 →
 
 $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
-여기서 양의 $x$는 침투를 뜻한다. 기하학적으로 가장 가까운 점이 항상 옳은 proxy는 아니다. 모서리 근처에서는 다른 면으로 뛰면서 사용자를 옆으로 밀어낼 수 있다. 따라서 접촉 렌더링에는 충돌 검출뿐 아니라 상태와 기억이 필요하다.
+여기서 양의 $x$는 침투를 뜻한다. 기하학적으로 가장 가까운 점이 항상 옳은 proxy는 아니다. 모서리 근처에서는 다른 면으로 뛰면서 사용자를 옆으로 밀어낼 수 있다. 따라서 접촉 렌더링에는 충돌 검출뿐 아니라 상태와 기억이 필요하다. 벌점 벽의 실패 방식과 그 기억을 제공하는 proxy는 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §2]]와 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §3]]에 있다.
 
 **튜닝 전에 루프를 모델링하라.** 1자유도 임피던스 장치의 표준 모델은 질량–댐퍼 $m\ddot x+b\dot x=F_a$다. $F_a$는 액추에이터 힘이고 $b$는 §2에서 필요해질 물리적 댐핑이다. 손은 흔히 핸들에 붙은 스프링–댐퍼로 모델링하고, 가상 환경이 측정된 위치를 $F_a$로 바꾸어 루프를 닫는다. 이 블록선도는 종이 위에서만 선형이다. 벽은 한쪽으로만 켜지는 스위치이고, encoder는 양자화하고, 증폭기는 포화하며, 사람은 과제 도중에 파지와 강성을 바꾼다. 그래서 이 페이지의 나머지는 선형 모델의 극점이 아니라 에너지와 수동성으로 추론한다. 선형 도구는 [[04-robotics/control-theory-ce397|5. 제어 이론]]에 있다. 비의지적 인간 동역학, 양자화, 지연, 속도 필터까지 넣은 완전한 비선형 하이브리드 모델은 Colonnese & Okamura다(§3).
 

@@ -33,7 +33,7 @@ For example, consider a hypothetical collision at t = 12.4 s. The pose stream st
 
 ### 2. Failure taxonomy
 
-Use task-specific categories such as sensing, calibration/synchronization, estimation, data association, planning, policy, control, communication/compute, actuator/mechanical, environment/material, human interaction, and procedure. Categories should be mutually interpretable and linked to observable evidence.
+Use task-specific categories such as sensing, calibration/synchronization, estimation, data association ([[04-robotics/state-estimation-slam|3. State Estimation §8.5]]), planning, policy, control, communication/compute, actuator/mechanical, environment/material, human interaction, and procedure. Categories should be mutually interpretable and linked to observable evidence.
 
 A useful taxonomy separates initiating faults from propagation and consequences because these require different fixes. Otherwise the same event appears under several labels and the aggregate chart depends on whoever annotated the video. Define what observation qualifies an event for each category and retain uncertainty when the necessary logs are absent.
 
@@ -174,7 +174,7 @@ flowchart LR
 
 ### 2. 실패 분류 체계
 
-센싱, 보정/동기화, 추정, data association, 계획, 정책, 제어, 통신/컴퓨트, 액추에이터/기계,
+센싱, 보정/동기화, 추정, data association([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5]]), 계획, 정책, 제어, 통신/컴퓨트, 액추에이터/기계,
 환경/재료, 인간 상호작용, 절차 같은 과제 맞춤 범주를 써라. 범주는 상호 해석 가능해야
 하고 관찰 가능한 증거와 연결돼야 한다.
 

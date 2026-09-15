@@ -129,7 +129,7 @@ Planners available in Jazzy, with the maintainers' robot-type guidance:
 | Smac Hybrid-A\* | non-circular or circular Ackermann and legged bases; kinematically feasible SE(2) paths |
 | Smac State Lattice | non-circular differential or omnidirectional, and arbitrary bases |
 
-The dividing question is not "which is best" but "can my robot drive the path this produces". The first three are holonomic: they will happily return a path with a 90° corner, which a differential base can execute only by stopping and pivoting, and an Ackermann base cannot execute at all. The Smac feasible planners respect the starting heading and the turning constraints, so the path is drivable as written.
+The dividing question is not "which is best" but "can my robot drive the path this produces". The first three are holonomic: they will happily return a path with a 90° corner, which a differential base can execute only by stopping and pivoting, and an Ackermann base cannot execute at all. The Smac feasible planners respect the starting heading and the turning constraints, so the path is drivable as written. The grid search underneath NavFn and Smac 2D is A\*, with Dijkstra as its zero-heuristic case ([[02-foundations/algorithms/graph-algorithms|11.6 §6]]); how Hybrid-A\* and state lattices build drivable edges, and what their "optimal" means, is [[04-robotics/planning-decision-making|4. Planning §5.5]].
 
 Controllers:
 
@@ -528,7 +528,7 @@ Jazzy에서 쓸 수 있는 플래너와 관리자들의 로봇 유형 지침.
 | Smac Hybrid-A\* | 비원형·원형 Ackermann과 다리형. 기구학적으로 실현 가능한 SE(2) 경로 |
 | Smac State Lattice | 비원형 차동·전방향, 그리고 임의 형상 |
 
-가르는 질문은 "무엇이 최고인가"가 아니라 "내 로봇이 이 경로를 주행할 수 있는가"다. 앞의 셋은 홀로노믹이다. 90° 모서리가 든 경로를 태연히 돌려주는데, 차동 구동 베이스는 멈춰서 제자리 회전을 해야만 실행할 수 있고 Ackermann 베이스는 아예 실행할 수 없다. Smac 계열의 실현 가능 플래너는 출발 헤딩과 회전 제약을 존중하므로 경로가 적힌 그대로 주행 가능하다.
+가르는 질문은 "무엇이 최고인가"가 아니라 "내 로봇이 이 경로를 주행할 수 있는가"다. 앞의 셋은 홀로노믹이다. 90° 모서리가 든 경로를 태연히 돌려주는데, 차동 구동 베이스는 멈춰서 제자리 회전을 해야만 실행할 수 있고 Ackermann 베이스는 아예 실행할 수 없다. Smac 계열의 실현 가능 플래너는 출발 헤딩과 회전 제약을 존중하므로 경로가 적힌 그대로 주행 가능하다. NavFn과 Smac 2D 밑의 격자 탐색은 A\*이고 Dijkstra는 휴리스틱이 0인 경우다([[02-foundations/algorithms/graph-algorithms|11.6 §6]]). Hybrid-A\*와 상태 격자가 주행 가능한 간선을 만드는 방식과 그 "최적"의 뜻은 [[04-robotics/planning-decision-making|4. 계획 §5.5]]에 있다.
 
 제어기.
 

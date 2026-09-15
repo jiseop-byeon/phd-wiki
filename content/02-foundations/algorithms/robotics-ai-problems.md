@@ -8,8 +8,8 @@ mastery-when: "Raise to Mastery only if one of these components (a planner, an e
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms & Search]] (A*) · [[02-foundations/algorithms/data-structures|11.2 Core Data Structures]] (heaps, KD-trees) · [[02-foundations/probability|3. Probability & Random Processes]] (Gaussians, Bayes' rule) · [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] (rotations, poses) · basic NumPy broadcasting
-> [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘과 탐색]](A*) · [[02-foundations/algorithms/data-structures|11.2 핵심 자료구조]](힙, KD-tree) · [[02-foundations/probability|3. 확률과 랜덤 프로세스]](가우시안, 베이즈 규칙) · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]](회전, 자세) · NumPy 브로드캐스팅 기초
+> [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms & Search]] (A*) · [[02-foundations/algorithms/data-structures|11.2 Core Data Structures]] (heaps, KD-trees) · [[02-foundations/probability|3. Probability & Random Processes]] (Gaussians, Bayes' rule) · [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] (rotations, poses) · [[04-robotics/state-estimation-slam|3. State Estimation]] (Kalman and particle filters) · [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] (FK, Jacobian) · [[04-robotics/control-theory-ce397|5. Control Theory]] (PID) · [[02-foundations/calculus-backprop|2. Calculus & Backprop]] (gradients) · basic NumPy broadcasting
+> [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘과 탐색]](A*) · [[02-foundations/algorithms/data-structures|11.2 핵심 자료구조]](힙, KD-tree) · [[02-foundations/probability|3. 확률과 랜덤 프로세스]](가우시안, 베이즈 규칙) · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]](회전, 자세) · [[04-robotics/state-estimation-slam|3. 상태 추정]](칼만·입자 필터) · [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학]](순기구학, 야코비안) · [[04-robotics/control-theory-ce397|5. 제어 이론]](PID) · [[02-foundations/calculus-backprop|2. 미적분과 역전파]](그래디언트) · NumPy 브로드캐스팅 기초
 
 ## English
 
@@ -213,7 +213,7 @@ print(ransac_iterations(0.99, 0.6, 2), -n[0] / n[1], c / n[1], mask[:60].mean())
 
 **What they are really testing.** Getting the shapes right, writing $Q$ from a physical noise model instead of `np.eye(2) * 0.01`, not calling `np.linalg.inv`, and knowing why the textbook covariance update drifts and what the Joseph form fixes.
 
-**Key idea.** The notation follows [[04-robotics/state-estimation-slam|3. State Estimation §5]] and [[02-foundations/probability|3. Probability §5]]: state $x = (\text{position}, \text{velocity})$, dynamics $A$, process noise covariance $Q$, measurement matrix $H$ (written $C$ on the probability page), measurement noise $R$, and estimate covariance $P$. Predict pushes the Gaussian through the dynamics: $x^- = Ax$ and $P^- = AP A^\top + Q$. Update conditions on the reading $z$: innovation $y = z - Hx^-$, its covariance $S = HP^-H^\top + R$, gain $K = P^-H^\top S^{-1}$, then $x = x^- + Ky$. For the covariance, use the Joseph form, which is symmetric and positive semidefinite by construction because it is a sum of two congruences:
+**Key idea.** The notation follows [[04-robotics/state-estimation-slam|3. State Estimation §5]] and [[02-foundations/probability|3. Probability §5]]: state $x = (\text{position}, \text{velocity})$, dynamics $A$, process noise covariance $Q$, measurement matrix $H$ (written $C$ on the probability page), measurement noise $R$, and estimate covariance $P$. Predict pushes the Gaussian through the dynamics: $x^- = Ax$ and $P^- = AP A^\top + Q$. Update conditions on the reading $z$: innovation $y = z - Hx^-$, its covariance $S = HP^-H^\top + R$, gain $K = P^-H^\top S^{-1}$, then $x = x^- + Ky$. For the covariance, use the Joseph form, which is symmetric and positive semidefinite by construction because it is a sum of two congruences, terms of the form $MXM^\top$ with $X$ symmetric positive semidefinite, each of which is again symmetric positive semidefinite since $v^\top MXM^\top v = (M^\top v)^\top X (M^\top v) \ge 0$:
 
 $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
@@ -326,7 +326,9 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 **What they are really testing.** Using `atan2` rather than `arccos` or `arctan` alone, knowing there are zero, one or two solutions, clipping round-off at the workspace boundary, and knowing why the plain Jacobian inverse fails when the arm is straight.
 
-**Key idea.** Forward kinematics is the sum of two rotated links, as in Lynch and Park's two-link example. For the inverse, the law of cosines gives $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$. If it lies outside $[-1, 1]$, the target is outside the annulus $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ and there is no solution. Otherwise $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$ picks the branch, and $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$. Branch names vary between books; the sign of $\theta_2$ is the unambiguous label, and here $\theta_2 \ge 0$ is called elbow-down (righty), as in Modern Robotics. The damped least-squares step is $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$.
+**Key idea.** Forward kinematics is the sum of two rotated links, as in Lynch and Park's two-link example. For the inverse, the law of cosines gives $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$. If it lies outside $[-1, 1]$, the target is outside the annulus $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ and there is no solution. Otherwise $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$ picks the branch, and $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$. Branch names vary between books; the sign of $\theta_2$ is the unambiguous label, and here $\theta_2 \ge 0$ is called elbow-down (righty), as in Modern Robotics.
+
+The numerical step is a separate idea. With tip error $e = (x, y)_{\text{target}} - \text{FK}(\theta)$, the damped least-squares step is $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$. When the arm is straight or folded, $J$ loses rank and $J^{-1}$ does not exist; for $\lambda > 0$ the matrix $JJ^\top + \lambda^2 I$ is always invertible, so the step stays finite (see the follow-ups).
 
 ```python
 import numpy as np
@@ -440,7 +442,7 @@ print(round(max(ys), 4), round(ys[-1], 4))
 
 **What they are really testing.** Frame discipline ($T_{AC} = T_{AB}T_{BC}$), the closed-form inverse, the quaternion convention you are using, and whether you know the common one-line conversion fails near 180°.
 
-**Key idea.** The inverse of a pose is $(R, p)^{-1} = (R^\top, -R^\top p)$, from [[02-foundations/se3-geometry|8. SE(3) §3]]. For quaternions this page uses that page's scalar-first order $q = (w, x, y, z)$, the same as Modern Robotics' $(q_0, q_1, q_2, q_3)$. The diagonal of $R$ determines every squared component: $4w^2 = 1 + \operatorname{tr}R$ and $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$, and likewise for $y$ and $z$. The familiar formula computes $w$ this way and then divides the off-diagonal differences by $4w$. Near a 180° rotation $w \to 0$ and that division is unstable. The fix is to solve for the *largest* component first. Because the four squares sum to 1, the largest has $\lvert q_i\rvert \ge 1/2$, so every division is by at least 2. The other three components then come from sums or differences of symmetric off-diagonal pairs.
+**Key idea.** The inverse of a pose is $(R, p)^{-1} = (R^\top, -R^\top p)$, from [[02-foundations/se3-geometry|8. SE(3) §3]]. For quaternions this page uses that page's scalar-first order $q = (w, x, y, z)$, the same as Modern Robotics' $(q_0, q_1, q_2, q_3)$. The diagonal of $R$ determines every squared component. For a unit quaternion $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$ and $R_{33} = 1 - 2(x^2 + y^2)$, so $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$. Hence $4w^2 = 1 + \operatorname{tr}R$ and $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$, and likewise for $y$ and $z$. The familiar formula computes $w$ this way and then divides the off-diagonal differences by $4w$. Near a 180° rotation $w \to 0$ and that division is unstable. The fix is to solve for the *largest* component first. Because the four squares sum to 1, the largest has $\lvert q_i\rvert \ge 1/2$, so every division is by at least 2. The other three components then come from sums or differences of symmetric off-diagonal pairs.
 
 ```python
 import numpy as np
@@ -602,7 +604,7 @@ print(out.shape, W.shape, W[0].round(2))
 **How it is tested.** Every weight above the diagonal is exactly zero and every row sums to one. Changing the inputs at positions 3 and later leaves the outputs at positions 0–2 unchanged. The output matches an explicit loop over positions.
 
 **Follow-ups they ask.**
-- *Why divide by $\sqrt{d_k}$?* If query and key components are independent with unit variance, their dot product has variance $d_k$. Unscaled scores grow with dimension and push the softmax into saturation, where gradients vanish.
+- *Why divide by $\sqrt{d_k}$?* If query and key components are independent with unit variance, their dot product has variance $d_k$: with zero-mean components each product $q_i k_i$ has variance $1 \cdot 1 = 1$, and the variances of $d_k$ independent terms add. Unscaled scores grow with dimension and push the softmax into saturation, where gradients vanish.
 - *Why $-\infty$ and not a large negative number?* $-\infty$ gives exactly zero. A finite $-10^9$ also works in float32 but overflows in float16, so frameworks use the dtype's minimum. If a whole row is masked, as with a fully padded sequence, $-\infty$ gives NaN; handle such rows explicitly.
 - *Multi-head?* Project to $h$ heads, reshape to $(B, h, T, d_k)$, run the same function over the head axis, then concatenate and apply an output projection.
 - *Generating one token at a time?* Cache the keys and values of past positions (KV cache). Each new token then needs one query against $t$ cached keys, $O(t)$ rather than recomputing the whole $O(t^2)$ table. The causal mask is implicit.
@@ -867,7 +869,7 @@ print(ransac_iterations(0.99, 0.6, 2), -n[0] / n[1], c / n[1], mask[:60].mean())
 
 **실제로 보는 것.** 모양을 맞게 쓰는지, $Q$를 `np.eye(2) * 0.01` 대신 물리적 잡음 모델에서 쓰는지, `np.linalg.inv`를 부르지 않는지, 교과서의 공분산 갱신이 왜 표류하고 Joseph 형태가 무엇을 고치는지 아는지다.
 
-**핵심 아이디어.** 표기는 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]와 [[02-foundations/probability|3. 확률 §5]]를 따른다. 상태 $x = (\text{위치}, \text{속도})$, 동역학 $A$, 과정 잡음 공분산 $Q$, 측정 행렬 $H$(확률 페이지에서는 $C$), 측정 잡음 $R$, 추정 공분산 $P$다. 예측은 가우시안을 동역학에 통과시킨다: $x^- = Ax$, $P^- = AP A^\top + Q$. 갱신은 측정 $z$로 조건화한다: 혁신 $y = z - Hx^-$, 그 공분산 $S = HP^-H^\top + R$, 이득 $K = P^-H^\top S^{-1}$, 그리고 $x = x^- + Ky$. 공분산은 Joseph 형태로 갱신한다. 두 합동 변환의 합이기 때문에 구조상 대칭이고 양의 준정부호다.
+**핵심 아이디어.** 표기는 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]와 [[02-foundations/probability|3. 확률 §5]]를 따른다. 상태 $x = (\text{위치}, \text{속도})$, 동역학 $A$, 과정 잡음 공분산 $Q$, 측정 행렬 $H$(확률 페이지에서는 $C$), 측정 잡음 $R$, 추정 공분산 $P$다. 예측은 가우시안을 동역학에 통과시킨다: $x^- = Ax$, $P^- = AP A^\top + Q$. 갱신은 측정 $z$로 조건화한다: 혁신 $y = z - Hx^-$, 그 공분산 $S = HP^-H^\top + R$, 이득 $K = P^-H^\top S^{-1}$, 그리고 $x = x^- + Ky$. 공분산은 Joseph 형태로 갱신한다. 두 합동 변환의 합이기 때문에 구조상 대칭이고 양의 준정부호다. 합동 변환이란 $X$가 대칭 양의 준정부호일 때 $MXM^\top$ 꼴의 항이며, $v^\top MXM^\top v = (M^\top v)^\top X (M^\top v) \ge 0$이므로 역시 대칭 양의 준정부호다.
 
 $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
@@ -980,7 +982,9 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 **실제로 보는 것.** `arccos`나 `arctan` 하나가 아니라 `atan2`를 쓰는지, 해가 0개, 1개, 2개일 수 있음을 아는지, 작업공간 경계에서 반올림 오차를 잘라내는지, 팔이 곧게 펴졌을 때 야코비안 역행렬이 왜 실패하는지 아는지다.
 
-**핵심 아이디어.** 순기구학은 Lynch와 Park의 2링크 예제처럼 회전한 두 링크의 합이다. 역기구학에서는 코사인 법칙이 $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$를 준다. 이 값이 $[-1, 1]$ 밖이면 목표는 고리 영역 $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ 밖에 있고 해가 없다. 그렇지 않으면 $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$가 가지를 고르고, $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$다. 가지 이름은 책마다 다르다. 모호하지 않은 이름표는 $\theta_2$의 부호이고, 여기서는 Modern Robotics를 따라 $\theta_2 \ge 0$을 elbow-down(righty)이라 부른다. 감쇠 최소제곱 스텝은 $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$다.
+**핵심 아이디어.** 순기구학은 Lynch와 Park의 2링크 예제처럼 회전한 두 링크의 합이다. 역기구학에서는 코사인 법칙이 $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$를 준다. 이 값이 $[-1, 1]$ 밖이면 목표는 고리 영역 $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ 밖에 있고 해가 없다. 그렇지 않으면 $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$가 가지를 고르고, $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$다. 가지 이름은 책마다 다르다. 모호하지 않은 이름표는 $\theta_2$의 부호이고, 여기서는 Modern Robotics를 따라 $\theta_2 \ge 0$을 elbow-down(righty)이라 부른다.
+
+수치 스텝은 별개의 아이디어다. 끝점 오차를 $e = (x, y)_{\text{target}} - \text{FK}(\theta)$라 하면 감쇠 최소제곱 스텝은 $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$다. 팔이 곧게 펴지거나 접히면 $J$의 계수가 떨어져 $J^{-1}$이 존재하지 않는다. $\lambda > 0$이면 $JJ^\top + \lambda^2 I$는 항상 역행렬이 있으므로 스텝이 유한하게 유지된다(후속 질문 참고).
 
 ```python
 import numpy as np
@@ -1094,7 +1098,7 @@ print(round(max(ys), 4), round(ys[-1], 4))
 
 **실제로 보는 것.** 좌표계 규율($T_{AC} = T_{AB}T_{BC}$), 닫힌 형태의 역, 자기가 쓰는 쿼터니언 규약, 흔한 한 줄짜리 변환이 180° 근처에서 실패한다는 것을 아는지다.
 
-**핵심 아이디어.** 자세의 역은 [[02-foundations/se3-geometry|8. SE(3) §3]]에 있듯 $(R, p)^{-1} = (R^\top, -R^\top p)$다. 쿼터니언은 그 페이지의 스칼라 우선 순서 $q = (w, x, y, z)$를 쓴다. Modern Robotics의 $(q_0, q_1, q_2, q_3)$와 같다. $R$의 대각 성분이 모든 성분의 제곱을 정한다: $4w^2 = 1 + \operatorname{tr}R$, $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$이고, $y$와 $z$도 마찬가지다. 익숙한 공식은 $w$를 이렇게 구한 뒤 비대각 차이를 $4w$로 나눈다. 180° 회전 근처에서는 $w \to 0$이라 그 나눗셈이 불안정하다. 해결책은 *가장 큰* 성분부터 구하는 것이다. 네 제곱의 합이 1이므로 가장 큰 성분은 $\lvert q_i\rvert \ge 1/2$이고, 모든 나눗셈의 분모가 적어도 2다. 나머지 세 성분은 대칭인 비대각 쌍의 합이나 차에서 나온다.
+**핵심 아이디어.** 자세의 역은 [[02-foundations/se3-geometry|8. SE(3) §3]]에 있듯 $(R, p)^{-1} = (R^\top, -R^\top p)$다. 쿼터니언은 그 페이지의 스칼라 우선 순서 $q = (w, x, y, z)$를 쓴다. Modern Robotics의 $(q_0, q_1, q_2, q_3)$와 같다. $R$의 대각 성분이 모든 성분의 제곱을 정한다. 단위 쿼터니언에서 $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$, $R_{33} = 1 - 2(x^2 + y^2)$이므로 $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$이다. 따라서 $4w^2 = 1 + \operatorname{tr}R$, $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$이고, $y$와 $z$도 마찬가지다. 익숙한 공식은 $w$를 이렇게 구한 뒤 비대각 차이를 $4w$로 나눈다. 180° 회전 근처에서는 $w \to 0$이라 그 나눗셈이 불안정하다. 해결책은 *가장 큰* 성분부터 구하는 것이다. 네 제곱의 합이 1이므로 가장 큰 성분은 $\lvert q_i\rvert \ge 1/2$이고, 모든 나눗셈의 분모가 적어도 2다. 나머지 세 성분은 대칭인 비대각 쌍의 합이나 차에서 나온다.
 
 ```python
 import numpy as np
@@ -1256,7 +1260,7 @@ print(out.shape, W.shape, W[0].round(2))
 **테스트 방법.** 대각선 위의 모든 가중치가 정확히 0이고 모든 행의 합이 1이다. 위치 3 이후의 입력을 바꿔도 위치 0–2의 출력은 변하지 않는다. 출력은 위치마다 도는 명시적 루프의 결과와 같다.
 
 **꼬리 질문.**
-- *왜 $\sqrt{d_k}$로 나누나?* 질의와 키의 성분이 독립이고 분산이 1이라면 내적의 분산은 $d_k$다. 스케일하지 않은 점수는 차원과 함께 커져 softmax를 포화 영역으로 밀고, 거기서는 그래디언트가 사라진다.
+- *왜 $\sqrt{d_k}$로 나누나?* 질의와 키의 성분이 독립이고 분산이 1이라면 내적의 분산은 $d_k$다. 성분의 평균이 0이면 곱 $q_i k_i$ 하나의 분산이 $1 \cdot 1 = 1$이고, 독립인 $d_k$개 항의 분산은 더해지기 때문이다. 스케일하지 않은 점수는 차원과 함께 커져 softmax를 포화 영역으로 밀고, 거기서는 그래디언트가 사라진다.
 - *왜 큰 음수가 아니라 $-\infty$인가?* $-\infty$는 정확히 0을 준다. 유한한 $-10^9$도 float32에서는 되지만 float16에서는 넘치므로, 프레임워크는 그 dtype의 최솟값을 쓴다. 한 행 전체가 가려지면(완전히 패딩된 시퀀스처럼) $-\infty$는 NaN을 주니, 그런 행은 따로 처리하라.
 - *멀티헤드는?* $h$개 헤드로 투영하고 $(B, h, T, d_k)$로 모양을 바꾼 뒤 헤드 축에 같은 함수를 돌리고, 이어 붙여 출력 투영을 적용한다.
 - *토큰을 하나씩 생성한다면?* 지난 위치들의 키와 값을 캐시한다(KV 캐시). 새 토큰마다 캐시된 키 $t$개에 대한 질의 하나만 필요하므로, 전체 $O(t^2)$ 표를 다시 계산하는 대신 $O(t)$다. 인과 마스크는 암묵적이다.

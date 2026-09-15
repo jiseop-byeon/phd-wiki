@@ -70,7 +70,7 @@ Separate training/tuning/test data and document the unit of split. Random frames
 
 Report trial count, independent runs, failures, exclusions, aggregation, and an uncertainty measure appropriate to the design. A seed captures only software randomness; physical trials vary through calibration, wear, temperature, material, timing, and people.
 
-Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a 95% CI half-width of **at most** $\pm 1/\sqrt{n}$ (10 trials → ±32%p; 100 → ±10%p). **That bound is the widest the interval ever gets, and it is reached only at $p = 0.5$** — near 0 or 1 it is far too pessimistic (at $p = 0.9$, $n = 10$, the true half-width is ±19%p), and it produces impossible bounds above 100%, so at high success rates use a Wilson or exact interval instead. Second: if zero failures are observed in $n$ trials, the rule of three puts the 95% **upper confidence bound** on the true failure rate at $\approx 3/n$ — an approximation that only holds for $n \gtrsim 30$; at $n = 10$ the exact bound is 26%, not 30%, and at $n = 5$ it is 45%, not 60%.
+Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Which test fits is decided by what number each trial yields and whether both methods ran on the same trials ([[02-foundations/probability|3. Probability §6]]). Two literacy-level tools for reasoning about n: a success rate from $n$ trials has a 95% CI half-width of **at most** $\pm 1/\sqrt{n}$ (10 trials → ±32%p; 100 → ±10%p). **That bound is the widest the interval ever gets, and it is reached only at $p = 0.5$** — near 0 or 1 it is far too pessimistic (at $p = 0.9$, $n = 10$, the true half-width is ±19%p), and it produces impossible bounds above 100%, so at high success rates use a Wilson or exact interval instead. Second: if zero failures are observed in $n$ trials, the rule of three puts the 95% **upper confidence bound** on the true failure rate at $\approx 3/n$ — an approximation that only holds for $n \gtrsim 30$; at $n = 10$ the exact bound is 26%, not 30%, and at $n = 5$ it is 45%, not 60%.
 
 <svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="how the uncertainty of a success rate shrinks with the number of trials">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="55" y1="24" x2="55" y2="140"/><line x1="55" y1="140" x2="415" y2="140"/><line x1="55.0" y1="140" x2="55.0" y2="146"/><line x1="100.8" y1="140" x2="100.8" y2="146"/><line x1="173.4" y1="140" x2="173.4" y2="146"/><line x1="252.9" y1="140" x2="252.9" y2="146"/><line x1="325.5" y1="140" x2="325.5" y2="146"/><line x1="405.0" y1="140" x2="405.0" y2="146"/></g>
@@ -141,7 +141,7 @@ Randomize or counterbalance method order within matched conditions. Record surfa
 
 Choose the sample size from the required precision and the claim, using §4's uncertainty tools as planning guides. Do not select a convenient count and declare reliability afterward; a rare-failure claim needs a different exposure argument from an average-performance comparison. Use appropriate intervals and preserve clustering in the analysis.
 
-Report success with uncertainty, recovery behavior, estimation timing, and failure categories for each condition. Include the cost of unnecessary corrections and the effect of compute latency. A finding that updates arrive after the decisive contact would locate a useful sensing boundary even without a success-rate gain. The final claim should distinguish this mechanistic evidence from the broader question of transfer across construction tasks.
+Report success with uncertainty, recovery behavior, estimation timing, and failure categories for each condition. Include the cost of unnecessary corrections and the effect of compute latency. A finding that updates arrive after the decisive contact would locate a useful sensing boundary even without a success-rate gain. The final claim should distinguish this mechanistic evidence from the broader question of transfer across construction tasks; writing that split into separate results and discussion sentences is [[06-research-practice/scientific-writing-peer-review|Scientific Writing §5]].
 
 ### After reading
 
@@ -239,6 +239,7 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 
 지표와 조건이 많아 체리피킹이 쉬울 때는 주요 결과(primary outcome)를 미리 선언하라.
 통계적 유의성과 실질적 중요성은 다르다([[02-foundations/ml-practice|ML 실무 §5]]).
+어떤 검정이 맞는지는 시행마다 어떤 수가 나오는지와 두 방법이 같은 시행에서 돌았는지로 정해진다([[02-foundations/probability|3. 확률 §6]]).
 시행 수를 가늠하는 문해력 수준의 도구 둘: $n$회 시행의 성공률 신뢰구간은 대략
 **최대** $\pm 1/\sqrt{n}$이다(10회 → ±32%p; 100회 → ±10%p). **이 값은 구간이 가장 넓어질 때의 크기이고 $p = 0.5$에서만 도달한다** — 0이나 1 근처에서는 지나치게 비관적이고($p = 0.9$, $n = 10$이면 실제 반폭은 ±19%p), 100%를 넘는 불가능한 상한을 만든다. 그러니 성공률이 높을 때는 Wilson이나 정확 구간을 써라. 둘째, $n$회에서 실패 0이면 3의
 법칙(rule of three)은 참 실패율의 95% **상한**을 $\approx 3/n$으로 준다 — $n \gtrsim 30$에서만 성립하는 근사이고, $n = 10$이면 정확한 상한이 30%가 아니라 26%, $n = 5$면 60%가 아니라 45%다.
@@ -319,7 +320,7 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 
 표본 수는 필요한 정밀도와 주장에 맞춰 정하고 §4의 도구를 계획 지침으로 쓴다. 편한 시행 수를 고른 뒤 신뢰성을 선언하지 않는다. 희귀 실패의 노출 논증은 평균 성능 비교와 다르다. 적절한 구간을 쓰고 분석에서 군집 구조를 보존한다.
 
-조건별 성공과 불확실성, 회복 행동, 추정 시점, 실패 분류를 보고한다. 불필요한 보정의 비용과 연산 지연도 포함한다. 갱신이 결정적 접촉 뒤에 도착한다는 결과는 성공률 개선이 없어도 유용한 센싱 경계다. 최종 주장은 이 기전 증거와 건설 과제 전반의 전이 질문을 구분해야 한다.
+조건별 성공과 불확실성, 회복 행동, 추정 시점, 실패 분류를 보고한다. 불필요한 보정의 비용과 연산 지연도 포함한다. 갱신이 결정적 접촉 뒤에 도착한다는 결과는 성공률 개선이 없어도 유용한 센싱 경계다. 최종 주장은 이 기전 증거와 건설 과제 전반의 전이 질문을 구분해야 한다. 그 구분을 Results 문장과 Discussion 문장으로 나눠 쓰는 법은 [[06-research-practice/scientific-writing-peer-review|과학 글쓰기 §5]]에 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
