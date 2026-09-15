@@ -23,13 +23,26 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   products), gravity. $M(\theta)$ is symmetric positive-definite
   ([[02-foundations/linear-algebra|PSD]]) — kinetic energy $\tfrac12\dot\theta^\top M \dot\theta$
   is a genuine square.
-- **Where the three terms come from, on one link**: a pendulum (mass $m$, length $l$,
-  angle $\theta$ from vertical) has $\tau = \underbrace{ml^2}_{M}\,\ddot\theta +
-  \underbrace{mgl\sin\theta}_{g(\theta)}$ — here $M=ml^2$ is the (constant) inertia and
-  $g(\theta)=mgl\sin\theta$ is the configuration-dependent gravity torque; the Coriolis
-  term $c$ is *zero* because $M = ml^2$ does not depend on $\theta$ (a one-joint system with configuration-dependent inertia would still have $c = \tfrac12 M'(\theta)\dot\theta^2$). Add a
-  second link and $M$ becomes $\theta$-dependent and $c$ turns on — that is the whole jump
-  from "one equation" to "why multi-link dynamics are hard.
+- **Where the three terms come from, on one link**: a pendulum has only two of them.
+  With mass $m$, length $l$ and angle $\theta$ from vertical,
+  $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$.
+  - $M=ml^2$ is the inertia, and it is constant.
+  - $g(\theta)=mgl\sin\theta$ is the gravity torque, and it depends on configuration.
+  - The Coriolis term $c$ is *zero* because $M$ does not depend on $\theta$. (A one-joint
+    system with configuration-dependent inertia would still have $c = \tfrac12 M'(\theta)\dot\theta^2$.)
+
+  Add a second link and $M$ becomes $\theta$-dependent and $c$ turns on — that is the whole
+  jump from "one equation" to "why multi-link dynamics are hard."
+
+> [!example] Worked example · 계산 예제
+> **Two links: $M$ changes with the elbow.** Take the planar 2R arm with point masses at the link ends, $m_1=m_2=1$ kg, $L_1=L_2=1$ m (full derivation in [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] §3–§5). Then
+> $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
+> - $\theta_2 = 0°$ (straight out): $M = \begin{pmatrix}5&2\\2&1\end{pmatrix}$.
+> - $\theta_2 = 90°$ (elbow square): $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$.
+>
+> **What it means physically.** $M_{11}$ drops from 5 to 3 kg·m² because the forearm mass moves closer to the shoulder axis: the same shoulder acceleration needs 40% less torque. The off-diagonal term (2, then 1) is coupling — accelerating one joint pushes on the other. The pendulum had neither effect.
+>
+> **Gravity at one pose.** With $g = 9.81$ m/s² in the vertical plane, at $\theta = (0°, 90°)$ the forearm points straight up. Both masses sit 1 m horizontally from the shoulder, so $g_1 = 2 \times 9.81 \times 1 = 19.62$ N·m. The forearm mass is directly above the elbow, so $g_2 = 0$.
 - Two derivations, one answer: **Lagrangian** (energy-based, clean for analysis) vs
   **recursive Newton-Euler** (force-balance, $O(n)$, what simulators and controllers
   actually compute).
@@ -54,12 +67,26 @@ to buy solvability.
   질량 행렬(자세 의존 관성), 코리올리/원심 항(속도 곱), 중력. $M(\theta)$는 대칭
   양정부호([[02-foundations/linear-algebra|PSD]]) — 운동 에너지
   $\tfrac12\dot\theta^\top M \dot\theta$가 진짜 제곱량이라는 뜻.
-- **세 항이 어디서 오는지, 1링크로**: 진자(질량 $m$, 길이 $l$, 연직에서의 각 $\theta$)는
-  $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$ —
-  여기서 $M=ml^2$가 (상수) 관성, $g(\theta)=mgl\sin\theta$가 자세 의존 중력 토크다;
-  코리올리 항 $c$는 *0*인데 $M = ml^2$가 $\theta$에 의존하지 않기 때문이다(관성이 자세에 의존하는 1관절 계라면 $c = \tfrac12 M'(\theta)\dot\theta^2$가 남는다). 링크를 하나
-  더 붙이면 $M$이 $\theta$ 의존이 되고 $c$가 켜진다 — 그것이 "한 방정식"에서 "다링크
-  동역학이 왜 어려운가"로 가는 도약 전부다.
+- **세 항이 어디서 오는지, 1링크로**: 진자에는 세 항 중 두 개만 있다.
+  질량 $m$, 길이 $l$, 연직에서의 각 $\theta$이면
+  $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$이다.
+  - $M=ml^2$는 관성이고, 상수다.
+  - $g(\theta)=mgl\sin\theta$는 중력 토크이고, 자세에 의존한다.
+  - 코리올리 항 $c$는 *0*이다. $M$이 $\theta$에 의존하지 않기 때문이다. (관성이 자세에
+    의존하는 1관절 계라면 $c = \tfrac12 M'(\theta)\dot\theta^2$가 남는다.)
+
+  링크를 하나 더 붙이면 $M$이 $\theta$ 의존이 되고 $c$가 켜진다 — 그것이 "한 방정식"에서
+  "다링크 동역학이 왜 어려운가"로 가는 도약 전부다.
+
+> [!example] 계산 예제 · Worked example
+> **2링크: 팔꿈치에 따라 $M$이 바뀐다.** 링크 끝에 점질량이 있는 평면 2R 팔, $m_1=m_2=1$ kg, $L_1=L_2=1$ m를 잡자(전체 유도는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학]] §3–§5). 그러면
+> $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
+> - $\theta_2 = 0°$ (쭉 뻗음): $M = \begin{pmatrix}5&2\\2&1\end{pmatrix}$.
+> - $\theta_2 = 90°$ (팔꿈치 직각): $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$.
+>
+> **물리적 의미.** 전완 질량이 어깨 축에 가까워지므로 $M_{11}$이 5에서 3 kg·m²로 줄어든다: 같은 어깨 가속도에 토크가 40% 덜 든다. 비대각 항(2, 그다음 1)은 결합이다 — 한 관절을 가속하면 다른 관절이 밀린다. 진자에는 둘 다 없었다.
+>
+> **한 자세의 중력.** 연직 평면에서 $g = 9.81$ m/s²로 두고 $\theta = (0°, 90°)$이면 전완이 똑바로 위를 향한다. 두 질량 모두 어깨에서 수평으로 1 m 떨어져 있으므로 $g_1 = 2 \times 9.81 \times 1 = 19.62$ N·m. 전완 질량은 팔꿈치 바로 위에 있으므로 $g_2 = 0$.
 - 유도는 둘, 답은 하나: **라그랑주**(에너지 기반, 해석에 깔끔) vs **재귀
   뉴턴-오일러**(힘 평형, $O(n)$, 시뮬레이터·제어기가 실제로 계산하는 것).
 - **순동역학** ($\tau \to \ddot\theta$): 시뮬레이터가 매 스텝 적분하는 것 — 모든 물리

@@ -26,6 +26,8 @@ where each concept appears in the papers of this wiki.
 
 ### 1. Vectors, matrices, and what multiplication means
 
+The first three bullets set up the vocabulary — what a matrix is and two ways to read $Wx$ — and the worked shape computation for an attention head follows right after.
+
 - A matrix $W \in \mathbb{R}^{m\times n}$ is a **linear map** $\mathbb{R}^n \to \mathbb{R}^m$:
   it satisfies $W(ax + by) = aWx + bWy$. Every linear layer, attention projection
   ($W_Q, W_K, W_V$), and embedding lookup is one.
@@ -460,6 +462,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 > 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §4.5는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
+
+처음 세 항목은 어휘를 세운다 — 행렬이 무엇인지, $Wx$를 읽는 두 방법 — 그리고 바로 뒤에 어텐션 헤드의 모양을 따지는 계산 예시가 이어진다.
 
 - 행렬 $W \in \mathbb{R}^{m\times n}$은 **선형 사상** $\mathbb{R}^n \to \mathbb{R}^m$이다:
   $W(ax + by) = aWx + bWy$를 만족한다. 모든 선형층, 어텐션 투영($W_Q, W_K, W_V$), 임베딩

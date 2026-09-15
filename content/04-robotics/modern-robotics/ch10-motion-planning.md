@@ -32,6 +32,14 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - Nonholonomic/kinodynamic planning: keep sampling configurations or states, but replace the straight-line local planner with one that respects the constraints — integrate a discrete set of controls, or use Reeds–Shepp curves for cars (MR §10.5.1.3) — when
   velocity constraints bind (cars, [[04-robotics/convex-mpc-legged|legged machines]]).
 
+> [!example] Worked example · 계산 예제
+> **How big is the grid?** Discretize each revolute joint's full $360°$ range at $10°$ resolution: $36$ values per joint. A grid planner must, in the worst case, collision-check every cell.
+> - **2-DOF arm:** $36^2 = 1{,}296$ cells. Trivial.
+> - **6-DOF arm:** $36^6 \approx 2.18 \times 10^9$ cells — $36^4 \approx 1.7$ million times more for four extra joints.
+> - At $1$ µs per collision check that is about $36$ minutes; at a more realistic $1$ ms, about $25$ days. And $10°$ is coarse: halve the step and the 6-DOF count grows $2^6 = 64\times$.
+>
+> **The fix.** Sampling planners never build the grid. One RRT step: sample a random $q_\text{rand}$, find the nearest tree node $q_\text{near}$, move a fixed step from $q_\text{near}$ toward $q_\text{rand}$ to get $q_\text{new}$, and add it if the segment is collision-free. The cost is paid per sample, not per cell.
+
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —
 a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pass, and
 [[01-canonical-papers/notes/5-world-models/planet|latent-space CEM]] is planning with a learned model;
@@ -58,6 +66,14 @@ proposals get filtered through.
   - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. *해상도* 완전성은 격자에 상대적인 다른 보장이다: 선택한 이산화 해상도에서 해가 존재하면 찾는다(MR §10.1). 그래서 격자보다 좁은 통로는 놓칠 수 있다. 둘 다 완전한 완전성보다 약하다. (언제인지, 얼마나 못생겼는지는
     약속 없음; 그래서 사후 평활화를 한다).
 - 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때도 컨피규레이션이나 상태는 계속 샘플링하되, 직선 국소 계획기를 제약을 지키는 것으로 바꾼다 — 이산 제어 집합을 적분하거나 자동차라면 Reeds–Shepp 곡선을 쓴다(MR §10.5.1.3)(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
+
+> [!example] 계산 예제 · Worked example
+> **격자는 얼마나 큰가?** 회전 관절마다 전체 $360°$ 범위를 $10°$ 해상도로 이산화하면 관절당 $36$개 값이다. 격자 계획기는 최악의 경우 모든 칸을 충돌 검사해야 한다.
+> - **2자유도 팔:** $36^2 = 1{,}296$칸. 사소하다.
+> - **6자유도 팔:** $36^6 \approx 2.18 \times 10^9$칸 — 관절 4개를 더했을 뿐인데 $36^4 \approx 170$만 배다.
+> - 충돌 검사 1회에 $1$ µs면 약 $36$분, 더 현실적인 $1$ ms면 약 $25$일이다. 게다가 $10°$는 거칠다: 간격을 절반으로 줄이면 6자유도 칸 수는 $2^6 = 64$배가 된다.
+>
+> **해결책.** 샘플링 계획기는 격자를 만들지 않는다. RRT 한 스텝: 무작위 $q_\text{rand}$를 뽑고, 트리에서 가장 가까운 노드 $q_\text{near}$를 찾고, $q_\text{near}$에서 $q_\text{rand}$ 쪽으로 고정 보폭만큼 움직여 $q_\text{new}$를 얻은 뒤, 그 선분에 충돌이 없으면 트리에 더한다. 비용은 칸마다가 아니라 표본마다 든다.
 
 **위키 연결**: 학습된 정책이 점점 *흡수*하는 고전 계층 —
 [[01-canonical-papers/notes/4-vla/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,

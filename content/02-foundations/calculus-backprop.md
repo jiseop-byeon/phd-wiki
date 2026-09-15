@@ -210,10 +210,10 @@ bug detector in existence.
   [[02-foundations/engineering-math|0.5 §6]].
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
-- **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: every sigmoid layer multiplies the
-  backward signal by at most 0.25, and 0.25 is the *best* case, at $z=0$ — from the sigmoid derivatives alone, ten layers
-  attenuate gradients at least a million-fold ($0.25^{10} \approx 9.5\times10^{-7}$), far more once units saturate ($\sigma'(4) \approx 0.018$) (the full gradient also carries weight
-  Jacobians). This single inequality explains a decade of architecture history.
+- **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: stacked sigmoids shrink the gradient geometrically.
+  Every sigmoid layer multiplies the backward signal by at most 0.25, and 0.25 is the *best* case, at $z=0$.
+  From the sigmoid derivatives alone, ten layers attenuate gradients at least a million-fold: $0.25^{10} \approx 9.5\times10^{-7}$.
+  Once units saturate it is far worse, since $\sigma'(4) \approx 0.018$. The full gradient also carries weight Jacobians. This single inequality explains a decade of architecture history.
 
 ### 5. The pathologies that shaped architectures
 
@@ -453,9 +453,10 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다.
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
-- **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드 층 하나가 역방향 신호에 많아야 0.25를
-  곱하고, 0.25는 $z=0$에서의 *최선*이다 — 시그모이드 도함수만 따져도 층 열 개면 그래디언트가 최소 백만 배
-  준다($0.25^{10} \approx 9.5\times10^{-7}$). 유닛이 포화하면 훨씬 더 준다($\sigma'(4) \approx 0.018$)(실제 그래디언트에는 가중치 야코비안도 함께 곱해진다). 이 부등식 하나가 구조
+- **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드를 쌓으면 그래디언트가 기하급수적으로 줄어든다.
+  시그모이드 층 하나가 역방향 신호에 많아야 0.25를 곱하고, 0.25는 $z=0$에서의 *최선*이다.
+  시그모이드 도함수만 따져도 층 열 개면 그래디언트가 최소 백만 배 준다: $0.25^{10} \approx 9.5\times10^{-7}$.
+  유닛이 포화하면 훨씬 더 준다. $\sigma'(4) \approx 0.018$이기 때문이다. 실제 그래디언트에는 가중치 야코비안도 함께 곱해진다. 이 부등식 하나가 구조
   설계사(史) 10년을 설명한다.
 
 ### 5. 구조를 만든 병리들

@@ -33,6 +33,18 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - Smoothness matters physically: discontinuous acceleration = torque spikes = vibration
   ([[02-foundations/signal-processing|signal processing]]'s frequency lens applies).
 
+> [!example] Worked example · 계산 예제
+> One joint moves $\Delta\theta = 1.2$ rad in $T = 2$ s. Scale the unit-move peaks by $\Delta\theta$:
+> - **Cubic**: peak velocity $1.5 \cdot 1.2/2 = 0.9$ rad/s; peak acceleration $6 \cdot 1.2/2^2 = 1.8$ rad/s².
+> - **Quintic**: peak velocity $1.875 \cdot 1.2/2 = 1.125$ rad/s; peak acceleration $5.77 \cdot 1.2/2^2 \approx 1.73$ rad/s².
+>
+> Now suppose the actuator allows $v_{\max} = 0.8$ rad/s and $a_{\max} = 2$ rad/s², and run a **trapezoidal** profile instead:
+> - Accelerate: $v_{\max}/a_{\max} = 0.4$ s, covering $\tfrac12 \cdot 2 \cdot 0.4^2 = 0.16$ rad. Decelerate: the same 0.4 s and 0.16 rad.
+> - Cruise: the remaining $1.2 - 0.32 = 0.88$ rad at 0.8 rad/s takes $1.1$ s.
+> - Total: $0.4 + 1.1 + 0.4 = 1.9$ s — faster than the 2 s polynomial moves.
+>
+> **Which limit binds**: velocity. Both polynomials stay under $a_{\max}$ (1.8 and 1.73 < 2) but exceed $v_{\max}$ (0.9 and 1.125 > 0.8), so at $T = 2$ s neither is executable on this joint; the trapezoid saturates $v_{\max}$ by construction.
+
 **Wiki connections**: [[01-canonical-papers/notes/4-vla/act|action chunks]] and
 [[01-canonical-papers/notes/4-vla/diffusion-policy|denoised trajectories]] are *learned*
 replacements for exactly this chapter; classical time scaling still wraps learned outputs
@@ -53,6 +65,18 @@ on real hardware for safety/limits.
   빠른 $s(t)$ 찾기 — 고전적 뱅뱅 구조를 갖는 [[02-foundations/optimization|최적화]] 문제.
 - 매끄러움은 물리적으로 중요하다: 불연속 가속도 = 토크 스파이크 = 진동
   ([[02-foundations/signal-processing|신호처리]]의 주파수 렌즈가 적용된다).
+
+> [!example] 계산 예제 · Worked example
+> 관절 하나가 $T = 2$ s 동안 $\Delta\theta = 1.2$ rad 움직인다. 단위 이동의 최댓값에 $\Delta\theta$를 곱한다:
+> - **3차**: 최대 속도 $1.5 \cdot 1.2/2 = 0.9$ rad/s, 최대 가속도 $6 \cdot 1.2/2^2 = 1.8$ rad/s².
+> - **5차**: 최대 속도 $1.875 \cdot 1.2/2 = 1.125$ rad/s, 최대 가속도 $5.77 \cdot 1.2/2^2 \approx 1.73$ rad/s².
+>
+> 이제 액추에이터 한계가 $v_{\max} = 0.8$ rad/s, $a_{\max} = 2$ rad/s²라 하고 **사다리꼴** 프로파일을 쓴다:
+> - 가속: $v_{\max}/a_{\max} = 0.4$ s 동안 $\tfrac12 \cdot 2 \cdot 0.4^2 = 0.16$ rad 이동. 감속도 똑같이 0.4 s, 0.16 rad.
+> - 순항: 남은 $1.2 - 0.32 = 0.88$ rad를 0.8 rad/s로 가는 데 $1.1$ s.
+> - 합계: $0.4 + 1.1 + 0.4 = 1.9$ s — 2 s짜리 다항식 이동보다 빠르다.
+>
+> **어느 한계가 걸리는가**: 속도다. 두 다항식 모두 가속도는 $a_{\max}$ 아래지만(1.8, 1.73 < 2) 속도는 $v_{\max}$를 넘으므로(0.9, 1.125 > 0.8) $T = 2$ s로는 이 관절에서 실행할 수 없다. 사다리꼴은 구성상 $v_{\max}$에 딱 맞춘다.
 
 **위키 연결**: [[01-canonical-papers/notes/4-vla/act|행동 청크]]와
 [[01-canonical-papers/notes/4-vla/diffusion-policy|노이즈 제거된 궤적]]은 정확히 이 장의 *학습된*

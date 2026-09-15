@@ -38,6 +38,13 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - Constraints: **holonomic** (reduce C-space dimension) vs **nonholonomic** (restrict
   velocities, not positions — a car can reach any pose but can't slide sideways).
 
+> [!example] Worked example · 계산 예제
+> Grübler: $\text{dof} = m(N-1-J) + \sum_i f_i$, with the ground counted in $N$.
+> - **Planar four-bar** (MR Example 2.3): $m = 3$, links $N = 4$ (ground + crank + coupler + rocker), $J = 4$ revolute joints, each $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. Fix the crank angle and the whole loop is determined.
+> - **Spatial 6R arm**: $m = 6$, links $N = 7$ (base + 6 moving links), $J = 6$ revolute joints, each $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — enough to place the tool at any position and orientation in its reachable workspace.
+>
+> **Pattern**: for an open serial chain $J = N - 1$, so the first term vanishes and dof is just $\sum_i f_i$. Each closed loop subtracts constraints, which is why the four-bar's 4 joints give only 1 dof. The formula assumes independent constraints; special geometry can break it (MR Example 2.6).
+
 **Wiki connections**: C-space is the "state" half of every
 [[02-foundations/rl-basics|MDP]] for robots; VLA action spaces are coordinates on it.
 
@@ -62,6 +69,13 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   바로 그 팔로는 그 과제를 못 한다는 뜻이다.
 - 제약: **홀로노믹**(C-space 차원을 줄임) vs **비홀로노믹**(위치가 아니라 속도를 제한 —
   자동차는 어느 자세든 도달하지만 옆으로 미끄러지지는 못한다).
+
+> [!example] 계산 예제 · Worked example
+> 그뤼블러: $\text{dof} = m(N-1-J) + \sum_i f_i$, 접지는 $N$에 포함한다.
+> - **평면 4절 링크**(MR 예제 2.3): $m = 3$, 링크 $N = 4$(접지 + 크랭크 + 커플러 + 로커), 회전관절 $J = 4$, 각 $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. 크랭크 각 하나를 정하면 루프 전체가 정해진다.
+> - **공간 6R 팔**: $m = 6$, 링크 $N = 7$(베이스 + 움직이는 링크 6), 회전관절 $J = 6$, 각 $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — 도달 가능한 작업 영역 안에서 도구의 위치와 자세를 모두 정하기에 충분하다.
+>
+> **패턴**: 열린 직렬 체인은 $J = N - 1$이라 첫 항이 사라지고 자유도는 그냥 $\sum_i f_i$다. 닫힌 루프마다 제약이 빠지므로 4절 링크는 관절이 4개여도 자유도가 1이다. 공식은 제약이 서로 독립이라고 가정하며, 특수한 기하에서는 틀릴 수 있다(MR 예제 2.6).
 
 **위키 연결**: C-space는 로봇 [[02-foundations/rl-basics|MDP]]의 "상태" 절반이고, VLA 행동
 공간은 그 위의 좌표다.

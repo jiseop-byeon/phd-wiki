@@ -28,10 +28,10 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 ### 1. Rotations are matrices with rules
 
 - A 3D rotation is a matrix $R \in \mathbb{R}^{3\times 3}$ with $R^\top R = I$ and
-  $\det R = +1$ — the set of all such matrices is the **group SO(3)**. ("Group" is the
-  algebraic word for a set closed under composition where every element has an inverse:
-  a rotation times a rotation is a rotation, and every rotation can be undone. That is all
-  the word carries here.)
+  $\det R = +1$ — the set of all such matrices is the **group SO(3)**.
+  "Group" is the algebraic word for a set closed under composition where every element has an inverse.
+  Here that means a rotation times a rotation is a rotation, and every rotation can be undone.
+  That is all the word carries here.
 - Consequences: columns are an orthonormal frame (the rotated x/y/z axes);
   $R^{-1} = R^\top$ (undoing a rotation is free); rotations compose by multiplication,
   and **order matters** ($R_1 R_2 \ne R_2 R_1$ — rotate your phone about two axes in both
@@ -51,6 +51,12 @@ space of rigid-body poses. This page is the working set for reading VLA action s
   $R_{world}R_{body}$ versus $R_{body}R_{world}$ is describing different motions, and why
   every convention mismatch in robotics is ultimately this.
 - **Checking a matrix is a rotation**, which you should do whenever you build one: columns
+
+  must have length 1, be mutually perpendicular, and $\det = +1$. For $R_z(90°)$: columns are
+  $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ — unit length ✓, pairwise dot products all 0 ✓, and
+  $\det = +1$ ✓. A $\det$ of $-1$ means you built a **reflection**, which mirrors the robot
+  rather than turning it — a real and common bug when converting conventions.
+
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="the same point rotated by z then x lands on the z axis, and by x then z lands on the y axis">
   <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
@@ -91,11 +97,6 @@ space of rigid-body poses. This page is the working set for reading VLA action s
     <text x="24" y="256">different motions, and why every convention mismatch in robotics is ultimately this one.</text>
   </g>
 </svg>
-
-  must have length 1, be mutually perpendicular, and $\det = +1$. For $R_z(90°)$: columns are
-  $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ — unit length ✓, pairwise dot products all 0 ✓, and
-  $\det = +1$ ✓. A $\det$ of $-1$ means you built a **reflection**, which mirrors the robot
-  rather than turning it — a real and common bug when converting conventions.
 
 ### 2. The four ways papers write rotations
 
@@ -244,9 +245,10 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 ### 1. 회전은 규칙 있는 행렬이다
 
 - 3D 회전은 $R^\top R = I$이고 $\det R = +1$인 행렬 $R \in \mathbb{R}^{3\times 3}$ —
-  이런 행렬 전체의 집합을 **군**(group) SO(3)라고 부른다. ("군"은 합성에 대해 닫혀 있고 모든
-  원소에 역원이 있는 집합을 가리키는 대수학 용어다: 회전 × 회전 = 회전이고, 모든 회전은
-  되돌릴 수 있다. 여기서 이 단어가 담는 뜻은 그것이 전부다.)
+  이런 행렬 전체의 집합을 **군**(group) SO(3)라고 부른다.
+  "군"은 합성에 대해 닫혀 있고 모든 원소에 역원이 있는 집합을 가리키는 대수학 용어다.
+  여기서는 회전 × 회전 = 회전이고, 모든 회전은 되돌릴 수 있다는 뜻이다.
+  이 단어가 담는 뜻은 그것이 전부다.
 - 따름정리: 열들은 정규직교 프레임(회전된 x/y/z 축)이다; $R^{-1} = R^\top$(회전 되돌리기는
   공짜); 회전은 곱셈으로 합성되고 **순서가 중요하다** ($R_1 R_2 \ne R_2 R_1$ — 폰을 두 축으로
   순서 바꿔 돌려보면 몸으로 느껴진다).
@@ -262,6 +264,13 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
   같은 회전 둘, 전혀 다른 두 위치. 미묘한 일은 하나도 없다: 두 번째 회전은 첫 번째 회전이
   *남겨둔* 자리에 작용한다. 논문의 $R_{world}R_{body}$와 $R_{body}R_{world}$가 서로 다른 운동을
+
+  기술하는 이유이고, 로보틱스의 모든 규약 불일치가 결국 이것인 이유다.
+- **어떤 행렬이 회전인지 확인하기** — 회전 행렬을 만들 때마다 해야 한다: 열의 길이가 1이고,
+  서로 수직이며, $\det = +1$이어야 한다. $R_z(90°)$라면 열이 $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ —
+  길이 1 ✓, 서로의 내적이 모두 0 ✓, $\det = +1$ ✓. $\det$가 $-1$이면 **반사**를 만든 것이고,
+  로봇을 돌리는 대신 거울에 비춘 셈이다 — 규약 변환에서 실제로 자주 나는 버그다.
+
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="같은 점을 z 다음 x로 돌리면 z축에 도착하고 x 다음 z로 돌리면 y축에 도착한다">
   <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
@@ -302,12 +311,6 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
     <text x="24" y="256">이유이고, 로보틱스의 규약 불일치가 결국 전부 이것인 이유다.</text>
   </g>
 </svg>
-
-  기술하는 이유이고, 로보틱스의 모든 규약 불일치가 결국 이것인 이유다.
-- **어떤 행렬이 회전인지 확인하기** — 회전 행렬을 만들 때마다 해야 한다: 열의 길이가 1이고,
-  서로 수직이며, $\det = +1$이어야 한다. $R_z(90°)$라면 열이 $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ —
-  길이 1 ✓, 서로의 내적이 모두 0 ✓, $\det = +1$ ✓. $\det$가 $-1$이면 **반사**를 만든 것이고,
-  로봇을 돌리는 대신 거울에 비춘 셈이다 — 규약 변환에서 실제로 자주 나는 버그다.
 
 ### 2. 논문이 회전을 쓰는 네 가지 방법
 

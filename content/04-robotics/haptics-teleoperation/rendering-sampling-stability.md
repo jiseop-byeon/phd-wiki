@@ -37,11 +37,18 @@ With backward-difference virtual damping $B$, a classic one-DOF passivity condit
 
 Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bound gives $K\le200$ N/m. Halving $T$ doubles that bound; adding digital damping does not substitute freely for physical dissipation because its estimate is delayed.
 
+These bounds are usually checked in simulation before hardware, and that check has its own trap.
+
 The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result.
 
 ### 3. Sampling and quantization are different
 
-Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Under a Coulomb-plus-viscous friction model with quantization, passivity requires both bounds at once, $K\le\min(2b/T,\,2f_c/\Delta)$ (Abbott & Okamura 2005), and whichever is smaller limits the wall; the second one is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons — read the units and the shape of the bound follows: N divided by m is a stiffness, so the coarser the encoder the lower the wall you can render, and friction *raises* that second ceiling rather than lowering it (it helps only when the quantization term is the binding one). That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
+Sampling hides **when** contact occurred between updates. Quantization hides **where** the device lies within an encoder interval $\Delta$. Quantization sets a second ceiling on stiffness, and friction raises it. Under a Coulomb-plus-viscous friction model with quantization, passivity requires $K\le\min(2b/T,\,2f_c/\Delta)$ (Abbott & Okamura 2005). Both must hold, and whichever is smaller limits the wall.
+
+- **Units.** The second bound is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons. N divided by m is a stiffness, so the coarser the encoder, the lower the wall you can render.
+- **Friction's role.** Friction *raises* that second ceiling rather than lowering it. It helps only when the quantization term is the binding one.
+
+That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
 
 Velocity estimation exposes the tradeoff:
 
@@ -113,11 +120,18 @@ $$K\le\frac{2b}{T}$$
 
 예제: 물리 댐핑 $b=0.1$ N·s/m, $T=1$ ms이면 단순 경계는 $K\le200$ N/m다. $T$를 절반으로 줄이면 이 경계는 두 배가 된다. 디지털 댐핑을 더하는 것은 물리적 소산을 자유롭게 대체하지 못하는데, 그 추정값 자체가 늦기 때문이다.
 
+이 경계들은 보통 하드웨어 전에 시뮬레이션으로 확인하는데, 그 확인에도 함정이 있다.
+
 이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다.
 
 ### 3. 샘플링과 양자화는 서로 다른 문제다
 
-샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. Coulomb에 점성 마찰을 더하고 양자화를 넣은 모델에서는 수동성이 두 경계를 동시에 요구한다: $K\le\min(2b/T,\,2f_c/\Delta)$(Abbott & Okamura 2005)이고, 더 작은 쪽이 벽을 제한한다. 둘째 경계가 $K\le2f_c/\Delta$다. 여기서 $f_c$는 장치의 Coulomb 마찰력이고 단위는 N이다. 단위를 읽으면 경계의 모양이 따라 나온다 — N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아지고, 마찰은 그 둘째 천장을 낮추는 것이 아니라 *올린다*(양자화 항이 더 작은 쪽일 때만 도움이 된다). 불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
+샘플링은 갱신 사이의 **언제** 접촉이 일어났는지를 가린다. 양자화는 장치가 encoder 간격 $\Delta$ 안의 **어디**에 있는지를 가린다. 양자화는 강성에 둘째 천장을 두고, 마찰은 그 천장을 올린다. Coulomb에 점성 마찰을 더하고 양자화를 넣은 모델에서는 수동성이 $K\le\min(2b/T,\,2f_c/\Delta)$(Abbott & Okamura 2005)를 요구한다. 두 경계가 모두 성립해야 하고, 더 작은 쪽이 벽을 제한한다.
+
+- **단위.** 둘째 경계는 $K\le2f_c/\Delta$이고, $f_c$는 장치의 Coulomb 마찰력으로 단위는 N이다. N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아진다.
+- **마찰의 역할.** 마찰은 그 둘째 천장을 낮추는 것이 아니라 *올린다*. 양자화 항이 더 작은 쪽일 때만 도움이 된다.
+
+불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
 
 속도 추정에서 이 상충이 드러난다.
 

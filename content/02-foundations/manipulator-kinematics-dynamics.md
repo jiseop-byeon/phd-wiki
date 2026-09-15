@@ -277,7 +277,9 @@ direction, but do not call their axis lengths exact reciprocals without stating 
 
 **Read the inverse before the inertia.** Ignore velocity-dependent and gravity terms for this local force-to-acceleration interpretation. A task force becomes joint torque through $J^\top$, joint torque becomes acceleration through $M^{-1}$, and $J$ maps that acceleration back into task coordinates. The product $JM^{-1}J^\top$ therefore answers “how much task acceleration does this force produce here?” Inverting it gives the inertia needed to express force in terms of task acceleration.
 
-The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded; it does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for—differentiating a moving Jacobian introduces $\dot J\dot\theta$.
+**When the inverse is safe.** These caveats protect you from inverting a matrix that is singular or nearly so and trusting the huge numbers that come out.
+
+The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded. It does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for. Differentiating a moving Jacobian introduces $\dot J\dot\theta$.
 
 ### 7. Where the parameters come from — and the sim-to-real gap
 
@@ -605,7 +607,9 @@ MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정
 
 **관성보다 역행렬 안쪽부터 읽는다.** 힘에서 가속도로 가는 국소 해석을 위해 속도 항과 중력을 잠시 분리한다. 작업 힘은 $J^\top$를 통해 관절 토크가 되고, $M^{-1}$을 통해 관절 가속도가 되며, $J$를 통해 다시 작업 좌표의 가속도가 된다. 따라서 $JM^{-1}J^\top$는 “여기서 이 힘이 작업 가속도를 얼마나 만드는가”에 답한다. 이를 뒤집으면 가속도로 힘을 표현할 때의 관성이다.
 
-보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀌며, 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다.
+**역행렬이 안전할 때.** 아래 단서들은 특이하거나 거의 특이한 행렬을 뒤집고, 거기서 나온 거대한 숫자를 믿는 일을 막아 준다.
+
+보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀐다. 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다.
 
 ### 7. 파라미터는 어디서 오는가 — 그리고 sim-to-real 격차
 

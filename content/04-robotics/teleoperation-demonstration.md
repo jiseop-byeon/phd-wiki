@@ -60,10 +60,13 @@ The two devices are the **leader** (what the human moves; historically "master")
 **follower** ("slave"). Two architectures:
 
 - **Unilateral**: motion flows from leader to follower; nothing comes back except what the
-  operator can see. Removing the remote force-feedback loop reduces channel-induced instability risk, but does not guarantee every local controller is stable; the operator is blind to contact force.
+  operator can see. The operator is blind to contact force.
 - **Bilateral**: force flows back from the follower to the leader, so the operator feels
   the environment. This is what makes insertion and fitting teleoperable — and it is what
   can go unstable.
+
+A stability note on the unilateral case: removing the remote force-feedback loop reduces
+channel-induced instability risk. It does not guarantee that every local controller is stable.
 
 Model the whole system as a **two-port network**: one port faces the human, one faces the
 environment, and each port has a velocity and a force.
@@ -115,9 +118,9 @@ compromise, and a paper that reports only one of the two is reporting half its r
 Delay is the reason this field has its own theory rather than borrowing control theory
 wholesale. The system is a chain of springs, masses, and dampers, all of which are
 **passive**: they cannot deliver more energy than they initially stored plus what enters
-through their ports. Under compatible interconnection and well-posedness assumptions,
-passivity is preserved and provides a route to stability; passivity alone does not
-automatically mean asymptotic convergence or good performance.
+through their ports. Connecting passive parts keeps the whole passive, which gives a route to
+stability. That holds under compatible interconnection and well-posedness assumptions.
+Passivity alone does not automatically mean asymptotic convergence or good performance.
 
 A communication delay can break that passivity argument. Force computed from a position the follower held
 $T$ seconds ago is applied to a leader that has since moved somewhere else, and the product
@@ -240,7 +243,7 @@ in an appendix:
   that angle down, and a lever arm turns it into end-point position. The transmission
   ratio $R$ *refines* position: a motor-side step of $\Delta\theta$ appears at the
   output as $\Delta\theta / R$.
-- **Force floor.** The same ratio *coarsens* force. Motor friction torque $\tau_f$ is
+- **Force floor.** The force floor is the friction the operator feels at the handle before any force is commanded; forces smaller than it are masked by that friction. The same ratio *coarsens* force. Motor friction torque $\tau_f$ is
   amplified right along with the torque you wanted: the operator feels
   $F_{floor} = \tau_f \cdot R / r_h$ at a handle of lever arm $r_h$, and every force
   the device records near a motion reversal is smeared by that stick–slip band.
@@ -481,10 +484,12 @@ flowchart LR
 두 아키텍처가 있다:
 
 - **단방향**: 운동이 리더에서 팔로워로만 흐르고, 조작자가 볼 수 있는 것 외에는 아무것도
-  돌아오지 않는다. 원격 힘 피드백 루프가 없어 채널 유발 불안정 위험은 작지만 모든 로컬
-  제어기의 안정성을 자동 보장하지는 않으며, 접촉력에 대해 눈이 멀었다.
+  돌아오지 않는다. 조작자는 접촉력에 대해 눈이 멀었다.
 - **양방향**: 힘이 팔로워에서 리더로 되돌아와 조작자가 환경을 느낀다. 삽입과 끼움을
   원격조작 가능하게 만드는 것이 이것이고, 불안정해질 수 있는 것도 이것이다.
+
+단방향의 안정성에 대한 주석: 원격 힘 피드백 루프가 없으면 채널 유발 불안정 위험이 작아진다.
+그렇다고 모든 로컬 제어기의 안정성이 자동 보장되지는 않는다.
 
 전체를 **2포트 네트워크**로 모델링한다: 한 포트는 사람을, 한 포트는 환경을 향하고,
 각 포트에는 속도와 힘이 있다.
@@ -534,9 +539,9 @@ Lawrence의 4채널 분석(1993)이 이것을 직관이 아니라 설계 목표�
 
 지연이야말로 이 분야가 제어 이론을 통째로 빌려 오는 대신 자기 이론을 갖게 된 이유다.
 시스템은 스프링·질량·감쇠기의 사슬이고, 이들은 **수동적(passive)** 이다: 처음 저장한 에너지와
-포트로 들어온 에너지보다 더 많이 내보낼 수 없다. 호환되는 연결과 well-posedness 가정 아래
-수동성은 보존되어 안정성을 보이는 길을 주지만, 그 자체가 점근 수렴이나 좋은 성능을 자동으로
-뜻하지는 않는다.
+포트로 들어온 에너지보다 더 많이 내보낼 수 없다. 수동적인 부품을 연결하면 전체도 수동적으로
+남고, 이것이 안정성을 보이는 길을 준다. 이는 호환되는 연결과 well-posedness 가정 아래 성립한다.
+수동성 그 자체가 점근 수렴이나 좋은 성능을 자동으로 뜻하지는 않는다.
 
 통신 지연은 그 수동성 논증을 깰 수 있다. 팔로워가 $T$초 전에 있던 위치로 계산된 힘이, 그사이 다른 곳으로
 움직인 리더에 가해진다. 그 둘의 곱이 시스템 *안으로* 에너지를 전달할 수 있다. 연결은 더
@@ -648,7 +653,7 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 - **위치 분해능.** 엔코더 카운트가 관절각이 되고, 전동이 그 각을 나누고, 레버 암이
   말단 위치로 바꾼다. 전동비 $R$은 위치를 *정밀하게* 만든다: 모터 쪽 한 스텝
   $\Delta\theta$는 출력에서 $\Delta\theta / R$로 나타난다.
-- **힘 바닥.** 같은 비율이 힘은 *거칠게* 만든다. 모터 마찰 토크 $\tau_f$는 원했던
+- **힘 바닥.** 힘 바닥은 아무 힘도 명령하지 않았을 때 조작자가 핸들에서 느끼는 마찰이고, 그보다 작은 힘은 그 마찰에 가려진다. 같은 비율이 힘은 *거칠게* 만든다. 모터 마찰 토크 $\tau_f$는 원했던
   토크와 함께 증폭된다: 레버 암 $r_h$의 핸들에서 조작자는
   $F_{floor} = \tau_f \cdot R / r_h$를 느끼고, 운동 반전 근처에서 장치가 기록하는
   모든 힘은 그 스틱-슬립 대역으로 번져 있다.

@@ -41,14 +41,14 @@ past it.
 
 $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 
-The controller does not "decide" to push with 100 N; it is simply what closing a 1 cm error
-against that stiffness costs. A compliant controller rendering $K = 200$ N/m in the same
-situation produces $200 \times 0.01 = 2$ N and holds a 1 cm error it never resolves — which
-in contact is the correct behaviour, not a failure.
+The controller does not "decide" to push with 100 N. That force is simply what closing a 1 cm
+error against that stiffness costs. A compliant controller rendering $K = 200$ N/m in the same
+situation produces $200 \times 0.01 = 2$ N. It holds a 1 cm error it never resolves. In contact
+that is the correct behaviour, not a failure.
 
-Environment stiffness spans five orders of magnitude, and papers name the contact rather than
-the number — so keep a scale, because the same control law is safe at one end and impossible
-at the other:
+Keep a scale of environment stiffness. It spans five orders of magnitude, and papers name the
+contact rather than the number. The same control law is safe at one end and impossible at the
+other:
 
 | Contact | $K_e$ (N/m) |
 |---|---:|
@@ -69,12 +69,12 @@ at the other:
 > ($\approx 10^6$), so a single scalar $K_e$ for it is a simplification that fails for a
 > straight-in push.
 
-The example above sits in the second row. The following is a local-linearization risk scale,
-not a force prediction at 1 cm: extrapolating $10^7$ N/m gives $10^5$ N. Actual force is limited
-by the series-equivalent controller, robot, tool, and environment stiffnesses and by saturation.
-**Commanding an unreachable penetration with high closed-loop stiffness is dangerous.** §5 uses the same two rows to
-compute impact forces, so a claim about "a stiff contact" should always be read back to a row
-of this table.
+The example above sits in the second row. **Commanding an unreachable penetration with high
+closed-loop stiffness is dangerous.** The table is a local-linearization risk scale. It is not a
+force prediction at 1 cm: extrapolating $10^7$ N/m gives $10^5$ N. Actual force is limited by the
+series-equivalent controller, robot, tool, and environment stiffnesses, and by saturation. §5
+uses the same two rows to compute impact forces. Always read a claim about "a stiff contact"
+back to a row of this table.
 
 <svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="a logarithmic stiffness axis from ten squared to ten to the eighth newtons per metre with the force a one centimetre error produces at three of them">
   <g font-size="10.5" fill="currentColor" opacity="0.85">
@@ -105,17 +105,17 @@ of this table.
   </g>
 </svg>
 
-**Contact couples position and force.** For an ideal rigid wall in maintained contact, the natural constraint is zero normal velocity; the controller may choose a normal force target. Tangential motion remains available subject to friction. In compliant contact, normal displacement and force are related by the contact mechanics. Thus independent, arbitrary position and force targets along the same constrained direction can conflict. Hybrid control selects complementary motion and force objectives, while impedance chooses their relation.
+**Contact couples position and force.** Against an ideal rigid wall, the natural constraint is zero normal velocity. This holds while contact is maintained. The controller may choose a normal force target. Tangential motion remains available, subject to friction. In compliant contact, normal displacement and force are related by the contact mechanics. So independent, arbitrary position and force targets along the same constrained direction can conflict. Hybrid control selects complementary motion and force objectives. Impedance control instead chooses their relation.
 
-The stiffness plot is a simplified local linear comparison, not a prediction that an actuator can generate unlimited force. Real torque limits, structural compliance and contact nonlinearity bound or change the response. A low-gain position-based controller can also render compliance; the danger is demanding an unreachable position with excessive stiffness or integral action.
+The stiffness plot is a simplified local linear comparison. It does not predict that an actuator can generate unlimited force. Real torque limits, structural compliance and contact nonlinearity bound or change the response. A low-gain position-based controller can also render compliance. The danger is demanding an unreachable position with excessive stiffness or integral action.
 
 ### 2. Impedance and admittance — the same idea, opposite causality
 
-Both describe a desired relation between motion and interaction force. For a fixed reference $x_d$, define displacement $e=x-x_d$ and let $F_{ext}$ be the force **on the robot**. A one-axis target is
+Both describe a desired relation between motion and interaction force. Fix a reference $x_d$. Define the displacement $e=x-x_d$, and let $F_{ext}$ be the force **on the robot**. A one-axis target is
 
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read it as a virtual mechanical system: an external push first accelerates the mass, damping resists motion, and the spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. Which of the two causalities you can build is decided by the hardware — transmission friction, reflected inertia and whether force is sensed or commanded — and [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] traces that chain from Cartesian force to motor current. This is a desired closed-loop behavior, not automatically the torque command of a real arm.
+Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. This equation is a desired closed-loop behavior. It is not automatically the torque command of a real arm. Read it as a virtual mechanical system. An external push first accelerates the mass. Damping resists the motion. The spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. The hardware decides which of the two causalities you can build. The deciding factors are transmission friction, reflected inertia, and whether force is sensed or commanded. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] traces that chain from Cartesian force to motor current.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -161,15 +161,15 @@ Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. Read i
 
 The diagram shows **two common implementations**, not hardware requirements for every controller carrying these names:
 
-- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior; low mechanical friction and backdrivability help, but are not the definition of impedance. Stiffness can be selected for the task rather than being “soft by default.”
-- **Admittance** takes measured or estimated external force and integrates a virtual dynamic model to generate a motion reference. An inner motion controller tracks that reference. This is useful on robots exposing position or velocity commands, but its achievable behavior depends on the inner loop as well as the outer force feedback.
+- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior. Low mechanical friction and backdrivability also help. They are not the definition of impedance. Stiffness is selected for the task; it is not “soft by default.”
+- **Admittance** takes measured or estimated external force and integrates a virtual dynamic model to generate a motion reference. An inner motion controller tracks that reference. This is useful on robots exposing position or velocity commands. Its achievable behavior depends on the inner loop as well as the outer force feedback.
 
 | Architecture | Useful starting point | What must be checked |
 |---|---|---|
 | Torque-based impedance | Shape the arm's response to displacement | Torque bandwidth, dynamics compensation, gains, saturation |
 | Admittance with an inner motion loop | Turn force feedback into a motion reference | Sensor/estimator delay, inner-loop tracking, virtual dynamics, contact stiffness |
 
-A stiff wall makes small motions produce large force changes. In an admittance loop, delayed force feedback can therefore generate an excessive corrective motion and oscillation. It **can** be stabilized with suitable dynamics, bandwidth and hardware; stiffness alone does not prove failure. Conversely, impedance can track motion in free space. The practical question is which desired behavior the complete robot can render in the operating conditions.
+A stiff wall makes small motions produce large force changes. In an admittance loop, delayed force feedback can therefore generate an excessive corrective motion and oscillation. It **can** be stabilized with suitable dynamics, bandwidth and hardware. Stiffness alone does not prove failure. Conversely, impedance can track motion in free space. The practical question is which desired behavior the complete robot can render in the operating conditions.
 
 > [!warning] Architecture and stiffness · 구조와 강성
 > A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
@@ -224,7 +224,10 @@ with $\mu$ and $p$ the task-space Coriolis and gravity terms. Read it as the arm
   people in it, this is the mechanism, not a nicety.
 
 **The projector, written out.** "Null-space" is used loosely across the literature, so it is
-worth seeing the object. With $\bar J = M^{-1}J^\top\Lambda$ the dynamically-consistent
+worth seeing the object. In plain terms, the projector is a filter on the secondary torque: it
+lets $\tau_0$ move the arm only in ways the task does not feel. The thing to watch is *when* the
+task does not feel it — only at rest (static), or also while the arm is moving (transient).
+Different projectors differ exactly there. With $\bar J = M^{-1}J^\top\Lambda$ the dynamically-consistent
 inverse of the Jacobian, the secondary torque is filtered through
 
 $$\tau = J^\top\mathcal{F} \;+\; \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{null-space projector } N^\top}\tau_0$$
@@ -537,10 +540,10 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 
 제어기가 100 N으로 밀기로 "결정"한 것이 아니다. 그 강성에 대해 1 cm 오차를 닫는 비용이 그저
 그것일 뿐이다. 같은 상황에서 $K = 200$ N/m를 구현하는 유연한 제어기는 $200 \times 0.01 = 2$ N을
-내고 끝내 해소하지 않는 1 cm 오차를 유지한다 — 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
+낸다. 이 제어기는 끝내 해소하지 않는 1 cm 오차를 유지한다. 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
 
-환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을 이름으로 부른다 — 그러니 눈금을
-갖고 있어야 한다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하기 때문이다:
+환경 강성의 눈금을 갖고 있어야 한다. 환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을
+이름으로 부른다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하다:
 
 | 접촉 | $K_e$ (N/m) |
 |---|---:|
@@ -559,8 +562,9 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 > 유연하고($\approx 10^4$) 축 방향으로는 단단하다($\approx 10^6$). 그래서 스칼라 $K_e$ 하나로
 > 적는 것은 곧장 밀어 넣는 경우에는 성립하지 않는 단순화다.
 
-위 예는 둘째 행에 있다. 다음 계산은 1 cm에서의 실제 힘 예측이 아니라 국소 선형화를 외삽한 위험 규모다:
-$10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·로봇·툴·환경의 직렬 등가강성과 포화로 제한된다. **도달 불가능한 침투 위치를 높은 폐루프 강성으로 명령하면 위험하다.** §5도 같은 두 행으로 충격력을 계산하므로, "단단한 접촉"이라는 주장은 언제나
+위 예는 둘째 행에 있다. **도달 불가능한 침투 위치를 높은 폐루프 강성으로 명령하면 위험하다.**
+이 표는 국소 선형화를 외삽한 위험 규모다. 1 cm에서의 실제 힘 예측은 아니다:
+$10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·로봇·툴·환경의 직렬 등가강성과 포화로 제한된다. §5도 같은 두 행으로 충격력을 계산한다. "단단한 접촉"이라는 주장은 언제나
 이 표의 어느 행인지로 되읽어야 한다.
 
 <svg viewBox="0 0 560 254" style="max-width:100%;height:auto" role="img" aria-label="10의 2승부터 8승까지 로그 눈금의 환경 강성 축과, 그중 세 곳에서 1 cm 오차가 만드는 힘">
@@ -592,17 +596,17 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
   </g>
 </svg>
 
-**접촉은 위치와 힘을 결합한다.** 이상적인 강체 벽과 접촉을 유지하면 자연 제약은 법선 속도가 0이라는 것이다. 제어기는 법선 힘의 목표를 고를 수 있다. 접선 운동은 마찰의 제약 아래 가능하다. 유연한 접촉에서는 법선 변위와 힘이 접촉 역학으로 연결된다. 따라서 같은 구속 방향에 독립적이고 임의적인 위치·힘 목표를 동시에 주면 충돌할 수 있다. 하이브리드 제어는 상보적인 운동·힘 목표를 고르고, 임피던스는 둘의 관계를 정한다.
+**접촉은 위치와 힘을 결합한다.** 이상적인 강체 벽에서 자연 제약은 법선 속도가 0이라는 것이다. 이는 접촉이 유지되는 동안 성립한다. 제어기는 법선 힘의 목표를 고를 수 있다. 접선 운동은 마찰의 제약 아래 가능하다. 유연한 접촉에서는 법선 변위와 힘이 접촉 역학으로 연결된다. 따라서 같은 구속 방향에 독립적이고 임의적인 위치·힘 목표를 동시에 주면 충돌할 수 있다. 하이브리드 제어는 상보적인 운동·힘 목표를 고르고, 임피던스는 둘의 관계를 정한다.
 
-강성 그림은 단순한 국소 선형 비교다. 액추에이터가 무한한 힘을 낸다는 예측이 아니다. 실제 토크 한계·구조 유연성·접촉 비선형성이 반응을 제한하거나 바꾼다. 낮은 게인의 위치 기반 제어기도 컴플라이언스를 구현할 수 있다. 위험은 도달할 수 없는 위치를 과도한 강성이나 적분 동작으로 요구할 때 생긴다.
+강성 그림은 단순한 국소 선형 비교다. 그것은 액추에이터가 무한한 힘을 낸다는 예측이 아니다. 실제 토크 한계·구조 유연성·접촉 비선형성이 반응을 제한하거나 바꾼다. 낮은 게인의 위치 기반 제어기도 컴플라이언스를 구현할 수 있다. 위험은 도달할 수 없는 위치를 과도한 강성이나 적분 동작으로 요구할 때 생긴다.
 
 ### 2. 임피던스와 어드미턴스 — 같은 발상, 반대 인과
 
-둘 다 운동과 상호작용 힘 사이의 원하는 관계를 정한다. 고정 기준 $x_d$에 대해 변위 $e=x-x_d$를 정의하고, $F_{ext}$를 **로봇에 가해지는** 외력이라 하자. 한 축의 목표 거동은 다음과 같다.
+둘 다 운동과 상호작용 힘 사이의 원하는 관계를 정한다. 고정 기준 $x_d$를 둔다. 변위 $e=x-x_d$를 정의하고, $F_{ext}$를 **로봇에 가해지는** 외력이라 하자. 한 축의 목표 거동은 다음과 같다.
 
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
-$M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 가상 기계로 읽으면 쉽다. 외력이 질량을 가속하고, 감쇠가 운동을 억제하며, 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 두 인과 중 무엇을 만들 수 있는지는 하드웨어가 정한다 — 전동 마찰, 반사 관성, 그리고 힘을 재는지 명령하는지다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 햅틱 장치 설계와 기구학]]이 직교 힘에서 모터 전류까지 그 사슬을 따라간다. 이 식은 원하는 폐루프 거동이며, 실제 팔에 보낼 토크 명령 자체는 아니다.
+$M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 이 식은 원하는 폐루프 거동이다. 실제 팔에 보낼 토크 명령 자체는 아니다. 가상 기계로 읽으면 쉽다. 외력이 먼저 질량을 가속한다. 감쇠가 운동을 억제한다. 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 두 인과 중 무엇을 만들 수 있는지는 하드웨어가 정한다. 결정 요인은 전동 마찰, 반사 관성, 그리고 힘을 재는지 명령하는지다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 햅틱 장치 설계와 기구학]]이 직교 힘에서 모터 전류까지 그 사슬을 따라간다.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -648,8 +652,8 @@ $M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 가상 기계로 
 
 그림은 **흔한 두 구현**이다. 같은 이름을 쓰는 모든 제어기의 필수 하드웨어 조건은 아니다.
 
-- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성도 도움이 되지만 임피던스의 정의는 아니다. 강성은 과제에 맞게 고르며, 항상 “기본적으로 무른” 것은 아니다.
-- **어드미턴스**는 측정·추정한 외력을 가상 동역학에 넣고 적분해 운동 기준을 만든다. 내부 운동 제어기가 그 기준을 추종한다. 위치·속도 명령을 받는 로봇에 유용하지만, 실제 거동은 외부 힘 피드백과 내부 루프 양쪽에 달렸다.
+- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성도 도움이 된다. 그러나 그것이 임피던스의 정의는 아니다. 강성은 과제에 맞게 고른다. 항상 “기본적으로 무른” 것은 아니다.
+- **어드미턴스**는 측정·추정한 외력을 가상 동역학에 넣고 적분해 운동 기준을 만든다. 내부 운동 제어기가 그 기준을 추종한다. 위치·속도 명령을 받는 로봇에 유용하다. 실제 거동은 외부 힘 피드백과 내부 루프 양쪽에 달렸다.
 
 | 구조 | 유용한 출발점 | 확인할 조건 |
 |---|---|---|
@@ -707,7 +711,9 @@ $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta),
   있다. 사람이 있는 현장의 모바일 매니퓰레이터에게 이것은 덤이 아니라 기제 그 자체다.
 
 **투영자를 실제로 써 보면.** "영공간"은 문헌에서 느슨하게 쓰이므로 그 대상을 직접 볼 값어치가
-있다. $\bar J = M^{-1}J^\top\Lambda$를 자코비안의 동역학적으로 일관된 역이라 하면, 부차 토크는
+있다. 쉽게 말해 투영자는 부차 토크에 거는 필터다. $\tau_0$가 작업이 느끼지 못하는 방식으로만 팔을
+움직이게 한다. 지켜볼 것은 작업이 *언제* 그것을 느끼지 못하느냐다. 정지해 있을 때만(정적)인가, 팔이
+움직이는 동안에도(과도)인가. 투영자들은 바로 그 지점에서 갈린다. $\bar J = M^{-1}J^\top\Lambda$를 자코비안의 동역학적으로 일관된 역이라 하면, 부차 토크는
 다음을 통과한다:
 
 $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{영공간 투영자 } N^\top}\tau_0$$

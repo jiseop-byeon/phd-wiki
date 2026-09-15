@@ -50,6 +50,28 @@ mean a paid pilot; “AI-powered” may describe perception while motion is scri
 > support different claims from a funding announcement or promotional video. Preserve the
 > date and source of every company-status statement.
 
+> [!example] Worked example · 계산 예제
+> **Hypothetical claim** (invented for practice, not any real vendor): "Our drywall robot is 3× faster than a crew."
+> 1. *Who specifies the task?* Faster at what — hanging, taping, or finishing — and who decided the wall passed?
+> 2. *How many machines, sites, hours?* One demo wall on one site is a different claim from months across many sites.
+> 3. *Operators and interventions?* If a technician watches the robot and steps in, that person belongs in the crew count.
+> 4. *Hidden labor?* Setup, calibration, material feeding, and rework are often done by people outside the "robot" time.
+> 5. *Complete workflow?* "3×" may compare robot surface time with a crew's whole day, including tasks the robot skips.
+> 6. *Ownership changes?* If the product was acquired, check whether the team that produced the evidence still builds it.
+>
+> What remains: a speed ratio on an unstated sub-task, with an unstated baseline. The checklist turns it into a question you can take to a named deployment.
+
+### Self-check
+
+1. A vendor says its excavator is "deployed". Which checklist questions distinguish a paid pilot from continuous operation?
+2. Why can a robot be faster per wall and still not reduce total labor?
+3. A product has a strong peer-reviewed paper but no named customer. Which of the four axes in §4 does that evidence support?
+
+> [!tip]- Answers
+> 1. Q2 (machines, sites, customers, continuous operating hours) and Q3 (remote operators and interventions per hour).
+> 2. Setup, calibration, material handling, maintenance, and recovery (Q4) can move labor elsewhere; only a complete-workflow comparison (Q5) shows the net effect.
+> 3. Method novelty and possibly system completeness — not deployment evidence or economic value, which need operational and customer sources.
+
 ### 4. Why commercialization does not rank research
 
 A commercially robust system may use conservative classical methods and solve a narrow
@@ -104,6 +126,28 @@ deployment evidence, and economic value** should not be collapsed into one score
 > [!warning] 증거 위계
 > 동료평가 시스템 논문, 규제·OEM 문서, 실명 고객 배치는 투자 발표·홍보 영상과 다른 주장을
 > 지지한다. 기업 상태 문장에는 날짜와 출처를 보존하라.
+
+> [!example] 계산 예제 · Worked example
+> **가상의 주장** (연습용으로 지어낸 것이며 실제 기업이 아님): "우리 석고보드 로봇은 작업팀보다 3배 빠르다."
+> 1. *과제는 누가 지정하나?* 붙이기·테이핑·마감 중 무엇이 빠른가, 벽의 합격은 누가 판정했나?
+> 2. *기계·현장·운용 시간은?* 한 현장의 시연 벽 하나와 여러 현장에서의 수개월 운용은 다른 주장이다.
+> 3. *운전자와 개입은?* 기술자가 로봇을 지켜보다 개입한다면 그 사람도 인원에 넣어야 한다.
+> 4. *숨은 노동은?* 준비·보정·재료 공급·재작업은 흔히 "로봇" 시간 밖에서 사람이 한다.
+> 5. *전체 공정 비교인가?* "3배"는 로봇의 표면 작업 시간을, 로봇이 건너뛰는 일까지 포함한 작업팀의 하루와 비교한 것일 수 있다.
+> 6. *소유권 변화는?* 인수된 제품이라면 증거를 만든 팀이 아직 개발하는지 확인하라.
+>
+> 남는 것: 기준도 과제 범위도 밝히지 않은 속도 비율. 체크리스트는 이를 실명 배치 사례에 던질 질문으로 바꾼다.
+
+### Self-check
+
+1. 업체가 굴착기가 "배치됐다"고 한다. 유료 pilot과 연속 운용을 가르는 질문은 어느 것인가?
+2. 로봇이 벽 하나당 더 빨라도 전체 노동이 줄지 않을 수 있는 이유는?
+3. 제품에 강한 동료평가 논문은 있지만 실명 고객은 없다. 4절의 네 축 중 이 증거가 지지하는 것은?
+
+> [!tip]- Answers
+> 1. 2번(기계·현장·고객·연속 운용 시간)과 3번(원격 운전자 비율과 시간당 개입).
+> 2. 준비·보정·재료 취급·유지·복구(4번)가 노동을 다른 곳으로 옮길 수 있고, 전체 공정 비교(5번)만이 순효과를 보여준다.
+> 3. 방법 신규성과, 경우에 따라 시스템 완결성 — 배치 증거와 경제성은 운용·고객 출처가 필요하다.
 
 ### 4. 상업화가 연구 순위는 아니다
 

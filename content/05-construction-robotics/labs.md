@@ -99,6 +99,21 @@ These groups publish the manipulation/HRC methods construction researchers impor
 | [BAIR](https://bair.berkeley.edu), UC Berkeley | Levine, Abbeel, et al. | the robot-learning engine room — [[01-canonical-papers/notes/4-vla/octo\|Octo]], much of the VLA lineage in this wiki |
 | [Interactive Robotics Group](https://interactive.mit.edu), MIT | Julie Shah | human-robot teaming for manufacturing assembly — cross-training, human-aware motion planning; the HRC playbook construction borrows |
 
+### What separates these groups
+
+The groups differ less by country than by what they put on the site. RICAL and RSL/HEAP build field-deployed mobile or heavy-machine systems, from site scanning to an autonomous dry-stone wall. The Michigan LIVE Lab line, the manufacturing labs, and Texas Robotics develop manipulation and learning methods. DPM, RAISE, HARMONIC, and the Florida and Oregon State groups study the human side — biosensing, teleoperation, and interfaces — rather than autonomy itself. RAAMAC, CMU CEE, and the fabrication institutes (GKR, ICD, TUM, CRCL) sit at the ends of the pipeline: monitoring what was built, or designing robotic production of a structure.
+
+### Self-check
+
+1. A paper uses EEG from a worker to slow a collaborative robot. Which cluster does it most likely trace to?
+2. A paper reports an autonomous excavator trained with sim-to-real RL for hydraulic control. Which lab line fits, and which Nordic group works on the same problem for wheel loaders?
+3. A paper builds a robotic timber pavilion with a cyber-physical prefabrication workflow. Which cluster, and which assumption from "How to use this map" does it carry?
+
+> [!tip]- Answers
+> 1. Worker-sensing: S. Lee's DPM Lab and its descendants (Jebelli's RAISE Lab, Baek's HARMONIC Lab).
+> 2. ETH RSL's HEAP line; UMIT/Algoryx (Servin) is the wheel-loader counterpart.
+> 3. Fabrication — Stuttgart ICD/IntCDC (Menges · Knippers); it assumes the fabrication framing, not manipulation-LfD or heavy-machine autonomy.
+
 ### How to use this map
 
 - **Paper triage**: an unfamiliar paper usually traces to one of these clusters — the
@@ -202,6 +217,21 @@ These groups publish the manipulation/HRC methods construction researchers impor
 | [AUTOLab](https://autolab.berkeley.edu), UC 버클리 (IEOR/EECS) | Ken Goldberg | 창고/산업 자동화를 위한 강건한 파지와 조작 |
 | [BAIR](https://bair.berkeley.edu), UC 버클리 | Levine, Abbeel 등 | 로봇 학습의 엔진룸 — [[01-canonical-papers/notes/4-vla/octo\|Octo]] 등 이 위키 VLA 계보의 산실 |
 | [Interactive Robotics Group](https://interactive.mit.edu), MIT | Julie Shah | 제조 조립의 인간-로봇 팀워크 — 교차 훈련, 인간 인지 모션 계획; 건설이 빌려 쓰는 HRC 플레이북 |
+
+### 그룹을 가르는 것
+
+그룹들은 나라보다 현장에 무엇을 내놓는지로 갈린다. RICAL과 RSL/HEAP은 현장 스캔부터 자율 돌담까지 현장 배치형 이동·중장비 시스템을 만든다. 미시간 LIVE Lab 계열, 제조 로봇 랩, Texas Robotics는 조작·학습 기법을 개발한다. DPM, RAISE, HARMONIC, 플로리다대·Oregon State 그룹은 자율성 자체보다 인간 쪽 — 바이오센싱, 원격조작, 인터페이스 — 을 연구한다. RAAMAC, CMU CEE, 패브리케이션 연구소(GKR, ICD, TUM, CRCL)는 파이프라인의 양 끝에 있다: 지어진 것을 모니터링하거나 구조물의 로봇 생산을 설계한다.
+
+### Self-check
+
+1. 작업자의 EEG로 협동 로봇을 감속시키는 논문이다. 어느 클러스터에서 왔을 가능성이 가장 큰가?
+2. 유압 제어를 sim-to-real RL로 학습한 자율 굴착기 논문이다. 어느 랩 계열이며, 휠로더에서 같은 문제를 다루는 북유럽 그룹은?
+3. 사이버-물리 프리팹 공정으로 로봇 목조 파빌리온을 짓는 논문이다. 어느 클러스터이며, "이 지도를 쓰는 법"의 어떤 가정을 지니는가?
+
+> [!tip]- Answers
+> 1. 작업자 센싱: S. Lee의 DPM Lab과 제자들(Jebelli의 RAISE Lab, Baek의 HARMONIC Lab).
+> 2. ETH RSL의 HEAP 라인; 휠로더 쪽 대응물은 UMIT/Algoryx(Servin).
+> 3. 패브리케이션 — 슈투트가르트 ICD/IntCDC(Menges · Knippers); 조작-LfD나 중장비 자율성이 아닌 패브리케이션 틀의 가정을 지닌다.
 
 ### 이 지도를 쓰는 법
 

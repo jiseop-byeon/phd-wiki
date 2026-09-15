@@ -97,6 +97,12 @@ Visual, audio, haptic, and physical interfaces can show state, intent, uncertain
 
 ### 6. Safety vocabulary
 
+This section gives you the words a safety paragraph is written in, in four steps. First the
+general vocabulary, then which standard defines what. Then the four collaboration methods, and
+last a worked example of what the separation distance costs.
+
+**The general vocabulary.**
+
 | Term | Meaning |
 |---|---|
 | Hazard | potential source or situation of harm |
@@ -110,9 +116,9 @@ Visual, audio, haptic, and physical interfaces can show state, intent, uncertain
 
 No learned policy is “safe” merely because it had zero collisions in a small test. Safety is a system property involving sensing, control, hardware, people, environment, procedures, and evidence.
 
-**The standards a paper will cite.** Safety sections quote standard numbers as shorthand, and
-the shorthand carries the actual claim. You are reading them, not certifying against them —
-but you cannot check a safety claim without knowing which document defines the term.
+**Which standard says what.** Safety sections quote standard numbers as shorthand. The
+shorthand carries the actual claim. You are reading them, not certifying against them. But you
+cannot check a safety claim without knowing which document defines the term.
 
 | Standard | Covers | What it gives a reader |
 |---|---|---|
@@ -121,6 +127,8 @@ but you cannot check a safety claim without knowing which document defines the t
 | **ISO 13482:2014** | personal care robots | service robots in physical contact with people. Its revision, ISO/FDIS 13482 *Safety requirements for service robots*, widens the scope to personal and professional service robots and is referenced in Europe as EN ISO 13482:2026 — check ISO's catalogue for the published edition before citing either |
 | **ISO 3691-4:2023** | driverless industrial trucks — AGVs and AMRs, owned by the industrial-truck committee | the **warehouse and plant** mobile-base standard |
 | **ISO 17757:2019** | **autonomous and semi-autonomous earth-moving and mining machines** | the standard for an autonomous excavator or loader — the ISO 6165 machine classes, outdoors |
+
+The takeaway: each standard is scoped to a kind of machine, so check the machine before you accept the citation.
 
 > [!warning] Two mistakes that are easy to make with these numbers
 > **ISO/TS 15066 is not withdrawn.** ISO 10218:2025 folded the collaborative-application and
@@ -138,11 +146,11 @@ but you cannot check a safety claim without knowing which document defines the t
 > written for outdoor autonomous earth-moving machines. The real gap is narrower and more
 > interesting — learned perception, and a site layout that changes weekly.
 
-**The four methods of safe interaction** are the vocabulary a pHRI paper's safety paragraph is
-written in. Note that the 2025 revision **renamed the first one**: what the 2011 edition and
-TS 15066 call a *safety-rated monitored stop* is **monitored standstill** in ISO 10218-2:2025,
-because it is used for more than collaborative applications. The other three names are
-unchanged.
+**The four collaboration methods.** These are the vocabulary a pHRI paper's safety paragraph is
+written in. Note that the 2025 revision **renamed the first one**. What the 2011 edition and
+TS 15066 call a *safety-rated monitored stop* is **monitored standstill** in ISO 10218-2:2025.
+The reason is that it is used for more than collaborative applications. The other three names
+are unchanged.
 
 | Method | The mechanism | What it costs |
 |---|---|---|
@@ -151,22 +159,27 @@ unchanged.
 | **Speed and separation monitoring (SSM)** | keep a *protective separation distance*; slow or stop as it closes | needs reliable person tracking |
 | **Power and force limiting (PFL)** | contact is permitted, bounded by force/pressure limits per body region | caps speed and payload by design |
 
+The takeaway: every method trades something away, and the last column names what.
+
 The two that generate research are the last two, and they fail differently. SSM's separation
-distance is a **sum of six contributions**, not a threshold: how far the operator travels while
-the robot reacts *and* stops, how far the robot travels during its reaction time, its stopping
-distance, the **intrusion distance** $C$ — how far a body part reaches into the sensing field
-before it is detected at all — and the position uncertainty of the operator and of the robot.
-Every learned-perception paper that claims to enable SSM is making a claim about $C$ and the
-two uncertainty terms, and detector latency enters the distance directly. PFL's limits are
-**per body region** — the tolerable force on a hand differs from that on a face — and are split
-by contact type, *quasi-static* (the body part is trapped against a surface) versus *transient*
-(it can recoil). "Under the force limit" is meaningless without naming region and contact type.
+distance is a **sum of six contributions**, not a threshold. They are: how far the operator
+travels while the robot reacts *and* stops; how far the robot travels during its reaction time;
+its stopping distance; the **intrusion distance** $C$ — how far a body part reaches into the
+sensing field before it is detected at all; and the position uncertainty of the operator and of
+the robot. Every learned-perception paper that claims to enable SSM is making a claim about $C$
+and the two uncertainty terms. Detector latency enters the distance directly. PFL's limits are
+**per body region** — the tolerable force on a hand differs from that on a face. They are also
+split by contact type: *quasi-static* (the body part is trapped against a surface) versus
+*transient* (it can recoil). "Under the force limit" is meaningless without naming region and
+contact type.
 
 For construction, match the standard to the machine: a wheeled or tracked **autonomous
 earth-moving machine** against ISO 17757, an **arm working next to a person** against ISO
 10218, an **AMR moving material in a plant** against ISO 3691-4. None of them was written for
-an unfenced, weather-exposed site whose layout changes week to week — but say that against the
+an unfenced, weather-exposed site whose layout changes week to week. But say that against the
 named standard, not against "safety" in general.
+
+**What the separation distance costs.** The example below puts numbers on the six-term sum.
 
 > [!example] Worked example · 계산 예제
 > **What the separation distance costs you.** ISO/TS 15066 sizes speed-and-separation
@@ -362,6 +375,12 @@ Finally, state the strongest conclusion that the design could support: under the
 
 ### 6. 안전 어휘
 
+이 절은 안전 문단이 쓰이는 어휘를 네 단계로 준다. 먼저 일반 어휘, 다음으로 어느 표준이 무엇을
+정의하는지 본다. 이어서 네 가지 협동 방법을 보고, 마지막으로 이격 거리가 무엇을 앗아가는지
+계산 예제로 확인한다.
+
+**일반 어휘.**
+
 | 용어 | 의미 |
 |---|---|
 | Hazard | 잠재적 해의 원천·상황 |
@@ -376,9 +395,9 @@ Finally, state the strongest conclusion that the design could support: under the
 작은 시험에서 충돌이 없었다는 이유만으로 학습 정책이 "안전"한 것은 아니다. 안전은 센싱,
 제어, 하드웨어, 사람, 환경, 절차, 증거가 얽힌 시스템 속성이다.
 
-**논문이 인용할 표준들.** 안전 절은 표준 번호를 약칭처럼 인용하고, 그 약칭이 실제 주장을
-지고 있다. 우리는 인증하는 것이 아니라 읽는 것이지만, 어느 문서가 그 용어를 정의하는지
-모르면 안전 주장을 검증할 수 없다.
+**어느 표준이 무엇을 말하는가.** 안전 절은 표준 번호를 약칭처럼 인용한다. 그 약칭이 실제
+주장을 지고 있다. 우리는 인증하는 것이 아니라 읽는 것이다. 그래도 어느 문서가 그 용어를
+정의하는지 모르면 안전 주장을 검증할 수 없다.
 
 | 표준 | 대상 | 읽는 사람에게 주는 것 |
 |---|---|---|
@@ -387,6 +406,8 @@ Finally, state the strongest conclusion that the design could support: under the
 | **ISO 13482:2014** | 개인 돌봄 로봇 | 사람과 물리적으로 접촉하는 서비스 로봇. 개정판 ISO/FDIS 13482 *Safety requirements for service robots*는 범위를 개인·전문 서비스 로봇으로 넓히며, 유럽에서는 EN ISO 13482:2026으로 인용된다 — 어느 쪽이든 인용 전에 ISO 카탈로그에서 발행판을 확인하라 |
 | **ISO 3691-4:2023** | 무인 산업 차량 — AGV·AMR, 산업차량 위원회 소관 | **창고와 공장**의 이동 베이스 표준 |
 | **ISO 17757:2019** | **자율·반자율 토공 및 광산 기계** | 자율 굴착기나 로더의 표준 — ISO 6165 기계 분류, 옥외 |
+
+요점: 표준마다 대상 기계가 정해져 있으니, 인용을 받아들이기 전에 기계부터 확인하라.
 
 > [!warning] 이 번호들에서 저지르기 쉬운 두 가지 실수
 > **ISO/TS 15066은 폐지되지 않았다.** ISO 10218:2025가 협동 응용과 동력 및 힘 제한(Power and Force Limiting, PFL) 요구사항을
@@ -402,8 +423,8 @@ Finally, state the strongest conclusion that the design could support: under the
 > 옥외 자율 토공 기계를 위해 쓰였다. 진짜 빈틈은 더 좁고 더 흥미롭다 — 학습된 인지, 그리고
 > 주 단위로 바뀌는 현장 배치.
 
-**안전한 상호작용의 네 가지 방법**은 pHRI 논문의 안전 문단이 쓰이는 어휘다. 2025년 개정이
-**첫 번째의 이름을 바꿨다는 점**을 유의하라: 2011년판과 TS 15066이 *safety-rated monitored
+**네 가지 협동 방법.** 이것이 pHRI 논문의 안전 문단이 쓰이는 어휘다. 2025년 개정이
+**첫 번째의 이름을 바꿨다는 점**을 유의하라. 2011년판과 TS 15066이 *safety-rated monitored
 stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**이다. 협동 응용 외에도
 쓰이기 때문이다. 나머지 셋의 이름은 그대로다.
 
@@ -414,19 +435,24 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 | **속도·이격 감시(SSM)** | *보호 이격 거리*를 유지하고, 거리가 좁혀지면 감속·정지 | 신뢰할 수 있는 사람 추적이 필요 |
 | **동력 및 힘 제한(PFL)** | 접촉을 허용하되 신체 부위별 힘·압력 한계로 제한 | 설계상 속도와 가반하중이 묶임 |
 
+요점: 모든 방법은 무언가를 내주며, 마지막 열이 그것을 적는다.
+
 연구를 낳는 것은 뒤의 둘이고, 둘은 서로 다르게 실패한다. SSM의 이격 거리는 임계값이 아니라
-**여섯 항의 합**이다: 로봇이 반응하고 *또* 정지하는 동안 조작자가 이동한 거리, 로봇이 반응
-시간 동안 이동한 거리, 로봇의 정지 거리, **침입 거리** $C$ — 신체 부위가 감지되기까지 감지
-영역 안으로 얼마나 들어가는가 — 그리고 조작자와 로봇 각각의 위치 불확실성. SSM을 가능하게
-한다고 주장하는 모든 학습 기반 인지 논문은 사실 $C$와 두 불확실성 항에 대한 주장을 하고 있고,
-검출기의 지연이 그 거리에 직접 들어간다. PFL의 한계는 **신체 부위별**이고 — 손에 허용되는 힘은
-얼굴의 것과 다르다 — 접촉 유형으로도 갈린다: *준정적*(신체 부위가 표면에 끼임) 대 *과도*(튕겨
-나올 수 있음). "힘 한계 이하"는 부위와 접촉 유형을 밝히지 않으면 아무 의미가 없다.
+**여섯 항의 합**이다. 그 항은 다음과 같다: 로봇이 반응하고 *또* 정지하는 동안 조작자가 이동한
+거리; 로봇이 반응 시간 동안 이동한 거리; 로봇의 정지 거리; **침입 거리** $C$ — 신체 부위가
+감지되기까지 감지 영역 안으로 얼마나 들어가는가; 그리고 조작자와 로봇 각각의 위치 불확실성.
+SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지 논문은 사실 $C$와 두 불확실성 항에 대한
+주장을 하고 있다. 검출기의 지연은 그 거리에 직접 들어간다. PFL의 한계는 **신체 부위별**이다 —
+손에 허용되는 힘은 얼굴의 것과 다르다. 접촉 유형으로도 갈린다: *준정적*(신체 부위가 표면에
+끼임) 대 *과도*(튕겨 나올 수 있음). "힘 한계 이하"는 부위와 접촉 유형을 밝히지 않으면 아무
+의미가 없다.
 
 건설에서는 기계에 표준을 맞춰라: 바퀴·궤도형 **자율 토공 기계**는 ISO 17757, 사람 옆에서
 일하는 **팔**은 ISO 10218, 공장에서 자재를 나르는 **AMR**은 ISO 3691-4. 그중 어느 것도 울타리
-없이 날씨에 노출되고 배치가 주 단위로 바뀌는 현장을 위해 쓰이지 않았다 — 다만 그것을 "안전"
+없이 날씨에 노출되고 배치가 주 단위로 바뀌는 현장을 위해 쓰이지 않았다. 다만 그것을 "안전"
 일반이 아니라 이름을 댄 표준에 대고 말하라.
+
+**이격 거리가 무엇을 앗아가는가.** 아래 예제는 여섯 항의 합에 숫자를 넣어 본다.
 
 > [!example] 계산 예제 · Worked example
 > **분리 거리가 실제로 무엇을 앗아가는가.** ISO/TS 15066은 속도·분리 감시를

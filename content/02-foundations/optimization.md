@@ -257,9 +257,11 @@ a trust parameter.
   4. **Complementary slackness**: $\lambda_i\, g_i = 0$ — a constraint either binds
      ($g_i=0$, price $\lambda_i>0$) or is free ($\lambda_i = 0$).
 
-  With differentiable functions they are **necessary** at any optimum where strong duality holds, which for a convex problem
-  follows from a constraint qualification such as Slater's condition (Boyd & Vandenberghe §5.5.3). At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ, which is what SQP and interior-point NLP solvers rely on. For a convex problem they are **also sufficient**. On a non-convex problem — nonlinear MPC, trajectory
-  optimization, the classes §5 lists — a KKT point need not be a minimum at all.
+  In plain terms: KKT is the checklist a solver uses to recognise a candidate optimum; whether an optimum must pass it, and whether passing it proves optimality, depends on the problem.
+  - **Necessary.** With differentiable functions they are **necessary** at any optimum where strong duality holds. For a convex problem, strong duality follows from a constraint qualification such as Slater's condition (Boyd & Vandenberghe §5.5.3).
+    At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ. That is what SQP and interior-point NLP solvers rely on.
+  - **Sufficient.** For a convex problem they are **also sufficient**. On a non-convex problem — nonlinear MPC, trajectory
+    optimization, the classes §5 lists — a KKT point need not be a minimum at all.
 - Worked example — project a point onto a half-space: $\min \tfrac12\|x - p\|^2$ s.t.
   $a^\top x \le b$. Stationarity: $x = p - \lambda a$. If $a^\top p \le b$: $\lambda = 0$,
   $x^* = p$ (constraint free). Else the constraint binds:
@@ -562,9 +564,11 @@ Gauss–Newton으로:
   4. **상보 여유성**: $\lambda_i\, g_i = 0$ — 제약은 구속되거나($g_i=0$, 가격
      $\lambda_i>0$) 놀거나($\lambda_i = 0$) 둘 중 하나다.
 
-  함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요**하고, 볼록 문제에서는 Slater 조건 같은
-  제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3). 일반 비볼록 문제의 국소 최소에서도 LICQ 같은 제약 자격 조건 아래에서는 여전히 필요하며, SQP와 내점법 NLP 솔버가 기대는 것이 이것이다. 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
-  비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
+  쉽게 말해: KKT는 솔버가 최적 후보를 알아보는 점검표다. 최적점이 반드시 이 점검을 통과하는지, 통과하면 최적이 증명되는지는 문제에 따라 다르다.
+  - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
+    일반 비볼록 문제의 국소 최소에서도 LICQ 같은 제약 자격 조건 아래에서는 여전히 필요하다. SQP와 내점법 NLP 솔버가 기대는 것이 이것이다.
+  - **충분조건.** 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
+    비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
 - 계산 예제 — 반공간으로의 투영: $\min \tfrac12\|x - p\|^2$ s.t. $a^\top x \le b$.
   정상성: $x = p - \lambda a$. $a^\top p \le b$이면: $\lambda = 0$, $x^* = p$(제약이 논다).
   아니면 제약이 구속되어: $\lambda = (a^\top p - b)/\|a\|^2$, $x^* = p - \lambda a$ —
