@@ -229,8 +229,108 @@ flowchart LR
 
  Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
 
+### 6. Detection, hypothesis tests, and whitening
+
+- **Detection is a decision, not an estimate.** Often a robot must choose between two explanations of a reading $y$: $H_0$ (nothing there, e.g. no contact) or $H_1$ (something there, e.g. contact). There are two ways to be wrong. A **false alarm** says $H_1$ when $H_0$ is true (probability $P_{FA}$). A **miss** says $H_0$ when $H_1$ is true (probability $1 - P_D$, where $P_D$ is the detection probability). The rules below all compare one statistic, the likelihood ratio, against a threshold:
+  $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
+  Only the threshold $\eta$ differs between rules, because the ratio already carries everything the reading says about which hypothesis produced it.
+  - **MAP rule** (fewest total errors): $\eta = P(H_0)/P(H_1)$. This is Bayes' rule from §1 applied to two hypotheses, so a rare event needs stronger evidence before you declare it.
+  - **Neyman–Pearson** (no trustworthy prior, or errors with unequal costs): fix the false-alarm rate you can tolerate, $P_{FA} = \alpha$, and set $\eta$ to hit it. The lemma says no other test with that $P_{FA}$ has a higher $P_D$.
+  - **Sweeping the threshold** from $\eta = \infty$ down to $0$ moves $(P_{FA}, P_D)$ from $(0,0)$ to $(1,1)$. That path is the ROC curve of [[02-foundations/ml-practice|9. ML Practice §3]]: $P_D$ is its TPR and $P_{FA}$ its FPR.
+
+> [!example] Worked example · 계산 예제
+> **Contact or not, from one force reading.** With no contact the wrist sensor reads pure noise, $y \sim \mathcal{N}(0,\,0.4^2)$ N. In contact it reads $y \sim \mathcal{N}(1.0,\,0.4^2)$ N.
+> - *The test becomes a threshold on $y$.* Both hypotheses share one variance, so $\log\Lambda(y) = (y - 0.5)/0.4^2$ grows with $y$ and "$\Lambda > \eta$" is the same as "$y > \tau$" with $\tau = 0.5 + 0.16\ln\eta$. Write $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$ for the Gaussian upper tail.
+> - *Equal priors* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
+> - *Contact is rare*, $P(H_1) = 0.1$, so $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. This is the base-rate effect of §1 again, now moving a threshold.
+> - *Neyman–Pearson at $\alpha = 0.01$*: $Q^{-1}(0.01) = 2.326$, so $\tau = 0.4 \times 2.326 = 0.931$ N and $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
+>
+> Cutting false alarms tenfold (0.106 → 0.01) cost more than a third of the detections (0.894 → 0.569). Moving the threshold only slides you along one ROC curve. A better sensor, meaning a larger offset relative to the noise ($1.0/0.4 = 2.5$ here), lifts the whole curve.
+
+- **A hypothesis test is detection applied to a claim.** $H_0$ is the "nothing is going on" story (method B is no better than A). The test statistic plays the role of $y$, and the significance level $\alpha$ is the false-alarm rate you accept. The **p-value** is the probability, *computed assuming $H_0$ is true*, of a statistic at least as extreme as the one observed. Three misreadings to catch in papers:
+  1. It is **not** $P(H_0 \mid \text{data})$. That needs a prior, exactly as in the crack example of §1.
+  2. It is **not** the size of the effect. A negligible improvement measured over enough trials still gets a tiny p.
+  3. $p > 0.05$ is **not** evidence of no difference. With few trials the test may simply be unable to see one.
+- **Compare two methods on the same trials, pair by pair.** When A and B run on the same 10 objects (or seeds, or scenes), object-to-object difficulty cancels in the per-trial differences $d_i = s_i^{B} - s_i^{A}$.
+  - The **paired t-test** uses $t = \bar d / (s_d/\sqrt{n})$, which follows a $t$ distribution with $n-1$ degrees of freedom under $H_0$ if the differences are roughly normal.
+  - The **sign test** only counts who won each pair. A **permutation test** randomly flips the signs of the $d_i$ to build the null distribution. Neither needs normality.
+  - *Example:* B beats A on 9 of 10 objects, with no ties. Under $H_0$ each win is a fair coin flip, so the two-sided sign test gives $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$.
+  - A **bootstrap CI** resamples the $n$ differences with replacement thousands of times and reports the 2.5th and 97.5th percentiles of the resampled mean. For how many trials to run and which interval to report, see [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
+- **Multiple comparisons.** Twenty independent tests of true nulls at $\alpha = 0.05$ give at least one "significant" result with probability $1 - 0.95^{20} = 0.64$. So divide $\alpha$ by the number of tests (Bonferroni: $0.05/20 = 0.0025$), or predeclare the one comparison that matters.
+- **Whitening turns a correlated Gaussian into an isotropic one.** Factor the covariance with Cholesky, $\Sigma = LL^\top$, with $L$ lower triangular (it exists since $\Sigma$ is positive definite). Then
+  $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
+  by the affine rule of §3, so every direction of $z$ has unit variance and no correlation. Run it backwards, $x = \mu + Lz$ with $z \sim \mathcal{N}(0, I)$, and you have **coloring**, the standard way to sample a correlated Gaussian. Any square root of $\Sigma$ works (the eigendecomposition gives one too); Cholesky is the cheapest.
+- **Mahalanobis distance is Euclidean distance after whitening.**
+  $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
+  This holds because $\Sigma^{-1} = L^{-\top}L^{-1}$. For Gaussian $x$ in $k$ dimensions, $z$ has $k$ independent standard-normal entries, so $d^2$ is a sum of $k$ squared standard normals, which is a $\chi^2_k$ variable.
+  - **Gating** in a tracker uses exactly this. A measurement is associated with a track only if the $d^2$ of its innovation (measurement minus prediction, with the innovation covariance as $\Sigma$; see [[04-robotics/state-estimation-slam|State Estimation §6]]) is below a $\chi^2_k$ quantile.
+  - For $k = 2$ the $\chi^2_2$ CDF is $1 - e^{-d^2/2}$, so the 99% gate is $d^2 < -2\ln 0.01 = 9.21$. In a million simulated Gaussian residuals, 98.99% fell inside.
+
+> [!example] Worked example · 계산 예제
+> **Same distance, different surprise.** Take $\Sigma = \begin{pmatrix}4&2\\2&3\end{pmatrix}$, whose Cholesky factor is $L = \begin{pmatrix}2&0\\1&\sqrt2\end{pmatrix}$.
+> - Residuals $(3, 3)$ and $(3, -3)$ are both $4.24$ from the mean in plain Euclidean distance.
+> - Whitening $(3, 3)$ gives $z = (1.5,\ 1.06)$ and $d^2 = 3.375$, well inside the 9.21 gate.
+> - Whitening $(3, -3)$ gives $z = (1.5,\ -3.18)$ and $d^2 = 12.375$, so the gate rejects it.
+>
+> The positive covariance says the two coordinates tend to err together. A residual that goes against that pattern is far more surprising. This is the "same displacement, different surprise" point of §3, in numbers.
+
+### 7. Markov chains and hidden Markov models
+
+- **A finite Markov chain** is a state $X_n \in \{1,\dots,S\}$ that jumps with fixed probabilities $P_{ij} = P(X_{n+1}=j \mid X_n = i)$. Convention on this page: **rows are "from" and columns are "to"**, so each row of $P$ sums to 1 (row-stochastic) and distributions are row vectors. By total probability $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, that is $\pi_{n+1} = \pi_n P$, and so $\pi_n = \pi_0 P^n$.
+- **Stationary distribution.**
+  $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
+  A distribution that satisfies this is unchanged by one more step, so it is where the chain settles if it settles at all.
+  - For a finite chain, **irreducible** (every state can reach every other) plus **aperiodic** (no forced cycle such as "odd steps in A, even steps in B") guarantees exactly one such $\pi$, and $\pi_n \to \pi$ from any start. Then $\pi_i$ is also the long-run fraction of time spent in state $i$.
+  - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually in total variation), starting from the worst initial state.
+- **Why it matters here.** *MCMC* runs the idea in reverse: design a chain whose stationary distribution is the posterior you cannot sample directly, run it past its mixing time, and use its states as samples. The *forward noising process* of [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$, is a Markov chain on images whose distribution approaches $\mathcal{N}(0, I)$; the learned model runs the chain backwards.
+
+> [!example] Worked example · 계산 예제
+> **A machine that is working (W), idle (I) or broken (B)**, checked once an hour, with rows W, I, B:
+> $P = \begin{pmatrix}0.7&0.2&0.1\\0.5&0.4&0.1\\0.6&0&0.4\end{pmatrix}$
+> - *Solve $\pi P = \pi$ one column at a time.* Column I: $\pi_I = 0.2\pi_W + 0.4\pi_I$, so $\pi_I = \pi_W/3$. Column B: $\pi_B = 0.1\pi_W + 0.1\pi_I + 0.4\pi_B$, so $0.6\pi_B = 0.1(\pi_W + \pi_W/3)$ and $\pi_B = 2\pi_W/9$.
+> - *Normalize:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$, so $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. Over the long run the machine is broken one hour in seven.
+> - *Power iteration from "broken"*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, and $\pi_{10}$ matches $\pi$ to four decimals.
+>
+> Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$, here $0.3$: the gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
+
+- **Hidden Markov model (HMM).** The chain $X_t$ is not observed. At each step the current state $j$ emits an observation $y_t$ with probability $B_j(y_t) = p(y_t \mid X_t = j)$. Two questions, each answered by a pass over a $T \times S$ table:
+  - **Filtering: where is it now?** The **forward algorithm** carries $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$:
+    $$\alpha_t(j) \propto B_j(y_t)\,\textstyle\sum_i \alpha_{t-1}(i)\,P_{ij}$$
+    The sum is the predict step and the multiplication is the correct step, so this is the Bayes filter of [[04-robotics/state-estimation-slam|State Estimation §4]] with the integral replaced by a sum. Normalize at every step so the numbers do not underflow.
+  - **Decoding: what most likely happened?** **Viterbi** replaces the sum with a max and records which predecessor won, $\delta_t(j) = \log B_j(y_t) + \max_i \big(\delta_{t-1}(i) + \log P_{ij}\big)$, then follows the back-pointers from the best final state. It is dynamic programming ([[02-foundations/algorithms/dynamic-programming|11.5 Dynamic Programming]]) because the best path into state $j$ at step $t$ must extend the best path into some state at step $t-1$.
+  - **Cost:** both run in $O(T S^2)$, since each of $S$ states looks at $S$ predecessors at each of $T$ steps. Enumerating paths would cost $S^T$.
+
+A two-state machine you can only hear: working (0) or worn (1), and each hour the vibration is quiet (0) or loud (1). Readings: quiet, quiet, loud, loud, loud, quiet, loud. Log-space keeps long sequences from underflowing.
+
+```python
+import numpy as np
+
+def viterbi(log_pi, log_A, log_B, obs):
+    """log_pi (S,), log_A (S,S) rows = from, log_B (S,O). Returns the best state path."""
+    T, S = len(obs), len(log_pi)
+    delta = log_pi + log_B[:, obs[0]]        # best log-prob of a path ending in each state
+    back = np.zeros((T, S), dtype=int)       # back[t, j] = best predecessor of j at step t
+    for t in range(1, T):
+        scores = delta[:, None] + log_A      # scores[i, j] = best path to i, then i -> j
+        back[t] = scores.argmax(axis=0)
+        delta = scores.max(axis=0) + log_B[:, obs[t]]
+    path = [int(delta.argmax())]
+    for t in range(T - 1, 0, -1):            # follow the back-pointers home
+        path.append(int(back[t, path[-1]]))
+    return path[::-1]
+
+A = np.array(((0.95, 0.05), (0.10, 0.90)))   # 0 = working, 1 = worn
+B = np.array(((0.8, 0.2), (0.3, 0.7)))       # 0 = quiet, 1 = loud
+print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
+```
+
+- **Output:** `[0, 0, 1, 1, 1, 1, 1]`, worn from hour 3 onward, including the quiet hour 6. The function was checked against brute-force enumeration of all $S^T$ paths on 300 random small models.
+- **Filter and decoder disagree, and both are right.** The forward filter puts $P(\text{worn})$ at only $0.229$ at hour 3 and $0.481$ at hour 6. The filter may use only readings up to now. Viterbi picks the whole sequence at once, so the later loud readings pull hour 3 toward "worn", and one quiet hour between loud ones is cheaper to explain as a quiet worn machine than as two switches ($0.10$, then $0.05$). Drop the final loud reading and Viterbi returns all six hours as working: the last hour of evidence rewrote the whole story.
+
 > [!tip] Going deeper · 더 깊이
 > If the Gaussian toolbox is too compressed, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.2–3 is the slower version — but not for the Kalman derivation, which that book explicitly defers to its sequel, *Advanced Topics*. Wasserman's *All of Statistics* is the compact reference. Neither tells you which of these appear in robotics papers — that is this page's job.
+>
+> Sources for §6–§7: Neyman & Pearson, "On the problem of the most efficient tests of statistical hypotheses", *Phil. Trans. R. Soc. A* (1933), the lemma; Rabiner, "A tutorial on hidden Markov models and selected applications in speech recognition", *Proc. IEEE* 77(2):257–286 (1989), still the standard introduction to the forward algorithm and Viterbi; Viterbi, "Error bounds for convolutional codes and an asymptotically optimum decoding algorithm", *IEEE Trans. Inf. Theory* 13(2) (1967); Levin & Peres, *Markov Chains and Mixing Times* (AMS), for stationary distributions and mixing.
 
 ### Self-check
 
@@ -240,12 +340,20 @@ flowchart LR
 3. Conditional on a fixed $x_0$, show why $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
    ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]) has the claimed distribution.
 4. In the Kalman gain, what happens as sensor noise $R \to 0$? As $R \to \infty$? Interpret.
+5. A paper reports $p = 0.03$ for "our method beats the baseline" over 5 seeds and concludes "there is a 97% chance our method is better." What is wrong, and what would you ask for?
+6. A tracker measures 3-D positions and reuses the 2-D gate $d^2 < 9.21$. What fraction of true measurements does it now reject, and what should the gate be?
+7. In the machine chain of §7, repairs get faster: the broken row becomes $(0.9,\ 0,\ 0.1)$. Find the new stationary distribution.
+8. Why can the Viterbi path disagree with the most likely state from the forward filter at the same hour? Which would you use for an online wear alarm, and which for labeling a logged run?
 
 > [!tip]- Answers
 > 1. $P(c|+) = \frac{0.95 \times 0.2}{0.95\times 0.2 + 0.05\times 0.8} = \frac{0.19}{0.23} \approx 0.83$. The same detector's alarm jumps from 16% to 83% trustworthy purely because the base rate rose — a detector's value is set by *where you deploy it*, not by its sensitivity alone.
 > 2. Gaussian: $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + C$, so maximizing the likelihood is minimizing the sum of squares (MSE). Categorical: $\log\prod_i p_{y_i} = \sum_i \log p_{y_i}$, so maximizing it is minimizing $-\sum_i\log p_{y_i}$ — exactly cross-entropy.
 > 3. Conditional on $x_0$, the first term is a fixed mean (a deterministic shift) and only $\sqrt{1-\bar\alpha_t}\,\epsilon$ is Gaussian noise. Their conditional sum is therefore $\mathcal{N}(\sqrt{\bar\alpha_t}x_0,\,(1-\bar\alpha_t)I)$.
 > 4. $R \to 0$: the gain $K$ grows and the estimate snaps onto the measurement (the sensor is trusted completely). $R \to \infty$: $K \to 0$, the measurement is ignored and the filter coasts on the model prediction. The gain is a *ratio* of trust, not a tuning knob set by hand.
+> 5. The p-value is the probability of data this extreme *if there were no difference*. "97% chance better" is $P(H_1 \mid \text{data})$, which needs a prior (misreading 1), and $p$ says nothing about how large the gain is (misreading 2). Ask for the per-seed paired differences with an effect size and a confidence interval, and for how many comparisons were run before this one was reported.
+> 6. In 3-D, $d^2$ is $\chi^2_3$, and $P(\chi^2_3 < 9.21) = 0.973$. The gate rejects about 2.7% of true measurements instead of 1%. The 99% gate for $k = 3$ is $d^2 < 11.34$: the quantile depends on the measurement dimension.
+> 7. Column I is unchanged, so $\pi_I = \pi_W/3$. Column B gives $0.9\pi_B = 0.1(\pi_W + \pi_I)$, so $\pi_B = 4\pi_W/27$. Normalizing, $\pi_W(1 + 1/3 + 4/27) = 40\pi_W/27 = 1$, so $\pi = (27/40,\ 9/40,\ 1/10) = (0.675,\ 0.225,\ 0.100)$. Broken time falls from 1/7 (14.3%) to 10%.
+> 8. The filter at hour $t$ uses only readings up to $t$; Viterbi chooses the single most probable *whole* path, so later readings can revise earlier hours. An online alarm cannot wait for the future, so use the filter. For labeling a logged run use Viterbi (or forward–backward smoothing if you want per-hour probabilities).
 
 ### Robotics bridge
 
@@ -463,8 +571,108 @@ flowchart LR
  비선형
   버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
 
+### 6. 검출, 가설 검정, 백색화
+
+- **검출은 추정이 아니라 결정이다.** 로봇은 측정값 $y$에 대한 두 설명 중 하나를 골라야 할 때가 많다: $H_0$(아무것도 없음, 예: 접촉 없음) 또는 $H_1$(무언가 있음, 예: 접촉). 틀리는 방식은 두 가지다. **오경보는** $H_0$가 참인데 $H_1$이라고 말하는 것이다(확률 $P_{FA}$). **놓침은** $H_1$이 참인데 $H_0$라고 말하는 것이다(확률 $1 - P_D$, $P_D$는 검출 확률). 아래 규칙들은 모두 같은 통계량인 우도비를 문턱값과 비교한다:
+  $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
+  규칙마다 달라지는 것은 문턱값 $\eta$뿐이다. 어느 가설이 이 측정값을 만들었는지에 대해 측정값이 말해주는 모든 것을 비율이 이미 담고 있기 때문이다.
+  - **MAP 규칙**(전체 오류 최소): $\eta = P(H_0)/P(H_1)$. §1의 베이즈 정리를 두 가설에 적용한 것이므로, 드문 사건일수록 선언하기 전에 더 강한 증거가 필요하다.
+  - **네이만–피어슨**(믿을 만한 사전확률이 없거나 두 오류의 비용이 다를 때): 감당할 수 있는 오경보율 $P_{FA} = \alpha$를 고정하고 그에 맞게 $\eta$를 정한다. 보조정리는 같은 $P_{FA}$를 갖는 어떤 검정도 이보다 높은 $P_D$를 갖지 못한다고 말한다.
+  - **문턱값을 훑으면** $\eta = \infty$에서 $0$까지 가는 동안 $(P_{FA}, P_D)$가 $(0,0)$에서 $(1,1)$로 움직인다. 그 경로가 [[02-foundations/ml-practice|9. ML 실무 §3]]의 ROC 곡선이다: $P_D$가 TPR이고 $P_{FA}$가 FPR이다.
+
+> [!example] 계산 예제 · Worked example
+> **힘 측정값 하나로 접촉 여부 판단.** 접촉이 없으면 손목 센서는 순수 잡음 $y \sim \mathcal{N}(0,\,0.4^2)$ N을 읽는다. 접촉 중이면 $y \sim \mathcal{N}(1.0,\,0.4^2)$ N을 읽는다.
+> - *검정이 $y$에 대한 문턱값이 된다.* 두 가설의 분산이 같으므로 $\log\Lambda(y) = (y - 0.5)/0.4^2$는 $y$에 대해 증가하고, "$\Lambda > \eta$"는 $\tau = 0.5 + 0.16\ln\eta$인 "$y > \tau$"와 같다. 가우시안 위쪽 꼬리를 $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$로 쓴다.
+> - *사전확률이 같을 때* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
+> - *접촉이 드물 때*, $P(H_1) = 0.1$이므로 $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. §1의 기저율 효과가 이번에는 문턱값을 움직인다.
+> - *$\alpha = 0.01$인 네이만–피어슨*: $Q^{-1}(0.01) = 2.326$이므로 $\tau = 0.4 \times 2.326 = 0.931$ N, $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
+>
+> 오경보를 10분의 1로 줄이자(0.106 → 0.01) 검출의 3분의 1 넘게를 잃었다(0.894 → 0.569). 문턱값을 옮기는 것은 하나의 ROC 곡선 위를 미끄러질 뿐이다. 더 좋은 센서, 즉 잡음 대비 더 큰 오프셋(여기서는 $1.0/0.4 = 2.5$)이 곡선 전체를 끌어올린다.
+
+- **가설 검정은 주장에 적용한 검출이다.** $H_0$는 "아무 일도 없다"는 이야기다(방법 B가 A보다 낫지 않다). 검정 통계량이 $y$ 역할을 하고, 유의수준 $\alpha$는 받아들이는 오경보율이다. **p-값은** *$H_0$가 참이라고 가정하고 계산한*, 관측된 것만큼 또는 그보다 극단적인 통계량이 나올 확률이다. 논문에서 잡아내야 할 세 가지 오독:
+  1. $P(H_0 \mid \text{데이터})$가 **아니다**. 그것을 구하려면 사전확률이 필요하다. §1의 균열 예제와 똑같다.
+  2. 효과의 크기가 **아니다**. 무시할 만한 개선도 시행을 충분히 많이 하면 아주 작은 p를 받는다.
+  3. $p > 0.05$는 차이가 없다는 증거가 **아니다**. 시행이 적으면 검정이 차이를 볼 능력이 없을 수 있다.
+- **두 방법은 같은 시행에서, 쌍으로 비교한다.** A와 B를 같은 물체 10개(또는 시드, 장면)에서 돌리면, 시행별 차이 $d_i = s_i^{B} - s_i^{A}$에서 물체마다 다른 난이도가 상쇄된다.
+  - **대응 t-검정은** $t = \bar d / (s_d/\sqrt{n})$를 쓰고, 차이가 대략 정규분포이면 $H_0$ 아래에서 자유도 $n-1$인 $t$ 분포를 따른다.
+  - **부호 검정은** 각 쌍에서 누가 이겼는지만 센다. **순열 검정은** $d_i$의 부호를 무작위로 뒤집어 귀무분포를 만든다. 둘 다 정규성이 필요 없다.
+  - *예:* B가 물체 10개 중 9개에서 A를 이겼고 동률은 없다. $H_0$ 아래에서 각 승리는 공정한 동전 던지기이므로, 양측 부호 검정은 $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$을 준다.
+  - **부트스트랩 CI는** $n$개의 차이를 복원추출로 수천 번 다시 뽑아, 재표본 평균의 2.5와 97.5 백분위수를 보고한다. 시행을 몇 번 할지, 어떤 구간을 보고할지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]를 보라.
+- **다중 비교.** 참인 귀무가설 20개를 $\alpha = 0.05$로 독립적으로 검정하면 적어도 하나가 "유의"하게 나올 확률이 $1 - 0.95^{20} = 0.64$다. 그러므로 $\alpha$를 검정 수로 나누거나(본페로니: $0.05/20 = 0.0025$), 중요한 비교 하나를 미리 선언한다.
+- **백색화는 상관된 가우시안을 등방 가우시안으로 바꾼다.** 공분산을 촐레스키로 분해한다: $\Sigma = LL^\top$, $L$은 하삼각행렬이다($\Sigma$가 양의 정부호이므로 존재한다). 그러면
+  $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
+  §3의 아핀 규칙에 따라 이 식이 성립하므로, $z$의 모든 방향은 분산이 1이고 상관이 없다. 거꾸로 $z \sim \mathcal{N}(0, I)$에서 $x = \mu + Lz$를 만들면 **채색**(coloring)이 되는데, 상관된 가우시안을 샘플링하는 표준 방법이다. $\Sigma$의 어떤 제곱근이든 되지만(고유분해로도 하나 얻는다) 촐레스키가 가장 싸다.
+- **마할라노비스 거리는 백색화한 뒤의 유클리드 거리다.**
+  $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
+  $\Sigma^{-1} = L^{-\top}L^{-1}$이기 때문에 성립한다. $k$차원 가우시안 $x$라면 $z$는 서로 독립인 표준정규 성분 $k$개를 가지므로, $d^2$는 표준정규의 제곱 $k$개의 합, 즉 $\chi^2_k$ 확률변수다.
+  - 추적기의 **게이팅**(gating)이 정확히 이것을 쓴다. 측정값의 innovation(측정 빼기 예측, $\Sigma$ 자리에 innovation 공분산; [[04-robotics/state-estimation-slam|상태 추정 §6]] 참고)의 $d^2$가 $\chi^2_k$ 분위수보다 작을 때만 그 측정을 트랙에 연관한다.
+  - $k = 2$이면 $\chi^2_2$의 CDF는 $1 - e^{-d^2/2}$이므로 99% 게이트는 $d^2 < -2\ln 0.01 = 9.21$이다. 가우시안 잔차 백만 개를 시뮬레이션하면 98.99%가 안에 들어왔다.
+
+> [!example] 계산 예제 · Worked example
+> **같은 거리, 다른 놀라움.** $\Sigma = \begin{pmatrix}4&2\\2&3\end{pmatrix}$를 잡으면 촐레스키 인수는 $L = \begin{pmatrix}2&0\\1&\sqrt2\end{pmatrix}$다.
+> - 잔차 $(3, 3)$과 $(3, -3)$은 보통의 유클리드 거리로 둘 다 평균에서 $4.24$ 떨어져 있다.
+> - $(3, 3)$을 백색화하면 $z = (1.5,\ 1.06)$, $d^2 = 3.375$로 9.21 게이트 안쪽 깊숙이 있다.
+> - $(3, -3)$을 백색화하면 $z = (1.5,\ -3.18)$, $d^2 = 12.375$이므로 게이트가 기각한다.
+>
+> 양의 공분산은 두 좌표가 함께 틀리는 경향이 있다는 뜻이다. 그 패턴을 거스르는 잔차는 훨씬 더 뜻밖이다. §3의 "같은 변위, 다른 놀라움"을 숫자로 본 것이다.
+
+### 7. 마르코프 체인과 은닉 마르코프 모델
+
+- **유한 마르코프 체인은** 고정된 확률 $P_{ij} = P(X_{n+1}=j \mid X_n = i)$로 옮겨 다니는 상태 $X_n \in \{1,\dots,S\}$다. 이 페이지의 규약: **행이 "출발", 열이 "도착"이다**. 그래서 $P$의 각 행의 합이 1이고(행 확률행렬) 분포는 행벡터다. 전확률로 $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, 즉 $\pi_{n+1} = \pi_n P$이므로 $\pi_n = \pi_0 P^n$이다.
+- **정상 분포.**
+  $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
+  이 식을 만족하는 분포는 한 스텝을 더 가도 바뀌지 않으므로, 체인이 어딘가에 자리 잡는다면 바로 여기다.
+  - 유한 체인에서 **기약**(모든 상태가 다른 모든 상태에 도달 가능)과 **비주기**("홀수 스텝엔 A, 짝수 스텝엔 B" 같은 강제 순환이 없음)가 함께 성립하면 그런 $\pi$가 정확히 하나이고, 어디서 시작해도 $\pi_n \to \pi$다. 이때 $\pi_i$는 장기적으로 상태 $i$에 머무는 시간의 비율이기도 하다.
+  - **혼합 시간은** 가장 나쁜 초기 상태에서 출발해 $\pi_n$이 $\pi$에서 정한 거리 안(보통 전변동 거리)으로 들어올 때까지 걸리는 스텝 수다.
+- **여기서 왜 중요한가.** *MCMC*는 이 생각을 거꾸로 쓴다: 직접 샘플링할 수 없는 사후분포를 정상 분포로 갖는 체인을 설계하고, 혼합 시간 너머까지 돌린 뒤, 그 상태들을 샘플로 쓴다. [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]의 *순방향 노이즈 과정* $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$는 분포가 $\mathcal{N}(0, I)$에 다가가는 이미지 위의 마르코프 체인이고, 학습된 모델은 그 체인을 거꾸로 돌린다.
+
+> [!example] 계산 예제 · Worked example
+> **작동(W), 대기(I), 고장(B) 중 하나인 기계를** 한 시간에 한 번 확인한다. 행 순서는 W, I, B:
+> $P = \begin{pmatrix}0.7&0.2&0.1\\0.5&0.4&0.1\\0.6&0&0.4\end{pmatrix}$
+> - *$\pi P = \pi$를 열 하나씩 푼다.* I 열: $\pi_I = 0.2\pi_W + 0.4\pi_I$이므로 $\pi_I = \pi_W/3$. B 열: $\pi_B = 0.1\pi_W + 0.1\pi_I + 0.4\pi_B$이므로 $0.6\pi_B = 0.1(\pi_W + \pi_W/3)$, $\pi_B = 2\pi_W/9$.
+> - *정규화:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$이므로 $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. 장기적으로 기계는 일곱 시간에 한 시간꼴로 고장 나 있다.
+> - *"고장"에서 시작하는 거듭제곱 반복*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, 그리고 $\pi_{10}$은 소수 넷째 자리까지 $\pi$와 같다.
+>
+> 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기, 여기서는 $0.3$이 정한다: $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
+
+- **은닉 마르코프 모델(HMM).** 체인 $X_t$는 관측되지 않는다. 각 스텝에서 현재 상태 $j$가 확률 $B_j(y_t) = p(y_t \mid X_t = j)$로 관측 $y_t$를 내보낸다. 질문 둘, 각각 $T \times S$ 표를 한 번 훑어서 답한다:
+  - **필터링: 지금 어디에 있나?** **순방향 알고리즘은** $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$를 들고 간다:
+    $$\alpha_t(j) \propto B_j(y_t)\,\textstyle\sum_i \alpha_{t-1}(i)\,P_{ij}$$
+    합이 예측 단계이고 곱이 보정 단계이므로, 이것은 [[04-robotics/state-estimation-slam|상태 추정 §4]]의 베이즈 필터에서 적분을 합으로 바꾼 것이다. 수가 언더플로하지 않도록 매 스텝 정규화한다.
+  - **디코딩: 무슨 일이 일어났을 가능성이 가장 큰가?** **비터비는** 합을 max로 바꾸고 어느 선행 상태가 이겼는지 기록한다, $\delta_t(j) = \log B_j(y_t) + \max_i \big(\delta_{t-1}(i) + \log P_{ij}\big)$. 그런 다음 가장 좋은 마지막 상태에서 역포인터를 따라간다. 스텝 $t$에서 상태 $j$로 들어오는 최선 경로는 스텝 $t-1$에서 어떤 상태로 들어오는 최선 경로를 연장한 것이어야 하므로, 이것은 동적 계획법이다([[02-foundations/algorithms/dynamic-programming|11.5 동적 계획법]]).
+  - **비용:** 둘 다 $O(T S^2)$다. $T$개 스텝마다 $S$개 상태가 각각 $S$개 선행 상태를 보기 때문이다. 경로를 전부 나열하면 $S^T$가 든다.
+
+소리로만 알 수 있는 두 상태 기계: 작동(0) 또는 마모(1)이고, 매시간 진동이 조용함(0) 또는 시끄러움(1)이다. 측정: 조용, 조용, 시끄러움, 시끄러움, 시끄러움, 조용, 시끄러움. 로그 공간에서 계산하면 긴 수열도 언더플로하지 않는다.
+
+```python
+import numpy as np
+
+def viterbi(log_pi, log_A, log_B, obs):
+    """log_pi (S,), log_A (S,S) rows = from, log_B (S,O). Returns the best state path."""
+    T, S = len(obs), len(log_pi)
+    delta = log_pi + log_B[:, obs[0]]        # best log-prob of a path ending in each state
+    back = np.zeros((T, S), dtype=int)       # back[t, j] = best predecessor of j at step t
+    for t in range(1, T):
+        scores = delta[:, None] + log_A      # scores[i, j] = best path to i, then i -> j
+        back[t] = scores.argmax(axis=0)
+        delta = scores.max(axis=0) + log_B[:, obs[t]]
+    path = [int(delta.argmax())]
+    for t in range(T - 1, 0, -1):            # follow the back-pointers home
+        path.append(int(back[t, path[-1]]))
+    return path[::-1]
+
+A = np.array(((0.95, 0.05), (0.10, 0.90)))   # 0 = working, 1 = worn
+B = np.array(((0.8, 0.2), (0.3, 0.7)))       # 0 = quiet, 1 = loud
+print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
+```
+
+- **출력:** `[0, 0, 1, 1, 1, 1, 1]`, 3시간째부터 마모이고 조용했던 6시간째도 포함한다. 이 함수는 작은 무작위 모델 300개에서 $S^T$개 경로를 전부 나열하는 방식과 대조해 검사했다.
+- **필터와 디코더가 다르게 말하고, 둘 다 옳다.** 순방향 필터는 3시간째의 $P(\text{마모})$를 $0.229$, 6시간째를 $0.481$로만 본다. 필터는 지금까지의 측정만 쓸 수 있다. 비터비는 수열 전체를 한꺼번에 고르므로, 뒤의 시끄러운 측정이 3시간째를 "마모" 쪽으로 끌어당기고, 시끄러운 시간 사이의 조용한 한 시간은 두 번의 전환($0.10$, 그다음 $0.05$)보다 조용했던 마모 기계로 설명하는 편이 싸다. 마지막 시끄러운 측정을 빼면 비터비는 여섯 시간 전부를 작동으로 돌려준다: 마지막 한 시간의 증거가 이야기 전체를 다시 썼다.
+
 > [!tip] 더 깊이 · Going deeper
 > 가우시안 도구 상자가 너무 압축적이면 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 2~3장이 더 천천히 간다. 다만 칼만 유도는 거기 없다 — 그 책은 그것을 속편 *Advanced Topics*로 넘긴다. Wasserman의 *All of Statistics*가 간결한 참고서다. 다만 그 둘은 이 중 무엇이 로보틱스 논문에 나오는지는 알려주지 않는다 — 그것이 이 페이지의 몫이다.
+>
+> §6–§7의 출처: Neyman & Pearson, "On the problem of the most efficient tests of statistical hypotheses", *Phil. Trans. R. Soc. A* (1933), 보조정리의 원전; Rabiner, "A tutorial on hidden Markov models and selected applications in speech recognition", *Proc. IEEE* 77(2):257–286 (1989), 순방향 알고리즘과 비터비의 여전한 표준 입문; Viterbi, "Error bounds for convolutional codes and an asymptotically optimum decoding algorithm", *IEEE Trans. Inf. Theory* 13(2) (1967); Levin & Peres, *Markov Chains and Mixing Times* (AMS), 정상 분포와 혼합에 대해.
 
 ### 스스로 점검
 
@@ -474,12 +682,20 @@ flowchart LR
 3. $x_0$를 고정해 조건부로 볼 때 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
    ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]])이 주장된 분포를 갖는 이유를 보여라.
 4. 칼만 이득에서 센서 노이즈 $R \to 0$이면? $R \to \infty$면? 해석하라.
+5. 어떤 논문이 시드 5개로 "우리 방법이 기준선보다 낫다"에 대해 $p = 0.03$을 보고하고 "우리 방법이 더 나을 확률이 97%다"라고 결론 내린다. 무엇이 틀렸고, 무엇을 요구하겠는가?
+6. 3차원 위치를 재는 추적기가 2차원 게이트 $d^2 < 9.21$을 그대로 쓴다. 참인 측정 중 몇 %를 기각하게 되고, 게이트는 얼마여야 하는가?
+7. §7의 기계 체인에서 수리가 빨라져 고장 행이 $(0.9,\ 0,\ 0.1)$이 되었다. 새 정상 분포를 구하라.
+8. 같은 시간에 대해 비터비 경로가 순방향 필터의 가장 가능성 높은 상태와 다를 수 있는 이유는? 온라인 마모 경보에는 어느 쪽을, 기록된 실행의 라벨링에는 어느 쪽을 쓰겠는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $P(c|+) = \frac{0.95 \times 0.2}{0.95 \times 0.2 + 0.05 \times 0.8} = \frac{0.19}{0.23} \approx 0.83$ — 기저율이 높은 곳에서는 같은 감지기의 경보 신뢰도가 16%→83%로 뛴다. 감지기의 가치는 배치 장소가 좌우한다.
 > 2. 가우시안: $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + C$ ⇒ 우도 최대화 = 제곱합 최소화(MSE). 카테고리: $\log\prod p_{y_i} = \sum \log p_{y_i}$ ⇒ 교차 엔트로피 최소화와 동일.
 > 3. $x_0$에 조건부로 첫 항은 고정된 평균(결정론적 이동)이고, 둘째 항만 가우시안 잡음이다. 따라서 조건부 합은 $\mathcal{N}(\sqrt{\bar\alpha_t}x_0,(1-\bar\alpha_t)I)$다.
 > 4. $R \to 0$: $K$가 커져 관측에 스냅(센서 완전 신뢰); $R \to \infty$: $K \to 0$, 관측을 무시하고 모델 예측만 따른다.
+> 5. p-값은 *차이가 없다면* 이만큼 극단적인 데이터가 나올 확률이다. "더 나을 확률 97%"는 $P(H_1 \mid \text{데이터})$이고, 이것에는 사전확률이 필요하며(오독 1), $p$는 이득이 얼마나 큰지도 말하지 않는다(오독 2). 시드별 대응 차이와 효과 크기, 신뢰구간을 요구하고, 이 비교를 보고하기 전에 비교를 몇 번 했는지 묻는다.
+> 6. 3차원에서 $d^2$는 $\chi^2_3$이고 $P(\chi^2_3 < 9.21) = 0.973$이다. 게이트가 참인 측정의 1%가 아니라 약 2.7%를 기각한다. $k = 3$의 99% 게이트는 $d^2 < 11.34$다: 분위수는 측정 차원에 따라 달라진다.
+> 7. I 열은 그대로이므로 $\pi_I = \pi_W/3$. B 열은 $0.9\pi_B = 0.1(\pi_W + \pi_I)$를 주므로 $\pi_B = 4\pi_W/27$. 정규화하면 $\pi_W(1 + 1/3 + 4/27) = 40\pi_W/27 = 1$이므로 $\pi = (27/40,\ 9/40,\ 1/10) = (0.675,\ 0.225,\ 0.100)$. 고장 시간이 1/7(14.3%)에서 10%로 준다.
+> 8. 시간 $t$의 필터는 $t$까지의 측정만 쓰고, 비터비는 가장 가능성 높은 *경로 전체* 하나를 고르므로 뒤의 측정이 앞 시간을 고칠 수 있다. 온라인 경보는 미래를 기다릴 수 없으므로 필터를 쓴다. 기록된 실행의 라벨링에는 비터비를 쓴다(시간별 확률이 필요하면 순방향–역방향 스무딩).
 
 ### 로보틱스 다리
 

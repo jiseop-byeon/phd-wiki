@@ -553,8 +553,154 @@ RL results depend on protocol more than those of almost any other subfield. What
 > 알고리즘 이름이 그중 가장 정보가 적다. 두 RL 논문을 비교하기 전에 이 여섯이 일치하는지
 > 확인하라 — 일치하지 않으면 방법이 아니라 문제 정의를 비교하는 것이다.
 
+### 11. Learning the reward: inverse RL and preferences
+
+§7 treated the reward as something an engineer writes. Sometimes nobody can write it down,
+but someone can *show* the behaviour, or say which of two attempts was better. Then the
+reward itself becomes the thing to learn.
+
+**Why learn a reward instead of copying actions.** Behaviour cloning copies actions, and §6
+showed where that breaks: the policy drifts into states its demos never covered, and errors
+compound. A learned reward carries different information.
+
+- It says *why* the expert acted — what they were trading off — not only *what* they did.
+- It transfers. Optimize the same reward under different dynamics, on a different robot, or
+  from a start state no demo began in, and you still get sensible behaviour; a cloned
+  state-to-action map has nothing to say there.
+- It can let the learner do better than an expert who was suboptimal or differently capable.
+
+The price is RL again: a learned reward is only useful once you optimize a policy against it.
+
+**The ambiguity every method has to break.** "The expert is optimal for some reward" does not
+pin the reward down. $r = 0$ makes every policy optimal, the expert included. So does any
+positive rescaling of the true reward, and so does adding the potential-based shaping term of
+§7. Read each method below as one *principle for choosing* among the many rewards that
+explain the same data.
+
+**Feature matching.** Assume a linear reward over hand-chosen features,
+$r(s,a) = w^\top\phi(s,a)$. A policy's expected return is then $w^\top\mu(\pi)$, where
+$\mu(\pi)$ is its discounted feature expectation:
+
+$$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
+
+The return factors this way because the reward is linear, so $w$ comes out of the
+expectation. The useful consequence: if a learner's $\mu$ is within $\epsilon$ of the
+expert's, then for *every* $w$ with $\lVert w\rVert \le 1$ its return is within $\epsilon$
+of the expert's (Cauchy–Schwarz). Matching features guarantees expert-level return without
+ever recovering the true $w$. Concretely: instead of memorizing "turn right at this
+intersection" (useless at an intersection the expert never drove through), notice that the
+expert's routes avoid stop signs and favour high speed limits, and seek routes with the same
+feature counts. **Max-margin planning** (Ratliff, Bagnell & Zinkevich, ICML 2006) turns this
+into a quadratic program: choose the smallest $w$ under which the expert beats every other
+candidate policy by a margin that grows with how different that policy is, with a slack
+variable for an imperfect expert.
+
+**Maximum-entropy IRL** (Ziebart, Maas, Bagnell & Dey, AAAI 2008). Feature matching still
+leaves ambiguity one level up: many trajectory distributions share the same feature
+expectations, and some of them prefer particular paths for no reason the features give.
+MaxEnt's principle is to commit to nothing the features do not demand — among all
+distributions that match the expert's feature counts, take the one with maximum entropy
+([[02-foundations/information-theory|information theory]]). The solution is exponential in
+the reward, with $f(\tau) = \sum_t \phi(s_t,a_t)$ the trajectory's feature count:
+
+$$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
+
+Read it as a noisy expert: since probability grows exponentially with reward, better
+trajectories are exponentially more likely, but worse ones are never impossible. Fit $w$ by
+maximum likelihood on $N$ demonstrations $\tau_1,\dots,\tau_N$:
+
+$$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
+
+The second term appears because the derivative of $\log Z(w)$ is the model's own expected
+feature count, so the gradient is *expert feature counts minus what the current model
+expects*, and it vanishes exactly when the features match. **The cost is in that second
+term.** It is an expectation over every trajectory the current reward makes likely, so each
+gradient step needs a full planning pass under the current $w$. Ziebart et al. compute it
+with a backward pass (a soft, log-sum-exp form of value iteration) and a forward pass for
+state-visitation frequencies; with a sampler instead, it is a forward RL run. The outer loop
+learns the reward, and the inner loop solves an RL problem every time — tractable in small
+discrete worlds, expensive anywhere larger. **GAIL** (Ho & Ermon, NeurIPS 2016) is the
+adversarial descendant: a discriminator that tells expert state-action pairs from the
+policy's plays the role of the learned reward, and the policy is trained against it with RL,
+without recovering an explicit reward first.
+
+> [!example] Worked example · 계산 예제
+> Two trajectories with a scalar feature, $f(\tau_1) = 2$ and $f(\tau_2) = 1$. The expert
+> was recorded four times: $\tau_1$ three times, $\tau_2$ once, so the expert feature sum is
+> $3(2) + 1 = 7$ (mean $1.75$).
+>
+> - **At $w = 0$** both trajectories have probability $0.5$, the model expects $f = 1.5$, and
+>   the gradient is $7 - 4(1.5) = 1.0$ — positive, so raise $w$.
+> - **At $w = 1$**, $P(\tau_1) = e^{2}/(e^{2} + e^{1}) = 0.731$, expected $f = 1.731$, and the
+>   gradient shrinks to $7 - 4(1.731) = 0.076$.
+> - **At $w = \ln 3 \approx 1.099$**, $P(\tau_1) = 0.75$ — the expert's own frequency — expected
+>   $f = 1.75$, and the gradient is exactly $0$.
+>
+> Two readings. The fitted model reproduces the expert's 3-to-1 mix rather than always picking
+> $\tau_1$, which is the "never impossible" of the exponential form. And if all four demos had
+> been $\tau_1$, the gradient $8 - 4E[f]$ would stay positive for every $w$ because $E[f] < 2$,
+> so $w$ would grow without bound — a perfectly consistent expert reads as infinitely
+> confident, which is why practical fits regularize $w$.
+
+**Preferences instead of demonstrations.** Demonstrations are sometimes the wrong ask: a
+high-dimensional arm is hard to teleoperate well, and people who demonstrate driving in
+simulation have been found to prefer a more defensive style than the one they demonstrated (Basu et al., HRI 2017).
+Comparing two attempts is easier. The standard model is **Bradley–Terry** (Bradley & Terry,
+*Biometrika*, 1952):
+
+$$P(A \succ B) = \sigma\big(R(A) - R(B)\big) = \frac{1}{1 + e^{-(R(A) - R(B))}}$$
+
+Only the difference enters, so adding the same constant to every reward changes nothing —
+the ambiguity again, this time as a shift. Fitting it means maximizing
+$\log\sigma(R(A) - R(B))$ over labelled pairs, which is **logistic regression on reward
+differences**. With a linear reward, $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$, so each
+comparison is one logistic-regression example whose input is the feature difference, and a
+noise-free answer cuts the space of possible $w$ in half along the hyperplane
+$w^\top(\phi(A) - \phi(B)) = 0$.
+
+- **Deep RL from human preferences** (Christiano et al., NeurIPS 2017) replaces the linear
+  reward with a neural network fitted to human comparisons of short clips of behaviour,
+  trains the policy with RL against it, and keeps asking for new comparisons as the policy
+  changes.
+- **This is the RLHF reward model.** [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]
+  trains its reward model with a pairwise ranking loss of this form on labeler rankings, then
+  optimizes the policy against it with PPO (§4) under a KL penalty (§9).
+- **DPO** (Rafailov et al., NeurIPS 2023) removes the explicit reward model: for the
+  KL-regularized objective the optimal policy determines the reward, so the Bradley–Terry loss
+  can be written directly in policy log-probability ratios and trained without an RL loop.
+- **Active queries for robots** (Sadigh et al., RSS 2017, "Active Preference-Based Learning
+  of Reward Functions"): since each answer is only one bit, choose the pair to show so that
+  the answer removes as much as possible of the remaining plausible reward weights.
+
+> [!example] Worked example · 계산 예제
+> Linear reward, features $\phi(A) = (1, 0)$, $\phi(B) = (0, 1)$, current weights
+> $w = (0.2, 0.6)$. So $R(A) = 0.2$, $R(B) = 0.6$, and the model predicts
+> $P(A \succ B) = \sigma(-0.4) = 0.401$.
+>
+> The person says **A is better**. The log-likelihood gradient is
+> $(1 - 0.401)\,(\phi(A) - \phi(B)) = (0.599, -0.599)$ — the error times the feature difference,
+> exactly as in logistic regression. One step of size $0.5$:
+>
+> - $w \leftarrow (0.2, 0.6) + 0.5\,(0.599, -0.599) = (0.499, 0.301)$;
+> - the prediction becomes $\sigma(0.199) = 0.550$, and the loss $-\log P$ falls from $0.913$
+>   to $0.599$.
+>
+> The step size scales with $1 - P$, how surprised the model was; a comparison the model
+> already predicted with $P$ near 1 barely moves $w$.
+
+**Reading a reward-learning paper.** Four questions, in order:
+
+| Question | What to check |
+|---|---|
+| What data? | demonstrations, pairwise comparisons or rankings, physical corrections — how many, and from whom (experts, crowd workers, the authors) |
+| What reward class? | linear over hand-designed features (inspectable, but the features carry most of the expertise) vs a neural network (expressive, data-hungry, hard to inspect) |
+| How is it evaluated? | ① the recovered reward against a known true reward (possible only in simulation); ② a policy trained on the learned reward, scored on the *true* task metric; ③ accuracy on held-out preferences. They answer different questions: high ③ does not by itself show good ② |
+| What stops reward hacking? | a learned reward is a proxy exactly like a hand-written one (§7), and it is least reliable where it saw no data — which is where an optimizing policy goes. Look for a KL anchor to a reference policy (§9) or continued querying as the policy changes |
+
 > [!tip] Going deeper · 더 깊이
 > Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is free and is what this page compresses — ch.3–6 for the Bellman machinery, ch.11 for the deadly triad and the divergence counterexample of §3.5, ch.13 for policy gradients. What this page has over it is §6 and §9, the robotics-specific parts the book does not cover.
+>
+> For §11, the primary sources: Ratliff, Bagnell & Zinkevich, "Maximum Margin Planning" (ICML 2006); Ziebart, Maas, Bagnell & Dey, "Maximum Entropy Inverse Reinforcement Learning" (AAAI 2008); Ho & Ermon, "Generative Adversarial Imitation Learning" (NeurIPS 2016); Bradley & Terry, "Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons" (*Biometrika*, 1952); Christiano et al., "Deep Reinforcement Learning from Human Preferences" (NeurIPS 2017); Sadigh et al., "Active Preference-Based Learning of Reward Functions" (RSS 2017); Rafailov et al., "Direct Preference Optimization: Your Language Model is Secretly a Reward Model" (NeurIPS 2023).
 
 ### Self-check
 
@@ -574,6 +720,14 @@ RL results depend on protocol more than those of almost any other subfield. What
 9. A paper reports $1\times10^9$ environment steps with 2,048 parallel environments at
    100 Hz. How much simulated experience is that per environment, and how long would the
    same number take on one real machine?
+10. An expert is optimal for some reward $r$. Name two other rewards under which the same
+    behaviour is optimal, and state the principle MaxEnt IRL uses to choose among them.
+11. MaxEnt IRL with two trajectories, $f(\tau_1) = 3$, $f(\tau_2) = 1$, and one demonstration
+    of $\tau_1$. What is the log-likelihood gradient at $w = 0$, and what happens to $w$ if you
+    keep following it?
+12. A reward model gives $R(A) = 2.0$ and $R(B) = 1.0$. What does Bradley–Terry predict for
+    $P(A \succ B)$, and what changes if every reward is shifted by $+10$? The paper reports 95%
+    held-out preference accuracy — why is that not yet evidence that the robot policy works?
 
 > [!tip]- Answers
 > 1. $V^\pi(s) = E[G_t\mid s] = E[r_t + \gamma G_{t+1}\mid s]$ by splitting the return; the Markov property lets you fold the inner expectation of $G_{t+1}$ into $V^\pi(s')$, giving $V^\pi(s) = E_{a\sim\pi, s'\sim p}[r + \gamma V^\pi(s')]$.
@@ -585,6 +739,9 @@ RL results depend on protocol more than those of almost any other subfield. What
 > 7. The difference between (method + curriculum) and (baseline without curriculum) — that is, it measured the curriculum and the method together. The comparison isolates nothing unless the baseline gets the same curriculum.
 > 8. Because it is a soft trade: a large enough task reward simply buys the penalty, and nothing bounds violations during the exploration that precedes learning. Stronger: a safety filter/envelope that vetoes unsafe commands before the actuator (often an MPC), and a constrained-MDP formulation that optimizes reward subject to an explicit bound on expected violation.
 > 9. $1\times10^9/2{,}048 \approx 488{,}000$ steps per environment; at 100 Hz that is 4,880 s ≈ **1.4 hours** of simulated experience each. On one real machine at 100 Hz: $10^9/100 = 10^7$ s ≈ **116 days**.
+> 10. $r = 0$ (every policy is optimal), any positive rescaling such as $2r$, or $r$ plus a potential-based shaping term $\gamma\Phi(s') - \Phi(s)$ (§7). MaxEnt IRL keeps only distributions that match the expert's feature counts and, among those, takes the maximum-entropy one; that fixes an exponential-family model $P_w(\tau) \propto \exp(w^\top f(\tau))$ whose $w$ is fitted by maximum likelihood.
+> 11. At $w = 0$ both trajectories have probability $0.5$, so the model expects $f = 2$ and the gradient is $3 - 2 = 1$. Because $E[f] < 3$ for every finite $w$, the gradient never reaches zero and $w$ grows without bound; only a regularizer, or a demonstration of $\tau_2$, gives a finite answer.
+> 12. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. The shift changes nothing, since only the difference enters. Held-out accuracy is measured on pairs drawn from the data the model was trained near; a policy optimized against the model moves toward behaviour where the model has seen nothing and can be exploited (reward hacking, §7). The evidence that counts is a policy trained on the learned reward and scored on the true task metric.
 
 ### Robotics bridge
 
@@ -1082,8 +1239,138 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
   후자는 여전히 가치 함수를 부트스트랩해야 하고, 이를 종료로 취급하면 정책에게 "시간 제한에서
   세계가 끝난다"고 조용히 가르치게 된다.
 
+### 11. 보상을 배우기: 역강화학습과 선호
+
+§7은 보상을 엔지니어가 써 넣는 것으로 다뤘다. 그런데 때로는 아무도 보상을 적어 내지 못하고,
+대신 누군가 거동을 *보여 주거나* 두 시도 중 어느 쪽이 나았는지 말해 줄 수는 있다. 그러면
+보상 자체가 배울 대상이 된다.
+
+**행동을 베끼지 않고 보상을 배우는 이유.** 행동 복제는 행동을 베끼고, 그것이 어디서 깨지는지는
+§6이 보였다: 정책이 시연이 덮지 않은 상태로 흘러가고 오차가 누적된다. 학습된 보상은 다른
+정보를 담는다.
+
+- 전문가가 *무엇을* 했는지만이 아니라 *왜* 그렇게 했는지 — 무엇과 무엇을 맞바꿨는지 — 를 말한다.
+- 전이된다. 같은 보상을 다른 동역학, 다른 로봇, 어떤 시연도 시작하지 않은 초기 상태에서
+  최적화해도 말이 되는 거동이 나온다. 복제한 상태→행동 사상은 거기서 할 말이 없다.
+- 전문가가 준최적이거나 능력이 다를 때 학습자가 전문가보다 잘할 여지를 준다.
+
+대가는 다시 RL이다: 학습된 보상은 그것에 대해 정책을 최적화해야 비로소 쓸모가 있다.
+
+**모든 방법이 깨야 하는 모호성.** "전문가는 어떤 보상에 대해 최적이다"라는 말은 보상을 하나로
+정하지 못한다. $r = 0$이면 전문가를 포함한 모든 정책이 최적이다. 참 보상에 양수를 곱해도
+마찬가지이고, §7의 포텐셜 기반 shaping 항을 더해도 마찬가지다. 아래 각 방법은 같은 데이터를
+설명하는 수많은 보상 가운데 하나를 *고르는 원리*로 읽어라.
+
+**특징 맞추기(feature matching).** 손으로 고른 특징 위의 선형 보상
+$r(s,a) = w^\top\phi(s,a)$를 가정한다. 그러면 정책의 기대 리턴은 $w^\top\mu(\pi)$이고,
+$\mu(\pi)$는 할인된 특징 기댓값이다:
+
+$$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
+
+리턴이 이렇게 인수분해되는 것은 보상이 선형이어서 $w$가 기댓값 밖으로 나오기 때문이다. 쓸모
+있는 귀결: 학습자의 $\mu$가 전문가의 것과 $\epsilon$ 이내이면, $\lVert w\rVert \le 1$인
+*모든* $w$에 대해 리턴도 $\epsilon$ 이내다(코시–슈바르츠). 참 $w$를 복원하지 않고도 특징을
+맞추면 전문가 수준의 리턴이 보장된다. 구체적으로: "이 교차로에서 우회전"을 외우는 대신(전문가가
+지나가 본 적 없는 교차로에서는 쓸모없다), 전문가의 경로가 정지 표지판을 피하고 제한 속도가 높은
+길을 좋아한다는 것을 알아채고 같은 특징 합을 내는 경로를 찾는다. **최대 마진 계획**(Maximum
+Margin Planning; Ratliff, Bagnell & Zinkevich, ICML 2006)은 이를 이차 계획 문제로 만든다: 전문가가
+다른 모든 후보 정책을 — 그 정책이 전문가와 다를수록 더 큰 — 마진으로 이기게 하는 가장 작은
+$w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다.
+
+**최대 엔트로피 IRL**(Ziebart, Maas, Bagnell & Dey, AAAI 2008). 특징 맞추기에도 한 층 위의
+모호성이 남는다: 특징 기댓값이 같은 궤적 분포는 많고, 그중 일부는 특징이 주지 않는 이유로 특정
+경로를 편애한다. MaxEnt의 원리는 특징이 요구하지 않는 것에는 아무것도 걸지 않는 것이다 — 전문가의
+특징 합을 맞추는 모든 분포 가운데 엔트로피가 최대인 것을 택한다
+([[02-foundations/information-theory|정보이론]]). 해는 보상에 대해 지수형이며,
+$f(\tau) = \sum_t \phi(s_t,a_t)$는 궤적의 특징 합이다:
+
+$$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
+
+잡음 있는 전문가로 읽으면 된다: 확률이 보상에 지수적으로 커지므로 좋은 궤적일수록 지수적으로
+더 자주 나오지만, 나쁜 궤적도 불가능하지는 않다. 시연 $N$개 $\tau_1,\dots,\tau_N$에 최대우도로
+$w$를 맞추면:
+
+$$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
+
+둘째 항은 $\log Z(w)$의 미분이 모델 자신의 기대 특징 합이기 때문에 생긴다. 그래서 그래디언트는
+*전문가의 특징 합 빼기 현재 모델이 기대하는 특징 합*이고, 특징이 맞는 바로 그때 0이 된다.
+**비용은 그 둘째 항에 있다.** 현재 보상이 그럴듯하게 만드는 모든 궤적에 대한 기댓값이므로,
+그래디언트 한 스텝마다 현재 $w$ 아래의 계획을 한 번 통째로 풀어야 한다. Ziebart 등은 이를
+역방향 패스(log-sum-exp 형태의 soft 가치 반복)와 상태 방문 빈도를 구하는 순방향 패스로 계산하고,
+샘플러로 대신하면 순방향 RL 실행 한 번이 된다. 바깥 루프가 보상을 배우고 안쪽 루프가 매번 RL
+문제를 푼다 — 작은 이산 세계에서는 다룰 만하지만 그보다 크면 비싸다. **GAIL**(Ho & Ermon,
+NeurIPS 2016)이 적대적 후손이다: 전문가의 상태-행동 쌍과 정책의 것을 구별하는 판별기가 학습된
+보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다.
+
+> [!example] 계산 예제 · Worked example
+> 스칼라 특징을 가진 궤적 둘, $f(\tau_1) = 2$, $f(\tau_2) = 1$. 전문가를 네 번 기록했더니
+> $\tau_1$이 세 번, $\tau_2$가 한 번이었다. 전문가 특징 합은 $3(2) + 1 = 7$(평균 $1.75$)이다.
+>
+> - **$w = 0$에서** 두 궤적의 확률은 각각 $0.5$, 모델이 기대하는 $f$는 $1.5$, 그래디언트는
+>   $7 - 4(1.5) = 1.0$ — 양수이므로 $w$를 올린다.
+> - **$w = 1$에서** $P(\tau_1) = e^{2}/(e^{2} + e^{1}) = 0.731$, 기대 $f = 1.731$, 그래디언트는
+>   $7 - 4(1.731) = 0.076$으로 줄어든다.
+> - **$w = \ln 3 \approx 1.099$에서** $P(\tau_1) = 0.75$ — 전문가 자신의 빈도 — 이고 기대
+>   $f = 1.75$, 그래디언트는 정확히 $0$이다.
+>
+> 두 가지로 읽는다. 맞춘 모델은 늘 $\tau_1$을 고르는 대신 전문가의 3대 1 혼합을 재현한다 —
+> 지수형의 "불가능하지는 않다"가 이것이다. 그리고 네 시연이 모두 $\tau_1$이었다면 $E[f] < 2$이므로
+> 그래디언트 $8 - 4E[f]$가 모든 $w$에서 양수로 남아 $w$가 한없이 커진다 — 완벽히 일관된 전문가는
+> 무한히 확신하는 것으로 읽히고, 실제 적합에서 $w$를 정규화하는 이유가 이것이다.
+
+**시연 대신 선호.** 시연이 잘못된 요구일 때가 있다: 고차원 팔은 잘 원격조종하기 어렵고,
+시뮬레이션에서 운전을 시연한 사람들이 자기가 시연한 것보다 더 방어적인 운전 방식을
+선호한다는 결과도 있다(Basu et al., HRI 2017). 두 시도를 비교하는 편이 쉽다. 표준 모델은 **Bradley–Terry**(Bradley & Terry,
+*Biometrika*, 1952)다:
+
+$$P(A \succ B) = \sigma\big(R(A) - R(B)\big) = \frac{1}{1 + e^{-(R(A) - R(B))}}$$
+
+차이만 들어가므로 모든 보상에 같은 상수를 더해도 아무것도 바뀌지 않는다 — 이번에는 평행이동의
+형태로 돌아온 모호성이다. 적합은 라벨된 쌍에 대해 $\log\sigma(R(A) - R(B))$를 최대화하는 것이고,
+이는 **보상 차이에 대한 로지스틱 회귀다.** 선형 보상이면 $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$이므로
+비교 하나가 특징 차이를 입력으로 하는 로지스틱 회귀 예제 하나이고, 잡음 없는 답 하나는 가능한
+$w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 자른다.
+
+- **인간 선호로부터의 심층 RL**(Christiano et al., NeurIPS 2017)은 선형 보상을 짧은 거동 클립에
+  대한 인간 비교에 맞춘 신경망으로 바꾸고, 그것에 대해 RL로 정책을 학습하며, 정책이 바뀌는 동안
+  계속 새 비교를 묻는다.
+- **이것이 RLHF의 보상 모델이다.** [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]는
+  라벨러 순위에 대해 이 형태의 쌍별 랭킹 손실로 보상 모델을 학습한 뒤, KL 페널티(§9) 아래에서 PPO(§4)로
+  정책을 그것에 대해 최적화한다.
+- **DPO**(Rafailov et al., NeurIPS 2023)는 명시적 보상 모델을 없앤다: KL 정규화 목적에서는 최적
+  정책이 보상을 결정하므로, Bradley–Terry 손실을 정책의 로그 확률 비로 직접 쓰고 RL 루프 없이
+  학습할 수 있다.
+- **로봇을 위한 능동 질의**(Sadigh et al., RSS 2017, "Active Preference-Based Learning of Reward
+  Functions"): 답 하나가 1비트뿐이므로, 그 답이 남은 그럴듯한 보상 가중치를 최대한 많이 지우도록
+  보여 줄 쌍을 고른다.
+
+> [!example] 계산 예제 · Worked example
+> 선형 보상, 특징 $\phi(A) = (1, 0)$, $\phi(B) = (0, 1)$, 현재 가중치 $w = (0.2, 0.6)$.
+> 그러면 $R(A) = 0.2$, $R(B) = 0.6$이고 모델의 예측은 $P(A \succ B) = \sigma(-0.4) = 0.401$이다.
+>
+> 사람이 **A가 낫다고** 답한다. 로그우도 그래디언트는
+> $(1 - 0.401)\,(\phi(A) - \phi(B)) = (0.599, -0.599)$ — 오차 곱하기 특징 차이로, 로지스틱 회귀와
+> 똑같다. 스텝 크기 $0.5$로 한 번:
+>
+> - $w \leftarrow (0.2, 0.6) + 0.5\,(0.599, -0.599) = (0.499, 0.301)$;
+> - 예측은 $\sigma(0.199) = 0.550$이 되고, 손실 $-\log P$는 $0.913$에서 $0.599$로 내려간다.
+>
+> 스텝 크기는 모델이 얼마나 놀랐는지인 $1 - P$에 비례한다. 이미 $P$가 1에 가깝게 예측한 비교는
+> $w$를 거의 움직이지 않는다.
+
+**보상 학습 논문 읽기.** 네 가지 질문을 순서대로:
+
+| 질문 | 확인할 것 |
+|---|---|
+| 어떤 데이터인가? | 시연, 쌍별 비교나 순위, 물리적 교정 — 몇 개이고 누구에게서(전문가, 크라우드 작업자, 저자 본인) |
+| 어떤 보상 클래스인가? | 손으로 설계한 특징 위의 선형(들여다볼 수 있지만 전문성 대부분을 특징이 떠안는다) vs 신경망(표현력이 크고 데이터를 많이 먹으며 들여다보기 어렵다) |
+| 어떻게 평가하는가? | ① 복원한 보상을 알려진 참 보상과 비교(시뮬레이션에서만 가능) ② 학습된 보상으로 학습한 정책을 *참* 과제 지표로 채점 ③ 보류된 선호에 대한 정확도. 서로 다른 질문에 답한다: ③이 높다고 그것만으로 ②가 좋다는 뜻은 아니다 |
+| 무엇이 reward hacking을 막는가? | 학습된 보상도 손으로 쓴 보상과 똑같은 대리물이고(§7), 데이터를 못 본 곳에서 가장 믿을 수 없는데 최적화하는 정책이 가는 곳이 바로 거기다. 기준 정책으로의 KL 닻(§9)이나 정책이 바뀌는 동안의 지속적 질의가 있는지 보라 |
+
 > [!tip] 더 깊이 · Going deeper
 > Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)이 무료이고, 이 페이지가 압축한 것이 그 책이다 — 벨만 기계장치는 3~6장, §3.5의 치명적 삼요소와 발산 반례는 11장, 정책 경사는 13장. 이 페이지가 그 책보다 나은 부분은 §6과 §9, 즉 그 책이 다루지 않는 로보틱스 쪽이다.
+>
+> §11의 1차 출처: Ratliff, Bagnell & Zinkevich, "Maximum Margin Planning" (ICML 2006); Ziebart, Maas, Bagnell & Dey, "Maximum Entropy Inverse Reinforcement Learning" (AAAI 2008); Ho & Ermon, "Generative Adversarial Imitation Learning" (NeurIPS 2016); Bradley & Terry, "Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons" (*Biometrika*, 1952); Christiano et al., "Deep Reinforcement Learning from Human Preferences" (NeurIPS 2017); Sadigh et al., "Active Preference-Based Learning of Reward Functions" (RSS 2017); Rafailov et al., "Direct Preference Optimization: Your Language Model is Secretly a Reward Model" (NeurIPS 2023).
 
 ### 스스로 점검
 
@@ -1101,6 +1388,13 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 8. "제약 위반을 보상에서 페널티로 준다"가 왜 안전 보장이 아닌가? 더 강한 장치 두 가지는?
 9. 어떤 논문이 병렬 환경 2,048개, 100 Hz에서 $1\times10^9$ environment step을 보고했다.
    환경당 시뮬레이션 경험은 얼마이고, 같은 숫자를 실기계 한 대로 채우면 얼마나 걸리는가?
+10. 전문가가 어떤 보상 $r$에 대해 최적이다. 같은 거동이 최적이 되는 다른 보상 두 가지를 들고,
+    MaxEnt IRL이 그중 하나를 고르는 원리를 말하라.
+11. 궤적 둘, $f(\tau_1) = 3$, $f(\tau_2) = 1$, $\tau_1$의 시연 하나로 MaxEnt IRL을 한다.
+    $w = 0$에서 로그우도 그래디언트는 얼마이고, 계속 그것을 따라가면 $w$는 어떻게 되는가?
+12. 보상 모델이 $R(A) = 2.0$, $R(B) = 1.0$을 준다. Bradley–Terry가 예측하는 $P(A \succ B)$는
+    얼마이고, 모든 보상을 $+10$만큼 옮기면 무엇이 바뀌는가? 논문이 보류된 선호에 대해 95% 정확도를
+    보고했다 — 왜 그것이 아직 로봇 정책이 작동한다는 증거가 아닌가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $V^\pi(s) = E[r_t + \gamma G_{t+1} \mid s]$에서 안쪽 기댓값을 마르코프 성질로 $V^\pi(s')$로 접으면 $E[r + \gamma V^\pi(s')]$.
@@ -1112,6 +1406,9 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 > 7. (방법 + 커리큘럼)과 (커리큘럼 없는 베이스라인)의 차이 — 즉 커리큘럼과 방법을 합쳐서 측정했다. 베이스라인이 같은 커리큘럼을 받기 전까지 이 비교는 아무것도 분리하지 못한다.
 > 8. 부드러운 교환이기 때문이다: 과제 보상이 충분히 크면 페널티를 사 버리고, 학습 이전의 탐색 구간에서는 위반을 아무것도 제한하지 않는다. 더 강한 것: 액추에이터 앞에서 안전하지 않은 명령을 거부하는 안전 필터·엔벨로프(대개 MPC), 그리고 기대 위반량의 명시적 상한 아래에서 보상을 최적화하는 제약 MDP 정식화.
 > 9. 환경당 $1\times10^9/2{,}048 \approx 488{,}000$ 스텝; 100 Hz면 4,880초 ≈ **1.4시간**의 시뮬레이션 경험이다. 실기계 한 대로는 $10^9/100 = 10^7$초 ≈ **116일**.
+> 10. $r = 0$(모든 정책이 최적), $2r$ 같은 양수배, 또는 $r$에 포텐셜 기반 shaping 항 $\gamma\Phi(s') - \Phi(s)$를 더한 것(§7). MaxEnt IRL은 전문가의 특징 합을 맞추는 분포만 남기고 그중 엔트로피가 최대인 것을 택한다. 그러면 지수족 모델 $P_w(\tau) \propto \exp(w^\top f(\tau))$가 정해지고 $w$는 최대우도로 맞춘다.
+> 11. $w = 0$에서 두 궤적의 확률이 각각 $0.5$이므로 모델의 기대 $f$는 $2$, 그래디언트는 $3 - 2 = 1$이다. 유한한 모든 $w$에서 $E[f] < 3$이므로 그래디언트가 0에 닿지 않고 $w$는 한없이 커진다. 정규화나 $\tau_2$의 시연이 있어야 유한한 답이 나온다.
+> 12. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. 차이만 들어가므로 평행이동은 아무것도 바꾸지 않는다. 보류 정확도는 모델이 학습된 데이터 근처에서 뽑은 쌍으로 잰 것이다. 모델에 대해 최적화한 정책은 모델이 아무것도 보지 못한 거동 쪽으로 움직여 모델을 공략할 수 있다(reward hacking, §7). 의미 있는 증거는 학습된 보상으로 학습한 정책을 참 과제 지표로 채점한 결과다.
 
 ### 로보틱스 다리
 
