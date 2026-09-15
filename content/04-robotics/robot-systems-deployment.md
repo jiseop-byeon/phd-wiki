@@ -169,6 +169,72 @@ common in field systems; FSMs are simpler but tangle as states multiply. When a 
 says the robot "recovered" or "retried," this layer — not the policy — often did it:
 check who detects failure, who chooses the response, and what counts as terminal.
 
+### 6.5 Architecture lineages and formal task specifications
+
+The execution layer of §6 is the middle tier of a design robotics reached after two extremes failed, and temporal logic states what that design must guarantee precisely enough to check or to generate it.
+
+**Three lineages.**
+
+- **Sense–plan–act** (the Shakey-era deliberative pipeline): sensing builds a world model, a planner reasons on it, a controller executes. The planner is a bottleneck the controller waits on, and the controller never sees sensors directly, so the robot cannot react while it thinks.
+- **Subsumption** (Brooks 1986): parallel reactive behaviours, each wiring sensors to actuators; a higher layer *suppresses* a lower one's input or *inhibits* its output. No world model, so reaction is fast; no long-horizon planning either.
+- **Three-layer** (Gat 1998): a fast *controller*, a *sequencer* (executive) that picks the active behaviour and handles failure, and a slow *deliberator*. Each runs at its own rate, and only the deliberator may be slow.
+
+| Tier | Rate | ROS 2 realisation |
+|---|---|---|
+| controller | fastest | `ros2_control` controller manager, `update_rate` default 100 Hz ([[04-robotics/ros2/simulation-and-control\|ROS 2 control]]) |
+| sequencer | medium | behaviour tree; Nav2's `bt_navigator` re-ticks the planner once per second by default ([[04-robotics/ros2/navigation-nav2\|Nav2 §2]]) |
+| deliberator | per task | task planner or TAMP ([[04-robotics/planning-decision-making\|4 §7]]), or a VLA/LLM planner emitting goals |
+
+Tiers talk through §5's split: topics carry data, services and actions carry commands with a reply. **The reading this gives you.** "The LLM plans" replaces the deliberator only; recovery still lives in the sequencer and stability in the controller.
+
+**Temporal logic.** LTL (Pnueli 1977) adds four operators to Boolean propositions over discrete steps: $\mathsf{X}\,\varphi$ (next step), $\mathsf{F}\,\varphi$ (eventually), $\mathsf{G}\,\varphi$ (always), $\varphi\,\mathsf{U}\,\psi$ ($\varphi$ at every step until $\psi$, which must occur). Patterns: safety $\mathsf{G}\,\neg\mathit{collision}$; liveness $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$; response $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$; sequencing $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+
+*Model checking* asks whether every behaviour of a given design satisfies $\varphi$, and returns yes or a counterexample. *Reactive synthesis* builds a controller that satisfies $\varphi$ against every sequence of environment inputs, choosing each output from the past alone. So $\varphi$ is *satisfiable* if some input–output run meets it, and *realizable* if one controller wins against all inputs. With environment inputs $\mathit{req},\mathit{obst}$ and output $\mathit{move}$, $\mathsf{G}(\mathit{req}\rightarrow\mathsf{X}\,\mathit{move})\wedge\mathsf{G}(\mathit{obst}\rightarrow\neg\mathit{move})$ is satisfiable (any obstacle-free run), but not realizable: $\mathit{req}$ at $t$ and $\mathit{obst}$ at $t+1$ leave no valid $\mathit{move}$ at $t+1$.
+
+Synthesis for full LTL is doubly exponential in formula size (Pnueli & Rosner 1989), so robotics uses fragments such as GR(1) (initial conditions, `always` step constraints, `always eventually` goals), solvable in time polynomial in the game's state space (Piterman, Pnueli & Sa'ar 2006) and applied to reactive mission and motion planning by Kress-Gerwin, Fainekos & Pappas (2009). For continuous signals, signal temporal logic adds time intervals and real-valued predicates, with a robustness score saying by how much a signal satisfies or violates the formula (Maler & Nickovic 2004; Donzé & Maler 2010).
+
+**Writing a spec.** "Always keep 2 m from any worker; eventually deliver panel A then panel B; if the zone sensor fails, stop." Let $\mathit{near}$ = within 2 m of a worker (from perception), $\mathit{fail}$ = zone-sensor fault, $\mathit{dA},\mathit{dB}$ = panel delivered, $\mathit{stop}$ = zero velocity commanded. Reading "stop" as "by the next step, and stay stopped":
+
+$$\varphi = \mathsf{G}\,\neg\mathit{near} \;\wedge\; \mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}) \;\wedge\; \mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$$
+
+This is not realizable as written, because an early fault leaves the robot stopped and a stopped robot cannot deliver; so weaken the liveness part to $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$ or assume no early fault.
+
+> [!example] Worked example · 계산 예제
+> **Assumption: finite-trace semantics.** The logged steps $t_0,\dots,t_5$ are the whole run; $\mathsf{G}$ and $\mathsf{F}$ range over the remaining steps, and $\mathsf{X}$ at the last step is false. Trace: $t_0\,\{\}$, $t_1\,\{\mathit{dB}\}$, $t_2\,\{\mathit{dA}\}$, $t_3\,\{\mathit{fail}\}$, $t_4\,\{\mathit{stop}\}$, $t_5\,\{\mathit{stop}\}$.
+>
+> **$\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})$ is false.** $\mathit{dA}$ holds only at $t_2$, and the only $\mathit{dB}$ is at $t_1$, before it. The unordered $\mathsf{F}\,\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}$ is true; only the nested form sees that B went first.
+>
+> **$\mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$ is true.** The implication is vacuous except at $t_3$, where it needs $\mathit{stop}$ at $t_4$ and $t_5$, which holds. The same-step $\mathsf{G}(\mathit{fail}\rightarrow\mathit{stop})$ is false at $t_3$: one step of reaction is a requirement decision, not notation.
+>
+> **The reading this gives you.** With $\mathsf{G}\,\neg\mathit{near}$ true, the full $\varphi$ is false but the weakened spec is true: this run is a correct fault stop, not a failed delivery.
+
+```python
+def ev(f, tr, i=0):  # LTL on a finite trace; X at the last step is false
+    op, a = f[0], f[1:]
+    if op == 'ap':  return a[0] in tr[i]
+    if op == 'not': return not ev(a[0], tr, i)
+    if op == 'and': return ev(a[0], tr, i) and ev(a[1], tr, i)
+    if op == 'or':  return ev(a[0], tr, i) or ev(a[1], tr, i)
+    if op == 'imp': return not ev(a[0], tr, i) or ev(a[1], tr, i)
+    if op == 'X':   return i + 1 < len(tr) and ev(a[0], tr, i + 1)
+    if op == 'F':   return any(ev(a[0], tr, j) for j in range(i, len(tr)))
+    if op == 'G':   return all(ev(a[0], tr, j) for j in range(i, len(tr)))
+    if op == 'U':   return any(ev(a[1], tr, j) and all(ev(a[0], tr, k) for k in range(i, j))
+                               for j in range(i, len(tr)))
+
+dA, dB, fail, stop, near = (('ap', s) for s in ['dA', 'dB', 'fail', 'stop', 'near'])
+tr = [set(), {'dB'}, {'dA'}, {'fail'}, {'stop'}, {'stop'}]
+seq = ('F', ('and', dA, ('F', dB)))
+react = ('G', ('imp', fail, ('X', ('G', stop))))
+print(ev(seq, tr), ev(('and', ('F', dA), ('F', dB)), tr))         # False True
+print(ev(react, tr), ev(('G', ('imp', fail, stop)), tr))           # True False
+safe = ('G', ('not', near))
+print(ev(('and', safe, ('and', seq, react)), tr),                  # False
+      ev(('and', safe, ('and', ('or', seq, ('F', fail)), react)), tr))  # True
+```
+
+**What to check in papers.** *Who controls each proposition*: if workers can walk toward the robot, $\mathsf{G}\,\neg\mathit{near}$ needs an assumption about human motion or must become a response; the distance itself is a standards question ([[04-robotics/hri-safety|HRI & Safety §6]]). *Grounding*: the guarantee is about the abstraction, only as good as the perception that sets $\mathit{near}$ and the controller that realises $\mathit{stop}$. *Semantics*: infinite-trace LTL and finite-trace evaluation of a log can disagree, most visibly on $\mathsf{X}$ and $\mathsf{G}$ at the end of the run.
+
 ### 7. Reliability and safety mechanisms
 
 - Watchdog: detects missing or unhealthy updates.
@@ -232,13 +298,27 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 2. Which records are needed to replay a field failure?
 3. Why might an offboard VLA fail despite unchanged model accuracy?
 4. What does hardware-in-the-loop establish—and not establish?
+5. In a three-layer architecture, which tier may be slow, and in which tiers do Nav2's recovery subtree and a `ros2_control` joint controller sit?
+6. On the finite trace $\{a\},\{b\},\{a\},\{\}$, is $\mathsf{G}(a\rightarrow\mathsf{X}\,b)$ true? Does a formula holding on every logged run show that it is realizable?
 
 > [!tip]- Answers
-> 1. Queues, batching, old timestamps, transport, and asynchronous stages can preserve high throughput while increasing age. 2. Synchronized raw sensors, transforms, commands, feedback, clocks, configuration, software/hardware versions, and operator events. 3. Network delay/loss, stale observations, deadline misses, or safe fallback. 4. It validates selected hardware/software interfaces and timing; it does not by itself validate real-world perception, contact, or task safety.
+> 1. Queues, batching, old timestamps, transport, and asynchronous stages can preserve high throughput while increasing age. 2. Synchronized raw sensors, transforms, commands, feedback, clocks, configuration, software/hardware versions, and operator events. 3. Network delay/loss, stale observations, deadline misses, or safe fallback. 4. It validates selected hardware/software interfaces and timing; it does not by itself validate real-world perception, contact, or task safety. 5. Only the deliberator may be slow; the recovery subtree is sequencer (executive) logic, and the joint controller is the controller tier. 6. False: $a$ at $t_2$ needs $b$ at $t_3$, which is empty (the step-$t_0$ obligation is met at $t_1$). No: logs are sample runs, so they show at most satisfiability; realizability needs one controller that wins against every environment input sequence, which is a synthesis question.
 
 ### Sources
 
 - C. Eppner, S. Höfer, R. Jonschkowski, R. Martín-Martín, A. Sieverling, V. Wall, O. Brock, "Lessons from the Amazon Picking Challenge: Four Aspects of Building Robotic Systems," *RSS 2016* (journal version: *Autonomous Robots*, 2018, DOI 10.1007/s10514-018-9761-2) — the challenge ran in 2015; the paper is 2016.
+
+- R. A. Brooks, "A Robust Layered Control System for a Mobile Robot," *IEEE Journal of Robotics and Automation*, 2(1):14–23, 1986 — subsumption.
+- N. J. Nilsson, "Shakey the Robot," SRI International Technical Note 323, 1984.
+- E. Gat, "On Three-Layer Architectures," in D. Kortenkamp, R. P. Bonasso, R. Murphy (eds.), *Artificial Intelligence and Mobile Robots*, AAAI Press / MIT Press, 1998.
+- A. Pnueli, "The Temporal Logic of Programs," *FOCS 1977*.
+- A. Pnueli, R. Rosner, "On the Synthesis of a Reactive Module," *POPL 1989* — doubly exponential LTL synthesis.
+- N. Piterman, A. Pnueli, Y. Sa'ar, "Synthesis of Reactive(1) Designs," *VMCAI 2006*, LNCS 3855 — GR(1).
+- M. Kress-Gerwin, G. E. Fainekos, G. J. Pappas, "Temporal-Logic-Based Reactive Mission and Motion Planning," *IEEE Transactions on Robotics*, 25(6), 2009.
+- O. Maler, D. Nickovic, "Monitoring Temporal Properties of Continuous Signals," *FORMATS/FTRTFT 2004*, LNCS 3253 — signal temporal logic.
+- A. Donzé, O. Maler, "Robust Satisfaction of Temporal Logic over Real-Valued Signals," *FORMATS 2010*, LNCS 6246.
+- G. De Giacomo, M. Y. Vardi, "Linear Temporal Logic and Linear Dynamic Logic on Finite Traces," *IJCAI 2013* — finite-trace semantics.
+- E. M. Clarke, O. Grumberg, D. Kroening, D. Peled, H. Veith, *Model Checking*, 2nd ed., MIT Press, 2018.
 
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
 - [MIT Manipulation (Tedrake) — systems chapters](https://manipulation.csail.mit.edu/)
@@ -421,6 +501,72 @@ Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorat
 "재시도했다"고 하면 — 정책이 아니라 이 계층이 한 일인 경우가 많다: 누가 실패를
 감지하고, 누가 대응을 고르고, 무엇이 종료 조건인지 확인하라.
 
+### 6.5 아키텍처 계보와 형식적 작업 명세
+
+§6의 실행 계층은 두 극단이 실패한 뒤 로보틱스가 도달한 설계의 가운데 층이고, 시간 논리는 그 설계가 보장해야 할 것을 검사하거나 생성할 수 있을 만큼 정확하게 적는 언어다.
+
+**세 계보.**
+
+- **Sense–plan–act** (Shakey 시대의 숙고형 파이프라인): 센싱이 세계 모델을 만들고, 플래너가 그 위에서 추론하고, 제어기가 실행한다. 제어기는 병목인 플래너를 기다려야 하고, 센서를 직접 보지 못하므로 로봇은 생각하는 동안 반응하지 못한다.
+- **Subsumption** (Brooks 1986): 각자 센서를 액추에이터에 잇는 반응형 행동들이 병렬로 돈다. 상위 층은 하위 층의 입력을 *억제*(suppress)하거나 출력을 *차단*(inhibit)한다. 세계 모델이 없어 반응은 빠르지만 긴 지평의 계획도 없다.
+- **Three-layer** (Gat 1998): 빠른 *controller*, 활성 행동을 고르고 실패를 처리하는 *sequencer*(executive), 느린 *deliberator*. 층마다 제 주기로 돌고, 느려도 되는 것은 deliberator뿐이다.
+
+| 층 | 주기 | ROS 2에서의 구현 |
+|---|---|---|
+| controller | 가장 빠름 | `ros2_control` 컨트롤러 매니저, `update_rate` 기본 100 Hz ([[04-robotics/ros2/simulation-and-control\|ROS 2 제어]]) |
+| sequencer | 중간 | behavior tree; Nav2의 `bt_navigator`는 기본 트리에서 플래너를 1초에 한 번 다시 tick한다 ([[04-robotics/ros2/navigation-nav2\|Nav2 §2]]) |
+| deliberator | 과제 단위 | 과제 플래너나 TAMP ([[04-robotics/planning-decision-making\|4 §7]]), 또는 목표를 내놓는 VLA/LLM 플래너 |
+
+층 사이 통신은 §5의 구분을 따른다: 토픽은 데이터를, 서비스와 액션은 응답이 있는 명령을 나른다. **여기서 얻는 독법.** "LLM이 계획한다"는 deliberator만 바꾼 것이다. 회복은 여전히 sequencer에, 안정성은 여전히 controller에 있다.
+
+**시간 논리.** LTL(Pnueli 1977)은 이산 단계마다의 불리언 명제에 네 연산자를 더한다: $\mathsf{X}\,\varphi$(다음 단계), $\mathsf{F}\,\varphi$(언젠가), $\mathsf{G}\,\varphi$(항상), $\varphi\,\mathsf{U}\,\psi$($\psi$가 올 때까지 매 단계 $\varphi$, 그리고 $\psi$는 반드시 온다). 패턴: 안전성 $\mathsf{G}\,\neg\mathit{collision}$, 활성(liveness) $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$, 응답 $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$, 순서 $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+
+*모델 검사*는 주어진 설계의 모든 거동이 $\varphi$를 만족하는지 묻고, 예 또는 반례 궤적을 돌려준다. *반응형 합성*은 모든 환경 입력 열에 대해 $\varphi$를 만족하는 제어기를 만들며, 각 출력은 과거만 보고 고른다. 그래서 $\varphi$는 어떤 입출력 실행 하나라도 만족하면 *충족 가능*(satisfiable), 한 제어기가 모든 입력을 이기면 *실현 가능*(realizable)이다. 환경 입력 $\mathit{req},\mathit{obst}$와 출력 $\mathit{move}$에 대해 $\mathsf{G}(\mathit{req}\rightarrow\mathsf{X}\,\mathit{move})\wedge\mathsf{G}(\mathit{obst}\rightarrow\neg\mathit{move})$는 충족 가능하지만(장애물 없는 실행 아무거나) 실현 불가능하다: $t$에 $\mathit{req}$, $t+1$에 $\mathit{obst}$가 오면 $t+1$의 $\mathit{move}$는 어느 값도 둘을 함께 만족하지 못한다.
+
+완전한 LTL의 합성은 식 크기에 대해 이중 지수적이다(Pnueli & Rosner 1989). 그래서 로보틱스는 GR(1) 같은 부분 논리를 쓴다(초기 조건, `always` 단계 제약, `always eventually` 목표). GR(1)은 게임 상태 공간 크기의 다항 시간에 풀리고(Piterman, Pnueli & Sa'ar 2006), Kress-Gerwin, Fainekos & Pappas(2009)가 반응형 임무·운동 계획에 적용했다. 연속 신호에는 signal temporal logic이 시간 구간과 실수값 술어를 붙이고, robustness 점수가 신호가 식을 얼마나 여유 있게 만족하거나 위반하는지 말해 준다(Maler & Nickovic 2004; Donzé & Maler 2010).
+
+**명세 쓰기.** "작업자와 항상 2 m를 유지하라; 언젠가 패널 A를, 그다음 패널 B를 배달하라; 구역 센서가 고장 나면 멈춰라." $\mathit{near}$ = 작업자 2 m 이내(인식이 설정), $\mathit{fail}$ = 구역 센서 고장, $\mathit{dA},\mathit{dB}$ = 패널 배달 완료, $\mathit{stop}$ = 영속도 명령으로 두자. "멈춰라"를 "다음 단계까지 멈추고 계속 멈춰 있어라"로 읽으면:
+
+$$\varphi = \mathsf{G}\,\neg\mathit{near} \;\wedge\; \mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}) \;\wedge\; \mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$$
+
+이 그대로는 실현 불가능하다. 이른 고장이 로봇을 멈춰 두고, 멈춘 로봇은 배달할 수 없기 때문이다. 그래서 활성 부분을 $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$로 약화하거나 이른 고장이 없다는 가정을 명시해야 한다.
+
+> [!example] 계산 예제 · Worked example
+> **가정: 유한 궤적 의미론.** 기록된 $t_0,\dots,t_5$가 실행 전체다. $\mathsf{G}$와 $\mathsf{F}$는 남은 단계에 걸치고, 마지막 단계의 $\mathsf{X}$는 거짓이다. 궤적: $t_0\,\{\}$, $t_1\,\{\mathit{dB}\}$, $t_2\,\{\mathit{dA}\}$, $t_3\,\{\mathit{fail}\}$, $t_4\,\{\mathit{stop}\}$, $t_5\,\{\mathit{stop}\}$.
+>
+> **$\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})$: 거짓.** $\mathit{dA}$는 $t_2$에서만 참이고, 유일한 $\mathit{dB}$는 그보다 앞선 $t_1$에 있다. 순서 없는 $\mathsf{F}\,\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}$는 참이다. B가 먼저였다는 사실은 중첩된 형태만 잡아낸다.
+>
+> **$\mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$: 참.** 함의는 $t_3$을 빼면 공허하게 참이고, $t_3$에서는 $t_4$와 $t_5$의 $\mathit{stop}$을 요구하는데 둘 다 성립한다. 같은 단계 형태 $\mathsf{G}(\mathit{fail}\rightarrow\mathit{stop})$는 $t_3$에서 거짓이다. 한 단계의 반응 지연을 허용할지는 표기가 아니라 요구사항의 결정이다.
+>
+> **여기서 얻는 독법.** $\mathsf{G}\,\neg\mathit{near}$가 참이므로 전체 $\varphi$는 거짓이지만 약화한 명세는 참이다: 이 실행은 실패한 배달이 아니라 올바른 고장 정지다.
+
+```python
+def ev(f, tr, i=0):  # LTL on a finite trace; X at the last step is false
+    op, a = f[0], f[1:]
+    if op == 'ap':  return a[0] in tr[i]
+    if op == 'not': return not ev(a[0], tr, i)
+    if op == 'and': return ev(a[0], tr, i) and ev(a[1], tr, i)
+    if op == 'or':  return ev(a[0], tr, i) or ev(a[1], tr, i)
+    if op == 'imp': return not ev(a[0], tr, i) or ev(a[1], tr, i)
+    if op == 'X':   return i + 1 < len(tr) and ev(a[0], tr, i + 1)
+    if op == 'F':   return any(ev(a[0], tr, j) for j in range(i, len(tr)))
+    if op == 'G':   return all(ev(a[0], tr, j) for j in range(i, len(tr)))
+    if op == 'U':   return any(ev(a[1], tr, j) and all(ev(a[0], tr, k) for k in range(i, j))
+                               for j in range(i, len(tr)))
+
+dA, dB, fail, stop, near = (('ap', s) for s in ['dA', 'dB', 'fail', 'stop', 'near'])
+tr = [set(), {'dB'}, {'dA'}, {'fail'}, {'stop'}, {'stop'}]
+seq = ('F', ('and', dA, ('F', dB)))
+react = ('G', ('imp', fail, ('X', ('G', stop))))
+print(ev(seq, tr), ev(('and', ('F', dA), ('F', dB)), tr))         # False True
+print(ev(react, tr), ev(('G', ('imp', fail, stop)), tr))           # True False
+safe = ('G', ('not', near))
+print(ev(('and', safe, ('and', seq, react)), tr),                  # False
+      ev(('and', safe, ('and', ('or', seq, ('F', fail)), react)), tr))  # True
+```
+
+**논문에서 확인할 것.** *누가 각 명제를 통제하는가*: 작업자가 로봇 쪽으로 걸어올 수 있다면 $\mathsf{G}\,\neg\mathit{near}$에는 사람의 움직임에 대한 가정이 필요하거나 응답 형태로 바뀌어야 한다. 거리 자체는 표준의 문제다([[04-robotics/hri-safety|HRI와 안전 §6]]). *접지(grounding)*: 보장은 추상화에 대한 것이므로 $\mathit{near}$를 설정하는 인식과 $\mathit{stop}$을 실현하는 제어기만큼만 좋다. *의미론*: 무한 궤적 LTL과 로그의 유한 궤적 평가는 서로 다를 수 있고, 실행 끝의 $\mathsf{X}$와 $\mathsf{G}$에서 가장 잘 드러난다.
+
 ### 7. 신뢰성과 안전 장치
 
 - Watchdog: 누락되거나 비정상인 갱신을 감지.
@@ -491,16 +637,32 @@ t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에
 2. 현장 실패를 재생하려면 어떤 기록이 필요한가?
 3. 모델 정확도가 그대로인데 오프보드 VLA가 실패할 수 있는 이유는?
 4. hardware-in-the-loop가 입증하는 것과 입증하지 못하는 것은?
+5. 3층 아키텍처에서 느려도 되는 층은 어디이고, Nav2의 회복 서브트리와 `ros2_control` 관절 제어기는 각각 어느 층에 있는가?
+6. 유한 궤적 $\{a\},\{b\},\{a\},\{\}$에서 $\mathsf{G}(a\rightarrow\mathsf{X}\,b)$는 참인가? 기록된 모든 실행에서 식이 성립하면 실현 가능하다는 뜻인가?
 
 > [!tip]- 정답 · Answers
 > 1. 큐, 배칭, 오래된 타임스탬프, 전송, 비동기 단계들이 높은 처리율을 유지하면서 데이터 나이를 키울 수 있다.
 > 2. 동기화된 원시 센서, 변환, 명령, 피드백, 클럭, 설정, 소프트웨어/하드웨어 버전, 운용자 이벤트.
 > 3. 네트워크 지연/손실, 오래된 관측, 데드라인 미스, 안전 폴백.
 > 4. 선택된 하드웨어/소프트웨어 인터페이스와 타이밍은 검증하지만, 실세계 인식·접촉·과제 안전을 그 자체로 검증하지는 않는다.
+> 5. 느려도 되는 것은 deliberator뿐이다. 회복 서브트리는 sequencer(executive)의 논리이고, 관절 제어기는 controller 층이다.
+> 6. 거짓이다: $t_2$의 $a$는 $t_3$의 $b$를 요구하는데 $t_3$은 비어 있다($t_0$의 의무는 $t_1$에서 채워진다). 아니다: 로그는 표본 실행이라 기껏해야 충족 가능성을 보여 준다. 실현 가능성은 모든 환경 입력 열을 이기는 제어기 하나가 있어야 하므로 합성의 문제다.
 
 ### 출처
 
 - C. Eppner, S. Höfer, R. Jonschkowski, R. Martín-Martín, A. Sieverling, V. Wall, O. Brock, "Lessons from the Amazon Picking Challenge: Four Aspects of Building Robotic Systems," *RSS 2016* (journal version: *Autonomous Robots*, 2018, DOI 10.1007/s10514-018-9761-2) — the challenge ran in 2015; the paper is 2016.
+
+- R. A. Brooks, "A Robust Layered Control System for a Mobile Robot," *IEEE Journal of Robotics and Automation*, 2(1):14–23, 1986 — subsumption.
+- N. J. Nilsson, "Shakey the Robot," SRI International Technical Note 323, 1984.
+- E. Gat, "On Three-Layer Architectures," in D. Kortenkamp, R. P. Bonasso, R. Murphy (eds.), *Artificial Intelligence and Mobile Robots*, AAAI Press / MIT Press, 1998.
+- A. Pnueli, "The Temporal Logic of Programs," *FOCS 1977*.
+- A. Pnueli, R. Rosner, "On the Synthesis of a Reactive Module," *POPL 1989* — doubly exponential LTL synthesis.
+- N. Piterman, A. Pnueli, Y. Sa'ar, "Synthesis of Reactive(1) Designs," *VMCAI 2006*, LNCS 3855 — GR(1).
+- M. Kress-Gerwin, G. E. Fainekos, G. J. Pappas, "Temporal-Logic-Based Reactive Mission and Motion Planning," *IEEE Transactions on Robotics*, 25(6), 2009.
+- O. Maler, D. Nickovic, "Monitoring Temporal Properties of Continuous Signals," *FORMATS/FTRTFT 2004*, LNCS 3253 — signal temporal logic.
+- A. Donzé, O. Maler, "Robust Satisfaction of Temporal Logic over Real-Valued Signals," *FORMATS 2010*, LNCS 6246.
+- G. De Giacomo, M. Y. Vardi, "Linear Temporal Logic and Linear Dynamic Logic on Finite Traces," *IJCAI 2013* — finite-trace semantics.
+- E. M. Clarke, O. Grumberg, D. Kroening, D. Peled, H. Veith, *Model Checking*, 2nd ed., MIT Press, 2018.
 
 - [ROS 2 Concepts](https://docs.ros.org/en/rolling/Concepts.html)
 - [MIT Manipulation (Tedrake) — 시스템 관련 장](https://manipulation.csail.mit.edu/)

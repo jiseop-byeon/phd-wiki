@@ -81,6 +81,58 @@ The conflict is about which side to pass, not simply how much assistance to appl
 
 **The reading this gives you.** Ask what happens when both commands are individually reasonable and mutually incompatible. Inspect conflict handling, constraint checking after combination, and the override path. A blending coefficient by itself does not specify a complete shared-control policy.
 
+### 3.5 Modelling the human inside the robot's decision
+
+The blend of §3 sets by hand how much the human is trusted; the methods below put a model of the human inside the robot's optimisation instead, either as a hidden goal to infer or as an agent who reacts to the robot.
+
+**Shared autonomy as inference over the goal.** The robot does not know where the user is heading, so it treats the goal as the hidden state of a POMDP ([[04-robotics/planning-decision-making|Planning & Decision-Making §7]]) and each joystick command as an observation of it. Javdani, Srinivasa & Bagnell (RSS 2015) model the user as noisy-rational over a discrete goal set and update a belief $b(g)$ by Bayes' rule:
+
+$$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
+
+$Q_g(x,u)$ is the value of command $u$ for someone heading to $g$ (a negative cost-to-go), and $\beta$ is how rational the user is assumed to be. It is the exponential noisy-expert model of [[02-foundations/rl-basics|RL Basics §11]] applied to one command, and since better commands are exponentially more likely but never certain, one sloppy input moves the belief without flipping it.
+
+Exact planning over beliefs is intractable, so the paper uses **hindsight optimisation**, the QMDP approximation:
+
+$$Q(b, a) \approx \sum_g b(g)\,Q_g(x, a)$$
+
+Each robot action $a$ is scored as if the goal would be revealed right after it. So the robot can help before it is sure, by moving where the goals agree, and the amount of help follows from the belief rather than from a hand-set α. What it gives up: an action whose only payoff is information, such as a motion that would make the user's next command more telling, is worth nothing under this score, and the values are optimistic. In shared autonomy that loss is often tolerable, because the user keeps supplying commands anyway.
+
+> [!example] Worked example · 계산 예제
+> **Goal inference.** Goals $g_1, g_2$, prior $(0.5, 0.5)$, $\beta = 1$. The user can command $u_1$ (toward $g_1$), $u_2$ (toward $g_2$) or $u_0$ (straight on), with values $Q_{g_1} = (-1, -3, -2)$ and $Q_{g_2} = (-3, -1, -2)$ for $(u_1, u_2, u_0)$.
+>
+> - Likelihoods: $P(u_1, u_2, u_0 \mid g_1) = (0.665, 0.090, 0.245)$, mirrored under $g_2$.
+> - After one $u_1$: $b(g_1) = e^2/(e^2 + 1) = 0.881$. After a second $u_1$: $e^4/(e^4 + 1) = 0.982$.
+> - A $u_0$ leaves 0.982 unchanged, since both goals predict it equally; a later $u_2$ brings it back to 0.881. With $\beta = 0.5$ the first $u_1$ gives only 0.731.
+>
+> **QMDP action.** Robot actions: toward $g_1$, toward $g_2$, and a middle move that serves both, with $Q_{g_1} = (-2, -6, -3.5)$ and $Q_{g_2} = (-6, -2, -3.5)$.
+>
+> - At the prior the scores are $(-4, -4, -3.5)$, so the robot takes the **middle** move and helps while unsure.
+> - At $b(g_1) = 0.881$ they are $(-2.48, -5.52, -3.5)$, so it commits toward $g_1$. The switch is where $-2b - 6(1 - b) = -3.5$, at $b(g_1) = 0.625$.
+>
+> **The reading this gives you.** The ratio $e^{2\beta}$ per command holds only because the two goals' normalisers are equal here; in general they differ and must be computed, so check that a paper's likelihood is normalised per goal.
+
+**Interaction as a game.** When the human reacts to the robot, the robot's action changes what the human will do, so the planner should optimise through that response. Sadigh, Sastry, Seshia & Dragan (RSS 2016) cast driving next to a human as a Stackelberg (leader–follower) game over a short receding horizon:
+
+$$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
+
+The robot leads because the human is assumed to see its planned controls over the horizon; $R_H$ is learned from driving data by inverse RL and treated as a deterministic best response. To optimise with gradients, note that $\partial R_H/\partial u_H = 0$ holds at $u_H^*$ for every $u_R$. Differentiating that identity gives
+
+$$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
+
+so the chain rule needs second derivatives of $R_H$ at its optimum, not a derivative through the inner solver. That requires $R_H$ smooth, an interior optimum, and an invertible Hessian. Unscripted behaviours emerge: the autonomous car nudges in front of a human-driven car so that it slows, or backs up at an intersection so the human crosses first. A follow-up (Sadigh et al., IROS 2016) adds the drop in belief entropy about the driver's type to $R_R$, so the car inches forward to learn whether the driver is attentive. The risk is that the model does double duty: a nudge is efficient only if $R_H$ is right, and people are not deterministic optimisers — they adapt to a robot that keeps pushing.
+
+> [!example] Worked example · 계산 예제
+> **A scalar Stackelberg game.** Human reward $R_H = -u_H^2 + (2 - u_R)\,u_H$, so the best response is $u_H^* = 1 - 0.5\,u_R$: the further the robot moves in, the more the human slows. The implicit formula gives $-(-2)^{-1}(-1) = -0.5$, the same slope. Robot reward $R_R = -(u_R - 1)^2 - 2u_H^2$: stay near its own target 1 and keep the human slow.
+>
+> - Treating $u_H$ as fixed, the robot picks $u_R = 1$; the human answers $u_H = 0.5$, and $R_R = -0.5$.
+> - Through the response, $dR_R/du_R = 4 - 3u_R$ (1.0 at $u_R = 1$, matching a finite difference), so $u_R^* = 4/3$, $u_H = 1/3$, $R_R = -1/3$.
+>
+> The leader pushes a third past its own target, and only the modelled slope −0.5 justifies it. If this human does not yield ($u_H = 1$), the push costs the robot: $R_R = -2.11$ instead of $-2.00$ at $u_R = 1$.
+
+**Construction bridge.** A crane slewing a load or an excavator swinging near a signal person or spotter has the same structure with a far less forgiving downside. Yielding under an uncertain belief is the conservative direction; probing is not, because an excavator that inches its bucket toward a spotter to see whether they step back is information gathering whose failure case is contact. Two things must stay outside the learned human model. The separation and stop functions of §6 must hold under every plausible hypothesis about the person, not the belief-weighted average that QMDP optimises. And a stop signal is a command with authority, not one more likelihood term. An "influence the human" objective belongs only inside that constraint set; a shorter cycle bought by workers learning to step aside is a change in their exposure, not a safety result.
+
+**What to check in papers.** Is the goal set closed, or can the true goal lie outside it and produce a confidently wrong belief? Was $\beta$ fitted or assumed, and is the belief calibrated ([[04-robotics/human-intent-prediction|23. Human Intent §4]])? Were the gains measured with real people, or with simulated users drawn from the very model the robot assumes?
+
 ### 4. Human performance
 
 Relevant constructs include workload, situation awareness, attention, reaction time, fatigue, skill, mental model, and trust. High trust is not automatically good: **calibrated trust** means reliance matches system capability and uncertainty. Self-reported trust should be paired with behavior and task outcomes.
@@ -261,14 +313,19 @@ Finally, state the strongest conclusion that the design could support: under the
 2. When might fewer interventions indicate worse HRI?
 3. Why should experienced operators and general participants not be pooled casually?
 4. What information is missing from the phrase “fully autonomous construction robot”?
+5. In the §3.5 goal-inference example the belief is still 0.5/0.5, yet the QMDP robot moves. Why, and what kind of action can QMDP never favour?
+6. A paper plans an excavator swing with a Stackelberg model in which the spotter steps back as the bucket approaches, and reports shorter cycles. What do you ask?
 
 > [!tip]- Answers
-> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials still leaves a 95% upper confidence bound on the failure rate of about 14% (exact; the rule-of-three shortcut $3/20 = 15\%$ is rough below $n \approx 30$) — about one collision in seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling.
+> 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials still leaves a 95% upper confidence bound on the failure rate of about 14% (exact; the rule-of-three shortcut $3/20 = 15\%$ is rough below $n \approx 30$) — about one collision in seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling. 5. The middle move scores −3.5 against −4 for either goal, because it makes progress that both goals share, so acting beats waiting. QMDP assumes the goal is revealed after one step, so an action whose only benefit is information (a probe that makes the next command more telling) has no value under it. 6. Where $R_H$ came from and whether it was validated on spotters rather than drivers or authors; what happens when the spotter does not step back (distracted, new to the site); whether the separation and stop functions of §6 hold independently of the model; and whether the shorter cycle was bought by workers adapting to a pushing machine, which is a change in exposure rather than a safety gain.
 
 ### Sources
 
 
 - The perception layer these decisions run on: [[04-robotics/video-action-understanding|20. Video & Action Understanding]], [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]], [[04-robotics/egocentric-perception|22. Egocentric Perception]], [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] — autonomy and authority are decisions; those pages are what the decision is made from.
+- S. Javdani, S. S. Srinivasa, and J. A. Bagnell, "Shared Autonomy via Hindsight Optimization," *Robotics: Science and Systems (RSS)*, 2015 — goal belief from a noisy-rational user model, assistance by the QMDP approximation (§3.5).
+- D. Sadigh, S. Sastry, S. A. Seshia, and A. Dragan, "Planning for Autonomous Cars that Leverage Effects on Human Actions," *RSS*, 2016 — the Stackelberg formulation and its implicit-gradient solution (§3.5).
+- D. Sadigh, S. Sastry, S. A. Seshia, and A. Dragan, "Information Gathering Actions over Human Internal State," *IEEE/RSJ IROS*, 2016; both combined in D. Sadigh et al., "Planning for cars that coordinate with people: leveraging effects on human actions for planning and active information gathering over human internal state," *Autonomous Robots* 42(7):1405–1426, 2018 — belief-entropy reduction as part of the robot reward (§3.5).
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
 - [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — the field's flagship venue; its papers set the de facto standard for human-study design
@@ -354,6 +411,58 @@ Finally, state the strongest conclusion that the design could support: under the
 갈등은 도움의 양보다 어느 쪽으로 지날지에 있다. 중재는 일관된 경로를 선택하거나 합친 동작에 제약을 걸 수 있다. 작업자는 현재 어느 권한이 활성화됐고 어떻게 바꾸는지 알아야 한다.
 
 **여기서 얻는 독법.** 개별적으로 합리적이지만 양립하지 않는 명령이 만나면 어떻게 되는지 묻는다. 갈등 처리, 결합 뒤 제약 검사, 덮어쓰기 경로를 확인한다. 블렌딩 계수만으로 공유 제어 정책 전체가 정해지지는 않는다.
+
+### 3.5 로봇의 결정 안에 사람을 모델링하기
+
+§3의 블렌딩은 사람을 얼마나 믿을지를 손으로 정한다. 아래 방법들은 대신 사람의 모델을 로봇의 최적화 안에 넣는다. 추론할 숨은 목표로 넣거나, 로봇에 반응하는 행위자로 넣는다.
+
+**목표에 대한 추론으로서의 공유 자율성.** 로봇은 사용자가 어디로 가려는지 모르므로, 목표를 POMDP([[04-robotics/planning-decision-making|계획과 의사결정 §7]])의 숨은 상태로, 조이스틱 명령 하나하나를 그 관측으로 다룬다. Javdani, Srinivasa & Bagnell(RSS 2015)은 사용자를 이산 목표 집합 위의 noisy-rational 행위자로 모델링하고 믿음(belief) $b(g)$를 베이즈 규칙으로 갱신한다:
+
+$$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
+
+$Q_g(x,u)$는 $g$로 가려는 사람에게 명령 $u$가 갖는 가치(음의 cost-to-go)이고, $\beta$는 사용자가 얼마나 합리적이라고 가정하는지다. [[02-foundations/rl-basics|RL 기초 §11]]의 지수형 noisy-expert 모델을 명령 하나에 적용한 것이다. 더 좋은 명령일수록 지수적으로 더 그럴듯하지만 확실하지는 않기 때문에, 엉성한 입력 하나는 믿음을 움직일 뿐 뒤집지 않는다.
+
+믿음 위의 정확한 계획은 계산 불가능하므로 이 논문은 **hindsight optimization**, 곧 QMDP 근사를 쓴다:
+
+$$Q(b, a) \approx \sum_g b(g)\,Q_g(x, a)$$
+
+로봇 행동 $a$ 각각을, 그 직후에 목표가 드러난다고 가정하고 점수 매긴다. 그래서 로봇은 확신하기 전에도 목표들이 합의하는 방향으로 움직이며 도울 수 있고, 도움의 양은 손으로 정한 α가 아니라 믿음에서 나온다. 대가도 있다. 정보만을 얻는 행동 — 사용자의 다음 명령을 더 분별력 있게 만드는 동작 같은 것 — 은 이 점수에서 가치가 0이고, 값은 낙관적이다. 공유 자율성에서는 사용자가 어차피 명령을 계속 주기 때문에 이 손실을 대개 감수할 만하다.
+
+> [!example] 계산 예제 · Worked example
+> **목표 추론.** 목표 $g_1, g_2$, 사전 $(0.5, 0.5)$, $\beta = 1$. 사용자는 $u_1$($g_1$ 쪽), $u_2$($g_2$ 쪽), $u_0$(직진)을 명령할 수 있고, $(u_1, u_2, u_0)$의 가치는 $Q_{g_1} = (-1, -3, -2)$, $Q_{g_2} = (-3, -1, -2)$다.
+>
+> - 우도: $P(u_1, u_2, u_0 \mid g_1) = (0.665, 0.090, 0.245)$, $g_2$에서는 좌우를 뒤집은 값.
+> - $u_1$ 한 번 뒤: $b(g_1) = e^2/(e^2 + 1) = 0.881$. $u_1$을 한 번 더: $e^4/(e^4 + 1) = 0.982$.
+> - $u_0$는 두 목표가 똑같이 예측하므로 0.982를 그대로 두고, 이어서 $u_2$가 오면 0.881로 돌아간다. $\beta = 0.5$라면 첫 $u_1$ 뒤 값은 0.731에 그친다.
+>
+> **QMDP 행동.** 로봇 행동은 $g_1$ 쪽, $g_2$ 쪽, 둘 다에 도움이 되는 가운데 이동이고, $Q_{g_1} = (-2, -6, -3.5)$, $Q_{g_2} = (-6, -2, -3.5)$다.
+>
+> - 사전에서 점수는 $(-4, -4, -3.5)$이므로 로봇은 **가운데 이동을** 골라 불확실한 채로 돕는다.
+> - $b(g_1) = 0.881$에서는 $(-2.48, -5.52, -3.5)$이므로 $g_1$ 쪽으로 확정한다. 전환점은 $-2b - 6(1 - b) = -3.5$인 $b(g_1) = 0.625$다.
+>
+> **여기서 얻는 독법.** 명령 하나당 비율 $e^{2\beta}$는 여기서 두 목표의 정규화 상수가 같기 때문에만 성립한다. 일반적으로는 다르므로 계산해야 한다. 논문의 우도가 목표별로 정규화됐는지 확인하라.
+
+**게임으로서의 상호작용.** 사람이 로봇에 반응하면 로봇의 행동이 사람이 할 일을 바꾸므로, 플래너는 그 반응을 거쳐 최적화해야 한다. Sadigh, Sastry, Seshia & Dragan(RSS 2016)은 사람 옆에서의 주행을 짧은 receding horizon 위의 Stackelberg(선도자–추종자) 게임으로 세운다:
+
+$$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
+
+사람이 horizon 동안 로봇의 계획된 제어를 본다고 가정하기 때문에 로봇이 선도자다. $R_H$는 주행 데이터에서 역강화학습으로 배우고, 결정론적 최적 반응으로 취급한다. 경사로 최적화하려면, $u_H^*$에서 $\partial R_H/\partial u_H = 0$이 모든 $u_R$에 대해 성립한다는 점을 쓴다. 그 항등식을 미분하면
+
+$$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
+
+이므로 연쇄 법칙에는 내부 풀이기를 거친 미분이 아니라 최적점에서 $R_H$의 2계 도함수만 필요하다. 이를 위해 $R_H$가 매끄럽고, 최적점이 내부에 있고, 헤시안이 가역이어야 한다. 아무도 스크립트하지 않은 행동이 나온다. 자율주행차가 사람이 모는 차 앞으로 비집고 들어가 그 차를 늦추거나, 교차로에서 살짝 후진해 사람이 먼저 건너게 한다. 후속 연구(Sadigh et al., IROS 2016)는 운전자 유형에 대한 믿음의 엔트로피 감소를 $R_R$에 더해, 차가 조금씩 앞으로 나가며 운전자가 주의하고 있는지 알아내게 한다. 위험은 모델이 두 가지 일을 한다는 데 있다. 비집고 들어가기는 $R_H$가 맞을 때만 효율적이고, 사람은 결정론적 최적화기가 아니며 계속 밀어붙이는 로봇에 적응한다.
+
+> [!example] 계산 예제 · Worked example
+> **스칼라 Stackelberg 게임.** 사람 보상 $R_H = -u_H^2 + (2 - u_R)\,u_H$이면 최적 반응은 $u_H^* = 1 - 0.5\,u_R$이다. 로봇이 더 들어올수록 사람은 더 늦춘다. 암묵 미분 공식은 $-(-2)^{-1}(-1) = -0.5$로 같은 기울기를 준다. 로봇 보상 $R_R = -(u_R - 1)^2 - 2u_H^2$: 자기 목표 1 근처에 머물고 사람을 느리게 둔다.
+>
+> - $u_H$를 고정으로 취급하면 로봇은 $u_R = 1$을 고르고, 사람은 $u_H = 0.5$로 답하며 $R_R = -0.5$다.
+> - 반응을 거치면 $dR_R/du_R = 4 - 3u_R$($u_R = 1$에서 1.0, 유한 차분과 일치)이므로 $u_R^* = 4/3$, $u_H = 1/3$, $R_R = -1/3$이다.
+>
+> 선도자는 자기 목표보다 3분의 1 더 밀고 들어가며, 그것을 정당화하는 것은 모델의 기울기 −0.5뿐이다. 이 사람이 양보하지 않으면($u_H = 1$) 그 밀기는 로봇에게 손해다: $u_R = 1$일 때의 $-2.00$ 대신 $R_R = -2.11$.
+
+**건설로 잇기.** 짐을 선회시키는 크레인이나 신호수·유도원 근처에서 선회하는 굴착기는 같은 구조이지만 실패의 대가가 훨씬 가혹하다. 믿음이 불확실할 때 양보하는 것은 보수적인 방향이다. 탐색은 그렇지 않다. 유도원이 물러서는지 보려고 버킷을 조금씩 들이미는 굴착기는, 실패하면 접촉으로 끝나는 정보 수집이기 때문이다. 두 가지는 학습된 사람 모델 밖에 두어야 한다. §6의 이격·정지 기능은 QMDP가 최적화하는 믿음 가중 평균이 아니라, 사람에 대한 그럴듯한 모든 가설 아래에서 성립해야 한다. 그리고 정지 신호는 권한을 가진 명령이지 우도 항 하나가 아니다. "사람에게 영향을 주는" 목적함수는 그 제약 집합 안에만 있어야 한다. 작업자가 비켜서는 법을 익혀서 얻은 짧은 사이클은 그들의 노출이 바뀐 것이지 안전 결과가 아니다.
+
+**논문에서 확인할 것.** 목표 집합이 닫혀 있는가, 아니면 진짜 목표가 그 밖에 있어 확신에 찬 틀린 믿음이 나올 수 있는가? $\beta$는 적합했는가 가정했는가, 그리고 믿음은 보정됐는가([[04-robotics/human-intent-prediction|23. 인간 의도 §4]])? 이득은 실제 사람으로 측정했는가, 아니면 로봇이 가정한 바로 그 모델에서 뽑은 모의 사용자로 측정했는가?
 
 ### 4. 인간 성능
 
@@ -548,17 +657,24 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 2. 개입이 적은 것이 오히려 나쁜 HRI를 나타낼 수 있는 경우는?
 3. 숙련 운용자와 일반 참가자를 함부로 합치면 안 되는 이유는?
 4. "완전 자율 건설로봇"이라는 문구에 빠진 정보는?
+5. §3.5 목표 추론 예제에서 믿음이 아직 0.5/0.5인데도 QMDP 로봇은 움직인다. 왜이고, QMDP가 결코 선호할 수 없는 행동은 어떤 종류인가?
+6. 어떤 논문이 버킷이 다가오면 유도원이 물러선다는 Stackelberg 모델로 굴착기 선회를 계획하고 더 짧은 사이클을 보고한다. 무엇을 묻겠는가?
 
 > [!tip]- 정답 · Answers
 > 1. 노출이 작고 희귀 위험, 분포 이동, 심각도, 시스템 실패를 놓칠 수 있다. 숫자로 말하면: rule of three([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]])에 따라 20회에서 실패 0이어도 실패율의 95% 신뢰 상한은 약 14%다(정확한 값. rule of three의 $3/20 = 15\%$는 $n \approx 30$ 미만에서 거칠다) — 일곱 번에 한 번꼴의 충돌이다.
 > 2. 운용자가 위험을 놓치거나, 인터페이스를 불신하거나, 과부하이거나, 권한이 없을 때.
 > 3. 숙련, 멘탈 모델, 속도, 작업 부하, 위험 반응이 다르다.
 > 4. 과제, 운용 도메인, 인간 역할, 개입/리셋, 안전 폴백, 지속 시간, 실패 처리.
+> 5. 가운데 이동은 두 목표가 공유하는 진척을 내기 때문에 어느 한 목표 쪽의 −4보다 나은 −3.5를 받고, 그래서 기다리기보다 움직이는 편이 낫다. QMDP는 한 단계 뒤에 목표가 드러난다고 가정하므로, 이득이 정보뿐인 행동(다음 명령을 더 분별력 있게 만드는 탐색)은 가치가 없다.
+> 6. $R_H$가 어디서 왔고 운전자나 저자가 아니라 유도원으로 검증됐는가; 유도원이 물러서지 않으면(주의 분산, 현장 신참) 어떻게 되는가; §6의 이격·정지 기능이 모델과 독립적으로 성립하는가; 짧은 사이클이 밀어붙이는 기계에 작업자가 적응해서 얻은 것은 아닌가 — 그렇다면 안전 이득이 아니라 노출의 변화다.
 
 ### 출처
 
 
 - 이 결정들이 딛고 선 인지 층: [[04-robotics/video-action-understanding|20. 비디오·행동 이해]], [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]], [[04-robotics/egocentric-perception|22. 자기중심 인지]], [[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]] — 자율성과 권한은 결정이고, 그 페이지들이 그 결정의 근거다.
+- S. Javdani, S. S. Srinivasa, and J. A. Bagnell, "Shared Autonomy via Hindsight Optimization," *Robotics: Science and Systems (RSS)*, 2015 — noisy-rational 사용자 모델로 목표 믿음을 세우고 QMDP 근사로 돕는다(§3.5).
+- D. Sadigh, S. Sastry, S. A. Seshia, and A. Dragan, "Planning for Autonomous Cars that Leverage Effects on Human Actions," *RSS*, 2016 — Stackelberg 정식화와 암묵 미분 풀이(§3.5).
+- D. Sadigh, S. Sastry, S. A. Seshia, and A. Dragan, "Information Gathering Actions over Human Internal State," *IEEE/RSJ IROS*, 2016; both combined in D. Sadigh et al., "Planning for cars that coordinate with people: leveraging effects on human actions for planning and active information gathering over human internal state," *Autonomous Robots* 42(7):1405–1426, 2018 — 믿음 엔트로피 감소를 로봇 보상에 넣는다(§3.5).
 - [NIST Human-Robot Interaction](https://www.nist.gov/topics/human-robot-interaction)
 - [NIST Robotics Test Methods](https://www.nist.gov/programs-projects/robotic-systems-smart-manufacturing-program)
 - [ACM/IEEE International Conference on Human-Robot Interaction (HRI)](https://humanrobotinteraction.org/) — 분야 대표 학회; 인간 대상 연구 설계의 실제 기준을 보여주는 논문들

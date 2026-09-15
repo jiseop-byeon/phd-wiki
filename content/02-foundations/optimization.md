@@ -94,6 +94,24 @@ The formulation is needed because a preference and a requirement play different 
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
   momentum + per-coordinate curvature proxy.
 
+**Adaptive step sizes, in three steps.** Each coordinate gets its own step size, set by how large its gradients have been. The three methods share one update and differ only in the scale $s$:
+
+$$x_{k+1,i} = x_{k,i} - \frac{\alpha}{\sqrt{s_{k,i}} + \epsilon}\, g_{k,i}$$
+
+so a coordinate with a large $s$ takes small steps, because $\alpha/(\sqrt{s}+\epsilon)$ is its effective step size.
+
+- **AdaGrad** (Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. Rarely-updated coordinates (a rare feature) keep a small sum and so keep large steps. But the sum only grows, so every step size decays and never recovers.
+- **RMSProp** (Tieleman & Hinton 2012, unpublished lecture slides): $s_k = \beta s_{k-1} + (1-\beta) g_k^2$. The exponential average forgets old gradients, so the step can grow back.
+- **Adam** adds momentum to the numerator and bias correction for the zero-initialized averages — see the [[01-canonical-papers/notes/1-foundations/adam|Adam note]].
+
+> [!example] Worked example · 계산 예제
+> One coordinate sees $g = [1.0, 0.1, 0.1, 0.1]$, with $\epsilon = 0$, $\beta = 0.9$, $s_0 = 0$.
+> - **AdaGrad**: $s = 1, 1.01, 1.02, 1.03$, so the effective step is $1.000, 0.995, 0.990, 0.985$ times $\alpha$ — shrinking every step. One early spike has set the scale for good: by step 100 (99 gradients of 0.1) the update is $0.071\alpha$.
+> - **RMSProp**: $s = 0.1, 0.091, 0.083, 0.076$, so the effective step is $3.16, 3.31, 3.47, 3.64$ times $\alpha$ — rising as the spike is forgotten; by step 100 the update is $1.00\alpha$.
+> - That first RMSProp step of $3.16\alpha$ comes from $s_1 = 0.1$ underestimating $g_1^2 = 1$ tenfold — the zero-initialization bias Adam's correction removes ($0.1/(1-0.9) = 1$).
+
+**AdamW — weight decay is not L2 under adaptive scaling** (Loshchilov & Hutter, ICLR 2019). For plain SGD, adding $\tfrac{\lambda}{2}\|w\|^2$ to the loss and shrinking $w \leftarrow w - \eta\lambda w$ give the same update. In Adam they differ: the L2 gradient $\lambda w$ is divided by $\sqrt{\hat v}$ along with the data gradient, so weights with a history of large gradients are decayed *less*. AdamW applies the shrink outside the adaptive step, so every weight decays at the same rate $\eta\lambda$. The paper reports that this decouples the best $\lambda$ from the learning rate and improves Adam's generalization, which is why most modern recipes — transformers, diffusion policies — use AdamW. Those recipes usually add **linear warmup then cosine decay** ([[02-foundations/ml-practice|9. ML Practice §6]]): early on $\hat v$ averages only a few squared gradients, so its scale is noisy and a full-size step can blow up, and the late decay lets minibatch noise settle.
+
 ### 3.5 Nonlinear least squares — the solver under half the robotics papers
 
 Section 3 gave you gradient descent and Newton on a general objective. A large share of
@@ -324,12 +342,16 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
 3. In the projection example, verify all four KKT conditions in the binding case.
 4. Why is the MPC problem above convex, and what could make it non-convex in practice?
    (Hint: obstacle avoidance constraints.)
+5. Two weights both equal 1, with $\sqrt{\hat v} = 10$ and $\sqrt{\hat v} = 0.1$. With
+   $\eta = 10^{-3}$, $\lambda = 10^{-2}$ and no momentum, how much does each shrink per step
+   under Adam + L2, and under AdamW?
 
 > [!tip]- Answers
 > 1. The epigraph of $\max(f,g)$ is the intersection of two convex epigraphs, hence convex. Hinge loss $\max(0, 1-yx)$ is the max of two affine functions, so it is convex.
 > 2. Stability needs $\alpha < 2/\lambda_{max} = 0.02$. Taking the usual half-of-the-limit $\alpha = 0.01$ (near the boundary the fast mode oscillates), the slow mode contracts as $(1-\alpha\lambda_{min})^k = 0.99^k$; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$ iterations. The condition number $\kappa = 100$ *is* that cost.
 > 3. Binding case: stationarity holds by construction, $x^* = p - \lambda a$; primal feasibility $a^\top x^* = b$ (active); dual feasibility $\lambda = (a^\top p - b)/\|a\|^2 > 0$ precisely because the constraint was violated at $p$; complementary slackness $\lambda g = \lambda\cdot 0 = 0$.
 > 4. The objective is a convex quadratic and the constraints are linear (dynamics equalities plus input/state boxes) — a convex QP. It stops being convex when obstacle avoidance enters (the free space is a non-convex complement) or when discrete decisions such as task ordering or contact-mode selection are added.
+> 5. Adam + L2: the decay term $\eta\lambda w/\sqrt{\hat v}$ is $10^{-6}$ for the first weight and $10^{-4}$ for the second — a 100× spread set by gradient history (ignoring the small effect of $\lambda w$ on $\hat v$). AdamW: $\eta\lambda w = 10^{-5}$ for both.
 
 ### Robotics bridge
 
@@ -409,6 +431,24 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
   좌표별 곡률 대리.
+
+**적응형 스텝 크기, 세 단계로.** 좌표마다 그동안 그래디언트가 얼마나 컸는지에 따라 자기만의 스텝 크기를 받는다. 세 방법은 같은 업데이트를 공유하고 척도 $s$만 다르다:
+
+$$x_{k+1,i} = x_{k,i} - \frac{\alpha}{\sqrt{s_{k,i}} + \epsilon}\, g_{k,i}$$
+
+$\alpha/(\sqrt{s}+\epsilon)$가 그 좌표의 유효 스텝 크기이기 때문에, $s$가 큰 좌표는 작은 스텝을 밟는다.
+
+- **AdaGrad**(Duchi, Hazan & Singer, JMLR 2011): $s_k = \sum_{t \le k} g_t^2$. 드물게 갱신되는 좌표(드문 특징)는 합이 작게 유지되므로 큰 스텝을 유지한다. 그러나 합은 커지기만 하므로 모든 스텝 크기가 줄어들고 다시 회복되지 않는다.
+- **RMSProp**(Tieleman & Hinton 2012, 미출간 강의 슬라이드): $s_k = \beta s_{k-1} + (1-\beta) g_k^2$. 지수 평균은 오래된 그래디언트를 잊으므로 스텝이 다시 커질 수 있다.
+- **Adam**은 분자에 모멘텀을, 0으로 초기화된 평균에 편향 보정을 더한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam 노트]] 참고.
+
+> [!example] 계산 예제 · Worked example
+> 한 좌표가 $g = [1.0, 0.1, 0.1, 0.1]$을 받는다. $\epsilon = 0$, $\beta = 0.9$, $s_0 = 0$.
+> - **AdaGrad**: $s = 1, 1.01, 1.02, 1.03$이므로 유효 스텝은 $\alpha$의 $1.000, 0.995, 0.990, 0.985$배 — 매 스텝 줄어든다. 초반의 스파이크 하나가 척도를 영영 정해 버린다: 100번째 스텝(0.1짜리 그래디언트 99개 뒤)의 업데이트는 $0.071\alpha$다.
+> - **RMSProp**: $s = 0.1, 0.091, 0.083, 0.076$이므로 유효 스텝은 $\alpha$의 $3.16, 3.31, 3.47, 3.64$배 — 스파이크를 잊어 가며 커진다. 100번째 스텝의 업데이트는 $1.00\alpha$다.
+> - RMSProp 첫 스텝이 $3.16\alpha$인 것은 $s_1 = 0.1$이 $g_1^2 = 1$을 열 배 과소추정하기 때문이다 — Adam의 보정이 없애는 바로 그 0-초기화 편향이다($0.1/(1-0.9) = 1$).
+
+**AdamW — 적응 스케일링 아래서 weight decay는 L2가 아니다**(Loshchilov & Hutter, ICLR 2019). 평범한 SGD에서는 손실에 $\tfrac{\lambda}{2}\|w\|^2$를 더하는 것과 $w \leftarrow w - \eta\lambda w$로 줄이는 것이 같은 업데이트다. Adam에서는 다르다: L2 그래디언트 $\lambda w$가 데이터 그래디언트와 함께 $\sqrt{\hat v}$로 나뉘므로, 그래디언트가 컸던 이력이 있는 가중치일수록 *덜* 감쇠된다. AdamW는 줄이기를 적응 스텝 바깥에서 적용하므로 모든 가중치가 같은 비율 $\eta\lambda$로 감쇠한다. 논문은 이렇게 하면 최적 $\lambda$가 학습률과 분리되고 Adam의 일반화가 좋아진다고 보고하며, 그래서 트랜스포머·디퓨전 정책 등 대부분의 현대 학습 레시피가 AdamW를 쓴다. 이런 레시피는 보통 **선형 워밍업 후 코사인 감쇠**를 붙인다([[02-foundations/ml-practice|9. ML 실무 §6]]): 초반에는 $\hat v$가 제곱 그래디언트 몇 개만 평균하므로 척도가 시끄럽고 전체 크기 스텝이 폭주할 수 있으며, 후반의 감쇠는 미니배치 노이즈를 가라앉힌다.
 
 ### 3.5 비선형 최소자승 — 로보틱스 논문 절반 아래에 있는 풀이법
 
@@ -626,12 +666,15 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 3. 투영 예제의 구속 케이스에서 KKT 네 조건을 전부 검증하라.
 4. 위 MPC 문제는 왜 볼록인가? 실전에서 무엇이 비볼록으로 만들 수 있는가?
    (힌트: 장애물 회피 제약.)
+5. 두 가중치가 모두 1이고 $\sqrt{\hat v} = 10$, $\sqrt{\hat v} = 0.1$이다. $\eta = 10^{-3}$,
+   $\lambda = 10^{-2}$, 모멘텀 없음일 때, Adam + L2와 AdamW에서 각각 스텝당 얼마나 줄어드는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $\max(f,g)$의 에피그래프는 두 볼록 에피그래프의 교집합 — 볼록. 힌지 $\max(0, 1-yx)$는 아핀 함수 둘의 max라 볼록이다.
 > 2. 안정 조건 $\alpha < 2/\lambda_{max} = 0.02$. 실전 관례대로 한계의 절반 $\alpha = 0.01$을 잡으면(경계 근처는 빠른 모드가 진동한다) 느린 모드는 $(1-0.01)^k = 0.99^k$로 수축; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$회. 조건수 $\kappa = 100$이 *곧* 그 대가다.
 > 3. 구속 케이스: 정상성은 $x^* = p - \lambda a$로 성립; $a^\top x^* = b$(원 가능·구속); $\lambda = (a^\top p - b)/\|a\|^2 > 0$(쌍대 가능); $\lambda g = \lambda \cdot 0 = 0$(상보 여유성).
 > 4. 목적은 볼록 이차, 제약은 선형(동역학 등식 + 박스) — 볼록 QP. 장애물 회피(비볼록 여집합)나 정수 결정(작업 순서, 접촉 모드 선택)이 들어오면 비볼록이 된다.
+> 5. Adam + L2: 감쇠항 $\eta\lambda w/\sqrt{\hat v}$는 첫 가중치에서 $10^{-6}$, 둘째에서 $10^{-4}$ — 그래디언트 이력이 만든 100배 차이다($\lambda w$가 $\hat v$에 주는 작은 영향은 무시). AdamW: 둘 다 $\eta\lambda w = 10^{-5}$.
 
 ### 로보틱스 다리
 
