@@ -45,7 +45,7 @@ The fix is to give the algorithm memory. Keep a second point, the **proxy** (Rus
 
 $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
-This resolves all three failures at once. The proxy remembers which side of the wall it entered from, so a thin plate holds; it follows the surface continuously around edges, so there is no flip; and the force direction is always proxy-minus-device, so it never points *into* the object. Friction comes almost free: let the proxy lag the device point tangentially until the tangential spring force exceeds a friction cone, then let it slip. The same proxy idea extends to streaming point clouds (Ryden & Chizeck, *IEEE ToH* 6(3), 2013), which is how telepresence systems render a depth camera's view as a touchable surface. On a one-degree-of-freedom device the proxy is trivial — the surface is a single coordinate — which is why a 1-DOF wall can be written as the penalty form in 24.4 without meeting any of these problems.
+This resolves all three failures at once. The proxy remembers which side of the wall it entered from, so a thin plate holds; it follows the surface continuously around edges, so there is no flip; and the force direction is always proxy-minus-device, so it never points *into* the object. Friction comes almost free: let the proxy lag the device point tangentially until the tangential spring force exceeds a friction cone, then let it slip. The same proxy idea extends to streaming point clouds (Ryden & Chizeck, *IEEE ToH* 6(3), 2013), which is how telepresence systems render a depth camera's view as a touchable surface. On a one-degree-of-freedom device the proxy is trivial — the surface is a single coordinate — which is why a 1-DOF wall can be written as the penalty form in 24.4 without meeting any of these problems. The idea also scales up. Deformable objects replace the rigid surface with a simulated mesh that the proxy presses on (for example Ding & Hasegawa, EuroHaptics 2020), and multi-point hand or exoskeleton interfaces give each contact link its own proxy (Galvan, Ramirez, Deshpande & Fey, WHC 2023).
 
 ### 4. Perceptual tricks: event-based haptics
 
@@ -53,13 +53,13 @@ The stiffness ceiling is a physics limit. Perceived hardness, it turns out, is n
 
 Their user study (WHC 2005, nine subjects, eleven samples rated for realism on a 1–7 scale, average tap speed 0.11 m/s) is the evidence to remember: real wood was rated most realistic, followed by wood-on-foam and the acceleration-matched virtual surfaces; plain foam and the two proportional-only virtual walls were rated least realistic. The acceleration-matched library recorded from the wood-on-foam sample was rated at the same level as that sample. Two caveats travel with the result. The transients are large force spikes, and users drove the device into saturation an average of five times each, most often with the decaying sinusoid and acceleration matching. And realism was a rating, not a task outcome — see [[04-robotics/haptics-teleoperation/experiments-readings|24.6]] for why that distinction matters.
 
-A second trick lives in the graphics: never draw the tool penetrating the surface, even though it does. Vision dominates, and the surface is judged stiffer when the picture says the tool stopped. Both tricks are honest in the same sense: they render the *cue* the nervous system uses, not the physics the device cannot produce.
+A second trick lives in the graphics: never draw the tool penetrating the surface, even though it does. Vision dominates, and the surface is judged stiffer when the picture says the tool stopped. Wu, Basdogan and Srinivasan (ASME IMECE 1999) measured this visual effect on perceived stiffness. Both tricks are honest in the same sense: they render the *cue* the nervous system uses, not the physics the device cannot produce.
 
 ### 5. Damping and friction on the surface
 
 A pure spring wall feels active and slippery. Two cheap additions fix most of it:
 
-- **Normal damping, entering only.** Add $-B v_n$ while the point moves *into* the wall and nothing while it leaves. Damping on the way out would pull the user back in. This is the wall of 24.4 §1, and the $B$ there is this $B$.
+- **Normal damping, entering only.** Add $-B v_n$ while the point moves *into* the wall and nothing while it leaves. Damping on the way out would pull the user back in. Entry damping also bleeds off the vibration that a stiff spring rings with at impact. This is the wall of 24.4 §1, and the $B$ there is this $B$.
 - **Tangential damping.** Add $-B_t v_t$ for motion parallel to the surface. It is not friction — it vanishes at rest — but it removes the ice feeling.
 
 Real friction has a stuck state, and rendering it means switching between two regimes. The **Karnopp model** (*J. Dyn. Sys. Meas. Control* 107(1), 1985) is the workhorse: while the point is *stuck*, the friction force equals the applied tangential force up to a static limit $F_s$; once $\lvert F_a\rvert > F_s$ the point *slides* with friction $F_d\,\mathrm{sgn}(v) + b v$; when speed drops below a small threshold $D_v$ it sticks again and the velocity is set to zero. The threshold is the trick that makes it computable: exact zero velocity never occurs in sampled data. The **Dahl** and **elasto-plastic** models (Dupont, Armstrong & Hayward, ACC 2000) replace the switch with a bristle-like state that captures pre-sliding displacement, and the Hayward–Armstrong variant (2000) removes the position drift the original Dahl model has.
@@ -71,7 +71,7 @@ Is friction worth rendering? Richard and Cutkosky (ICRA 2002) measured it with F
 
 ### 6. Textures and moving objects
 
-**Bumps and textures** are the penalty idea turned sideways: derive a force from a height field, opposing motion "uphill", and the hand reports a bump. Minsky et al. (I3D 1990) built the first such display, and Robles-De-La-Torre and Hayward (*Nature* 412, 2001) showed the surprising half: force information can *overcome* geometry, so a flat surface with the right lateral force pattern is felt as a bump, and a real bump with the force pattern removed is not. Texture rendering therefore has a frequency budget — the device must reproduce the force pattern at the speed the finger crosses it — which is the same bandwidth argument as [[04-robotics/haptics-teleoperation/tactile-display-design|24.2]].
+**Bumps and textures** are the penalty idea turned sideways: derive a force from a height field, opposing motion "uphill", and the hand reports a bump. Minsky et al. (I3D 1990) built the first such display, and Robles-De-La-Torre and Hayward (*Nature* 412, 2001) showed the surprising half: force information can *overcome* geometry, so a flat surface with the right lateral force pattern is felt as a bump, and a real bump with the force pattern removed is not. Texture rendering therefore has a frequency budget — the device must reproduce the force pattern at the speed the finger crosses it — which is the same bandwidth argument as [[04-robotics/haptics-teleoperation/tactile-display-design|24.2]]. Damping can be textured the same way: vary $B$ over position and a smooth surface reads as sticky or rough patches. Recorded vibration is the other route; the event-based transients of §4 grew out of reality-based vibration models fitted to tapping data (Okamura, Cutkosky & Dennerlein, *IEEE/ASME T-Mech* 2001).
 
 **Dynamic objects** add simulation to rendering. Each period: sum the forces on the object (the user's spring force, equal and opposite to what the user feels, plus penalty forces from other objects), divide by mass, integrate to a new velocity and position, and use the new position for next period's collision check. The integrator matters — 24.4 §2 explains why — and the trapezoidal rule is the common choice.
 
@@ -134,7 +134,7 @@ $$F = \begin{cases} K\,d\,\hat n, & d > 0 \\ 0, & d \le 0 \end{cases}$$
 
 $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
-이것이 세 실패를 한꺼번에 푼다. proxy가 어느 쪽에서 벽에 들어왔는지 기억하므로 얇은 판이 버틴다. 모서리를 돌 때 표면을 연속으로 따라가므로 뒤집힘이 없다. 힘의 방향이 언제나 proxy 빼기 장치이므로 물체 *안쪽*을 가리키는 일이 없다. 마찰은 거의 공짜로 온다. 접선 방향 스프링 힘이 마찰 원뿔을 넘을 때까지 proxy를 접선 방향으로 뒤처지게 두고, 넘으면 미끄러지게 한다. 같은 proxy 발상은 스트리밍 점군으로 확장되어(Ryden & Chizeck, *IEEE ToH* 6(3), 2013), 텔레프레즌스 시스템이 깊이 카메라의 시야를 만질 수 있는 표면으로 렌더링하는 방식이 된다. 1자유도 장치에서는 proxy가 자명하다 — 표면이 좌표 하나다 — 그래서 24.4의 1자유도 벽은 이 문제들을 하나도 만나지 않고 벌점 형태로 쓸 수 있다.
+이것이 세 실패를 한꺼번에 푼다. proxy가 어느 쪽에서 벽에 들어왔는지 기억하므로 얇은 판이 버틴다. 모서리를 돌 때 표면을 연속으로 따라가므로 뒤집힘이 없다. 힘의 방향이 언제나 proxy 빼기 장치이므로 물체 *안쪽*을 가리키는 일이 없다. 마찰은 거의 공짜로 온다. 접선 방향 스프링 힘이 마찰 원뿔을 넘을 때까지 proxy를 접선 방향으로 뒤처지게 두고, 넘으면 미끄러지게 한다. 같은 proxy 발상은 스트리밍 점군으로 확장되어(Ryden & Chizeck, *IEEE ToH* 6(3), 2013), 텔레프레즌스 시스템이 깊이 카메라의 시야를 만질 수 있는 표면으로 렌더링하는 방식이 된다. 1자유도 장치에서는 proxy가 자명하다 — 표면이 좌표 하나다 — 그래서 24.4의 1자유도 벽은 이 문제들을 하나도 만나지 않고 벌점 형태로 쓸 수 있다. 이 발상은 규모도 키울 수 있다. 변형 물체는 강체 표면 대신 proxy가 누르는 시뮬레이션 메시를 쓰고(예: Ding & Hasegawa, EuroHaptics 2020), 손이나 외골격의 다점 인터페이스는 접촉 링크마다 proxy를 둔다(Galvan, Ramirez, Deshpande & Fey, WHC 2023).
 
 ### 4. 지각적 트릭: 사건 기반 햅틱
 
@@ -142,13 +142,13 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 기억할 증거는 그들의 사용자 연구다(WHC 2005, 피험자 9명, 시료 11개를 1–7점 현실감으로 평가, 평균 두드림 속도 0.11 m/s). 실제 나무가 가장 현실적이라 평가됐고, 폼 위의 나무와 가속도 정합 가상 표면이 그 뒤를 이었다. 맨 폼과 비례 제어만 쓴 두 가상 벽이 가장 낮았다. 폼 위 나무에서 기록한 가속도 정합 라이브러리는 그 시료와 같은 수준으로 평가됐다. 단서 둘이 결과에 따라붙는다. 과도 신호는 큰 힘 스파이크라서 사용자가 장치를 평균 다섯 번씩 포화시켰고, 감쇠 정현파와 가속도 정합에서 가장 잦았다. 그리고 현실감은 평가 점수이지 과제 결과가 아니다 — 그 구분이 왜 중요한지는 [[04-robotics/haptics-teleoperation/experiments-readings|24.6]].
 
-두 번째 트릭은 그래픽에 있다. 도구가 실제로는 표면을 뚫고 들어가더라도 뚫는 모습을 절대 그리지 않는다. 시각이 지배하므로, 그림이 도구가 멈췄다고 말하면 표면은 더 단단하다고 판단된다. 두 트릭은 같은 의미에서 정직하다. 장치가 낼 수 없는 물리가 아니라 신경계가 쓰는 *단서*를 렌더링하는 것이다.
+두 번째 트릭은 그래픽에 있다. 도구가 실제로는 표면을 뚫고 들어가더라도 뚫는 모습을 절대 그리지 않는다. 시각이 지배하므로, 그림이 도구가 멈췄다고 말하면 표면은 더 단단하다고 판단된다. Wu, Basdogan, Srinivasan(ASME IMECE 1999)이 인지 강성에 대한 이 시각 효과를 측정했다. 두 트릭은 같은 의미에서 정직하다. 장치가 낼 수 없는 물리가 아니라 신경계가 쓰는 *단서*를 렌더링하는 것이다.
 
 ### 5. 표면 위의 댐핑과 마찰
 
 순수 스프링 벽은 능동적이고 미끄럽게 느껴진다. 값싼 추가 둘이 대부분을 고친다.
 
-- **들어갈 때만 거는 법선 댐핑.** 점이 벽 *안으로* 움직이는 동안만 $-B v_n$을 더하고 나올 때는 아무것도 하지 않는다. 나올 때의 댐핑은 사용자를 다시 안으로 끌어당긴다. 이것이 24.4 §1의 벽이고, 거기의 $B$가 이 $B$다.
+- **들어갈 때만 거는 법선 댐핑.** 점이 벽 *안으로* 움직이는 동안만 $-B v_n$을 더하고 나올 때는 아무것도 하지 않는다. 나올 때의 댐핑은 사용자를 다시 안으로 끌어당긴다. 진입 댐핑은 단단한 스프링이 충돌 순간 울리는 진동도 흘려 없앤다. 이것이 24.4 §1의 벽이고, 거기의 $B$가 이 $B$다.
 - **접선 댐핑.** 표면에 평행한 운동에 $-B_t v_t$를 더한다. 마찰은 아니다 — 정지하면 사라진다 — 하지만 얼음 느낌은 없앤다.
 
 실제 마찰에는 붙어 있는 상태가 있고, 이를 렌더링하려면 두 영역을 전환해야 한다. **Karnopp 모델**(*J. Dyn. Sys. Meas. Control* 107(1), 1985)이 주력이다. 점이 *붙어 있는* 동안 마찰력은 정지 한계 $F_s$까지 가해진 접선 힘과 같다. $\lvert F_a\rvert > F_s$가 되면 점은 $F_d\,\mathrm{sgn}(v) + b v$의 마찰을 받으며 *미끄러진다*. 속도가 작은 문턱 $D_v$ 아래로 떨어지면 다시 붙고 속도는 0으로 놓는다. 이 문턱이 계산 가능하게 만드는 요령이다. 샘플링된 데이터에서 정확한 0 속도는 결코 나오지 않는다. **Dahl** 모델과 **탄소성** 모델(Dupont, Armstrong, Hayward, ACC 2000)은 이 스위치를 미끄러지기 전 변위를 담는 강모(bristle) 같은 상태로 바꾸고, Hayward–Armstrong 변형(2000)은 원래 Dahl 모델의 위치 표류를 없앤다.
@@ -160,7 +160,7 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 ### 6. 질감과 움직이는 물체
 
-**돌기와 질감**은 벌점 발상을 옆으로 돌린 것이다. 높이장에서 힘을 유도해 "오르막" 운동을 막으면 손은 돌기를 보고한다. Minsky 외(I3D 1990)가 그런 디스플레이를 처음 만들었고, Robles-De-La-Torre와 Hayward(*Nature* 412, 2001)가 놀라운 절반을 보였다. 힘 정보는 기하를 *이길* 수 있다. 알맞은 횡방향 힘 패턴을 가진 평면은 돌기로 느껴지고, 힘 패턴을 제거한 실제 돌기는 돌기로 느껴지지 않는다. 그래서 질감 렌더링에는 주파수 예산이 있다 — 손가락이 지나는 속도로 힘 패턴을 재현해야 한다 — 그리고 이것은 [[04-robotics/haptics-teleoperation/tactile-display-design|24.2]]와 같은 대역폭 논증이다.
+**돌기와 질감**은 벌점 발상을 옆으로 돌린 것이다. 높이장에서 힘을 유도해 "오르막" 운동을 막으면 손은 돌기를 보고한다. Minsky 외(I3D 1990)가 그런 디스플레이를 처음 만들었고, Robles-De-La-Torre와 Hayward(*Nature* 412, 2001)가 놀라운 절반을 보였다. 힘 정보는 기하를 *이길* 수 있다. 알맞은 횡방향 힘 패턴을 가진 평면은 돌기로 느껴지고, 힘 패턴을 제거한 실제 돌기는 돌기로 느껴지지 않는다. 그래서 질감 렌더링에는 주파수 예산이 있다 — 손가락이 지나는 속도로 힘 패턴을 재현해야 한다 — 그리고 이것은 [[04-robotics/haptics-teleoperation/tactile-display-design|24.2]]와 같은 대역폭 논증이다. 댐핑도 같은 방식으로 질감을 줄 수 있다. 위치에 따라 $B$를 바꾸면 매끈한 표면이 끈적하거나 거친 패치로 읽힌다. 기록된 진동이 또 다른 길이다. §4의 사건 기반 과도 신호는 두드림 데이터에 맞춘 실측 기반 진동 모델에서 자라났다(Okamura, Cutkosky & Dennerlein, *IEEE/ASME T-Mech* 2001).
 
 **동적 물체**는 렌더링에 시뮬레이션을 더한다. 주기마다 물체에 걸리는 힘을 합하고(사용자의 스프링 힘, 즉 사용자가 느끼는 것과 크기가 같고 방향이 반대인 힘, 그리고 다른 물체들의 벌점 힘), 질량으로 나누고, 적분해 새 속도와 위치를 얻고, 그 새 위치를 다음 주기의 충돌 검사에 쓴다. 적분기가 중요하고 — 24.4 §2가 이유를 설명한다 — 사다리꼴 규칙이 흔한 선택이다.
 
@@ -201,3 +201,9 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 - M. Minsky, M. Ouh-young, O. Steele, F. P. Brooks, M. Behensky, "Feeling and seeing: issues in force display," *I3D 1990*, pp. 235–241. DOI 10.1145/91385.91451.
 - G. Robles-De-La-Torre, V. Hayward, "Force can overcome object geometry in the perception of shape through active touch," *Nature* 412:445–448, 2001. DOI 10.1038/35086588.
 - F. Ryden, H. J. Chizeck, "A proxy method for real-time 3-DOF haptic rendering of streaming point cloud data," *IEEE Transactions on Haptics* 6(3):257–267, 2013. DOI 10.1109/TOH.2013.20.
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7.
+- K. S. Hale, K. M. Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," *IEEE CG&A* 24(2):33–39, 2004. DOI 10.1109/MCG.2004.1274059.
+- W.-C. Wu, C. Basdogan, M. A. Srinivasan, "Visual, haptic, and bimodal perception of size and stiffness in virtual environments," *ASME IMECE 1999*, DSC. DOI 10.1115/IMECE1999-0003.
+- A. M. Okamura, M. R. Cutkosky, J. T. Dennerlein, "Reality-based models for vibration feedback in virtual environments," *IEEE/ASME Transactions on Mechatronics* 6(3):245–252, 2001. DOI 10.1109/3516.951362.
+- Y. Ding, S. Hasegawa, EuroHaptics 2020, LNCS 12272. DOI 10.1007/978-3-030-58147-3_27.
+- M. Galvan, C. Ramirez, A. D. Deshpande, A. M. Fey, WHC 2023, pp. 176–182. DOI 10.1109/WHC56415.2023.10224434.

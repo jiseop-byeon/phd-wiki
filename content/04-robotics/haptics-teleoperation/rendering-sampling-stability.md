@@ -19,6 +19,8 @@ $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
 where positive $x$ denotes penetration. The nearest geometric point is not always the correct proxy: near an edge it may jump to another face and eject the user sideways. Contact rendering therefore needs state/memory as well as collision detection.
 
+**Model the loop before tuning it.** For a one-DOF impedance device the standard model is a mass–damper, $m\ddot x+b\dot x=F_a$, where $F_a$ is the actuator force and $b$ is the physical damping that §2 will need. The hand is commonly modelled as a spring–damper attached to the handle, and the virtual environment closes the loop by turning measured position into $F_a$. That block diagram is linear only on paper. The wall is a unilateral switch, the encoder quantizes, the amplifier saturates, and the person changes grip and stiffness during the task. That is why the rest of this page reasons with energy and passivity rather than with the poles of a linear model; the linear tools are in [[04-robotics/control-theory-ce397|5. Control Theory]]. The full nonlinear hybrid model, with non-volitional human dynamics, quantization, delay and the velocity filter, is Colonnese & Okamura (§3).
+
 ### 2. Why a digital spring can create energy
 
 The controller samples position and holds a force until the next update. During one interval $T$, a constant velocity $v$ moves $\Delta x=vT$. The zero-order hold makes the force lag the ideal spring. A useful worst-case energy estimate is
@@ -39,7 +41,13 @@ Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bo
 
 These bounds are usually checked in simulation before hardware, and that check has its own trap.
 
-The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result.
+The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result. The same holds for the non-idealities you include: a simulation without quantization, Coulomb friction, actuator saturation and the zero-order hold will report a wall the hardware cannot render, so model them before trusting a simulated limit.
+
+The wall bound is a special case of a general one, and this is where it comes from. For any virtual environment written as a pulse transfer function $H(z)$, Colgate and Schenkel (*J. Robotic Systems* 14(1), 1997) give the passivity condition for the one-DOF sampled-data model with a zero-order hold, as presented in Weir & Colgate (eq. 8.2):
+
+$$b>\frac{T}{2}\,\frac{1}{1-\cos\omega T}\,\mathrm{Re}\{(1-e^{-j\omega T})H(e^{j\omega T})\},\qquad 0\le\omega\le\omega_N=\pi/T$$
+
+Read it the same way as the wall bound: the physical damping $b$ has to pay, at every frequency up to Nyquist, for the energy the sampled environment injects. Putting a spring and a backward-difference damper in for $H(z)$ gives the $b>KT/2+|B|$ form above.
 
 ### 3. Sampling and quantization are different
 
@@ -48,13 +56,15 @@ Sampling hides **when** contact occurred between updates. Quantization hides **w
 - **Units.** The second bound is $K\le2f_c/\Delta$, where $f_c$ is the device's Coulomb friction force in newtons. N divided by m is a stiffness, so the coarser the encoder, the lower the wall you can render.
 - **Friction's role.** Friction *raises* that second ceiling rather than lowering it. It helps only when the quantization term is the binding one.
 
-That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
+That is the uncomfortable part. The same friction that buys stability is the friction a transparency claim has to subtract, so a device reporting a high stable stiffness and high transparency owes you the friction number. Diolaiti, Niemeyer, Barbagli and Salisbury (*IEEE T-RO* 22(2), 2006) extend the analysis with time delay and draw it as a dimensionless plane with axes $\beta=b/(KT)$ and $\sigma=f_c/(K\Delta)$, divided into regions that are globally stable (passive), show limit cycles, are globally unstable, or are only locally stable or unstable. That plane is the quickest way to see which of $b$, $T$, $f_c$ and $\Delta$ to change. Note also what this bound does not share with $K\le2b/T$ above: no $T$ appears in it. Faster sampling does not improve encoder resolution. Conversely, finer resolution does not eliminate zero-order-hold delay.
 
 Velocity estimation exposes the tradeoff:
 
 $$\hat v_k=\frac{x_k-x_{k-1}}{T}.$$
 
 Small $T$ increases the velocity jump caused by one encoder count. Averaging over $n$ samples, $(x_k-x_{k-n})/(nT)$, reduces variance but increases effective delay. A low-pass filter should therefore be evaluated by both noise attenuation and phase at the contact frequencies.
+
+The usual low-pass filter on that estimate is a first-order IIR, $\hat v^{f}_k=\alpha\hat v_k+(1-\alpha)\hat v^{f}_{k-1}$ with $0<\alpha\le1$. Written this way, a larger $\alpha$ weights the new sample more and filters less. [[02-foundations/signal-processing|6. Signal Processing §4]] writes the same filter with $\alpha$ on the old value, so read the equation, not the symbol. Lowering the weight on new samples cuts noise and adds lag: the tradeoff above, in one knob.
 
 The failure is worst where it is least expected. Move slowly enough and a fixed window may contain **no** encoder transition at all, so the estimate reads exactly zero and the rendered damping vanishes at the moment a wall is being approached gently. The alternative is to invert the measurement — time the interval between successive encoder ticks instead of counting ticks in a fixed interval — which is accurate at low speed for the same reason, and degrades at high speed where the ticks arrive faster than the timer resolves. Neither estimator is good everywhere, so a paper that reports a stiffness ceiling owes you the velocity estimator and the speed at which it was measured.
 
@@ -69,6 +79,8 @@ $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 Interconnected passive systems have strong stability properties, which avoids needing an exact high-frequency human model. But passivity is a sufficient design framework, not a guarantee of good feel, task success, or safety; it can be conservative, and active humans or actuators still require careful port definitions and assumptions.
 
 **Z-width** is the range of impedances a device can render stably/passively—from light free space to hard contact. A stiffness–damping plot shows only part of it; frequency, minimum impedance, load, grip, and measurement location must be reported.
+
+Z-width has two ends, and different things set them. The lower end, how light free space can feel, is set mainly by mechanical design and force sensing: inertia, friction, backdrivability. The upper end, how stiff a wall can be, is limited by sensor quantization, sampled-data effects, time delay and noise (Weir & Colgate, citing Colgate & Schenkel 1997). Colgate and Brown (ICRA 1994) measured the upper end experimentally and found the counterintuitive lever: adding *physical* damping to the mechanism raises the virtual stiffness and damping that can be rendered passively, as do a faster sampling rate and finer position resolution. So Z-width is not a fixed number for a device. It moves with its damping, rate, sensor and filter, and with the task it is measured on.
 
 ### 5. Three stabilization families
 
@@ -102,6 +114,8 @@ $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
 여기서 양의 $x$는 침투를 뜻한다. 기하학적으로 가장 가까운 점이 항상 옳은 proxy는 아니다. 모서리 근처에서는 다른 면으로 뛰면서 사용자를 옆으로 밀어낼 수 있다. 따라서 접촉 렌더링에는 충돌 검출뿐 아니라 상태와 기억이 필요하다.
 
+**튜닝 전에 루프를 모델링하라.** 1자유도 임피던스 장치의 표준 모델은 질량–댐퍼 $m\ddot x+b\dot x=F_a$다. $F_a$는 액추에이터 힘이고 $b$는 §2에서 필요해질 물리적 댐핑이다. 손은 흔히 핸들에 붙은 스프링–댐퍼로 모델링하고, 가상 환경이 측정된 위치를 $F_a$로 바꾸어 루프를 닫는다. 이 블록선도는 종이 위에서만 선형이다. 벽은 한쪽으로만 켜지는 스위치이고, encoder는 양자화하고, 증폭기는 포화하며, 사람은 과제 도중에 파지와 강성을 바꾼다. 그래서 이 페이지의 나머지는 선형 모델의 극점이 아니라 에너지와 수동성으로 추론한다. 선형 도구는 [[04-robotics/control-theory-ce397|5. 제어 이론]]에 있다. 비의지적 인간 동역학, 양자화, 지연, 속도 필터까지 넣은 완전한 비선형 하이브리드 모델은 Colonnese & Okamura다(§3).
+
 ### 2. 디지털 스프링이 에너지를 만들 수 있는 이유
 
 제어기는 위치를 샘플링하고 다음 갱신까지 힘을 유지한다. 한 주기 $T$ 동안 일정 속도 $v$는 $\Delta x=vT$만큼 움직인다. Zero-order hold 때문에 힘이 이상적인 스프링보다 늦는다. 쓸 만한 최악의 경우 에너지 추정은
@@ -122,7 +136,13 @@ $$K\le\frac{2b}{T}$$
 
 이 경계들은 보통 하드웨어 전에 시뮬레이션으로 확인하는데, 그 확인에도 함정이 있다.
 
-이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다.
+이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다. 시뮬레이션에 넣는 비이상성도 마찬가지다. 양자화, Coulomb 마찰, 액추에이터 포화, zero-order hold가 빠진 시뮬레이션은 하드웨어가 구현할 수 없는 벽을 보고하므로, 시뮬레이션 한계를 믿기 전에 이것들을 모델링하라.
+
+벽 경계는 일반적인 경계의 특수한 경우이고, 그 경계가 여기서 나온다. 가상 환경을 펄스 전달함수 $H(z)$로 쓰면, Colgate와 Schenkel(*J. Robotic Systems* 14(1), 1997)은 zero-order hold가 있는 1자유도 샘플링 데이터 모델의 수동성 조건을 다음과 같이 준다(Weir & Colgate의 식 8.2).
+
+$$b>\frac{T}{2}\,\frac{1}{1-\cos\omega T}\,\mathrm{Re}\{(1-e^{-j\omega T})H(e^{j\omega T})\},\qquad 0\le\omega\le\omega_N=\pi/T$$
+
+벽 경계와 같은 방식으로 읽는다. 물리적 댐핑 $b$가 나이퀴스트까지의 모든 주파수에서, 샘플링된 환경이 주입하는 에너지를 갚아야 한다. $H(z)$ 자리에 스프링과 후방차분 댐퍼를 넣으면 위의 $b>KT/2+|B|$ 형태가 나온다.
 
 ### 3. 샘플링과 양자화는 서로 다른 문제다
 
@@ -131,13 +151,15 @@ $$K\le\frac{2b}{T}$$
 - **단위.** 둘째 경계는 $K\le2f_c/\Delta$이고, $f_c$는 장치의 Coulomb 마찰력으로 단위는 N이다. N을 m으로 나누면 강성이므로, encoder가 거칠수록 렌더링할 수 있는 벽은 낮아진다.
 - **마찰의 역할.** 마찰은 그 둘째 천장을 낮추는 것이 아니라 *올린다*. 양자화 항이 더 작은 쪽일 때만 도움이 된다.
 
-불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
+불편한 지점이 여기다. 안정성을 사 주는 그 마찰이 곧 투명도 주장에서 빼야 할 마찰이다. 높은 안정 강성과 높은 투명도를 동시에 보고하는 장치라면 마찰 수치를 함께 내놓아야 한다. Diolaiti, Niemeyer, Barbagli, Salisbury(*IEEE T-RO* 22(2), 2006)는 여기에 시간 지연을 더해 분석을 확장하고, 축이 $\beta=b/(KT)$와 $\sigma=f_c/(K\Delta)$인 무차원 평면으로 그린다. 평면은 전역 안정(수동), limit cycle, 전역 불안정, 국소적으로만 안정 또는 불안정한 영역으로 나뉜다. $b$, $T$, $f_c$, $\Delta$ 중 무엇을 바꿔야 할지 가장 빨리 보여 주는 그림이다. 위의 $K\le2b/T$와 다른 점도 보라. 이 경계에는 $T$가 등장하지 않는다. 더 빠른 샘플링이 encoder 해상도를 높여 주지는 않는다. 반대로, 더 고운 해상도가 zero-order hold 지연을 없애 주지도 않는다.
 
 속도 추정에서 이 상충이 드러난다.
 
 $$\hat v_k=\frac{x_k-x_{k-1}}{T}.$$
 
 $T$가 작을수록 encoder 한 count가 만드는 속도 도약이 커진다. $n$개 샘플에 대한 평균 $(x_k-x_{k-n})/(nT)$는 분산을 줄이지만 실효 지연을 늘린다. 따라서 저역통과 필터는 noise 감쇠와 접촉 주파수에서의 위상, 두 가지로 함께 평가해야 한다.
+
+그 추정값에 흔히 거는 저역통과 필터는 1차 IIR, $\hat v^{f}_k=\alpha\hat v_k+(1-\alpha)\hat v^{f}_{k-1}$($0<\alpha\le1$)이다. 이렇게 쓰면 $\alpha$가 클수록 새 샘플에 무게를 두고 덜 거른다. [[02-foundations/signal-processing|6. 신호처리 §4]]는 같은 필터를 $\alpha$가 이전 값에 붙도록 쓰므로, 기호가 아니라 식을 읽어라. 새 샘플의 가중을 낮추면 noise가 줄고 지연이 는다. 위의 상충이 손잡이 하나에 담긴 것이다.
 
 이 고장은 예상하기 가장 어려운 곳에서 가장 심하다. 충분히 느리게 움직이면 고정된 창 안에 encoder 전이가 **하나도** 안 들어올 수 있다. 그러면 추정값이 정확히 0이 되고, 벽에 조심스럽게 다가가는 바로 그 순간에 렌더링된 감쇠가 사라진다. 대안은 측정을 뒤집는 것이다. 고정 구간의 tick 수를 세는 대신 연속한 tick 사이의 시간을 재면, 같은 이유로 저속에서 정확하고, tick이 타이머 분해능보다 빨리 도착하는 고속에서 나빠진다. 어느 추정기도 전 구간에서 좋지 않다. 그러니 강성 한계를 보고하는 논문이라면 속도 추정기와 그것을 측정한 속도를 함께 내놓아야 한다.
 
@@ -152,6 +174,8 @@ $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 수동 시스템을 연결하면 강한 안정성 성질이 생기고, 덕분에 사람의 정확한 고주파 모델이 필요 없어진다. 그러나 수동성은 충분조건을 주는 설계 틀이지 좋은 촉감·과제 성공·안전을 보장하지 않는다. 보수적일 수 있고, 능동적인 사람이나 액추에이터가 있으면 포트 정의와 가정을 여전히 조심해야 한다.
 
 **Z-width**는 장치가 안정하게(수동적으로) 표현할 수 있는 임피던스의 범위다. 가벼운 자유공간에서 단단한 접촉까지가 여기에 들어간다. 강성–댐핑 평면의 그림은 그 일부만 보여 준다. 주파수, 최소 임피던스, 부하, 파지, 측정 위치를 함께 보고해야 한다.
+
+Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 끝, 즉 자유공간이 얼마나 가볍게 느껴질 수 있는가는 주로 기계 설계와 힘 센싱이 정한다: 관성, 마찰, 역구동성. 위 끝, 즉 벽이 얼마나 단단할 수 있는가는 센서 양자화, 샘플링 데이터 효과, 시간 지연, noise가 제한한다(Weir & Colgate, Colgate & Schenkel 1997 인용). Colgate와 Brown(ICRA 1994)은 위 끝을 실험으로 재서 직관에 반하는 지렛대를 찾았다. 메커니즘에 *물리적* 댐핑을 더하면 수동적으로 구현할 수 있는 가상 강성과 댐핑이 올라가고, 더 빠른 샘플링과 더 고운 위치 해상도도 그렇다. 그러니 Z-width는 장치에 고정된 숫자가 아니다. 댐핑, 주기, 센서, 필터, 그리고 측정한 과제에 따라 움직인다.
 
 ### 5. 세 가지 안정화 계열
 
