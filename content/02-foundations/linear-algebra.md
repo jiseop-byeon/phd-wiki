@@ -69,7 +69,7 @@ In the attention example above, select one row of the score matrix. That row con
 - **Least squares** — the most-used derivation in applied math. Overdetermined $Ax \approx b$:
   minimize $\|Ax - b\|^2$. Setting the gradient to zero:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS makes that
+  (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS (Boyd & Vandenberghe's *Introduction to Applied Linear Algebra*, see Going deeper below) makes that
   assumption explicitly, and it is what makes $A^\top A$ invertible. Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. Linear regression,
   calibration, and the Kalman filter's update all live here.
@@ -418,7 +418,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
   Observability is the transpose twin — can the
   output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
-- LQR gains, Kalman filters, and MPC all reduce to structured matrix computations — Riccati recursions (one linear solve per step) for LQR and Kalman, and a dense QP after MPC condensing — numerical linear algebra is the control engineer's daily tool.
+- LQR gains ([[04-robotics/lqr-lqg|6. LQR/LQG]]), Kalman filters ([[02-foundations/probability|3. Probability §5]]), and MPC ([[04-robotics/mpc|7. MPC]]) all reduce to structured matrix computations — Riccati recursions (one linear solve per step) for LQR and Kalman, and a dense QP (quadratic program: a quadratic cost under linear constraints) after MPC condensing (eliminating the states so only the inputs remain as variables, [[04-robotics/mpc|7. MPC §2]]) — numerical linear algebra is the control engineer's daily tool.
 
 ### 6. Geometry of high dimensions (paper-reading intuition)
 
@@ -504,7 +504,7 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 - **최소제곱** — 응용수학에서 가장 많이 쓰는 유도. 과결정 $Ax \approx b$:
   $\|Ax - b\|^2$ 최소화. 그래디언트를 0으로 놓으면:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
+  (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS(Boyd·Vandenberghe의 *Introduction to Applied Linear Algebra*, 아래 더 깊이 참고)가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
   **계산 예제 — 점 셋에 직선 하나.** $(1,1), (2,3), (3,4)$에 $y = c + mx$를 맞춰 보자 —
   식 셋, 미지수 둘, 정확한 해는 없다. 쌓으면
@@ -840,7 +840,7 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
 *왼쪽: $B$와 $AB$가 다른 방향을 가리켜 둘이 평면을 생성한다. 오른쪽: 동역학이 $B$를 자기 자신 위로만 돌려놓아, $u$를 어떻게 써도 상태 공간의 한 방향 전체에 닿지 못한다.*
 
   가관측성은 전치 쌍둥이다 — 출력 $y$가 결국 모든 상태를 드러낼 수 있는가? — 행렬은 $[C^\top, A^\top C^\top, \ldots]$이다.
-- LQR 이득, 칼만 필터, MPC가 전부 구조화된 행렬 계산으로 환원된다 — LQR과 칼만은 리카티 재귀(단계마다 선형 풀이 한 번), MPC는 응축(condensing) 뒤의 조밀한 QP — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
+- LQR 이득([[04-robotics/lqr-lqg|6. LQR/LQG]]), 칼만 필터([[02-foundations/probability|3. 확률 §5]]), MPC([[04-robotics/mpc|7. MPC]])가 전부 구조화된 행렬 계산으로 환원된다 — LQR과 칼만은 리카티 재귀(단계마다 선형 풀이 한 번), MPC는 응축(condensing: 상태를 소거해 입력만 변수로 남기는 것, [[04-robotics/mpc|7. MPC §2]]) 뒤의 조밀한 QP(이차 계획: 선형 제약 아래 이차 비용 최소화) — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
 
 ### 6. 고차원의 기하 (논문 읽기용 직관)
 

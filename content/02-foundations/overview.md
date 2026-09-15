@@ -8,7 +8,7 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 
 ## English
 
-*This page is the map, and the map is a tree rather than a chain: 0.5 and 0.7 are on-ramps, 1, 2 and 3 are the core triangle everything else stands on, 4 and 5 are the applied pillars,
+*This page is the map, and the map is a tree rather than a chain (the numbers are the page numbers used in the study order below): 0.5 and 0.7 are on-ramps, 1, 2 and 3 are the core triangle everything else stands on, 4 and 5 are the applied pillars,
 6 and 7 are the domain bridges, and 8, 9 and 10 are what the robotics track needs next. Read the order below, but know that a page only truly needs what its own prerequisite box names.*
 
 How the foundations connect — to each other, to the engineering math beneath them, and to
@@ -120,14 +120,22 @@ graph LR
     MKD --> ROB["Robotics track: force control"]
 ```
 
-Reading the map: **Transformers** need linear algebra (attention = matrix products),
-backprop, and optimization (Adam). **Generative models** add probability (MLE) and
-information theory (ELBO/KL). **World models** are generative models + RL. **VLA** sits on
-top of everything — plus signal processing on the sensor side. This is why the study order
-above exists. Two pages sit slightly apart from that chain and are drawn accordingly:
-**SE(3)** branches off linear algebra and feeds the robot-action side of VLA, and
-**ML Practice** attaches to everything with dashed arrows — it is not a prerequisite for
-understanding a method, but it is a prerequisite for believing any of their results tables.
+The right-hand boxes are model and paper names you are not expected to know yet: each is
+introduced in [[03-deep-learning/index|Deep Learning]], and the short definitions live in
+the [[glossary|Glossary]] (for example, a VLA is a model that outputs robot actions from
+images and language).
+
+Reading the map, one family at a time:
+
+- **Transformers** need linear algebra (attention = matrix products), backprop, and optimization (Adam).
+- **Generative models** add probability (MLE) and information theory (ELBO/KL).
+- **World models** are generative models + RL.
+- **VLA** sits on top of everything — plus signal processing on the sensor side.
+
+This is why the study order above exists. Two pages sit slightly apart from that chain and are drawn accordingly:
+
+- **SE(3)** branches off linear algebra and feeds the robot-action side of VLA.
+- **ML Practice** attaches to everything with dashed arrows — it is not a prerequisite for understanding a method, but it is a prerequisite for believing any of their results tables.
 
 ### Reading load and pacing
 
@@ -255,7 +263,7 @@ flowchart TD
 
 ## 한국어
 
-*이 페이지는 지도이고, 그 지도는 사슬이 아니라 나무다: 0.5와 0.7이 진입로, 1·2·3이 나머지 전부가 딛는
+*이 페이지는 지도이고, 그 지도는 사슬이 아니라 나무다(숫자는 아래 학습 순서에 쓰인 페이지 번호다): 0.5와 0.7이 진입로, 1·2·3이 나머지 전부가 딛는
 핵심 삼각형, 4·5가 응용 기둥, 6·7이 도메인 다리, 8·9·10이 로보틱스 트랙이 다음으로 요구하는 것이다. 아래 순서대로 읽되, 각 페이지가 진짜로 요구하는 것은 그 페이지의 선수 지식 상자에 적힌 것뿐이다.*
 
 기초 지식들이 서로, 그 아래의 공업수학과, 그리고 그 위의 딥러닝 논문들과 어떻게
@@ -366,13 +374,21 @@ graph LR
     MKD --> ROB["Robotics track: force control"]
 ```
 
-위의 mermaid 지도를 읽는 법: **Transformer**는 선형대수(어텐션 = 행렬곱), 역전파,
-최적화(Adam)가 필요하다. **생성모델**은 거기에 확률(MLE)과 정보이론(ELBO/KL)을 더한다.
-**월드모델** = 생성모델 + RL. **VLA**는 이 전부의 꼭대기에 앉아 있다 — 센서 쪽에서는
-신호처리까지. 위의 학습 순서가 존재하는 이유가 이것이다. 두 페이지는 이 사슬에서 살짝 비켜 있고 지도에도
-그렇게 그려져 있다: **SE(3)** 페이지는 선형대수에서 갈라져 나와 VLA의 로봇 행동 쪽으로 들어가고,
-**ML 실무**는 점선으로 모든 것에 붙는다 — 방법을 *이해*하는 데 필요한 선수 지식이 아니라,
-그 방법들의 결과 표를 *믿는* 데 필요한 선수 지식이기 때문이다.
+오른쪽 상자들은 아직 몰라도 되는 모델·논문 이름이다. 각각은 [[03-deep-learning/index|딥러닝]]에서
+소개되고, 짧은 정의는 [[glossary|용어집]]에 있다(예를 들어 VLA는 이미지와 언어를 받아 로봇
+행동을 출력하는 모델이다).
+
+위의 mermaid 지도를 모델 계열별로 읽으면:
+
+- **Transformer**는 선형대수(어텐션 = 행렬곱), 역전파, 최적화(Adam)가 필요하다.
+- **생성모델**은 거기에 확률(MLE)과 정보이론(ELBO/KL)을 더한다.
+- **월드모델** = 생성모델 + RL.
+- **VLA**는 이 전부의 꼭대기에 앉아 있다 — 센서 쪽에서는 신호처리까지.
+
+위의 학습 순서가 존재하는 이유가 이것이다. 두 페이지는 이 사슬에서 살짝 비켜 있고 지도에도 그렇게 그려져 있다:
+
+- **SE(3)** 페이지는 선형대수에서 갈라져 나와 VLA의 로봇 행동 쪽으로 들어간다.
+- **ML 실무**는 점선으로 모든 것에 붙는다 — 방법을 *이해*하는 데 필요한 선수 지식이 아니라, 그 방법들의 결과 표를 *믿는* 데 필요한 선수 지식이기 때문이다.
 
 ### 학습 분량과 페이스
 

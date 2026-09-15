@@ -104,7 +104,9 @@ Convolution is useful because a short physical event can affect several later sa
   seen as negative — for a real signal the magnitude spectrum is always symmetric, which is why one-sided FFT plots show only the first half). One frequency lit up, and it is the bin whose rotation completes
   exactly one turn across the window. That is the entire DFT.
 - **Convolution theorem**: $x * h \leftrightarrow X \cdot H$ — filtering is multiplication
-  in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first).
+  in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first, so a network
+  fed raw coordinates learns an over-smooth function — the reason
+  [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]] lifts its inputs to Fourier features).
 - Signal fingerprints: white noise = flat spectrum; drift/bias = spike near **DC** ("DC" is
   borrowed from direct current and here just means zero frequency — the constant part); rotating
   machinery = sharp peaks at harmonics (an excavator's engine band is a notch-filter target).
@@ -117,7 +119,10 @@ Frequency analysis is useful because visually similar fluctuations can require d
   phase possible (no waveform distortion), but needs more **taps** — one tap = one $b_k$,
   i.e. one past sample the filter still has to keep and multiply, so "more taps" means more
   memory, more arithmetic, and more delay. The moving average is the
-  simplest FIR; its frequency response $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$ shows the
+  simplest FIR. Feeding it a pure tone $e^{j2\pi fn}$ ($f$ in cycles/sample) multiplies the tone by
+  $H(f) = \tfrac1M\sum_{k=0}^{M-1} e^{-j2\pi fk}$, a geometric series that sums to
+  $\tfrac1M(1-e^{-j2\pi fM})/(1-e^{-j2\pi f})$; factoring $e^{-j\pi fM}$ out of the top and
+  $e^{-j\pi f}$ out of the bottom leaves two sines, so $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$. It shows the
   tradeoff: longer window ⇒ narrower passband *and* more delay.
 - **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
   smoother): cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$, so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
@@ -134,7 +139,9 @@ Frequency analysis is useful because visually similar fluctuations can require d
   about $0.22$ s to traverse 90% of the change. This is not a pure $0.22$ s dead time: the
   filter has frequency-dependent phase and group delay. Set $\alpha = 0.5$ instead and the
   first discrete sample above 90% is sample 4. For independent white input noise, this
-  coefficient convention gives variance gain $(1-\alpha)/(1+\alpha)$: 0.053 versus 0.333,
+  coefficient convention gives variance gain $(1-\alpha)/(1+\alpha)$ — in steady state the output
+  variance must satisfy $\sigma_y^2 = \alpha^2\sigma_y^2 + (1-\alpha)^2\sigma_x^2$, since $y[n-1]$ and the new
+  noise sample are independent, and $(1-\alpha)^2/(1-\alpha^2)$ simplifies to that ratio: 0.053 versus 0.333,
   a factor of 6.3 in variance and 2.5 in standard deviation. This trade — noise rejection
   bought with slower response and phase lag — is central to filter design, and the reason a control engineer always asks what your filter cost you
   in phase ([[04-robotics/control-theory-ce397|control theory §7]]).
@@ -279,7 +286,9 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   대칭이라, 단측 FFT 플롯은 앞쪽 절반만 보여준다)에 앉는다. 켜진 주파수는 하나이고, 빈 1의 회전이
   창 전체에서 정확히 한 바퀴를 돈다. DFT의 전부가 이것이다.
 - **합성곱 정리**: $x * h \leftrightarrow X \cdot H$ — 필터링은 주파수 영역의 곱;
-  신경망의 스펙트럼 편향(저주파부터 맞춘다)을 이해하는 렌즈이기도 하다.
+  신경망의 스펙트럼 편향(저주파부터 맞추므로 날것의 좌표를 입력받은 망은 과하게 매끄러운 함수를
+  배운다 — [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]가 입력을 푸리에 특징으로
+  들어올리는 이유)을 이해하는 렌즈이기도 하다.
 - 신호의 지문: 백색 잡음 = 평평한 스펙트럼; 드리프트/바이어스 = **DC** 근처 스파이크
   ("DC"는 직류에서 온 말이고 여기서는 그냥 주파수 0 — 신호의 상수 성분을 뜻한다);
   회전 기계 = 고조파의 날카로운 피크 (굴착기 엔진 대역은 노치 필터의 표적).
@@ -291,8 +300,10 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 - **FIR** (유한 임펄스 응답, $y = \sum b_k x[n-k]$): 항상 안정, 정확한 선형 위상
   가능(파형 왜곡 없음), 대신 **탭**(tap)이 많이 필요하다 — 탭 하나 = $b_k$ 하나, 즉 필터가
   아직 들고 있으면서 곱해야 하는 과거 샘플 하나다. 따라서 "탭이 많다"는 메모리·연산량·
-  지연이 모두 늘어난다는 뜻이다. 이동 평균이 가장 단순한 FIR; 그 주파수 응답
-  $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$이 트레이드오프를 보여준다: 창이 길수록 통과
+  지연이 모두 늘어난다는 뜻이다. 이동 평균이 가장 단순한 FIR이다. 순음 $e^{j2\pi fn}$($f$: cycles/sample)을
+  넣으면 출력은 그 순음에 $H(f) = \tfrac1M\sum_{k=0}^{M-1} e^{-j2\pi fk}$를 곱한 것이고, 이 등비급수의 합은
+  $\tfrac1M(1-e^{-j2\pi fM})/(1-e^{-j2\pi f})$다. 분자에서 $e^{-j\pi fM}$, 분모에서 $e^{-j\pi f}$를 묶어 내면
+  사인 두 개가 남아 $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$가 된다. 이 응답이 트레이드오프를 보여준다: 창이 길수록 통과
   대역이 좁아지고 *그리고* 지연이 커진다.
 - **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고
   위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라 $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
@@ -306,7 +317,9 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   **22 샘플**이 걸린다($0.9^{22} \approx 0.1$이므로). 100 Hz라면 계단 변화의 90%를 따라가는 데
   약 $0.22$초가 필요하다. 이것은 순수한 $0.22$초 dead time이 아니라 주파수에 따라 달라지는
   위상·군지연이다. $\alpha = 0.5$로 두면 90%를 처음 넘는 이산 샘플은 4번째다. 독립 백색 입력
-  잡음에 대해 이 계수 정의의 *분산* 이득은 $(1-\alpha)/(1+\alpha)$이므로 0.053 대 0.333 —
+  잡음에 대해 이 계수 정의의 *분산* 이득은 $(1-\alpha)/(1+\alpha)$다 — 정상 상태에서 $y[n-1]$과 새 잡음 표본이 독립이므로 출력
+  분산이 $\sigma_y^2 = \alpha^2\sigma_y^2 + (1-\alpha)^2\sigma_x^2$를 만족해야 하고, $(1-\alpha)^2/(1-\alpha^2)$를
+  정리하면 그 비가 된다. 그래서 0.053 대 0.333 —
   분산으로 6.3배, 표준편차로 2.5배 차이다.
   이 거래 — 느린 응답과 위상 지연을 치르고 사는 잡음 제거 — 는 필터 설계의 핵심이고, 제어 엔지니어가
   언제나 "그 필터가 위상에서 얼마를 앗아갔나"를 묻는 이유다

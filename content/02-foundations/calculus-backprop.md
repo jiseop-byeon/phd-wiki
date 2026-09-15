@@ -194,7 +194,7 @@ bug detector in existence.
 
 - **Softmax + cross-entropy** — the tidiest result in the field, and *not* a legacy topic:
   it is still how every LLM is trained (next-token prediction is one softmax over the
-  vocabulary, scored by cross-entropy), how every classification head works, and softmax is
+  vocabulary, scored by cross-entropy — the loss $-\log p_{\text{true}}$, derived in [[02-foundations/information-theory|5. Information Theory §2]]), how every classification head works, and softmax is
   the operation inside attention itself
   ([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]). Even robot
   policies use it when actions are discretized into tokens
@@ -212,6 +212,7 @@ bug detector in existence.
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: stacked sigmoids shrink the gradient geometrically.
+  The bound holds because $\sigma(1-\sigma)$ is a downward parabola in $\sigma\in(0,1)$, highest at $\sigma=1/2$ (that is, $z=0$), where it equals $1/2\cdot1/2=1/4$.
   Every sigmoid layer multiplies the backward signal by at most 0.25, and 0.25 is the *best* case, at $z=0$.
   From the sigmoid derivatives alone, ten layers attenuate gradients at least a million-fold: $0.25^{10} \approx 9.5\times10^{-7}$.
   Once units saturate it is far worse, since $\sigma'(4) \approx 0.018$. The full gradient also carries weight Jacobians. This single inequality explains a decade of architecture history.
@@ -232,7 +233,7 @@ bug detector in existence.
   ceiling), standard in RNN/LLM training.
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]]) moves sampling *outside* the differentiated path;
-  EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]) and RL target networks receive no
+  EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]; EMA = exponential moving average — the teacher's weights are a slowly updated running average of the student's) and RL target networks receive no
   gradient by design. A dashed arrow in a paper figure *often* denotes stop-gradient —
   but it can also mean an auxiliary or inference-only path, so always check the legend.
 
@@ -245,7 +246,7 @@ bug detector in existence.
   (reparameterization; likelihood-ratio/policy gradients — [[02-foundations/rl-basics|RL basics]]).
 - $\arg\max$ is not differentiable; softmax is its smooth stand-in (temperature controls
   the sharpness). Sampling is not differentiable; Gumbel-softmax / straight-through
-  estimators fake it.
+  estimators fake it. Gumbel-softmax replaces the discrete sample with a smooth, temperature-controlled softmax of noise-perturbed logits; straight-through uses the hard sample in the forward pass but passes the smooth version's gradient backward.
 - Frameworks differentiate *programs*, not formulas: control flow, loops, and in-place ops
   all have gradient semantics — most "my loss doesn't decrease" bugs are graph bugs.
 
@@ -440,7 +441,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 - **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과이고, 지나간 주제가 *아니다*:
   지금도 모든 LLM이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
-  교차 엔트로피로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
+  교차 엔트로피 — 손실 $-\log p_{\text{정답}}$, 유도는 [[02-foundations/information-theory|5. 정보이론 §2]] — 로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
   그 자체다([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]).
   로봇 정책도 행동을 토큰으로 이산화하면 이것을 쓴다
   ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]]은 각 행동 차원을 256개 구간으로 나눠 제어를
@@ -456,6 +457,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드를 쌓으면 그래디언트가 기하급수적으로 줄어든다.
+  이 상한이 성립하는 이유는 $\sigma(1-\sigma)$가 $\sigma\in(0,1)$에서 위로 볼록한(아래로 열린) 포물선이라 $\sigma=1/2$(즉 $z=0$)에서 가장 크고, 그 값이 $1/2\cdot1/2=1/4$이기 때문이다.
   시그모이드 층 하나가 역방향 신호에 많아야 0.25를 곱하고, 0.25는 $z=0$에서의 *최선*이다.
   시그모이드 도함수만 따져도 층 열 개면 그래디언트가 최소 백만 배 준다: $0.25^{10} \approx 9.5\times10^{-7}$.
   유닛이 포화하면 훨씬 더 준다. $\sigma'(4) \approx 0.018$이기 때문이다. 실제 그래디언트에는 가중치 야코비안도 함께 곱해진다. 이 부등식 하나가 구조
@@ -478,7 +480,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   처치, RNN/LLM 학습의 표준.
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
-  교사([[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
+  교사(지수 이동 평균 — 교사 가중치가 학생 가중치를 천천히 따라가는 이동 평균이다; [[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
   않는다. 논문 그림의 점선 화살표는 *대개* stop-gradient지만, 보조 경로나 추론 전용
   경로를 뜻하기도 하므로 반드시 범례를 확인하라.
 
@@ -490,7 +492,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   몬테카를로 추정, 또는 그래디언트 추정 기법(reparameterization;
   우도비/정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])이 된다.
 - $\arg\max$는 미분 불가능하다; softmax가 그 매끄러운 대역이다(온도가 날카로움을 조절).
-  샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다.
+  샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다. Gumbel-softmax는 이산 샘플을 잡음을 더한 로짓의 매끄러운 softmax(온도로 날카로움 조절)로 바꾸고, straight-through는 순방향에서는 딱딱한 샘플을 쓰되 역방향에서는 매끄러운 쪽의 그래디언트를 흘려보낸다.
 - 프레임워크는 수식이 아니라 *프로그램*을 미분한다: 제어 흐름, 루프, in-place 연산에 전부
   그래디언트 의미론이 있다 — "손실이 안 줄어요" 버그의 대부분은 그래프 버그다.
 

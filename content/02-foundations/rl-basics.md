@@ -94,7 +94,7 @@ flowchart LR
   different, exploratory one, so it can reuse old data; **on-policy** methods such as PPO
   must learn from data their *current* policy just generated, and discard it after):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$.
-  DQN = this + neural $Q$ + replay buffer + target network (a
+  DQN = this + neural $Q$ + replay buffer (a stored pool of past transitions, sampled at random) + target network (a
   [[02-foundations/calculus-backprop|stop-gradient]] copy for stable targets).
 - Value-based methods are sample-efficient but awkward for continuous actions
   (the $\max_{a'}$ needs an inner optimization) — hence robotics leans policy-side.
@@ -136,7 +136,11 @@ Van Roy's two-state example. One parameter $w$; the first state's estimated valu
 the second's is $2w$. Every reward is zero, so the true value is zero at both states —
 **and that is exactly representable**, at $w = 0$. The first state leads to the second; the
 second repeats, terminating with probability $\varepsilon$. At each sweep, choose $w_{k+1}$
-to be the *best possible least-squares fit* to the expected one-step return. Minimizing
+to be the *best possible least-squares fit* to the expected one-step return. Those targets,
+read off the current estimate: the first state earns $0$ and lands in the second, so its
+target is $0 + \gamma\cdot 2w_k = 2\gamma w_k$; the second earns $0$ and stays with probability
+$1-\varepsilon$ (value $2w_k$) or terminates (value $0$), so its target is $2(1-\varepsilon)\gamma w_k$.
+Each squared term below is (estimate $-$ target)$^2$ for one state. Minimizing
 $(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$ gives
 
 $$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
@@ -215,7 +219,9 @@ sometimes discount factor, occasionally the bootstrap.
   state-only baseline; best choice ≈ $V(s)$, making the weight the advantage $A$);
   use reward-to-go; **actor-critic**: learn $V_\phi$ with TD and use
   $\delta = r + \gamma V(s') - V(s)$ as a one-sample advantage estimate. **GAE** (generalized advantage estimation) interpolates
-  between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ.
+  between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ:
+  it weights the TD errors of the next steps by $(\gamma\lambda)^l$, so λ = 0 keeps only the
+  one-step $\delta$ above and λ = 1 sums them into the full Monte Carlo return minus $V(s)$.
 - **Why a baseline matters, in numbers.** One state, two actions, $\pi(a_1)=0.6$,
   $\pi(a_2)=0.4$, returns $G_1 = 1$, $G_2 = 0$. Raw REINFORCE weights the two
   log-probability gradients by $1$ and $0$: $a_1$ is pushed up and $a_2$ is *left alone*.
@@ -473,7 +479,8 @@ the binding constraint.
 - **Discrete actions**: $\epsilon$-greedy — act greedily with probability $1-\epsilon$,
   uniformly at random otherwise, with $\epsilon$ decayed over training.
 - **Continuous actions** (the robotics case): add noise to the action (Gaussian, or
-  temporally correlated Ornstein–Uhlenbeck noise so the machine does not jitter), or keep
+  temporally correlated Ornstein–Uhlenbeck noise — noise that drifts from its last value
+  instead of being drawn fresh each step — so the machine does not jitter), or keep
   the policy **stochastic** and let it learn its own standard deviation — what PPO does.
 - **Entropy bonus**: add $+\alpha H(\pi)$ to the objective
   ([[02-foundations/information-theory|information theory]]) so the policy is rewarded for
@@ -505,8 +512,10 @@ the binding constraint.
   1. train in simulation (dominant — a 12-tonne machine cannot "try and correct");
   2. wrap the policy in a **safety filter / envelope** that clips or vetoes unsafe commands
      before they reach the actuator ([[04-robotics/mpc|MPC]] is often that filter);
-  3. formulate a **constrained MDP** and optimize reward subject to a bound on expected
-     violation (Lagrangian methods);
+  3. formulate a **constrained MDP** — an MDP with a second, cost signal whose expected total
+     must stay under a limit — and optimize reward subject to that bound (Lagrangian methods,
+     which fold the limit into the objective with a multiplier, as in
+     [[02-foundations/optimization|optimization §4]]);
   4. penalize violations in the reward — convenient, and it guarantees **nothing**: a large
      enough task reward will buy the penalty.
 - **The real cost is not compute.** On hardware, every episode needs a reset, resets are
@@ -855,7 +864,7 @@ flowchart LR
   대해 학습하므로 과거 데이터를 재사용할 수 있다; PPO 같은 **온폴리시(on-policy)** 방법은
   *현재* 정책이 방금 만든 데이터로만 학습하고, 쓰고 나면 버려야 한다):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$
-  DQN = 이것 + 신경망 $Q$ + 리플레이 버퍼 + 타깃 네트워크(안정된 타깃을 위한
+  DQN = 이것 + 신경망 $Q$ + 리플레이 버퍼(과거 전이를 쌓아 두고 무작위로 뽑아 쓰는 저장소) + 타깃 네트워크(안정된 타깃을 위한
   [[02-foundations/calculus-backprop|stop-gradient]] 복사본).
 - 가치 기반은 샘플 효율이 좋지만 연속 행동에 어색하다($\max_{a'}$가 내부 최적화를
   요구) — 로보틱스가 정책 쪽으로 기우는 이유.
@@ -893,7 +902,10 @@ flowchart LR
 파라미터는 $w$ 하나이고, 첫 상태의 추정 가치는 $w$, 둘째는 $2w$다. 모든 보상이 0이므로 두 상태의
 참 가치는 0이고, **그것은 정확히 표현 가능하다** — $w = 0$에서. 첫 상태는 둘째로 가고, 둘째는
 확률 $\varepsilon$로 종료하며 반복한다. 매 스윕에서 $w_{k+1}$을 기대 1스텝 리턴에 대한 *가능한
-최선의 최소자승 적합*으로 고른다. $(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$을
+최선의 최소자승 적합*으로 고른다. 그 타깃은 현재 추정에서 읽는다: 첫 상태는 보상 $0$을 받고 둘째로
+가므로 타깃이 $0 + \gamma\cdot 2w_k = 2\gamma w_k$이고, 둘째는 보상 $0$을 받고 확률 $1-\varepsilon$로
+머물거나(가치 $2w_k$) 종료하므로(가치 $0$) 타깃이 $2(1-\varepsilon)\gamma w_k$다. 아래 각 제곱항은 한
+상태의 (추정 $-$ 타깃)$^2$이다. $(w - 2\gamma w_k)^2 + (2w - 2(1-\varepsilon)\gamma w_k)^2$을
 최소화하면
 
 $$w_{k+1} = \frac{6 - 4\varepsilon}{5}\,\gamma\, w_k$$
@@ -964,7 +976,9 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   순서로: **베이스라인** $b(s)$ 빼기(상태만의 베이스라인이면 무편향; 최선은 ≈ $V(s)$,
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를
   TD로 배우고 $\delta = r + \gamma V(s') - V(s)$를 1-샘플 어드밴티지로. **GAE**(generalized advantage estimation)는
-  λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다.
+  λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다: 이후 스텝들의 TD 오차에
+  $(\gamma\lambda)^l$ 가중치를 주므로, λ = 0이면 위의 1스텝 $\delta$만 남고 λ = 1이면 그 합이 몬테카를로
+  리턴 전체에서 $V(s)$를 뺀 값이 된다.
 - **베이스라인이 왜 중요한지, 숫자로.** 상태 하나에 행동 둘, $\pi(a_1)=0.6$,
   $\pi(a_2)=0.4$, 리턴 $G_1 = 1$, $G_2 = 0$. 날것의 REINFORCE는 두 로그 확률
   그래디언트에 $1$과 $0$을 곱한다: $a_1$은 올라가고 $a_2$는 *그대로 방치*된다.
@@ -1206,7 +1220,8 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 - **이산 행동**: $\epsilon$-greedy — 확률 $1-\epsilon$로 탐욕적으로, 나머지는 균등 무작위로
   행동하고, 학습이 진행되면 $\epsilon$을 줄인다.
 - **연속 행동**(로보틱스의 경우): 행동에 노이즈를 더하거나(가우시안, 또는 기계가 떨지 않도록
-  시간 상관이 있는 Ornstein–Uhlenbeck 노이즈), 정책을 **확률적**으로 두고 표준편차 자체를
+  시간 상관이 있는 Ornstein–Uhlenbeck 노이즈 — 매 스텝 새로 뽑지 않고 직전 값에서 조금씩
+  흘러가는 노이즈), 정책을 **확률적**으로 두고 표준편차 자체를
   학습시킨다 — PPO가 하는 방식.
 - **엔트로피 보너스**: 목적함수에 $+\alpha H(\pi)$를 더해
   ([[02-foundations/information-theory|정보이론]]) 정책이 결정을 유보하는 데 보상을 주고,
@@ -1235,7 +1250,9 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
   1. 시뮬레이션에서 학습한다(지배적 — 12톤 기계는 "해 보고 고치기"를 할 수 없다);
   2. 안전하지 않은 명령이 액추에이터에 닿기 전에 자르거나 거부하는 **안전 필터·엔벨로프**로
      정책을 감싼다([[04-robotics/mpc|MPC]]가 흔히 그 필터다);
-  3. **제약 MDP**로 정식화해 기대 위반량의 상한 아래에서 보상을 최적화한다(라그랑주 방법);
+  3. **제약 MDP**(보상과 별도의 비용 신호가 있고 그 기대 총합이 한도 아래에 머물러야 하는 MDP)로
+     정식화해 그 상한 아래에서 보상을 최적화한다(한도를 승수로 목적함수에 접어 넣는 라그랑주 방법,
+     [[02-foundations/optimization|최적화 §4]] 참고);
   4. 보상에 위반 페널티를 넣는다 — 편하지만 **아무것도 보장하지 않는다**: 과제 보상이 충분히
      크면 페널티를 사 버린다.
 - **진짜 비용은 연산이 아니다.** 하드웨어에서는 에피소드마다 리셋이 필요하고, 리셋은 인간

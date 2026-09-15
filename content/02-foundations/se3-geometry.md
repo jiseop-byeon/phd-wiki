@@ -109,12 +109,14 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 - Learning-specific fact worth knowing: if a regression target must be globally single-valued
   and continuous in a Euclidean output space, low-dimensional coordinates for $SO(3)$ face
-  topological obstructions. Many robot-learning papers therefore use a **6D representation**
+  topological obstructions — the same reason every flat world map must cut the globe
+  somewhere (longitude jumps from 180° to −180°): some pair of nearby rotations always gets
+  far-apart coordinates. Many robot-learning papers therefore use a **6D representation**
   (first two columns of $R$, then Gram-Schmidt) to avoid the relevant discontinuities.
 
 **Representation changes coordinates, not the physical orientation.** A rotation matrix stores how the local axes point in the reference frame. Euler angles describe an ordered sequence of rotations, so their order is part of the definition. Axis-angle describes an axis and a turn about it; the table's minimal count refers to its independent degrees of freedom, often stored as a rotation vector. An explicit unit axis plus angle uses redundant stored components.
 
-A unit quaternion is another constrained coordinate system. Its sign ambiguity means q and −q can encode exactly the same orientation, so a raw Euclidean difference between their entries is a poor rotation-error measure. Converting a rotation matrix to a quaternion has its own trap — the textbook formula divides by $4w$, which vanishes near 180° — and [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]] codes the stable version. Gimbal lock likewise belongs to an Euler coordinate chart, not a physical loss of the object's ability to rotate.
+A unit quaternion is another constrained coordinate system. Its sign ambiguity means q and −q can encode exactly the same orientation, so a raw Euclidean difference between their entries is a poor rotation-error measure. Converting a rotation matrix to a quaternion has its own trap — the textbook formula divides by $4w$, which vanishes near 180° — and [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]] codes the stable version. Gimbal lock is what happens when the middle Euler rotation reaches ±90° (pitch, for roll-pitch-yaw): the first and third rotation axes line up, so two of the three angles now turn about the same axis and one direction of rotation has no angle left to describe it. It likewise belongs to an Euler coordinate chart, not a physical loss of the object's ability to rotate.
 
 **Check your understanding.** If a robot's logged Euler angle jumps while the object moves smoothly, first check wrapping and the chosen rotation order. Do not immediately diagnose a mechanical jump. For a learning target, distinguish a discontinuity in coordinates from a discontinuity in the underlying motion.
 
@@ -180,14 +182,16 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
 > [!example] From an axis to $T$, and back
 > Let a revolute joint rotate about an axis parallel to world $z$ through the point
 > $q=(1,0,0)$, with $\omega=(0,0,1)$. Its screw axis is
-> $S=(\omega,v)$ with $v=-\omega\times q=(0,-1,0)$, and
+> $S=(\omega,v)$ with $v=-\omega\times q=(0,-1,0)$ — the velocity of the body point currently
+> at the origin when the joint turns at unit speed, since that point sits at $-q$ from the axis — and
 > $[S]=\begin{pmatrix}[\omega]_\times&v\\0&0\end{pmatrix}$.
 > At $\theta=\pi/2$,
 > $e^{[S]\theta}=\begin{pmatrix}R_z(90°)&(I-R_z)q\\0&1\end{pmatrix}$,
 > whose translation is $(1,-1,0)$. The motion is rotation about a line displaced from the
 > origin, not rotation plus an arbitrary translation. Conversely, away from branch
 > ambiguities such as rotations near $\pi$, $\log T=[S]\theta$; the vee operator reads its
-> six coordinates. This is the exact bridge used by PoE forward kinematics and pose-error IK.
+> six coordinates. This is the exact bridge used by product-of-exponentials (PoE) forward kinematics
+> ([[04-robotics/modern-robotics/ch04-forward-kinematics|Forward Kinematics]]) and pose-error IK.
 
 The linear part of a twist also depends on the reference frame and its origin. The same rotating body gives different point velocities at different distances from its axis. Before treating the last components of a twist as tool-tip translation, determine whether the twist is expressed in a body frame or a space frame and where that frame's origin lies. The detailed distinction is developed in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions]].
 
@@ -322,12 +326,14 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 | **쿼터니언** $(w, x, y, z)$ | 4 | 특이점 없음, 싼 합성, 보간(slerp) | 이중 덮개: $q$와 $-q$가 같은 회전 |
 
 - 학습 특화 상식: 유클리드 출력공간에서 전역 단일값·연속 회귀 타깃을 요구하면 $SO(3)$의
-  저차원 좌표에는 위상적 장애가 있다. 많은 로봇 학습 논문은 관련 불연속을 피하려고
+  저차원 좌표에는 위상적 장애가 있다 — 평평한 세계지도가 지구를 어딘가에서 잘라야 하는(경도가
+  180°에서 −180°로 뛰는) 것과 같은 이유로, 가까운 두 회전이 멀리 떨어진 좌표를 받는 곳이 반드시
+  생긴다. 많은 로봇 학습 논문은 관련 불연속을 피하려고
   **6D 표현**($R$의 앞 두 열 + Gram-Schmidt)을 쓴다.
 
 **표현은 좌표를 바꾸지 물리적 방향을 바꾸지 않는다.** 회전행렬은 로컬 축이 기준 좌표에서 향하는 방향을 저장한다. 오일러 각은 순서 있는 회전의 연속이라 순서도 정의의 일부다. 축–각은 축과 그 둘레의 회전을 나타낸다. 표의 최소 개수는 독립 자유도이며 흔히 회전벡터로 저장한다. 단위축과 각도를 따로 저장하면 중복 성분이 생긴다.
 
-단위 쿼터니언도 제약이 있는 좌표다. q와 −q가 정확히 같은 방향을 나타내므로 성분의 단순 유클리드 차이는 회전 오차로 부적절하다. 회전 행렬을 쿼터니언으로 바꾸는 데도 함정이 있다 — 교과서 식은 $4w$로 나누는데 180° 근처에서 이 값이 0으로 간다 — [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]]이 안정적인 버전을 코드로 보인다. 짐벌락도 오일러 좌표 표현의 문제이지 물체가 회전 능력을 물리적으로 잃는 것은 아니다.
+단위 쿼터니언도 제약이 있는 좌표다. q와 −q가 정확히 같은 방향을 나타내므로 성분의 단순 유클리드 차이는 회전 오차로 부적절하다. 회전 행렬을 쿼터니언으로 바꾸는 데도 함정이 있다 — 교과서 식은 $4w$로 나누는데 180° 근처에서 이 값이 0으로 간다 — [[02-foundations/algorithms/robotics-ai-problems|11.8 §8]]이 안정적인 버전을 코드로 보인다. 짐벌락은 가운데 오일러 회전이 ±90°에 이를 때(roll-pitch-yaw라면 pitch) 첫째와 셋째 회전축이 한 줄로 겹쳐, 세 각 중 둘이 같은 축을 돌리게 되고 한 회전 방향을 나타낼 각이 남지 않는 현상이다. 이것도 오일러 좌표 표현의 문제이지 물체가 회전 능력을 물리적으로 잃는 것은 아니다.
 
 **이해 확인.** 물체는 부드럽게 움직이는데 로그의 오일러 각이 튀면 먼저 각도 감기와 회전 순서를 본다. 곧바로 기계적 점프를 진단하지 않는다. 학습 목표에서도 좌표의 불연속과 실제 동작의 불연속을 구분한다.
 
@@ -392,13 +398,15 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 > [!example] 축에서 $T$로, 다시 축으로
 > 월드 $z$축과 평행하고 $q=(1,0,0)$을 지나는 회전 관절을 잡자.
 > $\omega=(0,0,1)$이면 screw axis는 $S=(\omega,v)$,
-> $v=-\omega\times q=(0,-1,0)$이고
+> $v=-\omega\times q=(0,-1,0)$이고(관절이 단위 속도로 돌 때 지금 원점에 있는 물체 점의 속도다 —
+> 그 점은 축에서 $-q$만큼 떨어져 있으므로)
 > $[S]=\begin{pmatrix}[\omega]_\times&v\\0&0\end{pmatrix}$다.
 > $\theta=\pi/2$에서
 > $e^{[S]\theta}=\begin{pmatrix}R_z(90°)&(I-R_z)q\\0&1\end{pmatrix}$이고 병진은
 > $(1,-1,0)$이다. 원점에서 벗어난 선 둘레의 회전이지, 회전과 임의 병진을 따로 붙인 것이 아니다.
 > 반대로 $\pi$ 근처 회전 같은 branch 모호성을 피하면 $\log T=[S]\theta$이고 vee 연산이 여섯
-> 좌표를 읽는다. 이것이 PoE 순기구학과 pose-error IK가 쓰는 정확한 다리다.
+> 좌표를 읽는다. 이것이 지수 곱(PoE, product of exponentials) 순기구학
+> ([[04-robotics/modern-robotics/ch04-forward-kinematics|순기구학]])과 pose-error IK가 쓰는 정확한 다리다.
 
 트위스트의 선형 성분도 기준 프레임과 원점에 달려 있다. 같은 회전체라도 축에서 떨어진 거리에 따라 점 속도가 다르다. 뒤쪽 성분을 도구 끝의 병진 속도로 읽기 전에 바디·공간 프레임 중 어디서 표현했고 원점이 어디인지 정한다. 자세한 구분은 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동]]에서 다룬다.
 

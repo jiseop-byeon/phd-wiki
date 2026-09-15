@@ -18,7 +18,7 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 which is that cross-entropy is maximum likelihood is KL.*
 
 Everything in deep learning that involves a probability distribution eventually speaks
-information theory: cross-entropy loss, KL divergence, the ELBO, contrastive learning,
+information theory: cross-entropy loss, KL divergence, the ELBO (evidence lower bound, derived in §5), contrastive learning,
 even "perplexity." This page is the complete working set for reading modern papers —
 no prior background assumed.
 
@@ -46,7 +46,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   Uniform distribution = maximum entropy; deterministic = zero.
 - Intuition anchor: entropy is a **lower bound** on the average number of yes/no questions needed to
   identify an outcome — the *compression limit* of the source. No code beats it, and a per-symbol
-  code generally does not reach it: every uniquely decodable code has $L(C,X) \ge H(X)$, with equality only when every code length equals its Shannon information content (MacKay eq. 5.17), and MacKay's Theorem 5.1 guarantees that *some* prefix code achieves $L(C,X) < H(X)+1$.
+  code generally does not reach it: every uniquely decodable code has $L(C,X) \ge H(X)$, with equality only when every code length equals its Shannon information content — the surprise $\log_2(1/p(x))$ defined above, in bits (MacKay eq. 5.17), and MacKay's Theorem 5.1 guarantees that *some* prefix code achieves $L(C,X) < H(X)+1$.
 - **Worked numbers** — a coin with $P(\text{H}) = 0.9$:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ bits —
   less than half the fair coin's 1 bit, because the outcome is mostly predictable.
@@ -249,7 +249,7 @@ non-variational world models take different routes).
 이름을 붙인다 — 교차 엔트로피가 곧 최대우도이고 곧 KL이다.*
 
 딥러닝에서 확률 분포가 등장하는 모든 것은 결국 정보이론의 언어로 말한다: 교차 엔트로피
-손실, KL divergence, ELBO, 대조학습, 심지어 "perplexity"까지. 이 페이지는 최신 논문을
+손실, KL divergence, ELBO(evidence lower bound, 증거 하한 — §5에서 유도), 대조학습, 심지어 "perplexity"까지. 이 페이지는 최신 논문을
 읽는 데 필요한 전부를 사전지식 없이 따라올 수 있게 담았다.
 
 > [!note] 처음이라면 · First pass
@@ -276,7 +276,7 @@ $\log(a^n) = n \log a$; 그리고 밑 2와 밑 $e$는 단위(**비트** vs **나
   균등 분포 = 최대 엔트로피; 결정론적 = 0.
 - 직관의 닻: 엔트로피는 결과 하나를 알아내는 데 필요한 예/아니오 질문 평균 개수의 **하한**이다.
   그 소스의 *압축 한계*이고, 어떤 부호도 이보다 잘하지 못하며, 심볼 단위 부호는 보통 여기에
-  닿지도 못한다. 유일 복호 가능한 모든 부호는 $L(C,X) \ge H(X)$이고, 등호는 모든 부호 길이가 자기 Shannon 정보량과
+  닿지도 못한다. 유일 복호 가능한 모든 부호는 $L(C,X) \ge H(X)$이고, 등호는 모든 부호 길이가 자기 Shannon 정보량 — 위에서 정의한 놀라움 $\log_2(1/p(x))$, 비트 단위 — 과
   같을 때만 성립한다(MacKay 식 5.17). MacKay의 정리 5.1은 $L(C,X) < H(X)+1$을 만족하는 접두 부호가 *존재함*을 보장한다.
 - **숫자로 한 번** — $P(\text{앞}) = 0.9$인 동전:
   $H = -0.9\log_2 0.9 - 0.1\log_2 0.1 = 0.9(0.152) + 0.1(3.322) \approx 0.47$ 비트 — 공정 동전(1비트)의 절반 이하다.

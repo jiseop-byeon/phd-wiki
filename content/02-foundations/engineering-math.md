@@ -360,7 +360,7 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   of $s$ that breaks the division, $s = a$, is the **pole** — the same $a$ whose sign decided
   stability back in §8. Poles are not a new idea; they are §8's exponents, relabelled.
 - **Poles** = roots of the denominator = the $a$'s of section 8 = eigenvalues of the
-  state-space $A$ — every pole is an eigenvalue, and every eigenvalue appears as a pole only when no pole–zero cancellation hides it (a minimal realization; Åström & Murray Example 9.7). A cancelled unstable eigenvalue is invisible in $G(s)$. Plotted in the complex **s-plane**:
+  state-space $A$ — every pole is an eigenvalue, and every eigenvalue appears as a pole only when no pole–zero cancellation hides it. A **zero** is a root of the numerator; if the same factor sits on top and bottom, as in $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$, it cancels and that eigenvalue ($s=1$ here) vanishes from $G(s)$. A state-space model with no such hidden modes is called a *minimal realization* (Åström & Murray Example 9.7). A cancelled unstable eigenvalue is invisible in $G(s)$. Plotted in the complex **s-plane**:
   - left half-plane (negative real part) → decaying → **stable**
   - right half-plane → growing → **unstable**
   - imaginary part → oscillation frequency; distance from axis → decay speed
@@ -779,7 +779,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   방금 무슨 일이 일어났는지 보라: 미분방정식이 *나눗셈*이 되었다. 그리고 그 나눗셈을 깨뜨리는
   단 하나의 $s$ 값, $s = a$가 **극점**이다 — 8절에서 부호로 안정성을 결정하던 바로 그 $a$다.
   극점은 새 개념이 아니라, 8절의 지수를 다른 이름으로 부른 것이다.
-- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값 — 모든 극점은 고유값이지만, 모든 고유값이 극점으로 보이는 것은 극점–영점 상쇄가 없을 때(최소 실현)뿐이다(Åström & Murray 예제 9.7). 상쇄된 불안정 고유값은 $G(s)$에 보이지 않는다. 복소 **s-평면**에 그리면:
+- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값 — 모든 극점은 고유값이지만, 모든 고유값이 극점으로 보이는 것은 극점–영점 상쇄가 없을 때뿐이다. **영점**은 분자의 근이다. $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$처럼 같은 인수가 분자와 분모에 함께 있으면 약분되어 그 고유값(여기서는 $s=1$)이 $G(s)$에서 사라진다. 이렇게 숨은 모드가 없는 상태공간 모델을 *최소 실현*이라 부른다(Åström & Murray 예제 9.7). 상쇄된 불안정 고유값은 $G(s)$에 보이지 않는다. 복소 **s-평면**에 그리면:
   - 좌반평면(실수부 음수) → 감쇠 → **안정**
   - 우반평면 → 성장 → **불안정**
   - 허수부 → 진동 주파수; 축에서의 거리 → 감쇠 속도

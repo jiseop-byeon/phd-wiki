@@ -59,7 +59,10 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 one derivative of one energy. Write the Lagrangian $L = T - V$ with kinetic energy
 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and potential $V(\theta)$, and apply
 Lagrange's equation $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$.
-The first term gives $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$;
+You do not need a mechanics course to trust it: it is Newton's second law rewritten in energy terms.
+For one mass on a line, $L = \tfrac12 m\dot x^2 - V(x)$, so $\frac{d}{dt}\frac{\partial L}{\partial\dot x} = \frac{d}{dt}(m\dot x)$ is the rate of change of momentum and $\frac{\partial L}{\partial x} = -\partial V/\partial x$ is the force the energy landscape (gravity, say) exerts; the equation says momentum changes by the applied force plus that force, i.e. $m\ddot x = F - \partial V/\partial x$.
+With joint angles in place of $x$ the same bookkeeping works, and [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] carries it out in full.
+Back to the arm: the first term gives $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$;
 the second contributes $-\frac{\partial T}{\partial\theta}$ and $\frac{\partial V}{\partial\theta}$.
 Collect them: $M\ddot\theta$ is the first piece, the velocity-quadratic leftovers
 $\dot M\dot\theta - \frac{\partial T}{\partial\theta}$ are what gets *named* $C(\theta,\dot\theta)\dot\theta$,
@@ -71,7 +74,7 @@ $\partial T/\partial\theta = 0$, and the Coriolis term would vanish outright. It
 extra force; it is the bookkeeping cost of a configuration-dependent mass. Second, $C$ is
 **not unique**: only the product $C\dot\theta$ is determined, so different books write
 different $C$ matrices for the same robot. Papers pick the factorization that makes
-$\dot M - 2C$ skew-symmetric, because that identity is what most stability proofs use.
+$\dot M - 2C$ skew-symmetric (a matrix $A$ with $A^\top = -A$, so $x^\top A x = 0$ for every $x$; see [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §4]]), because that identity is what most stability proofs use.
 
 Four terms, each with a distinct physical job:
 
@@ -170,7 +173,7 @@ $\dot\theta_2 = 2$ rad/s. The first row gives
 
 $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
-With joint 2 swinging at a constant rate ($\ddot\theta_2 = 0$), joint 1 must supply an extra $-4$ N·m *just to stay where it is*, on top of whatever gravity needs (in the vertical plane of §5 the total at this pose is $19.62 - 4 = 15.62$ N·m). Nothing is touching the robot;
+With joint 2 swinging at a constant rate ($\ddot\theta_2 = 0$), joint 1 must supply an extra $-4$ N·m *just to stay where it is*, on top of whatever gravity needs (§5 computes that part). Nothing is touching the robot;
 this is the arm's own moving mass pushing back through the linkage. Double the speed and
 it quadruples to $-16$ N·m, because the term is quadratic in velocity.
 
@@ -194,6 +197,8 @@ Check it physically: both masses sit one metre horizontally from joint 1, so the
 carries $2 \times 9.81 \times 1$; the forearm mass is directly above joint 2, zero lever
 arm, so the elbow carries nothing. The equation and the free-body diagram agree — always
 do this check, because a sign error in $g(\theta)$ is the single most common dynamics bug.
+
+Combine this with §4's example at the same pose: if the arm moves in this vertical plane and joint 2 swings at 2 rad/s, joint 1 needs gravity plus the Coriolis term, $19.62 - 4 = 15.62$ N·m, just to hold still.
 
 Reading the manipulator equation **right to left** — given a desired motion, what torque
 does it require? — is **inverse dynamics**, and it is the basis of model-based control:
@@ -268,10 +273,15 @@ assumes you have absorbed:
   dynamics in different directions and different poses.
 
 The relationship to MR ch.5's manipulability ellipsoid is qualitative, not a matrix
-reciprocal. Kinematic manipulability uses $JJ^\top$ under a unit joint-velocity norm.
-Operational inertia uses $JM^{-1}J^\top$ to map a task wrench to task acceleration after
-dynamic compensation. If instead you define a dynamic acceleration ellipsoid under a unit
-**Euclidean joint-torque** norm, its shape matrix is $JM^{-2}J^\top$. These coincide only
+reciprocal. Three different matrices get called "the ellipsoid", and each assumes a different input:
+
+| Construction | Shape matrix | Input it assumes | Question it answers | 2R arm at $(0°, 90°)$ |
+|---|---|---|---|---|
+| Kinematic manipulability (MR ch.5) | $JJ^\top$ | unit joint-velocity norm | which tip velocities are easy to reach? | $\begin{pmatrix}2&-1\\-1&1\end{pmatrix}$ |
+| Operational inertia (this section) | $JM^{-1}J^\top$ | a task wrench, after dynamic compensation | how much tip acceleration does a tip force produce? | $\begin{pmatrix}1&0\\0&0.5\end{pmatrix}$ |
+| Dynamic acceleration ellipsoid | $JM^{-2}J^\top$ | unit **Euclidean joint-torque** norm | which tip accelerations can unit motor torque produce? | $\begin{pmatrix}1&0.5\\0.5&0.5\end{pmatrix}$ |
+
+The last column shows the point: at one pose the three matrices have different shapes, not just different scales. They coincide only
 under special inertia and metric choices. Near a singularity all three reveal a lost task
 direction, but do not call their axis lengths exact reciprocals without stating the norm.
 
@@ -279,7 +289,7 @@ direction, but do not call their axis lengths exact reciprocals without stating 
 
 **When the inverse is safe.** These caveats protect you from inverting a matrix that is singular or nearly so and trusting the huge numbers that come out.
 
-The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded. It does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for. Differentiating a moving Jacobian introduces $\dot J\dot\theta$.
+The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded. It does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for. Differentiating a moving Jacobian introduces $\dot J\dot\theta$: since $\dot v = J\ddot\theta + \dot J\dot\theta$, the full task-space equation carries an extra velocity term $\Lambda\dot J\dot\theta$ next to the mapped Coriolis and gravity terms. It is zero when the arm is at rest, which is why the local reading above may drop it, but an operational-space controller tracking fast motion must include it in its model compensation.
 
 ### 7. Where the parameters come from — and the sim-to-real gap
 
@@ -402,7 +412,10 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 미분한 것이다. 운동에너지 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$와 위치에너지
 $V(\theta)$로 라그랑지안 $L = T - V$를 쓰고, 라그랑주 방정식
 $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$를
-적용한다. 첫 항이 $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$를 주고,
+적용한다. 역학 과목을 따로 듣지 않아도 믿을 수 있다: 이것은 뉴턴 제2법칙을 에너지 언어로 다시 쓴 것이다.
+직선 위 질량 하나라면 $L = \tfrac12 m\dot x^2 - V(x)$이므로 $\frac{d}{dt}\frac{\partial L}{\partial\dot x} = \frac{d}{dt}(m\dot x)$는 운동량의 변화율이고, $\frac{\partial L}{\partial x} = -\partial V/\partial x$는 에너지 지형(예컨대 중력)이 가하는 힘이다. 방정식은 운동량이 가한 힘과 그 힘의 합만큼 변한다는 말, 곧 $m\ddot x = F - \partial V/\partial x$다.
+$x$ 대신 관절각을 넣어도 같은 장부 정리가 통하며, [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]이 전 과정을 보여 준다.
+다시 팔로 돌아오면, 첫 항이 $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$를 주고,
 둘째 항이 $-\frac{\partial T}{\partial\theta}$와 $\frac{\partial V}{\partial\theta}$를 낸다.
 모으면 $M\ddot\theta$가 첫 조각이고, 속도에 이차인 나머지
 $\dot M\dot\theta - \frac{\partial T}{\partial\theta}$가 $C(\theta,\dot\theta)\dot\theta$라고
@@ -412,7 +425,7 @@ $\dot M\dot\theta - \frac{\partial T}{\partial\theta}$가 $C(\theta,\dot\theta)\
 때문에 존재한다** — 관성 행렬이 상수라면 $\dot M = 0$이고 $\partial T/\partial\theta = 0$이라
 코리올리 항은 통째로 사라진다. 추가된 힘이 아니라 *자세에 따라 변하는 질량을 쓰는 장부상의
 대가*다. 둘째, $C$는 **유일하지 않다**. 결정되는 것은 곱 $C\dot\theta$뿐이라서 책마다 같은
-로봇에 다른 $C$ 행렬을 쓴다. 논문들은 $\dot M - 2C$가 반대칭이 되는 분해를 고르는데, 대부분의
+로봇에 다른 $C$ 행렬을 쓴다. 논문들은 $\dot M - 2C$가 반대칭(skew-symmetric, $A^\top = -A$인 행렬이라 모든 $x$에 대해 $x^\top A x = 0$; [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §4]] 참고)이 되는 분해를 고르는데, 대부분의
 안정성 증명이 그 항등식을 쓰기 때문이다.
 
 네 항이고, 각각 다른 물리적 역할을 한다:
@@ -506,7 +519,7 @@ $$C(\theta,\dot\theta)\,\dot\theta = \begin{pmatrix} h\,\dot\theta_2^2 + 2h\,\do
 
 $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
-2번 관절이 일정한 속도로 휘두른다면($\ddot\theta_2 = 0$), 1번 관절은 중력에 필요한 토크에 더해 *제자리에 있기 위해서만* $-4$ N·m를 더 내야 한다(§5의 수직 평면이라면 이 자세에서 합계는 $19.62 - 4 = 15.62$ N·m다). 로봇에 닿은 것은 아무것도 없다.
+2번 관절이 일정한 속도로 휘두른다면($\ddot\theta_2 = 0$), 1번 관절은 중력에 필요한 토크에 더해 *제자리에 있기 위해서만* $-4$ N·m를 더 내야 한다(중력 몫은 §5에서 계산한다). 로봇에 닿은 것은 아무것도 없다.
 이것은 팔 자신의 움직이는 질량이 링크를 통해 되미는 힘이다. 속도를 두 배로 하면 항이 속도의
 이차식이므로 $-16$ N·m로 네 배가 된다.
 
@@ -529,6 +542,8 @@ $$g_1 = 2(9.81)(1) + 0 = 19.62\ \text{N}\cdot\text{m}, \qquad g_2 = 0$$
 $2 \times 9.81 \times 1$을 진다. 아래팔 질량은 2번 관절 바로 위에 있어 지렛대 팔이 0이므로
 팔꿈치는 아무것도 지지 않는다. 방정식과 자유물체도가 일치한다 — 이 검산은 반드시 하라.
 $g(\theta)$의 부호 오류가 동역학에서 가장 흔한 버그다.
+
+같은 자세의 §4 예제와 합쳐 보자: 팔이 이 수직 평면에서 움직이고 2번 관절이 2 rad/s로 휘두르면, 1번 관절은 제자리에 있기 위해서만 중력과 코리올리 항을 합친 $19.62 - 4 = 15.62$ N·m가 필요하다.
 
 매니퓰레이터 방정식을 **오른쪽에서 왼쪽으로** 읽는 것 — 원하는 운동이 주어졌을 때 어떤 토크가
 필요한가? — 이 **역동역학**이며, 모델 기반 제어의 토대다:
@@ -598,10 +613,15 @@ $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\
 - **하나의 강성 게인이 모든 방향에서 옳을 수 없다.** 임피던스 제어기의 폐루프 거동은
   $\Lambda$에 의존하므로, 같은 게인이 방향과 자세에 따라 다른 유효 동역학을 준다.
 
-MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정확한 역수 관계는 아니다. 기구학적
-가조작성은 단위 관절속도 노름 아래 $JJ^\top$을 쓴다. 작업공간 관성은 동역학 보상 뒤 과제 렌치를
-과제 가속도로 보내는 $JM^{-1}J^\top$을 쓴다. 반면 단위 **유클리드 관절토크** 아래 동적 가속도
-타원체를 정의하면 형상 행렬은 $JM^{-2}J^\top$이다. 관성과 노름을 특별하게 고를 때만 서로
+MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정확한 역수 관계는 아니다. 서로 다른 세 행렬이 모두 "타원체"라고 불리며, 각각 다른 입력을 가정한다:
+
+| 구성 | 형상 행렬 | 가정하는 입력 | 답하는 질문 | 2R 팔, $(0°, 90°)$ |
+|---|---|---|---|---|
+| 기구학적 가조작성 (MR 5장) | $JJ^\top$ | 단위 관절속도 노름 | 어떤 끝점 속도를 쉽게 낼 수 있나? | $\begin{pmatrix}2&-1\\-1&1\end{pmatrix}$ |
+| 작업공간 관성 (이 절) | $JM^{-1}J^\top$ | 동역학 보상 뒤의 과제 렌치 | 끝점 힘이 끝점 가속도를 얼마나 만드나? | $\begin{pmatrix}1&0\\0&0.5\end{pmatrix}$ |
+| 동적 가속도 타원체 | $JM^{-2}J^\top$ | 단위 **유클리드 관절토크** 노름 | 단위 모터 토크로 어떤 끝점 가속도를 낼 수 있나? | $\begin{pmatrix}1&0.5\\0.5&0.5\end{pmatrix}$ |
+
+마지막 열이 요점을 보여 준다: 같은 자세에서 세 행렬은 크기만이 아니라 모양 자체가 다르다. 관성과 노름을 특별하게 고를 때만 서로
 일치한다. 특이점 근처에서 셋 모두 잃어버린 과제 방향을 드러내지만, 노름을 밝히지 않고 축 길이가
 정확한 역수라고 부르면 안 된다.
 
@@ -609,7 +629,7 @@ MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정
 
 **역행렬이 안전할 때.** 아래 단서들은 특이하거나 거의 특이한 행렬을 뒤집고, 거기서 나온 거대한 숫자를 믿는 일을 막아 준다.
 
-보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀐다. 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다.
+보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀐다. 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다: $\dot v = J\ddot\theta + \dot J\dot\theta$이므로 완전한 작업공간 방정식에는 사상된 코리올리·중력 항 옆에 속도 항 $\Lambda\dot J\dot\theta$가 더 붙는다. 팔이 정지해 있으면 0이라 위의 국소 해석에서는 빼도 되지만, 빠른 운동을 추종하는 작업공간 제어기는 모델 보상에 이 항을 넣어야 한다.
 
 ### 7. 파라미터는 어디서 오는가 — 그리고 sim-to-real 격차
 

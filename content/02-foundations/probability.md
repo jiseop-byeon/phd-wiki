@@ -42,7 +42,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   An alarm with 95% sensitivity (and a 5% false-positive rate — two separate numbers,
   not one "accuracy") is right only 16% of the time it fires — base rates dominate. This is why
   perception pipelines calibrate.
-- Independence $P(A,B) = P(A)P(B)$ vs conditional independence $P(A,B|C) = P(A|C)P(B|C)$ —
+
 <svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="a thousand panels split into ten cracked and nine hundred ninety sound, with the alarms each branch produces, and a bar showing that only sixteen percent of alarms are real">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
     <rect x="24" y="76" width="94" height="30" rx="3"/>
@@ -93,6 +93,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   </g>
 </svg>
 
+- Independence $P(A,B) = P(A)P(B)$ vs conditional independence $P(A,B|C) = P(A|C)P(B|C)$ —
   the factorization assumptions behind graphical models, naive Bayes, and the Markov
   property alike.
 
@@ -126,6 +127,8 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
+Here $n$ is the dimension of $x$ and $|\Sigma|$ is the determinant of the covariance.
+
 Three **closure** properties make the Gaussian the workhorse — "closure" meaning the answer
 is still a Gaussian, so **affine** operations never leave the family:
 
@@ -137,7 +140,7 @@ is still a Gaussian, so **affine** operations never leave the family:
    Memorize the shape of this formula: it *is* the Kalman gain.
 
 Also: the CLT says the centred, $\sqrt N$-scaled sum of many i.i.d. effects *of finite variance* → Gaussian (it fails without finite variance, e.g. Cauchy), which is why noise models
-default to it; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
+default to it; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (the continuous-variable analogue of the entropy in [[02-foundations/information-theory|5. Information Theory §1]], computed from a density rather than probabilities, so unlike discrete entropy it can be negative) (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="the Gaussian: one shape, width set by sigma, area always one">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
@@ -157,7 +160,7 @@ default to it; and among continuous distributions with a given mean and variance
   </g>
 </svg>
 
-**Decode the density before memorizing it.** μ locates the center. Σ describes spread and how coordinates vary together. The displayed inverse-and-determinant density requires a nonsingular covariance; singular Gaussians live on a lower-dimensional support and need a different treatment. The inverse covariance inside the exponent measures how surprising a displacement is relative to that spread: the same physical displacement is less surprising along an uncertain direction than along a tightly constrained one. The factor outside the exponential normalizes the total probability; the density at a point is not itself the probability of that exact continuous value.
+**Decode the density before memorizing it.** μ locates the center. Σ describes spread and how coordinates vary together. The displayed inverse-and-determinant density requires a nonsingular covariance; singular Gaussians live on a lower-dimensional support (the set of values the variable can actually take, e.g. a line inside the plane) and need a different treatment. The inverse covariance inside the exponent measures how surprising a displacement is relative to that spread: the same physical displacement is less surprising along an uncertain direction than along a tightly constrained one. The factor outside the exponential normalizes the total probability; the density at a point is not itself the probability of that exact continuous value.
 
 For sensor fusion, the conditioning formula says: start from the expected value of the unobserved quantity, inspect how the observed quantity differs from its expectation, and transfer that discrepancy through their covariance relationship. If the quantities have no covariance and are jointly Gaussian, observing one does not shift the conditional mean of the other.
 
@@ -180,7 +183,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
   are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
   though not all: contrastive and some self-supervised objectives are not simple MLE.
-- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
+- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss (the loss is the negative log-posterior, because we minimize a loss but maximize a posterior, so the sign flips) — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
   **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
@@ -227,7 +230,7 @@ flowchart LR
     N -. "next step" .-> P
 ```
 
- Nonlinear versions (EKF/UKF) linearize or sample; SLAM scales this to maps.
+Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalman filter) — linearize or sample; SLAM (simultaneous localization and mapping) scales this to maps ([[04-robotics/state-estimation-slam|State Estimation & SLAM]]).
 
 ### 6. Detection, hypothesis tests, and whitening
 
@@ -463,7 +466,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   민감도 95%짜리(그리고 오경보율 5% — "정확도" 하나가 아니라 별개의 두 숫자다) 경보가
   울렸을 때 실제로는 16%만 맞는다 — 기저율이 지배한다. 인식 파이프라인이
   캘리브레이션을 하는 이유다.
-- 독립 $P(A,B) = P(A)P(B)$ vs 조건부 독립 $P(A,B|C) = P(A|C)P(B|C)$ — 그래프 모델,
+
 <svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="패널 1000장을 균열 10장과 정상 990장으로 나누고 각 가지가 만드는 경보 수, 그리고 경보 중 16%만 진짜임을 보이는 막대">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
     <rect x="24" y="76" width="94" height="30" rx="3"/>
@@ -514,6 +517,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   </g>
 </svg>
 
+- 독립 $P(A,B) = P(A)P(B)$ vs 조건부 독립 $P(A,B|C) = P(A|C)P(B|C)$ — 그래프 모델,
   나이브 베이즈, 마르코프 성질이 공유하는 인수분해 가정.
 
 ### 2. 확률변수와 기댓값
@@ -545,6 +549,8 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
 
+여기서 $n$은 $x$의 차원이고 $|\Sigma|$는 공분산의 행렬식이다.
+
 세 가지 **닫힘(closure)** 성질이 가우시안을 주력으로 만든다 — "닫힘"이란 결과가 여전히
 가우시안이라는 뜻이다. 즉 **아핀** 연산은 이 가족을 벗어나지 않는다:
 
@@ -556,7 +562,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
    이것이 *곧* 칼만 이득이다.
 
 또한: CLT는 *분산이 유한한* i.i.d. 효과 여럿의 합을 중심화하고 $\sqrt N$으로 나누면 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유. 코시 분포처럼 분산이 없으면 성립하지 않는다);
-그리고 평균과 분산이 주어진 연속 분포 중 가우시안의 미분 엔트로피가 가장 크다(Murphy PML1 §2.6.4, 증명은 §3.4.4) — "가장 덜 주제넘은" 선택.
+그리고 평균과 분산이 주어진 연속 분포 중 가우시안의 미분 엔트로피(differential entropy: [[02-foundations/information-theory|5. 정보이론 §1]]의 엔트로피를 연속 변수로 옮긴 것으로, 확률 대신 밀도로 계산하므로 이산 엔트로피와 달리 음수가 될 수 있다)가 가장 크다(Murphy PML1 §2.6.4, 증명은 §3.4.4) — "가장 덜 주제넘은" 선택.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="가우시안: 모양은 하나, 폭은 sigma가 정하고, 넓이는 언제나 1">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
@@ -576,7 +582,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   </g>
 </svg>
 
-**밀도식을 외우기 전에 해독한다.** μ는 중심, Σ는 퍼짐과 좌표들이 함께 변하는 방식을 나타낸다. 표시된 역행렬·행렬식 밀도식은 비특이 공분산에서만 유효하다. 특이 가우시안은 더 낮은 차원의 지지집합에 놓여 별도 처리가 필요하다. 지수 안의 역공분산은 변위가 그 퍼짐에 비해 얼마나 뜻밖인지 잰다. 같은 물리 변위도 불확실한 방향에서는 덜 뜻밖이고 좁게 묶인 방향에서는 더 뜻밖이다. 지수 밖의 계수는 전체 확률을 정규화한다. 한 점의 밀도 자체가 그 연속값이 나올 확률은 아니다.
+**밀도식을 외우기 전에 해독한다.** μ는 중심, Σ는 퍼짐과 좌표들이 함께 변하는 방식을 나타낸다. 표시된 역행렬·행렬식 밀도식은 비특이 공분산에서만 유효하다. 특이 가우시안은 더 낮은 차원의 지지집합(변수가 실제로 가질 수 있는 값들의 집합, 예: 평면 안의 한 직선)에 놓여 별도 처리가 필요하다. 지수 안의 역공분산은 변위가 그 퍼짐에 비해 얼마나 뜻밖인지 잰다. 같은 물리 변위도 불확실한 방향에서는 덜 뜻밖이고 좁게 묶인 방향에서는 더 뜻밖이다. 지수 밖의 계수는 전체 확률을 정규화한다. 한 점의 밀도 자체가 그 연속값이 나올 확률은 아니다.
 
 센서 융합에서 조건부 평균 식은 다음처럼 읽는다. 보지 못한 양의 기대값에서 시작한다. 관측한 양이 예상에서 얼마나 벗어났는지 본다. 두 양의 공분산 관계로 그 차이를 전달한다. 공동 가우시안이고 공분산이 없으면 하나의 관찰이 다른 것의 조건부 평균을 움직이지 않는다.
 
@@ -598,7 +604,7 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
-- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$ — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
+- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$(사후 확률은 최대화하고 손실은 최소화하므로 손실 = 음의 로그 사후 확률이 되어 부호가 뒤집힌다) — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
   **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
@@ -643,8 +649,7 @@ flowchart LR
     N -. "다음 스텝" .-> P
 ```
 
- 비선형
-  버전(EKF/UKF)은 선형화하거나 샘플링하고, SLAM은 이를 지도로 확장한다.
+비선형 버전 — EKF(확장 칼만 필터)와 UKF(무향 칼만 필터) — 은 선형화하거나 샘플링하고, SLAM(동시적 위치 추정 및 지도 작성)은 이를 지도로 확장한다([[04-robotics/state-estimation-slam|상태 추정과 SLAM]]).
 
 ### 6. 검출, 가설 검정, 백색화
 

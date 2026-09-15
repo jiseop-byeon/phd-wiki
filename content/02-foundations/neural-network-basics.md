@@ -169,11 +169,11 @@ These are not concepts to master here — just labels, so the word does not stop
 | **frozen** | parameters deliberately not updated |
 | **logits** | raw output scores before they are turned into probabilities |
 | **softmax** | the function that turns scores into probabilities ([[02-foundations/engineering-math\|0.5 §10]]) |
-| **tokenizer** | the step that cuts raw input into tokens — a text tokenizer splits words into sub-word pieces, a vision one cuts an image into patches or maps it to a learned codebook. It is a *choice*, and two models with different tokenizers are not comparable per token |
+| **tokenizer** | the step that cuts raw input into tokens — a text tokenizer splits words into sub-word pieces, a vision one cuts an image into patches or maps it to a learned codebook (a fixed list of learned vectors; each patch becomes the index of its nearest entry — **VQ** in the [[glossary\|Glossary]]). It is a *choice*, and two models with different tokenizers are not comparable per token |
 | **autoregressive** | producing output one token at a time, each conditioned on the ones already produced. Generating $n$ tokens takes $n$ sequential forward passes, which is why long outputs are slow |
 | **language model** | a network trained to predict the next token over a large text corpus. That single objective is what the VLM and VLA track builds on — the "L" in VLM |
 | **autoencoder** | a network trained to reproduce its own input through a narrow middle, so the middle becomes a compressed representation. *Masked* autoencoders hide part of the input and reconstruct it; *variational* ones make the middle a distribution |
-| **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] can remove its extra matrix-multiplication cost when its update is merged into the base weights before inference, which helps explain its broad use |
+| **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] can remove its extra matrix-multiplication cost when its update is merged into the base weights before inference (the low-rank update $BA$ is added into $W$ once, so inference runs a single ordinary matrix $W + BA$), which helps explain its broad use |
 | **activation** | the nonlinearity between layers. **ReLU** ($\max(0,x)$) is the default; **GELU** and **SiLU/Swish** are smooth variants used in transformers. Without one, stacked layers collapse to a single matrix (§1) |
 
 With these, the worked attention example on
@@ -362,11 +362,11 @@ flowchart LR
 | **frozen(얼림)** | 의도적으로 갱신하지 않는 파라미터 |
 | **로짓(logits)** | 확률로 바뀌기 전의 날 점수 |
 | **소프트맥스** | 점수를 확률로 바꾸는 함수 ([[02-foundations/engineering-math\|0.5 §10]]) |
-| **토크나이저(tokenizer)** | 날 입력을 토큰으로 자르는 단계 — 텍스트 토크나이저는 단어를 부분 단어로 쪼개고, 비전 쪽은 이미지를 패치로 자르거나 학습된 코드북으로 보낸다. 이것은 *선택*이고, 토크나이저가 다른 두 모델은 토큰 단위로 비교되지 않는다 |
+| **토크나이저(tokenizer)** | 날 입력을 토큰으로 자르는 단계 — 텍스트 토크나이저는 단어를 부분 단어로 쪼개고, 비전 쪽은 이미지를 패치로 자르거나 학습된 코드북(학습된 벡터들의 고정 목록으로, 각 패치는 가장 가까운 항목의 번호가 된다 — [[glossary\|용어집]]의 **VQ** 항목)으로 보낸다. 이것은 *선택*이고, 토크나이저가 다른 두 모델은 토큰 단위로 비교되지 않는다 |
 | **자기회귀(autoregressive)** | 이미 만든 토큰들에 조건부로 한 번에 한 토큰씩 출력을 만드는 것. $n$개 토큰을 만들려면 순전파를 $n$번 차례로 해야 하므로 긴 출력이 느린 이유 |
 | **언어 모델(language model)** | 큰 텍스트 말뭉치에서 다음 토큰을 예측하도록 학습한 신경망. 그 목적함수 하나 위에 VLM·VLA 트랙이 서 있다 — VLM의 "L"이다 |
 | **오토인코더(autoencoder)** | 좁은 가운데를 통과시켜 자기 입력을 재현하도록 학습해서, 그 가운데가 압축된 표현이 되게 하는 신경망. *마스킹* 오토인코더는 입력 일부를 가리고 복원하고, *변분* 오토인코더는 가운데를 분포로 만든다 |
-| **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]는 추론 전에 갱신을 기본 가중치에 병합할 수 있을 때 추가 행렬곱 비용을 없앨 수 있어 널리 쓰인다 |
+| **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]는 추론 전에 갱신을 기본 가중치에 병합할 수 있을 때(저랭크 갱신 $BA$를 $W$에 한 번 더해 두면 추론은 평범한 행렬 $W + BA$ 하나로 돈다) 추가 행렬곱 비용을 없앨 수 있어 널리 쓰인다 |
 | **활성함수(activation)** | 층 사이의 비선형성. **ReLU**($\max(0,x)$)가 기본이고, **GELU**와 **SiLU/Swish**가 트랜스포머에서 쓰는 매끄러운 변형이다. 이것이 없으면 쌓은 층이 행렬 하나로 무너진다(§1) |
 
 이것들이 있으면 [[02-foundations/linear-algebra|1. 선형대수 §1]]의 어텐션 계산 예제 —

@@ -70,7 +70,11 @@ The formulation is needed because a preference and a requirement play different 
 
 - **Optimality conditions**: first-order $\nabla f(x^*) = 0$; second-order $H(x^*) \succeq 0$
   (necessary), $\succ 0$ (sufficient for strict local min). Saddle points satisfy the first
-  but not the second — and dominate high-dimensional landscapes.
+  but not the second — and dominate high-dimensional landscapes. The intuition: a minimum needs
+  all $n$ Hessian eigenvalues positive, while a saddle only needs a mix of signs. If each sign were
+  a coin flip, all $n$ positive would have probability $2^{-n}$ (about 0.001 for $n = 10$). Real
+  Hessians are not coin flips, but Dauphin et al. (NeurIPS 2014) report evidence that critical
+  points with high loss in neural networks are overwhelmingly saddles.
 - **Gradient descent** from Taylor: minimizing the first-order model within a step-size
   trust gives $x_{k+1} = x_k - \alpha\nabla f(x_k)$. On a quadratic with Hessian $H$, the
   per-eigendirection contraction is $|1 - \alpha\lambda_i|$; stability needs
@@ -88,7 +92,7 @@ The formulation is needed because a preference and a requirement play different 
   invert $H$ — which is why nobody runs it on a neural network.
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
-  $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian, $O(n^3)$ per
+  $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian (its curvature cannot change arbitrarily fast: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$), $O(n^3)$ per
   step; quasi-Newton (BFGS/L-BFGS) builds $H^{-1}$ estimates from gradient differences.
 - Stochastic gradients: unbiased but noisy estimates from minibatches; noise ~ helps escape
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
@@ -158,7 +162,12 @@ Gauss–Newton asks for the inverse of a singular matrix and halts.
 
 **Levenberg–Marquardt: distrust the model by a tunable amount.** A poor local model calls
 for trust-region-style accept/reject and shorter steps; a rank-deficient Jacobian instead
-signals an unobserved or degenerate direction. Penalize distance from the current iterate — the divergence example above is the reason: the second term charges for leaving the neighbourhood where the affine model held, and $\lambda_k$ sets the price:
+signals an unobserved or degenerate direction. LM handles both with one knob $\lambda_k$; keep two facts in mind before the formulas:
+
+1. **What $\lambda$ buys.** It charges for long steps, which keeps the solver where its affine model is trustworthy, and it makes the linear system invertible even when $J$ loses rank.
+2. **How $\lambda$ is set.** By trial: shrink it after a step that truly lowered the residual, grow it after one that did not.
+
+Penalize distance from the current iterate — the divergence example above is the reason: the second term charges for leaving the neighbourhood where the affine model held, and $\lambda_k$ sets the price:
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
 
@@ -170,7 +179,9 @@ The $\lambda I$ makes the linear system invertible and limits explosive steps; i
 restore information in an unobserved direction or guarantee convergence. In the beacon example it turns
 $\det J^\top J = 0$ into $\det(J^\top J + I) = 4$ — the matrix is now invertible no matter
 what $J$ does. And $\lambda$ interpolates: at $\lambda \to 0$ this is Gauss–Newton, at large
-$\lambda$ it is a short step along the gradient. Adapt it by trial: take the step, and if
+$\lambda$ it is a short step along the gradient.
+
+Adapt it by trial: take the step, and if
 the *true* residual fell, accept it and relax ($\lambda \leftarrow 0.8\lambda$); if it did
 not, reject the step and distrust harder ($\lambda \leftarrow 2\lambda$). On the $\tanh$
 problem from the same $x_0 = 1.15$ that destroyed Newton, starting from $\lambda_0 = 1$, this reaches $|x| < 10^{-3}$ in
@@ -276,8 +287,8 @@ a trust parameter.
      ($g_i=0$, price $\lambda_i>0$) or is free ($\lambda_i = 0$).
 
   In plain terms: KKT is the checklist a solver uses to recognise a candidate optimum; whether an optimum must pass it, and whether passing it proves optimality, depends on the problem.
-  - **Necessary.** With differentiable functions they are **necessary** at any optimum where strong duality holds. For a convex problem, strong duality follows from a constraint qualification such as Slater's condition (Boyd & Vandenberghe §5.5.3).
-    At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ. That is what SQP and interior-point NLP solvers rely on.
+  - **Necessary.** With differentiable functions they are **necessary** at any optimum where strong duality holds. For a convex problem, strong duality follows from a constraint qualification such as Slater's condition — some feasible point satisfies every inequality strictly, $g_i(x) < 0$ (Boyd & Vandenberghe §5.5.3).
+    At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ (linear independence constraint qualification: at that point, the gradients of the equality constraints and of the active inequality constraints are linearly independent). That is what SQP and interior-point NLP solvers rely on.
   - **Sufficient.** For a convex problem they are **also sufficient**. On a non-convex problem — nonlinear MPC, trajectory
     optimization, the classes §5 lists — a KKT point need not be a minimum at all.
 - Worked example — project a point onto a half-space: $\min \tfrac12\|x - p\|^2$ s.t.
@@ -347,7 +358,7 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
    under Adam + L2, and under AdamW?
 
 > [!tip]- Answers
-> 1. The epigraph of $\max(f,g)$ is the intersection of two convex epigraphs, hence convex. Hinge loss $\max(0, 1-yx)$ is the max of two affine functions, so it is convex.
+> 1. The epigraph of a function is the set of points on or above its graph, $\{(x,t) : t \ge f(x)\}$, and a function is convex exactly when its epigraph is a convex set. Since $t \ge \max(f,g)$ means $t \ge f$ and $t \ge g$, the epigraph of $\max(f,g)$ is the intersection of two convex epigraphs, hence convex. Hinge loss $\max(0, 1-yx)$ is the max of two affine functions, so it is convex.
 > 2. Stability needs $\alpha < 2/\lambda_{max} = 0.02$. Taking the usual half-of-the-limit $\alpha = 0.01$ (near the boundary the fast mode oscillates), the slow mode contracts as $(1-\alpha\lambda_{min})^k = 0.99^k$; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$ iterations. The condition number $\kappa = 100$ *is* that cost.
 > 3. Binding case: stationarity holds by construction, $x^* = p - \lambda a$; primal feasibility $a^\top x^* = b$ (active); dual feasibility $\lambda = (a^\top p - b)/\|a\|^2 > 0$ precisely because the constraint was violated at $p$; complementary slackness $\lambda g = \lambda\cdot 0 = 0$.
 > 4. The objective is a convex quadratic and the constraints are linear (dynamics equalities plus input/state boxes) — a convex QP. It stops being convex when obstacle avoidance enters (the free space is a non-convex complement) or when discrete decisions such as task ordering or contact-mode selection are added.
@@ -411,7 +422,10 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 
 - **최적성 조건**: 1차 $\nabla f(x^*) = 0$; 2차 $H(x^*) \succeq 0$(필요),
   $\succ 0$(엄격 지역 최소의 충분). 안장점은 1차만 만족한다 — 그리고 고차원 지형을
-  지배한다.
+  지배한다. 직관은 이렇다: 최소점은 헤시안의 고유값 $n$개가 모두 양수여야 하지만, 안장점은
+  부호가 섞이기만 하면 된다. 부호 하나하나가 동전 던지기라면 $n$개가 모두 양수일 확률은
+  $2^{-n}$이다($n = 10$이면 약 0.001). 실제 헤시안이 동전 던지기는 아니지만, Dauphin 등(NeurIPS
+  2014)은 신경망 손실에서 손실이 높은 임계점이 압도적으로 안장점이라는 증거를 보고한다.
 - 테일러에서 나오는 **경사 하강**: 1차 모델을 신뢰 반경 안에서 최소화하면
   $x_{k+1} = x_k - \alpha\nabla f(x_k)$. 헤시안 $H$의 이차 함수에서 고유방향별 수축률은
   $|1 - \alpha\lambda_i|$; 안정성엔 $\alpha < 2/\lambda_{max}$가 필요하고, 흔히 쓰는 $\alpha = 1/\lambda_{max}$를 고르면 느린 방향은
@@ -426,7 +440,7 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   최적점 근처에서만 이 거동이 나오고, 매 스텝 $H$를 만들고 역행렬을 구하는 데 $O(n^3)$을 낸다 —
   아무도 신경망에 이걸 돌리지 않는 이유다.
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
-  모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때 최적점 근처 이차 수렴, 스텝당
+  모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때(곡률이 임의로 빠르게 변할 수 없다는 뜻: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$) 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
@@ -493,6 +507,11 @@ Gauss–Newton은 특이행렬의 역을 요구하고 멈춰 선다.
 
 **Levenberg–Marquardt: 모델을 조절 가능한 만큼 불신한다.** 나쁜 국소모델에는 trust-region식
 수락·거부와 짧은 스텝이 필요하지만, 랭크 결손 야코비안은 관측되지 않거나 퇴화한 방향을 뜻한다.
+LM은 둘을 손잡이 하나 $\lambda_k$로 다룬다. 식을 보기 전에 두 가지를 기억해 두자:
+
+1. **$\lambda$가 주는 것.** 긴 스텝에 값을 물려 아핀 모델을 믿을 수 있는 곳에 풀이를 붙잡아 두고, $J$가 랭크를 잃어도 선형계를 가역으로 만든다.
+2. **$\lambda$를 정하는 법.** 시행으로 정한다: 참 잔차를 실제로 줄인 스텝 뒤에는 줄이고, 그렇지 못한 스텝 뒤에는 키운다.
+
 현재 반복점에서 멀어지는 것에 벌점을 매긴다. 위의 발산 예제가 그 이유다. 둘째 항이 아핀 모델이 유효하던 이웃을 벗어나는 데 값을 물리고, $\lambda_k$가 그 값을 정한다.
 
 $$x_{k+1} = \arg\min_x \; \lVert f(x_k) + J(x - x_k) \rVert^2 + \lambda_k \lVert x - x_k \rVert^2$$
@@ -505,7 +524,9 @@ $\lambda I$는 선형계를 가역으로 만들고 폭발적인 스텝을 제한
 정보를 복원하거나 수렴을 보장하지는 않는다. 비콘 예제에서 그것은 $\det J^\top J = 0$을
 $\det(J^\top J + I) = 4$로 바꾼다 — $J$가 무슨 짓을 하든 이제 행렬은 역을 갖는다. 그리고
 $\lambda$는 보간한다. $\lambda \to 0$이면 Gauss–Newton이고, $\lambda$가 크면 그래디언트 방향의
-짧은 한 걸음이다. 시행으로 조절한다. 스텝을 밟아 보고 *참* 잔차가 줄었으면 받아들이고
+짧은 한 걸음이다.
+
+시행으로 조절한다. 스텝을 밟아 보고 *참* 잔차가 줄었으면 받아들이고
 느슨하게 하며($\lambda \leftarrow 0.8\lambda$), 줄지 않았으면 스텝을 물리고 더 불신한다
 ($\lambda \leftarrow 2\lambda$). 뉴턴을 파괴했던 바로 그 $x_0 = 1.15$에서 $\tanh$ 문제를 이렇게
 $\lambda_0 = 1$에서 시작해 풀면 여덟 스텝 만에 $|x| < 10^{-3}$에 닿는다(여기서는 $\lambda_0$가 작을수록 빠르고 클수록 느리다).
@@ -605,8 +626,8 @@ Gauss–Newton으로:
      $\lambda_i>0$) 놀거나($\lambda_i = 0$) 둘 중 하나다.
 
   쉽게 말해: KKT는 솔버가 최적 후보를 알아보는 점검표다. 최적점이 반드시 이 점검을 통과하는지, 통과하면 최적이 증명되는지는 문제에 따라 다르다.
-  - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
-    일반 비볼록 문제의 국소 최소에서도 LICQ 같은 제약 자격 조건 아래에서는 여전히 필요하다. SQP와 내점법 NLP 솔버가 기대는 것이 이것이다.
+  - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건(모든 부등식을 엄격히, 곧 $g_i(x) < 0$으로 만족하는 실현 가능한 점이 하나 있다는 조건) 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
+    일반 비볼록 문제의 국소 최소에서도 LICQ(선형 독립 제약 자격 조건: 그 점에서 등식 제약과 활성 부등식 제약의 그래디언트들이 선형 독립이라는 조건) 같은 제약 자격 조건 아래에서는 여전히 필요하다. SQP와 내점법 NLP 솔버가 기대는 것이 이것이다.
   - **충분조건.** 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
     비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
 - 계산 예제 — 반공간으로의 투영: $\min \tfrac12\|x - p\|^2$ s.t. $a^\top x \le b$.
@@ -670,7 +691,7 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
    $\lambda = 10^{-2}$, 모멘텀 없음일 때, Adam + L2와 AdamW에서 각각 스텝당 얼마나 줄어드는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
-> 1. $\max(f,g)$의 에피그래프는 두 볼록 에피그래프의 교집합 — 볼록. 힌지 $\max(0, 1-yx)$는 아핀 함수 둘의 max라 볼록이다.
+> 1. 함수의 에피그래프(epigraph)는 그래프 위 또는 그 위쪽 점들의 집합 $\{(x,t) : t \ge f(x)\}$이고, 함수가 볼록인 것은 에피그래프가 볼록 집합인 것과 정확히 같다. $t \ge \max(f,g)$는 $t \ge f$이면서 $t \ge g$라는 뜻이므로, $\max(f,g)$의 에피그래프는 두 볼록 에피그래프의 교집합 — 볼록. 힌지 $\max(0, 1-yx)$는 아핀 함수 둘의 max라 볼록이다.
 > 2. 안정 조건 $\alpha < 2/\lambda_{max} = 0.02$. 실전 관례대로 한계의 절반 $\alpha = 0.01$을 잡으면(경계 근처는 빠른 모드가 진동한다) 느린 모드는 $(1-0.01)^k = 0.99^k$로 수축; $0.99^k = 0.01 \Rightarrow k = \ln 0.01/\ln 0.99 \approx 458$회. 조건수 $\kappa = 100$이 *곧* 그 대가다.
 > 3. 구속 케이스: 정상성은 $x^* = p - \lambda a$로 성립; $a^\top x^* = b$(원 가능·구속); $\lambda = (a^\top p - b)/\|a\|^2 > 0$(쌍대 가능); $\lambda g = \lambda \cdot 0 = 0$(상보 여유성).
 > 4. 목적은 볼록 이차, 제약은 선형(동역학 등식 + 박스) — 볼록 QP. 장애물 회피(비볼록 여집합)나 정수 결정(작업 순서, 접촉 모드 선택)이 들어오면 비볼록이 된다.
