@@ -161,7 +161,7 @@ depending on where it stopped:
 | **Preprint (arXiv only)** | posted by the authors, **no peer review** | ideas and numbers may be entirely sound; nothing external has checked them. Say "preprint" when you cite it |
 | **Workshop paper** | reviewed, usually lightly, often non-archival | a signal of early direction, not a settled result. Frequently superseded by a conference version with different numbers |
 | **Conference paper** | peer-reviewed, fixed deadline, page limit | the standard unit in robotics — see [[06-research-practice/venue-strategy\|5. Venue Strategy §1]] |
-| **Journal paper** | peer-reviewed with revision rounds | usually the fullest account, and often a *later* version of a conference paper. **RA-L is the robotics exception**: a journal with a hard 8-page limit that is frequently the *first* version, and via RA-L+ICRA is tied to a conference deadline |
+| **Journal paper** | peer-reviewed with revision rounds | usually the fullest account, and often a *later* version of a conference paper. **RA-L is the robotics exception**: a journal with a hard 8-page limit that is frequently the *first* version, and an accepted RA-L paper can be presented at a RAS conference (the old joint RA-L+ICRA deadline ended with ICRA 2022; see [[06-research-practice/venue-strategy\|Venue Strategy §4]]) |
 
 The trap is not citing a preprint — it is citing one **as though it were published**. This
 wiki has hit it twice: a humanoid rough-terrain paper cited as published when it is a preprint
@@ -370,7 +370,7 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 | **프리프린트(arXiv만)** | 저자가 올린 것, **심사 없음** | 발상과 숫자가 완전히 타당할 수 있다. 다만 외부에서 확인한 것이 없다. 인용할 때 "프리프린트"라고 밝혀라 |
 | **워크숍 논문** | 심사는 있으나 대개 가볍고, 흔히 비아카이브 | 결정된 결과가 아니라 이른 방향의 신호. 숫자가 다른 학회 판본으로 대체되는 일이 잦다 |
 | **학회 논문** | 동료 심사, 고정 마감, 쪽수 제한 | 로보틱스의 표준 단위 — [[06-research-practice/venue-strategy\|5. 게재지 전략 §1]] |
-| **저널 논문** | 개정 라운드가 있는 동료 심사 | 대개 가장 완전한 기술이고 학회 논문의 *나중* 판본인 경우가 많다. **RA-L이 로보틱스의 예외다**: 8쪽 제한이 있는 저널이면서 흔히 *최초* 판본이고, RA-L+ICRA 경로로는 학회 마감에 묶인다 |
+| **저널 논문** | 개정 라운드가 있는 동료 심사 | 대개 가장 완전한 기술이고 학회 논문의 *나중* 판본인 경우가 많다. **RA-L이 로보틱스의 예외다**: 8쪽 제한이 있는 저널이면서 흔히 *최초* 판본이고, 채택된 RA-L 논문은 RAS 학회에서 발표할 수 있다(예전의 RA-L+ICRA 공동 마감은 ICRA 2022로 끝났다; [[06-research-practice/venue-strategy\|학회 전략 §4]]) |
 
 함정은 프리프린트를 인용하는 것이 아니라 **출판된 것처럼** 인용하는 것이다. 이 위키도 두 번
 걸렸다: 휴머노이드 험지 논문을 출판된 것처럼 인용한 사례([[04-robotics/legged-locomotion|18. §5]])와,

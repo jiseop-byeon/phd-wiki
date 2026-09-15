@@ -414,6 +414,15 @@ else:
                 err(_gloss, f"glossary section {_name!r} out of order: "
                             f"{_a!r} is listed before {_b!r}")
 
+# --- 16. glossary tooltip index in sync --------------------------------------
+# quartz/static/glossary/terms.json is generated from content/glossary.md and
+# committed; a glossary edit without a rebuild would ship stale tooltips.
+import subprocess as _sp
+_r = _sp.run([sys.executable, os.path.join("scripts", "build_glossary_index.py"), "--check"],
+             capture_output=True, text=True)
+if _r.returncode != 0:
+    err("quartz/static/glossary/terms.json", _r.stdout.strip() or "glossary index check failed")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

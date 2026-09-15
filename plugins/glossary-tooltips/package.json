@@ -1,0 +1,39 @@
+{
+  "name": "phd-wiki-glossary-tooltips",
+  "version": "1.0.0",
+  "description": "Hover (or tap) a glossary term on any page to see its one-line definition and the page that teaches it.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./package.json": "./package.json",
+    "./components": {
+      "import": "./index.js"
+    }
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "quartz": {
+    "name": "glossary-tooltips",
+    "displayName": "Glossary Tooltips",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 65,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "GlossaryTooltips": {
+        "displayName": "Glossary Tooltips",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 90
+      }
+    }
+  }
+}

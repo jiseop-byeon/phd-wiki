@@ -198,6 +198,8 @@ plugins:
       priority: 10
   - source: ./plugins/read-log
     enabled: true
+  - source: ./plugins/glossary-tooltips
+    enabled: true
     layout:
       position: afterBody
       priority: 20
