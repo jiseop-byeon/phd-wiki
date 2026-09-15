@@ -100,7 +100,7 @@ decision layer these pages feed.
 
 Read after sections D–E and before designing a force-feedback interface or a haptic human study.
 
-- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — human touch and psychophysics, tactile-display design, device kinematics and actuation, sampled virtual-contact stability, bilateral teleoperation, and experimental evidence
+- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — human touch and psychophysics, tactile-display design, device kinematics and actuation, sampled virtual-contact stability, rendering algorithms, bilateral teleoperation, and experimental evidence
 
 ### L. Build track
 
@@ -209,7 +209,7 @@ B절 다음에 읽는다; 이 페이지들이 먹이는 결정 계층은 G절에
 
 D–E절 다음에 읽으며, 힘 반향 인터페이스나 햅틱 인간 대상 연구를 설계하기 전에 필요한 전문 트랙이다.
 
-- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — 인간 촉각과 심리물리, 촉각 디스플레이 설계, 장치 기구학·구동, 샘플링된 가상 접촉의 안정성, 양방향 원격조작, 실험 증거
+- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — 인간 촉각과 심리물리, 촉각 디스플레이 설계, 장치 기구학·구동, 샘플링된 가상 접촉의 안정성, 렌더링 알고리즘, 양방향 원격조작, 실험 증거
 
 ### L. 만드는 트랙
 
