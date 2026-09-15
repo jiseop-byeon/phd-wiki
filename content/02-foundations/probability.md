@@ -26,10 +26,21 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 
 ### 1. The core language
 
-- Axioms: $P(\Omega)=1$, $P(A)\ge 0$, additivity over disjoint events. Everything else is
-  bookkeeping on top.
-- **Conditioning** $P(A|B) = P(A\cap B)/P(B)$ re-weights the world after evidence.
-  Chain rule: $P(A,B) = P(A|B)P(B)$.
+- **A probability space** is the object every statement on this page lives in. It has three named parts. The **sample space** $\Omega$ is the set of all possible outcomes (for one die, $\{1,\dots,6\}$). An **event** $A \subseteq \Omega$ is a set of outcomes you can ask about ("even" is $\{2,4,6\}$; set notation is in [[02-foundations/engineering-math|0.5 §10]]). The **probability measure** $P$ assigns each event a number. $P$ must satisfy the three **Kolmogorov axioms**:
+  - **Non-negativity**: no event has negative probability, so every $P(A)$ is at least 0.
+  $$P(A) \ge 0$$
+  - **Normalization**: something in $\Omega$ always happens.
+  $$P(\Omega) = 1$$
+  - **Countable additivity**: for events $A_1, A_2, \dots$ that are pairwise disjoint ($A_i \cap A_j = \emptyset$ for $i \ne j$, so no outcome is counted twice), the probability of the union is the sum.
+  $$P\Big(\bigcup_i A_i\Big) = \sum_i P(A_i)$$
+  Everything else is bookkeeping on top, because each rule below is derived from these three. For example $P(\emptyset) = 0$, $P(A^c) = 1 - P(A)$ (split $\Omega$ into $A$ and its complement $A^c$), and for events that overlap, $P(A \cup B) = P(A) + P(B) - P(A \cap B)$, since the overlap would otherwise be counted twice. With a fair die, $A$ = even and $B = \{4,5,6\}$: $P(A \cup B) = \tfrac12 + \tfrac12 - \tfrac13 = \tfrac23$, which matches counting $\{2,4,5,6\}$ directly. *Non-example:* "$P(\text{even}) = 0.5$, $P(\text{odd}) = 0.6$" violates the axioms, because the two events are disjoint and their union is $\Omega$, so the probabilities must add to exactly 1.
+- **Conditional probability** of $A$ given $B$ is the probability of $A$ once you know $B$ happened, defined for $P(B) > 0$:
+  $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+  Here $A \cap B$ is "both happen" and dividing by $P(B)$ renormalizes, so the outcomes inside $B$ again sum to 1. It re-weights the world after evidence. *Example:* a fair die shows an even number; $P(\text{six} \mid \text{even}) = \tfrac{1/6}{1/2} = \tfrac13$.
+  - **Chain rule** (the definition rearranged): $P(A,B) = P(A|B)P(B)$, and for $n$ events $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
+  - **Law of total probability**: if $B_1, \dots, B_k$ partition $\Omega$ (disjoint, covering everything), then
+  $$P(A) = \sum_{i=1}^k P(A \mid B_i)\,P(B_i)$$
+  since $A$ splits into the disjoint pieces $A \cap B_i$ and the chain rule gives each piece. It supplies the denominator of Bayes' rule below: in the crack example, $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$.
 - **Bayes' rule.** The chain rule above can factor a joint probability in either order —
   $P(\theta, x) = P(\theta|x)P(x)$ and $P(\theta, x) = P(x|\theta)P(\theta)$ — and both equal
   the same joint, so set them equal and divide by $P(x)$. That is the derivation:
@@ -93,16 +104,33 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   </g>
 </svg>
 
-- Independence $P(A,B) = P(A)P(B)$ vs conditional independence $P(A,B|C) = P(A|C)P(B|C)$ —
-  the factorization assumptions behind graphical models, naive Bayes, and the Markov
-  property alike.
+- **Independence** is a property of two events (or random variables): knowing one does not change the probability of the other. The defining condition is that the joint probability factorizes,
+  $$P(A \cap B) = P(A)\,P(B)$$
+  which is equivalent to $P(A \mid B) = P(A)$ whenever $P(B) > 0$, since dividing both sides by $P(B)$ gives the conditional. For random variables it must hold for every pair of values, $p(x,y) = p(x)\,p(y)$.
+  **Conditional independence** of $A$ and $B$ given $C$ is the same factorization inside the world where $C$ happened:
+  $$P(A \cap B \mid C) = P(A \mid C)\,P(B \mid C)$$
+  - *Example:* two fair dice, $A$ = first shows 6, $B$ = second is even. $P(A \cap B) = \tfrac{3}{36} = \tfrac{1}{12} = \tfrac16 \cdot \tfrac12$, so they are independent.
+  - *Non-example:* $A$ = first shows 6, $C$ = the sum is at least 10. $P(C) = \tfrac{6}{36} = \tfrac16$, but $P(A \cap C) = \tfrac{3}{36} = \tfrac{1}{12} \ne P(A)P(C) = \tfrac{1}{36}$: a 6 on the first die makes a large sum more likely.
+  - *The two notions do not imply each other.* Two independent fair coins become dependent once you are told $C$ = "they match": then $P(\text{both heads} \mid C) = \tfrac12$ but $P(\text{first heads} \mid C)\,P(\text{second heads} \mid C) = \tfrac14$.
+
+  These factorizations are the assumptions behind graphical models, naive Bayes, and the Markov property (§5) alike, because each lets a large joint distribution be stored as a product of small pieces.
 
 ### 2. Random variables and expectation
 
-- **PMF** (probability mass function — discrete: $p(x)$ *is* the probability of $x$),
-  **PDF** (probability density function — continuous: $p(x)$ is a *density*, so only
-  $\int p\,dx$ over an interval is a probability, and $p(x)$ itself may exceed 1),
-  **CDF** (cumulative: $F(x) = P(X \le x)$). Then $E[g(X)] = \int g(x)p(x)dx$.
+- **A random variable** $X$ is a function from outcomes to numbers, $X : \Omega \to \mathbb{R}$; it turns "what happened" into a quantity you can add and average. *Example:* roll two dice, $\Omega$ is the 36 ordered pairs, and $X$ = the sum maps $(2,5) \mapsto 7$. A random vector does the same into $\mathbb{R}^n$. Its **distribution** is described by one of three functions:
+  - **PMF** (probability mass function), for a discrete $X$: $p(x)$ *is* the probability of the value $x$. Its two conditions are $p(x) \ge 0$ and
+  $$p(x) = P(X = x), \qquad \sum_x p(x) = 1$$
+  because the events $\{X = x\}$ are disjoint and cover $\Omega$, so the axioms force them to add to 1. *Example:* one fair die, $p(x) = \tfrac16$ for $x = 1,\dots,6$.
+  - **PDF** (probability density function), for a continuous $X$: $p(x)$ is a *density*, so only its integral over an interval is a probability. Its conditions are $p(x) \ge 0$ and
+  $$P(a \le X \le b) = \int_a^b p(x)\,dx, \qquad \int_{-\infty}^{\infty} p(x)\,dx = 1$$
+  so a single point has probability 0 and $p(x)$ itself may exceed 1. *Example:* uniform on $[0, 0.5]$ has $p(x) = 2$ there, yet $P(0.1 \le X \le 0.3) = 0.2 \times 2 = 0.4$.
+  - **CDF** (cumulative distribution function), for any $X$: $F(x) = P(X \le x)$. It is non-decreasing, runs from $F(-\infty) = 0$ to $F(\infty) = 1$, and for a continuous $X$ it is the integral of the PDF, so $p(x) = F'(x)$. *Example:* one fair die has $F(2.5) = P(X \le 2) = \tfrac13$.
+- **Expectation** is the probability-weighted average of a function of $X$ (worked by hand in [[02-foundations/engineering-math|0.5 §3]]):
+  $$E[g(X)] = \sum_x g(x)\,p(x) \quad\text{(discrete)}, \qquad E[g(X)] = \int g(x)\,p(x)\,dx \quad\text{(continuous)}$$
+  Each value $g(x)$ is weighted by how likely it is, so one fair die has $E[X] = \tfrac{1+2+\cdots+6}{6} = 3.5$.
+- **i.i.d.** (independent and identically distributed) describes a sample $x_1, \dots, x_N$ that satisfies **two** conditions: *independent* (the joint density factorizes) and *identically distributed* (every factor is the same $p$):
+  $$p(x_1, \dots, x_N) = \prod_{i=1}^N p(x_i)$$
+  Repeated rolls of one die are i.i.d. *Non-example:* consecutive readings of a drifting sensor are neither, since each depends on the last and their mean changes over time. Every "average of $N$ samples" result below (CLT, standard error, MLE) assumes i.i.d., so it is the first assumption to check in a paper.
 - **Linearity** $E[aX + bY] = aE[X] + bE[Y]$ — *no independence needed*; the single most
   used identity in proofs. **Why that caveat is worth noticing:** with two dice,
   $E[X_1 + X_2] = 3.5 + 3.5 = 7$ whether or not the dice are glued together. Variance is
@@ -115,19 +143,42 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   when things are uncorrelated. That is exactly why averaging $N$ *independent* runs shrinks
   the standard error of the mean by $\sqrt N$ and averaging $N$ correlated runs does not
   ([[02-foundations/ml-practice|9. ML Practice §4]]).
-- Variance $\text{Var}(X) = E[X^2] - E[X]^2$; covariance
-  $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$; for vectors, the covariance matrix
-  $\Sigma = E[(x-\mu)(x-\mu)^\top]$ is PSD ([[02-foundations/linear-algebra|linear algebra]]).
-- **Conditional expectation** $E[X|Y]$ is the best mean-square predictor of $X$ given $Y$ —
-  the reason estimation theory keeps computing it, and what regression approximates.
-- Distributions that carry this wiki: **Bernoulli/categorical** (classification losses,
-  dropout masks), **Gaussian** (below), Poisson (event counts), exponential (waiting times).
+- **Variance** is the expected squared distance of $X$ from its own mean $\mu = E[X]$, a measure of spread; its square root $\sigma$ is the **standard deviation**, in the units of $X$:
+  $$\text{Var}(X) = E\big[(X - \mu)^2\big] = E[X^2] - E[X]^2$$
+  The second form follows by expanding the square and using linearity, since $E[2\mu X] = 2\mu^2$.
+- **Covariance** measures whether two variables move together: positive when they tend to sit on the same side of their means, negative when on opposite sides.
+  $$\text{Cov}(X,Y) = E\big[(X - E[X])(Y - E[Y])\big] = E[XY] - E[X]E[Y]$$
+  The **correlation coefficient** $\rho = \text{Cov}(X,Y)/(\sigma_X \sigma_Y)$ rescales it into $[-1, 1]$. It is what the dice caveat above was about, because $\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$; for the glued dice $\tfrac{35}{12} + \tfrac{35}{12} + 2 \cdot \tfrac{35}{12} = 11.67$.
+  - *Example:* one die $X$ and $Y = 7 - X$ (the opposite face). $\text{Cov}(X, Y) = -\tfrac{35}{12} = -2.92$ and $\rho = -1$.
+  - *Non-example (zero covariance is not independence):* $X$ uniform on $\{-1, 0, 1\}$ and $Y = X^2$. $\text{Cov}(X,Y) = E[X^3] - E[X]E[X^2] = 0 - 0 = 0$, yet $Y$ is a function of $X$: $P(Y = 1 \mid X = 0) = 0$ while $P(Y = 1) = \tfrac23$. Covariance detects only linear co-movement.
+- **The covariance matrix** of a random vector $x \in \mathbb{R}^n$ with mean $\mu$ collects every pairwise covariance, $\Sigma_{ij} = \text{Cov}(x_i, x_j)$, with variances on the diagonal:
+  $$\Sigma = E\big[(x-\mu)(x-\mu)^\top\big]$$
+  It is symmetric and PSD ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), because for any fixed vector $a$, $a^\top \Sigma a = \text{Var}(a^\top x) \ge 0$. For the die and its opposite face, $\Sigma = \tfrac{35}{12}\begin{pmatrix}1&-1\\-1&1\end{pmatrix}$, which is singular: all the randomness lies along one line.
+- **Conditional expectation** $E[X \mid Y]$ is itself a random variable, a function of $Y$: for each value $y$ it is the mean of $X$ under the conditional distribution,
+  $$E[X \mid Y = y] = \sum_x x\,p(x \mid y) \quad\text{(or } \textstyle\int x\,p(x \mid y)\,dx\text{)}$$
+  Its defining property is that it is the **best mean-square predictor** of $X$ from $Y$: among all functions $g$, $E\big[(X - g(Y))^2\big]$ is smallest at $g(Y) = E[X \mid Y]$. Averaging it over $Y$ gives back the plain mean, $E\big[E[X \mid Y]\big] = E[X]$ (the **tower property**).
+  - *Example:* two dice, $S = X_1 + X_2$. Knowing the first die, $E[S \mid X_1] = X_1 + 3.5$, so $E[S \mid X_1 = 2] = 5.5$. Its mean-square error is $\text{Var}(X_2) = 2.92$, half of the $\text{Var}(S) = 5.83$ you get by always guessing $7$.
+
+  It is the reason estimation theory keeps computing it (the Kalman filter's $\hat x$ in §5 is one), and it is what regression with squared loss approximates.
+- **Distributions that carry this wiki.** Each is a named family of PMFs or PDFs with parameters:
+
+| Name | PMF or PDF | Mean, variance | Used for |
+|---|---|---|---|
+| **Bernoulli**$(\theta)$ | $p(x) = \theta^x (1-\theta)^{1-x}$, $x \in \{0,1\}$ | $\theta$, $\theta(1-\theta)$ | success or failure, dropout masks |
+| **Categorical**$(\pi_1..\pi_K)$ | $P(X = k) = \pi_k$, with $\sum_k \pi_k = 1$ | (labels, not numbers) | classification outputs and losses |
+| **Gaussian** $\mathcal{N}(\mu, \sigma^2)$ | $\frac{1}{\sqrt{2\pi\sigma^2}} e^{-(x-\mu)^2/(2\sigma^2)}$ | $\mu$, $\sigma^2$ | noise; §3 |
+| **Poisson**$(\lambda)$ | $P(X = k) = \lambda^k e^{-\lambda}/k!$, $k = 0,1,\dots$ | $\lambda$, $\lambda$ | counts of independent events per interval |
+| **Exponential**$(\lambda)$ | $p(x) = \lambda e^{-\lambda x}$, $x \ge 0$ | $1/\lambda$, $1/\lambda^2$ | waiting time to the next such event |
+
+  *Examples:* a gripper that slips $\lambda = 2$ times per hour on average goes a whole hour without a slip with probability $e^{-2} = 0.135$. If faults arrive at rate $\lambda = 0.5$ per hour, the mean wait is 2 hours and $P(\text{wait} > 3\text{ h}) = e^{-1.5} = 0.223$. The two families describe the same process, since "no event in time $t$" is both a Poisson count of 0 and an exponential wait longer than $t$.
 
 ### 3. The Gaussian toolbox (why Gaussians run robotics)
 
-$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
+A **multivariate Gaussian** (normal distribution) is the continuous distribution on $\mathbb{R}^n$ fixed by exactly **two** parameters, a mean vector $\mu \in \mathbb{R}^n$ and a symmetric positive-definite covariance matrix $\Sigma \in \mathbb{R}^{n\times n}$ (§2), with density
 
-Here $n$ is the dimension of $x$ and $|\Sigma|$ is the determinant of the covariance.
+$$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$$
+
+Here $n$ is the dimension of $x$ and $|\Sigma|$ is the determinant of the covariance. The exponent is minus half the squared Mahalanobis distance of §6, so the density is highest at $x = \mu$ and falls off along ellipsoids shaped by $\Sigma$; the prefactor is whatever makes the integral equal 1. Then $E[x] = \mu$ and $\text{Cov}(x) = \Sigma$, so the two parameters are the mean and covariance. For $n = 1$ it reduces to the table entry of §2. *Example:* the standard normal $\mathcal{N}(0, 1)$ has density $0.399$ at its peak, while $\mathcal{N}(0, 0.1^2)$ has $3.99$, a density above 1, as §2 allowed.
 
 Three **closure** properties make the Gaussian the workhorse — "closure" meaning the answer
 is still a Gaussian, so **affine** operations never leave the family:
@@ -139,8 +190,9 @@ is still a Gaussian, so **affine** operations never leave the family:
    — the conditional mean is a *linear* correction weighted by covariance-to-variance.
    Memorize the shape of this formula: it *is* the Kalman gain.
 
-Also: the CLT says the centred, $\sqrt N$-scaled sum of many i.i.d. effects *of finite variance* → Gaussian (it fails without finite variance, e.g. Cauchy), which is why noise models
-default to it; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (the continuous-variable analogue of the entropy in [[02-foundations/information-theory|5. Information Theory §1]], computed from a density rather than probabilities, so unlike discrete entropy it can be negative) (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
+Also: the **central limit theorem (CLT)** is a limit statement with three named hypotheses: $X_1, \dots, X_N$ are i.i.d. (§2), with mean $\mu$, and with *finite* variance $\sigma^2$. Then the standardized sample mean $\bar X_N = \frac1N \sum_i X_i$ converges in distribution to a standard normal:
+$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad \text{as } N \to \infty$$
+"Converges in distribution" means the CDFs converge, so probabilities about $\bar X_N$ can be read off a Gaussian with mean $\mu$ and standard deviation $\sigma/\sqrt N$. *Example:* the mean of 30 dice has standard deviation $\sqrt{35/12}/\sqrt{30} = 0.312$, and the Gaussian approximation gives $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$ against an exact $0.88$. *Non-example:* it fails without finite variance; the mean of $N$ standard Cauchy samples is again standard Cauchy for every $N$, so averaging never narrows it. The CLT is why noise models default to the Gaussian; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (the continuous-variable analogue of the entropy in [[02-foundations/information-theory|5. Information Theory §1]], computed from a density rather than probabilities, so unlike discrete entropy it can be negative) (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="the Gaussian: one shape, width set by sigma, area always one">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
@@ -168,7 +220,9 @@ For sensor fusion, the conditioning formula says: start from the expected value 
 
 ### 4. Estimation — where loss functions come from
 
-- **MLE**: $\hat\theta = \arg\max_\theta \sum_i \log p(x_i|\theta)$.
+- **MLE** (maximum likelihood estimation) is an *estimator*: a rule that turns data into a parameter value. It has two ingredients. The **likelihood** $L(\theta) = p(x_1, \dots, x_N \mid \theta)$ is the probability (or density) of the observed data, read as a function of the parameter $\theta$ with the data held fixed; for i.i.d. data (§2) it is a product. The **MLE** is the parameter that makes the observed data most probable:
+  $$\hat\theta_{\text{MLE}} = \arg\max_\theta \prod_{i=1}^N p(x_i \mid \theta) = \arg\max_\theta \sum_{i=1}^N \log p(x_i|\theta)$$
+  The log changes nothing about where the maximum is, because $\log$ is increasing, but it turns the product into a sum that does not underflow and differentiates term by term. The likelihood is not a distribution over $\theta$; it need not integrate to 1 in $\theta$.
   Worked example (Gaussian mean): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{const}$ ⇒
   maximizing likelihood ≡ minimizing squared error; $\hat\mu = \bar{x}$.
   **With actual data:** five distance readings $2.1, 1.9, 2.4, 1.6, 2.0$ m of one wall.
@@ -180,15 +234,23 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   would jump to $3.38$ and the median would not move at all). *Many likelihood-based losses
   encode a noise or observation-model assumption; not every learning objective is a likelihood.*
   **MSE regression is MLE under Gaussian noise of fixed variance; cross-entropy is MLE for categorical
-  outputs.** Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
+  outputs.** (Cross-entropy is defined in [[02-foundations/information-theory|5. Information Theory §2]].) Many pretraining objectives in [[01-canonical-papers/canonical-list|the paper list]]
   are MLE or a bound on one ([[01-canonical-papers/notes/6-diffusion/vae|ELBO]]) —
   though not all: contrastive and some self-supervised objectives are not simple MLE.
-- **MAP**: add $\log p(\theta)$. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss (the loss is the negative log-posterior, because we minimize a loss but maximize a posterior, so the sign flips) — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
+- **MAP** (maximum a posteriori) estimation is MLE with a **prior** $p(\theta)$ added: it picks the mode of the posterior from Bayes' rule (§1),
+  $$\hat\theta_{\text{MAP}} = \arg\max_\theta \Big[\sum_{i=1}^N \log p(x_i \mid \theta) + \log p(\theta)\Big]$$
+  since $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$ and the evidence $p(x)$ does not depend on $\theta$. *Example:* the five wall readings above, with Gaussian noise $\sigma = 0.3$ m and a prior $\mu \sim \mathcal{N}(0, 1^2)$. Setting the derivative of $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$ to zero gives $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m, pulled slightly from the MLE's $2.0$ toward the prior mean 0. With more data the pull fades, because $N$ grows while $\sigma^2$ stays fixed. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss (the loss is the negative log-posterior, because we minimize a loss but maximize a posterior, so the sign flips) — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
   weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
 - Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
   **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
   "our estimator is unbiased but high-variance" in RL papers
-  ([[02-foundations/rl-basics|policy gradients]]).
+  ([[02-foundations/rl-basics|policy gradients]]). For an estimator $\hat\theta$ of a true value $\theta$, where the expectation is over random datasets, so both quantities describe the estimator's behaviour across many possible datasets rather than on yours:
+  $$\text{Bias}(\hat\theta) = E[\hat\theta] - \theta, \qquad \text{Var}(\hat\theta) = E\big[(\hat\theta - E[\hat\theta])^2\big]$$
+  An estimator is **unbiased** when its bias is 0 for every $\theta$. The two combine into the mean squared error,
+  $$E\big[(\hat\theta - \theta)^2\big] = \text{Bias}(\hat\theta)^2 + \text{Var}(\hat\theta)$$
+  because the cross term $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$ is zero. So a biased estimator can still win if it removes more variance than it adds bias squared, which is exactly what MAP shrinkage and weight decay bet on.
+  - *Example:* the sample mean $\bar x$ is unbiased for $\mu$, with variance $\sigma^2/N$.
+  - *Non-example:* the variance estimate $\frac1N\sum_i (x_i - \bar x)^2$ is biased, with $E = \frac{N-1}{N}\sigma^2$. For $N = 2$ rolls of a die, averaging over all 36 outcomes gives $1.46$ against the true $2.92$, exactly half. Dividing by $N - 1$ instead removes the bias, which is why sample standard deviations such as $s_d$ in §6 divide by $n-1$.
 
 ### 5. Random processes and the Kalman filter
 
@@ -200,13 +262,26 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   analysis, [[02-foundations/signal-processing|signal processing]]).
   **White noise**: uncorrelated samples, flat spectrum — the default disturbance model and
   the $\epsilon$ of [[01-canonical-papers/notes/6-diffusion/ddpm|diffusion]].
+  The same three ideas, written out:
+  - A **random process** $\{x(t) : t \in \mathcal{T}\}$ assigns a random variable to every index $t$ (time steps, or continuous time). One run of it is a *sample path*. Its **mean function** is $m(t) = E[x(t)]$ and its **autocorrelation function** is
+  $$R_x(t, \tau) = E\big[x(t)\,x(t+\tau)\big]$$
+  where $t$ is the moment you look and $\tau$ the lag, so $R_x(t, 0) = E[x(t)^2]$ is the power at time $t$. (Subtracting the means first gives the *autocovariance*; for a zero-mean process the two coincide.)
+  - **WSS** requires **three** conditions: a constant mean, an autocorrelation that depends only on the lag, and finite power.
+  $$E[x(t)] = m \;\;\forall t, \qquad R_x(t, \tau) = R_x(\tau) \;\;\forall t, \qquad E[x(t)^2] < \infty$$
+  These are what make a power spectrum well defined, since the spectrum is the Fourier transform of $R_x(\tau)$ (the Wiener–Khinchin theorem), and a transform needs one function of $\tau$ rather than one per $t$. *Example:* $x(t) = A\cos(\omega t + \Phi)$ with $\Phi$ uniform on $[0, 2\pi)$ has mean 0 and $R_x(\tau) = \tfrac{A^2}{2}\cos(\omega\tau)$ for every $t$, so it is WSS (for $A = 2$, $\omega = 1$, $\tau = 0.7$, a 2-million-sample simulation gives $1.528$ against $1.530$). *Non-example:* a random walk $x_t = \sum_{k \le t} \epsilon_k$ with unit-variance steps has $\text{Var}(x_t) = t$, so its spread grows with time (standard deviation 10 after 100 steps) and it is not WSS. *Strict-sense* stationarity asks more: the whole joint distribution, not just two moments, must be shift-invariant.
+  - **White noise** is a zero-mean WSS process whose samples at different times are uncorrelated, with variance $\sigma^2$:
+  $$E[w(t)] = 0, \qquad R_w(\tau) = \sigma^2\,\delta(\tau)$$
+  so its spectrum is the constant $\sigma^2$ at every frequency, which is the "flat spectrum" above. Here $\delta$ is the Kronecker delta for a discrete index (1 at $\tau = 0$, else 0) or the Dirac delta in continuous time. *Gaussian* white noise adds that each sample is Gaussian, and then uncorrelated means independent. *Non-example:* the random walk above is built from white noise but is not white, since neighbouring values share almost all their steps.
 - **Markov property**: future ⟂ past | present. The modeling assumption of MDPs
   ([[02-foundations/rl-basics|RL]]), world models, and diffusion chains.
+  Written out, a process $x_0, x_1, \dots$ has the Markov property when the distribution of the next state, given the entire history, depends only on the current state:
+  $$p(x_{t+1} \mid x_t, x_{t-1}, \dots, x_0) = p(x_{t+1} \mid x_t)$$
+  This is conditional independence (§1) of the future and the past given the present. It lets the joint distribution factor as $p(x_0)\prod_t p(x_{t+1} \mid x_t)$, so the model needs only one transition rule. *Example:* the random walk above, since $x_{t+1} = x_t + \epsilon_{t+1}$ uses nothing older than $x_t$. *Non-example:* $x_{t+1} = x_t - 0.5\,x_{t-1} + \epsilon_{t+1}$ needs two past values; it becomes Markov again if you define the state as the pair $(x_t, x_{t-1})$, which is how position-only robot models are made Markov by adding velocity to the state. §7 builds the finite-state version.
 - **Kalman filter, assembled from this page**: model
   $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$ with Gaussian $w_t \sim \mathcal{N}(0,Q)$,
   $v_t \sim \mathcal{N}(0,R)$, white, independent of each other and of a Gaussian initial state $x_0$.
   - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
-    the **estimate covariance** (uncertainty of $\hat x$) and $Q$ the process-noise covariance.
+    the **estimate covariance** (uncertainty of $\hat x$), $P = E[(x - \hat x)(x - \hat x)^\top]$, and $Q$ the process-noise covariance.
   - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
   Nothing new was needed: affine closure + conditioning formula = the optimal (minimum mean-square error) recursive
@@ -234,7 +309,7 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 ### 6. Detection, hypothesis tests, and whitening
 
-- **Detection is a decision, not an estimate.** Often a robot must choose between two explanations of a reading $y$: $H_0$ (nothing there, e.g. no contact) or $H_1$ (something there, e.g. contact). There are two ways to be wrong. A **false alarm** says $H_1$ when $H_0$ is true (probability $P_{FA}$). A **miss** says $H_0$ when $H_1$ is true (probability $1 - P_D$, where $P_D$ is the detection probability). The rules below all compare one statistic, the likelihood ratio, against a threshold:
+- **Detection is a decision, not an estimate.** Often a robot must choose between two explanations of a reading $y$: $H_0$ (nothing there, e.g. no contact) or $H_1$ (something there, e.g. contact). There are two ways to be wrong. A **false alarm** says $H_1$ when $H_0$ is true (probability $P_{FA}$). A **miss** says $H_0$ when $H_1$ is true (probability $1 - P_D$, where $P_D$ is the detection probability). Statistics names the same two errors **type I** (false alarm, rate $P_{FA}$) and **type II** (miss, rate $1 - P_D$), and calls $P_D$ the **power** of the test. The rules below all compare one statistic, the likelihood ratio, against a threshold:
   $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
   Only the threshold $\eta$ differs between rules, because the ratio already carries everything the reading says about which hypothesis produced it.
   - **MAP rule** (fewest total errors): $\eta = P(H_0)/P(H_1)$. This is Bayes' rule from §1 applied to two hypotheses, so a rare event needs stronger evidence before you declare it.
@@ -250,7 +325,9 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 >
 > Cutting false alarms tenfold (0.106 → 0.01) cost more than a third of the detections (0.894 → 0.569). Moving the threshold only slides you along one ROC curve. A better sensor, meaning a larger offset relative to the noise ($1.0/0.4 = 2.5$ here), lifts the whole curve.
 
-- **A hypothesis test is detection applied to a claim.** $H_0$ is the "nothing is going on" story (method B is no better than A). The test statistic plays the role of $y$, and the significance level $\alpha$ is the false-alarm rate you accept. The **p-value** is the probability, *computed assuming $H_0$ is true*, of a statistic at least as extreme as the one observed. Three misreadings to catch in papers:
+- **A hypothesis test is detection applied to a claim.** $H_0$ is the "nothing is going on" story (method B is no better than A). The test statistic plays the role of $y$, and the significance level $\alpha$ is the false-alarm rate you accept. The **p-value** is the probability, *computed assuming $H_0$ is true*, of a statistic at least as extreme as the one observed. For a statistic $T$ with observed value $t_{\text{obs}}$, where large values count as extreme,
+  $$p = P\big(T \ge t_{\text{obs}} \mid H_0\big) \quad\text{(one-sided)}, \qquad p = P\big(|T| \ge |t_{\text{obs}}| \mid H_0\big) \quad\text{(two-sided)}$$
+  and you reject $H_0$ when $p \le \alpha$. That rule has false-alarm rate exactly $\alpha$, because under $H_0$ the event $p \le \alpha$ has probability $\alpha$ (for a continuous statistic). The sign test below is a worked instance. Three misreadings to catch in papers:
   1. It is **not** $P(H_0 \mid \text{data})$. That needs a prior, exactly as in the crack example of §1.
   2. It is **not** the size of the effect. A negligible improvement measured over enough trials still gets a tiny p.
   3. $p > 0.05$ is **not** evidence of no difference. With few trials the test may simply be unable to see one.
@@ -259,7 +336,9 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
   - The **sign test** only counts who won each pair. A **permutation test** randomly flips the signs of the $d_i$ to build the null distribution. Neither needs normality.
   - *Example:* B beats A on 9 of 10 objects, with no ties. Under $H_0$ each win is a fair coin flip, so the two-sided sign test gives $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$.
   - A **bootstrap CI** resamples the $n$ differences with replacement thousands of times and reports the 2.5th and 97.5th percentiles of the resampled mean. For how many trials to run and which interval to report, see [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
-- **Multiple comparisons.** Twenty independent tests of true nulls at $\alpha = 0.05$ give at least one "significant" result with probability $1 - 0.95^{20} = 0.64$. So divide $\alpha$ by the number of tests (Bonferroni: $0.05/20 = 0.0025$), or predeclare the one comparison that matters.
+- **Multiple comparisons.** Twenty independent tests of true nulls at $\alpha = 0.05$ give at least one "significant" result with probability $1 - 0.95^{20} = 0.64$. So divide $\alpha$ by the number of tests (Bonferroni: $0.05/20 = 0.0025$), or predeclare the one comparison that matters. The quantity being controlled is the **family-wise error rate** (FWER), the probability of at least one false alarm among $m$ tests. The **Bonferroni correction** tests each at $\alpha/m$, and
+  $$\text{FWER} = P\Big(\bigcup_{i=1}^m \{\text{test } i \text{ falsely rejects}\}\Big) \le \sum_{i=1}^m \frac{\alpha}{m} = \alpha$$
+  holds since the probability of a union never exceeds the sum of the probabilities (§1), whether or not the tests are independent. For the twenty independent tests at $0.0025$ each, the FWER is $1 - 0.9975^{20} = 0.049$, just under $0.05$.
 
 **Choosing the test.** Two questions pick the row and the column: what number each trial produces, and whether both methods ran on the same trials (same objects, seeds, scenes or start states). In robot and ML experiments pairing is the usual case, and an unpaired test on paired data throws away the cancellation described above.
 
@@ -274,6 +353,9 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 - **McNemar is the sign test above, applied to discordant pairs.** A pair where both succeed or both fail says nothing about which method is better. So under $H_0$ each of the $m$ pairs where they disagree is a fair coin flip.
 - **Many seeds or tasks.** Agarwal et al. (NeurIPS 2021) showed that point estimates from the few runs per task common in deep RL can mislead. Their fix is the **stratified bootstrap**: resample runs with replacement separately within each task, recompute the aggregate score (they favour the interquartile mean over the mean or median), repeat, and read off percentiles.
+- **A confidence interval (CI)** is a *procedure*, not a single interval: a rule that maps a dataset to an interval $[L, U]$ such that, over repeated datasets drawn from the same process, the interval covers the true parameter $\theta$ with the stated probability (the **coverage** $1 - \alpha$):
+  $$P\big(L(\text{data}) \le \theta \le U(\text{data})\big) = 1 - \alpha$$
+  Here $L$ and $U$ are random because the data are, and $\theta$ is fixed. *Example:* for $n$ roughly Gaussian readings, $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$ is a 95% CI. The five wall readings of §4 have $\bar x = 2.0$, $s = 0.292$ and $t_{4,\,0.975} = 2.776$, so the interval is $2.0 \pm 0.362 = [1.64, 2.36]$ m. *Non-example:* "there is a 95% probability that $\theta$ lies in $[1.64, 2.36]$" is not what the frequentist CI says; once computed, that interval either covers $\theta$ or not. The 95% is a property of the procedure, and a probability statement about $\theta$ itself needs a prior, as in §1.
 - **Effect size comes first.** Report the difference with its CI, then the p-value. The CI shows both whether zero is plausible and how large the gain could be; $p$ alone shows neither size (misreading 2 above). How many trials to run and which binomial interval to use are in [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
 
 > [!example] Worked example · 계산 예제
@@ -305,11 +387,26 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 ### 7. Markov chains and hidden Markov models
 
 - **A finite Markov chain** is a state $X_n \in \{1,\dots,S\}$ that jumps with fixed probabilities $P_{ij} = P(X_{n+1}=j \mid X_n = i)$. Convention on this page: **rows are "from" and columns are "to"**, so each row of $P$ sums to 1 (row-stochastic) and distributions are row vectors. By total probability $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, that is $\pi_{n+1} = \pi_n P$, and so $\pi_n = \pi_0 P^n$.
+  A finite Markov chain is therefore fully specified by **four** named components:
+  - a **state space** $\{1, \dots, S\}$;
+  - a **transition matrix** $P$ whose entries are probabilities and whose rows each sum to 1,
+  $$P_{ij} \ge 0, \qquad \sum_{j=1}^S P_{ij} = 1 \;\text{ for every } i$$
+  since from state $i$ the chain must go somewhere;
+  - an **initial distribution** $\pi_0$, a row vector with $\sum_i \pi_0(i) = 1$;
+  - the **Markov property** of §5, $P(X_{n+1} = j \mid X_n = i, X_{n-1}, \dots, X_0) = P_{ij}$, with the same $P$ at every step (*time-homogeneous*).
+
+  Then the probability of any path is a product, $P(X_0 = i_0, \dots, X_n = i_n) = \pi_0(i_0)\,P_{i_0 i_1}\cdots P_{i_{n-1} i_n}$. *Non-example:* a matrix with a row $(0.5, 0.6)$ is not a transition matrix, because that row sums to 1.1.
 - **Stationary distribution.**
   $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
   A distribution that satisfies this is unchanged by one more step, so it is where the chain settles if it settles at all.
-  - For a finite chain, **irreducible** (every state can reach every other) plus **aperiodic** (no forced cycle such as "odd steps in A, even steps in B") guarantees exactly one such $\pi$, and $\pi_n \to \pi$ from any start. Then $\pi_i$ is also the long-run fraction of time spent in state $i$.
-  - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually total variation distance, the largest difference the two distributions assign to any single event), starting from the worst initial state.
+  - For a finite chain, **irreducible** (every state can reach every other) plus **aperiodic** (no forced cycle such as "odd steps in A, even steps in B") guarantees exactly one such $\pi$, and $\pi_n \to \pi$ from any start. Then $\pi_i$ is also the long-run fraction of time spent in state $i$. In symbols, with $(P^n)_{ij}$ the probability of going from $i$ to $j$ in exactly $n$ steps and $\gcd$ the greatest common divisor:
+  $$\text{irreducible: } \forall i, j\ \exists n \ge 1 \text{ with } (P^n)_{ij} > 0; \qquad \text{period } d(i) = \gcd\{n \ge 1 : (P^n)_{ii} > 0\}, \;\text{aperiodic: } d(i) = 1 \;\forall i$$
+    A self-loop ($P_{ii} > 0$) puts $n = 1$ in the set and so forces $d(i) = 1$.
+    - *Non-example, periodic:* $P = \begin{pmatrix}0&1\\1&0\end{pmatrix}$ is irreducible with period 2. It has the stationary distribution $(\tfrac12, \tfrac12)$, but from $\pi_0 = (1, 0)$ it alternates $(1,0), (0,1), (1,0), \dots$ and never converges.
+    - *Non-example, reducible:* $P = I$ (every state stays put forever). Every distribution satisfies $\pi P = \pi$, so the stationary distribution is not unique.
+  - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually total variation distance, the largest difference the two distributions assign to any single event), starting from the worst initial state. In symbols, with $e_i$ the distribution that starts surely in state $i$:
+  $$\|\mu - \nu\|_{TV} = \max_{A} |\mu(A) - \nu(A)| = \tfrac12 \sum_j |\mu_j - \nu_j|, \qquad t_{\text{mix}}(\varepsilon) = \min\big\{n : \max_i \|e_i P^n - \pi\|_{TV} \le \varepsilon\big\}$$
+    The two TV formulas agree because the maximizing event $A$ is the set of states where $\mu_j > \nu_j$. For the machine chain in the example below, starting from "broken" is the worst case, with distance $0.257$ after one hour, $0.034$ after three and $0.0037$ after five, so $t_{\text{mix}}(0.01) = 5$ hours.
 - **Why it matters here.** *MCMC* runs the idea in reverse: design a chain whose stationary distribution is the posterior you cannot sample directly, run it past its mixing time, and use its states as samples. The *forward noising process* of [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$, is a Markov chain on images whose distribution approaches $\mathcal{N}(0, I)$; the learned model runs the chain backwards.
 
 > [!example] Worked example · 계산 예제
@@ -321,7 +418,9 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 >
 > Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$ ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), here $0.3$. The reason: $\pi$ is the part of $\pi_n$ with eigenvalue 1, and the gap $\pi_n - \pi$ is made of the other eigen-directions, each multiplied by its eigenvalue (here $0.3$ and $0.2$) at every step, so the largest of them sets the decay. The gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
 
-- **Hidden Markov model (HMM).** The chain $X_t$ is not observed. At each step the current state $j$ emits an observation $y_t$ with probability $B_j(y_t) = p(y_t \mid X_t = j)$. Two questions, each answered by a pass over a $T \times S$ table:
+- **Hidden Markov model (HMM).** The chain $X_t$ is not observed. At each step the current state $j$ emits an observation $y_t$ with probability $B_j(y_t) = p(y_t \mid X_t = j)$. An HMM is specified by **three** parameter sets on top of a hidden state space: the initial distribution $\pi_0$, the transition matrix $P$, and the emission probabilities $B$. It rests on **two** assumptions: the hidden states form a Markov chain, and each observation depends only on the current hidden state. Together they make the joint probability of a state path and an observation sequence a product:
+  $$p(x_{1:T}, y_{1:T}) = \pi_0(x_1)\,B_{x_1}(y_1) \prod_{t=2}^{T} P_{x_{t-1} x_t}\,B_{x_t}(y_t)$$
+  so each factor is one arrow of the model, either a transition or an emission. *Example (the machine in the code below):* the path "working, working" with readings "quiet, quiet" has probability $0.9 \times 0.8 \times 0.95 \times 0.8 = 0.547$. Two questions, each answered by a pass over a $T \times S$ table:
   - **Filtering: where is it now?** The **forward algorithm** carries $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$:
     $$\alpha_t(j) \propto B_j(y_t)\,\textstyle\sum_i \alpha_{t-1}(i)\,P_{ij}$$
     The sum is the predict step and the multiplication is the correct step, so this is the Bayes filter of [[04-robotics/state-estimation-slam|State Estimation §4]] with the integral replaced by a sum. Normalize at every step so the numbers do not underflow.
@@ -368,7 +467,7 @@ Metropolis–Hastings is the MCMC of the "Why it matters" bullet made concrete: 
   This holds since, for $x' \ne x$, both sides equal $\min\big(p(x)\,q(x' \mid x),\ p(x')\,q(x \mid x')\big)$. Sum both sides over $x$: the right side becomes $p(x')$ because $T(x' \to \cdot)$ sums to 1, so $\sum_x p(x)T(x \to x') = p(x')$. That is $\pi P = \pi$ from above with $\pi = p$ (integrals replace sums for continuous $x$). Detailed balance only makes $p$ stationary; convergence to it from any start still needs the irreducible-and-aperiodic condition.
 - **Burn-in.** Early states reflect the starting point rather than $p$, so discard them.
 - **Autocorrelation.** Consecutive states are correlated, because each is a small move from the previous state or a repeat of it.
-- **Effective sample size (ESS).** $N$ correlated samples estimate a mean as well as $N/\tau$ independent ones, where $\tau = 1 + 2\sum_{k\ge 1}\rho_k$ sums the autocorrelations $\rho_k$ at lag $k$. Read $\tau$ as the number of steps per independent sample's worth of information: each state partly repeats its neighbours on both sides, hence the factor 2. If $\rho_k = 0.9^k$, then $\sum_{k\ge1} 0.9^k = 9$ and $\tau = 19$.
+- **Effective sample size (ESS).** $N$ correlated samples estimate a mean as well as $N/\tau$ independent ones, where $\tau = 1 + 2\sum_{k\ge 1}\rho_k$ sums the autocorrelations $\rho_k$ at lag $k$. Here $\rho_k = \text{Cov}(x_n, x_{n+k})/\text{Var}(x_n)$ is the §5 autocorrelation of the (stationary) chain after subtracting the mean and dividing by the variance, so $\rho_0 = 1$. Read $\tau$ as the number of steps per independent sample's worth of information: each state partly repeats its neighbours on both sides, hence the factor 2. If $\rho_k = 0.9^k$, then $\sum_{k\ge1} 0.9^k = 9$ and $\tau = 19$.
 - **Proposal width.** Too narrow and nearly every move is accepted but barely goes anywhere; too wide and most proposals land where $p$ is tiny and get rejected. Either way ESS collapses, so tune the width by ESS rather than by acceptance rate.
 
 Target: $\tilde p(x) = x^2 e^{-x}$ on $x > 0$, an unnormalized Gamma(3, 1) whose mean and variance are both 3. The chain deliberately starts far out at $x_0 = 20$. It works in log space for the same underflow reason as Viterbi.
@@ -451,9 +550,21 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 ### 1. 핵심 언어
 
-- 공리: $P(\Omega)=1$, $P(A)\ge 0$, 서로소 사건의 가산성. 나머지는 이 위의 장부 정리다.
-- **조건화** $P(A|B) = P(A\cap B)/P(B)$는 증거를 본 뒤 세계를 재가중한다.
-  연쇄 법칙: $P(A,B) = P(A|B)P(B)$.
+- **확률 공간은** 이 페이지의 모든 명제가 사는 대상이고, 이름 붙은 세 부분으로 이루어진다. **표본 공간** $\Omega$는 가능한 모든 결과의 집합이다(주사위 하나면 $\{1,\dots,6\}$). **사건** $A \subseteq \Omega$는 물어볼 수 있는 결과들의 집합이다("짝수"는 $\{2,4,6\}$; 집합 표기는 [[02-foundations/engineering-math|0.5 §10]]). **확률 측도** $P$는 각 사건에 수 하나를 배정한다. $P$는 세 가지 **콜모고로프 공리를** 만족해야 한다:
+  - **비음수성**: 어떤 사건도 음의 확률을 갖지 않으므로 모든 $P(A)$는 0 이상이다.
+  $$P(A) \ge 0$$
+  - **정규화**: $\Omega$ 안의 무언가는 반드시 일어난다.
+  $$P(\Omega) = 1$$
+  - **가산 가법성**: 서로소인 사건들 $A_1, A_2, \dots$($i \ne j$이면 $A_i \cap A_j = \emptyset$, 즉 어떤 결과도 두 번 세지 않는다)의 합집합의 확률은 각 확률의 합이다.
+  $$P\Big(\bigcup_i A_i\Big) = \sum_i P(A_i)$$
+  아래의 모든 규칙이 이 셋에서 유도되므로, 나머지는 이 위의 장부 정리다. 예를 들어 $P(\emptyset) = 0$, $P(A^c) = 1 - P(A)$($\Omega$를 $A$와 여사건 $A^c$로 나눈다)이고, 겹치는 사건이면 겹친 부분을 두 번 세게 되므로 $P(A \cup B) = P(A) + P(B) - P(A \cap B)$다. 공정한 주사위에서 $A$ = 짝수, $B = \{4,5,6\}$이면 $P(A \cup B) = \tfrac12 + \tfrac12 - \tfrac13 = \tfrac23$이고, $\{2,4,5,6\}$을 직접 세어도 같다. *반례:* "$P(\text{짝수}) = 0.5$, $P(\text{홀수}) = 0.6$"은 공리를 어긴다. 두 사건은 서로소이고 합집합이 $\Omega$이므로 확률의 합이 정확히 1이어야 하기 때문이다.
+- $B$가 주어졌을 때 $A$의 **조건부 확률은** $B$가 일어났음을 안 뒤의 $A$의 확률이며, $P(B) > 0$일 때 다음처럼 정의한다:
+  $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+  $A \cap B$는 "둘 다 일어남"이고 $P(B)$로 나누는 것은 재정규화다. 그래서 $B$ 안의 결과들의 확률이 다시 합 1이 된다. 증거를 본 뒤 세계를 재가중하는 연산이다. *예:* 공정한 주사위가 짝수를 보였다면 $P(\text{6} \mid \text{짝수}) = \tfrac{1/6}{1/2} = \tfrac13$이다.
+  - **연쇄 법칙**(정의를 옮겨 쓴 것): $P(A,B) = P(A|B)P(B)$이고, 사건 $n$개면 $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
+  - **전확률 법칙**: $B_1, \dots, B_k$가 $\Omega$를 분할하면(서로소이고 전체를 덮으면)
+  $$P(A) = \sum_{i=1}^k P(A \mid B_i)\,P(B_i)$$
+  $A$가 서로소 조각 $A \cap B_i$들로 나뉘고 각 조각을 연쇄 법칙이 주기 때문이다. 아래 베이즈 정리의 분모가 이것이다: 균열 예제에서 $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$.
 - **베이즈 정리.** 위의 연쇄 법칙은 결합 확률을 두 순서로 분해할 수 있다 —
   $P(\theta, x) = P(\theta|x)P(x)$와 $P(\theta, x) = P(x|\theta)P(\theta)$ — 둘 다 같은 결합
   확률이므로 서로 같다고 놓고 $P(x)$로 나누면 끝이다. 유도가 이게 전부다:
@@ -517,15 +628,33 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   </g>
 </svg>
 
-- 독립 $P(A,B) = P(A)P(B)$ vs 조건부 독립 $P(A,B|C) = P(A|C)P(B|C)$ — 그래프 모델,
-  나이브 베이즈, 마르코프 성질이 공유하는 인수분해 가정.
+- **독립은** 두 사건(또는 확률변수)의 성질이다: 하나를 알아도 다른 하나의 확률이 바뀌지 않는다. 정의 조건은 결합 확률이 인수분해되는 것이다.
+  $$P(A \cap B) = P(A)\,P(B)$$
+  $P(B) > 0$이면 양변을 $P(B)$로 나눠 $P(A \mid B) = P(A)$와 동치다. 확률변수라면 모든 값 쌍에서 $p(x,y) = p(x)\,p(y)$가 성립해야 한다.
+  $C$가 주어졌을 때 $A$와 $B$의 **조건부 독립은** $C$가 일어난 세계 안에서의 같은 인수분해다:
+  $$P(A \cap B \mid C) = P(A \mid C)\,P(B \mid C)$$
+  - *예:* 공정한 주사위 둘, $A$ = 첫째가 6, $B$ = 둘째가 짝수. $P(A \cap B) = \tfrac{3}{36} = \tfrac{1}{12} = \tfrac16 \cdot \tfrac12$이므로 독립이다.
+  - *반례:* $A$ = 첫째가 6, $C$ = 합이 10 이상. $P(C) = \tfrac{6}{36} = \tfrac16$이지만 $P(A \cap C) = \tfrac{3}{36} = \tfrac{1}{12} \ne P(A)P(C) = \tfrac{1}{36}$이다: 첫째가 6이면 큰 합이 더 그럴듯해진다.
+  - *두 개념은 서로를 함의하지 않는다.* 독립인 공정한 동전 둘도 $C$ = "둘이 같다"를 들으면 종속이 된다: $P(\text{둘 다 앞} \mid C) = \tfrac12$이지만 $P(\text{첫째 앞} \mid C)\,P(\text{둘째 앞} \mid C) = \tfrac14$이다.
+
+  각 인수분해가 큰 결합 분포를 작은 조각들의 곱으로 저장하게 해 주므로, 이것들이 그래프 모델, 나이브 베이즈, 마르코프 성질(§5)이 공유하는 가정이다.
 
 ### 2. 확률변수와 기댓값
 
-- **PMF**(확률질량함수 — 이산: $p(x)$가 곧 $x$의 확률),
-  **PDF**(확률밀도함수 — 연속: $p(x)$는 *밀도*라서 구간에 대한 $\int p\,dx$만이 확률이고,
-  $p(x)$ 자체는 1을 넘을 수도 있다),
-  **CDF**(누적: $F(x) = P(X \le x)$). 그 위에서 $E[g(X)] = \int g(x)p(x)dx$.
+- **확률변수** $X$는 결과를 수로 보내는 함수 $X : \Omega \to \mathbb{R}$다. "무슨 일이 일어났나"를 더하고 평균 낼 수 있는 양으로 바꾼다. *예:* 주사위 둘을 굴리면 $\Omega$는 순서쌍 36개이고, $X$ = 합은 $(2,5) \mapsto 7$로 보낸다. 확률벡터는 같은 일을 $\mathbb{R}^n$으로 한다. 그 **분포는** 다음 세 함수 중 하나로 기술한다:
+  - **PMF**(확률질량함수), 이산 $X$용: $p(x)$가 곧 값 $x$의 확률이다. 두 조건은 $p(x) \ge 0$과
+  $$p(x) = P(X = x), \qquad \sum_x p(x) = 1$$
+  이다. 사건 $\{X = x\}$들이 서로소이고 $\Omega$를 덮으므로 공리가 합을 1로 강제하기 때문이다. *예:* 공정한 주사위 하나는 $x = 1,\dots,6$에서 $p(x) = \tfrac16$.
+  - **PDF**(확률밀도함수), 연속 $X$용: $p(x)$는 *밀도*라서 구간에 대한 적분만이 확률이다. 조건은 $p(x) \ge 0$과
+  $$P(a \le X \le b) = \int_a^b p(x)\,dx, \qquad \int_{-\infty}^{\infty} p(x)\,dx = 1$$
+  이므로 한 점의 확률은 0이고 $p(x)$ 자체는 1을 넘을 수도 있다. *예:* $[0, 0.5]$ 위의 균등 분포는 거기서 $p(x) = 2$인데도 $P(0.1 \le X \le 0.3) = 0.2 \times 2 = 0.4$다.
+  - **CDF**(누적분포함수), 모든 $X$용: $F(x) = P(X \le x)$. 감소하지 않고, $F(-\infty) = 0$에서 $F(\infty) = 1$까지 가며, 연속 $X$에서는 PDF의 적분이므로 $p(x) = F'(x)$다. *예:* 공정한 주사위 하나는 $F(2.5) = P(X \le 2) = \tfrac13$.
+- **기댓값은** $X$의 함수를 확률로 가중해 평균 낸 값이다(손 계산은 [[02-foundations/engineering-math|0.5 §3]]):
+  $$E[g(X)] = \sum_x g(x)\,p(x) \quad\text{(이산)}, \qquad E[g(X)] = \int g(x)\,p(x)\,dx \quad\text{(연속)}$$
+  각 값 $g(x)$를 그 값이 나올 가능성으로 가중하므로, 공정한 주사위 하나는 $E[X] = \tfrac{1+2+\cdots+6}{6} = 3.5$다.
+- **i.i.d.**(독립이고 동일하게 분포된)는 표본 $x_1, \dots, x_N$이 **두** 조건을 만족한다는 뜻이다: *독립*(결합 밀도가 인수분해됨)과 *동일 분포*(모든 인수가 같은 $p$):
+  $$p(x_1, \dots, x_N) = \prod_{i=1}^N p(x_i)$$
+  주사위 하나를 반복해 굴린 값은 i.i.d.다. *반례:* 표류하는 센서의 연속 측정값은 둘 다 아니다. 각 값이 직전 값에 의존하고 평균이 시간에 따라 변하기 때문이다. 아래의 모든 "표본 $N$개의 평균" 결과(CLT, 표준오차, MLE)가 i.i.d.를 가정하므로, 논문에서 가장 먼저 확인할 가정이다.
 - **선형성** $E[aX + bY] = aE[X] + bE[Y]$ — *독립이 필요 없다*; 증명에서 가장 많이 쓰는
   항등식. **그 단서가 왜 눈여겨볼 점인가:** 주사위 둘이면 $E[X_1 + X_2] = 3.5 + 3.5 = 7$이고,
   두 주사위가 붙어 있든 말든 그렇다. 분산은 *그렇지 않다*. 독립인 주사위 둘은
@@ -537,19 +666,42 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   서로 무관할 때만 더해진다. *독립인* 실행 $N$번을 평균 내면 평균의 표준오차가 $\sqrt N$배로 줄고
   상관된 실행 $N$번은 그렇지 않은 이유가 정확히 이것이다
   ([[02-foundations/ml-practice|9. ML 실무 §4]]).
-- 분산 $\text{Var}(X) = E[X^2] - E[X]^2$; 공분산 $\text{Cov}(X,Y) = E[XY] - E[X]E[Y]$;
-  벡터의 공분산 행렬 $\Sigma = E[(x-\mu)(x-\mu)^\top]$는 PSD다
-  ([[02-foundations/linear-algebra|선형대수]]).
-- **조건부 기댓값** $E[X|Y]$는 $Y$가 주어졌을 때 $X$의 평균제곱 최적 예측기 — 추정 이론이
-  끊임없이 이것을 계산하는 이유이자, 회귀가 근사하는 대상.
-- 이 위키를 떠받치는 분포들: **베르누이/카테고리**(분류 손실, 드롭아웃 마스크),
-  **가우시안**(아래), 포아송(사건 횟수), 지수(대기 시간).
+- **분산은** $X$가 자기 평균 $\mu = E[X]$에서 떨어진 거리의 제곱의 기댓값으로, 퍼짐의 척도다. 그 제곱근 $\sigma$가 **표준편차이고** 단위는 $X$와 같다:
+  $$\text{Var}(X) = E\big[(X - \mu)^2\big] = E[X^2] - E[X]^2$$
+  $E[2\mu X] = 2\mu^2$이므로 제곱을 전개하고 선형성을 쓰면 둘째 형태가 나온다.
+- **공분산은** 두 변수가 함께 움직이는지를 잰다: 평균의 같은 쪽에 있는 경향이면 양수, 반대쪽이면 음수다.
+  $$\text{Cov}(X,Y) = E\big[(X - E[X])(Y - E[Y])\big] = E[XY] - E[X]E[Y]$$
+  **상관계수** $\rho = \text{Cov}(X,Y)/(\sigma_X \sigma_Y)$는 이것을 $[-1, 1]$로 다시 스케일한다. 위 주사위 단서가 말한 것이 바로 이것인데, $\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$이기 때문이다. 묶인 주사위는 $\tfrac{35}{12} + \tfrac{35}{12} + 2 \cdot \tfrac{35}{12} = 11.67$이다.
+  - *예:* 주사위 하나 $X$와 $Y = 7 - X$(반대편 면). $\text{Cov}(X, Y) = -\tfrac{35}{12} = -2.92$이고 $\rho = -1$이다.
+  - *반례(공분산 0은 독립이 아니다):* $X$가 $\{-1, 0, 1\}$ 위에서 균등하고 $Y = X^2$. $\text{Cov}(X,Y) = E[X^3] - E[X]E[X^2] = 0 - 0 = 0$이지만 $Y$는 $X$의 함수다: $P(Y = 1 \mid X = 0) = 0$인데 $P(Y = 1) = \tfrac23$이다. 공분산은 선형적인 함께-움직임만 잡는다.
+- 평균이 $\mu$인 확률벡터 $x \in \mathbb{R}^n$의 **공분산 행렬은** 모든 쌍의 공분산 $\Sigma_{ij} = \text{Cov}(x_i, x_j)$를 모은 것이고, 대각에 분산이 온다:
+  $$\Sigma = E\big[(x-\mu)(x-\mu)^\top\big]$$
+  대칭이고 PSD다([[02-foundations/linear-algebra|1. 선형대수 §3]]). 고정된 벡터 $a$에 대해 $a^\top \Sigma a = \text{Var}(a^\top x) \ge 0$이기 때문이다. 주사위와 그 반대편 면이면 $\Sigma = \tfrac{35}{12}\begin{pmatrix}1&-1\\-1&1\end{pmatrix}$이고 특이행렬이다: 무작위성이 전부 한 직선 위에 있다.
+- **조건부 기댓값** $E[X \mid Y]$는 그 자체로 $Y$의 함수인 확률변수다: 각 값 $y$마다 조건부 분포 아래 $X$의 평균이다.
+  $$E[X \mid Y = y] = \sum_x x\,p(x \mid y) \quad\text{(또는 } \textstyle\int x\,p(x \mid y)\,dx\text{)}$$
+  정의적 성질은 $Y$로부터 $X$를 예측하는 **평균제곱 최적 예측기라는** 것이다: 모든 함수 $g$ 중 $E\big[(X - g(Y))^2\big]$는 $g(Y) = E[X \mid Y]$에서 가장 작다. 이것을 $Y$에 대해 평균 내면 원래 평균이 돌아온다, $E\big[E[X \mid Y]\big] = E[X]$(**반복 기댓값 법칙**).
+  - *예:* 주사위 둘, $S = X_1 + X_2$. 첫째 주사위를 알면 $E[S \mid X_1] = X_1 + 3.5$이므로 $E[S \mid X_1 = 2] = 5.5$다. 그 평균제곱오차는 $\text{Var}(X_2) = 2.92$로, 늘 $7$로 찍을 때의 $\text{Var}(S) = 5.83$의 절반이다.
+
+  추정 이론이 끊임없이 이것을 계산하는 이유이고(§5 칼만 필터의 $\hat x$가 그 하나다), 제곱 손실 회귀가 근사하는 대상이다.
+- **이 위키를 떠받치는 분포들.** 각각은 파라미터를 가진, 이름 붙은 PMF 또는 PDF 가족이다:
+
+| 이름 | PMF 또는 PDF | 평균, 분산 | 쓰임 |
+|---|---|---|---|
+| **베르누이**$(\theta)$ | $p(x) = \theta^x (1-\theta)^{1-x}$, $x \in \{0,1\}$ | $\theta$, $\theta(1-\theta)$ | 성공/실패, 드롭아웃 마스크 |
+| **카테고리**$(\pi_1..\pi_K)$ | $P(X = k) = \pi_k$, $\sum_k \pi_k = 1$ | (수가 아니라 라벨) | 분류 출력과 손실 |
+| **가우시안** $\mathcal{N}(\mu, \sigma^2)$ | $\frac{1}{\sqrt{2\pi\sigma^2}} e^{-(x-\mu)^2/(2\sigma^2)}$ | $\mu$, $\sigma^2$ | 잡음; §3 |
+| **포아송**$(\lambda)$ | $P(X = k) = \lambda^k e^{-\lambda}/k!$, $k = 0,1,\dots$ | $\lambda$, $\lambda$ | 구간당 독립 사건의 횟수 |
+| **지수**$(\lambda)$ | $p(x) = \lambda e^{-\lambda x}$, $x \ge 0$ | $1/\lambda$, $1/\lambda^2$ | 그런 사건이 다음에 일어날 때까지의 대기 시간 |
+
+  *예:* 평균 시간당 $\lambda = 2$번 미끄러지는 그리퍼가 한 시간 내내 미끄러지지 않을 확률은 $e^{-2} = 0.135$다. 고장이 시간당 $\lambda = 0.5$로 온다면 평균 대기는 2시간이고 $P(\text{대기} > 3\text{ h}) = e^{-1.5} = 0.223$이다. "시간 $t$ 동안 사건 없음"은 포아송 횟수 0이자 $t$보다 긴 지수 대기이므로, 두 가족은 같은 과정을 기술한다.
 
 ### 3. 가우시안 도구 상자 (가우시안이 로보틱스를 굴리는 이유)
 
-$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$
+**다변량 가우시안**(정규분포)은 정확히 **두** 파라미터, 평균 벡터 $\mu \in \mathbb{R}^n$과 대칭 양의 정부호 공분산 행렬 $\Sigma \in \mathbb{R}^{n\times n}$(§2)으로 정해지는 $\mathbb{R}^n$ 위의 연속 분포이며, 밀도는 다음과 같다.
 
-여기서 $n$은 $x$의 차원이고 $|\Sigma|$는 공분산의 행렬식이다.
+$$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$$
+
+여기서 $n$은 $x$의 차원이고 $|\Sigma|$는 공분산의 행렬식이다. 지수는 §6의 마할라노비스 거리 제곱에 $-\tfrac12$을 곱한 것이므로 밀도는 $x = \mu$에서 가장 높고 $\Sigma$가 정하는 타원체를 따라 줄어든다. 앞의 계수는 적분을 1로 만드는 값이다. 그러면 $E[x] = \mu$, $\text{Cov}(x) = \Sigma$이므로 두 파라미터가 곧 평균과 공분산이다. $n = 1$이면 §2 표의 항목이 된다. *예:* 표준정규 $\mathcal{N}(0, 1)$의 봉우리 밀도는 $0.399$이고, $\mathcal{N}(0, 0.1^2)$은 $3.99$로 §2가 허용한 대로 1을 넘는다.
 
 세 가지 **닫힘(closure)** 성질이 가우시안을 주력으로 만든다 — "닫힘"이란 결과가 여전히
 가우시안이라는 뜻이다. 즉 **아핀** 연산은 이 가족을 벗어나지 않는다:
@@ -561,7 +713,9 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
    — 조건부 평균은 공분산/분산으로 가중된 *선형* 보정이다. 이 공식의 모양을 기억하라:
    이것이 *곧* 칼만 이득이다.
 
-또한: CLT는 *분산이 유한한* i.i.d. 효과 여럿의 합을 중심화하고 $\sqrt N$으로 나누면 → 가우시안이라 말한다(노이즈 모델의 기본값인 이유. 코시 분포처럼 분산이 없으면 성립하지 않는다);
+또한: **중심극한정리**(CLT)는 이름 붙은 가정 셋을 가진 극한 명제다: $X_1, \dots, X_N$이 i.i.d.(§2)이고, 평균이 $\mu$이고, 분산 $\sigma^2$이 *유한*하다. 그러면 표준화한 표본 평균 $\bar X_N = \frac1N \sum_i X_i$가 표준정규로 분포수렴한다:
+$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad (N \to \infty)$$
+"분포수렴"은 CDF가 수렴한다는 뜻이므로, $\bar X_N$에 관한 확률을 평균 $\mu$, 표준편차 $\sigma/\sqrt N$인 가우시안에서 읽을 수 있다. *예:* 주사위 30개의 평균은 표준편차가 $\sqrt{35/12}/\sqrt{30} = 0.312$이고, 가우시안 근사는 $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$를, 정확한 값은 $0.88$을 준다. *반례:* 분산이 유한하지 않으면 성립하지 않는다. 표준 코시 표본 $N$개의 평균은 모든 $N$에서 다시 표준 코시이므로 평균을 내도 좁아지지 않는다. CLT가 노이즈 모델의 기본값이 가우시안인 이유다;
 그리고 평균과 분산이 주어진 연속 분포 중 가우시안의 미분 엔트로피(differential entropy: [[02-foundations/information-theory|5. 정보이론 §1]]의 엔트로피를 연속 변수로 옮긴 것으로, 확률 대신 밀도로 계산하므로 이산 엔트로피와 달리 음수가 될 수 있다)가 가장 크다(Murphy PML1 §2.6.4, 증명은 §3.4.4) — "가장 덜 주제넘은" 선택.
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="가우시안: 모양은 하나, 폭은 sigma가 정하고, 넓이는 언제나 1">
@@ -590,7 +744,9 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
 
 ### 4. 추정 — 손실함수의 출생지
 
-- **MLE**: $\hat\theta = \arg\max_\theta \sum_i \log p(x_i|\theta)$.
+- **MLE**(최대우도추정)는 *추정기*, 즉 데이터를 파라미터 값으로 바꾸는 규칙이다. 재료는 둘이다. **우도** $L(\theta) = p(x_1, \dots, x_N \mid \theta)$는 관측된 데이터의 확률(또는 밀도)을, 데이터를 고정하고 파라미터 $\theta$의 함수로 읽은 것이다. i.i.d. 데이터(§2)면 곱이다. **MLE는** 관측된 데이터를 가장 그럴듯하게 만드는 파라미터다:
+  $$\hat\theta_{\text{MLE}} = \arg\max_\theta \prod_{i=1}^N p(x_i \mid \theta) = \arg\max_\theta \sum_{i=1}^N \log p(x_i|\theta)$$
+  $\log$는 증가함수이므로 최댓값의 위치는 그대로이고, 곱은 언더플로하지 않고 항별로 미분되는 합이 된다. 우도는 $\theta$ 위의 분포가 아니다. $\theta$에 대해 적분하면 1이 될 필요가 없다.
   계산 예제(가우시안 평균): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{상수}$ ⇒
   우도 최대화 ≡ 제곱 오차 최소화; $\hat\mu = \bar{x}$.
   **실제 데이터로:** 같은 벽을 잰 거리 측정값 다섯 개 $2.1, 1.9, 2.4, 1.6, 2.0$ m. MLE는 최선의
@@ -600,16 +756,24 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   가정하면 MLE는 **중앙값**이 된다(여기서는 $2.0$으로 같지만, $2.1$ 측정값이 $9.0$이었다면
   평균은 $3.38$로 튀고 중앙값은 전혀 움직이지 않는다). *많은 회귀·분류 손실은 확률적 관측
   가정으로 해석할 수 있지만, 모든 학습 목적함수가 잡음 모델인 것은 아니다.*
-  **MSE 회귀는 분산이 고정된 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.**
+  **MSE 회귀는 분산이 고정된 가우시안 노이즈 하의 MLE이고, 교차 엔트로피는 카테고리 출력의 MLE다.** (교차 엔트로피의 정의는 [[02-foundations/information-theory|5. 정보이론 §2]].)
   [[01-canonical-papers/canonical-list|논문 리스트]]의 많은 사전학습 목적함수가 MLE 또는 그
   하한([[01-canonical-papers/notes/6-diffusion/vae|ELBO]])이다 — 단 전부는 아니다:
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
-- **MAP**: $\log p(\theta)$를 더한다. **평균 0**인 가우시안 사전을 **가중치**에 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$(사후 확률은 최대화하고 손실은 최소화하므로 손실 = 음의 로그 사후 확률이 되어 부호가 뒤집힌다) — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
+- **MAP**(최대 사후 확률) 추정은 MLE에 **사전분포** $p(\theta)$를 더한 것이다. §1 베이즈 정리의 사후분포에서 최빈값을 고른다:
+  $$\hat\theta_{\text{MAP}} = \arg\max_\theta \Big[\sum_{i=1}^N \log p(x_i \mid \theta) + \log p(\theta)\Big]$$
+  $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$이고 증거 $p(x)$는 $\theta$에 의존하지 않기 때문이다. *예:* 위의 벽 측정값 다섯 개, 가우시안 잡음 $\sigma = 0.3$ m, 사전 $\mu \sim \mathcal{N}(0, 1^2)$. $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$의 도함수를 0으로 두면 $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m로, MLE의 $2.0$에서 사전 평균 0 쪽으로 조금 끌려간다. $N$은 커지고 $\sigma^2$은 고정이므로 데이터가 많아지면 이 끌림은 사라진다. **평균 0**인 가우시안 사전을 **가중치에** 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$(사후 확률은 최대화하고 손실은 최소화하므로 손실 = 음의 로그 사후 확률이 되어 부호가 뒤집힌다) — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
   weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
 - 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
   **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
   이지만 고분산인 추정기"라는 어휘가 여기서 온다
-  ([[02-foundations/rl-basics|정책 그래디언트]]).
+  ([[02-foundations/rl-basics|정책 그래디언트]]). 참값 $\theta$의 추정기 $\hat\theta$에 대해, 기댓값은 무작위 데이터셋에 대한 것이므로, 두 양은 내 데이터셋 하나가 아니라 가능한 여러 데이터셋에 걸친 추정기의 행동을 기술한다:
+  $$\text{Bias}(\hat\theta) = E[\hat\theta] - \theta, \qquad \text{Var}(\hat\theta) = E\big[(\hat\theta - E[\hat\theta])^2\big]$$
+  모든 $\theta$에서 편향이 0이면 **불편** 추정기다. 둘은 평균제곱오차로 합쳐진다,
+  $$E\big[(\hat\theta - \theta)^2\big] = \text{Bias}(\hat\theta)^2 + \text{Var}(\hat\theta)$$
+  교차항 $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$가 0이기 때문이다. 그래서 편향된 추정기도 더한 편향 제곱보다 줄인 분산이 크면 이길 수 있고, MAP 수축과 weight decay가 거는 내기가 정확히 이것이다.
+  - *예:* 표본 평균 $\bar x$는 $\mu$의 불편 추정기이고 분산은 $\sigma^2/N$이다.
+  - *반례:* 분산 추정 $\frac1N\sum_i (x_i - \bar x)^2$는 $E = \frac{N-1}{N}\sigma^2$으로 편향되어 있다. 주사위를 $N = 2$번 굴리면 36가지 결과 전부에 대해 평균 내어 $1.46$이 나오고 참값은 $2.92$, 정확히 절반이다. $N$ 대신 $N - 1$로 나누면 편향이 사라지며, §6의 $s_d$ 같은 표본 표준편차가 $n-1$로 나누는 이유다.
 
 ### 5. 랜덤 프로세스와 칼만 필터
 
@@ -621,13 +785,26 @@ $\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12
   [[02-foundations/signal-processing|신호처리]]).
   **백색 잡음**: 무상관 샘플, 평평한 스펙트럼 — 기본 외란 모델이자
   [[01-canonical-papers/notes/6-diffusion/ddpm|디퓨전]]의 $\epsilon$.
+  같은 세 개념을 식으로 쓰면:
+  - **랜덤 프로세스** $\{x(t) : t \in \mathcal{T}\}$는 모든 인덱스 $t$(시간 스텝 또는 연속 시간)에 확률변수 하나를 배정한다. 한 번 실행한 결과가 *표본 경로*다. **평균 함수는** $m(t) = E[x(t)]$이고 **자기상관 함수는**
+  $$R_x(t, \tau) = E\big[x(t)\,x(t+\tau)\big]$$
+  이며, $t$는 보는 순간, $\tau$는 시차이므로 $R_x(t, 0) = E[x(t)^2]$가 시각 $t$의 파워다. (평균을 먼저 빼면 *자기공분산*이고, 평균이 0인 프로세스면 둘이 같다.)
+  - **WSS는** **세** 조건을 요구한다: 일정한 평균, 시차에만 의존하는 자기상관, 유한한 파워.
+  $$E[x(t)] = m \;\;\forall t, \qquad R_x(t, \tau) = R_x(\tau) \;\;\forall t, \qquad E[x(t)^2] < \infty$$
+  스펙트럼은 $R_x(\tau)$의 푸리에 변환이고(위너–힌친 정리) 변환에는 $t$마다 하나가 아니라 $\tau$의 함수 하나가 필요하므로, 이 조건들이 파워 스펙트럼을 잘 정의되게 한다. *예:* $\Phi$가 $[0, 2\pi)$에서 균등한 $x(t) = A\cos(\omega t + \Phi)$는 평균이 0이고 모든 $t$에서 $R_x(\tau) = \tfrac{A^2}{2}\cos(\omega\tau)$이므로 WSS다($A = 2$, $\omega = 1$, $\tau = 0.7$에서 표본 200만 개 시뮬레이션이 $1.530$에 대해 $1.528$을 준다). *반례:* 분산 1인 스텝의 랜덤 워크 $x_t = \sum_{k \le t} \epsilon_k$는 $\text{Var}(x_t) = t$라서 퍼짐이 시간과 함께 커지고(100스텝 뒤 표준편차 10) WSS가 아니다. *강의* 정상성은 더 많이 요구한다: 두 모멘트만이 아니라 결합 분포 전체가 이동에 불변이어야 한다.
+  - **백색 잡음은** 서로 다른 시각의 샘플이 무상관이고 분산이 $\sigma^2$인, 평균 0의 WSS 프로세스다:
+  $$E[w(t)] = 0, \qquad R_w(\tau) = \sigma^2\,\delta(\tau)$$
+  그래서 스펙트럼이 모든 주파수에서 상수 $\sigma^2$이고, 이것이 위의 "평평한 스펙트럼"이다. $\delta$는 이산 인덱스면 크로네커 델타($\tau = 0$에서 1, 나머지 0), 연속 시간이면 디랙 델타다. *가우시안* 백색 잡음은 각 샘플이 가우시안이라는 조건을 더하고, 그러면 무상관이 곧 독립이다. *반례:* 위 랜덤 워크는 백색 잡음으로 만들었지만 백색이 아니다. 이웃한 값들이 스텝을 거의 전부 공유하기 때문이다.
 - **마르코프 성질**: 미래 ⟂ 과거 | 현재. MDP([[02-foundations/rl-basics|RL]]), 월드모델,
   디퓨전 체인의 모델링 가정.
+  식으로 쓰면, 프로세스 $x_0, x_1, \dots$가 마르코프 성질을 가진다는 것은 전체 이력이 주어졌을 때 다음 상태의 분포가 현재 상태에만 의존한다는 뜻이다:
+  $$p(x_{t+1} \mid x_t, x_{t-1}, \dots, x_0) = p(x_{t+1} \mid x_t)$$
+  현재가 주어졌을 때 미래와 과거의 조건부 독립(§1)이다. 결합 분포가 $p(x_0)\prod_t p(x_{t+1} \mid x_t)$로 인수분해되므로 모델에 전이 규칙 하나만 있으면 된다. *예:* 위 랜덤 워크. $x_{t+1} = x_t + \epsilon_{t+1}$은 $x_t$보다 오래된 것을 쓰지 않는다. *반례:* $x_{t+1} = x_t - 0.5\,x_{t-1} + \epsilon_{t+1}$은 과거 값 둘이 필요하다. 상태를 쌍 $(x_t, x_{t-1})$로 정의하면 다시 마르코프가 되며, 위치만 있는 로봇 모델에 속도를 상태로 더해 마르코프로 만드는 방법이 이것이다. §7이 유한 상태 판본을 만든다.
 - **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
   $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$, 가우시안 $w_t \sim \mathcal{N}(0,Q)$,
   $v_t \sim \mathcal{N}(0,R)$이고, 둘은 백색이며 서로, 그리고 가우시안 초기 상태 $x_0$와 독립이다.
   - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
-    **추정 공분산**($\hat x$의 불확실성), $Q$는 과정 잡음 공분산이다
+    **추정 공분산**($\hat x$의 불확실성), $P = E[(x - \hat x)(x - \hat x)^\top]$이고, $Q$는 과정 잡음 공분산이다
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
   새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 바로 그 가정 아래 최적(최소 평균제곱오차) 재귀 추정기.
@@ -653,7 +830,7 @@ flowchart LR
 
 ### 6. 검출, 가설 검정, 백색화
 
-- **검출은 추정이 아니라 결정이다.** 로봇은 측정값 $y$에 대한 두 설명 중 하나를 골라야 할 때가 많다: $H_0$(아무것도 없음, 예: 접촉 없음) 또는 $H_1$(무언가 있음, 예: 접촉). 틀리는 방식은 두 가지다. **오경보는** $H_0$가 참인데 $H_1$이라고 말하는 것이다(확률 $P_{FA}$). **놓침은** $H_1$이 참인데 $H_0$라고 말하는 것이다(확률 $1 - P_D$, $P_D$는 검출 확률). 아래 규칙들은 모두 같은 통계량인 우도비를 문턱값과 비교한다:
+- **검출은 추정이 아니라 결정이다.** 로봇은 측정값 $y$에 대한 두 설명 중 하나를 골라야 할 때가 많다: $H_0$(아무것도 없음, 예: 접촉 없음) 또는 $H_1$(무언가 있음, 예: 접촉). 틀리는 방식은 두 가지다. **오경보는** $H_0$가 참인데 $H_1$이라고 말하는 것이다(확률 $P_{FA}$). **놓침은** $H_1$이 참인데 $H_0$라고 말하는 것이다(확률 $1 - P_D$, $P_D$는 검출 확률). 통계학은 같은 두 오류를 **제1종 오류**(오경보, 비율 $P_{FA}$)와 **제2종 오류**(놓침, 비율 $1 - P_D$)라 부르고, $P_D$를 검정의 **검정력**이라 부른다. 아래 규칙들은 모두 같은 통계량인 우도비를 문턱값과 비교한다:
   $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
   규칙마다 달라지는 것은 문턱값 $\eta$뿐이다. 어느 가설이 이 측정값을 만들었는지에 대해 측정값이 말해주는 모든 것을 비율이 이미 담고 있기 때문이다.
   - **MAP 규칙**(전체 오류 최소): $\eta = P(H_0)/P(H_1)$. §1의 베이즈 정리를 두 가설에 적용한 것이므로, 드문 사건일수록 선언하기 전에 더 강한 증거가 필요하다.
@@ -669,7 +846,9 @@ flowchart LR
 >
 > 오경보를 10분의 1로 줄이자(0.106 → 0.01) 검출의 3분의 1 넘게를 잃었다(0.894 → 0.569). 문턱값을 옮기는 것은 하나의 ROC 곡선 위를 미끄러질 뿐이다. 더 좋은 센서, 즉 잡음 대비 더 큰 오프셋(여기서는 $1.0/0.4 = 2.5$)이 곡선 전체를 끌어올린다.
 
-- **가설 검정은 주장에 적용한 검출이다.** $H_0$는 "아무 일도 없다"는 이야기다(방법 B가 A보다 낫지 않다). 검정 통계량이 $y$ 역할을 하고, 유의수준 $\alpha$는 받아들이는 오경보율이다. **p-값은** *$H_0$가 참이라고 가정하고 계산한*, 관측된 것만큼 또는 그보다 극단적인 통계량이 나올 확률이다. 논문에서 잡아내야 할 세 가지 오독:
+- **가설 검정은 주장에 적용한 검출이다.** $H_0$는 "아무 일도 없다"는 이야기다(방법 B가 A보다 낫지 않다). 검정 통계량이 $y$ 역할을 하고, 유의수준 $\alpha$는 받아들이는 오경보율이다. **p-값은** *$H_0$가 참이라고 가정하고 계산한*, 관측된 것만큼 또는 그보다 극단적인 통계량이 나올 확률이다. 관측값이 $t_{\text{obs}}$인 통계량 $T$에서 큰 값을 극단으로 치면
+  $$p = P\big(T \ge t_{\text{obs}} \mid H_0\big) \quad\text{(단측)}, \qquad p = P\big(|T| \ge |t_{\text{obs}}| \mid H_0\big) \quad\text{(양측)}$$
+  이고, $p \le \alpha$이면 $H_0$를 기각한다. $H_0$ 아래에서 사건 $p \le \alpha$의 확률이 $\alpha$이므로(연속 통계량일 때) 이 규칙의 오경보율은 정확히 $\alpha$다. 아래 부호 검정이 계산된 사례다. 논문에서 잡아내야 할 세 가지 오독:
   1. $P(H_0 \mid \text{데이터})$가 **아니다**. 그것을 구하려면 사전확률이 필요하다. §1의 균열 예제와 똑같다.
   2. 효과의 크기가 **아니다**. 무시할 만한 개선도 시행을 충분히 많이 하면 아주 작은 p를 받는다.
   3. $p > 0.05$는 차이가 없다는 증거가 **아니다**. 시행이 적으면 검정이 차이를 볼 능력이 없을 수 있다.
@@ -679,6 +858,9 @@ flowchart LR
   - *예:* B가 물체 10개 중 9개에서 A를 이겼고 동률은 없다. $H_0$ 아래에서 각 승리는 공정한 동전 던지기이므로, 양측 부호 검정은 $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$을 준다.
   - **부트스트랩 CI는** $n$개의 차이를 복원추출로 수천 번 다시 뽑아, 재표본 평균의 2.5와 97.5 백분위수를 보고한다. 시행을 몇 번 할지, 어떤 구간을 보고할지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]를 보라.
 - **다중 비교.** 참인 귀무가설 20개를 $\alpha = 0.05$로 독립적으로 검정하면 적어도 하나가 "유의"하게 나올 확률이 $1 - 0.95^{20} = 0.64$다. 그러므로 $\alpha$를 검정 수로 나누거나(본페로니: $0.05/20 = 0.0025$), 중요한 비교 하나를 미리 선언한다.
+  통제하는 양은 **족별 오류율**(FWER), 즉 검정 $m$개 중 오경보가 적어도 하나 나올 확률이다. **본페로니 보정은** 각 검정을 $\alpha/m$로 하고,
+  $$\text{FWER} = P\Big(\bigcup_{i=1}^m \{\text{검정 } i \text{가 잘못 기각}\}\Big) \le \sum_{i=1}^m \frac{\alpha}{m} = \alpha$$
+  합집합의 확률은 확률의 합을 넘지 않으므로(§1) 검정들이 독립이든 아니든 성립한다. 각각 $0.0025$로 한 독립 검정 20개면 FWER는 $1 - 0.9975^{20} = 0.049$로 $0.05$ 바로 아래다.
 
 **검정 고르기.** 행과 열은 두 질문으로 정해진다: 시행마다 어떤 수가 나오는가, 그리고 두 방법이 같은 시행(같은 물체, 시드, 장면, 시작 상태)에서 돌았는가. 로봇과 ML 실험에서는 대응이 보통이고, 대응 데이터에 비대응 검정을 쓰면 위에서 말한 상쇄를 버리게 된다.
 
@@ -693,6 +875,9 @@ flowchart LR
 
 - **McNemar는 위의 부호 검정을 불일치 쌍에 적용한 것이다.** 둘 다 성공하거나 둘 다 실패한 쌍은 어느 방법이 나은지 아무것도 말하지 않는다. 그래서 $H_0$ 아래에서 두 방법이 엇갈린 $m$개 쌍 각각이 공정한 동전 던지기다.
 - **시드나 과제가 많을 때.** Agarwal 등(NeurIPS 2021)은 딥 RL에서 흔한, 과제당 몇 번 안 되는 실행에서 얻은 점추정이 오도할 수 있음을 보였다. 그들의 처방은 **층화 부트스트랩이다**: 과제마다 따로 실행을 복원추출하고, 종합 점수를 다시 계산하고(평균이나 중앙값보다 사분위 평균 IQM을 권한다), 이를 반복해 백분위수를 읽는다.
+- **신뢰구간(CI)은** 구간 하나가 아니라 *절차*다: 데이터셋을 구간 $[L, U]$로 보내는 규칙으로, 같은 과정에서 뽑은 데이터셋을 반복했을 때 구간이 참 파라미터 $\theta$를 명시된 확률(**포함 확률** $1 - \alpha$)로 덮는다:
+  $$P\big(L(\text{데이터}) \le \theta \le U(\text{데이터})\big) = 1 - \alpha$$
+  데이터가 무작위이므로 $L$과 $U$가 무작위이고, $\theta$는 고정이다. *예:* 대략 가우시안인 측정값 $n$개면 $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$이 95% CI다. §4의 벽 측정값 다섯 개는 $\bar x = 2.0$, $s = 0.292$, $t_{4,\,0.975} = 2.776$이므로 구간은 $2.0 \pm 0.362 = [1.64, 2.36]$ m다. *반례:* "$\theta$가 $[1.64, 2.36]$에 있을 확률이 95%다"는 빈도주의 CI가 말하는 바가 아니다. 한번 계산된 구간은 $\theta$를 덮거나 덮지 않거나 둘 중 하나다. 95%는 절차의 성질이고, $\theta$ 자체에 대한 확률 명제에는 §1처럼 사전확률이 필요하다.
 - **효과 크기가 먼저다.** 차이를 CI와 함께 보고하고, p-값은 그다음이다. CI는 0이 그럴듯한지와 이득이 얼마나 클 수 있는지를 함께 보여주지만, $p$만으로는 크기를 알 수 없다(위의 오독 2). 시행을 몇 번 할지, 어떤 이항 구간을 쓸지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]에 있다.
 
 > [!example] 계산 예제 · Worked example
@@ -724,11 +909,28 @@ flowchart LR
 ### 7. 마르코프 체인과 은닉 마르코프 모델
 
 - **유한 마르코프 체인은** 고정된 확률 $P_{ij} = P(X_{n+1}=j \mid X_n = i)$로 옮겨 다니는 상태 $X_n \in \{1,\dots,S\}$다. 이 페이지의 규약: **행이 "출발", 열이 "도착"이다**. 그래서 $P$의 각 행의 합이 1이고(행 확률행렬) 분포는 행벡터다. 전확률로 $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, 즉 $\pi_{n+1} = \pi_n P$이므로 $\pi_n = \pi_0 P^n$이다.
+  따라서 유한 마르코프 체인은 이름 붙은 **네** 구성요소로 완전히 정해진다:
+  - **상태 공간** $\{1, \dots, S\}$;
+  - 성분이 확률이고 각 행의 합이 1인 **전이 행렬** $P$,
+  $$P_{ij} \ge 0, \qquad \sum_{j=1}^S P_{ij} = 1 \;\text{ (모든 } i\text{)}$$
+  상태 $i$에서 체인은 어딘가로는 가야 하기 때문이다;
+  - $\sum_i \pi_0(i) = 1$인 행벡터 **초기 분포** $\pi_0$;
+  - §5의 **마르코프 성질** $P(X_{n+1} = j \mid X_n = i, X_{n-1}, \dots, X_0) = P_{ij}$, 매 스텝 같은 $P$(*시간 동질*).
+
+  그러면 어떤 경로의 확률도 곱이다, $P(X_0 = i_0, \dots, X_n = i_n) = \pi_0(i_0)\,P_{i_0 i_1}\cdots P_{i_{n-1} i_n}$. *반례:* 행 $(0.5, 0.6)$이 있는 행렬은 그 행의 합이 1.1이므로 전이 행렬이 아니다.
 - **정상 분포.**
   $$\pi P = \pi, \qquad \textstyle\sum_i \pi_i = 1$$
   이 식을 만족하는 분포는 한 스텝을 더 가도 바뀌지 않으므로, 체인이 어딘가에 자리 잡는다면 바로 여기다.
   - 유한 체인에서 **기약**(모든 상태가 다른 모든 상태에 도달 가능)과 **비주기**("홀수 스텝엔 A, 짝수 스텝엔 B" 같은 강제 순환이 없음)가 함께 성립하면 그런 $\pi$가 정확히 하나이고, 어디서 시작해도 $\pi_n \to \pi$다. 이때 $\pi_i$는 장기적으로 상태 $i$에 머무는 시간의 비율이기도 하다.
+  식으로 쓰면, $(P^n)_{ij}$를 $i$에서 정확히 $n$스텝 만에 $j$로 갈 확률, $\gcd$를 최대공약수라 할 때:
+  $$\text{기약: } \forall i, j\ \exists n \ge 1,\ (P^n)_{ij} > 0; \qquad \text{주기 } d(i) = \gcd\{n \ge 1 : (P^n)_{ii} > 0\}, \;\text{비주기: } d(i) = 1 \;\forall i$$
+    자기 루프($P_{ii} > 0$)가 있으면 집합에 $n = 1$이 들어가 $d(i) = 1$이 강제된다.
+    - *반례, 주기적:* $P = \begin{pmatrix}0&1\\1&0\end{pmatrix}$는 주기 2인 기약 체인이다. 정상 분포 $(\tfrac12, \tfrac12)$가 있지만 $\pi_0 = (1, 0)$에서 출발하면 $(1,0), (0,1), (1,0), \dots$로 번갈아 가며 수렴하지 않는다.
+    - *반례, 가약:* $P = I$(모든 상태가 영원히 제자리). 모든 분포가 $\pi P = \pi$를 만족하므로 정상 분포가 유일하지 않다.
   - **혼합 시간은** 가장 나쁜 초기 상태에서 출발해 $\pi_n$이 $\pi$에서 정한 거리 안(보통 전변동 거리, 즉 두 분포가 어떤 한 사건에 매기는 확률 차이의 최댓값)으로 들어올 때까지 걸리는 스텝 수다.
+  식으로는, $e_i$를 확실히 상태 $i$에서 출발하는 분포라 할 때:
+  $$\|\mu - \nu\|_{TV} = \max_{A} |\mu(A) - \nu(A)| = \tfrac12 \sum_j |\mu_j - \nu_j|, \qquad t_{\text{mix}}(\varepsilon) = \min\big\{n : \max_i \|e_i P^n - \pi\|_{TV} \le \varepsilon\big\}$$
+    최대화하는 사건 $A$가 $\mu_j > \nu_j$인 상태들의 집합이므로 두 TV 식은 같다. 아래 예제의 기계 체인에서는 "고장"에서 출발하는 것이 최악이고, 거리가 한 시간 뒤 $0.257$, 세 시간 뒤 $0.034$, 다섯 시간 뒤 $0.0037$이므로 $t_{\text{mix}}(0.01) = 5$시간이다.
 - **여기서 왜 중요한가.** *MCMC*는 이 생각을 거꾸로 쓴다: 직접 샘플링할 수 없는 사후분포를 정상 분포로 갖는 체인을 설계하고, 혼합 시간 너머까지 돌린 뒤, 그 상태들을 샘플로 쓴다. [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]의 *순방향 노이즈 과정* $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$는 분포가 $\mathcal{N}(0, I)$에 다가가는 이미지 위의 마르코프 체인이고, 학습된 모델은 그 체인을 거꾸로 돌린다.
 
 > [!example] 계산 예제 · Worked example
@@ -740,7 +942,9 @@ flowchart LR
 >
 > 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기([[02-foundations/linear-algebra|1. 선형대수 §3]]), 여기서는 $0.3$이 정한다. 이유: $\pi$는 $\pi_n$ 중 고유값 1인 부분이고, 차이 $\pi_n - \pi$는 나머지 고유방향들로 이루어져 매 스텝 각자의 고유값(여기서는 $0.3$과 $0.2$)이 곱해지므로, 그중 가장 큰 것이 감쇠 속도를 정한다. $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
 
-- **은닉 마르코프 모델(HMM).** 체인 $X_t$는 관측되지 않는다. 각 스텝에서 현재 상태 $j$가 확률 $B_j(y_t) = p(y_t \mid X_t = j)$로 관측 $y_t$를 내보낸다. 질문 둘, 각각 $T \times S$ 표를 한 번 훑어서 답한다:
+- **은닉 마르코프 모델(HMM).** 체인 $X_t$는 관측되지 않는다. 각 스텝에서 현재 상태 $j$가 확률 $B_j(y_t) = p(y_t \mid X_t = j)$로 관측 $y_t$를 내보낸다. HMM은 은닉 상태 공간 위의 **세** 파라미터 묶음으로 정해진다: 초기 분포 $\pi_0$, 전이 행렬 $P$, 방출 확률 $B$. 그리고 **두** 가정에 기댄다: 은닉 상태가 마르코프 체인을 이루고, 각 관측은 현재 은닉 상태에만 의존한다. 두 가정이 함께 상태 경로와 관측 수열의 결합 확률을 곱으로 만든다:
+  $$p(x_{1:T}, y_{1:T}) = \pi_0(x_1)\,B_{x_1}(y_1) \prod_{t=2}^{T} P_{x_{t-1} x_t}\,B_{x_t}(y_t)$$
+  그래서 각 인수가 모델의 화살표 하나, 즉 전이 아니면 방출이다. *예(아래 코드의 기계):* 경로 "작동, 작동"과 측정 "조용, 조용"의 확률은 $0.9 \times 0.8 \times 0.95 \times 0.8 = 0.547$이다. 질문 둘, 각각 $T \times S$ 표를 한 번 훑어서 답한다:
   - **필터링: 지금 어디에 있나?** **순방향 알고리즘은** $\alpha_t(j) \propto p(X_t = j \mid y_{1:t})$를 들고 간다:
     $$\alpha_t(j) \propto B_j(y_t)\,\textstyle\sum_i \alpha_{t-1}(i)\,P_{ij}$$
     합이 예측 단계이고 곱이 보정 단계이므로, 이것은 [[04-robotics/state-estimation-slam|상태 추정 §4]]의 베이즈 필터에서 적분을 합으로 바꾼 것이다. 수가 언더플로하지 않도록 매 스텝 정규화한다.
@@ -787,7 +991,7 @@ Metropolis–Hastings는 "여기서 왜 중요한가"의 MCMC를 구체화한 �
   $x' \ne x$이면 양변이 모두 $\min\big(p(x)\,q(x' \mid x),\ p(x')\,q(x \mid x')\big)$와 같기 때문에 성립한다. 양변을 $x$에 대해 더하면, $T(x' \to \cdot)$의 합이 1이므로 우변은 $p(x')$가 되어 $\sum_x p(x)T(x \to x') = p(x')$다. 이것이 위의 $\pi P = \pi$에서 $\pi = p$인 경우다(연속 $x$면 합 대신 적분). 상세 균형은 $p$를 정상 분포로 만들 뿐이고, 어디서 시작해도 $p$로 수렴하려면 여전히 기약·비주기 조건이 필요하다.
 - **번인(burn-in).** 초기 상태들은 $p$가 아니라 시작점을 반영하므로 버린다.
 - **자기상관.** 각 상태가 직전 상태에서 조금 움직인 것이거나 그 반복이므로, 연속한 상태들은 상관되어 있다.
-- **유효 표본 크기(ESS).** 상관된 표본 $N$개는 평균을 추정하는 데 독립 표본 $N/\tau$개만큼의 값어치가 있고, 여기서 $\tau = 1 + 2\sum_{k\ge 1}\rho_k$는 시차 $k$의 자기상관 $\rho_k$를 더한 것이다. $\tau$는 독립 표본 하나만큼의 정보를 얻는 데 드는 스텝 수로 읽으면 된다: 각 상태가 앞뒤 양쪽 이웃의 정보를 일부 반복하므로 2가 붙는다. $\rho_k = 0.9^k$이면 $\sum_{k\ge1} 0.9^k = 9$이므로 $\tau = 19$다.
+- **유효 표본 크기(ESS).** 상관된 표본 $N$개는 평균을 추정하는 데 독립 표본 $N/\tau$개만큼의 값어치가 있고, 여기서 $\tau = 1 + 2\sum_{k\ge 1}\rho_k$는 시차 $k$의 자기상관 $\rho_k$를 더한 것이다. $\rho_k = \text{Cov}(x_n, x_{n+k})/\text{Var}(x_n)$는 (정상 상태) 체인의 §5 자기상관에서 평균을 빼고 분산으로 나눈 것이므로 $\rho_0 = 1$이다. $\tau$는 독립 표본 하나만큼의 정보를 얻는 데 드는 스텝 수로 읽으면 된다: 각 상태가 앞뒤 양쪽 이웃의 정보를 일부 반복하므로 2가 붙는다. $\rho_k = 0.9^k$이면 $\sum_{k\ge1} 0.9^k = 9$이므로 $\tau = 19$다.
 - **제안 폭.** 너무 좁으면 거의 모든 이동이 받아들여지지만 거의 나아가지 못하고, 너무 넓으면 대부분의 제안이 $p$가 아주 작은 곳에 떨어져 기각된다. 어느 쪽이든 ESS가 무너지므로, 폭은 수락률이 아니라 ESS로 조정한다.
 
 목표: $x > 0$에서 $\tilde p(x) = x^2 e^{-x}$, 평균과 분산이 모두 3인 정규화 안 된 Gamma(3, 1)이다. 체인은 일부러 멀리 떨어진 $x_0 = 20$에서 시작한다. 비터비와 같은 언더플로 이유로 로그 공간에서 계산한다.

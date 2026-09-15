@@ -24,13 +24,31 @@ What interviews ask: "maximum non-overlapping intervals", "minimum meeting rooms
 
 **The idea in one sentence:** make the choice that is best by a simple local rule, commit to it, and solve what remains in the same way.
 
-A greedy algorithm is correct when two things hold. The **greedy-choice property** says that some optimal solution starts with the greedy choice. **Optimal substructure** says that after that choice, what remains is a smaller instance of the same problem, so the same argument applies again. Dynamic programming needs only the second property and pays for it by trying every option for each decision ([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). Greedy trusts one option, so it needs a proof that the one option is enough.
+**What a greedy algorithm is.** It is an algorithm-design paradigm for optimization problems whose solution is built from a sequence of choices, and it has four named parts:
+
+- **candidates**, the pieces a solution is made of (intervals, edges, coins);
+- a **selection rule**, a simple key that ranks the candidates;
+- a **feasibility test**, which says whether a candidate can join the partial solution;
+- **irrevocable commitment**: a chosen candidate is never removed or reconsidered.
+
+Largest-coin-first change making, Kruskal and Huffman coding all have exactly these parts.
+
+**When it is correct.** Write $I$ for an instance, $g$ for the greedy first choice, $I_g$ for the smaller instance that remains after committing to $g$, and $\mathrm{OPT}(\cdot)$ for the optimal value. Two properties are needed.
+
+- The **greedy-choice property**: some optimal solution of $I$ contains $g$. It need not be every optimal solution, only one.
+- **Optimal substructure**: an optimal solution of $I$ that contains $g$ consists of $g$ together with an optimal solution of $I_g$, so for a cost that adds up over the choices
+$$\mathrm{OPT}(I) = c(g) + \mathrm{OPT}(I_g)$$
+  where $c(g)$ is the cost, or value, of the choice $g$ itself.
+
+Together they prove greedy correct by induction on the instance size, because the first choice loses nothing and what remains is the same problem again. **Non-example:** paying $6$ with coins $\{1, 3, 4\}$, the greedy first choice is the coin $4$, but the only two-coin solution is $3 + 3$, so no optimal solution contains $4$ and the greedy-choice property fails. Optimal substructure still holds there, which is why dynamic programming solves it. Dynamic programming needs only the second property and pays for it by trying every option for each decision ([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). Greedy trusts one option, so it needs a proof that the one option is enough.
 
 There are two standard ways to write that proof.
 
-**Method 1: greedy stays ahead.** Choose a measure of progress that you can compare after each step, such as "how far along the route", "how many intervals scheduled" or "the finish time of the last interval chosen". Show by induction that after every step $k$, greedy's measure is at least as good as that of *any* other valid solution after $k$ steps. Then show that being ahead at every step means greedy cannot finish later or with fewer items.
+**Method 1: greedy stays ahead.** Choose a measure of progress that you can compare after each step, such as "how far along the route", "how many intervals scheduled" or "the finish time of the last interval chosen". Show by induction that after every step $k$, greedy's measure is at least as good as that of *any* other valid solution after $k$ steps. With $m_k(S)$ the measure of solution $S$ after $k$ steps, the claim to prove is
+$$m_k(G) \succeq m_k(O) \quad \text{for every step } k \text{ and every valid solution } O$$
+where $\succeq$ means "at least as good as", so it is $\ge$ for a measure you want large and $\le$ for one you want small. Then show that being ahead at every step means greedy cannot finish later or with fewer items.
 
-**Method 2: exchange argument.** Take any optimal solution $O$ that differs from the greedy solution $G$. Find the first place where they differ, and change $O$ at that place to agree with $G$, without making $O$ invalid and without making it worse. Repeating this turns $O$ into $G$ step by step, and cost never increases along the way, so $G$ is optimal too. A shorter form of the same argument proves only that greedy's *first* choice can be swapped into some optimal solution, and then uses optimal substructure to repeat on the rest.
+**Method 2: exchange argument.** Take any optimal solution $O$ that differs from the greedy solution $G$. Find the first place where they differ, and change $O$ at that place to agree with $G$, without making $O$ invalid and without making it worse: the changed solution $O'$ is valid and $\text{cost}(O') \le \text{cost}(O)$. Repeating this turns $O$ into $G$ step by step, and cost never increases along the way, so $G$ is optimal too. A shorter form of the same argument proves only that greedy's *first* choice can be swapped into some optimal solution, and then uses optimal substructure to repeat on the rest.
 
 The two methods are often interchangeable. Stays-ahead fits problems where solutions are built along a line or through time. Exchange fits problems where the answer is an order or a set, and swapping two elements has a cost you can compute.
 
@@ -67,9 +85,13 @@ A counterexample is a complete answer to "does this greedy work?". A proof is re
 
 ### 2. Interval problems
 
-Intervals are the most common greedy family in interviews. Choose an endpoint convention first and say it aloud. This page uses **half-open** intervals $[s, e)$: a booking that ends at $10$ does not conflict with one that starts at $10$.
+Intervals are the most common greedy family in interviews. Choose an endpoint convention first and say it aloud. This page uses **half-open** intervals $[s, e) = \{t : s \le t < e\}$, which contain their start time but not their end time. Two intervals overlap exactly when they share a time:
+$$[s_1, e_1) \cap [s_2, e_2) \ne \varnothing \iff s_1 < e_2 \ \text{ and } \ s_2 < e_1$$
+since each must start before the other ends. So a booking that ends at $10$ does not conflict with one that starts at $10$: for $[8, 10)$ and $[10, 12)$ the test $10 < 10$ is false. Closed intervals $[s, e]$ use $\le$ in both places, and then $[1, 3]$ and $[3, 5]$ overlap at time $3$.
 
 #### Activity selection: the most non-overlapping intervals
+
+**Problem.** Given $n$ intervals, choose a subset $S$ of largest size $|S|$ in which no two intervals overlap in the sense above.
 
 **The idea in one sentence:** repeatedly take the interval that *finishes* earliest among those that start after the last one taken.
 
@@ -98,7 +120,9 @@ Sorting costs $O(n \log n)$ and the scan costs $O(n)$. A closely related problem
 
 **The idea in one sentence:** sweep intervals in order of start time and reuse the resource that frees up earliest, opening a new one only when every resource is still busy.
 
-**Why it is optimal.** At any time $t$, every interval that contains $t$ needs its own resource, so the answer is at least the maximum number of intervals that contain a common point (the *depth*). The algorithm opens a new resource only when the earliest end in the heap is later than the current start. At that moment every open resource holds an interval that started no later and is still running, so together with the new interval they all contain the current start time, and the new count is at most the depth. The algorithm therefore never uses more resources than the depth, which is the lower bound.
+**Why it is optimal.** At any time $t$, every interval that contains $t$ needs its own resource, so the answer is at least the maximum number of intervals that contain a common point, the *depth*:
+$$\text{depth} = \max_t \big|\{i : s_i \le t < e_i\}\big|$$
+The set counts the intervals that contain time $t$, so the depth is the largest number running at once; for the seven jobs in the code below it is $2$. The algorithm opens a new resource only when the earliest end in the heap is later than the current start. At that moment every open resource holds an interval that started no later and is still running, so together with the new interval they all contain the current start time, and the new count is at most the depth. The algorithm therefore never uses more resources than the depth, which is the lower bound.
 
 ```python
 import heapq
@@ -141,7 +165,9 @@ This is barely greedy, but it has two classic bugs: forgetting `max` when one in
 
 ### 3. Scheduling to minimize weighted completion time
 
-**Problem.** One machine, such as a single robot arm, a printer or one CPU, must process jobs one at a time. Job $j$ has length $l_j > 0$ and weight $w_j$, which measures how much each unit of waiting costs. Job $j$'s completion time $C_j$ is the sum of the lengths of all jobs up to and including $j$. The goal is to minimize the total weighted completion time $\sum_j w_j C_j$.
+**Problem.** One machine, such as a single robot arm, a printer or one CPU, must process jobs one at a time. Job $j$ has length $l_j > 0$ and weight $w_j$, which measures how much each unit of waiting costs. Job $j$'s completion time $C_j$ is the sum of the lengths of all jobs up to and including $j$. The goal is to minimize the total weighted completion time:
+$$C_j = \sum_{k \preceq j} l_k, \qquad \text{minimize } \sum_j w_j C_j$$
+Here $k \preceq j$ means that job $k$ runs before $j$ or is $j$ itself, so a job's completion time includes its own length and every length scheduled before it.
 
 **The idea in one sentence:** run jobs in decreasing order of $w_j / l_j$, so the most weight per unit of processing time goes first (Smith 1956).
 
@@ -183,7 +209,9 @@ print(weighted_completion([(6, 4), (2, 1)]), weighted_completion(order_jobs([(6,
 
 ### 4. Fractional knapsack (greedy works) vs 0/1 knapsack (it does not)
 
-**Fractional knapsack.** Items have weight $w_i$ and value $v_i$, and you may take any fraction of each item. **The idea in one sentence:** take items in decreasing order of value density $v_i / w_i$, and cut the last item to fill the remaining capacity.
+**Fractional knapsack.** Items have weight $w_i$ and value $v_i$, and you may take any fraction of each item. With $x_i$ the fraction of item $i$ taken and $W$ the capacity, the problem is
+$$\max \sum_i v_i x_i \quad \text{subject to} \quad \sum_i w_i x_i \le W, \qquad 0 \le x_i \le 1$$
+so the total weight carried fits the capacity and no item is taken more than once. The **0/1 knapsack** is the same problem with $x_i \in \{0, 1\}$, every item taken whole or not at all. On §1's instance with $W = 10$, the greedy rule below sets $x = (1, 0.8, 0)$ for the items $(6, 9), (5, 7), (5, 7)$ and gets $9 + 0.8 \cdot 7 = 14.6$. **The idea in one sentence:** take items in decreasing order of value density $v_i / w_i$, and cut the last item to fill the remaining capacity.
 
 **Why it works (exchange).** Suppose a solution leaves some of the densest item unused while carrying some amount $\varepsilon$ of a less dense item. Replace that $\varepsilon$ weight of the less dense item with $\varepsilon$ weight of the densest item. Total weight stays the same and value goes up by $\varepsilon$ times the density difference. So an optimal solution takes as much of the densest item as fits, and the argument repeats on the remaining capacity. Time $O(n \log n)$ for the sort.
 
@@ -209,7 +237,9 @@ print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 
 ### 5. Huffman coding
 
-**Problem.** Symbols appear with frequencies $p_i$. Give each symbol a binary codeword so that no codeword is a prefix of another. This makes a bit stream decodable without separators. The goal is to minimize the expected code length $L = \sum_i p_i \ell_i$, where $\ell_i$ is the length of symbol $i$'s codeword.
+**Problem.** Symbols appear with frequencies $p_i$. Give each symbol a binary codeword so that no codeword is a prefix of another. A code with codewords $c_1, \dots, c_n$ is **prefix-free** when
+$$c_i \text{ is not a prefix of } c_j \quad \text{for all } i \ne j$$
+where a prefix of a string is any initial part of it. This makes a bit stream decodable without separators, because reading bits until they spell a codeword can never stop too early. $\{0, 10, 11\}$ is prefix-free. $\{0, 01, 1\}$ is not: $0$ is a prefix of $01$, and the stream $01$ could mean $0, 1$ or $01$. The goal is to minimize the expected code length $L = \sum_i p_i \ell_i$, where $\ell_i$ is the length of symbol $i$'s codeword.
 
 **Codes as trees.** A prefix-free code is a binary tree whose leaves are the symbols. A left edge writes $0$ and a right edge writes $1$, and each codeword length equals the depth of its leaf. The problem is to choose the tree that minimizes $\sum_i p_i \cdot \text{depth}_i$.
 
@@ -266,9 +296,23 @@ The gap to $H$ comes from rounding each codeword to a whole number of bits. It i
 
 ### 6. Minimum spanning trees
 
-**Problem.** Given a connected undirected graph with edge weights, find a set of edges that connects every vertex, contains no cycle and has the smallest total weight. Such a tree has exactly $V - 1$ edges. Negative weights are allowed, and a maximum spanning tree is found by negating every weight.
+**Definitions.** Let $G = (V, E)$ be an undirected graph ([[02-foundations/algorithms/graph-algorithms|11.6 §1]]) with a weight $w(e)$ on each edge. $G$ is **connected** when every two vertices are joined by a path. A **cycle** is a closed path $v_0, v_1, \dots, v_k = v_0$ with $k \ge 3$ and $v_0, \dots, v_{k-1}$ distinct. A **tree** is a connected graph with no cycle. A **spanning tree** of a connected $G$ is an edge set $T \subseteq E$ that satisfies three conditions:
 
-**Cut property.** A *cut* splits the vertices into two nonempty groups $(S, V \setminus S)$. *If $e$ is the lightest edge crossing some cut, then some MST contains $e$. If $e$ is strictly lightest, every MST contains $e$.* Proof by exchange: take an MST $T$ that does not contain $e = (u, v)$. $T$ has a path from $u$ to $v$, and because $u$ and $v$ are on opposite sides of the cut, that path has an edge $f$ that also crosses the cut. Replacing $f$ by $e$ gives another spanning tree, since removing $f$ splits $T$ into two parts and $e$ reconnects them. Its weight is $w(T) - w(f) + w(e) \le w(T)$, so it is also an MST, and it contains $e$.
+- **spanning**: it is taken on all of $V$, so every vertex is part of the graph $(V, T)$;
+- **connected**: $(V, T)$ has a path between every two vertices;
+- **acyclic**: $T$ contains no cycle.
+
+Every spanning tree has exactly $|V| - 1$ edges, and for an edge set on all of $V$, any two of "connected", "acyclic" and "$|T| = |V| - 1$" imply the third. The reason is a count. Start from $|V|$ isolated vertices and add the edges one at a time. An edge that joins two different components reduces the number of components by one, and an edge inside one component closes a cycle and reduces nothing. So $|T|$ edges leave at least $|V| - |T|$ components, with equality exactly when no edge closed a cycle, and a single component without a cycle takes exactly $|V| - 1$ edges.
+
+A **minimum spanning tree** (MST) is a spanning tree of least total weight:
+$$T^* = \arg\min_{T \text{ spanning tree of } G} w(T), \qquad w(T) = \sum_{e \in T} w(e)$$
+The minimum ranges over the finitely many spanning trees, so an MST exists whenever $G$ is connected, though it need not be unique when weights tie. Negative weights are allowed, and a maximum spanning tree is found by negating every weight.
+
+**Example and non-example.** The five-vertex graph in the code below has 21 spanning trees, with total weights from $12$ to $20$. Its MST is the only one of weight $12$, $\{0\text{–}2, 1\text{–}3, 1\text{–}2, 3\text{–}4\}$. The edge set $\{0\text{–}1, 0\text{–}2, 1\text{–}2, 1\text{–}3\}$ also has $4 = |V| - 1$ edges but is not a spanning tree: it contains the cycle $0\text{–}1\text{–}2\text{–}0$ and never reaches vertex $4$.
+
+**Cut property.** A *cut* splits the vertices into two nonempty groups $(S, V \setminus S)$. An edge **crosses** the cut when its endpoints lie on different sides, so the crossing edges are
+$$\delta(S) = \{(u, v) \in E : u \in S,\ v \notin S\}$$
+For $S = \{0\}$ in the example graph, $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$, so by the property below every MST contains $0\text{–}2$. *If $e$ is the lightest edge crossing some cut, then some MST contains $e$. If $e$ is strictly lightest, every MST contains $e$.* Proof by exchange: take an MST $T$ that does not contain $e = (u, v)$. $T$ has a path from $u$ to $v$, and because $u$ and $v$ are on opposite sides of the cut, that path has an edge $f$ that also crosses the cut. Replacing $f$ by $e$ gives another spanning tree, since removing $f$ splits $T$ into two parts and $e$ reconnects them. Its weight is $w(T) - w(f) + w(e) \le w(T)$, so it is also an MST, and it contains $e$.
 
 **Cycle property.** *If $e$ is the strictly heaviest edge on some cycle, no MST contains $e$.* If an MST contained $e$, removing $e$ would split it into two parts. Some other edge of the cycle crosses between those parts and is lighter, so swapping it in would give a cheaper spanning tree.
 
@@ -312,7 +356,7 @@ print(sum(w for w, _, _ in prim(5, adj)))  # 12
 
 #### Kruskal: add edges lightest first
 
-**The idea in one sentence:** sort all edges by weight and keep each one that connects two different components (Kruskal 1956).
+**The idea in one sentence:** sort all edges by weight and keep each one that connects two different components (Kruskal 1956). A **component** here is a maximal set of vertices joined by the edges kept so far.
 
 **Why it is correct.** When Kruskal accepts $e = (u, v)$, take the cut (the component containing $u$, everything else). No edge crossing that cut was considered earlier, because Kruskal would have accepted it and $u$'s component would be larger. So $e$ is the lightest edge crossing this cut, and the cut property justifies it. Each rejected edge would close a cycle, and it is a heaviest edge on that cycle.
 
@@ -350,14 +394,18 @@ print(kruskal(5, edges))  # [(1, 0, 2), (2, 1, 3), (3, 1, 2), (6, 3, 4)]
 
 **Two properties worth knowing.**
 
-- **An MST is not a shortest-path tree.** Take a triangle with $w(A,B) = 2$, $w(B,C) = 2$ and $w(A,C) = 3$. The MST is $\{AB, BC\}$ with weight $4$. The shortest-path tree from $A$ is $\{AB, AC\}$ with weight $5$, because in the MST the path from $A$ to $C$ has length $4$, not $3$. Use an MST to connect everything cheaply, and a shortest-path tree for cheap routes from one source.
-- **The MST minimizes the bottleneck.** For any two vertices, the path between them in the MST has the smallest possible *largest* edge among all paths between them. For example, the smallest battery range that lets a robot hop between any two charging docks is the heaviest edge of the MST built on the dock distances.
+- **An MST is not a shortest-path tree.** A shortest-path tree from a source $s$ is a spanning tree in which the tree path from $s$ to every vertex $v$ has length $d(s, v)$, the shortest distance in $G$. Take a triangle with $w(A,B) = 2$, $w(B,C) = 2$ and $w(A,C) = 3$. The MST is $\{AB, BC\}$ with weight $4$. The shortest-path tree from $A$ is $\{AB, AC\}$ with weight $5$, because in the MST the path from $A$ to $C$ has length $4$, not $3$. Use an MST to connect everything cheaply, and a shortest-path tree for cheap routes from one source.
+- **The MST minimizes the bottleneck.** For any two vertices, the path between them in the MST has the smallest possible *largest* edge among all paths between them:
+$$\max_{e \in P_{\text{MST}}(u, v)} w(e) = \min_{P \text{ from } u \text{ to } v} \ \max_{e \in P} w(e)$$
+  Here $P_{\text{MST}}(u, v)$ is the path between $u$ and $v$ inside the tree, which is unique since a tree has no cycle, and $P$ ranges over all paths in $G$. In the example graph, the tree path $0\text{–}2\text{–}1\text{–}3\text{–}4$ has largest edge $6$, and no path from $0$ to $4$ does better, because every path must enter vertex $4$ through $3\text{–}4\,(6)$ or $2\text{–}4\,(7)$. For example, the smallest battery range that lets a robot hop between any two charging docks is the heaviest edge of the MST built on the dock distances.
 
 #### Single-linkage clustering: Kruskal stopped early
 
 **The idea in one sentence:** treat points as vertices and distances as edge weights, run Kruskal, and stop before the long edges.
 
-There are two stopping rules. Stop when **$k$ components** remain: this gives the $k$-clustering that maximizes *spacing*, the smallest distance between points in different clusters. Or stop at **the first edge longer than a threshold $r$**: the clusters are then exactly the connected components of the graph that joins every pair of points closer than $r$ (Gower & Ross 1969).
+There are two stopping rules. The name comes from how the method measures the distance between two clusters, by their single closest pair, $d_{\text{single}}(A, B) = \min_{p \in A,\, q \in B} d(p, q)$; complete linkage uses the $\max$ over pairs and average linkage the mean. Stop when **$k$ components** remain: this gives the $k$-clustering that maximizes *spacing*, the smallest distance between points in different clusters,
+$$\text{spacing}(C_1, \dots, C_k) = \min_{a \ne b} \ \min_{p \in C_a,\, q \in C_b} d(p, q)$$
+so a large spacing means every cluster is far from every other. The two clusters of the first call below have spacing $5$, the distance from $(1, 0)$ to $(6, 0)$. Or stop at **the first edge longer than a threshold $r$**: the clusters are then exactly the connected components of the graph that joins every pair of points closer than $r$ (Gower & Ross 1969).
 
 ```python
 from itertools import combinations
@@ -391,15 +439,21 @@ Building all pairs costs $O(n^2 \log n)$, which is fine for a few hundred detect
 
 **The chaining weakness.** One chain of short hops is enough to merge two clusters. The second call above shows a thin line of points, such as a cable, a railing, remaining ground returns or a worker's arm resting on a wall, joining two objects into one cluster. Common fixes are to remove the ground plane first (for example with RANSAC), to require a minimum number of neighbours before a point may link, as density-based clustering does (DBSCAN, Ester et al. 1996), or to use average or complete linkage, which judge whole clusters rather than their single closest pair.
 
-**Aside.** An MST also gives a 2-approximation for a shortest closed tour through points with metric distances, such as an inspection route. Walk around the MST, visiting each edge twice, and skip vertices already visited. The walk costs $2 \cdot w(\text{MST})$, and skipping vertices cannot lengthen it because of the triangle inequality. Every tour costs at least $w(\text{MST})$, because deleting one edge of a tour leaves a spanning tree.
+**Aside.** An MST also gives a 2-approximation for a shortest closed tour through points with metric distances (distances that, among the other metric axioms, satisfy the triangle inequality $d(a, c) \le d(a, b) + d(b, c)$), such as an inspection route. Walk around the MST, visiting each edge twice, and skip vertices already visited. The walk costs $2 \cdot w(\text{MST})$, and skipping vertices cannot lengthen it because of the triangle inequality. Every tour costs at least $w(\text{MST})$, because deleting one edge of a tour leaves a spanning tree.
 
 ### 7. Greedy as an approximation when exact is NP-hard
 
 For many coverage and selection problems, exact optimization is NP-hard, and greedy is both the practical method and the one with the best guarantee known to be achievable in polynomial time.
 
+**Approximation factor.** An algorithm is an **$\alpha$-approximation** when, on every instance $I$, its value $\mathrm{ALG}(I)$ is within a factor $\alpha$ of the optimum $\mathrm{OPT}(I)$:
+$$\mathrm{ALG}(I) \le \alpha \cdot \mathrm{OPT}(I) \ \text{ for minimization } (\alpha \ge 1), \qquad \mathrm{ALG}(I) \ge \alpha \cdot \mathrm{OPT}(I) \ \text{ for maximization } (\alpha \le 1)$$
+The factor is a worst-case guarantee over all instances, so one good run proves nothing and one bad instance disproves it. §4's knapsack rule is a $1/2$-approximation and §6's MST tour a $2$-approximation. Below, set cover gets $\alpha = H(d)$, and in its worked example greedy uses $3$ sets against an optimum of $2$, a ratio of $1.5$ within $H(4) \approx 2.08$; submodular maximization gets $\alpha = 1 - 1/e$.
+
 #### Set cover
 
-**Problem.** A universe $U$ of $n$ elements, for example surface patches of a structure to inspect, and a family of subsets, for example the patches visible from each candidate viewpoint. Choose the fewest subsets whose union is $U$.
+**Problem.** A universe $U$ of $n$ elements, for example surface patches of a structure to inspect, and a family of subsets, for example the patches visible from each candidate viewpoint. Choose the fewest subsets whose union is $U$. With subsets $S_1, \dots, S_m \subseteq U$ and costs $c_j$, the problem is
+$$\min_{J \subseteq \{1, \dots, m\}} \sum_{j \in J} c_j \quad \text{subject to} \quad \bigcup_{j \in J} S_j = U$$
+so the unweighted problem, with every $c_j = 1$, simply counts the chosen subsets.
 
 **The idea in one sentence:** repeatedly choose the subset that covers the most still-uncovered elements. In the weighted version, choose the subset with the lowest cost per newly covered element.
 
@@ -431,7 +485,9 @@ Each round scans every subset, so a direct implementation costs $O(\text{rounds}
 
 #### Submodular maximization: the 1 − 1/e guarantee
 
-Many objectives in sensor placement and active perception have **diminishing returns**. Adding a sensor to a small set helps at least as much as adding it to a larger set that already contains the small one. Formally, a set function $f$ is *submodular* if $f(A \cup \{x\}) - f(A) \ge f(B \cup \{x\}) - f(B)$ whenever $A \subseteq B$ and $x \notin B$, and *monotone* if adding elements never decreases $f$. The area covered by the union of sensor footprints is monotone submodular. So is the information that sensor readings give about a hidden state, when the readings are conditionally independent given that state (Krause & Guestrin 2005). Krause, Singh & Guestrin (2008) develop this for sensor placement. For a monotone submodular $f$ with $f(\varnothing) = 0$, choosing $k$ elements one at a time by largest marginal gain guarantees
+Many objectives in sensor placement and active perception have **diminishing returns**. Adding a sensor to a small set helps at least as much as adding it to a larger set that already contains the small one. Formally, a set function $f$ is *submodular* if $f(A \cup \{x\}) - f(A) \ge f(B \cup \{x\}) - f(B)$ whenever $A \subseteq B$ and $x \notin B$, and *monotone* if adding elements never decreases $f$, that is, $f(A) \le f(B)$ whenever $A \subseteq B$. Writing $\Delta(x \mid A) = f(A \cup \{x\}) - f(A)$ for the **marginal gain** of $x$ given $A$, submodularity is the single line
+$$\Delta(x \mid A) \ge \Delta(x \mid B) \quad \text{for all } A \subseteq B,\ x \notin B$$
+so an element is worth less the more has already been chosen. For the coverage function $f(A) = \lvert \bigcup_{j \in A} \text{views}[j] \rvert$ of the set-cover example above, $\Delta(V3 \mid \varnothing) = 3$ but $\Delta(V3 \mid \{V1\}) = 1$, since $V1$ already sees patches $2$ and $4$. **Non-example:** $f(A) = \lvert A \rvert^2$ is monotone but not submodular, because the first element gains $1$ and the second gains $3$. The area covered by the union of sensor footprints is monotone submodular. So is the information that sensor readings give about a hidden state, when the readings are conditionally independent given that state (Krause & Guestrin 2005). Krause, Singh & Guestrin (2008) develop this for sensor placement. For a monotone submodular $f$ with $f(\varnothing) = 0$, choosing $k$ elements one at a time by largest marginal gain guarantees
 
 $$f(\text{greedy}_k) \ge \left(1 - \tfrac{1}{e}\right) f(\text{OPT}_k) \approx 0.632\, f(\text{OPT}_k),$$
 
@@ -530,13 +586,31 @@ print(first_counterexample())  # ([1, 3, 4], 6)
 
 **한 문장 요약:** 단순한 국소 규칙으로 가장 좋은 선택을 하고, 그 선택에 확정한 뒤, 남은 문제를 같은 방식으로 푼다.
 
-그리디 알고리즘이 옳으려면 두 가지가 성립해야 한다. **그리디 선택 속성**(greedy-choice property)은 어떤 최적해가 그리디 선택으로 시작한다는 뜻이다. **최적 부분 구조**는 그 선택 뒤에 남는 것이 같은 문제의 더 작은 사례라서 같은 논증을 다시 적용할 수 있다는 뜻이다. 동적 계획법은 두 번째 속성만 필요하고, 그 대가로 결정마다 모든 선택지를 시도한다([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). 그리디는 선택지 하나만 믿으므로, 그 하나로 충분하다는 증명이 필요하다.
+**그리디 알고리즘이란.** 해가 선택의 연속으로 만들어지는 최적화 문제를 위한 알고리즘 설계 패러다임이며, 이름 붙은 네 부분을 갖는다.
+
+- **후보**(candidates): 해를 이루는 조각들(구간, 간선, 동전).
+- **선택 규칙**(selection rule): 후보에 순위를 매기는 단순한 키.
+- **실현 가능성 검사**(feasibility test): 후보를 부분해에 더할 수 있는지 판정한다.
+- **되돌리지 않는 확정**(irrevocable commitment): 한 번 고른 후보는 빼거나 다시 검토하지 않는다.
+
+가장 큰 동전부터 내는 거스름돈, Kruskal, 허프만 부호가 모두 정확히 이 네 부분을 갖는다.
+
+**옳을 조건.** 사례를 $I$, 그리디의 첫 선택을 $g$, $g$를 확정한 뒤 남는 더 작은 사례를 $I_g$, 최적값을 $\mathrm{OPT}(\cdot)$라 쓰자. 두 속성이 필요하다.
+
+- **그리디 선택 속성**(greedy-choice property): $I$의 어떤 최적해가 $g$를 포함한다. 모든 최적해일 필요는 없고 하나면 된다.
+- **최적 부분 구조**(optimal substructure): $g$를 포함하는 $I$의 최적해는 $g$와 $I_g$의 최적해로 이루어진다. 그래서 비용이 선택들에 대해 더해지는 경우
+$$\mathrm{OPT}(I) = c(g) + \mathrm{OPT}(I_g)$$
+  이다. 여기서 $c(g)$는 선택 $g$ 자체의 비용 또는 가치다.
+
+첫 선택이 아무것도 잃지 않고 남는 것이 다시 같은 문제이므로, 두 속성이 함께 사례 크기에 대한 귀납법으로 그리디의 정당성을 증명한다. **반례:** 동전 $\{1, 3, 4\}$로 $6$을 낼 때 그리디의 첫 선택은 동전 $4$지만, 동전 두 개짜리 해는 $3 + 3$뿐이다. 어떤 최적해도 $4$를 포함하지 않으므로 그리디 선택 속성이 깨진다. 최적 부분 구조는 여전히 성립하며, 그래서 동적 계획법으로는 풀린다. 동적 계획법은 두 번째 속성만 필요하고, 그 대가로 결정마다 모든 선택지를 시도한다([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). 그리디는 선택지 하나만 믿으므로, 그 하나로 충분하다는 증명이 필요하다.
 
 그 증명을 쓰는 표준적인 방법은 두 가지다.
 
-**방법 1: 그리디가 앞서 간다(greedy stays ahead).** 매 단계 뒤에 비교할 수 있는 진행 척도를 정한다. 예를 들어 "경로를 얼마나 갔나", "구간을 몇 개 배정했나", "마지막으로 고른 구간의 종료 시각" 같은 것이다. 모든 단계 $k$ 뒤에 그리디의 척도가 *다른 어떤* 유효한 해의 $k$단계 뒤 척도보다 나쁘지 않음을 귀납법으로 보인다. 그다음 매 단계 앞서 있다는 사실로부터 그리디가 더 늦게 끝나거나 더 적게 고를 수 없음을 보인다.
+**방법 1: 그리디가 앞서 간다(greedy stays ahead).** 매 단계 뒤에 비교할 수 있는 진행 척도를 정한다. 예를 들어 "경로를 얼마나 갔나", "구간을 몇 개 배정했나", "마지막으로 고른 구간의 종료 시각" 같은 것이다. 모든 단계 $k$ 뒤에 그리디의 척도가 *다른 어떤* 유효한 해의 $k$단계 뒤 척도보다 나쁘지 않음을 귀납법으로 보인다. 해 $S$의 $k$단계 뒤 척도를 $m_k(S)$라 하면 증명할 주장은
+$$m_k(G) \succeq m_k(O) \quad \text{for every step } k \text{ and every valid solution } O$$
+이다. $\succeq$는 "적어도 그만큼 좋다"는 뜻이므로, 클수록 좋은 척도라면 $\ge$, 작을수록 좋은 척도라면 $\le$다. 그다음 매 단계 앞서 있다는 사실로부터 그리디가 더 늦게 끝나거나 더 적게 고를 수 없음을 보인다.
 
-**방법 2: 교환 논증(exchange argument).** 그리디 해 $G$와 다른 임의의 최적해 $O$를 잡는다. 둘이 처음 달라지는 곳을 찾아, $O$를 무효로 만들지도 더 나쁘게 만들지도 않으면서 그 자리를 $G$와 같게 바꾼다. 이것을 반복하면 $O$가 한 단계씩 $G$로 바뀌고 그동안 비용은 늘지 않으므로 $G$도 최적이다. 같은 논증의 짧은 형태는 그리디의 *첫* 선택을 어떤 최적해에 끼워 넣을 수 있다는 것만 보이고, 나머지는 최적 부분 구조로 반복한다.
+**방법 2: 교환 논증(exchange argument).** 그리디 해 $G$와 다른 임의의 최적해 $O$를 잡는다. 둘이 처음 달라지는 곳을 찾아, $O$를 무효로 만들지도 더 나쁘게 만들지도 않으면서 그 자리를 $G$와 같게 바꾼다. 즉 바뀐 해 $O'$는 유효하고 $\text{cost}(O') \le \text{cost}(O)$다. 이것을 반복하면 $O$가 한 단계씩 $G$로 바뀌고 그동안 비용은 늘지 않으므로 $G$도 최적이다. 같은 논증의 짧은 형태는 그리디의 *첫* 선택을 어떤 최적해에 끼워 넣을 수 있다는 것만 보이고, 나머지는 최적 부분 구조로 반복한다.
 
 두 방법은 서로 바꿔 쓸 수 있는 경우가 많다. 앞서 가기 논증은 해가 직선을 따라 또는 시간 순으로 만들어지는 문제에 잘 맞는다. 교환 논증은 답이 순서나 집합이고, 두 원소를 맞바꿀 때의 비용 변화를 계산할 수 있는 문제에 잘 맞는다.
 
@@ -573,9 +647,13 @@ print(min_charges([2, 9], 6, 12))             # -1
 
 ### 2. 구간 문제
 
-구간은 면접에서 가장 흔한 그리디 유형이다. 먼저 끝점 규약을 정하고 소리 내어 말한다. 이 페이지는 **반열린** 구간 $[s, e)$를 쓴다. $10$에 끝나는 예약과 $10$에 시작하는 예약은 충돌하지 않는다.
+구간은 면접에서 가장 흔한 그리디 유형이다. 먼저 끝점 규약을 정하고 소리 내어 말한다. 이 페이지는 **반열린** 구간 $[s, e) = \{t : s \le t < e\}$를 쓴다. 시작 시각은 포함하고 종료 시각은 포함하지 않는다. 두 구간은 시각을 공유할 때 정확히 겹친다.
+$$[s_1, e_1) \cap [s_2, e_2) \ne \varnothing \iff s_1 < e_2 \ \text{ and } \ s_2 < e_1$$
+각자 상대가 끝나기 전에 시작해야 하기 때문이다. 그래서 $10$에 끝나는 예약과 $10$에 시작하는 예약은 충돌하지 않는다. $[8, 10)$과 $[10, 12)$에서 $10 < 10$이 거짓이다. 닫힌 구간 $[s, e]$는 두 곳 모두 $\le$를 쓰며, 그러면 $[1, 3]$과 $[3, 5]$는 시각 $3$에서 겹친다.
 
 #### 활동 선택: 겹치지 않는 구간을 최대한 많이
+
+**문제.** 구간 $n$개가 주어지면, 위의 뜻으로 겹치는 두 구간이 없는 부분집합 $S$ 중 크기 $|S|$가 가장 큰 것을 고른다.
 
 **한 문장 요약:** 마지막으로 고른 구간 이후에 시작하는 구간 중 가장 먼저 *끝나는* 것을 반복해서 고른다.
 
@@ -604,7 +682,9 @@ print(max_activities(jobs))  # [(1, 2), (2, 5), (5, 8), (8, 10)]
 
 **한 문장 요약:** 시작 시각 순으로 구간을 훑으며 가장 먼저 비는 자원을 재사용하고, 모든 자원이 아직 쓰이는 중일 때만 새 자원을 연다.
 
-**최적인 이유.** 어느 시각 $t$에서든 $t$를 포함하는 구간은 각자 자원이 필요하므로, 답은 한 점을 공통으로 포함하는 구간의 최대 개수(*깊이*) 이상이다. 알고리즘은 힙의 가장 이른 종료 시각이 현재 시작 시각보다 늦을 때만 새 자원을 연다. 그 순간 열린 자원마다 더 일찍 또는 같은 시각에 시작해 아직 진행 중인 구간이 있으므로, 새 구간과 함께 모두 현재 시작 시각을 포함한다. 따라서 새 개수는 깊이 이하다. 알고리즘은 하한인 깊이보다 많은 자원을 쓰지 않는다.
+**최적인 이유.** 어느 시각 $t$에서든 $t$를 포함하는 구간은 각자 자원이 필요하므로, 답은 한 점을 공통으로 포함하는 구간의 최대 개수, 즉 *깊이* 이상이다.
+$$\text{depth} = \max_t \big|\{i : s_i \le t < e_i\}\big|$$
+집합은 시각 $t$를 포함하는 구간을 세므로, 깊이는 동시에 진행되는 구간의 최대 개수다. 아래 코드의 작업 일곱 개에서는 $2$다. 알고리즘은 힙의 가장 이른 종료 시각이 현재 시작 시각보다 늦을 때만 새 자원을 연다. 그 순간 열린 자원마다 더 일찍 또는 같은 시각에 시작해 아직 진행 중인 구간이 있으므로, 새 구간과 함께 모두 현재 시작 시각을 포함한다. 따라서 새 개수는 깊이 이하다. 알고리즘은 하한인 깊이보다 많은 자원을 쓰지 않는다.
 
 ```python
 import heapq
@@ -647,7 +727,9 @@ print(merge_intervals([(4, 7), (1, 3), (2, 5), (9, 10), (10, 12)]))  # [(1, 7), 
 
 ### 3. 가중 완료 시간을 최소화하는 스케줄링
 
-**문제.** 기계 하나(로봇 팔 하나, 프린터 하나, CPU 하나)가 작업을 하나씩 처리한다. 작업 $j$는 길이 $l_j > 0$와 가중치 $w_j$를 갖는다. 가중치는 기다리는 시간 한 단위가 얼마나 비싼지를 나타낸다. 작업 $j$의 완료 시간 $C_j$는 $j$까지(포함) 처리된 모든 작업 길이의 합이다. 목표는 총 가중 완료 시간 $\sum_j w_j C_j$의 최소화다.
+**문제.** 기계 하나(로봇 팔 하나, 프린터 하나, CPU 하나)가 작업을 하나씩 처리한다. 작업 $j$는 길이 $l_j > 0$와 가중치 $w_j$를 갖는다. 가중치는 기다리는 시간 한 단위가 얼마나 비싼지를 나타낸다. 작업 $j$의 완료 시간 $C_j$는 $j$까지(포함) 처리된 모든 작업 길이의 합이다. 목표는 총 가중 완료 시간의 최소화다.
+$$C_j = \sum_{k \preceq j} l_k, \qquad \text{minimize } \sum_j w_j C_j$$
+여기서 $k \preceq j$는 작업 $k$가 $j$보다 먼저 돌거나 $j$ 자신이라는 뜻이다. 그래서 작업의 완료 시간에는 자기 길이와 앞에 배정된 모든 길이가 들어간다.
 
 **한 문장 요약:** $w_j / l_j$가 큰 순서로, 즉 처리 시간 한 단위당 가중치가 가장 큰 작업부터 돌린다(Smith 1956).
 
@@ -689,7 +771,9 @@ print(weighted_completion([(6, 4), (2, 1)]), weighted_completion(order_jobs([(6,
 
 ### 4. 분할 가능 배낭(그리디가 된다) vs 0/1 배낭(안 된다)
 
-**분할 가능 배낭.** 물건은 무게 $w_i$와 가치 $v_i$를 갖고, 각 물건의 일부만 가져갈 수도 있다. **한 문장 요약:** 가치 밀도 $v_i / w_i$가 큰 순서로 담고, 남은 용량에 맞게 마지막 물건을 자른다.
+**분할 가능 배낭.** 물건은 무게 $w_i$와 가치 $v_i$를 갖고, 각 물건의 일부만 가져갈 수도 있다. 물건 $i$를 가져가는 비율을 $x_i$, 용량을 $W$라 하면 문제는 다음과 같다.
+$$\max \sum_i v_i x_i \quad \text{subject to} \quad \sum_i w_i x_i \le W, \qquad 0 \le x_i \le 1$$
+즉 담은 총무게가 용량에 맞고 어느 물건도 한 번보다 많이 담지 않는다. **0/1 배낭**(0/1 knapsack)은 $x_i \in \{0, 1\}$로 바꾼 같은 문제로, 모든 물건을 통째로 담거나 두고 간다. $W = 10$인 §1의 사례에서 아래 그리디 규칙은 물건 $(6, 9), (5, 7), (5, 7)$에 $x = (1, 0.8, 0)$을 주어 $9 + 0.8 \cdot 7 = 14.6$을 얻는다. **한 문장 요약:** 가치 밀도 $v_i / w_i$가 큰 순서로 담고, 남은 용량에 맞게 마지막 물건을 자른다.
 
 **옳은 이유(교환).** 어떤 해가 가장 밀도 높은 물건을 다 담지 않은 채 덜 밀도 높은 물건을 어느 양 $\varepsilon$만큼 담고 있다고 하자. 덜 밀도 높은 물건의 무게 $\varepsilon$을 가장 밀도 높은 물건의 무게 $\varepsilon$으로 바꾼다. 총무게는 그대로이고 가치는 $\varepsilon$ 곱하기 밀도 차이만큼 오른다. 그러므로 최적해는 가장 밀도 높은 물건을 들어가는 만큼 담고, 남은 용량에서 논증이 반복된다. 정렬 때문에 시간은 $O(n \log n)$이다.
 
@@ -715,7 +799,9 @@ print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 
 ### 5. 허프만 부호
 
-**문제.** 기호들이 빈도 $p_i$로 나타난다. 어떤 부호어도 다른 부호어의 접두사가 되지 않도록 각 기호에 이진 부호어를 준다. 그러면 구분자 없이도 비트열을 해독할 수 있다. 목표는 기대 부호 길이 $L = \sum_i p_i \ell_i$의 최소화다. $\ell_i$는 기호 $i$의 부호어 길이다.
+**문제.** 기호들이 빈도 $p_i$로 나타난다. 어떤 부호어도 다른 부호어의 접두사가 되지 않도록 각 기호에 이진 부호어를 준다. 부호어 $c_1, \dots, c_n$을 가진 부호가
+$$c_i \text{ is not a prefix of } c_j \quad \text{for all } i \ne j$$
+를 만족하면 **접두사 없는 부호**(prefix-free code)라 한다. 문자열의 접두사는 그 문자열의 앞부분 전체를 말한다. 비트를 읽다가 부호어가 완성되는 순간 멈춰도 너무 일찍 멈출 일이 없으므로, 구분자 없이도 비트열을 해독할 수 있다. $\{0, 10, 11\}$은 접두사 없는 부호다. $\{0, 01, 1\}$은 아니다. $0$이 $01$의 접두사이고, 비트열 $01$이 $0, 1$인지 $01$인지 알 수 없다. 목표는 기대 부호 길이 $L = \sum_i p_i \ell_i$의 최소화다. $\ell_i$는 기호 $i$의 부호어 길이다.
 
 **트리로서의 부호.** 접두사 없는 부호는 기호를 잎으로 갖는 이진 트리다. 왼쪽 간선은 $0$, 오른쪽 간선은 $1$을 쓰고, 부호어 길이는 잎의 깊이와 같다. 문제는 $\sum_i p_i \cdot \text{depth}_i$를 최소화하는 트리를 고르는 것이다.
 
@@ -772,9 +858,23 @@ $H$와의 차이는 부호어마다 길이를 정수 비트로 반올림해서 �
 
 ### 6. 최소 신장 트리
 
-**문제.** 간선 가중치가 있는 연결된 무방향 그래프에서, 모든 정점을 잇고 사이클이 없으며 총가중치가 가장 작은 간선 집합을 찾는다. 그런 트리는 간선이 정확히 $V - 1$개다. 음의 가중치도 괜찮고, 최대 신장 트리는 모든 가중치의 부호를 바꿔 구한다.
+**정의.** $G = (V, E)$를 간선마다 가중치 $w(e)$가 있는 무방향 그래프([[02-foundations/algorithms/graph-algorithms|11.6 §1]])라 하자. 모든 두 정점이 경로로 이어져 있으면 $G$는 **연결**(connected)되어 있다. **사이클**(cycle)은 $k \ge 3$이고 $v_0, \dots, v_{k-1}$이 서로 다른 닫힌 경로 $v_0, v_1, \dots, v_k = v_0$이다. **트리**(tree)는 사이클이 없는 연결 그래프다. 연결된 $G$의 **신장 트리**(spanning tree)는 다음 세 조건을 만족하는 간선 집합 $T \subseteq E$다.
 
-**컷 속성.** *컷*은 정점을 공집합이 아닌 두 그룹 $(S, V \setminus S)$로 나눈 것이다. *간선 $e$가 어떤 컷을 가로지르는 가장 가벼운 간선이면, 어떤 MST는 $e$를 포함한다. $e$가 엄격히 가장 가벼우면 모든 MST가 $e$를 포함한다.* 교환 증명: $e = (u, v)$를 포함하지 않는 MST $T$를 잡는다. $T$에는 $u$에서 $v$로 가는 경로가 있고, $u$와 $v$는 컷의 반대편에 있으므로 그 경로에는 컷을 가로지르는 간선 $f$가 있다. $f$를 $e$로 바꾸면 또 하나의 신장 트리가 된다. $f$를 지우면 $T$가 두 조각으로 나뉘고 $e$가 다시 잇기 때문이다. 그 가중치는 $w(T) - w(f) + w(e) \le w(T)$이므로 이것도 MST이고 $e$를 포함한다.
+- **신장**(spanning): $V$ 전체 위에서 잡으므로 모든 정점이 그래프 $(V, T)$에 속한다.
+- **연결**(connected): $(V, T)$에서 모든 두 정점 사이에 경로가 있다.
+- **비순환**(acyclic): $T$에 사이클이 없다.
+
+모든 신장 트리는 간선이 정확히 $|V| - 1$개이고, $V$ 전체 위의 간선 집합에서는 "연결", "비순환", "$|T| = |V| - 1$" 중 둘이 성립하면 나머지 하나도 성립한다. 이유는 세기다. 고립된 정점 $|V|$개에서 시작해 간선을 하나씩 더한다. 서로 다른 두 성분을 잇는 간선은 성분 수를 하나 줄이고, 한 성분 안의 간선은 사이클을 닫을 뿐 아무것도 줄이지 않는다. 그래서 간선 $|T|$개 뒤에는 성분이 적어도 $|V| - |T|$개 남고, 사이클을 닫은 간선이 없을 때만 등호가 성립하며, 사이클 없는 성분 하나에는 정확히 $|V| - 1$개의 간선이 필요하다.
+
+**최소 신장 트리**(minimum spanning tree, MST)는 총가중치가 가장 작은 신장 트리다.
+$$T^* = \arg\min_{T \text{ spanning tree of } G} w(T), \qquad w(T) = \sum_{e \in T} w(e)$$
+최솟값은 유한 개의 신장 트리 위에서 잡으므로 $G$가 연결되어 있으면 MST가 항상 존재하지만, 가중치가 같으면 유일하지 않을 수 있다. 음의 가중치도 괜찮고, 최대 신장 트리는 모든 가중치의 부호를 바꿔 구한다.
+
+**예와 반례.** 아래 코드의 정점 다섯 개 그래프에는 신장 트리가 21개 있고 총가중치는 $12$부터 $20$까지다. MST는 가중치 $12$인 유일한 트리 $\{0\text{–}2, 1\text{–}3, 1\text{–}2, 3\text{–}4\}$다. 간선 집합 $\{0\text{–}1, 0\text{–}2, 1\text{–}2, 1\text{–}3\}$도 간선이 $4 = |V| - 1$개지만 신장 트리가 아니다. 사이클 $0\text{–}1\text{–}2\text{–}0$을 포함하고 정점 $4$에 닿지 않는다.
+
+**컷 속성.** *컷*은 정점을 공집합이 아닌 두 그룹 $(S, V \setminus S)$로 나눈 것이다. 두 끝점이 서로 다른 쪽에 있는 간선이 컷을 **가로지른다**(crosses). 가로지르는 간선의 집합은
+$$\delta(S) = \{(u, v) \in E : u \in S,\ v \notin S\}$$
+이다. 예제 그래프에서 $S = \{0\}$이면 $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$이므로, 아래 속성에 따라 모든 MST가 $0\text{–}2$를 포함한다. *간선 $e$가 어떤 컷을 가로지르는 가장 가벼운 간선이면, 어떤 MST는 $e$를 포함한다. $e$가 엄격히 가장 가벼우면 모든 MST가 $e$를 포함한다.* 교환 증명: $e = (u, v)$를 포함하지 않는 MST $T$를 잡는다. $T$에는 $u$에서 $v$로 가는 경로가 있고, $u$와 $v$는 컷의 반대편에 있으므로 그 경로에는 컷을 가로지르는 간선 $f$가 있다. $f$를 $e$로 바꾸면 또 하나의 신장 트리가 된다. $f$를 지우면 $T$가 두 조각으로 나뉘고 $e$가 다시 잇기 때문이다. 그 가중치는 $w(T) - w(f) + w(e) \le w(T)$이므로 이것도 MST이고 $e$를 포함한다.
 
 **사이클 속성.** *$e$가 어떤 사이클에서 엄격히 가장 무거운 간선이면, 어떤 MST도 $e$를 포함하지 않는다.* MST가 $e$를 포함한다면 $e$를 지웠을 때 두 조각으로 나뉜다. 사이클의 다른 간선 하나가 두 조각 사이를 가로지르고 더 가벼우므로, 그것으로 바꾸면 더 싼 신장 트리가 된다.
 
@@ -818,7 +918,7 @@ print(sum(w for w, _, _ in prim(5, adj)))  # 12
 
 #### Kruskal: 가벼운 간선부터 더한다
 
-**한 문장 요약:** 모든 간선을 가중치로 정렬하고, 서로 다른 두 성분을 잇는 간선만 남긴다(Kruskal 1956).
+**한 문장 요약:** 모든 간선을 가중치로 정렬하고, 서로 다른 두 성분을 잇는 간선만 남긴다(Kruskal 1956). 여기서 **성분**(component)은 지금까지 남긴 간선으로 이어진 정점들의 극대 집합이다.
 
 **옳은 이유.** Kruskal이 $e = (u, v)$를 받아들일 때 컷 ($u$가 속한 성분, 나머지 전부)를 잡는다. 이 컷을 가로지르는 간선은 전에 검토된 적이 없다. 검토되었다면 Kruskal이 받아들였을 것이고 $u$의 성분이 더 컸을 것이기 때문이다. 따라서 $e$는 이 컷을 가로지르는 가장 가벼운 간선이고 컷 속성이 정당화한다. 거부된 간선은 각각 사이클을 닫았을 것이고, 그 사이클에서 가장 무거운 간선 중 하나다.
 
@@ -856,14 +956,18 @@ print(kruskal(5, edges))  # [(1, 0, 2), (2, 1, 3), (3, 1, 2), (6, 3, 4)]
 
 **알아 둘 성질 두 가지.**
 
-- **MST는 최단 경로 트리가 아니다.** $w(A,B) = 2$, $w(B,C) = 2$, $w(A,C) = 3$인 삼각형을 보자. MST는 가중치 $4$인 $\{AB, BC\}$다. $A$에서의 최단 경로 트리는 가중치 $5$인 $\{AB, AC\}$다. MST 안에서 $A$에서 $C$로 가는 경로의 길이가 $3$이 아니라 $4$이기 때문이다. 모든 것을 싸게 이을 때는 MST, 한 출발점에서 싸게 가는 경로에는 최단 경로 트리를 쓴다.
-- **MST는 병목을 최소화한다.** 어떤 두 정점에 대해서든 MST 안의 경로는 두 정점 사이 모든 경로 중에서 *가장 큰* 간선이 가장 작다. 예를 들어 로봇이 어느 두 충전 도크 사이든 건너다닐 수 있게 하는 최소 배터리 주행 거리는, 도크 간 거리로 만든 MST의 가장 무거운 간선이다.
+- **MST는 최단 경로 트리가 아니다.** 출발점 $s$의 최단 경로 트리는 $s$에서 모든 정점 $v$까지의 트리 경로 길이가 $G$에서의 최단 거리 $d(s, v)$인 신장 트리다. $w(A,B) = 2$, $w(B,C) = 2$, $w(A,C) = 3$인 삼각형을 보자. MST는 가중치 $4$인 $\{AB, BC\}$다. $A$에서의 최단 경로 트리는 가중치 $5$인 $\{AB, AC\}$다. MST 안에서 $A$에서 $C$로 가는 경로의 길이가 $3$이 아니라 $4$이기 때문이다. 모든 것을 싸게 이을 때는 MST, 한 출발점에서 싸게 가는 경로에는 최단 경로 트리를 쓴다.
+- **MST는 병목을 최소화한다.** 어떤 두 정점에 대해서든 MST 안의 경로는 두 정점 사이 모든 경로 중에서 *가장 큰* 간선이 가장 작다.
+$$\max_{e \in P_{\text{MST}}(u, v)} w(e) = \min_{P \text{ from } u \text{ to } v} \ \max_{e \in P} w(e)$$
+  여기서 $P_{\text{MST}}(u, v)$는 트리 안에서 $u$와 $v$를 잇는 경로로, 트리에는 사이클이 없어 유일하다. $P$는 $G$의 모든 경로를 돈다. 예제 그래프에서 트리 경로 $0\text{–}2\text{–}1\text{–}3\text{–}4$의 가장 큰 간선은 $6$이고, 정점 $4$로 들어가는 모든 경로가 $3\text{–}4\,(6)$이나 $2\text{–}4\,(7)$을 지나야 하므로 $0$에서 $4$로 가는 어떤 경로도 이보다 낫지 않다. 예를 들어 로봇이 어느 두 충전 도크 사이든 건너다닐 수 있게 하는 최소 배터리 주행 거리는, 도크 간 거리로 만든 MST의 가장 무거운 간선이다.
 
 #### 단일 연결 군집화: 일찍 멈춘 Kruskal
 
 **한 문장 요약:** 점을 정점으로, 거리를 간선 가중치로 보고 Kruskal을 돌리다가 긴 간선 앞에서 멈춘다.
 
-멈추는 규칙은 두 가지다. **성분이 $k$개** 남으면 멈추면, 서로 다른 군집에 속한 점들 사이의 최소 거리인 *간격*(spacing)을 최대화하는 $k$-군집화가 나온다. 또는 **임계값 $r$보다 긴 첫 간선에서** 멈추면, 군집은 $r$보다 가까운 모든 점 쌍을 이은 그래프의 연결 성분과 정확히 같다(Gower & Ross 1969).
+이름은 두 군집 사이의 거리를 가장 가까운 한 쌍으로 재는 방식 $d_{\text{single}}(A, B) = \min_{p \in A,\, q \in B} d(p, q)$에서 왔다. 완전 연결은 쌍들의 $\max$를, 평균 연결은 평균을 쓴다. 멈추는 규칙은 두 가지다. **성분이 $k$개** 남으면 멈추면, 서로 다른 군집에 속한 점들 사이의 최소 거리인 *간격*(spacing)을 최대화하는 $k$-군집화가 나온다.
+$$\text{spacing}(C_1, \dots, C_k) = \min_{a \ne b} \ \min_{p \in C_a,\, q \in C_b} d(p, q)$$
+간격이 크면 모든 군집이 다른 모든 군집에서 멀다. 아래 첫 번째 호출의 두 군집은 $(1, 0)$과 $(6, 0)$ 사이의 거리인 간격 $5$를 갖는다. 또는 **임계값 $r$보다 긴 첫 간선에서** 멈추면, 군집은 $r$보다 가까운 모든 점 쌍을 이은 그래프의 연결 성분과 정확히 같다(Gower & Ross 1969).
 
 ```python
 from itertools import combinations
@@ -897,15 +1001,21 @@ print(single_linkage(box + [(2, 0), (3, 0), (4, 0), (5, 0)] + crate, 1.2))  # al
 
 **사슬(chaining) 약점.** 짧은 도약 한 줄이면 두 군집이 합쳐진다. 위의 두 번째 호출이 보여 주듯, 케이블, 난간, 남아 있는 지면 점, 벽에 기댄 작업자의 팔 같은 가느다란 점의 줄이 두 물체를 하나의 군집으로 잇는다. 흔한 해결책은 지면 평면을 먼저 제거하는 것(예: RANSAC), 점이 연결되려면 최소 이웃 수를 요구하는 밀도 기반 군집화(DBSCAN, Ester et al. 1996), 또는 가장 가까운 한 쌍이 아니라 군집 전체로 판단하는 평균·완전 연결 군집화를 쓰는 것이다.
 
-**곁가지.** MST는 거리가 거리 공리를 만족할 때 점들을 도는 최단 순회(예: 점검 경로)의 2-근사도 준다. MST를 따라 각 간선을 두 번씩 지나며 한 바퀴 돌고, 이미 방문한 정점은 건너뛴다. 이 순회의 비용은 $2 \cdot w(\text{MST})$이고, 삼각 부등식 때문에 건너뛰어도 길어지지 않는다. 순회에서 간선 하나를 지우면 신장 트리가 남으므로 모든 순회는 $w(\text{MST})$ 이상이다.
+**곁가지.** MST는 거리가 거리 공리(그중 하나가 삼각 부등식 $d(a, c) \le d(a, b) + d(b, c)$)를 만족할 때 점들을 도는 최단 순회(예: 점검 경로)의 2-근사도 준다. MST를 따라 각 간선을 두 번씩 지나며 한 바퀴 돌고, 이미 방문한 정점은 건너뛴다. 이 순회의 비용은 $2 \cdot w(\text{MST})$이고, 삼각 부등식 때문에 건너뛰어도 길어지지 않는다. 순회에서 간선 하나를 지우면 신장 트리가 남으므로 모든 순회는 $w(\text{MST})$ 이상이다.
 
 ### 7. 정확한 풀이가 NP-난해할 때 근사로서의 그리디
 
 많은 커버리지·선택 문제에서 정확한 최적화는 NP-난해하고, 그리디는 실용적인 방법이자 다항 시간에 달성 가능하다고 알려진 최선의 보장을 갖는 방법이다.
 
+**근사 비율.** 모든 사례 $I$에서 알고리즘의 값 $\mathrm{ALG}(I)$가 최적값 $\mathrm{OPT}(I)$의 $\alpha$배 안에 들면 그 알고리즘을 **$\alpha$-근사**($\alpha$-approximation)라 한다.
+$$\mathrm{ALG}(I) \le \alpha \cdot \mathrm{OPT}(I) \ \text{ for minimization } (\alpha \ge 1), \qquad \mathrm{ALG}(I) \ge \alpha \cdot \mathrm{OPT}(I) \ \text{ for maximization } (\alpha \le 1)$$
+이 비율은 모든 사례에 대한 최악의 보장이므로, 잘 된 실행 하나는 아무것도 증명하지 못하고 나쁜 사례 하나는 반증한다. §4의 배낭 규칙은 $1/2$-근사, §6의 MST 순회는 $2$-근사다. 아래 집합 덮개는 $\alpha = H(d)$를 얻고, 그 계산 예제에서 그리디는 최적 $2$개 대신 $3$개를 써서 비율 $1.5$가 $H(4) \approx 2.08$ 안에 든다. 부분모듈 최대화는 $\alpha = 1 - 1/e$를 얻는다.
+
 #### 집합 덮개
 
-**문제.** 원소 $n$개의 전체 집합 $U$(예: 점검할 구조물 표면 조각들)와 부분집합들의 모음(예: 후보 시점마다 보이는 조각들)이 있다. 합집합이 $U$가 되는 부분집합을 가장 적게 고른다.
+**문제.** 원소 $n$개의 전체 집합 $U$(예: 점검할 구조물 표면 조각들)와 부분집합들의 모음(예: 후보 시점마다 보이는 조각들)이 있다. 합집합이 $U$가 되는 부분집합을 가장 적게 고른다. 부분집합 $S_1, \dots, S_m \subseteq U$와 비용 $c_j$가 있으면 문제는
+$$\min_{J \subseteq \{1, \dots, m\}} \sum_{j \in J} c_j \quad \text{subject to} \quad \bigcup_{j \in J} S_j = U$$
+이고, 모든 $c_j = 1$인 가중치 없는 문제는 고른 부분집합의 개수를 세는 것이다.
 
 **한 문장 요약:** 아직 덮이지 않은 원소를 가장 많이 덮는 부분집합을 반복해서 고른다. 가중 버전에서는 새로 덮는 원소당 비용이 가장 낮은 부분집합을 고른다.
 
@@ -937,7 +1047,9 @@ print(greedy_set_cover(range(1, 7), views))  # ['V1', 'V2', 'V3']; optimum is V2
 
 #### 부분모듈 최대화: 1 − 1/e 보장
 
-센서 배치와 능동 인식의 많은 목적 함수는 **한계 효용 체감** 성질을 보인다. 작은 집합에 센서 하나를 더하는 이득은, 그 작은 집합을 포함하는 더 큰 집합에 같은 센서를 더하는 이득 이상이다. 형식적으로, $A \subseteq B$이고 $x \notin B$일 때마다 $f(A \cup \{x\}) - f(A) \ge f(B \cup \{x\}) - f(B)$이면 집합 함수 $f$는 *부분모듈*(submodular)이고, 원소를 더해도 $f$가 줄지 않으면 *단조*다. 센서 탐지 영역의 합집합 넓이는 단조 부분모듈이다. 숨은 상태가 주어졌을 때 센서 측정들이 조건부 독립이면, 측정이 그 상태에 대해 주는 정보량도 단조 부분모듈이다(Krause & Guestrin 2005). Krause, Singh & Guestrin(2008)은 이를 센서 배치에 적용했다. $f(\varnothing) = 0$인 단조 부분모듈 $f$에 대해, 한계 이득이 가장 큰 원소를 하나씩 $k$개 고르면
+센서 배치와 능동 인식의 많은 목적 함수는 **한계 효용 체감** 성질을 보인다. 작은 집합에 센서 하나를 더하는 이득은, 그 작은 집합을 포함하는 더 큰 집합에 같은 센서를 더하는 이득 이상이다. 형식적으로, $A \subseteq B$이고 $x \notin B$일 때마다 $f(A \cup \{x\}) - f(A) \ge f(B \cup \{x\}) - f(B)$이면 집합 함수 $f$는 *부분모듈*(submodular)이고, 원소를 더해도 $f$가 줄지 않으면, 즉 $A \subseteq B$일 때마다 $f(A) \le f(B)$이면 *단조*다. $A$가 주어졌을 때 $x$의 **한계 이득**(marginal gain)을 $\Delta(x \mid A) = f(A \cup \{x\}) - f(A)$라 쓰면, 부분모듈성은 한 줄로
+$$\Delta(x \mid A) \ge \Delta(x \mid B) \quad \text{for all } A \subseteq B,\ x \notin B$$
+이다. 이미 많이 골랐을수록 원소 하나의 가치가 작아진다는 뜻이다. 위 집합 덮개 예제의 커버리지 함수 $f(A) = \lvert \bigcup_{j \in A} \text{views}[j] \rvert$에서 $\Delta(V3 \mid \varnothing) = 3$이지만, $V1$이 이미 조각 $2$와 $4$를 보므로 $\Delta(V3 \mid \{V1\}) = 1$이다. **반례:** $f(A) = \lvert A \rvert^2$은 단조지만 부분모듈이 아니다. 첫 원소는 $1$을, 두 번째 원소는 $3$을 얻기 때문이다. 센서 탐지 영역의 합집합 넓이는 단조 부분모듈이다. 숨은 상태가 주어졌을 때 센서 측정들이 조건부 독립이면, 측정이 그 상태에 대해 주는 정보량도 단조 부분모듈이다(Krause & Guestrin 2005). Krause, Singh & Guestrin(2008)은 이를 센서 배치에 적용했다. $f(\varnothing) = 0$인 단조 부분모듈 $f$에 대해, 한계 이득이 가장 큰 원소를 하나씩 $k$개 고르면
 
 $$f(\text{greedy}_k) \ge \left(1 - \tfrac{1}{e}\right) f(\text{OPT}_k) \approx 0.632\, f(\text{OPT}_k)$$
 

@@ -29,7 +29,13 @@ where each concept appears in the papers of this wiki.
 The first three bullets set up the vocabulary — what a matrix is and two ways to read $Wx$ — and the worked shape computation for an attention head follows right after.
 
 - A matrix $W \in \mathbb{R}^{m\times n}$ is a **linear map** $\mathbb{R}^n \to \mathbb{R}^m$:
-  it satisfies $W(ax + by) = aWx + bWy$. Every linear layer, attention projection
+  it satisfies $W(ax + by) = aWx + bWy$, which is additivity and homogeneity at once (the
+  complete definition, with non-examples, is [[02-foundations/engineering-math|0.5 §4.5]]).
+  The converse also holds: every linear map $\mathbb{R}^n \to \mathbb{R}^m$ is a matrix, whose
+  column $j$ is the image of the unit vector $e_j$, since any $x = \sum_j x_j e_j$ is then sent
+  to $\sum_j x_j W e_j$. For $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $We_1 = (1,3)$ is the
+  first column. Non-example: $x \mapsto Wx + b$ with $b \ne 0$ is affine, not linear, because it
+  sends $0$ to $b$. Every linear layer (strictly, its $W$), attention projection
   ($W_Q, W_K, W_V$), and embedding lookup is one.
 - Two readings of $y = Wx$:
   - **Row picture**: $y_i = \langle w_{i,:}, x\rangle$ — each output is a dot-product
@@ -43,11 +49,29 @@ The first three bullets set up the vocabulary — what a matrix is and two ways 
   output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$ (softmax turns scores
   into probabilities — defined in [[02-foundations/engineering-math|0.5 §10]]). The whole
   [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line.
-- **Dot product and angle**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. Cosine similarity
-  $= \langle a,b\rangle / (\|a\|\|b\|)$ — the retrieval metric of
+- **Dot product and angle**: the dot (inner) product takes two vectors of the same length and
+  returns one number,
+  $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
+  where $\theta$ is the angle between them; the last equality is the law of cosines, so the
+  product measures how much of one vector lies along the other. Example: $a = (1,2,2)$,
+  $b = (2,0,1)$ give $\langle a,b\rangle = 2 + 0 + 2 = 4$, $\|a\| = 3$, $\|b\| = \sqrt5 = 2.236$,
+  so $\cos\theta = 0.596$ and $\theta = 53.4°$. Two vectors are **orthogonal** when
+  $\langle a,b\rangle = 0$, like $(1,0)$ and $(0,1)$. Cosine similarity
+  $= \langle a,b\rangle / (\|a\|\|b\|)$ lies in $[-1, 1]$ ($1$ same direction, $0$ orthogonal,
+  $-1$ opposite; $0.596$ here) and ignores lengths — the retrieval metric of
   [[01-canonical-papers/notes/3-vlm/clip|CLIP]].
-- Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
-  (sparsity-inducing — its "corners" touch axes first), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
+- A **norm** $\|\cdot\|$ assigns a length to each vector. It is any function satisfying three
+  axioms, for all vectors $x, y$ and scalars $c$ — positive definiteness, absolute homogeneity
+  and the triangle inequality:
+  $$\|x\| \ge 0 \text{ with } \|x\| = 0 \iff x = 0, \qquad \|c\,x\| = |c|\,\|x\|, \qquad \|x + y\| \le \|x\| + \|y\|$$
+  so lengths behave the way distances must (no detour is shorter than the direct path).
+  Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
+  (sparsity-inducing — its "corners" touch axes first), $\|x\|_\infty = \max_i |x_i|$, and for
+  matrices $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$. Example: $x = (3,-4)$ has $\|x\|_2 = 5$,
+  $\|x\|_1 = 7$, $\|x\|_\infty = 4$; $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$ has
+  $\|A\|_F = \sqrt{30} = 5.477$; and $u = (3,0)$, $v = (0,4)$ satisfy the triangle inequality as
+  $\|u+v\|_2 = 5 \le 3 + 4$. Non-example: the so-called "$L_0$ norm", the count of nonzero
+  entries, is not a norm, since doubling $x$ leaves the count unchanged instead of doubling it.
 
 **Follow one input through the map.** Before calculating, say what each axis means. In a robot velocity map, the input entries may be joint speeds and the output entries tip-velocity components. In a neural layer, they are feature coordinates. The arithmetic is the same, but units and interpretation come from the application. A row asks which combination of inputs creates one output; a column asks what happens if only one input changes. Neither view requires imagining the whole matrix at once.
 
@@ -60,18 +84,48 @@ In the attention example above, select one row of the score matrix. That row con
 
 - $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ — the **column space**, i.e. everything you can
   reach by scaling $A$'s columns and adding them up. ("Everything reachable from a set of
-  vectors this way" is their **span**; the column space is the span of the columns.) Gaussian elimination = row
+  vectors this way" is their **span**; the column space is the span of the columns.) As sets,
+  $$\text{span}(v_1, \ldots, v_k) = \{c_1 v_1 + \cdots + c_k v_k : c_i \in \mathbb{R}\}, \qquad \text{col}(A) = \{Ax : x \in \mathbb{R}^n\}$$
+  and the two descriptions of $\text{col}(A)$ agree because $Ax$ is exactly the combination of
+  columns weighted by $x$ (§1's column picture). Example: $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$
+  has $\text{col}(C)$ = the line through $(1,2)$, so $Cx = (1,2)$ is solvable and $Cx = (1,0)$
+  is not.
+- **Linear independence**: vectors $v_1, \ldots, v_k$ are linearly independent when the only
+  combination that gives zero is the trivial one,
+  $$c_1 v_1 + \cdots + c_k v_k = 0 \implies c_1 = \cdots = c_k = 0$$
+  so no vector is a combination of the others and each one adds a new direction. Example:
+  $(1,0,1)$ and $(0,1,1)$ are independent; adding $(1,1,2)$, their sum, makes the set dependent
+  ($1\cdot v_1 + 1\cdot v_2 - 1\cdot v_3 = 0$), and the span stays a plane.
+- Gaussian elimination = row
   operations to triangular form; LU factorization is elimination *recorded* so multiple
-  right-hand sides are cheap.
+  right-hand sides are cheap. Written out, $A = LU$ with $L$ lower-triangular (ones on the
+  diagonal, the elimination multipliers below) and $U$ upper-triangular (what elimination
+  leaves), so $Ax = b$ becomes two triangular solves, $Ly = b$ then $Ux = y$. Example:
+  $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$
+  (the multiplier is $4/2 = 2$); for $b = (3,7)$, $Ly = b$ gives $y = (3,1)$ and $Ux = y$ gives
+  $x = (1,1)$.
 - **Rank** = number of independent columns = number of independent rows = dimension of
-  what the map can express. Rank-deficient ⇒ information is destroyed
-  (null space $\{x: Ax = 0\}$ is nontrivial).
+  what the map can express, $\text{rank}(A) = \dim \text{col}(A)$, where the dimension counts
+  the vectors in a largest independent set. The **null space**
+  $\text{null}(A) = \{x : Ax = 0\}$ is every input the map sends to zero; it always contains
+  $x = 0$, and is *nontrivial* when it contains more. The two are tied by rank–nullity, for
+  $A$ with $n$ columns:
+  $$\text{rank}(A) + \dim \text{null}(A) = n$$
+  since every input direction is either expressed in the output or destroyed. Rank-deficient ⇒ information is destroyed
+  (null space $\{x: Ax = 0\}$ is nontrivial). Example: $C$ above has rank $1$ and null space
+  spanned by $(2,-1)$, dimension $1$, and $1 + 1 = 2$ ✓. The consequence for solving: if $x_0$
+  solves $Ax = b$, then so does $x_0 + z$ for every $z$ in the null space, so the solution is
+  unique exactly when the null space is trivial.
 - **Least squares** — the most-used derivation in applied math. Overdetermined $Ax \approx b$:
   minimize $\|Ax - b\|^2$. Setting the gradient to zero:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS (Boyd & Vandenberghe's *Introduction to Applied Linear Algebra*, see Going deeper below) makes that
   assumption explicitly, and it is what makes $A^\top A$ invertible. Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
-  onto $\text{col}(A)$, and the residual is perpendicular to it. Linear regression,
+  onto $\text{col}(A)$, and the residual is perpendicular to it. That projection is itself a
+  matrix,
+  $$P = A(A^\top A)^{-1}A^\top, \qquad P^2 = P, \qquad P^\top = P$$
+  where $P^2 = P$ holds since projecting twice changes nothing and $P^\top = P$ since the discarded
+  part is perpendicular; in the example below $Pb = (7/6,\ 8/3,\ 25/6)$. Linear regression,
   calibration, and the Kalman filter's update all live here.
   **Worked, three points and a line.** Fit $y = c + mx$ to $(1,1), (2,3), (3,4)$ — three
   equations, two unknowns, no exact solution. Stack them:
@@ -133,9 +187,23 @@ For the line-fitting example, the first column says how changing the intercept m
 
 ### 3. Eigendecomposition — directions a map only stretches
 
-- $Av = \lambda v$: along eigenvector $v$, the map is pure scaling by $\lambda$. For
-  symmetric $A$: real eigenvalues, orthogonal eigenvectors, $A = Q\Lambda Q^\top$
-  (spectral theorem).
+- An **eigenvector** of a square matrix $A$ is a *nonzero* vector $v$ that $A$ only scales,
+  and the scale factor $\lambda$ is its **eigenvalue**:
+  $$Av = \lambda v, \qquad v \ne 0$$
+  so along eigenvector $v$, the map is pure scaling by $\lambda$ ($v = 0$ is excluded because
+  $A0 = \lambda 0$ for every $\lambda$). The eigenvalues are the roots of
+  $\det(A - \lambda I) = 0$, since $(A - \lambda I)v = 0$ has a nonzero solution only when
+  $A - \lambda I$ is singular. Non-example: the $90°$ rotation
+  $\begin{pmatrix}0&-1\\1&0\end{pmatrix}$ turns every nonzero vector, so it has no real
+  eigenvector; its eigenvalues are $\pm j$.
+- **Eigendecomposition**: when $A$ has $n$ independent eigenvectors, stack them as the columns
+  of $V$ and the eigenvalues on the diagonal of $\Lambda$; then $A = V\Lambda V^{-1}$. Example:
+  $\begin{pmatrix}1&1\\0&2\end{pmatrix}$ has $\lambda = 1, 2$ with eigenvectors $(1,0)$ and
+  $(1,1)$. Not every matrix has one: the shear $\begin{pmatrix}1&1\\0&1\end{pmatrix}$ has
+  $\lambda = 1$ twice but only the single eigenvector direction $(1,0)$.
+- **Spectral theorem.** For
+  symmetric $A$ ($A^\top = A$): real eigenvalues, orthogonal eigenvectors, $A = Q\Lambda Q^\top$
+  with $Q$ orthogonal ($Q^\top Q = I$, §4), so $Q^{-1} = Q^\top$.
 - **Worked $2\times2$, start to finish.** Take $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$.
   Eigenvalues solve $\det(A - \lambda I) = 0$:
   $$(2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0 \quad\Rightarrow\quad \lambda = 3,\ 1$$
@@ -143,7 +211,9 @@ For the line-fitting example, the first column says how changing the intercept m
   $\begin{pmatrix}-1&1\\1&-1\end{pmatrix}$ says $v_1 = v_2$, so $v = (1,1)$.
   Check: $A(1,1) = (3,3) = 3(1,1)$ ✓. For $\lambda = 1$ the same steps give $v = (1,-1)$,
   and $A(1,-1) = (1,-1)$ ✓. The two eigenvectors came out perpendicular — that is the
-  spectral theorem at work, not luck, and it happened because $A$ is symmetric.
+  spectral theorem at work, not luck, and it happened because $A$ is symmetric. Normalized to
+  length 1 they form $Q = \tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$, and
+  $Q\,\text{diag}(3,1)\,Q^\top$ multiplies back to $A$ ✓.
   *Reading it aloud:* this matrix stretches everything along the $45°$ diagonal by $3\times$
   and leaves the anti-diagonal untouched. Every symmetric matrix is a version of that sentence.
 - Why you care, concretely:
@@ -157,7 +227,8 @@ For the line-fitting example, the first column says how changing the intercept m
     set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
     **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD — symmetric positive-definite, defined below — Hessian; for a
     general matrix the 2-norm condition number is the singular-value ratio
-    $\kappa_2 = \sigma_{max}/\sigma_{min}$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
+    $\kappa_2 = \sigma_{max}/\sigma_{min}$, e.g. $\begin{pmatrix}1&2\\3&4\end{pmatrix}$ has
+    $\sigma = 5.465,\ 0.366$ and $\kappa_2 = 14.93$; a singular matrix has $\kappa = \infty$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
     adaptive optimization ([[01-canonical-papers/notes/1-foundations/adam|Adam]]) and normalization
     ([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]) help.
 
@@ -262,6 +333,16 @@ For the line-fitting example, the first column says how changing the intercept m
   perpendicular, so multiplying by one is a pure rotation/reflection — it stretches nothing) and
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$. Reading: rotate (input
   basis $V$) → scale (singular values) → rotate (output basis $U$).
+- **The pieces, named.** For $A \in \mathbb{R}^{m\times n}$, $U$ is $m\times m$, $\Sigma$ is
+  $m\times n$ with zeros off the diagonal, and $V$ is $n\times n$. A square matrix $Q$ is
+  **orthogonal** when $Q^\top Q = I$, which is why it preserves lengths:
+  $\|Qx\|^2 = x^\top Q^\top Q x = \|x\|^2$. A $30°$ rotation keeps $\|(3,4)\| = 5$; the
+  non-example $\text{diag}(2,1)$ has $\text{diag}(2,1)^\top\text{diag}(2,1) = \text{diag}(4,1) \ne I$
+  and stretches. Read column by column, the SVD says
+  $$A v_i = \sigma_i u_i, \qquad A^\top u_i = \sigma_i v_i$$
+  where the columns $v_i$ of $V$ are the **right singular vectors**, the columns $u_i$ of $U$
+  the **left singular vectors**, and $\sigma_i \ge 0$ the **singular values**, so input direction
+  $v_i$ goes to output direction $u_i$, stretched by $\sigma_i$.
 
 <svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD as rotate, scale, rotate">
   <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -298,15 +379,33 @@ For the line-fitting example, the first column says how changing the intercept m
   $(2,-1)/\sqrt5$ — check: $C(2,-1) = (0,0)$ ✓. That is §2's null space, found by a different
   route.
 - Connections: $\sigma_i^2$ = eigenvalues of $A^\top A$; rank = number of nonzero $\sigma_i$;
-  $\|A\|_2 = \sigma_1$.
+  $\|A\|_2 = \sigma_1$. That last one is the definition of the **spectral norm** (the matrix
+  2-norm) as the largest stretch,
+  $$\|A\|_2 = \max_{x \ne 0} \frac{\|Ax\|_2}{\|x\|_2} = \sigma_1$$
+  since the best input is $v_1$. For $C$ above, the input $(1,2)$ becomes $(5,10)$, stretched by
+  exactly $5$.
 - **Eckart–Young**: the best rank-$k$ approximation (in $\|\cdot\|_F$ or $\|\cdot\|_2$) is
-  truncated SVD $\sum_{i\le k}\sigma_i u_i v_i^\top$. This is the mathematical license for
+  truncated SVD $A_k = \sum_{i\le k}\sigma_i u_i v_i^\top$, and its error is exactly what was
+  thrown away,
+  $$\|A - A_k\|_2 = \sigma_{k+1}, \qquad \|A - A_k\|_F = \sqrt{\textstyle\sum_{i>k}\sigma_i^2}$$
+  so no rank-$k$ matrix can do better. Example: $A = \text{diag}(3,2,1)$ with $k = 1$ keeps
+  $\text{diag}(3,0,0)$, with error $2$ in the 2-norm and $\sqrt5 = 2.236$ in Frobenius. This is the mathematical license for
   model compression and PCA. ([[01-canonical-papers/notes/1-foundations/lora|LoRA]] is related but
   different: it does not SVD-approximate a finished update — it *parameterizes* the update
   as low-rank from the start, an empirical design choice.)
 - **PCA in four lines**: center data $X$; covariance $C = \frac1n X^\top X$; its top
   eigenvectors = directions of maximal variance = right singular vectors of $X$; project.
-  A classical ancestor of learned representations.
+  A classical ancestor of learned representations. PCA (principal component analysis) is thus
+  a linear dimensionality reduction. With $X$ holding $n$ centered samples as rows, the variance
+  along a unit direction $w$ is $w^\top C w$, so the directions of maximal variance are the
+  eigenvectors of $C$:
+  $$C\,w_i = \lambda_i\,w_i, \qquad z = W_k^\top x$$
+  where $w_i$ is the $i$-th principal direction, $\lambda_i$ the variance of the data along it,
+  $W_k$ the matrix of the top $k$ directions and $z$ the $k$ new coordinates of a sample $x$; the
+  share of variance kept is $\sum_{i \le k}\lambda_i / \sum_i \lambda_i$. Example: the points
+  $(2,0), (0,1), (-2,0), (0,-1)$ already have mean zero, $C = \text{diag}(2,\ 0.5)$, the first
+  component is $(1,0)$ with $2/2.5 = 80\%$ of the variance, and the one-number codes are
+  $2, 0, -2, 0$.
 
 **Read the multiplication from right to left.** Vᵀ first expresses an input in special input directions. Σ stretches or suppresses each of those coordinates. U then expresses the result in the output frame. The input and output spaces can have different dimensions, which is why SVD applies even when an eigenvector interpretation of A itself is unavailable.
 
@@ -371,9 +470,33 @@ special cases of it. It also explains the failure mode: near a singular configur
 $\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity grows without bound in
 that one direction as the arm approaches the singularity. The arm is being asked to move in a direction it cannot move; at the singular pose itself the pseudo-inverse leaves that zero alone, so the answer jumps discontinuously when the rank actually drops.
 
+**The definition behind both formulas.** The (Moore–Penrose) pseudo-inverse of any
+$m\times n$ matrix $A$ is the unique $n\times m$ matrix $A^\dagger$ satisfying four conditions:
+
+$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
+
+The first two say $A^\dagger$ undoes $A$ wherever undoing is possible, and the last two say the
+products $AA^\dagger$ and $A^\dagger A$ are orthogonal projections, so what cannot be undone is
+discarded perpendicularly rather than arbitrarily. The SVD formula satisfies all four, which is
+why it is the general definition. The $J^\dagger$ above passes all four numerically (to about
+$10^{-16}$), and $J^\dagger J$ is not $I$ but the projection with rows $(1,0,0)$,
+$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$: it removes exactly the null-space direction $n$, because the
+arm is redundant.
+
 The fix is to stop inverting the small singular values exactly — replace $1/\sigma$ with
 $\sigma/(\sigma^2 + \lambda)$, which is bounded for every $\sigma$ and equals $1/\sigma$
-when $\sigma^2 \gg \lambda$. That is **damped least squares**, and it is the same $\lambda$
+when $\sigma^2 \gg \lambda$. That is **damped least squares**: instead of the exact
+minimum-norm solution, it minimizes $\lVert J\dot\theta - v\rVert^2 + \lambda\lVert\dot\theta\rVert^2$,
+a trade between tracking error and joint speed, whose solution is
+
+$$J^\dagger_\lambda = J^\top (JJ^\top + \lambda I)^{-1}$$
+
+where $\lambda > 0$ is the damping; adding $\lambda I$ keeps the matrix invertible even at a
+singularity, so the inverse can never blow up. In numbers: with $\lambda = 0.01$, a healthy
+$\sigma = 1$ is inverted to $0.990$ instead of $1$, but a near-singular $\sigma = 0.01$ gives
+$0.990$ instead of $100$. On the arm above, the same $\lambda$ turns the command $v = (0,1)$ into
+$\dot\theta = (0.982,\ -0.784,\ -0.392)$ instead of $(1,\ -0.8,\ -0.4)$ — slightly less
+tracking, bounded speeds. It is the same $\lambda$
 as the trust parameter you will meet on [[02-foundations/optimization|4. Optimization §3.5]] —
 a forward pointer, not something this page depends on. So the chain
 runs: singular values → pseudo-inverse → what happens when one of them vanishes → damping →
@@ -385,6 +508,18 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 - **State-space model** $\dot{x} = Ax + Bu$, $y = Cx$: the system is a matrix; simulating
   is repeated matrix multiplication; the matrix exponential $e^{At}$ solves the unforced system exactly, and with the convolution $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$ the forced one.
+  The symbols: $x \in \mathbb{R}^n$ is the **state** (the numbers that, with future inputs,
+  determine the future), $u \in \mathbb{R}^m$ the input, $y \in \mathbb{R}^p$ the measured
+  output, and $A$ ($n\times n$), $B$ ($n\times m$), $C$ ($p\times n$) the internal dynamics, how
+  the input enters, and what the sensor sees (full treatment in
+  [[04-robotics/control-theory-ce397|5. Control Theory §2]]). The **matrix exponential** is
+  defined by the same power series as $e^{at}$,
+  $$e^{At} = I + At + \frac{(At)^2}{2!} + \frac{(At)^3}{3!} + \cdots$$
+  so that $\frac{d}{dt}e^{At} = Ae^{At}$ and $x(t) = e^{At}x_0$ solves $\dot x = Ax$. Example: a
+  unit mass pushed by a force $u$, with state (position, velocity), has
+  $A = \begin{pmatrix}0&1\\0&0\end{pmatrix}$ and $B = (0, 1)$. Here $A^2 = 0$, so the series
+  stops: $e^{At} = \begin{pmatrix}1&t\\0&1\end{pmatrix}$, and starting at position $0$ with
+  velocity $1$, after $t = 2$ the state is $(2, 1)$.
 - **Stability = eigenvalues of $A$** (poles): continuous-time stable iff all
   $\text{Re}(\lambda_i) < 0$; discrete-time iff all $|\lambda_i| < 1$.
 - **Controllability**: which directions can the input actually push the state? One step
@@ -392,7 +527,15 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $AB$, then $A^2B$, and so on. Stack those reachable directions —
   $[B, AB, \ldots, A^{n-1}B]$ — and if together they span all $n$ dimensions
   ($\text{rank} = n$), *every* state is reachable; if they miss a direction, no input
-  sequence ever drives the state there.
+  sequence ever drives the state there. As a test,
+  $$\mathcal{C} = [\,B \;\; AB \;\; \cdots \;\; A^{n-1}B\,], \qquad \text{controllable} \iff \text{rank}\,\mathcal{C} = n$$
+  where $\mathcal{C}$ is the $n \times nm$ controllability matrix; the stack stops at
+  $A^{n-1}B$ because later powers add no new direction (the Cayley–Hamilton argument in
+  [[04-robotics/control-theory-ce397|5. Control Theory §6]]). Example: the pushed mass above has
+  $AB = (1, 0)$, so $\mathcal{C} = \begin{pmatrix}0&1\\1&0\end{pmatrix}$ with rank 2 — a force
+  alone steers both position and velocity. Non-example: $A = \text{diag}(1, 2)$ with
+  $B = (1, 0)$ gives $\mathcal{C} = \begin{pmatrix}1&1\\0&0\end{pmatrix}$, rank 1, so the second,
+  unstable mode can never be influenced.
 <svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="controllable versus uncontrollable reachable directions">
   <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.35">
@@ -418,6 +561,14 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
   Observability is the transpose twin — can the
   output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
+  Stacked the usual way,
+  $$\mathcal{O} = \begin{bmatrix} C \\ CA \\ \vdots \\ CA^{n-1} \end{bmatrix}, \qquad \text{observable} \iff \text{rank}\,\mathcal{O} = n$$
+  which is the transpose of that matrix and has the same rank, because $y, \dot y, \ddot y, \ldots$
+  equal $Cx, CAx, CA^2x, \ldots$ when $u = 0$, and $x$ can be solved for exactly when this stack
+  has full rank. Example: measuring the pushed mass's position, $C = (1, 0)$, gives
+  $\mathcal{O} = I$, rank 2, observable. Non-example: measuring only its velocity, $C = (0, 1)$,
+  gives rows $(0,1)$ and $(0,0)$, rank 1 — no amount of speed data reveals where the mass
+  started.
 - LQR gains ([[04-robotics/lqr-lqg|6. LQR/LQG]]), Kalman filters ([[02-foundations/probability|3. Probability §5]]), and MPC ([[04-robotics/mpc|7. MPC]]) all reduce to structured matrix computations — Riccati recursions (one linear solve per step) for LQR and Kalman, and a dense QP (quadratic program: a quadratic cost under linear constraints) after MPC condensing (eliminating the states so only the inputs remain as variables, [[04-robotics/mpc|7. MPC §2]]) — numerical linear algebra is the control engineer's daily tool.
 
 ### 6. Geometry of high dimensions (paper-reading intuition)
@@ -466,7 +617,12 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 처음 세 항목은 어휘를 세운다 — 행렬이 무엇인지, $Wx$를 읽는 두 방법 — 그리고 바로 뒤에 어텐션 헤드의 모양을 따지는 계산 예시가 이어진다.
 
 - 행렬 $W \in \mathbb{R}^{m\times n}$은 **선형 사상** $\mathbb{R}^n \to \mathbb{R}^m$이다:
-  $W(ax + by) = aWx + bWy$를 만족한다. 모든 선형층, 어텐션 투영($W_Q, W_K, W_V$), 임베딩
+  $W(ax + by) = aWx + bWy$를 만족한다. 가법성과 동차성을 한꺼번에 쓴 것이다(비예시까지 담은
+  완전한 정의는 [[02-foundations/engineering-math|0.5 §4.5]]). 역도 성립한다. $\mathbb{R}^n \to \mathbb{R}^m$인
+  모든 선형 사상은 행렬이고, 그 $j$번째 열은 단위벡터 $e_j$의 상이다. 임의의 $x = \sum_j x_j e_j$가
+  $\sum_j x_j W e_j$로 가기 때문이다. $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$라면
+  $We_1 = (1,3)$이 첫 열이다. 비예시: $b \ne 0$인 $x \mapsto Wx + b$는 $0$을 $b$로 보내므로
+  선형이 아니라 아핀이다. 모든 선형층(엄밀히는 그 $W$), 어텐션 투영($W_Q, W_K, W_V$), 임베딩
   조회가 이것이다.
 - $y = Wx$의 두 가지 독해:
   - **행 관점**: $y_i = \langle w_{i,:}, x\rangle$ — 각 출력은 입력과 학습된 패턴(행)
@@ -481,10 +637,26 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   바꾼다 — [[02-foundations/engineering-math|0.5 §10]]에 정의).
   [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
   검사된다.
-- **내적과 각도**: $\langle a,b\rangle = \|a\|\|b\|\cos\theta$. 코사인 유사도
-  $= \langle a,b\rangle / (\|a\|\|b\|)$ — [[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 검색 지표.
-- 노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
-  "모서리"가 축에 먼저 닿는다), $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$.
+- **내적과 각도**: 내적은 길이가 같은 두 벡터를 받아 숫자 하나를 돌려준다.
+  $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
+  $\theta$는 두 벡터 사이의 각이다. 마지막 등식은 코사인 법칙이고, 그래서 내적은 한 벡터가 다른
+  벡터 방향으로 얼마나 누워 있는지를 잰다. 예: $a = (1,2,2)$, $b = (2,0,1)$이면
+  $\langle a,b\rangle = 2 + 0 + 2 = 4$, $\|a\| = 3$, $\|b\| = \sqrt5 = 2.236$이므로
+  $\cos\theta = 0.596$, $\theta = 53.4°$다. $\langle a,b\rangle = 0$이면 두 벡터가 **직교**한다.
+  $(1,0)$과 $(0,1)$이 그렇다. 코사인 유사도 $= \langle a,b\rangle / (\|a\|\|b\|)$는 $[-1, 1]$에
+  있고($1$은 같은 방향, $0$은 직교, $-1$은 반대 방향, 여기서는 $0.596$) 길이를 무시한다 —
+  [[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 검색 지표.
+- **노름** $\|\cdot\|$은 각 벡터에 길이를 준다. 모든 벡터 $x, y$와 스칼라 $c$에 대해 세 공리
+  — 양의 정부호성, 절대 동차성, 삼각 부등식 — 를 만족하는 함수면 무엇이든 노름이다.
+  $$\|x\| \ge 0 \text{ with } \|x\| = 0 \iff x = 0, \qquad \|c\,x\| = |c|\,\|x\|, \qquad \|x + y\| \le \|x\| + \|y\|$$
+  그래서 길이가 거리처럼 행동한다(돌아가는 길이 곧은 길보다 짧을 수 없다).
+  노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
+  "모서리"가 축에 먼저 닿는다), $\|x\|_\infty = \max_i |x_i|$, 행렬에는
+  $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$. 예: $x = (3,-4)$는 $\|x\|_2 = 5$, $\|x\|_1 = 7$,
+  $\|x\|_\infty = 4$이고, $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$는
+  $\|A\|_F = \sqrt{30} = 5.477$이며, $u = (3,0)$, $v = (0,4)$는 $\|u+v\|_2 = 5 \le 3 + 4$로
+  삼각 부등식을 만족한다. 비예시: 0이 아닌 성분의 개수인 이른바 "$L_0$ 노름"은 노름이 아니다.
+  $x$를 두 배로 해도 개수가 두 배가 되지 않고 그대로이기 때문이다.
 
 **입력 하나를 사상 끝까지 따라간다.** 계산 전에 각 축의 뜻을 말해 본다. 로봇 속도 사상에서는 입력이 관절 속도이고 출력이 말단 속도 성분일 수 있다. 신경망 층에서는 특징 좌표다. 계산은 같지만 단위와 해석은 응용이 정한다. 행은 한 출력을 만드는 입력 조합을 묻는다. 열은 입력 하나만 바뀌면 무슨 일이 생기는지 묻는다. 행렬 전체를 한꺼번에 상상할 필요가 없다.
 
@@ -497,15 +669,42 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 - $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$ — **열공간(column space)**, 즉 $A$의 열들을
   스칼라배해 더해서 도달할 수 있는 점 전체다. ("어떤 벡터 집합에서 이렇게 도달할 수 있는
-  것 전체"를 그 집합의 **span**(생성)이라 하고, 열공간은 열들의 span이다.) 가우스 소거 = 삼각형 꼴로 가는 행
-  연산; LU 분해는 소거 과정을 *기록*해 우변이 여러 개일 때 재사용을 싸게 만든 것.
-- **랭크** = 독립인 열의 수 = 독립인 행의 수 = 사상이 표현할 수 있는 것의 차원.
-  랭크 부족 ⇒ 정보가 파괴된다 (영공간 $\{x: Ax = 0\}$이 자명하지 않다).
+  것 전체"를 그 집합의 **span**(생성)이라 하고, 열공간은 열들의 span이다.) 집합으로 쓰면
+  $$\text{span}(v_1, \ldots, v_k) = \{c_1 v_1 + \cdots + c_k v_k : c_i \in \mathbb{R}\}, \qquad \text{col}(A) = \{Ax : x \in \mathbb{R}^n\}$$
+  이고, $Ax$가 정확히 $x$로 가중한 열들의 조합이므로(§1의 열 관점) $\text{col}(A)$의 두 설명이
+  일치한다. 예: $C = \begin{pmatrix}1&2\\2&4\end{pmatrix}$의 $\text{col}(C)$는 $(1,2)$를 지나는
+  직선이므로 $Cx = (1,2)$는 풀리고 $Cx = (1,0)$은 풀리지 않는다.
+- **일차독립**: 영벡터를 만드는 조합이 자명한 것뿐이면 벡터 $v_1, \ldots, v_k$가 일차독립이다.
+  $$c_1 v_1 + \cdots + c_k v_k = 0 \implies c_1 = \cdots = c_k = 0$$
+  그래서 어떤 벡터도 나머지의 조합이 아니고, 하나하나가 새 방향을 더한다. 예: $(1,0,1)$과
+  $(0,1,1)$은 독립이다. 둘의 합 $(1,1,2)$를 보태면 종속이 되고
+  ($1\cdot v_1 + 1\cdot v_2 - 1\cdot v_3 = 0$), span은 여전히 평면이다.
+- 가우스 소거 = 삼각형 꼴로 가는 행
+  연산; LU 분해는 소거 과정을 *기록*해 우변이 여러 개일 때 재사용을 싸게 만든 것. 풀어 쓰면
+  $A = LU$이고, $L$은 하삼각(대각선이 1, 그 아래가 소거 승수), $U$는 상삼각(소거가 남긴 것)이다.
+  그래서 $Ax = b$가 삼각 풀이 두 번, $Ly = b$와 $Ux = y$가 된다. 예:
+  $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$
+  (승수는 $4/2 = 2$)이고, $b = (3,7)$이면 $Ly = b$에서 $y = (3,1)$, $Ux = y$에서 $x = (1,1)$이다.
+- **랭크** = 독립인 열의 수 = 독립인 행의 수 = 사상이 표현할 수 있는 것의 차원,
+  $\text{rank}(A) = \dim \text{col}(A)$이다. 차원은 가장 큰 독립 집합의 벡터 수다. **영공간**
+  $\text{null}(A) = \{x : Ax = 0\}$은 사상이 0으로 보내는 입력 전체다. 항상 $x = 0$을 포함하고,
+  그보다 많이 포함하면 *자명하지 않다*고 한다. 열이 $n$개인 $A$에서 둘은 랭크–퇴화차수 정리로
+  묶인다.
+  $$\text{rank}(A) + \dim \text{null}(A) = n$$
+  모든 입력 방향은 출력에 표현되거나 파괴되거나 둘 중 하나이기 때문이다.
+  랭크 부족 ⇒ 정보가 파괴된다 (영공간 $\{x: Ax = 0\}$이 자명하지 않다). 예: 위의 $C$는 랭크
+  $1$이고 영공간은 $(2,-1)$이 생성하는 1차원이며 $1 + 1 = 2$다 ✓. 풀이에 대한 결과: $x_0$가
+  $Ax = b$의 해이면 영공간의 모든 $z$에 대해 $x_0 + z$도 해이므로, 해는 영공간이 자명할 때만
+  유일하다.
 - **최소제곱** — 응용수학에서 가장 많이 쓰는 유도. 과결정 $Ax \approx b$:
   $\|Ax - b\|^2$ 최소화. 그래디언트를 0으로 놓으면:
   $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS(Boyd·Vandenberghe의 *Introduction to Applied Linear Algebra*, 아래 더 깊이 참고)가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
-  잔차는 거기에 수직이다. 선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
+  잔차는 거기에 수직이다. 그 투영 자체가 행렬이다.
+  $$P = A(A^\top A)^{-1}A^\top, \qquad P^2 = P, \qquad P^\top = P$$
+  $P^2 = P$는 두 번 투영해도 달라지지 않는다는 뜻이고, $P^\top = P$는 버려지는 부분이 수직이라는
+  뜻이다. 아래 예제에서 $Pb = (7/6,\ 8/3,\ 25/6)$이다.
+  선형 회귀, 캘리브레이션, 칼만 필터의 갱신이 모두 여기 산다.
   **계산 예제 — 점 셋에 직선 하나.** $(1,1), (2,3), (3,4)$에 $y = c + mx$를 맞춰 보자 —
   식 셋, 미지수 둘, 정확한 해는 없다. 쌓으면
   $A = \begin{pmatrix}1&1\\1&2\\1&3\end{pmatrix}$, $b = (1,3,4)$. 그러면
@@ -566,8 +765,21 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### 3. 고유분해 — 사상이 늘이기만 하는 방향
 
-- $Av = \lambda v$: 고유벡터 $v$ 방향에서 사상은 $\lambda$배 순수 스케일링이다.
-  대칭 $A$: 실수 고유값, 직교 고유벡터, $A = Q\Lambda Q^\top$ (스펙트럼 정리).
+- 정방 행렬 $A$의 **고유벡터**는 $A$가 늘이거나 줄이기만 하는 *영이 아닌* 벡터 $v$이고, 그
+  배율 $\lambda$가 **고유값**이다.
+  $$Av = \lambda v, \qquad v \ne 0$$
+  그래서 고유벡터 $v$ 방향에서 사상은 $\lambda$배 순수 스케일링이다(모든 $\lambda$에 대해
+  $A0 = \lambda 0$이므로 $v = 0$은 뺀다). $(A - \lambda I)v = 0$이 영이 아닌 해를 가지려면
+  $A - \lambda I$가 특이해야 하므로, 고유값은 $\det(A - \lambda I) = 0$의 근이다. 비예시:
+  $90°$ 회전 $\begin{pmatrix}0&-1\\1&0\end{pmatrix}$은 영이 아닌 모든 벡터를 돌려 버리므로 실수
+  고유벡터가 없고, 고유값은 $\pm j$다.
+- **고유분해**: $A$가 독립인 고유벡터 $n$개를 가지면 그것들을 $V$의 열로, 고유값을 $\Lambda$의
+  대각선에 놓아 $A = V\Lambda V^{-1}$로 쓴다. 예: $\begin{pmatrix}1&1\\0&2\end{pmatrix}$는
+  고유값 $1, 2$와 고유벡터 $(1,0)$, $(1,1)$을 가진다. 모든 행렬이 되는 것은 아니다. 층밀림
+  $\begin{pmatrix}1&1\\0&1\end{pmatrix}$은 고유값 $1$이 두 번이지만 고유벡터 방향은 $(1,0)$
+  하나뿐이다.
+- **스펙트럼 정리.** 대칭 $A$($A^\top = A$): 실수 고유값, 직교 고유벡터, $A = Q\Lambda Q^\top$.
+  $Q$는 직교행렬($Q^\top Q = I$, §4)이므로 $Q^{-1} = Q^\top$이다.
 - **$2\times2$ 계산 예제, 처음부터 끝까지.** $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$를 보자.
   고유값은 $\det(A - \lambda I) = 0$을 푼다:
   $$(2-\lambda)^2 - 1 = \lambda^2 - 4\lambda + 3 = 0 \quad\Rightarrow\quad \lambda = 3,\ 1$$
@@ -575,7 +787,9 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $\begin{pmatrix}-1&1\\1&-1\end{pmatrix}$이 $v_1 = v_2$를 말하므로 $v = (1,1)$.
   검산: $A(1,1) = (3,3) = 3(1,1)$ ✓. $\lambda = 1$도 같은 절차로 $v = (1,-1)$,
   $A(1,-1) = (1,-1)$ ✓. 두 고유벡터가 서로 수직으로 나온 것은 운이 아니라 스펙트럼 정리가
-  작동한 것이고, $A$가 대칭이기 때문이다.
+  작동한 것이고, $A$가 대칭이기 때문이다. 길이 1로 정규화하면
+  $Q = \tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$이고, $Q\,\text{diag}(3,1)\,Q^\top$를
+  곱하면 다시 $A$가 된다 ✓.
   *소리 내어 읽으면:* 이 행렬은 $45°$ 대각선 방향으로 모든 것을 $3$배 늘이고 반대 대각선은
   건드리지 않는다. 모든 대칭 행렬이 이 문장의 어떤 판본이다.
 - 구체적으로 왜 중요한가:
@@ -588,7 +802,8 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
     $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
     가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
     $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD — 대칭 양정부호, 아래에 정의 — 헤시안 기준; 일반 행렬의 2-노름 조건수는
-    특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$)가 문제의 난이도 *그 자체*다 —
+    특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$. 예를 들어 $\begin{pmatrix}1&2\\3&4\end{pmatrix}$는
+    $\sigma = 5.465,\ 0.366$이고 $\kappa_2 = 14.93$이며, 특이 행렬은 $\kappa = \infty$)가 문제의 난이도 *그 자체*다 —
     나쁜 조건수는 적응형 최적화([[01-canonical-papers/notes/1-foundations/adam|Adam]])와
     정규화([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]])가 왜 돕는지 이해하는
     유용한 관점 중 하나다.
@@ -693,6 +908,15 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   것은 순수한 회전/반사이고 아무것도 늘이지 않는다),
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$.
   독해: 회전(입력 기저 $V$) → 스케일(특이값) → 회전(출력 기저 $U$).
+- **조각들의 이름.** $A \in \mathbb{R}^{m\times n}$이면 $U$는 $m\times m$, $\Sigma$는 대각선
+  밖이 0인 $m\times n$, $V$는 $n\times n$이다. 정방 행렬 $Q$가 $Q^\top Q = I$를 만족하면
+  **직교행렬**이고, 그래서 길이를 보존한다: $\|Qx\|^2 = x^\top Q^\top Q x = \|x\|^2$. $30°$ 회전은
+  $\|(3,4)\| = 5$를 그대로 두고, 비예시 $\text{diag}(2,1)$은
+  $\text{diag}(2,1)^\top\text{diag}(2,1) = \text{diag}(4,1) \ne I$라서 늘인다. 열 하나씩 읽으면
+  SVD는 이렇게 말한다.
+  $$A v_i = \sigma_i u_i, \qquad A^\top u_i = \sigma_i v_i$$
+  $V$의 열 $v_i$가 **오른쪽 특이벡터**, $U$의 열 $u_i$가 **왼쪽 특이벡터**, $\sigma_i \ge 0$이
+  **특이값**이다. 입력 방향 $v_i$가 $\sigma_i$배 늘어나 출력 방향 $u_i$로 간다.
 
 <svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD = 회전 → 스케일 → 회전">
   <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -728,14 +952,29 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   최대치다. 파괴되는 방향은 $\sigma_2 = 0$에 대응하는 우특이벡터, 여기서는 $(2,-1)/\sqrt5$ —
   검산: $C(2,-1) = (0,0)$ ✓. 2절의 영공간을 다른 길로 찾은 것이다.
 - 연결: $\sigma_i^2$ = $A^\top A$의 고유값; 랭크 = 0이 아닌 $\sigma_i$의 수;
-  $\|A\|_2 = \sigma_1$.
+  $\|A\|_2 = \sigma_1$. 마지막 것이 **스펙트럼 노름**(행렬 2-노름)을 가장 큰 늘임으로 정의한
+  것이다.
+  $$\|A\|_2 = \max_{x \ne 0} \frac{\|Ax\|_2}{\|x\|_2} = \sigma_1$$
+  가장 좋은 입력이 $v_1$이기 때문이다. 위의 $C$에서 입력 $(1,2)$는 $(5,10)$이 되어 정확히 $5$배
+  늘어난다.
 - **Eckart–Young**: 최적 랭크-$k$ 근사($\|\cdot\|_F$·$\|\cdot\|_2$ 기준)는 절단 SVD
-  $\sum_{i\le k}\sigma_i u_i v_i^\top$이다. 모델 압축과 PCA의 수학적 면허장.
+  $A_k = \sum_{i\le k}\sigma_i u_i v_i^\top$이고, 그 오차는 정확히 버린 것만큼이다.
+  $$\|A - A_k\|_2 = \sigma_{k+1}, \qquad \|A - A_k\|_F = \sqrt{\textstyle\sum_{i>k}\sigma_i^2}$$
+  그래서 어떤 랭크-$k$ 행렬도 더 잘할 수 없다. 예: $A = \text{diag}(3,2,1)$, $k = 1$이면
+  $\text{diag}(3,0,0)$을 남기고 오차는 2-노름으로 $2$, 프로베니우스로 $\sqrt5 = 2.236$이다.
+  모델 압축과 PCA의 수학적 면허장.
   ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 관련되지만 다르다: 완성된 업데이트를
   SVD로 근사하는 게 아니라 업데이트 자체를 처음부터 저랭크로 *매개화*하는 경험적 설계다.)
 - **PCA 네 줄 요약**: 데이터 $X$를 중심화; 공분산 $C = \frac1n X^\top X$; 그 상위
   고유벡터들 = 분산 최대 방향 = $X$의 오른쪽 특이벡터; 투영. 학습된 표현의 고전적
-  조상이다.
+  조상이다. 즉 PCA(주성분 분석)는 선형 차원 축소다. 중심화한 샘플 $n$개를 행으로 담은 $X$에서
+  주성분은
+  $$C\,w_i = \lambda_i\,w_i, \qquad z = W_k^\top x$$
+  를 푼다. $w_i$는 $i$번째 주방향, $\lambda_i$는 그 방향의 데이터 분산, $W_k$는 상위 $k$개 방향을
+  모은 행렬, $z$는 샘플 $x$의 새 좌표 $k$개다. 단위 방향 $w$를 따른 분산이 $w^\top C w$이므로 분산이 최대인 방향이 곧 $C$의 고유벡터다. 남기는 분산 비율은
+  $\sum_{i \le k}\lambda_i / \sum_i \lambda_i$다. 예: 점 $(2,0), (0,1), (-2,0), (0,-1)$은 이미
+  평균이 0이고 $C = \text{diag}(2,\ 0.5)$이므로, 첫 주성분은 $(1,0)$으로 분산의
+  $2/2.5 = 80\%$를 담고, 숫자 하나짜리 코드는 $2, 0, -2, 0$이다.
 
 **곱은 오른쪽에서 왼쪽으로 읽는다.** Vᵀ가 입력을 특별한 입력 방향들의 성분으로 바꾼다. Σ가 각 성분을 늘이거나 지운다. U가 결과를 출력 좌표로 표현한다. 입력·출력 공간의 차원이 달라도 된다. A 자체의 고유벡터 해석을 쓸 수 없는 경우에도 SVD가 가능한 이유다.
 
@@ -796,9 +1035,31 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
 관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 계수가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
 
+**두 공식 뒤에 있는 정의.** 임의의 $m\times n$ 행렬 $A$의 (무어–펜로즈) 유사역행렬은 네 조건을
+만족하는 유일한 $n\times m$ 행렬 $A^\dagger$다.
+
+$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
+
+앞의 둘은 되돌릴 수 있는 곳에서는 $A^\dagger$가 $A$를 되돌린다는 뜻이고, 뒤의 둘은 곱
+$AA^\dagger$와 $A^\dagger A$가 직교 투영이라는 뜻이다. 그래서 되돌릴 수 없는 부분은 제멋대로가
+아니라 수직으로 버려진다. SVD 공식이 넷을 모두 만족하므로 그것이 일반 정의다. 위의 $J^\dagger$도
+넷을 수치적으로(약 $10^{-16}$까지) 통과하고, $J^\dagger J$는 $I$가 아니라 행이 $(1,0,0)$,
+$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$인 투영이다. 팔이 여유자유도를 가지므로 영공간 방향 $n$을 정확히
+지우는 것이다.
+
 해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
 $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma^2 \gg \lambda$일
-때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이고,
+때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이다. 정확한 최소 노름 해 대신
+$\lVert J\dot\theta - v\rVert^2 + \lambda\lVert\dot\theta\rVert^2$, 즉 추종 오차와 관절 속도의
+절충을 최소화하며, 그 해는
+
+$$J^\dagger_\lambda = J^\top (JJ^\top + \lambda I)^{-1}$$
+
+이다. $\lambda > 0$이 감쇠다. $\lambda I$를 더하면 특이 자세에서도 행렬이 가역으로 남으므로 역이
+폭발할 수 없다. 숫자로: $\lambda = 0.01$일 때 멀쩡한 $\sigma = 1$은 $1$ 대신 $0.990$으로, 특이에
+가까운 $\sigma = 0.01$은 $100$ 대신 $0.990$으로 뒤집힌다. 위의 팔에서 같은 $\lambda$는 명령
+$v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392)$로 바꾼다 — 추종은
+조금 덜하고 속도는 유계다. 그리고 이것은
 [[02-foundations/optimization|4. 최적화 §3.5]]에서 만나게 될 신뢰 파라미터와 같은 $\lambda$다 —
 이 페이지가 기대는 것이 아니라 앞을 가리키는 표지다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
 → 그중 하나가 사라지면 벌어지는 일 → 감쇠 → Levenberg–Marquardt. 이름 넷, 발상 하나.
@@ -809,13 +1070,30 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
 
 - **상태공간 모델** $\dot{x} = Ax + Bu$, $y = Cx$: 시스템이 곧 행렬이다; 시뮬레이션은
   반복된 행렬곱이고, 행렬 지수 $e^{At}$가 입력이 없는 시스템의 정확한 해를 주고, 입력이 있으면 합성곱 $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$가 해다.
+  기호: $x \in \mathbb{R}^n$은 **상태**(미래 입력과 함께 미래를 결정하는 숫자들),
+  $u \in \mathbb{R}^m$은 입력, $y \in \mathbb{R}^p$는 측정 출력이고, $A$($n\times n$), $B$($n\times m$),
+  $C$($p\times n$)는 각각 내부 동역학, 입력이 들어오는 방식, 센서가 보는 것이다(자세한 서술은
+  [[04-robotics/control-theory-ce397|5. 제어 이론 §2]]). **행렬 지수**는 $e^{at}$와 같은 거듭제곱
+  급수로 정의한다.
+  $$e^{At} = I + At + \frac{(At)^2}{2!} + \frac{(At)^3}{3!} + \cdots$$
+  그래서 $\frac{d}{dt}e^{At} = Ae^{At}$이고 $x(t) = e^{At}x_0$가 $\dot x = Ax$를 푼다. 예: 힘
+  $u$로 미는 단위 질량의 상태를 (위치, 속도)로 두면 $A = \begin{pmatrix}0&1\\0&0\end{pmatrix}$,
+  $B = (0, 1)$이다. $A^2 = 0$이라 급수가 멈추고 $e^{At} = \begin{pmatrix}1&t\\0&1\end{pmatrix}$이며,
+  위치 $0$, 속도 $1$에서 출발하면 $t = 2$ 뒤 상태는 $(2, 1)$이다.
 - **안정성 = $A$의 고유값** (극점): 연속 시간은 모든 $\text{Re}(\lambda_i) < 0$일 때,
   이산 시간은 모든 $|\lambda_i| < 1$일 때 안정.
 - **가제어성**: 입력이 상태를 실제로 어느 방향으로 밀 수 있나? 입력 한 스텝은 $B$의 열
   방향으로 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그 도달
   방향들을 쌓아 —$[B, AB, \ldots, A^{n-1}B]$— 함께 $n$차원 전체를 생성하면($\text{rank}=n$)
   *모든* 상태에 도달 가능하고, 한 방향이라도 빠지면 어떤 입력 시퀀스도 상태를 그리로
-  몰지 못한다.
+  몰지 못한다. 판정식으로 쓰면
+  $$\mathcal{C} = [\,B \;\; AB \;\; \cdots \;\; A^{n-1}B\,], \qquad \text{controllable} \iff \text{rank}\,\mathcal{C} = n$$
+  이고 $\mathcal{C}$는 $n \times nm$ 가제어성 행렬이다. 그 뒤의 거듭제곱은 새 방향을 더하지
+  못하므로 $A^{n-1}B$에서 멈춘다(케일리–해밀턴 논증은 [[04-robotics/control-theory-ce397|5. 제어 이론 §6]]).
+  예: 위의 밀리는 질량은 $AB = (1, 0)$이라 $\mathcal{C} = \begin{pmatrix}0&1\\1&0\end{pmatrix}$,
+  랭크 2다 — 힘 하나로 위치와 속도를 모두 몬다. 비예시: $A = \text{diag}(1, 2)$,
+  $B = (1, 0)$이면 $\mathcal{C} = \begin{pmatrix}1&1\\0&0\end{pmatrix}$, 랭크 1이라 둘째 모드,
+  그것도 불안정한 모드에 결코 영향을 줄 수 없다.
 <svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="가제어 vs 비가제어: 도달 가능한 방향">
   <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.35">
@@ -840,6 +1118,13 @@ $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이�
 *왼쪽: $B$와 $AB$가 다른 방향을 가리켜 둘이 평면을 생성한다. 오른쪽: 동역학이 $B$를 자기 자신 위로만 돌려놓아, $u$를 어떻게 써도 상태 공간의 한 방향 전체에 닿지 못한다.*
 
   가관측성은 전치 쌍둥이다 — 출력 $y$가 결국 모든 상태를 드러낼 수 있는가? — 행렬은 $[C^\top, A^\top C^\top, \ldots]$이다.
+  보통 방식으로 쌓으면
+  $$\mathcal{O} = \begin{bmatrix} C \\ CA \\ \vdots \\ CA^{n-1} \end{bmatrix}, \qquad \text{observable} \iff \text{rank}\,\mathcal{O} = n$$
+  이고, 앞의 행렬의 전치라 랭크가 같다. $u = 0$일 때 $y, \dot y, \ddot y, \ldots$가
+  $Cx, CAx, CA^2x, \ldots$와 같으므로, 이 묶음이 풀랭크일 때 정확히 $x$를 풀어낼 수 있기
+  때문이다. 예: 밀리는 질량의 위치를 재면 $C = (1, 0)$, $\mathcal{O} = I$, 랭크 2로 가관측이다.
+  비예시: 속도만 재면 $C = (0, 1)$, 행이 $(0,1)$과 $(0,0)$이라 랭크 1 — 속도 자료를 아무리 모아도
+  질량이 어디서 출발했는지 알 수 없다.
 - LQR 이득([[04-robotics/lqr-lqg|6. LQR/LQG]]), 칼만 필터([[02-foundations/probability|3. 확률 §5]]), MPC([[04-robotics/mpc|7. MPC]])가 전부 구조화된 행렬 계산으로 환원된다 — LQR과 칼만은 리카티 재귀(단계마다 선형 풀이 한 번), MPC는 응축(condensing: 상태를 소거해 입력만 변수로 남기는 것, [[04-robotics/mpc|7. MPC §2]]) 뒤의 조밀한 QP(이차 계획: 선형 제약 아래 이차 비용 최소화) — 수치 선형대수가 제어 엔지니어의 일상 도구인 이유.
 
 ### 6. 고차원의 기하 (논문 읽기용 직관)

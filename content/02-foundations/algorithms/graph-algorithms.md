@@ -32,6 +32,17 @@ A graph is a set of vertices $V$ and edges $E$; write $n = \lvert V\rvert$ and $
 representation decides the cost of the two operations every search repeats: *list the
 neighbours of $u$* and *is $(u, v)$ an edge?*
 
+**The vocabulary, each term defined.** A **graph** is a pair $G = (V, E)$, a finite vertex set and an edge set, with these parts:
+
+- **Directed or undirected.** In a directed graph an edge is an *ordered* pair $(u, v)$, written $u \to v$, and can be followed only from $u$ to $v$. In an undirected graph an edge is an *unordered* pair $\{u, v\}$ and can be followed both ways.
+- **Weights.** A weighted graph adds a function $w : E \to \mathbb{R}$ giving each edge a cost; an unweighted graph is the case $w \equiv 1$.
+- **Degree.** In a directed graph the out-degree and in-degree of $v$ count the edges leaving and entering it, $\deg^+(v) = \lvert\{u : (v, u) \in E\}\rvert$ and $\deg^-(v) = \lvert\{u : (u, v) \in E\}\rvert$; in an undirected graph $\deg v$ counts the edges touching $v$.
+- **Path, simple path, cycle.** A path is a vertex sequence $v_0, v_1, \dots, v_k$ with every $(v_{i-1}, v_i) \in E$; it is simple if no vertex repeats, and it is a cycle if $k \ge 1$ and $v_k = v_0$ (in an undirected graph a cycle also needs $k \ge 3$ with no edge reused). Its weight is the sum of its edge weights, as the formula below says.
+$$w(P) = \sum_{i=1}^{k} w(v_{i-1}, v_i)$$
+- **Sparse and dense.** Since a simple directed graph has at most $n(n-1)$ edges, $m$ lies between $0$ and about $n^2$; a graph is called sparse when $m = O(n)$ and dense when $m = \Theta(n^2)$.
+
+*Example.* The directed edges in the code below, $a \to b$ (4), $a \to c$ (1), $c \to b$ (2), $b \to d$ (5), give $n = m = 4$, $\deg^+(a) = 2$ and $\deg^-(b) = 2$. The path $a, c, b, d$ has weight $1 + 2 + 5 = 8$ and $a, b, d$ has weight $4 + 5 = 9$. *Non-example:* $d, b$ is not a path, because the edge is $b \to d$ and a directed edge cannot be walked backwards.
+
 | | Adjacency list | Adjacency matrix | Implicit (grid, lattice) |
 |---|---|---|---|
 | Memory | $O(n + m)$ | $O(n^2)$ | occupancy only; edges are never stored |
@@ -84,7 +95,9 @@ store each edge in both lists and remember that $m$ then counts twice.
 
 **Breadth-first search** explores in rings: every vertex one edge away, then every vertex two
 edges away. So the first time BFS reaches a vertex, it has reached it by a path with the fewest
-edges.
+edges. Stated precisely, BFS from a source $s$ is a graph traversal that computes, for every vertex, the **unweighted distance** (hop count), where the minimum over an empty set is $\infty$ so unreachable vertices get $\infty$:
+
+$$\text{dist}(v) = \min\{\,k : \text{there is a path } s = v_0, v_1, \dots, v_k = v\,\}$$
 
 *Why that is true.* The queue always holds vertices whose distances are non-decreasing from
 front to back and differ by at most one. A vertex $v$ is discovered from the first dequeued
@@ -123,17 +136,32 @@ turns BFS into $O(n^2)$; use `collections.deque`. BFS is wrong on weighted edges
 exception: if every weight is 0 or 1, push 0-edges to the *front* of the deque and 1-edges to the
 back (0-1 BFS), still $O(n + m)$. Seeding the queue with many sources at distance 0 gives
 **multi-source BFS**, which on an occupancy grid is the *brushfire* distance transform: the
-distance from every free cell to its nearest obstacle in one pass.
+distance from every free cell to its nearest obstacle in one pass. It computes the distance to the *nearest* member of the source set $S$, which is correct because a single BFS from an imaginary super-source joined to every $s \in S$ by a free edge would enqueue exactly the same vertices in the same order:
+
+$$\text{dist}_S(v) = \min_{s \in S} \text{dist}_s(v)$$
+
+*Example.* A one-row map with obstacles at both ends, cells $[1, 0, 0, 0, 1]$, gives distances $[0, 1, 2, 1, 0]$: the middle cell is two steps from either wall.
 
 **Depth-first search** follows one branch as far as it goes, then backs up. Its value is not the
 order it visits vertices but the *timestamps* it leaves: a vertex is **discovered** when first
 entered and **finished** when every edge out of it has been explored. For any two vertices the
-discovery–finish intervals are either nested or disjoint, like parentheses.
+discovery–finish intervals are either nested or disjoint, like parentheses. With one clock that ticks at every discovery and every finish, write $d(u)$ and $f(u)$ for the two times; the **parenthesis theorem** says that for any two vertices $u \ne v$ exactly one of these holds, since a vertex discovered while $u$ is open must finish before $u$ does:
+
+$$[d(u), f(u)] \cap [d(v), f(v)] = \varnothing \quad\text{or}\quad [d(v), f(v)] \subset [d(u), f(u)] \quad\text{or}\quad [d(u), f(u)] \subset [d(v), f(v)]$$
+
+The times classify every directed edge $u \to v$ at the moment DFS examines it, by the colour of $v$:
+
+- **Tree edge:** $v$ is white, so DFS enters $v$ through this edge.
+- **Back edge:** $v$ is gray, meaning $v$ is an ancestor of $u$ still on the stack.
+- **Forward edge:** $v$ is black and $d(u) < d(v)$, so $v$ is a finished descendant reached earlier by another route.
+- **Cross edge:** $v$ is black and $d(v) < d(u)$, so $v$ lies in a subtree that was already finished.
+
+*Example.* Edges $a \to b$, $b \to c$, $a \to c$, $d \to c$, visited in that order. DFS gives $a$: 1/6, $b$: 2/5, $c$: 3/4, $d$: 7/8 (discovery/finish). So $a \to b$ and $b \to c$ are tree edges, $a \to c$ is a forward edge ($c$ black, $1 < 3$), and $d \to c$ is a cross edge ($c$ black, $3 < 7$). $[3, 4] \subset [2, 5] \subset [1, 6]$ are nested and $[7, 8]$ is disjoint from all of them. There is no back edge, so no cycle.
 
 That structure is what detects cycles. Colour a vertex gray while it is on the recursion stack
 and black once finished. In a directed graph, meeting a *gray* neighbour means an edge back to an
 ancestor still being explored, which is a cycle; a directed graph has a cycle exactly when DFS
-finds such a back edge. In an undirected graph every edge is stored both ways, so ignore the
+finds such a back edge. *Non-example:* forward and cross edges do not signal a cycle, which is why a "visited" flag alone (black or gray lumped together) reports false cycles on the graph above. In an undirected graph every edge is stored both ways, so ignore the
 edge to the vertex you just came from, and any other visited neighbour closes a cycle (with
 parallel edges, compare edge ids rather than parent vertices). DFS is also $O(n + m)$.
 
@@ -201,12 +229,19 @@ use the gray test.
 ### 3. Topological sort and strongly connected components
 
 A **topological order** of a directed graph lists the vertices so that every edge points
-forward. It exists exactly when the graph is a DAG (directed acyclic graph). Interviews dress it
+forward. It exists exactly when the graph is a DAG (directed acyclic graph). Both terms, precisely:
+
+- A **DAG** is a directed graph that contains no directed cycle, that is, no path $v_0 \to v_1 \to \dots \to v_k$ with $k \ge 1$ and $v_k = v_0$ (§1).
+- A **topological order** is a numbering of the vertices, a bijection $\pi : V \to \{1, \dots, n\}$, such that every edge goes from a smaller number to a larger one, so that for every edge $(u, v)$, $u$ precedes $v$:
+$$\pi(u) < \pi(v) \quad \text{for every edge } (u, v) \in E$$
+- **Why "exactly when DAG".** If a cycle $v_0 \to \dots \to v_k = v_0$ existed, the condition would give $\pi(v_0) < \pi(v_1) < \dots < \pi(v_k) = \pi(v_0)$, which is impossible; conversely, Kahn's algorithm below builds an order for every DAG.
+
+*Example.* For the build graph in the code below (`msgs` → `driver`, `msgs` → `planner`, `driver` → `bringup`, `planner` → `bringup`), both `msgs, driver, planner, bringup` and `msgs, planner, driver, bringup` are topological orders, so the order is generally not unique. *Non-example:* `msgs, bringup, driver, planner` fails, because the edge `driver` → `bringup` points backwards. Interviews dress it
 as course prerequisites or build order; robotics uses it for the same thing: `colcon` builds ROS 2
 packages in dependency order, an assembly sequence installs columns before beams, and a task
 graph cannot execute a step before its inputs exist.
 
-**Kahn's algorithm** repeatedly outputs a vertex with no remaining incoming edges. *Why it
+**Kahn's algorithm** repeatedly outputs a vertex with no remaining incoming edges, that is, a vertex whose in-degree $\deg^-(v)$ (§1) among the vertices not yet output is 0. *Why it
 works:* every DAG has such a vertex, since otherwise you could walk backwards along incoming
 edges forever and would have to repeat a vertex, which is a cycle; deleting it leaves a DAG. If
 the queue empties while vertices remain, each remaining vertex still has an incoming edge from
@@ -257,17 +292,27 @@ print(topo_kahn(deps), topo_dfs(deps))
 ```
 
 Variants worth knowing: replace Kahn's queue by a min-heap to get the lexicographically smallest
-order; relax edges in topological order to get **shortest or longest paths in a DAG** in
-$O(n + m)$, even with negative weights. The longest-path version is the critical-path method of
+order; relax edges (relaxation is defined in §4) in topological order to get **shortest or longest paths in a DAG** in
+$O(n + m)$, even with negative weights, because when a vertex's outgoing edges are relaxed every edge into it has already been relaxed. The longest-path version is the critical-path method of
 project scheduling, and Viterbi decoding of a hidden Markov model is the same relaxation over a
 trellis ([[02-foundations/probability|3. Probability §7]]).
 
 **Strongly connected components** (SCCs) are the maximal sets of vertices in which every vertex
 can reach every other. Contracting each SCC to a single node always leaves a DAG, the
-*condensation*. Two classic algorithms compute them in $O(n + m)$. **Kosaraju's** runs DFS twice:
+*condensation*. The definition has three parts:
+
+- **Reachability.** Write $u \rightsquigarrow v$ when there is a directed path from $u$ to $v$ (a path of length 0 counts, so $u \rightsquigarrow u$).
+- **Mutual reachability** is an equivalence relation: it is reflexive ($u \leftrightarrow u$), symmetric by its definition, and transitive, since paths can be concatenated.
+$$u \leftrightarrow v \iff u \rightsquigarrow v \ \text{and}\ v \rightsquigarrow u$$
+- **SCCs are its equivalence classes.** So they partition $V$, every vertex lies in exactly one SCC, and "maximal" means no vertex outside a class can be added while keeping mutual reachability.
+- **Condensation.** Its vertices are the SCCs, with an edge $C \to C'$ whenever some $u \in C$, $v \in C'$, $C \ne C'$ have $(u, v) \in E$. It is always a DAG, because a cycle $C \to C' \to C$ would make every vertex of $C$ and $C'$ mutually reachable, merging them into one class.
+
+*Non-example:* in the worked example below, $2 \rightsquigarrow 3$ but not $3 \rightsquigarrow 2$, so vertices 2 and 3 are in different SCCs even though the whole graph is connected when edge directions are ignored (it is one *weakly* connected component). Two classic algorithms compute them in $O(n + m)$. **Kosaraju's** runs DFS twice:
 once to get finish times, then again on the reversed graph in decreasing finish time, where each
 new DFS tree is exactly one SCC. **Tarjan's** does it in one DFS by tracking, for each vertex, the
-earliest discovery time its subtree can reach among vertices still on the stack (its *low-link*). In a directed state lattice
+earliest discovery time its subtree can reach among vertices still on the stack (its *low-link*). Written out, with $T_u$ the DFS subtree rooted at $u$, the low-link is the smaller of $u$'s own discovery time and the discovery time of any still-stacked vertex that one edge out of $T_u$ reaches:
+$$\text{low}(u) = \min\big(d(u),\ \min\{\, d(x) : (y, x) \in E,\ y \in T_u,\ x \text{ on the stack} \,\}\big)$$
+When $u$ finishes with $\text{low}(u) = d(u)$, nothing in its subtree can climb above $u$, so $u$ is the first-discovered vertex of its SCC and Tarjan pops the stack down to $u$ as one component. In a directed state lattice
 or a roadmap with one-way edges, a state outside the goal's SCC can reach the goal but cannot
 come back, which is how dead-end regions are found before a planner walks into them.
 
@@ -275,6 +320,16 @@ come back, which is how dead-end regions are found before a planner walks into t
 > Edges $0 \to 1$, $1 \to 2$, $2 \to 0$, $2 \to 3$, $3 \to 4$, $4 \to 3$. The cycle $0 \to 1 \to 2 \to 0$ makes $\{0, 1, 2\}$ one SCC and $3 \leftrightarrow 4$ makes $\{3, 4\}$ another; the condensation is the single edge $\{0,1,2\} \to \{3,4\}$. Kosaraju: a DFS from 0 finishes vertices in the order $4, 3, 2, 1, 0$. On the reversed graph, the DFS from 0 (latest finish) reaches $2$ and $1$ but not $3$, because $2 \to 3$ now points into $\{0,1,2\}$, so the first tree is $\{0, 1, 2\}$; the next unvisited vertex, 3, gives $\{3, 4\}$. If 4 is the goal, states 0, 1, 2 can reach it, but once a planner is in $\{3, 4\}$ it can never return to them.
 
 ### 4. Dijkstra's algorithm
+
+**Two definitions every shortest-path algorithm shares.**
+
+- **Shortest-path distance.** For a source $s$, $\delta(v)$ is the least weight of any path from $s$ to $v$ (path weight as in §1), with $\delta(v) = \infty$ when no path exists. It is well defined only when no cycle of negative total weight is reachable from $s$ (§5), since otherwise going round that cycle again always lowers the cost.
+$$\delta(v) = \min\{\, w(P) : P \text{ a path from } s \text{ to } v \,\}$$
+- **Relaxation** of an edge $(u, v)$ is the update that tests whether going through $u$ improves $v$'s label $d[v]$, the best path weight found so far, and if so lowers it and records $u$ as the parent:
+$$\text{if } d[u] + w(u, v) < d[v]: \quad d[v] \leftarrow d[u] + w(u, v),\ \ \text{parent}[v] \leftarrow u$$
+- **What it preserves.** Every label stays the weight of a real path, so $d[v] \ge \delta(v)$ at all times; and true distances satisfy the triangle inequality $\delta(v) \le \delta(u) + w(u, v)$, so once every edge passes the relaxation test with no change, the labels are exact. BFS, Dijkstra, Bellman–Ford and A* differ only in *which* edges they relax and in what order.
+
+*Example.* In the graph of the code below, after $s$ is expanded $d[a] = 2$ and $d[b] = 5$. Relaxing $a \to b$ (weight 1) finds $2 + 1 = 3 < 5$, so $d[b]$ drops to 3 with parent $a$.
 
 **Idea.** With non-negative edge weights, grow the set of vertices whose shortest distance is
 final, always adding the unfinished vertex with the smallest tentative distance.
@@ -350,6 +405,10 @@ $$d_k(v) = \min\Big(d_{k-1}(v),\ \min_{(u, v) \in E}\big(d_{k-1}(u) + w(u, v)\bi
 
 If there is no negative cycle, some shortest path is simple, so it has at most $n-1$ edges, and
 $d_{n-1}$ is final. Each round scans all $m$ edges, so the time is $O(nm)$ and the space $O(n)$.
+
+**Negative cycle, defined.** A negative cycle is a directed cycle $v_0 \to \dots \to v_k = v_0$ whose total weight is below zero:
+$$w(C) = \sum_{i=1}^{k} w(v_{i-1}, v_i) < 0$$
+If one is reachable from $s$ and can reach $v$, then $\delta(v)$ does not exist (it is $-\infty$), because each extra lap lowers the path weight by the same amount. Negative *edges* alone are harmless to Bellman–Ford; only negative *cycles* are. *Example:* edges $0 \to 1$ (1), $1 \to 2$ ($-2$), $2 \to 1$ (1) contain the cycle $1 \to 2 \to 1$ of weight $-2 + 1 = -1$, and `bellman_ford(3, [(0, 1, 1), (1, 2, -2), (2, 1, 1)], 0)` returns `None`. *Non-example:* the graph in the code below has the negative edge $1 \to 2$ but no cycle, and the answer `[0, 2, 0]` is exact.
 
 **Negative-cycle detection.** Run one more round. If nothing improves, every edge satisfies
 $d(v) \le d(u) + w(u, v)$; adding that inequality around any cycle cancels the $d$ terms and shows
@@ -434,10 +493,19 @@ $f(n) = g(n) + h(n)$, cost so far plus an estimate of the cost remaining, so the
 stretched toward the goal. The planning page explains what $g$, $h$ and $f$ mean for a planner;
 this section is about why the algorithm is correct and how to write it.
 
+**The three quantities.** $g(n)$ is the cost of the cheapest path from the start $s$ to $n$ found so far (Dijkstra's label); $h(n)$ is the heuristic, any function of the vertex alone that estimates the remaining cost; and $h^*(n)$ is the true remaining cost, the shortest-path distance (§4) from $n$ to the goal, $\infty$ if the goal is unreachable. The open list is the priority queue of generated but unexpanded vertices, and the closed set holds the vertices already expanded.
+
 **Admissible** means $h(n) \le h^*(n)$, never overestimating the true remaining cost.
 **Consistent** means $h(n) \le c(n, n') + h(n')$ for every edge, with $h(\text{goal}) = 0$.
 Consistency implies admissibility: apply the inequality along an optimal path from $n$ to the
-goal and the $h$ terms telescope to $h(n) \le h^*(n)$.
+goal and the $h$ terms telescope to $h(n) \le h^*(n)$. As formulas, with every condition named:
+
+- **Admissible:** the estimate is non-negative and never exceeds the truth at any vertex, so it is a lower bound on the cost to go.
+$$0 \le h(v) \le h^*(v) \quad \text{for all } v \in V$$
+- **Consistent** (also called monotone): two conditions, the triangle inequality on every edge, and zero at the goal. The first says $h$ never drops by more than the edge just paid for, so $f = g + h$ never decreases along a path, since $f(v) = g(u) + c(u, v) + h(v) \ge g(u) + h(u) = f(u)$.
+$$h(u) \le c(u, v) + h(v) \ \text{ for every edge } (u, v) \in E, \qquad h(\text{goal}) = 0$$
+
+*Non-example (inadmissible).* Edges $s \to t$ (6), $s \to m$ (1), $m \to t$ (3), so the optimum is $s \to m \to t$ with cost 4 and $h^*(m) = 3$. Set $h(m) = 10$, $h(s) = h(t) = 0$. A* pushes $t$ with $f = 6$ and $m$ with $f = 1 + 10 = 11$, pops $t$ first and returns 6. With the admissible $h(m) = 3$, $m$ has $f = 4 < 6$, and A* returns 4.
 
 **Why consistency means no re-expansion.** Define reduced edge costs
 
@@ -540,7 +608,9 @@ slightly inadmissible.
 
 **Weighted A\*.** Order by $g + \varepsilon h$ with $\varepsilon > 1$. The search becomes greedier
 and expands far fewer vertices, and with a consistent $h$ (or an admissible one plus reopening)
-the returned cost is at most $\varepsilon$ times the optimum. That bound is why the trade is acceptable: you choose how much
+the returned cost is at most $\varepsilon$ times the optimum $C^*$, so the priority and the guarantee are
+$$f_\varepsilon(n) = g(n) + \varepsilon\, h(n), \qquad C_{\text{returned}} \le \varepsilon\, C^*$$
+That bound is why the trade is acceptable: you choose how much
 optimality to give up. Anytime planners (ARA\*) start with a large $\varepsilon$ to get a path
 quickly and lower it while time remains.
 
@@ -624,7 +694,9 @@ expands $a$ at all, since its $C + h$ already exceeds the cost found.
 
 **Minimum spanning tree, in one paragraph.** A shortest-path tree minimizes each vertex's distance
 from a source; a minimum spanning tree minimizes the *total* edge weight connecting all vertices,
-and the two trees are generally different. Prim's algorithm is Dijkstra's loop with the key
+and the two trees are generally different. In a connected undirected weighted graph, a **spanning tree** is a subset of edges $T \subseteq E$ that (1) touches every vertex, (2) is connected and (3) has no cycle, which together force exactly $n - 1$ edges; a **minimum spanning tree** is one whose total weight is smallest, so it solves
+$$\min_{T \text{ spanning tree}} \ \sum_{e \in T} w(e)$$
+*Example:* the triangle $a - b$ (2), $b - c$ (2), $a - c$ (3) has MST $\{ab, bc\}$ of weight 4. The shortest-path tree from $a$ is $\{ab, ac\}$ instead, because $c$ is 3 away directly but 4 via $b$, and that tree weighs 5. *Non-example:* $\{ab, bc, ac\}$ connects everything but contains a cycle, so it is not a tree. Prim's algorithm is Dijkstra's loop with the key
 "weight of the cheapest edge into the tree" instead of "distance from the source"; Kruskal's sorts
 edges and adds each one that joins two different components, using union-find. Proofs and code
 are in [[02-foundations/algorithms/greedy-mst|11.4 Greedy Algorithms & Spanning Trees]].
@@ -723,6 +795,17 @@ search over a small set of arm motion primitives works when the task is structur
 그래프는 정점 집합 $V$와 간선 집합 $E$다. $n = \lvert V\rvert$, $m = \lvert E\rvert$로 쓴다. 표현이
 탐색이 매번 반복하는 두 연산의 비용을 정한다: *$u$의 이웃 나열*과 *$(u, v)$가 간선인가?*
 
+**용어, 하나씩 정의.** 그래프(**graph**)는 쌍 $G = (V, E)$, 즉 유한한 정점 집합과 간선 집합이며, 다음 요소를 가진다.
+
+- **방향 또는 무방향.** 방향 그래프에서 간선은 *순서쌍* $(u, v)$이고 $u \to v$로 쓰며, $u$에서 $v$ 쪽으로만 따라갈 수 있다. 무방향 그래프에서 간선은 *순서 없는 쌍* $\{u, v\}$이고 양쪽으로 따라갈 수 있다.
+- **가중치.** 가중 그래프는 각 간선에 비용을 주는 함수 $w : E \to \mathbb{R}$을 더한다. 가중치 없는 그래프는 $w \equiv 1$인 경우다.
+- **차수.** 방향 그래프에서 $v$의 진출 차수와 진입 차수는 $v$에서 나가는 간선과 들어오는 간선의 수로, $\deg^+(v) = \lvert\{u : (v, u) \in E\}\rvert$, $\deg^-(v) = \lvert\{u : (u, v) \in E\}\rvert$다. 무방향 그래프에서 $\deg v$는 $v$에 닿는 간선의 수다.
+- **경로, 단순 경로, 사이클.** 경로는 모든 $(v_{i-1}, v_i) \in E$인 정점 열 $v_0, v_1, \dots, v_k$다. 정점이 반복되지 않으면 단순 경로이고, $k \ge 1$이고 $v_k = v_0$이면 사이클이다(무방향 그래프의 사이클은 간선을 재사용하지 않고 $k \ge 3$이어야 한다). 경로의 가중치는 아래 식처럼 간선 가중치의 합이다.
+$$w(P) = \sum_{i=1}^{k} w(v_{i-1}, v_i)$$
+- **희소와 조밀.** 단순 방향 그래프의 간선은 많아야 $n(n-1)$개이므로 $m$은 $0$부터 약 $n^2$ 사이에 있다. $m = O(n)$이면 희소, $m = \Theta(n^2)$이면 조밀하다고 한다.
+
+*예.* 아래 코드의 방향 간선 $a \to b$ (4), $a \to c$ (1), $c \to b$ (2), $b \to d$ (5)는 $n = m = 4$, $\deg^+(a) = 2$, $\deg^-(b) = 2$를 준다. 경로 $a, c, b, d$의 가중치는 $1 + 2 + 5 = 8$이고 $a, b, d$는 $4 + 5 = 9$다. *반례:* $d, b$는 경로가 아니다. 간선은 $b \to d$이고 방향 간선은 거꾸로 걸을 수 없기 때문이다.
+
 | | 인접 리스트 | 인접 행렬 | 암묵적(격자, 래티스) |
 |---|---|---|---|
 | 메모리 | $O(n + m)$ | $O(n^2)$ | 점유 정보뿐, 간선은 저장하지 않음 |
@@ -775,7 +858,9 @@ print(adj["a"], mat[index["a"]][index["c"]], list(grid_neighbors(tiny, 0, 0)))
 
 **너비 우선 탐색**(BFS)은 고리 모양으로 퍼진다. 간선 하나 거리의 모든 정점, 그다음 두 개
 거리의 모든 정점. 그래서 BFS가 어떤 정점에 처음 도달했을 때는 간선 수가 가장 적은 경로로
-도달한 것이다.
+도달한 것이다. 정확히 말하면, 출발점 $s$에서의 BFS는 모든 정점에 대해 가중치 없는 거리(**unweighted distance**), 즉 홉 수를 계산하는 그래프 순회다. 공집합의 최솟값은 $\infty$로 두므로 도달할 수 없는 정점은 $\infty$를 받는다.
+
+$$\text{dist}(v) = \min\{\,k : \text{there is a path } s = v_0, v_1, \dots, v_k = v\,\}$$
 
 *왜 그런가.* 큐에 든 정점들의 거리는 앞에서 뒤로 감소하지 않고, 차이는 많아야 1이다. 정점
 $v$는 가장 먼저 꺼내진 이웃 $u$에게 발견되고, $u$는 $v$의 다른 어느 이웃보다 늦게 꺼내지지
@@ -812,15 +897,30 @@ print(bfs_path(adj, "s", "t"))           # ['s', 'a', 'c', 't']
 가중치가 있으면 BFS는 틀린다. 싼 예외가 하나 있다. 가중치가 모두 0 또는 1이면 0 간선은 덱의
 *앞*에, 1 간선은 뒤에 넣는다(0-1 BFS). 여전히 $O(n + m)$이다. 여러 출발점을 거리 0으로 큐에
 미리 넣으면 다중 출발 BFS(**multi-source BFS**)가 되고, 점유 격자에서는 이것이 *brushfire* 거리 변환이다. 한 번의
-훑기로 모든 빈 셀에서 가장 가까운 장애물까지의 거리를 얻는다.
+훑기로 모든 빈 셀에서 가장 가까운 장애물까지의 거리를 얻는다. 이것은 출발점 집합 $S$의 *가장 가까운* 원소까지의 거리를 계산한다. 모든 $s \in S$에 비용 없는 간선으로 이어진 가상의 초출발점에서 BFS를 한 번 돌리면 정확히 같은 정점을 같은 순서로 큐에 넣기 때문에 옳다.
+
+$$\text{dist}_S(v) = \min_{s \in S} \text{dist}_s(v)$$
+
+*예.* 양 끝에 장애물이 있는 한 줄 지도 $[1, 0, 0, 0, 1]$은 거리 $[0, 1, 2, 1, 0]$을 준다. 가운데 셀은 어느 벽에서나 두 걸음이다.
 
 **깊이 우선 탐색**(DFS)은 한 가지를 끝까지 따라가고 나서 되돌아온다. 가치는 방문 순서가 아니라
 남기는 *타임스탬프*에 있다. 정점은 처음 들어갈 때 **발견**(discovered)되고, 나가는 모든 간선을
-탐색하고 나면 **종료**(finished)된다. 두 정점의 발견–종료 구간은 괄호처럼 포개지거나 서로소다.
+탐색하고 나면 **종료**(finished)된다. 두 정점의 발견–종료 구간은 괄호처럼 포개지거나 서로소다. 발견과 종료 때마다 한 칸씩 가는 시계 하나로 두 시각을 $d(u)$, $f(u)$라 쓰자. 괄호 정리(**parenthesis theorem**)는 서로 다른 두 정점 $u \ne v$에 대해 다음 중 정확히 하나가 성립한다고 말한다. $u$가 열려 있는 동안 발견된 정점은 $u$보다 먼저 종료해야 하기 때문이다.
+
+$$[d(u), f(u)] \cap [d(v), f(v)] = \varnothing \quad\text{or}\quad [d(v), f(v)] \subset [d(u), f(u)] \quad\text{or}\quad [d(u), f(u)] \subset [d(v), f(v)]$$
+
+이 시각들은 DFS가 방향 간선 $u \to v$를 살펴보는 순간 $v$의 색으로 모든 간선을 분류한다.
+
+- **트리 간선:** $v$가 흰색이라 DFS가 이 간선으로 $v$에 들어간다.
+- **역방향 간선:** $v$가 회색, 즉 아직 스택에 있는 $u$의 조상이다.
+- **순방향 간선:** $v$가 검은색이고 $d(u) < d(v)$다. 다른 길로 먼저 도달해 종료된 자손이다.
+- **교차 간선:** $v$가 검은색이고 $d(v) < d(u)$다. 이미 종료된 서브트리에 있다.
+
+*예.* 간선 $a \to b$, $b \to c$, $a \to c$, $d \to c$를 이 순서로 방문한다. DFS는 $a$: 1/6, $b$: 2/5, $c$: 3/4, $d$: 7/8(발견/종료)을 준다. 그래서 $a \to b$와 $b \to c$는 트리 간선, $a \to c$는 순방향 간선($c$ 검은색, $1 < 3$), $d \to c$는 교차 간선($c$ 검은색, $3 < 7$)이다. $[3, 4] \subset [2, 5] \subset [1, 6]$은 포개지고 $[7, 8]$은 모두와 서로소다. 역방향 간선이 없으므로 사이클도 없다.
 
 사이클을 잡는 것이 이 구조다. 재귀 스택 위에 있는 동안은 회색, 종료되면 검은색으로 칠한다.
 방향 그래프에서 *회색* 이웃을 만나면 아직 탐색 중인 조상으로 돌아가는 간선이므로 사이클이다.
-방향 그래프에 사이클이 있는 것과 DFS가 이런 역방향 간선을 찾는 것은 정확히 동치다. 무방향
+방향 그래프에 사이클이 있는 것과 DFS가 이런 역방향 간선을 찾는 것은 정확히 동치다. *반례:* 순방향 간선과 교차 간선은 사이클의 신호가 아니다. 그래서 (검은색과 회색을 뭉뚱그린) "방문함" 표시만 쓰면 위 그래프에서 없는 사이클을 보고한다. 무방향
 그래프는 모든 간선이 양방향으로 저장되므로 방금 온 정점으로의 간선은 무시하고, 그 밖의 방문한
 이웃은 사이클을 닫는다(평행 간선이 있으면 부모 정점이 아니라 간선 id를 비교하라). DFS도
 $O(n + m)$이다.
@@ -888,11 +988,18 @@ print(dfs_iterative({"a": ["b"], "b": ["c"], "c": ["a"]}))  # (['c', 'b', 'a'], 
 ### 3. 위상 정렬과 강연결 요소
 
 방향 그래프의 위상 순서(**topological order**)는 모든 간선이 앞에서 뒤로 향하도록 정점을 나열한 것이다. 그래프가
-DAG(방향 비순환 그래프)일 때에만 존재한다. 인터뷰는 이것을 수강 선수과목이나 빌드 순서로
+DAG(방향 비순환 그래프)일 때에만 존재한다. 두 용어를 정확히 쓰면 이렇다.
+
+- **DAG**(directed acyclic graph)는 방향 사이클이 없는 방향 그래프다. 즉 $k \ge 1$이고 $v_k = v_0$인 경로 $v_0 \to v_1 \to \dots \to v_k$가 없다(§1).
+- 위상 순서(**topological order**)는 정점에 번호를 매기는 전단사 $\pi : V \to \{1, \dots, n\}$로서, 모든 간선이 작은 번호에서 큰 번호로 간다. 곧 모든 간선 $(u, v)$에서 $u$가 $v$보다 앞선다.
+$$\pi(u) < \pi(v) \quad \text{for every edge } (u, v) \in E$$
+- **왜 "DAG일 때에만"인가.** 사이클 $v_0 \to \dots \to v_k = v_0$가 있다면 조건이 $\pi(v_0) < \pi(v_1) < \dots < \pi(v_k) = \pi(v_0)$를 요구하므로 불가능하다. 거꾸로, 아래의 Kahn 알고리즘은 모든 DAG에 대해 순서를 만든다.
+
+*예.* 아래 코드의 빌드 그래프(`msgs` → `driver`, `msgs` → `planner`, `driver` → `bringup`, `planner` → `bringup`)에서는 `msgs, driver, planner, bringup`과 `msgs, planner, driver, bringup`이 모두 위상 순서이므로, 순서는 일반적으로 유일하지 않다. *반례:* `msgs, bringup, driver, planner`는 간선 `driver` → `bringup`이 뒤로 향하므로 위상 순서가 아니다. 인터뷰는 이것을 수강 선수과목이나 빌드 순서로
 포장하고, 로보틱스도 같은 일에 쓴다. `colcon`은 ROS 2 패키지를 의존성 순서로 빌드하고, 조립
 순서는 보보다 기둥을 먼저 세우며, 작업 그래프는 입력이 생기기 전의 단계를 실행할 수 없다.
 
-Kahn 알고리즘(**Kahn's algorithm**)은 남은 진입 간선이 없는 정점을 반복해서 출력한다. *왜 되는가:* 모든 DAG에는
+Kahn 알고리즘(**Kahn's algorithm**)은 남은 진입 간선이 없는 정점, 즉 아직 출력하지 않은 정점들 사이에서 진입 차수 $\deg^-(v)$(§1)가 0인 정점을 반복해서 출력한다. *왜 되는가:* 모든 DAG에는
 그런 정점이 있다. 없다면 진입 간선을 따라 끝없이 거슬러 갈 수 있고, 결국 정점이 반복되니
 사이클이다. 그 정점을 지워도 DAG가 남는다. 정점이 남았는데 큐가 비면, 남은 정점마다 다른 남은
 정점에서 오는 진입 간선이 있으므로 사이클이 존재하고, 길이 검사가 이를 알려 준다.
@@ -942,15 +1049,25 @@ print(topo_kahn(deps), topo_dfs(deps))
 ```
 
 알아 둘 변형: Kahn의 큐를 최소 힙으로 바꾸면 사전순으로 가장 앞선 순서가 나온다. 위상 순서로
-간선을 완화하면 DAG의 최단·최장 경로(**DAG shortest/longest path**)를 음수 가중치가 있어도 $O(n + m)$에 구한다. 최장 경로
+간선을 완화하면(완화의 정의는 §4) DAG의 최단·최장 경로(**DAG shortest/longest path**)를 음수 가중치가 있어도 $O(n + m)$에 구한다. 어떤 정점의 나가는 간선을 완화할 때는 그 정점으로 들어오는 간선이 이미 모두 완화되었기 때문이다. 최장 경로
 버전이 공정 관리의 주공정법(critical path method)이고, 은닉 마르코프 모델의 Viterbi 복호도
 트렐리스 위에서의 같은 완화다([[02-foundations/probability|3. 확률 §7]]).
 
 **강연결 요소**(SCC)는 모든 정점이 서로에게 도달할 수 있는 극대 정점 집합이다. 각 SCC를 한
-노드로 축약하면 항상 DAG, 즉 *응축 그래프*가 남는다. 두 고전 알고리즘이 $O(n + m)$에 구한다.
+노드로 축약하면 항상 DAG, 즉 *응축 그래프*가 남는다. 정의는 세 부분으로 되어 있다.
+
+- **도달 가능성.** $u$에서 $v$로 가는 방향 경로가 있으면 $u \rightsquigarrow v$로 쓴다(길이 0인 경로도 치므로 $u \rightsquigarrow u$).
+- **상호 도달 가능성**은 동치 관계다. 반사적이고($u \leftrightarrow u$), 정의상 대칭이며, 경로를 이어 붙일 수 있으므로 추이적이다.
+$$u \leftrightarrow v \iff u \rightsquigarrow v \ \text{and}\ v \rightsquigarrow u$$
+- **SCC는 그 동치류다.** 그래서 SCC들은 $V$를 분할하고, 모든 정점은 정확히 하나의 SCC에 속한다. "극대"란 상호 도달 가능성을 유지하면서 동치류 밖의 정점을 더할 수 없다는 뜻이다.
+- **응축 그래프.** 정점은 SCC들이고, 어떤 $u \in C$, $v \in C'$, $C \ne C'$에 대해 $(u, v) \in E$이면 간선 $C \to C'$을 둔다. 사이클 $C \to C' \to C$가 있다면 $C$와 $C'$의 모든 정점이 서로 도달 가능해져 한 동치류로 합쳐지므로, 응축 그래프는 항상 DAG다.
+
+*반례:* 아래 계산 예제에서 $2 \rightsquigarrow 3$이지만 $3 \rightsquigarrow 2$는 아니므로, 간선 방향을 무시하면 그래프 전체가 연결되어 있는데도(약연결 요소 하나) 정점 2와 3은 서로 다른 SCC에 있다. 두 고전 알고리즘이 $O(n + m)$에 구한다.
 Kosaraju(**Kosaraju's**)는 DFS를 두 번 돈다. 한 번은 종료 시각을 얻고, 다시 역방향 그래프에서 종료 시각이
 큰 순서로 돌면 새 DFS 트리 하나가 정확히 SCC 하나다. Tarjan(**Tarjan's**)은 각 정점에서 그 서브트리가
-아직 스택에 있는 정점 중에서 닿을 수 있는 가장 이른 발견 시각(*low-link*)을 추적해 DFS 한 번으로 해낸다. 방향이 있는 상태
+아직 스택에 있는 정점 중에서 닿을 수 있는 가장 이른 발견 시각(*low-link*)을 추적해 DFS 한 번으로 해낸다. 풀어 쓰면, $u$를 뿌리로 하는 DFS 서브트리를 $T_u$라 할 때 low-link는 $u$ 자신의 발견 시각과, $T_u$에서 간선 하나로 닿는 아직 스택에 있는 정점의 발견 시각 중 작은 값이다.
+$$\text{low}(u) = \min\big(d(u),\ \min\{\, d(x) : (y, x) \in E,\ y \in T_u,\ x \text{ on the stack} \,\}\big)$$
+$u$가 $\text{low}(u) = d(u)$로 종료하면 서브트리의 어떤 정점도 $u$ 위로 올라갈 수 없으므로 $u$는 자기 SCC에서 가장 먼저 발견된 정점이고, Tarjan은 스택을 $u$까지 꺼내 요소 하나로 만든다. 방향이 있는 상태
 래티스나 일방통행 간선이 있는 로드맵에서, 목표의 SCC 밖에 있는 상태는 목표에 갈 수는 있어도
 돌아올 수 없다. 플래너가 막다른 영역에 들어가기 전에 그런 영역을 찾는 방법이 이것이다.
 
@@ -958,6 +1075,16 @@ Kosaraju(**Kosaraju's**)는 DFS를 두 번 돈다. 한 번은 종료 시각을 �
 > 간선 $0 \to 1$, $1 \to 2$, $2 \to 0$, $2 \to 3$, $3 \to 4$, $4 \to 3$. 사이클 $0 \to 1 \to 2 \to 0$ 때문에 $\{0, 1, 2\}$가 SCC 하나, $3 \leftrightarrow 4$ 때문에 $\{3, 4\}$가 또 하나이고, 응축 그래프는 간선 하나 $\{0,1,2\} \to \{3,4\}$다. Kosaraju: 0에서 시작한 DFS는 정점을 $4, 3, 2, 1, 0$ 순서로 종료한다. 역방향 그래프에서 (가장 늦게 종료한) 0부터 DFS를 돌면 $2$와 $1$에는 닿지만 $3$에는 닿지 않는다. $2 \to 3$이 이제 $\{0,1,2\}$ 쪽을 가리키기 때문이다. 그래서 첫 트리는 $\{0, 1, 2\}$이고, 방문하지 않은 다음 정점 3이 $\{3, 4\}$를 준다. 4가 목표라면 상태 0, 1, 2는 목표에 갈 수 있지만, 플래너가 일단 $\{3, 4\}$에 들어가면 다시는 돌아올 수 없다.
 
 ### 4. Dijkstra 알고리즘
+
+**모든 최단 경로 알고리즘이 공유하는 두 정의.**
+
+- **최단 경로 거리.** 출발점 $s$에 대해 $\delta(v)$는 $s$에서 $v$로 가는 경로의 가중치(§1) 중 가장 작은 값이고, 경로가 없으면 $\delta(v) = \infty$다. 출발점에서 도달 가능한 음수 총합 사이클이 없을 때에만 잘 정의된다(§5). 그런 사이클이 있으면 한 바퀴 더 돌 때마다 비용이 내려가기 때문이다.
+$$\delta(v) = \min\{\, w(P) : P \text{ a path from } s \text{ to } v \,\}$$
+- 간선 $(u, v)$의 완화(**relaxation**)는 $u$를 거치면 $v$의 레이블 $d[v]$(지금까지 찾은 최선의 경로 가중치)가 좋아지는지 검사하고, 그렇다면 레이블을 낮추고 $u$를 부모로 기록하는 갱신이다.
+$$\text{if } d[u] + w(u, v) < d[v]: \quad d[v] \leftarrow d[u] + w(u, v),\ \ \text{parent}[v] \leftarrow u$$
+- **무엇을 보존하는가.** 모든 레이블은 실제 경로의 가중치로 남으므로 늘 $d[v] \ge \delta(v)$다. 그리고 참 거리는 삼각 부등식 $\delta(v) \le \delta(u) + w(u, v)$를 만족하므로, 모든 간선이 완화 검사에서 아무것도 바꾸지 않으면 레이블이 정확하다. BFS, Dijkstra, Bellman–Ford, A*는 *어떤* 간선을 어떤 순서로 완화하느냐만 다르다.
+
+*예.* 아래 코드의 그래프에서 $s$를 확장하면 $d[a] = 2$, $d[b] = 5$다. $a \to b$(가중치 1)를 완화하면 $2 + 1 = 3 < 5$이므로 $d[b]$가 3으로 내려가고 부모는 $a$가 된다.
 
 **아이디어.** 간선 가중치가 음수가 아니면, 최단 거리가 확정된 정점 집합을 키워 나가되 항상
 미확정 정점 중 임시 거리가 가장 작은 것을 더한다.
@@ -1031,6 +1158,10 @@ $$d_k(v) = \min\Big(d_{k-1}(v),\ \min_{(u, v) \in E}\big(d_{k-1}(u) + w(u, v)\bi
 
 음수 사이클이 없으면 단순 경로인 최단 경로가 있고, 그 간선은 많아야 $n-1$개이므로 $d_{n-1}$이
 최종값이다. 한 라운드가 간선 $m$개를 모두 훑으니 시간 $O(nm)$, 공간 $O(n)$이다.
+
+**음수 사이클의 정의.** 음수 사이클은 총 가중치가 0보다 작은 방향 사이클 $v_0 \to \dots \to v_k = v_0$이다.
+$$w(C) = \sum_{i=1}^{k} w(v_{i-1}, v_i) < 0$$
+그런 사이클이 $s$에서 도달 가능하고 $v$에 닿을 수 있으면 $\delta(v)$는 존재하지 않는다($-\infty$). 한 바퀴 더 돌 때마다 경로 가중치가 같은 양만큼 내려가기 때문이다. 음수 *간선*만으로는 Bellman–Ford에 해가 없고, 문제는 음수 *사이클*뿐이다. *예:* 간선 $0 \to 1$ (1), $1 \to 2$ ($-2$), $2 \to 1$ (1)에는 가중치 $-2 + 1 = -1$인 사이클 $1 \to 2 \to 1$이 있고, `bellman_ford(3, [(0, 1, 1), (1, 2, -2), (2, 1, 1)], 0)`은 `None`을 반환한다. *반례:* 아래 코드의 그래프에는 음수 간선 $1 \to 2$가 있지만 사이클이 없고, 답 `[0, 2, 0]`은 정확하다.
 
 **음수 사이클 검출.** 한 라운드를 더 돈다. 아무것도 좋아지지 않으면 모든 간선이
 $d(v) \le d(u) + w(u, v)$를 만족한다. 이 부등식을 어떤 사이클을 따라 더하면 $d$ 항이 상쇄되어
@@ -1114,10 +1245,19 @@ $f(n) = g(n) + h(n)$, 즉 지금까지의 비용과 남은 비용의 추정치�
 늘인다. $g$, $h$, $f$가 플래너에게 무엇을 뜻하는지는 계획 페이지가 설명한다. 이 절은 알고리즘이 왜
 옳은지와 어떻게 짜는지를 다룬다.
 
+**세 가지 양.** $g(n)$은 시작점 $s$에서 $n$까지 지금까지 찾은 가장 싼 경로의 비용(Dijkstra의 레이블)이다. $h(n)$은 휴리스틱으로, 정점만의 함수로 남은 비용을 추정한다. $h^*(n)$은 참 잔여 비용, 즉 $n$에서 목표까지의 최단 경로 거리(§4)이며 목표에 도달할 수 없으면 $\infty$다. 열린 목록은 생성되었지만 아직 확장하지 않은 정점의 우선순위 큐이고, 닫힌 집합은 이미 확장한 정점들이다.
+
 **허용적**(admissible)이란 $h(n) \le h^*(n)$, 즉 참 잔여 비용을 절대 과대추정하지 않는다는 뜻이다.
 **일관적**(consistent)이란 모든 간선에서 $h(n) \le c(n, n') + h(n')$이고 $h(\text{goal}) = 0$이라는
 뜻이다. 일관성은 허용성을 함의한다. $n$에서 목표까지의 최적 경로를 따라 부등식을 적용하면 $h$ 항이
-소거되어 $h(n) \le h^*(n)$이 된다.
+소거되어 $h(n) \le h^*(n)$이 된다. 모든 조건을 이름 붙여 식으로 쓰면 이렇다.
+
+- **허용적:** 추정값은 음수가 아니고 어느 정점에서도 참값을 넘지 않는다. 따라서 남은 비용의 하한이다.
+$$0 \le h(v) \le h^*(v) \quad \text{for all } v \in V$$
+- **일관적**(단조적이라고도 한다): 조건은 둘이다. 모든 간선에서의 삼각 부등식, 그리고 목표에서 0. 첫 조건은 $h$가 방금 치른 간선 비용보다 더 많이 떨어지지 않는다는 뜻이므로, $f(v) = g(u) + c(u, v) + h(v) \ge g(u) + h(u) = f(u)$가 되어 $f = g + h$는 경로를 따라 감소하지 않는다.
+$$h(u) \le c(u, v) + h(v) \ \text{ for every edge } (u, v) \in E, \qquad h(\text{goal}) = 0$$
+
+*반례(비허용적).* 간선 $s \to t$ (6), $s \to m$ (1), $m \to t$ (3). 최적은 비용 4인 $s \to m \to t$이고 $h^*(m) = 3$이다. $h(m) = 10$, $h(s) = h(t) = 0$으로 잡는다. A*는 $t$를 $f = 6$으로, $m$을 $f = 1 + 10 = 11$로 넣고, $t$를 먼저 꺼내 6을 반환한다. 허용적인 $h(m) = 3$이면 $m$의 $f = 4 < 6$이므로 A*는 4를 반환한다.
 
 **일관성이 재확장 없음을 뜻하는 이유.** 축소 간선 비용을 정의한다.
 
@@ -1215,7 +1355,9 @@ print(astar_grid(grid, (2, 0), (0, 0)))  # cost 8: around the wall on the right
 살짝 비허용적으로 만들 수 있다.
 
 **가중 A\*.** $g + \varepsilon h$($\varepsilon > 1$)로 정렬한다. 탐색이 더 탐욕적이 되어 확장이 훨씬
-줄고, $h$가 일관적이면(또는 허용적이고 다시 열기를 하면) 반환 비용은 최적의 $\varepsilon$배 이하다. 이 상한 덕분에 거래가 받아들일 만하다.
+줄고, $h$가 일관적이면(또는 허용적이고 다시 열기를 하면) 반환 비용은 최적 $C^*$의 $\varepsilon$배 이하다. 우선순위와 보장을 식으로 쓰면
+$$f_\varepsilon(n) = g(n) + \varepsilon\, h(n), \qquad C_{\text{returned}} \le \varepsilon\, C^*$$
+이 상한 덕분에 거래가 받아들일 만하다.
 최적성을 얼마나 포기할지 내가 고른다. 애니타임 플래너(ARA\*)는 큰 $\varepsilon$으로 경로를 빨리 얻고
 시간이 남는 동안 값을 낮춘다.
 
@@ -1294,7 +1436,9 @@ FIFO와 LIFO는 $d$와 $a$를 각각 두 번 꺼낸다. 확장한 뒤에 더 싼
 ### 8. 신장 트리, 그리고 로봇 계획으로 가는 다리
 
 **최소 신장 트리, 한 문단으로.** 최단 경로 트리는 출발점에서 각 정점까지의 거리를 최소화하고,
-최소 신장 트리는 모든 정점을 잇는 간선 가중치의 *합*을 최소화한다. 두 트리는 일반적으로 다르다.
+최소 신장 트리는 모든 정점을 잇는 간선 가중치의 *합*을 최소화한다. 두 트리는 일반적으로 다르다. 연결된 무방향 가중 그래프에서 신장 트리(**spanning tree**)는 (1) 모든 정점에 닿고 (2) 연결되어 있고 (3) 사이클이 없는 간선 부분집합 $T \subseteq E$이며, 세 조건이 합쳐져 간선 수는 정확히 $n - 1$개가 된다. 최소 신장 트리(**minimum spanning tree**)는 총 가중치가 가장 작은 신장 트리이므로 다음 문제를 푼다.
+$$\min_{T \text{ spanning tree}} \ \sum_{e \in T} w(e)$$
+*예:* 삼각형 $a - b$ (2), $b - c$ (2), $a - c$ (3)의 MST는 가중치 4인 $\{ab, bc\}$다. $a$에서의 최단 경로 트리는 $\{ab, ac\}$다. $c$까지 직접 가면 3, $b$를 거치면 4이기 때문이고, 그 트리의 가중치는 5다. *반례:* $\{ab, bc, ac\}$는 모두를 잇지만 사이클이 있으므로 트리가 아니다.
 Prim 알고리즘은 키를 "출발점에서의 거리" 대신 "트리로 들어오는 가장 싼 간선의 가중치"로 바꾼
 Dijkstra 루프다. Kruskal은 간선을 정렬하고 서로 다른 두 요소를 잇는 간선을 union-find로 확인하며
 더한다. 증명과 코드는 [[02-foundations/algorithms/greedy-mst|11.4 그리디 알고리즘과 신장 트리]]에 있다.

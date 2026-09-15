@@ -182,43 +182,43 @@ closed-book. **Eleven or more of the fourteen common questions means go.**
 1. A layer computes $h = \text{ReLU}(Wx + b)$ with $W$ of shape $256\times128$. Give the
    shape of $x$, of $h$, and the number of parameters in this layer. Then say why removing
    the ReLU would make a ten-layer stack no more expressive than one layer.
-   *(0.7 §1–2, 1. §1)*
+   *([[02-foundations/neural-network-basics|0.7 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
 2. Compute $\nabla f$ for $f(x,y) = (xy-3)^2$ at $(2,1)$ and say, from the two signs, which
    way gradient descent moves each variable and which one it moves harder.
-   *(0.5 §1, 4. §3)*
+   *([[02-foundations/engineering-math|0.5 §1]], [[02-foundations/optimization|4. §3]])*
 3. $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$. Find its eigenvalues, then say in one
    sentence what this matrix does to the plane. Is it positive definite, and how do you know
-   from the eigenvalues alone? *(1. §3)*
+   from the eigenvalues alone? *([[02-foundations/linear-algebra|1. §3]])*
 4. Write down what $x^\top A x$ means as a sum over indices, and explain why a covariance
-   matrix must be positive semidefinite without computing anything. *(1. §3, 3. §2)*
+   matrix must be positive semidefinite without computing anything. *([[02-foundations/linear-algebra|1. §3]], [[02-foundations/probability|3. §2]])*
 5. A classifier gives the correct class probability $0.5$ on one sample and $0.9$ on
    another. Give both cross-entropy losses in nats, and say which sample contributes more
-   gradient. *(5. §2, 2. §4)*
+   gradient. *([[02-foundations/information-theory|5. §2]], [[02-foundations/calculus-backprop|2. §4]])*
 6. True $p = (0.7, 0.2, 0.1)$, model $q = (0.5, 0.3, 0.2)$. Without recomputing $H(p)$ and
-   $H(p,q)$ separately, state what $H(p,q) - H(p)$ is called and what it measures. *(5. §2–3)*
+   $H(p,q)$ separately, state what $H(p,q) - H(p)$ is called and what it measures. *([[02-foundations/information-theory|5. §2–3]])*
 7. A crack detector fires on 95% of cracks and false-alarms on 5% of sound panels; 1% of
    panels are cracked. An alarm fires — how much should you believe it, and what single
-   quantity changed the answer most? *(3. §1)*
+   quantity changed the answer most? *([[02-foundations/probability|3. §1]])*
 8. Your prior says the wall is 10 cm away with variance 4; a sensor with variance 1 reads
    12. Give the fused estimate and its variance, and say what happens to both as the sensor
-   variance goes to infinity. *(3. §5)*
+   variance goes to infinity. *([[02-foundations/probability|3. §5]])*
 9. A joint obeys $\dot x = -2x + u$. Is it stable? Where is the pole of its transfer
    function, and in which half-plane? If you sample it at $\Delta t = 0.1$ s, is the
-   discrete factor inside the unit circle? *(0.5 §8–9)*
+   discrete factor inside the unit circle? *([[02-foundations/engineering-math|0.5 §8–9]])*
 10. An IMU samples at 200 Hz and a motor vibrates at 170 Hz. What frequency appears in your
-    log, and what should have been done before sampling? *(6. §2)*
+    log, and what should have been done before sampling? *([[02-foundations/signal-processing|6. §2]])*
 11. With $\gamma = 0.95$, what is the effective horizon, and how much weight does a reward
-    60 steps away carry? *(0.5 §5, 7. §1)*
+    60 steps away carry? *([[02-foundations/engineering-math|0.5 §5]], [[02-foundations/rl-basics|7. §1]])*
 12. A robotics paper reports 90% success on 10 trials. Give the rough uncertainty on that
     number, and name two things the sentence does not tell you that ML Practice says you
-    must ask. *(9. §3–5, and 2. Experimental Design §4)*
+    must ask. *([[02-foundations/ml-practice|9. §3–5]], and [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §4]])*
 13. $f(x) = 5x^2$, starting at $x_0 = 1$. Where does one Newton step land, and roughly how
-    many gradient-descent steps at $\alpha = 0.05$ match it? *(4. §3)*
+    many gradient-descent steps at $\alpha = 0.05$ match it? *([[02-foundations/optimization|4. §3]])*
 14. Apply $R_z(90°)$ then $R_x(90°)$ to the point $(1,0,0)$. Where does it end up, and where
-    does the opposite order put it? *(8. §1)*
+    does the opposite order put it? *([[02-foundations/se3-geometry|8. §1]])*
 15. **Optional — manipulation path.** For the 2R arm at $\theta = (0°, 90°)$ the operational-space inertia is
     $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$. In which direction does the tip feel
-    heavier, and by how much? *(10. §6)*
+    heavier, and by how much? *([[02-foundations/manipulator-kinematics-dynamics|10. §6]])*
 
 > [!tip]- Answers · 정답
 > 1. $x$ is $128\times1$, $h$ is $256\times1$; parameters $= 256\times128 + 256 = 33{,}024$. Without the nonlinearity the stack collapses: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, a single matrix, whose rank cannot exceed the smallest factor's.
@@ -428,37 +428,37 @@ graph LR
 
 1. 어떤 층이 $h = \text{ReLU}(Wx + b)$를 계산하고 $W$의 모양이 $256\times128$이다. $x$와 $h$의
    모양, 그리고 이 층의 파라미터 수를 말하라. 그다음 ReLU를 없애면 10층 스택이 왜 1층보다
-   나을 게 없어지는지 말하라. *(0.7 §1–2, 1. §1)*
+   나을 게 없어지는지 말하라. *([[02-foundations/neural-network-basics|0.7 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
 2. $f(x,y) = (xy-3)^2$의 $\nabla f$를 $(2,1)$에서 구하고, 두 부호로부터 경사 하강이 각 변수를
-   어느 쪽으로, 어느 쪽을 더 세게 미는지 말하라. *(0.5 §1, 4. §3)*
+   어느 쪽으로, 어느 쪽을 더 세게 미는지 말하라. *([[02-foundations/engineering-math|0.5 §1]], [[02-foundations/optimization|4. §3]])*
 3. $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$의 고유값을 구하고, 이 행렬이 평면에 하는 일을
-   한 문장으로 말하라. 양정부호인가? 고유값만으로 어떻게 아는가? *(1. §3)*
+   한 문장으로 말하라. 양정부호인가? 고유값만으로 어떻게 아는가? *([[02-foundations/linear-algebra|1. §3]])*
 4. $x^\top A x$를 인덱스에 대한 합으로 쓰고, 아무것도 계산하지 않고 공분산 행렬이 왜 반드시
-   양준정부호인지 설명하라. *(1. §3, 3. §2)*
+   양준정부호인지 설명하라. *([[02-foundations/linear-algebra|1. §3]], [[02-foundations/probability|3. §2]])*
 5. 분류기가 한 샘플에서 정답 클래스에 확률 $0.5$를, 다른 샘플에서 $0.9$를 줬다. 두 교차
-   엔트로피 손실을 나트로 구하고, 어느 샘플이 더 큰 그래디언트를 주는지 말하라. *(5. §2, 2. §4)*
+   엔트로피 손실을 나트로 구하고, 어느 샘플이 더 큰 그래디언트를 주는지 말하라. *([[02-foundations/information-theory|5. §2]], [[02-foundations/calculus-backprop|2. §4]])*
 6. 참 $p = (0.7, 0.2, 0.1)$, 모델 $q = (0.5, 0.3, 0.2)$. $H(p)$와 $H(p,q)$를 따로 다시 계산하지
-   말고, $H(p,q) - H(p)$의 이름과 그것이 재는 것을 말하라. *(5. §2–3)*
+   말고, $H(p,q) - H(p)$의 이름과 그것이 재는 것을 말하라. *([[02-foundations/information-theory|5. §2–3]])*
 7. 균열 감지기가 균열의 95%에서 울리고 멀쩡한 패널의 5%에서 오경보하며, 패널의 1%에 균열이
-   있다. 경보가 울렸다 — 얼마나 믿어야 하고, 답을 가장 크게 바꾼 양은 무엇인가? *(3. §1)*
+   있다. 경보가 울렸다 — 얼마나 믿어야 하고, 답을 가장 크게 바꾼 양은 무엇인가? *([[02-foundations/probability|3. §1]])*
 8. 사전 믿음은 벽이 10 cm 앞, 분산 4다. 분산 1인 센서가 12를 읽었다. 융합된 추정값과 그
-   분산을 구하고, 센서 분산이 무한대로 갈 때 둘이 어떻게 되는지 말하라. *(3. §5)*
+   분산을 구하고, 센서 분산이 무한대로 갈 때 둘이 어떻게 되는지 말하라. *([[02-foundations/probability|3. §5]])*
 9. 어떤 관절이 $\dot x = -2x + u$를 따른다. 안정한가? 전달함수의 극점은 어디이고 어느
-   반평면인가? $\Delta t = 0.1$초로 샘플링하면 이산 계수가 단위원 안에 있는가? *(0.5 §8–9)*
+   반평면인가? $\Delta t = 0.1$초로 샘플링하면 이산 계수가 단위원 안에 있는가? *([[02-foundations/engineering-math|0.5 §8–9]])*
 10. IMU가 200 Hz로 샘플링하고 모터가 170 Hz로 진동한다. 로그에는 어떤 주파수가 나타나고,
-    샘플링 전에 무엇을 했어야 하는가? *(6. §2)*
+    샘플링 전에 무엇을 했어야 하는가? *([[02-foundations/signal-processing|6. §2]])*
 11. $\gamma = 0.95$일 때 유효 지평은 얼마이고, 60 스텝 뒤의 보상은 얼마의 가중치를 갖는가?
-    *(0.5 §5, 7. §1)*
+    *([[02-foundations/engineering-math|0.5 §5]], [[02-foundations/rl-basics|7. §1]])*
 12. 어떤 로보틱스 논문이 10회 시행에서 성공률 90%를 보고했다. 그 숫자의 대략적 불확실성을
     말하고, ML 실무가 반드시 물어야 한다고 말하는 것 중 이 문장이 알려주지 않는 것 두 가지를
-    대라. *(9. §3–5, 그리고 2. 실험 설계 §4)*
+    대라. *([[02-foundations/ml-practice|9. §3–5]], 그리고 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §4]])*
 13. $f(x) = 5x^2$에서 $x_0 = 1$로 출발한다. 뉴턴법 한 스텝은 어디에 도착하고, $\alpha = 0.05$의
-    경사 하강은 대략 몇 스텝이 필요한가? *(4. §3)*
+    경사 하강은 대략 몇 스텝이 필요한가? *([[02-foundations/optimization|4. §3]])*
 14. 점 $(1,0,0)$에 $R_z(90°)$를 적용한 뒤 $R_x(90°)$를 적용하면 어디에 도착하는가? 순서를
-    바꾸면 어디인가? *(8. §1)*
+    바꾸면 어디인가? *([[02-foundations/se3-geometry|8. §1]])*
 15. **선택 — 매니퓰레이션 경로.** 2R 팔의 $\theta = (0°, 90°)$에서 작업공간 관성은
     $\Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$다. 말단은 어느 방향으로 더 무겁게
-    느껴지며 몇 배인가? *(10. §6)*
+    느껴지며 몇 배인가? *([[02-foundations/manipulator-kinematics-dynamics|10. §6]])*
 
 > [!tip]- 정답 · Answers
 > 1. $x$는 $128\times1$, $h$는 $256\times1$; 파라미터 $= 256\times128 + 256 = 33{,}024$개. 비선형성이 없으면 스택이 붕괴한다: $W_{10}\cdots W_1x = (W_{10}\cdots W_1)x$, 행렬 하나이고 그 랭크는 가장 작은 인자를 넘지 못한다.

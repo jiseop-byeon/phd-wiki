@@ -33,6 +33,20 @@ Decision variables, objective, inequality/equality constraints. Formulation is h
 work: *what is a variable, what is a constraint, what is the objective* — and often several
 formulations of the same engineering problem differ wildly in solvability.
 
+**The parts of that line, each named.**
+- **Decision variable** $x\in\mathbb{R}^n$: the $n$ numbers the solver may choose.
+- **Objective** $f:\mathbb{R}^n\to\mathbb{R}$: the single number to make small. A maximisation of $u(x)$ is written as minimising $f=-u$.
+- **Inequality constraints** $g_i(x)\le0$, $i=1,\ldots,m$, and **equality constraints** $h_j(x)=0$, $j=1,\ldots,p$: requirements every admissible $x$ must meet. "s.t." reads "subject to". Any requirement can be put in this form, for example $x_1\ge2$ becomes $2-x_1\le0$.
+- **Feasible set** $\mathcal{F}=\{x : g_i(x)\le0 \text{ for all } i,\ h_j(x)=0 \text{ for all } j\}$: the admissible points. An $x$ outside it is **infeasible**, however small $f(x)$ is.
+- **Optimal value** $p^\star=\inf_{x\in\mathcal{F}}f(x)$ and **minimiser** $x^\star$, a feasible point with $f(x^\star)=p^\star$ (the infimum $\inf$ is the greatest lower bound, which a minimiser attains when one exists).
+
+**Local and global minimum, defined.** A feasible $x^\star$ is a **global minimum** when no feasible point does better,
+$$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
+and a **local minimum** when that holds only nearby, for every feasible $x$ with $\lVert x-x^\star\rVert<r$ for some radius $r>0$, so a local minimum only has to beat its neighbours. Every global minimum is local; the converse is the question §2 answers. A **strict** local minimum has $<$ in place of $\le$ for $x\ne x^\star$.
+
+> [!example] Worked example · 계산 예제
+> Minimise $f(x)=(x-3)^2$ subject to $x\le1$, written as $g(x)=x-1\le0$. The feasible set is $(-\infty,1]$. Without the constraint the answer would be $x=3$, which is infeasible. On the feasible set $f$ keeps falling as $x$ rises toward $1$, so $x^\star=1$ and $p^\star=(1-3)^2=4$. The constraint changed the answer, which is exactly what it means for it to be **active** at the optimum, $g(x^\star)=0$.
+
 The formulation is needed because a preference and a requirement play different roles. For example, a robot may prefer a short path while being required to respect a workspace boundary. Put path cost in the objective and admissibility in constraints, then decide whether the chosen model can represent the actual obstacle and actuation limits. **The reading this gives you.** Before studying a solver, name what it may change and what it must satisfy. A smaller objective value does not establish feasibility, and feasibility in an approximate model does not prove that the physical system meets every requirement.
 
 ### 2. Convexity — the great divide
@@ -42,9 +56,22 @@ The formulation is needed because a preference and a requirement play different 
   (twice-differentiable case) $H \succeq 0$ everywhere — read $\succeq 0$ as "positive
   semidefinite", the matrix version of $\ge 0$: $x^\top H x \ge 0$ for every direction $x$,
   i.e. the surface curves upward (or at worst is flat) whichever way you walk.
+  (The eigenvalue test for $\succeq0$, all eigenvalues $\ge0$, is in [[02-foundations/linear-algebra|1. Linear Algebra §3]].)
+- **Convex set, stated completely.** A set $C\subseteq\mathbb{R}^n$ is convex when, for every two points in it and every mixing weight between $0$ and $1$, the mixed point is also in it:
+  $$x\in C,\ y\in C,\ \lambda\in[0,1]\ \implies\ \lambda x+(1-\lambda)y\in C$$
+  so the whole segment from $x$ ($\lambda=1$) to $y$ ($\lambda=0$) stays inside. Examples: a half-space $\{x : a^\top x\le b\}$, a ball $\{x : \lVert x-c\rVert\le r\}$, and any intersection of convex sets, which is why a polyhedron $\{x : Hx\le h\}$ is convex. **Non-example:** the ring $\{x : 0.5\le\lVert x\rVert\le1\}$ contains $(1,0)$ and $(-1,0)$ but not their midpoint $(0,0)$. The free space around an obstacle fails for the same reason.
+- **Convex function, stated completely.** $f$ is convex when its domain is a convex set and the chord between any two points of its graph lies on or above the graph:
+  $$f(\lambda x+(1-\lambda)y)\le\lambda f(x)+(1-\lambda)f(y)\quad\text{for all } x,y,\ \lambda\in[0,1]$$
+  because the left side is $f$ at the mixed point and the right side is the same mix of the two function values. Two equivalent tests hold when $f$ is smooth enough. **First order:** every tangent plane lies below the graph, $f(y)\ge f(x)+\nabla f(x)^\top(y-x)$. **Second order:** $H(x)\succeq0$ everywhere, the condition above.
+  - **Example.** $f(x)=x^2$ with $x=-1$, $y=3$, $\lambda=0.5$: $f(1)=1\le0.5(1)+0.5(9)=5$ ✓, and $f''=2\ge0$ everywhere.
+  - **Non-example.** $f(x)=x^4-2x^2$ with $x=-1$, $y=1$, $\lambda=0.5$: $f(0)=0$ but $0.5f(-1)+0.5f(1)=-1$, so the graph rises above the chord. Its $f''(0)=-4<0$ says the same.
+  - **Strict and strong.** $f$ is **strictly convex** when the inequality is strict for $x\ne y$ and $0<\lambda<1$, and **strongly convex** with modulus $m>0$ when $H(x)\succeq mI$ everywhere, curvature at least $m$ in every direction. $x^2$ is strongly convex ($m=2$); $x^4$ is strictly but not strongly convex, since $f''(0)=0$. The Newton convergence claim in §3 needs the strong version.
 - Convex problem = convex $f$ over a convex feasible set ⇒ **every local minimum is
   global**. Many standard finite-dimensional convex problems have efficient solvers with
   global-solution guarantees under their stated assumptions.
+  - **The conditions, each named.** In the §1 form a problem is **convex** when (1) the objective $f$ is convex, (2) every inequality function $g_i$ is convex, and (3) every equality function $h_j$ is affine, $h_j(x)=a_j^\top x-b_j$. Conditions (2) and (3) are what make the feasible set convex: $\{g_i\le0\}$ is a sublevel set of a convex function, and a nonlinear equality such as $x_1^2+x_2^2=1$ is a circle, which is not convex.
+  - **Why local means global.** Suppose $x^\star$ is a local minimum and some feasible $y$ had $f(y)<f(x^\star)$. Points $\lambda x^\star+(1-\lambda)y$ with $\lambda$ just below $1$ are feasible and arbitrarily close to $x^\star$, and convexity gives them $f\le\lambda f(x^\star)+(1-\lambda)f(y)<f(x^\star)$, contradicting local optimality.
+  - **Non-example with numbers.** $f(x)=x^4-2x^2+0.5x$ has two local minima, $x\approx-1.057$ with $f\approx-1.515$ and $x\approx0.930$ with $f\approx-0.517$, separated by a local maximum at $x\approx0.127$. Gradient descent with step $0.01$ started at $x=2$ settles at $0.930$, the worse one, and nothing local tells it so.
 
 <svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="convex versus non-convex landscape">
   <g fill="none" stroke="currentColor" stroke-width="1.8">
@@ -75,12 +102,17 @@ The formulation is needed because a preference and a requirement play different 
   a coin flip, all $n$ positive would have probability $2^{-n}$ (about 0.001 for $n = 10$). Real
   Hessians are not coin flips, but Dauphin et al. (NeurIPS 2014) report evidence that critical
   points with high loss in neural networks are overwhelmingly saddles.
+  - **The three conditions, each named.** For a twice-differentiable $f$ and a candidate $x^\star$: (1) **first-order necessary**, $\nabla f(x^\star)=0$, and a point satisfying it is a **stationary** (or **critical**) point; (2) **second-order necessary**, $H(x^\star)\succeq0$, true at every local minimum; (3) **second-order sufficient**, $\nabla f(x^\star)=0$ together with $H(x^\star)\succ0$, which guarantees a strict local minimum. A **saddle point** is a stationary point whose Hessian has at least one positive and one negative eigenvalue, so it is a minimum along some directions and a maximum along others.
+  - **Examples at the boundaries.** $f(x,y)=x^2-y^2$ at the origin has $\nabla f=0$ and $H=\text{diag}(2,-2)$: a saddle. $f(x)=x^3$ at $0$ has $f'=0$ and $f''=0\ge0$, so it passes both necessary conditions, yet it is not a minimum since $f(-0.1)=-0.001<f(0)$. $f(x)=x^4$ at $0$ is a strict minimum with $f''(0)=0$, so condition (3) is sufficient but not necessary.
 - **Gradient descent** from Taylor: minimizing the first-order model within a step-size
   trust gives $x_{k+1} = x_k - \alpha\nabla f(x_k)$. On a quadratic with Hessian $H$, the
   per-eigendirection contraction is $|1 - \alpha\lambda_i|$; stability needs
   $\alpha < 2/\lambda_{max}$; with the common choice $\alpha = 1/\lambda_{max}$ the slow direction converges like
   $(1 - \lambda_{min}/\lambda_{max})^k$ — **the condition number $\kappa$ is the pain**
-  ([[02-foundations/linear-algebra|linear algebra]]).
+  ([[02-foundations/linear-algebra|1. Linear Algebra §3]]).
+  - **The update, with every symbol.** "The first-order model within a step-size trust" is this problem:
+    $$x_{k+1}=\arg\min_x\Big[f(x_k)+\nabla f(x_k)^\top(x-x_k)+\frac{1}{2\alpha}\lVert x-x_k\rVert^2\Big]$$
+    because setting its gradient $\nabla f(x_k)+(x-x_k)/\alpha$ to zero gives exactly $x_{k+1}=x_k-\alpha\nabla f(x_k)$. Here $k$ counts iterations, $x_k$ is the current iterate, and the **step size** (or **learning rate**) $\alpha>0$ sets how far the linear model is trusted. On $f=\tfrac12x^\top Hx$ the error obeys $x_{k+1}=(I-\alpha H)\,x_k$, which is where the per-eigendirection factor $1-\alpha\lambda_i$ comes from.
 - **Gradient descent vs Newton, in one line of arithmetic.** Take $f(x) = 5x^2$, so
   $f'(x) = 10x$ and $f''(x) = 10$, starting at $x_0 = 1$. Gradient descent with
   $\alpha = 0.05$ gives $x_1 = 1 - 0.05(10) = 0.5$, then $0.25$, then $0.125$ — halving every
@@ -94,9 +126,18 @@ The formulation is needed because a preference and a requirement play different 
   valleys; **Newton** minimizes the *second*-order model,
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian (its curvature cannot change arbitrarily fast: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$), $O(n^3)$ per
   step; quasi-Newton (BFGS/L-BFGS) builds $H^{-1}$ estimates from gradient differences.
+  - **Momentum, stated completely.** The heavy-ball method keeps a **velocity** $v$ with a **momentum coefficient** $\beta\in[0,1)$ and steps along it:
+    $$v_{k+1}=\beta v_k+\nabla f(x_k),\qquad x_{k+1}=x_k-\alpha\,v_{k+1}$$
+    so $v$ is a decaying sum of past gradients, and $\beta=0$ recovers plain gradient descent. Its effect depends on whether gradients agree. With $\beta=0.9$ and a constant gradient $g$ (a valley floor), $v$ grows to $g/(1-\beta)=10g$, a tenfold longer step. With a gradient alternating $+g,-g$ (bouncing across the valley), $v$ settles to $\pm g/(1+\beta)=\pm0.53g$. The consistent direction is favoured about nineteen to one, which is the "average out oscillation" above.
+  - **Newton, with every symbol.** $H=\nabla^2f(x_k)$ is the Hessian at the current iterate, and $-H^{-1}\nabla f(x_k)$ is the exact minimiser of the second-order Taylor model ([[02-foundations/calculus-backprop|2. Calculus §1]]). **Quadratic convergence** means the error obeys $\lVert x_{k+1}-x^\star\rVert\le C\lVert x_k-x^\star\rVert^2$ for some constant $C$, so the number of correct digits roughly doubles each step. On $f(x)=e^x-2x$ (minimiser $x^\star=\ln2$) from $x_0=1$, Newton's errors are $0.307,\ 0.0426,\ 8.95\times10^{-4},\ 4.0\times10^{-7},\ 8.0\times10^{-14}$.
+  - **Quasi-Newton, stated completely.** Replace $H$ by a matrix $B_k$ built only from gradients. Its defining requirement is the **secant condition**, with step $s_k=x_{k+1}-x_k$ and gradient change $y_k=\nabla f(x_{k+1})-\nabla f(x_k)$:
+    $$B_{k+1}\,s_k = y_k$$
+    because along the step just taken, a correct Hessian must turn the change in position into the observed change in gradient. BFGS is the particular low-rank update of $B$ (or of its inverse) that satisfies this while staying symmetric positive definite; L-BFGS stores only the last few $(s_k,y_k)$ pairs instead of an $n\times n$ matrix. One-dimensional example: on $f=5x^2$, moving from $1$ to $0.5$ gives $s=-0.5$, $y=5-10=-5$, and $B=y/s=10$, the true curvature.
 - Stochastic gradients: unbiased but noisy estimates from minibatches; noise ~ helps escape
   saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
   momentum + per-coordinate curvature proxy.
+  - **Stated completely.** For $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$, an average of per-example losses, a random batch $B$ of $|B|$ examples gives the estimate $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$. **Unbiased** means $\mathbb{E}[\hat g]=\nabla f(x)$ over the random choice of batch; **noisy** means any single $\hat g$ can be far from it, with variance shrinking like $1/|B|$ for independently drawn examples.
+  - **Worked.** Take $\ell_i=\tfrac12(x-a_i)^2$ with $a=(1,2,3,6)$, at $x=0$. The full gradient is $\frac14\sum(0-a_i)=-3$. The six batches of size 2 give $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$: no single one equals $-3$, and their average is exactly $-3$.
 
 **Adaptive step sizes, in three steps.** These attack the condition-number problem above one coordinate at a time. A single $\alpha$ must be small enough for the steepest direction, which starves the flat ones. So each coordinate gets its own step size, set by how large its gradients have been: a steep coordinate with large gradients gets a small step, a flat one gets a large step. Because the scaling is per coordinate (a diagonal preconditioner), it fixes ill-conditioning aligned with the axes but not a valley tilted between them. The three methods share one update and differ only in the scale $s$:
 
@@ -116,6 +157,12 @@ so a coordinate with a large $s$ takes small steps, because $\alpha/(\sqrt{s}+\e
 
 **AdamW — weight decay is not L2 under adaptive scaling** (Loshchilov & Hutter, ICLR 2019). For plain SGD, adding $\tfrac{\lambda}{2}\|w\|^2$ to the loss and shrinking $w \leftarrow w - \eta\lambda w$ give the same update. In Adam they differ: the L2 gradient $\lambda w$ is divided by $\sqrt{\hat v}$ along with the data gradient, so weights with a history of large gradients are decayed *less*. AdamW applies the shrink outside the adaptive step, so every weight decays at the same rate $\eta\lambda$. The paper reports that this decouples the best $\lambda$ from the learning rate and improves Adam's generalization, which is why most modern recipes — transformers, diffusion policies — use AdamW. Those recipes usually add **linear warmup then cosine decay** ([[02-foundations/ml-practice|9. ML Practice §6]]): early on $\hat v$ averages only a few squared gradients, so its scale is noisy and a full-size step can blow up, and the late decay lets minibatch noise settle.
 
+**The two updates, written out.** With learning rate $\eta$, decay strength $\lambda$, and Adam's bias-corrected averages $\hat m_k$ (of gradients) and $\hat v_k$ (of squared gradients) from the [[01-canonical-papers/notes/1-foundations/adam|Adam note]]:
+- **Adam + L2** adds $\lambda w_k$ to the gradient *before* the averages are formed, so the decay passes through the adaptive division: with $g_k=\nabla f(w_k)+\lambda w_k$, the step is $w_{k+1}=w_k-\eta\,\hat m_k/(\sqrt{\hat v_k}+\epsilon)$.
+- **AdamW** keeps the gradient pure and applies the decay as a separate term:
+$$w_{k+1}=w_k-\eta\Big(\frac{\hat m_k}{\sqrt{\hat v_k}+\epsilon}+\lambda\,w_k\Big)$$
+so the shrink $\eta\lambda w_k$ is the same for every weight of the same size, whatever its gradient history. Example, looking at the decay part alone (no momentum, ignoring the small effect of $\lambda w$ on $\hat v$) for two weights equal to $1$ with $\eta=0.01$, $\lambda=0.1$ and $\sqrt{\hat v}=2$ versus $0.5$: under Adam + L2 they shrink by $\eta\lambda/\sqrt{\hat v}=5\times10^{-4}$ and $2\times10^{-3}$, under AdamW both shrink by $\eta\lambda=10^{-3}$.
+
 ### 3.5 Nonlinear least squares — the solver under half the robotics papers
 
 Section 3 gave you gradient descent and Newton on a general objective. A large share of
@@ -129,6 +176,8 @@ inverse kinematics, and IMU–camera time alignment are all this problem with a 
 $f$. Knowing the two algorithms below tells you what those systems are actually doing when
 a paper says "we optimize."
 
+**What the symbols are.** The unknown $x\in\mathbb{R}^n$ is what is being estimated (a pose, a set of landmark positions, calibration parameters). Each component $f_i:\mathbb{R}^n\to\mathbb{R}$ is a **residual**: what the model predicts for measurement $i$ at the guess $x$, minus what was actually measured. The vector $f(x)\in\mathbb{R}^m$ stacks all $m$ of them, and $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$ is the total squared mismatch, zero only if every measurement is explained exactly. Many papers write $\tfrac12\lVert f\rVert^2$ or weight each residual by an inverse covariance, which changes the scale of the objective but not the method. For the beacon example below, $f_i(x)=\lVert x-a_i\rVert-\rho_i$: the predicted range to beacon $a_i$ minus the measured range $\rho_i$. At the guess $x=(12,4)$ with $\rho=(11.66,\,6.32,\,11.66)$ the residuals are $(0.989,\,-0.663,\,-2.716)$ and $\lVert f\rVert^2=8.79$; at the true $(10,6)$ they are below $0.005$, rounding error in the ranges.
+
 **Gauss–Newton: linearize the residuals, not the objective.** At the current iterate,
 replace $f$ by its first-order Taylor model $f(x_k) + J(x - x_k)$, where $J = Df(x_k)$ is
 the Jacobian. That model is *affine*, so minimizing its squared norm is an ordinary linear
@@ -140,6 +189,10 @@ Two of the most useful ideas in applied mathematics meet here: calculus builds t
 approximation, least squares solves it. Note what is *not* here — the second derivatives of
 $f$. Full Newton would need them; Gauss–Newton gets its curvature for free out of
 $J^\top J$, which is why it is used and Newton is not.
+
+**Exactly what is dropped.** The objective $F(x)=\lVert f(x)\rVert^2$ has gradient $\nabla F=2J^\top f$ and Hessian
+$$\nabla^2F = 2\Big(J^\top J+\sum_{i=1}^{m} f_i(x)\,\nabla^2 f_i(x)\Big)$$
+so Newton's method on $F$ would need every residual's Hessian $\nabla^2f_i$. Gauss–Newton keeps only $J^\top J$. The dropped sum is weighted by the residuals $f_i$ themselves, so it is small when the model fits the data well near the solution, and then Gauss–Newton behaves almost like Newton. With large residuals at the solution (outliers, a wrong model) it can converge slowly. Setting the gradient of the linearised objective to zero gives the **normal equations** $J^\top J\,\Delta=-J^\top f(x_k)$ for the step $\Delta=x_{k+1}-x_k$, which is the update above.
 
 **It has two representative failure modes that you will see.**
 
@@ -166,6 +219,10 @@ signals an unobserved or degenerate direction. LM handles both with one knob $\l
 
 1. **What $\lambda$ buys.** It charges for long steps, which keeps the solver where its affine model is trustworthy, and it makes the linear system invertible even when $J$ loses rank.
 2. **How $\lambda$ is set.** By trial: shrink it after a step that truly lowered the residual, grow it after one that did not.
+
+**Trust region, the idea LM is a version of.** A trust-region method has two named parts. (1) The **subproblem**: minimise the local model only inside a ball of radius $\Delta_k$ around the iterate,
+$$\min_{\delta}\ \lVert f(x_k)+J\delta\rVert^2\quad\text{s.t.}\quad\lVert\delta\rVert\le\Delta_k$$
+because the model is believed only that far. (2) The **gain ratio** that grades the step afterwards, $\varrho_k=\big(F(x_k)-F(x_k+\delta)\big)/\big(\text{model decrease}\big)$, actual decrease over predicted decrease. A common rule (Nocedal & Wright ch. 4) rejects the step when $\varrho_k\le0$, shrinks $\Delta$ when $\varrho_k<0.25$, and enlarges it when $\varrho_k>0.75$ and the step reached the boundary. Example: the model predicts a drop of $1.0$; an actual drop of $0.9$ gives $\varrho=0.9$ (trust more), $0.2$ gives $\varrho=0.2$ (keep the step, shrink $\Delta$), and a rise of $0.1$ gives $\varrho=-0.1$ (reject). LM's $\lambda_k$ is the Lagrange multiplier of that ball constraint (§4), which is why raising $\lambda$ acts like shrinking the radius.
 
 Penalize distance from the current iterate — the divergence example above is the reason: the second term charges for leaving the neighbourhood where the affine model held, and $\lambda_k$ sets the price:
 
@@ -240,6 +297,8 @@ a trust parameter.
   $\nabla(f + \lambda g) = 0$ — so setting the gradient of the combined **Lagrangian** to zero picks out exactly the
   candidate points where no feasible descent direction remains (on a non-convex problem such a point can be a saddle of the Lagrangian rather than its minimum).
 - **Lagrangian**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$.
+  - **Its parts, each named.** A scalar function of the decision variable and of one **multiplier** per constraint: $\lambda_i$ for the inequality $g_i\le0$ and $\nu_j$ for the equality $h_j=0$. Inequality multipliers must be nonnegative, because $\lambda_i g_i$ has to act as a penalty for violation ($g_i>0$) and never as a reward. Equality multipliers may have either sign, since $h_j$ can be violated in either direction.
+  - **Example.** For the half-space projection worked below, $\min\tfrac12\lVert x-p\rVert^2$ s.t. $a^\top x-b\le0$, the Lagrangian is $\mathcal{L}(x,\lambda)=\tfrac12\lVert x-p\rVert^2+\lambda(a^\top x-b)$, and $\nabla_x\mathcal{L}=x-p+\lambda a=0$ is the stationarity line used there.
 <svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="at a constrained optimum the gradient of the objective and the gradient of the constraint lie on one line pointing opposite ways">
   <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.07">
@@ -286,11 +345,16 @@ a trust parameter.
   4. **Complementary slackness**: $\lambda_i\, g_i = 0$ — a constraint either binds
      ($g_i=0$, price $\lambda_i>0$) or is free ($\lambda_i = 0$).
 
+  Condition 1 written out in full, at a candidate $x^\star$ with multipliers $\lambda^\star,\nu^\star$:
+  $$\nabla f(x^\star)+\sum_{i=1}^{m}\lambda_i^\star\nabla g_i(x^\star)+\sum_{j=1}^{p}\nu_j^\star\nabla h_j(x^\star)=0$$
+  so the objective's gradient is balanced exactly by a nonnegative combination of the constraint gradients, the multi-constraint version of the picture above. A constraint is **active** at $x^\star$ when $g_i(x^\star)=0$ (the point sits on its boundary) and **inactive** when $g_i(x^\star)<0$; complementary slackness says only active constraints may carry a nonzero multiplier. Equality constraints are always active.
+
   In plain terms: KKT is the checklist a solver uses to recognise a candidate optimum; whether an optimum must pass it, and whether passing it proves optimality, depends on the problem.
   - **Necessary.** With differentiable functions they are **necessary** at any optimum where strong duality holds. For a convex problem, strong duality follows from a constraint qualification such as Slater's condition — some feasible point satisfies every inequality strictly, $g_i(x) < 0$ (Boyd & Vandenberghe §5.5.3).
     At a local minimum of a general, non-convex problem they are still necessary under a constraint qualification such as LICQ (linear independence constraint qualification: at that point, the gradients of the equality constraints and of the active inequality constraints are linearly independent). That is what SQP and interior-point NLP solvers rely on.
   - **Sufficient.** For a convex problem they are **also sufficient**. On a non-convex problem — nonlinear MPC, trajectory
     optimization, the classes §5 lists — a KKT point need not be a minimum at all.
+  - **Constraint qualification, and what goes wrong without one.** A constraint qualification is a condition on the *geometry of the constraints alone* (not on $f$) that guarantees the constraint gradients describe the feasible set correctly near the point; Slater and LICQ above are two. Non-example: minimise $f(x)=x$ subject to $g(x)=x^2\le0$. The only feasible point is $x^\star=0$, so it is the minimum. But $\nabla f=1$ and $\nabla g(0)=2x^\star=0$, and stationarity $1+\lambda\cdot0=0$ has no solution for any $\lambda$. KKT fails at a true minimum, because no point satisfies $x^2<0$ (Slater fails) and the single active gradient is zero (LICQ fails).
 - Worked example — project a point onto a half-space: $\min \tfrac12\|x - p\|^2$ s.t.
   $a^\top x \le b$. Stationarity: $x = p - \lambda a$. If $a^\top p \le b$: $\lambda = 0$,
   $x^* = p$ (constraint free). Else the constraint binds:
@@ -306,10 +370,21 @@ a trust parameter.
   duality); under convexity + constraint qualification the bound is tight. Multipliers =
   **shadow prices**: sensitivity of the optimum to constraint relaxation — in scheduling,
   literally the marginal value of one more crane-hour.
+  - **The pieces, each named.** The **dual function** is the Lagrangian minimised over $x$ with the multipliers held fixed,
+    $$q(\lambda,\nu)=\inf_{x}\ \mathcal{L}(x,\lambda,\nu)$$
+    so $q$ is always concave, whatever $f$ is, since it is a pointwise infimum of functions affine in $(\lambda,\nu)$. **Weak duality**: $q(\lambda,\nu)\le p^\star$ for every $\lambda\ge0$ and any $\nu$, because at any feasible $x$ the added terms satisfy $\lambda_ig_i\le0$ and $\nu_jh_j=0$. The **dual problem** is $d^\star=\max_{\lambda\ge0,\,\nu}q(\lambda,\nu)$, the best such bound. The **duality gap** is $p^\star-d^\star\ge0$, and **strong duality** means the gap is zero.
+  - **Shadow price, as a formula.** Relax constraint $i$ to $g_i(x)\le u_i$ and let $p^\star(u)$ be the new optimal value. Under strong duality with a differentiable $p^\star$, $\partial p^\star/\partial u_i=-\lambda_i^\star$: loosening a constraint by a small $u_i$ lowers the optimum by about $\lambda_i^\star u_i$.
+  - **Worked.** Minimise $x^2$ subject to $x\ge1$, i.e. $g(x)=1-x\le0$; clearly $x^\star=1$, $p^\star=1$. The Lagrangian $x^2+\lambda(1-x)$ is minimised at $x=\lambda/2$, so $q(\lambda)=\lambda-\lambda^2/4$. At $\lambda=1$ the bound is $q=0.75\le1$ (weak duality); its maximum is at $\lambda^\star=2$ with $d^\star=1=p^\star$ (strong duality). Tighten the constraint to $x\ge1.1$ ($u=-0.1$): the optimum becomes $1.21$, a rise of $0.21$, close to the predicted $\lambda^\star\cdot0.1=0.2$.
 - Algorithms: penalty/barrier methods bake constraints into the objective;
   **interior-point** follows the barrier central path (the LP/QP workhorse); **SQP**
   solves a QP model at each iterate (the nonlinear-MPC workhorse); projected gradient for
   simple sets.
+  - **Penalty method.** Solve a sequence of unconstrained problems $\min_x f(x)+\frac{\mu}{2}\sum_i\max(0,g_i(x))^2$ with growing weight $\mu$; iterates may be infeasible and approach feasibility as $\mu\to\infty$. On $\min x^2$ s.t. $x\ge1$ the minimiser is $\mu/(2+\mu)$: $0.333$, $0.833$, $0.998$ for $\mu=1,10,1000$, always slightly infeasible.
+  - **Barrier and interior-point.** Keep iterates strictly feasible with a logarithmic barrier that blows up at the boundary, with barrier weight $t>0$:
+    $$\min_x\ f(x)-t\sum_{i}\log\big(-g_i(x)\big)$$
+    because $-\log(-g_i)\to\infty$ as $g_i\to0^-$. The minimisers $x^\star(t)$ trace the **central path**, which reaches the true optimum as $t\to0$; an interior-point method follows that path, taking Newton steps while shrinking $t$. On the same problem, $\min x^2-t\log(x-1)$ gives $x^\star(t)=\big(1+\sqrt{1+2t}\big)/2$: $1.366$, $1.005$, $1.00005$ for $t=1,\,0.01,\,0.0001$, always slightly feasible.
+  - **SQP** (sequential quadratic programming). At iterate $x_k$, form a QP with a quadratic model of the Lagrangian as its objective and the constraints linearised, $g_i(x_k)+\nabla g_i(x_k)^\top\delta\le0$ and $h_j(x_k)+\nabla h_j(x_k)^\top\delta=0$; solve for the step $\delta$, update, repeat.
+  - **Projected gradient.** Take a gradient step, then return to the feasible set $C$ with the Euclidean projection $\Pi_C(y)=\arg\min_{x\in C}\lVert x-y\rVert$: $x_{k+1}=\Pi_C\big(x_k-\alpha\nabla f(x_k)\big)$. It is practical only when $\Pi_C$ is cheap, as for a box, where it is clipping. Example: on $C=[0,1]$ from $x=0.8$ with gradient $-2$ and $\alpha=0.5$, the step reaches $1.8$ and projection returns $1$.
 
 ### 5. Problem classes that matter for robotics
 
@@ -321,6 +396,14 @@ a trust parameter.
 | MIP | integer variables | task assignment, construction sequencing (branch & bound) |
 | Global | non-convex, certified | rarely needed directly; underneath MIP solvers |
 
+**The classes in standard form, each defined.**
+- **LP** (linear program): with cost vector $c\in\mathbb{R}^n$, constraint matrix $A\in\mathbb{R}^{m\times n}$ and bounds $b\in\mathbb{R}^m$,
+  $$\min_x\ c^\top x\quad\text{s.t.}\quad Ax\le b$$
+  so the objective and every constraint are affine, the feasible set is a polyhedron, and when an optimum exists one is found at a vertex. Example: $\min -x_1-2x_2$ s.t. $x_1+x_2\le4$, $x_2\le3$, $x\ge0$. The vertices $(0,0)$, $(4,0)$, $(1,3)$, $(0,3)$ give $0,\ -4,\ -7,\ -6$, so $x^\star=(1,3)$.
+- **QP** (quadratic program): the LP constraints with a quadratic objective, $\min_x\tfrac12x^\top Px+q^\top x$ s.t. $Ax\le b$, and it is convex exactly when $P\succeq0$. A non-convex QP ($P$ with a negative eigenvalue) is NP-hard in general, which is why the table says *convex* quadratic.
+- **NLP** (nonlinear program): the general §1 form where $f$, $g_i$ or $h_j$ is nonlinear; convex or not, it is solved by SQP or interior-point methods to a KKT point.
+- **MIP** (mixed-integer program): any of the above with some variables restricted to integers, $x_i\in\mathbb{Z}$ (often $\{0,1\}$ for yes/no decisions). The integrality makes the feasible set non-convex. **Branch and bound** solves it by dropping integrality to get a lower bound (the *relaxation*), splitting on a fractional variable ($x_i\le\lfloor\cdot\rfloor$ or $x_i\ge\lceil\cdot\rceil$), and discarding any branch whose bound is already worse than the best integer solution found.
+
 **MPC as a QP, written out** ([[04-robotics/index|control track]]): linear dynamics
 $x_{t+1} = Ax_t + Bu_t$, horizon $N$, stage cost $x^\top Q x + u^\top R u$,
 $Q,P\succeq0$, $R\succ0$, and a polyhedral state set
@@ -331,6 +414,11 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 Read it as the LQR cost with a finite horizon and hard constraints reattached. The dynamics enter as equality constraints; substitute them out (condensing) and what remains is a convex QP in the $u$'s alone. Small, structured
 QPs can run at millisecond scale with an appropriate solver and implementation; report the
 deadline and worst-case solve time. MPC re-solves each control step and applies the first input.
+
+**Every symbol, and the loop that makes it MPC.** $x_t\in\mathbb{R}^{n}$ is the predicted state $t$ steps ahead, starting from the measured state $x_0$; $u_t\in\mathbb{R}^{p}$ is the input, the decision variable; $A$ and $B$ are the dynamics matrices (not the LP's $A$); $N$ is the **horizon**, the number of steps looked ahead. $Q$ weights state error, $R$ weights input effort ($R\succ0$ keeps the problem strictly convex in $u$), and $P$ is the **terminal cost** that stands in for everything after step $N$. $H$ and $h$ describe the allowed states (here $H$ is a constraint matrix, not a Hessian). **Model predictive control** is then three steps repeated each sampling period: (1) measure $x_0$, (2) solve the QP for $u_0,\ldots,u_{N-1}$, (3) apply only $u_0$ and discard the rest (the **receding horizon**).
+
+> [!example] Worked example · 계산 예제
+> Scalar system $x_{t+1}=x_t+u_t$, $N=1$, $Q=R=P=1$, measured $x_0=1$. The cost is $x_0^2+u_0^2+(x_0+u_0)^2=1+u_0^2+(1+u_0)^2$, minimised where $2u_0+2(1+u_0)=0$, so $u_0=-0.5$ and cost $1.5$. Add the input limit $|u_0|\le0.2$: the unconstrained answer is infeasible, the constraint becomes active, $u_0=-0.2$ and the cost rises to $1+0.04+0.64=1.68$. The full treatment is [[04-robotics/mpc|7. MPC]].
 
 ### 6. Reading this wiki through optimization
 
@@ -387,6 +475,20 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 결정 변수, 목적함수, 부등식/등식 제약. 정식화가 일의 절반이다: *무엇이 변수이고, 무엇이
 제약이고, 무엇이 목적인가* — 같은 공학 문제라도 정식화에 따라 풀림성이 극적으로 달라진다.
 
+**이 한 줄의 부분들, 각각의 이름.**
+- **결정 변수** $x\in\mathbb{R}^n$: 솔버가 고를 수 있는 숫자 $n$개.
+- **목적함수** $f:\mathbb{R}^n\to\mathbb{R}$: 작게 만들 숫자 하나. $u(x)$의 최대화는 $f=-u$의 최소화로 쓴다.
+- **부등식 제약** $g_i(x)\le0$, $i=1,\ldots,m$과 **등식 제약** $h_j(x)=0$, $j=1,\ldots,p$: 허용되는 모든 $x$가 지켜야 할 요구 조건. "s.t."는 "subject to(다음 조건 아래)"로 읽는다. 어떤 요구든 이 형태로 쓸 수 있다. 예컨대 $x_1\ge2$는 $2-x_1\le0$이 된다.
+- **실행 가능 집합** $\mathcal{F}=\{x : \text{모든 } i\text{에 대해 } g_i(x)\le0,\ \text{모든 } j\text{에 대해 } h_j(x)=0\}$: 허용되는 점들. 그 밖의 $x$는 $f(x)$가 아무리 작아도 **실행 불가능**하다.
+- **최적값** $p^\star=\inf_{x\in\mathcal{F}}f(x)$와 **최소화점** $x^\star$, 즉 $f(x^\star)=p^\star$인 실행 가능한 점(하한 $\inf$는 가장 큰 하계이고, 최소화점이 있으면 그 점에서 도달한다).
+
+**지역 최솟값과 전역 최솟값의 정의.** 실행 가능한 $x^\star$보다 나은 실행 가능한 점이 하나도 없으면 **전역 최솟값**이다.
+$$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
+이것이 가까운 곳에서만, 즉 어떤 반경 $r>0$에 대해 $\lVert x-x^\star\rVert<r$인 모든 실행 가능한 $x$에서만 성립하면 **지역 최솟값**이다. 그래서 지역 최솟값은 이웃만 이기면 된다. 전역 최솟값은 모두 지역 최솟값이고, 그 역이 언제 성립하느냐가 §2의 질문이다. **엄격한** 지역 최솟값은 $x\ne x^\star$에서 $\le$ 대신 $<$가 성립하는 것이다.
+
+> [!example] 계산 예제 · Worked example
+> $x\le1$, 즉 $g(x)=x-1\le0$ 아래에서 $f(x)=(x-3)^2$를 최소화한다. 실행 가능 집합은 $(-\infty,1]$이다. 제약이 없다면 답은 $x=3$이지만 실행 불가능하다. 실행 가능 집합 위에서 $f$는 $x$가 $1$로 갈수록 계속 줄어드므로 $x^\star=1$, $p^\star=(1-3)^2=4$다. 제약이 답을 바꿨다. 이것이 최적점에서 제약이 **활성**이라는 것, $g(x^\star)=0$의 뜻이다.
+
 선호와 필수 조건의 역할이 달라 정식화가 필요하다. 로봇은 짧은 경로를 선호하면서 작업 공간 경계를 반드시 지켜야 할 수 있다. 경로 비용은 목적함수에, 허용 조건은 제약에 넣고 모델이 실제 장애물과 구동 한계를 표현하는지 판단한다. **여기서 얻는 독법.** 해법보다 먼저 바꿀 수 있는 것과 반드시 만족할 것을 적는다. 목적값 감소는 실행 가능성의 증거가 아니며 근사 모델의 가능성이 물리 시스템의 모든 요구 충족을 증명하지는 않는다.
 
 ### 2. 볼록성 — 결정적 분기점
@@ -396,8 +498,21 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   모든 곳에서 $H \succeq 0$과 동치 — $\succeq 0$은 "양의 준정부호"로 읽고, $\ge 0$의 행렬판이다:
   모든 방향 $x$에 대해 $x^\top H x \ge 0$, 즉 어느 방향으로 걸어도 표면이 위로 휘거나
   (최악의 경우) 평평하다는 뜻.
+  ($\succeq0$의 고유값 판정, 즉 모든 고유값 $\ge0$은 [[02-foundations/linear-algebra|1. 선형대수 §3]]에 있다.)
+- **볼록 집합의 완전한 정의.** 집합 $C\subseteq\mathbb{R}^n$ 안의 어떤 두 점과 $0$과 $1$ 사이의 어떤 섞음 비율에 대해서도 섞은 점이 역시 그 안에 있으면 볼록이다.
+  $$x\in C,\ y\in C,\ \lambda\in[0,1]\ \implies\ \lambda x+(1-\lambda)y\in C$$
+  그래서 $x$($\lambda=1$)에서 $y$($\lambda=0$)까지의 선분 전체가 안에 머문다. 예: 반공간 $\{x : a^\top x\le b\}$, 공 $\{x : \lVert x-c\rVert\le r\}$, 그리고 볼록 집합들의 교집합 — 다면체 $\{x : Hx\le h\}$가 볼록인 이유다. **반례:** 고리 $\{x : 0.5\le\lVert x\rVert\le1\}$은 $(1,0)$과 $(-1,0)$을 포함하지만 중점 $(0,0)$은 포함하지 않는다. 장애물 주변의 자유 공간이 볼록이 아닌 것도 같은 이유다.
+- **볼록 함수의 완전한 정의.** 정의역이 볼록 집합이고, 그래프 위 두 점을 잇는 현이 그래프 위나 그 위쪽에 놓이면 $f$는 볼록이다.
+  $$f(\lambda x+(1-\lambda)y)\le\lambda f(x)+(1-\lambda)f(y)\quad\text{for all } x,y,\ \lambda\in[0,1]$$
+  좌변은 섞은 점에서의 $f$이고 우변은 두 함수값을 같은 비율로 섞은 것이기 때문이다. $f$가 충분히 매끄러우면 동치인 판정이 둘 있다. **1차:** 모든 접평면이 그래프 아래에 있다, $f(y)\ge f(x)+\nabla f(x)^\top(y-x)$. **2차:** 위에서 말한 모든 곳에서의 $H(x)\succeq0$.
+  - **예.** $f(x)=x^2$, $x=-1$, $y=3$, $\lambda=0.5$: $f(1)=1\le0.5(1)+0.5(9)=5$ ✓이고, 모든 곳에서 $f''=2\ge0$.
+  - **반례.** $f(x)=x^4-2x^2$, $x=-1$, $y=1$, $\lambda=0.5$: $f(0)=0$인데 $0.5f(-1)+0.5f(1)=-1$이라 그래프가 현 위로 솟는다. $f''(0)=-4<0$도 같은 말을 한다.
+  - **엄격 볼록과 강볼록.** $x\ne y$, $0<\lambda<1$에서 부등식이 엄격하면 **엄격 볼록**, 모든 곳에서 $H(x)\succeq mI$($m>0$), 즉 모든 방향의 곡률이 적어도 $m$이면 계수 $m$의 **강볼록**이다. $x^2$은 강볼록($m=2$)이고, $x^4$은 $f''(0)=0$이므로 엄격 볼록이지만 강볼록은 아니다. §3의 뉴턴 수렴 주장에는 강볼록이 필요하다.
 - 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이다. 많은 표준
   유한차원 볼록 문제에는 명시된 가정 아래 전역해 보장과 효율적인 솔버가 있다.
+  - **조건들, 각각의 이름.** §1의 형태에서 (1) 목적함수 $f$가 볼록이고, (2) 모든 부등식 함수 $g_i$가 볼록이고, (3) 모든 등식 함수 $h_j$가 아핀, $h_j(x)=a_j^\top x-b_j$이면 문제가 **볼록**이다. (2)와 (3)이 실행 가능 집합을 볼록으로 만든다. $\{g_i\le0\}$은 볼록 함수의 하위 수준 집합이고, $x_1^2+x_2^2=1$ 같은 비선형 등식은 볼록이 아닌 원이기 때문이다.
+  - **지역이 곧 전역인 이유.** $x^\star$가 지역 최솟값인데 어떤 실행 가능한 $y$가 $f(y)<f(x^\star)$라고 하자. $\lambda$가 $1$보다 조금 작은 점 $\lambda x^\star+(1-\lambda)y$는 실행 가능하고 $x^\star$에 얼마든지 가깝다. 볼록성에 의해 그 점들에서 $f\le\lambda f(x^\star)+(1-\lambda)f(y)<f(x^\star)$이므로 지역 최적성과 모순이다.
+  - **숫자로 본 반례.** $f(x)=x^4-2x^2+0.5x$에는 지역 최솟값이 둘 있다. $x\approx-1.057$에서 $f\approx-1.515$, $x\approx0.930$에서 $f\approx-0.517$이고, 사이에 $x\approx0.127$의 지역 최댓값이 있다. $x=2$에서 스텝 $0.01$로 시작한 경사 하강은 더 나쁜 쪽인 $0.930$에 멈추고, 국소 정보는 그 사실을 알려주지 않는다.
 
 <svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="볼록 지형과 비볼록 지형">
   <g fill="none" stroke="currentColor" stroke-width="1.8">
@@ -426,11 +541,16 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
   부호가 섞이기만 하면 된다. 부호 하나하나가 동전 던지기라면 $n$개가 모두 양수일 확률은
   $2^{-n}$이다($n = 10$이면 약 0.001). 실제 헤시안이 동전 던지기는 아니지만, Dauphin 등(NeurIPS
   2014)은 신경망 손실에서 손실이 높은 임계점이 압도적으로 안장점이라는 증거를 보고한다.
+  - **세 조건, 각각의 이름.** 두 번 미분 가능한 $f$와 후보 $x^\star$에 대해: (1) **1차 필요조건** $\nabla f(x^\star)=0$, 이를 만족하는 점이 **정상점**(또는 **임계점**)이다. (2) **2차 필요조건** $H(x^\star)\succeq0$, 모든 지역 최솟값에서 참이다. (3) **2차 충분조건** $\nabla f(x^\star)=0$이면서 $H(x^\star)\succ0$, 엄격한 지역 최솟값을 보장한다. **안장점**은 헤시안에 양의 고유값과 음의 고유값이 적어도 하나씩 있는 정상점이라, 어떤 방향으로는 최소이고 다른 방향으로는 최대다.
+  - **경계에 있는 예.** $f(x,y)=x^2-y^2$의 원점은 $\nabla f=0$, $H=\text{diag}(2,-2)$인 안장점이다. $f(x)=x^3$의 $0$은 $f'=0$, $f''=0\ge0$이라 두 필요조건을 모두 통과하지만 $f(-0.1)=-0.001<f(0)$이므로 최솟값이 아니다. $f(x)=x^4$의 $0$은 $f''(0)=0$인 엄격한 최솟값이므로, 조건 (3)은 충분하지만 필요하지는 않다.
 - 테일러에서 나오는 **경사 하강**: 1차 모델을 신뢰 반경 안에서 최소화하면
   $x_{k+1} = x_k - \alpha\nabla f(x_k)$. 헤시안 $H$의 이차 함수에서 고유방향별 수축률은
   $|1 - \alpha\lambda_i|$; 안정성엔 $\alpha < 2/\lambda_{max}$가 필요하고, 흔히 쓰는 $\alpha = 1/\lambda_{max}$를 고르면 느린 방향은
   $(1 - \lambda_{min}/\lambda_{max})^k$처럼 수렴한다 — **조건수 $\kappa$가 곧 고통이다**
-  ([[02-foundations/linear-algebra|선형대수]]).
+  ([[02-foundations/linear-algebra|1. 선형대수 §3]]).
+  - **갱신식, 모든 기호와 함께.** "1차 모델을 신뢰 반경 안에서 최소화"는 이 문제다.
+    $$x_{k+1}=\arg\min_x\Big[f(x_k)+\nabla f(x_k)^\top(x-x_k)+\frac{1}{2\alpha}\lVert x-x_k\rVert^2\Big]$$
+    그 그래디언트 $\nabla f(x_k)+(x-x_k)/\alpha$를 0으로 놓으면 정확히 $x_{k+1}=x_k-\alpha\nabla f(x_k)$가 나오기 때문이다. $k$는 반복 횟수, $x_k$는 현재 반복점, **스텝 크기**(또는 **학습률**) $\alpha>0$는 선형 모델을 얼마나 멀리까지 믿을지 정한다. $f=\tfrac12x^\top Hx$에서는 오차가 $x_{k+1}=(I-\alpha H)\,x_k$를 따르고, 고유방향별 인수 $1-\alpha\lambda_i$가 여기서 나온다.
 - **경사 하강 vs 뉴턴법, 산수 한 줄로.** $f(x) = 5x^2$이면 $f'(x) = 10x$, $f''(x) = 10$이다.
   $x_0 = 1$에서 $\alpha = 0.05$의 경사 하강을 하면 $x_1 = 1 - 0.05(10) = 0.5$, 다음 $0.25$,
   그다음 $0.125$ — 매 스텝 절반이 되므로 $10^{-3}$에 닿는 데 약 10 스텝이 든다. 뉴턴법은 대신
@@ -442,9 +562,18 @@ $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x)
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
   모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때(곡률이 임의로 빠르게 변할 수 없다는 뜻: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$) 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
+  - **모멘텀의 완전한 정의.** heavy-ball 방법은 **모멘텀 계수** $\beta\in[0,1)$로 **속도** $v$를 유지하고 그 방향으로 내딛는다.
+    $$v_{k+1}=\beta v_k+\nabla f(x_k),\qquad x_{k+1}=x_k-\alpha\,v_{k+1}$$
+    그래서 $v$는 과거 그래디언트의 감쇠 합이고, $\beta=0$이면 평범한 경사 하강이다. 효과는 그래디언트들이 일치하느냐에 달려 있다. $\beta=0.9$에서 그래디언트가 일정한 $g$면(골짜기 바닥) $v$가 $g/(1-\beta)=10g$로 자라 스텝이 열 배 길어진다. $+g,-g$로 번갈아 오면(골짜기를 가로질러 튐) $v$는 $\pm g/(1+\beta)=\pm0.53g$에 자리 잡는다. 일관된 방향이 약 19대 1로 우대받는 것이 위에서 말한 "진동 상쇄"다.
+  - **뉴턴법, 모든 기호와 함께.** $H=\nabla^2f(x_k)$는 현재 반복점의 헤시안이고, $-H^{-1}\nabla f(x_k)$는 2차 테일러 모델([[02-foundations/calculus-backprop|2. 미적분 §1]])의 정확한 최소화점이다. **이차 수렴**은 어떤 상수 $C$에 대해 오차가 $\lVert x_{k+1}-x^\star\rVert\le C\lVert x_k-x^\star\rVert^2$를 따른다는 뜻이라, 맞는 자릿수가 스텝마다 대략 두 배가 된다. $f(x)=e^x-2x$(최소화점 $x^\star=\ln2$)를 $x_0=1$에서 풀면 뉴턴의 오차가 $0.307,\ 0.0426,\ 8.95\times10^{-4},\ 4.0\times10^{-7},\ 8.0\times10^{-14}$이다.
+  - **준뉴턴의 완전한 정의.** $H$를 그래디언트만으로 만든 행렬 $B_k$로 바꾼다. 스텝 $s_k=x_{k+1}-x_k$와 그래디언트 변화 $y_k=\nabla f(x_{k+1})-\nabla f(x_k)$로 쓴 **할선 조건**이 정의하는 요구다.
+    $$B_{k+1}\,s_k = y_k$$
+    방금 밟은 스텝 방향에서는 올바른 헤시안이 위치 변화를 관측된 그래디언트 변화로 바꿔야 하기 때문이다. BFGS는 이를 만족하면서 대칭 양정부호를 유지하는 특정한 저랭크 갱신($B$나 그 역에 대한)이고, L-BFGS는 $n\times n$ 행렬 대신 최근 $(s_k,y_k)$ 쌍 몇 개만 저장한다. 1차원 예: $f=5x^2$에서 $1$에서 $0.5$로 가면 $s=-0.5$, $y=5-10=-5$, $B=y/s=10$으로 참 곡률이다.
 - 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
   스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
   좌표별 곡률 대리.
+  - **완전한 정의.** 예제별 손실의 평균 $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$에 대해, 예제 $|B|$개의 무작위 배치 $B$가 추정 $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$를 준다. **불편**은 배치의 무작위 선택에 대해 $\mathbb{E}[\hat g]=\nabla f(x)$라는 뜻이고, **시끄럽다**는 것은 한 번의 $\hat g$가 그것과 멀 수 있다는 뜻이다. 예제를 독립적으로 뽑으면 분산은 $1/|B|$처럼 준다.
+  - **계산.** $\ell_i=\tfrac12(x-a_i)^2$, $a=(1,2,3,6)$, $x=0$으로 두자. 전체 그래디언트는 $\frac14\sum(0-a_i)=-3$이다. 크기 2인 배치 여섯 개는 $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$를 준다. 어느 하나도 $-3$이 아니지만 평균은 정확히 $-3$이다.
 
 **적응형 스텝 크기, 세 단계로.** 위의 조건수 문제를 좌표 하나씩 공략하는 방법이다. $\alpha$ 하나는 가장 가파른 방향에 맞춰 작아야 하므로 평평한 방향은 거의 움직이지 못한다. 그래서 좌표마다 그동안 그래디언트가 얼마나 컸는지에 따라 자기만의 스텝 크기를 받는다: 그래디언트가 큰 가파른 좌표는 작은 스텝을, 평평한 좌표는 큰 스텝을 받는다. 스케일링이 좌표별(대각 전처리기)이므로 축에 정렬된 나쁜 조건은 고치지만, 축 사이로 비스듬히 놓인 골짜기는 고치지 못한다. 세 방법은 같은 업데이트를 공유하고 척도 $s$만 다르다:
 
@@ -464,6 +593,12 @@ $\alpha/(\sqrt{s}+\epsilon)$가 그 좌표의 유효 스텝 크기이기 때문�
 
 **AdamW — 적응 스케일링 아래서 weight decay는 L2가 아니다**(Loshchilov & Hutter, ICLR 2019). 평범한 SGD에서는 손실에 $\tfrac{\lambda}{2}\|w\|^2$를 더하는 것과 $w \leftarrow w - \eta\lambda w$로 줄이는 것이 같은 업데이트다. Adam에서는 다르다: L2 그래디언트 $\lambda w$가 데이터 그래디언트와 함께 $\sqrt{\hat v}$로 나뉘므로, 그래디언트가 컸던 이력이 있는 가중치일수록 *덜* 감쇠된다. AdamW는 줄이기를 적응 스텝 바깥에서 적용하므로 모든 가중치가 같은 비율 $\eta\lambda$로 감쇠한다. 논문은 이렇게 하면 최적 $\lambda$가 학습률과 분리되고 Adam의 일반화가 좋아진다고 보고하며, 그래서 트랜스포머·디퓨전 정책 등 대부분의 현대 학습 레시피가 AdamW를 쓴다. 이런 레시피는 보통 **선형 워밍업 후 코사인 감쇠**를 붙인다([[02-foundations/ml-practice|9. ML 실무 §6]]): 초반에는 $\hat v$가 제곱 그래디언트 몇 개만 평균하므로 척도가 시끄럽고 전체 크기 스텝이 폭주할 수 있으며, 후반의 감쇠는 미니배치 노이즈를 가라앉힌다.
 
+**두 갱신식을 써 보면.** 학습률 $\eta$, 감쇠 강도 $\lambda$, 그리고 [[01-canonical-papers/notes/1-foundations/adam|Adam 노트]]의 편향 보정된 평균 $\hat m_k$(그래디언트)와 $\hat v_k$(제곱 그래디언트)로:
+- **Adam + L2**는 평균을 만들기 *전에* 그래디언트에 $\lambda w_k$를 더하므로 감쇠가 적응 나눗셈을 통과한다. $g_k=\nabla f(w_k)+\lambda w_k$로 두고 스텝은 $w_{k+1}=w_k-\eta\,\hat m_k/(\sqrt{\hat v_k}+\epsilon)$이다.
+- **AdamW**는 그래디언트를 순수하게 두고 감쇠를 별도 항으로 적용한다.
+$$w_{k+1}=w_k-\eta\Big(\frac{\hat m_k}{\sqrt{\hat v_k}+\epsilon}+\lambda\,w_k\Big)$$
+그래서 줄이는 양 $\eta\lambda w_k$는 그래디언트 이력과 상관없이 크기가 같은 모든 가중치에 같다. 예: 감쇠 부분만 보면(모멘텀 없음, $\lambda w$가 $\hat v$에 주는 작은 영향은 무시) $1$인 두 가중치에 $\eta=0.01$, $\lambda=0.1$, $\sqrt{\hat v}=2$와 $0.5$일 때, Adam + L2에서는 $\eta\lambda/\sqrt{\hat v}=5\times10^{-4}$와 $2\times10^{-3}$만큼, AdamW에서는 둘 다 $\eta\lambda=10^{-3}$만큼 준다.
+
 ### 3.5 비선형 최소자승 — 로보틱스 논문 절반 아래에 있는 풀이법
 
 3절은 일반 목적함수에 대한 경사하강과 뉴턴을 주었다. 로보틱스의 큰 몫은 둘 중 어느 것도 쓰지
@@ -474,6 +609,8 @@ $$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\
 번들 조정, 포즈그래프 SLAM, ICP 정합, 카메라·손눈 보정, 역기구학, IMU–카메라 시간 정렬이
 전부 $f$만 다른 이 문제다. 아래 두 알고리즘을 알면 논문이 "최적화한다"고 쓸 때 그 시스템들이
 실제로 무엇을 하고 있는지 알 수 있다.
+
+**기호가 무엇인가.** 미지수 $x\in\mathbb{R}^n$은 추정할 대상이다(자세, 랜드마크 위치들, 보정 파라미터). 각 성분 $f_i:\mathbb{R}^n\to\mathbb{R}$는 **잔차**다. 추정값 $x$에서 모델이 측정 $i$에 대해 예측하는 값에서 실제 측정값을 뺀 것이다. 벡터 $f(x)\in\mathbb{R}^m$은 잔차 $m$개를 쌓은 것이고, $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$은 전체 제곱 불일치로, 모든 측정이 정확히 설명될 때만 0이다. 많은 논문이 $\tfrac12\lVert f\rVert^2$로 쓰거나 잔차마다 역공분산 가중치를 주는데, 목적함수의 척도만 바뀌고 방법은 같다. 아래 비콘 예제에서는 $f_i(x)=\lVert x-a_i\rVert-\rho_i$, 즉 비콘 $a_i$까지의 예측 거리에서 측정 거리 $\rho_i$를 뺀 것이다. 추정값 $x=(12,4)$, $\rho=(11.66,\,6.32,\,11.66)$에서 잔차는 $(0.989,\,-0.663,\,-2.716)$이고 $\lVert f\rVert^2=8.79$다. 참 위치 $(10,6)$에서는 거리 반올림 오차 수준인 $0.005$ 미만이다.
 
 **Gauss–Newton: 목적함수가 아니라 잔차를 선형화한다.** 현재 반복점에서 $f$를 1차 테일러 모델
 $f(x_k) + J(x - x_k)$로 바꾼다. $J = Df(x_k)$는 야코비다. 이 모델은 *아핀*이므로 그 제곱
@@ -486,6 +623,10 @@ $$x_{k+1} = x_k - (J^\top J)^{-1} J^\top f(x_k)$$
 그것을 푼다. 여기에 *없는* 것에 주목하라 — $f$의 2차 도함수다. 완전한 뉴턴이라면 그것이
 필요하다. Gauss–Newton은 곡률을 $J^\top J$에서 공짜로 얻고, 그래서 이것이 쓰이고 뉴턴은
 쓰이지 않는다.
+
+**정확히 무엇을 버리는가.** 목적함수 $F(x)=\lVert f(x)\rVert^2$의 그래디언트는 $\nabla F=2J^\top f$이고 헤시안은
+$$\nabla^2F = 2\Big(J^\top J+\sum_{i=1}^{m} f_i(x)\,\nabla^2 f_i(x)\Big)$$
+이므로 $F$에 뉴턴법을 쓰려면 잔차마다 헤시안 $\nabla^2f_i$가 필요하다. Gauss–Newton은 $J^\top J$만 남긴다. 버린 합은 잔차 $f_i$ 자체로 가중되므로, 해 근처에서 모델이 데이터에 잘 맞으면 작고 그때 Gauss–Newton은 거의 뉴턴처럼 움직인다. 해에서도 잔차가 크면(이상치, 틀린 모델) 느리게 수렴할 수 있다. 선형화된 목적함수의 그래디언트를 0으로 놓으면 스텝 $\Delta=x_{k+1}-x_k$에 대한 **정규방정식** $J^\top J\,\Delta=-J^\top f(x_k)$가 나오고, 이것이 위의 갱신식이다.
 
 **대표적인 실패 방식 둘은 모두 자주 보게 된다.**
 
@@ -511,6 +652,10 @@ LM은 둘을 손잡이 하나 $\lambda_k$로 다룬다. 식을 보기 전에 두
 
 1. **$\lambda$가 주는 것.** 긴 스텝에 값을 물려 아핀 모델을 믿을 수 있는 곳에 풀이를 붙잡아 두고, $J$가 랭크를 잃어도 선형계를 가역으로 만든다.
 2. **$\lambda$를 정하는 법.** 시행으로 정한다: 참 잔차를 실제로 줄인 스텝 뒤에는 줄이고, 그렇지 못한 스텝 뒤에는 키운다.
+
+**신뢰 영역 — LM이 그 한 판본인 발상.** 신뢰 영역 방법에는 이름 붙은 두 부분이 있다. (1) **부분 문제**: 반복점 주변 반경 $\Delta_k$의 공 안에서만 국소 모델을 최소화한다.
+$$\min_{\delta}\ \lVert f(x_k)+J\delta\rVert^2\quad\text{s.t.}\quad\lVert\delta\rVert\le\Delta_k$$
+모델을 그만큼까지만 믿기 때문이다. (2) 스텝을 사후에 채점하는 **이득 비** $\varrho_k=\big(F(x_k)-F(x_k+\delta)\big)/\big(\text{모델 감소량}\big)$, 즉 실제 감소를 예측 감소로 나눈 것. 흔한 규칙(Nocedal & Wright 4장)은 $\varrho_k\le0$이면 스텝을 거부하고, $\varrho_k<0.25$면 $\Delta$를 줄이며, $\varrho_k>0.75$이고 스텝이 경계에 닿았으면 키운다. 예: 모델이 $1.0$ 감소를 예측했을 때 실제 감소가 $0.9$면 $\varrho=0.9$(더 믿는다), $0.2$면 $\varrho=0.2$(스텝은 받되 $\Delta$를 줄인다), $0.1$만큼 오르면 $\varrho=-0.1$(거부)이다. LM의 $\lambda_k$는 그 공 제약의 라그랑주 승수(§4)이고, 그래서 $\lambda$를 키우는 것이 반경을 줄이는 것처럼 작동한다.
 
 현재 반복점에서 멀어지는 것에 벌점을 매긴다. 위의 발산 예제가 그 이유다. 둘째 항이 아핀 모델이 유효하던 이웃을 벗어나는 데 값을 물리고, $\lambda_k$가 그 값을 정한다.
 
@@ -618,6 +763,8 @@ Gauss–Newton으로:
 </svg>
 
 - **라그랑지안**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$
+  - **부분들, 각각의 이름.** 결정 변수와 제약마다 하나씩인 **승수**의 스칼라 함수다. 부등식 $g_i\le0$에는 $\lambda_i$, 등식 $h_j=0$에는 $\nu_j$가 붙는다. 부등식 승수는 음수일 수 없다. $\lambda_i g_i$가 위반($g_i>0$)에 대한 벌점으로만 작동하고 보상이 되면 안 되기 때문이다. 등식은 어느 쪽으로도 어길 수 있으므로 등식 승수의 부호는 자유다.
+  - **예.** 아래의 반공간 투영 $\min\tfrac12\lVert x-p\rVert^2$ s.t. $a^\top x-b\le0$의 라그랑지안은 $\mathcal{L}(x,\lambda)=\tfrac12\lVert x-p\rVert^2+\lambda(a^\top x-b)$이고, $\nabla_x\mathcal{L}=x-p+\lambda a=0$이 거기서 쓰는 정상성 식이다.
 - **KKT 조건** (제약이 있는 1차 최적성):
   1. 정상성: $\nabla_x \mathcal{L} = 0$
   2. 원 가능성: $g_i \le 0,\ h_j = 0$
@@ -625,11 +772,16 @@ Gauss–Newton으로:
   4. **상보 여유성**: $\lambda_i\, g_i = 0$ — 제약은 구속되거나($g_i=0$, 가격
      $\lambda_i>0$) 놀거나($\lambda_i = 0$) 둘 중 하나다.
 
+  조건 1을 후보 $x^\star$와 승수 $\lambda^\star,\nu^\star$에서 완전히 쓰면:
+  $$\nabla f(x^\star)+\sum_{i=1}^{m}\lambda_i^\star\nabla g_i(x^\star)+\sum_{j=1}^{p}\nu_j^\star\nabla h_j(x^\star)=0$$
+  즉 목적함수의 그래디언트가 제약 그래디언트들의 비음 결합과 정확히 균형을 이룬다. 위 그림의 다중 제약 판이다. $g_i(x^\star)=0$(점이 경계 위)이면 그 제약은 **활성**, $g_i(x^\star)<0$이면 **비활성**이다. 상보 여유성은 활성 제약만 0이 아닌 승수를 가질 수 있다고 말한다. 등식 제약은 항상 활성이다.
+
   쉽게 말해: KKT는 솔버가 최적 후보를 알아보는 점검표다. 최적점이 반드시 이 점검을 통과하는지, 통과하면 최적이 증명되는지는 문제에 따라 다르다.
   - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건(모든 부등식을 엄격히, 곧 $g_i(x) < 0$으로 만족하는 실현 가능한 점이 하나 있다는 조건) 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
     일반 비볼록 문제의 국소 최소에서도 LICQ(선형 독립 제약 자격 조건: 그 점에서 등식 제약과 활성 부등식 제약의 그래디언트들이 선형 독립이라는 조건) 같은 제약 자격 조건 아래에서는 여전히 필요하다. SQP와 내점법 NLP 솔버가 기대는 것이 이것이다.
   - **충분조건.** 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
     비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
+  - **제약 자격 조건, 그리고 그것이 없을 때 생기는 일.** 제약 자격 조건은 ($f$가 아니라) *제약의 기하만*에 대한 조건으로, 그 점 근처에서 제약 그래디언트가 실행 가능 집합을 제대로 묘사함을 보장한다. 위의 Slater와 LICQ가 그 둘이다. 반례: $g(x)=x^2\le0$ 아래에서 $f(x)=x$를 최소화한다. 실행 가능한 점은 $x^\star=0$ 하나뿐이므로 그것이 최솟값이다. 그런데 $\nabla f=1$, $\nabla g(0)=2x^\star=0$이라 정상성 $1+\lambda\cdot0=0$을 만족하는 $\lambda$가 없다. 진짜 최솟값에서 KKT가 실패하는 것은 $x^2<0$을 만족하는 점이 없고(Slater 실패) 유일한 활성 그래디언트가 0이기(LICQ 실패) 때문이다.
 - 계산 예제 — 반공간으로의 투영: $\min \tfrac12\|x - p\|^2$ s.t. $a^\top x \le b$.
   정상성: $x = p - \lambda a$. $a^\top p \le b$이면: $\lambda = 0$, $x^* = p$(제약이 논다).
   아니면 제약이 구속되어: $\lambda = (a^\top p - b)/\|a\|^2$, $x^* = p - \lambda a$ —
@@ -643,9 +795,20 @@ Gauss–Newton으로:
 - **쌍대성**: $q(\lambda,\nu) = \min_x \mathcal{L}$은 최적값의 하한(약쌍대성); 볼록성 +
   제약 자격 조건에서 하한이 딱 맞는다. 승수 = **잠재 가격**: 제약을 풀어줄 때 최적값의
   민감도 — 스케줄링에서는 말 그대로 크레인 1시간 추가의 한계 가치다.
+  - **부분들, 각각의 이름.** **쌍대 함수**는 승수를 고정한 채 라그랑지안을 $x$에 대해 최소화한 것이다.
+    $$q(\lambda,\nu)=\inf_{x}\ \mathcal{L}(x,\lambda,\nu)$$
+    $(\lambda,\nu)$에 아핀인 함수들의 점별 하한이므로 $f$가 무엇이든 $q$는 항상 오목하다. **약쌍대성**: 모든 $\lambda\ge0$과 임의의 $\nu$에서 $q(\lambda,\nu)\le p^\star$다. 실행 가능한 $x$에서는 더한 항이 $\lambda_ig_i\le0$, $\nu_jh_j=0$이기 때문이다. **쌍대 문제**는 그런 하한 중 최선인 $d^\star=\max_{\lambda\ge0,\,\nu}q(\lambda,\nu)$이다. **쌍대 간극**은 $p^\star-d^\star\ge0$이고, **강쌍대성**은 간극이 0이라는 뜻이다.
+  - **잠재 가격을 식으로.** 제약 $i$를 $g_i(x)\le u_i$로 풀어 주고 새 최적값을 $p^\star(u)$라 하자. 강쌍대성이 성립하고 $p^\star$가 미분 가능하면 $\partial p^\star/\partial u_i=-\lambda_i^\star$이다. 작은 $u_i$만큼 제약을 느슨하게 하면 최적값이 약 $\lambda_i^\star u_i$만큼 내려간다.
+  - **계산.** $x\ge1$, 즉 $g(x)=1-x\le0$ 아래에서 $x^2$을 최소화한다. 분명히 $x^\star=1$, $p^\star=1$이다. 라그랑지안 $x^2+\lambda(1-x)$는 $x=\lambda/2$에서 최소이므로 $q(\lambda)=\lambda-\lambda^2/4$다. $\lambda=1$이면 하한이 $q=0.75\le1$(약쌍대성)이고, 최댓값은 $\lambda^\star=2$에서 $d^\star=1=p^\star$(강쌍대성)이다. 제약을 $x\ge1.1$로 조이면($u=-0.1$) 최적값이 $1.21$로 $0.21$ 오르고, 예측값 $\lambda^\star\cdot0.1=0.2$에 가깝다.
 - 알고리즘: 페널티/배리어는 제약을 목적함수에 굽고; **내부점법**은 배리어의 중심 경로를
   따른다(LP/QP 주력); **SQP**는 반복점마다 QP 모델을 푼다(비선형 MPC 주력); 단순한
   집합에는 투영 경사법.
+  - **페널티법.** 가중치 $\mu$를 키워 가며 무제약 문제 $\min_x f(x)+\frac{\mu}{2}\sum_i\max(0,g_i(x))^2$를 차례로 푼다. 반복점은 실행 불가능할 수 있고 $\mu\to\infty$에서 실행 가능성에 다가간다. $x\ge1$ 아래 $\min x^2$에서는 최소화점이 $\mu/(2+\mu)$라 $\mu=1,10,1000$에서 $0.333$, $0.833$, $0.998$로 항상 약간 실행 불가능하다.
+  - **배리어와 내부점법.** 경계에서 폭발하는 로그 배리어로 반복점을 엄격히 실행 가능하게 유지하며, 배리어 가중치는 $t>0$다.
+    $$\min_x\ f(x)-t\sum_{i}\log\big(-g_i(x)\big)$$
+    $g_i\to0^-$일 때 $-\log(-g_i)\to\infty$이기 때문이다. 최소화점 $x^\star(t)$들이 **중심 경로**를 그리고, $t\to0$에서 참 최적점에 닿는다. 내부점법은 $t$를 줄이면서 뉴턴 스텝으로 이 경로를 따라간다. 같은 문제에서 $\min x^2-t\log(x-1)$은 $x^\star(t)=\big(1+\sqrt{1+2t}\big)/2$를 주어 $t=1,\,0.01,\,0.0001$에서 $1.366$, $1.005$, $1.00005$로 항상 약간 실행 가능하다.
+  - **SQP**(순차 이차 계획법). 반복점 $x_k$에서 라그랑지안의 이차 모델을 목적함수로, 선형화한 제약 $g_i(x_k)+\nabla g_i(x_k)^\top\delta\le0$, $h_j(x_k)+\nabla h_j(x_k)^\top\delta=0$을 제약으로 하는 QP를 만든다. 스텝 $\delta$를 풀고, 갱신하고, 반복한다.
+  - **투영 경사법.** 경사 스텝을 밟은 뒤 유클리드 투영 $\Pi_C(y)=\arg\min_{x\in C}\lVert x-y\rVert$로 실행 가능 집합 $C$에 되돌린다: $x_{k+1}=\Pi_C\big(x_k-\alpha\nabla f(x_k)\big)$. $\Pi_C$가 쌀 때만 실용적이고, 박스라면 투영이 곧 잘라내기다. 예: $C=[0,1]$에서 $x=0.8$, 그래디언트 $-2$, $\alpha=0.5$면 스텝이 $1.8$에 닿고 투영이 $1$로 되돌린다.
 
 ### 5. 로보틱스에 중요한 문제 부류
 
@@ -657,6 +820,14 @@ Gauss–Newton으로:
 | MIP | 정수 변수 | 작업 배정, 공정 순서 (branch & bound) |
 | 전역 | 비볼록, 보증 | 직접 쓸 일은 드묾; MIP 솔버의 밑바닥 |
 
+**표준형으로 쓴 부류들, 각각의 정의.**
+- **LP**(선형 계획): 비용 벡터 $c\in\mathbb{R}^n$, 제약 행렬 $A\in\mathbb{R}^{m\times n}$, 경계 $b\in\mathbb{R}^m$으로
+  $$\min_x\ c^\top x\quad\text{s.t.}\quad Ax\le b$$
+  그래서 목적함수와 모든 제약이 아핀이고, 실행 가능 집합은 다면체이며, 최적해가 있으면 꼭짓점에서 하나를 찾을 수 있다. 예: $\min -x_1-2x_2$ s.t. $x_1+x_2\le4$, $x_2\le3$, $x\ge0$. 꼭짓점 $(0,0)$, $(4,0)$, $(1,3)$, $(0,3)$이 $0,\ -4,\ -7,\ -6$을 주므로 $x^\star=(1,3)$이다.
+- **QP**(이차 계획): LP의 제약에 이차 목적함수, $\min_x\tfrac12x^\top Px+q^\top x$ s.t. $Ax\le b$이고, 정확히 $P\succeq0$일 때 볼록이다. 비볼록 QP($P$에 음의 고유값)는 일반적으로 NP-난해이고, 표가 *볼록* 이차라고 쓴 이유다.
+- **NLP**(비선형 계획): $f$, $g_i$, $h_j$ 중 하나라도 비선형인 §1의 일반형이다. 볼록이든 아니든 SQP나 내부점법으로 KKT 점까지 푼다.
+- **MIP**(혼합 정수 계획): 위의 어느 것이든 일부 변수를 정수 $x_i\in\mathbb{Z}$(예/아니오 결정이면 흔히 $\{0,1\}$)로 제한한 것이다. 정수 조건이 실행 가능 집합을 비볼록으로 만든다. **분기 한정법**(branch and bound)은 정수 조건을 버려 하한을 얻고(*완화*), 분수값 변수에서 가지를 나누며($x_i\le\lfloor\cdot\rfloor$ 또는 $x_i\ge\lceil\cdot\rceil$), 하한이 이미 찾은 최선의 정수해보다 나쁜 가지를 버린다.
+
 **MPC를 QP로 완전히 써보기** ([[04-robotics/index|제어 트랙]]): 선형 동역학
 $x_{t+1} = Ax_t + Bu_t$, 지평 $N$, 단계 비용 $x^\top Q x + u^\top R u$,
 $Q,P\succeq0$, $R\succ0$, 다면체 상태 집합 $\mathcal X=\{x:Hx\le h\}$:
@@ -666,6 +837,11 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 유한 지평에 경성 제약을 다시 붙인 LQR 비용으로 읽어라. 동역학은 등식 제약으로 들어오고, 그것을 대입해 없애면(응축) $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
 구현에서 ms급도 가능하므로 deadline과 최악 실행시간을 함께 보고해야 한다. MPC는 매 제어
 주기에 다시 풀고 첫 입력만 적용한다.
+
+**모든 기호, 그리고 이것을 MPC로 만드는 루프.** $x_t\in\mathbb{R}^{n}$은 측정한 상태 $x_0$에서 시작해 $t$스텝 뒤를 예측한 상태, $u_t\in\mathbb{R}^{p}$는 입력이자 결정 변수, $A$와 $B$는 동역학 행렬(LP의 $A$가 아니다), $N$은 앞을 내다보는 스텝 수인 **지평**이다. $Q$는 상태 오차, $R$은 입력 크기에 가중치를 주고($R\succ0$이 $u$에 대해 엄격 볼록을 유지한다), $P$는 $N$스텝 이후 전부를 대신하는 **종단 비용**이다. $H$와 $h$는 허용 상태를 기술한다(여기서 $H$는 제약 행렬이지 헤시안이 아니다). **모델 예측 제어**는 매 샘플링 주기에 반복하는 세 단계다. (1) $x_0$를 측정하고, (2) $u_0,\ldots,u_{N-1}$에 대한 QP를 풀고, (3) $u_0$만 적용하고 나머지는 버린다(**이동 지평**).
+
+> [!example] 계산 예제 · Worked example
+> 스칼라 시스템 $x_{t+1}=x_t+u_t$, $N=1$, $Q=R=P=1$, 측정값 $x_0=1$. 비용은 $x_0^2+u_0^2+(x_0+u_0)^2=1+u_0^2+(1+u_0)^2$이고 $2u_0+2(1+u_0)=0$에서 최소이므로 $u_0=-0.5$, 비용 $1.5$다. 입력 제한 $|u_0|\le0.2$를 더하면 무제약 답이 실행 불가능해져 제약이 활성이 되고, $u_0=-0.2$, 비용은 $1+0.04+0.64=1.68$로 오른다. 완전한 전개는 [[04-robotics/mpc|7. MPC]].
 
 ### 6. 최적화의 눈으로 이 위키 읽기
 

@@ -32,13 +32,23 @@ fine-tuning on real machines, and how to read an RL experimental section.
 - **Markov Decision Process** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: states, actions,
   transition kernel $p(s'|s,a)$, reward $r(s,a)$, discount $\gamma \in [0,1]$ — Sutton and Barto write "$0 \le \gamma \le 1$", and $\gamma = 1$ is admissible once episodes terminate, which is why §4 below can derive the policy gradient for an undiscounted finite-horizon return.
   Markov = the state summarizes the past ([[02-foundations/probability|probability]]).
+  - *What kind of thing it is:* a mathematical model of sequential decision-making, specified by those five components, each with a precise meaning. $\mathcal{S}$ is the set of states and $\mathcal{A}$ the set of actions. The **transition kernel** is a conditional probability distribution over the next state, so for every $(s, a)$ it is nonnegative and sums to one:
+  $$p(s' \mid s, a) = P\big(s_{t+1} = s' \mid s_t = s,\ a_t = a\big), \qquad \sum_{s' \in \mathcal{S}} p(s' \mid s, a) = 1$$
+  (an integral for continuous states). The reward $r(s, a)$ is the scalar the agent receives for taking $a$ in $s$, and $\gamma$ weights future rewards.
+  - *The Markov property* is the condition that makes those five components enough: the next state depends on the history only through the current state and action,
+  $$P\big(s_{t+1} \mid s_t, a_t, s_{t-1}, a_{t-1}, \dots, s_0, a_0\big) = P\big(s_{t+1} \mid s_t, a_t\big)$$
+  so a policy that sees only $s_t$ loses nothing by ignoring the past ([[02-foundations/probability|3. Probability §5]]). **Non-example:** a "state" that holds an excavator arm's joint *angles* but not its velocities is not Markov, because two moments with the same angles but opposite velocities lead to different next angles; add the velocities and it becomes Markov.
 - **Policy** $\pi(a|s)$; **return** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; objective
   $J(\pi) = E_\pi[G_0]$. Discounting makes infinite sums finite and encodes impatience;
   $1/(1-\gamma)$ is the effective horizon (γ=0.99 ⇒ ~100 steps — the geometric sum that
   produces that number is derived step by step in [[02-foundations/engineering-math|0.5 §5]]).
+  - A **policy** is the agent's decision rule: for each state, a probability distribution over actions, $\pi(a \mid s) \ge 0$ with $\sum_a \pi(a \mid s) = 1$. A **deterministic** policy is the special case that puts all probability on one action, written $a = \pi(s)$.
+  - The **return** is a random variable — the discounted sum of the rewards actually received from step $t$ on — and $J(\pi)$ is its expectation from the start, taken over the policy's action choices and the kernel's transitions. With $\gamma = 0.9$, rewards $1, 0, 2$ and nothing after give $G_0 = 1 + 0.9(0) + 0.81(2) = 2.62$. Because $|r_t| \le r_{\max}$ implies $|G_t| \le r_{\max}/(1-\gamma)$, every return is finite whenever $\gamma < 1$, and $1/(1-\gamma)$ is that bound's horizon: $10$ steps for $\gamma = 0.9$, $100$ for $\gamma = 0.99$.
+  - An **episode** is one run from a start state until a terminal state (or a time limit); with episodes that always terminate, $\gamma = 1$ is allowed, as noted above.
 - Robotics reality: the state is *unobserved* (POMDP) — you see images and proprioception.
   Practical dodge: condition on observation histories / recurrent state (what
   [[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]s formalize).
+  - A **partially observable MDP** adds two components to the five: an observation space $\Omega$ and an observation kernel $O(o \mid s)$, the probability of seeing $o$ in state $s$. The agent acts on $o_t$ rather than $s_t$, and the observation alone is generally not Markov. What *is* Markov is the **belief** $b_t(s) = P(s_t = s \mid o_{0:t}, a_{0:t-1})$, the posterior over states given everything seen so far, which is why histories or recurrent state work as a substitute ([[04-robotics/planning-decision-making|Planning & Decision-Making]]).
 
 ```mermaid
 flowchart LR
@@ -53,6 +63,9 @@ flowchart LR
 
 - $V^\pi(s) = E_\pi[G_t | s_t{=}s]$, $Q^\pi(s,a) = E_\pi[G_t | s_t{=}s, a_t{=}a]$,
   **advantage** $A^\pi = Q^\pi - V^\pi$ (how much better than my average move).
+  - *The three, as one family.* Each is an expected return under policy $\pi$, differing only in what is fixed before the expectation is taken: $V^\pi(s)$ fixes the state, $Q^\pi(s,a)$ fixes the state *and* the first action (after which $\pi$ takes over), and the advantage compares the two. They are tied together by
+  $$V^\pi(s) = \sum_{a} \pi(a \mid s)\, Q^\pi(s, a), \qquad A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s), \qquad \sum_a \pi(a \mid s)\, A^\pi(s, a) = 0$$
+  since the value of a state is the policy-weighted average of its action values, and so the advantage averages to zero under the policy's own action choices. That zero mean is why the advantage is the right weight for a policy gradient (§4): it pushes above-average actions up and below-average ones down.
 - **Bellman expectation** (consistency of $V^\pi$):
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
 - **Where it comes from — it is the return folded once.** The return is a geometric sum,
@@ -67,6 +80,10 @@ flowchart LR
   is exactly what makes it something you can iterate to a fixed point.
 - **Bellman optimality**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   the greedy policy on $Q^*$ is optimal.
+  - *Definitions behind it.* The optimal value functions are the best achievable by any policy, $V^*(s) = \max_\pi V^\pi(s)$ and $Q^*(s,a) = \max_\pi Q^\pi(s,a)$. They satisfy the expectation equation with the policy average replaced by a maximum:
+  $$V^*(s) = \max_{a} \sum_{s'} p(s' \mid s, a)\,\big[r(s, a) + \gamma\, V^*(s')\big], \qquad \pi^*(s) = \arg\max_a Q^*(s, a)$$
+  because an optimal agent picks the best first action and then behaves optimally from wherever it lands. A policy $\pi^*$ that is greedy with respect to $Q^*$ in every state is optimal, and in a finite MDP a deterministic optimal policy always exists.
+  - *Worked:* give the bucket MDP below a second action in $A$, "wait", which stays in $A$ with reward $0$. With $V^*(B) = 10$ and $V^*(A) = 9$, the two action values in $A$ are $Q^*(A, \text{move}) = 0 + 0.9 \times 10 = 9$ and $Q^*(A, \text{wait}) = 0 + 0.9 \times 9 = 8.1$, so the greedy policy moves. Waiting is not worthless — it is worth $8.1$ — it is just $0.9$ worse.
 - **A two-state MDP you can solve on paper.** States $A$ (empty bucket) and $B$ (bucket
   full). From $A$ the only action moves you to $B$ with reward $0$; in $B$ you stay in $B$
   and collect reward $1$ every step. Take $\gamma = 0.9$. Write the Bellman equation for $B$ — its value is this step's reward plus the discounted value of where you land, which is $B$ again, so the unknown appears on both sides and you solve for it:
@@ -79,6 +96,9 @@ flowchart LR
   better than average. Advantage measures *choice*, and where there is no choice it is zero.
 - These are fixed-point equations; the Bellman operator is a $\gamma$-contraction, so
   iterating it converges — the license behind everything below.
+  - *What that means.* The **Bellman operator** $T^\pi$ maps any value table $V$ to a new one, $(T^\pi V)(s) = \sum_a \pi(a \mid s) \sum_{s'} p(s' \mid s, a)\,[r(s,a) + \gamma V(s')]$, and $V^\pi$ is the table it leaves unchanged, $T^\pi V^\pi = V^\pi$. A **$\gamma$-contraction** in the max-norm is an operator that brings any two tables closer by at least the factor $\gamma$:
+  $$\big\lVert T^\pi V - T^\pi V' \big\rVert_\infty \le \gamma\, \big\lVert V - V' \big\rVert_\infty, \qquad \lVert V \rVert_\infty = \max_s |V(s)|$$
+  which holds because the only place $V$ enters is the term $\gamma V(s')$, averaged with nonnegative weights that sum to one. The Banach fixed-point theorem then gives both consequences at once: the fixed point is **unique**, and iterating from any start shrinks the worst-case error by at least $\gamma$ per sweep. In the §3 worked example the max-norm error from $V_0 = (0,0)$ is $5.263, 4.737, 4.263, 3.837$ — each exactly $0.9$ times the last. The same inequality holds for the optimality operator, since a maximum cannot move by more than its arguments do.
 
 ### 3. Dynamic programming and TD learning
 
@@ -86,16 +106,26 @@ flowchart LR
   **Policy iteration**: evaluate $\pi$, then act greedily; repeat. The same backup read as
   algorithm design — finite-horizon backward induction, the table-size curse of dimensionality,
   LQR as DP with a closed-form value — is [[02-foundations/algorithms/dynamic-programming|11.5 §7]].
+  - *Both, written out.* Value iteration is a sequence of tables $V_0, V_1, \dots$, each obtained by one application of the optimality operator to every state:
+  $$V_{k+1}(s) = \max_{a} \sum_{s'} p(s' \mid s, a)\,\big[r(s, a) + \gamma\, V_k(s')\big]$$
+  so by the contraction property of §2 it converges to $V^*$ from any $V_0$. On the bucket MDP with the extra "wait" action, starting from zeros, $(V(A), V(B))$ goes $(0, 1)$, $(0.9, 1.9)$, $(1.71, 2.71)$, … toward $(9, 10)$. Policy iteration alternates two steps until the policy stops changing: **evaluation**, solving $V^{\pi_k} = T^{\pi_k} V^{\pi_k}$ for the current policy, and **improvement**, $\pi_{k+1}(s) = \arg\max_a \sum_{s'} p(s' \mid s, a)[r(s,a) + \gamma V^{\pi_k}(s')]$. Each improvement step can only raise the value, and a finite MDP has finitely many deterministic policies, so it terminates.
 - Without a model, sample: **TD(0)** update
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{target}} - V(s)]$
   — bootstrap from your own estimate. The bracket is the **TD error** $\delta$, RL's
   all-purpose learning signal.
+  - *Each symbol:* one observed transition $(s, r, s')$ — the state visited, the reward received, the state reached — replaces the expectation in the Bellman equation, and $\alpha \in (0, 1]$ is the step size.
+  $$\delta = r + \gamma\, V(s') - V(s), \qquad V(s) \leftarrow V(s) + \alpha\, \delta$$
+  so the estimate moves a fraction $\alpha$ of the way toward the one-sample target. **Bootstrapping** is the defining feature: the target contains the current estimate $V(s')$ rather than the true return. Worked: $V(s) = 0.5$, $r = 1$, $V(s') = 2$, $\gamma = 0.9$, $\alpha = 0.1$ give $\delta = 1 + 1.8 - 0.5 = 2.3$ and $V(s) \leftarrow 0.73$.
 - **Q-learning** (**off-policy** — it learns about the greedy policy while acting under a
   different, exploratory one, so it can reuse old data; **on-policy** methods such as PPO
   must learn from data their *current* policy just generated, and discard it after):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$.
   DQN = this + neural $Q$ + replay buffer (a stored pool of past transitions, sampled at random) + target network (a
   [[02-foundations/calculus-backprop|stop-gradient]] copy for stable targets).
+  - *On- vs off-policy, as a condition.* Two policies are involved in any learning method: the **behavior policy** $\mu$ that chooses the actions in the data, and the **target policy** $\pi$ whose value is being learned. A method is **on-policy** when $\mu = \pi$ and **off-policy** when they may differ. Q-learning's target uses $\max_{a'} Q(s', a')$, the greedy action, whatever action $\mu$ actually took next — that is exactly what makes it off-policy. **Sarsa**, its on-policy twin, uses the action $a'$ that was actually taken, $r + \gamma Q(s', a')$. Worked: $Q(s,a) = 0.5$, $r = 1$, $Q(s', \cdot) = (1.0, 3.0)$, $\gamma = 0.9$, $\alpha = 0.1$. Q-learning uses $\max = 3.0$, so $\delta = 3.2$ and $Q \leftarrow 0.82$; if the exploratory behavior actually took the first action, Sarsa uses $1.0$ and gives $Q \leftarrow 0.64$.
+  - *DQN, as a loss.* With network parameters $\theta$, a periodically copied target network $\bar\theta$, and transitions $(s, a, r, s')$ sampled uniformly from the replay buffer $\mathcal{D}$:
+  $$\mathcal{L}(\theta) = E_{(s,a,r,s') \sim \mathcal{D}}\Big[\big(r + \gamma \max_{a'} Q_{\bar\theta}(s', a') - Q_\theta(s, a)\big)^2\Big]$$
+  so each gradient step is a regression toward a target that does not move with $\theta$, since $\bar\theta$ is held fixed between copies (§3.5 explains why that matters).
 - Value-based methods are sample-efficient but awkward for continuous actions
   (the $\max_{a'}$ needs an inner optimization) — hence robotics leans policy-side.
 - **Worked example — policy evaluation you can do on paper.** (Value *iteration* would take a $\max_a$ at each step; with the policy fixed this is the evaluation half.) Two states, fixed policy,
@@ -185,7 +215,7 @@ its designs.
   and sampling scheme are tuned rather than maximized.
 - **Clipped double-$Q$** (TD3, [[01-canonical-papers/notes/1-foundations/sac|SAC]]): train two value networks
   (**critics** — see §4) and take the minimum of their estimates. Aimed at overestimation bias, which the triad amplifies because an
-  over-large value feeds its own next target.
+  over-large value feeds its own next target. The shared target is $y = r + \gamma \min_{j = 1, 2} Q_{\bar\theta_j}(s', a')$, with $a'$ the next action chosen by the current policy and $\bar\theta_j$ the two target networks. If the two critics estimate $12$ and $10$ for the same next pair, the target uses $10$: an error has to appear in *both* networks at once to propagate.
 - **Pessimism in offline RL**: penalize or avoid evaluating actions the dataset does not
   support. This attacks the off-policy leg directly, and it is why offline RL is a distinct
   literature rather than "RL with a fixed buffer."
@@ -214,6 +244,9 @@ sometimes discount factor, occasionally the bootstrap.
   trajectory-sampling convention). Papers often use discounted return-to-go inside an
   undiscounted finite-horizon estimator, so check which objective and sampling distribution
   their equality assumes.
+  - *The two facts the chain of equalities uses.* A trajectory $\tau = (s_0, a_0, s_1, a_1, \dots)$ has probability equal to the start-state distribution $\rho_0$ times one policy factor and one dynamics factor per step,
+  $$p_\theta(\tau) = \rho_0(s_0) \prod_{t} \pi_\theta(a_t \mid s_t)\, p(s_{t+1} \mid s_t, a_t), \qquad \nabla_\theta\, p_\theta(\tau) = p_\theta(\tau)\, \nabla_\theta \log p_\theta(\tau)$$
+  and the second identity is just the derivative of a logarithm, $\nabla \log p = \nabla p / p$. Taking the log turns the product into a sum, so $\nabla_\theta \log p_\theta(\tau) = \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)$: $\rho_0$ and $p$ contain no $\theta$ and drop out. That is why a policy gradient can be estimated from sampled episodes without a model of the dynamics.
 - **REINFORCE** is exactly this — unbiased, catastrophically high variance. Variance
   reductions, in order of importance: subtract a **baseline** $b(s)$ (unbiased for any
   state-only baseline; best choice ≈ $V(s)$, making the weight the advantage $A$);
@@ -222,6 +255,15 @@ sometimes discount factor, occasionally the bootstrap.
   between TD (biased, low-variance) and Monte Carlo (unbiased, high-variance) with a knob λ:
   it weights the TD errors of the next steps by $(\gamma\lambda)^l$, so λ = 0 keeps only the
   one-step $\delta$ above and λ = 1 sums them into the full Monte Carlo return minus $V(s)$.
+  - *REINFORCE with a baseline, as the estimator actually computed* from $N$ sampled episodes $i$ with steps $t$:
+  $$\hat g = \frac{1}{N}\sum_{i=1}^{N} \sum_{t} \nabla_\theta \log \pi_\theta\big(a_t^i \mid s_t^i\big)\,\Big(\hat G_t^i - b\big(s_t^i\big)\Big), \qquad \theta \leftarrow \theta + \alpha\,\hat g$$
+  where $\hat G_t^i$ is the reward-to-go actually observed after step $t$ and $\nabla_\theta \log \pi_\theta$ is the **score function**; the update is gradient *ascent* because $J$ is maximized. The baseline leaves the expectation unchanged since the score has zero mean under the policy (self-check 2) — for a two-action policy with probabilities $0.6$ and $0.4$, the score with respect to $p = 0.6$ is $1/0.6$ or $-1/0.4$, and $0.6(1/0.6) + 0.4(-1/0.4) = 0$.
+  - *Actor-critic, as two coupled learners.* The **actor** is the policy $\pi_\theta$; the **critic** is a learned value function $V_\phi$ whose only job is to supply the baseline. Each transition updates both,
+  $$\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t), \qquad \phi \leftarrow \phi + \alpha_\phi\, \delta_t\, \nabla_\phi V_\phi(s_t), \qquad \theta \leftarrow \theta + \alpha_\theta\, \delta_t\, \nabla_\theta \log \pi_\theta(a_t \mid s_t)$$
+  so the critic learns by TD(0) (§3) while the actor treats the critic's TD error as its advantage.
+  - *GAE, written out.* With TD errors $\delta_t$ as above,
+  $$\hat A_t^{\text{GAE}(\gamma, \lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l\, \delta_{t+l}$$
+  so the weights decay geometrically at rate $\gamma\lambda$. With $\gamma = 0.9$, $\lambda = 0.95$ ($\gamma\lambda = 0.855$) and the next three TD errors $1.0, 0.5, -0.2$ (zero afterwards), $\hat A_t = 1.0 + 0.855(0.5) + 0.855^2(-0.2) = 1.281$.
 - **Why a baseline matters, in numbers.** One state, two actions, $\pi(a_1)=0.6$,
   $\pi(a_2)=0.4$, returns $G_1 = 1$, $G_2 = 0$. Raw REINFORCE weights the two
   log-probability gradients by $1$ and $0$: $a_1$ is pushed up and $a_2$ is *left alone*.
@@ -235,6 +277,10 @@ sometimes discount factor, occasionally the bootstrap.
   — take policy-gradient steps but *clip away the incentive* to move far from the data-
   collecting policy. A trust region by clamp, plus (in RLHF) an explicit KL penalty
   ([[02-foundations/information-theory|information theory]]).
+  - *Every piece named.* $\pi_{old}$ is the policy that collected the current batch and $\pi_\theta$ the one being optimized. The **importance ratio** $\rho_t$ reweights an old sample to estimate what the new policy would earn: an action the new policy takes with probability $0.3$ where the old one took it with $0.2$ gets weight $1.5$. $A_t$ is an advantage estimate, usually GAE. $\epsilon$ (commonly $0.2$) is the clip range, and $\text{clip}(x, a, b) = \min(\max(x, a), b)$ confines $x$ to $[a, b]$, so $\text{clip}(1.3, 0.8, 1.2) = 1.2$ and $\text{clip}(0.7, 0.8, 1.2) = 0.8$. $E_t$ is the average over the timesteps in the batch.
+  - *Trust region, the idea being approximated.* TRPO maximizes the same importance-weighted advantage subject to an explicit bound on how far the policy moves, measured by KL divergence ([[02-foundations/information-theory|5. Information Theory §3]]):
+  $$\max_\theta\ E_t\big[\rho_t\, A_t\big] \quad \text{subject to} \quad E_t\Big[\mathrm{KL}\big(\pi_{old}(\cdot \mid s_t)\ \Vert\ \pi_\theta(\cdot \mid s_t)\big)\Big] \le \delta$$
+  because the ratio-weighted estimate is only accurate while the two policies stay close. PPO replaces the constraint with the clip, which is cheaper to optimize with ordinary minibatch gradient steps and enforces closeness only approximately.
 - **The clip, in numbers** ($\epsilon = 0.2$). Good action, $A = +1$, and the policy has
   already raised it to $\rho = 1.3$: $\min(1.3,\ \text{clip}(1.3)=1.2) = 1.2$ — the
   *clipped* branch wins, and it is flat, so the gradient is **zero**: no incentive to push
@@ -277,6 +323,10 @@ sometimes discount factor, occasionally the bootstrap.
 - The tradeoff: sample efficiency vs **model bias** — errors compound over imagined
   horizons (the same compounding-error logic as [[01-canonical-papers/notes/4-vla/act|ACT]]'s
   motivation), managed by short horizons and value bootstrapping.
+  - *The dividing condition.* An RL method is **model-based** when it learns (or is given) a transition model $\hat p(s' \mid s, a)$, and usually a reward model $\hat r(s, a)$, and uses them to plan or to generate training data; it is **model-free** when its updates use only real transitions and never query such a model. The learned-model version has two stages, fitting the model to real transitions $(s_i, a_i, s'_i)$ by maximum likelihood, then improving the policy against the model's predictions:
+  $$\hat p = \arg\max_{q} \sum_{i} \log q\big(s'_i \mid s_i, a_i\big), \qquad \hat J(\pi) = E_{\hat p,\, \pi}\Big[\sum_{t=0}^{H-1} \gamma^t\, \hat r(s_t, a_t) + \gamma^H\, V(s_H)\Big]$$
+  where the imagined rollout runs $H$ steps inside $\hat p$ and a learned value $V$ stands in for everything after, so errors of $\hat p$ only compound for $H$ steps. With $\gamma = 0.99$ and Dreamer's $H = 15$, the bootstrap term still carries weight $0.99^{15} = 0.860$, which is why a short horizon costs little.
+  - **Model bias** is the systematic difference $\hat p \ne p$. It is dangerous in a specific way: the policy optimizer actively seeks actions whose imagined return $\hat J$ is high, which includes actions that look good only because $\hat p$ is wrong there.
 
 ```mermaid
 flowchart TD
@@ -316,6 +366,17 @@ structural weakness is **covariate shift**: the policy is trained on *expert* st
 runs on *its own*, so small errors drift the state off-distribution where errors compound.
 That single failure mode is why **DAgger** exists — execute the learner, let the expert
 label the states it actually visited, retrain.
+
+- **Behaviour cloning, written out.** Given a dataset $\mathcal{D} = \{(o_i, a_i)\}_{i=1}^{N}$ of expert observations and actions,
+  $$\theta^\star = \arg\max_\theta \sum_{i=1}^{N} \log \pi_\theta\big(a_i \mid o_i\big)$$
+  which is maximum-likelihood supervised learning, so no reward and no environment interaction appear anywhere. For a Gaussian policy with fixed standard deviation, $-\log \pi_\theta(a \mid o) = \frac{1}{2\sigma^2}\lVert a - \mu_\theta(o)\rVert^2 + \text{const}$, so BC reduces to mean-squared-error regression onto the demonstrated actions.
+- **Covariate shift, as two distributions.** Write $d_\pi(s)$ for the distribution of states a policy $\pi$ visits when it runs. BC minimizes its loss under the expert's visitation $d_{\pi_E}$, but the deployed policy is scored under its own:
+  $$\text{trained on } E_{s \sim d_{\pi_E}}\big[\ell(\pi_\theta, s)\big], \qquad \text{evaluated on } E_{s \sim d_{\pi_\theta}}\big[\ell(\pi_\theta, s)\big], \qquad d_{\pi_\theta} \ne d_{\pi_E}$$
+  where $\ell$ is the per-state imitation loss. The inputs' distribution moves while the correct action for each state does not, which is exactly covariate shift in the sense of [[02-foundations/ml-practice|9. ML Practice §1]].
+- **DAgger, as an algorithm** (Ross, Gordon & Bagnell, 2011). Start with the demonstrations as $\mathcal{D}$ and train $\pi_1$. At iteration $i$: run a mixture that follows the expert with probability $\beta_i$ and the current learner otherwise; record the states visited; ask the expert what it *would* do in each; aggregate and retrain,
+  $$\mathcal{D} \leftarrow \mathcal{D} \cup \big\{(s, \pi_E(s)) : s \sim d_{\pi_i}\big\}, \qquad \pi_{i+1} = \text{BC on } \mathcal{D}$$
+  so the training distribution is pulled toward the learner's own state distribution. A common schedule is $\beta_i = 0.5^{\,i-1}$, that is $1, 0.5, 0.25, 0.125$, handing control to the learner geometrically. **Non-example:** collecting more expert demonstrations and retraining is not DAgger, because those states still come from $d_{\pi_E}$.
+- **Support.** The support of a distribution is the set where it has nonzero probability, $\operatorname{supp}(d) = \{s : d(s) > 0\}$. "Outside the support of the demonstrations" means states with $d_{\pi_E}(s) = 0$, where BC's loss has never been evaluated and its output is pure extrapolation.
 
 *How bad is it?* Suppose each step independently carries a small chance $\epsilon$ of an
 error that puts the policy somewhere its demonstrations never went. Then a $T$-step task
@@ -377,6 +438,10 @@ absolute vs delta, joint vs end-effector space.) Aside: **offline RL** learns fr
 dataset too, but uses rewards to *stitch* behavior better than any single demonstrator — at
 the price of value-extrapolation instability BC never has.
 
+- **Multimodal, precisely.** The expert's action distribution $p(a \mid o)$ has more than one separated peak (mode) for the same observation. A policy trained with mean-squared error predicts the conditional *mean*, $\mu^\star(o) = E[a \mid o]$, since that is what minimizes squared error. Two experts steering $+1$ m and $-1$ m around an obstacle, equally often, give a mean of $(1 + (-1))/2 = 0$ m: straight into the obstacle, an action *neither* expert ever took. A head that represents the distribution rather than its mean (a mixture, a diffusion or flow model, or discretized action tokens) can put probability on both sides.
+- **Action chunking, precisely.** The policy outputs the next $k$ actions from one observation, $\pi_\theta(a_t, a_{t+1}, \dots, a_{t+k-1} \mid o_t)$, and the robot executes several of them before querying again. A $T$-step task then needs about $T/k$ policy decisions: $500$ steps in chunks of $10$ is $50$ decisions, and at a $1\%$ per-decision error rate the illustration above moves from $0.99^{500} = 0.7\%$ to $0.99^{50} = 60.5\%$ clean. The same formula shows the cost: within a chunk, observations after $o_t$ are not used.
+- **Offline RL, precisely.** Learn a policy that maximizes expected return $J(\pi)$ from a fixed dataset of transitions $\mathcal{D} = \{(s, a, r, s')\}$ collected by some other behavior policy, with **no further interaction**. It differs from BC in using $r$, so it can prefer the better parts of mediocre trajectories, and from ordinary off-policy RL in that nothing outside $\operatorname{supp}(\mathcal{D})$ can ever be tried to correct an overestimated $Q$ — hence the pessimism of §3.5.
+
 > [!important] The 2024–2026 correction to this section
 > The framing above — imitation is stable but capped, RL can exceed the demonstrator — is
 > right, and the last two years sharpened it in a way worth carrying. On **contact-rich
@@ -416,6 +481,9 @@ Entry chain into the papers: this section →
 - Decoder ring for papers: "BC baseline" = behavior cloning; "advantage-weighted" =
   policy improvement re-weighted by $e^{A/\beta}$; "KL-regularized policy" = stay near a
   reference policy while improving.
+  - The last two are one formula. The **KL-regularized objective** trades return against distance from a reference policy $\pi_{\text{ref}}$ (the pretrained or data-collecting policy), with a temperature $\beta > 0$ setting the exchange rate:
+  $$\max_\pi\ E_{a \sim \pi}\big[A(s, a)\big] - \beta\, \mathrm{KL}\big(\pi(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big) \quad\Rightarrow\quad \pi^*(a \mid s) = \frac{\pi_{\text{ref}}(a \mid s)\, e^{A(s,a)/\beta}}{Z(s)}$$
+  where $Z(s)$ normalizes the probabilities to one; the closed form is the same Lagrange-multiplier result used for MaxEnt IRL and DPO in §11. "Advantage-weighted" methods fit $\pi_\theta$ to this $\pi^*$ by weighted BC, each logged action weighted by $e^{A/\beta}$. Worked: two actions with $\pi_{\text{ref}} = (0.5, 0.5)$, advantages $(1, 0)$ and $\beta = 0.5$ give weights $e^{2} : e^{0}$, so $\pi^* = (0.881, 0.119)$; a larger $\beta$ keeps $\pi^*$ closer to $(0.5, 0.5)$.
 
 ### 7. Reward design — the choice that decides the outcome
 
@@ -427,10 +495,15 @@ their abstracts never mention.
   honest — it says exactly what you want and nothing else — but a randomly initialized
   policy may never see it. A **dense** (shaped) reward gives signal every step and learns
   far faster, at the price that you are now optimizing your *proxy* for the goal.
+  - *As formulas.* A sparse reward is an indicator of a goal set $\mathcal{G}$, $r(s) = \mathbb{1}[s \in \mathcal{G}]$, nonzero on a small fraction of states. A dense reward is informative almost everywhere, typically a negative distance such as $r(s) = -\lVert x(s) - x_{\text{goal}} \rVert$ for a position $x(s)$. "Shaped" means a dense term added to the true reward, $r' = r + F$.
 - **Potential-based shaping** is the one shaping form that provably cannot change the
   optimal policy: add $F = \gamma\Phi(s') - \Phi(s)$ for any function $\Phi$ of state.
   Anything else — and most papers use something else — can change what is optimal.
-- **A real reward is a weighted sum of terms.** A digging policy's reward typically looks
+  - *Why it cannot* (Ng, Harada & Russell, ICML 1999). Along any trajectory the shaping terms telescope:
+  $$\sum_{t=0}^{T-1} \gamma^t \big(\gamma\,\Phi(s_{t+1}) - \Phi(s_t)\big) = \gamma^T\, \Phi(s_T) - \Phi(s_0)$$
+  because each $\gamma^{t+1}\Phi(s_{t+1})$ cancels the next step's $-\gamma^{t+1}\Phi(s_{t+1})$. The shaped return therefore differs from the original only by a start-state term (plus an end term that vanishes as $T \to \infty$ with bounded $\Phi$ and $\gamma < 1$), so $Q'(s, a) = Q(s, a) - \Phi(s)$ for every action: all actions in a state shift by the same amount, and the ranking of actions — hence the optimal policy — is unchanged. The condition is that $F$ depends only on a state potential; a bonus that can be collected again by looping has no such cancellation.
+  - *Worked,* on the bucket MDP of §2 with the extra "wait" action and $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$. Moving $A \to B$ earns $F = 0.9(5) - 0 = 4.5$; staying in $B$ earns $F = 0.9(5) - 5 = -0.5$ on top of its reward $1$. Shaped values: $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$, and in $A$, $Q'(A, \text{move}) = 4.5 + 0.9 \times 5 = 9$ against $Q'(A, \text{wait}) = 0 + 0.9 \times 9 = 8.1$ — the same two numbers as before shaping, because $\Phi(A) = 0$, so moving is still optimal.
+- **A real reward is a weighted sum of terms**, $r = \sum_{j} w_j\, r_j$, where each $r_j$ measures one aspect of behavior and each weight $w_j$ is a hyperparameter carrying its sign. A digging policy's reward typically looks
   like this, and the table *is* the method section worth reading:
 
 | Term | Purpose | Typical sign |
@@ -466,6 +539,9 @@ their abstracts never mention.
   meant. A velocity reward met by vibrating in place; a distance-to-goal reward met by
   circling just inside the threshold. Symptom: reward curve rises, behavior is wrong.
   The diagnostic question is always *what is the cheapest way to earn this reward?*
+  - *Stated as a condition.* Let $r^\dagger$ be the reward you meant (usually unwritable) and $\hat r$ the proxy you wrote. Reward hacking is the case where optimizing the proxy succeeds on the proxy and fails on the intent:
+  $$\hat\pi = \arg\max_\pi J_{\hat r}(\pi), \qquad J_{\hat r}(\hat\pi) \ \text{high}, \qquad J_{r^\dagger}(\hat\pi) \ \text{low}$$
+  so it is a property of the pair (proxy, optimizer), not of either alone — the stronger the optimizer, the more reliably it finds where $\hat r$ and $r^\dagger$ disagree. The $-0.48$ example above is the simplest instance: the proxy is maximized by standing still, which scores zero on the intended digging task.
 - **Reading cue**: find the reward table, count the terms, look for the weights (often only
   in an appendix), and ask which term dominates at the operating point the paper reports.
   A paper that will not show its reward has not shown its method.
@@ -478,20 +554,30 @@ the binding constraint.
 
 - **Discrete actions**: $\epsilon$-greedy — act greedily with probability $1-\epsilon$,
   uniformly at random otherwise, with $\epsilon$ decayed over training.
+  - *The policy it defines,* over $|\mathcal{A}|$ actions with greedy action $a^\star = \arg\max_a Q(s, a)$:
+  $$\pi(a \mid s) = \begin{cases} 1 - \epsilon + \epsilon/|\mathcal{A}| & a = a^\star \\ \epsilon/|\mathcal{A}| & a \ne a^\star \end{cases}$$
+  since the random branch can also pick $a^\star$. With $\epsilon = 0.1$ and 4 actions, the greedy action has probability $0.925$ and each other action $0.025$, so every action keeps being tried.
 - **Continuous actions** (the robotics case): add noise to the action (Gaussian, or
   temporally correlated Ornstein–Uhlenbeck noise — noise that drifts from its last value
   instead of being drawn fresh each step — so the machine does not jitter), or keep
   the policy **stochastic** and let it learn its own standard deviation — what PPO does.
+  - *Both noises as formulas.* Gaussian exploration executes $a_t = \mu_\theta(s_t) + \sigma \varepsilon_t$ with $\varepsilon_t \sim \mathcal{N}(0, I)$ drawn fresh each step. Ornstein–Uhlenbeck noise, discretized with time step $\Delta t$, pulls toward a mean $\mu$ at rate $\theta_{\text{OU}}$ while adding fresh randomness of scale $\sigma$:
+  $$x_{t+1} = x_t + \theta_{\text{OU}}\,\big(\mu - x_t\big)\,\Delta t + \sigma\sqrt{\Delta t}\;\varepsilon_t$$
+  so consecutive values are correlated with coefficient $1 - \theta_{\text{OU}}\Delta t$. With DDPG's $\theta_{\text{OU}} = 0.15$ and $\Delta t = 1$ that is $0.85$, where Gaussian noise gives $0$.
 - **Entropy bonus**: add $+\alpha H(\pi)$ to the objective
   ([[02-foundations/information-theory|information theory]]) so the policy is rewarded for
   staying undecided, and does not collapse early into a mediocre deterministic habit.
   [[01-canonical-papers/notes/1-foundations/sac|SAC]] promotes this from a bonus to *the*
   objective and tunes $\alpha$ automatically.
+  - *Written out.* The policy's entropy in a state, $H(\pi(\cdot \mid s)) = -\sum_a \pi(a \mid s) \log \pi(a \mid s)$ ([[02-foundations/information-theory|5. Information Theory §1]]), is added to every step's reward in SAC's maximum-entropy objective:
+  $$J(\pi) = E_\pi\Big[\sum_{t} \gamma^t \Big(r(s_t, a_t) + \alpha\, H\big(\pi(\cdot \mid s_t)\big)\Big)\Big]$$
+  so $\alpha \ge 0$ is the exchange rate between reward and randomness. Two actions at $(0.5, 0.5)$ have $H = \ln 2 = 0.693$ nats; at $(0.9, 0.1)$, $H = 0.325$. With $\alpha = 0.1$, collapsing from the first policy to the second must gain more than $0.1 \times (0.693 - 0.325) = 0.037$ reward per step to be worth it.
 - **Curriculum learning** changes the *task* instead of the algorithm: start with shallow
   digs in soft soil, raise depth and resistance once success rate passes a threshold. It is
   cheap and often does most of the work — which is exactly why it belongs in the comparison:
   if a paper's method used a curriculum and the baseline did not, the ablation is not
   measuring the method.
+  - *Its components.* A curriculum is a sequence of task variants $M_1, M_2, \dots, M_K$ ending at the target task, together with an advancement rule that decides when to switch — typically "move from $M_j$ to $M_{j+1}$ once the success rate over the last $n$ episodes exceeds a threshold". Both the sequence and the rule are design choices, and both belong in the methods section.
 - Its transfer-side sibling, **domain randomization**, is about robustness rather than
   exploration and lives in the [[05-construction-robotics/sim-to-real|sim-to-real guide]].
 
@@ -507,6 +593,9 @@ the binding constraint.
 - **Keep it near the reference.** RLFT is usually regularized by a KL term back to the
   pretrained policy. Drift too far and you lose what pretraining bought — and reward
   hacking becomes likely, because the reward was never meant to define the whole behavior.
+  - *The RLFT objective.* Starting from the pretrained parameters $\theta_0$, with $\pi_{\text{ref}} = \pi_{\theta_0}$ kept frozen:
+  $$\max_\theta\ E_{\pi_\theta}\Big[\sum_t \gamma^t\, r(s_t, a_t)\Big] - \beta\, E_{s \sim d_{\pi_\theta}}\Big[\mathrm{KL}\big(\pi_\theta(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big)\Big]$$
+  so $\beta$ sets how much task reward one unit of drift must buy. $\beta \to \infty$ returns the pretrained policy unchanged, and $\beta = 0$ is plain RL that has merely been initialized well. Its optimum has the exponential-tilting form given in the §6 decoder ring.
 - **Safety while learning** has only a few honest answers, and reward penalties are the
   weakest of them:
   1. train in simulation (dominant — a 12-tonne machine cannot "try and correct");
@@ -518,6 +607,12 @@ the binding constraint.
      [[02-foundations/optimization|optimization §4]]);
   4. penalize violations in the reward — convenient, and it guarantees **nothing**: a large
      enough task reward will buy the penalty.
+
+  *Mechanisms 2 to 4 as formulas.* A **safety filter** replaces the policy's command $a_\pi$ with the closest command in a safe set $\mathcal{C}(s)$ that the filter can certify:
+  $$a_{\text{safe}} = \arg\min_{a \in \mathcal{C}(s)} \lVert a - a_\pi \rVert^2$$
+  so a safe command passes unchanged and an unsafe one is projected to the boundary; with a speed limit $\mathcal{C} = [-0.5, 0.5]$ m/s, a requested $0.8$ m/s is executed as $0.5$. The guarantee holds whatever the policy outputs, because it is enforced after the policy. A **constrained MDP** adds a cost function $c(s, a) \ge 0$ and a limit $d$, and its Lagrangian relaxation introduces a multiplier $\lambda \ge 0$:
+  $$\max_\pi\ J_r(\pi) \ \ \text{s.t.}\ \ J_c(\pi) \le d, \qquad \mathcal{L}(\pi, \lambda) = J_r(\pi) - \lambda\,\big(J_c(\pi) - d\big)$$
+  where $J_r$ and $J_c$ are expected discounted totals of reward and cost. Lagrangian methods alternate improving $\pi$ on $\mathcal{L}$ with *raising* $\lambda$ while the constraint is violated. **Worked, and the non-example it exposes.** Two policies: $\pi_1$ with $J_r = 10$, $J_c = 3$; $\pi_2$ with $J_r = 8$, $J_c = 1$; limit $d = 2$. The constrained answer is $\pi_2$, the only feasible one. A fixed reward penalty of $0.5$ per unit of cost scores them $10 - 1.5 = 8.5$ and $8 - 0.5 = 7.5$ and picks the *violating* $\pi_1$ — mechanism 4 failing exactly as stated. The Lagrangian scores are $10 - \lambda$ and $8 + \lambda$, so once $\lambda$ has been raised past $1$ it prefers $\pi_2$; the multiplier is a penalty weight that is adjusted until the constraint holds, rather than guessed.
 - **The real cost is not compute.** On hardware, every episode needs a reset, resets are
   human labor, and wear and safety review are real budgets
   ([[04-robotics/hri-safety|HRI & safety]]).
@@ -554,6 +649,9 @@ RL results depend on protocol more than those of almost any other subfield. What
   ending it because the clock ran out are different: the second should still bootstrap the
   value function, and treating it as terminal quietly teaches the policy that the world
   ends at the time limit.
+  - *In the TD target.* Implementations carry a flag $d \in \{0, 1\}$ per transition and compute
+  $$y = r + \gamma\,(1 - d)\, V(s')$$
+  so $d = 1$ drops the future. **Termination** (the task truly ended: the goal was reached, or the machine tipped) sets $d = 1$. **Truncation** (the clock ran out in a state from which the task would continue) must keep $d = 0$, because $s'$ still has a future. Worked: $r = 1$, $\gamma = 0.99$, $V(s') = 10$ gives a bootstrapped target of $10.9$; marking the time-out as terminal gives $1$, less than a tenth of the correct target, for every state near the limit.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > An RL result is a claim about a *reward, an observation space, a simulator, a curriculum,
@@ -606,7 +704,9 @@ expert's routes avoid stop signs and favour high speed limits, and seek routes w
 feature counts. **Max-margin planning** (Ratliff, Bagnell & Zinkevich, ICML 2006) turns this
 into a quadratic program: choose the smallest $w$ under which the expert beats every other
 candidate policy by a margin that grows with how different that policy is, with a slack
-variable for an imperfect expert.
+variable for an imperfect expert. In symbols, with $\mu_E$ the expert's feature expectations, $\mu(\pi)$ a candidate's, $\ell(\pi) \ge 0$ a loss measuring how different $\pi$ is from the expert, and slack $\xi \ge 0$ weighted by $C$:
+$$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
+so minimizing $\lVert w\rVert$ picks the least extreme reward that still separates the expert, which is how this method breaks the scaling ambiguity. The discounted feature expectation itself is a concrete number: features $\phi = 1, 0, 1$ at steps $0, 1, 2$ with $\gamma = 0.9$ give $\mu = 1 + 0 + 0.81 = 1.81$.
 
 **Maximum-entropy IRL** (Ziebart, Maas, Bagnell & Dey, AAAI 2008). Feature matching still
 leaves ambiguity one level up: many trajectory distributions share the same feature
@@ -646,7 +746,9 @@ discrete worlds, expensive anywhere larger.
 *The adversarial version.* **GAIL** (Ho & Ermon, NeurIPS 2016) is the
 adversarial descendant: a discriminator that tells expert state-action pairs from the
 policy's plays the role of the learned reward, and the policy is trained against it with RL,
-without recovering an explicit reward first.
+without recovering an explicit reward first. Its saddle-point objective, with discriminator $D(s, a) \in (0, 1)$ scoring how *policy-like* a pair is, expert policy $\pi_E$, and entropy weight $\lambda \ge 0$:
+$$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
+so $D$ is trained to tell the two apart and $\pi$ is trained, by RL with cost $\log D(s, a)$, to make its pairs indistinguishable from the expert's. When no discriminator can do better than chance, $D = 0.5$ everywhere and the policy's state-action distribution matches the expert's — distribution matching, the same goal as feature matching without hand-chosen features.
 
 > [!example] Worked example · 계산 예제
 > Two trajectories with a scalar feature, $f(\tau_1) = 2$ and $f(\tau_2) = 1$. The expert
@@ -680,7 +782,9 @@ $\log\sigma(R(A) - R(B))$ over labelled pairs, which is **logistic regression on
 differences**. Logistic regression is the basic yes/no classifier: it predicts a probability
 as the sigmoid of a linear score and fits the weights by maximizing exactly this kind of
 log-likelihood (equivalently, minimizing cross-entropy; see
-[[02-foundations/information-theory|5. Information Theory]]). With a linear reward, $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$, so each
+[[02-foundations/information-theory|5. Information Theory §2]]). For labelled examples $(x_i, y_i)$ with $y_i \in \{0, 1\}$:
+$$P(y = 1 \mid x) = \sigma\big(w^\top x\big), \qquad \max_w \sum_i \Big[y_i \log \sigma\big(w^\top x_i\big) + (1 - y_i)\log\big(1 - \sigma(w^\top x_i)\big)\Big]$$
+since each example contributes the log-probability of the label it actually has; its gradient is $\sum_i (y_i - \sigma(w^\top x_i))\,x_i$, error times input, which is the update the worked example below uses. With a linear reward, $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$, so each
 comparison is one logistic-regression example whose input is the feature difference, and a
 noise-free answer cuts the space of possible $w$ in half along the hyperplane
 $w^\top(\phi(A) - \phi(B)) = 0$.
@@ -706,6 +810,9 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
     $\beta\log Z$ cancels in $r(A) - r(B)$. What remains,
     $\sigma\big(\beta\log\frac{\pi(A)}{\pi_{\text{ref}}(A)} - \beta\log\frac{\pi(B)}{\pi_{\text{ref}}(B)}\big)$,
     involves only the policy being trained and the frozen reference.
+  - The resulting **DPO loss**, averaged over preference triples of a prompt $x$, a preferred answer $y_w$ and a rejected answer $y_l$:
+    $$\mathcal{L}_{\text{DPO}}(\theta) = -E_{(x, y_w, y_l)}\Big[\log \sigma\Big(\beta \log \frac{\pi_\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi_\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)}\Big)\Big]$$
+    so it is the Bradley–Terry negative log-likelihood with $\beta \log(\pi_\theta/\pi_{\text{ref}})$ playing the reward. Worked: $\beta = 0.1$, log-ratio $+2.0$ for the preferred answer and $-1.0$ for the rejected one give $\sigma(0.2 + 0.1) = \sigma(0.3) = 0.574$ and loss $0.554$; the gradient raises the preferred answer's log-ratio and lowers the rejected one's until that probability approaches 1.
 - **Active queries for robots** (Sadigh et al., RSS 2017, "Active Preference-Based Learning
   of Reward Functions"): since each answer is only one bit, choose the pair to show so that
   the answer removes as much as possible of the remaining plausible reward weights.
@@ -804,13 +911,23 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 - **마르코프 결정 과정** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: 상태, 행동, 전이 커널
   $p(s'|s,a)$, 보상 $r(s,a)$, 할인율 $\gamma \in [0,1]$ — Sutton과 Barto는 "$0 \le \gamma \le 1$"로 쓰고, 에피소드가 종료하면 $\gamma = 1$도 허용된다. 아래 §4가 할인 없는 유한 지평 수익으로 정책 경사를 유도할 수 있는 이유다.
   마르코프 = 상태가 과거를 요약한다 ([[02-foundations/probability|확률]]).
+  - *무엇인가:* 순차적 의사결정의 수학적 모델이고, 위의 다섯 구성요소가 각각 정확한 뜻을 가진다. $\mathcal{S}$는 상태의 집합, $\mathcal{A}$는 행동의 집합이다. **전이 커널**은 다음 상태에 대한 조건부 확률분포이므로 모든 $(s, a)$에 대해 음이 아니고 합이 1이다.
+  $$p(s' \mid s, a) = P\big(s_{t+1} = s' \mid s_t = s,\ a_t = a\big), \qquad \sum_{s' \in \mathcal{S}} p(s' \mid s, a) = 1$$
+  (연속 상태면 적분). 보상 $r(s, a)$는 $s$에서 $a$를 했을 때 받는 스칼라이고, $\gamma$는 미래 보상의 가중치다.
+  - *마르코프 성질*은 이 다섯 구성요소로 충분하게 만드는 조건이다. 다음 상태는 현재 상태와 행동을 통해서만 이력에 의존한다.
+  $$P\big(s_{t+1} \mid s_t, a_t, s_{t-1}, a_{t-1}, \dots, s_0, a_0\big) = P\big(s_{t+1} \mid s_t, a_t\big)$$
+  그래서 $s_t$만 보는 정책은 과거를 무시해도 잃는 것이 없다([[02-foundations/probability|3. 확률 §5]]). **반례:** 굴착기 팔의 관절 *각도*만 담고 각속도는 없는 "상태"는 마르코프가 아니다. 각도가 같아도 속도 방향이 반대인 두 순간은 다음 각도가 다르기 때문이다. 각속도를 더하면 마르코프가 된다.
 - **정책** $\pi(a|s)$; **리턴** $G_t = \sum_{k\ge 0} \gamma^k r_{t+k}$; 목표
   $J(\pi) = E_\pi[G_0]$. 할인은 무한 합을 유한하게 만들고 조급함을 인코딩한다;
   $1/(1-\gamma)$이 유효 지평이다 (γ=0.99 ⇒ 약 100 스텝 — 이 숫자를 만드는 기하급수 합은
   [[02-foundations/engineering-math|0.5 §5]]에서 단계별로 유도한다).
+  - **정책**은 에이전트의 결정 규칙이다. 상태마다 행동에 대한 확률분포이고, $\pi(a \mid s) \ge 0$, $\sum_a \pi(a \mid s) = 1$이다. **결정론적** 정책은 한 행동에 확률을 전부 두는 특수한 경우이고 $a = \pi(s)$로 쓴다.
+  - **리턴**은 확률변수 — 스텝 $t$부터 실제로 받은 보상의 할인 합 — 이고, $J(\pi)$는 정책의 행동 선택과 커널의 전이에 대해 취한 시작 시점의 기댓값이다. $\gamma = 0.9$, 보상 $1, 0, 2$ 뒤로 아무것도 없으면 $G_0 = 1 + 0.9(0) + 0.81(2) = 2.62$다. $|r_t| \le r_{\max}$이면 $|G_t| \le r_{\max}/(1-\gamma)$이므로 $\gamma < 1$인 한 모든 리턴은 유한하고, $1/(1-\gamma)$가 그 상한의 지평이다. $\gamma = 0.9$면 $10$스텝, $\gamma = 0.99$면 $100$스텝이다.
+  - **에피소드**는 시작 상태에서 종료 상태(또는 시간 제한)까지의 한 번의 실행이다. 에피소드가 항상 종료하면 위에서 말했듯 $\gamma = 1$이 허용된다.
 - 로보틱스의 현실: 상태는 *관측되지 않는다*(POMDP) — 보이는 건 이미지와 고유수용감각.
   실전적 우회: 관측 이력/순환 상태를 조건으로 ([[01-canonical-papers/notes/5-world-models/dreamer|RSSM]]이
   이를 정식화한 것).
+  - **부분 관측 MDP**는 다섯 구성요소에 둘을 더한다. 관측 공간 $\Omega$와, 상태 $s$에서 $o$를 볼 확률인 관측 커널 $O(o \mid s)$다. 에이전트는 $s_t$가 아니라 $o_t$를 보고 행동하며, 관측만으로는 일반적으로 마르코프가 아니다. 마르코프인 것은 **믿음**(belief) $b_t(s) = P(s_t = s \mid o_{0:t}, a_{0:t-1})$, 곧 지금까지 본 모든 것이 주어졌을 때 상태에 대한 사후분포다. 이력이나 순환 상태가 대용으로 통하는 이유가 이것이다([[04-robotics/planning-decision-making|Planning & Decision-Making]]).
 
 ```mermaid
 flowchart LR
@@ -825,6 +942,9 @@ flowchart LR
 
 - $V^\pi(s) = E_\pi[G_t | s_t{=}s]$, $Q^\pi(s,a) = E_\pi[G_t | s_t{=}s, a_t{=}a]$,
   **어드밴티지** $A^\pi = Q^\pi - V^\pi$ (내 평균 수보다 얼마나 나은가).
+  - *셋을 한 가족으로.* 셋 다 정책 $\pi$ 아래의 기대 리턴이고, 기댓값을 취하기 전에 무엇을 고정하느냐만 다르다. $V^\pi(s)$는 상태를, $Q^\pi(s,a)$는 상태와 *첫 행동까지*(그 뒤는 $\pi$가 맡는다) 고정하고, 어드밴티지는 둘을 비교한다. 서로는 다음으로 묶인다.
+  $$V^\pi(s) = \sum_{a} \pi(a \mid s)\, Q^\pi(s, a), \qquad A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s), \qquad \sum_a \pi(a \mid s)\, A^\pi(s, a) = 0$$
+  상태의 가치는 행동 가치를 정책으로 가중평균한 것이므로, 어드밴티지는 정책 자신의 행동 선택 아래에서 평균이 0이다. 이 평균 0이 어드밴티지가 정책 그래디언트(§4)의 올바른 가중치인 이유다. 평균보다 나은 행동은 올리고 못한 행동은 내린다.
 - **벨만 기대 방정식** ($V^\pi$의 일관성):
   $$V^\pi(s) = E_{a\sim\pi,\, s'\sim p}\big[r(s,a) + \gamma V^\pi(s')\big]$$
 - **어디서 오는가 — 리턴을 한 번 접은 것이다.** 리턴은 기하급수다.
@@ -839,6 +959,10 @@ flowchart LR
   만든다.
 - **벨만 최적성**: $Q^*(s,a) = E\big[r + \gamma \max_{a'} Q^*(s',a')\big]$;
   $Q^*$에 대한 탐욕 정책이 최적이다.
+  - *뒤에 있는 정의.* 최적 가치 함수는 어떤 정책으로든 얻을 수 있는 최선이다. $V^*(s) = \max_\pi V^\pi(s)$, $Q^*(s,a) = \max_\pi Q^\pi(s,a)$. 이들은 기대 방정식에서 정책 평균을 최댓값으로 바꾼 식을 만족한다.
+  $$V^*(s) = \max_{a} \sum_{s'} p(s' \mid s, a)\,\big[r(s, a) + \gamma\, V^*(s')\big], \qquad \pi^*(s) = \arg\max_a Q^*(s, a)$$
+  최적 에이전트는 가장 좋은 첫 행동을 고르고 어디에 도착하든 그 뒤로 최적으로 행동하기 때문이다. 모든 상태에서 $Q^*$에 대해 탐욕적인 정책 $\pi^*$는 최적이고, 유한 MDP에는 결정론적 최적 정책이 항상 존재한다.
+  - *계산 예:* 아래 버킷 MDP의 $A$에 두 번째 행동 "대기"를 주자. $A$에 보상 $0$으로 머무는 행동이다. $V^*(B) = 10$, $V^*(A) = 9$이므로 $A$에서의 두 행동 가치는 $Q^*(A, \text{이동}) = 0 + 0.9 \times 10 = 9$, $Q^*(A, \text{대기}) = 0 + 0.9 \times 9 = 8.1$이고, 탐욕 정책은 이동한다. 대기가 무가치한 것은 아니다 — $8.1$의 가치가 있다 — 단지 $0.9$만큼 못할 뿐이다.
 - **종이 위에서 풀 수 있는 2-상태 MDP.** 상태 $A$(빈 버킷)와 $B$(버킷 가득). $A$에서는
   유일한 행동이 보상 $0$으로 $B$로 데려가고, $B$에서는 계속 $B$에 머물며 매 스텝 보상 $1$을
   받는다. $\gamma = 0.9$로 두고 $B$의 벨만 방정식을 쓰면 — $B$의 가치는 이번 스텝 보상에 다음 상태의 할인된 가치를 더한 것인데 다음 상태가 다시 $B$이므로 미지수가 양변에 나타나고, 그것을 풀면:
@@ -850,6 +974,9 @@ flowchart LR
   수도 평균보다 나을 수 없다. 어드밴티지는 *선택*을 재는 양이고, 선택이 없는 곳에서는 0이다.
 - 이들은 고정점 방정식이고, 벨만 연산자는 $\gamma$-수축이라 반복하면 수렴한다 —
   아래 모든 것의 면허장.
+  - *그 뜻.* **벨만 연산자** $T^\pi$는 임의의 가치 표 $V$를 새 표 $(T^\pi V)(s) = \sum_a \pi(a \mid s) \sum_{s'} p(s' \mid s, a)\,[r(s,a) + \gamma V(s')]$로 보내고, $V^\pi$는 이 연산자가 바꾸지 않는 표, $T^\pi V^\pi = V^\pi$다. 최대 노름에서의 **$\gamma$-수축**은 임의의 두 표를 최소한 $\gamma$배만큼 가깝게 만드는 연산자다.
+  $$\big\lVert T^\pi V - T^\pi V' \big\rVert_\infty \le \gamma\, \big\lVert V - V' \big\rVert_\infty, \qquad \lVert V \rVert_\infty = \max_s |V(s)|$$
+  $V$가 들어가는 곳이 합이 1인 음이 아닌 가중치로 평균한 항 $\gamma V(s')$뿐이기 때문에 성립한다. 그러면 바나흐 고정점 정리가 두 귀결을 한꺼번에 준다. 고정점은 **유일**하고, 어디서 시작하든 반복할 때마다 최악 오차가 최소 $\gamma$배로 줄어든다. §3 계산 예제에서 $V_0 = (0,0)$부터의 최대 노름 오차는 $5.263, 4.737, 4.263, 3.837$로, 매번 정확히 직전의 $0.9$배다. 최댓값은 인자가 움직인 것보다 더 움직일 수 없으므로 최적성 연산자에도 같은 부등식이 성립한다.
 
 ### 3. 동적 계획법과 TD 학습
 
@@ -857,15 +984,25 @@ flowchart LR
   **정책 반복**: $\pi$를 평가하고 탐욕적으로 개선; 반복. 같은 backup을 알고리즘 설계로
   읽은 것 — 유한 지평 역방향 귀납, 표 크기가 곧 차원의 저주라는 점, 닫힌 형태 가치를 갖는 DP로서의
   LQR — 은 [[02-foundations/algorithms/dynamic-programming|11.5 §7]]에 있다.
+  - *둘을 풀어 쓰면.* 가치 반복은 표의 수열 $V_0, V_1, \dots$이고, 각 표는 모든 상태에 최적성 연산자를 한 번 적용해 얻는다.
+  $$V_{k+1}(s) = \max_{a} \sum_{s'} p(s' \mid s, a)\,\big[r(s, a) + \gamma\, V_k(s')\big]$$
+  그래서 §2의 수축 성질에 의해 어떤 $V_0$에서든 $V^*$로 수렴한다. "대기" 행동을 더한 버킷 MDP에서 0부터 시작하면 $(V(A), V(B))$가 $(0, 1)$, $(0.9, 1.9)$, $(1.71, 2.71)$, …로 $(9, 10)$을 향한다. 정책 반복은 정책이 더 바뀌지 않을 때까지 두 단계를 번갈아 한다. 현재 정책에 대해 $V^{\pi_k} = T^{\pi_k} V^{\pi_k}$를 푸는 **평가**와, $\pi_{k+1}(s) = \arg\max_a \sum_{s'} p(s' \mid s, a)[r(s,a) + \gamma V^{\pi_k}(s')]$로 두는 **개선**이다. 개선 단계는 가치를 올리기만 하고 유한 MDP의 결정론적 정책은 유한 개이므로 끝난다.
 - 모델이 없으면 샘플링: **TD(0)** 갱신
   $V(s) \leftarrow V(s) + \alpha\,[\underbrace{r + \gamma V(s')}_{\text{타깃}} - V(s)]$
   — 자기 자신의 추정으로 부트스트랩. 괄호 안이 **TD 오차** $\delta$, RL의 만능 학습 신호다.
+  - *기호 하나하나:* 관측한 전이 하나 $(s, r, s')$ — 방문한 상태, 받은 보상, 도착한 상태 — 가 벨만 방정식의 기댓값을 대신하고, $\alpha \in (0, 1]$은 스텝 크기다.
+  $$\delta = r + \gamma\, V(s') - V(s), \qquad V(s) \leftarrow V(s) + \alpha\, \delta$$
+  그래서 추정이 1-샘플 타깃 쪽으로 $\alpha$만큼 움직인다. 정의상의 특징은 **부트스트랩**이다. 타깃에 참 리턴이 아니라 현재 추정 $V(s')$가 들어간다. 계산 예: $V(s) = 0.5$, $r = 1$, $V(s') = 2$, $\gamma = 0.9$, $\alpha = 0.1$이면 $\delta = 1 + 1.8 - 0.5 = 2.3$이고 $V(s) \leftarrow 0.73$이다.
 - **Q-learning** (**오프폴리시(off-policy)** — 탐색용의 다른 정책으로 행동하면서 탐욕 정책에
   대해 학습하므로 과거 데이터를 재사용할 수 있다; PPO 같은 **온폴리시(on-policy)** 방법은
   *현재* 정책이 방금 만든 데이터로만 학습하고, 쓰고 나면 버려야 한다):
   $Q(s,a) \leftarrow Q(s,a) + \alpha\,[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$
   DQN = 이것 + 신경망 $Q$ + 리플레이 버퍼(과거 전이를 쌓아 두고 무작위로 뽑아 쓰는 저장소) + 타깃 네트워크(안정된 타깃을 위한
   [[02-foundations/calculus-backprop|stop-gradient]] 복사본).
+  - *온폴리시 vs 오프폴리시, 조건으로.* 학습 방법에는 정책이 둘 관여한다. 데이터의 행동을 고르는 **행동 정책** $\mu$와, 가치를 배우는 대상인 **목표 정책** $\pi$다. $\mu = \pi$이면 **온폴리시**, 달라도 되면 **오프폴리시**다. Q-learning의 타깃은 $\mu$가 실제로 다음에 무엇을 했든 탐욕 행동인 $\max_{a'} Q(s', a')$를 쓰고, 바로 그 점이 오프폴리시로 만든다. 온폴리시 쌍둥이인 **Sarsa**는 실제로 취한 행동 $a'$로 $r + \gamma Q(s', a')$를 쓴다. 계산 예: $Q(s,a) = 0.5$, $r = 1$, $Q(s', \cdot) = (1.0, 3.0)$, $\gamma = 0.9$, $\alpha = 0.1$. Q-learning은 $\max = 3.0$을 써서 $\delta = 3.2$, $Q \leftarrow 0.82$이고, 탐색 행동이 실제로 첫 행동을 골랐다면 Sarsa는 $1.0$을 써서 $Q \leftarrow 0.64$를 준다.
+  - *DQN, 손실로.* 신경망 파라미터 $\theta$, 주기적으로 복사하는 타깃 네트워크 $\bar\theta$, 리플레이 버퍼 $\mathcal{D}$에서 균등하게 뽑은 전이 $(s, a, r, s')$에 대해
+  $$\mathcal{L}(\theta) = E_{(s,a,r,s') \sim \mathcal{D}}\Big[\big(r + \gamma \max_{a'} Q_{\bar\theta}(s', a') - Q_\theta(s, a)\big)^2\Big]$$
+  이다. 복사 사이에는 $\bar\theta$가 고정되므로 각 그래디언트 스텝은 $\theta$와 함께 움직이지 않는 타깃으로의 회귀다(그것이 왜 중요한지는 §3.5).
 - 가치 기반은 샘플 효율이 좋지만 연속 행동에 어색하다($\max_{a'}$가 내부 최적화를
   요구) — 로보틱스가 정책 쪽으로 기우는 이유.
 - **계산 예제 — 종이로 하는 정책 평가.**(가치 *반복*이라면 매 스텝 $\max_a$를 취한다. 정책이 고정이면 평가 쪽 절반이다.) 상태 둘, 고정 정책, $\gamma = 0.9$:
@@ -947,7 +1084,7 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   않고 조율하는 이유다.
 - **클리핑된 이중 $Q$**(TD3, [[01-canonical-papers/notes/1-foundations/sac|SAC]]): 가치 신경망 두 개(**크리틱**, §4 참조)를 학습시켜 두 추정값 중
   최솟값을 쓴다. 과대추정 편향을 겨냥한 것인데, 과하게 큰 가치가 자기 다음 목표로 다시 들어가므로
-  triad가 그 편향을 증폭시킨다.
+  triad가 그 편향을 증폭시킨다. 공유 타깃은 $y = r + \gamma \min_{j = 1, 2} Q_{\bar\theta_j}(s', a')$이고, $a'$는 현재 정책이 고른 다음 행동, $\bar\theta_j$는 두 타깃 네트워크다. 두 크리틱이 같은 다음 쌍을 $12$와 $10$으로 추정하면 타깃은 $10$을 쓴다. 오차가 전파되려면 *두* 네트워크에 동시에 나타나야 한다.
 - **오프라인 RL의 비관주의**: 데이터셋이 뒷받침하지 않는 행동을 평가하지 않거나 벌점을 준다.
   오프폴리시 다리를 정면으로 치는 것이고, 오프라인 RL이 "버퍼를 고정한 RL"이 아니라 별개의
   문헌인 이유다.
@@ -972,6 +1109,9 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   정확한 정리는 할인된 상태 방문분포로 쓰거나, trajectory sampling 관례에 따라 바깥쪽
   $\gamma^t$를 명시할 수 있다. 실제 논문은 비할인 유한 지평 추정기 안에 할인된 reward-to-go를
   넣기도 하므로, 등호가 가정하는 목적함수와 표본분포를 확인한다.
+  - *등호의 사슬이 쓰는 두 사실.* 궤적 $\tau = (s_0, a_0, s_1, a_1, \dots)$의 확률은 시작 상태 분포 $\rho_0$에 스텝마다 정책 인수 하나와 동역학 인수 하나를 곱한 것이다.
+  $$p_\theta(\tau) = \rho_0(s_0) \prod_{t} \pi_\theta(a_t \mid s_t)\, p(s_{t+1} \mid s_t, a_t), \qquad \nabla_\theta\, p_\theta(\tau) = p_\theta(\tau)\, \nabla_\theta \log p_\theta(\tau)$$
+  둘째 항등식은 로그의 미분 $\nabla \log p = \nabla p / p$일 뿐이다. 로그를 취하면 곱이 합이 되므로 $\nabla_\theta \log p_\theta(\tau) = \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)$이고, $\rho_0$과 $p$에는 $\theta$가 없어 떨어져 나간다. 그래서 동역학 모델 없이 표본 에피소드만으로 정책 그래디언트를 추정할 수 있다.
 - **REINFORCE**가 정확히 이것 — 불편이지만 분산이 파국적으로 크다. 분산 감소책, 중요한
   순서로: **베이스라인** $b(s)$ 빼기(상태만의 베이스라인이면 무편향; 최선은 ≈ $V(s)$,
   그러면 가중치가 어드밴티지 $A$가 된다); reward-to-go 사용; **actor-critic**: $V_\phi$를
@@ -979,6 +1119,15 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   λ 손잡이로 TD(편향, 저분산)와 몬테카를로(무편향, 고분산)를 보간한다: 이후 스텝들의 TD 오차에
   $(\gamma\lambda)^l$ 가중치를 주므로, λ = 0이면 위의 1스텝 $\delta$만 남고 λ = 1이면 그 합이 몬테카를로
   리턴 전체에서 $V(s)$를 뺀 값이 된다.
+  - *베이스라인을 쓴 REINFORCE, 실제로 계산하는 추정량으로.* 표본 에피소드 $i$ $N$개, 스텝 $t$에 대해
+  $$\hat g = \frac{1}{N}\sum_{i=1}^{N} \sum_{t} \nabla_\theta \log \pi_\theta\big(a_t^i \mid s_t^i\big)\,\Big(\hat G_t^i - b\big(s_t^i\big)\Big), \qquad \theta \leftarrow \theta + \alpha\,\hat g$$
+  이다. $\hat G_t^i$는 스텝 $t$ 뒤에 실제로 관측한 reward-to-go, $\nabla_\theta \log \pi_\theta$는 **스코어 함수**이고, $J$를 최대화하므로 갱신은 그래디언트 *상승*이다. 스코어는 정책 아래에서 평균이 0이므로 베이스라인이 기댓값을 바꾸지 않는다(자가점검 2). 확률 $0.6$과 $0.4$인 두 행동 정책에서 $p = 0.6$에 대한 스코어는 $1/0.6$ 또는 $-1/0.4$이고, $0.6(1/0.6) + 0.4(-1/0.4) = 0$이다.
+  - *액터-크리틱, 맞물린 두 학습자로.* **액터**는 정책 $\pi_\theta$이고, **크리틱**은 베이스라인을 대 주는 것이 유일한 일인 학습된 가치 함수 $V_\phi$다. 전이마다 둘을 함께 갱신한다.
+  $$\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t), \qquad \phi \leftarrow \phi + \alpha_\phi\, \delta_t\, \nabla_\phi V_\phi(s_t), \qquad \theta \leftarrow \theta + \alpha_\theta\, \delta_t\, \nabla_\theta \log \pi_\theta(a_t \mid s_t)$$
+  그래서 크리틱은 TD(0)(§3)으로 배우고, 액터는 크리틱의 TD 오차를 어드밴티지로 쓴다.
+  - *GAE를 풀어 쓰면.* 위의 TD 오차 $\delta_t$로
+  $$\hat A_t^{\text{GAE}(\gamma, \lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l\, \delta_{t+l}$$
+  이므로 가중치가 $\gamma\lambda$ 비율로 기하급수적으로 줄어든다. $\gamma = 0.9$, $\lambda = 0.95$($\gamma\lambda = 0.855$)에 이후 세 TD 오차가 $1.0, 0.5, -0.2$(그 뒤는 0)이면 $\hat A_t = 1.0 + 0.855(0.5) + 0.855^2(-0.2) = 1.281$이다.
 - **베이스라인이 왜 중요한지, 숫자로.** 상태 하나에 행동 둘, $\pi(a_1)=0.6$,
   $\pi(a_2)=0.4$, 리턴 $G_1 = 1$, $G_2 = 0$. 날것의 REINFORCE는 두 로그 확률
   그래디언트에 $1$과 $0$을 곱한다: $a_1$은 올라가고 $a_2$는 *그대로 방치*된다.
@@ -992,6 +1141,10 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
   — 정책 그래디언트 스텝을 밟되, 데이터를 모은 정책에서 멀어질 *유인을 클리핑으로
   제거*한다. 클램프로 만든 신뢰 영역, 그리고 (RLHF에서는) 명시적 KL 페널티
   ([[02-foundations/information-theory|정보이론]])까지.
+  - *조각마다 이름을.* $\pi_{old}$는 현재 배치를 모은 정책, $\pi_\theta$는 최적화 중인 정책이다. **중요도 비율** $\rho_t$는 옛 표본을 재가중해 새 정책이 얻을 것을 추정한다. 옛 정책이 확률 $0.2$로 취한 행동을 새 정책이 $0.3$으로 취하면 가중치는 $1.5$다. $A_t$는 어드밴티지 추정(보통 GAE), $\epsilon$(흔히 $0.2$)은 클립 범위이고, $\text{clip}(x, a, b) = \min(\max(x, a), b)$는 $x$를 $[a, b]$ 안에 가둔다. 그래서 $\text{clip}(1.3, 0.8, 1.2) = 1.2$, $\text{clip}(0.7, 0.8, 1.2) = 0.8$이다. $E_t$는 배치 안 타임스텝에 대한 평균이다.
+  - *신뢰 영역, 근사하려는 원래 생각.* TRPO는 같은 중요도 가중 어드밴티지를, KL 발산([[02-foundations/information-theory|5. 정보이론 §3]])으로 잰 정책 이동량에 명시적 상한을 두고 최대화한다.
+  $$\max_\theta\ E_t\big[\rho_t\, A_t\big] \quad \text{subject to} \quad E_t\Big[\mathrm{KL}\big(\pi_{old}(\cdot \mid s_t)\ \Vert\ \pi_\theta(\cdot \mid s_t)\big)\Big] \le \delta$$
+  비율로 가중한 추정은 두 정책이 가까울 때만 정확하기 때문이다. PPO는 이 제약을 클립으로 바꾸는데, 평범한 미니배치 그래디언트 스텝으로 최적화하기가 더 싸고 가까움은 근사적으로만 강제한다.
 - **클리핑, 숫자로** ($\epsilon = 0.2$). 좋은 행동 $A = +1$인데 정책이 이미
   $\rho = 1.3$까지 올려놨다면: $\min(1.3,\ \text{clip}(1.3)=1.2) = 1.2$ — *잘린* 가지가
   이기고, 그 가지는 평평하므로 그래디언트가 **0**이다: 더 밀 유인이 없다. 나쁜 행동
@@ -1033,6 +1186,10 @@ $$w = 1,\; 1.08,\; 1.166,\; 1.260,\; 1.360,\; \ldots,\; 50\text{스윕 뒤 } 46.
 - 트레이드오프: 샘플 효율 vs **모델 편향** — 상상 지평에서 오차가 누적된다
   ([[01-canonical-papers/notes/4-vla/act|ACT]]의 동기였던 복합 오차와 같은 논리); 짧은 지평과 가치
   부트스트래핑으로 관리한다.
+  - *가르는 조건.* 전이 모델 $\hat p(s' \mid s, a)$와 보통 보상 모델 $\hat r(s, a)$를 배우거나(또는 받아서) 계획이나 학습 데이터 생성에 쓰면 **모델 기반**, 갱신에 실제 전이만 쓰고 그런 모델에 결코 묻지 않으면 **모델 프리**다. 학습 모델 버전은 두 단계다. 실제 전이 $(s_i, a_i, s'_i)$에 최대우도로 모델을 맞추고, 그 모델의 예측에 대해 정책을 개선한다.
+  $$\hat p = \arg\max_{q} \sum_{i} \log q\big(s'_i \mid s_i, a_i\big), \qquad \hat J(\pi) = E_{\hat p,\, \pi}\Big[\sum_{t=0}^{H-1} \gamma^t\, \hat r(s_t, a_t) + \gamma^H\, V(s_H)\Big]$$
+  상상 롤아웃은 $\hat p$ 안에서 $H$스텝만 돌고 그 뒤 전부는 학습된 가치 $V$가 대신하므로, $\hat p$의 오차는 $H$스텝 동안만 누적된다. $\gamma = 0.99$, Dreamer의 $H = 15$면 부트스트랩 항의 가중치가 여전히 $0.99^{15} = 0.860$이라 짧은 지평의 비용이 작다.
+  - **모델 편향**은 체계적 차이 $\hat p \ne p$다. 위험한 방식이 구체적이다. 정책 최적화기는 상상 리턴 $\hat J$가 높은 행동을 적극적으로 찾고, 거기에는 $\hat p$가 틀려서 좋아 보일 뿐인 행동도 들어 있다.
 
 ```mermaid
 flowchart TD
@@ -1070,6 +1227,17 @@ flowchart TD
 학습되지만 *자신의* 상태에서 실행되므로, 작은 오차가 상태를 분포 밖으로 밀고 거기서 오차가
 누적된다. 이 하나의 실패 모드가 **DAgger**가 존재하는 이유다 — 학습자를 실행시키고, 실제로
 방문한 상태를 전문가가 라벨하고, 재학습.
+
+- **행동 복제를 풀어 쓰면.** 전문가 관측과 행동의 데이터셋 $\mathcal{D} = \{(o_i, a_i)\}_{i=1}^{N}$에 대해
+  $$\theta^\star = \arg\max_\theta \sum_{i=1}^{N} \log \pi_\theta\big(a_i \mid o_i\big)$$
+  이고, 이는 최대우도 지도학습이므로 보상도 환경 상호작용도 어디에도 나오지 않는다. 표준편차를 고정한 가우시안 정책이면 $-\log \pi_\theta(a \mid o) = \frac{1}{2\sigma^2}\lVert a - \mu_\theta(o)\rVert^2 + \text{const}$이므로 BC는 시연 행동에 대한 평균제곱오차 회귀로 줄어든다.
+- **공변량 이동, 두 분포로.** 정책 $\pi$가 실행될 때 방문하는 상태의 분포를 $d_\pi(s)$로 쓰자. BC는 전문가의 방문 분포 $d_{\pi_E}$ 아래에서 손실을 줄이지만, 배포된 정책은 자기 분포 아래에서 채점된다.
+  $$\text{trained on } E_{s \sim d_{\pi_E}}\big[\ell(\pi_\theta, s)\big], \qquad \text{evaluated on } E_{s \sim d_{\pi_\theta}}\big[\ell(\pi_\theta, s)\big], \qquad d_{\pi_\theta} \ne d_{\pi_E}$$
+  $\ell$은 상태별 모방 손실이다. 입력의 분포는 움직이는데 각 상태의 올바른 행동은 그대로이므로, [[02-foundations/ml-practice|9. ML 실무 §1]]의 뜻 그대로 공변량 이동이다.
+- **DAgger, 알고리즘으로**(Ross, Gordon & Bagnell, 2011). 시연을 $\mathcal{D}$로 두고 $\pi_1$을 학습한다. $i$번째 반복에서: 확률 $\beta_i$로 전문가를, 그 외에는 현재 학습자를 따르는 혼합 정책을 실행하고, 방문한 상태를 기록하고, 각 상태에서 전문가라면 *무엇을 했을지* 묻고, 모아서 재학습한다.
+  $$\mathcal{D} \leftarrow \mathcal{D} \cup \big\{(s, \pi_E(s)) : s \sim d_{\pi_i}\big\}, \qquad \pi_{i+1} = \text{BC on } \mathcal{D}$$
+  그래서 학습 분포가 학습자 자신의 상태 분포 쪽으로 끌려간다. 흔한 일정은 $\beta_i = 0.5^{\,i-1}$, 곧 $1, 0.5, 0.25, 0.125$로 제어를 기하급수적으로 학습자에게 넘긴다. **반례:** 전문가 시연을 더 모아 재학습하는 것은 DAgger가 아니다. 그 상태들은 여전히 $d_{\pi_E}$에서 오기 때문이다.
+- **지지집합(support).** 분포의 지지집합은 확률이 0이 아닌 집합, $\operatorname{supp}(d) = \{s : d(s) > 0\}$다. "시연의 지지집합 밖"은 $d_{\pi_E}(s) = 0$인 상태, 곧 BC의 손실이 한 번도 계산되지 않았고 출력이 순수한 외삽인 곳이다.
 
 *얼마나 나쁜가?* 각 스텝이 독립적으로 확률 $\epsilon$만큼, 시연이 가 본 적 없는 곳으로
 정책을 밀어내는 오차를 낸다고 하자. 그러면 $T$스텝 과제가 살아남을 확률은 $(1-\epsilon)^T$이고,
@@ -1127,6 +1295,10 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 관절 vs 말단 공간.) 곁가지: **오프라인 RL**도 고정 데이터셋에서 배우지만 보상으로 어느 단일
 시연자보다 나은 행동을 *꿰맨다* — BC엔 없는 가치 외삽 불안정을 대가로.
 
+- **다봉, 정확히.** 같은 관측에 대해 전문가의 행동 분포 $p(a \mid o)$에 떨어진 봉우리(모드)가 둘 이상 있다는 뜻이다. 평균제곱오차로 학습한 정책은 조건부 *평균* $\mu^\star(o) = E[a \mid o]$를 예측한다. 제곱 오차를 최소화하는 것이 그것이기 때문이다. 두 전문가가 장애물을 $+1$ m와 $-1$ m로 같은 빈도로 비켜 가면 평균은 $(1 + (-1))/2 = 0$ m, 곧 장애물 정면이고 *어느* 전문가도 한 적 없는 행동이다. 평균이 아니라 분포를 표현하는 헤드(혼합 모델, 디퓨전이나 flow 모델, 이산화한 행동 토큰)는 양쪽 모두에 확률을 둘 수 있다.
+- **행동 청킹, 정확히.** 정책이 관측 하나에서 다음 $k$개 행동 $\pi_\theta(a_t, a_{t+1}, \dots, a_{t+k-1} \mid o_t)$를 내고, 로봇은 다시 묻기 전에 그중 여러 개를 실행한다. 그러면 $T$스텝 과제에 정책 결정이 약 $T/k$번 필요하다. $500$스텝을 $10$개씩 묶으면 결정 $50$번이고, 결정당 오류율 $1\%$에서 위 그림의 무결 확률이 $0.99^{500} = 0.7\%$에서 $0.99^{50} = 60.5\%$로 옮겨 간다. 같은 식이 대가도 보여 준다. 청크 안에서는 $o_t$ 이후의 관측을 쓰지 않는다.
+- **오프라인 RL, 정확히.** 다른 행동 정책이 모은 고정 전이 데이터셋 $\mathcal{D} = \{(s, a, r, s')\}$에서, **추가 상호작용 없이** 기대 리턴 $J(\pi)$를 최대화하는 정책을 배운다. $r$을 쓴다는 점에서 BC와 달라 평범한 궤적의 좋은 부분을 골라 쓸 수 있고, $\operatorname{supp}(\mathcal{D})$ 밖을 시도해 과대추정된 $Q$를 바로잡을 길이 전혀 없다는 점에서 보통의 오프폴리시 RL과 다르다 — §3.5의 비관주의가 그래서 필요하다.
+
 > [!important] 이 절에 대한 2024~26년의 교정
 > 위의 프레이밍 — 모방은 안정적이지만 상한이 있고, RL은 시연자를 넘어설 수 있다 — 은 옳고,
 > 지난 2년이 그것을 가져갈 만한 방식으로 날카롭게 만들었다. **접촉이 많은 정밀** 과제에서 격차는
@@ -1161,6 +1333,9 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 
 - 논문 해독기: "BC baseline" = 행동 복제; "advantage-weighted" = $e^{A/\beta}$로 재가중된
   정책 개선; "KL-regularized policy" = 기준 정책 근처에 머물며 개선하기.
+  - 뒤의 둘은 한 식이다. **KL 정규화 목적함수**는 리턴을 기준 정책 $\pi_{\text{ref}}$(사전학습 정책이나 데이터 수집 정책)로부터의 거리와 맞바꾸고, 온도 $\beta > 0$이 교환 비율을 정한다.
+  $$\max_\pi\ E_{a \sim \pi}\big[A(s, a)\big] - \beta\, \mathrm{KL}\big(\pi(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big) \quad\Rightarrow\quad \pi^*(a \mid s) = \frac{\pi_{\text{ref}}(a \mid s)\, e^{A(s,a)/\beta}}{Z(s)}$$
+  $Z(s)$는 확률의 합을 1로 맞추는 정규화 상수이고, 이 닫힌 형태는 §11의 MaxEnt IRL과 DPO에 쓰이는 것과 같은 라그랑주 승수 결과다. "Advantage-weighted" 방법은 기록된 행동마다 $e^{A/\beta}$로 가중한 BC로 $\pi_\theta$를 이 $\pi^*$에 맞춘다. 계산 예: $\pi_{\text{ref}} = (0.5, 0.5)$인 두 행동, 어드밴티지 $(1, 0)$, $\beta = 0.5$면 가중치가 $e^{2} : e^{0}$이라 $\pi^* = (0.881, 0.119)$이고, $\beta$가 클수록 $\pi^*$는 $(0.5, 0.5)$에 가깝게 남는다.
 
 ### 7. 보상 설계 — 결과를 결정하는 선택
 
@@ -1170,10 +1345,15 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 - **희소 vs 촘촘.** **희소** 보상(버킷이 차면 +1, 아니면 0)은 정직하다 — 원하는 것만 정확히
   말한다 — 하지만 무작위 초기 정책은 그것을 영영 못 볼 수 있다. **촘촘한**(shaped) 보상은
   매 스텝 신호를 주어 훨씬 빨리 학습하지만, 이제 목표가 아니라 목표의 *대리물*을 최적화하게 된다.
+  - *식으로.* 희소 보상은 목표 집합 $\mathcal{G}$의 지시함수 $r(s) = \mathbb{1}[s \in \mathcal{G}]$이고, 상태의 작은 일부에서만 0이 아니다. 촘촘한 보상은 거의 모든 곳에서 정보를 주며, 위치 $x(s)$에 대한 $r(s) = -\lVert x(s) - x_{\text{goal}} \rVert$처럼 음의 거리가 전형적이다. "Shaped"는 참 보상에 촘촘한 항을 더한 $r' = r + F$를 뜻한다.
 - **포텐셜 기반 shaping**은 최적 정책을 바꾸지 않음이 증명된 유일한 형태다: 상태의 임의 함수
   $\Phi$에 대해 $F = \gamma\Phi(s') - \Phi(s)$를 더한다. 그 외의 것은 — 그리고 대부분의 논문이
   그 외의 것을 쓴다 — 무엇이 최적인지를 바꿀 수 있다.
-- **실제 보상은 항들의 가중합이다.** 굴착 정책의 보상은 보통 이렇게 생겼고, 이 표가 곧 읽을
+  - *바꿀 수 없는 이유*(Ng, Harada & Russell, ICML 1999). 어떤 궤적을 따라서든 shaping 항은 망원경처럼 접힌다.
+  $$\sum_{t=0}^{T-1} \gamma^t \big(\gamma\,\Phi(s_{t+1}) - \Phi(s_t)\big) = \gamma^T\, \Phi(s_T) - \Phi(s_0)$$
+  각 $\gamma^{t+1}\Phi(s_{t+1})$이 다음 스텝의 $-\gamma^{t+1}\Phi(s_{t+1})$과 상쇄되기 때문이다. 그래서 shaped 리턴은 원래 리턴과 시작 상태 항만큼만 다르고(끝 항은 $\Phi$가 유계이고 $\gamma < 1$이면 $T \to \infty$에서 사라진다), 모든 행동에 대해 $Q'(s, a) = Q(s, a) - \Phi(s)$다. 한 상태의 모든 행동이 같은 양만큼 옮겨지므로 행동의 순위, 곧 최적 정책은 바뀌지 않는다. 조건은 $F$가 상태 포텐셜에만 의존한다는 것이다. 루프를 돌며 다시 챙길 수 있는 보너스에는 이런 상쇄가 없다.
+  - *계산 예:* "대기" 행동을 더한 §2의 버킷 MDP에 $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$를 두자. $A \to B$ 이동은 $F = 0.9(5) - 0 = 4.5$를 벌고, $B$에 머물면 보상 $1$ 위에 $F = 0.9(5) - 5 = -0.5$를 받는다. shaped 가치는 $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$이고, $A$에서는 $Q'(A, \text{이동}) = 4.5 + 0.9 \times 5 = 9$ 대 $Q'(A, \text{대기}) = 0 + 0.9 \times 9 = 8.1$이다. $\Phi(A) = 0$이므로 shaping 전과 같은 두 숫자이고, 여전히 이동이 최적이다.
+- **실제 보상은 항들의 가중합이다.** 곧 $r = \sum_{j} w_j\, r_j$이고, 각 $r_j$는 거동의 한 측면을 재며 각 가중치 $w_j$는 부호를 품은 하이퍼파라미터다. 굴착 정책의 보상은 보통 이렇게 생겼고, 이 표가 곧 읽을
   가치가 있는 방법 절이다:
 
 | 항 | 목적 | 부호 |
@@ -1208,6 +1388,9 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
   최대화한다. 속도 보상을 제자리 진동으로 채우고, 목표까지 거리 보상을 문턱 안쪽에서 맴돌며
   채운다. 증상: 보상 곡선은 오르는데 거동이 틀렸다. 진단 질문은 언제나
   *이 보상을 버는 가장 싼 방법이 무엇인가?* 다.
+  - *조건으로 쓰면.* 의도한 보상(대개 적을 수 없다)을 $r^\dagger$, 써 놓은 대리 보상을 $\hat r$라 하자. Reward hacking은 대리물을 최적화한 결과가 대리물에서는 성공하고 의도에서는 실패하는 경우다.
+  $$\hat\pi = \arg\max_\pi J_{\hat r}(\pi), \qquad J_{\hat r}(\hat\pi) \ \text{high}, \qquad J_{r^\dagger}(\hat\pi) \ \text{low}$$
+  그래서 이것은 어느 한쪽이 아니라 (대리물, 최적화기) 쌍의 성질이다. 최적화기가 강할수록 $\hat r$과 $r^\dagger$가 어긋나는 곳을 더 확실히 찾아낸다. 위의 $-0.48$ 예가 가장 단순한 사례다. 대리물은 가만히 서 있기로 최대화되고, 그것은 의도한 굴착 과제에서 0점이다.
 - **읽기 단서**: 보상 표를 찾고, 항의 개수를 세고, 가중치를 찾고(대개 부록에만 있다), 논문이
   보고하는 운용점에서 어느 항이 지배적인지 물어라. 보상을 보여주지 않는 논문은 방법을 보여주지
   않은 것이다.
@@ -1219,19 +1402,29 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 
 - **이산 행동**: $\epsilon$-greedy — 확률 $1-\epsilon$로 탐욕적으로, 나머지는 균등 무작위로
   행동하고, 학습이 진행되면 $\epsilon$을 줄인다.
+  - *이것이 정의하는 정책*은 행동 $|\mathcal{A}|$개와 탐욕 행동 $a^\star = \arg\max_a Q(s, a)$에 대해
+  $$\pi(a \mid s) = \begin{cases} 1 - \epsilon + \epsilon/|\mathcal{A}| & a = a^\star \\ \epsilon/|\mathcal{A}| & a \ne a^\star \end{cases}$$
+  이다. 무작위 가지도 $a^\star$를 고를 수 있기 때문이다. $\epsilon = 0.1$, 행동 4개면 탐욕 행동의 확률은 $0.925$, 나머지 각 행동은 $0.025$이므로 모든 행동이 계속 시도된다.
 - **연속 행동**(로보틱스의 경우): 행동에 노이즈를 더하거나(가우시안, 또는 기계가 떨지 않도록
   시간 상관이 있는 Ornstein–Uhlenbeck 노이즈 — 매 스텝 새로 뽑지 않고 직전 값에서 조금씩
   흘러가는 노이즈), 정책을 **확률적**으로 두고 표준편차 자체를
   학습시킨다 — PPO가 하는 방식.
+  - *두 노이즈를 식으로.* 가우시안 탐색은 매 스텝 새로 뽑은 $\varepsilon_t \sim \mathcal{N}(0, I)$로 $a_t = \mu_\theta(s_t) + \sigma \varepsilon_t$를 실행한다. 시간 간격 $\Delta t$로 이산화한 Ornstein–Uhlenbeck 노이즈는 비율 $\theta_{\text{OU}}$로 평균 $\mu$ 쪽으로 당기면서 크기 $\sigma$의 새 무작위성을 더한다.
+  $$x_{t+1} = x_t + \theta_{\text{OU}}\,\big(\mu - x_t\big)\,\Delta t + \sigma\sqrt{\Delta t}\;\varepsilon_t$$
+  그래서 연속한 값의 상관계수가 $1 - \theta_{\text{OU}}\Delta t$다. DDPG의 $\theta_{\text{OU}} = 0.15$, $\Delta t = 1$이면 $0.85$이고, 가우시안 노이즈는 $0$이다.
 - **엔트로피 보너스**: 목적함수에 $+\alpha H(\pi)$를 더해
   ([[02-foundations/information-theory|정보이론]]) 정책이 결정을 유보하는 데 보상을 주고,
   이른 시점에 평범한 결정론적 습관으로 붕괴하지 않게 한다.
   [[01-canonical-papers/notes/1-foundations/sac|SAC]]는 이것을 보너스에서 *목적함수 자체*로
   승격시키고 $\alpha$를 자동 조정한다.
+  - *풀어 쓰면.* 한 상태에서 정책의 엔트로피 $H(\pi(\cdot \mid s)) = -\sum_a \pi(a \mid s) \log \pi(a \mid s)$([[02-foundations/information-theory|5. 정보이론 §1]])를 SAC의 최대 엔트로피 목적함수에서는 매 스텝 보상에 더한다.
+  $$J(\pi) = E_\pi\Big[\sum_{t} \gamma^t \Big(r(s_t, a_t) + \alpha\, H\big(\pi(\cdot \mid s_t)\big)\Big)\Big]$$
+  그래서 $\alpha \ge 0$은 보상과 무작위성 사이의 교환 비율이다. 두 행동이 $(0.5, 0.5)$면 $H = \ln 2 = 0.693$ nat, $(0.9, 0.1)$이면 $H = 0.325$다. $\alpha = 0.1$일 때 첫 정책에서 둘째 정책으로 붕괴할 가치가 있으려면 스텝당 보상을 $0.1 \times (0.693 - 0.325) = 0.037$보다 더 얻어야 한다.
 - **커리큘럼 학습**은 알고리즘 대신 *과제*를 바꾼다: 무른 토질에서 얕게 파는 것으로 시작해,
   성공률이 문턱을 넘으면 깊이와 저항을 올린다. 싸고 대개 일의 대부분을 해낸다 — 그래서 비교에
   반드시 들어가야 한다: 제안 방법은 커리큘럼을 쓰고 베이스라인은 안 썼다면, 그 절제 실험은
   방법을 재고 있는 것이 아니다.
+  - *구성요소.* 커리큘럼은 목표 과제로 끝나는 과제 변형의 수열 $M_1, M_2, \dots, M_K$와, 언제 넘어갈지 정하는 진급 규칙 — 전형적으로 "최근 $n$ 에피소드의 성공률이 문턱을 넘으면 $M_j$에서 $M_{j+1}$로" — 의 쌍이다. 수열도 규칙도 설계 선택이고, 둘 다 방법 절에 들어가야 한다.
 - 전이 쪽 형제인 **도메인 랜덤화**는 탐색이 아니라 강건성의 문제이고
   [[05-construction-robotics/sim-to-real|sim-to-real 가이드]]에 있다.
 
@@ -1246,6 +1439,9 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
 - **기준 근처에 붙들어 둔다.** RLFT는 보통 사전학습 정책으로의 KL 항으로 정규화한다. 너무 멀리
   가면 사전학습이 사 준 것을 잃고, reward hacking이 유력해진다 — 보상은 애초에 거동 전체를
   정의하려고 쓴 것이 아니기 때문이다.
+  - *RLFT 목적함수.* 사전학습 파라미터 $\theta_0$에서 출발하고 $\pi_{\text{ref}} = \pi_{\theta_0}$는 얼려 둔다.
+  $$\max_\theta\ E_{\pi_\theta}\Big[\sum_t \gamma^t\, r(s_t, a_t)\Big] - \beta\, E_{s \sim d_{\pi_\theta}}\Big[\mathrm{KL}\big(\pi_\theta(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big)\Big]$$
+  그래서 $\beta$는 이탈 한 단위가 사야 할 과제 보상의 양을 정한다. $\beta \to \infty$면 사전학습 정책이 그대로 돌아오고, $\beta = 0$이면 초기화만 잘한 평범한 RL이다. 최적해는 §6 논문 해독기의 지수 기울임 형태를 갖는다.
 - **학습 중 안전**에는 정직한 선택지가 몇 개뿐이고, 보상 페널티가 그중 가장 약하다:
   1. 시뮬레이션에서 학습한다(지배적 — 12톤 기계는 "해 보고 고치기"를 할 수 없다);
   2. 안전하지 않은 명령이 액추에이터에 닿기 전에 자르거나 거부하는 **안전 필터·엔벨로프**로
@@ -1255,6 +1451,12 @@ $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방�
      [[02-foundations/optimization|최적화 §4]] 참고);
   4. 보상에 위반 페널티를 넣는다 — 편하지만 **아무것도 보장하지 않는다**: 과제 보상이 충분히
      크면 페널티를 사 버린다.
+
+  *장치 2~4를 식으로.* **안전 필터**는 정책의 명령 $a_\pi$를, 필터가 보증할 수 있는 안전 집합 $\mathcal{C}(s)$ 안에서 가장 가까운 명령으로 바꾼다.
+  $$a_{\text{safe}} = \arg\min_{a \in \mathcal{C}(s)} \lVert a - a_\pi \rVert^2$$
+  그래서 안전한 명령은 그대로 지나가고 안전하지 않은 명령은 경계로 사영된다. 속도 한계 $\mathcal{C} = [-0.5, 0.5]$ m/s에서 요청된 $0.8$ m/s는 $0.5$로 실행된다. 정책 뒤에서 강제하므로 정책이 무엇을 내든 보장이 성립한다. **제약 MDP**는 비용 함수 $c(s, a) \ge 0$와 한도 $d$를 더하고, 그 라그랑주 완화는 승수 $\lambda \ge 0$을 도입한다.
+  $$\max_\pi\ J_r(\pi) \ \ \text{s.t.}\ \ J_c(\pi) \le d, \qquad \mathcal{L}(\pi, \lambda) = J_r(\pi) - \lambda\,\big(J_c(\pi) - d\big)$$
+  $J_r$과 $J_c$는 보상과 비용의 기대 할인 총합이다. 라그랑주 방법은 $\mathcal{L}$에 대해 $\pi$를 개선하는 것과, 제약이 깨지는 동안 $\lambda$를 *올리는* 것을 번갈아 한다. **계산 예와, 그것이 드러내는 반례.** 정책 둘: $\pi_1$은 $J_r = 10$, $J_c = 3$, $\pi_2$는 $J_r = 8$, $J_c = 1$, 한도 $d = 2$. 제약 문제의 답은 유일하게 허용되는 $\pi_2$다. 비용 단위당 고정 보상 페널티 $0.5$는 둘을 $10 - 1.5 = 8.5$와 $8 - 0.5 = 7.5$로 매겨 *위반하는* $\pi_1$을 고른다 — 장치 4가 말한 그대로 실패한다. 라그랑주 점수는 $10 - \lambda$와 $8 + \lambda$이므로 $\lambda$가 $1$을 넘도록 올라가면 $\pi_2$를 고른다. 승수는 짐작하는 값이 아니라 제약이 성립할 때까지 조정되는 페널티 가중치다.
 - **진짜 비용은 연산이 아니다.** 하드웨어에서는 에피소드마다 리셋이 필요하고, 리셋은 인간
   노동이며, 마모와 안전 심사가 실제 예산이다([[04-robotics/hri-safety|HRI·안전]]).
 - 이 이야기의 전이 쪽 절반 — reality gap, 랜덤화, privileged learning, 잔차, 배치 사다리 — 은
@@ -1286,6 +1488,9 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 - **에피소드 종료와 시간 제한.** 과제가 실패해서 끝난 것과 시계가 다 되어 끝난 것은 다르다:
   후자는 여전히 가치 함수를 부트스트랩해야 하고, 이를 종료로 취급하면 정책에게 "시간 제한에서
   세계가 끝난다"고 조용히 가르치게 된다.
+  - *TD 타깃 안에서.* 구현은 전이마다 플래그 $d \in \{0, 1\}$를 들고 다음을 계산한다.
+  $$y = r + \gamma\,(1 - d)\, V(s')$$
+  그래서 $d = 1$이면 미래가 빠진다. **종료**(과제가 정말 끝남: 목표 도달, 또는 기계 전도)는 $d = 1$이다. **절단**(과제가 계속될 상태에서 시계가 다 됨)은 $s'$에 여전히 미래가 있으므로 $d = 0$을 유지해야 한다. 계산 예: $r = 1$, $\gamma = 0.99$, $V(s') = 10$이면 부트스트랩 타깃은 $10.9$이고, 시간 초과를 종료로 표시하면 $1$, 곧 올바른 타깃의 10분의 1도 안 되는 값이 시간 한계 근처의 모든 상태에 들어간다.
 
 ### 11. 보상을 배우기: 역강화학습과 선호
 
@@ -1325,7 +1530,9 @@ $|w^\top\mu_L - w^\top\mu_E| \le \lVert w\rVert\,\lVert\mu_L - \mu_E\rVert \le 1
 길을 좋아한다는 것을 알아채고 같은 특징 합을 내는 경로를 찾는다. **최대 마진 계획**(Maximum
 Margin Planning; Ratliff, Bagnell & Zinkevich, ICML 2006)은 이를 이차 계획 문제로 만든다: 전문가가
 다른 모든 후보 정책을 — 그 정책이 전문가와 다를수록 더 큰 — 마진으로 이기게 하는 가장 작은
-$w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다.
+$w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다. 기호로 쓰면, $\mu_E$는 전문가의 특징 기댓값, $\mu(\pi)$는 후보의 것, $\ell(\pi) \ge 0$은 $\pi$가 전문가와 얼마나 다른지 재는 손실, 슬랙 $\xi \ge 0$의 가중치는 $C$다.
+$$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
+$\lVert w\rVert$를 최소화하므로 전문가를 여전히 가려내는 가장 덜 극단적인 보상이 골라지고, 이 방법이 척도 모호성을 깨는 방식이 이것이다. 할인된 특징 기댓값 자체는 구체적인 숫자다. 스텝 $0, 1, 2$의 특징이 $\phi = 1, 0, 1$이고 $\gamma = 0.9$면 $\mu = 1 + 0 + 0.81 = 1.81$이다.
 
 **최대 엔트로피 IRL**(Ziebart, Maas, Bagnell & Dey, AAAI 2008). 특징 맞추기에도 한 층 위의
 모호성이 남는다: 특징 기댓값이 같은 궤적 분포는 많고, 그중 일부는 특징이 주지 않는 이유로 특정
@@ -1359,7 +1566,9 @@ $$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\si
 
 *적대적 버전.* **GAIL**(Ho & Ermon,
 NeurIPS 2016)이 적대적 후손이다: 전문가의 상태-행동 쌍과 정책의 것을 구별하는 판별기가 학습된
-보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다.
+보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다. 쌍이 얼마나 *정책 같은지* 매기는 판별기 $D(s, a) \in (0, 1)$, 전문가 정책 $\pi_E$, 엔트로피 가중치 $\lambda \ge 0$에 대한 안장점 목적함수는 다음과 같다.
+$$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
+그래서 $D$는 둘을 구별하도록, $\pi$는 비용 $\log D(s, a)$로 RL을 해서 자기 쌍이 전문가의 것과 구별되지 않도록 학습된다. 어떤 판별기도 우연보다 잘할 수 없으면 모든 곳에서 $D = 0.5$이고 정책의 상태-행동 분포가 전문가의 것과 일치한다. 분포 맞추기, 곧 손으로 고른 특징 없는 특징 맞추기와 같은 목표다.
 
 > [!example] 계산 예제 · Worked example
 > 스칼라 특징을 가진 궤적 둘, $f(\tau_1) = 2$, $f(\tau_2) = 1$. 전문가를 네 번 기록했더니
@@ -1388,7 +1597,9 @@ $$P(A \succ B) = \sigma\big(R(A) - R(B)\big) = \frac{1}{1 + e^{-(R(A) - R(B))}}$
 형태로 돌아온 모호성이다. 적합은 라벨된 쌍에 대해 $\log\sigma(R(A) - R(B))$를 최대화하는 것이고,
 이는 **보상 차이에 대한 로지스틱 회귀다.** 로지스틱 회귀는 가장 기본적인 예/아니오 분류기로,
 선형 점수에 시그모이드를 씌워 확률을 예측하고 바로 이런 로그우도를 최대화해(교차 엔트로피를
-최소화하는 것과 같다; [[02-foundations/information-theory|5. 정보이론]] 참고) 가중치를 맞춘다. 선형 보상이면 $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$이므로
+최소화하는 것과 같다; [[02-foundations/information-theory|5. 정보이론 §2]] 참고) 가중치를 맞춘다. $y_i \in \{0, 1\}$인 라벨 예제 $(x_i, y_i)$에 대해
+$$P(y = 1 \mid x) = \sigma\big(w^\top x\big), \qquad \max_w \sum_i \Big[y_i \log \sigma\big(w^\top x_i\big) + (1 - y_i)\log\big(1 - \sigma(w^\top x_i)\big)\Big]$$
+이다. 각 예제가 실제로 가진 라벨의 로그 확률을 보태기 때문이다. 그래디언트는 $\sum_i (y_i - \sigma(w^\top x_i))\,x_i$, 곧 오차 곱하기 입력이고, 아래 계산 예제가 쓰는 갱신이 이것이다. 선형 보상이면 $R(A) - R(B) = w^\top(\phi(A) - \phi(B))$이므로
 비교 하나가 특징 차이를 입력으로 하는 로지스틱 회귀 예제 하나이고, 잡음 없는 답 하나는 가능한
 $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 자른다.
 
@@ -1410,6 +1621,9 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
     $r(A) - r(B)$에서 $\beta\log Z$가 약분된다. 남는 것은
     $\sigma\big(\beta\log\frac{\pi(A)}{\pi_{\text{ref}}(A)} - \beta\log\frac{\pi(B)}{\pi_{\text{ref}}(B)}\big)$로,
     학습 중인 정책과 고정된 기준 정책만 들어 있다.
+  - 그 결과인 **DPO 손실**을 프롬프트 $x$, 선호된 답 $y_w$, 거부된 답 $y_l$의 선호 삼중쌍에 대해 평균하면
+    $$\mathcal{L}_{\text{DPO}}(\theta) = -E_{(x, y_w, y_l)}\Big[\log \sigma\Big(\beta \log \frac{\pi_\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi_\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)}\Big)\Big]$$
+    이므로 $\beta \log(\pi_\theta/\pi_{\text{ref}})$가 보상 역할을 하는 Bradley–Terry 음의 로그우도다. 계산 예: $\beta = 0.1$, 선호된 답의 로그 비율 $+2.0$, 거부된 답의 $-1.0$이면 $\sigma(0.2 + 0.1) = \sigma(0.3) = 0.574$, 손실 $0.554$다. 그래디언트는 그 확률이 1에 다가갈 때까지 선호된 답의 로그 비율을 올리고 거부된 답의 것을 내린다.
 - **로봇을 위한 능동 질의**(Sadigh et al., RSS 2017, "Active Preference-Based Learning of Reward
   Functions"): 답 하나가 1비트뿐이므로, 그 답이 남은 그럴듯한 보상 가중치를 최대한 많이 지우도록
   보여 줄 쌍을 고른다.

@@ -30,6 +30,12 @@ Almost every coding interview ends with "what is the time and space complexity?"
 - **Worst case, unless you say otherwise.** For each $n$ we take the slowest input of that size. A worst-case bound is a guarantee: no input of that size will be slower. Average case, expected (for randomized algorithms) and amortized (§4) are different promises and must be named when you use them.
 - **Constants and lower-order terms are dropped.** $3n^2 + 40n + 7$ becomes $n^2$. The reason is not that constants are unimportant — a 10× constant matters on a robot — but that they depend on the machine, the language and the compiler, while the growth rate belongs to the algorithm. For large enough $n$, a lower growth rate wins over any constant factor.
 
+**The cases as formulas.** A running time is a function of $n$ only after you say how the many inputs of size $n$ are combined into one number. Let $\text{cost}(x)$ be the number of dominant operations on input $x$ and $I_n$ the set of inputs of size $n$. The worst case takes the largest cost in that set, so it is a guarantee for every input:
+$$T_{\text{worst}}(n) = \max_{x \in I_n} \text{cost}(x)$$
+The average case needs a probability distribution $D_n$ over the inputs of size $n$. The expected time of a randomized algorithm averages over the algorithm's own random bits $r$ and still takes the worst input, since the randomness comes from the code, not from the data:
+$$T_{\text{avg}}(n) = \mathbb{E}_{x \sim D_n}[\text{cost}(x)], \qquad T_{\text{exp}}(n) = \max_{x \in I_n} \mathbb{E}_{r}[\text{cost}(x, r)]$$
+Example: insertion sort (§2) does one shift per *inversion*, a pair of positions $i < j$ holding $x_i > x_j$. For $n = 4$ the reversed input has $4 \cdot 3 / 2 = 6$ inversions, so $T_{\text{worst}}(4) = 6$ shifts; over all $24$ orderings taken as equally likely the mean is $3 = n(n-1)/4$, so $T_{\text{avg}}(4) = 3$. An average is only as meaningful as its distribution: sensor logs that arrive nearly sorted are not uniformly random orderings.
+
 **The doubling check.** Growth rates make a testable prediction: what happens to the running time when $n$ doubles. Measure the time at $n$ and at $2n$; the ratio tells you the class.
 
 | Growth | Time when $n$ doubles |
@@ -79,10 +85,21 @@ Pure-Python loops with realistic bodies (indexing, dictionary lookups, function 
 
 You need these four terms the first time a later page, such as [[02-foundations/algorithms/greedy-mst|11.4]] or [[02-foundations/algorithms/dynamic-programming|11.5]], calls a problem "NP-hard". They rest on one precise meaning of input size: the number of bits needed to write the input down. For a list of $n$ small numbers that is proportional to $n$. For a single number $W$ it is only about $\log_2 W$ bits, and that gap is why the last term below exists.
 
-- **P** is the class of yes/no problems that some algorithm solves in time polynomial in the input size, $O(n^k)$ for a fixed $k$. "Is there a path from $s$ to $t$ in this graph?" is in P, because breadth-first search answers it in $O(V + E)$.
+- **P** is the class of yes/no problems that some algorithm solves in time polynomial in the input size, $O(n^k)$ for a fixed $k$. "Is there a path from $s$ to $t$ in this graph?" is in P, because breadth-first search ([[02-foundations/algorithms/graph-algorithms|11.6 §2]]) answers it in $O(V + E)$.
 - **NP** is the class of yes/no problems where a "yes" answer comes with a certificate that can be *checked* in polynomial time. The name stands for "nondeterministic polynomial", not "not polynomial". Every problem in P is also in NP. Whether P = NP is open, and most researchers expect the answer to be no.
 - **NP-hard** means at least as hard as every problem in NP: every NP problem can be translated into this one in polynomial time (a *reduction*), so a polynomial-time algorithm for it would give one for all of NP. A problem that is NP-hard and also in NP is **NP-complete**. Optimization problems such as 0/1 knapsack, the travelling salesman problem and set cover are called NP-hard. In practice the label means: do not look for an exact algorithm that is polynomial on every input. Use exponential exact search when $n$ is small (backtracking, §6), a pseudo-polynomial algorithm when the numbers are small, or an approximation with a proven factor.
 - **Pseudo-polynomial** means polynomial in the numeric *value* of a number in the input rather than in its bit length. The $O(nW)$ knapsack table is the standard example. Since $W$ is written in about $\log_2 W$ bits, $O(nW)$ is exponential in the input length, so the algorithm is fast only while the numbers stay small.
+
+**The same terms, stated exactly.** A yes/no problem is a set $L$ of the inputs whose answer is yes, and $|x|$ is the length of input $x$ in bits.
+- *P:* some algorithm decides whether $x \in L$ in $O(|x|^k)$ steps for a constant $k$.
+- *NP:* there is a polynomial-time checker $V$ (the *verifier*) and a polynomial $p$ such that the yes-inputs are exactly those with a short certificate $w$ that $V$ accepts, so every yes-answer can be checked quickly even when it cannot be found quickly:
+$$x \in L \iff \exists\, w \text{ with } |w| \le p(|x|) \text{ and } V(x, w) = 1$$
+- *Polynomial-time reduction* $A \le_p B$: a function $f$ computable in polynomial time that preserves the answer, so any fast algorithm for $B$ becomes one for $A$ by running it on $f(x)$:
+$$x \in A \iff f(x) \in B$$
+- *NP-hard:* $A \le_p B$ for every $A$ in NP. *NP-complete:* NP-hard and itself in NP.
+- *Pseudo-polynomial:* running time bounded by a polynomial in $n$ and in the largest number's *value* $W$, such as $O(nW)$, rather than in $|x|$, which grows only like $n \log_2 W$.
+
+For subset sum below, $V$ adds up the certificate's numbers and compares with $T$, which takes time polynomial in $|x|$.
 
 > [!example] Worked example · 계산 예제
 > **Subset sum** (NP-complete; Karp 1972): do some of the numbers $\{3, 34, 4, 12, 5, 2\}$ add up to exactly $T = 9$?
@@ -96,11 +113,18 @@ The three symbols are statements about eventual growth, each with a constant you
 
 $$f(n) = O(g(n)) \iff \exists\, c > 0,\ n_0 \text{ such that } 0 \le f(n) \le c\,g(n) \text{ for all } n \ge n_0$$
 
-- $f = \Omega(g)$: the same with $f(n) \ge c\,g(n)$ — $g$ is an eventual **lower** bound.
-- $f = \Theta(g)$: both — $c_1 g(n) \le f(n) \le c_2 g(n)$ for large $n$. This is the **tight** bound, and it is what people usually mean when they say "big-O" in conversation.
+Here $f$ and $g$ are functions from input sizes $n = 1, 2, \dots$ to non-negative costs, and $O(g)$ is strictly a *set* of functions, so "$f = O(g)$" is shorthand for $f \in O(g)$. It has three named parts: the constant $c$, the threshold $n_0$, and the inequality that must hold at every $n$ past the threshold.
+
+- $f = \Omega(g)$: the same with the inequality reversed, so $g$ is an eventual **lower** bound:
+$$f(n) = \Omega(g(n)) \iff \exists\, c > 0,\ n_0 \text{ such that } 0 \le c\,g(n) \le f(n) \text{ for all } n \ge n_0$$
+- $f = \Theta(g)$: both at once, with one threshold and two constants, so $g$ pins $f$ from above and below:
+$$f(n) = \Theta(g(n)) \iff \exists\, c_1, c_2 > 0,\ n_0 \text{ such that } 0 \le c_1 g(n) \le f(n) \le c_2 g(n) \text{ for all } n \ge n_0$$
+  This is the **tight** bound, and it is what people usually mean when they say "big-O" in conversation.
 - The constants $c$ and $n_0$ must not depend on $n$. That one rule is what makes "$n^2 = O(n)$" false: it would need $c \ge n$.
 
-Example: $3n^2 + 10n + 5 = \Theta(n^2)$. For $n \ge 1$, $3n^2 \le 3n^2 + 10n + 5 \le 3n^2 + 10n^2 + 5n^2 = 18n^2$, so $c_1 = 3$, $c_2 = 18$, $n_0 = 1$ work.
+Example: $3n^2 + 10n + 5 = \Theta(n^2)$. For $n \ge 1$, $3n^2 \le 3n^2 + 10n + 5 \le 3n^2 + 10n^2 + 5n^2 = 18n^2$, so $c_1 = 3$, $c_2 = 18$, $n_0 = 1$ work. And $n \log_2 n = \Omega(n)$ with $c = 1$, $n_0 = 2$, since $\log_2 n \ge 1$ from $n = 2$ on.
+
+Non-example: $n = O(n^2)$ is true but $n = \Theta(n^2)$ is false. A lower constant would need $c_1 n^2 \le n$, that is $c_1 \le 1/n$, and the ratio $n / n^2$ is $0.1$, $0.01$, $0.001$ at $n = 10, 100, 1000$, below any fixed $c_1 > 0$ eventually. So an $O$ bound can be true and loose; only $\Theta$ says the growth rate is exactly $g$.
 
 Two distinctions that interviewers probe:
 
@@ -170,6 +194,8 @@ For divide-and-conquer with equal-sized pieces, the tree has a regular shape. Su
 
 $$T(n) = a\,T(n/b) + O(n^d)$$
 
+A recurrence has two parts, and both must be stated: the **recursive case** above and a **base case**, here $T(n) = O(1)$ for every $n$ below some constant, without which the equation does not determine $T$. The master method's hypotheses are that $a \ge 1$, $b > 1$ and $d \ge 0$ are constants that do not depend on $n$; since $b > 1$ the pieces really shrink, so the tree has finitely many levels. Rounding $n/b$ up or down does not change the three answers.
+
 Level $j$ of the tree has $a^j$ calls, each on a piece of size $n/b^j$, so the work on that level is $a^j \cdot c\,(n/b^j)^d$, which rearranges into a form that shows the whole analysis:
 
 $$\text{work at level } j = c\,n^d \left(\frac{a}{b^d}\right)^j$$
@@ -215,9 +241,10 @@ for k in (4, 10, 20):
 
 ### 4. Amortized cost: why `append` is O(1)
 
-**Amortized cost** is the total cost of a sequence of $n$ operations, divided by $n$, in the worst case over sequences. It involves no probability — it is a worst-case guarantee on the *total*, not on each step.
+**Amortized cost** is the total cost of a sequence of $n$ operations, divided by $n$, in the worst case over sequences. It involves no probability — it is a worst-case guarantee on the *total*, not on each step. With $c_i$ the actual cost of the $i$-th operation, it is the largest average over any sequence the data structure can be driven through, so no sequence, however adversarial, beats it:
+$$\hat c(n) = \max_{\text{sequences } o_1, \dots, o_n} \frac{1}{n} \sum_{i=1}^{n} c_i$$
 
-**Dynamic arrays** are the example every interview expects. An array has a fixed capacity. When `append` finds it full, it allocates a larger block and copies every element — a single $\Theta(n)$ step. How the capacity grows decides everything.
+**Dynamic arrays** are the example every interview expects. The state is a block of `capacity` slots and a count `size`, with the invariant $0 \le \text{size} \le \text{capacity}$ and elements in slots $0$ to $\text{size} - 1$. An array has a fixed capacity. When `append` finds it full, it allocates a larger block and copies every element — a single $\Theta(n)$ step. How the capacity grows decides everything.
 
 - **Grow by a factor (doubling).** Starting from capacity 1, $n$ appends trigger copies of $1, 2, 4, \dots, 2^k$ elements, where $2^k < n$. The total number of copies is below $2n$, because the geometric sum is less than twice its largest term:
 
@@ -227,6 +254,17 @@ $$1 + 2 + 4 + \cdots + 2^k = 2^{k+1} - 1 < 2n$$
 - **Grow by a constant $k$.** Copies happen at sizes $k, 2k, 3k, \dots$, so the total is about $k(1 + 2 + \dots + n/k) \approx n^2/(2k)$: **$\Theta(n^2)$ total, $\Theta(n)$ per append**. A larger $k$ only divides the constant.
 
 A second way to see it, useful when asked to *explain* rather than sum: charge each append 3 units. One pays for writing the element; two are saved. By the time the array of capacity $m$ is full again, the $m/2$ elements added since the last resize have saved $m$ units, which is exactly what copying $m$ elements costs. The savings never go negative, so 3 per append always suffices.
+
+**The accounting and potential methods, stated as contracts.** Give operation $i$ a charge $\hat c_i$. The charges are valid when, on every sequence and at every prefix length $k$, the total charged never falls below the total actually spent, so the saved credit never goes negative:
+$$\sum_{i=1}^{k} \hat c_i \ge \sum_{i=1}^{k} c_i \quad \text{for all } k$$
+The **potential method** keeps that credit as a function $\Phi$ of the structure's state $D_i$ after operation $i$, and defines each charge as actual cost plus the change in potential:
+$$\hat c_i = c_i + \Phi(D_i) - \Phi(D_{i-1})$$
+The sum telescopes to $\sum_{i \le k} \hat c_i = \sum_{i \le k} c_i + \Phi(D_k) - \Phi(D_0)$, so the charges are valid as soon as $\Phi(D_k) \ge \Phi(D_0)$ for every $k$. For doubling take $\Phi = 2 \cdot \text{size} - \text{capacity}$.
+- *Append with room:* $c_i = 1$ and $\Phi$ rises by 2, so $\hat c_i = 3$.
+- *Append into a full array of size $s$:* $s$ copies plus one write, $c_i = s + 1$, while $\Phi$ falls from $2s - s = s$ to $2(s+1) - 2s = 2$, so $\hat c_i = s + 1 + 2 - s = 3$.
+- *Validity:* the code below starts at capacity 1 and size 0, so $\Phi(D_0) = -1$, and after any append the size is at least half the capacity, so $\Phi \ge 0$.
+
+The code's 4096 appends do $4096$ writes and $4095$ copies, $8191$ operations in all, under the $3 \cdot 4096 = 12288$ the charges allow. Non-example: growth by a constant $k$ admits no constant charge $c$, because its copies alone total about $n^2/(2k)$, which exceeds $c\,n$ once $n > 2kc$.
 
 Shrinking needs the same care: halve the capacity only when the array is a quarter full, not half full. Otherwise alternating append and pop at the boundary resizes every time.
 
@@ -284,6 +322,10 @@ A correct recursive function needs three things.
 2. **Progress**: each recursive call is on a strictly smaller instance (smaller $n$, shorter list, fewer remaining choices).
 3. **Trust the call.** When writing the recursive case, assume the call on the smaller input already returns the right answer, and only ask: how do I build my answer from it? This is proof by induction — the base case is the base step, and trusting the call is the inductive hypothesis. Tracing ten levels of calls in your head is the wrong way to convince yourself.
 
+Conditions 1 and 2 are a termination proof, and it can be stated exactly. Choose a **measure** $\mu$ that maps every valid input to a non-negative integer, and check that each recursive call made on input $x$ is on an input $x'$ with
+$$0 \le \mu(x') < \mu(x)$$
+A strictly decreasing sequence of non-negative integers is finite, so the recursion stops; the base case must then cover every input from which no further call is made. For `power` below, $\mu = n$, and $n // 2 < n$ for every $n \ge 1$. Non-example: `f(n) = 0 if n == 0 else f(n - 2)` has a base case and shrinks $n$, yet `f(3)` calls `f(1)`, `f(-1)`, `f(-3)`, … and never returns, because the measure leaves the non-negative integers without passing through the base case.
+
 **Space counts.** Each active call holds a stack frame, so a recursion of depth $D$ uses $\Theta(D)$ extra space even if it allocates nothing. Say this in the space analysis.
 
 ```python
@@ -300,6 +342,10 @@ print(power(3, 13), 3 ** 13)          # 1594323 1594323
 The recurrence is $T(n) = T(n/2) + 1$, so $\Theta(\log n)$ time and $\Theta(\log n)$ stack. **Pitfall:** writing `power(x, n // 2) * power(x, n // 2)` computes the same thing twice, which gives $T(n) = 2T(n/2) + 1 = \Theta(n)$ — the correct answer, exponentially more slowly.
 
 **Memoization.** When recursive calls overlap — the same arguments are requested again and again — store each result the first time and look it up afterwards. The cost becomes (number of distinct arguments) × (work per call, not counting the sub-calls). Naive Fibonacci makes $2F(n+1) - 1$ calls, about 2.7 million for $n = 30$; the memoized version makes $n + 1$ distinct computations.
+
+The contract that makes caching correct: the function must be **pure**, meaning its return value depends only on its arguments and calling it changes nothing a later call can observe. Then a stored answer is the answer, so
+$$\text{time} = (\text{number of distinct arguments}) \times (\text{work per call, sub-calls excluded})$$
+Non-example: a planner cost function that also reads a global map which changes between calls. The cache keeps returning the cost computed against the old map, and the bug is silent.
 
 Two ways to write it:
 
@@ -420,6 +466,8 @@ print(len(subsets([1, 2, 3])), len(permutations([1, 2, 3])), n_queens(4), n_quee
 
 **Pruning** is where backtracking earns its keep: a test at an internal node removes the whole subtree below it. The strongest prunes come from ordering. If the values are sorted, the first value that overshoots a target proves that every later value overshoots too, so the loop can `break` rather than `continue`. Sorting also lets you skip equal values at the same depth, which removes duplicate answers without a set.
 
+A prune must be **sound**: a test $\text{prune}(s)$ may return true only when no complete solution extends the partial state $s$. The sorted-order `break` above is sound, since every later value is at least as large and the numbers are positive. A test that only *looks* unpromising ("this branch has a high cost so far") is not sound, and it silently turns an exact search into one that can miss answers.
+
 ```python
 def subsets_with_sum(nums, target):
     """All distinct multisets drawn from positive nums that sum to target."""
@@ -442,7 +490,9 @@ def subsets_with_sum(nums, target):
 print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3] [1, 5] [2, 4]
 ```
 
-**Complexity of a search tree.** With branching factor at most $b$ and depth at most $d$ there are at most $b^d$ leaves, and the running time is (number of nodes visited) × (work per node). Pruning rarely improves the worst-case bound — N-Queens with column sets is still bounded only by $n!$ — but it changes what is practical by orders of magnitude, and the honest interview answer says both: "worst case $O(n!)$; in practice the diagonal checks cut most branches early."
+**Complexity of a search tree.** With branching factor at most $b$ and depth at most $d$ there are at most $b^d$ leaves, and the running time is (number of nodes visited) × (work per node). Counting every level, not only the leaves, the tree has at most
+$$1 + b + b^2 + \cdots + b^d = \frac{b^{d+1} - 1}{b - 1}$$
+nodes for $b \ge 2$, which is less than twice the leaf count, so the leaves dominate. For `subsets([1, 2, 3])`, $b = 2$ and $d = 3$ give $15$ calls and $8$ leaves. Pruning rarely improves the worst-case bound — N-Queens with column sets is still bounded only by $n!$ — but it changes what is practical by orders of magnitude, and the honest interview answer says both: "worst case $O(n!)$; in practice the diagonal checks cut most branches early."
 
 **Interview pitfalls.** Appending `path` instead of a copy (every recorded answer ends up as the same, finally empty, list). Forgetting the un-choose step, so state from one branch leaks into its siblings. Checking validity only at the leaves, which turns backtracking back into brute force. Using `continue` where sorted order allows `break`.
 
@@ -467,7 +517,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 
 **Statements that lose points:**
 
-- "Hash map lookup is $O(1)$." — Average $O(1)$ with a reasonable hash; worst case $O(n)$.
+- "Hash map lookup is $O(1)$." — Average $O(1)$ with a reasonable hash; worst case $O(n)$ ([[02-foundations/algorithms/data-structures|11.2 §3]]).
 - "Recursion uses no extra space." — It uses $O(\text{depth})$ stack.
 - "Two nested loops, so $O(n^2)$." — Not when the inner pointer never moves backwards (§2, example 3).
 - "Sorting is $O(n \log n)$." — For comparison sorts; counting sort on small integer keys is $O(n + \text{range})$.
@@ -524,6 +574,12 @@ A complete complexity answer has five parts, and saying them in order sounds org
 - **따로 말하지 않으면 최악의 경우.** 각 $n$마다 그 크기에서 가장 느린 입력을 본다. 최악 경우 상한은 보장이다: 그 크기의 어떤 입력도 그보다 느리지 않다. 평균 경우, 기대값(무작위 알고리즘), 분할상환(§4)은 다른 약속이므로 쓸 때 이름을 붙여야 한다.
 - **상수와 낮은 차수 항은 버린다.** $3n^2 + 40n + 7$은 $n^2$이 된다. 상수가 중요하지 않아서가 아니다 — 로봇에서 10배 상수는 중요하다. 상수는 기계·언어·컴파일러에 따라 달라지지만 증가율은 알고리즘의 성질이기 때문이다. $n$이 충분히 크면 증가율이 낮은 쪽이 어떤 상수 배도 이긴다.
 
+**경우를 식으로.** 크기 $n$인 수많은 입력을 어떻게 한 수로 묶는지 말해야 비로소 실행 시간이 $n$만의 함수가 된다. $\text{cost}(x)$를 입력 $x$에서 지배적 연산이 실행되는 횟수, $I_n$을 크기 $n$인 입력의 집합이라 하자. 최악 경우는 그 집합에서 가장 큰 비용을 취하므로 모든 입력에 대한 보장이다:
+$$T_{\text{worst}}(n) = \max_{x \in I_n} \text{cost}(x)$$
+평균 경우에는 크기 $n$인 입력 위의 확률분포 $D_n$이 필요하다. 무작위 알고리즘의 기대 시간은 알고리즘 자신의 난수 $r$에 대해 평균을 내되 입력은 여전히 최악을 취한다. 무작위성이 데이터가 아니라 코드에서 오기 때문이다:
+$$T_{\text{avg}}(n) = \mathbb{E}_{x \sim D_n}[\text{cost}(x)], \qquad T_{\text{exp}}(n) = \max_{x \in I_n} \mathbb{E}_{r}[\text{cost}(x, r)]$$
+예: 삽입 정렬(§2)은 *역전*(inversion), 즉 위치 $i < j$에 $x_i > x_j$가 놓인 쌍 하나마다 한 번 민다. $n = 4$에서 뒤집힌 입력의 역전은 $4 \cdot 3 / 2 = 6$개이므로 $T_{\text{worst}}(4) = 6$번이고, $24$가지 순서를 모두 같은 확률로 보면 평균은 $3 = n(n-1)/4$이므로 $T_{\text{avg}}(4) = 3$이다. 평균은 그 분포만큼만 의미가 있다. 거의 정렬된 채 들어오는 센서 로그는 균일한 무작위 순서가 아니다.
+
 **두 배 점검.** 증가율은 검증 가능한 예측을 준다: $n$을 두 배로 늘리면 실행 시간이 어떻게 되는가. $n$과 $2n$에서 시간을 재면 그 비율이 복잡도 부류를 알려 준다.
 
 | 증가율 | $n$이 두 배일 때 시간 |
@@ -573,10 +629,21 @@ print(doubling_ratios(all_pairs, [800, 1600, 3200]))  # each ratio roughly 4 (ti
 
 뒤 페이지, 예컨대 [[02-foundations/algorithms/greedy-mst|11.4]]나 [[02-foundations/algorithms/dynamic-programming|11.5]]가 어떤 문제를 "NP-난해"라고 부르는 순간 이 네 용어가 필요하다. 네 용어는 모두 입력 크기의 정확한 뜻 하나에 기대고 있다. 입력을 적는 데 필요한 비트 수다. 작은 수 $n$개의 리스트라면 이것은 $n$에 비례한다. 하지만 수 하나 $W$는 약 $\log_2 W$비트밖에 되지 않고, 이 차이 때문에 마지막 용어가 따로 있다.
 
-- **P**(polynomial)는 어떤 알고리즘이 입력 크기에 대한 다항 시간, 즉 고정된 $k$에 대해 $O(n^k)$에 푸는 예/아니오 문제의 모임이다. "이 그래프에 $s$에서 $t$로 가는 경로가 있는가?"는 너비 우선 탐색이 $O(V + E)$에 답하므로 P에 속한다.
+- **P**(polynomial)는 어떤 알고리즘이 입력 크기에 대한 다항 시간, 즉 고정된 $k$에 대해 $O(n^k)$에 푸는 예/아니오 문제의 모임이다. "이 그래프에 $s$에서 $t$로 가는 경로가 있는가?"는 너비 우선 탐색([[02-foundations/algorithms/graph-algorithms|11.6 §2]])이 $O(V + E)$에 답하므로 P에 속한다.
 - **NP**(nondeterministic polynomial)는 "예"라는 답에 다항 시간에 *검사*할 수 있는 증거(certificate)가 딸려 오는 예/아니오 문제의 모임이다. 이름은 "비결정적 다항"의 약자이지 "다항이 아님"이 아니다. P에 속한 문제는 모두 NP에도 속한다. P = NP인지는 풀리지 않은 문제이고, 대부분의 연구자는 답이 아니오일 것으로 본다.
 - **NP-난해**(NP-hard)는 NP의 모든 문제만큼은 어렵다는 뜻이다. NP의 어떤 문제든 다항 시간에 이 문제로 옮길 수 있으므로(*환원*, reduction), 이 문제의 다항 시간 알고리즘이 있으면 NP 전체의 다항 시간 알고리즘이 생긴다. NP-난해이면서 NP에도 속하는 문제를 **NP-완전**(NP-complete)이라 한다. 0/1 배낭, 외판원 문제, 집합 덮개 같은 최적화 문제를 NP-난해라고 부른다. 실무에서 이 딱지의 뜻은 이렇다. 모든 입력에서 다항 시간인 정확한 알고리즘을 찾지 마라. $n$이 작으면 지수 시간 정확 탐색(백트래킹, §6)을, 수가 작으면 의사 다항 알고리즘을, 그 밖에는 근사 비율이 증명된 근사를 쓴다.
 - **의사 다항**(pseudo-polynomial)은 입력에 든 수의 비트 길이가 아니라 그 수의 *값*에 대해 다항이라는 뜻이다. $O(nW)$ 배낭 표가 대표적인 예다. $W$는 약 $\log_2 W$비트로 적히므로 $O(nW)$는 입력 길이에 대해 지수적이고, 그래서 이 알고리즘은 수가 작은 동안에만 빠르다.
+
+**같은 용어를 정확히.** 예/아니오 문제는 답이 예인 입력들의 집합 $L$이고, $|x|$는 입력 $x$의 비트 길이다.
+- *P:* 어떤 알고리즘이 상수 $k$에 대해 $O(|x|^k)$ 단계 안에 $x \in L$인지 판정한다.
+- *NP:* 다항 시간 검사기 $V$(*검증기*, verifier)와 다항식 $p$가 있어서, 예인 입력이 정확히 $V$가 받아들이는 짧은 증거 $w$를 가진 입력들이다. 그래서 예라는 답은 빨리 찾지 못하더라도 빨리 검사할 수는 있다:
+$$x \in L \iff \exists\, w \text{ with } |w| \le p(|x|) \text{ and } V(x, w) = 1$$
+- *다항 시간 환원* $A \le_p B$: 다항 시간에 계산되며 답을 보존하는 함수 $f$. 그래서 $B$의 빠른 알고리즘을 $f(x)$에 돌리면 $A$의 빠른 알고리즘이 된다:
+$$x \in A \iff f(x) \in B$$
+- *NP-난해:* NP의 모든 $A$에 대해 $A \le_p B$. *NP-완전:* NP-난해이면서 그 자신이 NP에 속한다.
+- *의사 다항:* 실행 시간이 $|x|$가 아니라 $n$과 가장 큰 수의 *값* $W$에 대한 다항식으로 묶인다(예: $O(nW)$). $|x|$는 $n \log_2 W$ 정도로만 자란다.
+
+아래 부분집합 합에서 $V$는 증거의 수들을 더해 $T$와 비교하며, 이는 $|x|$에 대해 다항 시간이다.
 
 > [!example] 계산 예제 · Worked example
 > **부분집합 합**(NP-완전; Karp 1972): 수 $\{3, 34, 4, 12, 5, 2\}$ 중 몇 개를 골라 합이 정확히 $T = 9$가 되게 할 수 있는가?
@@ -590,11 +657,18 @@ print(doubling_ratios(all_pairs, [800, 1600, 3200]))  # each ratio roughly 4 (ti
 
 $$f(n) = O(g(n)) \iff \exists\, c > 0,\ n_0 \text{ such that } 0 \le f(n) \le c\,g(n) \text{ for all } n \ge n_0$$
 
-- $f = \Omega(g)$: 같은 식에서 $f(n) \ge c\,g(n)$ — $g$가 결국의 하한이다.
-- $f = \Theta(g)$: 둘 다 — 큰 $n$에서 $c_1 g(n) \le f(n) \le c_2 g(n)$. 이것이 딱 맞는(tight) 상한·하한이고, 대화에서 "빅오"라고 할 때 사람들이 보통 뜻하는 것이 이것이다.
+여기서 $f$와 $g$는 입력 크기 $n = 1, 2, \dots$을 음이 아닌 비용으로 보내는 함수이고, $O(g)$는 엄밀히 함수들의 *집합*이다. 그래서 "$f = O(g)$"는 $f \in O(g)$의 줄임말이다. 이름 붙은 부분이 셋이다: 상수 $c$, 문턱 $n_0$, 그리고 문턱 이후 모든 $n$에서 성립해야 하는 부등식.
+
+- $f = \Omega(g)$: 같은 식에서 부등식 방향만 바꾼 것이므로 $g$가 결국의 하한(**lower bound**)이다:
+$$f(n) = \Omega(g(n)) \iff \exists\, c > 0,\ n_0 \text{ such that } 0 \le c\,g(n) \le f(n) \text{ for all } n \ge n_0$$
+- $f = \Theta(g)$: 문턱 하나와 상수 둘로 둘을 동시에 만족하므로 $g$가 $f$를 위아래로 묶는다:
+$$f(n) = \Theta(g(n)) \iff \exists\, c_1, c_2 > 0,\ n_0 \text{ such that } 0 \le c_1 g(n) \le f(n) \le c_2 g(n) \text{ for all } n \ge n_0$$
+  이것이 딱 맞는(tight) 상한·하한이고, 대화에서 "빅오"라고 할 때 사람들이 보통 뜻하는 것이 이것이다.
 - 상수 $c$와 $n_0$은 $n$에 의존하면 안 된다. 이 규칙 하나 때문에 "$n^2 = O(n)$"이 거짓이 된다. 그러려면 $c \ge n$이어야 하기 때문이다.
 
-예: $3n^2 + 10n + 5 = \Theta(n^2)$. $n \ge 1$이면 $3n^2 \le 3n^2 + 10n + 5 \le 3n^2 + 10n^2 + 5n^2 = 18n^2$이므로 $c_1 = 3$, $c_2 = 18$, $n_0 = 1$이면 된다.
+예: $3n^2 + 10n + 5 = \Theta(n^2)$. $n \ge 1$이면 $3n^2 \le 3n^2 + 10n + 5 \le 3n^2 + 10n^2 + 5n^2 = 18n^2$이므로 $c_1 = 3$, $c_2 = 18$, $n_0 = 1$이면 된다. 또 $n \log_2 n = \Omega(n)$이다. $n = 2$부터 $\log_2 n \ge 1$이므로 $c = 1$, $n_0 = 2$이면 된다.
+
+반례: $n = O(n^2)$은 참이지만 $n = \Theta(n^2)$은 거짓이다. 하한 상수가 $c_1 n^2 \le n$, 즉 $c_1 \le 1/n$을 만족해야 하는데, 비율 $n / n^2$은 $n = 10, 100, 1000$에서 $0.1$, $0.01$, $0.001$로 결국 어떤 고정된 $c_1 > 0$보다도 작아진다. 그래서 $O$ 상한은 참이면서 느슨할 수 있고, 증가율이 정확히 $g$라고 말하는 것은 $\Theta$뿐이다.
 
 인터뷰어가 파고드는 구분 두 가지:
 
@@ -664,6 +738,8 @@ print(triangle(10), halvings(1024), longest_window([2, 1, 3, 1, 1, 4], 5))  # 45
 
 $$T(n) = a\,T(n/b) + O(n^d)$$
 
+점화식에는 두 부분이 있고 둘 다 적어야 한다. 위의 재귀 사례(**recursive case**)와, 여기서는 어떤 상수보다 작은 모든 $n$에 대해 $T(n) = O(1)$인 기저 사례(**base case**)다. 기저 사례가 없으면 식이 $T$를 결정하지 못한다. 마스터 방법의 가정은 $a \ge 1$, $b > 1$, $d \ge 0$이 $n$에 의존하지 않는 상수라는 것이다. $b > 1$이므로 조각이 실제로 작아지고, 그래서 트리의 층 수가 유한하다. $n/b$를 올림하든 내림하든 세 답은 바뀌지 않는다.
+
 트리의 $j$층에는 호출이 $a^j$개 있고, 각각 크기 $n/b^j$ 조각을 다루므로 그 층의 일은 $a^j \cdot c\,(n/b^j)^d$이다. 따라서:
 
 $$\text{work at level } j = c\,n^d \left(\frac{a}{b^d}\right)^j$$
@@ -709,9 +785,10 @@ for k in (4, 10, 20):
 
 ### 4. 분할상환 비용: `append`가 O(1)인 이유
 
-**분할상환 비용(amortized cost).** 연산 $n$개로 이루어진 수열의 총비용을 $n$으로 나눈 것이며, 수열에 대한 최악 경우로 잰다. 확률은 들어가지 않는다 — 각 단계가 아니라 *총합*에 대한 최악 경우 보장이다.
+**분할상환 비용(amortized cost).** 연산 $n$개로 이루어진 수열의 총비용을 $n$으로 나눈 것이며, 수열에 대한 최악 경우로 잰다. 확률은 들어가지 않는다 — 각 단계가 아니라 *총합*에 대한 최악 경우 보장이다. $c_i$를 $i$번째 연산의 실제 비용이라 하면, 자료구조를 몰고 갈 수 있는 모든 수열 중 가장 큰 평균이므로 아무리 적대적인 수열도 이를 넘지 못한다:
+$$\hat c(n) = \max_{\text{sequences } o_1, \dots, o_n} \frac{1}{n} \sum_{i=1}^{n} c_i$$
 
-**동적 배열.** 모든 인터뷰가 기대하는 예가 이것이다. 배열에는 고정된 용량이 있다. `append`가 가득 찬 배열을 만나면 더 큰 블록을 할당하고 원소를 모두 복사한다 — 단 한 번에 $\Theta(n)$인 단계다. 용량을 어떻게 늘리느냐가 모든 것을 결정한다.
+**동적 배열.** 모든 인터뷰가 기대하는 예가 이것이다. 상태는 `capacity`칸짜리 블록과 개수 `size`이고, 불변식은 $0 \le \text{size} \le \text{capacity}$, 원소는 $0$번부터 $\text{size} - 1$번 칸에 있다. 배열에는 고정된 용량이 있다. `append`가 가득 찬 배열을 만나면 더 큰 블록을 할당하고 원소를 모두 복사한다 — 단 한 번에 $\Theta(n)$인 단계다. 용량을 어떻게 늘리느냐가 모든 것을 결정한다.
 
 - **배수로 늘리기(두 배).** 용량 1에서 시작하면 $n$번의 append가 $1, 2, 4, \dots, 2^k$개 원소의 복사를 일으키고, $2^k < n$이다. 기하급수 합은 가장 큰 항의 두 배보다 작으므로 복사 총수는 $2n$ 미만이다:
 
@@ -721,6 +798,17 @@ $$1 + 2 + 4 + \cdots + 2^k = 2^{k+1} - 1 < 2n$$
 - **상수 $k$씩 늘리기.** 복사가 크기 $k, 2k, 3k, \dots$에서 일어나므로 합은 약 $k(1 + 2 + \dots + n/k) \approx n^2/(2k)$: **총 $\Theta(n^2)$, append당 $\Theta(n)$**. $k$를 키워도 상수만 나눌 뿐이다.
 
 합을 계산하기보다 *설명*하라는 요청을 받을 때 쓸 두 번째 관점: append마다 3단위를 청구한다. 1단위는 원소를 쓰는 데 쓰고 2단위는 저축한다. 용량 $m$인 배열이 다시 가득 찰 때까지, 지난 확장 이후 추가된 $m/2$개 원소가 $m$단위를 모았고, 이것이 원소 $m$개를 복사하는 비용과 정확히 같다. 저축이 음수가 되는 일이 없으므로 append당 3이면 언제나 충분하다.
+
+**회계 방법과 퍼텐셜 방법을 계약으로.** 연산 $i$에 청구액 $\hat c_i$를 준다. 모든 수열의 모든 앞부분 길이 $k$에서 청구 총액이 실제 지출 총액 밑으로 떨어지지 않으면 청구가 유효하다. 그러면 저축된 크레딧이 음수가 되지 않기 때문이다:
+$$\sum_{i=1}^{k} \hat c_i \ge \sum_{i=1}^{k} c_i \quad \text{for all } k$$
+**퍼텐셜 방법**(potential method)은 그 크레딧을 연산 $i$ 이후 자료구조 상태 $D_i$의 함수 $\Phi$로 들고 있고, 청구액을 실제 비용 더하기 퍼텐셜 변화로 정의한다:
+$$\hat c_i = c_i + \Phi(D_i) - \Phi(D_{i-1})$$
+합이 연쇄적으로 소거되어 $\sum_{i \le k} \hat c_i = \sum_{i \le k} c_i + \Phi(D_k) - \Phi(D_0)$이 되므로, 모든 $k$에서 $\Phi(D_k) \ge \Phi(D_0)$이기만 하면 청구가 유효하다. 두 배 증가에는 $\Phi = 2 \cdot \text{size} - \text{capacity}$를 쓴다.
+- *자리가 있을 때 append:* $c_i = 1$이고 $\Phi$가 2 오르므로 $\hat c_i = 3$.
+- *크기 $s$로 가득 찬 배열에 append:* 복사 $s$번과 쓰기 한 번으로 $c_i = s + 1$이고, $\Phi$는 $2s - s = s$에서 $2(s+1) - 2s = 2$로 떨어지므로 $\hat c_i = s + 1 + 2 - s = 3$.
+- *유효성:* 아래 코드는 용량 1, 크기 0에서 시작하므로 $\Phi(D_0) = -1$이고, append 뒤에는 언제나 크기가 용량의 절반 이상이므로 $\Phi \ge 0$이다.
+
+코드의 append 4096번은 쓰기 $4096$번과 복사 $4095$번, 모두 $8191$번 연산이고, 청구가 허락하는 $3 \cdot 4096 = 12288$ 아래다. 반례: 상수 $k$씩 늘리면 어떤 상수 청구 $c$도 통하지 않는다. 복사만 합해도 약 $n^2/(2k)$이고, $n > 2kc$이면 이것이 $c\,n$을 넘기 때문이다.
 
 줄이는 쪽도 같은 주의가 필요하다. 배열이 절반이 아니라 4분의 1만 찼을 때 용량을 반으로 줄인다. 그렇지 않으면 경계에서 append와 pop을 번갈아 할 때마다 크기 조정이 일어난다.
 
@@ -778,6 +866,10 @@ print(resizes)                        # gaps between resizes keep growing
 2. **진행** — 재귀 호출은 언제나 엄밀히 더 작은 인스턴스에 대해 한다(더 작은 $n$, 더 짧은 리스트, 더 적은 남은 선택).
 3. **호출을 믿어라.** 재귀 사례를 쓸 때는 더 작은 입력에 대한 호출이 이미 올바른 답을 돌려준다고 가정하고, 오직 그것으로 내 답을 어떻게 만드는지만 묻는다. 이것이 수학적 귀납법이다 — 기저 사례가 기저 단계, 호출을 믿는 것이 귀납 가정이다. 머릿속에서 호출 열 단계를 추적하는 것은 스스로를 설득하는 잘못된 방법이다.
 
+조건 1과 2는 종료 증명이고, 정확히 적을 수 있다. 모든 유효한 입력을 음이 아닌 정수로 보내는 **척도**(measure) $\mu$를 고르고, 입력 $x$에서 하는 모든 재귀 호출의 입력 $x'$가 다음을 만족하는지 확인한다:
+$$0 \le \mu(x') < \mu(x)$$
+음이 아닌 정수의 엄밀히 감소하는 수열은 유한하므로 재귀가 멈춘다. 그리고 더 이상 호출하지 않는 모든 입력을 기저 사례가 덮어야 한다. 아래 `power`에서는 $\mu = n$이고, 모든 $n \ge 1$에서 $n // 2 < n$이다. 반례: `f(n) = 0 if n == 0 else f(n - 2)`는 기저 사례도 있고 $n$도 줄이지만, `f(3)`은 `f(1)`, `f(-1)`, `f(-3)`, …을 부르며 끝나지 않는다. 척도가 기저 사례를 거치지 않고 음이 아닌 정수 밖으로 나가기 때문이다.
+
 **공간도 센다.** 활성 호출마다 스택 프레임을 차지하므로, 깊이 $D$의 재귀는 아무것도 할당하지 않아도 $\Theta(D)$ 추가 공간을 쓴다. 공간 분석에서 이것을 말하라.
 
 ```python
@@ -795,7 +887,9 @@ print(power(3, 13), 3 ** 13)          # 1594323 1594323
 
 **메모이제이션.** 재귀 호출이 겹칠 때 — 같은 인자가 거듭 요청될 때 — 결과를 처음 계산할 때 저장하고 그 뒤로는 찾아 쓴다. 비용은 (서로 다른 인자의 수) × (하위 호출을 뺀 호출당 일)이 된다. 순진한 피보나치는 $2F(n+1) - 1$번 호출하는데, $n = 30$이면 약 270만 번이다. 메모이제이션한 버전은 서로 다른 계산 $n + 1$번이다.
 
-쓰는 방법 두 가지:
+캐시가 옳게 동작하기 위한 계약: 함수가 **순수**(pure)해야 한다. 즉 반환값이 인자에만 의존하고, 호출이 이후 호출에서 관찰할 수 있는 것을 아무것도 바꾸지 않는다. 그래야 저장된 답이 곧 답이므로
+$$\text{time} = (\text{number of distinct arguments}) \times (\text{work per call, sub-calls excluded})$$
+반례: 호출 사이에 바뀌는 전역 지도를 함께 읽는 플래너 비용 함수. 캐시는 옛 지도로 계산한 비용을 계속 돌려주고, 버그는 조용하다.
 
 - **`functools.lru_cache(maxsize=None)`** (Python 3.9+에서는 `functools.cache`)를 데코레이터로. 인자는 해시 가능해야 하므로 리스트가 아니라 튜플을 넘긴다. 캐시는 호출 사이에 남는다 — 테스트 하네스가 서로 무관한 입력에 함수를 재사용하면 `.cache_clear()`로 비워라.
 - **래퍼 안의 명시적 딕셔너리.** 공개 함수가 캐시를 만들고, 재귀를 하는 중첩 헬퍼를 정의한다. 호출 사이에 새는 것이 없고, 키는 직접 만든 어떤 튜플이든 되며, 이 패턴은 C++로 그대로 옮겨진다(참조로 넘기는 `unordered_map`이나 2차원 `vector`). `memo={}` 같은 가변 기본 인자를 캐시로 쓰지 마라. 함수의 모든 호출이 그것을 공유한다.
@@ -914,6 +1008,8 @@ print(len(subsets([1, 2, 3])), len(permutations([1, 2, 3])), n_queens(4), n_quee
 
 **가지치기(pruning)** — 백트래킹의 값어치는 여기서 나온다. 내부 노드에서의 검사 하나가 그 아래 부분 트리 전체를 없앤다. 가장 강한 가지치기는 순서에서 나온다. 값이 정렬되어 있으면 목표를 처음 넘는 값이 그 뒤 모든 값도 넘는다는 증명이 되므로, 루프는 `continue`가 아니라 `break`할 수 있다. 정렬하면 같은 깊이에서 같은 값을 건너뛸 수도 있어서, 집합 없이 중복 답을 없앤다.
 
+가지치기는 **건전**(sound)해야 한다. 검사 $\text{prune}(s)$는 부분 상태 $s$를 확장하는 완성된 해가 하나도 없을 때에만 참을 돌려줄 수 있다. 위의 정렬 순서 `break`는 건전하다. 뒤의 값은 모두 그 이상이고 수가 양수이기 때문이다. 그저 *가망이 없어 보이는* 검사("이 가지는 지금까지 비용이 크다")는 건전하지 않고, 정확한 탐색을 답을 놓칠 수 있는 탐색으로 조용히 바꾼다.
+
 ```python
 def subsets_with_sum(nums, target):
     """All distinct multisets drawn from positive nums that sum to target."""
@@ -936,7 +1032,9 @@ def subsets_with_sum(nums, target):
 print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3] [1, 5] [2, 4]
 ```
 
-**탐색 트리의 복잡도.** 분기 계수가 최대 $b$, 깊이가 최대 $d$이면 잎은 최대 $b^d$개이고, 실행 시간은 (방문한 노드 수) × (노드당 일)이다. 가지치기는 최악 경우 상한을 거의 개선하지 못한다 — 열 집합을 쓴 N-Queens도 상한은 $n!$뿐이다 — 하지만 실용 범위를 몇 자릿수 바꾼다. 정직한 인터뷰 답은 둘 다 말한다: "최악 $O(n!)$, 실제로는 대각선 검사가 대부분의 가지를 일찍 자른다."
+**탐색 트리의 복잡도.** 분기 계수가 최대 $b$, 깊이가 최대 $d$이면 잎은 최대 $b^d$개이고, 실행 시간은 (방문한 노드 수) × (노드당 일)이다. 잎만이 아니라 모든 층을 세면 노드는 $b \ge 2$일 때 최대
+$$1 + b + b^2 + \cdots + b^d = \frac{b^{d+1} - 1}{b - 1}$$
+개다. 이는 잎 수의 두 배보다 작으므로 잎이 지배한다. `subsets([1, 2, 3])`에서는 $b = 2$, $d = 3$이므로 호출 $15$번, 잎 $8$개다. 가지치기는 최악 경우 상한을 거의 개선하지 못한다 — 열 집합을 쓴 N-Queens도 상한은 $n!$뿐이다 — 하지만 실용 범위를 몇 자릿수 바꾼다. 정직한 인터뷰 답은 둘 다 말한다: "최악 $O(n!)$, 실제로는 대각선 검사가 대부분의 가지를 일찍 자른다."
 
 **인터뷰 함정.** 복사본 대신 `path`를 그대로 추가하기(기록된 답이 전부 같은, 결국 빈 리스트가 된다). 선택 취소 단계를 잊어서 한 가지의 상태가 형제 가지로 새기. 유효성을 잎에서만 검사해서 백트래킹을 다시 무차별 탐색으로 만들기. 정렬 순서가 `break`를 허락하는데 `continue`를 쓰기.
 
@@ -961,7 +1059,7 @@ print(subsets_with_sum([3, 1, 4, 1, 5, 2], 6))  # four lists: [1, 1, 4] [1, 2, 3
 
 **점수를 잃는 말:**
 
-- "해시 맵 조회는 $O(1)$이다." — 괜찮은 해시에서 평균 $O(1)$, 최악 $O(n)$.
+- "해시 맵 조회는 $O(1)$이다." — 괜찮은 해시에서 평균 $O(1)$, 최악 $O(n)$([[02-foundations/algorithms/data-structures|11.2 §3]]).
 - "재귀는 추가 공간을 쓰지 않는다." — $O(\text{깊이})$ 스택을 쓴다.
 - "중첩 루프 두 개니까 $O(n^2)$." — 안쪽 포인터가 뒤로 가지 않으면 아니다(§2, 예제 3).
 - "정렬은 $O(n \log n)$이다." — 비교 정렬의 경우다. 작은 정수 키에 대한 계수 정렬은 $O(n + \text{범위})$.

@@ -55,10 +55,13 @@ The distinction matters because a reachable motion is not necessarily a motion t
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 
+This is the **equation of motion** of an $n$-joint rigid arm: $n$ coupled second-order differential equations, one torque balance per joint, so every term has units of torque (N·m for a revolute joint). $\theta \in \mathbb{R}^n$ holds the joint angles and $\dot\theta$, $\ddot\theta$ their velocities and accelerations; $M(\theta)$ and $C(\theta,\dot\theta)$ are $n \times n$ matrices; $g(\theta)$ and $\tau$ are $n$-vectors of torques. For the 2R arm below, $n = 2$.
+
 **Where the shape comes from.** This is not three physical effects bolted together — it is
 one derivative of one energy. Write the Lagrangian $L = T - V$ with kinetic energy
 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and potential $V(\theta)$, and apply
-Lagrange's equation $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$.
+Lagrange's equation $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$. It holds joint by joint, so the single scalar function $L$ generates all $n$ equations:
+$$\frac{d}{dt}\frac{\partial L}{\partial \dot\theta_i} - \frac{\partial L}{\partial \theta_i} = \tau_i, \qquad i = 1, \dots, n$$
 You do not need a mechanics course to trust it: it is Newton's second law rewritten in energy terms.
 For one mass on a line, $L = \tfrac12 m\dot x^2 - V(x)$, so $\frac{d}{dt}\frac{\partial L}{\partial\dot x} = \frac{d}{dt}(m\dot x)$ is the rate of change of momentum and $\frac{\partial L}{\partial x} = -\partial V/\partial x$ is the force the energy landscape (gravity, say) exerts; the equation says momentum changes by the applied force plus that force, i.e. $m\ddot x = F - \partial V/\partial x$.
 With joint angles in place of $x$ the same bookkeeping works, and [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] carries it out in full.
@@ -82,6 +85,9 @@ Four terms, each with a distinct physical job:
   always invertible — which is why $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$ is always
   well defined. The essential fact is the argument: $M$ **depends on the configuration**.
   An arm is not a constant mass; it is a mass whose value changes as it moves.
+  Both properties come from kinetic energy. Symmetric means $M = M^\top$. Positive definite means
+$$\dot\theta^\top M(\theta)\,\dot\theta > 0 \quad \text{for every } \dot\theta \ne 0$$
+  because $\tfrac12\dot\theta^\top M\dot\theta$ is the kinetic energy $T$, and any real motion of bodies with mass has positive kinetic energy ([[02-foundations/linear-algebra|1. Linear Algebra §3]]). For the 2R arm of §3, $M_{22} = 1 > 0$ and $\det M = 1 + \sin^2\theta_2 \ge 1$, so $M$ is positive definite at every configuration; at $\theta_2 = 90°$ the motion $\dot\theta = (1, -1)$ rad/s has $T = 1$ J. Non-example: $\begin{pmatrix}1&2\\2&1\end{pmatrix}$ is symmetric, but $\dot\theta = (1,-1)$ gives $\dot\theta^\top A\dot\theta = -2$, a negative "kinetic energy", so no physical arm has this mass matrix.
 - **$C(\theta,\dot\theta)\,\dot\theta$ — Coriolis and centrifugal terms.** Quadratic in
   velocity. These are *not* friction. They are the coupling that makes one joint's motion
   exert torque on another, and they vanish at rest.
@@ -97,7 +103,9 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau +
 That added term is the entire reason contact is a control problem rather than a planning
 problem: the environment gets to inject torques the controller did not command.
 
-**Use the equation in both directions.** In inverse dynamics, you specify a desired acceleration and compute the torque needed at the current position and velocity. In forward dynamics, you specify the torque and solve for the resulting acceleration. A simulator usually needs the latter; a model-based tracking controller often uses the former. The same equation serves both because the unknown changes.
+**Use the equation in both directions.** In inverse dynamics, you specify a desired acceleration and compute the torque needed at the current position and velocity. In forward dynamics, you specify the torque and solve for the resulting acceleration. A simulator usually needs the latter; a model-based tracking controller often uses the former. The same equation serves both because the unknown changes. Written out,
+$$\text{inverse: } \tau = M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta), \qquad \text{forward: } \ddot\theta = M(\theta)^{-1}\big(\tau - C(\theta,\dot\theta)\,\dot\theta - g(\theta)\big)$$
+and the forward form exists at every state since $M$ is invertible. Example, using $M$ from §3 and $g$ from §5: the 2R arm at $\theta = (0°, 90°)$, at rest, with the motors switched off ($\tau = 0$) has $\ddot\theta = -M^{-1}g = (-9.81,\ 9.81)$ rad/s², so the shoulder starts to drop while the elbow angle opens.
 
 Start by holding the arm still without contact. Both velocity and acceleration vanish, so the ideal model requires $\tau=g(\theta)$. Next imagine motion at constant joint velocity: acceleration is zero but $C\dot\theta$ can remain, because geometry changes as the joints move. Finally add contact: the external wrench may support some of the load or oppose motion, depending on its sign and frame. Gravity compensation alone does not cancel an unknown contact force. These three cases let you check a dynamics implementation before attempting a long trajectory.
 
@@ -167,6 +175,10 @@ For this arm, writing $h = -m_2L_1L_2\sin\theta_2$, the velocity-quadratic term 
 
 $$C(\theta,\dot\theta)\,\dot\theta = \begin{pmatrix} h\,\dot\theta_2^2 + 2h\,\dot\theta_1\dot\theta_2 \\ -h\,\dot\theta_1^2 \end{pmatrix}$$
 
+**Which terms are which, and where $C$ comes from.** In row $i$, a term in a single joint's speed squared, $\dot\theta_j^2$, is **centrifugal**; a term in a product $\dot\theta_j\dot\theta_k$ with $j \ne k$ is **Coriolis**. Above, $h\,\dot\theta_2^2$ and $-h\,\dot\theta_1^2$ are centrifugal and $2h\,\dot\theta_1\dot\theta_2$ is Coriolis. The standard $C$, the one that makes $\dot M - 2C$ skew-symmetric, is built from derivatives of $M$ through the *Christoffel symbols* $c_{ijk}$:
+$$c_{ijk} = \tfrac12\left(\frac{\partial M_{ij}}{\partial\theta_k} + \frac{\partial M_{ik}}{\partial\theta_j} - \frac{\partial M_{jk}}{\partial\theta_i}\right), \qquad C_{ij}(\theta,\dot\theta) = \sum_{k=1}^{n} c_{ijk}\,\dot\theta_k$$
+so a constant $M$ gives $C = 0$, as §2 said. For the 2R arm only $M_{11}$ and $M_{12}$ vary, with $\partial M_{11}/\partial\theta_2 = 2h$ and $\partial M_{12}/\partial\theta_2 = h$. Substituting reproduces the vector above, and $\dot M - 2C = \begin{pmatrix}0 & -h(2\dot\theta_1 + \dot\theta_2)\\ h(2\dot\theta_1 + \dot\theta_2) & 0\end{pmatrix}$, skew-symmetric as promised.
+
 Put in numbers. At $\theta_2 = 90°$, $h = -1\cdot1\cdot1\cdot\sin 90° = -1$. Suppose joint 1
 is commanded to **hold still** ($\dot\theta_1 = 0$) while joint 2 swings at
 $\dot\theta_2 = 2$ rad/s. The first row gives
@@ -183,7 +195,9 @@ to: at low speed the hardest terms in the equation are nearly zero.
 
 ### 5. Gravity, inverse dynamics, and computed torque
 
-Gravity comes from differentiating the potential energy. For the same arm
+Gravity comes from differentiating the potential energy: entry $i$ of $g(\theta)$ is the rate at which potential energy grows as joint $i$ turns,
+$$g(\theta) = \frac{\partial V}{\partial\theta}, \qquad V(\theta) = m_1 g L_1\sin\theta_1 + m_2 g\,(L_1\sin\theta_1 + L_2\sin\theta_{12})$$
+where each term is a weight times its height above joint 1, with angles measured from the horizontal and $\theta_{12} = \theta_1 + \theta_2$, so differentiating gives, for the same arm
 ($g = 9.81$ m/s²):
 
 $$g_1(\theta) = (m_1{+}m_2)\,g\,L_1\cos\theta_1 + m_2\,g\,L_2\cos\theta_{12}, \qquad g_2(\theta) = m_2\,g\,L_2\cos\theta_{12}$$
@@ -210,6 +224,10 @@ arm's own nonlinearity, and a simple linear controller handles what the model go
 That is the honest description of the method — its performance is exactly as good as the
 parameters in §7, which is why it is rarely used raw on real hardware.
 
+With tracking error $e = \theta_{\text{des}} - \theta$ and gain matrices $K_p$ and $K_d$, the controller is
+$$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(\theta,\dot\theta)\,\dot\theta + g(\theta)$$
+Substituting it into the manipulator equation gives $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$, and since $M$ is invertible, $\ddot e + K_d\dot e + K_p e = 0$ when the model is exact: every joint becomes an independent linear mass-spring-damper, whatever the pose. With $K_p = 100$ and $K_d = 20$ per joint the natural frequency is $\sqrt{100} = 10$ rad/s and the damping ratio is $20/(2\sqrt{100}) = 1$, critically damped ([[04-robotics/control-theory-ce397|5. Control Theory §7]]). Non-example: independent-joint PD, $\tau = K_p e + K_d\dot e$ with no model, leaves $M(\theta)$ in the closed loop, so §3's factor-of-five inertia change alters how fast and how damped its response is.
+
 ### 6. Operational-space dynamics — the bridge to force control
 
 Everything so far lives in joint space. Contact does not: contact happens at the
@@ -228,6 +246,10 @@ to have, seen from outside, in each task-space direction. A task-space force com
 becomes joint torques by $\tau = J^\top \mathcal{F}$, which is why the statics duality from
 MR ch.5 turns out to be the load-bearing result of the whole manipulation track.
 
+**The full task-space equation, every term named.** Substituting $\tau = J^\top\mathcal{F}$ into the forward dynamics and using $\dot v = J\ddot\theta + \dot J\dot\theta$ gives, for a square invertible $J$,
+$$\mathcal{F} = \Lambda(\theta)\,\dot v + \Lambda(\theta)\big(J M^{-1} C\,\dot\theta - \dot J\,\dot\theta\big) + \Lambda(\theta)\,J M^{-1} g(\theta)$$
+where $v$ is the end-effector velocity, $\dot v$ its acceleration and $\mathcal{F}$ the force (wrench) applied at the tip. So a tip force has three jobs: accelerate the apparent mass $\Lambda$, cancel the velocity terms as seen at the tip, and hold up gravity as seen at the tip. This is MR's eq. 8.90, $\mathcal{F} = \Lambda\dot v + \eta$, with $\eta$ written out.
+
 **Worked out for the 2R arm** at $\theta = (0°, 90°)$. From MR ch.5, the tip Jacobian there
 is $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$, and from §3,
 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ with $\det M = 2$, so
@@ -237,6 +259,8 @@ $$M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-
 $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\\-1&0\end{pmatrix} = \begin{pmatrix}1&0\\0&0.5\end{pmatrix} \quad\Longrightarrow\quad \Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$$
 
 Read it as the inverse of the mass a push at the tip feels: the product is $\mathrm{diag}(1, 0.5)$, so the apparent masses are its reciprocals.
+
+The gravity term checks the same way. At rest here, $\Lambda J M^{-1} g = J^{-\top} g$, the tip force whose torques $J^\top\mathcal{F}$ equal $g = (19.62, 0)$ N·m from §5, which is $\mathcal{F} = (0,\ 19.62)$ N: straight up and equal to the arm's full 2 kg weight. That is right because the tip, like both masses, is 1 m horizontally from joint 1, and it is directly above joint 2, like the forearm mass.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="the arm at elbow ninety degrees with an apparent-mass ellipse at the tip, one kilogram sideways and two kilograms vertically">
   <ellipse cx="130" cy="92" rx="26" ry="52" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/>
@@ -269,7 +293,7 @@ assumes you have absorbed:
   transfers twice the momentum in the heavy direction. A gripper that inserts safely
   along one axis can damage the part along another.
 - **A single stiffness gain is never uniformly right.** The closed-loop behaviour of an
-  impedance controller depends on $\Lambda$, so identical gains give different effective
+  impedance controller ([[04-robotics/force-compliance-control|13. Force & Compliance Control §2]]) depends on $\Lambda$, so identical gains give different effective
   dynamics in different directions and different poses.
 
 The relationship to MR ch.5's manipulability ellipsoid is qualitative, not a matrix
@@ -289,7 +313,9 @@ direction, but do not call their axis lengths exact reciprocals without stating 
 
 **When the inverse is safe.** These caveats protect you from inverting a matrix that is singular or nearly so and trusting the huge numbers that come out.
 
-The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded. It does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for. Differentiating a moving Jacobian introduces $\dot J\dot\theta$: since $\dot v = J\ddot\theta + \dot J\dot\theta$, the full task-space equation carries an extra velocity term $\Lambda\dot J\dot\theta$ next to the mapped Coriolis and gravity terms. It is zero when the arm is at rest, which is why the local reading above may drop it, but an operational-space controller tracking fast motion must include it in its model compensation.
+The ordinary inverse requires a full-row-rank task Jacobian and a positive-definite joint inertia matrix. A configuration is **singular** when the Jacobian loses rank, so some tip velocity cannot be produced by any joint rates ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]); for an $m$-dimensional task,
+$$\operatorname{rank} J(\theta) < m$$
+For this 2R arm $\det J = L_1L_2\sin\theta_2$, so it is singular at $\theta_2 = 0°$ and $180°$ (straight or folded) and has $\det J = 1$ at the $90°$ pose used above. Near a singular configuration, inspect which task direction is lost instead of blindly inverting a poorly conditioned matrix. Reducing the task or using a regularized solve changes what can be commanded. It does not restore a physically unavailable direction. The acceleration map here also assumes the remaining terms have been accounted for. Differentiating a moving Jacobian introduces $\dot J\dot\theta$: since $\dot v = J\ddot\theta + \dot J\dot\theta$, the full task-space equation carries an extra velocity term $\Lambda\dot J\dot\theta$ next to the mapped Coriolis and gravity terms. It is zero when the arm is at rest, which is why the local reading above may drop it, but an operational-space controller tracking fast motion must include it in its model compensation.
 
 ### 7. Where the parameters come from — and the sim-to-real gap
 
@@ -408,11 +434,15 @@ whether a contact will feel stiff or soft — and be right.
 
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 
+이것은 관절이 $n$개인 강체 팔의 **운동 방정식**(equation of motion)이다. 관절마다 토크 균형 하나씩, 서로 결합된 2계 미분방정식 $n$개이므로 모든 항의 단위가 토크다(회전 관절이면 N·m). $\theta \in \mathbb{R}^n$은 관절각, $\dot\theta$와 $\ddot\theta$는 그 속도와 가속도이고, $M(\theta)$와 $C(\theta,\dot\theta)$는 $n \times n$ 행렬, $g(\theta)$와 $\tau$는 토크의 $n$차원 벡터다. 아래 2R 팔에서는 $n = 2$다.
+
 **이 모양이 어디서 오는가.** 세 가지 물리 효과를 나사로 붙인 것이 아니라, 에너지 하나를 한 번
 미분한 것이다. 운동에너지 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$와 위치에너지
 $V(\theta)$로 라그랑지안 $L = T - V$를 쓰고, 라그랑주 방정식
 $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$를
-적용한다. 역학 과목을 따로 듣지 않아도 믿을 수 있다: 이것은 뉴턴 제2법칙을 에너지 언어로 다시 쓴 것이다.
+적용한다. 이 식은 관절마다 성립하므로 스칼라 함수 $L$ 하나가 방정식 $n$개를 모두 만든다:
+$$\frac{d}{dt}\frac{\partial L}{\partial \dot\theta_i} - \frac{\partial L}{\partial \theta_i} = \tau_i, \qquad i = 1, \dots, n$$
+역학 과목을 따로 듣지 않아도 믿을 수 있다: 이것은 뉴턴 제2법칙을 에너지 언어로 다시 쓴 것이다.
 직선 위 질량 하나라면 $L = \tfrac12 m\dot x^2 - V(x)$이므로 $\frac{d}{dt}\frac{\partial L}{\partial\dot x} = \frac{d}{dt}(m\dot x)$는 운동량의 변화율이고, $\frac{\partial L}{\partial x} = -\partial V/\partial x$는 에너지 지형(예컨대 중력)이 가하는 힘이다. 방정식은 운동량이 가한 힘과 그 힘의 합만큼 변한다는 말, 곧 $m\ddot x = F - \partial V/\partial x$다.
 $x$ 대신 관절각을 넣어도 같은 장부 정리가 통하며, [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]이 전 과정을 보여 준다.
 다시 팔로 돌아오면, 첫 항이 $\frac{d}{dt}\big(M\dot\theta\big) = M\ddot\theta + \dot M\dot\theta$를 주고,
@@ -434,6 +464,9 @@ $\dot M\dot\theta - \frac{\partial T}{\partial\theta}$가 $C(\theta,\dot\theta)\
   $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$가 언제나 잘 정의된다. 핵심은 괄호 안의
   인자다: $M$은 **자세에 의존한다**. 팔은 상수 질량이 아니라, 움직이면서 값이 변하는
   질량이다.
+  두 성질 모두 운동에너지에서 온다. 대칭은 $M = M^\top$이라는 뜻이다. 양정치는 다음을 뜻한다:
+$$\dot\theta^\top M(\theta)\,\dot\theta > 0 \quad \text{for every } \dot\theta \ne 0$$
+  $\tfrac12\dot\theta^\top M\dot\theta$가 운동에너지 $T$이고, 질량이 있는 물체의 실제 운동은 언제나 운동에너지가 양수이기 때문이다([[02-foundations/linear-algebra|1. 선형대수 §3]]). §3의 2R 팔에서는 $M_{22} = 1 > 0$이고 $\det M = 1 + \sin^2\theta_2 \ge 1$이므로 모든 자세에서 $M$이 양정치다. $\theta_2 = 90°$에서 운동 $\dot\theta = (1, -1)$ rad/s의 운동에너지는 $T = 1$ J이다. 반례: $\begin{pmatrix}1&2\\2&1\end{pmatrix}$은 대칭이지만 $\dot\theta = (1,-1)$에서 $\dot\theta^\top A\dot\theta = -2$, 즉 음의 "운동에너지"가 나오므로 어떤 실제 팔도 이런 질량 행렬을 갖지 않는다.
 - **$C(\theta,\dot\theta)\,\dot\theta$ — 코리올리·원심 항.** 속도의 이차식이다. 마찰이
   *아니다*. 한 관절의 운동이 다른 관절에 토크를 가하게 만드는 결합이며, 정지 상태에서 0이 된다.
 - **$g(\theta)$ — 중력.** 자세 의존, 속도 무관. 로봇이 가만히 있을 때도 싸우는 항.
@@ -446,7 +479,9 @@ $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau +
 이 추가 항이 접촉을 계획 문제가 아니라 제어 문제로 만드는 이유 전부다: 환경이 제어기가
 명령하지 않은 토크를 주입할 수 있게 된다.
 
-**방정식을 양쪽 방향으로 쓴다.** 역동역학은 원하는 가속도를 정하고 현재 위치·속도에서 필요한 토크를 구한다. 순동역학은 토크를 정하고 생길 가속도를 푼다. 시뮬레이터는 보통 후자를, 모델 기반 추종 제어기는 흔히 전자를 쓴다. 같은 방정식에서 미지수만 달라진다.
+**방정식을 양쪽 방향으로 쓴다.** 역동역학은 원하는 가속도를 정하고 현재 위치·속도에서 필요한 토크를 구한다. 순동역학은 토크를 정하고 생길 가속도를 푼다. 시뮬레이터는 보통 후자를, 모델 기반 추종 제어기는 흔히 전자를 쓴다. 같은 방정식에서 미지수만 달라진다. 식으로 쓰면
+$$\text{inverse: } \tau = M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta), \qquad \text{forward: } \ddot\theta = M(\theta)^{-1}\big(\tau - C(\theta,\dot\theta)\,\dot\theta - g(\theta)\big)$$
+이고, $M$이 가역이므로 순동역학 형태는 모든 상태에서 존재한다. §3의 $M$과 §5의 $g$로 예를 들면: $\theta = (0°, 90°)$에서 정지해 있고 모터를 끈($\tau = 0$) 2R 팔은 $\ddot\theta = -M^{-1}g = (-9.81,\ 9.81)$ rad/s²이다. 그래서 어깨는 떨어지기 시작하고 팔꿈치 각은 벌어진다.
 
 먼저 비접촉 상태로 팔을 정지시킨다. 속도·가속도가 모두 0이므로 이상적 모델은 $\tau=g(\theta)$를 요구한다. 다음으로 관절 속도를 일정하게 유지한다. 가속도는 0이어도 기하가 변하므로 $C\dot\theta$는 남을 수 있다. 마지막으로 접촉을 더한다. 외력은 부호와 프레임에 따라 하중을 받치거나 운동을 방해한다. 중력 보상만으로 미지의 접촉력을 없앨 수는 없다. 긴 궤적 전에 이 세 경우로 동역학 구현을 점검할 수 있다.
 
@@ -513,6 +548,10 @@ $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos
 
 $$C(\theta,\dot\theta)\,\dot\theta = \begin{pmatrix} h\,\dot\theta_2^2 + 2h\,\dot\theta_1\dot\theta_2 \\ -h\,\dot\theta_1^2 \end{pmatrix}$$
 
+**어느 항이 무엇이고, $C$는 어디서 오는가.** $i$번째 행에서 한 관절 속도의 제곱 $\dot\theta_j^2$에 비례하는 항이 **원심** 항이고, $j \ne k$인 곱 $\dot\theta_j\dot\theta_k$에 비례하는 항이 **코리올리** 항이다. 위에서 $h\,\dot\theta_2^2$와 $-h\,\dot\theta_1^2$는 원심 항, $2h\,\dot\theta_1\dot\theta_2$는 코리올리 항이다. $\dot M - 2C$를 반대칭으로 만드는 표준 $C$는 *크리스토펠 기호*(Christoffel symbols) $c_{ijk}$를 통해 $M$의 도함수로 만든다:
+$$c_{ijk} = \tfrac12\left(\frac{\partial M_{ij}}{\partial\theta_k} + \frac{\partial M_{ik}}{\partial\theta_j} - \frac{\partial M_{jk}}{\partial\theta_i}\right), \qquad C_{ij}(\theta,\dot\theta) = \sum_{k=1}^{n} c_{ijk}\,\dot\theta_k$$
+그래서 §2에서 말한 대로 $M$이 상수면 $C = 0$이다. 2R 팔에서는 $M_{11}$과 $M_{12}$만 변하고 $\partial M_{11}/\partial\theta_2 = 2h$, $\partial M_{12}/\partial\theta_2 = h$이다. 대입하면 위의 벡터가 그대로 나오고, $\dot M - 2C = \begin{pmatrix}0 & -h(2\dot\theta_1 + \dot\theta_2)\\ h(2\dot\theta_1 + \dot\theta_2) & 0\end{pmatrix}$로 약속대로 반대칭이다.
+
 숫자를 넣자. $\theta_2 = 90°$에서 $h = -1\cdot1\cdot1\cdot\sin 90° = -1$이다. 1번 관절은
 **가만히 있으라**($\dot\theta_1 = 0$)고 명령받았고, 2번 관절이 $\dot\theta_2 = 2$ rad/s로
 휘두른다고 하자. 첫 행은
@@ -529,7 +568,9 @@ $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
 ### 5. 중력, 역동역학, 계산 토크
 
-중력은 위치 에너지를 미분해서 나온다. 같은 팔에 대해 ($g = 9.81$ m/s²):
+중력은 위치 에너지를 미분해서 나온다. $g(\theta)$의 $i$번째 원소는 관절 $i$가 돌 때 위치 에너지가 늘어나는 비율이다:
+$$g(\theta) = \frac{\partial V}{\partial\theta}, \qquad V(\theta) = m_1 g L_1\sin\theta_1 + m_2 g\,(L_1\sin\theta_1 + L_2\sin\theta_{12})$$
+각 항은 무게 곱하기 1번 관절 위의 높이이고, 각도는 수평에서 재며 $\theta_{12} = \theta_1 + \theta_2$다. 그래서 같은 팔에 대해 미분하면 ($g = 9.81$ m/s²):
 
 $$g_1(\theta) = (m_1{+}m_2)\,g\,L_1\cos\theta_1 + m_2\,g\,L_2\cos\theta_{12}, \qquad g_2(\theta) = m_2\,g\,L_2\cos\theta_{12}$$
 
@@ -554,6 +595,10 @@ $$\tau = M(\theta)\,\ddot\theta_{\text{des}} + C(\theta,\dot\theta)\,\dot\theta 
 모델이 틀린 부분은 단순한 선형 제어기가 맡는다. 이것이 이 방법의 정직한 설명이다 — 성능은
 §7의 파라미터가 정확한 만큼만 좋으며, 그래서 실기계에서 날것 그대로 쓰이는 일은 드물다.
 
+추종 오차 $e = \theta_{\text{des}} - \theta$와 게인 행렬 $K_p$, $K_d$로 쓰면 제어기는
+$$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(\theta,\dot\theta)\,\dot\theta + g(\theta)$$
+이다. 매니퓰레이터 방정식에 대입하면 $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$이고, $M$이 가역이므로 모델이 정확할 때 $\ddot e + K_d\dot e + K_p e = 0$이다. 자세와 상관없이 모든 관절이 독립된 선형 질량-스프링-댐퍼가 된다. 관절마다 $K_p = 100$, $K_d = 20$이면 고유 진동수는 $\sqrt{100} = 10$ rad/s, 감쇠비는 $20/(2\sqrt{100}) = 1$로 임계 감쇠다([[04-robotics/control-theory-ce397|5. 제어 이론 §7]]). 반례: 모델 없는 독립 관절 PD $\tau = K_p e + K_d\dot e$는 폐루프에 $M(\theta)$가 남으므로, §3의 5배 관성 변화가 응답의 빠르기와 감쇠를 바꾼다.
+
 ### 6. 작업공간(operational space) 동역학 — 힘 제어로 가는 다리
 
 여기까지는 전부 관절 공간이다. 접촉은 그렇지 않다: 접촉은 말단에서, 작업 공간에서 일어난다.
@@ -572,6 +617,10 @@ $\Lambda$는 **작업 공간 관성 행렬**이다 — 밖에서 볼 때 말단�
 것처럼 보이는* 질량. 그다음 작업 공간의 힘 명령은 $\tau = J^\top \mathcal{F}$로 관절 토크가
 된다. MR 5장의 정역학 쌍대성이 결국 매니퓰레이션 트랙 전체를 떠받치는 결과인 이유가 이것이다.
 
+**모든 항에 이름을 붙인 완전한 작업공간 방정식.** 순동역학에 $\tau = J^\top\mathcal{F}$를 대입하고 $\dot v = J\ddot\theta + \dot J\dot\theta$를 쓰면, 정사각이고 가역인 $J$에 대해
+$$\mathcal{F} = \Lambda(\theta)\,\dot v + \Lambda(\theta)\big(J M^{-1} C\,\dot\theta - \dot J\,\dot\theta\big) + \Lambda(\theta)\,J M^{-1} g(\theta)$$
+이다. $v$는 말단 속도, $\dot v$는 그 가속도, $\mathcal{F}$는 끝점에 가하는 힘(렌치)이다. 그래서 끝점 힘에는 세 가지 일이 있다: 겉보기 질량 $\Lambda$를 가속하고, 끝점에서 본 속도 항을 상쇄하고, 끝점에서 본 중력을 떠받친다. MR 식 8.90 $\mathcal{F} = \Lambda\dot v + \eta$에서 $\eta$를 풀어 쓴 것이다.
+
 **2R 팔에 대해 $\theta = (0°, 90°)$에서 계산해 보자.** MR 5장에서 그 자세의 끝점 야코비안은
 $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$이고, §3에서
 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$, $\det M = 2$이므로
@@ -581,6 +630,8 @@ $$M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-
 $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\\-1&0\end{pmatrix} = \begin{pmatrix}1&0\\0&0.5\end{pmatrix} \quad\Longrightarrow\quad \Lambda = \begin{pmatrix}1&0\\0&2\end{pmatrix}$$
 
 말단을 미는 힘이 느끼는 질량의 역으로 읽어라. 곱은 $\mathrm{diag}(1, 0.5)$이고, 그래서 겉보기 질량은 그 역수들이다.
+
+중력 항도 같은 방식으로 검산된다. 여기서 정지 상태라면 $\Lambda J M^{-1} g = J^{-\top} g$는 토크 $J^\top\mathcal{F}$가 §5의 $g = (19.62, 0)$ N·m와 같아지는 끝점 힘, 곧 $\mathcal{F} = (0,\ 19.62)$ N이다. 똑바로 위를 향하고 팔 전체 2 kg의 무게와 같다. 끝점이 두 질량처럼 1번 관절에서 수평으로 1 m 떨어져 있고, 아래팔 질량처럼 2번 관절 바로 위에 있기 때문에 맞는 답이다.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="팔꿈치 90도 자세의 팔과 끝점의 겉보기 질량 타원, 옆으로 1 kg 위로 2 kg">
   <ellipse cx="130" cy="92" rx="26" ry="52" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/>
@@ -610,7 +661,7 @@ $$JM^{-1}J^\top = \begin{pmatrix}0&-1\\0.5&-0.5\end{pmatrix}\begin{pmatrix}-1&1\
 
 - **충격력은 방향에 의존한다.** 같은 속도로 단단한 면을 치면 무거운 방향에서 두 배의 운동량이
   전달된다. 한 축으로는 안전하게 삽입하는 그리퍼가 다른 축으로는 부재를 손상시킬 수 있다.
-- **하나의 강성 게인이 모든 방향에서 옳을 수 없다.** 임피던스 제어기의 폐루프 거동은
+- **하나의 강성 게인이 모든 방향에서 옳을 수 없다.** 임피던스 제어기([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §2]])의 폐루프 거동은
   $\Lambda$에 의존하므로, 같은 게인이 방향과 자세에 따라 다른 유효 동역학을 준다.
 
 MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정확한 역수 관계는 아니다. 서로 다른 세 행렬이 모두 "타원체"라고 불리며, 각각 다른 입력을 가정한다:
@@ -629,7 +680,9 @@ MR 5장의 가조작성 타원체와의 관계는 정성적이지, 행렬의 정
 
 **역행렬이 안전할 때.** 아래 단서들은 특이하거나 거의 특이한 행렬을 뒤집고, 거기서 나온 거대한 숫자를 믿는 일을 막아 준다.
 
-보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀐다. 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다: $\dot v = J\ddot\theta + \dot J\dot\theta$이므로 완전한 작업공간 방정식에는 사상된 코리올리·중력 항 옆에 속도 항 $\Lambda\dot J\dot\theta$가 더 붙는다. 팔이 정지해 있으면 0이라 위의 국소 해석에서는 빼도 되지만, 빠른 운동을 추종하는 작업공간 제어기는 모델 보상에 이 항을 넣어야 한다.
+보통의 역행렬에는 행 전체가 독립인 작업 자코비안과 양의 정부호 관성 행렬이 필요하다. 자코비안의 랭크가 떨어져 어떤 관절 속도로도 만들 수 없는 끝점 속도가 생기는 자세를 **특이** 자세라 한다([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]). $m$차원 작업이라면 다음 조건이다:
+$$\operatorname{rank} J(\theta) < m$$
+이 2R 팔은 $\det J = L_1L_2\sin\theta_2$이므로 $\theta_2 = 0°$와 $180°$(뻗거나 접힘)에서 특이하고, 위에서 쓴 $90°$ 자세에서는 $\det J = 1$이다. 특이 자세 부근에서는 조건이 나쁜 행렬을 무작정 뒤집기 전에 잃는 작업 방향을 확인한다. 작업 차원을 줄이거나 정규화하면 명령할 수 있는 내용이 바뀐다. 물리적으로 불가능한 방향이 되살아나는 것은 아니다. 이 가속도 해석은 나머지 항을 처리한 경우다. 움직이는 자코비안을 미분하면 $\dot J\dot\theta$도 생긴다: $\dot v = J\ddot\theta + \dot J\dot\theta$이므로 완전한 작업공간 방정식에는 사상된 코리올리·중력 항 옆에 속도 항 $\Lambda\dot J\dot\theta$가 더 붙는다. 팔이 정지해 있으면 0이라 위의 국소 해석에서는 빼도 되지만, 빠른 운동을 추종하는 작업공간 제어기는 모델 보상에 이 항을 넣어야 한다.
 
 ### 7. 파라미터는 어디서 오는가 — 그리고 sim-to-real 격차
 

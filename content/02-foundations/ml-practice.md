@@ -29,19 +29,33 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   on validation; touch test **once**, at the end. Every time a decision is influenced by
   test performance, the test set silently becomes a validation set — and reported numbers
   inflate.
+  - *What kind of thing it is:* a partition of the available data $\mathcal{D}$ into three **disjoint** subsets, each with one job. The two conditions that make it a split rather than three folders are disjointness and a shared distribution:
+  $$\mathcal{D} = \mathcal{D}_{\text{tr}} \cup \mathcal{D}_{\text{val}} \cup \mathcal{D}_{\text{te}}, \qquad \mathcal{D}_{\text{tr}} \cap \mathcal{D}_{\text{val}} = \mathcal{D}_{\text{tr}} \cap \mathcal{D}_{\text{te}} = \mathcal{D}_{\text{val}} \cap \mathcal{D}_{\text{te}} = \varnothing$$
+  and each subset is drawn from the same distribution as the deployment data, so the test error $\hat R_{\text{te}} = \frac{1}{|\mathcal{D}_{\text{te}}|}\sum_{(x,y)\in\mathcal{D}_{\text{te}}} L(f(x), y)$ — the average loss over test examples, $|\cdot|$ counting them — is an unbiased estimate of the error on new data *only if* nothing about $\mathcal{D}_{\text{te}}$ influenced $f$. Worked: 10,000 samples split 80/10/10 give 8,000 / 1,000 / 1,000.
+  - **Non-example:** 10,000 frames from 20 robot videos, shuffled and split 80/10/10. The sets are disjoint as *frames* but not as *episodes* — neighbouring, nearly identical frames land on both sides — so the test number measures interpolation between frames of scenes the model has already seen. The unit you split on must be the unit you want to generalize over: episode, scene, site or robot.
 - **Distribution shift**: test data from a different distribution than train (new site,
   new robot, new lighting) — the *actual* condition of robotics. This is why papers report
   "seen/unseen" splits ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]]) and OOD evaluations, and
   why [[01-canonical-papers/notes/3-vlm/clip|CLIP]]'s robustness results mattered so much.
+  - *Definition:* $p_{\text{tr}}(x, y) \ne p_{\text{te}}(x, y)$, where $p(x, y)$ is the joint distribution of inputs and labels. Since $p(x, y) = p(x)\,p(y \mid x) = p(y)\,p(x \mid y)$, there are three named kinds, depending on which factor moves:
+    - **covariate shift** — $p(x)$ changes, $p(y \mid x)$ does not: new lighting, same meaning of "crack". This is also the imitation-learning failure mode, where the policy's own states are the shifted inputs ([[02-foundations/rl-basics|7. RL Basics §6]]);
+    - **label (prior) shift** — $p(y)$ changes, $p(x \mid y)$ does not: the crack rate drops from 6% to 0.6%, and a crack still looks like a crack. The ROC-versus-precision table in §3 is exactly this case;
+    - **concept shift** — $p(y \mid x)$ itself changes: a site adopts a stricter definition of a reportable crack, so the same image gets a different label.
+  - **Out-of-distribution (OOD)** inputs are the extreme case: test inputs from regions where $p_{\text{tr}}(x)$ is essentially zero, so the model has no data to interpolate from.
 - Data leakage: test information sneaking into training (duplicates, temporal overlap,
   pretraining contamination — the [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] paper's own
   headache). First thing to suspect when numbers look too good.
+  - *Definition:* any path by which information from $\mathcal{D}_{\text{te}}$ (or $\mathcal{D}_{\text{val}}$) reaches the fitted model or the choices made about it, which breaks the "nothing about $\mathcal{D}_{\text{te}}$ influenced $f$" condition above. Its forms are exact or near-duplicate examples on both sides, temporal overlap (training on data recorded after the test period), contamination of a pretraining corpus, and **preprocessing fitted on all the data** — for instance normalization means and variances computed before the split, which quietly carries test statistics into training.
 
 ### 2. Overfitting and the regularization umbrella
 
 - **Overfitting**: train loss ↓ while validation loss ↑ — memorizing instead of
   generalizing. **Underfitting**: both stay high. Diagnose with **learning curves** before
   anything else.
+  - *The quantity behind both words* is the **generalization gap**, the difference between the average loss on held-out data and on training data at the same parameters $\theta_k$ after $k$ epochs:
+  $$\text{gap}_k = R_{\text{val}}(\theta_k) - R_{\text{tr}}(\theta_k)$$
+  so a learning curve is just $R_{\text{tr}}$ and $R_{\text{val}}$ plotted against $k$. **Overfitting** is named by two conditions together: $R_{\text{tr}}$ still falling *and* $R_{\text{val}}$ rising, so the gap grows. **Underfitting** is $R_{\text{tr}}$ itself staying high, so the model cannot even fit the data it sees. Worked: epoch 10 at train 0.40 / validation 0.45 (gap 0.05, both still falling — neither); epoch 50 at train 0.05 / validation 0.70 (gap 0.65, validation up from 0.45 — overfitting).
+  - **Non-example:** a large but *constant* gap with validation loss still falling is not overfitting yet; it says the validation data are harder or differently distributed, and stopping there would throw away progress.
 
 <svg viewBox="0 0 470 216" style="max-width:100%;height:auto" role="img" aria-label="training and validation loss curves showing overfitting">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="50" y1="22" x2="50" y2="140"/><line x1="50" y1="140" x2="415" y2="140"/></g>
@@ -65,6 +79,13 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   dropout ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), data augmentation
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] onward), early stopping, and — the modern twist —
   *more data instead of more constraints* ([[01-canonical-papers/notes/1-foundations/scaling-laws|scaling laws]]).
+  - *Definition:* a **regularizer** is any change to the learning procedure meant to lower the *validation* loss rather than the training loss. The explicit kind adds a penalty $\Omega$ on the parameters, weighted by a hyperparameter $\lambda \ge 0$:
+  $$\min_\theta\ \frac{1}{N}\sum_{i=1}^{N} L\big(f_\theta(x_i), y_i\big) + \lambda\, \Omega(\theta), \qquad \Omega(\theta) = \tfrac12 \lVert\theta\rVert^2 \ \text{for L2}$$
+  so a larger $\lambda$ trades training fit for smaller weights. The four named methods, each with its mechanism:
+    - **Weight decay** shrinks every weight by a fixed factor each step, $w \leftarrow w(1 - \eta\lambda)$ with learning rate $\eta$; with $\eta = 0.1$ and $\lambda = 0.01$ the factor is $0.999$, and 1,000 steps with no opposing gradient leave $0.999^{1000} = 0.368$ of a weight. It equals the L2 penalty above for plain SGD (§6 has why it does not under Adam).
+    - **Dropout** zeroes each hidden unit independently with probability $p$ during training and rescales the survivors, $\tilde h_j = m_j h_j / (1 - p)$ with $m_j \sim \text{Bernoulli}(1 - p)$, so the expected activation is unchanged and inference simply uses $h$. With $p = 0.5$, $h = (2, 4)$ and mask $m = (1, 0)$, the layer passes $(4, 0)$.
+    - **Data augmentation** trains on $(T(x), y)$ for random transformations $T$ (crops, flips, colour jitter) chosen so that the label is unchanged. **Non-example:** a horizontal flip applied to a "turn left" demonstration is not augmentation, because it changes the correct label.
+    - **Early stopping** keeps the checkpoint with the lowest validation loss, $\hat k = \arg\min_k R_{\text{val}}(\theta_k)$, which is the dashed line in the figure.
 
 Regularization helps because fitting every training detail can make a model depend on accidental cues. A crack detector may learn a particular site’s lighting rather than the defect pattern. Augmentation can discourage that shortcut only if its transformations preserve the intended label and resemble meaningful variation. **The reading this gives you.** Read the learning curves together with the split and augmentation policy. Better validation loss on neighboring frames cannot demonstrate generalization to a new site, regardless of how many regularizers the method lists.
 
@@ -91,6 +112,12 @@ Lay the four counts out:
 | **really cracked** | TP = 40 | FN = 20 |
 | **really fine** | FP = 10 | TN = 930 |
 
+That table is the **confusion matrix** of a binary classifier at one threshold: every test item lands in exactly one cell, named by whether the *prediction* was positive or negative and whether it was *true* or *false*. **TP** (true positive) = predicted crack, really cracked; **FP** (false positive, a false alarm) = predicted crack, really fine; **FN** (false negative, a miss) = predicted fine, really cracked; **TN** (true negative) = predicted fine, really fine. Every metric below is a ratio of these four counts:
+
+$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
+
+so precision divides by the *predicted*-positive column and recall by the *really*-positive row, which is why the two answer different questions. $F_1$ is the harmonic mean of $P$ and $R$. Both precision and recall ignore TN, so they stay informative when negatives vastly outnumber positives.
+
 - **Accuracy** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — and a detector that
   simply says "fine" every single time scores $94.0\%$. Accuracy is nearly useless here.
 - **Precision** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — of what you flagged, 80% was
@@ -114,7 +141,11 @@ curve**, and the area under it is the **AUC**. AUC has an exact meaning worth ca
 is the probability that a randomly chosen positive is scored above a randomly chosen
 negative. Score three cracked panels $0.9, 0.8, 0.6$ and four sound ones
 $0.7, 0.5, 0.4, 0.2$; of the $3 \times 4 = 12$ pairs, 11 are ordered correctly, so
-$\text{AUC} = 11/12 = 0.92$ — no threshold involved.
+$\text{AUC} = 11/12 = 0.92$ — no threshold involved. Written as the pair count it is:
+
+$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
+
+where $s_i^+$ are the $n_+$ positive items' scores, $s_j^-$ the $n_-$ negatives', and $\mathbb{1}[\cdot]$ is 1 when its condition holds and 0 otherwise; a tie counts half, since it is a coin flip. The one wrong pair above is the cracked $0.6$ below the sound $0.7$. AUC $= 0.5$ is chance ordering and $1$ is perfect.
 
 That threshold-independence is why AUC is reported, and the base-rate independence hiding
 behind it is why it misleads. The detector above sits at $\text{TPR} = 40/60 = 0.667$ and
@@ -140,6 +171,32 @@ deployment where positives are rare — the situation in
 on a site. When a paper reports AUC, ask for precision at a stated recall, on the deployment
 base rate.
 
+#### The rest of the dictionary, with formulas
+
+The table's one-line glosses are enough to recognize a metric; these are enough to recompute one. Each is a number computed from predictions and ground truth over a test set.
+
+- **Top-$k$ accuracy.** The fraction of items whose true class is among the $k$ highest-scoring classes,
+  $$\text{Acc}@k = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}\big[y_i \in \text{top-}k(\hat p_i)\big]$$
+  so top-1 is ordinary accuracy, and top-5 forgives any ranking error inside the first five.
+- **IoU (intersection over union).** For a predicted region $A$ and a ground-truth region $B$ (boxes or pixel masks), with $|\cdot|$ the area:
+  $$\text{IoU}(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
+  which is 1 for a perfect match and 0 for no overlap. Boxes $[0,2]\times[0,2]$ and $[1,3]\times[1,3]$ overlap in a $1 \times 1$ square, so $\text{IoU} = 1/(4 + 4 - 1) = 1/7 = 0.143$. A detection counts as a TP only if its IoU with an unmatched ground-truth object reaches the threshold (0.5 for PASCAL VOC), so these two boxes would be a false positive *and* a miss.
+- **AP and mAP.** Rank one class's detections by confidence; after the $n$-th detection record precision $P_n$ and recall $R_n$. Average precision is the area under that precision–recall curve,
+  $$\text{AP} = \sum_{n} \big(R_n - R_{n-1}\big)\, P^{\text{interp}}_n, \qquad P^{\text{interp}}_n = \max_{m \ge n} P_m, \qquad \text{mAP} = \frac{1}{C}\sum_{c=1}^{C} \text{AP}_c$$
+  where $R_0 = 0$, the interpolated precision is the best precision at this recall or higher, and mAP averages over the $C$ classes. Worked: two real objects, three detections ranked TP, FP, TP give $P = 1, 0.5, 0.667$ and $R = 0.5, 0.5, 1.0$, so $P^{\text{interp}} = 1, 0.667, 0.667$, and $\text{AP} = 0.5(1) + 0(0.667) + 0.5(0.667) = 0.833$. COCO additionally averages mAP over IoU thresholds $0.50, 0.55, \dots, 0.95$, so a COCO number and a VOC number are not the same quantity.
+- **mIoU (segmentation).** Per class $c$, pixel counts give $\text{IoU}_c = TP_c / (TP_c + FP_c + FN_c)$; mIoU is their mean over classes. A class with $TP = 80$, $FP = 10$, $FN = 10$ has IoU $0.8$; a rare class with $TP = 5$, $FP = 10$, $FN = 5$ has $0.25$; mIoU is $0.525$ — the rare class pulls it down exactly as much as the common one pushes it up, which is the point of averaging per class.
+- **FID (Fréchet Inception distance).** Fit a Gaussian to Inception-network features of real images, mean $\mu_r$ and covariance $\Sigma_r$, and another to generated images, $\mu_g, \Sigma_g$. FID is the Fréchet distance between the two Gaussians:
+  $$\text{FID} = \lVert \mu_r - \mu_g \rVert^2 + \operatorname{Tr}\Big(\Sigma_r + \Sigma_g - 2\big(\Sigma_r \Sigma_g\big)^{1/2}\Big)$$
+  so the first term penalizes a shifted average and the trace term a wrong spread; $\operatorname{Tr}$ is the sum of diagonal entries. In one dimension it reduces to $(\mu_r - \mu_g)^2 + (\sigma_r - \sigma_g)^2$: real $\mathcal{N}(0, 1^2)$ against generated $\mathcal{N}(0.5, 2^2)$ gives $0.25 + 1 = 1.25$. Lower is better, and FID depends on the sample count, so compare only at equal $N$.
+- **Perplexity.** The exponentiated average next-token cross-entropy of a language model on held-out text of $N$ tokens:
+  $$\text{PPL} = \exp\Big(-\frac{1}{N}\sum_{t=1}^{N} \ln p\big(x_t \mid x_{<t}\big)\Big) = 2^{H}, \quad H = -\frac{1}{N}\sum_{t=1}^{N} \log_2 p\big(x_t \mid x_{<t}\big)$$
+  so it reads as "the model is as uncertain as a uniform choice among PPL tokens". If the model gives the true tokens probabilities $0.5$, $0.25$, $0.125$, then $H = (1 + 2 + 3)/3 = 2$ bits and $\text{PPL} = 4$. Perplexities computed with different tokenizers are not comparable, because $N$ counts different units.
+- **BLEU.** A geometric mean of *clipped* $n$-gram precisions $p_n$ (each candidate $n$-gram counts at most as often as it appears in the reference), times a brevity penalty for candidates shorter than the reference:
+  $$\text{BLEU} = \text{BP} \cdot \exp\Big(\sum_{n=1}^{4} \tfrac14 \log p_n\Big), \qquad \text{BP} = \begin{cases} 1 & c > r \\ e^{\,1 - r/c} & c \le r \end{cases}$$
+  with $c$ and $r$ the candidate and reference lengths. Candidate "the cat sat on the mat" against reference "the cat is on the mat": $p_1 = 5/6$, $p_2 = 3/5$, $p_3 = 1/4$, $p_4 = 0/3$, $\text{BP} = 1$. **The boundary case:** one zero $p_4$ makes sentence-level BLEU exactly $0$ for a nearly correct sentence, which is why BLEU is computed over a whole corpus or with smoothing; the two-gram version here would be $\sqrt{(5/6)(3/5)} = 0.707$.
+- **Success rate.** For $n$ independent trials with $k$ successes, $\hat p = k/n$, with binomial standard error $\sqrt{\hat p(1 - \hat p)/n}$. At 9 of 10 that is $0.095$, and the normal-approximation 95% interval $0.9 \pm 1.96 \times 0.095 = [0.714, 1.086]$ runs past 100% — a non-example of an interval to report. The Wilson interval stays inside $[0, 1]$ and gives $[0.596, 0.982]$ ([[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]). The number is meaningless without the episode definition (§5).
+- **Recall@$k$ (retrieval).** The fraction of queries whose correct item is ranked within the first $k$ results, $\frac{1}{|Q|}\sum_{q \in Q} \mathbb{1}[\text{rank}_q \le k]$ over the query set $Q$. Three queries whose true items rank 1, 4 and 12 give recall@5 $= 2/3$. It shares a name with classification recall but not a denominator: here the denominator is queries, not positives.
+
 - Read metrics adversarially: success rate on *what* distribution, of *how many* trials,
   with *what* variance? 9 successes in 10 trials has a wide confidence interval — report
   the counts and the uncertainty, not just "90%".
@@ -150,6 +207,10 @@ base rate.
   field's chronic sin). **Ablation**: remove one component to show it mattered — the
   evidence connecting method to result. **SOTA**: state of the art; impressive but
   fragile — benchmark-specific and often compute-confounded.
+  - *Ablation, precisely:* a controlled comparison between the full method and the same method with exactly one component $c$ removed or replaced, everything else — data, compute budget, recipe, seeds, evaluation protocol — held fixed. Its output is an estimated effect,
+  $$\Delta_c = M(\text{full}) - M(\text{full} \setminus c)$$
+  where $M$ is the reported metric. Full method 76% success, the same method without action chunking 58%: $\Delta = 18$ percentage points attributed to chunking — and only to chunking if nothing else changed. **Non-example:** removing a component *and* shortening training to save compute measures both changes at once, so no $\Delta$ can be attributed to either.
+  - *Baseline, precisely:* the comparison method must satisfy the same conditions — same data, same budget, same protocol — and be tuned with a search comparable to the proposed method's. A baseline that fails any one of them is not a baseline for that claim.
 - Fair comparison checklist when reading: same data? same compute/params? same evaluation
   protocol? tuned baselines? If a table doesn't answer these, the numbers are decoration.
 - Seeds and variance: deep learning results wobble across random seeds; serious reporting
@@ -159,13 +220,18 @@ base rate.
   standard error $\sigma/\sqrt{n}$ says how well the *mean* is pinned down and does. At
   $n = 4$ they differ by a factor of 2, so a paper plotting the smaller one gets visually
   tighter error bars for free — check the caption before comparing two papers' bars — robotics papers report over several *rollouts and scenes*.
+  - *The three quantities, written out* for $n$ runs with results $x_1, \dots, x_n$ and mean $\bar x$:
+  $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
+  The sample standard deviation $s$ divides by $n - 1$ because $\bar x$ was estimated from the same numbers; SE shrinks with $\sqrt n$ because averaging cancels run-to-run noise; and the **confidence interval** multiplies SE by a Student-$t$ quantile $t_{0.975,\,n-1}$, which is larger than the normal 1.96 when $n$ is small. It is a procedure that covers the true mean in 95% of repeated experiments, not a 95% probability statement about this one interval. Worked, four seeds at 72, 76, 80, 84% success: $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$, so the 95% CI is $[69.8, 86.2]$. The same four runs can therefore be drawn with bars of $\pm 2.6$, $\pm 5.2$ or $\pm 8.2$ points, depending on which quantity the caption names. How to test a *difference* between two methods is [[02-foundations/probability|3. Probability §6]].
 
 ### 5. Evaluation pitfalls to watch for in papers
 
 - **Cherry-picking**: qualitative figures show the best runs — ask what the *median* rollout looks like.
 - **Statistical vs practical significance**: error-bar overlap alone does not settle significance — check what the bars represent (std? standard error? CI?), the number of runs, and pairedness. A +0.3%p gain may be noise or may matter (on a saturated benchmark); +5%p from one seed can be luck. Ask for variance first.
+  - The two are different questions. **Statistical significance** asks whether the observed difference would be unlikely if the true difference were zero — a p-value below a stated level such as 0.05 ([[02-foundations/probability|3. Probability §6]]). **Practical significance** asks whether the difference is large enough to matter for the task, judged by the effect size and its CI against a threshold fixed in advance. The first tends toward "yes" as $n$ grows, even for a negligible effect; the second does not change with $n$, which is why a paper needs both.
 - **Oracle information**: does the method quietly use ground-truth state, perfect calibration, or human resets that deployment won't have?
 - **Open-loop vs closed-loop evaluation**: predicting a good trajectory offline (open-loop) is far easier than executing under feedback with compounding errors (closed-loop) — robotics numbers are only comparable within the same regime.
+  - *Defined by where the input states come from.* **Open-loop** evaluation feeds the policy $\pi$ the states of a recorded dataset and scores its outputs against the recorded actions, for example $\frac{1}{N}\sum_{i=1}^{N} \lVert \pi(o_i) - a_i \rVert$ over $N$ logged pairs $(o_i, a_i)$, so the policy's mistakes never change what it sees next. **Closed-loop** evaluation executes $\pi$'s actions, so the next observation is produced by those actions, and it scores the outcome (success rate over rollouts). A low open-loop error does not imply closed-loop success, because in closed loop small errors move the policy into states the dataset never contained — covariate shift ([[02-foundations/rl-basics|7. RL Basics §6]]).
 - **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things.
 - **Benchmark saturation**: near-ceiling benchmarks reward overfitting to quirks; gains there generalize least.
 
@@ -184,6 +250,21 @@ one of them is not comparing what it claims.
 | **Mixed precision** (fp16/bf16) | compute in 16 bits with an fp32 master copy of the weights. **fp16 additionally needs loss scaling**; **bf16 does not** | roughly halves memory and raises throughput. bf16 trades mantissa for fp32's exponent range — which is exactly why it drops loss scaling and why large models train stably in 16 bits |
 | **EMA of weights** | keep a slowly-moving average of the parameters and *evaluate that*, not the live weights | a free fraction of a point on many benchmarks. Diffusion papers use it almost universally (DDPM: decay 0.9999, an appendix figure); policy papers vary and often only the **code** reveals it — Diffusion Policy uses it in its configs without mentioning it in the paper. Distinct from the EMA *teacher* of [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]], which is a target network, not an evaluation trick |
 | **Initialization** | Xavier/He scaling keeps activation variance stable across depth | rarely load-bearing now that normalization layers exist, but named when a paper trains without them |
+
+#### The recipe terms, with their formulas
+
+- **Warmup and cosine decay.** A learning-rate schedule is a function $\eta_t$ of the step $t$. Linear warmup over the first $T_w$ steps, then cosine decay from $\eta_{\max}$ to $\eta_{\min}$ by the last step $T$:
+  $$\eta_t = \eta_{\max}\,\frac{t}{T_w} \ \ (t \le T_w), \qquad \eta_t = \eta_{\min} + \tfrac12\big(\eta_{\max} - \eta_{\min}\big)\Big(1 + \cos\frac{\pi\,(t - T_w)}{T - T_w}\Big) \ \ (t > T_w)$$
+  so the rate climbs from 0, then follows half a cosine down to $\eta_{\min}$. With no warmup, $\eta_{\max} = 10^{-3}$, $\eta_{\min} = 0$ and $T = 10{,}000$, the rate is $8.54 \times 10^{-4}$ at step 2,500, $5 \times 10^{-4}$ at step 5,000 and $0$ at the end; a 1,000-step warmup is at $2.5 \times 10^{-4}$ on step 250.
+- **Weight decay (AdamW form).** Every step multiplies each weight by $(1 - \eta\lambda)$ *in addition to* the adaptive gradient step, rather than adding $\lambda w$ to the gradient before Adam rescales it. The two coincide only for plain SGD, since SGD applies no per-coordinate rescaling; §2 has the arithmetic, [[02-foundations/optimization|4. Optimization §3]] the full update.
+- **Gradient accumulation.** Split a batch of $B = KB_\mu$ examples into $K$ microbatches of $B_\mu$, compute each microbatch's mean gradient $g_k$, and step once with
+  $$g = \frac{1}{K}\sum_{k=1}^{K} g_k$$
+  which equals the full-batch mean gradient because the microbatches are the same size and the loss is a sum over examples. $8 \times 512$ is a nominal batch of 4,096. **Non-example:** a contrastive loss is *not* a sum over examples — each example's term depends on the others in its batch — so accumulation gives 511 negatives per example, not 4,095, unless features are gathered across microbatches.
+- **Mixed precision.** 16-bit formats trade range for memory. fp16's largest value is 65,504 and its smallest positive value about $6 \times 10^{-8}$; bf16 keeps fp32's 8 exponent bits, so its range reaches about $3.4 \times 10^{38}$, with coarser mantissa precision. **Loss scaling** multiplies the loss by a factor $S$ before the backward pass and divides the gradients by $S$ before the update, so small gradients survive fp16. A gradient of $10^{-8}$ becomes $0$ in fp16, while $S = 1024$ lifts it to about $1.02 \times 10^{-5}$, which fp16 represents.
+- **EMA of weights.** A second copy $\bar\theta$ updated after every optimizer step:
+  $$\bar\theta_t = \beta\,\bar\theta_{t-1} + (1 - \beta)\,\theta_t$$
+  so $\bar\theta$ averages roughly the last $1/(1-\beta)$ steps, with older weights discounted geometrically. At DDPM's $\beta = 0.9999$ that window is 10,000 steps, and a weight's influence halves after about 6,931 steps; the averaged copy is the one evaluated and released.
+- **Initialization.** Draw each weight with zero mean and a variance set by the layer's fan-in $n_{\text{in}}$ and fan-out $n_{\text{out}}$, so activation variance neither explodes nor vanishes with depth: Xavier (for tanh-like activations) uses $\operatorname{Var}(w) = 2/(n_{\text{in}} + n_{\text{out}})$, and He (for ReLU, which zeroes half its inputs) uses $\operatorname{Var}(w) = 2/n_{\text{in}}$. A ReLU layer with $n_{\text{in}} = 512$ gets standard deviation $\sqrt{2/512} = 0.0625$.
 
 > [!warning] Recipe differences masquerading as method differences
 > The most common unfair comparison in this literature is a new method trained with a modern
@@ -232,18 +313,32 @@ The transition matters because recognizing an unfair comparison after publicatio
 - **Train / validation / test**: train으로 적합하고, validation으로 하이퍼파라미터 튜닝과
   체크포인트 선택을 하고, test는 맨 끝에 **한 번만** 만진다. 결정이 test 성능의 영향을
   받는 순간 test는 조용히 validation이 되고 — 보고 수치는 부풀려진다.
+  - *무엇인가:* 가진 데이터 $\mathcal{D}$를 각자 한 가지 일을 맡는 **서로소**인 부분집합 셋으로 나눈 분할이다. 폴더 세 개가 아니라 분할이 되게 하는 두 조건은 서로소성과 같은 분포다.
+  $$\mathcal{D} = \mathcal{D}_{\text{tr}} \cup \mathcal{D}_{\text{val}} \cup \mathcal{D}_{\text{te}}, \qquad \mathcal{D}_{\text{tr}} \cap \mathcal{D}_{\text{val}} = \mathcal{D}_{\text{tr}} \cap \mathcal{D}_{\text{te}} = \mathcal{D}_{\text{val}} \cap \mathcal{D}_{\text{te}} = \varnothing$$
+  그리고 각 부분집합은 배포 데이터와 같은 분포에서 뽑는다. 그래야 test 오차 $\hat R_{\text{te}} = \frac{1}{|\mathcal{D}_{\text{te}}|}\sum_{(x,y)\in\mathcal{D}_{\text{te}}} L(f(x), y)$ — test 예제에 대한 평균 손실이고 $|\cdot|$는 개수 — 가 새 데이터 오차의 불편 추정이 되는데, $\mathcal{D}_{\text{te}}$의 어떤 것도 $f$에 영향을 주지 않았을 *때에만* 그렇다. 계산 예: 샘플 10,000개를 80/10/10으로 나누면 8,000 / 1,000 / 1,000이다.
+  - **반례:** 로봇 영상 20개에서 나온 프레임 10,000장을 섞어 80/10/10으로 나눈다. *프레임*으로는 서로소이지만 *에피소드*로는 아니다. 거의 똑같은 이웃 프레임이 양쪽에 들어가므로, test 수치는 이미 본 장면의 프레임 사이 보간을 잴 뿐이다. 나누는 단위는 일반화하고 싶은 단위여야 한다. 에피소드, 장면, 현장, 로봇.
 - **분포 이동**: train과 다른 분포의 test(새 현장, 새 로봇, 새 조명) — 로보틱스의 *실제*
   조건이다. 논문들이 "seen/unseen" 분할([[01-canonical-papers/notes/4-vla/rt-1|RT-1]])과 OOD
   평가를 보고하는 이유이고, [[01-canonical-papers/notes/3-vlm/clip|CLIP]]의 강건성 결과가 그토록
   중요했던 이유다.
+  - *정의:* $p_{\text{tr}}(x, y) \ne p_{\text{te}}(x, y)$이고, $p(x, y)$는 입력과 라벨의 결합분포다. $p(x, y) = p(x)\,p(y \mid x) = p(y)\,p(x \mid y)$이므로 어느 인수가 움직이느냐에 따라 이름 붙은 종류가 셋이다.
+    - **공변량 이동**(covariate shift) — $p(x)$는 바뀌고 $p(y \mid x)$는 그대로다. 조명은 새롭지만 "균열"의 뜻은 같다. 정책 자신의 상태가 이동된 입력이 되는 모방 학습의 실패 방식도 이것이다([[02-foundations/rl-basics|7. RL 기초 §6]]).
+    - **라벨(사전) 이동** — $p(y)$는 바뀌고 $p(x \mid y)$는 그대로다. 균열 비율이 6%에서 0.6%로 떨어져도 균열은 여전히 균열처럼 보인다. §3의 ROC 대 정밀도 표가 정확히 이 경우다.
+    - **개념 이동**(concept shift) — $p(y \mid x)$ 자체가 바뀐다. 현장이 보고 대상 균열의 정의를 더 엄격하게 바꾸면 같은 이미지가 다른 라벨을 받는다.
+  - **분포 밖(OOD)** 입력은 극단적인 경우다. $p_{\text{tr}}(x)$가 사실상 0인 영역에서 온 test 입력이라, 모델이 보간할 데이터가 없다.
 - 데이터 누수: test 정보가 학습에 스며드는 것(중복, 시간적 겹침, 사전학습 오염 —
   [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] 논문 스스로의 골칫거리). 숫자가 너무 좋아 보일
   때 첫 번째로 의심할 것.
+  - *정의:* $\mathcal{D}_{\text{te}}$(또는 $\mathcal{D}_{\text{val}}$)의 정보가 적합된 모델이나 그 모델에 대한 선택에 닿는 모든 경로이고, 위의 "$\mathcal{D}_{\text{te}}$의 어떤 것도 $f$에 영향을 주지 않았다"는 조건을 깨뜨린다. 형태는 양쪽에 걸친 완전 중복·유사 중복 예제, 시간적 겹침(test 기간 이후에 기록한 데이터로 학습), 사전학습 말뭉치 오염, 그리고 **전체 데이터에 맞춘 전처리**다. 예컨대 분할 전에 계산한 정규화 평균과 분산은 test 통계를 학습에 조용히 실어 나른다.
 
 ### 2. 과적합과 정규화라는 우산
 
 - **과적합**: train 손실은 ↓인데 validation 손실이 ↑ — 일반화 대신 암기. **과소적합**:
   둘 다 높음. 무엇보다 먼저 **학습 곡선**으로 진단하라.
+  - *두 단어 뒤에 있는 양*은 **일반화 격차**, 곧 $k$ 에포크 뒤의 같은 파라미터 $\theta_k$에서 보류 데이터 평균 손실과 학습 데이터 평균 손실의 차이다.
+  $$\text{gap}_k = R_{\text{val}}(\theta_k) - R_{\text{tr}}(\theta_k)$$
+  그래서 학습 곡선은 $R_{\text{tr}}$과 $R_{\text{val}}$을 $k$에 대해 그린 것일 뿐이다. **과적합**은 두 조건이 함께일 때의 이름이다. $R_{\text{tr}}$은 아직 떨어지고 *동시에* $R_{\text{val}}$은 올라가서 격차가 커진다. **과소적합**은 $R_{\text{tr}}$ 자체가 높게 머무는 것, 곧 보고 있는 데이터조차 맞추지 못하는 것이다. 계산 예: 에포크 10에서 학습 0.40 / 검증 0.45(격차 0.05, 둘 다 아직 하강 — 어느 쪽도 아님), 에포크 50에서 학습 0.05 / 검증 0.70(격차 0.65, 검증이 0.45에서 올라감 — 과적합).
+  - **반례:** 격차가 크더라도 *일정하고* 검증 손실이 아직 떨어지고 있다면 아직 과적합이 아니다. 검증 데이터가 더 어렵거나 분포가 다르다는 뜻이고, 거기서 멈추면 진전을 버리게 된다.
 
 <svg viewBox="0 0 470 216" style="max-width:100%;height:auto" role="img" aria-label="과적합을 보여주는 학습·검증 손실 곡선">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="50" y1="22" x2="50" y2="140"/><line x1="50" y1="140" x2="415" y2="140"/></g>
@@ -267,6 +362,13 @@ The transition matters because recognizing an unfair comparison after publicatio
   dropout([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]), 데이터 증강
   ([[01-canonical-papers/notes/1-foundations/vgg|VGG]] 이후), early stopping, 그리고 현대적 반전 —
   *제약 대신 더 많은 데이터*([[01-canonical-papers/notes/1-foundations/scaling-laws|스케일링 법칙]]).
+  - *정의:* **정규화 기법**은 학습 손실이 아니라 *검증* 손실을 낮추려는, 학습 절차에 가하는 모든 변경이다. 명시적인 종류는 파라미터에 벌점 $\Omega$를 하이퍼파라미터 $\lambda \ge 0$로 가중해 더한다.
+  $$\min_\theta\ \frac{1}{N}\sum_{i=1}^{N} L\big(f_\theta(x_i), y_i\big) + \lambda\, \Omega(\theta), \qquad \Omega(\theta) = \tfrac12 \lVert\theta\rVert^2 \ \text{for L2}$$
+  그래서 $\lambda$가 클수록 학습 적합을 내주고 작은 가중치를 산다. 이름 붙은 네 방법과 각각의 작동 기제:
+    - **Weight decay**는 매 스텝 모든 가중치를 고정된 비율로 줄인다. 학습률 $\eta$에 대해 $w \leftarrow w(1 - \eta\lambda)$이고, $\eta = 0.1$, $\lambda = 0.01$이면 비율이 $0.999$라 반대 방향 그래디언트 없이 1,000스텝이 지나면 가중치의 $0.999^{1000} = 0.368$만 남는다. 순수 SGD에서는 위의 L2 벌점과 같다(Adam에서 같지 않은 이유는 §6).
+    - **Dropout**은 학습 중 각 은닉 유닛을 확률 $p$로 독립적으로 0으로 만들고 살아남은 것을 키운다. $m_j \sim \text{Bernoulli}(1 - p)$에 대해 $\tilde h_j = m_j h_j / (1 - p)$이므로 활성값의 기댓값이 그대로이고, 추론에서는 그냥 $h$를 쓴다. $p = 0.5$, $h = (2, 4)$, 마스크 $m = (1, 0)$이면 층은 $(4, 0)$을 내보낸다.
+    - **데이터 증강**은 라벨이 바뀌지 않도록 고른 무작위 변환 $T$(자르기, 뒤집기, 색 흔들기)에 대해 $(T(x), y)$로 학습한다. **반례:** "왼쪽으로 돌기" 시연에 좌우 뒤집기를 적용하는 것은 증강이 아니다. 올바른 라벨을 바꾸기 때문이다.
+    - **Early stopping**은 검증 손실이 가장 낮은 체크포인트 $\hat k = \arg\min_k R_{\text{val}}(\theta_k)$를 남기는 것이고, 그림의 점선이 그것이다.
 
 학습 자료의 세부를 모두 맞추면 우연한 단서에 의존할 수 있어 정규화가 필요하다. 균열 검출기가 결함보다 특정 현장의 조명을 배울 수 있다. 증강은 변환이 정답을 보존하고 의미 있는 변동을 닮을 때 그 지름길을 억제한다. **여기서 얻는 독법.** 학습 곡선을 분할·증강 정책과 함께 본다. 정규화 목록이 길어도 이웃 프레임의 검증 손실 개선만으로 새 현장 일반화를 보이지는 못한다.
 
@@ -293,6 +395,12 @@ The transition matters because recognizing an unfair comparison after publicatio
 | **실제 균열** | TP = 40 | FN = 20 |
 | **실제 정상** | FP = 10 | TN = 930 |
 
+이 표가 한 문턱값에서 이진 분류기의 **혼동 행렬**(confusion matrix)이다. 모든 test 항목은 정확히 한 칸에 들어가고, 칸의 이름은 *예측*이 양성이었는지 음성이었는지, 그것이 *맞았는지(true)* 틀렸는지(false)로 붙는다. **TP**(참양성) = 균열로 예측, 실제 균열. **FP**(거짓양성, 오경보) = 균열로 예측, 실제 정상. **FN**(거짓음성, 놓침) = 정상으로 예측, 실제 균열. **TN**(참음성) = 정상으로 예측, 실제 정상. 아래 지표는 모두 이 네 개수의 비율이다.
+
+$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
+
+정밀도는 *예측* 양성 열로, 재현율은 *실제* 양성 행으로 나누므로 두 값은 서로 다른 질문에 답한다. $F_1$은 $P$와 $R$의 조화평균이다. 정밀도와 재현율은 둘 다 TN을 쓰지 않으므로, 음성이 양성보다 압도적으로 많아도 정보를 잃지 않는다.
+
 - **정확도(accuracy)** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — 그런데 무조건
   "정상"이라고만 답하는 감지기도 $94.0\%$가 나온다. 여기서 정확도는 거의 무용하다.
 - **정밀도(precision)** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — 플래그한 것 중 80%가
@@ -313,7 +421,11 @@ $\text{FPR} = FP/(FP+TN)$을 준다. TPR을 FPR에 대해 그린 것이 **ROC �
 **AUC**다. AUC에는 들고 다닐 만한 정확한 뜻이 있다. *무작위로 고른 양성이 무작위로 고른 음성보다
 높은 점수를 받을 확률*이다. 균열 있는 패널 셋에 $0.9, 0.8, 0.6$, 멀쩡한 넷에
 $0.7, 0.5, 0.4, 0.2$를 매겼다고 하자. $3 \times 4 = 12$쌍 중 11쌍이 옳게 정렬되므로
-$\text{AUC} = 11/12 = 0.92$다 — 문턱값이 개입하지 않는다.
+$\text{AUC} = 11/12 = 0.92$다 — 문턱값이 개입하지 않는다. 쌍 세기로 쓰면 다음과 같다.
+
+$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
+
+$s_i^+$는 양성 항목 $n_+$개의 점수, $s_j^-$는 음성 $n_-$개의 점수이고, $\mathbb{1}[\cdot]$은 조건이 성립하면 1, 아니면 0이다. 동점은 동전 던지기이므로 절반으로 센다. 위에서 틀린 한 쌍은 균열 패널의 $0.6$이 멀쩡한 패널의 $0.7$보다 낮은 쌍이다. AUC $= 0.5$는 우연 수준의 정렬이고 $1$은 완벽한 정렬이다.
 
 그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는
 이유다. 위의 검출기는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은
@@ -336,6 +448,32 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 시스템의 상황이다. 논문이 AUC를 보고하면, 배포 기저율 위에서 명시된 재현율에 대한 정밀도를
 요구하라.
 
+#### 사전의 나머지, 수식과 함께
+
+표의 한 줄 풀이는 지표를 알아보는 데 충분하고, 아래 내용은 지표를 다시 계산하는 데 충분하다. 모두 test 집합 위의 예측과 정답으로 계산하는 숫자다.
+
+- **Top-$k$ 정확도.** 참 클래스가 점수 상위 $k$개 클래스 안에 드는 항목의 비율이다.
+  $$\text{Acc}@k = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}\big[y_i \in \text{top-}k(\hat p_i)\big]$$
+  그래서 top-1은 보통의 정확도이고, top-5는 상위 다섯 안의 순위 오류를 봐준다.
+- **IoU(합집합 대비 교집합).** 예측 영역 $A$와 정답 영역 $B$(박스나 픽셀 마스크)에 대해, $|\cdot|$를 넓이로 두면
+  $$\text{IoU}(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
+  이고, 완벽히 일치하면 1, 전혀 겹치지 않으면 0이다. 박스 $[0,2]\times[0,2]$와 $[1,3]\times[1,3]$은 $1 \times 1$ 정사각형만큼 겹치므로 $\text{IoU} = 1/(4 + 4 - 1) = 1/7 = 0.143$이다. 검출은 아직 짝지어지지 않은 정답 물체와의 IoU가 문턱값(PASCAL VOC는 0.5)에 닿아야 TP로 세므로, 이 두 박스는 거짓양성*이면서* 놓침이 된다.
+- **AP와 mAP.** 한 클래스의 검출을 신뢰도 순으로 늘어놓고, $n$번째 검출 뒤의 정밀도 $P_n$과 재현율 $R_n$을 기록한다. 평균 정밀도는 그 정밀도–재현율 곡선 아래 넓이다.
+  $$\text{AP} = \sum_{n} \big(R_n - R_{n-1}\big)\, P^{\text{interp}}_n, \qquad P^{\text{interp}}_n = \max_{m \ge n} P_m, \qquad \text{mAP} = \frac{1}{C}\sum_{c=1}^{C} \text{AP}_c$$
+  $R_0 = 0$이고, 보간 정밀도는 이 재현율 이상에서의 최고 정밀도이며, mAP는 클래스 $C$개에 대해 평균한다. 계산 예: 실제 물체 둘, 검출 셋이 TP, FP, TP 순이면 $P = 1, 0.5, 0.667$, $R = 0.5, 0.5, 1.0$이므로 $P^{\text{interp}} = 1, 0.667, 0.667$이고 $\text{AP} = 0.5(1) + 0(0.667) + 0.5(0.667) = 0.833$이다. COCO는 여기에 더해 IoU 문턱값 $0.50, 0.55, \dots, 0.95$에 대해 mAP를 평균하므로, COCO 수치와 VOC 수치는 같은 양이 아니다.
+- **mIoU(분할).** 클래스 $c$마다 픽셀 개수로 $\text{IoU}_c = TP_c / (TP_c + FP_c + FN_c)$를 구하고, mIoU는 클래스에 대한 평균이다. $TP = 80$, $FP = 10$, $FN = 10$인 클래스는 IoU $0.8$, $TP = 5$, $FP = 10$, $FN = 5$인 드문 클래스는 $0.25$이고 mIoU는 $0.525$다. 흔한 클래스가 끌어올리는 만큼 드문 클래스가 끌어내리는 것, 그것이 클래스별로 평균하는 이유다.
+- **FID(Fréchet Inception distance).** 실제 이미지의 Inception 신경망 특징에 평균 $\mu_r$, 공분산 $\Sigma_r$인 가우시안을, 생성 이미지에 $\mu_g, \Sigma_g$인 가우시안을 맞춘다. FID는 두 가우시안 사이의 Fréchet 거리다.
+  $$\text{FID} = \lVert \mu_r - \mu_g \rVert^2 + \operatorname{Tr}\Big(\Sigma_r + \Sigma_g - 2\big(\Sigma_r \Sigma_g\big)^{1/2}\Big)$$
+  첫 항은 평균이 어긋난 것을, 대각합($\operatorname{Tr}$, 대각 성분의 합) 항은 퍼짐이 틀린 것을 벌한다. 1차원에서는 $(\mu_r - \mu_g)^2 + (\sigma_r - \sigma_g)^2$로 줄어든다. 실제 $\mathcal{N}(0, 1^2)$ 대 생성 $\mathcal{N}(0.5, 2^2)$이면 $0.25 + 1 = 1.25$다. 낮을수록 좋고, 표본 수에 따라 달라지므로 같은 $N$에서만 비교한다.
+- **Perplexity.** 보류 텍스트 토큰 $N$개에서 언어 모델의 평균 다음 토큰 교차 엔트로피를 지수로 올린 값이다.
+  $$\text{PPL} = \exp\Big(-\frac{1}{N}\sum_{t=1}^{N} \ln p\big(x_t \mid x_{<t}\big)\Big) = 2^{H}, \quad H = -\frac{1}{N}\sum_{t=1}^{N} \log_2 p\big(x_t \mid x_{<t}\big)$$
+  그래서 "모델이 PPL개의 토큰 중 균등하게 고르는 만큼 불확실하다"로 읽는다. 모델이 참 토큰들에 확률 $0.5$, $0.25$, $0.125$를 주면 $H = (1 + 2 + 3)/3 = 2$비트이고 $\text{PPL} = 4$다. $N$이 서로 다른 단위를 세므로, 토크나이저가 다른 perplexity끼리는 비교할 수 없다.
+- **BLEU.** *잘라낸*(clipped) $n$-gram 정밀도 $p_n$(후보의 각 $n$-gram은 참조문에 나온 횟수까지만 센다)의 기하평균에, 참조문보다 짧은 후보에 대한 간결성 벌점을 곱한다.
+  $$\text{BLEU} = \text{BP} \cdot \exp\Big(\sum_{n=1}^{4} \tfrac14 \log p_n\Big), \qquad \text{BP} = \begin{cases} 1 & c > r \\ e^{\,1 - r/c} & c \le r \end{cases}$$
+  $c$와 $r$은 후보와 참조문의 길이다. 후보 "the cat sat on the mat", 참조 "the cat is on the mat"이면 $p_1 = 5/6$, $p_2 = 3/5$, $p_3 = 1/4$, $p_4 = 0/3$, $\text{BP} = 1$이다. **경계 사례:** $p_4$ 하나가 0이면 거의 맞는 문장의 문장 단위 BLEU가 정확히 $0$이 된다. BLEU를 말뭉치 전체로 계산하거나 평활화를 쓰는 이유다. 여기서 2-gram 버전은 $\sqrt{(5/6)(3/5)} = 0.707$이다.
+- **성공률.** 독립 시행 $n$번에 성공 $k$번이면 $\hat p = k/n$이고 이항 표준오차는 $\sqrt{\hat p(1 - \hat p)/n}$이다. 10번 중 9번이면 $0.095$이고, 정규근사 95% 구간 $0.9 \pm 1.96 \times 0.095 = [0.714, 1.086]$은 100%를 넘는다. 보고해서는 안 되는 구간의 반례다. Wilson 구간은 $[0, 1]$ 안에 머물며 $[0.596, 0.982]$를 준다([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]). 에피소드 정의(§5)가 없으면 이 숫자는 의미가 없다.
+- **Recall@$k$(검색).** 질의 집합 $Q$에 대해 정답 항목이 상위 $k$개 결과 안에 드는 질의의 비율, $\frac{1}{|Q|}\sum_{q \in Q} \mathbb{1}[\text{rank}_q \le k]$다. 정답 순위가 1, 4, 12인 질의 셋이면 recall@5 $= 2/3$이다. 분류의 재현율과 이름은 같지만 분모가 다르다. 여기서 분모는 양성이 아니라 질의다.
+
 - 지표는 적대적으로 읽어라: *어떤* 분포에서, *몇 번의* 시행으로, *분산은* 얼마인 success
   rate인가? 10회 중 9회 성공은 신뢰구간이 넓다 — "90%"만이 아니라 횟수와 불확실성을
   함께 봐야 한다.
@@ -346,6 +484,10 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
   분야의 고질병). **절제 실험**(ablation): 구성 요소 하나를 빼서 그것이 중요했음을 보이기
   — 방법과 결과를 잇는 증거. **SOTA**: 최고 성능; 인상적이지만 취약하다 — 벤치마크
   특정적이고 연산량과 교락되기 일쑤.
+  - *절제 실험, 정확히:* 전체 방법과, 구성요소 $c$ 하나만 빼거나 바꾸고 나머지 — 데이터, 연산 예산, 레시피, 시드, 평가 규약 — 는 고정한 같은 방법 사이의 통제된 비교다. 결과는 추정된 효과다.
+  $$\Delta_c = M(\text{full}) - M(\text{full} \setminus c)$$
+  $M$은 보고 지표다. 전체 방법 성공률 76%, 행동 청킹을 뺀 같은 방법 58%면 $\Delta = 18$%p가 청킹 몫이다 — 다른 것이 아무것도 바뀌지 않았을 때에만 청킹 몫이다. **반례:** 구성요소를 빼면서 *동시에* 연산을 아끼려고 학습을 줄이면 두 변화를 한꺼번에 잰 것이라 어느 쪽에도 $\Delta$를 돌릴 수 없다.
+  - *베이스라인, 정확히:* 비교 대상도 같은 조건 — 같은 데이터, 같은 예산, 같은 규약 — 을 만족해야 하고, 제안 방법과 비슷한 규모의 탐색으로 튜닝되어야 한다. 하나라도 어기면 그 주장에 대한 베이스라인이 아니다.
 - 읽을 때의 공정 비교 체크리스트: 같은 데이터? 같은 연산/파라미터? 같은 평가 프로토콜?
   튜닝된 베이스라인? 표가 이에 답하지 않으면 그 숫자는 장식이다.
 - 시드와 분산: 딥러닝 결과는 랜덤 시드에 따라 흔들린다; 진지한 보고는 실행 횟수와 실험에
@@ -355,13 +497,18 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
   표준오차 $\sigma/\sqrt{n}$은 *평균*이 얼마나 단단히 고정됐는지를 말하고 줄어든다.
   $n = 4$면 둘이 2배 차이이므로, 작은 쪽을 그린 논문은 공짜로 더 좁은 오차 막대를 얻는다 —
   두 논문의 막대를 비교하기 전에 캡션을 확인하라.
+  - *세 양을 풀어 쓰면* 결과가 $x_1, \dots, x_n$이고 평균이 $\bar x$인 실행 $n$번에 대해
+  $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
+  이다. 표본 표준편차 $s$는 $\bar x$를 같은 숫자들로 추정했기 때문에 $n - 1$로 나눈다. SE는 평균을 내면 실행 간 잡음이 상쇄되므로 $\sqrt n$에 따라 줄어든다. **신뢰구간**은 SE에 Student-$t$ 분위수 $t_{0.975,\,n-1}$을 곱하는데, $n$이 작으면 이 값이 정규분포의 1.96보다 크다. 신뢰구간은 반복 실험의 95%에서 참 평균을 덮는 절차이지, 이 구간 하나에 대한 95% 확률 진술이 아니다. 계산 예, 시드 넷의 성공률이 72, 76, 80, 84%면 $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$이므로 95% CI는 $[69.8, 86.2]$다. 같은 네 실행을 캡션이 어느 양을 말하느냐에 따라 $\pm 2.6$, $\pm 5.2$, $\pm 8.2$점 막대로 그릴 수 있다. 두 방법의 *차이*를 검정하는 법은 [[02-foundations/probability|3. 확률 §6]]에 있다.
 
 ### 5. 논문에서 경계할 평가 함정
 
 - **체리피킹**: 정성적 그림은 최고 실행을 보여준다 — *중앙값* 롤아웃은 어떤지 물어라.
 - **통계적 vs 실질적 유의성**: 오차 막대 겹침만으로 유의성을 판정할 수 없다 — 막대가 무엇인지(표준편차? 표준오차? 신뢰구간?), 실행 횟수, 짝지음 여부를 확인하라. +0.3%p는 노이즈일 수도, (포화된 벤치마크에서는) 의미 있을 수도 있다; 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라.
+  - 둘은 다른 질문이다. **통계적 유의성**은 참 차이가 0이라면 관측된 차이가 나오기 어려운지를 묻는다. 0.05 같은 정해 둔 수준 아래의 p-값이다([[02-foundations/probability|3. 확률 §6]]). **실질적 유의성**은 차이가 과제에 의미 있을 만큼 큰지를 묻고, 효과 크기와 그 신뢰구간을 미리 정한 문턱에 대 보아 판단한다. 앞의 것은 $n$이 커지면 무시할 만한 효과에서도 "유의하다" 쪽으로 기울고, 뒤의 것은 $n$에 따라 바뀌지 않는다. 논문에 둘 다 필요한 이유다.
 - **오라클 정보**: 배포 환경에는 없을 실측 상태, 완벽한 캘리브레이션, 사람의 리셋을 조용히 쓰고 있지 않은가?
 - **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다.
+  - *입력 상태가 어디서 오는지로 정의된다.* **개루프** 평가는 정책 $\pi$에 기록된 데이터셋의 상태를 넣고 출력을 기록된 행동과 비교해 채점한다. 예컨대 기록 쌍 $(o_i, a_i)$ $N$개에 대해 $\frac{1}{N}\sum_{i=1}^{N} \lVert \pi(o_i) - a_i \rVert$이므로, 정책의 실수가 다음에 보는 것을 바꾸지 않는다. **폐루프** 평가는 $\pi$의 행동을 실행하므로 다음 관측을 그 행동이 만들고, 결과(롤아웃 성공률)를 채점한다. 개루프 오차가 낮다고 폐루프 성공이 따라오지는 않는다. 폐루프에서는 작은 오차가 정책을 데이터셋에 없던 상태로 옮기기 때문이다. 공변량 이동이다([[02-foundations/rl-basics|7. RL 기초 §6]]).
 - **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다.
 - **벤치마크 포화**: 천장 근처의 벤치마크는 그 벤치마크의 버릇에 과적합하는 것을 보상한다 — 거기서의 이득이 가장 일반화되지 않는다.
 
@@ -380,6 +527,21 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 | **혼합 정밀도**(fp16/bf16) | 16비트로 계산하되 가중치의 fp32 마스터 사본을 둔다. **fp16은 손실 스케일링이 추가로 필요하고, bf16은 필요 없다** | 메모리를 대략 절반으로 줄이고 처리량을 올린다. bf16은 가수를 fp32의 지수 범위와 맞바꾼 것이고, 그래서 손실 스케일링을 버릴 수 있으며 큰 모델이 16비트에서 안정적으로 학습된다 |
 | **가중치 EMA** | 파라미터의 느리게 움직이는 평균을 유지하고, 살아 있는 가중치가 아니라 *그것을* 평가한다 | 여러 벤치마크에서 공짜로 얻는 소수점 몇 자리. 확산 모델은 거의 예외 없이 쓰고(DDPM: 감쇠 0.9999. 부록 수치다), 정책 논문은 제각각이라 **코드**에서야 드러나는 일이 많다 — Diffusion Policy는 논문에 쓰지 않은 채 설정 파일에서 쓴다. [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]]의 EMA *교사*와는 다르다 — 그쪽은 타깃 네트워크이지 평가 요령이 아니다 |
 | **초기화** | Xavier/He 스케일링이 깊이에 걸쳐 활성 분산을 안정시킨다 | 정규화 층이 있는 지금은 결정적인 경우가 드물지만, 정규화 없이 학습하는 논문은 이것을 명시한다 |
+
+#### 레시피 용어, 수식과 함께
+
+- **Warmup과 cosine decay.** 학습률 스케줄은 스텝 $t$의 함수 $\eta_t$다. 처음 $T_w$스텝 동안 선형 warmup, 그 뒤 마지막 스텝 $T$까지 $\eta_{\max}$에서 $\eta_{\min}$으로 cosine decay를 하면
+  $$\eta_t = \eta_{\max}\,\frac{t}{T_w} \ \ (t \le T_w), \qquad \eta_t = \eta_{\min} + \tfrac12\big(\eta_{\max} - \eta_{\min}\big)\Big(1 + \cos\frac{\pi\,(t - T_w)}{T - T_w}\Big) \ \ (t > T_w)$$
+  이므로 학습률이 0에서 올라간 뒤 반 주기 코사인을 따라 $\eta_{\min}$까지 내려간다. warmup 없이 $\eta_{\max} = 10^{-3}$, $\eta_{\min} = 0$, $T = 10{,}000$이면 스텝 2,500에서 $8.54 \times 10^{-4}$, 스텝 5,000에서 $5 \times 10^{-4}$, 끝에서 $0$이다. 1,000스텝 warmup은 스텝 250에서 $2.5 \times 10^{-4}$다.
+- **Weight decay(AdamW 형태).** Adam이 재척도하기 전에 그래디언트에 $\lambda w$를 더하는 것이 아니라, 적응 그래디언트 스텝과 *별도로* 매 스텝 각 가중치에 $(1 - \eta\lambda)$를 곱한다. SGD는 좌표별 재척도를 하지 않으므로 둘은 순수 SGD에서만 일치한다. 산수는 §2, 전체 갱신식은 [[02-foundations/optimization|4. 최적화 §3]]에 있다.
+- **그래디언트 누적.** 예제 $B = KB_\mu$개의 배치를 $B_\mu$개씩 microbatch $K$개로 나누고, 각 microbatch의 평균 그래디언트 $g_k$를 구해 다음으로 한 번 스텝을 밟는다.
+  $$g = \frac{1}{K}\sum_{k=1}^{K} g_k$$
+  microbatch 크기가 같고 손실이 예제에 대한 합이므로 전체 배치 평균 그래디언트와 같다. $8 \times 512$는 명목 배치 4,096이다. **반례:** 대조 손실은 예제에 대한 합이 *아니다*. 각 예제의 항이 같은 배치의 다른 예제에 의존하므로, microbatch를 넘어 특징을 모으지 않으면 누적은 예제당 negative를 4,095개가 아니라 511개만 준다.
+- **혼합 정밀도.** 16비트 형식은 범위를 메모리와 맞바꾼다. fp16의 최댓값은 65,504, 가장 작은 양수는 약 $6 \times 10^{-8}$이다. bf16은 fp32의 지수 8비트를 유지하므로 범위가 약 $3.4 \times 10^{38}$까지 가고, 대신 가수 정밀도가 거칠다. **손실 스케일링**은 역전파 전에 손실에 $S$를 곱하고 갱신 전에 그래디언트를 $S$로 나누어, 작은 그래디언트가 fp16에서 살아남게 한다. 그래디언트 $10^{-8}$은 fp16에서 $0$이 되지만, $S = 1024$면 약 $1.02 \times 10^{-5}$로 올라가 fp16이 표현할 수 있다.
+- **가중치 EMA.** 옵티마이저 스텝마다 갱신하는 두 번째 사본 $\bar\theta$다.
+  $$\bar\theta_t = \beta\,\bar\theta_{t-1} + (1 - \beta)\,\theta_t$$
+  그래서 $\bar\theta$는 대략 최근 $1/(1-\beta)$스텝을 평균하고, 오래된 가중치는 기하급수적으로 할인된다. DDPM의 $\beta = 0.9999$면 그 창이 10,000스텝이고 한 가중치의 영향은 약 6,931스텝 뒤에 절반이 된다. 평가하고 공개하는 것은 이 평균 사본이다.
+- **초기화.** 각 가중치를 평균 0, 층의 fan-in $n_{\text{in}}$과 fan-out $n_{\text{out}}$으로 정한 분산으로 뽑아서, 활성 분산이 깊이에 따라 폭발하지도 사라지지도 않게 한다. Xavier(tanh류 활성함수용)는 $\operatorname{Var}(w) = 2/(n_{\text{in}} + n_{\text{out}})$, He(입력의 절반을 0으로 만드는 ReLU용)는 $\operatorname{Var}(w) = 2/n_{\text{in}}$을 쓴다. $n_{\text{in}} = 512$인 ReLU 층의 표준편차는 $\sqrt{2/512} = 0.0625$다.
 
 > [!warning] 방법 차이로 위장한 레시피 차이
 > 이 문헌에서 가장 흔한 불공정 비교는, 새 방법은 현대적 레시피로 학습시키고 베이스라인은

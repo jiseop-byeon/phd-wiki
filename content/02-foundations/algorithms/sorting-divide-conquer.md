@@ -32,6 +32,18 @@ Every divide-and-conquer algorithm answers three questions, and an interviewer w
 2. **Why is the combined answer correct?** The argument is induction on the input size: *assume* the recursive calls return correct answers for the smaller pieces, then show that the combine step turns them into a correct answer for the whole. You never trace the recursion to prove it.
 3. **What does the split and combine cost?** That cost, together with the number and size of the pieces, is a recurrence. Solve it with the recursion tree or the master method from [[02-foundations/algorithms/complexity-recursion|11.1 §3]].
 
+**The definition, precisely.** Divide-and-conquer is an algorithm-design paradigm, not one algorithm. An algorithm belongs to it when it has all three named parts.
+
+- **Divide**: an instance of size $n$ above a base size $n_0$ is turned into $a \ge 1$ instances of the *same* problem, each strictly smaller than $n$.
+- **Conquer**: each piece is solved by a recursive call, and an instance of size $n \le n_0$ is a **base case**, solved directly without recursion.
+- **Combine**: the answer for the whole is built from the $a$ answers of the pieces.
+
+When every piece has size $n/b$ for a constant $b > 1$, the running time satisfies the recurrence below, because the whole costs the $a$ recursive calls plus the non-recursive divide and combine work:
+$$T(n) = a\,T(n/b) + f(n) \ \text{ for } n > n_0, \qquad T(n) = \Theta(1) \ \text{ for } n \le n_0$$
+Here $a$ is the number of pieces, $n/b$ the size of each piece, $f(n)$ the cost of dividing and combining at size $n$, and $n_0$ the largest base-case size, usually 1. Merge sort has $a = 2$, $b = 2$ and $f(n) = \Theta(n)$; binary search has $a = 1$, $b = 2$ and $f(n) = \Theta(1)$. An unbalanced split writes the actual piece sizes instead, as quicksort's $T(q) + T(n - 1 - q)$ in §3 does. The symbols $O$, $\Omega$ and $\Theta$ are defined in [[02-foundations/algorithms/complexity-recursion|11.1 §2]].
+
+**Non-example.** The recursion $F(n) = F(n-1) + F(n-2)$ for Fibonacci numbers also splits into smaller instances of the same problem, but its pieces overlap, since $F(n-1)$ calls $F(n-2)$ again. Plain recursion therefore makes 2,692,537 calls to compute $F(30)$ although only 31 distinct arguments exist, so it is the dynamic-programming case described below, not a useful divide-and-conquer.
+
 Every algorithm on this page is one row of the table below. Learn the recurrence alongside the name, because "what is the recurrence?" is how you turn a new divide-and-conquer idea into a complexity in thirty seconds.
 
 | Algorithm | Recurrence | Cost | Why |
@@ -59,11 +71,18 @@ Every algorithm on this page is one row of the table below. Learn the recurrence
 
 **The merge invariant.** While merging `left` and `right` with pointers `i` and `j`, the output always holds the smallest `i + j` elements of both lists, in sorted order. It stays true because both inputs are sorted: `left[i]` is the smallest element left in `left`, and `right[j]` is the smallest element left in `right`, so the smaller of the two is the smallest element remaining anywhere. When one list runs out, the rest of the other is already sorted and larger than everything output, so it is appended as a block. The whole sort is then correct by induction (§1): if the recursive calls sort the halves, merging produces the sorted whole.
 
-**Time: $\Theta(n \log n)$ on every input.** The recursion tree has $\log_2 n$ levels. At each level the pieces partition the whole array, and merging pieces of total length $n$ costs O(n). So the total is $n$ per level times $\log_2 n$ levels. Nothing depends on the input order: sorted, reversed and random inputs all cost the same, which is a strength when you need a guarantee.
+**Time: $\Theta(n \log n)$ on every input.** The recursion tree has $\log_2 n$ levels. At each level the pieces partition the whole array, and merging pieces of total length $n$ costs O(n). So the total is $n$ per level times $\log_2 n$ levels. Nothing depends on the input order: sorted, reversed and random inputs all cost the same, which is a strength when you need a guarantee. Written as a recurrence with its base case, charging $n$ for a merge of total length $n$:
+$$T(n) = 2\,T(n/2) + n \ \text{ for } n \ge 2, \qquad T(1) = 1$$
+For $n$ a power of 2 this solves exactly to $T(n) = n \log_2 n + n$, because each of the $\log_2 n$ merge levels adds $n$ and the $n$ single-element leaves add 1 each. For example $T(8) = 2\,T(4) + 8 = 2 \cdot 12 + 8 = 32 = 8 \cdot 3 + 8$.
 
 **Space: O(n) extra.** The merge writes into a buffer the size of its two inputs. The recursion stack adds $O(\log n)$. In-place merging is possible but complicated and slow, so interviews accept O(n). On a **linked list** merge sort needs only O(1) extra space, because merging relinks nodes instead of copying them; that makes it the standard way to sort a linked list.
 
-**Stability.** A sort is **stable** if items with equal keys keep their input order. Merge sort is stable exactly when the merge takes from the left on ties, which is why the comparison below is `<=` and not `<`. Stability matters whenever the order of equal keys carries information. If you sort detections by class after they were already in timestamp order, a stable sort keeps each class in time order for free.
+**Stability.** First, what any sort must produce. Given items $x_1, \dots, x_n$ with keys $k(x_i)$, a sort outputs a permutation $\pi$ of the positions that puts the keys in nondecreasing order, $k(x_{\pi(1)}) \le k(x_{\pi(2)}) \le \dots \le k(x_{\pi(n)})$. When keys repeat, several permutations do that. A sort is **stable** if it always outputs the one in which items with equal keys keep their input order:
+$$i < j \ \text{ and } \ k(x_i) = k(x_j) \implies \pi^{-1}(i) < \pi^{-1}(j)$$
+Here $\pi^{-1}(i)$ is the output position of input item $i$, so the condition says that of two equal-key items, the one that came first in the input also comes first in the output. The code below shows it: `("lidar", 3)` stays ahead of `("cam", 3)`. Merge sort is stable exactly when the merge takes from the left on ties, which is why the comparison below is `<=` and not `<`.
+
+- **Non-example.** Selection sort, which swaps the smallest remaining item to the front, is not stable. On $[(2, a), (2, b), (1, c)]$ sorted by the number, the first swap exchanges $(2, a)$ with $(1, c)$ and gives $[(1, c), (2, b), (2, a)]$, so $a$ and $b$ have changed order. Quicksort and heapsort are not stable either.
+- **Why it matters.** Stability matters whenever the order of equal keys carries information. If you sort detections by class after they were already in timestamp order, a stable sort keeps each class in time order for free. It is also what makes sorting by several keys in successive passes work (§5), and what makes radix sort correct (§4).
 
 ```python
 def merge_sort(a, key=lambda x: x):
@@ -92,7 +111,9 @@ print(merge_sort(events, key=lambda e: e[1])) # equal times keep input order
 
 The same merge, applied to $k$ sorted streams at once with a heap, is how you combine several time-ordered sensor logs into one: `heapq.merge(*streams, key=...)` costs $O(N \log k)$ for $N$ records in total and reads the streams lazily. It is also the core of **external sorting**, where the data does not fit in memory: sort chunks that do fit, write them out, then k-way merge the files.
 
-**Counting inversions.** An **inversion** is a pair of positions $i < j$ with $a[i] > a[j]$. A sorted array has none, and a reversed one has all $n(n-1)/2$, so the count measures how far a sequence is from sorted. Checking all pairs costs $O(n^2)$. Merge sort counts them in $O(n \log n)$ with one extra line.
+**Counting inversions.** An **inversion** of a sequence $a[1], \dots, a[n]$ is a pair of positions $i < j$ whose values are out of order, $a[i] > a[j]$. The inversion count is the number of such pairs:
+$$\operatorname{inv}(a) = \big|\{(i, j) : 1 \le i < j \le n,\ a[i] > a[j]\}\big|$$
+The inequality is strict, so equal values never form an inversion: $[2, 2]$ has none. A sorted array has $\operatorname{inv}(a) = 0$, and a reversed array of distinct values has all $n(n-1)/2$, since every pair is out of order, so the count measures how far a sequence is from sorted. It also counts work: insertion sort swaps only adjacent out-of-order elements, and each such swap removes exactly one inversion, so it makes exactly $\operatorname{inv}(a)$ swaps, 3 for the $[3, 1, 4, 2]$ below. Checking all pairs costs $O(n^2)$. Merge sort counts them in $O(n \log n)$ with one extra line.
 
 Split the inversions into those inside the left half, those inside the right half, and **split inversions** with one element in each half. The recursive calls return the first two counts. For the third, look at the merge. A left element $x$ and a right element $y$ form an inversion exactly when $x > y$, and that is exactly when $y$ is output before $x$. So when the merge outputs `right[j]`, every element still waiting in `left` forms an inversion with it, and there are `len(left) - i` of them. Adding that number at each such step counts all split inversions during the O(n) merge, so the recurrence is still $T(n) = 2T(n/2) + O(n)$.
 
@@ -104,11 +125,11 @@ Split the inversions into those inside the left half, those inside the right hal
 >
 > Total: $1 + 1 + 1 = 3$. Check by listing all pairs: (3, 1), (3, 2), (4, 2).
 
-**Where this is used: ranking agreement.** Suppose two rankings of the same $n$ items: the order in which a simulator ranks ten policy checkpoints, and the order of their real-robot success rates; or a learned reward model's ranking of trajectories against a human's. A pair of items is **concordant** if both rankings put them in the same order and **discordant** otherwise. Kendall's tau is the fraction of concordant pairs minus the fraction of discordant ones:
+**Where this is used: ranking agreement.** Suppose two rankings of the same $n$ items: the order in which a simulator ranks ten policy checkpoints, and the order of their real-robot success rates; or a learned reward model's ranking of trajectories against a human's. A pair of items is **concordant** if both rankings put them in the same order and **discordant** otherwise. With $r_A(x)$ and $r_B(x)$ the positions of item $x$ in the two rankings, the pair $x, y$ is concordant when $(r_A(x) - r_A(y))(r_B(x) - r_B(y)) > 0$ and discordant when that product is negative; it is zero only for a tie. Kendall's tau is the fraction of concordant pairs minus the fraction of discordant ones:
 
 $$\tau = \frac{C - D}{n(n-1)/2} = 1 - \frac{4D}{n(n-1)}$$
 
-The second form follows because, without ties, every pair is one or the other, so $C + D = n(n-1)/2$. $\tau = 1$ means identical order, $\tau = -1$ means reversed. The key observation is that $D$ is an inversion count: list the items in the first ranking's order, write down each item's position in the second ranking, and the discordant pairs are exactly the inversions of that list. For example, take four items A, B, C, D in the first ranking's order, and suppose the second ranking puts them at positions 3, 1, 4, 2. The discordant pairs are the three inversions of $[3, 1, 4, 2]$ counted above, so $D = 3$, $C = 6 - 3 = 3$, and $\tau = (3 - 3)/6 = 0$: the two rankings agree on as many pairs as they disagree on. So Kendall's tau costs $O(n \log n)$ instead of $O(n^2)$ (Knight, 1966). With ties, use the tau-b correction, which is the default in `scipy.stats.kendalltau`.
+Here $C$ is the number of concordant pairs, $D$ the number of discordant pairs, and $n(n-1)/2$ the number of pairs of $n$ items. The second form follows because, without ties, every pair is one or the other, so $C + D = n(n-1)/2$. $\tau = 1$ means identical order, $\tau = -1$ means reversed. The key observation is that $D$ is an inversion count: list the items in the first ranking's order, write down each item's position in the second ranking, and the discordant pairs are exactly the inversions of that list. For example, take four items A, B, C, D in the first ranking's order, and suppose the second ranking puts them at positions 3, 1, 4, 2. The discordant pairs are the three inversions of $[3, 1, 4, 2]$ counted above, so $D = 3$, $C = 6 - 3 = 3$, and $\tau = (3 - 3)/6 = 0$: the two rankings agree on as many pairs as they disagree on. So Kendall's tau costs $O(n \log n)$ instead of $O(n^2)$ (Knight, 1966). With ties, use the tau-b correction, which is the default in `scipy.stats.kendalltau`.
 
 ```python
 def sort_and_count(a):
@@ -154,7 +175,9 @@ print(kendall_tau([0, 1, 2, 3, 4], [1, 0, 2, 4, 3]))          # 0.6
 
 **The idea in one sentence:** pick a pivot, rearrange the array so smaller elements come before it and larger ones after it, then sort the two sides recursively.
 
-Where merge sort does its work in the combine step and splits trivially, quicksort does its work in the split, the **partition**, and needs no combine at all: once both sides are sorted in place, the array is sorted. Correctness is the same induction as §1. After partitioning, the pivot is in its final position, every element to its left belongs to its left, and the recursive calls sort each side.
+Where merge sort does its work in the combine step and splits trivially, quicksort does its work in the split, the **partition**, and needs no combine at all. A partition of the range $a[lo..hi]$ around a pivot value $p$ rearranges the range and returns an index $q$ such that
+$$a[i] \le p \ \text{ for } lo \le i < q, \qquad a[q] = p, \qquad a[i] \ge p \ \text{ for } q < i \le hi$$
+so the pivot already sits at an index it can have in the sorted array, because everything before it is no larger and everything after it is no smaller. Lomuto's scheme below meets this with the stricter $<$ on the left; Hoare's meets a weaker form that does not fix the pivot at $q$. Once both sides are sorted in place, the array is sorted. Correctness is the same induction as §1. After partitioning, the pivot is in its final position, every element to its left belongs to its left, and the recursive calls sort each side.
 
 **Lomuto partition.** Use the last element as the pivot, and scan left to right with one boundary index `i`. The invariant is that `a[lo:i]` holds elements smaller than the pivot and `a[i:j]` holds elements that are not. When `a[j]` is smaller than the pivot, swap it to position `i` and advance `i`. At the end, swap the pivot into position `i`, which is its final place. Lomuto is the easiest to write correctly and returns the pivot's index, which quickselect (§7) needs. It makes more swaps than Hoare's scheme, though, and with only a two-way test it degrades to $\Theta(n^2)$ when many elements equal the pivot: an array of identical values splits into $n - 1$ and $0$ at every level.
 
@@ -202,19 +225,25 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 >
 > Finally swap the pivot into `a[3]`, giving $[4, 2, 1, 5, 7, 9]$. The pivot 5 is at index 3, with smaller elements on its left and larger ones on its right.
 
-**Why the pivot choice decides everything.** If the pivot is always the median, the recurrence is $T(n) = 2T(n/2) + O(n)$, which is $\Theta(n \log n)$. If it is always the minimum or maximum, one side is empty and the other has $n - 1$ elements, so $T(n) = T(n-1) + O(n) = \Theta(n^2)$. A fixed rule such as "use the first element" hits that worst case on **already sorted or reverse-sorted input**, which is common in practice: timestamps, re-sorting a nearly sorted list, a list sorted by a previous stage. A **random pivot** (every element equally likely) removes the dependence on the input. The expected running time is then $O(n \log n)$ *for every input*, where the expectation is over the algorithm's own coin flips, not over some assumed distribution of inputs.
+**Why the pivot choice decides everything.** If the pivot lands at rank $q$, so that $q$ elements go left and $n - 1 - q$ go right, quicksort's cost satisfies
+$$T(n) = T(q) + T(n - 1 - q) + \Theta(n), \qquad T(0) = T(1) = \Theta(1)$$
+because the partition is linear and the pivot itself is in neither recursive call. If the pivot is always the median, the recurrence is $T(n) = 2T(n/2) + O(n)$, which is $\Theta(n \log n)$. If it is always the minimum or maximum, one side is empty and the other has $n - 1$ elements, so $T(n) = T(n-1) + O(n) = \Theta(n^2)$. A fixed rule such as "use the first element" hits that worst case on **already sorted or reverse-sorted input**, which is common in practice: timestamps, re-sorting a nearly sorted list, a list sorted by a previous stage. A **random pivot** (every element equally likely) removes the dependence on the input. The expected running time is then $O(n \log n)$ *for every input*, where the expectation is over the algorithm's own coin flips, not over some assumed distribution of inputs.
 
 **The expected-time argument.** This proof is a favourite interview question because it avoids solving a messy random recurrence.
 
 1. Let $z_1 < z_2 < \dots < z_n$ be the elements in sorted order, assumed distinct. The running time is proportional to the number of comparisons $C$, since each partition does $O(1)$ work per comparison.
-2. Two elements are compared only when one of them is the pivot, and the pivot is then left out of both recursive calls. So each pair is compared **at most once**. Let $X_{ij}$ be 1 if $z_i$ and $z_j$ are ever compared and 0 otherwise. Then $C = \sum_{i<j} X_{ij}$, and by linearity of expectation, $E[C] = \sum_{i<j} \Pr[z_i, z_j \text{ compared}]$.
+2. Two elements are compared only when one of them is the pivot, and the pivot is then left out of both recursive calls. So each pair is compared **at most once**. Let $X_{ij}$ be 1 if $z_i$ and $z_j$ are ever compared and 0 otherwise. Then $C = \sum_{i<j} X_{ij}$, and by linearity of expectation ([[02-foundations/probability|3. Probability §2]]), $E[C] = \sum_{i<j} \Pr[z_i, z_j \text{ compared}]$.
 3. **The key claim:** $z_i$ and $z_j$ are compared if and only if the first pivot chosen from $\{z_i, z_{i+1}, \dots, z_j\}$ is $z_i$ or $z_j$. Until some element of that set is chosen as a pivot, the whole set stays together in one subarray, because any pivot outside the set is smaller or larger than all of them. If the first one chosen is $z_i$ or $z_j$, it is compared with everything in its subarray, including the other one. If it is some $z_k$ strictly between them, $z_i$ goes left and $z_j$ goes right, and they are never compared.
 4. The pivot is uniform, so each of the $j - i + 1$ elements of the set is equally likely to be the first one picked. Two of those choices lead to a comparison, so $\Pr[z_i, z_j \text{ compared}] = 2/(j-i+1)$.
 5. Sum it. For each $i$, substitute $k = j - i + 1$, which runs from 2 to at most $n$:
 
 $$E[C] = \sum_{i<j} \frac{2}{j-i+1} \le \sum_{i=1}^{n} \sum_{k=2}^{n} \frac{2}{k} \le 2n \ln n$$
 
-The last step holds because $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$. So randomized quicksort makes at most $2n \ln n \approx 1.39\, n \log_2 n$ comparisons in expectation. Evaluating the same double sum exactly, instead of bounding it, gives $2(n+1)H_n - 4n$, and the simulation below matches it.
+The last step holds because $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$, where $H_n = 1 + \tfrac12 + \dots + \tfrac1n$ is the $n$-th harmonic number. So randomized quicksort makes at most $2n \ln n \approx 1.39\, n \log_2 n$ comparisons in expectation. Evaluating the same double sum exactly, instead of bounding it, gives $2(n+1)H_n - 4n$, and the simulation below matches it.
+
+The same exact value comes out of the recurrence for the expected number of comparisons $C(n)$, which averages over the $n$ equally likely pivot ranks $q$:
+$$C(n) = (n - 1) + \frac{2}{n} \sum_{q=0}^{n-1} C(q), \qquad C(0) = C(1) = 0$$
+The $n - 1$ counts the partition's comparisons, and the factor 2 appears because each size $q$ occurs once as the left side and once as the right side. It gives $C(2) = 1$, $C(3) = 8/3$ and $C(4) = 29/6 \approx 4.83$, the value the example below finds from the pair sum.
 
 ```python
 import math
@@ -241,7 +270,9 @@ print(round(average), round(2 * (n + 1) * harmonic - 4 * n), round(2 * n * math.
 
 **When quicksort is still quadratic.** The worst case remains $\Theta(n^2)$: with random pivots it is simply very unlikely. In practice the quadratic cases come from three sources. A deterministic pivot rule meets sorted or adversarial input. A two-way partition meets **many duplicates**, which random pivots do not fix, because every choice is the same value. And a bad split also means recursion depth $n$, so a Python implementation crashes before it gets slow. The fixes are a random pivot, a three-way partition, and recursing on the smaller side while looping on the larger, which bounds the stack at $O(\log n)$ because each recursive call is on at most half the range.
 
-**Three-way partition for duplicates.** Split the range into three regions, smaller than, equal to, and larger than the pivot (Dijkstra's "Dutch national flag"), and recurse only on the outer two. An array of identical values then finishes after a single O(n) pass, and inputs with few distinct keys become close to linear.
+**Three-way partition for duplicates.** Split the range into three regions, smaller than, equal to, and larger than the pivot (Dijkstra's "Dutch national flag"), and recurse only on the outer two. Precisely, it returns indices $lt \le gt$ with
+$$a[i] < p \ \text{ for } lo \le i < lt, \qquad a[i] = p \ \text{ for } lt \le i \le gt, \qquad a[i] > p \ \text{ for } gt < i \le hi$$
+so every copy of the pivot is already in its final place and none of them is passed to a recursive call. An array of identical values then finishes after a single O(n) pass, and inputs with few distinct keys become close to linear.
 
 ```python
 import random
@@ -279,7 +310,9 @@ print(data)                           # [0, 1, 2, 3, 3, 3, 3, 3, 9]
 
 ### 4. The Ω(n log n) lower bound, and how to get under it
 
-A **comparison sort** learns about the input only by comparing pairs of elements. Merge sort, quicksort, heapsort and insertion sort are all comparison sorts. The claim is that every comparison sort needs $\Omega(n \log n)$ comparisons in the worst case, so merge sort is optimal up to a constant factor.
+A **comparison sort** is a sorting algorithm with one restriction: the only way it uses the keys is to ask, for two items, whether $k(x_i) \le k(x_j)$ (or $<$, or $=$), and everything it does next depends only on those yes/no answers. Equivalently, if two inputs $x$ and $y$ have the same relative order,
+$$k(x_i) \le k(x_j) \iff k(y_i) \le k(y_j) \quad \text{for all } i, j,$$
+the algorithm performs exactly the same steps on both, so it cannot tell $[1, 5, 3]$ from $[10, 50, 30]$. Merge sort, quicksort, heapsort and insertion sort are all comparison sorts. **Non-example:** counting sort, below, uses a key as an array index, which reads the key's value and not only its order. The claim is that every comparison sort needs $\Omega(n \log n)$ comparisons in the worst case, so merge sort is optimal up to a constant factor.
 
 **The decision-tree argument.** Fix $n$ and any comparison sort, and run it on inputs that are permutations of $n$ distinct values. Draw its behaviour as a binary tree. Each internal node is one comparison, its two children are the two possible outcomes, and each leaf is a finished run, which has determined the rearrangement that sorts the input. Different input permutations need different rearrangements, so they must end at different leaves, and the tree needs at least $n!$ leaves. A binary tree of height $h$ has at most $2^h$ leaves, so $2^h \ge n!$, and the worst-case number of comparisons is $h \ge \log_2 n!$. To see how large that is, keep only the largest $n/2$ factors of $n!$, each of which is at least $n/2$:
 
@@ -292,9 +325,13 @@ So no comparison sort beats $n \log n$, because it cannot tell $n!$ inputs apart
 
 **Getting under the bound.** The lower bound says nothing about algorithms that look at the keys themselves instead of only comparing them. When the keys are small integers, or can be cut into small digits, you can sort in linear time.
 
-- **Counting sort.** For integer keys in `range(k)`, count how many items have each key. The prefix sums of the counts then give the first output slot for each key, and a left-to-right pass places the items, which keeps the sort stable. It costs $O(n + k)$ time and space, so it is linear when $k = O(n)$ and useless when $k$ is huge.
-- **Radix sort.** Sort by the least significant digit first, then the next digit, and so on, with a *stable* counting sort per digit. After pass $t$, the items are sorted by their last $t$ digits, because stability keeps earlier ties in order. With $d$ digits in base $b$ it costs $O(d(n + b))$. 32-bit keys in base 256 need four linear passes. GPU bounding-volume-hierarchy builders, used for collision checking and ray casting, radix-sort the Morton codes of primitives this way, and an integer voxel index can be sorted the same way to group the points of a cloud by voxel.
-- **Bucket sort.** For real keys spread roughly uniformly over $[0, 1)$, drop each item into one of $n$ equal-width buckets, sort each bucket, and concatenate. Each bucket holds $O(1)$ items in expectation, so the expected time is $O(n)$. If the data are clumped, one bucket gets everything and you are back to the cost of the inner sort.
+- **Counting sort.** For integer keys in `range(k)`, count how many items have each key. The prefix sums of the counts then give the first output slot for each key, because every item with a smaller key must come before it:
+$$\text{start}[v] = \sum_{u < v} \text{count}[u]$$
+  Here $\text{count}[u]$ is the number of items whose key is $u$. For keys $2, 0, 2, 1$ the counts are $1, 1, 2$ and the starts are $0, 1, 2$. A left-to-right pass then places the items, which keeps the sort stable. It costs $O(n + k)$ time and space, so it is linear when $k = O(n)$ and useless when $k$ is huge.
+- **Radix sort.** Write each key in base $b$ with $d$ digits,
+$$x = \sum_{t=0}^{d-1} x_t\, b^t, \qquad x_t = \lfloor x / b^t \rfloor \bmod b$$
+  so the digit $x_t$ is what `(x // shift) % base` computes, and 802 in base 10 has $x_0 = 2$, $x_1 = 0$, $x_2 = 8$. Sort by the least significant digit first, then the next digit, and so on, with a *stable* counting sort per digit. After pass $t$, the items are sorted by their last $t$ digits, because stability keeps earlier ties in order. With $d$ digits in base $b$ it costs $O(d(n + b))$. 32-bit keys in base 256 need four linear passes. GPU bounding-volume-hierarchy builders, used for collision checking and ray casting, radix-sort the Morton codes of primitives this way, and an integer voxel index can be sorted the same way to group the points of a cloud by voxel.
+- **Bucket sort.** For real keys spread roughly uniformly over $[0, 1)$, drop each item $x$ into bucket $\lfloor n x \rfloor$ of $n$ equal-width buckets (with $n = 4$, the key $0.62$ goes to bucket 2), sort each bucket, and concatenate. Each bucket holds $O(1)$ items in expectation, so the expected time is $O(n)$. If the data are clumped, one bucket gets everything and you are back to the cost of the inner sort.
 
 ```python
 def counting_sort(items, key, k):
@@ -363,8 +400,16 @@ Two more Python traps. If a key tuple ties on its first fields and the next fiel
 
 - `std::sort` is **not stable**. It is $O(n \log n)$ and usually an introsort. When equal elements must keep their order, use `std::stable_sort`, which is a merge sort: $O(n \log n)$ with a buffer, and $O(n \log^2 n)$ if it cannot get the extra memory.
 - `std::partial_sort` sorts only the first $k$ positions in $O(n \log k)$, and `std::nth_element` performs selection (§7) in average linear time.
-- A custom comparator **must be a strict weak ordering**. That means `cmp(a, a)` is false, `cmp(a, b)` and `cmp(b, a)` are never both true, `cmp` is transitive, and "neither is less than the other" is also transitive.
-- The classic violation is `return a <= b;`. It breaks the first rule, and it is undefined behaviour, not just a wrong order: real implementations can read past the end of the array and crash. Comparing floating-point values that may be NaN, or treating values within an epsilon as "equal", break the same rules.
+- A custom comparator **must be a strict weak ordering**. Write $a \prec b$ for `cmp(a, b)`, and call $a$ and $b$ *incomparable* when neither is less than the other:
+$$a \sim b \iff \text{not } a \prec b \ \text{ and } \ \text{not } b \prec a$$
+  A strict weak ordering satisfies four named conditions for all $a, b, c$:
+  - *irreflexivity*: $a \prec a$ is false, so `cmp(a, a)` is false;
+  - *asymmetry*: $a \prec b$ implies that $b \prec a$ is false, so `cmp(a, b)` and `cmp(b, a)` are never both true;
+  - *transitivity*: $a \prec b$ and $b \prec c$ imply $a \prec c$;
+  - *transitivity of incomparability*: $a \sim b$ and $b \sim c$ imply $a \sim c$.
+
+  Together they make $\sim$ an equivalence relation whose classes, the groups of tied items, are totally ordered by $\prec$, so "sorted" has one meaning. `<` on integers satisfies all four.
+- The classic violation is `return a <= b;`. It breaks the first rule, and it is undefined behaviour, not just a wrong order: real implementations can read past the end of the array and crash. Comparing floating-point values that may be NaN, or treating values within an epsilon as "equal", break the same rules. With NaN, $1 \sim \text{NaN}$ and $\text{NaN} \sim 2$, since every comparison with NaN is false, yet $1 < 2$, so incomparability is not transitive.
 - For several fields, compare `std::tie(a.x, a.y) < std::tie(b.x, b.y)`, which is lexicographic and correct by construction.
 
 ### 6. Binary search done right
@@ -374,6 +419,10 @@ Two more Python traps. If a key tuple ties on its first fields and the next fiel
 Almost every binary-search bug is an inconsistency about what `lo` and `hi` mean. Fix one convention and derive every line from it. The one that composes best is the **half-open interval** `[lo, hi)`: `lo` is included, `hi` is not, the range is empty when `lo == hi`, and its size is `hi - lo`. That is the convention of `range`, slices, and C++ iterators.
 
 State the problem as **"find the first position where a monotone predicate becomes true"**: `pred` is False, …, False, True, …, True on `[lo, hi)`, and you want the first True, or `hi` if there is none. Every binary search is this one function with a different predicate.
+
+Precisely, a predicate on the integers of the half-open range $[lo, hi) = \{x : lo \le x < hi\}$ is **monotone** when, once true, it stays true:
+$$\text{pred}(x) \implies \text{pred}(y) \quad \text{for all } lo \le x \le y < hi$$
+The answer is $x^* = \min\{x \in [lo, hi) : \text{pred}(x)\}$, with $x^* = hi$ when no $x$ makes it true. Monotonicity is what lets one probe discard half the range, because a False at `mid` proves that everything left of `mid` is False. **Non-example:** on `a = [5, 1, 4]` the predicate `a[i] >= 4` is True, False, True, which is not monotone. `first_true` probes index 1, sees False, discards index 0 and returns 2, although index 0 is the first True.
 
 ```python
 from bisect import bisect_left, bisect_right
@@ -398,7 +447,9 @@ assert (lower, upper) == (bisect_left(a, 4), bisect_right(a, 4))
 
 **Why it is correct and terminates.** The invariant is that the first True lies in `[lo, hi]`, where the value `hi` stands for "none". It holds at the start. If `pred(mid)` is True, the first True is at `mid` or earlier, so `hi = mid` keeps it. If it is False, then by monotonicity everything up to `mid` is False, so `lo = mid + 1` keeps it. Because `mid < hi`, both branches strictly shrink the range, so the loop ends, with `lo == hi` equal to the answer. It takes $\lceil \log_2(\text{hi} - \text{lo} + 1) \rceil$ steps.
 
-**Lower and upper bound.** For a sorted array, the **lower bound** of `x` is the first index with `a[i] >= x`: where `x` is, or where it would be inserted before any equal items. The **upper bound** is the first index with `a[i] > x`, which is just past the last copy of `x`. Everything else follows from these two.
+**Lower and upper bound.** For a sorted array, the **lower bound** of `x` is the first index with `a[i] >= x`: where `x` is, or where it would be inserted before any equal items. The **upper bound** is the first index with `a[i] > x`, which is just past the last copy of `x`. As formulas,
+$$\text{lower}(x) = \min\{i : a[i] \ge x\}, \qquad \text{upper}(x) = \min\{i : a[i] > x\}$$
+with the minimum of an empty set taken as `len(a)`, so both are defined for every `x`. For `a = [2, 4, 4, 4, 7, 9]`: lower(4) = 1, upper(4) = 4, lower(5) = 4 and lower(10) = 6. Everything else follows from these two.
 
 - `x` is present iff `lower < len(a) and a[lower] == x`.
 - The number of copies of `x` is `upper - lower`.
@@ -431,7 +482,9 @@ def interpolate(stamps, values, t):
 print(interpolate([0.00, 0.10, 0.20, 0.30], [0.0, 1.0, 4.0, 9.0], 0.25))   # 6.5
 ```
 
-**Binary search on the answer.** Many optimization problems ask for the smallest value $x$ that makes something feasible. If feasibility is **monotone**, meaning that whenever $x$ works every larger $x$ works too, and if *checking* a given $x$ is much easier than finding the best $x$ directly, then binary search over $x$ with the feasibility check as the predicate. The cost is $O(\log(\text{range}))$ checks.
+**Binary search on the answer.** Many optimization problems ask for the smallest value $x$ that makes something feasible. If feasibility is **monotone**, meaning that whenever $x$ works every larger $x$ works too,
+$$\text{feasible}(x) \implies \text{feasible}(x') \quad \text{for all } x' \ge x,$$
+so that the answer $x^* = \min\{x : \text{feasible}(x)\}$ is exactly `first_true` with `feasible` as the predicate, and if *checking* a given $x$ is much easier than finding the best $x$ directly, then binary search over $x$ with the feasibility check as the predicate. The cost is $O(\log(\text{range}))$ checks.
 
 The standard example: packages with weights $w_1, \dots, w_n$ must leave a depot **in the given order**, over at most $D$ days, and each day's load cannot exceed the vehicle's capacity. What is the smallest capacity that works?
 
@@ -480,6 +533,10 @@ The same pattern appears in planning. Suppose you want the **largest clearance**
 
 Finding the median, a percentile, or the $k$ smallest items does not require a full sort. Sorting costs $O(n \log n)$; selection can be done in $O(n)$.
 
+**What is being selected.** The **$k$-th smallest element**, or $k$-th order statistic (counting from $k = 0$, as the code does), of $n$ values is the value that would sit at index $k$ after sorting. It can be stated without sorting: it is the value $x$ of the array with
+$$\#\{i : a[i] < x\} \le k < \#\{i : a[i] \le x\}$$
+because exactly the elements smaller than $x$ come before its first copy, and its copies fill the positions up to $\#\{i : a[i] \le x\} - 1$. The **median** is $k = \lfloor n/2 \rfloor$. For the seven ranges in the code below, $x = 2.8$ has 3 smaller values and 4 values $\le 2.8$, so it is the element at $k = 3$, the median.
+
 **Quickselect.** *The idea in one sentence:* partition around a random pivot as in quicksort, then continue only on the side that contains position $k$.
 
 After a three-way partition, the positions `lt..gt` hold copies of the pivot. If `k` falls among them, the pivot is the answer. If `k < lt`, the answer is on the left; if `k > gt`, it is on the right. The position `k` stays the same because the array is not copied.
@@ -521,7 +578,7 @@ ranges = [2.9, 0.4, 5.1, 0.5, 30.0, 0.45, 2.8]   # one spurious long return
 print(quickselect(ranges, len(ranges) // 2))     # 2.8, the median; the mean is 6.02
 ```
 
-**Median of medians: O(n) in the worst case.** Blum, Floyd, Pratt, Rivest and Tarjan (1973) choose the pivot deterministically. Split the elements into groups of 5, take each group's median, and recursively select the median of those $n/5$ medians as the pivot. Half of the group medians are at most this pivot, and each of them is at least as large as two more elements in its group, so the pivot is larger than about $3/10$ of all elements, and by symmetry smaller than about $3/10$. The side that remains has at most about $7n/10$ elements, so $T(n) \le T(n/5) + T(7n/10) + O(n)$. Since $1/5 + 7/10 = 9/10 < 1$, the work per level shrinks geometrically and the total is $O(n)$. It is worth knowing as "selection is linear even in the worst case", but the constant is large, and in practice people use randomized selection or introselect: C++ `std::nth_element`, NumPy `np.partition` and `np.argpartition`.
+**Median of medians: O(n) in the worst case.** Blum, Floyd, Pratt, Rivest and Tarjan (1973) choose the pivot deterministically. Split the elements into groups of 5, take each group's median, and recursively select the median of those $n/5$ medians as the pivot. Half of the group medians are at most this pivot, and each of them is at least as large as two more elements in its group, so the pivot is larger than about $3/10$ of all elements, and by symmetry smaller than about $3/10$. The side that remains has at most about $7n/10$ elements, so $T(n) \le T(n/5) + T(7n/10) + O(n)$ for $n$ above a small constant, with $T(n) = O(1)$ below it. Since $1/5 + 7/10 = 9/10 < 1$, the work per level shrinks geometrically and the total is $O(n)$. It is worth knowing as "selection is linear even in the worst case", but the constant is large, and in practice people use randomized selection or introselect: C++ `std::nth_element`, NumPy `np.partition` and `np.argpartition`.
 
 **Top-k with a heap.** `heapq.nsmallest(k, items, key=...)` (and `nlargest`) keeps a max-heap of the best $k$ items seen so far. Each new item is compared with the heap's top and replaces it if it is better, at $O(\log k)$ cost. That gives $O(n \log k)$ time, $O(k)$ memory, and a result in sorted order. It also works on a stream or iterator that you cannot hold in memory, and it is stable. For $k = 1$ use `min`. When $k$ is close to $n$, `sorted(items)[:k]` is faster. With everything already in a NumPy array, `np.argpartition` gives the top $k$ in $O(n)$, and you sort just those $k$ afterwards if you need them in order.
 
@@ -544,7 +601,9 @@ print(nearest)          # [(0.3, 0.4), (-0.5, 0.2), (1.0, 1.0)]
 
 ### 8. Other divide-and-conquer classics worth recognizing
 
-**Fast exponentiation.** *The idea in one sentence:* $x^n = (x^{n/2})^2$ when $n$ is even, and $x \cdot x^{n-1}$ when it is odd, so the exponent halves every other step. Written as a loop over the bits of $n$, the invariant is that `result * x**n` always equals the original $x_0^{n_0}$. Each step either multiplies the current bit into `result` or squares `x` and halves `n`, so it takes $O(\log n)$ multiplications. The method only needs an associative multiplication, so the same loop computes:
+**Fast exponentiation.** *The idea in one sentence:* $x^n = (x^{n/2})^2$ when $n$ is even, and $x \cdot x^{n-1}$ when it is odd, so the exponent halves every other step. Written with its base case,
+$$x^n = \begin{cases} 1 & n = 0 \\ (x^{n/2})^2 & n > 0 \text{ even} \\ x \cdot x^{n-1} & n \text{ odd} \end{cases}$$
+and every case is valid because multiplication is **associative**, $(ab)c = a(bc)$, so a product of $n$ copies of $x$ may be grouped in any way, and because `one` is an identity, $1 \cdot x = x$. Written as a loop over the bits of $n$, the invariant is that `result * x**n` always equals the original $x_0^{n_0}$. Each step either multiplies the current bit into `result` or squares `x` and halves `n`, so it takes $O(\log n)$ multiplications. The method only needs an associative multiplication with an identity. Subtraction is a non-example: $(8 - 4) - 2 = 2$ but $8 - (4 - 2) = 6$, so regrouping changes the answer. With any associative multiplication, the same loop computes:
 
 - modular powers, which Python's built-in `pow(a, n, m)` already does;
 - powers of matrices, which give the $n$-th term of a linear recurrence in $O(\log n)$ matrix products (Fibonacci is the classic);
@@ -572,15 +631,17 @@ fib = power(((1, 1), (1, 0)), 10, matmul, ((1, 0), (0, 1)))
 print(fib[0][1])                                           # 55, the 10th Fibonacci number
 ```
 
-**Closest pair of points in 2-D.** Checking all pairs costs $O(n^2)$. In 1-D you would sort and compare neighbours. In 2-D, divide-and-conquer reaches $O(n \log n)$.
+**Closest pair of points in 2-D.** Given $n$ points, find two different points $p, q$ that minimize the Euclidean distance $\lVert p - q \rVert = \sqrt{(p_x - q_x)^2 + (p_y - q_y)^2}$. Checking all pairs costs $O(n^2)$. In 1-D you would sort and compare neighbours. In 2-D, divide-and-conquer reaches $O(n \log n)$.
 
 1. **Split.** Sort the points by $x$ and divide them by a vertical line into a left half and a right half.
 2. **Recurse.** Find the closest pair in each half, and let $\delta$ be the smaller of the two distances.
-3. **Combine.** Any pair closer than $\delta$ that was not found yet must have one point on each side of the line, and both of its points must lie within $\delta$ of the line, since otherwise the horizontal gap alone exceeds $\delta$. So only the **strip** of width $2\delta$ around the line matters.
+3. **Combine.** Any pair closer than $\delta$ that was not found yet must have one point on each side of the line, and both of its points must lie within $\delta$ of the line, since otherwise the horizontal gap alone exceeds $\delta$. So only the **strip** matters, the points within $\delta$ of the dividing line $x = \ell$, which is the set $\{p : \lvert p_x - \ell \rvert < \delta\}$ of width $2\delta$.
 
 The strip can still contain almost every point, so the step that makes the combine linear is a packing argument. Sort the strip's points by $y$. A pair closer than $\delta$ has a $y$-difference below $\delta$. Above any point, cover the $2\delta \times \delta$ rectangle around the line with eight $\delta/2 \times \delta/2$ squares, four on each side. Two points in the same square would be on the same side and at most $\delta/\sqrt{2} < \delta$ apart, which contradicts $\delta$ being the smallest distance within a side. So each square holds at most one point, and each point needs to be compared only with the next **7** points in $y$-order. If you keep the $y$-order by merging, as merge sort does, instead of re-sorting the strip in every call, the combine is $O(n)$ and $T(n) = 2T(n/2) + O(n) = O(n \log n)$. Re-sorting in every call gives $O(n \log^2 n)$. In robotics code, "find all pairs closer than $r$" is usually solved with a grid or spatial hash of cell size $r$, or with a KD-tree. The divide-and-conquer version is the interview example of a combine step that a geometric argument makes linear.
 
-**Karatsuba multiplication.** Splitting two $n$-digit numbers into high and low halves, Karatsuba (1962) gets the middle term of the product from $(a + b)(c + d) - ac - bd$, so it needs three half-size multiplications instead of four. That gives $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$, which is the algorithm CPython uses for large integers.
+**Karatsuba multiplication.** Split two $n$-digit numbers into high and low halves: with base $B$ (10 for decimal digits) and $m = n/2$, write $x = x_1 B^m + x_0$ and $y = y_1 B^m + y_0$. Their product is
+$$xy = z_2 B^{2m} + z_1 B^m + z_0, \qquad z_2 = x_1 y_1, \quad z_0 = x_0 y_0, \quad z_1 = (x_1 + x_0)(y_1 + y_0) - z_2 - z_0$$
+where the last identity holds because $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$, so subtracting $z_2$ and $z_0$ leaves the middle term $x_1 y_0 + x_0 y_1$. Karatsuba (1962) therefore needs three half-size multiplications instead of four. For $1234 \times 5678$: $z_2 = 12 \cdot 56 = 672$, $z_0 = 34 \cdot 78 = 2652$, $z_1 = 46 \cdot 134 - 672 - 2652 = 2840$, and $672 \cdot 10^4 + 2840 \cdot 10^2 + 2652 = 7006652$. That gives $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$, which is the algorithm CPython uses for large integers.
 
 ### Self-check
 
@@ -642,6 +703,18 @@ The strip can still contain almost every point, so the step that makes the combi
 2. **합친 답이 왜 맞는가?** 논증은 입력 크기에 대한 귀납법이다. 재귀 호출이 더 작은 조각에 대해 맞는 답을 돌려준다고 *가정*하고, 합치는 단계가 그것을 전체에 대한 맞는 답으로 바꾼다는 것을 보인다. 증명하려고 재귀를 따라가 볼 필요는 없다.
 3. **나누기와 합치기의 비용은 얼마인가?** 그 비용과 조각의 개수·크기가 점화식이 된다. [[02-foundations/algorithms/complexity-recursion|11.1 §3]]의 재귀 트리나 마스터 방법으로 푼다.
 
+**정확한 정의.** 분할 정복은 알고리즘 하나가 아니라 알고리즘 설계 패러다임이다. 다음 세 부분을 모두 갖춘 알고리즘이 여기에 속한다.
+
+- **나누기**(divide): 기저 크기 $n_0$보다 큰 크기 $n$의 사례를 *같은* 문제의 사례 $a \ge 1$개로 바꾸며, 각 사례는 $n$보다 엄격히 작다.
+- **정복**(conquer): 각 조각을 재귀 호출로 푼다. 크기 $n \le n_0$인 사례는 **기저 사례**(base case)이며 재귀 없이 직접 푼다.
+- **합치기**(combine): 조각 $a$개의 답으로 전체의 답을 만든다.
+
+모든 조각의 크기가 상수 $b > 1$에 대해 $n/b$이면, 전체 비용은 재귀 호출 $a$번에 재귀 바깥의 나누기·합치기 작업을 더한 것이므로 실행 시간은 다음 점화식을 만족한다.
+$$T(n) = a\,T(n/b) + f(n) \ \text{ for } n > n_0, \qquad T(n) = \Theta(1) \ \text{ for } n \le n_0$$
+여기서 $a$는 조각 수, $n/b$는 조각 하나의 크기, $f(n)$은 크기 $n$에서 나누고 합치는 비용, $n_0$는 가장 큰 기저 사례 크기이며 보통 1이다. 병합 정렬은 $a = 2$, $b = 2$, $f(n) = \Theta(n)$이고, 이진 탐색은 $a = 1$, $b = 2$, $f(n) = \Theta(1)$이다. 불균형한 분할은 §3의 퀵정렬이 $T(q) + T(n - 1 - q)$로 쓰듯 실제 조각 크기를 적는다. 기호 $O$, $\Omega$, $\Theta$는 [[02-foundations/algorithms/complexity-recursion|11.1 §2]]에서 정의한다.
+
+**반례.** 피보나치 수의 재귀 $F(n) = F(n-1) + F(n-2)$도 같은 문제의 더 작은 사례로 나누지만, $F(n-1)$이 $F(n-2)$를 다시 부르므로 조각이 겹친다. 그래서 단순한 재귀는 서로 다른 인자가 31개뿐인데도 $F(30)$을 계산하려고 2,692,537번 호출한다. 이것은 쓸모 있는 분할 정복이 아니라 아래에서 말하는 동적 계획법의 경우다.
+
 이 페이지의 모든 알고리즘은 아래 표의 한 줄이다. 이름과 함께 점화식을 외워라. "점화식이 뭔가?"라고 묻는 것이 새로운 분할 정복 아이디어를 30초 만에 복잡도로 바꾸는 방법이다.
 
 | 알고리즘 | 점화식 | 비용 | 이유 |
@@ -669,11 +742,18 @@ The strip can still contain almost every point, so the step that makes the combi
 
 **병합 불변식.** 포인터 `i`, `j`로 `left`와 `right`를 병합하는 동안, 출력에는 항상 두 리스트 전체에서 가장 작은 `i + j`개 원소가 정렬된 순서로 들어 있다. 두 입력이 정렬되어 있으므로 이 성질이 유지된다. `left[i]`는 `left`에 남은 것 중 최소이고 `right[j]`는 `right`에 남은 것 중 최소이므로, 둘 중 작은 것이 남은 전체의 최소다. 한쪽이 바닥나면 다른 쪽의 나머지는 이미 정렬되어 있고 출력된 모든 것보다 크므로 한꺼번에 붙인다. 정렬 전체의 정당성은 §1의 귀납법으로 따라온다. 재귀 호출이 두 절반을 정렬하면, 병합이 정렬된 전체를 만든다.
 
-**시간: 모든 입력에서 $\Theta(n \log n)$.** 재귀 트리는 $\log_2 n$ 레벨이다. 각 레벨의 조각들은 배열 전체를 나눠 가지고, 총길이 $n$인 조각들을 병합하는 비용은 O(n)이다. 그러므로 레벨당 $n$에 레벨 수 $\log_2 n$을 곱한 것이 전체다. 입력 순서와 무관하다. 정렬된 입력, 역순, 무작위 입력의 비용이 모두 같고, 보장이 필요할 때는 이것이 장점이다.
+**시간: 모든 입력에서 $\Theta(n \log n)$.** 재귀 트리는 $\log_2 n$ 레벨이다. 각 레벨의 조각들은 배열 전체를 나눠 가지고, 총길이 $n$인 조각들을 병합하는 비용은 O(n)이다. 그러므로 레벨당 $n$에 레벨 수 $\log_2 n$을 곱한 것이 전체다. 입력 순서와 무관하다. 정렬된 입력, 역순, 무작위 입력의 비용이 모두 같고, 보장이 필요할 때는 이것이 장점이다. 총길이 $n$의 병합에 $n$을 매겨 기저 사례와 함께 점화식으로 쓰면 다음과 같다.
+$$T(n) = 2\,T(n/2) + n \ \text{ for } n \ge 2, \qquad T(1) = 1$$
+$n$이 2의 거듭제곱이면 병합 레벨 $\log_2 n$개가 각각 $n$을, 원소 하나짜리 리프 $n$개가 각각 1을 더하므로 정확히 $T(n) = n \log_2 n + n$이다. 예를 들어 $T(8) = 2\,T(4) + 8 = 2 \cdot 12 + 8 = 32 = 8 \cdot 3 + 8$이다.
 
 **공간: 추가 O(n).** 병합은 두 입력 크기만 한 버퍼에 쓴다. 재귀 스택이 $O(\log n)$을 더한다. 제자리 병합도 가능하지만 복잡하고 느려서, 인터뷰에서는 O(n)이면 된다. **연결 리스트** 위에서는 병합이 복사가 아니라 노드 연결을 바꾸는 일이므로 추가 공간이 O(1)이고, 그래서 연결 리스트 정렬의 표준 방법이다.
 
-**안정성.** 키가 같은 항목들이 입력 순서를 유지하면 그 정렬을 **안정 정렬**(stable)이라 한다. 병합 정렬은 동점일 때 왼쪽에서 가져와야만 안정적이다. 아래 비교가 `<`가 아니라 `<=`인 이유다. 같은 키의 순서에 정보가 담겨 있을 때마다 안정성이 중요하다. 이미 타임스탬프 순인 검출 결과를 클래스별로 정렬하면, 안정 정렬은 각 클래스 안의 시간 순서를 공짜로 지켜 준다.
+**안정성.** 먼저 모든 정렬이 내놓아야 하는 것부터. 키 $k(x_i)$를 가진 항목 $x_1, \dots, x_n$이 주어지면, 정렬은 키를 감소하지 않는 순서 $k(x_{\pi(1)}) \le k(x_{\pi(2)}) \le \dots \le k(x_{\pi(n)})$로 놓는 위치의 순열 $\pi$를 출력한다. 키가 겹치면 그런 순열이 여러 개다. 그중 키가 같은 항목들이 입력 순서를 유지하는 것을 언제나 내놓는 정렬을 **안정 정렬**(stable)이라 한다.
+$$i < j \ \text{ and } \ k(x_i) = k(x_j) \implies \pi^{-1}(i) < \pi^{-1}(j)$$
+여기서 $\pi^{-1}(i)$는 입력 항목 $i$의 출력 위치다. 즉 키가 같은 두 항목 중 입력에서 먼저 온 것이 출력에서도 먼저 온다는 조건이다. 아래 코드에서 `("lidar", 3)`이 `("cam", 3)` 앞에 남는 것이 그 예다. 병합 정렬은 동점일 때 왼쪽에서 가져와야만 안정적이다. 아래 비교가 `<`가 아니라 `<=`인 이유다.
+
+- **반례.** 남은 것 중 가장 작은 항목을 앞으로 스왑하는 선택 정렬은 안정적이지 않다. $[(2, a), (2, b), (1, c)]$를 숫자로 정렬하면 첫 스왑이 $(2, a)$와 $(1, c)$를 맞바꿔 $[(1, c), (2, b), (2, a)]$가 되고, $a$와 $b$의 순서가 바뀐다. 퀵정렬과 힙 정렬도 안정적이지 않다.
+- **왜 중요한가.** 같은 키의 순서에 정보가 담겨 있을 때마다 안정성이 중요하다. 이미 타임스탬프 순인 검출 결과를 클래스별로 정렬하면, 안정 정렬은 각 클래스 안의 시간 순서를 공짜로 지켜 준다. 여러 키로 차례차례 정렬하는 방법(§5)과 기수 정렬의 정당성(§4)도 안정성에 기댄다.
 
 ```python
 def merge_sort(a, key=lambda x: x):
@@ -702,7 +782,9 @@ print(merge_sort(events, key=lambda e: e[1])) # equal times keep input order
 
 같은 병합을 힙으로 $k$개의 정렬된 스트림에 한꺼번에 적용하면, 시간 순서인 센서 로그 여러 개를 하나로 합칠 수 있다. `heapq.merge(*streams, key=...)`는 전체 레코드 $N$개에 대해 $O(N \log k)$이고 스트림을 지연 읽기한다. 데이터가 메모리에 들어가지 않을 때 쓰는 **외부 정렬** 기법의 핵심도 이것이다. 메모리에 들어가는 덩어리를 정렬해 파일로 쓰고, 그 파일들을 k-way 병합한다.
 
-**역순쌍 세기.** **역순쌍**(inversion)은 $i < j$이면서 $a[i] > a[j]$인 위치 쌍이다. 정렬된 배열에는 하나도 없고 역순 배열에는 $n(n-1)/2$개 전부가 있으므로, 그 개수는 수열이 정렬 상태에서 얼마나 먼지를 잰다. 모든 쌍을 확인하면 $O(n^2)$이다. 병합 정렬은 한 줄을 더해 $O(n \log n)$에 센다.
+**역순쌍 세기.** 수열 $a[1], \dots, a[n]$의 **역순쌍**(inversion)은 $i < j$이면서 값의 순서가 뒤집힌, 즉 $a[i] > a[j]$인 위치 쌍이다. 역순쌍 개수는 그런 쌍의 수다.
+$$\operatorname{inv}(a) = \big|\{(i, j) : 1 \le i < j \le n,\ a[i] > a[j]\}\big|$$
+부등호가 엄격하므로 같은 값끼리는 역순쌍이 되지 않는다. $[2, 2]$에는 하나도 없다. 정렬된 배열은 $\operatorname{inv}(a) = 0$이고, 서로 다른 값의 역순 배열은 모든 쌍이 뒤집혀 있으므로 $n(n-1)/2$개 전부를 가진다. 그래서 그 개수는 수열이 정렬 상태에서 얼마나 먼지를 잰다. 작업량도 센다. 삽입 정렬은 이웃한 뒤집힌 원소만 스왑하고 그런 스왑 한 번이 역순쌍을 정확히 하나 없애므로, 정확히 $\operatorname{inv}(a)$번 스왑한다. 아래 $[3, 1, 4, 2]$라면 3번이다. 모든 쌍을 확인하면 $O(n^2)$이다. 병합 정렬은 한 줄을 더해 $O(n \log n)$에 센다.
 
 역순쌍을 왼쪽 절반 안의 것, 오른쪽 절반 안의 것, 그리고 양쪽에 하나씩 걸친 **분할 역순쌍**(split inversion)으로 나눈다. 앞의 두 개수는 재귀 호출이 돌려준다. 세 번째는 병합을 보면 된다. 왼쪽 원소 $x$와 오른쪽 원소 $y$가 역순쌍인 것은 정확히 $x > y$일 때이고, 그것은 정확히 $y$가 $x$보다 먼저 출력될 때다. 따라서 병합이 `right[j]`를 출력할 때 `left`에서 아직 기다리는 모든 원소가 그것과 역순쌍을 이루며, 그 수는 `len(left) - i`개다. 그런 단계마다 이 수를 더하면 O(n) 병합 안에서 분할 역순쌍이 모두 세어지므로, 점화식은 여전히 $T(n) = 2T(n/2) + O(n)$이다.
 
@@ -714,11 +796,11 @@ print(merge_sort(events, key=lambda e: e[1])) # equal times keep input order
 >
 > 합계: $1 + 1 + 1 = 3$. 모든 쌍을 나열해 확인: (3, 1), (3, 2), (4, 2).
 
-**쓰이는 곳: 순위 일치도.** 같은 $n$개 항목에 대한 두 순위가 있다고 하자. 시뮬레이터가 매긴 정책 체크포인트 열 개의 순위와 실제 로봇 성공률의 순위, 또는 학습된 보상 모델이 매긴 궤적 순위와 사람이 매긴 순위. 두 순위가 어떤 쌍을 같은 순서로 두면 그 쌍은 **일치**(concordant), 아니면 **불일치**(discordant)다. Kendall의 tau는 일치 쌍의 비율에서 불일치 쌍의 비율을 뺀 값이다.
+**쓰이는 곳: 순위 일치도.** 같은 $n$개 항목에 대한 두 순위가 있다고 하자. 시뮬레이터가 매긴 정책 체크포인트 열 개의 순위와 실제 로봇 성공률의 순위, 또는 학습된 보상 모델이 매긴 궤적 순위와 사람이 매긴 순위. 두 순위가 어떤 쌍을 같은 순서로 두면 그 쌍은 **일치**(concordant), 아니면 **불일치**(discordant)다. 두 순위에서 항목 $x$의 위치를 $r_A(x)$, $r_B(x)$라 하면, 쌍 $x, y$는 $(r_A(x) - r_A(y))(r_B(x) - r_B(y)) > 0$일 때 일치, 그 곱이 음수일 때 불일치이며, 0은 동점일 때뿐이다. Kendall의 tau는 일치 쌍의 비율에서 불일치 쌍의 비율을 뺀 값이다.
 
 $$\tau = \frac{C - D}{n(n-1)/2} = 1 - \frac{4D}{n(n-1)}$$
 
-동점이 없으면 모든 쌍이 둘 중 하나이므로 $C + D = n(n-1)/2$이고, 그래서 두 번째 형태가 나온다. $\tau = 1$이면 순서가 같고, $\tau = -1$이면 정반대다. 핵심 관찰은 $D$가 역순쌍 개수라는 점이다. 항목들을 첫 번째 순위 순서로 늘어놓고 각 항목의 두 번째 순위 위치를 적으면, 불일치 쌍이 정확히 그 리스트의 역순쌍이다. 예를 들어 항목 A, B, C, D를 첫 번째 순위 순서로 두고, 두 번째 순위가 이들을 위치 3, 1, 4, 2에 놓는다고 하자. 불일치 쌍은 위에서 센 $[3, 1, 4, 2]$의 역순쌍 세 개이므로 $D = 3$, $C = 6 - 3 = 3$, $\tau = (3 - 3)/6 = 0$이다. 두 순위가 일치하는 쌍과 어긋나는 쌍의 수가 같다는 뜻이다. 그러므로 Kendall tau는 $O(n^2)$이 아니라 $O(n \log n)$에 계산된다(Knight, 1966). 동점이 있으면 tau-b 보정을 쓴다. `scipy.stats.kendalltau`의 기본값이 그것이다.
+여기서 $C$는 일치 쌍의 수, $D$는 불일치 쌍의 수, $n(n-1)/2$는 항목 $n$개에서 나오는 쌍의 수다. 동점이 없으면 모든 쌍이 둘 중 하나이므로 $C + D = n(n-1)/2$이고, 그래서 두 번째 형태가 나온다. $\tau = 1$이면 순서가 같고, $\tau = -1$이면 정반대다. 핵심 관찰은 $D$가 역순쌍 개수라는 점이다. 항목들을 첫 번째 순위 순서로 늘어놓고 각 항목의 두 번째 순위 위치를 적으면, 불일치 쌍이 정확히 그 리스트의 역순쌍이다. 예를 들어 항목 A, B, C, D를 첫 번째 순위 순서로 두고, 두 번째 순위가 이들을 위치 3, 1, 4, 2에 놓는다고 하자. 불일치 쌍은 위에서 센 $[3, 1, 4, 2]$의 역순쌍 세 개이므로 $D = 3$, $C = 6 - 3 = 3$, $\tau = (3 - 3)/6 = 0$이다. 두 순위가 일치하는 쌍과 어긋나는 쌍의 수가 같다는 뜻이다. 그러므로 Kendall tau는 $O(n^2)$이 아니라 $O(n \log n)$에 계산된다(Knight, 1966). 동점이 있으면 tau-b 보정을 쓴다. `scipy.stats.kendalltau`의 기본값이 그것이다.
 
 ```python
 def sort_and_count(a):
@@ -764,7 +846,9 @@ print(kendall_tau([0, 1, 2, 3, 4], [1, 0, 2, 4, 3]))          # 0.6
 
 **한 문장 아이디어:** 피벗을 하나 고르고, 더 작은 원소는 앞으로, 더 큰 원소는 뒤로 오도록 배열을 재배치한 뒤, 양쪽을 재귀로 정렬한다.
 
-병합 정렬이 나누기는 거저 하고 합치기에서 일을 한다면, 퀵정렬은 나누기, 즉 **파티션**(partition) 단계에서 일을 하고 합치기가 아예 없다. 양쪽이 제자리에서 정렬되면 배열 전체가 정렬된 것이다. 정당성은 §1과 같은 귀납법이다. 파티션 후 피벗은 최종 위치에 있고, 그 왼쪽의 모든 원소는 왼쪽에 속하며, 재귀 호출이 각 쪽을 정렬한다.
+병합 정렬이 나누기는 거저 하고 합치기에서 일을 한다면, 퀵정렬은 나누기, 즉 **파티션**(partition) 단계에서 일을 하고 합치기가 아예 없다. 피벗 값 $p$에 대한 범위 $a[lo..hi]$의 파티션은 범위를 재배치하고 다음을 만족하는 인덱스 $q$를 돌려준다.
+$$a[i] \le p \ \text{ for } lo \le i < q, \qquad a[q] = p, \qquad a[i] \ge p \ \text{ for } q < i \le hi$$
+앞의 모든 원소가 크지 않고 뒤의 모든 원소가 작지 않으므로, 피벗은 이미 정렬된 배열에서 가질 수 있는 인덱스에 있다. 아래 Lomuto 방식은 왼쪽에 더 엄격한 $<$로 이것을 만족하고, Hoare 방식은 피벗을 $q$에 고정하지 않는 약한 형태를 만족한다. 양쪽이 제자리에서 정렬되면 배열 전체가 정렬된 것이다. 정당성은 §1과 같은 귀납법이다. 파티션 후 피벗은 최종 위치에 있고, 그 왼쪽의 모든 원소는 왼쪽에 속하며, 재귀 호출이 각 쪽을 정렬한다.
 
 **Lomuto 파티션.** 마지막 원소를 피벗으로 쓰고, 경계 인덱스 `i` 하나를 두고 왼쪽에서 오른쪽으로 훑는다. 불변식은 `a[lo:i]`에는 피벗보다 작은 원소가, `a[i:j]`에는 그렇지 않은 원소가 있다는 것이다. `a[j]`가 피벗보다 작으면 위치 `i`로 스왑하고 `i`를 늘린다. 끝나면 피벗을 위치 `i`로 스왑하며, 그곳이 최종 자리다. Lomuto는 올바르게 쓰기 가장 쉽고 피벗의 인덱스를 돌려주므로 quickselect(§7)에 맞는다. 다만 Hoare 방식보다 스왑이 많고, 양방향 비교만으로는 피벗과 같은 원소가 많을 때 $\Theta(n^2)$로 나빠진다. 값이 모두 같은 배열은 모든 레벨에서 $n - 1$과 $0$으로 갈라진다.
 
@@ -812,19 +896,25 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 >
 > 마지막으로 피벗을 `a[3]`으로 스왑하면 $[4, 2, 1, 5, 7, 9]$. 피벗 5가 인덱스 3에 있고, 왼쪽에는 더 작은 원소, 오른쪽에는 더 큰 원소가 있다.
 
-**피벗 선택이 모든 것을 정하는 이유.** 피벗이 늘 중앙값이면 점화식은 $T(n) = 2T(n/2) + O(n)$, 즉 $\Theta(n \log n)$이다. 늘 최솟값이나 최댓값이면 한쪽은 비고 다른 쪽은 $n - 1$개이므로 $T(n) = T(n-1) + O(n) = \Theta(n^2)$이다. "첫 원소를 쓴다" 같은 고정 규칙은 이미 정렬되었거나 역순인 입력에서 이 최악을 만나는데, 이런 입력은 실제로 흔하다. 타임스탬프, 거의 정렬된 리스트를 다시 정렬하기, 앞 단계에서 정렬된 리스트. **무작위 피벗**(모든 원소가 같은 확률)은 입력에 대한 의존을 없앤다. 그러면 기대 실행 시간이 *모든 입력에 대해* $O(n \log n)$이며, 여기서 기댓값은 가정한 입력 분포가 아니라 알고리즘 자신의 동전 던지기에 대한 것이다.
+**피벗 선택이 모든 것을 정하는 이유.** 피벗이 순위 $q$에 떨어져 $q$개가 왼쪽, $n - 1 - q$개가 오른쪽으로 가면, 파티션은 선형이고 피벗 자신은 어느 재귀 호출에도 들어가지 않으므로 퀵정렬의 비용은 다음을 만족한다.
+$$T(n) = T(q) + T(n - 1 - q) + \Theta(n), \qquad T(0) = T(1) = \Theta(1)$$
+피벗이 늘 중앙값이면 점화식은 $T(n) = 2T(n/2) + O(n)$, 즉 $\Theta(n \log n)$이다. 늘 최솟값이나 최댓값이면 한쪽은 비고 다른 쪽은 $n - 1$개이므로 $T(n) = T(n-1) + O(n) = \Theta(n^2)$이다. "첫 원소를 쓴다" 같은 고정 규칙은 이미 정렬되었거나 역순인 입력에서 이 최악을 만나는데, 이런 입력은 실제로 흔하다. 타임스탬프, 거의 정렬된 리스트를 다시 정렬하기, 앞 단계에서 정렬된 리스트. **무작위 피벗**(모든 원소가 같은 확률)은 입력에 대한 의존을 없앤다. 그러면 기대 실행 시간이 *모든 입력에 대해* $O(n \log n)$이며, 여기서 기댓값은 가정한 입력 분포가 아니라 알고리즘 자신의 동전 던지기에 대한 것이다.
 
 **기대 시간 논증.** 복잡한 무작위 점화식을 풀지 않아도 되어서 인터뷰에서 즐겨 묻는 증명이다.
 
 1. $z_1 < z_2 < \dots < z_n$을 정렬된 순서의 원소라 하고 서로 다르다고 가정한다. 파티션은 비교 한 번당 $O(1)$ 일을 하므로, 실행 시간은 비교 횟수 $C$에 비례한다.
-2. 두 원소는 둘 중 하나가 피벗일 때만 비교되고, 피벗은 이후 두 재귀 호출 모두에서 빠진다. 따라서 각 쌍은 **최대 한 번** 비교된다. $z_i$와 $z_j$가 한 번이라도 비교되면 1, 아니면 0인 $X_{ij}$를 두자. 그러면 $C = \sum_{i<j} X_{ij}$이고, 기댓값의 선형성으로 $E[C] = \sum_{i<j} \Pr[z_i, z_j \text{ compared}]$이다.
+2. 두 원소는 둘 중 하나가 피벗일 때만 비교되고, 피벗은 이후 두 재귀 호출 모두에서 빠진다. 따라서 각 쌍은 **최대 한 번** 비교된다. $z_i$와 $z_j$가 한 번이라도 비교되면 1, 아니면 0인 $X_{ij}$를 두자. 그러면 $C = \sum_{i<j} X_{ij}$이고, 기댓값의 선형성([[02-foundations/probability|3. 확률 §2]])으로 $E[C] = \sum_{i<j} \Pr[z_i, z_j \text{ compared}]$이다.
 3. **핵심 주장:** $z_i$와 $z_j$가 비교되는 것은 $\{z_i, z_{i+1}, \dots, z_j\}$에서 처음 뽑힌 피벗이 $z_i$ 또는 $z_j$일 때, 그리고 그때뿐이다. 이 집합의 원소가 피벗으로 뽑히기 전까지는 집합 전체가 한 부분 배열에 함께 남는다. 집합 밖의 피벗은 집합의 모든 원소보다 작거나 크기 때문이다. 처음 뽑힌 것이 $z_i$나 $z_j$이면, 그것은 자기 부분 배열의 모든 원소, 곧 다른 하나와도 비교된다. 둘 사이의 어떤 $z_k$가 먼저 뽑히면 $z_i$는 왼쪽, $z_j$는 오른쪽으로 가서 다시는 비교되지 않는다.
 4. 피벗은 균등하게 뽑히므로, 집합의 $j - i + 1$개 원소 각각이 처음 뽑힐 확률은 같다. 그중 두 경우가 비교로 이어지므로 $\Pr[z_i, z_j \text{ compared}] = 2/(j-i+1)$이다.
 5. 더한다. 각 $i$에 대해 $k = j - i + 1$로 치환하면 $k$는 2부터 많아야 $n$까지 간다.
 
 $$E[C] = \sum_{i<j} \frac{2}{j-i+1} \le \sum_{i=1}^{n} \sum_{k=2}^{n} \frac{2}{k} \le 2n \ln n$$
 
-마지막 단계는 $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$이기 때문에 성립한다. 따라서 무작위 퀵정렬의 기대 비교 횟수는 많아야 $2n \ln n \approx 1.39\, n \log_2 n$이다. 같은 이중합을 부등식으로 누르지 않고 정확히 계산하면 $2(n+1)H_n - 4n$이고, 아래 시뮬레이션이 그것과 맞는다.
+마지막 단계는 $\sum_{k=2}^{n} 1/k = H_n - 1 \le \ln n$이기 때문에 성립한다. 여기서 $H_n = 1 + \tfrac12 + \dots + \tfrac1n$은 $n$번째 조화수다. 따라서 무작위 퀵정렬의 기대 비교 횟수는 많아야 $2n \ln n \approx 1.39\, n \log_2 n$이다. 같은 이중합을 부등식으로 누르지 않고 정확히 계산하면 $2(n+1)H_n - 4n$이고, 아래 시뮬레이션이 그것과 맞는다.
+
+같은 정확한 값이 기대 비교 횟수 $C(n)$의 점화식에서도 나온다. 이 점화식은 똑같이 가능한 피벗 순위 $q$ $n$가지에 대해 평균을 낸다.
+$$C(n) = (n - 1) + \frac{2}{n} \sum_{q=0}^{n-1} C(q), \qquad C(0) = C(1) = 0$$
+$n - 1$은 파티션의 비교 횟수이고, 각 크기 $q$가 왼쪽으로 한 번, 오른쪽으로 한 번 나오므로 계수 2가 붙는다. 이것으로 $C(2) = 1$, $C(3) = 8/3$, $C(4) = 29/6 \approx 4.83$을 얻으며, 아래 예제가 쌍의 합으로 구하는 값과 같다.
 
 ```python
 import math
@@ -851,7 +941,9 @@ print(round(average), round(2 * (n + 1) * harmonic - 4 * n), round(2 * n * math.
 
 **그래도 퀵정렬이 이차 시간이 되는 경우.** 최악은 여전히 $\Theta(n^2)$이다. 무작위 피벗에서는 그저 매우 드물 뿐이다. 실제로 이차 시간은 세 가지에서 온다. 결정적 피벗 규칙이 정렬된 입력이나 적대적 입력을 만날 때. 양방향 파티션이 **중복 원소가 많은** 입력을 만날 때인데, 어떤 원소를 골라도 같은 값이므로 무작위 피벗으로는 고쳐지지 않는다. 그리고 나쁜 분할은 재귀 깊이 $n$을 뜻하므로, Python 구현은 느려지기 전에 죽는다. 해결책은 무작위 피벗, 삼분할 파티션, 그리고 작은 쪽은 재귀하고 큰 쪽은 반복문으로 처리하기다. 마지막 방법은 각 재귀 호출이 범위의 절반 이하만 받으므로 스택을 $O(\log n)$으로 묶는다.
 
-**중복을 위한 삼분할 파티션.** 범위를 피벗보다 작은 영역, 같은 영역, 큰 영역의 셋으로 나누고(Dijkstra의 "네덜란드 국기 문제"), 바깥 두 영역만 재귀한다. 그러면 값이 모두 같은 배열은 O(n) 한 번으로 끝나고, 서로 다른 키가 적은 입력은 선형에 가까워진다.
+**중복을 위한 삼분할 파티션.** 범위를 피벗보다 작은 영역, 같은 영역, 큰 영역의 셋으로 나누고(Dijkstra의 "네덜란드 국기 문제"), 바깥 두 영역만 재귀한다. 정확히는 다음을 만족하는 인덱스 $lt \le gt$를 돌려준다.
+$$a[i] < p \ \text{ for } lo \le i < lt, \qquad a[i] = p \ \text{ for } lt \le i \le gt, \qquad a[i] > p \ \text{ for } gt < i \le hi$$
+그래서 피벗의 모든 복사본이 이미 최종 위치에 있고, 어느 것도 재귀 호출에 넘어가지 않는다. 그러면 값이 모두 같은 배열은 O(n) 한 번으로 끝나고, 서로 다른 키가 적은 입력은 선형에 가까워진다.
 
 ```python
 import random
@@ -889,7 +981,9 @@ print(data)                           # [0, 1, 2, 3, 3, 3, 3, 3, 9]
 
 ### 4. Ω(n log n) 하한과 그 아래로 내려가는 법
 
-**비교 정렬**(comparison sort)은 원소 쌍을 비교하는 것으로만 입력에 대해 알아낸다. 병합 정렬, 퀵정렬, 힙 정렬, 삽입 정렬이 모두 비교 정렬이다. 주장은 모든 비교 정렬이 최악의 경우 $\Omega(n \log n)$번 비교해야 한다는 것이고, 따라서 병합 정렬은 상수배 안에서 최적이다.
+**비교 정렬**(comparison sort)은 제약 하나를 지키는 정렬 알고리즘이다. 키를 쓰는 유일한 방법이 두 항목에 대해 $k(x_i) \le k(x_j)$인지(또는 $<$, $=$인지) 묻는 것이고, 다음에 하는 일은 모두 그 예/아니오 답에만 달려 있다. 같은 말로, 두 입력 $x$와 $y$의 상대 순서가 같으면
+$$k(x_i) \le k(x_j) \iff k(y_i) \le k(y_j) \quad \text{for all } i, j,$$
+알고리즘은 두 입력에서 정확히 같은 단계를 밟으므로 $[1, 5, 3]$과 $[10, 50, 30]$을 구별하지 못한다. 병합 정렬, 퀵정렬, 힙 정렬, 삽입 정렬이 모두 비교 정렬이다. **반례:** 아래의 계수 정렬은 키를 배열 인덱스로 쓰므로 키의 순서만이 아니라 값 자체를 읽는다. 주장은 모든 비교 정렬이 최악의 경우 $\Omega(n \log n)$번 비교해야 한다는 것이고, 따라서 병합 정렬은 상수배 안에서 최적이다.
 
 **결정 트리 논증.** $n$과 임의의 비교 정렬 하나를 고정하고, 서로 다른 $n$개 값의 순열을 입력으로 넣는다. 그 동작을 이진 트리로 그린다. 내부 노드는 비교 하나이고, 두 자식은 두 가지 결과이며, 리프는 끝난 실행으로서 입력을 정렬하는 재배치를 확정한 상태다. 서로 다른 입력 순열은 서로 다른 재배치가 필요하므로 서로 다른 리프에 도착해야 하고, 트리에는 리프가 적어도 $n!$개 필요하다. 높이 $h$인 이진 트리의 리프는 많아야 $2^h$개이므로 $2^h \ge n!$이고, 최악 비교 횟수는 $h \ge \log_2 n!$이다. 그것이 얼마나 큰지 보려고 $n!$의 인수 중 가장 큰 $n/2$개만 남기면, 각각이 $n/2$ 이상이므로
 
@@ -902,9 +996,13 @@ $$\log_2 n! \ge \log_2 \left(\frac{n}{2}\right)^{n/2} = \frac{n}{2} \log_2 \frac
 
 **하한 아래로 내려가기.** 하한은 키를 비교만 하지 않고 키 자체를 들여다보는 알고리즘에 대해서는 아무 말도 하지 않는다. 키가 작은 정수이거나 작은 자릿수로 자를 수 있으면 선형 시간에 정렬할 수 있다.
 
-- **계수 정렬(counting sort).** `range(k)` 안의 정수 키에 대해 키마다 항목 수를 센다. 그 누적합이 키마다 첫 출력 위치를 주고, 왼쪽에서 오른쪽으로 한 번 훑으며 항목을 놓으면 안정성도 지켜진다. 시간과 공간이 $O(n + k)$이므로 $k = O(n)$이면 선형이고 $k$가 거대하면 쓸모없다.
-- **기수 정렬(radix sort).** 가장 낮은 자릿수부터 정렬하고, 다음 자릿수, 그다음 자릿수로 가며 자릿수마다 *안정적인* 계수 정렬을 쓴다. $t$번째 패스 후에는 항목들이 마지막 $t$자리 기준으로 정렬되어 있다. 안정성이 앞선 동점의 순서를 지키기 때문이다. 밑 $b$로 $d$자리면 $O(d(n + b))$이다. 32비트 키를 밑 256으로 하면 선형 패스 네 번이다. 충돌 검사와 레이 캐스팅에 쓰는 GPU 경계 볼륨 계층(BVH) 빌더는 기본 도형의 Morton 코드를 이렇게 기수 정렬하고, 포인트 클라우드의 점을 복셀별로 묶을 때 정수 복셀 인덱스도 같은 방식으로 정렬할 수 있다.
-- **버킷 정렬(bucket sort).** $[0, 1)$에 대략 균등하게 퍼진 실수 키라면, 각 항목을 너비가 같은 $n$개 버킷 중 하나에 넣고, 버킷마다 정렬해 이어 붙인다. 버킷마다 기댓값으로 $O(1)$개가 들어가므로 기대 시간은 $O(n)$이다. 데이터가 뭉쳐 있으면 한 버킷에 전부 들어가 안쪽 정렬의 비용으로 돌아간다.
+- **계수 정렬(counting sort).** `range(k)` 안의 정수 키에 대해 키마다 항목 수를 센다. 키가 더 작은 항목은 모두 앞에 와야 하므로, 그 누적합이 키마다 첫 출력 위치를 준다.
+$$\text{start}[v] = \sum_{u < v} \text{count}[u]$$
+  여기서 $\text{count}[u]$는 키가 $u$인 항목 수다. 키가 $2, 0, 2, 1$이면 개수는 $1, 1, 2$, 시작 위치는 $0, 1, 2$다. 그다음 왼쪽에서 오른쪽으로 한 번 훑으며 항목을 놓으면 안정성도 지켜진다. 시간과 공간이 $O(n + k)$이므로 $k = O(n)$이면 선형이고 $k$가 거대하면 쓸모없다.
+- **기수 정렬(radix sort).** 각 키를 밑 $b$의 $d$자리로 쓴다.
+$$x = \sum_{t=0}^{d-1} x_t\, b^t, \qquad x_t = \lfloor x / b^t \rfloor \bmod b$$
+  자릿수 $x_t$가 바로 `(x // shift) % base`가 계산하는 값이며, 밑 10에서 802는 $x_0 = 2$, $x_1 = 0$, $x_2 = 8$이다. 가장 낮은 자릿수부터 정렬하고, 다음 자릿수, 그다음 자릿수로 가며 자릿수마다 *안정적인* 계수 정렬을 쓴다. $t$번째 패스 후에는 항목들이 마지막 $t$자리 기준으로 정렬되어 있다. 안정성이 앞선 동점의 순서를 지키기 때문이다. 밑 $b$로 $d$자리면 $O(d(n + b))$이다. 32비트 키를 밑 256으로 하면 선형 패스 네 번이다. 충돌 검사와 레이 캐스팅에 쓰는 GPU 경계 볼륨 계층(BVH) 빌더는 기본 도형의 Morton 코드를 이렇게 기수 정렬하고, 포인트 클라우드의 점을 복셀별로 묶을 때 정수 복셀 인덱스도 같은 방식으로 정렬할 수 있다.
+- **버킷 정렬(bucket sort).** $[0, 1)$에 대략 균등하게 퍼진 실수 키라면, 각 항목 $x$를 너비가 같은 $n$개 버킷 중 $\lfloor n x \rfloor$번 버킷에 넣고($n = 4$이면 키 $0.62$는 2번 버킷), 버킷마다 정렬해 이어 붙인다. 버킷마다 기댓값으로 $O(1)$개가 들어가므로 기대 시간은 $O(n)$이다. 데이터가 뭉쳐 있으면 한 버킷에 전부 들어가 안쪽 정렬의 비용으로 돌아간다.
 
 ```python
 def counting_sort(items, key, k):
@@ -973,8 +1071,16 @@ Python 함정이 두 가지 더 있다. 키 튜플의 앞 필드가 동점이고
 
 - `std::sort`는 **안정적이지 않다.** $O(n \log n)$이고 보통 introsort다. 같은 원소의 순서를 지켜야 하면 병합 정렬인 `std::stable_sort`를 쓴다. 버퍼가 있으면 $O(n \log n)$, 추가 메모리를 얻지 못하면 $O(n \log^2 n)$이다.
 - `std::partial_sort`는 앞 $k$개 위치만 $O(n \log k)$에 정렬하고, `std::nth_element`는 평균 선형 시간에 선택(§7)을 한다.
-- 사용자 비교자는 **strict weak ordering이어야 한다.** 즉 `cmp(a, a)`는 거짓이고, `cmp(a, b)`와 `cmp(b, a)`가 동시에 참일 수 없고, `cmp`는 추이적이며, "어느 쪽도 작지 않다"는 관계도 추이적이어야 한다.
-- 대표적인 위반은 `return a <= b;`다. 첫 규칙을 깨며, 이는 순서가 틀리는 정도가 아니라 정의되지 않은 동작이다. 실제 구현은 배열 끝을 넘어 읽다가 죽을 수 있다. NaN일 수 있는 부동소수점 값을 비교하거나, 엡실론 안의 값을 "같다"고 취급해도 같은 규칙이 깨진다.
+- 사용자 비교자는 **strict weak ordering이어야 한다.** `cmp(a, b)`를 $a \prec b$로 쓰고, 어느 쪽도 다른 쪽보다 작지 않을 때 $a$와 $b$가 *비교 불가*라고 하자.
+$$a \sim b \iff \text{not } a \prec b \ \text{ and } \ \text{not } b \prec a$$
+  strict weak ordering은 모든 $a, b, c$에 대해 이름 붙은 네 조건을 만족한다.
+  - *비반사성*(irreflexivity): $a \prec a$는 거짓이다. 즉 `cmp(a, a)`가 거짓이다.
+  - *비대칭성*(asymmetry): $a \prec b$이면 $b \prec a$는 거짓이다. 즉 `cmp(a, b)`와 `cmp(b, a)`가 동시에 참일 수 없다.
+  - *추이성*(transitivity): $a \prec b$이고 $b \prec c$이면 $a \prec c$다.
+  - *비교 불가의 추이성*(transitivity of incomparability): $a \sim b$이고 $b \sim c$이면 $a \sim c$다.
+
+  넷이 함께 $\sim$을 동치 관계로 만들고, 그 동치류, 즉 동점 항목의 묶음들이 $\prec$로 전순서를 이루므로 "정렬됨"의 뜻이 하나로 정해진다. 정수의 `<`는 네 조건을 모두 만족한다.
+- 대표적인 위반은 `return a <= b;`다. 첫 규칙을 깨며, 이는 순서가 틀리는 정도가 아니라 정의되지 않은 동작이다. 실제 구현은 배열 끝을 넘어 읽다가 죽을 수 있다. NaN일 수 있는 부동소수점 값을 비교하거나, 엡실론 안의 값을 "같다"고 취급해도 같은 규칙이 깨진다. NaN과의 비교는 모두 거짓이므로 $1 \sim \text{NaN}$이고 $\text{NaN} \sim 2$인데 $1 < 2$다. 비교 불가가 추이적이지 않다.
 - 필드가 여러 개면 `std::tie(a.x, a.y) < std::tie(b.x, b.y)`로 비교하라. 사전식이고 구조상 올바르다.
 
 ### 6. 이진 탐색 제대로 하기
@@ -984,6 +1090,10 @@ Python 함정이 두 가지 더 있다. 키 튜플의 앞 필드가 동점이고
 이진 탐색 버그의 거의 전부는 `lo`와 `hi`가 무엇을 뜻하는지에 대한 불일치다. 규약 하나를 정하고 모든 줄을 거기서 끌어내라. 가장 잘 맞물리는 규약은 **반열린 구간** `[lo, hi)`다. `lo`는 포함, `hi`는 제외이고, `lo == hi`이면 범위가 비었으며, 크기는 `hi - lo`다. `range`, 슬라이스, C++ 반복자의 규약과 같다.
 
 문제를 "단조 술어가 처음으로 참이 되는 위치 찾기"로 말하라. `pred`가 `[lo, hi)`에서 False, …, False, True, …, True이고, 첫 True를, 없으면 `hi`를 원한다. 모든 이진 탐색은 이 함수 하나에 술어만 바꾼 것이다.
+
+정확히 말하면, 반열린 범위 $[lo, hi) = \{x : lo \le x < hi\}$의 정수 위에서 술어가 한 번 참이 되면 계속 참일 때 **단조**(monotone)라고 한다.
+$$\text{pred}(x) \implies \text{pred}(y) \quad \text{for all } lo \le x \le y < hi$$
+답은 $x^* = \min\{x \in [lo, hi) : \text{pred}(x)\}$이고, 참으로 만드는 $x$가 없으면 $x^* = hi$다. `mid`에서의 False는 `mid` 왼쪽이 모두 False임을 증명하므로, 단조성 덕분에 한 번의 검사로 범위의 절반을 버릴 수 있다. **반례:** `a = [5, 1, 4]`에서 술어 `a[i] >= 4`는 True, False, True로 단조가 아니다. `first_true`는 인덱스 1을 검사해 False를 보고 인덱스 0을 버린 뒤 2를 돌려주지만, 첫 True는 인덱스 0이다.
 
 ```python
 from bisect import bisect_left, bisect_right
@@ -1008,7 +1118,9 @@ assert (lower, upper) == (bisect_left(a, 4), bisect_right(a, 4))
 
 **왜 맞고 왜 끝나는가.** 불변식은 첫 True가 `[lo, hi]` 안에 있다는 것이며, 값 `hi`는 "없음"을 뜻한다. 시작할 때 성립한다. `pred(mid)`가 True이면 첫 True는 `mid`이거나 그 앞이므로 `hi = mid`가 그것을 지킨다. False이면 단조성에 의해 `mid`까지 모두 False이므로 `lo = mid + 1`이 그것을 지킨다. `mid < hi`이므로 두 분기 모두 범위를 엄격히 줄이고, 루프는 `lo == hi`가 답인 상태로 끝난다. 단계 수는 $\lceil \log_2(\text{hi} - \text{lo} + 1) \rceil$이다.
 
-**lower bound와 upper bound.** 정렬된 배열에서 `x`의 **lower bound** 값은 `a[i] >= x`인 첫 인덱스로, `x`가 있는 곳 또는 같은 항목들 앞에 삽입될 곳이다. **upper bound** 값은 `a[i] > x`인 첫 인덱스로, `x`의 마지막 복사본 바로 뒤다. 나머지는 모두 이 둘에서 나온다.
+**lower bound와 upper bound.** 정렬된 배열에서 `x`의 **lower bound** 값은 `a[i] >= x`인 첫 인덱스로, `x`가 있는 곳 또는 같은 항목들 앞에 삽입될 곳이다. **upper bound** 값은 `a[i] > x`인 첫 인덱스로, `x`의 마지막 복사본 바로 뒤다. 식으로 쓰면
+$$\text{lower}(x) = \min\{i : a[i] \ge x\}, \qquad \text{upper}(x) = \min\{i : a[i] > x\}$$
+이고, 공집합의 최솟값은 `len(a)`로 두므로 모든 `x`에 대해 정의된다. `a = [2, 4, 4, 4, 7, 9]`이면 lower(4) = 1, upper(4) = 4, lower(5) = 4, lower(10) = 6이다. 나머지는 모두 이 둘에서 나온다.
 
 - `x`가 있는 것은 `lower < len(a) and a[lower] == x`일 때, 그리고 그때뿐이다.
 - `x`의 개수는 `upper - lower`다.
@@ -1041,7 +1153,9 @@ def interpolate(stamps, values, t):
 print(interpolate([0.00, 0.10, 0.20, 0.30], [0.0, 1.0, 4.0, 9.0], 0.25))   # 6.5
 ```
 
-**답에 대한 이진 탐색.** 많은 최적화 문제가 무언가를 가능하게 하는 가장 작은 값 $x$를 묻는다. 가능성이 **단조** 성질을 가지고, 즉 $x$가 되면 더 큰 $x$도 모두 되고, 주어진 $x$를 *확인*하는 것이 최선의 $x$를 직접 찾는 것보다 훨씬 쉽다면, 가능성 검사를 술어로 삼아 $x$에 대해 이진 탐색하라. 비용은 검사 $O(\log(\text{범위}))$번이다.
+**답에 대한 이진 탐색.** 많은 최적화 문제가 무언가를 가능하게 하는 가장 작은 값 $x$를 묻는다. 가능성이 **단조** 성질을 가지고, 즉 $x$가 되면 더 큰 $x$도 모두 되어
+$$\text{feasible}(x) \implies \text{feasible}(x') \quad \text{for all } x' \ge x,$$
+답 $x^* = \min\{x : \text{feasible}(x)\}$가 정확히 `feasible`을 술어로 한 `first_true`이고, 주어진 $x$를 *확인*하는 것이 최선의 $x$를 직접 찾는 것보다 훨씬 쉽다면, 가능성 검사를 술어로 삼아 $x$에 대해 이진 탐색하라. 비용은 검사 $O(\log(\text{범위}))$번이다.
 
 표준 예: 무게 $w_1, \dots, w_n$인 짐들이 **주어진 순서대로** 창고를 떠나야 하고, 기간은 많아야 $D$일이며, 하루 적재량은 차량 용량을 넘을 수 없다. 가능한 가장 작은 용량은 얼마인가?
 
@@ -1090,6 +1204,10 @@ print(min_capacity([3, 2, 2, 4, 1, 4], days=3))   # 6
 
 중앙값, 백분위수, 가장 작은 $k$개를 찾는 데 전체 정렬은 필요 없다. 정렬은 $O(n \log n)$이고, 선택은 $O(n)$에 할 수 있다.
 
+**무엇을 선택하는가.** 값 $n$개의 **$k$번째로 작은 원소**(k-th order statistic, 코드처럼 $k = 0$부터 센다)는 정렬했을 때 인덱스 $k$에 올 값이다. 정렬 없이도 말할 수 있다. 배열의 값 $x$ 중
+$$\#\{i : a[i] < x\} \le k < \#\{i : a[i] \le x\}$$
+를 만족하는 것이다. $x$의 첫 복사본 앞에는 정확히 $x$보다 작은 원소들이 오고, 복사본들이 위치 $\#\{i : a[i] \le x\} - 1$까지를 채우기 때문이다. **중앙값**(median)은 $k = \lfloor n/2 \rfloor$이다. 아래 코드의 거리 값 일곱 개에서 $x = 2.8$은 더 작은 값이 3개, $2.8$ 이하인 값이 4개이므로 $k = 3$의 원소, 곧 중앙값이다.
+
 **Quickselect.** *한 문장 아이디어:* 퀵정렬처럼 무작위 피벗으로 파티션한 뒤, 위치 $k$를 담은 쪽에서만 계속한다.
 
 삼분할 파티션 후 위치 `lt..gt`에는 피벗의 복사본이 있다. `k`가 그 안에 있으면 피벗이 답이다. `k < lt`이면 답은 왼쪽에, `k > gt`이면 오른쪽에 있다. 배열을 복사하지 않으므로 위치 `k`는 그대로다.
@@ -1131,7 +1249,7 @@ ranges = [2.9, 0.4, 5.1, 0.5, 30.0, 0.45, 2.8]   # one spurious long return
 print(quickselect(ranges, len(ranges) // 2))     # 2.8, the median; the mean is 6.02
 ```
 
-**Median of medians: 최악에서도 O(n).** Blum, Floyd, Pratt, Rivest, Tarjan(1973)은 피벗을 결정적으로 고른다. 원소를 5개씩 묶고, 묶음마다 중앙값을 구하고, 그 $n/5$개 중앙값의 중앙값을 재귀로 선택해 피벗으로 쓴다. 묶음 중앙값의 절반은 이 피벗 이하이고, 그 각각은 자기 묶음의 다른 두 원소 이상이므로, 피벗은 전체 원소의 약 $3/10$보다 크고, 대칭으로 약 $3/10$보다 작다. 남는 쪽은 많아야 약 $7n/10$개이므로 $T(n) \le T(n/5) + T(7n/10) + O(n)$이다. $1/5 + 7/10 = 9/10 < 1$이므로 레벨당 작업이 기하급수로 줄고 전체는 $O(n)$이다. "선택은 최악에서도 선형이다"로 알아 둘 가치가 있지만 상수가 커서, 실제로는 무작위 선택이나 introselect를 쓴다: C++ `std::nth_element`, NumPy `np.partition`과 `np.argpartition`.
+**Median of medians: 최악에서도 O(n).** Blum, Floyd, Pratt, Rivest, Tarjan(1973)은 피벗을 결정적으로 고른다. 원소를 5개씩 묶고, 묶음마다 중앙값을 구하고, 그 $n/5$개 중앙값의 중앙값을 재귀로 선택해 피벗으로 쓴다. 묶음 중앙값의 절반은 이 피벗 이하이고, 그 각각은 자기 묶음의 다른 두 원소 이상이므로, 피벗은 전체 원소의 약 $3/10$보다 크고, 대칭으로 약 $3/10$보다 작다. 남는 쪽은 많아야 약 $7n/10$개이므로, 작은 상수보다 큰 $n$에서 $T(n) \le T(n/5) + T(7n/10) + O(n)$이고 그 아래에서는 $T(n) = O(1)$이다. $1/5 + 7/10 = 9/10 < 1$이므로 레벨당 작업이 기하급수로 줄고 전체는 $O(n)$이다. "선택은 최악에서도 선형이다"로 알아 둘 가치가 있지만 상수가 커서, 실제로는 무작위 선택이나 introselect를 쓴다: C++ `std::nth_element`, NumPy `np.partition`과 `np.argpartition`.
 
 **힙으로 상위 k개.** `heapq.nsmallest(k, items, key=...)`(와 `nlargest`)는 지금까지 본 최선의 $k$개를 최대 힙에 유지한다. 새 항목은 힙의 top과 비교해 더 좋으면 $O(\log k)$ 비용으로 교체한다. 그래서 시간 $O(n \log k)$, 메모리 $O(k)$이고, 결과는 정렬된 순서로 나온다. 메모리에 담을 수 없는 스트림이나 이터레이터에도 쓸 수 있고 안정적이다. $k = 1$이면 `min`을 써라. $k$가 $n$에 가까우면 `sorted(items)[:k]`가 더 빠르다. 모두 NumPy 배열에 있다면 `np.argpartition`이 상위 $k$개를 $O(n)$에 주고, 순서가 필요하면 그 $k$개만 나중에 정렬한다.
 
@@ -1154,7 +1272,9 @@ print(nearest)          # [(0.3, 0.4), (-0.5, 0.2), (1.0, 1.0)]
 
 ### 8. 알아볼 만한 다른 분할 정복 고전
 
-**빠른 거듭제곱.** *한 문장 아이디어:* $n$이 짝수면 $x^n = (x^{n/2})^2$, 홀수면 $x \cdot x^{n-1}$이므로 지수가 두 단계마다 반으로 준다. $n$의 비트를 도는 루프로 쓰면 불변식은 `result * x**n`이 항상 원래의 $x_0^{n_0}$와 같다는 것이다. 각 단계는 현재 비트를 `result`에 곱하거나, `x`를 제곱하고 `n`을 반으로 줄이므로 곱셈 $O(\log n)$번이 든다. 결합법칙이 성립하는 곱셈만 있으면 되므로 같은 루프가 다음을 계산한다.
+**빠른 거듭제곱.** *한 문장 아이디어:* $n$이 짝수면 $x^n = (x^{n/2})^2$, 홀수면 $x \cdot x^{n-1}$이므로 지수가 두 단계마다 반으로 준다. 기저 사례와 함께 쓰면
+$$x^n = \begin{cases} 1 & n = 0 \\ (x^{n/2})^2 & n > 0 \text{ even} \\ x \cdot x^{n-1} & n \text{ odd} \end{cases}$$
+이고, 곱셈이 **결합적**(associative)이어서 $(ab)c = a(bc)$, 즉 $x$ $n$개의 곱을 어떻게 묶어도 되고 `one`이 항등원 $1 \cdot x = x$이므로 모든 경우가 성립한다. $n$의 비트를 도는 루프로 쓰면 불변식은 `result * x**n`이 항상 원래의 $x_0^{n_0}$와 같다는 것이다. 각 단계는 현재 비트를 `result`에 곱하거나, `x`를 제곱하고 `n`을 반으로 줄이므로 곱셈 $O(\log n)$번이 든다. 항등원이 있는 결합적 곱셈만 있으면 된다. 뺄셈은 반례다. $(8 - 4) - 2 = 2$이지만 $8 - (4 - 2) = 6$이라 묶는 방식이 답을 바꾼다. 결합적 곱셈이면 같은 루프가 다음을 계산한다.
 
 - 모듈러 거듭제곱. Python 내장 `pow(a, n, m)`이 이미 한다.
 - 행렬 거듭제곱. 선형 점화식의 $n$번째 항을 행렬 곱 $O(\log n)$번에 준다(피보나치가 고전 예).
@@ -1182,15 +1302,17 @@ fib = power(((1, 1), (1, 0)), 10, matmul, ((1, 0), (0, 1)))
 print(fib[0][1])                                           # 55, the 10th Fibonacci number
 ```
 
-**2차원 최근접 점 쌍.** 모든 쌍을 확인하면 $O(n^2)$이다. 1차원이라면 정렬하고 이웃끼리 비교하면 된다. 2차원에서는 분할 정복이 $O(n \log n)$에 도달한다.
+**2차원 최근접 점 쌍.** 점 $n$개가 주어지면 유클리드 거리 $\lVert p - q \rVert = \sqrt{(p_x - q_x)^2 + (p_y - q_y)^2}$를 최소로 하는 서로 다른 두 점 $p, q$를 찾는다. 모든 쌍을 확인하면 $O(n^2)$이다. 1차원이라면 정렬하고 이웃끼리 비교하면 된다. 2차원에서는 분할 정복이 $O(n \log n)$에 도달한다.
 
 1. **나누기.** 점들을 $x$로 정렬하고 수직선으로 왼쪽 절반과 오른쪽 절반으로 나눈다.
 2. **재귀.** 각 절반에서 최근접 쌍을 찾고, 두 거리 중 작은 것을 $\delta$라 한다.
-3. **합치기.** 아직 찾지 못한 $\delta$보다 가까운 쌍은 선의 양쪽에 점이 하나씩 있어야 하고, 두 점 모두 선에서 $\delta$ 이내에 있어야 한다. 그렇지 않으면 가로 간격만으로 $\delta$를 넘기 때문이다. 따라서 선 주위의 너비 $2\delta$인 띠만 보면 된다.
+3. **합치기.** 아직 찾지 못한 $\delta$보다 가까운 쌍은 선의 양쪽에 점이 하나씩 있어야 하고, 두 점 모두 선에서 $\delta$ 이내에 있어야 한다. 그렇지 않으면 가로 간격만으로 $\delta$를 넘기 때문이다. 따라서 **띠**(strip)만 보면 된다. 띠는 분할선 $x = \ell$에서 $\delta$ 이내에 있는 점들의 집합 $\{p : \lvert p_x - \ell \rvert < \delta\}$이고 너비는 $2\delta$다.
 
 띠에도 거의 모든 점이 들어 있을 수 있으므로, 합치기를 선형으로 만드는 단계는 채우기(packing) 논증이다. 띠의 점들을 $y$로 정렬한다. $\delta$보다 가까운 쌍은 $y$ 차이가 $\delta$ 미만이다. 어떤 점 위쪽으로, 선을 가운데 둔 $2\delta \times \delta$ 직사각형을 한 변 $\delta/2$인 정사각형 여덟 개로 덮는다. 양쪽에 네 개씩이다. 같은 정사각형에 두 점이 있으면 같은 쪽에 있으면서 거리가 많아야 $\delta/\sqrt{2} < \delta$가 되어, $\delta$가 한쪽 안에서의 최소 거리라는 사실에 모순이다. 그러므로 정사각형마다 점은 많아야 하나이고, 각 점은 $y$ 순서로 다음 **7개** 점과만 비교하면 된다. 매 호출마다 띠를 다시 정렬하지 않고 병합 정렬처럼 병합으로 $y$ 순서를 유지하면 합치기가 $O(n)$이고 $T(n) = 2T(n/2) + O(n) = O(n \log n)$이다. 매 호출마다 다시 정렬하면 $O(n \log^2 n)$이다. 로보틱스 코드에서 "$r$보다 가까운 모든 쌍 찾기"는 보통 셀 크기 $r$인 격자나 공간 해시, 또는 KD-tree로 푼다. 분할 정복 버전은 기하학적 논증이 합치기를 선형으로 만드는 인터뷰 예제다.
 
-**Karatsuba 곱셈.** 두 $n$자리 수를 윗절반과 아랫절반으로 나눈 뒤, Karatsuba(1962)는 곱의 가운데 항을 $(a + b)(c + d) - ac - bd$로 얻어 절반 크기 곱셈을 네 번이 아니라 세 번만 한다. 그러면 $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$이고, CPython이 큰 정수에 쓰는 알고리즘이 이것이다.
+**Karatsuba 곱셈.** 두 $n$자리 수를 윗절반과 아랫절반으로 나눈다. 밑 $B$(십진 자릿수라면 10)와 $m = n/2$로 $x = x_1 B^m + x_0$, $y = y_1 B^m + y_0$라 쓰면 곱은 다음과 같다.
+$$xy = z_2 B^{2m} + z_1 B^m + z_0, \qquad z_2 = x_1 y_1, \quad z_0 = x_0 y_0, \quad z_1 = (x_1 + x_0)(y_1 + y_0) - z_2 - z_0$$
+$(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$이므로 $z_2$와 $z_0$를 빼면 가운데 항 $x_1 y_0 + x_0 y_1$만 남는다. 그래서 Karatsuba(1962)는 절반 크기 곱셈을 네 번이 아니라 세 번만 한다. $1234 \times 5678$이면 $z_2 = 12 \cdot 56 = 672$, $z_0 = 34 \cdot 78 = 2652$, $z_1 = 46 \cdot 134 - 672 - 2652 = 2840$이고 $672 \cdot 10^4 + 2840 \cdot 10^2 + 2652 = 7006652$다. 그러면 $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$이고, CPython이 큰 정수에 쓰는 알고리즘이 이것이다.
 
 ### 스스로 점검
 

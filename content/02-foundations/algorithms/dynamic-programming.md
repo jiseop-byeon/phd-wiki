@@ -27,15 +27,31 @@ comparing demonstrations, both in §7.
 
 ### 1. When DP applies, and how it differs from its neighbours
 
+**What DP is.** Dynamic programming is an algorithm-design technique for problems whose answer can be written in terms of answers to smaller instances of the same problem. A DP algorithm has five named parts:
+
+- **states**, the subproblems, such as an amount $a$ or a pair of prefix lengths $(i, j)$;
+- a **recurrence**, which gives the value of each state from the values of smaller states;
+- **base cases**, states whose values are given directly;
+- an **evaluation order**, in which every state comes after all the states it reads;
+- **answer extraction**, the state that holds the final answer, plus reconstruction of the choices that produced it.
+
+For an optimization problem the recurrence has the shape
+$$f(s) = \operatorname{opt}_{a \in A(s)} \big[\, c(s, a) + f(s \oplus a) \,\big] \ \text{ for non-base } s, \qquad f(s) = b(s) \ \text{ for base } s$$
+where $\operatorname{opt}$ is $\min$ or $\max$, $A(s)$ is the set of options for the one decision examined at state $s$, $c(s, a)$ is the cost of option $a$, $s \oplus a$ is the smaller state that remains after it, and $b(s)$ is the given base value. Counting problems replace $\operatorname{opt}$ by a sum and drop $c$. Each state is solved once, so the running time is the sum over states of $\lvert A(s) \rvert$ times the work per option, which is step 3's "number of subproblems × work per subproblem" below. Coin change in §3 is this shape with $s = a$, $A(a)$ the coins no larger than $a$, every option costing $1$, and the coin $c$ leaving the state $a - c$.
+
 DP needs two properties.
 
 - **Optimal substructure.** An optimal solution to the whole problem contains optimal solutions
-  to smaller instances of the *same* problem. The proof is almost always a cut-and-paste
+  to smaller instances of the *same* problem. Formally, if $x^*$ is optimal for an instance $P$ and its last decision is $a^*$, then the rest of $x^*$ is optimal for the subproblem $P_{a^*}$ that $a^*$ leaves, so
+$$\mathrm{OPT}(P) = c(a^*) + \mathrm{OPT}(P_{a^*})$$
+  which is exactly what lets the recurrence use $f$ of the smaller state. The proof is almost always a cut-and-paste
   argument: if the piece inside the optimum were not optimal, swap in a better piece and the
-  whole would improve — a contradiction.
+  whole would improve — a contradiction. Example: every subpath of a shortest path is itself a shortest path, since a shorter route between two of its vertices would shorten the whole path. The non-example is below.
 - **Overlapping subproblems.** The natural recursion asks the same smaller question many times.
   That is what makes caching pay: a problem with a few thousand *distinct* subproblems can have a
-  recursion tree with billions of nodes.
+  recursion tree with billions of nodes. Formally, the number of distinct states reached is far smaller than the number of calls the plain recursion makes. Fibonacci by $F(n) = F(n-1) + F(n-2)$ with $F(0) = 0$, $F(1) = 1$ makes
+$$\text{calls}(n) = 1 + \text{calls}(n-1) + \text{calls}(n-2), \qquad \text{calls}(0) = \text{calls}(1) = 1$$
+  calls, because each call makes its own two, and this solves to $2F(n+1) - 1$: 2,692,537 calls for $F(30)$, which has only 31 distinct states $F(0), \dots, F(30)$. Merge sort is the non-example: its two halves never repeat, so a cache would never be hit.
 
 **How it differs from the neighbours.**
 
@@ -134,8 +150,12 @@ rather than a `std::map`, which is far slower.
 ### 3. 1-D DP
 
 **Climbing stairs / counting paths.** If you can climb 1 or 2 steps at a time, the number of ways
-to reach step $n$ is $w(n) = w(n-1) + w(n-2)$ with $w(0) = 1$ — the last move was a 1-step or a
-2-step. It is the Fibonacci recurrence, and the same code as "number of ordered ways to make change
+to reach step $n$ is
+
+$$w(n) = w(n-1) + w(n-2) \ \text{ for } n \ge 2, \qquad w(0) = 1, \quad w(1) = 1$$
+
+because the last move was a 1-step or a
+2-step. Two base cases are needed since the recurrence reads two earlier values, and step 1 can only be reached by one 1-step. So $w(0), \dots, w(5) = 1, 1, 2, 3, 5, 8$. It is the Fibonacci recurrence, and the same code as "number of ordered ways to make change
 with coins $\{1, 2\}$" below.
 
 **Coin change — minimum coins.** Subproblem: $f(a)$ = fewest coins summing to exactly $a$. The last
@@ -144,7 +164,7 @@ solution for $a - c$ (cut-and-paste):
 
 $$f(a) = 1 + \min_{c \in \text{coins},\ c \le a} f(a - c), \qquad f(0) = 0$$
 
-Complexity $O(a \cdot k)$ for $k$ denominations.
+A minimum over no coins, when every coin is larger than $a$, is $+\infty$, which marks $a$ as impossible; the code's `INF` is that value, and $1 + \infty = \infty$ keeps it impossible. Complexity $O(a \cdot k)$ for $k$ denominations.
 
 > [!example] Worked example · 계산 예제
 > Coins $\{1, 3, 4\}$, target $6$. Greedy takes the largest coin that fits: $4$, then $1$, then $1$ — **three** coins. DP: $f(0..6) = 0, 1, 2, 1, 1, 2, 2$. At $a = 6$ the options are $f(5)+1 = 3$ (last coin 1), $f(3)+1 = 2$ (last coin 3), $f(2)+1 = 3$ (last coin 4), so $f(6) = 2$ via $3 + 3$. Greedy fails because taking $4$ leaves a remainder ($2$) that the other coins cover badly; no local rule can see that. Greedy is optimal for "canonical" systems such as $\{1, 5, 10, 25\}$, but that is a property of the denominations, and proving it is a separate argument.
@@ -194,11 +214,25 @@ the list, so each multiset is counted once, in list order. With amount outer, th
 over all denominations, so sequences are counted. For $\{1, 3, 4\}$ and $6$: $4$ combinations
 ($1^6$, $3+1^3$, $3+3$, $4+1+1$) but $9$ orderings. `count_orderings([1, 2], n)` is climbing stairs.
 
+As recurrences, with the coins $c_1, \dots, c_k$ in list order: combinations need the state $(j, a)$, the number of ways to make $a$ with the first $j$ coins,
+
+$$g_j(a) = g_{j-1}(a) + g_j(a - c_j), \qquad g_0(0) = 1, \quad g_0(a) = 0 \ \text{ for } a > 0, \quad g_j(a) = 0 \ \text{ for } a < 0$$
+
+because a multiset either uses no coin $c_j$ or uses at least one, and removing one leaves a multiset for $a - c_j$. Orderings need only the amount,
+
+$$h(a) = \sum_{c \in \text{coins},\ c \le a} h(a - c), \qquad h(0) = 1$$
+
+since a sequence is its last coin plus a sequence for the rest. For $\{1, 3, 4\}$ at $a = 6$ the rows give $g_1(6) = 1$, $g_2(6) = 3$, $g_3(6) = 4$, and $h(0), \dots, h(6) = 1, 1, 1, 2, 4, 6, 9$. `count_combinations` keeps only the current row $g_j$, which is why its coin loop is outer.
+
 **Maximum-weight independent set on a path.** Vertices $v_1, \dots, v_n$ in a line with weights
-$w_i \ge 0$; pick non-adjacent vertices of maximum total weight. Subproblem: $A[i]$ = best total
+$w_i \ge 0$; pick non-adjacent vertices of maximum total weight. A vertex set $S$ is **independent** when no two of its vertices are adjacent, which on a path means $v_i$ and $v_{i+1}$ are never both in $S$; the goal is the independent $S$ maximizing $\sum_{v_i \in S} w_i$. Subproblem: $A[i]$ = best total
 using only the first $i$ vertices. Either $v_i$ is not in the optimum (then the optimum is $A[i-1]$)
 or it is (then $v_{i-1}$ is excluded and the rest is an optimum for the first $i-2$), so the
-recurrence is $A[i] = \max(A[i-1],\ A[i-2] + w_i)$ with $A[0] = 0$, $A[1] = w_1$. $O(n)$ time.
+recurrence is
+
+$$A[i] = \max\big(A[i-1],\ A[i-2] + w_i\big) \ \text{ for } i \ge 2, \qquad A[0] = 0, \quad A[1] = w_1$$
+
+which takes $O(n)$ time since each entry reads two earlier ones.
 
 > [!example] Worked example · 계산 예제
 > Weights $[3, 2, 5, 10, 7]$. $A = 0, 3, 3, 8, 13, 15$. Reconstruction walks back: $A[5] = 15 \ne A[4] = 13$, so $v_5$ is taken, jump to $i = 3$; $A[3] = 8 \ne A[2]$, take $v_3$, jump to $i = 1$; $A[1] = 3 \ne A[0]$, take $v_1$. Answer $\{v_1, v_3, v_5\}$, weight $15$. Greedy (take the heaviest vertex that is still allowed) takes $10$, which blocks $5$ and $7$, then takes $3$: total $13$.
@@ -226,7 +260,7 @@ The reconstruction needs no extra storage: the finished table already says which
 ### 4. 2-D DP
 
 **0/1 knapsack.** $n$ items with integer weights $w_i$ and values $v_i$, capacity $W$; each item at
-most once. Subproblem: $V[i][x]$ = best value using only the first $i$ items with capacity $x$. Item
+most once. Formally, choose $z_i \in \{0, 1\}$ to maximize $\sum_i v_i z_i$ subject to $\sum_i w_i z_i \le W$ ([[02-foundations/algorithms/greedy-mst|11.4 §4]] states it beside the fractional version). Subproblem: $V[i][x]$ = best value using only the first $i$ items with capacity $x$. Item
 $i$ is either left out or put in, and in the second case the remaining items must be optimal for
 capacity $x - w_i$, so
 
@@ -287,7 +321,11 @@ The two functions differ only in the direction of the inner loop. Going downward
 read before this item's pass has touched it, so it still means "previous items only" — the 0/1
 rule. Going upward, `best[x - w]` has already been updated in this pass and may contain the item, so
 the item can be reused — the unbounded rule. With one item $(2, 3)$ and $W = 4$: downward gives $3$,
-upward gives $6$.
+upward gives $6$. As a recurrence, the unbounded rule is
+
+$$B(x) = \max\Big(0,\ \max_{i:\ w_i \le x} \big[B(x - w_i) + v_i\big]\Big), \qquad B(0) = 0$$
+
+because the last item packed can be any item that fits, including one already used, and $0$ is the empty knapsack. With the single item $(2, 3)$ it gives $B(0), \dots, B(4) = 0, 0, 3, 3, 6$.
 
 **Edit distance (Levenshtein).** The minimum number of single-character insertions, deletions and
 substitutions turning string $a$ into $b$. Subproblem: $D[i][j]$ = distance between the prefixes
@@ -296,7 +334,7 @@ pairs $a_i$ with $b_j$ (free if equal, cost 1 otherwise), so
 
 $$D[i][j] = \min\big(D[i-1][j] + 1,\ D[i][j-1] + 1,\ D[i-1][j-1] + [a_i \ne b_j]\big)$$
 
-with $D[i][0] = i$ and $D[0][j] = j$ since an empty prefix is reached only by deleting or inserting
+where $[a_i \ne b_j]$ is 1 when the two characters differ and 0 when they match, with $D[i][0] = i$ and $D[0][j] = j$ since an empty prefix is reached only by deleting or inserting
 everything. $O(nm)$ time and space; $O(\min(n,m))$ space with two rolling rows if you only need the
 number.
 
@@ -348,10 +386,14 @@ Weighted variants (different costs per substitution, affine gap penalties) chang
 weights; that is sequence alignment as used in bioinformatics.
 
 **Longest common subsequence (LCS).** The longest sequence that appears in both $a$ and $b$ in
-order, not necessarily contiguously. Subproblem: $L[i][j]$ = LCS length of $a[:i]$ and $b[:j]$. If
+order, not necessarily contiguously. A sequence $z_1, \dots, z_k$ is a **subsequence** of $a$ when there are indices $i_1 < i_2 < \dots < i_k$ with $a_{i_t} = z_t$ for every $t$, so elements may be skipped but not reordered. `rbt` is a subsequence of `robot` (positions 1, 3, 5) but not a substring, because a substring must be contiguous. Subproblem: $L[i][j]$ = LCS length of $a[:i]$ and $b[:j]$. If
 $a_i = b_j$, some LCS ends by pairing them (any LCS that does not can be edited to do so without
 getting shorter), so $L[i][j] = L[i-1][j-1] + 1$; otherwise at least one of the two last elements is
-unused, so $L[i][j] = \max(L[i-1][j], L[i][j-1])$. Base cases are zero. $O(nm)$.
+unused, so $L[i][j] = \max(L[i-1][j], L[i][j-1])$. Base cases are zero. $O(nm)$. In one line with its base cases:
+
+$$L[i][j] = \begin{cases} L[i-1][j-1] + 1 & a_i = b_j \\ \max\big(L[i-1][j],\ L[i][j-1]\big) & a_i \ne b_j \end{cases}, \qquad L[i][0] = L[0][j] = 0$$
+
+The base cases are zero because an empty prefix has no common subsequence but the empty one. For `robot` and `orbit` the table gives $L[5][5] = 3$, for example `rbt`, so the insert/delete-only distance below is $5 + 5 - 2 \cdot 3 = 4$.
 
 ```python
 def lcs(a, b):
@@ -387,7 +429,11 @@ inserted from $b$. The Unix `diff` tool is built on this idea.
 **$O(n^2)$ version.** Subproblem: $e[i]$ = length of the longest strictly increasing subsequence
 that *ends at* index $i$. Ending at a fixed index is what makes the recurrence possible: the element
 before $x_i$ is some earlier $x_j < x_i$, so $e[i] = 1 + \max\{e[j] : j < i,\ x_j < x_i\}$ (or $1$ if no
-such $j$). The answer is $\max_i e[i]$, not $e[n-1]$ — a common slip.
+such $j$). The answer is $\max_i e[i]$, not $e[n-1]$ — a common slip. Here a subsequence at indices $i_1 < \dots < i_k$ is **strictly increasing** when $x_{i_1} < x_{i_2} < \dots < x_{i_k}$. With the base case folded in:
+
+$$e[i] = 1 + \max\big(\{0\} \cup \{e[j] : j < i,\ x_j < x_i\}\big), \qquad \text{LIS} = \max_i e[i]$$
+
+so when no earlier element is smaller the maximum is over $\{0\}$ alone and $e[i] = 1$. For $[3, 1, 4, 1, 5, 9, 2, 6]$ this gives $e = 1, 1, 2, 1, 3, 4, 2, 4$ and LIS length $4$.
 
 ```python
 def lis_quadratic(xs):
@@ -446,8 +492,11 @@ two choices are `std::lower_bound` and `std::upper_bound`.
 
 ### 6. DP on graphs and bitmasks
 
-**Shortest paths in a DAG via topological order.** In a directed acyclic graph, $d(v) = \min_{(u,v)}
-[d(u) + w(u,v)]$ over incoming edges. The topological order *is* the evaluation order: when $u$ is
+**Shortest paths in a DAG via topological order.** In a directed acyclic graph with source $s$,
+
+$$d(s) = 0, \qquad d(v) = \min_{(u, v) \in E} \big[d(u) + w(u, v)\big] \ \text{ for } v \ne s$$
+
+where the minimum runs over the edges coming into $v$ and a minimum over no incoming edges is $+\infty$, since such a $v \ne s$ cannot be reached; unreachable predecessors also contribute $+\infty$. A **topological order** lists the vertices so that every edge points forward ([[02-foundations/algorithms/graph-algorithms|11.6 §3]]). The topological order *is* the evaluation order: when $u$ is
 processed, every path into $u$ has already been relaxed, so $d(u)$ is final. Time $O(V + E)$ —
 faster than Dijkstra, and negative edge weights are fine because there are no cycles to exploit
 them. Replace min with max (or negate the weights) and you get the *longest* path in a DAG, which
@@ -560,7 +609,7 @@ property is optimal substructure:
 
 $$V_t(s) = \max_a \Big[ r(s,a) + \sum_{s'} p(s' \mid s, a)\, V_{t+1}(s') \Big], \qquad V_T(s) = 0$$
 
-The evaluation order is backward in time; the reconstruction is the policy $\pi_t(s) = \arg\max_a$,
+Here $s$ is the current state, $a$ an action, $r(s,a)$ the immediate reward, $p(s' \mid s, a)$ the probability of landing in state $s'$, and $T$ the horizon, so the bracket is the reward now plus the expected best reward from the next state on; the Markov property is defined in [[02-foundations/rl-basics|7. RL Basics §1]]. The evaluation order is backward in time; the reconstruction is the policy $\pi_t(s) = \arg\max_a$,
 stored per cell like the coin in `min_coins`. One backward sweep costs $O(T\,\lvert S\rvert^2\lvert A\rvert)$
 with dense transitions. For an infinite discounted horizon there is no final row to start from, so
 you apply the same backup repeatedly until the values stop changing — **value iteration**, which
@@ -581,11 +630,13 @@ def backward_induction(states, actions, step, reward, T):
     return V, policy
 ```
 
+For example, take two states $A$ and $B$, actions *stay* and *go* (which switches the state), rewards $r(A, \text{stay}) = 0$, $r(A, \text{go}) = -1$, $r(B, \text{stay}) = 2$, $r(B, \text{go}) = 0$, and horizon $T = 2$. Then $V_1(A) = \max(0, -1) = 0$ and $V_1(B) = \max(2, 0) = 2$, so $V_0(A) = \max(0 + V_1(A),\ -1 + V_1(B)) = 1$ with $\pi_0(A) = \text{go}$, and $V_0(B) = \max(2 + V_1(B),\ 0 + V_1(A)) = 4$ with $\pi_0(B) = \text{stay}$. Paying $1$ to move is worth it at $t = 0$ only because a rewarded stay in $B$ is still to come; at $t = 1$ it is not.
+
 For a deterministic model this is literally §6's DAG shortest path on the *time-expanded graph*
 whose nodes are $(t, s)$. Three consequences worth saying in a research interview:
 
 - **The curse of dimensionality** (Bellman's own phrase) is the table size. Discretize a 6-DoF arm
-  at 100 bins per joint and the state table has $100^6 = 10^{12}$ entries before velocities. That is
+  at 100 bins per joint and the state table has $100^6 = 10^{12}$ entries before velocities; in general $d$ state dimensions at $b$ bins each give $b^d$ entries, exponential in $d$. That is
   why tabular DP stays on small or low-dimensional problems, and why deep RL replaces the table
   with a function approximator — and inherits instability the table never had.
 - **LQR is DP with a closed-form value function.** For linear dynamics and quadratic cost, $V_t$ is
@@ -598,7 +649,11 @@ whose nodes are $(t, s)$. Three consequences worth saying in a research intervie
 **Dynamic time warping (DTW): edit distance for trajectories.** Two demonstrations of the same
 insertion or trowelling motion rarely have the same timing: one operator pauses, another rushes the
 approach. Comparing them sample-by-sample penalizes timing rather than shape. DTW finds the monotone
-alignment of the two time series that minimizes total local distance. Subproblem: $D(i,j)$ = cost of
+alignment of the two time series that minimizes total local distance:
+
+$$\text{DTW}(x, y) = \min_{W} \sum_{(i, j) \in W} d(x_i, y_j)$$
+
+where $W$ ranges over **warping paths**, sequences of index pairs from $(1, 1)$ to $(n, m)$ in which each step increases $i$, $j$ or both by exactly one, so the alignment never goes back in time and never skips a sample, and $d$ is the local distance between two samples. Subproblem: $D(i,j)$ = cost of
 the best alignment of $x_{1..i}$ with $y_{1..j}$ that pairs $x_i$ with $y_j$. The previous pair was
 one step back in $x$, in $y$, or in both, so
 
@@ -633,7 +688,7 @@ played slower, a comparison plain Euclidean distance cannot even make since the 
 Uses in robot learning: aligning several kinesthetic demonstrations to a common time base before
 averaging them into a reference trajectory, comparing an executed trajectory against its
 reference, and matching force profiles across trials. Three cautions: DTW is **not a metric** (the
-triangle inequality can fail, so do not feed it to methods that assume one); it aligns *time* only,
+triangle inequality can fail, so do not feed it to methods that assume one). A metric $D$ must give $D(x, y) = 0$ only when $x = y$, be symmetric, and satisfy $D(x, z) \le D(x, y) + D(y, z)$. DTW breaks the first condition, since the example above gives $0$ for two different series, and the third, since $x = [0]$, $y = [1]$, $z = [1, 1]$ give $\text{DTW}(x, z) = 2 > \text{DTW}(x, y) + \text{DTW}(y, z) = 1 + 0$. Second, it aligns *time* only,
 so remove spatial offsets and choose units for $d$ first (position and orientation need weights);
 and an unconstrained warp can make two genuinely different motions look identical, which is what
 the window is for.
@@ -721,13 +776,29 @@ the window is for.
 
 ### 1. DP가 적용되는 조건, 그리고 이웃 기법과의 차이
 
+**DP란.** 동적 계획법은 답을 같은 문제의 더 작은 사례들의 답으로 쓸 수 있는 문제를 위한 알고리즘 설계 기법이다. DP 알고리즘은 이름 붙은 다섯 부분을 갖는다.
+
+- **상태**(states): 부분 문제. 금액 $a$나 접두사 길이 쌍 $(i, j)$ 같은 것이다.
+- **점화식**(recurrence): 각 상태의 값을 더 작은 상태들의 값으로 준다.
+- **기저 사례**(base cases): 값이 직접 주어지는 상태.
+- **계산 순서**(evaluation order): 모든 상태가 자기가 읽는 상태들보다 뒤에 오는 순서.
+- **답 추출**(answer extraction): 최종 답을 담은 상태, 그리고 그 답을 만든 선택들의 복원.
+
+최적화 문제의 점화식은 다음 모양이다.
+$$f(s) = \operatorname{opt}_{a \in A(s)} \big[\, c(s, a) + f(s \oplus a) \,\big] \ \text{ for non-base } s, \qquad f(s) = b(s) \ \text{ for base } s$$
+여기서 $\operatorname{opt}$는 $\min$ 또는 $\max$, $A(s)$는 상태 $s$에서 살펴보는 결정 하나의 선택지 집합, $c(s, a)$는 선택지 $a$의 비용, $s \oplus a$는 그 선택 뒤에 남는 더 작은 상태, $b(s)$는 주어진 기저 값이다. 개수 세기 문제는 $\operatorname{opt}$를 합으로 바꾸고 $c$를 뺀다. 상태마다 한 번씩만 풀므로 실행 시간은 상태별 $\lvert A(s) \rvert$에 선택지당 작업량을 곱해 모두 더한 것이며, 아래 3단계의 "부분 문제 수 × 부분 문제당 작업량"이 이것이다. §3의 동전 교환은 $s = a$, $A(a)$가 $a$보다 크지 않은 동전들, 모든 선택지의 비용 $1$, 동전 $c$가 남기는 상태 $a - c$인 이 모양이다.
+
 DP에는 두 성질이 필요하다.
 
 - **최적 부분 구조.** 전체 문제의 최적해가 *같은* 문제의 더 작은 사례에 대한 최적해를 품고
-  있다. 증명은 거의 언제나 잘라 붙이기 논법이다. 최적해 안의 조각이 최적이 아니라면 더 나은
-  조각으로 바꿔 끼워 전체가 좋아지므로 모순이다.
+  있다. 형식적으로, $x^*$가 사례 $P$의 최적해이고 마지막 결정이 $a^*$이면, $x^*$의 나머지는 $a^*$가 남기는 부분 문제 $P_{a^*}$의 최적해다. 그래서
+$$\mathrm{OPT}(P) = c(a^*) + \mathrm{OPT}(P_{a^*})$$
+  이고, 바로 이것이 점화식이 더 작은 상태의 $f$를 쓸 수 있게 해 준다. 증명은 거의 언제나 잘라 붙이기 논법이다. 최적해 안의 조각이 최적이 아니라면 더 나은
+  조각으로 바꿔 끼워 전체가 좋아지므로 모순이다. 예: 최단 경로의 모든 부분 경로는 그 자체로 최단 경로다. 두 정점 사이에 더 짧은 길이 있으면 전체 경로가 짧아지기 때문이다. 반례는 아래에 있다.
 - **겹치는 부분 문제.** 자연스러운 재귀가 같은 작은 질문을 여러 번 묻는다. 그래서 캐시가
-  이득이 된다. *서로 다른* 부분 문제가 몇천 개뿐인 문제도 재귀 트리는 수십억 노드가 될 수 있다.
+  이득이 된다. *서로 다른* 부분 문제가 몇천 개뿐인 문제도 재귀 트리는 수십억 노드가 될 수 있다. 형식적으로, 도달하는 서로 다른 상태 수가 단순한 재귀의 호출 수보다 훨씬 적다. $F(0) = 0$, $F(1) = 1$인 피보나치 $F(n) = F(n-1) + F(n-2)$는 호출마다 자기 호출 두 개를 하므로
+$$\text{calls}(n) = 1 + \text{calls}(n-1) + \text{calls}(n-2), \qquad \text{calls}(0) = \text{calls}(1) = 1$$
+  번 호출하며, 이 해는 $2F(n+1) - 1$이다. $F(30)$에 2,692,537번을 호출하지만 서로 다른 상태는 $F(0), \dots, F(30)$의 31개뿐이다. 병합 정렬은 반례다. 두 절반이 반복되지 않으므로 캐시가 한 번도 적중하지 않는다.
 
 **이웃 기법과의 차이.**
 
@@ -819,7 +890,11 @@ def min_path_bottomup(cost):
 ### 3. 1차원 DP
 
 **계단 오르기 / 경로 수 세기.** 한 번에 1칸 또는 2칸 오를 수 있다면 $n$번째 칸에 이르는 방법
-수는 $w(n) = w(n-1) + w(n-2)$, $w(0) = 1$이다. 마지막 이동이 1칸이거나 2칸이기 때문이다.
+수는 마지막 이동이 1칸이거나 2칸이기 때문에
+
+$$w(n) = w(n-1) + w(n-2) \ \text{ for } n \ge 2, \qquad w(0) = 1, \quad w(1) = 1$$
+
+이다. 점화식이 앞선 값 두 개를 읽고 1번째 칸에는 1칸 이동 하나로만 갈 수 있으므로 기저 사례가 두 개 필요하다. 그래서 $w(0), \dots, w(5) = 1, 1, 2, 3, 5, 8$이다.
 피보나치 점화식이며, 아래의 "동전 $\{1, 2\}$로 거스름돈을 만드는 순서 있는 방법 수" 코드와 같다.
 
 **동전 교환 — 최소 동전 수.** 부분 문제: $f(a)$ = 합이 정확히 $a$인 최소 동전 수. 마지막 동전은
@@ -828,7 +903,7 @@ def min_path_bottomup(cost):
 
 $$f(a) = 1 + \min_{c \in \text{coins},\ c \le a} f(a - c), \qquad f(0) = 0$$
 
-액면 $k$종류일 때 복잡도는 $O(a \cdot k)$다.
+모든 동전이 $a$보다 커서 최소를 취할 동전이 없으면 그 최솟값은 $+\infty$이고, $a$를 만들 수 없다는 표시다. 코드의 `INF`가 그 값이며 $1 + \infty = \infty$라 계속 불가능으로 남는다. 액면 $k$종류일 때 복잡도는 $O(a \cdot k)$다.
 
 > [!example] 계산 예제 · Worked example
 > 동전 $\{1, 3, 4\}$, 목표 $6$. 탐욕은 들어가는 가장 큰 동전을 고른다. $4$, $1$, $1$로 **세 개**다. DP: $f(0..6) = 0, 1, 2, 1, 1, 2, 2$. $a = 6$에서 선택지는 $f(5)+1 = 3$(마지막 동전 1), $f(3)+1 = 2$(마지막 동전 3), $f(2)+1 = 3$(마지막 동전 4)이므로 $f(6) = 2$, 즉 $3 + 3$이다. 탐욕이 실패하는 이유는 $4$를 집으면 남는 $2$를 다른 동전들이 나쁘게 채우기 때문이고, 어떤 국소 규칙도 그것을 보지 못한다. $\{1, 5, 10, 25\}$ 같은 "정규" 체계에서는 탐욕이 최적이지만, 그건 액면 구성의 성질이며 따로 증명해야 한다.
@@ -878,11 +953,24 @@ def count_orderings(coins, target):      # 1+3 and 3+1 are different ways
 액면을 돌므로 순서열이 세어진다. $\{1, 3, 4\}$와 $6$이면 조합은 $4$가지($1^6$, $3+1^3$, $3+3$,
 $4+1+1$)지만 순서열은 $9$가지다. `count_orderings([1, 2], n)`이 계단 오르기다.
 
+점화식으로 쓰면 이렇다. 동전을 목록 순서대로 $c_1, \dots, c_k$라 하자. 조합은 상태 $(j, a)$, 즉 앞의 동전 $j$종류로 $a$를 만드는 방법 수가 필요하다.
+
+$$g_j(a) = g_{j-1}(a) + g_j(a - c_j), \qquad g_0(0) = 1, \quad g_0(a) = 0 \ \text{ for } a > 0, \quad g_j(a) = 0 \ \text{ for } a < 0$$
+
+중복집합은 동전 $c_j$를 쓰지 않거나 적어도 하나 쓰고, 하나를 빼면 $a - c_j$의 중복집합이 남기 때문이다. 순서열은 금액만 있으면 된다.
+
+$$h(a) = \sum_{c \in \text{coins},\ c \le a} h(a - c), \qquad h(0) = 1$$
+
+순서열은 마지막 동전과 나머지의 순서열이기 때문이다. $\{1, 3, 4\}$에서 $a = 6$이면 $g_1(6) = 1$, $g_2(6) = 3$, $g_3(6) = 4$이고, $h(0), \dots, h(6) = 1, 1, 1, 2, 4, 6, 9$다. `count_combinations`는 현재 행 $g_j$만 유지하며, 그래서 동전 루프가 바깥에 있다.
+
 **경로 그래프의 최대 가중 독립 집합.** 일렬로 놓인 정점 $v_1, \dots, v_n$에 가중치 $w_i \ge 0$이
-있다. 서로 이웃하지 않는 정점들을 골라 가중치 합을 최대로 한다. 부분 문제: $A[i]$ = 앞의 $i$개
+있다. 서로 이웃하지 않는 정점들을 골라 가중치 합을 최대로 한다. 정점 집합 $S$의 어느 두 정점도 이웃하지 않으면 $S$를 **독립 집합**(independent set)이라 하며, 경로 위에서는 $v_i$와 $v_{i+1}$이 함께 $S$에 들지 않는다는 뜻이다. 목표는 $\sum_{v_i \in S} w_i$를 최대로 하는 독립 집합 $S$다. 부분 문제: $A[i]$ = 앞의 $i$개
 정점만 쓸 때의 최선 합. $v_i$가 최적해에 없으면 최적값은 $A[i-1]$이고, 있으면 $v_{i-1}$은
-빠지며 나머지는 앞 $i-2$개에 대한 최적해다. 따라서 점화식은 $A[i] = \max(A[i-1],\ A[i-2] + w_i)$,
-$A[0] = 0$, $A[1] = w_1$이다. 시간 $O(n)$.
+빠지며 나머지는 앞 $i-2$개에 대한 최적해다. 따라서 점화식은
+
+$$A[i] = \max\big(A[i-1],\ A[i-2] + w_i\big) \ \text{ for } i \ge 2, \qquad A[0] = 0, \quad A[1] = w_1$$
+
+이다. 각 항목이 앞선 두 항목을 읽으므로 시간 $O(n)$.
 
 > [!example] 계산 예제 · Worked example
 > 가중치 $[3, 2, 5, 10, 7]$. $A = 0, 3, 3, 8, 13, 15$. 복원은 뒤에서부터 걷는다. $A[5] = 15 \ne A[4] = 13$이므로 $v_5$를 넣고 $i = 3$으로 건너뛴다. $A[3] = 8 \ne A[2]$이므로 $v_3$을 넣고 $i = 1$로. $A[1] = 3 \ne A[0]$이므로 $v_1$을 넣는다. 답은 $\{v_1, v_3, v_5\}$, 가중치 $15$다. 탐욕(아직 허용되는 가장 무거운 정점 고르기)은 $10$을 집어 $5$와 $7$을 막고, 이어 $3$을 집어 합계 $13$이 된다.
@@ -909,7 +997,7 @@ def max_weight_independent_set(w):
 
 ### 4. 2차원 DP
 
-**0/1 배낭.** 정수 무게 $w_i$와 가치 $v_i$를 가진 물건 $n$개, 용량 $W$. 각 물건은 최대 한 번.
+**0/1 배낭.** 정수 무게 $w_i$와 가치 $v_i$를 가진 물건 $n$개, 용량 $W$. 각 물건은 최대 한 번. 형식적으로 $z_i \in \{0, 1\}$를 골라 $\sum_i w_i z_i \le W$ 아래에서 $\sum_i v_i z_i$를 최대화한다([[02-foundations/algorithms/greedy-mst|11.4 §4]]가 분할 가능 버전 옆에 적어 둔다).
 부분 문제: $V[i][x]$ = 앞의 $i$개 물건만 쓰고 용량이 $x$일 때의 최대 가치. 물건 $i$는 빼거나
 넣는데, 넣는 경우 나머지 물건들은 용량 $x - w_i$에 대해 최적이어야 하므로
 
@@ -968,7 +1056,11 @@ def knapsack_unbounded(items, W):
 두 함수는 안쪽 루프의 방향만 다르다. 내려가며 돌면 `best[x - w]`는 이 물건의 패스가 건드리기
 전에 읽히므로 여전히 "이전 물건만"을 뜻한다 — 0/1 규칙. 올라가며 돌면 `best[x - w]`는 이미 이
 패스에서 갱신되어 그 물건을 포함할 수 있으므로 물건을 재사용하게 된다 — 무제한 규칙. 물건
-$(2, 3)$ 하나와 $W = 4$라면 내림차순은 $3$, 오름차순은 $6$을 준다.
+$(2, 3)$ 하나와 $W = 4$라면 내림차순은 $3$, 오름차순은 $6$을 준다. 점화식으로 쓰면 무제한 규칙은
+
+$$B(x) = \max\Big(0,\ \max_{i:\ w_i \le x} \big[B(x - w_i) + v_i\big]\Big), \qquad B(0) = 0$$
+
+이다. 마지막으로 담은 물건은 이미 쓴 것을 포함해 들어가는 어떤 물건이든 될 수 있고, $0$은 빈 배낭이다. 물건 $(2, 3)$ 하나라면 $B(0), \dots, B(4) = 0, 0, 3, 3, 6$이다.
 
 **편집 거리(Levenshtein).** 문자열 $a$를 $b$로 바꾸는 단일 문자 삽입·삭제·치환의 최소 횟수.
 부분 문제: $D[i][j]$ = 접두사 $a[:i]$와 $b[:j]$ 사이의 거리. 최적 정렬의 마지막 열은 $a_i$를
@@ -976,7 +1068,7 @@ $(2, 3)$ 하나와 $W = 4$라면 내림차순은 $3$, 오름차순은 $6$을 준
 
 $$D[i][j] = \min\big(D[i-1][j] + 1,\ D[i][j-1] + 1,\ D[i-1][j-1] + [a_i \ne b_j]\big)$$
 
-이고, 빈 접두사에는 전부 삭제하거나 전부 삽입해야만 도달하므로 $D[i][0] = i$, $D[0][j] = j$다.
+이고, 여기서 $[a_i \ne b_j]$는 두 문자가 다르면 1, 같으면 0이다. 빈 접두사에는 전부 삭제하거나 전부 삽입해야만 도달하므로 $D[i][0] = i$, $D[0][j] = j$다.
 시간과 공간은 $O(nm)$이며, 수치만 필요하면 두 행을 굴려 공간 $O(\min(n,m))$로 줄인다.
 
 > [!example] 계산 예제 · Worked example
@@ -1026,10 +1118,14 @@ def edit_distance(a, b):
 벌점)은 간선 가중치만 바꾸며, 생물정보학의 서열 정렬이 바로 그것이다.
 
 **최장 공통 부분 수열(LCS).** $a$와 $b$ 모두에 순서대로(연속일 필요는 없이) 나타나는 가장 긴
-수열. 부분 문제: $L[i][j]$ = $a[:i]$와 $b[:j]$의 LCS 길이. $a_i = b_j$이면 둘을 짝지어 끝나는
+수열. 인덱스 $i_1 < i_2 < \dots < i_k$가 있어 모든 $t$에 대해 $a_{i_t} = z_t$이면 수열 $z_1, \dots, z_k$를 $a$의 **부분 수열**(subsequence)이라 한다. 원소를 건너뛸 수는 있어도 순서를 바꿀 수는 없다. `rbt`는 `robot`의 부분 수열(위치 1, 3, 5)이지만, 부분 문자열은 연속이어야 하므로 부분 문자열은 아니다. 부분 문제: $L[i][j]$ = $a[:i]$와 $b[:j]$의 LCS 길이. $a_i = b_j$이면 둘을 짝지어 끝나는
 LCS가 존재한다(그렇지 않은 LCS도 짧아지지 않게 그렇게 고칠 수 있다). 그래서
 $L[i][j] = L[i-1][j-1] + 1$이다. 다르면 마지막 두 원소 중 적어도 하나는 쓰이지 않으므로
-$L[i][j] = \max(L[i-1][j], L[i][j-1])$이다. 기저 사례는 0이다. $O(nm)$.
+$L[i][j] = \max(L[i-1][j], L[i][j-1])$이다. 기저 사례는 0이다. $O(nm)$. 기저 사례와 함께 한 줄로 쓰면
+
+$$L[i][j] = \begin{cases} L[i-1][j-1] + 1 & a_i = b_j \\ \max\big(L[i-1][j],\ L[i][j-1]\big) & a_i \ne b_j \end{cases}, \qquad L[i][0] = L[0][j] = 0$$
+
+이다. 빈 접두사에는 빈 수열 말고 공통 부분 수열이 없으므로 기저 사례가 0이다. `robot`과 `orbit`이면 표가 $L[5][5] = 3$(예: `rbt`)을 주므로, 아래의 삽입·삭제만 허용한 거리는 $5 + 5 - 2 \cdot 3 = 4$다.
 
 ```python
 def lcs(a, b):
@@ -1065,7 +1161,11 @@ LCS는 치환을 금지한 편집 거리다. 삽입·삭제만 허용한 거리�
 **$O(n^2)$ 버전.** 부분 문제: $e[i]$ = 인덱스 $i$에서 *끝나는* 가장 긴 순증가 부분 수열의 길이.
 끝 인덱스를 고정해야 점화식이 가능해진다. $x_i$ 앞의 원소는 더 앞의 어떤 $x_j < x_i$이므로
 $e[i] = 1 + \max\{e[j] : j < i,\ x_j < x_i\}$(그런 $j$가 없으면 $1$). 답은 $e[n-1]$이 아니라
-$\max_i e[i]$다 — 흔한 실수다.
+$\max_i e[i]$다 — 흔한 실수다. 여기서 인덱스 $i_1 < \dots < i_k$의 부분 수열이 $x_{i_1} < x_{i_2} < \dots < x_{i_k}$이면 **순증가**(strictly increasing)다. 기저 사례를 포함해 쓰면
+
+$$e[i] = 1 + \max\big(\{0\} \cup \{e[j] : j < i,\ x_j < x_i\}\big), \qquad \text{LIS} = \max_i e[i]$$
+
+이다. 앞에 더 작은 원소가 없으면 최댓값을 $\{0\}$에서만 취하므로 $e[i] = 1$이다. $[3, 1, 4, 1, 5, 9, 2, 6]$이면 $e = 1, 1, 2, 1, 3, 4, 2, 4$이고 LIS 길이는 $4$다.
 
 ```python
 def lis_quadratic(xs):
@@ -1123,8 +1223,11 @@ def lis_patience(xs):
 
 ### 6. 그래프와 비트마스크 위의 DP
 
-**위상 순서로 DAG 최단 경로 구하기.** 방향 비순환 그래프에서 $d(v) = \min_{(u,v)} [d(u) + w(u,v)]$이고
-최소는 들어오는 간선에 대해 취한다. 위상 순서가 *곧* 계산 순서다. $u$를 처리할 때 $u$로 들어오는
+**위상 순서로 DAG 최단 경로 구하기.** 출발점이 $s$인 방향 비순환 그래프에서
+
+$$d(s) = 0, \qquad d(v) = \min_{(u, v) \in E} \big[d(u) + w(u, v)\big] \ \text{ for } v \ne s$$
+
+이고, 최소는 $v$로 들어오는 간선에 대해 취한다. 들어오는 간선이 없으면 그런 $v \ne s$에는 도달할 수 없으므로 최솟값은 $+\infty$이고, 도달할 수 없는 선행 정점도 $+\infty$를 보탠다. **위상 순서**(topological order)는 모든 간선이 앞에서 뒤로 향하도록 정점을 나열한 것이다([[02-foundations/algorithms/graph-algorithms|11.6 §3]]). 위상 순서가 *곧* 계산 순서다. $u$를 처리할 때 $u$로 들어오는
 모든 경로는 이미 완화되었으므로 $d(u)$는 확정이다. 시간 $O(V + E)$로 Dijkstra보다 빠르고,
 악용할 사이클이 없으니 음수 간선도 괜찮다. min을 max로 바꾸면(또는 가중치 부호를 뒤집으면)
 DAG의 *최장* 경로가 되는데, 일반 그래프에서는 NP-난해다. 위의 모든 표 채우기 DP는 부분 문제를
@@ -1232,7 +1335,7 @@ $O(n\,2^n)$이다. $n = 20$이면 기본 연산 약 $4 \times 10^8$번, 표 항�
 
 $$V_t(s) = \max_a \Big[ r(s,a) + \sum_{s'} p(s' \mid s, a)\, V_{t+1}(s') \Big], \qquad V_T(s) = 0$$
 
-계산 순서는 시간을 거꾸로 가는 것이고, 복원은 정책 $\pi_t(s) = \arg\max_a$이며 `min_coins`의
+여기서 $s$는 현재 상태, $a$는 행동, $r(s,a)$는 즉시 보상, $p(s' \mid s, a)$는 상태 $s'$에 도착할 확률, $T$는 지평이다. 그래서 대괄호는 지금의 보상에 다음 상태부터의 최대 기대 보상을 더한 것이다. 마르코프 성질은 [[02-foundations/rl-basics|7. RL 기초 §1]]에서 정의한다. 계산 순서는 시간을 거꾸로 가는 것이고, 복원은 정책 $\pi_t(s) = \arg\max_a$이며 `min_coins`의
 동전처럼 칸마다 저장한다. 조밀한 전이에서 역방향 한 번 훑기는 $O(T\,\lvert S\rvert^2\lvert A\rvert)$다.
 무한 할인 지평에는 시작할 마지막 행이 없으므로 값이 변하지 않을 때까지 같은 백업을 반복 적용한다.
 이것이 **가치 반복**이며, 백업이 $\gamma$-축약이라 수렴한다([[02-foundations/rl-basics|7. RL 기초 §3]]). 백업 한 번이 두 가치
@@ -1252,11 +1355,13 @@ def backward_induction(states, actions, step, reward, T):
     return V, policy
 ```
 
+예를 들어 상태 $A$와 $B$, 행동 *stay*와 상태를 바꾸는 *go*, 보상 $r(A, \text{stay}) = 0$, $r(A, \text{go}) = -1$, $r(B, \text{stay}) = 2$, $r(B, \text{go}) = 0$, 지평 $T = 2$를 두자. 그러면 $V_1(A) = \max(0, -1) = 0$, $V_1(B) = \max(2, 0) = 2$이므로 $V_0(A) = \max(0 + V_1(A),\ -1 + V_1(B)) = 1$이고 $\pi_0(A) = \text{go}$, $V_0(B) = \max(2 + V_1(B),\ 0 + V_1(A)) = 4$이고 $\pi_0(B) = \text{stay}$다. 이동에 $1$을 치르는 것은 $B$에서 보상받으며 머물 기회가 아직 남은 $t = 0$에서만 이득이고, $t = 1$에서는 아니다.
+
 결정론적 모델이라면 이것은 노드가 $(t, s)$인 *시간 전개 그래프* 위에서 §6의 DAG 최단 경로를 푸는
 것과 문자 그대로 같다. 연구 면접에서 말할 만한 결과 세 가지.
 
 - **차원의 저주**(벨만 자신의 표현)는 표의 크기다. 6자유도 팔을 관절당 100칸으로 이산화하면 속도를
-  넣기도 전에 상태 표가 $100^6 = 10^{12}$개 항목이다. 그래서 표 기반 DP는 작거나 저차원인 문제에
+  넣기도 전에 상태 표가 $100^6 = 10^{12}$개 항목이다. 일반적으로 상태 차원 $d$개를 각각 $b$칸으로 나누면 항목이 $b^d$개로, $d$에 대해 지수적이다. 그래서 표 기반 DP는 작거나 저차원인 문제에
   머물고, 심층 RL은 표를 함수 근사기로 바꾸며 표에는 없던 불안정성을 물려받는다.
 - **LQR은 가치 함수가 닫힌 형태인 DP다.** 선형 동역학과 이차 비용이면 $V_t$가 이차식이고 max가
   해석적으로 풀려, 표 위의 역방향 훑기가 시간 단계마다 행렬 하나를 갱신하는 리카티 재귀가 된다
@@ -1267,7 +1372,11 @@ def backward_induction(states, actions, step, reward, T):
 **동적 시간 와핑(DTW): 궤적을 위한 편집 거리.** 같은 삽입 동작이나 흙손질 동작의 두 시연은
 타이밍이 거의 같지 않다. 한 작업자는 멈칫하고 다른 작업자는 접근을 서두른다. 표본끼리 그대로
 비교하면 모양이 아니라 타이밍에 벌점을 준다. DTW는 두 시계열의 단조 정렬 중 국소 거리 총합이
-최소인 것을 찾는다. 부분 문제: $D(i,j)$ = $x_i$와 $y_j$를 짝짓는, $x_{1..i}$와 $y_{1..j}$의 최선
+최소인 것을 찾는다.
+
+$$\text{DTW}(x, y) = \min_{W} \sum_{(i, j) \in W} d(x_i, y_j)$$
+
+여기서 $W$는 **와핑 경로**(warping path), 즉 $(1, 1)$에서 $(n, m)$까지 가는 인덱스 쌍의 열로서 매 단계 $i$, $j$, 또는 둘 다를 정확히 1씩 늘리는 것들을 돈다. 그래서 정렬은 시간을 거슬러 가지도 표본을 건너뛰지도 않는다. $d$는 두 표본 사이의 국소 거리다. 부분 문제: $D(i,j)$ = $x_i$와 $y_j$를 짝짓는, $x_{1..i}$와 $y_{1..j}$의 최선
 정렬 비용. 직전 짝은 $x$에서 한 칸, $y$에서 한 칸, 또는 둘 다 한 칸 뒤였으므로
 
 $$D(i,j) = d(x_i, y_j) + \min\big(D(i-1,j),\ D(i,j-1),\ D(i-1,j-1)\big), \qquad D(0,0) = 0$$
@@ -1299,7 +1408,7 @@ def dtw(x, y, band=None, d=lambda p, q: abs(p - q)):
 느리게 재생한 것인데, 평범한 유클리드 거리는 길이가 달라 비교조차 못 한다. 로봇 학습에서의 쓰임:
 여러 운동감각 교시 시연을 공통 시간축에 맞춘 뒤 평균 내어 기준 궤적을 만들기, 실행 궤적을 기준과
 비교하기, 시행 간 힘 프로파일 맞추기. 주의 세 가지. DTW는 **거리 함수(metric)가 아니다**(삼각
-부등식이 깨질 수 있으니 metric을 가정하는 방법에 넣지 말 것). *시간*만 정렬하므로 공간 오프셋을
+부등식이 깨질 수 있으니 metric을 가정하는 방법에 넣지 말 것). 거리 함수 $D$는 $x = y$일 때만 $D(x, y) = 0$이고, 대칭이며, $D(x, z) \le D(x, y) + D(y, z)$를 만족해야 한다. DTW는 첫 조건을 깬다. 위 예제가 서로 다른 두 시계열에 $0$을 준다. 셋째 조건도 깬다. $x = [0]$, $y = [1]$, $z = [1, 1]$이면 $\text{DTW}(x, z) = 2 > \text{DTW}(x, y) + \text{DTW}(y, z) = 1 + 0$이다. 둘째, *시간*만 정렬하므로 공간 오프셋을
 먼저 제거하고 $d$의 단위를 정해야 한다(위치와 자세에는 가중치가 필요하다). 제약 없는 와핑은 실제로
 다른 두 동작을 똑같아 보이게 만들 수 있고, 창이 그것을 막는다.
 

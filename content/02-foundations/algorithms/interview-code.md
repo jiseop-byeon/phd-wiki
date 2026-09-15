@@ -208,6 +208,8 @@ Python lets you write an interview solution in half the lines of C++, provided y
 | Prefix sums, pairs, products | `itertools` | lazy, O(1) memory per step |
 | Memoised recursion | `functools.cache` | one dictionary entry per distinct argument tuple |
 
+The "Cost" column uses two words with exact meanings that are defined elsewhere in the track. **Average O(1)** for a hash-based container is the *expected* cost per operation when keys spread evenly over the buckets, not a guarantee for every operation ([[02-foundations/algorithms/data-structures|11.2 §3]]). **Amortised O(1)**, used for `append` and `push_back` below, is a guarantee about sequences: any $k$ operations starting from an empty structure cost at most a constant times $k$ in total, so a single expensive resize is paid for by the many cheap appends before it ([[02-foundations/algorithms/complexity-recursion|11.1 §4]]).
+
 **collections.** A `Counter` reads a missing key as 0 without inserting it. A `defaultdict(list)` creates the missing entry on first access. A `deque(maxlen=k)` is a ready-made fixed-size window.
 
 ```python
@@ -231,7 +233,7 @@ assert list(recent) == [6, 7, 8]
 assert recent.popleft() == 6                             # O(1); list.pop(0) is O(n)
 ```
 
-**heapq.** It is a min-heap stored in a plain list. For a max-heap, push negated keys, since a > b exactly when −a < −b, so the smallest negated key belongs to the largest original (Python 3.14 added `heappush_max` and related functions, but interview environments are often older). Entries are usually tuples, compared element by element, so put a counter before any payload that cannot be compared.
+**heapq.** It is a min-heap stored in a plain list: the list satisfies `a[i] <= a[2*i + 1]` and `a[i] <= a[2*i + 2]` for every index where those children exist, so `a[0]` is always the smallest ([[02-foundations/algorithms/data-structures|11.2 §4]] defines the heap and proves the costs). For a max-heap, push negated keys, since a > b exactly when −a < −b, so the smallest negated key belongs to the largest original (Python 3.14 added `heappush_max` and related functions, but interview environments are often older). Entries are usually tuples, compared element by element, so put a counter before any payload that cannot be compared.
 
 ```python
 import heapq
@@ -311,11 +313,13 @@ assert ways(80) == 37889062373143906
 
 - **Mutable default arguments.** The default value is evaluated once, when `def` runs, so a default list is shared by every call.
 - **Aliased rows.** `[ [0] * m ] * n` makes a list of n references to *one* row. Build rows in a comprehension.
-- **Integer division and negative numbers.** `//` rounds toward minus infinity and `%` takes the sign of the divisor: `-7 // 2` is `-4` and `-7 % 2` is `1`. C++ and Java give `-3` and `-1`. `int(a / b)` truncates but goes through a float and is wrong for large integers.
+- **Integer division and negative numbers.** `//` rounds toward minus infinity and `%` takes the sign of the divisor: `-7 // 2` is `-4` and `-7 % 2` is `1`. C++ and Java give `-3` and `-1`. `int(a / b)` truncates but goes through a float and is wrong for large integers. Precisely, both languages define quotient $q$ and remainder $r$ of $a$ by $b \ne 0$ through the same identity, and differ only in how $q$ is rounded, so the remainder's sign follows from the choice of $q$:
+$$a = b\,q + r, \qquad q_{\text{Python}} = \lfloor a / b \rfloor, \qquad q_{\text{C++}} = \operatorname{trunc}(a / b)$$
+  Python's floor gives $0 \le r < b$ for $b > 0$; C++'s truncation toward zero gives $r$ the sign of $a$. Check with $a = -7$, $b = 2$: Python $q = -4$, $r = -7 - 2(-4) = 1$; C++ $q = -3$, $r = -7 - 2(-3) = -1$.
 - **Recursion limit.** CPython stops at about 1000 frames by default; see [[02-foundations/algorithms/complexity-recursion|11.1 §5]] for the fixes.
 - **Float comparison.** `0.1 + 0.2 == 0.3` is false. Compare with `math.isclose`, or avoid floats entirely by comparing squared integer distances or cross-multiplied fractions.
 - **`is` versus `==`.** `is` asks whether two names refer to the same object; `==` asks whether the values are equal. Use `is` only for `None` and deliberate sentinels. Small integers happen to be cached in CPython, so `is` on numbers sometimes works in testing and fails on real data.
-- **Sorting.** `list.sort` and `sorted` are guaranteed stable, including with `reverse=True`. Sort by a `key` function (computed once per element), or by a tuple key such as `(-score, name)`; `functools.cmp_to_key` exists but is rarely needed.
+- **Sorting.** `list.sort` and `sorted` are guaranteed stable, including with `reverse=True`. A sort is **stable** when elements with equal keys keep their input order: if $\text{key}(a) = \text{key}(b)$ and $a$ comes before $b$ in the input, then $a$ comes before $b$ in the output. That property is what makes the two-pass sort in the code below correct, since the second pass (by count) leaves the first pass's name order intact among equal counts; with an unstable sort, `("c", 2)` could land before `("b", 2)`. Sort by a `key` function (computed once per element), or by a tuple key such as `(-score, name)`; `functools.cmp_to_key` exists but is rarely needed.
 
 ```python
 import math
@@ -389,7 +393,7 @@ On a laptop the set lookup is thousands of times faster than the list scan, and 
 
 ### 4. C++ for interviews
 
-C++ interviews check the same algorithms plus whether you know what the language does not protect you from: overflow, invalidated iterators, and contracts whose violation is undefined behaviour rather than an error message. Every snippet below is a complete program that compiles with `c++ -std=c++17` and checks its claims with `assert`.
+C++ interviews check the same algorithms plus whether you know what the language does not protect you from: overflow, invalidated iterators, and contracts whose violation is undefined behaviour rather than an error message. **Undefined behaviour** (UB) is a category in the C++ standard with two defining parts: (1) the program performs an operation for which the standard imposes *no requirements at all*, such as signed integer overflow, reading past the end of an array, or dereferencing a dangling iterator; and (2) because nothing is required, the compiler may assume the operation never happens and optimise on that assumption. So UB is not "some unspecified result": the same code can print the expected value in a debug build, a different value with `-O2`, or crash. *Example:* `2 * big` with `int big = 2'000'000'000` is UB, because $4 \times 10^9$ exceeds `INT_MAX` $= 2\,147\,483\,647$. *Non-example:* unsigned overflow is defined, since unsigned arithmetic wraps modulo $2^{\text{bits}}$, which is exactly why `v.size() - 1` on an empty vector is a huge number instead of UB. Every snippet below is a complete program that compiles with `c++ -std=c++17` and checks its claims with `assert`.
 
 | Python habit | C++ tool | Cost | Trap |
 |---|---|---|---|
@@ -541,7 +545,17 @@ int main() {
 }
 ```
 
-**`std::sort` needs a strict weak ordering.** The comparator must behave like `<`: `comp(a, a)` is false; if `comp(a, b)` then not `comp(b, a)`; and it is transitive, including for "neither is less". Writing `<=` breaks the first rule, and so does comparing floating-point keys that contain NaN. The result is undefined behaviour — in practice wrong orders, infinite loops or out-of-bounds reads, depending on the library. Compare field by field, or build `std::tie` tuples. `std::sort` is not stable; use `std::stable_sort` when ties must keep their input order.
+**`std::sort` needs a strict weak ordering.** The comparator must behave like `<`: `comp(a, a)` is false; if `comp(a, b)` then not `comp(b, a)`; and it is transitive, including for "neither is less". Writing `<=` breaks the first rule, and comparing floating-point keys that contain NaN breaks the last one. Written as the four conditions of the *Compare* requirement, with $a \prec b$ meaning `comp(a, b)` is true and **incomparability** $a \sim b$ meaning neither is less:
+$$a \sim b \iff \neg(a \prec b) \wedge \neg(b \prec a)$$
+
+- **Irreflexivity:** $\neg(a \prec a)$ for every $a$.
+- **Asymmetry:** $a \prec b$ implies $\neg(b \prec a)$.
+- **Transitivity:** $a \prec b$ and $b \prec c$ imply $a \prec c$.
+- **Transitivity of incomparability:** $a \sim b$ and $b \sim c$ imply $a \sim c$, so "equal for sorting purposes" groups the elements into clean equivalence classes that the sort can place side by side.
+
+*Non-examples.* `<=` fails irreflexivity, because `comp(a, a)` is true. An "approximately less" comparator `a < b - 1` satisfies the first three but fails the fourth: $0 \sim 0.8$ and $0.8 \sim 1.6$, yet $0 \prec 1.6$ because $0 < 0.6$. NaN fails the fourth for plain `<`: every comparison with NaN is false, so $1 \sim \text{NaN}$ and $\text{NaN} \sim 2$ although $1 \prec 2$.
+
+The result is undefined behaviour — in practice wrong orders, infinite loops or out-of-bounds reads, depending on the library. Compare field by field, or build `std::tie` tuples. `std::sort` is not stable; use `std::stable_sort` when ties must keep their input order.
 
 ```cpp
 #include <algorithm>
@@ -602,7 +616,9 @@ A research-lab interviewer reads your code the way a labmate will: will it be ob
 - **Small functions, one job each.** Keep reading input, computing, and printing in separate functions. The computing function can then be called from a stress test or a unit test without faking input files.
 - **Assertions for invariants.** An `assert` states something that must be true if *your* code is correct: a probability sums to 1, an index is in range, a quaternion has unit norm. It documents the reasoning and turns a silent wrong answer into an immediate failure. Do not use `assert` to validate *inputs* from callers or files — `python -O` strips assertions — and raise `ValueError` instead.
 - **Shapes and units in comments for numeric code.** Write the shape of every array argument and result, such as `(N, 3) points in metres, world frame`. Most bugs in numeric code are shape and frame bugs, and NumPy broadcasting will silently turn a wrong shape into a wrong answer.
-- **Vectorize when asked, and say what it costs.** Loops in Python run at interpreter speed; one NumPy expression runs the loop in compiled code. Broadcasting aligns shapes from the right and stretches axes of length 1, so an `(N, 1, D)` array minus a `(1, M, D)` array gives every pairwise difference as `(N, M, D)`. That array uses N·M·D floats of memory; multiplying out (a − b)·(a − b) gives the expanded form ‖a‖² + ‖b‖² − 2a·b, which needs only `(N, M)`, but rounding can make a tiny true distance slightly negative, so clamp at zero before the square root.
+- **Vectorize when asked, and say what it costs.** Loops in Python run at interpreter speed; one NumPy expression runs the loop in compiled code. **Broadcasting** is NumPy's rule for combining arrays of different shapes elementwise, in three steps: (1) align the two shapes at their *right* ends, padding the shorter one with leading 1s; (2) each aligned pair of axis lengths must be equal or contain a 1, otherwise NumPy raises an error; (3) the result takes the larger length on every axis, and an axis of length 1 is reused (stretched) along it without copying. So for aligned lengths $p$ and $r$, the check that step (2) performs and the output length are
+$$p = r \ \text{ or } \ p = 1 \ \text{ or } \ r = 1, \qquad \text{out} = \max(p, r)$$
+  *Example:* `(2, 3)` with `(3,)` pads to `(1, 3)` and gives `(2, 3)`. *Non-example:* `(2, 3)` with `(2,)` pads to `(1, 2)`, and $3$ against $2$ fails, so it raises; `(2, 1)` is what "one value per row" needs. Broadcasting aligns shapes from the right and stretches axes of length 1, so an `(N, 1, D)` array minus a `(1, M, D)` array gives every pairwise difference as `(N, M, D)`. That array uses N·M·D floats of memory; multiplying out (a − b)·(a − b) gives the expanded form ‖a‖² + ‖b‖² − 2a·b, which needs only `(N, M)`, but rounding can make a tiny true distance slightly negative, so clamp at zero before the square root.
 - **Determinism.** Seed every random source and pass generators explicitly, so a failure can be replayed. Iteration order over a `set` of strings changes between interpreter runs (string hashing is randomised per process), so sort before iterating when order affects the output.
 
 ```python
@@ -662,13 +678,19 @@ assert np.array_equal(np.random.default_rng(7).normal(size=3), np.random.default
 
 A control loop that runs at 1 kHz has a deadline every millisecond, and a late answer is a wrong answer. Code that is fast on average is not enough; what matters is the *worst-case* time of one iteration, because that decides whether a deadline is missed. Three ordinary tools have unbounded or unpredictable worst cases, so real-time code keeps them out of the hot path — the code that runs every cycle.
 
+**Real-time, defined.** A periodic real-time task has three named parts: a **period** $T$ (1 ms at 1 kHz), a **deadline** $D$ by which each cycle's output must be ready (usually $D = T$), and a **worst-case execution time** (WCET) $C$, the longest one cycle can ever take on that hardware. The task is correct only if every cycle meets the deadline, which needs
+$$C \le D$$
+In a **hard** real-time system a single miss counts as a failure (a torque loop), while a **soft** one only degrades quality with each miss (a video stream). *Non-example of "real-time":* a loop averaging 0.2 ms per cycle but taking 3 ms once every 10 000 cycles is fast on average and still misses a 1 ms deadline about every $10\,000 / 1000 = 10$ seconds at 1 kHz.
+
 - **Heap allocation.** `new`, `malloc`, and anything that calls them — `std::vector::push_back` past capacity, building a `std::string`, inserting into a `std::map` — may take a lock inside the allocator, search free lists, or ask the operating system for pages. Preallocate everything at start-up: `reserve`, fixed-size `std::array`, and buffers reused every cycle. In an interview, the answer is "allocate in the constructor, never in the loop".
-- **Locks.** A mutex held by a lower-priority thread can block the control thread for as long as that thread runs, and a medium-priority thread can stretch that further (priority inversion). Keep critical sections tiny, use `try_lock` and skip the update when it fails, or pass data through a single-producer single-consumer lock-free queue.
+- **Locks.** A mutex held by a lower-priority thread can block the control thread for as long as that thread runs, and a medium-priority thread can stretch that further (priority inversion). **Priority inversion** is a scheduling failure with three parts: a high-priority thread H waits for a lock held by a low-priority thread L; a medium-priority thread M, which needs no lock, becomes ready and preempts L because it outranks L; so H is effectively blocked by M, a thread of *lower* priority, for as long as M runs. Priority-inheritance mutexes fix it by temporarily raising L to H's priority while L holds the lock. Keep critical sections tiny, use `try_lock` and skip the update when it fails, or pass data through a single-producer single-consumer lock-free queue.
 - **Exceptions.** Throwing usually allocates the exception object, and unwinding takes time that depends on the stack. Mark hot-path functions `noexcept`, report failure with return values or status flags, and handle errors in a non-real-time thread. The same applies to logging and console output: formatting allocates and writing to a terminal can block.
 
 Python, with its garbage collector and interpreter, belongs outside hard real-time loops; it is fine for planning, perception, and supervision at lower rates. For the ROS 2 side of the same problem — why a long callback stalls a control timer on a single-threaded executor, and which clock a timer follows — read [[04-robotics/ros2/qos-executors-time|ROS 2 QoS, executors & time]], which also points to real-time scheduling analysis.
 
-The standard structure for "keep the last N samples" in a hot path is a ring buffer over a fixed array: pushing overwrites the oldest sample, and nothing is ever allocated.
+The standard structure for "keep the last N samples" in a hot path is a ring buffer over a fixed array: pushing overwrites the oldest sample, and nothing is ever allocated. A **ring buffer** (circular buffer) of capacity $N$ is a fixed array plus two integers, `head` (the slot of the oldest sample) and `size` (how many slots are in use, $0 \le$ `size` $\le N$); indices wrap modulo $N$, so the $i$-th oldest sample and the slot the next push writes are
+$$\text{slot}(i) = (\text{head} + i) \bmod N, \qquad \text{write slot} = (\text{head} + \text{size}) \bmod N$$
+*Example:* with $N = 3$, pushing 0.1 to 0.5 writes slots 0, 1, 2, then 0 and 1 again, leaving the array `[0.4, 0.5, 0.3]` with `head` = 2, so slots 2, 0, 1 read back 0.3, 0.4, 0.5, oldest first, as the test in the code asserts.
 
 ```cpp
 #include <array>
@@ -705,7 +727,7 @@ int main() {
 
 1. **Ask what "better" means.** Faster in the worst case, less memory, fewer passes over a stream, or simpler to maintain? The answers differ, and asking shows you know they differ.
 2. **Find the dominant term.** If sorting costs O(n log n) and everything else is O(n), only the sort is worth attacking.
-3. **Check for a lower bound.** Any algorithm must read its input, so O(n) cannot be beaten for a problem that depends on every element. Sorting by comparisons needs Ω(n log n) comparisons. Producing K answers costs at least K. If you are already at the bound, say so, and turn to constants and memory.
+3. **Check for a lower bound.** A lower bound $\Omega(g(n))$ for a *problem* says every algorithm needs at least a constant times $g(n)$ steps on some input of size $n$, for all large $n$ ([[02-foundations/algorithms/complexity-recursion|11.1 §2]] defines $O$, $\Omega$ and $\Theta$). Any algorithm must read its input, so O(n) cannot be beaten for a problem that depends on every element. Sorting by comparisons needs Ω(n log n) comparisons. Producing K answers costs at least K. If you are already at the bound, say so, and turn to constants and memory.
 4. **Name the trade-off you would make.**
    - *Time against memory:* a hash set gives O(n) expected time with O(n) extra memory; sorting in place gives O(n log n) with O(1) extra memory (C++ `std::sort` on the input; Python's `list.sort` also needs up to n/2 pointers of temporary space).
    - *Preprocessing against queries:* sort once and binary-search many queries; build prefix sums once and answer range sums in O(1).
@@ -948,6 +970,8 @@ assert stress(longest_run_sorted_fixed, longest_run_slow) is None
 | 누적 합, 쌍, 곱집합 | `itertools` | 지연 평가, 한 걸음에 O(1) 메모리 |
 | 메모이제이션 재귀 | `functools.cache` | 서로 다른 인자 튜플마다 딕셔너리 항목 하나 |
 
+"비용" 열은 트랙의 다른 곳에서 정의한, 뜻이 정확한 두 낱말을 쓴다. 해시 기반 컨테이너의 평균 O(1)(**average O(1)**)은 키가 버킷에 고르게 퍼질 때 연산 하나의 *기대* 비용이지, 모든 연산에 대한 보장이 아니다([[02-foundations/algorithms/data-structures|11.2 §3]]). 아래 `append`와 `push_back`에 쓰는 분할상환 O(1)(**amortised O(1)**)은 연산의 열에 대한 보장이다. 빈 구조에서 시작한 임의의 연산 $k$개는 모두 합쳐 $k$의 상수배 이하의 비용이 들므로, 비싼 크기 조정 한 번은 그 앞의 많은 싼 append가 갚는다([[02-foundations/algorithms/complexity-recursion|11.1 §4]]).
+
 **collections.** `Counter`는 없는 키를 넣지 않고 0으로 읽는다. `defaultdict(list)`는 처음 접근할 때 없는 항목을 만든다. `deque(maxlen=k)`는 바로 쓸 수 있는 고정 크기 윈도다.
 
 ```python
@@ -971,7 +995,7 @@ assert list(recent) == [6, 7, 8]
 assert recent.popleft() == 6                             # O(1); list.pop(0) is O(n)
 ```
 
-**heapq.** 평범한 리스트에 저장된 최소 힙이다. 최대 힙이 필요하면 키를 음수로 바꿔 넣는다. a > b일 때에만 −a < −b이므로, 음수로 바꾼 키 중 가장 작은 것이 원래 가장 큰 키다(Python 3.14에서 `heappush_max` 등의 함수가 추가되었지만, 인터뷰 환경은 더 오래된 버전인 경우가 많다). 항목은 보통 원소별로 비교되는 튜플이므로, 비교할 수 없는 데이터 앞에는 카운터를 넣어라.
+**heapq.** 평범한 리스트에 저장된 최소 힙이다. 자식이 있는 모든 인덱스에서 리스트가 `a[i] <= a[2*i + 1]`과 `a[i] <= a[2*i + 2]`를 만족하므로 `a[0]`이 항상 가장 작다(힙의 정의와 비용 증명은 [[02-foundations/algorithms/data-structures|11.2 §4]]). 최대 힙이 필요하면 키를 음수로 바꿔 넣는다. a > b일 때에만 −a < −b이므로, 음수로 바꾼 키 중 가장 작은 것이 원래 가장 큰 키다(Python 3.14에서 `heappush_max` 등의 함수가 추가되었지만, 인터뷰 환경은 더 오래된 버전인 경우가 많다). 항목은 보통 원소별로 비교되는 튜플이므로, 비교할 수 없는 데이터 앞에는 카운터를 넣어라.
 
 ```python
 import heapq
@@ -1051,11 +1075,13 @@ assert ways(80) == 37889062373143906
 
 - **변경 가능한 기본 인자.** 기본값은 `def`가 실행될 때 한 번 평가되므로, 기본 리스트는 모든 호출이 공유한다.
 - **별칭이 된 행.** `[ [0] * m ] * n`은 *하나의* 행을 가리키는 참조 n개의 리스트를 만든다. 행은 컴프리헨션으로 만들어라.
-- **정수 나눗셈과 음수.** `//`는 음의 무한대 쪽으로 내림하고 `%`는 나누는 수의 부호를 따른다. `-7 // 2`는 `-4`, `-7 % 2`는 `1`이다. C++와 Java는 `-3`과 `-1`을 준다. `int(a / b)`는 0 쪽으로 자르지만 float을 거치므로 큰 정수에서 틀린다.
+- **정수 나눗셈과 음수.** `//`는 음의 무한대 쪽으로 내림하고 `%`는 나누는 수의 부호를 따른다. `-7 // 2`는 `-4`, `-7 % 2`는 `1`이다. C++와 Java는 `-3`과 `-1`을 준다. `int(a / b)`는 0 쪽으로 자르지만 float을 거치므로 큰 정수에서 틀린다. 정확히 말하면 두 언어 모두 $a$를 $b \ne 0$으로 나눈 몫 $q$와 나머지 $r$을 같은 항등식으로 정의하고, $q$를 어떻게 반올림하느냐만 다르다. 그래서 나머지의 부호는 $q$의 선택에서 따라 나온다.
+$$a = b\,q + r, \qquad q_{\text{Python}} = \lfloor a / b \rfloor, \qquad q_{\text{C++}} = \operatorname{trunc}(a / b)$$
+  Python의 내림은 $b > 0$일 때 $0 \le r < b$를 주고, C++의 0 쪽 자르기는 $r$에 $a$의 부호를 준다. $a = -7$, $b = 2$로 확인하면 Python은 $q = -4$, $r = -7 - 2(-4) = 1$이고, C++는 $q = -3$, $r = -7 - 2(-3) = -1$이다.
 - **재귀 한계.** CPython은 기본적으로 약 1000 프레임에서 멈춘다. 해법은 [[02-foundations/algorithms/complexity-recursion|11.1 §5]]를 보라.
 - **부동소수점 비교.** `0.1 + 0.2 == 0.3`은 거짓이다. `math.isclose`로 비교하거나, 제곱한 정수 거리나 교차 곱한 분수를 비교해 부동소수점을 아예 피하라.
 - **`is` 대 `==`.** `is`는 두 이름이 같은 객체를 가리키는지 묻고, `==`는 값이 같은지 묻는다. `is`는 `None`과 의도한 센티널에만 써라. CPython은 작은 정수를 우연히 캐시하므로, 숫자에 `is`를 쓰면 테스트에서는 되고 실제 데이터에서는 실패하기도 한다.
-- **정렬.** `list.sort`와 `sorted`는 `reverse=True`일 때를 포함해 안정성이 보장된다. `key` 함수(원소마다 한 번 계산된다)나 `(-score, name)` 같은 튜플 키로 정렬하라. `functools.cmp_to_key`도 있지만 필요한 일은 드물다.
+- **정렬.** `list.sort`와 `sorted`는 `reverse=True`일 때를 포함해 안정성이 보장된다. 정렬이 안정적(**stable**)이라는 것은 키가 같은 원소들이 입력 순서를 유지한다는 뜻이다. $\text{key}(a) = \text{key}(b)$이고 입력에서 $a$가 $b$보다 앞서면 출력에서도 $a$가 $b$보다 앞선다. 아래 코드의 두 번 정렬이 옳은 것은 이 성질 덕분이다. 두 번째 정렬(개수 기준)이 개수가 같은 원소들 사이에서 첫 번째 정렬의 이름 순서를 그대로 두기 때문이다. 불안정 정렬이면 `("c", 2)`가 `("b", 2)`보다 앞에 올 수 있다. `key` 함수(원소마다 한 번 계산된다)나 `(-score, name)` 같은 튜플 키로 정렬하라. `functools.cmp_to_key`도 있지만 필요한 일은 드물다.
 
 ```python
 import math
@@ -1129,7 +1155,7 @@ print(f"list.pop(0): {t_pop0:.4f} s   deque.popleft(): {t_popleft:.4f} s")
 
 ### 4. 인터뷰를 위한 C++
 
-C++ 인터뷰는 같은 알고리즘에 더해, 언어가 지켜 주지 않는 것들을 아는지 확인한다. 오버플로, 무효화된 반복자, 그리고 어기면 오류 메시지가 아니라 정의되지 않은 동작(undefined behaviour)이 되는 계약들이다. 아래 조각은 모두 `c++ -std=c++17`로 컴파일되는 완전한 프로그램이고, 주장한 내용을 `assert`로 확인한다.
+C++ 인터뷰는 같은 알고리즘에 더해, 언어가 지켜 주지 않는 것들을 아는지 확인한다. 오버플로, 무효화된 반복자, 그리고 어기면 오류 메시지가 아니라 정의되지 않은 동작(undefined behaviour)이 되는 계약들이다. 정의되지 않은 동작(**undefined behaviour**, UB)은 C++ 표준의 한 범주로, 정의하는 부분이 둘이다. (1) 프로그램이 표준이 *아무 요구도* 하지 않는 연산을 수행한다. 부호 있는 정수 오버플로, 배열 끝을 넘어 읽기, 허공을 가리키는 반복자 역참조 같은 것이다. (2) 요구가 없으므로 컴파일러는 그 연산이 절대 일어나지 않는다고 가정하고 그 가정 위에서 최적화해도 된다. 그래서 UB는 "어떤 정해지지 않은 결과"가 아니다. 같은 코드가 디버그 빌드에서는 기대한 값을, `-O2`에서는 다른 값을 출력하거나 크래시할 수 있다. *예:* `int big = 2'000'000'000`에서 `2 * big`은 $4 \times 10^9$가 `INT_MAX` $= 2\,147\,483\,647$을 넘으므로 UB다. *반례:* 부호 없는 오버플로는 정의되어 있다. 부호 없는 산술은 $2^{\text{bits}}$를 법으로 감싸 돌기 때문이고, 빈 벡터에서 `v.size() - 1`이 UB가 아니라 거대한 수가 되는 이유가 바로 이것이다. 아래 조각은 모두 `c++ -std=c++17`로 컴파일되는 완전한 프로그램이고, 주장한 내용을 `assert`로 확인한다.
 
 | Python 습관 | C++ 도구 | 비용 | 함정 |
 |---|---|---|---|
@@ -1281,7 +1307,17 @@ int main() {
 }
 ```
 
-**`std::sort`에는 엄격한 약순서(strict weak ordering)가 필요하다.** 비교자는 `<`처럼 행동해야 한다. `comp(a, a)`는 거짓이고, `comp(a, b)`이면 `comp(b, a)`가 아니며, "어느 쪽도 작지 않음"까지 포함해 추이적이어야 한다. `<=`를 쓰면 첫 규칙이 깨지고, NaN이 섞인 부동소수점 키를 비교해도 깨진다. 결과는 정의되지 않은 동작이다. 실제로는 라이브러리에 따라 틀린 순서, 무한 루프, 범위 밖 읽기가 된다. 필드별로 비교하거나 `std::tie` 튜플을 만들어라. `std::sort`는 안정 정렬이 아니므로, 동점이 입력 순서를 지켜야 하면 `std::stable_sort`를 써라.
+**`std::sort`에는 엄격한 약순서(strict weak ordering)가 필요하다.** 비교자는 `<`처럼 행동해야 한다. `comp(a, a)`는 거짓이고, `comp(a, b)`이면 `comp(b, a)`가 아니며, "어느 쪽도 작지 않음"까지 포함해 추이적이어야 한다. `<=`를 쓰면 첫 규칙이 깨지고, NaN이 섞인 부동소수점 키를 비교하면 마지막 규칙이 깨진다. *Compare* 요구사항의 네 조건으로 쓰면 이렇다. $a \prec b$는 `comp(a, b)`가 참이라는 뜻이고, 비교 불가능(**incomparability**) $a \sim b$는 어느 쪽도 작지 않다는 뜻이다.
+$$a \sim b \iff \neg(a \prec b) \wedge \neg(b \prec a)$$
+
+- **비반사성:** 모든 $a$에 대해 $\neg(a \prec a)$.
+- **비대칭성:** $a \prec b$이면 $\neg(b \prec a)$.
+- **추이성:** $a \prec b$이고 $b \prec c$이면 $a \prec c$.
+- **비교 불가능성의 추이성:** $a \sim b$이고 $b \sim c$이면 $a \sim c$. 그래서 "정렬 기준으로 같음"이 원소들을 깔끔한 동치류로 묶고, 정렬은 그 동치류를 나란히 놓을 수 있다.
+
+*반례.* `<=`는 `comp(a, a)`가 참이므로 비반사성을 어긴다. "대략 작다" 비교자 `a < b - 1`은 앞의 세 조건은 만족하지만 넷째를 어긴다. $0 \sim 0.8$이고 $0.8 \sim 1.6$인데 $0 < 0.6$이므로 $0 \prec 1.6$이다. 보통의 `<`에서 NaN은 넷째를 어긴다. NaN과의 비교는 모두 거짓이므로 $1 \prec 2$인데도 $1 \sim \text{NaN}$이고 $\text{NaN} \sim 2$다.
+
+결과는 정의되지 않은 동작이다. 실제로는 라이브러리에 따라 틀린 순서, 무한 루프, 범위 밖 읽기가 된다. 필드별로 비교하거나 `std::tie` 튜플을 만들어라. `std::sort`는 안정 정렬이 아니므로, 동점이 입력 순서를 지켜야 하면 `std::stable_sort`를 써라.
 
 ```cpp
 #include <algorithm>
@@ -1342,7 +1378,9 @@ int main() {
 - **작은 함수, 함수마다 일 하나.** 입력 읽기, 계산, 출력을 서로 다른 함수에 둔다. 그러면 계산 함수를 입력 파일을 흉내 내지 않고도 스트레스 테스트나 단위 테스트에서 부를 수 있다.
 - **불변식에는 단언문(assertion).** `assert`는 *내* 코드가 옳다면 반드시 참이어야 하는 것을 적는다. 확률의 합은 1이다, 인덱스는 범위 안이다, 쿼터니언의 노름은 1이다. 추론을 문서로 남기고, 조용히 틀린 답을 즉시 실패로 바꾼다. 호출자나 파일에서 온 *입력*을 검증하는 데 `assert`를 쓰지는 마라. `python -O`가 단언문을 없앤다. 대신 `ValueError`를 던져라.
 - **수치 코드에는 형상과 단위를 주석으로.** 모든 배열 인자와 결과의 형상을 `(N, 3) points in metres, world frame`처럼 적는다. 수치 코드 버그의 대부분은 형상과 좌표계 버그이고, NumPy 브로드캐스팅은 틀린 형상을 조용히 틀린 답으로 바꾼다.
-- **요청받으면 벡터화하고, 그 비용을 말하라.** Python 루프는 인터프리터 속도로 돈다. NumPy 식 하나는 그 루프를 컴파일된 코드에서 돌린다. 브로드캐스팅은 형상을 오른쪽부터 맞추고 길이 1인 축을 늘리므로, `(N, 1, D)` 배열에서 `(1, M, D)` 배열을 빼면 모든 쌍의 차이가 `(N, M, D)`로 나온다. 그 배열은 N·M·D개의 float 메모리를 쓴다. (a − b)·(a − b)를 전개한 형태 ‖a‖² + ‖b‖² − 2a·b는 `(N, M)`만 필요하지만, 반올림 때문에 아주 작은 실제 거리가 살짝 음수가 될 수 있으니 제곱근 전에 0으로 자른다.
+- **요청받으면 벡터화하고, 그 비용을 말하라.** Python 루프는 인터프리터 속도로 돈다. NumPy 식 하나는 그 루프를 컴파일된 코드에서 돌린다. 브로드캐스팅(**broadcasting**)은 형상이 다른 배열을 원소별로 결합하는 NumPy의 규칙이며 세 단계로 되어 있다. (1) 두 형상을 *오른쪽* 끝에 맞추고, 짧은 쪽 앞에 1을 채운다. (2) 맞춰진 축 길이 쌍은 서로 같거나 하나가 1이어야 하고, 아니면 NumPy가 오류를 낸다. (3) 결과는 각 축에서 더 긴 길이를 가지며, 길이 1인 축은 복사 없이 그 축을 따라 재사용(늘리기)된다. 그래서 맞춰진 길이 $p$와 $r$에 대해 (2)단계의 검사와 출력 길이는 다음과 같다.
+$$p = r \ \text{ or } \ p = 1 \ \text{ or } \ r = 1, \qquad \text{out} = \max(p, r)$$
+  *예:* `(2, 3)`과 `(3,)`은 `(1, 3)`으로 채워져 `(2, 3)`이 된다. *반례:* `(2, 3)`과 `(2,)`는 `(1, 2)`로 채워지고 $3$과 $2$가 맞지 않아 오류가 난다. "행마다 값 하나"에 필요한 것은 `(2, 1)`이다. 브로드캐스팅은 형상을 오른쪽부터 맞추고 길이 1인 축을 늘리므로, `(N, 1, D)` 배열에서 `(1, M, D)` 배열을 빼면 모든 쌍의 차이가 `(N, M, D)`로 나온다. 그 배열은 N·M·D개의 float 메모리를 쓴다. (a − b)·(a − b)를 전개한 형태 ‖a‖² + ‖b‖² − 2a·b는 `(N, M)`만 필요하지만, 반올림 때문에 아주 작은 실제 거리가 살짝 음수가 될 수 있으니 제곱근 전에 0으로 자른다.
 - **결정성.** 모든 난수원에 시드를 주고 생성기를 명시적으로 넘겨서 실패를 재현할 수 있게 하라. 문자열 `set`의 순회 순서는 인터프리터 실행마다 바뀐다(문자열 해싱이 프로세스마다 무작위화된다). 순서가 출력에 영향을 주면 순회 전에 정렬하라.
 
 ```python
@@ -1402,13 +1440,19 @@ assert np.array_equal(np.random.default_rng(7).normal(size=3), np.random.default
 
 1 kHz로 도는 제어 루프는 밀리초마다 마감이 있고, 늦은 답은 틀린 답이다. 평균적으로 빠른 코드로는 부족하다. 중요한 것은 반복 한 번의 *최악* 시간이다. 그것이 마감을 놓치는지를 결정하기 때문이다. 흔한 도구 세 가지는 최악의 경우가 무한하거나 예측할 수 없으므로, 실시간 코드는 이것들을 핫 패스 — 매 주기 도는 코드 — 밖에 둔다.
 
+**실시간의 정의.** 주기적 실시간 작업에는 이름 붙은 세 부분이 있다. 주기(**period**) $T$(1 kHz면 1 ms), 각 주기의 출력이 준비되어야 하는 마감(**deadline**) $D$(보통 $D = T$), 그리고 그 하드웨어에서 한 주기가 걸릴 수 있는 가장 긴 시간인 최악 실행 시간(**worst-case execution time**, WCET) $C$다. 모든 주기가 마감을 지켜야만 작업이 옳으므로 다음이 필요하다.
+$$C \le D$$
+경성(**hard**) 실시간 시스템에서는 한 번 놓치는 것이 곧 실패이고(토크 루프), 연성(**soft**) 시스템에서는 놓칠 때마다 품질만 떨어진다(비디오 스트림). *"실시간"의 반례:* 주기당 평균 0.2 ms이지만 10 000 주기에 한 번 3 ms가 걸리는 루프는 평균적으로 빠르지만, 1 kHz에서 약 $10\,000 / 1000 = 10$초마다 1 ms 마감을 놓친다.
+
 - **힙 할당.** `new`, `malloc`, 그리고 이들을 부르는 모든 것 — 용량을 넘는 `std::vector::push_back`, `std::string` 만들기, `std::map`에 삽입하기 — 은 할당기 안에서 락을 잡거나, 빈 블록 목록을 뒤지거나, 운영체제에 페이지를 요청할 수 있다. 모든 것을 시작할 때 미리 할당하라. `reserve`, 고정 크기 `std::array`, 매 주기 재사용하는 버퍼. 인터뷰에서의 답은 "생성자에서 할당하고, 루프에서는 절대 하지 않는다"이다.
-- **락.** 우선순위가 낮은 스레드가 잡은 뮤텍스는 그 스레드가 도는 동안 제어 스레드를 막을 수 있고, 중간 우선순위 스레드가 그 시간을 더 늘릴 수 있다(우선순위 역전). 임계 구역을 아주 작게 유지하거나, `try_lock`을 쓰고 실패하면 그 갱신을 건너뛰거나, 단일 생산자·단일 소비자 락-프리 큐로 데이터를 넘겨라.
+- **락.** 우선순위가 낮은 스레드가 잡은 뮤텍스는 그 스레드가 도는 동안 제어 스레드를 막을 수 있고, 중간 우선순위 스레드가 그 시간을 더 늘릴 수 있다(우선순위 역전). 우선순위 역전(**priority inversion**)은 세 부분으로 된 스케줄링 실패다. 높은 우선순위 스레드 H가 낮은 우선순위 스레드 L이 잡은 락을 기다린다. 락이 필요 없는 중간 우선순위 스레드 M이 준비되면 L보다 높으므로 L을 선점한다. 그래서 M이 도는 동안 H는 사실상 자기보다 *낮은* 우선순위인 M에게 막힌다. 우선순위 상속 뮤텍스는 L이 락을 잡고 있는 동안 L을 H의 우선순위로 잠시 올려 이를 고친다. 임계 구역을 아주 작게 유지하거나, `try_lock`을 쓰고 실패하면 그 갱신을 건너뛰거나, 단일 생산자·단일 소비자 락-프리 큐로 데이터를 넘겨라.
 - **예외.** throw는 보통 예외 객체를 할당하고, 스택 되감기에는 스택에 따라 달라지는 시간이 든다. 핫 패스 함수에는 `noexcept`를 붙이고, 실패는 반환값이나 상태 플래그로 알리고, 오류는 실시간이 아닌 스레드에서 처리하라. 로깅과 콘솔 출력도 마찬가지다. 서식화는 할당하고, 터미널에 쓰기는 블록될 수 있다.
 
 가비지 컬렉터와 인터프리터를 가진 Python은 경성 실시간 루프 밖에 둔다. 더 낮은 주기의 계획, 인식, 감독에는 괜찮다. 같은 문제의 ROS 2 쪽 — 단일 스레드 executor에서 긴 콜백이 왜 제어 타이머를 멈추게 하는지, 타이머가 어느 시계를 따르는지 — 은 [[04-robotics/ros2/qos-executors-time|ROS 2 QoS, executor와 시간]]을 읽어라. 실시간 스케줄링 분석으로 가는 길도 거기서 안내한다.
 
-핫 패스에서 "최근 N개 샘플 유지"의 표준 구조는 고정 배열 위의 링 버퍼다. push는 가장 오래된 샘플을 덮어쓰고, 아무것도 할당하지 않는다.
+핫 패스에서 "최근 N개 샘플 유지"의 표준 구조는 고정 배열 위의 링 버퍼다. push는 가장 오래된 샘플을 덮어쓰고, 아무것도 할당하지 않는다. 용량 $N$인 링 버퍼(**ring buffer**, 원형 버퍼)는 고정 배열에 정수 두 개, `head`(가장 오래된 샘플의 칸)와 `size`(쓰고 있는 칸 수, $0 \le$ `size` $\le N$)를 더한 것이다. 인덱스는 $N$을 법으로 감싸 돌므로, $i$번째로 오래된 샘플의 칸과 다음 push가 쓸 칸은 다음과 같다.
+$$\text{slot}(i) = (\text{head} + i) \bmod N, \qquad \text{write slot} = (\text{head} + \text{size}) \bmod N$$
+*예:* $N = 3$에서 0.1부터 0.5까지 넣으면 칸 0, 1, 2에 쓴 뒤 다시 0과 1에 써서 배열은 `[0.4, 0.5, 0.3]`, `head` = 2가 된다. 그래서 칸 2, 0, 1이 오래된 순서로 0.3, 0.4, 0.5를 돌려주고, 코드의 테스트가 이를 단언한다.
 
 ```cpp
 #include <array>
@@ -1445,7 +1489,7 @@ int main() {
 
 1. **"더 잘한다"가 무슨 뜻인지 묻는다.** 최악의 경우에 더 빠르게? 메모리를 덜? 스트림을 더 적게 훑기? 유지보수가 더 쉽게? 답이 서로 다르고, 묻는 것 자체가 다르다는 것을 안다는 표시다.
 2. **지배적인 항을 찾는다.** 정렬이 O(n log n)이고 나머지가 모두 O(n)이면, 공략할 가치가 있는 것은 정렬뿐이다.
-3. **하한을 확인한다.** 어떤 알고리즘이든 입력을 읽어야 하므로, 모든 원소에 의존하는 문제에서 O(n)은 이길 수 없다. 비교 기반 정렬은 Ω(n log n)번의 비교가 필요하다. 답 K개를 만드는 데는 적어도 K가 든다. 이미 하한에 있다면 그렇게 말하고, 상수와 메모리로 넘어가라.
+3. **하한을 확인한다.** *문제*에 대한 하한 $\Omega(g(n))$은 충분히 큰 모든 $n$에서, 어떤 알고리즘이든 크기 $n$인 어떤 입력에서는 적어도 $g(n)$의 상수배 걸음이 필요하다는 뜻이다($O$, $\Omega$, $\Theta$의 정의는 [[02-foundations/algorithms/complexity-recursion|11.1 §2]]). 어떤 알고리즘이든 입력을 읽어야 하므로, 모든 원소에 의존하는 문제에서 O(n)은 이길 수 없다. 비교 기반 정렬은 Ω(n log n)번의 비교가 필요하다. 답 K개를 만드는 데는 적어도 K가 든다. 이미 하한에 있다면 그렇게 말하고, 상수와 메모리로 넘어가라.
 4. **어떤 트레이드오프를 택할지 말한다.**
    - *시간 대 메모리:* 해시 집합은 O(n) 추가 메모리로 기대 O(n) 시간을 준다. 제자리 정렬은 O(1) 추가 메모리로 O(n log n)을 준다(입력에 대한 C++ `std::sort`. Python의 `list.sort`도 최대 n/2개 포인터의 임시 공간이 필요하다).
    - *전처리 대 질의:* 한 번 정렬하고 많은 질의를 이진 탐색한다. 누적 합을 한 번 만들고 구간 합을 O(1)에 답한다.

@@ -26,8 +26,16 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
 
-- Definition as sensitivity: $f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$ — "nudge the
-  input, how much does the output move?"
+- The **derivative** $f'$ is a new function that gives, at each point $x$, the instantaneous
+  rate of change of $f$. Definition as sensitivity:
+  $$f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$
+  — "nudge the input, how much does the output move?" Here $h$ is the size of the nudge, the
+  fraction is the slope of the line through $(x, f(x))$ and $(x+h, f(x+h))$, so the limit
+  asks whether that slope settles to one value as $h$ shrinks from either side. When it does, $f$ is
+  *differentiable* at $x$. Example: $f(x) = x^2$ at $x = 3$ with $h = 0.01$ gives
+  $(9.0601 - 9)/0.01 = 6.01$, closing in on $f'(3) = 6$. Non-example: $f(x) = |x|$ at $0$,
+  where the slope is $+1$ from the right and $-1$ from the left, so no single limit exists —
+  the same kink ReLU has at zero.
 - The rules you actually use:
 
 | Rule | Formula |
@@ -38,8 +46,13 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 | Exp/Log | $(e^x)' = e^x$, $(\ln x)' = 1/x$ |
 
 - **Partial derivative** $\partial f/\partial x_i$: differentiate w.r.t. one variable,
-  hold the rest fixed. The **gradient** $\nabla f = (\partial f/\partial x_1, \ldots)$
-  stacks them into a vector.
+  hold the rest fixed. Written out, with $e_i$ the unit vector along coordinate $i$,
+  $$\frac{\partial f}{\partial x_i}(x) = \lim_{h\to 0}\frac{f(x + h\,e_i) - f(x)}{h}$$
+  so it is the ordinary derivative along one axis. The **gradient**
+  $\nabla f = (\partial f/\partial x_1, \ldots, \partial f/\partial x_n)$ stacks all $n$ of
+  them into a vector. It points in the direction of steepest increase, because for a small step
+  $\delta$ the change in $f$ is about $\nabla f^\top \delta$, which is largest when $\delta$
+  lines up with $\nabla f$ — so gradient *descent* steps the opposite way.
 - Worked example (the shape of every loss-gradient computation):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — outer derivative
   times inner derivative, chain rule in action. **Evaluate at $(x,y) = (2,1)$:** the inner
@@ -57,6 +70,17 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 "Any smooth function is locally a line (1st order) or a parabola (2nd order)."
 Gradient descent trusts the line; Newton's method trusts the parabola.
+
+The **Taylor expansion** approximates a function near a point by a polynomial built from its
+derivatives *at* that point. In the formula, $x$ is the expansion point, $\delta$ the step away
+from it, and $f'(x)$, $f''(x)$ the first and second derivatives there. The approximation is
+only local: when $f$ has three continuous derivatives, the error of the second-order version
+shrinks like $\delta^3$, so halving the step cuts the error about eightfold. The version with
+many variables, which optimization uses, replaces $f'$ by the gradient and $f''$ by the Hessian
+matrix $H$ of second derivatives:
+$$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12\,\delta^\top H(x)\,\delta$$
+where $\delta$ is now a vector and $\delta^\top H \delta$ is the quadratic form read in
+[[02-foundations/linear-algebra|1. Linear Algebra §3]].
 
 **Sanity check.** With $f = x^2$ at $x=1$: $f(1+\delta) = 1 + 2\delta + \delta^2$ — exact,
 because $x^2$ *is* a parabola.
@@ -88,9 +112,20 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
 - An integral is a weighted sum **in the continuum limit** — slice the axis into pieces,
   multiply each $f$ value by its slice width, add them up, then let the slice width shrink
   to zero. "Continuum limit" always means exactly that: a sum whose steps have been taken
-  all the way down to infinitesimal. That sum is written $\int f(x)\,dx$.
-- The only integral pattern the foundations really use:
-  $E[g(X)] = \int g(x)\,p(x)\,dx$ — "average $g$ over the distribution $p$."
+  all the way down to infinitesimal. That sum is written $\int f(x)\,dx$. As a formula
+  (the Riemann sum), over an interval $[a, b]$ cut into $N$ equal slices,
+  $$\int_a^b f(x)\,dx = \lim_{N\to\infty} \sum_{i=0}^{N-1} f(x_i)\,\Delta x, \qquad \Delta x = \frac{b-a}{N},\quad x_i = a + i\,\Delta x$$
+  where $\Delta x$ is the slice width and $x_i$ the left edge of slice $i$; the limit exists for
+  every continuous $f$, so the answer does not depend on how finely you started. Example:
+  $\int_0^1 x\,dx$ with $N = 10$ slices gives $0.45$, with $N = 100$ gives $0.495$, with
+  $N = 1000$ gives $0.4995$ — creeping to the exact $\tfrac12$.
+- The only integral pattern the foundations really use is the **expectation**, the
+  probability-weighted average of a quantity $g(X)$ of a random variable $X$. It is a single
+  number, computed as a sum when $X$ takes discrete values with probabilities $p(x)$ and as an
+  integral when $X$ has a density $p(x)$:
+  $$E[g(X)] = \sum_x g(x)\,p(x) \qquad\text{or}\qquad E[g(X)] = \int g(x)\,p(x)\,dx$$
+  — "average $g$ over the distribution $p$." Because it is a sum, it is linear,
+  $E[aX + bY] = aE[X] + bE[Y]$ (§4.5).
   **Made concrete, three ways:**
   - *Discrete, so "weighted sum" is literal.* A fair die: $E[X] = \sum_x x\,p(x)
     = 1(\tfrac16) + 2(\tfrac16) + \cdots + 6(\tfrac16) = \tfrac{21}{6} = 3.5$. Each value is
@@ -126,9 +161,18 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   $W_1W_2x$ are different networks, and the reason frame order matters in
   [[02-foundations/se3-geometry|SE(3)]] ($R_1R_2 \ne R_2R_1$).
 - **Transpose**: flip across the diagonal, $A^\top_{ij} = A_{ji}$. Here
-  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. Identity $I$ changes nothing.
-- **Inverse, with the numbers.** $A^{-1}$ undoes $A$ ($A^{-1}A = I$) and exists only for
-  square, **full-rank** $A$. For a $2\times2$,
+  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. It reverses products,
+  $(AB)^\top = B^\top A^\top$: above, $(AB)^\top = \begin{pmatrix}2&4\\1&3\end{pmatrix}$, and
+  $B^\top A^\top$ gives the same. The **identity** $I$ has $1$ on the diagonal and $0$
+  elsewhere, $I_{ij} = 1$ if $i = j$ and $0$ otherwise, so $AI = IA = A$: it changes nothing.
+- **Determinant**: a single number assigned to a square matrix. For a $2\times2$ matrix
+  $\begin{pmatrix}a&b\\c&d\end{pmatrix}$ it is $\det A = ad - bc$, and $|\det A|$ is the factor
+  by which the map scales area (volume in higher dimensions), with a negative sign meaning the
+  orientation is flipped. Our $A$ has $\det A = 1(4) - 2(3) = -2$: it doubles areas and mirrors
+  them. The consequence that matters: $\det A \ne 0$ exactly when $A$ is invertible.
+- **Inverse, with the numbers.** $A^{-1}$ undoes $A$ from either side,
+  $A^{-1}A = AA^{-1} = I$, and exists only for
+  square, **full-rank** $A$ (equivalently $\det A \ne 0$). For a $2\times2$,
   $A^{-1} = \frac{1}{\det A}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$ with
   $\det A = ad - bc$. For our $A$: $\det A = 1(4) - 2(3) = -2 \ne 0$, so
   $A^{-1} = -\tfrac12\begin{pmatrix}4&-2\\-3&1\end{pmatrix} = \begin{pmatrix}-2&1\\1.5&-0.5\end{pmatrix}$.
@@ -145,6 +189,36 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   $(32 \times 512)$; a linear layer to 10 classes is $(512 \times 10)$; the output is
   $(32 \times 10)$ (row-vector convention, output $= XW$; in the column convention $y = Wx$ used on pages 0.7 and 2, the same layer's $W$ is $10 \times 512$) — one score vector per sample. Reading shapes like this *is* reading an
   architecture ([[02-foundations/linear-algebra|1. Linear Algebra §1]]).
+
+### 4.5 Linearity: additivity and homogeneity (→ 1. Linear Algebra, 6. Signal Processing, control track)
+
+"Linear" is the most used word in this wiki and has an exact meaning. A map $f$ (a function, a matrix, a system, an operator) is **linear** when it satisfies **two** conditions for all inputs $x, y$ and every scalar $a$:
+
+- **Additivity**: adding the inputs first gives the same result as adding the outputs.
+$$f(x + y) = f(x) + f(y)$$
+- **Homogeneity** (degree 1): scaling the input scales the output by the same factor.
+$$f(a x) = a\,f(x)$$
+
+Together they are the **superposition principle**, written as one line because any weighted sum of inputs can be split term by term:
+$$f(a x + b y) = a\,f(x) + b\,f(y)$$
+Applying it repeatedly gives $f\big(\sum_k a_k x_k\big) = \sum_k a_k f(x_k)$ for any finite sum, so the response to a complicated input is the sum of the responses to its simple pieces. That one consequence is why linear systems are tractable: measure the response to a few basis inputs and you know the response to everything.
+
+**Why both conditions are listed.** Additivity alone already forces $f(qx) = q f(x)$ for every rational $q$ (apply it to $x + x + \dots$), but not for every real $a$ unless $f$ is also continuous. Stating homogeneity separately closes that gap, which is why textbooks list both.
+
+> [!example] Worked example · 계산 예제
+> **A matrix is linear.** For $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $x = (1,0)$, $y = (0,1)$, $a = 2$, $b = 3$: $W(2x + 3y) = W(2,3) = (8, 18)$, and $2Wx + 3Wy = 2(1,3) + 3(2,4) = (8, 18)$. Equal, as distributivity of matrix multiplication guarantees for every input.
+>
+> **$f(x) = 2x + 1$ is not linear**, even though its graph is a straight line. Additivity: $f(1 + 2) = 7$ but $f(1) + f(2) = 3 + 5 = 8$. Homogeneity: $f(2 \cdot 1) = 5$ but $2 f(1) = 6$. The quick test is $f(0)$: every linear map sends $0$ to $0$ (take $a = 0$), and here $f(0) = 1$. A line with an offset is **affine**, not linear.
+>
+> **$f(x) = x^2$ is not linear**: $f(1 + 1) = 4$ but $f(1) + f(1) = 2$.
+>
+> **ReLU, $f(x) = \max(0, x)$, is not linear**: $f(-1 + 1) = 0$ but $f(-1) + f(1) = 0 + 1 = 1$. It is homogeneous only for $a \ge 0$, since $f(-1 \cdot 1) = 0 \ne -f(1) = -1$.
+
+**Where the wiki uses it.**
+- **Matrices and layers.** Every matrix is a linear map ([[02-foundations/linear-algebra|1. Linear Algebra §1]]). A "linear layer" $Wx + b$ is strictly affine; it is linear only when $b = 0$. Stacked linear maps collapse into one, which is why networks need a nonlinearity between them ([[02-foundations/neural-network-basics|0.7 §1]]).
+- **Operators.** Differentiation, integration and expectation are linear: $\frac{d}{dt}(af + bg) = a f' + b g'$ and $E[aX + bY] = aE[X] + bE[Y]$ (§1, §3, [[02-foundations/probability|3. Probability]]).
+- **Systems.** A linear time-invariant system is additive and homogeneous in its input signal and also shift-invariant; superposition is exactly what forces its output to be a convolution ([[02-foundations/signal-processing|6. Signal Processing §1]]).
+- **Linearization.** A nonlinear $f$ is replaced near an operating point $x_0$ by $f(x_0 + \delta) \approx f(x_0) + f'(x_0)\,\delta$; the map $\delta \mapsto f'(x_0)\,\delta$ is linear in the deviation $\delta$, which is what lets control design work locally (§2, [[04-robotics/control-theory-ce397|5. Control Theory]]).
 
 ### 5. Series and the geometric sum (→ 7. RL Basics)
 
@@ -187,14 +261,24 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 ### 6. Exponentials and logarithms (→ 5. Information Theory — its entry requirement)
 
 - $e^x$: the function that is its own derivative; growth at a rate proportional to itself.
-  ($e \approx 2.718$.)
+  ($e \approx 2.718$.) Precisely, the exponential is the one function with both properties
+  $$\frac{d}{dx}e^x = e^x, \qquad e^0 = 1$$
+  so growth is proportional to size; the number $e$ is where compound growth ends up, $e = \lim_{n\to\infty}(1 + 1/n)^n$:
+  $n = 1$ gives $2$, $n = 10$ gives $2.594$, $n = 100$ gives $2.705$, $n = 1000$ gives $2.717$,
+  approaching $2.71828$. Equivalently $e^x = \sum_{k \ge 0} x^k/k!$, which differentiates
+  term by term into itself.
 - **Which base?** $\ln$ always means base $e$ (the *natural* log — that is what the "n"
   stands for), and $\log_2$ means base 2. A bare $\log$ has no universal meaning: in this
   wiki and in most ML papers it means base $e$, except in information theory, where the
   unit is the **bit** and the base is 2. The good news is that it almost never matters:
   changing base only multiplies everything by a constant (third rule below), and constants
   do not change where a minimum is.
-- $\log$ is the inverse of the exponential: $\log(e^x) = x$. The three rules that carry all
+- $\log$ is the inverse of the exponential: $\log(e^x) = x$. For a base $b > 0$, $b \ne 1$,
+  $$y = \log_b x \iff b^y = x$$
+  so $\log_b x$ is "the power you raise $b$ to in order to get $x$": $\log_2 8 = 3$ since
+  $2^3 = 8$. It is defined only for $x > 0$, because no power of a positive base is zero or
+  negative; that is why a model that assigns probability $0$ to an observed event gets a
+  log-likelihood of $-\infty$. The three rules that carry all
   of information theory and every likelihood computation:
 
 | Rule | Why it matters |
@@ -225,14 +309,34 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   or unrelated operations. Stable softmax+cross-entropy implementations use this identity
   ([[02-foundations/calculus-backprop|2. Calculus §4]]).
 
+  *With numbers.* For $x = (800, 799)$, computing $e^{800}$ overflows, but the identity gives
+  $800 + \log(1 + e^{-1}) = 800.3133$. That also shows what log-sum-exp *is*: a smooth
+  maximum, always between $\max_i x_i$ and $\max_i x_i + \log n$ for $n$ entries — here
+  between $800$ and $800.693$.
+
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
 
 - $j = \sqrt{-1}$; a complex number $a + jb$ is a point in the 2D plane, $a$ across and $b$
   up; $|a+jb| = \sqrt{a^2+b^2}$ is its distance from the origin, and its angle is
-  $\theta = \operatorname{atan2}(b, a)$.
+  $\theta = \operatorname{atan2}(b, a)$. Formally it is a pair of reals, the **real part** $a$
+  and the **imaginary part** $b$, with the one extra rule $j^2 = -1$. Addition is
+  componentwise; multiplication expands the brackets and uses $j^2 = -1$. The same number in
+  **polar form** is
+  $$a + jb = r\,e^{j\theta}, \qquad r = \sqrt{a^2 + b^2}, \quad \theta = \operatorname{atan2}(b, a)$$
+  where $r$ is the magnitude and $\theta$ the angle (the $e^{j\theta}$ is Euler's formula,
+  below). So multiplying two complex numbers multiplies their magnitudes and adds their angles.
+  Examples: $3 + 4j$ has $r = 5$ and $\theta = 53.13°$; $(1 + j)^2 = 1 + 2j + j^2 = 2j$, and in
+  polar form $1 + j$ has $r = \sqrt2$, $\theta = 45°$, so its square has $r = 2$, $\theta = 90°$,
+  which is $2j$ ✓. The **conjugate** $\overline{a + jb} = a - jb$ mirrors the point, and
+  $z\bar z = |z|^2$.
 - **What atan2 is**: the two-argument arctangent, a function every language ships
   (`atan2(y, x)` in C, Python, NumPy, MATLAB). It takes the two coordinates *separately*
-  and returns the angle of the point $(x, y)$ over the full circle, $(-\pi, \pi]$.
+  and returns the angle of the point $(x, y)$ over the full circle, $(-\pi, \pi]$. Written
+  out, it corrects $\arctan$ by half a turn whenever the point is on the left:
+  $$\operatorname{atan2}(y, x) = \begin{cases} \arctan(y/x) & x > 0 \\ \arctan(y/x) + \pi & x < 0,\ y \ge 0 \\ \arctan(y/x) - \pi & x < 0,\ y < 0 \\ +\pi/2 & x = 0,\ y > 0 \\ -\pi/2 & x = 0,\ y < 0 \end{cases}$$
+  so the sign of $x$ decides whether a correction is needed, since $\arctan$ alone only
+  returns angles between $-90°$ and $90°$ ($\operatorname{atan2}(0, 0)$ is left undefined).
+  For $(x, y) = (-1, -1)$: $\arctan(1) - \pi = 45° - 180° = -135°$.
 - **Why not $\arctan(b/a)$**: dividing first throws away information. $\arctan$ only ever
   sees the single number $b/a$, and a point and its exact opposite have the *same* ratio.
   Concretely, $(a,b) = (1,1)$ and $(a,b) = (-1,-1)$ both give $b/a = 1$, so $\arctan$ returns
@@ -268,7 +372,10 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 
 
 - **Euler's formula**: $e^{j\theta} = \cos\theta + j\sin\theta$ — the unit-circle point at
-  angle $\theta$. Consequence: multiplying by $e^{j\theta}$ **rotates** by $\theta$.
+  angle $\theta$. Consequence: multiplying by $e^{j\theta}$ **rotates** by $\theta$, because its
+  magnitude is $\sqrt{\cos^2\theta + \sin^2\theta} = 1$ and its angle is $\theta$. Example:
+  $e^{j\pi/2} = \cos 90° + j\sin 90° = j$, and multiplying $3 + 4j$ by $j$ gives $-4 + 3j$,
+  the same point turned a quarter-turn counter-clockwise.
 - **Why this makes Fourier analysis work.** Three steps, and the third is the whole idea.
   1. *A sinusoid is a rotation seen from the side.* As $t$ runs, $e^{j\omega t}$ is a point
      going around the unit circle $\omega$ radians per second. Its real part — its shadow on
@@ -320,11 +427,23 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 
 Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]].
 
+- An **ODE** (ordinary differential equation) is an equation relating an unknown function
+  of one variable, here $x(t)$, to its derivatives; its **order** is the highest derivative
+  that appears. It is **linear** when $x$ and its derivatives appear only to the first power,
+  multiplied by coefficients that do not depend on $x$:
+  $$a_n\,x^{(n)} + \cdots + a_1\,\dot x + a_0\,x = u(t)$$
+  where $\dot x = dx/dt$, $x^{(n)}$ is the $n$-th derivative, the $a_i$ are the coefficients
+  (constants throughout this section) and $u(t)$ is the input. Linear ODEs obey superposition
+  (§4.5), so solutions to separate inputs add up, which is why every tool below works. Non-example:
+  $\dot x = -x^2$. Both $x_1 = 1/(t+1)$ and $x_2 = 1/(t+2)$ solve it, but their sum does not:
+  at $t = 0$ the sum has slope $-1 - 0.25 = -1.25$, while $-(\text{sum})^2 = -(1.5)^2 = -2.25$.
 - **First order**: $\dot x = ax$ has solution $x(t) = x(0)\,e^{at}$. You do not have to solve
   anything to believe it — just differentiate the candidate and check:
   $\frac{d}{dt}\big(x(0)e^{at}\big) = a\,x(0)e^{at} = a\,x(t)$ ✓, and at $t=0$ it gives
   $x(0)$ ✓. That is the entire content of "$e$ is the function that is its own derivative"
-  (§6) applied to a physical system. Everything follows from this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). A robot joint,
+  (§6) applied to a physical system. Everything follows from this one fact: $a < 0$ decays (stable), $a > 0$ blows up (unstable). Here "stable" means
+  *asymptotically stable*: from every starting value $x(0)$ the solution returns to $0$ as
+  $t \to \infty$ (the full definition is [[04-robotics/control-theory-ce397|5. Control Theory §4]]). A robot joint,
   a heating room, a draining tank — all locally this equation.
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
   input"; this is the scalar version of the state-space model
@@ -334,7 +453,14 @@ Physical systems are described by ODEs — this is the modeling language of all 
   mass-spring-damper. Two numbers describe every response: natural frequency $\omega_n$
   (the undamped frequency scale) and damping ratio $\zeta$ (whether it rings: $0<\zeta<1$
   oscillates while decaying, at $\omega_d = \omega_n\sqrt{1-\zeta^2}$; $\zeta \ge 1$ doesn't; $\zeta = 0$ oscillates forever and $\zeta<0$ grows). Robot arms and suspension systems are tuned in this
-  vocabulary.
+  vocabulary. Both numbers come from the physical form $m\ddot x + c\dot x + kx = 0$ with mass
+  $m$, damping coefficient $c$ and stiffness $k$: dividing by $m$ and matching terms gives
+  $$\omega_n = \sqrt{k/m}, \qquad \zeta = \frac{c}{2\sqrt{km}}$$
+  so stiffness raises the frequency and damping raises $\zeta$. The three named regimes are
+  *underdamped* ($0 < \zeta < 1$), *critically damped* ($\zeta = 1$, the fastest return with no
+  overshoot) and *overdamped* ($\zeta > 1$). Example: $m = 1$, $c = 1$, $k = 4$ gives
+  $\omega_n = 2$ rad/s and $\zeta = 0.25$, underdamped, ringing at
+  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s.
 - Discrete time (what code runs): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — stable iff
   $|a| < 1$. The continuous and discrete conditions ($\text{Re}(a) < 0$ vs $|a_d| < 1$) are
   the same statement, and here is the bridge: sampling $\dot x = ax$ every $\Delta t$ gives
@@ -347,8 +473,17 @@ Physical systems are described by ODEs — this is the modeling language of all 
 
 The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theory-ce397|5. Control Theory §5]] turns the resulting pole picture into the settling-time and overshoot numbers papers quote:
 
-- Definition: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; the one property that matters:
-  **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
+- Definition: the **Laplace transform** maps a signal $f(t)$, defined for $t \ge 0$, to a
+  function of a complex variable,
+  $$F(s) = \mathcal{L}[f](s) = \int_0^\infty f(t)\,e^{-st}\,dt$$
+  where $s = \sigma + j\omega$ is a complex frequency: its real part $\sigma$ sets a decay rate
+  and its imaginary part $\omega$ an oscillation rate. The integral exists only for $\text{Re}(s)$
+  large enough, since $e^{-st}$ must beat the growth of $f$. Two properties make it useful. It is
+  linear, $\mathcal{L}[af + bg] = aF + bG$ (§4.5). And, the one property that matters most,
+  **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$,
+  which follows from integrating by parts. Example: for $f(t) = e^{at}$,
+  $F(s) = \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{s-a}$ whenever $\text{Re}(s) > a$; with
+  $a = -3$ and $s = 1$ that is $1/4$, and integrating $e^{-4t}$ numerically gives $0.25$ ✓.
 - Consequence: an ODE becomes a polynomial equation, and a system becomes a
   **transfer function** $G(s) = \frac{\text{output}(s)}{\text{input}(s)}$.
   **Worked, in four lines.** Take $\dot x = ax + u$ and Laplace-transform both sides.
@@ -400,6 +535,14 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   [[02-foundations/signal-processing|signal processing]]. Poles near the imaginary axis at
   height $\omega$ make $|G(j\omega)|$ large there: that is a resonance.
   (Discrete-time twin: the Z-transform, unit circle instead of left half-plane.)
+  As a formula: for a stable $G$ and the input $u(t) = \sin\omega t$, once the transient has
+  died out the output is
+  $$y(t) = |G(j\omega)|\,\sin\!\big(\omega t + \angle G(j\omega)\big)$$
+  so the same frequency comes out, scaled by the magnitude and shifted by the angle. Worked for
+  $G(s) = \frac{1}{s+3}$: at $\omega = 0.3$ rad/s, $|G| = 0.332$ and the angle is $-5.7°$; at
+  $\omega = 3$, $|G| = 1/(3\sqrt2) = 0.236$ and $-45°$; at $\omega = 30$, $|G| = 0.033$ and
+  $-84.3°$. Slow inputs pass almost untouched and fast ones are attenuated and delayed — the
+  system is a low-pass filter with its corner at the pole's distance, $3$ rad/s.
 
 > [!note] This section is a preview, not the destination
 > §9 exists so the words *pole*, *transfer function*, and *frequency response* are not new
@@ -415,8 +558,15 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
 Two definitions used everywhere before they are formally introduced:
 
 - **Softmax** turns any score vector into a probability distribution:
-  $\text{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$ — positive, sums to 1, and the largest
-  score gets the largest probability (a smooth $\arg\max$). It appears in attention,
+  $$\text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
+  where $z = (z_1, \ldots, z_K)$ are $K$ real scores (often called *logits*) and $i$ picks one
+  entry. It has three defining properties — every output is positive, the outputs sum to 1,
+  and the largest score gets the largest probability (a smooth $\arg\max$) — since
+  exponentials are positive and increasing and the denominator is the sum of the numerators.
+  Example: $z = (1, 2, 3)$ gives $(0.090, 0.245, 0.665)$, and adding $100$ to every score gives
+  exactly the same output, because the common factor $e^{100}$ cancels (the fact the log-sum-exp
+  trick of §6 uses). Non-example: plain normalization $z_i / \sum_j z_j$ fails on negative
+  scores, since $z = (-1, 2)$ would give the "probabilities" $(-1, 2)$. It appears in attention,
   classification losses, and policies alike.
 - **Set notation**: $x \in A$ ("$x$ is in $A$"), $A \cap B$ (both), $A \cup B$ (either),
   $\Omega$ (the set of all outcomes), disjoint = no overlap. Probability pages use these
@@ -475,8 +625,14 @@ Two definitions used everywhere before they are formally introduced:
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
 
-- 민감도로서의 정의: $f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$ — "입력을 살짝 밀면
-  출력이 얼마나 움직이는가?"
+- **도함수** $f'$은 각 점 $x$에서 $f$의 순간 변화율을 돌려주는 새 함수다. 민감도로서의 정의:
+  $$f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$
+  — "입력을 살짝 밀면 출력이 얼마나 움직이는가?" $h$는 미는 크기, 분수는 $(x, f(x))$와
+  $(x+h, f(x+h))$를 잇는 직선의 기울기이고, 극한은 $h$가 어느 쪽에서 줄어들든 그 기울기가
+  한 값으로 모인다는 뜻이다. 모이면 $f$가 $x$에서 *미분 가능*하다고 한다. 예: $f(x) = x^2$,
+  $x = 3$, $h = 0.01$이면 $(9.0601 - 9)/0.01 = 6.01$로 $f'(3) = 6$에 다가간다. 비예시:
+  $f(x) = |x|$의 $0$에서는 오른쪽 기울기가 $+1$, 왼쪽이 $-1$이라 극한이 하나로 정해지지 않는다
+  — ReLU가 0에서 가진 바로 그 꺾임이다.
 - 실제로 쓰는 규칙들:
 
 | 규칙 | 공식 |
@@ -486,8 +642,14 @@ Two definitions used everywhere before they are formally introduced:
 | **연쇄** | $(f(g(x)))' = f'(g(x))\,g'(x)$ — 역전파가 세워진 그 규칙 |
 | 지수/로그 | $(e^x)' = e^x$, $(\ln x)' = 1/x$ |
 
-- **편미분** $\partial f/\partial x_i$: 한 변수로만 미분하고 나머지는 고정.
-  **그래디언트** $\nabla f = (\partial f/\partial x_1, \ldots)$는 그것들을 벡터로 쌓은 것.
+- **편미분** $\partial f/\partial x_i$: 한 변수로만 미분하고 나머지는 고정. 좌표 $i$ 방향
+  단위벡터를 $e_i$라 하면
+  $$\frac{\partial f}{\partial x_i}(x) = \lim_{h\to 0}\frac{f(x + h\,e_i) - f(x)}{h}$$
+  이므로 축 하나를 따라가는 보통의 도함수다. **그래디언트**
+  $\nabla f = (\partial f/\partial x_1, \ldots, \partial f/\partial x_n)$는 그 $n$개를 벡터로
+  쌓은 것이다. 작은 스텝 $\delta$에 대한 $f$의 변화가 약 $\nabla f^\top \delta$이고 이 값은
+  $\delta$가 $\nabla f$와 같은 방향일 때 가장 크므로, 그래디언트는 가장 가파르게 증가하는
+  방향을 가리킨다. 그래서 경사 *하강*은 반대로 간다.
 - 계산 예제 (모든 손실-그래디언트 계산의 원형):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — 바깥 미분 × 안쪽
   미분, 연쇄 법칙의 실전. **$(x,y) = (2,1)$에서 값을 넣어 보면:** 안쪽이 $xy - 3 = -1$이므로
@@ -504,6 +666,15 @@ $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
 "매끄러운 함수는 국소적으로 직선(1차)이거나 포물선(2차)이다." 경사 하강은 직선을 믿고,
 뉴턴법은 포물선을 믿는다.
+
+**테일러 전개**는 한 점 근처의 함수를 그 점*에서의* 도함수로 만든 다항식으로 근사한다. 식에서
+$x$는 전개점, $\delta$는 거기서 떨어진 스텝, $f'(x)$와 $f''(x)$는 그 점의 1차·2차 도함수다.
+근사는 국소적일 뿐이다. $f$가 연속인 3차 도함수를 가지면 2차 근사의 오차는 $\delta^3$처럼
+줄어들어, 스텝을 반으로 줄이면 오차가 약 8분의 1이 된다. 최적화가 쓰는 다변수판은 $f'$ 대신
+그래디언트, $f''$ 대신 2차 도함수의 행렬인 헤시안 $H$를 쓴다.
+$$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12\,\delta^\top H(x)\,\delta$$
+이제 $\delta$는 벡터이고, $\delta^\top H \delta$는
+[[02-foundations/linear-algebra|1. 선형대수 §3]]에서 읽는 이차형식이다.
 
 **검산.** $f = x^2$, $x=1$에서: $f(1+\delta) = 1 + 2\delta + \delta^2$ — 정확히 맞다,
 $x^2$ 자체가 포물선이니까.
@@ -533,9 +704,17 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
 
 - 적분은 **연속 극한**(continuum limit)의 가중합이다 — 축을 조각으로 자르고, 각 $f$ 값에
   조각의 폭을 곱해 더한 뒤, 조각의 폭을 0으로 보낸 것. "연속 극한"은 언제나 이 뜻이다:
-  더하는 단위를 끝까지 무한소로 내려보낸 합. 그 합을 $\int f(x)\,dx$로 쓴다.
-- 기초 페이지들이 실제로 쓰는 적분 패턴은 사실상 하나:
-  $E[g(X)] = \int g(x)\,p(x)\,dx$ — "분포 $p$ 위에서 $g$의 평균."
+  더하는 단위를 끝까지 무한소로 내려보낸 합. 그 합을 $\int f(x)\,dx$로 쓴다. 식으로 쓰면
+  (리만 합), 구간 $[a, b]$를 같은 폭의 조각 $N$개로 자를 때
+  $$\int_a^b f(x)\,dx = \lim_{N\to\infty} \sum_{i=0}^{N-1} f(x_i)\,\Delta x, \qquad \Delta x = \frac{b-a}{N},\quad x_i = a + i\,\Delta x$$
+  이다. $\Delta x$는 조각 폭, $x_i$는 조각 $i$의 왼쪽 끝이다. 연속인 $f$라면 이 극한이 항상
+  존재하므로 처음에 얼마나 잘게 잘랐는지와 답이 무관하다. 예: $\int_0^1 x\,dx$는 $N = 10$이면
+  $0.45$, $N = 100$이면 $0.495$, $N = 1000$이면 $0.4995$로 정확한 값 $\tfrac12$에 다가간다.
+- 기초 페이지들이 실제로 쓰는 적분 패턴은 사실상 하나, **기댓값**이다. 확률변수 $X$의 어떤 양
+  $g(X)$를 확률로 가중해 평균한 값이다. 숫자 하나이고, $X$가 확률 $p(x)$를 갖는 이산값이면 합으로,
+  밀도 $p(x)$를 가지면 적분으로 계산한다.
+  $$E[g(X)] = \sum_x g(x)\,p(x) \qquad\text{or}\qquad E[g(X)] = \int g(x)\,p(x)\,dx$$
+  — "분포 $p$ 위에서 $g$의 평균." 합이므로 선형이다: $E[aX + bY] = aE[X] + bE[Y]$ (§4.5).
   **구체적으로, 세 가지 방식:**
   - *이산 — 그래서 "가중합"이 말 그대로다.* 공정한 주사위:
     $E[X] = \sum_x x\,p(x) = 1(\tfrac16) + 2(\tfrac16) + \cdots + 6(\tfrac16) = \tfrac{21}{6} = 3.5$.
@@ -567,9 +746,16 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   작용한다. 이 비대칭이 $W_2W_1x$와 $W_1W_2x$가 서로 다른 신경망인 이유이고,
   [[02-foundations/se3-geometry|SE(3)]]에서 프레임 순서가 중요한 이유($R_1R_2 \ne R_2R_1$)다.
 - **전치**: 대각선 기준으로 뒤집기, $A^\top_{ij} = A_{ji}$. 위의 $A$라면
-  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. 항등 행렬 $I$는 아무것도 바꾸지 않는다.
-- **역행렬, 숫자와 함께.** $A^{-1}$은 $A$를 되돌리고($A^{-1}A = I$), 정방·**풀랭크**일 때만
-  존재한다. $2\times2$에서는
+  $A^\top = \begin{pmatrix}1&3\\2&4\end{pmatrix}$. 곱의 순서를 뒤집는다:
+  $(AB)^\top = B^\top A^\top$. 위에서 $(AB)^\top = \begin{pmatrix}2&4\\1&3\end{pmatrix}$이고
+  $B^\top A^\top$도 같다. **항등 행렬** $I$는 대각선이 $1$, 나머지가 $0$, 즉 $i = j$이면
+  $I_{ij} = 1$, 아니면 $0$이므로 $AI = IA = A$다. 아무것도 바꾸지 않는다.
+- **행렬식**: 정방 행렬에 붙는 숫자 하나. $2\times2$ 행렬 $\begin{pmatrix}a&b\\c&d\end{pmatrix}$에서는
+  $\det A = ad - bc$이고, $|\det A|$는 사상이 넓이(고차원에서는 부피)를 몇 배로 만드는지, 음의
+  부호는 방향이 뒤집힌다는 뜻이다. 위의 $A$는 $\det A = 1(4) - 2(3) = -2$이므로 넓이를 두 배로
+  만들고 거울상으로 뒤집는다. 중요한 결과: $\det A \ne 0$일 때와 $A$가 가역일 때가 정확히 같다.
+- **역행렬, 숫자와 함께.** $A^{-1}$은 $A$를 어느 쪽에서든 되돌리고($A^{-1}A = AA^{-1} = I$),
+  정방·**풀랭크**일 때만(동치로 $\det A \ne 0$일 때만) 존재한다. $2\times2$에서는
   $A^{-1} = \frac{1}{\det A}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$, $\det A = ad - bc$.
   위의 $A$는 $\det A = 1(4) - 2(3) = -2 \ne 0$이므로
   $A^{-1} = -\tfrac12\begin{pmatrix}4&-2\\-3&1\end{pmatrix} = \begin{pmatrix}-2&1\\1.5&-0.5\end{pmatrix}$.
@@ -584,6 +770,36 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   10개 클래스로 가는 선형 층은 $(512 \times 10)$, 출력은 $(32 \times 10)$(행벡터 관례, 출력 $= XW$. 0.7과 2 페이지의 열벡터 관례 $y = Wx$에서는 같은 층의 $W$가 $10 \times 512$다) — 샘플당 점수
   벡터 하나. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
   ([[02-foundations/linear-algebra|1. 선형대수 §1]]).
+
+### 4.5 선형성: 가법성과 동차성 (→ 1. 선형대수, 6. 신호처리, 제어 트랙)
+
+"선형"은 이 위키에서 가장 자주 쓰는 말이고, 뜻이 정확히 정해져 있다. 사상 $f$(함수, 행렬, 시스템, 연산자)가 모든 입력 $x, y$와 모든 스칼라 $a$에 대해 **두** 조건을 만족하면 **선형**이다.
+
+- **가법성(additivity)**: 입력을 먼저 더한 결과가 출력을 더한 결과와 같다.
+$$f(x + y) = f(x) + f(y)$$
+- **동차성(homogeneity, 1차)**: 입력을 몇 배 하면 출력도 같은 배수만큼 커진다.
+$$f(a x) = a\,f(x)$$
+
+둘을 합친 것이 중첩 원리(**superposition principle**)이다. 입력의 가중합을 항마다 나눌 수 있으므로 한 줄로 쓴다.
+$$f(a x + b y) = a\,f(x) + b\,f(y)$$
+이를 되풀이하면 유한합에 대해 $f\big(\sum_k a_k x_k\big) = \sum_k a_k f(x_k)$가 된다. 복잡한 입력에 대한 응답은 단순한 조각들의 응답을 더한 것이다. 선형 시스템을 다루기 쉬운 이유가 바로 이 결과다. 기저 입력 몇 개의 응답만 재면 모든 입력의 응답을 안다.
+
+**두 조건을 모두 적는 이유.** 가법성만으로도 모든 유리수 $q$에 대해 $f(qx) = q f(x)$가 나온다($x + x + \dots$에 적용). 하지만 $f$가 연속이라는 조건이 없으면 모든 실수 $a$로는 넓혀지지 않는다. 동차성을 따로 적으면 그 틈이 닫히므로 교과서는 두 조건을 모두 쓴다.
+
+> [!example] 계산 예제 · Worked example
+> **행렬은 선형이다.** $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $x = (1,0)$, $y = (0,1)$, $a = 2$, $b = 3$이면 $W(2x + 3y) = W(2,3) = (8, 18)$이고 $2Wx + 3Wy = 2(1,3) + 3(2,4) = (8, 18)$이다. 행렬곱의 분배법칙이 모든 입력에서 이를 보장한다.
+>
+> **$f(x) = 2x + 1$은 선형이 아니다.** 그래프가 직선인데도 그렇다. 가법성: $f(1 + 2) = 7$이지만 $f(1) + f(2) = 3 + 5 = 8$. 동차성: $f(2 \cdot 1) = 5$이지만 $2 f(1) = 6$. 빠른 판별법은 $f(0)$이다. 선형 사상은 $a = 0$을 넣으면 알 수 있듯 항상 $0$을 $0$으로 보내는데, 여기서는 $f(0) = 1$이다. 절편이 있는 직선은 선형이 아니라 아핀(**affine**)이다.
+>
+> **$f(x) = x^2$은 선형이 아니다**: $f(1 + 1) = 4$이지만 $f(1) + f(1) = 2$.
+>
+> **ReLU $f(x) = \max(0, x)$는 선형이 아니다**: $f(-1 + 1) = 0$이지만 $f(-1) + f(1) = 0 + 1 = 1$. 동차성도 $a \ge 0$일 때만 성립한다. $f(-1 \cdot 1) = 0 \ne -f(1) = -1$이기 때문이다.
+
+**위키에서 쓰이는 곳.**
+- **행렬과 층.** 모든 행렬은 선형 사상이다([[02-foundations/linear-algebra|1. 선형대수 §1]]). "선형층" $Wx + b$는 엄밀히는 아핀이고 $b = 0$일 때만 선형이다. 선형 사상을 쌓으면 하나로 접히므로 신경망은 층 사이에 비선형성이 필요하다([[02-foundations/neural-network-basics|0.7 §1]]).
+- **연산자.** 미분, 적분, 기댓값은 선형이다: $\frac{d}{dt}(af + bg) = a f' + b g'$, $E[aX + bY] = aE[X] + bE[Y]$ (§1, §3, [[02-foundations/probability|3. 확률]]).
+- **시스템.** 선형 시불변 시스템은 입력 신호에 대해 가법적이고 동차적이며, 시간 이동에도 불변이다. 중첩 원리가 바로 그 출력을 합성곱으로 만든다([[02-foundations/signal-processing|6. 신호처리 §1]]).
+- **선형화.** 비선형 $f$를 동작점 $x_0$ 근처에서 $f(x_0 + \delta) \approx f(x_0) + f'(x_0)\,\delta$로 바꾼다. 사상 $\delta \mapsto f'(x_0)\,\delta$는 편차 $\delta$에 대해 선형이고, 그래서 제어 설계가 국소적으로 작동한다(§2, [[04-robotics/control-theory-ce397|5. 제어 이론]]).
 
 ### 5. 급수와 기하급수 합 (→ 7. RL 기초)
 
@@ -624,11 +840,20 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 ### 6. 지수와 로그 (→ 5. 정보이론의 입장 조건)
 
 - $e^x$: 자기 자신이 도함수인 함수; 자신에 비례하는 속도로 성장. ($e \approx 2.718$.)
+  정확히는 두 성질을 함께 가진 유일한 함수다.
+  $$\frac{d}{dx}e^x = e^x, \qquad e^0 = 1$$
+  그리고 수 $e$는 복리 성장이 도달하는 값 $e = \lim_{n\to\infty}(1 + 1/n)^n$이다. $n = 1$이면
+  $2$, $n = 10$이면 $2.594$, $n = 100$이면 $2.705$, $n = 1000$이면 $2.717$로 $2.71828$에
+  다가간다. 동치로 $e^x = \sum_{k \ge 0} x^k/k!$이고, 항마다 미분하면 자기 자신이 된다.
 - **밑이 뭔가?** $\ln$은 언제나 밑이 $e$다(*자연로그*, natural log의 n이다). $\log_2$는 밑이 2.
   밑 없는 $\log$는 보편적 약속이 없다: 이 위키와 대부분의 ML 논문에서는 밑이 $e$이고,
   정보이론에서만 단위가 **비트**라서 밑이 2다. 다행히 거의 문제가 되지 않는다 — 밑을 바꿔도
   전체에 상수가 곱해질 뿐이고(아래 셋째 규칙), 상수는 최솟값의 위치를 바꾸지 않는다.
-- $\log$는 지수함수의 역함수: $\log(e^x) = x$. 정보이론 전체와 모든 우도 계산을 떠받치는 세 규칙:
+- $\log$는 지수함수의 역함수: $\log(e^x) = x$. 밑 $b > 0$, $b \ne 1$에 대해
+  $$y = \log_b x \iff b^y = x$$
+  이므로 $\log_b x$는 "$x$를 얻으려고 $b$에 올리는 지수"다. $2^3 = 8$이므로 $\log_2 8 = 3$.
+  양수 밑의 거듭제곱은 0이나 음수가 될 수 없으므로 $x > 0$에서만 정의된다. 관측된 사건에 확률
+  $0$을 준 모델의 로그 우도가 $-\infty$인 이유다. 정보이론 전체와 모든 우도 계산을 떠받치는 세 규칙:
 
 | 규칙 | 왜 중요한가 |
 |---|---|
@@ -656,13 +881,31 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   안정적인 softmax+교차 엔트로피 구현이 이 항등식을 쓰는 이유가 이것이다
   ([[02-foundations/calculus-backprop|2. 미적분 §4]]).
 
+  *숫자로.* $x = (800, 799)$에서 $e^{800}$을 계산하면 넘치지만, 항등식은
+  $800 + \log(1 + e^{-1}) = 800.3133$을 준다. log-sum-exp가 *무엇인지*도 보인다. 매끄러운
+  최댓값으로, 성분이 $n$개면 항상 $\max_i x_i$와 $\max_i x_i + \log n$ 사이에 있다. 여기서는
+  $800$과 $800.693$ 사이다.
+
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)
 
 - $j = \sqrt{-1}$; 복소수 $a + jb$는 2차원 평면의 점(가로 $a$, 세로 $b$);
   $|a+jb| = \sqrt{a^2+b^2}$가 원점으로부터의 거리, 각도는 $\theta = \operatorname{atan2}(b, a)$.
+  형식적으로는 실수 둘의 쌍, 즉 **실수부** $a$와 **허수부** $b$에 규칙 $j^2 = -1$ 하나를 더한
+  것이다. 덧셈은 성분별이고, 곱셈은 괄호를 전개한 뒤 $j^2 = -1$을 쓴다. 같은 수의 **극형식**은
+  $$a + jb = r\,e^{j\theta}, \qquad r = \sqrt{a^2 + b^2}, \quad \theta = \operatorname{atan2}(b, a)$$
+  이다. $r$은 크기, $\theta$는 각도다($e^{j\theta}$는 아래의 오일러 공식). 그래서 복소수 둘을
+  곱하면 크기는 곱해지고 각도는 더해진다. 예: $3 + 4j$는 $r = 5$, $\theta = 53.13°$.
+  $(1 + j)^2 = 1 + 2j + j^2 = 2j$이고, 극형식으로 $1 + j$는 $r = \sqrt2$, $\theta = 45°$이므로
+  제곱은 $r = 2$, $\theta = 90°$, 즉 $2j$다 ✓. **켤레** $\overline{a + jb} = a - jb$는 점을
+  거울에 비추고, $z\bar z = |z|^2$이다.
 - **atan2가 뭔가**: 인자가 둘인 아크탄젠트로, 어느 언어에나 있는 함수다
   (C·파이썬·NumPy·MATLAB의 `atan2(y, x)`). 두 좌표를 *따로* 받아서 점 $(x, y)$의 각도를
-  원 전체 $(-\pi, \pi]$ 범위로 돌려준다.
+  원 전체 $(-\pi, \pi]$ 범위로 돌려준다. 풀어 쓰면, 점이 왼쪽에 있을 때마다 $\arctan$을 반 바퀴
+  보정한다.
+  $$\operatorname{atan2}(y, x) = \begin{cases} \arctan(y/x) & x > 0 \\ \arctan(y/x) + \pi & x < 0,\ y \ge 0 \\ \arctan(y/x) - \pi & x < 0,\ y < 0 \\ +\pi/2 & x = 0,\ y > 0 \\ -\pi/2 & x = 0,\ y < 0 \end{cases}$$
+  $\arctan$ 혼자서는 $-90°$와 $90°$ 사이의 각만 돌려주므로 $x$의 부호가 보정 여부를 정한다
+  ($\operatorname{atan2}(0, 0)$은 정의하지 않는다). $(x, y) = (-1, -1)$이면
+  $\arctan(1) - \pi = 45° - 180° = -135°$다.
 - **왜 $\arctan(b/a)$가 아닌가**: 먼저 나누는 순간 정보가 버려진다. $\arctan$은 $b/a$라는
   숫자 하나만 보는데, 어떤 점과 그 정반대 점의 비는 *똑같다*. 구체적으로 $(a,b) = (1,1)$과
   $(a,b) = (-1,-1)$은 둘 다 $b/a = 1$이라서 $\arctan$은 둘 다 $45°$를 준다 — 하지만 두 번째
@@ -696,7 +939,10 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 
 - **오일러 공식**: $e^{j\theta} = \cos\theta + j\sin\theta$ — 각도 $\theta$의 단위원 위의 점.
-  따름정리: $e^{j\theta}$를 곱하는 것 = $\theta$만큼 **회전**.
+  따름정리: $e^{j\theta}$를 곱하는 것 = $\theta$만큼 **회전**. 크기가
+  $\sqrt{\cos^2\theta + \sin^2\theta} = 1$이고 각도가 $\theta$이기 때문이다. 예:
+  $e^{j\pi/2} = \cos 90° + j\sin 90° = j$이고, $3 + 4j$에 $j$를 곱하면 $-4 + 3j$, 같은 점을
+  반시계로 4분의 1 바퀴 돌린 것이다.
 - **이것이 푸리에 분석을 작동하게 하는 이유.** 세 단계인데, 셋째가 전부다.
   1. *사인파는 회전을 옆에서 본 것이다.* $t$가 흐르면 $e^{j\omega t}$는 초당 $\omega$ 라디안씩
      단위원을 도는 점이다. 그 실수부 — 가로축에 드리운 그림자 — 가 $\cos\omega t$다. 즉
@@ -743,11 +989,22 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다.
 
+- **상미분방정식**(ODE)은 한 변수의 미지 함수, 여기서는 $x(t)$와 그 도함수들 사이의 관계식이다.
+  나타나는 가장 높은 도함수의 차수가 방정식의 **차수**(order)다. $x$와 그 도함수들이 1제곱으로만, $x$에
+  의존하지 않는 계수와 곱해져 나타나면 **선형**이다.
+  $$a_n\,x^{(n)} + \cdots + a_1\,\dot x + a_0\,x = u(t)$$
+  $\dot x = dx/dt$, $x^{(n)}$은 $n$계 도함수, $a_i$는 계수(이 절에서는 전부 상수), $u(t)$는
+  입력이다. 선형 ODE는 중첩 원리(§4.5)를 따르므로 입력별 해를 더할 수 있고, 그래서 아래의 모든
+  도구가 작동한다. 비예시: $\dot x = -x^2$. $x_1 = 1/(t+1)$과 $x_2 = 1/(t+2)$는 둘 다 해이지만
+  합은 해가 아니다. $t = 0$에서 합의 기울기는 $-1 - 0.25 = -1.25$인데
+  $-(\text{합})^2 = -(1.5)^2 = -2.25$다.
 - **1차**: $\dot x = ax$의 해는 $x(t) = x(0)\,e^{at}$. 이걸 믿기 위해 방정식을 풀 필요는 없다 —
   후보를 미분해서 확인만 하면 된다: $\frac{d}{dt}\big(x(0)e^{at}\big) = a\,x(0)e^{at} = a\,x(t)$ ✓,
   그리고 $t=0$에서 $x(0)$ ✓. 6절의 "$e$는 자기 자신이 도함수인 함수"를 물리 시스템에 적용한
   것이 내용의 전부다. 모든 것이 이 한 사실에서 나온다:
-  $a < 0$이면 감쇠(안정), $a > 0$이면 폭발(불안정). 로봇 관절, 데워지는 방, 빠지는 물탱크
+  $a < 0$이면 감쇠(안정), $a > 0$이면 폭발(불안정). 여기서 "안정"은 *점근 안정*, 즉 어떤
+  초기값 $x(0)$에서 출발해도 $t \to \infty$에서 해가 $0$으로 돌아온다는 뜻이다(완전한 정의는
+  [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
 - **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
   상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
@@ -756,7 +1013,13 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 - **2차**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — 질량-스프링-댐퍼.
   모든 응답을 두 숫자가 기술한다: 고유 진동수 $\omega_n$(감쇠 없을 때의 진동수 척도)과 감쇠비
   $\zeta$(울리는가: $0<\zeta<1$이면 $\omega_d = \omega_n\sqrt{1-\zeta^2}$로 진동하며 감쇠, $\zeta \ge 1$이면 안 함; $\zeta = 0$이면 영원히 진동하고 $\zeta<0$이면 커진다). 로봇 팔과 서스펜션이
-  이 어휘로 튜닝된다.
+  이 어휘로 튜닝된다. 두 숫자는 질량 $m$, 감쇠 계수 $c$, 강성 $k$로 쓴 물리적 형태
+  $m\ddot x + c\dot x + kx = 0$에서 나온다. $m$으로 나누고 항을 맞추면
+  $$\omega_n = \sqrt{k/m}, \qquad \zeta = \frac{c}{2\sqrt{km}}$$
+  이므로 강성은 진동수를, 감쇠는 $\zeta$를 올린다. 이름 붙은 세 영역은 *부족감쇠*
+  ($0 < \zeta < 1$), *임계감쇠*($\zeta = 1$, 오버슈트 없이 가장 빨리 돌아옴), *과감쇠*($\zeta > 1$)다.
+  예: $m = 1$, $c = 1$, $k = 4$면 $\omega_n = 2$ rad/s, $\zeta = 0.25$로 부족감쇠이고
+  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s로 울린다.
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
   때만 안정. 연속과 이산의 조건($\text{Re}(a) < 0$ vs $|a_d| < 1$)은 같은 말이고, 다리는
   이것이다: $\dot x = ax$를 $\Delta t$마다 샘플링하면 $x_{t+1} = e^{a\Delta t}x_t$이므로 이산
@@ -768,8 +1031,15 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 라플라스 변환은 미분방정식을 대수로 바꾼다 — 그리고 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]가 그 극점 그림을 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾼다:
 
-- 정의: $F(s) = \int_0^\infty f(t)\,e^{-st}\,dt$; 중요한 성질은 하나:
-  **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$.
+- 정의: **라플라스 변환**은 $t \ge 0$에서 정의된 신호 $f(t)$를 복소 변수의 함수로 보낸다.
+  $$F(s) = \mathcal{L}[f](s) = \int_0^\infty f(t)\,e^{-st}\,dt$$
+  $s = \sigma + j\omega$는 복소 주파수다. 실수부 $\sigma$는 감쇠율을, 허수부 $\omega$는 진동
+  속도를 정한다. 적분은 $e^{-st}$가 $f$의 성장을 이길 만큼 $\text{Re}(s)$가 클 때만 존재한다.
+  쓸모 있는 성질이 둘이다. 선형이다: $\mathcal{L}[af + bg] = aF + bG$ (§4.5). 그리고 가장 중요한
+  성질, **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$. 부분적분에서
+  나온다. 예: $f(t) = e^{at}$면 $\text{Re}(s) > a$일 때
+  $F(s) = \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{s-a}$다. $a = -3$, $s = 1$이면 $1/4$이고,
+  $e^{-4t}$를 수치 적분하면 $0.25$다 ✓.
 - 따름정리: 미분방정식이 다항 방정식이 되고, 시스템이 **전달함수**
   $G(s) = \frac{\text{출력}(s)}{\text{입력}(s)}$가 된다.
   **네 줄 유도.** $\dot x = ax + u$의 양변에 라플라스 변환을 취한다. 전달함수는 언제나 시스템이
@@ -818,6 +1088,13 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   [[02-foundations/signal-processing|신호처리]] 양쪽에 쓰인다. 허수축 근처 높이 $\omega$에
   극점이 있으면 거기서 $|G(j\omega)|$가 커지는데, 그것이 공진이다.
   (이산 시간의 쌍둥이: Z-변환, 좌반평면 대신 단위원.)
+  식으로 쓰면: 안정한 $G$에 입력 $u(t) = \sin\omega t$를 넣고 과도응답이 사라진 뒤의 출력은
+  $$y(t) = |G(j\omega)|\,\sin\!\big(\omega t + \angle G(j\omega)\big)$$
+  이므로 같은 주파수가 크기만큼 배수되고 각도만큼 밀려 나온다. $G(s) = \frac{1}{s+3}$로 계산하면
+  $\omega = 0.3$ rad/s에서 $|G| = 0.332$, 각도 $-5.7°$; $\omega = 3$에서
+  $|G| = 1/(3\sqrt2) = 0.236$, $-45°$; $\omega = 30$에서 $|G| = 0.033$, $-84.3°$다. 느린 입력은
+  거의 그대로 지나가고 빠른 입력은 줄고 늦어진다 — 극점까지의 거리 $3$ rad/s에 모서리가 있는
+  저역통과 필터다.
 
 > [!note] 이 절은 예고편이지 목적지가 아니다
 > 9절은 *극점*, *전달함수*, *주파수 응답*이라는 말을 처음 만나는 것이 아니게 하려고 있다.
@@ -831,8 +1108,14 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 정식 도입 전에 어디서나 쓰이는 정의 둘:
 
 - **Softmax**는 임의의 점수 벡터를 확률분포로 바꾼다:
-  $\text{softmax}(z)_i = e^{z_i} / \sum_j e^{z_j}$ — 양수이고 합이 1이며, 가장 큰 점수가
-  가장 큰 확률을 받는다(매끄러운 $\arg\max$). 어텐션, 분류 손실, 정책 어디에나 나온다.
+  $$\text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
+  $z = (z_1, \ldots, z_K)$는 실수 점수 $K$개(흔히 *로짓*이라 부름), $i$는 성분 하나를 고른다.
+  정의하는 성질이 셋이다 — 모든 출력이 양수이고, 합이 1이며, 가장 큰 점수가 가장 큰 확률을
+  받는다(매끄러운 $\arg\max$). 지수함수는 양수이고 증가하며, 분모가 분자들의 합이기 때문이다.
+  예: $z = (1, 2, 3)$이면 $(0.090, 0.245, 0.665)$이고, 모든 점수에 $100$을 더해도 공통 인수
+  $e^{100}$이 약분되어 출력이 똑같다(§6의 log-sum-exp 요령이 쓰는 사실). 비예시: 그냥 정규화
+  $z_i / \sum_j z_j$는 음수 점수에서 깨진다. $z = (-1, 2)$면 "확률"이 $(-1, 2)$가 된다.
+  어텐션, 분류 손실, 정책 어디에나 나온다.
 - **집합 표기**: $x \in A$("$x$가 $A$에 속함"), $A \cap B$(둘 다), $A \cup B$(어느 쪽이든),
   $\Omega$(모든 결과의 집합), disjoint = 겹침 없음. 확률 페이지가 첫 줄부터 쓴다.
 

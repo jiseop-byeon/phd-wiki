@@ -31,13 +31,28 @@ example, plus the gradient pathologies that shaped architecture history.
   ($H$ is the **Hessian** — the matrix of second derivatives $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
   the multivariable version of $f''$.) Gradient descent trusts the first-order term;
   Newton's method trusts the second ([[02-foundations/optimization|optimization]]).
+  - **What kind of thing it is.** A polynomial model of a smooth function $f:\mathbb{R}^n\to\mathbb{R}$, built at one point and trusted only for small steps. Here $x\in\mathbb{R}^n$ is the current point, $\delta\in\mathbb{R}^n$ the proposed step, and $^\top$ turns the column $\nabla f(x)$ into a row so that the product is a single number.
+  - **Its three terms, each named.** The **value** $f(x)$ is zeroth order. The **slope term** $\nabla f(x)^\top\delta$ is first order: linear in $\delta$. The **curvature term** $\tfrac12\delta^\top H\delta$ is second order: quadratic in $\delta$. Every omitted term shrinks at least like $\lVert\delta\rVert^3$, so the model is accurate only while the step is small.
+  - **Worked, with numbers.** Take $f(x_1,x_2)=x_1^2x_2$ at $x=(1,2)$ with step $\delta=(0.1,\,0.1)$. Then $f(x)=2$, $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$ and $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$. First order gives $2+0.4+0.1=2.5$. The curvature term adds $\tfrac12(0.04+0.04+0)=0.04$, giving $2.54$. The true value is $f(1.1,\,2.1)=2.541$, and the missing $0.001$ is exactly the third-order term $\delta_1^2\delta_2$.
+- **Hessian**, stated completely. For a twice-differentiable $f:\mathbb{R}^n\to\mathbb{R}$ it is the $n\times n$ matrix of every second partial derivative:
+  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
+  so entry $(i,j)$ says how the slope along $x_i$ changes as you move along $x_j$. Two properties carry all its uses. It is **symmetric**, $H_{ij}=H_{ji}$, whenever those second partials are continuous (Schwarz's theorem); in the example $H_{12}=H_{21}=2$. And $\delta^\top H\delta$ is the **curvature along the direction $\delta$**: positive means the surface bends up that way. Why it matters: the signs of its eigenvalues ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) separate minima from saddles, and $H\succeq0$ everywhere is exactly convexity ([[02-foundations/optimization|4. Optimization §2]]).
 - $\partial L/\partial w$ answers: "nudge $w$, how much does $L$ move?" Training =
-  computing millions of these sensitivities and stepping against them.
+  computing millions of these sensitivities and stepping against them. (The partial derivative itself is defined in [[02-foundations/engineering-math|0.5 §1]].)
 - **Gradient** $\nabla_w L$: vector of all sensitivities; points uphill; perpendicular to
-  level sets. **Jacobian** $J_{ij} = \partial y_i/\partial x_j$: the sensitivity matrix of
+  level sets. Stated completely, for $f:\mathbb{R}^n\to\mathbb{R}$ it is the column vector of the $n$ partial derivatives,
+  $$\nabla f(x) = \Big(\frac{\partial f}{\partial x_1},\ \ldots,\ \frac{\partial f}{\partial x_n}\Big)^\top$$
+  Because it collects every partial, it answers the **directional derivative**: the rate of change along a unit vector $u$ is $\nabla f(x)^\top u$. Both geometric facts follow from that one product.
+  - **Points uphill.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$ is largest when $u$ is parallel to $\nabla f$, so the gradient is the steepest-ascent direction and its length $\lVert\nabla f\rVert$ is that steepest rate. In the Taylor example, moving along $x_1$ changes $f$ at rate $4$, while moving along $\nabla f=(4,1)$ changes it at rate $\sqrt{17}\approx4.12$.
+  - **Perpendicular to level sets.** Along a level set $f$ does not change, so every tangent direction $u$ has $\nabla f^\top u=0$. For $f=x_1^2+x_2^2$ at $(3,4)$ the gradient is $(6,8)$, the circle's tangent is $(-4,3)$, and $6(-4)+8(3)=0$ ✓.
+- **Jacobian** $J_{ij} = \partial y_i/\partial x_j$: the sensitivity matrix of
   a vector function — the object that *chains* under composition. (Robotics uses the same
   word for the same object: joint velocities → end-effector velocities,
-  [[04-robotics/index|Modern Robotics]].)
+  [[04-robotics/index|Modern Robotics]].) Stated completely, for $y=f(x)$ with $f:\mathbb{R}^n\to\mathbb{R}^m$ it is the $m\times n$ matrix
+  $$J(x) = \begin{pmatrix}\partial y_1/\partial x_1 & \cdots & \partial y_1/\partial x_n\\ \vdots & & \vdots\\ \partial y_m/\partial x_1 & \cdots & \partial y_m/\partial x_n\end{pmatrix}$$
+  so it has one row per output and one column per input, and its defining property is the first-order model $f(x+\delta)\approx f(x)+J(x)\,\delta$.
+  - **Row $i$** is the gradient of output $y_i$, laid on its side. **Column $j$** is how every output responds to input $x_j$ alone. For a scalar function ($m=1$) the Jacobian is the single row $\nabla f^\top$.
+  - **Worked.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$ at $x=(1,2)$ gives $f=(2,5)$ and $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}2&1\\1&4\end{pmatrix}$. Nudge $x_1$ by $0.01$: the outputs move by $(0.02,\,0.01)$, which is $0.01$ times the first column, as the model predicts.
 
 **A derivative predicts a change; it is not the changed value.** In the Taylor expression, f(x) is the current output, δ is the proposed input change, the gradient term predicts its first-order effect, and the Hessian term corrects for curvature. If δ is too large, omitted terms can matter. That is why knowing a downhill direction does not tell you how far to step.
 
@@ -57,9 +72,16 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
   are carrying sensitivities *backward* from the output — $J^\top$ is that same map run the
   other way. Shape-check it: if $f_1: \mathbb{R}^n \to \mathbb{R}^m$ then $J_1$ is $m\times n$,
   so only $J_1^\top$ ($n\times m$) can produce something the size of $x$.
+- **The multivariable chain rule, stated completely.** The scalar rule of [[02-foundations/engineering-math|0.5 §1]] generalises in two equivalent forms. For a composition $h(x)=g(f(x))$ with $f:\mathbb{R}^n\to\mathbb{R}^m$ and $g:\mathbb{R}^m\to\mathbb{R}^k$, the Jacobians multiply:
+  $$J_{g\circ f}(x) = J_g\big(f(x)\big)\,J_f(x)$$
+  so the $k\times m$ matrix of the outer map, evaluated where the inner map landed, times the $m\times n$ matrix of the inner map gives the $k\times n$ Jacobian of the whole. Written entry by entry for a scalar $L$ that depends on $x_j$ through intermediates $y_1,\ldots,y_m$, the same rule is a **sum over every path**:
+  $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
+  because a nudge to $x_j$ reaches $L$ through each $y_i$ separately and the first-order effects add. Stacking that sum over $j$ is exactly $\nabla_x L = J^\top\,\nabla_y L$.
+  - **Worked.** Use the Jacobian example from §1, $y=(x_1x_2,\;x_1+x_2^2)$ at $x=(1,2)$, so $y=(2,5)$, and let $L=y_1y_2$. Then $\nabla_y L=(y_2,\,y_1)=(5,2)$ and $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$. A central finite difference on $L=x_1x_2(x_1+x_2^2)$ returns $(12.000,\,13.000)$ ✓.
 - Two evaluation orders for that product:
   - **Forward mode**: propagate $\partial/\partial x_i$ input-side first — one pass *per input*.
   - **Reverse mode**: propagate $\partial L/\partial(\cdot)$ output-side first — one pass *per output*.
+  - **Stated as formulas.** Forward mode carries a **tangent** $\dot x$ (a chosen input direction) through each primitive $y=f(x)$ by the **Jacobian-vector product** $\dot y = J\dot x$. Seeding $\dot x=e_j$, the $j$-th unit vector, returns column $j$ of the Jacobian, so a full $n$-input Jacobian needs $n$ passes. Reverse mode carries an **adjoint** $\bar y=\partial L/\partial y$ backward by the **vector-Jacobian product** $\bar x = J^\top\bar y$. Seeding $\bar y=e_i$ returns row $i$, so an $m$-output Jacobian needs $m$ passes. With the §1 Jacobian: forward with $\dot x=(1,0)$ gives $(2,1)$, the first column; reverse with $\bar y=(0,1)$ gives $(1,4)$, the second row.
 - Losses are scalar: one output, millions of inputs ⇒ reverse mode computes *every*
   parameter gradient in a single backward pass. **Backprop is exactly this choice.**
   **Put numbers on it.** A modest network with $10^7$ parameters and one scalar loss:
@@ -107,6 +129,8 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
   $v \mapsto J^\top v$; the framework composes them along the recorded graph.
   Cost ≈ 2–3× a forward pass; memory ≈ stored activations (hence gradient checkpointing:
   recompute instead of store).
+  - **VJP, stated completely.** For a primitive $y=f(x)$ with Jacobian $J$, its VJP is the linear map from an output-sized sensitivity $v=\partial L/\partial y$ to the input-sized sensitivity $J^\top v=\partial L/\partial x$. A primitive supplies it as a rule and never builds $J$, which for a layer with $10^7$ inputs and outputs would have $10^{14}$ entries. Two rules you already use in §3: for a linear layer $y=Wx$ the VJP is $v\mapsto W^\top v$, and for an elementwise ReLU it is $v\mapsto v\odot\mathbb{1}[z>0]$.
+  - **Gradient checkpointing, stated completely.** A memory-for-compute trade with two parts: during the forward pass store activations only at chosen **checkpoints**, and during the backward pass **recompute** each segment's activations from its checkpoint just before that segment's VJPs need them. The cost is roughly one extra forward pass; with checkpoints every $\sqrt{n}$ layers of an $n$-layer network, activation memory falls from $O(n)$ to $O(\sqrt{n})$ (Chen et al., "Training Deep Nets with Sublinear Memory Cost," 2016).
 
 **Backward does not mean undoing the forward pass.** The forward pass carries values; the backward pass carries sensitivity of the final loss to those values. At each operation, multiply the arriving sensitivity by that operation's local derivative. If a value affects the loss through several branches, add the contributions from those branches. Shared use creates a sum of effects, not permission to count only the last branch visited.
 
@@ -126,6 +150,15 @@ $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU's
    gradient is a mask (call it $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
+
+**Three pieces of notation in those steps, each defined.** (The loss $L=\tfrac12\|\hat y-y\|^2$ is the squared-error loss of [[02-foundations/neural-network-basics|0.7 §3]].)
+- **Outer product.** For a column $u\in\mathbb{R}^m$ and a column $v\in\mathbb{R}^n$ it is the $m\times n$ matrix
+  $$(uv^\top)_{ij} = u_i\,v_j$$
+  so every entry is one component of $u$ times one component of $v$. It has rank 1 (every row is a multiple of $v^\top$). Example: $u=(1,2)$, $v=(3,4,5)$ gives $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. Contrast the **inner product** $u^\top v$, a single number that needs equal lengths. Why it appears: $\partial L/\partial W_{ij}=\delta_i\,h_j$, because weight $W_{ij}$ multiplies input $h_j$ on its way to output $i$.
+- **Hadamard (elementwise) product** $\odot$. For two vectors or matrices of the same shape,
+  $$(a\odot b)_i = a_i\,b_i$$
+  so it multiplies matching entries and keeps the shape. Example: $(-0.5,\,0.5,\,-0.25)\odot(1,0,1)=(-0.5,\,0,\,-0.25)$. It is not the matrix product: $a\odot b$ needs equal shapes, $ab$ needs matching inner dimensions.
+- **Indicator** $\mathbb{1}[\cdot]$. It returns $1$ when the condition inside is true and $0$ otherwise, applied entry by entry to a vector. $\mathbb{1}[z>0]$ is ReLU's derivative: slope $1$ where $z>0$, slope $0$ where $z<0$. At exactly $z=0$ ReLU has no derivative, and frameworks such as PyTorch simply use $0$ there.
 
 **Now with actual numbers** — the *same* network as
 [[02-foundations/neural-network-basics|0.7 §2]], so nothing new has to be set up:
@@ -206,12 +239,20 @@ bug detector in existence.
   With logits $z$, $p = \text{softmax}(z)$, one-hot target $y$:
   $\dfrac{\partial L}{\partial z} = p - y$ — *predicted minus true*, and nothing else.
   (Derivation: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
+  - **The four objects, each defined.** **Logits** $z\in\mathbb{R}^K$ are the network's raw, unnormalised scores, one per class, any real numbers. **Softmax** is the map from $\mathbb{R}^K$ to probability vectors,
+    $$p_j = \text{softmax}(z)_j = \frac{e^{z_j}}{\sum_{k=1}^{K} e^{z_k}}$$
+    so every $p_j$ is positive (an exponential is), the $p_j$ sum to $1$ (the denominator is their common total), and the order of the scores is kept. Adding one constant to every logit changes nothing, since the factor $e^{c}$ cancels. A **one-hot** target $y$ has $y_c=1$ at the true class $c$ and $0$ elsewhere. **Cross-entropy** against it is $L=-\sum_j y_j\log p_j=-\log p_c$, the general definition being in [[02-foundations/information-theory|5. Information Theory §2]].
+  - **Worked.** $z=(2,1,0)$ with true class $c=1$ (the first). Softmax gives $p=(0.665,\,0.245,\,0.090)$; $z+10=(12,11,10)$ gives the same $p$. The loss is $-\log 0.665=0.408$, and the gradient is $p-y=(-0.335,\,0.245,\,0.090)$: push the true logit up, the other two down, each in proportion to the probability it wrongly holds.
   Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
   [[02-foundations/engineering-math|0.5 §6]]. The same loss coded in NumPy, with the $1/N$ of a
   mean loss and a finite-difference gradient check, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]].
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
+  Stated with its formula: $\text{ReLU}(z)=\max(0,z)$, whose derivative is $\mathbb{1}[z>0]$ (§3). It is **non-saturating** because the slope stays exactly $1$ for every positive input, however large. A **dead unit** is one whose pre-activation $z=w^\top x+b$ is negative for every input in the data: its mask is always $0$, so $w$ and $b$ receive zero gradient and can never move back. Example: $w=1$, $b=-10$ and inputs $x\in[0,1]$ give $z\le-9$ on every example.
 - **Sigmoid** $\sigma' = \sigma(1-\sigma) \le 1/4$: stacked sigmoids shrink the gradient geometrically.
+  Stated with its formula, the sigmoid squashes any real $z$ into $(0,1)$:
+  $$\sigma(z) = \frac{1}{1+e^{-z}}$$
+  so $\sigma(0)=0.5$, $\sigma(4)=0.982$ and $\sigma(-4)=0.018$. Differentiating gives $\sigma'(z)=e^{-z}/(1+e^{-z})^2$, and splitting that fraction as $\frac{1}{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}$ shows it equals $\sigma(1-\sigma)$. A unit is **saturated** when $|z|$ is large enough that $\sigma$ sits near $0$ or $1$, which makes $\sigma'$ near $0$.
   The bound holds because $\sigma(1-\sigma)$ is a downward parabola in $\sigma\in(0,1)$, highest at $\sigma=1/2$ (that is, $z=0$), where it equals $1/2\cdot1/2=1/4$.
   Every sigmoid layer multiplies the backward signal by at most 0.25, and 0.25 is the *best* case, at $z=0$.
   From the sigmoid derivatives alone, ten layers attenuate gradients at least a million-fold: $0.25^{10} \approx 9.5\times10^{-7}$.
@@ -229,13 +270,26 @@ bug detector in existence.
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
     — the identity term gives the gradient a direct, unattenuated path — it *mitigates*
     vanishing (a path exists) rather than guaranteeing the total gradient never decays.
+  - **Stated with the formula.** For a chain of $T$ layers or time steps $h_t=f_t(h_{t-1})$ with Jacobians $J_t=\partial h_t/\partial h_{t-1}$, the chain rule of §2 gives
+    $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
+    so the signal reaching the first layer has passed through $T$ matrices, and its size is bounded by $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$. **Vanishing** is the case where every $\lVert J_t\rVert\le\rho<1$, which forces decay at least as fast as $\rho^{T}$. With scalar Jacobians of $0.9$ over $50$ steps the gradient is multiplied by $0.9^{50}=0.0052$. Consequence: early layers, or early time steps, stop learning while later ones still do.
 - **Exploding gradients**: norms > 1 — treated with gradient clipping (rescale $\|g\|$ to a
   ceiling), standard in RNN/LLM training.
+  - **Stated with the formula.** The same product with factors larger than $1$ can grow like $\rho^{T}$: scalar Jacobians of $1.1$ over $50$ steps multiply the gradient by $1.1^{50}=117$, and one such step can throw the weights far outside the region where the loss was sensible. **Clipping by norm**, with ceiling $c$, rescales the gradient $g$ as
+    $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
+    so a gradient already shorter than $c$ is untouched and a longer one keeps its direction but is shortened to length exactly $c$. Example: $g=(3,4)$ has length $5$; with $c=1$ it becomes $(0.6,\,0.8)$.
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]]) moves sampling *outside* the differentiated path;
   EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]; EMA = exponential moving average — the teacher's weights are a slowly updated running average of the student's) and RL target networks receive no
   gradient by design. A dashed arrow in a paper figure *often* denotes stop-gradient —
   but it can also mean an auxiliary or inference-only path, so always check the legend.
+  - **Stop-gradient, stated completely.** An operator with two rules: in the forward pass it is the identity, $\text{sg}[a]=a$; in the backward pass its derivative is declared zero, $\partial\,\text{sg}[a]/\partial a=0$. So the value is used but no sensitivity flows back through it (`detach()` in PyTorch, `stop_gradient` in JAX). Example: $L=(\text{sg}[a]-b)^2$ at $a=3$, $b=1$ has $L=4$, $\partial L/\partial b=-2(a-b)=-4$, and $\partial L/\partial a=0$, where without the operator it would be $+4$.
+  - **Reparameterization, stated completely.** Replace a sample $z\sim\mathcal{N}(\mu,\sigma^2)$ by a deterministic function of the parameters and external noise:
+    $$z = \mu + \sigma\,\epsilon,\qquad \epsilon\sim\mathcal{N}(0,1)$$
+    because this $z$ has exactly the same distribution, while now $\partial z/\partial\mu=1$ and $\partial z/\partial\sigma=\epsilon$ are ordinary derivatives. Example: $\mu=1$, $\sigma=2$ and a drawn $\epsilon=0.5$ give $z=2$ and $\partial z/\partial\sigma=0.5$. Drawing $z$ directly from $\mathcal{N}(\mu,\sigma^2)$ is the non-example: the draw is not a function of $\mu$ you can differentiate.
+  - **EMA teacher, stated completely.** After each student update the teacher's parameters $\theta_T$ move a fraction of the way toward the student's $\theta_S$, with a decay $\tau$ just below $1$:
+    $$\theta_T \leftarrow \tau\,\theta_T + (1-\tau)\,\theta_S$$
+    so a student value from $k$ steps ago keeps weight $\propto\tau^{k}$, and the teacher gets its values only through this rule, never through a gradient. With $\tau=0.99$ that weight halves every $\ln 0.5/\ln 0.99\approx69$ steps; DINO's schedule starts at $\tau=0.996$, a half-life of about $173$ steps.
 
 ### 6. Reading equations like an implementer
 
@@ -244,9 +298,21 @@ bug detector in existence.
   learning, intractable or non-reparameterizable expectations are often handled with a bound
   ([[02-foundations/information-theory|ELBO]]), a Monte Carlo estimator, or a gradient-estimation technique
   (reparameterization; likelihood-ratio/policy gradients — [[02-foundations/rl-basics|RL basics]]).
+  - **Minibatch estimate, stated completely.** For a training loss that averages per-example losses $\ell_i$ over $N$ examples, the minibatch gradient over a random subset $B$ of size $|B|$ is
+    $$\hat g = \frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(\theta)\ \approx\ \frac{1}{N}\sum_{i=1}^{N}\nabla\ell_i(\theta)$$
+    and it is **unbiased**: averaged over all possible batches it equals the full gradient, so it is right on average while each draw is noisy. A worked version is in [[02-foundations/optimization|4. Optimization §3]].
 - $\arg\max$ is not differentiable; softmax is its smooth stand-in (temperature controls
   the sharpness). Sampling is not differentiable; Gumbel-softmax / straight-through
   estimators fake it. Gumbel-softmax replaces the discrete sample with a smooth, temperature-controlled softmax of noise-perturbed logits; straight-through uses the hard sample in the forward pass but passes the smooth version's gradient backward.
+  - **Softmax with temperature.** With temperature $\tau>0$,
+    $$p_j = \frac{e^{z_j/\tau}}{\sum_k e^{z_k/\tau}}$$
+    so $\tau=1$ is ordinary softmax, a small $\tau$ sharpens toward the one-hot vector of $\arg\max$, and a large $\tau$ flattens toward uniform. For $z=(2,1,0)$: $\tau=1$ gives $(0.665,\,0.245,\,0.090)$, $\tau=0.5$ gives $(0.867,\,0.117,\,0.016)$, and $\tau=0.1$ gives $(0.99995,\,0.00005,\,0.00000)$. $\arg\max$ itself is the non-example: its output jumps between one-hot vectors, so its derivative is zero almost everywhere.
+  - **Gumbel-softmax, stated completely.** Three steps. Draw $u_j$ uniformly from $(0,1)$ and form Gumbel noise $g_j=-\log(-\log u_j)$. Then $\arg\max_j(z_j+g_j)$ is an exact sample from $\text{softmax}(z)$ (the Gumbel-max trick). Finally replace that $\arg\max$ by a temperature softmax:
+    $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
+    since $y$ is smooth in $z$ and approaches the one-hot sample as $\tau\to0$. Example: $z=(2,1,0)$ with $u=(0.1,\,0.9,\,0.5)$ gives $g=(-0.834,\,2.250,\,0.367)$ and $z+g=(1.166,\,3.250,\,0.367)$, so this draw picks class 2 although class 1 has the larger logit, which is what sampling should sometimes do. At $\tau=1$, $y=(0.105,\,0.847,\,0.047)$; at $\tau=0.5$, $y=(0.015,\,0.982,\,0.003)$.
+  - **Straight-through, stated completely.** Use the hard one-hot $y_{\text{hard}}$ in the forward pass and the soft $y$'s gradient in the backward pass, written with the stop-gradient of §5 as
+    $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
+    because the forward value is $y_{\text{hard}}-y+y=y_{\text{hard}}$, while the backward pass sees $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$, the two hard terms contributing nothing. The gradient is therefore biased: it is the gradient of a slightly different, smooth computation.
 - Frameworks differentiate *programs*, not formulas: control flow, loops, and in-place ops
   all have gradient semantics — most "my loss doesn't decrease" bugs are graph bugs.
 
@@ -287,12 +353,27 @@ bug detector in existence.
   ($H$는 **헤시안** — 2차 도함수의 행렬 $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
   $f''$의 다변수 버전이다.) 경사 하강은 1차 항을, 뉴턴법은 2차 항까지 믿는다
   ([[02-foundations/optimization|최적화]]).
+  - **어떤 종류의 대상인가.** 매끄러운 함수 $f:\mathbb{R}^n\to\mathbb{R}$를 한 점에서 만든 다항식 모델이고, 작은 스텝에서만 믿는다. $x\in\mathbb{R}^n$은 현재 점, $\delta\in\mathbb{R}^n$은 제안한 스텝, $^\top$은 열벡터 $\nabla f(x)$를 행벡터로 눕혀 곱이 숫자 하나가 되게 한다.
+  - **세 항, 각각의 이름.** **값** $f(x)$는 0차 항이다. **기울기 항** $\nabla f(x)^\top\delta$는 1차 항으로 $\delta$에 선형이다. **곡률 항** $\tfrac12\delta^\top H\delta$는 2차 항으로 $\delta$에 이차다. 생략한 항은 모두 적어도 $\lVert\delta\rVert^3$처럼 줄어들므로, 모델은 스텝이 작을 때만 정확하다.
+  - **숫자로 계산.** $f(x_1,x_2)=x_1^2x_2$를 $x=(1,2)$에서 스텝 $\delta=(0.1,\,0.1)$로 본다. $f(x)=2$, $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$, $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$이다. 1차까지는 $2+0.4+0.1=2.5$. 곡률 항이 $\tfrac12(0.04+0.04+0)=0.04$를 더해 $2.54$가 된다. 참값은 $f(1.1,\,2.1)=2.541$이고, 남은 $0.001$은 정확히 3차 항 $\delta_1^2\delta_2$다.
+- **헤시안**의 완전한 정의. 두 번 미분 가능한 $f:\mathbb{R}^n\to\mathbb{R}$에 대해, 모든 2계 편미분을 모은 $n\times n$ 행렬이다:
+  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
+  즉 $(i,j)$ 성분은 $x_j$ 방향으로 움직일 때 $x_i$ 방향 기울기가 얼마나 변하는지다. 쓰임은 두 성질에서 나온다. 2계 편미분이 연속이면 **대칭**이다, $H_{ij}=H_{ji}$(슈바르츠 정리). 위 예제에서도 $H_{12}=H_{21}=2$다. 그리고 $\delta^\top H\delta$는 **방향 $\delta$로의 곡률**이다. 양수면 그 방향으로 표면이 위로 휜다. 중요한 이유: 고유값의 부호([[02-foundations/linear-algebra|1. 선형대수 §3]])가 최소점과 안장점을 가르고, 모든 곳에서 $H\succeq0$인 것이 곧 볼록성이다([[02-foundations/optimization|4. 최적화 §2]]).
 - $\partial L/\partial w$의 질문: "$w$를 살짝 밀면 $L$이 얼마나 움직이는가?" 학습 = 이
-  민감도 수백만 개를 계산해 반대로 내딛는 일.
+  민감도 수백만 개를 계산해 반대로 내딛는 일. (편미분 자체의 정의는 [[02-foundations/engineering-math|0.5 §1]].)
 - **그래디언트** $\nabla_w L$: 민감도 전체의 벡터; 오르막을 가리키고 등고선에 수직이다.
-  **야코비안** $J_{ij} = \partial y_i/\partial x_j$: 벡터 함수의 민감도 행렬 — 합성에서
+  완전히 쓰면, $f:\mathbb{R}^n\to\mathbb{R}$의 편미분 $n$개를 세운 열벡터다.
+  $$\nabla f(x) = \Big(\frac{\partial f}{\partial x_1},\ \ldots,\ \frac{\partial f}{\partial x_n}\Big)^\top$$
+  모든 편미분을 모았기 때문에 **방향 미분**에 답한다: 단위벡터 $u$ 방향의 변화율은 $\nabla f(x)^\top u$다. 두 기하적 사실이 모두 이 곱 하나에서 나온다.
+  - **오르막을 가리킨다.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$는 $u$가 $\nabla f$와 평행할 때 가장 크므로, 그래디언트는 가장 가파른 오르막 방향이고 길이 $\lVert\nabla f\rVert$가 그 최대 변화율이다. 테일러 예제에서 $x_1$ 방향 변화율은 $4$, $\nabla f=(4,1)$ 방향 변화율은 $\sqrt{17}\approx4.12$다.
+  - **등고선에 수직이다.** 등고선을 따라가면 $f$가 변하지 않으므로 모든 접선 방향 $u$에서 $\nabla f^\top u=0$이다. $f=x_1^2+x_2^2$의 $(3,4)$에서 그래디언트는 $(6,8)$, 원의 접선은 $(-4,3)$이고 $6(-4)+8(3)=0$ ✓.
+- **야코비안** $J_{ij} = \partial y_i/\partial x_j$: 벡터 함수의 민감도 행렬 — 합성에서
   *연쇄되는* 대상. (로보틱스도 같은 대상에 같은 이름을 쓴다: 관절 속도 → 말단 속도,
-  [[04-robotics/index|Modern Robotics]].)
+  [[04-robotics/index|Modern Robotics]].) 완전히 쓰면, $f:\mathbb{R}^n\to\mathbb{R}^m$인 $y=f(x)$에 대한 $m\times n$ 행렬이다.
+  $$J(x) = \begin{pmatrix}\partial y_1/\partial x_1 & \cdots & \partial y_1/\partial x_n\\ \vdots & & \vdots\\ \partial y_m/\partial x_1 & \cdots & \partial y_m/\partial x_n\end{pmatrix}$$
+  그래서 출력마다 행 하나, 입력마다 열 하나이고, 정의하는 성질은 1차 모델 $f(x+\delta)\approx f(x)+J(x)\,\delta$다.
+  - **$i$번째 행**은 출력 $y_i$의 그래디언트를 눕힌 것이다. **$j$번째 열**은 입력 $x_j$ 하나에 모든 출력이 어떻게 반응하는지다. 스칼라 함수($m=1$)라면 야코비안은 행 하나 $\nabla f^\top$이다.
+  - **계산.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$를 $x=(1,2)$에서 보면 $f=(2,5)$이고 $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}2&1\\1&4\end{pmatrix}$다. $x_1$을 $0.01$ 밀면 출력이 $(0.02,\,0.01)$ 움직이는데, 모델이 예측하는 대로 첫 열의 $0.01$배다.
 
 **미분은 변화량을 예측하지 바뀐 값 자체가 아니다.** 테일러 식에서 f(x)는 현재 출력, δ는 제안한 입력 변화, 기울기 항은 그 일차 효과, 헤시안 항은 곡률 보정이다. δ가 크면 생략한 항이 중요해진다. 내려가는 방향을 안다고 얼마나 움직일지까지 아는 것은 아니다.
 
@@ -312,9 +393,16 @@ bug detector in existence.
   민감도를 출력에서 *뒤로* 나르고 있기 때문이다 — $J^\top$이 그 사상을 반대 방향으로 돌린
   것이다. 모양으로 확인하면: $f_1: \mathbb{R}^n \to \mathbb{R}^m$이면 $J_1$이 $m\times n$이므로
   $x$ 크기의 결과를 낼 수 있는 것은 $J_1^\top$($n\times m$)뿐이다.
+- **다변수 연쇄 법칙의 완전한 형태.** [[02-foundations/engineering-math|0.5 §1]]의 스칼라 법칙은 동치인 두 형태로 일반화된다. $f:\mathbb{R}^n\to\mathbb{R}^m$, $g:\mathbb{R}^m\to\mathbb{R}^k$의 합성 $h(x)=g(f(x))$에서는 야코비안이 곱해진다.
+  $$J_{g\circ f}(x) = J_g\big(f(x)\big)\,J_f(x)$$
+  즉 안쪽 사상이 도착한 점에서 계산한 바깥 사상의 $k\times m$ 행렬에 안쪽 사상의 $m\times n$ 행렬을 곱하면 전체의 $k\times n$ 야코비안이 된다. 스칼라 $L$이 중간값 $y_1,\ldots,y_m$을 거쳐 $x_j$에 의존할 때 성분별로 쓰면, 같은 법칙이 **모든 경로에 대한 합**이다.
+  $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
+  $x_j$를 미는 효과가 각 $y_i$를 따로 거쳐 $L$에 닿고 1차 효과는 더해지기 때문이다. 이 합을 $j$에 대해 쌓으면 정확히 $\nabla_x L = J^\top\,\nabla_y L$이다.
+  - **계산.** §1의 야코비안 예제 $y=(x_1x_2,\;x_1+x_2^2)$를 $x=(1,2)$에서 쓰면 $y=(2,5)$이고, $L=y_1y_2$로 두자. $\nabla_y L=(y_2,\,y_1)=(5,2)$이고 $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$이다. $L=x_1x_2(x_1+x_2^2)$에 중앙 유한 차분을 걸면 $(12.000,\,13.000)$ ✓.
 - 이 곱의 두 가지 계산 순서:
   - **순방향 모드**: $\partial/\partial x_i$를 입력 쪽부터 전파 — *입력마다* 한 패스.
   - **역방향 모드**: $\partial L/\partial(\cdot)$를 출력 쪽부터 전파 — *출력마다* 한 패스.
+  - **식으로 쓰면.** 순방향 모드는 **탄젠트** $\dot x$(고른 입력 방향)를 각 기본 연산 $y=f(x)$에 **야코비안-벡터 곱** $\dot y = J\dot x$로 통과시킨다. $\dot x=e_j$($j$번째 단위벡터)를 씨앗으로 넣으면 야코비안의 $j$번째 열이 나오므로, 입력이 $n$개인 야코비안 전체에는 패스 $n$번이 든다. 역방향 모드는 **수반(adjoint)** $\bar y=\partial L/\partial y$를 **벡터-야코비안 곱** $\bar x = J^\top\bar y$로 뒤로 나른다. $\bar y=e_i$를 넣으면 $i$번째 행이 나오므로, 출력이 $m$개인 야코비안에는 패스 $m$번이 든다. §1의 야코비안으로: 순방향에 $\dot x=(1,0)$을 넣으면 첫 열 $(2,1)$, 역방향에 $\bar y=(0,1)$을 넣으면 둘째 행 $(1,4)$가 나온다.
 - 손실은 스칼라다: 출력 1개, 입력 수백만 개 ⇒ 역방향 모드가 backward 한 번으로 *모든*
   파라미터의 그래디언트를 계산한다. **역전파는 정확히 이 선택이다.**
   **숫자를 붙여 보자.** 파라미터 $10^7$개에 스칼라 손실 하나인 평범한 신경망이라면, 순방향
@@ -325,6 +413,8 @@ bug detector in existence.
 - 자동 미분의 동작: 각 기본 연산이 **VJP**(벡터-야코비안 곱) $v \mapsto J^\top v$를
   제공하고, 프레임워크가 기록된 그래프를 따라 이를 합성한다.
   비용 ≈ 순방향의 2~3배; 메모리 ≈ 저장된 활성값 (gradient checkpointing: 저장 대신 재계산).
+  - **VJP의 완전한 정의.** 야코비안이 $J$인 기본 연산 $y=f(x)$의 VJP는 출력 크기의 민감도 $v=\partial L/\partial y$를 입력 크기의 민감도 $J^\top v=\partial L/\partial x$로 보내는 선형 사상이다. 기본 연산은 이것을 규칙으로 제공하고 $J$를 만들지 않는다. 입출력이 $10^7$개인 층이라면 $J$의 성분이 $10^{14}$개이기 때문이다. §3에서 이미 쓰는 규칙 둘: 선형층 $y=Wx$의 VJP는 $v\mapsto W^\top v$, 원소별 ReLU의 VJP는 $v\mapsto v\odot\mathbb{1}[z>0]$이다.
+  - **gradient checkpointing의 완전한 정의.** 메모리와 계산을 맞바꾸는 방법이고 두 부분으로 된다. 순전파에서는 고른 **체크포인트**에서만 활성값을 저장하고, 역전파에서는 각 구간의 VJP가 필요로 하기 직전에 그 구간의 활성값을 체크포인트부터 **재계산**한다. 비용은 대략 순전파 한 번 추가다. $n$층 네트워크에서 $\sqrt{n}$층마다 체크포인트를 두면 활성값 메모리가 $O(n)$에서 $O(\sqrt{n})$으로 준다(Chen et al., "Training Deep Nets with Sublinear Memory Cost," 2016).
 <svg viewBox="0 0 560 228" style="max-width:100%;height:auto" role="img" aria-label="파라미터마다 한 번 왼쪽에서 오른쪽으로 쓸어가는 순방향 모드와, 손실 하나에 대해 한 번 오른쪽에서 왼쪽으로 쓸어오는 역방향 모드">
   <defs><marker id="cbA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
@@ -376,6 +466,15 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU의
    그래디언트는 마스크 (이것이 $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
+
+**위 단계에 나온 표기 셋, 각각의 정의.** (손실 $L=\tfrac12\|\hat y-y\|^2$는 [[02-foundations/neural-network-basics|0.7 §3]]의 제곱 오차 손실이다.)
+- **외적(outer product).** 열벡터 $u\in\mathbb{R}^m$과 열벡터 $v\in\mathbb{R}^n$의 외적은 $m\times n$ 행렬이다.
+  $$(uv^\top)_{ij} = u_i\,v_j$$
+  즉 모든 성분이 $u$의 성분 하나와 $v$의 성분 하나의 곱이다. 계수는 1이다(모든 행이 $v^\top$의 배수). 예: $u=(1,2)$, $v=(3,4,5)$이면 $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. 대조되는 **내적** $u^\top v$는 숫자 하나이고 길이가 같아야 한다. 여기 나오는 이유: 가중치 $W_{ij}$가 입력 $h_j$를 출력 $i$로 보내며 곱해지기 때문에 $\partial L/\partial W_{ij}=\delta_i\,h_j$다.
+- **아다마르(원소별) 곱** $\odot$. 모양이 같은 두 벡터나 행렬에 대해
+  $$(a\odot b)_i = a_i\,b_i$$
+  즉 같은 자리 성분끼리 곱하고 모양을 유지한다. 예: $(-0.5,\,0.5,\,-0.25)\odot(1,0,1)=(-0.5,\,0,\,-0.25)$. 행렬곱이 아니다. $a\odot b$는 모양이 같아야 하고, $ab$는 안쪽 차원이 맞아야 한다.
+- **지시 함수** $\mathbb{1}[\cdot]$. 안의 조건이 참이면 $1$, 거짓이면 $0$을 돌려주고, 벡터에는 성분별로 적용한다. $\mathbb{1}[z>0]$이 ReLU의 도함수다. $z>0$에서 기울기 $1$, $z<0$에서 기울기 $0$이다. 정확히 $z=0$에서 ReLU는 미분 불가능하고, PyTorch 같은 프레임워크는 그냥 $0$을 쓴다.
 
 **이제 실제 숫자로** — [[02-foundations/neural-network-basics|0.7 §2]]와 *같은* 신경망이라
 새로 세팅할 것이 없다: $W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}$,
@@ -451,12 +550,20 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   로짓 $z$, $p = \text{softmax}(z)$, 원-핫 정답 $y$일 때:
   $\dfrac{\partial L}{\partial z} = p - y$ — *예측에서 정답을 뺀 것*, 그게 전부다.
   (유도: $L = -\log p_c$; $\partial \log p_c/\partial z_j = \mathbb{1}[j=c] - p_j$.)
+  - **네 대상, 각각의 정의.** **로짓** $z\in\mathbb{R}^K$는 네트워크가 내는 정규화 전 점수로, 클래스마다 하나씩이고 아무 실수나 될 수 있다. **softmax**는 $\mathbb{R}^K$에서 확률 벡터로 가는 사상이다.
+    $$p_j = \text{softmax}(z)_j = \frac{e^{z_j}}{\sum_{k=1}^{K} e^{z_k}}$$
+    그래서 모든 $p_j$가 양수이고(지수 함수이므로), 합이 $1$이며(분모가 공통 합계이므로), 점수의 순서가 유지된다. 모든 로짓에 같은 상수를 더해도 인수 $e^{c}$가 약분되므로 아무것도 바뀌지 않는다. **원-핫** 정답 $y$는 정답 클래스 $c$에서 $y_c=1$, 나머지는 $0$이다. 이에 대한 **교차 엔트로피**는 $L=-\sum_j y_j\log p_j=-\log p_c$이고, 일반 정의는 [[02-foundations/information-theory|5. 정보이론 §2]]에 있다.
+  - **계산.** $z=(2,1,0)$, 정답 클래스 $c=1$(첫째). softmax는 $p=(0.665,\,0.245,\,0.090)$이고, $z+10=(12,11,10)$도 같은 $p$를 준다. 손실은 $-\log 0.665=0.408$, 그래디언트는 $p-y=(-0.335,\,0.245,\,0.090)$이다. 정답 로짓은 올리고 나머지 둘은 내리되, 각자 잘못 가져간 확률에 비례해 움직인다.
   실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
   [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다. 같은 손실을 평균 손실의 $1/N$과
   유한 차분 그래디언트 검사까지 넣어 NumPy로 짠 것은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]에 있다.
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
+  식으로 쓰면 $\text{ReLU}(z)=\max(0,z)$이고 도함수는 $\mathbb{1}[z>0]$(§3)이다. 양수 입력이 아무리 커도 기울기가 정확히 $1$이므로 **포화하지 않는다**. **죽은 유닛**은 사전 활성값 $z=w^\top x+b$가 데이터의 모든 입력에서 음수인 유닛이다. 마스크가 항상 $0$이라 $w$와 $b$가 그래디언트 0을 받고, 다시는 돌아오지 못한다. 예: $w=1$, $b=-10$, 입력 $x\in[0,1]$이면 모든 예제에서 $z\le-9$다.
 - **시그모이드** $\sigma' = \sigma(1-\sigma) \le 1/4$: 시그모이드를 쌓으면 그래디언트가 기하급수적으로 줄어든다.
+  식으로 쓰면, 시그모이드는 임의의 실수 $z$를 $(0,1)$로 눌러 넣는다.
+  $$\sigma(z) = \frac{1}{1+e^{-z}}$$
+  그래서 $\sigma(0)=0.5$, $\sigma(4)=0.982$, $\sigma(-4)=0.018$이다. 미분하면 $\sigma'(z)=e^{-z}/(1+e^{-z})^2$이고, 이 분수를 $\frac{1}{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}$로 쪼개면 $\sigma(1-\sigma)$와 같음이 보인다. $|z|$가 커서 $\sigma$가 $0$이나 $1$ 근처에 붙어 $\sigma'$가 거의 $0$인 유닛을 **포화**했다고 한다.
   이 상한이 성립하는 이유는 $\sigma(1-\sigma)$가 $\sigma\in(0,1)$에서 위로 볼록한(아래로 열린) 포물선이라 $\sigma=1/2$(즉 $z=0$)에서 가장 크고, 그 값이 $1/2\cdot1/2=1/4$이기 때문이다.
   시그모이드 층 하나가 역방향 신호에 많아야 0.25를 곱하고, 0.25는 $z=0$에서의 *최선*이다.
   시그모이드 도함수만 따져도 층 열 개면 그래디언트가 최소 백만 배 준다: $0.25^{10} \approx 9.5\times10^{-7}$.
@@ -476,13 +583,26 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
     $\partial(x + F(x))/\partial x = I + \partial F/\partial x$ — 항등 항이 감쇠 없는
     직접 경로를 제공한다 — 소실을 *완화*하는 것이지(경로가 존재한다), 전체 그래디언트가
     절대 줄지 않음을 보장하는 것은 아니다.
+  - **식으로 쓰면.** 야코비안이 $J_t=\partial h_t/\partial h_{t-1}$인 $T$개의 층 또는 시간 스텝 $h_t=f_t(h_{t-1})$에 §2의 연쇄 법칙을 적용하면
+    $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
+    즉 첫 층에 닿는 신호는 행렬 $T$개를 통과했고, 크기는 $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$로 묶인다. **소실**은 모든 $\lVert J_t\rVert\le\rho<1$인 경우이고, 적어도 $\rho^{T}$만큼 빠른 감쇠를 강제한다. 스칼라 야코비안 $0.9$가 $50$스텝 이어지면 그래디언트에 $0.9^{50}=0.0052$가 곱해진다. 결과: 뒤쪽 층은 여전히 배우는데 앞쪽 층이나 앞쪽 시간 스텝은 배우기를 멈춘다.
 - **그래디언트 폭발**: 노름 > 1 — gradient clipping($\|g\|$를 상한으로 재스케일)으로
   처치, RNN/LLM 학습의 표준.
+  - **식으로 쓰면.** 같은 곱의 인수가 $1$보다 크면 $\rho^{T}$처럼 커질 수 있다. 스칼라 야코비안 $1.1$이 $50$스텝이면 그래디언트에 $1.1^{50}=117$이 곱해지고, 그런 스텝 한 번이 가중치를 손실이 말이 되던 영역 밖으로 던질 수 있다. 상한 $c$의 **노름 클리핑**은 그래디언트 $g$를 이렇게 재스케일한다.
+    $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
+    그래서 이미 $c$보다 짧은 그래디언트는 그대로이고, 긴 것은 방향을 유지한 채 길이가 정확히 $c$로 줄어든다. 예: $g=(3,4)$는 길이 $5$이고, $c=1$이면 $(0.6,\,0.8)$이 된다.
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
   교사(지수 이동 평균 — 교사 가중치가 학생 가중치를 천천히 따라가는 이동 평균이다; [[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
   않는다. 논문 그림의 점선 화살표는 *대개* stop-gradient지만, 보조 경로나 추론 전용
   경로를 뜻하기도 하므로 반드시 범례를 확인하라.
+  - **stop-gradient의 완전한 정의.** 규칙 두 개를 가진 연산자다. 순전파에서는 항등, $\text{sg}[a]=a$이고, 역전파에서는 도함수를 0으로 선언한다, $\partial\,\text{sg}[a]/\partial a=0$. 그래서 값은 쓰이지만 그것을 거쳐 민감도가 뒤로 흐르지 않는다(PyTorch의 `detach()`, JAX의 `stop_gradient`). 예: $L=(\text{sg}[a]-b)^2$을 $a=3$, $b=1$에서 보면 $L=4$, $\partial L/\partial b=-2(a-b)=-4$, $\partial L/\partial a=0$이다. 연산자가 없었다면 $+4$였다.
+  - **reparameterization의 완전한 정의.** 샘플 $z\sim\mathcal{N}(\mu,\sigma^2)$를 파라미터와 외부 잡음의 결정적 함수로 바꾼다.
+    $$z = \mu + \sigma\,\epsilon,\qquad \epsilon\sim\mathcal{N}(0,1)$$
+    이 $z$의 분포가 정확히 같으면서 이제 $\partial z/\partial\mu=1$, $\partial z/\partial\sigma=\epsilon$이 평범한 도함수이기 때문이다. 예: $\mu=1$, $\sigma=2$, 뽑힌 $\epsilon=0.5$이면 $z=2$이고 $\partial z/\partial\sigma=0.5$다. $\mathcal{N}(\mu,\sigma^2)$에서 $z$를 직접 뽑는 것이 반례다. 그 추출은 미분할 수 있는 $\mu$의 함수가 아니다.
+  - **EMA 교사의 완전한 정의.** 학생이 갱신될 때마다 교사 파라미터 $\theta_T$가 학생 파라미터 $\theta_S$ 쪽으로 일정 비율만큼 움직이고, 감쇠 $\tau$는 $1$보다 조금 작다.
+    $$\theta_T \leftarrow \tau\,\theta_T + (1-\tau)\,\theta_S$$
+    그래서 $k$스텝 전 학생 값은 $\tau^{k}$에 비례하는 가중치를 유지하고, 교사는 그래디언트가 아니라 오직 이 규칙으로만 값을 얻는다. $\tau=0.99$이면 그 가중치가 $\ln 0.5/\ln 0.99\approx69$스텝마다 절반이 된다. DINO의 스케줄은 $\tau=0.996$에서 시작하며, 반감기는 약 $173$스텝이다.
 
 ### 6. 구현자의 눈으로 수식 읽기
 
@@ -491,8 +611,20 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   reparameterize할 수 없는 기댓값을 흔히 하한([[02-foundations/information-theory|ELBO]]),
   몬테카를로 추정, 또는 그래디언트 추정 기법(reparameterization;
   우도비/정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])이 된다.
+  - **미니배치 추정의 완전한 정의.** 학습 손실이 예제 $N$개의 손실 $\ell_i$의 평균일 때, 크기 $|B|$의 무작위 부분집합 $B$에 대한 미니배치 그래디언트는
+    $$\hat g = \frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(\theta)\ \approx\ \frac{1}{N}\sum_{i=1}^{N}\nabla\ell_i(\theta)$$
+    이고 **불편**이다. 가능한 모든 배치에 대해 평균하면 전체 그래디언트와 같으므로, 한 번 뽑을 때마다 시끄럽지만 평균적으로는 맞다. 숫자로 푼 예는 [[02-foundations/optimization|4. 최적화 §3]]에 있다.
 - $\arg\max$는 미분 불가능하다; softmax가 그 매끄러운 대역이다(온도가 날카로움을 조절).
   샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다. Gumbel-softmax는 이산 샘플을 잡음을 더한 로짓의 매끄러운 softmax(온도로 날카로움 조절)로 바꾸고, straight-through는 순방향에서는 딱딱한 샘플을 쓰되 역방향에서는 매끄러운 쪽의 그래디언트를 흘려보낸다.
+  - **온도가 있는 softmax.** 온도 $\tau>0$에서
+    $$p_j = \frac{e^{z_j/\tau}}{\sum_k e^{z_k/\tau}}$$
+    그래서 $\tau=1$이면 평범한 softmax, 작은 $\tau$는 $\arg\max$의 원-핫 벡터 쪽으로 날카로워지고, 큰 $\tau$는 균등 분포 쪽으로 평평해진다. $z=(2,1,0)$에서 $\tau=1$은 $(0.665,\,0.245,\,0.090)$, $\tau=0.5$는 $(0.867,\,0.117,\,0.016)$, $\tau=0.1$은 $(0.99995,\,0.00005,\,0.00000)$이다. $\arg\max$ 자체가 반례다. 출력이 원-핫 벡터 사이를 뛰어다니므로 도함수가 거의 모든 곳에서 0이다.
+  - **Gumbel-softmax의 완전한 정의.** 세 단계다. $(0,1)$에서 균등하게 $u_j$를 뽑아 굼벨 잡음 $g_j=-\log(-\log u_j)$를 만든다. 그러면 $\arg\max_j(z_j+g_j)$가 $\text{softmax}(z)$의 정확한 샘플이다(굼벨-맥스 트릭). 마지막으로 그 $\arg\max$를 온도 softmax로 바꾼다.
+    $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
+    $y$는 $z$에 대해 매끄럽고 $\tau\to0$이면 원-핫 샘플에 다가가기 때문이다. 예: $z=(2,1,0)$, $u=(0.1,\,0.9,\,0.5)$이면 $g=(-0.834,\,2.250,\,0.367)$, $z+g=(1.166,\,3.250,\,0.367)$이라 이번 추출은 로짓이 더 큰 클래스 1이 아니라 클래스 2를 고른다. 샘플링이라면 가끔 그래야 한다. $\tau=1$에서 $y=(0.105,\,0.847,\,0.047)$, $\tau=0.5$에서 $y=(0.015,\,0.982,\,0.003)$이다.
+  - **straight-through의 완전한 정의.** 순전파에서는 딱딱한 원-핫 $y_{\text{hard}}$를, 역전파에서는 부드러운 $y$의 그래디언트를 쓴다. §5의 stop-gradient로 쓰면
+    $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
+    순전파 값은 $y_{\text{hard}}-y+y=y_{\text{hard}}$이고, 역전파는 딱딱한 두 항이 아무것도 보태지 않아 $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$를 보기 때문이다. 그래서 그래디언트는 편향되어 있다. 조금 다른 매끄러운 계산의 그래디언트다.
 - 프레임워크는 수식이 아니라 *프로그램*을 미분한다: 제어 흐름, 루프, in-place 연산에 전부
   그래디언트 의미론이 있다 — "손실이 안 줄어요" 버그의 대부분은 그래프 버그다.
 

@@ -27,9 +27,38 @@ functions.
 
 ### 1. Signals, systems, and convolution
 
-- A system is **LTI** (linear, time-invariant) ⟺ completely characterized by its impulse
-  response $h$; the output is **convolution**:
+- A **system** $T$ is a rule that turns an input sequence $x[n]$ into an output sequence
+  $y[n] = T\{x\}[n]$, where $n$ is the integer sample index. A system is **LTI** (linear,
+  time-invariant) when it has **two** properties, and each can fail without the other.
+- **Linearity** is additivity *and* homogeneity together, i.e. superposition (the full
+  definition, with non-examples, is [[02-foundations/engineering-math|0.5 §4.5]]). For all
+  inputs $x_1, x_2$ and all scalars $a, b$:
+  $$T\{a x_1[n] + b x_2[n]\} = a\,T\{x_1[n]\} + b\,T\{x_2[n]\}$$
+  so a weighted sum of inputs comes out as the same weighted sum of outputs.
+  *Non-example:* the squarer $y[n] = x[n]^2$. Constant inputs $1$ and $2$ give outputs $1$
+  and $4$, but their sum $3$ gives $9 \ne 1 + 4 = 5$.
+- **Time invariance** (shift invariance): delaying the input by $n_0$ samples only delays
+  the output by the same $n_0$,
+  $$x[n] \mapsto y[n] \implies x[n-n_0] \mapsto y[n-n_0]$$
+  where $\mapsto$ reads "the system turns this input into this output" and $n_0$ is any
+  integer shift. It holds when the rule never looks at the clock, since then an input that
+  arrives later is treated exactly as it would have been earlier. *Non-example:* the ramp
+  gain $y[n] = n\,x[n]$ is linear but not time-invariant, because an impulse at $n = 0$
+  produces the all-zero output while the same impulse at $n = 1$ produces $1$ at $n = 1$,
+  which is not a shifted zero.
+- *Example that passes both:* the running sum $y[n] = x[n] + x[n-1]$. Adding or scaling
+  inputs adds or scales both terms, so it is linear; it only refers to $n$ and $n-1$, so a
+  delayed input gives a delayed output.
+- The **unit impulse** is $\delta[n] = 1$ at $n = 0$ and $0$ everywhere else, and the
+  **impulse response** is what the system does to it, $h[n] = T\{\delta\}[n]$. For the
+  running sum, $h = [1, 1]$.
+- **The consequence.** An LTI system is completely characterized by its impulse
+  response $h$; the output is the **convolution** of the input with $h$:
   $$y[n] = (x * h)[n] = \sum_k x[k]\, h[n-k]$$
+  Here $k$ runs over every input sample, $x[k]$ is the input at time $k$, and $h[n-k]$ is
+  the response to that one sample, delayed so it starts at $k$. So convolution is an
+  operation that takes two sequences and returns a third: the sum of delayed copies of $h$,
+  each scaled by one input sample.
 - **Where that comes from — convolution is not a definition, it is forced.** Three lines.
   First, any signal is a sum of shifted impulses, which is a tautology:
   $x[n] = \sum_k x[k]\,\delta[n-k]$. Push it through the system $T$ and use *linearity* to
@@ -44,21 +73,52 @@ functions.
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — flip, slide, multiply, accumulate.
   Length: $N_x + N_h - 1$.
 - A CNN layer is a *learned bank* of such $h$'s in 2D (plus nonlinearity; frameworks
-  actually compute cross-correlation — convolution without the kernel flip — but since the
+  actually compute cross-correlation — convolution without the kernel flip,
+  $(x \star h)[n] = \sum_k x[n+k]\,h[k]$ — but since the
   kernel is learned the distinction is immaterial, and papers say "convolution" by convention) —
   [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] onward; "padding/stride" are the boundary and
   sampling choices of this same operation.
-- Key properties: commutative, associative (cascaded LTI systems = one convolved $h$),
-  and the delta $\delta[n]$ is the identity.
+- Key properties: commutative ($x * h = h * x$), associative
+  ($(x * h_1) * h_2 = x * (h_1 * h_2)$, so cascaded LTI systems = one convolved $h$),
+  and the delta is the identity ($x * \delta = x$).
+- **Causality** is a system property: the output at time $n$ may use only present and past
+  inputs $x[k]$ with $k \le n$. For an LTI system it is one condition on the impulse response,
+  $$h[n] = 0 \quad \text{for all } n < 0$$
+  because a nonzero $h[-1]$ would let the input at $n+1$ reach the output at $n$. The running
+  sum is causal; the centered average $y[n] = \tfrac12\big(x[n+1] + x[n-1]\big)$ is not, since
+  it needs the next sample. Only causal filters can run in real time, which is where the phase
+  lag of §4 comes from.
+- **BIBO stability** (bounded input, bounded output) is a system property too: every input
+  with $|x[n]| \le B_x$ for all $n$ yields an output that also stays below some finite bound.
+  For an LTI system this holds exactly when the impulse response is absolutely summable,
+  $$\sum_n |h[n]| < \infty$$
+  since $|y[n]| \le \sum_k |x[n-k]|\,|h[k]| \le B_x \sum_k |h[k]|$. The running sum passes
+  ($\sum_n |h[n]| = 2$). The accumulator $y[n] = y[n-1] + x[n]$, whose $h[n] = 1$ for every
+  $n \ge 0$, fails: a constant input of $1$ drives the output to $1, 2, 3, \ldots$ without
+  bound. §5 restates the same test as "poles inside the unit circle".
 
 Convolution is useful because a short physical event can affect several later samples through the sensor and filter response. For example, the force pulse when a tool touches a wall may appear spread out even if contact began abruptly. **The reading this gives you.** Ask whether a broad measured event belongs to the world or to the pipeline impulse response. Cascaded filters change that response together, so evaluating a filter in isolation can miss the timing seen by the controller.
 
 ### 2. Sampling — the contract between continuous and digital
 
-- **Nyquist–Shannon**: a signal with no content above $B$ Hz is *perfectly* recoverable
-  from samples at $f_s > 2B$. Above $f_s/2$, content **aliases**: frequency $f$ appears at
-  $|f - kf_s|$ — wheels spin backwards on camera; a 60 Hz vibration sampled at 50 Hz
-  masquerades as 10 Hz.
+- **Sampling** reads a continuous-time signal $x_c(t)$ once every $T_s$ seconds,
+  $x[n] = x_c(nT_s)$, so the **sampling rate** is $f_s = 1/T_s$ samples per second (Hz). Half
+  of it, $f_s/2$, is the **Nyquist frequency**: the highest frequency the samples can
+  represent without ambiguity.
+- **Nyquist–Shannon sampling theorem.** It has two conditions. The signal must be
+  **band-limited** to $B$ Hz (no content above $B$), *and* the rate must exceed twice that
+  band edge, the **Nyquist rate** $2B$:
+  $$f_s > 2B$$
+  Then the signal is *perfectly* recoverable from its samples, because sampling makes copies
+  of the spectrum spaced $f_s$ apart and those copies do not overlap. Example: audio
+  band-limited to 20 kHz needs $f_s > 40$ kHz, which is why CD audio uses 44.1 kHz.
+- **Aliasing** is what happens when the condition fails. Content at a frequency $f$ above
+  $f_s/2$ shows up in the samples at
+  $$f_{alias} = |f - k f_s|$$
+  where $k$ is the integer nearest to $f/f_s$, so that $f_{alias}$ lands between $0$ and
+  $f_s/2$. The true tone and its alias produce identical samples, so no later processing can
+  separate them. Wheels spin backwards on camera; a 60 Hz vibration sampled at 50 Hz ($k = 1$)
+  masquerades as 10 Hz; in the figure below, 170 Hz sampled at 200 Hz ($k = 1$) becomes 30 Hz.
 
 <svg viewBox="0 0 480 160" style="max-width:100%;height:auto" role="img" aria-label="aliasing: a 170 Hz signal sampled at 200 Hz looks like 30 Hz">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="25" y1="75" x2="460" y2="75"/></g>
@@ -74,13 +134,24 @@ Convolution is useful because a short physical event can affect several later sa
 
 
 - Therefore: **anti-alias filter before downsampling**, always (this includes decimating
-  IMU logs in software).
+  IMU logs in software). An anti-alias filter is a low-pass filter (§4) placed before the
+  sampler or the decimator that removes content above the *new* $f_s/2$, so nothing is left
+  that could fold down.
 - Engineering corollary: pick sensor rates from the fastest dynamics you must *observe*,
   with margin — a 10 Hz perception loop cannot even see, let alone damp, a 50 Hz vibration.
-- Quantization: finite bits add ~uniform noise — roughly **6 dB of SNR per bit**. *SNR* =
+- **Quantization** rounds each sample to one of $2^N$ levels, where $N$ is the number of bits
+  of the ADC (analog-to-digital converter). Over an input range $R$ the step is
+  $\Delta = R/2^N$, and the rounding error behaves like uniform noise on
+  $[-\Delta/2, \Delta/2]$, whose variance is $\Delta^2/12$. Finite bits therefore add ~uniform noise — roughly **6 dB of SNR per bit**. *SNR* =
   signal-to-noise ratio, signal power divided by noise power; *dB* (decibel) is the log scale
   it is quoted on, where +6 dB ≈ 2× in amplitude. So each extra bit of an ADC halves
-  the RMS quantization noise, which quarters its power — that factor of 4 is the 6 dB. This is the *other* half of digitization.
+  the RMS quantization noise, which quarters its power — that factor of 4 is the 6 dB. For a
+  full-scale sine wave the standard formula is
+  $$\text{SNR}_{dB} = 10\log_{10}\frac{P_{signal}}{P_{noise}} \approx 6.02\,N + 1.76$$
+  where $P_{signal}$ and $P_{noise}$ are the two powers, $6.02 = 10\log_{10}4$ is the per-bit
+  gain, and $1.76$ dB comes from the sine's power relative to the $\Delta^2/12$ noise. A 12-bit
+  ADC gives about $74$ dB and a 16-bit one about $98$ dB; a 12-bit converter spanning 10 V has
+  steps of $2.44$ mV and RMS quantization noise of $0.70$ mV. This is the *other* half of digitization.
 - Where this contract becomes a stability problem: a haptic loop rendering a virtual wall
   must close on a human hand every millisecond, and there sampling and quantization stop
   being accuracy questions and start deciding whether the device buzzes
@@ -92,9 +163,26 @@ Convolution is useful because a short physical event can affect several later sa
   the eigenfunctions of LTI systems** ([[02-foundations/linear-algebra|eigen-thinking]]) —
   for a stable LTI system, a complex exponential comes out multiplied by $H(f)$, so a real sinusoid comes out at the same frequency, scaled by $|H(f)|$ and phase-shifted by $\angle H(f)$. That is why frequency
   analysis diagonalizes filtering.
-- **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — correlation of the signal
-  with each basis frequency ([[02-foundations/engineering-math|0.5 §7]] unpacks *why* that
-  sum is a projection); **FFT** computes all $N$ in $O(N\log N)$.
+- **Frequency response.** For an LTI system with impulse response $h$ it is the complex-valued
+  function of frequency
+  $$H(f) = \sum_n h[n]\, e^{-j2\pi f n}$$
+  where $f$ is in cycles per sample ($f = f_{Hz}/f_s$), the magnitude $|H(f)|$ is the gain at
+  that frequency and the angle $\angle H(f)$ is the phase shift. It is exactly the eigenvalue
+  in the claim above, since feeding $x[n] = e^{j2\pi fn}$ into the convolution of §1 gives
+  $y[n] = \sum_k h[k]\,e^{j2\pi f(n-k)} = H(f)\,e^{j2\pi fn}$. For the running sum $h = [1, 1]$:
+  $H(0) = 2$ (a constant is doubled), $H(1/4) = 1 - j$, so the gain is $\sqrt2 \approx 1.414$
+  with a $-45°$ phase, and $H(1/2) = 0$ (the alternating input $+1, -1, +1, \ldots$ cancels).
+- **DFT** (discrete Fourier transform) maps a block of $N$ samples $x[0], \ldots, x[N-1]$ to
+  $N$ complex coefficients,
+  $$X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$$
+  where the bin index $k = 0, \ldots, N-1$ stands for the frequency $k f_s/N$ Hz (bins above
+  $N/2$ are the negative frequencies), $|X[k]|$ says how much of that frequency is present and
+  $\angle X[k]$ its phase. It is invertible, $x[n] = \frac1N \sum_{k} X[k]\,e^{j2\pi kn/N}$, so
+  no information is lost. The bin spacing $f_s/N$ is the frequency resolution: 1000 samples at
+  200 Hz resolve $0.2$ Hz. Each $X[k]$ is the correlation of the signal
+  with one basis frequency ([[02-foundations/engineering-math|0.5 §7]] unpacks *why* that
+  sum is a projection); the **FFT** (fast Fourier transform) is not a different transform but an
+  algorithm that computes all $N$ coefficients in $O(N\log N)$ instead of $O(N^2)$.
 - **Worked DFT, $N = 4$, by hand.** Take $x = [1, 0, -1, 0]$ — one full cycle across the
   4-sample window. The twiddle factor is $e^{-j2\pi kn/4} = (-j)^{kn}$, so:
   $$X[0] = 1 + 0 - 1 + 0 = 0, \qquad X[1] = 1(1) + 0(-j) + (-1)(-1) + 0(j) = 2$$
@@ -103,11 +191,18 @@ Convolution is useful because a short physical event can affect several later sa
   visibly does. All the energy sits in $k = 1$ and its mirror $k = 3$ (the same frequency
   seen as negative — for a real signal the magnitude spectrum is always symmetric, which is why one-sided FFT plots show only the first half). One frequency lit up, and it is the bin whose rotation completes
   exactly one turn across the window. That is the entire DFT.
-- **Convolution theorem**: $x * h \leftrightarrow X \cdot H$ — filtering is multiplication
+- **Convolution theorem**: convolving in time is multiplying in frequency,
+  $$y = x * h \quad\Longleftrightarrow\quad Y(f) = X(f)\,H(f)$$
+  where $X(f) = \sum_n x[n]e^{-j2\pi fn}$ and $Y(f)$ are the transforms of input and output,
+  built the same way as $H(f)$ above. It holds because each complex exponential in $x$ is just
+  multiplied by $H(f)$. Check it on §1's example at $f = 1/4$, where $e^{-j2\pi n/4} = (-j)^n$:
+  $X = 1 + 2(-j) + 3(-1) = -2 - 2j$ and $H = 1 - j$, so $XH = -4$; directly,
+  $Y = 1 + 3(-j) + 5(-1) + 3(j) = -4$ ✓. So filtering is multiplication
   in frequency; also the lens for neural nets' spectral bias (they fit low frequencies first, so a network
   fed raw coordinates learns an over-smooth function — the reason
   [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]] lifts its inputs to Fourier features).
-- Signal fingerprints: white noise = flat spectrum; drift/bias = spike near **DC** ("DC" is
+- Signal fingerprints: white noise = flat spectrum (uncorrelated samples; defined in
+  [[02-foundations/probability|3. Probability §5]]); drift/bias = spike near **DC** ("DC" is
   borrowed from direct current and here just means zero frequency — the constant part); rotating
   machinery = sharp peaks at harmonics (an excavator's engine band is a notch-filter target).
 
@@ -115,8 +210,16 @@ Frequency analysis is useful because visually similar fluctuations can require d
 
 ### 4. Filtering — design basics
 
-- **FIR** (finite impulse response, $y = \sum b_k x[n-k]$): always stable, exactly linear
-  phase possible (no waveform distortion), but needs more **taps** — one tap = one $b_k$,
+- **FIR** (finite impulse response) filter: the output is a fixed weighted sum of the
+  current input and the previous $M-1$ inputs, and nothing else,
+  $$y[n] = \sum_{k=0}^{M-1} b_k\, x[n-k]$$
+  where the $b_k$ are the coefficients and $M$ is the filter length. Feed it $\delta[n]$ and
+  the output is the coefficient list itself, $h[k] = b_k$, which ends after $M$ samples: that
+  is the "finite". Two consequences follow. It is always BIBO stable, since
+  $\sum_n |h[n]| = \sum_k |b_k|$ is a finite sum (§1). And it has exactly linear phase
+  whenever the coefficients are symmetric, $b_k = b_{M-1-k}$, which delays every frequency by
+  the same $(M-1)/2$ samples, so the waveform is not distorted: a 5-tap moving average delays
+  everything by 2 samples, i.e. 20 ms at 100 Hz. The price is that it needs more **taps** — one tap = one $b_k$,
   i.e. one past sample the filter still has to keep and multiply, so "more taps" means more
   memory, more arithmetic, and more delay. The moving average is the
   simplest FIR. Feeding it a pure tone $e^{j2\pi fn}$ ($f$ in cycles/sample) multiplies the tone by
@@ -124,8 +227,15 @@ Frequency analysis is useful because visually similar fluctuations can require d
   $\tfrac1M(1-e^{-j2\pi fM})/(1-e^{-j2\pi f})$; factoring $e^{-j\pi fM}$ out of the top and
   $e^{-j\pi f}$ out of the bottom leaves two sines, so $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$. It shows the
   tradeoff: longer window ⇒ narrower passband *and* more delay.
-- **IIR** (feedback, e.g., $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — the exponential
-  smoother): cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$, so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
+- **IIR** (infinite impulse response) filter: the output also feeds back past *outputs*,
+  $$y[n] = \sum_{k=0}^{M} b_k\, x[n-k] - \sum_{k=1}^{N} a_k\, y[n-k]$$
+  where the $b_k$ weight inputs as in an FIR and the $a_k$ weight the $N$ previous outputs.
+  Because every output re-enters later outputs, one impulse echoes forever, so $h$ never ends.
+  The simplest case is the exponential smoother $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$
+  ($b_0 = 1-\alpha$, $a_1 = -\alpha$), whose impulse response is $h[n] = (1-\alpha)\alpha^n$
+  for $n \ge 0$: with $\alpha = 0.9$ that is $0.1, 0.09, 0.081, 0.0729, \ldots$, never exactly
+  zero. Stability is no longer automatic: for $0 < \alpha < 1$ the sum $\sum_n |h[n]|$ is $1$,
+  but at $\alpha = 1.1$ the terms grow. IIR filters are cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$, so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
 - **The $\alpha$ in that formula is a convention, not a quantity.** Written as above, a
   large $\alpha$ trusts the *previous output* and filters more. Many papers and lecture
   notes instead write $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$, where a large $\alpha$
@@ -145,24 +255,67 @@ Frequency analysis is useful because visually similar fluctuations can require d
   a factor of 6.3 in variance and 2.5 in standard deviation. This trade — noise rejection
   bought with slower response and phase lag — is central to filter design, and the reason a control engineer always asks what your filter cost you
   in phase ([[04-robotics/control-theory-ce397|control theory §7]]).
-- Choosing: low-pass for sensor noise, high-pass for drift removal, notch at known
-  vibration harmonics, complementary filters to fuse IMU accel (low-passed) + gyro
+- **Filter types, named by the frequencies they pass.** With a cutoff $f_c$, an ideal
+  **low-pass** filter has $|H(f)| = 1$ for $|f| < f_c$ and $|H(f)| = 0$ above it; a
+  **high-pass** filter is the reverse; a **band-pass** filter keeps one band; a **notch**
+  filter removes one narrow band around a frequency $f_0$. Real filters replace the sharp edge
+  with a transition band. Choosing: low-pass for sensor noise, high-pass for drift removal,
+  notch at known vibration harmonics, complementary filters to fuse IMU accel (low-passed) + gyro
   (high-passed).
+- **Complementary filter**: a fusion filter for two sensors that measure the same quantity but
+  are trustworthy in *different* frequency bands. One sensor goes through a low-pass $H_L$, the
+  other through a high-pass $H_H$, and the pair is chosen so the two responses add to exactly
+  one,
+  $$H_L(f) + H_H(f) = 1$$
+  so the true signal, which both sensors see, passes with unit gain and no distortion, while
+  each sensor's bad band is suppressed. For IMU tilt, the accelerometer angle $\theta_{acc}$ is
+  right on average but noisy, and the gyro rate $\omega$ integrates smoothly but drifts, so the
+  update is one line
+  $$\hat\theta[n] = \alpha\big(\hat\theta[n-1] + \omega[n]\,\Delta t\big) + (1-\alpha)\,\theta_{acc}[n]$$
+  where $\hat\theta$ is the fused estimate, $\Delta t$ the sample period and $\alpha$ sets the
+  crossover. With $\alpha = 0.98$, $\Delta t = 0.01$ s, previous estimate $10°$, gyro rate
+  $5°/\text{s}$ and accelerometer reading $11°$, the new estimate is
+  $0.98 \times 10.05 + 0.02 \times 11 = 10.069°$. The crossover time constant is
+  $\tau = \alpha\Delta t/(1-\alpha) = 0.49$ s: slower changes follow the accelerometer, faster
+  ones the gyro.
 - **Phase lag is the price of causal smoothing**: realizable causal smoothing generally
   introduces frequency-dependent phase or group delay over the passband —
   aggressive filtering *fights your controller* (a lagged velocity estimate destabilizes a
   D-term). This is the practical reason to prefer model-based estimation:
   under an accurate linear-Gaussian state-space model and noise covariances, the
-  **Kalman filter** ([[02-foundations/probability|derived here]]) minimizes mean-square
+  **Kalman filter** ([[02-foundations/probability|derived in 3. Probability §5]]) minimizes mean-square
   estimation error. Model mismatch removes that guarantee.
+- **Phase delay and group delay** state how late a filter's output is. The phase response is
+  $\angle H(f)$ (§3). The **group delay** is its negative slope, measured in samples,
+  $$\tau_g(f) = -\frac{1}{2\pi}\,\frac{d\,\angle H(f)}{df}$$
+  so a filter whose phase falls linearly with frequency delays every frequency by the same
+  number of samples and keeps the waveform's shape. The symmetric 5-tap moving average has
+  $\angle H(f) = -4\pi f$ in its passband, hence $\tau_g = 2$ samples everywhere. The exponential
+  smoother is not linear-phase: with $\alpha = 0.9$ at $f = 0.05$ cycles/sample its gain is
+  $0.32$ and its phase $-62.6°$, and the delay changes from one frequency to the next.
 
 ### 5. Bridge to control: transforms
 
-- The Laplace transform (continuous) / **Z-transform** (discrete) generalize Fourier:
+- The Laplace transform (continuous, defined in [[02-foundations/engineering-math|0.5 §9]]) / **Z-transform** (discrete) generalize Fourier:
   convolution ↦ multiplication by a *transfer function* $H(s)$ or $H(z)$.
-- For a minimal realization, poles of $H$ = eigenvalues of the state-space $A$
-  ([[02-foundations/linear-algebra|control connection]]): stability = poles in the left
-  half-plane (continuous) / inside the unit circle (discrete). Filters, plants, and
+- The **Z-transform** turns a sequence into a function of a complex variable $z$,
+  $$X(z) = \sum_n x[n]\, z^{-n}$$
+  so a one-sample delay becomes multiplication by $z^{-1}$. It is tied to the Laplace variable
+  by $z = e^{sT_s}$, and on the unit circle $z = e^{j2\pi f}$ it reduces to the frequency
+  response of §3. The **transfer function** is the ratio of output to input transforms, with
+  the system starting at rest,
+  $$H(z) = \frac{Y(z)}{X(z)}$$
+  which is the transform of $h$, since convolution became multiplication. Worked: transform the
+  exponential smoother term by term, $Y(z) = \alpha z^{-1} Y(z) + (1-\alpha) X(z)$, so
+  $H(z) = (1-\alpha)/(1-\alpha z^{-1})$. Its **pole** (a $z$ that makes the denominator zero;
+  poles and zeros are defined in [[02-foundations/engineering-math|0.5 §9]]) is $z = \alpha$. Its
+  gain at DC ($z = 1$) is exactly $1$, so a constant passes unchanged; at the Nyquist frequency
+  ($z = -1$) it is $(1-\alpha)/(1+\alpha)$, which is $0.053$ for $\alpha = 0.9$.
+- For a minimal realization ([[02-foundations/engineering-math|0.5 §9]]), poles of $H$ = eigenvalues of the state-space $A$
+  ([[02-foundations/linear-algebra|1. Linear Algebra §5]]): stability = poles in the left
+  half-plane (continuous) / inside the unit circle, $|z| < 1$ (discrete), for a causal system.
+  This is §1's BIBO test in another form, because a pole at $z = \alpha$ contributes a term
+  $\alpha^n$ to $h[n]$, which is summable only when $|\alpha| < 1$. Filters, plants, and
   controllers all speak this one language — which is why the control-theory course packet
   and this page are two views of the same object.
 
@@ -215,8 +368,33 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 ### 1. 신호, 시스템, 합성곱
 
-- **LTI**(선형 시불변) 시스템 ⟺ 임펄스 응답 $h$로 완전히 특성화; 출력은 **합성곱**:
+- **시스템** $T$는 입력 수열 $x[n]$을 출력 수열 $y[n] = T\{x\}[n]$으로 바꾸는 규칙이다.
+  $n$은 정수 샘플 번호다. 시스템이 **두** 성질을 모두 가지면 **LTI**(선형 시불변)라 하고,
+  둘은 서로 따로 깨질 수 있다.
+- **선형성**은 가법성과 동차성을 함께 뜻한다. 즉 중첩 원리다(비예시까지 담은 완전한 정의는
+  [[02-foundations/engineering-math|0.5 §4.5]]). 모든 입력 $x_1, x_2$와 모든 스칼라 $a, b$에 대해
+  $$T\{a x_1[n] + b x_2[n]\} = a\,T\{x_1[n]\} + b\,T\{x_2[n]\}$$
+  이므로 입력의 가중합은 출력의 같은 가중합으로 나온다.
+  *비예시:* 제곱기 $y[n] = x[n]^2$. 상수 입력 $1$과 $2$는 출력 $1$과 $4$를 주지만, 그 합
+  $3$은 $9 \ne 1 + 4 = 5$를 준다.
+- **시불변성**(이동 불변성): 입력을 $n_0$ 샘플 늦추면 출력도 같은 $n_0$만큼만 늦춰진다.
+  $$x[n] \mapsto y[n] \implies x[n-n_0] \mapsto y[n-n_0]$$
+  여기서 $\mapsto$는 "시스템이 이 입력을 이 출력으로 바꾼다"로 읽고, $n_0$은 임의의 정수
+  이동량이다. 규칙이 시계를 보지 않으면 성립한다. 늦게 도착한 입력도 일찍 왔을 때와 똑같이
+  다뤄지기 때문이다. *비예시:* 램프 이득 $y[n] = n\,x[n]$은 선형이지만 시불변이 아니다.
+  $n = 0$의 임펄스는 전부 0인 출력을 내는데, 같은 임펄스를 $n = 1$에 넣으면 $n = 1$에서
+  $1$이 나오고, 이것은 0을 옮긴 것이 아니기 때문이다.
+- *둘 다 통과하는 예:* 연속 합 $y[n] = x[n] + x[n-1]$. 입력을 더하거나 배수하면 두 항이
+  함께 더해지거나 배수되므로 선형이다. $n$과 $n-1$만 참조하므로 늦춘 입력은 늦춘 출력을
+  준다.
+- **단위 임펄스**는 $n = 0$에서 $1$, 나머지에서 $0$인 $\delta[n]$이고, **임펄스 응답**은
+  시스템이 그것에 하는 일, $h[n] = T\{\delta\}[n]$이다. 연속 합이라면 $h = [1, 1]$이다.
+- **결과.** LTI 시스템은 임펄스 응답 $h$로 완전히 특성화되고, 출력은 입력과 $h$의
+  **합성곱**이다:
   $$y[n] = (x * h)[n] = \sum_k x[k]\, h[n-k]$$
+  $k$는 모든 입력 샘플을 훑고, $x[k]$는 시각 $k$의 입력, $h[n-k]$는 그 샘플 하나에 대한
+  응답을 $k$에서 시작하도록 늦춘 것이다. 그래서 합성곱은 두 수열을 받아 셋째 수열을 돌려주는
+  연산이다. 입력 샘플 하나씩으로 배수한, 늦춰진 $h$ 복사본들의 합이다.
 - **이것이 어디서 오는가 — 합성곱은 정의가 아니라 강제된 결과다.** 세 줄이면 된다. 첫째,
   어떤 신호든 옮겨진 임펄스의 합이다. 이건 항등식이다: $x[n] = \sum_k x[k]\,\delta[n-k]$.
   이것을 시스템 $T$에 통과시키고 *선형성*으로 $T$를 합 안으로 밀어 넣는다:
@@ -230,19 +408,47 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   $y = [1,\ 1{+}2,\ 2{+}3,\ 3] = [1, 3, 5, 3]$ — 뒤집고, 밀고, 곱하고, 누적한다.
   길이: $N_x + N_h - 1$.
 - CNN 층은 이런 $h$들의 *학습된 2D 묶음*(+ 비선형성)이다 — 실제 프레임워크는 커널을
-  뒤집지 않는 교차상관(cross-correlation)을 계산하지만, 커널이 학습되므로 기능상 차이가
+  뒤집지 않는 교차상관(cross-correlation) $(x \star h)[n] = \sum_k x[n+k]\,h[k]$을 계산하지만, 커널이 학습되므로 기능상 차이가
   없어 관례적으로 convolution이라 부른다 —
   [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] 이후 전부; "패딩/스트라이드"는 같은 연산의
   경계·샘플링 선택지다.
-- 핵심 성질: 교환·결합 법칙(직렬 LTI = 합성곱된 $h$ 하나), $\delta[n]$이 항등원.
+- 핵심 성질: 교환 법칙($x * h = h * x$), 결합 법칙($(x * h_1) * h_2 = x * (h_1 * h_2)$,
+  그래서 직렬 LTI = 합성곱된 $h$ 하나), $\delta$가 항등원($x * \delta = x$).
+- **인과성**은 시스템의 성질이다. 시각 $n$의 출력은 현재와 과거 입력, 즉 $k \le n$인
+  $x[k]$만 쓸 수 있다. LTI 시스템에서는 임펄스 응답에 대한 조건 하나가 된다.
+  $$h[n] = 0 \quad \text{for all } n < 0$$
+  $h[-1]$이 0이 아니면 시각 $n+1$의 입력이 시각 $n$의 출력에 닿기 때문이다. 연속 합은
+  인과적이다. 중심 평균 $y[n] = \tfrac12\big(x[n+1] + x[n-1]\big)$은 다음 샘플이 필요하므로
+  인과적이지 않다. 실시간으로 돌 수 있는 것은 인과 필터뿐이고, §4의 위상 지연이 여기서 나온다.
+- **BIBO 안정성**(유계 입력, 유계 출력)도 시스템의 성질이다. 모든 $n$에서
+  $|x[n]| \le B_x$인 모든 입력에 대해 출력도 어떤 유한한 한계 아래에 머문다. LTI
+  시스템에서는 임펄스 응답이 절대 합산 가능할 때와 정확히 같다.
+  $$\sum_n |h[n]| < \infty$$
+  $|y[n]| \le \sum_k |x[n-k]|\,|h[k]| \le B_x \sum_k |h[k]|$이기 때문이다. 연속 합은
+  통과한다($\sum_n |h[n]| = 2$). 모든 $n \ge 0$에서 $h[n] = 1$인 누산기 $y[n] = y[n-1] + x[n]$은
+  실패한다. 상수 입력 $1$이 출력을 $1, 2, 3, \ldots$으로 한없이 키운다. §5는 같은 판정을
+  "극점이 단위원 안"으로 다시 쓴다.
 
 짧은 물리 사건도 센서·필터 응답을 통해 뒤의 여러 표본에 영향을 줘 합성곱이 유용하다. 도구가 벽에 닿는 힘 펄스는 접촉이 급격해도 퍼져 보일 수 있다. **여기서 얻는 독법.** 넓게 측정된 사건이 세계의 성질인지 파이프라인 임펄스 응답인지 묻는다. 직렬 필터가 응답을 함께 바꾸므로 필터 하나의 평가로는 제어기가 겪는 시점을 놓칠 수 있다.
 
 ### 2. 샘플링 — 연속과 디지털 사이의 계약
 
-- **나이퀴스트–섀넌**: $B$ Hz 위 성분이 없는 신호는 $f_s > 2B$ 샘플에서 *완벽히* 복원된다.
-  $f_s/2$ 위의 성분은 **에일리어싱**된다: 주파수 $f$가 $|f - kf_s|$에 나타난다 —
-  카메라 속 바퀴가 거꾸로 돌고, 50 Hz로 샘플링한 60 Hz 진동은 10 Hz로 위장한다.
+- **샘플링**은 연속시간 신호 $x_c(t)$를 $T_s$초마다 한 번씩 읽는 것이다.
+  $x[n] = x_c(nT_s)$이므로 **샘플링 주파수**는 초당 $f_s = 1/T_s$개(Hz)다. 그 절반 $f_s/2$가
+  **나이퀴스트 주파수**, 즉 샘플이 모호함 없이 표현할 수 있는 가장 높은 주파수다.
+- **나이퀴스트–섀넌 샘플링 정리.** 조건이 둘이다. 신호가 $B$ Hz로 **대역 제한**되어
+  있어야 하고($B$ 위 성분이 없음), *그리고* 샘플링 주파수가 그 대역 끝의 두 배인
+  **나이퀴스트 율** $2B$보다 커야 한다.
+  $$f_s > 2B$$
+  그러면 신호는 샘플에서 *완벽히* 복원된다. 샘플링은 스펙트럼 복사본을 $f_s$ 간격으로
+  만드는데, 이 조건에서는 복사본끼리 겹치지 않기 때문이다. 예: 20 kHz로 대역 제한된 오디오는
+  $f_s > 40$ kHz가 필요하고, 그래서 CD 오디오가 44.1 kHz를 쓴다.
+- **에일리어싱**은 조건이 깨질 때 벌어지는 일이다. $f_s/2$ 위의 주파수 $f$ 성분은 샘플에서
+  $$f_{alias} = |f - k f_s|$$
+  에 나타난다. $k$는 $f/f_s$에 가장 가까운 정수이고, 그래서 $f_{alias}$가 $0$과 $f_s/2$
+  사이에 떨어진다. 실제 음과 그 에일리어스는 똑같은 샘플을 만들므로 뒤의 어떤 처리로도 둘을
+  가를 수 없다. 카메라 속 바퀴가 거꾸로 돌고, 50 Hz로 샘플링한 60 Hz 진동($k = 1$)은 10 Hz로
+  위장하며, 아래 그림에서는 200 Hz로 샘플링한 170 Hz($k = 1$)가 30 Hz가 된다.
 
 <svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="에일리어싱: 200 Hz로 샘플링한 170 Hz 신호가 30 Hz로 보인다">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="25" y1="75" x2="460" y2="75"/></g>
@@ -257,13 +463,22 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 
 - 따라서: **다운샘플링 전 안티에일리어스 필터**, 항상 (소프트웨어에서 IMU 로그를 솎아낼
-  때도 포함).
+  때도 포함). 안티에일리어스 필터는 샘플러나 데시메이터 앞에 두는 저역통과 필터(§4)로,
+  *새* $f_s/2$ 위의 성분을 없애 접혀 내려올 것을 남기지 않는다.
 - 공학적 따름정리: *관측해야 할* 가장 빠른 동역학에서 여유를 두고 센서 주기를 정하라 —
   10 Hz 인식 루프는 50 Hz 진동을 감쇠는커녕 보지도 못한다.
-- 양자화: 유한 비트는 거의 균일한 노이즈를 더한다 — 대략 **비트당 6 dB의 SNR**. *SNR*은
+- **양자화**는 각 샘플을 $2^N$개 준위 중 하나로 반올림한다. $N$은 ADC(아날로그-디지털
+  변환기)의 비트 수다. 입력 범위가 $R$이면 한 칸은 $\Delta = R/2^N$이고, 반올림 오차는
+  $[-\Delta/2, \Delta/2]$ 위의 균일 잡음처럼 행동하며 그 분산은 $\Delta^2/12$다. 그래서
+  유한 비트는 거의 균일한 노이즈를 더한다 — 대략 **비트당 6 dB의 SNR**. *SNR*은
   신호 대 잡음비(신호 전력 ÷ 잡음 전력)이고, *dB*(데시벨)는 그것을 표기하는 로그 척도로
   +6 dB가 진폭 약 2배다. 즉 ADC의 비트 하나가 늘 때마다 양자화 잡음의 RMS가 절반, 전력은 4분의 1이 되고, 그 4배가 6 dB다.
-  디지털화의 나머지 절반이 이것이다.
+  최대 진폭 사인파에 대한 표준 공식은
+  $$\text{SNR}_{dB} = 10\log_{10}\frac{P_{signal}}{P_{noise}} \approx 6.02\,N + 1.76$$
+  이다. $P_{signal}$과 $P_{noise}$는 두 전력, $6.02 = 10\log_{10}4$는 비트당 이득이고,
+  $1.76$ dB는 사인파 전력과 잡음 $\Delta^2/12$의 비에서 나온다. 12비트 ADC는 약 $74$ dB,
+  16비트는 약 $98$ dB다. 10 V를 덮는 12비트 변환기의 한 칸은 $2.44$ mV, 양자화 잡음 RMS는
+  $0.70$ mV다. 디지털화의 나머지 절반이 이것이다.
 - 이 계약이 안정성 문제로 바뀌는 자리: 가상 벽을 렌더링하는 햅틱 루프는 사람 손을 상대로
   매 밀리초 닫혀야 하고, 거기서 샘플링과 양자화는 정확도 문제이기를 그치고 장치가 떨지
   말지를 정하는 요인이 된다
@@ -274,9 +489,24 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 - 푸리에의 주장: 신호 = 사인파들의 합. 더 깊은 주장: **복소 지수함수는 LTI 시스템의
   고유함수다** ([[02-foundations/linear-algebra|고유값적 사고]]) — 안정한 LTI 시스템에서 복소 지수함수는
   $H(f)$배 되어 나오므로, 실수 사인파는 같은 주파수로 $|H(f)|$배 커지고 $\angle H(f)$만큼 위상이 밀려 나온다. 주파수 분석이 필터링을 대각화하는 이유가 이것이다.
-- **DFT**: $X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$ — 신호와 각 기저 주파수의
-  상관(그 합이 *왜* 투영인지는 [[02-foundations/engineering-math|0.5 §7]]에서 푼다);
-  **FFT**가 $N$개 전부를 $O(N\log N)$에 계산.
+- **주파수 응답.** 임펄스 응답이 $h$인 LTI 시스템에 대해, 주파수의 복소값 함수
+  $$H(f) = \sum_n h[n]\, e^{-j2\pi f n}$$
+  이다. $f$는 샘플당 사이클 단위($f = f_{Hz}/f_s$), 크기 $|H(f)|$는 그 주파수의 이득, 각도
+  $\angle H(f)$는 위상 이동이다. 위 주장의 고유값이 정확히 이것이다. $x[n] = e^{j2\pi fn}$을
+  §1의 합성곱에 넣으면 $y[n] = \sum_k h[k]\,e^{j2\pi f(n-k)} = H(f)\,e^{j2\pi fn}$이 되기
+  때문이다. 연속 합 $h = [1, 1]$이라면 $H(0) = 2$(상수가 두 배가 됨), $H(1/4) = 1 - j$이므로
+  이득 $\sqrt2 \approx 1.414$에 위상 $-45°$, 그리고 $H(1/2) = 0$(교대 입력 $+1, -1, +1, \ldots$이
+  상쇄됨)이다.
+- **DFT**(이산 푸리에 변환)는 샘플 $N$개 $x[0], \ldots, x[N-1]$의 블록을 복소 계수 $N$개로
+  보낸다.
+  $$X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi kn/N}$$
+  빈 번호 $k = 0, \ldots, N-1$은 주파수 $k f_s/N$ Hz를 뜻하고($N/2$ 위의 빈은 음의 주파수),
+  $|X[k]|$는 그 주파수가 얼마나 들었는지, $\angle X[k]$는 그 위상이다. 역변환
+  $x[n] = \frac1N \sum_{k} X[k]\,e^{j2\pi kn/N}$이 있으므로 정보가 사라지지 않는다. 빈 간격
+  $f_s/N$이 주파수 분해능이다. 200 Hz로 찍은 1000 샘플은 $0.2$ Hz를 가른다. 각 $X[k]$는
+  신호와 기저 주파수 하나의 상관이다(그 합이 *왜* 투영인지는 [[02-foundations/engineering-math|0.5 §7]]에서 푼다).
+  **FFT**(고속 푸리에 변환)는 다른 변환이 아니라 $N$개 계수 전부를 $O(N^2)$ 대신
+  $O(N\log N)$에 계산하는 알고리즘이다.
 - **$N = 4$ DFT, 손으로.** $x = [1, 0, -1, 0]$을 보자 — 4샘플 창에서 정확히 한 주기를 도는
   신호다. 회전 인자는 $e^{-j2\pi kn/4} = (-j)^{kn}$이므로:
   $$X[0] = 1 + 0 - 1 + 0 = 0, \qquad X[1] = 1(1) + 0(-j) + (-1)(-1) + 0(j) = 2$$
@@ -285,11 +515,18 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   $k = 1$과 그 거울상 $k = 3$(같은 주파수를 음수 쪽에서 본 것 — 실수 신호의 크기 스펙트럼은 항상 이렇게
   대칭이라, 단측 FFT 플롯은 앞쪽 절반만 보여준다)에 앉는다. 켜진 주파수는 하나이고, 빈 1의 회전이
   창 전체에서 정확히 한 바퀴를 돈다. DFT의 전부가 이것이다.
-- **합성곱 정리**: $x * h \leftrightarrow X \cdot H$ — 필터링은 주파수 영역의 곱;
+- **합성곱 정리**: 시간 영역의 합성곱은 주파수 영역의 곱이다.
+  $$y = x * h \quad\Longleftrightarrow\quad Y(f) = X(f)\,H(f)$$
+  $X(f) = \sum_n x[n]e^{-j2\pi fn}$와 $Y(f)$는 입력과 출력의 변환으로, 위의 $H(f)$와 같은
+  방식으로 만든다. $x$ 안의 복소 지수함수 하나하나가 $H(f)$배 될 뿐이기 때문에 성립한다.
+  §1의 예제로 $f = 1/4$에서 검산하면($e^{-j2\pi n/4} = (-j)^n$):
+  $X = 1 + 2(-j) + 3(-1) = -2 - 2j$, $H = 1 - j$이므로 $XH = -4$이고, 직접 계산한
+  $Y = 1 + 3(-j) + 5(-1) + 3(j) = -4$ ✓. 그래서 필터링은 주파수 영역의 곱;
   신경망의 스펙트럼 편향(저주파부터 맞추므로 날것의 좌표를 입력받은 망은 과하게 매끄러운 함수를
   배운다 — [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]가 입력을 푸리에 특징으로
   들어올리는 이유)을 이해하는 렌즈이기도 하다.
-- 신호의 지문: 백색 잡음 = 평평한 스펙트럼; 드리프트/바이어스 = **DC** 근처 스파이크
+- 신호의 지문: 백색 잡음 = 평평한 스펙트럼(서로 무상관인 샘플;
+  [[02-foundations/probability|3. 확률 §5]]에 정의); 드리프트/바이어스 = **DC** 근처 스파이크
   ("DC"는 직류에서 온 말이고 여기서는 그냥 주파수 0 — 신호의 상수 성분을 뜻한다);
   회전 기계 = 고조파의 날카로운 피크 (굴착기 엔진 대역은 노치 필터의 표적).
 
@@ -297,16 +534,30 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 ### 4. 필터링 — 설계 기초
 
-- **FIR** (유한 임펄스 응답, $y = \sum b_k x[n-k]$): 항상 안정, 정확한 선형 위상
-  가능(파형 왜곡 없음), 대신 **탭**(tap)이 많이 필요하다 — 탭 하나 = $b_k$ 하나, 즉 필터가
+- **FIR**(유한 임펄스 응답) 필터: 출력이 현재 입력과 직전 $M-1$개 입력의 고정된 가중합이고,
+  그 밖의 것은 쓰지 않는다.
+  $$y[n] = \sum_{k=0}^{M-1} b_k\, x[n-k]$$
+  $b_k$는 계수, $M$은 필터 길이다. $\delta[n]$을 넣으면 출력이 계수 목록 그 자체
+  $h[k] = b_k$이고 $M$ 샘플 뒤에 끝난다. 그것이 "유한"이다. 결과가 둘 따른다.
+  $\sum_n |h[n]| = \sum_k |b_k|$가 유한합이므로 항상 BIBO 안정하다(§1). 그리고 계수가
+  대칭 $b_k = b_{M-1-k}$이면 정확한 선형 위상을 가져 모든 주파수를 똑같이 $(M-1)/2$ 샘플
+  늦추므로 파형이 왜곡되지 않는다. 5탭 이동 평균은 모든 것을 2 샘플, 100 Hz라면 20 ms 늦춘다.
+  대신 **탭**(tap)이 많이 필요하다 — 탭 하나 = $b_k$ 하나, 즉 필터가
   아직 들고 있으면서 곱해야 하는 과거 샘플 하나다. 따라서 "탭이 많다"는 메모리·연산량·
   지연이 모두 늘어난다는 뜻이다. 이동 평균이 가장 단순한 FIR이다. 순음 $e^{j2\pi fn}$($f$: cycles/sample)을
   넣으면 출력은 그 순음에 $H(f) = \tfrac1M\sum_{k=0}^{M-1} e^{-j2\pi fk}$를 곱한 것이고, 이 등비급수의 합은
   $\tfrac1M(1-e^{-j2\pi fM})/(1-e^{-j2\pi f})$다. 분자에서 $e^{-j\pi fM}$, 분모에서 $e^{-j\pi f}$를 묶어 내면
   사인 두 개가 남아 $|H(f)| = |\sin(\pi f M)/(M\sin \pi f)|$가 된다. 이 응답이 트레이드오프를 보여준다: 창이 길수록 통과
   대역이 좁아지고 *그리고* 지연이 커진다.
-- **IIR** (피드백, 예: $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$ — 지수 평활기): 싸고
-  위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라 $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
+- **IIR**(무한 임펄스 응답) 필터: 과거 *출력*도 되먹인다.
+  $$y[n] = \sum_{k=0}^{M} b_k\, x[n-k] - \sum_{k=1}^{N} a_k\, y[n-k]$$
+  $b_k$는 FIR처럼 입력에 가중치를 주고, $a_k$는 직전 출력 $N$개에 가중치를 준다. 모든
+  출력이 뒤의 출력으로 다시 들어가므로 임펄스 하나가 영원히 메아리치고, 그래서 $h$가 끝나지
+  않는다. 가장 단순한 예가 지수 평활기 $y[n] = \alpha y[n-1] + (1-\alpha)x[n]$
+  ($b_0 = 1-\alpha$, $a_1 = -\alpha$)이고, 임펄스 응답은 $n \ge 0$에서
+  $h[n] = (1-\alpha)\alpha^n$이다. $\alpha = 0.9$면 $0.1, 0.09, 0.081, 0.0729, \ldots$로
+  정확히 0이 되는 일이 없다. 안정성도 더는 저절로 보장되지 않는다. $0 < \alpha < 1$이면
+  $\sum_n |h[n]|$이 $1$이지만 $\alpha = 1.1$이면 항이 커진다. IIR은 싸고 위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라 $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
 - **그 식의 $\alpha$는 양이 아니라 규약이다.** 위처럼 쓰면 큰 $\alpha$가 *직전 출력*을
   더 믿어 더 많이 거른다. 많은 논문과 강의안은 반대로 $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$로
   써서, 큰 $\alpha$가 *새 측정*을 더 믿어 덜 거른다. 둘은 $\alpha$를 $1-\alpha$로 바꾼 같은
@@ -324,22 +575,58 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   이 거래 — 느린 응답과 위상 지연을 치르고 사는 잡음 제거 — 는 필터 설계의 핵심이고, 제어 엔지니어가
   언제나 "그 필터가 위상에서 얼마를 앗아갔나"를 묻는 이유다
   ([[04-robotics/control-theory-ce397|제어 이론 §7]]).
-- 선택: 센서 노이즈엔 저역통과, 드리프트 제거엔 고역통과, 알려진 진동 고조파엔 노치,
+- **필터 종류는 통과시키는 주파수로 이름 붙는다.** 차단 주파수가 $f_c$일 때 이상적인
+  **저역통과** 필터는 $|f| < f_c$에서 $|H(f)| = 1$, 그 위에서 $|H(f)| = 0$이다.
+  **고역통과** 필터는 그 반대, **대역통과** 필터는 한 대역만 남기고, **노치** 필터는 주파수
+  $f_0$ 주변의 좁은 대역 하나를 없앤다. 실제 필터는 날카로운 경계 대신 전이 대역을 가진다.
+  선택: 센서 노이즈엔 저역통과, 드리프트 제거엔 고역통과, 알려진 진동 고조파엔 노치,
   IMU 융합엔 상보 필터(가속도 저역 + 자이로 고역).
+- **상보 필터**: 같은 양을 재지만 *서로 다른* 주파수 대역에서 믿을 만한 두 센서를 합치는 융합
+  필터다. 한 센서는 저역통과 $H_L$을, 다른 센서는 고역통과 $H_H$를 거치고, 두 응답의 합이
+  정확히 1이 되도록 짝을 고른다.
+  $$H_L(f) + H_H(f) = 1$$
+  그래서 두 센서가 함께 보는 참 신호는 이득 1로 왜곡 없이 지나가고, 각 센서의 나쁜 대역은
+  억제된다. IMU 기울기에서 가속도계 각도 $\theta_{acc}$는 평균적으로 맞지만 잡음이 많고,
+  자이로 각속도 $\omega$는 적분하면 매끄럽지만 드리프트한다. 그래서 한 줄 갱신식이 나온다.
+  $$\hat\theta[n] = \alpha\big(\hat\theta[n-1] + \omega[n]\,\Delta t\big) + (1-\alpha)\,\theta_{acc}[n]$$
+  $\hat\theta$는 융합 추정값, $\Delta t$는 샘플 주기, $\alpha$는 교차 지점을 정한다.
+  $\alpha = 0.98$, $\Delta t = 0.01$ s, 이전 추정 $10°$, 자이로 $5°/\text{s}$, 가속도계
+  $11°$이면 새 추정은 $0.98 \times 10.05 + 0.02 \times 11 = 10.069°$다. 교차 시상수는
+  $\tau = \alpha\Delta t/(1-\alpha) = 0.49$ s다. 그보다 느린 변화는 가속도계를, 빠른 변화는
+  자이로를 따른다.
 - **위상 지연은 인과적 평활화의 대가다**: 구현 가능한 인과적 평활화는 일반적으로 통과대역에
   주파수 의존 위상·군지연을 만든다 — 과한
   필터링은 *제어기와 싸운다*(지연된 속도 추정이 D항을 불안정하게 만든다). 모델 기반
   추정을 선호하는 실전적 이유가 이것이다: 정확한 선형-가우시안 상태공간 모델과 잡음
-  공분산 아래에서는 **칼만 필터**([[02-foundations/probability|여기서 유도]])가 평균제곱
+  공분산 아래에서는 **칼만 필터**([[02-foundations/probability|3. 확률 §5에서 유도]])가 평균제곱
   추정 오차를 최소화한다. 모델이 어긋나면 이 보장은 사라진다.
+- **위상 지연과 군지연**은 필터 출력이 얼마나 늦는지를 말한다. 위상 응답은 $\angle H(f)$다(§3).
+  **군지연**은 그 기울기에 음수를 붙인 것으로, 샘플 단위로 잰다.
+  $$\tau_g(f) = -\frac{1}{2\pi}\,\frac{d\,\angle H(f)}{df}$$
+  그래서 위상이 주파수에 따라 선형으로 떨어지는 필터는 모든 주파수를 같은 샘플 수만큼 늦추고
+  파형 모양을 지킨다. 대칭 5탭 이동 평균은 통과대역에서 $\angle H(f) = -4\pi f$이므로 어디서나
+  $\tau_g = 2$ 샘플이다. 지수 평활기는 선형 위상이 아니다. $\alpha = 0.9$, $f = 0.05$
+  cycles/sample에서 이득은 $0.32$, 위상은 $-62.6°$이고, 지연이 주파수마다 달라진다.
 
 ### 5. 제어로 가는 다리: 변환
 
-- 라플라스 변환(연속) / **Z-변환**(이산)은 푸리에의 일반화: 합성곱 ↦ *전달함수*
+- 라플라스 변환(연속, [[02-foundations/engineering-math|0.5 §9]]에 정의) / **Z-변환**(이산)은 푸리에의 일반화: 합성곱 ↦ *전달함수*
   $H(s)$ 또는 $H(z)$와의 곱.
-- 최소 실현에서 $H$의 극점 = 상태공간 $A$의 고유값
-  ([[02-foundations/linear-algebra|제어 연결]]): 안정성 = 극점이 좌반평면(연속) /
-  단위원 안(이산). 필터, 플랜트, 제어기가 전부 이 하나의 언어를 쓴다 — 제어이론 교재와
+- **Z-변환**은 수열을 복소 변수 $z$의 함수로 바꾼다.
+  $$X(z) = \sum_n x[n]\, z^{-n}$$
+  그래서 한 샘플 지연이 $z^{-1}$ 곱하기가 된다. 라플라스 변수와는 $z = e^{sT_s}$로 묶이고,
+  단위원 $z = e^{j2\pi f}$ 위에서는 §3의 주파수 응답으로 줄어든다. **전달함수**는 시스템이
+  정지 상태에서 출발할 때 출력 변환과 입력 변환의 비다.
+  $$H(z) = \frac{Y(z)}{X(z)}$$
+  합성곱이 곱이 되었으므로 이것은 $h$의 변환이다. 계산: 지수 평활기를 항마다 변환하면
+  $Y(z) = \alpha z^{-1} Y(z) + (1-\alpha) X(z)$이므로 $H(z) = (1-\alpha)/(1-\alpha z^{-1})$이다.
+  **극점**(분모를 0으로 만드는 $z$. 극점과 영점의 정의는 [[02-foundations/engineering-math|0.5 §9]])은 $z = \alpha$다.
+  DC($z = 1$)에서 이득은 정확히 $1$이라 상수는 그대로 지나가고, 나이퀴스트 주파수($z = -1$)에서는
+  $(1-\alpha)/(1+\alpha)$, 즉 $\alpha = 0.9$일 때 $0.053$이다.
+- 최소 실현([[02-foundations/engineering-math|0.5 §9]])에서 $H$의 극점 = 상태공간 $A$의 고유값
+  ([[02-foundations/linear-algebra|1. 선형대수 §5]]): 인과 시스템의 안정성 = 극점이 좌반평면(연속) /
+  단위원 안, $|z| < 1$(이산). §1의 BIBO 판정을 다르게 쓴 것이다. $z = \alpha$의 극점은
+  $h[n]$에 $\alpha^n$ 항을 보태고, 그 항은 $|\alpha| < 1$일 때만 합산 가능하기 때문이다. 필터, 플랜트, 제어기가 전부 이 하나의 언어를 쓴다 — 제어이론 교재와
   이 페이지가 같은 대상의 두 시점인 이유다.
 
 변환은 주파수별 변화와 내부 동역학의 성장·감쇠를 드러낸다. 평활 필터는 진동을 줄이면서 접촉 제어 피드백에 지연을 추가할 수 있다. **여기서 얻는 독법.** 필터 신호가 더 좋다고 하기 전에 이득과 위상을 함께 본다. 상태 공간 모드와 전달함수 극점도 구분한다. 관측·제어할 수 없는 모드는 상쇄로 사라질 수 있어 극점과 고유값의 동일성에는 최소 실현 조건이 필요하다.

@@ -28,7 +28,9 @@ Every section has the same seven parts: **the prompt** as an interviewer might s
 
 **What they are really testing.** Whether you can write a priority-queue search without the three classic bugs: testing the goal when a cell is pushed instead of when it is popped, a heuristic that overestimates for this move set, and diagonal moves that slip between two obstacles touching at a corner. Returning the path, not just the cost, checks that you know to store parent pointers.
 
-**Key idea.** Expand cells in order of $f = g + h$, where $g$ is the cost found so far and $h$ is a lower bound on the cost still to go. For 8-connected moves with diagonal cost √2 the right $h$ is the octile distance, which is the exact cost on an empty grid and therefore consistent. With a consistent $h$ the first time a cell is popped its $g$ is final, so a closed set is safe and each cell is expanded once.
+**Key idea.** Expand cells in order of $f = g + h$, where $g$ is the cost found so far and $h$ is a lower bound on the cost still to go. For 8-connected moves with diagonal cost √2 the right $h$ is the octile distance, which is the exact cost on an empty grid and therefore consistent. The two properties, stated completely on [[02-foundations/algorithms/graph-algorithms|11.6 §6]], are **admissible**, $0 \le h(v) \le h^*(v)$ for every cell $v$ with $h^*$ the true cost to go, and **consistent**, $h(u) \le c(u, v) + h(v)$ on every move together with $h(\text{goal}) = 0$. With absolute offsets $\Delta r, \Delta c$ to the goal, the octile distance takes $\min(\Delta r, \Delta c)$ diagonal steps and the rest straight, so
+$$h_{\text{oct}} = \max(\Delta r, \Delta c) + (\sqrt 2 - 1)\min(\Delta r, \Delta c)$$
+For offsets $(3, 4)$ that is $4 + 0.414 \cdot 3 = 5.243$, the cost of 3 diagonal steps and 1 straight step; Manhattan would say 7, which overestimates and is therefore not admissible here. With a consistent $h$ the first time a cell is popped its $g$ is final, so a closed set is safe and each cell is expanded once.
 
 ```python
 import heapq, math
@@ -90,7 +92,9 @@ On that grid the wall occupies row 1, columns 1–2, so the path runs along the 
 
 **What they are really testing.** NumPy fluency (broadcasting without a Python loop, and without building an $m \times n \times d$ array), knowing that a partial selection is cheaper than a sort, and whether you understand *why* a KD-tree prunes, and when it stops helping.
 
-**Key idea.** For brute force, expand the squared distance: $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$, so one matrix product gives all $m \times n$ distances. For a KD-tree, split the points at the median of the widest coordinate, recursively. At query time, descend into the side containing the query first, then visit the other side only if the splitting plane is closer than the best distance found so far, since every point beyond the plane is at least that far away.
+**Key idea.** For brute force, expand the squared distance: $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$, so one matrix product gives all $m \times n$ distances. For a KD-tree, split the points at the median of the widest coordinate, recursively. A **KD-tree** is a binary tree over points in $\mathbb{R}^d$ with two kinds of node: a *leaf* stores a small bucket of point indices, and a *split node* stores an axis $a$, a value $v$, and two subtrees, where every point in the left subtree has coordinate $x_a \le v$ and every point in the right subtree has $x_a \ge v$, so each node's region is an axis-aligned box. At query time, descend into the side containing the query first, then visit the other side only if the splitting plane is closer than the best distance found so far, since every point beyond the plane is at least that far away. With $d^2_{\text{best}}$ the best squared distance so far, the far side is visited only when the test below holds, because any point across the plane $x_a = v$ is at least $\lvert q_a - v\rvert$ from $q$:
+$$(q_a - v)^2 < d^2_{\text{best}}$$
+*Example:* with $q_a = 0.3$, $v = 0.5$ and $d^2_{\text{best}} = 0.05$, $(0.3 - 0.5)^2 = 0.04 < 0.05$, so the far side can still hold a closer point and must be searched; if $d^2_{\text{best}}$ had already dropped to $0.03$, the whole far subtree would be skipped.
 
 ```python
 import numpy as np
@@ -153,7 +157,10 @@ print(kd_nearest(tree, P, q)[1], knn_brute(P, q[None, :], k=1)[0][0, 0])
 
 **What they are really testing.** That you know least squares breaks with gross outliers, that you pick a *minimal* sample (two points for a line), that you can derive the iteration count rather than recite it, and that you finish with a refit on the inliers.
 
-**Key idea.** Repeatedly fit a line to two random points and count the points within a distance threshold; keep the line with the most inliers, then refit it by total least squares on those inliers. How many repetitions? If a fraction $w$ of points are inliers, one sample of $s$ points is all inliers with probability $w^s$, so all $k$ independent samples are contaminated with probability $(1 - w^s)^k$. Requiring that to be at most $1 - p$ and taking logarithms gives the count, where the inequality flips because both logarithms are negative:
+**Key idea.** RANSAC (random sample consensus) is a robust estimator with five named parts: a **model** (here a line $n^\top x = c$ with unit normal $\lVert n\rVert = 1$); a **minimal sample** of $s$ points, the fewest that determine the model ($s = 2$ for a line); a **residual**, here the perpendicular distance of a point to the line; a **threshold** $t$; and the **consensus set** of inliers, the points whose residual is below $t$, whose size is the score. For a unit normal the residual is the formula below, since $n^\top x - c$ is the signed length of $x$'s projection onto the normal beyond the line:
+$$r(x) = \lvert n^\top x - c \rvert, \qquad \text{inliers} = \{\, x_i : r(x_i) < t \,\}$$
+*Example:* for the line $y = 0.5x + 1$, $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$ and the point $(2, 3)$ has $r = 0.894$, while its vertical residual is $3 - 2 = 1.0$; RANSAC uses the perpendicular one so that a vertical line has finite residuals. Repeatedly fit a line to two random points and count the points within a distance threshold; keep the line with the most inliers, then refit it by total least squares on those inliers. **Total least squares** chooses the line that minimizes the sum of squared *perpendicular* distances, the problem below, whose solution is $c = n^\top \bar x$ with $\bar x$ the inliers' mean and $n$ the right singular vector of the centred inliers with the smallest singular value, because that direction carries the least spread:
+$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$ How many repetitions? If a fraction $w$ of points are inliers, one sample of $s$ points is all inliers with probability $w^s$, so all $k$ independent samples are contaminated with probability $(1 - w^s)^k$. Requiring that to be at most $1 - p$ and taking logarithms gives the count, where the inequality flips because both logarithms are negative:
 
 $$k = \left\lceil \frac{\log(1 - p)}{\log(1 - w^{s})} \right\rceil$$
 
@@ -219,6 +226,10 @@ $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
 For a white acceleration of standard deviation $\sigma_a$ held over each step, the state changes by $G a$ with $G = (\tfrac12 \Delta t^2, \Delta t)^\top$, so $Q = \sigma_a^2 G G^\top$.
 
+**The consistency statistics used below, defined.** A filter is *consistent* when its reported covariance matches its actual errors. Two squared, covariance-weighted errors test this, since each is chi-square distributed when the filter is right: the **normalized estimation error squared** (NEES), which needs the true state $x$ and so is used in simulation, and the **normalized innovation squared** (NIS), which needs only the measurement:
+$$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x), \qquad \text{NIS} = y^\top S^{-1} y$$
+For a consistent filter their averages are the state dimension $n$ and the measurement dimension $m$, so NEES near 2 is the target here; an average well above $n$ means $P$ is too small (the filter is overconfident), well below means $P$ is too large.
+
 ```python
 import numpy as np
 
@@ -270,7 +281,9 @@ print(x.round(4), P.round(4))
 
 **What they are really testing.** Whether you know resampling's purpose (fighting weight degeneracy) and its cost (losing diversity), the effective sample size criterion, the difference between multinomial and systematic resampling, and numerical care with likelihoods that underflow.
 
-**Key idea.** Multinomial resampling draws $M$ independent indices from the weights, so a particle with weight $w_i$ gets a random number of copies with mean $M w_i$ and binomial spread. Systematic resampling uses one random offset $u_0 \in [0, 1)$ and the $M$ evenly spaced pointers $u_m = (u_0 + m)/M$, each picking the particle whose cumulative-weight interval contains it. Each $u_m$ is uniform on its own, so every copy count still has mean $M w_i$, but the count is always $\lfloor M w_i\rfloor$ or $\lceil M w_i\rceil$, which removes most of the randomness. Resample only when the effective sample size $M_{\text{eff}} = 1/\sum_i w_i^2$ falls below a threshold, commonly $M/2$.
+**Key idea.** Multinomial resampling draws $M$ independent indices from the weights, so a particle with weight $w_i$ gets a random number of copies with mean $M w_i$ and binomial spread. Systematic resampling uses one random offset $u_0 \in [0, 1)$ and the $M$ evenly spaced pointers $u_m = (u_0 + m)/M$, each picking the particle whose cumulative-weight interval contains it. Each $u_m$ is uniform on its own, so every copy count still has mean $M w_i$, but the count is always $\lfloor M w_i\rfloor$ or $\lceil M w_i\rceil$, which removes most of the randomness. Resample only when the effective sample size $M_{\text{eff}} = 1/\sum_i w_i^2$ falls below a threshold, commonly $M/2$. The **effective sample size** measures how many equally weighted particles the weighted set is worth; for normalized weights ($w_i \ge 0$, $\sum_i w_i = 1$) it lies between 1 and $M$, because $\sum_i w_i^2$ is largest (1) when one particle holds all the weight and smallest ($1/M$) when all weights are equal:
+$$M_{\text{eff}} = \frac{1}{\sum_{i=1}^{M} w_i^2}, \qquad 1 \le M_{\text{eff}} \le M$$
+The collapse it detects is **weight degeneracy**, most of the weight on a few particles. *Example:* the weights $(0.10, 0.45, 0.35, 0.10)$ below give $\sum w_i^2 = 0.345$ and $M_{\text{eff}} = 2.90$, above the threshold $M/2 = 2$, so this set would not yet be resampled.
 
 ```python
 import numpy as np
@@ -328,7 +341,12 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 **Key idea.** Forward kinematics is the sum of two rotated links, as in Lynch and Park's two-link example. For the inverse, the law of cosines gives $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$. If it lies outside $[-1, 1]$, the target is outside the annulus $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ and there is no solution. Otherwise $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$ picks the branch, and $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$. Branch names vary between books; the sign of $\theta_2$ is the unambiguous label, and here $\theta_2 \ge 0$ is called elbow-down (righty), as in Modern Robotics.
 
-The numerical step is a separate idea. With tip error $e = (x, y)_{\text{target}} - \text{FK}(\theta)$, the damped least-squares step is $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$. When the arm is straight or folded, $J$ loses rank and $J^{-1}$ does not exist; for $\lambda > 0$ the matrix $JJ^\top + \lambda^2 I$ is always invertible, so the step stays finite (see the follow-ups).
+The numerical step is a separate idea. With tip error $e = (x, y)_{\text{target}} - \text{FK}(\theta)$, the damped least-squares step is $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$. When the arm is straight or folded, $J$ loses rank and $J^{-1}$ does not exist; for $\lambda > 0$ the matrix $JJ^\top + \lambda^2 I$ is always invertible, so the step stays finite (see the follow-ups). Both terms, precisely:
+
+- A **singular configuration** is a $\theta$ at which the $m \times n$ Jacobian loses rank, $\operatorname{rank} J(\theta) < m$, so some tip velocity cannot be produced by any joint velocity; for this square $2 \times 2$ arm that is $\det J = 0$.
+- The **damped least-squares** step is the minimizer of the linearized tip error plus a penalty on the step size, and setting the gradient to zero gives $(J^\top J + \lambda^2 I)\Delta\theta = J^\top e$, whose solution equals the formula above:
+$$\Delta\theta = \arg\min_{\Delta\theta}\ \lVert J\Delta\theta - e\rVert^2 + \lambda^2 \lVert\Delta\theta\rVert^2$$
+- *Example.* At $\theta = (0, 0)$ with $L_1 = 1$, $L_2 = 0.5$ the arm is straight along $x$, $J = \begin{pmatrix}0 & 0\\ 1.5 & 0.5\end{pmatrix}$ has rank 1, and $J^{-1}$ does not exist. For the error $e = (0.1, 0)$ along the link, the damped step with $\lambda = 0.1$ is exactly $\Delta\theta = (0, 0)$: finite, and honest that no joint motion moves the tip that way.
 
 ```python
 import numpy as np
@@ -385,7 +403,9 @@ The last line reproduces the hand iteration on [[04-robotics/modern-robotics/ch0
 
 **What they are really testing.** Whether you know the three fixes that separate a textbook PID from one that runs on hardware: take the derivative of the measurement, not the error, so a setpoint step does not produce a spike; low-pass the derivative, because differentiating noise amplifies it; and stop integrating while the output is saturated in the direction the error pushes, which is anti-windup.
 
-**Key idea.** The control law from [[04-robotics/control-theory-ce397|5. Control Theory §7]] is $u = K_p e + K_i \int e\,dt + K_d \dot e$ with $e = r - y$. For a constant setpoint $\dot e = -\dot y$, so replacing $K_d\dot e$ by $-K_d\dot y$ changes nothing between setpoint changes and removes the kick at them. Clamp $u$ to the actuator range, and commit the integrator update only when it would not drive $u$ further into the limit (conditional integration). The plant $\tau\dot y = -y + Ku$ under a zero-order hold is simulated exactly by $y_{k+1} = a y_k + K(1 - a)u_k$ with $a = e^{-\Delta t/\tau}$.
+**Key idea.** The control law from [[04-robotics/control-theory-ce397|5. Control Theory §7]] is $u = K_p e + K_i \int e\,dt + K_d \dot e$ with $e = r - y$. For a constant setpoint $\dot e = -\dot y$, so replacing $K_d\dot e$ by $-K_d\dot y$ changes nothing between setpoint changes and removes the kick at them. Clamp $u$ to the actuator range, and commit the integrator update only when it would not drive $u$ further into the limit (conditional integration). Written in discrete time, before the derivative filter and the clamp, the law the code implements at sample $k$ is the one below, with the sum as the integral and a backward difference on $y$ as the derivative:
+$$u_k = K_p e_k + K_i \sum_{j \le k} e_j\,\Delta t - K_d\,\frac{y_k - y_{k-1}}{\Delta t}$$
+Three terms from the prompt, defined. **Integral windup** is the growth of the integral term while the actuator is saturated, since the error persists but the clamped output cannot act on it, so the stored integral overshoots and must be unwound later. **Derivative kick** is the one-sample spike $K_d\,\Delta r/\Delta t$ that derivative-on-error produces when the setpoint $r$ jumps by $\Delta r$. A **zero-order hold** keeps each command constant over its sample interval, $u(t) = u_k$ for $k\Delta t \le t < (k+1)\Delta t$. The plant $\tau\dot y = -y + Ku$ under a zero-order hold is simulated exactly by $y_{k+1} = a y_k + K(1 - a)u_k$ with $a = e^{-\Delta t/\tau}$.
 
 ```python
 import math
@@ -442,7 +462,9 @@ print(round(max(ys), 4), round(ys[-1], 4))
 
 **What they are really testing.** Frame discipline ($T_{AC} = T_{AB}T_{BC}$), the closed-form inverse, the quaternion convention you are using, and whether you know the common one-line conversion fails near 180°.
 
-**Key idea.** The inverse of a pose is $(R, p)^{-1} = (R^\top, -R^\top p)$, from [[02-foundations/se3-geometry|8. SE(3) §3]]. For quaternions this page uses that page's scalar-first order $q = (w, x, y, z)$, the same as Modern Robotics' $(q_0, q_1, q_2, q_3)$. The diagonal of $R$ determines every squared component. For a unit quaternion $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$ and $R_{33} = 1 - 2(x^2 + y^2)$, so $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$. Hence $4w^2 = 1 + \operatorname{tr}R$ and $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$, and likewise for $y$ and $z$. The familiar formula computes $w$ this way and then divides the off-diagonal differences by $4w$. Near a 180° rotation $w \to 0$ and that division is unstable. The fix is to solve for the *largest* component first. Because the four squares sum to 1, the largest has $\lvert q_i\rvert \ge 1/2$, so every division is by at least 2. The other three components then come from sums or differences of symmetric off-diagonal pairs.
+**Key idea.** The inverse of a pose is $(R, p)^{-1} = (R^\top, -R^\top p)$, from [[02-foundations/se3-geometry|8. SE(3) §3]]. For quaternions this page uses that page's scalar-first order $q = (w, x, y, z)$, the same as Modern Robotics' $(q_0, q_1, q_2, q_3)$. The two objects, defined on [[02-foundations/se3-geometry|8. SE(3) §1]] and [[02-foundations/se3-geometry|8. SE(3) §2]]: a **rotation matrix** is a $3 \times 3$ real matrix with orthonormal columns and determinant $+1$, $R^\top R = I$ and $\det R = 1$ (the group SO(3)); a **unit quaternion** is $q \in \mathbb{R}^4$ with $\lVert q\rVert = 1$, and the rotation by angle $\theta$ about the unit axis $\hat\omega$ is written as the formula below, because half-angles are what make the quaternion product reproduce rotation composition:
+$$q = \big(\cos\tfrac{\theta}{2},\ \hat\omega \sin\tfrac{\theta}{2}\big)$$
+*Example:* 90° about $z$ is $(0.7071, 0, 0, 0.7071)$ and 180° about $x$ is $(0, 1, 0, 0)$. Since replacing $\theta$ by $\theta + 2\pi$ flips every sign, $q$ and $-q$ give the same $R$ (the double cover). The diagonal of $R$ determines every squared component. For a unit quaternion $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$ and $R_{33} = 1 - 2(x^2 + y^2)$, so $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$. Hence $4w^2 = 1 + \operatorname{tr}R$ and $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$, and likewise for $y$ and $z$. The familiar formula computes $w$ this way and then divides the off-diagonal differences by $4w$. Near a 180° rotation $w \to 0$ and that division is unstable. The fix is to solve for the *largest* component first. Because the four squares sum to 1, the largest has $\lvert q_i\rvert \ge 1/2$, so every division is by at least 2. The other three components then come from sums or differences of symmetric off-diagonal pairs.
 
 ```python
 import numpy as np
@@ -514,7 +536,9 @@ print(rot_to_quat(quat_to_rot(q)).round(6), q.round(6))
 
 **What they are really testing.** The shift trick, never computing `log(softmax(z))`, the $p - y$ gradient including the $1/N$ of a mean loss, and knowing how to write a finite-difference gradient check and pick its step size.
 
-**Key idea.** Softmax is unchanged when a constant is subtracted from every logit, so subtract the maximum: the largest exponent becomes $e^0 = 1$ and nothing overflows. Log-softmax is then $z_j - \log\sum_k e^{z_k}$ (log-sum-exp), computed without ever taking the log of a number that has rounded to zero. For a mean cross-entropy over $N$ examples the gradient with respect to the logits is $(p - y)/N$, derived on [[02-foundations/calculus-backprop|2. Calculus & Backprop §4]].
+**Key idea.** The four objects, defined for logits $z \in \mathbb{R}^C$ (complete treatment on [[02-foundations/calculus-backprop|2. Calculus & Backprop §4]]): **softmax** maps logits to a probability vector, $p_j = e^{z_j}/\sum_k e^{z_k}$; **log-sum-exp** is $\operatorname{LSE}(z) = \log\sum_k e^{z_k}$, so $\log p_j = z_j - \operatorname{LSE}(z)$; the **mean cross-entropy** of $N$ examples with true classes $y_i$ is $L = -\frac1N \sum_i \log p_{i, y_i}$; and a **central-difference gradient check** compares the analytic gradient with the numerical one below, reporting the *relative error* $\max\lvert g - \hat g\rvert / \max\lvert g\rvert$ as the code does. The shift identity is what makes LSE safe, since the common factor $e^m$ can be pulled out of the sum before any exponential is taken:
+$$\operatorname{LSE}(z) = m + \log\sum_k e^{z_k - m} \ \ (m = \max_k z_k), \qquad \hat g_i = \frac{L(z + \varepsilon e_i) - L(z - \varepsilon e_i)}{2\varepsilon}$$
+*Examples:* $z = (2, 1, 0)$ gives $p = (0.665, 0.245, 0.090)$; $\operatorname{LSE}(1000, 1000) = 1000 + \log 2 = 1000.693$, while the naive $e^{1000}$ overflows and softmax $(1000, 0)$ computed naively returns `[nan, 0]`. For $f(x) = x^3$ at $x = 1$ with $\varepsilon = 10^{-3}$, the central difference gives $3.000001$ (error $\varepsilon^2$) and the one-sided difference $3.003001$ (error about $3\varepsilon$). Softmax is unchanged when a constant is subtracted from every logit, so subtract the maximum: the largest exponent becomes $e^0 = 1$ and nothing overflows. Log-softmax is then $z_j - \log\sum_k e^{z_k}$ (log-sum-exp), computed without ever taking the log of a number that has rounded to zero. For a mean cross-entropy over $N$ examples the gradient with respect to the logits is $(p - y)/N$, derived on [[02-foundations/calculus-backprop|2. Calculus & Backprop §4]].
 
 ```python
 import numpy as np
@@ -570,7 +594,9 @@ print(np.abs(grad - num).max() / np.abs(grad).max(), softmax(np.array([1000.0, 0
 
 **What they are really testing.** Shapes and axis order under batching, applying the mask *before* the softmax, the $\sqrt{d_k}$ scale, and knowing the $O(T^2)$ memory cost and what happens at generation time.
 
-**Key idea.** From the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention note]]: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}(QK^\top/\sqrt{d_k})\,V$. Projections turn $X$ of shape $(B, T, d_{\text{model}})$ into $Q, K$ of shape $(B, T, d_k)$ and $V$ of shape $(B, T, d_v)$. The score table has shape $(B, T, T)$, where row $t$ is query position $t$. A causal model may not use positions $s > t$, so set those scores to $-\infty$ before the softmax. They become exactly zero weight, and the remaining weights in each row still sum to one.
+**Key idea.** From the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention note]]: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}(QK^\top/\sqrt{d_k})\,V$. Projections turn $X$ of shape $(B, T, d_{\text{model}})$ into $Q, K$ of shape $(B, T, d_k)$ and $V$ of shape $(B, T, d_v)$. The score table has shape $(B, T, T)$, where row $t$ is query position $t$. A causal model may not use positions $s > t$, so set those scores to $-\infty$ before the softmax. The **causal mask** is the $T \times T$ matrix added to the scores, zero where query $t$ may look and $-\infty$ where it may not, because $e^{-\infty} = 0$ removes exactly those keys from the softmax:
+$$M_{ts} = \begin{cases} 0 & s \le t \\ -\infty & s > t \end{cases}, \qquad \operatorname{softmax}\Big(\frac{QK^\top}{\sqrt{d_k}} + M\Big)$$
+*Example:* with $T = 3$ and all raw scores equal, the weight rows are $(1, 0, 0)$, $(0.5, 0.5, 0)$ and $(1/3, 1/3, 1/3)$. They become exactly zero weight, and the remaining weights in each row still sum to one.
 
 ```python
 import numpy as np
@@ -684,7 +710,9 @@ print(out.shape, W.shape, W[0].round(2))
 
 **실제로 보는 것.** 우선순위 큐 탐색을 고전적인 세 버그 없이 짤 수 있는가. 칸을 꺼낼 때가 아니라 넣을 때 목표를 검사하는 것, 이 이동 집합에서 과대추정하는 휴리스틱, 모서리로 맞닿은 두 장애물 사이를 대각으로 빠져나가는 것이다. 비용만이 아니라 경로를 돌려달라는 것은 부모 포인터를 저장할 줄 아는지 보려는 것이다.
 
-**핵심 아이디어.** $g$를 지금까지 찾은 비용, $h$를 남은 비용의 하한이라 할 때 $f = g + h$ 순서로 칸을 확장한다. 대각 비용이 √2인 8-연결 이동에 맞는 $h$는 옥타일 거리다. 빈 격자에서 정확한 비용이므로 일관적이다. 일관된 $h$에서는 칸을 처음 꺼내는 순간 그 $g$가 확정되므로 닫힌 집합을 써도 안전하고, 각 칸은 한 번만 확장된다.
+**핵심 아이디어.** $g$를 지금까지 찾은 비용, $h$를 남은 비용의 하한이라 할 때 $f = g + h$ 순서로 칸을 확장한다. 대각 비용이 √2인 8-연결 이동에 맞는 $h$는 옥타일 거리다. 빈 격자에서 정확한 비용이므로 일관적이다. 두 성질은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]에 완전하게 정의되어 있다. 허용적(**admissible**)은 모든 칸 $v$에서 $0 \le h(v) \le h^*(v)$($h^*$는 참 잔여 비용)이고, 일관적(**consistent**)은 모든 이동에서 $h(u) \le c(u, v) + h(v)$이면서 $h(\text{goal}) = 0$이다. 목표까지의 절대 차이를 $\Delta r, \Delta c$라 하면 옥타일 거리는 대각 걸음 $\min(\Delta r, \Delta c)$번과 나머지 직선 걸음을 쓰므로 다음과 같다.
+$$h_{\text{oct}} = \max(\Delta r, \Delta c) + (\sqrt 2 - 1)\min(\Delta r, \Delta c)$$
+차이 $(3, 4)$이면 $4 + 0.414 \cdot 3 = 5.243$으로, 대각 3걸음과 직선 1걸음의 비용이다. 맨해튼은 7이라고 하므로 과대추정이고, 여기서는 허용적이지 않다. 일관된 $h$에서는 칸을 처음 꺼내는 순간 그 $g$가 확정되므로 닫힌 집합을 써도 안전하고, 각 칸은 한 번만 확장된다.
 
 ```python
 import heapq, math
@@ -746,7 +774,9 @@ print(astar(grid, (2, 0), (0, 4)))
 
 **실제로 보는 것.** NumPy를 다루는 솜씨(파이썬 루프 없이, 그리고 $m \times n \times d$ 배열을 만들지 않고 브로드캐스팅하기), 부분 선택이 정렬보다 싸다는 것을 아는지, KD-tree가 *왜* 가지를 치는지와 언제 그 이점이 사라지는지 이해하는지다.
 
-**핵심 아이디어.** 전수 탐색에서는 거리 제곱을 전개한다. $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$이므로 행렬 곱 한 번으로 $m \times n$개의 거리를 모두 얻는다. KD-tree는 가장 넓게 퍼진 좌표의 중앙값에서 점들을 재귀적으로 나눈다. 질의할 때는 질의점이 속한 쪽으로 먼저 내려가고, 분할 평면이 지금까지의 최선 거리보다 가까울 때만 반대쪽을 방문한다. 평면 너머의 모든 점은 적어도 평면까지의 거리만큼 떨어져 있기 때문이다.
+**핵심 아이디어.** 전수 탐색에서는 거리 제곱을 전개한다. $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$이므로 행렬 곱 한 번으로 $m \times n$개의 거리를 모두 얻는다. KD-tree는 가장 넓게 퍼진 좌표의 중앙값에서 점들을 재귀적으로 나눈다. KD-tree(**k-d tree**)는 $\mathbb{R}^d$의 점들 위의 이진 트리이며 노드가 두 종류다. *잎*은 점 인덱스의 작은 묶음을 저장하고, *분할 노드*는 축 $a$, 값 $v$, 두 서브트리를 저장한다. 왼쪽 서브트리의 모든 점은 $x_a \le v$, 오른쪽 서브트리의 모든 점은 $x_a \ge v$이므로 각 노드의 영역은 축에 정렬된 상자다. 질의할 때는 질의점이 속한 쪽으로 먼저 내려가고, 분할 평면이 지금까지의 최선 거리보다 가까울 때만 반대쪽을 방문한다. 평면 너머의 모든 점은 적어도 평면까지의 거리만큼 떨어져 있기 때문이다. 지금까지의 최선 거리 제곱을 $d^2_{\text{best}}$라 하면, 평면 $x_a = v$ 너머의 점은 $q$에서 적어도 $\lvert q_a - v\rvert$ 떨어져 있으므로 아래 검사가 참일 때만 반대쪽을 방문한다.
+$$(q_a - v)^2 < d^2_{\text{best}}$$
+*예:* $q_a = 0.3$, $v = 0.5$, $d^2_{\text{best}} = 0.05$이면 $(0.3 - 0.5)^2 = 0.04 < 0.05$이므로 반대쪽에 더 가까운 점이 있을 수 있어 탐색해야 한다. $d^2_{\text{best}}$가 이미 $0.03$으로 내려갔다면 반대쪽 서브트리 전체를 건너뛴다.
 
 ```python
 import numpy as np
@@ -809,7 +839,10 @@ print(kd_nearest(tree, P, q)[1], knn_brute(P, q[None, :], k=1)[0][0, 0])
 
 **실제로 보는 것.** 큰 이상치가 있으면 최소제곱이 무너진다는 것을 아는지, *최소* 표본(직선이면 두 점)을 고르는지, 반복 횟수를 외우는 대신 유도할 수 있는지, 마지막에 인라이어로 다시 맞추는지다.
 
-**핵심 아이디어.** 무작위 두 점으로 직선을 만들고 거리 임계값 안에 드는 점을 세는 일을 반복한다. 인라이어가 가장 많은 직선을 남긴 뒤, 그 인라이어들에 전체 최소제곱(total least squares)으로 다시 맞춘다. 몇 번 반복하나? 점 중 비율 $w$가 인라이어라면 $s$개짜리 표본 하나가 모두 인라이어일 확률은 $w^s$이고, 그래서 독립 표본 $k$개가 모두 오염될 확률은 $(1 - w^s)^k$다. 이것이 $1 - p$ 이하가 되도록 요구하고 로그를 취하면 아래 횟수가 나온다. 두 로그가 모두 음수이기 때문에 부등호 방향이 뒤집힌다.
+**핵심 아이디어.** RANSAC(random sample consensus)은 이름 붙은 다섯 부분으로 된 강건 추정기다. **모델**(여기서는 단위 법선 $\lVert n\rVert = 1$인 직선 $n^\top x = c$), 모델을 정하는 가장 적은 점 $s$개로 된 **최소 표본**(직선이면 $s = 2$), **잔차**(여기서는 점에서 직선까지의 수직 거리), **임계값** $t$, 그리고 잔차가 $t$보다 작은 점들, 즉 인라이어로 이루어진 **합의 집합**이며 그 크기가 점수다. 단위 법선이면 $n^\top x - c$가 직선 너머로 법선에 투영한 부호 있는 길이이므로 잔차는 아래 식이다.
+$$r(x) = \lvert n^\top x - c \rvert, \qquad \text{inliers} = \{\, x_i : r(x_i) < t \,\}$$
+*예:* 직선 $y = 0.5x + 1$에서 $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$이고, 점 $(2, 3)$은 $r = 0.894$인 반면 수직 방향 잔차는 $3 - 2 = 1.0$이다. RANSAC이 수직 거리를 쓰는 것은 수직선에서도 잔차가 유한하게 하기 위해서다. 무작위 두 점으로 직선을 만들고 거리 임계값 안에 드는 점을 세는 일을 반복한다. 인라이어가 가장 많은 직선을 남긴 뒤, 그 인라이어들에 전체 최소제곱(total least squares)으로 다시 맞춘다. 전체 최소제곱(**total least squares**)은 *수직* 거리 제곱의 합을 최소화하는 직선, 즉 아래 문제의 해를 고른다. 해는 $c = n^\top \bar x$($\bar x$는 인라이어 평균)이고 $n$은 중심화한 인라이어의 가장 작은 특이값에 대응하는 오른쪽 특이 벡터다. 그 방향의 퍼짐이 가장 작기 때문이다.
+$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$ 몇 번 반복하나? 점 중 비율 $w$가 인라이어라면 $s$개짜리 표본 하나가 모두 인라이어일 확률은 $w^s$이고, 그래서 독립 표본 $k$개가 모두 오염될 확률은 $(1 - w^s)^k$다. 이것이 $1 - p$ 이하가 되도록 요구하고 로그를 취하면 아래 횟수가 나온다. 두 로그가 모두 음수이기 때문에 부등호 방향이 뒤집힌다.
 
 $$k = \left\lceil \frac{\log(1 - p)}{\log(1 - w^{s})} \right\rceil$$
 
@@ -875,6 +908,10 @@ $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
 한 스텝 동안 유지되는 표준편차 $\sigma_a$의 백색 가속도라면 상태는 $G a$만큼 바뀌고 $G = (\tfrac12 \Delta t^2, \Delta t)^\top$이다. 그래서 $Q = \sigma_a^2 G G^\top$이다.
 
+**아래에서 쓰는 일관성 통계의 정의.** 필터가 보고하는 공분산이 실제 오차와 맞으면 필터가 *일관적*이라고 한다. 이를 검사하는 공분산 가중 오차 제곱이 둘 있고, 필터가 옳으면 각각 카이제곱 분포를 따른다. 참 상태 $x$가 필요해서 시뮬레이션에서 쓰는 정규화 추정 오차 제곱(**normalized estimation error squared**, NEES)과, 측정만 있으면 되는 정규화 혁신 제곱(**normalized innovation squared**, NIS)이다.
+$$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x), \qquad \text{NIS} = y^\top S^{-1} y$$
+일관적인 필터에서 두 값의 평균은 각각 상태 차원 $n$과 측정 차원 $m$이므로, 여기서 목표는 NEES가 2 근처인 것이다. 평균이 $n$보다 훨씬 크면 $P$가 너무 작고(과신), 훨씬 작으면 $P$가 너무 크다.
+
 ```python
 import numpy as np
 
@@ -926,7 +963,9 @@ print(x.round(4), P.round(4))
 
 **실제로 보는 것.** 재표본추출의 목적(가중치 퇴화와 싸우기)과 비용(다양성 상실)을 아는지, 유효 표본 크기 기준, 다항 재표본추출과 체계적 재표본추출의 차이, 언더플로하는 우도를 수치적으로 조심스럽게 다루는지다.
 
-**핵심 아이디어.** 다항(multinomial) 재표본추출은 가중치에서 독립적으로 색인 $M$개를 뽑는다. 그래서 가중치 $w_i$인 입자의 복사 수는 평균이 $M w_i$이고 이항 분포만큼 흩어진다. 체계적(systematic) 재표본추출은 무작위 오프셋 하나 $u_0 \in [0, 1)$와 고르게 벌어진 포인터 $M$개 $u_m = (u_0 + m)/M$를 쓰고, 각 포인터는 자기가 속한 누적 가중치 구간의 입자를 고른다. 각 $u_m$은 그 자체로 균등 분포이므로 복사 수의 평균은 여전히 $M w_i$지만, 복사 수는 항상 $\lfloor M w_i\rfloor$ 아니면 $\lceil M w_i\rceil$이어서 무작위성의 대부분이 사라진다. 유효 표본 크기 $M_{\text{eff}} = 1/\sum_i w_i^2$가 임계값(흔히 $M/2$) 아래로 떨어질 때만 재표본추출한다.
+**핵심 아이디어.** 다항(multinomial) 재표본추출은 가중치에서 독립적으로 색인 $M$개를 뽑는다. 그래서 가중치 $w_i$인 입자의 복사 수는 평균이 $M w_i$이고 이항 분포만큼 흩어진다. 체계적(systematic) 재표본추출은 무작위 오프셋 하나 $u_0 \in [0, 1)$와 고르게 벌어진 포인터 $M$개 $u_m = (u_0 + m)/M$를 쓰고, 각 포인터는 자기가 속한 누적 가중치 구간의 입자를 고른다. 각 $u_m$은 그 자체로 균등 분포이므로 복사 수의 평균은 여전히 $M w_i$지만, 복사 수는 항상 $\lfloor M w_i\rfloor$ 아니면 $\lceil M w_i\rceil$이어서 무작위성의 대부분이 사라진다. 유효 표본 크기 $M_{\text{eff}} = 1/\sum_i w_i^2$가 임계값(흔히 $M/2$) 아래로 떨어질 때만 재표본추출한다. 유효 표본 크기(**effective sample size**)는 가중된 입자 집합이 가중치가 같은 입자 몇 개의 가치가 있는지를 잰다. 정규화된 가중치($w_i \ge 0$, $\sum_i w_i = 1$)에서 $\sum_i w_i^2$는 입자 하나가 모든 가중치를 가질 때 가장 크고(1), 모든 가중치가 같을 때 가장 작으므로($1/M$), 값은 1과 $M$ 사이에 있다.
+$$M_{\text{eff}} = \frac{1}{\sum_{i=1}^{M} w_i^2}, \qquad 1 \le M_{\text{eff}} \le M$$
+이것이 잡아내는 붕괴는 가중치 퇴화(**weight degeneracy**), 즉 가중치 대부분이 입자 몇 개에 몰리는 현상이다. *예:* 아래의 가중치 $(0.10, 0.45, 0.35, 0.10)$은 $\sum w_i^2 = 0.345$, $M_{\text{eff}} = 2.90$을 주고, 임계값 $M/2 = 2$보다 크므로 이 집합은 아직 재표본추출하지 않는다.
 
 ```python
 import numpy as np
@@ -984,7 +1023,12 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 **핵심 아이디어.** 순기구학은 Lynch와 Park의 2링크 예제처럼 회전한 두 링크의 합이다. 역기구학에서는 코사인 법칙이 $\cos\theta_2 = (x^2 + y^2 - L_1^2 - L_2^2)/(2L_1L_2)$를 준다. 이 값이 $[-1, 1]$ 밖이면 목표는 고리 영역 $\lvert L_1 - L_2\rvert \le r \le L_1 + L_2$ 밖에 있고 해가 없다. 그렇지 않으면 $\sin\theta_2 = \pm\sqrt{1 - \cos^2\theta_2}$가 가지를 고르고, $\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2, L_1 + L_2\cos\theta_2)$다. 가지 이름은 책마다 다르다. 모호하지 않은 이름표는 $\theta_2$의 부호이고, 여기서는 Modern Robotics를 따라 $\theta_2 \ge 0$을 elbow-down(righty)이라 부른다.
 
-수치 스텝은 별개의 아이디어다. 끝점 오차를 $e = (x, y)_{\text{target}} - \text{FK}(\theta)$라 하면 감쇠 최소제곱 스텝은 $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$다. 팔이 곧게 펴지거나 접히면 $J$의 계수가 떨어져 $J^{-1}$이 존재하지 않는다. $\lambda > 0$이면 $JJ^\top + \lambda^2 I$는 항상 역행렬이 있으므로 스텝이 유한하게 유지된다(후속 질문 참고).
+수치 스텝은 별개의 아이디어다. 끝점 오차를 $e = (x, y)_{\text{target}} - \text{FK}(\theta)$라 하면 감쇠 최소제곱 스텝은 $\Delta\theta = J^\top (JJ^\top + \lambda^2 I)^{-1} e$다. 팔이 곧게 펴지거나 접히면 $J$의 계수가 떨어져 $J^{-1}$이 존재하지 않는다. $\lambda > 0$이면 $JJ^\top + \lambda^2 I$는 항상 역행렬이 있으므로 스텝이 유한하게 유지된다(후속 질문 참고). 두 용어를 정확히 쓰면 이렇다.
+
+- 특이 자세(**singular configuration**)는 $m \times n$ 야코비안의 계수가 떨어지는 $\theta$, 즉 $\operatorname{rank} J(\theta) < m$인 자세다. 어떤 관절 속도로도 만들 수 없는 끝점 속도가 생긴다. 이 정사각 $2 \times 2$ 팔에서는 $\det J = 0$이다.
+- 감쇠 최소제곱(**damped least-squares**) 스텝은 선형화한 끝점 오차에 스텝 크기 벌점을 더한 것의 최소화 해다. 그래디언트를 0으로 두면 $(J^\top J + \lambda^2 I)\Delta\theta = J^\top e$가 나오고, 그 해는 위 공식과 같다.
+$$\Delta\theta = \arg\min_{\Delta\theta}\ \lVert J\Delta\theta - e\rVert^2 + \lambda^2 \lVert\Delta\theta\rVert^2$$
+- *예.* $L_1 = 1$, $L_2 = 0.5$, $\theta = (0, 0)$이면 팔은 $x$축을 따라 곧게 펴져 있고 $J = \begin{pmatrix}0 & 0\\ 1.5 & 0.5\end{pmatrix}$의 계수는 1이라 $J^{-1}$이 없다. 링크 방향 오차 $e = (0.1, 0)$에 대해 $\lambda = 0.1$인 감쇠 스텝은 정확히 $\Delta\theta = (0, 0)$이다. 유한하고, 어떤 관절 운동으로도 끝점을 그 방향으로 움직일 수 없다는 사실을 그대로 보여 준다.
 
 ```python
 import numpy as np
@@ -1041,7 +1085,9 @@ print(np.degrees(dls_step(np.radians([45.0, 90.0]), target, lam=0.0)).round(1))
 
 **실제로 보는 것.** 교과서 PID와 하드웨어에서 도는 PID를 가르는 세 가지 수정을 아는지다. 오차가 아니라 측정값을 미분해 설정값 계단이 튀는 값을 만들지 않게 하기, 잡음을 미분하면 증폭되니 미분 항에 저역통과 필터 걸기, 출력이 오차가 미는 방향으로 포화되어 있는 동안 적분 멈추기(안티와인드업)다.
 
-**핵심 아이디어.** [[04-robotics/control-theory-ce397|5. 제어 이론 §7]]의 제어 법칙은 $e = r - y$일 때 $u = K_p e + K_i \int e\,dt + K_d \dot e$다. 설정값이 일정하면 $\dot e = -\dot y$이므로, $K_d\dot e$를 $-K_d\dot y$로 바꿔도 설정값이 바뀌는 순간 사이에는 아무것도 달라지지 않고, 바뀌는 순간의 튐만 사라진다. $u$를 구동기 범위로 자르고, 적분기 갱신은 $u$를 한계 쪽으로 더 밀지 않을 때만 반영한다(조건부 적분). 영차 유지 아래의 플랜트 $\tau\dot y = -y + Ku$는 $a = e^{-\Delta t/\tau}$일 때 $y_{k+1} = a y_k + K(1 - a)u_k$로 정확히 모사된다.
+**핵심 아이디어.** [[04-robotics/control-theory-ce397|5. 제어 이론 §7]]의 제어 법칙은 $e = r - y$일 때 $u = K_p e + K_i \int e\,dt + K_d \dot e$다. 설정값이 일정하면 $\dot e = -\dot y$이므로, $K_d\dot e$를 $-K_d\dot y$로 바꿔도 설정값이 바뀌는 순간 사이에는 아무것도 달라지지 않고, 바뀌는 순간의 튐만 사라진다. $u$를 구동기 범위로 자르고, 적분기 갱신은 $u$를 한계 쪽으로 더 밀지 않을 때만 반영한다(조건부 적분). 미분 필터와 자르기 전의 이산 시간 법칙으로 쓰면, 코드가 표본 $k$에서 구현하는 것은 아래 식이다. 합이 적분을, $y$의 후진 차분이 미분을 대신한다.
+$$u_k = K_p e_k + K_i \sum_{j \le k} e_j\,\Delta t - K_d\,\frac{y_k - y_{k-1}}{\Delta t}$$
+문제에 나온 세 용어의 정의. 적분 와인드업(**integral windup**)은 구동기가 포화된 동안 적분 항이 커지는 현상이다. 오차는 남아 있지만 잘린 출력이 그 오차에 대응하지 못하므로 쌓인 적분이 넘치고, 나중에 되감아야 한다. 미분 킥(**derivative kick**)은 설정값 $r$이 $\Delta r$만큼 뛸 때 오차 미분이 만드는 한 표본짜리 튐 $K_d\,\Delta r/\Delta t$다. 영차 유지(**zero-order hold**)는 각 명령을 표본 구간 동안 일정하게 유지한다. 곧 $k\Delta t \le t < (k+1)\Delta t$에서 $u(t) = u_k$다. 영차 유지 아래의 플랜트 $\tau\dot y = -y + Ku$는 $a = e^{-\Delta t/\tau}$일 때 $y_{k+1} = a y_k + K(1 - a)u_k$로 정확히 모사된다.
 
 ```python
 import math
@@ -1098,7 +1144,9 @@ print(round(max(ys), 4), round(ys[-1], 4))
 
 **실제로 보는 것.** 좌표계 규율($T_{AC} = T_{AB}T_{BC}$), 닫힌 형태의 역, 자기가 쓰는 쿼터니언 규약, 흔한 한 줄짜리 변환이 180° 근처에서 실패한다는 것을 아는지다.
 
-**핵심 아이디어.** 자세의 역은 [[02-foundations/se3-geometry|8. SE(3) §3]]에 있듯 $(R, p)^{-1} = (R^\top, -R^\top p)$다. 쿼터니언은 그 페이지의 스칼라 우선 순서 $q = (w, x, y, z)$를 쓴다. Modern Robotics의 $(q_0, q_1, q_2, q_3)$와 같다. $R$의 대각 성분이 모든 성분의 제곱을 정한다. 단위 쿼터니언에서 $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$, $R_{33} = 1 - 2(x^2 + y^2)$이므로 $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$이다. 따라서 $4w^2 = 1 + \operatorname{tr}R$, $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$이고, $y$와 $z$도 마찬가지다. 익숙한 공식은 $w$를 이렇게 구한 뒤 비대각 차이를 $4w$로 나눈다. 180° 회전 근처에서는 $w \to 0$이라 그 나눗셈이 불안정하다. 해결책은 *가장 큰* 성분부터 구하는 것이다. 네 제곱의 합이 1이므로 가장 큰 성분은 $\lvert q_i\rvert \ge 1/2$이고, 모든 나눗셈의 분모가 적어도 2다. 나머지 세 성분은 대칭인 비대각 쌍의 합이나 차에서 나온다.
+**핵심 아이디어.** 자세의 역은 [[02-foundations/se3-geometry|8. SE(3) §3]]에 있듯 $(R, p)^{-1} = (R^\top, -R^\top p)$다. 쿼터니언은 그 페이지의 스칼라 우선 순서 $q = (w, x, y, z)$를 쓴다. Modern Robotics의 $(q_0, q_1, q_2, q_3)$와 같다. 두 대상은 [[02-foundations/se3-geometry|8. SE(3) §1]]과 [[02-foundations/se3-geometry|8. SE(3) §2]]에 정의되어 있다. 회전 행렬(**rotation matrix**)은 열이 정규직교이고 행렬식이 $+1$인 $3 \times 3$ 실행렬, 즉 $R^\top R = I$이고 $\det R = 1$인 행렬이다(군 SO(3)). 단위 쿼터니언(**unit quaternion**)은 $\lVert q\rVert = 1$인 $q \in \mathbb{R}^4$이고, 단위 축 $\hat\omega$에 대한 각도 $\theta$ 회전은 아래 식으로 쓴다. 반각을 써야 쿼터니언 곱이 회전의 합성을 재현하기 때문이다.
+$$q = \big(\cos\tfrac{\theta}{2},\ \hat\omega \sin\tfrac{\theta}{2}\big)$$
+*예:* $z$축에 대한 90°는 $(0.7071, 0, 0, 0.7071)$, $x$축에 대한 180°는 $(0, 1, 0, 0)$이다. $\theta$를 $\theta + 2\pi$로 바꾸면 모든 부호가 뒤집히므로 $q$와 $-q$는 같은 $R$을 준다(이중 덮개). $R$의 대각 성분이 모든 성분의 제곱을 정한다. 단위 쿼터니언에서 $R_{11} = 1 - 2(y^2 + z^2)$, $R_{22} = 1 - 2(x^2 + z^2)$, $R_{33} = 1 - 2(x^2 + y^2)$이므로 $\operatorname{tr}R = 3 - 4(x^2 + y^2 + z^2) = 4w^2 - 1$이다. 따라서 $4w^2 = 1 + \operatorname{tr}R$, $4x^2 = 1 + 2R_{11} - \operatorname{tr}R$이고, $y$와 $z$도 마찬가지다. 익숙한 공식은 $w$를 이렇게 구한 뒤 비대각 차이를 $4w$로 나눈다. 180° 회전 근처에서는 $w \to 0$이라 그 나눗셈이 불안정하다. 해결책은 *가장 큰* 성분부터 구하는 것이다. 네 제곱의 합이 1이므로 가장 큰 성분은 $\lvert q_i\rvert \ge 1/2$이고, 모든 나눗셈의 분모가 적어도 2다. 나머지 세 성분은 대칭인 비대각 쌍의 합이나 차에서 나온다.
 
 ```python
 import numpy as np
@@ -1170,7 +1218,9 @@ print(rot_to_quat(quat_to_rot(q)).round(6), q.round(6))
 
 **실제로 보는 것.** 이동 기법, `log(softmax(z))`를 절대 계산하지 않는 것, 평균 손실의 $1/N$까지 포함한 $p - y$ 그래디언트, 유한 차분 그래디언트 검사를 짜고 그 간격을 고를 줄 아는지다.
 
-**핵심 아이디어.** 모든 로짓에서 같은 상수를 빼도 softmax는 변하지 않으므로 최댓값을 뺀다. 가장 큰 지수는 $e^0 = 1$이 되고 아무것도 넘치지 않는다. 그러면 log-softmax는 $z_j - \log\sum_k e^{z_k}$(log-sum-exp)이고, 0으로 반올림된 수의 로그를 취하는 일이 없다. $N$개 예제에 대한 평균 교차 엔트로피의 로짓 그래디언트는 $(p - y)/N$이며, [[02-foundations/calculus-backprop|2. 미적분과 역전파 §4]]에서 유도한다.
+**핵심 아이디어.** 로짓 $z \in \mathbb{R}^C$에 대해 네 대상을 정의한다(완전한 설명은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §4]]). softmax 함수(**softmax**)는 로짓을 확률 벡터로 보내는 $p_j = e^{z_j}/\sum_k e^{z_k}$다. 로그-합-지수(**log-sum-exp**)는 $\operatorname{LSE}(z) = \log\sum_k e^{z_k}$이므로 $\log p_j = z_j - \operatorname{LSE}(z)$다. 참 클래스가 $y_i$인 예제 $N$개의 평균 교차 엔트로피(**mean cross-entropy**)는 $L = -\frac1N \sum_i \log p_{i, y_i}$다. 중앙 차분 그래디언트 검사(**central-difference gradient check**)는 해석적 그래디언트를 아래의 수치 그래디언트와 비교하고, 코드처럼 *상대 오차* $\max\lvert g - \hat g\rvert / \max\lvert g\rvert$를 보고한다. 지수를 취하기 전에 공통 인수 $e^m$을 합 밖으로 뺄 수 있으므로 이동 항등식이 LSE를 안전하게 만든다.
+$$\operatorname{LSE}(z) = m + \log\sum_k e^{z_k - m} \ \ (m = \max_k z_k), \qquad \hat g_i = \frac{L(z + \varepsilon e_i) - L(z - \varepsilon e_i)}{2\varepsilon}$$
+*예:* $z = (2, 1, 0)$은 $p = (0.665, 0.245, 0.090)$을 준다. $\operatorname{LSE}(1000, 1000) = 1000 + \log 2 = 1000.693$인 반면 순진한 $e^{1000}$은 넘치고, 순진하게 계산한 softmax $(1000, 0)$은 `[nan, 0]`을 반환한다. $f(x) = x^3$, $x = 1$, $\varepsilon = 10^{-3}$에서 중앙 차분은 $3.000001$(오차 $\varepsilon^2$), 한쪽 차분은 $3.003001$(오차 약 $3\varepsilon$)을 준다. 모든 로짓에서 같은 상수를 빼도 softmax는 변하지 않으므로 최댓값을 뺀다. 가장 큰 지수는 $e^0 = 1$이 되고 아무것도 넘치지 않는다. 그러면 log-softmax는 $z_j - \log\sum_k e^{z_k}$(log-sum-exp)이고, 0으로 반올림된 수의 로그를 취하는 일이 없다. $N$개 예제에 대한 평균 교차 엔트로피의 로짓 그래디언트는 $(p - y)/N$이며, [[02-foundations/calculus-backprop|2. 미적분과 역전파 §4]]에서 유도한다.
 
 ```python
 import numpy as np
@@ -1226,7 +1276,9 @@ print(np.abs(grad - num).max() / np.abs(grad).max(), softmax(np.array([1000.0, 0
 
 **실제로 보는 것.** 배치에서의 모양과 축 순서, softmax *전에* 마스크를 거는 것, $\sqrt{d_k}$ 스케일, $O(T^2)$ 메모리 비용과 생성 시점에 무슨 일이 일어나는지 아는지다.
 
-**핵심 아이디어.** [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|어텐션 노트]]에서: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}(QK^\top/\sqrt{d_k})\,V$. 투영이 모양 $(B, T, d_{\text{model}})$의 $X$를 모양 $(B, T, d_k)$의 $Q, K$와 모양 $(B, T, d_v)$의 $V$로 바꾼다. 점수 표의 모양은 $(B, T, T)$이고, 행 $t$가 질의 위치 $t$다. 인과 모델은 $s > t$인 위치를 쓸 수 없으므로 softmax 전에 그 점수를 $-\infty$로 둔다. 그러면 가중치가 정확히 0이 되고, 각 행의 나머지 가중치는 여전히 합이 1이다.
+**핵심 아이디어.** [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|어텐션 노트]]에서: $\operatorname{Attention}(Q, K, V) = \operatorname{softmax}(QK^\top/\sqrt{d_k})\,V$. 투영이 모양 $(B, T, d_{\text{model}})$의 $X$를 모양 $(B, T, d_k)$의 $Q, K$와 모양 $(B, T, d_v)$의 $V$로 바꾼다. 점수 표의 모양은 $(B, T, T)$이고, 행 $t$가 질의 위치 $t$다. 인과 모델은 $s > t$인 위치를 쓸 수 없으므로 softmax 전에 그 점수를 $-\infty$로 둔다. 인과 마스크(**causal mask**)는 점수에 더하는 $T \times T$ 행렬로, 질의 $t$가 볼 수 있는 곳은 0, 볼 수 없는 곳은 $-\infty$다. $e^{-\infty} = 0$이 그 키들을 softmax에서 정확히 지우기 때문이다.
+$$M_{ts} = \begin{cases} 0 & s \le t \\ -\infty & s > t \end{cases}, \qquad \operatorname{softmax}\Big(\frac{QK^\top}{\sqrt{d_k}} + M\Big)$$
+*예:* $T = 3$이고 원래 점수가 모두 같으면 가중치 행은 $(1, 0, 0)$, $(0.5, 0.5, 0)$, $(1/3, 1/3, 1/3)$이다. 그러면 가중치가 정확히 0이 되고, 각 행의 나머지 가중치는 여전히 합이 1이다.
 
 ```python
 import numpy as np
