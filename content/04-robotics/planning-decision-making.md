@@ -49,8 +49,10 @@ cost representations, so they belong in this section rather than in a system pap
 appendix.
 
 - **Occupancy grid** — the map is a grid of cells, each holding the probability that the cell
-  is occupied. Updates are done in **log-odds** so that accumulating evidence is an addition
-  rather than a multiplication, and to avoid the numerical trouble of probabilities pressed
+  is occupied. Updates are done in **log-odds**, $\ell=\log\frac{p}{1-p}$, which maps $p=0.5$ to
+  $0$ and $p\to 0$ or $1$ to $\mp\infty$. Bayes' rule multiplies a cell's odds $p/(1-p)$ by each
+  new reading's likelihood ratio, so after the log, accumulating evidence is an addition
+  rather than a multiplication (OctoMap's $+0.85$ is $\log(0.7/0.3)$, a "hit" worth $p=0.7$). It also avoids the numerical trouble of probabilities pressed
   against 0 or 1. Note the direction of the remaining hazard: log-odds is *unbounded*, so a
   cell observed occupied a thousand times needs on the order of a thousand contrary observations to flip (about 2,100 with OctoMap's default +0.85/−0.4 log-odds increments) —
   which is why implementations add an explicit **clamping** range (proposed by Yguel et al. 2007 and adopted by OctoMap) so
@@ -90,14 +92,16 @@ appendix.
 **Global and local.** Navigation stacks split planning in two: a **global planner** searches
 the whole costmap for a route (§3–§5), and a **local planner** repeatedly picks the next few
 seconds of motion, given the route, the robot's dynamics, and obstacles that appeared since.
-The local layer is where the classical names live — *dynamic window* approaches sample
-feasible velocity pairs and score them; the **elastic band** deforms a *path* under an
-internal contraction force and an external obstacle repulsion, with no notion of time, and
-**timed elastic band** is the descendant that adds the time intervals its name refers to; **sampling-based MPC** (the family
-[[01-canonical-papers/notes/9-navigation/badgr|BADGR]] uses) samples many action sequences
-around a running estimate, rolls each forward through a model, refits the estimate by a
-**reward-weighted average** over the samples rather than taking the single best, and executes
-its first action. §6 gives the
+The local layer is where the classical names live:
+
+| Local planner | What it does each cycle |
+|---|---|
+| *Dynamic window* | Samples velocity pairs (forward, turning) the robot can reach within one cycle, and scores each |
+| **Elastic band** | Deforms a *path* under an internal contraction force and an external obstacle repulsion, with no notion of time |
+| **Timed elastic band** | The descendant that adds the time intervals its name refers to |
+| **Sampling-based MPC** (the family [[01-canonical-papers/notes/9-navigation/badgr\|BADGR]] uses) | Samples many action sequences around a running estimate, rolls each forward through a model, refits the estimate by a **reward-weighted average** over the samples rather than taking the single best, and executes its first action |
+
+§6 gives the
 optimization view of the same layer. In a classical navigation stack the learned component is usually the local layer, with the
 global search and the costmap untouched — but not always: learned global planners and learned
 search heuristics exist, and the end-to-end line of
@@ -152,7 +156,7 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 | Trajectory optimization | shooting, transcription, collocation | Optimize states/inputs under constraints |
 | Task planning | symbolic operators and goals | Choose discrete actions |
 | TAMP | task and motion planning | Couple symbolic choices to geometric feasibility |
-| Feedback / potential field | attractive-to-goal plus repulsive-from-obstacle fields, navigation functions | Produce an action for *every* state rather than one path — cheap and reactive, but a plain potential field has local minima that trap the robot short of the goal |
+| Feedback / potential field | attractive-to-goal plus repulsive-from-obstacle fields; navigation functions (potentials constructed to have a single minimum, at the goal) | Produce an action for *every* state rather than one path — cheap and reactive, but a plain potential field has local minima that trap the robot short of the goal |
 | Uncertain planning | MDP, POMDP, belief space | Choose actions while accounting for uncertain state/outcomes |
 
 **Probabilistic completeness** means the probability of finding a solution approaches one with increasing computation when a robust solution exists under the method's assumptions. It does not mean fast success. **Asymptotic optimality** concerns convergence toward an optimum with increasing samples, not the quality available under a real-time budget.
@@ -274,7 +278,13 @@ $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text
 - **Runtime:** offline planning or repeated online as MPC.
 - **Caveat:** nonlinear dynamics and obstacle constraints usually create local, initialization-sensitive problems.
 
-Direct shooting optimizes controls and simulates states. Direct transcription treats states and controls as variables. Collocation enforces dynamics at selected points. None automatically proves global optimality in a nonconvex robot problem.
+The three classic ways to hand this program to a solver differ in what they make a decision variable:
+
+- **Direct shooting** optimizes only the controls $u_{0:N-1}$ and obtains the states by simulating forward from $x_0$. There are few variables and the dynamics always hold, but a small change to an early input moves the whole rest of the trajectory, so long horizons become badly conditioned.
+- **Direct transcription** makes both states and controls variables and writes the dynamics $x_{t+1}=f(x_t,u_t)$ as equality constraints. There are more variables, but each constraint touches only neighbouring steps, and the solver can start from an infeasible guess such as a straight line of states through an obstacle and repair it.
+- **Collocation** is transcription with a smoother trajectory representation: polynomials between knot points, with the dynamics enforced by requiring the polynomial's derivative to equal $f(x,u)$ at selected points.
+
+None automatically proves global optimality in a nonconvex robot problem.
 
 **Unpack the subscripts as a proposed future.** x₀ is fixed by the current estimated state. Later x values describe predicted states, and u values are the inputs that would produce them under the model. Stage costs judge each part of the future, while the terminal cost values where the horizon ends. The dynamics constraints tie this imagined sequence together so the optimizer cannot choose attractive states disconnected from achievable motion.
 
@@ -286,7 +296,14 @@ MPC makes this formulation into feedback: execute the first input, observe the n
 
 A symbolic instruction such as `pick(block)` may be logically valid yet geometrically impossible because no collision-free grasp exists. TAMP alternates or jointly reasons over discrete actions and continuous feasibility.
 
-With partial observability, the planning state becomes a belief. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward. Exact belief-space planning is often intractable, so papers use approximations, receding horizons, learned values, or contingency policies.
+With partial observability, the planning state becomes a **belief**: a probability distribution over the hidden state, updated after every action and observation. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward.
+
+> [!example] Worked example · 계산 예제
+> A robot must go through a door it cannot see clearly. **Hidden state:** open or closed. **Action:** look again, or drive through. **Transition:** looking changes nothing; driving moves the robot. **Observation:** a sensor reading "open" or "closed". **Observation model:** the reading is right 80% of the time. **Reward:** $+1$ for getting through, $-1$ for hitting a closed door.
+>
+> Start from belief $P(\text{open})=0.5$. One "open" reading gives $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$; a second gives $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$. Driving at belief 0.8 has expected reward $0.8-0.2=0.6$; at 0.94 it is $0.88$. Whether one more look is worth its time is exactly the question a POMDP planner answers, and it is asked about the belief, not the true door.
+
+Exact belief-space planning is often intractable, so papers use approximations, receding horizons, learned values, or contingency policies.
 
 Online replanning incorporates new observations. Reported replanning frequency is not enough: compare it with perception latency, scene dynamics, and controller bandwidth.
 
@@ -395,8 +412,10 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 보내므로, 시스템 논문의 부록이 아니라 이 절에 있어야 한다.
 
 - **점유 격자(occupancy grid)** — 지도를 격자로 두고 각 칸이 점유되어 있을 확률을 담는다.
-  갱신은 **로그 승산(log-odds)** 으로 하는데, 그래야 증거 누적이 곱셈이 아니라 덧셈이 되고,
-  확률이 0이나 1에 바짝 붙었을 때의 수치 문제를 피할 수 있다. 남는 위험의 방향을 짚어야 한다:
+  갱신은 **로그 승산(log-odds)** $\ell=\log\frac{p}{1-p}$ 으로 한다. 이 값은 $p=0.5$를 $0$으로,
+  $p\to 0$이나 $1$을 $\mp\infty$로 보낸다. 베이즈 규칙은 칸의 승산 $p/(1-p)$에 새 측정마다
+  우도비를 곱하므로, 로그를 취하면 증거 누적이 곱셈이 아니라 덧셈이 된다(OctoMap의 $+0.85$는
+  $\log(0.7/0.3)$, 즉 $p=0.7$짜리 "적중" 하나다). 또한 확률이 0이나 1에 바짝 붙었을 때의 수치 문제를 피할 수 있다. 남는 위험의 방향을 짚어야 한다:
   로그 승산은 *유계가 아니어서*, 점유로 천 번 관측된 칸은 뒤집으려면 반대 관측이 천 번 단위로 필요하다(OctoMap 기본 로그 승산 증분 +0.85/−0.4이면 약 2,100번) —
   그래서 구현들은 명시적 **클램핑** 범위를 둔다(Yguel 외 2007이 제안하고 OctoMap이 채택). 세상이 바뀌었을 때 지도가
   적응할 수 있게 하려는 것이다. 칸은 *비어 있음*, *점유됨*, 그리고
@@ -433,12 +452,15 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 **전역과 지역.** 내비게이션 스택은 계획을 둘로 나눈다: **전역 계획기**가 비용 지도 전체에서
 경로를 탐색하고(§3~§5), **지역 계획기**가 그 경로와 로봇의 동역학, 그리고 그사이 나타난
-장애물을 놓고 다음 몇 초의 운동을 반복해서 고른다. 고전적 이름들이 사는 곳이 지역 층이다 —
-*dynamic window* 계열은 실행 가능한 속도 쌍을 표본으로 뽑아 점수를 매기고, **elastic band**는
-내부 수축력과 외부 장애물 반발력으로 시간 개념 없이 *경로*를 변형하며, **timed elastic band**는
-이름이 가리키는 시간 간격을 더한 후손이다. **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr|BADGR]]이
-쓰는 계열)는 running estimate 주변에서 많은 행동열을 표본으로 뽑아 모델로 굴린 뒤, 가장 좋은
-하나를 고르는 대신 **보상 가중 평균**으로 추정을 갱신하고 그 첫 행동을 실행한다.
+장애물을 놓고 다음 몇 초의 운동을 반복해서 고른다. 고전적 이름들이 사는 곳이 지역 층이다.
+
+| 지역 계획기 | 매 주기에 하는 일 |
+|---|---|
+| *Dynamic window* | 한 주기 안에 도달할 수 있는 속도 쌍(전진, 회전)을 표본으로 뽑아 각각 점수를 매긴다 |
+| **Elastic band** | 내부 수축력과 외부 장애물 반발력으로 시간 개념 없이 *경로*를 변형한다 |
+| **Timed elastic band** | 이름이 가리키는 시간 간격을 더한 후손이다 |
+| **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr\|BADGR]]이 쓰는 계열) | running estimate 주변에서 많은 행동열을 표본으로 뽑아 모델로 굴린 뒤, 가장 좋은 하나를 고르는 대신 **보상 가중 평균**으로 추정을 갱신하고 그 첫 행동을 실행한다 |
+
 §6이 같은 층을 최적화 관점에서 다룬다. 고전적인 내비게이션 스택에서 학습되는 부분은 보통 지역 층이고 전역 탐색과 비용 지도는
 건드리지 않는다. 다만 항상 그런 것은 아니다. 학습된 전역 계획기와 학습된 탐색 휴리스틱이
 존재하고, [[04-robotics/semantic-language-navigation|19. §3]]의 end-to-end 계열은 스택 전체를
@@ -501,7 +523,7 @@ cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은
 | 궤적 최적화 | shooting, transcription, collocation | 제약 아래 상태/입력 최적화 |
 | 과제 계획 | 기호적 연산자와 목표 | 이산 행동 선택 |
 | TAMP | task and motion planning | 기호적 선택을 기하학적 실행 가능성과 결합 |
-| 피드백 / 퍼텐셜장 | 목표로 끌고 장애물에서 미는 장, 내비게이션 함수 | 경로 하나가 아니라 *모든* 상태에 대해 행동을 만든다 — 값싸고 반응적이지만, 단순한 퍼텐셜장에는 로봇을 목표 앞에서 가두는 국소 최솟값이 있다 |
+| 피드백 / 퍼텐셜장 | 목표로 끌고 장애물에서 미는 장; 내비게이션 함수(최솟값이 목표 한 곳에만 있도록 만든 퍼텐셜) | 경로 하나가 아니라 *모든* 상태에 대해 행동을 만든다 — 값싸고 반응적이지만, 단순한 퍼텐셜장에는 로봇을 목표 앞에서 가두는 국소 최솟값이 있다 |
 | 불확실성 계획 | MDP, POMDP, belief space | 불확실한 상태/결과 아래 행동 선택 |
 
 **Probabilistic completeness**는 방법의 가정 아래 robust한 해가 존재할 때 계산이 늘수록
@@ -623,9 +645,13 @@ $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text
 - **실행 시점:** 오프라인 계획 또는 MPC로 반복 온라인.
 - **주의:** 비선형 동역학과 장애물 제약은 대개 국소적·초기화 민감 문제를 만든다.
 
-Direct shooting은 제어를 최적화하고 상태를 시뮬레이션한다. Direct transcription은
-상태·제어를 모두 변수로 둔다. Collocation은 선택한 점들에서 동역학을 강제한다. 어느
-것도 비볼록 로봇 문제의 전역 최적성을 자동으로 증명하지 않는다.
+이 프로그램을 풀이기에 넘기는 고전적 방식 세 가지는 무엇을 결정 변수로 삼느냐가 다르다.
+
+- **Direct shooting**은 제어 $u_{0:N-1}$만 최적화하고, 상태는 $x_0$에서 앞으로 시뮬레이션해 얻는다. 변수가 적고 동역학이 늘 성립하지만, 앞쪽 입력을 조금만 바꿔도 나머지 궤적 전체가 움직여서 지평이 길면 조건수가 나빠진다.
+- **Direct transcription**은 상태와 제어를 모두 변수로 두고 동역학 $x_{t+1}=f(x_t,u_t)$를 등식 제약으로 쓴다. 변수는 많지만 각 제약이 이웃한 스텝만 건드리고, 장애물을 관통하는 직선 상태열 같은 실행 불가능한 초기 추정에서 출발해 고쳐 나갈 수 있다.
+- **Collocation**은 궤적을 더 매끄럽게 표현한 transcription이다. 매듭점 사이를 다항식으로 잇고, 선택한 점들에서 다항식의 도함수가 $f(x,u)$와 같도록 요구해 동역학을 강제한다.
+
+어느 것도 비볼록 로봇 문제의 전역 최적성을 자동으로 증명하지 않는다.
 
 **아래첨자를 제안한 미래로 풀어 읽는다.** x₀는 현재 추정 상태로 고정된다. 뒤의 x들은 예측 상태이고 u들은 모델상 그 상태를 만드는 입력이다. 단계 비용은 미래의 각 구간을 평가하고 종단 비용은 지평 끝의 위치를 평가한다. 동역학 제약이 상상한 시퀀스를 묶어, 실제 움직임으로 이어지지 않는 매력적인 상태만 고르지 못하게 한다.
 
@@ -639,8 +665,15 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 기하학적으로 불가능할 수 있다. TAMP는 이산 행동과 연속 실행 가능성을 번갈아 또는
 공동으로 추론한다.
 
-부분 관측에서는 계획의 상태가 belief가 된다. POMDP는 숨은 상태, 관측, 행동, 전이,
-관측 모델, 보상을 구분한다. 정확한 belief-space 계획은 대개 계산 불가능해서 논문들은
+부분 관측에서는 계획의 상태가 **belief**, 즉 숨은 상태에 대한 확률 분포가 되고, 행동과 관측이
+있을 때마다 갱신된다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다.
+
+> [!example] 계산 예제 · Worked example
+> 로봇이 잘 보이지 않는 문을 지나가야 한다. **숨은 상태:** 열림 또는 닫힘. **행동:** 다시 보기, 또는 지나가기. **전이:** 보기는 아무것도 바꾸지 않고, 지나가기는 로봇을 옮긴다. **관측:** "열림" 또는 "닫힘"이라는 센서 판독. **관측 모델:** 판독은 80% 확률로 맞다. **보상:** 통과하면 $+1$, 닫힌 문에 부딪히면 $-1$.
+>
+> belief $P(\text{열림})=0.5$에서 시작한다. "열림" 판독 한 번이면 $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$, 두 번이면 $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$다. belief 0.8에서 지나가면 기대 보상은 $0.8-0.2=0.6$, 0.94에서는 $0.88$이다. 한 번 더 볼 가치가 그 시간만큼 있는지가 바로 POMDP 계획기가 답하는 질문이고, 그 질문은 실제 문이 아니라 belief에 대해 던져진다.
+
+정확한 belief-space 계획은 대개 계산 불가능해서 논문들은
 근사, receding horizon, 학습된 가치, 비상 정책을 쓴다.
 
 온라인 replanning은 새 관측을 반영한다. 보고된 replanning 주기만으로는 부족하다 —

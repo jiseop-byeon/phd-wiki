@@ -37,6 +37,7 @@ The qualification “at the fixed configuration” matters. Once the joints move
 
 For the tip position (planar case, so a 2×2 suffices), differentiate the FK:
 $$x = L_1\cos\theta_1 + L_2\cos(\theta_1{+}\theta_2), \qquad y = L_1\sin\theta_1 + L_2\sin(\theta_1{+}\theta_2)$$
+Each entry is one partial derivative. The chain rule on the second term of $x$ gives $\partial\cos(\theta_1{+}\theta_2)/\partial\theta_1 = -\sin(\theta_1{+}\theta_2)\cdot 1$, so $\partial x/\partial\theta_1 = -L_1\sin\theta_1 - L_2\sin(\theta_1{+}\theta_2)$, while $\theta_2$ appears only in that term, so $\partial x/\partial\theta_2 = -L_2\sin(\theta_1{+}\theta_2)$. The $y$ row is the same with $\sin \to \cos$. Stacking rows $(x, y)$ against columns $(\theta_1, \theta_2)$:
 $$J(\theta) = \begin{pmatrix} -L_1 s_1 - L_2 s_{12} & -L_2 s_{12} \\ L_1 c_1 + L_2 c_{12} & L_2 c_{12} \end{pmatrix}$$
 with $s_{12} = \sin(\theta_1{+}\theta_2)$ etc. At $L_1 = L_2 = 1$, $\theta = (0°, 90°)$:
 $s_1 = 0, c_1 = 1, s_{12} = 1, c_{12} = 0$, so
@@ -127,6 +128,7 @@ $J_s = [\text{Ad}_{T}]\,J_b$로 연결된다
 
 끝점 위치(평면이므로 2×2면 충분)에 대해 FK를 미분하면:
 $$x = L_1\cos\theta_1 + L_2\cos(\theta_1{+}\theta_2), \qquad y = L_1\sin\theta_1 + L_2\sin(\theta_1{+}\theta_2)$$
+각 성분은 편미분 하나다. $x$의 둘째 항에 연쇄법칙을 쓰면 $\partial\cos(\theta_1{+}\theta_2)/\partial\theta_1 = -\sin(\theta_1{+}\theta_2)\cdot 1$이므로 $\partial x/\partial\theta_1 = -L_1\sin\theta_1 - L_2\sin(\theta_1{+}\theta_2)$이고, $\theta_2$는 그 항에만 나오므로 $\partial x/\partial\theta_2 = -L_2\sin(\theta_1{+}\theta_2)$다. $y$ 행은 $\sin \to \cos$로 바꾼 같은 계산이다. 행 $(x, y)$, 열 $(\theta_1, \theta_2)$로 쌓으면:
 $$J(\theta) = \begin{pmatrix} -L_1 s_1 - L_2 s_{12} & -L_2 s_{12} \\ L_1 c_1 + L_2 c_{12} & L_2 c_{12} \end{pmatrix}$$
 ($s_{12} = \sin(\theta_1{+}\theta_2)$ 등). $L_1 = L_2 = 1$, $\theta = (0°, 90°)$에서:
 $s_1 = 0, c_1 = 1, s_{12} = 1, c_{12} = 0$이므로

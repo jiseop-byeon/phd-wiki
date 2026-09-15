@@ -145,11 +145,11 @@ algorithm failures.
 
 | Family | What changes | How it is read | Strong at | Fails at |
 |---|---|---|---|---|
-| **Piezoresistive** | resistance of a doped elastomer or film under strain | Wheatstone bridge; arrays scanned row-by-column | cheapest and fastest to get working | drift, hysteresis, and noise that grows with array size |
+| **Piezoresistive** | resistance of a doped elastomer or film under strain | Wheatstone bridge — a four-resistor circuit that turns a tiny resistance change into a measurable voltage; arrays scanned row-by-column | cheapest and fastest to get working | drift, hysteresis, and noise that grows with array size |
 | **Capacitive** | capacitance of a conductor–insulator–conductor sandwich as the gap closes | a dedicated capacitance front end — a multimeter will not do it | sensitivity, and it survives being made of fabric | stray capacitance, including from the human body nearby |
-| **Piezoelectric** | charge that appears when the material is stressed (PVDF, ceramics, ferroelectric crystals) | charge amplifier | vibration, texture, the *onset* of slip | **static load — the charge leaks away**, so it reports change, not weight |
+| **Piezoelectric** | charge that appears when the material is stressed (PVDF, ceramics, ferroelectric crystals) | charge amplifier — its output voltage tracks the charge itself, which is tiny and would otherwise be lost to cable and input capacitance; even so the charge drains away over time, the failure at right | vibration, texture, the *onset* of slip | **static load — the charge leaks away**, so it reports change, not weight |
 | **Barometric** | pressure in a sealed cavity over an off-the-shelf MEMS die | the die's own digital output | a clean calibrated signal for \$30–100, because someone else solved the hard part | spatial density; each cavity is a taxel and cavities are bulky |
-| **Magnetic (Hall effect)** | position of a magnet in compliant material relative to the sensor; the Lorentz force on carriers makes a transverse voltage | Hall element, three axes per point | no wear, no electrical contact across the compliant layer | the field-to-contact map is nonlinear and not one-to-one |
+| **Magnetic (Hall effect)** | position of a magnet in compliant material relative to the sensor; the Lorentz force on carriers makes a transverse voltage (see [[glossary\|Hall effect]]) | Hall element, three axes per point | no wear, no electrical contact across the compliant layer | the field-to-contact map is nonlinear and not one-to-one |
 | **Acoustic** | structure-borne sound the contact itself makes | microphone or piezo element plus spectral features | events — impacts, scrapes, texture | telling you *where*, or anything about a contact that is not moving |
 | **Whisker** | deflection of a compliant beam, measured at its base | any of the above, at the root | reaching past the body, and pre-filtering by beam geometry | resolving what it touched, as opposed to that it touched |
 
@@ -268,8 +268,12 @@ part of the paper the number came from, because that abstract states none.
 ### 4. Visuotactile fusion — and what it is really buying
 
 The reference result here is Lee et al.'s *Making Sense of Vision and Touch*, which learns a
-single compact latent representation from RGB, force/torque, and proprioception using
-**self-supervised** objectives — action-conditional optical flow, whether contact will occur at the next control step, and whether the vision and force streams are time-aligned — and then does reinforcement learning in that latent space rather than on raw
+single compact latent representation from RGB, force/torque, and proprioception. It trains with
+**self-supervised** objectives: prediction targets the recorded data already contains, so no human labels
+are needed. Here there are three — action-conditional optical flow, whether contact will occur at the next control step, and whether the vision and force streams are time-aligned.
+
+Only then is the representation used: the policy is learned by reinforcement learning (trial-and-error
+reward maximisation, [[02-foundations/rl-basics|7. RL Basics]]) in that latent space rather than on raw
 inputs. The claim structure is worth internalising because it recurs:
 
 1. Raw multimodal input is high-dimensional and badly conditioned for policy learning.
@@ -543,11 +547,11 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 | 계열 | 무엇이 변하나 | 어떻게 읽나 | 강한 곳 | 실패하는 곳 |
 |---|---|---|---|---|
-| **압전저항(piezoresistive)** | 변형을 받은 도핑 엘라스토머·필름의 저항 | 휘트스톤 브리지, 배열은 행–열로 훑는다 | 가장 싸고 가장 빨리 동작시킬 수 있다 | 드리프트, 이력현상, 배열이 커질수록 자라는 잡음 |
+| **압전저항(piezoresistive)** | 변형을 받은 도핑 엘라스토머·필름의 저항 | 휘트스톤 브리지 — 저항 네 개로 된 회로로, 아주 작은 저항 변화를 잴 수 있는 전압으로 바꾼다. 배열은 행–열로 훑는다 | 가장 싸고 가장 빨리 동작시킬 수 있다 | 드리프트, 이력현상, 배열이 커질수록 자라는 잡음 |
 | **정전용량(capacitive)** | 간격이 좁아질 때 도체–절연체–도체 샌드위치의 정전용량 | 전용 정전용량 프런트엔드 — 멀티미터로는 안 된다 | 감도, 그리고 천으로 만들어도 살아남는다 | 부유 용량, 근처의 사람 몸까지 포함해서 |
-| **압전(piezoelectric)** | 재료에 응력이 걸릴 때 생기는 전하 (PVDF, 세라믹, 강유전 결정) | 전하 증폭기 | 진동, 질감, 미끄러짐의 *시작* | **정적 하중 — 전하가 빠져나간다**. 무게가 아니라 변화를 보고한다 |
+| **압전(piezoelectric)** | 재료에 응력이 걸릴 때 생기는 전하 (PVDF, 세라믹, 강유전 결정) | 전하 증폭기 — 출력 전압이 전하 자체를 따라가게 만든 증폭기. 전하가 아주 작아 그냥 두면 케이블과 입력단 정전용량에 묻히기 때문이다. 그래도 전하는 시간이 지나며 빠져나가고, 그것이 오른쪽의 실패다 | 진동, 질감, 미끄러짐의 *시작* | **정적 하중 — 전하가 빠져나간다**. 무게가 아니라 변화를 보고한다 |
 | **기압(barometric)** | 기성 MEMS 다이 위 밀폐 공동의 압력 | 다이 자신의 디지털 출력 | 30~100달러로 얻는 깨끗한 보정 신호. 어려운 부분은 남이 풀어 놨다 | 공간 밀도. 공동 하나가 taxel 하나인데 공동은 부피가 크다 |
-| **자기(홀 효과)** | 유연 재료 속 자석의 센서 대비 위치. 전하에 걸린 로런츠 힘이 횡방향 전압을 만든다 | 홀 소자, 한 점당 3축 | 마모가 없고, 유연층을 가로지르는 전기적 접촉이 없다 | 자기장→접촉 사상이 비선형이고 일대일이 아니다 |
+| **자기(홀 효과)** | 유연 재료 속 자석의 센서 대비 위치. 전하에 걸린 로런츠 힘이 횡방향 전압을 만든다([[glossary\|홀 효과]] 참고) | 홀 소자, 한 점당 3축 | 마모가 없고, 유연층을 가로지르는 전기적 접촉이 없다 | 자기장→접촉 사상이 비선형이고 일대일이 아니다 |
 | **음향(acoustic)** | 접촉 자체가 만드는 구조 전달음 | 마이크나 압전 소자 + 스펙트럼 특징 | 사건 — 충격, 긁힘, 질감 | *어디인지*, 그리고 움직이지 않는 접촉에 관한 것 전부 |
 | **수염(whisker)** | 유연한 보의 휨을 뿌리에서 측정 | 위의 어느 방식이든, 뿌리에서 | 몸 바깥으로 뻗는 것, 그리고 보 기하가 미리 걸러 주는 것 | 닿았다는 사실이 아니라 무엇에 닿았는지를 가려내는 것 |
 
@@ -651,7 +655,11 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
 ### 4. 시촉각 융합 — 그리고 그것이 실제로 사는 것
 
 여기서의 기준 결과는 Lee 등의 *Making Sense of Vision and Touch*다. RGB, 힘/토크, 고유수용
-감각으로부터 하나의 압축된 잠재 표현을 **자기지도** 목적함수 — 행동 조건부 광학 흐름, 다음 제어 단계의 접촉 여부, 그리고 시각과 힘 스트림의 시간 정렬 여부 예측 — 로 학습하고, 원 입력이 아니라 그 잠재 공간에서 강화학습을 돌린다. 주장의 구조를
+감각으로부터 하나의 압축된 잠재 표현을 학습한다. 학습에는 **자기지도** 목적함수를 쓴다: 기록된 데이터에
+이미 들어 있는 것을 예측 대상으로 삼으므로 사람의 라벨이 필요 없다. 여기서는 세 가지 — 행동 조건부 광학 흐름, 다음 제어 단계의 접촉 여부, 그리고 시각과 힘 스트림의 시간 정렬 여부 — 를 예측한다.
+
+그다음에야 표현을 쓴다: 원 입력이 아니라 그 잠재 공간에서 강화학습(시행착오로 보상을 최대화하는 학습,
+[[02-foundations/rl-basics|7. 강화학습 기초]])으로 정책을 학습한다. 주장의 구조를
 몸에 새겨 둘 가치가 있다. 반복해서 나오기 때문이다:
 
 1. 원 멀티모달 입력은 고차원이고 정책 학습에 조건이 나쁘다.

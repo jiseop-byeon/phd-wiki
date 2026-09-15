@@ -105,7 +105,7 @@ back to a row of this table.
   </g>
 </svg>
 
-**Contact couples position and force.** Against an ideal rigid wall, the natural constraint is zero normal velocity. This holds while contact is maintained. The controller may choose a normal force target. Tangential motion remains available, subject to friction. In compliant contact, normal displacement and force are related by the contact mechanics. So independent, arbitrary position and force targets along the same constrained direction can conflict. Hybrid control selects complementary motion and force objectives. Impedance control instead chooses their relation.
+**Contact couples position and force.** Against an ideal rigid wall, the natural constraint is zero normal velocity. This holds while contact is maintained. The controller may choose a normal force target. Tangential motion remains available, subject to friction. In compliant contact, normal displacement and force are related by the contact mechanics. So independent, arbitrary position and force targets along the same constrained direction can conflict. Hybrid control (§3) selects complementary motion and force objectives: some directions track position, the others track force. Impedance control (§2) instead chooses their relation, like a virtual spring between them.
 
 The stiffness plot is a simplified local linear comparison. It does not predict that an actuator can generate unlimited force. Real torque limits, structural compliance and contact nonlinearity bound or change the response. A low-gain position-based controller can also render compliance. The danger is demanding an unreachable position with excessive stiffness or integral action.
 
@@ -161,7 +161,7 @@ Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. This e
 
 The diagram shows **two common implementations**, not hardware requirements for every controller carrying these names:
 
-- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior. Low mechanical friction and backdrivability also help. They are not the definition of impedance. Stiffness is selected for the task; it is not “soft by default.”
+- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior. Low mechanical friction and backdrivability also help; a backdrivable joint can be turned by an external push without the motor and gearbox resisting it. They are not the definition of impedance. Stiffness is selected for the task; it is not “soft by default.”
 - **Admittance** takes measured or estimated external force and integrates a virtual dynamic model to generate a motion reference. An inner motion controller tracks that reference. This is useful on robots exposing position or velocity commands. Its achievable behavior depends on the inner loop as well as the outer force feedback.
 
 | Architecture | Useful starting point | What must be checked |
@@ -227,7 +227,7 @@ with $\mu$ and $p$ the task-space Coriolis and gravity terms. Read it as the arm
 worth seeing the object. In plain terms, the projector is a filter on the secondary torque: it
 lets $\tau_0$ move the arm only in ways the task does not feel. The thing to watch is *when* the
 task does not feel it — only at rest (static), or also while the arm is moving (transient).
-Different projectors differ exactly there. With $\bar J = M^{-1}J^\top\Lambda$ the dynamically-consistent
+Different projectors differ exactly there, and the two answers have names. **Statically consistent** means no leftover task force once the arm has stopped moving. **Dynamically consistent** means the task also feels nothing while the arm is still moving. With $\bar J = M^{-1}J^\top\Lambda$ the dynamically-consistent
 inverse of the Jacobian, the secondary torque is filtered through
 
 $$\tau = J^\top\mathcal{F} \;+\; \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{null-space projector } N^\top}\tau_0$$
@@ -249,7 +249,7 @@ projector, $M(I - J^{+}J)M^{-1}$, that is dynamically consistent too but not loa
 **Task priority, and whole-body control.** Stack more than two objectives and this becomes a
 hierarchy: each level is projected into the null space of all levels above it, so a lower
 priority can never fight a higher one. That is the classical form. The modern form solves the
-same problem as a **quadratic program** at every control step —
+same problem as a **quadratic program** (QP: minimize a quadratic cost under linear equality and inequality constraints; see [[02-foundations/linear-algebra|Linear Algebra §5]]) at every control step —
 
 - minimize the weighted task errors,
 - subject to joint-position, velocity and torque limits, friction cones at the contacts, and
@@ -346,7 +346,7 @@ other. It solves the insertion problem in aluminium, with no sensor and no laten
 
 Colgate and Hogan's 1988 result is the theoretical boundary of the active alternative: for
 linear time-invariant systems, a manipulator is stable when coupled to *every* passive
-environment if and only if its driving-point impedance is passive. That converts
+environment if and only if its driving-point impedance is passive. Here a passive system can store and return energy but never generate it, and the driving-point impedance is the force-versus-velocity relation the environment sees when it pushes on the robot at the contact point. That converts
 contact stability from a per-experiment tuning question into a frequency-domain test, and
 it says something uncomfortable — with non-collocated or unmodelled dynamics there is a **limit** to how far a controller can reduce the apparent inertia. The ceiling on renderable stiffness is a separate limit, set by sampling, delay and quantization ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The controller cannot pretend the
 arm's mass away.
@@ -596,7 +596,7 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
   </g>
 </svg>
 
-**접촉은 위치와 힘을 결합한다.** 이상적인 강체 벽에서 자연 제약은 법선 속도가 0이라는 것이다. 이는 접촉이 유지되는 동안 성립한다. 제어기는 법선 힘의 목표를 고를 수 있다. 접선 운동은 마찰의 제약 아래 가능하다. 유연한 접촉에서는 법선 변위와 힘이 접촉 역학으로 연결된다. 따라서 같은 구속 방향에 독립적이고 임의적인 위치·힘 목표를 동시에 주면 충돌할 수 있다. 하이브리드 제어는 상보적인 운동·힘 목표를 고르고, 임피던스는 둘의 관계를 정한다.
+**접촉은 위치와 힘을 결합한다.** 이상적인 강체 벽에서 자연 제약은 법선 속도가 0이라는 것이다. 이는 접촉이 유지되는 동안 성립한다. 제어기는 법선 힘의 목표를 고를 수 있다. 접선 운동은 마찰의 제약 아래 가능하다. 유연한 접촉에서는 법선 변위와 힘이 접촉 역학으로 연결된다. 따라서 같은 구속 방향에 독립적이고 임의적인 위치·힘 목표를 동시에 주면 충돌할 수 있다. 하이브리드 제어(§3)는 상보적인 운동·힘 목표를 고른다. 어떤 방향은 위치를, 나머지 방향은 힘을 추종한다. 임피던스 제어(§2)는 대신 둘 사이에 가상 스프링을 두듯 둘의 관계를 정한다.
 
 강성 그림은 단순한 국소 선형 비교다. 그것은 액추에이터가 무한한 힘을 낸다는 예측이 아니다. 실제 토크 한계·구조 유연성·접촉 비선형성이 반응을 제한하거나 바꾼다. 낮은 게인의 위치 기반 제어기도 컴플라이언스를 구현할 수 있다. 위험은 도달할 수 없는 위치를 과도한 강성이나 적분 동작으로 요구할 때 생긴다.
 
@@ -652,7 +652,7 @@ $M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 이 식은 원하
 
 그림은 **흔한 두 구현**이다. 같은 이름을 쓰는 모든 제어기의 필수 하드웨어 조건은 아니다.
 
-- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성도 도움이 된다. 그러나 그것이 임피던스의 정의는 아니다. 강성은 과제에 맞게 고른다. 항상 “기본적으로 무른” 것은 아니다.
+- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성(backdrivability)도 도움이 된다. 역구동 가능한 관절은 모터와 감속기의 저항 없이 외부에서 밀어 돌릴 수 있다. 그러나 그것이 임피던스의 정의는 아니다. 강성은 과제에 맞게 고른다. 항상 “기본적으로 무른” 것은 아니다.
 - **어드미턴스**는 측정·추정한 외력을 가상 동역학에 넣고 적분해 운동 기준을 만든다. 내부 운동 제어기가 그 기준을 추종한다. 위치·속도 명령을 받는 로봇에 유용하다. 실제 거동은 외부 힘 피드백과 내부 루프 양쪽에 달렸다.
 
 | 구조 | 유용한 출발점 | 확인할 조건 |
@@ -713,7 +713,7 @@ $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta),
 **투영자를 실제로 써 보면.** "영공간"은 문헌에서 느슨하게 쓰이므로 그 대상을 직접 볼 값어치가
 있다. 쉽게 말해 투영자는 부차 토크에 거는 필터다. $\tau_0$가 작업이 느끼지 못하는 방식으로만 팔을
 움직이게 한다. 지켜볼 것은 작업이 *언제* 그것을 느끼지 못하느냐다. 정지해 있을 때만(정적)인가, 팔이
-움직이는 동안에도(과도)인가. 투영자들은 바로 그 지점에서 갈린다. $\bar J = M^{-1}J^\top\Lambda$를 자코비안의 동역학적으로 일관된 역이라 하면, 부차 토크는
+움직이는 동안에도(과도)인가. 투영자들은 바로 그 지점에서 갈리고, 두 답에는 이름이 있다. 정적 일관성(static consistency)이란 팔이 멈춘 뒤 작업에 남는 힘이 없다는 뜻이다. 동역학적 일관성(dynamic consistency)이란 팔이 아직 움직이는 동안에도 작업이 아무것도 느끼지 못한다는 뜻이다. $\bar J = M^{-1}J^\top\Lambda$를 자코비안의 동역학적으로 일관된 역이라 하면, 부차 토크는
 다음을 통과한다:
 
 $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}_{\text{영공간 투영자 } N^\top}\tau_0$$
@@ -732,7 +732,7 @@ $M(I - J^{+}J)M^{-1}$도 동역학적으로 일관되지만 하중 독립성은 
 
 **과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
 층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이
-고전적 형태다. 현대적 형태는 같은 문제를 매 제어 스텝의 **이차 계획법(QP)** 으로 푼다 —
+고전적 형태다. 현대적 형태는 같은 문제를 매 제어 스텝의 **이차 계획법(QP)** 으로 푼다. QP는 선형 등식·부등식 제약 아래 이차 비용을 최소화하는 문제다([[02-foundations/linear-algebra|선형대수 §5]]) —
 
 - 가중된 과제 오차를 최소화하고,
 - 관절 위치·속도·토크 한계, 접촉점의 마찰 원뿔, 균형 또는 베이스 안정성 제약 아래에서.
@@ -823,7 +823,7 @@ $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되
 
 Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: 선형 시불변 시스템에서, 매니퓰레이터가
 *모든* 수동적 환경과 결합해도 안정한 것은 구동점 임피던스가 수동적일 때
-그리고 오직 그때뿐이다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
+그리고 오직 그때뿐이다. 여기서 수동적 시스템은 에너지를 저장했다 돌려줄 수는 있어도 새로 만들어 내지는 못한다. 구동점 임피던스는 환경이 접촉점에서 로봇을 밀 때 보게 되는 힘과 속도의 관계다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
 바꾸고, 불편한 것을 하나 말해 준다 — 비동위치(non-collocated) 동역학이나 모델링되지 않은 동역학이 있으면 제어기가 겉보기 관성을
 줄일 수 있는 데에는 **한계가 있다.** 구현 가능한 강성의 상한은 이와 별개로 샘플링·지연·양자화가 정한다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 제어기가 팔의 질량을 없는 척할 수는 없다.
 

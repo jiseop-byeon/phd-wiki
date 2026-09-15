@@ -114,7 +114,7 @@ Every method here is defined by what it uses as a label, and that is the useful 
 | **An existing stack** | distil a slow classical pipeline into a fast learned one | RoadRunner |
 
 **Wild Visual Navigation** is the system the current field is organised around. It runs
-online, vision-only, on DINO features, supervised by the robot's own velocity tracking, with
+online, vision-only, on [[01-canonical-papers/notes/2-computer-vision/dino|DINO]] features (general-purpose image features learned without labels), supervised by the robot's own velocity tracking, with
 **training and inference concurrent onboard** an ANYmal — and its claim is carefully
 limited: *less than five minutes of in-field training* from a short human demonstration,
 then 1.4 km of footpath following and high grass.
@@ -130,13 +130,16 @@ kilometre-scale routes after *seconds* of real data, matching methods that need
 
 > [!important] The claim divergence — read every paper for this
 > The papers split, but not the way a first reading suggests — check each abstract rather
-> than assuming. **WVN** is the in-field-adaptation case (five minutes from a demonstration),
-> yet still closes by claiming the approach "can generalize to any ground robot".
-> ***How Does It Feel?*** makes **no online-adaptation claim at all** — its self-supervision
-> is offline, from proprioceptive feedback. **SALON** adapts "within seconds" *and* claims
-> generalization, reporting "promising results on significantly different robots in different
-> environments". **V-STRONG** is the pure generalization claim: "unprecedented performance
-> for generalization to new environments", zero- and few-shot. That disagreement is the
+> than assuming.
+>
+> | Paper | Adaptation claim | Generalization claim |
+> |---|---|---|
+> | **WVN** | in-field, five minutes from a demonstration | yes — "can generalize to any ground robot" |
+> | ***How Does It Feel?*** | **none** — self-supervision is offline, from proprioceptive feedback | — |
+> | **SALON** | "within seconds" | yes — "promising results on significantly different robots in different environments" |
+> | **V-STRONG** | — (the pure generalization case) | "unprecedented performance for generalization to new environments", zero- and few-shot |
+>
+> That disagreement is the
 > most interesting open question in the thread, and the two claims require completely
 > different evidence. When you read a traversability paper, the first thing to establish is
 > which of the two it is claiming — the abstracts do not always make it obvious.
@@ -147,13 +150,14 @@ Two things a learning-first reading would miss.
 
 **The elevation map underneath.** Nearly every legged-navigation paper assumes a
 robot-centric 2.5D elevation map that propagates pose-estimate drift and sensor uncertainty
-into a **per-cell variance** — Fankhauser, Bloesch and Hutter's formulation, shipped as the
+into a **per-cell variance** (because each cell's height was computed from where the sensor
+was *believed* to be when it saw that cell, an error in that belief becomes an error in the height) — Fankhauser, Bloesch and Hutter's formulation, shipped as the
 `elevation_mapping` ROS package. Learned traversability usually runs *on top of* this, not
 instead of it.
 
 **Risk-aware geometric planning.** STEP is the counterweight: uncertainty-aware
 traversability evaluation, **tail-risk assessment via Conditional Value-at-Risk (CVaR)**,
-and a risk-constrained kinodynamic MPC solved by sequential quadratic programming. It is not
+and a risk-constrained kinodynamic MPC solved by sequential quadratic programming (SQP: solve a quadratic-program approximation at each iterate — [[02-foundations/optimization|4. Optimization §4]]). It is not
 a learning paper and makes no generalization claim; it plugs straight into the material in
 [[04-robotics/mpc|MPC]] and it is the traversability module of the NeBula stack that
 competed in DARPA SubT.
@@ -385,8 +389,8 @@ BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터*
 | **예측된 고유수용감각** | 차량이 겪게 *될* 경험을 기하로부터 예측 | ScaTE |
 | **기존 스택** | 느린 고전 파이프라인을 빠른 학습 모델로 증류 | RoadRunner |
 
-**Wild Visual Navigation**이 현재 분야가 조직되어 있는 시스템이다. 온라인으로, 비전만으로, DINO
-특징 위에서, 로봇 자신의 속도 추종을 지도 신호 삼아, **학습과 추론을 ANYmal 온보드에서 동시에**
+**Wild Visual Navigation**이 현재 분야가 조직되어 있는 시스템이다. 온라인으로, 비전만으로, [[01-canonical-papers/notes/2-computer-vision/dino|DINO]]
+특징(레이블 없이 학습한 범용 이미지 특징) 위에서, 로봇 자신의 속도 추종을 지도 신호 삼아, **학습과 추론을 ANYmal 온보드에서 동시에**
 돌린다 — 그리고 주장을 신중하게 제한한다: 짧은 사람 시연으로부터 *5분 미만의 현장 학습*, 그다음
 1.4 km의 오솔길 추종과 키 큰 풀.
 
@@ -399,12 +403,15 @@ BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터*
 
 > [!important] 주장의 분기 — 논문마다 이것부터 확인하라
 > 논문들은 갈리지만 처음 읽을 때 보이는 방식으로는 아니다 — 가정하지 말고 초록을 각각 확인하라.
-> **WVN**은 현장 적응 사례(시연으로부터 5분)이면서도 접근법이 "어떤 지상 로봇으로도 일반화될
-> 수 있다"고 맺는다. ***How Does It Feel?*** 은 **온라인 적응을 아예 주장하지 않는다** —
-> 자기지도가 오프라인이고 고유수용 피드백에서 온다. **SALON**은 "수 초 안에" 적응하면서
-> *동시에* 일반화를 주장하고 "상당히 다른 로봇과 다른 환경에서의 유망한 결과"를 보고한다.
-> **V-STRONG**이 순수한 일반화 주장이다: zero-shot·few-shot 과제에서 "새 환경으로의 일반화에서
-> 전례 없는 성능". 적응 주장과 일반화 주장은 완전히 다른 증거를 요구하므로, traversability
+>
+> | 논문 | 적응 주장 | 일반화 주장 |
+> |---|---|---|
+> | **WVN** | 현장 적응, 시연으로부터 5분 | 있음 — "어떤 지상 로봇으로도 일반화될 수 있다" |
+> | ***How Does It Feel?*** | **없음** — 자기지도가 오프라인이고 고유수용 피드백에서 온다 | — |
+> | **SALON** | "수 초 안에" | 있음 — "상당히 다른 로봇과 다른 환경에서의 유망한 결과" |
+> | **V-STRONG** | — (순수한 일반화 사례) | zero-shot·few-shot에서 "새 환경으로의 일반화에서 전례 없는 성능" |
+>
+> 적응 주장과 일반화 주장은 완전히 다른 증거를 요구하므로, traversability
 > 논문을 읽을 때 가장 먼저 확정할 것은 어느 쪽을 주장하는가이고, 초록이 늘 분명히 밝혀 주지는
 > 않는다.
 
@@ -413,12 +420,12 @@ BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터*
 학습 위주로만 읽으면 놓치는 것 둘.
 
 **밑에 깔린 고도 지도.** 거의 모든 레그드 내비게이션 논문이, 자세 추정 드리프트와 센서 불확실성을
-**셀별 분산**으로 전파하는 로봇 중심 2.5D 고도 지도를 가정한다 — Fankhauser, Bloesch, Hutter의
+**셀별 분산**으로 전파하는(각 셀의 높이는 센서가 그 셀을 볼 때 *있다고 믿은* 위치로부터 계산되므로, 그 믿음의 오차가 곧 높이의 오차가 된다) 로봇 중심 2.5D 고도 지도를 가정한다 — Fankhauser, Bloesch, Hutter의
 정식화이며 `elevation_mapping` ROS 패키지로 배포된다. 학습된 traversability는 대개 이것을 *대신*
 하는 것이 아니라 이것 *위에서* 돈다.
 
 **위험 인지 기하 계획.** STEP이 그 균형추다: 불확실성 인지 traversability 평가, **Conditional
-Value-at-Risk(CVaR)를 통한 꼬리 위험 평가**, 그리고 순차 이차 계획법으로 푸는 위험 제약
+Value-at-Risk(CVaR)를 통한 꼬리 위험 평가**, 그리고 순차 이차 계획법(SQP: 반복점마다 이차 계획 근사를 푼다 — [[02-foundations/optimization|4. 최적화 §4]])으로 푸는 위험 제약
 기구·동역학 MPC. 학습 논문이 아니고 일반화를 주장하지 않는다. [[04-robotics/mpc|MPC]]의 내용에
 곧바로 연결되며, DARPA SubT에 나간 NeBula 스택의 traversability 모듈이다.
 

@@ -7,6 +7,10 @@ depth-goal: "Explain and quantify why sampling, quantization, delay, and switchi
 mastery-when: "Master sampled-data proofs and passivity-controller design when stability or rendering performance is the contribution."
 ---
 
+> [!note] Prerequisites · 선수 지식
+> Sampling, the Nyquist frequency, and the Z-transform with its transfer function $H(z)$ from [[02-foundations/signal-processing|6. Signal Processing §2 and §5]]; stability and phase lag from [[04-robotics/control-theory-ce397|5. Control Theory §5]]; the device model and $\tau=J^\top F$ from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
+> [[02-foundations/signal-processing|6. 신호처리 §2와 §5]]의 샘플링, 나이퀴스트 주파수, Z-변환과 전달함수 $H(z)$. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 안정성과 위상 지연. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 장치 모델과 $\tau=J^\top F$.
+
 ## English
 
 ### 1. Haptic rendering is a hard real-time feedback loop
@@ -41,13 +45,15 @@ Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bo
 
 These bounds are usually checked in simulation before hardware, and that check has its own trap.
 
-The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result. The same holds for the non-idealities you include: a simulation without quantization, Coulomb friction, actuator saturation and the zero-order hold will report a wall the hardware cannot render, so model them before trusting a simulated limit.
+The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result.
 
-The wall bound is a special case of a general one, and this is where it comes from. For any virtual environment written as a pulse transfer function $H(z)$, Colgate and Schenkel (*J. Robotic Systems* 14(1), 1997) give the passivity condition for the one-DOF sampled-data model with a zero-order hold, as presented in Weir & Colgate (eq. 8.2):
+The same holds for the non-idealities you include: a simulation without quantization, Coulomb friction, actuator saturation and the zero-order hold will report a wall the hardware cannot render, so model them before trusting a simulated limit.
+
+The wall bound is a special case of a general one, and this is where it comes from. A pulse transfer function $H(z)$ is the sampled-data version of a transfer function: it maps the sequence of sampled positions to the sequence of commanded forces, with $z$ standing for a one-sample time shift ([[02-foundations/signal-processing|6. Signal Processing §5]]). Before the formula, the idea: read it the same way as the wall bound, because the physical damping $b$ has to pay, at every frequency up to Nyquist ($\omega_N=\pi/T$), for the energy the sampled environment injects. For any virtual environment written as $H(z)$, Colgate and Schenkel (*J. Robotic Systems* 14(1), 1997) give the passivity condition for the one-DOF sampled-data model with a zero-order hold, as presented in Weir & Colgate (eq. 8.2):
 
 $$b>\frac{T}{2}\,\frac{1}{1-\cos\omega T}\,\mathrm{Re}\{(1-e^{-j\omega T})H(e^{j\omega T})\},\qquad 0\le\omega\le\omega_N=\pi/T$$
 
-Read it the same way as the wall bound: the physical damping $b$ has to pay, at every frequency up to Nyquist, for the energy the sampled environment injects. Putting a spring and a backward-difference damper in for $H(z)$ gives the $b>KT/2+|B|$ form above.
+Here $H(e^{j\omega T})$ is just $H(z)$ evaluated on the unit circle, $z=e^{j\omega T}$, which is how a discrete transfer function gives its response to a sinusoid of frequency $\omega$. Putting a spring and a backward-difference damper in for $H(z)$ gives the $b>KT/2+|B|$ form above.
 
 ### 3. Sampling and quantization are different
 
@@ -72,7 +78,7 @@ Colonnese and Okamura put all of this into one model — device and human dynami
 
 ### 4. Passivity, stability, and Z-width
 
-With power defined positive into a one-port, passivity requires
+A port is a force/velocity pair through which power flows into or out of a system, and a one-port has exactly one such pair (here, the handle). With power defined positive into a one-port, passivity requires
 
 $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 
@@ -136,13 +142,15 @@ $$K\le\frac{2b}{T}$$
 
 이 경계들은 보통 하드웨어 전에 시뮬레이션으로 확인하는데, 그 확인에도 함정이 있다.
 
-이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다. 시뮬레이션에 넣는 비이상성도 마찬가지다. 양자화, Coulomb 마찰, 액추에이터 포화, zero-order hold가 빠진 시뮬레이션은 하드웨어가 구현할 수 없는 벽을 보고하므로, 시뮬레이션 한계를 믿기 전에 이것들을 모델링하라.
+이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다.
 
-벽 경계는 일반적인 경계의 특수한 경우이고, 그 경계가 여기서 나온다. 가상 환경을 펄스 전달함수 $H(z)$로 쓰면, Colgate와 Schenkel(*J. Robotic Systems* 14(1), 1997)은 zero-order hold가 있는 1자유도 샘플링 데이터 모델의 수동성 조건을 다음과 같이 준다(Weir & Colgate의 식 8.2).
+시뮬레이션에 넣는 비이상성도 마찬가지다. 양자화, Coulomb 마찰, 액추에이터 포화, zero-order hold가 빠진 시뮬레이션은 하드웨어가 구현할 수 없는 벽을 보고하므로, 시뮬레이션 한계를 믿기 전에 이것들을 모델링하라.
+
+벽 경계는 일반적인 경계의 특수한 경우이고, 그 경계가 여기서 나온다. 펄스 전달함수 $H(z)$는 전달함수의 샘플링 데이터 판이다. 샘플링된 위치의 수열을 명령 힘의 수열로 사상하고, $z$는 한 샘플만큼의 시간 이동을 나타낸다([[02-foundations/signal-processing|6. 신호처리 §5]]). 식보다 생각을 먼저 보자. 벽 경계와 같은 방식으로 읽으면 되는데, 물리적 댐핑 $b$가 나이퀴스트($\omega_N=\pi/T$)까지의 모든 주파수에서 샘플링된 환경이 주입하는 에너지를 갚아야 하기 때문이다. 가상 환경을 $H(z)$로 쓰면, Colgate와 Schenkel(*J. Robotic Systems* 14(1), 1997)은 zero-order hold가 있는 1자유도 샘플링 데이터 모델의 수동성 조건을 다음과 같이 준다(Weir & Colgate의 식 8.2).
 
 $$b>\frac{T}{2}\,\frac{1}{1-\cos\omega T}\,\mathrm{Re}\{(1-e^{-j\omega T})H(e^{j\omega T})\},\qquad 0\le\omega\le\omega_N=\pi/T$$
 
-벽 경계와 같은 방식으로 읽는다. 물리적 댐핑 $b$가 나이퀴스트까지의 모든 주파수에서, 샘플링된 환경이 주입하는 에너지를 갚아야 한다. $H(z)$ 자리에 스프링과 후방차분 댐퍼를 넣으면 위의 $b>KT/2+|B|$ 형태가 나온다.
+여기서 $H(e^{j\omega T})$는 $H(z)$를 단위원 위, 즉 $z=e^{j\omega T}$에서 계산한 값일 뿐이다. 이산 전달함수는 이렇게 주파수 $\omega$인 사인파에 대한 응답을 준다. $H(z)$ 자리에 스프링과 후방차분 댐퍼를 넣으면 위의 $b>KT/2+|B|$ 형태가 나온다.
 
 ### 3. 샘플링과 양자화는 서로 다른 문제다
 
@@ -167,7 +175,7 @@ Colonnese와 Okamura는 이것을 전부 한 모델에 넣었다 — 장치와 �
 
 ### 4. 수동성, 안정성, Z-width
 
-일률을 1-포트로 들어가는 방향을 양으로 정의하면 수동성은 다음을 요구한다.
+포트는 일률이 시스템으로 들어오거나 나가는 힘·속도 쌍이고, 1-포트는 그런 쌍을 정확히 하나(여기서는 손잡이) 가진다. 일률을 1-포트로 들어가는 방향을 양으로 정의하면 수동성은 다음을 요구한다.
 
 $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 

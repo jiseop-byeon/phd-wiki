@@ -26,7 +26,7 @@ every claim about *stability*, *tracking*, *bandwidth*, or *robustness* is a cla
 page's vocabulary.
 
 > [!note] First pass · 처음이라면
-> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
+> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which this page introduces only in a short primer at the start of §5.5; if that primer is not enough, read Åström & Murray ch.9 first. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
 
 ### 1. What feedback actually buys
 
@@ -103,7 +103,7 @@ poles because modal coefficients, zeros, and output choice also matter.
 | Continuous $\dot x = Ax$ | all $\text{Re}(\lambda_i) < 0$ | left half-plane |
 | Discrete $x_{t+1} = A_dx_t$ | all $\lvert\lambda_i\rvert < 1$ | inside the unit circle |
 
-These are the same statement in two clocks: exact (zero-order-hold) discretization with step $T$ maps
+These are the same statement in two clocks: exact (zero-order-hold, meaning the input is held constant between samples) discretization with step $T$ maps
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
 $e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Papers switch between continuous models and discrete
@@ -133,7 +133,7 @@ paper injects energy once it is sampled
 
 Laplace-transform the system ([[02-foundations/engineering-math|0.5 §9]]) and the ODE
 becomes algebra: for the mass–spring–damper,
-$G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. Its **poles** (denominator roots) are
+$G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. Its **poles** (denominator roots; the numerator's roots, where $G(s)=0$, are called **zeros**) are
 exactly the eigenvalues of $A$ — one object, two languages. (That equality holds here because nothing cancels; in general every pole is an eigenvalue, but a pole–zero cancellation can hide an eigenvalue, even an unstable one, from $G(s)$ — Åström & Murray Example 9.7.)
 
 For a standard or dominant second-order mode with negligible zero effects, the denominator is described by two numbers experimental sections often report:
@@ -163,10 +163,15 @@ Section 5 gave you the poles of a closed loop you already have. This section is 
 question papers actually argue over: **how close is that loop to not working**, and what is
 provably out of reach no matter how the controller is designed.
 
+**Primer: frequency response and the Nyquist plot.** Substitute $s = i\omega$ into a stable transfer function and you get a complex number for each frequency $\omega$. Its magnitude is how much a sine wave at that frequency is amplified once transients die out, and its angle is how far the output sine lags the input. The **Nyquist plot** is the curve these complex numbers trace in the complex plane as $\omega$ sweeps from $0$ to $\infty$.
+
+> [!example] Worked example · 계산 예제
+> Take $L(s) = 1/(s+1)$. At $\omega = 1$ rad/s, $L(i) = 1/(1+i) = 0.5 - 0.5i$, with magnitude $0.707$ and angle $-45°$: a 1 rad/s sine comes out at 71% amplitude, lagging by 45°. At $\omega = 0$ the value is $1$, and as $\omega \to \infty$ it shrinks to $0$, so the Nyquist plot is a half-circle from $1$ to $0$ below the real axis, never near $-1$.
+
 **Read the closed loop from the open loop.** Write the loop transfer function
 $L(s) = P(s)C(s)$ — plant times controller, going once around the loop. The closed loop is
 stable when the Nyquist plot of $L(i\omega)$ keeps the right relationship to the point $-1$
-(it is $1 + L = 0$ that makes the closed loop blow up, so $-1$ is where the danger is). This
+(it is $1 + L = 0$ that makes the closed loop blow up, so $-1$ is where the danger is). For an open loop with no right-half-plane poles, the right relationship is simply that the curve, together with its mirror image for negative $\omega$, does not encircle $-1$. This
 is why control papers plot an *open*-loop quantity: changing $C$ moves $L$ directly, while
 its effect on the closed-loop response is tangled.
 
@@ -183,6 +188,7 @@ $|L| = 1$.
 The first two constrain the curve along two directions; only $s_m$ constrains the distance
 itself. They are related by $g_m \ge 1/(1-s_m)$ and $\varphi_m \ge 2\arcsin(s_m/2)$ — note
 which way the inequality runs: a good $s_m$ *guarantees* the other two, but not the reverse.
+The picture behind both bounds: $s_m$ keeps the curve outside a disk of radius $s_m$ around $-1$. Where the curve crosses the negative real axis it must therefore stay within $1-s_m$ of the origin, which gives the gain bound. Where it crosses the unit circle it must stay outside the disk, and points on the unit circle at angle $\theta$ from $-1$ lie at distance $2\sin(\theta/2)$, which gives the phase bound. For $s_m = 0.5$ that is $g_m \ge 2$ and $\varphi_m \ge 29°$.
 
 **Why that asymmetry matters when reading.** Åström & Murray give a loop with
 $g_m = 266$ and $\varphi_m = 70°$ — numbers that would pass any review — whose stability
@@ -236,7 +242,7 @@ Delay also behaves like a right-half-plane zero, which is the deeper reason it i
 the first-order Padé approximation $\frac{1-s\tau/2}{1+s\tau/2}$ has a zero at $2/\tau$, so
 79 ms is a zero at 25.3 rad/s (4.0 Hz) sitting right where you wanted bandwidth.
 
-**Bode's integral — the constraint no design escapes.** For an internally stable loop with
+**Bode's integral — the constraint no design escapes.** The takeaway first, in one sentence: push sensitivity down in one frequency band and it must rise in another (the *waterbed effect*); the integral below says exactly how much, and why an unstable plant makes it worse. For an internally stable loop with
 $sL(s) \to 0$ **as $s \to \infty$** — the book calls that assumption essential, and without it the
 sensitivity can be made arbitrarily small —
 
@@ -247,7 +253,9 @@ is **zero**: on a linear frequency axis, the area where $\log|S|$ is negative (d
 attenuated) must be exactly paid for by area where it is positive (disturbances amplified).
 This is the **waterbed effect** — push sensitivity down in the band you care about and it
 rises somewhere else, always. An unstable plant or controller makes the right side positive, so it starts
-the account in debt. The complementary statement,
+the account in debt.
+
+The complementary statement,
 $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$ over right-half-plane
 zeros (as printed this needs integral action so that $T(0)=1$; otherwise the integral diverges at $\omega \to 0$), says **slow RHP zeros are worse than fast ones**, while the first says **fast RHP
 poles are worse than slow ones**.
@@ -466,7 +474,7 @@ examples *are* your domain.
 *안정성·추종·대역폭·강건성*에 대한 거의 모든 주장이 이 페이지의 어휘로 쓰여 있다.
 
 > [!note] 처음이라면 · First pass
-> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
+> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, 이 페이지는 §5.5 첫머리의 짧은 입문으로만 그것을 소개한다. 그 입문으로 부족하면 Åström & Murray 9장을 먼저 읽어라. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
 
 ### 1. 피드백이 실제로 사는 것
 
@@ -537,7 +545,7 @@ $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm 
 | 연속 $\dot x = Ax$ | 모든 $\text{Re}(\lambda_i) < 0$ | 좌반평면 |
 | 이산 $x_{t+1} = A_dx_t$ | 모든 $\lvert\lambda_i\rvert < 1$ | 단위원 안 |
 
-같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 정확히(영차 유지로) 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
+같은 진술을 두 시계로 쓴 것이다: 스텝 $T$로 정확히(영차 유지, 즉 샘플 사이에 입력을 일정하게 붙잡아 두는 방식으로) 이산화하면 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
 $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 논문은 연속 모델과 이산 구현을 예고 없이
 오가므로 각 식이 어느 시계를 쓰는지 확인한다. 이산 시계를 읽는 것이 아니라 몸으로 느끼는
@@ -562,7 +570,7 @@ $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키�
 
 라플라스 변환하면([[02-foundations/engineering-math|0.5 §9]]) 미분방정식이 대수가 된다:
 질량-스프링-댐퍼는 $G(s) = \dfrac{1}{ms^2+bs+k} = \dfrac{1}{s^2+s+4}$. 그 **극점**(분모의
-근)이 정확히 $A$의 고유값이다 — 하나의 대상, 두 개의 언어. (여기서 등식이 성립하는 것은 상쇄가 없기 때문이다. 일반적으로 모든 극점은 고유값이지만, 극점–영점 상쇄는 고유값을, 불안정한 것까지도 $G(s)$에서 숨길 수 있다 — Åström & Murray 예제 9.7.)
+근. 분자의 근, 즉 $G(s)=0$이 되는 곳은 **영점**이라 부른다)이 정확히 $A$의 고유값이다 — 하나의 대상, 두 개의 언어. (여기서 등식이 성립하는 것은 상쇄가 없기 때문이다. 일반적으로 모든 극점은 고유값이지만, 극점–영점 상쇄는 고유값을, 불안정한 것까지도 $G(s)$에서 숨길 수 있다 — Åström & Murray 예제 9.7.)
 
 영점 영향이 작고 표준 또는 우세 2차 모드가 지배할 때, 분모는 실험 절이 자주 보고하는 두 숫자로 기술된다:
 
@@ -590,10 +598,15 @@ $2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게
 **그 루프가 작동하지 않는 상태에 얼마나 가까운가**, 그리고 제어기를 어떻게 설계하든 증명
 가능하게 손에 닿지 않는 것은 무엇인가.
 
+**입문: 주파수 응답과 나이퀴스트 선도.** 안정한 전달함수에 $s = i\omega$를 넣으면 주파수 $\omega$마다 복소수 하나가 나온다. 그 크기는 과도 응답이 사라진 뒤 그 주파수의 사인파가 몇 배로 커지는지이고, 각은 출력 사인파가 입력보다 얼마나 늦는지다. **나이퀴스트 선도**는 $\omega$를 $0$에서 $\infty$까지 훑을 때 이 복소수들이 복소평면에 그리는 곡선이다.
+
+> [!example] 계산 예제 · Worked example
+> $L(s) = 1/(s+1)$을 보자. $\omega = 1$ rad/s에서 $L(i) = 1/(1+i) = 0.5 - 0.5i$이고, 크기는 $0.707$, 각은 $-45°$다. 1 rad/s 사인파가 진폭 71%로, 45° 늦게 나온다는 뜻이다. $\omega = 0$에서 값은 $1$이고 $\omega \to \infty$이면 $0$으로 줄어드니, 나이퀴스트 선도는 실수축 아래에서 $1$부터 $0$까지 가는 반원이고 $-1$ 근처에는 가지 않는다.
+
 **폐루프를 개루프에서 읽는다.** 루프 전달함수 $L(s) = P(s)C(s)$를 쓴다 — 플랜트 곱하기
 제어기, 루프를 한 바퀴 돈 것. 폐루프는 $L(i\omega)$의 나이퀴스트 선도가 점 $-1$과 올바른
 관계를 유지할 때 안정하다(폐루프를 발산시키는 것은 $1 + L = 0$이니, 위험이 있는 곳이
-$-1$이다). 제어 논문이 굳이 *개*루프 양을 그리는 이유가 이것이다. $C$를 바꾸면 $L$이 곧장
+$-1$이다). 개루프에 우반평면 극점이 없다면, 올바른 관계란 곡선이 음의 $\omega$에 대한 거울상과 함께 $-1$을 감싸 돌지 않는다는 것뿐이다. 제어 논문이 굳이 *개*루프 양을 그리는 이유가 이것이다. $C$를 바꾸면 $L$이 곧장
 움직이지만, 폐루프 응답에 미치는 영향은 뒤엉켜 있다.
 
 **여유는 셋이고, 서로 대체되지 않는다.** $\omega_{pc}$를 *위상 교차* — $\angle L = -180°$가
@@ -608,6 +621,7 @@ $-1$이다). 제어 논문이 굳이 *개*루프 양을 그리는 이유가 이�
 앞의 둘은 곡선을 두 방향으로 제약하고, 거리 자체를 제약하는 것은 $s_m$뿐이다. 셋은
 $g_m \ge 1/(1-s_m)$과 $\varphi_m \ge 2\arcsin(s_m/2)$로 이어진다 — 부등호의 방향을 보라.
 좋은 $s_m$은 나머지 둘을 *보장하지만*, 그 역은 성립하지 않는다.
+두 경계 뒤의 그림은 이렇다. $s_m$은 곡선을 $-1$ 둘레 반지름 $s_m$인 원판 밖에 묶어 둔다. 그래서 곡선이 음의 실수축을 지나는 곳은 원점에서 $1-s_m$ 안쪽이어야 하고, 이것이 이득 경계다. 곡선이 단위원을 지나는 곳도 원판 밖이어야 하는데, 단위원 위에서 $-1$로부터 각 $\theta$만큼 떨어진 점까지의 거리는 $2\sin(\theta/2)$이므로 이것이 위상 경계다. $s_m = 0.5$면 $g_m \ge 2$, $\varphi_m \ge 29°$다.
 
 **그 비대칭이 읽을 때 중요해지는 이유.** Åström & Murray는 $g_m = 266$, $\varphi_m = 70°$인
 루프를 든다 — 어떤 심사도 통과할 숫자다 — 그런데 그 안정 여유는 $s_m = 0.27$이다. 계단
@@ -656,7 +670,7 @@ $(1.571-0.785)/31.4=25$ ms다. 거꾸로 79 ms가 주어지면 **지연 전 90°
 $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 79 ms는 25.3 rad/s(4.0 Hz)의
 영점이고, 바로 당신이 대역폭을 원하던 자리에 앉는다.
 
-**보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** $s \to \infty$에서 $sL(s) \to 0$인 내부 안정 루프에 대해(책은 이 가정을 필수라고 부르고, 이것이 없으면 감도를 얼마든지 작게 만들 수 있다고 적는다)
+**보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** 요점부터 한 문장으로: 한 주파수 대역에서 감도를 눌러 내리면 다른 대역에서 반드시 올라온다(*워터베드 효과*). 아래 적분은 그 양이 정확히 얼마인지, 그리고 불안정한 플랜트가 왜 사정을 더 나쁘게 만드는지 말해 준다. $s \to \infty$에서 $sL(s) \to 0$인 내부 안정 루프에 대해(책은 이 가정을 필수라고 부르고, 이것이 없으면 감도를 얼마든지 작게 만들 수 있다고 적는다)
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
@@ -664,7 +678,9 @@ $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 선형 주파수 축 위에서 $\log|S|$가 음수인 넓이(외란이 감쇠되는 구간)는 양수인
 넓이(외란이 증폭되는 구간)로 정확히 값을 치러야 한다. 이것이 **워터베드 효과**다 — 관심
 있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트나 제어기는 우변을 양수로
-만드니, 시작부터 빚을 지고 들어간다. 상보 진술인 우반평면 영점에 대한
+만드니, 시작부터 빚을 지고 들어간다.
+
+상보 진술인 우반평면 영점에 대한
 $\int_0^\infty \omega^{-2}\log|T(i\omega)|\,d\omega = \pi\sum_i 1/z_i$는(이렇게 쓴 식은 $T(0)=1$이 되도록 적분 동작이 있어야 하고, 아니면 $\omega \to 0$에서 발산한다) **느린 RHP 영점이
 빠른 것보다 나쁘다**고 말하고, 앞의 것은 **빠른 RHP 극점이 느린 것보다 나쁘다**고 말한다.
 

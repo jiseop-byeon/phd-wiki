@@ -37,7 +37,7 @@ For a point displaced from a rotation axis, the cross product gives the part of 
 
 ### 2. Why an exponential? Rotation is a linear ODE
 
-A frame spinning at constant angular velocity obeys $\dot R = [\omega_s]\,R$ with $\omega_s$ expressed in the space frame (equivalently $\dot R = R\,[\omega_b]$ in the body frame; MR §3.2.2).
+A frame spinning at constant angular velocity obeys $\dot R = [\omega_s]\,R$ with $\omega_s$ expressed in the space frame (equivalently $\dot R = R\,[\omega_b]$ in the body frame; MR §3.2.2). The two forms agree because $\omega_s = R\,\omega_b$ and rotating a bracket gives $[R\,\omega_b] = R\,[\omega_b]\,R^\top$, so $[\omega_s]\,R = R\,[\omega_b]\,R^\top R = R\,[\omega_b]$.
 This is the matrix version of $\dot x = ax$ — so its solution is the matrix version of
 $e^{at}$: rotating about unit axis $\hat\omega$ for "time" $\theta$ gives
 $$R = e^{[\hat\omega]\theta} = I + \sin\theta\,[\hat\omega] + (1-\cos\theta)\,[\hat\omega]^2 \quad \text{(Rodrigues' formula)}.$$
@@ -75,6 +75,7 @@ The same physical motion can be written in the fixed frame ($\mathcal{V}_s$) or 
 body frame ($\mathcal{V}_b$). They are related by the **adjoint** of the current pose
 $T = (R, p)$:
 $$\mathcal{V}_s = [\text{Ad}_T]\,\mathcal{V}_b, \qquad [\text{Ad}_T] = \begin{pmatrix} R & 0 \\ [p]R & R\end{pmatrix}.$$
+The top row says $\omega_s = R\,\omega_b$. The corner $[p]R$ comes from §3's space-twist formula $v_s = \dot p - \omega_s \times p$: the body origin's velocity is $\dot p = R\,v_b$, so $v_s = R\,v_b + p \times \omega_s = R\,v_b + [p]R\,\omega_b$. In words, $v_s$ describes the imaginary body point sitting at the space origin, offset by $-p$ from the body origin, and spinning about the body origin sweeps that point sideways by $p \times \omega_s$.
 A special case worth memorizing: if $p = 0$ (pure rotation), this is just "rotate both
 halves": $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **Frame subscripts are not decoration**
 — most sign errors in later chapters are $s$/$b$ confusions, so write the subscript every
@@ -148,7 +149,7 @@ $$[\omega] = \begin{pmatrix}0&-\omega_3&\omega_2\\ \omega_3&0&-\omega_1\\ -\omeg
 
 ### 2. 왜 지수함수인가? 회전은 선형 미분방정식이다
 
-일정한 각속도로 도는 프레임은 공간 프레임에서 표현한 $\omega_s$로 $\dot R = [\omega_s]\,R$을 따른다(바디 프레임으로는 $\dot R = R\,[\omega_b]$; MR §3.2.2).
+일정한 각속도로 도는 프레임은 공간 프레임에서 표현한 $\omega_s$로 $\dot R = [\omega_s]\,R$을 따른다(바디 프레임으로는 $\dot R = R\,[\omega_b]$; MR §3.2.2). 두 형태가 같은 이유는 $\omega_s = R\,\omega_b$이고 괄호 행렬을 회전하면 $[R\,\omega_b] = R\,[\omega_b]\,R^\top$이 되어, $[\omega_s]\,R = R\,[\omega_b]\,R^\top R = R\,[\omega_b]$이기 때문이다.
 $\dot x = ax$의 행렬판이다 — 그러므로 해도 $e^{at}$의 행렬판이다: 단위축 $\hat\omega$
 둘레로 "시간" $\theta$만큼 돌면
 $$R = e^{[\hat\omega]\theta} = I + \sin\theta\,[\hat\omega] + (1-\cos\theta)\,[\hat\omega]^2 \quad \text{(로드리게스 공식)}.$$
@@ -183,6 +184,7 @@ $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{
 같은 물리적 운동을 고정 프레임에서 쓰면 $\mathcal{V}_s$, 움직이는 몸체 프레임에서 쓰면
 $\mathcal{V}_b$다. 둘은 현재 자세 $T = (R, p)$의 **adjoint**로 연결된다:
 $$\mathcal{V}_s = [\text{Ad}_T]\,\mathcal{V}_b, \qquad [\text{Ad}_T] = \begin{pmatrix} R & 0 \\ [p]R & R\end{pmatrix}.$$
+윗줄은 $\omega_s = R\,\omega_b$라는 뜻이다. 모서리의 $[p]R$은 §3의 공간 트위스트 식 $v_s = \dot p - \omega_s \times p$에서 나온다: 바디 원점의 속도가 $\dot p = R\,v_b$이므로 $v_s = R\,v_b + p \times \omega_s = R\,v_b + [p]R\,\omega_b$다. 말로 하면, $v_s$는 공간 원점에 놓인 가상의 물체 점(바디 원점에서 $-p$만큼 떨어진 점)을 기술하고, 바디 원점을 중심으로 도는 회전이 그 점을 $p \times \omega_s$만큼 옆으로 쓸고 간다.
 외울 가치가 있는 특수 사례: $p = 0$(순수 회전)이면 그냥 "양쪽을 회전"이다:
 $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **프레임 아래 첨자는 장식이 아니다** — 이후
 장들의 부호 실수 대부분이 $s$/$b$ 혼동이므로, 매번 아래 첨자를 써라. 자세의 지수도

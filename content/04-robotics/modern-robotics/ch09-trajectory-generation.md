@@ -29,8 +29,11 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Time-optimal time scaling**: given actuator limits and the
   [[04-robotics/modern-robotics/ch08-dynamics|dynamics]], find the fastest $s(t)$ along a
   fixed path — an [[02-foundations/optimization|optimization]] problem with a classic
-  bang-bang structure.
+  bang-bang structure (at every instant the path acceleration sits at its maximum or its
+  minimum, never in between — typically full acceleration, then a switch to full deceleration).
 - Smoothness matters physically: discontinuous acceleration = torque spikes = vibration
+  (the torque is $\tau = M(\theta)\ddot\theta + c + g$ from ch.8, and $c$, $g$ vary smoothly
+  with the state, so a jump in $\ddot\theta$ is a jump in commanded torque)
   ([[02-foundations/signal-processing|signal processing]]'s frequency lens applies).
 
 > [!example] Worked example · 계산 예제
@@ -62,8 +65,10 @@ on real hardware for safety/limits.
 - **경유점**: 스플라인으로 웨이포인트들을 통과 — 가까운 점 사이의 오버슈트를 조심.
 - **시간 최적 스케일링**: 액추에이터 한계와
   [[04-robotics/modern-robotics/ch08-dynamics|동역학]]이 주어졌을 때 고정 경로 위에서 가장
-  빠른 $s(t)$ 찾기 — 고전적 뱅뱅 구조를 갖는 [[02-foundations/optimization|최적화]] 문제.
+  빠른 $s(t)$ 찾기 — 고전적 뱅뱅 구조(매 순간 경로 가속도가 최댓값이나 최솟값에 붙어 있고 그 사이 값은 쓰지 않는다 — 보통 최대 가속 후 최대 감속으로 전환)를 갖는 [[02-foundations/optimization|최적화]] 문제.
 - 매끄러움은 물리적으로 중요하다: 불연속 가속도 = 토크 스파이크 = 진동
+  (8장의 토크는 $\tau = M(\theta)\ddot\theta + c + g$이고 $c$, $g$는 상태에 따라 매끄럽게
+  변하므로, $\ddot\theta$가 튀면 명령 토크도 튄다)
   ([[02-foundations/signal-processing|신호처리]]의 주파수 렌즈가 적용된다).
 
 > [!example] 계산 예제 · Worked example

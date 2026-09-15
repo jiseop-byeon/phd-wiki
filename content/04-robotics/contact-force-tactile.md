@@ -29,7 +29,7 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 
 A contact is typically **unilateral**: objects may push but do not pull through an ordinary surface. Motion can switch among separation, impact, sticking, and sliding. This makes the dynamics hybrid and often nonsmooth.
 
-For a gap $\phi(q)\ge 0$ and normal force $f_n\ge 0$, ideal rigid contact is summarized by
+Write $\phi(q)$ for the **gap**: the distance between the nearest points of the two surfaces when the robot and object are in configuration $q$ (for a fingertip above a table, simply its height above the table), positive when they are apart and zero when they touch. In practice a collision-geometry library computes it from the two shapes and their poses. For a gap $\phi(q)\ge 0$ and normal force $f_n\ge 0$, ideal rigid contact is summarized by
 
 $$\phi(q)f_n=0$$
 
@@ -77,11 +77,16 @@ The inequality is useful because increasing tangential demand without enough nor
 
 Simulator contact parameters are often numerical compromises. Success under one simulator setting is not evidence of robustness to real material variation.
 
-The model choice matters because an apparent controller improvement may come from a more forgiving simulated contact. For example, a compliant wall can absorb a wiping path error that would produce a force spike against a stiffer surface. A learned residual can correct repeatable mismatch, but only where its training observations constrain that correction. **The reading this gives you.** Separate the contact law, its parameter identification, and numerical settings. Then look for validation against the relevant physical response rather than success under one convenient simulator configuration.
+The model choice matters because an apparent controller improvement may come from a more forgiving simulated contact. For example, a compliant wall can absorb a wiping path error that would produce a force spike against a stiffer surface. A learned residual (a model fitted to the part of the true dynamics that the physics-based model leaves unexplained) can correct repeatable mismatch, but only where its training observations constrain that correction. **The reading this gives you.** Separate the contact law, its parameter identification, and numerical settings. Then look for validation against the relevant physical response rather than success under one convenient simulator configuration.
 
 ### 4. Grasp and wrench language
 
-A contact force produces a force and moment—a **wrench**—on the object. The grasp map combines contact forces into an object wrench. **Form closure** immobilizes an object through geometry under a specified contact model; **force closure** uses admissible contact forces, commonly including friction, to resist arbitrary external wrenches. Required contact counts depend on dimension, friction and contact assumptions, and general-position conditions.
+A contact force produces a force and moment on the object; stacked into one vector they are a **wrench** (defined in [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]). The **grasp map** is the matrix that adds up all the contact forces into a single object wrench. Two closure notions build on it:
+
+- **Form closure** immobilizes an object through geometry alone, under a specified contact model.
+- **Force closure** uses admissible contact forces, commonly including friction, to resist arbitrary external wrenches.
+
+Required contact counts depend on dimension, friction and contact assumptions, and general-position conditions, meaning the count assumes no degenerate, coincidental arrangement such as contact normals that happen to line up.
 
 **Build the wrench from one contact first.** A force $f$ applied at displacement $r$ from the chosen object origin creates moment $r\times f$. Moving the origin changes the moment coordinates even though the physical push is unchanged. Express every contact in a common frame before summing forces and moments; otherwise the grasp map combines incompatible quantities.
 
@@ -120,7 +125,7 @@ Rope, cloth, soil, wet concrete, cables, and bulk material have high-dimensional
 
 ### 8. Learning and sim-to-real
 
-Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state can aid training while being unavailable at deployment; check how the policy replaces it at test time.
+Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state can aid training while being unavailable at deployment; check how the policy replaces it at test time. One pushing task shows all three: a residual-dynamics network learns the difference between the simulator's predicted next state and the real one; domain randomization resamples μ and object mass every episode; and the policy trains with the simulator's exact object pose but must deploy with a pose estimated from the camera.
 
 ### 9. Evaluation and paper language
 
@@ -187,7 +192,7 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 없다. 운동은 분리·충격·고착(sticking)·미끄럼(sliding) 사이를 오간다. 그래서 동역학이
 하이브리드가 되고 대개 비매끄럽다.
 
-간극 $\phi(q)\ge 0$와 법선력 $f_n\ge 0$에 대해 이상적 강체 접촉은
+$\phi(q)$를 **간극**이라 하자. 로봇과 물체가 구성 $q$에 있을 때 두 표면의 가장 가까운 두 점 사이 거리이고(탁자 위 손끝이라면 그냥 탁자 위 높이), 떨어져 있으면 양수, 닿으면 0이다. 실제로는 충돌 기하 라이브러리가 두 형상과 자세로부터 계산한다. 간극 $\phi(q)\ge 0$와 법선력 $f_n\ge 0$에 대해 이상적 강체 접촉은
 
 $$\phi(q)f_n=0$$
 
@@ -241,14 +246,16 @@ $$\lVert f_t\rVert\le \mu f_n$$
 시뮬레이터의 접촉 파라미터는 대개 수치적 타협이다. 한 시뮬레이터 설정에서의 성공이
 실제 재료 변동에 대한 강건성의 증거는 아니다.
 
-겉보기 제어 개선이 더 관대한 시뮬레이션 접촉에서 올 수 있어 모델 선택이 중요하다. 순응적인 벽은 단단한 표면에서 힘 급증을 만들 닦기 경로 오차를 흡수할 수 있다. 학습 잔차는 반복 불일치를 고치지만 학습 관측이 보정을 제약하는 범위 안에서만 근거가 있다. **여기서 얻는 독법.** 접촉 법칙, 파라미터 식별, 수치 설정을 나눈다. 편한 설정 하나의 성공보다 관련 물리 반응과의 검증을 찾는다.
+겉보기 제어 개선이 더 관대한 시뮬레이션 접촉에서 올 수 있어 모델 선택이 중요하다. 순응적인 벽은 단단한 표면에서 힘 급증을 만들 닦기 경로 오차를 흡수할 수 있다. 학습 잔차(물리 기반 모델이 설명하지 못하고 남긴 실제 동역학의 몫에 맞춘 모델)는 반복 불일치를 고치지만 학습 관측이 보정을 제약하는 범위 안에서만 근거가 있다. **여기서 얻는 독법.** 접촉 법칙, 파라미터 식별, 수치 설정을 나눈다. 편한 설정 하나의 성공보다 관련 물리 반응과의 검증을 찾는다.
 
 ### 4. 파지와 렌치의 언어
 
-접촉력은 물체에 힘과 모멘트 — **렌치(wrench)** — 를 만든다. Grasp map은 접촉력들을
-물체 렌치로 결합한다. **Form closure**는 명시된 접촉 모델 아래 기하만으로 물체를
-고정하고, **force closure**는 허용 접촉력(대개 마찰 포함)으로 임의 외부 렌치에
-저항한다. 필요한 접촉 수는 차원, 마찰·접촉 가정, 일반 위치 조건에 의존한다.
+접촉력은 물체에 힘과 모멘트를 만들고, 이 둘을 한 벡터로 쌓은 것이 렌치다(**wrench**, [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]에서 정의). **Grasp map**은 모든 접촉력을 더해 물체 렌치 하나로 만드는 행렬이다. 그 위에 두 가지 닫힘 개념이 선다.
+
+- **Form closure**는 명시된 접촉 모델 아래 기하만으로 물체를 고정한다.
+- **Force closure**는 허용 접촉력(대개 마찰 포함)으로 임의 외부 렌치에 저항한다.
+
+필요한 접촉 수는 차원, 마찰·접촉 가정, 일반 위치 조건에 의존한다. 일반 위치 조건이란 접촉 법선들이 우연히 한 줄로 늘어서는 것 같은 퇴화한 배치가 없다고 가정한다는 뜻이다.
 
 **접촉 하나의 렌치부터 만든다.** 물체 원점에서 변위 $r$인 곳에 힘 $f$가 가해지면 모멘트는 $r\times f$다. 원점을 옮기면 같은 물리적 밀기라도 모멘트 좌표가 달라진다. 힘과 모멘트를 더하기 전에 모든 접촉을 같은 프레임으로 표현해야 한다. 그렇지 않으면 파지 사상이 서로 맞지 않는 양을 합친다.
 
@@ -305,6 +312,9 @@ $$F = K(x_d - x) + D(\dot x_d - \dot x)$$
 있다. Domain randomization은 학습 조건을 넓히지만, 선택한 randomization 분포가 곧
 "어떤 변동까지 커버했는가"를 정의한다. 시뮬레이터의 특권 정보(privileged state)는 학습을
 돕지만 배포 시에는 없다 — 정책이 시험 시점에 그것을 무엇으로 대체하는지 확인하라.
+밀기 과제 하나에 셋이 다 들어간다. 잔차 동역학 네트워크는 시뮬레이터가 예측한 다음 상태와
+실제 다음 상태의 차이를 배우고, domain randomization은 에피소드마다 μ와 물체 질량을 새로
+뽑으며, 정책은 시뮬레이터의 정확한 물체 자세로 학습하지만 배포 때는 카메라로 추정한 자세만 쓴다.
 
 ### 9. 평가와 논문 표현
 

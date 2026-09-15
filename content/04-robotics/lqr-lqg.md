@@ -39,7 +39,7 @@ $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
 
 **Where it comes from, in four steps.** Guess that the optimal cost-to-go is quadratic,
 $V(x) = x^\top P x$ — a guess justified afterwards by the fact that it closes. Substitute it
-into the optimality condition (the continuous-time Bellman equation, or HJB), which says the
+into the optimality condition (the continuous-time Bellman equation, or HJB — the Bellman equation is introduced in discrete time in [[02-foundations/rl-basics|7. RL Basics §2]]), which says the
 instantaneous cost plus the rate of change of the cost-to-go is zero at the optimum:
 $0 = \min_u\,[\,x^\top Q x + u^\top R u + \nabla V^\top(Ax + Bu)\,]$, with $\nabla V = 2Px$.
 Third, minimise over $u$ — now an ordinary quadratic: setting the derivative to zero gives
@@ -56,7 +56,7 @@ by acting.
 (Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
 stabilizing solution $P$ — positive definite when $(A,Q^{1/2})$ is observable — is what makes $V(x)=x^\top P x$ a Lyapunov function for
-the closed loop (under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step). When a paper says "we solve a Riccati equation," it means this constant
+the closed loop. (A **Lyapunov function** is a scalar "energy" of the state that is positive everywhere except at $x=0$ and decreases along every closed-loop trajectory; if one exists, the state has nowhere to go but $0$, so its existence proves stability. Here the HJB condition gives $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, minus the running cost.) Under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step — LaSalle's invariance principle, which still proves convergence when $\dot V$ is only $\le 0$, provided no trajectory can stay forever where $\dot V = 0$ except at the origin. When a paper says "we solve a Riccati equation," it means this constant
 $P$, computed once offline (or once per linearization in iterative/time-varying LQR).
 
 ### 2. When does this actually work? Two conditions
@@ -196,7 +196,7 @@ $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
 
 **어디서 오는가, 네 단계로.** 최적 cost-to-go가 이차형식이라고 추측한다,
 $V(x) = x^\top P x$ — 맞아떨어지기 때문에 사후에 정당화되는 추측이다. 그것을 최적성
-조건(연속 시간 벨만 방정식, 즉 HJB)에 대입한다. 최적에서는 순간 비용과 cost-to-go의 변화율의
+조건(연속 시간 벨만 방정식, 즉 HJB — 벨만 방정식은 [[02-foundations/rl-basics|7. RL 기초 §2]]에서 이산 시간으로 소개된다)에 대입한다. 최적에서는 순간 비용과 cost-to-go의 변화율의
 합이 0이라는 조건이다: $0 = \min_u\,[\,x^\top Q x + u^\top R u + \nabla V^\top(Ax + Bu)\,]$,
 그리고 $\nabla V = 2Px$다. 셋째, $u$에 대해 최소화하는데 이제 평범한 이차식이다. 미분을 0으로
 두면 $2Ru + 2B^\top P x = 0$, 즉 $u^\star = -R^{-1}B^\top P x$다. **LQR 이득
@@ -210,7 +210,7 @@ $K = R^{-1}B^\top P$가 여기서 나온다. 설계된 것이 아니라 떨어�
 
 (로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해
-$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다(검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다). 논문이 "리카티
+$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. (**리아푸노프 함수**(Lyapunov function)란 $x=0$을 뺀 모든 곳에서 양수이고 모든 폐루프 궤적을 따라 줄어드는 상태의 스칼라 "에너지"다. 그런 함수가 있으면 상태는 $0$ 말고 갈 곳이 없으므로, 그 존재가 곧 안정성의 증명이다. 여기서는 HJB 조건이 $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, 즉 순간 비용에 음수를 붙인 값을 준다.) 검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다 — LaSalle 불변 원리는 $\dot V$가 $\le 0$에 그칠 때도, 원점 말고는 어떤 궤적도 $\dot V = 0$인 곳에 영원히 머물 수 없다면 수렴을 증명해 준다. 논문이 "리카티
 방정식을 푼다"고 하면 이 상수 $P$를 오프라인에서 한 번(반복/시변 LQR에서는 선형화마다
 한 번) 계산한다는 뜻이다.
 

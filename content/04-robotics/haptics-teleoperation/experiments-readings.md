@@ -19,7 +19,7 @@ Each arrow needs a measurement. A motor command is not a measured skin stimulus;
 
 ### 2. Minimal protocol
 
-1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not.
+1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not. The estimand is the precise quantity the study is designed to estimate, here the mean reduction in peak contact force.
 2. **Participants and exclusions:** population, handedness if relevant, sensorimotor conditions, prior experience, stopping criteria.
 3. **Conditions:** feedback mode, delay, gain, task difficulty, and any secondary workload.
 4. **Design:** within-subject designs reduce between-person variance; counterbalance order and include enough practice to separate learning from treatment.
@@ -72,7 +72,7 @@ The algorithms in items 9–12 — penalty and proxy rendering, event-based tran
 The packet covers the first half of a full haptics course particularly well. It does not contain all later lecture/lab materials named in the syllabus—such as the complete CHAI3D, advanced teleoperation, and ROS sequence—so this guide does not reconstruct those lectures or claim to cover them.
 
 > [!question]- Self-check · Answer
-> **A within-subject study has 20 people and 30 trials per person. Is $n=600$?** Not for a participant-level treatment claim. Trials are nested/repeated observations. Analyze that dependence, for example with participant-level summaries or a hierarchical/mixed model; report both 20 participants and 600 trials.
+> **A within-subject study has 20 people and 30 trials per person. Is $n=600$?** Not for a participant-level treatment claim. Trials are nested/repeated observations. Analyze that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
 
 ## 한국어
 
@@ -86,7 +86,7 @@ $$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\
 
 ### 2. 최소 프로토콜
 
-1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다.
+1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다. Estimand는 연구가 추정하도록 설계된 정확한 양이고, 여기서는 최대 접촉력의 평균 감소량이다.
 2. **참가자와 제외:** 모집단, 필요하면 손잡이, 감각운동 조건, 사전 경험, 중단 기준.
 3. **조건:** 피드백 방식, 지연, 이득, 과제 난이도, 부가 workload.
 4. **설계:** within-subject는 사람 간 분산을 줄인다. 순서를 counterbalance하고, 학습을 처치와 분리할 만큼 연습을 넣는다.
@@ -139,4 +139,4 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 이 자료 묶음은 햅틱 과목 전반부를 특히 잘 덮는다. syllabus가 예고한 후반 강의·실습 자료 전부 — 완전한 CHAI3D, 고급 원격조작, ROS 순서 같은 것 — 를 담고 있지는 않다. 그래서 이 안내는 그 강의들을 복원하지 않으며, 다룬다고 주장하지도 않는다.
 
 > [!question]- 스스로 점검 · 정답
-> **within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?** 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.
+> **within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?** 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델(참가자마다 자기 기준선을 주어 한 사람의 반복 trial을 서로 독립인 사람처럼 세지 않는 회귀)로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.

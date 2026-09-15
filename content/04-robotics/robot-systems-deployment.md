@@ -51,12 +51,19 @@ The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz m
 > The third axis is the one most often skipped by a learning-first reader, and it is the same
 > observation [[04-robotics/grasping|15 §5]] makes about extrinsic dexterity: geometry you
 > arrange in advance is capability you do not have to compute.
+>
+> The paper also names concrete choices on two other axes. On *modularity vs. integration*, the
+> team matched perception to the gripper: a suction cup succeeds once it touches any pickable side,
+> so object recognition only had to deliver a rough bounding-box pose, not an exact one. On
+> *planning vs. feedback*, picks came from pre-defined sequences of force-guarded feedback
+> controllers switched by sensor events (touch the object, then turn on suction), with the arm on a
+> mobile base so that motion planning was mostly unnecessary.
 
 ### 2. Embodiment and action interfaces
 
 Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful.
 
-When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, impedance target, or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change. An end-effector-pose action does not reach a motor until [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] resolves it — including its branch choices and singularities — and a waypoint action does not become motion until [[04-robotics/modern-robotics/ch09-trajectory-generation|time scaling (MR ch.9)]] gives it a velocity profile inside the actuator limits. On a wheeled base, both sit on the [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|nonholonomic kinematics of MR ch.13]].
+When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, [[04-robotics/force-compliance-control|impedance target]] (a desired stiffness and damping around a reference, not a position to hit exactly), or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change. An end-effector-pose action does not reach a motor until [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] resolves it — including its branch choices and singularities — and a waypoint action does not become motion until [[04-robotics/modern-robotics/ch09-trajectory-generation|time scaling (MR ch.9)]] gives it a velocity profile inside the actuator limits. On a wheeled base, both sit on the [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|nonholonomic kinematics of MR ch.13]].
 
 ### 3. Timing and a latency budget
 
@@ -105,7 +112,9 @@ so the millisecond is the unit rather than the frame
 > travelled $0.3 \times 0.079 = 24$ mm by the time its own image produces an action. Against a
 > $\pm 10$ mm grasp tolerance you must either slow to $0.010/0.079 = 0.13$ m/s or predict
 > forward. As *dead time in a feedback loop*, a delay $T$ contributes $360 fT$ degrees of
-> phase lag. If the loop had 90° margin before the delay and must retain 45°, then 79 ms
+> phase lag at a signal frequency $f$ in Hz, because a delay of $T$ seconds is the fraction $fT$ of one period.
+> If the loop had 90° margin before the delay and must retain 45°, the delay may use at most 45° at the
+> crossover frequency $f$: $360fT\le 45°$, so $f\le 45°/(360T)$. With $T=0.079$ s this
 > gives the illustrative crossover budget $(90°-45°)/(360T)=\mathbf{1.6}$ Hz. This is not
 > a universal cap: the plant and controller determine the pre-delay margin, and adding delay
 > can move the crossover. [[04-robotics/control-theory-ce397|5. Control §5.5]] derives this
@@ -271,7 +280,7 @@ then a debugging order that separates numerical instability from mechanical reso
 friction limit cycle — see
 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability §6]].
 
-A digital twin is not automatically a validated predictor. Ask what is synchronized, calibrated, and experimentally checked. Domain randomization covers only the factors and ranges that were randomized.
+A [[05-construction-robotics/digital-twin-workflows|digital twin]] (a model of a specific real site or machine, kept updated from it) is not automatically a validated predictor. Ask what is synchronized, calibrated, and experimentally checked. [[05-construction-robotics/sim-to-real|Domain randomization]] (training across randomly varied simulator parameters so the real world looks like one more sample) covers only the factors and ranges that were randomized.
 
 ### 10. Failure taxonomy
 
@@ -377,6 +386,12 @@ flowchart LR
 >
 > 학습 중심으로 읽는 사람이 가장 자주 건너뛰는 것이 세 번째 축이고, 이는 [[04-robotics/grasping|15 §5]]의
 > extrinsic dexterity와 같은 관찰이다 — **미리 배치해 둔 기하는 계산하지 않아도 되는 능력이다.**
+>
+> 논문은 다른 두 축에서도 구체적 선택을 밝힌다. *모듈성 대 통합*에서는 인식을 그리퍼에 맞췄다:
+> 흡착 컵은 집을 수 있는 면 하나에 닿기만 하면 성공하므로, 물체 인식은 정확한 pose가 아니라
+> 대략적인 바운딩 박스 pose만 내면 됐다. *계획 대 피드백*에서는 미리 정한 힘 감시 피드백 제어기
+> 열을 센서 이벤트(물체에 닿으면 흡착을 켠다)로 전환해 집기 동작을 만들었고, 팔을 이동 베이스에
+> 올려 모션 플래닝이 대부분 필요 없게 했다.
 
 ### 2. Embodiment와 행동 인터페이스
 
@@ -384,8 +399,8 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 결합을 포함한다. 모터·유압·기어비·백래시·포화·부족구동·대역폭이 어떤 행동이 의미
 있는지를 결정한다.
 
-논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·임피던스
-타깃·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
+논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·[[04-robotics/force-compliance-control|임피던스 타깃]]
+(정확히 도달할 위치가 아니라 기준 주위의 원하는 강성과 감쇠)·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
 바뀌면 다르게 행동할 수 있다. 말단 pose 행동은
 [[04-robotics/modern-robotics/ch06-inverse-kinematics|역기구학(MR 6장)]]이 — 가지 선택과
 특이점까지 포함해 — 풀어 주기 전까지 모터에 닿지 않고, 웨이포인트 행동은
@@ -439,8 +454,9 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 > **대가는 두 번 치른다.** *낡음*으로: 0.3 m/s로 움직이는 엔드이펙터는 자기 이미지가 행동을
 > 만들어 낼 때쯤 이미 $0.3 \times 0.079 = 24$ mm를 갔다. $\pm 10$ mm 파지 허용 오차 앞에서는
 > $0.010/0.079 = 0.13$ m/s로 늦추거나 앞을 예측해야 한다. *피드백 루프의 죽은 시간*으로 보면
-> 지연 $T$는 $360 fT$도의 위상 지연을 더한다. 지연 전 여유가 90°이고 45°를 남겨야 한다고
-> 가정하면 79 ms에서 예시 교차 주파수 예산은 $(90°-45°)/(360T)=\mathbf{1.6}$ Hz다. 이것은
+> 지연 $T$는 신호 주파수 $f$(Hz)에서 $360 fT$도의 위상 지연을 더한다. $T$초 지연이 한 주기의 $fT$만큼이기 때문이다.
+> 지연 전 여유가 90°이고 45°를 남겨야 한다고 가정하면, 교차 주파수 $f$에서 지연이 쓸 수 있는 몫은
+> 최대 45°다: $360fT\le 45°$, 따라서 $f\le 45°/(360T)$. $T=0.079$ s를 넣으면 예시 교차 주파수 예산은 $(90°-45°)/(360T)=\mathbf{1.6}$ Hz다. 이것은
 > 보편 상한이 아니다. 지연 전 여유는 플랜트와 제어기가 정하고, 지연을 넣으면 교차 주파수도
 > 움직일 수 있다. [[04-robotics/control-theory-ce397|5. 제어 §5.5]]가 이 조건부 예산을 유도한다.
 >
@@ -609,8 +625,8 @@ print(ev(('and', safe, ('and', seq, react)), tr),                  # False
 불안정과 기계 공진과 마찰 한계주기를 갈라 주는 디버깅 순서 — 는
 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성 §6]]에 있다.
 
-디지털 트윈이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
-물어라. Domain randomization은 무작위화한 요인과 범위만 커버한다.
+[[05-construction-robotics/digital-twin-workflows|디지털 트윈]](특정 실제 현장이나 기계를 본뜨고 그로부터 계속 갱신되는 모델)이 자동으로 검증된 예측기인 것은 아니다. 무엇이 동기화·보정·실험 검증됐는지
+물어라. [[05-construction-robotics/sim-to-real|Domain randomization]](시뮬레이터 매개변수를 무작위로 바꿔 가며 학습해 실제 세계가 표본 하나로 보이게 하는 방법)은 무작위화한 요인과 범위만 커버한다.
 
 ### 10. 실패 분류
 

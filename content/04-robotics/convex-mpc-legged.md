@@ -18,17 +18,18 @@ The cleanest case study of the skill the optimization page teaches: choose the a
 > 왜 문제를 볼록화했고 그 단순화의 대가가 무엇인지 이해하는 것이 목표다. 대표 응용 읽기이지 제어기 설계 가이드가 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/mpc|7. MPC]] (the formulation being applied) · [[02-foundations/optimization|4. Optimization §5]] (QP) · [[04-robotics/contact-force-tactile|9. Contact §2]] (the friction cone that becomes the constraint set) · [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] (what the single-rigid-body approximation throws away)
-> [[04-robotics/mpc|7. MPC]] (적용되는 정식화) · [[02-foundations/optimization|4. 최적화 §5]] (QP) · [[04-robotics/contact-force-tactile|9. 접촉 §2]] (제약 집합이 되는 마찰 원뿔) · [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] (단일 강체 근사가 버리는 것)
+> [[04-robotics/mpc|7. MPC]] (the formulation being applied) · [[02-foundations/optimization|4. Optimization §5]] (QP) · [[04-robotics/contact-force-tactile|9. Contact §2]] (the friction cone that becomes the constraint set) · [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] (what the single-rigid-body approximation throws away) · [[02-foundations/se3-geometry|8. 3D Geometry §2]] (roll, pitch, yaw)
+> [[04-robotics/mpc|7. MPC]] (적용되는 정식화) · [[02-foundations/optimization|4. 최적화 §5]] (QP) · [[04-robotics/contact-force-tactile|9. 접촉 §2]] (제약 집합이 되는 마찰 원뿔) · [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] (단일 강체 근사가 버리는 것) · [[02-foundations/se3-geometry|8. 3D 기하 §2]] (롤·피치·요)
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*, made in five modelling moves:
 
-1. **Single rigid body**: approximate the robot as one rigid body (ignore leg dynamics).
+1. **Single rigid body**: approximate the robot as one rigid body (ignore leg dynamics). That is reasonable when the legs are light compared with the body, but it is a real omission: the momentum of a fast leg swing is simply not in the model.
 2. **Small roll and pitch**: linearize the rotation dynamics under a small roll-and-pitch
-   assumption. The single state matrix uses the *average* reference yaw over the horizon, while
-   each step's input matrix uses that step's reference yaw and footholds (the first step uses
-   the current robot state).
+   assumption (roll, pitch and yaw are the body's rotations about its forward, sideways and
+   vertical axes). The single state matrix uses the *average* reference yaw over the horizon, while
+   each step's input matrix uses that step's reference yaw and footholds.
+   The one exception is the first step, which uses the current robot state instead.
 3. **Forces as decisions**: treat ground reaction forces as the decision variables.
 4. **Friction pyramid**: approximate each circular friction cone by linear facets.
 5. **Condensed QP, solved fast**: those linear inequalities keep the problem a **convex QP**,
@@ -77,10 +78,11 @@ locomotion policies (RL) are compared against.
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*이고,
 다섯 가지 모델링 선택으로 이루어진다:
 
-1. **단일 강체**: 로봇을 단일 강체로 근사한다(다리 동역학 무시).
-2. **작은 롤·피치**: 회전 동역학을 롤과 피치가 작다는 가정 아래 선형화한다. 상태 행렬 하나는
+1. **단일 강체**: 로봇을 단일 강체로 근사한다(다리 동역학 무시). 다리가 몸통에 비해 가벼우면 합리적이지만, 실제로 빠뜨리는 것이 있다. 다리를 빠르게 휘두를 때의 운동량은 모델에 아예 없다.
+2. **작은 롤·피치**: 회전 동역학을 롤과 피치가 작다는 가정 아래 선형화한다(롤·피치·요는 몸통의
+   앞뒤·좌우·수직 축에 대한 회전이다). 상태 행렬 하나는
    지평 전체 기준 궤적의 *평균* 요를 쓰고, 단계별 입력 행렬은 그 단계의 기준 요와 발 위치를
-   쓴다(첫 단계는 현재 로봇 상태).
+   쓴다. 단 하나의 예외는 첫 단계로, 그 단계는 대신 현재 로봇 상태를 쓴다.
 3. **힘을 결정 변수로**: 지면 반력을 결정 변수로 삼는다.
 4. **마찰 피라미드**: 원형 마찰 원뿔을 선형 면들로 이루어진 마찰 피라미드로 근사한다.
 5. **condensed QP, 빠른 풀이**: 이 선형 부등식 덕분에 문제는 **볼록 QP**로 남고,

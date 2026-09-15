@@ -17,7 +17,7 @@ A single image answers *what is here*. Video is required to answer *what is happ
 > Distinguish recognition, temporal localization, spatiotemporal detection, and anticipation; explain why a video model may need no temporal reasoning to score well; interpret backbone choices (two-stream, 3D CNN, video transformer) and the cost they impose; and read an evaluation critically enough to know whether the claimed capability was tested.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
+> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
 
 > [!note] First pass · 처음이라면
 > Read §1 — four tasks that get mixed up routinely — then §2 on scene bias, then §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them.
@@ -31,11 +31,13 @@ A single image answers *what is here*. Video is required to answer *what is happ
 | Spatiotemporal detection | untrimmed video | per-frame boxes + action label | frame-mAP |
 | **Action anticipation** | video up to $t$, **nothing after** | label of the action starting at $t+\tau$ | top-$k$ accuracy at anticipation time $\tau$ |
 
+Temporal IoU (intersection over union) is the overlap of a predicted segment with the true one divided by the length of their union; mAP averages precision over classes. Both are defined in [[02-foundations/ml-practice|ML Practice §3]].
+
 Anticipation is the only one of these that is causally constrained: the model may not see the moment it is predicting. Every claim about "predicting intent" belongs in this row, and a paper that reports recognition numbers has not demonstrated anticipation.
 
 ### 2. The scene-bias problem
 
-Let $y$ be the action label and $x_1$ a single frame. Many datasets satisfy
+Let $y$ be the action label and $x_1$ a single frame. Write $I(a; b)$ for the mutual information between $a$ and $b$ — how much knowing one reduces uncertainty about the other ([[02-foundations/information-theory|Information Theory §4]]). Many datasets satisfy
 
 $$I(y; x_1) \approx I(y; x_{1:T})$$
 
@@ -66,7 +68,11 @@ flowchart LR
 
 The practical consequence for a robotics application is temporal receptive field. Most of these models reason over **2–10 seconds**. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
 
-Space-time attention works because tokens carry both image-patch content and a position in the clip. Query–key similarity weights let a patch depicting a hand draw information from a tool or from another time, rather than treating each frame in isolation. Full attention compares all token pairs; factorized variants restrict or separate the spatial and temporal comparisons. The underlying weighted aggregation is the same operation illustrated in [[02-foundations/linear-algebra|Linear Algebra §1]]. **The reading this gives you.** Ask which frames and patches can exchange information, and whether future frames enter a supposedly online prediction. Attention can connect evidence across a clip; it does not by itself establish action causality.
+Space-time attention works because tokens carry both image-patch content and a position in the clip. Query–key similarity weights let a patch depicting a hand draw information from a tool or from another time, rather than treating each frame in isolation.
+
+Full attention compares all token pairs; factorized variants restrict or separate the spatial and temporal comparisons. The underlying weighted aggregation is the same operation illustrated in [[02-foundations/linear-algebra|Linear Algebra §1]].
+
+**The reading this gives you.** Ask which frames and patches can exchange information, and whether future frames enter a supposedly online prediction. Attention can connect evidence across a clip; it does not by itself establish action causality.
 
 ### 4. Anticipation, formally
 
@@ -172,7 +178,7 @@ You should be able to:
 > 그 비용을 해석한다; 주장한 능력이 실제로 검증됐는지 판단할 만큼 평가를 비판적으로 읽는다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
+> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 습관적으로 뒤섞이는 네 과제 — 그다음 장면 편향인 §2, 그다음 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라.
@@ -186,11 +192,13 @@ You should be able to:
 | 시공간 검출 | 안 자른 영상 | 프레임별 박스 + 행동 레이블 | frame-mAP |
 | **행동 예측(anticipation)** | $t$까지의 영상, **이후는 없음** | $t+\tau$에 시작될 행동 | 예측 시점 $\tau$에서의 top-$k$ |
 
+시간 IoU(intersection over union)는 예측 구간과 실제 구간의 겹침을 두 구간의 합집합 길이로 나눈 값이고, mAP는 클래스별 정밀도를 평균한 값이다. 둘 다 [[02-foundations/ml-practice|ML 실무 §3]]에 정의되어 있다.
+
 이 중 인과적으로 제약된 것은 anticipation뿐이다 — 모델은 자기가 예측하는 순간을 볼 수 없다. "의도를 예측한다"는 모든 주장은 이 행에 속하고, 인식 수치를 보고한 논문은 예측을 입증한 것이 아니다.
 
 ### 2. 장면 편향(scene bias) 문제
 
-레이블을 $y$, 한 프레임을 $x_1$이라 하면 많은 데이터셋이
+레이블을 $y$, 한 프레임을 $x_1$이라 하자. $I(a; b)$는 $a$와 $b$ 사이의 상호정보량, 즉 한쪽을 알면 다른 쪽의 불확실성이 얼마나 줄어드는가이다([[02-foundations/information-theory|정보 이론 §4]]). 많은 데이터셋이
 
 $$I(y; x_1) \approx I(y; x_{1:T})$$
 
@@ -221,7 +229,11 @@ flowchart LR
 
 로보틱스 응용에서 실질적 귀결은 **시간 수용 영역**이다. 위 모델 대부분이 **2–10초**를 추론한다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
 
-시공간 어텐션의 토큰에는 영상 패치 내용과 클립 안의 위치가 담긴다. 쿼리–키 유사도 가중치로 손 패치가 도구나 다른 시각의 정보를 가져와 프레임을 따로 보지 않게 한다. 전체 어텐션은 모든 토큰 쌍을 비교한다. 분해형은 공간·시간 비교를 제한하거나 분리한다. 가중 집계 자체는 [[02-foundations/linear-algebra|선형대수 §1]]의 연산과 같다. **여기서 얻는 독법.** 어떤 프레임·패치가 정보를 교환하며 온라인 예측에 미래 프레임이 들어가는지 묻는다. 어텐션은 클립의 증거를 연결하지만 행동의 인과성을 자동으로 확립하지는 않는다.
+시공간 어텐션의 토큰에는 영상 패치 내용과 클립 안의 위치가 담긴다. 쿼리–키 유사도 가중치로 손 패치가 도구나 다른 시각의 정보를 가져와 프레임을 따로 보지 않게 한다.
+
+전체 어텐션은 모든 토큰 쌍을 비교한다. 분해형은 공간·시간 비교를 제한하거나 분리한다. 가중 집계 자체는 [[02-foundations/linear-algebra|선형대수 §1]]의 연산과 같다.
+
+**여기서 얻는 독법.** 어떤 프레임·패치가 정보를 교환하며 온라인 예측에 미래 프레임이 들어가는지 묻는다. 어텐션은 클립의 증거를 연결하지만 행동의 인과성을 자동으로 확립하지는 않는다.
 
 ### 4. Anticipation의 정식화
 

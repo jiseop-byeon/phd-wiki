@@ -17,7 +17,7 @@ A robot sharing space with a person acts on a guess about what the person will d
 > Distinguish intent classification from trajectory forecasting and know which one a paper solved; read a time-to-event curve; explain why a well-calibrated 0.7 is more useful than a poorly calibrated 0.9; identify the standard evaluation traps in pedestrian-intent benchmarks; and map the formulation onto human–robot collaboration.
 
 > [!note] Prerequisites
-> [[02-foundations/probability|Probability]] · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
+> [[02-foundations/probability|Probability]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] First pass · 처음이라면
 > Read §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material.
@@ -31,6 +31,8 @@ A robot sharing space with a person acts on a guess about what the person will d
 | Metric | accuracy, AUC, F1 — **conditioned on time-to-event** | ADE / FDE, minADE over $k$ samples |
 | Failure mode | confident wrong class | plausible but wrong mode |
 | What it feeds | a discrete decision (stop, warn, yield) | a continuous plan (cost map, MPC constraint) |
+
+In the right-hand column, ADE (average displacement error) is the Euclidean distance between predicted and true positions averaged over the forecast horizon, FDE (final displacement error) is that distance at the last step only, and minADE over $k$ samples keeps the best of $k$ sampled futures (§6).
 
 They are often solved by the same network and reported in the same paper, but they are not the same claim. **"We predict pedestrian intent" and "we forecast pedestrian trajectories" answer different questions and fail differently.** A trajectory model with low ADE can still be useless if it never places mass on the crossing mode; an intent classifier can be right about crossing and useless for planning because it says nothing about *where*.
 
@@ -116,7 +118,14 @@ Among all cases where the model said 0.7, did the event occur 70% of the time? D
 | Temperature scaling | recalibrated probabilities from a held-out set | one parameter |
 | **Conformal prediction** | a set/interval with a **distribution-free coverage guarantee** under exchangeability | a held-out calibration set |
 
-Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability plus a quantile — and its set-valued output can support a defer policy. The usual guarantee is **marginal coverage over exchangeable cases**, not a 90% probability for this individual scene or every subgroup. A set containing both `crossing` and `not crossing` still needs an explicit action rule, such as slow down or ask for help. See [[04-robotics/hri-safety|11. HRI & Safety]].
+ECE (expected calibration error) is the scalar behind the diagram: bin the predictions by $\hat p$, take each bin's gap between the observed event frequency and its mean $\hat p$, and average those gaps weighted by how many cases fall in each bin. Temperature scaling divides the logits by one scalar $T$ fitted on held-out data. A larger $T$ flattens the softmax ([[02-foundations/calculus-backprop|2. Calculus & Backprop §6]]), which pulls overconfident probabilities toward uniform without changing which class ranks first: logits $(2, 0)$ give 0.88 at $T = 1$ and 0.73 at $T = 2$.
+
+Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability (the calibration cases and the new case are equally likely to arrive in any order; i.i.d. draws satisfy it, but it is a weaker assumption) plus a quantile — and its set-valued output can support a defer policy. The usual guarantee is **marginal coverage over exchangeable cases**, not a 90% probability for this individual scene or every subgroup. A set containing both `crossing` and `not crossing` still needs an explicit action rule, such as slow down or ask for help. See [[04-robotics/hri-safety|11. HRI & Safety]].
+
+> [!example] Worked example · 계산 예제
+> **Building a conformal interval.** On 10 held-out pedestrians, the distances (m) between the predicted and true position 2 s ahead are 0.2, 0.3, 0.35, 0.4, 0.5, 0.55, 0.6, 0.7, 0.9, 1.4. For 90% coverage ($\alpha = 0.1$), split conformal takes the $\lceil (n+1)(1-\alpha) \rceil = \lceil 11 \times 0.9 \rceil = 10$th smallest residual, here 1.4 m. So for a new pedestrian the output is a disc of radius 1.4 m around the predicted point, which contains the true position in at least 90% of exchangeable cases.
+>
+> **The reading this gives you.** With only 10 calibration cases the rule picks the largest residual, so one unusual pedestrian sets the radius. A tight interval therefore needs enough calibration data from the deployment distribution.
 
 **A calibrated 0.7 supports a decision rule. An uncalibrated 0.9 does not.**
 
@@ -274,7 +283,7 @@ You should be able to:
 > 벤치마크의 표준 평가 함정을 짚는다; 이 정식화를 인간–로봇 협업에 사상한다.
 
 > [!note] 선수 지식
-> [[02-foundations/probability|확률]] · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
+> [[02-foundations/probability|확률]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다.
@@ -288,6 +297,8 @@ You should be able to:
 | 지표 | 정확도·AUC·F1 — **time-to-event로 조건화된** | ADE / FDE, $k$개 샘플의 minADE |
 | 실패 방식 | 확신에 찬 오분류 | 그럴듯하지만 틀린 모드 |
 | 무엇을 먹이나 | 이산 결정(정지·경고·양보) | 연속 계획(코스트맵, MPC 제약) |
+
+오른쪽 열에서 ADE(average displacement error)는 예측 위치와 실제 위치 사이의 유클리드 거리를 예측 구간 전체에 걸쳐 평균한 값, FDE(final displacement error)는 마지막 시점에서의 그 거리이며, $k$개 샘플의 minADE는 샘플링한 $k$개 미래 중 가장 가까운 것만 남긴다(§6).
 
 같은 네트워크로 풀고 같은 논문에서 보고되는 일이 잦지만 **같은 주장이 아니다.** "보행자 의도를 예측한다"와 "보행자 궤적을 예측한다"는 다른 질문에 답하고 다르게 실패한다. ADE가 낮은 궤적 모델도 횡단 모드에 확률을 전혀 주지 않으면 쓸모없고, 의도 분류기는 횡단 여부를 맞혀도 *어디로*를 말하지 않아 계획에 못 쓴다.
 
@@ -373,7 +384,14 @@ $$\mathbb{P}\big(y = 1 \mid \hat{p} = p\big) \;\overset{?}{=}\; p$$
 | Temperature scaling | held-out으로 재보정된 확률 | 파라미터 1개 |
 | **Conformal prediction** | 교환가능성 하에 **분포 무관 커버리지 보장**이 붙은 집합/구간 | held-out 보정 집합 |
 
-Conformal prediction의 수학은 교환가능성 + 분위수이며, 집합 출력은 defer 정책에 유용하다. 다만 보통의 보장은 교환가능한 사례 전체에 대한 **주변적 coverage**이지 이 한 장면이나 모든 하위집단의 90% 확률이 아니다. `횡단`과 `비횡단`이 모두 든 집합에는 감속이나 사람에게 질문하기 같은 별도 행동 규칙이 필요하다. [[04-robotics/hri-safety|11. HRI & Safety]]로 이어진다.
+ECE(expected calibration error)는 그 그림 뒤의 스칼라다. 예측을 $\hat p$ 구간(bin)으로 나누고, 구간마다 실제 사건 빈도와 평균 $\hat p$의 차이를 구한 뒤, 구간에 든 사례 수로 가중 평균한다. Temperature scaling은 held-out 데이터로 맞춘 스칼라 하나 $T$로 로짓을 나눈다. $T$가 클수록 softmax가 평평해지므로([[02-foundations/calculus-backprop|2. 미적분과 역전파 §6]]) 어느 클래스가 1등인지는 바꾸지 않은 채 과확신 확률을 균등 쪽으로 당긴다: 로짓 $(2, 0)$은 $T = 1$에서 0.88, $T = 2$에서 0.73이 된다.
+
+Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가 어떤 순서로 도착해도 확률이 같다는 가정; i.i.d. 추출이면 성립하지만 그보다 약한 가정이다) + 분위수이며, 집합 출력은 defer 정책에 유용하다. 다만 보통의 보장은 교환가능한 사례 전체에 대한 **주변적 coverage**이지 이 한 장면이나 모든 하위집단의 90% 확률이 아니다. `횡단`과 `비횡단`이 모두 든 집합에는 감속이나 사람에게 질문하기 같은 별도 행동 규칙이 필요하다. [[04-robotics/hri-safety|11. HRI & Safety]]로 이어진다.
+
+> [!example] 계산 예제 · Worked example
+> **conformal 구간 만들기.** held-out 보행자 10명에서 2초 뒤 예측 위치와 실제 위치 사이 거리(m)가 0.2, 0.3, 0.35, 0.4, 0.5, 0.55, 0.6, 0.7, 0.9, 1.4였다. 90% coverage($\alpha = 0.1$)를 원하면 split conformal은 $\lceil (n+1)(1-\alpha) \rceil = \lceil 11 \times 0.9 \rceil = 10$번째로 작은 잔차, 즉 1.4 m를 쓴다. 따라서 새 보행자에 대한 출력은 예측 지점을 중심으로 한 반지름 1.4 m 원판이고, 교환가능한 사례의 최소 90%에서 실제 위치를 담는다.
+>
+> **여기서 얻는 독법.** 보정 사례가 10개뿐이면 규칙이 가장 큰 잔차를 고르므로 특이한 보행자 한 명이 반지름을 정한다. 좁은 구간을 얻으려면 배포 분포에서 온 보정 데이터가 충분해야 한다.
 
 **보정된 0.7은 결정 규칙을 지지한다. 보정 안 된 0.9는 그러지 못한다.**
 

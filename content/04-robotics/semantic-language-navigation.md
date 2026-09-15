@@ -94,8 +94,10 @@ still the backbone.
 **vision-language similarity to the goal text**, choosing where to explore next. No ObjectNav
 training data at all (it still follows waypoints with a PointNav policy trained for 2.5B steps on HM3D), and it deployed on a real Spot. **ESC** does the same job with LLM
 commonsense — object-and-room co-occurrence — compiled into soft logic predicates over a
-frontier scorer. And **CoWs** established that a zero-shot pipeline "matches the navigation
-efficiency of a state-of-the-art ZSON method trained for 500M steps" — parity on SPL, not on
+frontier scorer. A soft logic predicate is a rule such as "a frontier near a sofa is likely
+near the TV" whose truth value lies between 0 and 1 instead of being true or false, so the
+scorer can pick the frontier that best satisfies all the weighted rules at once. And **CoWs** established that a zero-shot pipeline "matches the navigation
+efficiency of a state-of-the-art ZSON (Zero-Shot Object-goal Navigation) method trained for 500M steps" — parity on SPL, not on
 success, on Habitat MP3D (SPL 4.9 vs 4.8, success 9.2 vs 15.3), where the paper says its own comparison "indicates that there can be benefits to
 in-domain learning over CoW baselines". On RoboTHOR the same CoW beats the prior zero-shot model by 15.6 points in success. It is also weak at exploiting complex language.
 
@@ -127,7 +129,9 @@ measures improving.
 **R2R** created the task and the Matterport3D Simulator: follow a natural-language route
 instruction through a real building. But R2R is **discrete** — the agent teleports between
 nodes of a pre-built navigation graph. **RxR** added multilingual instructions and
-word-level temporal alignment to poses, and corrected R2R's path bias (R2R paths are all
+word-level temporal alignment to poses (each spoken word is timestamped against where the
+annotator was on the path, which tells a model and an evaluator which stretch of the path each
+phrase describes), and corrected R2R's path bias (R2R paths are all
 shortest paths, which lets an agent cheat).
 
 **VLN-CE is the most consequential paper in this literature.** It ports R2R into Habitat with
@@ -139,7 +143,7 @@ simplifying assumptions.**
 The empirical companion is Anderson et al.'s sim-to-real study: **55.9% in simulation →
 46.8% real with a pre-built map → 22.5% real with no prior mapping.**
 
-The transformer era — **HAMT** (a hierarchical ViT over the full history of past panoramas,
+The transformer era — **HAMT** (a hierarchical [[01-canonical-papers/notes/1-foundations/vit|ViT]], or Vision Transformer, an image model that splits each view into patches and processes them as a token sequence, over the full history of past panoramas,
 gaining most on long trajectories) and **DUET** (a topological map built on the fly,
 combining coarse global planning including backtracking with fine local encoding) — is the
 high-water mark of the discrete paradigm, and worth reading as such.
@@ -230,7 +234,8 @@ Running alongside, and now more consequential than the ObjectNav leaderboard:
   fusion into nodes, LLM-inferred edges. Cheaper and composable, which is why it became the
   default backbone.
 - **Clio** asks the better question: granularity is not a fixed threshold but is **derived
-  from the task list via an Information Bottleneck**. The same scene needs a coarse map for
+  from the task list via an [[02-foundations/information-theory|Information Bottleneck]]**, which
+  compresses a representation while keeping only what predicts a target, here the tasks. The same scene needs a coarse map for
   navigation and a fine one for manipulation, and the task should decide.
 - **Hydra** is the real-time systems foundation the rest assumes, with **Khronos** extending
   it to spatio-temporal mapping in dynamic environments.
@@ -390,7 +395,9 @@ RL을 이긴다는 것이다. **SemExp**가 그 골격에 의미 지도를 넣�
 만들고 프런티어를 뽑은 뒤, 각 프런티어를 **목표 텍스트와의 시각-언어 유사도**로 채점해 다음에
 어디를 탐색할지 고른다. ObjectNav 학습 데이터가 하나도 없고(웨이포인트 추종에는 HM3D에서 25억 스텝 학습한 PointNav 정책을 쓴다), 실제 Spot에 배치되었다. **ESC**는
 같은 일을 LLM 상식 — 물체-방 동시 출현 — 을 프런티어 채점기 위의 소프트 논리 술어로 컴파일해
-한다. 그리고 **CoWs**가, zero-shot 파이프라인이 "5억 스텝을 학습한 최신 ZSON 방법의 주행 효율과
+한다. 소프트 논리 술어란 "소파 근처의 프런티어는 TV 근처일 가능성이 높다" 같은 규칙인데, 참과
+거짓이 아니라 0과 1 사이의 참값을 가지므로 채점기는 가중된 규칙 전부를 가장 잘 만족하는
+프런티어를 고를 수 있다. 그리고 **CoWs**가, zero-shot 파이프라인이 "5억 스텝을 학습한 최신 ZSON(Zero-Shot Object-goal Navigation) 방법의 주행 효율과
 대등하다"는 것을 보였다 — Habitat MP3D에서 대등한 것은 SPL이지 성공률이 아니다(SPL 4.9 vs 4.8, 성공률 9.2 vs 15.3). 성공률에서는 논문 스스로 그
 비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을 시사한다"고 적는다. RoboTHOR에서는 같은 CoW가 이전 zero-shot 모델보다 성공률이 15.6포인트 높다. 복잡한 언어를 활용하는
 데는 약하다는 것을 확립했다.
@@ -420,7 +427,8 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 
 **R2R**이 과제와 Matterport3D 시뮬레이터를 만들었다: 실제 건물에서 자연어 경로 지시를 따르기.
 그러나 R2R은 **이산적**이다 — 에이전트가 미리 만든 내비게이션 그래프의 노드 사이를 순간이동한다.
-**RxR**이 다국어 지시와 자세에 대한 단어 수준 시간 정렬을 더하고, R2R의 경로 편향(R2R 경로가
+**RxR**이 다국어 지시와 자세에 대한 단어 수준 시간 정렬(말한 단어마다 그때 주석자가 경로 위 어디에 있었는지 시각을
+맞춰, 모델과 평가자가 각 구절이 경로의 어느 구간을 가리키는지 알 수 있게 한다)을 더하고, R2R의 경로 편향(R2R 경로가
 전부 최단 경로여서 에이전트가 부정행위를 할 수 있다)을 교정했다.
 
 **VLN-CE가 이 문헌에서 가장 중대한 논문이다.** R2R을 **저수준 연속 행동**과 함께 Habitat으로
@@ -431,7 +439,7 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 그 경험적 짝이 Anderson 등의 sim-to-real 연구다: **시뮬레이션 55.9% → 사전 지도가 있는 실제
 46.8% → 사전 지도 없는 실제 22.5%.**
 
-트랜스포머 시대 — **HAMT**(지난 파노라마 전체 이력에 대한 계층적 ViT, 긴 궤적에서 가장 크게
+트랜스포머 시대 — **HAMT**(지난 파노라마 전체 이력에 대한 계층적 [[01-canonical-papers/notes/1-foundations/vit|ViT]](Vision Transformer, 각 시야를 패치로 잘라 토큰 열로 처리하는 이미지 모델), 긴 궤적에서 가장 크게
 이득)와 **DUET**(즉석에서 만드는 위상 지도, 되돌아가기를 포함한 거친 전역 계획과 미세 지역
 인코딩의 결합) — 는 이산 패러다임의 정점이고, 그렇게 읽을 가치가 있다.
 
@@ -514,8 +522,8 @@ ObjectNav는 아니었다.
   색인한다.
 - **ConceptGraphs**가 조밀한 특징 필드를 **물체 중심 그래프**로 대체했다 — 다시점 융합으로 노드를,
   LLM 추론으로 간선을. 더 싸고 조합 가능해서 기본 중추가 되었다.
-- **Clio**가 더 나은 질문을 한다: granularity는 고정 임계값이 아니라 **정보 병목을 통해 과제
-  목록에서 유도된다.** 같은 장면이 내비게이션에는 거친 지도를, 조작에는 세밀한 지도를 필요로 하고,
+- **Clio**가 더 나은 질문을 한다: granularity는 고정 임계값이 아니라 **[[02-foundations/information-theory|정보 병목(Information Bottleneck)]]을 통해 과제
+  목록에서 유도된다.** 정보 병목은 목표를 예측하는 것만 남기고 표현을 압축하며, 여기서 목표는 과제들이다. 같은 장면이 내비게이션에는 거친 지도를, 조작에는 세밀한 지도를 필요로 하고,
   그것을 과제가 정해야 한다.
 - **Hydra**가 나머지가 가정하는 실시간 시스템 기반이고, **Khronos**가 그것을 동적 환경의 시공간
   매핑으로 확장한다.

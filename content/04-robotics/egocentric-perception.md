@@ -60,7 +60,7 @@ Large gaze shifts are executed by a coordinated eye-then-head movement, so head 
 It fails in three predictable places:
 
 1. **Small glances.** Checking a mirror, a peripheral hazard, or a colleague's hands may involve eyes only. These are short, frequent, and often decision-relevant — exactly the events a head-only proxy misses.
-2. **Sustained fixation with body motion.** Walking while looking ahead produces head motion driven by gait, not attention. Gait-frequency components must be removed before treating head motion as a signal.
+2. **Sustained fixation with body motion.** Walking while looking ahead produces head motion driven by gait, not attention. Gait-frequency components must be removed before treating head motion as a signal. Because walking repeats at a steady step rate, this is a filtering job: suppress that frequency band ([[02-foundations/signal-processing|signal processing §3–4]]).
 3. **Habitual action.** Skilled workers execute familiar motions with reduced visual guidance. Expertise systematically weakens the attention–head coupling, which means a model trained on novices degrades on experts — the population you would deploy on.
 
 > [!example] Worked example · 계산 예제
@@ -91,7 +91,7 @@ but the observable evidence is different and, for short horizons, better. Hands 
 
 | Cue | Typical lead before action | Reliability |
 |---|---|---|
-| Gaze shift | longest | lowest (often unmeasurable) |
+| Gaze shift | longest | lowest (often unmeasurable without an eye tracker; see §3) |
 | Head orientation | long | moderate |
 | Hand trajectory toward object | short | high |
 | Contact | zero | certain, and too late |
@@ -105,7 +105,7 @@ but the observable evidence is different and, for short horizons, better. Hands 
 
 - **Ego-Exo4D** — the same skilled activity captured *simultaneously* from the wearer's view and from several third-person cameras, with expert commentary as language annotation. This is the dataset that makes the ego–exo correspondence learnable, which is why it matters for turning third-person demonstration video into a first-person policy. Its headline numbers differ between the first arXiv preprint and the CVPR 2024 paper — see Sources.
 
-All three are daily-life or skill datasets. None contains PPE, industrial tools, exclusion zones, or safety-critical decisions. Treat a number from either as evidence that a method *can* work on egocentric video, not that it will work on a helmet camera.
+All three are daily-life or skill datasets. None contains PPE (personal protective equipment such as hard hats and gloves), industrial tools, exclusion zones, or safety-critical decisions. Treat a number from either as evidence that a method *can* work on egocentric video, not that it will work on a helmet camera.
 
 ### 6. The domain gap to field deployment
 
@@ -236,7 +236,7 @@ flowchart TD
 예측 가능한 세 곳에서 실패한다:
 
 1. **작은 곁눈질.** 거울, 주변 위험, 동료의 손을 확인하는 건 눈만 움직일 수 있다. 짧고, 잦고, 결정에 관련된다 — 머리만 보는 대용이 놓치는 바로 그 사건들이다.
-2. **몸이 움직이는 중의 지속 응시.** 앞을 보며 걸으면 머리 움직임이 주의가 아니라 보행에서 나온다. 머리 움직임을 신호로 쓰기 전에 **보행 주파수 성분을 제거해야 한다.**
+2. **몸이 움직이는 중의 지속 응시.** 앞을 보며 걸으면 머리 움직임이 주의가 아니라 보행에서 나온다. 머리 움직임을 신호로 쓰기 전에 **보행 주파수 성분을 제거해야 한다.** 걸음은 일정한 박자로 반복되므로 이것은 필터링 문제다. 그 주파수 대역을 억제하면 된다([[02-foundations/signal-processing|신호 처리 §3–4]]).
 3. **습관화된 동작.** 숙련 작업자는 익숙한 동작을 시각 안내를 줄인 채 수행한다. 숙련도가 주의–머리 결합을 체계적으로 약화시키므로, 초보로 학습한 모델은 숙련자에서 나빠진다 — **배포 대상이 바로 그 집단이다.**
 
 > [!example] 계산 예제 · Worked example
@@ -267,7 +267,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 | 단서 | 행동 전 통상 선행 시간 | 신뢰도 |
 |---|---|---|
-| 시선 이동 | 가장 김 | 가장 낮음 (측정 불가한 경우 많음) |
+| 시선 이동 | 가장 김 | 가장 낮음 (아이트래커 없이는 측정 불가한 경우 많음; §3 참고) |
 | 머리 정향 | 김 | 중간 |
 | 물체를 향한 손 궤적 | 짧음 | 높음 |
 | 접촉 | 0 | 확실하지만 이미 늦음 |
@@ -281,7 +281,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 - **Ego-Exo4D** — 같은 숙련 활동을 착용자 시점과 여러 3인칭 카메라에서 *동시에* 촬영하고, 전문가 해설을 언어 주석으로 붙였다. ego–exo 대응을 학습 가능하게 만드는 데이터셋이고, 3인칭 시연 영상을 1인칭 정책으로 바꾸는 문제에서 중요한 이유가 그것이다. 대표 숫자가 첫 arXiv 프리프린트와 CVPR 2024 논문에서 다르다 — 출처를 보라.
 
-셋 다 일상생활 또는 숙련 활동 데이터셋이다. **PPE도, 산업 공구도, 통제구역도, 안전 필수 결정도 없다.** 여기서 나온 숫자는 그 방법이 자기중심 영상에서 *작동할 수 있다*는 증거지 헬멧 카메라에서 작동한다는 증거가 아니다.
+셋 다 일상생활 또는 숙련 활동 데이터셋이다. **PPE(안전모·장갑 같은 개인 보호구)도, 산업 공구도, 통제구역도, 안전 필수 결정도 없다.** 여기서 나온 숫자는 그 방법이 자기중심 영상에서 *작동할 수 있다*는 증거지 헬멧 카메라에서 작동한다는 증거가 아니다.
 
 ### 6. 현장 배포까지의 도메인 격차
 

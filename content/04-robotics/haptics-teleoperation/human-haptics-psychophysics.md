@@ -11,9 +11,9 @@ mastery-when: "Master staircase design, psychometric modeling, and multisensory 
 
 ### 1. Touch is an active sensing loop
 
-**Cutaneous** cues arise from skin deformation; **kinesthetic/proprioceptive** cues arise from muscles, tendons, joints, and skin stretch during limb motion. Haptic perception combines both with motor commands and often with vision and sound. Passive stimulation asks what a delivered cue evokes; active touch also lets the person choose an exploratory motion. Texture, hardness, temperature, weight, and exact shape invite different exploratory procedures, so a device should be evaluated with the movement the target task actually requires.
+**Cutaneous** cues arise from skin deformation; **kinesthetic/proprioceptive** cues arise from muscles, tendons, joints, and skin stretch during limb motion. Haptic perception combines both with motor commands and often with vision and sound. Passive stimulation asks what a delivered cue evokes; active touch also lets the person choose an exploratory motion. Texture, hardness, temperature, weight, and exact shape invite different exploratory procedures (the stereotyped hand motions people use to probe a property, such as lateral sliding for texture, pressing for hardness, or static contact for temperature), so a device should be evaluated with the movement the target task actually requires.
 
-The common receptor labels are useful but approximate:
+The common receptor labels are useful but approximate. In the names, SA = slowly adapting (keeps firing during a sustained stimulus) and RA = rapidly adapting (fires mainly when the stimulus changes); type I has a small receptive field and type II a large one.
 
 | Afferent class | Adaptation/field | Especially informative about |
 |---|---|---|
@@ -26,13 +26,13 @@ Frequency bands overlap and depend on contactor size, site, preload, and wavefor
 
 ### 2. Threshold, PSE, and JND
 
-A **psychometric function** maps physical stimulus $x$ to response probability, for example $P(\text{comparison judged stronger}\mid x)$. Its midpoint can define the **point of subjective equality** (PSE). In a two-alternative comparison, one common convention is
+A **psychometric function** maps physical stimulus $x$ to response probability, for example $P(\text{comparison judged stronger}\mid x)$. Its midpoint can define the **point of subjective equality** (PSE). In a two-alternative comparison, one common convention reads the just-noticeable difference (JND) off the curve: $x_{75}$ and $x_{25}$ are the stimulus levels judged stronger 75% and 25% of the time, so half their gap measures how far the stimulus must move from the PSE before judgments shift reliably.
 
 $$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
 
 This is not a universal definition: yes/no detection, $n$-alternative choice, and fitted functions use different chance levels and threshold criteria. A 50% threshold is meaningful only after the response task is specified.
 
-**Weber's law** is the local empirical approximation $\Delta I/I\approx k$. It predicts that the absolute increment needed for discrimination grows with the reference intensity. Integrating equal relative increments motivates Fechner's logarithmic scale, but neither law is exact across all intensities or modalities.
+**Weber's law** is the local empirical approximation $\Delta I/I\approx k$. It predicts that the absolute increment needed for discrimination grows with the reference intensity. Integrating equal relative increments motivates Fechner's logarithmic scale (perceived magnitude grows roughly with the logarithm of physical intensity), but neither law is exact across all intensities or modalities.
 
 Worked interpretation: if a force JND is 8% near 5 N, a first estimate of a noticeable increment is $0.08(5)=0.4$ N. This does not prove that every participant notices 5.4 N; it describes a criterion-dependent population response near that operating point.
 
@@ -45,7 +45,7 @@ Worked interpretation: if a force JND is 8% near 5 N, a first estimate of a noti
 | let users match a sensation | adjustment | response and anchoring bias |
 | compare two interfaces | within-subject counterbalanced study | carryover and learning |
 
-Measure false alarms as well as hits. Signal-detection analysis separates sensitivity from response criterion. Randomize condition order, include training, predefine exclusions, and record contact force, motion, latency, and task success rather than relying only on preference.
+Measure false alarms as well as hits. Signal-detection analysis separates sensitivity (how well a person can actually tell stimulus from no stimulus) from response criterion (how willing they are to say "yes" when unsure), because a cautious and a liberal participant can have the same sensitivity but very different hit rates. Randomize condition order, include training, predefine exclusions, and record contact force, motion, latency, and task success rather than relying only on preference.
 
 ### 4. Multisensory and workload claims
 
@@ -62,9 +62,9 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 
 ### 1. 촉각은 능동 센싱 루프다
 
-**Cutaneous** cue는 피부 변형에서, **kinesthetic·proprioceptive** cue는 사지가 움직일 때 근육·힘줄·관절과 피부 신장에서 나온다. 햅틱 지각은 이 둘을 운동 명령과, 흔히 시각·청각과도 결합한다. 수동 자극은 주어진 cue가 무엇을 불러일으키는지 묻고, 능동 촉각은 사람이 탐색 동작까지 고른다. 질감, 경도, 온도, 무게, 정확한 형상은 서로 다른 탐색 절차를 부르므로, 장치는 목표 과제가 실제로 요구하는 움직임으로 평가해야 한다.
+**Cutaneous** cue는 피부 변형에서, **kinesthetic·proprioceptive** cue는 사지가 움직일 때 근육·힘줄·관절과 피부 신장에서 나온다. 햅틱 지각은 이 둘을 운동 명령과, 흔히 시각·청각과도 결합한다. 수동 자극은 주어진 cue가 무엇을 불러일으키는지 묻고, 능동 촉각은 사람이 탐색 동작까지 고른다. 질감, 경도, 온도, 무게, 정확한 형상은 서로 다른 탐색 절차(사람이 어떤 성질을 알아내려고 쓰는 정형화된 손동작. 질감에는 옆으로 문지르기, 경도에는 누르기, 온도에는 가만히 대고 있기)를 부르므로, 장치는 목표 과제가 실제로 요구하는 움직임으로 평가해야 한다.
 
-흔히 쓰는 수용기 이름표는 유용하지만 근사다.
+흔히 쓰는 수용기 이름표는 유용하지만 근사다. 이름에서 SA는 slowly adapting(지속 자극 동안 계속 발화), RA는 rapidly adapting(주로 자극이 변할 때 발화)이고, I형은 수용장이 작고 II형은 크다.
 
 | 구심신경 부류 | 적응·수용장 | 특히 잘 알려 주는 것 |
 |---|---|---|
@@ -77,13 +77,13 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 
 ### 2. 임계값, PSE, JND
 
-**심리측정 함수**는 물리 자극 $x$를 반응 확률로 사상한다. 예를 들어 $P(\text{비교 자극이 더 강하다고 판정}\mid x)$이다. 그 중간점이 **주관적 등가점**(PSE)을 정의할 수 있다. 2대안 비교에서 흔한 관례 하나는 이것이다.
+**심리측정 함수**는 물리 자극 $x$를 반응 확률로 사상한다. 예를 들어 $P(\text{비교 자극이 더 강하다고 판정}\mid x)$이다. 그 중간점이 **주관적 등가점**(PSE)을 정의할 수 있다. 2대안 비교에서 흔한 관례 하나는 곡선에서 최소 식별차(JND)를 읽는 것이다. $x_{75}$와 $x_{25}$는 더 강하다고 판정되는 비율이 각각 75%와 25%인 자극 수준이므로, 그 간격의 절반은 판단이 믿을 만하게 바뀌려면 자극이 PSE에서 얼마나 움직여야 하는지를 잰다.
 
 $$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
 
 이것은 보편적 정의가 아니다. yes/no 검출, $n$대안 선택, 적합된 함수는 각각 다른 chance level과 임계 기준을 쓴다. 50% 임계값이라는 말은 반응 과제를 명시한 뒤에만 의미를 갖는다.
 
-**Weber 법칙**은 국소적인 경험 근사 $\Delta I/I\approx k$다. 구별에 필요한 절대 증가량이 기준 세기와 함께 커진다고 예측한다. 같은 상대 증가량을 적분하면 Fechner의 로그 척도가 동기를 얻지만, 두 법칙 중 어느 것도 모든 세기와 모든 감각 양상에서 정확하지는 않다.
+**Weber 법칙**은 국소적인 경험 근사 $\Delta I/I\approx k$다. 구별에 필요한 절대 증가량이 기준 세기와 함께 커진다고 예측한다. 같은 상대 증가량을 적분하면 Fechner의 로그 척도(지각된 크기가 물리 세기의 로그에 대략 비례해 커진다)가 동기를 얻지만, 두 법칙 중 어느 것도 모든 세기와 모든 감각 양상에서 정확하지는 않다.
 
 계산해 읽기: 5 N 부근에서 힘 JND가 8%라면 알아챌 만한 증가량의 첫 추정은 $0.08(5)=0.4$ N이다. 이것은 모든 참가자가 5.4 N을 알아챈다는 증명이 아니라, 그 작동점 부근에서 기준에 의존하는 모집단 반응을 서술한 것이다.
 
@@ -96,7 +96,7 @@ $$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
 | 사용자가 감각을 맞추게 하기 | adjustment | 반응 편향과 anchoring |
 | 두 인터페이스 비교 | within-subject counterbalanced | 이월 효과와 학습 |
 
-hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도와 반응 기준을 분리해 준다. 조건 순서를 무작위화하고, 훈련을 넣고, 제외 기준을 미리 정하고, 선호도에만 기대지 말고 접촉력·운동·지연·과제 성공을 기록하라.
+hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도(자극이 있을 때와 없을 때를 실제로 얼마나 잘 구별하는가)와 반응 기준(확신이 없을 때 "있다"고 답하려는 경향)을 분리해 준다. 신중한 참가자와 대담한 참가자는 민감도가 같아도 hit 비율이 크게 다를 수 있기 때문이다. 조건 순서를 무작위화하고, 훈련을 넣고, 제외 기준을 미리 정하고, 선호도에만 기대지 말고 접촉력·운동·지연·과제 성공을 기록하라.
 
 ### 4. 다감각과 workload 주장
 

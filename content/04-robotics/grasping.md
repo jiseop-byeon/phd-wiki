@@ -203,7 +203,7 @@ you will meet:
 
 | Representation | What is fed in | Buys | Costs |
 |---|---|---|---|
-| **RGB images** | one or more camera views | the pretrained-backbone ecosystem (SigLIP, DINO) and web-scale priors | no metric scale; viewpoint changes are out-of-distribution |
+| **RGB images** | one or more camera views | the pretrained-backbone ecosystem (SigLIP, a vision–language image encoder in the [[01-canonical-papers/notes/3-vlm/clip\|CLIP]] family; [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]], a self-supervised vision backbone) and web-scale priors | no metric scale; viewpoint changes are out-of-distribution |
 | **Point clouds** | calibrated depth back-projected into the robot frame, encoded with a PointNet-style permutation-invariant network ([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | explicit metric geometry when depth and extrinsics are accurate | extrinsic error shifts the cloud; the encoder is **not** rotation- or viewpoint-invariant; occlusion changes the visible set |
 | **Keypoints** | a sparse set of task-relevant points on the object | a low-dimensional, interpretable state that generalizes across instances of a category | someone must define what the keypoints *are*, and a novel category has none |
 | **Affordances** | a per-pixel or per-point map of where an action can be applied | directly language- and task-conditionable, and composes with open-vocabulary models | supervision is expensive, and "graspable" is not a property of the object alone but of the object *and the gripper* |
@@ -227,7 +227,7 @@ share of the literature does not. Two distinctions are enough to read those pape
   and this section's learned pipelines were never trained. Two reductions are used: a
   **grasp taxonomy** — power versus precision at the top, with leaf types like tripod and tip
   pinch underneath — and, more often in synthesis, a *continuous* low-dimensional subspace
-  (eigengrasps).
+  (eigengrasps: a handful of principal hand-posture directions, found by principal component analysis (PCA) of recorded human grasps, whose combinations span most postures a hand actually uses).
 - **In-hand manipulation** — reorienting an object *after* it is grasped, without putting it
   down — is a genuinely different problem, because the contact set changes during the motion.
   Force closure ([[04-robotics/grasping|§3]]) describes a *static* condition; in-hand
@@ -235,7 +235,7 @@ share of the literature does not. Two distinctions are enough to read those pape
   rolling and sliding reorientation can hold contact throughout. What changes is that the
   problem becomes a hybrid contact-mode problem whose mode combinatorics explode, which is why
   sampling and RL in simulation with heavy randomization became the default. Analytic work did
-  not stop: contact-implicit MPC for in-hand manipulation is current.
+  not stop: contact-implicit MPC ([[04-robotics/mpc|model predictive control]], which re-solves a short-horizon trajectory optimization at every step; *contact-implicit* means the optimizer itself decides when contacts make and break) for in-hand manipulation is current.
 
 For construction this is mostly a boundary marker: site objects are heavy, held with tools or
 two-finger grips, and the dexterity that matters is force regulation ([[04-robotics/force-compliance-control|13]])
@@ -550,7 +550,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 
 | 표현 | 무엇을 넣는가 | 사는 것 | 치르는 것 |
 |---|---|---|---|
-| **RGB 이미지** | 카메라 시점 하나 이상 | 사전학습 백본 생태계(SigLIP, DINO)와 웹 규모 사전지식 | 미터 스케일이 없다. 시점 변화가 분포 밖이다 |
+| **RGB 이미지** | 카메라 시점 하나 이상 | 사전학습 백본 생태계(SigLIP: [[01-canonical-papers/notes/3-vlm/clip\|CLIP]] 계열의 시각–언어 이미지 인코더, [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]]: 자기지도 시각 백본)와 웹 규모 사전지식 | 미터 스케일이 없다. 시점 변화가 분포 밖이다 |
 | **포인트 클라우드** | 보정된 깊이를 로봇 프레임으로 역투영해 PointNet 계열 순열 불변 네트워크로 부호화([[01-canonical-papers/notes/2-computer-vision/pointnet\|PointNet]]) | 깊이와 extrinsic이 정확할 때 명시적 미터 기하 | extrinsic 오차가 점군을 옮긴다. 회전·시점 불변이 아니며 가림이 보이는 점 집합을 바꾼다 |
 | **키포인트** | 물체 위 과제 관련 점들의 성긴 집합 | 저차원이고 해석 가능하며 범주 내 개체를 가로질러 일반화되는 상태 | 키포인트가 *무엇인지*를 누군가 정의해야 하고, 새로운 범주에는 그것이 없다 |
 | **어포던스** | 행동을 적용할 수 있는 곳의 픽셀별·점별 지도 | 언어와 과제로 직접 조건화되고 개방 어휘 모델과 결합된다 | 지도 신호가 비싸고, "잡을 수 있음"은 물체만의 성질이 아니라 물체 *와 그리퍼*의 성질이다 |
@@ -571,14 +571,14 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
   자유도가 한 줌을 넘으면 파지 합성이 §4의 ε 지표를 평가하기 비싼 공간에서의 탐색이 되고, 이
   절의 학습 파이프라인들은 거기서 학습된 적이 없다. 축소는 두 가지가 쓰인다. 이산적인 **파지
   분류 체계**(위로는 power 대 precision, 잎으로는 tripod과 tip 같은 유형), 그리고 **eigengrasp**
-  — 실제 파지가 놓이는 저차원 연속 부분공간이다.
+  — 실제 파지가 놓이는 저차원 연속 부분공간이다. 기록된 사람 파지 자세에 주성분 분석(PCA)을 적용해 얻은 몇 개의 주요 손 자세 방향으로, 그 조합이 손이 실제로 쓰는 자세 대부분을 덮는다.
 - **In-hand manipulation** — 잡은 *뒤에* 내려놓지 않고 물체의 방향을 바꾸는 것 — 은 진짜로
   다른 문제다. 운동 중에 접촉 집합 자체가 바뀌기 때문이다. Force closure([[04-robotics/grasping|§3]])는
   *정적* 조건을 기술하는데, in-hand 재정향은 그것을 의도적으로 깨고 다시 만든다 — 다만 그것은
   **finger gaiting**의 이야기이고, 구르기나 미끄러짐에 의한 재정향은 접촉을 유지한 채로도
   가능하다. 바뀌는 것은 문제가 접촉 모드의 조합이 폭발하는 하이브리드 문제가 된다는 점이고,
   그래서 표본 기반 방법과 무거운 무작위화를 동반한 시뮬레이션 RL이 기본이 되었다. 해석적
-  연구가 멈춘 것은 아니다: in-hand manipulation을 위한 contact-implicit MPC는 현재 진행형이다.
+  연구가 멈춘 것은 아니다: in-hand manipulation을 위한 contact-implicit MPC는 현재 진행형이다. MPC([[04-robotics/mpc|모델 예측 제어]])는 매 스텝 짧은 구간의 궤적 최적화를 다시 푸는 방법이고, *contact-implicit*은 접촉이 언제 생기고 끊기는지를 최적화기 스스로 정한다는 뜻이다.
 
 건설에서 이것은 대체로 경계 표지다: 현장 물체는 무겁고, 공구나 두 손가락 파지로 다뤄지며,
 중요한 손재주는 손가락 걸음이 아니라 힘 조절([[04-robotics/force-compliance-control|13]])이다.

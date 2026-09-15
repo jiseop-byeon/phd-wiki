@@ -80,7 +80,7 @@ A numerical solver usually follows the branch near its initial guess. If it stop
 Iterate:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(task-space error)}$$
 where in the full SE(3) case $e$ is the six-vector error $[\log(T_{now}^{-1} T_{goal})]^\vee$ in body coordinates, paired with the body Jacobian
-([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]]'s log map), and $J^\dagger$
+([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]]'s log map; the "vee" $^\vee$ undoes ch.3's bracket operation, pulling the six numbers back out of the $4\times4$ matrix), and $J^\dagger$
 is the pseudoinverse ([[02-foundations/linear-algebra|least squares]]).
 
 **Follow one iteration.** Compute the current pose, express the goal error in a chosen frame, and evaluate the matching Jacobian at the current joints. Solve the local relation JΔθ ≈ e, update the joint guess, then recompute both pose and error. Repeating is necessary because the Jacobian describes only local change. A damping or step-size rule can keep the update from trusting that approximation too far.
@@ -109,19 +109,22 @@ $\theta^{(0)} = (45°, 90°)$.
 
 ### 4. The two practical complications
 
-- **Singularities**: near them $J^\dagger$ explodes → **damped least squares**
-  $J^\top(JJ^\top + \lambda^2 I)^{-1}$ trades accuracy for stability — ridge regression in
+- **Singularities**: near them $J^\dagger$ explodes. The fix in plain words: add $\lambda^2 I$
+  so the matrix to invert stays invertible even when $J$ loses rank, accepting a slightly
+  wrong but bounded step instead of a huge one. That is **damped least squares**
+  $J^\top(JJ^\top + \lambda^2 I)^{-1}$, which trades accuracy for stability — ridge regression in
   disguise. It is also, exactly, the **Levenberg–Marquardt** step for this residual: the
   identity $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$ makes the
   two expressions the same, so $\lambda$ is a trust parameter and damped IK is the same
   algorithm SLAM and calibration run ([[02-foundations/optimization|4. Optimization §3.5]]).
+
   Note where this comes from: **MR itself does not present damped least squares.** At a
   singularity chapter 6 offers the bare pseudo-inverse and sends the damped and redundant-arm
   family to its notes and references. The $\lambda^2$ form written here is the convention of
   that outside literature, chosen so that $\lambda$ carries units; the optimization page
   writes $\lambda$. Do not go looking for it in the chapter. For a two-link arm coded end to
   end — analytic IK with both elbow branches, then one damped step — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]].
-- **Redundancy** ($n > 6$): the null space of $J$ moves joints without moving the tool —
+- **Redundancy** ($n > 6$): the null space of $J$ ([[02-foundations/linear-algebra|§2's null space]], this time of $J$: joint velocities with $J\dot\theta = 0$) moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
 **Wiki connections**: end-effector-space teleop stacks and VLAs run IK (joint-space rigs such as [[01-canonical-papers/notes/4-vla/act|ALOHA]] skip it) (or its velocity-level cousin) between policy output
@@ -208,7 +211,7 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
 반복:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(작업 공간 오차)}$$
 완전한 SE(3)의 경우 $e$는 바디 좌표의 6차원 오차 $[\log(T_{now}^{-1} T_{goal})]^\vee$이며 바디 자코비안과 짝지어 쓴다
-([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 로그 사상)이고,
+([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 로그 사상; "vee" $^\vee$는 3장의 대괄호 연산을 되돌려 $4\times4$ 행렬에서 여섯 개의 수를 다시 꺼낸다)이고,
 $J^\dagger$는 유사역행렬([[02-foundations/linear-algebra|최소제곱]])이다.
 
 **반복 한 번을 따라간다.** 현재 자세를 계산하고 목표 오차를 정한 프레임으로 표현한다. 현재 관절에서 그 프레임의 야코비안을 구한다. 국소 관계 JΔθ ≈ e를 풀고 관절 추정을 갱신한 뒤 자세와 오차를 다시 계산한다. 야코비안이 국소 변화만 설명하므로 반복이 필요하다. 감쇠나 보폭 규칙은 근사를 너무 멀리 믿지 않게 한다.
@@ -236,18 +239,22 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
 
 ### 4. 실전의 두 가지 복잡성
 
-- **특이점**: 근처에서 $J^\dagger$가 폭발 → **감쇠 최소제곱**
-  $J^\top(JJ^\top + \lambda^2 I)^{-1}$이 정확도를 안정성과 맞바꾼다 — 변장한 릿지 회귀.
+- **특이점**: 근처에서 $J^\dagger$가 폭발한다. 쉬운 말로 된 해법: $\lambda^2 I$를 더해
+  $J$가 랭크를 잃어도 역행렬을 구할 행렬이 계속 가역이 되게 하고, 거대한 스텝 대신 약간
+  틀리지만 크기가 유한한 스텝을 받아들인다. 그것이 **감쇠 최소제곱**
+  $J^\top(JJ^\top + \lambda^2 I)^{-1}$이며, 정확도를 안정성과 맞바꾼다 — 변장한 릿지 회귀.
   그리고 정확히 이 잔차에 대한 **Levenberg–Marquardt** 스텝이기도 하다. 항등식
   $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$가 두 식을 같게
   만들므로 $\lambda$는 신뢰 파라미터이고, 감쇠 IK는 SLAM과 보정이 돌리는 바로 그 알고리즘이다
-  ([[02-foundations/optimization|4. 최적화 §3.5]]). 출처를 분명히 해 두자. **MR 자체는
+  ([[02-foundations/optimization|4. 최적화 §3.5]]).
+
+  출처를 분명히 해 두자. **MR 자체는
   damped least squares를 다루지 않는다.** 6장은 특이점에서 그냥 유사역행렬을 주고, 감쇠와
   여유자유도 계열은 참고문헌으로 넘긴다. 여기 쓴 $\lambda^2$ 표기는 그 바깥 문헌의 관례이고,
   $\lambda$가 단위를 갖게 하려는 것이다. 최적화 페이지는 $\lambda$로 쓴다. 6장에서 이
   표기를 찾지 마라. 2링크 팔을 처음부터 끝까지 코드로 옮긴 것 — 두 팔꿈치 해를 모두 주는
   해석적 IK와 감쇠 스텝 한 번 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]]에 있다.
-- **여유자유도** ($n > 6$): $J$의 영공간은 도구를 움직이지 않고 관절만 움직인다 — 이를
+- **여유자유도** ($n > 6$): $J$의 영공간([[02-foundations/linear-algebra|§2의 영공간]]을 이번엔 $J$에 적용한 것: $J\dot\theta = 0$인 관절 속도들)은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 
 **위키 연결**: 말단 공간 원격조작 스택과 말단 공간 VLA가([[01-canonical-papers/notes/4-vla/act|ALOHA]] 같은 관절 공간 장비는 건너뛴다) 정책 출력과 모터 명령 사이에서 IK(또는 그 속도 수준 사촌)를 돌린다.

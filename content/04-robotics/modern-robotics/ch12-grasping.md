@@ -29,12 +29,14 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   **two** contacts, well under the bound. So the number to quote depends on the order of the
   analysis, not on how the contacts are arranged.
 - **Force closure**: with friction, the contacts can resist *any* external wrench —
-  the contact friction cones must positively span the whole wrench space. Practical grasps
+  the contact friction cones must positively span the whole wrench space (every wrench is a
+  *nonnegative* combination of cone directions, because a contact can push but never pull). Practical grasps
   are usually force closures with 2–3 fingers.
 - **The antipodal intuition** (worked): for a **planar body with two frictional point
   contacts**, the line joining the contacts must lie inside both friction cones — "the
   fingers can see each other through their cones." In spatial grasping, two hard point
-  contacts cannot resist torque about their connecting axis; at least three point contacts
+  contacts cannot resist torque about their connecting axis, because each contact force acts
+  at a point on that axis and so has no lever arm about it; at least three point contacts
   are needed. Two **soft-finger** contacts can add torsional moments and achieve spatial
   force closure. Always name the contact model before claiming closure.
 - **Learning-era continuation**: grasp synthesis is now largely learned (grasp-detection
@@ -73,11 +75,11 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   경계보다 한참 아래다. 즉 인용할 숫자는 접촉을 어떻게 배치했는지가 아니라 몇 차까지
   분석했는지에 달렸다.
 - **Force closure**: 마찰이 있으면 접촉들이 *임의의* 외부 렌치를 버틸 수 있다 — 접촉
-  마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다. 실용적 파지는 대개 손가락
+  마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다(모든 렌치가 원뿔 방향들의 *음이 아닌* 결합이어야 한다는 뜻이다. 접촉은 밀 수만 있고 당길 수 없기 때문이다). 실용적 파지는 대개 손가락
   2~3개의 force closure다.
 - **대척 파지의 직관** (예제): **평면 물체와 마찰 점접촉 둘**의 모델에서는 두 접촉점을
   잇는 선이 두 마찰 원뿔 안에 있어야 한다 — "두 손가락이 원뿔을 통해 서로를 본다."
-  공간에서는 hard point 접촉 둘만으로 두 점을 잇는 축 둘레의 토크를 막을 수 없어 최소 세
+  공간에서는 hard point 접촉 둘만으로 두 점을 잇는 축 둘레의 토크를 막을 수 없어(각 접촉력이 그 축 위의 점에 작용하므로 축에 대한 지렛대 팔이 없다) 최소 세
   점접촉이 필요하다. **Soft-finger** 접촉 둘은 비틀림 모멘트를 더해 공간 force closure가
   가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다.
 - **학습 시대의 연속**: 파지 생성은 이제 대부분 학습된다(파지 검출 네트워크, 정밀 손

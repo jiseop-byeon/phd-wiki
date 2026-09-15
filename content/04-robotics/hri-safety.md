@@ -135,7 +135,7 @@ so the chain rule needs second derivatives of $R_H$ at its optimum, not a deriva
 
 ### 4. Human performance
 
-Relevant constructs include workload, situation awareness, attention, reaction time, fatigue, skill, mental model, and trust. High trust is not automatically good: **calibrated trust** means reliance matches system capability and uncertainty. Self-reported trust should be paired with behavior and task outcomes.
+Relevant constructs include workload, situation awareness (correctly perceiving and understanding what the system and site are doing right now), attention, reaction time, fatigue, skill, mental model (the operator's internal picture of how the system behaves, which sets what they expect it to do next), and trust. High trust is not automatically good: **calibrated trust** means reliance matches system capability and uncertainty. Self-reported trust should be paired with behavior and task outcomes.
 
 Trust is useful when it helps a person allocate attention to the system's actual strengths and weaknesses. It becomes harmful when a reassuring interface makes the operator stop noticing failures. For example, an excavator assistant may receive higher trust ratings and fewer overrides while stale localization goes unnoticed. The reduced intervention rate would then reflect missed opportunities to intervene rather than improved autonomy.
 
@@ -219,7 +219,9 @@ travels while the robot reacts *and* stops; how far the robot travels during its
 its stopping distance; the **intrusion distance** $C$ — how far a body part reaches into the
 sensing field before it is detected at all; and the position uncertainty of the operator and of
 the robot. Every learned-perception paper that claims to enable SSM is making a claim about $C$
-and the two uncertainty terms. Detector latency enters the distance directly. PFL's limits are
+and the two uncertainty terms. Detector latency enters the distance directly: it adds to the
+robot's reaction time $T_r$, which sets both the operator's approach and the robot's reaction
+travel (at the example's speeds below, each extra 0.1 s adds 0.26 m). PFL's limits are
 **per body region** — the tolerable force on a hand differs from that on a face. They are also
 split by contact type: *quasi-static* (the body part is trapped against a surface) versus
 *transient* (it can recoil). "Under the force limit" is meaningless without naming region and
@@ -261,7 +263,7 @@ named standard, not against "safety" in general.
 
 ### 7. Human-study design
 
-Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics/IRB review. When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] works the same design through for a haptic study, including the statistical unit and the safety controls a force-producing device needs.
+Within-subject studies compare conditions on the same participant; between-subject studies assign different participants. Counterbalancing helps separate condition effects from practice, fatigue, and order effects. Report participant population, expertise, sample size, exclusions, task realism, objective and subjective measures, and appropriate ethics review by an IRB (Institutional Review Board, the institutional committee that approves research with human participants). When the claim is *perceptual* — the operator felt or noticed something — the measurement procedures themselves are a settled toolbox: [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement]] covers thresholds, the classical procedures, and how to tell a perception study from a performance study. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] works the same design through for a haptic study, including the statistical unit and the safety controls a force-producing device needs.
 
 Order matters because people learn the task while they are being measured. Suppose every participant uses interface A before interface B in a bucket-placement study. B may appear easier because the operator has already learned the target geometry and machine response. A worse interface could therefore look better when it always receives the practice benefit.
 
@@ -466,7 +468,8 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 
 ### 4. 인간 성능
 
-작업 부하, 상황 인식, 주의, 반응 시간, 피로, 숙련, 멘탈 모델, 신뢰가 관련 구성 개념이다.
+작업 부하, 상황 인식(시스템과 현장이 지금 무엇을 하고 있는지 올바르게 지각하고 이해하는 상태), 주의, 반응 시간, 피로, 숙련,
+멘탈 모델(시스템이 어떻게 움직이는지에 대한 조작자의 내적 그림으로, 다음에 무엇을 기대할지를 정한다), 신뢰가 관련 구성 개념이다.
 높은 신뢰가 자동으로 좋은 것이 아니다: **보정된 신뢰**(calibrated trust)란 의존이 시스템의
 능력과 불확실성에 맞는 상태다. 자기 보고 신뢰는 행동·과제 결과와 짝지어 읽어야 한다.
 
@@ -551,7 +554,9 @@ stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**�
 거리; 로봇이 반응 시간 동안 이동한 거리; 로봇의 정지 거리; **침입 거리** $C$ — 신체 부위가
 감지되기까지 감지 영역 안으로 얼마나 들어가는가; 그리고 조작자와 로봇 각각의 위치 불확실성.
 SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지 논문은 사실 $C$와 두 불확실성 항에 대한
-주장을 하고 있다. 검출기의 지연은 그 거리에 직접 들어간다. PFL의 한계는 **신체 부위별**이다 —
+주장을 하고 있다. 검출기의 지연은 그 거리에 직접 들어간다: 지연은 로봇의 반응 시간 $T_r$에
+더해지고, $T_r$은 조작자의 접근 거리와 로봇의 반응 중 이동 거리를 함께 정한다(아래 예제의
+속도라면 지연 0.1초마다 0.26 m가 늘어난다). PFL의 한계는 **신체 부위별**이다 —
 손에 허용되는 힘은 얼굴의 것과 다르다. 접촉 유형으로도 갈린다: *준정적*(신체 부위가 표면에
 끼임) 대 *과도*(튕겨 나올 수 있음). "힘 한계 이하"는 부위와 접촉 유형을 밝히지 않으면 아무
 의미가 없다.
@@ -592,8 +597,8 @@ SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지 논문은
 
 Within-subject 연구는 같은 참가자에게 조건들을 비교하고, between-subject 연구는 참가자를
 나눠 배정한다. Counterbalancing은 조건 효과를 연습·피로·순서 효과와 분리하는 데 돕는다.
-참가자 모집단, 전문성, 표본 크기, 제외, 과제 현실성, 객관·주관 지표, 적절한 윤리/IRB
-심의를 보고하라. 주장이 *지각*에 관한 것이라면 — 작업자가 느꼈다, 알아챘다 — 측정 절차
+참가자 모집단, 전문성, 표본 크기, 제외, 과제 현실성, 객관·주관 지표, 적절한 윤리 심의(IRB,
+즉 사람 참가자 연구를 승인하는 기관 연구윤리위원회)를 보고하라. 주장이 *지각*에 관한 것이라면 — 작업자가 느꼈다, 알아챘다 — 측정 절차
 자체가 정착된 공구함이다:
 [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정]]이 임계값,
 고전적 절차들, 그리고 지각 연구와 성능 연구를 구분하는 법을 다룬다.

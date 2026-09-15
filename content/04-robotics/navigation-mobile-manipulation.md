@@ -129,7 +129,7 @@ manipulation paper is to ask which of these four it measured and which it assume
 
 The reference treatment of why mobility and manipulation do not simply concatenate is
 Brock, Park and Toussaint's *Mobility and Manipulation* chapter in the *Springer Handbook of
-Robotics* — whole-body control, redundancy resolution, and the interaction between
+Robotics* — whole-body control (commanding base and arm together as one kinematic chain, instead of moving the base first and the arm afterwards), redundancy resolution, and the interaction between
 navigation and manipulation constraints.
 
 > [!warning] Another absence worth knowing
@@ -199,7 +199,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 | How was the base pose measured — and by what, that the robot did not have? | External tracking makes a result a lower bound on difficulty |
 | Is the task tolerance stated, and does the error budget close? | Without both, "successful" is undefined |
 | Static map or changing environment? | The construction case is the second |
-| Whole-body control, or navigate-then-manipulate? | Sequential is easier and far more common than the phrasing suggests |
+| Whole-body control (base and arm commanded jointly), or navigate-then-manipulate (base move, then a separate arm move)? | Sequential is easier and far more common than the phrasing suggests |
 | Benchmark: simulation, real, or both? | HomeRobot ships both; BEHAVIOR-1K is simulation only |
 
 ### After reading
@@ -347,7 +347,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 조작 논문을 읽는 정직한 방법은 이 넷 중 무엇을 측정했고 무엇을 가정으로 없앴는지 묻는 것이다.
 
 이동과 조작이 그냥 이어 붙는 것이 아닌 이유에 대한 기준 서술은 Brock, Park, Toussaint의
-*Springer Handbook of Robotics* "Mobility and Manipulation" 장이다 — 전신 제어, 여유 자유도
+*Springer Handbook of Robotics* "Mobility and Manipulation" 장이다 — 전신 제어(베이스를 먼저 옮기고 팔을 나중에 움직이는 대신, 베이스와 팔을 하나의 기구학적 사슬로 함께 명령하는 것), 여유 자유도
 해소, 그리고 내비게이션 제약과 조작 제약의 상호작용.
 
 > [!warning] 알아 둘 또 하나의 부재
@@ -408,7 +408,7 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 | 베이스 자세를 무엇으로 쟀는가 — 로봇에게는 없는 무엇으로? | 외부 추적은 결과를 난이도의 하한으로 만든다 |
 | 작업 공차가 명시되어 있고, 오차 예산이 닫히는가? | 둘 다 없으면 "성공"이 정의되지 않는다 |
 | 정적 지도인가 변하는 환경인가? | 건설의 경우는 후자다 |
-| 전신 제어인가, 이동한 뒤 조작인가? | 순차 방식이 더 쉽고, 표현이 시사하는 것보다 훨씬 흔하다 |
+| 전신 제어(베이스와 팔을 함께 명령)인가, 이동한 뒤 조작(베이스 이동 후 별도의 팔 동작)인가? | 순차 방식이 더 쉽고, 표현이 시사하는 것보다 훨씬 흔하다 |
 | 벤치마크: 시뮬레이션인가, 실제인가, 둘 다인가? | HomeRobot은 둘 다, BEHAVIOR-1K는 시뮬레이션만 |
 
 ### 읽고 나면 말할 수 있어야 하는 것

@@ -22,7 +22,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   mass matrix (configuration-dependent inertia), Coriolis/centripetal terms (velocity
   products), gravity. $M(\theta)$ is symmetric positive-definite
   ([[02-foundations/linear-algebra|PSD]]) — kinetic energy $\tfrac12\dot\theta^\top M \dot\theta$
-  is a genuine square.
+  behaves like $x^2$: $\dot\theta^\top M\dot\theta > 0$ for every nonzero joint velocity, matching
+  the fact that a moving arm's kinetic energy can never be negative.
 - **Where the three terms come from, on one link**: a pendulum has only two of them.
   With mass $m$, length $l$ and angle $\theta$ from vertical,
   $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$.
@@ -51,7 +52,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   **Inverse dynamics** ($\ddot\theta \to \tau$): what a controller feeds forward
   ([[04-robotics/modern-robotics/ch11-robot-control|ch.11]]).
 - Task-space version: the same structure expressed at the end-effector — the bridge to
-  operational-space and impedance control.
+  operational-space control ([[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §6]]) and
+  impedance control ([[04-robotics/force-compliance-control|Force & Compliance Control §2]]).
 
 **Wiki connections**: sim-to-real gaps live in the mismatch of this equation's parameters;
 [[01-canonical-papers/notes/5-world-models/dreamer|world models]] *learn* an implicit version of it;
@@ -66,7 +68,8 @@ to buy solvability.
   $$\tau = M(\theta)\,\ddot\theta + c(\theta, \dot\theta) + g(\theta)$$
   질량 행렬(자세 의존 관성), 코리올리/원심 항(속도 곱), 중력. $M(\theta)$는 대칭
   양정부호([[02-foundations/linear-algebra|PSD]]) — 운동 에너지
-  $\tfrac12\dot\theta^\top M \dot\theta$가 진짜 제곱량이라는 뜻.
+  $\tfrac12\dot\theta^\top M \dot\theta$가 $x^2$처럼 행동한다는 뜻이다: 0이 아닌 모든 관절 속도에서
+  $\dot\theta^\top M\dot\theta > 0$이고, 움직이는 팔의 운동 에너지가 음수일 수 없다는 사실과 맞아떨어진다.
 - **세 항이 어디서 오는지, 1링크로**: 진자에는 세 항 중 두 개만 있다.
   질량 $m$, 길이 $l$, 연직에서의 각 $\theta$이면
   $\tau = \underbrace{ml^2}_{M}\,\ddot\theta + \underbrace{mgl\sin\theta}_{g(\theta)}$이다.
@@ -93,7 +96,8 @@ to buy solvability.
   엔진(Isaac, MuJoCo)이 이 방정식 + 접촉이다.
   **역동역학** ($\ddot\theta \to \tau$): 제어기가 피드포워드로 공급하는 것
   ([[04-robotics/modern-robotics/ch11-robot-control|11장]]).
-- 작업 공간 버전: 같은 구조를 말단에서 표현 — operational-space·임피던스 제어로 가는 다리.
+- 작업 공간 버전: 같은 구조를 말단에서 표현 — operational-space 제어([[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학 §6]])와
+  임피던스 제어([[04-robotics/force-compliance-control|힘·컴플라이언스 제어 §2]])로 가는 다리.
 
 **위키 연결**: sim-to-real 격차는 이 방정식의 파라미터 불일치에 살고,
 [[01-canonical-papers/notes/5-world-models/dreamer|월드모델]]은 이것의 암시적 버전을 *학습*하며,

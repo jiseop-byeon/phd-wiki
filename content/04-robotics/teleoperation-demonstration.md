@@ -106,7 +106,9 @@ environment the follower touches. Push the follower into concrete and the leader
 feel concrete; move it through air and the leader should feel nothing. Perfect transparency
 means the operator's hand and the follower's tool are, mechanically, the same object.
 
-Lawrence's four-channel analysis (1993) is where this became a design objective rather
+Lawrence's four-channel analysis (1993) — "four channels" because position/velocity and force
+each cross the link in both directions, four signals in all
+([[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral teleoperation §2]]) — is where this became a design objective rather
 than an intuition, and it also names **the fundamental tradeoff of the field**: transparency
 and robust stability pull against each other. Everything that makes the coupling more faithful — higher force gains,
 stiffer leader, less filtering — also makes the closed loop more willing to oscillate,
@@ -140,7 +142,14 @@ for a chosen wave impedance $b$. The power crossing the channel is then
 $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 
 and a delayed channel that carries $u$ forward and $v$ back can only *store* the difference
-between what entered and what left. It cannot manufacture energy, so the channel is passive
+between what entered and what left. To see it, let the leader side send $u_l$ and the follower
+side send $v_r$, so each arrives $T$ seconds late: $u_r(t) = u_l(t-T)$ and $v_l(t) = v_r(t-T)$.
+Because each squared term that leaves the channel is the same term that entered $T$ seconds
+earlier, the energy the channel has absorbed telescopes to what is still in transit:
+
+$$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfrac12\int_{t-T}^{t}\left(u_l^2 + v_r^2\right)d\tau \ge 0$$
+
+(starting from an empty channel). It cannot manufacture energy, so the channel is passive
 for **any** constant delay — the stability problem is solved structurally rather than by
 tuning.
 
@@ -237,7 +246,7 @@ building.
 Between the operator's intent and the logged data sits a chain of hardware conversions,
 and every link either quantizes the signal or pollutes it. For a force-bearing corpus
 this chain **is the instrument** — its numbers belong in the paper's method section, not
-in an appendix:
+in an appendix. (The worked example after this list puts numbers on all three bullets.)
 
 - **Position resolution.** Encoder counts become a joint angle, the transmission divides
   that angle down, and a lever arm turns it into end-point position. The transmission
@@ -249,9 +258,10 @@ in an appendix:
   the device records near a motion reversal is smeared by that stick–slip band.
 - **The double role of $R$.** Raising the ratio buys peak force and position resolution;
   motor-side friction torque is reflected roughly in proportion to $R$, while motor inertia
-  is reflected roughly as $R^2$ in an ideal rigid transmission. Both reduce backdrivability,
-  which is what
-  "poor backdrivability" means. The cable that lets the motor push the operator is the
+  is reflected roughly as $R^2$ in an ideal rigid transmission. Both reduce backdrivability —
+  how easily a push at the handle turns the motor backward through the transmission
+  ([[04-robotics/force-compliance-control|13. Force control §2]]) — and a device that resists
+  that push is what "poor backdrivability" means. The cable that lets the motor push the operator is the
   cable through which the operator must push the motor. Choosing $R$ is choosing which
   end of the corpus to corrupt.
 
@@ -294,7 +304,8 @@ robot command has to be chosen, and that choice is a modelling decision with con
 
 Two scalings sit on top of the map. **Motion scaling** lets a large human motion become a
 small robot motion, which is how teleoperation reaches tolerances a human hand cannot hold
-directly. **Force scaling** does the same in reverse, letting the operator feel a
+directly: under 10:1 motion scaling a 40 mm hand motion becomes a 4 mm tool motion, and a
+1 mm hand tremor becomes 0.1 mm. **Force scaling** does the same in reverse, letting the operator feel a
 small force amplified — necessary when the robot works at forces a human would not notice,
 and dangerous when it hides forces a human should.
 
@@ -529,7 +540,8 @@ flowchart LR
 움직이면 아무것도 느껴지지 않아야 한다. 완전한 투명성이란 조작자의 손과 팔로워의 공구가
 역학적으로 같은 물체라는 뜻이다.
 
-Lawrence의 4채널 분석(1993)이 이것을 직관이 아니라 설계 목표로 만든 지점이고, 동시에
+Lawrence의 4채널 분석(1993) — 위치/속도와 힘이 각각 양방향으로 링크를 건너 신호가 모두 넷이라 "4채널"이다
+([[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 양방향 원격조작 §2]]) — 이 이것을 직관이 아니라 설계 목표로 만든 지점이고, 동시에
 **이 분야의 근본적 트레이드오프**를 지명한다: 투명성과 견고한 안정성은 서로를 당긴다.
 결합을 더 충실하게 만드는 모든 것 — 높은 힘 게인, 더 뻣뻣한 리더, 적은 필터링 — 은 폐루프를
 더 쉽게 진동하게 만들고, 단단한 환경에서 특히 그렇다. 양방향 제어기는 그 타협선 위에서
@@ -560,7 +572,13 @@ $$u = \frac{b\,\dot x + F}{\sqrt{2b}}, \qquad v = \frac{b\,\dot x - F}{\sqrt{2b}
 $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 
 이고, $u$를 앞으로 $v$를 뒤로 나르는 지연된 채널은 들어온 것과 나간 것의 차이를 *저장*할
-수 있을 뿐이다. 에너지를 제조할 수 없으므로 채널은 **임의의** 상수 지연에 대해 수동적이다 —
+수 있을 뿐이다. 이를 보이려면 리더 쪽이 $u_l$을, 팔로워 쪽이 $v_r$을 보내고 각각 $T$초 늦게
+도착한다고 하자: $u_r(t) = u_l(t-T)$, $v_l(t) = v_r(t-T)$. 채널을 떠나는 제곱 항은 모두
+$T$초 전에 들어온 바로 그 항이므로, 채널이 흡수한 에너지는 상쇄되고 아직 전송 중인 몫만 남는다:
+
+$$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfrac12\int_{t-T}^{t}\left(u_l^2 + v_r^2\right)d\tau \ge 0$$
+
+(빈 채널에서 시작할 때). 에너지를 제조할 수 없으므로 채널은 **임의의** 상수 지연에 대해 수동적이다 —
 안정성 문제가 튜닝이 아니라 구조로 해결된다.
 
 대가는 투명성이다. wave variable 원격조작은 무르게 느껴지고 위치가 표류한다. 보장을 산
@@ -648,7 +666,7 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
 
 조작자의 의도와 기록된 데이터 사이에는 하드웨어 변환의 사슬이 놓여 있고, 모든 고리가
 신호를 양자화하거나 오염시킨다. force-bearing 코퍼스에서 이 사슬은 **측정 도구 그
-자체다** — 그 숫자들은 부록이 아니라 논문의 방법 절에 들어가야 한다:
+자체다** — 그 숫자들은 부록이 아니라 논문의 방법 절에 들어가야 한다. (목록 뒤의 계산 예제가 세 항목 모두에 숫자를 붙인다.)
 
 - **위치 분해능.** 엔코더 카운트가 관절각이 되고, 전동이 그 각을 나누고, 레버 암이
   말단 위치로 바꾼다. 전동비 $R$은 위치를 *정밀하게* 만든다: 모터 쪽 한 스텝
@@ -659,7 +677,9 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
   모든 힘은 그 스틱-슬립 대역으로 번져 있다.
 - **$R$의 이중 역할.** 비율을 올리면 최대 힘과 위치 분해능을 산다. 이상적인 강체 전동에서
   모터 쪽 마찰 토크는 대략 $R$에 비례해, 모터 관성은 대략 $R^2$로 출력에 반사된다. 둘 다
-  역구동성을 떨어뜨리는데, "backdrivability가 나쁘다"의 뜻이 그것이다. 모터가 조작자를
+  역구동성 — 핸들을 밀었을 때 전동을 거쳐 모터가 얼마나 쉽게 거꾸로 돌아가는가
+  ([[04-robotics/force-compliance-control|13. 힘 제어 §2]]) — 을 떨어뜨리고, 그 밀림에 저항하는
+  장치가 "backdrivability가 나쁘다"의 뜻이다. 모터가 조작자를
   밀게 해 주는 케이블은 조작자가 모터를 밀 때 통과해야 하는 케이블이다. $R$을 고르는
   것은 코퍼스의 어느 쪽 끝을 오염시킬지 고르는 것이다.
 
@@ -698,7 +718,8 @@ $$P = \dot x\,F = \tfrac12\left(u^2 - v^2\right)$$
   옮긴다. 사람과 로봇이 다른 위치에 서 있어도 견고하고, 셋업에 더 품이 든다.
 
 그 위에 두 스케일링이 얹힌다. **모션 스케일링**은 사람의 큰 운동을 로봇의 작은 운동으로
-만들어, 사람 손이 직접 유지할 수 없는 공차에 원격조작이 도달하게 한다. **힘 스케일링**은
+만들어, 사람 손이 직접 유지할 수 없는 공차에 원격조작이 도달하게 한다: 10:1 모션 스케일링에서
+40 mm의 손 운동은 4 mm의 공구 운동이 되고, 1 mm의 손떨림은 0.1 mm가 된다. **힘 스케일링**은
 반대로, 작은 힘을 증폭해 조작자가 느끼게 한다 — 로봇이 사람은 알아채지 못할 힘으로 일할 때
 필요하고, 사람이 알아채야 할 힘을 가릴 때 위험하다.
 

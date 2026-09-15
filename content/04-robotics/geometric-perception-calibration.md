@@ -54,7 +54,7 @@ matter of a better camera; it needs a second constraint, which is what §2 is ab
   focal lengths in pixels and the principal point. Fixed once calibrated (until the lens
   is touched).
 - **Extrinsics** $(R, t)$: the [[02-foundations/se3-geometry|SE(3)]] transform $T_{cw}$ that moves points from another frame (robot base,
-  world) into the camera frame before projection, $p^c = Rp^w + t$. The camera's *pose* in that frame is its inverse, $T_{wc}$, with the camera centre at $-R^\top t$ — check which one a calibration file stores.
+  world) into the camera frame before projection, $p^c = Rp^w + t$. The camera's *pose* in that frame is its inverse, $T_{wc}$, with the camera centre at $-R^\top t$: the centre is the point with $p^c=0$, so $0=Rp^w+t$ gives $p^w=-R^\top t$ (using $R^{-1}=R^\top$). Check which one a calibration file stores.
 - Division by $Z$ is the whole story of perspective: farther points move less in the
   image, and **absolute scale is lost** — a single image cannot tell a large-far object
   from a small-near one.
@@ -95,7 +95,7 @@ $v = 600\cdot 0.2/2.0+240=300$. Move the point twice as far
 | Stereo | disparity $d$ between two views: $Z = f\,b/d$ (baseline $b$) | textureless/repetitive surfaces; error grows as $Z^2$ |
 | RGB-D / ToF / structured light | sensor measures $Z$ per pixel | range limits, sunlight, reflective/dark materials |
 | LiDAR | direct time-of-flight ranges | sparsity, motion distortion, weather |
-| Learned monocular depth | network predicts $Z$ (often only up to an unknown scale and shift, frequently in inverse depth) | scale ambiguity; distribution shift — check the [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]] claim scope |
+| Learned monocular depth | network predicts $Z$ (often only up to an unknown scale and shift, frequently in inverse depth $1/Z$, which stays bounded as points recede toward the far background) | scale ambiguity; distribution shift — check the [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]] claim scope |
 | Triangulation | intersect rays from two known poses | needs baseline; degenerate for distant points and small baselines |
 
 **Stereo worked example**: $f=600$ px, baseline $b=0.12$ m, disparity $d=9$ px
@@ -249,10 +249,12 @@ Degeneracy depends on the measured geometry and objective. Point-to-plane residu
 | Hand–eye (camera–robot) | sensor-to-end-effector or base transform | robot motion + target ($AX=XB$) |
 | Temporal | clock offset / latency between sensors | correlation of motion signals |
 
+In the hand–eye equation $AX=XB$ for a wrist-mounted camera, $A$ is the gripper's motion between two robot poses (known from the joint encoders), $B$ is the camera's motion between the same two poses (measured from the target), and $X$ is the unknown camera-to-gripper transform. Each pair of poses gives one equation, and several pairs with different rotation axes pin $X$ down.
+
 The quality metric is usually **reprojection error**: project the estimated 3D points
 through the estimated model and measure pixel distance to their detections. Low
 reprojection error on the calibration set does **not** guarantee accuracy outside the
-calibrated volume, range, or temperature.
+calibrated volume, range, or temperature, because the model was fitted only at the target positions, distances and conditions actually observed; outside them it is extrapolating, not obeying a physical law.
 
 ### 6. Geometric + deep perception
 
@@ -384,7 +386,7 @@ $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
 - **Intrinsics** $(f_x, f_y, c_x, c_y$, 왜곡$)$: 카메라 자체의 성질 — 픽셀 단위 초점
   거리와 주점. 한 번 보정하면 (렌즈를 건드리기 전까지) 고정.
 - **Extrinsics** $(R, t)$: 투영 전에 다른 프레임(로봇 베이스, 월드)의 점을 카메라 프레임으로 옮기는 [[02-foundations/se3-geometry|SE(3)]] 변환 $T_{cw}$, $p^c = Rp^w + t$다.
-  그 프레임에서의 카메라 *pose*는 그 역 $T_{wc}$이고 카메라 중심은 $-R^\top t$다 — 보정 파일이 어느 쪽을 저장하는지 확인하라.
+  그 프레임에서의 카메라 *pose*는 그 역 $T_{wc}$이고 카메라 중심은 $-R^\top t$다. 중심은 $p^c=0$인 점이므로 $0=Rp^w+t$에서 $p^w=-R^\top t$가 나온다($R^{-1}=R^\top$ 사용). 보정 파일이 어느 쪽을 저장하는지 확인하라.
 - $Z$로 나누는 것이 원근의 전부다: 먼 점일수록 이미지에서 덜 움직이고, **절대
   스케일이 사라진다** — 이미지 한 장으로는 크고 먼 물체와 작고 가까운 물체를 구분할
   수 없다.
@@ -425,7 +427,7 @@ $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, 
 | 스테레오 | 두 시점 간 시차 $d$: $Z = f\,b/d$ (기선 $b$) | 무늬 없는/반복 표면; 오차가 $Z^2$로 증가 |
 | RGB-D / ToF / 구조광 | 센서가 픽셀별 $Z$ 측정 | 거리 한계, 햇빛, 반사/어두운 재질 |
 | LiDAR | 직접 time-of-flight 거리 | 희소성, 운동 왜곡, 날씨 |
-| 학습된 단안 깊이 | 네트워크가 $Z$ 예측 (대개 스케일과 오프셋이 미정, 흔히 역깊이 공간) | 스케일 모호성; 분포 이동 — [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]]의 주장 범위 확인 |
+| 학습된 단안 깊이 | 네트워크가 $Z$ 예측 (대개 스케일과 오프셋이 미정, 흔히 역깊이 $1/Z$ 공간. 먼 배경으로 갈수록 $1/Z$는 0 근처에 머물러 유계다) | 스케일 모호성; 분포 이동 — [[01-canonical-papers/notes/2-computer-vision/depth-anything\|Depth Anything]]의 주장 범위 확인 |
 | 삼각측량 | 알려진 두 pose에서 광선 교차 | 기선 필요; 먼 점·짧은 기선에서 퇴화 |
 
 **스테레오 계산 예제**: $f=600$ px, 기선 $b=0.12$ m, 시차 $d=9$ px
@@ -577,9 +579,11 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 | Hand–eye (카메라–로봇) | 센서–말단 또는 베이스 변환 | 로봇 운동 + 타깃 ($AX=XB$) |
 | 시간 | 센서 간 클럭 오프셋/지연 | 운동 신호의 상관 |
 
+손목에 단 카메라의 hand–eye 방정식 $AX=XB$에서 $A$는 두 로봇 자세 사이의 그리퍼 운동(관절 엔코더로 안다), $B$는 같은 두 자세 사이의 카메라 운동(타깃으로 측정한다), $X$는 모르는 카메라–그리퍼 변환이다. 자세 한 쌍이 방정식 하나를 주고, 회전축이 서로 다른 여러 쌍이 모여야 $X$가 정해진다.
+
 품질 지표는 대개 **reprojection error**다: 추정된 3D 점을 추정된 모델로 투영해 검출
 위치와의 픽셀 거리를 잰다. 보정 세트에서 낮은 reprojection error가 보정된 부피·거리·
-온도 밖에서의 정확도를 보장하지는 **않는다**.
+온도 밖에서의 정확도를 보장하지는 **않는다**. 모델은 타깃을 실제로 관측한 위치·거리·조건에서만 맞춰졌으므로, 그 밖에서는 물리 법칙을 따르는 것이 아니라 외삽하고 있을 뿐이다.
 
 ### 6. 기하학적 인식 + 딥 인식
 

@@ -7,6 +7,10 @@ depth-goal: "Read a bilateral architecture as a two-port energy and information 
 mastery-when: "Master two-port absolute-stability or wave-variable synthesis when bilateral control is the contribution."
 ---
 
+> [!note] Prerequisites · 선수 지식
+> Passivity as an energy inequality at a port, and why a sampled or delayed loop can inject energy, from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2 and §4]]; impedance versus admittance causality from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]; phase margin from [[04-robotics/control-theory-ce397|Control Theory §5.5]].
+> 포트에서의 에너지 부등식으로서의 수동성과, 샘플링되거나 지연된 루프가 에너지를 주입할 수 있는 이유는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2와 §4]]. 임피던스 대 어드미턴스 인과성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]. 위상 여유는 [[04-robotics/control-theory-ce397|제어 이론 §5.5]].
+
 ## English
 
 ### 1. Two ports and four signals
@@ -32,13 +36,16 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 Power-preserving scaling requires $s_f=s_x$ under this convention; other conventions or deliberate power amplification change the relation. A paper must distinguish geometric scaling, force scaling, actuator gain, and unit conversion.
 
+> [!example] Worked example · 계산 예제
+> A micro-manipulation setup scales motion down, $s_x=0.1$. The leader moves 20 mm at 50 mm/s, so the follower moves 2 mm at 5 mm/s, and it touches tissue with $F_f=0.5$ N, which is $P_f=0.5\times0.005=2.5$ mW. Power-preserving scaling, $s_f=s_x=0.1$, reflects only $F_l=0.05$ N, too faint to use. Choosing $s_f=10$ instead reflects $F_l=5$ N, and the leader port now carries $P_l=5\times0.05=250$ mW, which is $s_f/s_x=100$ times the follower power. That extra power comes from the actuators, so a force-amplifying teleoperator cannot inherit passivity from its parts; its stability has to be argued separately.
+
 ### 4. Why delay is hard
 
-A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin. Common strategies include:
+A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). Common strategies include:
 
 - local damping or virtual coupling;
 - time-domain passivity observers/controllers;
-- wave/scattering variables that make a constant-delay channel passive under assumptions;
+- wave/scattering variables that make a constant-delay channel passive under assumptions (send sum and difference combinations of velocity and force instead of the raw signals; derived in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]]);
 - model-mediated teleoperation, where a fast local model renders contact while remote updates correct it;
 - shared control or predictive displays that reduce the human's need to close the fastest loop through the network.
 
@@ -51,7 +58,7 @@ A two-port can be represented by impedance, admittance, hybrid, or transmission 
 1. Which variables are treated as inputs and outputs?
 2. Is the model impedance or admittance causal at each port?
 3. Which transfer terms describe self-impedance and cross-coupling?
-4. What human and environment classes are allowed—fixed LTI models, passive uncertainty, or nonlinear systems?
+4. What human and environment classes are allowed—fixed LTI (linear time-invariant; [[02-foundations/signal-processing|6. Signal Processing §1]]) models, passive uncertainty, or nonlinear systems?
 5. Is the criterion stability for one termination or absolute stability over a class of passive terminations?
 
 The classic two-port design literature demonstrates that desired port impedances and stability constraints can be expressed together, but the resulting gain choice depends on plant models and the assumed task impedance. It does not produce a task-independent “best teleoperator.”
@@ -88,13 +95,16 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 이 규약에서 일률을 보존하는 스케일링은 $s_f=s_x$를 요구한다. 다른 규약이나 의도적인 power amplification은 관계를 바꾼다. 논문은 기하 스케일, 힘 스케일, 액추에이터 이득, 단위 변환을 구분해야 한다.
 
+> [!example] 계산 예제 · Worked example
+> 미세 조작 장치가 운동을 $s_x=0.1$로 줄인다고 하자. leader가 50 mm/s로 20 mm 움직이면 follower는 5 mm/s로 2 mm 움직이고, 조직에 $F_f=0.5$ N으로 닿으면 $P_f=0.5\times0.005=2.5$ mW다. 일률 보존 스케일링 $s_f=s_x=0.1$은 $F_l=0.05$ N만 돌려주는데, 쓰기엔 너무 약하다. 대신 $s_f=10$을 고르면 $F_l=5$ N이 반사되고 leader 포트의 일률은 $P_l=5\times0.05=250$ mW, 즉 follower 일률의 $s_f/s_x=100$배가 된다. 그 여분의 일률은 액추에이터에서 나오므로, 힘을 증폭하는 원격조작기는 부품들로부터 수동성을 물려받을 수 없고 안정성을 따로 논증해야 한다.
+
 ### 4. 지연이 어려운 이유
 
-지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유가 깎인다. 흔한 대응은 이렇다.
+지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유(루프가 진동하기 전까지 견딜 수 있는 추가 지연의 여유. [[04-robotics/control-theory-ce397|제어 이론 §5.5]])가 깎인다. 흔한 대응은 이렇다.
 
 - local damping 또는 virtual coupling;
 - 시간영역 passivity observer/controller;
-- 가정 아래에서 일정 지연 채널을 수동적으로 만드는 wave/scattering 변수;
+- 가정 아래에서 일정 지연 채널을 수동적으로 만드는 wave/scattering 변수(원시 신호 대신 속도와 힘의 합·차 조합을 보낸다. 유도는 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]);
 - 빠른 local 모델이 접촉을 렌더링하고 원격 갱신이 그것을 교정하는 model-mediated teleoperation;
 - 사람이 네트워크를 통과하는 가장 빠른 루프를 닫을 필요를 줄이는 shared control이나 predictive display.
 
@@ -107,7 +117,7 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 1. 어떤 변수를 입력으로, 어떤 변수를 출력으로 두었는가?
 2. 각 포트에서 모델이 impedance 인과인가 admittance 인과인가?
 3. 어떤 전달 항이 자기 임피던스이고 어떤 항이 교차 결합인가?
-4. 어떤 사람·환경 부류를 허용하는가 — 고정된 LTI 모델인가, 수동적 불확실성인가, 비선형 시스템인가?
+4. 어떤 사람·환경 부류를 허용하는가 — 고정된 LTI(선형 시불변. [[02-foundations/signal-processing|6. 신호처리 §1]]) 모델인가, 수동적 불확실성인가, 비선형 시스템인가?
 5. 판정 기준이 한 termination에 대한 안정성인가, 수동적 termination 부류 전체에 대한 절대 안정성인가?
 
 고전적인 2-port 설계 문헌은 원하는 포트 임피던스와 안정성 제약을 함께 표현할 수 있음을 보이지만, 거기서 나오는 이득 선택은 플랜트 모델과 가정한 과제 임피던스에 달려 있다. 과제와 무관한 "최선의 원격조작기"를 만들어 주지는 않는다.

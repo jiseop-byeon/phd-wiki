@@ -59,21 +59,29 @@ MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
 **The Mayne et al. 2000 survey** is the field's canonical reference: it settled *when MPC
 is stable* — the roles of the terminal cost, terminal constraint set, and horizon length —
-turning a practical heuristic into a theory. The mechanism, in one paragraph: if the
-horizon ends inside a **terminal set** that is *invariant* under a known local controller
-(invariant = once the state is inside that set, the controller keeps it inside forever, and
-the set lies inside the state constraints while that appended control stays inside the input
-constraints), then a feasible plan today implies a feasible plan tomorrow (append one step of
-that controller) — this is **recursive feasibility**, the property MPC papers invoke by name;
-and if the terminal cost decreases by **at least the stage cost** under that controller, so
-that $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$, the optimal cost becomes a Lyapunov function and
-the origin is **asymptotically** stable, with the feasible set as its domain of attraction.
-Merely decreasing is not enough; the decrease has to dominate the stage cost, and the
-conclusion holds only from states that were feasible to begin with. That inequality is one
-assumption of four, not the whole hypothesis: Borrelli's Theorem 12.2 also requires the stage
-and terminal costs to be continuous and positive definite, the sets to be closed and to contain
-the origin in their interior, and the terminal set to be control invariant inside the state
-constraints. Rawlings adds a lower bound on the stage cost and a weak-controllability condition. Read the survey after the optimization page's example; skim its
+turning a practical heuristic into a theory. The mechanism has two parts, plus fine print:
+
+- **(a) Recursive feasibility.** Suppose the horizon ends inside a **terminal set** that is
+  *invariant* under a known local controller (invariant = once the state is inside that set,
+  the controller keeps it inside forever, and the set lies inside the state constraints while
+  that appended control stays inside the input constraints). Then a feasible plan today implies
+  a feasible plan tomorrow: drop the first step and append one step of that controller. This
+  is **recursive feasibility**, the property MPC papers invoke by name.
+- **(b) Stability from a cost decrease.** Suppose also that the terminal cost decreases by
+  **at least the stage cost** under that controller, so that
+  $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$. Then the optimal cost becomes a Lyapunov function
+  (a positive "energy" that strictly decreases along the closed loop, so the state must settle
+  at the origin; defined in [[04-robotics/lqr-lqg|6. LQR / LQG §1]]) and the origin is
+  **asymptotically** stable, with the feasible set as its domain of attraction. Merely
+  decreasing is not enough; the decrease has to dominate the stage cost, and the conclusion
+  holds only from states that were feasible to begin with.
+- **Fine print.** That inequality is one assumption of four, not the whole hypothesis:
+  Borrelli's Theorem 12.2 also requires the stage and terminal costs to be continuous and
+  positive definite, the sets to be closed and to contain the origin in their interior, and
+  the terminal set to be control invariant inside the state constraints. Rawlings adds a lower
+  bound on the stage cost and a weak-controllability condition.
+
+Read the survey after the optimization page's example; skim its
 formulation and stability sections rather than every proof.
 
 > [!note] First pass · 처음이라면
@@ -153,7 +161,7 @@ input constraints only → condensed. (Large powers of $A$ can worsen conditioni
 - **Linear MPC**: convex QP; solve times from microseconds to milliseconds *for
   small-to-moderate problems on modern CPUs* — always condition speed claims on problem
   size, solver, and hardware.
-- **Nonlinear MPC (NMPC)**: sequential quadratic programming or DDP-style solvers;
+- **Nonlinear MPC (NMPC)**: sequential quadratic programming or DDP-style solvers (differential dynamic programming: a second-order trajectory optimizer that alternates an LQR-like backward pass around the current trajectory with a forward rollout);
   local optima and initialization sensitivity return
   ([[04-robotics/planning-decision-making|planning §6]]).
 - **Contact-implicit MPC**: contact mode switches make the problem non-smooth
@@ -228,15 +236,26 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 
 **Mayne et al. 2000 서베이**는 이 분야의 정본이다: *MPC가 언제 안정한가* — 종단 비용,
 종단 제약 집합, 지평 길이의 역할 — 를 정리해 실용적 휴리스틱을 이론으로 만들었다.
-메커니즘을 한 단락으로: 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합** 안에
-떨어지면(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에 잡아두고,
-그 집합이 상태 제약 안에 있으며 이어 붙이는 입력도 입력 제약 안에 있다는 뜻), 오늘의 실행
-가능한 계획이 내일의 실행 가능한 계획을 함의한다(그 제어기 한 스텝을 이어 붙이면 된다) —
-이것이 MPC 논문들이 이름으로 부르는 **recursive feasibility**다. 그리고 종단 비용이 그
-제어기 아래 **최소한 단계 비용만큼** 감소하면, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$이면(이것은 가정 넷 중 하나일 뿐이다. Borrelli의 정리 12.2는 단계 비용과 종단 비용이 연속이고 양정부호일 것, 집합들이 닫혀 있고 원점을 내부에 포함할 것, 종단 집합이 상태 제약 안에서 제어 불변일 것도 함께 요구하고, Rawlings는 단계 비용의 하한과 약한 제어가능성 조건을 더한다),
-최적 비용이 리아푸노프 함수가 되고 원점이 **점근적으로** 안정해진다. 그 흡인 영역은 실행
-가능 집합이다. 그냥 감소하는 것으로는 부족하고 감소가 단계 비용을 압도해야 하며, 결론은
-애초에 실행 가능했던 상태에서만 성립한다. 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
+메커니즘은 두 부분과 작은 글씨로 이루어진다:
+
+- **(a) Recursive feasibility.** 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합**
+  안에 떨어진다고 하자(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에
+  잡아두고, 그 집합이 상태 제약 안에 있으며 이어 붙이는 입력도 입력 제약 안에 있다는 뜻).
+  그러면 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다: 첫 스텝을 떼어 내고
+  그 제어기 한 스텝을 이어 붙이면 된다. 이것이 MPC 논문들이 이름으로 부르는
+  성질(**recursive feasibility**)이다.
+- **(b) 비용 감소에서 오는 안정성.** 또 종단 비용이 그 제어기 아래 **최소한 단계 비용만큼**
+  감소한다고 하자, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$. 그러면 최적 비용이 리아푸노프
+  함수(폐루프를 따라 계속 줄어드는 양의 "에너지"라서 상태가 원점에 자리 잡을 수밖에 없게
+  만드는 함수; [[04-robotics/lqr-lqg|6. LQR / LQG §1]]에서 정의)가 되고 원점이
+  **점근적으로** 안정해진다. 그 흡인 영역은 실행 가능 집합이다. 그냥 감소하는 것으로는
+  부족하고 감소가 단계 비용을 압도해야 하며, 결론은 애초에 실행 가능했던 상태에서만 성립한다.
+- **작은 글씨.** 그 부등식은 가정 넷 중 하나일 뿐이다. Borrelli의 정리 12.2는 단계 비용과
+  종단 비용이 연속이고 양정부호일 것, 집합들이 닫혀 있고 원점을 내부에 포함할 것, 종단 집합이
+  상태 제약 안에서 제어 불변일 것도 함께 요구하고, Rawlings는 단계 비용의 하한과 약한
+  제어가능성 조건을 더한다.
+
+서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
 정식화와 안정성 조건을 다룬 절들을 훑는 것을 권한다.
 
 > [!note] 처음이라면 · First pass
@@ -310,7 +329,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 - **선형 MPC**: 볼록 QP; *현대 CPU에서 중소 규모 문제라면* 마이크로초~밀리초의 풀이
   시간 — 속도 주장은 항상 문제 크기·솔버·하드웨어를 조건으로 달아 읽어라.
-- **비선형 MPC (NMPC)**: SQP 또는 DDP류 솔버; 국소 최적과 초기화 민감성이 돌아온다
+- **비선형 MPC (NMPC)**: SQP 또는 DDP류 솔버(differential dynamic programming: 현재 궤적 주위에서 LQR 같은 역방향 패스와 순방향 롤아웃을 번갈아 도는 2차 궤적 최적화기); 국소 최적과 초기화 민감성이 돌아온다
   ([[04-robotics/planning-decision-making|계획 §6]]).
 - **접촉 내재 MPC**: 접촉 모드 전환이 문제를 비매끄럽게 만든다
   ([[04-robotics/contact-force-tactile|접촉 §1]]);

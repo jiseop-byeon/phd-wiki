@@ -59,9 +59,10 @@ is at literacy depth, with the reason it is absent from the rest of this page.
 **Why this page does not use any of it.** ZMP assumes a flat, known, co-planar support
 surface and a foot that makes full contact with it. That assumption is what the learned line
 gave up on purpose: on rubble, on a slope, on a toe-only foothold, the support polygon is not
-the object ZMP needs. What replaces it is not a better criterion but a different bargain —
-a policy rejecting disturbance at 50 Hz over a foot that only has to not slip
-([[04-robotics/convex-mpc-legged|8. Convex MPC]] keeps the model-based half of that bargain
+the object ZMP needs. What replaces it is not a better criterion but a different bargain:
+the controller gives up any verified balance criterion, and in exchange a policy reacts to
+disturbances 50 times a second while relying on only one physical condition — that the foot
+does not slip ([[04-robotics/convex-mpc-legged|8. Convex MPC]] keeps the model-based half of that bargain
 by *pre-specifying* the contact schedule).
 
 So: expect ZMP and capture point in humanoid, biped and whole-body-control papers, and expect
@@ -139,10 +140,11 @@ The student does not learn to perceive. It learns to **infer the privileged quan
 how the body has just been moving** — which is why a blind robot can adapt to mud it cannot
 see, after it has stepped in it.
 
-**RMA** is a close relative that positions itself explicitly against Lee 2020 — no predefined trajectory generator and no actuator model — with a sharper deployment story:
-compress a 17-dimensional privileged environment vector into an **8-dimensional latent** (these dimensions, the 0.5 s history and both rates are body figures, not abstract ones),
-estimate that latent from 0.5 s of proprioceptive history by supervised regression trained
-purely in simulation, and run it **asynchronously — base policy at 100 Hz, adaptation module
+**RMA** is a close relative that positions itself explicitly against Lee 2020 — no predefined trajectory generator and no actuator model — with a sharper deployment story in three steps.
+First, it compresses a 17-dimensional privileged environment vector into an **8-dimensional latent** (these dimensions, the 0.5 s history and both rates are body figures, not abstract ones).
+Second, an adaptation module estimates that latent from 0.5 s of proprioceptive history, by supervised regression trained
+purely in simulation.
+Third, the two parts run **asynchronously — base policy at 100 Hz, adaptation module
 at 10 Hz — on a cheap robot's onboard CPU.**
 
 The pattern has since generalised well past locomotion: multi-expert distillation into a
@@ -223,7 +225,7 @@ cannot model, keep the physics you can" — and it is the ancestor of every sim-
 actuator-modelling result since.
 
 **Rudin 2021 is infrastructure, and should be framed that way.** Thousands of robots in
-parallel on a single workstation GPU, PPO retuned for that regime, and a game-inspired
+parallel on a single workstation GPU, PPO (the standard on-policy policy-gradient algorithm, [[02-foundations/rl-basics|7. RL Basics §4]]) retuned for that regime, and a game-inspired
 terrain curriculum that promotes and demotes robots by difficulty. The released
 `legged_gym` / `rsl_rl` code is what made the 2022–2026 explosion economically possible in
 ordinary labs. Its scientific claim is narrow; its causal influence is enormous. Keeping
@@ -392,8 +394,9 @@ for the full picture and the licensing traps.
 **이 페이지가 그중 아무것도 쓰지 않는 이유.** ZMP는 평평하고 알려진 동일 평면의 지지면과,
 그 면에 발이 온전히 닿는 상황을 전제한다. 학습 계열이 의도적으로 포기한 것이 바로 그
 전제다: 잔해 위, 경사면, 발끝만 걸친 디딤에서는 지지 다각형이 ZMP가 요구하는 그 대상이
-아니다. 그것을 대신하는 것은 더 나은 기준이 아니라 다른 거래다 — 미끄러지지만 않으면 되는
-발 위에서 50 Hz로 외란을 기각하는 정책이다([[04-robotics/convex-mpc-legged|8. Convex MPC]]는
+아니다. 그것을 대신하는 것은 더 나은 기준이 아니라 다른 거래다: 제어기는 검증된 균형 기준을
+포기하고, 그 대가로 정책이 1초에 50번 외란에 반응하되 믿는 물리 조건은 하나뿐이다 — 발이
+미끄러지지 않는다는 것([[04-robotics/convex-mpc-legged|8. Convex MPC]]는
 접촉 스케줄을 *미리 지정*하는 방식으로 그 거래의 모델 기반 쪽을 유지한다).
 
 정리하면: 휴머노이드·이족·전신 제어 논문에서는 ZMP와 capture point를 예상하고, §3이 다루는
@@ -467,10 +470,12 @@ for the full picture and the licensing traps.
 학생은 지각하는 법을 배우지 않는다. **몸이 방금 어떻게 움직였는가로부터 특권적 양들을 추론하는
 법**을 배운다 — 눈이 먼 로봇이 보지 못하는 진흙에, 한 번 밟은 뒤에는 적응할 수 있는 이유다.
 
-**RMA**는 Lee 2020에 맞서 자신을 명시적으로 위치시킨 가까운 친척이고 — 미리 정한 궤적 생성기도 액추에이터 모델도 없다 — 배치 이야기가 더 날카롭다: 17차원 특권적 환경
-벡터를 **8차원 잠재**로 압축하고(이 차원·0.5초 이력·두 주기는 초록이 아니라 본문 수치다), 그 잠재를 0.5초의 고유수용감각 이력에서 지도 회귀로 추정하되
-전적으로 시뮬레이션에서 학습하며, **비동기로 — 기본 정책 100 Hz, 적응 모듈 10 Hz — 저가 로봇의
-온보드 CPU에서** 돌린다.
+**RMA**는 Lee 2020에 맞서 자신을 명시적으로 위치시킨 가까운 친척이고 — 미리 정한 궤적 생성기도 액추에이터 모델도 없다 — 배치 이야기가 세 단계로 더 날카롭다.
+첫째, 17차원 특권적 환경 벡터를 **8차원 잠재**로 압축한다(이 차원·0.5초 이력·두 주기는 초록이 아니라 본문 수치다).
+둘째, 적응 모듈이 그 잠재를 0.5초의 고유수용감각 이력에서 지도 회귀로 추정하며, 이 회귀는
+전적으로 시뮬레이션에서 학습한다.
+셋째, 두 부분이 **비동기로 — 기본 정책 100 Hz, 적응 모듈 10 Hz — 저가 로봇의
+온보드 CPU에서** 돌아간다.
 
 이 패턴은 이후 로코모션을 훨씬 넘어 일반화되었다: 다수 전문가를 일반가로 증류하기, 모델 기반
 전문가가 수동 데이터를 다시 라벨하기, 그리고 다른 옷을 입고 sim-to-real 레시피 일반의 교사-학생
@@ -539,7 +544,7 @@ for the full picture and the licensing traps.
 조상이다.
 
 **Rudin 2021은 인프라이고, 그렇게 서술해야 한다.** 워크스테이션 GPU 하나에서 수천 로봇을 병렬로,
-그 체제에 맞춰 재조율한 PPO, 그리고 난이도에 따라 로봇을 승급·강등시키는 게임식 지형 커리큘럼.
+그 체제에 맞춰 재조율한 PPO(표준 온폴리시 정책 경사 알고리즘, [[02-foundations/rl-basics|7. RL 기초 §4]]), 그리고 난이도에 따라 로봇을 승급·강등시키는 게임식 지형 커리큘럼.
 공개된 `legged_gym` / `rsl_rl` 코드가 2022~2026년의 폭발을 평범한 연구실에서 경제적으로 가능하게
 만든 것이다. 과학적 주장은 좁고, 인과적 영향력은 막대하다. 그 둘을 분리해 두는 것이 정확히 이
 위키가 존재하는 이유의 교정이다.

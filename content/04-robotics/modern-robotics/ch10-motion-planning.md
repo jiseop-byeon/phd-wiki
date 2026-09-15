@@ -19,7 +19,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 - **The framing**: obstacles in the workspace become **C-space obstacles** — planning is
   navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration space]], where the robot is a point.
-- **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic)
+- **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic, i.e. a cost-to-go guess that never overestimates the true remaining cost)
   — complete on the grid, and optimal there given an admissible heuristic plus the revisit
   bookkeeping a closed set needs (see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3; the correctness proof and an implementation are [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
 - **Sampling-based planning** — the high-dof workhorses:
@@ -57,7 +57,7 @@ proposals get filtered through.
 - **프레이밍**: 작업 영역(workspace)의 장애물이 **C-space 장애물**이 된다 — 계획은
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
-- **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱)를
+- **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱, 즉 실제 남은 비용을 절대 과대추정하지 않는 비용 추정)를
   돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
 - **샘플링 기반 계획** — 고자유도의 주력:
   - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
