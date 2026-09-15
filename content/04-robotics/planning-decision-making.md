@@ -180,6 +180,87 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 
 
 
+### 5.5 Planning under dynamics: kinodynamic search, lattices, and flatness
+
+A robot that cannot move in every direction at every speed needs a planner whose edges are motions the machine can execute, so the straight-line connection that grid edges and §5's sampling tree assume has to be replaced by a steering rule that respects the dynamics.
+
+**Why a geometric path is not enough.** Three kinds of constraint break the straight-segment assumption:
+
+- **Nonholonomic.** A car has no sideways velocity and a minimum turning radius, so a path with a corner or a sideways shift is undrivable as written, even though the car can still reach every pose ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] explains why).
+- **Dynamic.** An excavator boom carries inertia and a crane's suspended load swings, so the plan must also keep accelerations low enough that the machine stays stable and the load does not oscillate.
+- **Bounds.** Velocity, acceleration, and actuator limits hold even for a robot that can move in any direction.
+
+*Kinodynamic* originally named planning under velocity and acceleration bounds; it now covers any planning in a state space with $\dot x = f(x,u)$. A problem can be nonholonomic, kinodynamic, or both: a car with a dynamics model is both. MR ch.10 names the sampling version and its local planners in one line; this section is the longer map.
+
+**Exact shortest paths for a car in free space.**
+
+- **Dubins (1957):** a forward-only car at constant speed with minimum turning radius $\rho$. Between any two poses $(x,y,\theta)$ the shortest path has at most three segments, each a full-lock left arc $L$, a full-lock right arc $R$, or a straight $S$. Only six *words* can be optimal: $LSL, LSR, RSL, RSR, LRL, RLR$. In the $CCC$ words the middle arc turns through more than $\pi$.
+- **Reeds–Shepp (1990):** the same car allowed to reverse. The shortest path is one of a fixed list of fewer than fifty words, each at most five segments long with at most two gear changes (cusps).
+
+Both are closed-form, so planners use them as a **steering function**, meaning an exact connection between two states. They also serve as the obstacle-free, turning-radius-aware half of the lattice heuristic in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §8. Two limits come with them. They ignore obstacles. And curvature jumps at every segment joint, so a real steering wheel cannot follow the corner exactly.
+
+**Search over motion primitives.** A* itself is [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §6; what changes here is what an edge is.
+
+- **State lattice** (Pivtoraiko, Knepper & Kelly 2009). Discretize $(x,y,\theta)$, sometimes with curvature or speed, on a regular grid. Offline, solve boundary-value problems for a small set of feasible primitives that start and end exactly on lattice states. The set is translation-invariant, so the same primitives are reused everywhere. Any completeness or optimality claim is relative to that primitive set, not to the continuous problem.
+- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). Expand a node by integrating the car model for a few steering values. Keep one *continuous* pose per discrete $(x,y,\theta)$ cell and prune later arrivals in the same cell. Try an analytic Reeds–Shepp shot to the goal as the search nears it, then smooth the result. The path is drivable, but the cell pruning gives up completeness and optimality even on the lattice.
+
+[[04-robotics/ros2/navigation-nav2|Nav2]] ships both as its "feasible" planners.
+
+**Sampling with dynamics.** *Kinodynamic RRT* (LaValle & Kuffner 2001) samples a state, finds the nearest tree node under a chosen metric, and extends it by integrating $\dot x = f(x,u)$ for some input and duration. That forward propagation needs no boundary-value solver, but new nodes never land exactly on the sampled state, and the metric choice matters. Karaman & Frazzoli (2011) showed that plain RRT converges to a suboptimal path with probability one; RRT\* and PRM\* restore asymptotic optimality by connecting each sample to neighbours within a radius that shrinks like $(\log n / n)^{1/d}$. FMT\* (Janson et al. 2015) reaches the same guarantee with a lazy dynamic-programming pass over a batch of samples that postpones collision checks. The asymptotically optimal versions for dynamical systems need an exact steering function plus its cost — Dubins or Reeds–Shepp for cars, a precomputed lattice, or flatness below.
+
+**Differential flatness.** Some systems let you plan a few output curves freely and read every state and input off them. Fliess, Lévine, Martin & Rouchon (1995) call a system $\dot x = f(x,u)$ *flat* when there are outputs $z$ (as many as there are inputs) such that
+
+$$x=\beta(z,\dot z,\dots,z^{(q)}),\qquad u=\gamma(z,\dot z,\dots,z^{(q)})$$
+
+for a finite $q$, so any smooth curve $z(t)$ yields a state and input trajectory that satisfies the dynamics exactly. For the unicycle $\dot x = v\cos\theta,\ \dot y = v\sin\theta,\ \dot\theta = \omega$ with $z=(x,y)$:
+
+$$\theta=\operatorname{atan2}(\dot y,\dot x),\qquad v=\sqrt{\dot x^2+\dot y^2},\qquad \omega=\frac{\dot x\ddot y-\dot y\ddot x}{\dot x^2+\dot y^2}$$
+
+These hold because the velocity $(\dot x,\dot y)$ points along the heading with length $v$, so heading and speed are its angle and norm, and $\omega$ is the rate of that angle. The kinematic car adds a steering angle $\phi=\arctan(L\kappa)$, where $L$ is the wheelbase and $\kappa=\omega/v$ is the path curvature. A turning-radius limit is therefore a bound on the geometry of $z$, not on its timing.
+
+For a quadrotor, Mellinger & Kumar (2011) use position and yaw as flat outputs. Thrust and attitude follow from acceleration, body rates from jerk, and torques from snap, which is why they minimise snap.
+
+**Why flatness turns planning into curve fitting.** Write $z(t)$ as polynomials. Boundary conditions on $z$ and its derivatives are then *linear* in the coefficients, so one linear solve gives a dynamically feasible trajectory. What remains are the inequality constraints — speed, curvature, obstacles. They are checked afterwards, fixed by time scaling ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]]), or handed to the optimisation of §6 with the polynomial coefficients as decision variables. Flatness removes the dynamics constraint from §6's program, not the obstacle constraints.
+
+> [!example] Worked example · 계산 예제
+> Take the flat output $z(t)=(t,\,t^2)$, a parabola, so $\dot x=1,\ \dot y=2t,\ \ddot x=0,\ \ddot y=2$. The formulas give $v=\sqrt{1+4t^2}$, $\omega=2/(1+4t^2)$, and curvature $\kappa=\omega/v=2/(1+4t^2)^{3/2}$.
+>
+> | $t$ | $\theta$ | $v$ | $\omega$ | finite-difference $\dot\theta$ | $\kappa$ |
+> |---|---|---|---|---|---|
+> | 0 | 0° | 1.000 | 2.000 | 2.000 | 2.000 |
+> | 0.5 | 45.00° | 1.414 | 1.000 | 1.000 | 0.707 |
+> | 1 | 63.43° | 2.236 | 0.400 | 0.400 | 0.179 |
+>
+> Integrating the unicycle from $(0,0,0)$ with these $v(t)$ and $\omega(t)$ (Euler, $\Delta t=10^{-4}$) ends at $(1.000, 1.000, 1.107\text{ rad})$, within $10^{-4}$ of $z(1)=(1,1)$ and $\theta(1)=\arctan 2$. The inputs really do reproduce the curve.
+>
+> **Now add a car with a 1 m minimum turning radius** ($\kappa\le 1$). At the vertex $\kappa=2$, a 0.5 m radius, and the bound is violated until $(1+4t^2)^{3/2}=2$, which gives $t\approx 0.383$. Driving slower does not help. Traversing the same parabola at half speed, $z(t)=(t/2,\,t^2/4)$, gives $v=0.5$ and $\omega=1$ at the vertex, and $\kappa$ is still 2. The fix is a different geometry.
+
+```python
+import numpy as np
+xd, yd = lambda t: 1.0 + 0*t, lambda t: 2*t          # z(t) = (t, t^2)
+xdd, ydd = lambda t: 0*t, lambda t: 2.0 + 0*t
+theta = lambda t: np.arctan2(yd(t), xd(t))
+v = lambda t: np.hypot(xd(t), yd(t))
+omega = lambda t: (xd(t)*ydd(t) - yd(t)*xdd(t)) / (xd(t)*xd(t) + yd(t)*yd(t))
+for t in [0.0, 0.5, 1.0]:
+    h = 1e-5                                          # finite-difference check
+    fd = (theta(t + h) - theta(t - h)) / (2*h)
+    print(f"t={t}: theta={np.degrees(theta(t)):.2f} deg  v={v(t):.3f}  "
+          f"omega={omega(t):.3f}  fd={fd:.3f}  kappa={omega(t)/v(t):.3f}")
+dt, s = 1e-4, np.array([0.0, 0.0, 0.0])              # unicycle state (x, y, theta)
+for t in np.arange(0, 1, dt):
+    s = s + dt*np.array([v(t)*np.cos(s[2]), v(t)*np.sin(s[2]), omega(t)])
+print("end state", s.round(3), "target (1, 1, %.3f)" % theta(1.0))
+```
+
+> [!warning] Pitfalls and what to check in papers
+> - **Zero speed is a singularity.** When $\dot z\to 0$, $\theta=\operatorname{atan2}(0,0)$ is undefined and $\omega$'s denominator vanishes. Take $z(t)=(t^3,t^2)$: the heading is $-89.14°$ at $t=-0.01$ and $+89.14°$ at $t=+0.01$. That jump of almost $180°$ is a cusp, a gear change that a forward-speed parametrisation cannot express. Planners therefore keep interior points at nonzero speed, split trajectories at intended stops and reversals, and impose boundary headings through $\dot z(0)=v_0(\cos\theta_0,\sin\theta_0)$ with $v_0\neq 0$.
+> - **"Optimal" relative to what?** A lattice planner is optimal over its primitive set, Hybrid A\* is not optimal at all, and a Dubins or Reeds–Shepp cost ignores obstacles. The Dubins distance is not even symmetric, so using it as a nearest-neighbour metric needs care.
+> - **Check what survived smoothing.** After post-processing, check that curvature continuity, the turning-radius bound, and the speed and acceleration bounds still hold.
+> - **Flatness is a property to verify, not assume.** The paper should name its flat outputs.
+>
+> **For construction machines.** Articulated wheel loaders steer by bending the frame, and tracked excavators turn by skid-steering with heavy slip. Both have turning-radius or slip constraints that a costmap path ignores. A crane or boom adds load-swing dynamics on top, which is why [[05-construction-robotics/earthmoving-heavy-machinery|heavy-machine autonomy]] needs this section's feasibility checks rather than a 2-D grid planner alone.
+
 ### 6. Trajectory optimization and MPC
 
 A common formulation is the trajectory-optimization program of [[02-foundations/optimization|4. Optimization]] — read it as a running cost paid at every step plus a terminal cost at the end, with the physics and the obstacles as constraints:
@@ -238,15 +319,27 @@ You should be able to:
 2. What is lost when planning only in workspace rather than configuration space?
 3. Why can trajectory optimization fail even when a feasible trajectory exists?
 4. What evidence would support a “real-time closed-loop planner” claim?
+5. A Hybrid A\* paper and a state-lattice paper both call their paths "optimal". Optimal with respect to what, in each case?
+6. The parabola $z(t)=(t,t^2)$ violates a 1 m minimum turning radius near its vertex. Why does slowing down along the same curve not fix it?
 
 > [!tip]- Answers
-> 1. It may require impossible velocity, acceleration, torque, contact, or timing. 2. Robot geometry, joint limits, and multiple configurations for the same task pose. 3. The problem can be nonconvex and sensitive to initialization. 4. End-to-end latency distributions on specified hardware, execution with disturbances/dynamic obstacles, constraint violations and failures—not planner compute time alone.
+> 1. It may require impossible velocity, acceleration, torque, contact, or timing. 2. Robot geometry, joint limits, and multiple configurations for the same task pose. 3. The problem can be nonconvex and sensitive to initialization. 4. End-to-end latency distributions on specified hardware, execution with disturbances/dynamic obstacles, constraint violations and failures—not planner compute time alone. 5. The lattice planner is optimal only over its precomputed primitive set and resolution, so it can miss paths that need headings or curvatures the set lacks; Hybrid A\* is not optimal even on its grid, because it keeps one continuous pose per cell and prunes the rest. 6. The turning-radius limit bounds the curvature $\kappa=\omega/v$, which depends only on the geometry: at half speed the vertex has $v=0.5$ and $\omega=1$, so $\kappa$ is still 2. Only a different curve helps.
 
 ### Sources
 
 - [Modern Robotics, Chapter 10](http://modernrobotics.org)
 - [MIT Underactuated Robotics](https://underactuated.csail.mit.edu/)
 - [OMPL: planning concepts](https://ompl.kavrakilab.org/)
+- L. E. Dubins, "On curves of minimal length with a constraint on average curvature, and with prescribed initial and terminal positions and tangents," *American Journal of Mathematics* 79(3), 497–516, 1957. doi:10.2307/2372560
+- J. A. Reeds, L. A. Shepp, "Optimal paths for a car that goes both forwards and backwards," *Pacific Journal of Mathematics* 145(2), 367–393, 1990. doi:10.2140/pjm.1990.145.367
+- M. Pivtoraiko, R. A. Knepper, A. Kelly, "Differentially constrained mobile robot motion planning in state lattices," *Journal of Field Robotics* 26(3), 308–333, 2009.
+- D. Dolgov, S. Thrun, M. Montemerlo, J. Diebel, "Path planning for autonomous vehicles in unknown semi-structured environments," *International Journal of Robotics Research* 29(5), 485–501, 2010.
+- S. M. LaValle, J. J. Kuffner, "Randomized kinodynamic planning," *International Journal of Robotics Research* 20(5), 378–400, 2001. doi:10.1177/02783640122067453
+- S. Karaman, E. Frazzoli, "Sampling-based algorithms for optimal motion planning," *International Journal of Robotics Research* 30(7), 846–894, 2011. doi:10.1177/0278364911406761
+- L. Janson, E. Schmerling, A. Clark, M. Pavone, "Fast marching tree: a fast marching sampling-based method for optimal motion planning in many dimensions," *International Journal of Robotics Research* 34(7), 883–921, 2015. doi:10.1177/0278364915577958
+- M. Fliess, J. Lévine, P. Martin, P. Rouchon, "Flatness and defect of non-linear systems: introductory theory and examples," *International Journal of Control* 61(6), 1327–1361, 1995. doi:10.1080/00207179508921959
+- D. Mellinger, V. Kumar, "Minimum snap trajectory generation and control for quadrotors," *IEEE International Conference on Robotics and Automation (ICRA)*, 2520–2525, 2011. doi:10.1109/ICRA.2011.5980409
+- S. M. LaValle, *Planning Algorithms*, Cambridge University Press, 2006 — §14.1 (kinodynamic terminology) and §15.3 (Dubins and Reeds–Shepp curves).
 
 ## 한국어
 
@@ -434,6 +527,87 @@ optimality**도 표본이 늘 때의 수렴 성질이지, 실시간 예산에서
 
 
 
+### 5.5 동역학을 지키는 계획: kinodynamic 탐색, 격자, 평탄성
+
+모든 방향으로 모든 속도로 움직일 수 없는 로봇에는 간선이 곧 그 기계가 실행할 수 있는 운동인 계획기가 필요하다. 그래서 격자의 간선과 §5의 표본 트리가 가정하는 직선 연결을, 동역학을 지키는 조향 규칙으로 바꿔야 한다.
+
+**기하학적 경로만으로 부족한 이유.** 세 종류의 제약이 직선 구간 가정을 깬다.
+
+- **비홀로노믹 제약.** 자동차에는 옆 방향 속도가 없고 최소 회전 반경이 있다. 그래서 모서리나 옆으로 비키는 구간이 있는 경로는 쓰인 그대로는 운전할 수 없다. 그래도 차는 모든 pose에 도달할 수 있다(이유는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]).
+- **동역학 제약.** 굴착기 붐에는 관성이 있고 크레인에 매달린 짐은 흔들린다. 그래서 계획은 기계가 안정을 유지하고 짐이 진동하지 않을 만큼 가속도를 낮게 지켜야 한다.
+- **한계.** 속도·가속도·구동기 한계는 어느 방향으로든 움직일 수 있는 로봇에도 걸린다.
+
+*kinodynamic*은 원래 속도·가속도 한계 아래의 계획을 가리켰고, 지금은 $\dot x = f(x,u)$인 상태 공간에서의 계획 전반을 뜻한다. 문제는 비홀로노믹이거나, kinodynamic이거나, 둘 다일 수 있다. 동역학 모델을 가진 자동차가 둘 다다. MR 10장은 표본 기반 판본과 그 지역 계획기를 한 줄로 짚고, 이 절은 그 긴 지도다.
+
+**자유 공간에서 자동차의 정확한 최단 경로.**
+
+- **Dubins (1957):** 일정 속도로 전진만 하고 최소 회전 반경이 $\rho$인 차. 임의의 두 pose $(x,y,\theta)$ 사이 최단 경로는 최대 세 구간이고, 각 구간은 최대 조향 좌회전 호 $L$, 최대 조향 우회전 호 $R$, 직진 $S$ 중 하나다. 최적일 수 있는 *단어*는 여섯 개뿐이다: $LSL, LSR, RSL, RSR, LRL, RLR$. $CCC$ 단어에서 가운데 호는 $\pi$보다 크게 돈다.
+- **Reeds–Shepp (1990):** 같은 차에 후진을 허용한다. 최단 경로는 쉰 개가 안 되는 고정된 단어 목록 중 하나이고, 각 단어는 최대 다섯 구간, 기어 변환(cusp)은 최대 두 번이다.
+
+둘 다 닫힌 형태라서 계획기는 이것을 **조향 함수(steering function)**, 즉 두 상태 사이의 정확한 연결로 쓴다. 또한 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §8의 격자 휴리스틱에서 장애물을 무시하되 회전 반경은 지키는 쪽 절반이 된다. 한계도 둘 따라온다. 장애물을 무시한다. 그리고 구간 이음매마다 곡률이 점프하므로 실제 핸들은 그 모서리를 정확히 따라갈 수 없다.
+
+**모션 프리미티브 위의 탐색.** A* 자체는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §6에 있다. 여기서 바뀌는 것은 간선이 무엇이냐다.
+
+- **상태 격자(state lattice)** (Pivtoraiko, Knepper & Kelly 2009). $(x,y,\theta)$를, 때로는 곡률이나 속도까지 규칙적인 격자로 이산화한다. 오프라인에서 경계값 문제를 풀어, 격자 상태에서 정확히 시작해 격자 상태에서 정확히 끝나는 실행 가능한 프리미티브의 작은 집합을 만든다. 이 집합은 평행이동에 불변이라 어디서나 같은 프리미티브를 재사용한다. 완전성이나 최적성 주장은 연속 문제가 아니라 그 프리미티브 집합에 대한 것이다.
+- **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). 몇 개의 조향값으로 차 모델을 적분해 노드를 확장한다. 이산 $(x,y,\theta)$ 칸마다 *연속* pose를 하나만 두고, 같은 칸에 나중에 도착한 것은 가지친다. 목표에 가까워지면 목표까지 해석적 Reeds–Shepp 연결을 시도하고, 결과를 평활화한다. 경로는 운전 가능하지만, 칸 단위 가지치기 때문에 격자 위에서조차 완전성과 최적성을 포기한다.
+
+[[04-robotics/ros2/navigation-nav2|Nav2]]는 둘 다 "실현 가능(feasible)" 계획기로 제공한다.
+
+**동역학을 넣은 표본 기반 계획.** *Kinodynamic RRT*(LaValle & Kuffner 2001)는 상태를 표본으로 뽑고, 정한 거리 척도로 가장 가까운 트리 노드를 찾은 뒤, 어떤 입력과 지속 시간으로 $\dot x = f(x,u)$를 적분해 뻗는다. 이 전방 전파에는 경계값 문제 풀이기가 필요 없지만, 새 노드는 뽑은 상태에 정확히 닿지 않고 거리 척도의 선택이 결과를 좌우한다. Karaman & Frazzoli(2011)는 단순 RRT가 확률 1로 준최적 경로에 수렴함을 보였고, RRT\*와 PRM\*는 각 표본을 $(\log n / n)^{1/d}$처럼 줄어드는 반경 안의 이웃과 연결해 점근적 최적성을 되찾는다. FMT\*(Janson 외 2015)는 표본 묶음 위에서 충돌 검사를 미루는 게으른 동적 계획법으로 같은 보장을 얻는다. 동역학 시스템용 점근 최적 판본에는 정확한 조향 함수와 그 비용이 필요하다 — 자동차라면 Dubins나 Reeds–Shepp, 아니면 미리 계산한 격자, 아니면 아래의 평탄성.
+
+**미분 평탄성(differential flatness).** 어떤 시스템은 몇 개의 출력 곡선을 자유롭게 계획하면 모든 상태와 입력을 거기서 읽어낼 수 있다. Fliess, Lévine, Martin & Rouchon(1995)은 시스템 $\dot x = f(x,u)$가 (입력 개수만큼의) 출력 $z$를 가져
+
+$$x=\beta(z,\dot z,\dots,z^{(q)}),\qquad u=\gamma(z,\dot z,\dots,z^{(q)})$$
+
+를 유한한 $q$에 대해 만족하면 *평탄하다*고 부른다. 그래서 매끄러운 곡선 $z(t)$ 하나가 동역학을 정확히 만족하는 상태·입력 궤적을 준다. 유니사이클 $\dot x = v\cos\theta,\ \dot y = v\sin\theta,\ \dot\theta = \omega$에서 $z=(x,y)$로 두면:
+
+$$\theta=\operatorname{atan2}(\dot y,\dot x),\qquad v=\sqrt{\dot x^2+\dot y^2},\qquad \omega=\frac{\dot x\ddot y-\dot y\ddot x}{\dot x^2+\dot y^2}$$
+
+이것이 성립하는 이유는 속도 $(\dot x,\dot y)$가 길이 $v$로 heading 방향을 가리키기 때문이다. 그래서 heading과 속력은 그 벡터의 각도와 크기이고, $\omega$는 그 각도의 변화율이다. 기구학적 자동차는 조향각 $\phi=\arctan(L\kappa)$를 더한다. 여기서 $L$은 축간 거리, $\kappa=\omega/v$는 경로 곡률이다. 따라서 회전 반경 한계는 $z$의 시간 배분이 아니라 기하에 대한 한계다.
+
+쿼드로터에 대해 Mellinger & Kumar(2011)는 위치와 yaw를 평탄 출력으로 쓴다. 추력과 자세는 가속도에서, 몸체 각속도는 저크에서, 토크는 스냅에서 나오고, 그래서 이들은 스냅을 최소화한다.
+
+**평탄성이 계획을 곡선 맞추기로 바꾸는 이유.** $z(t)$를 다항식으로 쓴다. 그러면 $z$와 그 도함수에 대한 경계 조건이 계수에 대해 *선형*이 되고, 선형 풀이 한 번으로 동역학적으로 실행 가능한 궤적이 나온다. 남는 것은 부등식 제약 — 속도, 곡률, 장애물 — 이다. 이것들은 나중에 검사하거나, 시간 스케일링([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]])으로 고치거나, 다항식 계수를 결정 변수로 삼아 §6의 최적화에 넘긴다. 평탄성이 §6 프로그램에서 없애는 것은 동역학 제약이지 장애물 제약이 아니다.
+
+> [!example] 계산 예제 · Worked example
+> 평탄 출력 $z(t)=(t,\,t^2)$, 즉 포물선을 잡으면 $\dot x=1,\ \dot y=2t,\ \ddot x=0,\ \ddot y=2$다. 공식은 $v=\sqrt{1+4t^2}$, $\omega=2/(1+4t^2)$, 곡률 $\kappa=\omega/v=2/(1+4t^2)^{3/2}$를 준다.
+>
+> | $t$ | $\theta$ | $v$ | $\omega$ | 유한차분 $\dot\theta$ | $\kappa$ |
+> |---|---|---|---|---|---|
+> | 0 | 0° | 1.000 | 2.000 | 2.000 | 2.000 |
+> | 0.5 | 45.00° | 1.414 | 1.000 | 1.000 | 0.707 |
+> | 1 | 63.43° | 2.236 | 0.400 | 0.400 | 0.179 |
+>
+> 이 $v(t)$와 $\omega(t)$로 $(0,0,0)$에서 유니사이클을 적분하면(오일러, $\Delta t=10^{-4}$) $(1.000, 1.000, 1.107\text{ rad})$에서 끝나고, $z(1)=(1,1)$과 $\theta(1)=\arctan 2$에서 $10^{-4}$ 이내다. 입력이 정말로 곡선을 재현한다.
+>
+> **이제 최소 회전 반경 1 m인 차를 더한다**($\kappa\le 1$). 꼭짓점에서 $\kappa=2$, 반경 0.5 m이고, $(1+4t^2)^{3/2}=2$가 되는 $t\approx 0.383$까지 한계를 어긴다. 천천히 달려도 소용없다. 같은 포물선을 절반 속도로 지나는 $z(t)=(t/2,\,t^2/4)$는 꼭짓점에서 $v=0.5$, $\omega=1$이고 $\kappa$는 여전히 2다. 고치려면 기하를 바꿔야 한다.
+
+```python
+import numpy as np
+xd, yd = lambda t: 1.0 + 0*t, lambda t: 2*t          # z(t) = (t, t^2)
+xdd, ydd = lambda t: 0*t, lambda t: 2.0 + 0*t
+theta = lambda t: np.arctan2(yd(t), xd(t))
+v = lambda t: np.hypot(xd(t), yd(t))
+omega = lambda t: (xd(t)*ydd(t) - yd(t)*xdd(t)) / (xd(t)*xd(t) + yd(t)*yd(t))
+for t in [0.0, 0.5, 1.0]:
+    h = 1e-5                                          # finite-difference check
+    fd = (theta(t + h) - theta(t - h)) / (2*h)
+    print(f"t={t}: theta={np.degrees(theta(t)):.2f} deg  v={v(t):.3f}  "
+          f"omega={omega(t):.3f}  fd={fd:.3f}  kappa={omega(t)/v(t):.3f}")
+dt, s = 1e-4, np.array([0.0, 0.0, 0.0])              # unicycle state (x, y, theta)
+for t in np.arange(0, 1, dt):
+    s = s + dt*np.array([v(t)*np.cos(s[2]), v(t)*np.sin(s[2]), omega(t)])
+print("end state", s.round(3), "target (1, 1, %.3f)" % theta(1.0))
+```
+
+> [!warning] 함정과 논문에서 확인할 것
+> - **속력 0은 특이점이다.** $\dot z\to 0$이면 $\theta=\operatorname{atan2}(0,0)$이 정의되지 않고 $\omega$의 분모가 사라진다. $z(t)=(t^3,t^2)$를 보면 heading이 $t=-0.01$에서 $-89.14°$, $t=+0.01$에서 $+89.14°$다. 거의 $180°$인 이 점프는 cusp, 즉 전진 속력 매개변수화로는 표현할 수 없는 기어 변환이다. 그래서 계획기는 내부 점의 속력을 0이 아니게 두고, 의도한 정지·후진 지점에서 궤적을 나누며, 경계 heading은 $v_0\neq 0$인 $\dot z(0)=v_0(\cos\theta_0,\sin\theta_0)$로 부과한다.
+> - **"최적"은 무엇에 대해서인가?** 격자 계획기는 자기 프리미티브 집합 위에서 최적이고, Hybrid A\*는 아예 최적이 아니며, Dubins·Reeds–Shepp 비용은 장애물을 무시한다. Dubins 거리는 대칭조차 아니어서 최근접 이웃 척도로 쓸 때 조심해야 한다.
+> - **평활화 뒤에 무엇이 살아남았는지 확인하라.** 후처리 뒤에도 곡률 연속성, 회전 반경 한계, 속도·가속도 한계가 지켜지는지 본다.
+> - **평탄성은 가정이 아니라 확인할 성질이다.** 논문은 평탄 출력을 명시해야 한다.
+>
+> **건설 기계에서는.** 굴절식 휠 로더는 프레임을 꺾어 조향하고, 궤도식 굴착기는 미끄럼이 큰 스키드 조향으로 돈다. 둘 다 비용 지도 경로가 무시하는 회전 반경이나 미끄럼 제약을 가진다. 크레인이나 붐은 그 위에 짐 흔들림 동역학을 더한다. 그래서 [[05-construction-robotics/earthmoving-heavy-machinery|중장비 자율화]]에는 2-D 격자 계획기만이 아니라 이 절의 실행 가능성 검사가 필요하다.
+
 ### 6. 궤적 최적화와 MPC
 
 흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다:
@@ -502,15 +676,29 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 2. 컨피규레이션 공간 대신 작업 영역에서만 계획하면 무엇을 잃는가?
 3. 실행 가능한 궤적이 존재하는데도 궤적 최적화가 실패할 수 있는 이유는?
 4. "실시간 폐루프 플래너" 주장을 지지하는 증거는?
+5. Hybrid A\* 논문과 상태 격자 논문이 둘 다 경로가 "최적"이라고 한다. 각각 무엇에 대해 최적인가?
+6. 포물선 $z(t)=(t,t^2)$는 꼭짓점 근처에서 최소 회전 반경 1 m를 어긴다. 같은 곡선을 따라 천천히 달려도 고쳐지지 않는 이유는?
 
 > [!tip]- 정답 · Answers
 > 1. 불가능한 속도·가속도·토크·접촉·타이밍을 요구할 수 있다.
 > 2. 로봇 형상, 관절 한계, 같은 과제 pose에 대한 복수의 컨피규레이션.
 > 3. 문제가 비볼록이고 초기화에 민감할 수 있다.
 > 4. 명시된 하드웨어에서의 끝-끝 지연 분포, 교란·동적 장애물 아래의 실행, 제약 위반과 실패 — 플래너 계산 시간만으로는 안 된다.
+> 5. 격자 계획기는 미리 계산한 프리미티브 집합과 해상도 위에서만 최적이라, 그 집합에 없는 heading이나 곡률이 필요한 경로를 놓칠 수 있다. Hybrid A\*는 칸마다 연속 pose 하나만 남기고 나머지를 가지치기 때문에 자기 격자 위에서조차 최적이 아니다.
+> 6. 회전 반경 한계는 곡률 $\kappa=\omega/v$를 제한하는데, 곡률은 기하에만 달려 있다. 절반 속도에서 꼭짓점은 $v=0.5$, $\omega=1$이라 $\kappa$는 여전히 2다. 다른 곡선만이 답이다.
 
 ### 출처
 
 - [Modern Robotics, Chapter 10](http://modernrobotics.org)
 - [MIT Underactuated Robotics](https://underactuated.csail.mit.edu/)
 - [OMPL: planning concepts](https://ompl.kavrakilab.org/)
+- L. E. Dubins, "On curves of minimal length with a constraint on average curvature, and with prescribed initial and terminal positions and tangents," *American Journal of Mathematics* 79(3), 497–516, 1957. doi:10.2307/2372560
+- J. A. Reeds, L. A. Shepp, "Optimal paths for a car that goes both forwards and backwards," *Pacific Journal of Mathematics* 145(2), 367–393, 1990. doi:10.2140/pjm.1990.145.367
+- M. Pivtoraiko, R. A. Knepper, A. Kelly, "Differentially constrained mobile robot motion planning in state lattices," *Journal of Field Robotics* 26(3), 308–333, 2009.
+- D. Dolgov, S. Thrun, M. Montemerlo, J. Diebel, "Path planning for autonomous vehicles in unknown semi-structured environments," *International Journal of Robotics Research* 29(5), 485–501, 2010.
+- S. M. LaValle, J. J. Kuffner, "Randomized kinodynamic planning," *International Journal of Robotics Research* 20(5), 378–400, 2001. doi:10.1177/02783640122067453
+- S. Karaman, E. Frazzoli, "Sampling-based algorithms for optimal motion planning," *International Journal of Robotics Research* 30(7), 846–894, 2011. doi:10.1177/0278364911406761
+- L. Janson, E. Schmerling, A. Clark, M. Pavone, "Fast marching tree: a fast marching sampling-based method for optimal motion planning in many dimensions," *International Journal of Robotics Research* 34(7), 883–921, 2015. doi:10.1177/0278364915577958
+- M. Fliess, J. Lévine, P. Martin, P. Rouchon, "Flatness and defect of non-linear systems: introductory theory and examples," *International Journal of Control* 61(6), 1327–1361, 1995. doi:10.1080/00207179508921959
+- D. Mellinger, V. Kumar, "Minimum snap trajectory generation and control for quadrotors," *IEEE International Conference on Robotics and Automation (ICRA)*, 2520–2525, 2011. doi:10.1109/ICRA.2011.5980409
+- S. M. LaValle, *Planning Algorithms*, Cambridge University Press, 2006 — §14.1(kinodynamic 용어)와 §15.3(Dubins·Reeds–Shepp 곡선).

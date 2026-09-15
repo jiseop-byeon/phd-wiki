@@ -132,6 +132,82 @@ a 12.5% jump at this range: depth error grows quadratically with distance.
 
 
 
+### 2.5 Image features: detect, describe, match
+
+**The idea in one sentence:** pick a few hundred points that can be found again in another image, give each a compact fingerprint, and pair fingerprints across images — those pairs are the correspondences every geometric step needs.
+
+Why sparse points instead of every pixel? Stereo depth in §2 needs to know which right-image pixel shows the same point as a left-image pixel. Calibration in §5 needs target corners located to sub-pixel accuracy. Visual odometry and SLAM ([[04-robotics/state-estimation-slam|state estimation]]) track the same points across frames to constrain pose. A point is useful only if it is **repeatable** (detected again after the view changes) and **distinctive** (its neighbourhood does not resemble many others). The pipeline has three stages, and a paper can change any one of them.
+
+**Detect: where the image changes in every direction.** Shift a small window by $(u,v)$ and measure how much its content changes. Expanding the shifted image to first order turns that change into a quadratic form:
+
+$$E(u,v)=\sum_{x,y} w(x,y)\,\big(I(x+u,y+v)-I(x,y)\big)^2 \approx (u,v)\,M\,(u,v)^\top$$
+
+so the whole behaviour is governed by one 2×2 matrix, the **structure tensor**. It sums the image gradients $I_x, I_y$ over the window with weights $w$ (a box or a Gaussian):
+
+$$M=\sum_{x,y} w(x,y)\begin{pmatrix}I_x^2 & I_xI_y\\ I_xI_y & I_y^2\end{pmatrix}$$
+
+Its eigenvalues $\lambda_1 \le \lambda_2$ are the change along the least- and most-varying shift directions, so they classify the window:
+
+- **Flat**: both small — no shift changes anything.
+- **Edge**: one large, one near zero — sliding along the edge changes nothing, so the point cannot be located along it (the aperture problem).
+- **Corner**: both large — every shift is visible, so the point is pinned in 2D.
+
+Harris and Stephens (Alvey Vision Conference, 1988) avoid the eigen-decomposition with the response
+
+$$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)^2$$
+
+which works because the determinant and trace are the product and sum of the eigenvalues: $R$ is large and positive at a corner, negative on an edge and near zero in a flat region. $k$ is an empirical constant, commonly 0.04–0.06. Shi and Tomasi ("Good Features to Track", CVPR 1994) score the window by $\min(\lambda_1,\lambda_2)$ directly, which removes $k$. Either way, keep only local maxima above a threshold (non-maximum suppression).
+
+**Scale: SIFT.** Harris is invariant to rotation but not to scale: a corner at one zoom level is a rounded curve at another. Lowe's SIFT (IJCV 2004) also searches over scale. It blurs the image with Gaussians of increasing $\sigma$, subtracts neighbouring levels (the difference of Gaussians, a cheap approximation of the scale-normalized Laplacian), and keeps points that are extrema among their 26 neighbours in space and scale. Low-contrast points and edge-like points are discarded; the edge test uses a 2×2 Hessian eigenvalue ratio, the same logic as above. Each keypoint receives a dominant gradient orientation, and the descriptor is computed in that rotated, scaled frame: a 4×4 grid of cells around the point, each holding an 8-bin histogram of gradient orientations, gives 4·4·8 = 128 numbers. The vector is normalized to reduce illumination effects and compared by Euclidean distance.
+
+**Binary: ORB.** SIFT descriptors are floating-point and comparatively costly. ORB (Rublee et al., ICCV 2011) combines the FAST corner test (a quick comparison of pixels on a circle around the candidate), ranked by the Harris score, with an orientation from the patch's intensity centroid and a rotated ("steered") BRIEF descriptor: 256 pairwise intensity comparisons stored as bits. Two descriptors are compared by **Hamming distance** — XOR, then count the set bits — which costs a few CPU instructions. ORB-SLAM (Mur-Artal et al., IEEE T-RO 2015) uses ORB for tracking, mapping, relocalization and loop closing because it can be extracted and matched at frame rate on a CPU, is rotation-invariant and tolerates moderate viewpoint change. ORB itself is not scale-invariant, so it is extracted over an image pyramid.
+
+**Match: nearest neighbour, then filter.** For each descriptor in image A, find the nearest descriptor in image B. Raw nearest neighbours contain many wrong pairs, so three filters follow:
+
+1. **Ratio test** (Lowe 2004): accept only if $d_1/d_2 < 0.8$, where $d_1, d_2$ are the distances to the nearest and second-nearest candidates. A distinctive point has a clear winner; a point on a repeated pattern has two near-equal candidates. On his data, Lowe reports that 0.8 removed about 90% of false matches while discarding under 5% of correct ones.
+2. **Mutual check**: keep $a\leftrightarrow b$ only if $a$ is also $b$'s nearest neighbour in the reverse direction.
+3. **Geometric verification**: survivors must agree with one camera motion. RANSAC (Fischler & Bolles, CACM 1981) repeatedly fits a model — a fundamental or essential matrix, a homography, or a PnP pose — to a random minimal sample and keeps the model with the most inliers; the sample-count arithmetic is worked in [[02-foundations/algorithms/robotics-ai-problems|11.8 §3 RANSAC line fitting]]. The warning from ICP in §4 carries over: least squares on wrong correspondences is confidently wrong.
+
+**Learned features.** SuperPoint (DeTone et al., CVPR Workshops 2018) trains one network to output keypoints and descriptors. SuperGlue (Sarlin et al., CVPR 2020) replaces nearest-neighbour-plus-ratio with a graph neural network that matches the two point sets jointly. LoFTR (Sun et al., CVPR 2021) drops the detector and matches dense transformer features, aiming at low-texture regions where detectors find few points. Each paper reports stronger matching under large viewpoint and illumination change on its benchmarks. Classic features can still be the right call. Weigh the compute budget and frame rate on an embedded robot computer, and whether the training data resembled your scenes. Textureless or repetitive construction surfaces — bare drywall, formwork, rebar grids, identical façade panels — are hard for every method, so test on your own sequences rather than trusting a benchmark ranking.
+
+> [!example] Worked example · 계산 예제
+> Take three 5×5 patches with intensities 0 or 10. Use central differences, $I_x=(I_{x+1}-I_{x-1})/2$, on the inner 3×3 pixels, with $w=1$ and $k=0.05$.
+> - **Flat** (all 10): every gradient is 0, so $M=0$, $\lambda=(0,0)$ and $R=0$.
+> - **Edge** (left two columns 0, the rest 10): $I_x=5$ at 6 pixels and $I_y=0$, so $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$ and $R=0-0.05\cdot150^2=-1125$.
+> - **Corner** (bright lower-right 3×3 block): $I_x=5$ at 4 pixels, $I_y=5$ at 4, both at 1, so $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$ and $R=9375-0.05\cdot200^2=7375$.
+>
+> The signs follow the rule — flat 0, edge negative, corner positive — and the Shi–Tomasi scores are 0, 0 and 75.
+>
+> **Ratio test.** A descriptor's three nearest candidates lie at distances 0.20, 0.23 and 0.61. Since $0.20/0.23=0.87>0.8$, reject the match even though 0.20 is the best: two similar candidates usually mean repeated structure. The third distance plays no role. Had the second been 0.45, $0.20/0.45=0.44$ would pass.
+
+The same response on a synthetic image, with a check that the corner pixel scores highest:
+
+```python
+import numpy as np
+
+def harris(img, k=0.05):
+    Iy, Ix = np.gradient(img.astype(float))          # axis 0 is y (rows), axis 1 is x
+    def box3(a):                                     # window sum with w = 1 on a 3x3 patch
+        p = np.pad(a, 1)
+        return sum(p[i:i + a.shape[0], j:j + a.shape[1]] for i in range(3) for j in range(3))
+    Sxx, Syy, Sxy = box3(Ix * Ix), box3(Iy * Iy), box3(Ix * Iy)
+    return Sxx * Syy - Sxy**2 - k * (Sxx + Syy)**2   # det M - k (tr M)^2 at every pixel
+
+img = np.zeros((20, 20))
+img[10:, 10:] = 1.0                                  # one bright quadrant, corner at (10, 10)
+R = harris(img)
+r, c = np.unravel_index(np.argmax(R), R.shape)
+print(r, c, round(R.max(), 3), round(R[15, 10], 3), R[3, 3])   # 10 10 0.738 -0.112 0.0
+assert (r, c) == (10, 10) and R[15, 10] < 0 and R[3, 3] == 0     # corner > 0, edge < 0, flat 0
+```
+
+> [!warning] Reading matching claims · 매칭 주장 읽기
+> - A match count is not accuracy. Look for the inlier ratio after geometric verification and the downstream pose error.
+> - Note the ratio threshold, the RANSAC pixel threshold and the model (F, E, H or PnP); results move with all of them.
+> - Repeated structure can yield matches that are consistently wrong: a set shifted by one façade panel still fits a single motion and passes RANSAC. This is the §4 warning in image form.
+> - Harris and FAST are not scale-invariant on their own; check how scale is handled (pyramid or scale space).
+> - For learned matchers, check the training data, input resolution, GPU and whether reported timing includes detection.
+
 ### 3. Point clouds and frames
 
 A depth image plus intrinsics back-projects to a **point cloud**:
@@ -216,6 +292,7 @@ local basin.
 - Name the calibrations a camera+LiDAR+arm system needs.
 - Interpret reprojection error without over-trusting it.
 - Distinguish PBVS from IBVS and identify where pose, calibration, depth and the image Jacobian enter the loop.
+- Explain why corners, not edges, are matched, and filter matches with the ratio test, a mutual check and RANSAC.
 
 > [!tip] Going deeper · 더 깊이
 > Szeliski's [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/) is free and covers this page's whole span; when you need multi-view geometry stated as theorems — essential and fundamental matrices, triangulation, bundle adjustment — Hartley and Zisserman's *Multiple View Geometry in Computer Vision* is the reference the field cites.
@@ -226,18 +303,31 @@ local basin.
 2. Stereo at $f=600$, $b=0.12$: what disparity corresponds to $Z=24$ m, and why is that a problem?
 3. Why can ICP fail in a long empty corridor even with perfect data?
 4. A paper fuses LiDAR and camera "without calibration" — what is it most likely still assuming?
+5. A window has $\sum I_x^2=40$, $\sum I_y^2=2$ and $\sum I_xI_y=0$. With $k=0.05$, what are the Harris response and the Shi–Tomasi score, and what kind of point is it?
+6. On a wall of identical panels, an ORB descriptor's nearest candidate is 32 bits away and the second is 36. Does it pass a 0.8 ratio test, and what must catch a wrong match that survives the filters?
 
 > [!tip]- Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
 > 2. $d = fb/Z = 600\cdot0.12/24 = 3$ px — a ±1 px error spans 18–36 m; long-range stereo depth is fragile.
 > 3. Translation along the corridor axis barely changes point-to-nearest-point distances — a degenerate (unobservable) direction.
 > 4. Known intrinsics, and usually a rough extrinsic initialization or joint optimization that still needs overlap and synchronized timestamps.
+> 5. The eigenvalues are 40 and 2, so $R=80-0.05\cdot42^2=-8.2<0$ and $\min\lambda=2$. It is an edge: intensity changes along $x$ only, so the point is poorly located along the edge direction $y$.
+> 6. No: $32/36=0.89>0.8$, so reject it — near-equal candidates suggest the neighbouring panel. A wrong match that survives must be caught by geometric verification (RANSAC), and a set shifted by one whole panel can pass even that, so check against odometry or independent landmarks.
 
 ### Sources
 
 - [Szeliski, *Computer Vision: Algorithms and Applications* (free official PDF)](https://szeliski.org/Book/)
 - [OpenCV camera calibration tutorial](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
 - [KITTI sensor setup — a real calibrated multi-sensor rig](https://www.cvlibs.net/datasets/kitti/setup.php)
+- Harris, C. & Stephens, M. "A combined corner and edge detector." *Proceedings of the 4th Alvey Vision Conference*, 1988.
+- Shi, J. & Tomasi, C. "Good features to track." *IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 1994.
+- Lowe, D. G. "Distinctive image features from scale-invariant keypoints." *International Journal of Computer Vision* 60(2), 2004. doi:10.1023/B:VISI.0000029664.99615.94
+- Rublee, E., Rabaud, V., Konolige, K. & Bradski, G. "ORB: An efficient alternative to SIFT or SURF." *IEEE International Conference on Computer Vision (ICCV)*, 2011.
+- Mur-Artal, R., Montiel, J. M. M. & Tardós, J. D. "ORB-SLAM: A versatile and accurate monocular SLAM system." *IEEE Transactions on Robotics* 31(5), 2015. doi:10.1109/TRO.2015.2463671
+- Fischler, M. A. & Bolles, R. C. "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography." *Communications of the ACM* 24(6), 1981. doi:10.1145/358669.358692
+- DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperPoint: Self-supervised interest point detection and description." *CVPR Workshops*, 2018.
+- Sarlin, P.-E., DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperGlue: Learning feature matching with graph neural networks." *CVPR*, 2020.
+- Sun, J., Shen, Z., Wang, Y., Bao, H. & Zhou, X. "LoFTR: Detector-free local feature matching with transformers." *CVPR*, 2021.
 
 ## 한국어
 
@@ -360,6 +450,82 @@ $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, 
 
 
 
+### 2.5 이미지 특징: 검출, 기술, 매칭
+
+**한 문장으로:** 다른 이미지에서 다시 찾을 수 있는 점 수백 개를 고르고, 점마다 짧은 지문을 붙이고, 이미지 사이에서 지문을 짝짓는다. 그 짝이 모든 기하 단계가 필요로 하는 대응점이다.
+
+왜 모든 픽셀이 아니라 드문드문한 점인가? §2의 스테레오 깊이는 왼쪽 이미지의 픽셀이 오른쪽 어느 픽셀과 같은 점인지 알아야 한다. §5의 보정은 타깃 모서리를 서브픽셀 정확도로 찾아야 한다. Visual odometry와 SLAM([[04-robotics/state-estimation-slam|상태 추정]])은 같은 점을 프레임마다 추적해 pose를 제약한다. 점이 쓸모 있으려면 **반복성**(시점이 바뀌어도 다시 검출됨)과 **변별성**(주변이 다른 많은 곳과 닮지 않음)을 갖춰야 한다. 파이프라인은 세 단계이고, 논문은 그중 어느 단계든 바꿀 수 있다.
+
+**검출: 모든 방향으로 변하는 곳.** 작은 창을 $(u,v)$만큼 옮기고 내용이 얼마나 바뀌는지 잰다. 옮긴 이미지를 1차까지 전개하면 그 변화가 이차 형식이 된다.
+
+$$E(u,v)=\sum_{x,y} w(x,y)\,\big(I(x+u,y+v)-I(x,y)\big)^2 \approx (u,v)\,M\,(u,v)^\top$$
+
+그래서 전체 거동은 2×2 행렬 하나, 곧 **구조 텐서** 하나가 정한다. 창 안의 영상 기울기 $I_x, I_y$를 가중치 $w$(상자 또는 가우시안)로 더한 것이다.
+
+$$M=\sum_{x,y} w(x,y)\begin{pmatrix}I_x^2 & I_xI_y\\ I_xI_y & I_y^2\end{pmatrix}$$
+
+고윳값 $\lambda_1 \le \lambda_2$는 가장 덜 변하는 이동 방향과 가장 많이 변하는 이동 방향의 변화량이므로, 창을 이렇게 분류한다.
+
+- **평탄**: 둘 다 작다 — 어느 쪽으로 옮겨도 변화가 없다.
+- **에지**: 하나는 크고 하나는 거의 0이다 — 에지를 따라 미끄러지면 변화가 없으므로 그 방향으로는 위치를 정할 수 없다(aperture 문제).
+- **코너**: 둘 다 크다 — 어떤 이동도 드러나므로 점이 2D로 고정된다.
+
+Harris와 Stephens(Alvey Vision Conference, 1988)는 고윳값 분해 없이 다음 응답을 쓴다.
+
+$$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)^2$$
+
+행렬식과 대각합이 고윳값의 곱과 합이기 때문에 이 식이 통한다. $R$은 코너에서 크고 양수, 에지에서 음수, 평탄한 영역에서 0 근처다. $k$는 경험적 상수로 흔히 0.04–0.06을 쓴다. Shi와 Tomasi("Good Features to Track", CVPR 1994)는 $\min(\lambda_1,\lambda_2)$를 직접 점수로 써서 $k$를 없앤다. 어느 쪽이든 문턱값을 넘는 국소 최댓값만 남긴다(non-maximum suppression).
+
+**스케일: SIFT.** Harris는 회전에는 불변이지만 스케일에는 불변이 아니다. 한 배율의 코너가 다른 배율에서는 둥근 곡선이다. Lowe의 SIFT(IJCV 2004)는 스케일 방향으로도 탐색한다. $\sigma$를 키워 가며 가우시안으로 흐리게 한 뒤 이웃 단계끼리 빼고(difference of Gaussians, 스케일 정규화 라플라시안의 값싼 근사), 공간과 스케일의 이웃 26개 가운데 극값인 점을 남긴다. 대비가 낮은 점과 에지 같은 점은 버리는데, 에지 판정은 위와 같은 논리로 2×2 헤시안의 고윳값 비를 쓴다. 키포인트마다 지배적인 기울기 방향을 붙이고, 그 회전·스케일 좌표계에서 기술자를 계산한다. 점 주위를 4×4 칸으로 나누고 칸마다 기울기 방향의 8구간 히스토그램을 만들면 4·4·8 = 128개의 수가 된다. 조명 영향을 줄이도록 정규화하고 유클리드 거리로 비교한다.
+
+**이진: ORB.** SIFT 기술자는 실수 벡터이고 계산이 비교적 무겁다. ORB(Rublee 외, ICCV 2011)는 FAST 코너 검사(후보 주위 원 위의 픽셀을 빠르게 비교)를 Harris 점수로 순위를 매겨 쓰고, 패치의 밝기 중심(intensity centroid)으로 방향을 정하고, 회전시킨(steered) BRIEF 기술자를 붙인다. 이 기술자는 픽셀 쌍의 밝기 비교 256개를 비트로 저장한 것이다. 두 기술자는 **해밍 거리**, 곧 XOR 후 켜진 비트 수로 비교하며 CPU 명령 몇 개면 계산된다. ORB-SLAM(Mur-Artal 외, IEEE T-RO 2015)이 추적·지도 작성·재위치 추정·루프 닫기에 모두 ORB를 쓰는 이유는 CPU에서 프레임 속도로 추출·매칭할 수 있고, 회전에 불변이며, 적당한 시점 변화를 견디기 때문이다. ORB 자체는 스케일 불변이 아니어서 이미지 피라미드 위에서 추출한다.
+
+**매칭: 최근접 이웃, 그다음 거르기.** 이미지 A의 기술자마다 이미지 B에서 가장 가까운 기술자를 찾는다. 날것의 최근접 짝에는 틀린 쌍이 많아서 세 가지 거르기가 뒤따른다.
+
+1. **비율 검사**(Lowe 2004): 가장 가까운 후보와 두 번째 후보까지의 거리를 $d_1, d_2$라 할 때 $d_1/d_2 < 0.8$일 때만 받아들인다. 변별력 있는 점에는 확실한 1등이 있고, 반복 패턴 위의 점에는 거의 같은 후보가 둘 있다. Lowe는 자신의 데이터에서 0.8이 틀린 매칭의 약 90%를 없애면서 맞는 매칭은 5% 미만만 버렸다고 보고한다.
+2. **상호 검사**: 역방향으로도 $a$가 $b$의 최근접 이웃일 때만 $a\leftrightarrow b$를 남긴다.
+3. **기하 검증**: 남은 짝은 하나의 카메라 운동과 맞아야 한다. RANSAC(Fischler & Bolles, CACM 1981)은 무작위 최소 표본에 모델 — fundamental 또는 essential 행렬, homography, PnP pose — 을 맞추기를 반복하고 인라이어가 가장 많은 모델을 남긴다. 표본 수 계산은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §3 RANSAC 직선 맞춤]]에서 직접 해 본다. §4의 ICP 경고가 그대로 적용된다. 틀린 대응에 대한 최소제곱은 자신 있게 틀린다.
+
+**학습된 특징.** SuperPoint(DeTone 외, CVPR Workshops 2018)는 한 네트워크가 키포인트와 기술자를 함께 출력하도록 학습한다. SuperGlue(Sarlin 외, CVPR 2020)는 최근접 이웃과 비율 검사를 두 점 집합을 한꺼번에 짝짓는 그래프 신경망으로 바꾼다. LoFTR(Sun 외, CVPR 2021)은 검출기를 없애고 트랜스포머 특징을 조밀하게 매칭해, 검출기가 점을 거의 찾지 못하는 저텍스처 영역을 겨냥한다. 각 논문은 자기 벤치마크의 큰 시점·조명 변화에서 더 강한 매칭을 보고한다. 그래도 고전 특징이 맞는 선택일 수 있다. 임베디드 로봇 컴퓨터의 연산 예산과 프레임 속도, 학습 데이터가 내 장면과 닮았는지를 따져라. 맨 석고보드, 거푸집, 철근 격자, 똑같은 외벽 패널처럼 무늬가 없거나 반복되는 건설 현장 표면은 어떤 방법에도 어렵다. 벤치마크 순위를 믿기보다 자기 시퀀스에서 시험하라.
+
+> [!example] 계산 예제 · Worked example
+> 밝기가 0 또는 10인 5×5 패치 세 개를 잡는다. 안쪽 3×3 픽셀에서 중앙 차분 $I_x=(I_{x+1}-I_{x-1})/2$를 쓰고, $w=1$, $k=0.05$로 둔다.
+> - **평탄** (전부 10): 기울기가 모두 0이므로 $M=0$, $\lambda=(0,0)$, $R=0$이다.
+> - **에지** (왼쪽 두 열 0, 나머지 10): $I_x=5$인 픽셀이 6개이고 $I_y=0$이므로 $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$, $R=0-0.05\cdot150^2=-1125$다.
+> - **코너** (오른쪽 아래 3×3 블록만 밝음): $I_x=5$인 픽셀 4개, $I_y=5$인 픽셀 4개, 둘 다인 픽셀 1개이므로 $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$, $R=9375-0.05\cdot200^2=7375$다.
+>
+> 부호가 규칙대로다 — 평탄 0, 에지 음수, 코너 양수. Shi–Tomasi 점수는 0, 0, 75다.
+>
+> **비율 검사.** 어떤 기술자의 가장 가까운 후보 세 개가 거리 0.20, 0.23, 0.61에 있다. $0.20/0.23=0.87>0.8$이므로 0.20이 1등인데도 매칭을 버린다. 비슷한 후보가 둘이면 대개 반복 구조다. 세 번째 거리는 아무 역할도 하지 않는다. 두 번째가 0.45였다면 $0.20/0.45=0.44$로 통과했을 것이다.
+
+같은 응답을 합성 이미지에 계산하고, 코너 픽셀의 점수가 가장 큰지 확인하는 코드다.
+
+```python
+import numpy as np
+
+def harris(img, k=0.05):
+    Iy, Ix = np.gradient(img.astype(float))          # axis 0 is y (rows), axis 1 is x
+    def box3(a):                                     # window sum with w = 1 on a 3x3 patch
+        p = np.pad(a, 1)
+        return sum(p[i:i + a.shape[0], j:j + a.shape[1]] for i in range(3) for j in range(3))
+    Sxx, Syy, Sxy = box3(Ix * Ix), box3(Iy * Iy), box3(Ix * Iy)
+    return Sxx * Syy - Sxy**2 - k * (Sxx + Syy)**2   # det M - k (tr M)^2 at every pixel
+
+img = np.zeros((20, 20))
+img[10:, 10:] = 1.0                                  # one bright quadrant, corner at (10, 10)
+R = harris(img)
+r, c = np.unravel_index(np.argmax(R), R.shape)
+print(r, c, round(R.max(), 3), round(R[15, 10], 3), R[3, 3])   # 10 10 0.738 -0.112 0.0
+assert (r, c) == (10, 10) and R[15, 10] < 0 and R[3, 3] == 0     # corner > 0, edge < 0, flat 0
+```
+
+> [!warning] 매칭 주장 읽기 · Reading matching claims
+> - 매칭 개수는 정확도가 아니다. 기하 검증 뒤의 인라이어 비율과 그다음 단계의 pose 오차를 찾아라.
+> - 비율 문턱값, RANSAC 픽셀 문턱값, 모델(F, E, H, PnP)을 적어 두라. 결과가 이 모두에 따라 움직인다.
+> - 반복 구조는 일관되게 틀린 매칭을 만들 수 있다. 외벽 패널 한 칸만큼 밀린 매칭 집합도 하나의 운동에 맞아 RANSAC을 통과한다. 이미지 버전의 §4 경고다.
+> - Harris와 FAST는 그 자체로 스케일 불변이 아니다. 스케일을 어떻게 다루는지(피라미드인지 스케일 공간인지) 확인하라.
+> - 학습된 매처라면 학습 데이터, 입력 해상도, GPU, 보고된 시간에 검출이 포함되는지 확인하라.
+
 ### 3. 포인트 클라우드와 프레임
 
 깊이 이미지 + intrinsics를 역투영하면 **포인트 클라우드**가 된다:
@@ -440,6 +606,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 - 카메라+LiDAR+로봇팔 시스템에 필요한 보정들을 나열할 수 있다
 - reprojection error를 과신하지 않고 해석할 수 있다
 - PBVS와 IBVS를 구분하고 pose·보정·깊이·image Jacobian이 루프 어디에 들어가는지 말할 수 있다
+- 에지가 아니라 코너를 매칭하는 이유를 설명하고, 비율 검사·상호 검사·RANSAC으로 매칭을 거를 수 있다
 
 > [!tip] 더 깊이 · Going deeper
 > Szeliski의 [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)이 무료이고 이 페이지의 범위를 전부 덮는다. 다시점 기하를 정리로 봐야 할 때 — essential·fundamental 행렬, 삼각측량, 번들 조정 — 는 Hartley·Zisserman의 *Multiple View Geometry in Computer Vision*이 이 분야가 인용하는 참고서다.
@@ -450,15 +617,28 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 2. $f=600$, $b=0.12$의 스테레오에서 $Z=24$ m에 해당하는 시차는? 그것이 왜 문제인가?
 3. 데이터가 완벽해도 길고 빈 복도에서 ICP가 실패할 수 있는 이유는?
 4. "보정 없이" LiDAR와 카메라를 융합한다는 논문이 여전히 가정하고 있을 가능성이 큰 것은?
+5. 어떤 창에서 $\sum I_x^2=40$, $\sum I_y^2=2$, $\sum I_xI_y=0$이다. $k=0.05$일 때 Harris 응답과 Shi–Tomasi 점수는 얼마이고, 어떤 종류의 점인가?
+6. 똑같은 패널이 반복되는 벽에서 ORB 기술자의 가장 가까운 후보가 32비트, 두 번째가 36비트 떨어져 있다. 0.8 비율 검사를 통과하는가? 거르기를 통과한 틀린 매칭은 무엇이 잡아야 하는가?
 
 > [!tip]- 정답 · Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
 > 2. $d = fb/Z = 600\cdot0.12/24 = 3$ px — ±1 px 오차가 18–36 m를 오간다; 원거리 스테레오 깊이는 취약하다.
 > 3. 복도 축 방향의 병진은 점-최근접점 거리를 거의 바꾸지 않는다 — 퇴화된(관측 불가능한) 방향.
 > 4. 알려진 intrinsics, 그리고 대개 대략적인 extrinsic 초기화 또는 겹침과 동기화된 타임스탬프를 여전히 요구하는 공동 최적화.
+> 5. 고윳값이 40과 2이므로 $R=80-0.05\cdot42^2=-8.2<0$이고 $\min\lambda=2$다. 에지다. 밝기가 $x$ 방향으로만 바뀌므로 에지 방향인 $y$로는 위치가 잘 정해지지 않는다.
+> 6. 통과하지 못한다. $32/36=0.89>0.8$이므로 버린다 — 거의 같은 후보는 옆 패널일 가능성을 뜻한다. 거르기를 통과한 틀린 매칭은 기하 검증(RANSAC)이 잡아야 하는데, 패널 한 칸만큼 통째로 밀린 집합은 그것마저 통과할 수 있으니 odometry나 독립 랜드마크와 대조하라.
 
 ### 출처
 
 - [Szeliski, *Computer Vision: Algorithms and Applications* (공식 무료 PDF)](https://szeliski.org/Book/)
 - [OpenCV 카메라 보정 튜토리얼](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
 - [KITTI 센서 구성 — 실제 보정된 다중 센서 리그](https://www.cvlibs.net/datasets/kitti/setup.php)
+- Harris, C. & Stephens, M. "A combined corner and edge detector." *Proceedings of the 4th Alvey Vision Conference*, 1988.
+- Shi, J. & Tomasi, C. "Good features to track." *IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 1994.
+- Lowe, D. G. "Distinctive image features from scale-invariant keypoints." *International Journal of Computer Vision* 60(2), 2004. doi:10.1023/B:VISI.0000029664.99615.94
+- Rublee, E., Rabaud, V., Konolige, K. & Bradski, G. "ORB: An efficient alternative to SIFT or SURF." *IEEE International Conference on Computer Vision (ICCV)*, 2011.
+- Mur-Artal, R., Montiel, J. M. M. & Tardós, J. D. "ORB-SLAM: A versatile and accurate monocular SLAM system." *IEEE Transactions on Robotics* 31(5), 2015. doi:10.1109/TRO.2015.2463671
+- Fischler, M. A. & Bolles, R. C. "Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography." *Communications of the ACM* 24(6), 1981. doi:10.1145/358669.358692
+- DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperPoint: Self-supervised interest point detection and description." *CVPR Workshops*, 2018.
+- Sarlin, P.-E., DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperGlue: Learning feature matching with graph neural networks." *CVPR*, 2020.
+- Sun, J., Shen, Z., Wang, Y., Bao, H. & Zhou, X. "LoFTR: Detector-free local feature matching with transformers." *CVPR*, 2021.
