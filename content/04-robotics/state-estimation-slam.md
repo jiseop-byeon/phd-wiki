@@ -204,6 +204,8 @@ Here the measurement variance is smaller than the prediction variance, so the co
 
 **Try changing an assumption without recalculating.** If the measurement were much less precise, the gain should decrease and the estimate stay nearer the prediction. If the measurement reused information already inside the prediction, this formula would overcount evidence unless the correlation were modeled. Being able to predict those directions is a stronger first-pass check than memorizing 0.8 and 11.6.
 
+**Worked: P5 after the catalog update, then a wrong association.** Units centimetres. After the update above the belief is $11.6$, $P=0.8$ ([[02-foundations/lab-plants|0.6]]). P2 is carrying a tool toward a panel; this range *is* that panel. Predict a $1\,\mathrm{cm}$ advance with $Q=1$: $x=12.6$, $P=1.8$. Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, so a 3-σ gate is $5.0\,\mathrm{cm}$. A range $z=12.5$ is $0.1\,\mathrm{cm}$ inside the gate: $K=1.8/2.8=0.643$, $\hat x=12.536$, $P=0.643$. A passer-by at $z=20$ is $7.4\,\mathrm{cm}$ outside: reject it. If you fuse it anyway, $\hat x=17.36$ with the *same* $P=0.643$ — confident, five centimetres too far, and a contact force at that range would hit empty air. Association is not a covariance question; the gate is the whole difference. The problem set is this cycle as a drawing and a filled template.
+
 ### 7. Odometry, localization, mapping, and SLAM
 
 | Problem | What is treated as known | What is inferred |
@@ -702,6 +704,8 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 여기서는 측정 분산이 예측 분산보다 작아 추정이 측정 쪽으로 이동한다. 사후 분산은 스칼라 선형 가우시안 모델에서 독립 정보를 결합한 뒤의 불확실성이다. 분산은 거리 제곱 단위이고 표준편차는 거리 단위다. 이득에 둘을 섞으면 가중치가 틀린다.
 
 **계산 없이 가정 하나를 바꿔 본다.** 측정이 훨씬 부정확하면 이득이 줄고 추정은 예측에 가까이 남아야 한다. 측정이 이미 예측에 들어간 정보를 재사용한다면 상관을 모델링하지 않은 이 식은 증거를 중복 계산한다. 0.8과 11.6을 외우기보다 변화 방향을 예측하는 것이 더 좋은 첫 이해 확인이다.
+
+**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=12.6$, $P=1.8$. 혁신 $\sigma=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=12.5$는 $0.1\,\mathrm{cm}$로 게이트 안: $K=0.643$, $\hat x=12.536$, $P=0.643$. 통행인 $z=20$은 $7.4\,\mathrm{cm}$로 밖: 기각. 그래도 넣으면 $\hat x=17.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리에서 접촉력은 허공을 친다. 연관은 공분산 질문이 아니다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
 
 ### 7. Odometry, localization, mapping, SLAM
 

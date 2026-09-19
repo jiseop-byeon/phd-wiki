@@ -137,6 +137,7 @@ so an impedance controller measures motion and outputs force, and an admittance 
 
 > [!example] Worked example · 계산 예제
 > $M_d=2$ kg, $K_d=500$ N/m. A steady 10 N push settles at $e=F_{ext}/K_d=10/500=0.02$ m. The natural frequency is $\sqrt{500/2}=15.8$ rad/s, and critical damping ($\zeta=1$) needs $D_d=2\sqrt{500\times2}=63.2$ N·s/m.
+> **Those numbers are plant P2 in $y$.** Catalog pose $\theta=(0^\circ,90^\circ)$ has $\Lambda=\mathrm{diag}(1,2)$ ([[02-foundations/lab-plants|0.6]] and [[02-foundations/manipulator-kinematics-dynamics|10]]), so $\Lambda_y=2\,\mathrm{kg}$ is the apparent mass at the tip in $y$, not the $2\,\mathrm{kg}$ of metal. Command $F=(0,-10)$ on the panel: $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$. The panel pushes the robot in $+y$, so $F_{ext}=+10\,\mathrm{N}$ and the $0.02\,\mathrm{m}$ deflection is in $+y$. Unconstrained, $a_y=-10/2=-5\,\mathrm{m/s}^2$. Against steel the *position* is set by the wall: impedance still commands the $10\,\mathrm{N}$; admittance commands motion and a delayed force error becomes a shove into the wall. The problem set is this example as two block diagrams.
 > **Non-examples**: a controller that holds $F=F_d$ regardless of motion specifies no relation between motion and force, so it is force control, not an impedance. And "soft" is not part of the definition: $K_d=10^5$ N/m is a perfectly valid, very stiff impedance.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
@@ -709,6 +710,7 @@ $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}
 
 > [!example] 계산 예제 · Worked example
 > $M_d=2$ kg, $K_d=500$ N/m. 일정한 10 N 밀기는 $e=F_{ext}/K_d=10/500=0.02$ m에서 멈춘다. 고유 진동수는 $\sqrt{500/2}=15.8$ rad/s이고, 임계 감쇠($\zeta=1$)에는 $D_d=2\sqrt{500\times2}=63.2$ N·s/m가 필요하다.
+> **그 숫자가 $y$에서의 장치 P2다.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$의 $\Lambda=\mathrm{diag}(1,2)$([[02-foundations/lab-plants|0.6]], [[02-foundations/manipulator-kinematics-dynamics|10]])이므로 $\Lambda_y=2\,\mathrm{kg}$은 말단에서 $y$로 보이는 겉보기 질량이지 금속 $2\,\mathrm{kg}$이 아니다. 패널에 $F=(0,-10)$: $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$. 패널이 로봇을 $+y$로 밀므로 $F_{ext}=+10\,\mathrm{N}$이고 $0.02\,\mathrm{m}$ 처짐은 $+y$다. 구속이 없으면 $a_y=-5\,\mathrm{m/s}^2$. 강철에 대해서는 벽을 위치가 정한다. 임피던스는 여전히 $10\,\mathrm{N}$을 명령하고, 어드미턴스는 운동을 명령해 늦은 힘 오차가 벽으로의 밀침이 된다. 과제는 이 예제를 블록선도 둘로 묻는 것이다.
 > **반례**: 운동과 상관없이 $F=F_d$를 유지하는 제어기는 운동과 힘 사이의 관계를 정하지 않으므로 임피던스가 아니라 힘 제어다. 또 "무름"은 정의에 들어 있지 않다. $K_d=10^5$ N/m도 아주 단단하지만 온전한 임피던스다.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">

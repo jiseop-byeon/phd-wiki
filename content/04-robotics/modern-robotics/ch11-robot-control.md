@@ -57,6 +57,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > - Overshoot $= e^{-\pi\zeta/\sqrt{1-\zeta^2}} \approx 16\%$ (MR lists 16% for $\zeta = 0.5$), and settling $\approx 4/(0.5\cdot 10) = 0.8$ s.
 > - Halving $K_d$ bought no speed: $\zeta\omega_n$ halved, so settling doubled and the error now overshoots.
 
+**Worked: P2 under a $10\,\mathrm{N}$ contact, PD versus inverse dynamics.** Catalog pose, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ ([[02-foundations/lab-plants|0.6]]). A panel pushes the tip with $F=(0,-10)\,\mathrm{N}$ (the robot pressing down). Duality gives $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — the shoulder carries the load, the elbow does not, because the forearm is vertical. Inverse dynamics can add that $J^\top F$ (and $g$) and hold with $e=0$. Joint-space PD cannot: if gravity is already cancelled and the only restoring torque is $K_p e$ with $K_p=10\,\mathrm{N{\cdot}m/rad}$ on each joint, the linear map predicts $e_1\approx 10/10=1\,\mathrm{rad}$ of sag at the shoulder. That $O(1)$ radian is the lecture saying the linear spring is the wrong object for a $10\,\mathrm{N}$ contact. PD turns contact into position error times stiffness; a stiff PD on a stiff panel makes huge force from a millimetre. Impedance, next page, commands the *relationship* instead. The problem set is this paragraph as a drawing.
+
 **Wiki connections**: VLA outputs ultimately pass through platform-specific position,
 velocity, torque, or impedance interfaces and their low-level loops. Contact safety depends
 on that whole stack — actuators, limits, passive compliance, speed, task setup, and control —
@@ -115,6 +117,8 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Catalog 
 > - 댐퍼를 절반으로, $K_d = 10$: $\zeta = 10/(2\cdot 10) = 0.5$.
 > - 오버슈트 $= e^{-\pi\zeta/\sqrt{1-\zeta^2}} \approx 16\%$ (MR도 $\zeta = 0.5$에 16%를 든다), 정착 $\approx 4/(0.5\cdot 10) = 0.8$ s.
 > - $K_d$를 절반으로 줄여도 빨라지지 않는다. $\zeta\omega_n$이 절반이 되어 정착 시간은 두 배가 되고 오차가 오버슈트한다.
+
+**계산: $10\,\mathrm{N}$ 접촉 아래의 P2, PD 대 역동역학.** 카탈로그 자세, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$([[02-foundations/lab-plants|0.6]]). 패널이 말단을 $F=(0,-10)\,\mathrm{N}$으로 민다(로봇이 아래로 누름). 쌍대는 $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — 전완이 연직이라 어깨가 짐을 지고 엘보는 안 진다. 역동역학은 그 $J^\top F$(와 $g$)를 더해 $e=0$으로 유지할 수 있다. 관절 공간 PD는 못 한다. 중력이 이미 상쇄되고 복원 토크가 관절마다 $K_p=10\,\mathrm{N{\cdot}m/rad}$인 $K_p e$뿐이면, 선형 사상은 어깨 처짐 $e_1\approx 1\,\mathrm{rad}$을 예측한다. 그 $O(1)$ 라디안이 $10\,\mathrm{N}$ 접촉에 선형 스프링이 틀린 대상이라고 강의가 말하는 방식이다. PD는 접촉을 위치 오차 곱하기 강성으로 바꾼다. 과제는 이 문단을 그림으로 묻는 것이다.
 
 **위키 연결**: VLA 출력은 플랫폼마다 위치·속도·토크·임피던스 인터페이스와 저수준 루프를
 거친다. 접촉 안전은 임피던스 제어 하나가 아니라 액추에이터, 제한기, 수동 순응성, 속도,

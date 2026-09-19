@@ -82,6 +82,8 @@ $P = -0.414$ gives $\dot x = +1.414\,x$. A Riccati equation generally has severa
 closed loop gives $x = e^{-1.414t}$ and $u = -2.414\,x$, so
 $J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$.
 
+**Worked: plant P4, already stable.** The leaky heater $\dot x=-x+u$ has $A=-1$, $B=1$ ([[02-foundations/lab-plants|0.6]]). With $Q=4$, $R=1$ the ARE is $-2P-P^2+4=0$, so $P=-1+\sqrt5\approx 1.236$ (the positive root). Then $K=P\approx 1.236$, the closed-loop pole is $-(1+K)\approx-2.24$, and a constant $d=1$ sits at $x_\mathrm{ss}=d/(1+K)\approx 0.45$. Compare a CE397-style hand gain $K=4$: pole $-5$, $x_\mathrm{ss}=0.2$. $Q=4$ already prices state more than effort, so LQR acts, but not as hard as the hand gain that bought $5\times$ rejection. The problem set repeats the ARE at $Q=R=1$, where the optimizer barely acts ($K\approx 0.414$) because the plant is already stable and state and effort are priced equally. Raising $Q/R$ is the $(1+K)$ trade of CE397 §1: smaller $x_\mathrm{ss}$, more effort and noise.
+
 (Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) For $x_{k+1} = Ax_k + Bu_k$ and cost $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$ it reads
 
 $$P = A^\top P A - A^\top P B\,(R + B^\top P B)^{-1} B^\top P A + Q$$
@@ -328,6 +330,8 @@ $\dot x = -1.414\,x$를 주고, $P = -0.414$는 $\dot x = +1.414\,x$를 준다. 
 해가 여럿이고, 논문의 "그" 해는 언제나 안정화 해를 뜻한다. cost-to-go를 검산하면, $x_0 = 1$에서
 폐루프는 $x = e^{-1.414t}$, $u = -2.414\,x$이므로
 $J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$다.
+
+**계산: 이미 안정한 장치 P4.** 새는 히터 $\dot x=-x+u$는 $A=-1$, $B=1$([[02-foundations/lab-plants|0.6]]). $Q=4$, $R=1$이면 ARE는 $-2P-P^2+4=0$, $P=-1+\sqrt5\approx 1.236$(양근). $K\approx 1.236$, 폐루프 극점 $\approx-2.24$, 상수 $d=1$은 $x_\mathrm{ss}\approx 0.45$. 손 이득 $K=4$는 극점 $-5$, $x_\mathrm{ss}=0.2$. $Q=4$는 이미 상태 쪽을 더 사서 LQR이 움직이지만, $5$배 억제를 산 손 이득만큼은 아니다. 과제는 $Q=R=1$에서 ARE를 반복한다. 플랜트가 이미 안정하고 상태와 노력을 같게 매기므로 최적화기는 거의 안 움직인다($K\approx 0.414$). $Q/R$을 올리는 것이 CE397 §1의 $(1+K)$ 거래다.
 
 (로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) $x_{k+1} = Ax_k + Bu_k$와 비용 $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$에 대해 식은
 

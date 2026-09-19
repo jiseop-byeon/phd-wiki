@@ -72,6 +72,7 @@ Many models use a larger static coefficient $\mu_s$ for the stick bound and a sm
 
 > [!example] Worked example · 계산 예제
 > $\mu=0.5$ gives a half-angle $\arctan0.5=26.6°$. With $f_n=10$ N the cone allows $\lVert f_t\rVert\le5$ N: a 4 N tangential load can stick, and a 6 N demand cannot (Self-check 2).
+> **Worked: P2 wiping a P3 wall.** Vertical panel at $x=1\,\mathrm{m}$; P2 tip at $(1,1)$ just touching ([[02-foundations/lab-plants|0.6]]). Normal $\hat n=+x$, tangent $\hat t=-y$, wall stiffness $k_w=400\,\mathrm{N/m}$. Command $5\,\mathrm{mm}$ into the wall: $F_n=400\times0.005=2\,\mathrm{N}$, so the cone allows $|F_t|\le\mu F_n=1\,\mathrm{N}$. A $3\,\mathrm{N}$ downward wipe slips; a $1\,\mathrm{N}$ wipe can stick. Back the arm off so the gap $\phi>0$: complementarity forces $F_n=0$, hence $F_t=0$ — no friction without a push. Dust or a wrong $\mu$ changes the cone while the visual pose stays put. The problem set is this paragraph as a drawing.
 > **Non-example**: $f_n=-2$ N is outside the cone for every $\mu$, however small $f_t$ is, because a surface cannot pull. The circular cone is also not the same set as the four-faced **friction pyramid** that optimizers use to keep constraints linear ([[04-robotics/convex-mpc-legged|8. Convex MPC]]). Grasp analysis builds on these cones in [[04-robotics/grasping|Grasping §2]].
 
 <svg viewBox="0 0 440 214" style="max-width:100%;height:auto" role="img" aria-label="the friction cone: forces inside stick, forces outside slip">
@@ -319,6 +320,7 @@ $$f_t=-\mu f_n\,\frac{v_t}{\lVert v_t\rVert}$$
 
 > [!example] 계산 예제 · Worked example
 > $\mu=0.5$이면 반각은 $\arctan0.5=26.6°$다. $f_n=10$ N이면 원뿔은 $\lVert f_t\rVert\le5$ N을 허용한다. 4 N 접선 하중은 고착할 수 있고, 6 N 요구는 그럴 수 없다(스스로 점검 2).
+> **계산: P3 벽을 닦는 P2.** 수직 패널 $x=1\,\mathrm{m}$, P2 말단 $(1,1)$이 막 닿는다([[02-foundations/lab-plants|0.6]]). 법선 $\hat n=+x$, 접선 $\hat t=-y$, 벽 강성 $k_w=400\,\mathrm{N/m}$. 벽 안 $5\,\mathrm{mm}$: $F_n=2\,\mathrm{N}$, 원뿔은 $|F_t|\le 1\,\mathrm{N}$. $3\,\mathrm{N}$ 아래 닦기는 미끄러지고 $1\,\mathrm{N}$은 고착할 수 있다. 팔을 빼 $\phi>0$이면 상보성이 $F_n=0$을 강제하므로 마찰도 없다. 먼지나 틀린 $\mu$는 시각 자세가 그대로인데 원뿔을 바꾼다. 과제는 이 문단을 그림으로 묻는 것이다.
 > **반례**: $f_n=-2$ N은 $f_t$가 아무리 작아도 어떤 $\mu$에서든 원뿔 밖이다. 표면은 당길 수 없기 때문이다. 원형 원뿔은 최적화기가 제약을 선형으로 유지하려고 쓰는 네 면짜리 **마찰 피라미드**와도 같은 집합이 아니다([[04-robotics/convex-mpc-legged|8. Convex MPC]]). 파지 해석이 이 원뿔 위에 서는 방식은 [[04-robotics/grasping|파지 §2]]에 있다.
 
 <svg viewBox="0 0 440 214" style="max-width:100%;height:auto" role="img" aria-label="마찰 원뿔: 안쪽 힘은 고착, 바깥 힘은 미끄럼">

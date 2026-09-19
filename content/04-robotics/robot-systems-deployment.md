@@ -75,7 +75,9 @@ When a paper says “action,” identify whether it means joint position, veloci
 | Command processing | 5 ms |
 | **Observation-to-action** | **70 ms** |
 
-At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Budgets tighten by more than an
+At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end.
+
+**Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. Budgets tighten by more than an
 order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
 against this page's 70 ms observation-to-action budget,
 so the millisecond is the unit rather than the frame
@@ -445,7 +447,11 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | 명령 처리 | 5 ms |
 | **관측→행동** | **70 ms** |
 
-1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 루프가 단단한 접촉을 렌더링하면
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다.
+
+**계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]].
+
+루프가 단단한 접촉을 렌더링하면
 예산이 한 자릿수 넘게 빡빡해진다. 이 페이지의 관측-행동 예산 70 ms에 견주어 햅틱 서보는 유계 지터로 약 1 ms 안에 닫혀야 하므로 단위가 프레임이 아니라
 밀리초다 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]).
 

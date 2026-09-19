@@ -44,6 +44,8 @@ produce a convex program that is not a QP —
 and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
+**Worked: P4 with $|u|\le 1$.** The leaky heater $\dot x=-x+u+d$ ([[02-foundations/lab-plants|0.6]]). Unconstrained $100\times$ rejection wants $K=99$ (CE397 Self-check 1). At $x=0.5$ that law asks $u=-49.5$, which the rail $|u|\le 1$ forbids. Steady state $0=-x+u+d$ with $d=1$ and $|u|\le 1$ forces $x_\mathrm{ss}=u+1\in[0,2]$. Sitting at $d/(1+99)=0.01$ would need $u=-0.99$ *and* a transient that never asked for $|u|>1$, which $u=-99x$ does as soon as $|x|>1/99$. A receding horizon of length 3 on this plant, with only $u_0$ applied, exists *because* of that rail. LQR $K=99$ is not “almost MPC with a short horizon.” The problem set repeats the same arithmetic at $x=1$.
+
 <svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: plan over the horizon, execute one step, re-plan">
   <g stroke="currentColor" stroke-width="1" opacity="0.3">
     <line x1="30" y1="170" x2="440" y2="170"/>
@@ -274,6 +276,8 @@ $N$스텝 이후 전부를 대신하는 **종단 비용** $V_f$(보통 LQR의 $P
 QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써 놓았다. 더 일반적인 볼록
 제약은 볼록 최적화 문제를 만들 수 있지만 반드시 QP인 것은 아니다. 입력·상태 제약을 *태생적으로* 다루는 것이
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
+
+**계산: $|u|\le 1$인 P4.** 새는 히터 $\dot x=-x+u+d$([[02-foundations/lab-plants|0.6]]). 제약 없는 $100$배 억제는 $K=99$(CE397 스스로 점검 1). $x=0.5$에서 그 법칙은 $u=-49.5$를 요구하고 레일 $|u|\le 1$이 금지한다. 정상상태 $0=-x+u+d$, $d=1$, $|u|\le 1$이면 $x_\mathrm{ss}=u+1\in[0,2]$. $d/(1+99)=0.01$에 앉으려면 $u=-0.99$이면서 과도에서 $|u|>1$을 한 번도 안 물어야 하는데, $u=-99x$는 $|x|>1/99$이면 바로 묻는다. 이 플랜트에서 길이 3의 후퇴 지평이 있는 이유가 그 레일이다. LQR $K=99$는 “짧은 지평의 거의 MPC”가 아니다. 과제는 같은 산수를 $x=1$에서 반복한다.
 
 <svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: 지평 전체를 계획하고 한 스텝만 실행한 뒤 다시 계획">
   <g stroke="currentColor" stroke-width="1" opacity="0.3">

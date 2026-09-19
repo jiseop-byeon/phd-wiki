@@ -48,6 +48,8 @@ Every non-duration policy also accepts *system default*, which defers to the mid
 
 Deadline, lifespan and liveliness are the three most people never set, and deadline and liveliness are the only policies that can tell you a stream has *stopped* (lifespan expires stale samples but raises no event): a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical. A concrete case: a 30 Hz camera sends a frame every 33 ms; if the publisher offers and the subscription requests a 40 ms deadline, the subscription gets a *requested deadline missed* event whenever more than 40 ms pass without a frame.
 
+**Worked: P6's camera versus the $70\,\mathrm{ms}$ budget.** Vision at $50\,\mathrm{Hz}$ is a $20\,\mathrm{ms}$ period; a healthy camera therefore meets a $40\,\mathrm{ms}$ deadline on `/goal`. A $200\,\mathrm{ms}$ stall misses it and fires *requested deadline missed*. Separately, camera *best effort* against a controller that requests *reliable* does not connect at all — `ros2 topic echo` still prints, because `echo` adapts, while the node never runs. Fixing QoS still leaves a $200\,\mathrm{ms}$ stamp inside a $70\,\mathrm{ms}$ budget: $130\,\mathrm{ms}$ over, force applied to a goal the cart has already rolled past ([[02-foundations/lab-plants|0.6]], arithmetic on [[04-robotics/robot-systems-deployment|10]]). The problem set is this pair: incompatible reliability, then a late stamp after QoS is fixed.
+
 ### 3. Compatibility: the request-versus-offered rule
 
 This is the rule to memorise, because everything in section 4 follows from it.
@@ -504,6 +506,8 @@ QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션
 기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다.
 
 deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그중 deadline과 liveliness가 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책이다(lifespan은 낡은 샘플을 만료시킬 뿐 이벤트를 내지 않는다). deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다. 구체적인 예: 30 Hz 카메라는 33 ms마다 프레임을 보낸다. 퍼블리셔가 40 ms deadline을 제공하고 서브스크립션도 40 ms를 요청하면, 프레임 없이 40 ms가 넘게 지날 때마다 서브스크립션이 *requested deadline missed* 이벤트를 받는다.
+
+**계산: P6 카메라와 $70\,\mathrm{ms}$ 예산.** 비전 $50\,\mathrm{Hz}$는 주기 $20\,\mathrm{ms}$이므로 건강한 카메라는 `/goal`의 $40\,\mathrm{ms}$ deadline을 통과한다. $200\,\mathrm{ms}$ 정지는 놓치고 *requested deadline missed*를 낸다. 별도로, 카메라 *best effort*에 제어기의 *reliable* 요청은 연결되지 않는다. `echo`는 적응해서 출력하고 노드는 안 돈다. QoS를 고쳐도 $200\,\mathrm{ms}$ 스탬프는 $70\,\mathrm{ms}$ 예산 안에 남는다. 초과 $130\,\mathrm{ms}$, 카트가 이미 지나간 목표에 힘이 나간다([[02-foundations/lab-plants|0.6]], 산수는 [[04-robotics/robot-systems-deployment|10]]). 과제는 이 쌍이다. 비호환 신뢰성, 그다음 QoS를 고친 뒤의 늦은 스탬프.
 
 ### 3. 호환성: request 대 offered 규칙
 

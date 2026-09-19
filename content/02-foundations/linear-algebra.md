@@ -459,6 +459,12 @@ shortest one, and the null space is the freedom left over — which
 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] spends on joint limits and
 obstacle avoidance.
 
+**Worked: plant P2, the square case the problem set uses.** Catalog pose $\theta=(0^\circ,90^\circ)$ ([[02-foundations/lab-plants|0.6]]):
+
+$$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
+
+Draw the columns at the tip $(1,1)$: column 1 is the tip velocity for $\dot\theta=(1,0)$, which is $(-1,1)$; column 2 is $(-1,0)$. The $2\times 2$ inverse formula with $\det J=1$ gives $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible, so the table's last row says $J^\dagger=J^{-1}$. Check: $J J^{-1}=I$. The problem set asks you to write those two matrices and to say they match — you have just done it. The 3-link arm above needed a pseudoinverse because it was wide; P2 does not. What P2 *does* need the SVD story for is the next sentence: send $\theta_2\to 0$ and the two columns become parallel, $\det J\to 0$, $\kappa_2(J)\to\infty$, and a sideways tip motion is lost. $J^\dagger$ then explodes in the lost direction exactly as $\Sigma^\dagger$ below predicts.
+
 **The SVD view, and why $J^\dagger$ explodes.** Writing $A = U\Sigma V^\top$ from §4, the
 pseudo-inverse is
 
@@ -1037,6 +1043,12 @@ $\dot\theta = J^\dagger v = (1,\, -0.8,\, -0.4)$이고 $\lVert\dot\theta\rVert =
 많은 관절 운동 중 가장 짧은 것을 돌려주고, 영공간은 남은 자유다 —
 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]이 그것을 관절 한계와 장애물
 회피에 쓴다.
+
+**계산: 장치 P2, 과제가 쓰는 정방 경우.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$([[02-foundations/lab-plants|0.6]]):
+
+$$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
+
+말단 $(1,1)$에서 열을 그려라. 열 1은 $\dot\theta=(1,0)$의 말단 속도 $(-1,1)$, 열 2는 $(-1,0)$. $\det J=1$인 $2\times 2$ 역행렬 공식은 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역이므로 표의 마지막 행이 $J^\dagger=J^{-1}$이라고 말한다. $J J^{-1}=I$. 과제는 그 두 행렬을 쓰고 같다고 말하라고 한다 — 방금 한 일이다. 위의 3링크는 가로로 넓어서 유사역행렬이 필요했고, P2는 아니다. P2가 SVD 이야기를 필요로 하는 것은 다음 문장이다. $\theta_2\to 0$이면 두 열이 평행해지고 $\det J\to 0$, $\kappa_2(J)\to\infty$, 옆방향 말단 운동이 사라진다. $J^\dagger$는 잃어버린 방향에서 아래 $\Sigma^\dagger$가 예측하는 대로 폭발한다.
 
 **SVD의 관점, 그리고 $J^\dagger$가 폭발하는 이유.** §4에서 $A = U\Sigma V^\top$로 쓰면
 유사역행렬은
