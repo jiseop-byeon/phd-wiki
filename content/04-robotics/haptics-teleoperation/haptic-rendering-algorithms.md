@@ -38,6 +38,8 @@ Penalty methods fail in three ways, and Ruspini, Kolarov and Khatib named them (
 
 > [!example] Worked example · 계산 예제
 > A virtual plate $4$ mm thick rendered with $K = 1000$ N/m. The largest force the plate can produce before the device point crosses its mid-plane is $K \times 2\,\text{mm} = 2$ N. Any user who pushes harder than $2$ N pops through and is then pushed out the other side. Raising $K$ helps only until the stability ceiling of 24.4; making the plate thicker helps only until it looks wrong.
+>
+> **On P3's catalog wall.** $k_w=400$, $x_w=0.030$, plate occupying $[0.030,0.034]$ ([[02-foundations/lab-plants|0.6]]). At $x=0.036$ penalty sees the far face and pushes *out the back* ($0.80\,\mathrm{N}$ just before mid-plane; a $2\,\mathrm{N}$ push from 24.3's amplifier still survives a $4\,\mathrm{mm}$ plate but pops a $2\,\mathrm{mm}$ one). A proxy stuck on the entry face $x_w$ pulls $-x$ with $400\cdot 0.006=2.4\,\mathrm{N}$. A half-space never needed that memory; a plate does. The problem set is these two pictures.
 
 ### 3. Constraint-based rendering: the proxy
 

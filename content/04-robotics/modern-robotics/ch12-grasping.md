@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 - **Contact models**: a frictionless point contact can only *push* along the surface
   normal; a point contact with friction can push anywhere inside the **friction cone** —
   half-angle $\alpha = \tan^{-1}\mu$. For $\mu = 0.5$, $\alpha \approx 26.6°$: the physical
-  meaning of a friction coefficient is *an angle*.
+  meaning of a friction coefficient is *an angle*. The homework's angle claim *is* that conversion. First-order form closure's "at least 4 planar contacts" is falsified by second-order curvature with two contacts, named below. Two fingers on P2's panel along $\pm x$ with $\mu=0.5$ still need the cones to span wrench space; form closure would demand extra contacts because it cannot spend friction.
 - **Form closure**: the geometry alone traps the object (no friction needed) — for
   frictionless point contacts, at least 4 contacts in the plane and 7 in space. Robust but
   demanding. Those counts are for **first-order** form closure, which is the qualifier that

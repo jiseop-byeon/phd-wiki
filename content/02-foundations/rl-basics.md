@@ -94,6 +94,8 @@ flowchart LR
   exactly one discount factor, $9 = 0.9 \times 10$. And the advantage of the move out of $A$
   is $Q(A,\text{move}) - V(A) = 9 - 9 = 0$ — there was no alternative, so no move can be
   better than average. Advantage measures *choice*, and where there is no choice it is zero.
+
+**Worked: P4 as an MDP.** The leaky heater $\dot x=-x+u+d$ ([[02-foundations/lab-plants|0.6]]). The agent chooses $u$; $d$ is an exogenous arrow it does not pick. Bins $s\in\{0,1\}$ for $x\approx 0$ and $x\approx 1$, actions $u\in\{0,1\}$, $d=0$, Euler $T=1$ so $x^+=u$, reward $r=-s^2$, $\gamma=0.9$. One greedy backup from $V\equiv 0$: $s'=u$ and $Q(s,u)=-s^2$, so $V(0)=0$, $V(1)=-1$. A policy learned on these bins has no pole certificate when a real $d$ jumps; that stabilizer is $u=-Kx$ on [[04-robotics/control-theory-ce397|5]]. The problem set is this MDP as a drawing.
 - These are fixed-point equations; the Bellman operator is a $\gamma$-contraction, so
   iterating it converges — the license behind everything below.
   - *What that means.* The **Bellman operator** $T^\pi$ maps any value table $V$ to a new one, $(T^\pi V)(s) = \sum_a \pi(a \mid s) \sum_{s'} p(s' \mid s, a)\,[r(s,a) + \gamma V(s')]$, and $V^\pi$ is the table it leaves unchanged, $T^\pi V^\pi = V^\pi$. A **$\gamma$-contraction** in the max-norm is an operator that brings any two tables closer by at least the factor $\gamma$:

@@ -272,6 +272,8 @@ includes construction machinery is the nearest existing bridge between this page
 > 4. A name collision. The DARPA programme is *Robotic Autonomy in Complex Environments with Resiliency*; a separate, unrelated paper uses RACER for an epistemic risk-sensitive RL method on a 1/10-scale rally car. Both are real; citing one for the other is a common error.
 > 5. **GOOSE-Ex**, because it is the only off-road perception dataset here containing a robotic excavator, and it was built for cross-embodiment generalization. What is still missing is everything about the machine's own state — no actuator, joint, hydraulic-pressure or force channel is released, which is the same gap [[06-research-practice/simulators-benchmarks-datasets|7. §8]] documents across the whole construction dataset landscape.
 
+**Worked: the three readings the homework asks.** Tall grass occupied in lidar is the canonical counterexample; BADGR or *How Does It Feel?* replaces the occupancy label with consequence. Interventions per kilometre beat 95% success. CVaR, not the mean, is the excavator-on-a-slope objective.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

@@ -170,6 +170,8 @@ You should be able to:
 > [!tip]- Answers
 > 1. Head pose, not eye gaze — the eye region is not resolvable at that distance. 2. Procrustes alignment removes global rotation; orientation error is precisely the intent-relevant quantity, so the metric can improve while the useful signal is discarded. 3. Torso orientation from coarse 2D keypoints (the shoulder and hip lines); a tracked box alone gives heading only while the person is moving. A full 3D mesh is unnecessary. 4. Its constant cost is attractive for crowds, but crowding is what makes keypoint-to-person grouping ambiguous.
 
+**Worked: the three readings the homework asks.** At $20\,\mathrm{m}$ a vehicle camera measures head pose, not gaze. PA-MPJPE $45\to 30\,\mathrm{mm}$ can throw away facing. Cheapest sufficient cue for “turning toward a saw” is torso from shoulder/hip lines.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

@@ -55,6 +55,8 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
 
 This is a model, not a universal law of sensory dominance. Reliability, temporal alignment, task relevance, priors, attention, and conflict determine whether cues fuse, compete, or remain separate. Likewise, moving a warning from vision to touch does not automatically reduce workload; representative multitask testing is necessary.
 
+**Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
+
 > [!question]- Self-check · Answer
 > **Why can a clearer vibration fail to improve a teleoperation task?** Detectability is only one link. The cue may arrive late, encode the wrong state, conflict with vision, consume attention, or fail to change an actionable decision. Test perception, control behavior, and task outcome separately.
 

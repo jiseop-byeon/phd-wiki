@@ -159,6 +159,8 @@ You should be able to:
 > [!tip]- Answers
 > 1. The body is out of frame; systems estimate ego-motion from the scene and infer coarse body state from hands, motion, and priors rather than observing it. 2. It recognises the manner of action but not the object — for intent, "reaching for *what*" is usually the decision-relevant half, so the estimate is weak where it matters. 3. Expertise reduces visual guidance, weakening the head–attention coupling the model learned. 4. Gait produces roughly periodic motion at a characteristic frequency, so it is separable in the frequency domain from aperiodic attentional reorientations.
 
+**Worked: the three readings the homework asks.** Hands-and-object filling the frame transfers from EPIC-KITCHENS to a helmet; kitchen objects do not. Ego4D's title says 3,000 hours and the abstract 3,670 — cite the part you used; the *split* (past/present/future) is the claim that licenses a deployment. Expertise is the regime where head direction stops being gaze.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.
@@ -347,6 +349,8 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 > [!tip]- 정답
 > 1. 몸이 프레임 밖이다; 장면에서 ego-motion을 추정하고 손·움직임·사전지식으로 거친 신체 상태를 추론한다 — 관측이 아니라 추론이다. 2. 행동의 방식은 알아도 대상을 모른다는 뜻이다. 의도에서는 "*무엇*을 향해 뻗는가"가 대개 결정에 관련된 절반이므로, 중요한 곳에서 약한 추정치다. 3. 숙련도가 시각 안내를 줄여, 모델이 학습한 머리–주의 결합을 약화시킨다. 4. 보행은 특정 주파수의 거의 주기적인 움직임을 만들므로, 비주기적인 주의 재정향과 주파수 영역에서 분리 가능하다.
+
+**계산: 과제가 묻는 세 읽기.** 손과 물체가 프레임을 채우는 것은 헬멧으로 이전되고, 부엌 물체는 아니다. Ego4D 제목 3,000시간과 초록 3,670 — 쓴 쪽을 인용하고, 배치를 허가하는 주장은 *분할*(과거/현재/미래)이다. 숙련은 머리 방향이 시선이기를 멈추는 영역이다.
 
 ### 과제 · Problem set
 

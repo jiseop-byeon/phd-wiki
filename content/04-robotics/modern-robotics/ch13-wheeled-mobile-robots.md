@@ -26,7 +26,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   $$v = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{r(\omega_R - \omega_L)}{2d}$$
   Numbers: $r = 0.1$ m, $d = 0.2$ m, $\omega_R = 10$, $\omega_L = 5$ rad/s
   → $v = 0.75$ m/s, $\omega = 1.25$ rad/s — a gentle left arc. Equal speeds → straight;
-  opposite speeds → turn in place.
+  opposite speeds → turn in place. The homework's kinematic claim *is* that pair. A parallel-park falsifies reading “cannot slide sideways” as “cannot reach that pose.” Putting P2's origin in front of the panel cannot use a sideways shuffle as a legal edge; Reeds–Shepp or a lattice of drivable curves still reach the pose.
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
   parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
   car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no **continuous** time-invariant feedback can stabilize

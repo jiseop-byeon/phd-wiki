@@ -305,6 +305,8 @@ something different. Both are called self-correction, so read for the mechanism
 > 4. No. Ending a challenge or saturating one configuration is not evidence that the underlying task is solved. Open-vocabulary and lifelong variants (HM3D-OVON, GOAT-Bench), continuous control, sim-to-real transfer and mobile manipulation test different unresolved capabilities.
 > 5. That granularity should be **task-derived rather than fixed** — Clio's Information Bottleneck formulation exists precisely because navigation wants a coarse map and manipulation wants a fine one of the same scene. Architecturally, build an object-centric scene graph (the ConceptGraphs lineage) as the queryable interface, over whatever geometric substrate you use, and let the task list set the level of detail.
 
+**Worked: the three readings the homework asks.** Oracle-visibility is what makes ObjectNav a perception problem: omit it and 90% can be “stop 0.9 m from a wall.” Gervet et al. sit near 80% in sim and 80/90/23 in the world — a Habitat number is evidence about Habitat. Anderson et al. 2018 is unrefereed; skip it and you lose SPL.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

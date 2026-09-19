@@ -74,6 +74,8 @@ The packet covers the first half of a full haptics course particularly well. It 
 > [!question]- Self-check · Answer
 > **A within-subject study has 20 people and 30 trials per person. Is $n=600$?** Not for a participant-level treatment claim. Trials are nested/repeated observations. Analyze that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
 
+**Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

@@ -143,6 +143,8 @@ You should be able to:
 > [!tip]- Answers
 > 1. Retrain or evaluate a single-frame baseline on the same split; if it is close, the dataset is scene-biased. Frame shuffling is a cheaper approximation. 2. Because the label window is excluded from the input, so the mapping is one-to-many over legitimate futures; the model estimates a distribution, not a deterministic label. 3. Fixed-window 3D CNNs and standard video transformers (2–10 s receptive field); the workaround is hierarchical or memory-based aggregation over clip-level features. 4. When the decision requires a longer horizon than the higher-accuracy model can sustain above the action threshold — see §5.
 
+**Worked: the three readings the homework asks.** No single-frame baseline next to 92% means the number may be scene bias. Anticipation that keeps the label inside the input is recognition. A “30 fps” claim with a 2 s buffer has already spent two seconds of latency.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

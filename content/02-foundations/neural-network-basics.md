@@ -102,6 +102,8 @@ $$P = \sum_{\ell=1}^{L} \big(n_\ell\, n_{\ell-1} + n_\ell\big)$$
 
 because layer $\ell$ has $n_\ell \times n_{\ell-1}$ weights and $n_\ell$ biases; here $(3\cdot2 + 3) + (1\cdot3 + 1) = 9 + 4 = 13$.
 
+**Worked: plant P1.** The catalog freezes biases at zero ([[02-foundations/lab-plants|0.6]]), so only the $6+3=9$ weights count. The figure already is that graph: $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$, $W_1$ is $3\times 2$, $W_2$ is $1\times 3$. At $z=(1,2,3)$ every unit is positive, so ReLU is the identity and $\partial h_i/\partial z_i=1$. If $z_3$ had been $-3$, $h_3=0$ and that path (and $W_{2,3}$) would go dead. The problem set is this count with biases off.
+
 ### 3. Training = choosing those numbers by measured error
 
 The parameters start random and are *fitted to data*. Three pieces:
@@ -362,6 +364,8 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
 
 **파라미터 세기.** $W_1$이 $3\times2 = 6$개, $b_1$이 3개, $W_2$가 $1\times3=3$개,
 $b_2$가 1개 — **13개**. 논문의 "7B 파라미터"는 정확히 이렇게 센 것이다. 일반식은 층마다 행렬 하나와 편향 하나다.
+
+**계산: 장치 P1.** 카탈로그는 편향을 0으로 고정하므로([[02-foundations/lab-plants|0.6]]) 가중치 9만 센다. 그림이 그 그래프다. $z=(1,2,3)$에서 ReLU는 항등. $z_3=-3$이면 그 경로가 죽는다. 과제는 편향을 끈 이 개수다.
 
 $$P = \sum_{\ell=1}^{L} \big(n_\ell\, n_{\ell-1} + n_\ell\big)$$
 

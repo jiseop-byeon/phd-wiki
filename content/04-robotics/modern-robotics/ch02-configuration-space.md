@@ -46,6 +46,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > - **Spatial 6R arm**: $m = 6$, links $N = 7$ (base + 6 moving links), $J = 6$ revolute joints, each $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — enough to place the tool at any position and orientation in its reachable workspace.
 >
 > **Pattern**: for an open serial chain $J = N - 1$, so the first term vanishes and dof is just $\sum_i f_i$. Each closed loop subtracts constraints, which is why the four-bar's 4 joints give only 1 dof. The formula assumes independent constraints; special geometry can break it (MR Example 2.6).
+>
+> The homework's 1-dof claim *is* $3(4-1-4)+4=1$. Special geometry (MR 2.6) is what would falsify “Grübler always gives the mobility.” P2 reaching $(1,1)$ is in task space and in the workspace; two C-space points map to it (ch.6).
 
 **Wiki connections**: C-space is the "state" half of every
 [[02-foundations/rl-basics|MDP]] for robots; VLA action spaces are coordinates on it.

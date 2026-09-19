@@ -112,6 +112,7 @@ Convolution is useful because a short physical event can affect several later sa
   Then the signal is *perfectly* recoverable from its samples, because sampling makes copies
   of the spectrum spaced $f_s$ apart and those copies do not overlap. Example: audio
   band-limited to 20 kHz needs $f_s > 40$ kHz, which is why CD audio uses 44.1 kHz.
+- **Worked: plant P3 at $1\,\mathrm{kHz}$.** The haptic servo uses $T=10^{-3}\,\mathrm{s}$, so $f_s=1000\,\mathrm{Hz}$ and Nyquist is $500\,\mathrm{Hz}$ ([[02-foundations/lab-plants|0.6]]). Contact you care about below $30\,\mathrm{Hz}$ is far inside the theorem; sampling is not the bottleneck. One encoder count is $\Delta x=r_m 2\pi/N=0.010\cdot 2\pi/1024=61.4\,\mu\mathrm{m}$ — a *quantization* stair in space, not a $T_s$. Raising $N$ shrinks space; raising $f_s$ shrinks time. The problem set is this sampler+ZOH as a drawing.
 - **Aliasing** is what happens when the condition fails. Content at a frequency $f$ above
   $f_s/2$ shows up in the samples at
   $$f_{alias} = |f - k f_s|$$
@@ -456,6 +457,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   그러면 신호는 샘플에서 *완벽히* 복원된다. 샘플링은 스펙트럼 복사본을 $f_s$ 간격으로
   만드는데, 이 조건에서는 복사본끼리 겹치지 않기 때문이다. 예: 20 kHz로 대역 제한된 오디오는
   $f_s > 40$ kHz가 필요하고, 그래서 CD 오디오가 44.1 kHz를 쓴다.
+- **계산: $1\,\mathrm{kHz}$의 장치 P3.** 햅틱 서보는 $T=10^{-3}\,\mathrm{s}$이므로 $f_s=1000\,\mathrm{Hz}$, 나이퀴스트 $500\,\mathrm{Hz}$([[02-foundations/lab-plants|0.6]]). $30\,\mathrm{Hz}$ 아래 접촉은 정리 안쪽이고 샘플링이 병목이 아니다. 엔코더 한 카운트 $\Delta x=61.4\,\mu\mathrm{m}$은 공간 양자화이지 $T_s$가 아니다. $N$을 올리면 공간이, $f_s$를 올리면 시간이 줄어든다. 과제는 이 샘플러+ZOH 그림이다.
 - **에일리어싱**은 조건이 깨질 때 벌어지는 일이다. $f_s/2$ 위의 주파수 $f$ 성분은 샘플에서
   $$f_{alias} = |f - k f_s|$$
   에 나타난다. $k$는 $f/f_s$에 가장 가까운 정수이고, 그래서 $f_{alias}$가 $0$과 $f_s/2$

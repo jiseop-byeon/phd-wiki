@@ -43,6 +43,8 @@ Power-preserving scaling requires $s_f=s_x$ under this convention; other convent
 
 A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). Common strategies include:
 
+**Worked: two P3 devices, $T_d=50\,\mathrm{ms}$.** Catalog $b=0.8$, $k_w=400$, local $T=1\,\mathrm{ms}$ ([[02-foundations/lab-plants|0.6]]). A Colgate-style bound that spends the delay in the period is $K\le 2b/(T+T_d)\approx 31\,\mathrm{N/m}$; catalog $k_w$ fails it. Power-preserving $s_f=s_x=0.1$ with $F_f=1\,\mathrm{N}$ reflects $0.1\,\mathrm{N}$ at the leader — too faint. $s_f=10$ gives power ratio $100$ from the actuators, so the pair cannot inherit passivity. Added damping that makes users slower is not a contradiction of passivity. The problem set is this two-port as a drawing.
+
 - local damping or virtual coupling;
 - time-domain passivity observers/controllers;
 - wave/scattering variables that make a constant-delay channel passive under assumptions (send sum and difference combinations of velocity and force instead of the raw signals; derived in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]]);

@@ -157,6 +157,9 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
   - **Homogeneous coordinates.** To let one matrix both rotate and translate, a point $x\in\mathbb{R}^3$ is written with a fourth entry $1$, and a free direction (a velocity, an axis) with a fourth entry $0$:
     $$T\begin{pmatrix}x\\1\end{pmatrix}=\begin{pmatrix}Rx+p\\1\end{pmatrix},\qquad T\begin{pmatrix}d\\0\end{pmatrix}=\begin{pmatrix}Rd\\0\end{pmatrix}$$
     so points are rotated and shifted, while directions are only rotated. With $R=R_z(90°)$, $p=(2,0,0)$: the point $(1,0,0)$ goes to $(2,1,0)$, the direction $(1,0,0)$ goes to $(0,1,0)$. The inverse checks out on the same $T$: $-R^\top p=(0,2,0)$, and $T^{-1}$ sends the point $(2,0,0)$ back to the origin, as it should, since that is where $T$ put the origin.
+  - **Worked: $T$ of plant P2.** Catalog pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)$ ([[02-foundations/lab-plants|0.6]]). The second link is vertical, so the tip $x$-axis is along $+y_s$. Then $R=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, and
+    $$T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
+    $\mathrm{Ad}_T$ rewrites one twist in another frame; $J$ stacks joint screws at this pose. They are not the same map. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$. The problem set asks you to write this $T$.
   - **What the subscripts mean.** $T_{AB}$ is the pose of frame $B$ expressed in frame $A$: its $R$ columns are $B$'s axes written in $A$'s coordinates, and its $p$ is $B$'s origin in $A$'s coordinates. Used as a map it converts coordinates, $x_A=T_{AB}\,x_B$, which is why inner subscripts must match to multiply. $T_{world\leftarrow cam}$ below is the same object written with an arrow.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="frame composition: world to base to camera">
@@ -433,6 +436,9 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   - **동차 좌표.** 행렬 하나가 회전과 병진을 함께 하도록, 점 $x\in\mathbb{R}^3$에는 넷째 성분 $1$을, 자유 방향(속도, 축)에는 넷째 성분 $0$을 붙인다.
     $$T\begin{pmatrix}x\\1\end{pmatrix}=\begin{pmatrix}Rx+p\\1\end{pmatrix},\qquad T\begin{pmatrix}d\\0\end{pmatrix}=\begin{pmatrix}Rd\\0\end{pmatrix}$$
     그래서 점은 회전하고 이동하지만 방향은 회전만 한다. $R=R_z(90°)$, $p=(2,0,0)$이면 점 $(1,0,0)$은 $(2,1,0)$으로, 방향 $(1,0,0)$은 $(0,1,0)$으로 간다. 같은 $T$로 역도 확인된다. $-R^\top p=(0,2,0)$이고, $T^{-1}$은 점 $(2,0,0)$을 원점으로 되돌린다. $T$가 원점을 그 자리에 놓았으므로 당연하다.
+  - **계산: 장치 P2의 $T$.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)$([[02-foundations/lab-plants|0.6]]). 둘째 링크가 수직이므로 말단 $x$축은 $+y_s$. $R=R_z(90^\circ)$, $p=(1,1,0)$,
+    $$T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
+    $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이고 $J$는 이 자세의 관절 스크류 묶음이다. 같은 사상이 아니다. 과제는 이 $T$를 쓰라고 한다.
   - **아래 첨자의 뜻.** $T_{AB}$는 프레임 $A$에서 표현한 프레임 $B$의 자세다. $R$의 열은 $A$ 좌표로 쓴 $B$의 축이고, $p$는 $A$ 좌표로 쓴 $B$의 원점이다. 사상으로 쓰면 좌표를 변환한다, $x_A=T_{AB}\,x_B$. 곱하려면 안쪽 첨자가 맞아야 하는 이유다. 아래의 $T_{world\leftarrow cam}$은 같은 대상을 화살표로 쓴 것이다.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="프레임 합성: 월드에서 베이스, 베이스에서 카메라">

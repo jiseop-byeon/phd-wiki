@@ -38,6 +38,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > - **6-DOF arm:** $36^6 \approx 2.18 \times 10^9$ cells — $36^4 \approx 1.7$ million times more for four extra joints.
 > - At $1$ µs per collision check that is about $36$ minutes; at a more realistic $1$ ms, about $25$ days. And $10°$ is coarse: halve the step and the 6-DOF count grows $2^6 = 64\times$.
 >
+> The homework's intractability claim *is* $36^6\approx 2.18\times 10^9$ at $1\,\mathrm{ms}\approx 25$ days. Probabilistic completeness is not a time bound: a planner can run forever on a problem that has a solution. An RRT path that puts P2's tip on the panel has not checked $F_n$ on the P3 wall.
+>
 > **The fix.** Sampling planners never build the grid. One RRT step: sample a random $q_\text{rand}$, find the nearest tree node $q_\text{near}$, move a fixed step from $q_\text{near}$ toward $q_\text{rand}$ to get $q_\text{new}$, and add it if the segment is collision-free. The cost is paid per sample, not per cell.
 
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —

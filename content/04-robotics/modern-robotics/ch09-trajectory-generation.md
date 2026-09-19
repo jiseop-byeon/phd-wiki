@@ -47,6 +47,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > - Total: $0.4 + 1.1 + 0.4 = 1.9$ s — faster than the 2 s polynomial moves.
 >
 > **Which limit binds**: velocity. Both polynomials stay under $a_{\max}$ (1.8 and 1.73 < 2) but exceed $v_{\max}$ (0.9 and 1.125 > 0.8), so at $T = 2$ s neither is executable on this joint; the trapezoid saturates $v_{\max}$ by construction.
+>
+> The homework's infeasibility claim *is* $0.9>0.8$. A cubic on P2 that ignores contact still does not bound $F_n$ on a P3-stiffness wall.
 
 **Wiki connections**: [[01-canonical-papers/notes/4-vla/act|action chunks]] and
 [[01-canonical-papers/notes/4-vla/diffusion-policy|denoised trajectories]] are *learned*

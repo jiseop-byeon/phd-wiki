@@ -445,6 +445,7 @@ Physical systems are described by ODEs — this is the modeling language of all 
   *asymptotically stable*: from every starting value $x(0)$ the solution returns to $0$ as
   $t \to \infty$ (the full definition is [[04-robotics/control-theory-ce397|5. Control Theory §4]]). A robot joint,
   a heating room, a draining tank — all locally this equation.
+- **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$. With $u=1$ and $x(0)=0$ the solution is $x(t)=1-e^{-t}$ (particular $1$, homogeneous $ce^{-t}$, $c=-1$). At $t=0.1$ and $0.2$: $0.095$ and $0.181$. Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$ gives $0.10$ then $0.19$ ([[02-foundations/lab-kernel|0.65]]). It is high because it uses the slope at the *start* of the step, where $1-x$ is largest. The problem set is this ODE as a block diagram.
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
   input"; this is the scalar version of the state-space model
   $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$ ([[02-foundations/linear-algebra|linear algebra §5]]),
@@ -1019,6 +1020,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   초기값 $x(0)$에서 출발해도 $t \to \infty$에서 해가 $0$으로 돌아온다는 뜻이다(완전한 정의는
   [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
+- **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$. $u=1$, $x(0)=0$이면 $x(t)=1-e^{-t}$. $t=0.1,0.2$에서 $0.095$, $0.181$. 전진 오일러 $T=0.1$은 $0.10$ 다음 $0.19$([[02-foundations/lab-kernel|0.65]]). 스텝 *시작*의 기울기를 써서 높다. 과제는 이 ODE의 블록선도다.
 - **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
   상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
   ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수

@@ -229,6 +229,8 @@ You should be able to:
 > [!tip]- Answers
 > 1. Base rate — a constant "no" scores similarly. Report AUC for ranking and precision–recall plus the chosen deployed operating point as functions of time-to-event. 2. B meets this stated requirement; A does not provide enough lead at that operating point. AUC alone does not choose the threshold, encode braking cost, or establish calibration. 3. minADE rewards one lucky sample among twenty; the planner needs a probability distribution over futures, which the metric does not require the model to provide. 4. Mask or remove the pedestrian and re-evaluate; near-equal performance means the model learned scene priors. 5. The worker adapts to the deployed robot, so deployment changes the data-generating process — a feedback loop absent from passive road recordings.
 
+**Worked: the three readings the homework asks.** 96% accuracy on a 94% “no” base rate is a constant-no score. minADE$_{20}=0.18\,\mathrm{m}$ does not give a calibrated set for a stop. Week-four worksite labels are not JAAD: coworkers adapted to the robot.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

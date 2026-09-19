@@ -51,6 +51,8 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
 > [!question]- Self-check · Answer
 > **Why is a 250 Hz command not enough to specify a tactile stimulus?** The actuator and mounting determine delivered acceleration/displacement; preload, contact area, body site, waveform envelope, and individual sensitivity determine perception. Frequency is only one coordinate.
 
+**Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

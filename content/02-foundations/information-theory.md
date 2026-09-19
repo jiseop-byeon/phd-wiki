@@ -86,7 +86,8 @@ Logarithms are useful because they turn the joint probability of many observatio
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{bits}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{bits}$$
   The model costs $1.280$ bits per symbol where $1.157$ is the floor — an overpayment of
-  $0.123$ bits. Hold that number; §3 shows it is exactly the KL. Both figures are expected
+  $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
+- **Worked: P5 crack detector.** Catalog $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$ ([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. The true posterior is Bernoulli($0.161$) with $H(p)\approx 0.63$ bits. A model that treats the *sensitivity* $0.95$ as if it were $P(c|+)$ pays $H(p,q)\approx 3.64$ bits. False alarms from the $99\%$ non-crack mass ($0.0495$) dominate true positives ($0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$. The problem set is this channel as a drawing. Both figures are expected
   costs, not code lengths. Entropy bounds the *expected* length, and a per-symbol code reaches
   it only when every probability is a power of two, because a symbol's code length has to be a
   whole number of bits: the best symbol code here is Huffman at $1.3$ bits (built and proved optimal in [[02-foundations/algorithms/greedy-mst|11.4 §5]]). The floor is approached by coding long blocks of **i.i.d.** ([[02-foundations/probability|3. Probability §2]])

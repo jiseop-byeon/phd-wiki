@@ -251,6 +251,15 @@ one of them is not comparing what it claims.
 | **EMA of weights** | keep a slowly-moving average of the parameters and *evaluate that*, not the live weights | a free fraction of a point on many benchmarks. Diffusion papers use it almost universally (DDPM: decay 0.9999, an appendix figure); policy papers vary and often only the **code** reveals it — Diffusion Policy uses it in its configs without mentioning it in the paper. Distinct from the EMA *teacher* of [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]], which is a target network, not an evaluation trick |
 | **Initialization** | Xavier/He scaling keeps activation variance stable across depth | rarely load-bearing now that normalization layers exist, but named when a paper trains without them |
 
+**Worked: a two-row table the abstract will quote.** Invented, on purpose:
+
+| Method | Success | Trials | Training |
+|---|---:|---:|---|
+| Ours | 0.88 | 25 | new schedule, one seed |
+| Prior SOTA | 0.72 | 25 | the 2021 paper's recipe |
+
+The 16-point gap is the claim. It silently depends on $n=25$, one seed, and a recipe mismatch — this section's warning. Retrain the SOTA with the new schedule and several seeds; if the gap vanishes the claim was a recipe. Separately $22/25$ vs $18/25$ is a thin binomial. The problem set is this table as a drawing.
+
 #### The recipe terms, with their formulas
 
 - **Warmup and cosine decay.** A learning-rate schedule is a function $\eta_t$ of the step $t$. Linear warmup over the first $T_w$ steps, then cosine decay from $\eta_{\max}$ to $\eta_{\min}$ by the last step $T$:

@@ -345,6 +345,8 @@ for the full picture and the licensing traps.
 > 4. Adaptation *across* episodes rather than within one. With a context window spanning episode boundaries, the policy can condition on what happened in earlier attempts — including falls — so it improves within a deployment without any weight update. That is a different mechanism from RMA-style latent estimation, which adapts within an episode from proprioceptive history and resets when the episode does.
 > 5. **ANYmal parkour**, because it is the only one whose high-level policy reasons about what a piece of terrain affords, which is what a mobile manipulator needs to reach a workspace. What it does not give you is the manipulator: it is a navigation-among-obstacles result on a curated course, with no arm, no payload, and no account of how carrying one changes the dynamics. The error-budget consequences of adding an arm are in [[04-robotics/navigation-mobile-manipulation|16. §4]].
 
+**Worked: the three readings the homework asks.** “Walk in minutes” is teacher–student wall clock: the teacher sees friction; minutes are not sample efficiency. Hwangbo 2019 transferred agile quadruped skills, not “sim-to-real is solved.” Closest precedent for a manipulator over rubble is ANYmal parkour — still no arm, no payload.
+
 ### Problem set · 과제
 
 Tier C. Using this page only.

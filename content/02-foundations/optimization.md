@@ -122,6 +122,7 @@ The formulation is needed because a preference and a requirement play different 
   speed is not magic, it is the payoff for owning the second derivative. On a non-quadratic
   you get that behavior only near the optimum, and you pay $O(n^3)$ per step to form and
   invert $H$ — which is why nobody runs it on a neural network.
+- **Worked: one GD step on P1.** Catalog $W_2=(1,-1,0.5)$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$ from [[02-foundations/calculus-backprop|2]] ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$: $W_2\leftarrow(1.05,-0.9,0.65)$. Holding $h=(1,2,3)$, $L=\tfrac12(W_{2,1}-1.5)^2$ is a parabola in $W_{2,1}$ with minimum at $1.5$; the catalog sits on the left slope. $\eta=10$ jumps to $W_2=(6,9,15.5)$, $\hat y=70.5$, and $L$ explodes. The problem set is this step by hand.
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian (its curvature cannot change arbitrarily fast: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$), $O(n^3)$ per

@@ -296,6 +296,8 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   $K = 0.04$ and $\hat x = 10.08$, i.e. the filter almost ignores it. The gain is just
   *relative trust*, and that is all any Kalman-gain sentence in a paper is saying.
 
+**Worked: P5 sequential.** The numbers above *are* the catalog plant ([[02-foundations/lab-plants|0.6]]). A second independent range $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. Predict $x\leftarrow x+1$ with $Q=1$: $x=12.333$, $P=1.444$. Then $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. A *wrong* wall at $20$ after the first update would yank to $\approx 15.3$ with the same small $P$ — confident and wrong. The problem set is this sequence as a drawing and a filled `correct()` template.
+
 ```mermaid
 flowchart LR
     P["belief at t-1<br/>mean and covariance"] --> PR["PREDICT<br/>push through dynamics<br/>uncertainty grows"]
@@ -844,6 +846,8 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   잡음 섞인 두 의견을 합치면 둘 다보다 낫다; 그리고 $R = 100$(형편없는 센서)으로 두면
   $K = 0.04$, $\hat x = 10.08$이 되어 필터가 센서를 거의 무시한다. 이득은 그저 *상대적
   신뢰도*이고, 논문의 칼만 이득 문장이 말하는 것도 그게 전부다.
+
+**계산: P5 순차.** 위 숫자가 카탈로그 장치다([[02-foundations/lab-plants|0.6]]). 둘째 거리 $z_2=11$, $R=1$: $K=0.444$, $\hat x=11.333$, $P=0.444$. $Q=1$로 $x\leftarrow x+1$ 예측 뒤 $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. 첫 갱신 뒤 틀린 벽 $20$은 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. 과제는 이 열을 그림과 `correct()` 템플릿으로 묻는 것이다.
 
 ```mermaid
 flowchart LR

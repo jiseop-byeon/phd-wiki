@@ -175,6 +175,9 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. Backward, one line per step above:
 | 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | mask is $(1,1,1)$ since $z>0$, so $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
+**Worked: one SGD step on P1.** This *is* plant P1 ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$ only on $W_2$:
+$W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. The same $h$ then gives $\hat y=1.20$ and $L=0.020$. One step overshot $y=1$ — $\eta=0.1$ is not small on this scale ([[02-foundations/optimization|4]]). The problem set asks you to fill a template that prints these numbers.
+
 Three things to notice, and they generalize to every network you will read about:
 - **The sign says what to do — locally.** $\delta_2 = -0.5$ is negative because the
   prediction was *too low*, so all three output weights in step 2 increase under gradient
@@ -522,6 +525,8 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. 역전파는 위 단계마다 한 줄씩:
 | 3 | $\partial L/\partial h = W_2^\top\delta_2$ | $-0.5\,(1,-1,0.5) = (-0.5,\,0.5,\,-0.25)$ |
 | 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | $z>0$이라 마스크가 $(1,1,1)$, 따라서 $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
+
+**계산: P1에서 SGD 한 스텝.** 이것이 장치 P1이다([[02-foundations/lab-plants|0.6]]). $\eta=0.1$로 $W_2$만: $W_2\leftarrow(1.05,-0.9,0.65)$. 같은 $h$로 $\hat y=1.20$, $L=0.020$. 한 스텝이 $y=1$을 지나쳤다. 과제는 이 숫자를 출력하는 템플릿이다.
 
 눈여겨볼 것 셋, 그리고 이 셋은 앞으로 읽을 모든 신경망에 그대로 적용된다:
 - **부호는 국소적으로 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이
