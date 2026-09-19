@@ -31,8 +31,7 @@ each stream has enough real published work to be read as a lineage.
    excavators, wheel loaders, fleets: dynamics, terrain interaction, MPC vs RL vs
    imitation, HEAP/AES/ExT
 2. [[05-construction-robotics/assembly-fabrication|4. Robotic Assembly & Fabrication]] —
-   manipulation on site (UMich line), architectural fabrication (ETH GKR line), welding,
-   bricklaying, 3D printing
+   the worked stream: S1 two-hole alignment, then the three lineages (UMich, ETH GKR, mobile production)
 3. [[05-construction-robotics/site-perception|5. Site Perception, Scan-to-BIM & Inspection]] —
    LiDAR/point clouds, registration to BIM, autonomous scanning robots, progress
    monitoring, inspection platforms
@@ -103,7 +102,7 @@ this field's specific literature.
 1. [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving & Heavy-Machine Autonomy]] —
    굴착기, 휠로더, 선단: 동역학, 지반 상호작용, MPC vs RL vs 모방, HEAP/AES/ExT
 2. [[05-construction-robotics/assembly-fabrication|4. Robotic Assembly & Fabrication]] —
-   현장 조작(미시간 라인), 건축 패브리케이션(ETH GKR 라인), 용접, 조적, 3D 프린팅
+   교과 스트림: S1 두 구멍 정렬, 그다음 세 계보(미시간, ETH GKR, 모바일 생산)
 3. [[05-construction-robotics/site-perception|5. Site Perception, Scan-to-BIM & Inspection]] —
    LiDAR/포인트 클라우드, BIM 정합, 자율 스캔 로봇, 공정 모니터링, 점검 플랫폼
 4. [[05-construction-robotics/hrc-worker-centered|6. HRC & Worker-Centered Robotics]] —

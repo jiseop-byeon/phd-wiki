@@ -17,7 +17,7 @@ mastery-when: "Raise when the deployment workflow or field-evaluation method car
 
 ### Running project: S1 panel placement
 
-A mobile manipulator must pick a 20 kg facade panel from a rack, move it 8 m, align two mounting holes within $\pm5$ mm, hold while a worker fastens it, and clear the area. People may enter the shared site, GNSS can be blocked, and the base is repositioned between panels. This is a course object—not a proposed product—and its numbers exist to make every design claim testable.
+A mobile manipulator must pick a 20 kg facade panel from a rack, move it 8 m, align two mounting holes 400 mm apart within $\pm5$ mm, hold while a worker fastens it, and clear the area. People may enter the shared site, GNSS can be blocked, and the base is repositioned between panels. This is a course object—not a proposed product—and its numbers exist to make every design claim testable.
 
 ### 1. Begin with the work package, not the robot
 
@@ -85,7 +85,7 @@ For a construction-robotics claim, produce a one-page ledger of work unit, toler
 
 ### 계속 쓰는 프로젝트: S1 패널 설치
 
-모바일 매니퓰레이터가 20 kg 외장 패널을 rack에서 집어 8 m 이동하고, 두 mounting hole을 $\pm5$ mm 안에 맞추고, 작업자가 체결하는 동안 들고 있다가 구역을 비운다. 사람은 공유 현장에 들어오고 GNSS는 가려질 수 있으며 panel마다 base가 이동한다. 실제 제품 제안이 아니라 모든 설계 주장을 검사하기 위한 교과 대상이다.
+모바일 매니퓰레이터가 20 kg 외장 패널을 rack에서 집어 8 m 이동하고, 400 mm 떨어진 두 mounting hole을 $\pm5$ mm 안에 맞추고, 작업자가 체결하는 동안 들고 있다가 구역을 비운다. 사람은 공유 현장에 들어오고 GNSS는 가려질 수 있으며 panel마다 base가 이동한다. 실제 제품 제안이 아니라 모든 설계 주장을 검사하기 위한 교과 대상이다.
 
 ### 1. 로봇보다 작업 package부터
 

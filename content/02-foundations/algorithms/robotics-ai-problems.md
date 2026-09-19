@@ -13,7 +13,7 @@ mastery-when: "Raise to Mastery only if one of these components (a planner, an e
 
 ## English
 
-*The last page of the algorithms track, and the one closest to a lab interview. Each problem links back to the page that owns its theory; this page owns only the from-blank implementation, the traps, and the follow-up questions.*
+*The last page of the algorithms track, and the one closest to a lab interview. This is the major-related special attention: blank-file A*, nearest neighbour, RANSAC, a Kalman step, resampling, planar IK, PID, poses, softmax, and attention. Each problem links back to the page that owns its theory; this page owns only the implementation, the traps, and the follow-up questions. VLA chunks and site error budgets are not extra algorithm problems — they live on [[03-deep-learning/vla/index|D4]] and [[05-construction-robotics/site-engineering|S1]].*
 
 A research-lab coding round rarely asks for a clever puzzle. It asks you to write, in 20 to 40 minutes, a small piece of the code your future lab already runs: a planner, a filter step, an inverse-kinematics solve, an attention layer. The interviewer is checking three things at once. Can you state the idea before typing? Does your code survive the input that breaks the naive version (an unreachable goal, a rotation near 180°, logits of 1000)? And when they push with "what if…", do you know where the method stops working? The ten problems below are the ones that come up most, each written so that it runs, with the tests kept in a separate file.
 
@@ -695,7 +695,7 @@ print(out.shape, W.shape, W[0].round(2))
 
 ## 한국어
 
-*알고리즘 트랙의 마지막 페이지이고, 연구실 인터뷰에 가장 가까운 페이지다. 문제마다 이론을 맡은 페이지로 링크를 걸어 두었다. 이 페이지가 맡는 것은 빈 파일에서 짜는 구현, 함정, 그리고 꼬리 질문뿐이다.*
+*알고리즘 트랙의 마지막 페이지이고, 연구실 인터뷰에 가장 가까운 페이지다. 전공과 겹치는 특별 취급이 여기다: 백지 A*, 최근접점, RANSAC, 칼만 한 스텝, 재표본추출, 평면 IK, PID, pose, softmax, attention. 문제마다 이론을 맡은 페이지로 링크를 걸어 두었다. 이 페이지가 맡는 것은 구현, 함정, 꼬리 질문뿐이다. VLA chunk와 현장 오차 budget은 알고리즘 문제를 하나 더 만들지 않는다 — [[03-deep-learning/vla/index|D4]]와 [[05-construction-robotics/site-engineering|S1]]에 있다.*
 
 연구실 코딩 면접은 기발한 퍼즐을 잘 내지 않는다. 대신 20–40분 안에, 들어갈 연구실이 이미 돌리고 있는 코드의 작은 조각을 짜 보라고 한다. 플래너, 필터 한 스텝, 역기구학 풀이, 어텐션 층 같은 것들이다. 면접관은 세 가지를 동시에 본다. 타이핑 전에 아이디어를 말할 수 있는가? 순진한 구현을 깨뜨리는 입력(도달할 수 없는 목표, 180° 근처의 회전, 1000짜리 로짓)에도 코드가 살아남는가? "그러면 이런 경우는?" 하고 밀어붙일 때, 방법이 어디서 무너지는지 아는가? 아래 열 문제는 가장 자주 나오는 것들이다. 모든 코드는 그대로 실행되고, 테스트는 별도 파일에 두었다.
 

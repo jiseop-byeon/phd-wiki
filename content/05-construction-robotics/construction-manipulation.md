@@ -21,8 +21,8 @@ mastery-when: "This is the intersection the research program is built on — the
 
 ### 1. Why construction manipulation is its own problem
 
-[[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]] covers this
-domain's *lineages* — who built what, and out of which research tradition. This page takes
+[[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]] now works **S1**
+as a two-hole alignment course, then maps the domain's *lineages*. This page takes
 the other cut: **what the robot's hand actually has to do**, task by task, and what each
 task demands of the pages in the manipulation track.
 
@@ -291,8 +291,7 @@ the [[07-research-program/index|research program]] is built on.
 
 ### 1. 건설 조작이 자기만의 문제인 이유
 
-[[05-construction-robotics/assembly-fabrication|조립·제작]]은 이 도메인의 *계보*를 다룬다 —
-누가 무엇을 만들었고 어느 연구 전통에서 나왔는가. 이 페이지는 다른 단면을 자른다:
+[[05-construction-robotics/assembly-fabrication|조립·제작]]은 이제 **S1**을 두 구멍 정렬 교과로 푼 뒤 도메인의 *계보*를 지도로 둔다. 이 페이지는 다른 단면을 자른다:
 **로봇의 손이 실제로 무엇을 해야 하는가**를 작업별로, 그리고 각 작업이 매니퓰레이션 트랙의
 페이지들에 무엇을 요구하는지를.
 

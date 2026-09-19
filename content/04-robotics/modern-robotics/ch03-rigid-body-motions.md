@@ -84,9 +84,9 @@ $T = e^{[\mathcal{S}]\theta}$ means "follow screw $\mathcal{S}$ for angle $\thet
 
 **Worked: $T_{sb}$ of plant P2.** Catalog pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)$ ([[02-foundations/lab-plants|0.6]]). Put $\{b\}$ at the tip with its $x$-axis along the forearm, so along $+\hat y_s$. A right-handed frame with $z$ out of the page then has $y_b=-\hat x_s$, and
 
-$$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p=(1,1,0).$$
+$$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p=(1,1,0),\qquad T_{sb}=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
 
-That $4\times 4$ $T_{sb}$ is the pose the problem set asks you to write. A pure $z$-rotation of the *whole arm about the origin* has space twist $\mathcal{V}_s=((0,0,1),(0,0,0))$: the axis through the origin gives $v_s=-\omega\times 0=0$. The tip still moves; $v_s$ is not the tip velocity. At this $p$, $\omega_s\times p=(-1,1,0)$, which is exactly the tip velocity for $1\,\mathrm{rad/s}$, and $v_s=\dot p-\omega_s\times p$ recovers the distinction of §3. Planar P2 always has $\omega_x=\omega_y=v_z=0$, so SE(2) is enough — until a paper treats $v_s$ as $\dot p$.
+A pure $z$-rotation of the *whole arm about the origin* has space twist $\mathcal{V}_s=((0,0,1),(0,0,0))$: the axis through the origin gives $v_s=-\omega\times 0=0$. The tip still moves; $v_s$ is not the tip velocity. At this $p$, $\omega_s\times p=(-1,1,0)$, which is exactly the tip velocity for $1\,\mathrm{rad/s}$, and $v_s=\dot p-\omega_s\times p$ recovers the distinction of §3. Planar P2 always has $\omega_x=\omega_y=v_z=0$, so SE(2) is enough — until a paper treats $v_s$ as $\dot p$. The problem set keeps this $T_{sb}$ and asks the twist about the *elbow* instead.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="one physical motion described from the fixed frame and from the body frame">
   <defs><marker id="mr3a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -137,12 +137,12 @@ heads ([[01-canonical-papers/notes/4-vla/pi0|π0]]-style).
 Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. No simulator.
 
 1. **Draw.** Base frame $\{s\}$ at the origin, elbow at $(1,0)$, tip at $(1,1)$. Put the tool frame $\{b\}$ at the tip with its $x$-axis along the forearm.
-2. **Derive.** The $4\times4$ $T_{sb}$ of that tip. For a pure $z$-rotation of the whole arm about the origin, write the space twist $\mathcal{V}_s=(\omega,v)$. Which three of the six $\mathfrak{se}(3)$ coordinates are identically zero on this planar plant?
+2. **Derive.** Write $T_{sb}$ of that tip (the lecture's $4\times4$). Then a pure $z$-rotation of the whole arm about the *elbow* $q_2=(1,0,0)$: space twist $\mathcal{V}_s=(\omega,v)$. Which three of the six $\mathfrak{se}(3)$ coordinates are still identically zero?
 3. **Interpret.** Why is SE(2) enough here, and what goes wrong if a paper treats the space-twist linear part $v_s$ as the tip velocity at this pose?
 
 > [!tip]- Solutions
 > 1. Forearm along $+y_s$, so $x_b=\hat y_s$ and $y_b=-\hat x_s$ (right-handed, $z$ out).
-> 2. $R=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, so $T_{sb}$ has that $R$ and $p$. Axis through the origin: $\omega_s=(0,0,1)$, $v_s=(0,0,0)$. Always $\omega_x=\omega_y=v_z=0$.
+> 2. $T_{sb}$ as in §4. Elbow axis: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. Still $\omega_x=\omega_y=v_z=0$; $v_s$ is no longer $0$.
 > 3. Motion stays in the plane, so SE(2) is the configuration group. At this pose $v_s=\dot p-\omega_s\times p$: a $1\,\mathrm{rad/s}$ spin about $z$ gives $\omega_s\times p=(-1,1,0)$, so $v_s$ is *not* the tip velocity unless $p=0$. Use the adjoint of §4.
 
 ## 한국어
@@ -212,9 +212,9 @@ $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **프레임 아래 첨자는 장식이
 
 **계산: 장치 P2의 $T_{sb}$.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)$([[02-foundations/lab-plants|0.6]]). $\{b\}$를 말단에 두고 $x$축을 전완, 곧 $+\hat y_s$에 둔다. 지면 밖으로 $z$인 오른손 프레임이면 $y_b=-\hat x_s$이고
 
-$$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p=(1,1,0).$$
+$$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p=(1,1,0),\qquad T_{sb}=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
 
-과제가 쓰라고 하는 $4\times 4$ $T_{sb}$가 이것이다. 원점 둘레로 팔 전체를 도는 순수 $z$ 회전의 공간 트위스트는 $\mathcal{V}_s=((0,0,1),(0,0,0))$: 원점을 지나는 축이라 $v_s=0$. 말단은 움직인다. $v_s$는 말단 속도가 아니다. 이 $p$에서 $\omega_s\times p=(-1,1,0)$이 $1\,\mathrm{rad/s}$의 말단 속도이고, $v_s=\dot p-\omega_s\times p$가 §3의 구분을 되살린다. 평면 P2는 항상 $\omega_x=\omega_y=v_z=0$이라 SE(2)로 충분하다 — 논문이 $v_s$를 $\dot p$로 취급하기 전까지.
+원점 둘레로 팔 전체를 도는 순수 $z$ 회전의 공간 트위스트는 $\mathcal{V}_s=((0,0,1),(0,0,0))$: 원점을 지나는 축이라 $v_s=0$. 말단은 움직인다. $v_s$는 말단 속도가 아니다. 이 $p$에서 $\omega_s\times p=(-1,1,0)$이 $1\,\mathrm{rad/s}$의 말단 속도이고, $v_s=\dot p-\omega_s\times p$가 §3의 구분을 되살린다. 평면 P2는 항상 $\omega_x=\omega_y=v_z=0$이라 SE(2)로 충분하다 — 논문이 $v_s$를 $\dot p$로 취급하기 전까지. 과제는 이 $T_{sb}$를 유지하고 *엘보* 둘레 twist를 묻는다.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="하나의 물리적 운동을 고정 프레임에서, 그리고 몸체 프레임에서 기술한 것">
   <defs><marker id="mr3a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -265,10 +265,10 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 시뮬레이터 없음.
 
 1. **그리기.** 원점의 베이스 $\{s\}$, 엘보 $(1,0)$, 말단 $(1,1)$. 말단에 도구 프레임 $\{b\}$, $x$축은 전완 방향.
-2. **유도.** 그 말단의 $4\times4$ $T_{sb}$. 원점 $z$축 순수 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 이 평면 장치에서 $\mathfrak{se}(3)$ 여섯 좌표 중 항상 0인 셋은?
+2. **유도.** 그 말단의 $T_{sb}$(강의의 $4\times4$). 그다음 엘보 $q_2=(1,0,0)$ 둘레로 팔 전체를 도는 순수 $z$ 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 여섯 좌표 중 여전히 0인 셋은?
 3. **해석.** 왜 SE(2)면 충분한가? 이 자세에서 space twist의 $v_s$를 말단 속도로 읽으면 무엇이 틀리는가?
 
 > [!tip]- 정답 · Solutions
 > 1. 전완이 $+y_s$이므로 $x_b=\hat y_s$, $y_b=-\hat x_s$.
-> 2. $R=R_z(90^\circ)$, $p=(1,1,0)$. 원점을 지나는 축: $\omega_s=(0,0,1)$, $v_s=0$. 항상 $\omega_x=\omega_y=v_z=0$.
+> 2. $T_{sb}$는 §4. 엘보 축: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. 여전히 $\omega_x=\omega_y=v_z=0$; $v_s$는 이제 0이 아니다.
 > 3. 운동이 평면에 남는다. $v_s=\dot p-\omega_s\times p$이라 $p\neq0$이면 $v_s$는 말단 속도가 아니다. §4의 adjoint를 쓴다.

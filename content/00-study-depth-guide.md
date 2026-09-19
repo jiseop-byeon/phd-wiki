@@ -76,13 +76,13 @@ Not every department subject belongs here. No thermofluids, no structures sequen
 
 | Track | What the notes must teach | Where it lives now |
 |---|---|---|
-| Math and computing | calculus, linear algebra, probability, optimization, information, algorithms as tools | [[02-foundations/overview\|2. Foundations]] (algorithms still sit as an interview sidecar) |
+| Math and computing | calculus, linear algebra, probability, optimization, information; algorithms stay an interview track, with extra care only where the major uses them | [[02-foundations/overview\|2. Foundations]]; [[02-foundations/algorithms/index\|11]] is interviews, [[02-foundations/algorithms/graph-algorithms\|11.6]] and [[02-foundations/algorithms/robotics-ai-problems\|11.8]] are the major-related implementations |
 | Signals, estimation, control | sampling, Kalman, state-space, LQR, MPC | foundations 6, robotics 3 and 5–8 |
 | Rigid-body robotics | SE(3), FK/IK/Jacobian, dynamics, trajectories, planning | MR summaries + page 10 |
 | Contact and haptics | unilateral contact, impedance, rendering, teleoperation | robotics E, H, K |
 | Systems | timing, frames, ROS 2, logs | robotics F, L |
 | Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses | 0.7, 2, 9 + the six modules in [[03-deep-learning/index\|3. Deep Learning]] |
-| Construction domain | site constraints, task streams | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + the stream maps in [[05-construction-robotics/index\|5. Construction]] |
+| Construction domain | site constraints, one worked assembly task; other streams stay maps | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + [[05-construction-robotics/assembly-fabrication\|5.4 Assembly]] as the worked stream; the rest of [[05-construction-robotics/index\|5. Construction]] remains a map |
 
 Filling a hole means writing a course page in that cell, not promoting the whole field to Mastery.
 
@@ -255,13 +255,13 @@ If the honest answer is "it would be interesting", the answer is no.
 
 | 트랙 | 노트가 가르쳐야 하는 것 | 지금 있는 곳 |
 |---|---|---|
-| 수학과 계산 | 미적분, 선형대수, 확률, 최적화, 정보, 도구로서의 알고리즘 | [[02-foundations/overview\|2. 기초]] (알고리즘은 아직 인터뷰 곁가지) |
+| 수학과 계산 | 미적분, 선형대수, 확률, 최적화, 정보; 알고리즘은 면접 트랙으로 두고 전공이 쓰는 곳만 특별히 다룬다 | [[02-foundations/overview\|2. 기초]]; [[02-foundations/algorithms/index\|11]]은 면접, [[02-foundations/algorithms/graph-algorithms\|11.6]]과 [[02-foundations/algorithms/robotics-ai-problems\|11.8]]이 전공 관련 구현 |
 | 신호·추정·제어 | 샘플링, 칼만, 상태공간, LQR, MPC | 기초 6, 로보틱스 3과 5–8 |
 | 강체 로보틱스 | SE(3), FK/IK/야코비안, 동역학, 궤적, 계획 | MR 요약 + 페이지 10 |
 | 접촉과 햅틱 | 단방향 접촉, 임피던스, 렌더링, 원격조작 | 로보틱스 E, H, K |
 | 시스템 | 타이밍, 프레임, ROS 2, 로그 | 로보틱스 F, L |
 | 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로 | 0.7, 2, 9 + [[03-deep-learning/index\|3. 딥러닝]]의 여섯 모듈 |
-| 건설 도메인 | 현장 제약, 작업 스트림 | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + [[05-construction-robotics/index\|5. Construction]]의 스트림 지도 |
+| 건설 도메인 | 현장 제약, 조립 과제 하나; 다른 스트림은 지도로 남긴다 | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + 교과인 [[05-construction-robotics/assembly-fabrication\|5.4 Assembly]]; [[05-construction-robotics/index\|5. Construction]]의 나머지는 지도 |
 
 구멍을 메우는 것은 그 칸에 교과 페이지를 쓰는 일이지, 분야 전체를 Mastery로 올리는 일이 아니다.
 

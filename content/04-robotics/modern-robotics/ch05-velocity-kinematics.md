@@ -46,6 +46,12 @@ Full rank — every tip velocity is reachable. In general
 $\det J = L_1 L_2 \sin\theta_2$: **the arm is singular exactly when straight or folded**
 ($\theta_2 = 0°$ or $180°$) — geometrically obvious once the math says where to look.
 
+**Those two columns are arrows at the tip.** Shoulder-only, $\dot\theta=(1,0)$: the tip sits at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, so column 1 $=(-1,1)$. Elbow-only, $\dot\theta=(0,1)$: the forearm is along $+y$, velocity perpendicular to it, so column 2 $=(-1,0)$. Stacking them recovers $J$. Inverse: $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Command $v=(0,-0.25)\,\mathrm{m/s}$ at this pose:
+
+$$\dot\theta=J^{-1}v=(-0.25,\ 0.25)\,\mathrm{rad/s}.$$
+
+**Worked: resolved-rate Euler.** Same command for $2\,\mathrm{s}$, $T=0.01$, explicit Euler on $\theta$ ([[02-foundations/lab-kernel|0.65]]). Recompute $J(\theta)$ every step: the tip ends at $\approx(0.999,\ 0.500)$, $x$-drift $<1\,\mathrm{mm}$ on a commanded $\Delta y=-0.50\,\mathrm{m}$. Freeze $J$ at the start: the tip ends at $\approx(0.878,\ 0.521)$ — twelve centimetres of $x$ error. A constant Jacobian is a local map, not a finite-motion map. The problem set fills this loop; changing $T$ is the knob.
+
 ### 3. Statics duality — derived in three lines
 
 Power must match at both ends of a lossless mechanism. Joint-side power is
@@ -54,7 +60,7 @@ $\dot\theta^\top \tau$; end-effector-side power is $\mathcal{V}^\top \mathcal{F}
 $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
 The *same* matrix maps velocities out and wrenches back in — gravity compensation, force
 control, and contact reasoning all run on this one line. (Frames must match: $J_b$ pairs
-with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.)
+with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.) On catalog P2, $F=(0,-10)\,\mathrm{N}$ (down on the panel) gives $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$: the shoulder carries the load, the elbow does not. The problem set uses a different $F$.
 
 **Read the equality as an accounting rule.** A wrench does work through the motion it acts on. The Jacobian tells how a joint motion appears at the tool, so the transpose tells how that same tool wrench loads each joint. For each column, ask how strongly the wrench acts along the motion that column produces. That dot product is the corresponding joint effort.
 
@@ -109,7 +115,7 @@ Tier A. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 
 1. **Draw.** P2 at the frozen pose: base at the origin, elbow at $(1,0)$, tip at $(1,1)$. Draw Jacobian column 1 as the tip velocity for $\dot\theta=(1,0)$, and column 2 as the tip velocity for $\dot\theta=(0,1)$. Both are arrows at the tip. Write the two arrows as vectors.
 2. **Derive.** (a) Confirm $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ from the arrows (or from §2). (b) $J^{-1}$. (c) Joint rates that produce $v=(0,-0.25)\,\mathrm{m/s}$. (d) $\tau=J^\top F$ for $F=(2,-5)\,\mathrm{N}$. (e) Same $F$ at $\theta_2=5^\circ$ is *not* asked as a number — say which joint torque blows up if you instead asked for a tip velocity *along the arm*, and why $J^\top F$ itself does not blow up.
-3. **Do.** Resolved-rate: command $v=(0,-0.25)$ for $2\,\mathrm{s}$ from the frozen pose, $T=0.01$, explicit Euler on $\theta$ ([[02-foundations/lab-kernel|0.65]]). Fill `?`. Run twice: recompute $J(\theta)$ every step, then freeze $J$ at the start. Plot tip $x(t),y(t)$. Report final tip and the $x$-drift of the frozen-$J$ run.
+3. **Do.** Fill the template and reproduce the lecture's $T=0.01$, $2\,\mathrm{s}$ pair (live vs frozen $J$). Then change *only* $T$ to $0.05$, live $J$, same $2\,\mathrm{s}$. Is the extra error frozen-$J$ class or integrator class?
 
 ```python
 # P2 resolved-rate. Fill ?.
@@ -140,7 +146,7 @@ for k in range(n):
 > [!tip]- Solutions
 > 1. Shoulder-only: the tip is at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, i.e. parallel to $(-1,1)$. Unit $\dot\theta_1$ gives $|v|=L_\text{tip}=\sqrt{2}$, so column 1 $=(-1,1)$. Elbow-only: forearm is along $+y$ from $(1,0)$ to $(1,1)$, unit $\dot\theta_2$ gives $v$ perpendicular to the forearm, column 2 $=(-1,0)$.
 > 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_{\min}$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
-> 3. $J$ blanks: `((-s1-s12, -s12), (c1+c12, c12))`. Inverse: `th1d = (J[1][1]*0 - J[0][1]*vy)/det`, `th2d = (-J[1][0]*0 + J[0][0]*vy)/det`. Live $J$: tip ends at $\approx(1.00,\ 0.50)$, $x$-drift $<1\,\mathrm{mm}$ (commanded $\Delta y=-0.50$). Frozen $J$: tip ends at $\approx(0.88,\ 0.52)$ — a centimetre-scale $x$ error on a half-metre task, from using a local map as a finite-motion map.
+> 3. $J$ blanks: `((-s1-s12, -s12), (c1+c12, c12))`. Inverse: `th1d = (J[1][1]*0 - J[0][1]*vy)/det`, `th2d = (-J[1][0]*0 + J[0][0]*vy)/det`. Lecture pair: live $\approx(0.999,\ 0.500)$, frozen $\approx(0.878,\ 0.521)$. Live at $T=0.05$: $\approx(0.997,\ 0.501)$ — still millimetre-scale. Integrator class. Frozen error is independent of $T$ (joint rates are constant), so it is not a step-size artefact.
 
 ## 한국어
 
@@ -176,6 +182,10 @@ $$J = \begin{pmatrix} -1 & -1 \\ 1 & 0 \end{pmatrix}, \qquad \det J = 1.$$
 $\det J = L_1 L_2 \sin\theta_2$: **팔이 완전히 뻗거나 접힐 때가 정확히 특이점이다**
 ($\theta_2 = 0°$ 또는 $180°$) — 수학이 어디를 보라고 알려주면 기하적으로도 자명해진다.
 
+**그 두 열이 말단의 화살표다.** 어깨만 $\dot\theta=(1,0)$: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직, 열 1 $=(-1,1)$. 엘보만 $\dot\theta=(0,1)$: 전완이 $+y$, 속도는 그에 수직, 열 2 $=(-1,0)$. 쌓으면 $J$가 나온다. 역행렬 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 이 자세에서 $v=(0,-0.25)\,\mathrm{m/s}$이면 $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$.
+
+**계산: resolved-rate 오일러.** 같은 명령을 $2\,\mathrm{s}$, $T=0.01$, $\theta$에 명시적 오일러([[02-foundations/lab-kernel|0.65]]). $J(\theta)$를 매 스텝 재계산하면 말단 $\approx(0.999,\ 0.500)$, 명령 $\Delta y=-0.50\,\mathrm{m}$에서 $x$ 드리프트 $<1\,\mathrm{mm}$. 시작 $J$를 고정하면 $\approx(0.878,\ 0.521)$ — $x$ 오차 12 cm. 상수 야코비안은 국소 사상이지 유한 운동 사상이 아니다. 과제가 이 루프를 채우고, $T$를 바꾸는 것이 노브다.
+
 ### 3. 정역학 쌍대성 — 세 줄 유도
 
 손실 없는 기구의 양 끝에서 일률은 같아야 한다. 관절 쪽 일률은 $\dot\theta^\top \tau$,
@@ -184,7 +194,7 @@ $\mathcal{V} = J\dot\theta$를 대입하면:
 $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
 *같은* 행렬이 속도를 내보내고 렌치를 되받는다 — 중력 보상, 힘 제어, 접촉 추론이 전부 이
 한 줄 위에서 돈다. (프레임은 맞춰야 한다: $J_b$는 body 렌치 $\mathcal{F}_b$와, $J_s$는
-$\mathcal{F}_s$와 짝이다.)
+$\mathcal{F}_s$와 짝이다.) 카탈로그 P2에서 $F=(0,-10)\,\mathrm{N}$이면 $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$: 어깨가 지고 엘보는 안 진다. 과제는 다른 $F$를 쓴다.
 
 **등식을 일률의 회계 규칙으로 읽는다.** 렌치는 작용하는 운동을 통해 일을 한다. 야코비안이 관절 운동이 도구에서 어떻게 보이는지 알려 주므로 전치는 도구 렌치가 각 관절에 주는 부하를 알려 준다. 열마다 그 열이 만드는 운동에 렌치가 얼마나 작용하는지 묻는다. 그 내적이 해당 관절의 노력이다.
 
@@ -240,9 +250,9 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 
 1. **그리기.** 고정 자세의 P2: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $\dot\theta=(1,0)$의 말단 속도(열 1)와 $\dot\theta=(0,1)$의 말단 속도(열 2)를 말단에서 화살표로 그려라. 두 벡터를 써라.
 2. **유도.** (a) 화살표(또는 §2)에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$. (b) $J^{-1}$. (c) $v=(0,-0.25)\,\mathrm{m/s}$를 만드는 관절 속도. (d) $F=(2,-5)\,\mathrm{N}$의 $\tau=J^\top F$. (e) $\theta_2=5^\circ$에서 같은 $F$의 숫자를 묻지 않는다. 대신 *팔을 따른* 말단 속도를 시키면 어느 관절 속도가 터지는지, 그리고 왜 $J^\top F$ 자체는 터지지 않는지.
-3. **실행.** 영어 템플릿. $v=(0,-0.25)$를 $2\,\mathrm{s}$, $T=0.01$, $\theta$에 명시적 오일러. $J(\theta)$를 매 스텝 재계산한 런과 시작 $J$를 고정한 런. 말단 $x(t),y(t)$를 그리고 최종 말단과 고정-$J$의 $x$ 드리프트를 보고하라.
+3. **실행.** 템플릿을 채워 강의의 $T=0.01$, $2\,\mathrm{s}$ 쌍(산 $J$ 대 고정 $J$)을 재현한다. 그다음 $T$만 $0.05$로, 산 $J$, 같은 $2\,\mathrm{s}$. 추가 오차는 고정-$J$급인가 적분기급인가?
 
 > [!tip]- 정답 · Solutions
 > 1. 어깨만: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직 즉 $(-1,1)$ 방향. 단위 $\dot\theta_1$의 $|v|=\sqrt{2}$이므로 열 1 $=(-1,1)$. 엘보만: 전완이 $(1,0)\to(1,1)$의 $+y$, 단위 $\dot\theta_2$는 전완에 수직, 열 2 $=(-1,0)$.
 > 2. (a) $J$의 열이 그 화살표. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $\tau=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) 팔 방향 속도는 잃어버린 특이 방향이라 $\dot\theta\sim 1/\sigma_{\min}$이 터진다. $J^\top F$는 정역학 사상이라 유한 — 구조가 힘을 지고 모터는 안 져도 된다.
-> 3. 빈칸은 영어 해. 산 $J$: 말단 $\approx(1.00,\ 0.50)$, $x$ 드리프트 $<1\,\mathrm{mm}$. 고정 $J$: $\approx(0.88,\ 0.52)$ — 0.5 m 과제에서 센티미터급 $x$ 오차. 국소 사상을 유한 운동 사상으로 쓴 대가.
+> 3. 빈칸은 영어 해. 강의 쌍: 산 $\approx(0.999,\ 0.500)$, 고정 $\approx(0.878,\ 0.521)$. $T=0.05$ 산 $J$: $\approx(0.997,\ 0.501)$ — 여전히 밀리미터. 적분기급. 고정 오차는 $T$와 무관하다(관절 속도가 상수).

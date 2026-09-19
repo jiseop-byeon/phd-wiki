@@ -12,6 +12,9 @@ mastery-when: "Raise when the generative objective, sampler, action distribution
 
 ## English
 
+> [!note] First pass
+> Read D6, §§1–2, and questions 1–2. Return to §4 when a policy cuts denoising steps.
+
 ### Running object: D6
 
 For **D6**, $x_0=2$, $\epsilon=-1$, and $\bar\alpha_t=0.64$. The standard closed-form forward sample is
@@ -62,6 +65,9 @@ Read [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], DDIM, score-SDE, flow-
 Given a generative paper, identify path, prediction target, conditioning, solver and steps, and which downstream metric—not sample aesthetics alone—supports the claim.
 
 ## 한국어
+
+> [!note] 처음이라면
+> D6, §1–2, 문제 1–2를 먼저 한다. 정책이 denoising step을 줄이면 §4로 돌아온다.
 
 ### 계속 쓰는 대상: D6
 

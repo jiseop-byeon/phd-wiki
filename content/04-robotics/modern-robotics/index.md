@@ -32,7 +32,7 @@ Tier C. Claim-reading. This hub is the map, not a chapter.
 
 > [!tip]- Solutions
 > 1. The intro: chapter 7 (closed-chain kinematics) is intentionally omitted because this wiki prioritizes open-chain manipulation — that sentence *is* the claim.
-> 2. Completing a chapter's problem set from the summary alone when the summary never derived the object (wiki-support was Literacy). Raising a chapter to Working means the set *is* completable here; ch.5 is the velocity lab, not this hub.
+> 2. Completing a chapter's problem set from the summary alone when wiki-support is Literacy (ch.2, 9, 10, 12, 13). Those pages are book companions. ch.3–6, 8, 11 derive on P2 here; ch.5 is the velocity lab, not this hub.
 > 3. $\theta=(0^\circ,90^\circ)$, tip $(1,1)$. That is the panel point of the running task.
 
 ## 한국어
@@ -53,5 +53,5 @@ Tier C. 주장 읽기. 이 허브는 지도이지 챕터가 아니다.
 
 > [!tip]- 정답 · Solutions
 > 1. 도입: 7장(폐쇄 사슬 기구학)을 개연쇄 조작을 우선해 의도적으로 생략 — 그 문장이 곧 주장이다.
-> 2. 요약이 대상을 유도하지 않았는데 요약만으로 그 장 과제를 끝내는 것(wiki-support가 Literacy였던 이유). Working으로 올린 장은 여기서 과제가 끝난다. 5장은 속도 랩이지 이 허브가 아니다.
+> 2. wiki-support가 Literacy인 장(2, 9, 10, 12, 13)에서 요약만으로 과제를 끝내는 것. 그 페이지는 책 동반 요약이다. 3–6, 8, 11장은 여기서 P2를 유도하고, 5장은 속도 랩이지 이 허브가 아니다.
 > 3. $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)$. 관통 과제의 패널 점이다.

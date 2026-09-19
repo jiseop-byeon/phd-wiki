@@ -12,6 +12,9 @@ mastery-when: "Raise when policy architecture, action representation, data mixtu
 
 ## English
 
+> [!note] First pass
+> Read the interface, §§1–3, and questions 1–2. Return to §4 when a paper reports a success rate.
+
 ### Running object: D4
 
 At time $t$, **D4** receives image features $o_t$, instruction $l=$ “move left, then down,” and predicts a chunk $a_{t:t+2}$ of three 2-D end-effector deltas. The robot executes only the first $k$ actions before observing again. Write the interface before the architecture:
@@ -59,6 +62,9 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 
 ## 한국어
 
+> [!note] 처음이라면
+> interface와 §1–3, 문제 1–2를 먼저 한다. 논문이 성공률을 보고하면 §4로 돌아온다.
+
 ### 계속 쓰는 대상: D4
 
 시간 $t$에 **D4**는 image feature $o_t$와 “왼쪽으로 간 다음 아래로”라는 instruction $l$을 받고, 2차원 말단 delta 행동 세 개의 chunk를 예측한다. architecture보다 먼저 $\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l)$와 $a_i=(\Delta x_i,\Delta y_i)$라는 interface를 쓴다.
@@ -67,13 +73,15 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 
 관절 위치·속도·torque, 말단 pose·delta pose, gripper, action token은 물리 가정이 다르다. 단위·frame·rate·horizon·하위 controller가 없으면 “행동 출력”은 불완전하다.
 
+D4가 $(0.02,0)$을 미터로 세 번 예측했는데 하위 interface가 센티미터로 해석하면, 의도한 6 cm가 0.06 cm가 된다. 표현 오차는 물리 오차다.
+
 ### 2. Behavior cloning과 다봉성
 
 $L_{BC}=H^{-1}\sum_h\|a_{t+h}-\hat a_{t+h}\|^2$. 장애물의 좌우로 지나가는 시연을 평균하면 장애물 중앙으로 갈 수 있다. D4의 한 상태에서 시연이 $(-1,0)$과 $(1,0)$이면 MSE-optimal 결정 행동은 평균 $(0,0)$이다. 어느 시연 mode도 아니고, 장애물이 국소 행동 원점에 있으면 충돌한다. token·mixture·diffusion·flow는 출력 분포의 대안이지, 나쁜 시연과 recovery 문제를 없애지 않는다.
 
 ### 3. Chunking의 교환
 
-긴 chunk는 호출 횟수와 흔들림을 줄이지만 보정을 늦춘다. 20 Hz 행동 10개는 0.5초 open loop다. 10개를 예측하고 2개만 실행한 뒤 다시 관측하면 feedback을 회복하지만 계산량이 늘어난다.
+긴 chunk는 호출 횟수와 흔들림을 줄이지만 보정을 늦춘다. 추론이 100 ms이고 로봇이 20 Hz로 행동 10개를 실행하면 전체 open-loop chunk는 0.5초다. 10개를 예측하고 2개만 실행한 뒤 다시 관측하면 feedback을 회복하지만 계산량이 늘어난다.
 
 ### 4. 증거 읽기
 

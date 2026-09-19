@@ -12,6 +12,9 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 
 ## English
 
+> [!note] First pass
+> Read D3, §2, and questions 1–2. Return to §3 when a caption or VQA number is treated as grounding.
+
 ### Running object: D3
 
 **D3** from [[03-deep-learning/lab-objects|0. Lab Objects]] is three matched image–caption pairs with frozen unit embeddings and $\tau=1/2$:
@@ -58,6 +61,9 @@ VLM representations can supply semantic labels, language-conditioned goals, rewa
 Identify a VLM's encoder/fusion/generation pattern, objective, negatives, output, and the experiment needed to separate semantic fluency from visual grounding.
 
 ## 한국어
+
+> [!note] 처음이라면
+> D3, §2, 문제 1–2를 먼저 한다. caption이나 VQA 숫자를 grounding으로 읽을 때 §3으로 돌아온다.
 
 ### 계속 쓰는 대상: D3
 

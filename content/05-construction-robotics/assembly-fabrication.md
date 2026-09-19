@@ -2,7 +2,8 @@
 title: 4. Robotic Assembly & Fabrication
 tags: [construction, assembly, fabrication, manipulation]
 study-depth: Working
-depth-goal: "Use the task taxonomy, system assumptions, and evaluation criteria to formulate construction-robotics research."
+wiki-support: Working
+depth-goal: "On S1, decide translate / yaw / retreat from two-hole residuals, then read an assembly paper as a closed loop rather than a pose-error percentage."
 mastery-when: "Raise to Mastery when this task stream or deployment layer is the thesis contribution."
 ---
 
@@ -21,7 +22,23 @@ fabrication, and mobile machines that carry tools to workpieces too large to fix
 > [!note] Prerequisites
 > [[04-robotics/modern-robotics-book|Modern Robotics Summary]] ·
 > [[04-robotics/contact-force-tactile|Contact]] · [[03-deep-learning/index|Deep Learning]] ·
-> [[05-construction-robotics/site-perception|Site Perception]]
+> [[05-construction-robotics/site-perception|Site Perception]] ·
+> [[05-construction-robotics/site-engineering|2.5 Site Robotics]] (S1)
+
+> [!note] First pass
+> Read the running object, the two-hole calculation, and the problem set. The lineage sections after that are the map for comparing papers.
+
+### Running object: S1 two-hole alignment
+
+**S1** from [[05-construction-robotics/site-engineering|2.5]] is a 20 kg panel moved 8 m, with two mounting holes $L=400\,\mathrm{mm}$ apart and tolerance $\pm5\,\mathrm{mm}$. Factory pick-and-place assumes one commanded pose. Two holes on a rigid panel are a residual *pair*: translation can zero the mean; only yaw, or a retreat and rescan, can zero the difference.
+
+**Worked.** After transport, the measured residuals along the hole axis are $e_A=0\,\mathrm{mm}$ and $e_B=12\,\mathrm{mm}$.
+
+- Translation only: $t=(0+12)/2=6\,\mathrm{mm}$ leaves residuals $\pm6\,\mathrm{mm}$, both outside $\pm5\,\mathrm{mm}$. Align must not accept.
+- Translation plus yaw, small angle: $\theta=(e_B-e_A)/L=12/400=0.03\,\mathrm{rad}$ ($\approx1.7^\circ$). A rigid panel then seats both holes.
+- If yaw is unavailable (base already committed, joint limit, or a worker in the swing), S1's fallback is retreat and rescan — not “command the mean pose.”
+
+The conservative S1 budget already summed to $5.5\,\mathrm{mm}$. A $12\,\mathrm{mm}$ hole residual means a term was missing (opening out of square, frame mix-up) or the measurement is not in the site frame. Verification that only checks end-effector pose in the *robot* frame can accept this panel while hole B is still $12\,\mathrm{mm}$ off the structure.
 
 ### 1. Why construction assembly is not factory assembly
 
@@ -104,6 +121,19 @@ For example, trace a panel from initial localization through contact to acceptan
 > localized, and fixtured every part. Count setup, calibration, material feeding,
 > inspection, recovery, and finishing before assigning an autonomy level.
 
+### Problem set
+
+Tier B. **S1** from [[05-construction-robotics/site-engineering|2.5]], holes $400\,\mathrm{mm}$ apart unless the question changes $L$. The lineages below are for question 3, not a second derivation.
+
+1. **Draw.** Draw S1's assembly loop: BIM → localize → transport → measure both holes → decide translate / yaw / retreat → contact → verify both holes in the site frame. Mark the safe fallback from align.
+2. **Derive.** Residuals $1\,\mathrm{mm}$ and $14\,\mathrm{mm}$, holes $500\,\mathrm{mm}$ apart. Translation-only $t$ and leftover residuals: accept against $\pm5\,\mathrm{mm}$? The yaw $\theta$ that seats a rigid panel?
+3. **Interpret.** A paper reports 95% “placement success” as end-effector pose error $<5\,\mathrm{mm}$ in the robot frame, with no hole scan after seating. Which S1 claim remains open?
+
+> [!tip]- Solutions
+> 1. The drawing must include two hole measurements and three decisions at align, plus verify in the *site* frame — not a single pose arrow into “success.”
+> 2. $t=(1+14)/2=7.5\,\mathrm{mm}$ leaves $\pm6.5\,\mathrm{mm}$, both outside $\pm5\,\mathrm{mm}$: reject. $\theta=(14-1)/500=0.026\,\mathrm{rad}$.
+> 3. That both holes meet $\pm5\,\mathrm{mm}$ on the structure after seating. Robot-frame pose error can hide a $12\,\mathrm{mm}$ hole residual of the kind the lecture just computed.
+
 ### After reading
 
 - Explain why accumulated tolerance and changing access make site assembly difficult.
@@ -149,7 +179,23 @@ For example, trace a panel from initial localization through contact to acceptan
 > [!note] 선수 지식
 > [[04-robotics/modern-robotics-book|Modern Robotics Summary]] ·
 > [[04-robotics/contact-force-tactile|접촉]] · [[03-deep-learning/index|딥러닝]] ·
-> [[05-construction-robotics/site-perception|현장 인식]]
+> [[05-construction-robotics/site-perception|현장 인식]] ·
+> [[05-construction-robotics/site-engineering|2.5 Site Robotics]] (S1)
+
+> [!note] 처음이라면
+> 계속 쓰는 대상, 두 구멍 계산, 과제를 먼저 한다. 그 뒤 계보 절은 논문을 비교하는 지도다.
+
+### 계속 쓰는 대상: S1 두 구멍 정렬
+
+[[05-construction-robotics/site-engineering|2.5]]의 **S1**은 20 kg 패널을 8 m 옮기고, $L=400\,\mathrm{mm}$ 떨어진 두 구멍을 $\pm5\,\mathrm{mm}$에 맞춘다. 공장 pick-and-place는 명령 pose 하나를 가정한다. 강체 패널의 구멍 둘은 잔차 *쌍*이다. 병진은 평균을 0으로 만들 수 있고, 차분은 yaw 또는 후퇴·재스캔만 없앤다.
+
+**계산.** 이동 뒤 구멍 축 잔차가 $e_A=0\,\mathrm{mm}$, $e_B=12\,\mathrm{mm}$다.
+
+- 병진만: $t=6\,\mathrm{mm}$이면 잔차 $\pm6\,\mathrm{mm}$라 $\pm5\,\mathrm{mm}$ 밖이다. align은 합격하면 안 된다.
+- 병진과 yaw, 소각도: $\theta=(12-0)/400=0.03\,\mathrm{rad}$ ($\approx1.7^\circ$). 강체 패널이면 두 구멍이 앉는다.
+- yaw를 쓸 수 없으면(베이스가 이미 고정, 관절 한계, 스윙 안에 사람) S1의 fallback은 평균 pose를 명령하는 것이 아니라 후퇴와 재스캔이다.
+
+S1의 보수 budget은 이미 $5.5\,\mathrm{mm}$였다. $12\,\mathrm{mm}$ 잔차는 빠진 항(개구부가 직각이 아님, 프레임 혼동)이거나 측정이 현장 프레임이 아니라는 뜻이다. *로봇* 프레임의 말단 pose만 검사하면 구멍 B가 구조물에서 $12\,\mathrm{mm}$ 어긋난 채 합격할 수 있다.
 
 ### 1. 건설 조립이 공장 조립과 다른 이유
 
@@ -218,6 +264,19 @@ flowchart LR
 > [!warning] 주장 읽기
 > “자율 시공”이 사람이 모든 부품을 준비·정합·고정한 뒤의 공구 운동만 뜻할 수 있다. 준비,
 > 보정, 재료 공급, 검사, 복구, 마감까지 세고 자율 수준을 판단하라.
+
+### 과제
+
+Tier B. [[05-construction-robotics/site-engineering|2.5]]의 **S1**. 질문이 $L$을 바꾸지 않으면 구멍 간격 $400\,\mathrm{mm}$. 아래 계보는 문제 3용이지 두 번째 유도가 아니다.
+
+1. **그리기.** S1 조립 루프: BIM → 위치추정 → 이동 → 구멍 둘 측정 → 병진 / yaw / 후퇴 결정 → 접촉 → 현장 프레임에서 구멍 둘 검증. align의 safe fallback을 표시한다.
+2. **유도.** 잔차 $1\,\mathrm{mm}$와 $14\,\mathrm{mm}$, 구멍 $500\,\mathrm{mm}$. 병진만의 $t$와 남은 잔차: $\pm5\,\mathrm{mm}$에 합격인가? 강체 패널을 앉히는 yaw $\theta$는?
+3. **해석.** 로봇 프레임 말단 pose 오차 $<5\,\mathrm{mm}$를 95% “배치 성공”으로 보고하고 체결 후 구멍 스캔이 없다. S1의 어떤 주장이 열려 있는가?
+
+> [!tip]- 정답
+> 1. 구멍 측정 둘과 align의 결정 셋, 그리고 *현장* 프레임 검증이 있어야 한다. pose 화살표 하나가 “성공”으로 들어가면 안 된다.
+> 2. $t=7.5\,\mathrm{mm}$이면 $\pm6.5\,\mathrm{mm}$라 불합격. $\theta=(14-1)/500=0.026\,\mathrm{rad}$.
+> 3. 앉은 뒤 구조물에서 두 구멍이 $\pm5\,\mathrm{mm}$를 만족한다는 주장. 로봇 프레임 pose 오차는 강의의 $12\,\mathrm{mm}$ 구멍 잔차를 숨길 수 있다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

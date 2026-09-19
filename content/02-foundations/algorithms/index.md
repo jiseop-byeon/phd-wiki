@@ -14,7 +14,9 @@ Two kinds of interview test this material, and they reward different preparation
 - **A general coding interview** gives an unfamiliar problem and 30–45 minutes. It checks whether you can pick the right data structure, state the complexity, and write correct code with the edge cases handled. It is mostly pattern recognition, and it comes only from solving many problems.
 - **A research-lab interview** is more likely to say "implement A* on this grid", "write one Kalman filter step", or "why is your nearest-neighbour query slow" (A* is covered in 11.6; the Kalman step and nearest-neighbour search are problems in 11.8). It checks whether you understand the algorithms your research code already calls.
 
-This track teaches the ideas behind both. It is not a problem bank. Pair each page with timed practice on a public problem set, and after each solved problem write one line: *which structure, why, what complexity.*
+This track is for interviews. It is not a third copy of planning, estimation, or learning — those theories stay on the robotics and foundations course pages. Extra care for the major is [[02-foundations/algorithms/graph-algorithms|11.6]] (A*) and [[02-foundations/algorithms/robotics-ai-problems|11.8]] (blank-file implementations of algorithms a lab already runs). Do not turn 11.1–11.7 into robotics textbooks.
+
+This track teaches the ideas behind both interview types. It is not a problem bank. Pair each page with timed practice on a public problem set, and after each solved problem write one line: *which structure, why, what complexity.*
 
 ```mermaid
 flowchart LR
@@ -72,7 +74,9 @@ You are done with a page when you can do three things with nothing open: write t
 - **일반 코딩 인터뷰**는 처음 보는 문제를 30–45분 동안 준다. 알맞은 자료구조를 고르는지, 복잡도를 말하는지, 경계 사례까지 처리한 올바른 코드를 쓰는지를 본다. 대부분 패턴 인식이고, 그것은 문제를 많이 풀어야만 생긴다.
 - **연구실 인터뷰**는 "이 격자에서 A*를 구현하라", "칼만 필터 한 스텝을 써 보라", "최근접점 질의가 왜 느린가"를 묻는 경우가 많다(A*는 11.6에서, 칼만 필터 한 스텝과 최근접점 탐색은 11.8의 문제로 다룬다). 이미 연구 코드가 호출하고 있는 알고리즘을 이해하는지를 본다.
 
-이 트랙은 두 가지 모두의 바탕이 되는 개념을 가르친다. 문제 은행은 아니다. 각 페이지를 공개 문제 세트의 시간 제한 연습과 짝지어라. 문제를 하나 풀 때마다 한 줄을 적는다: *어떤 자료구조를, 왜, 복잡도는 얼마.*
+이 트랙은 면접용이다. 계획·추정·학습 이론의 세 번째 사본이 아니다. 그 이론은 로보틱스와 기초 교과 페이지에 둔다. 전공과 겹치는 곳은 [[02-foundations/algorithms/graph-algorithms|11.6]](A*)과 [[02-foundations/algorithms/robotics-ai-problems|11.8]](연구실이 이미 돌리는 알고리즘의 백지 구현)이다. 11.1–11.7을 로봇 교재로 키우지 마라.
+
+이 트랙은 두 가지 면접의 바탕이 되는 개념을 가르친다. 문제 은행은 아니다. 각 페이지를 공개 문제 세트의 시간 제한 연습과 짝지어라. 문제를 하나 풀 때마다 한 줄을 적는다: *어떤 자료구조를, 왜, 복잡도는 얼마.*
 
 ```mermaid
 flowchart LR

@@ -70,7 +70,7 @@ ch.5, ch.8, and ch.11 ideas into one path through operational-space inertia and 
 
 ### Interview track
 
-Track 11 is also outside the common curriculum. It prepares coding interviews and research-lab implementation interviews: complexity, data structures, sorting, greedy algorithms, dynamic programming, graph search, interview-ready Python and C++, and ten robotics and AI problems written from a blank editor.
+Track 11 is also outside the common curriculum. It prepares coding interviews and research-lab implementation interviews: complexity, data structures, sorting, greedy algorithms, dynamic programming, graph search, interview-ready Python and C++, and ten robotics and AI problems written from a blank editor. A*, Kalman, IK, and attention as *engineering* stay on the robotics and foundations course pages; 11.6 and 11.8 are the interview implementations of those tools.
 
 - [[02-foundations/algorithms/index|11. Algorithms & Data Structures]] — eight pages, each algorithm with its invariant, complexity, tested code, and interview pitfalls
 
@@ -138,7 +138,7 @@ Skip the interview track unless a coding interview or a lab implementation inter
 
 ### 인터뷰 트랙
 
-11번 트랙도 공통 교과과정 밖에 있다. 코딩 인터뷰와 연구실 구현 인터뷰를 준비한다: 복잡도, 자료구조, 정렬, 그리디 알고리즘, 동적 계획법, 그래프 탐색, 인터뷰용 Python·C++, 그리고 빈 편집기에서 쓰는 로봇·AI 문제 열 개.
+11번 트랙도 공통 교과과정 밖에 있다. 코딩 인터뷰와 연구실 구현 인터뷰를 준비한다: 복잡도, 자료구조, 정렬, 그리디 알고리즘, 동적 계획법, 그래프 탐색, 인터뷰용 Python·C++, 그리고 빈 편집기에서 쓰는 로봇·AI 문제 열 개. A*·칼만·IK·attention의 *공학*은 로보틱스와 기초 교과 페이지에 두고, 11.6과 11.8은 그 도구의 면접 구현이다.
 
 - [[02-foundations/algorithms/index|11. 알고리즘과 자료구조]] — 여덟 페이지, 알고리즘마다 불변식·복잡도·검증된 코드·인터뷰 함정
 
