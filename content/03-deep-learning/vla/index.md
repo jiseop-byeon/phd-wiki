@@ -30,7 +30,7 @@ For continuous demonstrations, a simple objective is
 
 $$L_{\mathrm{BC}}=\frac1H\sum_{h=0}^{H-1}\|a_{t+h}-\hat a_{t+h}\|_2^2.$$
 
-If equally valid demonstrations pass left and right of an obstacle, their MSE mean may go through it. Discrete tokens, mixture models, diffusion, and flow policies are alternative output distributions; they do not remove the need for good demonstrations and closed-loop recovery.
+If equally valid demonstrations pass left and right of an obstacle, their MSE mean may go through it. On D4, two demonstrations at one state are $a=(-1,0)$ and $a=(1,0)$. The MSE-optimal deterministic action is their mean $(0,0)$: neither demonstrated mode, and a collision if the obstacle sits at the origin of the local action frame. Discrete tokens, mixture models, diffusion, and flow policies are alternative output distributions; they do not remove the need for good demonstrations and closed-loop recovery.
 
 ### 3. Chunking trades smoothness against feedback
 
@@ -45,12 +45,12 @@ Read [[01-canonical-papers/notes/4-vla/rt-1|RT-1]], [[01-canonical-papers/notes/
 ### Problem set
 
 1. **Draw.** Draw D4 from camera and instruction through policy, chunk buffer, low-level controller, robot, and new observation. Label rates.
-2. **Derive.** Demonstrations for one state are actions $(-1,0)$ and $(1,0)$. Find the MSE-optimal deterministic prediction and explain its danger.
+2. **Derive.** Three demonstrations at one D4 state are $(-1,0)$, $(-1,0)$, and $(1,0)$. Find the MSE-optimal deterministic prediction and explain its danger.
 3. **Interpret.** A policy succeeds on novel object names but uses the same practiced reaching trajectory. Which generalization was shown, and which was not?
 
 > [!tip]- Solutions
 > 1. The important loop is observation → policy → buffered actions → controller → world → observation; policy and controller rates are distinct.
-> 2. The mean $(0,0)$; it may be neither demonstrated mode and can collide or stall.
+> 2. The mean $(-1/3,0)$; still between modes, now biased toward the more frequent left pass, and still not a demonstrated action.
 > 3. Semantic/generalization of task selection was shown; new motor-skill acquisition was not.
 
 ### Exit check
@@ -61,7 +61,7 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 
 ### 계속 쓰는 대상: D4
 
-시간 $t$에 **D4**는 image feature $o_t$, “왼쪽 뒤 아래”라는 instruction $l$, 2차원 말단 delta 행동 세 개의 chunk를 받는다. architecture보다 먼저 $\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l)$와 $a_i=(\Delta x_i,\Delta y_i)$라는 interface를 쓴다.
+시간 $t$에 **D4**는 image feature $o_t$와 “왼쪽으로 간 다음 아래로”라는 instruction $l$을 받고, 2차원 말단 delta 행동 세 개의 chunk를 예측한다. architecture보다 먼저 $\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l)$와 $a_i=(\Delta x_i,\Delta y_i)$라는 interface를 쓴다.
 
 ### 1. 행동 표현도 방법이다
 
@@ -69,7 +69,7 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 
 ### 2. Behavior cloning과 다봉성
 
-$L_{BC}=H^{-1}\sum_h\|a_{t+h}-\hat a_{t+h}\|^2$. 장애물의 좌우로 지나가는 시연을 평균하면 장애물 중앙으로 갈 수 있다. token·mixture·diffusion·flow는 출력 분포의 대안이지, 나쁜 시연과 recovery 문제를 없애지 않는다.
+$L_{BC}=H^{-1}\sum_h\|a_{t+h}-\hat a_{t+h}\|^2$. 장애물의 좌우로 지나가는 시연을 평균하면 장애물 중앙으로 갈 수 있다. D4의 한 상태에서 시연이 $(-1,0)$과 $(1,0)$이면 MSE-optimal 결정 행동은 평균 $(0,0)$이다. 어느 시연 mode도 아니고, 장애물이 국소 행동 원점에 있으면 충돌한다. token·mixture·diffusion·flow는 출력 분포의 대안이지, 나쁜 시연과 recovery 문제를 없애지 않는다.
 
 ### 3. Chunking의 교환
 
@@ -82,12 +82,12 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 ### 과제
 
 1. camera→policy→chunk→controller→robot→새 관측 폐루프와 rate를 그린다.
-2. 한 상태의 행동이 $(-1,0)$과 $(1,0)$일 때 MSE-optimal 예측과 위험을 구한다.
+2. D4 한 상태의 시연이 $(-1,0)$, $(-1,0)$, $(1,0)$일 때 MSE-optimal 예측과 위험을 구한다.
 3. 새 물체 이름에는 성공하지만 같은 reaching만 썼다면 무엇이 일반화됐는가.
 
 > [!tip]- 정답
 > 1. policy rate와 controller rate를 분리한다.
-> 2. 평균 $(0,0)$; 어느 시연 mode도 아니어서 충돌·정지가 가능하다.
+> 2. 평균 $(-1/3,0)$; 여전히 mode 사이이고, 더 잦은 왼쪽 통과 쪽으로 치우치며, 시연된 행동이 아니다.
 > 3. semantic 선택은 보였지만 새로운 motor skill은 보이지 않았다.
 
 ### 통과 기준

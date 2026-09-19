@@ -66,6 +66,9 @@ Given a vision paper, state its output object, tensor shape, supervision, metric
 
 ## 한국어
 
+> [!note] 처음이라면
+> §1–3과 task 표를 읽는다. 과제를 한 뒤에 CV 논문 계보를 연다.
+
 ### 계속 쓰는 대상: D2
 
 **D2**는 회색조 $8\times8$ 이미지다. 겹치지 않는 $4\times4$ 패치로 나누면 $2\times2$, 즉 토큰 4개다. 각 패치는 값 16개이고 $E\in\mathbb R^{16\times d}$가 $d$차원으로 투영한다.
@@ -76,7 +79,15 @@ convolution의 출력 크기는 $n_{out}=\lfloor(n+2p-k)/s\rfloor+1$이다. D2�
 
 ### 2. 출력이 문제를 정의한다
 
-분류는 이미지당 label, 검출은 box·label·confidence, 분할은 pixel/object mask, depth는 pixel당 거리, 3D 복원은 pose·geometry·appearance를 낸다. backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
+| 과제 | 출력 | 대표 metric | 주의 |
+|---|---|---|---|
+| 분류 | 이미지당 label/분포 | top-1 accuracy | 클래스 불균형을 숨김 |
+| 검출 | box, label, confidence | IoU 임계값 위의 mAP | matching과 임계값에 의존 |
+| 분할 | pixel 또는 object mask | IoU / mIoU | 작은 클래스가 평균에서 사라질 수 있음 |
+| 단안 depth | pixel당 깊이 | AbsRel, RMSE, $\delta$ | metric scale이 없을 수 있음 |
+| 3D 복원 | camera/geometry/appearance | pose 오차, depth, rendering | photorealism은 기하 정확도가 아님 |
+
+backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
 
 ### 3. 학습 뒤에도 기하는 남는다
 

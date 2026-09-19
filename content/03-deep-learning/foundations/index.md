@@ -17,13 +17,17 @@ mastery-when: "Raise when architecture, objective, optimization, or scaling is p
 
 ### Running object: D1
 
-Use **D1** from [[03-deep-learning/lab-objects|0. Lab Objects]]: $x=(1,2)$, hidden vector $h=\operatorname{ReLU}(W_1x)$ of width 3, and two logits $s=W_2h$. The prediction is $p=\operatorname{softmax}(s)$. A diagram must show shapes: $2\rightarrow3\rightarrow2$.
+Use **D1** from [[03-deep-learning/lab-objects|0. Lab Objects]], biases zero:
+
+$$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}.$$
+
+Forward: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$. The prediction is $p=\operatorname{softmax}(s)$. A diagram must show shapes $2\rightarrow3\rightarrow2$. This is not **P1** ($2\to3\to1$ MSE).
 
 ### 1. A paper's model is a typed computation
 
 Architecture prose becomes checkable only after attaching shapes. For a batch of $B$ samples, $X\in\mathbb R^{B\times2}$, $H\in\mathbb R^{B\times3}$, and $S\in\mathbb R^{B\times2}$. Parameters are learned; activations are sample-dependent; hyperparameters are chosen outside gradient descent. If these three are mixed, parameter counts and claims about efficiency become unreliable.
 
-For logits $s=(2,1)$,
+Those logits $s=(2,1)$ are D1's forward pass, not a second example:
 
 $$p_1=\frac{e^2}{e^2+e^1}=0.731,\qquad p_2=0.269.$$
 
@@ -75,13 +79,17 @@ Explain the difference among parameter, activation, and hyperparameter; trace on
 
 ### 계속 쓰는 대상: D1
 
-[[03-deep-learning/lab-objects|0. Lab Objects]]의 **D1**을 쓴다. 입력 $x=(1,2)$, 폭 3의 $h=\operatorname{ReLU}(W_1x)$, 두 logit $s=W_2h$, 확률 $p=\operatorname{softmax}(s)$이다. 그림에 $2\rightarrow3\rightarrow2$ shape를 적는다.
+[[03-deep-learning/lab-objects|0. Lab Objects]]의 **D1**을 쓴다. bias는 0이다.
+
+$$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}.$$
+
+순전파: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$, $p=\operatorname{softmax}(s)$. 그림에 $2\rightarrow3\rightarrow2$ shape를 적는다. **P1**($2\to3\to1$ MSE)과 다른 장치다.
 
 ### 1. 모델은 형식이 붙은 계산이다
 
 배치 크기 $B$이면 $X\in\mathbb R^{B\times2}$, $H\in\mathbb R^{B\times3}$, $S\in\mathbb R^{B\times2}$. 파라미터는 학습되고, activation은 샘플마다 달라지며, 하이퍼파라미터는 경사하강 밖에서 고른다.
 
-$s=(2,1)$이면 $p=(0.731,0.269)$이고 정답이 1번일 때 cross-entropy는 $0.313$이다. 두 logit에 같은 상수를 더해도 확률은 같다. softmax는 상대적 증거를 표현한다.
+이 $s=(2,1)$은 D1 순전파 결과다. $p=(0.731,0.269)$이고 정답이 1번일 때 cross-entropy는 $0.313$이다. 두 logit에 같은 상수를 더해도 확률은 같다. softmax는 상대적 증거를 표현한다.
 
 ### 2. 한 번의 update는 학습 결과가 아니다
 

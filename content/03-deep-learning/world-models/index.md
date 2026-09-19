@@ -69,7 +69,15 @@ Decompose a world-model paper into five components, identify its rollout horizon
 
 ### 1. 월드모델은 여러 모델이다
 
-encoder/inference는 관측에서 latent state, transition은 행동 뒤 변화, decoder는 센서 관측, reward/termination은 task signal, policy/planner는 상상 rollout에서 행동을 고른다. 일부는 pixel decoder가 없고 일부는 video만 생성한다. “world model”이라는 이름만으로 planning이나 물리 일관성이 보장되지 않는다.
+| 구성요소 | 질문 |
+|---|---|
+| encoder/inference | 관측을 설명하는 latent state는 무엇인가? |
+| transition | 상태와 행동이 그것을 어떻게 바꾸는가? |
+| observation decoder | 센서는 무엇을 볼 것인가? |
+| reward/termination | 어떤 task signal과 종료가 따르는가? |
+| policy/planner | 어떤 상상 행동 sequence를 고를 것인가? |
+
+일부는 pixel decoder가 없고 일부는 video만 생성한다. “world model”이라는 이름만으로 planning이나 물리 일관성이 보장되지 않는다.
 
 ### 2. 다단계 오차
 

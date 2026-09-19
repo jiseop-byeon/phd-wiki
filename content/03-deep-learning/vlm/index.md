@@ -14,7 +14,11 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 
 ### Running object: D3
 
-**D3** contains three matched image–caption pairs. Encoders produce unit vectors $v_i,t_j\in\mathbb R^2$. Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$. Rows ask “which text matches this image?”; columns ask the reverse.
+**D3** from [[03-deep-learning/lab-objects|0. Lab Objects]] is three matched image–caption pairs with frozen unit embeddings and $\tau=1/2$:
+
+$$v_1=t_1=\begin{pmatrix}1\\0\end{pmatrix},\quad v_2=t_2=\begin{pmatrix}1/2\\\sqrt{3}/2\end{pmatrix},\quad v_3=t_3=\begin{pmatrix}0\\1\end{pmatrix}.$$
+
+Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$. Rows ask “which text matches this image?”; columns ask the reverse.
 
 ### 1. Three VLM families
 
@@ -24,7 +28,7 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 
 ### 2. Contrastive learning, by hand
 
-Take image 1 logits against three captions as $(2,1,0)$ after temperature scaling. Its correct-pair probability is
+Image 1 dots are $v_1^\top t_j=(1,1/2,0)$. Dividing by $\tau=1/2$ gives logits $(2,1,0)$. Its correct-pair probability is
 
 $$p_{11}=\frac{e^2}{e^2+e+1}=0.665,\qquad L_{i\to t}=-\log p_{11}=0.408.$$
 
@@ -41,12 +45,12 @@ VLM representations can supply semantic labels, language-conditioned goals, rewa
 ### Problem set
 
 1. **Draw.** Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal.
-2. **Derive.** Recompute the row loss for logits $(4,2,0)$ and explain the effect of a lower temperature.
+2. **Derive.** On D3 image 1, recompute logits and row loss at $\tau=1/4$. Explain the effect of the lower temperature.
 3. **Interpret.** A model answers “red valve” correctly but no localization or intervention is tested. What claim remains open?
 
 > [!tip]- Solutions
 > 1. Rows are images, columns captions; $(i,i)$ are matched pairs.
-> 2. $p=e^4/(e^4+e^2+1)=0.867$, loss $0.143$. Sharper logits improve confidence here but also sharpen mistakes.
+> 2. Dots unchanged, so logits $(4,2,0)$. $p=e^4/(e^4+e^2+1)=0.867$, loss $0.143$. Sharper logits improve confidence here but also sharpen mistakes.
 > 3. Whether the answer is grounded in the valve pixels rather than language priors.
 
 ### Exit check
@@ -57,7 +61,11 @@ Identify a VLM's encoder/fusion/generation pattern, objective, negatives, output
 
 ### 계속 쓰는 대상: D3
 
-**D3**는 이미지–캡션 3쌍이다. encoder가 단위 벡터 $v_i,t_j\in\mathbb R^2$를 만들고 logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트, 열은 텍스트에 맞는 이미지를 묻는다.
+[[03-deep-learning/lab-objects|0. Lab Objects]]의 **D3**는 이미지–캡션 3쌍이다. 고정 임베딩과 $\tau=1/2$는
+
+$$v_1=t_1=\begin{pmatrix}1\\0\end{pmatrix},\quad v_2=t_2=\begin{pmatrix}1/2\\\sqrt{3}/2\end{pmatrix},\quad v_3=t_3=\begin{pmatrix}0\\1\end{pmatrix}.$$
+
+logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트, 열은 텍스트에 맞는 이미지를 묻는다.
 
 ### 1. 세 VLM 계열
 
@@ -67,7 +75,7 @@ Identify a VLM's encoder/fusion/generation pattern, objective, negatives, output
 
 ### 2. 대조학습 계산
 
-이미지 1의 logit이 $(2,1,0)$이면 정답 확률은 $0.665$, loss는 $0.408$이다. 전체 목적함수는 image→text와 text→image cross-entropy를 평균한다. batch의 다른 항목은 sampled negative라서 false negative와 batch 구성이 학습을 바꾼다.
+이미지 1의 내적은 $v_1^\top t_j=(1,1/2,0)$이고 $\tau=1/2$로 나누면 logit $(2,1,0)$이다. 정답 확률은 $0.665$, loss는 $0.408$이다. 전체 목적함수는 image→text와 text→image cross-entropy를 평균한다. batch의 다른 항목은 sampled negative라서 false negative와 batch 구성이 학습을 바꾼다.
 
 ### 3. Conditioning은 grounding이 아니다
 
@@ -80,12 +88,12 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 ### 과제
 
 1. D3의 $3\times3$ similarity matrix와 diagonal positive를 그린다.
-2. logit $(4,2,0)$의 row loss와 낮은 temperature의 효과를 계산한다.
+2. D3 이미지 1에서 $\tau=1/4$일 때 logit과 row loss, 낮은 temperature의 효과를 계산한다.
 3. “red valve” 정답만으로 남는 grounding 질문을 말한다.
 
 > [!tip]- 정답
 > 1. 행=image, 열=caption, $(i,i)$가 positive.
-> 2. 확률 $0.867$, loss $0.143$; 맞을 때 더 자신 있지만 오류도 날카로워진다.
+> 2. 내적은 같고 logit은 $(4,2,0)$. 확률 $0.867$, loss $0.143$; 맞을 때 더 자신 있지만 오류도 날카로워진다.
 > 3. valve pixel을 실제 사용했는지 language prior를 사용했는지 미확인이다.
 
 ### 통과 기준

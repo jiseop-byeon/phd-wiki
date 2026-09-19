@@ -80,6 +80,9 @@ For a construction-robotics claim, produce a one-page ledger of work unit, toler
 
 ## 한국어
 
+> [!note] 처음이라면
+> §1–4와 요구사항 장부를 먼저 한다. 작업을 이 정밀도로 말한 뒤에만 스트림 페이지를 연다.
+
 ### 계속 쓰는 프로젝트: S1 패널 설치
 
 모바일 매니퓰레이터가 20 kg 외장 패널을 rack에서 집어 8 m 이동하고, 두 mounting hole을 $\pm5$ mm 안에 맞추고, 작업자가 체결하는 동안 들고 있다가 구역을 비운다. 사람은 공유 현장에 들어오고 GNSS는 가려질 수 있으며 panel마다 base가 이동한다. 실제 제품 제안이 아니라 모든 설계 주장을 검사하기 위한 교과 대상이다.
@@ -87,6 +90,14 @@ For a construction-robotics claim, produce a one-page ledger of work unit, toler
 ### 1. 로봇보다 작업 package부터
 
 생산 단위, 시작·끝 상태, 허용오차, cycle 목표, 선행·후속 공정, 책임 경계를 쓴다. panel 설치는 acquire·transport·localize·align/hold·release/verify로 나뉘며 지배적 실패가 다르다.
+
+| 단계 | 필요한 증거 | 지배적 불확실성 | 안전 fallback |
+|---|---|---|---|
+| acquire | 안정 grasp와 payload 여유 | panel pose, suction/contact | 내려놓고 재파지 |
+| transport | 충돌 없는 base 운동 | 사람, 지형, 위치추정 | 제어된 정지 |
+| align | hole 잔차 $\le5$ mm | base/arm/frame 오차 | 후퇴 후 재스캔 |
+| hold/fasten | 힘과 pose가 envelope 안 | 작업자 행동, compliance | freeze 또는 yield |
+| verify | 체결/pose 완료 기록 | 센서 관측 가능성 | 검사 요청 |
 
 ### 2. Frame과 오차 budget 닫기
 
