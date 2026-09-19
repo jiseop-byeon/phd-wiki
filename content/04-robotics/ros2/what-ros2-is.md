@@ -341,6 +341,19 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 > **3. Why does a second terminal need `source /opt/ros/jazzy/setup.bash` when the first one already ran it?** Environment variables live in a process and are inherited only by children. The setup file sets `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH` and `PYTHONPATH` in the shell that runs it and nowhere else. The upside of that design is that different terminals can run different distributions or workspaces.
 > **4. Someone claims ROS 2 is a real-time system. What do you ask them?** Which kernel, which middleware and configuration, and which operations were removed from the execution path. Installing ROS 2 from apt gives no deadline guarantees; the official position is that ROS 2 was *designed with* real-time constraints in mind, and the real-time demo itself is documented as requiring a source build against a static DDS API.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ counts/m, vision $50\,\mathrm{Hz}$, control $200\,\mathrm{Hz}$, end-to-end budget $70\,\mathrm{ms}$. No new simulator.
+
+1. **Draw.** P6 computation graph: `camera` publishes a goal, `controller` samples the encoder and commands the motor, `logger` writes a bag. Mark rates. Five-line timeline from camera mid-exposure to applied force, with the $70\,\mathrm{ms}$ mark.
+2. **Derive.** (a) Vision period and control period. (b) Encoder $\Delta p$ for one count. (c) How many control samples fit in the $70\,\mathrm{ms}$ budget? How many vision frames?
+3. **Interpret.** A colleague says "ROS 2 is real-time, so the $70\,\mathrm{ms}$ is guaranteed." What do you ask, and what does putting camera, controller, and logger in *one* process destroy that P6's budget cares about?
+
+> [!tip]- Solutions
+> 1. Three nodes, topics `goal` at $50\,\mathrm{Hz}$ and `cmd` at $200\,\mathrm{Hz}$. Timeline: $t=0$ mid-exposure; $\sim 20\,\mathrm{ms}$ a vision period; next controller tick $\le 5\,\mathrm{ms}$; force by $70\,\mathrm{ms}$.
+> 2. (a) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (b) $1/2048\approx 0.488\,\mathrm{mm}$. (c) $14$ control samples, $3$ vision frames (a fourth would land at $80\,\mathrm{ms}$).
+> 3. Which kernel, which rmw, which allocations were removed. Apt ROS 2 gives no deadline. One process: a logger stall or camera crash takes the $200\,\mathrm{Hz}$ loop with it — the independent-restart reason §1 split the robot.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -674,3 +687,16 @@ ros2: command not found
 > **2. `ros2 topic info /turtle1/cmd_vel`이 퍼블리셔 1, 서브스크라이버 2를 보고하는데 띄운 것은 turtlesim과 teleop뿐이다. 두 번째 서브스크라이버는 누구인가?** 당신의 `ros2 topic echo`. CLI 내성 도구는 진짜 노드로서 그래프에 참여하고, 그래서 `rqt_graph`의 **Debug** 항목에 나타난다.
 > **3. 첫 터미널에서 이미 했는데 두 번째 터미널도 `source /opt/ros/jazzy/setup.bash`가 필요한 이유는?** 환경 변수는 프로세스에 살고 자식에게만 상속된다. setup 파일은 실행한 그 셸에만 `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH`, `PYTHONPATH`를 설정한다. 그 설계의 이득은 터미널마다 다른 배포판이나 워크스페이스를 쓸 수 있다는 것이다.
 > **4. 누가 ROS 2는 실시간 시스템이라고 주장한다. 무엇을 되물어야 하나?** 어떤 커널, 어떤 미들웨어와 구성, 실행 경로에서 어떤 연산을 제거했는지. apt로 설치한 ROS 2는 마감 시한을 보장하지 않는다. 공식 입장은 실시간 제약을 *염두에 두고 설계했다*는 것이고, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**: 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 종단 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6 계산 그래프: `camera`가 목표를 발행, `controller`가 엔코더를 샘플해 모터를 명령, `logger`가 bag을 씀. 주기 기입. 카메라 노출 중간부터 힘이 나갈 때까지 다섯 줄 타임라인, $70\,\mathrm{ms}$ 표시.
+2. **유도.** (a) 비전 주기와 제어 주기. (b) 엔코더 한 카운트의 $\Delta p$. (c) $70\,\mathrm{ms}$ 예산 안에 제어 샘플이 몇 개, 비전 프레임이 몇 장?
+3. **해석.** 동료가 "ROS 2는 실시간이라 $70\,\mathrm{ms}$는 보장된다"고 한다. 무엇을 묻고, 카메라·제어기·로거를 *한* 프로세스에 넣으면 P6 예산이 아끼는 무엇이 무너지는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 노드 셋, 토픽 `goal` $50\,\mathrm{Hz}$, `cmd` $200\,\mathrm{Hz}$. 타임라인: $t=0$ 노출 중간; $\sim 20\,\mathrm{ms}$ 비전 한 주기; 다음 제어 틱 $\le 5\,\mathrm{ms}$; $70\,\mathrm{ms}$까지 힘.
+> 2. (a) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (b) $1/2048\approx 0.488\,\mathrm{mm}$. (c) 제어 샘플 $14$, 비전 프레임 $3$(네 번째는 $80\,\mathrm{ms}$).
+> 3. 어떤 커널, 어떤 rmw, 어떤 할당을 뺐는가. apt ROS 2는 마감을 주지 않는다. 한 프로세스면 로거 지연이나 카메라 충돌이 $200\,\mathrm{Hz}$ 루프를 함께 가져간다 — §1이 로봇을 나눈 이유인 독립 재시작.

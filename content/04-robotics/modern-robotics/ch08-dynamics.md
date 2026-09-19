@@ -2,7 +2,7 @@
 title: "MR Ch.08 — Dynamics of Open Chains"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -44,6 +44,8 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > **What it means physically.** $M_{11}$ drops from 5 to 3 kg·m² because the forearm mass moves closer to the shoulder axis: the same shoulder acceleration needs 40% less torque. The off-diagonal term (2, then 1) is coupling — accelerating one joint pushes on the other. The pendulum had neither effect.
 >
 > **Gravity at one pose.** With $g = 9.81$ m/s² in the vertical plane, at $\theta = (0°, 90°)$ the forearm points straight up. Both masses sit 1 m horizontally from the shoulder, so $g_1 = 2 \times 9.81 \times 1 = 19.62$ N·m. The forearm mass is directly above the elbow, so $g_2 = 0$.
+>
+> **At rest on P2, only $g$ survives.** That pose is the catalog frozen pose ([[02-foundations/lab-plants|0.6]]), with $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$. Coriolis/centripetal terms are quadratic in $\dot\theta$, so $c=0$ whenever the arm is still. Holding still with $\ddot\theta=0$ then requires $\tau=g=(19.62,\,0)$. Forward dynamics at that rest pose is $\ddot\theta=M^{-1}(\tau-g)$: command $\tau=g$ and the next simulator step does nothing. Inverse dynamics is the same line read the other way. The problem set is this paragraph as a drawing and a sentence; $\Lambda$ stays on [[02-foundations/manipulator-kinematics-dynamics|page 10]].
 - Two derivations, one answer: **Lagrangian** (energy-based, clean for analysis) vs
   **recursive Newton-Euler** (force-balance, $O(n)$, what simulators and controllers
   actually compute).
@@ -59,6 +61,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 [[01-canonical-papers/notes/5-world-models/dreamer|world models]] *learn* an implicit version of it;
 [[04-robotics/convex-mpc-legged|convex MPC]] deliberately simplifies it (single rigid body)
 to buy solvability.
+
+### Problem set · 과제
+
+Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Quote catalog $M$; do **not** recompute $\Lambda$ — that lab is [[02-foundations/manipulator-kinematics-dynamics|10]].
+
+1. **Draw.** P2 at rest in the vertical plane. Mark both point masses. Write $\tau=M\ddot\theta+c+g$ and circle the terms that survive at rest.
+2. **Derive.** Catalog $M$ at this pose. At rest, what is $c(\theta,\dot\theta)$, and why? Holding torque?
+3. **Interpret.** One simulator step vs one inverse-dynamics control step at this rest pose. Why copying the $\Lambda$ lab here would miss this chapter's point.
+
+> [!tip]- Solutions
+> 1. Masses at $(1,0)$ and $(1,1)$. $\dot\theta=0$ and $\ddot\theta=0$, so only $g$ remains: $\tau=g$.
+> 2. $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$. Coriolis/centripetal terms are quadratic in $\dot\theta$, so $c=0$ at rest. $\tau=g=(19.62,\ 0)$.
+> 3. Forward: $\ddot\theta=M^{-1}(\tau-c-g)$ — here $\ddot\theta=0$ if $\tau=g$. Inverse: command that $\tau$. $\Lambda$ rewrites the same physics at the tip; this chapter's object is the joint-space equation and the rest-pose vanishing of $c$.
 
 ## 한국어
 
@@ -90,6 +105,8 @@ to buy solvability.
 > **물리적 의미.** 전완 질량이 어깨 축에 가까워지므로 $M_{11}$이 5에서 3 kg·m²로 줄어든다: 같은 어깨 가속도에 토크가 40% 덜 든다. 비대각 항(2, 그다음 1)은 결합이다 — 한 관절을 가속하면 다른 관절이 밀린다. 진자에는 둘 다 없었다.
 >
 > **한 자세의 중력.** 연직 평면에서 $g = 9.81$ m/s²로 두고 $\theta = (0°, 90°)$이면 전완이 똑바로 위를 향한다. 두 질량 모두 어깨에서 수평으로 1 m 떨어져 있으므로 $g_1 = 2 \times 9.81 \times 1 = 19.62$ N·m. 전완 질량은 팔꿈치 바로 위에 있으므로 $g_2 = 0$.
+>
+> **P2에서 정지하면 $g$만 남는다.** 그 자세가 카탈로그 고정 자세([[02-foundations/lab-plants|0.6]])이고 $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$이다. 코리올리·원심 항은 $\dot\theta$의 이차식이라 팔이 멈추면 $c=0$. $\ddot\theta=0$으로 유지하려면 $\tau=g=(19.62,\,0)$. 그 정지 자세의 순동역학은 $\ddot\theta=M^{-1}(\tau-g)$: $\tau=g$를 명령하면 시뮬레이터의 다음 스텝은 아무것도 하지 않는다. 역동역학은 같은 줄을 반대로 읽는 것이다. 과제는 이 문단을 그림과 문장으로 묻는 것이다. $\Lambda$는 [[02-foundations/manipulator-kinematics-dynamics|10]]에 남긴다.
 - 유도는 둘, 답은 하나: **라그랑주**(에너지 기반, 해석에 깔끔) vs **재귀
   뉴턴-오일러**(힘 평형, $O(n)$, 시뮬레이터·제어기가 실제로 계산하는 것).
 - **순동역학** ($\tau \to \ddot\theta$): 시뮬레이터가 매 스텝 적분하는 것 — 모든 물리
@@ -114,3 +131,16 @@ to buy solvability.
 > 1. Rotational inertia depends on how far mass sits from the axis. Extended, the distal links are far out and the same joint acceleration needs much more torque; folded, they are close and it needs less. Inertia is a function of geometry, and geometry is $\theta$. · 같은 관절 가속도라도 팔을 뻗으면 말단 질량이 축에서 멀어 회전 관성이 커진다 — 관성이 기하(자세)의 함수이기 때문.
 > 2. Simulator = forward dynamics ($\tau \to \ddot\theta$), integrated each step; controller feedforward = inverse dynamics ($\ddot\theta \to \tau$). · 시뮬레이터 = 순동역학; 제어기 피드포워드 = 역동역학.
 > 3. Substituting the kinetic energy $\tfrac12\dot\theta^\top M(\theta)\dot\theta$ into the Lagrange equation differentiates $M$ with respect to $\theta$, and the chain rule turns $\partial M/\partial\theta$ into products $\dot\theta_i\dot\theta_j$ — velocity times velocity. · 운동 에너지를 라그랑주 방정식에 넣으면 $M$의 $\theta$ 의존성에서 $\dot\theta_i\dot\theta_j$ 곱 항이 나오기 때문.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 고정 자세 **P2**. 카탈로그 $M$을 인용하고 $\Lambda$는 다시 구하지 마라 — 그 랩은 [[02-foundations/manipulator-kinematics-dynamics|10]].
+
+1. **그리기.** 연직면에서 정지한 P2. 점질량 둘. $\tau=M\ddot\theta+c+g$에서 정지 때 남는 항을 동그라미.
+2. **유도.** 이 자세의 카탈로그 $M$. 정지에서 $c(\theta,\dot\theta)$는 무엇이고 왜인가? 유지 토크는?
+3. **해석.** 이 정지 자세에서 시뮬레이터 한 스텝과 역동역학 제어 한 스텝. 여기 $\Lambda$ 랩을 복사하면 이 장이 빠지는 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 질량은 $(1,0)$과 $(1,1)$. $\dot\theta=\ddot\theta=0$이라 $g$만 남는다: $\tau=g$.
+> 2. $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$. 코리올리/원심 항은 $\dot\theta$의 이차식이라 정지에서 $c=0$. $\tau=g=(19.62,\ 0)$.
+> 3. 순: $\ddot\theta=M^{-1}(\tau-c-g)$ — $\tau=g$면 $\ddot\theta=0$. 역: 그 $\tau$를 명령. $\Lambda$는 말단 재기술이고, 이 장의 대상은 관절 공간 방정식과 정지에서 꺼지는 $c$다.

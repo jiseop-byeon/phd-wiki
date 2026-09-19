@@ -229,6 +229,19 @@ You should be able to:
 > [!tip]- Answers
 > 1. Base rate — a constant "no" scores similarly. Report AUC for ranking and precision–recall plus the chosen deployed operating point as functions of time-to-event. 2. B meets this stated requirement; A does not provide enough lead at that operating point. AUC alone does not choose the threshold, encode braking cost, or establish calibration. 3. minADE rewards one lucky sample among twenty; the planner needs a probability distribution over futures, which the metric does not require the model to provide. 4. Mask or remove the pedestrian and re-evaluate; near-equal performance means the model learned scene priors. 5. The worker adapts to the deployed robot, so deployment changes the data-generating process — a feedback loop absent from passive road recordings.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A crossing model reports 96% accuracy on a dataset whose base rate of "no" is 94%. What did the number fail to measure, and what two plots replace it?
+2. minADE$_{20} = 0.18\,\mathrm{m}$. The planner needs a distribution over futures for a safety stop. Why can this win still be unusable, and which scoring rule (calibration / conformal) fits the stop?
+3. A worksite model is trained on week one and evaluated on week four, after workers have learned the robot's path. Why is this not the JAAD/PIE problem, and what happens to the label "will yield"?
+
+> [!tip]- Solutions
+> 1. Ranking under a low base rate; a constant "no" is already 94%. Replace with AUC and a precision–recall curve versus time-to-event at the deployed threshold.
+> 2. minADE rewards one lucky sample of twenty and does not require probabilities. A stop needs a calibrated (or conformal) set that covers the true future at a stated error rate, not a best-of-twenty mean.
+> 3. Road datasets are passive; coworkers adapt, so the generating process moves. "Will yield" becomes a function of the robot you deployed — a feedback loop the week-one labels do not contain.
+
 ### Sources
 
 **Pedestrian intent**
@@ -492,6 +505,19 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 
 > [!tip]- 정답
 > 1. 기저율 때문 — 무조건 "아니오"가 비슷한 점수를 받는다. 순위 판별용 AUC와 precision–recall, 선택한 배포 동작점을 time-to-event의 함수로 보고해야 한다. 2. B가 이 요구를 만족하고 A는 해당 동작점에서 선행 시간이 부족하다. AUC만으로는 임계값·제동 비용·보정을 결정하지 못한다. 3. minADE는 스무 개 중 운 좋은 하나를 보상한다; 플래너는 미래에 대한 확률분포가 필요한데 지표가 그것을 요구하지 않는다. 4. 보행자를 마스킹·제거하고 재평가한다; 성능이 비슷하면 장면 사전확률을 학습한 것이다. 5. 작업자가 배포된 로봇에 적응하므로 배포 자체가 데이터 생성 과정을 바꾼다 — 수동적 도로 녹화에는 없는 피드백 루프다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 횡단 모델이 "아니오" 기저율 94%인 데이터셋에서 정확도 96%를 보고한다. 그 숫자가 재지 못한 것과, 대신할 그림 둘은?
+2. minADE$_{20} = 0.18\,\mathrm{m}$. 플래너는 안전 정지를 위해 미래에 대한 분포가 필요하다. 이 승리가 여전히 못 쓰일 수 있는 이유와, 정지에 맞는 채점(보정 / conformal)은?
+3. 현장 모델을 1주차로 학습하고, 작업자가 로봇 경로를 배운 4주차로 평가한다. 이것이 JAAD/PIE 문제가 아닌 이유와, 레이블 "양보할 것이다"에 일어나는 일은?
+
+> [!tip]- 정답 · Solutions
+> 1. 낮은 기저율에서의 순위; 무조건 "아니오"가 이미 94%. AUC와, 배포 임계값에서 time-to-event에 대한 precision–recall로 바꿔라.
+> 2. minADE는 스무 개 중 운 좋은 하나를 보상하고 확률을 요구하지 않는다. 정지는 말한 오류율로 참 미래를 덮는 보정(또는 conformal) 집합이 필요하지, 스무 개 평균의 최선이 아니다.
+> 3. 도로 데이터셋은 수동이고, 동료는 적응하므로 생성 과정이 움직인다. "양보할 것이다"는 배포한 로봇의 함수가 된다 — 1주차 레이블에 없는 피드백 루프.
 
 ### 출처
 

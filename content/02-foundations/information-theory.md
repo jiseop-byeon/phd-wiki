@@ -297,6 +297,19 @@ so it is a lower bound on the evidence for every $q$, since the KL on the right 
 > 3. Reverse KL, $KL(q(z|x)\|p(z|x))$, sits in the posterior fit: being mode-seeking, it tends to under-disperse $q$, which is a statement about the latent, not about blur. Blur comes from the data-level side: maximum likelihood minimises the *forward* $KL(p_{data}\|p_\theta)$, which is mass-covering, and a Gaussian pixel likelihood turns uncertainty into averaged pixels.
 > 4. $I \ge \log N - \mathcal{L}$, so the bound's ceiling rises by $\log 2 \approx 0.69$ nats (= 1 bit).
 
+### Problem set · 과제
+
+Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$. Use bits ($\log_2$).
+
+1. **Draw.** Binary channel $C\in\{c,\neg c\}$ into $\{+,-\}$. Label all four transitions. Mark the rare prior $P(c)=0.01$.
+2. **Derive.** (a) $P(+)$ and $P(c|+)$ from Bayes. (b) After a $+$ reading the true posterior is Bernoulli($p$) with that $p$. Binary cross-entropy of a model that outputs $q=0.95$ (the sensitivity, treated as if it were $P(c|+)$). Compare to $H(p)$.
+3. **Interpret.** Why is $P(c|+)\approx 0.16$ even though sensitivity is 95%?
+
+> [!tip]- Solutions
+> 1. $c\to +$ at $0.95$, $c\to -$ at $0.05$; $\neg c\to +$ at $0.05$, $\neg c\to -$ at $0.95$. Almost all prior mass on $\neg c$.
+> 2. $P(+)=0.95\cdot 0.01+0.05\cdot 0.99=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)=-p\log_2 0.95-(1-p)\log_2 0.05\approx 3.64$ bits, while $H(p)\approx 0.63$ bits: sensitivity is a badly calibrated posterior.
+> 3. False alarms from the 99% non-crack mass dominate true positives ($0.0495$ vs $0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$.
+
 ## 한국어
 
 *[[02-foundations/probability|3. 확률]]과 [[02-foundations/engineering-math|0.5]]의 로그 위에 선다. 둘째 응용 기둥이고, 목적함수들이 공통으로 재는 것에
@@ -572,3 +585,16 @@ $$\text{ELBO}(q, \theta) = E_{q(z|x)}\big[\log p_\theta(x, z) - \log q(z \mid x)
 > 2. $-\ln 0.25 = \ln 4 \approx 1.39$ 나트.
 > 3. reverse KL $KL(q(z|x)\|p(z|x))$은 사후분포 근사에 있다. 모드 시킹이라 $q$를 좁게 잡는 경향이 있지만, 이것은 잠재 변수에 대한 이야기이지 흐릿함의 원인이 아니다. 흐릿함은 데이터 쪽에서 온다: 최대우도는 *forward* $KL(p_{data}\|p_\theta)$을 최소화해 질량을 덮으려 하고, 가우시안 픽셀 우도가 그 불확실성을 평균된 픽셀로 바꾼다.
 > 4. $I \ge \log N - \mathcal{L}$이므로 하한의 천장이 $\log 2 \approx 0.69$ 나트(= 1비트)만큼 올라간다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P5** 균열 감지기: $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$. 비트($\log_2$).
+
+1. **그리기.** 이진 채널 $C\in\{c,\neg c\}$ → $\{+,-\}$. 전이 네 개에 확률. 희귀한 사전 $P(c)=0.01$.
+2. **유도.** (a) 베이즈로 $P(+)$와 $P(c|+)$. (b) $+$를 본 뒤 참 사후는 그 $p$의 베르누이. 민감도 $q=0.95$를 $P(c|+)$인 양 쓰는 모델의 이진 교차 엔트로피. $H(p)$와 비교.
+3. **해석.** 민감도가 95%인데도 $P(c|+)\approx 0.16$인 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. $c\to +$는 $0.95$, $c\to -$는 $0.05$; $\neg c\to +$는 $0.05$, $\neg c\to -$는 $0.95$. 사전 질량은 거의 $\neg c$.
+> 2. $P(+)=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)\approx 3.64$비트, $H(p)\approx 0.63$비트: 민감도를 사후로 쓰면 보정이 크게 틀린다.
+> 3. 균열이 없는 99%에서 나온 거짓 경보가 참양성을 이긴다($0.0495$ vs $0.0095$). 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다.

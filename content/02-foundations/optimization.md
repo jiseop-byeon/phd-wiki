@@ -452,6 +452,19 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
 > 4. The objective is a convex quadratic and the constraints are linear (dynamics equalities plus input/state boxes) — a convex QP. It stops being convex when obstacle avoidance enters (the free space is a non-convex complement) or when discrete decisions such as task ordering or contact-mode selection are added.
 > 5. Adam + L2: the decay term $\eta\lambda w/\sqrt{\hat v}$ is $10^{-6}$ for the first weight and $10^{-4}$ for the second — a 100× spread set by gradient history (ignoring the small effect of $\lambda w$ on $\hat v$). AdamW: $\eta\lambda w = 10^{-5}$ for both.
 
+### Problem set · 과제
+
+Tier B. **P1** from [[02-foundations/lab-plants|0.6]]. One gradient step, by hand. The backprop that produced the given gradient lives on [[02-foundations/calculus-backprop|2]]; do not re-derive it here.
+
+1. **Draw.** $L=\tfrac12(\hat y-1)^2$ versus the single weight $W_{2,1}$ near $1$, holding the rest of $W_2$ and $h=(1,2,3)$ fixed. Mark the catalog point $W_{2,1}=1$.
+2. **Derive.** One GD step $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$ with $\eta=0.1$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$, from catalog $W_2=(1,-1,0.5)$.
+3. **Interpret.** Repeat with $\eta=10$. New $W_2$, and what happens to $L$?
+
+> [!tip]- Solutions
+> 1. $\hat y=W_{2,1}-0.5$, so $L=\tfrac12(W_{2,1}-1.5)^2$, a parabola, minimum at $1.5$. Catalog $W_{2,1}=1$ sits on the left slope.
+> 2. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
+> 3. $W_2\leftarrow(1,-1,0.5)+(5,10,15)=(6,9,15.5)$. Then $\hat y=70.5$ and $L$ explodes. $\eta=10$ is far past a stable step on this scale.
+
 ### Robotics bridge
 
 Constraints and nonlinear optimization become executable robot decisions in [[04-robotics/planning-decision-making|Planning & Decision-Making]] and [[04-robotics/mpc|MPC]].
@@ -872,6 +885,19 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 > 3. 구속 케이스: 정상성은 $x^* = p - \lambda a$로 성립; $a^\top x^* = b$(원 가능·구속); $\lambda = (a^\top p - b)/\|a\|^2 > 0$(쌍대 가능); $\lambda g = \lambda \cdot 0 = 0$(상보 여유성).
 > 4. 목적은 볼록 이차, 제약은 선형(동역학 등식 + 박스) — 볼록 QP. 장애물 회피(비볼록 여집합)나 정수 결정(작업 순서, 접촉 모드 선택)이 들어오면 비볼록이 된다.
 > 5. Adam + L2: 감쇠항 $\eta\lambda w/\sqrt{\hat v}$는 첫 가중치에서 $10^{-6}$, 둘째에서 $10^{-4}$ — 그래디언트 이력이 만든 100배 차이다($\lambda w$가 $\hat v$에 주는 작은 영향은 무시). AdamW: 둘 다 $\eta\lambda w = 10^{-5}$.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P1**. 경사 한 스텝, 손계산. 주어진 그래디언트의 역전파는 [[02-foundations/calculus-backprop|2]]에 있다. 여기서 다시 유도하지 마라.
+
+1. **그리기.** $L=\tfrac12(\hat y-1)^2$를 가중치 하나 $W_{2,1}$의 $1$ 근처 함수로. 나머지 $W_2$와 $h=(1,2,3)$은 고정. 카탈로그 점 $W_{2,1}=1$을 표시.
+2. **유도.** GD 한 스텝 $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$, $\eta=0.1$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, 출발 $W_2=(1,-1,0.5)$.
+3. **해석.** $\eta=10$으로 반복. 새 $W_2$, $L$은?
+
+> [!tip]- 정답 · Solutions
+> 1. $\hat y=W_{2,1}-0.5$이므로 $L=\tfrac12(W_{2,1}-1.5)^2$, 최솟값 $1.5$. 카탈로그 $W_{2,1}=1$은 왼쪽 기울기.
+> 2. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
+> 3. $W_2\leftarrow(1,-1,0.5)+(5,10,15)=(6,9,15.5)$. $\hat y=70.5$, $L$이 폭발. $\eta=10$은 이 척도에서 안정 스텝을 한참 지난다.
 
 ### 로보틱스 다리
 

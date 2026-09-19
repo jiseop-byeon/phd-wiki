@@ -39,6 +39,8 @@ paper in this wiki** (individual papers may require deeper references): math cor
 
 - [[02-foundations/overview|0. Overview]] — prerequisites, study order, connection map
 - [[02-foundations/engineering-math|0.5 Engineering Math]] — the assumed undergraduate math, self-contained: derivatives to Euler's formula, plus a notation dictionary
+- [[02-foundations/lab-plants|0.6 Lab Plants]] — six numbered plants (P1–P6) frozen for every problem set in Foundations and Robotics
+- [[02-foundations/lab-kernel|0.65 Lab Kernel]] — explicit Euler, symplectic Euler, plotting rules
 - [[02-foundations/neural-network-basics|0.7 What a Neural Network Is]] — layers, loss, batch, epoch, hyperparameter: the ML vocabulary pages 1–9 assume, for a reader who has only done engineering math
 - [[02-foundations/linear-algebra|1. Linear Algebra]] — matrices as maps, rank/SVD, the geometry behind attention and LoRA
 - [[02-foundations/calculus-backprop|2. Calculus & Backpropagation]] — chain rule to backprop, vanishing/exploding gradients as architecture history
@@ -72,8 +74,7 @@ Track 11 is also outside the common curriculum. It prepares coding interviews an
 
 - [[02-foundations/algorithms/index|11. Algorithms & Data Structures]] — eight pages, each algorithm with its invariant, complexity, tested code, and interview pitfalls
 
-Skip it unless manipulation is your contribution area; read it before
-[[04-robotics/contact-force-tactile|Contact, Force & Tactile]] if it is.
+Skip the interview track unless a coding interview or a lab implementation interview is next. If the contribution is manipulation, read [[02-foundations/manipulator-kinematics-dynamics|10]] before [[04-robotics/contact-force-tactile|Contact, Force & Tactile]], not this track.
 
 ## 한국어
 
@@ -107,6 +108,8 @@ Skip it unless manipulation is your contribution area; read it before
 
 - [[02-foundations/overview|0. Overview]] — 사전 지식, 학습 순서, 연결 지도
 - [[02-foundations/engineering-math|0.5 공업수학]] — 전제되는 학부 수학을 자체 완결로: 미분부터 오일러 공식까지 + 표기법 사전
+- [[02-foundations/lab-plants|0.6 Lab Plants]] — 기초·로보틱스 과제에 쓰는 장치 여섯 개(P1–P6)
+- [[02-foundations/lab-kernel|0.65 Lab Kernel]] — 명시적 오일러, 심플렉틱 오일러, 플롯 규약
 - [[02-foundations/neural-network-basics|0.7 신경망이란 무엇인가]] — 층·손실·배치·에포크·하이퍼파라미터: 1~9페이지가 전제하는 ML 어휘를 공업수학만 한 독자를 위해
 - [[02-foundations/linear-algebra|1. 선형대수]] — 사상으로서의 행렬, 랭크/SVD, 어텐션과 LoRA 뒤의 기하
 - [[02-foundations/calculus-backprop|2. 미적분과 역전파]] — 연쇄 법칙에서 역전파까지, 구조 설계사(史)로서의 그래디언트 소실/폭발
@@ -139,5 +142,4 @@ Skip it unless manipulation is your contribution area; read it before
 
 - [[02-foundations/algorithms/index|11. 알고리즘과 자료구조]] — 여덟 페이지, 알고리즘마다 불변식·복잡도·검증된 코드·인터뷰 함정
 
-매니퓰레이션이 기여 영역이 아니라면 건너뛰고, 맞다면
-[[04-robotics/contact-force-tactile|접촉·힘·촉각]]보다 먼저 읽어라.
+코딩 인터뷰나 연구실 구현 인터뷰가 아니면 이 트랙은 건너뛴다. 기여가 매니퓰레이션이면 [[04-robotics/contact-force-tactile|접촉·힘·촉각]]보다 먼저 읽을 것은 이 트랙이 아니라 [[02-foundations/manipulator-kinematics-dynamics|10]]이다.

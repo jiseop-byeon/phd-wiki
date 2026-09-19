@@ -291,6 +291,26 @@ one of them is not comparing what it claims.
 > 3. Pixel distance ignores perceptual quality (a one-pixel shift is punished heavily) — Inception feature space reflects semantic similarity, so distribution distance is measured there.
 > 4. ① How many trials, with what variance? ② What does "unseen" mean (new objects? new instructions? new scenes?) ③ Against which baseline, and is there failure analysis?
 
+### Problem set · 과제
+
+Tier C. Claim-reading only. No plant dynamics.
+
+A paper's results table (invented):
+
+| Method | Success | Trials | Training |
+|---|---:|---:|---|
+| Ours | 0.88 | 25 | new schedule, one seed |
+| Prior SOTA | 0.72 | 25 | the 2021 paper's recipe |
+
+1. **Draw.** Copy the two-row table. Circle the number the abstract will quote as "a 16-point gain."
+2. **Derive.** Which number is the claim, and which numbers are the experimental setup the claim silently depends on?
+3. **Interpret.** Name one concrete way to falsify the gain (a rerun, a split, or a count).
+
+> [!tip]- Solutions
+> 1. Circle $0.88-0.72=0.16$, or the pair $0.88$ vs $0.72$.
+> 2. The claim is the 16-point success gap. It depends on $n=25$, one seed, and a recipe mismatch (new schedule vs 2021 recipe) — the warning in §6 of this page.
+> 3. Retrain the SOTA with the new schedule and several seeds. If the gap vanishes, the claim was a recipe difference. Separately, $22/25$ vs $18/25$ is a thin binomial: one extra failure on "Ours" already moves the headline.
+
 ### From reading experiments to designing them
 
 Continue with [[06-research-practice/index|Research Practice]] for research questions, controlled robot experiments, failure diagnosis, reproducibility, and peer review.
@@ -566,6 +586,26 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 > 2. 진짜 균열의 70%를 놓친다(재현율 0.3). 1차 스크리닝이나 유일한 안전 관문으로는 불가하다. 표시하지 않은 것은 점검에 아예 올라가지 않기 때문이다. 모든 패널을 여전히 점검하는 체계 위에서 우선순위를 정하는 보조 수단으로만 용인 가능하다: 표시는 믿을 만하므로(정밀도 0.9) 먼저 처리하고, 놓친 것은 정규 점검이 잡는다.
 > 3. 픽셀 거리는 지각 품질과 무관하다(한 픽셀 평행이동에도 크게 벌점) — Inception 특징 공간이 의미적 유사성을 반영하기 때문에 특징 분포 거리로 잰다.
 > 4. ① 몇 회 시행이고 분산은 얼마인가 ② "unseen"의 정의는(새 물체? 새 지시문? 새 장면?) ③ 어떤 베이스라인 대비이며 실패 사례 분석이 있는가.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기만. 플랜트 동역학 없음.
+
+어떤 논문의 결과 표(창작):
+
+| 방법 | 성공 | 시행 | 학습 |
+|---|---:|---:|---|
+| 우리 | 0.88 | 25 | 새 스케줄, 시드 하나 |
+| 기존 SOTA | 0.72 | 25 | 2021년 논문의 레시피 |
+
+1. **그리기.** 두 행 표를 옮겨 그려라. 초록이 "16포인트 향상"으로 인용할 숫자를 동그라미.
+2. **유도.** 어느 숫자가 주장이고, 그 주장이 말없이 의존하는 실험 설정 숫자는?
+3. **해석.** 그 향상을 반증할 구체적 방법 하나(재학습, 분할, 또는 횟수).
+
+> [!tip]- 정답 · Solutions
+> 1. $0.88-0.72=0.16$, 또는 쌍 $0.88$ vs $0.72$에 동그라미.
+> 2. 주장은 성공률 16포인트 격차. $n=25$, 시드 하나, 레시피 불일치(새 스케줄 vs 2021 레시피)에 의존한다 — 이 페이지 §6의 경고.
+> 3. 기존 SOTA를 새 스케줄과 여러 시드로 다시 학습한다. 격차가 사라지면 주장은 레시피 차이였다. 별도로 $22/25$ vs $18/25$는 얇은 이항: "우리"에 실패 하나면 헤드라인이 움직인다.
 
 ### 실험을 읽는 것에서 설계하는 것으로
 

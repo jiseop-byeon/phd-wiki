@@ -229,6 +229,19 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 4. That the *manipulation* worked given accurate base poses. External motion capture supplies a pose the robot would not have on a site, so the result is a lower bound on the real difficulty — the navigation and localization contribution has been measured out of the experiment. It is a legitimate way to isolate a manipulation claim, as long as the paper says so and you read it that way.
 > 5. Cite the primary methods instead — Zacharias et al. 2007 for capability maps and Vahrenkamp et al. 2013 for inverse reachability — because no such survey was found to exist. Writing "no survey of this exists; the primary references are…" is accurate and shows you looked.
 
+### Problem set · 과제
+
+Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base. Panel at world $(2,1)\,\mathrm{m}$. Frozen pose: tip at $(1,1)$ relative to the base, $\det J=1$. No new simulator.
+
+1. **Draw.** World frame, panel at $(2,1)$. Sketch the reachable disk of radius $2$ about a candidate base. Mark the frozen-pose base that puts the tip on the panel. Draw the annulus of base positions that keep the tip-to-base distance near $\sqrt{2}$ (well-conditioned) versus the outer circle $r=2$ (singular).
+2. **Derive.** (a) Base position for the frozen pose. (b) Tip-to-base distance $r=\sqrt{2+2\cos\theta_2}$. Values at $\theta_2=90^\circ$, $5^\circ$, $0^\circ$. (c) $\det J=L_1 L_2\sin\theta_2$ at those three angles.
+3. **Interpret.** A team parks "as close as possible" so the arm is fully extended toward the panel. What have they maximised, and what have they lost in the direction the panel-push needs?
+
+> [!tip]- Solutions
+> 1. Reachable set is a disk of radius $2$ about the base (P2 can fold). Frozen-pose base at $(1,0)$. Good bases lie on (or near) the circle of radius $\sqrt{2}$ about the panel; the outer circle of radius $2$ is the singular ring.
+> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.996$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
+> 3. They maximised reach and parked on the singular ring. $\det J\to 0$: the lost direction is along the arm, which is the panel normal if they stretched straight at it. The arm is *strong* along that direction and cannot *move* or modulate force through the motors. The useful set is the $\sqrt{2}$ band, not the outer limit.
+
 ### Sources
 
 - F. Zacharias, C. Borst, G. Hirzinger, "Capturing robot workspace structure: representing robot capabilities," IROS 2007, pp. 3229–3236 — the capability map.
@@ -437,6 +450,19 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 > 3. 틀린 난이도를 재기 때문이다. 정적 지도 벤치마크는 가만히 있는 장면에 정확히 정합하는 것을 보상하는데, 건설 현장은 *로봇과 다른 공종이 그것을 바꾸고 있기 때문에* 변하고, 변한 영역이 정확히 작업 영역이다. 앞의 것에서 좋은 점수를 받는 시스템이 뒤의 것에서는 크게 표류할 수 있다.
 > 4. 정확한 베이스 자세가 주어졌을 때 *조작*이 동작했다는 것. 외부 모션 캡처는 현장에서 로봇이 갖지 못할 자세를 공급하므로, 결과는 실제 난이도의 하한이다 — 내비게이션과 위치추정의 기여가 실험에서 빠져 있다. 조작 주장을 분리하는 정당한 방법이다. 논문이 그렇게 밝히고 독자가 그렇게 읽는다면.
 > 5. 대신 1차 방법을 인용하라 — 능력 지도는 Zacharias 등 2007, inverse reachability는 Vahrenkamp 등 2013 — 그런 서베이가 존재하지 않는 것으로 확인되었기 때문이다. "이 주제의 서베이는 없으며 1차 참고문헌은…"이라고 쓰는 것이 정확하고, 찾아봤다는 것을 보여 준다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**를 홀로노믹 베이스 위에. 패널은 월드 $(2,1)\,\mathrm{m}$. 고정 자세: 말단이 베이스 기준 $(1,1)$, $\det J=1$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** 월드 프레임, 패널 $(2,1)$. 후보 베이스 둘레 반지름 $2$의 도달 원판. 말단을 패널에 올리는 고정 자세 베이스. 말단–베이스 거리가 $\sqrt{2}$ 근처인(조건이 좋은) 고리와, 바깥 원 $r=2$(특이)를 그려라.
+2. **유도.** (a) 고정 자세의 베이스 위치. (b) 말단–베이스 거리 $r=\sqrt{2+2\cos\theta_2}$. $\theta_2=90^\circ$, $5^\circ$, $0^\circ$의 값. (c) 그 세 각에서 $\det J=L_1 L_2\sin\theta_2$.
+3. **해석.** 어떤 팀이 "최대한 가까이" 세워서 팔을 패널을 향해 완전히 뻗는다. 무엇을 최대화했고, 패널을 누르는 방향에서 무엇을 잃었는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 도달 집합은 베이스 둘레 반지름 $2$의 원판(P2는 접을 수 있다). 고정 자세 베이스는 $(1,0)$. 좋은 베이스는 패널 둘레 반지름 $\sqrt{2}$의 원(근처)이고, 바깥 원 $r=2$가 특이 고리다.
+> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.996$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
+> 3. 도달 범위를 최대화하고 특이 고리에 세웠다. $\det J\to 0$: 잃은 방향은 팔 축이고, 곧게 뻗었다면 그것이 패널 법선이다. 그 방향으로 팔은 *강하고*, 모터로 *움직이거나* 힘을 조절하지는 못한다. 쓸 집합은 바깥 한계가 아니라 $\sqrt{2}$ 띠다.
 
 ### 출처
 

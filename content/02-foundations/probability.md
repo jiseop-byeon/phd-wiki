@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §3]] (integrals as expectations) · [[02-foundations/engineering-math|0.5 §10]] (set notation) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (PSD matrices, for covariance)
-> [[02-foundations/engineering-math|0.5 §3]](기댓값으로서의 적분) · [[02-foundations/engineering-math|0.5 §10]](집합 표기) · [[02-foundations/linear-algebra|1. 선형대수 §3]](공분산을 위한 PSD 행렬)
+> Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §3]] (integrals as expectations) · [[02-foundations/engineering-math|0.5 §10]] (set notation) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (PSD matrices, for covariance)
+> [[02-foundations/lab-plants|0.6]]의 장치 **P5** · [[02-foundations/engineering-math|0.5 §3]](기댓값으로서의 적분) · [[02-foundations/engineering-math|0.5 §10]](집합 표기) · [[02-foundations/linear-algebra|1. 선형대수 §3]](공분산을 위한 PSD 행렬)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -531,6 +531,34 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 > 8. The filter at hour $t$ uses only readings up to $t$; Viterbi chooses the single most probable *whole* path, so later readings can revise earlier hours. An online alarm cannot wait for the future, so use the filter. For labeling a logged run use Viterbi (or forward–backward smoothing if you want per-hour probabilities).
 > 9. Now $m = 14$ discordant pairs and the smaller count is 2, so $p = 2\big(\binom{14}{0} + \binom{14}{1} + \binom{14}{2}\big)/2^{14} = 212/16384 = 0.013$. The difference is still +25 points (80% against 55%). Only the evidence grew, which is why a p-value cannot stand in for an effect size.
 > 10. The width is probably too small: nearly every tiny step is accepted, so consecutive samples are almost identical and the chain explores slowly. In the §7 example, width 0.1 accepted 98% yet gave an ESS of about 100 from 200,000 steps and a mean of 3.19 instead of 3. Ask for the ESS, and for several chains from dispersed starts.
+
+### Problem set · 과제
+
+Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. The motion step is the scalar Kalman of §5, not a new filter.
+
+1. **Draw.** Prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,1)$ with $z=12$, posterior. Mark the Kalman gain as the weight on the innovation.
+2. **Derive.** Catalog update: $K$, $\hat x^+$, $P^+$. Then a second independent range $z_2=11$, $R=1$. Then a motion $x\leftarrow x+1$ with process variance $Q=1$, then $z_3=13$, $R=1$. Write predict then correct.
+3. **Do.** Fill `?`. Print the three posteriors (after $z$, after $z_2$, after motion+$z_3$).
+
+```python
+# P5 sequential Kalman. Fill ?.
+x, P = 10.0, 4.0
+def correct(x, P, z, R=1.0):
+    K = ?                      # P / (P + R)
+    x = ?                      # x + K*(z - x)
+    P = ?                      # (1 - K)*P
+    return x, P, K
+x, P, K1 = correct(x, P, 12.0)
+x, P, K2 = correct(x, P, 11.0)
+x, P = x + 1.0, P + 1.0        # predict
+x, P, K3 = correct(x, P, 13.0)
+print(K1, K2, K3, x, P)
+```
+
+> [!tip]- Solutions
+> 1. Prior blob at 10 with width 2; likelihood at 12 with width 1; posterior in between, closer to 12.
+> 2. $K=4/(4+1)=0.8$, $\hat x=10+0.8\cdot2=11.6$, $P=0.8$. Second: $K=0.8/(0.8+1)=0.444$, $\hat x=11.6+0.444\cdot(11-11.6)=11.333$, $P=0.444$. Predict: $x=12.333$, $P=1.444$. Third: $K=1.444/(1.444+1)=0.591$, $\hat x=12.333+0.591\cdot(13-12.333)=12.727$, $P=0.591$.
+> 3. Blanks: `K = P/(P+R)`, `x = x + K*(z-x)`, `P = (1-K)*P`. Prints $0.8$, $0.444$, then after predict+correct the third gain $\approx 0.591$, $x\approx 12.73$, $P\approx 0.591$. Fusing a *wrong* wall at 20 cm with $R=1$ after the first update would yank the estimate to $11.6+0.444\cdot(20-11.6)\approx 15.3$ with the same small $P$ — confident and wrong. That is the association failure [[04-robotics/state-estimation-slam|3]] exists to name.
 
 ### Robotics bridge
 
@@ -1056,6 +1084,17 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 > 9. 이제 불일치 쌍은 $m = 14$개이고 작은 쪽 개수는 2이므로 $p = 2\big(\binom{14}{0} + \binom{14}{1} + \binom{14}{2}\big)/2^{14} = 212/16384 = 0.013$이다. 차이는 여전히 +25%p(80% 대 55%)다. 증거만 커졌다. p-값이 효과 크기를 대신할 수 없는 이유다.
 > 10. 폭이 너무 작을 가능성이 크다: 아주 작은 스텝이 거의 다 받아들여지므로 연속한 표본이 거의 같고 체인이 느리게 탐색한다. §7 예제에서 폭 0.1은 98%를 받아들였지만 200,000 스텝에서 ESS가 약 100이었고 평균은 3이 아니라 3.19였다. ESS를, 그리고 흩어진 시작점에서 돌린 여러 체인을 요구한다.
 
-### 로보틱스 다리
+### 과제 · Problem set
+
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
+
+1. **그리기.** 사전 $\mathcal{N}(10,4)$, 우도 $z=12$, $R=1$, 사후. 칼만 이득을 혁신의 가중으로 표시하라.
+2. **유도.** 카탈로그 갱신. 둘째 거리 $z_2=11$, $R=1$. 운동 $x\leftarrow x+1$, $Q=1$, 그다음 $z_3=13$. 예측 다음 보정.
+3. **실행.** 세 사후를 출력하라.
+
+> [!tip]- 정답 · Solutions
+> 1. 사전 10(폭 2), 우도 12(폭 1), 사후는 12 쪽.
+> 2. $K=0.8$, $11.6$, $P=0.8$. 둘째 $K=0.444$, $11.333$, $P=0.444$. 예측 $12.333$, $P=1.444$. 셋째 $K=0.591$, $12.727$, $P=0.591$.
+> 3. 빈칸은 영어 해. 첫 갱신 뒤 틀린 벽 20 cm를 같은 $R=1$로 넣으면 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. [[04-robotics/state-estimation-slam|3]]이 이름 붙이는 연관 실패다.
 
 가우시안 조건화와 재귀 추정은 [[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM]]에서 로봇의 belief가 된다.

@@ -613,6 +613,19 @@ Request–response, long-running cancellable goals, runtime configuration and ma
 > **3. Your republisher subscribes at 60 Hz and publishes from the subscription callback. A colleague changes it to publish from a 10 Hz timer. What changed, and when would each be right?** Callback-driven gives exactly one output per input, so the output rate is the input rate and you do not control it. Timer-driven gives a fixed output rate, dropping inputs when they arrive faster and republishing stale data when they arrive slower. Callback-driven is right when every input must be seen and downstream can keep up; timer-driven is right when a fast source feeds a slower fixed-rate consumer, or when the output rate is part of the contract.
 > **4. What does the C++ version make explicit that the Python version hides?** The message type is a compile-time template parameter, so an in-process type error is a build failure. Endpoints are explicitly owned `SharedPtr` members that die if you let them go out of scope. The callback signature states how the message is passed and whether it is modifiable, which is what makes zero-copy intra-process delivery expressible. And the clock is named: `create_wall_timer` is the wall clock, while rclpy's `create_timer` silently defaults to the node's clock, which follows simulated time.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/goal` at $50\,\mathrm{Hz}$; the controller must command the motor at $200\,\mathrm{Hz}$. No new simulator.
+
+1. **Draw.** Two nodes, topic `/goal`, encoder counts in, motor command out. Mark the $50\,\mathrm{Hz}$ subscription and the $200\,\mathrm{Hz}$ timer. Five-line timeline: vision message, three controller ticks with no new vision, next vision.
+2. **Derive.** (a) If the controller publishes from the *vision callback*, what is the motor rate? (b) Encoder $\Delta p$ for one count. (c) Silent case: vision publishes `/cart/goal`, controller subscribes `/goal`. Both nodes log "ok". Which three causes look like this, and which command splits them?
+3. **Interpret.** Why is the timer-driven controller the right contract for P6, and when would callback-driven be right instead?
+
+> [!tip]- Solutions
+> 1. `camera` → `/goal` → `controller`; controller also reads $2048$ counts/m and publishes `cmd` from a $5\,\mathrm{ms}$ timer. Timeline: vision at $0,20\,\mathrm{ms}$; ticks at $0,5,10,15,20$.
+> 2. (a) $50\,\mathrm{Hz}$ — the motor inherits the camera. (b) $0.488\,\mathrm{mm}$. (c) Name mismatch, type mismatch, QoS. `ros2 topic info /goal --verbose` (then `ros2 node info`).
+> 3. The $200\,\mathrm{Hz}$ rate is the contract; vision is a slower input that may miss ticks. Callback-driven is right when every frame must be seen and the downstream can keep up — not when a motor loop has its own period.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -1218,3 +1231,16 @@ ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle
 > **2. 커스텀 메시지를 publish하는 노드 안이 아니라 별도 패키지에 정의하는 이유는?** 토픽의 모든 소비자가 그 타입에 의존해야 하기 때문이다. 노드 패키지에 넣으면 토픽을 읽고 싶을 뿐인 사람도 그 노드와 의존성 트리 전체를 빌드해야 하고, 두 노드가 서로의 타입을 쓰면 의존이 순환하며, 재빌드 파급 범위가 넓어진다. 인터페이스는 `ament_cmake` 패키지에서만 정의할 수 있고, 정의한 패키지 안에서 그 타입을 쓰려면 패키지 간 사용에는 필요 없는 `rosidl_get_typesupport_target` 배관이 추가로 필요하다.
 > **3. republisher가 60 Hz로 subscribe하고 구독 콜백에서 publish한다. 동료가 10 Hz 타이머에서 publish하도록 바꿨다. 무엇이 바뀌었고 각각 언제 옳은가?** 콜백 구동은 입력 하나당 출력 하나이므로 출력 주기가 입력 주기이고 제어할 수 없다. 타이머 구동은 출력 주기가 고정이며, 입력이 더 빨리 오면 버리고 더 늦게 오면 낡은 데이터를 다시 낸다. 모든 입력을 봐야 하고 하류가 따라올 수 있으면 콜백 구동이 맞다. 빠른 소스가 느린 고정 주기 소비자에 들어가거나 출력 주기가 계약의 일부라면 타이머 구동이 맞다.
 > **4. C++ 판본이 Python 판본이 감추는 무엇을 드러내는가?** 메시지 타입이 컴파일 시점 템플릿 인자라서 프로세스 내 타입 오류가 빌드 실패가 된다. 엔드포인트가 명시적으로 소유되는 `SharedPtr` 멤버라서 스코프 밖으로 흘리면 죽는다. 콜백 시그니처가 메시지를 어떻게 넘기고 수정 가능한지를 말하고, 그것이 프로세스 내 zero-copy 전달을 표현 가능하게 만든다. 그리고 시계에 이름이 붙어 있다. `create_wall_timer`는 벽시계이고, rclpy의 `create_timer`는 말없이 노드의 시계를 기본값으로 쓰며 그것은 시뮬레이션 시간을 따라간다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 비전이 `/goal`을 $50\,\mathrm{Hz}$로 발행하고, 제어기는 모터를 $200\,\mathrm{Hz}$로 명령해야 한다. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** 노드 둘, 토픽 `/goal`, 엔코더 카운트 입력, 모터 명령 출력. $50\,\mathrm{Hz}$ 구독과 $200\,\mathrm{Hz}$ 타이머. 다섯 줄 타임라인: 비전 메시지, 새 비전 없이 제어 틱 셋, 다음 비전.
+2. **유도.** (a) 제어기가 *비전 콜백*에서 publish하면 모터 주기는? (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 비전은 `/cart/goal`, 제어기는 `/goal`을 구독. 두 노드 모두 "ok". 이렇게 보이는 원인 셋과, 가르는 명령은?
+3. **해석.** P6에서 타이머 구동 제어기가 옳은 계약인 이유, 그리고 콜백 구동이 오히려 옳을 때는?
+
+> [!tip]- 정답 · Solutions
+> 1. `camera` → `/goal` → `controller`; 제어기는 $2048$ counts/m를 읽고 $5\,\mathrm{ms}$ 타이머에서 `cmd`를 낸다. 타임라인: 비전 $0,20\,\mathrm{ms}$; 틱 $0,5,10,15,20$.
+> 2. (a) $50\,\mathrm{Hz}$ — 모터가 카메라를 상속. (b) $0.488\,\mathrm{mm}$. (c) 이름, 타입, QoS. `ros2 topic info /goal --verbose`(그다음 `ros2 node info`).
+> 3. $200\,\mathrm{Hz}$가 계약이고 비전은 틱을 놓칠 수 있는 느린 입력이다. 모든 프레임을 봐야 하고 하류가 따라오면 콜백 구동이 맞다 — 모터 루프가 자기 주기를 가질 때는 아니다.

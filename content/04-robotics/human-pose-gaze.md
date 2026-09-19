@@ -170,6 +170,19 @@ You should be able to:
 > [!tip]- Answers
 > 1. Head pose, not eye gaze — the eye region is not resolvable at that distance. 2. Procrustes alignment removes global rotation; orientation error is precisely the intent-relevant quantity, so the metric can improve while the useful signal is discarded. 3. Torso orientation from coarse 2D keypoints (the shoulder and hip lines); a tracked box alone gives heading only while the person is moving. A full 3D mesh is unnecessary. 4. Its constant cost is attractive for crowds, but crowding is what makes keypoint-to-person grouping ambiguous.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A paper titles itself "gaze-aware" and the method is head pose from a vehicle camera at $20\,\mathrm{m}$. What is it measuring, and what claim must the title not be allowed to keep?
+2. PA-MPJPE falls from $45\,\mathrm{mm}$ to $30\,\mathrm{mm}$. The robot needs a worker's facing, not their joint locations. Did the cue get more usable? Why?
+3. You need "worker turning toward a saw". Which representation on the ladder is the cheapest sufficient one, and which two are overkill?
+
+> [!tip]- Solutions
+> 1. Head pose. Eyes are not resolvable at $20\,\mathrm{m}$. The title's "gaze" is a substitution; keep "head orientation" or drop the claim.
+> 2. No. Procrustes throws away global rotation — the facing. The millimetres improved on a quantity the robot does not use.
+> 3. Torso from shoulder/hip lines (coarse 2D). A tracked box is not enough while the person is still; a 3D mesh is overkill.
+
 ### Sources
 
 **Pose — verified citations**
@@ -359,6 +372,19 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 
 > [!tip]- 정답
 > 1. 눈 시선이 아니라 머리 자세 — 그 거리에서 눈 영역은 분해되지 않는다. 2. Procrustes 정렬이 전역 회전을 제거하는데, 방향 오차가 바로 의도 관련 양이므로 지표는 좋아지면서 유용한 신호는 버려진다. 3. 거친 2D 키포인트(어깨선과 엉덩이선)에서 얻은 몸통 방향. 추적 박스만으로는 사람이 움직이는 동안의 진행 방향만 알 수 있다. 3D 메시는 불필요하다. 4. 일정한 비용이 군중에 매력적이지만, 군중이야말로 키포인트–사람 그룹핑을 모호하게 만드는 조건이다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 제목이 "gaze-aware"이고 방법은 차량 카메라 $20\,\mathrm{m}$의 머리 자세다. 무엇을 재고 있고, 제목이 지키면 안 되는 주장은?
+2. PA-MPJPE가 $45\,\mathrm{mm}$에서 $30\,\mathrm{mm}$로 떨어진다. 로봇은 관절 위치가 아니라 작업자가 향하는 쪽이 필요하다. 단서가 더 쓸 만해졌는가? 왜?
+3. "작업자가 톱 쪽으로 돈다"를 감지해야 한다. 사다리에서 가장 싼 충분 표현은, 과한 둘은?
+
+> [!tip]- 정답 · Solutions
+> 1. 머리 자세. $20\,\mathrm{m}$에서 눈은 분해되지 않는다. 제목의 "gaze"는 대치이므로 "머리 방향"을 지키거나 주장을 내려라.
+> 2. 아니다. Procrustes가 전역 회전 — 향하는 쪽 — 을 버린다. 밀리미터는 로봇이 안 쓰는 양에서 좋아졌다.
+> 3. 어깨/엉덩이 선의 몸통(거친 2D). 추적 박스는 사람이 멈춰 있으면 부족하고, 3D 메시는 과하다.
 
 ### 출처
 

@@ -143,6 +143,19 @@ You should be able to:
 > [!tip]- Answers
 > 1. Retrain or evaluate a single-frame baseline on the same split; if it is close, the dataset is scene-biased. Frame shuffling is a cheaper approximation. 2. Because the label window is excluded from the input, so the mapping is one-to-many over legitimate futures; the model estimates a distribution, not a deterministic label. 3. Fixed-window 3D CNNs and standard video transformers (2–10 s receptive field); the workaround is hierarchical or memory-based aggregation over clip-level features. 4. When the decision requires a longer horizon than the higher-accuracy model can sustain above the action threshold — see §5.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A paper reports 92% action accuracy and no single-frame baseline. What is the cheapest test that the number used time, and what does a near-equal baseline imply?
+2. Anticipation is implemented as recognition on a window shifted $1\,\mathrm{s}$ later, with the label still inside the input. What task was actually evaluated?
+3. A "real-time" 30 fps claim hides a 2 s clip buffer and an offline decoder. Which preprocessing cost is inside the number, and what horizon can the system *not* speak to?
+
+> [!tip]- Solutions
+> 1. Same-split single-frame (or shuffle) baseline. Near-equal means scene bias: the accuracy is object/room recognition, not action.
+> 2. Recognition, not anticipation. Anticipation excludes the label window so the map is one-to-many; leaking the future makes the number incomparable.
+> 3. The 2 s buffer (and decode) is latency. The system cannot claim a decision before those two seconds, whatever the fps of the forward pass.
+
 ### Sources
 
 **Backbones — verified citations**
@@ -303,6 +316,19 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 
 > [!tip]- 정답
 > 1. 같은 split에서 단일 프레임 베이스라인을 평가한다; 근접하면 장면 편향이다. 프레임 셔플이 더 싼 근사다. 2. 레이블 구간이 입력에서 배제되므로 정당한 여러 미래에 대해 일대다 사상이 된다; 모델은 결정적 레이블이 아니라 분포를 추정한다. 3. 고정 창 3D CNN과 표준 비디오 트랜스포머(2–10초 수용 영역); 우회는 클립 단위 특징 위의 계층적·메모리 기반 집계다. 4. 결정에 필요한 지평이, 정확도 높은 모델이 임계값 위에서 유지할 수 있는 $\tau$보다 길 때 — §5 참조.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 논문이 행동 정확도 92%를 보고하고 단일 프레임 베이스라인이 없다. 그 숫자가 시간을 썼는지 가장 싼 시험은, 그리고 베이스라인이 거의 같으면 무엇을 함의하는가?
+2. Anticipation을 $1\,\mathrm{s}$ 뒤로 민 창의 인식으로 구현하고, 레이블이 아직 입력 안에 있다. 실제로 평가된 과제는?
+3. "실시간" 30 fps 주장이 2초 클립 버퍼와 오프라인 디코더를 감춘다. 숫자 안의 전처리 비용은 무엇이고, 시스템이 말할 수 *없는* 지평은?
+
+> [!tip]- 정답 · Solutions
+> 1. 같은 split의 단일 프레임(또는 셔플) 베이스라인. 거의 같으면 장면 편향: 정확도는 행동이 아니라 물체/방 인식이다.
+> 2. 인식이지 anticipation이 아니다. Anticipation은 레이블 창을 빼서 사상이 일대다가 된다. 미래를 새면 숫자를 비교할 수 없다.
+> 3. 2초 버퍼(와 디코드)가 지연이다. 순전파 fps가 무엇이든 그 2초 전의 결정을 주장할 수 없다.
 
 ### 출처
 

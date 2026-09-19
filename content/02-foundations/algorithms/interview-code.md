@@ -766,6 +766,15 @@ int main() {
 > 8. First, `push_back` occasionally exceeds the capacity and reallocates, copying the whole vector — a spike that grows with run time. Preallocate, or keep a fixed-size ring buffer (§6) and hand samples to a logging thread. Second, `std::endl` flushes, and formatting and writing to a terminal can allocate and block. Remove output from the loop; record a status in a preallocated structure and print it from a non-real-time thread.
 > 9. Quickselect (`std::nth_element` in C++) partitions around the k-th smallest distance in O(n) expected time, after which the first k elements are the answer; sorting those k adds O(k log k). Reasons to keep the heap: it works on a stream without storing all n points (O(k) memory), it has a guaranteed O(n log k) worst case, and for small k, log k is a small constant anyway.
 
+### Problem set · 과제
+
+One extra, not a rewrite of the interview track. **P2** from [[02-foundations/lab-plants|0.6]] at the frozen pose. $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, $F=(0,-10)$.
+
+1. Write `joint_torque(F)` (Python or C++) that returns $\tau=J^\top F$ for that frozen $J$ and a length-2 force. Evaluate at $F=(0,-10)$. Units. No time loop.
+
+> [!tip]- Solutions
+> $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, so $\tau=J^\top F=(-10,\,0)\,\mathrm{N{\cdot}m}$. Python: `tau = J.T @ F` with catalog $J$. C++: `tau[0] = -F[0] + F[1]; tau[1] = -F[0]`. The statics dual of $v=J\dot\theta$; same $J$, no inverse.
+
 ### Sources
 
 - A. S. Kulikov, P. A. Pevzner, *Learning Algorithms Through Programming and Puzzle Solving*, Active Learning Technologies, 2018 — chapter 3 (solving a programming challenge in stages, testing, and stress testing against a naive solution) and chapter 8 (good programming practices, language-independent and for C++ and Python). The routine, checklist and examples on this page are written independently.
@@ -1527,6 +1536,15 @@ int main() {
 > 7. −π 바로 아래의 각도에서 `angle + pi`는 아주 작은 음수이고, Python의 `%`는 나누는 수의 부호를 가진 결과를 낸다. 정확한 결과 2π − ε는 표현할 수 없어 정확히 2π로 반올림되므로 `wrapped`는 π가 된다. 단언은 제대로 발동한 것이다. 부동소수점 산술이 보장하지 않는 가정(반열린 구간)을 드러냈다. 옳은 대응은 반사적 수정이 아니라 결정이다. 닫힌 구간 [−π, π]를 받아들이고 문서화하거나(§5가 그렇게 한다), 하류 코드가 반열린 범위에 기댄다면 π를 명시적으로 −π로 보낸다. 단언을 지우는 것이 틀린 대응이었을 것이다.
 > 8. 첫째, `push_back`이 가끔 용량을 넘어 재할당하면서 벡터 전체를 복사한다 — 실행 시간이 길어질수록 커지는 스파이크다. 미리 할당하거나, 고정 크기 링 버퍼(§6)를 두고 샘플을 로깅 스레드에 넘겨라. 둘째, `std::endl`은 flush하고, 서식화와 터미널 쓰기는 할당하고 블록될 수 있다. 루프에서 출력을 빼고, 상태는 미리 할당한 구조에 기록해 실시간이 아닌 스레드에서 출력하라.
 > 9. Quickselect(C++의 `std::nth_element`)는 k번째로 작은 거리를 기준으로 기대 O(n) 시간에 분할하고, 그러면 앞의 k개가 답이다. 그 k개를 정렬하면 O(k log k)가 더해진다. 힙을 유지할 이유: 점 n개를 모두 저장하지 않고 스트림에서 동작하고(O(k) 메모리), 최악 O(n log k)가 보장되며, k가 작으면 log k는 어차피 작은 상수다.
+
+### 과제 · Problem set
+
+면접 트랙을 다시 쓰지 않는 추가 한 문제. [[02-foundations/lab-plants|0.6]]의 **P2**, 고정 자세. $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, $F=(0,-10)$.
+
+1. 그 고정 $J$와 길이 2인 힘에 대해 $\tau=J^\top F$를 돌려주는 `joint_torque(F)`(Python 또는 C++). $F=(0,-10)$에서 값을 말하라. 단위. 시간 루프 없음.
+
+> [!tip]- 정답 · Solutions
+> $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$이므로 $\tau=(-10,\,0)\,\mathrm{N{\cdot}m}$. Python: 카탈로그 $J$에 `tau = J.T @ F`. C++: `tau[0] = -F[0] + F[1]; tau[1] = -F[0]`. $v=J\dot\theta$의 정역학 쌍대. 같은 $J$, 역행렬 없음.
 
 ### 출처
 

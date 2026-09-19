@@ -319,6 +319,19 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 > **4. A grasp succeeded in Gazebo and fails on the real object. Why is "tune the friction coefficient" usually the wrong first move?** Because contact failures are commonly model-form errors rather than parameter errors. The rigid-body engine resolves contact as per-timestep point constraints and cannot represent the real contact patch, so no value of the parameter recovers the behaviour. Free-space motion transfers far better than contact, which is why the first real experiments should be free-space ones.
 > **5. What is wrong with an emergency stop implemented as a topic?** It shares failure modes with the system it is meant to protect against: if the executor has hung, the DDS link has dropped or the machine has been unplugged from the network, the message is never delivered. An E-stop must remove power or engage brakes through hard-wired circuitry, latch, and work with the computer switched off.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. Encoder $2048$ counts/m, control $200\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$. The Gazebo plugin is swapped for a vendor hardware component. No new simulator.
+
+1. **Draw.** Same controller YAML as in simulation. The one URDF line that changed. Five-line timeline of `read` (encoder) – `update` ($200\,\mathrm{Hz}$) – `write` (motor), with the $70\,\mathrm{ms}$ camera-to-force budget drawn *across* that loop, not inside `update`.
+2. **Derive.** (a) Encoder $\Delta p$ for one count — now a real quantum. (b) An RT_PREEMPT kernel bounds scheduling latency. Does it bound P6's $70\,\mathrm{ms}$? (c) Two machines list each other's nodes; `echo` is empty. First suspect, and why not QoS?
+3. **Interpret.** E-stop as `/p6/estop` at $200\,\mathrm{Hz}$. What failure modes does it share with the controller it is meant to kill? Separately: a $200\,\mathrm{ms}$-late camera on the real cart — plugin line or budget?
+
+> [!tip]- Solutions
+> 1. `<plugin>` inside `<ros2_control>` is the only change. Timeline: encoder `read` every $5\,\mathrm{ms}$; camera path is a second chain that must still finish by $70\,\mathrm{ms}$.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
+> 3. Hung executor, dropped DDS, unplugged cable — the message never arrives. E-stop must be wired. The late camera is the same $70\,\mathrm{ms}$ budget as in sim; swapping the plugin does not buy you milliseconds.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -628,3 +641,16 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 > **3. 지도교수가 RT_PREEMPT 커널을 쓰면 제어 루프가 결정적이 되느냐고 묻는다. 정확한 답은?** 스케줄링 지연을 유계로 만든다 — 실행 준비된 스레드가 알려진 시간 안에 실행된다 — 그리고 그 스레드가 무엇을 하는지에 대해서는 아무것도 하지 않는다. 실행 경로의 페이지 폴트, 동적 할당, 무한 블로킹은 여전히 결정성을 파괴하고, 그래서 `controller_manager`가 `lock_memory`를 제공하고 `SCHED_FIFO`를 시도한다. 그리고 경성 마감은 애초에 ROS에 있으면 안 되고 모터 제어기에 속한다.
 > **4. Gazebo에서 성공한 파지가 실물에서 실패한다. "마찰 계수를 튜닝한다"가 왜 보통 틀린 첫수인가?** 접촉 실패는 파라미터 오류가 아니라 모델 형식 오류인 경우가 많기 때문이다. 강체 엔진은 접촉을 시간 스텝마다의 점 구속으로 풀고 실제 접촉 면적을 표현하지 못하므로, 파라미터를 어떤 값으로 해도 그 거동은 복원되지 않는다. 자유 공간 운동은 접촉보다 훨씬 잘 이전되고, 그래서 첫 실기 실험은 자유 공간이어야 한다.
 > **5. 토픽으로 구현한 비상정지의 무엇이 잘못됐나?** 그것이 막아야 할 시스템과 실패 모드를 공유한다. executor가 멈췄거나 DDS 링크가 끊겼거나 기계가 네트워크에서 뽑혔다면 메시지는 영영 전달되지 않는다. E-stop은 하드와이어 회로로 전원을 끊거나 브레이크를 걸어야 하고, 래치되어야 하며, 컴퓨터가 꺼진 상태에서도 동작해야 한다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 *실제* 카트에. 엔코더 $2048$ counts/m, 제어 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. Gazebo 플러그인을 벤더 하드웨어 컴포넌트로 바꿨다. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** 시뮬레이션과 같은 제어기 YAML. 바뀐 URDF 한 줄. `read`(엔코더) – `update`($200\,\mathrm{Hz}$) – `write`(모터)의 다섯 줄 타임라인. $70\,\mathrm{ms}$ 카메라–힘 예산은 `update` *안*이 아니라 그 루프를 *가로질러* 그린다.
+2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — 이제 실제 양자. (b) RT_PREEMPT 커널이 스케줄 지연을 유계로 만든다. P6의 $70\,\mathrm{ms}$도 유계로 만드는가? (c) 두 머신이 서로의 노드를 나열하고 `echo`는 빔. 첫 의심, 왜 QoS가 아닌가?
+3. **해석.** E-stop을 $200\,\mathrm{Hz}$의 `/p6/estop`으로. 그것이 죽이려는 제어기와 어떤 실패 모드를 공유하는가? 별도로: 실제 카트의 $200\,\mathrm{ms}$ 늦은 카메라 — 플러그인 줄인가 예산인가?
+
+> [!tip]- 정답 · Solutions
+> 1. `<ros2_control>` 안의 `<plugin>`만 바뀐다. 타임라인: $5\,\mathrm{ms}$마다 엔코더 `read`; 카메라 경로는 $70\,\mathrm{ms}$까지 끝나야 하는 둘째 사슬.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
+> 3. 멈춘 executor, 끊긴 DDS, 뽑힌 케이블 — 메시지가 안 온다. E-stop은 배선이어야 한다. 늦은 카메라는 시뮬과 같은 $70\,\mathrm{ms}$ 예산이고, 플러그인을 바꾼다고 밀리초가 생기지는 않는다.

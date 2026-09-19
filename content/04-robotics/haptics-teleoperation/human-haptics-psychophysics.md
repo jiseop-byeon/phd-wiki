@@ -58,6 +58,19 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 > [!question]- Self-check · Answer
 > **Why can a clearer vibration fail to improve a teleoperation task?** Detectability is only one link. The cue may arrive late, encode the wrong state, conflict with vision, consume attention, or fail to change an actionable decision. Test perception, control behavior, and task outcome separately.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A paper says "users detected the 250 Hz vibration, therefore the cue improved insertion". Which arrows of the causal chain did it skip, and what would you measure at each?
+2. Force JND is reported as $8\%$ near $5\,\mathrm{N}$. A device reflects $5.2\,\mathrm{N}$ versus $5.0\,\mathrm{N}$. What does Weber's law *not* let you claim about every participant?
+3. Two sensors, $\sigma_v=2\,\mathrm{mm}$ and $\sigma_h=4\,\mathrm{mm}$, are fused by precision weighting. Write $\hat x$. A paper claims "vision dominates, so haptic noise does not matter". What did they drop from the model?
+
+> [!tip]- Solutions
+> 1. Detectability $\to$ action $\to$ task outcome. Measure the skin stimulus (not the command), the control behaviour (force, timing), and the insertion outcome, separately. Detection is one link.
+> 2. Not that every person notices $0.2\,\mathrm{N}$. The $0.4\,\mathrm{N}$ increment is a criterion-dependent population figure near that operating point; $0.2\,\mathrm{N}$ is half a JND and the psychometric function is not a step.
+> 3. $\hat x=(\sigma_v^{-2}x_v+\sigma_h^{-2}x_h)/(\sigma_v^{-2}+\sigma_h^{-2})=\tfrac45 x_v+\tfrac15 x_h$. Weights are $4:1$, not $1:0$. "Dominates" dropped the haptic term and the assumption list (Gaussian, independent, aligned).
+
 ## 한국어
 
 ### 1. 촉각은 능동 센싱 루프다
@@ -108,3 +121,16 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
 
 > [!question]- 스스로 점검 · 정답
 > **더 선명한 진동이 원격조작 과제를 개선하지 못할 수 있는 이유는?** 검출 가능성은 사슬의 한 고리일 뿐이다. cue가 늦게 도착하거나, 틀린 상태를 부호화하거나, 시각과 충돌하거나, 주의를 소모하거나, 실행 가능한 결정을 바꾸지 못할 수 있다. 지각과 제어 행동과 과제 결과를 따로 시험하라.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 논문이 "사용자가 250 Hz 진동을 검출했으므로 그 cue가 삽입을 개선했다"고 한다. 인과 사슬의 어느 화살표를 건너뛰었고, 각각에서 무엇을 재겠는가?
+2. $5\,\mathrm{N}$ 부근 힘 JND가 $8\%$로 보고된다. 장치가 $5.2\,\mathrm{N}$ 대 $5.0\,\mathrm{N}$을 반사한다. Weber 법칙이 모든 참가자에 대해 *주장하지 못하는* 것은?
+3. 센서 둘, $\sigma_v=2\,\mathrm{mm}$와 $\sigma_h=4\,\mathrm{mm}$를 정밀도 가중으로 융합한다. $\hat x$를 써라. 어떤 논문이 "시각이 우세하므로 햅틱 잡음은 상관없다"고 한다. 모델에서 무엇을 떨어뜨렸는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 검출 $\to$ 행동 $\to$ 과제 결과. 피부 자극(명령이 아님), 제어 행동(힘, 타이밍), 삽입 결과를 따로 잰다. 검출은 고리 하나다.
+> 2. 모든 사람이 $0.2\,\mathrm{N}$을 알아챈다는 것이 아니다. $0.4\,\mathrm{N}$ 증분은 그 작동점 부근의 기준 의존 모집단 숫자이고, $0.2\,\mathrm{N}$은 JND의 절반이며 심리측정 함수는 계단이 아니다.
+> 3. $\hat x=(\sigma_v^{-2}x_v+\sigma_h^{-2}x_h)/(\sigma_v^{-2}+\sigma_h^{-2})=\tfrac45 x_v+\tfrac15 x_h$. 가중은 $4:1$이지 $1:0$이 아니다. "우세"는 햅틱 항과 가정 목록(가우시안, 독립, 정렬)을 떨어뜨렸다.

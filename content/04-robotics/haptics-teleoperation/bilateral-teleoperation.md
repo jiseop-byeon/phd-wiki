@@ -70,6 +70,21 @@ Report round-trip delay and jitter, control rates, force/position scaling, satur
 > [!question]- Self-check · Answer
 > **A controller is passive and users are slower. Is the result contradictory?** No. Passivity constrains energy generation; it does not guarantee transparency, low effort, good authority allocation, or task-optimal cues. Added dissipation may stabilize the loop while making motion sluggish.
 
+### Problem set · 과제
+
+Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]] as *both* leader and follower. The Euler lab stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]].
+
+Leader motion is sent to the follower; follower wall force $F_a$ is sent back. One-way delay $T_d=50\,\mathrm{ms}$. Local sample $T=1\,\mathrm{ms}$. Catalog $k_w=400$, $b=0.8$.
+
+1. **Draw.** Human port $(F_1,v_1)$ — leader P3 — delayed channel — follower P3 — wall. Mark the four signals and the sign convention (positive force into the network at both ports).
+2. **Derive.** (a) Power-preserving scales $s_f=s_x$. If $s_x=0.1$ and the follower holds $F_f=1\,\mathrm{N}$ (catalog wall at $2.5\,\mathrm{mm}$ in), what does the leader reflect? Too faint? (b) With $s_f=10$, $s_x=0.1$, the power ratio $s_f/s_x$. Can the pair inherit passivity from its parts? (c) Colgate-style $K\le 2b/(T+T_d)$ at the leader. Does catalog $k_w$ pass?
+3. **Interpret.** Users are slower after you add damping to survive the delay. Is that a contradiction of passivity?
+
+> [!tip]- Solutions
+> 1. Four signals $F_1,v_1,F_2,v_2$; delay on both directions or at least on force; wall switch at the follower. Arrows for force into the two-port.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — below a typical force JND near $1\,\mathrm{N}$, too faint. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $2b/0.051\approx 31\,\mathrm{N/m}$; $400$ fails.
+> 3. No. Passivity bounds energy generation, not transparency or speed. Added dissipation can stabilize and make the wall feel sluggish — the trade §4 names.
+
 ## 한국어
 
 ### 1. 두 포트와 네 신호
@@ -128,3 +143,18 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 > [!question]- 스스로 점검 · 정답
 > **제어기가 수동적인데 사용자가 더 느려졌다면 모순인가?** 아니다. Passivity는 에너지 생성을 제약할 뿐, transparency나 낮은 힘 소모, 좋은 권한 배분, 과제에 최적인 cue를 보장하지 않는다. 소산을 더하면 루프는 안정되면서 운동은 둔해질 수 있다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 다*로. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남긴다.
+
+리더 운동이 팔로워로, 팔로워 벽 힘 $F_a$가 돌아온다. 편도 지연 $T_d=50\,\mathrm{ms}$. 로컬 샘플 $T=1\,\mathrm{ms}$. 카탈로그 $k_w=400$, $b=0.8$.
+
+1. **그리기.** 사람 포트 $(F_1,v_1)$ — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽. 신호 넷과 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘).
+2. **유도.** (a) 일률 보존 스케일 $s_f=s_x$. $s_x=0.1$이고 팔로워가 $F_f=1\,\mathrm{N}$(카탈로그 벽 안 $2.5\,\mathrm{mm}$)을 쥐면 리더는 얼마를 반사하는가? 너무 약한가? (b) $s_f=10$, $s_x=0.1$에서 일률 비 $s_f/s_x$. 쌍이 부품에서 수동성을 물려받을 수 있는가? (c) 리더에서 Colgate형 $K\le 2b/(T+T_d)$. 카탈로그 $k_w$가 통과하는가?
+3. **해석.** 지연을 버티려고 댐핑을 더했더니 사용자가 느려졌다. 수동성의 모순인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 신호 넷 $F_1,v_1,F_2,v_2$; 양방향 또는 적어도 힘 쪽 지연; 팔로워의 벽 스위치. 2포트 안으로 들어가는 힘 화살표.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — $1\,\mathrm{N}$ 부근 힘 JND보다 작아 너무 약하다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $2b/0.051\approx 31\,\mathrm{N/m}$; $400$ 실패.
+> 3. 아니다. 수동성은 에너지 생성을 묶지 투명성이나 속도를 묶지 않는다. 소산을 더하면 안정되면서 벽이 둔해질 수 있다 — §4가 이름 붙인 거래다.

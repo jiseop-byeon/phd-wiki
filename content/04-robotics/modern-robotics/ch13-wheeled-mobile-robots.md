@@ -2,7 +2,7 @@
 title: "MR Ch.13 — Wheeled Mobile Robots"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -57,6 +57,19 @@ fused localization.
 > 2. Because the system has no sideways velocity, its reachable directions at a point are restricted, and Brockett's condition shows no *continuous* time-invariant feedback can asymptotically stabilize it to an arbitrary pose — continuous, not merely smooth, so no amount of relaxing differentiability rescues it — which is why practical controllers track *trajectories* instead of regulating to a point.
 > 3. Short-term precision (odometry, smooth and high-rate but drifting) plus a drift-free absolute reference (GNSS — though on site, multipath and occlusion add bias, not just noise). Kalman fusion takes the strengths of both timescales: locally smooth *and* globally bounded, which neither has alone. See [[04-robotics/state-estimation-slam|State Estimation §8]].
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: a wheeled base carries **P2** to the panel ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which pair of numbers is the kinematic claim for the worked diff-drive?
+2. **Falsify.** What motion would falsify reading “cannot slide sideways” as “cannot reach that pose”?
+3. **Task.** The base must put P2's origin in front of the panel. Why is a sideways shuffle into contact not a legal edge, and what still lets the pose be reachable?
+
+> [!tip]- Solutions
+> 1. $\omega_R=10$, $\omega_L=5$ $\Rightarrow$ $v=0.75\,\mathrm{m/s}$, $\omega=1.25\,\mathrm{rad/s}$ — that evaluation *is* the claim.
+> 2. A parallel-park that arrives at a pose with no instantaneous sideways velocity. Nonholonomy restricts paths, not the reachable set, for these rolling models.
+> 3. The unicycle has no $\dot y$ in the body $y$ direction, so a C-space straight edge into the panel is not drivable. Reeds–Shepp / a turn-then-advance still reaches the pose; P2 then does the contact, not the wheels.
+
 ## 한국어
 
 **핵심 질문**: 바퀴 달린 베이스는 어떻게 움직이고, "옆으로 못 미끄러진다"가 왜 "거기 못 간다"와 다른가?
@@ -103,3 +116,16 @@ fused localization.
 >    더한다. 칼만 융합은 두 시간 척도의 장점을 각각 취한다: 국소적으로 부드럽고
 >    *동시에* 전역적으로 유계 — 어느 쪽도 혼자서는 갖지 못하는 성질이다.
 >    [[04-robotics/state-estimation-slam|상태 추정 §8]]을 보라.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: 바퀴 베이스가 [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지 나른다.
+
+1. **주장.** 차동 구동 계산 예제의 기구학 주장은 어느 숫자 쌍인가?
+2. **반증.** “옆으로 못 미끄러진다”를 “그 자세에 못 간다”로 읽는 주장을 깨는 운동은?
+3. **과제.** 베이스가 P2 원점을 패널 앞에 둬야 한다. 옆으로 미끄러져 접촉하는 간선이 불법인 이유, 그래도 자세가 도달 가능한 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. $\omega_R=10$, $\omega_L=5$ $\Rightarrow$ $v=0.75\,\mathrm{m/s}$, $\omega=1.25\,\mathrm{rad/s}$ — 그 평가가 곧 주장이다.
+> 2. 순간 옆속도 없이 자세에 도착하는 평행 주차. 이 구름 모델에서 비홀로노미는 경로를 제한할 뿐 도달 집합을 제한하지 않는다.
+> 3. 외바퀴는 바디 $y$의 $\dot y$가 없어 패널로 가는 C-space 직선 간선은 주행 불가다. Reeds–Shepp / 회전 후 전진은 자세에 도달하고, 접촉은 바퀴가 아니라 P2가 한다.

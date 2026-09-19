@@ -611,6 +611,19 @@ Two definitions used everywhere before they are formally introduced:
 > 5. Stable ($a=-3<0$). $x(t) = 2e^{-3t}$; ~5% means $e^{-3t}\approx 0.05 \Rightarrow 3t\approx 3 \Rightarrow t\approx 1$ s.
 > 6. Pole at $s=-3$ — left half-plane (negative real part), so **stable**; the pole *is* the $a=-3$ of §8 and the eigenvalue of a 1-D state-space $A$.
 
+### Problem set · 과제
+
+Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page §8; Euler numbers on [[02-foundations/lab-kernel|0.65]]. No simulator.
+
+1. **Draw.** Block diagram of $\dot x=-x+u$: command $u$, summing junction, integrator, $-x$ feedback. Label $x$ as temperature error.
+2. **Derive.** With $u=1$ and $x(0)=0$, solve $\dot x=-x+1$. Give $x(t)$ and the values at $t=0.1$ and $t=0.2$.
+3. **Interpret.** Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$, from $x_0=0$. First two steps versus the exact values. Which way does Euler miss, and why?
+
+> [!tip]- Solutions
+> 1. $u$ and $-x$ meet at a sum; that sum is $\dot x$; an integrator returns $x$. With $u=0$ the error decays as $e^{-t}$.
+> 2. Particular $x=1$, homogeneous $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, so $x(t)=1-e^{-t}$. At $0.1$ and $0.2$: $0.095$ and $0.181$.
+> 3. $x_1=0.10$, $x_2=0.19$. Euler is high (kernel: $0.10$, $0.19$ vs $0.095$, $0.181$). Forward Euler uses the slope at the *start* of the step, where $1-x$ is largest, so it overshoots a trajectory that is decaying toward $1$.
+
 ## 한국어
 
 *[[02-foundations/overview|0. Overview]]가 지도를 그렸다. 이 페이지는 그 지도가 말없이 전제하는 학부 수학 — 미분, 행렬 연산,
@@ -1155,3 +1168,16 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 > 4. $e^{j\pi} = \cos\pi + j\sin\pi = -1$ — 180° 회전이 1을 $-1$로 보낸다.
 > 5. 안정($a=-3<0$). $x(t) = 2e^{-3t}$; ~5%는 $e^{-3t}\approx 0.05 \Rightarrow 3t\approx 3 \Rightarrow t\approx 1$초.
 > 6. 극점 $s=-3$ — 좌반평면(음의 실수부)이라 **안정**; 이 극점이 곧 §8의 $a=-3$이자 1차원 상태공간 $A$의 고유값이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, [[02-foundations/lab-kernel|0.65]]의 오일러 숫자. 시뮬레이터 없음.
+
+1. **그리기.** $\dot x=-x+u$의 블록선도: 명령 $u$, 합산점, 적분기, $-x$ 피드백. $x$는 온도 오차.
+2. **유도.** $u=1$, $x(0)=0$에서 $\dot x=-x+1$을 풀어라. $x(t)$와 $t=0.1$, $t=0.2$의 값.
+3. **해석.** 전방 오일러 $x\leftarrow x+T(-x+u)$, $T=0.1$, $x_0=0$. 두 스텝을 정확해와 비교하라. 어느 쪽으로 빗나가며 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. $u$와 $-x$가 합산되고, 합이 $\dot x$, 적분기가 $x$. $u=0$이면 오차가 $e^{-t}$로 감쇠.
+> 2. 특수해 $x=1$, 동차해 $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, $x(t)=1-e^{-t}$. $0.1$과 $0.2$에서 $0.095$, $0.181$.
+> 3. $x_1=0.10$, $x_2=0.19$. 오일러가 높다(커널: $0.10$, $0.19$ vs $0.095$, $0.181$). 전방 오일러는 구간의 *시작* 기울기를 쓰며, 그때 $1-x$가 가장 커서 1로 다가가는 궤적을 지나친다.

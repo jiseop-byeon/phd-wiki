@@ -313,6 +313,19 @@ Where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]]; what hap
 > **4. You close the gripper on a block and every subsequent plan fails in collision. Why?** The block is still a world collision object and the gripper is now inside it. Attach it to the gripper link with the gripper's links listed as `touch_links`, which moves it into the robot's own collision model.
 > **5. Which parts of a construction-site pick does MoveIt not solve?** Where the grasp pose is — that is grasp synthesis from perception — and everything from the moment of contact onward, since MoveIt's world model treats contact as failure. It solves only the collision-free motion between those two.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a planner must not treat as instant. Vision $50\,\mathrm{Hz}$ supplies a panel pose; the cart controller is $200\,\mathrm{Hz}$; budget $70\,\mathrm{ms}$. No new simulator.
+
+1. **Draw.** P6 cart, a panel, MoveIt's planning scene. Mark `/goal` from vision, the `follow_joint_trajectory` action, and the $200\,\mathrm{Hz}$ controller underneath. Five-line timeline: a $2\,\mathrm{s}$ plan, then execution ticks at $5\,\mathrm{ms}$, with the $70\,\mathrm{ms}$ sensing budget on a *different* clock from planning.
+2. **Derive.** (a) Why a $2\,\mathrm{s}$ plan does not violate the $70\,\mathrm{ms}$ budget — which loop owns which number. (b) Encoder $\Delta p$ for one count, as the base-pose resolution the scene is *not* given. (c) `computeCartesianPath` returns $0.62$. Execute?
+3. **Interpret.** The plan is beautiful in RViz and the cart never moves. First three commands. Separately: a $200\,\mathrm{ms}$-late panel pose in the scene — is that a MoveIt bug or a P6 budget bug?
+
+> [!tip]- Solutions
+> 1. Scene holds the panel; MoveIt talks to the trajectory controller, not to the camera. Planning seconds; control milliseconds; the $70\,\mathrm{ms}$ is camera-to-force, not planner-to-scene.
+> 2. (a) $70\,\mathrm{ms}$ is the sensing/control chain; planning is allowed to be slow if execution still samples at $200\,\mathrm{Hz}$. (b) $0.488\,\mathrm{mm}$, invisible to a scene that was painted once. (c) No — stop at 62% of a line you chose.
+> 3. `list_controllers`, match `controller_names`, `ros2 action list | grep follow_joint_trajectory`. The late pose is a P6 budget bug: MoveIt will happily plan against a stale scene.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -618,3 +631,16 @@ ros2 control list_controllers
 > **3. `computeCartesianPath`가 0.62를 돌려줬다. 무엇을 하고, 원인은 무엇일 가능성이 큰가?** 실행하지 마라. 이유가 있어 고른 직선의 62 % 지점에서 공구를 멈추는 일이 된다. 원인은 직선이 도달 가능 작업 공간을 벗어남, 특이점 근처 통과, 다른 IK 분기로 넘어감, 보간된 자세의 충돌 중 하나일 가능성이 크다. 구간을 줄이거나 방향을 바꾸거나, 부분이 아니라 깔끔하게 실패하는 Pilz `LIN`을 쓴다.
 > **4. 블록을 쥐었더니 이후 모든 계획이 충돌로 실패한다. 왜인가?** 블록이 여전히 세계의 collision object이고 그리퍼가 그 안에 들어가 있다. 그리퍼 링크들을 `touch_links`로 넘기며 그리퍼 링크에 attach해서 로봇 자신의 충돌 모형으로 옮겨야 한다.
 > **5. 건설 현장 픽에서 MoveIt이 풀어 주지 않는 부분은?** 파지 자세가 어디인가 — 인식으로부터의 파지 합성 — 그리고 접촉 순간 이후의 전부. MoveIt의 세계 모형은 접촉을 실패로 취급하기 때문이다. MoveIt이 푸는 것은 그 둘 사이의 충돌 없는 이동뿐이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 플래너가 순간 이동으로 취급하면 안 되는 모바일 베이스로. 비전 $50\,\mathrm{Hz}$가 패널 자세를 주고, 카트 제어기는 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6 카트, 패널, MoveIt planning scene. 비전의 `/goal`, `follow_joint_trajectory` 액션, 그 아래 $200\,\mathrm{Hz}$ 제어기. 다섯 줄 타임라인: $2\,\mathrm{s}$ 계획, 그다음 $5\,\mathrm{ms}$ 실행 틱. $70\,\mathrm{ms}$ 센싱 예산은 계획과 *다른* 시계.
+2. **유도.** (a) $2\,\mathrm{s}$ 계획이 $70\,\mathrm{ms}$ 예산을 어기지 않는 이유 — 어느 루프가 어느 숫자를 소유하는가. (b) 엔코더 한 카운트의 $\Delta p$, 씬이 *받지 않는* 베이스 자세 해상도. (c) `computeCartesianPath`가 $0.62$를 반환. 실행하는가?
+3. **해석.** RViz 계획은 훌륭한 데 카트가 안 움직인다. 첫 세 명령. 별도로: 씬 안의 $200\,\mathrm{ms}$ 늦은 패널 자세 — MoveIt 버그인가 P6 예산 버그인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 씬이 패널을 쥐고, MoveIt은 카메라가 아니라 궤적 제어기와 말한다. 계획은 초, 제어는 밀리초; $70\,\mathrm{ms}$는 카메라–힘이지 플래너–씬이 아니다.
+> 2. (a) $70\,\mathrm{ms}$는 센싱/제어 사슬이고, 실행이 여전히 $200\,\mathrm{Hz}$로 샘플하면 계획은 느려도 된다. (b) $0.488\,\mathrm{mm}$, 한 번 그린 씬에는 안 보인다. (c) 아니오 — 고른 직선의 62 %에서 멈춘다.
+> 3. `list_controllers`, `controller_names` 대조, `ros2 action list | grep follow_joint_trajectory`. 늦은 자세는 P6 예산 버그: MoveIt은 낡은 씬에 대해 기꺼이 계획한다.

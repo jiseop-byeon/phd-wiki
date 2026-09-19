@@ -26,6 +26,17 @@ control. For linear dynamics $\dot x = Ax + Bu$ and quadratic cost
 $\int (x^\top Q x + u^\top R u)\,dt$ with $Q \succeq 0$ and $R \succ 0$ (so $R^{-1}$ exists), the optimal controller is a constant linear feedback
 $u = -Kx$, with $K = R^{-1}B^\top P$ where $P$ solves the **algebraic Riccati equation** —
 no iteration at runtime.
+Written out, the infinite-horizon LQR problem is
+
+$$\min_{u(\cdot)}\; J = \int_0^\infty \big(x^\top Q x + u^\top R u\big)\,dt \quad \text{subject to} \quad \dot x = Ax + Bu,\;\; x(0) = x_0$$
+
+with four named ingredients: the linear model $(A, B)$; the **state weight** $Q$, positive
+semidefinite ($x^\top Q x \ge 0$ for every $x$), which prices deviation from the origin; the
+**input weight** $R$, positive definite ($u^\top R u > 0$ for every $u \ne 0$), which prices
+effort and must be strictly positive so that no input is free; and the infinite horizon, which is
+why the optimal gain is constant rather than time-varying. (Definiteness is defined in
+[[02-foundations/linear-algebra|1. Linear Algebra §3]].) Tracking a reference is the same problem
+written in error coordinates $x - x_{ref}$.
 **LQG** adds Gaussian noise and partial observation: the optimal solution is a
 [[02-foundations/probability|Kalman filter]] feeding an LQR (the **separation principle**:
 estimate optimally, then control the estimate optimally, and it is jointly optimal).
@@ -36,6 +47,15 @@ estimate optimally, then control the estimate optimally, and it is jointly optim
 ### 1. The Riccati equation, read structurally
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
+
+This is the **algebraic Riccati equation (ARE)**: a matrix equation, quadratic in the unknown
+symmetric $n \times n$ matrix $P$, whose data are the model $A, B$ and the weights $Q, R$. $P$ is
+the matrix of the optimal **cost-to-go** (value function), the least cost achievable from a
+given starting state:
+
+$$V(x_0) = \min_{u(\cdot)} \int_0^\infty \big(x^\top Q x + u^\top R u\big)\,dt = x_0^\top P x_0$$
+
+so $P$ answers "how expensive is it to be at $x_0$" for every $x_0$ at once.
 
 **Where it comes from, in four steps.** Guess that the optimal cost-to-go is quadratic,
 $V(x) = x^\top P x$ — a guess justified afterwards by the fact that it closes. Substitute it
@@ -53,10 +73,26 @@ extra modelling choice — it is the optimal feedback substituted back into the 
 why it is quadratic in $P$ and why it is subtracted: it is the cost the controller *avoids*
 by acting.
 
-(Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
+**Worked, scalar.** Take the unstable $\dot x = x + u$ ($A = B = 1$) with $Q = R = 1$. The ARE
+becomes $2P - P^2 + 1 = 0$, which has **two** roots, $P = 1 + \sqrt2 = 2.414$ and
+$P = 1 - \sqrt2 = -0.414$. The **stabilizing solution** is the one whose gain makes $A - BK$
+stable: $P = 2.414$ gives $K = 2.414$ and the closed loop $\dot x = -1.414\,x$, while
+$P = -0.414$ gives $\dot x = +1.414\,x$. A Riccati equation generally has several solutions, and
+"the" solution in any paper means the stabilizing one. Check the cost-to-go: from $x_0 = 1$ the
+closed loop gives $x = e^{-1.414t}$ and $u = -2.414\,x$, so
+$J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$.
+
+(Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) For $x_{k+1} = Ax_k + Bu_k$ and cost $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$ it reads
+
+$$P = A^\top P A - A^\top P B\,(R + B^\top P B)^{-1} B^\top P A + Q$$
+
+so each step's cost-to-go is the stage cost plus the next step's cost-to-go under the best input.
+For $x_{k+1} = x_k + u_k$ with $Q = R = 1$ it reduces to $P^2 - P - 1 = 0$, so $P = 1.618$,
+$K = P/(1+P) = 0.618$, and the closed loop $x_{k+1} = 0.382\,x_k$ is inside the unit circle
+([[04-robotics/mpc|7. MPC]] reuses these numbers). You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
 stabilizing solution $P$ — positive definite when $(A,Q^{1/2})$ is observable — is what makes $V(x)=x^\top P x$ a Lyapunov function for
-the closed loop. (A **Lyapunov function** is a scalar "energy" of the state that is positive everywhere except at $x=0$ and decreases along every closed-loop trajectory; if one exists, the state has nowhere to go but $0$, so its existence proves stability. Here the HJB condition gives $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, minus the running cost.) Under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step — LaSalle's invariance principle, which still proves convergence when $\dot V$ is only $\le 0$, provided no trajectory can stay forever where $\dot V = 0$ except at the origin. When a paper says "we solve a Riccati equation," it means this constant
+the closed loop. (A **Lyapunov function** is a scalar "energy" of the state that is positive everywhere except at $x=0$ and decreases along every closed-loop trajectory; if one exists, the state has nowhere to go but $0$, so its existence proves stability; the three conditions and a worked example are in [[04-robotics/control-theory-ce397|5. Control Theory §4]]. Here the HJB condition gives $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, minus the running cost.) Under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step — LaSalle's invariance principle, which still proves convergence when $\dot V$ is only $\le 0$, provided no trajectory can stay forever where $\dot V = 0$ except at the origin. When a paper says "we solve a Riccati equation," it means this constant
 $P$, computed once offline (or once per linearization in iterative/time-varying LQR).
 
 ### 2. When does this actually work? Two conditions
@@ -66,9 +102,31 @@ $P$, computed once offline (or once per linearization in iterative/time-varying 
   weaker than the full controllability rank test in
   [[02-foundations/linear-algebra|page 1's control section]]. Otherwise no feedback can
   stabilize, Riccati or not.
+  Stated as a definition, $(A,B)$ is **stabilizable** when some gain $K$ makes every eigenvalue of
+  $A - BK$ have negative real part. It is checked mode by mode with the PBH
+  (Popov–Belevitch–Hautus) rank test,
+  $$\text{rank}\,[\,A - \lambda I \;\; B\,] = n \quad \text{for every eigenvalue } \lambda \text{ of } A \text{ with } \text{Re}\,\lambda \ge 0$$
+  because the rank drops below $n$ exactly at an eigenvalue whose mode the input cannot touch;
+  demanding full rank at *every* eigenvalue is controllability itself. (In discrete time the
+  unstable modes are those with $|\lambda| \ge 1$.) *Example:* the uncontrollable pair of
+  [[04-robotics/control-theory-ce397|5. Control Theory §6]], $A = \text{diag}(-1,-2)$ with
+  $B = (1, 0)^\top$, loses rank only at $\lambda = -2$, a mode that decays by itself, so it is
+  stabilizable. *Non-example:* $A = \text{diag}(1, 2)$ with the same $B$ loses rank at
+  $\lambda = 2$, an unstable mode, so no $K$ exists.
 - **Detectability** of $(A,Q^{1/2})$: every mode with $\text{Re}\,\lambda \ge 0$ must show up in the cost —
   otherwise the optimizer can "not care" about a mode that is quietly diverging, and the
   optimal-cost controller is not stabilizing.
+  Here $Q^{1/2}$ is any matrix with $(Q^{1/2})^\top Q^{1/2} = Q$, so that
+  $x^\top Q x = \lVert Q^{1/2}x\rVert^2$ is the "output" the cost sees. Detectability is the dual
+  of stabilizability, with the rows stacked instead of the columns:
+  $$\text{rank}\begin{bmatrix} A - \lambda I \\ Q^{1/2} \end{bmatrix} = n \quad \text{for every eigenvalue } \lambda \text{ of } A \text{ with } \text{Re}\,\lambda \ge 0$$
+  since a rank drop means some non-decaying mode $v$ has $Q^{1/2}v = 0$ and so costs nothing.
+  *Example:* on the §3 double integrator, $Q = \text{diag}(q, 0)$ passes (rank 2 at $\lambda = 0$),
+  because position is penalized and velocity changes position. *Non-example:* $Q = \text{diag}(0, 1)$,
+  velocity only, with $R = 1$, has rank 1 at $\lambda = 0$. Its positive semidefinite Riccati
+  solution is $P = \text{diag}(0, 1)$, so $K = (0\;\;1)$ and the closed-loop eigenvalues are
+  $0$ and $-1$: started at position $1$ with velocity $1$, the cart stops at position $2$ and stays
+  there, because the cost never asked it to come back.
 
 These two are the fine print behind "LQR is guaranteed stable." Papers that linearize a
 nonlinear system and run LQR inherit both conditions *at the linearization point only*.
@@ -142,9 +200,35 @@ The qualitative vocabulary experimental sections use maps onto exactly this arit
 
 ### 4. LQG's fine print
 
+**The LQG problem, written out.** Both the dynamics and the sensor carry zero-mean Gaussian white
+noise, independent of each other ([[02-foundations/probability|3. Probability §5]]):
+
+$$x_{k+1} = Ax_k + Bu_k + w_k, \qquad y_k = Cx_k + v_k, \qquad w_k \sim \mathcal N(0, W), \quad v_k \sim \mathcal N(0, V)$$
+
+Here $W$ and $V$ are the process and measurement noise covariances (the probability page calls them
+$Q$ and $R$; they are renamed because $Q$ and $R$ are already the cost weights), and $u_k$ may use
+only the measurements up to step $k$. The objective is the expected LQR cost per step,
+$\lim_{T\to\infty}\tfrac1T E\big[\sum_{k<T} (x_k^\top Q x_k + u_k^\top R u_k)\big]$, since the noise
+never lets the state settle. The solution has three named parts:
+- a **Kalman filter** that produces $\hat x_k$, with a gain from a filter Riccati equation that
+  involves only $A, C, W, V$;
+- an **LQR gain** $K$ from the DARE of §1, which involves only $A, B, Q, R$;
+- the **certainty-equivalent controller** $u_k = -K\hat x_k$, which treats the estimate as if it
+  were the true state.
+
+That the two gains can be computed separately and the combination is still optimal is the
+**separation principle**; its pole version, closed-loop eigenvalues equal to those of $A - BK$
+together with those of $A - LC$, is derived in
+[[04-robotics/control-theory-ce397|5. Control Theory §8]]. Existence needs $(A, B)$ stabilizable and
+$(A, Q^{1/2})$ detectable for the controller, and the dual pair of conditions for the filter.
+*Example:* with $A = B = C = 1$ and $Q = R = W = V = 1$, both Riccati equations reduce to
+$P^2 - P - 1 = 0$, so the LQR gain and the steady-state Kalman gain are both $0.618$, the duality
+made literal.
+
 The separation principle is exact for linear-Gaussian models — and famously fragile:
 **LQG has no guaranteed robustness margins** (Doyle 1978's one-line abstract: "there are
-none"). Estimator error and model error interact; real systems re-introduce margin checks
+none"; gain, phase and stability margins are defined in
+[[04-robotics/control-theory-ce397|5. Control Theory §5.5]]). Estimator error and model error interact; real systems re-introduce margin checks
 or robust variants. Read "we use LQG" as *nominal-optimal, robustness unverified unless
 shown*.
 
@@ -171,6 +255,19 @@ Underactuated ch. (geometric intuition, code) → connect to the
 > 3. Optimality is with respect to the nominal model, and LQG is proven to have no guaranteed margins against model error (Doyle 1978).
 > 4. $x^\top P x$ is the exact cost-to-go inside a terminal set where the LQR law satisfies the constraints and keeps the state in the set. With that terminal constraint added, a short horizon still supports the stability argument — the terminal cost and terminal set together are the ingredients [[04-robotics/mpc|MPC §1]] lists (Borrelli Theorem 12.2).
 
+### Problem set · 과제
+
+Tier B. **P4** $\dot x=-x+u+d$ from [[02-foundations/lab-plants|0.6]], $Q=1$, $R=1$. No simulator.
+
+1. **Draw.** The leaky heater with $u=-Kx$, boxes for $Q$ and $R$, disturbance $d$.
+2. **Derive.** Scalar ARE. Stabilizing $P$ and $K$. Closed-loop pole and $x_\mathrm{ss}$ for $d=1$. Same two numbers at a CE397-style hand gain $K=4$.
+3. **Interpret.** Why LQR's $K$ is smaller than $K=4$, and what raising $Q/R$ buys and costs (the $(1+K)$ trade of CE397 §1).
+
+> [!tip]- Solutions
+> 1. Plant pole already at $-1$; $Q$ prices $x$, $R$ prices $u$.
+> 2. $-2P-P^2+1=0\Rightarrow P=-1+\sqrt2\approx0.414$, $K=P\approx0.414$. Pole $-(1+K)\approx-1.414$, $x_\mathrm{ss}=d/(1+K)\approx0.707$. At $K=4$: pole $-5$, $x_\mathrm{ss}=0.2$.
+> 3. $Q=R=1$ prices state and effort equally on an already-stable plant, so the optimizer barely acts. $K=4$ is a hand choice (CE397 §1 used $K=9$ for $10\times$ rejection). Raising $Q/R$ increases $K$, buys smaller $x_\mathrm{ss}$, costs effort and noise.
+
 ### Continue beyond this guide
 
 The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
@@ -183,7 +280,15 @@ The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|St
 **무엇인가**: **LQR**은 최적 제어에서 정확히 풀리는 심장부다. 선형 동역학
 $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$($Q \succeq 0$, $R \succ 0$이라 $R^{-1}$이 존재)에 대해 최적 제어기는
 상수 선형 피드백 $u = -Kx$이고, $K = R^{-1}B^\top P$에서 $P$는 **대수 리카티 방정식**의
-해다 — 실행 시 반복 계산이 없다. **LQG**는 가우시안 노이즈와 부분 관측을 더한 것: 최적해는
+해다 — 실행 시 반복 계산이 없다. 식으로 쓰면 무한 지평 LQR 문제는
+
+$$\min_{u(\cdot)}\; J = \int_0^\infty \big(x^\top Q x + u^\top R u\big)\,dt \quad \text{subject to} \quad \dot x = Ax + Bu,\;\; x(0) = x_0$$
+
+이고 이름 붙은 재료가 넷이다. 선형 모델 $(A, B)$; 원점에서 벗어난 것에 값을 매기는 **상태 가중치**
+$Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 매기는 **입력 가중치** $R$, 양의
+정부호(모든 $u \ne 0$에서 $u^\top R u > 0$)이며 공짜 입력이 없도록 엄격히 양수여야 한다; 그리고 무한
+지평, 이것 때문에 최적 이득이 시변이 아니라 상수다. (정부호성은 [[02-foundations/linear-algebra|1. 선형대수 §3]]에서
+정의한다.) 기준 궤적 추종은 오차 좌표 $x - x_{ref}$로 쓴 같은 문제다. **LQG**는 가우시안 노이즈와 부분 관측을 더한 것: 최적해는
 [[02-foundations/probability|칼만 필터]]가 LQR에 추정값을 공급하는 구조다
 (**분리 원리**: 최적으로 추정하고, 그 추정값을 최적으로 제어하면, 그 결합이 전체 최적이다).
 
@@ -193,6 +298,14 @@ $\dot x = Ax + Bu$와 이차 비용 $\int (x^\top Q x + u^\top R u)\,dt$($Q \suc
 ### 1. 리카티 방정식, 구조로 읽기
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
+
+이것이 **대수 리카티 방정식**(ARE)이다. 모르는 대칭 $n \times n$ 행렬 $P$에 대해 이차인 행렬
+방정식이고, 자료는 모델 $A, B$와 가중치 $Q, R$이다. $P$는 최적 **cost-to-go**(가치 함수), 즉 주어진
+출발 상태에서 달성할 수 있는 최소 비용의 행렬이다.
+
+$$V(x_0) = \min_{u(\cdot)} \int_0^\infty \big(x^\top Q x + u^\top R u\big)\,dt = x_0^\top P x_0$$
+
+그래서 $P$는 모든 $x_0$에 대해 한꺼번에 "$x_0$에 있는 것이 얼마나 비싼가"에 답한다.
 
 **어디서 오는가, 네 단계로.** 최적 cost-to-go가 이차형식이라고 추측한다,
 $V(x) = x^\top P x$ — 맞아떨어지기 때문에 사후에 정당화되는 추측이다. 그것을 최적성
@@ -208,9 +321,23 @@ $K = R^{-1}B^\top P$가 여기서 나온다. 설계된 것이 아니라 떨어�
 아니라 *최적 피드백을 비용에 도로 대입한 것*이다. $P$에 대해 이차인 이유이고, 빼는 이유다 —
 제어기가 행동함으로써 *치르지 않게 된* 비용이다.
 
-(로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
+**계산 예제, 스칼라.** 불안정한 $\dot x = x + u$($A = B = 1$)에 $Q = R = 1$을 쓰자. ARE는
+$2P - P^2 + 1 = 0$이 되고 근이 **둘**, $P = 1 + \sqrt2 = 2.414$와 $P = 1 - \sqrt2 = -0.414$다.
+**안정화 해**는 그 이득이 $A - BK$를 안정하게 만드는 해다. $P = 2.414$는 $K = 2.414$와 폐루프
+$\dot x = -1.414\,x$를 주고, $P = -0.414$는 $\dot x = +1.414\,x$를 준다. 리카티 방정식은 일반적으로
+해가 여럿이고, 논문의 "그" 해는 언제나 안정화 해를 뜻한다. cost-to-go를 검산하면, $x_0 = 1$에서
+폐루프는 $x = e^{-1.414t}$, $u = -2.414\,x$이므로
+$J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$다.
+
+(로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) $x_{k+1} = Ax_k + Bu_k$와 비용 $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$에 대해 식은
+
+$$P = A^\top P A - A^\top P B\,(R + B^\top P B)^{-1} B^\top P A + Q$$
+
+이다. 각 스텝의 cost-to-go가 단계 비용에 최선의 입력 아래 다음 스텝 cost-to-go를 더한 것이기 때문이다.
+$x_{k+1} = x_k + u_k$, $Q = R = 1$이면 $P^2 - P - 1 = 0$으로 줄어 $P = 1.618$, $K = P/(1+P) = 0.618$이고,
+폐루프 $x_{k+1} = 0.382\,x_k$는 단위원 안에 있다([[04-robotics/mpc|7. MPC]]가 이 숫자를 다시 쓴다). 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해
-$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. (**리아푸노프 함수**(Lyapunov function)란 $x=0$을 뺀 모든 곳에서 양수이고 모든 폐루프 궤적을 따라 줄어드는 상태의 스칼라 "에너지"다. 그런 함수가 있으면 상태는 $0$ 말고 갈 곳이 없으므로, 그 존재가 곧 안정성의 증명이다. 여기서는 HJB 조건이 $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, 즉 순간 비용에 음수를 붙인 값을 준다.) 검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다 — LaSalle 불변 원리는 $\dot V$가 $\le 0$에 그칠 때도, 원점 말고는 어떤 궤적도 $\dot V = 0$인 곳에 영원히 머물 수 없다면 수렴을 증명해 준다. 논문이 "리카티
+$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. (**리아푸노프 함수**(Lyapunov function)란 $x=0$을 뺀 모든 곳에서 양수이고 모든 폐루프 궤적을 따라 줄어드는 상태의 스칼라 "에너지"다. 그런 함수가 있으면 상태는 $0$ 말고 갈 곳이 없으므로, 그 존재가 곧 안정성의 증명이다. 세 조건과 계산 예제는 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]에 있다. 여기서는 HJB 조건이 $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, 즉 순간 비용에 음수를 붙인 값을 준다.) 검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다 — LaSalle 불변 원리는 $\dot V$가 $\le 0$에 그칠 때도, 원점 말고는 어떤 궤적도 $\dot V = 0$인 곳에 영원히 머물 수 없다면 수렴을 증명해 준다. 논문이 "리카티
 방정식을 푼다"고 하면 이 상수 $P$를 오프라인에서 한 번(반복/시변 LQR에서는 선형화마다
 한 번) 계산한다는 뜻이다.
 
@@ -220,9 +347,27 @@ $P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P 
   받아야 한다 — 안정화 피드백이 존재하기 위한 정확한(필요충분) 조건이며,
   [[02-foundations/linear-algebra|1페이지 제어 섹션]]의 완전한 가제어성 랭크 검정보다
   약하다. 아니면 리카티든 뭐든 어떤 피드백도 안정화할 수 없다.
+  정의로 쓰면, 어떤 이득 $K$가 $A - BK$의 모든 고유값의 실수부를 음수로 만들 때 $(A,B)$가
+  **안정화 가능**하다. 모드별로는 PBH(Popov–Belevitch–Hautus) 랭크 검정으로 확인한다.
+  $$\text{rank}\,[\,A - \lambda I \;\; B\,] = n \quad \text{for every eigenvalue } \lambda \text{ of } A \text{ with } \text{Re}\,\lambda \ge 0$$
+  입력이 건드릴 수 없는 모드의 고유값에서 정확히 랭크가 $n$ 아래로 떨어지기 때문이다. *모든*
+  고유값에서 완전 랭크를 요구하면 그것이 가제어성 자체다. (이산 시간에서는 $|\lambda| \ge 1$인 모드가
+  불안정 모드다.) *예:* [[04-robotics/control-theory-ce397|5. 제어 이론 §6]]의 불가제어 쌍
+  $A = \text{diag}(-1,-2)$, $B = (1, 0)^\top$은 스스로 감쇠하는 모드인 $\lambda = -2$에서만 랭크를
+  잃으므로 안정화 가능하다. *반례:* 같은 $B$에 $A = \text{diag}(1, 2)$이면 불안정 모드인
+  $\lambda = 2$에서 랭크를 잃으므로 그런 $K$가 없다.
 - **$(A,Q^{1/2})$의 검출 가능성(detectability)**: $\text{Re}\,\lambda \ge 0$인 모든 모드가 비용에 나타나야
   한다 — 아니면 최적화기가 조용히 발산하는 모드를 "신경 안 쓰는" 것이 허용되어, 최적
   비용의 제어기가 안정화 제어기가 아니게 된다.
+  $Q^{1/2}$는 $(Q^{1/2})^\top Q^{1/2} = Q$인 아무 행렬이며, 그래서 $x^\top Q x = \lVert Q^{1/2}x\rVert^2$가
+  비용이 보는 "출력"이 된다. 검출 가능성은 안정화 가능성의 쌍대로, 열 대신 행을 쌓는다.
+  $$\text{rank}\begin{bmatrix} A - \lambda I \\ Q^{1/2} \end{bmatrix} = n \quad \text{for every eigenvalue } \lambda \text{ of } A \text{ with } \text{Re}\,\lambda \ge 0$$
+  랭크가 떨어진다는 것은 감쇠하지 않는 어떤 모드 $v$가 $Q^{1/2}v = 0$이라 비용이 들지 않는다는 뜻이기
+  때문이다. *예:* §3의 이중 적분기에서 $Q = \text{diag}(q, 0)$은 통과한다($\lambda = 0$에서 랭크 2).
+  위치에 벌점이 붙고 속도가 위치를 바꾸기 때문이다. *반례:* 속도만 보는 $Q = \text{diag}(0, 1)$,
+  $R = 1$은 $\lambda = 0$에서 랭크 1이다. 양의 준정부호 리카티 해는 $P = \text{diag}(0, 1)$이라
+  $K = (0\;\;1)$이고 폐루프 고유값은 $0$과 $-1$이다. 위치 $1$, 속도 $1$에서 출발한 카트는 위치 $2$에서
+  멈추고 거기 머문다. 비용이 돌아오라고 요구한 적이 없기 때문이다.
 
 이 둘이 "LQR은 안정성이 보장된다"의 작은 글씨다. 비선형 시스템을 선형화해 LQR을 쓰는
 논문은 두 조건을 *선형화 지점에서만* 상속한다.
@@ -295,8 +440,30 @@ $$k_1 = \sqrt{\rho}, \qquad k_2 = \sqrt{2}\,\rho^{1/4}, \qquad \rho = q/r$$
 
 ### 4. LQG의 작은 글씨
 
+**LQG 문제를 식으로.** 동역학과 센서 모두에 서로 독립인 평균 0의 가우시안 백색 잡음이 붙는다
+([[02-foundations/probability|3. 확률 §5]]).
+
+$$x_{k+1} = Ax_k + Bu_k + w_k, \qquad y_k = Cx_k + v_k, \qquad w_k \sim \mathcal N(0, W), \quad v_k \sim \mathcal N(0, V)$$
+
+$W$와 $V$는 공정 잡음과 측정 잡음의 공분산이다(확률 페이지는 $Q$와 $R$로 부르지만, 여기서는 $Q$와
+$R$이 이미 비용 가중치라 이름을 바꿨다). $u_k$는 스텝 $k$까지의 측정만 쓸 수 있다. 잡음 때문에 상태가
+결코 가라앉지 않으므로 목적은 스텝당 기대 LQR 비용
+$\lim_{T\to\infty}\tfrac1T E\big[\sum_{k<T} (x_k^\top Q x_k + u_k^\top R u_k)\big]$이다. 해는 이름 붙은
+세 부분으로 이루어진다.
+- $\hat x_k$를 만드는 **칼만 필터**. 그 이득은 $A, C, W, V$만 들어가는 필터 리카티 방정식에서 나온다.
+- §1의 DARE에서 나오는 **LQR 이득** $K$. $A, B, Q, R$만 들어간다.
+- 추정값을 참 상태처럼 다루는 **확실성 등가 제어기** $u_k = -K\hat x_k$.
+
+두 이득을 따로 계산해도 결합이 여전히 최적이라는 것이 **분리 원리**이고, 그 극점판(폐루프 고유값이
+$A - BK$의 고유값과 $A - LC$의 고유값을 합친 것)은 [[04-robotics/control-theory-ce397|5. 제어 이론 §8]]에서
+유도한다. 해가 존재하려면 제어기 쪽에 $(A, B)$ 안정화 가능과 $(A, Q^{1/2})$ 검출 가능이, 필터 쪽에
+그 쌍대 조건들이 필요하다. *예:* $A = B = C = 1$, $Q = R = W = V = 1$이면 두 리카티 방정식이 모두
+$P^2 - P - 1 = 0$으로 줄어 LQR 이득과 정상 상태 칼만 이득이 모두 $0.618$이다. 쌍대성이 글자 그대로
+드러난다.
+
 분리 원리는 선형-가우시안 모델에서 정확하다 — 그리고 유명하게 취약하다: **LQG에는
-보장된 강건성 여유가 없다** (Doyle 1978의 한 줄 초록: "there are none"). 추정 오차와 모델
+보장된 강건성 여유가 없다** (Doyle 1978의 한 줄 초록: "there are none"; 이득·위상·안정 여유는
+[[04-robotics/control-theory-ce397|5. 제어 이론 §5.5]]에서 정의한다). 추정 오차와 모델
 오차가 상호작용한다; 실제 시스템은 여유 검사나 강건 변형을 다시 도입한다. "LQG를 쓴다"는
 *공칭 최적, 강건성은 보이기 전까지 미검증*으로 읽어라.
 
@@ -329,6 +496,19 @@ LQG의 추정기 쪽은 [[04-robotics/state-estimation-slam|상태 추정, 위�
 > 2. 불변 — $Q$와 $R$ 전체에 같은 양의 스칼라를 곱하면 비용 스케일만 바뀐다. 행렬형 $Q,R$ 내부의 상대 가중치는 여전히 $K$를 정한다.
 > 3. 최적성은 공칭 모델에 대한 것이고, LQG는 모델 오차에 대한 보장된 여유가 없음이 증명되어 있다(Doyle 1978).
 > 4. LQR 법칙이 제약을 지키고 상태를 그 안에 머물게 하는 종단 집합 안에서는 $x^\top P x$가 남은 비용을 정확히 준다. 그 종단 제약을 함께 두어야 짧은 지평으로도 안정성 논증이 성립한다 — 종단 비용과 종단 집합이 함께 [[04-robotics/mpc|MPC §1]]이 나열하는 재료다(Borrelli 정리 12.2).
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** $\dot x=-x+u+d$, $Q=1$, $R=1$. 시뮬레이터 없음.
+
+1. **그리기.** $u=-Kx$인 새는 히터, $Q$와 $R$ 상자, 외란 $d$.
+2. **유도.** 스칼라 리카티. 안정화 $P$와 $K$. $d=1$의 폐루프 극점과 $x_\mathrm{ss}$. CE397식 손 이득 $K=4$에서 같은 두 숫자.
+3. **해석.** LQR의 $K$가 $K=4$보다 작은 이유, $Q/R$을 올리면 사고 치는 것(CE397 §1의 $(1+K)$ 거래).
+
+> [!tip]- 정답 · Solutions
+> 1. 플랜트 극점은 이미 $-1$; $Q$는 $x$, $R$은 $u$에 값을 매긴다.
+> 2. $P=-1+\sqrt2\approx0.414$, $K\approx0.414$. 극점 $\approx-1.414$, $x_\mathrm{ss}\approx0.707$. $K=4$면 극점 $-5$, $x_\mathrm{ss}=0.2$.
+> 3. 이미 안정한 플랜트에서 $Q=R=1$은 거의 안 움직인다. $K=4$는 손 선택(CE397 §1은 $10$배 억제에 $K=9$). $Q/R$을 올리면 $K$가 커져 $x_\mathrm{ss}$는 줄고 노력·잡음은 늘는다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

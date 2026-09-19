@@ -3,13 +3,13 @@ title: 24.3 Haptic Device Design & Kinematics
 tags: [haptics, mechatronics, kinematics]
 study-depth: Working
 wiki-support: Working
-depth-goal: "Trace a command from Cartesian force to joint torque and motor current, and identify the hardware limitation that breaks the ideal mapping."
+depth-goal: "Trace a command from Cartesian force to joint torque and motor current on plant P3, complete this page's problem set from the wiki alone, and name the hardware limit that breaks the ideal mapping."
 mastery-when: "Master mechanism optimization and device identification when new hardware is the contribution."
 ---
 
 > [!note] Prerequisites · 선수 지식
-> The Jacobian $v=J(q)\dot q$ and the statics relation $\tau=J^\top F$ from [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], and the idea of impedance versus admittance control from [[04-robotics/force-compliance-control|13. Force & Compliance Control §2]]; this page re-derives $\tau=J^\top F$ but moves quickly.
-> [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]의 야코비안 $v=J(q)\dot q$와 정역학 관계 $\tau=J^\top F$, 그리고 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §2]]의 임피던스 대 어드미턴스 제어 개념. 이 페이지도 $\tau=J^\top F$를 다시 유도하지만 빠르게 지나간다.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]]. The Jacobian $v=J(q)\dot q$ and the statics relation $\tau=J^\top F$ from [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], and the idea of impedance versus admittance control from [[04-robotics/force-compliance-control|13. Force & Compliance Control §2]]; this page re-derives $\tau=J^\top F$ but moves quickly.
+> [[02-foundations/lab-plants|0.6]]의 장치 **P3**. [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]의 야코비안 $v=J(q)\dot q$와 정역학 관계 $\tau=J^\top F$, 그리고 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §2]]의 임피던스 대 어드미턴스 제어 개념. 이 페이지도 $\tau=J^\top F$를 다시 유도하지만 빠르게 지나간다.
 
 ## English
 
@@ -51,6 +51,42 @@ Current is the direct torque variable. PWM duty cycle approximately controls ave
 
 A transmission multiplies torque and reflected inertia approximately by $N$ and $N^2$, respectively. Gears can add backlash and friction; capstan drives (a cable wrapped around a small motor pulley and a larger output drum) can be low-backlash but require tension, alignment, and no-slip contact. High torque ratio can make a device strong yet heavy-feeling—bad for free-space transparency.
 
+**Worked: plant P3, the translating handle.** The catalog numbers are in [[02-foundations/lab-plants|0.6]]: motor pulley $r_m=0.010\,\mathrm{m}$, sector $r_s=0.050\,\mathrm{m}$, encoder $N=1024$ counts/rev after quadrature decode. This is the object the problem set will ask you to draw. Follow the chain once here so the homework is a variant, not a first meeting.
+
+```mermaid
+flowchart LR
+    Enc["encoder N=1024"] --> Tm["θm"]
+    Tm --> Pulley["pulley rm=0.010"]
+    Pulley --> Cable["inextensible cable"]
+    Cable --> Sector["sector rs=0.050"]
+    Sector --> X["handle x"]
+    X --> Wall["wall at xw=0.030"]
+```
+
+The cable does not stretch, so an arc on the motor pulley equals an arc on the sector:
+
+$$r_m\theta_m = r_s\theta_s.$$
+
+A handle that translates at the sector rim moves $x = r_s\theta_s$. Substitute the cable constraint and $r_s$ cancels:
+
+$$x = r_m\theta_m.$$
+
+The sector is a lever that the cable already accounted for. Using $x=r_s\theta_m$ pretends the cable wraps the sector as if the sector *were* the motor pulley; every length and every force would then be wrong by $r_s/r_m=5$.
+
+Power at the two ends of a lossless capstan must match: $\tau_m\omega_m = F\dot x$. From $x=r_m\theta_m$ one has $\dot x = r_m\omega_m$, so
+
+$$\tau_m = F r_m.$$
+
+On P3 the Jacobian of this 1-DoF map is the scalar $r_m$, and $\tau=J^\top F$ is exactly that line. One encoder count is $\Delta\theta_m=2\pi/N=2\pi/1024$. The handle therefore moves
+
+$$\Delta x = r_m\Delta\theta_m = 0.010\cdot\frac{2\pi}{1024}=6.14\times10^{-5}\,\mathrm{m}$$
+
+(61.4 µm). Once the handle is inside the catalog wall $k_w=400\,\mathrm{N/m}$, that one count changes the rendered force by
+
+$$\Delta F = k_w\Delta x = 400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}.$$
+
+That is the resolution of the wall, not a sampling-rate number. Sampling ($T$) and quantization ($\Delta x$) are different ceilings; [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]] takes the second one. The problem set keeps this map and asks what happens when the amplifier saturates, and what a reviewer who swaps $r_s$ for $r_m$ would publish.
+
 ### 4. Sensing and differentiation
 
 Quadrature encoders provide counts and direction; angle requires counts-per-revolution and transmission calibration. Velocity from $(q_k-q_{k-1})/T$ amplifies quantization and noise. Filtering reduces noise but adds phase lag, which can destabilize a haptic loop. The filter equation, and the convention trap in its $\alpha$, are in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]. Force sensors add direct interaction information but require bias, temperature, frame, bandwidth, and inertial-load checks.
@@ -61,6 +97,21 @@ From the person: workspace, grasp, comfortable continuous/peak force, perceptual
 
 > [!question]- Self-check · Answer
 > **Why can increasing a gear ratio worsen a haptic interface even when maximum force rises?** Reflected motor inertia grows approximately with the square of ratio, and friction/backlash may grow. The device becomes harder to backdrive and corrupts free-space motion and small forces.
+
+### Problem set · 과제
+
+Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]], this page, and [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]. The Euler loop for the same handle lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator here.
+
+The translating handle is driven by an inextensible capstan: motor pulley radius $r_m$, sector radius $r_s$. Cable length is conserved, so handle displacement is $x=r_m\theta_m$ regardless of $r_s$. Power match then gives $\tau_m=F r_m$. The motor encoder has $N=1024$ counts/rev after decode. A current amplifier saturates at $\tau_m^\max=0.020\,\mathrm{N{\cdot}m}$ (a problem number, not a catalog number).
+
+1. **Draw.** Sketch the chain encoder $\to$ $\theta_m$ $\to$ pulley $r_m$ $\to$ cable $\to$ sector $r_s$ $\to$ handle $x$. Label every P3 length and $N$. Mark the wall at $x_w$ and the $+x$ direction into the wall. Write the two constitutive equalities $x=\ldots$ and $\tau_m=\ldots$ on the sketch.
+2. **Derive.** (a) Handle motion $\Delta x$ for one encoder count. (b) Force increment $\Delta F$ of the default virtual wall $k_w$ for that one count, once inside the wall. (c) Maximum handle force $F^\max$ at amplifier saturation, and the penetration at which the default wall saturates. (d) At $x=0.036\,\mathrm{m}$ (6 mm into the wall), does the unsaturated spring law still hold?
+3. **Interpret.** A reviewer says “just use the sector radius in $x=r_s\theta_m$, the handle sits on the sector.” What factor would that mistake inject into every force you report? Separately: $N$ is after quadrature decode. If you treated it as 256 slots before decode, how would $\Delta x$ change?
+
+> [!tip]- Solutions
+> 1. Cable inextensible $\Rightarrow$ arc on the motor pulley equals arc on the sector, $r_m\theta_m=r_s\theta_s$. A translating handle at the sector rim has $x=r_s\theta_s=r_m\theta_m$. Power $\tau_m\omega_m=F\dot x$ with $\dot x=r_m\omega_m$ gives $\tau_m=F r_m$. $r_s$ sets how the sector is built; it cancels in the handle map.
+> 2. (a) $\Delta\theta_m=2\pi/N=2\pi/1024$, so $\Delta x=r_m\Delta\theta_m=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=k_w\Delta x=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^\max=\tau_m^\max/r_m=0.020/0.010=2.0\,\mathrm{N}$. Saturation penetration $\delta=F^\max/k_w=2/400=0.005\,\mathrm{m}$ (5 mm), i.e. at $x=0.035\,\mathrm{m}$. (d) At $x=0.036$ the unsaturated law wants $F=k_w(0.006)=2.4\,\mathrm{N}>2.0$, so the amplifier is already saturated and the spring law is a lie.
+> 3. Using $r_s$ in place of $r_m$ multiplies $x$ and divides $F$ by $r_s/r_m=5$. Every Newton you publish would be off by five. Quadrature $4\times$ on 256 slots is 1024 counts: treating $N=256$ inflates $\Delta x$ by four, so the wall would feel four times coarser and you would under-report resolution.
 
 ## 한국어
 
@@ -101,6 +152,42 @@ $$\tau_m=k_t i,\qquad V=Ri+L\dot i+k_e\omega.$$
 
 전달장치는 토크를 대략 $N$배, 반사 관성을 대략 $N^2$배로 만든다. 기어는 backlash와 마찰을 더할 수 있고, capstan(작은 모터 풀리와 큰 출력 드럼에 케이블을 감은 전달장치)은 backlash가 작지만 장력·정렬·미끄럼 없는 접촉을 요구한다. 큰 감속비는 장치를 강하지만 무겁게 느껴지게 만들며, 이는 자유공간 투명성에 나쁘다.
 
+**계산: 장치 P3, 병진 핸들.** 카탈로그 숫자는 [[02-foundations/lab-plants|0.6]]에 있다: 모터 풀리 $r_m=0.010\,\mathrm{m}$, 섹터 $r_s=0.050\,\mathrm{m}$, 엔코더는 쿼드러처 디코드 후 $N=1024$ counts/rev. 과제가 그리라고 할 대상이다. 여기서 사슬을 한 번 따라가면 과제는 변형이지 첫 만남이 아니다.
+
+```mermaid
+flowchart LR
+    Enc["encoder N=1024"] --> Tm["θm"]
+    Tm --> Pulley["pulley rm=0.010"]
+    Pulley --> Cable["비신장 케이블"]
+    Cable --> Sector["sector rs=0.050"]
+    Sector --> X["handle x"]
+    X --> Wall["벽 xw=0.030"]
+```
+
+케이블이 늘어나지 않으므로 모터 풀리의 호와 섹터의 호가 같다:
+
+$$r_m\theta_m = r_s\theta_s.$$
+
+섹터 가장자리에서 병진하는 핸들은 $x = r_s\theta_s$. 케이블 제약을 넣으면 $r_s$가 소거된다:
+
+$$x = r_m\theta_m.$$
+
+섹터는 케이블이 이미 센 지렛대다. $x=r_s\theta_m$을 쓰면 케이블이 섹터를 모터 풀리인 양 감는 셈이 되어, 길이와 힘이 모두 $r_s/r_m=5$배 틀린다.
+
+손실 없는 캡스턴의 양 끝 일률은 같아야 한다: $\tau_m\omega_m = F\dot x$. $x=r_m\theta_m$이면 $\dot x = r_m\omega_m$이므로
+
+$$\tau_m = F r_m.$$
+
+P3에서 이 1자유도 사상의 야코비안은 스칼라 $r_m$이고, $\tau=J^\top F$가 바로 그 줄이다. 엔코더 한 카운트는 $\Delta\theta_m=2\pi/1024$. 핸들은
+
+$$\Delta x = 0.010\cdot\frac{2\pi}{1024}=6.14\times10^{-5}\,\mathrm{m}$$
+
+(61.4 µm) 움직인다. 카탈로그 벽 $k_w=400\,\mathrm{N/m}$ 안에서는 그 한 카운트가 힘을
+
+$$\Delta F = 400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$$
+
+만큼 바꾼다. 이것은 벽의 해상도이지 샘플 주기 숫자가 아니다. 샘플링($T$)과 양자화($\Delta x$)는 다른 천장이고, [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]이 둘째를 가져간다. 과제는 이 사상을 유지한 채 증폭기 포화와, $r_m$ 자리에 $r_s$를 넣는 심사자를 묻는다.
+
 ### 4. 센싱과 미분
 
 Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전당 count 수와 전달비 보정이 필요하다. $(q_k-q_{k-1})/T$로 얻는 속도는 quantization과 noise를 증폭한다. 필터는 noise를 줄이지만 phase lag를 더해 햅틱 루프를 불안정하게 만들 수 있다. 필터 식과 그 $\alpha$의 표기 함정은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]에 있다. Force sensor는 상호작용 정보를 직접 주지만 bias·온도·프레임·대역폭·관성 부하를 함께 점검해야 한다.
@@ -111,3 +198,18 @@ Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전�
 
 > [!question]- 스스로 점검 · 정답
 > **감속비를 높이면 최대 힘이 커져도 왜 햅틱 인터페이스가 나빠질 수 있는가?** 반사 모터 관성이 대략 감속비의 제곱으로 커지고 마찰·backlash도 함께 커질 수 있다. 장치가 역구동하기 어려워지면서 자유공간 운동과 작은 힘의 표현이 망가진다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 이 페이지, [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]. 같은 핸들의 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
+
+병진 핸들은 비신장 캡스턴으로 구동된다: 모터 풀리 $r_m$, 섹터 $r_s$. 케이블 길이가 보존되므로 핸들 변위는 $r_s$와 무관하게 $x=r_m\theta_m$이다. 일률에서 $\tau_m=F r_m$. 모터 엔코더는 디코드 후 $N=1024$ counts/rev. 전류 증폭기는 $\tau_m^\max=0.020\,\mathrm{N{\cdot}m}$에서 포화한다(과제 숫자이지 카탈로그 숫자가 아니다).
+
+1. **그리기.** 엔코더 $\to$ $\theta_m$ $\to$ 풀리 $r_m$ $\to$ 케이블 $\to$ 섹터 $r_s$ $\to$ 핸들 $x$ 사슬을 그려라. P3의 길이와 $N$을 모두 기입하라. 벽 $x_w$와 벽 안 $+x$를 표시하라. 구성 등식 $x=\ldots$, $\tau_m=\ldots$를 그림에 써라.
+2. **유도.** (a) 엔코더 한 카운트의 핸들 변위 $\Delta x$. (b) 벽 안에서 기본 가상 벽 $k_w$의 힘 증분 $\Delta F$. (c) 증폭기 포화 시 최대 핸들 힘 $F^\max$, 기본 벽이 포화하는 침투량. (d) $x=0.036\,\mathrm{m}$(벽 안 6 mm)에서 포화 없는 스프링 법칙이 아직 성립하는가?
+3. **해석.** 심사자가 “핸들이 섹터 위에 있으니 $x=r_s\theta_m$을 써라”고 한다. 그 실수가 보고하는 힘마다 몇 배를 넣는가? 별도로: $N$은 쿼드러처 디코드 후 값이다. 디코드 전 256 슬롯으로 취급하면 $\Delta x$는 어떻게 바뀌는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 케이블 비신장 $\Rightarrow$ $r_m\theta_m=r_s\theta_s$. 섹터 가장자리의 병진 핸들은 $x=r_s\theta_s=r_m\theta_m$. 일률 $\tau_m\omega_m=F\dot x$, $\dot x=r_m\omega_m$이므로 $\tau_m=F r_m$. $r_s$는 섹터 형상이고 핸들 사상에서는 소거된다.
+> 2. (a) $\Delta\theta_m=2\pi/1024$, $\Delta x=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^\max=0.020/0.010=2.0\,\mathrm{N}$. 포화 침투 $\delta=2/400=0.005\,\mathrm{m}$ (5 mm), 즉 $x=0.035\,\mathrm{m}$. (d) $x=0.036$에서 포화 없는 법칙은 $F=2.4\,\mathrm{N}>2.0$을 원하므로 증폭기는 이미 포화이고 스프링 법칙은 거짓이다.
+> 3. $r_m$ 자리에 $r_s$를 쓰면 $x$는 5배, $F$는 $1/5$. 발표하는 뉴턴마다 다섯 배가 틀린다. 256 슬롯의 쿼드러처 $4\times$가 1024 카운트다. $N=256$으로 쓰면 $\Delta x$가 네 배가 되어 벽이 네 배 거칠고 해상도를 낮게 보고하게 된다.

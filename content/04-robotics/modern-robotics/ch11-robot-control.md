@@ -2,7 +2,7 @@
 title: "MR Ch.11 — Robot Control"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -62,6 +62,19 @@ velocity, torque, or impedance interfaces and their low-level loops. Contact saf
 on that whole stack — actuators, limits, passive compliance, speed, task setup, and control —
 not on impedance control alone.
 
+### Problem set · 과제
+
+Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Catalog $J$. No simulator.
+
+1. **Draw.** A $10\,\mathrm{N}$ contact on the tip in $-y$. Sketch joint-space PD as springs, and inverse dynamics as a block that adds $M,c,g$.
+2. **Derive.** $\tau=J^\top F$ for $F=(0,-10)$. If gravity is cancelled and the only restoring torque is $K_p e$ with $K_p=10\,\mathrm{N{\cdot}m/rad}$ on each joint, which joint sags, and what does the linear map predict for $e_1$?
+3. **Interpret.** Inverse dynamics with $F_\mathrm{cmd}$ included can hold with $e=0$. What does PD alone turn the $10\,\mathrm{N}$ into, and why is impedance the next page?
+
+> [!tip]- Solutions
+> 1. Force on the tip $(0,-10)$. PD: $\tau=-K_p e-K_d\dot e$. Inverse dynamics: $\tau=M(\ddot\theta_d+K_p e+K_d\dot e)+c+g$ and, if used, $+J^\top F_\mathrm{cmd}$.
+> 2. $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, so $J^\top F=(-10,\ 0)$ — shoulder only. Linear $e_1\approx 10/10=1\,\mathrm{rad}$. That $O(1)$ prediction already says the linear spring is the wrong object for a $10\,\mathrm{N}$ contact.
+> 3. PD turns contact into position error $\times$ stiffness. A stiff PD on a stiff panel makes huge force from a millimetre — the reason this chapter hands contact to impedance.
+
 ## 한국어
 
 **핵심 질문**: 로봇이 궤적을 실제로 따르게 만드는 방법은?
@@ -117,3 +130,16 @@ not on impedance control alone.
 > 1. Matching $\ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$ gives $\omega_n^2 = K_p$ and $2\zeta\omega_n = K_d$, so $\zeta = 1 \iff K_d = 2\sqrt{K_p}$ ([[02-foundations/engineering-math|0.5 §8]]). · $\zeta = 1 \Leftrightarrow K_d = 2\sqrt{K_p}$.
 > 2. The cancellation is incomplete, so residual nonlinear terms remain inside the error dynamics — they act as a disturbance the PD gains must suppress. The error dynamics are no longer exactly linear, and both tracking performance and stability margin degrade as model error grows. · 상쇄가 불완전해 잔차 비선형 항이 남고, 모델 오차가 클수록 성능·안정 여유가 준다.
 > 3. Contact tasks (polishing, insertion — where a small position error against a stiff surface produces a huge force) and human collaboration (compliance so a collision is survivable). Both are cases where the *force–motion relationship* matters more than positional accuracy. · 접촉 작업과 인간 협업 — 힘-운동 관계가 위치 정확도보다 중요한 경우.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 고정 자세 **P2**. 카탈로그 $J$. 시뮬레이터 없음.
+
+1. **그리기.** 말단에 $-y$로 $10\,\mathrm{N}$ 접촉. 관절 PD를 스프링으로, 역동역학을 $M,c,g$를 더하는 블록으로.
+2. **유도.** $F=(0,-10)$의 $\tau=J^\top F$. 중력을 상쇄했고 복원 토크가 관절마다 $K_p=10\,\mathrm{N{\cdot}m/rad}$인 $K_p e$뿐이면, 어느 관절이 처지고 선형 사상이 $e_1$을 얼마로 예측하는가?
+3. **해석.** $F_\mathrm{cmd}$를 넣은 역동역학은 $e=0$으로 유지할 수 있다. PD만 쓰면 $10\,\mathrm{N}$이 무엇이 되고, 왜 다음이 임피던스인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 말단 힘 $(0,-10)$. PD: $\tau=-K_p e-K_d\dot e$. 역동역학: $\tau=M(\ddot\theta_d+K_p e+K_d\dot e)+c+g$, 쓰면 $+J^\top F_\mathrm{cmd}$.
+> 2. $J^\top F=(-10,\ 0)$ — 어깨만. 선형 $e_1\approx 1\,\mathrm{rad}$. $O(1)$ 예측 자체가 $10\,\mathrm{N}$ 접촉에 선형 스프링이 잘못된 대상임을 말한다.
+> 3. PD는 접촉을 위치 오차 $\times$ 강성으로 바꾼다. 단단한 패널 위 뻣뻣한 PD는 밀리미터에서 큰 힘을 만든다 — 이 장이 접촉을 임피던스에 넘기는 이유.

@@ -401,6 +401,21 @@ belongs to [[04-robotics/force-compliance-control|13]].
 > 4. The gripper's own weight and any payload, projected into the sensor frame — which depends on the arm's orientation, since gravity is fixed in the world frame and the sensor rotates with the wrist. The same held part produces a different raw reading in every pose, so gravity compensation needs the current kinematics ([[02-foundations/manipulator-kinematics-dynamics|10. §5]]). Inertial terms matter too during acceleration.
 > 5. In scope: using an existing tactile sensor to make fastening robust — the contact-state classification, the policy that acts on it, and the evaluation against real fasteners. Out of scope: designing or fabricating a new sensor, which [[07-research-program/index|§7]] excludes because it is a separate contribution with its own literature and its own failure modes.
 
+### Problem set · 과제
+
+Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]], $\Lambda_y=2\,\mathrm{kg}$. A tactile sample is late by $5\,\mathrm{ms}$. Contact numbers from [[04-robotics/force-compliance-control|13. §5]]: $F_{\max}=v\sqrt{\Lambda K}$, duration $\pi\sqrt{\Lambda/K}$. No new simulator.
+
+The tip approaches a panel in $-y$ at $v=0.05\,\mathrm{m/s}$. Take the identified (row-3) stiffness $K_e=10^4\,\mathrm{N/m}$, not Hertzian.
+
+1. **Draw.** P2, panel under the tip, a tactile sensor at the contact. Mark the $5\,\mathrm{ms}$ delay on the tactile channel into the controller. Mark the impact window of length $\pi\sqrt{\Lambda_y/K_e}$.
+2. **Derive.** (a) $F_{\max}$ and duration. (b) How many $5\,\mathrm{ms}$ samples fit in the impact? (c) Extra penetration during the delay, $v\cdot 5\,\mathrm{ms}$, and the extra spring force $K_e$ times that. (d) Same three numbers at $K_e=10^5$ (still identified, not Hertzian).
+3. **Interpret.** Can the $5\,\mathrm{ms}$ tactile channel regulate the impact peak, or only report what the contact *was*? Compare a $30\,\mathrm{fps}$ GelSight ($33\,\mathrm{ms}$). Who owns the peak?
+
+> [!tip]- Solutions
+> 1. Tip at $(1,1)$, wall in $-y$; delay block on the tactile line; impact bar of length $\approx 44\,\mathrm{ms}$.
+> 2. (a) $F_{\max}=0.05\sqrt{2\cdot 10^4}=7.1\,\mathrm{N}$, duration $\pi\sqrt{2/10^4}=44\,\mathrm{ms}$. (b) About eight samples — enough to see the event, not to servo it at the peak. (c) $0.25\,\mathrm{mm}$, extra $2.5\,\mathrm{N}$. (d) $F_{\max}=22\,\mathrm{N}$, duration $14\,\mathrm{ms}$, extra $25\,\mathrm{N}$ — the delay is a third of the event and the extra force is the same order as the peak.
+> 3. At $10^4$ the channel can *decide* after contact; it cannot close a force loop on the peak. At $10^5$ even the report is of a finished event. A $33\,\mathrm{ms}$ GelSight misses the $14\,\mathrm{ms}$ impact entirely. The peak belongs to passive compliance and a kilohertz torque loop; touch here is a decision signal.
+
 ### Sources
 
 **Sensors**
@@ -778,6 +793,21 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 > 3. 30 fps면 샘플이 33 ms마다 오는데, 단단한 접촉 천이는 실제 팔의 맨 공구에서 약 14 ms, 이상화한 강체 경우 약 1.4 ms에 끝난다([[04-robotics/force-compliance-control|13. §5]]) — 사건 전체가 두 프레임 사이에서 일어난다. 센서는 접촉이 *어땠는지*를 보고할 수 있고 그것은 다음 행동을 정하는 데 유용하지만, 충격 자체를 조절하는 데 참여할 수는 없다. 그 일은 수동 컴플라이언스와 킬로헤르츠 토크 루프의 몫이다.
 > 4. 그리퍼 자신의 무게와 페이로드를 센서 프레임으로 사영해서 빼야 한다 — 그리고 그것은 팔의 방향에 의존한다. 중력은 월드 프레임에 고정되어 있고 센서는 손목과 함께 회전하기 때문이다. 같은 부재를 잡아도 자세마다 원 측정값이 다르므로, 중력 보상에는 현재 기구학이 필요하다([[02-foundations/manipulator-kinematics-dynamics|10. §5]]). 가속 중에는 관성 항도 들어온다.
 > 5. 범위 안: 기존 촉각 센서를 써서 체결을 견고하게 만드는 것 — 접촉 상태 분류, 그것에 따라 행동하는 정책, 실제 체결구에 대한 평가. 범위 밖: 새 센서를 설계하거나 제작하는 것. [[07-research-program/index|§7]]이 이를 제외하는 이유는 그것이 자기 문헌과 자기 실패 모드를 가진 별개의 기여이기 때문이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$, $\Lambda_y=2\,\mathrm{kg}$. 촉각 샘플이 $5\,\mathrm{ms}$ 늦다. 접촉 숫자는 [[04-robotics/force-compliance-control|13. §5]]: $F_{\max}=v\sqrt{\Lambda K}$, 지속 $\pi\sqrt{\Lambda/K}$. 시뮬레이터를 새로 만들지 마라.
+
+말단이 $-y$로 패널에 $v=0.05\,\mathrm{m/s}$로 접근. 식별된(3행) 강성 $K_e=10^4\,\mathrm{N/m}$, Hertz가 아니다.
+
+1. **그리기.** P2, 말단 아래 패널, 접촉의 촉각 센서. 제어기로 가는 촉각 채널에 $5\,\mathrm{ms}$ 지연. 충격 창 길이 $\pi\sqrt{\Lambda_y/K_e}$.
+2. **유도.** (a) $F_{\max}$와 지속 시간. (b) 충격 안에 $5\,\mathrm{ms}$ 샘플이 몇 개 들어가는가? (c) 지연 동안의 추가 침투 $v\cdot 5\,\mathrm{ms}$, 그리고 그 값에 $K_e$를 곱한 추가 스프링 힘. (d) $K_e=10^5$(여전히 식별값, Hertz 아님)에서 같은 세 숫자.
+3. **해석.** $5\,\mathrm{ms}$ 촉각 채널이 충격 첨두를 조절할 수 있는가, 아니면 접촉이 *어땠는지*만 보고하는가? $30\,\mathrm{fps}$ GelSight($33\,\mathrm{ms}$)와 비교. 첨두의 주인은 누구인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 말단 $(1,1)$, $-y$ 벽; 촉각 선의 지연 블록; 충격 막대 $\approx 44\,\mathrm{ms}$.
+> 2. (a) $F_{\max}=0.05\sqrt{2\cdot 10^4}=7.1\,\mathrm{N}$, 지속 $\pi\sqrt{2/10^4}=44\,\mathrm{ms}$. (b) 약 여덟 샘플 — 사건은 보이지만 첨두를 서보하지는 못함. (c) $0.25\,\mathrm{mm}$, 추가 $2.5\,\mathrm{N}$. (d) $F_{\max}=22\,\mathrm{N}$, 지속 $14\,\mathrm{ms}$, 추가 $25\,\mathrm{N}$ — 지연이 사건의 1/3이고 추가 힘이 첨두와 같은 자릿수.
+> 3. $10^4$에서는 접촉 *뒤*에 결정할 수 있고, 첨두의 힘 루프는 닫지 못한다. $10^5$에서는 보고 자체가 끝난 사건이다. $33\,\mathrm{ms}$ GelSight는 $14\,\mathrm{ms}$ 충격을 통째로 놓친다. 첨두는 수동 컴플라이언스와 킬로헤르츠 토크 루프의 몫이고, 여기서 촉각은 결정 신호다.
 
 ### 출처
 

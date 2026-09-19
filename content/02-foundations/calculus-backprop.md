@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.7]] (what a layer and a loss are)
-> [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.7]](층과 손실이 무엇인지)
+> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.7]] (what a layer and a loss are)
+> [[02-foundations/lab-plants|0.6]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.7]](층과 손실이 무엇인지)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -334,6 +334,39 @@ bug detector in existence.
 > 3. Forward mode propagates sensitivities with respect to *one* input direction per pass, so covering 7B parameters would need 7B passes. Reverse mode propagates from a *scalar* loss, so a single backward pass yields every parameter gradient — the asymmetry is why training is possible at all.
 > 4. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
 
+### Problem set · 과제
+
+Tier A. Plant **P1** from [[02-foundations/lab-plants|0.6]] — the same net as §3. No Euler; the “loop” is one SGD step.
+
+1. **Draw.** Computational graph of P1: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$. Label every node with its numerical value from the catalog.
+2. **Derive.** $\delta_2=\partial L/\partial\hat y$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1=\partial L/\partial z$, $\partial L/\partial W_1$. Then one SGD step at $\eta=0.1$ on $W_2$ only.
+3. **Do.** Fill `?`. Print new $W_2$ and new $L$ after that one step (forward again with the updated $W_2$, same $x$).
+
+```python
+# P1 one SGD step. Fill ?.
+import numpy as np
+W1 = np.array(((1., 0.), (0., 1.), (1., 1.)))
+W2 = np.array((1., -1., 0.5)).reshape(1, 3)
+x = np.array((1., 2.)).reshape(2, 1)
+y = 1.0
+eta = 0.1
+z = W1 @ x
+h = np.maximum(z, 0.0)
+yhat = (W2 @ h).item()
+L = 0.5 * (yhat - y) ** 2
+d2 = ?                              # yhat - y
+dW2 = ?                             # d2 * h.T
+W2 = W2 - eta * dW2
+yhat2 = (W2 @ h).item()
+L2 = 0.5 * (yhat2 - y) ** 2
+print(d2, W2, L, L2)
+```
+
+> [!tip]- Solutions
+> 1. Values: $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
+> 2. $\delta_2=0.5-1=-0.5$. $\partial L/\partial W_2=\delta_2 h^\top=(-0.5,-1,-1.5)$. $\partial L/\partial h=W_2^\top\delta_2=(-0.5,0.5,-0.25)$. ReLU mask is $(1,1,1)$, so $\delta_1$ is the same. $\partial L/\partial W_1=\delta_1 x^\top=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
+> 3. Blanks: `d2 = yhat - y`, `dW2 = d2 * h.T`. Prints $-0.5$, `W2 = (1.05, -0.9, 0.65)`, $L=0.125$, $L_2=0.5(0.5+0.1\cdot(0.5\cdot1+1\cdot2+1.5\cdot3)-1)^2$. New $\hat y=W_2 h=1.05-1.8+1.95=1.20$, $L_2=0.5(0.20)^2=0.020$. One step overshot the target (ŷ went from 0.5 through 1 to 1.20) — $\eta=0.1$ is not small on this scale. That is the point of [[02-foundations/optimization|4]].
+
 ## 한국어
 
 *[[02-foundations/linear-algebra|1. 선형대수]] 위에 선다. 그 사상들의 적층을 미분하는 것이 역전파의 전부다.
@@ -646,3 +679,16 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 > 2. 합의 미분 = 미분의 합: $I + \partial F/\partial x$ — 항등 항 덕분에 역방향 신호가 아무리 깊어도 곱해 줄어들지 않는 경로를 하나 갖는다. 즉 깊이가 감쇠를 *강제하지* 않게 될 뿐이고, 전체 gradient가 절대 줄지 않는다는 보장은 아니다.
 > 3. 순방향 모드는 입력 방향 하나당 전체 패스 한 번 — 7B 파라미터면 패스 7B번이 필요해 불가능; 역방향은 스칼라 손실(출력 1개) 기준 한 번이면 된다.
 > 4. 샘플링은 미분 불가능한 확률적 분기다; $z = \mu + \sigma\epsilon$으로 쓰면 무작위성이 외부 입력 $\epsilon$으로 밀려나 $\mu, \sigma$에 그래디언트가 흐른다.
+
+### 과제 · Problem set
+
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프”는 SGD 한 스텝. 영어 템플릿을 채워라.
+
+1. **그리기.** P1 계산 그래프. 카탈로그 수치를 각 노드에 써라.
+2. **유도.** $\delta_2$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1$, $\partial L/\partial W_1$. $\eta=0.1$로 $W_2$만 SGD 한 스텝.
+3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라.
+
+> [!tip]- 정답 · Solutions
+> 1. $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
+> 2. $\delta_2=-0.5$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, $\partial L/\partial h=(-0.5,0.5,-0.25)=\delta_1$, $\partial L/\partial W_1=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1.05,-0.9,0.65)$.
+> 3. 빈칸은 영어 해. 새 $\hat y=1.20$, $L_2=0.020$. 한 스텝이 목표를 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다.

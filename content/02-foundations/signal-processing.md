@@ -350,6 +350,19 @@ For example, a driver may already smooth force readings before a second filter i
 > 3. $H(f) = \tfrac12(1 + e^{-j2\pi f})$, so $|H(f)| = |\cos(\pi f)|$ with $f$ in cycles/sample. It nulls completely at $f = 1/2$ — the Nyquist frequency, where consecutive samples alternate sign and average to zero.
 > 4. Lag: the Kalman filter's *prediction* step advances the state before correcting, so it does not pay the full phase lag a causal low-pass does. Models: it uses an explicit process/measurement noise ratio to compute a time-varying optimal gain, instead of one fixed cutoff. The low-pass wins when the motion model is wrong or unknown, when the noise is far from the assumed statistics, or when you simply cannot afford the modeling and tuning effort — a wrong model makes the Kalman filter confidently wrong.
 
+### Problem set · 과제
+
+Tier B. **P3** from [[02-foundations/lab-plants|0.6]]. This page §2. The haptic loop is $1\,\mathrm{kHz}$ ($T=10^{-3}\,\mathrm{s}$). No simulator.
+
+1. **Draw.** Continuous handle position $x(t)$ through an ideal sampler of period $T$, then a zero-order hold (value held constant until the next tick). Mark the wall $x_w$.
+2. **Derive.** Nyquist frequency at $1\,\mathrm{kHz}$, and the largest band $B$ the theorem allows. If the hand/wall contact you care about lives below $30\,\mathrm{Hz}$, is $1\,\mathrm{kHz}$ enough on sampling grounds alone?
+3. **Interpret.** One motor encoder count is $\Delta x=r_m\,2\pi/N$. Compute it. Sampling interval or quantization step? What does raising $N$ change that raising $f_s$ does not?
+
+> [!tip]- Solutions
+> 1. Sampler $x[n]=x(nT)$. ZOH: a stair of height $x[n]$ on $[nT,(n+1)T)$. Wall at $x_w=0.030\,\mathrm{m}$.
+> 2. $f_s=1000\,\mathrm{Hz}$, Nyquist $500\,\mathrm{Hz}$, so $B<500\,\mathrm{Hz}$. $30\,\mathrm{Hz}$ is far below; sampling is not the bottleneck.
+> 3. $\Delta x=0.010\cdot 2\pi/1024=6.14\times 10^{-5}\,\mathrm{m}$ ($61.4\,\mu\mathrm{m}$). Quantization of position, not a $T_s$. Larger $N$ shrinks the stair in space; larger $f_s$ shrinks it in time.
+
 ### Robotics bridge
 
 Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state-estimation-slam|State Estimation]] and [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]].
@@ -658,6 +671,19 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 > 2. $|170 - 200| = 30$ Hz로 위장해 나타난다. 샘플링 전에 아날로그 안티에일리어스 필터(차단 <100 Hz)를 넣거나 $f_s > 340$ Hz로 올렸어야 한다.
 > 3. $H(f) = \tfrac12(1 + e^{-j2\pi f})$이므로 $|H(f)| = |\cos(\pi f)|$다($f$: cycles/sample). 나이퀴스트 주파수 $f = 1/2$에서 완전히 소거되는데, 연속한 두 표본이 부호를 번갈아 평균이 0이 되기 때문이다.
 > 4. 지연: 칼만의 *예측* 단계가 보정 전에 상태를 앞으로 보내므로, 인과적 저역통과가 무는 위상 지연을 전부 물지는 않는다. 없애는 것이 아니라 덜 무는 것이다. 모델: 프로세스/측정 노이즈 비를 명시적으로 써서 시변 최적 이득을 계산한다 — 손튜닝 저역통과에는 둘 다 없다. 반대로 저역통과가 이기는 경우는 운동 모델이 틀렸거나 아예 없을 때, 잡음이 가정한 통계에서 멀 때, 또는 모델링과 튜닝에 들일 여력이 없을 때다. 틀린 모델은 칼만 필터를 확신에 차서 틀리게 만든다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 이 페이지 §2. 햅틱 루프는 $1\,\mathrm{kHz}$ ($T=10^{-3}\,\mathrm{s}$). 시뮬레이터 없음.
+
+1. **그리기.** 연속 핸들 위치 $x(t)$가 주기 $T$의 이상 샘플러, 이어서 영차 홀드(다음 틱까지 값을 유지). 벽 $x_w$를 표시.
+2. **유도.** $1\,\mathrm{kHz}$에서의 나이퀴스트 주파수, 정리가 허용하는 최대 대역 $B$. 손/벽 접촉이 $30\,\mathrm{Hz}$ 아래라면, 샘플링만으로 $1\,\mathrm{kHz}$는 충분한가?
+3. **해석.** 모터 엔코더 한 카운트 $\Delta x=r_m\,2\pi/N$을 계산하라. 샘플 간격인가 양자화 스텝인가? $N$을 키우는 것과 $f_s$를 키우는 것은 무엇이 다른가?
+
+> [!tip]- 정답 · Solutions
+> 1. 샘플러 $x[n]=x(nT)$. ZOH는 $[nT,(n+1)T)$에서 높이 $x[n]$인 계단. 벽 $x_w=0.030\,\mathrm{m}$.
+> 2. $f_s=1000\,\mathrm{Hz}$, 나이퀴스트 $500\,\mathrm{Hz}$, 따라서 $B<500\,\mathrm{Hz}$. $30\,\mathrm{Hz}$는 한참 아래라 샘플링이 병목이 아니다.
+> 3. $\Delta x=0.010\cdot 2\pi/1024=6.14\times 10^{-5}\,\mathrm{m}$ ($61.4\,\mu\mathrm{m}$). 위치의 양자화이지 $T_s$가 아니다. $N$을 키우면 공간 계단이 줄고, $f_s$를 키우면 시간 계단이 준다.
 
 ### 로보틱스 다리
 

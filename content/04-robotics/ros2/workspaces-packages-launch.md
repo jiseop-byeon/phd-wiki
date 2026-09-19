@@ -532,6 +532,19 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 > **3. Your YAML parameter file loads without error and no parameter is set. What are the two things to check first?** The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), That mistake is silent. A misspelled `ros__parameters` would not have loaded without error — it is a parse error that stops the node — so if the file truly loaded, the name (or whether the file was passed at all) is the suspect. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
 > **4. Why should a pure Python package use `<exec_depend>` rather than `<depend>`?** `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have misinforms rosdep and the release tooling, which will install and require them at build time, and misrepresents what the package actually needs. (It does not change colcon's build order: colcon orders by run dependencies too.)
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — camera $50\,\mathrm{Hz}$, controller $200\,\mathrm{Hz}$, bag logger — must start from one launch file. No new simulator.
+
+1. **Draw.** Launch tree: one file starts the three P6 nodes and loads `p6.yaml`. Five-line timeline of the daily loop: edit controller, `colcon build`, `source install/setup.bash`, launch, first `/goal` at $20\,\mathrm{ms}$.
+2. **Derive.** (a) YAML top-level key for a controller namespaced `/cart`. What silent failure if the key is `/controller`? (b) Encoder $\Delta p$ for one count — a parameter in that file. (c) You rebuilt, relaunched, motor still at the old rate. Three causes, one command that splits them.
+3. **Interpret.** `--symlink-install` fixed the Python camera node and not the C++ controller. Why, and which of P6's two rates does that matter for?
+
+> [!tip]- Solutions
+> 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML under `/cart`. Timeline: edit; build; source; launch; first vision period.
+> 2. (a) `/cart/controller` (or `/**`). `/controller` loads with no error and sets nothing. (b) $0.488\,\mathrm{mm}$, stored as $2048$ counts/m. (c) Wrong `--packages-select`, overlay not sourced, failed build. `ros2 pkg prefix` / `python3 -c "…__file__"`.
+> 3. Python `develop` points at `src/`; the C++ artefact is a binary. The $200\,\mathrm{Hz}$ loop is the C++ one — a stale binary keeps the old period even when the camera script updates.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -1056,3 +1069,16 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 > **2. `--symlink-install`은 왜 Python은 고치고 C++은 못 고치나?** `ament_python` 패키지에서는 colcon이 setuptools의 `develop` 단계를 돌리므로 설치된 모듈 경로가 `src/`로 되돌아 해석된다. C++ 패키지의 설치 산출물은 컴파일된 바이너리이고, 가리킬 소스 파일이 없으므로 새 바이너리에는 컴파일이 필요하다. CMake 패키지가 설치하는 데이터 파일 — launch, YAML, URDF — 은 링크되고 소스를 따라간다.
 > **3. YAML 파라미터 파일이 에러 없이 로드되는데 아무 파라미터도 설정되지 않는다. 먼저 확인할 두 가지는?** 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 이 실수는 조용하다. `ros__parameters` 오타였다면 에러 없이 로드될 수 없다 — 노드를 멈추는 파싱 오류다 — 그러니 파일이 정말 로드됐다면 의심할 것은 이름(또는 파일이 아예 전달됐는지)이다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
 > **4. 순수 Python 패키지는 왜 `<depend>`가 아니라 `<exec_depend>`를 써야 하나?** `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 rosdep과 릴리스 도구가 그것을 빌드 시점에 설치·요구하도록 잘못 알리고, 패키지가 실제로 무엇을 필요로 하는지도 잘못 표현한다. (colcon의 빌드 순서는 바뀌지 않는다. colcon은 실행 의존성으로도 순서를 정한다.)
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 노드 셋 — 카메라 $50\,\mathrm{Hz}$, 제어기 $200\,\mathrm{Hz}$, bag 로거 — 를 launch 파일 하나에서 띄워야 한다. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** Launch 트리: 파일 하나가 P6 노드 셋을 띄우고 `p6.yaml`을 로드. 일상 루프의 다섯 줄 타임라인: 제어기 수정, `colcon build`, `source install/setup.bash`, launch, 첫 `/goal`이 $20\,\mathrm{ms}$.
+2. **유도.** (a) 네임스페이스 `/cart`인 제어기의 YAML 최상위 키. 키가 `/controller`이면 어떤 조용한 고장인가? (b) 엔코더 한 카운트의 $\Delta p$ — 그 파일의 파라미터. (c) 다시 빌드하고 다시 띄웠는데 모터가 옛 주기. 원인 셋, 가르는 명령 하나.
+3. **해석.** `--symlink-install`이 Python 카메라 노드는 고치고 C++ 제어기는 못 고쳤다. 이유는, 그리고 P6의 두 주기 중 어느 쪽에 중요한가?
+
+> [!tip]- 정답 · Solutions
+> 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML은 `/cart` 아래. 타임라인: 수정; 빌드; source; launch; 첫 비전 주기.
+> 2. (a) `/cart/controller`(또는 `/**`). `/controller`는 에러 없이 로드되고 아무것도 안 넣는다. (b) $0.488\,\mathrm{mm}$, $2048$ counts/m로 저장. (c) 잘못된 `--packages-select`, overlay 미source, 실패한 빌드. `ros2 pkg prefix` / `python3 -c "…__file__"`.
+> 3. Python `develop`은 `src/`를 가리키고, C++ 산출물은 바이너리다. $200\,\mathrm{Hz}$ 루프가 C++ 쪽이라 낡은 바이너리는 카메라 스크립트가 갱신돼도 옛 주기를 유지한다.

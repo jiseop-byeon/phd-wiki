@@ -272,6 +272,19 @@ includes construction machinery is the nearest existing bridge between this page
 > 4. A name collision. The DARPA programme is *Robotic Autonomy in Complex Environments with Resiliency*; a separate, unrelated paper uses RACER for an epistemic risk-sensitive RL method on a 1/10-scale rally car. Both are real; citing one for the other is a common error.
 > 5. **GOOSE-Ex**, because it is the only off-road perception dataset here containing a robotic excavator, and it was built for cross-embodiment generalization. What is still missing is everything about the machine's own state — no actuator, joint, hydraulic-pressure or force channel is released, which is the same gap [[06-research-practice/simulators-benchmarks-datasets|7. §8]] documents across the whole construction dataset landscape.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A lidar occupancy map labels tall grass as occupied. Why is that the canonical counterexample, and what supervision source (name a paper) replaces the occupancy label?
+2. A learned system reports 95% success on a 2 km course. Which number is more informative, and what two courses of driving does 95% conflate?
+3. A planner minimises expected cost on a costmap. What does CVaR buy over the mean, and when is the mean the *wrong* objective for an excavator on a slope?
+
+> [!tip]- Solutions
+> 1. Grass is occupied in the grid and traversable for many platforms. BADGR (drive-and-label), or proprioceptive cost (*How Does It Feel?*), replaces geometry with consequence.
+> 2. Interventions per kilometre, plus the distance. 95% conflates a clean run with a run after operator rescues.
+> 3. CVaR penalises the tail, not the average rut. A mean-optimal path can still include a rare roll-over; an excavator on a slope cares about that tail.
+
 ### Sources
 
 - G. Kahn, P. Abbeel, S. Levine, "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System," *IEEE RA-L*, vol. 6, no. 2, pp. 1312–1319, 2021 ([arXiv:2002.05700](https://arxiv.org/abs/2002.05700)).
@@ -529,6 +542,19 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 > 3. **킬로미터당 개입 횟수**, 그리고 거리 그 자체. 고정 코스의 성공률은 "깨끗하게 주행했다"와 "조작자가 세 번 구해 준 뒤 주행했다"를 뭉뚱그리고, 배치 가능성을 추적하는 숫자는 개입 횟수다. *How Does It Feel?* 의 대표 수치가 성공률이 아니라 정확히 이것 — 개입 **최대** 57% 감소 — 이다.
 > 4. 이름 충돌이다. DARPA 프로그램은 *Robotic Autonomy in Complex Environments with Resiliency*이고, 별개의 무관한 논문이 1/10 스케일 랠리카의 epistemic risk-sensitive RL 방법에 RACER를 쓴다. 둘 다 실재하며, 하나를 다른 하나로 인용하는 것이 흔한 오류다.
 > 5. **GOOSE-Ex.** 여기서 로봇 굴착기를 담은 유일한 오프로드 인식 데이터셋이고 교차 embodiment 일반화를 위해 만들어졌기 때문이다. 여전히 없는 것은 기계 자신의 상태 전부다 — 액추에이터·관절·유압·힘 채널이 하나도 공개되지 않으며, 이는 [[06-research-practice/simulators-benchmarks-datasets|7. §8]]이 건설 데이터셋 전반에 대해 기록한 바로 그 공백이다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 라이다 occupancy 지도가 키 큰 풀을 점유로 표시한다. 이것이 정전 반례인 이유와, occupancy 레이블을 대체하는 감독 원천(논문 이름)은?
+2. 학습 시스템이 2 km 코스에서 95% 성공을 보고한다. 더 정보가 되는 숫자와, 95%가 뭉뚱그리는 주행 둘은?
+3. 플래너가 costmap에서 기댓값을 최소화한다. 평균 대신 CVaR가 사는 것과, 경사면 굴착기에서 평균이 *틀린* 목적인 때는?
+
+> [!tip]- 정답 · Solutions
+> 1. 풀은 격자에서 점유지만 많은 플랫폼에는 통과 가능하다. BADGR(달려 보며 라벨)이나 고유수용 비용(*How Does It Feel?*)이 기하를 결과로 바꾼다.
+> 2. 킬로미터당 개입, 그리고 거리. 95%는 깨끗한 주행과 조작자 구조 뒤 주행을 섞는다.
+> 3. CVaR는 평균 골이 아니라 꼬리를 벌한다. 평균 최적 경로에도 드문 전복이 남을 수 있고, 경사면 굴착기는 그 꼬리를 본다.
 
 ### 출처
 

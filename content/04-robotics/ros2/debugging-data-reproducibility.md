@@ -507,6 +507,19 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 > **3. Why is `ros2 bag record -a` a bad default for a research recording, beyond disk space?** Because the recorder must serialise and write everything it subscribed to, and when it cannot keep up it drops messages — so the topic you actually cared about comes home incomplete, with no error. `ros2 bag info`'s Count column is where you find out, usually too late. A 400 GB bag also cannot be shared, put in CI, or iterated on.
 > **4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and how you tell them apart.** The clock (the node is not on `use_sim_time`, or is on it with nothing publishing `/clock`) and QoS durability or reliability (the subscriber requests more than the player offers, so no connection is made). `ros2 topic hz /scan` only tells you the player publishes that name — it uses a best-effort profile that connects to anything, so it cannot see QoS. `ros2 topic info /scan --verbose` then compares the player's offer with your node's request: incompatible profiles are cause B; compatible ones leave `/clock` and `use_sim_time` (cause A).
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal` ($50\,\mathrm{Hz}$) and `/cmd` ($200\,\mathrm{Hz}$). Budget $70\,\mathrm{ms}$. No new simulator.
+
+1. **Draw.** Ordered checklist (environment → node list → topic hz → info `--verbose` → TF → `/clock`) on the P6 graph. Five-line timeline of a bag replay with `--clock`: first `/goal`, fourteen `/cmd` ticks, the $70\,\mathrm{ms}$ mark.
+2. **Derive.** (a) `ros2 topic hz /goal` is a healthy $50\,\mathrm{Hz}$; `delay` grows $1\,\mathrm{s}$ per second. What is happening, and why `hz` is blind. (b) A frame with delay $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget. (c) `record -a` on P6: besides disk, what happens to `/cmd` when the recorder cannot keep $200\,\mathrm{Hz}$?
+3. **Interpret.** Replay with `--clock` shows thousands of messages; the controller emits nothing. Two causes, and the command that splits them. Which of the two also hides a budget failure?
+
+> [!tip]- Solutions
+> 1. Check 0 is the shell. Timeline in bag time, not wall time, if `--clock` and `use_sim_time` agree.
+> 2. (a) Upstream queue: arrivals stay $50\,\mathrm{Hz}$, each stamp older. `hz` is inter-arrival; `delay` is age. (b) $130\,\mathrm{ms}$ over budget — even a "healthy" hz is a late force. (c) Drops, no error; `ros2 bag info` Count on `/cmd` is short.
+> 3. Clock (`use_sim_time` / `/clock`) versus QoS. `ros2 topic info /goal --verbose` splits them (`hz` cannot see QoS). A compatible QoS pair with $200\,\mathrm{ms}$ delay is the budget failure: data flows and is already late.
+
 ## 한국어
 
 ### 1. 이 페이지가 존재하는 이유
@@ -998,3 +1011,16 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 > **2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 1초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?** 상류 어딘가가 뒤처져 출력이 큐에 쌓이고 있다. 메시지는 제 주기로 오지만 하나하나가 앞의 것보다 오래됐다. `hz`는 도착 간격을 재고, 일정한 적체는 그 간격을 바꾸지 않는다. header 스탬프와 수신 시각을 비교하는 `delay`만 쌓이는 나이를 본다. 유계한 지연은 지연이고, 자라는 지연은 결국 잃게 될 큐다.
 > **3. 연구용 녹화에서 `ros2 bag record -a`가 나쁜 기본값인 이유를 디스크 용량 말고 대라.** 기록기가 구독한 모든 것을 직렬화해서 써야 하고, 따라가지 못하면 메시지를 흘리기 때문이다. 그래서 정작 필요한 토픽이 불완전한 채로 돌아오고 에러는 없다. 알게 되는 곳은 `ros2 bag info`의 Count 열이고 보통 이미 늦었다. 400 GB짜리 bag은 공유도, CI 투입도, 반복도 불가능하다.
 > **4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 방법을 대라.** 시계(노드가 `use_sim_time`이 아니거나, `use_sim_time`인데 `/clock`을 발행하는 것이 없음)와 QoS durability/reliability(구독자가 플레이어의 제공보다 많이 요구해 연결이 성립하지 않음). `ros2 topic hz /scan`은 플레이어가 그 이름으로 발행한다는 것만 알려 준다 — 무엇과도 연결되는 best-effort 프로파일을 쓰므로 QoS를 보지 못한다. 그다음 `ros2 topic info /scan --verbose`로 플레이어의 제공과 내 노드의 요청을 비교한다. 비호환이면 원인 B, 호환이면 남는 것은 `/clock`과 `use_sim_time`(원인 A)이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. `/goal`($50\,\mathrm{Hz}$)과 `/cmd`($200\,\mathrm{Hz}$)를 녹화했다. 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6 그래프 위의 순서 있는 점검(환경 → node list → topic hz → info `--verbose` → TF → `/clock`). `--clock` bag 재생의 다섯 줄 타임라인: 첫 `/goal`, `/cmd` 틱 열넷, $70\,\mathrm{ms}$ 표시.
+2. **유도.** (a) `ros2 topic hz /goal`은 $50\,\mathrm{Hz}$로 멀쩡하고 `delay`는 1초마다 $1\,\mathrm{s}$씩 는다. 무슨 일이고, 왜 `hz`는 못 보는가. (b) 지연 $200\,\mathrm{ms}$인 프레임 대 $70\,\mathrm{ms}$ 예산. (c) P6에서 `record -a`: 디스크 말고, 기록기가 $200\,\mathrm{Hz}$를 못 따라가면 `/cmd`에 무슨 일이 있는가?
+3. **해석.** `--clock` 재생이 메시지 수천 개를 보여 주는데 제어기는 아무것도 안 낸다. 원인 둘과 가르는 명령. 둘 중 어느 것이 예산 실패도 감추는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 0번은 셸. `--clock`과 `use_sim_time`이 맞으면 타임라인은 벽시계가 아니라 bag 시간.
+> 2. (a) 상류 큐: 도착은 $50\,\mathrm{Hz}$로 남고 스탬프만 늙는다. `hz`는 도착 간격, `delay`는 나이. (b) 예산 초과 $130\,\mathrm{ms}$ — "건강한" hz도 늦은 힘. (c) 드롭, 에러 없음; `ros2 bag info`의 `/cmd` Count가 짧다.
+> 3. 시계(`use_sim_time` / `/clock`) 대 QoS. `ros2 topic info /goal --verbose`가 가른다(`hz`는 QoS를 못 봄). 호환 QoS에 $200\,\mathrm{ms}$ 지연이면 예산 실패: 데이터는 흐르고 이미 늦다.

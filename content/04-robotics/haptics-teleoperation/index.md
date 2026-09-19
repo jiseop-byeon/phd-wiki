@@ -50,6 +50,19 @@ You need not master every formula first, but mark the inputs, outputs, energy fl
 
 After this track, you should be able to trace one full haptic cycle, distinguish tactile from kinesthetic display, derive $\tau=J^\top F$, explain why a sampled virtual wall can add energy, state what passivity does and does not guarantee, and propose measurements that separate perceptual benefit from controller performance.
 
+### Problem set · 과제
+
+Tier C. Using this page and the **P3** lab on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]].
+
+1. After 24.1–24.4, which three facts about **P3** must you be able to state without opening 24.4 (mass, damper, wall), and which bound do they enter?
+2. A colleague wants to skip 24.4 and "just raise $k_w$ until the handle feels hard". What does the 24.4 lab's case C versus D show that this page's completion criterion is asking you to explain?
+3. Where does a force-reflecting teleoperator leave this track and enter [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]], and what does 24.4's energy sum still buy you there?
+
+> [!tip]- Solutions
+> 1. $m=0.04$, $b=0.8$, $k_w=400$. They enter $K\le 2b/T$ (device $b$, not $b_h$).
+> 2. Case C ($T=5\,\mathrm{ms}$, $k_w=2500$) chatters and $\sum T F_a v>0$; case D looks settled only because $b_h$ is damping for you. Raising $k_w$ can inject energy. That is the sampled-wall fact the completion criterion names.
+> 3. When a second port and a delayed channel appear. The same energy sum at each port still diagnoses whether the channel is injecting; 24.5 adds transparency and scaling on top of that test.
+
 ## 한국어
 
 햅틱은 사람을 포함해 닫히는 피드백 루프다. 센서가 운동이나 힘을 측정하고, 모델이 반응을 계산하고, 액추에이터가 기계적 에너지를 돌려주면 사람의 손이 다음 입력을 바꾼다. 따라서 햅틱은 지각·메카트로닉스·샘플드데이터 제어 문제를 동시에 다룬다.
@@ -92,3 +105,16 @@ flowchart LR
 ### 완료 기준
 
 하나의 햅틱 루프 전체를 추적하고, tactile과 kinesthetic display를 구분하고, $\tau=J^\top F$를 유도하고, 샘플된 가상 벽이 왜 에너지를 만들 수 있는지 설명하고, 수동성이 보장하는 것과 보장하지 않는 것을 구분하며, 지각 이득과 제어기 성능을 분리하는 실험을 제안할 수 있어야 한다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 **P3** 랩.
+
+1. 24.1–24.4를 마친 뒤 24.4를 열지 않고 말해야 하는 **P3**의 사실 셋(질량, 댐퍼, 벽)은 무엇이고, 그것들이 들어가는 경계는?
+2. 동료가 24.4를 건너뛰고 "핸들이 단단해질 때까지 $k_w$만 올리자"고 한다. 24.4 랩의 조건 C 대 D가, 이 페이지 완료 기준이 설명하라고 하는 무엇을 보여 주는가?
+3. 힘 반사 원격조작기가 이 트랙을 떠나 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]]로 들어가는 지점은 어디이고, 거기서도 24.4의 에너지 합이 사 주는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. $m=0.04$, $b=0.8$, $k_w=400$. $K\le 2b/T$에 들어간다(장치 $b$이지 $b_h$가 아님).
+> 2. 조건 C($T=5\,\mathrm{ms}$, $k_w=2500$)는 채터하고 $\sum T F_a v>0$; 조건 D가 정착해 보이는 것은 $b_h$가 대신 댐핑하기 때문이다. $k_w$를 올리면 에너지를 넣을 수 있다. 완료 기준이 가리키는 샘플된 벽의 사실이다.
+> 3. 두 번째 포트와 지연 채널이 나타날 때. 각 포트의 같은 에너지 합이 채널이 주입하는지를 여전히 진단하고, 24.5는 그 시험 위에 투명성과 스케일링을 더한다.

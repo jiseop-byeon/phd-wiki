@@ -275,6 +275,20 @@ The linear part of a twist also depends on the reference frame and its origin. T
 > 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (append 1 for homogeneous coordinates, then multiply).
 > 4. Right-multiplication $T \cdot \Delta T$ — motion in the body (gripper) frame multiplies on the right; world-frame motion on the left.
 
+### Problem set · 과제
+
+Tier B. **P2** at $\theta=(0^\circ,90^\circ)$. This page §3–4. Planar, so $R=R_z(\theta_1+\theta_2)$.
+
+1. **Draw.** Base frame at the origin and tip frame at $(1,1)$. The second link is vertical: tip $x$-axis along $+y$. Label both origins.
+2. **Derive.** Write $T_{\mathrm{base}\leftarrow\mathrm{tip}}$ as a $4\times 4$ homogeneous matrix. Rotation of the second link is $90^\circ$ about $z$; translation is the tip $(1,1,0)$.
+3. **Interpret.** $\mathrm{Ad}_T$ rewrites one twist in another frame. $J$ maps $\dot\theta$ to a twist at this pose. Same matrix? What would $\mathrm{Ad}_T$ do to a column of $J$ if you changed the velocity frame?
+
+> [!tip]- Solutions
+> 1. Base at $(0,0)$; elbow $(1,0)$; tip $(1,1)$ with $x_{\mathrm{tip}}$ up and $y_{\mathrm{tip}}$ left.
+> 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, so
+>    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
+> 3. Not the same map. $J$ is pose-dependent and stacks joint screws; $\mathrm{Ad}_T$ is a change of frame for a single twist. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$ — it does not replace $J$.
+
 ### Robotics bridge
 
 This notation is used verbatim throughout the [[04-robotics/modern-robotics/index|Modern Robotics summary]] and the extrinsics of [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]; it becomes operational in [[04-robotics/state-estimation-slam|SLAM and localization]] and the time-indexed TF trees of [[04-robotics/robot-systems-deployment|Robot Systems]].
@@ -533,6 +547,20 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 > 2. $\pm 180°$ 경계에서 각도 값이 점프한다($179° \to -181°$가 아니라 $-179°$) — 이웃한 회전이 먼 타깃이 되어 MSE가 폭발. 쿼터니언은 $q$와 $-q$가 같은 회전이라, 타깃과 부호가 반대면 옳은 답에 큰 손실을 주는 잘못된 그래디언트가 생긴다.
 > 3. $p_{base} = T_{base \leftarrow cam}\,[p_{cam}; 1]$ (동차 좌표로 확장해 곱한다).
 > 4. 오른쪽 곱 $T \cdot \Delta T$ — 자기(그리퍼) 프레임 기준 운동은 오른쪽에, 월드 프레임 기준 운동은 왼쪽에 곱한다.
+
+### 과제 · Problem set
+
+Tier B. **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §3–4. 평면이므로 $R=R_z(\theta_1+\theta_2)$.
+
+1. **그리기.** 원점의 베이스 프레임과 $(1,1)$의 말단 프레임. 둘째 링크는 수직: 말단 $x$축이 $+y$. 두 원점을 기입.
+2. **유도.** $T_{\mathrm{base}\leftarrow\mathrm{tip}}$을 $4\times 4$ 동차행렬로. 둘째 링크의 회전은 $z$ 둘레 $90^\circ$, 평행이동은 말단 $(1,1,0)$.
+3. **해석.** $\mathrm{Ad}_T$는 트위스트 하나를 다른 프레임으로 다시 쓴다. $J$는 이 자세에서 $\dot\theta$를 트위스트로 보낸다. 같은 행렬인가? 속도 프레임을 바꾸면 $\mathrm{Ad}_T$는 $J$의 한 열에 무엇을 하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 베이스 $(0,0)$, 엘보 $(1,0)$, 말단 $(1,1)$. $x_{\mathrm{tip}}$은 위, $y_{\mathrm{tip}}$은 왼쪽.
+> 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$,
+>    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
+> 3. 같은 사상이 아니다. $J$는 자세에 의존하며 관절 스크류를 쌓고, $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이다. 속도 프레임을 바꾸면 $J$의 열에 $\mathrm{Ad}$를 왼쪽 곱할 뿐, $J$를 대체하지 않는다.
 
 ### 로보틱스 다리
 

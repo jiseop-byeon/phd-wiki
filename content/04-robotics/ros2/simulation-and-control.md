@@ -448,6 +448,19 @@ Writing a hardware component of your own — a real driver behind the same inter
 > **4. A tutorial tells you to add `<plugin filename="libgazebo_ros_control.so">` to your URDF. What is wrong with it?** It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
 > **5. You get a manipulation policy working in Gazebo. What can you claim?** That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. Controller `update_rate: 200`. Vision is a bridged camera at $50\,\mathrm{Hz}$. Budget $70\,\mathrm{ms}$. No new Euler simulator.
+
+1. **Draw.** P6 cart in Gazebo: `gz_ros2_control` hardware plugin, joint-state broadcaster, a velocity controller, `/clock` bridge. Five-line timeline on *sim* time: camera exposure, bridge, controller `read`–`update`–`write`, force. Mark the $70\,\mathrm{ms}$ budget.
+2. **Derive.** (a) Control period at $200\,\mathrm{Hz}$. Encoder $\Delta p$ for one count. (b) The controller is `active` and the cart does not move. First command, most likely cause. (c) No `/clock` bridge; a trajectory is stamped with wall time. What does the sim-time controller read?
+3. **Interpret.** A $200\,\mathrm{ms}$-late bridged vision frame still meets Gazebo's physics rate. Does it meet P6's budget? What can a Gazebo success claim, and what can it not?
+
+> [!tip]- Solutions
+> 1. Plugin `gz_ros2_control/GazeboSimSystem`; `/clock` out of Gazebo into ROS. Timeline in sim time, not wall time.
+> 2. (a) $5\,\mathrm{ms}$, $0.488\,\mathrm{mm}$. (b) `ros2 control list_controllers`; joint-name mismatch among URDF, `<ros2_control>`, YAML. (c) A start far in the future (unless the stamp is zero, "start now").
+> 3. No: $200>70$. Gazebo success claims plumbing — interfaces, rates, launch. Not that the $70\,\mathrm{ms}$ camera-to-force chain, or contact, will hold on hardware.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -888,3 +901,16 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 > **3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?** 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 `use_sim_time`을 켠 ROS 쪽 노드 — robot_state_publisher, TF 소비자, 스탬프를 찍거나 변환을 조회하는 모든 것 — 에 시간 원천이 없어 멈추고, 벽시계 스탬프를 준 궤적은 제어기의 시뮬레이션 시계에서 먼 미래에 시작하는 것으로 읽힌다. (`ros2 topic pub`이 기본으로 보내는 0 스탬프는 "지금 시작"이라 이 문제를 비켜 간다.) 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
 > **4. 어떤 튜토리얼이 URDF에 `<plugin filename="libgazebo_ros_control.so">`를 넣으라고 한다. 무엇이 잘못됐나?** Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
 > **5. Gazebo에서 매니퓰레이션 정책이 동작한다. 무엇을 주장할 수 있나?** 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.
+
+### 과제 · Problem set
+
+Tier B. Gazebo Harmonic 안의 [[02-foundations/lab-plants|0.6]] **P6**. 제어기 `update_rate: 200`. 비전은 $50\,\mathrm{Hz}$로 브리지된 카메라. 예산 $70\,\mathrm{ms}$. 새 오일러 시뮬레이터는 만들지 마라.
+
+1. **그리기.** Gazebo의 P6 카트: `gz_ros2_control` 하드웨어 플러그인, joint-state broadcaster, 속도 제어기, `/clock` 브리지. *시뮬* 시간의 다섯 줄 타임라인: 카메라 노출, 브리지, 제어기 `read`–`update`–`write`, 힘. $70\,\mathrm{ms}$ 예산 표시.
+2. **유도.** (a) $200\,\mathrm{Hz}$의 제어 주기. 엔코더 한 카운트의 $\Delta p$. (b) 제어기는 `active`인데 카트가 안 움직인다. 첫 명령, 가장 유력한 원인. (c) `/clock` 브리지가 없고 궤적에 벽시계 스탬프. 시뮬 시간 제어기는 무엇을 읽는가?
+3. **해석.** $200\,\mathrm{ms}$ 늦은 브리지 비전 프레임이 Gazebo 물리 주기는 만족한다. P6 예산을 만족하는가? Gazebo 성공이 주장할 수 있는 것과 없는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. 플러그인 `gz_ros2_control/GazeboSimSystem`; Gazebo에서 ROS로 `/clock`. 타임라인은 벽시계가 아니라 시뮬 시간.
+> 2. (a) $5\,\mathrm{ms}$, $0.488\,\mathrm{mm}$. (b) `ros2 control list_controllers`; URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
+> 3. 아니오: $200>70$. Gazebo 성공은 배관 — 인터페이스, 주기, launch — 을 주장한다. $70\,\mathrm{ms}$ 카메라–힘 사슬이나 접촉이 하드웨어에서 버틴다는 것은 아니다.

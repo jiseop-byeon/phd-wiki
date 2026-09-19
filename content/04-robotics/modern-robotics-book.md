@@ -39,6 +39,19 @@ Coursera specialization.
 joint commands) and every simulator's dynamics assume this material; SE(3) fluency is the
 entry ticket to manipulation research.
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: **P2** to a panel ([[02-foundations/lab-plants|0.6]]). This page is the book guide, not a chapter.
+
+1. **Claim.** Which sentence is the claim that MR uses screw theory / PoE instead of D–H?
+2. **Falsify.** What would falsify “SE(3) fluency is the entry ticket to manipulation and VLA papers”?
+3. **Task.** Which chapters of this book does the P2→panel running task actually use, and which one is grasping the panel?
+
+> [!tip]- Solutions
+> 1. The “What it is” paragraph: built on screw-theory/exponential coordinates rather than classical D–H — that sentence *is* the claim.
+> 2. A widely used manipulation or VLA paper whose action space and losses never refer to poses, twists, or Jacobians (joint-chunk policies still *interpret* chunks through FK). One counter-example would weaken “entry ticket”, not the book’s formulation.
+> 3. C-space through Jacobian and IK (ch.2–6), dynamics and control (ch.8, 11) to press the panel; grasping the panel is ch.12. Planning/timing are ch.9–10.
+
 ## 한국어
 
 *A군의 뿌리다. 이 트랙이 기하와 역학에 쓰는 어휘가 전부 이 교재에서 나온다. 챕터 요약은
@@ -61,6 +74,19 @@ entry ticket to manipulation research.
 **이 위키에서 중요한 이유**: 모든 VLA 논문의 행동 공간(말단 자세, 관절 명령)과 모든
 시뮬레이터의 동역학이 이 내용을 전제한다; SE(3)에 능숙해지는 것이 매니퓰레이션 연구의
 입장권이다.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지. 이 페이지는 책 가이드이지 챕터가 아니다.
+
+1. **주장.** MR이 D–H 대신 스크류 이론 / PoE를 쓴다는 주장은 어느 문장인가?
+2. **반증.** “SE(3) 유창성이 매니퓰레이션·VLA 논문의 입장권이다”를 깨는 것은?
+3. **과제.** P2→패널 관통 과제가 실제로 쓰는 장은 어느 장이고, 패널을 잡는 장은?
+
+> [!tip]- 정답 · Solutions
+> 1. “무엇인가” 단락: 고전 D–H 대신 스크류 이론/지수 좌표 — 그 문장이 곧 주장이다.
+> 2. 행동 공간과 손실이 자세·트위스트·야코비안을 한 번도 안 가리키는 널리 쓰인 매니퓰레이션·VLA 논문(관절 청크 정책도 FK로 청크를 *해석*한다). 반례 하나는 “입장권”을 약화할 뿐 책의 정식화를 깨지 않는다.
+> 3. 패널을 누르려면 2–6장(C-space부터 야코비안·IK)과 8·11장(동역학·제어). 패널을 잡는 것은 12장. 계획·타이밍은 9–10장.
 
 ### Connections · 연결
 

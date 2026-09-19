@@ -326,6 +326,19 @@ local basin.
 > 5. The eigenvalues are 40 and 2, so $R=80-0.05\cdot42^2=-8.2<0$ and $\min\lambda=2$. It is an edge: intensity changes along $x$ only, so the point is poorly located along the edge direction $y$.
 > 6. No: $32/36=0.89>0.8$, so reject it — near-equal candidates suggest the neighbouring panel. A wrong match that survives must be caught by geometric verification (RANSAC), and a set shifted by one whole panel can pass even that, so check against odometry or independent landmarks.
 
+### Problem set · 과제
+
+Tier B. **P5** as a range to a wall ([[02-foundations/lab-plants|0.6]]). One hand–eye number: camera $4\,\mathrm{cm}$ behind the P2 tip. No simulator.
+
+1. **Draw.** Wrist camera looking along $+x$ at the panel. Mark P5's prior and measurement on that ray, and the $4\,\mathrm{cm}$ camera-to-tip offset.
+2. **Derive.** Scalar Kalman of P5: $K$, fused range, $P^+$. If that fused number is camera-to-wall, what is tip-to-wall after the $4\,\mathrm{cm}$?
+3. **Interpret.** In $AX=XB$, which of $A,B,X$ is the $4\,\mathrm{cm}$? Why a $1\,\mathrm{px}$ reprojection error does not certify that number.
+
+> [!tip]- Solutions
+> 1. Ray from camera through the tip to the wall. Prior $10\,\mathrm{cm}$, $z=12\,\mathrm{cm}$, camera behind the tip.
+> 2. $K=4/(4+1)=0.8$, fused $11.6\,\mathrm{cm}$, $P^+=0.8$. Tip-to-wall $11.6-4=7.6\,\mathrm{cm}$.
+> 3. $X$ is the unknown camera-to-gripper transform; $4\,\mathrm{cm}$ is one translation component of $X$. $A$ is gripper motion, $B$ is camera motion. Reprojection can be small while $X$ is still wrong outside the calibrated volume (§5).
+
 ### Sources
 
 - [Szeliski, *Computer Vision: Algorithms and Applications* (free official PDF)](https://szeliski.org/Book/)
@@ -651,6 +664,19 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 > 4. 알려진 intrinsics, 그리고 대개 대략적인 extrinsic 초기화 또는 겹침과 동기화된 타임스탬프를 여전히 요구하는 공동 최적화.
 > 5. 고윳값이 40과 2이므로 $R=80-0.05\cdot42^2=-8.2<0$이고 $\min\lambda=2$다. 에지다. 밝기가 $x$ 방향으로만 바뀌므로 에지 방향인 $y$로는 위치가 잘 정해지지 않는다.
 > 6. 통과하지 못한다. $32/36=0.89>0.8$이므로 버린다 — 거의 같은 후보는 옆 패널일 가능성을 뜻한다. 거르기를 통과한 틀린 매칭은 기하 검증(RANSAC)이 잡아야 하는데, 패널 한 칸만큼 통째로 밀린 집합은 그것마저 통과할 수 있으니 odometry나 독립 랜드마크와 대조하라.
+
+### 과제 · Problem set
+
+Tier B. 벽에 대한 거리로 **P5**([[02-foundations/lab-plants|0.6]]). hand–eye 숫자 하나: 카메라가 P2 말단보다 $4\,\mathrm{cm}$ 뒤. 시뮬레이터 없음.
+
+1. **그리기.** 손목 카메라가 $+x$로 패널을 본다. 그 광선 위에 P5의 사전과 측정, 카메라–말단 $4\,\mathrm{cm}$.
+2. **유도.** P5의 스칼라 칼만: $K$, 융합 거리, $P^+$. 융합이 카메라–벽이면 $4\,\mathrm{cm}$ 뒤 말단–벽은?
+3. **해석.** $AX=XB$에서 $A,B,X$ 중 $4\,\mathrm{cm}$는 어느 것인가? $1\,\mathrm{px}$ reprojection error가 그 숫자를 보증하지 않는 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 카메라에서 말단을 지나 벽으로 가는 광선. 사전 $10\,\mathrm{cm}$, $z=12\,\mathrm{cm}$.
+> 2. $K=0.8$, 융합 $11.6\,\mathrm{cm}$, $P^+=0.8$. 말단–벽 $7.6\,\mathrm{cm}$.
+> 3. $X$가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$는 $X$의 병진 성분 하나. $A$는 그리퍼 운동, $B$는 카메라 운동. 보정 부피 밖에서 $X$가 틀려도 reprojection은 작을 수 있다(§5).
 
 ### 출처
 

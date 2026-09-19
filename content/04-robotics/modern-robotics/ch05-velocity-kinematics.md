@@ -2,16 +2,16 @@
 title: "MR Ch.05 — Velocity Kinematics & Statics"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
-depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+wiki-support: Working
+depth-goal: "On plant P2, draw the Jacobian columns, compute τ = JᵀF, run resolved-rate Euler with a live versus frozen J, and say what a near-singularity does to a straight-line task."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]).
-> [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK와 [[02-foundations/calculus-backprop|편미분·야코비안]], 그리고 행렬 랭크의 의미([[02-foundations/linear-algebra|선형대수 §2]])를 알고 있어야 한다.
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.65 Lab Kernel]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.65]].
 
 ## English
 
@@ -102,6 +102,45 @@ VLA outputs pass through safety filters on real arms.
 > 2. Power must match at both ends: $\dot\theta^\top\tau = \mathcal{V}^\top\mathcal{F}$. Substituting $\mathcal{V} = J\dot\theta$ gives $\dot\theta^\top\tau = \dot\theta^\top J^\top\mathcal{F}$ for *all* $\dot\theta$, hence $\tau = J^\top\mathcal{F}$.
 > 3. Motion along the arm's own axis is the nearly-singular direction: $\det J = \sin 5° \approx 0.087$, so producing that tip velocity demands roughly an order of magnitude more joint speed than normal — often beyond joint limits. Perpendicular motion is unaffected and behaves normally.
 > 4. Velocities are amplified by the singular value $\sigma$ in each principal direction; by $\tau = J^\top\mathcal{F}$ the force transmitted in that same direction scales as $1/\sigma$. Directions that are easy to move are therefore hard to hold force in, and vice versa — the two ellipsoids are reciprocal.
+
+### Problem set · 과제
+
+Tier A. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. Mass and $\Lambda$ wait until [[02-foundations/manipulator-kinematics-dynamics|10]]; this page is velocity and statics.
+
+1. **Draw.** P2 at the frozen pose: base at the origin, elbow at $(1,0)$, tip at $(1,1)$. Draw Jacobian column 1 as the tip velocity for $\dot\theta=(1,0)$, and column 2 as the tip velocity for $\dot\theta=(0,1)$. Both are arrows at the tip. Write the two arrows as vectors.
+2. **Derive.** (a) Confirm $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ from the arrows (or from §2). (b) $J^{-1}$. (c) Joint rates that produce $v=(0,-0.25)\,\mathrm{m/s}$. (d) $\tau=J^\top F$ for $F=(2,-5)\,\mathrm{N}$. (e) Same $F$ at $\theta_2=5^\circ$ is *not* asked as a number — say which joint torque blows up if you instead asked for a tip velocity *along the arm*, and why $J^\top F$ itself does not blow up.
+3. **Do.** Resolved-rate: command $v=(0,-0.25)$ for $2\,\mathrm{s}$ from the frozen pose, $T=0.01$, explicit Euler on $\theta$ ([[02-foundations/lab-kernel|0.65]]). Fill `?`. Run twice: recompute $J(\theta)$ every step, then freeze $J$ at the start. Plot tip $x(t),y(t)$. Report final tip and the $x$-drift of the frozen-$J$ run.
+
+```python
+# P2 resolved-rate. Fill ?.
+import math
+T, t1, vy = 0.01, 2.0, -0.25
+n = int(round(t1 / T))
+th1, th2 = 0.0, math.pi / 2
+xs, ys = [], []
+freeze = False                       # True on the second run
+J0 = None
+for k in range(n):
+    s1, c1 = math.sin(th1), math.cos(th1)
+    s12, c12 = math.sin(th1 + th2), math.cos(th1 + th2)
+    J = ((?, ?), (?, ?))             # ((-s1-s12, -s12), (c1+c12, c12))
+    if freeze:
+        if J0 is None:
+            J0 = J
+        J = J0
+    det = J[0][0]*J[1][1] - J[0][1]*J[1][0]
+    # inverse of 2x2, then thdot = Jinv @ [0, vy]
+    th1d, th2d = ?, ?
+    th1, th2 = th1 + T*th1d, th2 + T*th2d
+    xs.append(c1 + math.cos(th1 + th2))
+    ys.append(math.sin(th1) + math.sin(th1 + th2))
+# plot xs, ys; caption "P2, explicit Euler on theta, T=0.01"
+```
+
+> [!tip]- Solutions
+> 1. Shoulder-only: the tip is at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, i.e. parallel to $(-1,1)$. Unit $\dot\theta_1$ gives $|v|=L_\text{tip}=\sqrt{2}$, so column 1 $=(-1,1)$. Elbow-only: forearm is along $+y$ from $(1,0)$ to $(1,1)$, unit $\dot\theta_2$ gives $v$ perpendicular to the forearm, column 2 $=(-1,0)$.
+> 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_\min$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
+> 3. $J$ blanks: `((-s1-s12, -s12), (c1+c12, c12))`. Inverse: `th1d = (J[1][1]*0 - J[0][1]*vy)/det`, `th2d = (-J[1][0]*0 + J[0][0]*vy)/det`. Live $J$: tip ends at $\approx(1.00,\ 0.50)$, $x$-drift $<1\,\mathrm{mm}$ (commanded $\Delta y=-0.50$). Frozen $J$: tip ends at $\approx(0.88,\ 0.52)$ — a centimetre-scale $x$ error on a half-metre task, from using a local map as a finite-motion map.
 
 ## 한국어
 
@@ -194,3 +233,16 @@ $\tau = J^\top \mathcal{F}$ 위에 살고([[01-canonical-papers/notes/4-vla/act|
 > 2. $\dot\theta^\top \tau = \mathcal{V}^\top \mathcal{F}$에 $\mathcal{V} = J\dot\theta$ 대입, 모든 $\dot\theta$에 대해 성립 ⇒ $\tau = J^\top \mathcal{F}$.
 > 3. 팔 자신의 축 방향이 거의 특이 방향이다: $\det J = \sin 5° \approx 0.087$, 최소 특이값 ≈ 0.04라 정상 자세보다 한 자릿수 이상 큰 관절 속도가 필요하고 관절 한계를 넘기 쉽다. 수직 방향은 정상 동작.
 > 4. 속도는 특이값 $\sigma$배로 증폭되고, 같은 방향의 힘은 $\tau = J^\top \mathcal{F}$에 의해 $1/\sigma$로 스케일되기 때문.
+
+### 과제 · Problem set
+
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 질량과 $\Lambda$는 [[02-foundations/manipulator-kinematics-dynamics|10]]까지 기다려라. 이 페이지는 속도와 정역학이다.
+
+1. **그리기.** 고정 자세의 P2: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $\dot\theta=(1,0)$의 말단 속도(열 1)와 $\dot\theta=(0,1)$의 말단 속도(열 2)를 말단에서 화살표로 그려라. 두 벡터를 써라.
+2. **유도.** (a) 화살표(또는 §2)에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$. (b) $J^{-1}$. (c) $v=(0,-0.25)\,\mathrm{m/s}$를 만드는 관절 속도. (d) $F=(2,-5)\,\mathrm{N}$의 $\tau=J^\top F$. (e) $\theta_2=5^\circ$에서 같은 $F$의 숫자를 묻지 않는다. 대신 *팔을 따른* 말단 속도를 시키면 어느 관절 속도가 터지는지, 그리고 왜 $J^\top F$ 자체는 터지지 않는지.
+3. **실행.** 영어 템플릿. $v=(0,-0.25)$를 $2\,\mathrm{s}$, $T=0.01$, $\theta$에 명시적 오일러. $J(\theta)$를 매 스텝 재계산한 런과 시작 $J$를 고정한 런. 말단 $x(t),y(t)$를 그리고 최종 말단과 고정-$J$의 $x$ 드리프트를 보고하라.
+
+> [!tip]- 정답 · Solutions
+> 1. 어깨만: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직 즉 $(-1,1)$ 방향. 단위 $\dot\theta_1$의 $|v|=\sqrt{2}$이므로 열 1 $=(-1,1)$. 엘보만: 전완이 $(1,0)\to(1,1)$의 $+y$, 단위 $\dot\theta_2$는 전완에 수직, 열 2 $=(-1,0)$.
+> 2. (a) $J$의 열이 그 화살표. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $\tau=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) 팔 방향 속도는 잃어버린 특이 방향이라 $\dot\theta\sim 1/\sigma_\min$이 터진다. $J^\top F$는 정역학 사상이라 유한 — 구조가 힘을 지고 모터는 안 져도 된다.
+> 3. 빈칸은 영어 해. 산 $J$: 말단 $\approx(1.00,\ 0.50)$, $x$ 드리프트 $<1\,\mathrm{mm}$. 고정 $J$: $\approx(0.88,\ 0.52)$ — 0.5 m 과제에서 센티미터급 $x$ 오차. 국소 사상을 유한 운동 사상으로 쓴 대가.

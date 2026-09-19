@@ -69,6 +69,12 @@ other:
 > ($\approx 10^6$), so a single scalar $K_e$ for it is a simplification that fails for a
 > straight-in push.
 
+**Where the fourth row comes from: Hertzian contact.** Two elastic bodies touching at a point do not behave like a linear spring. For a sphere of radius $R$ pressed a depth $\delta$ into a flat, Hertz's solution gives
+
+$$F=\tfrac43\,E^*\sqrt{R}\,\delta^{3/2},\qquad k=\frac{dF}{d\delta}=\frac{3F}{2\delta}$$
+
+where $E^*$ is the combined elastic modulus, $1/E^*=(1-\nu_1^2)/E_1+(1-\nu_2^2)/E_2$, with Young's moduli $E_i$ and Poisson ratios $\nu_i$. The contact area grows as the bodies press together, so the local stiffness $k$ rises with load and a single $K_e$ is only a linearization at one force. For a 5 mm-radius steel ball on steel ($E=200$ GPa, $\nu=0.3$, so $E^*=110$ GPa), 10 N indents $0.98\ \mu$m with $k=1.5\times10^7$ N/m, and 100 N indents $4.5\ \mu$m with $k=3.3\times10^7$ N/m, both inside the fourth row.
+
 The example above sits in the second row. **Commanding an unreachable penetration with high
 closed-loop stiffness is dangerous.** The table is a local-linearization risk scale. It is not a
 force prediction at 1 cm: extrapolating $10^7$ N/m gives $10^5$ N. Actual force is limited by the
@@ -116,6 +122,22 @@ Both describe a desired relation between motion and interaction force. Fix a ref
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
 Here $M_d$, $D_d$, and $K_d$ are desired inertia, damping, and stiffness. This equation is a desired closed-loop behavior. It is not automatically the torque command of a real arm. Read it as a virtual mechanical system. An external push first accelerates the mass. Damping resists the motion. The spring pulls it back toward the reference. At static equilibrium the velocity and acceleration vanish, leaving $K_de=F_{ext}$. Low stiffness permits a larger displacement under the same force. The hardware decides which of the two causalities you can build. The deciding factors are transmission friction, reflected inertia, and whether force is sensed or commanded. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 Haptic Device Design & Kinematics]] traces that chain from Cartesian force to motor current.
+
+**Impedance, defined term by term.** An **impedance** is a dynamic map from motion to force, and **impedance control** is any controller whose closed loop is designed to make the robot's response to an external force obey a chosen impedance. The target has three named terms, each a force:
+
+- **Inertia term** $M_d\ddot e$: resists acceleration, with $M_d$ (kg) the apparent mass the environment should feel.
+- **Damping term** $D_d\dot e$: resists velocity, with $D_d$ (N·s/m) dissipating energy.
+- **Stiffness term** $K_de$: pulls back toward the reference, with $K_d$ (N/m) the virtual spring.
+
+In the Laplace domain, with velocity $V(s)=sE(s)$, the same target is a transfer function from velocity to force, and an **admittance** is its inverse, from force to motion:
+
+$$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}$$
+
+so an impedance controller measures motion and outputs force, and an admittance controller measures force and outputs motion, which is the causality the section title refers to. Reading the target as a mass-spring-damper gives its natural frequency $\omega_n=\sqrt{K_d/M_d}$ and damping ratio $\zeta=D_d/(2\sqrt{K_dM_d})$, since those are the standard second-order parameters ([[04-robotics/control-theory-ce397|Control Theory §5]]).
+
+> [!example] Worked example · 계산 예제
+> $M_d=2$ kg, $K_d=500$ N/m. A steady 10 N push settles at $e=F_{ext}/K_d=10/500=0.02$ m. The natural frequency is $\sqrt{500/2}=15.8$ rad/s, and critical damping ($\zeta=1$) needs $D_d=2\sqrt{500\times2}=63.2$ N·s/m.
+> **Non-examples**: a controller that holds $F=F_d$ regardless of motion specifies no relation between motion and force, so it is force control, not an impedance. And "soft" is not part of the definition: $K_d=10^5$ N/m is a perfectly valid, very stiff impedance.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -172,7 +194,7 @@ The diagram shows **two common implementations**, not hardware requirements for 
 A stiff wall makes small motions produce large force changes. In an admittance loop, delayed force feedback can therefore generate an excessive corrective motion and oscillation. It **can** be stabilized with suitable dynamics, bandwidth and hardware. Stiffness alone does not prove failure. Conversely, impedance can track motion in free space. The practical question is which desired behavior the complete robot can render in the operating conditions.
 
 > [!warning] Architecture and stiffness · 구조와 강성
-> A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
+> A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. That follows because the same force $F$ passes through both springs and their deflections add, $F/K_{eq}=F/K_1+F/K_2$. For $K_1=10^5$ and $K_2=10^7$ N/m, $K_{eq}=9.90\times10^4$ N/m, so the softer spring sets the series stiffness (§5 uses exactly this). Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
 
 > [!question] Check the model · 모델 확인
 > If the robot settles under a steady external force, which terms remain? **Answer:** only the spring term in this fixed-reference model. If the measured response oscillates, inspect inertia, damping, feedback delay and tracking; the static spring equation alone cannot explain it.
@@ -196,6 +218,21 @@ Position control runs in the $S$ directions and force control in the complementa
 the ideal model those projected objectives do not address the same axis. For sliding a tool along a
 surface: position control in the two tangential directions, force control along the normal.
 
+**Natural and artificial constraints, and the selection matrix, defined.** Mason's analysis works in a **task frame**, a coordinate frame at the contact with axes along the surface normal and tangents, and splits each of its six directions (three translations, three rotations) twice:
+
+- **Natural constraints** are what the contact imposes whatever the controller does. Along a direction the surface blocks, velocity is zero; along a direction it leaves free, an ideal frictionless contact transmits no force.
+- **Artificial constraints** are the targets the controller adds in the complementary slots: a desired force where motion is blocked, a desired position or velocity where motion is free.
+
+Each direction gets exactly one natural and one artificial constraint, so no axis carries both a position target and a force target. The **selection matrix** records the split, with one entry per task-frame direction:
+
+$$S=\mathrm{diag}(s_1,\dots,s_6),\qquad s_j=\begin{cases}1 & \text{direction } j \text{ is free, so position-controlled}\\ 0 & \text{direction } j \text{ is blocked, so force-controlled}\end{cases}$$
+
+and in the control law $\mathcal{F}_{\text{pos}}$ is the wrench a position controller outputs (for example PD on pose error) and $\mathcal{F}_{\text{force}}$ the wrench a force controller outputs (for example PI on force error), both in the task frame.
+
+> [!example] Worked example · 계산 예제
+> Wiping a table, translations only, $z$ along the normal. Natural: $v_z=0$, $f_x=f_y=0$. Artificial: a desired tangential velocity along $x$ and $y$, and a desired pressing force along $z$. So $S=\mathrm{diag}(1,1,0)$. If the position loop asks for $\mathcal{F}_{\text{pos}}=(3,-1,7)$ N and the force loop for $\mathcal{F}_{\text{force}}=(0.5,0.2,-10)$ N, the command is $S\mathcal{F}_{\text{pos}}+(I-S)\mathcal{F}_{\text{force}}=(3,-1,-10)$ N: the position loop's 7 N along the normal is discarded.
+> **Non-example**: $S$ is diagonal only in the task frame. If the table is actually tilted $10°$ about $x$, the correct matrix in world axes is $RSR^\top$, whose $y$–$z$ block is $\begin{pmatrix}0.970&0.171\\0.171&0.030\end{pmatrix}$. Using $\mathrm{diag}(1,1,0)$ in world axes instead lets the force loop act partly along the surface, which is the orientation-error failure described next.
+
 This is the architecture that made constrained-manipulation tasks *specifiable*, and its
 limitation is the same as its premise — it assumes you know the task frame and the contact
 geometry. When the task frame is accurate and the model is adequate, the split is clean and
@@ -212,13 +249,13 @@ operational-space inertia from [[02-foundations/manipulator-kinematics-dynamics|
 
 $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
 
-with $\mu$ and $p$ the task-space Coriolis and gravity terms. Read it as the arm's equation of motion rewritten in tip coordinates and then solved for the force that would produce the desired tip acceleration; $J^\top$ maps that force back to joint torques. Two consequences that matter:
+with $\Lambda=(JM^{-1}J^\top)^{-1}$ the operational-space inertia (the mass the tip appears to have, $M$ being the joint-space mass matrix), $\ddot x_d$ the commanded tip acceleration, and $\mu$ and $p$ the task-space Coriolis and gravity terms. Read it as the arm's equation of motion rewritten in tip coordinates and then solved for the force that would produce the desired tip acceleration; $J^\top$ maps that force back to joint torques. Two consequences that matter:
 
 - The arm's configuration-dependent inertia is **compensated**, so a commanded task-space
   behaviour is the same in every pose. Without this, the factor-of-five inertia change from
   [[02-foundations/manipulator-kinematics-dynamics|10. §3]] shows up directly as a
   pose-dependent change in the contact behaviour you thought you had specified.
-- Redundancy resolution becomes a **null-space projection**: a redundant arm can satisfy a
+- Redundancy resolution becomes a **null-space projection** (the null space of $J$ is the set of joint motions $\{\dot\theta: J\dot\theta=0\}$ that leave the tip still, [[02-foundations/linear-algebra|1. Linear Algebra §2]]): a redundant arm can satisfy a
   secondary objective — stay away from joint limits, keep the elbow clear of a worker —
   using motion that produces no task-space force. For a mobile manipulator on a site with
   people in it, this is the mechanism, not a nicety.
@@ -234,7 +271,7 @@ $$\tau = J^\top\mathcal{F} \;+\; \underbrace{\left(I - J^\top\bar J^{\,\top}\rig
 
 where $\tau_0$ is whatever the secondary objective asks for. The projector's job is that
 **$\tau_0$ cannot disturb the task**. Be precise about *which* disturbance, because this is
-commonly stated backwards: a projector built from the plain Moore–Penrose pseudo-inverse is
+commonly stated backwards: a projector built from the plain Moore–Penrose pseudo-inverse ([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]) is
 already **statically consistent** — in steady state the secondary torque produces no task
 force at all. What it does not do is prevent the task from *accelerating* during the
 transient, because $JM^{-1}N^\top\tau_0 \neq 0$ for the Moore–Penrose $N^\top$ when $M \neq I$. **Dynamic consistency buys
@@ -246,14 +283,29 @@ adds no interfering acceleration at any time (§3.3). It also gives a differentl
 projector, $M(I - J^{+}J)M^{-1}$, that is dynamically consistent too but not load-independent
 (§3.3.2).
 
+**What makes it a projector, and a three-joint check.** A **projector** is a matrix $P$ with $P^2=P$, so applying it twice changes nothing more; $N^\top$ qualifies because $J\bar J=JM^{-1}J^\top\Lambda=I$ gives $(J^\top\bar J^{\,\top})^2=J^\top\bar J^{\,\top}$. The two consistency properties are two conditions on it:
+
+- **Static consistency**: at rest, the filtered torque produces no task force, so its least-squares task force $J^{+\top}N^\top\tau_0$ is zero.
+- **Dynamic consistency**: at every instant, the filtered torque produces no task acceleration, which is the condition below.
+$$J\,M^{-1}N^\top=0$$
+
+> [!example] Worked example · 계산 예제
+> Three joints, one task direction: $M=\mathrm{diag}(2,1,1)$, $J=(1,1,1)$, secondary torque $\tau_0=(1,0,0)$. Then $\Lambda=(JM^{-1}J^\top)^{-1}=1/2.5=0.4$ and $\bar J=M^{-1}J^\top\Lambda=(0.2,0.4,0.4)$, so $N^\top\tau_0=(0.8,-0.2,-0.2)$ and the task acceleration $JM^{-1}N^\top\tau_0=0.4-0.2-0.2=0$. With the Moore–Penrose inverse $J^+=(1/3,1/3,1/3)$ instead, $N^\top\tau_0=(2/3,-1/3,-1/3)$: its task force $J^{+\top}N^\top\tau_0=0$ (statically consistent), but $JM^{-1}N^\top\tau_0=1/3-1/3-1/3=-1/3\neq0$, so the task accelerates during the transient. That is the non-example the paragraph above warns about.
+
 **Task priority, and whole-body control.** Stack more than two objectives and this becomes a
 hierarchy: each level is projected into the null space of all levels above it, so a lower
 priority can never fight a higher one. That is the classical form. The modern form solves the
-same problem as a **quadratic program** (QP: minimize a quadratic cost under linear equality and inequality constraints; see [[02-foundations/linear-algebra|Linear Algebra §5]]) at every control step —
+same problem as a **quadratic program** (QP: minimize a quadratic cost under linear equality and inequality constraints; defined with its standard form in [[02-foundations/optimization|4. Optimization §5]]) at every control step —
 
 - minimize the weighted task errors,
 - subject to joint-position, velocity and torque limits, friction cones at the contacts, and
   balance or base-stability constraints.
+
+**The whole-body QP, written out.** With $q$ the generalized coordinates (floating base plus joints), the decision variables are the accelerations $\ddot q$, joint torques $\tau$ and contact forces $f$:
+
+$$\min_{\ddot q,\,\tau,\,f}\ \sum_i w_i\,\lVert J_i\ddot q+\dot J_i\dot q-\ddot x_i^{\text{des}}\rVert^2\quad\text{s.t.}\quad M\ddot q+h=S_a^\top\tau+J_c^\top f,\ \ f\in FC,\ \ \tau_{\min}\le\tau\le\tau_{\max}$$
+
+Here each task $i$ has Jacobian $J_i$, desired acceleration $\ddot x_i^{\text{des}}$ (typically a PD law on that task's error) and weight $w_i$; $M$ is the mass matrix and $h$ collects Coriolis and gravity terms; $S_a$ selects the actuated joints, since a floating base has no motor; $J_c$ is the contact Jacobian; and $FC$ the friction cones of [[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]. At the current state $q,\dot q$ the dynamics are linear in $(\ddot q,\tau,f)$ and the cost is quadratic, so once the cones are replaced by pyramids the problem is a convex QP that re-solves every control step.
 
 **This QP is what "whole-body control" names.** The reason the field moved to it is not
 elegance: strict null-space priority cannot express *inequality* constraints, and joint
@@ -350,6 +402,20 @@ environment if and only if its driving-point impedance is passive. Here a passiv
 contact stability from a per-experiment tuning question into a frequency-domain test, and
 it says something uncomfortable — with non-collocated or unmodelled dynamics there is a **limit** to how far a controller can reduce the apparent inertia. The ceiling on renderable stiffness is a separate limit, set by sampling, delay and quantization ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The controller cannot pretend the
 arm's mass away.
+
+**Passivity and the driving-point impedance, as formulas.** Treat the contact point as a **port**: the environment applies force $F(t)$ to the robot there, and the robot moves with velocity $v(t)$ at the same point, so $F\,v$ is the power flowing into the robot. The system is **passive** when it can never return more energy through the port than it held at the start; with $E_0\ge0$ its initially stored energy,
+
+$$\int_0^t F(\tau)\,v(\tau)\,d\tau\ \ge\ -E_0\quad\text{for every } t \text{ and every input}$$
+
+so the net energy that has flowed in never drops below minus what was stored (the storage-function form is in [[04-robotics/control-theory-ce397|Control Theory §4]]). The **driving-point impedance** is the transfer function from velocity to force at that one point, $Z(s)=F(s)/V(s)$, "driving point" meaning force and velocity are measured at the same place. For a linear time-invariant system, passivity is equivalent to $Z(s)$ being **positive real**, which has two conditions: $Z$ has no poles in the open right half-plane (any on the imaginary axis are simple, with positive residue), and
+
+$$\mathrm{Re}\,Z(j\omega)\ge0\quad\text{for all }\omega$$
+
+because a sinusoidal velocity of amplitude $V_0$ at frequency $\omega$ makes the port absorb average power $\tfrac12V_0^2\,\mathrm{Re}\,Z(j\omega)$. Colgate and Hogan's theorem then reads: the robot is stable against every passive environment if and only if its $Z$ is positive real.
+
+> [!example] Worked example · 계산 예제
+> The ideal §2 target $Z(s)=M_ds+D_d+K_d/s$ has $M_dj\omega$ and $K_d/(j\omega)$ purely imaginary, so $\mathrm{Re}\,Z(j\omega)=D_d$ at every frequency: it is passive exactly when $D_d\ge0$ ($M_d=2$, $D_d=20$, $K_d=500$ gives $20$ N·s/m at every $\omega$).
+> **Non-example**: the same spring rendered with a 1 ms delay, $Z(s)=K_de^{-sT}/s$, has $\mathrm{Re}\,Z(j\omega)=-K_d\sin(\omega T)/\omega$. With $K_d=1000$ N/m, $T=0.001$ s and $\omega=100$ rad/s that is $-0.998$ N·s/m: the delayed spring pumps energy into the contact, and only enough physical damping can pay it back ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).
 
 ### 6. Where learned policies sit
 
@@ -490,6 +556,21 @@ tolerance, say which architecture can meet it — and whether any can.
 > 4. At minimum, that the policy chose useful position references. The system may still realise compliance through a lower-level impedance/admittance or force loop and passive hardware, so inspect that stack. A 10 Hz outer policy cannot react to the millisecond impact peak itself, but it can adapt references for slower sustained contact. The strongest supported claim depends on which layer produced the measured force behaviour.
 > 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres of position error makes contact early, late or at the wrong point, and a couple of degrees of orientation or surface-shape error rotates the true normal, so force control now acts partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
 
+### Problem set · 과제
+
+Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. $\Lambda_y=2\,\mathrm{kg}$. The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
+
+A panel sits at the tip. Command $10\,\mathrm{N}$ down on the panel, $F=(0,-10)$. Desired closed-loop: $M_d\ddot e+D_d\dot e+K_d e=F_{\mathrm{ext}}$ with $M_d=\Lambda_y$ and $K_d=500\,\mathrm{N/m}$.
+
+1. **Draw.** P2 at the frozen pose, panel under the tip. Two block diagrams: impedance (measure $y,\dot y$, command $F_y$) and admittance (measure $F_y$, command $y$). Label the panel as a stiff wall in $-y$.
+2. **Derive.** (a) $\tau=J^\top F$ for $F=(0,-10)$. (b) Static deflection $e=F_{\mathrm{ext}}/K_d$ under a $10\,\mathrm{N}$ push, with $F_{\mathrm{ext}}$ the force *on the robot*. (c) $\omega_n=\sqrt{K_d/M_d}$ and the $D_d$ for $\zeta=1$. (d) Unconstrained tip acceleration if that $10\,\mathrm{N}$ were applied in free space, $a_y=F_y/\Lambda_y$.
+3. **Interpret.** Against a steel panel the position is set by the wall. Which causality still lets you choose the $10\,\mathrm{N}$, and which one tries to *move* the wall? Why is $\Lambda_y=2$ the $M_d$ you would pick rather than the arm's $2\,\mathrm{kg}$ of metal?
+
+> [!tip]- Solutions
+> 1. Elbow at $(1,0)$, tip at $(1,1)$. Impedance: $(y,\dot y)\mapsto F_y$ then $\tau=J^\top F$. Admittance: $F_y\mapsto y_d$ into a position inner loop. The panel is a wall in $-y$ at the tip.
+> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) The panel pushes the robot in $+y$, so $F_{\mathrm{ext}}=+10\,\mathrm{N}$ and $e=10/500=0.02\,\mathrm{m}$. (c) $\omega_n=\sqrt{500/2}=15.8\,\mathrm{rad/s}$, $D_d=2\sqrt{500\cdot 2}=63.2\,\mathrm{N{\cdot}s/m}$. (d) $a_y=-10/2=-5\,\mathrm{m/s}^2$.
+> 3. Impedance commands force, so the $10\,\mathrm{N}$ is the output and the wall sets $y$. Admittance commands motion; against steel a delayed force error becomes a position shove into the wall and can chatter. $\Lambda_y$ is apparent mass *at the tip in $y$*, not the metal mass: the arm can rotate, so only $2\,\mathrm{kg}$ resists a vertical push at this pose.
+
 ### Sources
 
 **The classics — verified citations**
@@ -562,6 +643,12 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 > 유연하고($\approx 10^4$) 축 방향으로는 단단하다($\approx 10^6$). 그래서 스칼라 $K_e$ 하나로
 > 적는 것은 곧장 밀어 넣는 경우에는 성립하지 않는 단순화다.
 
+**넷째 행의 출처: 헤르츠 접촉.** 한 점에서 닿은 두 탄성체는 선형 스프링처럼 거동하지 않는다. 반지름 $R$인 구를 평면에 깊이 $\delta$만큼 누르면 Hertz의 해는 다음과 같다.
+
+$$F=\tfrac43\,E^*\sqrt{R}\,\delta^{3/2},\qquad k=\frac{dF}{d\delta}=\frac{3F}{2\delta}$$
+
+$E^*$는 합성 탄성계수로 $1/E^*=(1-\nu_1^2)/E_1+(1-\nu_2^2)/E_2$이고, $E_i$는 영률, $\nu_i$는 푸아송 비다. 누를수록 접촉 면적이 커지므로 국소 강성 $k$는 하중과 함께 오르고, 스칼라 $K_e$ 하나는 한 힘에서의 선형화일 뿐이다. 반지름 5 mm 강구가 강판에 닿을 때($E=200$ GPa, $\nu=0.3$이므로 $E^*=110$ GPa) 10 N은 $0.98\ \mu$m를 누르고 $k=1.5\times10^7$ N/m, 100 N은 $4.5\ \mu$m를 누르고 $k=3.3\times10^7$ N/m이다. 둘 다 넷째 행 안이다.
+
 위 예는 둘째 행에 있다. **도달 불가능한 침투 위치를 높은 폐루프 강성으로 명령하면 위험하다.**
 이 표는 국소 선형화를 외삽한 위험 규모다. 1 cm에서의 실제 힘 예측은 아니다:
 $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·로봇·툴·환경의 직렬 등가강성과 포화로 제한된다. §5도 같은 두 행으로 충격력을 계산한다. "단단한 접촉"이라는 주장은 언제나
@@ -607,6 +694,22 @@ $10^7$ N/m를 그대로 쓰면 $10^5$ N이 나온다. 실제 힘은 제어기·�
 $$M_d\ddot e+D_d\dot e+K_de=F_{ext}.$$
 
 $M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 이 식은 원하는 폐루프 거동이다. 실제 팔에 보낼 토크 명령 자체는 아니다. 가상 기계로 읽으면 쉽다. 외력이 먼저 질량을 가속한다. 감쇠가 운동을 억제한다. 스프링이 기준 위치로 되돌린다. 정적 평형에서는 속도와 가속도가 사라져 $K_de=F_{ext}$만 남는다. 같은 힘이면 낮은 강성에서 변위가 더 크다. 두 인과 중 무엇을 만들 수 있는지는 하드웨어가 정한다. 결정 요인은 전동 마찰, 반사 관성, 그리고 힘을 재는지 명령하는지다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 햅틱 장치 설계와 기구학]]이 직교 힘에서 모터 전류까지 그 사슬을 따라간다.
+
+**임피던스를 항마다 정의하면.** **임피던스**는 운동에서 힘으로 가는 동적 사상이고, **임피던스 제어**는 외력에 대한 로봇의 응답이 고른 임피던스를 따르도록 폐루프를 설계한 모든 제어기다. 목표 거동에는 이름 붙은 세 항이 있고, 각각이 힘이다.
+
+- **관성 항** $M_d\ddot e$: 가속에 저항한다. $M_d$(kg)는 환경이 느껴야 할 겉보기 질량이다.
+- **감쇠 항** $D_d\dot e$: 속도에 저항한다. $D_d$(N·s/m)가 에너지를 소산한다.
+- **강성 항** $K_de$: 기준 쪽으로 끌어당긴다. $K_d$(N/m)는 가상 스프링이다.
+
+라플라스 영역에서 속도 $V(s)=sE(s)$로 쓰면 같은 목표가 속도에서 힘으로 가는 전달함수가 되고, **어드미턴스**는 그 역, 곧 힘에서 운동으로 가는 사상이다.
+
+$$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}$$
+
+그래서 임피던스 제어기는 운동을 재고 힘을 내며, 어드미턴스 제어기는 힘을 재고 운동을 낸다. 절 제목의 인과가 이것이다. 목표를 질량-스프링-댐퍼로 읽으면 표준 2차계 파라미터인 고유 진동수 $\omega_n=\sqrt{K_d/M_d}$와 감쇠비 $\zeta=D_d/(2\sqrt{K_dM_d})$가 나온다([[04-robotics/control-theory-ce397|제어 이론 §5]]).
+
+> [!example] 계산 예제 · Worked example
+> $M_d=2$ kg, $K_d=500$ N/m. 일정한 10 N 밀기는 $e=F_{ext}/K_d=10/500=0.02$ m에서 멈춘다. 고유 진동수는 $\sqrt{500/2}=15.8$ rad/s이고, 임계 감쇠($\zeta=1$)에는 $D_d=2\sqrt{500\times2}=63.2$ N·s/m가 필요하다.
+> **반례**: 운동과 상관없이 $F=F_d$를 유지하는 제어기는 운동과 힘 사이의 관계를 정하지 않으므로 임피던스가 아니라 힘 제어다. 또 "무름"은 정의에 들어 있지 않다. $K_d=10^5$ N/m도 아주 단단하지만 온전한 임피던스다.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="임피던스 제어는 운동을 재고 토크를 명령하며, 어드미턴스 제어는 힘을 재고 내부 루프에 위치를 명령한다">
   <g font-size="11" fill="currentColor" font-weight="600">
@@ -663,7 +766,7 @@ $M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 이 식은 원하
 단단한 벽에서는 작은 운동이 큰 힘 변화를 만든다. 어드미턴스 루프의 힘 피드백이 늦으면 보정 운동이 과해져 진동할 수 있다. 그러나 적절한 동역학·대역폭·하드웨어로 안정화할 수 있다. 강성만으로 실패를 단정할 수 없다. 반대로 임피던스도 자유 공간의 운동을 추종할 수 있다. 핵심은 전체 로봇이 해당 조건에서 어떤 거동을 실제로 구현할 수 있느냐다.
 
 > [!warning] 구조와 강성 · Architecture and stiffness
-> 손목 힘 센서만으로 제어 구조를 판정하지 않는다. 신호가 어디에 들어가며 무엇을 명령하는지 본다. 또한 수동 선형 스프링 두 개가 **직렬**이면 $1/K_{eq}=1/K_1+1/K_2$다. 강성을 더하는 것이 아니다. 피드백 안정성은 이 정적 등가식만으로 판단할 수 없고 동적 모델이 필요하다. 제어 블록을 [[02-foundations/manipulator-kinematics-dynamics|10. §8]]과 연결한다.
+> 손목 힘 센서만으로 제어 구조를 판정하지 않는다. 신호가 어디에 들어가며 무엇을 명령하는지 본다. 또한 수동 선형 스프링 두 개가 **직렬**이면 $1/K_{eq}=1/K_1+1/K_2$다. 강성을 더하는 것이 아니다. 같은 힘 $F$가 두 스프링을 모두 지나고 변형이 더해지므로 $F/K_{eq}=F/K_1+F/K_2$이기 때문이다. $K_1=10^5$, $K_2=10^7$ N/m이면 $K_{eq}=9.90\times10^4$ N/m로, 더 무른 스프링이 직렬 강성을 정한다(§5가 바로 이것을 쓴다). 피드백 안정성은 이 정적 등가식만으로 판단할 수 없고 동적 모델이 필요하다. 제어 블록을 [[02-foundations/manipulator-kinematics-dynamics|10. §8]]과 연결한다.
 
 > [!question] 모델 확인 · Check the model
 > 일정 외력 아래 로봇이 정지하면 어떤 항이 남는가? **답:** 고정 기준 모델의 스프링 항만 남는다. 실제 반응이 진동하면 관성·감쇠·피드백 지연·추종을 살펴본다. 정적 스프링 식만으로 진동을 설명할 수 없다.
@@ -686,6 +789,21 @@ $S$ 방향에서는 위치 제어가, 나머지 방향에서는 힘 제어가 �
 목표가 같은 축을 건드리지 않는다. 표면을 따라 공구를 미끄러뜨린다면: 접선 두 방향은 위치 제어, 법선 방향은
 힘 제어.
 
+**자연 제약, 인공 제약, 선택 행렬의 정의.** Mason의 분석은 **과제 프레임**, 곧 접촉점에 두고 축을 표면 법선과 접선에 맞춘 좌표계에서 이루어지며, 그 여섯 방향(병진 셋, 회전 셋)을 두 번 나눈다.
+
+- **자연 제약**은 제어기가 무엇을 하든 접촉이 부과하는 조건이다. 표면이 막는 방향에서는 속도가 0이고, 표면이 열어 둔 방향에서는 이상적인 무마찰 접촉이 힘을 전달하지 못한다.
+- **인공 제약**은 제어기가 나머지 자리에 더하는 목표다. 운동이 막힌 곳에는 원하는 힘을, 운동이 자유로운 곳에는 원하는 위치나 속도를 준다.
+
+방향마다 자연 제약 하나와 인공 제약 하나가 정확히 배정되므로, 어느 축도 위치 목표와 힘 목표를 동시에 갖지 않는다. **선택 행렬**은 과제 프레임의 방향마다 원소 하나씩으로 이 분할을 기록한다.
+
+$$S=\mathrm{diag}(s_1,\dots,s_6),\qquad s_j=\begin{cases}1 & \text{direction } j \text{ is free, so position-controlled}\\ 0 & \text{direction } j \text{ is blocked, so force-controlled}\end{cases}$$
+
+($s_j=1$이면 방향 $j$가 자유라서 위치 제어, $0$이면 막혀 있어서 힘 제어.) 제어 법칙의 $\mathcal{F}_{\text{pos}}$는 위치 제어기(예: 자세 오차에 대한 PD)가 내는 렌치, $\mathcal{F}_{\text{force}}$는 힘 제어기(예: 힘 오차에 대한 PI)가 내는 렌치이고, 둘 다 과제 프레임에서 표현한다.
+
+> [!example] 계산 예제 · Worked example
+> 탁자 닦기, 병진만, $z$가 법선. 자연 제약: $v_z=0$, $f_x=f_y=0$. 인공 제약: $x$·$y$ 방향의 원하는 접선 속도와 $z$ 방향의 원하는 누르는 힘. 그래서 $S=\mathrm{diag}(1,1,0)$이다. 위치 루프가 $\mathcal{F}_{\text{pos}}=(3,-1,7)$ N을, 힘 루프가 $\mathcal{F}_{\text{force}}=(0.5,0.2,-10)$ N을 요구하면 명령은 $S\mathcal{F}_{\text{pos}}+(I-S)\mathcal{F}_{\text{force}}=(3,-1,-10)$ N이다. 법선 방향으로 위치 루프가 낸 7 N은 버려진다.
+> **반례**: $S$는 과제 프레임에서만 대각이다. 탁자가 실제로 $x$축 둘레로 $10°$ 기울어 있으면 월드 축에서 올바른 행렬은 $RSR^\top$이고, 그 $y$–$z$ 블록은 $\begin{pmatrix}0.970&0.171\\0.171&0.030\end{pmatrix}$다. 월드 축에서 그대로 $\mathrm{diag}(1,1,0)$을 쓰면 힘 루프가 부분적으로 표면을 따라 작용한다. 바로 다음에 설명하는 자세 오차 실패다.
+
 구속 조작 과제를 *명세 가능하게* 만든 아키텍처이고, 그 한계는 그 전제와 같다 — 과제 프레임과
 접촉 기하를 안다고 가정한다. 과제 프레임이 정확하고 모델이 충분하면 분할이 깔끔하고 비교적
 쉽게 튜닝할 수 있다. 3 mm **병진** 오차는 접촉을 너무 일찍·늦게 또는 잘못된 점에서 일으키지만 그 자체로
@@ -701,12 +819,12 @@ Khatib의 1987년 정식화가 앞의 두 절을 점질량이 아니라 실제 �
 
 $$\mathcal{F} = \Lambda(\theta)\,\ddot x_d + \mu(\theta,\dot\theta) + p(\theta), \qquad \tau = J^\top\mathcal{F}$$
 
-($\mu$와 $p$는 작업 공간의 코리올리·중력 항). 팔의 운동방정식을 말단 좌표로 다시 쓰고, 원하는 말단 가속도를 만들 힘에 대해 푼 것으로 읽어라. $J^\top$이 그 힘을 관절 토크로 되돌린다. 중요한 귀결 둘:
+($\Lambda=(JM^{-1}J^\top)^{-1}$는 작업 공간 관성으로 말단이 지닌 것처럼 보이는 질량이고 $M$은 관절 공간 질량 행렬, $\ddot x_d$는 명령한 말단 가속도, $\mu$와 $p$는 작업 공간의 코리올리·중력 항). 팔의 운동방정식을 말단 좌표로 다시 쓰고, 원하는 말단 가속도를 만들 힘에 대해 푼 것으로 읽어라. $J^\top$이 그 힘을 관절 토크로 되돌린다. 중요한 귀결 둘:
 
 - 팔의 자세 의존적 관성이 **보상된다.** 그래서 명령한 작업 공간 거동이 모든 자세에서 같아진다.
   이것이 없으면 [[02-foundations/manipulator-kinematics-dynamics|10. §3]]의 5배 관성 변화가
   곧바로, 명세했다고 믿은 접촉 거동의 자세 의존적 변화로 나타난다.
-- 여유 자유도 해소가 **영공간 투영**이 된다: 여유 자유도가 있는 팔은 작업 공간 힘을 전혀 만들지
+- 여유 자유도 해소가 **영공간 투영**이 된다($J$의 영공간은 말단을 움직이지 않는 관절 운동의 집합 $\{\dot\theta: J\dot\theta=0\}$이다, [[02-foundations/linear-algebra|1. 선형대수 §2]]): 여유 자유도가 있는 팔은 작업 공간 힘을 전혀 만들지
   않는 운동으로 부차 목표 — 관절 한계에서 멀어지기, 팔꿈치를 작업자에게서 비키기 — 를 만족할 수
   있다. 사람이 있는 현장의 모바일 매니퓰레이터에게 이것은 덤이 아니라 기제 그 자체다.
 
@@ -720,7 +838,7 @@ $$\tau = J^\top\mathcal{F} + \underbrace{\left(I - J^\top\bar J^{\,\top}\right)}
 
 여기서 $\tau_0$는 부차 목표가 요구하는 무엇이든 된다. 투영자의 임무는 **$\tau_0$가 작업을
 교란할 수 없게** 하는 것이다. 다만 *어떤* 교란인지를 정확히 해야 한다. 이 부분은 거꾸로 서술되는
-일이 흔하다: 평범한 Moore–Penrose 유사역행렬로 만든 투영자도 이미 **정적으로 일관되다** —
+일이 흔하다: 평범한 Moore–Penrose 유사역행렬([[02-foundations/linear-algebra|1. 선형대수 §4.5]])로 만든 투영자도 이미 **정적으로 일관되다** —
 정상 상태에서 부차 토크는 작업 힘을 전혀 만들지 않는다. 그것이 막지 못하는 것은 과도 구간에서
 작업이 *가속되는* 것이다. $M \neq I$이면 Moore–Penrose $N^\top$에 대해 $JM^{-1}N^\top\tau_0 \neq 0$이기 때문이다.
 **동역학적 일관성이 사는 것은 정적인 힘이 아니라 과도 구간이다**. 이 형태의 투영자 가운데
@@ -730,12 +848,27 @@ Ott, Albu-Schäffer, *IJRR* 2015 §3.3.1에서 재진술). 이 서베이는 정�
 어느 시점에도 간섭하는 가속이 없다는 조건을 더한다(§3.3). 구조가 다른 투영자
 $M(I - J^{+}J)M^{-1}$도 동역학적으로 일관되지만 하중 독립성은 없다(§3.3.2).
 
+**무엇이 투영자를 만드는가, 그리고 3관절 확인.** **투영자**는 $P^2=P$인 행렬 $P$로, 두 번 적용해도 더 바뀌는 것이 없다. $J\bar J=JM^{-1}J^\top\Lambda=I$이므로 $(J^\top\bar J^{\,\top})^2=J^\top\bar J^{\,\top}$이고, 따라서 $N^\top$은 투영자다. 두 일관성은 그것에 대한 두 조건이다.
+
+- **정적 일관성**: 정지 상태에서 걸러진 토크가 작업 힘을 만들지 않는다. 곧 최소자승 작업 힘 $J^{+\top}N^\top\tau_0$가 0이다.
+- **동역학적 일관성**: 모든 순간에 걸러진 토크가 작업 가속을 만들지 않는다. 아래 조건이 그것이다.
+$$J\,M^{-1}N^\top=0$$
+
+> [!example] 계산 예제 · Worked example
+> 관절 셋, 작업 방향 하나: $M=\mathrm{diag}(2,1,1)$, $J=(1,1,1)$, 부차 토크 $\tau_0=(1,0,0)$. 그러면 $\Lambda=(JM^{-1}J^\top)^{-1}=1/2.5=0.4$, $\bar J=M^{-1}J^\top\Lambda=(0.2,0.4,0.4)$이므로 $N^\top\tau_0=(0.8,-0.2,-0.2)$이고 작업 가속 $JM^{-1}N^\top\tau_0=0.4-0.2-0.2=0$이다. 대신 Moore–Penrose 역 $J^+=(1/3,1/3,1/3)$을 쓰면 $N^\top\tau_0=(2/3,-1/3,-1/3)$이다. 작업 힘 $J^{+\top}N^\top\tau_0=0$이라 정적으로는 일관되지만, $JM^{-1}N^\top\tau_0=1/3-1/3-1/3=-1/3\neq0$이라 과도 구간에서 작업이 가속된다. 위 문단이 경고한 반례가 이것이다.
+
 **과제 우선순위, 그리고 whole-body control.** 목표를 둘 이상 쌓으면 이것이 계층이 된다: 각
 층이 자기 위의 모든 층의 영공간으로 투영되므로, 낮은 우선순위가 높은 것과 다툴 수 없다. 그것이
-고전적 형태다. 현대적 형태는 같은 문제를 매 제어 스텝의 **이차 계획법(QP)** 으로 푼다. QP는 선형 등식·부등식 제약 아래 이차 비용을 최소화하는 문제다([[02-foundations/linear-algebra|선형대수 §5]]) —
+고전적 형태다. 현대적 형태는 같은 문제를 매 제어 스텝의 **이차 계획법(QP)** 으로 푼다. QP는 선형 등식·부등식 제약 아래 이차 비용을 최소화하는 문제이고, 표준형은 [[02-foundations/optimization|4. 최적화 §5]]에 정의되어 있다 —
 
 - 가중된 과제 오차를 최소화하고,
 - 관절 위치·속도·토크 한계, 접촉점의 마찰 원뿔, 균형 또는 베이스 안정성 제약 아래에서.
+
+**전신 QP를 풀어 쓰면.** $q$를 일반화 좌표(부유 베이스와 관절)라 하면 결정 변수는 가속도 $\ddot q$, 관절 토크 $\tau$, 접촉력 $f$다.
+
+$$\min_{\ddot q,\,\tau,\,f}\ \sum_i w_i\,\lVert J_i\ddot q+\dot J_i\dot q-\ddot x_i^{\text{des}}\rVert^2\quad\text{s.t.}\quad M\ddot q+h=S_a^\top\tau+J_c^\top f,\ \ f\in FC,\ \ \tau_{\min}\le\tau\le\tau_{\max}$$
+
+과제 $i$마다 야코비안 $J_i$, 원하는 가속도 $\ddot x_i^{\text{des}}$(보통 그 과제 오차에 대한 PD 법칙), 가중치 $w_i$가 있다. $M$은 질량 행렬, $h$는 코리올리·중력 항을 모은 것이다. 부유 베이스에는 모터가 없으므로 $S_a$가 구동 관절만 고른다. $J_c$는 접촉 야코비안, $FC$는 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]의 마찰 원뿔이다. 현재 상태 $q,\dot q$에서 동역학은 $(\ddot q,\tau,f)$에 선형이고 비용은 이차이므로, 원뿔을 피라미드로 바꾸면 매 제어 스텝 다시 푸는 볼록 QP가 된다.
 
 **이 QP가 "whole-body control"이 가리키는 것이다.** 이 분야가 그리로 옮겨간 이유는 우아함이
 아니다: 엄격한 영공간 우선순위는 *부등식* 제약을 표현할 수 없는데, 관절 한계도 토크 포화도
@@ -826,6 +959,20 @@ Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: �
 그리고 오직 그때뿐이다. 여기서 수동적 시스템은 에너지를 저장했다 돌려줄 수는 있어도 새로 만들어 내지는 못한다. 구동점 임피던스는 환경이 접촉점에서 로봇을 밀 때 보게 되는 힘과 속도의 관계다. 접촉 안정성을 실험마다의 튜닝 문제에서 주파수 영역의 판정으로
 바꾸고, 불편한 것을 하나 말해 준다 — 비동위치(non-collocated) 동역학이나 모델링되지 않은 동역학이 있으면 제어기가 겉보기 관성을
 줄일 수 있는 데에는 **한계가 있다.** 구현 가능한 강성의 상한은 이와 별개로 샘플링·지연·양자화가 정한다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 제어기가 팔의 질량을 없는 척할 수는 없다.
+
+**수동성과 구동점 임피던스를 식으로.** 접촉점을 **포트**로 본다. 환경이 거기서 로봇에 힘 $F(t)$를 가하고 로봇은 같은 점에서 속도 $v(t)$로 움직이므로, $F\,v$가 로봇으로 흘러드는 파워다. 시스템이 처음에 지녔던 것보다 많은 에너지를 포트로 되돌려 줄 수 없을 때 **수동적**이라 한다. 초기 저장 에너지를 $E_0\ge0$라 하면
+
+$$\int_0^t F(\tau)\,v(\tau)\,d\tau\ \ge\ -E_0\quad\text{for every } t \text{ and every input}$$
+
+(모든 시각 $t$와 모든 입력에 대해) 곧 흘러든 순 에너지가 저장량의 음수 아래로 내려가지 않는다(저장 함수 형태는 [[04-robotics/control-theory-ce397|제어 이론 §4]]). **구동점 임피던스**는 그 한 점에서 속도에서 힘으로 가는 전달함수 $Z(s)=F(s)/V(s)$이고, "구동점"은 힘과 속도를 같은 곳에서 잰다는 뜻이다. 선형 시불변 시스템에서 수동성은 $Z(s)$가 **양의 실수 함수**(positive real)인 것과 같고, 조건은 둘이다. $Z$가 열린 오른쪽 반평면에 극점이 없고(허수축 위의 극점은 단순하고 유수가 양수), 그리고
+
+$$\mathrm{Re}\,Z(j\omega)\ge0\quad\text{for all }\omega$$
+
+이다. 진폭 $V_0$, 주파수 $\omega$의 정현 속도가 포트에 평균 파워 $\tfrac12V_0^2\,\mathrm{Re}\,Z(j\omega)$를 흡수시키기 때문이다. 그러면 Colgate–Hogan 정리는 이렇게 읽힌다: 로봇은 $Z$가 양의 실수 함수일 때 그리고 오직 그때만 모든 수동적 환경에 대해 안정하다.
+
+> [!example] 계산 예제 · Worked example
+> §2의 이상적 목표 $Z(s)=M_ds+D_d+K_d/s$에서 $M_dj\omega$와 $K_d/(j\omega)$는 순허수이므로 모든 주파수에서 $\mathrm{Re}\,Z(j\omega)=D_d$다. 정확히 $D_d\ge0$일 때 수동적이다($M_d=2$, $D_d=20$, $K_d=500$이면 모든 $\omega$에서 $20$ N·s/m).
+> **반례**: 같은 스프링을 1 ms 지연으로 구현하면 $Z(s)=K_de^{-sT}/s$이고 $\mathrm{Re}\,Z(j\omega)=-K_d\sin(\omega T)/\omega$다. $K_d=1000$ N/m, $T=0.001$ s, $\omega=100$ rad/s이면 $-0.998$ N·s/m다. 지연된 스프링이 접촉에 에너지를 퍼 넣고, 충분한 물리적 감쇠만이 그것을 갚을 수 있다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).
 
 ### 6. 학습된 정책이 앉는 자리
 
@@ -951,6 +1098,21 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 > 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
 > 4. 최소한 정책이 유용한 위치 기준을 골랐다는 것. 시스템은 하위 임피던스·어드미턴스·힘 루프와 수동 하드웨어로 컴플라이언스를 만들 수도 있으므로 그 스택을 확인해야 한다. 10 Hz 외부 정책은 밀리초 충격 첨두 자체에 반응할 수 없지만 더 느린 지속 접촉을 위한 기준은 바꿀 수 있다. 측정된 힘 거동을 어느 층이 만들었는지에 따라 가장 강한 주장이 달라진다.
 > 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터의 위치 오차는 접촉을 이르게, 늦게, 혹은 엉뚱한 점에서 일으키고, 몇 도의 자세나 표면 형상 오차는 실제 법선을 돌려 힘 제어가 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용하게 만든다. 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. $\Lambda_y=2\,\mathrm{kg}$. 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
+
+말단에 패널. 패널에 아래로 $10\,\mathrm{N}$, $F=(0,-10)$. 목표 폐루프 $M_d\ddot e+D_d\dot e+K_d e=F_{\mathrm{ext}}$, $M_d=\Lambda_y$, $K_d=500\,\mathrm{N/m}$.
+
+1. **그리기.** 고정 자세의 P2, 말단 아래 패널. 블록선도 둘: 임피던스($y,\dot y$를 재고 $F_y$를 명령)와 어드미턴스($F_y$를 재고 $y$를 명령). 패널은 $-y$의 단단한 벽.
+2. **유도.** (a) $F=(0,-10)$의 $\tau=J^\top F$. (b) $10\,\mathrm{N}$ 가압의 정적 처짐 $e=F_{\mathrm{ext}}/K_d$. $F_{\mathrm{ext}}$는 *로봇에 걸리는* 힘. (c) $\omega_n=\sqrt{K_d/M_d}$와 $\zeta=1$인 $D_d$. (d) 그 $10\,\mathrm{N}$을 자유 공간에서 가하면 말단 가속도 $a_y=F_y/\Lambda_y$.
+3. **해석.** 강판 앞에서는 위치가 벽이 정한다. 어느 인과성이 여전히 $10\,\mathrm{N}$을 고르게 하고, 어느 쪽이 벽을 *움직이려* 하는가? $M_d$로 팔의 금속 $2\,\mathrm{kg}$이 아니라 $\Lambda_y=2$를 고르는 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 임피던스: $(y,\dot y)\mapsto F_y$, 그다음 $\tau=J^\top F$. 어드미턴스: $F_y\mapsto y_d$를 위치 내부 루프로. 패널은 말단의 $-y$ 벽.
+> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) 패널이 로봇을 $+y$로 밀므로 $F_{\mathrm{ext}}=+10\,\mathrm{N}$, $e=10/500=0.02\,\mathrm{m}$. (c) $\omega_n=\sqrt{500/2}=15.8\,\mathrm{rad/s}$, $D_d=2\sqrt{500\cdot 2}=63.2\,\mathrm{N{\cdot}s/m}$. (d) $a_y=-10/2=-5\,\mathrm{m/s}^2$.
+> 3. 임피던스는 힘을 명령하므로 $10\,\mathrm{N}$이 출력이고 $y$는 벽이 정한다. 어드미턴스는 운동을 명령한다. 강철에서는 늦은 힘 오차가 벽을 밀어 넣는 위치 명령이 되어 채터할 수 있다. $\Lambda_y$는 *$y$ 방향 말단의* 겉보기 질량이지 금속 질량이 아니다. 팔이 회전할 수 있어 이 자세의 수직 가압을 버티는 것은 $2\,\mathrm{kg}$뿐이다.
 
 ### 출처
 

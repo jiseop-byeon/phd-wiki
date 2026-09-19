@@ -74,6 +74,19 @@ The packet covers the first half of a full haptics course particularly well. It 
 > [!question]- Self-check · Answer
 > **A within-subject study has 20 people and 30 trials per person. Is $n=600$?** Not for a participant-level treatment claim. Trials are nested/repeated observations. Analyze that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A study reports "haptics is better" with NASA-TLX down and completion time down. Which estimand is missing, and which arrow of actuator $\to$ stimulus $\to$ perception $\to$ outcome was not measured?
+2. Twenty people, thirty trials each, $n=600$ in the t-test. What is the analysis unit, and what must the report still say?
+3. Place "actuator bench response" and "controlled task improvement" on the evidence ladder. What does each not yet support?
+
+> [!tip]- Solutions
+> 1. The estimand should be a named quantity (peak contact force, not "better"). TLX is self-reported workload, not the mechanical stimulus; time does not identify which cue caused the change. Calibrate the skin stimulus.
+> 2. The participant is the unit for a treatment claim; trials are nested. Report $20$ people *and* $600$ trials, with a hierarchical/mixed model or participant-level summaries.
+> 3. Bench response supports delivered dynamics, not detectability. Task improvement supports a causal effect in that protocol, not field generality.
+
 ## 한국어
 
 ### 1. 아이디어에서 주장까지
@@ -140,3 +153,16 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 
 > [!question]- 스스로 점검 · 정답
 > **within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?** 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델(참가자마다 자기 기준선을 주어 한 사람의 반복 trial을 서로 독립인 사람처럼 세지 않는 회귀)로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 연구가 NASA-TLX가 내려가고 완료 시간이 줄었으니 "햅틱이 더 낫다"고 보고한다. 빠진 estimand는 무엇이고, 액추에이터 $\to$ 자극 $\to$ 지각 $\to$ 결과의 어느 화살표가 재지지 않았는가?
+2. 20명이 각 30 trial, t-검정에서 $n=600$. 분석 단위는 무엇이고, 보고가 여전히 말해야 하는 것은?
+3. 증거 사다리에 "액추에이터 벤치 응답"과 "통제된 과제 개선"을 놓아라. 각각이 아직 지지하지 못하는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. Estimand는 이름 붙은 양이어야 한다(첨두 접촉력이지 "더 낫다"가 아님). TLX는 자기보고 workload이지 역학 자극이 아니고, 시간은 어느 cue가 변화를 일으켰는지 가리지 않는다. 피부 자극을 보정하라.
+> 2. 처치 주장의 단위는 참가자이고 trial은 nested다. 사람 $20$명 *과* trial $600$회를, 위계·혼합 모델이나 참가자별 요약과 함께 보고한다.
+> 3. 벤치 응답은 전달된 동역학을 지지하지 검출 가능성을 지지하지 않는다. 과제 개선은 그 프로토콜 안의 인과 효과를 지지하지 현장 일반화를 지지하지 않는다.

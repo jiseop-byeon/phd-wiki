@@ -2,7 +2,7 @@
 title: "MR Ch.09 — Trajectory Generation"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -53,6 +53,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 replacements for exactly this chapter; classical time scaling still wraps learned outputs
 on real hardware for safety/limits.
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: time a **P2** move toward the panel ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which number is the claim that the cubic at $T=2\,\mathrm{s}$ is infeasible on $v_{\max}=0.8\,\mathrm{rad/s}$?
+2. **Falsify.** What actuator spec would falsify “the trapezoid is faster than the $2\,\mathrm{s}$ polynomials”?
+3. **Task.** A cubic in P2's joints that ignores contact: what can it not promise at the panel?
+
+> [!tip]- Solutions
+> 1. Peak cubic velocity $0.9\,\mathrm{rad/s}>0.8$ — that comparison *is* the infeasibility claim (the example's “which limit binds”).
+> 2. $v_{\max}\ge1.125\,\mathrm{rad/s}$ and a slower trapezoid (lower $a_{\max}$, or $v_{\max}$ so small the cruise disappears and total time exceeds $2\,\mathrm{s}$). Then the $2\,\mathrm{s}$ polynomials would be executable and could win on time.
+> 3. Smooth $\theta(t)$ does not bound $F_n$ on a P3-stiffness wall. Discontinuous $\ddot\theta$ is a torque spike (ch.8); contact force is a different object.
+
 ## 한국어
 
 **핵심 질문**: "A에서 B로 가라"를 매끄럽고 실행 가능한 시간 함수로 어떻게 바꾸는가?
@@ -98,3 +111,16 @@ on real hardware for safety/limits.
 > 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement. · 양 끝에서 정지한다.
 > 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay. · 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 같은 시간에서 최대 속도가 커지는 것이다($1.875/T$ vs $1.5/T$). 최대 가속도는 오히려 작다($5.77/T^2$ vs $6/T^2$). 치르는 것은 토크가 아니라 속도다.
 > 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything. · 최대 속도·가속도 한계를 직접 파라미터로 가져 액추에이터 스펙과 1:1로 대응되기 때문.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지 시간으로 스케일.
+
+1. **주장.** $T=2\,\mathrm{s}$ 3차가 $v_{\max}=0.8\,\mathrm{rad/s}$에서 실행 불가라는 주장은 어느 숫자인가?
+2. **반증.** “사다리꼴이 $2\,\mathrm{s}$ 다항식보다 빠르다”를 깨는 액추에이터 스펙은?
+3. **과제.** 접촉을 무시한 P2 관절 3차가 패널에서 약속하지 못하는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. 3차 최대 속도 $0.9>0.8$ — 그 비교가 곧 실행 불가 주장이다.
+> 2. $v_{\max}\ge1.125$이고 사다리꼴이 더 느린 경우(낮은 $a_{\max}$, 또는 순항이 사라져 총 시간이 $2\,\mathrm{s}$를 넘는 $v_{\max}$). 그때 $2\,\mathrm{s}$ 다항식이 실행 가능하고 시간에서 이길 수 있다.
+> 3. 매끄러운 $\theta(t)$는 P3 강성 벽의 $F_n$을 묶지 않는다. $\ddot\theta$의 불연속은 토크 스파이크(8장)이고, 접촉력은 다른 대상이다.

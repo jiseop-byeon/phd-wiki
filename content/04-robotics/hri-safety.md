@@ -321,6 +321,19 @@ Finally, state the strongest conclusion that the design could support: under the
 > [!tip]- Answers
 > 1. The exposure is small and may omit rare hazards, distribution shift, severity, and system failures. Put a number on it: by the rule of three ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]), zero failures in 20 trials still leaves a 95% upper confidence bound on the failure rate of about 14% (exact; the rule-of-three shortcut $3/20 = 15\%$ is rough below $n \approx 30$) — about one collision in seven runs. 2. The operator may miss hazards, distrust the interface, be overloaded, or lack authority. 3. Skill, mental models, speed, workload, and risk response differ. 4. Task, operating domain, human role, intervention/reset, safety fallback, duration, and failure handling. 5. The middle move scores −3.5 against −4 for either goal, because it makes progress that both goals share, so acting beats waiting. QMDP assumes the goal is revealed after one step, so an action whose only benefit is information (a probe that makes the next command more telling) has no value under it. 6. Where $R_H$ came from and whether it was validated on spotters rather than drivers or authors; what happens when the spotter does not step back (distracted, new to the site); whether the separation and stop functions of §6 hold independently of the model; and whether the shorter cycle was bought by workers adapting to a pushing machine, which is a change in exposure rather than a safety gain.
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: **P2** presses a panel with a person nearby ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which number is the claim that “zero collisions in 20 trials” is not evidence of safety?
+2. **Falsify.** What evidence would falsify calling the P2 panel task “fully autonomous”?
+3. **Task.** A 95% success rate at seating the tool on the panel: why is that not a safety argument for the person next to the arm?
+
+> [!tip]- Solutions
+> 1. The 95% upper bound $\approx 14\%$ (rule of three, Self-check 1) — that percentage *is* the claim.
+> 2. A declared human role, intervention/reset, operating domain, or fallback (table in §1). Any of those present falsifies “full autonomy”; their absence is missing information, not proof.
+> 3. Success at the panel does not report authority, override, force limits, or exposure. A stiff PD on a P3 wall can still produce a hazardous $F_n$ on a successful seating.
+
 ### Sources
 
 
@@ -672,6 +685,19 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 > 4. 과제, 운용 도메인, 인간 역할, 개입/리셋, 안전 폴백, 지속 시간, 실패 처리.
 > 5. 가운데 이동은 두 목표가 공유하는 진척을 내기 때문에 어느 한 목표 쪽의 −4보다 나은 −3.5를 받고, 그래서 기다리기보다 움직이는 편이 낫다. QMDP는 한 단계 뒤에 목표가 드러난다고 가정하므로, 이득이 정보뿐인 행동(다음 명령을 더 분별력 있게 만드는 탐색)은 가치가 없다.
 > 6. $R_H$가 어디서 왔고 운전자나 저자가 아니라 유도원으로 검증됐는가; 유도원이 물러서지 않으면(주의 분산, 현장 신참) 어떻게 되는가; §6의 이격·정지 기능이 모델과 독립적으로 성립하는가; 짧은 사이클이 밀어붙이는 기계에 작업자가 적응해서 얻은 것은 아닌가 — 그렇다면 안전 이득이 아니라 노출의 변화다.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: 사람 옆에서 [[02-foundations/lab-plants|0.6]]의 **P2**가 패널을 누른다.
+
+1. **주장.** “20회 시행에서 충돌 0”이 안전의 증거가 아니라는 주장은 어느 숫자인가?
+2. **반증.** P2 패널 과제를 “완전 자율”이라고 부르는 주장을 깨는 증거는?
+3. **과제.** 도구를 패널에 안착시키는 성공률 95%: 팔 옆의 사람에 대한 안전 주장이 아닌 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 95% 상한 $\approx 14\%$(rule of three, 스스로 점검 1) — 그 비율이 곧 주장이다.
+> 2. 밝힌 인간 역할, 개입/리셋, 운용 도메인, 폴백(§1 표). 그중 하나라도 있으면 “완전 자율”은 거짓이고, 없으면 정보가 빠진 것이지 증명이 아니다.
+> 3. 패널 성공은 권한, override, 힘 한계, 노출을 보고하지 않는다. P3 벽 위 뻣뻣한 PD는 성공한 안착에서도 위험한 $F_n$을 만들 수 있다.
 
 ### 출처
 

@@ -356,6 +356,19 @@ grasps are and what would make your answer wrong.
 > 4. That the analytic metric is a good enough proxy for real grasp success — that is, that the physics in the label generator matches the physics of the real contact closely enough for the ranking to survive. Depth-image realism matters too, but it is the *label* that carries the assumption: the network can only learn the quality function it was shown.
 > 5. Everything from §2 on, because the sheet is not a rigid body — it flexes, so the contact geometry and therefore the grasp wrench space depend on where and how it is held, and closure is not defined on a shape that changes under load. The realistic move is multi-point support or a vacuum array that constrains the deformation, treating it as a handling and fixturing problem rather than a grasp-analysis one.
 
+### Problem set · 과제
+
+Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. The tip holds a small rigid block; the task wrench on the block is $F=(0,-10)\,\mathrm{N}$ (weight, no moment about the tip). No new simulator.
+
+1. **Draw.** P2 at the frozen pose. Two soft-finger contacts on the left and right faces of the block, normals along $\pm x$. Draw both friction cones (half-angle $\arctan\mu$) and the line joining the contacts. Mark $F=(0,-10)$ at the tip.
+2. **Derive.** (a) $\tau=J^\top F$ with $F=(0,-10)$. (b) Equal share of the weight: each contact needs $\lvert f_t\rvert\ge 5\,\mathrm{N}$. Smallest normal squeeze $f_n$ that keeps both forces inside the cone, for $\mu=0.5$ and for $\mu=1$. (c) Cone half-angles for those two $\mu$.
+3. **Interpret.** $\mu$ drops to $0.3$ and the squeeze is still the $\mu=0.5$ value. Does the grasp stay force-closed? Qualitatively: the cones narrow; the weight vector must still lie in the cone sum. What does a planner that still believes $\mu=0.5$ keep proposing?
+
+> [!tip]- Solutions
+> 1. Elbow $(1,0)$, tip $(1,1)$. Contacts on the $\pm x$ faces; cones about those normals; the joining line is along $x$. Weight arrow down at the tip.
+> 2. (a) $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) $\lvert f_t\rvert\le\mu f_n$ and $\lvert f_t\rvert=5$ $\Rightarrow$ $f_n\ge 5/\mu$. So $10\,\mathrm{N}$ at $\mu=0.5$, $5\,\mathrm{N}$ at $\mu=1$. (c) $\arctan 0.5\approx 26.6^\circ$, $\arctan 1=45^\circ$.
+> 3. No: $5/0.3\approx 16.7\,\mathrm{N}$ is now required and $10\,\mathrm{N}$ of squeeze is short. Half-angle falls to $\arctan 0.3\approx 16.7^\circ$; the downward $5\,\mathrm{N}$ per finger sits outside. A planner that still believes $\mu=0.5$ keeps proposing the same contacts.
+
 ### Sources
 
 **Classical**
@@ -689,6 +702,19 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 > 3. $\epsilon$이 *모든* 렌치 방향에 대한 최악의 경우이고, 과제가 결코 만들지 않을 방향까지 동등하게 가중하기 때문이다. 균일한 공에 대해 최적화된 파지가, 실제 과제에서는 무관한 방향으로는 약하고 정작 중요한 한 방향 — 이를테면 드라이버 축 둘레의 토크 저항 — 으로는 강한 파지에 질 수 있다. 품질은 과제의 렌치 분포에 상대적으로만 의미가 있다.
 > 4. 해석적 지표가 실제 파지 성공의 충분히 좋은 대리라는 것 — 즉 라벨 생성기 안의 물리가 실제 접촉의 물리와 충분히 가까워서 순위가 살아남는다는 것이다. 깊이 이미지의 사실성도 중요하지만 가정을 지는 것은 *라벨*이다: 네트워크는 자기가 본 품질 함수만 배울 수 있다.
 > 5. §2부터 전부다. 시트는 강체가 아니기 때문이다 — 휘므로 접촉 기하가, 따라서 파지 렌치 공간이 어디를 어떻게 잡느냐에 달라지고, 하중을 받으면 변하는 형상 위에는 closure가 정의되지 않는다. 현실적인 수는 변형을 구속하는 다점 지지나 진공 배열이고, 파지 해석 문제가 아니라 취급·고정(fixturing) 문제로 다루는 것이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 말단이 작은 강체 블록을 잡는다. 블록의 과제 렌치는 $F=(0,-10)\,\mathrm{N}$(무게, 말단 둘레 모멘트 없음). 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** 고정 자세의 P2. 블록 좌우 면에 soft-finger 접촉 둘, 법선은 $\pm x$. 마찰 원뿔(반각 $\arctan\mu$)과 접촉을 잇는 선. 말단에 $F=(0,-10)$.
+2. **유도.** (a) $F=(0,-10)$의 $\tau=J^\top F$. (b) 무게를 나눠 지면 접촉마다 $\lvert f_t\rvert\ge 5\,\mathrm{N}$. 두 힘이 원뿔 안에 남는 최소 법선 조임 $f_n$, $\mu=0.5$와 $\mu=1$. (c) 그 두 $\mu$의 원뿔 반각.
+3. **해석.** $\mu$가 $0.3$으로 떨어졌는데 조임은 여전히 $\mu=0.5$ 값이다. 파지는 force-closed로 남는가? 원뿔은 좁아지고, 무게 벡터는 여전히 원뿔 합 안에 있어야 한다. 아직 $\mu=0.5$라고 믿는 계획기는 무엇을 계속 제안하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 접촉은 $\pm x$ 면, 원뿔은 그 법선, 이음선은 $x$ 방향. 말단에서 무게 화살표 아래.
+> 2. (a) $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) $\lvert f_t\rvert\le\mu f_n$이고 $\lvert f_t\rvert=5$이므로 $f_n\ge 5/\mu$. $\mu=0.5$에서 $10\,\mathrm{N}$, $\mu=1$에서 $5\,\mathrm{N}$. (c) $\arctan 0.5\approx 26.6^\circ$, $\arctan 1=45^\circ$.
+> 3. 아니다. 이제 $5/0.3\approx 16.7\,\mathrm{N}$이 필요하고 $10\,\mathrm{N}$ 조임은 모자란다. 반각이 $\arctan 0.3\approx 16.7^\circ$로 줄고, 손가락당 아래 $5\,\mathrm{N}$이 원뿔 밖이다. $\mu=0.5$를 믿는 계획기는 같은 접촉을 계속 제안한다.
 
 ### 출처
 

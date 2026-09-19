@@ -455,6 +455,19 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 > **3. A node you wrote is in `ros2 node list`, its service client and subscription show in `ros2 node info`, the server it calls is running, and it emits nothing after the first input. What is your first hypothesis?** A synchronous service call from inside a callback. The executor cannot preempt the running callback to deliver the response, so the call waits forever — no exception, no warning, no failure. Confirm by checking that the node produced output before the first trigger; fix with `call_async`, or a separate callback group plus a multi-threaded executor.
 > **4. Why does Nav2 use lifecycle nodes instead of ordinary ones?** Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation brings the stack down deterministically. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop is $200\,\mathrm{Hz}$. A planner may take $2\,\mathrm{s}$ to produce the next goal. No new simulator.
+
+1. **Draw.** P6 nodes: `planner` (long goal), `controller` ($5\,\mathrm{ms}$ timer + encoder), `camera` ($50\,\mathrm{Hz}$). Mark the planner–controller link as an *action*, not a topic or a service. Five-line timeline: goal sent, feedback at $0.5\,\mathrm{s}$, result at $2\,\mathrm{s}$, controller ticks throughout.
+2. **Derive.** (a) How many control samples does a $2\,\mathrm{s}$ *service* callback block? (b) Encoder $\Delta p$ for one count. (c) Silent case: the controller calls the planner with `client.call` inside the $200\,\mathrm{Hz}$ timer. What happens after the first tick, and why is there no error?
+3. **Interpret.** Why is a P6 goal an action, and what does lifecycle buy you when the camera driver dies after the controller is already at $200\,\mathrm{Hz}$?
+
+> [!tip]- Solutions
+> 1. Action `navigate` from planner to controller; camera on `/goal` is a separate stream. Timeline: $t=0$ goal; ticks every $5\,\mathrm{ms}$; feedback; result at $2\,\mathrm{s}$.
+> 2. (a) $2/0.005=400$ samples. (b) $0.488\,\mathrm{mm}$. (c) The timer holds the executor; the response callback cannot run; one `calling` and silence. No exception.
+> 3. $2\,\mathrm{s}$ is not "return quickly"; the action keeps the $200\,\mathrm{Hz}$ loop alive and is cancellable. Lifecycle + a bond tears the stack down when the camera dies, instead of letting the controller track a stale $70\,\mathrm{ms}$ budget.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -902,3 +915,16 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 > **2. `ros2 param load /my_node params.yaml`이 일부는 "successful", 일부는 "cannot be set because it is read-only"를 찍는다. 뭔가 고장 났나?** 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. 모든 C++ 노드가 읽기 전용 `qos_overrides./parameter_events.*`를 선언하므로, rclcpp 노드에서 dump 후 load를 왕복하면 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
 > **3. 직접 쓴 노드가 `ros2 node list`에 있고, `ros2 node info`에 서비스 클라이언트와 구독이 다 보이고, 호출하는 서버도 돌고 있는데, 첫 입력 이후 아무것도 내보내지 않는다. 첫 가설은?** 콜백 안에서 한 동기 서비스 호출. executor가 실행 중인 콜백을 선점해 응답을 전달할 수 없어서 호출이 영원히 기다린다. 예외도, 경고도, 실패도 없다. 첫 트리거 이전에는 출력이 있었는지 확인해 확증하고, `call_async`나 별도 콜백 그룹 + 다중 스레드 executor로 고친다.
 > **4. Nav2는 왜 보통 노드 대신 라이프사이클 노드를 쓰는가?** 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌이 스택을 반쯤 살아 있는 상태로 남기지 않고 결정론적으로 내리게 한다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 제어 루프는 $200\,\mathrm{Hz}$. 계획기는 다음 목표를 만드는 데 $2\,\mathrm{s}$가 걸릴 수 있다. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6 노드: `planner`(긴 목표), `controller`($5\,\mathrm{ms}$ 타이머 + 엔코더), `camera`($50\,\mathrm{Hz}$). 계획기–제어기 링크는 토픽이나 서비스가 아니라 *액션*. 다섯 줄 타임라인: 목표 전송, $0.5\,\mathrm{s}$ 피드백, $2\,\mathrm{s}$ 결과, 그동안의 제어 틱.
+2. **유도.** (a) $2\,\mathrm{s}$ *서비스* 콜백이 막는 제어 샘플 수. (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 제어기가 $200\,\mathrm{Hz}$ 타이머 안에서 `client.call`로 계획기를 부른다. 첫 틱 이후 무슨 일이 있고, 왜 에러가 없는가?
+3. **해석.** P6 목표가 액션인 이유, 그리고 제어기가 이미 $200\,\mathrm{Hz}$인데 카메라 드라이버가 죽으면 라이프사이클이 사 주는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. 계획기에서 제어기로 액션 `navigate`; 카메라 `/goal`은 별 스트림. 타임라인: $t=0$ 목표; $5\,\mathrm{ms}$마다 틱; 피드백; $2\,\mathrm{s}$에 결과.
+> 2. (a) $2/0.005=400$ 샘플. (b) $0.488\,\mathrm{mm}$. (c) 타이머가 executor를 붙들고 응답 콜백이 못 돈다. `calling` 한 줄 후 침묵. 예외 없음.
+> 3. $2\,\mathrm{s}$는 "빨리 반환"이 아니다. 액션은 $200\,\mathrm{Hz}$ 루프를 살려 두고 취소할 수 있다. 라이프사이클 + bond는 카메라가 죽으면 스택을 내리지, 제어기가 낡은 $70\,\mathrm{ms}$ 예산을 추적하게 두지 않는다.

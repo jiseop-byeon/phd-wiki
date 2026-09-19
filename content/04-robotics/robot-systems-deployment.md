@@ -317,6 +317,32 @@ Onboard/offboard compute changes latency, network dependence, power, thermal lim
 > [!tip]- Answers
 > 1. Queues, batching, old timestamps, transport, and asynchronous stages can preserve high throughput while increasing age. 2. Synchronized raw sensors, transforms, commands, feedback, clocks, configuration, software/hardware versions, and operator events. 3. Network delay/loss, stale observations, deadline misses, or safe fallback. 4. It validates selected hardware/software interfaces and timing; it does not by itself validate real-world perception, contact, or task safety. 5. Only the deliberator may be slow; the recovery subtree is sequencer (executive) logic, and the joint controller is the controller tier. 6. False: $a$ at $t_2$ needs $b$ at $t_3$, which is empty (the step-$t_0$ obligation is met at $t_1$). No: logs are sample runs, so they show at most satisfiability; realizability needs one controller that wins against every environment input sequence, which is a synthesis question.
 
+### Problem set · 과제
+
+Tier A. Plant **P6** from [[02-foundations/lab-plants|0.6]]. The weekend ROS 2 path is [[04-robotics/ros2/index|25]]; this page is the budget and the log.
+
+Encoder $N=2048$ counts/m. Vision publishes a goal at $50\,\mathrm{Hz}$. Controller samples the encoder and commands a motor at $200\,\mathrm{Hz}$. End-to-end budget, camera mid-exposure $\to$ applied force: $70\,\mathrm{ms}$.
+
+1. **Draw.** One cycle as a timeline: exposure midpoint, vision publish, TF lookup, controller tick, current to the motor. Mark the $70\,\mathrm{ms}$ budget as a bar. Put the $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$ periods on the same axis.
+2. **Derive.** (a) One encoder count in millimetres. (b) Vision period and control period. (c) If the vision message is $200\,\mathrm{ms}$ old at the controller, by how much is the budget blown, and how many control ticks ran on a stale goal? (d) A $0.10\,\mathrm{m/s}$ cart: how many millimetres does it move during those $200\,\mathrm{ms}$, and how many encoder counts is that?
+3. **Do.** Fill `?`. Print counts, ticks, millimetres. No plant ODE.
+
+```python
+N, v, age, budget = 2048, 0.10, 0.200, 0.070
+mm_per_count = ?
+vision_T, control_T = ?, ?          # 1/50, 1/200
+over = ?                             # age - budget
+stale_ticks = ?                      # age / control_T
+travel_mm = ?                        # v * age * 1000
+travel_counts = ?                    # v * age * N
+print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
+```
+
+> [!tip]- Solutions
+> 1. Vision ticks every $20\,\mathrm{ms}$; control every $5\,\mathrm{ms}$. The budget bar is 3.5 vision periods long. Force is applied on a control edge, not on a vision edge.
+> 2. (a) $1000/2048=0.488\,\mathrm{mm}$. (b) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (c) $200-70=130\,\mathrm{ms}$ over; $200/5=40$ stale ticks. (d) $0.10\times 0.200=0.020\,\mathrm{m}=20\,\mathrm{mm}=41$ counts. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy.
+> 3. `1000/N`, `1/50`, `1/200`, `age-budget`, `age/control_T`, `v*age*1000`, `v*age*N`. Prints $0.488$, $0.130$, $40$, $20$, $40.96$. “Nothing happens” on this plant is often a TF stamp or a QoS mismatch, not a wrong $K$ — that drill is [[04-robotics/ros2/qos-executors-time|25.5]].
+
 ### Sources
 
 - C. Eppner, S. Höfer, R. Jonschkowski, R. Martín-Martín, A. Sieverling, V. Wall, O. Brock, "Lessons from the Amazon Picking Challenge: Four Aspects of Building Robotic Systems," *RSS 2016* (journal version: *Autonomous Robots*, 2018, DOI 10.1007/s10514-018-9761-2) — the challenge ran in 2015; the paper is 2016.
@@ -671,6 +697,19 @@ t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에
 > 4. 선택된 하드웨어/소프트웨어 인터페이스와 타이밍은 검증하지만, 실세계 인식·접촉·과제 안전을 그 자체로 검증하지는 않는다.
 > 5. 느려도 되는 것은 deliberator뿐이다. 회복 서브트리는 sequencer(executive)의 논리이고, 관절 제어기는 controller 층이다.
 > 6. 거짓이다: $t_2$의 $a$는 $t_3$의 $b$를 요구하는데 $t_3$은 비어 있다($t_0$의 의무는 $t_1$에서 채워진다). 아니다: 로그는 표본 실행이라 기껏해야 충족 가능성을 보여 준다. 실현 가능성은 모든 환경 입력 열을 이기는 제어기 하나가 있어야 하므로 합성의 문제다.
+
+### 과제 · Problem set
+
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P6**. 주말 ROS 2 경로는 [[04-robotics/ros2/index|25]]. 영어 템플릿.
+
+1. **그리기.** 한 주기의 타임라인: 노출 중간, 비전 발행, TF, 제어 틱, 모터 전류. $70\,\mathrm{ms}$ 예산을 막대로. $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$를 같은 축에.
+2. **유도.** (a) 엔코더 한 카운트의 mm. (b) 비전·제어 주기. (c) 비전 메시지가 제어기에서 $200\,\mathrm{ms}$ 늙었으면 예산이 얼마나 깨지고, 낡은 목표로 몇 틱이 도는가? (d) $0.10\,\mathrm{m/s}$ 카트가 그 $200\,\mathrm{ms}$ 동안 몇 mm, 몇 카운트?
+3. **실행.** 카운트, 틱, mm를 출력하라. ODE 없음.
+
+> [!tip]- 정답 · Solutions
+> 1. 비전 $20\,\mathrm{ms}$, 제어 $5\,\mathrm{ms}$. 예산 막대는 비전 주기 3.5개. 힘은 제어 에지에서 나간다.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (c) $130\,\mathrm{ms}$ 초과, 40 틱. (d) $20\,\mathrm{mm}$, 41 카운트. [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다.
+> 3. $0.488$, $0.130$, $40$, $20$, $40.96$. 이 장치에서 “아무 일도 안 일어남”은 종종 $K$가 아니라 TF 스탬프나 QoS다([[04-robotics/ros2/qos-executors-time|25.5]]).
 
 ### 출처
 

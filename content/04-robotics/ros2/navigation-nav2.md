@@ -406,6 +406,19 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 > **3. The robot spins in place and never departs. What do you check first, and why not the controller parameters?** The transform tree: `ros2 run tf2_tools view_frames` and `ros2 run tf2_ros tf2_monitor map base_link`. A missing `map` → `odom` or a transform older than `transform_tolerance` makes every trajectory invalid, and it produces exactly this symptom with no error that names TF. Costmap content and footprint come next; controller parameters are fourth because a parameter changed before TF is verified is a parameter you will change back.
 > **4. Why a behaviour tree rather than a state machine, given that the nominal path is just "plan, then follow"?** Because the nominal path is not the hard part. Recovery is, and in an FSM every recovery rule is a transition that must be duplicated for every state it can fire from. The tree scopes recovery: a `RecoveryNode` around the planner clears the global costmap, one around the controller clears the local costmap, and only a system-level failure reaches the shared spin/wait/back-up subtree. It is also editable as data — a different XML per goal, via the action's `behavior_tree` field — rather than as compiled control flow.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the Nav2 base. Encoder $2048$ counts/m, vision $50\,\mathrm{Hz}$ into AMCL, controller $200\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$. No new simulator.
+
+1. **Draw.** REP 105 chain `map` → `odom` → `base_link` on the P6 cart. Global costmap in `map`, local in `odom`. Five-line timeline: a $50\,\mathrm{Hz}$ laser/vision scan, AMCL jump on `map` → `odom`, controller ticks on `odom` that must stay smooth.
+2. **Derive.** (a) Encoder $\Delta p$ — the odom resolution. (b) A scan stamp $200\,\mathrm{ms}$ old versus `transform_tolerance` of $70\,\mathrm{ms}$. Is every trajectory valid? (c) The robot spins in place. First check, and why not controller gains?
+3. **Interpret.** Why the local costmap must *not* live in `map` on P6, and why a $200\,\mathrm{ms}$ late scan is a budget failure even if AMCL still reports a pose.
+
+> [!tip]- Solutions
+> 1. Encoder owns `odom` → `base_link`; AMCL owns `map` → `odom`. Local control at $200\,\mathrm{Hz}$ reads the smooth frame; the planner reads the jumpy one.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) Stamp older than tolerance $\Rightarrow$ every trajectory invalid. (c) `view_frames` / `tf2_monitor map base_link`. Gains are fourth; a missing TF produces this symptom with no error that names TF.
+> 3. `map` → `odom` may jump at $50\,\mathrm{Hz}$ corrections; a $200\,\mathrm{Hz}$ local controller on a teleporting frame issues discontinuous `cmd`. A $200\,\mathrm{ms}$ scan is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — AMCL can still output a pose of a place the cart has left.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -806,3 +819,16 @@ ros2 param dump /controller_server
 > **2. 로봇이 모서리를 깎고 벽에 붙는데 충돌은 한 번도 하지 않는다. 유력한 원인은 무엇이고 어느 방향으로 바꾸는가?** 팽창이 너무 큰 게 아니라 너무 작다. 감쇠하는 팽창 비용은 비용 인식 플래너를 자유 공간 한가운데로 이끄는 퍼텐셜 필드다. 벽 주변의 얇은 고리만 있으면 그 사이의 넓은 0 비용 공백 안에서 플래너가 어느 지점을 선호할 근거가 없다. 주행 가능한 폭 전체에 매끄러운 경사가 생길 때까지 `inflation_radius`는 키우고 `cost_scaling_factor`는 *낮춰라*(더 느린 감쇠). 단, 반드시 통과해야 하는 가장 좁은 틈이 여전히 계획 가능한지 확인하면서.
 > **3. 로봇이 제자리에서 돌기만 하고 출발하지 않는다. 무엇을 먼저 확인하고, 제어기 파라미터는 왜 먼저가 아닌가?** 변환 트리다. `ros2 run tf2_tools view_frames`와 `ros2 run tf2_ros tf2_monitor map base_link`. `map` → `odom`이 없거나 변환이 `transform_tolerance`보다 오래됐으면 모든 궤적이 무효가 되고, TF를 지목하는 오류 한 줄 없이 정확히 이 증상이 나온다. 그다음이 costmap 내용과 발자국이다. 제어기 파라미터가 넷째인 이유는, TF를 확인하기 전에 바꾼 파라미터는 결국 되돌리게 되기 때문이다.
 > **4. 정상 경로는 "계획하고 따라간다"뿐인데 왜 상태 기계가 아니라 행동 트리인가?** 어려운 부분이 정상 경로가 아니기 때문이다. 어려운 것은 복구이고, FSM에서는 복구 규칙 하나하나가 그것이 발동할 수 있는 모든 상태마다 복제되어야 하는 전이다. 트리는 복구에 범위를 준다. 플래너를 감싼 `RecoveryNode`는 전역 costmap을 지우고, 제어기를 감싼 것은 지역 costmap을 지우며, 시스템 수준 실패만이 공유되는 회전/대기/후진 서브트리에 도달한다. 또한 컴파일된 제어 흐름이 아니라 데이터로 편집된다 — 액션의 `behavior_tree` 필드를 통해 목표마다 다른 XML을 쓸 수 있다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 Nav2 베이스로. 엔코더 $2048$ counts/m, 비전 $50\,\mathrm{Hz}$가 AMCL로, 제어기 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6 카트의 REP 105 사슬 `map` → `odom` → `base_link`. 전역 costmap은 `map`, 지역은 `odom`. 다섯 줄 타임라인: $50\,\mathrm{Hz}$ 스캔, `map` → `odom`의 AMCL 점프, `odom` 위에서 매끄러워야 하는 제어 틱.
+2. **유도.** (a) 엔코더 $\Delta p$ — odom 해상도. (b) $200\,\mathrm{ms}$ 된 스캔 스탬프 대 `transform_tolerance` $70\,\mathrm{ms}$. 모든 궤적이 유효한가? (c) 로봇이 제자리 회전. 첫 점검, 왜 제어 게인이 아닌가?
+3. **해석.** P6에서 지역 costmap이 `map`에 살면 안 되는 이유, 그리고 AMCL이 자세를 보고해도 $200\,\mathrm{ms}$ 늦은 스캔이 예산 실패인 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 엔코더가 `odom` → `base_link`를, AMCL이 `map` → `odom`을 소유. $200\,\mathrm{Hz}$ 지역 제어는 매끄러운 프레임, 플래너는 튀는 프레임.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) 스탬프가 tolerance보다 오래되면 모든 궤적이 무효. (c) `view_frames` / `tf2_monitor map base_link`. 게인은 넷째; 빠진 TF는 TF를 지목하는 오류 없이 이 증상을 낸다.
+> 3. `map` → `odom`이 $50\,\mathrm{Hz}$ 보정에서 점프할 수 있고, 순간이동 프레임 위의 $200\,\mathrm{Hz}$ 제어기는 불연속 `cmd`를 낸다. $200\,\mathrm{ms}$ 스캔은 이미 예산보다 $130\,\mathrm{ms}$ 초과 — AMCL은 카트가 떠난 곳의 자세를 여전히 낼 수 있다.

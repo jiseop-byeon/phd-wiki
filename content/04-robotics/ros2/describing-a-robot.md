@@ -467,6 +467,19 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 > **3. Your planner takes 40 seconds per query on a robot whose URDF loads fine and looks right in RViz. Where do you look first?** The `<collision>` elements. If they reuse the detailed visual meshes, every one of the thousands of collision checks per query is mesh-versus-mesh instead of primitive-versus-primitive. Turn off *Visual Enabled* and turn on *Collision Enabled* in RViz's RobotModel display to see what the checker is actually using, then replace the meshes with primitives or a convex decomposition.
 > **4. `view_frames` shows `default_authority` on every edge. How do you tell that an edge has two publishers?** The Broadcaster field carries no information in ROS 2 — listeners cannot learn who sent a transform. Read the average rate instead: an edge you expect at 10 Hz reporting about 30 Hz has more than one owner. Confirm with `ros2 topic info /tf --verbose` and `/tf_static`. (Two publishers sending *identical* transforms with identical stamps do not show up at all, because tf2 drops exact duplicates — and they also do no harm.)
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_link`, camera on the cart, encoder $N=2048$ counts/m. Vision $50\,\mathrm{Hz}$, control $200\,\mathrm{Hz}$. No new simulator.
+
+1. **Draw.** TF tree `map` → `odom` → `base_link` → `camera_link`. Who owns each edge? Mark encoder counts on `odom` → `base_link` and vision on `camera_link`. Five-line timeline: a $50\,\mathrm{Hz}$ TF update and four $200\,\mathrm{Hz}$ lookups, one of them with `now()`.
+2. **Derive.** (a) Encoder $\Delta p$ for one count — the resolution of `odom` → `base_link`. (b) Why `lookup_transform(..., now())` from the controller logs "extrapolation into the future". (c) Two publishers on `odom` → `base_link` at $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$. What rate does `view_frames` report?
+3. **Interpret.** A $70\,\mathrm{ms}$ budget lookup uses a camera stamp $200\,\mathrm{ms}$ old. Which two fixes from §9, and which one is wrong for P6's force loop?
+
+> [!tip]- Solutions
+> 1. Localisation owns `map` → `odom`; odometry (encoder) owns `odom` → `base_link`; a static (or $50\,\mathrm{Hz}$) broadcaster owns `base_link` → `camera_link`. Timeline: TF at $0,20\,\mathrm{ms}$; lookups at $0,5,10,15$; the `now()` lookup sits in the future of the buffer.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) Transforms arrive late; `now()` is a time the buffer has not seen. Use `Time()` or the message stamp. (c) About $250\,\mathrm{Hz}$ — two owners.
+> 3. Latest available (`Time()`), or the *message* stamp with a short timeout. Subtracting a hard-coded $0.1\,\mathrm{s}$ is a diagnostic. For the force loop, a $200\,\mathrm{ms}$ camera stamp is already over the $70\,\mathrm{ms}$ budget — drop it, do not extrapolate it.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -926,3 +939,16 @@ ros2 topic info /tf_static --verbose
 > **2. `map`과 `odom`이 둘 다 `base_link`의 부모가 될 수 없는 이유는 무엇이고, 위치추정 노드는 대신 무엇을 내보내나?** tf2 프레임은 부모가 정확히 하나이고, 그것이 조회 경로를 유일하게 만든다. 그래서 REP 105는 `map` → `odom` → `base_link`로 잇는다. 오도메트리가 `odom` → `base_link`를 소유하고, 위치추정은 누적된 오도메트리 표류인 `map` → `odom` 보정을 내보낸다. `odom`은 연속이지만 표류하고, `map`은 표류하지 않지만 도약한다.
 > **3. URDF는 잘 로드되고 RViz에서도 멀쩡한데 플래너가 질의당 40초를 쓴다. 어디부터 보나?** `<collision>` 요소. 정밀한 visual 메시를 재사용하고 있다면 질의당 수천 번의 충돌 검사가 원시 도형 대신 메시 대 메시로 돈다. RViz의 RobotModel display에서 *Visual Enabled*를 끄고 *Collision Enabled*를 켜서 검사기가 실제로 쓰는 형상을 보고, 원시 도형이나 볼록 분해로 바꾼다.
 > **4. `view_frames`는 모든 간선에 `default_authority`를 보여 준다. 한 간선에 퍼블리셔가 둘인지 어떻게 알아내나?** ROS 2에서 Broadcaster 칸에는 정보가 없다 — 리스너는 누가 변환을 보냈는지 알 수 없다. 대신 평균 주기를 읽는다. 10 Hz로 예상한 간선이 약 30 Hz로 보고되면 소유자가 둘 이상이다. `ros2 topic info /tf --verbose`와 `/tf_static`으로 확인한다. (값과 스탬프가 *똑같은* 변환을 보내는 두 퍼블리셔는 tf2가 완전 중복을 버리므로 아예 드러나지 않고, 해를 끼치지도 않는다.)
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카트 프레임 `base_link`, 카메라가 카트 위, 엔코더 $N=2048$ counts/m. 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** TF 트리 `map` → `odom` → `base_link` → `camera_link`. 각 간선의 소유자. `odom` → `base_link`에 엔코더 카운트, `camera_link`에 비전. 다섯 줄 타임라인: $50\,\mathrm{Hz}$ TF 갱신과 $200\,\mathrm{Hz}$ 조회 넷, 그중 하나가 `now()`.
+2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — `odom` → `base_link`의 해상도. (b) 제어기의 `lookup_transform(..., now())`가 "extrapolation into the future"를 찍는 이유. (c) `odom` → `base_link`에 $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$ 퍼블리셔 둘. `view_frames`가 보고하는 주기는?
+3. **해석.** $70\,\mathrm{ms}$ 예산의 조회가 $200\,\mathrm{ms}$ 된 카메라 스탬프를 쓴다. §9의 수정 둘 중 어느 것이고, P6 힘 루프에 틀린 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. 위치추정이 `map` → `odom`을, 오도메트리(엔코더)가 `odom` → `base_link`를, 정적(또는 $50\,\mathrm{Hz}$) 브로드캐스터가 `base_link` → `camera_link`를 소유. 타임라인: TF $0,20\,\mathrm{ms}$; 조회 $0,5,10,15$; `now()` 조회는 버퍼의 미래.
+> 2. (a) $0.488\,\mathrm{mm}$. (b) 변환은 늦게 도착하고 `now()`는 버퍼가 아직 못 본 시각. `Time()` 또는 메시지 스탬프. (c) 약 $250\,\mathrm{Hz}$ — 소유자 둘.
+> 3. 최신값(`Time()`), 또는 짧은 timeout을 붙인 *메시지* 스탬프. $0.1\,\mathrm{s}$를 빼는 것은 진단이다. 힘 루프에서는 $200\,\mathrm{ms}$ 카메라 스탬프가 이미 $70\,\mathrm{ms}$ 예산을 넘는다 — 외삽하지 말고 버려라.

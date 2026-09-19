@@ -42,19 +42,25 @@ before roughly 2019 were written in. You still need that language to read them, 
 is at literacy depth, with the reason it is absent from the rest of this page.
 
 - **Support polygon** — the convex hull of the contact points on the ground. The classical
-  stability question is whether a particular point stays inside it.
+  stability question is whether a particular point stays inside it. Written out, with $c_1,\dots,c_k$ the contact points projected onto the ground plane, it is every weighted average of them with nonnegative weights summing to one:
+$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
+  The **static stability criterion** requires the vertical projection of the centre of mass (CoM) to lie in $\mathcal S$, because nonnegative vertical foot forces can only produce a resultant located inside the hull, and standing still needs that resultant directly under the CoM. Example: feet at $(\pm0.3,\pm0.15)$ m give a $0.6\times0.3$ m rectangle, and a CoM projection at $(0.1,0.05)$ m is inside. Non-example: in a trot only a diagonal pair is down, the polygon collapses to the segment between them, and the CoM is almost never on that segment, yet trotting robots do not fall, since a trot is balanced dynamically, not statically.
 - **ZMP (zero-moment point)** — the point on the ground where the ground reaction force
   produces no horizontal moment. Keep the ZMP strictly inside the support polygon and the
   foot cannot rotate about its edge; let it reach the boundary and the foot tips. Almost
   every walking-pattern generator of that era is a device for producing a ZMP trajectory the
-  robot can track.
+  robot can track. On flat ground the ZMP coincides with the **centre of pressure**, the force-weighted average of the contact points,
+$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
+  where $f_{z,i}\ge0$ is the vertical force at contact $c_i$; the vertical forces produce no horizontal moment about this point, so it satisfies the definition. Because the weights are nonnegative, a ZMP measured from real forces is always inside the polygon; the criterion is about the ZMP the *planned motion* demands. For a CoM at constant height $z$ (the linear inverted pendulum below) that demand is $p=x-(z/g)\,\ddot x$, with $x$ the CoM's horizontal position. Example: four feet at $x=0.3,0.3,-0.3,-0.3$ m carrying $40,30,20,10$ N put the ZMP at $x=0.12$ m. A CoM at $z=0.9$ m accelerating forward at $1$ m/s² demands a ZMP $0.9/9.81=0.092$ m behind the CoM, so a foot reaching $0.125$ m behind it allows at most $9.81\times0.125/0.9=1.36$ m/s² before the demanded ZMP leaves the foot and it tips.
 - **Capture point / DCM (divergent component of motion)** — where you would have to place
   the next footfall to come to a complete stop. From the linear inverted pendulum model with
   centre-of-mass height $z$, $\;\omega_0 = \sqrt{g/z}\;$ and the capture point sits
   $\;\dot x/\omega_0\;$ ahead of the centre of mass. **Worked:** a humanoid with
   $z = 0.9$ m has $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s, so at $\dot x = 0.5$ m/s it
   must step $0.5/3.30 = 0.15$ m ahead to stop; at $1.0$ m/s, $0.30$ m. DCM is the
-  three-dimensional generalisation used by modern whole-body controllers.
+  three-dimensional generalisation used by modern whole-body controllers. The model behind it is the **linear inverted pendulum**: a point mass at constant height $z$ on a massless leg whose foot, the ZMP, is at $p$. Its dynamics and the capture point $\xi$ are
+$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
+  so the last equation follows by differentiating $\xi$ and substituting the first. It has a positive rate $\omega_0$, so $\xi$ runs away from $p$ exponentially unless the foot is placed on $\xi$; placing it there makes $\dot\xi=0$ and the CoM comes to rest over the foot. Non-example: step 5 cm short of $\xi$ with $\omega_0=3.30$ rad/s, and the gap grows to $0.05\,e^{3.30\times0.5}=0.26$ m within half a second.
 
 **Why this page does not use any of it.** ZMP assumes a flat, known, co-planar support
 surface and a foot that makes full contact with it. That assumption is what the learned line
@@ -79,6 +85,10 @@ state stays near a point (a walker is never at rest) but that the trajectory ret
 cycle after a disturbance. That is why gait stability is studied through the *return map* —
 the state at one foot strike as a function of the state at the previous one — and why a
 walker can be stable in this sense while violating both the static criterion (CoM projection inside the support polygon) and the dynamic ZMP criterion.
+
+**The same idea as formulas.** For a system $\dot x=f(x)$, a **periodic orbit** is a solution with $x(t+T)=x(t)$ for a smallest period $T>0$, and it is a **limit cycle** when it is isolated, meaning no other periodic orbit lies arbitrarily close. The **return map** (Poincaré map) samples the state once per cycle, at each foot strike, $x_{k+1}=P(x_k)$. A periodic gait is a fixed point of that map, and it is locally stable when every eigenvalue of the map's Jacobian there has magnitude below one:
+$$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^\star)\Big)\Big|<1$$
+because a small deviation $\delta_k=x_k-x^\star$ then evolves as $\delta_{k+1}\approx\frac{\partial P}{\partial x}\delta_k$ and shrinks. Example: $P(x)=0.5x+0.1$ has $x^\star=0.2$ and slope $0.5$, so a start at $0.3$ goes $0.25,\ 0.225,\dots$ and the deviation halves every step. Non-examples: $P(x)=1.2x-0.04$ has the same fixed point but deviations grow by $1.2$ per step, an unstable cycle; and an undamped harmonic oscillator has closed orbits at every amplitude, a continuum rather than an isolated one, so none of them is a limit cycle and a push simply leaves it on a neighbouring orbit.
 
 The learned policies in §3 never name the concept, but they inherit it: what a locomotion
 reward actually selects for, when it rewards forward velocity without prescribing a gait, is
@@ -335,6 +345,19 @@ for the full picture and the licensing traps.
 > 4. Adaptation *across* episodes rather than within one. With a context window spanning episode boundaries, the policy can condition on what happened in earlier attempts — including falls — so it improves within a deployment without any weight update. That is a different mechanism from RMA-style latent estimation, which adapts within an episode from proprioceptive history and resets when the episode does.
 > 5. **ANYmal parkour**, because it is the only one whose high-level policy reasons about what a piece of terrain affords, which is what a mobile manipulator needs to reach a workspace. What it does not give you is the manipulator: it is a navigation-among-obstacles result on a curated course, with no arm, no payload, and no account of how carrying one changes the dynamics. The error-budget consequences of adding an arm are in [[04-robotics/navigation-mobile-manipulation|16. §4]].
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A paper says it "learns to walk in minutes." What is privileged in the teacher–student diagram, and why is wall-clock minutes not a sample-efficiency claim?
+2. Hwangbo 2019 is cited as "sim-to-real is solved." What did it actually demonstrate, and what transfer does it not license?
+3. You need a quadruped to carry a manipulator over rubble. Which result on this page is the closest precedent, and which two things does it still not give you?
+
+> [!tip]- Solutions
+> 1. The teacher sees friction and terrain; the student sees proprioception (and maybe a camera). Minutes are parallel-simulator wall clock, not environment steps per skill — Rudin's claim is throughput, not sample efficiency.
+> 2. Agile skills on a quadruped transferred from a rigid-body sim with system ID and domain randomisation. Not contact-rich manipulation, not any other robot, not "solved."
+> 3. ANYmal parkour (affordance at the high level). Not the arm, not the payload dynamics. Adding the manipulator is an error-budget problem [[04-robotics/navigation-mobile-manipulation|16. §4]] does not find in the locomotion papers.
+
 ### Sources
 
 - J. Hwangbo, J. Lee, A. Dosovitskiy, et al., "Learning agile and dynamic motor skills for legged robots," *Science Robotics*, vol. 4, no. 26, eaau5872, 2019 ([arXiv:1901.08652](https://arxiv.org/abs/1901.08652)).
@@ -379,17 +402,23 @@ for the full picture and the licensing traps.
 그리고 이 페이지의 나머지에서 왜 빠져 있는지도 함께.
 
 - **지지 다각형(support polygon)** — 지면 접촉점들의 볼록 껍질. 고전적 안정성 질문은 어떤
-  점이 그 안에 머무는가다.
+  점이 그 안에 머무는가다. 풀어 쓰면, 지면에 투영한 접촉점 $c_1,\dots,c_k$에 대해 합이 1인 음이 아닌 가중치로 만든 모든 가중 평균이다.
+$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
+  **정적 안정성 기준**은 무게중심(CoM)의 수직 투영이 $\mathcal S$ 안에 있기를 요구한다. 음이 아닌 수직 발 힘들은 껍질 안에 놓인 합력만 만들 수 있고, 가만히 서 있으려면 그 합력이 CoM 바로 아래에 있어야 하기 때문이다. 예: 발이 $(\pm0.3,\pm0.15)$ m에 있으면 $0.6\times0.3$ m 직사각형이고, $(0.1,0.05)$ m의 CoM 투영은 그 안에 있다. 반례: 속보(trot)에서는 대각선 한 쌍만 땅에 있어 다각형이 둘 사이의 선분으로 줄어들고, CoM은 거의 그 선분 위에 있지 않다. 그래도 속보하는 로봇은 넘어지지 않는다. 속보는 정적으로가 아니라 동적으로 균형을 잡기 때문이다.
 - **ZMP(zero-moment point)** — 지면 반력이 수평 모멘트를 만들지 않는 지면 위의 점. ZMP가
   지지 다각형 안에 확실히 있으면 발이 모서리를 축으로 회전하지 못하고, 경계에 닿으면 발이
   들린다. 그 시대의 보행 패턴 생성기는 사실상 로봇이 추종할 수 있는 ZMP 궤적을 만들어 내는
-  장치다.
+  장치다. 평지에서 ZMP는 접촉점들을 힘으로 가중 평균한 **압력 중심**과 일치한다.
+$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
+  $f_{z,i}\ge0$는 접촉점 $c_i$의 수직력이다. 이 점에 대해 수직력들은 수평 모멘트를 만들지 않으므로 정의를 만족한다. 가중치가 음이 아니므로 실제 힘으로 잰 ZMP는 언제나 다각형 안에 있다. 기준이 문제 삼는 것은 *계획한 운동*이 요구하는 ZMP다. 높이 $z$가 일정한 CoM(아래의 선형 도립진자)에서 그 요구는 $p=x-(z/g)\,\ddot x$이고 $x$는 CoM의 수평 위치다. 예: $x=0.3,0.3,-0.3,-0.3$ m의 네 발이 $40,30,20,10$ N을 받치면 ZMP는 $x=0.12$ m다. $z=0.9$ m의 CoM이 앞으로 $1$ m/s²로 가속하면 CoM보다 $0.9/9.81=0.092$ m 뒤의 ZMP를 요구하므로, CoM 뒤로 $0.125$ m까지 뻗은 발은 요구 ZMP가 발을 벗어나 발이 들리기 전까지 최대 $9.81\times0.125/0.9=1.36$ m/s²를 허용한다.
 - **Capture point / DCM(divergent component of motion)** — 완전히 멈추려면 다음 발을 어디에
   디뎌야 하는가. 무게중심 높이 $z$의 선형 도립진자 모형에서 $\;\omega_0 = \sqrt{g/z}\;$이고,
   capture point는 무게중심보다 $\;\dot x/\omega_0\;$만큼 앞에 있다. **계산 예제:**
   $z = 0.9$ m인 휴머노이드는 $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s이므로
   $\dot x = 0.5$ m/s에서 멈추려면 $0.5/3.30 = 0.15$ m 앞을 디뎌야 하고, $1.0$ m/s에서는
-  $0.30$ m다. DCM은 현대 전신 제어기가 쓰는 3차원 일반화다.
+  $0.30$ m다. DCM은 현대 전신 제어기가 쓰는 3차원 일반화다. 그 뒤의 모델은 **선형 도립진자**다. 높이 $z$가 일정한 점질량이 질량 없는 다리 위에 있고, 그 발(곧 ZMP)이 $p$에 있다. 동역학과 capture point $\xi$는 다음과 같다.
+$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
+  마지막 식은 $\xi$를 미분하고 첫 식을 대입하면 나온다. 비율 $\omega_0$가 양수이므로 발을 $\xi$ 위에 놓지 않으면 $\xi$는 $p$에서 지수적으로 멀어진다. 거기에 놓으면 $\dot\xi=0$이 되고 CoM이 발 위에서 멈춘다. 반례: $\omega_0=3.30$ rad/s에서 $\xi$보다 5 cm 짧게 디디면 그 간격이 반 초 만에 $0.05\,e^{3.30\times0.5}=0.26$ m로 커진다.
 
 **이 페이지가 그중 아무것도 쓰지 않는 이유.** ZMP는 평평하고 알려진 동일 평면의 지지면과,
 그 면에 발이 온전히 닿는 상황을 전제한다. 학습 계열이 의도적으로 포기한 것이 바로 그
@@ -412,6 +441,10 @@ for the full picture and the licensing traps.
 주기로 되돌아오는 것이다. 걸음새 안정성을 *복귀 사상(return map)* — 직전 발 착지의 상태에
 대한 함수로서 이번 발 착지의 상태 — 으로 연구하는 이유이고, 정적 기준(지지 다각형 안의 무게중심 투영)과 동적 ZMP 기준을 모두
 어기면서도 이 의미에서는 안정할 수 있는 이유다.
+
+**같은 발상을 식으로.** 시스템 $\dot x=f(x)$에서 **주기 궤도**는 가장 작은 주기 $T>0$에 대해 $x(t+T)=x(t)$인 해이고, 그것이 고립되어 있을 때, 곧 임의로 가까운 곳에 다른 주기 궤도가 없을 때 **극한주기**다. **복귀 사상**(푸앵카레 사상)은 한 주기에 한 번, 발 착지마다 상태를 표본으로 뽑는다: $x_{k+1}=P(x_k)$. 주기적 걸음새는 그 사상의 고정점이고, 거기서 사상의 야코비안 고유값이 모두 크기 1 미만이면 국소적으로 안정하다.
+$$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^\star)\Big)\Big|<1$$
+작은 편차 $\delta_k=x_k-x^\star$가 $\delta_{k+1}\approx\frac{\partial P}{\partial x}\delta_k$로 진화하며 줄어들기 때문이다. 예: $P(x)=0.5x+0.1$은 $x^\star=0.2$, 기울기 $0.5$이므로 $0.3$에서 시작하면 $0.25,\ 0.225,\dots$로 가고 편차가 매 걸음 절반이 된다. 반례: $P(x)=1.2x-0.04$는 고정점이 같지만 편차가 걸음마다 $1.2$배로 커지는 불안정한 주기다. 또 감쇠 없는 조화 진동자는 모든 진폭에서 닫힌 궤도를 가져 고립이 아니라 연속체이므로 그중 어느 것도 극한주기가 아니고, 밀면 이웃 궤도로 옮겨 갈 뿐이다.
 
 §3의 학습된 정책들은 이 개념을 결코 이름 부르지 않지만 물려받는다. 보행 보상이 걸음새를
 지정하지 않고 전진 속도만 보상할 때 실제로 골라내는 것은, 신경망이 스스로 찾아낸 극한주기다.
@@ -643,6 +676,19 @@ for the full picture and the licensing traps.
 > 3. 비교 대상은 **단일 계측 알프스 경로** — 2.2 km, 고도 120 m — 를 그 경로의 **하이킹 플래너 76분 추정치**에 대해 78분에 완주한 것이다(정상까지는 표지판 35분에 대해 31분). 사람 등산객에 대한 벤치마크가 아니라 발표된 시간에 대한 한 경로이고, 로봇이 전체적으로는 조금 더 느렸다. 결과는 진심으로 인상적이고, 그것이 뒷받침하는 주장은 통상 귀속되는 것보다 좁다.
 > 4. 에피소드 *안*이 아니라 에피소드를 *가로지르는* 적응. 컨텍스트 창이 에피소드 경계를 넘으면 정책이 앞선 시도에서 일어난 일 — 넘어짐을 포함해 — 을 조건으로 삼을 수 있어, 가중치 갱신 없이 한 배치 안에서 개선된다. 에피소드 안에서 고유수용감각 이력으로 적응하고 에피소드가 끝나면 초기화되는 RMA식 잠재 추정과는 다른 기제다.
 > 5. **ANYmal parkour.** 상위 정책이 어떤 지형이 무엇을 허용하는지 추론하는 유일한 결과이고, 그것이 모바일 매니퓰레이터가 작업 공간에 도달하는 데 필요한 것이기 때문이다. 그것이 주지 않는 것은 매니퓰레이터 자체다: 팔도, 페이로드도, 팔을 실었을 때 동역학이 어떻게 달라지는지에 대한 설명도 없는, 정돈된 코스 위의 장애물 사이 내비게이션 결과다. 팔을 더할 때의 오차 예산 귀결은 [[04-robotics/navigation-mobile-manipulation|16. §4]]에 있다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 논문이 "몇 분 만에 걷기를 학습한다"고 한다. 교사–학생 도식에서 특권인 것과, 벽시계 분이 샘플 효율 주장이 아닌 이유는?
+2. Hwangbo 2019가 "sim-to-real은 풀렸다"로 인용된다. 실제로 보인 것과, 허가하지 않는 이전은?
+3. 사족이 잔해 위로 매니퓰레이터를 실어 나르길 원한다. 이 페이지에서 가장 가까운 선례와, 그것이 여전히 주지 않는 둘은?
+
+> [!tip]- 정답 · Solutions
+> 1. 교사는 마찰과 지형을 보고, 학생은 고유수용(과 카메라)을 본다. 분은 병렬 시뮬레이터 벽시계이지 기술당 환경 스텝이 아니다 — Rudin의 주장은 처리량이지 샘플 효율이 아니다.
+> 2. 강체 시뮬에서 시스템 식별과 도메인 랜덤화로 사족의 민첩 기술이 이전된 것. 접촉이 많은 조작도, 다른 로봇도, "풀렸다"도 아니다.
+> 3. ANYmal parkour(상위 수준의 affordance). 팔도, 페이로드 동역학도 아니다. 매니퓰레이터를 더하는 것은 로코모션 논문이 다루지 않는 오차 예산 문제([[04-robotics/navigation-mobile-manipulation|16. §4]]).
 
 ### 출처
 

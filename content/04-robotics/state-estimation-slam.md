@@ -47,6 +47,23 @@ The controller rarely receives the true state $x_t$. It acts on an estimate $\ha
 
 State is a modeling choice, not a synonym for all physical reality. Covariance describes uncertainty **under the assumed model**; a small covariance can still be overconfident when calibration, association, or noise assumptions are wrong.
 
+**The four, stated completely.**
+- **State** $x_t$ is a vector of variables chosen so that the past influences the future only through it. That is the **completeness** (Markov) condition:
+$$p(x_t \mid x_{0:t-1}, z_{1:t-1}, u_{1:t}) = p(x_t \mid x_{t-1}, u_t)$$
+Here $x_{0:t-1}$ is every earlier state, $z_{1:t-1}$ every earlier measurement and $u_{1:t}$ every control input, so the condition says that once the previous state and the current input are known, nothing older adds information about $x_t$. It is the Markov property of [[02-foundations/probability|3. Probability §5]]. *Example:* position and velocity together are a complete state for a cart pushed by known forces. *Non-example:* position alone is not, because two carts at the same position with different velocities move differently, so a prediction from position needs older positions too.
+- **Observation** $z_t$ is the sensor output at time $t$. It is a random variable because of noise, and §3's observation model $h$ links it to the state.
+- **Belief** is the posterior distribution of the state given all data so far,
+$$\operatorname{bel}(x_t) = p(x_t \mid z_{1:t}, u_{1:t})$$
+so it is a whole distribution, conditioned on the measurements $z_{1:t}$ and inputs $u_{1:t}$ from time 1 to $t$. The Bayes filter of §4 computes it.
+- **Estimate** $\hat x_t$ is one point computed from the belief. The usual choices are the posterior mean (the minimum mean-square-error estimate) and the posterior mode (the MAP estimate):
+$$\hat x_t = E[x_t \mid z_{1:t}, u_{1:t}] \quad \text{or} \quad \hat x_t = \arg\max_{x_t} \operatorname{bel}(x_t)$$
+Its uncertainty is reported by the **estimate covariance**, the expected outer product of the error $x_t - \hat x_t$, since that is what says how far and in which directions the truth may lie (covariance is defined in [[02-foundations/probability|3. Probability §2]]):
+$$P_t = E\big[(x_t - \hat x_t)(x_t - \hat x_t)^\top \mid z_{1:t}, u_{1:t}\big]$$
+*Example:* after §6's update the belief is Gaussian with mean 11.6 m and variance 0.8 m², so the estimate is 11.6 m by either rule, because a Gaussian's mean and mode coincide. *Non-example:* for a two-peaked belief (the robot is at door 1 or at door 2) the mean can fall between the doors, where the robot certainly is not, so a single point is a poor summary.
+- **Consistency** is the property that the reported $P_t$ matches the actual error. With ground truth $x_t$ available it is checked by the **normalized estimation error squared** (NEES), the squared Mahalanobis distance of the true error:
+$$\epsilon_t = (x_t - \hat x_t)^\top P_t^{-1} (x_t - \hat x_t)$$
+Since $\epsilon_t$ follows a $\chi^2_n$ distribution for a consistent Gaussian estimator of an $n$-dimensional state, its average over many runs should be close to $n$. *Example:* with $P = 0.8$ m² and a true error of 1 m, $\epsilon = 1.25$; a consistent 1-D filter averages about 1 over many runs. *Non-example (overconfident):* a filter reporting $P = 0.01$ m² while its errors actually have variance 1 m² averages $\epsilon = 100$. That is the small-covariance failure above, in numbers.
+
 The distinction is needed because the controller acts on an estimate while the world evolves according to the actual state. For example, an excavator can receive a precise-looking pose after a localization outage; the small reported covariance may simply omit the unmodeled motion. **The reading this gives you.** Ask what the observation directly measured, what inference produced the estimate, and which alternatives the belief still represents. A point estimate and its timestamp should never be read as a complete account of uncertainty merely because they arrived in the same message.
 
 ### 3. Process and observation models
@@ -57,6 +74,17 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 - **Estimated:** current state or belief.
 - **Uncertainty:** $w_t$ captures process/model uncertainty; $v_t$ captures measurement noise.
 - **Runtime:** the estimate is updated online as measurements arrive.
+
+**The two models, stated completely.** A state-space model has four named parts.
+- The **process (motion) model** $f$ maps the previous state $x_{t-1}$ and control $u_t$ to the next state.
+- The **observation (measurement) model** $h$ maps a state to the measurement the sensor would produce without noise.
+- The **process noise** $w_t$ and **measurement noise** $v_t$. In the standard Gaussian case both are zero-mean, white (independent across time) and independent of each other, with covariances $Q_t$ and $R_t$:
+$$w_t \sim \mathcal{N}(0, Q_t), \qquad v_t \sim \mathcal{N}(0, R_t)$$
+- An **initial belief** $p(x_0)$.
+
+The Bayes filter of §4 uses the same models written as distributions, because adding Gaussian noise to a deterministic prediction gives a Gaussian centred on that prediction:
+$$p(x_t \mid x_{t-1}, u_t) = \mathcal{N}\big(f(x_{t-1}, u_t),\, Q_t\big), \qquad p(z_t \mid x_t) = \mathcal{N}\big(h(x_t),\, R_t\big)$$
+When $f(x, u) = Ax + Bu$ and $h(x) = Hx$ are linear, the model is **linear-Gaussian** and the Kalman filter of §5 is exact; otherwise the EKF, UKF or particle filter approximates. *Example:* a cart on a rail driven at commanded speed $u_t$ over a step $\Delta t$ has $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$, and a range sensor along the rail has $h(x_t) = x_t$, both linear. With $x_{t-1}$ estimated at 9 m (variance 3 m²), $u_t = 1$ m/s, $\Delta t = 1$ s and $Q = 1$ m², the prediction is 10 m with variance $3 + 1 = 4$ m², exactly the prior §6 starts from. *Non-example:* a sensor measuring range to a landmark beside the rail, $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$, is not linear in $x$, so the Kalman filter no longer applies exactly.
 
 Model error and sensor noise are different. Wheel slip violates a motion model; noisy range readings perturb measurements. Treating both as the same Gaussian noise can make a filter inconsistent.
 
@@ -69,6 +97,24 @@ $$p(x_t\mid z_{1:t-1},u_{1:t})=\int p(x_t\mid x_{t-1},u_t)p(x_{t-1}\mid z_{1:t-1
 $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
 Read it as two moves. Prediction moves the previous belief through the dynamics and normally increases uncertainty. Correction weights that prior by how compatible each state is with the new measurement.
+
+**What the Bayes filter is, part by part.** It is a **recursive estimator**: it computes the belief at time $t$ from the belief at $t-1$ plus the newest input and measurement only, so the data history never has to be stored. It has three named parts.
+- **Prior belief** $\operatorname{bel}(x_{t-1}) = p(x_{t-1}\mid z_{1:t-1}, u_{1:t-1})$, the output of the previous step (at $t = 1$, the initial belief $p(x_0)$).
+- **Prediction**, which produces the predicted belief $\overline{\operatorname{bel}}(x_t) = p(x_t \mid z_{1:t-1}, u_{1:t})$ by the first equation. Inside the integral, $p(x_t\mid x_{t-1},u_t)$ is §3's process model, and the integral sums over every previous state $x_{t-1}$ that could have led to $x_t$.
+- **Correction**, which produces $\operatorname{bel}(x_t)$ by the second equation with its normalizer $\eta$ written out:
+$$\operatorname{bel}(x_t) = \eta\, p(z_t \mid x_t)\, \overline{\operatorname{bel}}(x_t), \qquad \eta^{-1} = \int p(z_t \mid x_t)\, \overline{\operatorname{bel}}(x_t)\, dx_t$$
+Here $p(z_t\mid x_t)$ is the observation model read as a **likelihood** (a function of $x_t$ for the fixed reading $z_t$), and $\eta$ is chosen so the belief integrates to 1, since likelihood times prediction is not yet a distribution. This is Bayes' rule of [[02-foundations/probability|3. Probability §1]], with $\eta^{-1}$ as the evidence.
+
+The two assumptions it rests on, derived below, are the Markov property of the dynamics and the conditional independence of each measurement given its state ([[02-foundations/probability|3. Probability §5]]):
+$$p(x_t\mid x_{t-1}, z_{1:t-1}, u_{1:t}) = p(x_t\mid x_{t-1},u_t), \qquad p(z_t\mid x_t, z_{1:t-1}, u_{1:t}) = p(z_t\mid x_t)$$
+
+> [!example] Worked example: a three-cell corridor · 계산 예제
+> A robot is in one of three cells 0, 1, 2 arranged in a loop. Cells 0 and 1 have a door and cell 2 is wall. It starts with no idea, $\operatorname{bel} = (1/3, 1/3, 1/3)$. Each step it tries to move one cell forward and succeeds with probability 0.8, otherwise it stays. Its door sensor reports "door" with probability 0.6 at a door and 0.2 at a wall.
+> - *Step 1, predict.* $\overline{\operatorname{bel}}(i) = 0.8\,\operatorname{bel}(i-1) + 0.2\,\operatorname{bel}(i)$ stays $(1/3, 1/3, 1/3)$, since moving a uniform belief keeps it uniform.
+> - *Step 1, correct on "door".* Likelihood times prediction is $(0.2, 0.2, 0.0667)$. Its sum $0.4667$ gives $\eta = 2.143$, so $\operatorname{bel} = (0.429, 0.429, 0.143)$.
+> - *Step 2, predict, then correct on "wall".* The prediction is $(0.200, 0.429, 0.371)$. With wall likelihoods $(0.4, 0.4, 0.8)$ the belief becomes $(0.146, 0.313, 0.542)$: cell 2 is now the best guess.
+>
+> *Non-example:* applying the step-1 "door" likelihood a second time to the same single reading gives $(0.474, 0.474, 0.053)$, a belief that looks sharper only because one piece of evidence was counted twice. That is the double counting a sensor with memory causes.
 
 **Where the two lines come from, and what each assumption buys.** Neither is a new principle;
 both are elementary probability plus one assumption used exactly once. For **prediction**,
@@ -106,6 +152,41 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 
 $K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$. For both filters written as code — one Kalman predict/update with the Joseph-form covariance, and particle resampling triggered by the effective sample size — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]] and [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
 
+**The Kalman filter, stated completely.** It is the Bayes filter of §4 specialised to §3's **linear-Gaussian** model, where it is exact rather than approximate. It needs four conditions: linear dynamics $x_t = Ax_{t-1} + Bu_t + w_t$; a linear observation $z_t = Hx_t + v_t$; zero-mean white Gaussian noises $w_t\sim\mathcal N(0,Q)$ and $v_t\sim\mathcal N(0,R)$, independent of each other; and a Gaussian initial belief. Under them every belief stays Gaussian, because affine maps and conditioning keep Gaussians Gaussian ([[02-foundations/probability|3. Probability §3]]), so the filter carries only a mean and a covariance. The **predict** step pushes both through the dynamics:
+$$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
+This holds since the mean of $Ax + Bu + w$ is $A\hat x + Bu$, the covariance of $Ax$ is $APA^\top$, and independent noise adds its own $Q$. The **update** step forms the **innovation** $y$ (measurement minus predicted measurement), its covariance $S$, and the gain:
+$$y = z - H\hat x^-, \qquad S = HP^-H^\top + R, \qquad K = P^-H^\top S^{-1}$$
+$$\hat x^+ = \hat x^- + Ky, \qquad P^+ = (I - KH)P^-$$
+Symbols: $\hat x$ and $P$ are the previous mean and covariance, superscript $-$ marks the prediction and $+$ the corrected result, $A$ is the state-transition matrix, $B$ the input matrix, $H$ the observation matrix, $Q$ and $R$ the process- and measurement-noise covariances, and $I$ the identity. The derivation from Gaussian conditioning is in [[02-foundations/probability|3. Probability §5]]. *Example:* §3's cart prediction (9 m and 3 m² become 10 m and 4 m²) followed by §6's update ($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ m, $P^+ = 0.8$ m²) is one complete cycle. *Non-example:* for a range-to-landmark sensor, $h$ is not a matrix, so there is no $H$ to put into these equations. The EKF replaces it with a Jacobian.
+
+**The EKF, stated completely.** The **extended Kalman filter** keeps the Kalman equations but allows nonlinear $f$ and $h$ by linearizing each around the current estimate with a first-order Taylor expansion. The Jacobians (matrices of partial derivatives, [[02-foundations/calculus-backprop|2. Calculus §1]]) are
+$$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \frac{\partial h}{\partial x}\Big|_{\hat x_t^-}$$
+so $F_t$ is taken at the previous estimate and $H_t$ at the prediction, the best available guesses of where the linearization belongs. The mean still goes through the nonlinear models and only the covariance uses the Jacobians:
+$$\hat x_t^- = f(\hat x_{t-1}, u_t), \qquad P_t^- = F_tP_{t-1}F_t^\top + Q, \qquad y_t = z_t - h(\hat x_t^-)$$
+and the update is the Kalman update above with $H_t$ in place of $H$. *Example:* a robot predicted at $(3, 4)$ m with $P^- = I$ m² measures its range to a landmark at the origin, $h(x) = \sqrt{x_1^2 + x_2^2}$, with $R = 1$ m². Then $h(\hat x^-) = 5$ and $H = (x_1, x_2)/h = (0.6, 0.8)$, so $S = 0.36 + 0.64 + 1 = 2$ and $K = (0.3, 0.4)$. A reading of 4.5 m gives $y = -0.5$ and $\hat x^+ = (2.85, 3.80)$, a correction straight toward the landmark, the only direction a range constrains, and $P^+ = \begin{pmatrix}0.82&-0.24\\-0.24&0.68\end{pmatrix}$. *Non-example (why EKFs become inconsistent):* the Jacobian is exact only at its linearization point, so when $P^-$ is large the belief covers regions where $h$ curves away from its tangent, and the reported $P^+$ comes out too small.
+
+**Sigma points, stated completely.** The UKF's **unscented transform** replaces the Jacobian with $2n+1$ deterministic samples of an $n$-dimensional Gaussian $\mathcal N(\hat x, P)$. In Julier and Uhlmann's basic form, with a spread parameter $\kappa$:
+$$\chi_0 = \hat x, \qquad \chi_{\pm i} = \hat x \pm \big(\sqrt{(n+\kappa)P}\big)_i, \qquad W_0 = \frac{\kappa}{n+\kappa}, \qquad W_{\pm i} = \frac{1}{2(n+\kappa)}$$
+Here $(\sqrt{M})_i$ is the $i$-th column of a matrix square root such as the Cholesky factor, and the weights $W$ are chosen so that the weighted mean and covariance of the points are exactly $\hat x$ and $P$. Each point is pushed through the nonlinear model, and the output mean and covariance are the weighted mean and covariance of the results. *Example:* $n = 1$, $\hat x = 10$, $P = 4$ and $\kappa = 2$ give points $10$ and $10 \pm \sqrt{12}$, that is $13.464$ and $6.536$, with weights $2/3, 1/6, 1/6$. Through $g(x) = x^2$ their weighted mean is $104$, the exact $E[x^2] = \hat x^2 + P$, whereas linearizing at the mean gives $g(10) = 100$.
+
+**The particle filter, stated completely.** It represents the belief by $N$ weighted samples, $\operatorname{bel}(x_t) \approx \sum_{i=1}^N w_t^{[i]}\,\delta(x_t - x_t^{[i]})$, where $x_t^{[i]}$ is particle $i$, $w_t^{[i]}$ its weight and $\delta$ the Dirac delta, so the approximation puts mass $w_t^{[i]}$ exactly at each particle. One step has three parts.
+- **Sample** each particle from the process model, $x_t^{[i]} \sim p(x_t \mid x_{t-1}^{[i]}, u_t)$; this is the prediction.
+- **Weight** each particle by the likelihood of the new measurement and normalize so the weights sum to 1, since the likelihood supplies §4's correction:
+$$\tilde w_t^{[i]} = w_{t-1}^{[i]}\, p(z_t \mid x_t^{[i]}), \qquad w_t^{[i]} = \frac{\tilde w_t^{[i]}}{\sum_j \tilde w_t^{[j]}}$$
+- **Resample** $N$ particles with replacement in proportion to weight, then reset every weight to $1/N$. Doing this only when the **effective sample size** is low slows depletion:
+$$N_{\text{eff}} = \frac{1}{\sum_i \big(w_t^{[i]}\big)^2}$$
+It equals $N$ for uniform weights and 1 when one particle holds all the weight, so it counts how many particles are really contributing.
+
+*Example:* particles at 9, 10 and 12 m with equal previous weights, a reading $z = 12$ m and Gaussian noise $\sigma = 1$ m give likelihoods $e^{-4.5}, e^{-0.5}, e^{0}$, that is $0.011, 0.135, 1$. The weights are $0.010, 0.118, 0.872$, the weighted mean is 11.73 m, and $N_{\text{eff}} = 1.29$ out of 3, so it is time to resample. The code is in [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
+
+**Factor graphs, stated completely.** A **factor graph** is a bipartite graph with **variable nodes** (poses, landmarks, calibration) and **factor nodes**, each factor $\phi_k$ connected only to the variables $X_k$ its measurement involves. It represents a factorization of the posterior:
+$$p(X \mid Z) \propto \prod_k \phi_k(X_k), \qquad \phi_k(X_k) \propto \exp\!\big(-\tfrac12 \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}\big)$$
+Here $h_k$ predicts measurement $z_k$ from its variables, $\Sigma_k$ is that measurement's noise covariance, and $\lVert e\rVert^2_{\Sigma} = e^\top\Sigma^{-1}e$ is the squared Mahalanobis norm. Taking the negative logarithm turns the product into a sum, so the MAP estimate is a nonlinear least-squares problem:
+$$X^* = \arg\min_X \sum_k \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}$$
+A **pose graph** is the special case whose variables are only poses and whose factors are relative-pose measurements (odometry and loop closures). **Gauge freedom** is the set of transformations that leave this cost unchanged. When every factor is relative, $h_k$ depends only on differences between poses, so applying one rigid transform $G$ to the whole solution changes nothing:
+$$\sum_k \lVert h_k(G \cdot X_k) - z_k \rVert^2_{\Sigma_k} = \sum_k \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}$$
+The minimum is then a whole family of solutions rather than a point, and a prior factor on one pose removes it. *Example:* 1-D poses $x_0, x_1, x_2$, a prior fixing $x_0 = 0$, odometry $x_1 - x_0 = 1$ and $x_2 - x_1 = 1$, and a loop closure $x_2 - x_0 = 1.8$, all with unit variance. Odometry alone says $x_2 = 2$. Least squares gives $x_1 = 0.933$ and $x_2 = 1.867$, spreading the 0.2 m disagreement over the three constraints as residuals of $-0.067$, $-0.067$ and $+0.067$. *Non-example:* drop the prior, and $(x_0, x_1, x_2) = (5, 5.933, 6.867)$ has exactly the same relative residuals and cost. That shift is the gauge.
+
 > [!note] Filter and smoother are one update · 필터와 스무더는 같은 갱신
 > If Gauss–Newton and marginalising are new to you, skip this note and return after §7, where both appear. The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and a Gauss–Newton step on that cost started from the prior mean is the EKF update, while iterating it is exactly the iterated EKF — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
 
@@ -132,7 +213,26 @@ Here the measurement variance is smaller than the prediction variance, so the co
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
 
+**The four problems as posteriors.** Each row is a different conditional distribution, which is what makes the table exact. Write $x_{1:t}$ for the trajectory, $m$ for the map (for example landmark positions $m = \{m_1, \dots, m_N\}$), $z_{1:t}$ for the measurements and $u_{1:t}$ for the inputs.
+- **Localization** conditions on a known map: $p(x_t \mid z_{1:t}, u_{1:t}, m)$.
+- **Mapping** conditions on known poses: $p(m \mid z_{1:t}, x_{1:t})$.
+- **Odometry** estimates the relative motion $x_{t-1}^{-1}x_t$ from consecutive measurements only and never revisits older ones, so nothing it produces can correct an earlier step.
+- **Full SLAM** estimates the whole trajectory and the map jointly, so its target is the posterior below, with neither poses nor map on the conditioning side:
+$$p(x_{1:t}, m \mid z_{1:t}, u_{1:t})$$
+**Online SLAM** keeps only the current pose, $p(x_t, m \mid z_{1:t}, u_{1:t})$, obtained by integrating the past poses out of the full posterior.
+
+Under §4's Markov and conditional-independence assumptions, the full SLAM posterior (with the initial pose $x_0$ included) factors into a prior, one motion term per step and one measurement term per observation:
+$$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) \propto p(x_0) \prod_{k=1}^t p(x_k \mid x_{k-1}, u_k) \prod_{k=1}^t p(z_k \mid x_k, m_{c_k})$$
+Here $c_k$ is the **data association**, the index of the landmark that measurement $z_k$ came from. Each term is one factor of §5's factor graph, which is why graph-based SLAM back ends exist. *Example:* the three-pose chain of §5 is a full SLAM problem without landmarks, where the loop closure plays the part of a re-observed place. *Non-example:* a wrong $c_k$ inserts a factor tied to the wrong landmark, and least squares will bend the map to satisfy it.
+
 A SLAM **front end** extracts features ([[04-robotics/geometric-perception-calibration|3.5 §2.5]]) or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
+
+- **Drift** is pose error that accumulates because each relative-motion estimate carries its own error and nothing corrects their sum. If each of $k$ steps adds an independent error of variance $\sigma^2$, the variances add, so the position standard deviation grows as
+$$\sigma_k = \sigma\sqrt{k}$$
+which is the random walk of [[02-foundations/probability|3. Probability §5]]. Heading errors make it worse, since a wrong heading rotates every later step. *Example:* 100 steps with 1 cm standard deviation each give 10 cm, not 1 cm.
+- **Loop closure** is a measurement between the current pose $x_j$ and a much earlier pose $x_i$ ($j \gg i$), produced when the front end recognizes a place it has already seen. It enters the back end as one more relative factor, the pose of $x_j$ expressed in $x_i$'s frame ([[02-foundations/se3-geometry|8. SE(3) §3]]):
+$$z_{ij} \approx x_i^{-1} x_j$$
+Because it links the two ends of a long chain, least squares redistributes the accumulated drift along the whole loop, as in §5's example where a 0.2 m disagreement spread over all three edges. A **false** closure is the same factor between two places that merely look alike.
 
 **The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
 paper names its front end by acronym and assumes you know what the letters buy. They differ
@@ -153,6 +253,14 @@ constraint, so the optimizer does not carry every sample — and **deskewing**, 
 lidar scan for the fact that the robot moved *during* the sweep. A paper that omits deskewing
 on a fast platform is reporting a map built from distorted scans.
 
+**Preintegration and deskewing, written out.** An IMU reports angular velocity $\tilde\omega_k$ and specific force $\tilde a_k$ at samples $k$ spaced $\Delta t$ apart, corrupted by a gyroscope bias $b_g$ and an accelerometer bias $b_a$. Preintegration between keyframes $i$ and $j$ sums those samples in keyframe $i$'s body frame into three **relative-motion increments** (Forster et al., *IEEE T-RO* 2017), where $\Delta R_{ik}$ and $\Delta v_{ik}$ are the partial sums up to sample $k$:
+$$\Delta R_{ij} = \prod_{k=i}^{j-1} \operatorname{Exp}\big((\tilde\omega_k - b_g)\Delta t\big), \quad \Delta v_{ij} = \sum_{k=i}^{j-1} \Delta R_{ik}(\tilde a_k - b_a)\Delta t, \quad \Delta p_{ij} = \sum_{k=i}^{j-1} \big[\Delta v_{ik}\Delta t + \tfrac12 \Delta R_{ik}(\tilde a_k - b_a)\Delta t^2\big]$$
+$\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-foundations/se3-geometry|8. 3D Geometry §2]]). The increments do not depend on the global pose, velocity or gravity at keyframe $i$, which enter only when the increments are compared with the states, so the sums are computed once and reused at every optimizer iteration; a later bias update is applied as a first-order correction instead of re-summing. *Example:* 100 samples at 200 Hz of a constant 0.5 m/s² along $x$, with no rotation and zero bias, give $\Delta v = 0.25$ m/s and $\Delta p = 0.0625$ m over 0.5 s, the familiar $\tfrac12 aT^2$.
+
+**Deskewing** re-expresses each lidar point $p_k$, captured at time $t_k$ during the sweep, in the sensor frame at one reference time $t_s$, using the sensor pose $T(t)$ interpolated from the IMU or odometry:
+$$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
+so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan.
+
 **Keyframes** are the other structural idea: rather than optimize every frame, the back end
 keeps a sparse subset and marginalizes the rest, which is what keeps the problem bounded as
 the session grows.
@@ -166,6 +274,17 @@ nonlinear estimators the resulting prior is tied to a linearization point and la
 relinearization or approximation can lose information. That fill-in is why sliding-window estimators cap their window, and why a
 paper's window length is a compute claim rather than a modelling preference
 (the Schur complement is defined in Boyd & Vandenberghe, *Convex Optimization*, appendix A.5.5, and block elimination with it is appendix C.4).
+
+**The information matrix, stated completely.** For a Gaussian with mean $\mu$ and covariance $\Sigma$, the **information matrix** (precision matrix) and **information vector** are
+$$\Lambda = \Sigma^{-1}, \qquad \xi = \Sigma^{-1}\mu$$
+so large entries mean tight knowledge, the opposite of covariance. Three properties make it the natural object for SLAM.
+- **Zeros are conditional independence.** $\Lambda_{ij} = 0$ exactly when $x_i$ and $x_j$ are independent given all other variables, because the exponent $-\tfrac12 x^\top\Lambda x$ then has no term coupling $x_i$ with $x_j$, so the density factors.
+- **Factors add.** In least squares, the Gauss–Newton matrix $J^\top\Sigma^{-1}J$ is the information matrix of the linearized problem, and each factor adds a block only where its own variables are, so SLAM's $\Lambda$ is sparse ([[02-foundations/optimization|4. Optimization §3.5]]).
+- **Marginalizing** a block is the Schur complement above in information form, and simply deleting rows and columns in covariance form.
+
+*Example:* the chain $x_0 \to x_1 \to x_2$ with a unit-variance prior on $x_0$ and two unit-variance odometry factors has
+$$\Lambda = \begin{pmatrix}2&-1&0\\-1&2&-1\\0&-1&1\end{pmatrix}, \qquad \Sigma = \Lambda^{-1} = \begin{pmatrix}1&1&1\\1&2&2\\1&2&3\end{pmatrix}$$
+$\Lambda_{02} = 0$ says $x_0$ and $x_2$ are independent once $x_1$ is known, even though $\Sigma_{02} = 1$ shows they are correlated. The variances grow 1, 2, 3 along the chain, which is drift. Marginalizing $x_1$ with $A = 2$, $B = (-1, -1)$ and $C = \operatorname{diag}(2, 1)$ gives $S = \begin{pmatrix}1.5&-0.5\\-0.5&0.5\end{pmatrix}$. The zero has filled in, and $S^{-1} = \begin{pmatrix}1&1\\1&3\end{pmatrix}$ equals the $(x_0, x_2)$ block of $\Sigma$, as it must.
 
 > [!warning] "Drift-free" and "loop closure" are claims about different things
 > Loop closure removes accumulated drift *only along paths that return to a previously visited
@@ -187,6 +306,14 @@ real-time reconstruction pipelines are built on. Its planning cousin is the **ES
 giving a planner both a clearance value and its gradient for free, which is why
 trajectory-optimization planners want one.
 
+**TSDF and ESDF, written out.** For a voxel centred at $x$ on a sensor ray, let $\lambda(x)$ be its distance from the sensor along the ray and $D_{\text{meas}}$ the depth measured along that ray. The **projective signed distance** and its **truncation** to a band of half-width $\tau$ are
+$$d(x) = D_{\text{meas}} - \lambda(x), \qquad \operatorname{tsdf}(x) = \max\!\big(-1,\ \min\!\big(1,\ d(x)/\tau\big)\big)$$
+so positive values lie in front of the surface (free space), negative values behind it, and the zero crossing is the surface; truncation keeps a far-away measurement from overwriting voxels it says nothing precise about. Each new frame is **fused** by a running weighted average (Curless & Levoy, SIGGRAPH 1996), where $D$ is the stored value, $W$ its accumulated weight and $w$ the new measurement's weight, so independent noise averages out:
+$$D \leftarrow \frac{W D + w\,\operatorname{tsdf}}{W + w}, \qquad W \leftarrow W + w$$
+The **ESDF** instead stores the Euclidean distance to the nearest point $o$ of the obstacle set $\mathcal O$, negative inside obstacles, since a planner needs true clearance in every direction:
+$$\operatorname{esdf}(x) = \pm \min_{o \in \mathcal O} \lVert x - o \rVert$$
+*Example:* with $\tau = 0.1$ m, a voxel 1.95 m along a ray that hits a surface at 2.00 m has $d = 0.05$ m and stored value 0.5. A second frame measuring 1.98 m gives 0.3, and equal weights fuse the two to 0.4. *Non-example:* where the ray meets a wall at 60° from its normal, a voxel 0.1 m before the hit point along the ray is only $0.1\cos 60° = 0.05$ m from the wall, so the projective value overstates the true clearance by a factor of 2. That is why a planner needs the ESDF rather than the TSDF.
+
 **What a map does not store.** Every representation on this page converges on one estimate of
 the present. That is the right target for localisation and planning, and the wrong one for a
 robot that returns to the same building for a year: folding each change into a single map
@@ -204,6 +331,10 @@ spatial memory ([[04-robotics/semantic-language-navigation|19. Semantic Navigati
 - GNSS: absolute non-drifting reference in favorable conditions, but obstruction and multipath can introduce noise and bias.
 
 **Loosely coupled** systems fuse completed subsystem estimates. **Tightly coupled** systems jointly use lower-level measurements, often preserving information but increasing model and implementation complexity. Calibration, timestamps, rolling shutter, latency, and clock offset can dominate algorithmic improvements.
+
+Written as costs, the difference is exact. A loosely coupled system first runs each subsystem $s$ to an estimate $\hat x_s$ with covariance $P_s$ and fuses those estimates; a tightly coupled system puts every raw residual $r$ (each IMU increment, each image feature, each pseudorange) into one problem:
+$$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{tight: } \min_x \sum_{\text{raw measurements } r} \lVert r(x) \rVert^2_{\Sigma_r}$$
+Here $\lVert e\rVert^2_{P} = e^\top P^{-1}e$, so each term is weighted by its own uncertainty. *Example:* a standalone GNSS fix needs pseudoranges to at least four satellites, for three position coordinates plus the receiver clock offset. Under a bridge with two satellites visible, a loosely coupled system has no GNSS estimate to fuse, while a tightly coupled one still adds the two pseudorange residuals, and they still constrain the solution.
 
 ### 8.5 Tracking many objects: gating, association, and track management
 
@@ -236,19 +367,27 @@ The threshold comes from a table because, for a correct pair under the linear-Ga
 **Association decides who gets which detection.**
 
 - **Greedy nearest neighbour** repeatedly commits the smallest remaining $d^2$ pair. It is fast, but an early commitment can force a later track onto a bad detection. Letting each track independently take its own nearest detection is worse still, because two tracks can claim the same one.
-- **Global nearest neighbour (GNN)** chooses the one-to-one assignment with the smallest total $\sum d^2$ over gated pairs. This is the linear assignment problem, solved exactly in polynomial time by the Hungarian method (Kuhn 1955; Munkres 1957) — the same matching [[01-canonical-papers/notes/2-computer-vision/detr|DETR]] uses in its loss. Unlike greedy, it returns the true minimum-total assignment, and it does so without trying all $n!$ one-to-one matchings. Why $\sum d^2$ is the right total: the Gaussian likelihood of detection $i$ under track $j$ has negative log $-\ln p = \tfrac12 d^2_{ij} + \tfrac12\ln|2\pi S_j|$, so the negative log of the joint likelihood is $\tfrac12\sum d^2$ plus one normalizing term per track. When every track is assigned, minimizing $\sum d^2$ maximizes the joint Gaussian likelihood, because each track's normalizing term $\ln|2\pi S_j|$ appears once in every candidate and cancels. Once a track may go unassigned, implementations add an explicit cost for a missed track or a new one, and that constant is a tuning choice.
+- **Global nearest neighbour (GNN)** chooses the one-to-one assignment with the smallest total $\sum d^2$ over gated pairs. Written with a 0/1 variable $a_{ij}$ that is 1 when detection $i$ goes to track $j$, and with every track assigned, it is
+$$\min_{a_{ij}\in\{0,1\}} \sum_{(i,j)\ \text{gated}} a_{ij}\, d^2_{ij} \quad \text{s.t.} \quad \sum_i a_{ij} = 1 \ \ \forall j, \qquad \sum_j a_{ij} \le 1 \ \ \forall i$$
+since the first constraint gives each track exactly one detection and the second lets each detection serve at most one track. This is the linear assignment problem, solved exactly in polynomial time by the Hungarian method (Kuhn 1955; Munkres 1957) — the same matching [[01-canonical-papers/notes/2-computer-vision/detr|DETR]] uses in its loss. Unlike greedy, it returns the true minimum-total assignment, and it does so without trying all $n!$ one-to-one matchings. Why $\sum d^2$ is the right total: the Gaussian likelihood of detection $i$ under track $j$ has negative log $-\ln p = \tfrac12 d^2_{ij} + \tfrac12\ln|2\pi S_j|$, so the negative log of the joint likelihood is $\tfrac12\sum d^2$ plus one normalizing term per track. When every track is assigned, minimizing $\sum d^2$ maximizes the joint Gaussian likelihood, because each track's normalizing term $\ln|2\pi S_j|$ appears once in every candidate and cancels. Once a track may go unassigned, implementations add an explicit cost for a missed track or a new one, and that constant is a tuning choice.
 - **JPDA** (joint probabilistic data association; Fortmann, Bar-Shalom & Scheffe 1983) does not commit. It enumerates the joint events allowed by the gates — each detection used at most once, including "missed" and "clutter" — weights them by probability, and updates each track with the weighted combination of its gated innovations. It is robust when targets are close, but it can pull nearby tracks toward each other (track coalescence; Fitzgerald, *IEEE TAES* 1985).
 - **MHT** (multiple hypothesis tracking; Reid 1979) keeps several association histories alive across frames, lets later data decide between them, and prunes the hypothesis tree to stay tractable.
 - **Random-finite-set filters** such as the PHD filter (Mahler 2003) treat the whole collection of objects as one random set and propagate its first moment — a density whose integral over any region is the expected number of objects in that region. They estimate how many objects there are and where, without carrying per-object identities.
 
-**Track management gives tracks a life cycle.** A detection outside every gate starts a **tentative** track. It is **confirmed** once associated in M of the last N frames, and a confirmed track is **deleted** after too many consecutive misses. M and N trade confirmation delay against false tracks. With 2-of-3, a real object detected with probability 0.9 per frame confirms within three frames with probability $0.972$: it needs at least two detections in three, so $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$. A clutter blob that reappears in the gate with probability 0.1 per frame confirms with probability $0.028$, from $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$.
+**Track management gives tracks a life cycle.** A detection outside every gate starts a **tentative** track. It is **confirmed** once associated in M of the last N frames, and a confirmed track is **deleted** after too many consecutive misses. M and N trade confirmation delay against false tracks. If each frame independently associates with probability $p$, the chance of at least $M$ associations in $N$ frames is the binomial tail, because each of the $\binom{N}{k}$ arrangements of $k$ hits has probability $p^k(1-p)^{N-k}$:
+$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
+With 2-of-3, a real object detected with probability 0.9 per frame confirms within three frames with probability $0.972$: it needs at least two detections in three, so $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$. A clutter blob that reappears in the gate with probability 0.1 per frame confirms with probability $0.028$, from $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$.
 
-**How detector-based trackers use the same skeleton.** Most vision tracking today is tracking-by-detection. SORT (Bewley et al., ICIP 2016) runs a constant-velocity Kalman filter on each bounding box and the Hungarian algorithm on an IoU cost, with a minimum-IoU cutoff in place of a χ² gate. DeepSORT (Wojke et al., ICIP 2017) adds an appearance embedding from a re-identification network alongside Mahalanobis gating, so a person who reappears after occlusion can keep their identity.
+**How detector-based trackers use the same skeleton.** Most vision tracking today is tracking-by-detection. SORT (Bewley et al., ICIP 2016) runs a constant-velocity Kalman filter on each bounding box and the Hungarian algorithm on an IoU cost, with a minimum-IoU cutoff in place of a χ² gate. **IoU** (intersection over union, defined in [[02-foundations/ml-practice|9. ML Practice §3]]) is $|A\cap B|/|A\cup B|$ for two boxes $A$ and $B$: two 2×2 boxes offset by 1 along $x$ share area 2 out of a union of 6, so IoU $= 1/3$, and offset by 2 they share nothing, so IoU $= 0$. DeepSORT (Wojke et al., ICIP 2017) adds an appearance embedding from a re-identification network alongside Mahalanobis gating, so a person who reappears after occlusion can keep their identity.
 
 **How tracking is scored.** Two metrics dominate, and they weight identity very differently.
 
-- **MOTA** (Bernardin & Stiefelhagen 2008) is $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$ over all frames, which makes it detection-dominated: 50 misses, 30 false positives and 20 **identity switches** over 1000 ground-truth boxes give MOTA $= 0.90$, and the switches cost only 0.02 of it.
-- **HOTA** (Luiten et al., IJCV 2021) is the geometric mean of a detection score and an association score, averaged over localization thresholds, so association failures cannot hide behind good detection.
+- **MOTA** (Bernardin & Stiefelhagen 2008) is $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$ over all frames, which makes it detection-dominated: 50 misses, 30 false positives and 20 **identity switches** over 1000 ground-truth boxes give MOTA $= 0.90$, and the switches cost only 0.02 of it. Per frame $t$, $\mathrm{FN}_t$ counts ground-truth objects with no matched hypothesis, $\mathrm{FP}_t$ hypotheses matched to no object, $\mathrm{IDSW}_t$ objects whose matched track ID differs from the one they had last time they were matched, and $\mathrm{GT}_t$ ground-truth objects:
+$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
+Because errors are summed without a cap, MOTA is not a fraction in $[0,1]$. *Non-example:* 1200 false positives on 1000 ground-truth boxes give MOTA $= -0.2$.
+- **HOTA** (Luiten et al., IJCV 2021) is the geometric mean of a detection score and an association score, averaged over localization thresholds, so association failures cannot hide behind good detection. At a localization threshold $\alpha$ (the IoU a detection needs to count as matched), with TP, FN and FP the matched, missed and false detections:
+$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
+For each true positive $c$, TPA$(c)$ are the true positives with the same ground-truth ID and the same predicted ID as $c$, FNA$(c)$ the detections of that ground-truth ID given another or no predicted ID, and FPA$(c)$ the detections with that predicted ID on another or no ground-truth object; HOTA averages $\text{HOTA}_\alpha$ over $\alpha = 0.05, 0.10, \dots, 0.95$. *Example:* 90 TP, 10 FN and 10 FP give DetA $= 0.818$; if associations average an overlap of only 0.5, HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$, so poor identity keeping pulls the score down even with good detection.
 
 > [!example] Worked example · 계산 예제
 > **Two tracks, three detections, 2-D positions in metres.** T1 predicts $\hat z_1 = (0, 0)$ with $S_1 = I$. T2 predicts $\hat z_2 = (4, 0)$ with $S_2 = \mathrm{diag}(4, 1)$: it is moving along $x$ and uncertain in that direction. Detections are D1 $= (1, 0)$, D2 $= (-1, 1)$, D3 $= (1, 4)$.
@@ -305,9 +444,19 @@ print("greedy:", sum(d2[p] for p in greedy), greedy)
 | robust localization | environments, motion, lighting/weather, and catastrophic failures |
 | drift-free | duration/distance and reliance on absolute references or loop closure |
 | tightly coupled | which raw measurements and states are jointly optimized |
-| consistent | whether reported uncertainty matches actual estimation error |
+| consistent | whether reported uncertainty matches actual estimation error (NEES, §2) |
 
 Common metrics include Absolute Trajectory Error, Relative Pose Error, drift per distance/time, relocalization success, map accuracy, latency, and failure rate. A low average trajectory error can hide rare catastrophic tracking losses.
+
+**The trajectory metrics, written out.** Let $P_i$ be the estimated pose and $Q_i$ the ground-truth pose at time $i$, both as homogeneous transforms, and $\operatorname{trans}(\cdot)$ the translation part.
+- **Absolute Trajectory Error** first fits one rigid alignment $S$ (a similarity transform for monocular systems, whose scale is unknown) over the whole trajectory, then reports the RMS of the remaining translation errors (Sturm et al., IROS 2012). It measures global consistency, since every pose is compared in one common frame:
+$$\text{ATE}_{\text{RMSE}} = \Big(\frac1N \sum_{i=1}^N \lVert \operatorname{trans}(Q_i^{-1} S P_i) \rVert^2\Big)^{1/2}$$
+- **Relative Pose Error** compares the motion over a fixed interval $\Delta$ instead, so it measures local drift and is blind to where the accumulated error ended up:
+$$E_i = \big(Q_i^{-1}Q_{i+\Delta}\big)^{-1}\big(P_i^{-1}P_{i+\Delta}\big)$$
+It is reported as the RMS of $\operatorname{trans}(E_i)$, and of its rotation angle.
+- **Drift per distance**, as in the KITTI benchmark, averages the relative translation error over all sub-sequences of 100, 200, …, 800 m and divides by the sub-sequence length, giving a percentage.
+
+*Example:* 1-D ground truth 0, 1, 2, 3 m and estimate 0, 1.1, 2.1, 3.3 m, already aligned. ATE is the RMS of $(0, 0.1, 0.1, 0.3)$, which is 0.166 m; RPE with $\Delta = 1$ is the RMS of $(0.1, 0, 0.2)$, which is 0.129 m; and an endpoint error of 0.3 m over 3 m would read as 10% drift. *Non-example:* ATE computed without the alignment mixes the arbitrary choice of starting frame into the error, and aligning a monocular trajectory with only a rigid transform leaves its unknown scale inside the number.
 
 ### After reading
 
@@ -337,6 +486,31 @@ You should be able to:
 
 > [!tip]- Answers
 > 1. Covariance is conditional on the model; wrong calibration, association, or noise assumptions create overconfidence. 2. $K=4/(4+16)=0.2$, so $\hat{x}^+=10.4$ m. 3. The belief can contain several separated pose hypotheses. 4. Repeated trajectories with controlled vibration levels, synchronized ground truth, failure counts, and comparison against the same pipeline without the claimed robustness mechanism. 5. T2's distances become $9.00,\ 26.00,\ 25.00$, so only D1 is inside T2's gate, and only just. The one complete assignment is {T1–D2, T2–D1} at $2 + 9 = 11$. Greedy commits T1–D1 and leaves T2 with nothing, so T2 coasts. If a missed track costs the gate value, {T1–D1, T2 missed} costs $1 + 9.21 = 10.21 < 11$, and GNN leaves T2 unassigned too — the miss cost is a real design parameter. 6. The gain is 200 fewer summed errors, and MOTA cannot say which kind. Misses plus false positives could have fallen from 1950 to 1700 while identity switches doubled from 50 to 100, and MOTA would still read 0.82. Ask for ID switches and an association score such as HOTA's, with the detector held fixed.
+
+### Problem set · 과제
+
+Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]; the scalar loop is on [[02-foundations/probability|3. Probability]]. This page adds motion, a wrong association, and the panel of the running task.
+
+P2 is carrying a tool toward a panel. Range to the panel is the P5 wall. Units centimetres.
+
+1. **Draw.** Predict–correct cycle: motion $x\leftarrow x+1$ (the cart of **P6** advanced 1 cm), then a range $z$. Two boxes: “this $z$ is the panel” vs “this $z$ is a passer-by.”
+2. **Derive.** After the catalog P5 update ($11.6$, $P=0.8$): (a) predict $Q=1$, then correct $z=12.5$, $R=1$. (b) Same predict, but you associate a passer-by at $z=20$, $R=1$. Posterior mean and variance in both cases. (c) A 3-σ gate on the innovation after the predict: which of $12.5$ and $20$ would you accept?
+3. **Do.** Fill `?` (reuse the correct function from [[02-foundations/probability|3]] if you already wrote it). Print (a) and (b).
+
+```python
+x, P = 11.6, 0.8
+x, P = x + 1.0, P + 1.0          # predict
+# (a) z = 12.5 ; (b) z = 20
+K = ?                             # P / (P + 1)
+x_a = ?                           # x + K*(12.5 - x)
+P_a = ?                           # (1-K)*P
+# recompute predict then z=20 for (b)
+```
+
+> [!tip]- Solutions
+> 1. An arrow “predict” widens $P$; an arrow “correct” pulls toward $z$ only if the gate says the panel owns that $z$.
+> 2. Predict: $x=12.6$, $P=1.8$. (a) $K=1.8/2.8=0.643$, $\hat x=12.6+0.643\cdot(-0.1)=12.536$, $P=0.643$. (b) $\hat x=12.6+0.643\cdot 7.4=17.36$, $P=0.643$ still — confident, 5 cm too far. (c) Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67$ cm; 3-σ is $5.0$ cm. $12.5$ is $0.1$ cm (keep). $20$ is $7.4$ cm (reject). The gate is the whole difference between (a) and (b).
+> 3. Blanks as in [[02-foundations/probability|3]]. Association is not a covariance question; a small $P$ after (b) would license a contact force at the wrong range.
 
 ### Sources
 
@@ -402,6 +576,23 @@ flowchart LR
 아래의** 불확실성이다 — 보정·association·잡음 가정이 틀리면 covariance가 작아도 과신일 수
 있다.
 
+**네 가지의 완전한 정의.**
+- **상태** $x_t$: 과거가 오직 이것을 통해서만 미래에 영향을 주도록 고른 변수 벡터다. 이것이 **완전성**(마르코프) 조건이다.
+$$p(x_t \mid x_{0:t-1}, z_{1:t-1}, u_{1:t}) = p(x_t \mid x_{t-1}, u_t)$$
+$x_{0:t-1}$은 그 이전의 모든 상태, $z_{1:t-1}$은 이전의 모든 측정, $u_{1:t}$는 모든 제어 입력이다. 그래서 이 조건은 직전 상태와 현재 입력을 알면 더 오래된 것은 $x_t$에 대해 아무 정보도 더하지 않는다는 뜻이다. [[02-foundations/probability|3. 확률 §5]]의 마르코프 성질이다. *예:* 알려진 힘으로 미는 수레라면 위치와 속도를 함께 쓴 것이 완전한 상태다. *반례:* 위치만으로는 완전하지 않다. 같은 위치에서도 속도가 다른 두 수레는 다르게 움직이므로, 위치로 예측하려면 더 오래된 위치가 필요하기 때문이다.
+- **관측** $z_t$: 시점 $t$의 센서 출력이다. 잡음 때문에 확률 변수이고, §3의 관측 모델 $h$가 이것을 상태와 잇는다.
+- **Belief**: 지금까지의 모든 데이터가 주어졌을 때 상태의 사후 분포다.
+$$\operatorname{bel}(x_t) = p(x_t \mid z_{1:t}, u_{1:t})$$
+그래서 점 하나가 아니라 분포 전체이며, 시점 1부터 $t$까지의 측정 $z_{1:t}$와 입력 $u_{1:t}$에 조건부다. §4의 베이즈 필터가 이것을 계산한다.
+- **추정값** $\hat x_t$: belief에서 계산한 점 하나다. 흔한 선택은 사후 평균(최소 평균제곱오차 추정)과 사후 최빈값(MAP 추정)이다.
+$$\hat x_t = E[x_t \mid z_{1:t}, u_{1:t}] \quad \text{or} \quad \hat x_t = \arg\max_{x_t} \operatorname{bel}(x_t)$$
+그 불확실성은 **추정 공분산**, 곧 오차 $x_t - \hat x_t$의 외적의 기댓값으로 보고한다. 참값이 얼마나 멀리, 어느 방향으로 있을 수 있는지를 말해 주는 것이 이것이기 때문이다(공분산의 정의는 [[02-foundations/probability|3. 확률 §2]]).
+$$P_t = E\big[(x_t - \hat x_t)(x_t - \hat x_t)^\top \mid z_{1:t}, u_{1:t}\big]$$
+*예:* §6의 갱신 뒤 belief는 평균 11.6 m, 분산 0.8 m²인 가우시안이므로 어느 규칙으로든 추정값은 11.6 m다. 가우시안은 평균과 최빈값이 같기 때문이다. *반례:* 봉우리가 둘인 belief(로봇이 문 1 앞이거나 문 2 앞)라면 평균이 두 문 사이, 로봇이 확실히 없는 곳에 떨어질 수 있어 점 하나로는 요약이 나쁘다.
+- **일관성**(consistency): 보고한 $P_t$가 실제 오차와 맞는 성질이다. 참값 $x_t$가 있으면 **정규화 추정 오차 제곱**(NEES), 곧 실제 오차의 제곱 마할라노비스 거리로 확인한다.
+$$\epsilon_t = (x_t - \hat x_t)^\top P_t^{-1} (x_t - \hat x_t)$$
+$n$차원 상태의 일관된 가우시안 추정기에서 $\epsilon_t$는 $\chi^2_n$ 분포를 따르므로, 여러 번 돌린 평균이 $n$에 가까워야 한다. *예:* $P = 0.8$ m²이고 실제 오차가 1 m이면 $\epsilon = 1.25$다. 일관된 1차원 필터는 여러 번 돌리면 평균이 약 1이다. *반례(과신):* 실제 오차 분산이 1 m²인데 $P = 0.01$ m²을 보고하는 필터는 평균 $\epsilon = 100$이다. 위에서 말한 작은 공분산의 실패를 숫자로 본 것이다.
+
 제어기는 추정값으로 행동하지만 세계는 실제 상태에 따라 변하므로 구분이 필요하다. 위치 추정 중단 뒤 굴착기에 정밀해 보이는 자세가 들어와도 작은 공분산이 모델 밖 움직임을 빠뜨린 것일 수 있다. **여기서 얻는 독법.** 관측이 직접 측정한 것, 추정값을 만든 추론, 믿음이 아직 표현하는 대안을 묻는다. 점 추정과 시각이 같은 메시지에 도착했다고 불확실성 전체를 설명하는 것은 아니다.
 
 ### 3. 과정 모델과 관측 모델
@@ -412,6 +603,17 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 - **추정하는 것:** 현재 상태 또는 belief.
 - **불확실성:** $w_t$는 과정/모델 불확실성, $v_t$는 측정 잡음.
 - **실행 시점:** 측정이 들어올 때마다 온라인으로 갱신.
+
+**두 모델의 완전한 정의.** 상태공간 모델에는 이름 붙은 네 부분이 있다.
+- **과정(운동) 모델** $f$: 직전 상태 $x_{t-1}$과 제어 $u_t$를 다음 상태로 보낸다.
+- **관측(측정) 모델** $h$: 상태를 잡음 없는 센서가 낼 측정값으로 보낸다.
+- **과정 잡음** $w_t$와 **측정 잡음** $v_t$. 표준 가우시안 경우 둘 다 평균 0, 백색(시간에 걸쳐 독립), 서로 독립이며 공분산은 $Q_t$와 $R_t$다.
+$$w_t \sim \mathcal{N}(0, Q_t), \qquad v_t \sim \mathcal{N}(0, R_t)$$
+- **초기 belief** $p(x_0)$.
+
+§4의 베이즈 필터는 같은 모델을 분포로 쓴 것을 사용한다. 결정적 예측에 가우시안 잡음을 더하면 그 예측을 중심으로 하는 가우시안이 되기 때문이다.
+$$p(x_t \mid x_{t-1}, u_t) = \mathcal{N}\big(f(x_{t-1}, u_t),\, Q_t\big), \qquad p(z_t \mid x_t) = \mathcal{N}\big(h(x_t),\, R_t\big)$$
+$f(x, u) = Ax + Bu$와 $h(x) = Hx$가 선형이면 모델은 **선형-가우시안**이고 §5의 칼만 필터가 정확하다. 그렇지 않으면 EKF, UKF, 파티클 필터가 근사한다. *예:* 레일 위 수레를 명령 속도 $u_t$로 한 스텝 $\Delta t$ 동안 몰면 $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$이고, 레일을 따라 재는 거리 센서는 $h(x_t) = x_t$로 둘 다 선형이다. $x_{t-1}$을 9 m(분산 3 m²)로 추정했고 $u_t = 1$ m/s, $\Delta t = 1$ s, $Q = 1$ m²이면 예측은 10 m, 분산 $3 + 1 = 4$ m²로, 정확히 §6이 출발하는 prior다. *반례:* 레일 옆 랜드마크까지의 거리를 재는 센서 $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$는 $x$에 대해 선형이 아니므로 칼만 필터가 더 이상 정확히 적용되지 않는다.
 
 모델 오차와 센서 잡음은 다르다. 바퀴 미끄럼은 운동 모델을 *위반*하고, 잡음 낀 거리
 측정은 관측을 *교란*한다. 둘을 같은 가우시안 잡음으로 뭉뚱그리면 필터가 비일관해질 수
@@ -427,6 +629,24 @@ $$p(x_t\mid z_{1:t},u_{1:t})\propto p(z_t\mid x_t)p(x_t\mid z_{1:t-1},u_{1:t})$$
 
 두 동작으로 읽어라. **예측**은 이전 belief를 동역학에 통과시키며 보통 불확실성을 키운다. **보정**은 그 prior를
 새 측정과 각 상태의 부합 정도로 가중한다.
+
+**베이즈 필터를 부분별로.** 베이즈 필터는 **재귀 추정기**다. 시점 $t$의 belief를 시점 $t-1$의 belief와 가장 새 입력·측정만으로 계산하므로 데이터 이력을 저장할 필요가 없다. 이름 붙은 부분이 셋이다.
+- **이전 belief** $\operatorname{bel}(x_{t-1}) = p(x_{t-1}\mid z_{1:t-1}, u_{1:t-1})$: 직전 스텝의 출력이다($t = 1$에서는 초기 belief $p(x_0)$).
+- **예측**: 첫 식으로 예측 belief $\overline{\operatorname{bel}}(x_t) = p(x_t \mid z_{1:t-1}, u_{1:t})$를 만든다. 적분 안의 $p(x_t\mid x_{t-1},u_t)$는 §3의 과정 모델이고, 적분은 $x_t$로 이어졌을 수 있는 모든 직전 상태 $x_{t-1}$에 걸쳐 더한다.
+- **보정**: 둘째 식으로 $\operatorname{bel}(x_t)$를 만든다. 정규화 상수 $\eta$를 풀어 쓰면 다음과 같다.
+$$\operatorname{bel}(x_t) = \eta\, p(z_t \mid x_t)\, \overline{\operatorname{bel}}(x_t), \qquad \eta^{-1} = \int p(z_t \mid x_t)\, \overline{\operatorname{bel}}(x_t)\, dx_t$$
+$p(z_t\mid x_t)$는 관측 모델을 **우도**(고정된 측정 $z_t$에 대한 $x_t$의 함수)로 읽은 것이다. 우도 곱하기 예측은 아직 분포가 아니므로 belief의 적분이 1이 되도록 $\eta$를 고른다. [[02-foundations/probability|3. 확률 §1]]의 베이즈 규칙에서 $\eta^{-1}$이 증거(evidence) 자리에 온 것이다.
+
+아래에서 유도할 때 기대는 두 가정은 동역학의 마르코프 성질과, 상태가 주어졌을 때 각 측정의 조건부 독립이다([[02-foundations/probability|3. 확률 §5]]).
+$$p(x_t\mid x_{t-1}, z_{1:t-1}, u_{1:t}) = p(x_t\mid x_{t-1},u_t), \qquad p(z_t\mid x_t, z_{1:t-1}, u_{1:t}) = p(z_t\mid x_t)$$
+
+> [!example] 계산 예제: 세 칸짜리 복도 · Worked example
+> 로봇이 고리 모양으로 이어진 칸 0, 1, 2 중 하나에 있다. 칸 0과 1에는 문이 있고 칸 2는 벽이다. 처음에는 아무것도 몰라 $\operatorname{bel} = (1/3, 1/3, 1/3)$이다. 매 스텝 한 칸 앞으로 가려 하고 확률 0.8로 성공하며, 아니면 제자리다. 문 센서는 문 앞에서 0.6, 벽 앞에서 0.2의 확률로 "문"이라고 보고한다.
+> - *1스텝, 예측.* $\overline{\operatorname{bel}}(i) = 0.8\,\operatorname{bel}(i-1) + 0.2\,\operatorname{bel}(i)$는 $(1/3, 1/3, 1/3)$ 그대로다. 균일한 belief를 옮겨도 균일하기 때문이다.
+> - *1스텝, "문"으로 보정.* 우도 곱하기 예측은 $(0.2, 0.2, 0.0667)$이다. 그 합 $0.4667$에서 $\eta = 2.143$이므로 $\operatorname{bel} = (0.429, 0.429, 0.143)$이다.
+> - *2스텝, 예측 후 "벽"으로 보정.* 예측은 $(0.200, 0.429, 0.371)$이다. 벽 우도 $(0.4, 0.4, 0.8)$을 곱하면 belief는 $(0.146, 0.313, 0.542)$가 되어 이제 칸 2가 가장 유력하다.
+>
+> *반례:* 같은 한 번의 측정에 1스텝의 "문" 우도를 한 번 더 곱하면 $(0.474, 0.474, 0.053)$이 된다. 증거 하나를 두 번 셌을 뿐인데 belief가 더 뾰족해 보인다. 기억을 가진 센서가 일으키는 중복 계산이 바로 이것이다.
 
 **두 줄이 어디서 오고, 각 가정이 무엇을 사 주는가.** 둘 다 새로운 원리가 아니라 기초 확률에
 가정 하나씩을 정확히 한 번 쓴 것이다. **예측**은 직전 상태를 끌어들여 적분해 없애는 것,
@@ -451,8 +671,8 @@ $z_{1:t-1}$이 떨어지고 관측 모델 $p(z_t\mid x_t)$가 나타난다.
 
 | 계열 | 표현과 용도 | 주된 주의점 |
 |---|---|---|
-| 칼만 필터 | 선형-가우시안 평균·공분산 | 모델이 가정에 맞아야 함 |
-| EKF | 야코비안으로 비선형 모델을 선형화 | 선형화 오차와 비일관성 |
+| 칼만 필터 | 선형-가우시안 평균·공분산([[02-foundations/probability\\|3. 확률 §3]]) | 모델이 가정에 맞아야 함 |
+| EKF | 야코비안([[02-foundations/calculus-backprop\\|2. 미적분 §1]])으로 비선형 모델을 선형화 | 선형화 오차와 비일관성 |
 | UKF | **시그마 포인트** 전파 — 평균과 공분산이 belief와 일치하도록 고른 소수의 표본 상태를 선형화 대신 진짜 비선형 모델에 통과시킨다 | 여전히 조밀한 단봉 belief 가정 |
 | 파티클 필터 | 가중 표본: 매 스텝 모든 표본을 운동 모델에 통과시키고, 측정을 얼마나 잘 설명하는지로 가중치를 매긴 뒤, 가중치에 비례해 재표집한다; 다봉성에 유용 | **파티클 고갈** — 재표집이 가중치 높은 소수 파티클만 계속 복제해 다양성이 사라지고 필터가 자신 있게 틀리게 된다 — 과 계산량 |
 | Factor/pose graph | 제약들 위의 일괄·증분 최적화 | association 오류와 **게이지 자유도** — 상대 제약은 지도의 *모양*은 고정하지만 그것이 세계 어디에 놓이는지는 고정하지 않아, 한 pose를 앵커로 박기 전까지 지도 전체가 자유롭게 미끄러지고 회전한다 |
@@ -496,7 +716,7 @@ SLAM **front end**는 특징([[04-robotics/geometric-perception-calibration|3.5 
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
 Gauss–Newton이나 Levenberg–Marquardt로 푼다. "Ceres/g2o/GTSAM으로 최적화한다"가 뜻하는 것이
 그것이다 ([[02-foundations/optimization|4. 최적화 §3.5]]). Loop closure는 누적 drift를
-고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
+고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다. 닫힘은 $x_j$를 $x_i$ 프레임으로 쓴 상대 인자([[02-foundations/se3-geometry|8. SE(3) §3]])다.
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
 front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
@@ -512,7 +732,7 @@ front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고
 두 경우 모두 **관성**이라는 항이 구체적인 일을 한다: IMU는 밀리초 단위에서 정확하고 분 단위에서
 쓸모없으며, 카메라와 라이다는 그 반대다. 그래서 융합하면 서로의 실패 시간대를 덮어 준다. 논문에
 반복해서 나오는 두 기구를 알아볼 수 있어야 한다: **IMU preintegration** — 두 keyframe 사이의
-IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것 — 과
+IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것. 회전 벡터를 회전 행렬로 보내는 $\operatorname{Exp}$는 [[02-foundations/se3-geometry|8. 3D 기하 §2]]다. 그리고
 **deskewing**, 라이다 스캔이 훑는 *동안* 로봇이 움직였다는 사실을 보정하는 것. 빠른 플랫폼에서
 deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다.
 
@@ -601,7 +821,7 @@ $$d^2_{ij} = (z_i-\hat z_j)^\top S_j^{-1}(z_i-\hat z_j) < \gamma$$
 
 **트랙 관리는 트랙에 생애 주기를 준다.** 모든 게이트 밖의 검출은 **잠정**(tentative) 트랙을 시작한다. 최근 N 프레임 중 M번 연관되면 **확정**(confirmed)되고, 확정 트랙은 연속으로 너무 많이 놓치면 **삭제**(deleted)된다. M과 N은 확정 지연과 거짓 트랙을 맞바꾼다. 2-of-3이라면 프레임마다 0.9 확률로 검출되는 실제 물체는 세 프레임 안에 $0.972$의 확률로 확정된다: 셋 중 적어도 두 번 검출되어야 하므로 $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$다. 프레임마다 0.1 확률로 게이트에 다시 나타나는 클러터 덩어리는 $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$에서 $0.028$의 확률로 확정된다.
 
-**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
+**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. **IoU**(intersection over union, [[02-foundations/ml-practice|9. ML 실무 §3]])는 두 박스 $A,B$에 대해 $|A\cap B|/|A\cup B|$다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
 
 **추적의 채점 방식.** 두 지표가 주로 쓰이는데, 정체에 두는 비중이 크게 다르다.
 
@@ -700,6 +920,19 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 > 4. 진동 수준을 통제한 반복 궤적, 동기화된 ground truth, 실패 횟수, 그리고 주장한 강건화 장치를 뺀 동일 파이프라인과의 비교.
 > 5. T2의 거리는 $9.00,\ 26.00,\ 25.00$이 되어 D1만 겨우 T2의 게이트 안에 있다. 완전한 할당은 {T1–D2, T2–D1} 하나로 $2 + 9 = 11$이다. 탐욕은 T1–D1을 확정하고 T2에 아무것도 남기지 않아 T2가 예측만으로 이어진다. 놓친 트랙의 비용을 게이트 값으로 두면 {T1–D1, T2 놓침}이 $1 + 9.21 = 10.21 < 11$이라 GNN도 T2를 할당하지 않는다 — 놓침 비용은 실제 설계 파라미터다.
 > 6. 늘어난 것은 오류 합계 200개 감소이고, MOTA는 그것이 어떤 종류인지 말하지 못한다. 놓침과 오검출이 1950에서 1700으로 줄면서 ID 전환이 50에서 100으로 두 배가 되어도 MOTA는 여전히 0.82다. 검출기를 고정한 채 ID 전환과 HOTA의 연관 점수 같은 연관 지표를 요구한다.
+
+### 과제 · Problem set
+
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 스칼라 루프는 [[02-foundations/probability|3]]. 이 페이지는 운동, 틀린 연관, 관통 과제의 패널을 더한다.
+
+1. **그리기.** 예측 $x\leftarrow x+1$ 다음 거리 $z$. “이 $z$는 패널” 대 “통행인” 상자 둘.
+2. **유도.** 카탈로그 갱신($11.6$, $P=0.8$) 뒤: (a) $Q=1$ 예측 후 $z=12.5$, $R=1$. (b) 같은 예측, $z=20$. (c) 예측 뒤 혁신의 3-σ 게이트: $12.5$와 $20$ 중 어느 쪽을 받는가?
+3. **실행.** 영어 템플릿. (a)와 (b)를 출력하라.
+
+> [!tip]- 정답 · Solutions
+> 1. 예측은 $P$를 넓히고, 보정은 게이트가 패널의 것이라고 할 때만 $z$로 당긴다.
+> 2. 예측 $x=12.6$, $P=1.8$. (a) $K=0.643$, $\hat x=12.536$, $P=0.643$. (b) $\hat x=17.36$, $P$는 그대로 $0.643$ — 확신하고 5 cm 멀다. (c) $\sigma=\sqrt{2.8}=1.67$ cm, 3-σ는 5.0 cm. $12.5$는 0.1 cm(유지), $20$은 7.4 cm(기각). 게이트가 (a)와 (b)의 전부다.
+> 3. (b) 뒤의 작은 $P$는 틀린 거리에서 접촉력을 허가한다. 연관은 공분산 질문이 아니다.
 
 ### 출처
 

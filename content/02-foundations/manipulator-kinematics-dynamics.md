@@ -3,7 +3,7 @@ title: 10. Manipulator Kinematics & Dynamics
 tags: [foundations, robotics, manipulation]
 study-depth: Mastery
 wiki-support: Working
-depth-goal: "Read, write, and manipulate the manipulator equation; convert between joint-space and task-space dynamics; predict how a configuration changes what a controller feels."
+depth-goal: "Read, write, and manipulate the manipulator equation on plant P2; convert between joint-space and task-space dynamics; complete this page's problem set from the wiki; predict how a configuration changes what a controller feels."
 mastery-when: "This page is on the manipulation track's critical path — Mastery here is the prerequisite for defending any force-control or contact-rich manipulation claim."
 ---
 
@@ -17,8 +17,8 @@ mastery-when: "This page is on the manipulation track's critical path — Master
 > 페이지다. 이 페이지 자체는 Working까지 데려다주고, Mastery는 §8의 교재와 시뮬레이터가 필요하다.
 
 > [!note] Prerequisites · 선수 지식
-> You need forward kinematics and the Jacobian — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR ch.4]] and [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], especially $\tau = J^\top\mathcal{F}$ — plus matrix inverses and positive definiteness ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) and partial derivatives ([[02-foundations/calculus-backprop|2. Calculus §1]]).
-> 순기구학과 야코비안이 필요하다 — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR 4장]]과 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]], 특히 $\tau = J^\top\mathcal{F}$ — 그리고 역행렬과 양정치성([[02-foundations/linear-algebra|1. 선형대수 §3]]), 편미분([[02-foundations/calculus-backprop|2. 미적분 §1]]).
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (the $J$ and $M$ frozen there). Forward kinematics and the Jacobian — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR ch.4]] and [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], especially $\tau = J^\top\mathcal{F}$ — plus matrix inverses and positive definiteness ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) and partial derivatives ([[02-foundations/calculus-backprop|2. Calculus §1]]).
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2** (거기에 고정된 $J$와 $M$). 순기구학과 야코비안 — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR 4장]]과 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]], 특히 $\tau = J^\top\mathcal{F}$ — 그리고 역행렬과 양정치성([[02-foundations/linear-algebra|1. 선형대수 §3]]), 편미분([[02-foundations/calculus-backprop|2. 미적분 §1]]).
 
 ## English
 
@@ -394,6 +394,35 @@ whether a contact will feel stiff or soft — and be right.
 > 4. Whether the arm is actually torque-controlled underneath. With a stiff position-controlled inner loop, the force "control" is an outer loop commanding small positions, which is admittance control with the vendor's stiffness in the way — it can work, but its stability depends on the environment being soft, and the claim should be tested against a rigid surface. See [[04-robotics/contact-force-tactile|Contact, Force & Tactile §5]].
 > 5. $M(\theta)$ and $g(\theta)$ both change substantially, since the payload adds mass at the far end where the lever arm is longest, and $C$ changes with $M$. The panel more than doubles the moving mass in this example, so a controller tuned unloaded will be badly wrong loaded — the reason payload-aware or adaptive control matters in construction more than in a factory with a known part.
 
+### Problem set · 과제
+
+Tier A (dynamics half of **P2**; the velocity loop is on [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]] — do not start a second time-stepper here). Numbers frozen in [[02-foundations/lab-plants|0.6]]: at $\theta=(0^\circ,90^\circ)$,
+
+$$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{pmatrix},\quad \Lambda=\mathrm{diag}(1,2),\quad g=(19.62,\ 0)\,\mathrm{N{\cdot}m}$$
+
+1. **Draw.** P2 at the frozen pose in the vertical plane, $g$ in $-y$. Mark both point masses, $g(\theta)$ as shoulder/elbow torques, and a panel force of $10\,\mathrm{N}$ *on the panel* in $-y$ (the robot is pressing down). Write Newton's third law for the force *on the tip*.
+2. **Derive.** At rest. (a) Holding torque with no contact. (b) Holding torque while commanding $F_\text{cmd}=(0,-10)\,\mathrm{N}$ on the panel, using $\tau=g+J^\top F_\text{cmd}$. (c) Task-space: the tip wrench that produces $\dot v=(0,1)\,\mathrm{m/s}^2$ if velocity terms are zero, $\mathcal{F}=\Lambda\dot v$. (d) Joint torque for that wrench via $J^\top$. (e) Recompute $\Lambda=(JM^{-1}J^\top)^{-1}$ from $J$ and $M$ — do not quote the catalog until you have the matrix.
+3. **Do.** Fill `?` and print $\Lambda$ and the two torques from (b) and (d). No time loop.
+
+```python
+# P2 operational-space numbers. Fill ?.
+import numpy as np
+J = np.array(((-1., -1.), (1., 0.)))
+M = np.array(((3., 1.), (1., 1.)))
+g = np.array([19.62, 0.])
+F_cmd = np.array([0., -10.])
+a = np.array([0., 1.])
+Lam = ?                 # inv(J @ inv(M) @ J.T)
+tau_hold = ?            # g + J.T @ F_cmd
+tau_acc = ?             # J.T @ (Lam @ a)
+print(Lam, tau_hold, tau_acc)
+```
+
+> [!tip]- Solutions
+> 1. Elbow at $(1,0)$, tip at $(1,1)$. Masses at those two points. Gravity torques: shoulder $19.62\,\mathrm{N{\cdot}m}$ (both masses 1 m to the right of joint 1), elbow $0$ (forearm mass above joint 2). Force on the panel $(0,-10)$ $\Rightarrow$ force on the tip $(0,+10)$.
+> 2. (a) $\tau=g=(19.62,\ 0)$. (b) $J^\top F_\text{cmd}=(-10,\ 0)$, so $\tau=(9.62,\ 0)$ — the panel takes $10\,\mathrm{N}$ of the $19.62\,\mathrm{N}$ weight as seen at the tip. (c) $\Lambda a=(0,2)\,\mathrm{N}$. (d) $J^\top(0,2)=(2,\ 0)\,\mathrm{N{\cdot}m}$. (e) $M^{-1}=\begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$, $M^{-1}J^\top=\begin{pmatrix}0&0.5\\-1&-0.5\end{pmatrix}$, $JM^{-1}J^\top=\mathrm{diag}(1,0.5)$, $\Lambda=\mathrm{diag}(1,2)$. Catalog matches.
+> 3. `Lam = np.linalg.inv(J @ np.linalg.inv(M) @ J.T)`, `tau_hold = g + J.T @ F_cmd`, `tau_acc = J.T @ (Lam @ a)`. Prints $\mathrm{diag}(1,2)$, $(9.62,0)$, $(2,0)$. The apparent mass in $y$ is $2\,\mathrm{kg}$ at this pose: a $10\,\mathrm{N}$ vertical contact on an unconstrained tip wants $5\,\mathrm{m/s}^2$. A stiff position inner loop is not this map — it is admittance with the vendor stiffness in the way ([[04-robotics/force-compliance-control|13]]).
+
 ### Sources
 
 - *Modern Robotics* (Lynch & Park) ch.8 (dynamics) and ch.11 (control) — see [[04-robotics/modern-robotics-book|the book guide]] for the free official PDF. The mass-matrix form in §3 is the standard planar 2R result derived there.
@@ -755,7 +784,20 @@ $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, �
 > 4. 팔이 실제로 그 아래에서 토크 제어되는지 확인해야 한다. 뻣뻣한 위치 제어 내부 루프가 있다면 그 힘 "제어"는 작은 위치를 명령하는 외부 루프이고, 이는 벤더의 강성이 사이에 낀 어드미턴스 제어다 — 동작할 수는 있지만 안정성이 환경이 무르다는 데 의존하므로, 주장은 단단한 면에 대해 검증되어야 한다. [[04-robotics/contact-force-tactile|접촉·힘·촉각 §5]]를 보라.
 > 5. $M(\theta)$와 $g(\theta)$가 모두 크게 바뀐다. 페이로드가 지렛대 팔이 가장 긴 맨 끝에 질량을 더하기 때문이고, $C$도 $M$을 따라 바뀐다. 이 예에서 패널은 움직이는 질량을 두 배 이상으로 만들므로, 무부하로 튜닝한 제어기는 부하 상태에서 크게 틀린다 — 부품 질량이 알려진 공장보다 건설에서 페이로드 인지 제어나 적응 제어가 더 중요한 이유다.
 
-### 출처
+### 과제 · Problem set
+
+Tier A (**P2**의 동역학 절반. 속도 루프는 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]에 있다. 여기서 시간 스테퍼를 하나 더 만들지 마라). [[02-foundations/lab-plants|0.6]]의 숫자, $\theta=(0^\circ,90^\circ)$:
+
+$$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{pmatrix},\quad \Lambda=\mathrm{diag}(1,2),\quad g=(19.62,\ 0)\,\mathrm{N{\cdot}m}$$
+
+1. **그리기.** 연직면의 고정 자세 P2, $g$는 $-y$. 점질량 둘, 어깨/엘보 중력 토크, 패널에 $-y$로 $10\,\mathrm{N}$(로봇이 아래로 누름). 말단에 *가해지는* 힘에 뉴턴 3법칙을 써라.
+2. **유도.** 정지. (a) 비접촉 유지 토크. (b) 패널에 $F_\text{cmd}=(0,-10)\,\mathrm{N}$을 명령할 때 $\tau=g+J^\top F_\text{cmd}$. (c) 속도 항이 0일 때 $\dot v=(0,1)\,\mathrm{m/s}^2$를 만드는 말단 렌치 $\mathcal{F}=\Lambda\dot v$. (d) 그 렌치의 관절 토크 $J^\top$. (e) $J$와 $M$에서 $\Lambda=(JM^{-1}J^\top)^{-1}$를 다시 계산하라. 행렬을 얻기 전에 카탈로그를 인용하지 마라.
+3. **실행.** 영어 템플릿의 `?`를 채우고 $\Lambda$와 (b)·(d)의 토크를 출력하라. 시간 루프 없음.
+
+> [!tip]- 정답 · Solutions
+> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 질량은 그 두 점. 중력: 어깨 $19.62\,\mathrm{N{\cdot}m}$(두 질량이 관절 1에서 오른쪽으로 1 m), 엘보 $0$(전완 질량이 관절 2 위). 패널에 $(0,-10)$ $\Rightarrow$ 말단에 $(0,+10)$.
+> 2. (a) $\tau=(19.62,\ 0)$. (b) $J^\top F_\text{cmd}=(-10,\ 0)$, $\tau=(9.62,\ 0)$ — 패널이 말단에서 보이는 $19.62\,\mathrm{N}$ 중 $10\,\mathrm{N}$을 진다. (c) $\Lambda a=(0,2)\,\mathrm{N}$. (d) $J^\top(0,2)=(2,\ 0)$. (e) $M^{-1}=\begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$, $JM^{-1}J^\top=\mathrm{diag}(1,0.5)$, $\Lambda=\mathrm{diag}(1,2)$.
+> 3. 빈칸은 영어 해. $\mathrm{diag}(1,2)$, $(9.62,0)$, $(2,0)$. 이 자세에서 $y$ 겉보기 질량은 $2\,\mathrm{kg}$: 구속 없는 말단에 수직 $10\,\mathrm{N}$이면 $5\,\mathrm{m/s}^2$. 뻣뻣한 위치 내부 루프는 이 사상이 아니다([[04-robotics/force-compliance-control|13]]).
 
 - *Modern Robotics* (Lynch & Park) 8장(동역학)·11장(제어) — 공식 무료 PDF는 [[04-robotics/modern-robotics-book|책 가이드]]에. §3의 질량 행렬 형태는 거기서 유도되는 표준 평면 2R 결과다.
 - O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987 — $\Lambda$와 작업 공간 제어의 출처. (저널명은 "Journal *on*"이며 "of"가 아니다.)

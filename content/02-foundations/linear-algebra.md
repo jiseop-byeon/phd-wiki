@@ -601,6 +601,19 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 > 3. The component along the $0.9$ eigenvector decays; the component along the $1.02$ eigenvector grows 2% per step. The state therefore diverges, asymptotically aligned with the $1.02$ eigenvector — a single unstable mode dominates the long run no matter how small it starts.
 > 4. With $B = 0$ the update is $\Delta W = BA = 0$, so $W_0 + BA = W_0$ at step 0: training starts *exactly* at the pretrained model (a no-op initialization) instead of perturbing it randomly.
 
+### Problem set · 과제
+
+Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\circ)$. This page §4.5. No time-stepper.
+
+1. **Draw.** Arm in the plane: base at the origin, elbow $(1,0)$, tip $(1,1)$. Draw $J$'s two columns as arrows at the tip (tip velocity for each unit joint rate).
+2. **Derive.** From $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, compute $J^{-1}$ by the $2\times 2$ formula. Then $J^\dagger$ from the square-invertible row of the §4.5 table. Confirm they match.
+3. **Interpret.** Send $\theta_2\to 0$ with $\theta_1$ fixed. What happens to the two column arrows, to $\det J$, and to $\kappa_2(J)$? What tool motion becomes impossible?
+
+> [!tip]- Solutions
+> 1. Column 1 is $(-1,1)$ (whole arm about the base). Column 2 is $(-1,0)$ (forearm about the elbow).
+> 2. $\det J=1$, so $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible $\Rightarrow J^\dagger=J^{-1}$.
+> 3. The columns become parallel (both along $\pm y$ at $\theta=(0^\circ,0^\circ)$), $\det J\to 0$, $\kappa_2\to\infty$. Sideways ($x$) tip motion is lost: a stretched arm cannot do it at finite joint speed.
+
 ## 한국어
 
 *[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.7]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
@@ -1154,3 +1167,16 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 > 2. $\nabla\|Ax-b\|^2 = 2A^\top(Ax-b) = 0 \Rightarrow A^\top A\hat{x} = A^\top b$; 잔차 $r = b - A\hat{x}$는 $A^\top r = 0$ — $A$의 모든 열과 직교한다.
 > 3. 0.9 고유방향 성분은 감쇠하고 1.02 방향 성분은 매 스텝 2%씩 지수 성장 — 상태는 결국 1.02의 고유벡터 방향으로 발산한다.
 > 4. $B=0$이면 $\Delta W = BA = 0$이라 시작 시점에 $W_0 + BA = W_0$ — 학습이 정확히 사전학습 모델에서 출발한다(no-op 초기화).
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §4.5. 시간 스테퍼 없음.
+
+1. **그리기.** 평면 팔: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $J$의 두 열을 말단의 화살로 (각 관절 단위속도가 만드는 말단 속도).
+2. **유도.** $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$에서 $2\times 2$ 공식으로 $J^{-1}$. 이어서 §4.5 표의 정방·가역 행으로 $J^\dagger$. 둘이 같은지 확인하라.
+3. **해석.** $\theta_1$을 고정하고 $\theta_2\to 0$. 두 열 화살, $\det J$, $\kappa_2(J)$는? 어떤 말단 운동이 불가능해지는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 1열은 $(-1,1)$ (베이스를 도는 팔 전체). 2열은 $(-1,0)$ (엘보를 도는 전완).
+> 2. $\det J=1$이므로 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역 $\Rightarrow J^\dagger=J^{-1}$.
+> 3. 열이 평행해진다($\theta=(0^\circ,0^\circ)$에서 둘 다 $\pm y$), $\det J\to 0$, $\kappa_2\to\infty$. 옆($x$) 말단 운동이 사라진다: 곧게 뻗은 팔은 유한 관절속도로 그것을 못 한다.

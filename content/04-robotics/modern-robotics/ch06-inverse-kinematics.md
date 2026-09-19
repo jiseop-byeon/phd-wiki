@@ -2,7 +2,7 @@
 title: "MR Ch.06 — Inverse Kinematics"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -68,6 +68,8 @@ doesn't permit it, go numerical.
     <text x="24" y="254">prediction needs a representation that can hold alternatives.</text>
   </g>
 </svg>
+
+**Those two solutions are plant P2 at tip $(1,1)$.** Unit links: the elbow of $(0^\circ,90^\circ)$ sits at $(1,0)$ with the forearm along $+y$; the elbow of $(90^\circ,-90^\circ)$ sits at $(0,1)$ with the forearm along $+x$. Both tips are $(1,1)$. The catalog frozen pose ([[02-foundations/lab-plants|0.6]]) is the first of these. The dashed average in the figure is $(45^\circ,0^\circ)$, a straight arm whose tip is $(\sqrt{2},\sqrt{2})$ — not a solution. The problem set asks you to draw both branches and to say that; the figure has already done the geometry.
 
 **A pose target is not yet a motion plan.** Elbow-up and elbow-down solutions can reach the same tip pose through very different arm configurations. Joint limits or an obstacle can invalidate one branch without invalidating the other. A solver returning a target configuration therefore answers a narrower question than a planner finding a collision-free route to it.
 
@@ -145,6 +147,19 @@ and motor commands.
 > 3. $\theta_2 = 0$ is a singularity: $\det J = L_1L_2\sin\theta_2 = 0$, so $J^{-1}$ does not exist. The pseudoinverse still returns a step, but it cannot reduce error in the lost direction at all — the iteration stalls (or blows up numerically without damping).
 > 4. $\Delta\theta = J^\top(JJ^\top + \lambda^2 I)^{-1}e$. Large $\lambda$ = stable near singularities but slower and biased (the step no longer solves the exact least-squares problem); small $\lambda$ = accurate away from singularities but explosive near them. It is ridge regression, and $\lambda$ is the ridge.
 
+### Problem set · 과제
+
+Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Analytic only — no Newton loop.
+
+1. **Draw.** Both IK branches that put the tip at $(1,1)$. Label the two elbow points.
+2. **Derive.** The two joint pairs. Which is the frozen pose of 0.6? Average the two joint vectors; where does that mean configuration put the tip?
+3. **Interpret.** A numerical IK seeded at $(45^\circ,0^\circ)$ cannot jump branches without crossing $\theta_2=0$. What does that mean for moving the tool to the panel?
+
+> [!tip]- Solutions
+> 1. Elbow-right: elbow at $(1,0)$, forearm up. Elbow-up: elbow at $(0,1)$, forearm to the right.
+> 2. $(0^\circ,90^\circ)$ and $(90^\circ,-90^\circ)$. Frozen pose is $(0^\circ,90^\circ)$. Mean $(45^\circ,0^\circ)$: tip $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — not a solution. The mean of two IKs is not an IK (the figure in §1).
+> 3. $\det J=L_1L_2\sin\theta_2$ vanishes on the straight arm between branches. A local solver stays on its seed's side; switching elbows loses the panel-normal velocity at the singularity.
+
 ## 한국어
 
 **핵심 질문**: 원하는 말단 자세가 주어지면 어떤 관절 각이 그것을 달성하는가?
@@ -199,6 +214,8 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
     <text x="24" y="254">고전적 그림이 바로 이것이다.</text>
   </g>
 </svg>
+
+**그 두 해가 끝점 $(1,1)$의 장치 P2다.** 단위 링크: $(0^\circ,90^\circ)$의 엘보는 $(1,0)$에 있고 전완은 $+y$; $(90^\circ,-90^\circ)$의 엘보는 $(0,1)$에 있고 전완은 $+x$. 끝점은 둘 다 $(1,1)$. 카탈로그 고정 자세([[02-foundations/lab-plants|0.6]])는 전자다. 그림의 점선 평균은 $(45^\circ,0^\circ)$, 곧은 팔의 끝점 $(\sqrt{2},\sqrt{2})$ — 해가 아니다. 과제는 두 분기를 그리고 그것을 말하라고 한다. 그림이 이미 기하를 했다.
 
 **목표 자세는 아직 운동 계획이 아니다.** 팔꿈치가 위·아래인 해는 말단 자세가 같아도 팔 구성은 크게 다를 수 있다. 관절 한계나 장애물 때문에 한 분기만 불가능할 수 있다. 목표 구성을 반환하는 해법과 그곳까지 충돌 없는 경로를 찾는 계획기는 다른 질문에 답한다.
 
@@ -272,3 +289,16 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
 > 2. 뉴턴법은 국소적으로만 수렴한다. 해에서 멀면 선형화 $J$가 나쁜 모델이어서 스텝이 발산하거나 다른 가지에 떨어질 수 있다. 제어 루프에서는 목표가 연속적으로 움직이므로 직전 시점의 해가 자연스러운 초기값이고, 덕분에 팔이 운동 도중 elbow 컨피규레이션을 뒤집지 않고 한 가지에 머문다.
 > 3. $\theta_2 = 0$은 특이점이다: $\det J = L_1L_2\sin\theta_2 = 0$이므로 $J^{-1}$가 존재하지 않는다. 유사역행렬은 그래도 스텝을 하나 돌려주지만 잃어버린 방향의 오차는 전혀 줄이지 못한다. 반복은 정체하거나, 감쇠가 없으면 수치적으로 폭주한다.
 > 4. $\Delta\theta = J^\top(JJ^\top + \lambda^2 I)^{-1}e$. 큰 $\lambda$는 특이점 근처에서 안정하지만 느리고 편향된다. 여기서 편향이란 스텝이 더 이상 정확한 최소제곱 문제를 풀지 않는다는 뜻이다. 작은 $\lambda$는 특이점에서 멀 때 정확하지만 가까이서는 폭주한다. 이것은 능형회귀이고 $\lambda$가 그 능선이다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, 말단 목표 $(1,1)$. 해석해만 — 뉴턴 루프 없음.
+
+1. **그리기.** 말단을 $(1,1)$에 두는 IK 가지 둘. 엘보 두 점을 표시.
+2. **유도.** 관절 각 두 쌍. 0.6의 고정 자세는 어느 쪽인가? 두 관절 벡터의 평균은 말단을 어디에 두는가?
+3. **해석.** $(45^\circ,0^\circ)$에서 시작한 수치 IK는 $\theta_2=0$을 건너지 않고는 가지를 못 바꾼다. 도구를 패널로 옮길 때 뜻은?
+
+> [!tip]- 정답 · Solutions
+> 1. 엘보-오른쪽: 엘보 $(1,0)$, 전완 위. 엘보-위: 엘보 $(0,1)$, 전완 오른쪽.
+> 2. $(0^\circ,90^\circ)$와 $(90^\circ,-90^\circ)$. 고정 자세는 $(0^\circ,90^\circ)$. 평균 $(45^\circ,0^\circ)$: 말단 $(\sqrt2,\sqrt2)$ — 해가 아니다. 두 IK의 평균은 IK가 아니다(§1 그림).
+> 3. 가지 사이의 직선 팔에서 $\det J=0$. 국소 해법은 씨앗 쪽에 남고, 엘보를 바꾸면 특이점에서 패널 법선 속도를 잃는다.

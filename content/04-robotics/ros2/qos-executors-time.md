@@ -451,6 +451,19 @@ Per-topic QoS overrides for recording and replay, and the ordered set of checks 
 > **3. You put your node on a `MultiThreadedExecutor` and the synchronous service call in your timer still deadlocks. Why?** Because you did not assign callback groups. Everything created without a group joins the node's default group, which is mutually exclusive, so the node behaves as if it were single-threaded. The timer callback holds the group while waiting, and the future's hidden done-callback — which must run for the result to appear — cannot be scheduled in the same mutually exclusive group. Put the client and the timer in different groups, or in one shared reentrant group.
 > **4. A node stamps its messages with `time.time()`. Everything works in the lab and the numbers are wrong on a bag replay. What exactly goes wrong, and what should it call?** `time.time()` is the wall clock and ignores `/clock` entirely, so under replay it stamps data recorded two years ago with today's time; under simulation it drifts against the rest of the system by the real-time factor. Downstream TF lookups and any comparison with other message stamps then fail or silently extrapolate. It should call `self.get_clock().now()` on the node's clock, with `use_sim_time` set for the whole graph — and use `create_timer` rather than a wall timer if its period must follow simulated time.
 
+### Problem set · 과제
+
+Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm{ms}$ from camera mid-exposure to applied force. A vision message arrives $200\,\mathrm{ms}$ late. No new simulator.
+
+1. **Draw.** P6: camera offers *sensor data* (best effort, volatile), controller requests the default profile (reliable, volatile). Mark the $70\,\mathrm{ms}$ budget and a $200\,\mathrm{ms}$-old stamp. Five-line timeline of a late frame versus fourteen $5\,\mathrm{ms}$ ticks.
+2. **Derive.** (a) Do those QoS endpoints connect? (b) $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget — by how much is the force late if the controller still uses that stamp? (c) A deadline of $40\,\mathrm{ms}$ on `/goal`: does a healthy $50\,\mathrm{Hz}$ camera meet it? Does a $200\,\mathrm{ms}$ stall raise an event?
+3. **Interpret.** `ros2 topic echo /goal` prints frames, the controller callback never runs. What is the silent failure, and why is a $200\,\mathrm{ms}$ late vision *also* a budget failure even after QoS is fixed?
+
+> [!tip]- Solutions
+> 1. Camera best-effort → controller reliable: an X on the match. Timeline: stamp $t-200\,\mathrm{ms}$; ticks at $0,5,\ldots,65$; budget expires at $70$ with the frame still $130\,\mathrm{ms}$ late.
+> 2. (a) No — reliable request vs best-effort offer. (b) $130\,\mathrm{ms}$ over budget. (c) Healthy $20\,\mathrm{ms}$ period meets $40\,\mathrm{ms}$; a $200\,\mathrm{ms}$ gap misses and fires *requested deadline missed*.
+> 3. Incompatible reliability; `echo` adapts, the node does not. Fixing QoS still leaves a $200\,\mathrm{ms}$ stamp inside a $70\,\mathrm{ms}$ budget — the force is applied to a goal the cart has already rolled past.
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
@@ -894,3 +907,16 @@ executor.spin()
 > **2. 내 노드는 `/map`을 구독하는데 아무것도 못 받고, `ros2 topic echo /map`은 지도를 바로 찍는다. 무슨 일인가?** 거의 확실히 durability다. map server는 transient local로, 내 노드가 뜨기 전에 한 번 발행했다. 내 노드는 기본 volatile을 요청하므로 연결은 정당하게 되지만 새 메시지만 받는다. `ros2 topic echo`는 퍼블리셔를 조사해 자기 요청을 transient local로 맞추므로 보존된 샘플을 받는다. 구독 쪽을 transient local로 고치고, `echo`가 된다고 해서 내 노드가 받을 수 있다는 증명이 되지는 않는다는 것을 기억하라.
 > **3. 노드를 `MultiThreadedExecutor`에 올렸는데도 타이머 안의 동기 서비스 호출이 여전히 교착한다. 왜인가?** 콜백 그룹을 지정하지 않았기 때문이다. 그룹 없이 만든 것은 전부 노드 기본 그룹에 들어가고 그것은 mutually exclusive이므로, 노드는 단일 스레드처럼 동작한다. 타이머 콜백이 기다리는 동안 그룹을 붙들고 있고, 결과가 나오려면 실행되어야 하는 future의 숨은 done-callback은 같은 mutually exclusive 그룹에서 스케줄될 수 없다. 클라이언트와 타이머를 다른 그룹에 두거나, 공유된 reentrant 그룹 하나에 두어라.
 > **4. 어떤 노드가 `time.time()`으로 메시지에 스탬프를 찍는다. 실험실에서는 잘 되는데 bag 재생에서는 숫자가 틀린다. 정확히 무엇이 잘못됐고, 무엇을 불러야 하나?** `time.time()`은 벽시계이고 `/clock`을 완전히 무시한다. 그래서 재생에서는 2년 전에 기록된 데이터에 오늘 시각을 찍고, 시뮬레이션에서는 시스템 나머지에 대해 실시간 계수만큼 어긋난다. 그러면 하류의 TF 조회와 다른 메시지 스탬프와의 비교가 실패하거나 조용히 외삽한다. 노드 시계의 `self.get_clock().now()`를 부르고 그래프 전체에 `use_sim_time`을 설정해야 하며, 주기가 시뮬레이션 시간을 따라야 한다면 wall timer가 아니라 `create_timer`를 쓴다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카메라 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$. 비전 메시지가 $200\,\mathrm{ms}$ 늦다. 시뮬레이터를 새로 만들지 마라.
+
+1. **그리기.** P6: 카메라가 *sensor data*(best effort, volatile)를 offer, 제어기가 기본 프로파일(reliable, volatile)을 request. $70\,\mathrm{ms}$ 예산과 $200\,\mathrm{ms}$ 된 스탬프. 늦은 프레임 대 $5\,\mathrm{ms}$ 틱 열넷의 다섯 줄 타임라인.
+2. **유도.** (a) 그 QoS 끝점이 연결되는가? (b) $200\,\mathrm{ms}$ 대 $70\,\mathrm{ms}$ 예산 — 제어기가 그 스탬프를 그대로 쓰면 힘은 얼마나 늦은가? (c) `/goal`에 $40\,\mathrm{ms}$ deadline: 건강한 $50\,\mathrm{Hz}$ 카메라는 통과하는가? $200\,\mathrm{ms}$ 정지는 이벤트를 내는가?
+3. **해석.** `ros2 topic echo /goal`은 프레임을 찍는데 제어기 콜백은 안 돈다. 조용한 고장은 무엇이고, QoS를 고친 뒤에도 $200\,\mathrm{ms}$ 늦은 비전이 *역시* 예산 실패인 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 카메라 best-effort → 제어기 reliable: 짝에 X. 타임라인: 스탬프 $t-200\,\mathrm{ms}$; 틱 $0,5,\ldots,65$; $70$에 예산이 끝나고 프레임은 아직 $130\,\mathrm{ms}$ 늦다.
+> 2. (a) 아니오 — reliable 요청 대 best-effort 제공. (b) 예산 초과 $130\,\mathrm{ms}$. (c) 건강한 $20\,\mathrm{ms}$ 주기는 $40\,\mathrm{ms}$를 통과; $200\,\mathrm{ms}$ 공백은 *requested deadline missed*.
+> 3. 신뢰성 비호환. `echo`는 맞추고 노드는 안 맞춘다. QoS를 고쳐도 $70\,\mathrm{ms}$ 예산 안에 $200\,\mathrm{ms}$ 스탬프가 남는다 — 힘은 카트가 이미 지나간 목표에 걸린다.

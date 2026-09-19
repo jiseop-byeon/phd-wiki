@@ -253,6 +253,19 @@ embeddings" — reads as what it is: a matrix multiplication with named parts.
 > 3. $50{,}000/250 = 200$ iterations per epoch; $200 \times 10 = $ **2,000 updates**.
 > 4. Learning rate, batch size, and number of layers are hyperparameters (set by a chosen configuration or search procedure, not by gradient descent). $W_1$ and $b_2$ are parameters — gradient descent chooses them.
 
+### Problem set · 과제
+
+Tier B. **P1** from [[02-foundations/lab-plants|0.6]] (biases zero, ReLU). Hand only.
+
+1. **Draw.** The $2\to 3\to 1$ graph. Label $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$. Write the two matrix shapes on the edges.
+2. **Derive.** Parameter count with biases off, as the catalog freezes them. $W_1$ entries, $W_2$ entries, total. (The lecture's 13 includes four bias numbers.)
+3. **Interpret.** At $z=(1,2,3)$, what does ReLU do to each unit, and what is $\partial h_i/\partial z_i$? If $z_3$ had been $-3$, which path to $\hat y$ would go dead?
+
+> [!tip]- Solutions
+> 1. Two inputs, three hidden, one output. $W_1$ is $3\times 2$, $W_2$ is $1\times 3$.
+> 2. $W_1$ has 6, $W_2$ has 3, total 9. Biases would add $3+1=4$.
+> 3. All $z_i>0$, so ReLU is the identity and each local slope is $1$. If $z_3=-3$, then $h_3=0$ and $\partial h_3/\partial z_3=0$: that hidden unit and $W_{2,3}$ contribute nothing on this pass.
+
 ### Where to go next
 
 Straight on to [[02-foundations/linear-algebra|1. Linear Algebra]]. The mechanics of the
@@ -500,6 +513,19 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 > 2. 1층: $8\times4 + 8 = 40$; 2층: $8\times8 + 8 = 72$; 3층: $2\times8 + 2 = 18$. 합 **130개**.
 > 3. 에포크당 $50{,}000/250 = 200$ 이터레이션; $200 \times 10 = $ **2,000회**.
 > 4. 학습률·배치 크기·층 수가 하이퍼파라미터(설정 선택이나 탐색 절차로 정한다). $W_1$과 $b_2$는 파라미터로, 경사 하강이 고른다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P1** (편향 0, ReLU). 손계산만.
+
+1. **그리기.** $2\to 3\to 1$ 그래프. $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$를 기입. 변에 두 행렬의 모양.
+2. **유도.** 카탈로그대로 편향을 끈 파라미터 수. $W_1$ 개수, $W_2$ 개수, 합. (본문의 13은 편향 4개를 포함한다.)
+3. **해석.** $z=(1,2,3)$에서 ReLU가 각 유닛에 하는 일과 $\partial h_i/\partial z_i$. $z_3$이 $-3$이었다면 $\hat y$로 가는 어느 길이 죽는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 입력 둘, 은닉 셋, 출력 하나. $W_1$은 $3\times 2$, $W_2$는 $1\times 3$.
+> 2. $W_1$이 6, $W_2$가 3, 합 9. 편향을 켜면 $3+1=4$가 더해진다.
+> 3. 모든 $z_i>0$이라 ReLU는 항등이고 국소 기울기는 $1$. $z_3=-3$이면 $h_3=0$, $\partial h_3/\partial z_3=0$: 그 은닉 유닛과 $W_{2,3}$은 이번 순전파에 기여하지 않는다.
 
 ### 다음으로 갈 곳
 

@@ -305,6 +305,19 @@ something different. Both are called self-correction, so read for the mechanism
 > 4. No. Ending a challenge or saturating one configuration is not evidence that the underlying task is solved. Open-vocabulary and lifelong variants (HM3D-OVON, GOAT-Bench), continuous control, sim-to-real transfer and mobile manipulation test different unresolved capabilities.
 > 5. That granularity should be **task-derived rather than fixed** — Clio's Information Bottleneck formulation exists precisely because navigation wants a coarse map and manipulation wants a fine one of the same scene. Architecturally, build an object-centric scene graph (the ConceptGraphs lineage) as the queryable interface, over whatever geometric substrate you use, and let the task list set the level of detail.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A paper reports 90% ObjectNav success and the evaluation omits the oracle-visibility clause. What did the agent possibly do, and what task was actually scored?
+2. Gervet et al.: three families sit near 80% in simulation and spread to 80 / 90 / 23 in the real world, with end-to-end *inversely* related. A 2026 method cites its Habitat number as evidence it will work on a site. What may you *not* infer?
+3. Anderson et al. 2018 introduces SPL and is unrefereed. How do you cite it, and why is that not a reason to skip it?
+
+> [!tip]- Solutions
+> 1. Stop 0.9 m from the object with a wall between. The score is metric navigation to a coordinate, not finding an object.
+> 2. That the real-world ranking will follow, or that sim failures are the ones to fix. Sim and reality fail differently; a Habitat number is evidence about Habitat.
+> 3. Cite it as unrefereed (arXiv 2018). Skip it and you lose SPL and the evaluation vocabulary the rest of the field is written in.
+
 ### Sources
 
 **Definitions and evaluation** — P. Anderson, A. Chang, D. S. Chaplot, et al., "On Evaluation of Embodied Navigation Agents," [arXiv:1807.06757](https://arxiv.org/abs/1807.06757), 2018 (introduces SPL; **unrefereed**); D. Batra, A. Gokaslan, A. Kembhavi, et al., "ObjectNav Revisited," [arXiv:2006.13171](https://arxiv.org/abs/2006.13171), 2020 (**unrefereed**).
@@ -590,6 +603,19 @@ ObjectNav는 아니었다.
 > 3. 실세계 순위가 따라올 것이라는 점. 그들의 발견은 성능이 떨어진다는 것만이 아니라 **시뮬레이션과 현실이 다른 방식으로 실패한다**는 것이고, 그래서 시뮬레이션은 방법을 가르지도, 무엇을 고칠지 보여 주지도 못한다. 세 계열은 시뮬에서 모두 80% 근처(고전 78, 모듈형 81, 종단간 77)였다가 실세계에서 80 / 90 / 23으로 벌어졌고, 종단간 변형들 사이에서는 실세계 성능이 시뮬 성능과 반비례했다. 시뮬 결과는 시뮬에 관한 증거다.
 > 4. 아니다. 챌린지가 끝났거나 한 설정이 포화됐다는 사실은 바탕 과제가 해결됐다는 증거가 아니다. Open-vocabulary·평생 변형(HM3D-OVON, GOAT-Bench), 연속 제어, sim-to-real, 모바일 조작은 서로 다른 미해결 능력을 시험한다.
 > 5. Granularity가 **고정이 아니라 과제에서 유도되어야 한다**는 것 — Clio의 정보 병목 정식화가 존재하는 이유가 정확히, 같은 장면에 대해 내비게이션은 거친 지도를 원하고 조작은 세밀한 지도를 원하기 때문이다. 아키텍처로는, 어떤 기하 substrate를 쓰든 그 위에 물체 중심 장면 그래프(ConceptGraphs 계보)를 질의 가능한 인터페이스로 세우고, 상세도는 과제 목록이 정하게 하라.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 논문이 ObjectNav 성공 90%를 보고하고 평가에서 오라클 가시성 조항을 뺀다. 에이전트가 했을 수 있는 일과, 실제로 채점된 과제는?
+2. Gervet 외: 세 계열이 시뮬에서 80% 근처, 실세계에서 80 / 90 / 23으로 벌어지고 종단간은 *반비례*. 2026년 방법이 Habitat 숫자를 현장에서 동작할 근거로 인용한다. 무엇을 추론하면 *안 되는가*?
+3. Anderson 외 2018이 SPL을 도입하고 심사를 거치지 않았다. 어떻게 인용하고, 그것이 건너뛸 이유가 아닌 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 물체에서 0.9 m, 사이에 벽. 점수는 물체를 찾은 것이 아니라 좌표로의 계량 내비게이션이다.
+> 2. 실세계 순위가 따라온다거나, 시뮬 실패가 고칠 실패라는 것. 시뮬과 현실은 다르게 실패하고, Habitat 숫자는 Habitat에 관한 증거다.
+> 3. 미심사(arXiv 2018)로 인용한다. 건너뛰면 SPL과 이후 분야가 쓰인 평가 어휘를 잃는다.
 
 ### 출처
 

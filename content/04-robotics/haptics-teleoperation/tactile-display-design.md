@@ -51,6 +51,19 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
 > [!question]- Self-check · Answer
 > **Why is a 250 Hz command not enough to specify a tactile stimulus?** The actuator and mounting determine delivered acceleration/displacement; preload, contact area, body site, waveform envelope, and individual sensitivity determine perception. Frequency is only one coordinate.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A team specifies a tactile cue as "250 Hz on an ERM". Which physical variables are still free, and why is the ERM the wrong family if they need independent amplitude?
+2. Why is equal motor voltage not equal perceived magnitude across frequency?
+3. A wearable array is tested on a table, then worn on a moving forearm under a real task. Which two design-checklist items were skipped, and what typically happens to discriminability?
+
+> [!tip]- Solutions
+> 1. Amplitude, envelope, duration, preload, contact area, site. An ERM couples frequency to force ($\propto\omega^2$); independent amplitude wants an LRA, voice coil, or piezo.
+> 2. The actuator/mounting transfer function peaks near resonance; skin and receptor sensitivity also vary with frequency, site, and preload. Voltage is not skin acceleration, and acceleration is not a percept.
+> 3. Items 2 and 5: reliable contact site during the task, and distinguishability under workload. Masking, loss of preload, and motion collapse the table-top vocabulary.
+
 ## 한국어
 
 ### 1. 액추에이터가 아니라 정보에서 시작한다
@@ -94,3 +107,16 @@ Tactile display는 피부를 의도적으로 자극한다. Kinesthetic display�
 
 > [!question]- 스스로 점검 · 정답
 > **250 Hz라는 명령만으로 촉각 자극을 규정할 수 없는 이유는?** 액추에이터와 장착이 전달되는 가속도·변위를 정하고, 예압·접촉 면적·신체 부위·파형 포락선·개인 감수성이 지각을 정한다. 주파수는 좌표 하나일 뿐이다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. 어떤 팀이 촉각 cue를 "ERM의 250 Hz"로 규정한다. 아직 자유인 물리 변수는 무엇이고, 진폭을 독립적으로 써야 한다면 ERM이 틀린 계열인 이유는?
+2. 같은 모터 전압이 주파수를 가로질러 같은 지각 크기가 아닌 이유는?
+3. 착용형 배열을 탁자에서 시험한 뒤, 실제 과제 중 움직이는 팔뚝에 착용한다. 설계 체크리스트의 어느 두 항목을 건너뛰었고, 구별 성능에는 보통 무슨 일이 일어나는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 진폭, 포락선, 지속 시간, 예압, 접촉 면적, 부위. ERM은 주파수와 힘($\propto\omega^2$)을 묶는다. 독립 진폭에는 LRA, voice coil, 피에조가 맞다.
+> 2. 액추에이터·장착 전달함수가 공진 근처에서 커지고, 피부와 수용기 감수성도 주파수·부위·예압에 따라 변한다. 전압은 피부 가속도가 아니고, 가속도는 지각이 아니다.
+> 3. 항목 2와 5: 과제 중 믿을 만한 접촉 부위, 그리고 workload 아래의 구별. Masking, 예압 상실, 운동이 탁자 위 어휘를 무너뜨린다.

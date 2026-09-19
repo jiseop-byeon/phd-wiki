@@ -2,7 +2,7 @@
 title: "MR Ch.10 — Motion Planning"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -45,6 +45,19 @@ a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pa
 [[01-canonical-papers/notes/5-world-models/planet|latent-space CEM]] is planning with a learned model;
 on real sites, sampling planners still provide the safety-checkable backbone that learned
 proposals get filtered through.
+
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: plan **P2** to the panel ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which number is the claim that a $10^\circ$ grid on a 6-dof arm is intractable?
+2. **Falsify.** What observation would falsify treating probabilistic completeness as a *time* guarantee?
+3. **Task.** An RRT path that puts P2's tip on the panel: what has not been checked about the wall?
+
+> [!tip]- Solutions
+> 1. $36^6\approx2.18\times10^9$ cells (and $25$ days at $1\,\mathrm{ms/check}$) — that count *is* the intractability claim.
+> 2. A solution exists, the planner eventually finds it, but only after an unbounded wait. Completeness says “probability $\to 1$”, not “by the control period”.
+> 3. Collision-free in $\mathcal{C}$ is not $F_n$, $\mu$, or P3 stiffness. Sampling did not promise contact force (or when the path is found).
 
 ### Continue beyond this chapter
 
@@ -95,3 +108,16 @@ proposals get filtered through.
 > 1. $100^7 = 10^{14}$ cells. Grid search explodes exponentially in dof, so beyond a few dimensions only sampling is tractable — you cannot even enumerate the space, let alone search it. · 격자 탐색은 자유도에 지수적으로 폭발하므로 고차원에서는 샘플링만이 실용적이다.
 > 2. Guaranteed: if a solution exists (under the method's assumptions), the probability of finding it tends to 1 as computation grows. Not guaranteed: *when* it is found, or the quality of the path — plain RRT paths are typically far from optimal, which is what RRT\* and post-smoothing address. · 언제 찾는지와 경로 품질은 보장하지 않는다.
 > 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. Keep sampling states, but extend with a constraint-respecting local planner — integrate discretized controls or use Reeds–Shepp curves (kinodynamic planning). · 비홀로노믹 제약 때문에 직선 확장이 실행 불가능한 운동일 수 있다 — 상태 샘플링은 그대로 두고, 이산 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 제약 준수 국소 계획기로 확장해야 한다. ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]])
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지 계획.
+
+1. **주장.** $10^\circ$ 격자 6자유도 팔이 감당 안 된다는 주장은 어느 숫자인가?
+2. **반증.** 확률적 완전성을 *시간* 보장으로 읽는 주장을 깨는 관찰은?
+3. **과제.** P2 말단을 패널에 두는 RRT 경로가 벽에 대해 검사하지 않은 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. $36^6\approx2.18\times10^9$칸(그리고 $1\,\mathrm{ms}$면 약 $25$일) — 그 개수가 곧 비실용 주장이다.
+> 2. 해는 있고 결국 찾지만 대기 시간은 무계. 완전성은 “확률 $\to 1$”이지 “제어 주기 안에”가 아니다.
+> 3. $\mathcal{C}$에서 충돌 없음은 $F_n$, $\mu$, P3 강성이 아니다. 샘플링은 접촉력을 약속하지 않는다.

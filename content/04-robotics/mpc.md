@@ -23,7 +23,20 @@ next to LQR, and [[04-robotics/convex-mpc-legged|8. Convex MPC]] is the applicat
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
-at the next step (receding horizon). With linear dynamics, positive-semidefinite quadratic
+at the next step (receding horizon). Written out, at time $t$, with measured (or estimated) state
+$x(t)$, it solves
+
+$$\min_{u_0,\ldots,u_{N-1}} \sum_{k=0}^{N-1} \ell(x_k, u_k) + V_f(x_N) \quad \text{s.t.} \quad x_{k+1} = f(x_k, u_k),\;\; x_k \in \mathcal X,\;\; u_k \in \mathcal U,\;\; x_N \in \mathcal X_f,\;\; x_0 = x(t)$$
+
+and applies $u(t) = u_0^\star$, because only the first input is used before the next measurement
+arrives and the whole problem is solved again. Its named components are the **prediction model**
+$f$ (for linear MPC $f(x,u) = Ax + Bu$); the **horizon** $N$, the number of steps looked ahead;
+the **stage cost** $\ell$ (for linear MPC $x^\top Q x + u^\top R u$); the **terminal cost** $V_f$,
+which stands in for everything after step $N$ (typically $x^\top P x$ with the LQR $P$); the
+**constraint sets** $\mathcal X$ and $\mathcal U$ for states and inputs; and the **terminal set**
+$\mathcal X_f$ in which the prediction must end. *Non-example:* solving this once and executing the
+whole sequence $u_0, \ldots, u_{N-1}$ is open-loop optimal control, not MPC; the re-solve from a new
+measurement is what supplies the feedback. With linear dynamics, positive-semidefinite quadratic
 state/terminal costs, a positive-definite input cost, and affine equality plus linear
 inequality constraints, it is a convex QP — written out fully in
 [[02-foundations/optimization|4. Optimization §5]]. More general convex constraints can
@@ -64,15 +77,24 @@ turning a practical heuristic into a theory. The mechanism has two parts, plus f
 - **(a) Recursive feasibility.** Suppose the horizon ends inside a **terminal set** that is
   *invariant* under a known local controller (invariant = once the state is inside that set,
   the controller keeps it inside forever, and the set lies inside the state constraints while
-  that appended control stays inside the input constraints). Then a feasible plan today implies
+  that appended control stays inside the input constraints). In symbols, with $\kappa_f$ the local
+  controller (usually the LQR law $-Kx$),
+  $$x \in \mathcal X_f \implies f\big(x, \kappa_f(x)\big) \in \mathcal X_f, \qquad \mathcal X_f \subseteq \mathcal X, \qquad \kappa_f(x) \in \mathcal U \ \text{ for all } x \in \mathcal X_f$$
+  so the three conditions say that the state stays in the set, the set respects the state
+  constraints, and the local control respects the input constraints. Then a feasible plan today implies
   a feasible plan tomorrow: drop the first step and append one step of that controller. This
   is **recursive feasibility**, the property MPC papers invoke by name.
 - **(b) Stability from a cost decrease.** Suppose also that the terminal cost decreases by
   **at least the stage cost** under that controller, so that
-  $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$. Then the optimal cost becomes a Lyapunov function
+  $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$ with $u = \kappa_f(x)$, for every $x \in \mathcal X_f$
+  (here $f$ is the prediction model, $\ell$ the stage cost and $V_f$ the terminal cost). Then the
+  optimal cost becomes a Lyapunov function
   (a positive "energy" that strictly decreases along the closed loop, so the state must settle
-  at the origin; defined in [[04-robotics/lqr-lqg|6. LQR / LQG §1]]) and the origin is
-  **asymptotically** stable, with the feasible set as its domain of attraction. Merely
+  at the origin; the three defining conditions are in [[04-robotics/control-theory-ce397|5. Control Theory §4]]) and the origin is
+  **asymptotically** stable, with the feasible set as its domain of attraction. The **feasible
+  set** is the set of initial states for which at least one input sequence satisfies every
+  constraint, and a **domain of attraction** is a set of initial states from which the closed loop
+  converges to the origin. Merely
   decreasing is not enough; the decrease has to dominate the stage cost, and the conclusion
   holds only from states that were feasible to begin with.
 - **Fine print.** That inequality is one assumption of four, not the whole hypothesis:
@@ -80,6 +102,21 @@ turning a practical heuristic into a theory. The mechanism has two parts, plus f
   positive definite, the sets to be closed and to contain the origin in their interior, and
   the terminal set to be control invariant inside the state constraints. Rawlings adds a lower
   bound on the stage cost and a weak-controllability condition.
+
+**Worked, on one scalar system.** Take $x_{k+1} = x_k + u_k$ with $|u_k| \le 1$, stage cost
+$\ell = x^2 + u^2$, and the discrete LQR solution of [[04-robotics/lqr-lqg|6. LQR / LQG §1]]:
+$V_f = 1.618\,x^2$ and $\kappa_f(x) = -0.618\,x$.
+- *Terminal set.* $|\kappa_f(x)| \le 1$ exactly when $|x| \le 1.618$, and the next state
+  $0.382\,x$ stays in that interval, so $\mathcal X_f = [-1.618,\ 1.618]$ is invariant.
+- *Cost decrease.* $V_f(0.382x) - V_f(x) = -1.382\,x^2$ and $\ell(x, \kappa_f(x)) = x^2 + 0.382\,x^2 = 1.382\,x^2$,
+  so condition (b) holds with equality, as it must when $V_f$ is the exact LQR cost-to-go.
+- *Feasible set.* Each step moves the state by at most $1$, so with $N = 2$ the feasible set is
+  $|x| \le 2 + 1.618 = 3.618$. From $x = 4$ the problem has no solution.
+- *One step.* From $x = 3$, unconstrained LQR would command $-1.854$, which violates $|u| \le 1$.
+  The MPC problem returns $u_0 = u_1 = -1$ (predicted $x_2 = 1 \in \mathcal X_f$, cost $16.62$),
+  the plant receives $-1$, and the next problem starts from $x = 2$. The shifted plan
+  $(-1,\ \kappa_f(1) = -0.618)$ ends at $0.382 \in \mathcal X_f$, so it is feasible, exactly as (a)
+  promised.
 
 Read the survey after the optimization page's example; skim its
 formulation and stability sections rather than every proof.
@@ -98,7 +135,11 @@ The "it's just a QP" claim carries conditions worth checking in any paper:
   decays away from the linearization point).
 - **Constraints**: input/state sets must be convex (boxes, polytopes). **Obstacle-avoidance
   constraints are non-convex** — which is why collision-aware MPC papers either convexify
-  locally (safe corridors) or leave the QP world entirely.
+  locally (safe corridors) or leave the QP world entirely. A set is convex when the segment
+  between any two of its points stays inside it (the definition, and the conditions for a convex
+  problem, are in [[02-foundations/optimization|4. Optimization §2]]). The free space outside a
+  unit-radius obstacle at the origin, $\lVert p\rVert \ge 1$, contains $(-1.5, 0)$ and $(1.5, 0)$
+  but not their midpoint $(0, 0)$, so it fails that test.
 
 ### 2. What the solver actually sees
 
@@ -144,7 +185,9 @@ input constraints only → condensed. (Large powers of $A$ can worsen conditioni
 - **Infeasibility**: a disturbance pushes the state where *no* input sequence satisfies
   the constraints — the solver returns nothing, and the controller must do *something*.
   Standard fix: **constraint softening** — replace hard state constraints with penalized
-  slack variables $\sigma \ge 0$ (cost $+\rho\|\sigma\|$), allowing violations of the relaxed constraints at a cost. This does not guarantee feasibility if the remaining hard constraints conflict. Input (actuator) constraints stay hard, and the controller needs a defined fallback when no usable solution is available.
+  slack variables $\sigma \ge 0$ (cost $+\rho\|\sigma\|$), allowing violations of the relaxed constraints at a cost. For a state bound $x_k \le x_{max}$ it reads
+  $$x_k \le x_{max} + \sigma_k, \qquad \sigma_k \ge 0, \qquad \text{cost} = \textstyle\sum_k \ell(x_k, u_k) + V_f(x_N) + \rho \sum_k \sigma_k$$
+  so a violation of size $\sigma_k$ is permitted but costs $\rho\,\sigma_k$; with this linear ($\ell_1$) penalty and $\rho$ larger than the constraint's Lagrange multiplier, the softened problem returns the hard-constrained solution whenever that one exists (an *exact penalty*). This does not guarantee feasibility if the remaining hard constraints conflict. Input (actuator) constraints stay hard, and the controller needs a defined fallback when no usable solution is available.
 - **Model mismatch**: MPC optimizes the *model's* future; bias between model and plant
   turns "optimal" plans into repeated small errors that feedback (the re-solving itself)
   must absorb. Watch for papers quantifying this vs assuming it away.
@@ -161,7 +204,7 @@ input constraints only → condensed. (Large powers of $A$ can worsen conditioni
 - **Linear MPC**: convex QP; solve times from microseconds to milliseconds *for
   small-to-moderate problems on modern CPUs* — always condition speed claims on problem
   size, solver, and hardware.
-- **Nonlinear MPC (NMPC)**: sequential quadratic programming or DDP-style solvers (differential dynamic programming: a second-order trajectory optimizer that alternates an LQR-like backward pass around the current trajectory with a forward rollout);
+- **Nonlinear MPC (NMPC)**: sequential quadratic programming (SQP: solve a QP model of the problem at the current iterate, step, repeat, [[02-foundations/optimization|4. Optimization §4]]) or DDP-style solvers (differential dynamic programming: a second-order trajectory optimizer that alternates an LQR-like backward pass around the current trajectory with a forward rollout);
   local optima and initialization sensitivity return
   ([[04-robotics/planning-decision-making|planning §6]]).
 - **Contact-implicit MPC**: contact mode switches make the problem non-smooth
@@ -192,6 +235,19 @@ construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-ma
 > 3. Hard: infeasible — the solver returns no usable command and a separate fallback must act. Soft: slacks can return a penalized violation **if the remaining hard constraints are feasible**; softening selected constraints does not guarantee that control can continue.
 > 4. ① Warm-started or cold? ② Problem size (horizon, state dimension) and solver? ③ Is 200 Hz solve time or end-to-end latency ([[04-robotics/robot-systems-deployment|frequency ≠ latency]])?
 
+### Problem set · 과제
+
+Tier B. **P4** from [[02-foundations/lab-plants|0.6]], horizon $N=3$, $|u|\le1$, $d=1$. No simulator.
+
+1. **Draw.** Receding horizon of length 3 on the leaky heater. Mark the rails $|u|\le1$ and $d=1$ entering the plant.
+2. **Derive.** Unconstrained $100\times$ rejection wants $K=99$ (CE397 Self-check 1). At $x=1$, what is $u=-Kx$? Why is that illegal here? Under $|u|\le1$ and $d=1$, what interval can $x_\mathrm{ss}$ sit in?
+3. **Interpret.** Why LQR $K=99$ is not "almost MPC with a short horizon" on this plant.
+
+> [!tip]- Solutions
+> 1. Three predicted steps, only $u_0$ applied, rails at $\pm1$.
+> 2. $u=-99$. The constraint $|u|\le1$ forbids it. Steady state $0=-x+u+d\Rightarrow x=u+1\in[0,2]$. Sitting at $d/(1+99)=0.01$ would need $u=-0.99$ *and* a transient that never asked for $|u|>1$, which $u=-99x$ does as soon as $|x|>1/99$.
+> 3. MPC exists next to LQR *because* of the constraint. A huge unconstrained gain is not a feasible plan of any horizon.
+
 ### Continue beyond this guide
 
 See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for trajectory optimization, replanning, task planning, and planning under uncertainty.
@@ -202,7 +258,18 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 이것을 보행 로봇의 표준으로 만든 응용이다.*
 
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
-문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 선형 동역학,
+문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 식으로 쓰면, 시각 $t$에서
+측정한(또는 추정한) 상태 $x(t)$로부터 다음을 푼다.
+
+$$\min_{u_0,\ldots,u_{N-1}} \sum_{k=0}^{N-1} \ell(x_k, u_k) + V_f(x_N) \quad \text{s.t.} \quad x_{k+1} = f(x_k, u_k),\;\; x_k \in \mathcal X,\;\; u_k \in \mathcal U,\;\; x_N \in \mathcal X_f,\;\; x_0 = x(t)$$
+
+그리고 $u(t) = u_0^\star$를 적용한다. 다음 측정이 오기 전까지 쓰이는 것은 첫 입력뿐이고 문제 전체를
+다시 풀기 때문이다. 이름 붙은 구성 요소는 **예측 모델** $f$(선형 MPC에서는 $f(x,u) = Ax + Bu$),
+앞을 내다보는 스텝 수인 **지평** $N$, **단계 비용** $\ell$(선형 MPC에서는 $x^\top Q x + u^\top R u$),
+$N$스텝 이후 전부를 대신하는 **종단 비용** $V_f$(보통 LQR의 $P$로 $x^\top P x$), 상태와 입력의
+**제약 집합** $\mathcal X$와 $\mathcal U$, 그리고 예측이 끝나야 하는 **종단 집합** $\mathcal X_f$다.
+*반례:* 이 문제를 한 번 풀고 시퀀스 $u_0, \ldots, u_{N-1}$ 전체를 실행하는 것은 MPC가 아니라 개루프
+최적 제어다. 피드백을 공급하는 것은 새 측정에서 다시 푸는 일이다. 선형 동역학,
 양의 준정부호 상태·종단 비용, 양의 정부호 입력 비용, 아핀 등식과 선형 부등식 제약이면 볼록
 QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 써 놓았다. 더 일반적인 볼록
 제약은 볼록 최적화 문제를 만들 수 있지만 반드시 QP인 것은 아니다. 입력·상태 제약을 *태생적으로* 다루는 것이
@@ -241,19 +308,38 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 - **(a) Recursive feasibility.** 지평의 끝이 알려진 국소 제어기 아래 *불변*인 **종단 집합**
   안에 떨어진다고 하자(불변 = 일단 상태가 그 집합 안에 들어오면 그 제어기가 영원히 그 안에
   잡아두고, 그 집합이 상태 제약 안에 있으며 이어 붙이는 입력도 입력 제약 안에 있다는 뜻).
-  그러면 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다: 첫 스텝을 떼어 내고
+  기호로는 국소 제어기를 $\kappa_f$(보통 LQR 법칙 $-Kx$)라 할 때
+  $$x \in \mathcal X_f \implies f\big(x, \kappa_f(x)\big) \in \mathcal X_f, \qquad \mathcal X_f \subseteq \mathcal X, \qquad \kappa_f(x) \in \mathcal U \ \text{ for all } x \in \mathcal X_f$$
+  이다. 세 조건은 차례로 상태가 집합 안에 머물고, 집합이 상태 제약을 지키고, 국소 제어가 입력 제약을
+  지킨다는 말이다. 그러면 오늘의 실행 가능한 계획이 내일의 실행 가능한 계획을 함의한다: 첫 스텝을 떼어 내고
   그 제어기 한 스텝을 이어 붙이면 된다. 이것이 MPC 논문들이 이름으로 부르는
   성질(**recursive feasibility**)이다.
 - **(b) 비용 감소에서 오는 안정성.** 또 종단 비용이 그 제어기 아래 **최소한 단계 비용만큼**
-  감소한다고 하자, 즉 $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$. 그러면 최적 비용이 리아푸노프
+  감소한다고 하자, 즉 모든 $x \in \mathcal X_f$에서 $u = \kappa_f(x)$일 때
+  $V_f(f(x,u)) - V_f(x) \le -\ell(x,u)$($f$는 예측 모델, $\ell$은 단계 비용, $V_f$는 종단 비용). 그러면 최적 비용이 리아푸노프
   함수(폐루프를 따라 계속 줄어드는 양의 "에너지"라서 상태가 원점에 자리 잡을 수밖에 없게
-  만드는 함수; [[04-robotics/lqr-lqg|6. LQR / LQG §1]]에서 정의)가 되고 원점이
-  **점근적으로** 안정해진다. 그 흡인 영역은 실행 가능 집합이다. 그냥 감소하는 것으로는
+  만드는 함수; 세 정의 조건은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]에 있다)가 되고 원점이
+  **점근적으로** 안정해진다. 그 흡인 영역은 실행 가능 집합이다. **실행 가능 집합**은 모든 제약을
+  만족하는 입력 시퀀스가 하나라도 있는 초기 상태들의 집합이고, **흡인 영역**은 폐루프가 원점으로
+  수렴하는 초기 상태들의 집합이다. 그냥 감소하는 것으로는
   부족하고 감소가 단계 비용을 압도해야 하며, 결론은 애초에 실행 가능했던 상태에서만 성립한다.
 - **작은 글씨.** 그 부등식은 가정 넷 중 하나일 뿐이다. Borrelli의 정리 12.2는 단계 비용과
   종단 비용이 연속이고 양정부호일 것, 집합들이 닫혀 있고 원점을 내부에 포함할 것, 종단 집합이
   상태 제약 안에서 제어 불변일 것도 함께 요구하고, Rawlings는 단계 비용의 하한과 약한
   제어가능성 조건을 더한다.
+
+**계산 예제, 스칼라 시스템 하나로.** $x_{k+1} = x_k + u_k$, $|u_k| \le 1$, 단계 비용 $\ell = x^2 + u^2$,
+그리고 [[04-robotics/lqr-lqg|6. LQR / LQG §1]]의 이산 LQR 해 $V_f = 1.618\,x^2$, $\kappa_f(x) = -0.618\,x$를 쓰자.
+- *종단 집합.* $|\kappa_f(x)| \le 1$은 정확히 $|x| \le 1.618$일 때이고 다음 상태 $0.382\,x$도 그 구간에
+  머물므로, $\mathcal X_f = [-1.618,\ 1.618]$은 불변이다.
+- *비용 감소.* $V_f(0.382x) - V_f(x) = -1.382\,x^2$이고 $\ell(x, \kappa_f(x)) = x^2 + 0.382\,x^2 = 1.382\,x^2$이므로
+  조건 (b)가 등호로 성립한다. $V_f$가 정확한 LQR cost-to-go이면 그래야 한다.
+- *실행 가능 집합.* 한 스텝에 상태가 최대 $1$만큼 움직이므로 $N = 2$면 실행 가능 집합은
+  $|x| \le 2 + 1.618 = 3.618$이다. $x = 4$에서는 해가 없다.
+- *한 스텝.* $x = 3$에서 제약 없는 LQR은 $|u| \le 1$을 어기는 $-1.854$를 명령한다. MPC 문제는
+  $u_0 = u_1 = -1$을 돌려주고(예측 $x_2 = 1 \in \mathcal X_f$, 비용 $16.62$), 플랜트는 $-1$을 받으며,
+  다음 문제는 $x = 2$에서 시작한다. 한 칸 민 계획 $(-1,\ \kappa_f(1) = -0.618)$은 $0.382 \in \mathcal X_f$에서
+  끝나므로 실행 가능하다. (a)가 약속한 그대로다.
 
 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
 정식화와 안정성 조건을 다룬 절들을 훑는 것을 권한다.
@@ -272,7 +358,10 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
   근사일 뿐이다).
 - **제약**: 입력/상태 집합이 볼록해야 한다(박스, 폴리토프). **장애물 회피 제약은
   비볼록이다** — 충돌 인지 MPC 논문들이 국소 볼록화(안전 통로)를 하거나 아예 QP 세계를
-  떠나는 이유다.
+  떠나는 이유다. 집합은 그 안의 두 점을 잇는 선분이 집합 안에 머물 때 볼록하다(정의와 볼록 문제의
+  조건은 [[02-foundations/optimization|4. 최적화 §2]]). 원점에 있는 반지름 1 장애물 바깥의 자유 공간
+  $\lVert p\rVert \ge 1$은 $(-1.5, 0)$과 $(1.5, 0)$을 담지만 그 중점 $(0, 0)$은 담지 않으므로 이 검사에
+  실패한다.
 
 ### 2. 솔버가 실제로 보는 것
 
@@ -313,7 +402,9 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 - **Infeasibility**: 외란이 상태를 *어떤* 입력 시퀀스로도 제약을 만족할 수 없는 곳으로
   밀면 — 솔버는 아무것도 돌려주지 않고, 제어기는 *뭐라도* 해야 한다. 표준 처방:
   **제약 연화(constraint softening)** — 딱딱한 상태 제약을 벌점 붙은 슬랙 변수
-  $\sigma \ge 0$(비용 $+\rho\|\sigma\|$)로 바꿔, 연화한 제약을 비용을 치르고 위반하도록 허용한다. 남은 경성 제약이 충돌하면 여전히 해가 없을 수 있다. 입력(액추에이터) 제약은 경성으로 유지하며, 쓸 수 있는 해가 없을 때의 대체 동작도 정해야 한다.
+  $\sigma \ge 0$(비용 $+\rho\|\sigma\|$)로 바꿔, 연화한 제약을 비용을 치르고 위반하도록 허용한다. 상태 한계 $x_k \le x_{max}$라면
+  $$x_k \le x_{max} + \sigma_k, \qquad \sigma_k \ge 0, \qquad \text{cost} = \textstyle\sum_k \ell(x_k, u_k) + V_f(x_N) + \rho \sum_k \sigma_k$$
+  이다. 크기 $\sigma_k$의 위반이 허용되지만 $\rho\,\sigma_k$만큼 비용이 붙는다. 이 선형($\ell_1$) 벌점에서 $\rho$가 그 제약의 라그랑주 승수보다 크면, 경성 제약 해가 존재할 때 연화한 문제도 그 해를 돌려준다(*정확한 벌점*). 남은 경성 제약이 충돌하면 여전히 해가 없을 수 있다. 입력(액추에이터) 제약은 경성으로 유지하며, 쓸 수 있는 해가 없을 때의 대체 동작도 정해야 한다.
 - **모델 불일치**: MPC는 *모델의* 미래를 최적화한다; 모델과 플랜트의 편차는 "최적" 계획을
   피드백(재풀이 자체)이 흡수해야 하는 반복적 소오차로 바꾼다. 이를 정량화하는 논문과
   가정으로 치우는 논문을 구분하라.
@@ -329,7 +420,7 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 - **선형 MPC**: 볼록 QP; *현대 CPU에서 중소 규모 문제라면* 마이크로초~밀리초의 풀이
   시간 — 속도 주장은 항상 문제 크기·솔버·하드웨어를 조건으로 달아 읽어라.
-- **비선형 MPC (NMPC)**: SQP 또는 DDP류 솔버(differential dynamic programming: 현재 궤적 주위에서 LQR 같은 역방향 패스와 순방향 롤아웃을 번갈아 도는 2차 궤적 최적화기); 국소 최적과 초기화 민감성이 돌아온다
+- **비선형 MPC (NMPC)**: SQP(현재 반복점에서 문제의 QP 모델을 풀고, 한 스텝 가고, 반복한다, [[02-foundations/optimization|4. 최적화 §4]]) 또는 DDP류 솔버(differential dynamic programming: 현재 궤적 주위에서 LQR 같은 역방향 패스와 순방향 롤아웃을 번갈아 도는 2차 궤적 최적화기); 국소 최적과 초기화 민감성이 돌아온다
   ([[04-robotics/planning-decision-making|계획 §6]]).
 - **접촉 내재 MPC**: 접촉 모드 전환이 문제를 비매끄럽게 만든다
   ([[04-robotics/contact-force-tactile|접촉 §1]]);
@@ -363,6 +454,19 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 > 2. Stacked — 구조화된(리카티 또는 희소) 풀이는 $N$에 선형으로 늘지만, condensed 형태의 범용 조밀 분해는 $N^3$(Axehill–Morari를 쓰면 $N^2$)으로 는다. condensed 헤시안은 지평과 무관하게 조밀하고, $A$의 거듭제곱 때문에 조건수가 나빠질 수 있으며, 상태 제약은 stacked에서 희소하게 남는다.
 > 3. 하드: infeasible — 솔버가 쓸 수 있는 명령을 반환하지 않아 별도의 폴백이 필요. 소프트: **남은 하드 제약이 feasible할 때** 슬랙으로 벌점 있는 위반 해를 반환할 수 있다. 일부 제약을 연화한다고 제어 지속이 보장되지는 않는다.
 > 4. ① warm start 여부 ② 문제 크기(지평·상태 차원)와 솔버 ③ 그 200 Hz가 풀이 시간인지 끝-끝 지연인지 ([[04-robotics/robot-systems-deployment|주파수 ≠ 지연]]).
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P4**, 지평 $N=3$, $|u|\le1$, $d=1$. 시뮬레이터 없음.
+
+1. **그리기.** 새는 히터의 길이 3 receding horizon. 레일 $|u|\le1$과 플랜트로 들어가는 $d=1$.
+2. **유도.** 제약 없는 $100$배 억제는 $K=99$(CE397 스스로 점검 1). $x=1$에서 $u=-Kx$는? 여기서 왜 불법인가? $|u|\le1$, $d=1$이면 $x_\mathrm{ss}$가 앉을 수 있는 구간은?
+3. **해석.** 이 플랜트에서 LQR $K=99$가 "짧은 지평 MPC와 거의 같다"가 아닌 이유.
+
+> [!tip]- 정답 · Solutions
+> 1. 예측 세 스텝, 적용은 $u_0$만, 레일 $\pm1$.
+> 2. $u=-99$. $|u|\le1$이 금지. 정상상태 $x=u+1\in[0,2]$. $0.01$에 앉으려면 $u=-0.99$이고 과도에서 $|u|>1$을 한 번도 안 물어야 하는데, $u=-99x$는 $|x|>1/99$이면 바로 위반한다.
+> 3. MPC가 LQR 옆에 있는 이유가 제약이다. 거대한 무제약 이득은 어떤 지평의 가능 계획도 아니다.
 
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 

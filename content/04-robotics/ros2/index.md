@@ -98,6 +98,19 @@ commands rather than guesses.
 >
 > **What would make this track's work count as research evidence rather than practice?** Reproducibility: a pinned environment, a recorded bag, a launch file that starts the whole system, and a written account of what failed. [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] sets that bar.
 
+### Problem set · 과제
+
+Tier A (weekend path). Plant **P6** from [[02-foundations/lab-plants|0.6]]. The arithmetic lives on [[04-robotics/robot-systems-deployment|10]]; this page is the silent-failure drill. No new ODE.
+
+1. **Draw.** Three nodes on P6: `vision` (50 Hz pose), `tf` (cart frame), `controller` (200 Hz, reads encoder, writes effort). Label the two topics and the TF edge. Mark which process owns the 70 ms budget.
+2. **Derive.** The cart is commanded to a goal 0.40 m away at $0.10\,\mathrm{m/s}$. (a) How long should motion last? (b) How many vision messages, control ticks, and encoder counts in that interval? (c) `controller` looks up TF with `time=0` (latest) instead of the vision stamp. Vision is 120 ms late. What age does the controller actually use, and is the 70 ms budget intact?
+3. **Interpret.** After launch, encoder ticks up, `/tf` is silent, the motor effort is identically zero, and `ros2 topic echo` on the vision topic prints nothing. Ordered checks — name the first three you run, and which page of this track each one lives on. One of them is a QoS mismatch (vision `transient_local`, controller `volatile` on a latched goal). Say why that presents as “nothing happens” rather than a crash.
+
+> [!tip]- Solutions
+> 1. `vision` $\to$ pose topic $\to$ `controller`; `vision` $\to$ TF `map\to cart`; encoder is a local read. The budget is owned by the controller process, not the camera.
+> 2. (a) $0.40/0.10=4.0\,\mathrm{s}$. (b) $4\times 50=200$ vision messages; $4\times 200=800$ ticks; $0.40\times 2048=819$ counts. (c) Latest TF can be *newer* than the vision stamp or *older* if TF is starved; with a 120 ms late vision and `time=0`, you typically apply a transform from a different instant than the pose, so the 70 ms budget is already gone (120>70) *and* the frames are inconsistent. Stamp the lookup.
+> 3. (i) `ros2 topic list` / `hz` on the vision topic ([[04-robotics/ros2/nodes-topics-messages|25.2]]). (ii) `ros2 topic info -v` QoS, because a volatile subscriber on a transient-local latched goal never sees the pose published before it started ([[04-robotics/ros2/qos-executors-time|25.5]]). (iii) `ros2 run tf2_ros tf2_echo` for `map\to cart` ([[04-robotics/ros2/describing-a-robot|25.6]]). Effort zero with a live encoder is consistent with “no goal, no TF, still running.” A crash would have been kinder.
+
 ## 한국어
 
 이 위키의 대부분은 논문을 정확히 *읽기* 위해 있다. 이 트랙은 나머지 절반을 위해 있다.
@@ -174,3 +187,16 @@ Python, C++, 리눅스, Git은 가르치지 않는다. 위키의 나머지가 �
 > **이 트랙은 왜 조용히 실패하는 것들에 한 쪽을 통째로 쓰는가?** 프로그램을 멈추지 않기 때문이다. stale install, 변환 간선의 중복 발행자, 잘못된 시계는 모두 "아무 일도 안 일어남"으로 나타난다. 신뢰성(reliability)이나 내구성(durability)의 QoS *비호환*은 부분적인 예외다. 클라이언트 라이브러리가 발견 시점에 경고를 한 줄 남기는데, 바쁜 런치 로그에서는 놓치기 쉽다. 정말로 조용한 QoS 경우는 transient-local 토픽에 붙은 volatile 구독자다. 연결은 정당하게 성립하지만, 구독자가 뜨기 전에 발행된 메시지를 끝내 받지 못한다. 엔지니어를 가르는 것은 그 경우를 위한 순서 있는 점검 목록을 갖고 있는지다.
 >
 > **이 트랙의 작업이 연습이 아니라 연구 증거가 되려면 무엇이 필요한가?** 재현성이다. 고정된 환경, 기록된 bag, 시스템 전체를 띄우는 런치 파일, 그리고 무엇이 실패했는지에 대한 기록. 그 기준은 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계와 재현성]]이 정한다.
+
+### 과제 · Problem set
+
+Tier A (주말 경로). [[02-foundations/lab-plants|0.6]]의 **P6**. 산수는 [[04-robotics/robot-systems-deployment|10]]에 있다. ODE 없음.
+
+1. **그리기.** P6의 노드 셋: `vision` (50 Hz), `tf`, `controller` (200 Hz). 토픽 둘과 TF 간선. 70 ms 예산을 누가 소유하는지.
+2. **유도.** 목표 0.40 m, $0.10\,\mathrm{m/s}$. (a) 운동 시간. (b) 그 구간의 비전 메시지, 제어 틱, 엔코더 카운트. (c) 제어기가 비전 스탬프 대신 `time=0`(최신)으로 TF를 찾고, 비전이 120 ms 늦다. 실제 나이와 70 ms 예산.
+3. **해석.** 런치 뒤 엔코더는 올라가고 `/tf`는 조용하고 모터 노력은 0이며 비전 토픽 echo가 비어 있다. 점검 세 개와 각 페이지. 하나는 QoS(비전 `transient_local`, 제어기 `volatile`). 왜 충돌이 아니라 “아무 일도 안 일어남”인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 예산은 제어기 프로세스의 것.
+> 2. (a) 4.0 s. (b) 200, 800, 819. (c) 120>70이라 예산은 이미 깨졌고, 최신 TF는 포즈와 다른 시각일 수 있다. 스탬프를 써라.
+> 3. (i) `ros2 topic hz` ([[04-robotics/ros2/nodes-topics-messages|25.2]]). (ii) QoS `topic info -v` ([[04-robotics/ros2/qos-executors-time|25.5]]) — volatile 구독자는 뜨기 전 transient-local 목표를 영영 못 본다. (iii) `tf2_echo` ([[04-robotics/ros2/describing-a-robot|25.6]]). 엔코더가 살아 있는데 노력이 0인 것은 “목표 없음, TF 없음, 프로세스는 도는 중”과 맞다.

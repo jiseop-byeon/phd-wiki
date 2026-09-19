@@ -100,6 +100,19 @@ Four questions separate the claims. **Which algorithm computes the force** — p
 > 2. Add an event-based contact transient (a pulse or acceleration-matched profile at impact); it costs force headroom and can saturate the actuators. Clamp the visual tool at the surface; it costs nothing physically but is a perceptual claim and can conflict with other visual cues. Normal damping on entry is a third option; it costs some of the passivity budget of 24.4.
 > 3. Whether the comparison was against no friction or against a *different* friction level (Richard & Cutkosky found moderate friction helped and high stiction hurt), whether the effect held across difficulty indices or only the easiest, whether errors moved with time, and whether the friction level was matched to a real reference or tuned until it "felt good" — which would make the result a preference, not a task effect.
 
+### Problem set · 과제
+
+Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=400$, $x_w=0.030$. Replace the half-space with a *plate* of thickness $4\,\mathrm{mm}$ occupying $x\in[0.030,0.034]$. The Euler lab stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
+
+1. **Draw.** Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.036$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
+2. **Derive.** (a) Penalty force just before the mid-plane, and the push that pops through. (b) Proxy force at $x=0.036$. (c) Colgate bound $2b/T$ at $T=10^{-3}$. At that ceiling, does a $2\,\mathrm{N}$ push (the 24.3 amplifier limit) still pop a $4\,\mathrm{mm}$ plate? A $2\,\mathrm{mm}$ plate?
+3. **Interpret.** Why is the 24.4 half-space wall honest as a penalty law, and why does the same law lie on this plate? What memory does the proxy add that a 1-DoF *half-space* never needed?
+
+> [!tip]- Solutions
+> 1. Penalty at $x=0.036$ is $2\,\mathrm{mm}$ past mid-plane, nearest face is $x=0.034$, force points $+x$ (out the back). Proxy remains at $0.030$, spring pulls $-x$.
+> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; any harder push pops through. (b) $400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. Ceiling force before mid-plane is $K\cdot(\mathrm{thickness}/2)$: $4\,\mathrm{mm}$ plate $\to 3.2\,\mathrm{N}$ (a $2\,\mathrm{N}$ push survives); $2\,\mathrm{mm}$ plate $\to 1.6\,\mathrm{N}$ (it pops). The bound is not why catalog penalty fails here — missing state is.
+> 3. A half-space has one face; nearest-surface is always the entry face, so penalty and proxy coincide. A plate has two faces; without memory the force flips at the mid-plane. The proxy remembers the entry face.
+
 ## 한국어
 
 ### 1. 루프가 실제로 계산하는 것
@@ -188,6 +201,19 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 > 1. 벌점(위치만 보는) 방법이다. 힘은 가장 가까운 면을 향하는데, 점이 패널의 중간면을 지나면 그것이 반대쪽 면이 된다. 수정: 표면에 제약된 proxy를 추적하고 proxy와 장치 점 사이의 스프링을 렌더링해, 알고리즘이 사용자가 어느 쪽에서 들어왔는지 기억하게 한다.
 > 2. 사건 기반 접촉 과도 신호(충돌 시 펄스나 가속도 정합 프로파일)를 더한다. 힘 여유를 쓰고 액추에이터를 포화시킬 수 있다. 시각적 도구를 표면에 고정한다. 물리적 비용은 없지만 지각에 대한 주장이고 다른 시각 단서와 충돌할 수 있다. 진입 시 법선 댐핑이 셋째 선택지이고, 24.4의 수동성 예산 일부를 쓴다.
 > 3. 비교 대상이 마찰 없음이었는지 *다른* 마찰 수준이었는지(Richard & Cutkosky는 적당한 마찰은 돕고 높은 정지 마찰은 해친다고 보았다), 효과가 난이도 지수 전체에서 나타났는지 가장 쉬운 것에서만 나타났는지, 오류가 시간과 함께 움직였는지, 그리고 마찰 수준이 실제 기준에 맞춰졌는지 아니면 "느낌이 좋을 때까지" 조정됐는지 — 후자라면 결과는 과제 효과가 아니라 선호다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 카탈로그 벽 $k_w=400$, $x_w=0.030$. 반공간을 두께 $4\,\mathrm{mm}$의 *판* $x\in[0.030,0.034]$으로 바꿔라. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남긴다. 여기서 시뮬레이터를 하나 더 만들지 마라.
+
+1. **그리기.** 핸들 $x$, 판, 중간면 $0.032$. $x=0.036$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
+2. **유도.** (a) 중간면 직전의 벌점 힘, 그리고 뚫고 나가는 가압. (b) $x=0.036$의 proxy 힘. (c) $T=10^{-3}$에서 Colgate 경계 $2b/T$. 그 천장에서 $2\,\mathrm{N}$ 가압(24.3 증폭기 한계)이 $4\,\mathrm{mm}$ 판을 아직 뚫는가? $2\,\mathrm{mm}$ 판은?
+3. **해석.** 24.4의 반공간 벽이 벌점 법칙으로 정직한 이유, 같은 법칙이 이 판에서는 거짓인 이유는? 1자유도 *반공간*이 끝내 필요 없었던 기억을 proxy가 무엇을 더하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. $x=0.036$의 벌점은 중간면을 $2\,\mathrm{mm}$ 지났고, 가장 가까운 면은 $x=0.034$, 힘은 $+x$(뒤로). Proxy는 $0.030$에 남아 스프링이 $-x$로 당긴다.
+> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; 더 센 가압은 뚫고 나간다. (b) $400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. 중간면 전 천장 힘은 $K\cdot(\mathrm{두께}/2)$: $4\,\mathrm{mm}$ 판 $\to 3.2\,\mathrm{N}$($2\,\mathrm{N}$은 버팀); $2\,\mathrm{mm}$ 판 $\to 1.6\,\mathrm{N}$(뚫림). 카탈로그 벌점이 여기서 실패하는 이유는 경계가 아니라 상태의 부재다.
+> 3. 반공간은 면이 하나라 가장 가까운 면이 언제나 진입 면이고, 벌점과 proxy가 같다. 판은 면이 둘이라 기억 없이 중간면에서 힘이 뒤집힌다. Proxy가 진입 면을 기억한다.
 
 ### Sources
 

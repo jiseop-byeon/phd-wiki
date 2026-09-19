@@ -888,6 +888,19 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
 > 11. At $w = 0$ both trajectories have probability $0.5$, so the model expects $f = 2$ and the gradient is $3 - 2 = 1$. Because $E[f] < 3$ for every finite $w$, the gradient never reaches zero and $w$ grows without bound; only a regularizer, or a demonstration of $\tau_2$, gives a finite answer.
 > 12. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. The shift changes nothing, since only the difference enters. Held-out accuracy is measured on pairs drawn from the data the model was trained near; a policy optimized against the model moves toward behaviour where the model has seen nothing and can be exploited (reward hacking, §7). The evidence that counts is a policy trained on the learned reward and scored on the true task metric.
 
+### Problem set · 과제
+
+Tier B. **P4** as an MDP. Plant from [[02-foundations/lab-plants|0.6]]; $d$ is unknown. Stabilizer language is [[04-robotics/control-theory-ce397|5. Control Theory]]. No simulator.
+
+1. **Draw.** MDP: state $x$ (temperature error), action $u$, disturbance $d$ entering the same sum as $u$ in $\dot x=-x+u+d$. Mark that the agent does not choose $d$.
+2. **Derive.** Bins $s\in\{0,1\}$ for $x\approx 0$ and $x\approx 1$; actions $u\in\{0,1\}$; $d=0$; Euler $T=1$ so $x^+=u$. Reward $r=-s^2$, $\gamma=0.9$. One greedy Bellman backup from $V\equiv 0$. Report $V(0)$ and $V(1)$.
+3. **Interpret.** Why can a policy learned on this MDP still need the CE397 stabilizer $u=-Kx$ when $d$ is a real, unmodelled disturbance?
+
+> [!tip]- Solutions
+> 1. The agent outputs $u$; $d$ is an exogenous arrow into $\dot x$. Next $x$ is the plant, not a sampled reward.
+> 2. $s'=u$. From $V=0$, $Q(s,u)=-s^2$, so $V(0)=0$ and $V(1)=-1$ (both actions equivalent at this first backup).
+> 3. The backup never saw $d$, and a tabular or neural $\pi(u|x)$ has no pole certificate. Closed-loop $\dot x=-(1+K)x+d$ is a CE397 fact; RL can look optimal on the bins it trained and still drift when $d$ jumps.
+
 ### Robotics bridge
 
 MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]]. If your interest is robots, read the [[05-construction-robotics/sim-to-real|Sim-to-Real guide]] next — it is the transfer half of §9.
@@ -1693,6 +1706,19 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
 > 10. $r = 0$(모든 정책이 최적), $2r$ 같은 양수배, 또는 $r$에 포텐셜 기반 shaping 항 $\gamma\Phi(s') - \Phi(s)$를 더한 것(§7). MaxEnt IRL은 전문가의 특징 합을 맞추는 분포만 남기고 그중 엔트로피가 최대인 것을 택한다. 그러면 지수족 모델 $P_w(\tau) \propto \exp(w^\top f(\tau))$가 정해지고 $w$는 최대우도로 맞춘다.
 > 11. $w = 0$에서 두 궤적의 확률이 각각 $0.5$이므로 모델의 기대 $f$는 $2$, 그래디언트는 $3 - 2 = 1$이다. 유한한 모든 $w$에서 $E[f] < 3$이므로 그래디언트가 0에 닿지 않고 $w$는 한없이 커진다. 정규화나 $\tau_2$의 시연이 있어야 유한한 답이 나온다.
 > 12. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. 차이만 들어가므로 평행이동은 아무것도 바꾸지 않는다. 보류 정확도는 모델이 학습된 데이터 근처에서 뽑은 쌍으로 잰 것이다. 모델에 대해 최적화한 정책은 모델이 아무것도 보지 못한 거동 쪽으로 움직여 모델을 공략할 수 있다(reward hacking, §7). 의미 있는 증거는 학습된 보상으로 학습한 정책을 참 과제 지표로 채점한 결과다.
+
+### 과제 · Problem set
+
+Tier B. **P4**를 MDP로. 장치는 [[02-foundations/lab-plants|0.6]], $d$는 미지. 안정화 언어는 [[04-robotics/control-theory-ce397|5. 제어 이론]]. 시뮬레이터 없음.
+
+1. **그리기.** MDP: 상태 $x$(온도 오차), 행동 $u$, $\dot x=-x+u+d$의 합산에 들어가는 외란 $d$. 에이전트가 $d$를 고르지 않음을 표시.
+2. **유도.** $x\approx 0$과 $x\approx 1$의 빈 $s\in\{0,1\}$; 행동 $u\in\{0,1\}$; $d=0$; 오일러 $T=1$이라 $x^+=u$. 보상 $r=-s^2$, $\gamma=0.9$. $V\equiv 0$에서 탐욕 벨만 백업 한 번. $V(0)$과 $V(1)$.
+3. **해석.** 이 MDP에서 배운 정책이, $d$가 실제의 미모형 외란일 때에도 CE397 안정기 $u=-Kx$를 왜 여전히 필요로 하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 에이전트는 $u$를 내고, $d$는 $\dot x$로 들어가는 외생 화살. 다음 $x$는 플랜트이지 샘플된 보상이 아니다.
+> 2. $s'=u$. $V=0$이면 $Q(s,u)=-s^2$, 따라서 $V(0)=0$, $V(1)=-1$(이 첫 백업에서 두 행동은 동등).
+> 3. 백업은 $d$를 본 적이 없고, 표나 신경망 $\pi(u|x)$에는 극점 증명이 없다. 폐루프 $\dot x=-(1+K)x+d$는 CE397의 사실이다. RL은 학습한 빈에서는 최적으로 보여도 $d$가 뛰면 표류한다.
 
 ### 로보틱스 다리
 

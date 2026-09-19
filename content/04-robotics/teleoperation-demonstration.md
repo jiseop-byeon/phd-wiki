@@ -433,6 +433,19 @@ requires, because the contribution *is* the corpus — needs these:
 > 4. How long the 50 demonstrations took to collect, and how the 92% was measured — specifically, whether the evaluation initial states were drawn from the same distribution the expert demonstrated. One expert also means the policy learned one strategy, so nothing is known about robustness to operator variation.
 > 5. It divides the felt force by 5 as well, so a 50 N contact feels like 10 N. That is the direction that hides forces the operator should notice, which is why fine-motion teleoperation usually scales motion down and force *up*, decoupling the two ratios rather than sharing one.
 
+### Problem set · 과제
+
+Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. The Euler lab is on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator. Leader and follower are two copies of the P3 handle; the wall sits at the follower.
+
+1. **Draw.** Two-port: human — leader P3 — delayed channel — follower P3 — wall at $x_w$. Mark $T=1\,\mathrm{ms}$ on each local loop and a one-way delay $T_d=50\,\mathrm{ms}$ on the force channel back to the leader. Label $F_a=-k_w(x-x_w)$ at the follower.
+2. **Derive.** Colgate-style $K\le 2b/T$ on the leader, using the device damper $b$ not $b_h$. (a) Bound at $T=10^{-3}$ with $T_d=0$. Does catalog $k_w=400$ pass? (b) Treat the delayed force as an extra hold, $T_{\mathrm{eff}}=T+T_d=0.051$. New bound. Does $k_w=400$ pass? (c) The largest $k_w$ that still passes at $T_d=50\,\mathrm{ms}$.
+3. **Interpret.** Z-width is the interval of impedances you can render stably. Why does $50\,\mathrm{ms}$ of delay shrink it by about fifty, and why is "just raise $k_w$ to feel the wall" the wrong fix?
+
+> [!tip]- Solutions
+> 1. Human spring–damper into leader mass $m$; delayed $F_a$ from the follower wall; follower has the same $m,b$ and the switch at $x_w$. No path that skips the delay.
+> 2. (a) $2b/T=1.6/10^{-3}=1600\,\mathrm{N/m}$; $400$ passes. (b) $2b/T_{\mathrm{eff}}=1.6/0.051\approx 31\,\mathrm{N/m}$; $400$ fails. (c) $K\le 31\,\mathrm{N/m}$.
+> 3. Delay lets a restoring force arrive after $\dot x$ has reversed, so the wall injects energy. The bound is $\propto 1/T_{\mathrm{eff}}$; fifty extra milliseconds dominate the $1\,\mathrm{ms}$ sample and cut the ceiling from $1600$ to $\sim 31$. Raising $k_w$ moves *further* outside the bound. The trade is damping, wave variables, or a local model — each buys stability by giving up transparency.
+
 ### Sources
 
 **Bilateral control theory**
@@ -837,6 +850,19 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 > 3. 수동성이 사는 것은 안정성이지 성능이 아니기 때문이다. 이 변환은 고주파 충실도를 의도적으로 버리므로 조작자는 환경의 무르고 표류하는 판본을 느낀다 — 힘 피드백의 요점이 분명한 접촉 천이를 감지하는 것인 과제에서는, 그 무름이 조작자가 필요로 했던 신호를 지운다. 불안정해질 수 없음을 보장하는 것과 쓸모 있는 것은 같지 않다.
 > 4. 시연 50개를 모으는 데 걸린 시간, 그리고 92%를 어떻게 측정했는가 — 특히 평가 초기 상태가 전문가가 시연한 것과 같은 분포에서 뽑혔는가. 전문가 한 명이라는 것은 정책이 하나의 전략을 배웠다는 뜻이므로, 조작자 변동에 대한 견고성은 아무것도 알 수 없다.
 > 5. 느끼는 힘도 5로 나뉘어, 50 N 접촉이 10 N처럼 느껴진다. 조작자가 알아채야 할 힘을 가리는 방향이며, 그래서 미세 운동 원격조작은 보통 모션은 줄이고 힘은 *키운다* — 하나의 비를 공유하는 대신 두 비를 분리한다.
+
+### 과제 · Problem set
+
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라. 리더와 팔로워는 P3 핸들 두 대, 벽은 팔로워 쪽.
+
+1. **그리기.** 2포트: 사람 — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽 $x_w$. 각 로컬 루프에 $T=1\,\mathrm{ms}$, 리더로 돌아오는 힘 채널에 편도 $T_d=50\,\mathrm{ms}$. 팔로워에 $F_a=-k_w(x-x_w)$.
+2. **유도.** 리더에서 Colgate형 $K\le 2b/T$. 장치 댐퍼 $b$이지 $b_h$가 아니다. (a) $T_d=0$, $T=10^{-3}$의 경계. 카탈로그 $k_w=400$이 통과하는가? (b) 지연된 힘을 추가 홀드로 보면 $T_{\mathrm{eff}}=T+T_d=0.051$. 새 경계. $k_w=400$이 통과하는가? (c) $T_d=50\,\mathrm{ms}$에서 아직 통과하는 최대 $k_w$.
+3. **해석.** Z-width는 안정하게 렌더링할 수 있는 임피던스 구간이다. $50\,\mathrm{ms}$ 지연이 그것을 약 쉰 배로 줄이는 이유, 그리고 "벽을 느끼려면 $k_w$를 올리면 된다"가 틀린 처방인 이유는?
+
+> [!tip]- 정답 · Solutions
+> 1. 사람 스프링–댐퍼가 리더 질량 $m$으로; 팔로워 벽의 $F_a$는 지연됨; 팔로워도 같은 $m,b$와 $x_w$ 스위치. 지연을 건너뛰는 길은 없다.
+> 2. (a) $2b/T=1600\,\mathrm{N/m}$; $400$ 통과. (b) $2b/T_{\mathrm{eff}}\approx 31\,\mathrm{N/m}$; $400$ 실패. (c) $K\le 31\,\mathrm{N/m}$.
+> 3. 지연은 복원력이 $\dot x$가 바뀐 뒤에 도착하게 해서 벽이 에너지를 넣는다. 경계는 $1/T_{\mathrm{eff}}$에 비례하고, 밀리초 샘플을 $50\,\mathrm{ms}$가 압도해 천장이 $1600$에서 $\sim 31$로 떨어진다. $k_w$를 올리면 경계 *밖*으로 더 나간다. 거래는 댐핑, wave variable, 로컬 모델 — 각각 투명성을 내주고 안정성을 산다.
 
 ### 출처
 

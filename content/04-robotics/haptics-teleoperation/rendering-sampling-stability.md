@@ -3,15 +3,18 @@ title: 24.4 Rendering, Sampling & Stability
 tags: [haptics, control, passivity]
 study-depth: Working
 wiki-support: Working
-depth-goal: "Explain and quantify why sampling, quantization, delay, and switching restrict rendered impedance; choose a defensible stabilization strategy."
+depth-goal: "On plant P3, draw the human–device–wall loop, derive the wall bound and the contact characteristic equation, run the Euler template, and say what the integrator and the human damper each contribute to the trace."
 mastery-when: "Master sampled-data proofs and passivity-controller design when stability or rendering performance is the contribution."
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Sampling, the Nyquist frequency, and the Z-transform with its transfer function $H(z)$ from [[02-foundations/signal-processing|6. Signal Processing §2 and §5]]; stability and phase lag from [[04-robotics/control-theory-ce397|5. Control Theory §5]]; the device model and $\tau=J^\top F$ from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
-> [[02-foundations/signal-processing|6. 신호처리 §2와 §5]]의 샘플링, 나이퀴스트 주파수, Z-변환과 전달함수 $H(z)$. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 안정성과 위상 지연. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 장치 모델과 $\tau=J^\top F$.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the integrator from [[02-foundations/lab-kernel|0.65 Lab Kernel]]; encoder and capstan maps from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Sampling, the Nyquist frequency, and the Z-transform $H(z)$ from [[02-foundations/signal-processing|6. Signal Processing §2 and §5]]; stability and phase lag from [[04-robotics/control-theory-ce397|5. Control Theory §5]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P3**; [[02-foundations/lab-kernel|0.65]]의 적분기; [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 엔코더·캡스턴 사상. [[02-foundations/signal-processing|6. 신호처리 §2와 §5]]의 샘플링, 나이퀴스트, $H(z)$. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 안정성과 위상 지연.
 
 ## English
+
+> [!note] First pass · 처음이라면
+> Draw the P3 loop in §7, derive the wall bound in §2 with P3's $b$, then do the problem set. §3–§6 are what you open when a paper's stiffness ceiling or a filter needs a name.
 
 ### 1. Haptic rendering is a hard real-time feedback loop
 
@@ -42,6 +45,8 @@ $$K\le\frac{2b}{T}.$$
 With backward-difference virtual damping $B$, a classic one-DOF passivity condition under its model assumptions is $b>KT/2+|B|$. It is not a universal hardware rating: friction, delay, quantization, nonlinear kinematics, saturation, human grip, and implementation details change the boundary.
 
 Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bound gives $K\le200$ N/m. Halving $T$ doubles that bound; adding digital damping does not substitute freely for physical dissipation because its estimate is delayed.
+
+On **P3**, the catalog damper is $b=0.8\,\mathrm{N{\cdot}s/m}$. At the haptic period $T=10^{-3}\,\mathrm{s}$ the same formula gives $K\le 2\cdot 0.8/10^{-3}=1600\,\mathrm{N/m}$. Catalog $k_w=400$ sits comfortably inside; $k_w=2500$ does not. At $T=5\times10^{-3}$ the bound falls to $320\,\mathrm{N/m}$ and even the catalog wall fails it. The $b$ in this inequality is the *device* damper. The human damper $b_h$ is not a term you may spend to claim a stiffer wall.
 
 These bounds are usually checked in simulation before hardware, and that check has its own trap.
 
@@ -105,10 +110,125 @@ For a discrete sample, a common observer uses $\Delta E_k=T F_k^\top v_k$ with a
 5. Raise stiffness gradually; stop at sustained oscillation, saturation, overheating, or unsafe force.
 6. Separate numerical instability, mechanical resonance, friction limit cycle, and collision/proxy discontinuity.
 
+### 7. Worked: the P3 human–device–wall loop
+
+This is the homework object. The problem set will ask you to draw it, write its characteristic polynomial, and step it. Do those three things here first, on the catalog numbers, so the set is a change of knobs rather than a first derivation.
+
+Plant **P3** ([[02-foundations/lab-plants|0.6]]): $m=0.04$, $b=0.8$, $k_h=400$, $b_h=8$, $k_w=400$, $x_w=0.030$. Integrator: [[02-foundations/lab-kernel|0.65]]. Capstan and encoder: [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
+
+The human is an impedance attached to a *desired* position $x_d$ that we hold constant, so $\dot x_d=0$:
+
+$$F_h=k_h(x_d-x)+b_h(0-\dot x).$$
+
+The device is a mass–damper driven by the sum of human force, actuator force, and physical damping:
+
+$$m\ddot x+b\dot x=F_h+F_a.$$
+
+The wall is a switch, not a linear spring:
+
+$$F_a=\begin{cases}-k_w(x-x_w),&x>x_w,\\0,&x\le x_w.\end{cases}$$
+
+```mermaid
+flowchart LR
+    Xd["xd"] --> Hum["human kh, bh"]
+    X["x"] --> Hum
+    V["v"] --> Hum
+    Hum --> Fh["Fh"]
+    X --> Sw{"x > xw?"}
+    Sw -->|yes| Fa["Fa = -kw(x-xw)"]
+    Sw -->|no| Z["Fa = 0"]
+    Fh --> Sum["Σ"]
+    Fa --> Sum
+    V --> Damp["-b v"]
+    Damp --> Sum
+    Sum --> Inv["÷ m"]
+    Inv --> A["a"]
+```
+
+There is no arrow from $F_a$ back to $x_d$. The person chooses where they want the handle; the wall only pushes on $x$.
+
+**In sustained contact** the switch stays on, so the closed-loop ODE is linear:
+
+$$m\ddot x+(b+b_h)\dot x+(k_h+k_w)x = k_h x_d + k_w x_w$$
+
+(the right-hand side is constant when $x_d$ is held). The characteristic polynomial is therefore
+
+$$0.04 s^2 + 8.8 s + 800 = 0 \quad\Leftrightarrow\quad s^2 + 220 s + 20000 = 0.$$
+
+Natural frequency $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$. Damping ratio $\zeta=220/(2\cdot 141)=0.78$ — underdamped, a couple of rings then settle, not a chatter. This $\zeta$ *includes* $b_h$. The passivity bound in §2 does not.
+
+**Equilibrium**, velocities zero, for a worked desired position $x_d=0.032\,\mathrm{m}$ (2 mm into the wall): the two springs share the stretch,
+
+$$k_h(0.032-x^\ast)=k_w(x^\ast-0.030) \Rightarrow x^\ast=0.031\,\mathrm{m},$$
+
+wall force $k_w\cdot 0.001=0.4\,\mathrm{N}$. The problem set repeats this with $x_d=0.035$. Same algebra, one number changed.
+
+**One explicit-Euler step**, so the template's blanks have a check. Start at $x=0.020$ (still free), $v=0$, $x_d=0.035$, $T=10^{-3}$, catalog $k_w$. The wall is off, so $F_a=0$. Then
+
+$$F_h=400\cdot(0.035-0.020)+8\cdot 0=6.0\,\mathrm{N},\qquad a=\frac{6.0}{0.04}=150\,\mathrm{m/s}^2.$$
+
+Explicit Euler uses the *old* velocity for position ([[02-foundations/lab-kernel|0.65]]):
+
+$$v\leftarrow 0+10^{-3}\cdot 150=0.150,\qquad x\leftarrow 0.020+10^{-3}\cdot 0=0.020.$$
+
+Next step: $F_h=400\cdot 0.015+8\cdot(-0.150)=4.80$, $a=(4.80-0.8\cdot 0.150)/0.04=117$, $v\leftarrow 0.267$, $x\leftarrow 0.02015$. If your filled template disagrees here, the blanks are wrong before any plot.
+
+The four-condition sweep in the problem set is this same loop with one knob changed each time: never hit the wall; hit it and settle; sample too slowly on a stiff wall; sample faster; then drop $b_h$ and watch the “stable” stiff wall fail. §2 already told you which of those the device damper can pay for.
+
 > [!question]- Self-check · Answer
 > **Why may a smoother velocity trace make a virtual wall less stable?** Smoothing attenuates noise but adds phase lag. Delayed damping can act after the motion has reversed and inject rather than remove energy at the relevant frequency.
 
+### Problem set · 과제
+
+Tier A. Using **P3**, this page, [[02-foundations/lab-kernel|0.65]], and [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Original plant and original problems — fill the blanks; do not rewrite the loop.
+
+Human (impedance, desired position $x_d$ held constant so $\dot x_d=0$):
+
+$$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
+
+Device: $m\ddot x+b\dot x=F_h+F_a$. Wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$.
+
+1. **Draw.** Block diagram with signals $x_d$, $x$, $\dot x$, $F_h$, $F_a$, and the summing junction into $m$. Mark the unilateral switch on the wall. This is the homework object; the rest of the set is this diagram in equations and in a loop.
+2. **Derive.** (a) In sustained contact, the characteristic polynomial in $s$. Natural frequency and damping ratio at the catalog $k_w=400$. (b) Equilibrium $x^\ast$ for $x_d=0.035\,\mathrm{m}$ (velocities zero). (c) Colgate-style bound $K\le 2b/T$ at $T=10^{-3}$ and at $T=5\times10^{-3}$. Does catalog $k_w$ pass each? Does $k_w=2500$ pass each? The bound is on the *device* damper $b$, not $b_h$.
+3. **Do.** Fill the `?` in the template. Explicit Euler, $T$ is the controller period ([[02-foundations/lab-kernel|0.65]]). Run four conditions, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, and plot $x(t)$ with a dashed wall at $x_w$:
+   - A. Free: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
+   - B. Contact: $x_d=0.035$, $k_w=400$, $T=10^{-3}$
+   - C. Slow sample, stiff wall: $x_d=0.035$, $k_w=2500$, $T=5\times10^{-3}$
+   - D. Fast sample, same wall: $x_d=0.035$, $k_w=2500$, $T=10^{-3}$
+   Then one extra run: D with $b_h=0$. Report, for each, whether $x$ stays off the wall, settles, or chatters, and the sign of $\sum T F_a v$ (virtual-wall energy; negative means the wall took energy out).
+
+```python
+# P3 explicit Euler. Integrator: lab-kernel. Fill ?.
+m, b = 0.04, 0.8
+kh, bh = 400.0, 8.0
+kw, xw = 400.0, 0.030          # override per case
+xd = 0.035                     # 0.020 in case A
+T = 1e-3                       # 5e-3 in case C
+t1 = 1.5
+n = int(round(t1 / T)) + 1
+x, v = 0.020, 0.0
+xs, vs, Fas, ts, E = [], [], [], [], 0.0
+for k in range(n):
+    Fh = ?                     # kh*(xd - x) + bh*(0.0 - v)
+    Fa = ?                     # -kw*(x - xw) if x > xw else 0.0
+    a = ?                      # (Fh + Fa - b*v) / m
+    E = E + T * Fa * v
+    xs.append(x); vs.append(v); Fas.append(Fa); ts.append(k * T)
+    v_old = v
+    v = v + T * a              # explicit: position uses OLD velocity
+    x = x + T * v_old
+# plot xs vs ts; axhline xw; caption "P3, explicit Euler, T=..."
+```
+
+> [!tip]- Solutions
+> 1. $x_d$ feeds a spring–damper whose other port is $(x,\dot x)$; that force $F_h$ sums with $F_a$ and $-b\dot x$ into $1/m$. The wall block is a switch: it reads $x$ and emits $F_a$ only for $x>x_w$. No path from $F_a$ back to $x_d$ — the human desired position is an exogenous input.
+> 2. (a) $m s^2+(b+b_h)s+(k_h+k_w)=0.04 s^2+8.8 s+800$. Divide by $m$: $s^2+220s+20000=0$. $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$, $\zeta=220/(2\cdot 141)=0.78$ (underdamped). (b) $k_h(x_d-x^\ast)=k_w(x^\ast-x_w)$ $\Rightarrow$ $0.035-x^\ast=x^\ast-0.030$ $\Rightarrow$ $x^\ast=0.0325\,\mathrm{m}$, wall force $1.0\,\mathrm{N}$. (c) $T=10^{-3}$: $2b/T=1600\,\mathrm{N/m}$. Catalog $400$ passes; $2500$ fails. $T=5\times10^{-3}$: $2b/T=320$. Both $400$ and $2500$ fail the device-only bound. Human damper $b_h$ is *not* in this inequality.
+> 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle.
+
 ## 한국어
+
+> [!note] 처음이라면 · First pass
+> §7에서 P3 루프를 그리고, §2에서 P3의 $b$로 벽 경계를 유도한 뒤 과제를 풀어라. §3–§6은 논문의 강성 천장이나 필터에 이름이 필요할 때 연다.
 
 ### 1. 햅틱 렌더링은 hard real-time feedback loop다
 
@@ -139,6 +259,8 @@ $$K\le\frac{2b}{T}$$
 를 얻는다. 후방차분 가상 댐핑 $B$를 쓸 때, 모델 가정 아래의 고전적인 1자유도 수동성 조건은 $b>KT/2+|B|$다. 이것은 보편적인 하드웨어 정격이 아니다. 마찰·지연·양자화·비선형 기구학·포화·사람의 파지·구현 세부가 경계를 바꾼다.
 
 예제: 물리 댐핑 $b=0.1$ N·s/m, $T=1$ ms이면 단순 경계는 $K\le200$ N/m다. $T$를 절반으로 줄이면 이 경계는 두 배가 된다. 디지털 댐핑을 더하는 것은 물리적 소산을 자유롭게 대체하지 못하는데, 그 추정값 자체가 늦기 때문이다.
+
+**P3**의 카탈로그 댐퍼는 $b=0.8\,\mathrm{N{\cdot}s/m}$이다. 햅틱 주기 $T=10^{-3}\,\mathrm{s}$에서 같은 식은 $K\le 1600\,\mathrm{N/m}$을 준다. 카탈로그 $k_w=400$은 안에 있고, $k_w=2500$은 아니다. $T=5\times10^{-3}$이면 경계는 $320\,\mathrm{N/m}$이 되어 카탈로그 벽도 실패한다. 이 부등식의 $b$는 *장치* 댐퍼다. 사람 댐퍼 $b_h$는 더 단단한 벽을 주장하는 데 써도 되는 항이 아니다.
 
 이 경계들은 보통 하드웨어 전에 시뮬레이션으로 확인하는데, 그 확인에도 함정이 있다.
 
@@ -202,5 +324,94 @@ Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 �
 5. 강성을 점진적으로 올리고, 지속 진동·포화·과열·위험한 힘에서 멈춘다.
 6. 수치 불안정, 기계 공진, 마찰 limit cycle, 충돌/proxy 불연속을 구분한다.
 
+### 7. 계산: P3의 사람–장치–벽 루프
+
+이것이 과제의 대상이다. 과제는 이 그림을 그리고, 특성다항식을 쓰고, 한 스텝 전진하라고 한다. 카탈로그 숫자로 여기서 먼저 하면 과제는 손잡이를 바꾸는 일이지 첫 유도가 아니다.
+
+장치 **P3**([[02-foundations/lab-plants|0.6]]): $m=0.04$, $b=0.8$, $k_h=400$, $b_h=8$, $k_w=400$, $x_w=0.030$. 적분기: [[02-foundations/lab-kernel|0.65]]. 캡스턴과 엔코더: [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
+
+사람은 목표 위치 $x_d$에 붙은 임피던스이고, $x_d$를 상수로 두므로 $\dot x_d=0$:
+
+$$F_h=k_h(x_d-x)+b_h(0-\dot x).$$
+
+장치는 사람 힘, 액추에이터 힘, 물리 댐핑의 합이 미는 질량–댐퍼다:
+
+$$m\ddot x+b\dot x=F_h+F_a.$$
+
+벽은 선형 스프링이 아니라 스위치다:
+
+$$F_a=\begin{cases}-k_w(x-x_w),&x>x_w,\\0,&x\le x_w.\end{cases}$$
+
+```mermaid
+flowchart LR
+    Xd["xd"] --> Hum["human kh, bh"]
+    X["x"] --> Hum
+    V["v"] --> Hum
+    Hum --> Fh["Fh"]
+    X --> Sw{"x > xw?"}
+    Sw -->|yes| Fa["Fa = -kw(x-xw)"]
+    Sw -->|no| Z["Fa = 0"]
+    Fh --> Sum["Σ"]
+    Fa --> Sum
+    V --> Damp["-b v"]
+    Damp --> Sum
+    Sum --> Inv["÷ m"]
+    Inv --> A["a"]
+```
+
+$F_a$에서 $x_d$로 가는 화살표는 없다. 사람이 핸들을 어디에 두고 싶은지를 정하고, 벽은 $x$만 민다.
+
+**지속 접촉**에서 스위치는 켜진 채라 폐루프 ODE가 선형이다:
+
+$$m\ddot x+(b+b_h)\dot x+(k_h+k_w)x = k_h x_d + k_w x_w$$
+
+($x_d$가 상수면 우변도 상수). 특성다항식은
+
+$$0.04 s^2 + 8.8 s + 800 = 0 \quad\Leftrightarrow\quad s^2 + 220 s + 20000 = 0.$$
+
+고유진동수 $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$. 감쇠비 $\zeta=220/(2\cdot 141)=0.78$ — 과소감쇠, 두어 번 울리고 정착하지 채터가 아니다. 이 $\zeta$는 $b_h$를 *포함한다*. §2의 수동성 경계는 그렇지 않다.
+
+**평형**, 속도 0, 계산용 목표 $x_d=0.032\,\mathrm{m}$(벽 안 2 mm): 두 스프링이 신장을 나눈다.
+
+$$k_h(0.032-x^\ast)=k_w(x^\ast-0.030) \Rightarrow x^\ast=0.031\,\mathrm{m},$$
+
+벽 힘 $0.4\,\mathrm{N}$. 과제는 같은 대수를 $x_d=0.035$로 반복한다. 숫자 하나.
+
+**명시적 오일러 한 스텝**, 템플릿 빈칸의 검산. $x=0.020$(아직 자유), $v=0$, $x_d=0.035$, $T=10^{-3}$, 카탈로그 $k_w$. 벽은 꺼져 $F_a=0$.
+
+$$F_h=400\cdot 0.015=6.0\,\mathrm{N},\qquad a=6.0/0.04=150\,\mathrm{m/s}^2.$$
+
+명시적 오일러는 위치에 *이전* 속도를 쓴다([[02-foundations/lab-kernel|0.65]]):
+
+$$v\leftarrow 0.150,\qquad x\leftarrow 0.020.$$
+
+다음 스텝: $F_h=4.80$, $a=117$, $v\leftarrow 0.267$, $x\leftarrow 0.02015$. 채운 템플릿이 여기서 어긋나면 플롯 전에 빈칸이 틀린 것이다.
+
+과제의 네 조건 스윕은 같은 루프에서 손잡이 하나만 바꾼다. §2가 장치 댐퍼가 어느 것을 갚을 수 있는지 이미 말했다.
+
 > [!question]- 스스로 점검 · 정답
 > **더 매끄러운 속도 신호가 가상 벽을 더 불안정하게 만들 수 있는 이유는?** 필터가 noise를 줄이는 대신 phase lag를 만든다. 늦은 damping은 운동 방향이 바뀐 뒤 작용해 해당 주파수에서 에너지를 제거하지 않고 넣을 수 있다.
+
+### 과제 · Problem set
+
+Tier A. **P3**, 이 페이지, [[02-foundations/lab-kernel|0.65]], [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. 영어 절의 템플릿을 채워라. 루프를 다시 쓰지 마라.
+
+사람은 임피던스, 목표 $x_d$는 상수라 $\dot x_d=0$:
+
+$$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
+
+장치 $m\ddot x+b\dot x=F_h+F_a$. 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$.
+
+1. **그리기.** 신호 $x_d$, $x$, $\dot x$, $F_h$, $F_a$와 $m$으로 들어가는 합산점을 가진 블록선도. 벽의 한쪽 스위치. 이 그림이 과제 대상이다.
+2. **유도.** (a) 지속 접촉에서 $s$의 특성다항식. 카탈로그 $k_w=400$의 고유진동수와 감쇠비. (b) $x_d=0.035\,\mathrm{m}$의 평형 $x^\ast$. (c) $T=10^{-3}$과 $T=5\times10^{-3}$에서 $K\le 2b/T$. 카탈로그 $k_w$와 $k_w=2500$이 각각 통과하는가? 경계는 장치 댐퍼 $b$이지 $b_h$가 아니다.
+3. **실행.** 영어 템플릿의 `?`를 채운다. 명시적 오일러. 네 조건, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, 벽을 점선으로:
+   - A. 자유: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
+   - B. 접촉: $x_d=0.035$, $k_w=400$, $T=10^{-3}$
+   - C. 느린 샘플, 단단한 벽: $x_d=0.035$, $k_w=2500$, $T=5\times10^{-3}$
+   - D. 빠른 샘플, 같은 벽: $x_d=0.035$, $k_w=2500$, $T=10^{-3}$
+   추가: D에서 $b_h=0$. 각각 벽을 안 닿는지, 정착하는지, 채터하는지, 그리고 $\sum T F_a v$의 부호.
+
+> [!tip]- 정답 · Solutions
+> 1. $x_d$는 $(x,\dot x)$가 다른 포트인 스프링–댐퍼로 들어가 $F_h$가 되고, $F_a$ 및 $-b\dot x$와 더해 $1/m$으로 간다. 벽은 $x>x_w$일 때만 $F_a$를 낸다. $F_a$에서 $x_d$로 가는 길은 없다.
+> 2. (a) $0.04 s^2+8.8 s+800=0$, 즉 $s^2+220s+20000=0$. $\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$. (b) $x^\ast=0.0325\,\mathrm{m}$, 벽 힘 $1.0\,\mathrm{N}$. (c) $T=10^{-3}$이면 $2b/T=1600$: $400$ 통과, $2500$ 실패. $T=5\times10^{-3}$이면 $320$: 둘 다 실패. $b_h$는 이 부등식에 없다.
+> 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다 — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다.

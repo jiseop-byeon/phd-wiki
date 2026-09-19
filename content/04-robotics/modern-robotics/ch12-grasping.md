@@ -2,7 +2,7 @@
 title: "MR Ch.12 — Grasping & Manipulation"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -57,6 +57,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > 2. Form closure must block every direction using geometry alone, without the "free" tangential directions that friction cones supply — so it needs more contacts (at least 4 in the plane, 7 in space for frictionless point contacts). Those bounds are first-order results; curvature is a second-order effect and can immobilize a planar body with two contacts.
 > 3. For the planar two-point model, the line joining the contacts lies inside both friction cones. This is not by itself a spatial force-closure test for two hard point contacts; a spatial parallel-jaw argument needs a soft-finger contact model or another source of torsional resistance.
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: P2's tool holds the panel ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which number is the claim that a friction coefficient is an *angle*?
+2. **Falsify.** What contact observation would falsify quoting “at least 4 planar contacts” as a hard lower bound?
+3. **Task.** Two fingers squeeze the panel along $\pm x$ with $\mu=0.5$. What does force closure still need that form closure would demand extra contacts for?
+
+> [!tip]- Solutions
+> 1. $\mu=0.5\Rightarrow\alpha=\tan^{-1}0.5\approx26.6^\circ$ — that conversion *is* the angle claim.
+> 2. Curved surfaces immobilizing a planar body with two contacts (second-order form closure, named on this page). The 4/7 counts are first-order.
+> 3. Friction supplies tangential directions, so two opposing contacts can resist a bounded vertical load (preload $\times\mu$). Form closure would need more frictionless normals; two hard points still cannot resist torsion about the squeeze axis.
+
 ### Continue beyond this chapter
 
 [[04-robotics/contact-force-tactile|Contact, Force & Tactile Interaction]] extends grasping to contact modes, force/impedance control, tactile sensing, deformable materials, and sim-to-real evaluation.
@@ -100,6 +113,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > 3. 평면 2점 모델에서는 두 접촉점을 잇는 선이 두 마찰 원뿔 안에 있어야 한다. 이것만으로
 > 공간의 hard point 접촉 둘이 force closure인 것은 아니다. 공간 평행 그리퍼에는 soft-finger
 > 모델이나 다른 비틀림 저항이 필요하다.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: P2의 도구가 패널을 잡는다([[02-foundations/lab-plants|0.6]]).
+
+1. **주장.** 마찰 계수가 *각도*라는 주장은 어느 숫자인가?
+2. **반증.** “평면 접촉 최소 4개”를 단단한 하한으로 인용하는 주장을 깨는 접촉 관찰은?
+3. **과제.** 손가락 둘이 $\mu=0.5$로 패널을 $\pm x$에서 쥔다. force closure가 아직 필요로 하고 form closure가 접촉을 더 요구하는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. $\mu=0.5\Rightarrow\alpha\approx26.6^\circ$ — 그 환산이 곧 각도 주장이다.
+> 2. 곡면이 평면 물체를 접촉 둘로 가두는 2차 form closure(이 페이지). 4/7은 1차 결과다.
+> 3. 마찰이 접선 방향을 주므로 대향 접촉 둘이 유계 수직 하중을 버틸 수 있다(예압 $\times\mu$). form closure는 마찰 없는 법선이 더 필요하고, hard point 둘은 쥐는 축 둘레 비틀림을 막지 못한다.
 
 ### 이 장 다음으로
 

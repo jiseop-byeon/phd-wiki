@@ -34,6 +34,18 @@ Planning asks how a robot should choose a feasible sequence of future states and
 
 A planner may produce a path that a trajectory generator times ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] — time scaling, via points, time-optimal scaling) and a controller tracks. When the plan lives in task space but the robot is commanded in joint space, [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] sits between them, and its multimodality is a planning problem in miniature. In learned systems, a policy can collapse these boundaries, but the physical requirements do not disappear.
 
+**The five, as mathematical objects.** Let $\mathcal{C}$ be the configuration space, $\mathcal{X}$ the state space and $\mathcal{U}$ the input space (all three are defined in §2).
+
+- A **path** is a continuous map from a normalised parameter $s$ to configurations, with both ends fixed. The parameter is not time, so a path says only *where*.
+$$\sigma:[0,1]\to\mathcal{C},\qquad \sigma(0)=q_{\text{start}},\quad \sigma(1)=q_{\text{goal}}$$
+- A **trajectory** adds timing: the state, and usually the input, as functions of time over a duration $T$. Every trajectory traces a path, but one path has infinitely many trajectories, since any increasing time scaling $s(t)$ with $s(0)=0$ and $s(T)=1$ gives another ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]]).
+$$x:[0,T]\to\mathcal{X},\qquad u:[0,T]\to\mathcal{U}$$
+- A **plan** is a finite sequence of decisions $(a_0,\dots,a_{K-1})$, whether symbolic actions, waypoints or inputs, computed *before* execution for one start state.
+- A **policy** is a rule evaluated *during* execution. It maps whatever information $I_t$ is available (the state, an observation history, a belief) to an action, $a_t=\pi(I_t)$, or to a distribution $\pi(a_t\mid I_t)$ ([[02-foundations/rl-basics|RL Basics §1]]).
+- A **controller** is a feedback law, usually fast, that computes the actuator command from the measured state and a reference, $u_t=\kappa(x_t,\,x^{\text{ref}}_t)$.
+
+The plan/policy split matters most: a plan is one answer for one start, and a policy is an answer for every state it may meet. Example: the straight segment from $(0,0)$ to $(1,0)$ m is one path. Driving it at a constant 0.5 m/s is a trajectory with $T=2$ s, and driving it at 1 m/s is a different trajectory, with $T=1$ s, on the same path. **Non-example:** a list of waypoints without times is a path or a plan, not a trajectory, so it cannot be checked against velocity or acceleration limits until something times it.
+
 ### 2. Spaces and constraints
 
 - **Workspace:** physical positions occupied by the robot and obstacles.
@@ -43,6 +55,20 @@ A planner may produce a path that a trajectory generator times ([[04-robotics/mo
 - **Task space:** variables directly tied to the task, such as end-effector pose.
 
 Collision-free in workspace does not imply joint, torque, velocity, stability, or contact feasibility.
+
+**Configuration space and its free part, defined.** A **configuration** $q$ is a complete specification of the position of every point of the robot, and the **configuration space** $\mathcal{C}$ is the set of all configurations. Its dimension is the number of degrees of freedom, and its shape can be curved: a 2R arm's is a torus ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]]). Let $\mathcal{W}$ ($\mathbb{R}^2$ or $\mathbb{R}^3$) be the workspace, $\mathcal{O}\subset\mathcal{W}$ the region occupied by obstacles, and $\mathcal{A}(q)\subset\mathcal{W}$ the region the robot's body occupies at configuration $q$. Every configuration is either in collision or not, so $\mathcal{C}$ splits into two parts:
+
+- the **C-obstacle**, every configuration at which the body overlaps an obstacle,
+$$\mathcal{C}_{\text{obs}}=\{\,q\in\mathcal{C} : \mathcal{A}(q)\cap\mathcal{O}\neq\emptyset\,\}$$
+- and the **free space**, everything else, since the two parts are complements.
+$$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
+
+The **path-planning problem** is then: given $q_{\text{start}},q_{\text{goal}}\in\mathcal{C}_{\text{free}}$, find a path $\sigma$ (§1) with $\sigma(s)\in\mathcal{C}_{\text{free}}$ for every $s\in[0,1]$, or report that none exists. The **state space** $\mathcal{X}$ adds velocities, $x=(q,\dot q)$, so an $n$-dof robot has a $2n$-dimensional state. The **input space** $\mathcal{U}$ is the set of admissible commands, for example $|u_i|\le u_{\max}$ for each actuator. Workspace and task space are sets of physical positions or poses, while $\mathcal{C}$ is a set of robot configurations, which is why the figure below needs two panels.
+
+> [!example] Worked example · 계산 예제
+> A disc robot of radius 0.5 m that translates without rotating has configuration $q=(x,y)$, its centre, so $\mathcal{C}=\mathbb{R}^2$. With a square obstacle $[1,2]\times[1,2]$ m, $q\in\mathcal{C}_{\text{obs}}$ exactly when the centre is closer than 0.5 m to the square. $q=(0.6,1.5)$ is 0.4 m from it, so it is in $\mathcal{C}_{\text{obs}}$ even though the workspace *point* $(0.6,1.5)$ is empty. $q=(0.4,1.5)$ is 0.6 m away and free.
+>
+> **Non-example:** the C-obstacle is not the square grown into the box $[0.5,2.5]^2$. Its corners are rounded, because it is the square's Minkowski sum with the disc. So $q=(0.6,0.6)$, inside that box, is 0.566 m from the corner $(1,1)$ and free, while $(0.7,0.7)$, at 0.424 m, is not. This is the inflation of the list below, and it is exact only because the robot is a disc.
 
 **How that space is actually stored.** Two pages of this wiki send you here for occupancy and
 cost representations, so they belong in this section rather than in a system paper's
@@ -58,12 +84,17 @@ appendix.
   which is why implementations add an explicit **clamping** range (proposed by Yguel et al. 2007 and adopted by OctoMap) so
   the map can still adapt when the world changes. A cell reads as *free*, *occupied*, or
   **unknown**, and the third is the one beginners drop: unknown is not free, and the difference is what exploration is about.
+  **The update, written out.** Let $m_i=1$ mean "cell $i$ is occupied" and $p_0$ be the prior occupancy probability. Each reading $z_t$ adds its own evidence and the prior is subtracted once, so it is not counted again with every reading:
+  $$\ell_t(i)=\ell_{t-1}(i)+\log\frac{p(m_i=1\mid z_t)}{1-p(m_i=1\mid z_t)}-\log\frac{p_0}{1-p_0},\qquad p=1-\frac{1}{1+e^{\ell}}$$
+  The middle term is the **inverse sensor model**, the occupancy probability that this one reading alone implies, and the second formula converts log-odds back to a probability. With $p_0=0.5$ the prior term is $0$. Two OctoMap hits then give $\ell=1.70$ and $p=0.846$, and one miss ($-0.4$) after them gives $\ell=1.30$ and $p=0.786$. Clamping bounds $\ell$ to an interval $[\ell_{\min},\ell_{\max}]$ after every update.
 - **Inflation** — a planner that treats the robot as a point (the figure below) has to grow
   the obstacles instead. Inflating occupied cells by the robot radius produces a C-space
   obstacle directly on the grid **for a circular robot** — for any other footprint it is an
   approximation, which is why a stack like Nav2 still runs a separate footprint collision
   check. Adding a decaying cost outside that radius produces a margin the planner prefers not
-  to enter.
+  to enter. As a function of a cell's distance $d$ to the nearest obstacle cell, with inscribed robot radius $r$ and decay rate $\alpha>0$, ROS costmaps use an exponential:
+  $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
+  so a cell within the inscribed radius means certain collision for a robot centred there, the cost decays with distance outside it, and cells beyond the inflation radius $d_{\text{infl}}$ cost nothing. With $\alpha=3$ /m, a cell 0.2 m outside the inscribed radius costs $e^{-0.6}=0.55$ of the inscribed value; raising $\alpha$ narrows the margin.
 - **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
   Cost combines inflation with whatever else the robot should avoid: unknown space, rough
   terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
@@ -73,7 +104,7 @@ appendix.
   different robots. What that page rejects is the plain occupancy grid, the geometric predicate.
 - **Layered costmaps** — production stacks keep several layers (static map, obstacles, inflation,
   sensor-specific) and compose them, so that clearing a stale obstacle does not erase the map.
-- **Frontier** — a boundary cell between *known free* and *unknown*. **Frontier exploration**
+- **Frontier** — a boundary cell between *known free* and *unknown*: precisely, a cell that is itself known free and has at least one unknown neighbour (4- or 8-connected). **Frontier exploration**
   is the classic answer to "where next": drive to the nearest frontier, and the known region
   grows until no frontier remains. Some semantic-navigation methods keep this candidate set
   and let the learned part supply only a *score* over it — [[04-robotics/semantic-language-navigation|19. §3]]'s
@@ -100,6 +131,15 @@ The local layer is where the classical names live:
 | **Elastic band** | Deforms a *path* under an internal contraction force and an external obstacle repulsion, with no notion of time |
 | **Timed elastic band** | The descendant that adds the time intervals its name refers to |
 | **Sampling-based MPC** (the family [[01-canonical-papers/notes/9-navigation/badgr\|BADGR]] uses) | Samples many action sequences around a running estimate, rolls each forward through a model, refits the estimate by a **reward-weighted average** over the samples rather than taking the single best, and executes its first action |
+
+**Two of those rows, written out.**
+
+- **Dynamic window** (Fox, Burgard & Thrun 1997). Let $(v_c,\omega_c)$ be the current forward and turning velocities, $\dot v_{\max},\dot\omega_{\max}$ the acceleration limits and $\Delta t$ the cycle time. The candidates must satisfy three conditions at once. They must be velocities the robot can have at all ($V_s$). They must be reachable within one cycle, which is a small box because accelerations are bounded:
+$$V_d=\{(v,\omega): |v-v_c|\le\dot v_{\max}\Delta t,\ |\omega-\omega_c|\le\dot\omega_{\max}\Delta t\}$$
+  And they must be **admissible**, meaning the robot can still brake to a stop before the nearest obstacle on that arc, $v\le\sqrt{2\,\mathrm{dist}(v,\omega)\,\dot v_b}$ with braking deceleration $\dot v_b$ (and likewise for $\omega$). Each pair in $V_s\cap V_d\cap V_a$ is scored by a weighted sum of heading toward the goal, clearance and speed, and the best pair is executed for one cycle. Example: $v_c=0.5$ m/s, $\dot v_{\max}=0.5$ m/s² and $\Delta t=0.25$ s give $v\in[0.375,0.625]$ m/s. An obstacle 0.5 m along the arc with $\dot v_b=0.5$ m/s² caps $v$ at $\sqrt{0.5}=0.71$ m/s, so here the window, not the obstacle, is the binding limit.
+- **Reward-weighted average.** Sample $K$ action sequences $u^{(k)}$ around the current estimate $\bar u$, roll each through the model to a return $R_k$, and refit:
+$$\bar u\leftarrow\sum_{k=1}^{K}w_k\,u^{(k)},\qquad w_k=\frac{\exp(R_k/\lambda)}{\sum_{j=1}^{K}\exp(R_j/\lambda)}$$
+  The weights are positive and sum to one, so every sample contributes in proportion to how good it was, and the temperature $\lambda>0$ sets how sharply they favour the best ($\lambda\to0$ recovers "take the single best"). Example: two samples whose first actions are $0.4$ and $0$, with returns $1$ and $0$ and $\lambda=1$, get weights $0.731$ and $0.269$, so the new first action is $0.292$.
 
 §6 gives the
 optimization view of the same layer. In a classical navigation stack the learned component is usually the local layer, with the
@@ -137,6 +177,10 @@ $$f(n)=g(n)+h(n)$$
 
 Dijkstra uses no informative heuristic. A* is optimal on a graph under the appropriate admissibility/consistency conditions. *Admissible* means $h$ never **over**estimates the true remaining cost, so the estimate is optimistic; *consistent* means it additionally never drops by more than the cost of the edge just traversed, so the estimates agree with each other along a path. This theorem does not guarantee that a discretized graph represents every feasible continuous robot motion.
 
+In symbols, with $h^*(n)$ the true cheapest cost from $n$ to the goal and $c(n,n')$ the cost of the edge $n\to n'$, the two conditions are:
+$$\text{admissible: } 0\le h(n)\le h^*(n)\ \ \forall n,\qquad \text{consistent: } h(n)\le c(n,n')+h(n')\ \ \forall (n,n'),\ \ h(\text{goal})=0$$
+Consistency implies admissibility, because summing its inequality along an optimal path from $n$ gives $h(n)\le h^*(n)$. Dijkstra is the case $h\equiv0$, which is both. **Optimal** here means that the returned path's cost equals the least cost $C^*$ over all paths in the graph. The proofs, a counterexample for each condition and an implementation are in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §6]].
+
 **Think of the frontier as unfinished routes.** Each queued node represents a route that has reached somewhere but has not yet been explored onward. g records what that route has already cost. h estimates the remaining work, and f decides which unfinished route deserves attention next. Expanding a node means considering its outgoing edges; it does not mean the robot physically moves there.
 
 If a cheaper route reaches an already encountered node, its best-known cost and parent may need updating. This bookkeeping is part of the algorithm, not a detail that can be ignored when quoting optimality. For nonnegative edge costs, consistency makes heuristic values cooperate with the graph's edges; admissibility alone requires appropriate handling of revisits.
@@ -159,7 +203,29 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 | Feedback / potential field | attractive-to-goal plus repulsive-from-obstacle fields; navigation functions (potentials constructed to have a single minimum, at the goal) | Produce an action for *every* state rather than one path — cheap and reactive, but a plain potential field has local minima that trap the robot short of the goal |
 | Uncertain planning | MDP, POMDP, belief space | Choose actions while accounting for uncertain state/outcomes |
 
-**Probabilistic completeness** means the probability of finding a solution approaches one with increasing computation when a robust solution exists under the method's assumptions. It does not mean fast success. **Asymptotic optimality** concerns convergence toward an optimum with increasing samples, not the quality available under a real-time budget.
+**The potential field, written out.** A potential field is a scalar function $U:\mathcal{C}\to\mathbb{R}$ whose downhill direction is the command, $\dot q=-\nabla U(q)$. It is built from an attractive part and a repulsive part:
+$$U(q)=\tfrac12 k_a\lVert q-q_{\text{goal}}\rVert^2+\begin{cases}\tfrac12 k_r\big(\tfrac1{\rho(q)}-\tfrac1{\rho_0}\big)^2 & \rho(q)\le\rho_0\\ 0 & \rho(q)>\rho_0\end{cases}$$
+Here $k_a,k_r>0$ are gains, $\rho(q)$ is the distance to the nearest obstacle and $\rho_0$ is the range beyond which obstacles are ignored, so the robot slides toward the goal and is pushed back ever harder as $\rho\to0$. A **navigation function** (Rimon & Koditschek 1992) is a potential that satisfies four further conditions: it is smooth on the free space, has a *unique* minimum at the goal, is uniformly maximal on every obstacle boundary, and has only non-degenerate critical points. Its gradient therefore reaches the goal from almost every start.
+
+> [!example] Worked example · 계산 예제
+> Goal at the origin, a point obstacle at $(1,0)$, and $k_a=k_r=\rho_0=1$. On the segment between them the attractive force at $x$ is $-x$ and the repulsive force is $(1/\rho-1)/\rho^2$ with $\rho=x-1$. They cancel at $x=1.618$ ($\rho=0.618$), so a robot released at $(2,0)$ comes to rest there, short of the goal.
+>
+> **Non-example of a local minimum:** that point is a *saddle*. Moving sideways lowers the potential, $\partial^2U/\partial y^2=1-1.618/0.618=-1.62<0$, so any perturbation lets the robot slide around the obstacle. A concave obstacle such as a U-shaped wall creates a true minimum, and that is the trap the table warns of.
+
+**Completeness, in four strengths.** These words state what a planner guarantees about *finding* a solution, and each has an exact meaning.
+
+- **Complete**: for every problem instance, it returns a solution in finite time when one exists and reports failure in finite time when none does. Exact cell decomposition achieves this in low dimensions; almost nothing practical does in high dimensions.
+- **Resolution complete**: complete *relative to a discretisation*. If a solution exists in the grid or lattice at the chosen resolution, the search finds it, and otherwise it reports failure. A* on a grid is resolution complete, but a passage narrower than a cell can be missed, so failure at one resolution proves nothing about the continuous problem.
+- **Probabilistically complete**: when a *robust* solution exists, the probability of having found one approaches one as the number of samples $n$ grows,
+$$\lim_{n\to\infty}P\big(\text{a solution is found within } n \text{ samples}\big)=1$$
+  where robust (or $\delta$-clear) means a path whose $\delta$-neighbourhood lies in $\mathcal{C}_{\text{free}}$ for some $\delta>0$, since a path that only grazes obstacles has probability zero of being sampled. The method cannot report "no solution": failure after any finite $n$ is still possible. PRM and RRT have this property. It does not mean fast success.
+- **Asymptotically optimal**: the cost $c_n$ of the best solution after $n$ samples converges to the optimal cost $c^*$ with probability one. This is a statement about the limit, so it says nothing about the quality available under a real-time budget. RRT\* and PRM\* have it; plain RRT does not (§5.5).
+$$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
+
+> [!example] Worked example · 계산 예제
+> In a simplified model, suppose every solution passes through a narrow passage that fills 1% of $\mathcal{C}$, and the planner succeeds once one uniform sample lands inside it. Each sample misses with probability $0.99$, independently, so the failure probability after $n$ samples is $0.99^n$: $0.366$ at $n=100$, $0.0066$ at $n=500$, and $4.3\times10^{-5}$ at $n=1000$. It tends to zero, which is probabilistic completeness, yet a third of the 100-sample runs fail, which is why the guarantee says nothing about speed.
+>
+> **Non-example of completeness:** a grid of 10 cm cells can return "no path" on a map whose only gap is 5 cm wide, because every cell that straddles the gap is marked occupied. The answer is correct for the grid, as resolution completeness promises, and wrong for the world.
 
 
 
@@ -190,7 +256,9 @@ A robot that cannot move in every direction at every speed needs a planner whose
 
 **Why a geometric path is not enough.** Three kinds of constraint break the straight-segment assumption:
 
-- **Nonholonomic.** A car has no sideways velocity and a minimum turning radius, so a path with a corner or a sideways shift is undrivable as written, even though the car can still reach every pose ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] explains why).
+- **Nonholonomic.** A car has no sideways velocity and a minimum turning radius, so a path with a corner or a sideways shift is undrivable as written, even though the car can still reach every pose ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] explains why). Formally, a nonholonomic constraint is a velocity constraint $A(q)\dot q=0$ that cannot be integrated into a constraint on $q$ alone. For a car or unicycle with heading $\theta$ it reads as follows, because the velocity must point along the heading:
+$$\dot x\sin\theta-\dot y\cos\theta=0$$
+  At $\theta=0$, forward motion $(\dot x,\dot y)=(1,0)$ gives $0$ and is allowed, while sideways motion $(0,1)$ gives $-1$ and is forbidden. A **holonomic** constraint $g(q)=0$ removes a dimension from $\mathcal{C}$; a nonholonomic one removes directions of motion but no reachable configurations.
 - **Dynamic.** An excavator boom carries inertia and a crane's suspended load swings, so the plan must also keep accelerations low enough that the machine stays stable and the load does not oscillate.
 - **Bounds.** Velocity, acceleration, and actuator limits hold even for a robot that can move in any direction.
 
@@ -273,6 +341,19 @@ A common formulation is the trajectory-optimization program of [[02-foundations/
 
 $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text{s.t. dynamics, bounds, and collision constraints.}$$
 
+**Every symbol.** $x_t\in\mathbb{R}^n$ is the state at step $t$ and $u_t\in\mathbb{R}^m$ the input. $N$ is the **horizon**, the number of steps. The **running** (or **stage**) **cost** $\ell(x_t,u_t)$ is a scalar paid at every step, such as distance to the goal or control effort. The **terminal cost** $\ell_f(x_N)$ is paid once, on the final state, and is often written $\phi(x_T)$. Their sum is the objective $J$, so the program minimises the total cost of one proposed future. The constraints have three named kinds:
+
+- **dynamics** $x_{t+1}=f(x_t,u_t)$ for every $t$, with $x_0$ fixed to the current state;
+- **bounds** such as $u_{\min}\le u_t\le u_{\max}$;
+- **collision constraints** such as $\mathrm{sd}(x_t)\ge d_{\text{safe}}$, where $\mathrm{sd}$ is the signed distance to the nearest obstacle.
+
+This is the general program of [[02-foundations/optimization|4. Optimization §1]] with the decision variable spread over time, and its linear-quadratic special case, written as a QP, is in [[02-foundations/optimization|4. Optimization §5]].
+
+> [!example] Worked example · 계산 예제
+> Take scalar dynamics $x_{t+1}=x_t+u_t$ with $x_0=1$, $N=2$, $\ell=x_t^2+u_t^2$ and $\ell_f=x_N^2$. The inputs $(-0.5,-0.5)$ give the states $1, 0.5, 0$ and $J=(1+0.25)+(0.25+0.25)+0=1.75$. The inputs $(-1,0)$ reach the goal a step sooner, with states $1,0,0$, but $J=(1+1)+(0+0)+0=2$, since one large input costs more than two half-size ones. Doing nothing, $(0,0)$, gives $J=1+1+1=3$.
+>
+> **Non-example of a candidate:** the states $1,0,0$ paired with the inputs $(0,0)$ would cost only $1$, but they violate $x_1=x_0+u_0$, so they are not a trajectory at all. Ruling that out is the job of the dynamics constraint.
+
 - **Given:** initial state, model, goal, constraints, and cost.
 - **Optimized:** state and/or input sequence.
 - **Runtime:** offline planning or repeated online as MPC.
@@ -296,12 +377,22 @@ MPC makes this formulation into feedback: execute the first input, observe the n
 
 A symbolic instruction such as `pick(block)` may be logically valid yet geometrically impossible because no collision-free grasp exists. TAMP alternates or jointly reasons over discrete actions and continuous feasibility.
 
-With partial observability, the planning state becomes a **belief**: a probability distribution over the hidden state, updated after every action and observation. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward.
+**Symbolic task planning, defined.** A classical (STRIPS-style) planning problem has four parts. There is a set of Boolean **propositions**, facts such as `holding(block)`. A **state** $s$ is the set of propositions currently true, with an initial state $s_0$ and a **goal** $G$, the set of propositions that must end up true. And there are **operators**, each with a precondition set $\mathrm{pre}(a)$, an add list $\mathrm{add}(a)$ and a delete list $\mathrm{del}(a)$. An operator is applicable in $s$ when $\mathrm{pre}(a)\subseteq s$, and applying it replaces exactly the facts it names, so the successor state is
+$$s'=\big(s\setminus\mathrm{del}(a)\big)\cup\mathrm{add}(a)$$
+A plan is a sequence of applicable operators after which $G\subseteq s$. Example, simplified: `pick(block)` with pre $\{$`handempty`, `clear(block)`$\}$, del $\{$`handempty`$\}$ and add $\{$`holding(block)`$\}$ takes $\{$`handempty`, `clear(block)`$\}$ to $\{$`clear(block)`, `holding(block)`$\}$. **Non-example:** nothing in that state records where the block is or whether a collision-free grasp exists, so a valid symbolic plan is not yet an executable one. That gap is what TAMP fills.
+
+**MDP and POMDP, as tuples.** An **MDP** is $(\mathcal{S},\mathcal{A},T,R,\gamma)$: a state set, an action set, a transition kernel $T(s'\mid s,a)$, a reward $R(s,a)$ and a discount $\gamma\in[0,1]$, together with the Markov property that the next state depends only on the current state and action. Its complete definition is [[02-foundations/rl-basics|RL Basics §1]].
+
+With partial observability, the planning state becomes a **belief**: a probability distribution over the hidden state, updated after every action and observation. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward. Written as a tuple, a **POMDP** is
+$$(\mathcal{S},\mathcal{A},\Omega,T,Z,R,\gamma,b_0)$$
+which adds three components to the MDP, because the state is no longer seen: an **observation space** $\Omega$, an **observation model** $Z(o\mid s',a)$ giving the probability of observing $o$ when action $a$ has led to state $s'$, and an **initial belief** $b_0$. The belief $b(s)$ is the posterior probability of state $s$ given every action and observation so far. After taking $a$ and observing $o$, Bayes' rule updates it:
+$$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
+The sum is the **prediction**, which pushes the old belief through the dynamics; the factor $Z$ is the **correction**, which weights each state by how well it explains $o$; and $\eta$ is the normaliser that makes $b'$ sum to one. This is the Bayes filter of [[04-robotics/state-estimation-slam|3. State Estimation §4]] with a chosen action attached. Since the belief summarises the whole history, a POMDP is an MDP whose states are beliefs, with expected reward $\rho(b,a)=\sum_s b(s)\,R(s,a)$. **Non-example:** the latest observation alone is not a Markov state. The same "open" reading moves a belief of $0.5$ to $0.8$ but a belief of $0.8$ to $0.94$ in the example below.
 
 > [!example] Worked example · 계산 예제
 > A robot must go through a door it cannot see clearly. **Hidden state:** open or closed. **Action:** look again, or drive through. **Transition:** looking changes nothing; driving moves the robot. **Observation:** a sensor reading "open" or "closed". **Observation model:** the reading is right 80% of the time. **Reward:** $+1$ for getting through, $-1$ for hitting a closed door.
 >
-> Start from belief $P(\text{open})=0.5$. One "open" reading gives $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$; a second gives $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$. Driving at belief 0.8 has expected reward $0.8-0.2=0.6$; at 0.94 it is $0.88$. Whether one more look is worth its time is exactly the question a POMDP planner answers, and it is asked about the belief, not the true door.
+> Start from belief $P(\text{open})=0.5$. One "open" reading gives $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$; a second gives $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$. These are the update formula above: looking leaves the state unchanged, so the sum is just $b(s')$, $Z$ is $0.8$ or $0.2$, and $\eta=1/0.5=2$ the first time and $1/0.68=1.47$ the second. Driving at belief 0.8 has expected reward $\rho=0.8\cdot(+1)+0.2\cdot(-1)=0.6$; at 0.94 it is $0.88$. Whether one more look is worth its time is exactly the question a POMDP planner answers, and it is asked about the belief, not the true door.
 
 Exact belief-space planning is often intractable, so papers use approximations, receding horizons, learned values, or contingency policies.
 
@@ -316,7 +407,7 @@ Learned components may provide a heuristic, cost, dynamics/world model, value fu
 
 ### 9. Evaluation and failure modes
 
-Check success rate, collision rate, path/trajectory cost, planning and execution time, optimality gap, constraint violation, replanning rate, robustness to map/state error, and closed-loop execution. Separate planning failure, perception failure, tracking failure, and hardware failure.
+Check success rate, collision rate, path/trajectory cost, planning and execution time, optimality gap (the relative excess cost $(C-C^*)/C^*$, so an 11 m path against a 10 m optimum is a 10% gap), constraint violation, replanning rate, robustness to map/state error, and closed-loop execution. Separate planning failure, perception failure, tracking failure, and hardware failure.
 
 ### After reading
 
@@ -344,6 +435,19 @@ You should be able to:
 > [!tip]- Answers
 > 1. It may require impossible velocity, acceleration, torque, contact, or timing. 2. Robot geometry, joint limits, and multiple configurations for the same task pose. 3. The problem can be nonconvex and sensitive to initialization. 4. End-to-end latency distributions on specified hardware, execution with disturbances/dynamic obstacles, constraint violations and failures—not planner compute time alone. 5. The lattice planner is optimal only over its precomputed primitive set and resolution, so it can miss paths that need headings or curvatures the set lacks; Hybrid A\* is not optimal even on its grid, because it keeps one continuous pose per cell and prunes the rest. 6. The turning-radius limit bounds the curvature $\kappa=\omega/v$, which depends only on the geometry: at half speed the vertex has $v=0.5$ and $\omega=1$, so $\kappa$ is still 2. Only a different curve helps.
 
+### Problem set · 과제
+
+Tier B. First pass. **P2** to the panel ([[02-foundations/lab-plants|0.6]]). Two-node graph. No simulator.
+
+1. **Draw.** Node $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$ (tip at $(2,0)$) and $q_\mathrm{goal}=$ frozen pose (tip at $(1,1)$ on the panel). One edge in $\mathcal{C}$. Label $\mathcal{C}_\mathrm{free}$.
+2. **Derive.** Straight interpolation $\theta(s)=(0^\circ,90^\circ s)$. Tip $x(s)=1+\cos(90^\circ s)$. If the panel is the wall $x=1$, when does the tip first touch? What does A* return on this two-node graph?
+3. **Interpret.** What can this search not promise about contact force at the panel?
+
+> [!tip]- Solutions
+> 1. Two dots in $\mathcal{C}=T^2$, one segment. Free except the goal, which is on the contact set.
+> 2. $x(s)=1$ only at $s=1$, so the open segment is free. A* returns that single edge as a feasible path (cost = whatever you put on it).
+> 3. A path is geometry without force. Search does not know $k_w$, $\mu$, or $F_n$ — those are contact, not $\mathcal{C}_\mathrm{free}$ (Self-check 1: collision-free $\neq$ dynamically / contact feasible).
+
 ### Sources
 
 - [Modern Robotics, Chapter 10](http://modernrobotics.org)
@@ -359,6 +463,9 @@ You should be able to:
 - M. Fliess, J. Lévine, P. Martin, P. Rouchon, "Flatness and defect of non-linear systems: introductory theory and examples," *International Journal of Control* 61(6), 1327–1361, 1995. doi:10.1080/00207179508921959
 - D. Mellinger, V. Kumar, "Minimum snap trajectory generation and control for quadrotors," *IEEE International Conference on Robotics and Automation (ICRA)*, 2520–2525, 2011. doi:10.1109/ICRA.2011.5980409
 - S. M. LaValle, *Planning Algorithms*, Cambridge University Press, 2006 — §14.1 (kinodynamic terminology) and §15.3 (Dubins and Reeds–Shepp curves).
+- D. Fox, W. Burgard, S. Thrun, "The dynamic window approach to collision avoidance," *IEEE Robotics & Automation Magazine* 4(1), 23–33, 1997.
+- E. Rimon, D. E. Koditschek, "Exact robot navigation using artificial potential functions," *IEEE Transactions on Robotics and Automation* 8(5), 501–518, 1992.
+- S. Thrun, W. Burgard, D. Fox, *Probabilistic Robotics*, MIT Press, 2005 — ch.9 (occupancy grid log-odds update).
 
 ## 한국어
 
@@ -397,6 +504,18 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 축소판 계획 문제다. 학습 시스템에서는 정책이 이 경계들을 합칠 수 있지만, 물리적 요구 사항이
 사라지는 것은 아니다.
 
+**다섯 가지를 수학적 대상으로 쓰면.** $\mathcal{C}$를 컨피규레이션 공간, $\mathcal{X}$를 상태 공간, $\mathcal{U}$를 입력 공간이라 하자(셋 다 §2에서 정의한다).
+
+- **path**는 정규화된 매개변수 $s$에서 컨피규레이션으로 가는 연속 사상이고, 양 끝이 고정되어 있다. 매개변수는 시간이 아니므로 path는 *어디로*만 말한다.
+$$\sigma:[0,1]\to\mathcal{C},\qquad \sigma(0)=q_{\text{start}},\quad \sigma(1)=q_{\text{goal}}$$
+- **trajectory**는 시간을 더한다: 지속 시간 $T$ 동안 상태와 (대개) 입력을 시간의 함수로 준다. 모든 trajectory는 path 하나를 그리지만, path 하나에는 trajectory가 무한히 많다. $s(0)=0$, $s(T)=1$인 증가하는 시간 스케일링 $s(t)$마다 다른 trajectory가 나오기 때문이다([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]).
+$$x:[0,T]\to\mathcal{X},\qquad u:[0,T]\to\mathcal{U}$$
+- **plan**은 실행 *전에* 한 시작 상태에 대해 계산한 결정의 유한 열 $(a_0,\dots,a_{K-1})$이다. 기호적 행동일 수도, 웨이포인트나 입력일 수도 있다.
+- **policy**는 실행 *중에* 평가하는 규칙이다. 가용 정보 $I_t$(상태, 관측 이력, belief)를 행동 $a_t=\pi(I_t)$ 또는 분포 $\pi(a_t\mid I_t)$로 사상한다([[02-foundations/rl-basics|RL 기초 §1]]).
+- **controller**는 측정 상태와 기준으로부터 구동기 명령을 계산하는, 대개 빠른 피드백 법칙 $u_t=\kappa(x_t,\,x^{\text{ref}}_t)$이다.
+
+가장 중요한 구분은 plan과 policy다. plan은 한 시작점에 대한 답 하나이고, policy는 만날 수 있는 모든 상태에 대한 답이다. 예: $(0,0)$에서 $(1,0)$ m까지의 직선 구간은 path 하나다. 이를 일정한 0.5 m/s로 달리면 $T=2$ s인 trajectory이고, 1 m/s로 달리면 같은 path 위의 다른 trajectory($T=1$ s)다. **반례:** 시각이 없는 웨이포인트 목록은 path나 plan이지 trajectory가 아니다. 그래서 무언가가 시간을 매겨 주기 전에는 속도·가속도 한계에 비추어 검사할 수 없다.
+
 ### 2. 공간과 제약
 
 - **작업 영역(workspace):** 로봇과 장애물이 차지하는 물리적 위치.
@@ -407,6 +526,20 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 작업 영역에서 충돌이 없다는 것이 관절·토크·속도·안정성·접촉의 실행 가능성을 함의하지
 않는다.
+
+**컨피규레이션 공간과 그 자유 부분의 정의.** **컨피규레이션** $q$는 로봇의 모든 점의 위치를 완전히 지정한 것이고, **컨피규레이션 공간** $\mathcal{C}$는 모든 컨피규레이션의 집합이다. 차원은 자유도 수이고, 모양은 휘어 있을 수 있다. 2R 팔의 것은 토러스다([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]). $\mathcal{W}$($\mathbb{R}^2$ 또는 $\mathbb{R}^3$)를 작업 영역, $\mathcal{O}\subset\mathcal{W}$를 장애물이 차지한 영역, $\mathcal{A}(q)\subset\mathcal{W}$를 컨피규레이션 $q$에서 로봇 몸체가 차지하는 영역이라 하자. 모든 컨피규레이션은 충돌이거나 아니므로 $\mathcal{C}$는 두 부분으로 나뉜다.
+
+- **C-장애물**: 몸체가 장애물과 겹치는 모든 컨피규레이션.
+$$\mathcal{C}_{\text{obs}}=\{\,q\in\mathcal{C} : \mathcal{A}(q)\cap\mathcal{O}\neq\emptyset\,\}$$
+- **자유 공간**: 나머지 전부. 두 부분은 서로의 여집합이다.
+$$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
+
+그러면 **경로 계획 문제**는 이렇다: $q_{\text{start}},q_{\text{goal}}\in\mathcal{C}_{\text{free}}$가 주어졌을 때 모든 $s\in[0,1]$에서 $\sigma(s)\in\mathcal{C}_{\text{free}}$인 path $\sigma$(§1)를 찾거나, 없다고 보고한다. **상태 공간** $\mathcal{X}$는 속도를 더한 $x=(q,\dot q)$이므로 자유도 $n$인 로봇의 상태는 $2n$차원이다. **입력 공간** $\mathcal{U}$는 허용되는 명령의 집합이다. 예를 들어 구동기마다 $|u_i|\le u_{\max}$다. 작업 영역과 과제 공간은 물리적 위치나 pose의 집합이고 $\mathcal{C}$는 로봇 컨피규레이션의 집합이다. 아래 그림에 칸이 두 개 필요한 이유다.
+
+> [!example] 계산 예제 · Worked example
+> 회전하지 않고 평행이동만 하는 반경 0.5 m 원판 로봇의 컨피규레이션은 중심 $q=(x,y)$이므로 $\mathcal{C}=\mathbb{R}^2$다. 정사각형 장애물 $[1,2]\times[1,2]$ m가 있으면, 중심이 정사각형에서 0.5 m보다 가까울 때 정확히 $q\in\mathcal{C}_{\text{obs}}$다. $q=(0.6,1.5)$는 0.4 m 떨어져 있으므로, 작업 영역의 *점* $(0.6,1.5)$는 비어 있는데도 $\mathcal{C}_{\text{obs}}$에 속한다. $q=(0.4,1.5)$는 0.6 m 떨어져 있어 자유다.
+>
+> **반례:** C-장애물은 정사각형을 상자 $[0.5,2.5]^2$로 키운 것이 아니다. 정사각형과 원판의 민코프스키 합이라 모서리가 둥글다. 그래서 그 상자 안의 $q=(0.6,0.6)$은 모서리 $(1,1)$에서 0.566 m라 자유이고, 0.424 m인 $(0.7,0.7)$은 자유가 아니다. 이것이 아래 목록의 팽창이며, 로봇이 원판이기 때문에만 정확하다.
 
 **그 공간을 실제로 저장하는 방법.** 이 위키의 두 페이지가 점유·비용 표현을 위해 여기로
 보내므로, 시스템 논문의 부록이 아니라 이 절에 있어야 한다.
@@ -421,10 +554,15 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
   적응할 수 있게 하려는 것이다. 칸은 *비어 있음*, *점유됨*, 그리고
   **미지**의 셋 중 하나이고, 초심자가 빠뜨리는 것이 셋째다. 미지는 비어 있음이 아니며,
   그 차이가 곧 탐색이 존재하는 이유다.
+  **갱신 식.** $m_i=1$을 "칸 $i$가 점유됨", $p_0$을 사전 점유 확률이라 하자. 판독 $z_t$마다 자기 증거를 더하고, 사전 확률은 판독마다 다시 세지 않도록 한 번 뺀다:
+  $$\ell_t(i)=\ell_{t-1}(i)+\log\frac{p(m_i=1\mid z_t)}{1-p(m_i=1\mid z_t)}-\log\frac{p_0}{1-p_0},\qquad p=1-\frac{1}{1+e^{\ell}}$$
+  가운데 항은 **역센서 모델**(inverse sensor model), 즉 이 판독 하나만으로 본 점유 확률이고, 둘째 식은 로그 승산을 확률로 되돌린다. $p_0=0.5$이면 사전 항은 $0$이다. 그러면 OctoMap 적중 두 번은 $\ell=1.70$, $p=0.846$을 주고, 그 뒤 빗나감 한 번($-0.4$)은 $\ell=1.30$, $p=0.786$을 준다. 클램핑은 매 갱신 뒤 $\ell$을 구간 $[\ell_{\min},\ell_{\max}]$ 안에 가둔다.
 - **팽창(inflation)** — 로봇을 점으로 다루는 계획기(아래 그림)는 대신 장애물을 키워야 한다.
   점유 칸을 로봇 반경만큼 팽창시키면 **원형 로봇에 한해** 격자 위에서 바로 C-공간 장애물이
   된다 — 다른 형상에서는 근사이고, 그래서 Nav2 같은 스택은 별도의 footprint 충돌 검사를 따로
-  돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다.
+  돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다. 칸에서 가장 가까운 장애물 칸까지의 거리 $d$, 내접 로봇 반경 $r$, 감쇠율 $\alpha>0$에 대해 ROS costmap은 지수 함수를 쓴다:
+  $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
+  내접 반경 안의 칸은 로봇 중심을 거기 두면 반드시 충돌한다는 뜻이고, 그 바깥에서 비용은 거리에 따라 감쇠하며, 팽창 반경 $d_{\text{infl}}$ 너머의 칸은 비용이 없다. $\alpha=3$ /m이면 내접 반경에서 0.2 m 바깥 칸의 비용은 내접값의 $e^{-0.6}=0.55$배다. $\alpha$를 키우면 여유가 좁아진다.
 - **비용 지도(costmap)** — 칸이 이진값이 아니라 *통행 비용*을 담는 점유 격자다. 비용은
   팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
   진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
@@ -434,7 +572,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
   무엇인지 알아야 한다.
 - **계층형 비용 지도** — 실제 스택은 여러 층(정적 지도, 장애물, 팽창, 센서별)을 두고 합성한다.
   그래야 낡은 장애물 하나를 지우는 일이 지도를 지워버리지 않는다.
-- **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. **frontier 탐색**은 "다음에
+- **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. 정확히는 자신은 자유로 알려져 있고 이웃(4-연결 또는 8-연결) 중 적어도 하나가 미지인 칸이다. **frontier 탐색**은 "다음에
   어디로"에 대한 고전적 답이다: 가장 가까운 frontier로 가면 아는 영역이 자라고, frontier가
   없어질 때까지 반복한다. [[04-robotics/semantic-language-navigation|19. §3]]에서 "어디를
   탐색할지 고른다"는 의미 내비게이션 방법 중 일부는 이 후보 집합을 그대로 두고 학습된 부분이
@@ -460,6 +598,15 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 | **Elastic band** | 내부 수축력과 외부 장애물 반발력으로 시간 개념 없이 *경로*를 변형한다 |
 | **Timed elastic band** | 이름이 가리키는 시간 간격을 더한 후손이다 |
 | **표본 기반 MPC**([[01-canonical-papers/notes/9-navigation/badgr\|BADGR]]이 쓰는 계열) | running estimate 주변에서 많은 행동열을 표본으로 뽑아 모델로 굴린 뒤, 가장 좋은 하나를 고르는 대신 **보상 가중 평균**으로 추정을 갱신하고 그 첫 행동을 실행한다 |
+
+**두 행을 식으로 쓰면.**
+
+- **Dynamic window** (Fox, Burgard & Thrun 1997). $(v_c,\omega_c)$를 현재 전진·회전 속도, $\dot v_{\max},\dot\omega_{\max}$를 가속도 한계, $\Delta t$를 주기라 하자. 후보는 세 조건을 동시에 만족해야 한다. 로봇이 애초에 낼 수 있는 속도여야 한다($V_s$). 한 주기 안에 도달할 수 있어야 하는데, 가속도가 유계이므로 이것은 작은 상자다:
+$$V_d=\{(v,\omega): |v-v_c|\le\dot v_{\max}\Delta t,\ |\omega-\omega_c|\le\dot\omega_{\max}\Delta t\}$$
+  그리고 **허용 가능**해야 한다. 즉 그 호 위의 가장 가까운 장애물 앞에서 멈출 수 있어야 하므로, 제동 감속도 $\dot v_b$에 대해 $v\le\sqrt{2\,\mathrm{dist}(v,\omega)\,\dot v_b}$다($\omega$도 마찬가지). $V_s\cap V_d\cap V_a$의 각 쌍에 목표 방향·여유 거리·속력의 가중합으로 점수를 매기고, 최고의 쌍을 한 주기 동안 실행한다. 예: $v_c=0.5$ m/s, $\dot v_{\max}=0.5$ m/s², $\Delta t=0.25$ s이면 $v\in[0.375,0.625]$ m/s다. 호를 따라 0.5 m 앞의 장애물은 $\dot v_b=0.5$ m/s²에서 $v$를 $\sqrt{0.5}=0.71$ m/s로 제한하므로, 여기서 묶는 한계는 장애물이 아니라 창이다.
+- **보상 가중 평균.** 현재 추정 $\bar u$ 주변에서 행동열 $K$개 $u^{(k)}$를 뽑아 모델로 굴려 반환값 $R_k$를 얻고, 다시 맞춘다:
+$$\bar u\leftarrow\sum_{k=1}^{K}w_k\,u^{(k)},\qquad w_k=\frac{\exp(R_k/\lambda)}{\sum_{j=1}^{K}\exp(R_j/\lambda)}$$
+  가중치는 양수이고 합이 1이므로 모든 표본이 좋은 정도에 비례해 기여하고, 온도 $\lambda>0$가 최고 표본을 얼마나 날카롭게 편애할지 정한다($\lambda\to0$이면 "가장 좋은 하나 고르기"로 돌아간다). 예: 첫 행동이 $0.4$와 $0$, 반환값이 $1$과 $0$인 두 표본에 $\lambda=1$이면 가중치는 $0.731$과 $0.269$이고, 새 첫 행동은 $0.292$다.
 
 §6이 같은 층을 최적화 관점에서 다룬다. 고전적인 내비게이션 스택에서 학습되는 부분은 보통 지역 층이고 전역 탐색과 비용 지도는
 건드리지 않는다. 다만 항상 그런 것은 아니다. 학습된 전역 계획기와 학습된 탐색 휴리스틱이
@@ -501,6 +648,10 @@ Dijkstra는 정보성 휴리스틱이 없는 경우다. A*는 적절한 admissib
 다만 이 정리는 이산화된 그래프가 모든 실행 가능한 연속 로봇
 운동을 대표한다는 것까지 보장하지 않는다.
 
+기호로 쓰면, $h^*(n)$을 $n$에서 목표까지의 참 최소 비용, $c(n,n')$을 간선 $n\to n'$의 비용이라 할 때 두 조건은 다음과 같다:
+$$\text{admissible: } 0\le h(n)\le h^*(n)\ \ \forall n,\qquad \text{consistent: } h(n)\le c(n,n')+h(n')\ \ \forall (n,n'),\ \ h(\text{goal})=0$$
+일관성은 허용성을 함의한다. $n$에서 나가는 최적 경로를 따라 부등식을 더하면 $h(n)\le h^*(n)$이 나오기 때문이다. Dijkstra는 $h\equiv0$인 경우이고 둘 다 만족한다. 여기서 **최적**이란 돌려준 경로의 비용이 그래프 안 모든 경로의 최소 비용 $C^*$와 같다는 뜻이다. 증명, 각 조건의 반례, 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §6]]에 있다.
+
 **프런티어를 아직 끝나지 않은 경로로 생각한다.** 대기 중인 노드는 어느 곳까지 도달했지만 그 뒤를 아직 탐색하지 않은 경로다. g는 이미 쓴 비용, h는 남은 일의 추정, f는 다음으로 볼 경로의 우선순위다. 노드를 확장한다는 것은 나가는 간선을 검토한다는 뜻이다. 로봇이 실제로 그곳으로 움직이는 것은 아니다.
 
 이미 본 노드에 더 싼 경로가 도달하면 알려진 최저 비용과 부모를 갱신해야 할 수 있다. 최적성을 말할 때 생략해도 되는 구현 세부가 아니라 알고리즘의 일부다. 음수가 아닌 간선 비용에서 일관성은 휴리스틱과 간선 비용이 맞물리게 한다. 허용성만 있으면 재방문을 적절히 처리해야 한다.
@@ -526,9 +677,29 @@ cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은
 | 피드백 / 퍼텐셜장 | 목표로 끌고 장애물에서 미는 장; 내비게이션 함수(최솟값이 목표 한 곳에만 있도록 만든 퍼텐셜) | 경로 하나가 아니라 *모든* 상태에 대해 행동을 만든다 — 값싸고 반응적이지만, 단순한 퍼텐셜장에는 로봇을 목표 앞에서 가두는 국소 최솟값이 있다 |
 | 불확실성 계획 | MDP, POMDP, belief space | 불확실한 상태/결과 아래 행동 선택 |
 
-**Probabilistic completeness**는 방법의 가정 아래 robust한 해가 존재할 때 계산이 늘수록
-해를 찾을 확률이 1에 다가간다는 뜻이다. 빠른 성공을 뜻하지 않는다. **Asymptotic
-optimality**도 표본이 늘 때의 수렴 성질이지, 실시간 예산에서 얻는 품질이 아니다.
+**퍼텐셜장을 식으로 쓰면.** 퍼텐셜장은 내리막 방향이 곧 명령인 스칼라 함수 $U:\mathcal{C}\to\mathbb{R}$이고, $\dot q=-\nabla U(q)$다. 끌어당기는 부분과 밀어내는 부분으로 만든다:
+$$U(q)=\tfrac12 k_a\lVert q-q_{\text{goal}}\rVert^2+\begin{cases}\tfrac12 k_r\big(\tfrac1{\rho(q)}-\tfrac1{\rho_0}\big)^2 & \rho(q)\le\rho_0\\ 0 & \rho(q)>\rho_0\end{cases}$$
+$k_a,k_r>0$는 이득, $\rho(q)$는 가장 가까운 장애물까지의 거리, $\rho_0$는 그보다 먼 장애물을 무시하는 범위다. 그래서 로봇은 목표 쪽으로 미끄러지고 $\rho\to0$일수록 점점 세게 밀려난다. **내비게이션 함수**(Rimon & Koditschek 1992)는 조건 넷을 더 만족하는 퍼텐셜이다: 자유 공간에서 매끄럽고, 최솟값이 목표 한 곳에*만* 있고, 모든 장애물 경계에서 균일하게 최대이며, 임계점이 모두 비퇴화다. 그래서 그 기울기를 따라가면 거의 모든 출발점에서 목표에 닿는다.
+
+> [!example] 계산 예제 · Worked example
+> 목표는 원점, 점 장애물은 $(1,0)$, $k_a=k_r=\rho_0=1$이다. 둘 사이 선분 위의 $x$에서 인력은 $-x$, 척력은 $\rho=x-1$로 두어 $(1/\rho-1)/\rho^2$다. 둘은 $x=1.618$($\rho=0.618$)에서 상쇄되므로, $(2,0)$에서 놓은 로봇은 목표에 못 미친 그곳에서 멈춘다.
+>
+> **국소 최솟값의 반례:** 그 점은 *안장점*이다. 옆으로 움직이면 퍼텐셜이 낮아지므로($\partial^2U/\partial y^2=1-1.618/0.618=-1.62<0$) 작은 교란만 있어도 로봇은 장애물을 돌아 미끄러진다. U자 벽 같은 오목한 장애물은 진짜 최솟값을 만들고, 표가 경고하는 함정이 그것이다.
+
+**완전성의 네 강도.** 이 낱말들은 계획기가 해를 *찾는 것*에 대해 무엇을 보장하는지 말하며, 각각 정확한 뜻이 있다.
+
+- **완전(complete)**: 모든 문제 사례에서, 해가 있으면 유한 시간 안에 해를 돌려주고 없으면 유한 시간 안에 실패를 보고한다. 저차원에서는 정확한 셀 분해가 이를 달성하지만, 고차원에서 실용적인 방법은 거의 없다.
+- **해상도 완전(resolution complete)**: *이산화에 대해* 완전하다. 정한 해상도의 격자나 lattice 안에 해가 있으면 찾고, 없으면 실패를 보고한다. 격자 위의 A*가 해상도 완전하지만 칸보다 좁은 통로는 놓칠 수 있으므로, 한 해상도에서의 실패는 연속 문제에 대해 아무것도 증명하지 않는다.
+- **확률적 완전(probabilistically complete)**: *robust한* 해가 존재하면, 표본 수 $n$이 늘수록 해를 찾았을 확률이 1로 간다.
+$$\lim_{n\to\infty}P\big(\text{a solution is found within } n \text{ samples}\big)=1$$
+  robust(또는 $\delta$-여유)란 어떤 $\delta>0$에 대해 $\delta$-근방이 $\mathcal{C}_{\text{free}}$ 안에 있는 경로라는 뜻이다. 장애물을 스치기만 하는 경로는 표본으로 뽑힐 확률이 0이기 때문이다. 이 방법은 "해 없음"을 보고할 수 없다: 유한한 어떤 $n$ 뒤에도 실패가 가능하다. PRM과 RRT가 이 성질을 가진다. 빠른 성공을 뜻하지 않는다.
+- **점근적 최적(asymptotically optimal)**: 표본 $n$개 뒤 최선의 해의 비용 $c_n$이 확률 1로 최적 비용 $c^*$에 수렴한다. 극한에 대한 진술이므로 실시간 예산에서 얻는 품질에 대해서는 아무것도 말하지 않는다. RRT\*와 PRM\*는 이 성질을 가지고, 단순 RRT는 가지지 않는다(§5.5).
+$$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
+
+> [!example] 계산 예제 · Worked example
+> 단순화한 모형에서, 모든 해가 $\mathcal{C}$의 1%를 차지하는 좁은 통로를 지나고, 균일 표본 하나가 그 안에 떨어지면 계획기가 성공한다고 하자. 표본마다 독립적으로 확률 $0.99$로 빗나가므로 $n$개 뒤 실패 확률은 $0.99^n$이다: $n=100$에서 $0.366$, $n=500$에서 $0.0066$, $n=1000$에서 $4.3\times10^{-5}$. 0으로 가므로 확률적 완전이지만, 표본 100개짜리 실행의 3분의 1은 실패한다. 이 보장이 속도에 대해 아무것도 말하지 않는 이유다.
+>
+> **완전성의 반례:** 10 cm 칸 격자는 유일한 틈이 5 cm인 지도에서 "경로 없음"을 돌려줄 수 있다. 틈에 걸친 칸이 모두 점유로 표시되기 때문이다. 해상도 완전성이 약속한 대로 격자에 대해서는 맞는 답이고, 세계에 대해서는 틀린 답이다.
 
 <svg viewBox="0 0 660 214" style="max-width:100%;height:auto" role="img" aria-label="표본 기반 플래너가 자유 공간에 트리를 키우는 방식">
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.5"><rect x="30" y="30" width="330" height="140" rx="3"/></g>
@@ -636,7 +807,7 @@ print("end state", s.round(3), "target (1, 1, %.3f)" % theta(1.0))
 
 ### 6. 궤적 최적화와 MPC
 
-흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다:
+흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다. 이것은 [[02-foundations/optimization|4. 최적화 §1]]의 일반 프로그램이고, 선형-이차 특수 경우를 QP로 쓴 것은 [[02-foundations/optimization|4. 최적화 §5]]에 있다.
 
 $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text{s.t. 동역학, 한계, 충돌 제약}$$
 
@@ -666,7 +837,7 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 공동으로 추론한다.
 
 부분 관측에서는 계획의 상태가 **belief**, 즉 숨은 상태에 대한 확률 분포가 되고, 행동과 관측이
-있을 때마다 갱신된다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다.
+있을 때마다 갱신된다. 그 갱신은 [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 베이즈 필터에 행동을 붙인 것이다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다.
 
 > [!example] 계산 예제 · Worked example
 > 로봇이 잘 보이지 않는 문을 지나가야 한다. **숨은 상태:** 열림 또는 닫힘. **행동:** 다시 보기, 또는 지나가기. **전이:** 보기는 아무것도 바꾸지 않고, 지나가기는 로봇을 옮긴다. **관측:** "열림" 또는 "닫힘"이라는 센서 판독. **관측 모델:** 판독은 80% 확률로 맞다. **보상:** 통과하면 $+1$, 닫힌 문에 부딪히면 $-1$.
@@ -724,6 +895,19 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 > 5. 격자 계획기는 미리 계산한 프리미티브 집합과 해상도 위에서만 최적이라, 그 집합에 없는 heading이나 곡률이 필요한 경로를 놓칠 수 있다. Hybrid A\*는 칸마다 연속 pose 하나만 남기고 나머지를 가지치기 때문에 자기 격자 위에서조차 최적이 아니다.
 > 6. 회전 반경 한계는 곡률 $\kappa=\omega/v$를 제한하는데, 곡률은 기하에만 달려 있다. 절반 속도에서 꼭짓점은 $v=0.5$, $\omega=1$이라 $\kappa$는 여전히 2다. 다른 곡선만이 답이다.
 
+### 과제 · Problem set
+
+Tier B. 첫 패스. [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지. 노드 둘짜리 그래프. 시뮬레이터 없음.
+
+1. **그리기.** $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$(말단 $(2,0)$)와 $q_\mathrm{goal}=$ 고정 자세(말단 $(1,1)$, 패널). $\mathcal{C}$의 간선 하나. $\mathcal{C}_\mathrm{free}$를 표시.
+2. **유도.** 직선 보간 $\theta(s)=(0^\circ,90^\circ s)$. 말단 $x(s)=1+\cos(90^\circ s)$. 패널이 벽 $x=1$이면 언제 처음 닿는가? 이 두 노드에서 A*가 반환하는 것은?
+3. **해석.** 이 탐색이 패널 접촉력에 대해 약속할 수 없는 것은?
+
+> [!tip]- 정답 · Solutions
+> 1. $\mathcal{C}=T^2$의 점 둘, 선분 하나. 목표는 접촉 집합 위.
+> 2. $x(s)=1$은 $s=1$뿐이라 열린 선분은 자유. A*는 그 간선 하나를 가능 경로로 반환한다.
+> 3. 경로는 힘이 없는 기하. 탐색은 $k_w$, $\mu$, $F_n$을 모른다 — 접촉이지 $\mathcal{C}_\mathrm{free}$가 아니다(스스로 점검 1).
+
 ### 출처
 
 - [Modern Robotics, Chapter 10](http://modernrobotics.org)
@@ -739,3 +923,6 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 - M. Fliess, J. Lévine, P. Martin, P. Rouchon, "Flatness and defect of non-linear systems: introductory theory and examples," *International Journal of Control* 61(6), 1327–1361, 1995. doi:10.1080/00207179508921959
 - D. Mellinger, V. Kumar, "Minimum snap trajectory generation and control for quadrotors," *IEEE International Conference on Robotics and Automation (ICRA)*, 2520–2525, 2011. doi:10.1109/ICRA.2011.5980409
 - S. M. LaValle, *Planning Algorithms*, Cambridge University Press, 2006 — §14.1(kinodynamic 용어)와 §15.3(Dubins·Reeds–Shepp 곡선).
+- D. Fox, W. Burgard, S. Thrun, "The dynamic window approach to collision avoidance," *IEEE Robotics & Automation Magazine* 4(1), 23–33, 1997.
+- E. Rimon, D. E. Koditschek, "Exact robot navigation using artificial potential functions," *IEEE Transactions on Robotics and Automation* 8(5), 501–518, 1992.
+- S. Thrun, W. Burgard, D. Fox, *Probabilistic Robotics*, MIT Press, 2005 — 9장(점유 격자 로그 승산 갱신).

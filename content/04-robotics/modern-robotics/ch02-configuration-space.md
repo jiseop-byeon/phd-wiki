@@ -2,7 +2,7 @@
 title: "MR Ch.02 — Configuration Space"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -50,6 +50,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Wiki connections**: C-space is the "state" half of every
 [[02-foundations/rl-basics|MDP]] for robots; VLA action spaces are coordinates on it.
 
+### Problem set · 과제
+
+Tier C. Claim-reading. Running task: **P2** to a panel at $(1,1)$ ([[02-foundations/lab-plants|0.6]]).
+
+1. **Claim.** Which number on this page is the claim that a planar four-bar has one dof?
+2. **Falsify.** What mechanism would falsify “Grübler always gives the mobility”?
+3. **Task.** For P2 reaching $(1,1)$: is that point in task space, in the workspace, and how many C-space points map to it?
+
+> [!tip]- Solutions
+> 1. $3(4-1-4)+4=1$ in the worked example — that evaluation *is* the 1-dof claim.
+> 2. Special geometry with dependent constraints (MR Example 2.6, named on this page). A count that assumed independent joints would then be wrong.
+> 3. $(1,1)$ is a task-space point inside this arm's workspace (reach $2\,\mathrm{m}$). Two C-space points map to it: the frozen pose $(0^\circ,90^\circ)$ and $(90^\circ,-90^\circ)$. Task space $\neq$ C-space.
+
 ## 한국어
 
 **핵심 질문**: 로봇의 가능한 "자세" 전체의 공간은 무엇이고, 그 모양은 어떠한가?
@@ -94,3 +107,16 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 > 1. Three for the chassis: $(x, y, \theta)$ (five if the two wheel rolling angles are included, as MR §13.3 does). The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable chassis configurations — the robot can still reach any pose, just not by any path. · 차체만 보면 $(x, y, \theta)$ 세 개(MR §13.3처럼 두 바퀴의 회전각까지 넣으면 다섯); 비홀로노믹 제약(옆 미끄럼 불가)이 속도를 제한하지만 도달 가능한 차체 자세는 제한하지 않는다.
 > 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. · $3(4-1-4) + 4 = 1$ 자유도.
 > 3. $359°$ and $1°$ are neighbours on the circle but far apart in Euclidean distance, so a naive MSE regression is penalized enormously at the wrap point and learns a discontinuous target ([[02-foundations/se3-geometry|SE(3) §2]]). · $359°$와 $1°$는 실제로 이웃인데 유클리드 거리로는 멀다 — 순진한 MSE 회귀가 감긴 지점에서 깨진다.
+
+### 과제 · Problem set
+
+Tier C. 주장 읽기. 관통 과제: [[02-foundations/lab-plants|0.6]]의 **P2**를 $(1,1)$ 패널까지.
+
+1. **주장.** 이 페이지에서 평면 4절 링크가 자유도 1이라는 주장은 어느 숫자인가?
+2. **반증.** “그뤼블러가 항상 가동도를 준다”를 깨는 기구는?
+3. **과제.** P2가 $(1,1)$에 도달할 때: 그 점은 작업 공간·작업 영역에 있는가, C-space 점은 몇 개인가?
+
+> [!tip]- 정답 · Solutions
+> 1. 계산 예제의 $3(4-1-4)+4=1$ — 그 평가가 곧 1자유도 주장이다.
+> 2. 제약이 독립이 아닌 특수 기하(이 페이지가 가리키는 MR 예제 2.6).
+> 3. $(1,1)$은 도달 $2\,\mathrm{m}$인 이 팔의 작업 영역 안 작업 공간 점. C-space 점은 둘: 고정 자세 $(0^\circ,90^\circ)$와 $(90^\circ,-90^\circ)$. 작업 공간 $\neq$ C-space.

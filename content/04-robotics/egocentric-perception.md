@@ -159,6 +159,19 @@ You should be able to:
 > [!tip]- Answers
 > 1. The body is out of frame; systems estimate ego-motion from the scene and infer coarse body state from hands, motion, and priors rather than observing it. 2. It recognises the manner of action but not the object — for intent, "reaching for *what*" is usually the decision-relevant half, so the estimate is weak where it matters. 3. Expertise reduces visual guidance, weakening the head–attention coupling the model learned. 4. Gait produces roughly periodic motion at a characteristic frequency, so it is separable in the frequency domain from aperiodic attentional reorientations.
 
+### Problem set · 과제
+
+Tier C. Using this page only.
+
+1. A method trained on EPIC-KITCHENS is deployed on a construction helmet camera. Name one observability change that *does* transfer and one domain gap that does not. What claim can the kitchen number not support?
+2. Ego4D's title says 3,000 hours and the abstract says 3,670. What is the claim-reading move, and why does the benchmark split (past / present / future) matter more than the hour count?
+3. A paper treats head direction as gaze for a skilled assembler. Which of the three regimes where head motion stops being an attention proxy is it in, and what cue cascade step did it skip?
+
+> [!tip]- Solutions
+> 1. Hands-and-object filling the frame transfers; kitchen objects, lighting, and unscripted daily verbs do not. The kitchen accuracy is not a helmet result.
+> 2. Cite the number from the part of the paper you used; do not mix title and abstract. The split is the claim: a past (memory) number does not license a future (forecasting) deployment.
+> 3. Expertise: visual guidance drops, so head–attention coupling learned on novices breaks. It skipped gaze → head; at assembly distance the eyes still matter and the head may stay put.
+
 ### Sources
 
 **Datasets — verified citations**
@@ -334,6 +347,19 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 > [!tip]- 정답
 > 1. 몸이 프레임 밖이다; 장면에서 ego-motion을 추정하고 손·움직임·사전지식으로 거친 신체 상태를 추론한다 — 관측이 아니라 추론이다. 2. 행동의 방식은 알아도 대상을 모른다는 뜻이다. 의도에서는 "*무엇*을 향해 뻗는가"가 대개 결정에 관련된 절반이므로, 중요한 곳에서 약한 추정치다. 3. 숙련도가 시각 안내를 줄여, 모델이 학습한 머리–주의 결합을 약화시킨다. 4. 보행은 특정 주파수의 거의 주기적인 움직임을 만들므로, 비주기적인 주의 재정향과 주파수 영역에서 분리 가능하다.
+
+### 과제 · Problem set
+
+Tier C. 이 페이지만 사용한다.
+
+1. EPIC-KITCHENS로 학습한 방법을 건설 헬멧 카메라에 배치한다. 이전되는 관측 가능성 변화 하나와, 이전되지 않는 도메인 격차 하나를 대라. 부엌 숫자가 지지하지 못하는 주장은?
+2. Ego4D 제목은 3,000시간, 초록은 3,670시간이다. 주장 읽기의 수는 무엇이고, 벤치마크 분할(과거 / 현재 / 미래)이 시간 수보다 중요한 이유는?
+3. 어떤 논문이 숙련 조립공의 머리 방향을 시선으로 취급한다. 머리 움직임이 주의 대용이기를 멈추는 세 영역 중 어디이고, 단서 사슬의 어느 단계를 건너뛰었는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 손과 물체가 프레임을 채우는 것은 이전되고, 부엌 물체·조명·대본 없는 일상 동사는 아니다. 부엌 정확도는 헬멧 결과가 아니다.
+> 2. 숫자를 가져온 논문 부분을 인용하고 제목과 초록을 섞지 마라. 분할이 주장이다. 과거(기억) 숫자가 미래(예측) 배치를 허가하지 않는다.
+> 3. 숙련: 시각 안내가 줄어 초보에서 배운 머리–주의 결합이 깨진다. 시선 → 머리를 건너뛰었다. 조립 거리에서는 눈이 아직 중요하고 머리는 가만히 있을 수 있다.
 
 ### 출처
 
