@@ -17,6 +17,9 @@ work one numerical case in full. The problem set is a *variant* (a different pos
 changed knob, an interpretation). A page that only appends problems to a summary has
 not met the bar.
 
+Reader depth may be Literacy; the note is still this course. Do not shorten the lecture
+because the recommended study-depth is Literacy.
+
 Tier A (Lab): named plant + diagram + derivation + Python loop + parameter sweep.
 Tier B (Derive): named plant from 0.6 + diagram + hand problem set. No new simulator.
 Tier C (Read): claim-reading homework only.

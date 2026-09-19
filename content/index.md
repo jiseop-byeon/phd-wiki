@@ -7,10 +7,12 @@ title: Home
 Welcome. This wiki is my long-term knowledge base for PhD research at the intersection of
 **deep learning** and **construction robotics**.
 
-**What this wiki is for**: research *literacy*, not uniform technical mastery — making the
-vocabulary, equations, claims, and experimental language of physical-AI papers readable on
-first contact. Derivations, implementation, and reproduction are pursued selectively, in
-one's own research area.
+**What this wiki is for.** Two jobs, kept separate:
+
+- **Your depth defaults to literacy.** Adjacent fields: explain the problem, vocabulary, claim, and limit. Working is for methods you actually use. Mastery is only the thesis contribution. That T-shape is unchanged — see [[00-study-depth-guide|0. Study Depth Guide]].
+- **The notes themselves are a complete engineering curriculum** for physical AI (math, learning, rigid-body robotics, contact, systems). A page is written so a reader with the declared prerequisites can finish its problem set from the wiki — draw the plant, derive on it, change one knob — without opening a textbook. Literacy is the *reader's* default, not an excuse for a summary note.
+
+Derivations, implementation, and reproduction that go past the course still concentrate in the contribution column. The course is what the notes contain everywhere they exist.
 
 ### Start here — pick the path that matches you
 
@@ -41,9 +43,12 @@ one's own research area.
 
 박사 과정에서 공부하는 딥러닝과 건설로봇 지식을 정리해 두는 공간이다.
 
-**이 위키의 목표**: 모든 분야의 균일한 기술적 숙달이 아니라 연구 *문해력* — physical AI
-논문의 용어·수식·주장·실험 표현을 처음 보더라도 읽을 수 있게 만드는 것. 유도·구현·재현은
-자신의 연구 분야를 중심으로 선택적으로 깊게 한다.
+**이 위키의 목표.** 두 일을 섞지 않는다.
+
+- **당신의 깊이는 문해력이 기본이다.** 인접 분야는 문제·어휘·주장·한계를 말한다. Working은 실제로 쓰는 방법, Mastery는 논문 기여만. T자 모양은 그대로다 — [[00-study-depth-guide|0. Study Depth Guide]].
+- **노트 자체는 physical AI를 위한 완전한 공학 교과과정이다**(수학, 학습, 강체 로보틱스, 접촉, 시스템). 페이지는 선언된 선수 지식만으로 위키에서 과제를 끝낼 수 있게 쓴다 — 장치를 그리고, 유도하고, 손잡이 하나를 바꾼다. 문해력은 *독자*의 기본이지, 요약을 정당화하는 말이 아니다.
+
+교과과정을 넘는 유도·구현·재현은 기여 기둥에 모은다. 노트가 있는 곳에서는 교과과정이 노트의 내용이다.
 
 ### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 

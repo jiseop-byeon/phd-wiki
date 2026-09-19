@@ -12,7 +12,10 @@ This page sets the **recommended minimum depth for a construction Physical AI
 researcher**. It is different from the ★·◐·○ marks in the paper list:
 
 - **★·◐·○ = how much of that paper to read.**
-- **Literacy / Working / Mastery = how well to use that knowledge.**
+- **Literacy / Working / Mastery = how well *you* should command that knowledge.**
+- **The notes = a complete engineering curriculum**, even when your recommended depth is Literacy.
+
+Literacy is the default *for you*. It is not the length of the note. A Literacy topic can still carry a course: named plant, derivation, problem set. You may stop after the first pass. The page must still be completable as a course if you stay.
 
 Every substantive page displays its recommended minimum and the condition for raising it
 to Mastery. The recommendation is a starting profile, not a permanent label.
@@ -66,6 +69,22 @@ there. Where the gap matters, pages carry a second field:
   means the page over-delivers: it will carry you past the depth this topic asks of you.
 
 This split keeps recommendations honest without bloating every page to textbook length.
+
+The **engineering-curriculum goal** is that `wiki-support` on a study page is a *course*: first pass for literacy, the rest plus the problem set for Working, without a required textbook. Mastery still names an original paper, a simulator, or a defense. Adjacent fields stay Literacy *for you*; the note is still a course.
+
+Not every department subject belongs here. No thermofluids, no structures sequence, no circuits sequence unless a plant needs it. The curriculum is the engineering a physical-AI construction roboticist actually uses:
+
+| Track | What the notes must teach | Where it lives now |
+|---|---|---|
+| Math and computing | calculus, linear algebra, probability, optimization, information, algorithms as tools | [[02-foundations/overview\|2. Foundations]] (algorithms still sit as an interview sidecar) |
+| Signals, estimation, control | sampling, Kalman, state-space, LQR, MPC | foundations 6, robotics 3 and 5–8 |
+| Rigid-body robotics | SE(3), FK/IK/Jacobian, dynamics, trajectories, planning | MR summaries + page 10 |
+| Contact and haptics | unilateral contact, impedance, rendering, teleoperation | robotics E, H, K |
+| Systems | timing, frames, ROS 2, logs | robotics F, L |
+| Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses | 0.7, 2, 9; **[[03-deep-learning/index\|3. Deep Learning]] subarea folders are empty** — paper notes in ch.1 are not a course |
+| Construction domain | site constraints, task streams | [[05-construction-robotics/index\|5]] — still landscape maps, not a site-engineering course |
+
+Filling a hole means writing a course page in that cell, not promoting the whole field to Mastery.
 
 ### Recommended profile
 
@@ -172,7 +191,10 @@ If the honest answer is "it would be interesting", the answer is no.
 논문 목록의 ★·◐·○와는 역할이 다르다.
 
 - **★·◐·○ = 그 논문을 얼마나 읽을 것인가**
-- **Literacy / Working / Mastery = 그 지식을 어느 수준으로 사용할 것인가**
+- **Literacy / Working / Mastery = *당신*이 그 지식을 어느 수준으로 다룰 것인가**
+- **노트 = 완전한 공학 교과과정**, 권장 깊이가 Literacy여도 그렇다.
+
+문해력은 *당신*의 기본이다. 노트의 길이가 아니다. Literacy 주제도 장치·유도·과제가 있는 교과가 될 수 있다. 처음 통과만 하고 멈춰도 된다. 머물면 그 페이지는 교과로 끝낼 수 있어야 한다.
 
 모든 주요 페이지는 권장 최소 깊이와 Mastery로 올려야 하는 조건을 표시한다.
 이 값은 출발점이지 영구적인 등급이 아니다.
@@ -226,6 +248,22 @@ If the honest answer is "it would be interesting", the answer is no.
   필요한 것보다 더 깊은 곳까지 데려간다.
 
 이 분리가 모든 페이지를 교재 길이로 불리지 않으면서 권장을 정직하게 유지한다.
+
+**공학 교과과정의 목표**는 학습 페이지의 `wiki-support`가 *교과*인 것이다. 처음 통과는 문해력, 나머지와 과제는 Working, 필수 교재는 없다. Mastery는 여전히 원논문·시뮬레이터·방어를 지목한다. 인접 분야는 *당신*에게 Literacy로 남고, 노트는 그래도 교과다.
+
+학과 전 과목이 여기 있는 것은 아니다. 열유체·구조 시퀀스·회로 시퀀스는 장치가 요구하지 않으면 넣지 않는다. 교과는 건설 physical-AI 로보티시스트가 실제로 쓰는 공학이다.
+
+| 트랙 | 노트가 가르쳐야 하는 것 | 지금 있는 곳 |
+|---|---|---|
+| 수학과 계산 | 미적분, 선형대수, 확률, 최적화, 정보, 도구로서의 알고리즘 | [[02-foundations/overview\|2. 기초]] (알고리즘은 아직 인터뷰 곁가지) |
+| 신호·추정·제어 | 샘플링, 칼만, 상태공간, LQR, MPC | 기초 6, 로보틱스 3과 5–8 |
+| 강체 로보틱스 | SE(3), FK/IK/야코비안, 동역학, 궤적, 계획 | MR 요약 + 페이지 10 |
+| 접촉과 햅틱 | 단방향 접촉, 임피던스, 렌더링, 원격조작 | 로보틱스 E, H, K |
+| 시스템 | 타이밍, 프레임, ROS 2, 로그 | 로보틱스 F, L |
+| 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로 | 0.7, 2, 9; **[[03-deep-learning/index\|3. 딥러닝]] 세부 폴더는 비어 있다** — 1장의 논문 노트는 교과가 아니다 |
+| 건설 도메인 | 현장 제약, 작업 스트림 | [[05-construction-robotics/index\|5]] — 아직 지형도이지 현장 공학 교과가 아니다 |
+
+구멍을 메우는 것은 그 칸에 교과 페이지를 쓰는 일이지, 분야 전체를 Mastery로 올리는 일이 아니다.
 
 ### 권장 프로필
 

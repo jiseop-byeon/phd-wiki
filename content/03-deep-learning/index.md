@@ -25,7 +25,7 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 - **World Models** — Dreamer line, Genie, JEPA, video generation as simulation
 - **Diffusion & Generative** — DDPM → latent diffusion → flow matching, DiT
 
-All subareas are covered by notes in the [[01-canonical-papers/canonical-list|canonical paper list]] — start there, with the lineage map open alongside.
+Paper notes for these subareas live in the [[01-canonical-papers/canonical-list|canonical paper list]] — start there, with the lineage map open alongside. That is *literacy of papers*. The folders under this chapter (`foundations/`, `computer-vision/`, `vlm/`, `vla/`, `world-models/`, `diffusion/`) are reserved for **engineering-curriculum notes** of the same kind as [[02-foundations/overview|Foundations]]: named objects, derivations, problem sets. They are empty. Filling them is the next curriculum hole; it does not raise the whole field to Mastery.
 
 ## 한국어
 
@@ -46,4 +46,4 @@ All subareas are covered by notes in the [[01-canonical-papers/canonical-list|ca
 - **월드모델** — Dreamer 계열, Genie, JEPA, 시뮬레이터 역할을 하는 비디오 생성 모델
 - **디퓨전 & 생성모델** — DDPM → latent diffusion → flow matching, DiT
 
-모든 세부 분야는 [[01-canonical-papers/canonical-list|핵심 논문 리스트]]의 노트로 덮여 있다 — 계보도를 옆에 열어 두고 리스트에서 시작하라.
+세부 분야의 *논문* 노트는 [[01-canonical-papers/canonical-list|핵심 논문 리스트]]에 있다 — 계보도를 옆에 열어 두고 리스트에서 시작하라. 그것은 논문 문해력이다. 이 장 아래 폴더(`foundations/`, `computer-vision/`, `vlm/`, `vla/`, `world-models/`, `diffusion/`)는 [[02-foundations/overview|기초]]와 같은 **공학 교과 노트**(이름 붙은 대상, 유도, 과제)를 위한 자리이고, 지금은 비어 있다. 채우는 것이 다음 교과 구멍이다. 분야 전체를 Mastery로 올리는 일이 아니다.
