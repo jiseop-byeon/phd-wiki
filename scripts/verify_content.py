@@ -65,6 +65,8 @@ for p in md_files:
     for i, line in enumerate(lines, 1):
         if line.lstrip().startswith("|"):
             for m in WIKILINK.finditer(line):
+                if "\\\\|" in m.group(0):
+                    err(p, f"line {i}: table-cell wikilink pipe is double-escaped; use one backslash")
                 if "|" in m.group(1) and "\\|" not in m.group(0):
                     err(p, f"line {i}: table-cell wikilink needs an escaped pipe (\\|)")
 
@@ -275,24 +277,6 @@ _notes = [f for f in md_files
 _n_notes = len(_notes)
 _n_secs = len({os.path.basename(os.path.dirname(f)) for f in _notes})
 
-def _track(d):
-    return len([f for f in md_files
-                if os.path.relpath(f, "content").replace(os.sep, "/").rsplit("/", 1)[0] == d
-                and os.path.basename(f) != "index.md"])
-
-_cl = ""
-try:
-    _cl = open("content/01-canonical-papers/canonical-list.md", encoding="utf-8").read()
-except OSError:
-    err("content/01-canonical-papers/canonical-list.md", "missing: cannot derive ★/◐/○ counts")
-_marks = {m: len(re.findall(r"^- (?:\[.\] )?" + m + " ", _cl, re.M)) for m in "★◐○"}
-# one ★ is the Modern Robotics textbook, which overview.md counts separately
-_star_papers = _marks["★"] - 1
-_total_pages = (_track("02-foundations") + _track("02-foundations/algorithms") + _track("04-robotics")
-                + _track("04-robotics/modern-robotics") + _track("04-robotics/haptics-teleoperation")
-                + _track("04-robotics/ros2") + _track("05-construction-robotics")
-                + _track("06-research-practice") + _track("07-research-program") + _n_notes)
-
 _depths = collections.Counter()
 _ch01_literacy = 0
 for _f in md_files:
@@ -308,22 +292,6 @@ _claims = [
      (_n_notes, _n_secs), "note and section count (EN)"),
     ("01-canonical-papers/index.md", r"\((\d+)편, (\d+)개 섹션\)",
      (_n_notes, _n_secs), "note and section count (KR)"),
-    ("02-foundations/overview.md", r"\| Paper notes \((\d+)\) \| (\d+) \|",
-     (_n_notes, _n_notes), "reading-load table, notes row (EN)"),
-    ("02-foundations/overview.md", r"\| 논문 노트 \((\d+)편\) \| (\d+) \|",
-     (_n_notes, _n_notes), "reading-load table, notes row (KR)"),
-    ("02-foundations/overview.md", r"\*\*Total\*\* \| \*\*(\d+)\*\*",
-     (_total_pages,), "reading-load table total (EN)"),
-    ("02-foundations/overview.md", r"\*\*합계\*\* \| \*\*(\d+)\*\*",
-     (_total_pages,), "reading-load table total (KR)"),
-    ("02-foundations/overview.md", r"extra: \*\*(\d+)\*\* of them read in the original",
-     (_star_papers,), "★ paper count (EN)"),
-    ("02-foundations/overview.md", r"★ 논문은 별도다: \*\*(\d+)편\*\*",
-     (_star_papers,), "★ paper count (KR)"),
-    ("02-foundations/overview.md", r"the (\d+) ◐ and (\d+) ○",
-     (_marks["◐"], _marks["○"]), "◐/○ counts (EN)"),
-    ("02-foundations/overview.md", r"◐ (\d+)편과 ○ (\d+)편",
-     (_marks["◐"], _marks["○"]), "◐/○ counts (KR)"),
     ("07-research-program/index.md",
      r"(\d+) pages sit at Working, (\d+) at\nLiteracy, (\d+) at Mastery",
      (_depths["Working"], _depths["Literacy"], _depths["Mastery"]),

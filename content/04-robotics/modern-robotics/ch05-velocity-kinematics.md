@@ -139,7 +139,7 @@ for k in range(n):
 
 > [!tip]- Solutions
 > 1. Shoulder-only: the tip is at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, i.e. parallel to $(-1,1)$. Unit $\dot\theta_1$ gives $|v|=L_\text{tip}=\sqrt{2}$, so column 1 $=(-1,1)$. Elbow-only: forearm is along $+y$ from $(1,0)$ to $(1,1)$, unit $\dot\theta_2$ gives $v$ perpendicular to the forearm, column 2 $=(-1,0)$.
-> 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_\min$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
+> 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_{\min}$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
 > 3. $J$ blanks: `((-s1-s12, -s12), (c1+c12, c12))`. Inverse: `th1d = (J[1][1]*0 - J[0][1]*vy)/det`, `th2d = (-J[1][0]*0 + J[0][0]*vy)/det`. Live $J$: tip ends at $\approx(1.00,\ 0.50)$, $x$-drift $<1\,\mathrm{mm}$ (commanded $\Delta y=-0.50$). Frozen $J$: tip ends at $\approx(0.88,\ 0.52)$ — a centimetre-scale $x$ error on a half-metre task, from using a local map as a finite-motion map.
 
 ## 한국어
@@ -244,5 +244,5 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 
 > [!tip]- 정답 · Solutions
 > 1. 어깨만: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직 즉 $(-1,1)$ 방향. 단위 $\dot\theta_1$의 $|v|=\sqrt{2}$이므로 열 1 $=(-1,1)$. 엘보만: 전완이 $(1,0)\to(1,1)$의 $+y$, 단위 $\dot\theta_2$는 전완에 수직, 열 2 $=(-1,0)$.
-> 2. (a) $J$의 열이 그 화살표. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $\tau=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) 팔 방향 속도는 잃어버린 특이 방향이라 $\dot\theta\sim 1/\sigma_\min$이 터진다. $J^\top F$는 정역학 사상이라 유한 — 구조가 힘을 지고 모터는 안 져도 된다.
+> 2. (a) $J$의 열이 그 화살표. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $\tau=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) 팔 방향 속도는 잃어버린 특이 방향이라 $\dot\theta\sim 1/\sigma_{\min}$이 터진다. $J^\top F$는 정역학 사상이라 유한 — 구조가 힘을 지고 모터는 안 져도 된다.
 > 3. 빈칸은 영어 해. 산 $J$: 말단 $\approx(1.00,\ 0.50)$, $x$ 드리프트 $<1\,\mathrm{mm}$. 고정 $J$: $\approx(0.88,\ 0.52)$ — 0.5 m 과제에서 센티미터급 $x$ 오차. 국소 사상을 유한 운동 사상으로 쓴 대가.

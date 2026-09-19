@@ -65,6 +65,9 @@ PROFILE_LITERACY_PATHS = (
 # or the research program gives.  A page may only exceed its default if it is
 # named here.
 PROMOTED = {
+    "03-deep-learning/lab-objects": "shared calculation objects used by all six engineering modules",
+    "03-deep-learning/computer-vision/index": "perception and 3D are Working in the recommended profile",
+    "03-deep-learning/vla/index": "VLA and robot learning are Working in the recommended profile",
     "notes/6-diffusion/ddpm": "the objective Diffusion Policy runs on",
     "notes/6-diffusion/ddim": "the sampler Diffusion Policy runs on",
     "notes/6-diffusion/classifier-free-guidance": "conditioning used by the manipulation policies",

@@ -19,7 +19,7 @@ domain. The literature spans four disciplines, so it is scattered across their v
 Start with the two maps — [[05-construction-robotics/lineage|1. Research Lineage]] (three
 genealogies: technical eras, academic family trees, machine evolution) and
 [[05-construction-robotics/labs|2. Labs Map]] (who does this research, verified 2026-07) —
-then read by stream below. Curated papers live in
+then complete [[05-construction-robotics/site-engineering|2.5 Site Robotics as an Engineering System]]. It turns one work package into requirements, frames, uncertainty, safety, productivity, and an evidence ladder. Only then read by stream below. Curated papers live in
 [[01-canonical-papers/canonical-list|section 8 of the canonical list]].
 
 ### The five research streams
@@ -92,7 +92,7 @@ this field's specific literature.
 두 개의 지도에서 시작하라 — [[05-construction-robotics/lineage|1. Research Lineage]](세
 가지 계보: 기술 시대, 학술 가계도, 기계 진화)와
 [[05-construction-robotics/labs|2. Labs Map]](누가 이 연구를 하는가, 2026-07 검증) —
-그다음 아래 스트림별로 읽는다. 큐레이션된 논문은
+그다음 [[05-construction-robotics/site-engineering|2.5 Site Robotics as an Engineering System]]을 마친다. 하나의 작업 package를 요구조건·frame·불확실성·안전·생산성·증거 사다리로 바꾸는 교과다. 그 뒤 아래 스트림별로 읽는다. 큐레이션된 논문은
 [[01-canonical-papers/canonical-list|핵심 논문 리스트 8번 섹션]]에 있다.
 
 ### 다섯 개의 연구 스트림

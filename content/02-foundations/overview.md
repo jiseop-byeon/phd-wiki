@@ -147,38 +147,29 @@ This is why the study order above exists. Two pages sit slightly apart from that
 
 ### Reading load and pacing
 
-Knowing the size up front is part of being able to finish. Measured from the pages
-themselves (prose only — code blocks and equations excluded):
+Do not estimate this curriculum from word count. Equations, diagrams, covered solutions,
+and parameter changes are the work; a fast prose scan is not completion. Use a **60–90
+minute study session** as the unit and stop when the page's first-pass or exit criterion is
+met.
 
-| Track | Pages | One read-through |
-|---|---:|---:|
-| Foundations 0–10 | 15 | about 2.0 h |
-| Robotics 1–23 (incl. the 11 MR chapters) | 34 | about 3.6 h |
-| Algorithms 11 (interview track) | 8 | about 2.0 h |
-| Robotics 24–25 (haptics & teleoperation, ROS 2) | 18 | about 2.9 h |
-| Construction robotics | 10 | about 0.8 h |
-| Paper notes (115) | 115 | about 3.6 h |
-| Research practice | 8 | about 1.1 h |
-| Research program | 1 | about 0.1 h |
-| **Total** | **209** | **about 16.1 h** |
+| Route | Literacy pass | Working pass | What completion means |
+|---|---:|---:|---|
+| Foundations 0.5–10 | about 15–25 sessions | about 35–60 sessions | cumulative gate + selected problem sets |
+| Deep-learning bridge courses 1–6 | about 6–10 | about 12–18 | six exit checks; Working only for modules used in experiments |
+| Robotics common track 1–11 | about 20–30 | about 45–80 | running-task checkpoints + cumulative problem |
+| One robotics specialization | about 3–8 | about 8–20 | the selected pages' problem sets or build artifacts |
+| Construction entry + one stream | about 3–6 | about 8–15 | site-system ledger + evidence table for the chosen task |
+| Paper track | ongoing | contribution-dependent | ★·◐·○ policy, not a fixed end date |
 
-Read that number honestly: it is *one pass of the prose in one language*, and it is not the
-study time. Working the self-checks and re-deriving the worked examples typically costs
-**3–5× the reading time** — call it 40–70 hours for the whole wiki — and the ★ papers are
-extra: **17** of them read in the original at a few hours each is another 50–70 hours. (The
-list carries an eighteenth ★ mark, but it is the *Modern Robotics* textbook, which is a
-separate commitment and not a few-hours item.) The notes exist so that the 74 ◐ and 40 ○
-papers do *not* need that.
+These are planning ranges, not promises. Prior knowledge can compress a first pass; doing
+the derivations and debugging a build can expand a Working pass. Do not sum every row:
+algorithms, ROS 2, haptics, navigation, human perception, and manipulation are branching
+specializations. The common robotics curriculum stops at page 11, and the
+[[00-study-depth-guide|depth guide]] decides which branch is worth the time.
 
-Not every row is required, and the total above assumes you read everything.
-Robotics 12–25 are specialization layers — manipulation, navigation, human perception, haptics and teleoperation, and the hands-on ROS 2 build track —
-and the common curriculum stops at 11.
-
-A pace that works: **foundations in two weeks** (one page per weekday, self-checks done
-the same day), then the robotics track over three weeks, then papers at two ★ or four ◐
-per week alongside. Nothing here is a deadline — the value of the estimate is that you can
-tell whether you are on a two-month path or a two-year one, and adjust the
-[[00-study-depth-guide|depth targets]] rather than abandon the plan.
+A sustainable pace is four sessions per week: two course sessions, one paper session, and
+one review or implementation session. Re-test the gate every two weeks. Move on when the
+exit criterion is met, not when a calendar says the chapter should be over.
 
 ### Gate check — are the foundations done?
 
@@ -402,33 +393,26 @@ graph LR
 
 ### 학습 분량과 페이스
 
-분량을 미리 아는 것이 완주의 일부다. 페이지에서 직접 측정했다(산문만 — 코드 블록과 수식 제외):
+단어 수로 교과 시간을 계산하지 않는다. 수식·그림·가린 정답·parameter 변경이 공부이며 빠른
+산문 훑기는 완주가 아니다. **60–90분 학습 회차**를 단위로 쓰고 페이지의 first-pass 또는
+통과 기준을 만족하면 멈춘다.
 
-| 트랙 | 페이지 | 1회 정독 |
-|---|---:|---:|
-| 기초 0–10 | 15 | 약 2.0시간 |
-| 로보틱스 1–23 (MR 11개 장 포함) | 34 | 약 3.6시간 |
-| 알고리즘 11 (인터뷰 트랙) | 8 | 약 2.0시간 |
-| 로보틱스 24–25 (햅틱·원격조작, ROS 2) | 18 | 약 2.9시간 |
-| 건설로봇 | 10 | 약 0.8시간 |
-| 논문 노트 (115편) | 115 | 약 3.6시간 |
-| Research Practice | 8 | 약 1.1시간 |
-| Research Program | 1 | 약 0.1시간 |
-| **합계** | **209** | **약 16.1시간** |
+| 경로 | Literacy 통과 | Working 통과 | 완료의 뜻 |
+|---|---:|---:|---|
+| 기초 0.5–10 | 약 15–25회 | 약 35–60회 | 누적 gate + 선택한 problem set |
+| 딥러닝 브리지 교과 1–6 | 약 6–10회 | 약 12–18회 | 여섯 통과 기준; 실험에 쓰는 모듈만 Working |
+| 로보틱스 공통 1–11 | 약 20–30회 | 약 45–80회 | running-task 확인 + 누적 과제 |
+| 로보틱스 전문화 하나 | 약 3–8회 | 약 8–20회 | 선택 페이지의 과제 또는 build 산출물 |
+| 건설 입문 + 스트림 하나 | 약 3–6회 | 약 8–15회 | 현장 시스템 장부 + 선택 작업의 증거 표 |
+| 논문 트랙 | 계속됨 | 기여에 따라 다름 | 고정 종료일이 아니라 ★·◐·○ 정책 |
 
-이 숫자를 정직하게 읽어라: *한 언어로 산문을 1회 통과*하는 시간이지 공부 시간이 아니다.
-자가점검을 풀고 계산 예제를 다시 유도하면 보통 **읽기 시간의 3–5배** — 위키 전체로
-40–70시간 — 가 들고, ★ 논문은 별도다: **17편**을 원문으로 각각 몇 시간씩 읽으면 50–70시간이
-더 붙는다. (목록에 ★가 하나 더 있지만 그것은 *Modern Robotics* 교재이고, 몇 시간짜리 항목이
-아니라 별도의 약속이다.) ◐ 74편과 ○ 40편은 그럴 필요가 없도록 노트가 존재한다.
+계획 범위이지 약속이 아니다. 선수 지식은 first pass를 줄이고, 유도와 debugging은 Working을
+늘린다. 모든 행을 더하지 않는다. 알고리즘·ROS 2·햅틱·내비게이션·사람 인지·매니퓰레이션은
+갈라지는 전문화다. 공통 로보틱스는 11번에서 끝나며 어느 가지를 탈지는
+[[00-study-depth-guide|깊이 가이드]]가 정한다.
 
-모든 행이 필수는 아니고, 위 합계는 전부 읽는다고 가정한 값이다. 로보틱스 12–25번은
-전문화 층 — 매니퓰레이션·내비게이션·사람 인지·햅틱과 원격조작, 그리고 손으로 만드는 ROS 2 트랙 — 이고, 공통 커리큘럼은 11번에서 끝난다.
-
-통하는 페이스: **기초 2주**(평일 하루 한 페이지, 자가점검은 그날 안에), 그다음 로보틱스
-트랙 3주, 그다음부터 주당 ★ 2편 또는 ◐ 4편을 병행. 여기 어떤 것도 마감이 아니다 — 이
-추정치의 쓸모는 지금 두 달짜리 경로에 있는지 두 해짜리 경로에 있는지 알고, 계획을 버리는
-대신 [[00-study-depth-guide|깊이 목표]]를 조절할 수 있다는 데 있다.
+지속 가능한 페이스는 주 4회다: 교과 2회, 논문 1회, 복습 또는 구현 1회. 2주마다 gate를
+다시 검사한다. 달력이 아니라 통과 기준을 만족하면 다음으로 간다.
 
 ### 통과 점검 — 기초는 끝났는가
 

@@ -18,14 +18,16 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 
 ### Subareas
 
-- **Foundations** — backprop, optimization, CNNs, transformers, scaling laws
-- **Computer Vision** — classification, detection, segmentation, 3D (NeRF, Gaussian Splatting)
-- **VLM (Vision-Language Models)** — CLIP-style contrastive models → instruction-tuned multimodal LLMs
-- **VLA (Vision-Language-Action)** — robot foundation models: RT-1/RT-2 → OpenVLA, π0, GR00T
-- **World Models** — Dreamer line, Genie, JEPA, video generation as simulation
-- **Diffusion & Generative** — DDPM → latent diffusion → flow matching, DiT
+Start with [[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]. The six course modules reuse those fixed objects so that representations, objectives, and evidence can be compared rather than relearned from scratch.
 
-Paper notes for these subareas live in the [[01-canonical-papers/canonical-list|canonical paper list]] — start there, with the lineage map open alongside. That is *literacy of papers*. The folders under this chapter (`foundations/`, `computer-vision/`, `vlm/`, `vla/`, `world-models/`, `diffusion/`) are reserved for **engineering-curriculum notes** of the same kind as [[02-foundations/overview|Foundations]]: named objects, derivations, problem sets. They are empty. Filling them is the next curriculum hole; it does not raise the whole field to Mastery.
+1. [[03-deep-learning/foundations/index|Learning Systems]] — tensors, logits, loss, updates, data splits, recipes and scaling claims
+2. [[03-deep-learning/computer-vision/index|Computer Vision]] — convolution and patch tokens; classification, detection, segmentation, depth and 3D outputs
+3. [[03-deep-learning/vlm/index|Vision–Language Models]] — dual encoders, fusion, generation, contrastive batches and grounding
+4. [[03-deep-learning/vla/index|Vision–Language–Action]] — action representations, behavior cloning, chunking, control interfaces and evidence
+5. [[03-deep-learning/world-models/index|World Models]] — latent state, transition, reward, rollout error, planning and model exploitation
+6. [[03-deep-learning/diffusion/index|Diffusion & Flow]] — noising, denoising targets, flow fields, samplers and policy latency
+
+These are **engineering bridge courses**: each names an object, works one calculation, gives a problem set, and states an exit test. They make the canonical papers readable and usable; the [[01-canonical-papers/canonical-list|canonical paper list]] supplies historical depth and primary evidence. Completing a module to Working does not promote the whole field to Mastery.
 
 ## 한국어
 
@@ -39,11 +41,13 @@ Paper notes for these subareas live in the [[01-canonical-papers/canonical-list|
 
 ### 세부 분야
 
-- **기초** — 역전파, 최적화, CNN, 트랜스포머, 스케일링 법칙
-- **컴퓨터비전** — 분류, 검출, 분할, 3D (NeRF, Gaussian Splatting)
-- **VLM** — CLIP 계열 대조학습 모델부터 명령어 튜닝된 멀티모달 LLM까지
-- **VLA** — 로봇 파운데이션 모델: RT-1/RT-2 → OpenVLA, π0, GR00T
-- **월드모델** — Dreamer 계열, Genie, JEPA, 시뮬레이터 역할을 하는 비디오 생성 모델
-- **디퓨전 & 생성모델** — DDPM → latent diffusion → flow matching, DiT
+[[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]에서 시작한다. 여섯 교과 모듈은 같은 고정 대상을 재사용해 표현·목적함수·증거를 서로 비교하게 한다.
 
-세부 분야의 *논문* 노트는 [[01-canonical-papers/canonical-list|핵심 논문 리스트]]에 있다 — 계보도를 옆에 열어 두고 리스트에서 시작하라. 그것은 논문 문해력이다. 이 장 아래 폴더(`foundations/`, `computer-vision/`, `vlm/`, `vla/`, `world-models/`, `diffusion/`)는 [[02-foundations/overview|기초]]와 같은 **공학 교과 노트**(이름 붙은 대상, 유도, 과제)를 위한 자리이고, 지금은 비어 있다. 채우는 것이 다음 교과 구멍이다. 분야 전체를 Mastery로 올리는 일이 아니다.
+1. [[03-deep-learning/foundations/index|Learning Systems]] — tensor, logit, loss, update, data split, 학습 recipe와 scaling 주장
+2. [[03-deep-learning/computer-vision/index|Computer Vision]] — convolution·patch token과 분류·검출·분할·depth·3D 출력
+3. [[03-deep-learning/vlm/index|Vision–Language Models]] — dual encoder, fusion, generation, contrastive batch, grounding
+4. [[03-deep-learning/vla/index|Vision–Language–Action]] — 행동 표현, behavior cloning, chunking, 제어 interface, 증거
+5. [[03-deep-learning/world-models/index|World Models]] — latent state, transition, reward, rollout error, planning, model exploitation
+6. [[03-deep-learning/diffusion/index|Diffusion & Flow]] — noising, denoising target, flow field, sampler, policy latency
+
+각 모듈은 이름 붙은 대상·완전 계산·과제·통과 기준을 갖춘 **공학 브리지 교과**다. 핵심 논문을 읽고 사용할 수 있게 만들며, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]가 역사적 깊이와 1차 증거를 제공한다. 모듈을 Working으로 마쳐도 분야 전체가 Mastery가 되는 것은 아니다.

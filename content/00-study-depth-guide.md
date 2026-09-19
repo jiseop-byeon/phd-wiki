@@ -81,8 +81,8 @@ Not every department subject belongs here. No thermofluids, no structures sequen
 | Rigid-body robotics | SE(3), FK/IK/Jacobian, dynamics, trajectories, planning | MR summaries + page 10 |
 | Contact and haptics | unilateral contact, impedance, rendering, teleoperation | robotics E, H, K |
 | Systems | timing, frames, ROS 2, logs | robotics F, L |
-| Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses | 0.7, 2, 9; **[[03-deep-learning/index\|3. Deep Learning]] subarea folders are empty** — paper notes in ch.1 are not a course |
-| Construction domain | site constraints, task streams | [[05-construction-robotics/index\|5]] — still landscape maps, not a site-engineering course |
+| Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses | 0.7, 2, 9 + the six modules in [[03-deep-learning/index\|3. Deep Learning]] |
+| Construction domain | site constraints, task streams | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + the stream maps in [[05-construction-robotics/index\|5. Construction]] |
 
 Filling a hole means writing a course page in that cell, not promoting the whole field to Mastery.
 
@@ -260,8 +260,8 @@ If the honest answer is "it would be interesting", the answer is no.
 | 강체 로보틱스 | SE(3), FK/IK/야코비안, 동역학, 궤적, 계획 | MR 요약 + 페이지 10 |
 | 접촉과 햅틱 | 단방향 접촉, 임피던스, 렌더링, 원격조작 | 로보틱스 E, H, K |
 | 시스템 | 타이밍, 프레임, ROS 2, 로그 | 로보틱스 F, L |
-| 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로 | 0.7, 2, 9; **[[03-deep-learning/index\|3. 딥러닝]] 세부 폴더는 비어 있다** — 1장의 논문 노트는 교과가 아니다 |
-| 건설 도메인 | 현장 제약, 작업 스트림 | [[05-construction-robotics/index\|5]] — 아직 지형도이지 현장 공학 교과가 아니다 |
+| 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로 | 0.7, 2, 9 + [[03-deep-learning/index\|3. 딥러닝]]의 여섯 모듈 |
+| 건설 도메인 | 현장 제약, 작업 스트림 | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + [[05-construction-robotics/index\|5. Construction]]의 스트림 지도 |
 
 구멍을 메우는 것은 그 칸에 교과 페이지를 쓰는 일이지, 분야 전체를 Mastery로 올리는 일이 아니다.
 
