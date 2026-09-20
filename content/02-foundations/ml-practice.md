@@ -2,6 +2,7 @@
 title: 9. ML Practice & Evaluation
 tags: [foundations]
 study-depth: Working
+wiki-support: Working
 depth-goal: "Use the notation, equations, and diagnostic ideas while reading methods and designing experiments."
 mastery-when: "Raise to Mastery only for the mathematical or estimation component that carries the thesis novelty."
 ---
@@ -21,7 +22,113 @@ The craft knowledge every paper assumes: how models are trained, validated, and 
 all — *measured*. This page is the decoder for every "Results" table in the wiki.
 
 > [!note] First pass · 처음이라면
-> Read §1 — the one sacred rule — then §5, the traps. §3 is a dictionary: do not read it, keep it open next to a results table. Everything else you will absorb by using it.
+> Read the running object and the five derivations on it, then §1 — the one sacred rule — then §5, the traps, which are that object read wrong. §3 is a dictionary: do not read it, keep it open next to a results table. Everything else you will absorb by using it.
+
+### Running object · 이 페이지의 대상
+
+Evaluation is not a machine, so no plant **P1**–**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] fits. The nearest catalog entry is **P5**'s crack detector, and it is the wrong shape: P5 specifies *probabilities* — $P(+ \mid c) = 0.95$, $P(+ \mid \neg c) = 0.05$, $P(c) = 0.01$ — which is what a Bayes update needs, while every metric on this page is a ratio of **counts** on a finite test set, and that finiteness is the whole subject of §4. So this page freezes its own object and never changes its numbers afterwards. Every number in it is invented on purpose: it is a teaching object, not a measurement.
+
+**E1 — one crack detector, three records.** The model scores each wall panel in $[0, 1]$, and a panel is *flagged* when its score reaches the deployed threshold $\tau = 0.55$.
+
+**E1a, the full audit.** 1,000 panels, 60 of them really cracked. At $\tau = 0.55$ the detector flags 50, of which 40 are real:
+
+| | predicted crack | predicted fine |
+|---|---|---|
+| **really cracked** | TP = 40 | FN = 20 |
+| **really fine** | FP = 10 | TN = 930 |
+
+**E1b, the score slice.** Seven panels **chosen to span the score range** — three cracked, four sound — with the raw scores recorded before any threshold, so that a sweep can be done by hand:
+
+| truth | cracked | cracked | cracked | fine | fine | fine | fine |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| score | 0.90 | 0.80 | 0.60 | 0.70 | 0.50 | 0.40 | 0.20 |
+
+E1b is not a random sample of the site, so no rate computed on it estimates a deployment rate — it is here for ordering and for sweeping, and the self-check asks you to say why that distinction is not a technicality.
+
+**E1c, the trial record.** Two further runs of the same system. A **site pilot**: a robot inspector attempts 10 independent panels and succeeds on 9. And a **seed record**: this method and the method it is compared against are each retrained on four random seeds under one matched recipe — same schedule, same budget, same 25-episode benchmark — giving successes out of 25 of 21, 22, 20, 19 (ours) and 18, 19, 20, 21 (the prior method). The published two-row table in §6 quotes the first seed of each: $22/25 = 0.88$ against $18/25 = 0.72$.
+
+*Scope: this page teaches how to read a results table — what each metric counts, what it hides, and how wide its uncertainty is. It does not teach how to design the experiment that produced the table, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]], nor the hypothesis tests behind the intervals, which are [[02-foundations/probability|3. Probability §6]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+Draw these three panels once. The problem set asks for the same three at a different threshold.
+
+1. **The 2×2 box.** E1a's four counts in a square, columns labelled by the *prediction* and rows by the *truth*. Ring the column precision divides by and the row recall divides by in two different colours, and mark TP where the two rings cross. Shade TN and write beside it: neither ratio uses this cell.
+2. **The ROC axes, with one point on them.** FPR across, TPR up, the chance diagonal, and E1a's operating point at $(0.011,\ 0.667)$. Beside the point write its precision, $0.80$; then write $0.27$ under that — the precision of the *same point* at a site with one-tenth the crack rate. The point does not move. That is the entire picture.
+3. **The interval strip.** A horizontal axis from 0 to 1. Mark E1c's pilot estimate $\hat p = 0.9$ and stack three intervals above it: the normal approximation, the Wilson interval, the percentile bootstrap. Mark where the first one leaves the axis.
+
+A correct drawing has already answered the hardest question in §4 — which of those three intervals you are allowed to print under a ten-trial number.
+
+### Worked case · 대상으로 한 번 끝까지
+
+**1. The four counted metrics, and why accuracy lies.** E1a's table is the **confusion matrix** of a binary classifier at one threshold: every test item lands in exactly one cell, named by whether the *prediction* was positive or negative and whether it was *true* or *false*. **TP** (true positive) = predicted crack, really cracked; **FP** (false positive, a false alarm) = predicted crack, really fine; **FN** (false negative, a miss) = predicted fine, really cracked; **TN** (true negative) = predicted fine, really fine. Every metric here is a ratio of those four counts:
+
+$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
+
+so precision divides by the *predicted*-positive column and recall by the *really*-positive row, which is why the two answer different questions. $F_1$ is the harmonic mean of $P$ and $R$. Both precision and recall ignore TN, so they stay informative when negatives vastly outnumber positives. Substituting E1a's counts:
+
+- **Accuracy** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — and a detector that simply says "fine" every single time scores $\frac{940}{1000} = 94.0\%$. Accuracy is nearly useless here, and that 94% is the **non-example** that shows why: a metric which a constant answer nearly matches is not measuring the skill you care about.
+- **Precision** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — of what you flagged, 80% was real. This is the number an inspector cares about: how often a dispatch is wasted.
+- **Recall** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.667$ — of the real cracks you caught two-thirds. **20 cracks were missed**, and that is the number a safety engineer cares about.
+- **F1** $= \frac{2PR}{P+R} = \frac{2(0.80)(0.667)}{1.467} = 0.727$ — the harmonic mean, which stays low if *either* is low. **Non-example:** the arithmetic mean of the same two numbers is $0.733$, and it scores a lopsided precision $0.9$ with recall $0.5$ at $0.70$ — barely lower — where the harmonic mean of that pair is $0.643$. Hiding a bad half behind a good one is exactly what $F_1$ refuses to do.
+
+The lesson to carry into every Results table: precision and recall trade against each other through one threshold knob, so a paper reporting only the flattering one has told you half a sentence. And in construction the asymmetry is real — a false alarm costs an inspection, a missed crack can cost a structure.
+
+**2. Ranking with no threshold at all: AUC on E1b.** Sweep the threshold and each setting gives a *true positive rate* $\text{TPR} = TP/(TP+FN)$ (that is recall) and a *false positive rate* $\text{FPR} = FP/(FP+TN)$. Plotting TPR against FPR traces the **ROC curve**, and the area under it is the **AUC**. AUC has an exact meaning worth carrying: it is the probability that a randomly chosen positive is scored above a randomly chosen negative. Take E1b's cracked panels $0.90, 0.80, 0.60$ against its sound ones $0.70, 0.50, 0.40, 0.20$: of the $3 \times 4 = 12$ pairs, 11 are ordered correctly, so $\text{AUC} = 11/12 = 0.917$ — no threshold involved. Written as the pair count it is:
+
+$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
+
+where $s_i^+$ are the $n_+$ positive items' scores, $s_j^-$ the $n_-$ negatives', and $\mathbb{1}[\cdot]$ is 1 when its condition holds and 0 otherwise; a tie counts half, since it is a coin flip. The one wrong pair above is the cracked $0.60$ below the sound $0.70$. AUC $= 0.5$ is chance ordering and $1$ is perfect. **Non-example:** AUC is not accuracy at the best threshold. Sweeping E1b, the best any single threshold does is 6 of 7 panels right, $0.857$ (at $\tau = 0.75$ and again at the deployed $\tau = 0.55$), while the AUC of those same seven scores is $0.917$, because AUC never commits to a threshold and is paid only for the ordering. **Why it matters:** a paper that reports only AUC has told you the model ranks well, and nothing about what happens when somebody has to pick a threshold and dispatch an inspector.
+
+**3. The same ROC point, a different base rate.** That threshold-independence is why AUC is reported, and the base-rate independence hiding behind it is why it misleads. E1a sits at $\text{TPR} = 40/60 = 0.667$ and $\text{FPR} = 10/940 = 0.011$. Move that same detector to a better-built site where only **0.6%** of panels are cracked instead of 6%, and out of 1,000 panels it now yields $TP = 0.667 \times 6 = 4.0$ and $FP = 0.011 \times 994 = 10.6$:
+
+| | 6% cracked | 0.6% cracked |
+|---|---|---|
+| TPR | 0.667 | 0.667 — unchanged |
+| FPR | 0.011 | 0.011 — unchanged |
+| ROC point | identical | identical |
+| **Precision** | **0.80** | **0.27** |
+
+The ROC curve and the AUC do not move at all, while precision collapses by a factor of three. **TPR and FPR are conditional rates within the actual-positive and actual-negative groups**, so preserving the two class-conditional score distributions preserves the ROC curve even when the positive prevalence changes. Precision instead conditions on a positive prediction and therefore depends on prevalence. So an AUC measured on a balanced benchmark tells you almost nothing about how a system behaves in a deployment where positives are rare — the situation in [[04-robotics/human-intent-prediction|23. Intent prediction §5]], and in every alarm system on a site. When a paper reports AUC, ask for precision at a stated recall, on the deployment base rate.
+
+**4. How wide is "9 out of 10"? A bootstrap on E1c.**
+
+> [!info] Definition — percentile bootstrap confidence interval
+> **What kind of thing it is:** an interval estimate produced by a *procedure*, not a formula read off an assumed distribution. Three conditions make a bootstrap a bootstrap: (1) each **resample** draws $n$ items **with replacement** from the observed sample of size $n$, so an item may appear twice or not at all; (2) the statistic is recomputed on every resample, and their spread is the **bootstrap distribution** $\hat\theta^*$; (3) the **percentile** interval is the $\alpha/2$ and $1-\alpha/2$ quantiles of that distribution,
+> $$\text{CI}_{1-\alpha} = \Big[\,Q_{\alpha/2}\big(\hat\theta^*\big),\ Q_{1-\alpha/2}\big(\hat\theta^*\big)\,\Big]$$
+> where $Q_q$ is the smallest attainable value the bootstrap distribution reaches with probability at least $q$, and $\alpha = 0.05$ for a 95% interval. The whole trick is that the sample you have stands in for the population you do not.
+> **Example.** E1c's pilot, derived below: $[0.70,\ 1.00]$.
+> **Non-example.** Ten successes out of ten. Every resample of an all-success sample is all successes, so the bootstrap distribution is the single point $1.00$ and the "95% interval" is $[1.00,\ 1.00]$ — certainty claimed from ten trials. A bootstrap can never reach outside the range of the data it was handed, so it fails hardest exactly where the data are thinnest.
+> **Why it matters.** Robotics papers quote bootstrap intervals over tens of rollouts. Knowing that the ends of such an interval are attainable sample values, and that its granularity is $1/n$, is what stops you reading $[0.70,\ 1.00]$ as a measurement rather than as an admission of ignorance.
+
+For a **binary** outcome the bootstrap needs no simulation at all, and it is worth doing by hand once. Drawing one item from E1c's ten pilot trials returns a success with probability $\hat p = 9/10$, and the $n$ draws are independent, so resampling with replacement *is* sampling from a Bernoulli with parameter $\hat p$ and the bootstrap distribution is exactly binomial:
+
+$$\Pr\Big[\hat p^* = \frac{x}{n}\Big] = \binom{n}{x}\,\hat p^{\,x}\,(1-\hat p)^{\,n-x}$$
+
+because $x$, the number of successes in one resample, counts $n$ independent draws each succeeding with probability $\hat p$. With $n = 10$ and $\hat p = 0.9$:
+
+| $x$ | $\hat p^* = x/10$ | $\Pr[\hat p^* = x/10]$ | cumulative |
+|---:|---:|---:|---:|
+| $\le 5$ | $\le 0.5$ | 0.0016 | 0.0016 |
+| 6 | 0.6 | 0.0112 | 0.0128 |
+| 7 | 0.7 | 0.0574 | 0.0702 |
+| 8 | 0.8 | 0.1937 | 0.2639 |
+| 9 | 0.9 | 0.3874 | 0.6513 |
+| 10 | 1.0 | 0.3487 | 1.0000 |
+
+The 2.5% quantile is the smallest value whose cumulative probability reaches $0.025$, which is $x = 7$ at $0.0702$, and the 97.5% quantile is $x = 10$. The percentile bootstrap 95% interval for the pilot is therefore $[0.70,\ 1.00]$, and three properties of it are the lesson.
+
+It is **discrete**. Only multiples of $0.1$ are attainable with ten trials, so no interval can land on 95%: this one actually carries $1 - 0.0128 = 98.7\%$ of the bootstrap distribution, and dropping $x = 7$ from it would leave $92.98\%$. It is **bounded by the data**: the upper end is $1.00$ because no resample can beat the best you saw, and $0.9^{10} = 0.349$ of all resamples miss the single failure entirely. And it is **not** the other two intervals. The normal approximation on the same counts is $0.9 \pm 1.96\sqrt{0.9 \times 0.1/10} = 0.9 \pm 0.186 = [0.714,\ 1.086]$, which runs off the end of the axis; the Wilson interval is $[0.596,\ 0.982]$, inside $[0,1]$ and far wider at the bottom, because it asks which true $p$ could plausibly have produced 9 of 10 rather than which resamples of those 10 are plausible. **Report the counts.** "90%" and "9/10" are the same estimate with completely different uncertainty, and only the second lets a reader recompute any of this.
+
+**5. One seed or four? The same experiment, two claims.** E1c's seed record holds four runs per method, so the published pair is one row of a table with three more rows behind it. Using the sample standard deviation and standard error of §4, ours at 84, 88, 80, 76% gives $\bar x_A = 82.0$ and $s_A = 5.16$; the prior method at 72, 76, 80, 84% gives $\bar x_B = 78.0$ and $s_B = 5.16$; each has $\text{SE} = 5.16/\sqrt4 = 2.58$ points. The difference of the means is **4.0** points, not 16. An interval on a *difference* needs the two standard errors combined, which for equal group sizes $n$ is
+
+$$\big(\bar x_A - \bar x_B\big) \pm t_{0.975,\,2n-2}\; s_p \sqrt{\tfrac1n + \tfrac1n}, \qquad s_p^2 = \frac{(n-1)s_A^2 + (n-1)s_B^2}{2n-2}$$
+
+because independent errors add in variance when they are subtracted, so the spread of a difference is larger than either alone. Here $s_A = s_B$ makes $s_p = 5.16$, the standard error of the difference is $5.16\sqrt{0.5} = 3.65$ points, $t_{0.975,\,6} = 2.447$, and
+
+$$4.0 \pm 2.447 \times 3.65 = 4.0 \pm 8.9 = [-4.9,\ 12.9]$$
+
+so the interval contains zero and four seeds per method cannot separate the two. Nothing was faked to get the headline: $88 - 72 = 16$ is the best seed of one method against the worst seed of the other, and both numbers sit in the same honest record. **A single-seed gap is a statistic of the seeds you chose to print.** The same eight runs support "a 16-point gain" and "a 4-point difference indistinguishable from none", and the only thing that decides which sentence a reader gets is whether the counts and the seed count were printed.
 
 ### 1. Data splits — the one sacred rule
 
@@ -39,7 +146,7 @@ all — *measured*. This page is the decoder for every "Results" table in the wi
   why [[01-canonical-papers/notes/3-vlm/clip|CLIP]]'s robustness results mattered so much.
   - *Definition:* $p_{\text{tr}}(x, y) \ne p_{\text{te}}(x, y)$, where $p(x, y)$ is the joint distribution of inputs and labels. Since $p(x, y) = p(x)\,p(y \mid x) = p(y)\,p(x \mid y)$, there are three named kinds, depending on which factor moves:
     - **covariate shift** — $p(x)$ changes, $p(y \mid x)$ does not: new lighting, same meaning of "crack". This is also the imitation-learning failure mode, where the policy's own states are the shifted inputs ([[02-foundations/rl-basics|7. RL Basics §6]]);
-    - **label (prior) shift** — $p(y)$ changes, $p(x \mid y)$ does not: the crack rate drops from 6% to 0.6%, and a crack still looks like a crack. The ROC-versus-precision table in §3 is exactly this case;
+    - **label (prior) shift** — $p(y)$ changes, $p(x \mid y)$ does not: the crack rate drops from 6% to 0.6%, and a crack still looks like a crack. The ROC-versus-precision table in the worked case is exactly this case;
     - **concept shift** — $p(y \mid x)$ itself changes: a site adopts a stricter definition of a reportable crack, so the same image gets a different label.
   - **Out-of-distribution (OOD)** inputs are the extreme case: test inputs from regions where $p_{\text{tr}}(x)$ is essentially zero, so the model has no data to interpolate from.
 - Data leakage: test information sneaking into training (duplicates, temporal overlap,
@@ -103,73 +210,7 @@ Regularization helps because fitting every training detail can make a model depe
 | Robotics | **success rate** | fraction of trials achieving the goal — plus *which* trials (seen/unseen) matters more than the number |
 | Retrieval | recall@k | truth within top-k results |
 
-**Worked example — why accuracy lies on imbalanced data.** A crack detector is run on
-1,000 wall panels; 60 really have cracks. It flags 50 panels, of which 40 are real cracks.
-Lay the four counts out:
-
-| | predicted crack | predicted fine |
-|---|---|---|
-| **really cracked** | TP = 40 | FN = 20 |
-| **really fine** | FP = 10 | TN = 930 |
-
-That table is the **confusion matrix** of a binary classifier at one threshold: every test item lands in exactly one cell, named by whether the *prediction* was positive or negative and whether it was *true* or *false*. **TP** (true positive) = predicted crack, really cracked; **FP** (false positive, a false alarm) = predicted crack, really fine; **FN** (false negative, a miss) = predicted fine, really cracked; **TN** (true negative) = predicted fine, really fine. Every metric below is a ratio of these four counts:
-
-$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
-
-so precision divides by the *predicted*-positive column and recall by the *really*-positive row, which is why the two answer different questions. $F_1$ is the harmonic mean of $P$ and $R$. Both precision and recall ignore TN, so they stay informative when negatives vastly outnumber positives.
-
-- **Accuracy** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — and a detector that
-  simply says "fine" every single time scores $94.0\%$. Accuracy is nearly useless here.
-- **Precision** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — of what you flagged, 80% was
-  real. This is the number an inspector cares about: how often a dispatch is wasted.
-- **Recall** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — of the real cracks, you caught
-  two-thirds. **20 cracks were missed**, and that is the number a safety engineer cares about.
-- **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — the harmonic mean, which
-  stays low if *either* is low (an arithmetic mean of the same two numbers is 0.73, and it would
-  have scored a lopsided precision 0.9 with recall 0.5 at 0.70 — barely lower, which is
-  exactly the hiding the harmonic mean refuses to do).
-
-The lesson to carry into every Results table: precision and recall trade against each other
-through one threshold knob, so a paper reporting only the flattering one has told you half a
-sentence. And in construction the asymmetry is real — a false alarm costs an inspection, a
-missed crack can cost a structure.
-
-**ROC and AUC — and the one property that makes them dangerous.** Sweep the threshold and
-each setting gives a *true positive rate* $\text{TPR} = TP/(TP+FN)$ (that is recall) and a
-*false positive rate* $\text{FPR} = FP/(FP+TN)$. Plotting TPR against FPR traces the **ROC
-curve**, and the area under it is the **AUC**. AUC has an exact meaning worth carrying: it
-is the probability that a randomly chosen positive is scored above a randomly chosen
-negative. Score three cracked panels $0.9, 0.8, 0.6$ and four sound ones
-$0.7, 0.5, 0.4, 0.2$; of the $3 \times 4 = 12$ pairs, 11 are ordered correctly, so
-$\text{AUC} = 11/12 = 0.92$ — no threshold involved. Written as the pair count it is:
-
-$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
-
-where $s_i^+$ are the $n_+$ positive items' scores, $s_j^-$ the $n_-$ negatives', and $\mathbb{1}[\cdot]$ is 1 when its condition holds and 0 otherwise; a tie counts half, since it is a coin flip. The one wrong pair above is the cracked $0.6$ below the sound $0.7$. AUC $= 0.5$ is chance ordering and $1$ is perfect.
-
-That threshold-independence is why AUC is reported, and the base-rate independence hiding
-behind it is why it misleads. The detector above sits at $\text{TPR} = 40/60 = 0.667$ and
-$\text{FPR} = 10/940 = 0.011$. Move the same detector to a better-built site where only
-**0.6%** of panels are cracked instead of 6%, and out of 1,000 panels it now yields
-$TP = 4.0$, $FP = 10.6$:
-
-| | 6% cracked | 0.6% cracked |
-|---|---|---|
-| TPR | 0.667 | 0.667 — unchanged |
-| FPR | 0.011 | 0.011 — unchanged |
-| ROC point | identical | identical |
-| **Precision** | **0.80** | **0.27** |
-
-The ROC curve and the AUC do not move at all, while precision collapses by a factor of
-three. **TPR and FPR are conditional rates within the actual-positive and actual-negative
-groups**, so preserving the two class-conditional score distributions preserves the ROC
-curve even when the positive prevalence changes. Precision instead conditions on a positive
-prediction and therefore depends on prevalence. So an AUC
-measured on a balanced benchmark tells you almost nothing about how a system behaves in a
-deployment where positives are rare — the situation in
-[[04-robotics/human-intent-prediction|23. Intent prediction §5]], and in every alarm system
-on a site. When a paper reports AUC, ask for precision at a stated recall, on the deployment
-base rate.
+Accuracy, precision, recall, $F_1$ and AUC are the metrics this page derives in full, and they are worked on **E1** in the worked case above — with the base-rate collapse that makes an AUC on a balanced benchmark nearly uninformative about a deployment. The rest of the dictionary follows here.
 
 #### The rest of the dictionary, with formulas
 
@@ -177,7 +218,7 @@ The table's one-line glosses are enough to recognize a metric; these are enough 
 
 - **Top-$k$ accuracy.** The fraction of items whose true class is among the $k$ highest-scoring classes,
   $$\text{Acc}@k = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}\big[y_i \in \text{top-}k(\hat p_i)\big]$$
-  so top-1 is ordinary accuracy, and top-5 forgives any ranking error inside the first five.
+  so top-1 is ordinary accuracy, and top-5 forgives any ranking error inside the first five. An item whose true class the model ranks third counts as correct for top-5 and wrong for top-1, which is the whole gap between the two columns of an ImageNet table.
 - **IoU (intersection over union).** For a predicted region $A$ and a ground-truth region $B$ (boxes or pixel masks), with $|\cdot|$ the area:
   $$\text{IoU}(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
   which is 1 for a perfect match and 0 for no overlap. Boxes $[0,2]\times[0,2]$ and $[1,3]\times[1,3]$ overlap in a $1 \times 1$ square, so $\text{IoU} = 1/(4 + 4 - 1) = 1/7 = 0.143$. A detection counts as a TP only if its IoU with an unmatched ground-truth object reaches the threshold (0.5 for PASCAL VOC), so these two boxes would be a false positive *and* a miss.
@@ -194,7 +235,9 @@ The table's one-line glosses are enough to recognize a metric; these are enough 
 - **BLEU.** A geometric mean of *clipped* $n$-gram precisions $p_n$ (each candidate $n$-gram counts at most as often as it appears in the reference), times a brevity penalty for candidates shorter than the reference:
   $$\text{BLEU} = \text{BP} \cdot \exp\Big(\sum_{n=1}^{4} \tfrac14 \log p_n\Big), \qquad \text{BP} = \begin{cases} 1 & c > r \\ e^{\,1 - r/c} & c \le r \end{cases}$$
   with $c$ and $r$ the candidate and reference lengths. Candidate "the cat sat on the mat" against reference "the cat is on the mat": $p_1 = 5/6$, $p_2 = 3/5$, $p_3 = 1/4$, $p_4 = 0/3$, $\text{BP} = 1$. **The boundary case:** one zero $p_4$ makes sentence-level BLEU exactly $0$ for a nearly correct sentence, which is why BLEU is computed over a whole corpus or with smoothing; the two-gram version here would be $\sqrt{(5/6)(3/5)} = 0.707$.
-- **Success rate.** For $n$ independent trials with $k$ successes, $\hat p = k/n$, with binomial standard error $\sqrt{\hat p(1 - \hat p)/n}$. At 9 of 10 that is $0.095$, and the normal-approximation 95% interval $0.9 \pm 1.96 \times 0.095 = [0.714, 1.086]$ runs past 100% — a non-example of an interval to report. The Wilson interval stays inside $[0, 1]$ and gives $[0.596, 0.982]$ ([[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]). The number is meaningless without the episode definition (§5).
+- **Success rate.** The fraction of trials achieving the goal: for $n$ independent trials with $k$ successes, $\hat p = k/n$, with binomial standard error
+  $$\text{SE}\big(\hat p\big) = \sqrt{\frac{\hat p\,(1 - \hat p)}{n}}$$
+  so the uncertainty shrinks only as $\sqrt n$ and is largest at $\hat p = 0.5$. At E1c's 9 of 10 it is $0.095$. *Which interval* to print around it is the part that goes wrong: the normal approximation, the Wilson interval ([[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]) and the percentile bootstrap disagree at $n = 10$, and all three are derived on E1c in the worked case. The number is meaningless without the episode definition (§5).
 - **Recall@$k$ (retrieval).** The fraction of queries whose correct item is ranked within the first $k$ results, $\frac{1}{|Q|}\sum_{q \in Q} \mathbb{1}[\text{rank}_q \le k]$ over the query set $Q$. Three queries whose true items rank 1, 4 and 12 give recall@5 $= 2/3$. It shares a name with classification recall but not a denominator: here the denominator is queries, not positives.
 
 - Read metrics adversarially: success rate on *what* distribution, of *how many* trials,
@@ -222,18 +265,18 @@ The table's one-line glosses are enough to recognize a metric; these are enough 
   tighter error bars for free — check the caption before comparing two papers' bars — robotics papers report over several *rollouts and scenes*.
   - *The three quantities, written out* for $n$ runs with results $x_1, \dots, x_n$ and mean $\bar x$:
   $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
-  The sample standard deviation $s$ divides by $n - 1$ because $\bar x$ was estimated from the same numbers; SE shrinks with $\sqrt n$ because averaging cancels run-to-run noise; and the **confidence interval** multiplies SE by a Student-$t$ quantile $t_{0.975,\,n-1}$, which is larger than the normal 1.96 when $n$ is small. It is a procedure that covers the true mean in 95% of repeated experiments, not a 95% probability statement about this one interval. Worked, four seeds at 72, 76, 80, 84% success: $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$, so the 95% CI is $[69.8, 86.2]$. The same four runs can therefore be drawn with bars of $\pm 2.6$, $\pm 5.2$ or $\pm 8.2$ points, depending on which quantity the caption names. How to test a *difference* between two methods is [[02-foundations/probability|3. Probability §6]].
+  The sample standard deviation $s$ divides by $n - 1$ because $\bar x$ was estimated from the same numbers; SE shrinks with $\sqrt n$ because averaging cancels run-to-run noise; and the **confidence interval** multiplies SE by a Student-$t$ quantile $t_{0.975,\,n-1}$, which is larger than the normal 1.96 when $n$ is small. It is a procedure that covers the true mean in 95% of repeated experiments, not a 95% probability statement about this one interval. Worked, four seeds at 72, 76, 80, 84% success: $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$, so the 95% CI is $[69.8, 86.2]$. The same four runs can therefore be drawn with bars of $\pm 2.6$, $\pm 5.2$ or $\pm 8.2$ points, depending on which quantity the caption names. How to test a *difference* between two methods is [[02-foundations/probability|3. Probability §6]]; the worked case runs that difference on E1c's two four-seed records, and the published 16-point gap does not survive it.
 
 ### 5. Evaluation pitfalls to watch for in papers
 
-- **Cherry-picking**: qualitative figures show the best runs — ask what the *median* rollout looks like.
-- **Statistical vs practical significance**: error-bar overlap alone does not settle significance — check what the bars represent (std? standard error? CI?), the number of runs, and pairedness. A +0.3%p gain may be noise or may matter (on a saturated benchmark); +5%p from one seed can be luck. Ask for variance first.
+- **Cherry-picking**: qualitative figures show the best runs — ask what the *median* rollout looks like. E1c is the arithmetic of it: the published $0.88$ is the best of four seeds and the median seed is $0.82$, so the headline is a maximum wearing the clothes of an average.
+- **Statistical vs practical significance**: error-bar overlap alone does not settle significance — check what the bars represent (std? standard error? CI?), the number of runs, and pairedness. A +0.3%p gain may be noise or may matter (on a saturated benchmark); +5%p from one seed can be luck. Ask for variance first — E1c's own numbers are 16 points on one seed and $4.0 \pm 8.9$ points on four.
   - The two are different questions. **Statistical significance** asks whether the observed difference would be unlikely if the true difference were zero — a p-value below a stated level such as 0.05 ([[02-foundations/probability|3. Probability §6]]). **Practical significance** asks whether the difference is large enough to matter for the task, judged by the effect size and its CI against a threshold fixed in advance. The first tends toward "yes" as $n$ grows, even for a negligible effect; the second does not change with $n$, which is why a paper needs both.
-- **Oracle information**: does the method quietly use ground-truth state, perfect calibration, or human resets that deployment won't have?
-- **Open-loop vs closed-loop evaluation**: predicting a good trajectory offline (open-loop) is far easier than executing under feedback with compounding errors (closed-loop) — robotics numbers are only comparable within the same regime.
+- **Oracle information**: does the method quietly use ground-truth state, perfect calibration, or human resets that deployment won't have? E1a's column of 60 "really cracked" panels is one: somebody opened a wall to produce it, and the detector will never have that column on site.
+- **Open-loop vs closed-loop evaluation**: predicting a good trajectory offline (open-loop) is far easier than executing under feedback with compounding errors (closed-loop) — robotics numbers are only comparable within the same regime. E1a and E1c's pilot are the two regimes of one system — 1,000 stored images scored, against 10 panels a robot actually drove to — and no arithmetic turns the first number into the second.
   - *Defined by where the input states come from.* **Open-loop** evaluation feeds the policy $\pi$ the states of a recorded dataset and scores its outputs against the recorded actions, for example $\frac{1}{N}\sum_{i=1}^{N} \lVert \pi(o_i) - a_i \rVert$ over $N$ logged pairs $(o_i, a_i)$, so the policy's mistakes never change what it sees next. **Closed-loop** evaluation executes $\pi$'s actions, so the next observation is produced by those actions, and it scores the outcome (success rate over rollouts). A low open-loop error does not imply closed-loop success, because in closed loop small errors move the policy into states the dataset never contained — covariate shift ([[02-foundations/rl-basics|7. RL Basics §6]]).
-- **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things.
-- **Benchmark saturation**: near-ceiling benchmarks reward overfitting to quirks; gains there generalize least.
+- **Episode definition**: "success rate" depends on time limits, reset conditions, and what counts as success — two papers' 80% can mean different things. E1c's $9/10$ is undefined until that sentence is written: flagged and reached? flagged, reached and photographed inside the time limit? The bootstrap in the worked case is exact arithmetic on a number this definition has to fix first.
+- **Benchmark saturation**: near-ceiling benchmarks reward overfitting to quirks; gains there generalize least. E1a's 97% accuracy is that ceiling by construction, since 94% of it comes free from answering "fine".
 
 ### 6. The training recipe, as vocabulary
 
@@ -251,14 +294,14 @@ one of them is not comparing what it claims.
 | **EMA of weights** | keep a slowly-moving average of the parameters and *evaluate that*, not the live weights | a free fraction of a point on many benchmarks. Diffusion papers use it almost universally (DDPM: decay 0.9999, an appendix figure); policy papers vary and often only the **code** reveals it — Diffusion Policy uses it in its configs without mentioning it in the paper. Distinct from the EMA *teacher* of [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]], which is a target network, not an evaluation trick |
 | **Initialization** | Xavier/He scaling keeps activation variance stable across depth | rarely load-bearing now that normalization layers exist, but named when a paper trains without them |
 
-**Worked: a two-row table the abstract will quote.** Invented, on purpose:
+**The two-row table the abstract will quote.** These are E1c's published rows, reprinted here where the recipe vocabulary is:
 
 | Method | Success | Trials | Training |
 |---|---:|---:|---|
 | Ours | 0.88 | 25 | new schedule, one seed |
 | Prior SOTA | 0.72 | 25 | the 2021 paper's recipe |
 
-The 16-point gap is the claim. It silently depends on $n=25$, one seed, and a recipe mismatch — this section's warning. Retrain the SOTA with the new schedule and several seeds; if the gap vanishes the claim was a recipe. Separately $22/25$ vs $18/25$ is a thin binomial. The problem set is this table as a drawing.
+The 16-point gap is the claim. It silently depends on $n=25$, one seed, and a recipe mismatch — this section's warning. Retrain the SOTA with the new schedule and several seeds; if the gap vanishes the claim was a recipe. E1c is that retraining: four seeds each under one matched recipe leave $4.0 \pm 8.9$ points, an interval containing zero, so twelve of the sixteen points were the seed and the recipe rather than the method. Separately $22/25$ vs $18/25$ is a thin binomial.
 
 #### The recipe terms, with their formulas
 
@@ -284,6 +327,19 @@ The 16-point gap is the claim. It silently depends on $n=25$, one seed, and a re
 > [!tip] Going deeper · 더 깊이
 > This page is the reading half; the doing half is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]], which is where the same ideas become choices you have to make. For the statistics underneath, Murphy's free [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) ch.4–6.
 
+### Problem set · 과제
+
+Tier B. Hand derivation on **E1**, using only this page, its prerequisites and the object frozen above. A different threshold and a different base rate from the worked case.
+
+1. **Draw.** From E1b's seven scores, draw the $2\times2$ confusion matrix at threshold $\tau = 0.65$ and again at $\tau = 0.45$, and put both operating points on the ROC axes. Label each point with its precision. What does the step between the two points tell you about the panels scoring between $0.45$ and $0.65$?
+2. **Derive.** Take the $\tau = 0.65$ point, unchanged, to a site where 1% of panels are cracked, and compute its precision over 1,000 panels. Then, holding TPR fixed, find the FPR that would give precision $0.5$ at that base rate, and state by what factor the detector must improve.
+3. **Interpret.** E1c's pilot gives $\hat p = 0.9$ from 10 trials and a percentile bootstrap of $[0.70,\ 1.00]$. (a) Why can that interval's upper end never exceed $1.00$ here, and what would the interval be had the pilot gone 10 for 10? (b) A referee asks for "the success rate with error bars". Which of §4's three quantities, and which of the three intervals, should the pilot's row carry — and what else must be printed beside it before a reader can check your answer?
+
+> [!tip]- Solutions
+> 1. At $\tau = 0.65$ the flags are the cracked $0.90$ and $0.80$ plus the sound $0.70$: $TP = 2$, $FN = 1$, $FP = 1$, $TN = 3$, so precision $2/3 = 0.667$, recall $2/3 = 0.667$, and the point is $(\text{FPR},\ \text{TPR}) = (0.25,\ 0.667)$. At $\tau = 0.45$ the cracked $0.60$ and the sound $0.50$ join them: $TP = 3$, $FN = 0$, $FP = 2$, $TN = 2$, precision $3/5 = 0.600$, recall $1.000$, point $(0.50,\ 1.00)$. Exactly one cracked panel and one sound panel score inside $[0.45,\ 0.65)$, so crossing that band buys the last crack at the price of one more false alarm — recall $0.667 \to 1.000$ while FPR $0.25 \to 0.50$ — and precision *falls* while recall rises, which is the trade-off the worked case names, drawn on seven panels.
+> 2. At 1% of 1,000 panels there are 10 cracked and 990 sound. Holding the point fixed, $TP = 0.667 \times 10 = 6.67$ and $FP = 0.25 \times 990 = 247.5$, so precision $= 6.67/254.17 = 0.026$ — a factor of 25 below the $0.667$ computed on E1b, where 3 of 7 panels were cracked. For precision $0.5$ the false alarms must fall to $FP = TP = 6.67$, that is $\text{FPR} = 6.67/990 = 0.0067$: the false-positive rate has to improve by a factor of 37 with recall held. That factor is the concrete content of "ask for precision at a stated recall, on the deployment base rate."
+> 3. (a) Every resample is drawn from the ten recorded trials, which contain nine successes and one failure, so the largest attainable $\hat p^*$ is $1.00$ — reached by any resample that misses the single failure, which is $0.9^{10} = 0.349$ of them. Had the pilot gone 10 for 10 the bootstrap distribution would be the single point $1.00$ and the interval $[1.00,\ 1.00]$: the non-example in the worked case, an interval claiming certainty from ten trials. (b) Not $s$ and not SE — those describe scatter across *runs*, and the pilot is one run of 10 Bernoulli trials, so there is no run-to-run spread to report. The row should carry an interval, and Wilson $[0.596,\ 0.982]$ is the defensible one: the bootstrap cannot see above its own data and the normal approximation leaves the axis. Beside it must appear $k$ and $n$ — "9/10", not "90%" — and the episode definition of §5, because without those two the interval cannot be recomputed or even interpreted.
+
 ### Self-check
 
 1. A model picks its best checkpoint by test accuracy. What went wrong, and in which
@@ -293,32 +349,16 @@ The 16-point gap is the claim. It silently depends on $n=25$, one seed, and a re
 3. Why is FID computed on *features* (embeddings from Inception, an image-classification CNN) instead of pixels?
 4. In a VLA paper, "76% success on unseen instructions" — list three questions you'd ask
    before believing it matters.
+5. E1b's precision at the deployed threshold is $0.75$. Why is it wrong to read that as an
+   estimate of the detector's precision on site, and which number computed on E1b *is*
+   trustworthy?
 
 > [!tip]- Answers
 > 1. The test set was used as a validation set — the reported number is biased upward (optimistic); true generalization is lower.
 > 2. It misses 70% of real cracks (recall 0.3). It is unacceptable as a first-pass screen or as the sole safety gate, because anything it does not flag never reaches inspection. It is acceptable only as a prioritisation aid on top of an inspection regime that still covers every panel: its flags are trustworthy (precision 0.9), so they can be fast-tracked while misses are caught by the regular inspection.
 > 3. Pixel distance ignores perceptual quality (a one-pixel shift is punished heavily) — Inception feature space reflects semantic similarity, so distribution distance is measured there.
 > 4. ① How many trials, with what variance? ② What does "unseen" mean (new objects? new instructions? new scenes?) ③ Against which baseline, and is there failure analysis?
-
-### Problem set · 과제
-
-Tier C. Claim-reading only. No plant dynamics.
-
-A paper's results table (invented):
-
-| Method | Success | Trials | Training |
-|---|---:|---:|---|
-| Ours | 0.88 | 25 | new schedule, one seed |
-| Prior SOTA | 0.72 | 25 | the 2021 paper's recipe |
-
-1. **Draw.** Copy the two-row table. Circle the number the abstract will quote as "a 16-point gain."
-2. **Derive.** Which number is the claim, and which numbers are the experimental setup the claim silently depends on?
-3. **Interpret.** Name one concrete way to falsify the gain (a rerun, a split, or a count).
-
-> [!tip]- Solutions
-> 1. Circle $0.88-0.72=0.16$, or the pair $0.88$ vs $0.72$.
-> 2. The claim is the 16-point success gap. It depends on $n=25$, one seed, and a recipe mismatch (new schedule vs 2021 recipe) — the warning in §6 of this page.
-> 3. Retrain the SOTA with the new schedule and several seeds. If the gap vanishes, the claim was a recipe difference. Separately, $22/25$ vs $18/25$ is a thin binomial: one extra failure on "Ours" already moves the headline.
+> 5. E1b was chosen to span the score range, so 3 of its 7 panels are cracked — a 43% base rate against the site's 6%. Precision conditions on a positive *prediction*, so it moves with the base rate (worked case, part 3) and the $0.75$ describes the slice and nothing else. The AUC of $0.917$ is the trustworthy one: it depends only on how the scores of the cracked panels are ordered against the scores of the sound ones, and mixing the two groups in any proportion leaves that ordering alone.
 
 ### From reading experiments to designing them
 
@@ -335,7 +375,113 @@ The transition matters because recognizing an unfair comparison after publicatio
 이 페이지는 위키의 모든 "Results" 표를 읽는 해독기다.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 단 하나의 신성한 규칙 — 그다음 §5의 함정들. §3은 사전이다: 읽지 말고 결과 표 옆에 펴 두라. 나머지는 쓰면서 몸에 붙는다.
+> 먼저 이 페이지의 대상과 그 위의 유도 다섯 개, 그다음 §1 — 단 하나의 신성한 규칙 — 그리고 §5의 함정들, 곧 그 대상을 잘못 읽는 방법들. §3은 사전이다: 읽지 말고 결과 표 옆에 펴 두라. 나머지는 쓰면서 몸에 붙는다.
+
+### 이 페이지의 대상 · Running object
+
+평가는 기계가 아니므로 [[02-foundations/lab-plants|0.6 Lab Plants]]의 플랜트 **P1**–**P6** 중 맞는 것이 없다. 가장 가까운 카탈로그 항목은 **P5**의 균열 감지기인데 모양이 다르다. P5는 *확률* — $P(+ \mid c) = 0.95$, $P(+ \mid \neg c) = 0.05$, $P(c) = 0.01$ — 로 규정되어 있고 그것은 베이즈 갱신에 필요한 것인 반면, 이 페이지의 모든 지표는 유한한 test 집합 위 **개수**의 비이고 그 유한성이 §4의 주제 전부다. 그래서 이 페이지는 자기 대상을 고정하고 이후로 숫자를 바꾸지 않는다. 그 안의 모든 숫자는 일부러 지어낸 것이다. 측정값이 아니라 교육용 대상이다.
+
+**E1 — 균열 감지기 하나, 기록 셋.** 모델은 벽체 패널마다 $[0, 1]$의 점수를 매기고, 점수가 배포 문턱값 $\tau = 0.55$에 닿으면 그 패널을 *플래그*한다.
+
+**E1a, 전수 감사.** 패널 1,000장, 그중 60장이 실제로 균열이다. $\tau = 0.55$에서 감지기는 50장을 플래그했고 그중 40장이 진짜다.
+
+| | 균열로 예측 | 정상으로 예측 |
+|---|---|---|
+| **실제 균열** | TP = 40 | FN = 20 |
+| **실제 정상** | FP = 10 | TN = 930 |
+
+**E1b, 점수 조각.** 손으로 문턱값을 훑을 수 있도록 **점수 범위를 고루 덮게 고른** 패널 일곱 장 — 균열 셋, 정상 넷 — 과 문턱값을 대기 전에 기록한 원 점수다.
+
+| 실제 | 균열 | 균열 | 균열 | 정상 | 정상 | 정상 | 정상 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 점수 | 0.90 | 0.80 | 0.60 | 0.70 | 0.50 | 0.40 | 0.20 |
+
+E1b는 현장의 무작위 표본이 아니므로 여기서 계산한 어떤 비율도 배포 시의 비율을 추정하지 않는다. 순서와 문턱값 훑기를 위해 있을 뿐이고, 그 구분이 왜 말장난이 아닌지는 스스로 점검이 묻는다.
+
+**E1c, 시행 기록.** 같은 시스템의 다른 두 실행이다. **현장 파일럿**: 로봇 점검기가 독립적인 패널 10장을 시도해 9장에 성공했다. 그리고 **시드 기록**: 이 방법과 비교 대상 방법을 각각 랜덤 시드 넷으로, 레시피를 맞춘 채 — 같은 스케줄, 같은 예산, 같은 25 에피소드 벤치마크 — 다시 학습시켜 25번 중 성공이 21, 22, 20, 19(우리)와 18, 19, 20, 21(기존 방법)이 나왔다. §6에 실린 두 행 표는 각각의 첫 시드를 인용한 것이다. $22/25 = 0.88$ 대 $18/25 = 0.72$.
+
+*범위: 이 페이지는 결과 표를 읽는 법을 가르친다. 각 지표가 무엇을 세고, 무엇을 감추고, 불확실성이 얼마나 넓은지다. 그 표를 만든 실험을 설계하는 법은 가르치지 않는다. 그것은 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이고, 구간 뒤에 있는 가설 검정은 [[02-foundations/probability|3. 확률 §6]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+세 그림을 한 번 그려 두면 과제는 문턱값만 바꾼 같은 세 그림을 묻는다.
+
+1. **2×2 상자.** E1a의 네 개수를 정사각형에 넣고 열에는 *예측*, 행에는 *실제*를 붙인다. 정밀도가 나누는 열과 재현율이 나누는 행을 서로 다른 색으로 두르고, 두 테두리가 만나는 칸에 TP를 표시한다. TN은 칠하고 옆에 적는다. 두 비 모두 이 칸을 쓰지 않는다.
+2. **ROC 축과 점 하나.** 가로 FPR, 세로 TPR, 우연 수준 대각선, 그리고 E1a의 동작점 $(0.011,\ 0.667)$. 점 옆에 그 정밀도 $0.80$을 적고, 그 아래에 $0.27$을 적는다. 균열 비율이 10분의 1인 현장에서의 *같은 점*의 정밀도다. 점은 움직이지 않는다. 그림 전체가 그 말이다.
+3. **구간 띠.** 0에서 1까지의 가로축. E1c 파일럿의 추정 $\hat p = 0.9$를 찍고 그 위로 구간 셋을 쌓는다. 정규근사, Wilson 구간, 백분위 부트스트랩. 첫 번째가 축을 벗어나는 지점을 표시한다.
+
+제대로 그린 그림은 §4의 가장 어려운 질문에 이미 답한 것이다. 시행 열 번짜리 숫자 밑에 저 셋 중 무엇을 인쇄해도 되는가.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+**1. 세어서 만드는 네 지표, 그리고 정확도가 거짓말하는 이유.** E1a의 표가 한 문턱값에서 이진 분류기의 **혼동 행렬**(confusion matrix)이다. 모든 test 항목은 정확히 한 칸에 들어가고, 칸의 이름은 *예측*이 양성이었는지 음성이었는지, 그것이 *맞았는지(true)* 틀렸는지(false)로 붙는다. **TP**(참양성) = 균열로 예측, 실제 균열. **FP**(거짓양성, 오경보) = 균열로 예측, 실제 정상. **FN**(거짓음성, 놓침) = 정상으로 예측, 실제 균열. **TN**(참음성) = 정상으로 예측, 실제 정상. 여기의 모든 지표는 이 네 개수의 비다.
+
+$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
+
+정밀도는 *예측* 양성 열로, 재현율은 *실제* 양성 행으로 나누므로 두 값은 서로 다른 질문에 답한다. $F_1$은 $P$와 $R$의 조화평균이다. 정밀도와 재현율은 둘 다 TN을 쓰지 않으므로, 음성이 양성보다 압도적으로 많아도 정보를 잃지 않는다. E1a의 개수를 대입하면:
+
+- **정확도(accuracy)** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — 그런데 무조건 "정상"이라고만 답하는 감지기도 $\frac{940}{1000} = 94.0\%$가 나온다. 여기서 정확도는 거의 무용하고, 그 94%가 이유를 보여 주는 **반례**다. 상수로 답해도 거의 따라잡히는 지표는 우리가 원하는 능력을 재고 있지 않다.
+- **정밀도(precision)** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — 플래그한 것 중 80%가 진짜였다. 점검자가 신경 쓰는 숫자다: 출동이 얼마나 헛되는가.
+- **재현율(recall)** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.667$ — 실제 균열 중 3분의 2를 잡았다. **균열 20개를 놓쳤고**, 이것이 안전 담당자가 신경 쓰는 숫자다.
+- **F1** $= \frac{2PR}{P+R} = \frac{2(0.80)(0.667)}{1.467} = 0.727$ — 조화평균이라 *둘 중 하나만* 낮아도 낮게 유지된다. **반례:** 같은 두 수의 산술평균은 $0.733$이고, 정밀도 $0.9$·재현율 $0.5$처럼 한쪽으로 쏠린 쌍도 산술평균은 $0.70$으로 매겨 겨우 조금 낮을 뿐인데, 그 쌍의 조화평균은 $0.643$이다. 나쁜 절반을 좋은 절반 뒤에 숨기는 일이야말로 $F_1$이 거부하는 것이다.
+
+모든 Results 표에 들고 갈 교훈: 정밀도와 재현율은 문턱값 하나로 서로 맞바꾸는 값이므로, 유리한 쪽만 보고한 논문은 문장의 절반만 말한 것이다. 그리고 건설에서는 이 비대칭이 실제다 — 오경보는 점검 한 번을 낭비하지만, 놓친 균열은 구조물을 대가로 할 수 있다.
+
+**2. 문턱값 없이 순서만: E1b의 AUC.** 문턱값을 훑으면 각 설정이 *참양성률* $\text{TPR} = TP/(TP+FN)$(즉 재현율)과 *거짓양성률* $\text{FPR} = FP/(FP+TN)$을 준다. TPR을 FPR에 대해 그린 것이 **ROC 곡선**이고 그 아래 넓이가 **AUC**다. AUC에는 들고 다닐 만한 정확한 뜻이 있다. *무작위로 고른 양성이 무작위로 고른 음성보다 높은 점수를 받을 확률*이다. E1b의 균열 패널 $0.90, 0.80, 0.60$과 정상 패널 $0.70, 0.50, 0.40, 0.20$을 보면, $3 \times 4 = 12$쌍 중 11쌍이 옳게 정렬되므로 $\text{AUC} = 11/12 = 0.917$이다 — 문턱값이 개입하지 않는다. 쌍 세기로 쓰면 다음과 같다.
+
+$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
+
+$s_i^+$는 양성 항목 $n_+$개의 점수, $s_j^-$는 음성 $n_-$개의 점수이고, $\mathbb{1}[\cdot]$은 조건이 성립하면 1, 아니면 0이다. 동점은 동전 던지기이므로 절반으로 센다. 위에서 틀린 한 쌍은 균열 패널의 $0.60$이 정상 패널의 $0.70$보다 낮은 쌍이다. AUC $= 0.5$는 우연 수준의 정렬이고 $1$은 완벽한 정렬이다. **반례:** AUC는 최적 문턱값에서의 정확도가 아니다. E1b를 훑으면 단일 문턱값이 낼 수 있는 최고는 일곱 장 중 여섯 장, $0.857$이고($\tau = 0.75$에서, 그리고 배포 문턱값 $\tau = 0.55$에서 다시), 같은 일곱 점수의 AUC는 $0.917$이다. AUC는 문턱값을 아예 정하지 않고 순서에 대해서만 값을 받기 때문이다. **왜 중요한가:** AUC만 보고한 논문은 모델이 순위를 잘 매긴다는 말만 한 것이고, 누군가 문턱값을 정해 점검자를 출동시켜야 할 때 무슨 일이 벌어지는지는 아무 말도 하지 않은 것이다.
+
+**3. 같은 ROC 점, 다른 기저율.** 그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는 이유다. E1a는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은 감지기를 더 잘 지어진 현장, 균열이 6%가 아니라 **0.6%** 수준인 곳으로 옮기면 패널 1,000장에서 $TP = 0.667 \times 6 = 4.0$, $FP = 0.011 \times 994 = 10.6$이 된다.
+
+| | 균열 6% | 균열 0.6% |
+|---|---|---|
+| TPR | 0.667 | 0.667 — 그대로 |
+| FPR | 0.011 | 0.011 — 그대로 |
+| ROC 점 | 동일 | 동일 |
+| **정밀도** | **0.80** | **0.27** |
+
+ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무너진다. **TPR과 FPR은 실제 양성군과 실제 음성군 안에서 각각 계산되는 조건부 비율**이므로 두 클래스의 조건부 점수분포가 그대로라면 양성 비율이 바뀌어도 ROC 곡선은 유지된다. 반면 정밀도는 양성으로 예측된 표본에 조건화하므로 기저율에 의존한다. 그러므로 균형 잡힌 벤치마크에서 잰 AUC는 양성이 드문 현장에서 시스템이 어떻게 굴지에 대해 거의 아무것도 말해 주지 않는다 — [[04-robotics/human-intent-prediction|23. 의도 예측 §5]]의 상황이고, 현장의 모든 경보 시스템의 상황이다. 논문이 AUC를 보고하면, 배포 기저율 위에서 명시된 재현율에 대한 정밀도를 요구하라.
+
+**4. "10번 중 9번"은 얼마나 넓은가: E1c의 부트스트랩.**
+
+> [!info] 정의 — 백분위 부트스트랩 신뢰구간
+> **무엇인가:** 가정한 분포에서 읽어 내는 공식이 아니라 *절차*가 만들어 내는 구간 추정이다. 부트스트랩을 부트스트랩이게 하는 조건이 셋이다. (1) **재표본** 하나는 크기 $n$인 관측 표본에서 $n$개를 **복원추출**로 뽑으므로 어떤 항목은 두 번 나오고 어떤 항목은 안 나온다. (2) 재표본마다 통계량을 다시 계산하고, 그 흩어짐이 **부트스트랩 분포** $\hat\theta^*$다. (3) **백분위** 구간은 그 분포의 $\alpha/2$, $1-\alpha/2$ 분위수다.
+> $$\text{CI}_{1-\alpha} = \Big[\,Q_{\alpha/2}\big(\hat\theta^*\big),\ Q_{1-\alpha/2}\big(\hat\theta^*\big)\,\Big]$$
+> $Q_q$는 부트스트랩 분포가 확률 $q$ 이상으로 도달하는 가장 작은 값이고, 95% 구간이면 $\alpha = 0.05$다. 요령의 전부는 가지고 있지 않은 모집단 자리에 가지고 있는 표본을 세우는 것이다.
+> **예.** 아래에서 유도하는 E1c 파일럿: $[0.70,\ 1.00]$.
+> **반례.** 10번 중 10번 성공. 성공만 든 표본의 재표본은 모두 성공뿐이라 부트스트랩 분포가 점 $1.00$ 하나가 되고 "95% 구간"은 $[1.00,\ 1.00]$이 된다. 시행 열 번으로 확실성을 주장하는 셈이다. 부트스트랩은 건네받은 데이터의 범위 밖으로 결코 나가지 못하므로, 데이터가 가장 얇은 곳에서 가장 크게 실패한다.
+> **왜 중요한가.** 로보틱스 논문은 롤아웃 수십 번에 대해 부트스트랩 구간을 인용한다. 그런 구간의 양 끝이 표본이 실제로 낼 수 있는 값이고 눈금이 $1/n$이라는 것을 알아야, $[0.70,\ 1.00]$을 측정이 아니라 무지의 고백으로 읽게 된다.
+
+**이진** 결과에서는 부트스트랩에 시뮬레이션이 아예 필요 없고, 한 번은 손으로 해 볼 값어치가 있다. E1c의 파일럿 시행 열 개에서 하나를 뽑으면 확률 $\hat p = 9/10$로 성공이 나오고 $n$번의 뽑기가 독립이므로, 복원추출 재표본은 모수 $\hat p$인 베르누이에서 뽑는 것과 *같고* 부트스트랩 분포는 정확히 이항이다.
+
+$$\Pr\Big[\hat p^* = \frac{x}{n}\Big] = \binom{n}{x}\,\hat p^{\,x}\,(1-\hat p)^{\,n-x}$$
+
+재표본 하나의 성공 수 $x$가 각각 확률 $\hat p$로 성공하는 독립 뽑기 $n$번을 세기 때문이다. $n = 10$, $\hat p = 0.9$이면:
+
+| $x$ | $\hat p^* = x/10$ | $\Pr[\hat p^* = x/10]$ | 누적 |
+|---:|---:|---:|---:|
+| $\le 5$ | $\le 0.5$ | 0.0016 | 0.0016 |
+| 6 | 0.6 | 0.0112 | 0.0128 |
+| 7 | 0.7 | 0.0574 | 0.0702 |
+| 8 | 0.8 | 0.1937 | 0.2639 |
+| 9 | 0.9 | 0.3874 | 0.6513 |
+| 10 | 1.0 | 0.3487 | 1.0000 |
+
+2.5% 분위수는 누적 확률이 $0.025$에 닿는 가장 작은 값, 곧 누적 $0.0702$의 $x = 7$이고 97.5% 분위수는 $x = 10$이다. 그래서 파일럿의 백분위 부트스트랩 95% 구간은 $[0.70,\ 1.00]$이고, 이 구간의 성질 셋이 교훈이다.
+
+**이산적이다.** 시행이 열 번이면 $0.1$의 배수만 나올 수 있어 어떤 구간도 95%에 정확히 앉지 못한다. 이 구간은 실제로 부트스트랩 분포의 $1 - 0.0128 = 98.7\%$를 담고, 여기서 $x = 7$을 빼면 $92.98\%$가 된다. **데이터에 갇혀 있다.** 위쪽 끝이 $1.00$인 것은 어떤 재표본도 본 것보다 잘할 수 없기 때문이고, 재표본의 $0.9^{10} = 0.349$는 하나뿐인 실패를 아예 건너뛴다. 그리고 **다른 두 구간이 아니다.** 같은 개수에 대한 정규근사는 $0.9 \pm 1.96\sqrt{0.9 \times 0.1/10} = 0.9 \pm 0.186 = [0.714,\ 1.086]$으로 축 밖으로 나가고, Wilson 구간은 $[0.596,\ 0.982]$로 $[0,1]$ 안에 있으면서 아래쪽이 훨씬 넓다. 10번 중 9번을 낼 법한 참 $p$가 무엇인지를 묻지, 그 열 개의 재표본 중 무엇이 그럴듯한지를 묻지 않기 때문이다. **개수를 보고하라.** "90%"와 "9/10"은 같은 추정이지만 불확실성이 전혀 다르고, 독자가 이 계산을 다시 해 볼 수 있게 하는 것은 뒤쪽뿐이다.
+
+**5. 시드 하나인가 넷인가: 같은 실험, 두 개의 주장.** E1c의 시드 기록에는 방법마다 실행이 넷 있으므로, 발표된 두 값은 뒤에 세 행이 더 있는 표의 한 행이다. §4의 표본 표준편차와 표준오차를 쓰면, 84, 88, 80, 76%인 우리 쪽은 $\bar x_A = 82.0$, $s_A = 5.16$이고, 72, 76, 80, 84%인 기존 방법은 $\bar x_B = 78.0$, $s_B = 5.16$이며, 각각 $\text{SE} = 5.16/\sqrt4 = 2.58$점이다. 평균의 차는 16점이 아니라 **4.0**점이다. *차이*에 구간을 붙이려면 두 표준오차를 합성해야 하고, 집단 크기가 $n$으로 같으면
+
+$$\big(\bar x_A - \bar x_B\big) \pm t_{0.975,\,2n-2}\; s_p \sqrt{\tfrac1n + \tfrac1n}, \qquad s_p^2 = \frac{(n-1)s_A^2 + (n-1)s_B^2}{2n-2}$$
+
+이다. 독립인 오차는 빼더라도 분산이 더해지므로 차이의 흩어짐은 어느 한쪽보다 크기 때문이다. 여기서는 $s_A = s_B$라 $s_p = 5.16$, 차이의 표준오차가 $5.16\sqrt{0.5} = 3.65$점, $t_{0.975,\,6} = 2.447$이므로
+
+$$4.0 \pm 2.447 \times 3.65 = 4.0 \pm 8.9 = [-4.9,\ 12.9]$$
+
+이고 구간이 0을 포함한다. 방법마다 시드 넷으로는 둘을 가를 수 없다. 헤드라인을 만들려고 조작한 것은 없다. $88 - 72 = 16$은 한 방법의 가장 좋은 시드와 다른 방법의 가장 나쁜 시드를 맞붙인 것이고, 두 숫자 모두 같은 정직한 기록 안에 있다. **시드 하나짜리 격차는 인쇄하기로 고른 시드의 통계량이다.** 같은 실행 여덟 개가 "16포인트 향상"도, "없는 것과 구별되지 않는 4포인트 차이"도 뒷받침하고, 독자가 어느 문장을 받을지는 개수와 시드 수를 인쇄했는지만이 결정한다.
 
 ### 1. 데이터 분할 — 단 하나의 신성한 규칙
 
@@ -352,7 +498,7 @@ The transition matters because recognizing an unfair comparison after publicatio
   중요했던 이유다.
   - *정의:* $p_{\text{tr}}(x, y) \ne p_{\text{te}}(x, y)$이고, $p(x, y)$는 입력과 라벨의 결합분포다. $p(x, y) = p(x)\,p(y \mid x) = p(y)\,p(x \mid y)$이므로 어느 인수가 움직이느냐에 따라 이름 붙은 종류가 셋이다.
     - **공변량 이동**(covariate shift) — $p(x)$는 바뀌고 $p(y \mid x)$는 그대로다. 조명은 새롭지만 "균열"의 뜻은 같다. 정책 자신의 상태가 이동된 입력이 되는 모방 학습의 실패 방식도 이것이다([[02-foundations/rl-basics|7. RL 기초 §6]]).
-    - **라벨(사전) 이동** — $p(y)$는 바뀌고 $p(x \mid y)$는 그대로다. 균열 비율이 6%에서 0.6%로 떨어져도 균열은 여전히 균열처럼 보인다. §3의 ROC 대 정밀도 표가 정확히 이 경우다.
+    - **라벨(사전) 이동** — $p(y)$는 바뀌고 $p(x \mid y)$는 그대로다. 균열 비율이 6%에서 0.6%로 떨어져도 균열은 여전히 균열처럼 보인다. 계산 예제의 ROC 대 정밀도 표가 정확히 이 경우다.
     - **개념 이동**(concept shift) — $p(y \mid x)$ 자체가 바뀐다. 현장이 보고 대상 균열의 정의를 더 엄격하게 바꾸면 같은 이미지가 다른 라벨을 받는다.
   - **분포 밖(OOD)** 입력은 극단적인 경우다. $p_{\text{tr}}(x)$가 사실상 0인 영역에서 온 test 입력이라, 모델이 보간할 데이터가 없다.
 - 데이터 누수: test 정보가 학습에 스며드는 것(중복, 시간적 겹침, 사전학습 오염 —
@@ -415,67 +561,7 @@ The transition matters because recognizing an unfair comparison after publicatio
 | 로보틱스 | **success rate** | 목표 달성 시행 비율 — 숫자보다 *어떤* 시행(seen/unseen)인지가 더 중요 |
 | 검색 | recall@k | 정답이 상위 k개 안 |
 
-**계산 예제 — 불균형 데이터에서 정확도가 거짓말하는 이유.** 벽체 패널 1,000장에 균열
-감지기를 돌렸고, 실제 균열은 60장에 있다. 감지기는 50장을 플래그했고 그중 40장이 진짜였다.
-네 숫자를 늘어놓으면:
-
-| | 균열로 예측 | 정상으로 예측 |
-|---|---|---|
-| **실제 균열** | TP = 40 | FN = 20 |
-| **실제 정상** | FP = 10 | TN = 930 |
-
-이 표가 한 문턱값에서 이진 분류기의 **혼동 행렬**(confusion matrix)이다. 모든 test 항목은 정확히 한 칸에 들어가고, 칸의 이름은 *예측*이 양성이었는지 음성이었는지, 그것이 *맞았는지(true)* 틀렸는지(false)로 붙는다. **TP**(참양성) = 균열로 예측, 실제 균열. **FP**(거짓양성, 오경보) = 균열로 예측, 실제 정상. **FN**(거짓음성, 놓침) = 정상으로 예측, 실제 균열. **TN**(참음성) = 정상으로 예측, 실제 정상. 아래 지표는 모두 이 네 개수의 비율이다.
-
-$$\text{Accuracy} = \frac{TP + TN}{TP + FP + FN + TN}, \quad P = \text{Precision} = \frac{TP}{TP + FP}, \quad R = \text{Recall} = \frac{TP}{TP + FN}, \quad F_1 = \frac{2PR}{P + R}$$
-
-정밀도는 *예측* 양성 열로, 재현율은 *실제* 양성 행으로 나누므로 두 값은 서로 다른 질문에 답한다. $F_1$은 $P$와 $R$의 조화평균이다. 정밀도와 재현율은 둘 다 TN을 쓰지 않으므로, 음성이 양성보다 압도적으로 많아도 정보를 잃지 않는다.
-
-- **정확도(accuracy)** $= \frac{TP+TN}{1000} = \frac{970}{1000} = 97.0\%$ — 그런데 무조건
-  "정상"이라고만 답하는 감지기도 $94.0\%$가 나온다. 여기서 정확도는 거의 무용하다.
-- **정밀도(precision)** $= \frac{TP}{TP+FP} = \frac{40}{50} = 0.80$ — 플래그한 것 중 80%가
-  진짜였다. 점검자가 신경 쓰는 숫자다: 출동이 얼마나 헛되는가.
-- **재현율(recall)** $= \frac{TP}{TP+FN} = \frac{40}{60} = 0.67$ — 실제 균열 중 3분의 2를
-  잡았다. **균열 20개를 놓쳤고**, 이것이 안전 담당자가 신경 쓰는 숫자다.
-- **F1** $= \frac{2PR}{P+R} = \frac{2(0.8)(0.667)}{1.467} = 0.727$ — 조화평균이라 *둘 중
-  하나만* 낮아도 낮게 유지된다(같은 두 수의 산술평균은 0.73이고, 정밀도 0.9·재현율 0.5처럼 한쪽으로 쏠린 경우도
-  산술평균은 0.70으로 매겨 겨우 조금 낮을 뿐이다 — 조화평균(0.64)은 그렇게 가려 주지 않는다).
-
-모든 Results 표에 들고 갈 교훈: 정밀도와 재현율은 문턱값 하나로 서로 맞바꾸는 값이므로,
-유리한 쪽만 보고한 논문은 문장의 절반만 말한 것이다. 그리고 건설에서는 이 비대칭이 실제다 —
-오경보는 점검 한 번을 낭비하지만, 놓친 균열은 구조물을 대가로 할 수 있다.
-
-**ROC와 AUC — 그리고 이 둘을 위험하게 만드는 성질 하나.** 문턱값을 훑으면 각 설정이
-*참양성률* $\text{TPR} = TP/(TP+FN)$(즉 재현율)과 *거짓양성률*
-$\text{FPR} = FP/(FP+TN)$을 준다. TPR을 FPR에 대해 그린 것이 **ROC 곡선**이고 그 아래 넓이가
-**AUC**다. AUC에는 들고 다닐 만한 정확한 뜻이 있다. *무작위로 고른 양성이 무작위로 고른 음성보다
-높은 점수를 받을 확률*이다. 균열 있는 패널 셋에 $0.9, 0.8, 0.6$, 멀쩡한 넷에
-$0.7, 0.5, 0.4, 0.2$를 매겼다고 하자. $3 \times 4 = 12$쌍 중 11쌍이 옳게 정렬되므로
-$\text{AUC} = 11/12 = 0.92$다 — 문턱값이 개입하지 않는다. 쌍 세기로 쓰면 다음과 같다.
-
-$$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb{1}\big[s_i^+ > s_j^-\big] + \tfrac12\, \mathbb{1}\big[s_i^+ = s_j^-\big] \Big)$$
-
-$s_i^+$는 양성 항목 $n_+$개의 점수, $s_j^-$는 음성 $n_-$개의 점수이고, $\mathbb{1}[\cdot]$은 조건이 성립하면 1, 아니면 0이다. 동점은 동전 던지기이므로 절반으로 센다. 위에서 틀린 한 쌍은 균열 패널의 $0.6$이 멀쩡한 패널의 $0.7$보다 낮은 쌍이다. AUC $= 0.5$는 우연 수준의 정렬이고 $1$은 완벽한 정렬이다.
-
-그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는
-이유다. 위의 검출기는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은
-검출기를 더 잘 지어진 현장, 균열이 6%가 아니라 **0.6%** 수준인 곳으로 옮기면 패널 1,000장에서
-$TP = 4.0$, $FP = 10.6$이 된다.
-
-| | 균열 6% | 균열 0.6% |
-|---|---|---|
-| TPR | 0.667 | 0.667 — 그대로 |
-| FPR | 0.011 | 0.011 — 그대로 |
-| ROC 점 | 동일 | 동일 |
-| **정밀도** | **0.80** | **0.27** |
-
-ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무너진다. **TPR과 FPR은 실제 양성군과
-실제 음성군 안에서 각각 계산되는 조건부 비율**이므로 두 클래스의 조건부 점수분포가 그대로라면
-양성 비율이 바뀌어도 ROC 곡선은 유지된다. 반면 정밀도는 양성으로 예측된 표본에 조건화하므로
-기저율에 의존한다. 그러므로 균형 잡힌 벤치마크에서 잰 AUC는 양성이 드문 현장에서 시스템이 어떻게 굴지에
-대해 거의 아무것도 말해 주지 않는다 —
-[[04-robotics/human-intent-prediction|23. 의도 예측 §5]]의 상황이고, 현장의 모든 경보
-시스템의 상황이다. 논문이 AUC를 보고하면, 배포 기저율 위에서 명시된 재현율에 대한 정밀도를
-요구하라.
+정확도·정밀도·재현율·$F_1$·AUC는 이 페이지가 끝까지 유도하는 지표이고, 위의 계산 예제에서 **E1**로 다룬다. 균형 잡힌 벤치마크의 AUC가 배포에 대해 거의 아무것도 말해 주지 않게 만드는 기저율 붕괴까지 거기 있다. 사전의 나머지는 여기서 이어진다.
 
 #### 사전의 나머지, 수식과 함께
 
@@ -483,7 +569,7 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 
 - **Top-$k$ 정확도.** 참 클래스가 점수 상위 $k$개 클래스 안에 드는 항목의 비율이다.
   $$\text{Acc}@k = \frac{1}{N}\sum_{i=1}^{N} \mathbb{1}\big[y_i \in \text{top-}k(\hat p_i)\big]$$
-  그래서 top-1은 보통의 정확도이고, top-5는 상위 다섯 안의 순위 오류를 봐준다.
+  그래서 top-1은 보통의 정확도이고, top-5는 상위 다섯 안의 순위 오류를 봐준다. 참 클래스를 3위로 매긴 항목은 top-5에서는 맞고 top-1에서는 틀리며, ImageNet 표의 두 열 차이가 통째로 그것이다.
 - **IoU(합집합 대비 교집합).** 예측 영역 $A$와 정답 영역 $B$(박스나 픽셀 마스크)에 대해, $|\cdot|$를 넓이로 두면
   $$\text{IoU}(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
   이고, 완벽히 일치하면 1, 전혀 겹치지 않으면 0이다. 박스 $[0,2]\times[0,2]$와 $[1,3]\times[1,3]$은 $1 \times 1$ 정사각형만큼 겹치므로 $\text{IoU} = 1/(4 + 4 - 1) = 1/7 = 0.143$이다. 검출은 아직 짝지어지지 않은 정답 물체와의 IoU가 문턱값(PASCAL VOC는 0.5)에 닿아야 TP로 세므로, 이 두 박스는 거짓양성*이면서* 놓침이 된다.
@@ -500,7 +586,9 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 - **BLEU.** *잘라낸*(clipped) $n$-gram 정밀도 $p_n$(후보의 각 $n$-gram은 참조문에 나온 횟수까지만 센다)의 기하평균에, 참조문보다 짧은 후보에 대한 간결성 벌점을 곱한다.
   $$\text{BLEU} = \text{BP} \cdot \exp\Big(\sum_{n=1}^{4} \tfrac14 \log p_n\Big), \qquad \text{BP} = \begin{cases} 1 & c > r \\ e^{\,1 - r/c} & c \le r \end{cases}$$
   $c$와 $r$은 후보와 참조문의 길이다. 후보 "the cat sat on the mat", 참조 "the cat is on the mat"이면 $p_1 = 5/6$, $p_2 = 3/5$, $p_3 = 1/4$, $p_4 = 0/3$, $\text{BP} = 1$이다. **경계 사례:** $p_4$ 하나가 0이면 거의 맞는 문장의 문장 단위 BLEU가 정확히 $0$이 된다. BLEU를 말뭉치 전체로 계산하거나 평활화를 쓰는 이유다. 여기서 2-gram 버전은 $\sqrt{(5/6)(3/5)} = 0.707$이다.
-- **성공률.** 독립 시행 $n$번에 성공 $k$번이면 $\hat p = k/n$이고 이항 표준오차는 $\sqrt{\hat p(1 - \hat p)/n}$이다. 10번 중 9번이면 $0.095$이고, 정규근사 95% 구간 $0.9 \pm 1.96 \times 0.095 = [0.714, 1.086]$은 100%를 넘는다. 보고해서는 안 되는 구간의 반례다. Wilson 구간은 $[0, 1]$ 안에 머물며 $[0.596, 0.982]$를 준다([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]). 에피소드 정의(§5)가 없으면 이 숫자는 의미가 없다.
+- **성공률.** 목표를 달성한 시행의 비율이다. 독립 시행 $n$번에 성공 $k$번이면 $\hat p = k/n$이고 이항 표준오차는
+  $$\text{SE}\big(\hat p\big) = \sqrt{\frac{\hat p\,(1 - \hat p)}{n}}$$
+  이므로 불확실성은 $\sqrt n$로만 줄고 $\hat p = 0.5$에서 가장 크다. E1c의 10번 중 9번이면 $0.095$다. 정작 틀리는 부분은 *어느 구간*을 인쇄하느냐다. 정규근사, Wilson 구간([[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]), 백분위 부트스트랩이 $n = 10$에서 서로 다르고, 셋 모두 계산 예제에서 E1c로 유도한다. 에피소드 정의(§5)가 없으면 이 숫자는 의미가 없다.
 - **Recall@$k$(검색).** 질의 집합 $Q$에 대해 정답 항목이 상위 $k$개 결과 안에 드는 질의의 비율, $\frac{1}{|Q|}\sum_{q \in Q} \mathbb{1}[\text{rank}_q \le k]$다. 정답 순위가 1, 4, 12인 질의 셋이면 recall@5 $= 2/3$이다. 분류의 재현율과 이름은 같지만 분모가 다르다. 여기서 분모는 양성이 아니라 질의다.
 
 - 지표는 적대적으로 읽어라: *어떤* 분포에서, *몇 번의* 시행으로, *분산은* 얼마인 success
@@ -528,18 +616,18 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
   두 논문의 막대를 비교하기 전에 캡션을 확인하라.
   - *세 양을 풀어 쓰면* 결과가 $x_1, \dots, x_n$이고 평균이 $\bar x$인 실행 $n$번에 대해
   $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
-  이다. 표본 표준편차 $s$는 $\bar x$를 같은 숫자들로 추정했기 때문에 $n - 1$로 나눈다. SE는 평균을 내면 실행 간 잡음이 상쇄되므로 $\sqrt n$에 따라 줄어든다. **신뢰구간**은 SE에 Student-$t$ 분위수 $t_{0.975,\,n-1}$을 곱하는데, $n$이 작으면 이 값이 정규분포의 1.96보다 크다. 신뢰구간은 반복 실험의 95%에서 참 평균을 덮는 절차이지, 이 구간 하나에 대한 95% 확률 진술이 아니다. 계산 예, 시드 넷의 성공률이 72, 76, 80, 84%면 $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$이므로 95% CI는 $[69.8, 86.2]$다. 같은 네 실행을 캡션이 어느 양을 말하느냐에 따라 $\pm 2.6$, $\pm 5.2$, $\pm 8.2$점 막대로 그릴 수 있다. 두 방법의 *차이*를 검정하는 법은 [[02-foundations/probability|3. 확률 §6]]에 있다.
+  이다. 표본 표준편차 $s$는 $\bar x$를 같은 숫자들로 추정했기 때문에 $n - 1$로 나눈다. SE는 평균을 내면 실행 간 잡음이 상쇄되므로 $\sqrt n$에 따라 줄어든다. **신뢰구간**은 SE에 Student-$t$ 분위수 $t_{0.975,\,n-1}$을 곱하는데, $n$이 작으면 이 값이 정규분포의 1.96보다 크다. 신뢰구간은 반복 실험의 95%에서 참 평균을 덮는 절차이지, 이 구간 하나에 대한 95% 확률 진술이 아니다. 계산 예, 시드 넷의 성공률이 72, 76, 80, 84%면 $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$이므로 95% CI는 $[69.8, 86.2]$다. 같은 네 실행을 캡션이 어느 양을 말하느냐에 따라 $\pm 2.6$, $\pm 5.2$, $\pm 8.2$점 막대로 그릴 수 있다. 두 방법의 *차이*를 검정하는 법은 [[02-foundations/probability|3. 확률 §6]]에 있다. 계산 예제가 E1c의 네 시드 기록 둘로 그 차이를 내는데, 발표된 16포인트 격차는 거기서 살아남지 못한다.
 
 ### 5. 논문에서 경계할 평가 함정
 
-- **체리피킹**: 정성적 그림은 최고 실행을 보여준다 — *중앙값* 롤아웃은 어떤지 물어라.
-- **통계적 vs 실질적 유의성**: 오차 막대 겹침만으로 유의성을 판정할 수 없다 — 막대가 무엇인지(표준편차? 표준오차? 신뢰구간?), 실행 횟수, 짝지음 여부를 확인하라. +0.3%p는 노이즈일 수도, (포화된 벤치마크에서는) 의미 있을 수도 있다; 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라.
+- **체리피킹**: 정성적 그림은 최고 실행을 보여준다 — *중앙값* 롤아웃은 어떤지 물어라. E1c가 그 산수다. 발표된 $0.88$은 시드 넷 중 최고이고 중앙값 시드는 $0.82$이므로, 헤드라인은 평균의 옷을 입은 최댓값이다.
+- **통계적 vs 실질적 유의성**: 오차 막대 겹침만으로 유의성을 판정할 수 없다 — 막대가 무엇인지(표준편차? 표준오차? 신뢰구간?), 실행 횟수, 짝지음 여부를 확인하라. +0.3%p는 노이즈일 수도, (포화된 벤치마크에서는) 의미 있을 수도 있다; 시드 하나의 +5%p는 운일 수 있다. 분산부터 확인하라 — E1c의 숫자가 시드 하나로는 16점, 넷으로는 $4.0 \pm 8.9$점이다.
   - 둘은 다른 질문이다. **통계적 유의성**은 참 차이가 0이라면 관측된 차이가 나오기 어려운지를 묻는다. 0.05 같은 정해 둔 수준 아래의 p-값이다([[02-foundations/probability|3. 확률 §6]]). **실질적 유의성**은 차이가 과제에 의미 있을 만큼 큰지를 묻고, 효과 크기와 그 신뢰구간을 미리 정한 문턱에 대 보아 판단한다. 앞의 것은 $n$이 커지면 무시할 만한 효과에서도 "유의하다" 쪽으로 기울고, 뒤의 것은 $n$에 따라 바뀌지 않는다. 논문에 둘 다 필요한 이유다.
-- **오라클 정보**: 배포 환경에는 없을 실측 상태, 완벽한 캘리브레이션, 사람의 리셋을 조용히 쓰고 있지 않은가?
-- **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다.
+- **오라클 정보**: 배포 환경에는 없을 실측 상태, 완벽한 캘리브레이션, 사람의 리셋을 조용히 쓰고 있지 않은가? E1a의 "실제 균열" 60장이라는 열이 그런 것이다. 누군가 벽을 열어야 나오는 열이고, 현장의 감지기는 그 열을 결코 가질 수 없다.
+- **개루프 vs 폐루프 평가**: 오프라인에서 좋은 궤적을 예측하는 것(개루프)은 피드백과 복합 오차 아래에서 실행하는 것(폐루프)보다 훨씬 쉽다 — 로보틱스 수치는 같은 체제 안에서만 비교 가능하다. E1a와 E1c의 파일럿이 한 시스템의 두 체제다. 저장된 이미지 1,000장을 채점한 것과 로봇이 실제로 찾아간 패널 10장이고, 어떤 산수도 앞의 수치를 뒤의 수치로 바꿔 주지 않는다.
   - *입력 상태가 어디서 오는지로 정의된다.* **개루프** 평가는 정책 $\pi$에 기록된 데이터셋의 상태를 넣고 출력을 기록된 행동과 비교해 채점한다. 예컨대 기록 쌍 $(o_i, a_i)$ $N$개에 대해 $\frac{1}{N}\sum_{i=1}^{N} \lVert \pi(o_i) - a_i \rVert$이므로, 정책의 실수가 다음에 보는 것을 바꾸지 않는다. **폐루프** 평가는 $\pi$의 행동을 실행하므로 다음 관측을 그 행동이 만들고, 결과(롤아웃 성공률)를 채점한다. 개루프 오차가 낮다고 폐루프 성공이 따라오지는 않는다. 폐루프에서는 작은 오차가 정책을 데이터셋에 없던 상태로 옮기기 때문이다. 공변량 이동이다([[02-foundations/rl-basics|7. RL 기초 §6]]).
-- **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다.
-- **벤치마크 포화**: 천장 근처의 벤치마크는 그 벤치마크의 버릇에 과적합하는 것을 보상한다 — 거기서의 이득이 가장 일반화되지 않는다.
+- **에피소드 정의**: "성공률"은 시간 제한, 리셋 조건, 성공의 정의에 의존한다 — 두 논문의 80%는 다른 것을 의미할 수 있다. E1c의 $9/10$도 그 문장을 쓰기 전에는 정의되지 않는다. 플래그하고 도달하면 성공인가, 플래그하고 도달해서 제한 시간 안에 촬영까지 해야 성공인가? 계산 예제의 부트스트랩은 이 정의가 먼저 고정해 줘야 하는 숫자 위의 정확한 산수다.
+- **벤치마크 포화**: 천장 근처의 벤치마크는 그 벤치마크의 버릇에 과적합하는 것을 보상한다 — 거기서의 이득이 가장 일반화되지 않는다. E1a의 정확도 97%가 구조적으로 그 천장이다. 그중 94%는 "정상"이라고만 답해도 공짜로 나온다.
 
 ### 6. 학습 레시피, 어휘로서
 
@@ -556,6 +644,15 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 | **혼합 정밀도**(fp16/bf16) | 16비트로 계산하되 가중치의 fp32 마스터 사본을 둔다. **fp16은 손실 스케일링이 추가로 필요하고, bf16은 필요 없다** | 메모리를 대략 절반으로 줄이고 처리량을 올린다. bf16은 가수를 fp32의 지수 범위와 맞바꾼 것이고, 그래서 손실 스케일링을 버릴 수 있으며 큰 모델이 16비트에서 안정적으로 학습된다 |
 | **가중치 EMA** | 파라미터의 느리게 움직이는 평균을 유지하고, 살아 있는 가중치가 아니라 *그것을* 평가한다 | 여러 벤치마크에서 공짜로 얻는 소수점 몇 자리. 확산 모델은 거의 예외 없이 쓰고(DDPM: 감쇠 0.9999. 부록 수치다), 정책 논문은 제각각이라 **코드**에서야 드러나는 일이 많다 — Diffusion Policy는 논문에 쓰지 않은 채 설정 파일에서 쓴다. [[01-canonical-papers/notes/2-computer-vision/dino\|DINO]]의 EMA *교사*와는 다르다 — 그쪽은 타깃 네트워크이지 평가 요령이 아니다 |
 | **초기화** | Xavier/He 스케일링이 깊이에 걸쳐 활성 분산을 안정시킨다 | 정규화 층이 있는 지금은 결정적인 경우가 드물지만, 정규화 없이 학습하는 논문은 이것을 명시한다 |
+
+**초록이 인용할 두 행짜리 표.** E1c에서 발표된 두 행을, 레시피 어휘가 있는 여기에 다시 싣는다:
+
+| 방법 | 성공 | 시행 | 학습 |
+|---|---:|---:|---|
+| 우리 | 0.88 | 25 | 새 스케줄, 시드 하나 |
+| 기존 SOTA | 0.72 | 25 | 2021년 논문의 레시피 |
+
+16포인트 격차가 주장이다. 그 주장은 $n=25$, 시드 하나, 레시피 불일치에 말없이 의존한다 — 이 절의 경고다. 기존 SOTA를 새 스케줄과 여러 시드로 다시 학습시켜 보라. 격차가 사라지면 그 주장은 레시피였다. E1c가 바로 그 재학습이다. 레시피를 맞춘 채 방법마다 시드 넷을 돌리면 $4.0 \pm 8.9$점이 남고 그 구간은 0을 포함하므로, 16점 중 12점은 방법이 아니라 시드와 레시피였다. 별도로 $22/25$ 대 $18/25$는 얇은 이항이다.
 
 #### 레시피 용어, 수식과 함께
 
@@ -581,6 +678,19 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
 > [!tip] 더 깊이 · Going deeper
 > 이 페이지는 읽는 쪽 절반이다. 하는 쪽 절반은 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이고, 거기서 같은 개념들이 직접 내려야 하는 결정이 된다. 아래 깔린 통계는 Murphy의 무료 교재 [*Probabilistic Machine Learning: An Introduction*](https://probml.github.io/pml-book/book1.html) 4~6장.
 
+### 과제 · Problem set
+
+Tier B. **E1** 위의 손 유도. 이 페이지와 선수 지식, 위에 고정한 대상만 쓴다. 계산 예제와는 문턱값도 기저율도 다르다.
+
+1. **그리기.** E1b의 점수 일곱 개로 문턱값 $\tau = 0.65$에서, 그리고 $\tau = 0.45$에서 $2\times2$ 혼동 행렬을 그리고 두 동작점을 ROC 축 위에 찍어라. 점마다 정밀도를 적는다. 두 점 사이의 계단은 점수가 $0.45$와 $0.65$ 사이인 패널에 대해 무엇을 말하는가?
+2. **유도.** $\tau = 0.65$의 점을 그대로 들고 패널의 1%가 균열인 현장으로 옮겨, 패널 1,000장에 대한 정밀도를 구하라. 그다음 TPR을 고정한 채 그 기저율에서 정밀도 $0.5$를 주는 FPR을 찾고, 감지기가 몇 배 좋아져야 하는지 말하라.
+3. **해석.** E1c의 파일럿은 시행 10번에서 $\hat p = 0.9$, 백분위 부트스트랩 $[0.70,\ 1.00]$을 준다. (가) 여기서 그 구간의 위쪽 끝이 $1.00$을 넘을 수 없는 이유는 무엇이고, 파일럿이 10번 중 10번이었다면 구간은 무엇이 되는가? (나) 심사자가 "성공률에 오차 막대"를 요구한다. §4의 세 양 중 무엇을, 세 구간 중 무엇을 그 행에 실어야 하고, 독자가 그 답을 검산하려면 옆에 무엇이 더 인쇄되어 있어야 하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. $\tau = 0.65$에서 플래그되는 것은 균열 $0.90$·$0.80$과 정상 $0.70$이다. $TP = 2$, $FN = 1$, $FP = 1$, $TN = 3$이므로 정밀도 $2/3 = 0.667$, 재현율 $2/3 = 0.667$, 점은 $(\text{FPR},\ \text{TPR}) = (0.25,\ 0.667)$이다. $\tau = 0.45$에서는 균열 $0.60$과 정상 $0.50$이 합류해 $TP = 3$, $FN = 0$, $FP = 2$, $TN = 2$, 정밀도 $3/5 = 0.600$, 재현율 $1.000$, 점은 $(0.50,\ 1.00)$이다. $[0.45,\ 0.65)$ 구간에는 균열 하나와 정상 하나가 정확히 하나씩 있으므로, 그 띠를 건너면 마지막 균열을 오경보 하나의 값으로 산다. 재현율은 $0.667 \to 1.000$, FPR은 $0.25 \to 0.50$이고 재현율이 오르는 동안 정밀도는 *내려간다*. 계산 예제의 맞바꿈을 패널 일곱 장에 그린 것이다.
+> 2. 1,000장의 1%면 균열 10장, 정상 990장이다. 점을 고정하면 $TP = 0.667 \times 10 = 6.67$, $FP = 0.25 \times 990 = 247.5$이므로 정밀도는 $6.67/254.17 = 0.026$이다. 일곱 장 중 셋이 균열이던 E1b에서 계산한 $0.667$의 25분의 1이다. 정밀도 $0.5$를 얻으려면 오경보가 $FP = TP = 6.67$까지 내려가야 하므로 $\text{FPR} = 6.67/990 = 0.0067$, 곧 재현율을 유지한 채 거짓양성률이 37배 좋아져야 한다. 그 배수가 "배포 기저율 위에서 명시된 재현율에 대한 정밀도를 요구하라"의 구체적 내용이다.
+> 3. (가) 모든 재표본은 성공 아홉·실패 하나로 이루어진 기록된 시행 열 개에서 뽑으므로 $\hat p^*$가 낼 수 있는 최댓값이 $1.00$이다. 하나뿐인 실패를 건너뛴 재표본이 그렇고, 그런 재표본이 $0.9^{10} = 0.349$다. 파일럿이 10번 중 10번이었다면 부트스트랩 분포는 점 $1.00$ 하나, 구간은 $[1.00,\ 1.00]$이 된다. 계산 예제의 반례, 곧 시행 열 번으로 확실성을 주장하는 구간이다. (나) $s$도 SE도 아니다. 둘은 *실행* 사이의 흩어짐을 말하는데 파일럿은 베르누이 시행 10번짜리 실행 하나라 실행 간 흩어짐이 없다. 그 행에는 구간을 실어야 하고, 방어 가능한 것은 Wilson $[0.596,\ 0.982]$다. 부트스트랩은 자기 데이터 위를 보지 못하고 정규근사는 축을 벗어난다. 그리고 옆에는 $k$와 $n$이 — "90%"가 아니라 "9/10"이 — 그리고 §5의 에피소드 정의가 인쇄되어 있어야 한다. 그 둘이 없으면 구간을 다시 계산할 수도, 해석할 수도 없다.
+
 ### 스스로 점검
 
 1. 어떤 모델이 test 정확도로 최적 체크포인트를 골랐다. 무엇이 잘못됐고, 보고 수치는 어느
@@ -589,32 +699,15 @@ ROC 곡선도 AUC도 전혀 움직이지 않는데 정밀도는 세 배로 무�
    용인 가능한가?
 3. FID는 왜 픽셀이 아니라 *특징*(이미지 분류용 CNN인 Inception의 임베딩)에서 계산하는가?
 4. VLA 논문의 "unseen 지시 76% 성공" — 믿기 전에 물어야 할 질문 세 개를 들어라.
+5. 배포 문턱값에서 E1b의 정밀도는 $0.75$다. 이것을 현장 정밀도의 추정으로 읽으면 왜
+   틀리고, E1b에서 계산한 숫자 중 믿을 수 있는 것은 무엇인가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 테스트가 검증 집합 역할을 해버렸다 — 보고 수치는 위로(낙관적으로) 편향되고, 실제 일반화 성능은 그보다 낮다.
 > 2. 진짜 균열의 70%를 놓친다(재현율 0.3). 1차 스크리닝이나 유일한 안전 관문으로는 불가하다. 표시하지 않은 것은 점검에 아예 올라가지 않기 때문이다. 모든 패널을 여전히 점검하는 체계 위에서 우선순위를 정하는 보조 수단으로만 용인 가능하다: 표시는 믿을 만하므로(정밀도 0.9) 먼저 처리하고, 놓친 것은 정규 점검이 잡는다.
 > 3. 픽셀 거리는 지각 품질과 무관하다(한 픽셀 평행이동에도 크게 벌점) — Inception 특징 공간이 의미적 유사성을 반영하기 때문에 특징 분포 거리로 잰다.
 > 4. ① 몇 회 시행이고 분산은 얼마인가 ② "unseen"의 정의는(새 물체? 새 지시문? 새 장면?) ③ 어떤 베이스라인 대비이며 실패 사례 분석이 있는가.
-
-### 과제 · Problem set
-
-Tier C. 주장 읽기만. 플랜트 동역학 없음.
-
-어떤 논문의 결과 표(창작):
-
-| 방법 | 성공 | 시행 | 학습 |
-|---|---:|---:|---|
-| 우리 | 0.88 | 25 | 새 스케줄, 시드 하나 |
-| 기존 SOTA | 0.72 | 25 | 2021년 논문의 레시피 |
-
-1. **그리기.** 두 행 표를 옮겨 그려라. 초록이 "16포인트 향상"으로 인용할 숫자를 동그라미.
-2. **유도.** 어느 숫자가 주장이고, 그 주장이 말없이 의존하는 실험 설정 숫자는?
-3. **해석.** 그 향상을 반증할 구체적 방법 하나(재학습, 분할, 또는 횟수).
-
-> [!tip]- 정답 · Solutions
-> 1. $0.88-0.72=0.16$, 또는 쌍 $0.88$ vs $0.72$에 동그라미.
-> 2. 주장은 성공률 16포인트 격차. $n=25$, 시드 하나, 레시피 불일치(새 스케줄 vs 2021 레시피)에 의존한다 — 이 페이지 §6의 경고.
-> 3. 기존 SOTA를 새 스케줄과 여러 시드로 다시 학습한다. 격차가 사라지면 주장은 레시피 차이였다. 별도로 $22/25$ vs $18/25$는 얇은 이항: "우리"에 실패 하나면 헤드라인이 움직인다.
+> 5. E1b는 점수 범위를 덮도록 고른 것이라 일곱 장 중 셋이 균열, 곧 기저율 43%인데 현장은 6%다. 정밀도는 양성 *예측*에 조건화하므로 기저율을 따라 움직이고(계산 예제 3번), $0.75$는 그 조각만을 설명한다. 믿을 수 있는 것은 AUC $0.917$이다. 균열 패널의 점수가 정상 패널의 점수에 대해 어떻게 정렬되는지에만 의존하고, 두 군을 어떤 비율로 섞어도 그 정렬은 그대로이기 때문이다.
 
 ### 실험을 읽는 것에서 설계하는 것으로
 

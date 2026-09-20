@@ -2,25 +2,106 @@
 title: "MR Ch.12 — Grasping & Manipulation"
 tags: [robotics, modern-robotics]
 study-depth: Working
-wiki-support: Literacy
-depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
+wiki-support: Working
+depth-goal: "On P2's panel tile, write the four friction-cone wrench edges, settle force closure and form closure with the positive-span test, and size the preload that holds the tile."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
 **Modern Robotics ch.12** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the wrench (moment + force) concept from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]] and vector cross products.
-> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 렌치(모멘트+힘) 개념과 벡터 외적이 필요하다.
+> You need the wrench (moment + force) concept from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]] and vector cross products. The object is the panel tile that P2 carries, defined below from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 렌치(모멘트+힘) 개념과 벡터 외적이 필요하다. 대상은 P2가 나르는 패널 타일이고, [[02-foundations/lab-plants|0.6 Lab Plants]]에서 아래와 같이 정의한다.
 
 ## English
 
 **Core question**: when does a grasp actually hold the object?
 
+### Running plant · 이 페이지의 장치
+
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] carries a tool, and the tool holds **the panel tile** — frozen here, numbers unchanged for the rest of the page.
+
+| quantity | value | note |
+|---|---:|---|
+| tile size | $0.200 \times 0.100\ \mathrm{m}$ | corners at $(\pm 0.100,\ \pm 0.050)$ in the tile frame |
+| tile mass | $0.500\ \mathrm{kg}$ | weight $W = mg = 0.500 \times 9.81 = 4.905\ \mathrm{N}$, $g$ from 0.6 |
+| contacts | $r_1 = (-0.100,\ 0)$, $r_2 = (+0.100,\ 0)$ | midpoints of the two short edges |
+| inward normals | $\hat n_1 = (+1,\ 0)$, $\hat n_2 = (-1,\ 0)$ | two point fingers squeezing along $\pm x$ |
+| friction | $\mu = 0.5$ | Coulomb, the same $\mu$ the chapter already uses |
+| preload | $f_n = 20\ \mathrm{N}$ per finger | the squeeze the gripper applies |
+
+The tile frame's origin is the centre of mass, which is also the midpoint of the two contacts; its $x$ axis is the squeeze axis and its $y$ axis is world-vertical, so gravity acts along $-y$. A planar wrench is written $w = (f_x,\ f_y,\ m_z)$ throughout.
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, the tile drawn as a rectangle with its centre of mass marked.
+
+- Draw both contact points on the short edges and, at each, the **inward normal** as a solid arrow.
+- At each contact draw the **friction cone**: two dashed rays at $\pm 26.565°$ from that normal, with the wedge between them shaded. Write the half-angle on one of them.
+- Draw the line joining the two contacts as a thin straight line all the way through the tile, and check by eye that it lies inside both shaded wedges — that is the antipodal condition, and here the line and the normals coincide.
+- Draw the weight $W$ as a downward arrow at the centre of mass, and beside it the two tangential (vertical) finger forces that must add up to it.
+- In a margin box, list the four cone-edge wrenches as $(f_x, f_y, m_z)$ triples.
+
+The problem set asks for the same figure with a narrower cone and the centre of mass shifted along $x$, which adds a moment arrow the figure above does not have.
+
+### Worked on the plant · 장치로 한 번 끝까지
+
+**Step 1 — the friction cone as an angle.** Coulomb's condition $|f_t| \le \mu f_n$ says the contact force must lie within
+
+$$\alpha = \tan^{-1}\mu = \tan^{-1}0.5 = 26.565°$$
+
+of the inward normal, because $f_t/f_n = \tan(\text{angle from the normal})$. The cone's two boundary rays are therefore the unit directions $\hat n \pm \mu\,\hat t$, and any force in the cone is a nonnegative combination of them.
+
+**Step 2 — turn each cone edge into a wrench.** A planar contact force $f$ applied at $r$ produces
+
+$$w = (f_x,\ f_y,\ m_z), \qquad m_z = r_x f_y - r_y f_x$$
+
+because the planar cross product $r \times f$ has only a $z$ component. With $r_y = 0$ at both contacts this reduces to $m_z = r_x f_y$, so only the *tangential* force makes a moment here. Taking unit normal component at each edge:
+
+| edge | $r$ | $f$ | $m_z = r_x f_y$ | wrench $w$ |
+|---|---|---|---:|---|
+| $1^{+}$ | $(-0.100, 0)$ | $(1,\ +0.5)$ | $-0.05$ | $(1,\ 0.5,\ -0.05)$ |
+| $1^{-}$ | $(-0.100, 0)$ | $(1,\ -0.5)$ | $+0.05$ | $(1,\ -0.5,\ +0.05)$ |
+| $2^{+}$ | $(+0.100, 0)$ | $(-1,\ +0.5)$ | $+0.05$ | $(-1,\ 0.5,\ +0.05)$ |
+| $2^{-}$ | $(+0.100, 0)$ | $(-1,\ -0.5)$ | $-0.05$ | $(-1,\ -0.5,\ -0.05)$ |
+
+**Step 3 — the closure test, applied.** Closure asks whether these four wrenches **positively span** $\mathbb{R}^3$: whether every external wrench can be resisted by a nonnegative combination, contacts being able to push but never pull. The computable form of that question is two conditions — find strictly positive coefficients that cancel, and check the rank:
+
+$$\exists\,\lambda > 0 \text{ with } \sum_i \lambda_i w_i = 0, \qquad \operatorname{rank}\,[w_1\ w_2\ w_3\ w_4] = 3$$
+
+since a strictly positive null combination puts the origin in the *interior* of the cone's cross-section, and full rank rules out the whole thing collapsing into a plane. Here $\lambda = (1,1,1,1)$ already works:
+
+$$w_{1^{+}} + w_{1^{-}} + w_{2^{+}} + w_{2^{-}} = (1{+}1{-}1{-}1,\ \ 0.5{-}0.5{+}0.5{-}0.5,\ \ -0.05{+}0.05{+}0.05{-}0.05) = (0,0,0)$$
+
+and the rank is 3 because three independent directions come out of pairs: $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, and $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. Both conditions hold, so the two-finger grasp is a **force closure**. Cross-check it against the antipodal rule: the line joining the contacts runs along $\hat x$, which is the normal at both contacts, so it makes a $0°$ angle with each normal — well inside $26.565°$.
+
+**Step 4 — the same contacts without friction are not form closure.** Set $\mu = 0$ and only the normals survive: $w_1 = (1,0,0)$ and $w_2 = (-1,0,0)$. They cancel with $\lambda = (1,1)$, but the rank is $1$. Their positive span is one line, so the grasp resists nothing in $f_y$ and nothing in $m_z$ — the tile slides down and spins out. That is why frictionless planar form closure needs at least four contacts.
+
+**Step 5 — four frictionless contacts that do close, and four that do not.** Place them as a pinwheel, each normal offset from the centre so that it carries a moment:
+
+| contact | $r$ | $\hat n$ | wrench |
+|---|---|---|---|
+| $c_1$ | $(-0.100,\ +0.025)$ | $(1,\ 0)$ | $(1,\ 0,\ -0.025)$ |
+| $c_2$ | $(+0.100,\ -0.025)$ | $(-1,\ 0)$ | $(-1,\ 0,\ -0.025)$ |
+| $c_3$ | $(-0.050,\ +0.050)$ | $(0,\ -1)$ | $(0,\ -1,\ +0.050)$ |
+| $c_4$ | $(+0.050,\ -0.050)$ | $(0,\ +1)$ | $(0,\ +1,\ +0.050)$ |
+
+Try $\lambda = (1,1,1,1)$: the sum is $(0,\ 0,\ +0.05)$, not zero — so that choice fails, and the test is not "any $\lambda$". Try $\lambda = (2,2,1,1)$: the sum is $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$, all coefficients positive, and the rank is 3. **Form closure.** Now move the same four contacts to the edge midpoints, $(\pm 0.100, 0)$ and $(0, \pm 0.050)$, so that every normal passes through the centre of mass. The wrenches become $(\pm1, 0, 0)$ and $(0, \pm1, 0)$, rank $2$, and no positive combination produces any $m_z$ at all: four contacts, the count satisfied, and the tile still free to spin. **The bound of four is necessary, not sufficient.**
+
+**Step 6 — how hard to squeeze.** Closure says a wrench *can* be resisted; it says nothing about how much force that takes. Hold the tile against gravity: the fingers must supply $(0, +W, 0)$, and by symmetry $f_{y1} = f_{y2} = W/2 = 2.4525\,\mathrm{N}$, each of which Coulomb caps at $\mu f_n$. So
+
+$$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
+
+because the two contacts share the load and each converts preload into $\mu$ times as much friction. The frozen preload of $20\,\mathrm{N}$ therefore carries a safety factor of $20/4.905 = 4.08$, a total tangential budget of $2\mu f_n = 20\,\mathrm{N}$, and a moment capacity about $z$ of $2\,(\mu f_n)\,(0.100) = 2.00\ \mathrm{N\cdot m}$.
+
+**Step 7 — the limit that separates the two questions.** Repeat Step 3 with a general $\mu > 0$: the four edges are $(\pm1, \pm\mu, \mp 0.1\mu)$ in the same pattern, $\lambda = (1,1,1,1)$ still cancels, and the rank is still 3. So the grasp is a force closure **for every positive $\mu$, however small** — and yet $f_n^{\min} = W/(2\mu)$ diverges: at $\mu = 0.05$ it is $49.05\,\mathrm{N}$, ten times the catalog figure. Closure is a statement about *directions*; preload is a statement about *magnitudes*. A paper that reports a force-closure grasp has told you the first and nothing about the second.
+
+### 1. The chapter in one list
+
 - **Contact models**: a frictionless point contact can only *push* along the surface
   normal; a point contact with friction can push anywhere inside the **friction cone** —
   half-angle $\alpha = \tan^{-1}\mu$. For $\mu = 0.5$, $\alpha \approx 26.6°$: the physical
-  meaning of a friction coefficient is *an angle*. The homework's angle claim *is* that conversion. First-order form closure's "at least 4 planar contacts" is falsified by second-order curvature with two contacts, named below. Two fingers on P2's panel along $\pm x$ with $\mu=0.5$ still need the cones to span wrench space; form closure would demand extra contacts because it cannot spend friction.
+  meaning of a friction coefficient is *an angle*. First-order form closure's "at least 4 planar contacts" is falsified by second-order curvature with two contacts, named below.
 - **Form closure**: the geometry alone traps the object (no friction needed) — for
   frictionless point contacts, at least 4 contacts in the plane and 7 in space. Robust but
   demanding. Those counts are for **first-order** form closure, which is the qualifier that
@@ -46,29 +127,61 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
   multi-tonne stones, exactly where closure analysis matters, though its open sources
   describe the gripper and the scans rather than a closure analysis.
 
+### 2. The contact wrench and the friction cone, defined
+
+A **contact wrench** is a *vector in wrench space* — $\mathbb{R}^3$ in the plane, $\mathbb{R}^6$ in space — recording everything one contact force does to the body. Two ingredients define it: the force, and the point it acts at. In the plane
+
+$$w(r, f) = (f_x,\ f_y,\ r_x f_y - r_y f_x)$$
+
+where $r$ is the contact position in the body frame and $f$ the force the finger applies to the body, so the third entry is the moment about the frame's origin. Changing the frame origin changes $m_z$ but not $f$, which is why every wrench on this page is referred to the tile's centre of mass.
+
+- **Example**: edge $1^{+}$ above, $w = (1,\ 0.5,\ -0.05)$ — pushing right, dragging up, and rotating the tile clockwise because the upward drag acts $0.100\,\mathrm{m}$ to the left of centre.
+- **Non-example**: the pair $(f_x, f_y)$ alone. Two grasps with identical contact forces and different contact *locations* hold the tile differently, and dropping $m_z$ makes them look the same.
+
+A **friction cone** at a point contact is the *set of forces the contact can transmit*. Its defining conditions are two, and both are inequalities: the normal component cannot pull, $f_n \ge 0$; and the tangential component obeys Coulomb, $|f_t| \le \mu f_n$. Equivalently it is the circular cone of half-angle $\alpha = \tan^{-1}\mu$ about the inward normal, and in the plane it degenerates to a wedge with two edges $\hat n \pm \mu \hat t$.
+
+- **Example**: $\mu = 0.5$ gives $\alpha = 26.565°$; $\mu = 1.0$ gives exactly $45°$.
+- **Non-example**: "$\mu$ is the cone angle." Doubling $\mu$ from $0.5$ to $1.0$ doubles the allowed force *ratio* but takes the angle from $26.565°$ to $45°$, not to $53.13°$. The cone angle is the arctangent, and it saturates at $90°$ however large $\mu$ becomes.
+- **Why it matters**: closure tests are linear-algebra questions about the cone *edges*. Get the edge directions wrong and every wrench-space conclusion after them is wrong.
+
+### 3. Form closure and force closure, defined by a computable test
+
+**Form closure** is a property of a *set of contacts on a body*: the contact normals alone, with no friction, immobilize the body. **Force closure** is the same property when each contact may use its whole friction cone. Both are the same mathematical condition applied to different generator sets — the normals, or the cone edges — and the condition is **positive spanning**: every wrench in the space is $\sum_i \lambda_i w_i$ for some $\lambda_i \ge 0$. Made checkable:
+
+$$\text{closure} \iff \exists\,\lambda > 0 \text{ with } \textstyle\sum_i \lambda_i w_i = 0 \ \text{ and } \ \operatorname{rank}[w_1 \cdots w_k] = n$$
+
+with $n = 3$ in the plane and $6$ in space, because a strictly positive combination summing to zero places the origin in the relative interior of the generated cone, and full rank forbids that cone from lying in a proper subspace.
+
+- **Example**: the two frictional fingers, $\lambda = (1,1,1,1)$, rank 3 — force closure. And the pinwheel, $\lambda = (2,2,1,1)$, rank 3 — form closure.
+- **Non-example, rank**: two frictionless antipodal normals. They cancel with positive $\lambda$, but rank 1, so the cone is a line.
+- **Non-example, count**: four frictionless normals all passing through the centre of mass. Four contacts is the textbook minimum and this arrangement still has rank 2. The minimum is necessary, never sufficient.
+- **Why it matters**: the test costs a small linear program and gives a yes or no. It gives no margin, no required preload, and no answer at all about whether the fingers can be placed there — which is why Step 6 exists and why grasp *quality* metrics are a separate literature.
+
 ### Self-check
 
 1. What is the friction cone half-angle for $\mu = 1.0$? What does that imply physically?
 2. Why does form closure need more contacts than force closure?
 3. State the antipodal grasp condition for a parallel-jaw gripper.
+4. The tile is lifted with an upward acceleration of $2\,\mathrm{m/s^2}$. What preload does it now need at $\mu = 0.5$?
 
 > [!tip]- Answers
 > 1. $\alpha = \tan^{-1}1.0 = 45°$: the contact force may tilt up to 45° away from the surface normal before the model says it slips. A friction coefficient is an *angle*, which is why doubling $\mu$ from 0.5 to 1.0 widens the cone from ~26.6° to 45°: the allowed tangential-to-normal force ratio doubles, but the cone angle does not.
 > 2. Form closure must block every direction using geometry alone, without the "free" tangential directions that friction cones supply — so it needs more contacts (at least 4 in the plane, 7 in space for frictionless point contacts). Those bounds are first-order results; curvature is a second-order effect and can immobilize a planar body with two contacts.
 > 3. For the planar two-point model, the line joining the contacts lies inside both friction cones. This is not by itself a spatial force-closure test for two hard point contacts; a spatial parallel-jaw argument needs a soft-finger contact model or another source of torsional resistance.
+> 4. The fingers must supply $m(g+a) = 0.500 \times 11.81 = 5.905\,\mathrm{N}$ instead of $4.905$, so $f_n^{\min} = 5.905/(2 \times 0.5) = 5.905\,\mathrm{N}$ — a $20.4\,\%$ rise, exactly the ratio $11.81/9.81$. Force closure is unaffected: acceleration changes the wrench to be resisted, not the set of wrenches that can be.
 
 ### Problem set · 과제
 
-Tier C. Claim-reading. Running task: P2's tool holds the panel ([[02-foundations/lab-plants|0.6]]).
+Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same tile, same two fingers at $(\pm 0.100, 0)$, but two knobs move: site dust drops the friction to $\mu = 0.2$, and the tile now carries a bracket that puts its centre of mass at $(+0.030,\ 0)$ in the grasp frame instead of at the origin.
 
-1. **Claim.** Which number is the claim that a friction coefficient is an *angle*?
-2. **Falsify.** What contact observation would falsify quoting “at least 4 planar contacts” as a hard lower bound?
-3. **Task.** Two fingers squeeze the panel along $\pm x$ with $\mu=0.5$. What does force closure still need that form closure would demand extra contacts for?
+1. **Draw.** The figure again with the narrower cones and the shifted centre of mass. Draw the weight arrow at its new location, mark the $0.030\,\mathrm{m}$ lever arm, and add the moment the weight now makes about the grasp midpoint. Write the new half-angle on a cone edge.
+2. **Derive.** (a) The new half-angle $\alpha$, and the four cone-edge wrenches. (b) Decide force closure with the positive-span test — state the $\lambda$ you use and the rank. (c) The gravity wrench about the grasp midpoint, then the two tangential forces $f_{y1}, f_{y2}$ that resist it, then the minimum preload $f_n^{\min}$. (d) Does the frozen $20\,\mathrm{N}$ preload still hold the tile, and with what margin?
+3. **Interpret.** Did either knob change the force-closure verdict? Answer for each, with the reason. Then explain what the offset costs as a formula rather than a number, and say what would have to change before the grasp fails outright rather than merely needing a harder squeeze.
 
 > [!tip]- Solutions
-> 1. $\mu=0.5\Rightarrow\alpha=\tan^{-1}0.5\approx26.6^\circ$ — that conversion *is* the angle claim.
-> 2. Curved surfaces immobilizing a planar body with two contacts (second-order form closure, named on this page). The 4/7 counts are first-order.
-> 3. Friction supplies tangential directions, so two opposing contacts can resist a bounded vertical load (preload $\times\mu$). Form closure would need more frictionless normals; two hard points still cannot resist torsion about the squeeze axis.
+> 1. The cones are visibly thinner and the weight arrow no longer passes between the fingers, so a curved moment arrow appears about the grasp midpoint.
+> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. Edges: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$ sums to $(0,0,0)$, and the rank is 3 because the pairs give $(2,0,0)$, $(0,0.4,0)$ and $(0,0,-0.04)$. Force closure holds. (c) Gravity acts at $(0.030, 0)$ with force $(0,-4.905)$, so $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$ and the grasp must supply $(0,\ +4.905,\ +0.14715)$. Then $f_{y1}+f_{y2} = 4.905$ and $-0.100f_{y1} + 0.100f_{y2} = 0.14715$, giving $f_{y2} - f_{y1} = 1.4715$, so $f_{y2} = 3.18825$ and $f_{y1} = 1.71675\ \mathrm{N}$. The binding finger is the far one: $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) Yes: the budget per finger is $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$ against a demand of $3.188\ \mathrm{N}$, a margin of $4/3.188 = 1.25$ — against $4.08$ in the catalog case, so almost all of the safety factor is gone.
+> 3. Neither changed it. Force closure is decided by the cone-edge *directions* and the contact positions, and $\mu > 0$ with unchanged antipodal geometry keeps the positive-span test passing, while moving the centre of mass changes the wrench to be resisted, not the wrenches available. Both knobs move only the preload. As a formula, the offset $e$ raises the worst finger's tangential demand from $W/2$ to $\tfrac{W}{2}(1 + e/\ell)$ with $\ell = 0.100\,\mathrm{m}$ the half-span of the grasp, so $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$ — here $1 + 0.3 = 1.30$, a $30\,\%$ surcharge at any $\mu$. Outright failure needs the *directions* to change: $\mu \to 0$ exactly (rank drops to 1), or a re-grasp that stops the contact line from lying inside both cones, or an offset $e > \ell$, which puts the centre of mass outside the fingers so that no nonnegative normal forces can balance it.
 
 ### Continue beyond this chapter
 
@@ -78,9 +191,90 @@ Tier C. Claim-reading. Running task: P2's tool holds the panel ([[02-foundations
 
 **핵심 질문**: 파지는 언제 실제로 물체를 붙잡는가?
 
+### 이 페이지의 장치 · Running plant
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**가 도구를 들고, 그 도구가 **패널 타일**을 잡는다. 여기서 고정하고 이 페이지 끝까지 숫자를 바꾸지 않는다.
+
+| 양 | 값 | 비고 |
+|---|---:|---|
+| 타일 크기 | $0.200 \times 0.100\ \mathrm{m}$ | 타일 좌표계에서 꼭짓점 $(\pm 0.100,\ \pm 0.050)$ |
+| 타일 질량 | $0.500\ \mathrm{kg}$ | 무게 $W = mg = 0.500 \times 9.81 = 4.905\ \mathrm{N}$, $g$는 0.6 |
+| 접촉점 | $r_1 = (-0.100,\ 0)$, $r_2 = (+0.100,\ 0)$ | 짧은 두 변의 중점 |
+| 안쪽 법선 | $\hat n_1 = (+1,\ 0)$, $\hat n_2 = (-1,\ 0)$ | 점 손가락 둘이 $\pm x$로 쥔다 |
+| 마찰 | $\mu = 0.5$ | 쿨롱, 이 장이 이미 쓰던 그 $\mu$ |
+| 예압 | 손가락당 $f_n = 20\ \mathrm{N}$ | 그리퍼가 주는 쥐는 힘 |
+
+타일 좌표계의 원점은 질량 중심이고 동시에 두 접촉점의 중점이다. $x$축이 쥐는 축, $y$축이 세계의 연직이므로 중력은 $-y$로 작용한다. 평면 렌치는 전부 $w = (f_x,\ f_y,\ m_z)$로 쓴다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 질량 중심을 표시한 직사각형으로 타일을 그린다.
+
+- 짧은 두 변의 접촉점을 찍고 각각에 **안쪽 법선**을 실선 화살표로 그린다.
+- 각 접촉점에 **마찰 원뿔**을 그린다. 법선에서 $\pm 26.565°$인 점선 두 개와 그 사이를 칠한 쐐기. 반각을 한쪽에 적는다.
+- 두 접촉점을 잇는 선을 타일을 관통하는 가는 직선으로 긋고, 그것이 칠한 두 쐐기 안에 있는지 눈으로 확인한다. 그것이 대척 조건이고, 여기서는 그 선과 법선이 일치한다.
+- 질량 중심에 무게 $W$를 아래 방향 화살표로, 그 옆에 합이 그것과 같아야 하는 접선(연직) 손가락 힘 두 개를 그린다.
+- 여백 상자에 마찰 원뿔 모서리 렌치 네 개를 $(f_x, f_y, m_z)$ 삼중항으로 나열한다.
+
+과제는 원뿔이 좁아지고 질량 중심이 $x$로 옮겨간 같은 그림을 요구하며, 그러면 위 그림에는 없는 모멘트 화살표가 하나 생긴다.
+
+### 장치로 한 번 끝까지 · Worked on the plant
+
+**1단계 — 마찰 원뿔은 각도다.** 쿨롱 조건 $|f_t| \le \mu f_n$은 접촉력이 안쪽 법선에서
+
+$$\alpha = \tan^{-1}\mu = \tan^{-1}0.5 = 26.565°$$
+
+이내에 있어야 한다는 뜻이다. $f_t/f_n = \tan(\text{법선에서의 각})$이기 때문이다. 따라서 원뿔의 두 경계 방향은 단위 벡터 $\hat n \pm \mu\,\hat t$이고, 원뿔 안의 모든 힘은 그 둘의 음이 아닌 결합이다.
+
+**2단계 — 원뿔 모서리를 렌치로.** 평면에서 $r$에 작용하는 접촉력 $f$는
+
+$$w = (f_x,\ f_y,\ m_z), \qquad m_z = r_x f_y - r_y f_x$$
+
+를 만든다. 평면 외적 $r \times f$가 $z$ 성분만 갖기 때문이다. 두 접촉 모두 $r_y = 0$이므로 $m_z = r_x f_y$로 줄고, 여기서는 *접선* 힘만 모멘트를 만든다. 각 모서리에서 법선 성분을 1로 두면:
+
+| 모서리 | $r$ | $f$ | $m_z = r_x f_y$ | 렌치 $w$ |
+|---|---|---|---:|---|
+| $1^{+}$ | $(-0.100, 0)$ | $(1,\ +0.5)$ | $-0.05$ | $(1,\ 0.5,\ -0.05)$ |
+| $1^{-}$ | $(-0.100, 0)$ | $(1,\ -0.5)$ | $+0.05$ | $(1,\ -0.5,\ +0.05)$ |
+| $2^{+}$ | $(+0.100, 0)$ | $(-1,\ +0.5)$ | $+0.05$ | $(-1,\ 0.5,\ +0.05)$ |
+| $2^{-}$ | $(+0.100, 0)$ | $(-1,\ -0.5)$ | $-0.05$ | $(-1,\ -0.5,\ -0.05)$ |
+
+**3단계 — closure 검사를 적용한다.** closure는 이 렌치 넷이 $\mathbb{R}^3$를 **양으로 생성**하는지 묻는다. 즉 모든 외부 렌치를 음이 아닌 결합으로 버틸 수 있는지다. 접촉은 밀 수만 있고 당길 수 없기 때문이다. 그 질문의 계산 가능한 형태는 조건 둘이다. 상쇄되는 엄격히 양인 계수를 찾고, 랭크를 확인한다:
+
+$$\exists\,\lambda > 0,\ \sum_i \lambda_i w_i = 0, \qquad \operatorname{rank}\,[w_1\ w_2\ w_3\ w_4] = 3$$
+
+엄격히 양인 영결합이 원점을 원뿔 단면의 *내부*에 놓고, 풀랭크가 전체가 평면으로 주저앉는 것을 막기 때문이다. 여기서는 $\lambda = (1,1,1,1)$이 이미 된다:
+
+$$w_{1^{+}} + w_{1^{-}} + w_{2^{+}} + w_{2^{-}} = (1{+}1{-}1{-}1,\ \ 0.5{-}0.5{+}0.5{-}0.5,\ \ -0.05{+}0.05{+}0.05{-}0.05) = (0,0,0)$$
+
+랭크가 3인 이유는 쌍에서 독립인 방향 셋이 나오기 때문이다. $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. 두 조건이 모두 성립하므로 손가락 둘의 파지는 **force closure**다. 대척 규칙으로 교차 확인하면, 두 접촉점을 잇는 선이 $\hat x$이고 그것이 양쪽 법선이므로 각 법선과 이루는 각이 $0°$, $26.565°$ 안쪽으로 충분하다.
+
+**4단계 — 같은 접촉을 마찰 없이 두면 form closure가 아니다.** $\mu = 0$으로 두면 법선만 남아 $w_1 = (1,0,0)$, $w_2 = (-1,0,0)$이다. $\lambda = (1,1)$로 상쇄되지만 랭크가 $1$이다. 양의 생성이 직선 하나뿐이라 $f_y$도 $m_z$도 전혀 버티지 못한다. 타일이 미끄러져 내려가고 돌아 빠진다. 마찰 없는 평면 form closure에 접촉이 최소 넷 필요한 이유다.
+
+**5단계 — closure가 되는 마찰 없는 접촉 넷과 안 되는 넷.** 바람개비처럼 놓아 각 법선이 중심에서 벗어나게 하면 모멘트를 낸다:
+
+| 접촉 | $r$ | $\hat n$ | 렌치 |
+|---|---|---|---|
+| $c_1$ | $(-0.100,\ +0.025)$ | $(1,\ 0)$ | $(1,\ 0,\ -0.025)$ |
+| $c_2$ | $(+0.100,\ -0.025)$ | $(-1,\ 0)$ | $(-1,\ 0,\ -0.025)$ |
+| $c_3$ | $(-0.050,\ +0.050)$ | $(0,\ -1)$ | $(0,\ -1,\ +0.050)$ |
+| $c_4$ | $(+0.050,\ -0.050)$ | $(0,\ +1)$ | $(0,\ +1,\ +0.050)$ |
+
+$\lambda = (1,1,1,1)$을 넣으면 합이 $(0,\ 0,\ +0.05)$로 0이 아니다. 그 선택은 실패하며, 검사는 "아무 $\lambda$나"가 아니다. $\lambda = (2,2,1,1)$을 넣으면 합이 $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$, 계수가 모두 양수이고 랭크는 3이다. **Form closure.** 이제 같은 접촉 넷을 변의 중점 $(\pm 0.100, 0)$과 $(0, \pm 0.050)$으로 옮겨 모든 법선이 질량 중심을 지나게 해 보자. 렌치는 $(\pm1, 0, 0)$과 $(0, \pm1, 0)$이 되어 랭크 $2$, 어떤 양의 결합도 $m_z$를 전혀 만들지 못한다. 접촉은 넷이고 개수 조건은 채웠는데 타일은 여전히 자유롭게 돈다. **넷이라는 하한은 필요조건이지 충분조건이 아니다.**
+
+**6단계 — 얼마나 세게 쥐어야 하는가.** closure는 렌치를 버틸 수 *있다*고 말할 뿐 얼마나 큰 힘이 드는지는 말하지 않는다. 중력에 맞서 타일을 든다고 하자. 손가락이 $(0, +W, 0)$을 내야 하고 대칭에서 $f_{y1} = f_{y2} = W/2 = 2.4525\,\mathrm{N}$이며, 쿨롱은 각각을 $\mu f_n$으로 자른다. 따라서
+
+$$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
+
+이다. 두 접촉이 하중을 나눠 지고 각각이 예압을 그 $\mu$배의 마찰로 바꾸기 때문이다. 그러므로 고정된 $20\,\mathrm{N}$ 예압은 안전율 $20/4.905 = 4.08$, 접선 여유 총 $2\mu f_n = 20\,\mathrm{N}$, $z$ 둘레 모멘트 용량 $2\,(\mu f_n)\,(0.100) = 2.00\ \mathrm{N\cdot m}$을 준다.
+
+**7단계 — 두 질문을 가르는 극한.** 3단계를 일반의 $\mu > 0$으로 반복하면 모서리 넷이 같은 형태의 $(\pm1, \pm\mu, \mp 0.1\mu)$이고, $\lambda = (1,1,1,1)$이 여전히 상쇄되며 랭크도 여전히 3이다. 즉 **$\mu$가 아무리 작아도 양이기만 하면** force closure다. 그런데 $f_n^{\min} = W/(2\mu)$는 발산한다. $\mu = 0.05$면 $49.05\,\mathrm{N}$, 카탈로그 값의 열 배다. closure는 *방향*에 관한 진술이고 예압은 *크기*에 관한 진술이다. force closure 파지를 보고한 논문은 앞의 것을 말한 것이고 뒤의 것은 아무것도 말하지 않은 것이다.
+
+### 1. 이 장을 목록 하나로
+
 - **접촉 모델**: 마찰 없는 점 접촉은 표면 법선 방향으로만 *밀 수* 있다; 마찰 있는 점
   접촉은 **마찰 원뿔** 안 어디로든 밀 수 있다 — 반각 $\alpha = \tan^{-1}\mu$.
-  $\mu = 0.5$면 $\alpha \approx 26.6°$: 마찰 계수의 물리적 의미는 *각도*다.
+  $\mu = 0.5$면 $\alpha \approx 26.6°$: 마찰 계수의 물리적 의미는 *각도*다. 1차 form closure의 "평면 접촉 최소 4개"는 아래에 이름을 적은 2차 곡률 효과, 접촉 둘로 반증된다.
 - **Form closure**: 기하만으로 물체를 가둔다(마찰 불필요) — 마찰 없는 점 접촉에서 평면
   최소 4개, 공간 최소 7개의 접촉이 필요하다. 강건하지만 요구가 크다. 이 수는 **1차**
   form closure에 대한 것이고, 그 단서가 핵심이다. 접촉 구속을 선형화해서 얻은 결과라 접촉
@@ -101,11 +295,42 @@ Tier C. Claim-reading. Running task: P2's tool holds the panel ([[02-foundations
   수 톤급 돌을 파지하므로 closure 분석이 중요한 바로 그 자리다. 다만 공개 출처는 closure
   분석이 아니라 그리퍼와 스캔을 기술한다.
 
+### 2. 접촉 렌치와 마찰 원뿔의 정의
+
+**접촉 렌치**는 *렌치 공간의 벡터*다. 평면이면 $\mathbb{R}^3$, 공간이면 $\mathbb{R}^6$이고, 접촉력 하나가 물체에 하는 일을 전부 담는다. 정의에 들어가는 재료는 둘, 힘과 그 작용점이다. 평면에서는
+
+$$w(r, f) = (f_x,\ f_y,\ r_x f_y - r_y f_x)$$
+
+이고 $r$은 물체 좌표계의 접촉 위치, $f$는 손가락이 물체에 주는 힘이므로 셋째 성분은 좌표 원점 둘레의 모멘트다. 원점을 바꾸면 $m_z$는 바뀌고 $f$는 안 바뀐다. 이 페이지의 모든 렌치를 타일의 질량 중심 기준으로 쓰는 이유다.
+
+- **예**: 위의 모서리 $1^{+}$, $w = (1,\ 0.5,\ -0.05)$ — 오른쪽으로 밀고, 위로 끌고, 타일을 시계 방향으로 돌린다. 위로 끄는 힘이 중심에서 왼쪽으로 $0.100\,\mathrm{m}$ 떨어진 곳에 작용하기 때문이다.
+- **반례**: 쌍 $(f_x, f_y)$만. 접촉력은 같고 접촉 *위치*가 다른 두 파지는 타일을 다르게 잡는데, $m_z$를 버리면 둘이 같아 보인다.
+
+점 접촉의 **마찰 원뿔**은 *그 접촉이 전달할 수 있는 힘들의 집합*이다. 정의 조건은 둘이고 둘 다 부등식이다. 법선 성분은 당길 수 없다, 즉 $f_n \ge 0$. 접선 성분은 쿨롱을 지킨다, 즉 $|f_t| \le \mu f_n$. 같은 말로, 안쪽 법선 둘레의 반각 $\alpha = \tan^{-1}\mu$인 원뿔이며, 평면에서는 모서리 $\hat n \pm \mu \hat t$ 둘을 가진 쐐기로 축퇴한다.
+
+- **예**: $\mu = 0.5$면 $\alpha = 26.565°$; $\mu = 1.0$이면 정확히 $45°$.
+- **반례**: "$\mu$가 원뿔 각이다". $\mu$를 $0.5$에서 $1.0$으로 두 배 하면 허용 힘 *비*는 두 배가 되지만 각은 $26.565°$에서 $45°$가 되지 $53.13°$가 되지 않는다. 원뿔 각은 아크탄젠트이고, $\mu$가 아무리 커져도 $90°$에서 포화한다.
+- **왜 중요한가**: closure 검사는 원뿔 *모서리*에 대한 선형대수 질문이다. 모서리 방향을 틀리면 그 뒤의 렌치 공간 결론이 전부 틀린다.
+
+### 3. Form closure와 force closure를 계산 가능한 검사로 정의하기
+
+**Form closure**는 *물체 위 접촉 집합*의 성질이다. 마찰 없이 접촉 법선만으로 물체를 못 움직이게 한다는 뜻이다. **Force closure**는 각 접촉이 자기 마찰 원뿔 전체를 쓸 수 있을 때의 같은 성질이다. 둘은 생성자 집합만 다를 뿐 — 법선이냐 원뿔 모서리냐 — 같은 수학 조건이고, 그 조건이 **양의 생성**이다. 공간의 모든 렌치가 어떤 $\lambda_i \ge 0$에 대해 $\sum_i \lambda_i w_i$여야 한다. 검사 가능한 형태로 쓰면:
+
+$$\text{closure} \iff \exists\,\lambda > 0,\ \textstyle\sum_i \lambda_i w_i = 0 \ \text{ 이고 } \ \operatorname{rank}[w_1 \cdots w_k] = n$$
+
+평면이면 $n = 3$, 공간이면 $6$이다. 엄격히 양인 결합이 0이 된다는 것은 원점이 생성된 원뿔의 상대적 내부에 있다는 뜻이고, 풀랭크는 그 원뿔이 진부분공간에 갇히는 것을 막기 때문이다.
+
+- **예**: 마찰 손가락 둘, $\lambda = (1,1,1,1)$, 랭크 3 — force closure. 그리고 바람개비, $\lambda = (2,2,1,1)$, 랭크 3 — form closure.
+- **반례(랭크)**: 마찰 없는 대척 법선 둘. 양의 $\lambda$로 상쇄되지만 랭크가 1이라 원뿔이 직선이다.
+- **반례(개수)**: 질량 중심을 모두 지나는 마찰 없는 법선 넷. 넷은 교과서적 최소치인데 이 배치는 랭크가 2다. 최소치는 필요조건일 뿐 절대 충분조건이 아니다.
+- **왜 중요한가**: 검사는 작은 선형계획 하나 값이고 예/아니오를 준다. 여유도, 필요한 예압도, 손가락을 거기 놓을 수 있는지도 말해 주지 않는다. 6단계가 있는 이유이자 파지 *품질* 지표가 별개의 문헌인 이유다.
+
 ### 스스로 점검
 
 1. $\mu = 1.0$일 때 마찰 원뿔 반각은? 물리적으로 무엇을 의미하는가?
 2. form closure가 force closure보다 많은 접촉을 요구하는 이유는?
 3. 평행 그리퍼의 대척 파지 조건을 말하라.
+4. 타일을 $2\,\mathrm{m/s^2}$로 위로 가속하며 든다. $\mu = 0.5$에서 예압은 얼마가 되어야 하는가?
 
 > [!tip]- 정답 · Answers
 > 1. $45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다.
@@ -113,19 +338,20 @@ Tier C. Claim-reading. Running task: P2's tool holds the panel ([[02-foundations
 > 3. 평면 2점 모델에서는 두 접촉점을 잇는 선이 두 마찰 원뿔 안에 있어야 한다. 이것만으로
 > 공간의 hard point 접촉 둘이 force closure인 것은 아니다. 공간 평행 그리퍼에는 soft-finger
 > 모델이나 다른 비틀림 저항이 필요하다.
+> 4. 손가락이 $4.905$ 대신 $m(g+a) = 0.500 \times 11.81 = 5.905\,\mathrm{N}$을 내야 하므로 $f_n^{\min} = 5.905/(2 \times 0.5) = 5.905\,\mathrm{N}$, $20.4\,\%$ 증가이고 정확히 비 $11.81/9.81$이다. force closure는 영향을 받지 않는다. 가속은 버텨야 할 렌치를 바꾸지 버틸 수 있는 렌치의 집합을 바꾸지 않는다.
 
 ### 과제 · Problem set
 
-Tier C. 주장 읽기. 관통 과제: P2의 도구가 패널을 잡는다([[02-foundations/lab-plants|0.6]]).
+Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 같고 $(\pm 0.100, 0)$의 손가락 둘도 같지만 노브 둘이 움직인다. 현장 먼지로 마찰이 $\mu = 0.2$로 떨어지고, 타일이 브래킷을 달아 질량 중심이 파지 좌표계의 원점이 아니라 $(+0.030,\ 0)$에 온다.
 
-1. **주장.** 마찰 계수가 *각도*라는 주장은 어느 숫자인가?
-2. **반증.** “평면 접촉 최소 4개”를 단단한 하한으로 인용하는 주장을 깨는 접촉 관찰은?
-3. **과제.** 손가락 둘이 $\mu=0.5$로 패널을 $\pm x$에서 쥔다. force closure가 아직 필요로 하고 form closure가 접촉을 더 요구하는 것은?
+1. **그리기.** 좁아진 원뿔과 옮겨진 질량 중심으로 그림을 다시 그린다. 무게 화살표를 새 위치에 그리고 $0.030\,\mathrm{m}$ 지렛대 팔을 표시하며, 무게가 이제 파지 중점 둘레에 만드는 모멘트를 더한다. 원뿔 모서리에 새 반각을 적는다.
+2. **유도.** (a) 새 반각 $\alpha$와 마찰 원뿔 모서리 렌치 넷. (b) 양의 생성 검사로 force closure를 판정하라. 쓴 $\lambda$와 랭크를 밝힐 것. (c) 파지 중점 둘레의 중력 렌치, 그것을 버티는 접선 힘 $f_{y1}, f_{y2}$, 그리고 최소 예압 $f_n^{\min}$. (d) 고정된 $20\,\mathrm{N}$ 예압으로 타일을 여전히 잡는가, 여유는 얼마인가?
+3. **해석.** 두 노브 중 force closure 판정을 바꾼 것이 있는가? 각각에 대해 이유와 함께 답하라. 그다음 옮겨진 질량 중심의 대가를 숫자가 아니라 공식으로 설명하고, 더 세게 쥐는 정도가 아니라 파지가 아예 실패하려면 무엇이 바뀌어야 하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. $\mu=0.5\Rightarrow\alpha\approx26.6^\circ$ — 그 환산이 곧 각도 주장이다.
-> 2. 곡면이 평면 물체를 접촉 둘로 가두는 2차 form closure(이 페이지). 4/7은 1차 결과다.
-> 3. 마찰이 접선 방향을 주므로 대향 접촉 둘이 유계 수직 하중을 버틸 수 있다(예압 $\times\mu$). form closure는 마찰 없는 법선이 더 필요하고, hard point 둘은 쥐는 축 둘레 비틀림을 막지 못한다.
+> 1. 원뿔이 눈에 띄게 얇아지고 무게 화살표가 더 이상 두 손가락 사이를 지나지 않으므로, 파지 중점 둘레에 굽은 모멘트 화살표가 하나 나타난다.
+> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. 모서리: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$의 합이 $(0,0,0)$이고, 쌍에서 $(2,0,0)$, $(0,0.4,0)$, $(0,0,-0.04)$가 나오므로 랭크는 3이다. force closure가 성립한다. (c) 중력은 $(0.030, 0)$에 $(0,-4.905)$로 작용하므로 $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$이고 파지는 $(0,\ +4.905,\ +0.14715)$를 내야 한다. 그러면 $f_{y1}+f_{y2} = 4.905$, $-0.100f_{y1} + 0.100f_{y2} = 0.14715$에서 $f_{y2} - f_{y1} = 1.4715$이므로 $f_{y2} = 3.18825$, $f_{y1} = 1.71675\ \mathrm{N}$. 걸리는 쪽은 먼 손가락이고 $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) 잡는다. 손가락당 여유가 $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$인데 요구가 $3.188\ \mathrm{N}$이라 $4/3.188 = 1.25$배다. 카탈로그의 $4.08$에 비하면 안전율이 거의 사라졌다.
+> 3. 둘 다 바꾸지 않았다. force closure는 원뿔 모서리의 *방향*과 접촉 위치가 결정하는데, 대척 기하가 그대로이고 $\mu > 0$이면 양의 생성 검사는 계속 통과한다. 질량 중심을 옮기는 것은 버텨야 할 렌치를 바꾸지 쓸 수 있는 렌치를 바꾸지 않는다. 두 노브는 예압만 움직인다. 공식으로 쓰면, 편심 $e$는 가장 불리한 손가락의 접선 요구를 $W/2$에서 $\tfrac{W}{2}(1 + e/\ell)$로 올린다. $\ell = 0.100\,\mathrm{m}$은 파지의 반너비다. 따라서 $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$이고, 여기서는 $1 + 0.3 = 1.30$, 어떤 $\mu$에서도 $30\,\%$ 할증이다. 아예 실패하려면 *방향*이 바뀌어야 한다. $\mu$가 정확히 0이 되거나(랭크가 1로 떨어진다), 접촉선이 두 원뿔 안에 있지 않게 다시 쥐거나, 편심이 $e > \ell$이 되어 질량 중심이 손가락 바깥으로 나가 음이 아닌 법선력으로는 균형을 맞출 수 없게 되어야 한다.
 
 ### 이 장 다음으로
 

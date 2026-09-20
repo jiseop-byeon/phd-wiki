@@ -23,7 +23,108 @@ mastery-when: "Raise to Mastery only if language-grounded navigation becomes the
 When the goal is a word rather than a coordinate, the hard problem stops being path-finding and becomes deciding where to look.*
 
 > [!note] First pass · 처음이라면
-> Read §1 — the shift a classically trained reader has to make — then §2, because most confusion here is people arguing about ObjectNav without agreeing on its definition, then §8. §3 to §7 are the history; read it once the definitions are solid.
+> Read the running object and the worked case below — one map, one instruction, and the two numbers this literature reports — then §1, the shift a classically trained reader has to make, then §2, because most confusion here is people arguing about ObjectNav without agreeing on its definition, then §8. §3 to §7 are the history; read it once the definitions are solid.
+
+### Running object: the map G4
+
+No plant from [[02-foundations/lab-plants|0.6]] fits a page whose object is a *map*, so this page freezes its own and never changes it. **G4** is a 4×4 grid of 1 m cells, cell centres at integer coordinates $(c, r)$ with $c$ the column left to right and $r$ the row bottom to top, both running 0 to 3. Motion is four-connected, one metre per step, and there are no diagonals.
+
+| | $c=0$ | $c=1$ | $c=2$ | $c=3$ |
+|---|---|---|---|---|
+| $r=3$ | **sofa** | · | · | **plant** |
+| $r=2$ | · | · | · | · |
+| $r=1$ | · | · | · | **tv** |
+| $r=0$ | **start** | · | · | · |
+
+Three labelled objects fill three cells, which the agent therefore cannot enter: **sofa** at $(0,3)$, **tv** at $(3,1)$, **plant** at $(3,3)$. The agent starts at $(0,0)$. Three **wall segments** sit on edges between cells and block motion across them, nothing more:
+
+- **A** between $(0,1)$ and $(0,2)$
+- **B** between $(1,1)$ and $(1,2)$
+- **C** between $(2,1)$ and $(3,1)$
+
+A and B are a partition across the left of the room; C is the short wall the television is mounted on. The instruction is fixed too: **"go to the television."** The agent carries an object-centric map of the kind §7 describes, so the three labels and their cells are given; what it has to do is ground the instruction onto one of them and then stop somewhere legal.
+
+Finally, the agent's open-vocabulary detector has already scored each map node against the goal phrase. These three cosine similarities are frozen page-local numbers, not measurements from any system: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
+
+*Scope: this page teaches the two definitions this literature is written in — the ObjectNav success criterion and SPL — and how a grounding score and a map geometry combine into a stop decision. It does not teach how the frontier is chosen or the local controller drives ([[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]]), how the vision-language features are trained ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), or outdoor traversability ([[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]]).*
+
+### Homework diagram: G4, its legal stops, and one path
+
+Draw the grid full size, 4×4, one square per cell, and label every cell $(c, r)$. Shade the three object cells and write their names in. Draw the three wall segments **A**, **B**, **C** as thick lines *on the edges between* cells, not inside cells — the whole geometry lesson is that a wall lives on an edge and an object lives in a cell.
+
+Then, for the goal object, mark every cell that is a **legal stop**: four-adjacent to the object cell with no wall segment on the shared edge. Circle those. Then mark, with a cross, every cell that is four-adjacent to the object but separated from it by a wall — these are exactly 1.0 m from the goal and are *not* legal stops. For the television the circles go on $(3,0)$ and $(3,2)$ and the cross goes on $(2,1)$.
+
+Finally draw two paths from $(0,0)$: the shortest path to the nearest circled cell, dashed, and the path the agent actually walked, solid, with an arrowhead at each step so the steps can be counted. The problem set asks for this same drawing with one wall moved.
+
+### Worked case: one instruction, one map, two numbers
+
+**Step 1 — the grounding score.**
+
+> [!info] Definition · 정의 — grounding score
+> **What kind of thing it is.** A *probability distribution over a closed candidate set*: one number per candidate object, non-negative, summing to 1 across exactly the candidates considered. It is not a similarity, and it is not a confidence that the goal exists.
+>
+> **Its defining conditions.** Three. (i) The candidate set is **closed and declared** — the scores are normalised over exactly those objects, so an object outside the set cannot be chosen and its absence is invisible in the numbers. (ii) The map is **order-preserving** in the raw scores: the highest similarity is always the highest grounding score. (iii) A **temperature** $T > 0$ sets the sharpness and is a design choice, not something the vision-language model reports.
+>
+> $$g(o) = \frac{\exp\big(s_o / T\big)}{\sum_{o' \in \mathcal{O}} \exp\big(s_{o'} / T\big)}$$
+>
+> $\mathcal{O}$ is the declared candidate set, $o$ one object in it, $s_o$ the raw similarity between the instruction's goal phrase and that object's label, and $T$ the temperature: small $T$ sharpens toward a hard argmax, large $T$ flattens toward the uniform distribution $1/|\mathcal{O}|$.
+>
+> **Example.** The three objects of G4 at $T = 0.10$, worked below: $g(\text{tv}) = 0.846$.
+>
+> **Non-examples.** The raw cosine $s_{\text{tv}} = 0.34$ is not a grounding score — nothing normalises it, so it cannot be compared across instructions or across maps. Neither is a score normalised over only the objects detected *so far* in an episode: that is a grounding score over a different $\mathcal{O}$, which is why the same instruction can report a different confidence at two points in one run without the model having changed its mind.
+>
+> **Why it matters.** The number a paper prints as "the model understood the instruction" is a function of two design choices, the candidate set and the temperature, and only the *ranking* survives both. Whenever a navigation failure is blamed on language, check the ranking first — if the ranking is right, the failure is somewhere else, which is exactly what happens below.
+
+Exponentiate each frozen similarity at $T = 0.10$, because the exponent $s_o/T$ is what the softmax acts on:
+
+$$e^{0.11/0.10} = 3.004, \qquad e^{0.34/0.10} = 29.964, \qquad e^{0.09/0.10} = 2.460$$
+
+The normaliser is $Z = 3.004 + 29.964 + 2.460 = 35.428$, so
+
+$$g(\text{sofa}) = 0.085, \qquad g(\text{tv}) = 0.846, \qquad g(\text{plant}) = 0.069$$
+
+The instruction grounds on the television at 0.846. That is the language half of the task, and it is finished.
+
+**Step 2 — the legal stops, from the geometry.** The success criterion of §2 has two parts, and on G4 they read: the agent must stop within 1.0 m of the goal — a four-adjacent cell — **and** the object must be viewable from there, which on this map means no wall segment on the shared edge. The television at $(3,1)$ has three four-adjacent cells: $(3,0)$, $(3,2)$ and $(2,1)$. Wall **C** sits between $(2,1)$ and $(3,1)$, so $(2,1)$ fails the second part. The legal stops are $(3,0)$ and $(3,2)$.
+
+Breadth-first from the start over the free cells, respecting the three walls, gives the geodesic distance to every cell: $(3,0)$ is 3 steps, $(3,2)$ is 5, and $(2,1)$ is also 3. So the shortest path length to the goal, measured to the nearest *legal* stop, is $\ell = 3$ m.
+
+**Step 3 — SPL over three episodes on this map.**
+
+> [!info] Definition · 정의 — SPL (Success weighted by normalised inverse Path Length)
+> **What kind of thing it is.** A scalar in $[0, 1]$ reported for a whole evaluation set: the mean, over episodes, of a per-episode term that is zero on failure and a path-efficiency ratio on success.
+>
+> **Its defining conditions.** Four, and each is a place the number is misreported. (i) **Every episode contributes**, and a failed one contributes exactly 0 — failures are not dropped. (ii) The term is **success-gated**, so an efficient failure earns nothing and a wasteful success earns something. (iii) $\ell_i$ is the **geodesic** shortest path from the agent's start to the nearest position that would satisfy the success criterion for the goal — not straight-line distance, and not measured from where the agent ended up. (iv) The $\max(p_i, \ell_i)$ caps each term at 1, so an episode cannot be rewarded for appearing to beat the shortest path.
+>
+> $$\text{SPL} = \frac{1}{N}\sum_{i=1}^{N} S_i \, \frac{\ell_i}{\max(p_i, \ell_i)}$$
+>
+> $N$ is the number of episodes, $S_i \in \{0, 1\}$ is whether episode $i$ satisfied the full success criterion, $\ell_i$ is its shortest-path length and $p_i$ the length the agent actually walked.
+>
+> **Example.** The three G4 episodes below: 0.519, next to a success rate of 0.667.
+>
+> **Non-examples.** The mean of $\ell_i / p_i$ over the *successful* episodes only is not SPL — on the episodes below it is $(1.000 + 0.556)/2 = 0.778$, a path-efficiency figure for the runs that worked, which says nothing about how often they work. Nor is "success rate × mean efficiency" SPL: it coincides only when efficiency is uncorrelated with success, and the whole interest of the metric is that it usually is not.
+>
+> **Why it matters.** A single SPL is compatible with a wandering near-perfect navigator and with a straight-line mediocre one — the §2 box works that out — so SPL is uninterpretable without the success rate beside it, and the two together are what this literature reports.
+
+Three episodes on G4, all starting at $(0,0)$:
+
+| Episode | Goal | Stop cell | $S_i$ | $\ell_i$ | $p_i$ | Term |
+|---|---|---|---|---:|---:|---|
+| 1 | tv | $(3,0)$ | yes | 3 | 3 | $1 \times 3/3 = 1.000$ |
+| 2 | plant | $(2,3)$ | yes | 5 | 9 | $1 \times 5/9 = 0.556$ |
+| 3 | tv | $(2,1)$ | **no** | 3 | 3 | $0$ |
+
+Episode 2 is the agent checking the wrong room first: $(0,0) \to (0,1) \to (1,1) \to (2,1) \to (2,2) \to (1,2) \to (1,3) \to (1,2) \to (2,2) \to (2,3)$, nine steps against a five-step optimum, ending on a legal plant stop. Episode 3 is the failure this page exists to name. Therefore
+
+$$\text{SPL} = \frac{1.000 + 0.556 + 0}{3} = 0.519, \qquad \text{success rate} = \frac{2}{3} = 0.667$$
+
+**Step 4 — the failure where the language matched and the geometry did not.** In episode 3 the agent grounded the instruction on the television with confidence 0.846 and then walked until its distance to the television node dropped to 1.0 m. Two cells meet that test three steps from the start, $(3,0)$ and $(2,1)$, so nothing in the planner preferred either; the agent came round from the west and stopped at $(2,1)$. Nothing about the language went wrong — the ranking is tv, sofa, plant and the margin is wide. What went wrong is that the stopping rule tested *distance to the object* and never tested *visibility of the object*, and wall **C** stands between $(2,1)$ and the television. A tie the planner was indifferent to became the whole difference between 1 and 0 in the metric, and the agent is one metre from a screen it cannot see.
+
+Price the visibility clause exactly. Score the same three runs on distance alone, dropping the second half of the criterion, and episode 3 becomes a success:
+
+$$\text{SPL}_{\text{distance only}} = \frac{1.000 + 0.556 + 1.000}{3} = 0.852, \qquad \text{success rate} = \frac{3}{3} = 1.000$$
+
+The clause costs 0.333 of SPL and 0.333 of success rate on this three-episode set — a third of the score, produced entirely by one wall. That is the arithmetic behind the sentence in §2 that an agent could otherwise succeed standing on the far side of a wall, and it is why "we dropped the oracle-visibility check for efficiency" is never a small change to an evaluation.
 
 ### 1. The shift a classical reader has to make
 
@@ -305,20 +406,20 @@ something different. Both are called self-correction, so read for the mechanism
 > 4. No. Ending a challenge or saturating one configuration is not evidence that the underlying task is solved. Open-vocabulary and lifelong variants (HM3D-OVON, GOAT-Bench), continuous control, sim-to-real transfer and mobile manipulation test different unresolved capabilities.
 > 5. That granularity should be **task-derived rather than fixed** — Clio's Information Bottleneck formulation exists precisely because navigation wants a coarse map and manipulation wants a fine one of the same scene. Architecturally, build an object-centric scene graph (the ConceptGraphs lineage) as the queryable interface, over whatever geometric substrate you use, and let the task list set the level of detail.
 
-**Worked: the three readings the homework asks.** Oracle-visibility is what makes ObjectNav a perception problem: omit it and 90% can be “stop 0.9 m from a wall.” Gervet et al. sit near 80% in sim and 80/90/23 in the world — a Habitat number is evidence about Habitat. Anderson et al. 2018 is unrefereed; skip it and you lose SPL.
+**Worked: the three readings the homework asks.** The ranking, not the confidence, is what survives the temperature — a grounding score that falls from 0.846 to 0.566 has not got worse, so a wide-margin grounding is never what failed. A stop one metre from the goal with a wall between is a coordinate, not an object, and on G4 the visibility clause was worth a third of both scores. And SPL without its success rate tells two different stories at the same number: 0.50 is perfect paths failing half the time, and it is also every episode succeeding at twice the shortest path.
 
 ### Problem set · 과제
 
-Tier C. Using this page only.
+Tier B. Hand derivation on **G4**, using only this page and its prerequisites. Same grid, same three objects, same start $(0,0)$, same instruction "go to the television", same frozen similarities $(0.11, 0.34, 0.09)$. Two things change: the television is remounted, so wall **C** between $(2,1)$ and $(3,1)$ is **removed** and a new wall **E** is added between $(3,1)$ and $(3,2)$; and the grounding temperature is raised from $T = 0.10$ to $T = 0.25$.
 
-1. A paper reports 90% ObjectNav success and the evaluation omits the oracle-visibility clause. What did the agent possibly do, and what task was actually scored?
-2. Gervet et al.: three families sit near 80% in simulation and spread to 80 / 90 / 23 in the real world, with end-to-end *inversely* related. A 2026 method cites its Habitat number as evidence it will work on a site. What may you *not* infer?
-3. Anderson et al. 2018 introduces SPL and is unrefereed. How do you cite it, and why is that not a reason to skip it?
+1. **Draw.** Redraw G4 with walls **A**, **B** and **E**. Circle every legal stop for the television and cross every cell that is 1.0 m from it but illegal. Then draw the two episodes of question 2 as step-counted paths, dashed for the shortest path and solid for the walked one.
+2. **Derive.** (a) Recompute $g(\text{sofa})$, $g(\text{tv})$, $g(\text{plant})$ at $T = 0.25$ and say what changed and what did not. (b) Give $\ell$ for the television on the new map. (c) Score two episodes: the agent walks 3 m and stops at $(2,1)$; then, in a second run, it walks 5 m by $(0,0) \to (1,0) \to (2,0) \to (2,1) \to (2,2) \to (3,2)$ and stops there. Report SPL and the success rate.
+3. **Interpret.** A paper evaluates on maps like this one, reports SPL 0.50, no success rate, and explains its failures as "language grounding errors under ambiguous instructions". Using your answer to 2(a), say what the reported SPL is consistent with, and what evidence would be needed before accepting the language explanation.
 
 > [!tip]- Solutions
-> 1. Stop 0.9 m from the object with a wall between. The score is metric navigation to a coordinate, not finding an object.
-> 2. That the real-world ranking will follow, or that sim failures are the ones to fix. Sim and reality fail differently; a Habitat number is evidence about Habitat.
-> 3. Cite it as unrefereed (arXiv 2018). Skip it and you lose SPL and the evaluation vocabulary the rest of the field is written in.
+> 1. The circles go on $(3,0)$ and $(2,1)$; the cross goes on $(3,2)$, which is 1.0 m from the television with wall **E** between. It is the mirror image of the worked case — the legal and illegal cells have swapped.
+> 2. (a) The exponents are $0.11/0.25 = 0.44$, $1.36$ and $0.36$, giving $1.553$, $3.896$ and $1.433$ with $Z = 6.882$, so $g = 0.226$, $0.566$, $0.208$. The television's score falls from 0.846 to 0.566 — a flatter distribution, because a larger temperature moves every softmax toward uniform — but the **ranking is unchanged**, and the ranking is all the agent acts on. Nothing about the grounding got worse. (b) Both $(3,0)$ and $(2,1)$ are 3 steps from the start, so $\ell = 3$ m. (c) Run 1 stops on a legal cell after the shortest path: $S = 1$, term $3/3 = 1.000$. Run 2 stops at $(3,2)$, which is 1.0 m from the television but on the far side of wall **E**, so $S = 0$ and the term is 0 whatever the path length. $\text{SPL} = (1.000 + 0)/2 = 0.500$ and the success rate is $1/2 = 0.500$.
+> 3. An SPL of 0.50 is consistent with half the episodes failing on perfect paths, as here, and equally with every episode succeeding at twice the shortest path — the §2 box shows the two are indistinguishable without the success rate, which is the first missing piece. The language explanation is the second problem: at both temperatures the ranking puts the television first by a wide margin, so a grounding score cannot be what produced run 2's failure. Before accepting it you would want the ranking reported per failed episode, and the stop cell reported next to the goal cell — which would show immediately that the stop was one wall away from legal. The honest label for this failure is that the planner optimised distance to the object rather than to a legal stop.
 
 ### Sources
 
@@ -349,7 +450,108 @@ Tier C. Using this page only.
 목표가 좌표가 아니라 단어일 때 어려운 문제는 경로 찾기가 아니라 어디를 볼지 정하는 것이 된다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 고전적 독자가 해야 하는 전환 — 그다음 §2, 이 분야 혼란 대부분이 ObjectNav의 정의에 합의하지 않은 채 논쟁하는 데서 오기 때문이다 — 그다음 §8. §3~§7은 역사이니 정의가 단단해진 뒤에 읽어라.
+> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 지도 하나, 지시 하나, 이 문헌이 보고하는 두 숫자 — 그다음 §1, 고전적 독자가 해야 하는 전환, 그다음 §2, 이 분야 혼란 대부분이 ObjectNav의 정의에 합의하지 않은 채 논쟁하는 데서 오기 때문이다, 그다음 §8. §3~§7은 역사이니 정의가 단단해진 뒤에 읽어라.
+
+### 계속 쓰는 대상: 지도 G4
+
+대상이 *지도*인 페이지에는 [[02-foundations/lab-plants|0.6]]의 어떤 장치도 맞지 않으므로, 이 페이지는 자기 것을 하나 고정하고 끝까지 바꾸지 않는다. **G4**는 1 m 칸 4×4 격자다. 칸 중심은 정수 좌표 $(c, r)$이고 $c$는 왼쪽에서 오른쪽으로 가는 열, $r$은 아래에서 위로 가는 행이며 둘 다 0에서 3까지다. 이동은 4-연결, 한 걸음에 1 m, 대각선은 없다.
+
+| | $c=0$ | $c=1$ | $c=2$ | $c=3$ |
+|---|---|---|---|---|
+| $r=3$ | **sofa** | · | · | **plant** |
+| $r=2$ | · | · | · | · |
+| $r=1$ | · | · | · | **tv** |
+| $r=0$ | **start** | · | · | · |
+
+라벨이 붙은 물체 셋이 칸 셋을 채우고, 그 칸에는 에이전트가 들어갈 수 없다: $(0,3)$의 **sofa**, $(3,1)$의 **tv**, $(3,3)$의 **plant**. 에이전트는 $(0,0)$에서 출발한다. **벽 선분** 셋은 칸 사이의 변 위에 놓여 그 변을 가로지르는 이동만 막는다. 그 이상은 아무것도 하지 않는다:
+
+- **A**: $(0,1)$과 $(0,2)$ 사이
+- **B**: $(1,1)$과 $(1,2)$ 사이
+- **C**: $(2,1)$과 $(3,1)$ 사이
+
+A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 걸린 짧은 벽이다. 지시도 고정이다: **"텔레비전으로 가라."** 에이전트는 §7이 말하는 종류의 물체 중심 지도를 들고 있어서 라벨 셋과 그 칸은 주어져 있다. 해야 할 일은 지시를 그중 하나에 접지(ground)하고, 합법적인 곳에 멈추는 것이다.
+
+마지막으로, 에이전트의 open-vocabulary 검출기가 각 지도 노드를 목표 구절과 이미 대조해 두었다. 이 코사인 유사도 셋은 어떤 시스템의 측정값이 아니라 이 페이지가 고정한 숫자다: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
+
+*범위: 이 페이지는 이 문헌이 쓰인 두 정의 — ObjectNav 성공 기준과 SPL — 와, 접지 점수와 지도 기하가 어떻게 정지 결정 하나로 합쳐지는지를 가르친다. 프런티어를 어떻게 고르고 지역 제어기가 어떻게 모는지([[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 조작]]), 시각-언어 특징을 어떻게 학습하는지([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), 실외 traversability([[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: G4와 합법적 정지 칸, 그리고 경로 하나
+
+격자를 크게, 4×4로, 칸 하나에 정사각형 하나씩 그리고 모든 칸에 $(c, r)$을 적는다. 물체 칸 셋을 칠하고 이름을 써 넣는다. 벽 선분 **A**, **B**, **C**는 칸 안이 아니라 칸과 칸 *사이의 변 위에* 굵은 선으로 그린다 — 벽은 변에 살고 물체는 칸에 산다는 것이 이 기하 수업의 전부다.
+
+그다음 목표 물체에 대해 **합법적 정지 칸**을 전부 표시한다: 물체 칸과 4-인접이면서 공유하는 변에 벽 선분이 없는 칸이다. 거기에 동그라미를 친다. 그리고 물체와 4-인접이지만 벽으로 갈린 칸마다 가위표를 친다 — 목표에서 정확히 1.0 m이면서 합법적 정지 칸이 *아닌* 칸들이다. 텔레비전이라면 동그라미는 $(3,0)$과 $(3,2)$, 가위표는 $(2,1)$이다.
+
+마지막으로 $(0,0)$에서 출발하는 경로 둘을 그린다: 가장 가까운 동그라미 칸까지의 최단 경로를 점선으로, 에이전트가 실제로 걸은 경로를 실선으로, 걸음을 셀 수 있게 걸음마다 화살표를 단다. 과제는 벽 하나를 옮긴 같은 그림을 요구한다.
+
+### 대상으로 한 번 끝까지: 지시 하나, 지도 하나, 숫자 둘
+
+**1단계 — 접지 점수.**
+
+> [!info] 정의 · Definition — 접지 점수(grounding score)
+> **어떤 종류의 것인가.** *닫힌 후보 집합 위의 확률 분포*다. 후보마다 숫자 하나, 음이 아니고, 고려한 후보 전체에 대해 합이 정확히 1이다. 유사도가 아니고, 목표가 존재한다는 확신도 아니다.
+>
+> **정의 조건.** 셋이다. (i) 후보 집합은 **닫혀 있고 명시되어야** 한다 — 점수는 정확히 그 물체들에 대해 정규화되므로, 집합 밖의 물체는 선택될 수 없고 그 부재는 숫자에 전혀 드러나지 않는다. (ii) 원 점수에 대해 **순서를 보존한다**: 유사도가 가장 높은 것이 언제나 접지 점수도 가장 높다. (iii) **온도** $T > 0$가 뾰족함을 정하며, 이는 설계 선택이지 시각-언어 모델이 보고하는 값이 아니다.
+>
+> $$g(o) = \frac{\exp\big(s_o / T\big)}{\sum_{o' \in \mathcal{O}} \exp\big(s_{o'} / T\big)}$$
+>
+> $\mathcal{O}$는 명시된 후보 집합, $o$는 그 안의 물체 하나, $s_o$는 지시의 목표 구절과 그 물체 라벨 사이의 원 유사도, $T$는 온도다. $T$가 작으면 하드 argmax 쪽으로 날카로워지고, 크면 균등 분포 $1/|\mathcal{O}|$ 쪽으로 평평해진다.
+>
+> **예.** $T = 0.10$에서 G4의 물체 셋, 아래에서 계산한다: $g(\text{tv}) = 0.846$.
+>
+> **비-예.** 원 코사인 $s_{\text{tv}} = 0.34$는 접지 점수가 아니다 — 정규화하는 것이 없으므로 지시끼리도, 지도끼리도 비교할 수 없다. 한 에피소드에서 *지금까지* 검출한 물체들에 대해서만 정규화한 점수도 아니다. 그것은 다른 $\mathcal{O}$ 위의 접지 점수이고, 모델이 마음을 바꾼 적이 없는데도 같은 지시가 한 실행의 두 시점에서 다른 확신을 보고하는 이유가 그것이다.
+>
+> **왜 중요한가.** 논문이 "모델이 지시를 이해했다"며 찍는 숫자는 후보 집합과 온도라는 설계 선택 둘의 함수이고, 둘 다를 견디는 것은 *순서*뿐이다. 내비게이션 실패를 언어 탓으로 돌리는 주장을 보면 순서부터 확인하라 — 순서가 맞으면 실패는 다른 데 있고, 아래에서 정확히 그 일이 일어난다.
+
+$T = 0.10$에서 고정된 유사도를 각각 지수화한다. softmax가 작용하는 대상이 지수 $s_o/T$이기 때문이다.
+
+$$e^{0.11/0.10} = 3.004, \qquad e^{0.34/0.10} = 29.964, \qquad e^{0.09/0.10} = 2.460$$
+
+정규화 상수는 $Z = 3.004 + 29.964 + 2.460 = 35.428$이므로
+
+$$g(\text{sofa}) = 0.085, \qquad g(\text{tv}) = 0.846, \qquad g(\text{plant}) = 0.069$$
+
+지시는 0.846으로 텔레비전에 접지된다. 과제의 언어 절반은 그것으로 끝났다.
+
+**2단계 — 기하가 정하는 합법적 정지 칸.** §2의 성공 기준은 두 부분이고, G4에서는 이렇게 읽힌다: 에이전트는 목표에서 1.0 m 이내 — 4-인접 칸 — 에 멈춰야 **하고**, 그 자리에서 물체를 볼 수 있어야 하는데 이 지도에서는 공유 변에 벽 선분이 없다는 뜻이다. $(3,1)$의 텔레비전에는 4-인접 칸이 셋 있다: $(3,0)$, $(3,2)$, $(2,1)$. 벽 **C**가 $(2,1)$과 $(3,1)$ 사이에 있으므로 $(2,1)$은 두 번째 조건에서 탈락한다. 합법적 정지 칸은 $(3,0)$과 $(3,2)$다.
+
+출발점에서 자유 칸 위로 벽 셋을 지키며 너비 우선 탐색을 하면 모든 칸까지의 측지 거리가 나온다: $(3,0)$은 3걸음, $(3,2)$는 5걸음, $(2,1)$도 3걸음이다. 그러므로 가장 가까운 *합법적* 정지 칸까지로 잰 최단 경로 길이는 $\ell = 3$ m다.
+
+**3단계 — 이 지도 위 세 에피소드의 SPL.**
+
+> [!info] 정의 · Definition — SPL(경로 길이로 가중한 성공률)
+> **어떤 종류의 것인가.** 평가 집합 전체에 대해 보고하는 $[0, 1]$의 스칼라다. 실패면 0이고 성공이면 경로 효율 비인 에피소드별 항을, 에피소드에 대해 평균한 값이다.
+>
+> **정의 조건.** 넷이고, 각각이 이 숫자가 잘못 보고되는 자리다. (i) **모든 에피소드가 기여하고**, 실패한 에피소드는 정확히 0으로 기여한다 — 빼지 않는다. (ii) 항은 **성공으로 게이팅된다**. 효율적인 실패는 아무것도 못 얻고 낭비한 성공은 얼마간 얻는다. (iii) $\ell_i$는 출발 자세에서, 그 목표의 성공 기준을 만족시킬 가장 가까운 위치까지의 **측지** 최단 경로다 — 직선 거리가 아니고, 에이전트가 결국 멈춘 곳에서 재는 것도 아니다. (iv) $\max(p_i, \ell_i)$가 각 항을 1로 자르므로, 최단 경로를 이긴 것처럼 보이는 에피소드에 상을 줄 수 없다.
+>
+> $$\text{SPL} = \frac{1}{N}\sum_{i=1}^{N} S_i \, \frac{\ell_i}{\max(p_i, \ell_i)}$$
+>
+> $N$은 에피소드 수, $S_i \in \{0, 1\}$은 에피소드 $i$가 성공 기준 전체를 만족했는지, $\ell_i$는 그 최단 경로 길이, $p_i$는 실제로 걸은 길이다.
+>
+> **예.** 아래 G4의 세 에피소드: 0.519, 그리고 그 옆의 성공률 0.667.
+>
+> **비-예.** *성공한* 에피소드에 대해서만 $\ell_i / p_i$를 평균한 값은 SPL이 아니다 — 아래 에피소드들에서는 $(1.000 + 0.556)/2 = 0.778$이고, 이는 잘 된 실행들의 경로 효율 수치일 뿐 얼마나 자주 되는지는 말하지 않는다. "성공률 × 평균 효율"도 SPL이 아니다. 효율이 성공과 무상관일 때만 일치하는데, 이 지표가 흥미로운 이유가 바로 보통은 무상관이 아니라는 데 있다.
+>
+> **왜 중요한가.** 하나의 SPL 값은 헤매는 거의 완벽한 내비게이터와도, 직선으로 걷는 평범한 내비게이터와도 양립한다 — §2의 예제가 그것을 계산해 둔다 — 그래서 SPL은 옆에 성공률이 없으면 해석할 수 없고, 이 문헌이 보고하는 것은 그 둘을 함께다.
+
+G4 위의 세 에피소드, 모두 $(0,0)$에서 출발한다:
+
+| 에피소드 | 목표 | 정지 칸 | $S_i$ | $\ell_i$ | $p_i$ | 항 |
+|---|---|---|---|---:|---:|---|
+| 1 | tv | $(3,0)$ | O | 3 | 3 | $1 \times 3/3 = 1.000$ |
+| 2 | plant | $(2,3)$ | O | 5 | 9 | $1 \times 5/9 = 0.556$ |
+| 3 | tv | $(2,1)$ | **X** | 3 | 3 | $0$ |
+
+에피소드 2는 엉뚱한 방을 먼저 확인한 것이다: $(0,0) \to (0,1) \to (1,1) \to (2,1) \to (2,2) \to (1,2) \to (1,3) \to (1,2) \to (2,2) \to (2,3)$, 최적 다섯 걸음에 아홉 걸음을 썼고 합법적인 plant 정지 칸에서 끝난다. 에피소드 3은 이 페이지가 존재하는 이유인 그 실패다. 따라서
+
+$$\text{SPL} = \frac{1.000 + 0.556 + 0}{3} = 0.519, \qquad \text{성공률} = \frac{2}{3} = 0.667$$
+
+**4단계 — 언어는 맞았는데 기하가 틀린 실패.** 에피소드 3에서 에이전트는 확신 0.846으로 지시를 텔레비전에 접지한 뒤, 텔레비전 노드까지의 거리가 1.0 m로 떨어질 때까지 걸었다. 출발에서 세 걸음 거리에 그 조건을 만족하는 칸이 둘 — $(3,0)$과 $(2,1)$ — 있으므로 플래너는 어느 쪽도 선호하지 않았다. 에이전트는 서쪽으로 돌아 들어와 $(2,1)$에 멈췄다. 언어 쪽에서는 아무것도 어긋나지 않았다. 순서는 tv, sofa, plant이고 격차도 넓다. 어긋난 것은 정지 규칙이 *물체까지의 거리*만 검사하고 *물체의 가시성*은 한 번도 검사하지 않았다는 점이고, $(2,1)$과 텔레비전 사이에는 벽 **C**가 서 있다. 플래너가 무심했던 동점이 지표에서는 1과 0의 차이 전부가 되었고, 에이전트는 볼 수 없는 화면에서 1 m 떨어져 있다.
+
+가시성 조항의 값을 정확히 매겨 보자. 기준의 두 번째 절반을 빼고 거리만으로 같은 세 실행을 채점하면 에피소드 3이 성공이 된다:
+
+$$\text{SPL}_{\text{거리만}} = \frac{1.000 + 0.556 + 1.000}{3} = 0.852, \qquad \text{성공률} = \frac{3}{3} = 1.000$$
+
+이 세 에피소드 집합에서 그 조항은 SPL 0.333, 성공률 0.333을 앗아간다 — 점수의 3분의 1이고, 전부 벽 하나가 만든 것이다. 그것이 가시성 조항이 없으면 에이전트가 벽 반대편에 서서도 성공할 수 있다는 §2 문장 뒤의 산수이고, "효율을 위해 오라클 가시성 검사를 뺐다"가 결코 평가의 사소한 변경이 아닌 이유다.
 
 ### 1. 고전적 독자가 해야 하는 전환
 
@@ -606,18 +808,20 @@ ObjectNav는 아니었다.
 > 4. 아니다. 챌린지가 끝났거나 한 설정이 포화됐다는 사실은 바탕 과제가 해결됐다는 증거가 아니다. Open-vocabulary·평생 변형(HM3D-OVON, GOAT-Bench), 연속 제어, sim-to-real, 모바일 조작은 서로 다른 미해결 능력을 시험한다.
 > 5. Granularity가 **고정이 아니라 과제에서 유도되어야 한다**는 것 — Clio의 정보 병목 정식화가 존재하는 이유가 정확히, 같은 장면에 대해 내비게이션은 거친 지도를 원하고 조작은 세밀한 지도를 원하기 때문이다. 아키텍처로는, 어떤 기하 substrate를 쓰든 그 위에 물체 중심 장면 그래프(ConceptGraphs 계보)를 질의 가능한 인터페이스로 세우고, 상세도는 과제 목록이 정하게 하라.
 
+**계산으로 확인: 과제가 묻는 세 독법.** 온도를 견디는 것은 확신값이 아니라 순서다 — 0.846에서 0.566으로 떨어진 접지 점수는 나빠진 것이 아니므로, 격차가 넓은 접지가 실패의 원인일 수는 없다. 목표에서 1 m 떨어졌는데 사이에 벽이 있는 정지는 물체가 아니라 좌표이고, G4에서 그 가시성 조항의 값은 두 점수 모두의 3분의 1이었다. 그리고 성공률 없는 SPL은 같은 숫자로 두 이야기를 한다: 0.50은 완벽한 경로로 절반이 실패한 것이기도 하고, 모든 에피소드가 최단 경로의 두 배를 걸어 성공한 것이기도 하다.
+
 ### 과제 · Problem set
 
-Tier C. 이 페이지만 사용한다.
+Tier B. **G4** 위에서 손으로 유도한다. 이 페이지와 선수 지식만 쓴다. 같은 격자, 같은 물체 셋, 같은 출발 $(0,0)$, 같은 지시 "텔레비전으로 가라", 같은 고정 유사도 $(0.11, 0.34, 0.09)$. 두 가지가 바뀐다. 텔레비전을 다시 걸어서 $(2,1)$과 $(3,1)$ 사이의 벽 **C**를 **없애고** $(3,1)$과 $(3,2)$ 사이에 새 벽 **E**를 놓는다. 그리고 접지 온도를 $T = 0.10$에서 $T = 0.25$로 올린다.
 
-1. 어떤 논문이 ObjectNav 성공 90%를 보고하고 평가에서 오라클 가시성 조항을 뺀다. 에이전트가 했을 수 있는 일과, 실제로 채점된 과제는?
-2. Gervet 외: 세 계열이 시뮬에서 80% 근처, 실세계에서 80 / 90 / 23으로 벌어지고 종단간은 *반비례*. 2026년 방법이 Habitat 숫자를 현장에서 동작할 근거로 인용한다. 무엇을 추론하면 *안 되는가*?
-3. Anderson 외 2018이 SPL을 도입하고 심사를 거치지 않았다. 어떻게 인용하고, 그것이 건너뛸 이유가 아닌 이유는?
+1. **그리기.** 벽 **A**, **B**, **E**로 G4를 다시 그려라. 텔레비전의 합법적 정지 칸을 모두 동그라미 치고, 1.0 m이지만 합법적이지 않은 칸마다 가위표를 쳐라. 그다음 2번의 두 에피소드를 걸음 수가 보이는 경로로 그려라. 최단 경로는 점선, 실제로 걸은 경로는 실선이다.
+2. **유도.** (a) $T = 0.25$에서 $g(\text{sofa})$, $g(\text{tv})$, $g(\text{plant})$를 다시 계산하고, 무엇이 바뀌고 무엇이 바뀌지 않았는지 말하라. (b) 새 지도에서 텔레비전의 $\ell$을 구하라. (c) 에피소드 둘을 채점하라: 에이전트가 3 m를 걸어 $(2,1)$에 멈춘다. 두 번째 실행에서는 $(0,0) \to (1,0) \to (2,0) \to (2,1) \to (2,2) \to (3,2)$로 5 m를 걷고 거기에 멈춘다. SPL과 성공률을 보고하라.
+3. **해석.** 어떤 논문이 이런 지도들에서 평가하고, SPL 0.50을 보고하고, 성공률은 보고하지 않고, 실패를 "모호한 지시에서의 언어 접지 오류"로 설명한다. 2(a)의 답을 써서, 보고된 SPL이 무엇과 양립하는지, 그리고 그 언어 설명을 받아들이기 전에 어떤 증거가 필요한지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 물체에서 0.9 m, 사이에 벽. 점수는 물체를 찾은 것이 아니라 좌표로의 계량 내비게이션이다.
-> 2. 실세계 순위가 따라온다거나, 시뮬 실패가 고칠 실패라는 것. 시뮬과 현실은 다르게 실패하고, Habitat 숫자는 Habitat에 관한 증거다.
-> 3. 미심사(arXiv 2018)로 인용한다. 건너뛰면 SPL과 이후 분야가 쓰인 평가 어휘를 잃는다.
+> 1. 동그라미는 $(3,0)$과 $(2,1)$, 가위표는 $(3,2)$다. $(3,2)$는 텔레비전에서 1.0 m이고 사이에 벽 **E**가 있다. 계산 예제의 거울상이다 — 합법 칸과 불법 칸이 맞바뀌었다.
+> 2. (a) 지수는 $0.11/0.25 = 0.44$, $1.36$, $0.36$이고, 값은 $1.553$, $3.896$, $1.433$, $Z = 6.882$이므로 $g = 0.226$, $0.566$, $0.208$이다. 텔레비전의 점수는 0.846에서 0.566으로 떨어진다 — 온도가 커지면 모든 softmax가 균등 쪽으로 밀리므로 더 평평해진 분포다 — 그러나 **순서는 그대로이고**, 에이전트가 행동의 근거로 삼는 것은 순서뿐이다. 접지가 나빠진 것은 아무것도 없다. (b) $(3,0)$과 $(2,1)$ 모두 출발에서 3걸음이므로 $\ell = 3$ m다. (c) 실행 1은 최단 경로로 합법 칸에 멈추므로 $S = 1$, 항은 $3/3 = 1.000$이다. 실행 2는 $(3,2)$에 멈추는데 텔레비전에서 1.0 m이지만 벽 **E** 반대편이므로 $S = 0$이고, 경로 길이가 얼마든 항은 0이다. $\text{SPL} = (1.000 + 0)/2 = 0.500$, 성공률은 $1/2 = 0.500$이다.
+> 3. SPL 0.50은 여기처럼 완벽한 경로로 걸으면서 절반이 실패하는 것과도, 모든 에피소드가 최단 경로의 두 배를 걸으며 성공하는 것과도 양립한다 — §2의 예제가 성공률 없이는 둘을 구분할 수 없음을 보인다. 그 성공률이 빠진 첫 번째 조각이다. 언어 설명은 두 번째 문제다. 두 온도 모두에서 순서는 텔레비전을 넓은 격차로 1위에 두므로, 실행 2의 실패를 만든 것이 접지 점수일 수는 없다. 받아들이기 전에 실패한 에피소드별 순서와, 목표 칸 옆에 나란히 적은 정지 칸을 요구해야 한다. 그러면 정지가 합법에서 벽 하나 떨어져 있었다는 것이 즉시 드러난다. 이 실패의 정직한 이름은 플래너가 합법적 정지 칸이 아니라 물체까지의 거리를 최적화했다는 것이다.
 
 ### 출처
 

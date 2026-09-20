@@ -4,6 +4,7 @@ tags: [robotics, perception, video, human]
 study-depth: Working
 depth-goal: "Read video-understanding papers without confusing recognition, localization, and anticipation; judge whether a reported number reflects temporal reasoning or scene bias."
 mastery-when: "Raise to Mastery when a video backbone or anticipation formulation carries a thesis contribution."
+wiki-support: Working
 ---
 
 ## English
@@ -20,7 +21,131 @@ A single image answers *what is here*. Video is required to answer *what is happ
 > [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
 
 > [!note] First pass · 처음이라면
-> Read §1 — four tasks that get mixed up routinely — then §2 on scene bias, then §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them.
+> Read the running object and the worked case below — eight frames, one ground truth, and the three numbers you can compute from them — then §1, four tasks that get mixed up routinely, then §2 on scene bias, then §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them.
+
+### Running object: the clip V8
+
+No plant from [[02-foundations/lab-plants|0.6]] fits a page whose object is a *score sequence*, so this page freezes its own and never changes it. **V8** is an eight-frame clip recorded at 4 fps, so each frame lasts $\Delta = 0.25$ s and frame $k$ occupies the interval $[(k-1)\Delta,\ k\Delta)$ — the clip runs from 0 to 2.00 s. One class matters: *a hand entering the machine's swing zone.*
+
+A per-frame detector returns a score $s_k \in [0,1]$ for that class on every frame. These eight numbers are frozen page-local values, not measurements from any system:
+
+| Frame $k$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Start time (s) | 0.00 | 0.25 | 0.50 | 0.75 | 1.00 | 1.25 | 1.50 | 1.75 |
+| $s_k$ — the live detector | 0.10 | 0.15 | 0.35 | 0.62 | 0.88 | 0.91 | 0.54 | 0.20 |
+| $s_k$ — the lagged detector | 0 | 0 | 0.10 | 0.15 | 0.35 | 0.62 | 0.88 | 0.91 |
+
+The **ground-truth segment** $G$ is frames 3 to 7, that is $[0.50,\ 1.75)$ s, a duration of 1.25 s. The **lagged detector** is the same detector behind a two-frame buffer: $s^{\text{lag}}_k = s^{\text{live}}_{k-2}$, with 0 before the buffer fills. Two frames at 4 fps is 0.50 s, and that half-second is the point of this page.
+
+A **predicted segment** $P$ at threshold $\theta$ is the set of frames with $s_k \ge \theta$, read as one interval. The threshold is a choice, not a property of the detector, and the worked case charges it accordingly.
+
+*Scope: this page teaches what the four video tasks measure, how a per-frame score becomes a segment and a number, and what a detection delay costs downstream. It does not teach how to train a backbone (the lineage in §3 is the reading list), how a pose or hand is extracted from the frames ([[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]]), or what to do with the prediction once it exists ([[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] and [[04-robotics/hri-safety|11. HRI & Safety]]).*
+
+### Homework diagram: the timeline, three bars under it
+
+Draw one horizontal time axis from 0 to 2.00 s with eight frame boxes above it, each 0.25 s wide and labelled with $k$ and its start time. Inside each box draw $s_k$ for the live detector as a vertical bar, and rule a horizontal dashed line at the threshold $\theta$ across all eight.
+
+Under the axis draw three bars, aligned to the same times and stacked:
+
+1. **$G$** — the ground truth, spanning frames 3 to 7.
+2. **$P_{\text{live}}$** — the frames at or above $\theta$, drawn as one interval.
+3. **$P_{\text{lag}}$** — the same for the lagged detector.
+
+Between bars 1 and 2, bracket the **intersection** and, separately, the **union**, and write the frame count of each — those two counts are the whole of temporal IoU. Finally mark three instants on the axis with vertical arrows: the true onset of $G$, the time the live detector first crosses $\theta$, and the time the lagged one does. Label the gap between the last two, in seconds. The problem set asks for this drawing with a different ground truth, a different threshold and a longer lag.
+
+### Worked case: from eight scores to a stopping distance
+
+**Step 1 — the predicted segment depends on the threshold you chose.** Take the live row and read off the frames at or above $\theta$:
+
+| $\theta$ | Frames with $s_k \ge \theta$ | $P$ as an interval | Duration |
+|---:|---|---|---:|
+| 0.30 | 3, 4, 5, 6, 7 | $[0.50,\ 1.75)$ | 1.25 s |
+| 0.50 | 4, 5, 6, 7 | $[0.75,\ 1.75)$ | 1.00 s |
+| 0.60 | 4, 5, 6 | $[0.75,\ 1.50)$ | 0.75 s |
+
+**Step 2 — temporal IoU, on this clip.**
+
+> [!info] Definition · 정의 — temporal IoU
+> **What kind of thing it is.** A dimensionless scalar in $[0, 1]$: the agreement between two *time intervals* on one video's timeline. It is a comparison between a prediction and a ground truth, not a property of either one alone.
+>
+> **Its defining conditions.** Four. (i) Both arguments are intervals on the **same clock**, so a tIoU across two videos, or across two frame rates without converting to seconds, is not defined. (ii) It is **symmetric** — swapping $P$ and $G$ gives the same number — which is what makes it an agreement measure rather than a coverage measure. (iii) It is a **ratio of durations**, so it is unchanged if you measure in frames or in seconds, but it does change if you resegment time more coarsely. (iv) It is **blind to direction**: a prediction that is late and one that is early by the same amount score identically, so tIoU alone never tells you that a detector lags.
+>
+> $$\text{tIoU}(P, G) = \frac{|P \cap G|}{|P \cup G|}$$
+>
+> $P$ is the predicted segment, $G$ the ground-truth segment, and $|\cdot|$ is duration — equivalently a frame count when every frame has the same length, as on V8.
+>
+> **Example.** At $\theta = 0.50$ the live detector gives $P = $ frames 4–7 against $G = $ frames 3–7: the intersection is frames 4–7, four frames, and the union is frames 3–7, five frames, so $\text{tIoU} = 4/5 = 0.80$.
+>
+> **Non-examples.** The fraction of the ground truth that the prediction covers, $|P \cap G|/|G|$, is not tIoU — it is recall, it is not symmetric, and it rewards a prediction that simply spans the whole video. For the lagged detector below, coverage is $2/5 = 0.400$ while tIoU is $2/6 = 0.333$. Spatial IoU on bounding boxes ([[02-foundations/ml-practice|ML Practice §3]]) is also a different quantity on a different domain; the two share a name and nothing else, and a frame-mAP number is therefore not comparable to a segment-mAP number.
+>
+> **Why it matters.** tIoU is the **matching rule**: it decides which predicted segments count as detections at all, so every localization number in a results table is a function of the threshold applied to it.
+
+Running the three thresholds against $G = $ frames 3–7, which is five frames:
+
+$$\text{tIoU} = \tfrac{5}{5} = 1.00 \ \ (\theta = 0.30), \qquad \tfrac{4}{5} = 0.80 \ \ (\theta = 0.50), \qquad \tfrac{3}{5} = 0.60 \ \ (\theta = 0.60)$$
+
+The detector never changed. Its localization score moved by 0.40 because someone chose a number, which is why a threshold-free claim about localization quality is not a claim.
+
+**Step 3 — top-1 against segment level, on the same eight scores.** Clip-level recognition needs one score for the clip, so it pools. Two standard pooling rules, both applied to the live row:
+
+$$\max_k s_k = 0.91, \qquad \frac{1}{8}\sum_k s_k = \frac{3.75}{8} = 0.469$$
+
+With max pooling the clip scores 0.91, the predicted label is correct, and top-1 accuracy is $1/1 = 100\%$. With mean pooling the clip scores 0.469, below the same 0.5 used above, so the clip is labelled *action absent* and top-1 accuracy is $0/1 = 0\%$. Same scores, same detector, same clip: the pooling rule alone moved the headline number the whole way.
+
+Now compare the two detectors. The lagged row pools to $\max = 0.91$ and mean $= 3.01/8 = 0.376$. Under max pooling both detectors score 100% top-1; under mean pooling both score 0%. **Top-1 cannot separate them at all.** The segment-level number can: at $\theta = 0.50$ the lagged detector gives $P = $ frames 6–8, so the intersection with $G$ is frames 6 and 7, two frames, the union is frames 3–8, six frames, and
+
+$$\text{tIoU}_{\text{lag}} = \tfrac{2}{6} = 0.333 \quad\text{against}\quad \text{tIoU}_{\text{live}} = 0.80$$
+
+That is the concrete version of §1's table: recognition and localization are different tasks, and a recognition metric is structurally unable to report a timing defect because pooling throws the time axis away before the number is computed.
+
+**Step 4 — the same delay, priced in metres.** The action truly begins at the start of frame 3, $t = 0.50$ s. The live detector first crosses $\theta = 0.50$ at frame 4, $t = 0.75$ s. The lagged one first crosses at frame 6, $t = 1.25$ s. The alarm is therefore
+
+$$\Delta T = 1.25 - 0.75 = 0.50\ \mathrm{s}$$
+
+later — the two frames, exactly. Hand that to the cell on [[04-robotics/hri-safety|11. HRI & Safety]], whose P2 running object sits at $v_h = 1.6$ m/s, $v_r = 1.0$ m/s and $S_p = 1.24$ m. Detection latency enters the protective separation distance through the reaction time, and that page derives $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s, so
+
+$$\Delta S_p = 2.6 \times 0.50 = 1.30\ \mathrm{m}$$
+
+$S_p$ goes from 1.24 m to 2.54 m. The sensing field, which starts at the 2.25 m hazard boundary plus $S_p$, moves from 3.49 m to 4.79 m, and the monitored floor grows from $\pi(3.49)^2 = 38.3\ \mathrm{m}^2$ to $\pi(4.79)^2 = 72.1\ \mathrm{m}^2$ — it nearly doubles, a factor of 1.88.
+
+**The reading this gives you.** Two frames of buffering cost 34 m² of floor and were invisible in top-1 accuracy. When a video paper reports latency at all it usually reports throughput — frames per second — and throughput is not latency: a model running at 30 fps behind a two-frame buffer still answers half a second late. Ask for the delay from mid-exposure to decision, which is the quantity the safety calculation actually consumes.
+
+**Step 5 — where the threshold goes when the table says mAP.**
+
+> [!info] Definition · 정의 — mAP at a temporal IoU threshold
+> **What kind of thing it is.** A scalar in $[0, 1]$ reported for a whole evaluation set: the mean over classes of the area under each class's interpolated precision–recall curve, computed after a matching rule has labelled every prediction a true or false positive.
+>
+> **Its defining conditions.** Four. (i) A predicted segment is a true positive only if its tIoU with an **as-yet-unmatched** ground-truth segment of the same class reaches the threshold $\alpha$; each ground-truth segment matches at most once, so a second prediction of the same action is a false positive however good it is. (ii) Predictions are ranked by **confidence across the whole set** before the curve is traced, so the ordering, not just the count, decides the number. (iii) Recall is measured against the **total** number of ground-truth segments, so an action nobody predicted lowers recall while producing no prediction to inspect. (iv) The threshold $\alpha$ **is part of the metric's name** — mAP@0.5 and mAP@0.75 are different quantities and cannot be compared.
+>
+> $$\text{AP} = \sum_n \big(R_n - R_{n-1}\big)\,P^{\text{interp}}_n, \qquad P^{\text{interp}}_n = \max_{m \ge n} P_m, \qquad \text{mAP} = \frac{1}{C}\sum_{c=1}^{C}\text{AP}_c$$
+>
+> $P_n$ and $R_n$ are precision and recall after the $n$-th ranked prediction, $R_0 = 0$, $P^{\text{interp}}_n$ is the best precision at this recall or higher, and $C$ is the number of classes. The precision–recall machinery is the same one [[02-foundations/ml-practice|ML Practice §3]] derives for detection; only the matching rule changes, from spatial IoU on boxes to temporal IoU on segments.
+>
+> **Example.** The five-prediction set below: 0.625 at $\alpha = 0.50$ and 0.417 at $\alpha = 0.75$.
+>
+> **Non-examples.** The fraction of ground-truth actions detected at all is not mAP — on the set below that is $3/4 = 0.75$ at $\alpha = 0.50$, and it ignores every false positive. An mAP quoted without its $\alpha$ is not a number you can use, and a frame-mAP from spatiotemporal detection (§1's third row) is a different metric again, matched per frame rather than per segment.
+>
+> **Why it matters.** Localization results are reported as one number, and that number carries a hidden choice. Two papers can differ entirely because of $\alpha$, and a method that improves boundaries rather than detections gains only at high $\alpha$ — which is exactly what the two columns below show.
+
+Freeze one class, four ground-truth segments across four clips, and five predictions ranked by confidence, each with its tIoU against the ground truth it overlaps:
+
+| Rank $n$ | Confidence | tIoU | TP at $\alpha = 0.50$? | TP at $\alpha = 0.75$? |
+|---:|---:|---:|---|---|
+| 1 | 0.91 | 0.80 | yes | yes |
+| 2 | 0.72 | 0.33 | no | no |
+| 3 | 0.65 | 0.90 | yes | yes |
+| 4 | 0.55 | 0.55 | yes | **no** |
+| 5 | 0.40 | 0.20 | no | no |
+
+At $\alpha = 0.50$ the running precision is $1.000,\ 0.500,\ 0.667,\ 0.750,\ 0.600$ and the recall $0.25,\ 0.25,\ 0.50,\ 0.75,\ 0.75$. Interpolating precision backwards from the end gives $1.000,\ 0.750,\ 0.750,\ 0.750,\ 0.600$, so summing $(R_n - R_{n-1})P^{\text{interp}}_n$:
+
+$$\text{AP}_{@0.50} = 0.25(1.000) + 0 + 0.25(0.750) + 0.25(0.750) + 0 = 0.625$$
+
+At $\alpha = 0.75$ only ranks 1 and 3 survive. Precision becomes $1.000,\ 0.500,\ 0.667,\ 0.500,\ 0.400$ and recall $0.25,\ 0.25,\ 0.50,\ 0.50,\ 0.50$; interpolated precision is $1.000,\ 0.667,\ 0.667,\ 0.500,\ 0.400$, so
+
+$$\text{AP}_{@0.75} = 0.25(1.000) + 0 + 0.25(0.667) = 0.417$$
+
+With one class, mAP equals AP. The predictions never changed: raising $\alpha$ from 0.50 to 0.75 removed one detection and took a third of the score with it, because rank 4's tIoU of 0.55 is a real detection with sloppy boundaries. That is the difference between finding an action and knowing when it started, and it is the difference that matters when the next stage is a stop decision.
 
 ### 1. Four tasks that are routinely conflated
 
@@ -31,7 +156,7 @@ A single image answers *what is here*. Video is required to answer *what is happ
 | Spatiotemporal detection | untrimmed video | per-frame boxes + action label | frame-mAP |
 | **Action anticipation** | video up to $t$, **nothing after** | label of the action starting at $t+\tau$ | top-$k$ accuracy at anticipation time $\tau$ |
 
-Temporal IoU (intersection over union) is the overlap of a predicted segment with the true one divided by the length of their union; mAP averages precision over classes. Both are defined in [[02-foundations/ml-practice|ML Practice §3]].
+Temporal IoU and segment-level mAP are defined in full in the worked case above, on V8's own numbers. They are not the detection metrics of [[02-foundations/ml-practice|ML Practice §3]] under new names: the precision–recall machinery is shared, but the matching rule changes from spatial overlap of boxes to temporal overlap of intervals, so a frame-mAP and a segment-mAP are different quantities.
 
 Anticipation is the only one of these that is causally constrained: the model may not see the moment it is predicting. Every claim about "predicting intent" belongs in this row, and a paper that reports recognition numbers has not demonstrated anticipation.
 
@@ -143,20 +268,22 @@ You should be able to:
 > [!tip]- Answers
 > 1. Retrain or evaluate a single-frame baseline on the same split; if it is close, the dataset is scene-biased. Frame shuffling is a cheaper approximation. 2. Because the label window is excluded from the input, so the mapping is one-to-many over legitimate futures; the model estimates a distribution, not a deterministic label. 3. Fixed-window 3D CNNs and standard video transformers (2–10 s receptive field); the workaround is hierarchical or memory-based aggregation over clip-level features. 4. When the decision requires a longer horizon than the higher-accuracy model can sustain above the action threshold — see §5.
 
-**Worked: the three readings the homework asks.** No single-frame baseline next to 92% means the number may be scene bias. Anticipation that keeps the label inside the input is recognition. A “30 fps” claim with a 2 s buffer has already spent two seconds of latency.
+**Worked: the three readings the homework asks.** A localization score that moved 0.40 when only the threshold changed is a claim about the threshold. Top-1 under max pooling cannot see a timing defect, and mean pooling would have called the very same clip empty — so a pooling rule, not the model, decided the headline. Throughput is not latency: three buffered frames are 0.75 s and 1.95 m of protective separation, and none of it appears in an fps number.
 
 ### Problem set · 과제
 
-Tier C. Using this page only.
+Tier B. Hand derivation on **V8**, using only this page and its prerequisites. Same eight frames, same 4 fps, same live score row. Three things change: the ground-truth segment is now $G' = $ frames **2 to 6**, the threshold is $\theta = 0.30$, and the deployed detector sits behind a **three**-frame buffer, so $s^{\text{lag3}}_k = s^{\text{live}}_{k-3}$ with 0 before it fills.
 
-1. A paper reports 92% action accuracy and no single-frame baseline. What is the cheapest test that the number used time, and what does a near-equal baseline imply?
-2. Anticipation is implemented as recognition on a window shifted $1\,\mathrm{s}$ later, with the label still inside the input. What task was actually evaluated?
-3. A "real-time" 30 fps claim hides a 2 s clip buffer and an offline decoder. Which preprocessing cost is inside the number, and what horizon can the system *not* speak to?
+1. **Draw.** Redraw the homework diagram at these numbers: the eight score bars with the dashed line at $\theta = 0.30$, then the three bars $G'$, $P_{\text{live}}$ and $P_{\text{lag3}}$, with the intersection and union of the first two bracketed and counted. Mark the true onset of $G'$ and the two crossing times, and label the gap in seconds.
+2. **Derive.** (a) Give $P_{\text{live}}$ at $\theta = 0.30$ and its temporal IoU against $G'$; then repeat at $\theta = 0.50$ and say which of the two predictions would be a true positive in an mAP@0.5 table. (b) Give $P_{\text{lag3}}$ at $\theta = 0.50$, its tIoU against $G'$, the clip's max-pooled and mean-pooled scores, and the top-1 verdict under each pooling rule. (c) Convert the three-frame lag into seconds, then into metres of protective separation and into monitored floor area for the P2 cell of [[04-robotics/hri-safety|11. HRI & Safety]].
+3. **Interpret.** A paper reports top-1 accuracy of 100% on this class and calls the system suitable for a safety interlock, adding that it runs at 30 fps. Using 2(b) and 2(c), say what the top-1 number did and did not establish, and name the one measurement you would ask for instead.
 
 > [!tip]- Solutions
-> 1. Same-split single-frame (or shuffle) baseline. Near-equal means scene bias: the accuracy is object/room recognition, not action.
-> 2. Recognition, not anticipation. Anticipation excludes the label window so the map is one-to-many; leaking the future makes the number incomparable.
-> 3. The 2 s buffer (and decode) is latency. The system cannot claim a decision before those two seconds, whatever the fps of the forward pass.
+> 1. The drawing must show $P_{\text{live}}$ starting one frame *after* $G'$ starts and ending one frame *after* it ends — the prediction is shifted, not merely shorter, which is why the union is larger than either segment. $P_{\text{lag3}}$ must not touch $G'$ at all.
+> 2. (a) At $\theta = 0.30$ the frames at or above threshold are 3, 4, 5, 6, 7, so $P_{\text{live}} = $ frames 3–7 $= [0.50,\ 1.75)$ s. Against $G' = $ frames 2–6 the intersection is frames 3–6, four frames, and the union is frames 2–7, six frames, so $\text{tIoU} = 4/6 = 0.667$. At $\theta = 0.50$ the prediction is frames 4–7; the intersection is frames 4, 5, 6, three frames, and the union is still frames 2–7, six frames, so $\text{tIoU} = 3/6 = 0.500$. Both are true positives at $\alpha = 0.50$: the matching condition is that tIoU *reaches* the threshold, so 0.500 counts, exactly as a spatial IoU of 0.50 counts in ML Practice §3. Note what this exercise shows — moving the threshold changed the number by a third without the detector changing, and both predictions score identically in the mAP table.
+> (b) The lagged row is $0, 0, 0, 0.10, 0.15, 0.35, 0.62, 0.88$, so at $\theta = 0.50$ only frames 7 and 8 qualify: $P_{\text{lag3}} = [1.50,\ 2.00)$ s. Its intersection with $G' = $ frames 2–6 is **empty**, so $\text{tIoU} = 0$. Yet max pooling gives $0.88$ — correct label, top-1 $= 100\%$ — while mean pooling gives $2.10/8 = 0.263$, below 0.5, so top-1 $= 0\%$. A detector that found nothing where the action was still scores a perfect top-1 under max pooling.
+> (c) Three frames at 4 fps is $0.75$ s. The live detector crosses $\theta = 0.50$ at frame 4, $t = 0.75$ s, and the lagged one at frame 7, $t = 1.50$ s. With $\partial S_p/\partial T_r = 2.6$ m/s, $\Delta S_p = 2.6 \times 0.75 = 1.95$ m, so $S_p$ rises from 1.24 m to 3.19 m, the sensing field from 3.49 m to $2.25 + 3.19 = 5.44$ m, and the monitored floor from $38.3\ \mathrm{m}^2$ to $\pi(5.44)^2 = 93.0\ \mathrm{m}^2$ — about $2.4\times$.
+> 3. Top-1 of 100% established that the clip contains the class under max pooling, and nothing else. It did not establish *when*, and a safety interlock consumes only the when: this detector's segment has zero overlap with the true action, and mean pooling would have scored the same detector 0%. The 30 fps figure is throughput and says nothing about the three-frame buffer, which is 0.75 s of latency and 1.95 m of separation. The measurement to ask for is the delay from mid-exposure of the frame in which the action begins to the instant the decision leaves the system — one number, in milliseconds, which is what the $T_r$ term of the separation distance actually consumes.
 
 ### Sources
 
@@ -196,7 +323,131 @@ Tier C. Using this page only.
 > [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 습관적으로 뒤섞이는 네 과제 — 그다음 장면 편향인 §2, 그다음 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라.
+> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 프레임 여덟 장, 정답 구간 하나, 그리고 거기서 계산할 수 있는 숫자 셋 — 그다음 §1, 습관적으로 뒤섞이는 네 과제, 그다음 장면 편향인 §2, 그다음 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라.
+
+### 계속 쓰는 대상: 클립 V8
+
+대상이 *점수 열*인 페이지에는 [[02-foundations/lab-plants|0.6]]의 어떤 장치도 맞지 않으므로, 이 페이지는 자기 것을 하나 고정하고 끝까지 바꾸지 않는다. **V8**은 4 fps로 찍은 여덟 프레임 클립이다. 프레임 하나가 $\Delta = 0.25$ s이고 프레임 $k$는 구간 $[(k-1)\Delta,\ k\Delta)$를 차지하므로, 클립은 0에서 2.00초까지다. 중요한 클래스는 하나다: *손이 기계의 선회 구역에 들어간다.*
+
+프레임별 검출기가 모든 프레임에 대해 그 클래스의 점수 $s_k \in [0,1]$을 낸다. 이 여덟 숫자는 어떤 시스템의 측정값이 아니라 이 페이지가 고정한 값이다:
+
+| 프레임 $k$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 시작 시각 (s) | 0.00 | 0.25 | 0.50 | 0.75 | 1.00 | 1.25 | 1.50 | 1.75 |
+| $s_k$ — 실시간 검출기 | 0.10 | 0.15 | 0.35 | 0.62 | 0.88 | 0.91 | 0.54 | 0.20 |
+| $s_k$ — 지연된 검출기 | 0 | 0 | 0.10 | 0.15 | 0.35 | 0.62 | 0.88 | 0.91 |
+
+**정답 구간** $G$는 프레임 3에서 7까지, 곧 $[0.50,\ 1.75)$ s이고 길이는 1.25초다. **지연된 검출기**는 두 프레임짜리 버퍼 뒤에 앉은 같은 검출기다: $s^{\text{lag}}_k = s^{\text{live}}_{k-2}$, 버퍼가 차기 전에는 0이다. 4 fps에서 두 프레임은 0.50초이고, 그 반초가 이 페이지의 요점이다.
+
+문턱값 $\theta$에서의 **예측 구간** $P$는 $s_k \ge \theta$인 프레임들을 구간 하나로 읽은 것이다. 문턱값은 검출기의 성질이 아니라 선택이며, 계산 예제는 그에 맞게 값을 매긴다.
+
+*범위: 이 페이지는 네 비디오 과제가 각각 무엇을 재는지, 프레임별 점수가 어떻게 구간과 숫자가 되는지, 검출 지연이 하류에서 무엇을 치르는지를 가르친다. 백본을 학습시키는 법(§3의 계보가 곧 읽기 목록이다), 프레임에서 자세나 손을 뽑는 법([[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]]), 예측이 생긴 다음에 무엇을 할지([[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]]와 [[04-robotics/hri-safety|11. HRI와 안전]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: 시간축과 그 아래 막대 셋
+
+0에서 2.00초까지 가로 시간축을 하나 긋고 그 위에 프레임 상자 여덟 개를 놓는다. 각 상자는 0.25초 폭이고 $k$와 시작 시각을 적는다. 상자 안에 실시간 검출기의 $s_k$를 세로 막대로 그리고, 여덟 상자를 가로지르는 문턱값 $\theta$의 점선을 긋는다.
+
+축 아래에는 같은 시각에 맞춘 막대 셋을 쌓는다:
+
+1. **$G$** — 정답, 프레임 3에서 7까지.
+2. **$P_{\text{live}}$** — $\theta$ 이상인 프레임들을 구간 하나로.
+3. **$P_{\text{lag}}$** — 지연된 검출기에 대해 같은 것.
+
+막대 1과 2 사이에 **교집합**과 **합집합**을 각각 괄호로 묶고 프레임 수를 적는다 — 그 두 숫자가 시간 IoU의 전부다. 마지막으로 축 위 세 순간에 세로 화살표를 찍는다: $G$의 실제 시작, 실시간 검출기가 $\theta$를 처음 넘는 시각, 지연된 검출기가 넘는 시각. 뒤의 두 시각 사이 간격을 초 단위로 적는다. 과제는 정답 구간과 문턱값과 지연 길이를 바꾼 같은 그림을 요구한다.
+
+### 대상으로 한 번 끝까지: 점수 여덟 개에서 정지 거리까지
+
+**1단계 — 예측 구간은 고른 문턱값에 달려 있다.** 실시간 행에서 $\theta$ 이상인 프레임을 읽는다:
+
+| $\theta$ | $s_k \ge \theta$인 프레임 | 구간으로서의 $P$ | 길이 |
+|---:|---|---|---:|
+| 0.30 | 3, 4, 5, 6, 7 | $[0.50,\ 1.75)$ | 1.25 s |
+| 0.50 | 4, 5, 6, 7 | $[0.75,\ 1.75)$ | 1.00 s |
+| 0.60 | 4, 5, 6 | $[0.75,\ 1.50)$ | 0.75 s |
+
+**2단계 — 이 클립 위의 시간 IoU.**
+
+> [!info] 정의 · Definition — 시간 IoU
+> **어떤 종류의 것인가.** $[0, 1]$의 무차원 스칼라로, 한 영상의 시간축 위에 놓인 두 *시간 구간*이 얼마나 일치하는지를 잰다. 예측과 정답 사이의 비교이지 둘 중 하나의 성질이 아니다.
+>
+> **정의 조건.** 넷이다. (i) 두 인자가 **같은 시계** 위의 구간이어야 한다. 그래서 영상 둘 사이의 tIoU나, 초로 환산하지 않은 서로 다른 프레임률 사이의 tIoU는 정의되지 않는다. (ii) **대칭이다** — $P$와 $G$를 바꿔도 같은 값 — 이것이 이 값을 포함도가 아니라 일치도로 만든다. (iii) **길이의 비**이므로 프레임으로 재든 초로 재든 값이 같지만, 시간을 더 거칠게 다시 나누면 값이 바뀐다. (iv) **방향을 보지 못한다**: 같은 양만큼 늦은 예측과 이른 예측이 똑같은 점수를 받으므로, tIoU만으로는 검출기가 지연되고 있다는 사실을 결코 알 수 없다.
+>
+> $$\text{tIoU}(P, G) = \frac{|P \cap G|}{|P \cup G|}$$
+>
+> $P$는 예측 구간, $G$는 정답 구간, $|\cdot|$는 길이다. V8처럼 모든 프레임 길이가 같으면 프레임 수와 같다.
+>
+> **예.** $\theta = 0.50$에서 실시간 검출기의 $P$는 프레임 4–7이고 $G$는 프레임 3–7이다. 교집합은 프레임 4–7로 넷, 합집합은 프레임 3–7로 다섯이므로 $\text{tIoU} = 4/5 = 0.80$이다.
+>
+> **비-예.** 예측이 정답을 덮는 비율 $|P \cap G|/|G|$는 tIoU가 아니다 — 그것은 재현율이고, 대칭이 아니며, 영상 전체를 덮는 예측에 상을 준다. 아래 지연된 검출기에서 그 값은 $2/5 = 0.400$이지만 tIoU는 $2/6 = 0.333$이다. 바운딩 박스의 공간 IoU([[02-foundations/ml-practice|ML 실무 §3]])도 다른 영역의 다른 양이다. 둘은 이름만 공유하며, 그래서 frame-mAP 수치와 segment-mAP 수치는 비교 대상이 아니다.
+>
+> **왜 중요한가.** tIoU는 **정합 규칙**이다. 어떤 예측 구간이 애초에 검출로 집계되는지를 정하므로, 결과표의 모든 위치추정 수치는 거기 적용된 문턱값의 함수다.
+
+다섯 프레임인 $G$ = 프레임 3–7에 대해 세 문턱값을 돌리면
+
+$$\text{tIoU} = \tfrac{5}{5} = 1.00 \ \ (\theta = 0.30), \qquad \tfrac{4}{5} = 0.80 \ \ (\theta = 0.50), \qquad \tfrac{3}{5} = 0.60 \ \ (\theta = 0.60)$$
+
+검출기는 아무것도 바뀌지 않았다. 누군가 숫자 하나를 골랐기 때문에 위치추정 점수가 0.40만큼 움직였고, 그래서 문턱값 없는 위치추정 품질 주장은 주장이 아니다.
+
+**3단계 — 같은 점수 여덟 개 위에서 top-1 대 구간 단위.** 클립 단위 인식은 클립에 점수 하나가 필요하므로 풀링을 한다. 실시간 행에 표준 풀링 둘을 적용하면
+
+$$\max_k s_k = 0.91, \qquad \frac{1}{8}\sum_k s_k = \frac{3.75}{8} = 0.469$$
+
+max 풀링에서는 클립이 0.91을 받고 예측 라벨이 맞으므로 top-1 정확도가 $1/1 = 100\%$다. mean 풀링에서는 0.469를 받아 위에서 쓴 0.5에 못 미치므로 클립이 *행동 없음*으로 분류되고 top-1 정확도가 $0/1 = 0\%$다. 같은 점수, 같은 검출기, 같은 클립인데 풀링 규칙 하나가 표제 숫자를 끝에서 끝까지 옮겼다.
+
+이제 두 검출기를 비교하자. 지연된 행은 $\max = 0.91$, 평균 $= 3.01/8 = 0.376$으로 풀링된다. max 풀링에서는 둘 다 top-1 100%, mean 풀링에서는 둘 다 0%다. **top-1은 둘을 전혀 가르지 못한다.** 구간 단위 수치는 가른다. $\theta = 0.50$에서 지연된 검출기의 $P$는 프레임 6–8이므로 $G$와의 교집합은 프레임 6, 7로 둘, 합집합은 프레임 3–8로 여섯이고
+
+$$\text{tIoU}_{\text{lag}} = \tfrac{2}{6} = 0.333 \quad\text{대}\quad \text{tIoU}_{\text{live}} = 0.80$$
+
+이것이 §1 표의 구체적 판본이다. 인식과 위치추정은 다른 과제이고, 인식 지표는 숫자를 계산하기 전에 풀링이 시간축을 버리기 때문에 타이밍 결함을 구조적으로 보고할 수 없다.
+
+**4단계 — 같은 지연을 미터로 환산하기.** 행동은 프레임 3의 시작, $t = 0.50$ s에 실제로 시작한다. 실시간 검출기는 프레임 4, $t = 0.75$ s에 $\theta = 0.50$을 처음 넘는다. 지연된 검출기는 프레임 6, $t = 1.25$ s에 넘는다. 따라서 경보는
+
+$$\Delta T = 1.25 - 0.75 = 0.50\ \mathrm{s}$$
+
+늦는다 — 정확히 두 프레임이다. 이것을 [[04-robotics/hri-safety|11. HRI와 안전]]의 셀에 넘기자. 그 페이지의 P2 대상은 $v_h = 1.6$ m/s, $v_r = 1.0$ m/s, $S_p = 1.24$ m에 앉아 있다. 검출 지연은 반응 시간을 통해 보호 이격 거리에 들어가고, 그 페이지가 $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s를 유도하므로
+
+$$\Delta S_p = 2.6 \times 0.50 = 1.30\ \mathrm{m}$$
+
+$S_p$는 1.24 m에서 2.54 m가 된다. 감지 영역은 위험 경계 2.25 m에 $S_p$를 더한 자리에서 시작하므로 3.49 m에서 4.79 m로 밀려나고, 감시 바닥은 $\pi(3.49)^2 = 38.3\ \mathrm{m}^2$에서 $\pi(4.79)^2 = 72.1\ \mathrm{m}^2$로 거의 두 배, 정확히는 1.88배가 된다.
+
+**여기서 얻는 독법.** 버퍼 두 프레임이 바닥 34 m²를 물렸고, top-1 정확도에서는 보이지 않았다. 비디오 논문이 지연을 보고한다고 할 때 보고하는 것은 대개 처리량 — 초당 프레임 — 이고, 처리량은 지연이 아니다. 두 프레임 버퍼 뒤에서 30 fps로 도는 모델도 여전히 반초 늦게 답한다. 노출 중간부터 결정까지의 지연을 요구하라. 안전 계산이 실제로 먹는 양은 그것이다.
+
+**5단계 — 표가 mAP라고 적을 때 문턱값은 어디로 갔는가.**
+
+> [!info] 정의 · Definition — 시간 IoU 문턱값에서의 mAP
+> **어떤 종류의 것인가.** 평가 집합 전체에 대해 보고하는 $[0, 1]$의 스칼라다. 정합 규칙이 모든 예측에 참양성·거짓양성 딱지를 붙인 뒤, 클래스별 보간 정밀도–재현율 곡선 아래 넓이를 클래스에 대해 평균한 값이다.
+>
+> **정의 조건.** 넷이다. (i) 예측 구간이 참양성이 되려면 같은 클래스의 **아직 짝지어지지 않은** 정답 구간과의 tIoU가 문턱값 $\alpha$에 닿아야 한다. 정답 구간 하나는 최대 한 번만 짝지어지므로, 같은 행동에 대한 두 번째 예측은 아무리 좋아도 거짓양성이다. (ii) 곡선을 그리기 전에 예측을 **평가 집합 전체에 걸쳐 신뢰도로** 정렬한다. 개수만이 아니라 순서가 값을 정한다. (iii) 재현율은 정답 구간의 **전체** 개수에 대해 잰다. 그래서 아무도 예측하지 않은 행동은 들여다볼 예측을 만들지 않으면서 재현율만 낮춘다. (iv) 문턱값 $\alpha$는 **지표 이름의 일부다** — mAP@0.5와 mAP@0.75는 다른 양이고 비교할 수 없다.
+>
+> $$\text{AP} = \sum_n \big(R_n - R_{n-1}\big)\,P^{\text{interp}}_n, \qquad P^{\text{interp}}_n = \max_{m \ge n} P_m, \qquad \text{mAP} = \frac{1}{C}\sum_{c=1}^{C}\text{AP}_c$$
+>
+> $P_n$과 $R_n$은 $n$번째 예측 뒤의 정밀도와 재현율, $R_0 = 0$, $P^{\text{interp}}_n$은 이 재현율 이상에서의 최고 정밀도, $C$는 클래스 수다. 정밀도–재현율 기계는 [[02-foundations/ml-practice|ML 실무 §3]]이 검출에 대해 유도하는 바로 그것이고, 바뀌는 것은 정합 규칙뿐이다. 박스의 공간 IoU에서 구간의 시간 IoU로.
+>
+> **예.** 아래 다섯 예측 집합: $\alpha = 0.50$에서 0.625, $\alpha = 0.75$에서 0.417.
+>
+> **비-예.** 정답 행동 중 몇 개나 검출되었는가는 mAP가 아니다 — 아래 집합에서 $\alpha = 0.50$일 때 그 값은 $3/4 = 0.75$이고, 거짓양성을 전부 무시한다. $\alpha$ 없이 적힌 mAP도 쓸 수 있는 숫자가 아니며, 시공간 검출(§1의 셋째 행)의 frame-mAP는 또 다른 지표로 구간이 아니라 프레임마다 정합한다.
+>
+> **왜 중요한가.** 위치추정 결과는 숫자 하나로 보고되고, 그 숫자는 숨은 선택 하나를 지고 있다. 논문 둘이 오직 $\alpha$ 때문에 갈릴 수 있고, 검출이 아니라 경계를 개선한 방법은 높은 $\alpha$에서만 이득을 본다 — 아래 두 열이 보이는 것이 정확히 그것이다.
+
+클래스 하나, 클립 넷에 걸친 정답 구간 넷, 신뢰도로 정렬한 예측 다섯을 고정한다. 각 예측에는 겹치는 정답에 대한 tIoU가 붙어 있다:
+
+| 순위 $n$ | 신뢰도 | tIoU | $\alpha = 0.50$에서 TP? | $\alpha = 0.75$에서 TP? |
+|---:|---:|---:|---|---|
+| 1 | 0.91 | 0.80 | O | O |
+| 2 | 0.72 | 0.33 | X | X |
+| 3 | 0.65 | 0.90 | O | O |
+| 4 | 0.55 | 0.55 | O | **X** |
+| 5 | 0.40 | 0.20 | X | X |
+
+$\alpha = 0.50$에서 누적 정밀도는 $1.000,\ 0.500,\ 0.667,\ 0.750,\ 0.600$이고 재현율은 $0.25,\ 0.25,\ 0.50,\ 0.75,\ 0.75$다. 끝에서부터 정밀도를 보간하면 $1.000,\ 0.750,\ 0.750,\ 0.750,\ 0.600$이므로 $(R_n - R_{n-1})P^{\text{interp}}_n$을 더해
+
+$$\text{AP}_{@0.50} = 0.25(1.000) + 0 + 0.25(0.750) + 0.25(0.750) + 0 = 0.625$$
+
+$\alpha = 0.75$에서는 순위 1과 3만 살아남는다. 정밀도는 $1.000,\ 0.500,\ 0.667,\ 0.500,\ 0.400$, 재현율은 $0.25,\ 0.25,\ 0.50,\ 0.50,\ 0.50$이고 보간 정밀도는 $1.000,\ 0.667,\ 0.667,\ 0.500,\ 0.400$이므로
+
+$$\text{AP}_{@0.75} = 0.25(1.000) + 0 + 0.25(0.667) = 0.417$$
+
+클래스가 하나이므로 mAP는 AP와 같다. 예측은 하나도 바뀌지 않았다. $\alpha$를 0.50에서 0.75로 올린 것이 검출 하나를 지우고 점수의 3분의 1을 함께 가져갔다. 순위 4의 tIoU 0.55가 경계가 엉성한 진짜 검출이기 때문이다. 그것이 행동을 찾는 것과 언제 시작했는지 아는 것의 차이이고, 다음 단계가 정지 결정일 때 문제가 되는 차이다.
 
 ### 1. 습관적으로 뒤섞이는 네 가지 과제
 
@@ -207,7 +458,7 @@ Tier C. Using this page only.
 | 시공간 검출 | 안 자른 영상 | 프레임별 박스 + 행동 레이블 | frame-mAP |
 | **행동 예측(anticipation)** | $t$까지의 영상, **이후는 없음** | $t+\tau$에 시작될 행동 | 예측 시점 $\tau$에서의 top-$k$ |
 
-시간 IoU(intersection over union)는 예측 구간과 실제 구간의 겹침을 두 구간의 합집합 길이로 나눈 값이고, mAP는 클래스별 정밀도를 평균한 값이다. 둘 다 [[02-foundations/ml-practice|ML 실무 §3]]에 정의되어 있다.
+시간 IoU와 구간 단위 mAP는 위의 계산 예제에서 V8 자신의 숫자로 온전히 정의한다. 이름만 바꾼 [[02-foundations/ml-practice|ML 실무 §3]]의 검출 지표가 아니다. 정밀도–재현율 기계는 공유하지만 정합 규칙이 박스의 공간적 겹침에서 구간의 시간적 겹침으로 바뀌므로, frame-mAP와 segment-mAP는 다른 양이다.
 
 이 중 인과적으로 제약된 것은 anticipation뿐이다 — 모델은 자기가 예측하는 순간을 볼 수 없다. "의도를 예측한다"는 모든 주장은 이 행에 속하고, 인식 수치를 보고한 논문은 예측을 입증한 것이 아니다.
 
@@ -319,18 +570,22 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 > [!tip]- 정답
 > 1. 같은 split에서 단일 프레임 베이스라인을 평가한다; 근접하면 장면 편향이다. 프레임 셔플이 더 싼 근사다. 2. 레이블 구간이 입력에서 배제되므로 정당한 여러 미래에 대해 일대다 사상이 된다; 모델은 결정적 레이블이 아니라 분포를 추정한다. 3. 고정 창 3D CNN과 표준 비디오 트랜스포머(2–10초 수용 영역); 우회는 클립 단위 특징 위의 계층적·메모리 기반 집계다. 4. 결정에 필요한 지평이, 정확도 높은 모델이 임계값 위에서 유지할 수 있는 $\tau$보다 길 때 — §5 참조.
 
+**계산으로 확인: 과제가 묻는 세 독법.** 문턱값만 바꿨는데 0.40이 움직인 위치추정 점수는 문턱값에 관한 주장이다. max 풀링의 top-1은 타이밍 결함을 볼 수 없고, mean 풀링이었다면 바로 그 클립을 비었다고 했을 것이다 — 표제 숫자를 정한 것은 모델이 아니라 풀링 규칙이다. 처리량은 지연이 아니다: 버퍼 세 프레임은 0.75초이자 보호 이격 1.95 m이고, 그중 어느 것도 fps 숫자에는 나타나지 않는다.
+
 ### 과제 · Problem set
 
-Tier C. 이 페이지만 사용한다.
+Tier B. **V8** 위에서 손으로 유도한다. 이 페이지와 선수 지식만 쓴다. 같은 프레임 여덟 장, 같은 4 fps, 같은 실시간 점수 행이다. 세 가지가 바뀐다. 정답 구간이 이제 $G' = $ 프레임 **2에서 6까지**이고, 문턱값이 $\theta = 0.30$이며, 배포된 검출기는 **세** 프레임 버퍼 뒤에 앉아 $s^{\text{lag3}}_k = s^{\text{live}}_{k-3}$, 버퍼가 차기 전에는 0이다.
 
-1. 어떤 논문이 행동 정확도 92%를 보고하고 단일 프레임 베이스라인이 없다. 그 숫자가 시간을 썼는지 가장 싼 시험은, 그리고 베이스라인이 거의 같으면 무엇을 함의하는가?
-2. Anticipation을 $1\,\mathrm{s}$ 뒤로 민 창의 인식으로 구현하고, 레이블이 아직 입력 안에 있다. 실제로 평가된 과제는?
-3. "실시간" 30 fps 주장이 2초 클립 버퍼와 오프라인 디코더를 감춘다. 숫자 안의 전처리 비용은 무엇이고, 시스템이 말할 수 *없는* 지평은?
+1. **그리기.** 이 숫자들로 과제의 그림을 다시 그려라: $\theta = 0.30$의 점선을 두른 점수 막대 여덟 개, 그 아래 막대 셋 $G'$, $P_{\text{live}}$, $P_{\text{lag3}}$, 앞의 둘에 대한 교집합과 합집합을 괄호로 묶고 개수를 적는다. $G'$의 실제 시작과 두 검출기의 문턱값 통과 시각을 표시하고 그 간격을 초로 적는다.
+2. **유도.** (a) $\theta = 0.30$에서의 $P_{\text{live}}$와 $G'$에 대한 시간 IoU를 구하고, $\theta = 0.50$에서 같은 것을 구한 뒤, 둘 중 어느 예측이 mAP@0.5 표에서 참양성이 되는지 말하라. (b) $\theta = 0.50$에서의 $P_{\text{lag3}}$, $G'$에 대한 tIoU, 클립의 max·mean 풀링 점수, 그리고 각 풀링 규칙에서의 top-1 판정을 구하라. (c) 세 프레임 지연을 초로, 그다음 [[04-robotics/hri-safety|11. HRI와 안전]]의 P2 셀에서 보호 이격 거리의 미터와 감시 바닥 면적으로 환산하라.
+3. **해석.** 어떤 논문이 이 클래스에서 top-1 정확도 100%를 보고하고, 30 fps로 돈다는 말을 덧붙이며, 이 시스템이 안전 인터록에 적합하다고 말한다. 2(b)와 2(c)를 써서 그 top-1 숫자가 무엇을 확립했고 무엇을 확립하지 못했는지 말하고, 대신 요구할 측정 하나를 대라.
 
 > [!tip]- 정답 · Solutions
-> 1. 같은 split의 단일 프레임(또는 셔플) 베이스라인. 거의 같으면 장면 편향: 정확도는 행동이 아니라 물체/방 인식이다.
-> 2. 인식이지 anticipation이 아니다. Anticipation은 레이블 창을 빼서 사상이 일대다가 된다. 미래를 새면 숫자를 비교할 수 없다.
-> 3. 2초 버퍼(와 디코드)가 지연이다. 순전파 fps가 무엇이든 그 2초 전의 결정을 주장할 수 없다.
+> 1. 그림에서 $P_{\text{live}}$는 $G'$보다 한 프레임 *늦게* 시작해 한 프레임 *늦게* 끝나야 한다. 예측이 단지 짧은 것이 아니라 밀려 있고, 그래서 합집합이 두 구간 어느 쪽보다도 크다. $P_{\text{lag3}}$은 $G'$에 전혀 닿지 않아야 한다.
+> 2. (a) $\theta = 0.30$에서 문턱값 이상인 프레임은 3, 4, 5, 6, 7이므로 $P_{\text{live}} = $ 프레임 3–7 $= [0.50,\ 1.75)$ s다. $G' = $ 프레임 2–6에 대해 교집합은 프레임 3–6으로 넷, 합집합은 프레임 2–7로 여섯이므로 $\text{tIoU} = 4/6 = 0.667$이다. $\theta = 0.50$에서는 예측이 프레임 4–7이고, 교집합은 프레임 4, 5, 6으로 셋, 합집합은 여전히 프레임 2–7로 여섯이므로 $\text{tIoU} = 3/6 = 0.500$이다. 둘 다 $\alpha = 0.50$에서 참양성이다. 정합 조건은 tIoU가 문턱값에 *닿는* 것이므로 0.500도 집계된다. ML 실무 §3에서 공간 IoU 0.50이 집계되는 것과 같다. 이 문제가 보이는 것에 주의하라 — 검출기는 그대로인데 문턱값을 옮긴 것만으로 값이 3분의 1 움직였고, 두 예측은 mAP 표에서 똑같은 점수를 받는다.
+> (b) 지연된 행은 $0, 0, 0, 0.10, 0.15, 0.35, 0.62, 0.88$이므로 $\theta = 0.50$에서는 프레임 7과 8만 남는다: $P_{\text{lag3}} = [1.50,\ 2.00)$ s. $G' = $ 프레임 2–6과의 교집합은 **공집합**이므로 $\text{tIoU} = 0$이다. 그런데 max 풀링은 $0.88$을 주고 — 라벨이 맞으므로 top-1 $= 100\%$ — mean 풀링은 $2.10/8 = 0.263$으로 0.5에 못 미쳐 top-1 $= 0\%$다. 행동이 있던 자리에서 아무것도 못 찾은 검출기가 max 풀링에서는 여전히 완벽한 top-1을 받는다.
+> (c) 4 fps에서 세 프레임은 $0.75$초다. 실시간 검출기는 프레임 4, $t = 0.75$ s에, 지연된 검출기는 프레임 7, $t = 1.50$ s에 $\theta = 0.50$을 넘는다. $\partial S_p/\partial T_r = 2.6$ m/s이므로 $\Delta S_p = 2.6 \times 0.75 = 1.95$ m이고, $S_p$는 1.24 m에서 3.19 m로, 감지 영역은 3.49 m에서 $2.25 + 3.19 = 5.44$ m로, 감시 바닥은 $38.3\ \mathrm{m}^2$에서 $\pi(5.44)^2 = 93.0\ \mathrm{m}^2$로, 약 $2.4$배가 된다.
+> 3. top-1 100%는 max 풀링 아래에서 클립이 그 클래스를 담고 있다는 것만 확립했고 그 이상은 아니다. *언제*인지는 확립하지 못했는데, 안전 인터록이 먹는 것은 오직 그 언제다. 이 검출기의 구간은 실제 행동과 겹침이 0이고, mean 풀링이었다면 같은 검출기가 0%를 받았을 것이다. 30 fps는 처리량이고 세 프레임 버퍼에 대해 아무 말도 하지 않는다. 그 버퍼가 0.75초의 지연이고 1.95 m의 이격이다. 요구할 측정은 행동이 시작되는 프레임의 노출 중간부터 결정이 시스템을 떠나는 순간까지의 지연이다. 밀리초 단위 숫자 하나이고, 이격 거리의 $T_r$ 항이 실제로 먹는 양이 그것이다.
 
 ### 출처
 

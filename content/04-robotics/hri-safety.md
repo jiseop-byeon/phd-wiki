@@ -4,6 +4,7 @@ tags: [robotics, hri, safety, construction]
 study-depth: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
+wiki-support: Working
 ---
 
 ## English
@@ -23,7 +24,78 @@ When people operate, supervise, share space with, or depend on a robot, task suc
 > [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]] — §9 connects onward to [[05-construction-robotics/index|Construction Robotics]] (the next track, not a prerequisite).
 
 > [!note] First pass · 처음이라면
-> Read §1 and §2 — most confusion in this literature is one of these two spectra being collapsed — then §6 for the safety vocabulary, then §10, which works one interpretation end to end.
+> Read the running object and the worked case below — they are the one calculation this page owes you — then §1 and §2, where most confusion in this literature is one of these two spectra being collapsed, then §6 for the safety vocabulary, then §10, which works one interpretation end to end.
+
+### Running object: the P2 safety cell
+
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the planar 2R arm, $L_1 = L_2 = 1$ m — carrying a tool, at the pose $\theta = (0^\circ, 90^\circ)$ where the tip sits at $(1,1)$ m and seats the tool on a panel. The arm stands in a cell that one operator may walk into while it works. The numbers below are the ones §6's example already uses, with the reaction time split one step finer so that the detector is visible as its own term.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $L_1, L_2$ | 1.00 m each | P2's link lengths, frozen in 0.6 |
+| $L_t$ | 0.25 m | the tool, held along the forearm axis and extending that far beyond the tip — this page's only addition to P2 |
+| $v_h$ | 1.6 m/s | the operator's approach speed, the standard walking speed of ISO 13855 |
+| $v_r$ | 1.0 m/s | the robot's tip speed in the direction of the person |
+| $T_{\text{sens}}$ | 0.06 s | detector latency: body enters the sensing field → the tracker reports it |
+| $T_{\text{ctrl}}$ | 0.04 s | controller decision plus brake command |
+| $T_r$ | 0.10 s | reaction time, $T_r = T_{\text{sens}} + T_{\text{ctrl}}$ |
+| $T_s$ | 0.30 s | stopping time once braking starts |
+| $C$ | 0.20 m | intrusion distance — how far a body part reaches into the field before it is detected at all |
+| $Z_d$ | 0.10 m | operator position uncertainty of the presence-sensing device |
+| $Z_r$ | 0.05 m | robot position uncertainty |
+
+The tool matters because the hazard is the swept volume, not the base: with the arm outstretched the hazard reaches $R_h = L_1 + L_2 + L_t = 2.25$ m from the base, and every separation distance is measured from *that* boundary.
+
+*Scope: this page teaches how to read an autonomy, trust or safety claim and how to size one safety function — speed and separation monitoring — on a named machine. It does not teach how to certify a machine (that is the standards themselves, named in §6), how to run a human study (that is [[06-research-practice/psychophysics-human-measurement|8. Psychophysics]] and [[06-research-practice/experimental-design-reproducibility|Experimental Design]]), or how the perception that feeds the separation function works ([[04-robotics/video-action-understanding|20. Video & Action Understanding]], [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]]).*
+
+### Homework diagram: the cell in plan, with the clock underneath
+
+Draw it once; the problem set asks for the same drawing at different numbers.
+
+**Top — the plan view.** P2's base at the origin. Link 1 along $+x$ to $(1,0)$, link 2 up to the tip at $(1,1)$, the tool beyond it. A dashed circle of radius $R_h = 2.25$ m around the base: the hazard boundary. A second, solid circle at $R_h + S_p$: the sensing-field boundary. One straight approach line running inward from the field boundary toward the arm, with the person on it walking at $v_h$. On that line, mark the six contributions end to end as segments, in the order a body actually spends them: $C$ first (the reach into the field before detection), then $S_h$ (how far the person travels while the robot reacts and stops), then $S_r$ and $S_s$ (the robot's own travel and stopping distance, measured from the hazard boundary outward), and $Z_d$, $Z_r$ at each end as the two uncertainty pads. The segments must be drawn to scale — that is the whole point of the drawing.
+
+**Bottom — the clock, on the same horizontal axis.** $t = 0$ when the body crosses the field boundary. A tick at $T_{\text{sens}} = 0.06$ s where the tracker first reports the person; a tick at $T_r = 0.10$ s where the brake command leaves the controller; a tick at $T_r + T_s = 0.40$ s where motion has stopped. Above the clock, one bar showing the person still walking through all 0.40 s, because nothing the robot does shortens it.
+
+### Worked case: the protective separation distance, term by term
+
+> [!info] Definition · 정의 — protective separation distance $S_p$
+> **What kind of thing it is.** A *distance in metres*: the smallest gap between the person and the robot's hazard boundary at which the robot is still allowed to keep moving. It is recomputed continuously as speeds change — it is not a fence radius and not a fixed trigger threshold.
+>
+> **Its defining conditions.** Three of them, and dropping any one makes the number meaningless. (i) It is a **sum of six contributions**, not a threshold anyone chooses. (ii) Each contribution must be an **over-estimate** of the quantity it stands for, because the sum is a bound and a bound built from best-case terms bounds nothing. (iii) It is measured **from the hazard boundary** — the swept volume of arm plus tool — not from the base, the tool tip, or the sensor.
+>
+> $$S_p = \underbrace{v_h\,(T_r + T_s)}_{S_h} + \underbrace{v_r\,T_r}_{S_r} + \underbrace{\tfrac{1}{2}\,v_r\,T_s}_{S_s} + C + Z_d + Z_r$$
+>
+> $S_h$ is how far the operator walks during the whole reaction-plus-stop interval at approach speed $v_h$; $S_r$ is how far the robot travels at $v_r$ during its reaction time $T_r$; $S_s$ is its stopping distance during $T_s$, which is $\tfrac{1}{2}v_r T_s$ under constant deceleration; $C$ is the intrusion distance; $Z_d$ and $Z_r$ are the position uncertainties of the operator measurement and of the robot. Detector latency does not appear as its own symbol — it is inside $T_r$, which is exactly why it is easy to lose.
+>
+> **Example.** The cell above: 1.24 m, derived term by term below.
+>
+> **Non-examples.** "The scanner stops the robot when someone is within 1 m" is not an $S_p$: a fixed trigger distance has no $T_r$, no $T_s$ and no $v_h$ in it, so it does not change when the robot speeds up or the detector slows down. "The field is set at 1.24 m from the robot's base" is not one either — the same number measured from the wrong origin leaves the person $2.25 - 1.24 = 1.01$ m *inside* the hazard boundary before the field even notices them.
+>
+> **Why it matters.** It is the one safety function whose cost is a *number of metres of floor*, so it turns every claim about faster perception, or about slowing a robot down, into a quantity you can check.
+
+Now the cell. Substituting the frozen numbers, term by term, in metres:
+
+$$S_h = 1.6\,(0.10 + 0.30) = 0.64,\quad S_r = 1.0 \times 0.10 = 0.10,\quad S_s = \tfrac{1}{2}(1.0)(0.30) = 0.15$$
+
+so, adding the three uncertainty terms $C = 0.20$, $Z_d = 0.10$, $Z_r = 0.05$ unchanged:
+
+$$S_p = 0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = 1.24\ \mathrm{m}$$
+
+**Which term dominates.** As a share of the 1.24 m: $S_h$ 51.6%, $C$ 16.1%, $S_s$ 12.1%, $S_r$ 8.1%, $Z_d$ 8.1%, $Z_r$ 4.0%. Over half the budget is the human walking, and the robot's own two motion terms together are 20.2%. That ranking is the result; the sum is only its total.
+
+**What the cell costs.** The sensing field must begin at $R_h + S_p = 2.25 + 1.24 = 3.49$ m from P2's base, so the monitored floor is $\pi (3.49)^2 = 38.3\ \mathrm{m}^2$ — for an arm whose own reach is 2.25 m.
+
+**The three sensitivities, and the one that decides.** Differentiate the definition, holding the rest fixed:
+
+$$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \frac{\partial S_p}{\partial v_r} = T_r + \tfrac{1}{2}T_s = 0.25\ \mathrm{s}, \qquad \frac{\partial S_p}{\partial v_h} = T_r + T_s = 0.40\ \mathrm{s}$$
+
+Reaction time is charged twice — once to the person's approach through $S_h$ and once to the robot's own travel through $S_r$ — which is why it carries $v_h + v_r$ and the robot's speed does not. Put the numbers to work:
+
+- A detector 0.1 s slower costs $2.6 \times 0.1 = 0.26$ m, so the field moves out to 3.75 m and the monitored floor grows to $\pi(3.75)^2 = 44.2\ \mathrm{m}^2$, about 5.9 m² more.
+- Slowing the robot from 1.0 to 0.5 m/s saves $0.25 \times 0.5 = 0.125$ m: $S_p$ falls to 1.115 m.
+- Stopping the robot dead, $v_r = 0$, still leaves $S_p = 0.99$ m. So the **entire** budget available from robot speed is $1.24 - 0.99 = 0.25$ m.
+
+That last line is the whole lecture in one inequality: $0.25 < 0.26$. A detector regression of one tenth of a second cannot be paid for by slowing the robot *at all*, because buying 0.26 m back would need $0.26 / 0.25 = 1.04$ m/s of speed and the robot only has 1.0 m/s to give. Speed scaling and sensing latency are not interchangeable knobs, and §6 is where you will see papers trade one for the other in words.
 
 ### 1. Autonomy is a spectrum
 
@@ -323,16 +395,18 @@ Finally, state the strongest conclusion that the design could support: under the
 
 ### Problem set · 과제
 
-Tier C. Claim-reading. Running task: **P2** presses a panel with a person nearby ([[02-foundations/lab-plants|0.6]]).
+Tier B. Hand derivation on the **P2** safety cell above, using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. The cell is unchanged except where a question changes a number; $v_h = 1.6$ m/s, $T_s = 0.30$ s, $C = 0.20$ m, $Z_d = 0.10$ m and $Z_r = 0.05$ m stay frozen throughout.
 
-1. **Claim.** Which number is the claim that “zero collisions in 20 trials” is not evidence of safety?
-2. **Falsify.** What evidence would falsify calling the P2 panel task “fully autonomous”?
-3. **Task.** A 95% success rate at seating the tool on the panel: why is that not a safety argument for the person next to the arm?
+A procurement decision has landed on the cell. The new person-tracker is cheaper and 0.1 s slower, so $T_{\text{sens}}$ rises from 0.06 s to 0.16 s and $T_r$ becomes 0.20 s. To compensate, the integrator proposes slowing the robot from $v_r = 1.0$ to $v_r = 0.6$ m/s.
+
+1. **Draw.** Redraw the homework diagram at the new numbers: the plan view with the hazard circle, the sensing-field circle, and the six segments to scale along the approach line; the clock underneath with ticks at $T_{\text{sens}}$, $T_r$ and $T_r + T_s$. Mark the three segments whose lengths did **not** change, and mark on the clock the interval during which the person is walking but nothing about the robot has yet begun to move.
+2. **Derive.** Compute $S_h$, $S_r$, $S_s$ and $S_p$ at the new numbers, then the radius at which the sensing field must now start. Then, from the three sensitivities, state the largest reduction in $S_p$ that the robot's speed could possibly buy at $T_r = 0.20$ s, and say whether the integrator's compensation works.
+3. **Interpret.** The integrator's report says: "Speed scaling reduced the required separation, keeping the existing cell." A later paper on the same system claims speed scaling shrank the cell by 0.5 m. Using only the sensitivities, say which quantity the paper must actually have changed, and name the two things about the cell that a reported $S_p$ still does not tell you.
 
 > [!tip]- Solutions
-> 1. The 95% upper bound $\approx 14\%$ (rule of three, Self-check 1) — that percentage *is* the claim.
-> 2. A declared human role, intervention/reset, operating domain, or fallback (table in §1). Any of those present falsifies “full autonomy”; their absence is missing information, not proof.
-> 3. Success at the panel does not report authority, override, force limits, or exposure. A stiff PD on a P3 wall can still produce a hazardous $F_n$ on a successful seating.
+> 1. The drawing must keep $C$, $Z_d$ and $Z_r$ at the lengths they had — those three are the unchanged ones, since none of them contains a speed or a time. $S_h$ must be visibly longer than before and $S_s$ visibly shorter. On the clock, the interval from $t = 0$ to $t = 0.20$ s is the person walking while the robot has not yet begun to brake, and the first 0.16 s of it is the detector alone.
+> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m; $S_r = 0.6 \times 0.20 = 0.12$ m; $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m; $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. The field must start at $2.25 + 1.36 = 3.61$ m. The compensation fails, and by more than it looks: $S_p$ went **up** by 0.12 m even after the robot gave up 40% of its speed. At $T_r = 0.20$ s the sensitivity is $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s, so taking the robot all the way to $v_r = 0$ would buy only $0.35 \times 0.6 = 0.21$ m — less than the $0.26$ m the slower detector cost. The slower detector is not purchasable with speed at any price.
+> 3. It must have changed $T_r$ (a faster detector, or a shorter brake-command path) or $C$ (a sensing field that detects a body earlier, which is the same claim in different clothing). Speed cannot do it: the whole speed budget is $0.25$ m at $T_r = 0.10$ s and $0.21$ m at $T_r = 0.20$ s, both below 0.5 m. What an $S_p$ still does not tell you: whether the cell actually stops — the separation function is worthless without a verified stop, which is the monitored-standstill and emergency-stop machinery of §6 — and what the change cost in cycle time, which is the honest way to report a separation result at all.
 
 ### Sources
 
@@ -367,7 +441,78 @@ Tier C. Claim-reading. Running task: **P2** presses a panel with a person nearby
 > [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]] — §9는 [[05-construction-robotics/index|건설로봇]](다음 트랙, 선수 지식 아님)으로 이어진다.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1과 §2 — 이 문헌의 혼란 대부분이 이 두 스펙트럼 중 하나를 뭉갠 것이다 — 그다음 §6의 안전 어휘, 그다음 한 해석을 끝까지 해 보는 §10.
+> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 이 페이지가 독자에게 빚진 계산은 그 하나다 — 그다음 §1과 §2, 이 문헌의 혼란 대부분이 이 두 스펙트럼 중 하나를 뭉갠 것이다, 그다음 §6의 안전 어휘, 그다음 한 해석을 끝까지 해 보는 §10.
+
+### 계속 쓰는 대상: P2 안전 셀
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2** — 평면 2R 팔, $L_1 = L_2 = 1$ m — 가 도구를 들고 $\theta = (0^\circ, 90^\circ)$ 자세에 있다. 말단은 $(1,1)$ m에서 패널에 도구를 안착시킨다. 팔은 작업 중에도 작업자 한 명이 걸어 들어올 수 있는 셀 안에 서 있다. 아래 숫자는 §6 예제가 이미 쓰는 것과 같고, 검출기가 자기 항으로 보이도록 반응 시간만 한 단계 더 쪼갰다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| $L_1, L_2$ | 각 1.00 m | 0.6이 고정한 P2 링크 길이 |
+| $L_t$ | 0.25 m | 전완 축을 따라 들어 말단 너머로 그만큼 나오는 도구 — 이 페이지가 P2에 더하는 유일한 값 |
+| $v_h$ | 1.6 m/s | 작업자 접근 속도, ISO 13855의 표준 보행 속도 |
+| $v_r$ | 1.0 m/s | 사람 방향으로의 로봇 말단 속도 |
+| $T_{\text{sens}}$ | 0.06 s | 검출 지연: 신체가 감지 영역에 들어옴 → 추적기가 보고함 |
+| $T_{\text{ctrl}}$ | 0.04 s | 제어기 판단과 제동 명령 |
+| $T_r$ | 0.10 s | 반응 시간, $T_r = T_{\text{sens}} + T_{\text{ctrl}}$ |
+| $T_s$ | 0.30 s | 제동 시작 후 정지까지 걸리는 시간 |
+| $C$ | 0.20 m | 침입 거리 — 신체 부위가 감지되기까지 영역 안으로 들어가는 거리 |
+| $Z_d$ | 0.10 m | 존재 감지 장치가 재는 작업자 위치 불확실성 |
+| $Z_r$ | 0.05 m | 로봇 위치 불확실성 |
+
+도구가 중요한 이유는 위험원이 베이스가 아니라 쓸고 지나가는 부피이기 때문이다. 팔을 뻗으면 위험은 베이스에서 $R_h = L_1 + L_2 + L_t = 2.25$ m까지 닿고, 모든 이격 거리는 *그* 경계에서부터 잰다.
+
+*범위: 이 페이지는 자율성·신뢰·안전 주장을 읽는 법과, 이름을 댄 기계 하나에 안전 기능 하나 — 속도·이격 감시 — 를 치수화하는 법을 가르친다. 기계를 인증하는 법(그것은 §6이 이름을 댄 표준 문서 자체다), 인간 대상 연구를 수행하는 법([[06-research-practice/psychophysics-human-measurement|8. 심리물리]]와 [[06-research-practice/experimental-design-reproducibility|실험 설계]]), 이격 기능에 입력을 넣는 인지가 어떻게 동작하는지([[04-robotics/video-action-understanding|20. 비디오·행동 이해]], [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: 셀의 평면도와 그 아래의 시계
+
+한 번 그려 두면 과제가 같은 그림을 다른 숫자로 다시 요구한다.
+
+**위 — 평면도.** P2의 베이스가 원점. 링크 1이 $+x$로 $(1,0)$까지, 링크 2가 위로 말단 $(1,1)$까지, 그 너머로 도구. 베이스를 중심으로 반지름 $R_h = 2.25$ m의 점선 원: 위험 경계. 그 밖에 $R_h + S_p$의 실선 원: 감지 영역 경계. 영역 경계에서 팔 쪽으로 곧게 들어오는 접근선 하나를 긋고, 그 위에 $v_h$로 걷는 사람을 놓는다. 그 선 위에 여섯 기여를, 신체가 실제로 쓰는 순서대로 이어 붙여 표시한다: 먼저 $C$(감지되기 전에 영역 안으로 들어간 거리), 다음 $S_h$(로봇이 반응하고 멈추는 동안 사람이 이동한 거리), 다음 $S_r$과 $S_s$(위험 경계에서 바깥쪽으로 잰 로봇 자신의 이동 거리와 정지 거리), 그리고 양 끝에 두 불확실성 여유 $Z_d$, $Z_r$. 선분은 반드시 축척에 맞게 그려야 한다 — 그것이 이 그림의 전부다.
+
+**아래 — 같은 가로축 위의 시계.** 신체가 영역 경계를 넘는 순간이 $t = 0$. $T_{\text{sens}} = 0.06$ s에 추적기가 사람을 처음 보고하는 눈금, $T_r = 0.10$ s에 제동 명령이 제어기를 떠나는 눈금, $T_r + T_s = 0.40$ s에 운동이 멈춘 눈금. 시계 위에는 0.40초 내내 계속 걷고 있는 사람을 막대 하나로 그린다. 로봇이 무엇을 하든 그 구간은 짧아지지 않기 때문이다.
+
+### 대상으로 한 번 끝까지: 보호 이격 거리를 항별로
+
+> [!info] 정의 · Definition — 보호 이격 거리 $S_p$
+> **어떤 종류의 것인가.** *미터 단위의 거리*다. 로봇이 계속 움직여도 되는, 사람과 로봇 위험 경계 사이의 최소 간격이다. 속도가 바뀌면 계속 다시 계산된다 — 울타리 반지름도 아니고 고정된 트리거 문턱값도 아니다.
+>
+> **정의 조건.** 셋이고, 하나라도 빠지면 숫자가 무의미해진다. (i) 누가 고르는 문턱값이 아니라 **여섯 기여의 합**이다. (ii) 각 기여는 대표하는 양의 **과대평가**여야 한다. 합이 상한이고, 최선의 경우로 쌓은 상한은 아무것도 한정하지 못하기 때문이다. (iii) **위험 경계**에서 잰다 — 베이스도, 도구 끝도, 센서도 아니고 팔과 도구가 쓸고 지나가는 부피의 경계다.
+>
+> $$S_p = \underbrace{v_h\,(T_r + T_s)}_{S_h} + \underbrace{v_r\,T_r}_{S_r} + \underbrace{\tfrac{1}{2}\,v_r\,T_s}_{S_s} + C + Z_d + Z_r$$
+>
+> $S_h$는 반응과 정지를 합친 구간 내내 작업자가 접근 속도 $v_h$로 걷는 거리, $S_r$은 로봇이 반응 시간 $T_r$ 동안 $v_r$로 이동하는 거리, $S_s$는 $T_s$ 동안의 정지 거리로 일정 감속 가정에서 $\tfrac{1}{2}v_r T_s$, $C$는 침입 거리, $Z_d$와 $Z_r$은 작업자 측정과 로봇의 위치 불확실성이다. 검출 지연은 자기 기호로 나타나지 않는다 — $T_r$ 안에 들어 있고, 그래서 잃어버리기 쉽다.
+>
+> **예.** 위의 셀: 1.24 m, 아래에서 항별로 유도한다.
+>
+> **비-예.** "누가 1 m 안에 들어오면 스캐너가 로봇을 세운다"는 $S_p$가 아니다. 고정 트리거 거리에는 $T_r$도, $T_s$도, $v_h$도 들어 있지 않아서 로봇이 빨라지거나 검출기가 느려져도 변하지 않는다. "영역을 로봇 베이스에서 1.24 m에 설정했다"도 아니다 — 같은 숫자를 잘못된 원점에서 재면, 영역이 사람을 알아채기도 전에 그 사람이 위험 경계 *안으로* $2.25 - 1.24 = 1.01$ m 들어와 있게 된다.
+>
+> **왜 중요한가.** 비용이 *바닥 면적의 미터 수*로 나오는 유일한 안전 기능이다. 그래서 더 빠른 인지에 대한 주장이든 로봇을 늦추자는 주장이든, 검산할 수 있는 양으로 바뀐다.
+
+이제 셀이다. 고정된 숫자를 항별로, 미터 단위로 대입하면
+
+$$S_h = 1.6\,(0.10 + 0.30) = 0.64,\quad S_r = 1.0 \times 0.10 = 0.10,\quad S_s = \tfrac{1}{2}(1.0)(0.30) = 0.15$$
+
+이고, 그대로인 세 불확실성 항 $C = 0.20$, $Z_d = 0.10$, $Z_r = 0.05$를 더하므로
+
+$$S_p = 0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = 1.24\ \mathrm{m}$$
+
+**어느 항이 지배하는가.** 1.24 m에 대한 비중으로: $S_h$ 51.6%, $C$ 16.1%, $S_s$ 12.1%, $S_r$ 8.1%, $Z_d$ 8.1%, $Z_r$ 4.0%. 예산의 절반 이상이 사람이 걷는 몫이고, 로봇 자신의 두 운동 항을 합쳐도 20.2%다. 이 순위가 결과이고, 합은 그 총계일 뿐이다.
+
+**셀이 치르는 비용.** 감지 영역은 P2 베이스에서 $R_h + S_p = 2.25 + 1.24 = 3.49$ m부터 시작해야 하므로, 감시해야 하는 바닥은 $\pi (3.49)^2 = 38.3\ \mathrm{m}^2$다 — 자기 도달 범위가 2.25 m인 팔 하나를 위해서.
+
+**세 민감도, 그리고 결정을 내리는 하나.** 나머지를 고정하고 정의를 미분하면
+
+$$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \frac{\partial S_p}{\partial v_r} = T_r + \tfrac{1}{2}T_s = 0.25\ \mathrm{s}, \qquad \frac{\partial S_p}{\partial v_h} = T_r + T_s = 0.40\ \mathrm{s}$$
+
+반응 시간은 두 번 청구된다 — 한 번은 $S_h$를 통해 사람의 접근에, 한 번은 $S_r$을 통해 로봇 자신의 이동에. 그래서 $v_h + v_r$을 달고 있고 로봇 속도는 그렇지 않다. 숫자를 넣어 보면:
+
+- 검출기가 0.1초 느려지면 $2.6 \times 0.1 = 0.26$ m가 들고, 영역은 3.75 m로 밀려나며 감시 바닥은 $\pi(3.75)^2 = 44.2\ \mathrm{m}^2$, 약 5.9 m² 늘어난다.
+- 로봇을 1.0에서 0.5 m/s로 늦추면 $0.25 \times 0.5 = 0.125$ m를 아낀다. $S_p$는 1.115 m로 떨어진다.
+- 로봇을 아예 세워도, $v_r = 0$에서 $S_p = 0.99$ m가 남는다. 즉 로봇 속도로 쓸 수 있는 예산 **전부**가 $1.24 - 0.99 = 0.25$ m다.
+
+마지막 줄이 부등식 하나로 요약한 이 강의다: $0.25 < 0.26$. 0.1초짜리 검출 성능 후퇴는 로봇을 늦춰서 *전혀* 메울 수 없다. 0.26 m를 되사려면 $0.26 / 0.25 = 1.04$ m/s의 속도가 필요한데 로봇에게는 1.0 m/s밖에 없기 때문이다. 속도 스케일링과 감지 지연은 서로 바꿔 쓸 수 있는 손잡이가 아니고, §6은 논문들이 그 둘을 말로 맞바꾸는 것을 보게 되는 곳이다.
 
 ### 1. 자율성은 스펙트럼이다
 
@@ -688,16 +833,18 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 
 ### 과제 · Problem set
 
-Tier C. 주장 읽기. 관통 과제: 사람 옆에서 [[02-foundations/lab-plants|0.6]]의 **P2**가 패널을 누른다.
+Tier B. 위의 **P2** 안전 셀 위에서 손으로 유도한다. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 문제가 바꾸는 숫자 말고는 셀이 그대로이고, $v_h = 1.6$ m/s, $T_s = 0.30$ s, $C = 0.20$ m, $Z_d = 0.10$ m, $Z_r = 0.05$ m는 끝까지 고정이다.
 
-1. **주장.** “20회 시행에서 충돌 0”이 안전의 증거가 아니라는 주장은 어느 숫자인가?
-2. **반증.** P2 패널 과제를 “완전 자율”이라고 부르는 주장을 깨는 증거는?
-3. **과제.** 도구를 패널에 안착시키는 성공률 95%: 팔 옆의 사람에 대한 안전 주장이 아닌 이유는?
+셀에 구매 결정이 하나 내려왔다. 새 사람 추적기는 더 싸고 0.1초 느려서 $T_{\text{sens}}$가 0.06초에서 0.16초로, $T_r$은 0.20초가 된다. 이를 보상하려고 통합 담당자가 로봇을 $v_r = 1.0$에서 $v_r = 0.6$ m/s로 늦추자고 제안한다.
+
+1. **그리기.** 과제가 그릴 그림을 새 숫자로 다시 그려라: 위험 원, 감지 영역 원, 접근선 위 여섯 선분을 축척에 맞게 그린 평면도와, $T_{\text{sens}}$·$T_r$·$T_r + T_s$에 눈금을 둔 아래 시계. 길이가 바뀌지 **않은** 세 선분을 표시하고, 시계 위에는 사람은 걷고 있지만 로봇 쪽에서는 아직 아무 운동도 시작되지 않은 구간을 표시하라.
+2. **유도.** 새 숫자에서 $S_h$, $S_r$, $S_s$, $S_p$를 계산하고, 감지 영역이 이제 어느 반지름에서 시작해야 하는지 구하라. 그다음 세 민감도로부터, $T_r = 0.20$ s에서 로봇 속도가 살 수 있는 $S_p$ 감소의 최대치를 말하고, 통합 담당자의 보상이 성립하는지 판정하라.
+3. **해석.** 담당자의 보고서에는 "속도 스케일링으로 필요한 이격을 줄여 기존 셀을 유지했다"고 적혀 있다. 이후 같은 시스템에 대한 논문이 속도 스케일링으로 셀을 0.5 m 줄였다고 주장한다. 민감도만 써서, 그 논문이 실제로 바꾼 양이 무엇인지 말하고, 보고된 $S_p$ 하나로는 여전히 알 수 없는 셀의 두 가지를 대라.
 
 > [!tip]- 정답 · Solutions
-> 1. 95% 상한 $\approx 14\%$(rule of three, 스스로 점검 1) — 그 비율이 곧 주장이다.
-> 2. 밝힌 인간 역할, 개입/리셋, 운용 도메인, 폴백(§1 표). 그중 하나라도 있으면 “완전 자율”은 거짓이고, 없으면 정보가 빠진 것이지 증명이 아니다.
-> 3. 패널 성공은 권한, override, 힘 한계, 노출을 보고하지 않는다. P3 벽 위 뻣뻣한 PD는 성공한 안착에서도 위험한 $F_n$을 만들 수 있다.
+> 1. 그림에서 $C$, $Z_d$, $Z_r$은 이전 길이 그대로여야 한다. 셋 다 안에 속도도 시간도 없으므로 바뀌지 않은 것이 이 셋이다. $S_h$는 눈에 띄게 길어지고 $S_s$는 눈에 띄게 짧아져야 한다. 시계에서 $t = 0$부터 $t = 0.20$ s까지가 로봇이 아직 제동을 시작하지 않은 채 사람이 걷는 구간이고, 그중 앞의 0.16초는 검출기만의 몫이다.
+> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m, $S_r = 0.6 \times 0.20 = 0.12$ m, $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m, $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. 영역은 $2.25 + 1.36 = 3.61$ m에서 시작해야 한다. 보상은 실패하고, 보이는 것보다 더 크게 실패한다. 로봇이 속도의 40%를 내놓았는데도 $S_p$는 오히려 0.12 m **늘었다**. $T_r = 0.20$ s에서 민감도는 $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s이므로 로봇을 $v_r = 0$까지 세워도 $0.35 \times 0.6 = 0.21$ m밖에 못 산다 — 느려진 검출기가 물린 0.26 m보다 적다. 느려진 검출기는 어떤 값을 치러도 속도로 살 수 없다.
+> 3. $T_r$(더 빠른 검출기, 또는 더 짧은 제동 명령 경로)이나 $C$(신체를 더 일찍 감지하는 감지 영역, 곧 옷만 갈아입은 같은 주장)를 바꿨어야 한다. 속도로는 불가능하다. 속도 예산 전체가 $T_r = 0.10$ s에서 $0.25$ m, $T_r = 0.20$ s에서 $0.21$ m로 둘 다 0.5 m에 못 미친다. $S_p$ 하나로 여전히 알 수 없는 것: 셀이 실제로 멈추는지 — 검증된 정지 없이는 이격 기능이 아무 값도 하지 않으며, 그것이 §6의 monitored standstill과 비상 정지 장치다 — 그리고 그 변경이 사이클 타임으로 얼마를 치렀는지. 후자가 이격 결과를 정직하게 보고하는 방법이다.
 
 ### 출처
 
