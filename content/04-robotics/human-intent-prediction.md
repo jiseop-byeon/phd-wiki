@@ -2,6 +2,7 @@
 title: 23. Human Intent & Trajectory Prediction
 tags: [robotics, hri, prediction, human, construction]
 study-depth: Working
+wiki-support: Working
 depth-goal: "Separate intent from trajectory, read the early-versus-accurate trade-off correctly, and evaluate a prediction claim including its calibration and its class imbalance."
 mastery-when: "Raise to Mastery when a predictor or its uncertainty is a contribution of the thesis rather than a component."
 ---
@@ -20,7 +21,205 @@ A robot sharing space with a person acts on a guess about what the person will d
 > [[02-foundations/probability|Probability]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] First pass · 처음이라면
-> Read §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material.
+> Read the running object and the five derivations on it, then §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material.
+
+### Running object · 이 페이지의 대상
+
+Prediction is evaluated on a log, not on a plant, so no object from [[02-foundations/lab-plants|0.6 Lab Plants]] fits. This page freezes its own log — **I20**, one afternoon of a crossing-intent system on a mobile base — and never changes its numbers afterwards. It has three parts, one for each thing the page has to evaluate.
+
+**Part 1 — twenty judgements.** Each case $i$ is a probability $\hat p_i$ that a worker will enter the robot's path within the next 2 s, and the outcome $y_i \in \{0,1\}$ that followed. The cases are listed in increasing $\hat p$; the index is a label, not a time.
+
+| case | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| $\hat p_i$ | 0.05 | 0.10 | 0.10 | 0.15 | 0.20 | 0.25 | 0.25 | 0.30 | 0.45 | 0.50 |
+| $y_i$ | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 |
+
+| case | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| $\hat p_i$ | 0.50 | 0.55 | 0.65 | 0.70 | 0.70 | 0.75 | 0.85 | 0.90 | 0.90 | 0.95 |
+| $y_i$ | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 1 |
+
+Nine of the twenty events occurred, so the base rate on this log is $\bar p = 9/20 = 0.45$. That is far higher than a real deployment's few percent — the log is the subset the system flagged as worth judging, which is exactly the population a calibration claim is about, and §5 handles what happens when you put it back on the full frame stream.
+
+**Part 2 — one trajectory.** Case 20 also carries a path, sampled at 1 Hz on the ground plane, in metres. The three observed positions are $(-2.00, 0)$, $(-1.00, 0)$, $(0.00, 0)$; the three true future positions and the model's three predicted ones are:
+
+| step | $t+1$ | $t+2$ | $t+3$ |
+|---|---|---|---|
+| truth $x_k$ | $(1.00,\ 0.00)$ | $(2.00,\ 0.00)$ | $(3.00,\ 0.00)$ |
+| model $\hat x_k$ | $(1.00,\ 0.30)$ | $(2.30,\ 0.40)$ | $(3.60,\ 0.80)$ |
+
+**Part 3 — the early-versus-accurate curve, and the platform it has to serve.** Recall at a fixed false-positive rate $\alpha = 0.05$, as a function of time to event:
+
+| $\Delta$ (s) | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 |
+|---|---:|---:|---:|---:|---:|
+| $\mathrm{Recall}_{\mathrm{FPR}=0.05}(\Delta)$ | 0.92 | 0.84 | 0.72 | 0.60 | 0.48 |
+
+The platform is a mobile base at $v = 1.5\ \mathrm{m/s}$ with a maximum deceleration $a = 1.5\ \mathrm{m/s^2}$ and a perception-to-brake latency $t_{\mathrm{lat}} = 0.45$ s, and the safety case requires recall $\ge 0.75$ at that same $\alpha$.
+
+### Homework diagram · 과제가 그릴 그림
+
+Two panels, drawn once. The problem set asks for the same two with a changed outcome and a changed platform.
+
+1. **The reliability diagram.** A unit square, $\hat p$ across and observed frequency up, with the $45^\circ$ diagonal drawn as the calibrated line. Divide the horizontal axis into the five equal-width bins, and for each bin plot one point at (bin mean $\hat p$, bin observed frequency), with a bar above the axis showing how many of the twenty cases fell in it. Draw the vertical gap from each point to the diagonal and label it — the weighted average of those five gaps is the whole of §4's scalar.
+2. **The time-to-event panel.** $\Delta$ across, recall up, the five points of Part 3 joined. Draw the horizontal requirement line at $0.75$, drop a vertical from where the curve crosses it and label it $\Delta^{*}$, then draw a second vertical at the required lead $t_{\mathrm{stop}} + t_{\mathrm{lat}}$. The signed distance between those two verticals is the answer, and its sign is the deployment decision.
+
+Beside panel 2, draw the trajectory of Part 2 from above: the three observed positions, the three true future ones, the three predicted ones, and the three displacement segments that ADE averages, with the last one thickened because it alone is FDE.
+
+### Worked on I20 · I20로 한 번 끝까지
+
+**1. What calibration is, before any score.**
+
+> [!info] Definition — calibration
+> A **property of a probabilistic forecaster**, not a score and not accuracy: the forecaster is
+> calibrated when its stated probability equals the conditional frequency of the event among the
+> cases where it stated that probability. Four conditions make it precise. It is conditional on
+> the **forecast value**, not marginal. It must hold at **every** value in the range, not on
+> average. It is a statement about a **distribution of cases**, so a single case is neither
+> calibrated nor not. And it constrains only honesty, not **sharpness**: how far the forecasts
+> move away from the base rate is a separate virtue.
+> $$\mathbb{P}\big(y = 1 \mid \hat p = p\big) = p \quad \text{for every } p \in [0,1]$$
+> where $\hat p$ is the forecast, $y$ the binary outcome, and the probability is over the case
+> distribution the forecaster is deployed on.
+> **Example.** In I20 the four cases near $0.50$ (cases 9–12) average $\hat p = 0.50$ and the
+> event occurred in two of them, a frequency of $0.50$. Calibrated, in that bin.
+> **Non-example 1 — accuracy.** Thresholding I20 at $0.5$ classifies 14 of 20 correctly, an
+> accuracy of $70\%$, and that number would not change if every $\hat p$ were replaced by $0.99$
+> or $0.51$. Accuracy cannot see confidence.
+> **Non-example 2 — AUC.** AUC depends only on the **ranking**, so any strictly increasing
+> transform of the forecasts leaves it untouched. Square every $\hat p_i$ in I20: AUC stays at
+> $0.7172$ to the last digit while the five-bin ECE below moves from $0.100$ to $0.177$ and the
+> Brier score from $0.226$ to $0.249$. A paper reporting only AUC has reported nothing about
+> calibration.
+> **Non-example 3 — the constant forecaster.** Saying $0.45$ on all twenty cases is *perfectly*
+> calibrated and useless: zero sharpness, $\mathrm{AUC} = 0.5$. Calibration alone is never the claim.
+> **Why it matters.** Downstream is a decision rule that weighs a probability against a cost. If
+> $0.7$ does not mean $0.7$, the product $\text{cost} \times \text{probability}$ is not a number
+> anyone can act on, and §5's precision arithmetic silently becomes fiction.
+
+**2. The Brier score on I20.**
+
+> [!info] Definition — Brier score
+> A **proper scoring rule** for binary forecasts: the mean squared error between the stated
+> probability and the realised outcome, a dimensionless number in $[0,1]$, lower better. Three
+> conditions: the outcome is coded $0/1$; the forecast is a probability, not a logit or a score;
+> and "proper" means the expected score is uniquely minimised by reporting your honest belief,
+> so no forecaster gains by shading toward confidence or toward the middle.
+> $$\mathrm{BS} = \frac{1}{N}\sum_{i=1}^{N}\big(\hat p_i - y_i\big)^2$$
+> where $N$ is the number of cases, $\hat p_i$ the $i$-th forecast and $y_i \in \{0,1\}$ its
+> outcome.
+> **Example.** I20 scores $0.2258$, worked below.
+> **Non-example.** It is not $1 - \text{accuracy}$, which is $0.30$ here. Nor is a Brier of
+> $0.2258$ "good" on its own: the constant base-rate forecaster scores $\bar p(1-\bar p) = 0.2475$
+> on the same log, so all the model's ranking and all its confidence together buy $0.0218$.
+> **Why it matters.** It is the one number that a forecaster cannot improve by lying, so it is the
+> reference against which the next definition's blind spot becomes visible.
+
+Sum the twenty squared residuals. Grouping them the way the bins will group them keeps the arithmetic checkable:
+
+| cases | squared residuals | subtotal |
+|---|---|---:|
+| 1–4 | $0.05^2 + 0.10^2 + 0.10^2 + 0.85^2$ | 0.7450 |
+| 5–8 | $0.20^2 + 0.25^2 + 0.25^2 + 0.70^2$ | 0.6550 |
+| 9–12 | $0.45^2 + 0.50^2 + 0.50^2 + 0.55^2$ | 1.0050 |
+| 13–16 | $0.35^2 + 0.70^2 + 0.30^2 + 0.75^2$ | 1.2650 |
+| 17–20 | $0.15^2 + 0.10^2 + 0.90^2 + 0.05^2$ | 0.8450 |
+| | **total** | **4.5150** |
+
+$$\mathrm{BS} = \frac{4.5150}{20} = 0.2258$$
+
+Now the reference, because a squared error means nothing until something else has been squared too. The constant forecaster that always says the base rate scores $\bar p(1-\bar p) = 0.45 \times 0.55 = 0.2475$, so the **Brier skill score** is
+
+$$\mathrm{BSS} = 1 - \frac{\mathrm{BS}}{\bar p(1-\bar p)} = 1 - \frac{0.2258}{0.2475} = 0.088$$
+
+**Eight point eight percent.** The model beats "say the base rate every time" by that much, and one case is responsible for most of what is left: case 19 said $0.90$ and the event did not happen, contributing $0.81$ of the $4.515$ total — **18% of the whole score from one judgement out of twenty.** That fragility is not a flaw in the object; it is what $N = 20$ means, and it is why calibration claims need calibration sets of hundreds.
+
+**3. The five-bin ECE, and the choice that is not the model's.**
+
+> [!info] Definition — expected calibration error
+> A **scalar summary of the reliability diagram**: the occupancy-weighted mean absolute gap
+> between observed frequency and mean forecast, dimensionless, in $[0,1]$. It is an *estimator*,
+> and four conditions have to be fixed before it has a value: a **binning scheme** — how many
+> bins, and equal-width or equal-mass; the gap taken between each bin's **observed frequency**
+> and that bin's **mean forecast** (not the bin's midpoint); the **absolute value applied after
+> the bin average**, so opposite-signed errors inside one bin cancel before they are ever seen;
+> and bins **weighted by occupancy**, so a bin holding one case counts once.
+> $$\mathrm{ECE} = \sum_{b=1}^{B} \frac{n_b}{N}\,\Big| \mathrm{freq}(b) - \overline{\hat p}(b) \Big|$$
+> where $B$ is the number of bins, $n_b$ the count in bin $b$, $N$ the total, $\mathrm{freq}(b)$
+> the observed event frequency in that bin and $\overline{\hat p}(b)$ the mean forecast in it.
+> **Example.** I20 with five equal-width bins: $0.100$, worked below.
+> **Non-example — ECE is not a property of the model.** The same twenty forecasts and the same
+> twenty outcomes give $0.055$ with two bins and $0.270$ with ten. Coarse bins average
+> opposite-signed gaps into nothing; fine bins leave single cases defining a bin, where the only
+> possible frequencies are $0$ and $1$. **An ECE quoted without its binning is unreadable**, and
+> the direction of the bias is not even fixed in advance. A second non-example: $\mathrm{ECE} = 0$
+> does not mean useful. The constant $0.45$ forecaster has $\mathrm{ECE} = 0$ exactly, because all
+> twenty cases land in one bin whose mean and frequency are both $0.45$.
+> **Why it matters.** It is the scalar every "uncertainty-aware" paper reports, and the binning is
+> the line those papers most often leave out.
+
+Bin the twenty cases into five equal-width bins. Each bin happens to hold four cases, so every weight $n_b/N$ is $4/20 = 0.2$:
+
+| bin | cases | $n_b$ | mean $\hat p$ | observed freq | $\lvert \text{gap} \rvert$ |
+|---|---|---:|---:|---:|---:|
+| $[0.0, 0.2)$ | 1–4 | 4 | 0.10 | 1/4 = 0.25 | 0.15 |
+| $[0.2, 0.4)$ | 5–8 | 4 | 0.25 | 1/4 = 0.25 | 0.00 |
+| $[0.4, 0.6)$ | 9–12 | 4 | 0.50 | 2/4 = 0.50 | 0.00 |
+| $[0.6, 0.8)$ | 13–16 | 4 | 0.70 | 2/4 = 0.50 | 0.20 |
+| $[0.8, 1.0]$ | 17–20 | 4 | 0.90 | 3/4 = 0.75 | 0.15 |
+
+$$\mathrm{ECE} = 0.2\,\big(0.15 + 0.00 + 0.00 + 0.20 + 0.15\big) = 0.2 \times 0.50 = 0.100$$
+
+Read the sign column, not just the total, because the signs are the diagnosis. The bottom bin's frequency exceeds its forecast and the top two bins' frequencies fall short of theirs: the model is pushed toward both extremes relative to what happens, which is textbook **overconfidence** and exactly what temperature scaling in §4's table is for. And notice what the total conceals: a model that said $0.70$ and was right half the time is reported by the same $0.100$ as a model with three smaller errors spread differently.
+
+**4. ADE and FDE on Part 2.**
+
+> [!info] Definition — ADE and FDE
+> Two **lengths in metres**, both built from the Euclidean displacement between a predicted and a
+> true position at matching timestamps. **ADE** (average displacement error) averages that
+> displacement over the whole forecast horizon; **FDE** (final displacement error) is the same
+> displacement at the last step only. Conditions: a stated observation window and a stated horizon
+> $H$; **one** predicted trajectory, not a set — best-of-$k$ over samples is $\mathrm{minADE}_k$
+> and a different object (§6); positions compared **step by step in the same frame** at the same
+> sampling rate.
+> $$\mathrm{ADE} = \frac{1}{H}\sum_{k=1}^{H}\big\lVert \hat x_k - x_k \big\rVert_2, \qquad \mathrm{FDE} = \big\lVert \hat x_H - x_H \big\rVert_2$$
+> where $x_k$ is the true position at step $k$, $\hat x_k$ the predicted one, and $H$ the horizon
+> in steps.
+> **Example.** Part 2 gives $\mathrm{ADE} = 0.60$ m and $\mathrm{FDE} = 1.00$ m.
+> **Non-example.** ADE is not the distance between the two endpoints — that is FDE. FDE is not the
+> worst error over the horizon either; the two coincide here only because this error happens to
+> grow monotonically, and a model that overshoots early and recovers has its maximum in the
+> middle. Neither is a distance measured *along* a path.
+> **Why it matters.** Their ratio is the shape of the error over the horizon — $1.00/0.60 = 1.67$
+> here — which no single number reports, and a planner's constraint lives at the horizon, not at
+> its average.
+
+The per-step displacements come out of three right triangles, so the arithmetic is exact:
+
+- $t+1$: $\hat x_1 - x_1 = (0.00,\ 0.30)$, $\lVert\cdot\rVert = 0.30$ m;
+- $t+2$: $(0.30,\ 0.40)$, $\lVert\cdot\rVert = \sqrt{0.09 + 0.16} = 0.50$ m;
+- $t+3$: $(0.60,\ 0.80)$, $\lVert\cdot\rVert = \sqrt{0.36 + 0.64} = 1.00$ m.
+
+$$\mathrm{ADE} = \frac{0.30 + 0.50 + 1.00}{3} = \frac{1.80}{3} = 0.60\ \mathrm{m}, \qquad \mathrm{FDE} = 1.00\ \mathrm{m}$$
+
+Now run the baseline the whole Schöller critique in Sources is about. The three observed positions are $1.00$ m apart on a straight line at 1 Hz, so a **constant-velocity** extrapolation is $x_t + k\,(1.00, 0)$, which is $(1,0), (2,0), (3,0)$ — the truth, exactly. On this walk, $\mathrm{ADE}_{\mathrm{CV}} = \mathrm{FDE}_{\mathrm{CV}} = 0$.
+
+The object is built that way on purpose, and the point is not that constant velocity is always exact. The point is that **the published $\mathrm{ADE} = 0.60$ m does not tell you it was beaten by arithmetic**, and no benchmark table is obliged to. The problem set turns the pedestrian and the ranking reverses; that reversal is the reading, not either number.
+
+**5. The usable horizon $\Delta^{*}$ against what the platform needs.** Part 3's requirement is recall $\ge 0.75$. The curve is $0.84$ at $\Delta = 1.0$ s and $0.72$ at $\Delta = 1.5$ s, so it crosses between them; interpolating linearly, the fraction of the interval used is $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$, so
+
+$$\Delta^{*} = 1.0 + 0.75 \times (1.5 - 1.0) = 1.375\ \mathrm{s}$$
+
+The platform's requirement is a separate calculation with no model in it. Braking from $v$ at constant $a$ takes $t_{\mathrm{stop}} = v/a$ and covers $v^2/2a$, so
+
+$$t_{\mathrm{stop}} = \frac{1.5}{1.5} = 1.00\ \mathrm{s}, \qquad d_{\mathrm{stop}} = \frac{1.5^2}{2 \times 1.5} = 0.75\ \mathrm{m}, \qquad \Delta_{\mathrm{req}} = t_{\mathrm{stop}} + t_{\mathrm{lat}} = 1.00 + 0.45 = 1.45\ \mathrm{s}$$
+
+$\Delta^{*} = 1.375\ \mathrm{s} < \Delta_{\mathrm{req}} = 1.45\ \mathrm{s}$. **The system misses by 75 milliseconds**, and nothing in a headline AUC, a Brier score or an ECE would have said so — those three numbers are all computed with $\Delta$ averaged away.
+
+The useful move is to ask what the shortfall costs, because it is the platform side that is cheap to change. Solving $v/a + t_{\mathrm{lat}} \le \Delta^{*}$ for $v$:
+
+$$v \le a\big(\Delta^{*} - t_{\mathrm{lat}}\big) = 1.5 \times (1.375 - 0.45) = 1.39\ \mathrm{m/s}$$
+
+so capping the base at $1.39\ \mathrm{m/s}$ — a $7\%$ speed reduction — makes this exact predictor sufficient. Shaving $75$ ms off $t_{\mathrm{lat}}$ does the same. Either is a smaller intervention than a better model, and neither is visible from the benchmark table. **A predictor is not slow or fast; it is slow or fast relative to a deceleration and a latency that belong to the robot.**
 
 ### 1. Two different problems
 
@@ -32,7 +231,7 @@ A robot sharing space with a person acts on a guess about what the person will d
 | Failure mode | confident wrong class | plausible but wrong mode |
 | What it feeds | a discrete decision (stop, warn, yield) | a continuous plan (cost map, MPC constraint) |
 
-In the right-hand column, ADE (average displacement error) is the Euclidean distance between predicted and true positions averaged over the forecast horizon, FDE (final displacement error) is that distance at the last step only, and minADE over $k$ samples keeps the best of $k$ sampled futures (§6).
+In the right-hand column, ADE (average displacement error) is the Euclidean distance between predicted and true positions averaged over the forecast horizon, FDE (final displacement error) is that distance at the last step only — both are defined in full, with their conditions and non-examples, on I20 above — and minADE over $k$ samples keeps the best of $k$ sampled futures (§6).
 
 They are often solved by the same network and reported in the same paper, but they are not the same claim. **"We predict pedestrian intent" and "we forecast pedestrian trajectories" answer different questions and fail differently.** A trajectory model with low ADE can still be useless if it never places mass on the crossing mode; an intent classifier can be right about crossing and useless for planning because it says nothing about *where*.
 
@@ -118,7 +317,7 @@ Among all cases where the model said 0.7, did the event occur 70% of the time? D
 | Temperature scaling | recalibrated probabilities from a held-out set | one parameter |
 | **Conformal prediction** | a set/interval with a **distribution-free coverage guarantee** under exchangeability | a held-out calibration set |
 
-ECE (expected calibration error) is the scalar behind the diagram: bin the predictions by $\hat p$, take each bin's gap between the observed event frequency and its mean $\hat p$, and average those gaps weighted by how many cases fall in each bin. Temperature scaling divides the logits by one scalar $T$ fitted on held-out data. A larger $T$ flattens the softmax ([[02-foundations/calculus-backprop|2. Calculus & Backprop §6]]), which pulls overconfident probabilities toward uniform without changing which class ranks first: logits $(2, 0)$ give 0.88 at $T = 1$ and 0.73 at $T = 2$.
+ECE (expected calibration error) is the scalar behind the diagram: bin the predictions by $\hat p$, take each bin's gap between the observed event frequency and its mean $\hat p$, and average those gaps weighted by how many cases fall in each bin. It is worked on I20 above, where the same twenty forecasts give $0.100$ with five bins and $0.270$ with ten, so **ask a paper for its binning before you compare two ECEs.** The sign pattern of I20's bins is the overconfidence this row diagnoses. Temperature scaling divides the logits by one scalar $T$ fitted on held-out data. A larger $T$ flattens the softmax ([[02-foundations/calculus-backprop|2. Calculus & Backprop §6]]), which pulls overconfident probabilities toward uniform without changing which class ranks first: logits $(2, 0)$ give 0.88 at $T = 1$ and 0.73 at $T = 2$.
 
 Conformal prediction deserves emphasis because the mathematics is elementary — exchangeability (the calibration cases and the new case are equally likely to arrive in any order; i.i.d. draws satisfy it, but it is a weaker assumption) plus a quantile — and its set-valued output can support a defer policy. The usual guarantee is **marginal coverage over exchangeable cases**, not a 90% probability for this individual scene or every subgroup. A set containing both `crossing` and `not crossing` still needs an explicit action rule, such as slow down or ask for help. See [[04-robotics/hri-safety|11. HRI & Safety]].
 
@@ -209,6 +408,8 @@ The last one deserves the same treatment as scene bias in [[04-robotics/video-ac
 You should be able to:
 
 - state the difference between intent classification and trajectory forecasting and which metric belongs to each;
+- compute a Brier score, a Brier skill score and a binned ECE from a log you are handed, and say what the binning did to the last one;
+- compute ADE and FDE for a predicted path and for a constant-velocity baseline on the same path;
 - compute a usable horizon $\Delta^*$ and compare it against a required lead time;
 - explain calibration, name two ways to fix it, and say why conformal prediction fits safety decisions;
 - explain why accuracy is the wrong metric under a low base rate;
@@ -229,20 +430,22 @@ You should be able to:
 > [!tip]- Answers
 > 1. Base rate — a constant "no" scores similarly. Report AUC for ranking and precision–recall plus the chosen deployed operating point as functions of time-to-event. 2. B meets this stated requirement; A does not provide enough lead at that operating point. AUC alone does not choose the threshold, encode braking cost, or establish calibration. 3. minADE rewards one lucky sample among twenty; the planner needs a probability distribution over futures, which the metric does not require the model to provide. 4. Mask or remove the pedestrian and re-evaluate; near-equal performance means the model learned scene priors. 5. The worker adapts to the deployed robot, so deployment changes the data-generating process — a feedback loop absent from passive road recordings.
 
-**Worked: the three readings the homework asks.** 96% accuracy on a 94% “no” base rate is a constant-no score. minADE$_{20}=0.18\,\mathrm{m}$ does not give a calibrated set for a stop. Week-four worksite labels are not JAAD: coworkers adapted to the robot.
+**Worked: three claim-readings this page licenses.** 96% accuracy on a 94% “no” base rate is a constant-no score. minADE$_{20}=0.18\,\mathrm{m}$ does not give a calibrated set for a stop. Week-four worksite labels are not JAAD: coworkers adapted to the robot.
 
 ### Problem set · 과제
 
-Tier C. Using this page only.
+Tier B. Using **I20** from the running object above, and this page only. One outcome flips, the pedestrian turns, and the platform changes; the twenty forecasts do not.
 
-1. A crossing model reports 96% accuracy on a dataset whose base rate of "no" is 94%. What did the number fail to measure, and what two plots replace it?
-2. minADE$_{20} = 0.18\,\mathrm{m}$. The planner needs a distribution over futures for a safety stop. Why can this win still be unusable, and which scoring rule (calibration / conformal) fits the stop?
-3. A worksite model is trained on week one and evaluated on week four, after workers have learned the robot's path. Why is this not the JAAD/PIE problem, and what happens to the label "will yield"?
+1. **Draw.** Redraw both homework panels for the changed object. Panel 1: the reliability diagram after case 19 (which forecast $0.90$) turns out to have been a $y = 1$ after all — show which single point moves and in which direction, and mark the diagonal it moves toward. Panel 2: the same time-to-event curve against a faster platform, $v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$ s, with both verticals drawn and the gap between them signed.
+2. **Derive.** (a) With case 19 flipped to $y = 1$ and nothing else changed: the new Brier score, the new base rate, the new Brier skill score, and the new five-bin ECE. (b) The pedestrian of Part 2 turns instead of walking straight: the true future is now $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$, the observed history and the model's prediction are unchanged. Compute ADE and FDE for the model and for the constant-velocity baseline. (c) $\Delta^{*}$ is unchanged at $1.375$ s; compute $\Delta_{\mathrm{req}}$ for the faster platform of panel 2 and say whether it now passes.
+3. **Interpret.** The vendor reads the part (a) result and reports "recalibrated: ECE improved from $0.100$ to $0.090$." Two of the three numbers you computed in (a) moved much further than the ECE did. Say what actually changed in the log, why ECE is the least sensitive of the three to it, and what you would require the vendor to report instead.
 
 > [!tip]- Solutions
-> 1. Ranking under a low base rate; a constant "no" is already 94%. Replace with AUC and a precision–recall curve versus time-to-event at the deployed threshold.
-> 2. minADE rewards one lucky sample of twenty and does not require probabilities. A stop needs a calibrated (or conformal) set that covers the true future at a stated error rate, not a best-of-twenty mean.
-> 3. Road datasets are passive; coworkers adapt, so the generating process moves. "Will yield" becomes a function of the robot you deployed — a feedback loop the week-one labels do not contain.
+> 1. Panel 1: only the top bin's point moves, from $(0.90,\ 0.75)$ up to $(0.90,\ 1.00)$ — past the diagonal, from under-confident-in-the-data to over-shooting it; the other four points and all five bars are untouched, because the flip changes an outcome, not a forecast. Panel 2: $\Delta^{*}$ stays at $1.375$ s while the required-lead vertical moves out to $1.55$ s, so the gap that was $-0.075$ s becomes $-0.175$ s — a faster base with a shorter latency is still worse off, because $v/a$ grew more than $t_{\mathrm{lat}}$ shrank.
+> 2. (a) Case 19's residual changes from $(0.90-0)^2 = 0.81$ to $(0.90-1)^2 = 0.01$, so the total falls from $4.515$ to $3.715$ and $\mathrm{BS} = 3.715/20 = \mathbf{0.1858}$. The base rate becomes $10/20 = \mathbf{0.50}$, the reference is $0.50 \times 0.50 = 0.2500$, and $\mathrm{BSS} = 1 - 0.1858/0.2500 = \mathbf{0.257}$. Only the top bin's ECE term changes, its frequency going from $0.75$ to $1.00$ and its gap from $0.15$ to $|1.00-0.90| = 0.10$, so $\mathrm{ECE} = 0.2\,(0.15 + 0 + 0 + 0.20 + 0.10) = \mathbf{0.090}$.
+> (b) Model errors $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$; $(-0.12,-0.16) \to 0.20$; $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. Constant velocity still predicts $(1,0), (2,0), (3,0)$, giving errors $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$, so $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$ and $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$. The ranking has completely reversed from the straight walk, on the same model and the same baseline. That is the reading: an ADE is a statement about the *test set's* motion as much as about the model, which is why the constant-velocity control belongs in every table.
+> (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$ s, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$ s $> 1.375$ s. It fails, and by more than before. The stopping distance also grows from $0.75$ m to $2.0^2/(2\times1.6) = 1.25$ m.
+> 3. What changed is one outcome out of twenty — not the model, which emitted the identical twenty probabilities in both versions. The Brier score moved $18\%$ and the skill score nearly tripled, from $0.088$ to $0.257$, while ECE moved $10\%$, because ECE collapses each bin to a single frequency before taking a difference and a $0.75 \to 1.00$ move inside one bin of four is a small change to a bounded gap, while the same flip removes the single largest squared residual in the log. Require the vendor to report $N$, the binning, the base rate, the Brier skill score against the base-rate forecaster, and the reliability diagram itself; an ECE alone at $N = 20$ is a number one worker's afternoon can move either way.
 
 ### Sources
 
@@ -301,7 +504,194 @@ Tier C. Using this page only.
 > [[02-foundations/probability|확률]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다.
+> 먼저 이 페이지의 대상과 그 위에서 하는 다섯 개의 유도, 그다음 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다.
+
+### 이 페이지의 대상 · Running object
+
+예측은 장치가 아니라 로그 위에서 평가되므로 [[02-foundations/lab-plants|0.6 Lab Plants]]의 대상이 맞지 않는다. 그래서 이 페이지는 자기 로그를 고정한다. 이동 베이스에 올린 횡단 의도 시스템의 오후 한나절, **I20** 이고, 이후로 숫자를 바꾸지 않는다. 페이지가 평가해야 할 것 하나씩에 대응하는 세 부분으로 되어 있다.
+
+**1부 — 판정 스무 건.** 각 사례 $i$는 작업자가 앞으로 2초 안에 로봇 경로로 들어올 확률 $\hat p_i$와 뒤이어 일어난 결과 $y_i \in \{0,1\}$다. $\hat p$ 오름차순으로 적었고, 번호는 시각이 아니라 이름표다.
+
+| 사례 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| $\hat p_i$ | 0.05 | 0.10 | 0.10 | 0.15 | 0.20 | 0.25 | 0.25 | 0.30 | 0.45 | 0.50 |
+| $y_i$ | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 |
+
+| 사례 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| $\hat p_i$ | 0.50 | 0.55 | 0.65 | 0.70 | 0.70 | 0.75 | 0.85 | 0.90 | 0.90 | 0.95 |
+| $y_i$ | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 1 | 0 | 1 |
+
+스무 건 중 아홉 건에서 사건이 일어났으므로 이 로그의 기저율은 $\bar p = 9/20 = 0.45$다. 실제 배포의 몇 %보다 훨씬 높은데, 이 로그는 시스템이 판정할 가치가 있다고 걸러낸 부분집합이고 보정 주장이 대상으로 삼는 모집단이 바로 그것이다. 전체 프레임 스트림으로 되돌릴 때 무슨 일이 생기는지는 §5가 다룬다.
+
+**2부 — 궤적 하나.** 사례 20에는 경로도 붙어 있다. 지면 위에서 1 Hz로 샘플링한 미터 좌표다. 관측된 세 위치는 $(-2.00, 0)$, $(-1.00, 0)$, $(0.00, 0)$이고, 참 미래 세 위치와 모델의 예측 세 위치는:
+
+| 스텝 | $t+1$ | $t+2$ | $t+3$ |
+|---|---|---|---|
+| 정답 $x_k$ | $(1.00,\ 0.00)$ | $(2.00,\ 0.00)$ | $(3.00,\ 0.00)$ |
+| 모델 $\hat x_k$ | $(1.00,\ 0.30)$ | $(2.30,\ 0.40)$ | $(3.60,\ 0.80)$ |
+
+**3부 — 조기성 대 정확도 곡선, 그리고 그것이 지켜야 할 플랫폼.** 오경보율 $\alpha = 0.05$를 고정한 recall을 사건까지 남은 시간의 함수로:
+
+| $\Delta$ (초) | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 |
+|---|---:|---:|---:|---:|---:|
+| $\mathrm{Recall}_{\mathrm{FPR}=0.05}(\Delta)$ | 0.92 | 0.84 | 0.72 | 0.60 | 0.48 |
+
+플랫폼은 $v = 1.5\ \mathrm{m/s}$로 달리는 이동 베이스이고 최대 감속 $a = 1.5\ \mathrm{m/s^2}$, 인지에서 제동까지의 지연 $t_{\mathrm{lat}} = 0.45$초이며, 안전 논거는 같은 $\alpha$에서 recall $\ge 0.75$를 요구한다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+패널 둘, 한 번 그린다. 과제는 결과 하나와 플랫폼을 바꿔서 같은 둘을 다시 요구한다.
+
+1. **Reliability diagram.** 단위 정사각형에 가로는 $\hat p$, 세로는 관측 빈도, 그리고 보정된 선인 $45^\circ$ 대각선을 긋는다. 가로축을 등폭 5구간으로 나누고, 구간마다 (구간 평균 $\hat p$, 구간 관측 빈도)에 점 하나를 찍고, 축 위에 스무 사례 중 몇 개가 그 구간에 들었는지 막대로 표시한다. 각 점에서 대각선까지 수직 간격을 그리고 값을 적어라. 그 다섯 간격의 가중 평균이 §4 스칼라의 전부다.
+2. **Time-to-event 패널.** 가로는 $\Delta$, 세로는 recall, 3부의 다섯 점을 잇는다. $0.75$에 수평 요구선을 긋고 곡선이 그것을 가로지르는 지점에서 수직선을 내려 $\Delta^{*}$라 적은 뒤, 필요 선행 $t_{\mathrm{stop}} + t_{\mathrm{lat}}$에 두 번째 수직선을 긋는다. 두 수직선 사이의 부호 있는 거리가 답이고, 그 부호가 배포 결정이다.
+
+패널 2 옆에는 2부의 궤적을 위에서 본 그림으로 그린다. 관측된 세 위치, 참 미래 세 위치, 예측 세 위치, 그리고 ADE가 평균하는 변위 선분 셋을 그리되, 마지막 하나만 굵게 — 그것 혼자가 FDE다.
+
+### I20으로 한 번 끝까지 · Worked on I20
+
+**1. 점수를 매기기 전에, 보정이란 무엇인가.**
+
+> [!info] 정의 — 보정(calibration)
+> 점수도 정확도도 아니라 **확률 예측기의 성질**이다. 예측기가 어떤 확률을 말한 사례들 안에서
+> 사건의 조건부 빈도가 그 확률과 같을 때 보정돼 있다고 한다. 조건 넷이 이것을 정밀하게 만든다.
+> 주변(marginal)이 아니라 **예측값에 조건부**다. 평균이 아니라 범위 안의 **모든** 값에서 성립해야
+> 한다. **사례의 분포**에 관한 진술이라 사례 하나는 보정됐다고도 아니라고도 할 수 없다. 그리고
+> 정직함만 제약할 뿐 **뾰족함(sharpness)** 은 제약하지 않는다. 예측이 기저율에서 얼마나 멀리
+> 움직이느냐는 별개의 미덕이다.
+> $$\mathbb{P}\big(y = 1 \mid \hat p = p\big) = p \quad \text{모든 } p \in [0,1] \text{에 대해}$$
+> $\hat p$는 예측, $y$는 이진 결과이고, 확률은 예측기가 배포되는 사례 분포에 대한 것이다.
+> **예.** I20에서 $0.50$ 근처 네 사례(9–12번)는 $\hat p$ 평균이 $0.50$이고 그중 둘에서 사건이
+> 일어나 빈도가 $0.50$이다. 그 구간에서는 보정돼 있다.
+> **반례 1 — 정확도.** I20을 $0.5$에서 자르면 스무 건 중 열넷을 맞혀 정확도 $70\%$인데, 모든
+> $\hat p$를 $0.99$로 바꾸든 $0.51$로 바꾸든 그 숫자는 그대로다. 정확도는 확신을 보지 못한다.
+> **반례 2 — AUC.** AUC는 **순위**에만 의존하므로 예측에 단조증가 변환을 아무리 걸어도 꿈쩍하지
+> 않는다. I20의 $\hat p_i$를 전부 제곱해 보라. AUC는 마지막 자리까지 $0.7172$ 그대로인데 아래의
+> 5구간 ECE는 $0.100$에서 $0.177$로, Brier 점수는 $0.226$에서 $0.249$로 움직인다. AUC만 보고한
+> 논문은 보정에 대해 아무것도 보고하지 않은 것이다.
+> **반례 3 — 상수 예측기.** 스무 건 모두에 $0.45$라고 말하면 *완벽하게* 보정돼 있으면서
+> 쓸모없다. 뾰족함이 0이고 $\mathrm{AUC} = 0.5$다. 보정만으로는 결코 주장이 되지 않는다.
+> **왜 중요한가.** 하위에 있는 것은 확률을 비용과 견주는 결정 규칙이다. $0.7$이 $0.7$을 뜻하지
+> 않으면 $\text{비용} \times \text{확률}$은 누구도 행동의 근거로 삼을 수 없는 값이고, §5의 정밀도
+> 산수는 조용히 허구가 된다.
+
+**2. I20의 Brier 점수.**
+
+> [!info] 정의 — Brier 점수
+> 이진 예측에 대한 **엄밀 채점 규칙(proper scoring rule)** 이다. 말한 확률과 실현된 결과 사이의
+> 평균제곱오차이고, $[0,1]$의 무차원 수이며 낮을수록 좋다. 조건이 셋이다. 결과는 $0/1$로
+> 부호화하고, 예측은 로짓이나 점수가 아니라 확률이어야 하며, "엄밀"하다는 것은 기대 점수가 자기
+> 진짜 믿음을 말할 때만 최소가 된다는 뜻이다. 확신 쪽으로든 가운데 쪽으로든 눙쳐서 이득을 보는
+> 예측기는 없다.
+> $$\mathrm{BS} = \frac{1}{N}\sum_{i=1}^{N}\big(\hat p_i - y_i\big)^2$$
+> $N$은 사례 수, $\hat p_i$는 $i$번째 예측, $y_i \in \{0,1\}$은 그 결과다.
+> **예.** I20은 $0.2258$이고 아래에서 계산한다.
+> **반례.** $1 - \text{정확도}$가 아니다. 그건 여기서 $0.30$이다. $0.2258$이라는 값 자체가
+> "좋다"는 뜻도 아니다. 같은 로그에서 상수 기저율 예측기가 $\bar p(1-\bar p) = 0.2475$를 받으므로,
+> 모델의 순위 판별력과 확신을 다 합쳐 산 것이 $0.0218$이다.
+> **왜 중요한가.** 거짓말로는 개선할 수 없는 유일한 숫자이고, 그래서 다음 정의의 맹점이 드러나는
+> 기준선이 된다.
+
+스무 개의 제곱 잔차를 더한다. 뒤에서 구간이 묶는 방식대로 묶어 두면 검산하기 쉽다:
+
+| 사례 | 제곱 잔차 | 소계 |
+|---|---|---:|
+| 1–4 | $0.05^2 + 0.10^2 + 0.10^2 + 0.85^2$ | 0.7450 |
+| 5–8 | $0.20^2 + 0.25^2 + 0.25^2 + 0.70^2$ | 0.6550 |
+| 9–12 | $0.45^2 + 0.50^2 + 0.50^2 + 0.55^2$ | 1.0050 |
+| 13–16 | $0.35^2 + 0.70^2 + 0.30^2 + 0.75^2$ | 1.2650 |
+| 17–20 | $0.15^2 + 0.10^2 + 0.90^2 + 0.05^2$ | 0.8450 |
+| | **합계** | **4.5150** |
+
+$$\mathrm{BS} = \frac{4.5150}{20} = 0.2258$$
+
+이제 기준선을 잡는다. 제곱오차는 다른 무언가도 제곱해 보기 전에는 아무 뜻이 없기 때문이다. 늘 기저율만 말하는 상수 예측기는 $\bar p(1-\bar p) = 0.45 \times 0.55 = 0.2475$를 받으므로 **Brier skill score** 는
+
+$$\mathrm{BSS} = 1 - \frac{\mathrm{BS}}{\bar p(1-\bar p)} = 1 - \frac{0.2258}{0.2475} = 0.088$$
+
+**8.8%.** 모델이 "매번 기저율을 말하기"를 이기는 폭이 그만큼이고, 남은 것의 대부분에 사례 하나가 책임이 있다. 19번은 $0.90$이라 말했고 사건은 일어나지 않아 $4.515$ 중 $0.81$을 혼자 냈다. **스무 건 중 한 판정에서 점수 전체의 18%가 나온 것이다.** 이 취약함은 대상의 결함이 아니라 $N = 20$이 뜻하는 바이고, 보정 주장에 수백 건짜리 보정 집합이 필요한 이유다.
+
+**3. 5구간 ECE, 그리고 모델의 것이 아닌 선택.**
+
+> [!info] 정의 — 기대 보정 오차(ECE)
+> **Reliability diagram의 스칼라 요약** 이다. 관측 빈도와 평균 예측값 사이 절대 간격을 구간 점유
+> 수로 가중 평균한 값이고, 무차원이며 $[0,1]$에 있다. 이것은 *추정량* 이고, 값을 가지려면 조건
+> 넷이 먼저 정해져야 한다. **구간 나누기 방식** — 구간 수, 그리고 등폭인지 등질량인지. 간격은 각
+> 구간의 **관측 빈도** 와 그 구간의 **평균 예측값** 사이에서 잰다(구간 중점이 아니다). **절댓값은
+> 구간 평균을 낸 뒤에** 씌우므로, 한 구간 안의 반대 부호 오차는 보이기도 전에 상쇄된다. 그리고
+> 구간은 **점유 수로 가중** 하므로 사례 하나짜리 구간은 한 번만 센다.
+> $$\mathrm{ECE} = \sum_{b=1}^{B} \frac{n_b}{N}\,\Big| \mathrm{freq}(b) - \overline{\hat p}(b) \Big|$$
+> $B$는 구간 수, $n_b$는 구간 $b$의 사례 수, $N$은 전체, $\mathrm{freq}(b)$는 그 구간의 관측 사건
+> 빈도, $\overline{\hat p}(b)$는 그 구간의 평균 예측값이다.
+> **예.** 등폭 5구간의 I20은 $0.100$이고 아래에서 계산한다.
+> **반례 — ECE는 모델의 성질이 아니다.** 똑같은 스무 예측과 똑같은 스무 결과가 2구간에서는
+> $0.055$, 10구간에서는 $0.270$을 준다. 성긴 구간은 반대 부호 간격을 평균으로 지우고, 촘촘한
+> 구간은 사례 하나가 구간을 정의하게 두어 가능한 빈도가 $0$과 $1$뿐이 된다. **구간 나누기를 밝히지
+> 않은 ECE는 읽을 수 없고**, 치우치는 방향조차 미리 정해져 있지 않다. 두 번째 반례:
+> $\mathrm{ECE} = 0$이 유용함을 뜻하지 않는다. 상수 $0.45$ 예측기는 스무 건이 한 구간에 들어가고
+> 그 구간의 평균과 빈도가 모두 $0.45$라서 $\mathrm{ECE} = 0$이 정확히 성립한다.
+> **왜 중요한가.** "불확실성 인지"를 내건 논문이 전부 보고하는 스칼라이고, 그 논문들이 가장 자주
+> 빼먹는 줄이 구간 나누기다.
+
+스무 사례를 등폭 5구간에 넣는다. 공교롭게 구간마다 네 건씩이라 모든 가중치 $n_b/N$이 $4/20 = 0.2$다:
+
+| 구간 | 사례 | $n_b$ | 평균 $\hat p$ | 관측 빈도 | $\lvert \text{간격} \rvert$ |
+|---|---|---:|---:|---:|---:|
+| $[0.0, 0.2)$ | 1–4 | 4 | 0.10 | 1/4 = 0.25 | 0.15 |
+| $[0.2, 0.4)$ | 5–8 | 4 | 0.25 | 1/4 = 0.25 | 0.00 |
+| $[0.4, 0.6)$ | 9–12 | 4 | 0.50 | 2/4 = 0.50 | 0.00 |
+| $[0.6, 0.8)$ | 13–16 | 4 | 0.70 | 2/4 = 0.50 | 0.20 |
+| $[0.8, 1.0]$ | 17–20 | 4 | 0.90 | 3/4 = 0.75 | 0.15 |
+
+$$\mathrm{ECE} = 0.2\,\big(0.15 + 0.00 + 0.00 + 0.20 + 0.15\big) = 0.2 \times 0.50 = 0.100$$
+
+합계만 보지 말고 부호를 읽어라. 진단이 부호에 있다. 맨 아래 구간은 빈도가 예측값보다 높고 위 두 구간은 빈도가 예측값에 못 미친다. 즉 모델이 실제 일어나는 바에 비해 양 극단으로 밀려 있고, 이것이 교과서적인 **과확신** 이며 §4 표의 temperature scaling이 겨냥하는 바로 그것이다. 그리고 합계가 가리는 것도 보라. $0.70$이라 말하고 절반만 맞힌 모델과, 작은 오차 셋이 다르게 퍼진 모델을 같은 $0.100$이 보고한다.
+
+**4. 2부 위의 ADE와 FDE.**
+
+> [!info] 정의 — ADE와 FDE
+> 둘 다 **미터 단위 길이** 이고, 같은 시각끼리 짝지은 예측 위치와 참 위치 사이의 유클리드 변위로
+> 만든다. **ADE**(average displacement error)는 그 변위를 예측 구간 전체에 걸쳐 평균하고,
+> **FDE**(final displacement error)는 마지막 스텝의 같은 변위다. 조건: 관측 창과 구간 $H$를
+> 명시할 것; 예측 궤적이 집합이 아니라 **하나** 일 것 — 표본 $k$개의 최선은
+> $\mathrm{minADE}_k$이고 다른 대상이다(§6); 같은 좌표계에서 같은 샘플링 주기로 **스텝마다**
+> 비교할 것.
+> $$\mathrm{ADE} = \frac{1}{H}\sum_{k=1}^{H}\big\lVert \hat x_k - x_k \big\rVert_2, \qquad \mathrm{FDE} = \big\lVert \hat x_H - x_H \big\rVert_2$$
+> $x_k$는 스텝 $k$의 참 위치, $\hat x_k$는 예측 위치, $H$는 스텝 단위 구간이다.
+> **예.** 2부는 $\mathrm{ADE} = 0.60$ m, $\mathrm{FDE} = 1.00$ m다.
+> **반례.** ADE는 두 끝점 사이 거리가 아니다. 그게 FDE다. FDE도 구간 내 최대 오차가 아니다. 여기서
+> 둘이 일치하는 건 이 오차가 마침 단조증가하기 때문이고, 초반에 넘어갔다 회복하는 모델은 최댓값이
+> 가운데 있다. 어느 쪽도 경로를 *따라* 잰 거리가 아니다.
+> **왜 중요한가.** 둘의 비가 구간에 걸친 오차의 모양이고 — 여기서는 $1.00/0.60 = 1.67$ — 숫자
+> 하나로는 보고되지 않으며, 플래너의 제약은 평균이 아니라 구간 끝에 걸린다.
+
+스텝별 변위가 직각삼각형 셋에서 나오므로 산수가 정확히 떨어진다:
+
+- $t+1$: $\hat x_1 - x_1 = (0.00,\ 0.30)$, $\lVert\cdot\rVert = 0.30$ m;
+- $t+2$: $(0.30,\ 0.40)$, $\lVert\cdot\rVert = \sqrt{0.09 + 0.16} = 0.50$ m;
+- $t+3$: $(0.60,\ 0.80)$, $\lVert\cdot\rVert = \sqrt{0.36 + 0.64} = 1.00$ m.
+
+$$\mathrm{ADE} = \frac{0.30 + 0.50 + 1.00}{3} = \frac{1.80}{3} = 0.60\ \mathrm{m}, \qquad \mathrm{FDE} = 1.00\ \mathrm{m}$$
+
+이제 출처의 Schöller 비판이 통째로 겨누는 그 기준선을 돌려 보자. 관측된 세 위치가 1 Hz에서 직선 위로 $1.00$ m씩 떨어져 있으므로 **등속** 외삽은 $x_t + k\,(1.00, 0)$, 즉 $(1,0), (2,0), (3,0)$ — 정답 그 자체다. 이 보행에서 $\mathrm{ADE}_{\mathrm{CV}} = \mathrm{FDE}_{\mathrm{CV}} = 0$이다.
+
+대상을 일부러 그렇게 만들었고, 요점은 등속이 늘 정확하다는 게 아니다. 요점은 **출판된 $\mathrm{ADE} = 0.60$ m가 자기가 산수에 졌다는 사실을 말해 주지 않는다** 는 것이고, 어떤 벤치마크 표도 그걸 말할 의무가 없다는 것이다. 과제에서는 보행자가 방향을 틀고 순위가 뒤집힌다. 읽어야 할 것은 그 뒤집힘이지 두 숫자 중 어느 쪽도 아니다.
+
+**5. 가용 지평 $\Delta^{*}$와 플랫폼이 요구하는 것.** 3부의 요구는 recall $\ge 0.75$다. 곡선은 $\Delta = 1.0$초에서 $0.84$, $1.5$초에서 $0.72$이므로 그 사이에서 가로지른다. 선형 보간하면 구간에서 쓴 비율이 $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$이므로
+
+$$\Delta^{*} = 1.0 + 0.75 \times (1.5 - 1.0) = 1.375\ \mathrm{s}$$
+
+플랫폼 쪽 요구는 모델이 전혀 들어가지 않는 별개의 계산이다. 일정한 $a$로 $v$에서 제동하면 $t_{\mathrm{stop}} = v/a$가 걸리고 $v^2/2a$를 지나므로
+
+$$t_{\mathrm{stop}} = \frac{1.5}{1.5} = 1.00\ \mathrm{s}, \qquad d_{\mathrm{stop}} = \frac{1.5^2}{2 \times 1.5} = 0.75\ \mathrm{m}, \qquad \Delta_{\mathrm{req}} = t_{\mathrm{stop}} + t_{\mathrm{lat}} = 1.00 + 0.45 = 1.45\ \mathrm{s}$$
+
+$\Delta^{*} = 1.375\ \mathrm{s} < \Delta_{\mathrm{req}} = 1.45\ \mathrm{s}$. **75밀리초가 모자란다.** 그리고 헤드라인 AUC도, Brier 점수도, ECE도 그 사실을 말해 주지 않았을 것이다. 셋 다 $\Delta$를 평균으로 지워 버린 채 계산되기 때문이다.
+
+쓸 만한 수는 그 모자람의 값을 묻는 것이다. 바꾸기 싼 쪽이 플랫폼이기 때문이다. $v/a + t_{\mathrm{lat}} \le \Delta^{*}$를 $v$에 대해 풀면
+
+$$v \le a\big(\Delta^{*} - t_{\mathrm{lat}}\big) = 1.5 \times (1.375 - 0.45) = 1.39\ \mathrm{m/s}$$
+
+이므로 베이스 속도를 $1.39\ \mathrm{m/s}$로 — $7\%$ — 낮추면 바로 이 예측기로 충분해진다. $t_{\mathrm{lat}}$에서 $75$ ms를 깎아도 같다. 어느 쪽도 더 나은 모델보다 작은 개입이고, 둘 다 벤치마크 표에서는 보이지 않는다. **예측기는 느리거나 빠른 것이 아니라, 로봇의 감속도와 지연에 비해 느리거나 빠르다.**
 
 ### 1. 서로 다른 두 문제
 
@@ -313,7 +703,7 @@ Tier C. Using this page only.
 | 실패 방식 | 확신에 찬 오분류 | 그럴듯하지만 틀린 모드 |
 | 무엇을 먹이나 | 이산 결정(정지·경고·양보) | 연속 계획(코스트맵, MPC 제약) |
 
-오른쪽 열에서 ADE(average displacement error)는 예측 위치와 실제 위치 사이의 유클리드 거리를 예측 구간 전체에 걸쳐 평균한 값, FDE(final displacement error)는 마지막 시점에서의 그 거리이며, $k$개 샘플의 minADE는 샘플링한 $k$개 미래 중 가장 가까운 것만 남긴다(§6).
+오른쪽 열에서 ADE(average displacement error)는 예측 위치와 실제 위치 사이의 유클리드 거리를 예측 구간 전체에 걸쳐 평균한 값, FDE(final displacement error)는 마지막 시점에서의 그 거리다. 둘의 조건과 반례를 갖춘 완전한 정의는 위의 I20 위에 있다. $k$개 샘플의 minADE는 샘플링한 $k$개 미래 중 가장 가까운 것만 남긴다(§6).
 
 같은 네트워크로 풀고 같은 논문에서 보고되는 일이 잦지만 **같은 주장이 아니다.** "보행자 의도를 예측한다"와 "보행자 궤적을 예측한다"는 다른 질문에 답하고 다르게 실패한다. ADE가 낮은 궤적 모델도 횡단 모드에 확률을 전혀 주지 않으면 쓸모없고, 의도 분류기는 횡단 여부를 맞혀도 *어디로*를 말하지 않아 계획에 못 쓴다.
 
@@ -399,7 +789,7 @@ $$\mathbb{P}\big(y = 1 \mid \hat{p} = p\big) \;\overset{?}{=}\; p$$
 | Temperature scaling | held-out으로 재보정된 확률 | 파라미터 1개 |
 | **Conformal prediction** | 교환가능성 하에 **분포 무관 커버리지 보장**이 붙은 집합/구간 | held-out 보정 집합 |
 
-ECE(expected calibration error)는 그 그림 뒤의 스칼라다. 예측을 $\hat p$ 구간(bin)으로 나누고, 구간마다 실제 사건 빈도와 평균 $\hat p$의 차이를 구한 뒤, 구간에 든 사례 수로 가중 평균한다. Temperature scaling은 held-out 데이터로 맞춘 스칼라 하나 $T$로 로짓을 나눈다. $T$가 클수록 softmax가 평평해지므로([[02-foundations/calculus-backprop|2. 미적분과 역전파 §6]]) 어느 클래스가 1등인지는 바꾸지 않은 채 과확신 확률을 균등 쪽으로 당긴다: 로짓 $(2, 0)$은 $T = 1$에서 0.88, $T = 2$에서 0.73이 된다.
+ECE(expected calibration error)는 그 그림 뒤의 스칼라다. 예측을 $\hat p$ 구간(bin)으로 나누고, 구간마다 실제 사건 빈도와 평균 $\hat p$의 차이를 구한 뒤, 구간에 든 사례 수로 가중 평균한다. 위의 I20에서 끝까지 계산해 두었는데, 똑같은 스무 예측이 5구간에서 $0.100$, 10구간에서 $0.270$을 준다. 그러니 **두 ECE를 비교하기 전에 논문의 구간 나누기를 물어라.** I20 구간들의 부호 패턴이 이 행이 진단하는 과확신이다. Temperature scaling은 held-out 데이터로 맞춘 스칼라 하나 $T$로 로짓을 나눈다. $T$가 클수록 softmax가 평평해지므로([[02-foundations/calculus-backprop|2. 미적분과 역전파 §6]]) 어느 클래스가 1등인지는 바꾸지 않은 채 과확신 확률을 균등 쪽으로 당긴다: 로짓 $(2, 0)$은 $T = 1$에서 0.88, $T = 2$에서 0.73이 된다.
 
 Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가 어떤 순서로 도착해도 확률이 같다는 가정; i.i.d. 추출이면 성립하지만 그보다 약한 가정이다) + 분위수이며, 집합 출력은 defer 정책에 유용하다. 다만 보통의 보장은 교환가능한 사례 전체에 대한 **주변적 coverage**이지 이 한 장면이나 모든 하위집단의 90% 확률이 아니다. `횡단`과 `비횡단`이 모두 든 집합에는 감속이나 사람에게 질문하기 같은 별도 행동 규칙이 필요하다. [[04-robotics/hri-safety|11. HRI & Safety]]로 이어진다.
 
@@ -488,6 +878,8 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 다음을 할 수 있어야 한다:
 
 - 의도 분류와 궤적 예측의 차이와 각각의 지표를 말한다;
+- 주어진 로그에서 Brier 점수·Brier skill score·구간 ECE를 계산하고, 구간 나누기가 마지막 값에 무슨 짓을 했는지 말한다;
+- 예측 경로와 같은 경로의 등속 기준선에 대해 ADE와 FDE를 계산한다;
 - 가용 지평 $\Delta^*$를 계산하고 필요 선행 시간과 비교한다;
 - 보정을 설명하고, 고치는 방법 둘을 들고, conformal prediction이 안전 결정에 맞는 이유를 말한다;
 - 낮은 기저율에서 정확도가 왜 틀린 지표인지 설명한다;
@@ -510,16 +902,18 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 
 ### 과제 · Problem set
 
-Tier C. 이 페이지만 사용한다.
+Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 하나가 뒤집히고, 보행자가 방향을 틀고, 플랫폼이 바뀐다. 스무 개의 예측은 그대로다.
 
-1. 횡단 모델이 "아니오" 기저율 94%인 데이터셋에서 정확도 96%를 보고한다. 그 숫자가 재지 못한 것과, 대신할 그림 둘은?
-2. minADE$_{20} = 0.18\,\mathrm{m}$. 플래너는 안전 정지를 위해 미래에 대한 분포가 필요하다. 이 승리가 여전히 못 쓰일 수 있는 이유와, 정지에 맞는 채점(보정 / conformal)은?
-3. 현장 모델을 1주차로 학습하고, 작업자가 로봇 경로를 배운 4주차로 평가한다. 이것이 JAAD/PIE 문제가 아닌 이유와, 레이블 "양보할 것이다"에 일어나는 일은?
+1. **그려라.** 바뀐 대상으로 과제 패널 둘을 다시 그려라. 패널 1: $0.90$을 예측했던 19번 사례가 사실은 $y = 1$이었다고 하자. 점 하나가 어느 방향으로 움직이는지 표시하고, 그것이 향해 가는 대각선을 표시하라. 패널 2: 같은 time-to-event 곡선을 더 빠른 플랫폼($v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$초)에 대해 그리고, 수직선 둘과 그 사이 부호 있는 간격을 표시하라.
+2. **유도하라.** (a) 19번 사례를 $y = 1$로 뒤집고 나머지는 그대로일 때, 새 Brier 점수·새 기저율·새 Brier skill score·새 5구간 ECE. (b) 2부의 보행자가 직진 대신 방향을 튼다. 참 미래가 $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$이고 관측 이력과 모델 예측은 그대로다. 모델과 등속 기준선의 ADE·FDE를 구하라. (c) $\Delta^{*}$는 $1.375$초로 그대로다. 패널 2의 더 빠른 플랫폼에 대해 $\Delta_{\mathrm{req}}$를 구하고 이제 통과하는지 말하라.
+3. **해석하라.** 업체가 (a)의 결과를 읽고 "재보정 완료: ECE가 $0.100$에서 $0.090$으로 개선"이라 보고한다. (a)에서 구한 셋 중 둘은 ECE보다 훨씬 크게 움직였다. 로그에서 실제로 바뀐 것이 무엇인지, ECE가 셋 중 그것에 가장 둔감한 이유가 무엇인지, 그리고 업체에 대신 무엇을 요구할지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 낮은 기저율에서의 순위; 무조건 "아니오"가 이미 94%. AUC와, 배포 임계값에서 time-to-event에 대한 precision–recall로 바꿔라.
-> 2. minADE는 스무 개 중 운 좋은 하나를 보상하고 확률을 요구하지 않는다. 정지는 말한 오류율로 참 미래를 덮는 보정(또는 conformal) 집합이 필요하지, 스무 개 평균의 최선이 아니다.
-> 3. 도로 데이터셋은 수동이고, 동료는 적응하므로 생성 과정이 움직인다. "양보할 것이다"는 배포한 로봇의 함수가 된다 — 1주차 레이블에 없는 피드백 루프.
+> 1. 패널 1: 맨 위 구간의 점 하나만 $(0.90,\ 0.75)$에서 $(0.90,\ 1.00)$으로 올라간다. 대각선을 지나쳐 데이터에 못 미치던 쪽에서 넘어서는 쪽으로 간다. 나머지 네 점과 다섯 막대는 그대로다. 뒤집힌 것이 예측이 아니라 결과이기 때문이다. 패널 2: $\Delta^{*}$는 $1.375$초로 그대로인데 필요 선행 수직선이 $1.55$초로 밀려나, $-0.075$초였던 간격이 $-0.175$초가 된다. 더 빠르고 지연이 짧은 베이스가 오히려 나빠지는 이유는 $v/a$가 늘어난 폭이 $t_{\mathrm{lat}}$이 줄어든 폭보다 크기 때문이다.
+> 2. (a) 19번의 잔차가 $(0.90-0)^2 = 0.81$에서 $(0.90-1)^2 = 0.01$로 바뀌어 합계가 $4.515$에서 $3.715$가 되므로 $\mathrm{BS} = 3.715/20 = \mathbf{0.1858}$이다. 기저율은 $10/20 = \mathbf{0.50}$, 기준은 $0.50 \times 0.50 = 0.2500$, 따라서 $\mathrm{BSS} = 1 - 0.1858/0.2500 = \mathbf{0.257}$. ECE는 맨 위 구간 항만 바뀌어 빈도가 $0.75$에서 $1.00$, 간격이 $0.15$에서 $|1.00-0.90| = 0.10$이 되므로 $\mathrm{ECE} = 0.2\,(0.15 + 0 + 0 + 0.20 + 0.10) = \mathbf{0.090}$이다.
+> (b) 모델 오차 $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$, $(-0.12,-0.16) \to 0.20$, $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. 등속은 여전히 $(1,0), (2,0), (3,0)$을 내놓아 오차가 $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$이므로 $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$, $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$다. 같은 모델, 같은 기준선인데 직진 보행에서와 순위가 완전히 뒤집혔다. 그것이 읽어야 할 바다. ADE는 모델에 관한 진술인 만큼이나 *시험 집합의 움직임* 에 관한 진술이고, 그래서 모든 표에 등속 대조군이 들어가야 한다.
+> (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$초, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$초 $> 1.375$초. 통과하지 못하고, 전보다 더 못 미친다. 제동거리도 $0.75$ m에서 $2.0^2/(2\times1.6) = 1.25$ m로 늘어난다.
+> 3. 바뀐 것은 스무 건 중 결과 하나다. 모델이 아니다. 모델은 두 판본 모두에서 똑같은 스무 확률을 내놓았다. 그런데 Brier 점수는 $18\%$ 움직였고 skill score는 $0.088$에서 $0.257$로 거의 세 배가 된 반면 ECE는 $10\%$만 움직였다. ECE가 차이를 내기 전에 각 구간을 빈도 하나로 눌러 버리기 때문이고, 네 건짜리 구간 안에서 $0.75 \to 1.00$은 유계인 간격에 작은 변화인 데 비해 같은 뒤집힘이 로그에서 가장 큰 제곱 잔차 하나를 통째로 없애기 때문이다. 업체에는 $N$, 구간 나누기, 기저율, 기저율 예측기 대비 Brier skill score, 그리고 reliability diagram 자체를 요구하라. $N = 20$에서 ECE 하나는 작업자 한 사람의 오후가 어느 쪽으로든 밀어낼 수 있는 숫자다.
 
 ### 출처
 

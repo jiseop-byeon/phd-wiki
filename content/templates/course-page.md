@@ -8,11 +8,12 @@ wiki-support: Working
 ---
 
 <!--
-Three-tier contract for 02-foundations and 04-robotics study pages.
-Haptics ME384R is the bar: a specific object, then draw / derive / run / change one knob.
+Three-tier contract for every course page: 02-foundations, 04-robotics, and the
+03-deep-learning modules. A haptics course is the bar: a specific object, then
+draw / derive / run / change one knob.
 
 The lecture, not the answer key, is the main product. Before the problem set, the page
-must draw the homework object, derive on the named plant with the catalog numbers, and
+must draw the homework object, derive on the named object with the catalog numbers, and
 work one numerical case in full. The problem set is a *variant* (a different pose, a
 changed knob, an interpretation). A page that only appends problems to a summary has
 not met the bar.
@@ -20,34 +21,70 @@ not met the bar.
 Reader depth may be Literacy; the note is still this course. Do not shorten the lecture
 because the recommended study-depth is Literacy.
 
-Tier A (Lab): named plant + diagram + derivation + Python loop + parameter sweep.
-Tier B (Derive): named plant from 0.6 + diagram + hand problem set. No new simulator.
-Tier C (Read): claim-reading homework only.
+Tier A (Lab): named object + diagram + derivation + Python loop + parameter sweep.
+Tier B (Derive): named object + diagram + hand derivation + hand problem set. No new simulator.
+Tier C (Read): claim-reading homework only. Allowed only for a reading map or an index —
+a page whose subject can be derived is Tier B, not Tier C.
 
-Do not copy UT slides or assignments. Original problems. Python only.
+1. OBJECT CATALOGS. Physical pages name a plant P1-P6 from 0.6 Lab Plants; deep-learning
+pages name a tensor object D1-D6 from 3.0 Lab Objects. Reuse before inventing: add a new
+catalog entry only when the page needs a different *kind* of object, and then say on the
+page how it differs from the nearest existing one (D1 is 2->3->2 softmax, P1 is 2->3->1 MSE).
+A page may freeze its own small object when no catalog entry fits (a 5-keypoint skeleton,
+a 3x3 elevation patch); specify it completely once and never change its numbers later.
+
+2. SCOPE HONESTY. A page titled with a whole field (computer vision, VLA, planning) must
+say what it teaches and what it does not, and where the rest lives. If the field needs
+more than one object, split it into sub-pages in the folder and keep index.md as the map.
+One 50-line page does not become a course by declaring wiki-support: Working.
+
+3. TIER A TRIGGER. If the subject *is* numerical computation - tensors, sampling, iteration,
+stability boundaries, timing - a hand derivation alone is not the lecture: the page owes a
+runnable loop and a sweep. Deep-learning modules are in this class.
+
+4. DEFINITION COMPLETENESS. Every concept the page itself defines needs: what kind of thing
+it is; every defining condition named (linearity is additivity AND homogeneity; LTI is
+linearity AND time invariance); the formula on one $$ line with each symbol explained; an
+example and, where readers go wrong, a non-example; why it matters. A metric used in a
+table (IoU, mAP, ECE, MPJPE) is defined where it is first used or linked to the page that
+defines it. Concepts defined elsewhere get a section link, never half a definition.
+Reference: 0.5 Engineering Math §4.5 (linearity) and 6. Signal Processing §1 (LTI).
+
+5. ONE SKELETON. Every course page carries the same headings in both halves, in this order:
+Prerequisites callout, First pass callout, Running object, Homework diagram, Worked case,
+numbered lecture sections, Problem set · 과제 (tier line, Draw / Derive / Do or Interpret,
+Solutions), Self-check (+ Answers). Do not invent per-track variants such as "Exit check".
+
+6. wiki-support: Working means the page's own problem set is completable from the page,
+its prerequisites, and the object catalog - nothing else. If it is not, the honest value
+is Literacy until the lecture is written.
+
+Do not copy any course's slides or assignments. Original problems. Python only.
 Code once in the English half; Korean captions and interprets.
 -->
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/lab-plants|0.6]] (plant id) · [[02-foundations/lab-kernel|0.65]] if this page is Tier A
-> [[02-foundations/lab-plants|0.6]](장치 id) · Tier A이면 [[02-foundations/lab-kernel|0.65]]
+> [[02-foundations/lab-plants|0.6]] (plant id) or [[03-deep-learning/lab-objects|3.0]] (tensor object id) · [[02-foundations/lab-kernel|0.65]] if this page is Tier A
+> [[02-foundations/lab-plants|0.6]](장치 id) 또는 [[03-deep-learning/lab-objects|3.0]](텐서 객체 id) · Tier A이면 [[02-foundations/lab-kernel|0.65]]
 
 ## English
 
-*Stands on … First / later use of plant **P?**.*
+*Stands on … First / later use of plant **P?** (or object **D?**).*
 
 > [!note] First pass · 처음이라면
 > …
 
-### Running plant · 이 페이지의 장치
+### Running object · 이 페이지의 대상
 
-**P?** from [[02-foundations/lab-plants|0.6 Lab Plants]], at the pose / numbers that page freezes.
+**P?** from [[02-foundations/lab-plants|0.6 Lab Plants]] (or **D?** from [[03-deep-learning/lab-objects|3.0 Lab Objects]]), at the pose / numbers that page freezes. A page-local object is specified in full here instead.
+
+*Scope: this page teaches … ; it does not teach … , which lives in … .*
 
 ### Homework diagram · 과제가 그릴 그림
 
 (the same diagram the problem set will ask for)
 
-### Worked on the plant · 장치로 한 번 끝까지
+### Worked case · 대상으로 한 번 끝까지
 
 (derive with catalog numbers; one fully worked numerical case)
 
@@ -57,7 +94,7 @@ Code once in the English half; Korean captions and interprets.
 
 ### Problem set · 과제
 
-Tier A / B / C. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]].
+Tier A / B / C. Using only this page, its prerequisites, and the object catalog. State the tier explicitly — a problem set with no tier line is incomplete.
 
 1. **Draw.** …
 2. **Derive.** …
@@ -75,6 +112,9 @@ Tier A / B / C. Using only this page, its prerequisites, and [[02-foundations/la
 ### Self-check
 
 …
+
+> [!tip]- Answers
+> …
 
 ## 한국어
 

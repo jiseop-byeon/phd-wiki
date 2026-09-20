@@ -22,7 +22,93 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 Privileged teacher–student distillation is the idea to take from here, and the page doubles as practice at correcting over-citation.*
 
 > [!note] First pass · 처음이라면
-> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language.
+> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language. The running object, the homework diagram and the worked derivation on them are the lecture the problem set assumes; do those in order (object, diagram, §1.5, worked) if you are here for the course rather than for the literature.
+
+### Running object · 이 페이지의 장치
+
+None of the six plants in [[02-foundations/lab-plants|0.6 Lab Plants]] is a legged body, so this
+page freezes its own and the next two pages reuse it rather than inventing a second one.
+
+**Q — the frozen quadruped.** One rigid body on four massless legs, standing square.
+
+| Symbol | Value | Meaning |
+|---|---:|---|
+| $m$ | $12\,\mathrm{kg}$ | total body mass |
+| $z$ | $0.30\,\mathrm{m}$ | centre-of-mass height when standing |
+| hip rectangle | $0.60\times0.30\,\mathrm{m}$ | feet at $(\pm0.30,\pm0.15)\,\mathrm{m}$ under the CoM |
+| $\ell$ | $0.34\,\mathrm{m}$ | leg length, hip to foot |
+| $\mu$ | $0.6$ | foot–ground friction coefficient |
+| $T$ | $0.40\,\mathrm{s}$ | gait period |
+| $\beta$ | $0.50$ | duty factor of the nominal trot |
+| $h_{\max}$ | $0.15\,\mathrm{m}$ | step-over height the catalog grants it |
+| $f_{z,\max}$ | $200\,\mathrm{N}$ | per-foot vertical force limit |
+| $g$ | $9.81\,\mathrm{m/s}^2$ | gravity |
+
+Only the last four rows are stipulations. $h_{\max}$ and $f_{z,\max}$ are catalog numbers the way
+P3's hand stiffness is a catalog number — stated once, never derived here, changed only in a
+problem set. Everything else on this page is computed from the rows above, and no number below
+contradicts one of them.
+
+Q carries the wiki's running robotics task: **P2** from [[02-foundations/lab-plants|0.6]] rides
+on Q's back, and the worked derivation below ends by computing what that arm costs the body. Q is
+also the body of the QP on [[04-robotics/convex-mpc-legged|8. Convex MPC]] and the robot whose
+costmap is built on [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]].
+
+The humanoid in §1.5 with $z=0.9$ m is a *different* body, kept because that is the size the
+capture-point literature is written about. When the two disagree it is because they are two
+machines, not because one number is stale.
+
+### Homework diagram · 과제가 그릴 그림
+
+Two panels, and the problem set asks for the same pair.
+
+**Top — the sagittal inverted pendulum.** Draw the ground as a horizontal line. Put a dot for the
+CoM at height $z=0.30$ m and a straight massless leg from it down to the stance foot at $p$. Draw a
+horizontal velocity arrow $\dot x$ at the CoM. On the ground mark three points: the foot $p$, the
+CoM's vertical projection $x$, and the capture point $\xi$ at a distance $\dot x/\omega_0$ ahead of
+$x$. Then bracket the ground from $0.46$ m behind $x$ to $0.46$ m ahead of it and label the bracket
+*reach* — that is where a foot can be placed at all. The whole homework is the question of whether
+$\xi$ lands inside that bracket.
+
+**Bottom — the gait chart.** Four horizontal lanes stacked, one per foot, labelled LF, RF, LH, RH,
+over a time axis covering one period $T=0.40$ s. Shade each lane where that foot is in stance. For
+the nominal trot, LF and RH are shaded from $0$ to $0.20$ s and RF and LH from $0.20$ to $0.40$ s.
+Mark the instants where the shaded set changes: those are the moments the support polygon changes
+shape, and the **contact schedule** that [[04-robotics/convex-mpc-legged|8. Convex MPC]] is handed
+is exactly this chart read as a table.
+
+<svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="top: the frozen quadruped as an inverted pendulum with its capture point inside a foothold reach bracket; bottom: a trot gait chart over one period">
+  <defs><marker id="arQ" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6"><line x1="40" y1="120" x2="520" y2="120"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.9"><line x1="250" y1="58" x2="200" y2="120"/></g>
+  <circle cx="250" cy="58" r="5" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.45" stroke-dasharray="3 3"><line x1="250" y1="58" x2="250" y2="120"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.9" marker-end="url(#arQ)"><line x1="260" y1="58" x2="304" y2="58"/></g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" opacity="0.8"><line x1="200" y1="114" x2="200" y2="126"/><line x1="250" y1="114" x2="250" y2="126"/><line x1="296" y1="114" x2="296" y2="126"/></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.7"><line x1="130" y1="144" x2="370" y2="144"/><line x1="130" y1="138" x2="130" y2="150"/><line x1="370" y1="138" x2="370" y2="150"/></g>
+  <g font-size="10" fill="currentColor">
+    <text x="262" y="50" font-size="11">x&#775;</text>
+    <text x="180" y="140" font-size="9.5" opacity="0.85">p</text>
+    <text x="244" y="140" font-size="9.5" opacity="0.85">x</text>
+    <text x="290" y="140" font-size="9.5" opacity="0.85">&#958;</text>
+    <text x="262" y="34" opacity="0.85">CoM, z = 0.30 m, m = 12 kg</text>
+    <text x="250" y="164" font-size="9.5" text-anchor="middle" opacity="0.85">foothold reach, 0.46 m each way</text>
+    <text x="40" y="184" font-size="10.5" opacity="0.9">&#958; inside the bracket means one step can still bring it to rest.</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"><line x1="80" y1="268" x2="480" y2="268"/><line x1="80" y1="268" x2="80" y2="274"/><line x1="280" y1="268" x2="280" y2="274"/><line x1="480" y1="268" x2="480" y2="274"/></g>
+  <g fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6">
+    <rect x="80" y="199" width="200" height="14" rx="2"/>
+    <rect x="280" y="219" width="200" height="14" rx="2"/>
+    <rect x="280" y="239" width="200" height="14" rx="2"/>
+    <rect x="80" y="259" width="200" height="14" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.35"><line x1="80" y1="199" x2="480" y2="199"/><line x1="80" y1="219" x2="480" y2="219"/><line x1="80" y1="239" x2="480" y2="239"/><line x1="80" y1="259" x2="480" y2="259"/></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.9">
+    <text x="46" y="210">LF</text><text x="46" y="230">RF</text><text x="46" y="250">LH</text><text x="46" y="270">RH</text>
+    <text x="80" y="286" text-anchor="middle">0</text><text x="280" y="286" text-anchor="middle">0.20 s</text><text x="480" y="286" text-anchor="middle">0.40 s</text>
+    <text x="40" y="306" font-size="10.5">Shaded = stance. Trot: two diagonal feet down at a time, swapping every 0.20 s.</text>
+  </g>
+</svg>
 
 ### 1. Why this page exists
 
@@ -101,6 +187,106 @@ unbidden in those papers are that object appearing without being asked for.
   Recovery," *Humanoids 2006*.
 - J. Englsberger, C. Ott, A. Albu-Schäffer, "Three-Dimensional Bipedal Walking Control Based
   on Divergent Component of Motion," *IEEE Transactions on Robotics*, vol. 31, no. 2, 2015.
+
+### Worked on Q · 장치로 한 번 끝까지
+
+Everything here is the linear inverted pendulum of §1.5 evaluated on Q's rows, plus the gait
+arithmetic that turns it into a speed limit. Do it once here and the problem set is a change of
+knobs rather than a first derivation.
+
+**1. The time constant.** The LIP obeys $\ddot x=\omega_0^2(x-p)$ with $\omega_0=\sqrt{g/z}$, and
+that rate depends on height alone — not on mass, not on leg length, not on how many feet are down —
+so Q's is fixed the moment its standing height is:
+
+$$\omega_0=\sqrt{\frac{g}{z}}=\sqrt{\frac{9.81}{0.30}}=5.72\ \mathrm{rad/s},\qquad \frac{1}{\omega_0}=0.175\ \mathrm{s}$$
+
+An uncorrected lean grows by a factor $e$ every $0.175$ s, so a $5$ cm error that nobody pays for
+becomes $0.05\,e^{1}=0.136$ m of it one time constant later. A 10 Hz controller gets fewer than two
+samples per time constant; that is the arithmetic behind §2's policies running at 50 Hz and above, and behind
+every locomotion stack having a fast inner loop.
+
+**2. The capture point.** From §1.5, $\xi=x+\dot x/\omega_0$, and placing the next foot on $\xi$
+makes $\dot\xi=0$, so the distance the foot must go ahead of the CoM to bring Q to rest in one step is
+
+$$\xi-x=\frac{\dot x}{\omega_0}=\frac{1.0}{5.72}=0.175\ \mathrm{m}$$
+
+at the trot command $\dot x=1.0$ m/s. The number is small; the question is whether Q's leg can reach it.
+
+**3. Where a foot can actually go.** The hip sits $d=0.30$ m ahead of the CoM (half the hip
+rectangle). The foot lies on a sphere of radius $\ell=0.34$ m about the hip, and while the hip is at
+standing height the vertical side of that right triangle is $z=0.30$ m, so the horizontal excursion
+left over is
+
+$$R=\sqrt{\ell^2-z^2}=\sqrt{0.34^2-0.30^2}=\sqrt{0.0256}=0.16\ \mathrm{m}$$
+
+The hip-relative window is therefore $2R=0.32$ m wide, and the furthest foothold ahead of the CoM is
+$d+R=0.30+0.16=0.46$ m. That $0.46$ m is the bracket in the homework diagram.
+
+**4. Two speed limits, and which one binds.** The first is balance: a one-step stop needs
+$\xi-x\le d+R$, so $\dot x\le\omega_0(d+R)=5.72\times0.46=2.63$ m/s. The second is stroke. During
+stance the foot is pinned to the ground while the hip travels forward $\dot x\,\beta T$, so the foot
+sweeps backwards through the hip-relative window by exactly that much and must fit inside $2R$:
+
+$$\dot x_{\max}=\frac{2R}{\beta T}=\frac{2\times0.16}{0.50\times0.40}=\frac{0.32}{0.20}=1.60\ \mathrm{m/s}$$
+
+The stroke limit binds first, and by a wide margin. At Q's frozen height and trot the legs run out of
+stroke at $1.60$ m/s while the capture point at that speed is only $1.60/5.72=0.28$ m out, well
+inside the $0.46$ m the leg can reach. Going faster is
+therefore a *gait* change — a shorter stance — and not a balance problem at all, which is the reason
+the table below is the object a locomotion paper is really varying when it reports a top speed.
+
+**5. Gait timing.** **Duty factor** $\beta$ is the fraction of the gait period one foot spends in
+stance, $\beta=T_{\mathrm{st}}/T$, a dimensionless number in $(0,1]$ defined per foot; the gaits
+below are symmetric, so all four feet share one $\beta$ and differ only in phase offset. Example:
+Q's nominal trot has $T_{\mathrm{st}}=0.20$ s out of $T=0.40$ s, so $\beta=0.50$. Non-example:
+$\beta$ is not the number of feet on the ground — that is $4\beta$ on average, which is why
+$\beta<0.25$ forces intervals with no foot down whatever the phase offsets are, and why a gallop is
+a ballistic problem the LIP above cannot describe. It matters because $\beta$ is the only knob in
+the stroke limit that a controller actually chooses.
+
+| Gait | $\beta$ | $T_{\mathrm{st}}$ | $T_{\mathrm{sw}}$ | feet down, $4\beta$ on average | $\dot x_{\max}=2R/\beta T$ |
+|---|---:|---:|---:|---|---:|
+| crawl | $0.75$ | $0.30\,\mathrm{s}$ | $0.10\,\mathrm{s}$ | $3$ — exactly three at quarter-period offsets | $1.07\,\mathrm{m/s}$ |
+| trot | $0.50$ | $0.20\,\mathrm{s}$ | $0.20\,\mathrm{s}$ | $2$ — one diagonal pair | $1.60\,\mathrm{m/s}$ |
+| bound | $0.40$ | $0.16\,\mathrm{s}$ | $0.24\,\mathrm{s}$ | $1.6$ — fore or hind pair, flight in between | $2.00\,\mathrm{m/s}$ |
+| gallop | $0.30$ | $0.12\,\mathrm{s}$ | $0.28\,\mathrm{s}$ | $1.2$ — feet in rotation, flight phases | $2.67\,\mathrm{m/s}$ |
+
+Read the last column against the $2.63$ m/s balance limit: only at the gallop row do the two finally
+meet. A quadruped shortens its stance not because balance demands it but because the leg runs out of
+travel, and it arrives at the balance limit just as it arrives at a gait with no support polygon left.
+
+**6. Friction, the one physical condition the learned line keeps.** Whatever the gait, the tangential
+force summed over the feet cannot exceed $\mu$ times the vertical force they carry, and in steady
+support that vertical total is $mg$, so the horizontal acceleration is capped independently of how
+many feet are down:
+
+$$a_{\max}=\frac{\mu\,m\,g}{m}=\mu g=0.6\times9.81=5.89\ \mathrm{m/s}^2$$
+
+Reaching the $1.60$ m/s stroke limit from rest therefore takes at least $1.60/5.886=0.272$ s, most
+of one gait cycle. Per foot: standing square, each carries $mg/4=29.43$ N; in the trot only two are
+down, so each carries $mg/2=58.86$ N and may push sideways with at most $\mu f_z=0.6\times58.86=35.3$
+N. Those three numbers are exactly what [[04-robotics/convex-mpc-legged|8. Convex MPC]] turns into
+constraint rows, and the $\mu$ that produces them is the single physical condition §1.5 says the
+learned controllers still rely on.
+
+**7. What P2 costs Q.** Mount **P2** ([[02-foundations/lab-plants|0.6]]) with its shoulder at Q's
+CoM. At P2's frozen pose $\theta=(0^\circ,90^\circ)$ its two $1$ kg masses sit $1$ m forward of the
+shoulder, one at shoulder height and one $1$ m above it, so the combined body has
+
+$$z'=\frac{12(0.30)+1(0.30)+1(1.30)}{14}=\frac{5.20}{14}=0.371\ \mathrm{m},\qquad \Delta x=\frac{1(1.0)+1(1.0)}{14}=0.143\ \mathrm{m}$$
+
+because a centre of mass is the mass-weighted average of the parts. Two consequences, both bad.
+The pendulum slows to $\omega_0'=\sqrt{9.81/0.371}=5.14$ rad/s, so the capture point at $1.0$ m/s
+moves out from $0.175$ m to $0.195$ m. And the reach bracket is measured from the *new* CoM, which
+has moved $0.143$ m forward into it, leaving $0.46-0.143=0.317$ m: the balance limit falls to
+$5.14\times0.317=1.63$ m/s. The stroke limit has not moved. Carrying P2 collapses $2.63$ and $1.60$
+m/s onto $1.63$ and $1.60$, and the margin between "the legs run out" and "it cannot stop" is gone.
+
+Laterally, P2's frozen pose is in the sagittal plane, so it shifts no mass sideways but still raises
+the CoM. Static tip-over about a lateral foot pair happens when the CoM projection crosses the
+$0.15$ m half-width, at $\arctan(0.15/z)$ — $26.6^\circ$ bare and $\arctan(0.15/0.371)=22.0^\circ$
+carrying P2. That $22.0^\circ$ is the slope gate the costmap on
+[[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] uses.
 
 ### 2. The idea worth taking away: privileged teacher-student distillation
 
@@ -320,6 +506,8 @@ for the full picture and the licensing traps.
 
 ### After reading
 
+- [ ] Draw Q's inverted pendulum and its gait chart, and mark the capture point inside the reach bracket.
+- [ ] Say which of Q's two speed limits binds at the nominal trot, and what mounting P2 does to the other one.
 - [ ] Draw the teacher-student diagram and name what is privileged.
 - [ ] State what Hwangbo 2019 actually demonstrated.
 - [ ] Explain why "walk in minutes" is not a sample-efficiency claim.
@@ -349,16 +537,38 @@ for the full picture and the licensing traps.
 
 ### Problem set · 과제
 
-Tier C. Using this page only.
+Tier B. Using **Q**, this page, and **P2** from [[02-foundations/lab-plants|0.6]]. No simulator: the
+Euler loop for a legged body is not on this page and you do not need one.
 
-1. A paper says it "learns to walk in minutes." What is privileged in the teacher–student diagram, and why is wall-clock minutes not a sample-efficiency claim?
-2. Hwangbo 2019 is cited as "sim-to-real is solved." What did it actually demonstrate, and what transfer does it not license?
-3. You need a quadruped to carry a manipulator over rubble. Which result on this page is the closest precedent, and which two things does it still not give you?
+**The change of knobs.** Q crouches to $z=0.24$ m and walks a **crawl**, $\beta=0.75$ at the same
+period $T=0.40$ s, with the four feet offset a quarter period apart in the order LF, RH, RF, LH.
+Commanded speed $\dot x=0.6$ m/s. Leg length, hip offset, mass and $\mu$ are unchanged.
+
+1. **Draw.** Both panels of the homework diagram for the crouched crawl. Top: the inverted pendulum
+   at $z=0.24$ m, the capture point at $0.6$ m/s, and the reach bracket for the new standing height —
+   mark whether $\xi$ is inside it and by how much. Bottom: the gait chart, four lanes, $0.30$ s of
+   stance per lane wrapping around the period. Shade it, then write under the chart how many feet are
+   down at every instant and say what shape the support polygon has.
+2. **Derive.** (a) $\omega_0$ and $1/\omega_0$ at the crouch. (b) The foot excursion $R$ and the
+   furthest foothold ahead of the CoM. (c) The crawl's stroke limit $2R/\beta T$ and the balance limit
+   $\omega_0(d+R)$; say which one binds and by how much. (d) Now mount P2 at the shoulder as in the
+   worked derivation, recompute $z'$, $\Delta x$ and the balance limit, and say whether the margin of
+   (c) survives.
+3. **Interpret.** The crouch changes two things at once: it speeds the pendulum up and it lengthens
+   the stroke. Say why each happens from the formula, name what the crouch costs that neither formula
+   shows, and then answer the reading question: which of §2–§3's learned results would have found this
+   trade-off *without* being told it exists, and what does the LIP give you that the policy does not?
+4. **Read.** Three claims, using §2–§6 only. (a) A paper says it "learns to walk in minutes." What is
+   privileged in the teacher–student diagram, and why is wall-clock minutes not a sample-efficiency
+   claim? (b) Hwangbo 2019 is cited as "sim-to-real is solved." What did it actually demonstrate, and
+   what transfer does it not license? (c) You need a quadruped to carry a manipulator over rubble.
+   Which result on this page is the closest precedent, and which two things does it still not give you?
 
 > [!tip]- Solutions
-> 1. The teacher sees friction and terrain; the student sees proprioception (and maybe a camera). Minutes are parallel-simulator wall clock, not environment steps per skill — Rudin's claim is throughput, not sample efficiency.
-> 2. Agile skills on a quadruped transferred from a rigid-body sim with system ID and domain randomisation. Not contact-rich manipulation, not any other robot, not "solved."
-> 3. ANYmal parkour (affordance at the high level). Not the arm, not the payload dynamics. Adding the manipulator is an error-budget problem [[04-robotics/navigation-mobile-manipulation|16. §4]] does not find in the locomotion papers.
+> 1. Top: $\xi$ sits $0.094$ m ahead of the CoM and the bracket now runs to $0.541$ m, so it is inside with roughly $0.45$ m to spare. Bottom: with $\beta=0.75$ and quarter-period offsets, exactly $4\beta=3$ feet are down at every instant, so the support polygon is a triangle that swaps one vertex every $0.10$ s and never collapses to a segment — the opposite of the trot in the lecture chart.
+> 2. (a) $\omega_0=\sqrt{9.81/0.24}=6.39\,\mathrm{rad/s}$, $1/\omega_0=0.156\,\mathrm{s}$. (b) $R=\sqrt{0.34^2-0.24^2}=\sqrt{0.058}=0.241\,\mathrm{m}$, furthest foothold $0.30+0.241=0.541\,\mathrm{m}$. (c) Stroke $2(0.241)/0.30=1.61\,\mathrm{m/s}$; balance $6.39\times0.541=3.46\,\mathrm{m/s}$. Stroke binds, and the gap is wider than at standing height — but note the crawl at a crouch ($1.61$ m/s) matches the trot at full height ($1.60$ m/s), so the crouch bought back everything the higher duty factor cost. (d) $z'=(12(0.24)+1(0.24)+1(1.24))/14=4.36/14=0.311\,\mathrm{m}$, $\Delta x=0.143\,\mathrm{m}$ unchanged, $\omega_0'=5.61\,\mathrm{rad/s}$, balance $=5.61\times(0.541-0.143)=2.23\,\mathrm{m/s}$. The margin survives: $2.23$ against a stroke limit of $1.61$. At standing height the same arm erased the margin entirely, so crouching is the fix for carrying it.
+> 3. $\omega_0=\sqrt{g/z}$ rises as $z$ falls, so the pendulum diverges faster and the controller has less time — that is the cost hidden in (a), and it is why a crouch is not free. $R=\sqrt{\ell^2-z^2}$ rises as $z$ falls because the leg's fixed length buys horizontal travel with the vertical it no longer spends. What neither formula shows is the joint torque: holding a crouch loads the knee against gravity for the whole stance, and the LIP has no torque in it at all. As for the reading question — all of them, in the sense that a reward for forward velocity plus a torque penalty selects exactly this trade without anyone writing $\sqrt{\ell^2-z^2}$ down; that is what §2 means by a limit cycle the network found on its own. What the LIP gives you that the policy does not is the *reason*: two closed-form limits you can check before building anything, and a way to say which of them a reported top speed was actually up against.
+> 4. (a) The teacher sees friction and terrain; the student sees proprioception (and maybe a camera). Minutes are parallel-simulator wall clock, not environment steps per skill — Rudin's claim is throughput, not sample efficiency. (b) Agile skills on a quadruped transferred from a rigid-body sim with system ID and domain randomisation. Not contact-rich manipulation, not any other robot, not "solved." (c) ANYmal parkour (affordance at the high level). Not the arm, not the payload dynamics. Adding the manipulator is an error-budget problem [[04-robotics/navigation-mobile-manipulation|16. §4]] does not find in the locomotion papers — and §7 of the worked derivation gives you the two numbers it costs: the capture point moves out $0.175\to0.195$ m and the reach bracket loses $0.143$ m.
 
 ### Sources
 
@@ -386,7 +596,90 @@ Tier C. Using this page only.
 가져갈 발상은 특권 교사–학생 증류이고, 이 페이지는 동시에 과잉 인용을 교정하는 연습장이다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다.
+> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다. 이 페이지의 장치, 과제가 그릴 그림, 그리고 그 위에서 끝까지 해 본 유도는 과제가 전제하는 강의다. 문헌이 아니라 수업 때문에 왔다면 장치 → 그림 → §1.5 → 유도 순서로 읽어라.
+
+### 이 페이지의 장치 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 여섯 장치 중 다리 달린 몸은 없다. 그래서 이
+페이지가 자기 장치를 고정하고, 다음 두 페이지는 새 장치를 만드는 대신 이것을 다시 쓴다.
+
+**Q — 고정된 사족.** 질량 없는 다리 네 개 위의 단일 강체. 네 발을 정사각으로 딛고 선다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| $m$ | $12\,\mathrm{kg}$ | 몸통 전체 질량 |
+| $z$ | $0.30\,\mathrm{m}$ | 서 있을 때 무게중심 높이 |
+| 고관절 직사각형 | $0.60\times0.30\,\mathrm{m}$ | 무게중심 아래 $(\pm0.30,\pm0.15)\,\mathrm{m}$의 발 |
+| $\ell$ | $0.34\,\mathrm{m}$ | 고관절에서 발까지 다리 길이 |
+| $\mu$ | $0.6$ | 발–지면 마찰계수 |
+| $T$ | $0.40\,\mathrm{s}$ | 보행 주기 |
+| $\beta$ | $0.50$ | 기준 trot의 듀티 팩터 |
+| $h_{\max}$ | $0.15\,\mathrm{m}$ | 카탈로그가 허락하는 넘어설 수 있는 단차 |
+| $f_{z,\max}$ | $200\,\mathrm{N}$ | 발당 수직력 한계 |
+| $g$ | $9.81\,\mathrm{m/s}^2$ | 중력 |
+
+규정에 해당하는 것은 마지막 네 줄뿐이다. $h_{\max}$와 $f_{z,\max}$는 P3의 손 강성이 그렇듯
+카탈로그 숫자다 — 한 번 적고, 여기서 유도하지 않으며, 과제에서만 바꾼다. 나머지는 모두 위의
+줄에서 계산되고, 아래의 어떤 숫자도 그 줄과 모순되지 않는다.
+
+Q는 이 위키의 관통 과제를 나른다: [[02-foundations/lab-plants|0.6]]의 **P2**가 Q의 등에 타고,
+아래 유도의 마지막이 그 팔이 몸통에 물리는 비용을 계산한다. Q는
+[[04-robotics/convex-mpc-legged|8. Convex MPC]]에서 QP의 몸통으로,
+[[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]에서는 비용 지도를
+받는 로봇으로 다시 나온다.
+
+§1.5의 $z=0.9$ m 휴머노이드는 *다른* 몸이다. capture point 문헌이 그 크기에 대해 쓰였기 때문에
+그대로 둔다. 두 숫자가 어긋나면 하나가 낡아서가 아니라 기계가 둘이기 때문이다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+두 칸짜리 그림이고, 과제가 요구하는 것도 같은 쌍이다.
+
+**위 — 시상면의 도립진자.** 지면을 수평선으로 긋는다. 높이 $z=0.30$ m에 무게중심 점을 찍고,
+거기서 디딤발 $p$까지 질량 없는 곧은 다리를 내린다. 무게중심에 수평 속도 화살표 $\dot x$를
+그린다. 지면에 세 점을 표시한다: 발 $p$, 무게중심의 수직 투영 $x$, 그리고 $x$보다
+$\dot x/\omega_0$만큼 앞의 capture point $\xi$. 그다음 $x$의 뒤 $0.46$ m부터 앞 $0.46$ m까지
+괄호를 치고 *reach*라 적는다 — 발을 놓을 수 있는 구간이다. 과제 전체가 $\xi$가 그 괄호 안에
+들어오는가 하는 물음이다.
+
+**아래 — 보행 차트.** 발마다 한 줄씩 수평 네 줄을 쌓고 LF, RF, LH, RH라 이름 붙인 뒤, 한 주기
+$T=0.40$ s의 시간 축 위에 놓는다. 그 발이 디딤(stance)인 구간을 칠한다. 기준 trot에서는 LF와
+RH가 $0$부터 $0.20$ s까지, RF와 LH가 $0.20$부터 $0.40$ s까지다. 칠해진 집합이 바뀌는 순간을
+표시한다. 그 순간이 지지 다각형의 모양이 바뀌는 때이고, [[04-robotics/convex-mpc-legged|8. Convex MPC]]가
+건네받는 **접촉 스케줄**이란 바로 이 차트를 표로 읽은 것이다.
+
+<svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="위: 발을 놓을 수 있는 구간 괄호 안에 capture point가 들어온 고정 사족의 도립진자. 아래: 한 주기의 trot 보행 차트">
+  <defs><marker id="arQk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6"><line x1="40" y1="120" x2="520" y2="120"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.9"><line x1="250" y1="58" x2="200" y2="120"/></g>
+  <circle cx="250" cy="58" r="5" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.45" stroke-dasharray="3 3"><line x1="250" y1="58" x2="250" y2="120"/></g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.9" marker-end="url(#arQk)"><line x1="260" y1="58" x2="304" y2="58"/></g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" opacity="0.8"><line x1="200" y1="114" x2="200" y2="126"/><line x1="250" y1="114" x2="250" y2="126"/><line x1="296" y1="114" x2="296" y2="126"/></g>
+  <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.7"><line x1="130" y1="144" x2="370" y2="144"/><line x1="130" y1="138" x2="130" y2="150"/><line x1="370" y1="138" x2="370" y2="150"/></g>
+  <g font-size="10" fill="currentColor">
+    <text x="262" y="50" font-size="11">x&#775;</text>
+    <text x="180" y="140" font-size="9.5" opacity="0.85">p</text>
+    <text x="244" y="140" font-size="9.5" opacity="0.85">x</text>
+    <text x="290" y="140" font-size="9.5" opacity="0.85">&#958;</text>
+    <text x="262" y="34" opacity="0.85">무게중심, z = 0.30 m, m = 12 kg</text>
+    <text x="250" y="164" font-size="9.5" text-anchor="middle" opacity="0.85">발을 놓을 수 있는 구간, 앞뒤로 0.46 m</text>
+    <text x="40" y="184" font-size="10.5" opacity="0.9">&#958;가 괄호 안이면 한 걸음으로 아직 멈출 수 있다.</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"><line x1="80" y1="268" x2="480" y2="268"/><line x1="80" y1="268" x2="80" y2="274"/><line x1="280" y1="268" x2="280" y2="274"/><line x1="480" y1="268" x2="480" y2="274"/></g>
+  <g fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6">
+    <rect x="80" y="199" width="200" height="14" rx="2"/>
+    <rect x="280" y="219" width="200" height="14" rx="2"/>
+    <rect x="280" y="239" width="200" height="14" rx="2"/>
+    <rect x="80" y="259" width="200" height="14" rx="2"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.35"><line x1="80" y1="199" x2="480" y2="199"/><line x1="80" y1="219" x2="480" y2="219"/><line x1="80" y1="239" x2="480" y2="239"/><line x1="80" y1="259" x2="480" y2="259"/></g>
+  <g font-size="9.5" fill="currentColor" opacity="0.9">
+    <text x="46" y="210">LF</text><text x="46" y="230">RF</text><text x="46" y="250">LH</text><text x="46" y="270">RH</text>
+    <text x="80" y="286" text-anchor="middle">0</text><text x="280" y="286" text-anchor="middle">0.20 s</text><text x="480" y="286" text-anchor="middle">0.40 s</text>
+    <text x="40" y="306" font-size="10.5">칠한 구간이 디딤. trot은 대각선 두 발이 0.20 s마다 교대한다.</text>
+  </g>
+</svg>
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -459,6 +752,104 @@ $$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^
   Recovery," *Humanoids 2006*.
 - J. Englsberger, C. Ott, A. Albu-Schäffer, "Three-Dimensional Bipedal Walking Control Based
   on Divergent Component of Motion," *IEEE Transactions on Robotics*, vol. 31, no. 2, 2015.
+
+### 장치로 한 번 끝까지 · Worked on Q
+
+여기 있는 것은 전부 §1.5의 선형 도립진자를 Q의 줄에 대입한 것이고, 거기에 그것을 속도 한계로
+바꾸는 보행 산수를 더한 것이다. 여기서 한 번 해 두면 과제는 첫 유도가 아니라 손잡이를 하나
+돌리는 일이 된다.
+
+**1. 시간 상수.** 도립진자는 $\ddot x=\omega_0^2(x-p)$를 따르고 $\omega_0=\sqrt{g/z}$인데, 이
+비율은 높이 하나로만 정해진다 — 질량도, 다리 길이도, 몇 발이 땅에 있는지도 들어가지 않는다.
+그래서 Q의 값은 서 있는 높이를 정하는 순간 함께 정해진다.
+
+$$\omega_0=\sqrt{\frac{g}{z}}=\sqrt{\frac{9.81}{0.30}}=5.72\ \mathrm{rad/s},\qquad \frac{1}{\omega_0}=0.175\ \mathrm{s}$$
+
+바로잡지 않은 기울어짐은 $0.175$ s마다 $e$배로 커지므로, 아무도 값을 치르지 않은 $5$ cm 오차는
+시간 상수 하나 뒤에 $0.05\,e^{1}=0.136$ m가 된다. 10 Hz 제어기는 시간 상수당 표본을 둘도
+얻지 못한다. §2의 정책이 50 Hz 이상으로 도는 이유, 그리고 모든 보행 스택에 빠른 내부 루프가 있는
+이유가 이 산수다.
+
+**2. Capture point.** §1.5에서 $\xi=x+\dot x/\omega_0$이고 다음 발을 $\xi$에 놓으면
+$\dot\xi=0$이 되므로, Q를 한 걸음에 멈추려면 발이 무게중심보다 앞서야 하는 거리는 다음과 같다.
+
+$$\xi-x=\frac{\dot x}{\omega_0}=\frac{1.0}{5.72}=0.175\ \mathrm{m}$$
+
+trot 명령 $\dot x=1.0$ m/s에서의 값이다. 숫자 자체는 작다. 문제는 Q의 다리가 거기에 닿느냐다.
+
+**3. 발이 실제로 갈 수 있는 곳.** 고관절은 무게중심보다 $d=0.30$ m 앞에 있다(고관절 직사각형의
+절반). 발은 고관절을 중심으로 반지름 $\ell=0.34$ m인 구 위에 있고, 고관절이 서 있는 높이에 있는
+동안 그 직각삼각형의 수직 변은 $z=0.30$ m이므로 남는 수평 여유는 다음과 같다.
+
+$$R=\sqrt{\ell^2-z^2}=\sqrt{0.34^2-0.30^2}=\sqrt{0.0256}=0.16\ \mathrm{m}$$
+
+따라서 고관절 기준 창은 $2R=0.32$ m 폭이고, 무게중심 앞 가장 먼 디딤점은 $d+R=0.30+0.16=0.46$
+m다. 이 $0.46$ m가 과제 그림의 괄호다.
+
+**4. 속도 한계 둘, 그리고 먼저 걸리는 쪽.** 첫째는 균형이다. 한 걸음 정지에는 $\xi-x\le d+R$가
+필요하므로 $\dot x\le\omega_0(d+R)=5.72\times0.46=2.63$ m/s다. 둘째는 스트로크다. 디딤 동안 발은
+지면에 고정되고 고관절은 $\dot x\,\beta T$만큼 앞으로 가므로, 발은 고관절 기준 창을 정확히 그만큼
+뒤로 쓸고 지나가며 그것이 $2R$ 안에 들어와야 한다.
+
+$$\dot x_{\max}=\frac{2R}{\beta T}=\frac{2\times0.16}{0.50\times0.40}=\frac{0.32}{0.20}=1.60\ \mathrm{m/s}$$
+
+스트로크 한계가, 그것도 큰 차이로 먼저 걸린다. Q의 고정된 높이와 trot에서 다리는 $1.60$ m/s에서
+행정이 바닥나는데 그 속도의 capture point는 $1.60/5.72=0.28$ m밖에 안 나가 있어 다리가 닿는
+$0.46$ m 안쪽에 넉넉히 들어온다. 그러니 더 빨리 가는 것은
+*보행 양식*을 바꾸는 일 — 디딤을 짧게 하는 일 — 이지 균형 문제가 아니다. 보행 논문이 최고 속도를
+보고할 때 실제로 건드리고 있는 대상이 아래 표인 이유가 이것이다.
+
+**5. 보행 타이밍.** **듀티 팩터** $\beta$는 한 발이 한 주기 중 디딤으로 보내는 비율,
+$\beta=T_{\mathrm{st}}/T$이고, $(0,1]$의 무차원 수이며 발마다 정의된다. 아래 보행 양식들은
+대칭이라 네 발이 $\beta$ 하나를 공유하고 위상 차만 다르다. 예: Q의 기준 trot은 $T=0.40$ s 중
+$T_{\mathrm{st}}=0.20$ s이므로 $\beta=0.50$이다. 반례: $\beta$는 땅에 있는 발의 수가 아니다. 그
+수는 평균 $4\beta$이고, 그래서 $\beta<0.25$이면 위상 차가 어떻든 발이 하나도 없는 구간이 생기며,
+갤럽이 위의 도립진자로는 서술할 수 없는 탄도 문제인 것도 그 때문이다. 이것이 중요한 이유는
+스트로크 한계에서 제어기가 실제로 고르는 손잡이가 $\beta$뿐이기 때문이다.
+
+| 보행 양식 | $\beta$ | $T_{\mathrm{st}}$ | $T_{\mathrm{sw}}$ | 땅에 있는 발, 평균 $4\beta$ | $\dot x_{\max}=2R/\beta T$ |
+|---|---:|---:|---:|---|---:|
+| crawl | $0.75$ | $0.30\,\mathrm{s}$ | $0.10\,\mathrm{s}$ | $3$ — 4분의 1 주기 위상이면 정확히 셋 | $1.07\,\mathrm{m/s}$ |
+| trot | $0.50$ | $0.20\,\mathrm{s}$ | $0.20\,\mathrm{s}$ | $2$ — 대각선 한 쌍 | $1.60\,\mathrm{m/s}$ |
+| bound | $0.40$ | $0.16\,\mathrm{s}$ | $0.24\,\mathrm{s}$ | $1.6$ — 앞 또는 뒤 한 쌍, 사이에 체공 | $2.00\,\mathrm{m/s}$ |
+| gallop | $0.30$ | $0.12\,\mathrm{s}$ | $0.28\,\mathrm{s}$ | $1.2$ — 발이 돌아가며, 체공 구간 있음 | $2.67\,\mathrm{m/s}$ |
+
+마지막 열을 $2.63$ m/s의 균형 한계와 나란히 읽어라. 둘이 마침내 만나는 곳은 갤럽 줄뿐이다.
+사족이 디딤을 줄이는 것은 균형이 요구해서가 아니라 다리 행정이 바닥나서이고, 지지 다각형이 더는
+남지 않는 보행 양식에 이르는 바로 그때 균형 한계에도 도달한다.
+
+**6. 마찰, 학습 계열이 유일하게 지키는 물리 조건.** 보행 양식이 무엇이든 발들의 접선력 합은
+그들이 받치는 수직력의 $\mu$배를 넘을 수 없고, 정상 지지에서 그 수직 총합은 $mg$다. 그래서 수평
+가속도는 땅에 있는 발의 수와 무관하게 묶인다.
+
+$$a_{\max}=\frac{\mu\,m\,g}{m}=\mu g=0.6\times9.81=5.89\ \mathrm{m/s}^2$$
+
+정지에서 $1.60$ m/s의 스트로크 한계까지 가는 데 최소 $1.60/5.886=0.272$ s, 곧 한 보행 주기의
+대부분이 든다. 발당으로 보면, 정사각으로 서 있을 때는 각각 $mg/4=29.43$ N을 받치고, trot에서는
+둘만 땅에 있으므로 각각 $mg/2=58.86$ N을 받치며 옆으로는 많아야
+$\mu f_z=0.6\times58.86=35.3$ N을 밀 수 있다. 이 세 숫자가 정확히
+[[04-robotics/convex-mpc-legged|8. Convex MPC]]가 제약 행으로 바꾸는 것이고, 그것을 만들어 내는
+$\mu$가 §1.5가 말한 대로 학습 제어기도 여전히 기대는 유일한 물리 조건이다.
+
+**7. P2가 Q에 물리는 비용.** [[02-foundations/lab-plants|0.6]]의 **P2**를 어깨가 Q의 무게중심에
+오도록 얹는다. P2의 고정 자세 $\theta=(0^\circ,90^\circ)$에서 $1$ kg 질량 둘은 어깨보다 $1$ m
+앞에 있고 하나는 어깨 높이, 하나는 그보다 $1$ m 위에 있다. 그래서 합쳐진 몸은 다음과 같다.
+
+$$z'=\frac{12(0.30)+1(0.30)+1(1.30)}{14}=\frac{5.20}{14}=0.371\ \mathrm{m},\qquad \Delta x=\frac{1(1.0)+1(1.0)}{14}=0.143\ \mathrm{m}$$
+
+무게중심이 부분들의 질량 가중 평균이기 때문이다. 나쁜 귀결이 둘이다. 진자가
+$\omega_0'=\sqrt{9.81/0.371}=5.14$ rad/s로 느려져 $1.0$ m/s에서의 capture point가 $0.175$ m에서
+$0.195$ m로 멀어진다. 그리고 괄호는 *새* 무게중심에서 재는데 그 무게중심이 괄호 안쪽으로
+$0.143$ m 들어와 버려 $0.46-0.143=0.317$ m만 남고, 균형 한계가 $5.14\times0.317=1.63$ m/s로
+떨어진다. 스트로크 한계는 그대로다. P2를 실으면 $2.63$과 $1.60$ m/s가 $1.63$과 $1.60$으로
+포개지고, "다리가 바닥난다"와 "멈추지 못한다" 사이의 여유가 사라진다.
+
+측면으로는, P2의 고정 자세가 시상면 안에 있어 옆으로 질량을 옮기지는 않지만 무게중심은
+그대로 올린다. 측면 발 한 쌍을 축으로 한 정적 전복은 무게중심 투영이 $0.15$ m 반폭을 넘을 때
+일어나므로 각도는 $\arctan(0.15/z)$ — 맨몸 $26.6^\circ$, P2를 실으면
+$\arctan(0.15/0.371)=22.0^\circ$다. 이 $22.0^\circ$가
+[[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]의 비용 지도가 쓰는
+경사 관문이다.
 
 ### 2. 가져갈 발상: privileged teacher-student 증류
 
@@ -654,6 +1045,8 @@ $$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
+- [ ] Q의 도립진자와 보행 차트를 그리고, capture point가 괄호 안에 있음을 표시한다.
+- [ ] 기준 trot에서 Q의 두 속도 한계 중 어느 쪽이 걸리는지, P2를 실으면 나머지 하나가 어떻게 되는지 말한다.
 - [ ] 교사-학생 그림을 그리고 무엇이 특권적인지 댄다.
 - [ ] Hwangbo 2019가 실제로 무엇을 실증했는지 말한다.
 - [ ] "몇 분 만에 걷기"가 왜 샘플 효율 주장이 아닌지 설명한다.
@@ -681,16 +1074,36 @@ $$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^
 
 ### 과제 · Problem set
 
-Tier C. 이 페이지만 사용한다.
+Tier B. **Q**, 이 페이지, 그리고 [[02-foundations/lab-plants|0.6]]의 **P2**를 쓴다. 시뮬레이터는
+없다. 다리 달린 몸의 오일러 루프는 이 페이지에 없고, 필요하지도 않다.
 
-1. 어떤 논문이 "몇 분 만에 걷기를 학습한다"고 한다. 교사–학생 도식에서 특권인 것과, 벽시계 분이 샘플 효율 주장이 아닌 이유는?
-2. Hwangbo 2019가 "sim-to-real은 풀렸다"로 인용된다. 실제로 보인 것과, 허가하지 않는 이전은?
-3. 사족이 잔해 위로 매니퓰레이터를 실어 나르길 원한다. 이 페이지에서 가장 가까운 선례와, 그것이 여전히 주지 않는 둘은?
+**바꿀 손잡이.** Q가 $z=0.24$ m로 몸을 낮추고 **crawl**로 걷는다. 주기는 그대로 $T=0.40$ s,
+$\beta=0.75$, 네 발의 위상은 LF, RH, RF, LH 순으로 4분의 1 주기씩 어긋난다. 명령 속도는
+$\dot x=0.6$ m/s. 다리 길이, 고관절 거리, 질량, $\mu$는 그대로다.
+
+1. **그려라.** 낮춘 crawl에 대해 과제 그림 두 칸을 모두 그린다. 위: $z=0.24$ m의 도립진자,
+   $0.6$ m/s에서의 capture point, 그리고 새 높이에 대한 괄호 — $\xi$가 그 안인지, 얼마나 여유가
+   있는지 표시한다. 아래: 보행 차트 네 줄, 줄마다 $0.30$ s의 디딤이 주기를 돌며 들어간다. 칠한
+   뒤 차트 아래에 매 순간 발이 몇 개 땅에 있는지 적고, 지지 다각형이 어떤 모양인지 말한다.
+2. **유도하라.** (a) 낮춘 자세의 $\omega_0$와 $1/\omega_0$. (b) 발의 여유 $R$과 무게중심 앞
+   가장 먼 디딤점. (c) crawl의 스트로크 한계 $2R/\beta T$와 균형 한계 $\omega_0(d+R)$. 어느 쪽이
+   먼저 걸리고 차이는 얼마인가. (d) 유도 §7처럼 P2를 어깨에 얹고 $z'$, $\Delta x$, 균형 한계를
+   다시 구한 뒤, (c)의 여유가 살아남는지 말한다.
+3. **해석하라.** 낮춘 자세는 두 가지를 한꺼번에 바꾼다. 진자를 빠르게 하고 스트로크를 늘린다.
+   각각이 왜 그런지 식에서 말하고, 두 식 어디에도 나오지 않는 대가가 무엇인지 대라. 그다음 독해
+   질문: §2~§3의 학습 결과들 중 이 맞거래를 *알려 주지 않아도* 찾아냈을 것은 어느 것이고,
+   도립진자가 정책이 주지 않는 무엇을 주는가?
+4. **읽어라.** §2~§6만 써서 세 가지 주장을 다룬다. (a) 어떤 논문이 "몇 분 만에 걷기를 학습한다"고
+   한다. 교사–학생 도식에서 특권인 것과, 벽시계 분이 샘플 효율 주장이 아닌 이유는? (b) Hwangbo
+   2019가 "sim-to-real은 풀렸다"로 인용된다. 실제로 보인 것과, 허가하지 않는 이전은? (c) 사족이
+   잔해 위로 매니퓰레이터를 실어 나르길 원한다. 이 페이지에서 가장 가까운 선례와, 그것이 여전히
+   주지 않는 둘은?
 
 > [!tip]- 정답 · Solutions
-> 1. 교사는 마찰과 지형을 보고, 학생은 고유수용(과 카메라)을 본다. 분은 병렬 시뮬레이터 벽시계이지 기술당 환경 스텝이 아니다 — Rudin의 주장은 처리량이지 샘플 효율이 아니다.
-> 2. 강체 시뮬에서 시스템 식별과 도메인 랜덤화로 사족의 민첩 기술이 이전된 것. 접촉이 많은 조작도, 다른 로봇도, "풀렸다"도 아니다.
-> 3. ANYmal parkour(상위 수준의 affordance). 팔도, 페이로드 동역학도 아니다. 매니퓰레이터를 더하는 것은 로코모션 논문이 다루지 않는 오차 예산 문제([[04-robotics/navigation-mobile-manipulation|16. §4]]).
+> 1. 위: $\xi$는 무게중심 앞 $0.094$ m이고 괄호는 이제 $0.541$ m까지 가므로, 약 $0.45$ m 여유를 두고 안쪽이다. 아래: $\beta=0.75$에 4분의 1 주기 위상이면 매 순간 정확히 $4\beta=3$개의 발이 땅에 있으므로, 지지 다각형은 $0.10$ s마다 꼭짓점 하나를 바꾸는 삼각형이고 결코 선분으로 무너지지 않는다 — 강의의 trot 차트와 정반대다.
+> 2. (a) $\omega_0=\sqrt{9.81/0.24}=6.39\,\mathrm{rad/s}$, $1/\omega_0=0.156\,\mathrm{s}$. (b) $R=\sqrt{0.34^2-0.24^2}=\sqrt{0.058}=0.241\,\mathrm{m}$, 가장 먼 디딤점 $0.30+0.241=0.541\,\mathrm{m}$. (c) 스트로크 $2(0.241)/0.30=1.61\,\mathrm{m/s}$, 균형 $6.39\times0.541=3.46\,\mathrm{m/s}$. 스트로크가 걸리고 그 차이는 선 자세보다 오히려 크다 — 다만 낮춘 crawl($1.61$ m/s)이 선 자세의 trot($1.60$ m/s)과 같아졌다는 점을 보라. 높은 듀티 팩터가 물린 값을 낮춘 자세가 그대로 되사 왔다. (d) $z'=(12(0.24)+1(0.24)+1(1.24))/14=4.36/14=0.311\,\mathrm{m}$, $\Delta x=0.143\,\mathrm{m}$ 그대로, $\omega_0'=5.61\,\mathrm{rad/s}$, 균형 $=5.61\times(0.541-0.143)=2.23\,\mathrm{m/s}$. 여유는 살아남는다: 스트로크 $1.61$에 대해 $2.23$. 선 자세에서는 같은 팔이 여유를 완전히 지웠으니, 팔을 싣는 문제의 해법이 낮춘 자세다.
+> 3. $z$가 작아지면 $\omega_0=\sqrt{g/z}$가 커져 진자가 더 빨리 발산하고 제어기의 시간이 줄어든다 — (a)에 숨은 대가이고, 낮춘 자세가 공짜가 아닌 이유다. $R=\sqrt{\ell^2-z^2}$는 $z$가 작아지면 커지는데, 길이가 정해진 다리가 더는 쓰지 않는 수직 몫으로 수평 이동을 사기 때문이다. 두 식 어디에도 없는 것은 관절 토크다. 낮춘 자세를 유지하려면 디딤 내내 무릎이 중력을 버텨야 하는데 도립진자에는 토크 항이 아예 없다. 독해 질문은 — 전부다. 전진 속도 보상에 토크 벌점을 더하면 누구도 $\sqrt{\ell^2-z^2}$를 적지 않고도 정확히 이 맞거래가 선택된다는 뜻에서 그렇고, 그것이 §2가 말하는, 신경망이 스스로 찾은 극한주기다. 도립진자가 정책 대신 주는 것은 *이유*다. 아무것도 만들기 전에 확인할 수 있는 닫힌 형태의 한계 두 개, 그리고 보고된 최고 속도가 둘 중 어느 것에 부딪혔던 것인지 말할 수 있는 수단.
+> 4. (a) 교사는 마찰과 지형을 보고, 학생은 고유수용(과 카메라)을 본다. 분은 병렬 시뮬레이터 벽시계이지 기술당 환경 스텝이 아니다 — Rudin의 주장은 처리량이지 샘플 효율이 아니다. (b) 강체 시뮬에서 시스템 식별과 도메인 랜덤화로 사족의 민첩 기술이 이전된 것. 접촉이 많은 조작도, 다른 로봇도, "풀렸다"도 아니다. (c) ANYmal parkour(상위 수준의 affordance). 팔도, 페이로드 동역학도 아니다. 매니퓰레이터를 더하는 것은 로코모션 논문이 다루지 않는 오차 예산 문제([[04-robotics/navigation-mobile-manipulation|16. §4]])이고, 유도 §7이 그 값을 두 숫자로 준다: capture point가 $0.175\to0.195$ m로 멀어지고 괄호가 $0.143$ m를 잃는다.
 
 ### 출처
 
