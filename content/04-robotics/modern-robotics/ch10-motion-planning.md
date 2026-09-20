@@ -169,6 +169,19 @@ a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pa
 on real sites, sampling planners still provide the safety-checkable backbone that learned
 proposals get filtered through.
 
+### Self-check
+
+1. Discretize a 7-dof arm's C-space at 100 cells per axis — how many cells? What does that explain about sampling-based planning?
+2. What does RRT's "probabilistic completeness" guarantee, and what does it not?
+3. Why can't you run plain RRT on a car?
+4. Both endpoints of the direct edge $A$–$B$ are collision-free. Why is the edge not?
+
+> [!tip]- Answers
+> 1. $100^7 = 10^{14}$ cells. Grid search explodes exponentially in dof, so beyond a few dimensions only sampling is tractable — you cannot even enumerate the space, let alone search it.
+> 2. Guaranteed: if a solution exists (under the method's assumptions), the probability of finding it tends to 1 as computation grows. Not guaranteed: *when* it is found, or the quality of the path — plain RRT paths are typically far from optimal, which is what RRT\* and post-smoothing address.
+> 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. Keep sampling states, but extend with a constraint-respecting local planner — integrate discretized controls or use Reeds–Shepp curves (kinodynamic planning; [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]]).
+> 4. Because $\mathcal{C}_{\text{free}}$ is not convex: the segment between two of its points may leave it. Here $p_x(\lambda) = \cos(90°\lambda)+\sin(90°\lambda)$ rises from $1$ to $\sqrt2$ and back, so the interior penetrates $0.4142\,\mathrm{m}$ while both ends merely touch.
+
 ### Problem set · 과제
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2**, same five nodes, same query $A \to B$ — but the panel is rebuilt at $x \ge 1.5$, the wall of ch.2's problem set.
@@ -340,22 +353,18 @@ $$\lim_{n \to \infty} P[\text{표본 } n \text{개 안에 해를 찾음}] = 1$$
 실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.
 
-### 이 장 너머로
+### 스스로 점검
 
-[[04-robotics/planning-decision-making|계획과 의사결정]]이 이 장을 A*, 표본 기반 계획, 궤적 최적화, TAMP, 불확실성, MPC, 학습된 계획기로 이어 준다.
+1. 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 칸은 몇 개인가? 이것이 표본 기반 계획의 존재 이유를 어떻게 설명하는가?
+2. RRT의 "확률적 완전성"이 보장하는 것과 보장하지 않는 것은 각각 무엇인가?
+3. 자동차에 일반 RRT를 그대로 쓰면 안 되는 이유는?
+4. 직통 간선 $A$–$B$의 두 끝점은 충돌이 없다. 왜 간선은 충돌이 있는가?
 
-### Self-check · 스스로 점검
-
-1. Discretize a 7-dof arm's C-space at 100 cells per axis — how many cells? What does that explain about sampling-based planning? · 7자유도 팔의 C-space를 축당 100칸으로 이산화하면 격자 크기는? 이것이 샘플링 기반 계획의 존재 이유를 어떻게 설명하는가?
-2. What does RRT's "probabilistic completeness" guarantee, and what does it not? · RRT의 "확률적 완전성"이 보장하는 것과 보장하지 않는 것은?
-3. Why can't you run plain RRT on a car? · 자동차에 일반 RRT를 그대로 쓰면 안 되는 이유는?
-4. Both endpoints of the direct edge $A$–$B$ are collision-free. Why is the edge not? · 직통 간선 $A$–$B$의 두 끝점은 충돌이 없다. 왜 간선은 그렇지 않은가?
-
-> [!tip]- Answers · 정답
-> 1. $100^7 = 10^{14}$ cells. Grid search explodes exponentially in dof, so beyond a few dimensions only sampling is tractable — you cannot even enumerate the space, let alone search it. · 격자 탐색은 자유도에 지수적으로 폭발하므로 고차원에서는 샘플링만이 실용적이다.
-> 2. Guaranteed: if a solution exists (under the method's assumptions), the probability of finding it tends to 1 as computation grows. Not guaranteed: *when* it is found, or the quality of the path — plain RRT paths are typically far from optimal, which is what RRT\* and post-smoothing address. · 언제 찾는지와 경로 품질은 보장하지 않는다.
-> 3. Its extension step connects two configurations with a straight line in C-space, but a nonholonomic vehicle cannot execute sideways motion — the "edge" is not a feasible trajectory. Keep sampling states, but extend with a constraint-respecting local planner — integrate discretized controls or use Reeds–Shepp curves (kinodynamic planning). · 비홀로노믹 제약 때문에 직선 확장이 실행 불가능한 운동일 수 있다 — 상태 샘플링은 그대로 두고, 이산 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 제약 준수 국소 계획기로 확장해야 한다. ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]])
-> 4. Because $\mathcal{C}_{\text{free}}$ is not convex: the segment between two of its points may leave it. Here $p_x(\lambda) = \cos(90°\lambda)+\sin(90°\lambda)$ rises from $1$ to $\sqrt2$ and back, so the interior penetrates $0.4142\,\mathrm{m}$ while both ends merely touch. · $\mathcal{C}_{\text{free}}$가 볼록하지 않기 때문이다. 두 점을 잇는 선분이 밖으로 나갈 수 있다. 여기서 $p_x(\lambda)$는 $1$에서 $\sqrt2$까지 올랐다 내려오므로 양 끝은 닿기만 하는데 내부는 $0.4142\,\mathrm{m}$ 파고든다.
+> [!tip]- 정답
+> 1. $100^7 = 10^{14}$칸이다. 격자 탐색은 자유도에 지수적으로 폭발하므로 몇 차원만 넘어가도 표본 추출만이 실용적이다. 탐색은커녕 공간을 나열하는 것조차 불가능하다.
+> 2. 보장하는 것: 해가 존재하면(그 방법의 가정 아래) 계산을 늘릴수록 찾을 확률이 1로 간다. 보장하지 않는 것: *언제* 찾는지, 그리고 경로의 품질이다. 일반 RRT의 경로는 대개 최적과 거리가 멀고, RRT\*와 사후 평활화가 그 문제를 다룬다.
+> 3. 확장 단계가 두 자세를 C-space의 직선으로 잇는데, 비홀로노믹 차량은 옆으로 가는 운동을 실행할 수 없다. 그 "간선"이 실행 가능한 궤적이 아닌 것이다. 상태 표본 추출은 그대로 두고, 제약을 지키는 국소 계획기로 확장한다. 이산화한 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 방식이다(kinodynamic 계획; [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]).
+> 4. $\mathcal{C}_{\text{free}}$가 볼록하지 않기 때문이다. 두 점을 잇는 선분이 밖으로 나갈 수 있다. 여기서 $p_x(\lambda) = \cos(90°\lambda)+\sin(90°\lambda)$는 $1$에서 $\sqrt2$까지 올랐다 내려오므로, 양 끝은 닿기만 하는데 내부는 $0.4142\,\mathrm{m}$ 파고든다.
 
 ### 과제 · Problem set
 
@@ -369,3 +378,7 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 > 1. 전에 점선이던 두 간선이 모두 실선이 되므로 다섯 노드 위에서 로드맵은 완전 그래프가 되고 직통 간선 $A$–$B$를 쓸 수 있다.
 > 2. (a) $p_x$는 여전히 $\lambda = 0.5$에서 $\sqrt2 = 1.4142$로 최대지만 벽이 이제 $1.5$이므로 $d_{\max} = 1.4142 - 1.5 = -0.0858\,\mathrm{m}$. 자유이고 $8.6\,\mathrm{cm}$ 여유가 있다. (b) 그 간선 위의 모든 $d$가 정확히 $0.5$씩 내려가므로 최악점이 $0.0201 - 0.5 = -0.4799$가 된다. 자유다. (c) 최단 경로는 이제 직통 간선이고 비용은 $(\pi/2)\sqrt5 = 3.5124\,\mathrm{rad}$, $\pi\sqrt2$ 대비 $1 - 3.5124/4.4429 = 20.9\,\%$ 절약이다.
 > 3. 여전히 과소평가한다. 진짜 넓이는 $0.08515 \times 144 = 12.3$칸어치인데 막힌 노드는 $9$개라 $3.3$칸 모자란다. 벽이 움직여도 노드의 *좌표*는 하나도 바뀌지 않았고 노드의 *딱지*는 전부 바뀌었으며, 간선 판정 열 개가 모두 무효가 되었다. 그래프의 기하는 로봇의 성질이고 점유는 세계의 성질이다. 따라서 로드맵은 검사할 때 쓴 세계가 유지되는 동안만 캐시해 재사용할 수 있다. 현장에서는 측량이 갱신될 때마다 검사를 다시 돌린다는 뜻이고, 표본은 그대로 두므로 다시 샘플링하는 것보다 싸다. PRM이 학습 단계와 질의 단계를 나누는 이유가 정확히 이것이다.
+
+### 이 장 너머로
+
+[[04-robotics/planning-decision-making|계획과 의사결정]]이 이 장을 A*, 표본 기반 계획, 궤적 최적화, TAMP, 불확실성, MPC, 학습된 계획기로 이어 준다.

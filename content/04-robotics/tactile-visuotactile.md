@@ -25,6 +25,82 @@ For the tasks where the deciding variable is inside the contact, hidden by the v
 > [!note] First pass · 처음이라면
 > Read §1 — what vision cannot see, and why that is a short and specific list — then §2 on what a sensor actually transduces, then §6. §3 and §4 are for reading a specific fusion or slip-detection paper, and §2.5 is for when you are choosing or building a sensor rather than reading about one.
 
+### Running object · 이 페이지의 대상
+
+No plant in [[02-foundations/lab-plants|0.6]] has a contact patch, so this page freezes its own object and never changes its numbers. **S1 — the fingertip patch**: one finger pressing a panel edge, with three candidate sensors behind the same gel and one camera watching from the wrist.
+
+| Part of S1 | Frozen value | Source of the number |
+|---|---|---|
+| contact patch | circular, radius $a = 5\ \mathrm{mm}$, normal load $P = 5\ \mathrm{N}$, $\mu = 0.5$ | chosen here; a fingertip-scale patch, and $\mu$ matches [[04-robotics/grasping\|15. Grasping]] |
+| **optical** sensor | pitch $p = 0.0634\ \mathrm{mm}$, $320 \times 240$ px over $18.6 \times 14.3\ \mathrm{mm}$, $30\ \mathrm{Hz}$ | GelSight Mini's own published figures, used unchanged in §2.5 below |
+| **taxel** array | $4 \times 4$ over the same $18.6 \times 14.3\ \mathrm{mm}$ sensing area, $1\ \mathrm{kHz}$, holds a DC reading | chosen here; a representative coarse capacitive pad |
+| **piezoelectric** element | charge amplifier with $R_f = 10\ \mathrm{G\Omega}$, $C_f = 1\ \mathrm{nF}$, $1\ \mathrm{kHz}$ | chosen here; a plain single-pole charge amplifier |
+| wrist camera | $1280$ px across $1.0\ \mathrm{m}$ at $0.5\ \mathrm{m}$, $30\ \mathrm{Hz}$, depth noise $\sigma_v = 2.0\ \mathrm{mm}$ | the camera already in §2's worked example; the noise figure is chosen here |
+| tactile in-hand pose | $\sigma_t = 0.2\ \mathrm{mm}$ | chosen here |
+| the event | the grip holds $5\ \mathrm{N}$ for $30\ \mathrm{s}$, then a tangential load ramps up and an $80\ \mathrm{Hz}$ slip transient appears | chosen here |
+| human baseline | fingertip grating-orientation threshold $0.94\ \mathrm{mm}$ | van Boven & Johnson 1994, already cited in §3 |
+
+The three sensors watch the *same* patch and the *same* event, which is the whole point: every comparison below is a comparison of transduction and sampling, with the physics held fixed.
+
+*Scope: this page teaches what a tactile signal can and cannot carry — what each transduction family measures, what spatial resolution a pitch actually buys, when partial slip becomes visible, and what fusing touch with vision is worth — and how to read a paper built on one. It does not teach sensor fabrication, which [[07-research-program/index|7. Research Program §7]] puts out of scope; nor contact mechanics, which [[04-robotics/contact-force-tactile|9. Contact §1–2]] carries; nor the control loops the signal might close, which belong to [[04-robotics/force-compliance-control|13]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+Three panels, and the first two must be drawn to the same scale or they teach nothing.
+
+**Left — the patch, sampled.** Draw the $5\ \mathrm{mm}$-radius patch as a circle. Over its left half, rule the optical sampling grid; over its right half, rule the $4 \times 4$ taxel grid. Beneath it, three horizontal bars in a row, all at the same scale: $0.1268\ \mathrm{mm}$ (what the optical sensor resolves), $0.94\ \mathrm{mm}$ (the fingertip), $9.30\ \mathrm{mm}$ (what the taxel array resolves). The third bar is wider than the patch; draw it so, and let that be the figure's punchline.
+
+**Middle — slip, as an annulus.** The same circle with the stick zone of radius $c$ drawn inside it and the slipping annulus shaded. Draw it three times, at $Q/\mu P = 0.25$, $0.50$ and $1.00$, and write the annulus width on each. Mark which of the three bars from the left panel would first fit inside each annulus.
+
+**Right — time.** One axis, $0$ to $30\ \mathrm{s}$. Plot the piezoelectric element's reading of a constant $5\ \mathrm{N}$ grip decaying, mark $\tau$ and the half-life, and draw the flat line a barometric element would have given. Then, on an inset with a $50\ \mathrm{ms}$ axis, draw the $80\ \mathrm{Hz}$ burst on both and show that this time they agree.
+
+The problem set asks for the same three panels with a denser taxel array, a faster charge amplifier and a smaller patch.
+
+### Worked case · 대상으로 한 번 끝까지
+
+**Step 1 — pitch is not resolution.** A sampled signal needs at least two samples per cycle of the finest feature it is to represent, so the finest resolvable *period* is twice the pitch, before any blur. For the optical sensor, $2 \times 0.0634 = 0.1268\ \mathrm{mm}$; for the taxel array, whose pitch is $18.6/4 = 4.65\ \mathrm{mm}$, it is $9.30\ \mathrm{mm}$.
+
+| | pitch | resolution $= 2\times$ pitch | vs fingertip $0.94\ \mathrm{mm}$ |
+|---|---:|---:|---|
+| optical | $0.0634\ \mathrm{mm}$ | $0.1268\ \mathrm{mm}$ | $7.41\times$ finer |
+| taxel $4\times4$ | $4.65\ \mathrm{mm}$ | $9.30\ \mathrm{mm}$ | $9.89\times$ **coarser** |
+
+So the optical sensor is $14.83\times$ finer than a fingertip in *pitch* and $7.41\times$ finer in *resolution* — a factor of two between the two ways of saying it, and the larger one is the one that gets quoted. Between the two sensors, over the same sensing area, the resolution gap is $9.30/0.1268 = 73\times$ while the channel count differs by $76800/16 = 4800\times$; the gap in what can be *seen* is far smaller than the gap in what is *transmitted*.
+
+**Step 2 — what each family measures, and for how long.** The piezoelectric element's charge amplifier is a single-pole high pass with $\tau = R_f C_f = 10\ \mathrm{G\Omega}\times 1\ \mathrm{nF} = 10.0\ \mathrm{s}$, so $f_c = 1/(2\pi\tau) = 0.0159\ \mathrm{Hz}$. Its reading of a constant $5\ \mathrm{N}$ grip is $5e^{-t/\tau}$:
+
+| $t$ | $1\ \mathrm{s}$ | $5\ \mathrm{s}$ | $6.93\ \mathrm{s}$ | $10\ \mathrm{s}$ | $30\ \mathrm{s}$ |
+|---|---:|---:|---:|---:|---:|
+| reading | $4.52\ \mathrm{N}$ | $3.03\ \mathrm{N}$ | $2.50\ \mathrm{N}$ | $1.84\ \mathrm{N}$ | $0.25\ \mathrm{N}$ |
+
+Half the grip is gone after $\tau\ln 2 = 6.93\ \mathrm{s}$ and $95\%$ of it after $30\ \mathrm{s}$, with the finger never having moved. Now the $80\ \mathrm{Hz}$ slip transient: $|H(f)| = (f/f_c)/\sqrt{1+(f/f_c)^2}$ with $f/f_c = 5027$, so $|H| = 1.0000$ to four places. **The same element reports the transient perfectly and the grip not at all**, and $|H(0)| = 0$ exactly says so: this is not a calibration problem and no amount of filtering repairs it. The taxel array's $|H(0)| = 1$, and it holds the $5\ \mathrm{N}$ for as long as you like.
+
+**Step 3 — when partial slip becomes visible.** Under a normal load $P$ and a growing tangential load $Q$, a compliant circular contact does not go from stuck to sliding at a single instant. The periphery slips first and the stick zone shrinks from the rim inwards, with radius
+
+$$c = a\left(1 - \frac{Q}{\mu P}\right)^{1/3}$$
+
+so at $Q/\mu P = 0.50$ the stick radius is $5 \times 0.5^{1/3} = 3.97\ \mathrm{mm}$, the slipping annulus is $1.03\ \mathrm{mm}$ wide, and $1 - 0.5^{2/3} = 37\%$ of the contact area is already sliding **while the object has not moved at all**. That is the state §1's table calls incipient slip, and this is what it looks like as a number.
+
+Now ask each sensor when it first *sees* that annulus — when the annulus width first reaches its resolution:
+
+| sensor | resolution | annulus reaches it at | tangential load, at $P = 5\ \mathrm{N}$, $\mu = 0.5$ |
+|---|---:|---:|---:|
+| optical | $0.1268\ \mathrm{mm}$ | $Q/\mu P = 0.074$ | $0.185\ \mathrm{N}$ of a $2.5\ \mathrm{N}$ budget |
+| human fingertip | $0.94\ \mathrm{mm}$ | $Q/\mu P = 0.465$ | $1.16\ \mathrm{N}$ |
+| taxel $4\times4$ | $9.30\ \mathrm{mm}$ | **never** | — |
+
+The annulus can never be wider than the patch radius, $5\ \mathrm{mm}$, and the taxel array's finest resolvable feature is $9.30\ \mathrm{mm}$ — so no amount of sampling rate makes partial slip visible to it: it can report the grip force forever and can never report that the grip is about to fail. That is §1's claim for high resolution, converted from an argument into a threshold — and it is a *geometry* result, independent of the $1\ \mathrm{kHz}$ the same array runs at.
+
+**Step 4 — the rate argument is a different argument.** At $50\ \mathrm{mm/s}$ of gross slip the object moves $1.67\ \mathrm{mm}$ between two $30\ \mathrm{Hz}$ frames and $0.05\ \mathrm{mm}$ between two $1\ \mathrm{kHz}$ samples — §2's worked example, unchanged. Note which sensor wins which: the optical sensor wins Step 3 on geometry and loses Step 4 on rate; the taxel array does the reverse. **The resolution advantage and the rate advantage belong to different transducers**, which is why "high-resolution tactile sensing gives you slip detection" is two claims wearing one coat.
+
+**Step 5 — what fusing with vision is worth.** Vision and touch both estimate the same in-hand offset, independently, with $\sigma_v = 2.0\ \mathrm{mm}$ and $\sigma_t = 0.2\ \mathrm{mm}$. Weighting each by its precision $1/\sigma^2$:
+
+$$w_t = \frac{\sigma_t^{-2}}{\sigma_v^{-2} + \sigma_t^{-2}} = \frac{25}{0.25 + 25} = 0.990, \qquad \sigma_{\text{fused}} = \left(\sigma_v^{-2} + \sigma_t^{-2}\right)^{-1/2} = 0.199\ \mathrm{mm}$$
+
+because independent Gaussian precisions add. So fusion buys $10.05\times$ over vision alone and $1.005\times$ over touch alone — **half a percent**. If vision says $1.40\ \mathrm{mm}$ and touch says $0.20\ \mathrm{mm}$, the fused estimate is $0.212\ \mathrm{mm}$: touch, with a rounding error of vision. Do it unweighted instead — concatenate and average, which is what a naive architecture does — and the answer is $0.800\ \mathrm{mm}$ with $\sigma = \sqrt{(4 + 0.04)/4} = 1.005\ \mathrm{mm}$, **five times worse than touch alone**. Against a $0.5\ \mathrm{mm}$ seating tolerance that is the difference between $2.5\sigma$ and $0.50\sigma$.
+
+The lesson is §4's honest reading, arrived at from below. When one modality dominates in a quantity, optimal fusion of that quantity is worth almost nothing, and unweighted fusion is worth less than nothing. Whatever a fusion paper's gain is coming from, it is not this — it is coming from the modalities being good at *different* quantities, from the extra training signal, or from the representation. Which is exactly why the two ablations in §6 are the first thing to look for.
+
 ### 1. What vision cannot see
 
 The case for touch is not that it is richer than vision. It is that a handful of quantities
@@ -143,15 +219,25 @@ can make. This section groups them by what physically changes, because that is w
 what you can *build* — and because a paper's sensor choice explains failures that look like
 algorithm failures.
 
-| Family | What changes | How it is read | Strong at | Fails at |
-|---|---|---|---|---|
-| **Piezoresistive** | resistance of a doped elastomer or film under strain | Wheatstone bridge — a four-resistor circuit that turns a tiny resistance change into a measurable voltage; arrays scanned row-by-column | cheapest and fastest to get working | drift, hysteresis, and noise that grows with array size |
-| **Capacitive** | capacitance of a conductor–insulator–conductor sandwich as the gap closes | a dedicated capacitance front end — a multimeter will not do it | sensitivity, and it survives being made of fabric | stray capacitance, including from the human body nearby |
-| **Piezoelectric** | charge that appears when the material is stressed (PVDF, ceramics, ferroelectric crystals) | charge amplifier — its output voltage tracks the charge itself, which is tiny and would otherwise be lost to cable and input capacitance; even so the charge drains away over time, the failure at right | vibration, texture, the *onset* of slip | **static load — the charge leaks away**, so it reports change, not weight |
-| **Barometric** | pressure in a sealed cavity over an off-the-shelf MEMS die | the die's own digital output | a clean calibrated signal for \$30–100, because someone else solved the hard part | spatial density; each cavity is a taxel and cavities are bulky |
-| **Magnetic (Hall effect)** | position of a magnet in compliant material relative to the sensor; the Lorentz force on carriers makes a transverse voltage (see [[glossary\|Hall effect]]) | Hall element, three axes per point | no wear, no electrical contact across the compliant layer | the field-to-contact map is nonlinear and not one-to-one |
-| **Acoustic** | structure-borne sound the contact itself makes | microphone or piezo element plus spectral features | events — impacts, scrapes, texture | telling you *where*, or anything about a contact that is not moving |
-| **Whisker** | deflection of a compliant beam, measured at its base | any of the above, at the root | reaching past the body, and pre-filtering by beam geometry | resolving what it touched, as opposed to that it touched |
+> **Tactile transduction, defined.** A **transduction family** is a *class of sensors sharing one physical conversion* from a mechanical contact variable to an electrical one — not a product, not a form factor and not a spatial layout. Three defining conditions, and a family is only named once all three are fixed. A named **mechanical input**: normal pressure, shear, strain, displacement, or the time derivative of one of them. A named **electrical output**: resistance, capacitance, charge, voltage, digital word. And a **passband** — the range of frequencies over which the conversion actually holds, whose lower edge is what decides whether the family reports a *state* or a *change*. The third is the one hardware sections state and method sections forget.
+>
+> $$\left|H(f)\right| = \frac{f/f_c}{\sqrt{1 + (f/f_c)^2}}, \qquad f_c = \frac{1}{2\pi R_f C_f}$$
+>
+> for a charge-coupled family read through a single-pole front end, where $f$ is the frequency of the contact variable, $f_c$ the corner set by the readout's own $R_f C_f$, and $|H|$ the fraction of the signal that survives — so $|H(0)| = 0$ says, exactly and unfixably, that this family cannot report a constant load.
+>
+> - **Example**: S1's piezoelectric element, $f_c = 0.0159\ \mathrm{Hz}$. It passes the $80\ \mathrm{Hz}$ slip transient at $|H| = 1.0000$ and a constant grip at $|H| = 0$. It is a *change* family.
+> - **Non-example**: "piezoelectric sensors drift." Drift is a slow, unpredictable wander of a family that *can* hold DC — the piezoresistive row below. A piezoelectric element does not drift; it high-passes, with a corner you can compute from two component values and a decay you can predict to four figures. Calling both "drift" hides the fact that one is a calibration problem and the other is a passband.
+> - **Why it matters**: read the passband first and half the table below is predictable. It is also the shortest honest answer to "will this sensor work for my task": a task that needs a held force needs a $|H(0)| = 1$ family, and no amount of learning recovers a quantity the transducer never transmitted.
+
+| Family | What changes | What it measures, and for how long | How it is read | Strong at | Fails at |
+|---|---|---|---|---|---|
+| **Piezoresistive** | resistance of a doped elastomer or film under strain | normal pressure, as a **state** — $\left\|H(0)\right\| = 1$ in principle, degraded by drift and hysteresis in practice | Wheatstone bridge — a four-resistor circuit that turns a tiny resistance change into a measurable voltage; arrays scanned row-by-column | cheapest and fastest to get working | drift, hysteresis, and noise that grows with array size |
+| **Capacitive** | capacitance of a conductor–insulator–conductor sandwich as the gap closes | normal displacement, hence pressure, as a **state** — holds DC indefinitely | a dedicated capacitance front end — a multimeter will not do it | sensitivity, and it survives being made of fabric | stray capacitance, including from the human body nearby |
+| **Piezoelectric** | charge that appears when the material is stressed (PVDF, ceramics, ferroelectric crystals) | the **rate of change** of stress — a high pass at $f_c = 1/2\pi R_f C_f$, so $\left\|H(0)\right\| = 0$ | charge amplifier — its output voltage tracks the charge itself, which is tiny and would otherwise be lost to cable and input capacitance; even so the charge drains away over time, the failure at right | vibration, texture, the *onset* of slip | **static load — the charge leaks away**, so it reports change, not weight |
+| **Barometric** | pressure in a sealed cavity over an off-the-shelf MEMS die | absolute pressure over one cavity, as a **state**, already calibrated in kPa | the die's own digital output | a clean calibrated signal for \$30–100, because someone else solved the hard part | spatial density; each cavity is a taxel and cavities are bulky |
+| **Magnetic (Hall effect)** | position of a magnet in compliant material relative to the sensor; the Lorentz force on carriers makes a transverse voltage (see [[glossary\|Hall effect]]) | three components of a field, hence normal **and shear** displacement, as a **state** — but through a nonlinear, non-injective map | Hall element, three axes per point | no wear, no electrical contact across the compliant layer | the field-to-contact map is nonlinear and not one-to-one |
+| **Acoustic** | structure-borne sound the contact itself makes | acoustic power in frequency bands — a **change** family by construction, with a passband set by the coupling | microphone or piezo element plus spectral features | events — impacts, scrapes, texture | telling you *where*, or anything about a contact that is not moving |
+| **Whisker** | deflection of a compliant beam, measured at its base | root bending moment, hence one integral of the load along the beam, as a **state** — the spatial distribution is lost, not attenuated | any of the above, at the root | reaching past the body, and pre-filtering by beam geometry | resolving what it touched, as opposed to that it touched |
 
 **The distinction that decides most of it: static or dynamic.** Half the families above
 measure a *state* and half measure a *change*, and the split is not a matter of degree.
@@ -171,12 +257,13 @@ family became practical when learned models started doing the inversion, which i
 example of a *sensor* becoming viable because of progress in software.
 
 **A calibration point worth carrying.** Human spatial acuity for touch runs from about
-0.94 mm at the fingertip (grating orientation threshold, §4) to centimetres across the back. The optical sensors of §2 have a pixel pitch of about
-0.06 mm — some fifteen times finer in pitch than the fingertip threshold, though resolving a feature takes at least two pixels plus gel blur — but only over a patch the size of one
+0.94 mm at the fingertip (grating orientation threshold, §3) to centimetres across the back. The optical sensors of §2 have a pixel pitch of about
+0.06 mm — some fifteen times finer in pitch than the fingertip threshold, and, once the two-samples-per-feature rule of the Worked case is applied, **7.4 times** finer in resolution before any gel blur — but only over a patch the size of one
 fingertip, and only where the gel is in contact. Human touch is far coarser and covers the
 entire body continuously. Which of those two numbers matters depends on the task, and a
 paper claiming "human-level tactile sensing" has usually compared one of them and not
-the other.
+the other — and has usually quoted the pitch ratio rather than the resolution ratio, which
+is a free factor of two in its own favour.
 
 **And the reason whole-body skin is a different problem.** Everything above is about a
 patch. Covering a robot is a scaling question, and the arithmetic is unkind. Human skin
@@ -216,6 +303,20 @@ Three problems where touch is not one option among several:
   It is also the state a task-level planner actually needs.
 - **In-hand pose.** Where the object is *relative to the fingers* after grasping, which is
   the error a vision-planned grasp leaves behind and the thing an insertion needs.
+
+The first of the three is the one that gets used loosely, so pin it down. "Slip" is not one
+thing, and the useful distinction is between a *state of the contact patch* and a *motion of
+the object*.
+
+> **Slip and incipient slip, defined.** **Gross slip** is a *relative motion*: the object moves with respect to the finger, everywhere on the patch at once. **Incipient slip** — equivalently *partial slip* — is a **state of the contact patch**, not a motion and not an event: an outer annulus of the patch is sliding while an inner stick zone is not, and the object's net displacement is zero. Three defining conditions. The patch is **divided** into a stick zone and a slip annulus, so a single contact is simultaneously in two contact modes. The **object has not moved** — any definition that mentions object velocity has defined gross slip instead. And the division is set by the *ratio* of tangential to available friction force, so it is reached at the same $Q/\mu P$ whatever the absolute load.
+>
+> $$c = a\left(1 - \frac{Q}{\mu P}\right)^{1/3}, \qquad \frac{A_{\text{slip}}}{A} = 1 - \left(\frac{c}{a}\right)^{2}$$
+>
+> where $a$ is the patch radius, $c$ the stick-zone radius, $P$ the normal load, $Q$ the tangential load and $\mu$ the friction coefficient — the Cattaneo–Mindlin result for a compliant circular contact, so the annulus opens continuously from $Q = 0$ and the stick zone vanishes exactly at $Q = \mu P$, which is where gross slip begins.
+>
+> - **Example**: S1 at $Q/\mu P = 0.50$. The stick radius is $3.97\ \mathrm{mm}$ of a $5\ \mathrm{mm}$ patch, the annulus is $1.03\ \mathrm{mm}$ wide, and $37\%$ of the contact area is sliding with the object stationary.
+> - **Non-example**: "the tactile signal changed, so the object is slipping." A change is also what a grip-force increase, a re-grasp, or a temperature drift produces. Incipient slip has a *spatial signature* — an annulus — and detecting it means resolving that annulus, which is why the Worked case's Step 3 table is a statement about the sensor, not about the algorithm.
+> - **Why it matters**: it is the one quantity in §1's table that is defined by something *not* having happened yet, which is precisely why no modality that reports motion can supply it. And because the threshold is a ratio, a sensor that first resolves the annulus at $Q/\mu P = 0.074$ gives $93\%$ of the tangential budget as warning, at any grip force — a usable margin, stated without reference to the object's weight.
 
 #### Why the signal splits into two channels
 
@@ -258,6 +359,23 @@ so it is worth knowing what human skin actually does. Two things matter:
   0.5 mm). A paper quoting a two-point number as its human baseline has quoted a contaminated
   measure, and its sensor–human comparison can be off in either direction (van Boven & Johnson 1994 give the grating thresholds: fingertip 0.94 mm, lip 0.51 mm, tongue 0.58 mm).
 
+The **two-point limen** is defined in full and derived as a design constraint on
+[[04-robotics/haptics-teleoperation/tactile-display-design|24.2 Tactile display design §3]],
+where it caps the number of *locations* a tactor array can address whatever its actuator
+count. It is a property of a person at a named body site under named contact conditions, and
+it is not re-derived here. What this page owes is the other half of the comparison — the
+number on the sensor's side of it.
+
+> **Spatial resolution, defined.** The **spatial resolution** of a tactile sensor is a *distance*: the smallest separation of two features on the contact surface that the sensor can still report as two. It is not the pitch, not the channel count, and not the sensing area. Three defining conditions, all of which must be stated with the number. It is bounded below by **sampling** — at least two samples per feature period, so $d \ge 2p$ for a grid of pitch $p$. It is bounded below again by **blur** — the compliant layer between the contact and the transducer low-passes the pattern, and no sampling recovers what the gel has already smoothed away. And it is measured over a **stated area**, because a sensor that resolves $0.13\ \mathrm{mm}$ over $2.7\ \mathrm{cm^2}$ and one that resolves it over a whole hand are not comparable devices.
+>
+> $$d_{\min} = \max\left(2p,\ d_{\text{blur}}\right)$$
+>
+> where $p$ is the sampling pitch and $d_{\text{blur}}$ the finest separation surviving the compliant layer, so a resolution figure is a *maximum* of two independent limits and quoting only the sampling one is an upper bound on performance, never a measurement of it.
+>
+> - **Example**: S1's optical sensor, $2 \times 0.0634 = 0.127\ \mathrm{mm}$ from sampling alone, over $2.66\ \mathrm{cm^2}$ — $7.4\times$ finer than the fingertip's $0.94\ \mathrm{mm}$, over $0.015\%$ of a body.
+> - **Non-example**: "$0.0634\ \mathrm{mm}$ resolution." That is the pitch, and it overstates the resolution by exactly a factor of two before blur is considered at all. The $4\times4$ taxel array is the same error at the other end: $16$ channels sounds like a map, and $9.30\ \mathrm{mm}$ over a $10\ \mathrm{mm}$ patch is one number with a direction.
+> - **Why it matters**: the sensor's resolution and the human limen are the two ends of every "human-level touch" claim, and both are distances measured under conditions that have to be quoted. Worked case Step 3 turns the sensor end into a task threshold: whether a given sensor sees incipient slip at all is decided by this number against the annulus width, and the taxel array fails that test on geometry no matter how fast it runs.
+
 The design consequence is that resolution is a *task* target, not a virtue. A construction
 gripper handling a panel edge or seating an anchor does not need fingertip acuity across the
 whole finger; it needs enough resolution to resolve the contact patch that decides the task.
@@ -266,6 +384,16 @@ apply [[01-canonical-papers/notes/7-robotics/gelsight|GelSight's]] own caution �
 part of the paper the number came from, because that abstract states none.
 
 ### 4. Visuotactile fusion — and what it is really buying
+
+> **Visuotactile fusion, defined.** **Fusion** is a *map from several sensor streams to one quantity or one representation that a downstream stage consumes*. It is not a concatenation, not a network architecture and not an ablation. Three defining conditions. The streams must be **about the same thing** — the same pose, the same contact state, the same instant — which is why time alignment is a training objective in the reference paper below and not a detail. Each stream must enter with a **weight that reflects its reliability**, whether that weight is computed from stated variances, learned, or gated by a mode; an unweighted combination is not fusion, it is averaging. And the output must be **one** thing: two streams kept side by side for a policy to sort out are *inputs*, not a fusion.
+>
+> $$\hat x = \frac{\sigma_v^{-2}x_v + \sigma_t^{-2}x_t}{\sigma_v^{-2} + \sigma_t^{-2}}, \qquad \sigma_{\text{fused}}^{-2} = \sigma_v^{-2} + \sigma_t^{-2}$$
+>
+> for the analytic case of two independent unbiased estimates $x_v, x_t$ of one scalar with variances $\sigma_v^2, \sigma_t^2$ — because independent *precisions* add, which is the bound any learned fusion of the same two streams is competing against.
+>
+> - **Example**: S1's in-hand offset. $\sigma_v = 2.0\ \mathrm{mm}$ and $\sigma_t = 0.2\ \mathrm{mm}$ give $w_t = 0.990$ and $\sigma_{\text{fused}} = 0.199\ \mathrm{mm}$ — $10.05\times$ better than vision and $1.005\times$ better than touch.
+> - **Non-example**: the unweighted mean, $\sigma = \sqrt{(\sigma_v^2 + \sigma_t^2)/4} = 1.005\ \mathrm{mm}$ — **five times worse than the better sensor alone**. Adding a modality is not monotone. A fusion architecture that cannot learn to ignore a stream can be beaten by deleting that stream, which is exactly what the vision-only and touch-only ablations of §6 test for.
+> - **Why it matters**: it sets the ceiling. In any quantity where one modality dominates, optimal fusion is worth a fraction of a percent, so a fusion paper reporting a large gain is *not* getting it from combining two estimates of the same quantity. It is getting it from the modalities covering different quantities, from the extra self-supervised training signal, or from the representation — and those are three different claims with three different failure modes.
 
 The reference result here is Lee et al.'s *Making Sense of Vision and Touch*, which learns a
 single compact latent representation from RGB, force/torque, and proprioception. It trains with
@@ -375,6 +503,9 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 - [ ] Name three quantities vision cannot supply at the moment they matter.
 - [ ] Say what an optical tactile sensor physically measures, and what is inferred.
+- [ ] Turn a sensor's pitch into its resolution, and name the second thing that bounds it.
+- [ ] Say what a transduction family's passband decides, and which families cannot report a held force.
+- [ ] Say what incipient slip is a state *of*, and what has to be resolved before it can be detected.
 - [ ] Explain why sensor latency makes touch a decision signal rather than an impact-survival mechanism.
 - [ ] State what visuotactile fusion usually buys, and what it usually does not.
 - [ ] List the two ablations a fusion paper needs before its claim is readable.
@@ -403,18 +534,16 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 ### Problem set · 과제
 
-Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]], $\Lambda_y=2\,\mathrm{kg}$. A tactile sample is late by $5\,\mathrm{ms}$. Contact numbers from [[04-robotics/force-compliance-control|13. §5]]: $F_{\max}=v\sqrt{\Lambda K}$, duration $\pi\sqrt{\Lambda/K}$. No new simulator.
+Tier B. Using only this page, its prerequisites and **S1**. Three knobs move, nothing else. The finger is smaller, so the patch radius is $a' = 3\,\mathrm{mm}$ at the same $P = 5\,\mathrm{N}$ and $\mu = 0.5$. The taxel array is rebuilt at $8\times 8$ over the same $18.6\times14.3\,\mathrm{mm}$. The charge amplifier is rebuilt with $R_f' = 1\,\mathrm{G\Omega}$ at the same $C_f$. A tangential load now ramps at $5\,\mathrm{N/s}$ from zero, and the wrist camera is recalibrated so its depth noise falls to $\sigma_v' = 0.8\,\mathrm{mm}$. No new simulator.
 
-The tip approaches a panel in $-y$ at $v=0.05\,\mathrm{m/s}$. Take the identified (row-3) stiffness $K_e=10^4\,\mathrm{N/m}$, not Hertzian.
-
-1. **Draw.** P2, panel under the tip, a tactile sensor at the contact. Mark the $5\,\mathrm{ms}$ delay on the tactile channel into the controller. Mark the impact window of length $\pi\sqrt{\Lambda_y/K_e}$.
-2. **Derive.** (a) $F_{\max}$ and duration. (b) How many $5\,\mathrm{ms}$ samples fit in the impact? (c) Extra penetration during the delay, $v\cdot 5\,\mathrm{ms}$, and the extra spring force $K_e$ times that. (d) Same three numbers at $K_e=10^5$ (still identified, not Hertzian).
-3. **Interpret.** Can the $5\,\mathrm{ms}$ tactile channel regulate the impact peak, or only report what the contact *was*? Compare a $30\,\mathrm{fps}$ GelSight ($33\,\mathrm{ms}$). Who owns the peak?
+1. **Draw.** The three panels of the homework diagram at the new numbers: the $3\,\mathrm{mm}$ patch with both sampling grids and the three resolution bars beneath it; the stick zone and annulus at $Q/\mu P = 0.25$ and $0.50$; and the new decay curve with $\tau'$ and the half-life marked. Add a fourth, small panel: a time axis from $0$ to $0.5\,\mathrm{s}$ with the instant each sensor first resolves the annulus marked on it, and the gross-slip instant at the right-hand end.
+2. **Derive.** (a) The new taxel pitch and resolution, and its ratio to the fingertip's $0.94\,\mathrm{mm}$. (b) $\tau'$, $f_c'$, the reading of a constant $5\,\mathrm{N}$ grip at $t = 1\,\mathrm{s}$ and $t = 5\,\mathrm{s}$, and $|H|$ at $80\,\mathrm{Hz}$ and at $1\,\mathrm{Hz}$. (c) For each of the optical sensor and the new taxel array, the $Q/\mu P$ at which the annulus first reaches its resolution on the $3\,\mathrm{mm}$ patch — or a statement that it never does. (d) Convert (c) into seconds under the $5\,\mathrm{N/s}$ ramp: the detection instant, the gross-slip instant, and the warning window between them, in milliseconds and in $30\,\mathrm{Hz}$ frames. (e) The fused $\sigma$ and $w_t$ at $\sigma_v' = 0.8\,\mathrm{mm}$, and the $\sigma$ of the unweighted mean.
+3. **Interpret.** §2's latency box says an optical tactile sensor at $33\,\mathrm{ms}$ per frame cannot participate in a $14\,\mathrm{ms}$ contact transition. Your answer to (d) says it has many frames of warning before gross slip. Reconcile the two in one sentence. Then say which of the three knobs changed a *verdict* rather than a number, and what that implies for the sentence "we improved slip detection with a higher-rate sensor".
 
 > [!tip]- Solutions
-> 1. Tip at $(1,1)$, wall in $-y$; delay block on the tactile line; impact bar of length $\approx 44\,\mathrm{ms}$.
-> 2. (a) $F_{\max}=0.05\sqrt{2\cdot 10^4}=7.1\,\mathrm{N}$, duration $\pi\sqrt{2/10^4}=44\,\mathrm{ms}$. (b) About eight samples — enough to see the event, not to servo it at the peak. (c) $0.25\,\mathrm{mm}$, extra $2.5\,\mathrm{N}$. (d) $F_{\max}=22\,\mathrm{N}$, duration $14\,\mathrm{ms}$, extra $25\,\mathrm{N}$ — the delay is a third of the event and the extra force is the same order as the peak.
-> 3. At $10^4$ the channel can *decide* after contact; it cannot close a force loop on the peak. At $10^5$ even the report is of a finished event. A $33\,\mathrm{ms}$ GelSight misses the $14\,\mathrm{ms}$ impact entirely. The peak belongs to passive compliance and a kilohertz torque loop; touch here is a decision signal.
+> 1. The $9.30\,\mathrm{mm}$ bar of the original figure becomes $4.65\,\mathrm{mm}$ and is still wider than the whole $3\,\mathrm{mm}$ patch — the punchline survives the knob.
+> 2. (a) Pitch $18.6/8 = 2.325\,\mathrm{mm}$, resolution $4.65\,\mathrm{mm}$, which is $4.95\times$ coarser than the fingertip — twice as good as the $9.89\times$ of the $4\times4$ array, and still coarser than skin. (b) $\tau' = 10^9 \times 10^{-9} = 1.00\,\mathrm{s}$, $f_c' = 1/(2\pi) = 0.159\,\mathrm{Hz}$; the grip reads $5e^{-1} = 1.84\,\mathrm{N}$ at $1\,\mathrm{s}$ and $5e^{-5} = 0.034\,\mathrm{N}$ at $5\,\mathrm{s}$; $|H(80)| = 1.0000$ and $|H(1)| = 0.988$. The faster amplifier lost the grip ten times sooner and gained nothing at $80\,\mathrm{Hz}$. (c) Optical: $1 - ((3 - 0.1268)/3)^3 = 0.1215$. Taxel: resolution $4.65\,\mathrm{mm} \ge a' = 3\,\mathrm{mm}$, so its finest resolvable feature is wider than the annulus can ever become — **never**, even at $1\,\mathrm{kHz}$ and even with four times the channels. (d) $\mu P = 2.5\,\mathrm{N}$, so gross slip at $2.5/5 = 0.500\,\mathrm{s}$. The optical sensor detects at $0.1215 \times 0.500 = 0.0608\,\mathrm{s}$, a warning window of $439\,\mathrm{ms}$ = $13.2$ frames at $30\,\mathrm{Hz}$. (e) $w_t = 25/(1.5625 + 25) = 0.941$, $\sigma_{\text{fused}} = 0.194\,\mathrm{mm}$ — still only $1.031\times$ better than touch alone. The unweighted mean gives $\sqrt{(0.64 + 0.04)/4} = 0.412\,\mathrm{mm}$, $2.06\times$ worse than touch alone: halving the camera's noise made unweighted fusion less catastrophic and did not make it useful.
+> 3. The two statements are about events with different durations, not about the sensor: an impact is over in $14\,\mathrm{ms}$ and incipient slip lasts $439\,\mathrm{ms}$, so the same $33\,\mathrm{ms}$ frame is far too slow for one and thirteen times faster than needed for the other. The knob that changed a verdict is the **patch radius**, which pushed the taxel array from "never resolves the annulus" to — still never, but now by a smaller margin, and would have flipped had the array gone finer than $1.5\,\mathrm{mm}$ pitch; the amplifier and the camera moved numbers only. Which is why "we improved slip detection with a higher-rate sensor" is suspicious on its face: rate is the answer to Step 4's question, and incipient slip is Step 3's, so a rate improvement that improved incipient-slip detection was probably improving something else.
 
 ### Sources
 
@@ -450,6 +579,82 @@ The tip approaches a panel in $-y$ at $v=0.05\,\mathrm{m/s}$. Take the identifie
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지 — 그다음 센서가 실제로 변환하는 것인 §2, 그다음 §6. §3·§4는 특정 융합·미끄러짐 논문을 읽을 때이고, §2.5는 센서에 관해 읽는 것이 아니라 고르거나 만들 때다.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6]]의 어떤 장치에도 접촉면이 없으므로, 이 페이지는 자기 대상을 고정하고 숫자를 끝까지 바꾸지 않는다. **S1 — 손끝 접촉면**: 손가락 하나가 패널 모서리를 누르고, 같은 젤 뒤에 후보 센서 셋, 손목에서 카메라 하나가 본다.
+
+| S1의 구성 | 고정값 | 숫자의 출처 |
+|---|---|---|
+| 접촉면 | 원형, 반지름 $a = 5\ \mathrm{mm}$, 법선 하중 $P = 5\ \mathrm{N}$, $\mu = 0.5$ | 여기서 고름. 손끝 규모의 접촉면이고 $\mu$는 [[04-robotics/grasping\|15. 파지]]와 같다 |
+| **광학** 센서 | 피치 $p = 0.0634\ \mathrm{mm}$, $18.6 \times 14.3\ \mathrm{mm}$ 위 $320 \times 240$ px, $30\ \mathrm{Hz}$ | GelSight Mini가 공표한 값, 아래 §2.5에서 쓰는 것 그대로 |
+| **택셀** 배열 | 같은 $18.6 \times 14.3\ \mathrm{mm}$ 감지 면적 위 $4 \times 4$, $1\ \mathrm{kHz}$, DC를 유지 | 여기서 고름. 대표적인 거친 정전용량 패드 |
+| **압전** 소자 | $R_f = 10\ \mathrm{G\Omega}$, $C_f = 1\ \mathrm{nF}$짜리 전하 증폭기, $1\ \mathrm{kHz}$ | 여기서 고름. 평범한 단극 전하 증폭기 |
+| 손목 카메라 | $0.5\ \mathrm{m}$에서 $1.0\ \mathrm{m}$를 $1280$ px에, $30\ \mathrm{Hz}$, 깊이 잡음 $\sigma_v = 2.0\ \mathrm{mm}$ | 카메라는 §2의 계산 예제에 이미 있고, 잡음 값은 여기서 고름 |
+| 촉각의 손 안 자세 | $\sigma_t = 0.2\ \mathrm{mm}$ | 여기서 고름 |
+| 사건 | $5\ \mathrm{N}$으로 $30\ \mathrm{s}$ 쥐고 있다가, 접선 하중이 올라가고 $80\ \mathrm{Hz}$ 미끄러짐 과도가 나타난다 | 여기서 고름 |
+| 사람 기준선 | 손끝 격자 방향 역치 $0.94\ \mathrm{mm}$ | van Boven & Johnson 1994, §3에 이미 인용됨 |
+
+센서 셋이 *같은* 접촉면의 *같은* 사건을 본다. 그것이 요점 전부다. 아래의 모든 비교가 물리를 고정한 채 변환 방식과 표집만 비교하는 것이 된다.
+
+*범위: 이 페이지는 촉각 신호가 무엇을 실어 나르고 무엇을 못 나르는지를 가르친다 — 각 변환 계열이 무엇을 재는지, 피치가 실제로 사 주는 공간 해상도가 얼마인지, 부분 미끄러짐이 언제 보이게 되는지, 촉각과 비전을 융합하는 것이 얼마짜리인지, 그리고 그 위에 세운 논문을 어떻게 읽는지. 센서 제작은 가르치지 않는다. [[07-research-program/index|7. 연구 프로그램 §7]]이 범위 밖에 둔다. 접촉 역학도 가르치지 않는다. [[04-robotics/contact-force-tactile|9. 접촉 §1~2]]가 진다. 이 신호가 닫을 수도 있는 제어 루프도 가르치지 않는다. [[04-robotics/force-compliance-control|13]]의 몫이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+패널 셋이고, 앞의 둘은 반드시 같은 축척으로 그려야 한다. 그러지 않으면 아무것도 가르치지 못한다.
+
+**왼쪽 — 표집된 접촉면.** 반지름 $5\ \mathrm{mm}$의 접촉면을 원으로 그린다. 왼쪽 절반에 광학 표집 격자를, 오른쪽 절반에 $4 \times 4$ 택셀 격자를 긋는다. 그 아래에 같은 축척의 가로 막대 셋을 나란히: $0.1268\ \mathrm{mm}$(광학이 분해하는 것), $0.94\ \mathrm{mm}$(손끝), $9.30\ \mathrm{mm}$(택셀 배열이 분해하는 것). 세 번째 막대가 접촉면보다 넓다. 그렇게 그리고, 그것이 이 그림의 급소가 되게 두라.
+
+**가운데 — 미끄러짐은 고리다.** 같은 원 안에 반지름 $c$의 고착 영역을 그리고 미끄러지는 고리를 칠한다. $Q/\mu P = 0.25$, $0.50$, $1.00$에서 세 번 그리고 각각에 고리 폭을 적는다. 왼쪽 패널의 막대 셋 중 어느 것이 각 고리에 처음 들어가는지 표시한다.
+
+**오른쪽 — 시간.** 축 하나, $0$부터 $30\ \mathrm{s}$까지. 일정한 $5\ \mathrm{N}$ 쥠에 대한 압전 소자의 값이 감쇠하는 곡선을 그리고 $\tau$와 반감기를 표시하며, 기압식이었다면 주었을 평평한 선을 함께 그린다. 그다음 $50\ \mathrm{ms}$ 축의 삽입 그림에 $80\ \mathrm{Hz}$ 버스트를 둘 다 그려, 이번에는 둘이 일치함을 보인다.
+
+과제는 택셀 배열이 조밀해지고 전하 증폭기가 빨라지고 접촉면이 작아진 같은 패널 셋을 요구한다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+**1단계 — 피치는 해상도가 아니다.** 표집된 신호가 어떤 특징을 표현하려면 그 특징의 한 주기당 표본이 적어도 둘 필요하므로, 분해 가능한 가장 미세한 *주기*는 번짐을 따지기 전에 이미 피치의 두 배다. 광학 센서는 $2 \times 0.0634 = 0.1268\ \mathrm{mm}$, 피치가 $18.6/4 = 4.65\ \mathrm{mm}$인 택셀 배열은 $9.30\ \mathrm{mm}$다.
+
+| | 피치 | 해상도 $=$ 피치의 $2$배 | 손끝 $0.94\ \mathrm{mm}$ 대비 |
+|---|---:|---:|---|
+| 광학 | $0.0634\ \mathrm{mm}$ | $0.1268\ \mathrm{mm}$ | $7.41$배 곱다 |
+| 택셀 $4\times4$ | $4.65\ \mathrm{mm}$ | $9.30\ \mathrm{mm}$ | $9.89$배 **거칠다** |
+
+즉 광학 센서는 *피치*로는 손끝보다 $14.83$배 곱고 *해상도*로는 $7.41$배 곱다 — 같은 말의 두 방식 사이에 두 배가 있고, 인용되는 쪽은 큰 쪽이다. 두 센서 사이에서는 같은 감지 면적 위 해상도 차이가 $9.30/0.1268 = 73$배인데 채널 수 차이는 $76800/16 = 4800$배다. *볼 수 있는 것*의 격차가 *전송되는 것*의 격차보다 훨씬 작다.
+
+**2단계 — 각 계열이 무엇을, 얼마 동안 재는가.** 압전 소자의 전하 증폭기는 $\tau = R_f C_f = 10\ \mathrm{G\Omega}\times 1\ \mathrm{nF} = 10.0\ \mathrm{s}$인 단극 고역 통과이므로 $f_c = 1/(2\pi\tau) = 0.0159\ \mathrm{Hz}$다. 일정한 $5\ \mathrm{N}$ 쥠에 대한 값은 $5e^{-t/\tau}$다:
+
+| $t$ | $1\ \mathrm{s}$ | $5\ \mathrm{s}$ | $6.93\ \mathrm{s}$ | $10\ \mathrm{s}$ | $30\ \mathrm{s}$ |
+|---|---:|---:|---:|---:|---:|
+| 값 | $4.52\ \mathrm{N}$ | $3.03\ \mathrm{N}$ | $2.50\ \mathrm{N}$ | $1.84\ \mathrm{N}$ | $0.25\ \mathrm{N}$ |
+
+$\tau\ln 2 = 6.93\ \mathrm{s}$ 뒤에 쥠의 절반이, $30\ \mathrm{s}$ 뒤에 $95\%$가 사라진다. 손가락은 전혀 움직이지 않았는데도. 이제 $80\ \mathrm{Hz}$ 미끄러짐 과도를 보자. $|H(f)| = (f/f_c)/\sqrt{1+(f/f_c)^2}$이고 $f/f_c = 5027$이므로 $|H| = 1.0000$이다, 소수 넷째 자리까지. **같은 소자가 과도는 완벽히 보고하고 쥠은 전혀 보고하지 않는다.** $|H(0)| = 0$이 정확히 그 말이다. 보정 문제가 아니고 어떤 필터링으로도 고쳐지지 않는다. 택셀 배열은 $|H(0)| = 1$이고 $5\ \mathrm{N}$을 원하는 만큼 오래 유지한다.
+
+**3단계 — 부분 미끄러짐이 언제 보이는가.** 법선 하중 $P$ 아래 접선 하중 $Q$가 자라면, 유연한 원형 접촉은 어느 한 순간에 고착에서 활주로 넘어가지 않는다. 가장자리부터 미끄러지고 고착 영역이 테두리에서 안쪽으로 줄어들며, 그 반지름이
+
+$$c = a\left(1 - \frac{Q}{\mu P}\right)^{1/3}$$
+
+이다. 그래서 $Q/\mu P = 0.50$이면 고착 반지름이 $5 \times 0.5^{1/3} = 3.97\ \mathrm{mm}$, 미끄러지는 고리가 폭 $1.03\ \mathrm{mm}$, 접촉 면적의 $1 - 0.5^{2/3} = 37\%$가 이미 활주 중인데 **물체는 전혀 움직이지 않았다.** §1의 표가 초기 미끄러짐이라 부르는 상태가 그것이고, 숫자로 보면 이렇게 생겼다.
+
+이제 각 센서가 그 고리를 언제 *보는지* 묻자. 고리 폭이 자기 해상도에 처음 도달하는 때다:
+
+| 센서 | 해상도 | 고리가 거기 닿는 때 | $P = 5\ \mathrm{N}$, $\mu = 0.5$에서의 접선 하중 |
+|---|---:|---:|---:|
+| 광학 | $0.1268\ \mathrm{mm}$ | $Q/\mu P = 0.074$ | $2.5\ \mathrm{N}$ 예산 중 $0.185\ \mathrm{N}$ |
+| 사람 손끝 | $0.94\ \mathrm{mm}$ | $Q/\mu P = 0.465$ | $1.16\ \mathrm{N}$ |
+| 택셀 $4\times4$ | $9.30\ \mathrm{mm}$ | **결코** | — |
+
+고리는 접촉면 반지름 $5\ \mathrm{mm}$보다 넓어질 수 없는데 택셀 배열이 분해할 수 있는 가장 미세한 특징은 $9.30\ \mathrm{mm}$다. 그래서 표집 주파수를 아무리 올려도 부분 미끄러짐이 보이지 않는다. 파지력은 영원히 보고할 수 있고 파지가 곧 실패한다는 것은 결코 보고할 수 없다. 고해상도에 대한 §1의 주장이 논증에서 문턱값으로 바뀐 것이고, 같은 배열이 도는 $1\ \mathrm{kHz}$와 무관한 *기하*의 결과다.
+
+**4단계 — 주파수 논증은 다른 논증이다.** 총 미끄러짐 $50\ \mathrm{mm/s}$에서 물체는 $30\ \mathrm{Hz}$ 두 프레임 사이에 $1.67\ \mathrm{mm}$, $1\ \mathrm{kHz}$ 두 표본 사이에 $0.05\ \mathrm{mm}$를 간다 — §2의 계산 예제 그대로다. 어느 센서가 어느 쪽을 이기는지 보라. 광학 센서는 기하의 3단계를 이기고 주파수의 4단계를 진다. 택셀 배열은 그 반대다. **해상도 이점과 주파수 이점은 서로 다른 변환기의 것**이고, 그래서 "고해상도 촉각이 미끄러짐 감지를 준다"는 외투 하나를 걸친 주장 둘이다.
+
+**5단계 — 비전과 융합하면 얼마인가.** 비전과 촉각이 같은 손 안 오프셋을 독립적으로, $\sigma_v = 2.0\ \mathrm{mm}$와 $\sigma_t = 0.2\ \mathrm{mm}$로 추정한다. 각각을 자기 정밀도 $1/\sigma^2$로 가중하면:
+
+$$w_t = \frac{\sigma_t^{-2}}{\sigma_v^{-2} + \sigma_t^{-2}} = \frac{25}{0.25 + 25} = 0.990, \qquad \sigma_{\text{fused}} = \left(\sigma_v^{-2} + \sigma_t^{-2}\right)^{-1/2} = 0.199\ \mathrm{mm}$$
+
+이다. 독립인 가우시안 정밀도가 더해지기 때문이다. 그러므로 융합은 비전만에 비해 $10.05$배, 촉각만에 비해 $1.005$배를 산다 — **0.5퍼센트**다. 비전이 $1.40\ \mathrm{mm}$, 촉각이 $0.20\ \mathrm{mm}$라고 하면 융합 추정은 $0.212\ \mathrm{mm}$, 즉 촉각에 비전의 반올림 오차가 붙은 것이다. 대신 가중 없이 하면 — 이어 붙이고 평균 내는, 소박한 구조가 하는 일 — 답이 $0.800\ \mathrm{mm}$에 $\sigma = \sqrt{(4 + 0.04)/4} = 1.005\ \mathrm{mm}$로 **촉각만보다 다섯 배 나쁘다.** $0.5\ \mathrm{mm}$ 안착 공차에 대해서는 $2.5\sigma$와 $0.50\sigma$의 차이다.
+
+교훈은 §4의 정직한 독법을 아래에서부터 도달한 것이다. 어떤 양에서 한 모달리티가 압도적이면 그 양에 대한 최적 융합은 거의 아무 값이 없고, 가중 없는 융합은 값이 음수다. 융합 논문의 이득이 어디서 오든 여기서 오는 것은 아니다. 모달리티들이 *서로 다른* 양을 잘한다는 데서, 늘어난 학습 신호에서, 혹은 표현에서 온다. §6의 ablation 둘을 가장 먼저 찾아야 하는 이유가 정확히 그것이다.
 
 ### 1. 비전이 볼 수 없는 것
 
@@ -560,15 +765,25 @@ The tip approaches a panel in $-y$ at $v=0.05\,\mathrm{m/s}$. Take the identifie
 이 절은 물리적으로 무엇이 변하는지로 묶는다. 그것이 당신이 *만들 수 있는 것*을 한정하기
 때문이고, 논문의 센서 선택이 알고리즘 실패처럼 보이는 실패를 설명해 주기 때문이다.
 
-| 계열 | 무엇이 변하나 | 어떻게 읽나 | 강한 곳 | 실패하는 곳 |
-|---|---|---|---|---|
-| **압전저항(piezoresistive)** | 변형을 받은 도핑 엘라스토머·필름의 저항 | 휘트스톤 브리지 — 저항 네 개로 된 회로로, 아주 작은 저항 변화를 잴 수 있는 전압으로 바꾼다. 배열은 행–열로 훑는다 | 가장 싸고 가장 빨리 동작시킬 수 있다 | 드리프트, 이력현상, 배열이 커질수록 자라는 잡음 |
-| **정전용량(capacitive)** | 간격이 좁아질 때 도체–절연체–도체 샌드위치의 정전용량 | 전용 정전용량 프런트엔드 — 멀티미터로는 안 된다 | 감도, 그리고 천으로 만들어도 살아남는다 | 부유 용량, 근처의 사람 몸까지 포함해서 |
-| **압전(piezoelectric)** | 재료에 응력이 걸릴 때 생기는 전하 (PVDF, 세라믹, 강유전 결정) | 전하 증폭기 — 출력 전압이 전하 자체를 따라가게 만든 증폭기. 전하가 아주 작아 그냥 두면 케이블과 입력단 정전용량에 묻히기 때문이다. 그래도 전하는 시간이 지나며 빠져나가고, 그것이 오른쪽의 실패다 | 진동, 질감, 미끄러짐의 *시작* | **정적 하중 — 전하가 빠져나간다**. 무게가 아니라 변화를 보고한다 |
-| **기압(barometric)** | 기성 MEMS 다이 위 밀폐 공동의 압력 | 다이 자신의 디지털 출력 | 30~100달러로 얻는 깨끗한 보정 신호. 어려운 부분은 남이 풀어 놨다 | 공간 밀도. 공동 하나가 taxel 하나인데 공동은 부피가 크다 |
-| **자기(홀 효과)** | 유연 재료 속 자석의 센서 대비 위치. 전하에 걸린 로런츠 힘이 횡방향 전압을 만든다([[glossary\|홀 효과]] 참고) | 홀 소자, 한 점당 3축 | 마모가 없고, 유연층을 가로지르는 전기적 접촉이 없다 | 자기장→접촉 사상이 비선형이고 일대일이 아니다 |
-| **음향(acoustic)** | 접촉 자체가 만드는 구조 전달음 | 마이크나 압전 소자 + 스펙트럼 특징 | 사건 — 충격, 긁힘, 질감 | *어디인지*, 그리고 움직이지 않는 접촉에 관한 것 전부 |
-| **수염(whisker)** | 유연한 보의 휨을 뿌리에서 측정 | 위의 어느 방식이든, 뿌리에서 | 몸 바깥으로 뻗는 것, 그리고 보 기하가 미리 걸러 주는 것 | 닿았다는 사실이 아니라 무엇에 닿았는지를 가려내는 것 |
+> **촉각 변환의 정의.** **변환 계열**(transduction family)은 기계적 접촉 변수에서 전기적 변수로 가는 물리적 변환 하나를 공유하는 *센서들의 부류*다. 제품도, 형태도, 공간 배치도 아니다. 정의 조건이 셋이고, 셋이 모두 정해진 뒤에야 계열에 이름이 붙는다. 명시된 **기계적 입력**: 법선 압력, 전단, 변형률, 변위, 혹은 그중 하나의 시간 미분. 명시된 **전기적 출력**: 저항, 정전용량, 전하, 전압, 디지털 값. 그리고 **통과대역** — 그 변환이 실제로 성립하는 주파수 범위이고, 그 아래쪽 끝이 이 계열이 *상태*를 보고하는지 *변화*를 보고하는지를 정한다. 하드웨어 절은 밝히고 방법 절은 잊는 것이 셋째다.
+>
+> $$\left|H(f)\right| = \frac{f/f_c}{\sqrt{1 + (f/f_c)^2}}, \qquad f_c = \frac{1}{2\pi R_f C_f}$$
+>
+> 단극 프런트엔드로 읽는 전하 결합 계열에 대한 식이다. $f$는 접촉 변수의 주파수, $f_c$는 판독 회로 자신의 $R_f C_f$가 정하는 코너, $|H|$는 살아남는 신호의 비율이다. 그러므로 $|H(0)| = 0$은 이 계열이 일정한 하중을 보고할 수 없다고 정확히, 그리고 고칠 수 없게 말한다.
+>
+> - **예**: S1의 압전 소자, $f_c = 0.0159\ \mathrm{Hz}$. $80\ \mathrm{Hz}$ 미끄러짐 과도를 $|H| = 1.0000$으로 통과시키고 일정한 쥠을 $|H| = 0$으로 막는다. *변화* 계열이다.
+> - **반례**: "압전 센서는 드리프트한다". 드리프트는 DC를 유지할 *수 있는* 계열이 느리고 예측 불가능하게 흘러가는 것이고, 아래 표의 압전저항 행이 그것이다. 압전 소자는 드리프트하지 않는다. 고역 통과를 할 뿐이고, 코너는 부품 값 둘로 계산되며 감쇠는 네 자리까지 예측된다. 둘 다 "드리프트"라고 부르면 하나가 보정 문제이고 다른 하나가 통과대역이라는 사실이 가려진다.
+> - **왜 중요한가**: 통과대역부터 읽으면 아래 표의 절반이 예측된다. "이 센서가 내 과제에 맞나"에 대한 가장 짧은 정직한 답이기도 하다. 쥐고 있는 힘이 필요한 과제에는 $|H(0)| = 1$인 계열이 필요하고, 변환기가 애초에 보내지 않은 양을 학습이 되살려 주지는 않는다.
+
+| 계열 | 무엇이 변하나 | 무엇을, 얼마나 오래 재나 | 어떻게 읽나 | 강한 곳 | 실패하는 곳 |
+|---|---|---|---|---|---|
+| **압전저항(piezoresistive)** | 변형을 받은 도핑 엘라스토머·필름의 저항 | 법선 압력을 **상태**로 — 원리적으로 $\left\|H(0)\right\| = 1$이지만 드리프트와 이력현상이 실제로는 깎는다 | 휘트스톤 브리지 — 저항 네 개로 된 회로로, 아주 작은 저항 변화를 잴 수 있는 전압으로 바꾼다. 배열은 행–열로 훑는다 | 가장 싸고 가장 빨리 동작시킬 수 있다 | 드리프트, 이력현상, 배열이 커질수록 자라는 잡음 |
+| **정전용량(capacitive)** | 간격이 좁아질 때 도체–절연체–도체 샌드위치의 정전용량 | 법선 변위, 따라서 압력을 **상태**로 — DC를 무한정 유지 | 전용 정전용량 프런트엔드 — 멀티미터로는 안 된다 | 감도, 그리고 천으로 만들어도 살아남는다 | 부유 용량, 근처의 사람 몸까지 포함해서 |
+| **압전(piezoelectric)** | 재료에 응력이 걸릴 때 생기는 전하 (PVDF, 세라믹, 강유전 결정) | 응력의 **변화율** — $f_c = 1/2\pi R_f C_f$의 고역 통과이므로 $\left\|H(0)\right\| = 0$ | 전하 증폭기 — 출력 전압이 전하 자체를 따라가게 만든 증폭기. 전하가 아주 작아 그냥 두면 케이블과 입력단 정전용량에 묻히기 때문이다. 그래도 전하는 시간이 지나며 빠져나가고, 그것이 오른쪽의 실패다 | 진동, 질감, 미끄러짐의 *시작* | **정적 하중 — 전하가 빠져나간다**. 무게가 아니라 변화를 보고한다 |
+| **기압(barometric)** | 기성 MEMS 다이 위 밀폐 공동의 압력 | 공동 하나 위의 절대 압력을 **상태**로, 이미 kPa로 보정되어 | 다이 자신의 디지털 출력 | 30~100달러로 얻는 깨끗한 보정 신호. 어려운 부분은 남이 풀어 놨다 | 공간 밀도. 공동 하나가 taxel 하나인데 공동은 부피가 크다 |
+| **자기(홀 효과)** | 유연 재료 속 자석의 센서 대비 위치. 전하에 걸린 로런츠 힘이 횡방향 전압을 만든다([[glossary\|홀 효과]] 참고) | 자기장 3성분, 따라서 법선 **과 전단** 변위를 **상태**로 — 다만 비선형이고 단사가 아닌 사상을 통해 | 홀 소자, 한 점당 3축 | 마모가 없고, 유연층을 가로지르는 전기적 접촉이 없다 | 자기장→접촉 사상이 비선형이고 일대일이 아니다 |
+| **음향(acoustic)** | 접촉 자체가 만드는 구조 전달음 | 주파수 대역별 음향 파워 — 구조상 **변화** 계열이고, 통과대역은 결합이 정한다 | 마이크나 압전 소자 + 스펙트럼 특징 | 사건 — 충격, 긁힘, 질감 | *어디인지*, 그리고 움직이지 않는 접촉에 관한 것 전부 |
+| **수염(whisker)** | 유연한 보의 휨을 뿌리에서 측정 | 뿌리의 굽힘 모멘트, 따라서 보를 따른 하중의 적분 하나를 **상태**로 — 공간 분포는 감쇠하는 것이 아니라 사라진다 | 위의 어느 방식이든, 뿌리에서 | 몸 바깥으로 뻗는 것, 그리고 보 기하가 미리 걸러 주는 것 | 닿았다는 사실이 아니라 무엇에 닿았는지를 가려내는 것 |
 
 **대부분을 결정하는 구분: 정적인가 동적인가.** 위 계열의 절반은 *상태*를 재고 절반은
 *변화*를 재는데, 그 갈림은 정도의 문제가 아니다. 압전 전하는 실재하는 어떤 입력 임피던스로도
@@ -584,11 +799,12 @@ The tip approaches a panel in $-y$ at $v=0.05\,\mathrm{m/s}$. Take the identifie
 일은 일상이다. 그래서 이 계열은 학습된 모델이 역변환을 맡기 시작하면서 실용화됐다.
 *센서*가 소프트웨어의 진전 덕분에 가능해진 좋은 사례다.
 
-**들고 다닐 만한 기준점 하나.** 사람의 촉각 공간 예민도는 손끝의 약 0.94 mm(격자 방향 역치, 4절)에서 등의 수 센티미터까지다.
-2절의 광학 센서는 픽셀 간격이 약 0.06 mm다 — 손끝 역치보다 간격으로 열다섯 배쯤 곱지만, 특징 하나를 분해하려면 최소 두 픽셀과 젤 번짐이 더 든다 — 그러나 손끝 하나만 한
+**들고 다닐 만한 기준점 하나.** 사람의 촉각 공간 예민도는 손끝의 약 0.94 mm(격자 방향 역치, 3절)에서 등의 수 센티미터까지다.
+2절의 광학 센서는 픽셀 간격이 약 0.06 mm다 — 손끝 역치보다 간격으로 열다섯 배쯤 곱고, Worked case의 "특징당 표본 둘" 규칙을 적용하면 젤 번짐을 따지기 전에 해상도로 **7.4배** 곱다 — 그러나 손끝 하나만 한
 패치 위에서만, 그것도 젤이 닿아 있는 곳에서만 그렇다. 사람의 촉각은 훨씬 거칠지만 몸 전체를
 끊김 없이 덮는다. 그 두 숫자 중 어느 쪽이 중요한지는 과제가 정하고, "사람 수준의 촉각"을
-주장하는 논문은 대개 둘 중 하나만 비교하고 나머지는 비교하지 않았다.
+주장하는 논문은 대개 둘 중 하나만 비교하고 나머지는 비교하지 않았으며, 대개 해상도 비가 아니라
+피치 비를 인용했다. 자기에게 유리한 두 배를 공짜로 얻은 것이다.
 
 **그리고 전신 스킨이 다른 문제인 이유.** 위의 이야기는 전부 패치 하나에 관한 것이다. 로봇을
 덮는 것은 규모의 문제이고, 산술이 야박하다. 사람 피부는 손끝에서 cm²당 대략 240개, 손바닥에서
@@ -624,6 +840,19 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
   상태이기도 하다.
 - **손 안 자세(in-hand pose).** 파지 이후 물체가 *손가락에 대해* 어디 있는가. 비전으로 계획한
   파지가 남기는 오차이자, 삽입이 필요로 하는 바로 그것이다.
+
+셋 중 첫째가 느슨하게 쓰이므로 못을 박아 두자. "미끄러짐"은 한 가지가 아니고, 쓸모 있는 구분은
+*접촉면의 상태*와 *물체의 운동* 사이에 있다.
+
+> **미끄러짐과 초기 미끄러짐의 정의.** **총 미끄러짐**(gross slip)은 *상대 운동*이다. 물체가 손가락에 대해, 접촉면 전체에서 한꺼번에 움직인다. **초기 미끄러짐**(incipient slip) — 같은 말로 *부분 미끄러짐* — 은 **접촉면의 상태**이지 운동도 사건도 아니다. 접촉면의 바깥 고리가 활주하는 동안 안쪽 고착 영역은 그렇지 않고, 물체의 알짜 변위는 0이다. 정의 조건이 셋이다. 접촉면이 고착 영역과 미끄럼 고리로 **나뉘므로** 접촉 하나가 동시에 두 접촉 모드에 있다. **물체가 움직이지 않았다** — 물체 속도를 언급하는 정의는 총 미끄러짐을 정의한 것이다. 그리고 그 나눔이 접선력과 쓸 수 있는 마찰력의 *비*로 정해지므로, 절대 하중이 얼마든 같은 $Q/\mu P$에서 도달한다.
+>
+> $$c = a\left(1 - \frac{Q}{\mu P}\right)^{1/3}, \qquad \frac{A_{\text{slip}}}{A} = 1 - \left(\frac{c}{a}\right)^{2}$$
+>
+> $a$는 접촉면 반지름, $c$는 고착 영역 반지름, $P$는 법선 하중, $Q$는 접선 하중, $\mu$는 마찰계수다. 유연한 원형 접촉에 대한 Cattaneo–Mindlin 결과이므로 고리가 $Q = 0$에서부터 연속적으로 열리고 고착 영역은 정확히 $Q = \mu P$에서 사라지는데, 거기가 총 미끄러짐이 시작되는 곳이다.
+>
+> - **예**: $Q/\mu P = 0.50$의 S1. $5\ \mathrm{mm}$ 접촉면에서 고착 반지름이 $3.97\ \mathrm{mm}$, 고리 폭이 $1.03\ \mathrm{mm}$, 접촉 면적의 $37\%$가 활주 중인데 물체는 정지해 있다.
+> - **반례**: "촉각 신호가 변했으니 물체가 미끄러지고 있다". 파지력 증가, 재파지, 온도 드리프트도 변화를 만든다. 초기 미끄러짐에는 *공간적 흔적* — 고리 — 이 있고, 그것을 감지한다는 것은 그 고리를 분해한다는 뜻이다. Worked case 3단계의 표가 알고리즘이 아니라 센서에 대한 진술인 이유가 그것이다.
+> - **왜 중요한가**: §1의 표에서 아직 일어나지 *않은* 것으로 정의되는 유일한 양이고, 운동을 보고하는 어떤 모달리티도 그것을 공급할 수 없는 이유가 정확히 그것이다. 그리고 문턱값이 비이기 때문에, $Q/\mu P = 0.074$에서 고리를 처음 분해하는 센서는 파지력이 얼마든 접선 예산의 $93\%$를 경고 시간으로 준다. 물체 무게를 언급하지 않고 말할 수 있는 쓸 만한 여유다.
 
 #### 신호가 두 채널로 갈리는 이유
 
@@ -661,6 +890,21 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
   0.5 mm 부근). 인간 기준선으로 2점 수치를 인용한 논문은 **오염된 측정을 인용한 것**이고, 센서와 인간의
   비교가 어느 쪽으로든 틀어질 수 있다(격자 역치는 van Boven & Johnson 1994: 손끝 0.94 mm, 입술 0.51 mm, 혀 0.58 mm).
 
+**Two-point limen** 자체는 [[04-robotics/haptics-teleoperation/tactile-display-design|24.2 촉각 디스플레이 설계 §3]]이
+완전히 정의하고 설계 제약으로 유도한다. 액추에이터 수와 무관하게 tactor 배열이 쓸 수 있는
+*위치*의 수를 그것이 제한한다. 명시된 신체 부위와 명시된 접촉 조건 아래 사람에 대한 성질이고,
+여기서 다시 유도하지 않는다. 이 페이지가 갚아야 할 것은 그 비교의 반대쪽 — 센서 쪽 숫자다.
+
+> **공간 해상도의 정의.** 촉각 센서의 **공간 해상도**는 *거리*다. 접촉면 위 특징 둘을 여전히 둘로 보고할 수 있는 최소 간격. 피치도, 채널 수도, 감지 면적도 아니다. 정의 조건이 셋이고 셋 다 숫자와 함께 밝혀야 한다. **표집**이 아래에서 막는다 — 특징 주기당 표본이 적어도 둘이어야 하므로 피치 $p$의 격자에 대해 $d \ge 2p$다. **번짐**이 또 한 번 아래에서 막는다 — 접촉과 변환기 사이의 유연층이 패턴을 저역 통과시키고, 젤이 이미 뭉갠 것은 어떤 표집으로도 되살아나지 않는다. 그리고 **명시된 면적** 위에서 재야 한다. $2.7\ \mathrm{cm^2}$ 위에서 $0.13\ \mathrm{mm}$를 분해하는 센서와 손 전체에서 그것을 분해하는 센서는 비교 가능한 장치가 아니기 때문이다.
+>
+> $$d_{\min} = \max\left(2p,\ d_{\text{blur}}\right)$$
+>
+> $p$는 표집 피치, $d_{\text{blur}}$는 유연층을 통과해 살아남는 최소 간격이다. 그러므로 해상도 수치는 독립인 한계 둘의 *최댓값*이고, 표집 쪽만 인용하는 것은 성능의 상한일 뿐 결코 측정값이 아니다.
+>
+> - **예**: S1의 광학 센서, 표집만으로 $2 \times 0.0634 = 0.127\ \mathrm{mm}$, 면적은 $2.66\ \mathrm{cm^2}$다. 손끝의 $0.94\ \mathrm{mm}$보다 $7.4$배 곱고, 몸의 $0.015\%$ 위에서 그렇다.
+> - **반례**: "해상도 $0.0634\ \mathrm{mm}$". 그것은 피치이고, 번짐을 따지기도 전에 해상도를 정확히 두 배 부풀린다. $4\times4$ 택셀 배열은 반대쪽 끝의 같은 오류다. 채널 $16$개는 지도처럼 들리고, $10\ \mathrm{mm}$ 패치 위의 $9.30\ \mathrm{mm}$는 방향이 붙은 숫자 하나다.
+> - **왜 중요한가**: 센서의 해상도와 사람의 limen이 모든 "사람 수준 촉각" 주장의 양 끝이고, 둘 다 조건을 함께 인용해야 하는 거리다. Worked case 3단계가 센서 쪽 끝을 과제 문턱값으로 바꾼다. 주어진 센서가 초기 미끄러짐을 보기나 하는지는 이 숫자를 고리 폭에 견주어 정해지고, 택셀 배열은 아무리 빨리 돌아도 기하에서 그 시험에 떨어진다.
+
 설계상의 귀결은 해상도가 미덕이 아니라 *과제* 목표라는 것이다. 패널 모서리를 다루거나 앵커를
 안착시키는 건설 그리퍼는 손가락 전체에 손끝 수준의 예민도가 필요하지 않다. 과제를 가르는 접촉
 패치를 분해할 만큼만 있으면 된다. **패치를 먼저 정하고 센서를 정하라.** 그리고 어떤 센서의 해상도
@@ -668,6 +912,16 @@ cm²당 약 60개의 감지 단위를 지니며 체표면적은 약 1.8 m²다 �
 그 수치가 논문의 어느 부분에서 왔는지 알고 써라. 그 초록에는 수치가 하나도 없다.
 
 ### 4. 시촉각 융합 — 그리고 그것이 실제로 사는 것
+
+> **시촉각 융합의 정의.** **융합**(fusion)은 *센서 스트림 여럿에서, 뒷단이 소비하는 양 하나 또는 표현 하나로 가는 사상*이다. 이어 붙이기도, 네트워크 구조도, ablation도 아니다. 정의 조건이 셋이다. 스트림들이 **같은 것에 관한 것**이어야 한다 — 같은 자세, 같은 접촉 상태, 같은 순간 — 그래서 아래 기준 논문에서 시간 정렬이 세부사항이 아니라 학습 목적함수다. 각 스트림이 **신뢰도를 반영한 가중치**로 들어와야 한다. 명시된 분산에서 계산하든, 학습하든, 모드로 게이팅하든 상관없다. 가중 없는 결합은 융합이 아니라 평균이다. 그리고 출력이 **하나**여야 한다. 정책이 알아서 정리하라고 나란히 둔 스트림 둘은 융합이 아니라 *입력*이다.
+>
+> $$\hat x = \frac{\sigma_v^{-2}x_v + \sigma_t^{-2}x_t}{\sigma_v^{-2} + \sigma_t^{-2}}, \qquad \sigma_{\text{fused}}^{-2} = \sigma_v^{-2} + \sigma_t^{-2}$$
+>
+> 한 스칼라에 대한 독립이고 불편인 추정 $x_v, x_t$가 분산 $\sigma_v^2, \sigma_t^2$을 가질 때의 해석적 경우다. 독립인 *정밀도*가 더해지기 때문이고, 같은 두 스트림에 대한 어떤 학습된 융합도 이것을 상대로 겨룬다.
+>
+> - **예**: S1의 손 안 오프셋. $\sigma_v = 2.0\ \mathrm{mm}$와 $\sigma_t = 0.2\ \mathrm{mm}$가 $w_t = 0.990$과 $\sigma_{\text{fused}} = 0.199\ \mathrm{mm}$를 준다 — 비전보다 $10.05$배, 촉각보다 $1.005$배 낫다.
+> - **반례**: 가중 없는 평균, $\sigma = \sqrt{(\sigma_v^2 + \sigma_t^2)/4} = 1.005\ \mathrm{mm}$ — **더 나은 센서 하나보다 다섯 배 나쁘다.** 모달리티를 더하는 것은 단조가 아니다. 어떤 스트림을 무시하는 법을 배우지 못하는 융합 구조는 그 스트림을 지운 쪽에 질 수 있고, §6의 비전만·촉각만 ablation이 검사하는 것이 정확히 그것이다.
+> - **왜 중요한가**: 천장을 정한다. 한 모달리티가 압도하는 양에서는 최적 융합이 1퍼센트의 몇 분의 일짜리이므로, 큰 이득을 보고하는 융합 논문은 같은 양의 추정 둘을 합쳐서 그 이득을 얻고 있는 것이 *아니다*. 모달리티들이 서로 다른 양을 덮어서, 자기지도 학습 신호가 늘어서, 아니면 표현 덕분에 얻고 있다 — 그리고 그 셋은 실패 모드가 셋인 서로 다른 주장이다.
 
 여기서의 기준 결과는 Lee 등의 *Making Sense of Vision and Touch*다. RGB, 힘/토크, 고유수용
 감각으로부터 하나의 압축된 잠재 표현을 학습한다. 학습에는 **자기지도** 목적함수를 쓴다: 기록된 데이터에
@@ -768,6 +1022,9 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 - [ ] 중요해지는 순간에 비전이 줄 수 없는 양 셋을 댄다.
 - [ ] 광학 촉각 센서가 물리적으로 무엇을 재고 무엇이 추론되는지 말한다.
+- [ ] 센서의 피치를 해상도로 바꾸고, 해상도를 막는 두 번째 것을 댄다.
+- [ ] 변환 계열의 통과대역이 무엇을 정하는지, 그리고 어느 계열이 쥐고 있는 힘을 보고할 수 없는지 말한다.
+- [ ] 초기 미끄러짐이 무엇*의* 상태인지, 그리고 그것을 감지하려면 무엇을 분해해야 하는지 말한다.
 - [ ] 센서 지연 때문에 촉각이 충격 생존 기제가 아니라 결정 신호인 이유를 설명한다.
 - [ ] 시촉각 융합이 보통 사는 것과 사지 못하는 것을 말한다.
 - [ ] 융합 논문의 주장이 읽히려면 필요한 두 ablation을 댄다.
@@ -796,18 +1053,16 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$, $\Lambda_y=2\,\mathrm{kg}$. 촉각 샘플이 $5\,\mathrm{ms}$ 늦다. 접촉 숫자는 [[04-robotics/force-compliance-control|13. §5]]: $F_{\max}=v\sqrt{\Lambda K}$, 지속 $\pi\sqrt{\Lambda/K}$. 시뮬레이터를 새로 만들지 마라.
+Tier B. 이 페이지와 선수 지식, **S1**만 쓴다. 손잡이 셋만 움직이고 나머지는 그대로다. 손가락이 작아져 접촉면 반지름이 $a' = 3\,\mathrm{mm}$이고 $P = 5\,\mathrm{N}$, $\mu = 0.5$는 같다. 택셀 배열을 같은 $18.6\times14.3\,\mathrm{mm}$ 위에 $8\times 8$로 다시 만든다. 전하 증폭기를 같은 $C_f$에 $R_f' = 1\,\mathrm{G\Omega}$으로 다시 만든다. 접선 하중이 이제 0에서 $5\,\mathrm{N/s}$로 올라가고, 손목 카메라를 재보정해 깊이 잡음이 $\sigma_v' = 0.8\,\mathrm{mm}$로 떨어진다. 시뮬레이터를 새로 만들지 마라.
 
-말단이 $-y$로 패널에 $v=0.05\,\mathrm{m/s}$로 접근. 식별된(3행) 강성 $K_e=10^4\,\mathrm{N/m}$, Hertz가 아니다.
-
-1. **그리기.** P2, 말단 아래 패널, 접촉의 촉각 센서. 제어기로 가는 촉각 채널에 $5\,\mathrm{ms}$ 지연. 충격 창 길이 $\pi\sqrt{\Lambda_y/K_e}$.
-2. **유도.** (a) $F_{\max}$와 지속 시간. (b) 충격 안에 $5\,\mathrm{ms}$ 샘플이 몇 개 들어가는가? (c) 지연 동안의 추가 침투 $v\cdot 5\,\mathrm{ms}$, 그리고 그 값에 $K_e$를 곱한 추가 스프링 힘. (d) $K_e=10^5$(여전히 식별값, Hertz 아님)에서 같은 세 숫자.
-3. **해석.** $5\,\mathrm{ms}$ 촉각 채널이 충격 첨두를 조절할 수 있는가, 아니면 접촉이 *어땠는지*만 보고하는가? $30\,\mathrm{fps}$ GelSight($33\,\mathrm{ms}$)와 비교. 첨두의 주인은 누구인가?
+1. **그리기.** 과제 그림의 패널 셋을 새 숫자로. $3\,\mathrm{mm}$ 접촉면에 표집 격자 둘과 그 아래 해상도 막대 셋, $Q/\mu P = 0.25$와 $0.50$에서의 고착 영역과 고리, 그리고 $\tau'$와 반감기를 표시한 새 감쇠 곡선. 작은 네 번째 패널을 더한다. $0$부터 $0.5\,\mathrm{s}$까지의 시간 축에 각 센서가 고리를 처음 분해하는 순간을 찍고, 오른쪽 끝에 총 미끄러짐 순간을 찍는다.
+2. **유도.** (a) 새 택셀 피치와 해상도, 그리고 손끝 $0.94\,\mathrm{mm}$에 대한 비. (b) $\tau'$, $f_c'$, $t = 1\,\mathrm{s}$와 $t = 5\,\mathrm{s}$에서 일정한 $5\,\mathrm{N}$ 쥠의 값, 그리고 $80\,\mathrm{Hz}$와 $1\,\mathrm{Hz}$에서의 $|H|$. (c) 광학 센서와 새 택셀 배열 각각에 대해, $3\,\mathrm{mm}$ 접촉면에서 고리가 자기 해상도에 처음 닿는 $Q/\mu P$ — 또는 결코 닿지 않는다는 진술. (d) (c)를 $5\,\mathrm{N/s}$ 램프 아래 초로 바꾼다. 감지 순간, 총 미끄러짐 순간, 그 사이 경고 시간을 밀리초와 $30\,\mathrm{Hz}$ 프레임 수로. (e) $\sigma_v' = 0.8\,\mathrm{mm}$에서의 융합 $\sigma$와 $w_t$, 그리고 가중 없는 평균의 $\sigma$.
+3. **해석.** §2의 지연 상자는 프레임당 $33\,\mathrm{ms}$인 광학 촉각 센서가 $14\,\mathrm{ms}$ 접촉 천이에 참여할 수 없다고 말한다. (d)의 답은 총 미끄러짐 전에 여러 프레임의 경고가 있다고 말한다. 둘을 한 문장으로 조정하라. 그다음 손잡이 셋 중 숫자가 아니라 *판정*을 바꾼 것이 무엇인지, 그리고 그것이 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장에 무엇을 함의하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 말단 $(1,1)$, $-y$ 벽; 촉각 선의 지연 블록; 충격 막대 $\approx 44\,\mathrm{ms}$.
-> 2. (a) $F_{\max}=0.05\sqrt{2\cdot 10^4}=7.1\,\mathrm{N}$, 지속 $\pi\sqrt{2/10^4}=44\,\mathrm{ms}$. (b) 약 여덟 샘플 — 사건은 보이지만 첨두를 서보하지는 못함. (c) $0.25\,\mathrm{mm}$, 추가 $2.5\,\mathrm{N}$. (d) $F_{\max}=22\,\mathrm{N}$, 지속 $14\,\mathrm{ms}$, 추가 $25\,\mathrm{N}$ — 지연이 사건의 1/3이고 추가 힘이 첨두와 같은 자릿수.
-> 3. $10^4$에서는 접촉 *뒤*에 결정할 수 있고, 첨두의 힘 루프는 닫지 못한다. $10^5$에서는 보고 자체가 끝난 사건이다. $33\,\mathrm{ms}$ GelSight는 $14\,\mathrm{ms}$ 충격을 통째로 놓친다. 첨두는 수동 컴플라이언스와 킬로헤르츠 토크 루프의 몫이고, 여기서 촉각은 결정 신호다.
+> 1. 원래 그림의 $9.30\,\mathrm{mm}$ 막대가 $4.65\,\mathrm{mm}$가 되는데 그래도 $3\,\mathrm{mm}$ 접촉면 전체보다 넓다 — 급소가 손잡이를 견디고 살아남는다.
+> 2. (a) 피치 $18.6/8 = 2.325\,\mathrm{mm}$, 해상도 $4.65\,\mathrm{mm}$로 손끝보다 $4.95$배 거칠다. $4\times4$ 배열의 $9.89$배보다 두 배 낫고, 여전히 피부보다 거칠다. (b) $\tau' = 10^9 \times 10^{-9} = 1.00\,\mathrm{s}$, $f_c' = 1/(2\pi) = 0.159\,\mathrm{Hz}$. 쥠이 $1\,\mathrm{s}$에 $5e^{-1} = 1.84\,\mathrm{N}$, $5\,\mathrm{s}$에 $5e^{-5} = 0.034\,\mathrm{N}$. $|H(80)| = 1.0000$, $|H(1)| = 0.988$. 빨라진 증폭기는 쥠을 열 배 일찍 잃고 $80\,\mathrm{Hz}$에서는 아무것도 얻지 못했다. (c) 광학은 $1 - ((3 - 0.1268)/3)^3 = 0.1215$. 택셀은 해상도 $4.65\,\mathrm{mm} \ge a' = 3\,\mathrm{mm}$이므로 분해 가능한 가장 미세한 특징이 고리가 도달할 수 있는 최대 폭보다 넓다 — **결코**, $1\,\mathrm{kHz}$에서도, 채널이 네 배가 되어도. (d) $\mu P = 2.5\,\mathrm{N}$이므로 총 미끄러짐이 $2.5/5 = 0.500\,\mathrm{s}$. 광학은 $0.1215 \times 0.500 = 0.0608\,\mathrm{s}$에 감지하므로 경고 시간이 $439\,\mathrm{ms}$, $30\,\mathrm{Hz}$에서 $13.2$ 프레임이다. (e) $w_t = 25/(1.5625 + 25) = 0.941$, $\sigma_{\text{fused}} = 0.194\,\mathrm{mm}$ — 여전히 촉각만보다 $1.031$배 나을 뿐이다. 가중 없는 평균은 $\sqrt{(0.64 + 0.04)/4} = 0.412\,\mathrm{mm}$로 촉각만보다 $2.06$배 나쁘다. 카메라 잡음을 반으로 줄인 것은 가중 없는 융합을 덜 파국적으로 만들었을 뿐 쓸모 있게 만들지 못했다.
+> 3. 두 진술은 센서가 아니라 지속 시간이 다른 사건들에 관한 것이다. 충격은 $14\,\mathrm{ms}$에 끝나고 초기 미끄러짐은 $439\,\mathrm{ms}$ 동안 이어지므로, 같은 $33\,\mathrm{ms}$ 프레임이 하나에는 한참 느리고 다른 하나에는 필요보다 열세 배 빠르다. 판정을 바꾼 손잡이는 **접촉면 반지름**이다. 택셀 배열을 "고리를 결코 분해하지 못함"에서 — 여전히 못하지만 이제 더 작은 차이로 — 밀었고, 배열이 피치 $1.5\,\mathrm{mm}$보다 곱게 갔다면 뒤집혔을 것이다. 증폭기와 카메라는 숫자만 움직였다. 그래서 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장이 그 자체로 의심스럽다. 주파수는 4단계 질문의 답이고 초기 미끄러짐은 3단계의 질문이므로, 초기 미끄러짐 감지를 개선한 주파수 개선은 아마 다른 무언가를 개선하고 있었다.
 
 ### 출처
 

@@ -17,6 +17,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: how do joint velocities map to end-effector velocity — and forces back?
 
+### Homework diagram · 과제가 그릴 그림
+
+One figure, and every number on this page is read off it. The object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm to scale, then add four layers.
+
+1. **The two Jacobian columns, as arrows anchored at the tip.** Column 1 is the tip velocity when only the shoulder turns, $\dot\theta = (1,0)\,\mathrm{rad/s}$: the tip is at lever arm $\sqrt2$ from the base, so the arrow is perpendicular to the line from base to tip and has length $\sqrt2$ — draw it pointing up and to the left, and label it $(-1, 1)\,\mathrm{m/s}$. Column 2 is the tip velocity when only the elbow turns, $\dot\theta = (0,1)$: the forearm is the lever now, length $1$, so the arrow is perpendicular to the forearm, points in $-x$, and is labelled $(-1, 0)\,\mathrm{m/s}$. Do not draw them from the base; a Jacobian column is a velocity *of the tip*, and drawing it anywhere else is the standard way this figure goes wrong.
+2. **The commanded velocity** $v = (0, -0.25)\,\mathrm{m/s}$, a short arrow straight down from the tip, in a different line weight from the two columns. Beside it write the joint rates that produce it, $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$, so the figure shows both sides of one equation.
+3. **The manipulability ellipse** centred on the tip: the image of the unit circle of joint rates. Its axes are the singular values $\sigma = 1.618$ and $0.618$, an axis ratio of $2.6$ — draw it visibly elongated, not as a circle, and put its long axis along the easy direction.
+4. **The static wrench**, a fifth arrow at the tip for $F = (0,-10)\,\mathrm{N}$, drawn in outline rather than solid so it is never confused with a velocity. Label the joint torques it produces, $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$.
+
+Layers 1–2 are kinematics and layers 3–4 are their consequences, which is why one drawing serves the whole chapter: arrows out of the tip are velocities, the outlined arrow into the tip is a force, and the same matrix $J$ connects them in opposite directions.
+
+The problem set asks for layers 1 and 2 of this figure and then changes the wrench in layer 4.
+
 ### 1. The Jacobian — with its frame written down
 
 $$\mathcal{V}_s = J_s(\theta)\,\dot\theta \qquad \text{or} \qquad \mathcal{V}_b = J_b(\theta)\,\dot\theta$$
@@ -151,6 +164,19 @@ for k in range(n):
 ## 한국어
 
 **핵심 질문**: 관절 속도는 말단 속도로, 힘은 그 반대로 어떻게 사상되는가?
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나로 끝내고, 이 페이지의 모든 숫자를 거기서 읽는다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 축척에 맞게 그린 뒤 네 겹을 얹는다.
+
+1. **야코비안의 두 열을 말단에 붙인 화살표로.** 열 1은 어깨만 도는 $\dot\theta = (1,0)\,\mathrm{rad/s}$일 때의 말단 속도다. 말단이 베이스에서 지렛대 $\sqrt2$만큼 떨어져 있으므로 화살표는 베이스–말단 선에 수직이고 길이가 $\sqrt2$다. 왼쪽 위로 그리고 $(-1, 1)\,\mathrm{m/s}$라고 쓴다. 열 2는 엘보만 도는 $\dot\theta = (0,1)$일 때의 말단 속도다. 이번엔 전완이 지렛대라 길이가 $1$이고, 화살표는 전완에 수직인 $-x$ 방향이며 $(-1, 0)\,\mathrm{m/s}$다. 베이스에서 그리면 안 된다. 야코비안의 열은 *말단의* 속도이고, 다른 곳에 그리는 것이 이 그림이 틀어지는 표준적인 방식이다.
+2. **명령 속도** $v = (0, -0.25)\,\mathrm{m/s}$를 말단에서 아래로 내리는 짧은 화살표로, 앞의 두 열과는 다른 선 굵기로 그린다. 옆에는 그것을 만드는 관절 속도 $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$를 적는다. 한 방정식의 양변이 그림 하나에 들어온다.
+3. **가조작성 타원**을 말단 중심으로. 관절 속도 단위원의 상이다. 축은 특이값 $\sigma = 1.618$과 $0.618$, 축 비 $2.6$이다. 원이 아니라 눈에 띄게 길쭉하게 그리고, 긴 축을 쉬운 방향에 둔다.
+4. **정역학 렌치**를 말단의 다섯 번째 화살표로, $F = (0,-10)\,\mathrm{N}$. 속도와 절대 헷갈리지 않도록 속을 채우지 말고 윤곽선으로 그린다. 그것이 만드는 관절 토크 $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$을 함께 적는다.
+
+1–2겹이 기구학, 3–4겹이 그 귀결이라 그림 하나로 이 장 전체가 된다. 말단에서 나가는 화살표는 속도, 말단으로 들어오는 윤곽 화살표는 힘이고, 같은 행렬 $J$가 둘을 반대 방향으로 잇는다.
+
+과제는 이 그림의 1–2겹을 요구하고, 4겹의 렌치를 바꾼다.
 
 ### 1. 야코비안 — 프레임을 명시해서
 

@@ -17,6 +17,47 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: given a desired end-effector pose, what joint angles achieve it?
 
+### Homework diagram · 과제가 그릴 그림
+
+One workspace figure, three arms on it, and one annotation that is not an arm. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], unit links, and the target is the catalog tip $(1,1)$ — the point on the panel face that the running task has to reach.
+
+1. **Branch A, solid.** $\theta = (0^\circ, 90^\circ)$: link 1 along $+\hat x$ to the elbow at $(1,0)$, link 2 straight up to $(1,1)$. Label the elbow point. This is the catalog frozen pose.
+2. **Branch B, solid but lighter.** $\theta = (90^\circ, -90^\circ)$: link 1 straight up to the elbow at $(0,1)$, link 2 along $+\hat x$ to $(1,1)$. Label this elbow too. The two elbows are the whole content of "elbow-up versus elbow-down" — same tip, two different arms.
+3. **The mean arm, dashed.** $\theta = (45^\circ, 0^\circ)$, the componentwise average of the two branches: a single straight segment from the origin out to $(\sqrt2, \sqrt2) = (1.414, 1.414)$. Put an $\times$ on its tip and mark the miss distance $0.586\,\mathrm{m}$ back to the target. It must be visibly *past* the target, not near it.
+4. **Two arrows at the dashed tip, and this is the layer that earns the figure.** One double-headed arrow perpendicular to the straight arm, labelled "reachable"; one arrow pointing back along the arm toward the target, labelled "wanted". They are at right angles. Every tip velocity a straight arm can produce lies on the first, and the entire error lies on the second.
+
+Draw the target as a small circle, once, and let all three arms point at it. The problem set asks for layers 1–3 with the elbow points labelled; layer 4 is what the worked case below turns into a number.
+
+### Worked case · 대상으로 한 번 끝까지
+
+Analytic IK on **P2** for the catalog target, then one numerical step from the worst possible seed. Every number here is exact.
+
+**Step 1 — the elbow angle, from the law of cosines.** Squaring and adding the two FK equations kills $\theta_1$ and leaves $x^2 + y^2 = L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2$, because the cross terms collapse by $\cos\theta_1\cos(\theta_1{+}\theta_2) + \sin\theta_1\sin(\theta_1{+}\theta_2) = \cos\theta_2$. Solving for the elbow:
+
+$$\cos\theta_2 = \frac{x^2 + y^2 - L_1^2 - L_2^2}{2L_1L_2} = \frac{1 + 1 - 1 - 1}{2} = 0 \quad\Longrightarrow\quad \theta_2 = \pm 90^\circ$$
+
+and the $\pm$ is where multiple solutions come from: the equation fixes $\cos\theta_2$, never $\theta_2$ itself. The target is reachable exactly when this cosine lands in $[-1, 1]$, which is the clean test for "no solution".
+
+**Step 2 — the shoulder angle, one per branch.** With $\theta_2$ chosen, the arm becomes a rigid triangle and the tip's bearing from the base splits into two pieces — where the target lies, minus how far the folded forearm swings the tip off link 1's own direction:
+
+$$\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2,\ L_1 + L_2\cos\theta_2)$$
+
+and the second term flips sign with $\theta_2$, so the two elbow choices give two different shoulder angles rather than one. For $\theta_2 = +90^\circ$: $\operatorname{atan2}(1,1) - \operatorname{atan2}(1, 1) = 45^\circ - 45^\circ = 0^\circ$, giving $\theta = (0^\circ, 90^\circ)$. For $\theta_2 = -90^\circ$: $45^\circ - \operatorname{atan2}(-1, 1) = 45^\circ - (-45^\circ) = 90^\circ$, giving $\theta = (90^\circ, -90^\circ)$. Both check against FK: $(\cos 0^\circ + \cos 90^\circ,\ \sin 0^\circ + \sin 90^\circ) = (1,1)$ and $(\cos 90^\circ + \cos 0^\circ,\ \sin 90^\circ + \sin 0^\circ) = (1,1)$. The first is the catalog frozen pose; nothing on this page chose it over the other, the catalog did.
+
+**Step 3 — why the average is not an answer, in numbers.** The componentwise mean is $(45^\circ, 0^\circ)$, a straight arm, tip at $(\sqrt2, \sqrt2)$, a miss of $\sqrt{2(\sqrt2 - 1)^2} = 0.5858\,\mathrm{m}$ on a target $1.414\,\mathrm{m}$ from the base — a $41\,\%$ overshoot, not a rounding error. The set of IK solutions is not convex, and averaging is exactly the operation that assumes it is.
+
+**Step 4 — hand the mean configuration to a numerical solver and watch nothing happen.** Seed Newton IK at $\theta^{(0)} = (45^\circ, 0^\circ)$. With $s_1 = c_1 = s_{12} = c_{12} = 0.7071$ the ch.5 formula gives
+
+$$J = \begin{pmatrix}-1.4142 & -0.7071\\ 1.4142 & 0.7071\end{pmatrix}, \qquad \det J = L_1L_2\sin\theta_2 = 0, \qquad \sigma = (2.2361,\ 0)$$
+
+so the map has rank 1: its one reachable direction is $(-0.7071, 0.7071)$, perpendicular to the arm. The error is $e = (1,1) - (\sqrt2,\sqrt2) = (-0.4142, -0.4142)$, which points straight back *along* the arm. Then
+
+$$J^\top e = \begin{pmatrix}-1.4142 & 1.4142\\ -0.7071 & 0.7071\end{pmatrix}\begin{pmatrix}-0.4142\\ -0.4142\end{pmatrix} = \begin{pmatrix}0.5858 - 0.5858\\ 0.2929 - 0.2929\end{pmatrix} = \begin{pmatrix}0\\0\end{pmatrix}$$
+
+and every update built on $J^\top$ inherits that zero: the pseudoinverse step is $0$, and so is the damped step $J^\top(JJ^\top + \lambda^2 I)^{-1}e$ for **every** $\lambda$, because the damping only changes what multiplies a vector that is already zero. The solver terminates on "no progress" while standing $58.6\,\mathrm{cm}$ from a target that has two exact solutions. Damping is the wrong medicine here; a different seed is the only cure.
+
+**Step 5 — one degree off the singularity is a different failure.** Move the seed to $(45^\circ, 10^\circ)$ so the arm is merely *nearly* straight: now $\det J = \sin 10^\circ = 0.1736$ and $\sigma = (2.2279,\ 0.0779)$. The error $\|e\| = 0.5964$ divided by that smallest singular value is what sets the step size, and the undamped update is a joint move of $\|\Delta\theta\| = 7.51\,\mathrm{rad}$ — it hurls the tip to $(-1.32, -1.39)$ and drives $\|e\|$ from $0.596$ up to $3.33$. Damping at $\lambda = 0.3$ instead steps to $(30.3^\circ, 33.1^\circ)$ and brings $\|e\|$ down to $0.506$: smaller than the exact least-squares step, and in the right direction. **Exactly singular means no step; nearly singular means a wild one.** They look alike on a plot of $\|e\|$ and need opposite fixes.
+
 ### 1. IK is structurally harder than FK
 
 Unlike FK, IK has **zero, one, several, or infinitely many** solutions (elbow-up vs
@@ -163,6 +204,47 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 ## 한국어
 
 **핵심 질문**: 원하는 말단 자세가 주어지면 어떤 관절 각이 그것을 달성하는가?
+
+### 과제가 그릴 그림 · Homework diagram
+
+작업 영역 그림 하나에 팔 셋을 올리고, 팔이 아닌 표시 하나를 더한다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 단위 링크이고, 목표는 카탈로그 말단 $(1,1)$ — 관통 과제가 닿아야 하는 패널 면 위의 점이다.
+
+1. **분기 A, 실선.** $\theta = (0^\circ, 90^\circ)$: 링크 1이 $+\hat x$로 가서 엘보가 $(1,0)$, 링크 2가 곧장 위로 올라가 $(1,1)$. 엘보 점에 이름을 붙인다. 카탈로그 고정 자세다.
+2. **분기 B, 실선이지만 더 얇게.** $\theta = (90^\circ, -90^\circ)$: 링크 1이 곧장 위로 가서 엘보가 $(0,1)$, 링크 2가 $+\hat x$로 가서 $(1,1)$. 이 엘보에도 이름을 붙인다. 두 엘보 점이 "팔꿈치 위/아래"의 내용 전부다. 말단은 같고 팔이 둘이다.
+3. **평균 팔, 점선.** $\theta = (45^\circ, 0^\circ)$, 두 분기의 성분별 평균이다. 원점에서 $(\sqrt2, \sqrt2) = (1.414, 1.414)$까지 가는 곧은 선분 하나다. 그 말단에 $\times$를 치고 목표까지 되돌아오는 거리 $0.586\,\mathrm{m}$를 표시한다. 목표 *근처*가 아니라 눈에 띄게 *지나쳐* 있어야 한다.
+4. **점선 말단의 화살표 둘. 이 겹이 그림의 값을 한다.** 하나는 곧은 팔에 수직인 양방향 화살표, 이름은 "도달 가능". 하나는 팔을 따라 목표 쪽으로 되돌아가는 화살표, 이름은 "원하는 방향". 둘은 직각이다. 곧은 팔이 만들 수 있는 말단 속도는 전부 앞쪽에 있고, 오차는 전부 뒤쪽에 있다.
+
+목표는 작은 원 하나로 한 번만 그리고, 팔 셋이 모두 그것을 가리키게 둔다. 과제는 엘보 점을 표시한 1–3겹을 요구하고, 4겹은 아래 계산이 숫자로 바꾼다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+카탈로그 목표에 대한 **P2**의 해석적 IK, 그다음 가장 나쁜 초기값에서의 수치 한 스텝. 여기 숫자는 전부 정확하다.
+
+**1단계 — 엘보 각, 코사인 법칙에서.** FK 두 식을 제곱해 더하면 $\theta_1$이 사라지고 $x^2 + y^2 = L_1^2 + L_2^2 + 2L_1L_2\cos\theta_2$만 남는다. 교차항이 $\cos\theta_1\cos(\theta_1{+}\theta_2) + \sin\theta_1\sin(\theta_1{+}\theta_2) = \cos\theta_2$로 접히기 때문이다. 엘보에 대해 풀면
+
+$$\cos\theta_2 = \frac{x^2 + y^2 - L_1^2 - L_2^2}{2L_1L_2} = \frac{1 + 1 - 1 - 1}{2} = 0 \quad\Longrightarrow\quad \theta_2 = \pm 90^\circ$$
+
+이고, 이 $\pm$가 해가 여럿인 이유다. 방정식이 정하는 것은 $\cos\theta_2$이지 $\theta_2$ 자체가 아니다. 목표에 도달 가능한 조건도 여기서 나온다. 이 코사인이 $[-1, 1]$에 들어와야 하고, 그것이 "해 없음"의 깔끔한 판정이다.
+
+**2단계 — 어깨 각, 분기마다 하나씩.** $\theta_2$를 고르면 팔이 강체 삼각형이 되고, 베이스에서 본 말단의 방위각이 두 조각으로 갈라진다. 목표가 놓인 방향에서, 접힌 전완이 말단을 링크 1 자신의 방향에서 얼마나 밀어냈는지를 뺀 것이다:
+
+$$\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2,\ L_1 + L_2\cos\theta_2)$$
+
+둘째 항은 $\theta_2$와 함께 부호가 뒤집히므로, 엘보 선택 둘이 어깨 각 하나가 아니라 둘을 준다. $\theta_2 = +90^\circ$: $\operatorname{atan2}(1,1) - \operatorname{atan2}(1, 1) = 45^\circ - 45^\circ = 0^\circ$이므로 $\theta = (0^\circ, 90^\circ)$. $\theta_2 = -90^\circ$: $45^\circ - \operatorname{atan2}(-1, 1) = 45^\circ - (-45^\circ) = 90^\circ$이므로 $\theta = (90^\circ, -90^\circ)$. 둘 다 FK로 검산된다. $(\cos 0^\circ + \cos 90^\circ,\ \sin 0^\circ + \sin 90^\circ) = (1,1)$이고 $(\cos 90^\circ + \cos 0^\circ,\ \sin 90^\circ + \sin 0^\circ) = (1,1)$이다. 앞의 것이 카탈로그 고정 자세인데, 이 페이지가 그렇게 고른 것이 아니라 카탈로그가 고른 것이다.
+
+**3단계 — 평균이 왜 해가 아닌지, 숫자로.** 성분별 평균은 $(45^\circ, 0^\circ)$, 곧게 편 팔이고 말단은 $(\sqrt2, \sqrt2)$다. 빗나간 거리는 $\sqrt{2(\sqrt2 - 1)^2} = 0.5858\,\mathrm{m}$인데, 베이스에서 $1.414\,\mathrm{m}$ 떨어진 목표에 대해 $41\,\%$를 지나친 것이지 반올림 오차가 아니다. IK 해의 집합은 볼록하지 않고, 평균은 정확히 그것이 볼록하다고 가정하는 연산이다.
+
+**4단계 — 그 평균 자세를 수치 해법에 주고 아무 일도 안 일어나는 것을 본다.** $\theta^{(0)} = (45^\circ, 0^\circ)$에서 뉴턴 IK를 시작한다. $s_1 = c_1 = s_{12} = c_{12} = 0.7071$이므로 5장 공식이
+
+$$J = \begin{pmatrix}-1.4142 & -0.7071\\ 1.4142 & 0.7071\end{pmatrix}, \qquad \det J = L_1L_2\sin\theta_2 = 0, \qquad \sigma = (2.2361,\ 0)$$
+
+을 준다. 랭크가 1이고, 도달 가능한 단 하나의 방향은 팔에 수직인 $(-0.7071, 0.7071)$이다. 오차는 $e = (1,1) - (\sqrt2,\sqrt2) = (-0.4142, -0.4142)$로 팔을 *따라* 곧장 되돌아가는 방향이다. 그러면
+
+$$J^\top e = \begin{pmatrix}-1.4142 & 1.4142\\ -0.7071 & 0.7071\end{pmatrix}\begin{pmatrix}-0.4142\\ -0.4142\end{pmatrix} = \begin{pmatrix}0.5858 - 0.5858\\ 0.2929 - 0.2929\end{pmatrix} = \begin{pmatrix}0\\0\end{pmatrix}$$
+
+이고, $J^\top$ 위에 세운 모든 갱신이 이 0을 물려받는다. 유사역행렬 스텝이 $0$이고, 감쇠 스텝 $J^\top(JJ^\top + \lambda^2 I)^{-1}e$도 **모든** $\lambda$에 대해 $0$이다. 감쇠는 이미 0인 벡터에 곱해지는 것만 바꾸기 때문이다. 해법은 정확한 해가 둘이나 있는 목표에서 $58.6\,\mathrm{cm}$ 떨어진 채 "진전 없음"으로 멈춘다. 여기서 감쇠는 잘못된 처방이고, 유일한 처방은 다른 초기값이다.
+
+**5단계 — 특이점에서 조금 떨어지면 실패의 종류가 바뀐다.** 초기값을 $(45^\circ, 10^\circ)$로 옮겨 팔이 *거의* 곧게 편 상태만 되게 하자. 이제 $\det J = \sin 10^\circ = 0.1736$, $\sigma = (2.2279,\ 0.0779)$다. 스텝 크기를 정하는 것은 $\|e\| = 0.5964$를 그 가장 작은 특이값으로 나눈 값이고, 감쇠 없는 갱신은 관절이 $\|\Delta\theta\| = 7.51\,\mathrm{rad}$만큼 움직이는 것이다. 말단은 $(-1.32, -1.39)$로 내던져지고 $\|e\|$는 $0.596$에서 $3.33$으로 커진다. $\lambda = 0.3$의 감쇠는 대신 $(30.3^\circ, 33.1^\circ)$로 가서 $\|e\|$를 $0.506$까지 내린다. 정확한 최소제곱 스텝보다 작고, 방향은 옳다. **정확히 특이점이면 스텝이 없고, 거의 특이점이면 스텝이 날뛴다.** $\|e\|$ 그래프에서는 비슷해 보이지만 처방이 정반대다.
 
 ### 1. IK는 구조적으로 FK보다 어렵다
 

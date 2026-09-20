@@ -25,6 +25,18 @@ no prior background assumed.
 > [!note] First pass · 처음이라면
 > Read §0 (three log rules, five minutes), §1, §2, §3 — and do the bit calculations by hand, they are the page. §4 and §5 are for when a paper puts mutual information or an ELBO in its objective.
 
+### Homework diagram · 과제가 그릴 그림
+
+The page's object is the **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]], and every number below is drawn as a channel. The problem set asks for this same figure.
+
+**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node do *not* — a column of a channel matrix is a distribution, a row of it is not.
+
+**The prior, drawn to scale.** Draw the two left nodes as boxes whose heights are their prior masses, $P(c)=0.01$ against $P(\neg c)=0.99$. Drawn honestly, the top box is a line and the bottom one is the whole figure. That ratio of $99$ is the only reason the page's punchline exists, so it must be visible before any arithmetic starts.
+
+**The four joint masses, at the arrowheads.** Multiply prior by conditional along each arrow and write the product where the arrow lands: $0.0095$ on $c\to+$, $0.0005$ on $c\to-$, $0.0495$ on $\neg c\to+$, $0.9405$ on $\neg c\to-$. The four sum to $1$; write that check on the page. Then bracket the two arrows that land on $+$ and write their total, $P(+)=0.059$, beside the bracket. Inside the bracket, split it into the two shares $0.0095/0.059$ and $0.0495/0.059$ and label them $0.161$ and $0.839$: the posterior after an alarm, read off the picture rather than from Bayes' rule.
+
+**The last annotation, which is the point.** Beside the $c\to+$ arrow write $0.95$ once more and circle it; beside the bracket write $0.161$ and circle that. Two circled numbers, one arrow apart, differing by a factor of about six. §2 charges $H(p,q)\approx 3.64$ bits against a floor of $H(p)\approx 0.637$ bits for confusing them, and the problem set asks you to pay that bill by hand.
+
 ### 0. Prerequisite: the three log rules
 
 Everything on this page runs on logarithms. If these three lines are not second nature,
@@ -323,6 +335,18 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 > [!note] 처음이라면 · First pass
 > 먼저 §0(로그 세 규칙, 5분), §1, §2, §3 — 비트 계산은 손으로 해라, 그것이 이 페이지다. §4·§5는 논문이 목적함수에 상호 정보량이나 ELBO를 넣을 때 보면 된다.
 
+### 과제가 그릴 그림 · Homework diagram
+
+이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 균열 감지기이고, 아래 숫자는 전부 채널 하나로 그려진다. 과제가 바로 이 그림을 요구한다.
+
+**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$이 *아니다*. 채널 행렬의 열은 분포지만 행은 분포가 아니다.
+
+**사전확률, 실제 비율로.** 왼쪽 노드 둘을 사전 질량 높이의 상자로 그린다. $P(c)=0.01$ 대 $P(\neg c)=0.99$다. 정직하게 그리면 위 상자는 선 하나이고 아래 상자가 그림 전체다. $99$라는 이 비율이 이 페이지 결론의 유일한 근거이므로, 산술을 시작하기 전에 눈에 보여야 한다.
+
+**결합 질량 넷, 화살촉 자리에.** 화살표마다 사전확률과 조건부를 곱해 화살표가 닿는 자리에 적는다. $c\to+$에 $0.0095$, $c\to-$에 $0.0005$, $\neg c\to+$에 $0.0495$, $\neg c\to-$에 $0.9405$. 넷의 합이 $1$이고, 그 확인을 그림에 적는다. 그다음 $+$에 닿는 화살표 둘을 묶음으로 표시하고 옆에 합 $P(+)=0.059$를 쓴다. 묶음 안을 두 몫 $0.0095/0.059$와 $0.0495/0.059$로 나누고 각각 $0.161$, $0.839$라고 쓴다. 베이즈 공식이 아니라 그림에서 읽어 낸 경보 후의 사후확률이다.
+
+**마지막 주석, 이것이 요점이다.** $c\to+$ 화살표 옆에 $0.95$를 한 번 더 쓰고 동그라미를 친다. 묶음 옆에는 $0.161$을 쓰고 역시 동그라미를 친다. 화살표 하나 떨어진 두 숫자가 약 여섯 배 차이 난다. 이 둘을 혼동한 대가로 §2는 바닥 $H(p)\approx 0.637$비트에 대해 $H(p,q)\approx 3.64$비트를 청구하고, 과제는 그 청구서를 손으로 치르게 한다.
+
 ### 0. 사전 준비: 로그의 세 규칙
 
 이 페이지 전체가 로그로 굴러간다. 아래 세 줄이 자동으로 나오지 않으면
@@ -384,6 +408,7 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
   바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다. 이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
+- **계산: P5 균열 감지기.** 카탈로그의 $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. 참 사후분포는 Bernoulli($0.161$)이고 $H(p)\approx 0.63$비트다. *민감도* $0.95$를 $P(c|+)$인 양 쓰는 모델은 $H(p,q)\approx 3.64$비트를 치른다. 균열이 없는 $99\%$ 질량에서 나온 거짓 경보($0.0495$)가 참양성($0.0095$)을 압도한다. 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다. 과제는 이 채널을 그림으로 그리는 것이다.
   두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
   단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
   정수 비트여야 하기 때문이다. 여기서 최선의 심볼

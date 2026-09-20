@@ -25,6 +25,18 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 > [!note] First pass · 처음이라면
 > Read §1 (rotation order, with the coordinates), §3 (poses compose by matrix product), §5 (where this shows up). §2 is a table to consult, and §4 is the on-ramp to Modern Robotics — read it when you get there.
 
+### Homework diagram · 과제가 그릴 그림
+
+The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, drawn as two frames rather than as an arm. The problem set asks for this drawing.
+
+**Two frames, axes first.** Draw the base frame at the origin: $x_s$ along $+x$, $y_s$ along $+y$, $z_s$ out of the page, drawn as a circled dot so the page has a right-handed triad and not two arrows. Sketch the arm faintly behind it — elbow $(1,0)$, tip $(1,1)$ — but draw it faintly, because this page's object is the frames and the links are only scaffolding. At the tip, draw the second frame. The forearm is vertical, so the tool's own $x$-axis points along $+y_s$ (straight up the page) and its $y$-axis along $-x_s$ (to the left); $z$ stays out of the page. Label the tip axes $x_b$, $y_b$, $z_b$ and *do not* draw them parallel to the base axes — the entire content of $R$ is that they are not.
+
+**The matrix, read off the drawing rather than computed.** Beside the figure write a $3\times3$ box and fill each column by reading the corresponding tip axis off the page in base coordinates: $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. That is $R_z(90^\circ)$, obtained without a trigonometric identity. Under the box write the two membership tests of §1 as checks you can do on those three columns: they are unit length and mutually perpendicular ($R^\top R=I$), and $x_b\times y_b=z_b$ rather than $-z_b$ ($\det R=+1$). Then draw the arrow from base origin to tip origin and label it $p=(1,1,0)$, and assemble $T$ with $R$ in the corner, $p$ in the last column, and the bottom row $(0,0,0,1)$ written in — that row is not decoration, and §3 says what goes wrong without it.
+
+**One point and one direction, to separate them.** Mark a small dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis. In tool coordinates it is $(0.1,0,0)$; on the page it sits at $(1,\ 1.1,\ 0)$ in base coordinates, so draw it above the tip, not to the right of it. Beside it draw the tool's $x$-*direction* as a short arrow and label it $(0,1,0)$ in base coordinates. Write the difference next to the two marks: the point carried the fourth entry $1$ and so was rotated *and* shifted; the direction carried $0$ and was only rotated. Nearly every frame bug in the robotics track is this distinction.
+
+**The inverse, drawn as the same picture read backwards.** In a margin box, draw the base origin as seen from the tool frame: it lies at $(-1,\ 1,\ 0)$ in tool coordinates, which is $-R^\top p$. Draw it at the correct place relative to the tool axes — down-left along $x_b$, up-left along $y_b$ — and check on the page that its distance from the tip is still $\sqrt2$, since a rigid motion cannot change a distance. The problem set asks for $T$; this box is how you check the $T$ you wrote without multiplying anything.
+
 ### 1. Rotations are matrices with rules
 
 - A 3D rotation is a matrix $R \in \mathbb{R}^{3\times 3}$ with $R^\top R = I$ and
@@ -307,6 +319,18 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1(회전 순서, 좌표까지), §3(자세는 행렬곱으로 합성된다), §5(어디에 나타나는가). §2는 찾아보는 표이고, §4는 Modern Robotics로 가는 진입로다 — 거기 도착할 때 읽어라.
+
+### 과제가 그릴 그림 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 $\theta=(0^\circ,90^\circ)$에서 본 것이고, 팔이 아니라 프레임 둘로 그린다. 과제가 이 그림을 요구한다.
+
+**프레임 둘, 축부터.** 원점에 베이스 프레임을 그린다. $x_s$는 $+x$, $y_s$는 $+y$, $z_s$는 지면 밖으로 나오므로 동그라미 안의 점으로 그린다. 화살표 둘이 아니라 오른손 삼각대가 지면 위에 있어야 하기 때문이다. 팔은 뒤에 흐리게 스케치한다 — 엘보 $(1,0)$, 말단 $(1,1)$ — 흐리게 그리는 이유는 이 페이지의 대상이 프레임이고 링크는 받침대일 뿐이기 때문이다. 말단에 둘째 프레임을 그린다. 전완이 수직이므로 도구 자신의 $x$축은 $+y_s$(지면 위쪽)를, $y$축은 $-x_s$(왼쪽)를 향하고 $z$는 지면 밖 그대로다. 말단 축에 $x_b$, $y_b$, $z_b$라 이름 붙이고 베이스 축과 평행하게 그리지 *않는다*. $R$의 내용 전부가 그 둘이 평행하지 않다는 것이다.
+
+**행렬, 계산이 아니라 그림에서 읽어 내기.** 그림 옆에 $3\times3$ 상자를 그리고, 각 열을 해당 말단 축을 베이스 좌표로 읽어 채운다. $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. 삼각함수 항등식 없이 얻은 $R_z(90^\circ)$다. 상자 아래에는 §1의 소속 검사 둘을, 그 세 열로 직접 할 수 있는 확인으로 적는다. 길이가 1이고 서로 수직이며($R^\top R=I$), $x_b\times y_b$가 $-z_b$가 아니라 $z_b$다($\det R=+1$). 그다음 베이스 원점에서 말단 원점으로 화살표를 긋고 $p=(1,1,0)$이라 쓴 뒤, 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적어 $T$를 조립한다. 그 아래 행은 장식이 아니고, 없으면 무엇이 깨지는지는 §3이 말한다.
+
+**점 하나와 방향 하나, 둘을 가르기 위해.** *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 자리에 작은 점을 찍는다. 도구 좌표로는 $(0.1,0,0)$이고, 지면 위 베이스 좌표로는 $(1,\ 1.1,\ 0)$이므로 말단의 오른쪽이 아니라 위에 찍힌다. 그 옆에 도구의 $x$-*방향*을 짧은 화살표로 그리고 베이스 좌표 $(0,1,0)$이라 적는다. 두 표시 옆에 차이를 적는다. 점은 넷째 성분 $1$을 지녀 회전되고 *또* 평행이동했고, 방향은 $0$을 지녀 회전만 되었다. 로보틱스 트랙의 프레임 버그는 거의 전부 이 구분이다.
+
+**역행렬, 같은 그림을 거꾸로 읽은 것.** 여백 상자에 도구 프레임에서 본 베이스 원점을 그린다. 도구 좌표로 $(-1,\ 1,\ 0)$이고, 이것이 $-R^\top p$다. 도구 축에 대해 올바른 자리에 — $x_b$ 쪽으로 아래-왼쪽, $y_b$ 쪽으로 위-왼쪽 — 찍고, 말단에서의 거리가 여전히 $\sqrt2$인지 지면 위에서 확인한다. 강체 운동은 거리를 바꿀 수 없기 때문이다. 과제가 요구하는 것은 $T$이고, 이 상자는 아무것도 곱하지 않고 그 $T$를 검산하는 방법이다.
 
 ### 1. 회전은 규칙 있는 행렬이다
 

@@ -150,6 +150,19 @@ because the cruise covers $\Delta\theta - v_{\max}^2/a_{\max}$ at speed $v_{\max
 replacements for exactly this chapter; classical time scaling still wraps learned outputs
 on real hardware for safety/limits.
 
+### Self-check
+
+1. For the cubic scaling $s(t) = 3t^2/T^2 - 2t^3/T^3$, compute $s(0), s(T), \dot s(0), \dot s(T)$ and confirm the boundary conditions.
+2. What does quintic scaling buy over cubic, and what does it cost?
+3. Why is the trapezoidal velocity profile the industrial default?
+4. P2's shoulder alone must move $\Delta\theta_1 = \pi/2$ with the catalog limits. Which limit binds, and what is the trapezoid's duration?
+
+> [!tip]- Answers
+> 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement.
+> 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay.
+> 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything.
+> 4. $\Delta\theta_1 = 1.5708 > \Delta\theta^{*} = 0.32$, so it is still a true trapezoid, and $1.5708 > \Delta\theta^{\dagger} = 0.853$, so velocity binds. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 1.963 + 0.4 = 2.363\,\mathrm{s}$ — the $\Delta\theta/v_{\max}$ term is exactly half the elbow's, while the $v_{\max}/a_{\max}$ ramp term does not scale with the move at all.
+
 ### Problem set · 과제
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2** and the same elbow flip, $|\Delta\theta_2| = \pi\,\mathrm{rad}$, but the joint is re-geared: a taller gear ratio raises the top speed and cuts the torque, giving $v_{\max} = 1.6\,\mathrm{rad/s}$ and $a_{\max} = 0.5\,\mathrm{rad/s^2}$.
@@ -291,18 +304,18 @@ $$T_{\text{trap}} = \frac{\Delta\theta}{v_{\max}} + \frac{v_{\max}}{a_{\max}} \q
 대체물이고, 실제 하드웨어에서는 안전/한계를 위해 고전적 시간 스케일링이 학습 출력을 여전히
 감싼다.
 
-### Self-check · 스스로 점검
+### 스스로 점검
 
-1. For the cubic scaling $s(t) = 3t^2/T^2 - 2t^3/T^3$, compute $s(0), s(T), \dot s(0), \dot s(T)$ and confirm the boundary conditions. · 3차 시간 스케일링에서 $s(0), s(T), \dot s(0), \dot s(T)$를 계산해 경계 조건을 확인하라.
-2. What does quintic scaling buy over cubic, and what does it cost? · 5차 스케일링이 3차보다 나은 점은 무엇이고, 그 대가는?
-3. Why is the trapezoidal velocity profile the industrial default? · 사다리꼴 속도 프로파일이 산업 제어기의 기본값인 실용적 이유는?
-4. P2's shoulder alone must move $\Delta\theta_1 = \pi/2$ with the catalog limits. Which limit binds, and what is the trapezoid's duration? · P2 어깨만 카탈로그 한계로 $\Delta\theta_1 = \pi/2$ 움직인다. 어느 한계가 걸리고, 사다리꼴 소요 시간은?
+1. 3차 스케일링 $s(t) = 3t^2/T^2 - 2t^3/T^3$에서 $s(0), s(T), \dot s(0), \dot s(T)$를 계산해 경계 조건을 확인하라.
+2. 5차 스케일링이 3차보다 나은 점은 무엇이고, 그 대가는 무엇인가?
+3. 사다리꼴 속도 프로파일이 산업 제어기의 기본값인 실용적 이유는?
+4. P2 어깨만 카탈로그 한계로 $\Delta\theta_1 = \pi/2$ 움직인다. 어느 한계가 걸리고, 사다리꼴 소요 시간은 얼마인가?
 
-> [!tip]- Answers · 정답
-> 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement. · 양 끝에서 정지한다.
-> 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay. · 양 끝 가속도까지 0이라 토크가 매끄럽다; 대가는 같은 시간에서 최대 속도가 커지는 것이다($1.875/T$ vs $1.5/T$). 최대 가속도는 오히려 작다($5.77/T^2$ vs $6/T^2$). 치르는 것은 토크가 아니라 속도다.
-> 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything. · 최대 속도·가속도 한계를 직접 파라미터로 가져 액추에이터 스펙과 1:1로 대응되기 때문.
-> 4. $\Delta\theta_1 = 1.5708 > \Delta\theta^{*} = 0.32$, so it is still a true trapezoid, and $1.5708 > \Delta\theta^{\dagger} = 0.853$, so velocity binds. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 1.963 + 0.4 = 2.363\,\mathrm{s}$ — the $\Delta\theta/v_{\max}$ term is exactly half the elbow's, while the $v_{\max}/a_{\max}$ ramp term does not scale with the move at all. · $1.5708$은 $0.32$보다 크므로 여전히 진짜 사다리꼴이고 $0.853$보다 크므로 속도가 걸린다. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 2.363\,\mathrm{s}$. $\Delta\theta/v_{\max}$ 항만 엘보의 절반이고 램프 항 $v_{\max}/a_{\max}$는 이동 크기와 무관하다.
+> [!tip]- 정답
+> 1. $s(0)=0$, $s(T)=1$이고 $\dot s = 6t/T^2 - 6t^2/T^3$이므로 $\dot s(0) = \dot s(T) = 0$이다. 양 끝에서 정지하며, 이것이 점대점 이동이 요구하는 조건 그대로다.
+> 2. 5차는 양 끝의 *가속도*까지 0으로 만들어 끝에서 토크가 연속이다(덜컥거림이 없다). 대가는 같은 소요 시간에서 최대 속도가 커지는 것이다($1.875/T$ 대 $1.5/T$). 최대 *가속도*는 오히려 3차보다 작으므로($5.77/T^2$ 대 $6/T^2$) 치르는 것은 토크가 아니라 속도다.
+> 3. 파라미터가 곧 액추에이터 한계이기 때문이다. 최대 속도와 최대 가속도가 프로파일에 그대로 들어가므로 기계 사양이 아무것도 풀지 않고 1:1로 대응된다.
+> 4. $\Delta\theta_1 = 1.5708$은 $\Delta\theta^{*} = 0.32$보다 크므로 여전히 진짜 사다리꼴이고, $\Delta\theta^{\dagger} = 0.853$보다도 크므로 속도가 걸린다. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 1.963 + 0.4 = 2.363\,\mathrm{s}$다. $\Delta\theta/v_{\max}$ 항만 엘보의 절반이고, 램프 항 $v_{\max}/a_{\max}$는 이동 크기와 아예 무관하다.
 
 ### 과제 · Problem set
 

@@ -4,6 +4,7 @@ tags: [robotics, estimation, slam]
 study-depth: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
+wiki-support: Working
 ---
 
 ## English
@@ -21,6 +22,69 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 
 > [!note] First pass · 처음이라면
 > Read §2 — the four words nobody separates — then §4 for the predict/correct loop, then §6 to do the one-dimensional update by hand. §5, §7 and §8 are the reference half; open them against a specific paper.
+
+### Running object: P5's panel on P6's clock
+
+**P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] is the panel P2 is carrying a tool toward: a wall at a prior range of $10\,\mathrm{cm}$ with variance $4\,\mathrm{cm}^2$, and a range sensor that reads $12\,\mathrm{cm}$ with variance $1\,\mathrm{cm}^2$. **P6** supplies the clock and the motion. Every range on this page is in centimetres.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $x_0$, $P_0$ | $10\,\mathrm{cm}$, $4\,\mathrm{cm}^2$ | P5's prior range and its variance, frozen in 0.6 |
+| $z$ | $12\,\mathrm{cm}$ | P5's first range reading |
+| $R$ | $1\,\mathrm{cm}^2$ | the range sensor's noise variance, frozen in 0.6 |
+| $\Delta t$ | $20\,\mathrm{ms}$ | one filter step, from P6's $50\,\mathrm{Hz}$ vision rate |
+| $u$ | $0.5\,\mathrm{m/s}$ | commanded approach speed, so $u\Delta t = 1\,\mathrm{cm}$ of advance per step |
+| $Q$ | $1\,\mathrm{cm}^2$ | process-noise variance per step — this page's only addition to P5 |
+| $T_\ell$ | $70\,\mathrm{ms}$ | P6's end-to-end latency, camera mid-exposure to applied force |
+| $N$ | $2048$ counts/m | P6's encoder resolution |
+
+The $1\,\mathrm{cm}$ step every later section advances by is not a free choice: it is $u\Delta t = 0.5 \times 0.02\,\mathrm{m}$, the distance the tool covers between two frames of P6's vision node. Two numbers from the same table decide what the filter can and cannot fix.
+
+- **Latency is larger than the noise it is usually blamed on.** A range that arrives $T_\ell = 70\,\mathrm{ms}$ late describes the world $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ ago, and $3.5\,\mathrm{cm}$ is $3.5$ times the sensor's own standard deviation of $1\,\mathrm{cm}$. So an unmodelled timestamp is a bias three times the size of the noise term the filter is tuned against, and no covariance setting removes a bias.
+- **The noise on the datasheet is not the noise that matters.** P6's encoder quantizes position to $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$, and a uniform quantum $q$ has variance $q^2/12$, so its standard deviation is $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$ and its variance $1.99\times10^{-4}\,\mathrm{cm}^2$. That is four orders of magnitude below $Q = 1\,\mathrm{cm}^2$, because $Q$ stands for slip and unmodelled motion, not for encoder counts.
+
+*Scope: this page teaches how a belief is propagated and corrected, what a Kalman gain and an innovation are, how the SLAM posterior factors, and how to read an estimation claim. It does not teach the rotation parameterizations an SE(3) estimator needs ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]), the perception front end that produces the measurements ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]), or the solvers the back end calls ([[02-foundations/optimization|4. Optimization §3.5]]).*
+
+### Homework diagram: one cycle, with the gate drawn to scale
+
+Draw it once; the problem set asks for the same drawing at different numbers.
+
+**Top — the range axis, in centimetres, drawn to scale.** A tick at $11.6$ for the belief the catalog update leaves behind, an arrow of length $1$ to the right labelled *predict* ending at $12.6$, and under each tick a horizontal bar of half-width $\sqrt{P}$: $0.89$ before the step, $1.34$ after it. The bar must visibly grow, because prediction adds $Q$ and never subtracts anything.
+
+**Middle — the gate.** Centred on the prediction $12.6$, a shaded band of half-width $3\sqrt{P^- + R} = 5.02$. Mark two candidate readings on the axis: $z = 12.5$ just inside the band on the left, and $z = 20$ far outside it on the right. The band is drawn around the *prediction*, not around the sensor reading, and its half-width uses $P^- + R$, not $P^-$ — both are the drawing's whole content.
+
+**Bottom — two boxes, one arrow each.** A box "this $z$ is the panel" with an arrow pulling the estimate a short way toward $12.5$, and a box "this $z$ is a passer-by" with an arrow throwing the estimate $4.86\,\mathrm{cm}$ past the panel. Under the second box write the posterior variance that the filter would report anyway. That the two boxes end with the *same* variance is the point of the drawing.
+
+### Worked case: one predict–correct–gate cycle on P5, every intermediate
+
+Start from the belief the catalog's own update leaves: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$ (P5's scalar Kalman step, reproduced in §6). One step of P6's clock passes and a new range arrives.
+
+**1. Predict.** The motion model is $f(x, u) = x + u\Delta t$ with $u\Delta t = 1\,\mathrm{cm}$, so $A = 1$ and §5's predict equations give
+
+$$\hat x^- = 11.6 + 1 = 12.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
+
+because $A = 1$ carries the variance through unchanged and the independent process noise $Q$ adds its own $1\,\mathrm{cm}^2$ on top.
+
+**2. Innovation covariance and gain, before any measurement is looked at.** With $H = 1$,
+
+$$S = P^- + R = 1.8 + 1 = 2.8\ \mathrm{cm}^2, \qquad \sqrt{S} = 1.673\ \mathrm{cm}, \qquad K = \frac{P^-}{S} = \frac{1.8}{2.8} = 0.6429$$
+
+Both are fixed by the model alone, since neither $S$ nor $K$ contains $z$. That is why the gate below can be drawn before the reading arrives.
+
+**3. Gate.** The squared Mahalanobis distance of the innovation is $d^2 = y^2/S$ (§8.5 defines the gate in full, including the $\chi^2$ table the threshold comes from; do not re-derive it here). In one dimension a $3\sigma$ gate is $d^2 < 9$, equivalently $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$.
+
+| Candidate | $y = z - \hat x^-$ | $d^2 = y^2/S$ | $3\sigma$ gate | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
+|---|---:|---:|---|---:|---:|
+| panel, $z = 12.5$ | $-0.100$ | $0.0036$ | accept | $12.536$ | $0.6429$ |
+| passer-by, $z = 20$ | $+7.400$ | $19.557$ | reject | $17.357$ | $0.6429$ |
+
+**4. What the wrong association costs, in the filter's own units.** Fuse the passer-by anyway and the estimate lands $17.357 - 12.5 = 4.857\,\mathrm{cm}$ beyond the panel while reporting $P^+ = 0.6429\,\mathrm{cm}^2$. §2's consistency check turns that into one number, the NEES of the resulting estimate:
+
+$$\epsilon = \frac{(12.5 - 17.357)^2}{0.6429} = 36.7$$
+
+A consistent one-dimensional filter averages $\epsilon \approx 1$, so $36.7$ is not a large error inside a wide belief: it is a confident belief about the wrong place. A contact force commanded at that range meets air. The gate, not the covariance, is what separates the two rows of the table, because both rows report the identical $P^+$.
+
+**5. One check worth doing by hand.** The Joseph form $P^+ = (1-K)^2P^- + K^2R$ gives $0.6429$, the same value as $(1-K)P^-$, which it must for the optimal $K$; the two disagree only when the gain used is not the optimal one, which is exactly when the Joseph form is worth its extra arithmetic.
 
 ### 1. Position in the robot loop
 
@@ -177,7 +241,7 @@ $$\tilde w_t^{[i]} = w_{t-1}^{[i]}\, p(z_t \mid x_t^{[i]}), \qquad w_t^{[i]} = \
 $$N_{\text{eff}} = \frac{1}{\sum_i \big(w_t^{[i]}\big)^2}$$
 It equals $N$ for uniform weights and 1 when one particle holds all the weight, so it counts how many particles are really contributing.
 
-*Example:* particles at 9, 10 and 12 m with equal previous weights, a reading $z = 12$ m and Gaussian noise $\sigma = 1$ m give likelihoods $e^{-4.5}, e^{-0.5}, e^{0}$, that is $0.011, 0.135, 1$. The weights are $0.010, 0.118, 0.872$, the weighted mean is 11.73 m, and $N_{\text{eff}} = 1.29$ out of 3, so it is time to resample. The code is in [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
+*Example:* particles at 9, 10 and 12 m with equal previous weights, a reading $z = 12$ m and Gaussian noise $\sigma = 1$ m give likelihoods $e^{-4.5}, e^{-2}, e^{0}$, that is $0.011, 0.135, 1$. The weights are $0.010, 0.118, 0.872$, the weighted mean is 11.73 m, and $N_{\text{eff}} = 1.29$ out of 3, so it is time to resample. The code is in [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
 
 **Factor graphs, stated completely.** A **factor graph** is a bipartite graph with **variable nodes** (poses, landmarks, calibration) and **factor nodes**, each factor $\phi_k$ connected only to the variables $X_k$ its measurement involves. It represents a factorization of the posterior:
 $$p(X \mid Z) \propto \prod_k \phi_k(X_k), \qquad \phi_k(X_k) \propto \exp\!\big(-\tfrac12 \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}\big)$$
@@ -225,7 +289,16 @@ $$p(x_{1:t}, m \mid z_{1:t}, u_{1:t})$$
 
 Under §4's Markov and conditional-independence assumptions, the full SLAM posterior (with the initial pose $x_0$ included) factors into a prior, one motion term per step and one measurement term per observation:
 $$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) \propto p(x_0) \prod_{k=1}^t p(x_k \mid x_{k-1}, u_k) \prod_{k=1}^t p(z_k \mid x_k, m_{c_k})$$
-Here $c_k$ is the **data association**, the index of the landmark that measurement $z_k$ came from. Each term is one factor of §5's factor graph, which is why graph-based SLAM back ends exist. *Example:* the three-pose chain of §5 is a full SLAM problem without landmarks, where the loop closure plays the part of a re-observed place. *Non-example:* a wrong $c_k$ inserts a factor tied to the wrong landmark, and least squares will bend the map to satisfy it.
+Each term is one factor of §5's factor graph, which is why graph-based SLAM back ends exist. *Example:* the three-pose chain of §5 is a full SLAM problem without landmarks, where the loop closure plays the part of a re-observed place. *Non-example:* drop the product over motion terms and the poses are no longer chained, so the trajectory is a set of unrelated snapshots rather than a path.
+
+**Data association, stated completely.** The $c_k$ in that posterior is not a number the sensor reports. It is a **discrete latent variable**: $c_k \in \{1, \dots, N\}$ is the index of the landmark that produced measurement $z_k$, and it is estimated along with everything else. Three conditions define it.
+
+- It is **per measurement**, not per frame: each $z_k$ gets its own $c_k$.
+- It is **not observed**, so the honest posterior sums over it — the SLAM posterior above is the one *given* an association, and the full one marginalizes it out over all $N^t$ assignments:
+$$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) = \sum_{c_{1:t}} p(x_{0:t}, m, c_{1:t} \mid z_{1:t}, u_{1:t})$$
+- Almost every working system replaces that sum with its **maximum-likelihood assignment** — one hard choice of $c_{1:t}$, then optimization as if it were known — because the sum has exponentially many terms.
+
+That last substitution is the whole risk. The machinery for making the choice safely is the same for a landmark here and for a tracked object in §8.5: score each candidate by the squared Mahalanobis distance of its innovation, reject everything above a $\chi^2$ threshold, and choose among the survivors. **Gating and the association algorithms — nearest neighbour, GNN, JPDA, MHT — are defined in §8.5 below and are not repeated here**; the only difference is what a mistake costs. *Example:* the accepted row of the Worked case is an association decision, $d^2 = 0.0036$ against a gate of 9. *Non-example:* the rejected row fused anyway is a wrong $c_k$; in SLAM the same mistake inserts a factor tied to the wrong landmark, and least squares bends the whole map to satisfy it rather than reporting a conflict. A tracker recovers from a swap after a few frames. A map does not recover from a false loop closure, which is why the front end's gate is a mapping decision and not a bookkeeping detail.
 
 A SLAM **front end** extracts features ([[04-robotics/geometric-perception-calibration|3.5 §2.5]]) or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
 
@@ -491,28 +564,50 @@ You should be able to:
 
 ### Problem set · 과제
 
-Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]; the scalar loop is on [[02-foundations/probability|3. Probability]]. This page adds motion, a wrong association, and the panel of the running task.
+Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]] on **P6**'s clock; the scalar loop is on [[02-foundations/probability|3. Probability]]. The Worked case above ran *one* step and fused. This set runs *two* steps and **rejects** on the first, which is the variant: what a gate costs while it is protecting you.
 
-P2 is carrying a tool toward a panel. Range to the panel is the P5 wall. Units centimetres.
+P2 is carrying a tool toward a panel. Range to the panel is the P5 wall. Units centimetres, $Q = R = 1$, one $1\,\mathrm{cm}$ advance per step.
 
-1. **Draw.** Predict–correct cycle: motion $x\leftarrow x+1$ (the cart of **P6** advanced 1 cm), then a range $z$. Two boxes: “this $z$ is the panel” vs “this $z$ is a passer-by.”
-2. **Derive.** After the catalog P5 update ($11.6$, $P=0.8$): (a) predict $Q=1$, then correct $z=12.5$, $R=1$. (b) Same predict, but you associate a passer-by at $z=20$, $R=1$. Posterior mean and variance in both cases. (c) A 3-σ gate on the innovation after the predict: which of $12.5$ and $20$ would you accept?
-3. **Do.** Fill `?` (reuse the correct function from [[02-foundations/probability|3]] if you already wrote it). Print (a) and (b).
+1. **Draw.** Two cycles on one range axis. Step 1: predict from $11.6$, draw the gate, mark $z = 20$ outside it, and draw *no* correction arrow. Step 2: predict again from the **unchanged** belief, draw the new and visibly wider gate, mark $z = 14.4$ inside it, and draw the correction arrow. Label both gate half-widths. Beside them, in a second colour, the counterfactual: where the step-2 gate would have sat had step 1 fused $z=20$.
+2. **Derive.** Starting from the catalog P5 update ($11.6$, $P = 0.8$): (a) step 1 predict, then the $3\sigma$ gate on $z = 20$ — accept or reject, and what happens to $\hat x$ and $P$ either way. (b) step 2 predict from the belief (a) leaves, then the gate and the full correction on $z = 14.4$: $S$, $K$, $\hat x^+$, $P^+$. (c) The counterfactual: redo (b) from the belief you would have had if (a) had fused $z = 20$. Does the *correct* reading $14.4$ still pass the gate, and where does it leave the estimate?
+3. **Do.** Fill the `?` blanks (reuse the correct function from [[02-foundations/probability|3]] if you already wrote it). Print (a) and (b), then **sweep** $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$: run the gated loop for 200 steps at each $q$ and report the value $P$ settles to. Compare it with the closed form you get by setting $P^+ = P^-R/(P^-+R)$ equal to $P$ and solving the resulting quadratic. Which knob, $Q$ or $R$, moves the steady-state gain, and does their ratio alone decide it?
 
 ```python
+def update(x, P, z, R):             # one gated correct; returns (x, P, accepted)
+    S = ?                           # P + R
+    y = ?                           # z - x
+    if y*y / S > 9.0:               # 3-sigma gate in d^2 units, k = 1
+        return x, P, False
+    K = ?                           # P / S
+    return ?, ?, True               # x + K*y , (1-K)*P
+
 x, P = 11.6, 0.8
-x, P = x + 1.0, P + 1.0          # predict
-# (a) z = 12.5 ; (b) z = 20
-K = ?                             # P / (P + 1)
-x_a = ?                           # x + K*(12.5 - x)
-P_a = ?                           # (1-K)*P
-# recompute predict then z=20 for (b)
+x, P = x + 1.0, P + 1.0             # predict one 1 cm step, Q = 1
+print(update(x, P, 12.5, 1.0))      # (a) the panel
+print(update(x, P, 20.0, 1.0))      # (b) the passer-by — note what the gate does
+
+for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
+    x, P = 11.6, 0.8
+    for k in range(200):
+        x, P = x + 1.0, P + q       # predict
+        x, P, ok = update(x, P, x + 0.1, 1.0)   # a well-behaved reading each step
+    print(q, round(P, 6))
 ```
 
 > [!tip]- Solutions
-> 1. An arrow “predict” widens $P$; an arrow “correct” pulls toward $z$ only if the gate says the panel owns that $z$.
-> 2. Predict: $x=12.6$, $P=1.8$. (a) $K=1.8/2.8=0.643$, $\hat x=12.6+0.643\cdot(-0.1)=12.536$, $P=0.643$. (b) $\hat x=12.6+0.643\cdot 7.4=17.36$, $P=0.643$ still — confident, 5 cm too far. (c) Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67$ cm; 3-σ is $5.0$ cm. $12.5$ is $0.1$ cm (keep). $20$ is $7.4$ cm (reject). The gate is the whole difference between (a) and (b).
-> 3. Blanks as in [[02-foundations/probability|3]]. Association is not a covariance question; a small $P$ after (b) would license a contact force at the wrong range.
+> 1. Step 1's gate is a band of half-width $5.02$ around $12.6$; step 2's is $5.85$ around $13.6$, wider because a rejected step adds $Q$ and subtracts nothing. The counterfactual band is $4.88$ around $18.36$ — narrower *and* in the wrong place, which is the drawing's point.
+> 2. (a) Predict $\hat x^- = 12.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. The innovation is $y = 7.4$, so $d^2 = 19.56 > 9$: reject, and the belief stays exactly $(12.6,\ 1.8)$ — a rejected measurement is not a zero-gain update, it is no update. (b) Predict again: $\hat x^- = 13.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. Then $y = 0.8$, $d^2 = 0.168$: accept, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 14.189$, $P^+ = 0.7368$. The gain is *larger* than the Worked case's $0.643$ because a step of coasting made the prediction less trustworthy relative to the same sensor. (c) After fusing $z=20$ the belief is $(17.357,\ 0.643)$; predicting gives $(18.357,\ 1.643)$ and $S = 2.643$. Now $y = 14.4 - 18.357 = -3.957$ and $d^2 = 5.93 < 9$ — the correct reading **does** pass, but it only drags the estimate to $15.897$, still $1.7\,\mathrm{cm}$ past the panel, with a reported $P^+ = 0.622$ *smaller* than the honest branch's $0.737$. One bad association does not announce itself; it moves the gate so that good data is absorbed into a wrong trajectory.
+> 3. Blanks: `S = P + R`, `y = z - x`, `K = P / S`, then `x + K*y, (1-K)*P`. (a) prints $(12.536,\ 0.643,\ \text{True})$ and (b) prints $(12.6,\ 1.8,\ \text{False})$ — the gate returns the belief untouched. The sweep, with $R = 1$ throughout:
+>
+> | $q = Q/R$ | $P$ after 200 steps | closed form $\tfrac12\big(\sqrt{q^2+4q}-q\big)$ | $K_{ss}$ |
+> |---:|---:|---:|---:|
+> | $0.25$ | $0.390388$ | $0.390388$ | $0.390388$ |
+> | $0.50$ | $0.500000$ | $0.500000$ | $0.500000$ |
+> | $1.00$ | $0.618034$ | $0.618034$ | $0.618034$ |
+> | $2.00$ | $0.732051$ | $0.732051$ | $0.732051$ |
+> | $4.00$ | $0.828427$ | $0.828427$ | $0.828427$ |
+>
+> Closed form: setting $P = (P+q)/(P+q+1)$ gives $P^2 + qP - q = 0$, so $P_{ss} = \tfrac12\big(\sqrt{q^2+4q} - q\big)$, which is $(\sqrt5-1)/2 = 0.618034$ at $q = 1$. The last two columns coincide only because $R = 1$ here, since $P^+ = KR$ exactly. **Neither knob alone decides the gain — their ratio does.** Scaling $Q$ and $R$ together by 4 leaves $K_{ss} = 0.618034$ unchanged and multiplies $P_{ss}$ by exactly 4, since $P_{ss} = R\,g(Q/R)$ while $K_{ss}$ depends on $q$ only. So a paper that reports tuned $Q$ and $R$ without their ratio has reported the units, not the filter.
 
 ### Sources
 
@@ -549,6 +644,69 @@ P_a = ?                           # (1-K)*P
 
 > [!note] 처음이라면 · First pass
 > 먼저 §2 — 아무도 구분하지 않는 네 단어 — 그다음 §4의 예측·보정 루프, 그다음 §6에서 1차원 갱신을 손으로. §5·§7·§8은 참고서 쪽 절반이니 특정 논문을 놓고 펴라.
+
+### 계속 쓰는 대상: P6의 시계 위에 놓인 P5의 패널
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 가 이 페이지의 대상이다. P2가 도구를 나르며 다가가는 패널이고, 사전 분포는 거리 $10\,\mathrm{cm}$ 에 분산 $4\,\mathrm{cm}^2$, 거리 센서는 $12\,\mathrm{cm}$ 를 분산 $1\,\mathrm{cm}^2$ 로 읽는다. 시계와 운동은 **P6** 가 준다. 이 페이지의 모든 거리는 센티미터다.
+
+| 기호 | 값 | 무엇인가 |
+|---|---:|---|
+| $x_0$, $P_0$ | $10\,\mathrm{cm}$, $4\,\mathrm{cm}^2$ | 0.6이 고정한 P5의 사전 거리와 그 분산 |
+| $z$ | $12\,\mathrm{cm}$ | P5의 첫 거리 측정 |
+| $R$ | $1\,\mathrm{cm}^2$ | 0.6이 고정한 거리 센서의 잡음 분산 |
+| $\Delta t$ | $20\,\mathrm{ms}$ | 한 필터 스텝, P6의 $50\,\mathrm{Hz}$ 비전 주기에서 |
+| $u$ | $0.5\,\mathrm{m/s}$ | 명령 접근 속도, 그래서 한 스텝에 $u\Delta t = 1\,\mathrm{cm}$ 전진 |
+| $Q$ | $1\,\mathrm{cm}^2$ | 스텝당 과정 잡음 분산 — 이 페이지가 P5에 더하는 유일한 값 |
+| $T_\ell$ | $70\,\mathrm{ms}$ | P6의 종단 지연, 카메라 노출 중앙에서 힘이 걸릴 때까지 |
+| $N$ | $2048$ counts/m | P6의 엔코더 분해능 |
+
+뒤의 모든 절이 전진시키는 $1\,\mathrm{cm}$ 는 임의로 고른 값이 아니다. $u\Delta t = 0.5 \times 0.02\,\mathrm{m}$, 곧 P6의 비전 노드가 두 프레임을 내는 사이에 도구가 지나가는 거리다. 같은 표의 숫자 둘이 필터가 고칠 수 있는 것과 없는 것을 가른다.
+
+- **지연은 흔히 그 탓으로 돌리는 잡음보다 크다.** $T_\ell = 70\,\mathrm{ms}$ 늦게 도착한 거리 측정은 $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ 이전의 세계를 말하고, $3.5\,\mathrm{cm}$ 는 센서 자신의 표준편차 $1\,\mathrm{cm}$ 의 3.5배다. 그래서 모델에 없는 타임스탬프는 필터가 맞춰 놓은 잡음 항보다 세 배 큰 편향이고, 어떤 공분산 설정도 편향을 없애지는 못한다.
+- **데이터시트의 잡음이 문제가 되는 잡음은 아니다.** P6의 엔코더는 위치를 $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ 로 양자화하고, 균일 양자 $q$ 의 분산은 $q^2/12$ 이므로 표준편차는 $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$, 분산은 $1.99\times10^{-4}\,\mathrm{cm}^2$ 다. $Q = 1\,\mathrm{cm}^2$ 보다 네 자릿수 아래인데, $Q$ 가 대표하는 것은 엔코더 카운트가 아니라 미끄럼과 모델 밖 운동이기 때문이다.
+
+*범위: 이 페이지는 belief가 어떻게 전파되고 보정되는지, 칼만 이득과 innovation이 무엇인지, SLAM 사후 분포가 어떻게 인수분해되는지, 추정 주장을 어떻게 읽는지를 가르친다. SE(3) 추정기에 필요한 회전 매개변수화([[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]), 측정을 만들어 내는 인식 front end([[04-robotics/geometric-perception-calibration|3.5 기하 인식]]), back end가 호출하는 solver([[02-foundations/optimization|4. 최적화 §3.5]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: 한 순환, 게이트를 축척대로
+
+한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
+
+**위 — 센티미터 단위의 거리 축, 축척대로.** 카탈로그 갱신이 남긴 belief 자리에 $11.6$ 눈금, 오른쪽으로 길이 $1$ 인 *예측* 화살표가 $12.6$ 에서 끝난다. 각 눈금 아래에 반너비 $\sqrt{P}$ 의 가로 막대: 스텝 전 $0.89$, 스텝 후 $1.34$. 막대는 눈에 띄게 커져야 한다. 예측은 $Q$ 를 더하기만 하고 무엇도 빼지 않기 때문이다.
+
+**가운데 — 게이트.** 예측값 $12.6$ 을 중심으로 반너비 $3\sqrt{P^- + R} = 5.02$ 의 음영 띠. 축 위에 후보 측정 둘을 찍는다: 왼쪽 띠 안에 아슬아슬하게 들어온 $z = 12.5$, 오른쪽 띠 한참 밖의 $z = 20$. 띠는 센서 측정이 아니라 *예측값* 둘레에 그리고, 반너비에는 $P^-$ 가 아니라 $P^- + R$ 이 들어간다. 이 그림의 내용은 그 둘이 전부다.
+
+**아래 — 상자 둘, 각각 화살표 하나.** "이 $z$ 는 패널" 상자에서는 추정값이 $12.5$ 쪽으로 조금 끌려가고, "이 $z$ 는 통행인" 상자에서는 추정값이 패널을 $4.86\,\mathrm{cm}$ 지나쳐 던져진다. 두 번째 상자 아래에 그래도 필터가 보고할 사후 분산을 적는다. 두 상자가 *같은* 분산으로 끝난다는 것이 이 그림의 요점이다.
+
+### 대상으로 한 번 끝까지: P5의 예측·보정·게이트 한 순환
+
+카탈로그 자신의 갱신이 남긴 belief에서 출발한다: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$(P5의 스칼라 칼만 스텝, §6에 다시 나온다). P6의 시계로 한 스텝이 지나고 새 거리 측정이 온다.
+
+**1. 예측.** 운동 모델은 $f(x, u) = x + u\Delta t$ 이고 $u\Delta t = 1\,\mathrm{cm}$ 이므로 $A = 1$ 이다. §5의 예측 식은
+
+$$\hat x^- = 11.6 + 1 = 12.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
+
+$A = 1$ 이 분산을 그대로 통과시키고, 독립인 과정 잡음 $Q$ 가 자기 몫 $1\,\mathrm{cm}^2$ 를 그 위에 더하기 때문이다.
+
+**2. Innovation 공분산과 이득 — 측정을 보기 전에.** $H = 1$ 이면
+
+$$S = P^- + R = 1.8 + 1 = 2.8\ \mathrm{cm}^2, \qquad \sqrt{S} = 1.673\ \mathrm{cm}, \qquad K = \frac{P^-}{S} = \frac{1.8}{2.8} = 0.6429$$
+
+$S$ 에도 $K$ 에도 $z$ 가 들어 있지 않으므로 둘은 모델만으로 정해진다. 아래 게이트를 측정이 도착하기 전에 그릴 수 있는 이유가 그것이다.
+
+**3. 게이트.** Innovation의 제곱 마할라노비스 거리는 $d^2 = y^2/S$ 다(게이트의 완전한 정의와 문턱이 나오는 $\chi^2$ 표는 §8.5에 있다. 여기서 다시 유도하지 않는다). 1차원에서 3-σ 게이트는 $d^2 < 9$, 같은 말로 $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$ 다.
+
+| 후보 | $y = z - \hat x^-$ | $d^2 = y^2/S$ | 3-σ 게이트 | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
+|---|---:|---:|---|---:|---:|
+| 패널, $z = 12.5$ | $-0.100$ | $0.0036$ | 통과 | $12.536$ | $0.6429$ |
+| 통행인, $z = 20$ | $+7.400$ | $19.557$ | 기각 | $17.357$ | $0.6429$ |
+
+**4. 틀린 연관의 비용을, 필터 자신의 단위로.** 통행인을 그래도 융합하면 추정값은 패널을 $17.357 - 12.5 = 4.857\,\mathrm{cm}$ 지나친 자리에 놓이면서 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다. §2의 일관성 검사가 그것을 숫자 하나로 바꾼다. 그 추정값의 NEES는
+
+$$\epsilon = \frac{(12.5 - 17.357)^2}{0.6429} = 36.7$$
+
+일관된 1차원 필터는 $\epsilon \approx 1$ 을 평균하므로, $36.7$ 은 넓은 belief 안의 큰 오차가 아니라 틀린 장소에 대한 확신이다. 그 거리에서 명령한 접촉력은 허공을 친다. 표의 두 행을 가르는 것은 공분산이 아니라 게이트다. 두 행이 똑같은 $P^+$ 를 보고하기 때문이다.
+
+**5. 손으로 해 볼 만한 확인 하나.** Joseph 형태 $P^+ = (1-K)^2P^- + K^2R$ 도 $0.6429$ 를 주는데, 최적 $K$ 에서는 $(1-K)P^-$ 와 반드시 같아야 한다. 둘이 어긋나는 것은 쓰는 이득이 최적이 아닐 때뿐이고, Joseph 형태가 추가 계산값을 하는 것도 바로 그때다.
 
 ### 1. 로봇 루프 안에서의 위치
 
@@ -686,6 +844,41 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$, 센서 공분산 $R$, 관측 기하
 $H$에서 *따라 나온다*. 두 필터를 코드로 옮긴 것 — Joseph 형태 공분산을 쓰는 칼만 예측·갱신 한 스텝과, 유효 표본 크기로 시점을 정하는 파티클 재표집 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]]와 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다.
 
+**칼만 필터의 완전한 정의.** §4의 베이즈 필터를 §3의 **선형-가우시안** 모델에 특수화한 것이고, 거기서는 근사가 아니라 정확하다. 조건이 넷이다: 선형 동역학 $x_t = Ax_{t-1} + Bu_t + w_t$; 선형 관측 $z_t = Hx_t + v_t$; 서로 독립인 평균 0의 백색 가우시안 잡음 $w_t\sim\mathcal N(0,Q)$ 와 $v_t\sim\mathcal N(0,R)$; 가우시안 초기 belief. 이 아래에서는 모든 belief가 가우시안으로 남는다. 아핀 사상과 조건부화가 가우시안을 가우시안으로 보내기 때문이다([[02-foundations/probability|3. 확률 §3]]). 그래서 필터는 평균과 공분산만 들고 간다. **예측** 단계는 둘을 동역학에 통과시킨다.
+$$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
+$Ax + Bu + w$ 의 평균이 $A\hat x + Bu$ 이고, $Ax$ 의 공분산이 $APA^\top$ 이며, 독립 잡음이 자기 $Q$ 를 더하기 때문이다. **갱신** 단계는 **innovation** $y$(측정에서 예측 측정을 뺀 것), 그 공분산 $S$, 그리고 이득을 만든다.
+$$y = z - H\hat x^-, \qquad S = HP^-H^\top + R, \qquad K = P^-H^\top S^{-1}$$
+$$\hat x^+ = \hat x^- + Ky, \qquad P^+ = (I - KH)P^-$$
+기호: $\hat x$ 와 $P$ 는 직전 평균과 공분산, 위첨자 $-$ 는 예측값, $+$ 는 보정 결과, $A$ 는 상태 전이 행렬, $B$ 는 입력 행렬, $H$ 는 관측 행렬, $Q$ 와 $R$ 은 과정·측정 잡음 공분산, $I$ 는 항등 행렬이다. 가우시안 조건부화에서 나오는 유도는 [[02-foundations/probability|3. 확률 §5]]에 있다. *예:* §3의 수레 예측(9 m, 3 m²가 10 m, 4 m²가 된다)에 §6의 갱신($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ m, $P^+ = 0.8$ m²)을 이으면 한 순환이 완성된다. *반례:* 랜드마크까지의 거리 센서에서는 $h$ 가 행렬이 아니므로 이 식에 넣을 $H$ 자체가 없다. EKF가 그 자리를 야코비안으로 채운다.
+
+**EKF의 완전한 정의.** **확장 칼만 필터**는 칼만 식을 그대로 두되, 비선형 $f$ 와 $h$ 를 현재 추정값 둘레에서 1차 테일러 전개로 선형화해 허용한다. 야코비안(편도함수 행렬, [[02-foundations/calculus-backprop|2. 미적분 §1]])은
+$$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \frac{\partial h}{\partial x}\Big|_{\hat x_t^-}$$
+이므로 $F_t$ 는 직전 추정값에서, $H_t$ 는 예측값에서 잡는다. 선형화를 놓을 자리로 그 시점에 쓸 수 있는 가장 좋은 추측이기 때문이다. 평균은 여전히 비선형 모델을 통과하고 공분산만 야코비안을 쓴다.
+$$\hat x_t^- = f(\hat x_{t-1}, u_t), \qquad P_t^- = F_tP_{t-1}F_t^\top + Q, \qquad y_t = z_t - h(\hat x_t^-)$$
+갱신은 $H$ 자리에 $H_t$ 를 넣은 위의 칼만 갱신이다. *예:* $(3, 4)$ m로 예측된 로봇이 $P^- = I$ m²를 들고 원점의 랜드마크까지 거리 $h(x) = \sqrt{x_1^2 + x_2^2}$ 를 $R = 1$ m²로 잰다. $h(\hat x^-) = 5$, $H = (x_1, x_2)/h = (0.6, 0.8)$ 이므로 $S = 0.36 + 0.64 + 1 = 2$, $K = (0.3, 0.4)$ 다. $4.5$ m를 읽으면 $y = -0.5$, $\hat x^+ = (2.85, 3.80)$ — 거리가 구속하는 유일한 방향인 랜드마크 쪽으로 곧장 보정되고, $P^+ = \begin{pmatrix}0.82&-0.24\\-0.24&0.68\end{pmatrix}$ 다. *반례(EKF가 비일관해지는 이유):* 야코비안은 선형화점에서만 정확하므로, $P^-$ 가 크면 belief가 $h$ 의 접선에서 휘어 나가는 영역까지 덮고, 보고되는 $P^+$ 는 너무 작게 나온다.
+
+**시그마 포인트의 완전한 정의.** UKF의 **무향 변환**(unscented transform)은 야코비안을 $n$ 차원 가우시안 $\mathcal N(\hat x, P)$ 의 결정적 표본 $2n+1$ 개로 대체한다. Julier와 Uhlmann의 기본형은 퍼짐 파라미터 $\kappa$ 와 함께 다음과 같다.
+$$\chi_0 = \hat x, \qquad \chi_{\pm i} = \hat x \pm \big(\sqrt{(n+\kappa)P}\big)_i, \qquad W_0 = \frac{\kappa}{n+\kappa}, \qquad W_{\pm i} = \frac{1}{2(n+\kappa)}$$
+$(\sqrt{M})_i$ 는 Cholesky 인자 같은 행렬 제곱근의 $i$ 번째 열이고, 가중치 $W$ 는 점들의 가중 평균과 공분산이 정확히 $\hat x$ 와 $P$ 가 되도록 고른 값이다. 각 점을 비선형 모델에 통과시키고, 결과의 가중 평균과 공분산을 출력으로 쓴다. *예:* $n = 1$, $\hat x = 10$, $P = 4$, $\kappa = 2$ 면 점은 $10$ 과 $10 \pm \sqrt{12}$, 곧 $13.464$ 와 $6.536$ 이고 가중치는 $2/3, 1/6, 1/6$ 이다. $g(x) = x^2$ 를 통과시킨 가중 평균은 $104$ 로 정확한 $E[x^2] = \hat x^2 + P$ 와 같은 반면, 평균에서 선형화하면 $g(10) = 100$ 이 나온다.
+
+**파티클 필터의 완전한 정의.** Belief를 가중 표본 $N$ 개로 표현한다. $\operatorname{bel}(x_t) \approx \sum_{i=1}^N w_t^{[i]}\,\delta(x_t - x_t^{[i]})$ 에서 $x_t^{[i]}$ 는 파티클 $i$, $w_t^{[i]}$ 는 그 가중치, $\delta$ 는 디랙 델타이므로, 이 근사는 각 파티클 자리에 정확히 $w_t^{[i]}$ 만큼의 질량을 놓는다. 한 스텝은 세 부분이다.
+- **표집**: 각 파티클을 과정 모델에서 뽑는다, $x_t^{[i]} \sim p(x_t \mid x_{t-1}^{[i]}, u_t)$. 이것이 예측이다.
+- **가중**: 새 측정의 우도로 각 파티클에 가중치를 주고 합이 1이 되도록 정규화한다. 우도가 §4의 보정을 공급하기 때문이다.
+$$\tilde w_t^{[i]} = w_{t-1}^{[i]}\, p(z_t \mid x_t^{[i]}), \qquad w_t^{[i]} = \frac{\tilde w_t^{[i]}}{\sum_j \tilde w_t^{[j]}}$$
+- **재표집**: 가중치에 비례해 복원 추출로 $N$ 개를 다시 뽑고 모든 가중치를 $1/N$ 로 되돌린다. **유효 표본 크기**가 낮을 때만 이렇게 하면 고갈이 늦춰진다.
+$$N_{\text{eff}} = \frac{1}{\sum_i \big(w_t^{[i]}\big)^2}$$
+가중치가 균일하면 $N$ 이고 한 파티클이 전부를 가지면 1이므로, 실제로 기여하는 파티클이 몇 개인지를 센다.
+
+*예:* 이전 가중치가 같은 파티클이 9, 10, 12 m에 있고 측정이 $z = 12$ m, 가우시안 잡음이 $\sigma = 1$ m이면 우도는 $e^{-4.5}, e^{-2}, e^{0}$, 곧 $0.011, 0.135, 1$ 이다. 가중치는 $0.010, 0.118, 0.872$, 가중 평균은 11.73 m, $N_{\text{eff}}$ 는 3 중 1.29이므로 재표집할 때다. 코드는 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다.
+
+**Factor graph의 완전한 정의.** **Factor graph**는 **변수 노드**(pose, landmark, 보정값)와 **factor 노드**로 이루어진 이분 그래프이고, 각 factor $\phi_k$ 는 자기 측정이 관여하는 변수 $X_k$ 에만 연결된다. 사후 분포의 인수분해를 나타낸다.
+$$p(X \mid Z) \propto \prod_k \phi_k(X_k), \qquad \phi_k(X_k) \propto \exp\!\big(-\tfrac12 \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}\big)$$
+$h_k$ 는 자기 변수에서 측정 $z_k$ 를 예측하고, $\Sigma_k$ 는 그 측정의 잡음 공분산이며, $\lVert e\rVert^2_{\Sigma} = e^\top\Sigma^{-1}e$ 는 제곱 마할라노비스 노름이다. 음의 로그를 취하면 곱이 합이 되므로 MAP 추정은 비선형 최소자승 문제가 된다.
+$$X^* = \arg\min_X \sum_k \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}$$
+**Pose graph**는 변수가 pose뿐이고 factor가 상대 pose 측정(오도메트리와 loop closure)뿐인 특수한 경우다. **게이지 자유도**는 이 비용을 바꾸지 않는 변환들의 집합이다. 모든 factor가 상대적이면 $h_k$ 는 pose 차이에만 의존하므로, 해 전체에 강체 변환 $G$ 를 하나 적용해도 아무것도 변하지 않는다.
+$$\sum_k \lVert h_k(G \cdot X_k) - z_k \rVert^2_{\Sigma_k} = \sum_k \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}$$
+그래서 최소점은 한 점이 아니라 해의 한 족이 되고, pose 하나에 prior factor를 걸면 없어진다. *예:* 1차원 pose $x_0, x_1, x_2$, $x_0 = 0$ 을 고정하는 prior, 오도메트리 $x_1 - x_0 = 1$ 과 $x_2 - x_1 = 1$, loop closure $x_2 - x_0 = 1.8$, 모두 단위 분산. 오도메트리만 보면 $x_2 = 2$ 다. 최소자승은 $x_1 = 0.933$, $x_2 = 1.867$ 을 주어 0.2 m의 불일치를 세 제약에 $-0.067$, $-0.067$, $+0.067$ 의 잔차로 나눈다. *반례:* prior를 빼면 $(x_0, x_1, x_2) = (5, 5.933, 6.867)$ 이 정확히 같은 상대 잔차와 같은 비용을 갖는다. 그 평행 이동이 게이지다.
+
 > [!note] 필터와 스무더는 같은 갱신 · Filter and smoother are one update
 > Gauss–Newton과 주변화가 처음이라면 이 노트는 건너뛰고 둘이 나오는 §7을 읽은 뒤 돌아오라. 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 사전 평균에서 시작한 그 비용의 Gauss–Newton 한 스텝이 EKF 갱신이고, 그것을 반복하면 정확히 iterated EKF다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
 
@@ -716,11 +909,39 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 | Mapping | 로봇 pose들 | 지도 구조 |
 | SLAM | 어느 쪽도 완전히 모름 | 궤적과 지도를 동시에 |
 
+**네 문제를 사후 분포로.** 각 행은 서로 다른 조건부 분포이고, 그것이 이 표를 정확하게 만든다. 궤적을 $x_{1:t}$, 지도를 $m$(예를 들어 landmark 위치 $m = \{m_1, \dots, m_N\}$), 측정을 $z_{1:t}$, 입력을 $u_{1:t}$ 로 쓴다.
+- **Localization**은 알려진 지도에 조건부다: $p(x_t \mid z_{1:t}, u_{1:t}, m)$.
+- **Mapping**은 알려진 pose에 조건부다: $p(m \mid z_{1:t}, x_{1:t})$.
+- **Odometry**는 연속한 측정만으로 상대 이동 $x_{t-1}^{-1}x_t$ 를 추정하고 옛 측정을 다시 보지 않으므로, 그것이 만든 어떤 값도 앞선 스텝을 고칠 수 없다.
+- **Full SLAM**은 궤적 전체와 지도를 동시에 추정하므로, 목표는 pose도 지도도 조건부 쪽에 없는 아래 사후 분포다.
+$$p(x_{1:t}, m \mid z_{1:t}, u_{1:t})$$
+**Online SLAM**은 현재 pose만 남긴 $p(x_t, m \mid z_{1:t}, u_{1:t})$ 로, 전체 사후 분포에서 과거 pose를 적분해 없앤 것이다.
+
+§4의 마르코프 가정과 조건부 독립 가정 아래에서, 전체 SLAM 사후 분포(초기 pose $x_0$ 포함)는 prior 하나, 스텝마다 운동 항 하나, 관측마다 측정 항 하나로 인수분해된다.
+$$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) \propto p(x_0) \prod_{k=1}^t p(x_k \mid x_{k-1}, u_k) \prod_{k=1}^t p(z_k \mid x_k, m_{c_k})$$
+각 항이 §5 factor graph의 factor 하나이고, 그래프 기반 SLAM back end가 존재하는 이유가 그것이다. *예:* §5의 세 pose 사슬은 landmark 없는 full SLAM 문제이고, 거기서 loop closure가 다시 관측된 장소의 역할을 한다. *반례:* 운동 항의 곱을 빼면 pose들이 더 이상 사슬로 묶이지 않으므로, 궤적이 아니라 서로 무관한 스냅숏 묶음이 된다.
+
+**Data association의 완전한 정의.** 저 사후 분포의 $c_k$ 는 센서가 보고하는 숫자가 아니다. **이산 잠재 변수**다: $c_k \in \{1, \dots, N\}$ 은 측정 $z_k$ 를 만든 landmark의 인덱스이고, 나머지와 함께 추정된다. 조건이 셋이다.
+
+- 프레임당이 아니라 **측정당**이다: $z_k$ 마다 자기 $c_k$ 를 갖는다.
+- **관측되지 않으므로** 정직한 사후 분포는 그것을 합으로 없앤다. 위의 SLAM 사후 분포는 association이 *주어졌을 때*의 것이고, 전체 사후 분포는 $N^t$ 가지 배정 전부에 걸쳐 주변화한다.
+$$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) = \sum_{c_{1:t}} p(x_{0:t}, m, c_{1:t} \mid z_{1:t}, u_{1:t})$$
+- 실제로 돌아가는 시스템은 거의 전부 그 합을 **최대우도 배정** 하나로 갈음한다. $c_{1:t}$ 를 한 번 딱 정하고 그것이 알려진 값인 양 최적화하는데, 합의 항 수가 지수적이기 때문이다.
+
+마지막 갈음이 위험의 전부다. 그 선택을 안전하게 하는 장치는 여기의 landmark나 §8.5의 추적 대상이나 똑같다: 후보마다 innovation의 제곱 마할라노비스 거리로 점수를 매기고, $\chi^2$ 문턱을 넘는 것을 버리고, 남은 것 중에서 고른다. **게이팅과 연관 알고리즘 — 최근접 이웃, GNN, JPDA, MHT — 의 정의는 아래 §8.5에 있고 여기서 되풀이하지 않는다.** 다른 것은 실수의 대가뿐이다. *예:* 위 계산 예제에서 통과한 행이 association 결정이다. 게이트 9에 대해 $d^2 = 0.0036$ 이었다. *반례:* 기각된 행을 그래도 융합하면 틀린 $c_k$ 이고, SLAM에서 같은 실수는 엉뚱한 landmark에 묶인 factor를 넣는다. 그러면 최소자승은 충돌을 보고하는 대신 지도 전체를 휘어 그 factor를 만족시킨다. 추적기는 몇 프레임이면 뒤바뀐 정체에서 회복한다. 지도는 잘못된 loop closure에서 회복하지 못한다. Front end의 게이트가 장부 정리가 아니라 매핑 결정인 이유가 그것이다.
+
 SLAM **front end**는 특징([[04-robotics/geometric-perception-calibration|3.5 §2.5]])·기하 제약을 추출하고 data association을 수행한다. **back
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
 Gauss–Newton이나 Levenberg–Marquardt로 푼다. "Ceres/g2o/GTSAM으로 최적화한다"가 뜻하는 것이
 그것이다 ([[02-foundations/optimization|4. 최적화 §3.5]]). Loop closure는 누적 drift를
-고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다. 닫힘은 $x_j$를 $x_i$ 프레임으로 쓴 상대 인자([[02-foundations/se3-geometry|8. SE(3) §3]])다.
+고칠 수 있지만, 잘못된 closure 하나가 지도 전체를 망칠 수 있다.
+
+- **Drift**는 상대 이동 추정마다 자기 오차가 있고 그 합을 아무것도 고쳐 주지 않기 때문에 누적되는 pose 오차다. $k$ 스텝 각각이 분산 $\sigma^2$ 의 독립 오차를 더하면 분산이 더해지므로 위치 표준편차는 다음처럼 자란다.
+$$\sigma_k = \sigma\sqrt{k}$$
+[[02-foundations/probability|3. 확률 §5]]의 랜덤 워크다. 방향 오차는 이것을 더 나쁘게 만든다. 틀린 방향이 이후의 모든 스텝을 회전시키기 때문이다. *예:* 스텝마다 표준편차 1 cm인 100 스텝은 1 cm가 아니라 10 cm를 준다.
+- **Loop closure**는 현재 pose $x_j$ 와 훨씬 이전 pose $x_i$($j \gg i$) 사이의 측정이고, front end가 이미 본 장소를 알아볼 때 생긴다. Back end에는 $x_j$ 를 $x_i$ 프레임으로 쓴 상대 factor 하나로 들어간다([[02-foundations/se3-geometry|8. SE(3) §3]]).
+$$z_{ij} \approx x_i^{-1} x_j$$
+긴 사슬의 양끝을 잇기 때문에, 최소자승은 §5의 예제에서 0.2 m의 불일치를 세 변에 나눈 것처럼 누적 drift를 루프 전체에 재분배한다. **잘못된** closure는 서로 닮았을 뿐인 두 장소 사이의 같은 factor다.
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
 front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
@@ -740,6 +961,14 @@ IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 
 **deskewing**, 라이다 스캔이 훑는 *동안* 로봇이 움직였다는 사실을 보정하는 것. 빠른 플랫폼에서
 deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다.
 
+**Preintegration과 deskewing을 풀어 쓰면.** IMU는 $\Delta t$ 간격의 표본 $k$ 마다 각속도 $\tilde\omega_k$ 와 비력 $\tilde a_k$ 를 보고하고, 자이로 bias $b_g$ 와 가속도계 bias $b_a$ 가 그것을 오염시킨다. Keyframe $i$ 와 $j$ 사이의 preintegration은 그 표본들을 keyframe $i$ 의 몸체 프레임에서 **상대 운동 증분** 셋으로 합친다(Forster 외, *IEEE T-RO* 2017). $\Delta R_{ik}$ 와 $\Delta v_{ik}$ 는 표본 $k$ 까지의 부분합이다.
+$$\Delta R_{ij} = \prod_{k=i}^{j-1} \operatorname{Exp}\big((\tilde\omega_k - b_g)\Delta t\big), \quad \Delta v_{ij} = \sum_{k=i}^{j-1} \Delta R_{ik}(\tilde a_k - b_a)\Delta t, \quad \Delta p_{ij} = \sum_{k=i}^{j-1} \big[\Delta v_{ik}\Delta t + \tfrac12 \Delta R_{ik}(\tilde a_k - b_a)\Delta t^2\big]$$
+이 증분들은 keyframe $i$ 의 전역 pose, 속도, 중력에 의존하지 않는다. 그것들은 증분을 상태와 비교할 때에만 들어오므로, 합은 한 번 계산해서 최적화기의 모든 반복에서 재사용된다. 나중의 bias 갱신은 다시 합하는 대신 1차 보정으로 적용한다. *예:* 200 Hz의 표본 100개 동안 회전 없이 $x$ 방향 $0.5$ m/s²가 일정하고 bias가 0이면, 0.5 s에 $\Delta v = 0.25$ m/s와 $\Delta p = 0.0625$ m를 준다. 익숙한 $\tfrac12 aT^2$ 다.
+
+**Deskewing**은 스윕 도중 시각 $t_k$ 에 잡힌 라이다 점 $p_k$ 를 기준 시각 $t_s$ 의 센서 프레임으로 다시 쓴다. 센서 pose $T(t)$ 는 IMU나 오도메트리에서 보간한다.
+$$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
+그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다.
+
 **Keyframe**이 나머지 한 축이다: 모든 프레임을 최적화하는 대신 성긴 부분집합만 남기고 나머지를
 주변화(marginalize)하며, 그것이 세션이 길어져도 문제 크기를 유한하게 유지하는 방법이다.
 
@@ -750,6 +979,17 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 이 prior가 선형화점에 묶이고, 뒤의 재선형화나 근사에서 정보가 손실될 수 있다. 그 fill-in 때문에 슬라이딩 윈도우 추정기가 창 길이를 제한하고, 논문의 창
 길이가 모델링 취향이 아니라 계산 비용에 대한 주장인 이유다
 (Schur 보수의 정의는 Boyd & Vandenberghe, *Convex Optimization* 부록 A.5.5, 그것을 쓴 블록 소거는 부록 C.4다).
+
+**정보 행렬의 완전한 정의.** 평균 $\mu$, 공분산 $\Sigma$ 의 가우시안에 대해 **정보 행렬**(precision matrix)과 **정보 벡터**는
+$$\Lambda = \Sigma^{-1}, \qquad \xi = \Sigma^{-1}\mu$$
+이므로 성분이 크다는 것은 공분산과 반대로 앎이 단단하다는 뜻이다. 이것을 SLAM의 자연스러운 대상으로 만드는 성질이 셋이다.
+- **0은 조건부 독립이다.** $\Lambda_{ij} = 0$ 인 것은 나머지 변수가 모두 주어졌을 때 $x_i$ 와 $x_j$ 가 독립인 것과 정확히 같다. 지수 $-\tfrac12 x^\top\Lambda x$ 에 $x_i$ 와 $x_j$ 를 묶는 항이 없어져 밀도가 인수분해되기 때문이다.
+- **Factor는 더해진다.** 최소자승에서 Gauss–Newton 행렬 $J^\top\Sigma^{-1}J$ 가 선형화된 문제의 정보 행렬이고, 각 factor는 자기 변수 자리에만 블록을 더하므로 SLAM의 $\Lambda$ 는 희소하다([[02-foundations/optimization|4. 최적화 §3.5]]).
+- **주변화**는 정보 형태에서는 위의 Schur 보수이고, 공분산 형태에서는 행과 열을 그냥 지우는 것이다.
+
+*예:* $x_0$ 에 단위 분산 prior가 걸리고 단위 분산 오도메트리 factor가 둘인 사슬 $x_0 \to x_1 \to x_2$ 는
+$$\Lambda = \begin{pmatrix}2&-1&0\\-1&2&-1\\0&-1&1\end{pmatrix}, \qquad \Sigma = \Lambda^{-1} = \begin{pmatrix}1&1&1\\1&2&2\\1&2&3\end{pmatrix}$$
+를 갖는다. $\Lambda_{02} = 0$ 은 $x_1$ 을 알고 나면 $x_0$ 와 $x_2$ 가 독립이라고 말하는데, $\Sigma_{02} = 1$ 은 둘이 상관되어 있음을 보인다. 분산이 사슬을 따라 1, 2, 3으로 자라는 것이 drift다. $A = 2$, $B = (-1, -1)$, $C = \operatorname{diag}(2, 1)$ 로 $x_1$ 을 주변화하면 $S = \begin{pmatrix}1.5&-0.5\\-0.5&0.5\end{pmatrix}$ 이다. 0이 메워졌고, $S^{-1} = \begin{pmatrix}1&1\\1&3\end{pmatrix}$ 은 $\Sigma$ 의 $(x_0, x_2)$ 블록과 같다 — 그래야만 한다.
 
 > [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
 > Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
@@ -766,6 +1006,14 @@ deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고�
 실시간 재구성 파이프라인이 그 위에 서 있다. 계획 쪽 사촌이 **ESDF**(Euclidean signed distance
 field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저장한다 — 계획기에게 여유 간격 값과
 그 그래디언트를 공짜로 주고, 궤적 최적화 계획기가 이것을 원하는 이유가 그것이다.
+
+**TSDF와 ESDF를 풀어 쓰면.** 센서 ray 위의 복셀 중심 $x$ 에 대해 $\lambda(x)$ 를 ray를 따른 센서로부터의 거리, $D_{\text{meas}}$ 를 그 ray에서 측정된 깊이라 하자. **투영 부호 거리**와 반너비 $\tau$ 의 띠로의 **절단**은
+$$d(x) = D_{\text{meas}} - \lambda(x), \qquad \operatorname{tsdf}(x) = \max\!\big(-1,\ \min\!\big(1,\ d(x)/\tau\big)\big)$$
+이므로 양수는 표면 앞(자유 공간), 음수는 뒤이고 0-crossing이 표면이다. 절단은 멀리 있는 측정이 자기가 정밀하게 말해 주지 못하는 복셀을 덮어쓰지 못하게 한다. 새 프레임은 이동 가중 평균으로 **융합**한다(Curless & Levoy, SIGGRAPH 1996). $D$ 는 저장된 값, $W$ 는 누적 가중치, $w$ 는 새 측정의 가중치이고, 독립 잡음이 평균으로 상쇄된다.
+$$D \leftarrow \frac{W D + w\,\operatorname{tsdf}}{W + w}, \qquad W \leftarrow W + w$$
+**ESDF**는 대신 장애물 집합 $\mathcal O$ 의 최근접 점 $o$ 까지의 유클리드 거리를 저장하고 장애물 안에서는 음수다. 계획기에는 모든 방향의 진짜 여유 간격이 필요하기 때문이다.
+$$\operatorname{esdf}(x) = \pm \min_{o \in \mathcal O} \lVert x - o \rVert$$
+*예:* $\tau = 0.1$ m에서, 표면을 2.00 m에 맞히는 ray 위 1.95 m의 복셀은 $d = 0.05$ m, 저장값 0.5다. 두 번째 프레임이 1.98 m를 재면 0.3이고, 같은 가중치면 둘이 0.4로 융합된다. *반례:* ray가 법선에서 60°로 벽을 만나는 곳에서, 맞힌 점보다 ray를 따라 0.1 m 앞의 복셀은 벽에서 $0.1\cos 60° = 0.05$ m 떨어져 있을 뿐이다. 투영값이 진짜 여유 간격을 두 배로 부풀린다. 계획기에 TSDF가 아니라 ESDF가 필요한 이유가 그것이다.
 
 **지도가 저장하지 않는 것.** 이 페이지의 모든 표현은 현재에 대한 추정 하나로 수렴한다. localization과
 계획에는 그것이 옳은 목표지만, 같은 건물로 1년간 돌아오는 로봇에게는 아니다. 변화를 매번 하나의 지도
@@ -786,6 +1034,10 @@ field)로, 모든 지점에서 가장 가까운 장애물까지의 거리를 저
 **Loosely coupled**는 완성된 하위 추정들을 융합하고, **tightly coupled**는 저수준 측정을
 공동으로 사용해 정보를 더 보존하지만 모델·구현 복잡도가 커진다. 보정, 타임스탬프,
 롤링 셔터, 지연, 클럭 오프셋이 알고리즘 개선보다 성능을 지배할 수 있다.
+
+비용으로 쓰면 그 차이가 정확해진다. Loosely coupled는 하위 시스템 $s$ 를 먼저 각각 돌려 추정값 $\hat x_s$ 와 공분산 $P_s$ 를 얻고 그 추정값들을 융합한다. Tightly coupled는 모든 원시 잔차 $r$(IMU 증분 하나하나, 이미지 특징 하나하나, pseudorange 하나하나)를 한 문제에 넣는다.
+$$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{tight: } \min_x \sum_{\text{원시 측정 } r} \lVert r(x) \rVert^2_{\Sigma_r}$$
+$\lVert e\rVert^2_{P} = e^\top P^{-1}e$ 이므로 각 항은 자기 불확실성으로 가중된다. *예:* 단독 GNSS 해는 위성 넷 이상까지의 pseudorange가 필요하다. 위치 세 좌표에 수신기 클럭 오프셋이 더해지기 때문이다. 다리 밑에서 위성이 둘만 보이면 loosely coupled 시스템은 융합할 GNSS 추정값 자체가 없지만, tightly coupled 시스템은 그 두 pseudorange 잔차를 여전히 더하고 그것들이 해를 구속한다.
 
 ### 8.5 여러 물체 추적: 게이팅, 연관, 트랙 관리
 
@@ -887,11 +1139,21 @@ print("greedy:", sum(d2[p] for p in greedy), greedy)
 | robust localization | 환경, 운동, 조명/날씨, 파국적 실패 |
 | drift-free | 지속 시간/거리, 절대 기준·loop closure 의존 여부 |
 | tightly coupled | 어떤 원시 측정과 상태가 공동 최적화되는가 |
-| consistent | 보고된 불확실성이 실제 추정 오차와 맞는가 |
+| consistent | 보고된 불확실성이 실제 추정 오차와 맞는가(NEES, §2) |
 
 흔한 지표: Absolute Trajectory Error, Relative Pose Error, 거리/시간당 drift,
 relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* ATE가 드문 파국적 추적
 손실을 가릴 수 있다.
+
+**궤적 지표를 풀어 쓰면.** 시점 $i$ 의 추정 pose를 $P_i$, 참 pose를 $Q_i$ 라 하고 둘 다 동차 변환으로, $\operatorname{trans}(\cdot)$ 를 평행 이동 부분으로 쓴다.
+- **Absolute Trajectory Error**는 먼저 궤적 전체에 강체 정렬 $S$ 를 하나 맞추고(단안 시스템은 스케일을 모르므로 닮음 변환), 남은 평행 이동 오차의 RMS를 보고한다(Sturm 외, IROS 2012). 모든 pose를 하나의 공통 프레임에서 비교하므로 전역 일관성을 재는 값이다.
+$$\text{ATE}_{\text{RMSE}} = \Big(\frac1N \sum_{i=1}^N \lVert \operatorname{trans}(Q_i^{-1} S P_i) \rVert^2\Big)^{1/2}$$
+- **Relative Pose Error**는 대신 고정 구간 $\Delta$ 동안의 이동을 비교하므로 국소 drift를 재고, 누적 오차가 결국 어디에 쌓였는지에는 눈을 감는다.
+$$E_i = \big(Q_i^{-1}Q_{i+\Delta}\big)^{-1}\big(P_i^{-1}P_{i+\Delta}\big)$$
+$\operatorname{trans}(E_i)$ 의 RMS와 그 회전각의 RMS로 보고한다.
+- **거리당 drift**는 KITTI 벤치마크처럼 100, 200, …, 800 m의 모든 부분 구간에 걸쳐 상대 평행 이동 오차를 평균하고 구간 길이로 나눠 백분율로 준다.
+
+*예:* 1차원 참값 0, 1, 2, 3 m와 추정값 0, 1.1, 2.1, 3.3 m가 이미 정렬되어 있다고 하자. ATE는 $(0, 0.1, 0.1, 0.3)$ 의 RMS인 0.166 m, $\Delta = 1$ 의 RPE는 $(0.1, 0, 0.2)$ 의 RMS인 0.129 m이고, 3 m에 대한 끝점 오차 0.3 m는 10% drift로 읽힌다. *반례:* 정렬 없이 계산한 ATE는 시작 프레임을 어떻게 잡았는가 하는 임의의 선택을 오차에 섞고, 단안 궤적을 강체 변환만으로 정렬하면 모르는 스케일이 숫자 안에 남는다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
@@ -927,16 +1189,28 @@ relocalization 성공률, 지도 정확도, 지연, 실패율. 낮은 *평균* A
 
 ### 과제 · Problem set
 
-Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 스칼라 루프는 [[02-foundations/probability|3]]. 이 페이지는 운동, 틀린 연관, 관통 과제의 패널을 더한다.
+Tier A. **P6** 의 시계 위에 놓인 [[02-foundations/lab-plants|0.6]]의 **P5**. 스칼라 루프는 [[02-foundations/probability|3]]. 위의 계산 예제는 한 스텝을 돌고 융합했다. 이 과제는 두 스텝을 돌고 첫 스텝에서 **기각**한다. 그것이 변형이다 — 게이트가 지켜 주는 동안 무엇을 치르는가.
 
-1. **그리기.** 예측 $x\leftarrow x+1$ 다음 거리 $z$. “이 $z$는 패널” 대 “통행인” 상자 둘.
-2. **유도.** 카탈로그 갱신($11.6$, $P=0.8$) 뒤: (a) $Q=1$ 예측 후 $z=12.5$, $R=1$. (b) 같은 예측, $z=20$. (c) 예측 뒤 혁신의 3-σ 게이트: $12.5$와 $20$ 중 어느 쪽을 받는가?
-3. **실행.** 영어 템플릿. (a)와 (b)를 출력하라.
+P2가 패널로 도구를 나른다. 패널까지의 거리가 P5의 벽이다. 단위 센티미터, $Q = R = 1$, 한 스텝에 $1\,\mathrm{cm}$ 전진.
+
+1. **그리기.** 한 거리 축 위에 두 순환. 스텝 1: $11.6$ 에서 예측하고 게이트를 그린 뒤 $z = 20$ 을 그 밖에 찍고, 보정 화살표는 *그리지 않는다*. 스텝 2: **그대로인** belief에서 다시 예측하고, 눈에 띄게 넓어진 새 게이트를 그린 뒤 $z = 14.4$ 를 그 안에 찍고 보정 화살표를 그린다. 두 게이트의 반너비를 모두 적는다. 그 옆에 다른 색으로 반사실: 스텝 1이 $z=20$ 을 융합했다면 스텝 2의 게이트가 어디에 놓였을지.
+2. **유도.** 카탈로그 P5 갱신($11.6$, $P = 0.8$)에서 시작해서: (a) 스텝 1 예측, 그다음 $z = 20$ 에 3-σ 게이트 — 통과인가 기각인가, 그리고 어느 쪽이든 $\hat x$ 와 $P$ 에 무슨 일이 일어나는가. (b) (a)가 남긴 belief에서 스텝 2 예측, 그다음 $z = 14.4$ 의 게이트와 완전한 보정: $S$, $K$, $\hat x^+$, $P^+$. (c) 반사실: (a)가 $z = 20$ 을 융합했을 때의 belief에서 (b)를 다시 하라. *옳은* 측정 $14.4$ 가 그래도 게이트를 통과하는가, 그리고 추정값을 어디에 남기는가?
+3. **실행.** 영어 템플릿. (a)와 (b)를 출력하고, $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$ 를 **훑어라**: 각 $q$ 에서 게이트가 달린 루프를 200 스텝 돌려 $P$ 가 수렴하는 값을 보고하라. $P^+ = P^-R/(P^-+R)$ 를 $P$ 와 같다고 놓고 이차식을 풀어 얻는 닫힌 형태와 비교하라. $Q$ 와 $R$ 중 어느 손잡이가 정상 상태 이득을 움직이는가, 그리고 둘의 비만으로 결정되는가?
 
 > [!tip]- 정답 · Solutions
-> 1. 예측은 $P$를 넓히고, 보정은 게이트가 패널의 것이라고 할 때만 $z$로 당긴다.
-> 2. 예측 $x=12.6$, $P=1.8$. (a) $K=0.643$, $\hat x=12.536$, $P=0.643$. (b) $\hat x=17.36$, $P$는 그대로 $0.643$ — 확신하고 5 cm 멀다. (c) $\sigma=\sqrt{2.8}=1.67$ cm, 3-σ는 5.0 cm. $12.5$는 0.1 cm(유지), $20$은 7.4 cm(기각). 게이트가 (a)와 (b)의 전부다.
-> 3. (b) 뒤의 작은 $P$는 틀린 거리에서 접촉력을 허가한다. 연관은 공분산 질문이 아니다.
+> 1. 스텝 1의 게이트는 $12.6$ 둘레 반너비 $5.02$ 의 띠, 스텝 2는 $13.6$ 둘레 $5.85$ 다. 기각된 스텝이 $Q$ 를 더하기만 하고 아무것도 빼지 않으므로 넓어진다. 반사실의 띠는 $18.36$ 둘레 $4.88$ — 더 좁으면서 *동시에* 틀린 자리에 있고, 그것이 이 그림의 요점이다.
+> 2. (a) 예측 $\hat x^- = 12.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. Innovation이 $y = 7.4$ 이므로 $d^2 = 19.56 > 9$: 기각이고 belief는 정확히 $(12.6,\ 1.8)$ 로 남는다 — 기각된 측정은 이득 0의 갱신이 아니라 갱신이 아예 없는 것이다. (b) 다시 예측: $\hat x^- = 13.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. $y = 0.8$, $d^2 = 0.168$: 통과, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 14.189$, $P^+ = 0.7368$. 이득이 계산 예제의 $0.643$ 보다 *큰* 것은, 한 스텝을 예측만으로 흘려보낸 탓에 같은 센서에 비해 예측이 덜 믿을 만해졌기 때문이다. (c) $z=20$ 을 융합했다면 belief는 $(17.357,\ 0.643)$, 예측하면 $(18.357,\ 1.643)$ 이고 $S = 2.643$ 이다. 이제 $y = 14.4 - 18.357 = -3.957$, $d^2 = 5.93 < 9$ — 옳은 측정이 **통과한다**. 그러나 추정값을 $15.897$ 까지 끌어오는 데 그쳐 여전히 패널을 $1.7\,\mathrm{cm}$ 지나쳐 있고, 보고하는 $P^+ = 0.622$ 는 정직한 갈래의 $0.737$ 보다 *작다*. 틀린 연관 하나는 스스로를 알리지 않는다. 게이트를 옮겨서 좋은 데이터가 틀린 궤적 안으로 흡수되게 만든다.
+> 3. 빈칸: `S = P + R`, `y = z - x`, `K = P / S`, 그리고 `x + K*y, (1-K)*P`. (a)는 $(12.536,\ 0.643,\ \text{True})$, (b)는 $(12.6,\ 1.8,\ \text{False})$ 를 출력한다 — 게이트가 belief를 건드리지 않고 돌려준다. $R = 1$ 로 고정한 훑기는 다음과 같다.
+>
+> | $q = Q/R$ | 200스텝 뒤 $P$ | 닫힌 형태 $\tfrac12\big(\sqrt{q^2+4q}-q\big)$ | $K_{ss}$ |
+> |---:|---:|---:|---:|
+> | $0.25$ | $0.390388$ | $0.390388$ | $0.390388$ |
+> | $0.50$ | $0.500000$ | $0.500000$ | $0.500000$ |
+> | $1.00$ | $0.618034$ | $0.618034$ | $0.618034$ |
+> | $2.00$ | $0.732051$ | $0.732051$ | $0.732051$ |
+> | $4.00$ | $0.828427$ | $0.828427$ | $0.828427$ |
+>
+> 닫힌 형태: $P = (P+q)/(P+q+1)$ 에서 $P^2 + qP - q = 0$ 이므로 $P_{ss} = \tfrac12\big(\sqrt{q^2+4q} - q\big)$ 이고, $q = 1$ 에서 $(\sqrt5-1)/2 = 0.618034$ 다. 마지막 두 열이 일치하는 것은 여기서 $R = 1$ 이기 때문뿐이다. $P^+ = KR$ 이 정확히 성립하기 때문이다. **어느 손잡이도 혼자서는 이득을 정하지 못한다. 둘의 비가 정한다.** $Q$ 와 $R$ 을 함께 4배 하면 $K_{ss} = 0.618034$ 는 그대로이고 $P_{ss}$ 만 정확히 4배가 된다. $P_{ss} = R\,g(Q/R)$ 인 반면 $K_{ss}$ 는 $q$ 에만 의존하기 때문이다. 그러니 $Q$ 와 $R$ 을 조율했다고 보고하면서 그 비를 적지 않은 논문은 필터가 아니라 단위를 보고한 것이다.
 
 ### 출처
 

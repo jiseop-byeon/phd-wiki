@@ -13,18 +13,104 @@ mastery-when: "Master two-port absolute-stability or wave-variable synthesis whe
 
 ## English
 
-### 1. Two ports and four signals
+> [!note] First pass · 처음이라면
+> Read the Running object and the Worked case below: two copies of one handle, fifty milliseconds apart, and the three numbers that decide whether the pair can be honest. Then §2 for what transparency actually asserts and §4 for why delay is not just lag. §5 and §6 are what you open when you are reading somebody's architecture rather than building one.
 
-A bilateral system has a local **leader** port coupled to the human and a remote **follower** port coupled to the environment. Each port has force and velocity, and therefore power. A paper is unreadable until its signs are declared: does positive force point into the network at both ports, or along the same spatial axis? The passivity inequality changes appearance with convention even when the physics is identical.
+### Running object · 이 페이지의 대상
+
+Two copies of plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] — one as the **leader** in the operator's hand, one as the **follower** against the wall — joined by a channel that delays and scales. No new device is introduced; the point of the page is what the *channel* does to a pair of machines already fully specified.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $m,\ b$ | $0.04\,\mathrm{kg}$, $0.8\,\mathrm{N{\cdot}s/m}$ | each device's mass and damping, both copies identical |
+| $k_w,\ x_w$ | $400\,\mathrm{N/m}$, $0.030\,\mathrm{m}$ | the wall the follower meets |
+| $T$ | $1\,\mathrm{ms}$ | local control period at each end |
+| $T_d$ | $50\,\mathrm{ms}$ | one-way channel delay, constant and known |
+| $s_x$ | $0.1$ | position scale, follower per leader: a micro-manipulation setup |
+| $s_f$ | $0.1$ or $10$ | force scale reflected to the leader — the knob the page argues about |
+| $b_w$ | $0.8\,\mathrm{N{\cdot}s/m}$ | wave impedance, when §4's wave encoding is used; chosen equal to $b$ |
+
+$T_d$ is a *declared* channel property of this page, not a measurement of any network; $s_x$ and $s_f$ are design choices. Everything else is catalog.
+
+*Scope: this page teaches the bilateral pair as a two-port energy and information system — the four port signals, what transparency asserts, what scaling does to power, and what delay does to the passivity argument. It does not re-derive the sampled-data wall bound, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]; nor run a simulator, which stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]; nor derive the wave-variable channel-passivity proof, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One drawing, five blocks in a row, and the problem set asks for this one.
 
 ```mermaid
 flowchart LR
     H["human"] <-->|"f₁, v₁"| L["leader +<br/>controller"] <-->|"delayed/scaled<br/>channel"| R["follower +<br/>controller"] <-->|"f₂, v₂"| E["environment"]
 ```
 
+Four things have to be on the page, and three of them are the things a published block diagram usually leaves out.
+**Both ports drawn as double-headed arrows**, each labelled with its own pair $(F_1,v_1)$ and $(F_2,v_2)$. A single-headed arrow claims information flow where there is power flow, and the whole page is about power.
+**The sign convention, written on the figure** — here, positive force *into* the network at both ports. Write it as a short legend, not as an arrowhead, because the arrowhead is what everyone reads differently.
+**The delay, on both directions separately**, each marked $T_d=50\,\mathrm{ms}$, with the round trip $2T_d=100\,\mathrm{ms}$ written underneath. A single box labelled "network" hides whether the return path is delayed, which is the one thing that decides the argument.
+**The wall as a switch at the follower**, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], plus the two scale blocks $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears and the *ratio* $s_f/s_x$ always does.
+
+### Worked case · 대상으로 한 번 끝까지
+
+Five steps on the pair above. Everything §2 to §4 assert in words is a number here.
+
+**Step 1 — what the operator's hand feels when nothing is touching.** With the follower in free space the operator still feels the leader itself, $Z=ms+b$. At $1\,\mathrm{Hz}$ that is $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$, so moving the leader at $5\,\mathrm{cm/s}$ costs $0.042\,\mathrm{N}$ of drag against an environment that is producing nothing at all. At $10\,\mathrm{Hz}$ the same handle reads $2.64\,\mathrm{N{\cdot}s/m}$, or $0.132\,\mathrm{N}$ — the inertia has taken over. §5 calls this quantity $h_{11}$ and transparency asks for it to be zero, which is why a teleoperator can fail its own specification before the channel is switched on.
+
+**Step 2 — the stiffness the delay leaves.** The §2 bound of 24.4 spends the *whole* loop period, and a one-way delay of $50\,\mathrm{ms}$ is fifty times the local sample:
+
+$$K\le\frac{2b}{T+T_d}=\frac{2\cdot 0.8}{0.001+0.050}=31.4\,\mathrm{N/m}$$
+
+because the energy the hold leaks now has $51\,\mathrm{ms}$ to accumulate before the damper is told about it. Catalog $k_w=400\,\mathrm{N/m}$ misses that ceiling by a factor of $400/31.4=12.7$, and the local ceiling of $1600\,\mathrm{N/m}$ has fallen by the same factor $51$ as the effective period rose. The wall the follower actually touches is unchanged; what changed is how much of it may be reflected.
+
+**Step 3 — power-preserving scaling, and why nobody ships it.** With $x_f=s_xx_l$ and $F_l=s_fF_f$ the power ratio is $s_f/s_x$ (§3), so power preservation means $s_f=s_x=0.1$. Let the follower hold $F_f=1\,\mathrm{N}$, which on the catalog wall is a penetration of $1/400=2.5\,\mathrm{mm}$. The leader then reflects
+
+$$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
+
+which is below a typical force JND near $1\,\mathrm{N}$ and therefore not a cue at all. The honest scaling is unusable, which is the whole reason the next step exists.
+
+**Step 4 — force amplification, and what it costs.** Choose $s_f=10$ with $s_x=0.1$ instead. The leader now reflects $10\,\mathrm{N}$ from the same $1\,\mathrm{N}$ contact, and
+
+$$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
+
+so the leader port carries a hundred times the follower's power, and that factor comes out of the leader's actuators. A system that generates power at a port cannot inherit passivity from passive parts, so its stability has to be argued directly rather than assembled — and the interconnection theorem of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]] no longer applies to it.
+
+**Step 5 — what the standard repair would charge.** Encode the channel in wave variables with $b_w=0.8\,\mathrm{N{\cdot}s/m}$ (§4). The channel becomes passive for *any* constant delay, including this $50\,\mathrm{ms}$, but the operator now feels an apparent damping of $b_w$ through it: at $5\,\mathrm{cm/s}$ that is $0.8\cdot0.05=0.040\,\mathrm{N}$, on top of the $0.042\,\mathrm{N}$ of Step 1. The pair has bought an unconditional guarantee and paid for it in exactly the currency Step 1 was already short of. Sanity check on the encoding, at $\dot x=0.05\,\mathrm{m/s}$ and $F=1\,\mathrm{N}$: $u=(0.8\cdot0.05+1)/\sqrt{1.6}=0.822$ and $v=(0.8\cdot0.05-1)/\sqrt{1.6}=-0.759$, so $\tfrac12(u^2-v^2)=0.050\,\mathrm{W}$, which is $F\dot x$ exactly — the transformation moved the power without changing it.
+
+The problem set is this same pair with the same channel, asked as a drawing and three questions.
+
+### 1. Two ports and four signals
+
+A bilateral system has a local **leader** port coupled to the human and a remote **follower** port coupled to the environment, drawn in the Homework diagram above. Each port has force and velocity, and therefore power. A paper is unreadable until its signs are declared: does positive force point into the network at both ports, or along the same spatial axis? The passivity inequality changes appearance with convention even when the physics is identical.
+
+Each of those two ports is a port in the sense of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]] — one effort–flow pair, one causality — and the energy that crosses it obeys the inequality of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]. What is new here is that there are two of them and one system in between, which has a name.
+
+> **Two-port model, defined.** A **two-port model** of a teleoperator is a *linear map between four port variables* — a $2\times2$ matrix, and nothing else: not a block diagram, not a controller and not an architecture. Three defining conditions, and the third is the one that makes two papers' matrices incomparable. There are **exactly two power ports**, each carrying one effort–flow pair whose product is power; anything with a third connection is a three-port and its passivity argument is different. A **causality is declared at each port**, which is what decides whether the matrix is called impedance, admittance, hybrid or transmission — the four names are four choices of which two variables are inputs. And a **sign convention is declared**, because negating one port's force negates a whole row and column while changing no physics at all.
+>
+> $$\begin{pmatrix}F_1\\ -V_2\end{pmatrix}=\begin{pmatrix}h_{11}&h_{12}\\ h_{21}&h_{22}\end{pmatrix}\begin{pmatrix}V_1\\ F_2\end{pmatrix}$$
+>
+> is the **hybrid** form, the one teleoperation uses, where $F_1,V_1$ are force and velocity at the human port and $F_2,V_2$ at the environment port — so $h_{11}$ is the input impedance with the follower free, $h_{22}$ the output admittance with the leader locked, and $h_{12},h_{21}$ the two transmissions. Terminating port 2 with an environment $F_2=Z_eV_2$ and eliminating $V_2$ gives what the hand feels,
+>
+> $$Z_{to}=\frac{F_1}{V_1}=h_{11}-\frac{h_{12}h_{21}Z_e}{1+h_{22}Z_e}$$
+>
+> because row 2 forces $V_2=-h_{21}V_1/(1+h_{22}Z_e)$, and substituting that into row 1 is the whole derivation.
+>
+> - **Example**: the ideal transparent teleoperator, $h=\begin{pmatrix}0&1\\-1&0\end{pmatrix}$ in this convention. Substituting gives $Z_{to}=Z_e$ for *every* $Z_e$, which is §2's definition of transparency reached from the matrix rather than asserted.
+> - **Non-example**: the bare P3 leader of the Worked case, which has $h_{11}=ms+b\ne0$. Setting $Z_e=0$ in the formula returns $Z_{to}=h_{11}$, so in free space the operator feels the leader and nothing else — no amount of channel design removes a term that sits outside the fraction.
+> - **Why it matters**: the two limits of that one formula are the two ends of Z-width read at the human port. $Z_e\to0$ gives $h_{11}$, the lightest thing the system can display; $Z_e\to\infty$ gives $h_{11}-h_{12}h_{21}/h_{22}$, the hardest. A paper that reports one and not the other has described half of its own device.
+
 ### 2. Transparency is a target impedance
 
 Ideal transparency means the operator feels the remote environment as if the intervening system were absent. At the human port, the displayed impedance $Z_{in}=F_1/V_1$ should equal a scaled remote impedance. Real systems add leader/follower inertia, friction, local servos, sensor filtering, communication delay, quantization, and saturation. “Stable” and “transparent” are therefore different claims.
+
+> **Transparency, defined.** **Transparency** is a *target* — an asserted equality between two impedances at the human port — not a score, not a percentage, and not a synonym for "feels good". Three defining conditions, and a claim missing any of them is not checkable. The equality is between the **displayed** impedance and the **scaled environment** impedance, so the scale factors are part of the claim and a system with $s_f\ne s_x$ is transparent to a *different* environment than the one being touched. It must hold over a **declared frequency band**, because $Z$ is a function of $\omega$ and matching a slow press says nothing about an impact. And it must hold over a **declared class of environments**, since matching one soft object is one point of a function.
+>
+> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=\frac{s_f}{s_x}\,Z_e(j\omega)\qquad\text{for all }\omega\text{ in the declared band and all }Z_e\text{ in the declared class}$$
+>
+> where $Z_{to}$ is what the hand feels, $Z_e$ the environment impedance at the follower, and $s_f/s_x$ the power ratio of §3 — so unscaled transparency is the case $s_f=s_x$, in which the equality reads $Z_{to}=Z_e$ and the intervening system has disappeared from the expression entirely.
+>
+> - **Example**: the ideal $h$ of §1. Substituting it into $Z_{to}=h_{11}-h_{12}h_{21}Z_e/(1+h_{22}Z_e)$ gives $Z_e$ for every $Z_e$ — transparency as an identity rather than a fit.
+> - **Non-example**: "force-tracking RMS error was $5\%$ on the trajectory we recorded." That is a performance number at one input, and it can be small on a system whose $h_{11}$ makes free space feel like syrup. Transparency is a statement about the *map*; performance is a statement about one of its outputs.
+> - **Non-example**: the Worked case's bare leader in free space. There $Z_e=0$, so $Z_{to}=h_{11}=0.839\,\mathrm{N{\cdot}s/m}$ at $1\,\mathrm{Hz}$ against a target of $0$, an error of $0.042\,\mathrm{N}$ at $5\,\mathrm{cm/s}$ — largest exactly where the target is smallest.
+> - **Why it matters**: every stabilizer on this page pays for stability in transparency — the virtual coupling of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]], the added damping of §4, the wave encoding of §4 — so "stable" and "transparent" cannot be claimed as one result, and a paper reporting only one has told you which half it lost.
 
 A four-channel architecture may transmit position/velocity and force in both directions; simpler position–force or position–position architectures transmit fewer signals. More channels can improve matching under a model, but also expose noise, delay, calibration, and causality constraints.
 
@@ -41,17 +127,28 @@ Power-preserving scaling requires $s_f=s_x$ under this convention; other convent
 
 ### 4. Why delay is hard
 
-A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). Common strategies include:
+A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). On the running pair that costs a factor of $51$ in renderable stiffness, worked in Step 2 above. Common strategies include:
 
-**Worked: two P3 devices, $T_d=50\,\mathrm{ms}$.** Catalog $b=0.8$, $k_w=400$, local $T=1\,\mathrm{ms}$ ([[02-foundations/lab-plants|0.6]]). A Colgate-style bound that spends the delay in the period is $K\le 2b/(T+T_d)\approx 31\,\mathrm{N/m}$; catalog $k_w$ fails it. Power-preserving $s_f=s_x=0.1$ with $F_f=1\,\mathrm{N}$ reflects $0.1\,\mathrm{N}$ at the leader — too faint. $s_f=10$ gives power ratio $100$ from the actuators, so the pair cannot inherit passivity. Added damping that makes users slower is not a contradiction of passivity. The problem set is this two-port as a drawing.
-
-- local damping or virtual coupling;
+- local damping or virtual coupling, the latter defined in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]];
 - time-domain passivity observers/controllers;
 - wave/scattering variables that make a constant-delay channel passive under assumptions (send sum and difference combinations of velocity and force instead of the raw signals; derived in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]]);
 - model-mediated teleoperation, where a fast local model renders contact while remote updates correct it;
 - shared control or predictive displays that reduce the human's need to close the fastest loop through the network.
 
 Each pays somewhere: added damping reduces transparency, wave variables distort transients, local models can be wrong, and prediction/shared autonomy can alter authority — how shared autonomy arbitrates that authority by inferring the operator's goal is [[04-robotics/hri-safety|11. HRI & Safety §3.5]].
+
+The third of those is the one that is a theorem rather than a tuning knob, so it gets a definition; the channel-passivity proof itself is not repeated here.
+
+> **Wave variables, defined.** **Wave variables** (equivalently, the **scattering transformation**) are a *change of variables* — an invertible linear map of the port pair $(\dot x,F)$ onto a new pair $(u,v)$ — and not a controller, not a filter and not a delay compensator. Three defining conditions. The map is parameterized by a **wave impedance** $b_w>0$ with units $\mathrm{N{\cdot}s/m}$, which is a free design choice and not a property of the hardware. It is chosen so that **port power is the difference of the squared wave amplitudes**, which is the entire reason the transformation exists. And the channel must carry **one wave each way**, $u$ forward and $v$ back, because it is that pairing that makes a *constant* delay store rather than create energy.
+>
+> $$u=\frac{b_w\dot x+F}{\sqrt{2b_w}},\qquad v=\frac{b_w\dot x-F}{\sqrt{2b_w}},\qquad \tfrac12\left(u^2-v^2\right)=F\dot x$$
+>
+> where $\dot x$ and $F$ are the port velocity and force and $b_w$ the wave impedance — the third equality is algebra, since $u^2-v^2=[(b_w\dot x+F)^2-(b_w\dot x-F)^2]/(2b_w)=2F\dot x$, and everything else follows from it.
+>
+> - **Example**: the running pair at $\dot x=0.05\,\mathrm{m/s}$, $F=1\,\mathrm{N}$, $b_w=0.8$. Then $u=0.822$, $v=-0.759$ and $\tfrac12(u^2-v^2)=0.050\,\mathrm{W}=F\dot x$, so the $50\,\mathrm{ms}$ channel now holds energy in flight instead of manufacturing it. The telescoping argument that turns this identity into passivity for *any* constant delay is [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]] and is not repeated here.
+> - **Non-example**: sending $\dot x$ and $F$ through the same channel and adding damping until it stops ringing. That is the §4 problem, not its solution: the guarantee is conditional on the delay you tuned against, and wave variables are unconditional in $T_d$.
+> - **Non-example**: reading $b_w$ as the device's physical damping. It is a *choice*; the hardware's $b=0.8$ is a separate number that happens to be what this page picks for $b_w$, and picking a different $b_w$ changes the feel without changing any machine.
+> - **Why it matters**: it converts "delay destroys passivity" into "delay is passive and costs impedance matching", which is a design trade rather than a failure. The bill arrives as an apparent damping of $b_w$ at the port — $0.040\,\mathrm{N}$ at $5\,\mathrm{cm/s}$ on this pair — plus wave reflection at impedance mismatches and a position drift, because the channel transmits velocity rather than position. That is the §2 tradeoff again, now as a theorem.
 
 ### 5. Reading a two-port model
 
@@ -89,18 +186,104 @@ Leader motion is sent to the follower; follower wall force $F_a$ is sent back. O
 
 ## 한국어
 
-### 1. 두 포트와 네 신호
+> [!note] 처음이라면 · First pass
+> 아래 대상과 계산을 먼저 읽어라. 같은 핸들 두 대가 50밀리초 떨어져 있고, 그 쌍이 정직할 수 있는지를 정하는 숫자가 셋이다. 그다음 §2에서 투명성이 실제로 무엇을 주장하는지, §4에서 지연이 왜 단순한 늦음이 아닌지를 읽는다. §5와 §6은 남의 구조를 읽을 때 연다.
 
-양방향 시스템은 사람과 연결된 local **leader** 포트와 환경과 연결된 remote **follower** 포트를 가진다. 각 포트에는 force와 velocity가, 따라서 power가 있다. 논문은 부호를 선언하기 전까지 읽을 수 없다. 두 포트에서 network 안쪽을 향하는 것을 양의 힘으로 정했는가, 아니면 같은 공간축을 따라 정했는가? 물리가 똑같아도 규약이 다르면 passivity 부등식의 모양이 달라진다.
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3** 두 대 — 하나는 조작자 손의 **leader**, 하나는 벽을 마주한 **follower** — 를 지연하고 스케일하는 채널로 잇는다. 새 장치는 없다. 이 페이지의 요점은 이미 완전히 규정된 기계 두 대에 *채널*이 무엇을 하는가다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| $m,\ b$ | $0.04\,\mathrm{kg}$, $0.8\,\mathrm{N{\cdot}s/m}$ | 각 장치의 질량과 댐핑. 두 대가 동일 |
+| $k_w,\ x_w$ | $400\,\mathrm{N/m}$, $0.030\,\mathrm{m}$ | follower가 만나는 벽 |
+| $T$ | $1\,\mathrm{ms}$ | 양 끝의 로컬 제어 주기 |
+| $T_d$ | $50\,\mathrm{ms}$ | 편도 채널 지연. 일정하고 알려져 있다 |
+| $s_x$ | $0.1$ | 위치 스케일, leader 대비 follower: 미세 조작 설정 |
+| $s_f$ | $0.1$ 또는 $10$ | leader로 반사되는 힘 스케일 — 이 페이지가 다투는 손잡이 |
+| $b_w$ | $0.8\,\mathrm{N{\cdot}s/m}$ | §4의 wave 인코딩을 쓸 때의 wave 임피던스. $b$와 같게 잡았다 |
+
+$T_d$는 이 페이지가 *선언한* 채널 성질이지 어떤 네트워크의 측정값이 아니다. $s_x$와 $s_f$는 설계 선택이다. 나머지는 전부 카탈로그다.
+
+*범위: 이 페이지는 양방향 쌍을 2포트 에너지·정보 시스템으로 가르친다 — 포트 신호 넷, 투명성이 주장하는 것, 스케일링이 일률에 하는 일, 지연이 수동성 논증에 하는 일. 샘플링 데이터 벽 경계를 다시 유도하지는 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]다. 시뮬레이터도 돌리지 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남는다. Wave variable 채널의 수동성 증명도 유도하지 않는다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 한 줄에 블록 다섯. 과제가 요구하는 것이 이 그림이다.
 
 ```mermaid
 flowchart LR
     H["사람"] <-->|"f₁, v₁"| L["leader +<br/>제어기"] <-->|"지연·스케일된<br/>채널"| R["follower +<br/>제어기"] <-->|"f₂, v₂"| E["환경"]
 ```
 
+그림에 들어가야 할 것이 넷이고, 그중 셋은 출판된 블록선도가 보통 빠뜨리는 것이다.
+**두 포트를 양쪽 화살표로.** 각각 자기 쌍 $(F_1,v_1)$과 $(F_2,v_2)$를 달아 준다. 한쪽 화살표는 일률이 흐르는 곳에 정보가 흐른다고 주장하는 것이고, 이 페이지 전체가 일률에 대한 이야기다.
+**부호 규약을 그림 위에.** 여기서는 두 포트 모두 네트워크 *안쪽*이 양의 힘이다. 화살촉이 아니라 짧은 범례로 적어라. 화살촉이야말로 사람마다 다르게 읽는 것이다.
+**지연을 양방향에 따로.** 각각 $T_d=50\,\mathrm{ms}$로 표시하고 아래에 왕복 $2T_d=100\,\mathrm{ms}$를 적는다. "네트워크"라고만 적힌 상자 하나는 되돌아오는 경로가 지연되는지를 가리는데, 논증을 정하는 것이 바로 그것이다.
+**follower의 벽은 스위치로.** [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다. 나가는 길의 $s_x$와 돌아오는 길의 $s_f$ 스케일 블록도 함께 그려서, 곱 $s_fs_x$는 어디에도 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보이게 한다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+위 쌍에 대해 다섯 단계. §2부터 §4까지가 말로 주장하는 것이 여기서는 전부 숫자다.
+
+**1단계 — 아무것도 닿지 않을 때 손이 느끼는 것.** follower가 자유공간에 있어도 조작자는 leader 자체, $Z=ms+b$를 느낀다. $1\,\mathrm{Hz}$에서 $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$이므로 leader를 $5\,\mathrm{cm/s}$로 움직이는 데 아무것도 내지 않는 환경에 대해 $0.042\,\mathrm{N}$의 끌림을 쓴다. $10\,\mathrm{Hz}$에서 같은 핸들이 $2.64\,\mathrm{N{\cdot}s/m}$, 즉 $0.132\,\mathrm{N}$이 된다. 관성이 넘겨받은 것이다. §5는 이 양을 $h_{11}$이라 부르고 투명성은 그것이 0이기를 요구한다. 원격조작기가 채널을 켜기도 전에 자기 규격에 미달할 수 있는 이유다.
+
+**2단계 — 지연이 남겨 주는 강성.** 24.4 §2의 경계는 루프 주기 *전체*를 쓰는데, 편도 $50\,\mathrm{ms}$는 로컬 샘플의 쉰 배다.
+
+$$K\le\frac{2b}{T+T_d}=\frac{2\cdot 0.8}{0.001+0.050}=31.4\,\mathrm{N/m}$$
+
+홀드가 흘리는 에너지가 댐퍼에게 알려지기까지 이제 $51\,\mathrm{ms}$ 동안 쌓이기 때문이다. 카탈로그 $k_w=400\,\mathrm{N/m}$은 그 천장을 $400/31.4=12.7$배 넘고, 로컬 천장 $1600\,\mathrm{N/m}$은 실효 주기가 커진 것과 같은 배수 $51$만큼 내려앉았다. follower가 실제로 만지는 벽은 그대로다. 바뀐 것은 그중 얼마를 반사해도 되는가다.
+
+**3단계 — 일률 보존 스케일링, 그리고 아무도 그것을 출하하지 않는 이유.** $x_f=s_xx_l$, $F_l=s_fF_f$이면 일률 비는 $s_f/s_x$이므로(§3) 일률 보존은 $s_f=s_x=0.1$을 뜻한다. follower가 $F_f=1\,\mathrm{N}$을 쥔다고 하자. 카탈로그 벽에서 침투 $1/400=2.5\,\mathrm{mm}$다. 그러면 leader가 반사하는 것은
+
+$$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
+
+이고, 이는 $1\,\mathrm{N}$ 부근의 흔한 힘 JND보다 작아 cue가 되지 못한다. 정직한 스케일링이 쓸모없다는 것, 이것이 다음 단계가 존재하는 이유다.
+
+**4단계 — 힘 증폭, 그리고 그 대가.** 대신 $s_x=0.1$에 $s_f=10$을 고른다. 같은 $1\,\mathrm{N}$ 접촉에서 leader가 이제 $10\,\mathrm{N}$을 반사하고,
+
+$$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
+
+이므로 leader 포트는 follower 일률의 백 배를 나른다. 그 배수는 leader의 액추에이터에서 나온다. 포트에서 일률을 만들어 내는 시스템은 수동적인 부품들로부터 수동성을 물려받을 수 없으므로 안정성을 조립하는 대신 직접 논증해야 하고, [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]의 상호연결 정리가 더 이상 적용되지 않는다.
+
+**5단계 — 표준적인 수선이 청구하는 값.** 채널을 $b_w=0.8\,\mathrm{N{\cdot}s/m}$의 wave variable로 인코딩한다(§4). 채널은 이 $50\,\mathrm{ms}$을 포함해 *임의의* 일정 지연에 대해 수동이 되지만, 조작자는 이제 그것을 통해 $b_w$만큼의 겉보기 댐핑을 느낀다. $5\,\mathrm{cm/s}$에서 $0.8\cdot0.05=0.040\,\mathrm{N}$이고, 1단계의 $0.042\,\mathrm{N}$ 위에 얹힌다. 쌍은 무조건적인 보장을 샀고, 1단계에서 이미 모자라던 바로 그 화폐로 값을 치렀다. 인코딩 검산, $\dot x=0.05\,\mathrm{m/s}$, $F=1\,\mathrm{N}$: $u=(0.8\cdot0.05+1)/\sqrt{1.6}=0.822$, $v=(0.8\cdot0.05-1)/\sqrt{1.6}=-0.759$이므로 $\tfrac12(u^2-v^2)=0.050\,\mathrm{W}$이고 이는 정확히 $F\dot x$다. 변환은 일률을 옮겼을 뿐 바꾸지 않았다.
+
+과제는 같은 쌍과 같은 채널을 그림 하나와 질문 셋으로 묻는다.
+
+### 1. 두 포트와 네 신호
+
+양방향 시스템은 사람과 연결된 local **leader** 포트와 환경과 연결된 remote **follower** 포트를 가진다. 그림은 위의 과제가 그릴 그림에 있다. 각 포트에는 force와 velocity가, 따라서 power가 있다. 논문은 부호를 선언하기 전까지 읽을 수 없다. 두 포트에서 network 안쪽을 향하는 것을 양의 힘으로 정했는가, 아니면 같은 공간축을 따라 정했는가? 물리가 똑같아도 규약이 다르면 passivity 부등식의 모양이 달라진다.
+
+두 포트 각각은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]의 의미에서 포트다 — effort–flow 쌍 하나, 인과성 하나 — 그리고 거기를 건너는 에너지는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]의 부등식을 따른다. 여기서 새로운 것은 포트가 둘이고 그 사이에 시스템이 하나 있다는 점이고, 거기에는 이름이 있다.
+
+> **2포트 모델의 정의.** 원격조작기의 **2포트 모델**(two-port model)은 *포트 변수 넷 사이의 선형 사상*이다. $2\times2$ 행렬이고 그 이상이 아니다. 블록선도도 아니고 제어기도 아니고 구조도 아니다. 정의 조건 셋이고, 셋째가 두 논문의 행렬을 비교 불가능하게 만드는 바로 그것이다. **일률 포트가 정확히 둘**이고 각각이 곱이 일률인 effort–flow 쌍 하나를 나른다. 연결이 셋이면 3포트이고 수동성 논증이 다르다. **각 포트에서 인과성을 선언**하는데, 그것이 행렬을 impedance라 부를지 admittance, hybrid, transmission이라 부를지를 정한다. 이름 넷은 어느 변수 둘을 입력으로 둘지의 선택 넷이다. 그리고 **부호 규약을 선언**해야 한다. 한 포트의 힘 부호를 뒤집으면 물리는 그대로인 채 행과 열 하나가 통째로 부호를 바꾸기 때문이다.
+>
+> $$\begin{pmatrix}F_1\\ -V_2\end{pmatrix}=\begin{pmatrix}h_{11}&h_{12}\\ h_{21}&h_{22}\end{pmatrix}\begin{pmatrix}V_1\\ F_2\end{pmatrix}$$
+>
+> 이것이 원격조작이 쓰는 **hybrid** 형태다. $F_1,V_1$은 사람 포트의 힘과 속도, $F_2,V_2$는 환경 포트의 것이다. 그래서 $h_{11}$은 follower가 자유일 때의 입력 임피던스, $h_{22}$는 leader를 고정했을 때의 출력 어드미턴스, $h_{12}$와 $h_{21}$이 두 전달이다. 포트 2를 환경 $F_2=Z_eV_2$로 끝맺고 $V_2$를 소거하면 손이 느끼는 것이 나온다.
+>
+> $$Z_{to}=\frac{F_1}{V_1}=h_{11}-\frac{h_{12}h_{21}Z_e}{1+h_{22}Z_e}$$
+>
+> 둘째 행이 $V_2=-h_{21}V_1/(1+h_{22}Z_e)$를 강제하고 그것을 첫째 행에 넣는 것이 유도의 전부이기 때문이다.
+>
+> - **예**: 이상적으로 투명한 원격조작기, 이 규약에서 $h=\begin{pmatrix}0&1\\-1&0\end{pmatrix}$. 넣어 보면 *모든* $Z_e$에 대해 $Z_{to}=Z_e$이고, §2의 투명성 정의를 주장이 아니라 행렬에서 얻은 것이다.
+> - **비예**: 계산 절의 맨 leader. $h_{11}=ms+b\ne0$이다. 식에 $Z_e=0$을 넣으면 $Z_{to}=h_{11}$이므로 자유공간에서 조작자는 leader만 느낀다. 분수 바깥에 앉은 항은 어떤 채널 설계로도 없앨 수 없다.
+> - **왜 중요한가**: 그 식 하나의 두 극한이 사람 포트에서 읽은 Z-width의 두 끝이다. $Z_e\to0$은 $h_{11}$, 시스템이 표시할 수 있는 가장 가벼운 것을 주고, $Z_e\to\infty$는 $h_{11}-h_{12}h_{21}/h_{22}$, 가장 단단한 것을 준다. 둘 중 하나만 보고한 논문은 자기 장치의 절반만 기술한 것이다.
+
 ### 2. 투명성은 목표 임피던스다
 
 이상적 transparency는 중간 시스템이 없는 것처럼 원격 환경을 조작자가 느끼는 것이다. 사람 쪽 포트에서 표시되는 임피던스 $Z_{in}=F_1/V_1$이 스케일된 원격 임피던스와 같아야 한다. 실제 시스템은 leader와 follower의 관성, 마찰, local servo, 센서 필터링, 통신 지연, quantization, saturation을 더한다. 그러므로 "안정하다"와 "투명하다"는 서로 다른 주장이다.
+
+> **투명성의 정의.** **투명성**(transparency)은 *목표*다. 사람 포트에서 임피던스 둘이 같다는 주장이지 점수도, 백분율도, "느낌이 좋다"의 동의어도 아니다. 정의 조건 셋이고, 하나라도 빠진 주장은 검증할 수 없다. 등식은 **표시되는** 임피던스와 **스케일된 환경** 임피던스 사이의 것이므로 스케일 인자가 주장의 일부이고, $s_f\ne s_x$인 시스템은 실제로 만지는 환경이 아니라 *다른* 환경에 대해 투명하다. **선언한 주파수 대역**에서 성립해야 한다. $Z$가 $\omega$의 함수이므로 느린 가압이 맞았다는 것은 충격에 대해 아무것도 말하지 않는다. 그리고 **선언한 환경 부류**에서 성립해야 한다. 부드러운 물체 하나가 맞은 것은 함수의 점 하나다.
+>
+> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=\frac{s_f}{s_x}\,Z_e(j\omega)\qquad\text{선언한 대역의 모든 }\omega\text{, 선언한 부류의 모든 }Z_e$$
+>
+> $Z_{to}$는 손이 느끼는 것, $Z_e$는 follower에서의 환경 임피던스, $s_f/s_x$는 §3의 일률 비다. 그러므로 스케일 없는 투명성은 $s_f=s_x$인 경우이고, 그때 등식은 $Z_{to}=Z_e$가 되어 중간 시스템이 식에서 완전히 사라진다.
+>
+> - **예**: §1의 이상적 $h$. $Z_{to}=h_{11}-h_{12}h_{21}Z_e/(1+h_{22}Z_e)$에 넣으면 모든 $Z_e$에 대해 $Z_e$가 나온다. 맞춤이 아니라 항등식으로서의 투명성이다.
+> - **비예**: "우리가 기록한 궤적에서 힘 추종 RMS 오차가 $5\%$였다." 입력 하나에서의 성능 수치이고, $h_{11}$ 때문에 자유공간이 꿀처럼 느껴지는 시스템에서도 작을 수 있다. 투명성은 *사상*에 대한 진술이고 성능은 그 출력 하나에 대한 진술이다.
+> - **비예**: 계산 절의 자유공간 leader. 거기서는 $Z_e=0$이므로 $1\,\mathrm{Hz}$에서 $Z_{to}=h_{11}=0.839\,\mathrm{N{\cdot}s/m}$, 목표는 $0$이다. $5\,\mathrm{cm/s}$에서 오차 $0.042\,\mathrm{N}$이고, 목표가 가장 작은 곳에서 오차가 가장 크다.
+> - **왜 중요한가**: 이 페이지의 모든 안정화 수단이 안정성을 투명성으로 값을 치른다 — [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]]의 virtual coupling, §4의 추가 댐핑, §4의 wave 인코딩. 그래서 "안정"과 "투명"은 한 결과로 주장할 수 없고, 하나만 보고한 논문은 어느 쪽을 잃었는지를 말해 준 셈이다.
 
 4채널 구조는 위치·속도와 힘을 양방향으로 모두 전송할 수 있고, 더 단순한 position–force나 position–position 구조는 더 적은 신호를 보낸다. 채널이 많으면 어떤 모델 아래에서 정합이 좋아질 수 있지만, 동시에 잡음·지연·보정·인과성 제약에 더 노출된다.
 
@@ -117,15 +300,28 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 ### 4. 지연이 어려운 이유
 
-지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유(루프가 진동하기 전까지 견딜 수 있는 추가 지연의 여유. [[04-robotics/control-theory-ce397|제어 이론 §5.5]])가 깎인다. 흔한 대응은 이렇다.
+지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유(루프가 진동하기 전까지 견딜 수 있는 추가 지연의 여유. [[04-robotics/control-theory-ce397|제어 이론 §5.5]])가 깎인다. 위의 대상 쌍에서는 그 값이 렌더링 가능한 강성의 $51$배이고, 2단계에서 계산했다. 흔한 대응은 이렇다.
 
-- local damping 또는 virtual coupling;
+- local damping 또는 virtual coupling. 뒤쪽의 정의는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]];
 - 시간영역 passivity observer/controller;
 - 가정 아래에서 일정 지연 채널을 수동적으로 만드는 wave/scattering 변수(원시 신호 대신 속도와 힘의 합·차 조합을 보낸다. 유도는 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]);
 - 빠른 local 모델이 접촉을 렌더링하고 원격 갱신이 그것을 교정하는 model-mediated teleoperation;
 - 사람이 네트워크를 통과하는 가장 빠른 루프를 닫을 필요를 줄이는 shared control이나 predictive display.
 
 각각 어딘가에서 값을 치른다. damping을 더하면 transparency가 줄고, wave 변수는 과도 응답을 일그러뜨리며, local 모델은 틀릴 수 있고, 예측과 shared autonomy는 권한 배분을 바꿀 수 있다 — shared autonomy가 조작자의 목표를 추론해 그 권한을 어떻게 나누는지는 [[04-robotics/hri-safety|11. HRI·안전 §3.5]]에 있다.
+
+셋째 것만은 튜닝 손잡이가 아니라 정리이므로 정의를 준다. 채널 수동성 증명 자체는 여기서 되풀이하지 않는다.
+
+> **Wave variable의 정의.** **Wave variable**(동등하게 **scattering transformation**)은 *변수 변환*이다. 포트 쌍 $(\dot x,F)$를 새 쌍 $(u,v)$로 보내는 가역 선형 사상이고, 제어기도 필터도 지연 보상기도 아니다. 정의 조건 셋. 사상은 단위가 $\mathrm{N{\cdot}s/m}$인 **wave 임피던스** $b_w>0$으로 매개되는데, 이것은 자유로운 설계 선택이지 하드웨어의 성질이 아니다. **포트 일률이 wave 진폭 제곱의 차**가 되도록 고르고, 이 변환이 존재하는 이유 전체가 그것이다. 그리고 채널은 **한쪽 방향에 wave 하나씩**, $u$는 앞으로 $v$는 뒤로 날라야 한다. *일정한* 지연이 에너지를 만들지 않고 저장하게 만드는 것이 바로 그 짝짓기이기 때문이다.
+>
+> $$u=\frac{b_w\dot x+F}{\sqrt{2b_w}},\qquad v=\frac{b_w\dot x-F}{\sqrt{2b_w}},\qquad \tfrac12\left(u^2-v^2\right)=F\dot x$$
+>
+> $\dot x$와 $F$는 포트 속도와 힘, $b_w$는 wave 임피던스다. 셋째 등식은 대수다. $u^2-v^2=[(b_w\dot x+F)^2-(b_w\dot x-F)^2]/(2b_w)=2F\dot x$이고, 나머지는 전부 여기서 따라 나온다.
+>
+> - **예**: $\dot x=0.05\,\mathrm{m/s}$, $F=1\,\mathrm{N}$, $b_w=0.8$의 대상 쌍. $u=0.822$, $v=-0.759$이고 $\tfrac12(u^2-v^2)=0.050\,\mathrm{W}=F\dot x$이므로, $50\,\mathrm{ms}$ 채널은 이제 에너지를 만들어 내는 대신 비행 중에 담고 있다. 이 항등식을 임의의 일정 지연에 대한 수동성으로 바꾸는 망원 합 논증은 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]이고 여기서 되풀이하지 않는다.
+> - **비예**: $\dot x$와 $F$를 같은 채널로 보내고 울림이 멎을 때까지 댐핑을 더하는 것. 그것은 §4의 해법이 아니라 §4의 문제다. 보장이 당신이 맞춰 튜닝한 지연에 조건부인데, wave variable은 $T_d$에 대해 무조건이다.
+> - **비예**: $b_w$를 장치의 물리적 댐핑으로 읽는 것. 그것은 *선택*이다. 하드웨어의 $b=0.8$은 별개의 숫자이고 이 페이지가 마침 그 값을 $b_w$로 골랐을 뿐이다. 다른 $b_w$를 고르면 어떤 기계도 바꾸지 않은 채 촉감이 달라진다.
+> - **왜 중요한가**: "지연이 수동성을 깬다"를 "지연은 수동이고 임피던스 정합을 값으로 치른다"로 바꾼다. 실패가 아니라 설계 거래다. 청구서는 포트에서 $b_w$만큼의 겉보기 댐핑으로 온다. 이 쌍에서 $5\,\mathrm{cm/s}$에 $0.040\,\mathrm{N}$이다. 거기에 임피던스 불일치에서의 wave 반사와 위치 표류가 더해지는데, 채널이 위치가 아니라 속도를 보내기 때문이다. §2의 상충이 이제 정리로 나타난 것이다.
 
 ### 5. 2-port 모델 읽기
 

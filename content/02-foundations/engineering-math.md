@@ -24,6 +24,16 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 > [!note] First pass · 처음이라면
 > This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. The one exception is §10, the notation dictionary: skim it once and the rest of the track costs less.
 
+### Homework diagram · 과제가 그릴 그림
+
+This page is a reference, but it owns one object — plant **P4**, the leaky heater $\dot x=-x+u$ of §8 — and one drawing of it. The problem set asks for the same drawing.
+
+**The loop, left to right.** Start with the command $u$ entering from the left as an arrow labelled $u=1$. It meets a **summing junction** — a small circle with two inputs — whose second input arrives from below. Write a $+$ beside the $u$ arrow and a $-$ beside the other, because the sign at the junction, not the sign inside a box, is what makes this a *negative* feedback loop. The junction's output leaves to the right and is labelled $\dot x$: name it on the drawing, because the whole picture is the sentence "the sum *is* the derivative". That arrow enters a box marked $\int$ or $1/s$ (§9 says why those are the same box), and the box's output is $x$, the temperature error, which is the only state on the page. Carry $x$ to the right edge as the output, then tap the same line and route it down and back to the junction's lower input with a gain block marked $1$ on the way — the unit gain is drawn, not omitted, so that when the control track replaces it with $K$ the picture does not change shape.
+
+**What to write on the drawing.** Three annotations, all readable straight off the loop. At $t=0$ with $x=0$, the junction outputs $\dot x=1$, so mark the initial slope as $1$ per second. Draw the tangent of that slope from the origin in a small inset of $x$ against $t$; it crosses the steady value $x=1$ at $t=1\,\mathrm{s}$, which is the time constant, and the true curve $x=1-e^{-t}$ passes below it. On the same inset put four points and nothing else: the exact $0.095$ at $t=0.1$ and $0.181$ at $t=0.2$, and the forward-Euler $0.10$ and $0.19$ at the same two instants, each Euler point drawn *above* its exact partner. That gap, not the curve, is the figure's argument.
+
+**The one thing the drawing must not contain.** No disturbance arrow. **P4** carries a $d$ that enters the same summing junction as $u$, and this page sets $d=0$; when [[02-foundations/rl-basics|7. RL Basics]] and the control track draw the same loop they add that third input, and the difference between the two pictures is exactly what those pages are about.
+
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
 
 - The **derivative** $f'$ is a new function that gives, at each point $x$, the instantaneous
@@ -636,6 +646,16 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 
 > [!note] 처음이라면 · First pass
 > 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 §10 표기법 사전이다: 한 번 훑어 두면 나머지 트랙이 싸진다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+이 페이지는 참고서지만 대상 하나를 가진다. §8의 새는 히터 $\dot x=-x+u$, 즉 장치 **P4**이고, 그것을 그린 그림도 하나다. 과제가 같은 그림을 요구한다.
+
+**루프, 왼쪽에서 오른쪽으로.** 왼쪽에서 들어오는 화살표 $u=1$로 시작한다. 이것이 **합산점** — 입력 둘을 가진 작은 원 — 을 만나고, 둘째 입력은 아래에서 올라온다. $u$ 화살표 옆에 $+$, 다른 쪽에 $-$를 쓴다. 이것을 *음*의 피드백 루프로 만드는 것은 상자 안의 부호가 아니라 합산점의 부호이기 때문이다. 합산점의 출력은 오른쪽으로 나가고 이름은 $\dot x$다. 그림 위에 그 이름을 반드시 적는다. 이 그림 전체가 "합이 곧 미분이다"라는 한 문장이기 때문이다. 그 화살표가 $\int$ 또는 $1/s$라고 쓴 상자로 들어가고(둘이 왜 같은 상자인지는 §9가 말한다), 상자의 출력이 $x$, 곧 온도 오차이며 이 페이지의 유일한 상태다. $x$를 오른쪽 끝까지 출력으로 끌고 간 다음, 같은 선을 따 내려 이득 블록 $1$을 거쳐 합산점의 아래 입력으로 되돌린다. 이득 $1$을 생략하지 않고 그리는 이유는, 제어 트랙이 그것을 $K$로 바꿀 때 그림의 모양이 달라지지 않게 하기 위해서다.
+
+**그림에 적을 것.** 주석 셋이고 셋 다 루프에서 바로 읽힌다. $t=0$, $x=0$에서 합산점의 출력은 $\dot x=1$이므로 초기 기울기를 초당 $1$로 표시한다. $x$ 대 $t$의 작은 삽도에 그 기울기의 접선을 원점에서 그으면 $t=1\,\mathrm{s}$에서 정상값 $x=1$을 지나고, 이것이 시정수다. 참 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 같은 삽도에 점 넷만 찍는다. $t=0.1$과 $0.2$에서 정확값 $0.095$와 $0.181$, 같은 두 순간의 전진 오일러 $0.10$과 $0.19$이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 이 그림의 논증이다.
+
+**그림에 들어가면 안 되는 것 하나.** 외란 화살표는 없다. **P4**는 $u$와 같은 합산점으로 들어오는 $d$를 가지고 있고 이 페이지는 $d=0$으로 둔다. [[02-foundations/rl-basics|7. RL 기초]]와 제어 트랙이 같은 루프를 그릴 때 그 셋째 입력을 더하며, 두 그림의 차이가 정확히 그 페이지들의 주제다.
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
 

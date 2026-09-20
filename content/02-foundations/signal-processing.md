@@ -25,6 +25,18 @@ functions.
 > [!note] First pass · 처음이라면
 > Read §1, §2 — the sampling contract and aliasing are what actually bite — then §6 for the field habits. §3 to §5 are the machinery; open them when a paper does something in the frequency domain.
 
+### Homework diagram · 과제가 그릴 그림
+
+The object is plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the haptic handle, running on its $1\,\mathrm{kHz}$ servo. The problem set asks for this drawing.
+
+**The signal path, as four blocks in a row.** From the left: the handle, giving the continuous position $x(t)$; an **ideal sampler**, drawn as a switch that closes for an instant every $T=10^{-3}\,\mathrm{s}$; the sequence $x[n]=x(nT)$; a **zero-order hold**, drawn as a box whose output is a staircase; and the held signal that the wall law actually sees. Under the sampler write $f_s=1000\,\mathrm{Hz}$ and Nyquist $500\,\mathrm{Hz}$. Under the hold write the one thing the block does: it holds $x[n]$ constant on $[nT,\ (n+1)T)$ and then jumps.
+
+**The time plot underneath, all three curves on one axis.** Horizontal axis: time, about $8\,\mathrm{ms}$ so that eight ticks fit. Draw $x(t)$ as a smooth curve rising through the wall position. Put a dot on it at each tick — those are $x[n]$, and nothing between them exists for the controller. Then draw the ZOH staircase over the same axis: each tread flat at the height of the *previous* dot. Shade the sliver between the smooth curve and the staircase on one tread and label it: the hold is late by half a sample on average, $T/2 = 0.5\,\mathrm{ms}$, and §5 is where that half-sample becomes a phase lag in a loop. Draw the wall $x_w=0.030\,\mathrm{m}$ as a horizontal dashed line across all three, and circle the first tread whose height is above it — the controller's contact begins at a tick, never at the true crossing.
+
+**The vertical axis has its own grid, and that is the second lesson.** Draw faint horizontal gridlines spaced by one encoder count, $\Delta x = r_m\,2\pi/N = 0.010\cdot2\pi/1024 = 61.4\,\mu\mathrm{m}$, and redraw the dots snapped onto the nearest gridline. Now the figure has two step sizes at right angles: $T$ along time, $\Delta x$ along space, one set by the clock and one by the encoder. Label them so they cannot be confused — this is exactly the confusion the problem set's third item is built to catch. Write beside the grid what one count costs in force on this wall: $k_w\,\Delta x = 400\times61.4\,\mu\mathrm{m} = 0.025\,\mathrm{N}$, the smallest force step the device can command inside the wall.
+
+**One number where the two grids meet.** At the bottom write the handle speed at which exactly one new count appears per tick, $\Delta x/T = 61.4\,\mathrm{mm/s}$. Slower than that and some ticks report *no* motion at all, so a velocity estimated by differencing positions reads zero and then jumps — the quantization noise that §4's filtering section exists to handle, and the reason $30\,\mathrm{Hz}$ contact at $33.3$ samples per cycle can still be reconstructed badly even though the sampling theorem is satisfied with room to spare.
+
 ### 1. Signals, systems, and convolution
 
 - A **system** $T$ is a rule that turns an input sequence $x[n]$ into an output sequence
@@ -379,6 +391,18 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1, §2 — 실제로 무는 것은 샘플링 계약과 에일리어싱이다 — 그다음 §6의 현장 습관. §3~§5는 기계장치이고, 논문이 주파수 영역에서 무언가 할 때 펴라.
+
+### 과제가 그릴 그림 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 곧 $1\,\mathrm{kHz}$ 서보로 도는 햅틱 핸들이다. 과제가 이 그림을 요구한다.
+
+**신호 경로, 한 줄에 놓인 블록 넷.** 왼쪽부터: 연속 위치 $x(t)$를 내는 핸들, $T=10^{-3}\,\mathrm{s}$마다 순간적으로 닫히는 스위치로 그린 **이상 샘플러**, 수열 $x[n]=x(nT)$, 출력이 계단인 상자로 그린 **영차 홀드**, 그리고 벽 법칙이 실제로 보는 유지된 신호. 샘플러 아래에 $f_s=1000\,\mathrm{Hz}$와 나이퀴스트 $500\,\mathrm{Hz}$를 쓴다. 홀드 아래에는 그 블록이 하는 일 하나만 쓴다. $x[n]$을 $[nT,\ (n+1)T)$ 동안 일정하게 유지하고 그다음 튄다.
+
+**그 아래 시간 그림, 곡선 셋을 축 하나에.** 가로축은 시간이고 눈금 여덟 개가 들어가도록 약 $8\,\mathrm{ms}$. $x(t)$를 벽 위치를 가로지르며 올라가는 매끄러운 곡선으로 그린다. 눈금마다 곡선 위에 점을 찍는다. 그것이 $x[n]$이고, 제어기에게 그 사이는 존재하지 않는다. 그다음 같은 축 위에 ZOH 계단을 그린다. 각 디딤판은 *직전* 점의 높이에서 평평하다. 디딤판 하나에서 매끄러운 곡선과 계단 사이의 조각을 칠하고 이름을 붙인다. 홀드는 평균 반 샘플, $T/2 = 0.5\,\mathrm{ms}$만큼 늦고, 그 반 샘플이 루프 안에서 위상 지연이 되는 곳이 §5다. 벽 $x_w=0.030\,\mathrm{m}$을 셋 모두를 가로지르는 수평 점선으로 긋고, 그보다 높은 첫 디딤판에 동그라미를 친다. 제어기의 접촉은 언제나 눈금에서 시작하지 참된 교차점에서 시작하지 않는다.
+
+**세로축에도 자기 격자가 있고, 그것이 둘째 교훈이다.** 엔코더 한 카운트 $\Delta x = r_m\,2\pi/N = 0.010\cdot2\pi/1024 = 61.4\,\mu\mathrm{m}$ 간격으로 흐린 수평 격자선을 긋고, 점들을 가장 가까운 격자선에 스냅해 다시 찍는다. 이제 그림에는 직각으로 만나는 두 스텝이 있다. 시간을 따라 $T$, 공간을 따라 $\Delta x$이고, 하나는 시계가 하나는 엔코더가 정한다. 둘을 혼동할 수 없도록 이름을 붙인다. 과제 3번이 잡으려고 만든 혼동이 정확히 이것이다. 격자 옆에는 이 벽에서 한 카운트가 힘으로 얼마인지 적는다. $k_w\,\Delta x = 400\times61.4\,\mu\mathrm{m} = 0.025\,\mathrm{N}$, 벽 안에서 이 장치가 명령할 수 있는 가장 작은 힘 단위다.
+
+**두 격자가 만나는 숫자 하나.** 맨 아래에 눈금마다 정확히 새 카운트 하나가 생기는 핸들 속도 $\Delta x/T = 61.4\,\mathrm{mm/s}$를 쓴다. 그보다 느리면 어떤 눈금은 움직임을 *전혀* 보고하지 않으므로, 위치를 차분해 얻은 속도가 0이었다가 튄다. §4의 필터링 절이 존재하는 이유인 양자화 잡음이고, 한 주기에 $33.3$ 샘플이 들어가 샘플링 정리를 여유 있게 만족하는 $30\,\mathrm{Hz}$ 접촉조차 재구성이 나쁠 수 있는 이유다.
 
 ### 1. 신호, 시스템, 합성곱
 

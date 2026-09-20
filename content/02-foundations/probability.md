@@ -24,6 +24,18 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 > [!note] First pass · 처음이라면
 > Read §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. Leave §5 until you reach state estimation; it will make more sense there.
 
+### Homework diagram · 과제가 그릴 그림
+
+The object is plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a wall believed to be $10\,\mathrm{cm}$ away with variance $4$, and a range sensor of variance $1$ reading $12$. The problem set asks for this drawing.
+
+**Three curves on one axis.** Horizontal axis: distance $x$ in centimetres, from about $6$ to $16$. Draw the **prior** $\mathcal{N}(10,\,4)$ centred at $10$, with its inflection points marked at $10\pm2$ so the width on the page *is* the standard deviation. Draw the **likelihood** $\mathcal{N}(12,\,1)$ as a function of $x$, centred at $12$ and half as wide, marked at $12\pm1$. Draw them to a common vertical scale so that the narrower curve is visibly the taller one — peak heights $0.199$ and $0.399$ — because that height ratio is the whole reason the answer moves toward the sensor.
+
+**The posterior, and where it must land.** Draw the third curve centred at $11.6$ with variance $0.8$, so its standard deviation is $\sqrt{0.8}=0.894$ and its peak is $0.446$. Two checks belong on the drawing, written as short notes. It is *between* the two centres, not outside them, and nearer the sensor. And it is **narrower than either input** — $0.894$ against $2$ and $1$ — which is the counter-intuitive part: draw it visibly thinner than the likelihood, or the figure has told a lie about what fusion does.
+
+**The gain, as a labelled segment.** On the axis, mark the distance from $10$ to $12$ and label it the **innovation**, $z-\hat x^-=2$. Then mark the sub-segment from $10$ to $11.6$ and label it $K\cdot(z-\hat x^-)=0.8\times2=1.6$. Write $K=P^-/(P^-+R)=4/5=0.8$ beside it, and read the figure aloud once: the gain is the *fraction of the innovation you are willing to walk*, and nothing else. In the margin, draw the same segment for a bad sensor, $R=100$, where $K=0.04$ moves the estimate only to $10.08$ — a mark almost on top of the prior.
+
+**The time axis underneath, which the problem set extends.** Below the distribution plot, draw a horizontal time axis with three measurement ticks and, between the second and third, one *predict* step. At each tick draw a vertical error bar for the current $P$: $4$, then $0.8$ after $z_1=12$, then $0.444$ after $z_2=11$, then widening to $1.444$ across the predict, then $0.591$ after $z_3=13$. The bars shrink at every correction and grow at the prediction, and that sawtooth is the Kalman filter as a picture. Mark the one danger the problem set ends on with a dashed bar: a *wrong* wall at $20$ after the first update drags the estimate to $\approx15.3$ while the bar stays just as short — confident and wrong.
+
 ### 1. The core language
 
 - **A probability space** is the object every statement on this page lives in. It has three named parts. The **sample space** $\Omega$ is the set of all possible outcomes (for one die, $\{1,\dots,6\}$). An **event** $A \subseteq \Omega$ is a set of outcomes you can ask about ("even" is $\{2,4,6\}$; set notation is in [[02-foundations/engineering-math|0.5 §10]]). The **probability measure** $P$ assigns each event a number. $P$ must satisfy the three **Kolmogorov axioms**:
@@ -578,6 +590,18 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 > [!note] 처음이라면 · First pass
 > 먼저 §1, §2, 그다음 §3 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5는 상태 추정에 닿을 때까지 미뤄라 — 거기서 더 잘 읽힌다.
 
+### 과제가 그릴 그림 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**다. 벽이 $10\,\mathrm{cm}$ 앞에 있다고 분산 $4$로 믿고 있고, 분산 $1$짜리 거리 센서가 $12$를 읽는다. 과제가 이 그림을 요구한다.
+
+**축 하나 위의 곡선 셋.** 가로축은 거리 $x$, 단위는 센티미터이고 대략 $6$부터 $16$까지. **사전분포** $\mathcal{N}(10,\,4)$을 $10$을 중심으로 그리고 변곡점을 $10\pm2$에 표시한다. 지면 위의 폭이 곧 표준편차가 되도록. **우도** $\mathcal{N}(12,\,1)$을 $x$의 함수로 $12$를 중심에, 폭은 절반으로 그리고 $12\pm1$을 표시한다. 세로 축척을 공통으로 써서 좁은 곡선이 눈에 띄게 높아 보이게 한다. 봉우리 높이가 $0.199$와 $0.399$이고, 답이 센서 쪽으로 움직이는 이유가 전부 그 높이 비율이기 때문이다.
+
+**사후분포, 그리고 그것이 놓여야 할 자리.** 셋째 곡선을 중심 $11.6$, 분산 $0.8$로 그린다. 표준편차는 $\sqrt{0.8}=0.894$, 봉우리는 $0.446$이다. 그림 위에 짧은 주석으로 확인할 것이 둘이다. 두 중심의 바깥이 아니라 *사이*에 있고 센서 쪽에 더 가깝다. 그리고 **어느 입력보다도 좁다** — $2$와 $1$에 대해 $0.894$ — 이것이 직관에 어긋나는 대목이다. 우도보다 눈에 띄게 가늘게 그려라. 그러지 않으면 그림이 융합이 하는 일에 대해 거짓말을 한 것이다.
+
+**이득, 이름 붙인 선분으로.** 축 위에 $10$에서 $12$까지의 거리를 표시하고 **혁신**(innovation) $z-\hat x^-=2$라고 쓴다. 그다음 $10$에서 $11.6$까지의 부분 선분을 표시하고 $K\cdot(z-\hat x^-)=0.8\times2=1.6$이라 쓴다. 옆에 $K=P^-/(P^-+R)=4/5=0.8$을 적고 그림을 한 번 소리 내어 읽는다. 이득은 *혁신 중 걸어갈 용의가 있는 비율*이고 그 이상은 아니다. 여백에는 나쁜 센서 $R=100$의 같은 선분을 그린다. $K=0.04$라 추정이 $10.08$까지만 움직이고, 표시는 사전분포 거의 위에 겹친다.
+
+**아래의 시간축, 과제가 이어 가는 부분.** 분포 그림 아래에 가로 시간축을 긋고 측정 눈금 셋을 찍은 뒤 둘째와 셋째 사이에 *예측* 스텝 하나를 넣는다. 눈금마다 그때의 $P$를 세로 오차 막대로 그린다. $4$, $z_1=12$ 뒤 $0.8$, $z_2=11$ 뒤 $0.444$, 예측을 지나며 $1.444$로 넓어지고, $z_3=13$ 뒤 $0.591$. 보정마다 막대가 줄고 예측에서 늘어난다. 그 톱니가 칼만 필터를 그림으로 옮긴 것이다. 과제가 끝나는 지점의 위험 하나를 점선 막대로 표시한다. 첫 갱신 뒤 $20$에 있는 *틀린* 벽은 추정을 $\approx15.3$까지 끌고 가면서 막대는 그대로 짧다. 확신하고 틀린 것이다.
+
 ### 1. 핵심 언어
 
 - **확률 공간은** 이 페이지의 모든 명제가 사는 대상이고, 이름 붙은 세 부분으로 이루어진다. **표본 공간** $\Omega$는 가능한 모든 결과의 집합이다(주사위 하나면 $\{1,\dots,6\}$). **사건** $A \subseteq \Omega$는 물어볼 수 있는 결과들의 집합이다("짝수"는 $\{2,4,6\}$; 집합 표기는 [[02-foundations/engineering-math|0.5 §10]]). **확률 측도** $P$는 각 사건에 수 하나를 배정한다. $P$는 세 가지 **콜모고로프 공리를** 만족해야 한다:
@@ -1100,5 +1124,7 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
 > 1. 사전 10(폭 2), 우도 12(폭 1), 사후는 12 쪽.
 > 2. $K=0.8$, $11.6$, $P=0.8$. 둘째 $K=0.444$, $11.333$, $P=0.444$. 예측 $12.333$, $P=1.444$. 셋째 $K=0.591$, $12.727$, $P=0.591$.
 > 3. 빈칸은 영어 해. 첫 갱신 뒤 틀린 벽 20 cm를 같은 $R=1$로 넣으면 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. [[04-robotics/state-estimation-slam|3]]이 이름 붙이는 연관 실패다.
+
+### 로보틱스 다리 · Robotics bridge
 
 가우시안 조건화와 재귀 추정은 [[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM]]에서 로봇의 belief가 된다.

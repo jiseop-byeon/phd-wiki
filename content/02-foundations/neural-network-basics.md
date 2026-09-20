@@ -27,6 +27,18 @@ already know** — matrix multiplication and derivatives — wearing unfamiliar 
 > [!note] First pass · 처음이라면
 > The shortest page in the track, and the one to read straight through. Twenty minutes here is what makes pages 1 to 9 readable at all; there is nothing to defer.
 
+### Homework diagram · 과제가 그릴 그림
+
+The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the drawing is a vocabulary chart: every word this page teaches has a place on it. The problem set asks for the same drawing. §2 prints the finished figure — draw yours before looking at it.
+
+**The graph.** Two circles in a left column, three in a middle column, one on the right. Every left circle joins every middle circle (six edges), and every middle circle joins the output (three edges) — nine edges, fully connected, which is what the word *dense* or *fully connected* names. Write the value inside each circle: $1$ and $2$ on the left, $1$, $2$ and $3$ in the middle, $0.5$ on the right.
+
+**The words, hung on the parts they name.** Bracket the left column and write *input layer*, the middle column *hidden layer*, the right circle *output*. Bracket the six edges between column one and two and label the bundle $W_1$, shape $3\times2$; bracket the three edges to the output and label it $W_2$, shape $1\times3$. Write the individual weights on the edges — $W_1$'s rows are $(1,0)$, $(0,1)$, $(1,1)$ and $W_2$ is $(1,-1,0.5)$ — so that one edge carries one *weight* and the bundle is one *layer*: the drawing is what makes those two words different. On each middle circle write $\sigma=\mathrm{ReLU}$ and note that the catalog sets every *bias* to zero, so no bias stub is drawn; put the stubs in faintly anyway and label them $b_1$, $b_2$, because the parameter count below changes by exactly those four.
+
+**Two arithmetic checks written on the figure.** First, the output: $1\cdot1 + (-1)\cdot2 + 0.5\cdot3 = 0.5$, written along the three edges that produce it, so that "a neuron is a weighted sum" is a line on the page and not a sentence. Second, the parameter count beside the whole graph: $6 + 3 = 9$ with the catalog's biases off, and $9 + 4 = 13$ with them on. Circle the $9$, since that is the number the problem set asks for.
+
+**One mark that is not in §2's figure.** Beside the middle circles write the ReLU mask $(1,1,1)$ — every pre-activation here is positive, so ReLU is doing nothing at this input — and beside it, in brackets, what the figure would look like if the third pre-activation were $-3$: that circle carrying $0$, its outgoing edge greyed out, and $W_{2,3}$ contributing nothing. That greyed-out edge is the difference between a *network* and a stack of matrices, and it is the last item of the problem set.
+
 ### 1. A neural network is a stack of matrix multiplies
 
 Start with something familiar: a matrix $W$ maps a vector to another vector, $y = Wx$.
@@ -275,13 +287,13 @@ gradient step are [[02-foundations/calculus-backprop|2. Calculus & Backpropagati
 those steps converge is [[02-foundations/optimization|4. Optimization]]; how to read the
 numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practice & Evaluation]].
 
-### After reading · 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
-- [ ] Write a two-layer network as matrices and say what a layer, weight, bias and activation are · 2층 네트워크를 행렬로 쓰고 층·가중치·편향·활성함수가 무엇인지 말할 수 있다
-- [ ] Say why a nonlinearity is required between layers · 층 사이에 비선형성이 왜 필요한지 말할 수 있다
-- [ ] Count a network's parameters, and separate parameters from hyperparameters · 네트워크의 파라미터 수를 세고, 파라미터와 하이퍼파라미터를 구분할 수 있다
-- [ ] Convert dataset size, batch size and epochs into a number of updates · 데이터 수·배치 크기·에포크를 갱신 횟수로 환산할 수 있다
-- [ ] Read "pretrained backbone, fine-tuned head, 300 epochs" without stopping · "사전학습 백본, 파인튜닝된 헤드, 300 에포크"를 멈추지 않고 읽을 수 있다
+- [ ] Write a two-layer network as matrices and say what a layer, weight, bias and activation are
+- [ ] Say why a nonlinearity is required between layers
+- [ ] Count a network's parameters, and separate parameters from hyperparameters
+- [ ] Convert dataset size, batch size and epochs into a number of updates
+- [ ] Read "pretrained backbone, fine-tuned head, 300 epochs" without stopping
 
 ## 한국어
 
@@ -294,6 +306,18 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 
 > [!note] 처음이라면 · First pass
 > 트랙에서 가장 짧고, 순서대로 끝까지 읽으면 되는 유일한 페이지다. 여기 쓰는 20분이 1~9번을 읽히게 만든다. 미뤄 둘 절이 없다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 그림은 어휘 도표다. 이 페이지가 가르치는 단어마다 그림 위에 자리가 하나씩 있다. 과제가 같은 그림을 요구한다. §2에 완성된 그림이 있으니, 보기 전에 먼저 그려라.
+
+**그래프.** 왼쪽 열에 동그라미 둘, 가운데 열에 셋, 오른쪽에 하나. 왼쪽 동그라미마다 가운데 동그라미 전부와 이어지고(변 여섯), 가운데 동그라미마다 출력과 이어진다(변 셋). 변이 아홉이고 빠짐없이 이어진 이 상태를 *dense* 또는 *완전 연결*이라 부른다. 각 동그라미 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, 오른쪽은 $0.5$.
+
+**단어들을, 그것이 가리키는 부분에.** 왼쪽 열을 묶어 *입력층*, 가운데 열을 *은닉층*, 오른쪽 동그라미를 *출력*이라 쓴다. 1열과 2열 사이 변 여섯을 묶어 $W_1$, 모양 $3\times2$라 적고, 출력으로 가는 변 셋을 묶어 $W_2$, 모양 $1\times3$이라 적는다. 변 위에는 개별 가중치를 쓴다. $W_1$의 행은 $(1,0)$, $(0,1)$, $(1,1)$이고 $W_2$는 $(1,-1,0.5)$다. 그러면 변 하나가 *가중치* 하나이고 묶음 하나가 *층* 하나가 된다. 두 단어가 어떻게 다른지를 만드는 것이 이 그림이다. 가운데 동그라미마다 $\sigma=\mathrm{ReLU}$를 쓰고, 카탈로그가 *편향*을 전부 0으로 두므로 편향 가지는 그리지 않는다고 적는다. 그래도 가지를 흐리게 그려 $b_1$, $b_2$라 이름 붙인다. 아래의 파라미터 수가 정확히 그 넷만큼 달라지기 때문이다.
+
+**그림 위에 적을 산술 확인 둘.** 첫째, 출력이다. $1\cdot1 + (-1)\cdot2 + 0.5\cdot3 = 0.5$을 그 값을 만든 변 셋을 따라 적는다. 그러면 "뉴런은 가중합이다"가 문장이 아니라 지면 위의 한 줄이 된다. 둘째, 그래프 옆의 파라미터 수다. 카탈로그처럼 편향을 끄면 $6 + 3 = 9$, 켜면 $9 + 4 = 13$이다. $9$에 동그라미를 친다. 과제가 묻는 수가 그것이다.
+
+**§2의 그림에는 없는 표시 하나.** 가운데 동그라미 옆에 ReLU 마스크 $(1,1,1)$을 적는다. 여기서는 활성 전 값이 전부 양수라 ReLU가 아무 일도 하지 않는다. 그 옆 괄호 안에, 셋째 활성 전 값이 $-3$이었다면 그림이 어땠을지를 적는다. 그 동그라미는 $0$을 담고, 거기서 나가는 변은 흐려지고, $W_{2,3}$은 아무것도 기여하지 않는다. 흐려진 그 변이 *네트워크*와 행렬 더미의 차이이고, 과제의 마지막 항목이다.
 
 ### 1. 신경망은 행렬곱을 쌓은 것이다
 
@@ -537,3 +561,11 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P1** (편향 0, ReLU). 손계산�
 [[02-foundations/calculus-backprop|2. 미적분과 역전파]], 그 스텝이 수렴하는 이유는
 [[02-foundations/optimization|4. 최적화]], 논문이 그것에 대해 보고하는 숫자를 읽는 법은
 [[02-foundations/ml-practice|9. ML 실무와 평가]]에 있다.
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- [ ] 2층 네트워크를 행렬로 쓰고 층·가중치·편향·활성함수가 무엇인지 말할 수 있다
+- [ ] 층 사이에 비선형성이 왜 필요한지 말할 수 있다
+- [ ] 네트워크의 파라미터 수를 세고, 파라미터와 하이퍼파라미터를 구분할 수 있다
+- [ ] 데이터 수·배치 크기·에포크를 갱신 횟수로 환산할 수 있다
+- [ ] "사전학습 백본, 파인튜닝된 헤드, 300 에포크"를 멈추지 않고 읽을 수 있다

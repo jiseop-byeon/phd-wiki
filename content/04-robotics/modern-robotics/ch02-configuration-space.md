@@ -143,6 +143,19 @@ A **constraint** on a mechanism is a condition its motion must satisfy. Two kind
 **Wiki connections**: C-space is the "state" half of every
 [[02-foundations/rl-basics|MDP]] for robots; VLA action spaces are coordinates on it.
 
+### Self-check
+
+1. How many numbers describe the configuration of a planar differential-drive robot, and what is the constraint?
+2. Use Grübler's formula on a planar slider-crank (4 links, 3 revolute + 1 prismatic joint).
+3. Why does the 2R arm's C-space being a torus $T^2$ rather than the plane $\mathbb{R}^2$ cause trouble for learned angle regression?
+4. P2 is at $\theta = (45°, 0°)$. Compute $d(\theta)$ for the panel and say what the arm is doing.
+
+> [!tip]- Answers
+> 1. Three for the chassis: $(x, y, \theta)$ (five if the two wheel rolling angles are included, as MR §13.3 does). The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable chassis configurations — the robot can still reach any pose, just not by any path.
+> 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. The prismatic joint contributes its one freedom exactly like a revolute one; what matters to the count is $f_i$, not the joint's kind.
+> 3. $359°$ and $1°$ are neighbours on the circle but far apart in Euclidean distance, so a naive MSE regression is penalized enormously at the wrap point and learns a discontinuous target ([[02-foundations/se3-geometry|SE(3) §2]]).
+> 4. The arm is straight at $45°$, so the tip is at $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$ and $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$ — it is $41.4\,\mathrm{cm}$ inside the panel, the deepest point of the lens along the line $\theta_2 = 0$.
+
 ### Problem set · 과제
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2**, but the panel is rebuilt 0.5 m further out: the wall is now $x \ge 1.5$.
@@ -277,18 +290,18 @@ $$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta
 **위키 연결**: C-space는 로봇 [[02-foundations/rl-basics|MDP]]의 "상태" 절반이고, VLA 행동
 공간은 그 위의 좌표다.
 
-### Self-check · 스스로 점검
+### 스스로 점검
 
-1. How many numbers describe the configuration of a planar differential-drive robot, and what is the constraint? · 평면에서 구동되는 차동 구동(differential-drive) 로봇의 컨피규레이션은 몇 개의 숫자로 기술되고, 제약은 무엇인가?
-2. Use Grübler's formula on a planar slider-crank (4 links, 3 revolute + 1 prismatic joint). · 그뤼블러 공식으로 평면 슬라이더-크랭크(링크 4, 회전관절 3 + 직동관절 1)의 자유도를 계산하라.
-3. Why does the 2R arm's C-space being a torus $T^2$ rather than the plane $\mathbb{R}^2$ cause trouble for learned angle regression? · 2R 팔의 C-space가 평면 $\mathbb{R}^2$가 아니라 원환면 $T^2$라는 사실이 학습(각도 회귀)에서 왜 문제가 되는가?
-4. P2 is at $\theta = (45°, 0°)$. Compute $d(\theta)$ for the panel and say what the arm is doing. · P2가 $\theta = (45°, 0°)$에 있다. 패널에 대한 $d(\theta)$를 계산하고 팔이 무엇을 하고 있는지 말하라.
+1. 평면 차동 구동(differential-drive) 로봇의 컨피규레이션은 숫자 몇 개로 기술되고, 제약은 무엇인가?
+2. 그뤼블러 공식으로 평면 슬라이더-크랭크(링크 4, 회전관절 3 + 직동관절 1)의 자유도를 계산하라.
+3. 2R 팔의 C-space가 평면 $\mathbb{R}^2$가 아니라 원환면 $T^2$라는 사실이 학습(각도 회귀)에서 왜 문제가 되는가?
+4. P2가 $\theta = (45°, 0°)$에 있다. 패널에 대한 $d(\theta)$를 계산하고 팔이 무엇을 하고 있는지 말하라.
 
-> [!tip]- Answers · 정답
-> 1. Three for the chassis: $(x, y, \theta)$ (five if the two wheel rolling angles are included, as MR §13.3 does). The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable chassis configurations — the robot can still reach any pose, just not by any path. · 차체만 보면 $(x, y, \theta)$ 세 개(MR §13.3처럼 두 바퀴의 회전각까지 넣으면 다섯); 비홀로노믹 제약(옆 미끄럼 불가)이 속도를 제한하지만 도달 가능한 차체 자세는 제한하지 않는다.
-> 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. · $3(4-1-4) + 4 = 1$ 자유도.
-> 3. $359°$ and $1°$ are neighbours on the circle but far apart in Euclidean distance, so a naive MSE regression is penalized enormously at the wrap point and learns a discontinuous target ([[02-foundations/se3-geometry|SE(3) §2]]). · $359°$와 $1°$는 실제로 이웃인데 유클리드 거리로는 멀다 — 순진한 MSE 회귀가 감긴 지점에서 깨진다.
-> 4. The arm is straight at $45°$, so the tip is at $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$ and $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$ — it is $41.4\,\mathrm{cm}$ inside the panel, the deepest point of the lens along the line $\theta_2 = 0$. · 팔이 $45°$로 곧게 펴져 말단이 $(\sqrt2, \sqrt2)$이므로 $d = \sqrt2 - 1 = 0.4142\,\mathrm{m}$ — 패널 안으로 $41.4\,\mathrm{cm}$ 들어가 있고, $\theta_2 = 0$ 선 위에서 렌즈가 가장 깊은 지점이다.
+> [!tip]- 정답
+> 1. 차체만 보면 $(x, y, \theta)$ 세 개다(MR §13.3처럼 두 바퀴의 회전각까지 넣으면 다섯). 비홀로노믹 제약(옆 미끄럼 불가)은 *속도*를 제한할 뿐 도달 가능한 차체 자세를 제한하지 않는다. 어떤 자세에도 갈 수 있고, 다만 아무 경로로나 가지는 못한다.
+> 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. 직동관절도 회전관절과 똑같이 자유도 하나를 보탠다. 계산에 들어가는 것은 관절의 종류가 아니라 $f_i$다.
+> 3. $359°$와 $1°$는 원 위에서 이웃인데 유클리드 거리로는 멀다. 순진한 MSE 회귀는 각이 감기는 지점에서 큰 벌점을 받고 불연속인 목표를 학습하게 된다([[02-foundations/se3-geometry|SE(3) §2]]).
+> 4. 팔이 $45°$로 곧게 펴져 말단이 $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$이므로 $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$다. 패널 안으로 $41.4\,\mathrm{cm}$ 들어가 있고, $\theta_2 = 0$ 선 위에서 렌즈가 가장 깊은 지점이다.
 
 ### 과제 · Problem set
 

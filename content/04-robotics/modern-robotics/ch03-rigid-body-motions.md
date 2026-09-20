@@ -20,6 +20,18 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 This is the longest-feeling chapter of the book, and the one worth ~30% of your total
 study time: every later chapter is this machinery applied. Take it in four steps.
 
+### Homework diagram · 과제가 그릴 그림
+
+One planar figure, drawn once and carried through every section below. The running object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm first, then add three things that are not the arm.
+
+1. **The space frame $\{s\}$** at the origin — $\hat x_s$ right, $\hat y_s$ up, and $\hat z_s$ as a circled dot meaning *out of the page*. Draw the dot, do not leave the third axis implicit: a planar figure that does not declare which way $z$ points makes every sign in this chapter a coin flip.
+2. **The body frame $\{b\}$** at the tip, with $\hat x_b$ along the forearm — that is, along $+\hat y_s$ — so that $\hat y_b$ points along $-\hat x_s$ and $\hat z_b$ is again out of the page. Draw both as short arrows anchored at $(1,1)$, and draw the offset $p = (1,1,0)$ as a dashed arrow from the origin to the tip. Those two items, $R_{sb}$ and $p$, are the whole of $T_{sb}$.
+3. **Two candidate rotation axes**, each a circled dot with a curved arrow around it: one through the origin at $q_1 = (0,0,0)$, one through the elbow at $q_2 = (1,0,0)$. Label both $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$.
+
+Then write, beside the figure and not inside it, the four numbers the chapter keeps apart. For the origin axis: the tip's actual velocity $\hat\omega \times p = (-1, 1, 0)\,\mathrm{m/s}$, against the space twist's linear part $v_s = -\hat\omega \times q_1 = (0,0,0)$. For the elbow axis: tip velocity $\hat\omega \times (p - q_2) = (-1, 0, 0)\,\mathrm{m/s}$, against $v_s = -\hat\omega \times q_2 = (0,-1,0)$. Neither $v_s$ is the tip velocity, and that pair of mismatches is the figure's whole point.
+
+The problem set asks for this same figure and then for the elbow-axis twist.
+
 ### 1. The skew-symmetric bridge: cross products become matrices
 
 For $\omega = (\omega_1, \omega_2, \omega_3)$, define
@@ -151,6 +163,18 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 
 책에서 가장 길게 느껴지는 장이고, 전체 공부 시간의 약 30%를 써도 되는 장이다 —
 이후의 모든 장이 이 기계장치의 응용이기 때문이다. 네 단계로 나눠 잡아라.
+
+### 과제가 그릴 그림 · Homework diagram
+
+평면 그림 하나를 그려 아래 모든 절에서 그대로 쓴다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 먼저 그리고, 팔이 아닌 것 셋을 더한다.
+
+1. **원점의 space 프레임 $\{s\}$** — $\hat x_s$는 오른쪽, $\hat y_s$는 위, $\hat z_s$는 *지면 밖*을 뜻하는 동그라미 친 점으로. 점을 반드시 그린다. 셋째 축이 어디를 향하는지 말하지 않는 평면 그림에서는 이 장의 모든 부호가 동전 던지기가 된다.
+2. **말단의 body 프레임 $\{b\}$** — $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다. 그러면 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 지면 밖이다. 두 축을 $(1,1)$에 붙인 짧은 화살표로 그리고, 오프셋 $p = (1,1,0)$을 원점에서 말단까지의 점선 화살표로 그린다. 이 둘, 즉 $R_{sb}$와 $p$가 $T_{sb}$의 전부다.
+3. **회전축 후보 둘** — 각각 동그라미 친 점과 그 둘레의 굽은 화살표로. 하나는 원점 $q_1 = (0,0,0)$을, 다른 하나는 엘보 $q_2 = (1,0,0)$을 지난다. 둘 다 $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$로 표시한다.
+
+그다음, 이 장이 끝까지 갈라 두는 숫자 넷을 그림 안이 아니라 옆에 적는다. 원점 축: 말단의 실제 속도 $\hat\omega \times p = (-1, 1, 0)\,\mathrm{m/s}$ 대 공간 트위스트의 선형 성분 $v_s = -\hat\omega \times q_1 = (0,0,0)$. 엘보 축: 말단 속도 $\hat\omega \times (p - q_2) = (-1, 0, 0)\,\mathrm{m/s}$ 대 $v_s = -\hat\omega \times q_2 = (0,-1,0)$. 어느 쪽 $v_s$도 말단 속도가 아니며, 이 두 번의 불일치가 그림의 요점 전부다.
+
+과제는 바로 이 그림과 엘보 축 트위스트를 요구한다.
 
 ### 1. 반대칭 다리: 외적이 행렬이 된다
 

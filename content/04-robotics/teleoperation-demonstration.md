@@ -30,6 +30,117 @@ It reads teleoperation as data generation rather than as driving, which is what 
 >
 > 이 페이지는 원격조작을 주로 연구·데이터 수집 시스템으로 다룬다. 물리 장치, 샘플링된 가상 접촉의 안정성, 인간 촉각, 촉각 디스플레이, 실험 설계는 [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]]에서 공부한다. 그중 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|양방향 원격조작]] 페이지가 §2–3이 전제하는 two-port 기반을 제공한다.
 
+### Running object · 이 페이지의 대상
+
+Two copies of **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] — one leader, one follower — with a channel between them and a task at the far end. P3's catalog numbers are used unchanged: $m = 0.04\ \mathrm{kg}$, $b = 0.8\ \mathrm{N\cdot s/m}$, $k_h = 400\ \mathrm{N/m}$, $b_h = 8\ \mathrm{N\cdot s/m}$, capstan $r_m = 0.010$, $r_s = 0.050\ \mathrm{m}$, encoder $N = 1024$ counts/rev. (§4.5's worked example deliberately borrows a *different* capstan device from [[06-research-practice/psychophysics-human-measurement|8. Psychophysics §3]]; when a ratio is quoted below, it is P3's $R = r_s/r_m = 5$.)
+
+Five things this page needs and 0.6 does not supply, frozen here:
+
+| Addition | Value |
+|---|---|
+| **the channel** | a round-trip budget of $150\ \mathrm{ms}$, itemised in the table in §3 — the same $150\ \mathrm{ms}$ §3's worked example already uses |
+| **the environment** | $k_e = 10^4\ \mathrm{N/m}$, the compliantly mounted wall of [[04-robotics/force-compliance-control\|13. Force control §1]] |
+| **the operator** | advances at $v = 50\ \mathrm{mm/s}$; for the energy argument, oscillates at amplitude $A = 2\ \mathrm{mm}$ and $f = 2\ \mathrm{Hz}$ |
+| **the scalings** | motion $s = 10$, force $s_f = 1$ — the default of a rig where nobody chose the second ratio |
+| **the corpus log** | one session: $120$ attempts, $96$ task-successful, $8$ of those discarded for dropout or clipped force, $4.0$ h wall clock. The task has two valid approaches, $-60$ and $+60\ \mathrm{mm}$ of lateral offset into a slot of half-width $10\ \mathrm{mm}$; the successes split $58$ / $38$. Eleven usable episodes contain an off-nominal excursion beyond $10\ \mathrm{mm}$ and a return. |
+
+*Scope: this page teaches teleoperation as an instrument for making data — the two-port description of what the operator feels, why delay breaks the passivity argument and what repairs it, what the mapping and the scalings commit the data to, what the loop's latency budget costs at contact, and which statistics of a corpus support a policy claim. It does not teach controller synthesis for bilateral systems, nor the sampled-data stability of a rendered virtual wall, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]'s Euler lab and is not to be rebuilt here.*
+
+### Homework diagram · 과제가 그릴 그림
+
+Three figures.
+
+**Top — the two-port chain, annotated.** The diagram of §2 redrawn with the four $h$ entries written on it: $h_{11}$ at the human port, $h_{22}$ at the environment port, $h_{12}$ and $h_{21}$ on the two crossing arrows. Mark the one-way delay on **both** rows, and beside the human port write the transmitted impedance $Z_t$ as a formula with the numbers substituted.
+
+**Middle — the energy of one cycle.** A force–displacement plane. Draw $x$ over one cycle on the horizontal axis and the wall's force on the vertical, once with no delay (a straight line through the origin, zero enclosed area) and once with $50\ \mathrm{ms}$ of delay (an ellipse, and it must be traced in the direction that makes the enclosed area energy *into* the leader). Shade the ellipse and write its area in millijoules. Beside it, a much smaller shaded rectangle for what the leader's own damper removes in the same cycle, to the same scale.
+
+**Bottom — the budget as a bar.** One horizontal bar of length $150\ \mathrm{ms}$, divided into its ten named segments with the two network segments shaded differently. Beneath it, a second bar of length $40\ \mathrm{ms}$ — the allowance at $F_{\max} = 20\ \mathrm{N}$ — drawn to the same scale, so the overrun is visible rather than computed.
+
+The problem set asks for the same three figures on a worse network and a slower operator, where one of the three verdicts changes and two do not.
+
+### Worked case · 대상으로 한 번 끝까지
+
+**Step 1 — what the operator feels, as a formula.** With the hybrid two-port of §2 and an environment $F_e = Z_e\dot x_e$, eliminate the environment port: $-\dot x_e = h_{21}\dot x_h + h_{22}Z_e\dot x_e$ gives $\dot x_e = -h_{21}\dot x_h/(1 + h_{22}Z_e)$, and substituting into $F_h = h_{11}\dot x_h + h_{12}F_e$ gives the transmitted impedance
+
+$$Z_t = h_{11} - \frac{h_{12}h_{21}Z_e}{1 + h_{22}Z_e}$$
+
+so $Z_t = Z_e$ for **every** $Z_e$ exactly when $h_{11} = 0$, $h_{22} = 0$ and $h_{12}h_{21} = -1$. Now put three devices through it:
+
+| device | $Z_t$ at $Z_e = 0$ | at $Z_e = 400$ | at $Z_e = 10^4$ | what the operator is told |
+|---|---:|---:|---:|---|
+| ideal | $0$ | $400$ | $10^4$ | the truth |
+| P3 leader, $h_{11} = b = 0.8$ | $0.80$ | $400.80$ | $10000.80$ | free space drags; error $0.20\%$ then $0.008\%$ |
+| force gain $0.5$, $h_{12}h_{21} = -0.5$ | $0$ | $200$ | $5000$ | every wall is half as stiff, at every stiffness |
+| compliant follower, $h_{22} = 1/2000$ | $0$ | $333$ | $1667$ | every wall above $2\ \mathrm{kN/m}$ feels like $2\ \mathrm{kN/m}$ |
+
+Read the second row backwards: the P3 leader's own damping is a $0.040\ \mathrm{N}$ phantom drag at $50\ \mathrm{mm/s}$, felt most where there is nothing to feel and least against the wall. **Transparency is worst in free space**, which is the opposite of the intuition, and it is why a "it feels great on the wall" demonstration proves little. The fourth row is the one to carry: $h_{22}$ **saturates**, $Z_t \to -h_{12}h_{21}/h_{22} = 2000\ \mathrm{N/m}$ however stiff the world gets, so concrete and drywall become the same object.
+
+**Step 2 — the delayed spring, priced in joules.** Let the operator oscillate against the wall, $x = A\sin\omega t$ with $A = 2\ \mathrm{mm}$ and $f = 2\ \mathrm{Hz}$, so $\omega = 12.566\ \mathrm{rad/s}$. The force that arrives has been computed from a position $T_d$ old, $F = -k\,x(t - T_d)$, so the work it does on the leader over one cycle is
+
+$$W_{\text{cycle}} = \oint F\,\mathrm{d}x = -kA^2\omega\!\!\int_0^{2\pi/\omega}\!\!\sin(\omega t - \omega T_d)\cos(\omega t)\,\mathrm{d}t = \pi k A^2\sin(\omega T_d)$$
+
+because the product expands to $\tfrac12\sin(2\omega t - \omega T_d) - \tfrac12\sin(\omega T_d)$ and the first term integrates to zero over a whole period. At $T_d = 0$ this is exactly zero — the spring gives back everything it took, which is what passive means. At $T_d = 50\ \mathrm{ms}$, $\omega T_d = 0.628\ \mathrm{rad} = 36°$ and
+
+$$W_{\text{cycle}} = \pi \times 400 \times (0.002)^2 \times \sin 0.628 = 2.955\ \mathrm{mJ} \quad\text{per cycle, or } 5.91\ \mathrm{mW}$$
+
+The leader's own damper removes $\pi b A^2\omega = 0.126\ \mathrm{mJ}$ in the same cycle — **23.4 times less than the channel puts in**. Setting the two equal gives the largest stiffness the damper can pay for:
+
+$$k_{\text{crit}} = \frac{b\,\omega}{\sin(\omega T_d)} = \frac{0.8 \times 12.566}{0.5878} = 17.1\ \mathrm{N/m}$$
+
+against P3's catalog $k_w = 400\ \mathrm{N/m}$. Two further readings. The worst frequency for a given delay is $\omega T_d = \pi/2$, i.e. $f = 1/(4T_d) = 5\ \mathrm{Hz}$ at $50\ \mathrm{ms}$ — comfortably inside a human's voluntary range, which is why this is not a theoretical concern. And the numbers scale as expected: at $5\ \mathrm{ms}$, $k_{\text{crit}} = 160\ \mathrm{N/m}$; at $10\ \mathrm{ms}$, $80.2$; at $100\ \mathrm{ms}$, $10.6$. This page's problem set reaches $\sim 31\ \mathrm{N/m}$ at $50\ \mathrm{ms}$ by a *different* route — the sampled-data bound $K \le 2b/T_{\text{eff}}$ of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]. Two arguments, one energetic and one sampled, agreeing within a factor of two and both saying the catalog wall is out of reach by more than an order of magnitude.
+
+**Step 3 — the same channel in wave variables.** Take $b = 0.8\ \mathrm{N\cdot s/m}$ as the wave impedance and one operating point, $\dot x = 0.05\ \mathrm{m/s}$ and $F = 2\ \mathrm{N}$. Then $u = (0.8 \times 0.05 + 2)/\sqrt{1.6} = 1.6128$ and $v = (0.8\times 0.05 - 2)/\sqrt{1.6} = -1.5495$, and
+
+$$\tfrac12\left(u^2 - v^2\right) = \tfrac12(2.6011 - 2.4010) = 0.100\ \mathrm{W} = \dot x F$$
+
+exactly, which is the identity the whole argument rests on. The energy the $50\ \mathrm{ms}$ channel is holding at that operating point is $\tfrac12(u^2 + v^2)T_d = 0.125\ \mathrm{J}$, and §3's telescoping integral says it can never return more than that. Compare with Step 2: the same delay that manufactured $5.91\ \mathrm{mW}$ out of a spring now manufactures nothing, at any $T_d$. The price is the $0.8\ \mathrm{N\cdot s/m}$ of wave impedance, which arrives at the human port as exactly the $h_{11}$ term row 2 of Step 1 called a phantom drag — **the repair for Step 2 is paid for in Step 1's currency.**
+
+**Step 4 — what the scalings render.** A leader displacement $\Delta x_l$ becomes a follower displacement $\Delta x_l/s$; the environment answers with $F_e = k_e\Delta x_l/s$; the operator is shown $s_f F_e$. So the stiffness the hand feels is
+
+$$k_{\text{felt}} = \frac{s_f}{s}\,k_e$$
+
+| $s$ | $s_f$ | $k_{\text{felt}}$ against $k_e = 10^4$ | what it is |
+|---:|---:|---:|---|
+| $1$ | $1$ | $10^4$ | transparent |
+| $10$ | $1$ | $10^3$ | this page's frozen rig: a wall ten times too soft |
+| $5$ | $1/5$ | $400$ | one ratio shared: $k_e/s^2$, and $400\ \mathrm{N/m}$ is P3's *virtual* wall |
+| $5$ | $5$ | $10^4$ | transparent again, with the ratios decoupled |
+
+Self-check 5 says the shared ratio divides the felt *force* by five; row 3 says it divides the felt *stiffness* by twenty-five. Both are true and the second is the one that misleads, because a consistently wrong stiffness never announces itself. Meanwhile the frozen rig at $s = 10$ turns a $40\ \mathrm{mm}$ hand motion into $4\ \mathrm{mm}$ of tool and a $1\ \mathrm{mm}$ tremor into $0.1\ \mathrm{mm}$ — and, with $s_f$ set to $10$ instead of $1$, that same tremor would command $k_e \times 10^{-3}/10 = 1.0\ \mathrm{N}$ of extra contact force per millimetre of shake.
+
+**Step 5 — the budget, and what it is allowed to be.** The $150\ \mathrm{ms}$ §3 uses is not a measurement, it is a sum:
+
+| term | ms | share |
+|---|---:|---:|
+| leader sampling + anti-alias filter | 2 | 1.33 % |
+| command encode + packetise | 3 | 2.00 % |
+| network, leader → follower | 55 | 36.67 % |
+| follower decode + control step | 2 | 1.33 % |
+| follower actuator + mechanical rise | 8 | 5.33 % |
+| contact force sense + filter | 5 | 3.33 % |
+| return encode + packetise | 3 | 2.00 % |
+| network, follower → leader | 55 | 36.67 % |
+| leader decode | 2 | 1.33 % |
+| leader amplifier + device rise | 15 | 10.00 % |
+| **round trip** | **150** | |
+
+The ping is the two shaded rows, $110\ \mathrm{ms}$, $73.3\%$ of the total. A paper that reports it alone has hidden $40\ \mathrm{ms}$, which at $50\ \mathrm{mm/s}$ is $2.0\ \mathrm{mm}$ of extra commanded penetration and $20\ \mathrm{N}$ against the $10^4\ \mathrm{N/m}$ wall. Now the allowance, from the task rather than from feel: to keep the contact peak under $F_{\max} = 20\ \mathrm{N}$,
+
+$$T_{\text{rt}} \le \frac{F_{\max}}{k_e\,v} = \frac{20}{10^4 \times 0.050} = 40\ \mathrm{ms}$$
+
+so the rig is over budget by $3.75\times$, and — this is the point of writing it as a sum — **the two network terms cannot be cut to close the gap**: deleting them entirely leaves $40\ \mathrm{ms}$, exactly the allowance and with no margin. The fix has to come from $v$, from a rendered $k$ below $k_e$, or from moving the force loop to the follower, which is §3's list of three moves arriving as arithmetic.
+
+**Step 6 — the corpus, scored before any training.** The session log gives four numbers that an episode count does not.
+
+$$\eta = \frac{88}{120} = 0.733, \qquad c = \frac{4.0 \times 3600}{88} = 164\ \mathrm{s} = 2.73\ \mathrm{min}, \qquad H = -\!\!\sum_j p_j\log_2 p_j = 0.968\ \text{bits}$$
+
+because the yield counts *usable* episodes against *attempts*, the cost divides wall clock by the same usable count, and the mode entropy is taken over the $58/38$ split, $p = (0.604, 0.396)$. Recovery coverage is $11/88 = 0.125$. Read them:
+
+- The naive cost, wall clock over attempts, is $120\ \mathrm{s}$ — understating the real figure by $1.36\times$. At the true $164\ \mathrm{s}$, a $500$-episode corpus is $22.7$ hours of operator time.
+- The two modes are at $\pm 60\ \mathrm{mm}$ and the MSE-optimal single action is their mean, $-12.5\ \mathrm{mm}$. The nearer mode is $47.5\ \mathrm{mm}$ away and the slot half-width is $10\ \mathrm{mm}$, so a unimodal regression's output misses the slot by $37.5\ \mathrm{mm}$ — **it is not a worse version of either demonstration, it is not a demonstration at all.**
+- And balancing the corpus does not help. At $48/48$, $H$ rises to the full $1.000$ bits and the optimal single action moves to $0\ \mathrm{mm}$, $60\ \mathrm{mm}$ from either mode: *worse*. Entropy measures balance, not separability, so it has to be reported with the mode locations or it argues for the wrong fix.
+- One usable episode in eight contains a recovery. A policy that goes off-distribution will have seen one demonstrated recovery for every eight nominal runs, which is the number §6's compounding-error bullet is really about.
+
 ### 1. Teleoperation is a data-generation tool
 
 The old reading of teleoperation is "driving a robot from a distance", and it is still
@@ -71,6 +182,16 @@ channel-induced instability risk. It does not guarantee that every local control
 Model the whole system as a **two-port network**: one port faces the human, one faces the
 environment, and each port has a velocity and a force.
 
+> **Two-port model, defined.** A **two-port model** is a *description of a system that exchanges power at exactly two places*, as one $2\times2$ matrix relating the four port variables. It is not a block diagram, not a controller and not a stability test. Three defining conditions. There are exactly **two ports**, each carrying a force and a velocity whose product is the power crossing it — so the model says nothing about a third interaction, and a gripper resting on a table is outside it. The relation is **linear and time-invariant**, hence written in the frequency domain ([[02-foundations/signal-processing|6. Signal Processing §1]]), so a paper reporting it has linearised somewhere and should say where. And the **choice of which two variables are inputs is a convention**: the *hybrid* form below takes the human's velocity and the environment's force, and the four entries only mean what they are said to mean under that choice.
+>
+> $$\begin{bmatrix}F_h\\[2pt] -\dot x_e\end{bmatrix} = \begin{bmatrix}h_{11} & h_{12}\\[2pt] h_{21} & h_{22}\end{bmatrix}\begin{bmatrix}\dot x_h\\[2pt] F_e\end{bmatrix}$$
+>
+> where $F_h, \dot x_h$ are the force and velocity at the human port and $F_e, \dot x_e$ at the environment port — so $h_{11}$ is the impedance the operator feels with the follower in free space, $h_{22}$ the admittance the environment sees while the operator holds still, and $h_{12}, h_{21}$ the two transmissions, force back and motion forward.
+>
+> - **Example**: the ideal teleoperator, $h_{11} = h_{22} = 0$ and $h_{12} = -h_{21} = 1$. Nothing is felt in free space, the environment is driven by the operator alone, and both transmissions are unity.
+> - **Non-example**: a one-port impedance $Z(s) = F/\dot x$ for the leader device. It is a complete description of what the hand touches and it cannot express any relationship to what the follower touches, which is the entire subject.
+> - **Why it matters**: Lawrence's four channels are four signals sent across the link, and the four $h$ entries are what those signals set. Every claim in §2–§3 — transparency, the stability tradeoff, what delay costs — is a claim about one or two of these four numbers, and a paper that will not write them down is not comparable to one that will.
+
 <svg viewBox="0 0 560 212" style="max-width:100%;height:auto" role="img" aria-label="a two-port bilateral teleoperation chain from the human port through leader, delayed channel, and follower to the environment port">
   <g fill="currentColor">
     <rect x="104" y="64" width="94" height="46" rx="3" fill-opacity="0.10"/>
@@ -106,6 +227,16 @@ environment the follower touches. Push the follower into concrete and the leader
 feel concrete; move it through air and the leader should feel nothing. Perfect transparency
 means the operator's hand and the follower's tool are, mechanically, the same object.
 
+> **Transparency, defined.** **Transparency** is a *comparison of two impedances* — the transmitted impedance $Z_t$ the operator feels against the environment impedance $Z_e$ the follower touches. It is a relation, not a score, and three conditions pin it down. It is a statement for **all** $Z_e$ in a declared range, including $Z_e = 0$; a device that renders one wall correctly is not transparent. It is **frequency-dependent**, so it is a curve and any single number is a value at a frequency that must be named. And it is about the **transmitted impedance**, not about position tracking: a system can track the leader's position perfectly and still render the wrong world.
+>
+> $$Z_t = \frac{F_h}{\dot x_h} = h_{11} - \frac{h_{12}h_{21}\,Z_e}{1 + h_{22}Z_e}, \qquad Z_t = Z_e\ \ \forall Z_e \iff h_{11} = 0,\ h_{22} = 0,\ h_{12}h_{21} = -1$$
+>
+> derived in Step 1 of the Worked case by eliminating the environment port, so perfect transparency is three conditions on the matrix and not a gain to be turned up.
+>
+> - **Example**: the P3 leader with its own damping in $h_{11}$, $Z_t = 0.8 + Z_e$. The error is a fixed $0.8\ \mathrm{N\cdot s/m}$ — $0.008\%$ against the $10^4\ \mathrm{N/m}$ wall and *infinite* in free space, which is why transparency is worst exactly where there is nothing to feel.
+> - **Non-example**: halving the force-feedback gain, $h_{12}h_{21} = -0.5$. Then $Z_t = 0.5\,Z_e$ at every stiffness: every wall is half as stiff, consistently, and nothing in the operator's experience flags it. Perfect tracking, perfectly wrong world. A second non-example worth knowing is $h_{22} \ne 0$, which **saturates** — at $h_{22} = 1/2000$ every environment above $2\ \mathrm{kN/m}$ renders as $2\ \mathrm{kN/m}$, so concrete and drywall become the same object.
+> - **Why it matters**: the field's central tradeoff, named next, is a tradeoff between these three conditions and stability margin, so "transparent" without the $h$ entries or a $Z_t$ curve is a word rather than a result — and, per §8, a paper that reports its delay but not the stiffness it rendered has reported half of one.
+
 Lawrence's four-channel analysis (1993) — "four channels" because position/velocity and force
 each cross the link in both directions, four signals in all
 ([[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral teleoperation §2]]) — is where this became a design objective rather
@@ -123,6 +254,16 @@ wholesale. The system is a chain of springs, masses, and dampers, all of which a
 through their ports. Connecting passive parts keeps the whole passive, which gives a route to
 stability. That holds under compatible interconnection and well-posedness assumptions.
 Passivity alone does not automatically mean asymptotic convergence or good performance.
+
+> **Passivity, defined.** **Passivity** is a *property of a system with a power port*: an inequality that must hold at every instant and for every admissible input. It is not stability, not convergence and not a performance guarantee — a passive system can oscillate forever. Three defining conditions. There is a **storage function** $E \ge 0$, bounded below, which is what "energy" means here and need not be physical energy. The inequality holds for **all** trajectories, not typical ones, which is why the property survives interconnection at all. And the **sign convention at the port** is fixed in advance, since flipping it flips the claim.
+>
+> $$\int_0^{t} F(\tau)\,\dot x(\tau)\,\mathrm{d}\tau \;\ge\; E(t) - E(0) \qquad \text{for all } t \ge 0, \quad E(\cdot) \ge 0$$
+>
+> where $F\dot x$ is the power entering the port — so the system may store what comes in and may dissipate it, and may never return more than it received.
+>
+> - **Example**: P3's damper, $F = b\dot x$. The integral is $b\!\int\!\dot x^2 \ge 0$ with $E \equiv 0$: it dissipates and stores nothing.
+> - **Non-example, with a number**: a **delayed** spring, $F = -k\,x(t - T_d)$. Over one cycle of $x = A\sin\omega t$ it delivers $W_{\text{cycle}} = \pi k A^2\sin(\omega T_d)$, which is strictly positive for $0 < \omega T_d < \pi$. At P3's $k_w = 400\ \mathrm{N/m}$ with $A = 2\ \mathrm{mm}$ at $2\ \mathrm{Hz}$ and $T_d = 50\ \mathrm{ms}$, that is $2.955\ \mathrm{mJ}$ per cycle — $5.91\ \mathrm{mW}$ **manufactured** by an object made of nothing but a spring and a wire. Step 2 of the Worked case derives it and prices what the damper can pay back.
+> - **Why it matters**: the argument for connecting passive parts is the only guarantee in this field that does not depend on a model of the environment, which is exactly what you do not have on a construction site. Lose it and every stability claim becomes conditional on a wall stiffness somebody assumed.
 
 A communication delay can break that passivity argument. Force computed from a position the follower held
 $T$ seconds ago is applied to a leader that has since moved somewhere else, and the product
@@ -153,6 +294,16 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 for **any** constant delay — the stability problem is solved structurally rather than by
 tuning.
 
+> **Wave variables, defined.** **Wave variables** are an *invertible linear change of coordinates on a power port*, parameterised by one chosen constant. They are not a controller, not a filter and not an approximation. Three defining conditions. The map is **invertible**, so the transform itself discards nothing — whatever is lost is lost later, in the channel. The **wave impedance** $b > 0$, in $\mathrm{N\cdot s/m}$, is a free design constant and part of the result. And the **power identity** must hold exactly, $\dot x F = \tfrac12(u^2 - v^2)$; a transform that only approximately preserves power gives only an approximate guarantee, which is no guarantee at all.
+>
+> $$u = \frac{b\dot x + F}{\sqrt{2b}}, \quad v = \frac{b\dot x - F}{\sqrt{2b}} \qquad\Longleftrightarrow\qquad \dot x = \frac{u + v}{\sqrt{2b}}, \quad F = \sqrt{\tfrac{b}{2}}\,(u - v)$$
+>
+> where $u$ is the wave leaving toward the follower and $v$ the wave returning — so a delay line that carries each one forward unchanged can only hold the difference between what entered and what left, which is the telescoping integral above.
+>
+> - **Example**: at $\dot x = 0.05\ \mathrm{m/s}$ and $F = 2\ \mathrm{N}$ with $b = 0.8$, $u = 1.613$ and $v = -1.549$, and $\tfrac12(u^2 - v^2) = 0.100\ \mathrm{W}$, which is $\dot x F$ exactly. A $50\ \mathrm{ms}$ channel is then holding $\tfrac12(u^2 + v^2)T_d = 0.125\ \mathrm{J}$ at that operating point and can return no more.
+> - **Non-example**: low-pass filtering the returned force. It also reduces the energy the channel can inject, and it is not a wave transform: it is not invertible, the power identity fails, and there is no delay for which it yields a guarantee rather than a tuning.
+> - **Why it matters**: the guarantee is structural and so is the bill. Terminating the channel in $b$ puts $b$ where $h_{11}$ should have been zero, so the operator feels $0.8\ \mathrm{N\cdot s/m}$ of damping *in free space* — the exact defect §2's transparency definition calls out. The repair for delay is paid for in the currency of transparency, which is the next paragraph stated as an entry in a matrix.
+
 The cost is transparency: wave-variable teleoperation feels soft and drifts in position,
 because the guarantee was bought by throwing away exactly the high-frequency fidelity that
 made the coupling feel real. This is the tradeoff of §2 appearing again, now as a theorem
@@ -163,6 +314,19 @@ rather than a tuning knob.
 > delay **constant or variable** (packet networks give variable), is it **known**, and was
 > stability shown against a **stiff** environment or only against free motion? Free-motion
 > stability is nearly free; contact stability is the claim.
+
+The first of those three qualifiers is usually answered with one number, and one number is
+not what the quantity is.
+
+> **Teleoperation latency budget, defined.** A **latency budget** is an *additive decomposition of one loop's round-trip time into named, separately measurable terms*, set against an allowance derived from the task. It is a design artefact, not a measurement, and not the number a ping returns. Three defining conditions. **Every element on the loop appears exactly once, in both directions** — sensing, encoding, transport, decoding, computation, actuation, and the device's own mechanical rise, forward and back. Each term is an **upper bound**, so the sum is conservative and a budget that is met is met. And it is stated **against an allowance** that comes from the task's own tolerance, not from how the rig feels.
+>
+> $$T_{\text{rt}} = \sum_i T_i \;\ge\; 2\,T_{\text{net}}, \qquad\text{allowance}\quad T_{\text{rt}} \le \frac{F_{\max}}{k_e\,v}$$
+>
+> where $T_i$ are the named terms, $T_{\text{net}}$ the one-way transport time, $F_{\max}$ the largest contact force the part or tool may see, $k_e$ the environment stiffness and $v$ the operator's approach speed — because the operator keeps advancing for a whole round trip before any resistance arrives, so the commanded penetration is $vT_{\text{rt}}$ and the force it asks for is $k_e v T_{\text{rt}}$.
+>
+> - **Example**: Step 5's table, ten terms summing to $150\ \mathrm{ms}$, against an allowance of $20/(10^4\times 0.050) = 40\ \mathrm{ms}$ — over by $3.75\times$, and not closable by networking alone, since deleting both transport terms leaves exactly $40\ \mathrm{ms}$ and no margin.
+> - **Non-example**: "our latency is $110\ \mathrm{ms}$", the round-trip ping. It is $73.3\%$ of that budget and omits $40\ \mathrm{ms}$ — $2.0\ \mathrm{mm}$ of extra commanded penetration at $50\ \mathrm{mm/s}$ and $20\ \mathrm{N}$ against this wall, which is the entire force allowance, hidden in the terms that were not counted.
+> - **Why it matters**: it converts "is the delay acceptable?" into arithmetic with a task-derived right-hand side, and it identifies which term to attack. A budget dominated by transport is a networking problem; one dominated by the device's own rise time, as a $15\ \mathrm{ms}$ amplifier would be on a short link, is a hardware problem that no network will fix.
 
 > [!example] Worked example · 계산 예제
 > **What 150 ms of round trip does on contact.** The operator moves the master at 50 mm/s and
@@ -309,6 +473,16 @@ directly: under 10:1 motion scaling a 40 mm hand motion becomes a 4 mm tool moti
 small force amplified — necessary when the robot works at forces a human would not notice,
 and dangerous when it hides forces a human should.
 
+> **Motion scaling, defined.** **Motion scaling** is a *dimensionless ratio applied to a displacement*, not to a pose and not to a signal's frequency content. Three defining conditions, and each one is a way rigs get it wrong. It scales **increments**, so the map needs an absolute offset and a clutch — the operator must be able to disengage, reposition and re-engage, or the workspace is $s$ times too small. It scales **intent and tremor by the same factor**: it is a gear ratio, not a filter, and it improves the signal-to-noise ratio of a hand motion not at all. And the **force ratio $s_f$ is a separate choice**; only the pair $(s, s_f)$ determines what the hand feels, so quoting $s$ alone does not say what was rendered.
+>
+> $$\Delta x_f = \frac{\Delta x_l}{s}, \qquad F_h = s_f F_e, \qquad k_{\text{felt}} = \frac{F_h}{\Delta x_l} = \frac{s_f}{s}\,k_e$$
+>
+> where $\Delta x_l, \Delta x_f$ are leader and follower displacements, $s$ the motion scale-down, $s_f$ the force scale-up and $k_e$ the true environment stiffness — so transparency in the sense of §2 requires $s_f = s$ exactly, and any other pair renders a different world.
+>
+> - **Example**: this page's frozen rig, $s = 10$ and $s_f = 1$. A $40\ \mathrm{mm}$ hand motion is $4\ \mathrm{mm}$ of tool, a $1\ \mathrm{mm}$ tremor is $0.1\ \mathrm{mm}$, and the $10^4\ \mathrm{N/m}$ wall is rendered at $10^3\ \mathrm{N/m}$ — ten times too soft, at every depth.
+> - **Non-example**: taking the felt *force* as the whole story. At $s = 5$ with one shared ratio ($s_f = 1/5$), a $50\ \mathrm{N}$ contact does feel like $10\ \mathrm{N}$ — and the stiffness is down by $s^2 = 25$, to $400\ \mathrm{N/m}$. The force error is the one that gets noticed and the stiffness error is the one that changes what the operator does.
+> - **Why it matters**: the scaling is recorded nowhere in the trajectory. A demonstration corpus collected at $s = 10$ contains hand motions the policy will never make and contact forces the operator never felt at their true magnitude, and nothing downstream can recover $s$ from the data. It belongs in the method section beside the interface, and $s_f$ beside it.
+
 > [!important] Retargeting is where demonstrations quietly become unrealistic
 > If the map lets the human command poses the robot reaches only at the edge of its
 > workspace, the dataset will be full of near-singular configurations, and the policy
@@ -322,7 +496,18 @@ a single number in a paper. It is also the section with a dedicated controlled s
 *What Matters in Learning from Offline Human Demonstrations for Robot Manipulation* (Mandlekar
 et al., CoRL 2021 — the robomimic benchmark) compares six offline learning algorithms across
 five simulated and three real-world multi-stage tasks precisely to separate what the data
-contributes from what the algorithm does. Quantity is the easy axis; the harder ones:
+contributes from what the algorithm does. Quantity is the easy axis; the harder ones are
+below, and each has a statistic that can be computed before any training runs.
+
+> **Demonstration quality metrics, defined.** A **demonstration quality metric** is a *statistic of the corpus*, computed from the logged episodes alone. It is not a policy result, and a number that requires training a model to obtain is an evaluation, not a corpus metric. Three defining conditions. It is computed **before and independently of any policy**, which is what makes it a property of the instrument rather than of the method. Each has a **declared denominator** — attempts, usable episodes, or task-successful episodes — and on any real log those three differ. And each is reported **alongside the raw episode count**, which by itself fixes none of them.
+>
+> $$\eta = \frac{N_{\text{usable}}}{N_{\text{att}}}, \qquad c = \frac{T_{\text{wall}}}{N_{\text{usable}}}, \qquad H = -\sum_{j=1}^{M} p_j \log_2 p_j, \qquad \rho_{\text{rec}} = \frac{N_{\text{rec}}}{N_{\text{usable}}}$$
+>
+> the **yield** $\eta$, the **cost per usable episode** $c$, the **mode entropy** $H$ over the $M$ valid solutions with empirical shares $p_j$, and the **recovery coverage** $\rho_{\text{rec}}$ — because an episode that the task succeeded at but the logger clipped is a cost with no data, and a corpus that never leaves the nominal path cannot teach a return to it.
+>
+> - **Example**: the frozen session log. $\eta = 88/120 = 0.733$ against a task success rate of $96/120 = 0.800$; $c = 164\ \mathrm{s}$ per usable episode, so $500$ of them is $22.7$ hours; $H = 0.968$ bits over the $58/38$ split; $\rho_{\text{rec}} = 11/88 = 0.125$.
+> - **Non-example**: "50 demonstrations". And the subtler one — **$H$ quoted alone.** A balanced $48/48$ corpus scores the full $1.000$ bits and is *worse*: the MSE-optimal single action moves from $-12.5$ to $0\ \mathrm{mm}$, which is $60\ \mathrm{mm}$ from either mode against a slot half-width of $10\ \mathrm{mm}$. Entropy measures balance, not separability, so without the mode locations beside it, it argues for the wrong fix.
+> - **Why it matters**: these are the numbers §8's table is asking for, and they are the ones that transfer to another lab. $c$ is what a collection plan is actually costed in; $\eta$ is what a second logger would change; $H$ with the mode locations is what decides between a regression policy and a generative one; and $\rho_{\text{rec}}$ is the compounding-error bullet below, in a form you can put in a table.
 
 - **Operator skill, and consistency.** Demonstrations from operators of different skill
   levels are not simply "more data" — they are samples from different policies. Naive
@@ -405,10 +590,13 @@ requires, because the contribution *is* the corpus — needs these:
 
 ### After reading
 
-- [ ] Draw the two-port diagram and mark where the delay enters.
-- [ ] Explain why delay breaks passivity, and what wave variables trade away to fix it.
+- [ ] Draw the two-port diagram, write its four $h$ entries, and mark where the delay enters.
+- [ ] State the three conditions for perfect transparency, and say which one a halved force gain breaks.
+- [ ] Explain why delay breaks passivity, with the energy of one cycle as a number, and what wave variables trade away to fix it.
 - [ ] Choose an interface for a stated task and defend it on the fidelity–cost axes.
-- [ ] Name three properties of a demonstration dataset that a count of episodes does not capture.
+- [ ] Itemise a round-trip latency budget, and say what a ping-only figure leaves out of it.
+- [ ] Give the felt stiffness under a motion scaling $s$ and a force scaling $s_f$.
+- [ ] Name three properties of a demonstration dataset that a count of episodes does not capture, and compute one of them.
 - [ ] Given a paper, extract the seven items in the table above.
 
 > [!tip] Going deeper · 더 깊이
@@ -435,16 +623,16 @@ requires, because the contribution *is* the corpus — needs these:
 
 ### Problem set · 과제
 
-Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. The Euler lab is on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator. Leader and follower are two copies of the P3 handle; the wall sits at the follower.
+Tier B. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. The Euler lab is on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator. Same two P3 handles, same wall $k_e=10^4\,\mathrm{N/m}$, same oscillation $A=2\,\mathrm{mm}$ at $2\,\mathrm{Hz}$. Three knobs move: the link is worse, $100\,\mathrm{ms}$ each way instead of $55$; the operator works slower, $v'=20\,\mathrm{mm/s}$; and the rig is rebuilt at $s'=4$ with $s_f'=4$. A second session logs $200$ attempts, $150$ task-successful, $20$ of those discarded, $5.0$ h wall clock, modes split $75/75$.
 
-1. **Draw.** Two-port: human — leader P3 — delayed channel — follower P3 — wall at $x_w$. Mark $T=1\,\mathrm{ms}$ on each local loop and a one-way delay $T_d=50\,\mathrm{ms}$ on the force channel back to the leader. Label $F_a=-k_w(x-x_w)$ at the follower.
-2. **Derive.** Colgate-style $K\le 2b/T$ on the leader, using the device damper $b$ not $b_h$. (a) Bound at $T=10^{-3}$ with $T_d=0$. Does catalog $k_w=400$ pass? (b) Treat the delayed force as an extra hold, $T_{\mathrm{eff}}=T+T_d=0.051$. New bound. Does $k_w=400$ pass? (c) The largest $k_w$ that still passes at $T_d=50\,\mathrm{ms}$.
-3. **Interpret.** Z-width is the interval of impedances you can render stably. Why does $50\,\mathrm{ms}$ of delay shrink it by about fifty, and why is "just raise $k_w$ to feel the wall" the wrong fix?
+1. **Draw.** The three homework figures at the new numbers: the two-port with its $h$ entries and the delay marked on **both** rows; the force–displacement ellipse at $T_d=100\,\mathrm{ms}$ with its area in millijoules, and the damper's rectangle beside it to the same scale; and the budget bar with the new allowance bar drawn beneath it.
+2. **Derive.** (a) The new round-trip budget, the ping's share of it, the commanded penetration and force at $v'$, and the allowance $F_{\max}/(k_e v')$ at $F_{\max}=20\,\mathrm{N}$. Over budget, and by how much? (b) Set both transport terms to zero and answer the same question. (c) $W_{\text{cycle}}$ at $T_d=100\,\mathrm{ms}$, the damper's dissipation, their ratio, $k_{\text{crit}}$, and the frequency at which this delay is worst. (d) $k_{\text{felt}}$ at $(s',s_f')$ and at $(s',1)$; then the follower displacement, the contact force and the felt force produced by a $1\,\mathrm{mm}$ hand tremor at $(s',s_f')$. (e) The second session's $\eta$, success rate, $c$, hours to $500$ usable episodes, $H$, and the MSE-optimal single action with its distance to the slot.
+3. **Interpret.** Exactly one of the three knobs flips a verdict the Worked case reached. Name it, say which verdict, and say why the other two only moved numbers. Then: the second session has a **worse** yield, a **better** cost per episode and a **higher** entropy than the first. Say which of those three is good news, and what a paper reporting only "200 demonstrations, 75% success" would have concealed.
 
 > [!tip]- Solutions
-> 1. Human spring–damper into leader mass $m$; delayed $F_a$ from the follower wall; follower has the same $m,b$ and the switch at $x_w$. No path that skips the delay.
-> 2. (a) $2b/T=1.6/10^{-3}=1600\,\mathrm{N/m}$; $400$ passes. (b) $2b/T_{\mathrm{eff}}=1.6/0.051\approx 31\,\mathrm{N/m}$; $400$ fails. (c) $K\le 31\,\mathrm{N/m}$.
-> 3. Delay lets a restoring force arrive after $\dot x$ has reversed, so the wall injects energy. The bound is $\propto 1/T_{\mathrm{eff}}$; fifty extra milliseconds dominate the $1\,\mathrm{ms}$ sample and cut the ceiling from $1600$ to $\sim 31$. Raising $k_w$ moves *further* outside the bound. The trade is damping, wave variables, or a local model — each buys stability by giving up transparency.
+> 1. The ellipse is visibly fatter than the $50\,\mathrm{ms}$ one — $72°$ of phase instead of $36°$ — and the damper's rectangle is barely visible beside it.
+> 2. (a) $150 - 110 + 200 = 240\,\mathrm{ms}$; the ping is $200\,\mathrm{ms}$, $83.3\,\%$, hiding $40\,\mathrm{ms}$. Penetration $20\times0.240 = 4.8\,\mathrm{mm}$, force $48\,\mathrm{N}$; the hidden $40\,\mathrm{ms}$ alone is $0.8\,\mathrm{mm}$ and $8\,\mathrm{N}$. Allowance $= 20/(10^4\times0.020) = 100\,\mathrm{ms}$, so the rig is over by $2.4\times$. (b) With both transport terms at zero the budget is $40\,\mathrm{ms}$, **under** the $100\,\mathrm{ms}$ allowance with $2.5\times$ of margin: on this operator the gap *is* closable by networking alone. (c) $\omega T_d = 1.2566\,\mathrm{rad} = 72°$, $\sin = 0.9511$, so $W_{\text{cycle}} = \pi\times400\times(0.002)^2\times0.9511 = 4.781\,\mathrm{mJ}$ against the damper's $0.126\,\mathrm{mJ}$, a ratio of $37.8$; $k_{\text{crit}} = 0.8\times12.566/0.9511 = 10.57\,\mathrm{N/m}$; worst at $f = 1/(4T_d) = 2.5\,\mathrm{Hz}$. (d) $k_{\text{felt}} = (4/4)k_e = 10^4\,\mathrm{N/m}$, transparent; at $s_f = 1$ it is $2500\,\mathrm{N/m}$. A $1\,\mathrm{mm}$ tremor moves the follower $0.25\,\mathrm{mm}$, commands $10^4\times0.25\times10^{-3} = 2.5\,\mathrm{N}$ of contact force, and is shown to the operator as $4\times2.5 = 10\,\mathrm{N}$. (e) $\eta = 130/200 = 0.650$, success $150/200 = 0.750$, $c = 5.0\times3600/130 = 138.5\,\mathrm{s} = 2.31\,\mathrm{min}$ — the naive wall-clock-over-attempts figure is $90\,\mathrm{s}$, understating by $1.54\times$ — $500$ usable episodes is $19.2\,\mathrm{h}$; $H = 1.000$ bits; the optimal single action is $0\,\mathrm{mm}$, $60\,\mathrm{mm}$ from either mode and missing the slot by $50\,\mathrm{mm}$.
+> 3. The knob that flips a verdict is the **operator's speed**. It doubles the allowance from $40$ to $100\,\mathrm{ms}$, which turns Step 5's "not closable by networking" into "closable with $2.5\times$ of margin" — and it is the one knob with nothing to do with the network. The worse link only made a bad budget worse ($2.4\times$ over instead of $3.75\times$) and only deepened an energy deficit that was already there ($k_{\text{crit}}$ from $17.1$ to $10.6\,\mathrm{N/m}$, both far under $k_w=400$); the new scaling restored a transparency that was never a stability question. As for the corpus, only the **cost per episode** is good news, and even that is partly a looser discard rule: the yield fell, so more operator time is being thrown away, and the entropy rose to its maximum while the corpus got **worse**, because a balanced two-mode set moves the regression optimum to $0\,\mathrm{mm}$ — $50\,\mathrm{mm}$ outside the slot against $37.5\,\mathrm{mm}$ before. "200 demonstrations, 75% success" conceals all five: it is an attempt-denominated success rate quoted beside a count that is neither attempts nor usable episodes, with no cost, no mode structure and no recovery coverage.
 
 ### Sources
 
@@ -478,6 +666,119 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. The Euler lab is on
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 이 주제를 인터페이스 문제가 아닌 연구 문제로 만드는 재프레이밍 — 그다음 좋은 시연 데이터가 무엇인지인 §6, 그다음 §8. §2·§3(수동성, 투명성)은 양방향 제어 논문을 읽을 때 특정해서 보라.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 두 대 — 하나는 리더, 하나는 팔로워 — 그 사이의 채널, 그리고 반대쪽 끝의 과제. P3의 카탈로그 값을 그대로 쓴다. $m = 0.04\ \mathrm{kg}$, $b = 0.8\ \mathrm{N\cdot s/m}$, $k_h = 400\ \mathrm{N/m}$, $b_h = 8\ \mathrm{N\cdot s/m}$, 캡스턴 $r_m = 0.010$, $r_s = 0.050\ \mathrm{m}$, 엔코더 $N = 1024$ counts/rev. (§4.5의 계산 예제는 의도적으로 [[06-research-practice/psychophysics-human-measurement|8. 정신물리 §3]]의 *다른* 캡스턴 장치를 빌려 온다. 아래에서 비를 인용할 때는 P3의 $R = r_s/r_m = 5$다.)
+
+이 페이지에 필요한데 0.6이 주지 않는 것 다섯을 여기서 고정한다:
+
+| 추가하는 것 | 값 |
+|---|---|
+| **채널** | 왕복 예산 $150\ \mathrm{ms}$, 항목별 분해는 §3의 표에. §3의 계산 예제가 이미 쓰는 그 $150\ \mathrm{ms}$다 |
+| **환경** | $k_e = 10^4\ \mathrm{N/m}$, [[04-robotics/force-compliance-control\|13. 힘 제어 §1]]의 유연하게 장착한 벽 |
+| **조작자** | $v = 50\ \mathrm{mm/s}$로 전진. 에너지 논증에서는 진폭 $A = 2\ \mathrm{mm}$, $f = 2\ \mathrm{Hz}$로 진동 |
+| **스케일링** | 모션 $s = 10$, 힘 $s_f = 1$ — 두 번째 비를 아무도 고르지 않은 장비의 기본값 |
+| **코퍼스 로그** | 한 세션: 시도 $120$회, 과제 성공 $96$회, 그중 끊김이나 힘 클리핑으로 버린 것 $8$회, 벽시계 $4.0$시간. 과제에는 유효한 접근이 둘, 슬롯 중심에서 $-60$과 $+60\ \mathrm{mm}$의 횡방향 오프셋이고 슬롯 반폭은 $10\ \mathrm{mm}$다. 성공은 $58$ 대 $38$로 갈린다. 쓸 만한 에피소드 열하나에 $10\ \mathrm{mm}$를 넘는 이탈과 복귀가 들어 있다. |
+
+*범위: 이 페이지는 데이터를 만드는 도구로서의 원격조작을 가르친다 — 조작자가 느끼는 것에 대한 2포트 기술, 지연이 수동성 논증을 왜 깨고 무엇이 그것을 고치는지, 사상과 스케일링이 데이터를 무엇에 묶는지, 루프의 지연 예산이 접촉에서 얼마를 치르는지, 그리고 코퍼스의 어떤 통계가 정책 주장을 떠받치는지. 양방향 시스템의 제어기 합성은 가르치지 않는다. 렌더링된 가상 벽의 샘플링 안정성도 가르치지 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 Euler 랩이고 여기서 다시 만들지 않는다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 셋.
+
+**위 — 주석을 단 2포트 사슬.** §2의 그림을 다시 그리되 $h$ 항 넷을 적어 넣는다. 사람 포트에 $h_{11}$, 환경 포트에 $h_{22}$, 교차하는 화살표 둘에 $h_{12}$와 $h_{21}$. 편도 지연을 **두 줄 모두에** 표시하고, 사람 포트 옆에 전달 임피던스 $Z_t$를 숫자를 넣은 식으로 적는다.
+
+**가운데 — 한 주기의 에너지.** 힘–변위 평면. 가로축에 한 주기의 $x$를, 세로축에 벽의 힘을 그린다. 지연이 없을 때 한 번(원점을 지나는 직선, 둘러싸인 면적 0), $50\ \mathrm{ms}$ 지연일 때 한 번(타원). 타원은 둘러싸인 면적이 리더로 *들어가는* 에너지가 되는 방향으로 돌려 그려야 한다. 타원을 칠하고 면적을 밀리줄로 적는다. 그 옆에 같은 주기에 리더의 댐퍼가 걷어 가는 양을 같은 축척의 훨씬 작은 직사각형으로 그린다.
+
+**아래 — 막대로 본 예산.** 길이 $150\ \mathrm{ms}$인 가로 막대 하나를 이름 붙은 열 조각으로 나누고, 네트워크 두 조각만 다르게 칠한다. 그 아래에 같은 축척으로 길이 $40\ \mathrm{ms}$의 두 번째 막대 — $F_{\max} = 20\ \mathrm{N}$에서의 허용치 — 를 그린다. 초과분이 계산되는 것이 아니라 보이게.
+
+과제는 같은 그림 셋을 더 나쁜 네트워크와 더 느린 조작자에 대해 요구한다. 판정 셋 중 하나가 바뀌고 둘은 바뀌지 않는다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+**1단계 — 조작자가 느끼는 것을 식으로.** §2의 혼성 2포트와 환경 $F_e = Z_e\dot x_e$에서 환경 포트를 소거한다. $-\dot x_e = h_{21}\dot x_h + h_{22}Z_e\dot x_e$에서 $\dot x_e = -h_{21}\dot x_h/(1 + h_{22}Z_e)$이고, 이를 $F_h = h_{11}\dot x_h + h_{12}F_e$에 넣으면 전달 임피던스가
+
+$$Z_t = h_{11} - \frac{h_{12}h_{21}Z_e}{1 + h_{22}Z_e}$$
+
+이다. 그러므로 **모든** $Z_e$에 대해 $Z_t = Z_e$인 것은 정확히 $h_{11} = 0$, $h_{22} = 0$, $h_{12}h_{21} = -1$일 때다. 이제 장치 셋을 통과시켜 보자:
+
+| 장치 | $Z_e = 0$에서의 $Z_t$ | $Z_e = 400$ | $Z_e = 10^4$ | 조작자가 듣는 말 |
+|---|---:|---:|---:|---|
+| 이상 | $0$ | $400$ | $10^4$ | 사실 |
+| P3 리더, $h_{11} = b = 0.8$ | $0.80$ | $400.80$ | $10000.80$ | 허공이 끌린다. 오차 $0.20\%$ 다음 $0.008\%$ |
+| 힘 이득 $0.5$, $h_{12}h_{21} = -0.5$ | $0$ | $200$ | $5000$ | 모든 벽이 절반으로 무르다, 모든 강성에서 |
+| 유연한 팔로워, $h_{22} = 1/2000$ | $0$ | $333$ | $1667$ | $2\ \mathrm{kN/m}$ 넘는 벽은 전부 $2\ \mathrm{kN/m}$ |
+
+둘째 행을 거꾸로 읽어라. P3 리더 자신의 댐핑은 $50\ \mathrm{mm/s}$에서 $0.040\ \mathrm{N}$짜리 유령 끌림이고, 느낄 것이 없는 곳에서 가장 크게 느껴지고 벽에 대해서는 가장 작다. **투명성은 허공에서 가장 나쁘다.** 직관의 반대이고, "벽에서는 느낌이 훌륭하다"는 시연이 증명하는 것이 거의 없는 이유다. 가져갈 것은 넷째 행이다. $h_{22}$가 **포화**한다. 세상이 아무리 뻣뻣해져도 $Z_t \to -h_{12}h_{21}/h_{22} = 2000\ \mathrm{N/m}$이므로 콘크리트와 석고보드가 같은 물체가 된다.
+
+**2단계 — 지연된 스프링의 값을 줄로.** 조작자가 벽에 대고 $x = A\sin\omega t$로 진동한다고 하자. $A = 2\ \mathrm{mm}$, $f = 2\ \mathrm{Hz}$이므로 $\omega = 12.566\ \mathrm{rad/s}$다. 도착하는 힘은 $T_d$만큼 오래된 위치에서 계산된 $F = -k\,x(t - T_d)$이므로, 한 주기에 리더에 하는 일은
+
+$$W_{\text{cycle}} = \oint F\,\mathrm{d}x = -kA^2\omega\!\!\int_0^{2\pi/\omega}\!\!\sin(\omega t - \omega T_d)\cos(\omega t)\,\mathrm{d}t = \pi k A^2\sin(\omega T_d)$$
+
+이다. 곱이 $\tfrac12\sin(2\omega t - \omega T_d) - \tfrac12\sin(\omega T_d)$로 전개되고 앞 항이 한 주기에서 0으로 적분되기 때문이다. $T_d = 0$이면 정확히 0이다 — 스프링이 가져간 것을 전부 돌려준다는 뜻이고, 그것이 수동성이다. $T_d = 50\ \mathrm{ms}$면 $\omega T_d = 0.628\ \mathrm{rad} = 36°$이고
+
+$$W_{\text{cycle}} = \pi \times 400 \times (0.002)^2 \times \sin 0.628 = 2.955\ \mathrm{mJ} \quad\text{주기당, 즉 } 5.91\ \mathrm{mW}$$
+
+이다. 같은 주기에 리더 자신의 댐퍼가 걷어 가는 것은 $\pi b A^2\omega = 0.126\ \mathrm{mJ}$로 **채널이 넣는 것의 23.4분의 1**이다. 둘을 같게 두면 댐퍼가 감당할 수 있는 최대 강성이 나온다:
+
+$$k_{\text{crit}} = \frac{b\,\omega}{\sin(\omega T_d)} = \frac{0.8 \times 12.566}{0.5878} = 17.1\ \mathrm{N/m}$$
+
+P3 카탈로그의 $k_w = 400\ \mathrm{N/m}$에 대해서다. 두 가지를 더 읽는다. 주어진 지연에서 가장 나쁜 주파수는 $\omega T_d = \pi/2$, 즉 $50\ \mathrm{ms}$에서 $f = 1/(4T_d) = 5\ \mathrm{Hz}$다. 사람의 수의 운동 범위 안에 넉넉히 들어오고, 그래서 이것이 이론적 걱정이 아니다. 숫자도 예상대로 움직인다. $5\ \mathrm{ms}$에서 $k_{\text{crit}} = 160\ \mathrm{N/m}$, $10\ \mathrm{ms}$에서 $80.2$, $100\ \mathrm{ms}$에서 $10.6$이다. 이 페이지의 과제는 $50\ \mathrm{ms}$에서 $\sim 31\ \mathrm{N/m}$에 *다른* 경로로 도달한다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 샘플링 경계 $K \le 2b/T_{\text{eff}}$다. 하나는 에너지, 하나는 샘플링인 논증 둘이 두 배 안에서 일치하고, 둘 다 카탈로그의 벽이 한 자릿수 넘게 손 밖이라고 말한다.
+
+**3단계 — 같은 채널을 wave variable로.** wave 임피던스를 $b = 0.8\ \mathrm{N\cdot s/m}$로 잡고 동작점 하나, $\dot x = 0.05\ \mathrm{m/s}$와 $F = 2\ \mathrm{N}$을 보자. 그러면 $u = (0.8 \times 0.05 + 2)/\sqrt{1.6} = 1.6128$, $v = (0.8\times 0.05 - 2)/\sqrt{1.6} = -1.5495$이고
+
+$$\tfrac12\left(u^2 - v^2\right) = \tfrac12(2.6011 - 2.4010) = 0.100\ \mathrm{W} = \dot x F$$
+
+가 정확히 성립한다. 논증 전체가 딛고 선 항등식이다. $50\ \mathrm{ms}$ 채널이 그 동작점에서 담고 있는 에너지는 $\tfrac12(u^2 + v^2)T_d = 0.125\ \mathrm{J}$이고, §3의 망원 적분은 그보다 더는 돌려줄 수 없다고 말한다. 2단계와 견주어라. 스프링에서 $5.91\ \mathrm{mW}$를 만들어 내던 그 지연이 이제는 어떤 $T_d$에서도 아무것도 만들지 못한다. 값은 $0.8\ \mathrm{N\cdot s/m}$의 wave 임피던스이고, 그것이 사람 포트에 도착하는 모습이 정확히 1단계 둘째 행이 유령 끌림이라 부른 $h_{11}$ 항이다. **2단계의 처방은 1단계의 화폐로 지불된다.**
+
+**4단계 — 스케일링이 무엇을 그려 주는가.** 리더 변위 $\Delta x_l$이 팔로워 변위 $\Delta x_l/s$가 되고, 환경이 $F_e = k_e\Delta x_l/s$로 답하고, 조작자에게는 $s_f F_e$가 보인다. 그러므로 손이 느끼는 강성은
+
+$$k_{\text{felt}} = \frac{s_f}{s}\,k_e$$
+
+이다.
+
+| $s$ | $s_f$ | $k_e = 10^4$에 대한 $k_{\text{felt}}$ | 무엇인가 |
+|---:|---:|---:|---|
+| $1$ | $1$ | $10^4$ | 투명 |
+| $10$ | $1$ | $10^3$ | 이 페이지의 고정 장비: 열 배 무른 벽 |
+| $5$ | $1/5$ | $400$ | 비 하나를 공유: $k_e/s^2$이고, $400\ \mathrm{N/m}$은 P3의 *가상* 벽이다 |
+| $5$ | $5$ | $10^4$ | 비를 분리해 다시 투명 |
+
+스스로 점검 5번은 비를 공유하면 느끼는 *힘*이 5분의 1이 된다고 말하고, 셋째 행은 느끼는 *강성*이 25분의 1이 된다고 말한다. 둘 다 참이고 오해를 부르는 쪽은 둘째다. 일관되게 틀린 강성은 스스로를 드러내지 않기 때문이다. 한편 $s = 10$인 고정 장비는 $40\ \mathrm{mm}$의 손 운동을 $4\ \mathrm{mm}$의 공구 운동으로, $1\ \mathrm{mm}$의 손떨림을 $0.1\ \mathrm{mm}$로 만든다 — 그리고 $s_f$를 $1$이 아니라 $10$으로 두면 그 같은 떨림이 밀리미터당 $k_e \times 10^{-3}/10 = 1.0\ \mathrm{N}$의 추가 접촉력을 명령한다.
+
+**5단계 — 예산, 그리고 그것이 얼마여도 되는가.** §3이 쓰는 $150\ \mathrm{ms}$는 측정값이 아니라 합이다:
+
+| 항목 | ms | 비중 |
+|---|---:|---:|
+| 리더 표집 + 에일리어싱 방지 필터 | 2 | 1.33 % |
+| 명령 부호화 + 패킷화 | 3 | 2.00 % |
+| 네트워크, 리더 → 팔로워 | 55 | 36.67 % |
+| 팔로워 복호 + 제어 주기 | 2 | 1.33 % |
+| 팔로워 액추에이터 + 기계적 상승 | 8 | 5.33 % |
+| 접촉력 측정 + 필터 | 5 | 3.33 % |
+| 귀환 부호화 + 패킷화 | 3 | 2.00 % |
+| 네트워크, 팔로워 → 리더 | 55 | 36.67 % |
+| 리더 복호 | 2 | 1.33 % |
+| 리더 증폭기 + 장치 상승 | 15 | 10.00 % |
+| **왕복** | **150** | |
+
+ping은 칠한 두 행, $110\ \mathrm{ms}$, 전체의 $73.3\%$다. 그것만 보고한 논문은 $40\ \mathrm{ms}$를 감춘 것이고, $50\ \mathrm{mm/s}$에서 그것은 추가로 명령된 침투 $2.0\ \mathrm{mm}$이자 $10^4\ \mathrm{N/m}$ 벽에 대한 $20\ \mathrm{N}$이다. 이제 느낌이 아니라 과제에서 나오는 허용치. 접촉 첨두를 $F_{\max} = 20\ \mathrm{N}$ 아래로 두려면
+
+$$T_{\text{rt}} \le \frac{F_{\max}}{k_e\,v} = \frac{20}{10^4 \times 0.050} = 40\ \mathrm{ms}$$
+
+이므로 이 장비는 $3.75$배 초과다. 그리고 — 합으로 쓴 이유가 이것이다 — **네트워크 두 항을 잘라서는 간격을 메울 수 없다.** 둘을 아예 지워도 $40\ \mathrm{ms}$가 남고, 그것이 정확히 허용치이며 여유가 0이다. 처방은 $v$에서, $k_e$보다 낮게 렌더링한 $k$에서, 아니면 힘 루프를 팔로워로 옮기는 데서 나와야 한다. §3이 말한 수 셋이 산술로 도착한 것이다.
+
+**6단계 — 학습 전에 채점하는 코퍼스.** 세션 로그는 에피소드 개수가 주지 않는 숫자 넷을 준다.
+
+$$\eta = \frac{88}{120} = 0.733, \qquad c = \frac{4.0 \times 3600}{88} = 164\ \mathrm{s} = 2.73\ \mathrm{min}, \qquad H = -\!\!\sum_j p_j\log_2 p_j = 0.968\ \text{bits}$$
+
+수율은 *쓸 만한* 에피소드를 *시도*로 나누고, 비용은 같은 쓸 만한 개수로 벽시계를 나누며, 모드 엔트로피는 $58/38$ 분할 $p = (0.604, 0.396)$에 대해 잰다. 복구 커버리지는 $11/88 = 0.125$다. 읽어 보자:
+
+- 소박한 비용, 즉 벽시계를 시도로 나눈 값은 $120\ \mathrm{s}$로 실제보다 $1.36$배 적게 잡는다. 실제 $164\ \mathrm{s}$에서는 $500$ 에피소드 코퍼스가 조작자 시간 $22.7$시간이다.
+- 모드가 $\pm 60\ \mathrm{mm}$에 있고 MSE 최적의 단일 행동은 그 평균인 $-12.5\ \mathrm{mm}$다. 가까운 모드까지가 $47.5\ \mathrm{mm}$이고 슬롯 반폭이 $10\ \mathrm{mm}$이므로, 단봉 회귀의 출력은 슬롯을 $37.5\ \mathrm{mm}$ 빗나간다 — **어느 시연의 나쁜 판본도 아니고, 시연이 아예 아니다.**
+- 코퍼스를 균형 맞춰도 나아지지 않는다. $48/48$이면 $H$가 온전한 $1.000$비트로 오르고 최적 단일 행동은 $0\ \mathrm{mm}$로, 양쪽 모드에서 $60\ \mathrm{mm}$ 떨어진다. *더 나쁘다*. 엔트로피는 분리 가능성이 아니라 균형을 재므로, 모드 위치와 함께 보고하지 않으면 틀린 처방을 주장하게 된다.
+- 쓸 만한 에피소드 여덟에 하나가 복구를 담고 있다. 분포를 벗어난 정책은 정상 주행 여덟 번에 시연된 복구 한 번을 본 셈이고, §6의 오차 누적 항목이 실제로 말하는 숫자가 그것이다.
 
 ### 1. 원격조작은 데이터 생성 도구다
 
@@ -518,6 +819,16 @@ flowchart LR
 전체를 **2포트 네트워크**로 모델링한다: 한 포트는 사람을, 한 포트는 환경을 향하고,
 각 포트에는 속도와 힘이 있다.
 
+> **2포트 모델의 정의.** **2포트 모델**은 *정확히 두 곳에서 일률을 주고받는 시스템에 대한 기술*이고, 포트 변수 넷을 잇는 $2\times2$ 행렬 하나다. 블록 다이어그램도, 제어기도, 안정성 검사도 아니다. 정의 조건이 셋이다. 포트가 정확히 **둘**이고 각각이 곱하면 그 포트를 건너는 일률이 되는 힘과 속도를 나른다 — 그러므로 세 번째 상호작용에 대해서는 아무 말도 하지 않고, 탁자에 놓인 그리퍼는 이 모델 바깥이다. 관계가 **선형이고 시불변**이라 주파수 영역에서 쓰인다([[02-foundations/signal-processing|6. 신호 처리 §1]]). 즉 이것을 보고한 논문은 어딘가에서 선형화했고 어디인지를 밝혀야 한다. 그리고 **어느 둘을 입력으로 삼느냐가 규약**이다. 아래의 *혼성*(hybrid) 형태는 사람의 속도와 환경의 힘을 입력으로 잡고, 네 항은 그 선택 아래에서만 말해진 뜻을 갖는다.
+>
+> $$\begin{bmatrix}F_h\\[2pt] -\dot x_e\end{bmatrix} = \begin{bmatrix}h_{11} & h_{12}\\[2pt] h_{21} & h_{22}\end{bmatrix}\begin{bmatrix}\dot x_h\\[2pt] F_e\end{bmatrix}$$
+>
+> $F_h, \dot x_h$는 사람 포트의 힘과 속도, $F_e, \dot x_e$는 환경 포트의 것이다. 그래서 $h_{11}$은 팔로워가 허공에 있을 때 조작자가 느끼는 임피던스, $h_{22}$는 조작자가 가만히 있을 때 환경이 보는 어드미턴스, $h_{12}$와 $h_{21}$은 전달 둘 — 힘은 뒤로, 운동은 앞으로 — 이다.
+>
+> - **예**: 이상적 원격조작기, $h_{11} = h_{22} = 0$이고 $h_{12} = -h_{21} = 1$. 허공에서 아무것도 느껴지지 않고, 환경은 조작자만이 구동하며, 두 전달이 모두 1이다.
+> - **반례**: 리더 장치의 1포트 임피던스 $Z(s) = F/\dot x$. 손이 닿는 것에 대한 완전한 기술이면서 팔로워가 닿는 것과의 어떤 관계도 표현하지 못하는데, 그것이 이 주제 전체다.
+> - **왜 중요한가**: Lawrence의 4채널은 링크를 건너보내는 신호 넷이고, $h$ 항 넷은 그 신호들이 정하는 값이다. §2~§3의 모든 주장 — 투명성, 안정성 상충, 지연의 값 — 이 이 숫자 넷 중 하나나 둘에 대한 주장이며, 그것을 적지 않으려는 논문은 적는 논문과 비교할 수 없다.
+
 <svg viewBox="0 0 560 212" style="max-width:100%;height:auto" role="img" aria-label="사람 포트에서 리더, 지연된 채널, 팔로워를 거쳐 환경 포트로 이어지는 2포트 양방향 원격조작 사슬">
   <g fill="currentColor">
     <rect x="104" y="64" width="94" height="46" rx="3" fill-opacity="0.10"/>
@@ -553,6 +864,16 @@ flowchart LR
 움직이면 아무것도 느껴지지 않아야 한다. 완전한 투명성이란 조작자의 손과 팔로워의 공구가
 역학적으로 같은 물체라는 뜻이다.
 
+> **투명성의 정의.** **투명성**은 *임피던스 둘의 비교*다. 조작자가 느끼는 전달 임피던스 $Z_t$ 대 팔로워가 닿는 환경 임피던스 $Z_e$. 점수가 아니라 관계이고, 조건 셋이 그것을 못 박는다. 명시된 범위의 **모든** $Z_e$에 대한 진술이며 $Z_e = 0$도 포함한다. 벽 하나를 옳게 그려 주는 장치는 투명한 것이 아니다. **주파수에 의존**하므로 곡선이고, 단일 숫자는 이름을 밝혀야 하는 어떤 주파수에서의 값이다. 그리고 위치 추종이 아니라 **전달 임피던스**에 대한 것이다. 리더의 위치를 완벽히 따라가면서 틀린 세상을 그려 줄 수 있다.
+>
+> $$Z_t = \frac{F_h}{\dot x_h} = h_{11} - \frac{h_{12}h_{21}\,Z_e}{1 + h_{22}Z_e}, \qquad Z_t = Z_e\ \ \forall Z_e \iff h_{11} = 0,\ h_{22} = 0,\ h_{12}h_{21} = -1$$
+>
+> Worked case 1단계에서 환경 포트를 소거해 유도한 것이다. 그러므로 완전한 투명성은 행렬에 대한 조건 셋이지 올려야 할 이득이 아니다.
+>
+> - **예**: 자기 댐핑이 $h_{11}$에 들어간 P3 리더, $Z_t = 0.8 + Z_e$. 오차가 고정된 $0.8\ \mathrm{N\cdot s/m}$이므로 $10^4\ \mathrm{N/m}$ 벽에 대해서는 $0.008\%$이고 허공에서는 *무한*이다. 투명성이 느낄 것이 없는 바로 그곳에서 가장 나쁜 이유다.
+> - **반례**: 힘 피드백 이득을 반으로, $h_{12}h_{21} = -0.5$. 그러면 모든 강성에서 $Z_t = 0.5\,Z_e$다. 모든 벽이 일관되게 절반으로 무르고, 조작자의 경험 중 어느 것도 그것을 알려 주지 않는다. 완벽한 추종, 완벽하게 틀린 세상. 알아 둘 두 번째 반례는 **포화**하는 $h_{22} \ne 0$이다. $h_{22} = 1/2000$이면 $2\ \mathrm{kN/m}$ 넘는 환경이 전부 $2\ \mathrm{kN/m}$으로 그려지므로 콘크리트와 석고보드가 같은 물체가 된다.
+> - **왜 중요한가**: 바로 다음에 이름 붙는 이 분야의 중심 상충이 이 조건 셋과 안정성 여유 사이의 상충이다. 그러므로 $h$ 항도 $Z_t$ 곡선도 없는 "투명하다"는 결과가 아니라 단어이고, §8이 말하듯 지연은 보고하고 렌더링한 강성은 보고하지 않은 논문은 그 하나의 절반을 보고한 것이다.
+
 Lawrence의 4채널 분석(1993) — 위치/속도와 힘이 각각 양방향으로 링크를 건너 신호가 모두 넷이라 "4채널"이다
 ([[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 양방향 원격조작 §2]]) — 이 이것을 직관이 아니라 설계 목표로 만든 지점이고, 동시에
 **이 분야의 근본적 트레이드오프**를 지명한다: 투명성과 견고한 안정성은 서로를 당긴다.
@@ -567,6 +888,16 @@ Lawrence의 4채널 분석(1993) — 위치/속도와 힘이 각각 양방향으
 포트로 들어온 에너지보다 더 많이 내보낼 수 없다. 수동적인 부품을 연결하면 전체도 수동적으로
 남고, 이것이 안정성을 보이는 길을 준다. 이는 호환되는 연결과 well-posedness 가정 아래 성립한다.
 수동성 그 자체가 점근 수렴이나 좋은 성능을 자동으로 뜻하지는 않는다.
+
+> **수동성의 정의.** **수동성**은 *일률 포트를 가진 시스템의 성질*이고, 모든 순간과 모든 허용 입력에 대해 성립해야 하는 부등식이다. 안정성도, 수렴도, 성능 보장도 아니다. 수동적인 시스템이 영원히 진동할 수 있다. 정의 조건이 셋이다. 아래로 유계인 **저장 함수** $E \ge 0$이 있고, 여기서 "에너지"란 그것을 말하며 물리적 에너지일 필요가 없다. 부등식이 전형적인 궤적이 아니라 **모든** 궤적에 대해 성립하고, 그래서 이 성질이 연결에도 살아남는다. 그리고 **포트의 부호 규약**이 미리 정해져 있어야 한다. 뒤집으면 주장도 뒤집힌다.
+>
+> $$\int_0^{t} F(\tau)\,\dot x(\tau)\,\mathrm{d}\tau \;\ge\; E(t) - E(0) \qquad \text{모든 } t \ge 0, \quad E(\cdot) \ge 0$$
+>
+> $F\dot x$가 포트로 들어오는 일률이다. 그러므로 시스템은 들어온 것을 저장할 수도, 소산할 수도 있고, 받은 것보다 더 돌려줄 수는 없다.
+>
+> - **예**: P3의 댐퍼, $F = b\dot x$. 적분이 $b\!\int\!\dot x^2 \ge 0$이고 $E \equiv 0$이다. 소산할 뿐 저장하지 않는다.
+> - **반례, 숫자와 함께**: **지연된** 스프링 $F = -k\,x(t - T_d)$. $x = A\sin\omega t$의 한 주기에 $W_{\text{cycle}} = \pi k A^2\sin(\omega T_d)$를 내주고, $0 < \omega T_d < \pi$이면 엄격히 양수다. P3의 $k_w = 400\ \mathrm{N/m}$에 $A = 2\ \mathrm{mm}$, $2\ \mathrm{Hz}$, $T_d = 50\ \mathrm{ms}$면 주기당 $2.955\ \mathrm{mJ}$ — 스프링과 전선밖에 없는 물건이 **제조한** $5.91\ \mathrm{mW}$다. Worked case 2단계가 그것을 유도하고 댐퍼가 갚을 수 있는 몫의 값을 매긴다.
+> - **왜 중요한가**: 수동적인 부품을 연결한다는 논증이 이 분야에서 환경 모델에 의존하지 않는 유일한 보장이고, 건설 현장에서 당신이 갖고 있지 않은 것이 정확히 그 모델이다. 그것을 잃으면 모든 안정성 주장이 누군가 가정한 벽 강성에 조건부가 된다.
 
 통신 지연은 그 수동성 논증을 깰 수 있다. 팔로워가 $T$초 전에 있던 위치로 계산된 힘이, 그사이 다른 곳으로
 움직인 리더에 가해진다. 그 둘의 곱이 시스템 *안으로* 에너지를 전달할 수 있다. 연결은 더
@@ -594,6 +925,16 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 (빈 채널에서 시작할 때). 에너지를 제조할 수 없으므로 채널은 **임의의** 상수 지연에 대해 수동적이다 —
 안정성 문제가 튜닝이 아니라 구조로 해결된다.
 
+> **Wave variable의 정의.** **Wave variable**은 *일률 포트 위의 가역 선형 좌표 변환*이고, 고른 상수 하나로 매개된다. 제어기도, 필터도, 근사도 아니다. 정의 조건이 셋이다. 사상이 **가역**이므로 변환 자체는 아무것도 버리지 않는다. 잃는 것이 있다면 나중에, 채널에서 잃는다. $\mathrm{N\cdot s/m}$ 단위의 **wave 임피던스** $b > 0$은 자유로운 설계 상수이자 결과의 일부다. 그리고 **일률 항등식** $\dot x F = \tfrac12(u^2 - v^2)$이 정확히 성립해야 한다. 일률을 근사적으로만 보존하는 변환은 근사적인 보장만 주고, 그것은 보장이 아니다.
+>
+> $$u = \frac{b\dot x + F}{\sqrt{2b}}, \quad v = \frac{b\dot x - F}{\sqrt{2b}} \qquad\Longleftrightarrow\qquad \dot x = \frac{u + v}{\sqrt{2b}}, \quad F = \sqrt{\tfrac{b}{2}}\,(u - v)$$
+>
+> $u$는 팔로워 쪽으로 떠나는 파, $v$는 돌아오는 파다. 그러므로 각각을 그대로 나르는 지연선은 들어온 것과 나간 것의 차이만 담을 수 있고, 그것이 위의 망원 적분이다.
+>
+> - **예**: $b = 0.8$에서 $\dot x = 0.05\ \mathrm{m/s}$, $F = 2\ \mathrm{N}$이면 $u = 1.613$, $v = -1.549$이고 $\tfrac12(u^2 - v^2) = 0.100\ \mathrm{W}$로 정확히 $\dot x F$다. 그때 $50\ \mathrm{ms}$ 채널이 담고 있는 것은 $\tfrac12(u^2 + v^2)T_d = 0.125\ \mathrm{J}$이고 그보다 더 돌려줄 수 없다.
+> - **반례**: 돌아오는 힘에 저역 통과를 거는 것. 그것도 채널이 넣을 수 있는 에너지를 줄이고, wave 변환은 아니다. 가역이 아니고 일률 항등식이 깨지며, 튜닝이 아닌 보장을 주는 지연이 하나도 없다.
+> - **왜 중요한가**: 보장이 구조적이고 청구서도 구조적이다. 채널을 $b$로 종단하면 $h_{11}$이 0이어야 할 자리에 $b$가 놓이므로 조작자가 *허공에서* $0.8\ \mathrm{N\cdot s/m}$의 댐핑을 느낀다 — §2의 투명성 정의가 지목한 바로 그 결함이다. 지연의 처방은 투명성의 화폐로 지불되고, 그것이 다음 문단을 행렬의 한 항으로 말한 것이다.
+
 대가는 투명성이다. wave variable 원격조작은 무르게 느껴지고 위치가 표류한다. 보장을 산
 대가로, 결합을 진짜처럼 느끼게 만들던 고주파 충실도를 정확히 그만큼 버렸기 때문이다.
 §2의 트레이드오프가 이제 튜닝 손잡이가 아니라 정리(theorem)의 형태로 다시 나타난 것이다.
@@ -603,6 +944,18 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 > **상수인가 변동하는가**(패킷 네트워크는 변동한다), **알려져 있는가**, 그리고 안정성이
 > **단단한** 환경에 대해 보여졌는가 아니면 자유 운동에서만인가. 자유 운동 안정성은 거의
 > 공짜다. 접촉 안정성이 주장이다.
+
+그 셋 중 첫째는 보통 숫자 하나로 답해지는데, 숫자 하나는 그 양이 아니다.
+
+> **원격조작 지연 예산의 정의.** **지연 예산**은 *루프 하나의 왕복 시간을 이름 붙은, 따로 잴 수 있는 항들로 더해서 분해한 것*이고, 과제에서 나온 허용치에 견준다. 설계 산출물이지 측정값이 아니며, ping이 돌려주는 숫자도 아니다. 정의 조건이 셋이다. **루프 위의 모든 요소가 양방향 각각에 정확히 한 번씩 나온다** — 측정, 부호화, 전송, 복호, 계산, 구동, 그리고 장치 자신의 기계적 상승까지 앞뒤로. 각 항이 **상한**이므로 합이 보수적이고, 지켜진 예산은 지켜진 것이다. 그리고 장비의 느낌이 아니라 과제 자신의 공차에서 나온 **허용치에 견주어** 말한다.
+>
+> $$T_{\text{rt}} = \sum_i T_i \;\ge\; 2\,T_{\text{net}}, \qquad\text{허용치}\quad T_{\text{rt}} \le \frac{F_{\max}}{k_e\,v}$$
+>
+> $T_i$는 이름 붙은 항들, $T_{\text{net}}$은 편도 전송 시간, $F_{\max}$는 부재나 공구가 볼 수 있는 최대 접촉력, $k_e$는 환경 강성, $v$는 조작자의 접근 속도다. 조작자가 저항이 도착하기 전까지 왕복 시간 내내 밀고 들어가므로 명령되는 침투가 $vT_{\text{rt}}$이고 그것이 요구하는 힘이 $k_e v T_{\text{rt}}$이기 때문이다.
+>
+> - **예**: 5단계의 표, 항 열 개가 $150\ \mathrm{ms}$로 합쳐지고 허용치는 $20/(10^4\times 0.050) = 40\ \mathrm{ms}$다 — $3.75$배 초과이고, 네트워킹만으로는 닫을 수 없다. 전송 두 항을 지워도 정확히 $40\ \mathrm{ms}$가 남아 여유가 0이기 때문이다.
+> - **반례**: "우리 지연은 $110\ \mathrm{ms}$입니다", 즉 왕복 ping. 그 예산의 $73.3\%$이고 $40\ \mathrm{ms}$를 뺀 것이며 — $50\ \mathrm{mm/s}$에서 추가 명령 침투 $2.0\ \mathrm{mm}$, 이 벽에 대해 $20\ \mathrm{N}$ — 그것은 힘 허용치 전부가 세지 않은 항들 속에 숨은 것이다.
+> - **왜 중요한가**: "이 지연이 받아들일 만한가"를 과제에서 나온 우변을 가진 산술로 바꾸고, 어느 항을 쳐야 하는지를 짚어 준다. 전송이 지배하는 예산은 네트워킹 문제이고, 짧은 링크에서 $15\ \mathrm{ms}$ 증폭기가 그렇듯 장치 자신의 상승 시간이 지배하는 예산은 어떤 네트워크로도 고쳐지지 않는 하드웨어 문제다.
 
 > [!example] 계산 예제 · Worked example
 > **왕복 150 ms가 접촉 순간에 하는 일.** 작업자가 마스터를 50 mm/s로 움직이는데 공구가 벽에
@@ -736,6 +1089,16 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 반대로, 작은 힘을 증폭해 조작자가 느끼게 한다 — 로봇이 사람은 알아채지 못할 힘으로 일할 때
 필요하고, 사람이 알아채야 할 힘을 가릴 때 위험하다.
 
+> **모션 스케일링의 정의.** **모션 스케일링**은 *변위에 적용하는 무차원 비*다. 자세에 적용하는 것도, 신호의 주파수 성분에 적용하는 것도 아니다. 정의 조건이 셋이고 각각이 장비가 틀리는 방식이다. **증분**을 스케일하므로 사상에 절대 오프셋과 클러치가 필요하다 — 조작자가 풀고, 손을 다시 놓고, 다시 무는 것이 가능해야 하며 그러지 않으면 작업 영역이 $s$배 작다. **의도와 손떨림을 같은 비로** 스케일한다. 기어비이지 필터가 아니고, 손 운동의 신호 대 잡음비를 조금도 개선하지 않는다. 그리고 **힘 비 $s_f$는 별개의 선택**이다. 손이 느끼는 것은 쌍 $(s, s_f)$만이 정하므로 $s$만 인용하면 무엇을 그려 줬는지 말하지 않은 것이다.
+>
+> $$\Delta x_f = \frac{\Delta x_l}{s}, \qquad F_h = s_f F_e, \qquad k_{\text{felt}} = \frac{F_h}{\Delta x_l} = \frac{s_f}{s}\,k_e$$
+>
+> $\Delta x_l, \Delta x_f$는 리더와 팔로워 변위, $s$는 모션 축소비, $s_f$는 힘 확대비, $k_e$는 참된 환경 강성이다. 그러므로 §2의 뜻에서 투명하려면 $s_f = s$가 정확히 성립해야 하고, 다른 어떤 쌍도 다른 세상을 그려 준다.
+>
+> - **예**: 이 페이지의 고정 장비, $s = 10$에 $s_f = 1$. $40\ \mathrm{mm}$ 손 운동이 $4\ \mathrm{mm}$ 공구 운동, $1\ \mathrm{mm}$ 손떨림이 $0.1\ \mathrm{mm}$, 그리고 $10^4\ \mathrm{N/m}$ 벽이 $10^3\ \mathrm{N/m}$으로 그려진다. 모든 깊이에서 열 배 무르다.
+> - **반례**: 느끼는 *힘*을 이야기의 전부로 삼는 것. $s = 5$에 비 하나를 공유하면($s_f = 1/5$) $50\ \mathrm{N}$ 접촉이 $10\ \mathrm{N}$으로 느껴지는 것이 맞고 — 강성은 $s^2 = 25$배로 줄어 $400\ \mathrm{N/m}$이다. 눈에 띄는 쪽은 힘 오차이고, 조작자의 행동을 바꾸는 쪽은 강성 오차다.
+> - **왜 중요한가**: 스케일링은 궤적 어디에도 기록되지 않는다. $s = 10$에서 모은 시연 코퍼스에는 정책이 결코 하지 않을 손 운동과 조작자가 참된 크기로 느낀 적 없는 접촉력이 들어 있고, 뒷단의 무엇도 데이터에서 $s$를 복원할 수 없다. 인터페이스 옆 방법 절에 적어야 하고, $s_f$도 그 옆에 적어야 한다.
+
 > [!important] 리타게팅은 시연이 조용히 비현실적으로 변하는 지점이다
 > 사상이 사람으로 하여금 로봇이 작업 영역 가장자리에서만 도달하는 자세를 명령하게 두면,
 > 데이터셋은 특이점에 가까운 자세로 가득 차고 그 위에서 학습한 정책이 그것을 물려받는다.
@@ -749,7 +1112,17 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic 벤치마크)은
 데이터가 기여하는 것과 알고리즘이 하는 일을 분리하기 위해, 오프라인 학습 알고리즘 여섯
 개를 시뮬레이션 과제 다섯 개와 실기계 다단계 과제 세 개에서 비교한다. 양은 쉬운 축이고,
-어려운 축들은 이렇다:
+어려운 축들은 아래에 있으며, 각각에는 학습을 한 번도 돌리기 전에 계산할 수 있는 통계가 하나씩 붙는다.
+
+> **시연 품질 지표의 정의.** **시연 품질 지표**는 *코퍼스의 통계*이고, 기록된 에피소드만으로 계산한다. 정책 결과가 아니며, 모델을 학습시켜야 얻는 숫자는 코퍼스 지표가 아니라 평가다. 정의 조건이 셋이다. **어떤 정책보다도 먼저, 정책과 무관하게** 계산되고, 그것이 이 숫자를 방법의 성질이 아니라 도구의 성질로 만든다. 각각에 **명시된 분모** — 시도, 쓸 만한 에피소드, 과제 성공 에피소드 — 가 있고, 실제 로그에서는 셋이 서로 다르다. 그리고 각각을 **원 에피소드 개수와 나란히** 보고한다. 개수만으로는 셋 중 어느 것도 정해지지 않기 때문이다.
+>
+> $$\eta = \frac{N_{\text{usable}}}{N_{\text{att}}}, \qquad c = \frac{T_{\text{wall}}}{N_{\text{usable}}}, \qquad H = -\sum_{j=1}^{M} p_j \log_2 p_j, \qquad \rho_{\text{rec}} = \frac{N_{\text{rec}}}{N_{\text{usable}}}$$
+>
+> **수율** $\eta$, **쓸 만한 에피소드당 비용** $c$, 유효한 해 $M$개의 경험적 비중 $p_j$에 대한 **모드 엔트로피** $H$, 그리고 **복구 커버리지** $\rho_{\text{rec}}$다. 과제는 성공했는데 기록기가 잘라 먹은 에피소드는 데이터 없는 비용이고, 정상 경로를 한 번도 벗어나지 않은 코퍼스는 복귀를 가르칠 수 없기 때문이다.
+>
+> - **예**: 고정된 세션 로그. 과제 성공률 $96/120 = 0.800$에 대해 $\eta = 88/120 = 0.733$, 쓸 만한 에피소드당 $c = 164\ \mathrm{s}$이므로 $500$개면 $22.7$시간, $58/38$ 분할에 대해 $H = 0.968$비트, $\rho_{\text{rec}} = 11/88 = 0.125$.
+> - **반례**: "시연 50개". 그리고 더 미묘한 것 — **$H$만 인용하기.** $48/48$로 균형 잡힌 코퍼스는 온전한 $1.000$비트를 받고 *더 나쁘다*. MSE 최적의 단일 행동이 $-12.5$에서 $0\ \mathrm{mm}$로 옮겨 가는데, 그것은 반폭 $10\ \mathrm{mm}$ 슬롯에 대해 양쪽 모드에서 $60\ \mathrm{mm}$다. 엔트로피는 분리 가능성이 아니라 균형을 재므로, 모드 위치를 옆에 두지 않으면 틀린 처방을 주장한다.
+> - **왜 중요한가**: §8의 표가 요구하는 숫자가 이것들이고, 다른 연구실로 전이되는 숫자도 이것들이다. 수집 계획의 비용이 실제로 매겨지는 단위가 $c$이고, 기록기를 바꾸면 달라지는 것이 $\eta$이며, 회귀 정책과 생성 정책 사이를 결정하는 것이 모드 위치를 곁들인 $H$이고, 아래 오차 누적 항목을 표에 넣을 수 있는 형태로 만든 것이 $\rho_{\text{rec}}$다.
 
 - **조작자의 숙련도, 그리고 일관성.** 숙련도가 다른 조작자들의 시연은 단순히 "더 많은
   데이터"가 아니다 — 서로 다른 정책에서 뽑은 표본이다. 소박한 행동 복제는 그것들을 평균
@@ -823,10 +1196,13 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] 2포트 도식을 그리고 지연이 들어오는 곳을 표시한다.
-- [ ] 지연이 왜 수동성을 깨는지, wave variable이 그것을 고치려고 무엇을 내주는지 설명한다.
+- [ ] 2포트 도식을 그리고 $h$ 항 넷을 적고 지연이 들어오는 곳을 표시한다.
+- [ ] 완전한 투명성의 조건 셋을 말하고, 힘 이득을 반으로 줄이면 그중 무엇이 깨지는지 밝힌다.
+- [ ] 지연이 왜 수동성을 깨는지를 한 주기의 에너지를 숫자로 들어 설명하고, wave variable이 그것을 고치려고 무엇을 내주는지 말한다.
 - [ ] 주어진 과제에 인터페이스를 고르고 충실도–비용 축에서 방어한다.
-- [ ] 에피소드 개수가 담지 못하는 시연 데이터셋의 성질 셋을 댄다.
+- [ ] 왕복 지연 예산을 항목별로 쓰고, ping 하나짜리 수치가 무엇을 빼놓는지 말한다.
+- [ ] 모션 스케일링 $s$와 힘 스케일링 $s_f$ 아래 느끼는 강성을 댄다.
+- [ ] 에피소드 개수가 담지 못하는 시연 데이터셋의 성질 셋을 대고, 그중 하나를 계산한다.
 - [ ] 논문 하나에서 위 표의 일곱 항목을 뽑아낸다.
 
 > [!tip] 더 깊이 · Going deeper
@@ -853,16 +1229,16 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라. 리더와 팔로워는 P3 핸들 두 대, 벽은 팔로워 쪽.
+Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라. P3 핸들 두 대도, 벽 $k_e=10^4\,\mathrm{N/m}$도, 진동 $A=2\,\mathrm{mm}$ $2\,\mathrm{Hz}$도 그대로다. 손잡이 셋이 움직인다. 링크가 나빠져 편도가 $55$가 아니라 $100\,\mathrm{ms}$이고, 조작자가 느리게 일해 $v'=20\,\mathrm{mm/s}$이며, 장비를 $s'=4$와 $s_f'=4$로 다시 만든다. 두 번째 세션 로그는 시도 $200$회, 과제 성공 $150$회, 그중 버린 것 $20$회, 벽시계 $5.0$시간, 모드 분할 $75/75$다.
 
-1. **그리기.** 2포트: 사람 — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽 $x_w$. 각 로컬 루프에 $T=1\,\mathrm{ms}$, 리더로 돌아오는 힘 채널에 편도 $T_d=50\,\mathrm{ms}$. 팔로워에 $F_a=-k_w(x-x_w)$.
-2. **유도.** 리더에서 Colgate형 $K\le 2b/T$. 장치 댐퍼 $b$이지 $b_h$가 아니다. (a) $T_d=0$, $T=10^{-3}$의 경계. 카탈로그 $k_w=400$이 통과하는가? (b) 지연된 힘을 추가 홀드로 보면 $T_{\mathrm{eff}}=T+T_d=0.051$. 새 경계. $k_w=400$이 통과하는가? (c) $T_d=50\,\mathrm{ms}$에서 아직 통과하는 최대 $k_w$.
-3. **해석.** Z-width는 안정하게 렌더링할 수 있는 임피던스 구간이다. $50\,\mathrm{ms}$ 지연이 그것을 약 쉰 배로 줄이는 이유, 그리고 "벽을 느끼려면 $k_w$를 올리면 된다"가 틀린 처방인 이유는?
+1. **그리기.** 과제 그림 셋을 새 숫자로. $h$ 항과 지연을 **두 줄 모두에** 표시한 2포트, $T_d=100\,\mathrm{ms}$에서의 힘–변위 타원과 밀리줄로 적은 면적 그리고 같은 축척의 댐퍼 직사각형, 그리고 새 허용치 막대를 아래에 그린 예산 막대.
+2. **유도.** (a) 새 왕복 예산, ping의 비중, $v'$에서의 명령 침투와 힘, 그리고 $F_{\max}=20\,\mathrm{N}$에서의 허용치 $F_{\max}/(k_e v')$. 예산 초과인가, 얼마나? (b) 전송 두 항을 0으로 두고 같은 질문에 답하라. (c) $T_d=100\,\mathrm{ms}$에서의 $W_{\text{cycle}}$, 댐퍼의 소산, 둘의 비, $k_{\text{crit}}$, 그리고 이 지연이 가장 나쁜 주파수. (d) $(s', s_f')$와 $(s', 1)$에서의 $k_{\text{felt}}$, 그다음 $(s', s_f')$에서 $1\,\mathrm{mm}$ 손떨림이 만드는 팔로워 변위·접촉력·느끼는 힘. (e) 두 번째 세션의 $\eta$, 성공률, $c$, 쓸 만한 에피소드 $500$개까지의 시간, $H$, 그리고 MSE 최적의 단일 행동과 슬롯까지의 거리.
+3. **해석.** 손잡이 셋 중 정확히 하나가 Worked case가 내린 판정을 뒤집는다. 무엇인지, 어느 판정인지 밝히고, 나머지 둘이 왜 숫자만 옮겼는지 말하라. 그다음: 두 번째 세션은 첫 세션보다 수율이 **나쁘고**, 에피소드당 비용이 **좋고**, 엔트로피가 **높다**. 그중 무엇이 좋은 소식인지, 그리고 "시연 200개, 성공률 75%"만 보고한 논문이 무엇을 감췄을지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 사람 스프링–댐퍼가 리더 질량 $m$으로; 팔로워 벽의 $F_a$는 지연됨; 팔로워도 같은 $m,b$와 $x_w$ 스위치. 지연을 건너뛰는 길은 없다.
-> 2. (a) $2b/T=1600\,\mathrm{N/m}$; $400$ 통과. (b) $2b/T_{\mathrm{eff}}\approx 31\,\mathrm{N/m}$; $400$ 실패. (c) $K\le 31\,\mathrm{N/m}$.
-> 3. 지연은 복원력이 $\dot x$가 바뀐 뒤에 도착하게 해서 벽이 에너지를 넣는다. 경계는 $1/T_{\mathrm{eff}}$에 비례하고, 밀리초 샘플을 $50\,\mathrm{ms}$가 압도해 천장이 $1600$에서 $\sim 31$로 떨어진다. $k_w$를 올리면 경계 *밖*으로 더 나간다. 거래는 댐핑, wave variable, 로컬 모델 — 각각 투명성을 내주고 안정성을 산다.
+> 1. 타원이 $50\,\mathrm{ms}$일 때보다 눈에 띄게 뚱뚱하고 — 위상이 $36°$가 아니라 $72°$다 — 댐퍼의 직사각형은 그 옆에서 거의 보이지 않는다.
+> 2. (a) $150 - 110 + 200 = 240\,\mathrm{ms}$. ping이 $200\,\mathrm{ms}$로 $83.3\,\%$이고 $40\,\mathrm{ms}$를 감춘다. 침투 $20\times0.240 = 4.8\,\mathrm{mm}$, 힘 $48\,\mathrm{N}$. 감춘 $40\,\mathrm{ms}$만 해도 $0.8\,\mathrm{mm}$와 $8\,\mathrm{N}$이다. 허용치 $= 20/(10^4\times0.020) = 100\,\mathrm{ms}$이므로 $2.4$배 초과. (b) 전송 두 항을 0으로 두면 예산이 $40\,\mathrm{ms}$로 허용치 $100\,\mathrm{ms}$ **아래**이고 여유가 $2.5$배다. 이 조작자에게는 네트워킹만으로 간격이 닫힌다. (c) $\omega T_d = 1.2566\,\mathrm{rad} = 72°$, $\sin = 0.9511$이므로 $W_{\text{cycle}} = \pi\times400\times(0.002)^2\times0.9511 = 4.781\,\mathrm{mJ}$, 댐퍼의 $0.126\,\mathrm{mJ}$에 대해 비가 $37.8$. $k_{\text{crit}} = 0.8\times12.566/0.9511 = 10.57\,\mathrm{N/m}$, 가장 나쁜 주파수는 $f = 1/(4T_d) = 2.5\,\mathrm{Hz}$. (d) $k_{\text{felt}} = (4/4)k_e = 10^4\,\mathrm{N/m}$로 투명하고, $s_f = 1$이면 $2500\,\mathrm{N/m}$이다. $1\,\mathrm{mm}$ 손떨림은 팔로워를 $0.25\,\mathrm{mm}$ 움직여 $10^4\times0.25\times10^{-3} = 2.5\,\mathrm{N}$의 접촉력을 명령하고, 조작자에게는 $4\times2.5 = 10\,\mathrm{N}$으로 보인다. (e) $\eta = 130/200 = 0.650$, 성공률 $150/200 = 0.750$, $c = 5.0\times3600/130 = 138.5\,\mathrm{s} = 2.31\,\mathrm{min}$ — 벽시계를 시도로 나눈 소박한 값은 $90\,\mathrm{s}$로 $1.54$배 적게 잡는다 — 쓸 만한 에피소드 $500$개면 $19.2$시간. $H = 1.000$비트, 최적 단일 행동은 $0\,\mathrm{mm}$로 양쪽 모드에서 $60\,\mathrm{mm}$, 슬롯을 $50\,\mathrm{mm}$ 빗나간다.
+> 3. 판정을 뒤집는 손잡이는 **조작자의 속도**다. 허용치를 $40$에서 $100\,\mathrm{ms}$로 두 배 만들어 5단계의 "네트워킹만으로는 닫히지 않는다"를 "$2.5$배 여유로 닫힌다"로 바꾼다. 그리고 네트워크와 아무 상관 없는 유일한 손잡이다. 나빠진 링크는 이미 나쁜 예산을 더 나쁘게 만들었을 뿐이고($3.75$배 초과가 $2.4$배 초과로), 이미 있던 에너지 적자를 더 깊게 했을 뿐이다($k_{\text{crit}}$이 $17.1$에서 $10.6\,\mathrm{N/m}$으로, 둘 다 $k_w=400$보다 한참 아래). 새 스케일링은 애초에 안정성 문제가 아니었던 투명성을 복원했다. 코퍼스에서는 **에피소드당 비용**만 좋은 소식이고, 그것조차 일부는 느슨해진 폐기 규칙 탓이다. 수율이 떨어졌으니 조작자 시간이 더 많이 버려지고 있고, 엔트로피는 최댓값으로 올랐는데 코퍼스는 **더 나빠졌다**. 두 모드가 균형을 이루면 회귀 최적점이 $0\,\mathrm{mm}$로 옮겨 가 슬롯 바깥 $50\,\mathrm{mm}$가 되기 때문이다. 이전에는 $37.5\,\mathrm{mm}$였다. "시연 200개, 성공률 75%"는 다섯 가지를 모두 감춘다. 시도를 분모로 한 성공률을, 시도도 쓸 만한 에피소드도 아닌 개수 옆에 적어 놓고, 비용도 모드 구조도 복구 커버리지도 없다.
 
 ### 출처
 

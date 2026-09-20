@@ -24,6 +24,16 @@ example, plus the gradient pathologies that shaped architecture history.
 > [!note] First pass · 처음이라면
 > Read §1, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are for when you are reading an architecture paper and want to know why it is shaped that way.
 
+### Homework diagram · 과제가 그릴 그림
+
+One figure, drawn once here and asked for again in the problem set.
+
+**The forward chain, left to right.** Five boxes joined by four arrows: $x$, then $z=W_1x$, then $h=\mathrm{ReLU}(z)$, then $\hat y=W_2h$, then $L=\tfrac12(\hat y-y)^2$. Inside each box write its catalog number — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$ — and on each arrow write what produced the next box together with its shape: $W_1$ is $3\times2$, ReLU is elementwise and changes no shape, $W_2$ is $1\times3$, and the loss arrow also carries the target $y=1$ in from the side. Mark each of the three hidden units with its ReLU mask bit, here $(1,1,1)$, because that bit is the only place the picture can be cut.
+
+**The backward chain, underneath, right to left.** One arrow under each forward arrow, and on it the quantity that travels back: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow. Draw the two parameter gradients as stubs hanging *off* the chain rather than links in it — $\partial L/\partial W_2$ dropping from the $\hat y$ arrow, $\partial L/\partial W_1$ from the $z$ arrow — because a weight gradient is a leaf of the backward pass: nothing is computed from it, it is only read out. Next to each backward arrow write the shape of what travels on it, and check that every stub has the shape of the matrix it will update.
+
+**The update.** One more arrow from the $\partial L/\partial W_2$ stub back into the $W_2$ label, marked $-\eta$ with $\eta=0.1$. That arrow is the only thing on the page that changes a number, and the problem set's third item is exactly what comes out of it.
+
 ### 1. Derivatives as local linear models
 
 - **Taylor expansion** is the foundation of all of optimization:
@@ -381,6 +391,16 @@ print(d2, W2, L, L2)
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나. 여기서 한 번 그리고 과제가 같은 것을 다시 요구한다.
+
+**순전파 사슬, 왼쪽에서 오른쪽으로.** 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$. 각 상자 안에 카탈로그 숫자를 쓴다 — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$. 각 화살표 위에는 다음 상자를 만든 것과 그 모양을 쓴다. $W_1$은 $3\times2$, ReLU는 원소별이라 모양을 바꾸지 않고, $W_2$는 $1\times3$이며, 손실로 가는 화살표에는 옆에서 목표 $y=1$이 함께 들어온다. 은닉 유닛 셋에는 각각 ReLU 마스크 비트를 적는다. 여기서는 $(1,1,1)$이고, 이 비트가 이 그림에서 사슬이 끊어질 수 있는 유일한 자리다.
+
+**역전파 사슬, 그 아래에 오른쪽에서 왼쪽으로.** 순전파 화살표마다 그 아래 화살표를 하나씩 그리고, 거기로 거슬러 가는 양을 적는다. 손실 화살표 아래에 $\partial L/\partial\hat y$, $W_2$ 화살표 아래에 $\partial L/\partial h$, ReLU 화살표 아래에 $\partial L/\partial z$. 파라미터 그래디언트 둘은 사슬의 고리가 아니라 사슬에서 *뻗어 나온* 가지로 그린다. $\partial L/\partial W_2$는 $\hat y$ 화살표에서, $\partial L/\partial W_1$은 $z$ 화살표에서 아래로 떨어진다. 가중치 그래디언트는 역전파의 잎이기 때문이다. 그것으로부터 계산되는 것은 없고 읽어 내기만 한다. 역전파 화살표 옆에는 그 위를 지나는 것의 모양을 쓰고, 각 가지의 모양이 그것이 갱신할 행렬의 모양과 같은지 확인한다.
+
+**갱신.** 화살표 하나를 더 그린다. $\partial L/\partial W_2$ 가지에서 $W_2$ 라벨로 돌아가는 화살표이고, 위에 $\eta=0.1$로 $-\eta$라고 쓴다. 이 그림에서 숫자를 바꾸는 것은 이 화살표뿐이고, 과제 3번이 바로 그 결과다.
 
 ### 1. 국소 선형 모델로서의 미분
 

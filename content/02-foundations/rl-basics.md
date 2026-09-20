@@ -27,6 +27,18 @@ fine-tuning on real machines, and how to read an RL experimental section.
 > [!note] First pass · 처음이라면
 > This is the longest page in the track, so read §6 early. First pass: §1, §2, then jump to §6 — the RL-versus-imitation map tells you which half of the page your papers actually live in. Come back for §3, §4 and §7 with that in hand, and read §3.5 — why deep RL needs its patches — right after §3.
 
+### Homework diagram · 과제가 그릴 그림
+
+The object is plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$, read as an MDP. The problem set asks for this drawing.
+
+**Top panel — the plant, with three arrows into one sum.** Draw the summing junction of the heater with all three inputs: $u$ arriving from the controller, $-x$ arriving from the feedback path, and $d$ arriving from outside the figure. Draw $d$'s arrow crossing the box that encloses everything the agent owns, and put a heavy dashed border on that box. Label the border *what the policy may choose*: $u$ is inside it, $d$ is not, and $-x$ is a consequence rather than a choice. That single border is the difference between a controller and an agent, and it is the one thing the problem set checks. Write beside $d$ that it enters at exactly the same point as $u$ — so the plant cannot tell them apart, and only the border can.
+
+**Middle panel — the same plant as a two-state MDP.** Two circles, $s=0$ for $x\approx0$ and $s=1$ for $x\approx1$. With $d=0$ and one Euler step of $T=1$, the next state is $x^+=u$, so draw four arrows: from each circle, one arrow to $s=0$ labelled $u=0$ and one to $s=1$ labelled $u=1$. Every arrow is deterministic, so write probability $1$ on each and nothing else — the stochasticity of the general MDP has been spent, and the figure should say so rather than hide it. Write the reward *inside* each circle, $r=-s^2$, giving $0$ and $-1$: on this page reward is a property of the state you are in, not of the arrow you took. Put $\gamma=0.9$ on one arrow with a note that the effective horizon is $1/(1-\gamma)=10$ steps.
+
+**Middle panel, second layer — the backup.** Beside each circle write the value after one greedy backup from $V\equiv0$: $V(0)=0$, $V(1)=-1$. Then write, in a box, that this is already the fixed point: backing up again returns the same two numbers, because the best move from either state is $u=0$ and $V(0)=0.9\,V(0)$ forces $V(0)=0$. Along the two arrows the greedy policy does *not* take, write the action values $Q(0,1)=-0.9$ and $Q(1,1)=-1.9$, and beside each the advantage $-0.9$ — the price of one unnecessary hot step, drawn as the gap between two arrows leaving the same circle.
+
+**Bottom strip — what the drawing cannot certify.** Under both panels write one line: the two bins are the whole state space of this model, so when a real $d$ jumps the agent has no statement at all about what happens between bins. The control track's $u=-Kx$ does have one, and it is a pole ([[04-robotics/control-theory-ce397|5. Control Theory]]). Drawing the missing certificate as an empty box is the point of the exercise.
+
 ### 1. The MDP
 
 - **Markov Decision Process** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: states, actions,
@@ -921,6 +933,18 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 > [!note] 처음이라면 · First pass
 > 트랙에서 가장 긴 페이지이므로 §6을 일찍 읽어라. 1차 통과: §1, §2, 그다음 §6으로 건너뛴다 — RL 대 모방 지도가 당신의 논문들이 이 페이지의 어느 절반에 사는지 알려 준다. §3·§4·§7은 그것을 손에 쥐고 돌아와서 읽고, §3.5 — 심층 RL이 그 패치들을 필요로 하는 이유 — 는 §3 바로 다음에 읽어라.
 
+### 과제가 그릴 그림 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P4**, 곧 새는 히터 $\dot x=-x+u+d$를 MDP로 읽은 것이다. 과제가 이 그림을 요구한다.
+
+**위 칸 — 플랜트, 합산점 하나로 들어가는 화살표 셋.** 히터의 합산점을 입력 셋과 함께 그린다. 제어기에서 오는 $u$, 피드백 경로에서 오는 $-x$, 그림 바깥에서 오는 $d$. $d$의 화살표가 에이전트가 소유한 모든 것을 감싼 상자를 가로지르게 그리고, 그 상자의 테두리를 굵은 점선으로 그린다. 테두리에 *정책이 고를 수 있는 것*이라 이름 붙인다. $u$는 안에 있고 $d$는 밖에 있으며, $-x$는 선택이 아니라 결과다. 이 테두리 하나가 제어기와 에이전트의 차이이고, 과제가 확인하는 것도 그것 하나다. $d$ 옆에 그것이 $u$와 정확히 같은 지점으로 들어온다고 적는다. 플랜트는 둘을 구별하지 못하고, 구별하는 것은 테두리뿐이다.
+
+**가운데 칸 — 같은 플랜트를 두 상태 MDP로.** 동그라미 둘. $x\approx0$인 $s=0$과 $x\approx1$인 $s=1$. $d=0$이고 $T=1$의 오일러 한 스텝이면 다음 상태가 $x^+=u$이므로 화살표 넷을 그린다. 각 동그라미에서 $u=0$이라 적은 화살표가 $s=0$으로, $u=1$이라 적은 화살표가 $s=1$로 간다. 모든 화살표가 결정론적이므로 각각에 확률 $1$만 쓴다. 일반 MDP의 확률성은 여기서 다 써 버렸고, 그림은 그것을 감추지 말고 말해야 한다. 보상은 각 동그라미 *안에* $r=-s^2$로 써서 $0$과 $-1$이 되게 한다. 이 페이지에서 보상은 밟은 화살표가 아니라 머무는 상태의 성질이다. 화살표 하나에 $\gamma=0.9$를 적고 실효 지평이 $1/(1-\gamma)=10$스텝이라는 주석을 단다.
+
+**가운데 칸의 둘째 겹 — backup.** 동그라미 옆에 $V\equiv0$에서 탐욕적 backup을 한 번 한 뒤의 값을 적는다. $V(0)=0$, $V(1)=-1$. 그다음 상자 안에 이것이 이미 고정점이라고 적는다. 한 번 더 backup해도 같은 두 수가 돌아온다. 어느 상태에서든 최선의 수가 $u=0$이고 $V(0)=0.9\,V(0)$이 $V(0)=0$을 강제하기 때문이다. 탐욕 정책이 밟지 *않는* 두 화살표에는 행동 가치 $Q(0,1)=-0.9$와 $Q(1,1)=-1.9$를, 그 옆에 어드밴티지 $-0.9$를 각각 적는다. 불필요하게 한 스텝 더 데운 값이고, 같은 동그라미에서 나가는 두 화살표의 간격으로 그려진다.
+
+**아래 띠 — 이 그림이 보증하지 못하는 것.** 두 칸 아래에 한 줄을 쓴다. 이 모델의 상태 공간은 두 칸이 전부이므로, 진짜 $d$가 뛸 때 칸과 칸 사이에서 무슨 일이 일어나는지에 대해 에이전트는 아무 진술도 갖지 못한다. 제어 트랙의 $u=-Kx$는 그 진술을 가지고 있고, 그것이 극점이다([[04-robotics/control-theory-ce397|5. 제어 이론]]). 없는 보증서를 빈 상자로 그리는 것이 이 연습의 요점이다.
+
 ### 1. MDP
 
 - **마르코프 결정 과정** $(\mathcal{S}, \mathcal{A}, p, r, \gamma)$: 상태, 행동, 전이 커널
@@ -987,6 +1011,9 @@ flowchart LR
   떨어져 있다는 것의 대가가 정확히 할인율 한 번, $9 = 0.9 \times 10$이다. 그리고 $A$에서
   나가는 행동의 어드밴티지는 $Q(A,\text{이동}) - V(A) = 9 - 9 = 0$ — 대안이 없었으니 어떤
   수도 평균보다 나을 수 없다. 어드밴티지는 *선택*을 재는 양이고, 선택이 없는 곳에서는 0이다.
+
+**계산: MDP로서의 P4.** 새는 히터 $\dot x=-x+u+d$([[02-foundations/lab-plants|0.6]]). 에이전트는 $u$를 고르고, $d$는 고르지 않는 외생 화살표다. $x\approx 0$과 $x\approx 1$에 대해 칸 $s\in\{0,1\}$, 행동 $u\in\{0,1\}$, $d=0$, $T=1$의 오일러라 $x^+=u$, 보상 $r=-s^2$, $\gamma=0.9$. $V\equiv 0$에서 탐욕적 backup 한 번: $s'=u$이고 $Q(s,u)=-s^2$이므로 $V(0)=0$, $V(1)=-1$. 이 칸들 위에서 배운 정책은 진짜 $d$가 뛸 때 극점 보증서를 갖지 못한다. 그 안정화기는 [[04-robotics/control-theory-ce397|5]]의 $u=-Kx$다. 과제는 이 MDP를 그림으로 그리는 것이다.
+
 - 이들은 고정점 방정식이고, 벨만 연산자는 $\gamma$-수축이라 반복하면 수렴한다 —
   아래 모든 것의 면허장.
   - *그 뜻.* **벨만 연산자** $T^\pi$는 임의의 가치 표 $V$를 새 표 $(T^\pi V)(s) = \sum_a \pi(a \mid s) \sum_{s'} p(s' \mid s, a)\,[r(s,a) + \gamma V(s')]$로 보내고, $V^\pi$는 이 연산자가 바꾸지 않는 표, $T^\pi V^\pi = V^\pi$다. 최대 노름에서의 **$\gamma$-수축**은 임의의 두 표를 최소한 $\gamma$배만큼 가깝게 만드는 연산자다.

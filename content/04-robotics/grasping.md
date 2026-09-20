@@ -26,6 +26,103 @@ Half the field is the mathematics of closure and half is predicting it from a de
 > [!note] First pass · 처음이라면
 > Read §1, then §3 — form closure versus force closure is the distinction the secondary literature keeps getting wrong — then §7. §4 (the epsilon metric) and §5 are for when you are comparing grasp planners rather than reading about them.
 
+### Running object · 이 페이지의 대상
+
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] carries the tool, and the tool holds **the panel tile** already frozen by [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] — same numbers, not restated and not changed: $0.200 \times 0.100\ \mathrm{m}$, mass $0.500\ \mathrm{kg}$ so $W = 4.905\ \mathrm{N}$, Coulomb $\mu = 0.5$, planar wrenches written $w = (f_x,\ f_y,\ m_z)$ about the tile's centre of mass.
+
+Closure is binary and ch.12 settles it. Ranking needs three things ch.12 never has to choose, so this page freezes them:
+
+| Addition | Value | Why a quality metric needs it |
+|---|---|---|
+| **three candidate grasps** | **A** at $(\pm 0.100,\ 0)$ with normals $(\pm 1,\ 0)$ · **B** at $(0,\ \pm 0.050)$ with normals $(0,\ \mp 1)$ · **C** at $(-0.100,\ 0)$ with normal $(1,\ 0)$ and $(0.060,\ -0.050)$ with normal $(0,\ 1)$ | a ranking needs more than one grasp, and a screening test needs something that fails it |
+| **force budget** | $\sum_i f_{n,i} \le F = 20\ \mathrm{N}$ — a **total**, not a per-contact cap | without a bound the wrench set is an unbounded cone and no radius or volume exists |
+| **characteristic length** | $\rho = 0.100\ \mathrm{m}$, the grasp half-span | a ball cannot mix newtons with newton-metres until $m_z$ is divided by a length |
+
+Grasp **A** is ch.12's grasp. **B** is the same tile turned $90°$ in the gripper, squeezing across the short dimension. **C** is a pair a depth image would happily propose and the test of §3 rejects. Ch.12's preload of $20\ \mathrm{N}$ *per finger* is the other budget convention, and §4 prices the difference exactly.
+
+*Scope: this page teaches how a grasp is scored — the linear map from contact forces to object wrenches, the wrench set that map generates under a budget, and the two numbers usually read off that set — and where the arithmetic survives inside a learned pipeline. It does not teach the closure test, which [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §3]] derives on this same tile; nor grasp synthesis algorithms; nor hand design, for which §8 names sources.*
+
+### Homework diagram · 과제가 그릴 그림
+
+Two figures, side by side.
+
+**Left — the tile and its candidates.** Draw the tile as a rectangle with the centre of mass marked, then all four contact points of **A** and **C** on it. At each, the inward normal as a solid arrow and the friction cone as two dashed rays at $\pm 26.565°$ with the wedge shaded. Draw the connecting line of **A** straight through the tile and the connecting line of **C** as a second, tilted line. Write the angle each line makes with each normal at its own end — four numbers — and circle the one that is outside its cone. In a margin box, draw one contact's cone a second time with an inscribed regular octagon over it, and shade the eight slivers the octagon throws away.
+
+**Right — the wrench space.** Axes $f_x$, $f_y$ and $m_z/\rho$, all three in newtons. Plot the four generator wrenches of **A** as points, join them into the tetrahedron, mark the origin inside it, and draw the inscribed ball touching a face. Label the ball's radius $\epsilon$ and draw the arrow from the origin to that touch point — the weakest direction. Then draw the gravity wrench $(0,\ +4.905,\ 0)$ as a separate arrow from the origin and mark where it leaves the tetrahedron: a longer arrow than $\epsilon$, which is the whole point of §4.
+
+The problem set asks for the same two figures at $\mu = 0.2$, where one of those two arrows changes sign of verdict and the other does not.
+
+### Worked case · 대상으로 한 번 끝까지
+
+**Step 1 — the grasp map.** Each contact $i$ applies $f_i = f_{n,i}\hat n_i + f_{t,i}\hat t_i$, and ch.12 §2 turns a force at a point into a wrench. Stacking all the contact coordinates into one vector $f_c$ makes the whole thing one matrix.
+
+> **Grasp map, defined.** The **grasp map** $G$ is a *matrix* — a linear map from contact-force coordinates to object wrenches, and nothing else: not a set, not a test, not a quality. Three defining conditions: it is built column by column, one column per contact-force coordinate, each column being the wrench that coordinate produces at unit magnitude; its columns are written in a stated object frame, because $m_z$ moves with the origin; and it is **linear**, which is what buys everything downstream — additivity and homogeneity in $f_c$, in the sense of [[02-foundations/engineering-math|0.5 Engineering Math §4.5]]. The friction cones are *not* part of $G$; they are the constraint set $G$ is later applied to.
+>
+> $$\mathcal{F}_o = G\,f_c, \qquad G = \big[\,w(r_1,\hat n_1)\ \ w(r_1,\hat t_1)\ \cdots\ w(r_k,\hat n_k)\ \ w(r_k,\hat t_k)\,\big]$$
+>
+> where $\mathcal{F}_o$ is the net wrench on the object, $f_c = (f_{n,1}, f_{t,1}, \ldots, f_{n,k}, f_{t,k})$ the contact-force coordinates, $r_i$ and $(\hat n_i, \hat t_i)$ contact $i$'s position and its normal and tangent, and $w(r, d) = (d_x,\ d_y,\ r_x d_y - r_y d_x)$ the unit wrench of ch.12 §2 — so $G$ is $3 \times 2k$ in the plane and $6 \times 6k$ in space.
+
+For grasp **A**, with $r_1 = (-0.100,\ 0)$, $\hat n_1 = (1,0)$, $\hat t_1 = (0,1)$ and $r_2 = (+0.100,\ 0)$, $\hat n_2 = (-1,0)$, $\hat t_2 = (0,1)$:
+
+$$G_A = \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & -0.100 & 0 & 0.100 \end{bmatrix}$$
+
+because each column is $(d_x,\ d_y,\ r_x d_y - r_y d_x)$ for that contact's own $r$ and direction. Read three things straight off it. Its rank is $3$, so the grasp can in principle produce any planar wrench. Its null space has dimension $4 - 3 = 1$ and is spanned by $(1,\ 0,\ 1,\ 0)$: pressing both normals equally is an **internal force** that the object never feels — $G_A\,(1,0,1,0)^\top = (0,0,0)$ — which is exactly why a preload can be raised freely without disturbing the load balance. And holding the tile against gravity, $\mathcal{F}_o = (0,\ 4.905,\ 0)$, the least-norm solution is $f_c = (0,\ 2.4525,\ 0,\ 2.4525)$, reproducing ch.12's $f_{y}=W/2$ and $f_n^{\min} = 2.4525/0.5 = 4.905\ \mathrm{N}$ without re-deriving it.
+
+One more reading, because it recurs in §4: $G_A\,(20,\ 10,\ 20,\ -10)^\top = (0,\ 0,\ -2)$. Equal squeeze with opposed tangentials is a **pure moment** of $2.00\ \mathrm{N\cdot m}$, the moment capacity ch.12 Step 6 reports.
+
+- **Example**: the column $w(r_1, \hat t_1) = (0,\ 1,\ -0.100)$ — dragging up at the left contact lifts *and* rolls the tile, because that force acts $0.100\,\mathrm{m}$ off centre.
+- **Non-example**: the $3 \times 2$ matrix of just the two normals. It is a perfectly good matrix and it is not the grasp map of a *frictional* grasp: drop the tangential columns and the rank falls to $1$, which is ch.12 Step 4's frictionless case and a different grasp entirely.
+- **Why it matters**: every object in §3 and §4 — the closure test, the wrench space, both quality numbers — is a statement about $G$ and the cones together. Write $G$ in the wrong frame and all of them are wrong in the third coordinate only, which is the hardest kind of error to notice.
+
+**Step 2 — make the cones polyhedral.** In the plane nothing is needed: the wedge already has exactly two edges, $\hat n \pm \mu\hat t$, and they are the same two $G$ will be applied to. In space the cone is circular and has to be replaced before any of this is computable — see the definition at the end of §2, which costs $7.6\%$ of $\mu$ at $m = 8$ and nothing at all here.
+
+**Step 3 — screen the candidates.** The antipodal test of §3, applied to all three:
+
+| grasp | line joining the contacts | angle at contact 1 | angle at contact 2 | verdict against $\arctan 0.5 = 26.565°$ |
+|---|---|---:|---:|---|
+| **A** | $0.200\ \mathrm{m}$ along $\hat x$ | $0.000°$ | $0.000°$ | pass, with the widest possible margin |
+| **B** | $0.100\ \mathrm{m}$ along $\hat y$ | $0.000°$ | $0.000°$ | pass |
+| **C** | $0.168\ \mathrm{m}$, tilted | $17.354°$ | $72.646°$ | **fail at contact 2** |
+
+Contact 2 of **C** is on the bottom edge with normal $(0,1)$, and the line back to contact 1 is $(-0.160,\ +0.050)$, so $\cos\theta = 0.050/0.167631 = 0.298275$ and $\theta = 72.646°$. **C** would need $\mu \ge \tan 72.646° = 3.20$ — several times any dry surface — so no squeeze whatever makes it work, which is the point of screening before computing anything.
+
+**Step 4 — build the wrench space and read the two numbers.** Take the budget $F = 20\ \mathrm{N}$ to one contact at a time, at each of its two cone edges, and divide $m_z$ by $\rho = 0.100\ \mathrm{m}$:
+
+| edge | $f$ (N) | $m_z = r_x f_y$ (N·m) | generator $(f_x,\ f_y,\ m_z/\rho)$ (N) |
+|---|---|---:|---|
+| $1^{+}$ | $(20,\ +10)$ | $-1$ | $(20,\ 10,\ -10)$ |
+| $1^{-}$ | $(20,\ -10)$ | $+1$ | $(20,\ -10,\ 10)$ |
+| $2^{+}$ | $(-20,\ +10)$ | $+1$ | $(-20,\ 10,\ 10)$ |
+| $2^{-}$ | $(-20,\ -10)$ | $-1$ | $(-20,\ -10,\ -10)$ |
+
+$\mathcal{W}_A$ is the convex hull of those four points — a tetrahedron. They sum to zero, which is ch.12's $\lambda = (1,1,1,1)$ arriving again, so the origin is the centroid and sits strictly inside.
+
+The inscribed ball. By symmetry all four faces are the same distance from the origin; take the face through $1^{+}, 1^{-}, 2^{+}$, whose unit normal is $\hat u = (1,\ 2,\ 2)/3$. Then $\hat u\cdot(20,\ 10,\ -10) = (20 + 20 - 20)/3$, so
+
+$$\epsilon_A = \tfrac{20}{3} = 6.667\ \mathrm{N}, \qquad \text{attained along } \hat u = \tfrac13(1,\ 2,\ 2)$$
+
+because a face's supporting plane is the first thing a growing ball touches. The weakest direction is not a pure force and not a pure moment: it is one part push to two parts lift to two parts twist, which no hand calculation would have guessed.
+
+The volume. The tetrahedron on those four vertices has
+
+$$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -40 & -20 & 0\end{bmatrix}\right| = \tfrac{32000}{6} = \tfrac{16000}{3} = 5333\ \mathrm{N^3}$$
+
+since the three rows are the edge vectors from vertex $1^{+}$ to the other three.
+
+**Step 5 — rank the two grasps, then look at the task.** Repeating Step 4 for **B** (contacts $0.050\,\mathrm{m}$ from centre, squeeze along $\hat y$) gives generators $(\pm 10,\ \mp 20,\ \mp 5)$ and $(\pm 10,\ \pm 20,\ \pm 5)$, then $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$ on the face with normal $(2,\ -1,\ 4)/\sqrt{21}$, and $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$. So **A** wins on both metrics — $2.00\times$ the volume, $\sqrt{21}/3 = 1.528\times$ the radius. Now ask what the task loads:
+
+| direction | **A** capacity | **B** capacity |
+|---|---:|---:|
+| $+y$, lifting against gravity | $\mu F = 10.0\ \mathrm{N}$ | $F = 20.0\ \mathrm{N}$ |
+| $+x$, a sideways nudge | $F = 20.0\ \mathrm{N}$ | $\mu F = 10.0\ \mathrm{N}$ |
+| $+m_z/\rho$, twist | $10.0\ \mathrm{N}$ | $5.0\ \mathrm{N}$ |
+
+**B** is twice as strong as **A** in the one direction gravity actually pulls, because **B** carries the weight on its *normals* while **A** carries it on friction alone. Against $W = 4.905\ \mathrm{N}$ the margins are $2.04$ for **A** and $4.08$ for **B**. Two metrics, both ranking **A** first, both blind to the only load the task has. That is §4's complaint about $\epsilon$, derived rather than asserted — and it applies to hull volume just as hard.
+
+**Step 6 — the input nobody measures.** Re-run Step 4 for **A** with site dust, $\mu = 0.2$: the cone half-angle falls to $11.310°$, $\epsilon_A$ falls to $2.801\ \mathrm{N}$ ($0.42\times$) and $Q_{v,A}$ to $853\ \mathrm{N^3}$ ($0.16\times$) — the volume, being three-dimensional, is punished far harder than the radius. The antipodal verdicts do not move at all: **A** was at $0°$ and stays inside any cone, **C** needed $\mu \ge 3.20$ and still does. But the lift capacity is now $\mu F = 4.0\ \mathrm{N}$ against a weight of $4.905\ \mathrm{N}$, a margin of $0.82$: **under a $20\ \mathrm{N}$ total budget the grasp is still force-closed and can no longer hold the tile.** Ch.12 Step 7's separation of directions from magnitudes, arriving as a number.
+
+(Under ch.12's own convention — $20\ \mathrm{N}$ *per* finger — the same grasp has $2\mu F = 8.0\ \mathrm{N}$ of lift and a margin of $1.63$, and it holds. The verdict changed because the budget did, which is §4's warning about quality numbers in exactly the form it is usually met.)
+
 ### 1. The question a grasp has to answer
 
 A grasp is not "the gripper is touching the object". It is a claim: **whatever the world
@@ -83,14 +180,31 @@ the cones together span everything the world can throw at the object.
   </g>
 </svg>
 
+The cone's own full definition — both inequalities, the worked example and the "$\mu$ is the cone angle" non-example — is in [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §2]] and is not repeated here. What this page needs on top of it is the step that makes the cone computable at all in three dimensions.
+
+> **Friction cone linearization, defined.** Cone **linearization** replaces the circular cone $\|f_t\| \le \mu f_n$ by the polyhedral cone generated by $m$ edges spaced evenly around the normal. It is an approximation of a *set*, not of a number, and it has three defining conditions. The $m$ edges lie **on** the true cone, so the polyhedron is **inscribed** and every force it admits the contact really can apply — the approximation is conservative in one direction only, never optimistic. The count $m$ is part of the result and has to be reported with it. And it is *anisotropic*: the error is zero along an edge and largest halfway between two edges.
+>
+> $$f = \sum_{j=1}^{m}\lambda_j\left(\hat n + \mu\cos\tfrac{2\pi j}{m}\,\hat t_1 + \mu\sin\tfrac{2\pi j}{m}\,\hat t_2\right),\quad \lambda_j \ge 0, \qquad \mu_{\text{eff}} = \mu\cos\tfrac{\pi}{m}$$
+>
+> where $\hat n$ is the inward normal, $\hat t_1,\hat t_2$ any two tangents completing a frame, $\lambda_j$ the nonnegative edge weights and $\mu_{\text{eff}}$ the friction the pyramid actually delivers in its worst direction — because the apothem of a regular $m$-gon is $\cos(\pi/m)$ times its circumradius, and the worst direction points at the middle of a side.
+>
+> - **Example**: $m = 8$ at $\mu = 0.5$ gives $\mu_{\text{eff}} = 0.462$ and a worst-case half-angle of $24.794°$ instead of $26.565°$ — $7.6\%$ of $\mu$ and $10.0\%$ of the cone's base disc thrown away. At $m = 4$ it is $\mu_{\text{eff}} = 0.354$, a third of the disc gone; at $m = 16$, $\mu_{\text{eff}} = 0.490$ and $2.6\%$.
+> - **Non-example**: the *circumscribed* pyramid, $\mu_{\text{circ}} = \mu/\cos(\pi/m)$, whose edges lie outside the cone. It is the same construction with the polygon on the other side of the circle, and it admits tangential forces the contact cannot apply — so it reports closure and quality where there is none. A paper that says "we linearize the friction cone with 8 facets" has not said which side, and the two differ by $\cos^2(\pi/8) = 0.854$ in the ratio.
+> - **Why it matters**: with polyhedral cones the closure test of §3 is a linear program and the wrench set of §4 is the convex hull of finitely many points — both become arithmetic instead of geometry. Everything worked above is planar, where $m = 2$ is *exact* and costs nothing; a 3D grasp planner's $\epsilon$ is pessimistic by roughly $\cos(\pi/m)$, which is worth knowing before comparing two planners that chose different $m$.
+
 ### 3. Form closure and force closure
 
 Two different guarantees, routinely conflated:
 
-| | Means | Depends on friction? |
-|---|---|---|
-| **Form closure** | the contact geometry alone immobilises the object; no motion is possible whatever forces are applied | no — it is a purely kinematic property |
-| **Force closure** | the contacts can generate forces resisting **any** external wrench | yes — it is a statement about the friction cones |
+| | Means | Depends on friction? | Defined, and derived on this tile, in |
+|---|---|---|---|
+| **Form closure** | the contact geometry alone immobilises the object; no motion is possible whatever forces are applied | no — it is a purely kinematic property | [[04-robotics/modern-robotics/ch12-grasping\|MR ch.12 §3]], Steps 4–5 |
+| **Force closure** | the contacts can generate forces resisting **any** external wrench | yes — it is a statement about the friction cones | [[04-robotics/modern-robotics/ch12-grasping\|MR ch.12 §3]], Step 3 |
+
+> [!note] Both closures are one condition, and it is derived on this page's own tile
+> [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §3]] defines the two as the *same* mathematical property — **positive spanning** — applied to two different generator sets, the bare contact normals or the friction-cone edges; makes it checkable as "find $\lambda > 0$ with $\sum_i\lambda_i w_i = 0$, then check $\operatorname{rank} = n$"; and runs it on grasp **A**, on a frictionless pair, and on a four-contact pinwheel, including the four-contact arrangement that satisfies the textbook count and still lets the tile spin. That derivation is not repeated here.
+>
+> What this section adds is the part ch.12 has no reason to cover: **which published finger count is a statement about which of the two, and under what contact model.** The test is settled; the literature is not.
 
 Form closure is the stronger and rarer condition. Force closure is what a two-finger grasp
 of a box achieves and what almost every grasp paper means when it says "stable".
@@ -130,22 +244,59 @@ theorems; always say which one you mean.
 > planners almost always assume soft finger implicitly, by training on grippers with
 > compliant pads.
 
-For two contacts specifically, the practical criterion is the **antipodal** condition: the
-line joining the two contact points must lie inside both friction cones. That is the second
-panel of the figure above, and it is the geometric core of essentially every two-finger
-grasp planner, learned or not.
+For two contacts specifically, the practical criterion is the **antipodal** condition —
+the second panel of the figure above, and the geometric core of essentially every
+two-finger grasp planner, learned or not.
 
-### 4. Grasp quality — the epsilon metric
+> **Antipodal grasp, defined.** An **antipodal grasp** is a *pair of contacts*, not a force, not a hand pose and not a quality score: two point contacts whose connecting line lies inside both friction cones. Three defining conditions, and the second is where implementations go wrong. There are exactly **two** contacts — the notion does not generalise to three by inspection. The condition must hold **at both ends**: each contact's own inward normal makes an angle of at most $\arctan\mu_i$ with the line, measured at that contact. And each end uses **its own** $\mu_i$, which on a real part with two different surfaces are two different numbers.
+>
+> $$\angle\!\left(r_2 - r_1,\ \hat n_1\right) \le \arctan\mu_1 \quad\text{and}\quad \angle\!\left(r_1 - r_2,\ \hat n_2\right) \le \arctan\mu_2$$
+>
+> where $r_i$ is contact $i$'s position, $\hat n_i$ its inward normal and $\mu_i$ its friction coefficient — because a force directed along that line is then admissible at both contacts, so the pair can squeeze with zero net wrench and lean within the cones to resist a load.
+>
+> - **Example**: grasp **A** on the tile. The line runs along $\hat x$, both normals are $\pm\hat x$, so both angles are exactly $0°$ against a budget of $26.565°$: the largest margin the geometry allows.
+> - **Non-example**: grasp **C**. At the left contact the line makes $17.354°$, comfortably inside the cone — and at the bottom contact it makes $\arccos(0.050/0.167631) = 72.646°$, far outside. **C** would need $\mu \ge \tan 72.646° = 3.20$. A test written to check one end, or to check the *average* of the two angles ($45.0°$ here, still outside but for the wrong reason), accepts pairs like this, and it is the standard bug in a hand-rolled antipodal screen.
+> - **Why it matters**: it costs two dot products per candidate pair, so a planner can screen millions of surface-point pairs before any of them reaches a closure test or a wrench-space construction. And in the plane, for two point contacts with friction, it is not merely a heuristic — it is *equivalent* to force closure, which is why [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] Step 3 can use it as a cross-check on the positive-span test rather than as a separate claim. In space it is not equivalent, and the contact model in the box above is why.
 
-Closure is binary; a planner needs a ranking. Build the **grasp wrench space**: the set of
-wrenches the contacts can produce with bounded contact forces — a convex set containing the
-origin. Ferrari and Canny's 1992 metric is then disarmingly geometric:
+### 4. Grasp quality — the wrench space and the two numbers read off it
 
-> $\epsilon$ = the radius of the largest ball centred at the wrench-space origin that fits
-> inside the grasp wrench space.
-> Its numerical value is meaningful only after fixing the wrench origin, contact-force budget, and a characteristic length that puts forces and moments on a common scale.
+Closure is binary; a planner needs a ranking. Both of the standard rankings are properties
+of one set, so define the set first.
 
-Read what that buys. $\epsilon$ is the magnitude of the **worst-case** external wrench the
+> **Grasp wrench space, defined.** The **grasp wrench space** $\mathcal{W}$ is a *convex body* in wrench space — $\mathbb{R}^3$ in the plane, $\mathbb{R}^6$ in space — and not a cone, not a number and not a test. Four defining conditions, every one of them a choice that must be stated with the result. It is the image under the grasp map $G$ of the product of the contacts' friction cones, so nothing enters it that some contact could not have applied. The contact forces are **bounded** by a declared budget, because without one the set is an unbounded cone and neither of the numbers below exists. The wrenches are referred to a declared **origin**, because $m_z$ moves with it. And the moment coordinates are divided by a declared **characteristic length** $\rho$, because otherwise a ball in this space is comparing newtons with newton-metres.
+>
+> $$\mathcal{W} = \left\{\,S\,G f_c \;\middle|\; f_c \in \mathcal{FC}_1 \times \cdots \times \mathcal{FC}_k,\ \ \textstyle\sum_i f_{n,i} \le F \right\}, \qquad S = \operatorname{diag}\!\left(1,\ 1,\ \tfrac1\rho\right)$$
+>
+> with $G$ the grasp map of the Worked case, $\mathcal{FC}_i$ contact $i$'s friction cone, $F$ the total normal-force budget, $\rho$ the characteristic length and $S$ the scaling that leaves every coordinate of $\mathcal{W}$ in newtons — so $\mathcal{W}$ is convex, because $G$ is linear, each cone is convex and the budget is one linear inequality. When the cones are polyhedral, $\mathcal{W}$ is exactly the convex hull of the budgeted cone-edge wrenches, which is what makes it computable.
+>
+> - **Example**: $\mathcal{W}_A$, the tetrahedron on $(\pm 20,\ \pm 10,\ \mp 10)$ built in Step 4, with the origin at its centroid.
+> - **Non-example, no budget**: the cone those four edges generate. It contains the origin in its interior exactly when the grasp is force-closed, so "the largest ball inside it" is *infinite* for every closed grasp and zero for every other — the quality metric collapses back into the binary test it was meant to refine.
+> - **Non-example, no $\rho$**: the same four wrenches with $m_z$ left in newton-metres, $(\pm20,\pm10,\mp1)$. The inscribed radius drops from $6.667$ to $0.994$ and the weakest direction swings to almost pure moment, $(0.050,\ 0.099,\ 0.994)$ — the metric now measures the tile's size, not the grasp.
+> - **Why it matters**: both numbers below are functions of $\mathcal{W}$, so two papers scoring the *same grasp on the same object* differ by a factor of $\sqrt3 = 1.73$ in $\epsilon$ and $3$ in volume purely by choosing a per-contact budget instead of a total one, and by another factor for $\rho$. Neither convention is wrong. Reporting the number without it is.
+
+Ferrari and Canny's 1992 metric is then disarmingly geometric.
+
+> **Epsilon, defined.** $\epsilon$ is a *radius* — one number, in newtons once $\rho$ has been applied: the largest ball centred at the wrench-space **origin** that fits inside $\mathcal{W}$. Three conditions beyond inheriting all four of $\mathcal{W}$'s. The ball is centred at the origin, not at the set's centroid. It is a **minimum over directions**, so a single weak direction sets the whole score however strong the rest is. And it is positive exactly when the grasp is force-closed under that budget, which is what makes it a refinement of §3 rather than a different question.
+>
+> $$\epsilon = \max\{\,r : \mathcal{B}(0,r)\subseteq\mathcal{W}\,\} = \min_{\|u\|=1} h_{\mathcal{W}}(u), \qquad h_{\mathcal{W}}(u) = \max_{w\in\mathcal{W}} u^{\!\top} w$$
+>
+> where $h_{\mathcal{W}}$ is the support function and $\mathcal{B}(0,r)$ the ball of radius $r$ at the origin — so for a polytope the minimum is attained on a face, and $\epsilon$ is just the distance from the origin to the nearest face.
+>
+> - **Example**: $\epsilon_A = 20/3 = 6.667\ \mathrm{N}$, attained along $(1,\ 2,\ 2)/3$; $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$.
+> - **Non-example**: "$\epsilon$ is the weight the grasp can hold." Grasp **A** lifts $\mu F = 10.0\ \mathrm{N}$, half again more than its $\epsilon$, because $+y$ is not its weakest direction. $\epsilon$ is a *lower bound* over all directions and is attained in only one of them.
+> - **Why it matters**: it is the one quality number that is comparable across grasps with different contact counts, because it is a worst case rather than a total, and it rises as contacts are added. It is also the number Dex-Net's labels are made of (§5), so the assumptions above propagate into every learned grasp score trained on them.
+
+> **Hull volume, defined.** The **hull volume** $Q_v$ is a *volume*: the Lebesgue measure of $\mathcal{W}$, in $\mathrm{N}^3$ here and $\mathrm{N}^6$ in space. It inherits all four of $\mathcal{W}$'s conventions and adds two properties of its own. It is an **average-case** score, not a worst case — every direction contributes in proportion to how far $\mathcal{W}$ extends in it, so one weak direction barely moves it. And it is **not scale-free**: multiplying the budget by $\lambda$ multiplies $\epsilon$ by $\lambda$ and $Q_v$ by $\lambda^3$.
+>
+> $$Q_v = \operatorname{vol}(\mathcal{W}) = \int_{\mathcal{W}} \mathrm{d}w$$
+>
+> where the integral is over the same scaled, budgeted set — so for the tetrahedra above it is $\tfrac16\left|\det[\,v_2 - v_1,\ v_3 - v_1,\ v_4 - v_1\,]\right|$ on the four generators.
+>
+> - **Example**: $Q_{v,A} = 16000/3 = 5333\ \mathrm{N^3}$ against $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$, so **A** scores twice **B** while $\epsilon$ scores it only $1.53$ times better. The two metrics agree on the ranking here and not on the margin, and they need not agree on either.
+> - **Non-example**: comparing $Q_v$ across papers that chose different $\rho$. Halving $\rho$ from $0.100$ to $0.050\,\mathrm{m}$ **doubles** $Q_{v,A}$ to $10667\ \mathrm{N^3}$ while raising $\epsilon_A$ only $22\%$, to $8.165\ \mathrm{N}$ — so a volume comparison is a $\rho$ comparison unless both are stated.
+> - **Why it matters**: it is the metric that rewards a grasp for being strong *somewhere*, which is what you want when the task wrench is unknown and broadly distributed, and exactly what you do not want when it is known and narrow. Dust makes the difference visible: at $\mu = 0.2$, grasp **A** keeps $42\%$ of its $\epsilon$ and only $16\%$ of its volume.
+
+Read what $\epsilon$ buys. It is the magnitude of the **worst-case** external wrench the
 grasp can resist — worst-case over direction, because a ball is direction-agnostic. It is
 positive exactly when the grasp has closure, and it grows as contacts are added. A grasp
 that is superb against gravity and helpless against a sideways nudge gets the low score it
@@ -155,7 +306,9 @@ The weakness is the same as the strength: by treating all wrench directions as e
 likely, $\epsilon$ ignores the task. A screwdriver grasp that must resist torque about the
 shaft is not well served by a metric whose value is set by the weakest direction, even one the task will never load —
 which is the motivation for task-oriented quality measures, and worth remembering when a
-paper reports "grasp quality" without saying quality *for what*.
+paper reports "grasp quality" without saying quality *for what*. Step 5 of the Worked case
+is that complaint with numbers on it: **A** wins both metrics and **B** is twice as strong
+against the only load the task has.
 
 ### 5. From analysis to learning
 
@@ -329,8 +482,10 @@ grasps are and what would make your answer wrong.
 ### After reading
 
 - [ ] Draw a friction cone and give its half-angle for $\mu = 0.5$ and $\mu = 1$.
+- [ ] Write the grasp map of a two-contact planar grasp and say what its null space is physically.
+- [ ] Run the antipodal test at both ends of a pair, and say what a one-ended test would have accepted.
 - [ ] State the difference between form closure and force closure, and state the frictional 3D counts — the Springer §38.4.2 minimums (two soft-finger / three non-collinear hard-finger) versus Markenscoff's universal four — with their sources.
-- [ ] Define $\epsilon$ and say what it deliberately ignores.
+- [ ] Define $\epsilon$ and say what it deliberately ignores, and name the three conventions without which a reported $\epsilon$ means nothing.
 - [ ] Explain where the analytic theory sits inside a learned grasping pipeline.
 - [ ] Name the assumption construction most reliably breaks.
 
@@ -358,16 +513,16 @@ grasps are and what would make your answer wrong.
 
 ### Problem set · 과제
 
-Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. The tip holds a small rigid block; the task wrench on the block is $F=(0,-10)\,\mathrm{N}$ (weight, no moment about the tip). No new simulator.
+Tier B. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. Same tile, same budget $F=20\,\mathrm{N}$, same $\rho=0.100\,\mathrm{m}$. Two knobs move: the planner now proposes a **left-edge plus bottom-edge** pair — contact 1 fixed at $(-0.100,\ 0)$ with normal $(1,0)$, contact 2 anywhere on the bottom edge at $(x_2,\ -0.050)$ with normal $(0,1)$ — and the surface is dusty, $\mu=0.2$. No new simulator.
 
-1. **Draw.** P2 at the frozen pose. Two soft-finger contacts on the left and right faces of the block, normals along $\pm x$. Draw both friction cones (half-angle $\arctan\mu$) and the line joining the contacts. Mark $F=(0,-10)$ at the tip.
-2. **Derive.** (a) $\tau=J^\top F$ with $F=(0,-10)$. (b) Equal share of the weight: each contact needs $\lvert f_t\rvert\ge 5\,\mathrm{N}$. Smallest normal squeeze $f_n$ that keeps both forces inside the cone, for $\mu=0.5$ and for $\mu=1$. (c) Cone half-angles for those two $\mu$.
-3. **Interpret.** $\mu$ drops to $0.3$ and the squeeze is still the $\mu=0.5$ value. Does the grasp stay force-closed? Qualitatively: the cones narrow; the weight vector must still lie in the cone sum. What does a planner that still believes $\mu=0.5$ keep proposing?
+1. **Draw.** The tile with contact 1 and its cone, and the bottom edge marked as a segment. Shade, along that segment, the set of $x_2$ passing the angle test *at contact 1*, then shade separately the set passing it *at contact 2*, using two different hatchings. Beside it, redraw the wrench-space figure for grasp **B** at $\mu=0.2$: the four generators, the tetrahedron, the inscribed ball, and the gravity arrow $(0,\ 4.905,\ 0)$.
+2. **Derive.** (a) Write each end's antipodal condition as an inequality on $x_2$ in terms of $\mu$, and show the two sets are **disjoint** at $\mu=0.2$ and at $\mu=0.5$. (b) Find the $\mu$ at which they first meet, and the single $x_2$ where they meet. (c) Grasp **B** at $\mu=0.2$: the four generators, $\epsilon_B$, $Q_{v,B}$, and the ratio of each to its $\mu=0.5$ value. (d) The lift capacity of **B** and of **A** at $\mu=0.2$, each as a margin over $W=4.905\,\mathrm{N}$.
+3. **Interpret.** At $\mu=0.2$ both metrics still rank **A** above **B**. State which grasp survives the dust and which does not, and explain in one sentence what property of **B** the two metrics are structurally unable to see. Then say what this implies for a planner that ranks candidates by $\epsilon$ alone on a site where $\mu$ is unknown.
 
 > [!tip]- Solutions
-> 1. Elbow $(1,0)$, tip $(1,1)$. Contacts on the $\pm x$ faces; cones about those normals; the joining line is along $x$. Weight arrow down at the tip.
-> 2. (a) $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) $\lvert f_t\rvert\le\mu f_n$ and $\lvert f_t\rvert=5$ $\Rightarrow$ $f_n\ge 5/\mu$. So $10\,\mathrm{N}$ at $\mu=0.5$, $5\,\mathrm{N}$ at $\mu=1$. (c) $\arctan 0.5\approx 26.6^\circ$, $\arctan 1=45^\circ$.
-> 3. No: $5/0.3\approx 16.7\,\mathrm{N}$ is now required and $10\,\mathrm{N}$ of squeeze is short. Half-angle falls to $\arctan 0.3\approx 16.7^\circ$; the downward $5\,\mathrm{N}$ per finger sits outside. A planner that still believes $\mu=0.5$ keeps proposing the same contacts.
+> 1. Contact 1's cone opens $\pm 11.310°$ about $+\hat x$. The two hatchings never overlap.
+> 2. (a) At contact 1 the line is $(x_2+0.100,\ -0.050)$ against $\hat n_1 = (1,0)$, so $0.050/(x_2+0.100)\le\mu$, i.e. $x_2 \ge 0.050/\mu - 0.100$. At contact 2 the line is $(-(x_2+0.100),\ +0.050)$ against $\hat n_2 = (0,1)$, so $(x_2+0.100)/0.050 \le \mu$, i.e. $x_2 \le 0.050\mu - 0.100$. At $\mu=0.2$: $x_2\ge +0.150$ and $x_2\le -0.090$ — empty, and $+0.150$ is off the tile besides. At $\mu=0.5$: $x_2\ge 0$ and $x_2\le -0.075$ — empty. (b) The bounds meet when $0.050/\mu = 0.050\mu$, so $\mu=1$ and $x_2=-0.050\,\mathrm{m}$, where both angles are exactly $45°$ and the line is the $0.0707\,\mathrm{m}$ diagonal. **No left-edge-plus-bottom-edge pair on this tile is antipodal below $\mu=1$** — a whole family of candidates ruled out by two inequalities, with no wrench space built. (c) Generators $(4,\ -20,\ -2)$, $(-4,\ -20,\ 2)$, $(4,\ 20,\ 2)$, $(-4,\ 20,\ -2)$; they sum to zero. The nearest face has normal $(5,\ -1,\ 10)/\sqrt{126}$, so $\epsilon_B = 20/\sqrt{126} = 1.782\,\mathrm{N}$, which is $0.408\times$ its $\mu=0.5$ value of $4.364$; $Q_{v,B} = 426.7\,\mathrm{N^3}$, $0.160\times$ its $2667$. **A** fell by the same pattern, $0.420$ and $0.160$: the volume is exactly $(0.2/0.5)^2 = 0.16$ because two of the three generator coordinates are proportional to $\mu$, while $\epsilon$ falls a little less than in proportion. (d) **B** lifts $F = 20.0\,\mathrm{N}$, margin $20.0/4.905 = 4.08$, **unchanged from $\mu=0.5$**, because **B** carries the weight on its contact *normals* and normals do not care about friction. **A** lifts $\mu F = 4.0\,\mathrm{N}$, margin $0.82$: it drops the tile.
+> 3. **B** survives and **A** does not, and yet both metrics rank **A** first at both values of $\mu$ ($\epsilon$: $2.801$ against $1.782$; volume: $853$ against $427$). What the metrics cannot see is that **B**'s strength lies along the one axis the task loads, so dust takes $59\%$ of **B**'s $\epsilon$ and none of its actual job. A planner ranking by $\epsilon$ alone while $\mu$ is unknown is optimising a worst case over directions the task will never produce, and on this object it picks the grasp that fails. The fix is not a better scalar: it is a task wrench distribution, which is what the task-oriented critique in §8 is about.
 
 ### Sources
 
@@ -404,6 +559,103 @@ Every quantitative figure quoted in §5 is from the respective paper's own abstr
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 다음 §3 — form closure 대 force closure는 2차 문헌이 계속 틀리는 구분이다 — 그다음 §7. §4(엡실론 지표)와 §5는 파지 계획기에 관해 읽는 것이 아니라 비교할 때 본다.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**가 도구를 들고, 그 도구가 이미 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]]이 고정해 둔 **패널 타일**을 잡는다. 숫자를 다시 적지도, 바꾸지도 않는다: $0.200 \times 0.100\ \mathrm{m}$, 질량 $0.500\ \mathrm{kg}$이므로 $W = 4.905\ \mathrm{N}$, 쿨롱 $\mu = 0.5$, 평면 렌치는 타일 질량 중심 기준으로 $w = (f_x,\ f_y,\ m_z)$.
+
+Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 12장이 고를 필요가 없었던 것 셋이 필요하므로, 이 페이지에서 고정한다:
+
+| 추가하는 것 | 값 | 품질 지표에 왜 필요한가 |
+|---|---|---|
+| **후보 파지 셋** | **A**는 $(\pm 0.100,\ 0)$, 법선 $(\pm 1,\ 0)$ · **B**는 $(0,\ \pm 0.050)$, 법선 $(0,\ \mp 1)$ · **C**는 $(-0.100,\ 0)$에 법선 $(1,\ 0)$과 $(0.060,\ -0.050)$에 법선 $(0,\ 1)$ | 순위에는 파지가 둘 이상 필요하고, 선별 검사에는 그것을 통과하지 못하는 것이 필요하다 |
+| **힘 예산** | $\sum_i f_{n,i} \le F = 20\ \mathrm{N}$ — 접촉당이 아니라 **총합** | 한계가 없으면 렌치 집합은 유계가 아닌 원뿔이고 반지름도 부피도 존재하지 않는다 |
+| **특성 길이** | $\rho = 0.100\ \mathrm{m}$, 파지의 반너비 | $m_z$를 길이로 나누기 전에는 공 하나가 뉴턴과 뉴턴미터를 비교하게 된다 |
+
+파지 **A**가 12장의 파지다. **B**는 같은 타일을 그리퍼 안에서 $90°$ 돌려 짧은 쪽으로 쥔 것이다. **C**는 깊이 이미지가 기꺼이 제안할 법하고 §3의 검사가 기각하는 쌍이다. 12장의 손가락당 $20\ \mathrm{N}$ 예압은 다른 쪽 예산 규약이고, §4가 그 차이를 정확히 값으로 매긴다.
+
+*범위: 이 페이지는 파지를 어떻게 채점하는지를 가르친다 — 접촉력에서 물체 렌치로 가는 선형 사상, 그 사상이 예산 아래 만들어 내는 렌치 집합, 그리고 그 집합에서 보통 읽어 내는 숫자 둘, 그리고 그 산술이 학습 파이프라인 안에서 어디에 살아남는지. Closure 검사 자체는 가르치지 않는다. 그것은 [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §3]]이 바로 이 타일 위에서 유도한다. 파지 합성 알고리즘과 손 설계도 가르치지 않는다. 후자는 §8이 출처를 지목한다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 둘을 나란히.
+
+**왼쪽 — 타일과 후보들.** 타일을 직사각형으로 그리고 질량 중심을 표시한 뒤, **A**와 **C**의 접촉점 넷을 모두 찍는다. 각각에 안쪽 법선을 실선 화살표로, 마찰 원뿔을 $\pm 26.565°$의 점선 두 개와 그 사이를 칠한 쐐기로 그린다. **A**의 이음선은 타일을 관통하는 직선으로, **C**의 이음선은 기울어진 두 번째 직선으로 긋는다. 각 선이 자기 쪽 끝의 법선과 이루는 각을 적는다 — 숫자 넷 — 그리고 자기 원뿔 밖에 있는 것 하나에 동그라미를 친다. 여백 상자에는 접촉 하나의 원뿔을 다시 그리고 그 위에 내접 정팔각형을 겹쳐, 팔각형이 버리는 조각 여덟 개를 칠한다.
+
+**오른쪽 — 렌치 공간.** 축은 $f_x$, $f_y$, $m_z/\rho$이고 셋 다 단위가 뉴턴이다. **A**의 생성 렌치 넷을 점으로 찍고 사면체로 잇고, 그 안의 원점을 표시하고, 한 면에 닿는 내접 공을 그린다. 공의 반지름에 $\epsilon$이라 쓰고 원점에서 그 접점으로 가는 화살표를 그린다 — 가장 약한 방향이다. 그다음 중력 렌치 $(0,\ +4.905,\ 0)$을 원점에서 나가는 별도의 화살표로 그리고 그것이 사면체를 벗어나는 지점을 표시한다. $\epsilon$보다 긴 화살표이고, 그것이 §4의 요점 전부다.
+
+과제는 같은 그림 둘을 $\mu = 0.2$에서 요구한다. 두 화살표 중 하나는 판정이 뒤집히고 다른 하나는 그대로다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+**1단계 — 파지 사상.** 각 접촉 $i$가 $f_i = f_{n,i}\hat n_i + f_{t,i}\hat t_i$를 가하고, 12장 §2가 한 점의 힘을 렌치로 바꾼다. 모든 접촉력 좌표를 벡터 하나로 쌓으면 전체가 행렬 하나가 된다.
+
+> **파지 사상의 정의.** **파지 사상**(grasp map) $G$는 *행렬*이다 — 접촉력 좌표에서 물체 렌치로 가는 선형 사상일 뿐, 집합도 검사도 품질도 아니다. 정의 조건 셋: 접촉력 좌표 하나당 열 하나씩 쌓아 만들고 각 열은 그 좌표가 크기 1일 때 만드는 렌치다. 열은 명시된 물체 좌표계에서 쓰인다. $m_z$가 원점을 따라 움직이기 때문이다. 그리고 $f_c$에 대해 **선형**이다 — 덧셈성과 동차성 둘 다이고, [[02-foundations/engineering-math|0.5 공학 수학 §4.5]]가 말하는 그 뜻이다. 이것이 아래 모든 것을 사는 조건이다. 마찰 원뿔은 $G$의 일부가 *아니다*. 그것은 나중에 $G$를 적용할 제약 집합이다.
+>
+> $$\mathcal{F}_o = G\,f_c, \qquad G = \big[\,w(r_1,\hat n_1)\ \ w(r_1,\hat t_1)\ \cdots\ w(r_k,\hat n_k)\ \ w(r_k,\hat t_k)\,\big]$$
+>
+> $\mathcal{F}_o$는 물체에 걸리는 합렌치, $f_c = (f_{n,1}, f_{t,1}, \ldots, f_{n,k}, f_{t,k})$는 접촉력 좌표, $r_i$와 $(\hat n_i, \hat t_i)$는 접촉 $i$의 위치와 법선·접선, $w(r, d) = (d_x,\ d_y,\ r_x d_y - r_y d_x)$는 12장 §2의 단위 렌치다. 그래서 $G$는 평면에서 $3 \times 2k$, 공간에서 $6 \times 6k$이다.
+
+파지 **A**에 대해, $r_1 = (-0.100,\ 0)$, $\hat n_1 = (1,0)$, $\hat t_1 = (0,1)$이고 $r_2 = (+0.100,\ 0)$, $\hat n_2 = (-1,0)$, $\hat t_2 = (0,1)$이므로:
+
+$$G_A = \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & -0.100 & 0 & 0.100 \end{bmatrix}$$
+
+각 열이 그 접촉의 $r$와 방향에 대한 $(d_x,\ d_y,\ r_x d_y - r_y d_x)$이기 때문이다. 여기서 셋을 바로 읽는다. 랭크가 $3$이므로 원리적으로 어떤 평면 렌치도 만들 수 있다. 영공간 차원은 $4 - 3 = 1$이고 $(1,\ 0,\ 1,\ 0)$이 그것을 생성한다. 두 법선을 똑같이 누르는 것은 물체가 전혀 느끼지 못하는 **내부 힘**이고 — $G_A\,(1,0,1,0)^\top = (0,0,0)$ — 그래서 하중 균형을 흐트러뜨리지 않고 예압을 마음대로 올릴 수 있다. 그리고 중력에 맞서 타일을 들 때, $\mathcal{F}_o = (0,\ 4.905,\ 0)$의 최소 노름 해는 $f_c = (0,\ 2.4525,\ 0,\ 2.4525)$이므로 12장의 $f_y = W/2$와 $f_n^{\min} = 2.4525/0.5 = 4.905\ \mathrm{N}$을 다시 유도하지 않고 재현한다.
+
+§4에서 다시 나오니 하나 더: $G_A\,(20,\ 10,\ 20,\ -10)^\top = (0,\ 0,\ -2)$다. 똑같이 쥐면서 접선만 반대로 주면 **순수 모멘트** $2.00\ \mathrm{N\cdot m}$이 되고, 이것이 12장 6단계가 보고하는 모멘트 용량이다.
+
+- **예**: 열 $w(r_1, \hat t_1) = (0,\ 1,\ -0.100)$ — 왼쪽 접촉에서 위로 끌면 타일이 올라가면서 *동시에* 구른다. 그 힘이 중심에서 $0.100\,\mathrm{m}$ 벗어난 곳에 작용하기 때문이다.
+- **반례**: 법선 둘만 모은 $3 \times 2$ 행렬. 훌륭한 행렬이지만 *마찰이 있는* 파지의 파지 사상은 아니다. 접선 열을 빼면 랭크가 $1$로 떨어지고, 그것이 12장 4단계의 마찰 없는 경우이며 전혀 다른 파지다.
+- **왜 중요한가**: §3과 §4의 모든 대상 — closure 검사, 렌치 공간, 품질 숫자 둘 — 이 $G$와 원뿔에 관한 진술이다. $G$를 틀린 좌표계에서 쓰면 그것들이 전부 셋째 성분에서만 틀리는데, 그것이 가장 알아채기 어려운 종류의 오류다.
+
+**2단계 — 원뿔을 다면체로.** 평면에서는 할 일이 없다. 쐐기는 이미 모서리가 정확히 둘, $\hat n \pm \mu\hat t$이고, $G$가 적용될 대상이 바로 그 둘이다. 공간에서는 원뿔이 원형이라 계산 가능해지기 전에 반드시 바꿔야 한다 — §2 끝의 정의를 보라. $m = 8$에서 $\mu$의 $7.6\%$가 들고 여기서는 아무것도 들지 않는다.
+
+**3단계 — 후보를 선별한다.** §3의 antipodal 검사를 셋 모두에:
+
+| 파지 | 접촉을 잇는 선 | 접촉 1에서의 각 | 접촉 2에서의 각 | $\arctan 0.5 = 26.565°$에 대한 판정 |
+|---|---|---:|---:|---|
+| **A** | $\hat x$ 방향 $0.200\ \mathrm{m}$ | $0.000°$ | $0.000°$ | 통과, 가능한 가장 넓은 여유로 |
+| **B** | $\hat y$ 방향 $0.100\ \mathrm{m}$ | $0.000°$ | $0.000°$ | 통과 |
+| **C** | $0.168\ \mathrm{m}$, 기울어짐 | $17.354°$ | $72.646°$ | **접촉 2에서 실패** |
+
+**C**의 접촉 2는 법선이 $(0,1)$인 아래 변에 있고 접촉 1로 돌아가는 선이 $(-0.160,\ +0.050)$이므로 $\cos\theta = 0.050/0.167631 = 0.298275$, 즉 $\theta = 72.646°$다. **C**에는 $\mu \ge \tan 72.646° = 3.20$이 필요하다 — 어떤 마른 표면의 몇 배다 — 그러니 얼마나 세게 쥐든 되지 않고, 아무것도 계산하기 전에 선별하는 이유가 그것이다.
+
+**4단계 — 렌치 공간을 짓고 숫자 둘을 읽는다.** 예산 $F = 20\ \mathrm{N}$을 한 번에 접촉 하나에, 그 접촉의 두 원뿔 모서리 각각에 주고, $m_z$를 $\rho = 0.100\ \mathrm{m}$으로 나눈다:
+
+| 모서리 | $f$ (N) | $m_z = r_x f_y$ (N·m) | 생성자 $(f_x,\ f_y,\ m_z/\rho)$ (N) |
+|---|---|---:|---|
+| $1^{+}$ | $(20,\ +10)$ | $-1$ | $(20,\ 10,\ -10)$ |
+| $1^{-}$ | $(20,\ -10)$ | $+1$ | $(20,\ -10,\ 10)$ |
+| $2^{+}$ | $(-20,\ +10)$ | $+1$ | $(-20,\ 10,\ 10)$ |
+| $2^{-}$ | $(-20,\ -10)$ | $-1$ | $(-20,\ -10,\ -10)$ |
+
+$\mathcal{W}_A$는 그 점 넷의 볼록 껍질, 즉 사면체다. 넷을 더하면 0인데 그것이 12장의 $\lambda = (1,1,1,1)$이 다시 온 것이고, 그러므로 원점이 무게중심이며 엄밀히 내부에 있다.
+
+내접 공. 대칭에 의해 네 면이 원점에서 같은 거리에 있으므로 $1^{+}, 1^{-}, 2^{+}$를 지나는 면을 잡으면 그 단위 법선이 $\hat u = (1,\ 2,\ 2)/3$이다. 그러면 $\hat u\cdot(20,\ 10,\ -10) = (20 + 20 - 20)/3$이므로
+
+$$\epsilon_A = \tfrac{20}{3} = 6.667\ \mathrm{N}, \qquad \text{가장 약한 방향은 } \hat u = \tfrac13(1,\ 2,\ 2)$$
+
+이다. 자라나는 공이 처음 닿는 것이 면의 지지 평면이기 때문이다. 가장 약한 방향은 순수한 힘도 순수한 모멘트도 아니다. 미는 힘 1 : 드는 힘 2 : 비트는 힘 2이고, 손으로는 짐작할 수 없는 조합이다.
+
+부피. 그 꼭짓점 넷 위의 사면체는
+
+$$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -40 & -20 & 0\end{bmatrix}\right| = \tfrac{32000}{6} = \tfrac{16000}{3} = 5333\ \mathrm{N^3}$$
+
+이다. 세 행이 꼭짓점 $1^{+}$에서 나머지 셋으로 가는 변 벡터이기 때문이다.
+
+**5단계 — 파지 둘의 순위를 매기고, 그다음 과제를 본다.** **B**(접촉이 중심에서 $0.050\,\mathrm{m}$, $\hat y$로 쥔다)에 4단계를 반복하면 생성자가 $(\pm 10,\ \mp 20,\ \mp 5)$와 $(\pm 10,\ \pm 20,\ \pm 5)$, 그다음 법선이 $(2,\ -1,\ 4)/\sqrt{21}$인 면에서 $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$, 그리고 $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$이다. 즉 **A**가 두 지표 모두에서 이긴다 — 부피 $2.00$배, 반지름 $\sqrt{21}/3 = 1.528$배. 이제 과제가 무엇에 힘을 거는지 묻자:
+
+| 방향 | **A**의 용량 | **B**의 용량 |
+|---|---:|---:|
+| $+y$, 중력에 맞서 들기 | $\mu F = 10.0\ \mathrm{N}$ | $F = 20.0\ \mathrm{N}$ |
+| $+x$, 옆에서 툭 밀기 | $F = 20.0\ \mathrm{N}$ | $\mu F = 10.0\ \mathrm{N}$ |
+| $+m_z/\rho$, 비틀기 | $10.0\ \mathrm{N}$ | $5.0\ \mathrm{N}$ |
+
+중력이 실제로 당기는 그 한 방향에서 **B**가 **A**보다 두 배 강하다. **B**는 무게를 *법선*으로 지고 **A**는 마찰만으로 지기 때문이다. $W = 4.905\ \mathrm{N}$에 대한 여유는 **A**가 $2.04$, **B**가 $4.08$이다. 지표 둘이 모두 **A**를 1위로 놓고, 둘 다 과제가 가진 유일한 하중을 보지 못한다. 그것이 $\epsilon$에 대한 §4의 불평이고, 주장이 아니라 유도된 것이다 — 그리고 hull volume에도 똑같이 세게 적용된다.
+
+**6단계 — 아무도 재지 않는 입력.** 현장 먼지로 $\mu = 0.2$가 된 **A**에 4단계를 다시 돌린다. 원뿔 반각이 $11.310°$로 줄고 $\epsilon_A$는 $2.801\ \mathrm{N}$($0.42$배), $Q_{v,A}$는 $853\ \mathrm{N^3}$($0.16$배)이 된다 — 3차원인 부피가 반지름보다 훨씬 심하게 벌을 받는다. Antipodal 판정은 전혀 움직이지 않는다. **A**는 $0°$였으니 어떤 원뿔 안에도 있고, **C**는 $\mu \ge 3.20$이 필요했고 여전히 그렇다. 그런데 드는 용량이 이제 $\mu F = 4.0\ \mathrm{N}$으로 무게 $4.905\ \mathrm{N}$에 대해 여유 $0.82$다. **총합 $20\ \mathrm{N}$ 예산에서 이 파지는 여전히 force closure이고 더 이상 타일을 들지 못한다.** 12장 7단계가 갈라 놓은 방향과 크기가 숫자로 도착한 것이다.
+
+(12장 자신의 규약 — 손가락*당* $20\ \mathrm{N}$ — 에서는 같은 파지가 $2\mu F = 8.0\ \mathrm{N}$의 드는 힘과 여유 $1.63$을 가지고 타일을 든다. 판정이 바뀐 이유는 예산이 바뀌었기 때문이고, 품질 숫자에 대한 §4의 경고가 실제로 마주치는 바로 그 모습이다.)
 
 ### 1. 파지가 답해야 하는 질문
 
@@ -459,14 +711,31 @@ $\mu = 0.5$면 그 반각은 $\arctan 0.5 \approx 26.6°$이고, $\mu = 1.0$이�
   </g>
 </svg>
 
+원뿔 자체의 완전한 정의 — 부등식 둘, 계산 예, 그리고 "$\mu$가 원뿔 각이다" 반례 — 는 [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §2]]에 있고 여기서 되풀이하지 않는다. 이 페이지가 그 위에 더해야 하는 것은 3차원에서 원뿔을 애초에 계산 가능하게 만드는 단계다.
+
+> **마찰 원뿔 선형화의 정의.** 원뿔 **선형화**(linearization)는 원형 원뿔 $\|f_t\| \le \mu f_n$을 법선 둘레에 고르게 놓인 모서리 $m$개가 생성하는 다면체 원뿔로 바꾸는 것이다. *집합*의 근사이지 숫자의 근사가 아니며, 정의 조건이 셋이다. 모서리 $m$개가 참된 원뿔 **위에** 놓이므로 다면체는 **내접**이고, 그것이 허용하는 힘은 접촉이 실제로 가할 수 있는 힘이다 — 근사가 한쪽으로만 보수적이고 결코 낙관적이지 않다. 개수 $m$은 결과의 일부이므로 함께 보고해야 한다. 그리고 *비등방적*이다. 오차는 모서리 방향에서 0이고 두 모서리의 한가운데에서 가장 크다.
+>
+> $$f = \sum_{j=1}^{m}\lambda_j\left(\hat n + \mu\cos\tfrac{2\pi j}{m}\,\hat t_1 + \mu\sin\tfrac{2\pi j}{m}\,\hat t_2\right),\quad \lambda_j \ge 0, \qquad \mu_{\text{eff}} = \mu\cos\tfrac{\pi}{m}$$
+>
+> $\hat n$은 안쪽 법선, $\hat t_1,\hat t_2$는 좌표계를 완성하는 접선 둘, $\lambda_j$는 음이 아닌 모서리 가중치, $\mu_{\text{eff}}$는 그 피라미드가 최악의 방향에서 실제로 내주는 마찰이다. 정$m$각형의 내심거리가 외접반지름의 $\cos(\pi/m)$배이고, 최악의 방향이 변의 한가운데를 향하기 때문이다.
+>
+> - **예**: $\mu = 0.5$에서 $m = 8$이면 $\mu_{\text{eff}} = 0.462$, 최악의 반각이 $26.565°$ 대신 $24.794°$다 — $\mu$의 $7.6\%$와 원뿔 밑면 원판의 $10.0\%$를 버린 것이다. $m = 4$면 $\mu_{\text{eff}} = 0.354$로 원판의 3분의 1이 사라지고, $m = 16$이면 $\mu_{\text{eff}} = 0.490$에 $2.6\%$다.
+> - **반례**: 모서리가 원뿔 바깥에 놓이는 *외접* 피라미드, $\mu_{\text{circ}} = \mu/\cos(\pi/m)$. 다각형을 원의 반대쪽에 놓은 같은 구성이고, 접촉이 가할 수 없는 접선력을 허용한다 — 그래서 closure도 품질도 없는 곳에서 있다고 보고한다. "마찰 원뿔을 면 8개로 선형화했다"고 쓴 논문은 어느 쪽인지를 말하지 않은 것이고, 둘은 비에서 $\cos^2(\pi/8) = 0.854$만큼 다르다.
+> - **왜 중요한가**: 원뿔이 다면체면 §3의 closure 검사가 선형계획이 되고 §4의 렌치 집합이 유한한 점들의 볼록 껍질이 된다 — 둘 다 기하에서 산술이 된다. 위에서 계산한 모든 것이 평면이고, 평면에서는 $m = 2$가 *정확*하며 비용이 0이다. 3D 파지 계획기의 $\epsilon$은 대략 $\cos(\pi/m)$만큼 체계적으로 비관적이고, 서로 다른 $m$을 고른 계획기 둘을 비교하기 전에 알아 둘 값이 있다.
+
 ### 3. Form closure와 force closure
 
 일상적으로 혼동되는 두 가지 다른 보장이다:
 
-| | 뜻 | 마찰에 의존? |
-|---|---|---|
-| **Form closure** | 접촉 기하만으로 물체가 고정된다. 어떤 힘을 가해도 운동이 불가능하다 | 아니다 — 순수하게 기구학적 성질 |
-| **Force closure** | 접촉들이 **임의의** 외부 렌치에 저항하는 힘을 만들 수 있다 | 그렇다 — 마찰 원뿔에 관한 진술 |
+| | 뜻 | 마찰에 의존? | 정의와, 이 타일 위에서의 유도가 있는 곳 |
+|---|---|---|---|
+| **Form closure** | 접촉 기하만으로 물체가 고정된다. 어떤 힘을 가해도 운동이 불가능하다 | 아니다 — 순수하게 기구학적 성질 | [[04-robotics/modern-robotics/ch12-grasping\|MR 12장 §3]], 4~5단계 |
+| **Force closure** | 접촉들이 **임의의** 외부 렌치에 저항하는 힘을 만들 수 있다 | 그렇다 — 마찰 원뿔에 관한 진술 | [[04-robotics/modern-robotics/ch12-grasping\|MR 12장 §3]], 3단계 |
+
+> [!note] 두 closure는 조건 하나이고, 그것이 이 페이지의 타일 위에서 유도된다
+> [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §3]]은 둘을 *같은* 수학적 성질 — **양의 생성**(positive spanning) — 을 서로 다른 생성자 집합, 즉 맨 접촉 법선이나 마찰 원뿔 모서리에 적용한 것으로 정의한다. 그것을 "$\sum_i\lambda_i w_i = 0$인 $\lambda > 0$을 찾고 $\operatorname{rank} = n$을 확인하라"로 검사 가능하게 만들고, 파지 **A**와 마찰 없는 쌍과 접촉 넷짜리 바람개비에 실제로 돌린다. 교과서적 개수 조건을 채우고도 타일이 도는 네 접촉 배치까지 포함해서다. 그 유도를 여기서 되풀이하지 않는다.
+>
+> 이 절이 더하는 것은 12장이 다룰 이유가 없는 부분이다. **어느 출판된 손가락 개수가 둘 중 무엇에 대한 진술이고, 어떤 접촉 모델 아래인가.** 검사는 끝났고, 문헌은 그렇지 않다.
 
 Form closure가 더 강하고 더 드문 조건이다. Force closure가 상자를 두 손가락으로 잡을 때
 달성되는 것이고, 거의 모든 파지 논문이 "안정적"이라고 할 때 뜻하는 것이다.
@@ -499,20 +768,58 @@ Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 
 > 개수의 양화, 둘이다. **논문이 force closure를 주장하면 접촉 모델과 특정/보편 양화를 함께 물어야 한다** — 학습 기반
 > 파지 계획기는 대개 유연한 패드가 달린 그리퍼로 학습하면서 soft finger를 암묵적으로 가정한다.
 
-접촉이 둘일 때의 실용적 판정은 **antipodal** 조건이다: 두 접촉점을 잇는 선이 두 마찰 원뿔
-안에 모두 들어가야 한다. 위 그림의 두 번째 패널이 그것이고, 학습이든 아니든 사실상 모든 두
-손가락 파지 계획기의 기하학적 핵심이다.
+접촉이 둘일 때의 실용적 판정은 **antipodal** 조건이다 — 위 그림의 두 번째 패널이 그것이고,
+학습이든 아니든 사실상 모든 두 손가락 파지 계획기의 기하학적 핵심이다.
 
-### 4. 파지 품질 — 엡실론 지표
+> **Antipodal 파지의 정의.** **Antipodal 파지**는 *접촉 쌍*이다. 힘도, 손 자세도, 품질 점수도 아니다. 두 접촉점을 잇는 선이 두 마찰 원뿔 안에 모두 들어가는 점접촉 둘이다. 정의 조건은 셋이고, 구현이 틀리는 곳은 둘째다. 접촉이 정확히 **둘**이다 — 이 개념은 눈대중으로 셋으로 일반화되지 않는다. 조건이 **양쪽 끝에서** 성립해야 한다. 각 접촉 자신의 안쪽 법선이 그 접촉에서 잰 선과 이루는 각이 $\arctan\mu_i$ 이하여야 한다. 그리고 각 끝은 **자기** $\mu_i$를 쓴다. 표면이 서로 다른 실제 부재에서는 그것이 서로 다른 두 숫자다.
+>
+> $$\angle\!\left(r_2 - r_1,\ \hat n_1\right) \le \arctan\mu_1 \quad\text{이고}\quad \angle\!\left(r_1 - r_2,\ \hat n_2\right) \le \arctan\mu_2$$
+>
+> $r_i$는 접촉 $i$의 위치, $\hat n_i$는 그 안쪽 법선, $\mu_i$는 그 마찰계수다. 그 선 방향의 힘이 두 접촉 모두에서 허용되므로, 쌍이 합렌치 0으로 쥘 수 있고 원뿔 안에서 기울여 하중에 버틸 수 있기 때문이다.
+>
+> - **예**: 타일 위의 파지 **A**. 선이 $\hat x$이고 법선이 $\pm\hat x$이므로 양쪽 각이 정확히 $0°$, 예산 $26.565°$에 대해 기하가 허락하는 가장 큰 여유다.
+> - **반례**: 파지 **C**. 왼쪽 접촉에서 선이 $17.354°$로 원뿔 안에 넉넉히 들어가고 — 아래 접촉에서는 $\arccos(0.050/0.167631) = 72.646°$로 한참 바깥이다. **C**에는 $\mu \ge \tan 72.646° = 3.20$이 필요하다. 한쪽 끝만 검사하거나 두 각의 *평균*(여기서는 $45.0°$, 여전히 바깥이지만 틀린 이유로)을 검사하도록 쓴 코드는 이런 쌍을 통과시키고, 손으로 짠 antipodal 선별기의 표준적인 버그가 그것이다.
+> - **왜 중요한가**: 후보 쌍당 내적 두 번이면 되므로, 계획기가 closure 검사나 렌치 공간 구성에 도달하기 전에 표면 점 쌍 수백만 개를 선별할 수 있다. 그리고 평면에서 마찰 있는 점접촉 둘에 대해서는 이것이 단순한 휴리스틱이 아니라 force closure와 *동치*다. [[04-robotics/modern-robotics/ch12-grasping|MR 12장]] 3단계가 이것을 별개 주장이 아니라 양의 생성 검사의 교차 확인으로 쓸 수 있는 이유가 그것이다. 공간에서는 동치가 아니고, 위 상자의 접촉 모델이 그 이유다.
 
-Closure는 이분법이고, 계획기에는 순위가 필요하다. **파지 렌치 공간**(grasp wrench space)을
-만든다: 접촉력이 유계일 때 접촉들이 만들 수 있는 렌치의 집합 — 원점을 포함하는 볼록 집합이다.
-Ferrari와 Canny의 1992년 지표는 놀랄 만큼 기하적이다:
+### 4. 파지 품질 — 렌치 공간과 거기서 읽는 숫자 둘
 
-> $\epsilon$ = 렌치 공간의 원점을 중심으로 파지 렌치 공간 안에 들어가는 가장 큰 공의 반지름.
-> 수치는 렌치 원점과 접촉력 예산을 고정하고, 특성 길이로 힘과 모멘트의 스케일을 맞춘 뒤에만 의미가 있다.
+Closure는 이분법이고, 계획기에는 순위가 필요하다. 표준적인 순위 둘 다 집합 하나의 성질이므로
+집합부터 정의한다.
 
-무엇을 사는지 읽어라. $\epsilon$은 파지가 저항할 수 있는 **최악의** 외부 렌치의 크기다 —
+> **파지 렌치 공간의 정의.** **파지 렌치 공간**(grasp wrench space) $\mathcal{W}$는 렌치 공간의 *볼록체*다 — 평면이면 $\mathbb{R}^3$, 공간이면 $\mathbb{R}^6$ — 원뿔도, 숫자도, 검사도 아니다. 정의 조건이 넷이고 하나하나가 결과와 함께 밝혀야 하는 선택이다. 파지 사상 $G$에 의한 접촉 마찰 원뿔들의 곱의 상이므로, 어떤 접촉도 가할 수 없었을 것은 들어오지 않는다. 접촉력이 명시된 예산으로 **유계**여야 한다. 그렇지 않으면 집합이 유계가 아닌 원뿔이고 아래 숫자 둘 다 존재하지 않는다. 렌치가 명시된 **원점** 기준이어야 한다. $m_z$가 원점을 따라 움직이기 때문이다. 그리고 모멘트 좌표를 명시된 **특성 길이** $\rho$로 나눠야 한다. 그러지 않으면 이 공간의 공이 뉴턴과 뉴턴미터를 비교하게 된다.
+>
+> $$\mathcal{W} = \left\{\,S\,G f_c \;\middle|\; f_c \in \mathcal{FC}_1 \times \cdots \times \mathcal{FC}_k,\ \ \textstyle\sum_i f_{n,i} \le F \right\}, \qquad S = \operatorname{diag}\!\left(1,\ 1,\ \tfrac1\rho\right)$$
+>
+> $G$는 Worked case의 파지 사상, $\mathcal{FC}_i$는 접촉 $i$의 마찰 원뿔, $F$는 법선력 총 예산, $\rho$는 특성 길이, $S$는 $\mathcal{W}$의 모든 좌표를 뉴턴으로 남기는 스케일링이다. $G$가 선형이고 각 원뿔이 볼록이며 예산이 선형 부등식 하나이므로 $\mathcal{W}$는 볼록이다. 원뿔이 다면체일 때 $\mathcal{W}$는 정확히 예산이 적용된 원뿔 모서리 렌치들의 볼록 껍질이고, 그것이 계산 가능하게 만드는 것이다.
+>
+> - **예**: 4단계에서 $(\pm 20,\ \pm 10,\ \mp 10)$ 위에 지은 사면체 $\mathcal{W}_A$, 원점이 그 무게중심이다.
+> - **반례(예산 없음)**: 그 모서리 넷이 생성하는 원뿔. 파지가 force closure일 때 정확히 원점을 내부에 담으므로 "그 안의 가장 큰 공"은 닫힌 파지마다 *무한*이고 나머지마다 0이다 — 품질 지표가 정교하게 만들려던 그 이분법으로 도로 무너진다.
+> - **반례($\rho$ 없음)**: $m_z$를 뉴턴미터로 남긴 같은 렌치 넷, $(\pm20,\pm10,\mp1)$. 내접 반지름이 $6.667$에서 $0.994$로 떨어지고 가장 약한 방향이 거의 순수 모멘트 $(0.050,\ 0.099,\ 0.994)$로 돌아간다 — 지표가 파지가 아니라 타일의 크기를 재고 있다.
+> - **왜 중요한가**: 아래 숫자 둘 다 $\mathcal{W}$의 함수이므로, *같은 물체 위 같은 파지*를 채점한 논문 둘이 총합 예산 대신 접촉당 예산을 골랐다는 이유만으로 $\epsilon$에서 $\sqrt3 = 1.73$배, 부피에서 $3$배 다르고, $\rho$로 또 한 번 다르다. 어느 규약도 틀리지 않았다. 규약 없이 숫자만 보고하는 것이 틀렸다.
+
+Ferrari와 Canny의 1992년 지표는 그다음 놀랄 만큼 기하적이다.
+
+> **엡실론의 정의.** $\epsilon$은 *반지름*이다 — $\rho$를 적용한 뒤 단위가 뉴턴인 숫자 하나로, 렌치 공간의 **원점**을 중심으로 $\mathcal{W}$ 안에 들어가는 가장 큰 공의 반지름이다. $\mathcal{W}$의 조건 넷을 물려받고 조건 셋을 더한다. 공의 중심이 집합의 무게중심이 아니라 원점이다. **방향에 대한 최솟값**이므로 나머지가 아무리 강해도 약한 방향 하나가 점수 전체를 정한다. 그리고 그 예산 아래 파지가 force closure일 때 정확히 양수이고, 그것이 §3의 다른 질문이 아니라 §3의 정교화이게 만드는 조건이다.
+>
+> $$\epsilon = \max\{\,r : \mathcal{B}(0,r)\subseteq\mathcal{W}\,\} = \min_{\|u\|=1} h_{\mathcal{W}}(u), \qquad h_{\mathcal{W}}(u) = \max_{w\in\mathcal{W}} u^{\!\top} w$$
+>
+> $h_{\mathcal{W}}$는 지지 함수, $\mathcal{B}(0,r)$은 원점의 반지름 $r$짜리 공이다. 다면체에서는 최솟값이 어떤 면에서 달성되므로 $\epsilon$은 원점에서 가장 가까운 면까지의 거리일 뿐이다.
+>
+> - **예**: $\epsilon_A = 20/3 = 6.667\ \mathrm{N}$, $(1,\ 2,\ 2)/3$ 방향에서 달성된다. $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$.
+> - **반례**: "$\epsilon$은 파지가 들 수 있는 무게다". 파지 **A**는 $\mu F = 10.0\ \mathrm{N}$을 드는데, 자기 $\epsilon$의 1.5배다. $+y$가 가장 약한 방향이 아니기 때문이다. $\epsilon$은 모든 방향에 대한 *하한*이고 그중 한 방향에서만 달성된다.
+> - **왜 중요한가**: 총합이 아니라 최악의 경우이기 때문에 접촉 개수가 다른 파지들을 가로질러 비교할 수 있는 유일한 품질 숫자이고, 접촉을 더하면 커진다. 그리고 Dex-Net의 라벨이 만들어지는 재료이기도 하다(§5). 위 가정들이 그 라벨로 학습한 모든 파지 점수로 전파된다는 뜻이다.
+
+> **Hull volume의 정의.** **Hull volume** $Q_v$는 *부피*다. $\mathcal{W}$의 르베그 측도이고 여기서는 단위가 $\mathrm{N}^3$, 공간에서는 $\mathrm{N}^6$이다. $\mathcal{W}$의 규약 넷을 물려받고 자기 성질 둘을 더한다. 최악의 경우가 아니라 **평균적 경우**의 점수다 — 모든 방향이 $\mathcal{W}$가 그 방향으로 얼마나 뻗는지에 비례해 기여하므로 약한 방향 하나로는 거의 움직이지 않는다. 그리고 **스케일에 자유롭지 않다**. 예산에 $\lambda$를 곱하면 $\epsilon$은 $\lambda$배, $Q_v$는 $\lambda^3$배가 된다.
+>
+> $$Q_v = \operatorname{vol}(\mathcal{W}) = \int_{\mathcal{W}} \mathrm{d}w$$
+>
+> 적분은 스케일링과 예산이 적용된 같은 집합 위에서 한다. 위의 사면체들에 대해서는 생성자 넷으로 $\tfrac16\left|\det[\,v_2 - v_1,\ v_3 - v_1,\ v_4 - v_1\,]\right|$이다.
+>
+> - **예**: $Q_{v,A} = 16000/3 = 5333\ \mathrm{N^3}$ 대 $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$. **A**가 **B**의 두 배를 받는데 $\epsilon$은 $1.53$배만 낫다고 한다. 여기서는 두 지표가 순위에 동의하고 차이에는 동의하지 않으며, 둘 중 어느 것에도 동의할 필요가 없다.
+> - **반례**: $\rho$를 다르게 고른 논문들 사이의 $Q_v$ 비교. $\rho$를 $0.100$에서 $0.050\,\mathrm{m}$으로 반으로 줄이면 $Q_{v,A}$가 $10667\ \mathrm{N^3}$으로 **두 배**가 되는데 $\epsilon_A$는 $22\%$만 올라 $8.165\ \mathrm{N}$이 된다 — 둘 다 밝히지 않은 부피 비교는 $\rho$ 비교다.
+> - **왜 중요한가**: 파지가 *어딘가에서* 강한 것에 상을 주는 지표이고, 과제 렌치를 모르고 넓게 퍼져 있을 때 바라는 바로 그것이며, 알고 좁을 때는 정확히 바라지 않는 것이다. 먼지가 그 차이를 드러낸다. $\mu = 0.2$에서 파지 **A**는 $\epsilon$의 $42\%$를 지키고 부피는 $16\%$만 지킨다.
+
+$\epsilon$이 무엇을 사는지 읽어라. 파지가 저항할 수 있는 **최악의** 외부 렌치의 크기다 —
 방향에 대해 최악인데, 공은 방향을 가리지 않기 때문이다. 파지가 closure를 가질 때 정확히
 양수이고, 접촉을 더하면 커진다. 중력에는 훌륭하고 옆에서 툭 미는 데는 무력한 파지는 마땅히
 낮은 점수를 받는다.
@@ -520,7 +827,8 @@ Ferrari와 Canny의 1992년 지표는 놀랄 만큼 기하적이다:
 약점은 강점과 같다: 모든 렌치 방향을 동등하게 취급하므로 $\epsilon$은 과제를 무시한다. 축
 둘레의 토크에 저항해야 하는 드라이버 파지는, 과제가 결코 힘을 걸지 않을 방향이라도 가장 약한 방향이 값을 정하는 지표로
 잘 다뤄지지 않는다 — 과제 지향 품질 지표의 동기이고, 어떤 논문이 무엇을 *위한* 품질인지 밝히지
-않은 채 "파지 품질"을 보고할 때 기억할 것이다.
+않은 채 "파지 품질"을 보고할 때 기억할 것이다. Worked case 5단계가 그 불평에 숫자를 붙인
+것이다. **A**가 두 지표를 다 이기고, **B**가 과제가 가진 유일한 하중에 두 배 강하다.
 
 ### 5. 해석에서 학습으로
 
@@ -677,8 +985,10 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 마찰 원뿔을 그리고 $\mu = 0.5$와 $\mu = 1$에서의 반각을 댄다.
+- [ ] 접촉 둘짜리 평면 파지의 파지 사상을 쓰고, 그 영공간이 물리적으로 무엇인지 말한다.
+- [ ] 쌍의 양쪽 끝에서 antipodal 검사를 돌리고, 한쪽 끝만 보는 검사라면 무엇을 통과시켰을지 말한다.
 - [ ] Form closure와 force closure의 차이를 말하고, 마찰 있는 3D 접촉 수 — Springer §38.4.2의 최소 개수(soft finger 둘 / 비공선 hard finger 셋)와 Markenscoff의 보편 bound 넷 — 를 출처와 함께 말한다.
-- [ ] $\epsilon$을 정의하고 그것이 의도적으로 무시하는 것을 말한다.
+- [ ] $\epsilon$을 정의하고 그것이 의도적으로 무시하는 것을 말하며, 그것 없이는 보고된 $\epsilon$이 아무 뜻도 없는 규약 셋을 댄다.
 - [ ] 학습 파지 파이프라인 안에서 해석 이론이 어디에 앉는지 설명한다.
 - [ ] 건설이 가장 어김없이 깨뜨리는 가정을 댄다.
 
@@ -705,16 +1015,16 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 말단이 작은 강체 블록을 잡는다. 블록의 과제 렌치는 $F=(0,-10)\,\mathrm{N}$(무게, 말단 둘레 모멘트 없음). 시뮬레이터를 새로 만들지 마라.
+Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 예산 $F=20\,\mathrm{N}$도 $\rho=0.100\,\mathrm{m}$도 그대로다. 노브 둘이 움직인다. 계획기가 이제 **왼쪽 변과 아래 변**의 쌍을 제안한다 — 접촉 1은 $(-0.100,\ 0)$에 법선 $(1,0)$으로 고정, 접촉 2는 아래 변 위 아무 데나 $(x_2,\ -0.050)$에 법선 $(0,1)$ — 그리고 표면에 먼지가 앉아 $\mu=0.2$다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 고정 자세의 P2. 블록 좌우 면에 soft-finger 접촉 둘, 법선은 $\pm x$. 마찰 원뿔(반각 $\arctan\mu$)과 접촉을 잇는 선. 말단에 $F=(0,-10)$.
-2. **유도.** (a) $F=(0,-10)$의 $\tau=J^\top F$. (b) 무게를 나눠 지면 접촉마다 $\lvert f_t\rvert\ge 5\,\mathrm{N}$. 두 힘이 원뿔 안에 남는 최소 법선 조임 $f_n$, $\mu=0.5$와 $\mu=1$. (c) 그 두 $\mu$의 원뿔 반각.
-3. **해석.** $\mu$가 $0.3$으로 떨어졌는데 조임은 여전히 $\mu=0.5$ 값이다. 파지는 force-closed로 남는가? 원뿔은 좁아지고, 무게 벡터는 여전히 원뿔 합 안에 있어야 한다. 아직 $\mu=0.5$라고 믿는 계획기는 무엇을 계속 제안하는가?
+1. **그리기.** 타일과 접촉 1, 그 원뿔, 그리고 아래 변을 선분으로 표시한다. 그 선분을 따라 *접촉 1에서* 각 조건을 통과하는 $x_2$ 집합을 칠하고, *접촉 2에서* 통과하는 집합을 다른 빗금으로 따로 칠한다. 그 옆에 $\mu=0.2$의 파지 **B**에 대한 렌치 공간 그림을 다시 그린다. 생성자 넷, 사면체, 내접 공, 그리고 중력 화살표 $(0,\ 4.905,\ 0)$.
+2. **유도.** (a) 각 끝의 antipodal 조건을 $\mu$가 든 $x_2$에 대한 부등식으로 쓰고, $\mu=0.2$와 $\mu=0.5$에서 두 집합이 **서로소**임을 보여라. (b) 두 집합이 처음 만나는 $\mu$와 그때의 유일한 $x_2$를 구하라. (c) $\mu=0.2$의 파지 **B**: 생성자 넷, $\epsilon_B$, $Q_{v,B}$, 그리고 각각의 $\mu=0.5$ 값 대비 비. (d) $\mu=0.2$에서 **B**와 **A**가 드는 용량을, 각각 $W=4.905\,\mathrm{N}$에 대한 여유로.
+3. **해석.** $\mu=0.2$에서도 두 지표는 여전히 **A**를 **B**보다 위에 놓는다. 먼지에서 살아남는 파지와 그러지 못하는 파지를 밝히고, 두 지표가 구조적으로 볼 수 없는 **B**의 성질이 무엇인지 한 문장으로 설명하라. 그다음 $\mu$를 모르는 현장에서 $\epsilon$만으로 후보 순위를 매기는 계획기에 이것이 무엇을 함의하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 접촉은 $\pm x$ 면, 원뿔은 그 법선, 이음선은 $x$ 방향. 말단에서 무게 화살표 아래.
-> 2. (a) $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) $\lvert f_t\rvert\le\mu f_n$이고 $\lvert f_t\rvert=5$이므로 $f_n\ge 5/\mu$. $\mu=0.5$에서 $10\,\mathrm{N}$, $\mu=1$에서 $5\,\mathrm{N}$. (c) $\arctan 0.5\approx 26.6^\circ$, $\arctan 1=45^\circ$.
-> 3. 아니다. 이제 $5/0.3\approx 16.7\,\mathrm{N}$이 필요하고 $10\,\mathrm{N}$ 조임은 모자란다. 반각이 $\arctan 0.3\approx 16.7^\circ$로 줄고, 손가락당 아래 $5\,\mathrm{N}$이 원뿔 밖이다. $\mu=0.5$를 믿는 계획기는 같은 접촉을 계속 제안한다.
+> 1. 접촉 1의 원뿔이 $+\hat x$ 둘레로 $\pm 11.310°$ 열린다. 두 빗금은 결코 겹치지 않는다.
+> 2. (a) 접촉 1에서 선이 $(x_2+0.100,\ -0.050)$이고 $\hat n_1 = (1,0)$이므로 $0.050/(x_2+0.100)\le\mu$, 즉 $x_2 \ge 0.050/\mu - 0.100$이다. 접촉 2에서 선이 $(-(x_2+0.100),\ +0.050)$이고 $\hat n_2 = (0,1)$이므로 $(x_2+0.100)/0.050 \le \mu$, 즉 $x_2 \le 0.050\mu - 0.100$이다. $\mu=0.2$에서는 $x_2\ge +0.150$이고 $x_2\le -0.090$ — 공집합이고, $+0.150$은 애초에 타일 바깥이다. $\mu=0.5$에서는 $x_2\ge 0$이고 $x_2\le -0.075$ — 공집합이다. (b) $0.050/\mu = 0.050\mu$일 때 두 경계가 만나므로 $\mu=1$, $x_2=-0.050\,\mathrm{m}$이고, 거기서 두 각이 정확히 $45°$이며 선은 $0.0707\,\mathrm{m}$짜리 대각선이다. **이 타일에서 왼쪽 변과 아래 변의 쌍은 $\mu=1$ 아래에서는 어느 것도 antipodal이 아니다** — 렌치 공간을 하나도 짓지 않고 부등식 둘로 후보 가족 전체를 배제한 것이다. (c) 생성자는 $(4,\ -20,\ -2)$, $(-4,\ -20,\ 2)$, $(4,\ 20,\ 2)$, $(-4,\ 20,\ -2)$이고 합이 0이다. 가장 가까운 면의 법선이 $(5,\ -1,\ 10)/\sqrt{126}$이므로 $\epsilon_B = 20/\sqrt{126} = 1.782\,\mathrm{N}$, $\mu=0.5$ 값 $4.364$의 $0.408$배다. $Q_{v,B} = 426.7\,\mathrm{N^3}$으로 $2667$의 $0.160$배다. **A**도 같은 형태로 떨어졌다($0.420$과 $0.160$). 부피가 정확히 $(0.2/0.5)^2 = 0.16$인 이유는 생성자 세 좌표 중 둘이 $\mu$에 비례하기 때문이고, $\epsilon$은 비례보다 조금 덜 떨어진다. (d) **B**는 $F = 20.0\,\mathrm{N}$을 들고 여유가 $20.0/4.905 = 4.08$로 **$\mu=0.5$에서와 같다**. **B**가 무게를 접촉 *법선*으로 지고, 법선은 마찰을 신경 쓰지 않기 때문이다. **A**는 $\mu F = 4.0\,\mathrm{N}$을 들고 여유가 $0.82$다. 타일을 떨어뜨린다.
+> 3. **B**가 살아남고 **A**가 그러지 못하는데, 두 지표는 두 $\mu$ 값 모두에서 **A**를 1위로 놓는다($\epsilon$은 $2.801$ 대 $1.782$, 부피는 $853$ 대 $427$). 지표가 볼 수 없는 것은 **B**의 강함이 과제가 하중을 거는 바로 그 축에 놓여 있다는 사실이고, 그래서 먼지는 **B**의 $\epsilon$을 $59\%$ 가져가고 실제 임무는 하나도 가져가지 못한다. $\mu$를 모르는 채 $\epsilon$만으로 순위를 매기는 계획기는 과제가 결코 만들지 않을 방향들에 대한 최악의 경우를 최적화하고 있고, 이 물체에서는 실패하는 파지를 고른다. 해법은 더 나은 스칼라가 아니라 과제 렌치 분포이며, §8의 과제 지향 비판이 말하는 것이 그것이다.
 
 ### 출처
 

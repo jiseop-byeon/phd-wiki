@@ -24,6 +24,18 @@ where each concept appears in the papers of this wiki.
 > [!note] First pass · 처음이라면
 > Read §1 for what a matrix is, then the 2×2 worked example in §3, then §6 for the high-dimensional intuition papers assume. Come back for §4 (SVD) when a paper factorises something, §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
 
+### Homework diagram · 과제가 그릴 그림
+
+The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the frozen pose $\theta=(0^\circ,90^\circ)$, and the figure is what §4.5 means by "a matrix is a map". The problem set asks for the same figure.
+
+**The arm, to scale.** Base at the origin, a unit link along $+x$ to the elbow at $(1,0)$, a second unit link straight up to the tip at $(1,1)$. Mark both joints with a circle and write the angle each one owns: $\theta_1$ measured from $+x$ at the base, $\theta_2$ measured at the elbow *relative to link 1*, which is the convention the catalog freezes and the commonest place to go wrong.
+
+**The two columns, as arrows at the tip.** Put both arrow tails at the tip, not at the joints. Column 1 of $J$ is the tip velocity when $\dot\theta=(1,0)$ — the whole arm turning about the base — and it is $(-1,1)$, so it points up and to the left, at $135^\circ$, with length $\sqrt2$. Column 2 is the tip velocity when $\dot\theta=(0,1)$ — the forearm turning about the elbow — and it is $(-1,0)$, pointing straight left, length $1$. Label each arrow with the joint rate that produced it, and write beside the figure the sentence the picture is: *a column of $J$ is the output of one unit of one input.* Check on the drawing that each arrow is perpendicular to the segment from its own joint to the tip, because a point on a rotating body moves at right angles to its radius; that check catches a wrong sign faster than redoing the algebra.
+
+**The image of the unit circle.** Draw a small circle of radius $1$ in a corner box labelled joint-rate space $(\dot\theta_1,\dot\theta_2)$, and beside it, at the tip, the ellipse that circle maps to under $J$. Its semi-axes are the singular values of §4, $\sigma_1=1.618$ and $\sigma_2=0.618$, so the ellipse is about $2.6$ times longer than it is wide — write $\kappa_2(J)=\sigma_1/\sigma_2=2.618$ inside it. The ellipse has area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$: the circle's own area, because $\det J=1$ means this pose neither creates nor destroys area, only reshapes it.
+
+**The variant the problem set ends on.** In a second, smaller panel, redraw the arm straight — $\theta=(0^\circ,0^\circ)$, tip at $(2,0)$ — and draw the two column arrows there: $(0,2)$ and $(0,1)$, both straight up, parallel. Shade the ellipse down to the segment it has collapsed into and write $\det J=0$, $\kappa_2=\infty$ beside it. The missing direction is $x$: the two panels differ by exactly one lost degree of freedom, and $J^\dagger$ blowing up in §4.5 is the algebra of this second panel.
+
 ### 1. Vectors, matrices, and what multiplication means
 
 The first three bullets set up the vocabulary — what a matrix is and two ways to read $Wx$ — and the worked shape computation for an attention head follows right after.
@@ -630,6 +642,18 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §4.5는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
+
+### 과제가 그릴 그림 · Homework diagram
+
+이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 고정 자세 $\theta=(0^\circ,90^\circ)$에서 본 것이고, 그림은 §4.5가 말하는 "행렬은 사상이다"의 그림판이다. 과제가 같은 그림을 요구한다.
+
+**팔, 실제 비율로.** 베이스는 원점, 단위 링크가 $+x$를 따라 엘보 $(1,0)$까지, 둘째 단위 링크가 곧장 위로 말단 $(1,1)$까지. 관절 둘을 동그라미로 표시하고 각자가 가진 각을 적는다. $\theta_1$은 베이스에서 $+x$로부터, $\theta_2$는 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
+
+**두 열, 말단의 화살표로.** 화살표 둘의 꼬리를 관절이 아니라 말단에 둔다. $J$의 열 1은 $\dot\theta=(1,0)$일 때의 말단 속도 — 팔 전체가 베이스를 중심으로 도는 경우 — 이고 $(-1,1)$이라 왼쪽 위 $135^\circ$ 방향, 길이 $\sqrt2$다. 열 2는 $\dot\theta=(0,1)$일 때의 말단 속도 — 전완이 엘보를 중심으로 도는 경우 — 이고 $(-1,0)$이라 왼쪽으로 길이 $1$이다. 화살표마다 그것을 만든 관절 속도를 적고, 그림 옆에 이 그림이 곧 그 문장임을 적는다. *$J$의 한 열은 입력 하나의 단위량이 만드는 출력이다.* 그림 위에서 확인할 것: 각 화살표는 자기 관절에서 말단으로 가는 선분과 수직이다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다.
+
+**단위원의 상.** 한쪽 구석 상자에 관절 속도 공간 $(\dot\theta_1,\dot\theta_2)$의 반지름 $1$짜리 원을 그리고, 그 옆 말단 자리에 그 원이 $J$로 옮겨 간 타원을 그린다. 반축은 §4의 특이값 $\sigma_1=1.618$과 $\sigma_2=0.618$이므로 타원은 폭의 약 $2.6$배로 길다. 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2=2.618$이라 쓴다. 타원의 넓이는 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$, 곧 원의 넓이 그대로다. $\det J=1$은 이 자세가 넓이를 만들지도 없애지도 않고 모양만 바꾼다는 뜻이기 때문이다.
+
+**과제가 끝나는 변형.** 더 작은 둘째 칸에 팔을 곧게 편 자세 — $\theta=(0^\circ,0^\circ)$, 말단 $(2,0)$ — 를 다시 그리고 거기서 두 열 화살표를 그린다. $(0,2)$와 $(0,1)$로 둘 다 위를 향해 평행하다. 타원이 주저앉아 버린 선분을 칠하고 옆에 $\det J=0$, $\kappa_2=\infty$라고 쓴다. 사라진 방향은 $x$다. 두 칸의 차이가 정확히 자유도 하나이고, §4.5에서 $J^\dagger$가 폭발하는 것이 이 둘째 칸의 대수다.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
 

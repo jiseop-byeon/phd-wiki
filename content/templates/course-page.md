@@ -52,8 +52,9 @@ Reference: 0.5 Engineering Math §4.5 (linearity) and 6. Signal Processing §1 (
 
 5. ONE SKELETON. Every course page carries the same headings in both halves, in this order:
 Prerequisites callout, First pass callout, Running object, Homework diagram, Worked case,
-numbered lecture sections, Problem set · 과제 (tier line, Draw / Derive / Do or Interpret,
-Solutions), Self-check (+ Answers). Do not invent per-track variants such as "Exit check".
+numbered lecture sections, then the wiki's standing tail - After reading (where the page has
+one), Self-check (+ Answers), Problem set · 과제 (tier line, Draw / Derive / Do or Interpret,
+Solutions), Sources. Do not invent per-track variants such as "Exit check".
 
 6. wiki-support: Working means the page's own problem set is completable from the page,
 its prerequisites, and the object catalog - nothing else. If it is not, the honest value

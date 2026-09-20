@@ -4,6 +4,7 @@ tags: [robotics, perception, calibration, geometry]
 study-depth: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
+wiki-support: Working
 ---
 
 ## English
@@ -28,6 +29,59 @@ perception tells you *where* it is, at *what scale*, in *which frame*.
 
 > [!note] First pass · 처음이라면
 > Read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start), §7. §2 to §4 are the machinery; read them when a paper's numbers depend on them.
+
+### Running object: the wrist rig on P2
+
+No plant in [[02-foundations/lab-plants|0.6 Lab Plants]] is a camera, so this page freezes its own rig and never changes these numbers. It is mounted on **P2**, the planar 2R arm, looking along the tool axis at the panel; **P5** supplies the one scalar range the problem set fuses. Lengths in metres, pixels in pixels, and P5's range in centimetres as 0.6 freezes it.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $f_x, f_y$ | $600$ px each | focal length in pixels, equal because the pixels are square |
+| $c_x, c_y$ | $320$, $240$ px | principal point, the image centre of a $640\times480$ sensor |
+| $s$ | $0$ | skew, zero for every sensor you will meet |
+| $k_1, k_2$ | $-0.20$, $+0.05$ | radial distortion coefficients (barrel, since $k_1<0$) |
+| $p_1, p_2$ | $0$, $0$ | tangential distortion, zero for a well-seated lens |
+| $b$ | $0.12$ m | stereo baseline: a second identical camera at $t = (-b, 0, 0)$, $R = I$ |
+| $L$ | $(0.5,\ 0.2,\ 2.0)$ m | the landmark, in camera 1's frame |
+| $A, B, C$ | $(0,0,2)$, $(0.5,0,2)$, $(0,0.4,2)$ m | three calibration-target corners on one plane |
+| $d_{ct}$ | $0.04$ m | hand–eye offset: the camera sits this far behind P2's tool tip |
+| P5 | $10 \pm 2$ cm prior, $12$ cm read, $R = 1\,\mathrm{cm}^2$ | the range to the panel, frozen in 0.6 |
+
+Everything else on the page is derived from that table. $L$ lands at $(470, 300)$ px in camera 1 and $(434, 300)$ px in camera 2, so its disparity is $36$ px and $Z = f b / d = 600 \times 0.12 / 36 = 2.0$ m, which is where it started — the round trip is the check that the rig is consistent.
+
+*Scope: this page teaches the geometry between a 3D point and a pixel and the calibrations that geometry depends on — intrinsics, extrinsics, distortion, two-view constraints, registration. It does not teach what an object is ([[03-deep-learning/index|Deep Learning]]), how the camera pose is estimated over time ([[04-robotics/state-estimation-slam|3. State Estimation & SLAM]]), or how the rig is published and time-stamped at runtime ([[04-robotics/robot-systems-deployment|10. Robot Systems]]).*
+
+### Homework diagram: one ray, two cameras, three error bars
+
+Draw it once; the problem set asks for the same drawing at different numbers.
+
+**Left — the projection, in the $XZ$ plane.** Optical centre $O$ at the origin, the optical axis along $+Z$, the image plane at $Z = f$. The landmark $L$ at $(X, Z) = (0.5, 2.0)$, and the ray from $L$ through $O$ crossing the image plane. Mark the similar triangles that give $u - c_x = f_x X / Z$: they are the derivation, so the drawing has to show both.
+
+**Middle — the second camera.** An identical centre at $X = -0.12$, its own ray to the same $L$. Label the two image points $470$ and $434$ and the disparity $36$ px between them. Then draw the *same* pair of rays for a point at $Z = 8$ m and show them nearly parallel: the disparity is $9$ px, and the angle between the rays is what depth accuracy is actually made of.
+
+**Right — three error bars on the same axis, to scale.** (i) A $\pm 1$ px disparity error at $Z = 2$ m, which is $\pm 0.056$ m. (ii) The same $\pm 1$ px at $Z = 8$ m, which is $\pm 0.89$ m — sixteen times longer, and it must be drawn sixteen times longer. (iii) The $2.30$ px that ignoring distortion costs at $L$, drawn on the image plane rather than on the depth axis, because it is a different kind of error: a bias, not a noise.
+
+### Worked case: from the table to a pixel, and back
+
+**1. Project $L$.** In homogeneous form, with the camera frame equal to the world frame so $R = I$ and $t = 0$:
+
+$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\360\\2\end{pmatrix}$$
+
+so dividing by the third entry gives $(u, v) = (470, 300)$ px, because the division by $Z$ that perspective performs is exactly the dehomogenization of the third coordinate.
+
+**2. The same point in camera 2, and back to depth.** $p^{c_2} = Ip^{c_1} + t = (0.5 - 0.12,\ 0.2,\ 2.0) = (0.38, 0.2, 2.0)$, which projects to $u_2 = 600 \times 0.38/2.0 + 320 = 434$ and $v_2 = 300$. The disparity is $d = 470 - 434 = 36$ px and $Z = f b / d = 2.0$ m, then $X = (u_1 - c_x)Z/f_x = 150 \times 2/600 = 0.5$ m and $Y = (v_1 - c_y)Z/f_y = 60 \times 2/600 = 0.2$ m. The rig recovers $L$ exactly, since with $R = I$ the triangulation is algebraically the inverse of the projection.
+
+**3. Where distortion moves it.** Normalized coordinates are $x_n = X/Z = 0.25$ and $y_n = Y/Z = 0.10$, so $r^2 = 0.0725$ and $r^4 = 0.00525625$. The radial factor is $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$, giving $(x_d, y_d) = (0.246441, 0.098576)$ and a distorted pixel of $(467.864,\ 299.146)$. The landmark actually lands $2.30$ px from where the ideal model says, and that is at a modest $r = 0.269$; it grows as $r^2$ toward the image corners.
+
+**4. What a sub-pixel calibration residual hides.** Suppose calibration returns $\hat f = 598$ px instead of $600$, everything else exact. Reproject the three target corners:
+
+| Corner | true $(u,v)$ | with $\hat f = 598$ | residual |
+|---|---|---|---:|
+| $A=(0,0,2)$ | $(320,\ 240)$ | $(320.0,\ 240.0)$ | $0.00$ px |
+| $B=(0.5,0,2)$ | $(470,\ 240)$ | $(469.5,\ 240.0)$ | $0.50$ px |
+| $C=(0,0.4,2)$ | $(320,\ 360)$ | $(320.0,\ 359.6)$ | $0.40$ px |
+
+The RMS reprojection error is $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px — comfortably "sub-pixel", and the corner at the principal point contributes nothing at all, because a focal-length error is invisible there. Now use that calibration to back-project $B$'s detection at a known $Z = 2$ m: $X = (470-320)\times 2/598 = 0.50167$ m, an error of $1.67$ mm. The relative error is $(f - \hat f)/\hat f = 0.334\%$ of the off-axis distance, so it is $1.67$ mm at $X = 0.5$ m and $10.0$ mm at $X = 3$ m. A sub-pixel residual is a statement about the fit, not about the metre.
 
 ### 1. The pinhole camera model
 
@@ -87,6 +141,28 @@ matter of a better camera; it needs a second constraint, which is what §2 is ab
 $p^{c}=(0.5, 0.2, 2.0)$ m. Then $u = 600\cdot 0.5/2.0+320=470$,
 $v = 600\cdot 0.2/2.0+240=300$. Move the point twice as far
 ($Z=4$): $u=395, v=270$ — it slides toward the principal point.
+
+**The intrinsic matrix, stated completely.** $K$ is an **upper-triangular $3\times3$ matrix** that maps a point in normalized image coordinates — the ray direction $(X/Z,\ Y/Z,\ 1)$, which is what is left of a 3D point after perspective has thrown away its distance — to pixel coordinates. It has five entries, and naming all five is the definition:
+
+$$K = \begin{pmatrix} f_x & s & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{pmatrix}$$
+
+- $f_x, f_y$ — **focal length in pixels along each image axis**, that is, the physical focal length divided by the pixel pitch in that direction. They are equal exactly when the pixels are square, so $f_x \ne f_y$ is a statement about the sensor, not about the lens. The rig freezes both at $600$.
+- $c_x, c_y$ — the **principal point**, where the optical axis pierces the image plane, in pixels from the array corner. It is near the image centre but not exactly at it; a calibration that returns $c_x$ far from $w/2$ is usually reporting a cropped or mis-specified image.
+- $s$ — **skew**, non-zero only if the sensor's two pixel axes are not perpendicular. It is $0$ on every solid-state sensor, and the rig freezes it at $0$. It survives in the model mostly so that $K$ can absorb an affine rectification.
+
+The whole camera is then the composition of extrinsics and intrinsics on homogeneous coordinates, which is the one equation the rest of the page differentiates, inverts and optimizes:
+
+$$\lambda \begin{pmatrix}u\\v\\1\end{pmatrix} = K\,[R \mid t]\begin{pmatrix}X^w\\Y^w\\Z^w\\1\end{pmatrix}, \qquad \lambda = Z^c$$
+
+The scalar $\lambda$ is the depth in the camera frame, so dividing it out *is* the perspective division, and $K$ has to be written this way because a matrix cannot divide — only the dehomogenization can. *Example:* the rig's $K$ takes $L$'s ray $(0.25, 0.10, 1)$ to $(470, 300, 1)$. *Non-example:* $K$ is **not** a change of physical units. It maps a direction to a pixel, so applying $K$ to a point in metres, as $K(0.5, 0.2, 2.0)^\top$, only accidentally works — it gives $(940, 360, 2)$, which dehomogenizes to the right answer precisely because the third row divides by $Z$ again. Feed it a ray you have already normalized and it is correct; feed it a metric point without dividing and you have relied on a coincidence.
+
+**Extrinsics, stated completely.** $[R \mid t]$ is the $3\times4$ block of the **SE(3)** transform $T_{cw}$ that expresses a world point in the camera frame, $p^c = Rp^w + t$, with $R \in SO(3)$ and $t \in \mathbb{R}^3$ ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]). Two conditions make it an extrinsic rather than a pose: it is the **world-to-camera** direction, and it carries **no** scale or shear, since $R^\top R = I$. The camera's *pose in the world* is the inverse $T_{wc}$, whose translation is the camera centre $-R^\top t$, because the centre is the point with $p^c = 0$ and $0 = Rp^w + t$ gives $p^w = -R^\top t$. *Non-example:* storing $t$ and calling it "the camera position" is the single most common calibration-file bug — $t$ equals the camera centre only when $R = I$, and then only up to sign.
+
+**The distortion model, stated completely.** A real lens bends rays, so the pinhole map is applied in **normalized coordinates first, distortion second, and $K$ last** — that order is part of the definition, and swapping it is a silent error. With $x_n = X/Z$, $y_n = Y/Z$ and $r^2 = x_n^2 + y_n^2$, the Brown–Conrady model used by OpenCV has two radial terms and two tangential ones:
+
+$$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r^6)}_{\text{radial}}\begin{pmatrix}x_n\\y_n\end{pmatrix} + \underbrace{\begin{pmatrix}2p_1x_ny_n + p_2(r^2+2x_n^2)\\ p_1(r^2+2y_n^2) + 2p_2x_ny_n\end{pmatrix}}_{\text{tangential}}$$
+
+then $u = f_xx_d + c_x$ and $v = f_yy_d + c_y$. The **radial** part is even in $r$ and moves a point along its own radius — outward for $k_1>0$ (pincushion), inward for $k_1<0$ (barrel) — because a lens's deviation depends on how far off-axis a ray enters, not on which way. The **tangential** part comes from the lens not being parallel to the sensor and moves points sideways. *Example:* the rig's $L$ sits at $r = 0.269$, and $k_1 = -0.20$, $k_2 = 0.05$ pull it from $(470, 300)$ to $(467.86, 299.15)$, a shift of $2.30$ px. *Non-example:* distortion is **not** noise. It is a deterministic, repeatable bias, so averaging more frames does not reduce it by $1/\sqrt{n}$ — only estimating $k_1, k_2$ does. A feature matcher reporting "sub-pixel" repeatability on an uncorrected image is repeatably $2.3$ px wrong. *Why it matters:* every residual later on this page — reprojection error, epipolar distance, ICP — is computed against the *undistorted* model, so an unmodelled $k_1$ enters all three as a bias that no amount of least squares can absorb.
 
 ### 2. Recovering depth
 
@@ -218,6 +294,45 @@ assert (r, c) == (10, 10) and R[15, 10] < 0 and R[3, 3] == 0     # corner > 0, e
 > - Harris and FAST are not scale-invariant on their own; check how scale is handled (pyramid or scale space).
 > - For learned matchers, check the training data, input resolution, GPU and whether reported timing includes detection.
 
+### 2.6 Two views: the epipolar constraint and triangulation
+
+§2.5 produced candidate correspondences. Two questions remain: which of them are geometrically possible at all, and what 3D point a surviving pair implies. The first is answered by a constraint that needs no 3D point, the second by solving for one.
+
+**The epipolar constraint, stated completely.** Take one 3D point seen by two cameras. Its two optical centres and the point span a plane — the **epipolar plane** — and each image sees that plane as a line. So the match of a point in image 1 cannot be anywhere in image 2: it must lie on **one line**, the **epipolar line**. Written algebraically with homogeneous pixel coordinates $\tilde u_1, \tilde u_2$ and normalized coordinates $\hat x_i = K_i^{-1}\tilde u_i$, the constraint is a single scalar equation:
+
+$$\hat x_2^\top E\, \hat x_1 = 0, \qquad \tilde u_2^\top F\, \tilde u_1 = 0$$
+
+It holds because $\hat x_1$, $\hat x_2$ and the baseline $t$ are coplanar, and a triple product of coplanar vectors vanishes.
+
+- The **essential matrix** $E = [t]_\times R$ works in **calibrated** (normalized) coordinates, where $R, t$ are the second camera's rotation and translation relative to the first and $[t]_\times$ is the skew-symmetric matrix with $[t]_\times a = t \times a$. It has **five** degrees of freedom — three for $R$, three for $t$, minus one because scale is unrecoverable — and its singular values are $(\sigma, \sigma, 0)$, so it is rank 2.
+- The **fundamental matrix** $F = K_2^{-\top} E K_1^{-1}$ works in **pixels** and therefore needs no calibration at all. It has **seven** degrees of freedom: nine entries, minus one for overall scale, minus one for $\det F = 0$. It too is rank 2.
+- Both are defined **only up to scale**, since multiplying either by a constant leaves the constraint $=0$ untouched.
+- The constraint is **necessary, not sufficient.** It constrains a 2D match to a 1D line, removing one degree of freedom out of two. Everything along that line still passes.
+
+*Example, on the rig.* With $R = I$ and $t = (-0.12, 0, 0)$,
+
+$$E = [t]_\times = \begin{pmatrix}0&0&0\\0&0&0.12\\0&-0.12&0\end{pmatrix}, \qquad 5000\,F = \begin{pmatrix}0&0&0\\0&0&1\\0&-1&0\end{pmatrix}$$
+
+For $L$'s pair, $\hat x_1 = (0.25, 0.10, 1)$ and $\hat x_2 = (0.19, 0.10, 1)$: $E\hat x_1 = (0,\ 0.12,\ -0.012)$ and $\hat x_2^\top(0, 0.12, -0.012) = 0.012 - 0.012 = 0$ exactly. In pixels the epipolar line is $\ell_2 = F\tilde u_1 \propto (0,\ 1,\ -300)$, that is $v = 300$ — for a rectified rig every epipolar line is a scanline, which is the whole reason stereo rigs are rectified before matching.
+
+*How a violation is measured.* The scalar $\tilde u_2^\top F \tilde u_1$ is an *algebraic* residual with no units, so it is converted to a **point-to-line distance in pixels** before it is thresholded:
+
+$$d_\perp = \frac{\lvert \tilde u_2^\top F \tilde u_1 \rvert}{\sqrt{\ell_1^2 + \ell_2^2}}, \qquad \ell = F\tilde u_1$$
+
+A candidate at $(434, 303)$ instead of $(434, 300)$ gives an algebraic residual of $6\times10^{-4}$ and $d_\perp = 3.0$ px, which is the vertical offset, as it must be for a horizontal line. That conversion is why RANSAC thresholds in these papers are quoted in pixels.
+
+*Non-example, and it is the dangerous one.* A match at $(440, 300)$ — the same row, one repeated panel over — has an epipolar residual of **exactly zero**. It passes $F$, it passes RANSAC, and it triangulates to $(0.60, 0.24, 2.40)$ m instead of $(0.50, 0.20, 2.00)$ m: $40$ cm too far. The epipolar constraint cannot catch a correspondence error *along* the epipolar line, and on repeated structure that is precisely the error you get. This is the §2.5 warning and the §4 ICP warning in one number.
+
+**Triangulation, stated completely.** Given two known camera matrices $P_1, P_2$ (each $3\times4$, $P_i = K_i[R_i \mid t_i]$) and a corresponding pair $\tilde u_1, \tilde u_2$, triangulation returns the 3D point $\tilde X$ that both rays pass through. Because measurement noise means they generally do **not** intersect, it is a least-squares problem, not a construction. The standard **DLT** form stacks the two cross-product constraints $\tilde u_i \times P_i\tilde X = 0$, of which two of each three rows are independent, into $A\tilde X = 0$ with
+
+$$A = \begin{pmatrix} u_1 P_1^{3\top} - P_1^{1\top}\\ v_1 P_1^{3\top} - P_1^{2\top}\\ u_2 P_2^{3\top} - P_2^{1\top}\\ v_2 P_2^{3\top} - P_2^{2\top}\end{pmatrix}$$
+
+where $P_i^{j\top}$ is row $j$ of $P_i$, and $\tilde X$ is the right singular vector of $A$ for its smallest singular value, since that is the unit vector minimizing $\lVert A\tilde X\rVert$. For the rectified rig the solution collapses to closed form:
+
+$$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 - c_y)Z}{f_y}, \qquad d = u_1 - u_2$$
+
+*Example:* the DLT on $L$'s pair returns $(0.5, 0.2, 2.0)$ m, identical to the closed form, because the rig is noiseless and rectified. *Why the $Z^2$ law:* differentiating $Z = fb/d$ gives $\partial Z/\partial d = -fb/d^2 = -Z^2/(fb)$, so one pixel of disparity error is worth $Z^2/(fb)$ metres — $0.056$ m at $Z = 2$ and $0.889$ m at $Z = 8$, sixteen times more for four times the range. *Non-example (degeneracy):* as the baseline shrinks toward zero, or as the point recedes, $d \to 0$ and the two rays become parallel, so $A$ loses rank and $Z$ is unconstrained. "Triangulation failed" in a paper almost always means this, not a solver bug.
+
 ### 3. Point clouds and frames
 
 A depth image plus intrinsics back-projects to a **point cloud**:
@@ -233,6 +348,25 @@ plausible-looking cloud in the wrong frame produces systematic, learning-resista
 **ICP** (iterative closest point) alternates two problems: match points under the current transform, then update the transform while holding those matches fixed. For ordinary rigid **point-to-point** least squares, the fixed-correspondence update has a closed-form SVD solution. **Point-to-plane** variants commonly use linearized least squares. Gauss–Newton or Levenberg–Marquardt is therefore not a defining requirement of every ICP update ([[02-foundations/optimization|4. Optimization §3.5]]).
 
 Imagine aligning a scan of one wall panel to a model containing several similar panels. A bad initial transform may match the scan to the neighboring panel. Even an exact least-squares solution for those matches can reinforce the wrong alignment. **This is why ICP is local:** correspondence selection and pose depend on each other, and alternating improvements do not search every assignment. Use an initial estimate from odometry or global matching and inspect overlap and outliers. See the [MIT geometric pose-estimation derivation](https://manipulation.mit.edu/pose.html).
+
+**The ICP objective, stated completely.** ICP is an **alternating minimization** of one cost over two unknowns: a rigid transform $T = (R, t)$ with $R \in SO(3)$, and a correspondence map $c$ that sends each source point to a target point. Given source points $\{p_i\}$ and target points $\{q_j\}$, the two half-steps are
+
+$$c(i) \leftarrow \arg\min_j \lVert Rp_i + t - q_j \rVert \quad\text{(match)}, \qquad (R,t) \leftarrow \arg\min_{R,t} \sum_i \lVert Rp_i + t - q_{c(i)} \rVert^2 \quad\text{(solve)}$$
+
+Each half-step can only lower the cost, so the loop converges — but it converges to a **local** minimum, because the match step is a discrete choice that the solve step never revisits. That is the precise content of "ICP is local". The solve step has a closed form: centre both sets, take the SVD of the cross-covariance $H = \sum_i (p_i - \bar p)(q_{c(i)} - \bar q)^\top$, set $R = V\operatorname{diag}(1,1,\det(VU^\top))U^\top$ and $t = \bar q - R\bar p$, where the $\det$ term forces a rotation rather than a reflection.
+
+**The point-to-plane variant, stated completely.** When the target is a sampled *surface*, the nearest target point is almost never the true corresponding point — it is just the nearest sample. Point-to-plane therefore measures the residual **along the target's surface normal** $n_{c(i)}$ only, so a source point is free to slide within the tangent plane at no cost:
+
+$$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
+
+It converges in far fewer iterations on smooth surfaces, because sliding is exactly the motion the point-to-point cost wrongly penalizes. The price is that the freedom is real: if the normals do not span, the cost has a flat direction.
+
+> [!example] Worked example · 계산 예제 — the degeneracy in numbers
+> **A wall.** Target plane $y = 0$ with normal $n = (0,1)$; three scan points at $(0,\ 0.05)$, $(1,\ 0.05)$, $(2,\ 0.05)$, so the scan sits $5$ cm off the model. For a pure translation $t = (t_x, t_y)$ the point-to-plane residual of every point is $(t_y + 0.05)$, and the cost is $3(t_y + 0.05)^2$. It is **zero for $t = (0, -0.05)$, for $t = (-0.30, -0.05)$ and for $t = (+0.75, -0.05)$ alike** — $t_x$ does not appear in the cost at all. A $30$ cm along-wall error therefore has an exactly zero residual, which is what "a small residual does not prove the pose" means arithmetically.
+>
+> **A corner fixes it.** Add a second face, $x = 0$ with normal $(1,0)$, and two scan points at $(0.05,\ 0)$ and $(0.05,\ 1)$. Now the cost at $t = (0, -0.05)$ is $2(0.05)^2 = 0.005$, at $t = (-0.05, -0.05)$ it is $0$, and at $t = (-0.30, -0.05)$ it is $2(0.05-0.30)^2 = 0.125$. Two non-parallel normals are enough to pin a planar translation, so **degeneracy is a property of the normals the scan contains**, not of walls.
+>
+> **Point-to-point on the same wall, with correct correspondences,** recovers the full transform: with $q_i = p_i + (0.30, 0.05)$ the SVD solve returns $R = I$ and $t = (0.30, 0.05)$ exactly. The catch is that ICP does not *have* the correct correspondences — nearest-point matching on a featureless plane returns the foot of the perpendicular, which slides with $t_x$ and reproduces the same degeneracy.
 
 Degeneracy depends on the measured geometry and objective. Point-to-plane residuals on a featureless planar patch cannot constrain translation along the plane or rotation about its normal. Distinct boundaries or point correspondences can supply additional information. Thus “a wall is degenerate” is shorthand for an insufficient measurement model, not a universal statement about every wall scan.
 
@@ -255,6 +389,18 @@ The quality metric is usually **reprojection error**: project the estimated 3D p
 through the estimated model and measure pixel distance to their detections. Low
 reprojection error on the calibration set does **not** guarantee accuracy outside the
 calibrated volume, range, or temperature, because the model was fitted only at the target positions, distances and conditions actually observed; outside them it is extrapolating, not obeying a physical law.
+
+**Reprojection error, stated completely.** For one 3D point $X_j$ seen in one view $i$, it is a **distance in pixels** between two image points: the detected feature $\tilde u_{ij}$ and the projection of $X_j$ through the current model. Writing $\pi(\cdot)$ for the full pipeline of §1 — extrinsics, perspective division, distortion, then $K$ —
+
+$$e_{ij} = \big\lVert\, \tilde u_{ij} - \pi\big(K, d, T_i, X_j\big) \,\big\rVert_2$$
+
+Three conditions are what make it *the* metric. It is measured **in the image**, where the noise actually is, so least squares on it is the maximum-likelihood estimate under isotropic Gaussian pixel noise ([[02-foundations/optimization|4. Optimization §3]]) — an error measured in metres in 3D would be weighting a quantity the camera never observed. It is **per observation**, so every $(i,j)$ pair contributes. And it depends on **every** parameter at once: move $K$, a distortion coefficient, a pose or the point, and $e_{ij}$ moves. That is why calibration and bundle adjustment are the same optimization with different variables held fixed.
+
+**The calibration residual, stated completely.** What a calibration tool prints is the **RMS reprojection error** over all corners in all views — one number summarizing $NM$ of the above, with $N$ views and $M$ target corners:
+
+$$e_{\text{RMS}} = \sqrt{\frac{1}{NM}\sum_{i=1}^{N}\sum_{j=1}^{M} \big\lVert \tilde u_{ij} - \pi(K, d, T_i, X_j)\big\rVert_2^2}$$
+
+*Example:* the three rig corners with $\hat f = 598$ give residuals $0.00$, $0.50$ and $0.40$ px, so $e_{\text{RMS}} = \sqrt{0.41/3} = 0.370$ px, and that calibration still misplaces a point $0.5$ m off-axis by $1.67$ mm, or $10.0$ mm at $3$ m off-axis. *Non-example, and the one to remember:* $e_{\text{RMS}}$ is a **training** residual. Adding $k_3$, $p_1$ and $p_2$ to a model fitted on twenty views of a target at one distance will lower it while making the extrapolation worse, exactly as an over-parameterized regression does ([[02-foundations/ml-practice|9. ML Practice §2]]). The honest checks are a held-out set of views the fit never saw, residuals plotted *by image position* (a focal error leaves nothing at the principal point and grows radially, as the table above shows), and a measurement of a known length at the working distance.
 
 ### 6. Geometric + deep perception
 
@@ -305,6 +451,11 @@ local basin.
 - Interpret reprojection error without over-trusting it.
 - Distinguish PBVS from IBVS and identify where pose, calibration, depth and the image Jacobian enter the loop.
 - Explain why corners, not edges, are matched, and filter matches with the ratio test, a mutual check and RANSAC.
+- Name all five entries of $K$, say which are properties of the sensor and which of the lens, and apply distortion in the right order.
+- Write the epipolar constraint with $E$ and with $F$, convert an algebraic residual to a pixel distance, and say what the constraint cannot catch.
+- Triangulate a rectified pair, and state the range at which its $Z^2$ error law makes the answer useless.
+- Write the point-to-point and point-to-plane ICP objectives and show a case where the second has a flat direction.
+- Read an RMS reprojection error as a training residual rather than an accuracy.
 
 > [!tip] Going deeper · 더 깊이
 > Szeliski's [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/) is free and covers this page's whole span; when you need multi-view geometry stated as theorems — essential and fundamental matrices, triangulation, bundle adjustment — Hartley and Zisserman's *Multiple View Geometry in Computer Vision* is the reference the field cites.
@@ -317,6 +468,9 @@ local basin.
 4. A paper fuses LiDAR and camera "without calibration" — what is it most likely still assuming?
 5. A window has $\sum I_x^2=40$, $\sum I_y^2=2$ and $\sum I_xI_y=0$. With $k=0.05$, what are the Harris response and the Shi–Tomasi score, and what kind of point is it?
 6. On a wall of identical panels, an ORB descriptor's nearest candidate is 32 bits away and the second is 36. Does it pass a 0.8 ratio test, and what must catch a wrong match that survives the filters?
+7. A calibration file reports $f_x = 600$, $f_y = 604$, $c_x = 318$, $c_y = 241$, $s = 0$ for the rig's $640\times480$ sensor. Which of these tells you something about the *sensor* rather than the lens, and which single value would make you suspect the image was cropped?
+8. Using the rig's $F$, a candidate match for $\tilde u_1 = (470, 300)$ sits at $(434, 306)$. Compute the algebraic residual and the point-to-line distance in pixels. Would a match at $(452, 300)$ be rejected by the same test?
+9. A calibration is refitted with $k_3$, $p_1$ and $p_2$ added, and $e_{\text{RMS}}$ drops from $0.37$ px to $0.21$ px on the same twenty views. What has been demonstrated, and what two checks would settle whether the new model is better?
 
 > [!tip]- Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -325,19 +479,22 @@ local basin.
 > 4. Known intrinsics, and usually a rough extrinsic initialization or joint optimization that still needs overlap and synchronized timestamps.
 > 5. The eigenvalues are 40 and 2, so $R=80-0.05\cdot42^2=-8.2<0$ and $\min\lambda=2$. It is an edge: intensity changes along $x$ only, so the point is poorly located along the edge direction $y$.
 > 6. No: $32/36=0.89>0.8$, so reject it — near-equal candidates suggest the neighbouring panel. A wrong match that survives must be caught by geometric verification (RANSAC), and a set shifted by one whole panel can pass even that, so check against odometry or independent landmarks.
+> 7. $f_x \ne f_y$ and $s$ are sensor facts: unequal focal lengths in pixels mean non-square pixels, and $s=0$ means the pixel axes are perpendicular. The focal length itself is the lens. $c_x = 318$ is unremarkable, but $c_y = 241$ against an image height of 480 means the principal point sits $1$ px *below* centre while $c_x$ sits $2$ px left of $320$ — both normal. The value that would signal a crop is a principal point far from $(w/2, h/2)$, for instance $c_x = 240$ on a $640$-wide image, which says the array you calibrated is not the array you are now projecting into.
+> 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$. The algebraic residual is $0.0002(306) - 0.06 = 1.2\times10^{-3}$ and $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$, so $d_\perp = 6.0$ px — the vertical offset, as it must be for a horizontal epipolar line. A match at $(452, 300)$ gives an algebraic residual of exactly $0$ and $d_\perp = 0$: it is *on* the line, so the epipolar test passes it. It is still wrong — it triangulates to $Z = 600(0.12)/18 = 4.0$ m instead of $2.0$ m. Moving along the epipolar line is invisible to $F$ and visible only in depth.
+> 9. Only that a model with more free parameters fits the same data better, which is guaranteed and therefore demonstrates nothing about accuracy ([[02-foundations/ml-practice|9. ML Practice §2]]). Two checks settle it: (i) hold out views the fit never saw — ideally at a different distance and tilt — and compare $e_{\text{RMS}}$ there, not on the training views; (ii) measure a known length, or a known target-to-target distance, at the actual working range, since that is the metre the calibration is for. A third useful look is the residual map by image position: genuine distortion structure appears as a radial pattern, while noise-fitting appears as speckle.
 
 ### Problem set · 과제
 
-Tier B. **P5** as a range to a wall ([[02-foundations/lab-plants|0.6]]). One hand–eye number: camera $4\,\mathrm{cm}$ behind the P2 tip. No simulator.
+Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([[02-foundations/lab-plants|0.6]]) and the hand–eye offset $d_{ct}=4\,\mathrm{cm}$. No simulator. The Worked case ran the rig at the landmark $L$, $Z = 2.0$ m. This set moves it to $L' = (0.5,\ 0.2,\ 4.0)$ m and asks which errors grow, which shrink, and which stay put — that is the variant.
 
-1. **Draw.** Wrist camera looking along $+x$ at the panel. Mark P5's prior and measurement on that ray, and the $4\,\mathrm{cm}$ camera-to-tip offset.
-2. **Derive.** Scalar Kalman of P5: $K$, fused range, $P^+$. If that fused number is camera-to-wall, what is tip-to-wall after the $4\,\mathrm{cm}$?
-3. **Interpret.** In $AX=XB$, which of $A,B,X$ is the $4\,\mathrm{cm}$? Why a $1\,\mathrm{px}$ reprojection error does not certify that number.
+1. **Draw.** Both cameras, both rays to $L'$, the two image points and the disparity between them. Beside them, and to the same scale, the $\pm1$ px depth error bar at $Z = 4$ m and the one at $Z = 2$ m from the Homework diagram. Add the distortion shift at $L'$ as a short segment on the image plane. Three errors, three different scaling laws — the drawing has to make them look different.
+2. **Derive.** (a) Project $L'$ into both cameras: $u_1, v_1, u_2$, the disparity $d'$, and the check $Z = f b / d'$. (b) The depth error for $d' \pm 1$ px, exactly, and compare it with the first-order estimate $Z^2/(fb)$; say why the exact $+1$ and $-1$ errors are not equal. (c) The distortion shift at $L'$: compute $r$, the radial factor, and the shift in pixels, then explain the ratio to the $2.30$ px at $Z = 2$ using the leading term. (d) P5's scalar fusion: $K$, the fused camera-to-wall range, $P^+$, and the tip-to-wall number after $d_{ct}$.
+3. **Interpret.** (a) In $AX = XB$, which of $A$, $B$, $X$ contains the $4\,\mathrm{cm}$, and why a $0.37$ px calibration residual does not certify it. (b) A match on the repeated panel at $(440, 300)$ has an epipolar residual of exactly zero. Name the one number in part 2 that would have caught it, and say what you would add to the rig to catch it in general.
 
 > [!tip]- Solutions
-> 1. Ray from camera through the tip to the wall. Prior $10\,\mathrm{cm}$, $z=12\,\mathrm{cm}$, camera behind the tip.
-> 2. $K=4/(4+1)=0.8$, fused $11.6\,\mathrm{cm}$, $P^+=0.8$. Tip-to-wall $11.6-4=7.6\,\mathrm{cm}$.
-> 3. $X$ is the unknown camera-to-gripper transform; $4\,\mathrm{cm}$ is one translation component of $X$. $A$ is gripper motion, $B$ is camera motion. Reprojection can be small while $X$ is still wrong outside the calibrated volume (§5).
+> 1. The two rays to $L'$ are visibly closer to parallel than the pair at $Z = 2$; the $Z=4$ error bar must be drawn about four times the $Z=2$ one, and the distortion segment about eight times *shorter* than the one in the Homework diagram.
+> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; in camera 2 the point is $(0.38, 0.2, 4.0)$, so $u_2 = 377$ and $d' = 18$ px, giving $Z = 600(0.12)/18 = 4.0$ m. (b) $d' = 17 \Rightarrow Z = 4.235$ m ($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m ($-0.211$). The first-order estimate is $Z^2/(fb) = 16/72 = 0.222$ m, between the two, and the two are unequal because $Z = fb/d$ is convex in $d$ — losing disparity costs more than gaining it, so the depth error distribution is skewed *away* from the camera even when the pixel error is symmetric. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; the factor is $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$, so the point lands at $(394.729,\ 269.892)$ and the shift is $0.291$ px. That is $7.9$ times smaller than the $2.30$ px at $Z = 2$, because the leading radial displacement in pixels is $f\lvert k_1\rvert r^3$ and $r$ halved: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, fused range $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, tip-to-wall $11.6 - 4 = 7.6\,\mathrm{cm}$.
+> 3. (a) $X$ is the unknown camera-to-gripper transform and the $4\,\mathrm{cm}$ is one translation component of it; $A$ is the gripper's motion between two robot poses, $B$ the camera's motion between the same two. A $0.37$ px residual is a *training* residual on the target views, and §5 shows a fit with exactly that residual still misplacing a point by $1.67$ mm at $0.5$ m off-axis and $10.0$ mm at $3$ m — the camera-to-gripper translation is estimated from those same views, so it inherits that extrapolation error. Only a held-out pose and a measured known length test it. (b) **The triangulated depth.** The wrong match has disparity $30$ instead of $36$, so it triangulates to $Z = 2.40$ m rather than $2.00$ m — a $40$ cm error that the epipolar residual reports as zero, because $F$ constrains a match to a line and says nothing about position *along* it. In general you add an independent constraint that is not along the epipolar line: a third view whose epipolar lines cross the first pair at an angle, a direct range measurement (the P5 sensor, or lidar), or an appearance check strong enough to tell two identical panels apart — which, on identical panels, means using their context rather than their texture.
 
 ### Sources
 
@@ -375,6 +532,59 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1(핀홀 모델, 투영식까지), §5(보정 — 현장 실패가 실제로 시작되는 곳), §7. §2~§4는 기계장치이고, 논문의 숫자가 거기 기댈 때 읽어라.
+
+### 계속 쓰는 대상: P2의 손목 리그
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]에는 카메라인 장치가 없다. 그래서 이 페이지는 자기 리그를 고정하고 아래 숫자를 다시는 바꾸지 않는다. 평면 2R 팔 **P2** 에 달려 도구 축을 따라 패널을 보고, 과제가 융합하는 스칼라 거리 하나는 **P5** 가 준다. 길이는 미터, 픽셀은 픽셀, P5의 거리는 0.6이 고정한 대로 센티미터다.
+
+| 기호 | 값 | 무엇인가 |
+|---|---:|---|
+| $f_x, f_y$ | 각각 $600$ px | 픽셀 단위 초점 거리, 픽셀이 정사각이라 둘이 같다 |
+| $c_x, c_y$ | $320$, $240$ px | 주점, $640\times480$ 센서의 이미지 중심 |
+| $s$ | $0$ | skew, 실제로 만날 모든 센서에서 0 |
+| $k_1, k_2$ | $-0.20$, $+0.05$ | 반경 방향 왜곡 계수($k_1<0$ 이므로 배럴) |
+| $p_1, p_2$ | $0$, $0$ | 접선 방향 왜곡, 렌즈가 제대로 앉았으면 0 |
+| $b$ | $0.12$ m | 스테레오 기선: $t = (-b, 0, 0)$, $R = I$ 의 동일한 두 번째 카메라 |
+| $L$ | $(0.5,\ 0.2,\ 2.0)$ m | 랜드마크, 카메라 1의 프레임에서 |
+| $A, B, C$ | $(0,0,2)$, $(0.5,0,2)$, $(0,0.4,2)$ m | 한 평면 위의 보정 타깃 코너 셋 |
+| $d_{ct}$ | $0.04$ m | 손-눈 오프셋: 카메라가 P2 도구 끝에서 이만큼 뒤에 있다 |
+| P5 | 사전 $10 \pm 2$ cm, 측정 $12$ cm, $R = 1\,\mathrm{cm}^2$ | 0.6이 고정한 패널까지의 거리 |
+
+페이지의 나머지는 전부 저 표에서 나온다. $L$ 은 카메라 1에서 $(470, 300)$ px, 카메라 2에서 $(434, 300)$ px에 맺히므로 시차가 $36$ px이고 $Z = f b / d = 600 \times 0.12 / 36 = 2.0$ m — 출발한 자리다. 이 왕복이 리그가 일관되다는 확인이다.
+
+*범위: 이 페이지는 3D 점과 픽셀 사이의 기하, 그리고 그 기하가 의존하는 보정을 가르친다 — intrinsics, extrinsics, 왜곡, 두 시점 제약, registration. 물체가 무엇인지([[03-deep-learning/index|딥러닝]]), 카메라 pose가 시간에 걸쳐 어떻게 추정되는지([[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM]]), 리그가 런타임에 어떻게 발행되고 타임스탬프가 찍히는지([[04-robotics/robot-systems-deployment|10. 로봇 시스템]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: 광선 하나, 카메라 둘, 오차 막대 셋
+
+한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
+
+**왼쪽 — $XZ$ 평면에서의 투영.** 원점에 광학 중심 $O$, $+Z$ 를 따라 광축, $Z = f$ 에 이미지 평면. 랜드마크 $L$ 은 $(X, Z) = (0.5, 2.0)$ 이고 $L$ 에서 $O$ 로 가는 광선이 이미지 평면을 지난다. $u - c_x = f_x X / Z$ 를 주는 닮은꼴 삼각형을 표시한다. 그것이 유도 자체이므로 그림이 둘 다 보여야 한다.
+
+**가운데 — 두 번째 카메라.** $X = -0.12$ 에 동일한 중심, 같은 $L$ 로 가는 자기 광선. 두 상점 $470$ 과 $434$, 그리고 그 사이의 시차 $36$ px를 적는다. 그다음 $Z = 8$ m의 점에 대해 *같은* 광선 쌍을 그려 거의 평행함을 보인다. 시차는 $9$ px이고, 두 광선 사이의 각도가 깊이 정확도의 실체다.
+
+**오른쪽 — 같은 축 위의 오차 막대 셋, 축척대로.** (i) $Z = 2$ m에서 시차 $\pm 1$ px 오차, 곧 $\pm 0.056$ m. (ii) $Z = 8$ m에서의 같은 $\pm 1$ px, 곧 $\pm 0.89$ m — 열여섯 배 길고, 열여섯 배 길게 그려야 한다. (iii) $L$ 에서 왜곡을 무시할 때 치르는 $2.30$ px. 이것은 깊이 축이 아니라 이미지 평면 위에 그린다. 종류가 다른 오차, 잡음이 아니라 편향이기 때문이다.
+
+### 대상으로 한 번 끝까지: 표에서 픽셀로, 그리고 되돌아
+
+**1. $L$ 을 투영한다.** 카메라 프레임을 세계 프레임과 같게 두어 $R = I$, $t = 0$ 인 동차 형태로
+
+$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\360\\2\end{pmatrix}$$
+
+세 번째 성분으로 나누면 $(u, v) = (470, 300)$ px다. 원근이 수행하는 $Z$ 로 나누기가 정확히 세 번째 좌표의 비동차화이기 때문이다.
+
+**2. 같은 점을 카메라 2에서, 그리고 깊이로 되돌리기.** $p^{c_2} = Ip^{c_1} + t = (0.5 - 0.12,\ 0.2,\ 2.0) = (0.38, 0.2, 2.0)$ 이므로 $u_2 = 600 \times 0.38/2.0 + 320 = 434$, $v_2 = 300$ 이다. 시차는 $d = 470 - 434 = 36$ px, $Z = f b / d = 2.0$ m이고, 이어서 $X = (u_1 - c_x)Z/f_x = 150 \times 2/600 = 0.5$ m, $Y = (v_1 - c_y)Z/f_y = 60 \times 2/600 = 0.2$ m다. 리그가 $L$ 을 정확히 복원한다. $R = I$ 일 때 삼각측량이 대수적으로 투영의 역이기 때문이다.
+
+**3. 왜곡이 그것을 어디로 옮기는가.** 정규화 좌표는 $x_n = X/Z = 0.25$, $y_n = Y/Z = 0.10$ 이므로 $r^2 = 0.0725$, $r^4 = 0.00525625$ 다. 반경 계수는 $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$ 이라 $(x_d, y_d) = (0.246441, 0.098576)$ 이 되고 왜곡된 픽셀은 $(467.864,\ 299.146)$ 이다. 랜드마크는 이상적 모델이 말하는 자리에서 실제로 $2.30$ px 떨어져 맺히는데, 그것도 $r = 0.269$ 라는 온건한 값에서다. 이미지 모서리로 갈수록 $r^2$ 로 자란다.
+
+**4. 서브픽셀 보정 잔차가 감추는 것.** 보정이 $600$ 대신 $\hat f = 598$ px를 돌려주고 나머지는 정확하다고 하자. 타깃 코너 셋을 다시 투영하면
+
+| 코너 | 참 $(u,v)$ | $\hat f = 598$ 로 | 잔차 |
+|---|---|---|---:|
+| $A=(0,0,2)$ | $(320,\ 240)$ | $(320.0,\ 240.0)$ | $0.00$ px |
+| $B=(0.5,0,2)$ | $(470,\ 240)$ | $(469.5,\ 240.0)$ | $0.50$ px |
+| $C=(0,0.4,2)$ | $(320,\ 360)$ | $(320.0,\ 359.6)$ | $0.40$ px |
+
+RMS reprojection error는 $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px로 넉넉히 "서브픽셀"이고, 주점에 있는 코너는 아무 기여도 하지 않는다. 초점 거리 오차가 거기서는 보이지 않기 때문이다. 이제 그 보정으로 $Z = 2$ m를 아는 $B$ 의 검출을 역투영하면 $X = (470-320)\times 2/598 = 0.50167$ m, 곧 $1.67$ mm의 오차다. 상대 오차는 축에서 벗어난 거리의 $(f - \hat f)/\hat f = 0.334\%$ 이므로 $X = 0.5$ m에서 $1.67$ mm, $X = 3$ m에서 $10.0$ mm다. 서브픽셀 잔차는 적합에 대한 진술이지 미터에 대한 진술이 아니다.
 
 ### 1. 핀홀 카메라 모델
 
@@ -432,6 +642,28 @@ $$u = f_x\frac{X}{Z}+c_x, \qquad v = f_y\frac{Y}{Z}+c_y$$
 $p^{c}=(0.5, 0.2, 2.0)$ m이면 $u = 600\cdot 0.5/2.0+320=470$,
 $v = 600\cdot 0.2/2.0+240=300$. 점을 두 배 멀리 보내면($Z=4$): $u=395, v=270$ —
 주점 쪽으로 미끄러진다.
+
+**내부 행렬의 완전한 정의.** $K$ 는 정규화 이미지 좌표 — 광선 방향 $(X/Z,\ Y/Z,\ 1)$, 곧 원근이 거리를 버리고 3D 점에서 남긴 것 — 를 픽셀 좌표로 보내는 **상삼각 $3\times3$ 행렬**이다. 성분이 다섯이고, 다섯을 다 이름 붙이는 것이 정의다.
+
+$$K = \begin{pmatrix} f_x & s & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{pmatrix}$$
+
+- $f_x, f_y$ — 각 이미지 축을 따른 **픽셀 단위 초점 거리**, 곧 물리적 초점 거리를 그 방향의 픽셀 피치로 나눈 값이다. 픽셀이 정사각일 때만 둘이 같으므로 $f_x \ne f_y$ 는 렌즈가 아니라 센서에 대한 진술이다. 이 리그는 둘 다 $600$ 으로 고정한다.
+- $c_x, c_y$ — **주점**, 광축이 이미지 평면을 뚫는 자리를 배열 모서리에서부터 픽셀로 잰 값이다. 이미지 중심 근처지만 정확히 중심은 아니다. $c_x$ 가 $w/2$ 에서 크게 벗어난 보정 결과는 대개 잘렸거나 잘못 지정된 이미지를 보고하는 것이다.
+- $s$ — **skew**, 센서의 두 픽셀 축이 직교하지 않을 때만 0이 아니다. 모든 고체 촬상 소자에서 $0$ 이고 이 리그도 $0$ 으로 고정한다. 모델에 남아 있는 이유는 주로 $K$ 가 아핀 rectification을 흡수할 수 있게 하기 위해서다.
+
+그러면 카메라 전체는 동차 좌표 위에서 extrinsics와 intrinsics를 합성한 것이고, 이것이 페이지의 나머지가 미분하고 역으로 풀고 최적화하는 단 하나의 식이다.
+
+$$\lambda \begin{pmatrix}u\\v\\1\end{pmatrix} = K\,[R \mid t]\begin{pmatrix}X^w\\Y^w\\Z^w\\1\end{pmatrix}, \qquad \lambda = Z^c$$
+
+스칼라 $\lambda$ 는 카메라 프레임에서의 깊이이므로 그것을 나눠 없애는 것이 *곧* 원근 나눗셈이고, 행렬은 나눌 수 없으므로 — 나눌 수 있는 것은 비동차화뿐이므로 — $K$ 를 이렇게 써야 한다. *예:* 리그의 $K$ 는 $L$ 의 광선 $(0.25, 0.10, 1)$ 을 $(470, 300, 1)$ 로 보낸다. *반례:* $K$ 는 물리 단위의 변환이 **아니다**. 방향을 픽셀로 보내므로 미터 단위 점에 $K(0.5, 0.2, 2.0)^\top$ 처럼 적용하면 우연히 맞는 것이다 — $(940, 360, 2)$ 가 나오고 비동차화하면 정답이 되는데, 세 번째 행이 $Z$ 로 또 나누기 때문일 뿐이다. 이미 정규화한 광선을 넣으면 옳고, 나누지 않은 미터 점을 넣으면 우연에 기댄 것이다.
+
+**외부 파라미터의 완전한 정의.** $[R \mid t]$ 는 세계 점을 카메라 프레임으로 쓰는 **SE(3)** 변환 $T_{cw}$ 의 $3\times4$ 블록이다. $p^c = Rp^w + t$ 이고 $R \in SO(3)$, $t \in \mathbb{R}^3$ 이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]). 이것을 pose가 아니라 extrinsic으로 만드는 조건이 둘이다: 방향이 **세계에서 카메라로**이고, $R^\top R = I$ 이므로 스케일도 전단도 **없다**. 카메라의 *세계 안 pose*는 역변환 $T_{wc}$ 이고 그 평행 이동이 카메라 중심 $-R^\top t$ 다. 중심은 $p^c = 0$ 인 점이고 $0 = Rp^w + t$ 에서 $p^w = -R^\top t$ 가 나오기 때문이다. *반례:* $t$ 를 저장해 놓고 "카메라 위치"라 부르는 것이 보정 파일에서 가장 흔한 버그다. $t$ 가 카메라 중심과 같은 것은 $R = I$ 일 때뿐이고, 그때도 부호를 빼고서다.
+
+**왜곡 모델의 완전한 정의.** 실제 렌즈는 광선을 휘게 하므로 핀홀 사상은 **정규화 좌표에서 먼저, 왜곡이 다음, $K$ 가 마지막** 순서로 적용된다. 그 순서가 정의의 일부이고 바꾸면 조용한 오류가 된다. $x_n = X/Z$, $y_n = Y/Z$, $r^2 = x_n^2 + y_n^2$ 로 두면 OpenCV가 쓰는 Brown–Conrady 모델은 반경 항 둘과 접선 항 둘을 갖는다.
+
+$$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r^6)}_{\text{반경}}\begin{pmatrix}x_n\\y_n\end{pmatrix} + \underbrace{\begin{pmatrix}2p_1x_ny_n + p_2(r^2+2x_n^2)\\ p_1(r^2+2y_n^2) + 2p_2x_ny_n\end{pmatrix}}_{\text{접선}}$$
+
+그다음 $u = f_xx_d + c_x$, $v = f_yy_d + c_y$ 다. **반경** 부분은 $r$ 의 짝함수이고 점을 자기 반경을 따라 움직인다 — $k_1>0$ 이면 바깥으로(핀쿠션), $k_1<0$ 이면 안으로(배럴). 렌즈의 어긋남이 광선이 어느 쪽으로 들어오느냐가 아니라 축에서 얼마나 벗어나 들어오느냐에 달렸기 때문이다. **접선** 부분은 렌즈가 센서와 평행하지 않아 생기고 점을 옆으로 민다. *예:* 리그의 $L$ 은 $r = 0.269$ 에 있고 $k_1 = -0.20$, $k_2 = 0.05$ 가 그것을 $(470, 300)$ 에서 $(467.86, 299.15)$ 로, 곧 $2.30$ px 끌어당긴다. *반례:* 왜곡은 잡음이 **아니다**. 결정적이고 재현되는 편향이므로 프레임을 더 평균해도 $1/\sqrt{n}$ 로 줄지 않는다. 줄이는 것은 $k_1, k_2$ 를 추정하는 것뿐이다. 보정하지 않은 이미지에서 "서브픽셀" 재현성을 보고하는 특징 매처는 재현성 있게 $2.3$ px 틀린 것이다. *왜 중요한가:* 이 페이지 뒤쪽의 모든 잔차 — reprojection error, epipolar 거리, ICP — 는 *왜곡을 편 뒤의* 모델에 대해 계산되므로, 모델에 없는 $k_1$ 은 셋 모두에 최소자승이 아무리 해도 흡수하지 못하는 편향으로 들어간다.
 
 ### 2. 깊이 복원
 
@@ -561,6 +793,45 @@ assert (r, c) == (10, 10) and R[15, 10] < 0 and R[3, 3] == 0     # corner > 0, e
 > - Harris와 FAST는 그 자체로 스케일 불변이 아니다. 스케일을 어떻게 다루는지(피라미드인지 스케일 공간인지) 확인하라.
 > - 학습된 매처라면 학습 데이터, 입력 해상도, GPU, 보고된 시간에 검출이 포함되는지 확인하라.
 
+### 2.6 두 시점: epipolar 제약과 삼각측량
+
+§2.5는 후보 대응점을 만들었다. 남은 질문이 둘이다. 그중 어느 것이 기하적으로 가능하기나 한가, 그리고 살아남은 짝이 어떤 3D 점을 뜻하는가. 첫째는 3D 점이 필요 없는 제약이 답하고, 둘째는 그 점을 푸는 것이 답한다.
+
+**Epipolar 제약의 완전한 정의.** 두 카메라가 보는 3D 점 하나를 잡는다. 두 광학 중심과 그 점이 평면 하나를 — **epipolar 평면** — 펼치고, 각 이미지는 그 평면을 선 하나로 본다. 그래서 이미지 1의 한 점에 대응하는 짝은 이미지 2의 아무 데나 있을 수 없고 **선 하나**, 곧 **epipolar 선** 위에 있어야 한다. 동차 픽셀 좌표 $\tilde u_1, \tilde u_2$ 와 정규화 좌표 $\hat x_i = K_i^{-1}\tilde u_i$ 로 대수적으로 쓰면 제약은 스칼라 방정식 하나다.
+
+$$\hat x_2^\top E\, \hat x_1 = 0, \qquad \tilde u_2^\top F\, \tilde u_1 = 0$$
+
+$\hat x_1$, $\hat x_2$, 기선 $t$ 가 같은 평면에 있고, 공면인 벡터들의 삼중곱이 0이기 때문에 성립한다.
+
+- **Essential matrix** $E = [t]_\times R$ 는 **보정된**(정규화) 좌표에서 작동한다. $R, t$ 는 첫 카메라에 대한 둘째 카메라의 회전과 평행 이동이고 $[t]_\times$ 는 $[t]_\times a = t \times a$ 인 반대칭 행렬이다. 자유도는 **다섯**이다 — $R$ 에서 셋, $t$ 에서 셋, 스케일을 복원할 수 없어 하나를 뺀다 — 특잇값은 $(\sigma, \sigma, 0)$ 이라 rank 2다.
+- **Fundamental matrix** $F = K_2^{-\top} E K_1^{-1}$ 는 **픽셀**에서 작동하므로 보정이 전혀 필요 없다. 자유도는 **일곱**이다: 성분 아홉에서 전체 스케일로 하나, $\det F = 0$ 으로 하나를 뺀다. 이것도 rank 2다.
+- 둘 다 **스케일을 빼고서만** 정의된다. 어느 쪽에 상수를 곱해도 제약 $=0$ 은 그대로이기 때문이다.
+- 이 제약은 **필요조건이지 충분조건이 아니다.** 2차원 짝을 1차원 선으로 줄여 자유도 둘 중 하나를 없앨 뿐이다. 그 선 위의 모든 것이 여전히 통과한다.
+
+*리그에서의 예.* $R = I$, $t = (-0.12, 0, 0)$ 이므로
+
+$$E = [t]_\times = \begin{pmatrix}0&0&0\\0&0&0.12\\0&-0.12&0\end{pmatrix}, \qquad 5000\,F = \begin{pmatrix}0&0&0\\0&0&1\\0&-1&0\end{pmatrix}$$
+
+$L$ 의 짝은 $\hat x_1 = (0.25, 0.10, 1)$, $\hat x_2 = (0.19, 0.10, 1)$ 이고 $E\hat x_1 = (0,\ 0.12,\ -0.012)$, $\hat x_2^\top(0, 0.12, -0.012) = 0.012 - 0.012 = 0$ 으로 정확히 0이다. 픽셀에서 epipolar 선은 $\ell_2 = F\tilde u_1 \propto (0,\ 1,\ -300)$, 곧 $v = 300$ 이다. Rectify된 리그에서는 모든 epipolar 선이 스캔라인이고, 매칭 전에 스테레오 리그를 rectify하는 이유가 전부 그것이다.
+
+*위반을 어떻게 재는가.* 스칼라 $\tilde u_2^\top F \tilde u_1$ 은 단위가 없는 *대수적* 잔차이므로, 문턱을 걸기 전에 **픽셀 단위 점-선 거리**로 바꾼다.
+
+$$d_\perp = \frac{\lvert \tilde u_2^\top F \tilde u_1 \rvert}{\sqrt{\ell_1^2 + \ell_2^2}}, \qquad \ell = F\tilde u_1$$
+
+$(434, 300)$ 대신 $(434, 303)$ 인 후보는 대수적 잔차가 $6\times10^{-4}$, $d_\perp = 3.0$ px다. 수평 epipolar 선에서는 당연히 수직 어긋남 그대로다. 이 논문들의 RANSAC 문턱이 픽셀로 인용되는 이유가 그 변환이다.
+
+*반례, 그리고 이것이 위험한 쪽이다.* 같은 행에서 반복 패널 하나 옆인 $(440, 300)$ 의 짝은 epipolar 잔차가 **정확히 0**이다. $F$ 를 통과하고, RANSAC을 통과하고, $(0.50, 0.20, 2.00)$ m가 아니라 $(0.60, 0.24, 2.40)$ m로 삼각측량된다 — $40$ cm 멀다. Epipolar 제약은 epipolar 선을 *따라가는* 대응점 오류를 잡지 못하고, 반복 구조에서는 바로 그 오류가 난다. §2.5의 경고와 §4 ICP의 경고를 숫자 하나로 합친 것이다.
+
+**삼각측량의 완전한 정의.** 알려진 카메라 행렬 둘 $P_1, P_2$(각각 $3\times4$, $P_i = K_i[R_i \mid t_i]$)와 대응 짝 $\tilde u_1, \tilde u_2$ 가 주어지면, 삼각측량은 두 광선이 함께 지나는 3D 점 $\tilde X$ 를 돌려준다. 측정 잡음 때문에 두 광선은 대개 **만나지 않으므로**, 이것은 작도가 아니라 최소자승 문제다. 표준 **DLT** 형태는 외적 제약 $\tilde u_i \times P_i\tilde X = 0$ 의 세 행 중 독립인 두 행씩을 쌓아 $A\tilde X = 0$ 을 만든다.
+
+$$A = \begin{pmatrix} u_1 P_1^{3\top} - P_1^{1\top}\\ v_1 P_1^{3\top} - P_1^{2\top}\\ u_2 P_2^{3\top} - P_2^{1\top}\\ v_2 P_2^{3\top} - P_2^{2\top}\end{pmatrix}$$
+
+$P_i^{j\top}$ 는 $P_i$ 의 $j$ 번째 행이고, $\tilde X$ 는 $A$ 의 가장 작은 특잇값에 대응하는 오른쪽 특이벡터다. 그것이 $\lVert A\tilde X\rVert$ 를 최소화하는 단위 벡터이기 때문이다. Rectify된 리그에서는 해가 닫힌 형태로 주저앉는다.
+
+$$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 - c_y)Z}{f_y}, \qquad d = u_1 - u_2$$
+
+*예:* $L$ 의 짝에 DLT를 돌리면 닫힌 형태와 똑같이 $(0.5, 0.2, 2.0)$ m가 나온다. 리그에 잡음이 없고 rectify되어 있기 때문이다. *$Z^2$ 법칙이 나오는 곳:* $Z = fb/d$ 를 미분하면 $\partial Z/\partial d = -fb/d^2 = -Z^2/(fb)$ 이므로 시차 1픽셀 오차는 $Z^2/(fb)$ 미터의 값이다 — $Z = 2$ 에서 $0.056$ m, $Z = 8$ 에서 $0.889$ m로, 거리 4배에 열여섯 배다. *반례(퇴화):* 기선이 0으로 줄거나 점이 멀어지면 $d \to 0$ 이고 두 광선이 평행해지므로 $A$ 가 rank를 잃고 $Z$ 가 구속되지 않는다. 논문의 "삼각측량 실패"는 solver 버그가 아니라 거의 항상 이것이다.
+
 ### 3. 포인트 클라우드와 프레임
 
 깊이 이미지 + intrinsics를 역투영하면 **포인트 클라우드**가 된다:
@@ -576,6 +847,25 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 **ICP**(iterative closest point)는 현재 변환으로 대응점을 고른 뒤, 그 대응을 고정하고 변환을 갱신한다. 일반적인 강체 **점대점** 최소제곱의 고정 대응 갱신은 SVD로 닫힌 형태의 해를 구한다. **점대평면** 방식은 흔히 선형화한 최소제곱을 쓴다. 따라서 모든 ICP 갱신에 Gauss–Newton이나 Levenberg–Marquardt가 필수인 것은 아니다([[02-foundations/optimization|4. 최적화 §3.5]]).
 
 비슷한 패널이 반복되는 벽 모델에 스캔을 맞춘다고 하자. 초기 변환이 틀리면 옆 패널의 점과 짝지을 수 있다. 그 대응에 대해 최소제곱을 정확히 풀어도 잘못된 정렬을 강화할 수 있다. **ICP가 국소적인 이유**는 대응 선택과 자세가 서로 의존하며, 번갈아 개선한다고 모든 대응을 탐색하지는 않기 때문이다. odometry나 전역 매칭으로 초기값을 얻고 겹치는 영역과 이상점을 확인한다. [MIT 기하 자세 추정 유도](https://manipulation.mit.edu/pose.html)를 함께 보라.
+
+**ICP 목적함수의 완전한 정의.** ICP는 미지수 둘 위에서 비용 하나를 **번갈아 최소화**한다. $R \in SO(3)$ 인 강체 변환 $T = (R, t)$, 그리고 각 원본 점을 대상 점으로 보내는 대응 사상 $c$ 다. 원본 점 $\{p_i\}$ 와 대상 점 $\{q_j\}$ 에 대해 두 반쪽 스텝은
+
+$$c(i) \leftarrow \arg\min_j \lVert Rp_i + t - q_j \rVert \quad\text{(대응)}, \qquad (R,t) \leftarrow \arg\min_{R,t} \sum_i \lVert Rp_i + t - q_{c(i)} \rVert^2 \quad\text{(풀이)}$$
+
+각 반쪽 스텝이 비용을 낮추기만 하므로 루프는 수렴한다 — 다만 **국소** 최소점으로 수렴한다. 대응 스텝이 이산 선택이고 풀이 스텝이 그것을 다시 들여다보지 않기 때문이다. 그것이 "ICP는 국소적이다"의 정확한 내용이다. 풀이 스텝은 닫힌 형태다: 두 집합을 중심화하고 교차 공분산 $H = \sum_i (p_i - \bar p)(q_{c(i)} - \bar q)^\top$ 의 SVD를 취해 $R = V\operatorname{diag}(1,1,\det(VU^\top))U^\top$, $t = \bar q - R\bar p$ 로 둔다. $\det$ 항은 반사가 아니라 회전이 되도록 강제한다.
+
+**점대평면 방식의 완전한 정의.** 대상이 표본으로 찍힌 *표면*일 때, 가장 가까운 대상 점은 참된 대응점인 경우가 거의 없다 — 그냥 가장 가까운 표본일 뿐이다. 그래서 점대평면은 잔차를 대상의 표면 법선 $n_{c(i)}$ **방향으로만** 재고, 원본 점은 접평면 안에서 비용 없이 미끄러질 수 있다.
+
+$$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
+
+매끄러운 표면에서 훨씬 적은 반복으로 수렴한다. 미끄러짐이야말로 점대점 비용이 잘못 벌주는 운동이기 때문이다. 대가는 그 자유가 진짜라는 것이다. 법선들이 공간을 펼치지 못하면 비용에 평평한 방향이 남는다.
+
+> [!example] 계산 예제 · Worked example — 퇴화를 숫자로
+> **벽 하나.** 대상 평면은 $y = 0$, 법선 $n = (0,1)$; 스캔 점 셋은 $(0,\ 0.05)$, $(1,\ 0.05)$, $(2,\ 0.05)$ 라 스캔이 모델에서 $5$ cm 떠 있다. 순수 평행 이동 $t = (t_x, t_y)$ 에 대해 모든 점의 점대평면 잔차는 $(t_y + 0.05)$ 이고 비용은 $3(t_y + 0.05)^2$ 이다. $t = (0, -0.05)$ 에서도, $t = (-0.30, -0.05)$ 에서도, $t = (+0.75, -0.05)$ 에서도 똑같이 **0**이다 — $t_x$ 는 비용에 아예 나타나지 않는다. 벽을 따라 $30$ cm 틀려도 잔차가 정확히 0이라는 것, 그것이 "잔차가 작다고 pose가 맞는 것은 아니다"를 산수로 쓴 것이다.
+>
+> **모서리가 그것을 고친다.** 법선 $(1,0)$ 의 두 번째 면 $x = 0$ 과 그 위의 스캔 점 $(0.05,\ 0)$, $(0.05,\ 1)$ 을 더한다. 이제 $t = (0, -0.05)$ 의 비용은 $2(0.05)^2 = 0.005$, $t = (-0.05, -0.05)$ 에서 $0$, $t = (-0.30, -0.05)$ 에서 $2(0.05-0.30)^2 = 0.125$ 다. 평행하지 않은 법선 둘이면 평면 위 평행 이동을 고정하기에 충분하므로, **퇴화는 벽의 성질이 아니라 스캔이 담은 법선들의 성질**이다.
+>
+> **같은 벽에 올바른 대응점으로 점대점을** 풀면 변환 전체가 복원된다: $q_i = p_i + (0.30, 0.05)$ 이면 SVD 풀이가 정확히 $R = I$, $t = (0.30, 0.05)$ 를 돌려준다. 함정은 ICP가 올바른 대응점을 *갖고 있지 않다*는 것이다. 특징 없는 평면에서 최근접 점 매칭은 수선의 발을 돌려주고, 그것은 $t_x$ 와 함께 미끄러지므로 같은 퇴화를 그대로 재현한다.
 
 퇴화는 기하와 목적함수에 달렸다. 특징 없는 평면의 점대평면 잔차로는 평면을 따르는 병진과 법선 둘레 회전을 제약할 수 없다. 뚜렷한 경계나 점 대응은 추가 정보를 줄 수 있다. “벽은 퇴화한다”는 말은 측정 모델의 정보 부족을 줄여 부르는 것이지, 모든 벽 스캔의 보편적 성질은 아니다.
 
@@ -597,6 +887,18 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 품질 지표는 대개 **reprojection error**다: 추정된 3D 점을 추정된 모델로 투영해 검출
 위치와의 픽셀 거리를 잰다. 보정 세트에서 낮은 reprojection error가 보정된 부피·거리·
 온도 밖에서의 정확도를 보장하지는 **않는다**. 모델은 타깃을 실제로 관측한 위치·거리·조건에서만 맞춰졌으므로, 그 밖에서는 물리 법칙을 따르는 것이 아니라 외삽하고 있을 뿐이다.
+
+**Reprojection error의 완전한 정의.** 한 시점 $i$ 에서 보인 3D 점 $X_j$ 하나에 대해, 이것은 이미지 점 둘 사이의 **픽셀 단위 거리**다: 검출된 특징 $\tilde u_{ij}$ 와 현재 모델로 투영한 $X_j$. §1의 전체 파이프라인 — extrinsics, 원근 나눗셈, 왜곡, 그리고 $K$ — 을 $\pi(\cdot)$ 로 쓰면
+
+$$e_{ij} = \big\lVert\, \tilde u_{ij} - \pi\big(K, d, T_i, X_j\big) \,\big\rVert_2$$
+
+이것을 *그* 지표로 만드는 조건이 셋이다. 잡음이 실제로 있는 곳인 **이미지에서** 재므로, 이것에 대한 최소자승이 등방 가우시안 픽셀 잡음 아래의 최대우도 추정이다([[02-foundations/optimization|4. 최적화 §3]]) — 3D에서 미터로 잰 오차는 카메라가 관측한 적 없는 양에 가중치를 주는 것이다. **관측마다** 하나이므로 모든 $(i,j)$ 짝이 기여한다. 그리고 **모든** 파라미터에 동시에 의존한다: $K$, 왜곡 계수 하나, pose, 점 중 무엇을 움직여도 $e_{ij}$ 가 움직인다. 보정과 bundle adjustment가 어떤 변수를 고정하느냐만 다른 같은 최적화인 이유가 그것이다.
+
+**보정 잔차의 완전한 정의.** 보정 도구가 찍어 주는 값은 모든 시점의 모든 코너에 걸친 **RMS reprojection error**, 곧 시점 $N$ 개와 타깃 코너 $M$ 개에 대한 위 값 $NM$ 개를 요약한 숫자 하나다.
+
+$$e_{\text{RMS}} = \sqrt{\frac{1}{NM}\sum_{i=1}^{N}\sum_{j=1}^{M} \big\lVert \tilde u_{ij} - \pi(K, d, T_i, X_j)\big\rVert_2^2}$$
+
+*예:* $\hat f = 598$ 인 리그의 코너 셋은 잔차 $0.00$, $0.50$, $0.40$ px를 주므로 $e_{\text{RMS}} = \sqrt{0.41/3} = 0.370$ px이고, 그 보정은 축에서 $0.5$ m 벗어난 점을 여전히 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는다. *반례, 그리고 기억할 쪽:* $e_{\text{RMS}}$ 는 **훈련** 잔차다. 한 거리에서 찍은 타깃 스무 장에 맞춘 모델에 $k_3$, $p_1$, $p_2$ 를 더하면 이 값은 내려가면서 외삽은 나빠진다. 과대 매개변수화된 회귀와 정확히 같다([[02-foundations/ml-practice|9. ML 실무 §2]]). 정직한 확인은 셋이다: 적합이 본 적 없는 시점으로 만든 홀드아웃 세트, *이미지 위치별로* 그린 잔차(초점 거리 오차는 위 표처럼 주점에서 아무것도 남기지 않고 반경 방향으로 자란다), 그리고 실제 작업 거리에서 잰 알려진 길이.
 
 ### 6. 기하학적 인식 + 딥 인식
 
@@ -644,6 +946,11 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 - reprojection error를 과신하지 않고 해석할 수 있다
 - PBVS와 IBVS를 구분하고 pose·보정·깊이·image Jacobian이 루프 어디에 들어가는지 말할 수 있다
 - 에지가 아니라 코너를 매칭하는 이유를 설명하고, 비율 검사·상호 검사·RANSAC으로 매칭을 거를 수 있다
+- $K$ 의 다섯 성분을 모두 이름 붙이고, 어느 것이 센서의 성질이고 어느 것이 렌즈의 성질인지 말하고, 왜곡을 올바른 순서로 적용할 수 있다
+- Epipolar 제약을 $E$ 로도 $F$ 로도 쓰고, 대수적 잔차를 픽셀 거리로 바꾸고, 그 제약이 잡지 못하는 것을 말할 수 있다
+- Rectify된 짝을 삼각측량하고, $Z^2$ 오차 법칙 때문에 답이 쓸모없어지는 거리를 말할 수 있다
+- 점대점과 점대평면 ICP 목적함수를 쓰고, 후자에 평평한 방향이 생기는 경우를 보일 수 있다
+- RMS reprojection error를 정확도가 아니라 훈련 잔차로 읽을 수 있다
 
 > [!tip] 더 깊이 · Going deeper
 > Szeliski의 [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)이 무료이고 이 페이지의 범위를 전부 덮는다. 다시점 기하를 정리로 봐야 할 때 — essential·fundamental 행렬, 삼각측량, 번들 조정 — 는 Hartley·Zisserman의 *Multiple View Geometry in Computer Vision*이 이 분야가 인용하는 참고서다.
@@ -656,6 +963,9 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 4. "보정 없이" LiDAR와 카메라를 융합한다는 논문이 여전히 가정하고 있을 가능성이 큰 것은?
 5. 어떤 창에서 $\sum I_x^2=40$, $\sum I_y^2=2$, $\sum I_xI_y=0$이다. $k=0.05$일 때 Harris 응답과 Shi–Tomasi 점수는 얼마이고, 어떤 종류의 점인가?
 6. 똑같은 패널이 반복되는 벽에서 ORB 기술자의 가장 가까운 후보가 32비트, 두 번째가 36비트 떨어져 있다. 0.8 비율 검사를 통과하는가? 거르기를 통과한 틀린 매칭은 무엇이 잡아야 하는가?
+7. 어떤 보정 파일이 리그의 $640\times480$ 센서에 대해 $f_x = 600$, $f_y = 604$, $c_x = 318$, $c_y = 241$, $s = 0$ 을 보고한다. 이 중 렌즈가 아니라 *센서*에 대해 말해 주는 것은 무엇이고, 이미지가 잘렸다고 의심하게 만들 값은 어느 하나인가?
+8. 리그의 $F$ 로, $\tilde u_1 = (470, 300)$ 의 후보 짝이 $(434, 306)$ 에 있다. 대수적 잔차와 픽셀 단위 점-선 거리를 계산하라. $(452, 300)$ 의 짝은 같은 검사에서 기각되는가?
+9. 같은 시점 스무 장에 $k_3$, $p_1$, $p_2$ 를 더해 보정을 다시 맞추니 $e_{\text{RMS}}$ 가 $0.37$ px에서 $0.21$ px로 내려갔다. 무엇이 입증되었으며, 새 모델이 더 나은지를 가리려면 어떤 확인 둘이 필요한가?
 
 > [!tip]- 정답 · Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -664,19 +974,22 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 > 4. 알려진 intrinsics, 그리고 대개 대략적인 extrinsic 초기화 또는 겹침과 동기화된 타임스탬프를 여전히 요구하는 공동 최적화.
 > 5. 고윳값이 40과 2이므로 $R=80-0.05\cdot42^2=-8.2<0$이고 $\min\lambda=2$다. 에지다. 밝기가 $x$ 방향으로만 바뀌므로 에지 방향인 $y$로는 위치가 잘 정해지지 않는다.
 > 6. 통과하지 못한다. $32/36=0.89>0.8$이므로 버린다 — 거의 같은 후보는 옆 패널일 가능성을 뜻한다. 거르기를 통과한 틀린 매칭은 기하 검증(RANSAC)이 잡아야 하는데, 패널 한 칸만큼 통째로 밀린 집합은 그것마저 통과할 수 있으니 odometry나 독립 랜드마크와 대조하라.
+> 7. $f_x \ne f_y$ 와 $s$ 가 센서의 사실이다. 픽셀 단위 초점 거리가 다르다는 것은 픽셀이 정사각이 아니라는 뜻이고, $s=0$ 은 픽셀 축이 직교한다는 뜻이다. 초점 거리 자체는 렌즈다. $c_x = 318$ 은 특별할 것이 없고, 높이 480에 대한 $c_y = 241$ 은 주점이 중심보다 $1$ px *아래*, $c_x$ 는 $320$ 보다 $2$ px 왼쪽에 있다는 뜻으로 둘 다 정상이다. 자르기를 알리는 값은 $(w/2, h/2)$ 에서 크게 벗어난 주점이다. 예를 들어 폭 $640$ 이미지에서 $c_x = 240$ 이라면, 보정한 배열과 지금 투영해 넣는 배열이 다르다는 말이다.
+> 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$ 이다. 대수적 잔차는 $0.0002(306) - 0.06 = 1.2\times10^{-3}$, $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$ 이므로 $d_\perp = 6.0$ px — 수평 epipolar 선이니 당연히 수직 어긋남 그대로다. $(452, 300)$ 의 짝은 대수적 잔차가 정확히 $0$ 이고 $d_\perp = 0$ 이다. 선 *위에* 있으므로 epipolar 검사를 통과한다. 그래도 틀렸다. $Z = 600(0.12)/18 = 4.0$ m로 삼각측량되어 $2.0$ m가 아니다. Epipolar 선을 따라 움직이는 것은 $F$ 에 보이지 않고 깊이에만 보인다.
+> 9. 자유 파라미터가 많은 모델이 같은 데이터에 더 잘 맞았다는 것뿐이고, 그것은 보장된 일이므로 정확도에 대해서는 아무것도 입증하지 않는다([[02-foundations/ml-practice|9. ML 실무 §2]]). 가리는 확인이 둘이다: (i) 적합이 본 적 없는 시점 — 되도록 다른 거리와 기울기 — 을 홀드아웃으로 두고 훈련 시점이 아니라 거기서 $e_{\text{RMS}}$ 를 비교한다; (ii) 실제 작업 거리에서 알려진 길이나 타깃 간 거리를 잰다. 그것이 보정이 봉사할 미터이기 때문이다. 셋째로 이미지 위치별 잔차 지도가 유용하다. 진짜 왜곡 구조는 반경 방향 무늬로 나타나고, 잡음 적합은 얼룩으로 나타난다.
 
 ### 과제 · Problem set
 
-Tier B. 벽에 대한 거리로 **P5**([[02-foundations/lab-plants|0.6]]). hand–eye 숫자 하나: 카메라가 P2 말단보다 $4\,\mathrm{cm}$ 뒤. 시뮬레이터 없음.
+Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5**([[02-foundations/lab-plants|0.6]]), 그리고 손-눈 오프셋 $d_{ct}=4\,\mathrm{cm}$. 시뮬레이터 없음. 위의 계산 예제는 리그를 랜드마크 $L$, $Z = 2.0$ m에서 돌렸다. 이 과제는 그것을 $L' = (0.5,\ 0.2,\ 4.0)$ m로 옮기고 어떤 오차가 자라고 어떤 오차가 줄고 어떤 오차가 그대로인지 묻는다. 그것이 변형이다.
 
-1. **그리기.** 손목 카메라가 $+x$로 패널을 본다. 그 광선 위에 P5의 사전과 측정, 카메라–말단 $4\,\mathrm{cm}$.
-2. **유도.** P5의 스칼라 칼만: $K$, 융합 거리, $P^+$. 융합이 카메라–벽이면 $4\,\mathrm{cm}$ 뒤 말단–벽은?
-3. **해석.** $AX=XB$에서 $A,B,X$ 중 $4\,\mathrm{cm}$는 어느 것인가? $1\,\mathrm{px}$ reprojection error가 그 숫자를 보증하지 않는 이유는?
+1. **그리기.** 두 카메라, $L'$ 로 가는 두 광선, 두 상점과 그 사이의 시차. 그 옆에 같은 축척으로 $Z = 4$ m에서의 $\pm1$ px 깊이 오차 막대와 과제가 그릴 그림에 있던 $Z = 2$ m의 것을 함께. 이미지 평면 위에는 $L'$ 에서의 왜곡 변위를 짧은 선분으로 더한다. 오차 셋, 서로 다른 축척 법칙 셋 — 그림이 셋을 달라 보이게 해야 한다.
+2. **유도.** (a) $L'$ 을 두 카메라에 투영하라: $u_1, v_1, u_2$, 시차 $d'$, 그리고 확인 $Z = f b / d'$. (b) $d' \pm 1$ px의 깊이 오차를 정확히 구하고 1차 추정 $Z^2/(fb)$ 와 비교한 뒤, $+1$ 과 $-1$ 의 정확한 오차가 왜 같지 않은지 말하라. (c) $L'$ 에서의 왜곡 변위: $r$, 반경 계수, 픽셀 변위를 구하고, $Z = 2$ 에서의 $2.30$ px과의 비를 주도항으로 설명하라. (d) P5의 스칼라 융합: $K$, 융합한 카메라–벽 거리, $P^+$, 그리고 $d_{ct}$ 를 뺀 말단–벽 값.
+3. **해석.** (a) $AX = XB$ 에서 $A$, $B$, $X$ 중 무엇이 $4\,\mathrm{cm}$ 를 담고 있으며, $0.37$ px 보정 잔차가 그것을 보증하지 못하는 이유는? (b) 반복 패널 위 $(440, 300)$ 의 매칭은 epipolar 잔차가 정확히 0이다. 2번의 어느 숫자 하나가 그것을 잡았을지 말하고, 일반적으로 잡으려면 리그에 무엇을 더해야 하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 카메라에서 말단을 지나 벽으로 가는 광선. 사전 $10\,\mathrm{cm}$, $z=12\,\mathrm{cm}$.
-> 2. $K=0.8$, 융합 $11.6\,\mathrm{cm}$, $P^+=0.8$. 말단–벽 $7.6\,\mathrm{cm}$.
-> 3. $X$가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$는 $X$의 병진 성분 하나. $A$는 그리퍼 운동, $B$는 카메라 운동. 보정 부피 밖에서 $X$가 틀려도 reprojection은 작을 수 있다(§5).
+> 1. $L'$ 로 가는 두 광선은 $Z = 2$ 의 짝보다 눈에 띄게 평행에 가깝다. $Z=4$ 의 오차 막대는 $Z=2$ 것의 약 네 배로, 왜곡 선분은 과제가 그릴 그림의 것보다 약 여덟 배 *짧게* 그려야 한다.
+> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; 카메라 2에서 점은 $(0.38, 0.2, 4.0)$ 이므로 $u_2 = 377$, $d' = 18$ px이고 $Z = 600(0.12)/18 = 4.0$ m다. (b) $d' = 17 \Rightarrow Z = 4.235$ m($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m($-0.211$). 1차 추정은 $Z^2/(fb) = 16/72 = 0.222$ m로 둘 사이에 있고, 둘이 같지 않은 것은 $Z = fb/d$ 가 $d$ 에 대해 볼록하기 때문이다 — 시차를 잃는 쪽이 얻는 쪽보다 비싸므로, 픽셀 오차가 대칭이어도 깊이 오차 분포는 카메라에서 *멀어지는* 쪽으로 기운다. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; 계수는 $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$ 이라 점은 $(394.729,\ 269.892)$ 에 맺히고 변위는 $0.291$ px다. $Z = 2$ 에서의 $2.30$ px보다 $7.9$ 배 작은데, 픽셀 단위 주도 반경 변위가 $f\lvert k_1\rvert r^3$ 이고 $r$ 이 절반이 되었기 때문이다: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, 융합 거리 $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, 말단–벽 $11.6 - 4 = 7.6\,\mathrm{cm}$.
+> 3. (a) $X$ 가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$ 는 그 평행 이동 성분 하나다. $A$ 는 두 로봇 자세 사이의 그리퍼 운동, $B$ 는 같은 두 자세 사이의 카메라 운동이다. $0.37$ px 잔차는 타깃 시점들 위의 *훈련* 잔차이고, §5는 바로 그 잔차를 가진 적합이 축에서 $0.5$ m 벗어난 점을 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는 것을 보인다 — 카메라–그리퍼 평행 이동도 같은 시점들에서 추정되므로 그 외삽 오차를 물려받는다. 홀드아웃 자세와 알려진 길이 측정만이 그것을 검사한다. (b) **삼각측량한 깊이.** 틀린 매칭은 시차가 $36$ 이 아니라 $30$ 이므로 $Z = 2.00$ m가 아니라 $2.40$ m로 삼각측량된다 — epipolar 잔차가 0이라고 보고하는 $40$ cm 오차다. $F$ 는 매칭을 선 위로 구속할 뿐 그 선을 *따라간* 위치에 대해서는 아무 말도 하지 않기 때문이다. 일반적으로는 epipolar 선을 따르지 않는 독립 제약을 더한다: 첫 짝의 epipolar 선과 각을 이루는 세 번째 시점, 직접 거리 측정(P5 센서나 라이다), 또는 똑같은 패널 둘을 구별할 만큼 강한 외양 검사 — 그런데 똑같은 패널에서는 그것이 질감이 아니라 맥락을 쓴다는 뜻이다.
 
 ### 출처
 

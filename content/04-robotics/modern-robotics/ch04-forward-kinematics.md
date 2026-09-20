@@ -17,6 +17,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: given joint angles $\theta$, where is the end-effector?
 
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two arms on it. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the whole point of the drawing is that PoE needs *two* configurations at once: the home pose, where the screw axes are measured, and the pose being evaluated.
+
+1. **The home arm, dashed.** Both links along $+\hat x$: base at the origin, elbow at $(1,0)$, tip at $(2,0)$. This is where $M$ is read off, and it is a fact about the *model*, not about where the robot is now.
+2. **The evaluated arm, solid.** P2 at the catalog pose $\theta = (0^\circ, 90^\circ)$: base at the origin, elbow still at $(1,0)$, tip at $(1,1)$. The two arms share link 1 exactly, because $\theta_1 = 0$ — draw them overlapping there rather than offset, since that coincidence is what makes the first exponential the identity.
+3. **The two screw axes**, marked on the *home* drawing and nowhere else: a circled dot at $q_1 = (0,0,0)$ and another at $q_2 = (1,0,0)$, each labelled $\hat\omega_i = (0,0,1)$. Beside each write its linear part, $v_i = -\hat\omega_i \times q_i$, giving $v_1 = (0,0,0)$ and $v_2 = (0,-1,0)$. Marking an axis on the solid arm instead is the single most common way this figure is drawn wrong: $\mathcal{S}_i$ is defined at the home pose and stays there.
+4. **Three frames**, as small pairs of labelled arrows: $\{s\}$ at the base, one at $q_2$, and the tool frame at the solid tip with its $x$-axis along the forearm, i.e. along $+\hat y_s$.
+
+Write the answer beside the figure as two independent lines that must agree: the matrix route, $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$, and the geometric route, elbow $+$ forearm $= (1,0) + (0,1) = (1,1)$. A figure that shows only one of the two routes cannot catch the error it exists to catch.
+
+The problem set asks for exactly this pair of arms with the frames and screw axes labelled.
+
 ### The Product of Exponentials — one formula
 
 $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\, e^{[\mathcal{S}_2]\theta_2} \cdots e^{[\mathcal{S}_n]\theta_n}\, M$$
@@ -57,8 +70,6 @@ $+\hat y$ (elbow at $(0,1)$); $\theta_2 = 90°$ adds another 90°, pointing link
 $-\hat x$; tip $= (0,1) + (-1,0) = (-1, 1)$, total orientation $180°$. **Same answer.**
 Do this double-check on every robot you model — geometric FK and PoE FK must agree.
 
-**The same arm at plant P2.** The catalog pose is $\theta=(0^\circ,90^\circ)$ ([[02-foundations/lab-plants|0.6]]). Joint 1 is at home, so $e^{[\mathcal{S}_1]\theta_1}=I$ and the elbow stays at $q_2=(1,0,0)$. Joint 2 rotates link 2 by $90^\circ$ about the vertical through $q_2$: the tip, which started at $(2,0)$ relative to that axis as $(1,0)$, goes to $(0,1)$ relative to $q_2$, hence to $(1,1,0)$, with $R=R_z(90^\circ)$. Geometry: elbow $(1,0)$, forearm along $+y$, tip $(1,0)+(0,1)=(1,1)$. Same $T$. The problem set asks you to *write* $\mathcal{S}_1$, $\mathcal{S}_2$, $M$, and this $T$ — you have just watched it happen. When the shoulder later moves, the first exponential is no longer $I$ and the product order matters.
-
 <svg viewBox="0 0 540 210" style="max-width:100%;height:auto" role="img" aria-label="the planar 2R arm at home and at 90/90, with the tip reached by both routes">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="30" y1="150" x2="440" y2="150"/><line x1="70" y1="30" x2="70" y2="180"/></g>
   <g stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.45" stroke-dasharray="6 4">
@@ -81,6 +92,36 @@ Do this double-check on every robot you model — geometric FK and PoE FK must a
     <text x="20" y="206" opacity="0.85">Two routes, one tip. If they disagree, the screw axes or the home pose are wrong &#8212; check q first.</text>
   </g>
 </svg>
+
+### Worked case · 대상으로 한 번 끝까지
+
+The same recipe on the catalog object, at the pose every later chapter quotes: plant **P2** at $\theta = (0^\circ, 90^\circ)$ ([[02-foundations/lab-plants|0.6]]). Nothing here is new machinery; the point is to produce the one $4\times4$ that the rest of the track means by "the frozen pose".
+
+**Step 1 — the ingredients do not move.** $M$ and the screw axes were measured at the home pose, so §2's numbers carry over unchanged no matter what $\theta$ is asked for:
+
+$$\mathcal{S}_1 = (0,0,1;\ 0,0,0), \qquad \mathcal{S}_2 = (0,0,1;\ 0,-1,0), \qquad M = \begin{pmatrix}1&0&0&2\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+because a screw axis is a property of the mechanism at home, not of the configuration being evaluated. Only $\theta$ changes between one FK call and the next.
+
+**Step 2 — the first factor is the identity.** $\theta_1 = 0$, and $e^{[\mathcal{S}]\cdot 0} = I$ for every screw $\mathcal{S}$, so $T(0^\circ, 90^\circ) = e^{[\mathcal{S}_2](\pi/2)}M$. The shoulder contributes nothing and the elbow does all the work. This is a fact about this pose only, and step 6 shows what it costs to forget that.
+
+**Step 3 — the elbow exponential, as a matrix.** For a screw with unit $\hat\omega$, the closed form is $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$ with $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$, the translation integrated along the screw. With $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$ and the coefficients $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$:
+
+$$G = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G\,v_2 = G\begin{pmatrix}0\\-1\\0\end{pmatrix} = \begin{pmatrix}1\\-1\\0\end{pmatrix}$$
+
+since the first two diagonal entries are $\pi/2 - 0.5708 = 1$. Rodrigues supplies the rotation block, $e^{[\hat z](\pi/2)} = R_z(90^\circ)$, so
+
+$$e^{[\mathcal{S}_2](\pi/2)} = \begin{pmatrix}0&-1&0&1\\1&0&0&-1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
+
+**Step 4 — multiply by $M$.** Rotation: $R_z(90^\circ)\cdot I = R_z(90^\circ)$. Translation: $R_z(90^\circ)(2,0,0)^\top + (1,-1,0)^\top = (0,2,0)^\top + (1,-1,0)^\top = (1,1,0)^\top$. So
+
+$$T(0^\circ, 90^\circ) = \begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+where the translation column is the catalog tip $(1,1)$ and the rotation block carries the tool's $x$-axis onto $+\hat y_s$, because the elbow exponential turned the whole downstream link a quarter turn about the vertical through $q_2$. Geometry agrees in one line: elbow $(\cos 0^\circ, \sin 0^\circ) = (1,0)$, plus a unit forearm at absolute angle $\theta_1 + \theta_2 = 90^\circ$, giving $(1,0) + (0,1) = (1,1)$.
+
+**Step 5 — the body form, as an independent check.** The body axes are the same screws measured from the tool frame at home, $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$, which here gives $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$ and $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$ — the linear parts are literally the distances $2\,\mathrm{m}$ and $1\,\mathrm{m}$ from the tool back to each axis. Then $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$ multiplies out to the identical $4\times4$. Two formulations, one pose.
+
+**Step 6 — what the identity was hiding.** Take the *other* worked pose, $\theta = (90^\circ, 90^\circ)$, where neither factor is $I$, and multiply the two exponentials in the wrong order. The correct product puts the tip at $(-1, 1)$; the swapped product $e^{[\mathcal{S}_2]\theta_2}e^{[\mathcal{S}_1]\theta_1}M$ puts it at $(-1, -1)$, with the *same* orientation $R_z(180^\circ)$. Two metres of position error and no orientation error to warn you — which is why the order is part of the formula, and why the catalog pose is a poor place to test a new FK implementation.
 
 The recipe generalizes verbatim: home pose → per-joint $(\hat\omega_i, q_i)$ →
 $v_i = -\hat\omega_i \times q_i$ → exponentials → multiply. For code, the Modern Robotics
@@ -120,6 +161,19 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and
 
 **핵심 질문**: 관절 각 $\theta$가 주어지면 말단은 어디에 있는가?
 
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나에 팔 둘을 올린다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**이고, 이 그림의 요점은 PoE가 자세 *두 개*를 동시에 요구한다는 것이다. 스크류 축을 재는 홈 자세와, 지금 평가하려는 자세다.
+
+1. **홈 자세의 팔, 점선.** 두 링크 모두 $+\hat x$: 베이스 원점, 엘보 $(1,0)$, 말단 $(2,0)$. $M$을 읽는 곳이며, 로봇이 지금 어디 있는지가 아니라 *모형*에 대한 사실이다.
+2. **평가할 자세의 팔, 실선.** 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$의 P2: 베이스 원점, 엘보는 여전히 $(1,0)$, 말단 $(1,1)$. $\theta_1 = 0$이므로 두 팔은 링크 1을 정확히 공유한다. 어긋나게 그리지 말고 겹쳐 그린다. 그 겹침이 첫 지수를 항등으로 만드는 사실 그 자체다.
+3. **스크류 축 둘**을 *홈* 그림에만 표시한다. $q_1 = (0,0,0)$에 동그라미 친 점 하나, $q_2 = (1,0,0)$에 또 하나, 둘 다 $\hat\omega_i = (0,0,1)$로 쓴다. 각각 옆에 선형부 $v_i = -\hat\omega_i \times q_i$를 적으면 $v_1 = (0,0,0)$, $v_2 = (0,-1,0)$이다. 축을 실선 팔에 표시하는 것이 이 그림이 틀리는 가장 흔한 방식이다. $\mathcal{S}_i$는 홈 자세에서 정의되고 거기 머문다.
+4. **프레임 셋**을 짧은 화살표 쌍으로. 베이스의 $\{s\}$, $q_2$의 것 하나, 그리고 실선 말단의 도구 프레임 — $x$축은 전완 방향, 곧 $+\hat y_s$다.
+
+그림 옆에는 서로 맞아야 하는 두 줄을 독립적으로 적는다. 행렬 경로 $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$과 기하 경로 엘보 $+$ 전완 $= (1,0) + (0,1) = (1,1)$이다. 둘 중 하나만 보여 주는 그림은 자기가 존재하는 이유인 그 오류를 잡지 못한다.
+
+과제는 프레임과 스크류 축을 표시한 이 두 팔을 그대로 요구한다.
+
 ### 지수 곱 공식 — 단 하나의 공식
 
 $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\, e^{[\mathcal{S}_2]\theta_2} \cdots e^{[\mathcal{S}_n]\theta_n}\, M$$
@@ -158,8 +212,6 @@ $(0,1)$); $\theta_2 = 90°$가 90°를 더해 링크 2는 $-\hat x$ 방향; 끝�
 = (-1, 1)$, 총 방향 $180°$. **같은 답이다.** 모델링하는 모든 로봇에서 이 이중 검산을
 하라 — 기하 FK와 PoE FK는 반드시 일치해야 한다.
 
-**같은 팔, 장치 P2.** 카탈로그 자세는 $\theta=(0^\circ,90^\circ)$([[02-foundations/lab-plants|0.6]])이다. 관절 1이 홈이므로 $e^{[\mathcal{S}_1]\theta_1}=I$이고 엘보는 $q_2=(1,0,0)$에 남는다. 관절 2가 $q_2$의 연직축 둘레로 링크 2를 $90^\circ$ 돌린다: 끝점은 $(1,1,0)$, $R=R_z(90^\circ)$. 기하: 엘보 $(1,0)$, 전완 $+y$, 끝점 $(1,1)$. 같은 $T$. 과제는 $\mathcal{S}_1$, $\mathcal{S}_2$, $M$, 이 $T$를 *쓰라고* 한다 — 방금 일어난 일이다. 어깨가 움직이면 첫 지수는 더 이상 $I$가 아니고 곱의 순서가 중요해진다.
-
 <svg viewBox="0 0 540 210" style="max-width:100%;height:auto" role="img" aria-label="home 자세와 90/90에서의 평면 2R 팔, 두 경로로 도달한 끝점">
   <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="30" y1="150" x2="440" y2="150"/><line x1="70" y1="30" x2="70" y2="180"/></g>
   <g stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.45" stroke-dasharray="6 4">
@@ -184,6 +236,38 @@ $(0,1)$); $\theta_2 = 90°$가 90°를 더해 링크 2는 $-\hat x$ 방향; 끝�
 </svg>
 
 
+
+### 대상으로 한 번 끝까지 · Worked case
+
+같은 레시피를 카탈로그 대상에, 이후 모든 장이 인용하는 그 자세에서 돌린다. [[02-foundations/lab-plants|0.6]]의 장치 **P2**, $\theta = (0^\circ, 90^\circ)$다. 새로운 기계장치는 없다. 목적은 트랙의 나머지가 "고정 자세"라고 부를 때 뜻하는 그 $4\times4$ 하나를 만들어 내는 것이다.
+
+**1단계 — 재료는 움직이지 않는다.** $M$과 스크류 축은 홈 자세에서 쟀으므로, 어떤 $\theta$를 물어도 2절의 숫자가 그대로다:
+
+$$\mathcal{S}_1 = (0,0,1;\ 0,0,0), \qquad \mathcal{S}_2 = (0,0,1;\ 0,-1,0), \qquad M = \begin{pmatrix}1&0&0&2\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+스크류 축은 평가하려는 자세가 아니라 홈에서의 기구에 대한 성질이기 때문이다. FK 호출 사이에서 바뀌는 것은 $\theta$뿐이다.
+
+**2단계 — 첫 인자가 항등이다.** $\theta_1 = 0$이고 모든 스크류 $\mathcal{S}$에 대해 $e^{[\mathcal{S}]\cdot 0} = I$이므로 $T(0^\circ, 90^\circ) = e^{[\mathcal{S}_2](\pi/2)}M$이다. 어깨는 아무것도 하지 않고 엘보가 전부 한다. 이 자세에서만 성립하는 사실이고, 그것을 잊으면 얼마를 치르는지는 6단계가 보여 준다.
+
+**3단계 — 엘보 지수를 행렬로.** 단위 $\hat\omega$의 스크류에 대한 닫힌 형태는 $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$이고, $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$는 스크류를 따라 적분한 병진이다. $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$이고 계수가 $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$이므로
+
+$$G = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G\,v_2 = G\begin{pmatrix}0\\-1\\0\end{pmatrix} = \begin{pmatrix}1\\-1\\0\end{pmatrix}$$
+
+다. 앞의 두 대각 성분이 $\pi/2 - 0.5708 = 1$이기 때문이다. 회전 블록은 로드리게스가 주므로 $e^{[\hat z](\pi/2)} = R_z(90^\circ)$이고,
+
+$$e^{[\mathcal{S}_2](\pi/2)} = \begin{pmatrix}0&-1&0&1\\1&0&0&-1\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+이다.
+
+**4단계 — $M$을 곱한다.** 회전은 $R_z(90^\circ)\cdot I = R_z(90^\circ)$. 병진은 $R_z(90^\circ)(2,0,0)^\top + (1,-1,0)^\top = (0,2,0)^\top + (1,-1,0)^\top = (1,1,0)^\top$. 따라서
+
+$$T(0^\circ, 90^\circ) = \begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+이다. 병진 열이 카탈로그 말단 $(1,1)$이고 회전 블록이 도구의 $x$축을 $+\hat y_s$로 옮기는데, 엘보 지수가 $q_2$를 지나는 연직축 둘레로 하류 링크 전체를 4분의 1바퀴 돌렸기 때문이다. 기하도 한 줄이다. 엘보 $(\cos 0^\circ, \sin 0^\circ) = (1,0)$에 절대각 $\theta_1 + \theta_2 = 90^\circ$인 단위 전완을 더해 $(1,0) + (0,1) = (1,1)$.
+
+**5단계 — 바디 형식으로 독립 검산.** 바디 축은 같은 스크류를 홈에서 도구 프레임 기준으로 잰 것, 곧 $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$다. 여기서는 $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$, $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$이고, 선형부가 말 그대로 도구에서 각 축까지의 거리 $2\,\mathrm{m}$와 $1\,\mathrm{m}$다. $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$를 곱하면 같은 $4\times4$가 나온다. 정식화 둘, 자세 하나.
+
+**6단계 — 항등이 가리고 있던 것.** 두 인자 중 어느 쪽도 $I$가 아닌 다른 계산 자세 $\theta = (90^\circ, 90^\circ)$에서 두 지수를 일부러 반대 순서로 곱해 보자. 올바른 곱은 말단을 $(-1, 1)$에 놓고, 뒤바꾼 곱 $e^{[\mathcal{S}_2]\theta_2}e^{[\mathcal{S}_1]\theta_1}M$은 $(-1, -1)$에 놓는다. 방향은 *둘 다* $R_z(180^\circ)$로 같다. 위치 오차 2 m에 경고가 될 방향 오차는 0이다. 순서가 공식의 일부인 이유이고, 새 FK 구현을 시험하기에 카탈로그 자세가 나쁜 자리인 이유다.
 
 레시피는 그대로 일반화된다: 홈 자세 → 관절별 $(\hat\omega_i, q_i)$ →
 $v_i = -\hat\omega_i \times q_i$ → 지수들 → 곱. 코드로는 Modern Robotics 파이썬

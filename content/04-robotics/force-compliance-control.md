@@ -25,9 +25,84 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 Contact turns position error into force, so control stops being a choice between the two and becomes a choice of the relation between them.*
 
 > [!note] First pass · 처음이라면
-> Read §1 — why stiff position tracking becomes dangerous in contact, with the stiffness
-> numbers — then §2 for impedance versus admittance, then §7. §3 to §5 are what you read
+> Read the running object and the worked case below — they are the one calculation this page
+> owes you, and they end on the single ratio that decides the whole argument. Then §1, why
+> stiff position tracking becomes dangerous in contact, with the stiffness numbers, then §2
+> for impedance versus admittance, then §7. §3 to §5 are what you read
 > when you are actually choosing a controller rather than reading about one.
+
+### Running object: P2, the panel, and one target impedance
+
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the frozen pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)\,\mathrm{m}$, carrying a tool that seats down onto a panel lying under the tip. This is the same arm, tool and panel as the running object of [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]], turned through a right angle: there the panel stands up and the question is friction, here it lies flat and the question is what *relation* the controller puts between motion and force. Every number in §1–§5 comes from this table.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $\theta$ | $(0^\circ,90^\circ)$ | P2's frozen pose, tip at $(1,1)$ m, elbow at $(1,0)$ |
+| $J$ | $\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ | position Jacobian at that pose, frozen in 0.6 |
+| $\Lambda$ | $\mathrm{diag}(1,2)\ \mathrm{kg}$ | operational-space inertia: $\Lambda_x=1$, $\Lambda_y=2$ kg |
+| $F$ | $(0,-10)\ \mathrm{N}$ | the press commanded on the panel |
+| $M_d$ | $2\ \mathrm{kg}$ | target inertia, chosen equal to $\Lambda_y$ |
+| $K_d$ | $500\ \mathrm{N/m}$ | target stiffness |
+| $D_d$ | $63.2\ \mathrm{N\cdot s/m}$ | target damping, the critically damped value for that $M_d,K_d$ |
+| $K_e$ | $10^5\ \mathrm{N/m}$ | the series stiffness a force controller identifies here — row 3 of §1's table |
+| $v$ | $0.05\ \mathrm{m/s}$ | approach speed at the instant of first touch |
+| $f_s$ | $1\ \mathrm{kHz}$ | control rate |
+
+$K_e$ is the series stiffness of tool, sensor, arm structure and panel taken together, not the panel's material stiffness; §1 is entirely about the difference, and §5 shows what each choice of row costs.
+
+*Scope: this page teaches how to choose and size the relation between motion and force at one contact — impedance, admittance, the hybrid split, the operational-space implementation of both, and the passive compliance that acts below all of them — on one named arm. It does not teach the contact mechanics the controller is acting on (complementarity, friction cones and their linearizations, closure: [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction §1–§4]]), the sampled-data limit on how stiff a virtual wall can be rendered ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]), or how the policy in §6 is trained ([[03-deep-learning/vla/index|VLA]]).*
+
+### Homework diagram: the two causalities over one panel, with the clock underneath
+
+Draw it once; the problem set asks for the same drawing on the other axis.
+
+**Top — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A horizontal line under the tip for the panel's face, with the commanded press $F=(0,-10)$ N drawn as a downward arrow at the tip and the reaction on the robot as an upward arrow of the same length. Beside the tip, two small springs in series and labelled: the virtual one, $K_d=500$ N/m, and the real one, $K_e=10^5$ N/m — drawn with the virtual spring's coils stretched out and the real one's compressed almost flat, because that ratio of 200 is the picture's only job.
+
+**Middle — the two block diagrams, one above the other, sharing the same plant block on the right.** Impedance: measure $(y,\dot y)$ at the tip, run it through the target $M_d\ddot e+D_d\dot e+K_de$, get a force, map it with $\tau=J^\top F$, send torque to the arm. Admittance: measure $F_y$ at the wrist, integrate the virtual dynamics to get a motion reference $y_c$, hand $y_c$ to an inner position loop, and let that loop send torque. Shade the one block each architecture cannot fake — the torque interface on the top row, the force sensor on the bottom — and draw the feedback path from the panel back to the measurement in both.
+
+**Bottom — the clock, in milliseconds, on one axis from 0 to 400 ms.** Mark the contact event as a half-sine of width $t_{\text{contact}}=14$ ms starting at $t=0$. On the same axis, draw one full period of the behaviour the controller specified, $T=2\pi/\omega_n=397$ ms, as a sine that has barely left the origin when the impact is already over. Above the clock, 1 kHz sample ticks: about 14 of them fall inside the impact and about 397 inside one period of the target. The two lengths must be drawn to the same scale — that comparison is the lecture.
+
+### Worked case: the target impedance on P2, and the impact it cannot feel
+
+Six steps on the object above. Everything §2 and §5 assert in words is a number here.
+
+**Step 1 — the command, in joint coordinates.** The panel is pressed with $F=(0,-10)$ N, so
+
+$$\tau=J^\top F=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}\begin{pmatrix}0\\-10\end{pmatrix}=\begin{pmatrix}-10\\0\end{pmatrix}\ \mathrm{N\cdot m}$$
+
+and the elbow carries exactly none of it. That is not a rounding: the second column of $J$ is $(-1,0)^\top$, so at this pose moving the elbow alone slides the tip purely in $x$, and a purely vertical force does no work on it. Read the zero as a statement about the pose, not about the arm.
+
+**Step 2 — the mass the panel actually meets.** $\Lambda_y=2$ kg. The arm is $m_1+m_2=2$ kg of metal, and the coincidence is a trap: $\Lambda_x=1$ kg at the *same* pose, from the same 2 kg. Apparent mass is a property of the pose and the direction, which is why §4's operational-space formulation exists and why $M_d=\Lambda_y$ is the target inertia that asks the controller for no inertia shaping at all.
+
+**Step 3 — the static behaviour.** The panel pushes the robot up, so $F_{ext}=+10$ N, and at equilibrium the target reduces to its spring term:
+
+$$e=\frac{F_{ext}}{K_d}=\frac{10}{500}=0.020\ \mathrm{m}$$
+
+Two centimetres of steady-state error that the controller will never remove, and in contact that is the specification, not a failure. Unconstrained, the same 10 N would instead give $a_y=-10/2=-5\ \mathrm{m/s^2}$.
+
+**Step 4 — the dynamic behaviour.** Reading the target as a second-order system,
+
+$$\omega_n=\sqrt{K_d/M_d}=\sqrt{500/2}=15.81\ \mathrm{rad/s}=2.52\ \mathrm{Hz},\qquad D_d\big|_{\zeta=1}=2\sqrt{K_dM_d}=63.2\ \mathrm{N\cdot s/m}$$
+
+because those are the standard second-order parameters ([[04-robotics/control-theory-ce397|5. Control Theory §5]]). At $\zeta=0.7$ instead, $D_d=44.3$ N·s/m. Sanity check on the damper: at $0.05$ m/s the critically damped $D_d$ contributes $63.2\times0.05=3.16$ N, a third of the press — damping is not a small correction here.
+
+**Step 5 — whose compliance is it, in steady contact?** At the commanded 10 N the panel and structure yield $10/K_e=10/10^5=0.1$ mm while the virtual spring yields 20 mm. The controller therefore supplies $20/20.1=99.5\%$ of the total give, which is the stiffness ratio $K_e/K_d=200$ read as $200/201$. So in *sustained* contact the word "compliant" refers to the controller, and it is honest.
+
+**Step 6 — and in the impact, whose is it?** Now arrive at $v=5$ cm/s against $K_e=10^5$ N/m. From §5's half-sine model,
+
+$$F_{\max}=v\sqrt{\Lambda_yK_e}=0.05\sqrt{2\times10^5}=22.4\ \mathrm{N},\qquad t_{\text{contact}}=\pi\sqrt{\Lambda_y/K_e}=0.01405\ \mathrm{s}$$
+
+so 22.4 N arrives and leaves inside 14.05 ms, and a 1 kHz loop gets about 14 samples in it. Compare that with one period of the behaviour the controller specified, $T=2\pi/\omega_n=0.397$ s:
+
+$$\frac{T}{t_{\text{contact}}}=\frac{0.397}{0.01405}=28.3$$
+
+**The whole impact is over in one twenty-eighth of a single period of the target dynamics**, so the behaviour the controller specified has barely started to respond by the time the event has finished. The energy argument says the same thing without the frequency domain: the tool carries $\tfrac12\Lambda_yv^2=\tfrac12(2)(0.05)^2=2.5$ mJ, the $K_d=500$ N/m virtual spring would have to compress $\sqrt{2E/K_d}=3.16$ mm to absorb it, and the tool only penetrates $\sqrt{2E/K_e}=0.22$ mm before the structure has stopped it — $7.1\%$ of the distance the commanded spring needed. The structure took the entire 2.5 mJ and gave it back.
+
+**What that ratio means, and what changes it.** Against the compliant wrist ($K_e=10^4$) the ratio falls to $8.9$, and against the idealised material row ($10^7$) it rises to $283$. It is never anywhere near 1. Nor is 28 a tuning failure you could gain your way out of: setting $T=t_{\text{contact}}$ means $2\pi/\omega_n=\pi\sqrt{\Lambda_y/K_e}$, so $\omega_n=2\sqrt{K_e/\Lambda_y}$ and, with $M_d=\Lambda_y$,
+
+$$K_d=4K_e=4\times10^5\ \mathrm{N/m}$$
+
+which is 800 times the stiffness chosen here and far past what a 1 kHz loop can render against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]). The other direction — lowering $K_e$ — is a mechanical change, not a control one, which is the whole of §5's passive-compliance argument. So this is §5's claim as arithmetic: **the controller owns sustained contact and owns essentially none of the impact**, and a paper that reports a compliance gain while showing only steady contact has reported the easy half.
 
 ### 1. Why stiff position tracking becomes dangerous in contact
 
@@ -45,6 +120,25 @@ The controller does not "decide" to push with 100 N. That force is simply what c
 error against that stiffness costs. A compliant controller rendering $K = 200$ N/m in the same
 situation produces $200 \times 0.01 = 2$ N. It holds a 1 cm error it never resolves. In contact
 that is the correct behaviour, not a failure.
+
+> [!info] Definition · 정의 — stiffness, compliance, damping
+> **What kind of things they are.** Three *coefficients* of a linear mechanical relation at one port, each with its own units, each answering a different question about the same contact. They are properties of a relation, not of a part — which is the condition people drop.
+>
+> - **Stiffness** $K$, in N/m: force per unit displacement, $F=K\,\Delta x$. It answers "what does this much position error cost me in force?"
+> - **Compliance** $C=1/K$, in m/N: displacement per unit force. The same content with the question inverted — "how far does this much force move it?" The wall above, $K_e=10^4$ N/m, has $C=10^{-4}$ m/N, that is $0.1$ mm per newton; the $K=200$ N/m controller has $C=5\times10^{-3}$ m/N, $5$ mm per newton.
+> - **Damping** $D$, in N·s/m: force per unit *velocity*, $F=D\,\dot x$. It is not a weaker spring. It produces no force at all once the motion stops, which is why a damper cannot hold a position and a spring cannot dissipate energy — and why §2's target needs both terms.
+>
+> **The defining condition, and why compliance is the useful one.** Because these describe a relation across a chain, the coefficients of elements **in series** combine through *compliance*, which simply adds:
+>
+> $$C_{eq}=C_1+C_2\quad\Longleftrightarrow\quad \frac{1}{K_{eq}}=\frac{1}{K_1}+\frac{1}{K_2}$$
+>
+> since the same force passes through both elements and their deflections add. For $C_1=10^{-5}$ and $C_2=10^{-7}$ m/N the sum is $1.010\times10^{-5}$ m/N, so $K_{eq}=9.90\times10^{4}$ N/m and the softer element contributed $99.0\%$ of the yielding. "The softest element wins" is that arithmetic, not a slogan, and §5 runs the whole impact argument on it.
+>
+> **Example.** The running object in sustained contact: $K_d=500$ N/m in series with $K_e=10^5$ N/m gives $C_{eq}=2\times10^{-3}+10^{-5}=2.01\times10^{-3}$ m/N, so the controller supplies $99.5\%$ of the give at the tip.
+>
+> **Non-examples.** "A compliant controller", with no number, is not a specification — $K_d=10^5$ N/m is also a rendered stiffness. And a *scalar* stiffness is not a specification for a directional device: a remote-centre compliance is about $10^4$ N/m laterally and $10^6$ N/m axially (§5), so one number for it is wrong in one of the two directions by two orders of magnitude.
+>
+> **Why it matters.** Every row of the table below, every $K_d$ in §2, the selection of which direction is stiff in §3, and the impact arithmetic in §5 are these same three coefficients. A contact claim with none of them reported is a claim with no units.
 
 Keep a scale of environment stiffness. It spans five orders of magnitude, and papers name the
 contact rather than the number. The same control law is safe at one end and impossible at the
@@ -133,7 +227,7 @@ In the Laplace domain, with velocity $V(s)=sE(s)$, the same target is a transfer
 
 $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}$$
 
-so an impedance controller measures motion and outputs force, and an admittance controller measures force and outputs motion, which is the causality the section title refers to. Reading the target as a mass-spring-damper gives its natural frequency $\omega_n=\sqrt{K_d/M_d}$ and damping ratio $\zeta=D_d/(2\sqrt{K_dM_d})$, since those are the standard second-order parameters ([[04-robotics/control-theory-ce397|Control Theory §5]]).
+so an impedance controller measures motion and outputs force, and an admittance controller measures force and outputs motion, which is the causality the section title refers to. Reading the target as a mass-spring-damper gives its natural frequency $\omega_n=\sqrt{K_d/M_d}$ and damping ratio $\zeta=D_d/(2\sqrt{K_dM_d})$, since those are the standard second-order parameters ([[04-robotics/control-theory-ce397|Control Theory §5]]). The admittance side has a second, time-domain target of its own — the virtual dynamics the controller integrates to produce the motion reference $x_c$ it hands to the inner loop — written out term by term in [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction §5]].
 
 > [!example] Worked example · 계산 예제
 > $M_d=2$ kg, $K_d=500$ N/m. A steady 10 N push settles at $e=F_{ext}/K_d=10/500=0.02$ m. The natural frequency is $\sqrt{500/2}=15.8$ rad/s, and critical damping ($\zeta=1$) needs $D_d=2\sqrt{500\times2}=63.2$ N·s/m.
@@ -306,7 +400,7 @@ same problem as a **quadratic program** (QP: minimize a quadratic cost under lin
 
 $$\min_{\ddot q,\,\tau,\,f}\ \sum_i w_i\,\lVert J_i\ddot q+\dot J_i\dot q-\ddot x_i^{\text{des}}\rVert^2\quad\text{s.t.}\quad M\ddot q+h=S_a^\top\tau+J_c^\top f,\ \ f\in FC,\ \ \tau_{\min}\le\tau\le\tau_{\max}$$
 
-Here each task $i$ has Jacobian $J_i$, desired acceleration $\ddot x_i^{\text{des}}$ (typically a PD law on that task's error) and weight $w_i$; $M$ is the mass matrix and $h$ collects Coriolis and gravity terms; $S_a$ selects the actuated joints, since a floating base has no motor; $J_c$ is the contact Jacobian; and $FC$ the friction cones of [[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]. At the current state $q,\dot q$ the dynamics are linear in $(\ddot q,\tau,f)$ and the cost is quadratic, so once the cones are replaced by pyramids the problem is a convex QP that re-solves every control step.
+Here each task $i$ has Jacobian $J_i$, desired acceleration $\ddot x_i^{\text{des}}$ (typically a PD law on that task's error) and weight $w_i$; $M$ is the mass matrix and $h$ collects Coriolis and gravity terms; $S_a$ selects the actuated joints, since a floating base has no motor; $J_c$ is the contact Jacobian; and $FC$ the friction cones of [[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]. At the current state $q,\dot q$ the dynamics are linear in $(\ddot q,\tau,f)$ and the cost is quadratic, so once the cones are replaced by the polyhedral cones of [[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]] the problem is a convex QP that re-solves every control step. Which polyhedral cone matters to the answer, not only to the solve time: the outer box pyramid lets the QP authorise contact forces that slip, the inner generator cone makes it refuse forces the contact would have carried, and that section gives both the formula and the size of each error.
 
 **This QP is what "whole-body control" names.** The reason the field moved to it is not
 elegance: strict null-space priority cannot express *inequality* constraints, and joint
@@ -390,12 +484,46 @@ The lesson generalises past the arithmetic: **passive compliance is not a cheap 
 for active control; it is the only thing that acts at contact bandwidth.** Whitney's 1982
 quasi-static analysis of compliantly supported insertion is the mature version of this
 idea — it derives, for chamfered and chamferless peg-in-hole, the conditions under which
-misalignment causes **wedging** (opposing contact forces lock the part) or **jamming**
-(the applied wrench falls outside the cone that produces insertion), and turns them into
-design inequalities the support compliance must satisfy. A remote-centre compliance device
-places the compliance centre at the part's tip, so a lateral error produces lateral motion
-and an angular error produces rotation about the tip, and the two errors stop feeding each
-other. It solves the insertion problem in aluminium, with no sensor and no latency.
+misalignment causes wedging or jamming, and turns them into
+design inequalities the support compliance must satisfy.
+
+**Wedging and jamming, which are not the same failure.** Both end with the peg stopped part
+of the way in, and they take opposite fixes, so a paper that reports "the insertion failed"
+without saying which has reported nothing actionable.
+
+- **Wedging** is a *geometric* lock. The peg touches both walls of the hole at two points whose
+  normals oppose each other, and the two contact forces can then balance each other for any
+  axial push. Its defining conditions are two-point contact with opposing normals, reached
+  while the peg is still tilted — so it is entered by inserting at too large an angle too
+  early, and once it holds, **pushing harder does not help**, because extra push raises both
+  contact forces together. The fix is geometric: a chamfer, a smaller initial angle, or
+  compliance that straightens the peg before the second contact forms.
+- **Jamming** is a *wrench* condition. Contact is perfectly ordinary, but the applied
+  combination of force and moment falls outside the cone of wrenches that produce insertion,
+  so friction at the contacts absorbs all of it and the peg stops. Its defining condition is
+  therefore a statement about the applied wrench and the friction cones ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]), not
+  about geometry, and the fix is to change the applied wrench: less lateral force, less
+  moment, more axial push. Non-example: a peg that stops because the hole is undersized is
+  neither — that is interference, and no wrench inside any cone gets it in.
+
+The practical difference is that **jamming is fixed by whatever supplies the right wrench, and
+a compliance placed at the right point supplies it automatically.**
+
+**Remote-centre compliance, defined.** An **RCC** is a *passive mechanical element* placed
+between wrist and tool, whose **compliance centre** — the single point at which an applied
+force produces translation with no rotation, and an applied moment produces rotation with no
+translation — is located at the *tip of the part*. That one placement condition is the whole
+device. It decouples the two errors: a lateral misalignment then produces lateral motion, and
+an angular misalignment produces rotation about the tip, instead of each error generating the
+other and driving the peg toward the wedging geometry above. It has no sensor and no loop, so
+it acts at the speed of the material. **Non-example**: a soft spring in the wrist is compliant
+but its compliance centre is at the *wrist*, where a lateral force also rotates the peg — that
+is compliance without an RCC, and it makes the coupling worse, not better.
+It solves the insertion problem in aluminium, with no sensor and no latency.
+
+All of this assumes you know a transition happened. Detecting it is a separate estimation
+problem, defined with its mode set and its failure cases in [[04-robotics/contact-force-tactile|Contact, Force & Tactile §7]]; the
+argument here starts one sample after that estimate has fired.
 
 Colgate and Hogan's 1988 result is the theoretical boundary of the active alternative: for
 linear time-invariant systems, a manipulator is stable when coupled to *every* passive
@@ -508,7 +636,7 @@ useful; they do not establish that every system needs the same interface.
 | Was it tested against a **stiff** environment? | Foam and free space hide the instability entirely |
 | Are $M_d, D_d, K_d$ reported, with units? | "Compliant" without numbers is not a specification |
 | Contact **transition** shown, or only steady contact? | The transition is where §5 says the difficulty lives |
-| Control rate, sensor rate, contact duration and task bandwidth? | Millisecond impact peaks may be dominated by mechanics before feedback reacts; sustained contact can still be regulated at much lower rates. Compare rates with the phenomenon being claimed. |
+| Control rate, sensor rate, contact duration and **bandwidth** (the frequency range over which the closed loop still follows its reference, [[04-robotics/control-theory-ce397\|5. Control Theory §5.5]])? | Millisecond impact peaks may be dominated by mechanics before feedback reacts; sustained contact can still be regulated at much lower rates. Compare rates with the phenomenon being claimed — the worked case does it in one ratio. |
 | Any passive compliance in the hardware? | If yes, part of the result belongs to the spring, not the algorithm |
 | Position accuracy in free space *and* force accuracy in contact? | Each architecture is bad at one of them; reporting one is reporting half |
 
@@ -529,9 +657,12 @@ tolerance, say which architecture can meet it — and whether any can.
 ### After reading
 
 - [ ] State why position and force cannot be controlled in the same direction.
+- [ ] Give stiffness, compliance and damping with their units, and say which of the three adds in series.
 - [ ] Explain how impedance and admittance generate commands, and what limits their behavior in stiff contact.
 - [ ] Write the selection-matrix form of hybrid control and give a task for it.
 - [ ] Compute $F_{\max}$ and contact duration for a given $\Lambda$, $K$, $v$, and say how many control samples land inside.
+- [ ] Compare the contact duration with one period of the target impedance, and say what the ratio implies about who owns the impact.
+- [ ] Distinguish wedging from jamming, and say what an RCC's compliance centre has to be placed on.
 - [ ] Explain what Colgate and Hogan's passivity condition forbids.
 
 > [!tip] Going deeper · 더 깊이
@@ -549,6 +680,10 @@ tolerance, say which architecture can meet it — and whether any can.
    strongest claim it can actually support?
 5. Hybrid position/force control is exact when the geometry is known. Why is that a problem
    specifically in construction?
+6. Two elements in series, $10^5$ and $10^7$ N/m. Which of stiffness or compliance do you add,
+   what is the result, and what fraction of the total yielding belongs to the softer element?
+7. An insertion stops part-way in. Pushing harder changes nothing. Wedging or jamming, and
+   what does your answer rule out as a fix?
 
 > [!tip]- Answers
 > 1. The hardware and symptom alone do not determine the architecture. If force feedback generates position references, it is an admittance implementation. Higher contact stiffness can amplify the effect of delay and insufficient damping; check the actual loops, gains and timing before assigning the cause. Stable behavior on foam does not establish stable behavior on steel.
@@ -556,21 +691,21 @@ tolerance, say which architecture can meet it — and whether any can.
 > 3. Because it places the compliance centre at the tip of the peg, so a lateral misalignment produces lateral compliance and an angular misalignment produces rotation about the tip, instead of each error generating the other. The correction is mechanical, so it happens at the speed of the material rather than the speed of a control loop — and §5 shows the control loop is too slow to have helped anyway.
 > 4. At minimum, that the policy chose useful position references. The system may still realise compliance through a lower-level impedance/admittance or force loop and passive hardware, so inspect that stack. A 10 Hz outer policy cannot react to the millisecond impact peak itself, but it can adapt references for slower sustained contact. The strongest supported claim depends on which layer produced the measured force behaviour.
 > 5. Because the architecture assigns force control to a direction it believes is normal to the surface, and that belief comes from a model. On a construction site the part is where it was placed, not where the drawing says: a few millimetres of position error makes contact early, late or at the wrong point, and a couple of degrees of orientation or surface-shape error rotates the true normal, so force control now acts partly along the surface and position control partly into it, which is exactly the fighting the architecture was designed to avoid. It is the difference between a fixtured factory cell and [[05-construction-robotics/assembly-fabrication|construction assembly]].
+> 6. Compliance adds: $C_{eq}=10^{-5}+10^{-7}=1.010\times10^{-5}$ m/N, so $K_{eq}=9.90\times10^{4}$ N/m. The softer element supplies $99.0\%$ of the yielding, which is why the series number sits essentially on top of $10^5$ and why a controller identifies the structure rather than the material.
+> 7. Wedging. It is the geometric lock, two-point contact with opposing normals, and its signature is exactly that extra axial push raises both contact forces together and changes nothing. That rules out "push harder" and rules out re-aiming the applied wrench, which is the *jamming* fix; what is left is geometry — chamfer, smaller entry angle, or compliance that straightens the peg before the second contact forms.
 
 ### Problem set · 과제
 
-Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. $\Lambda_y=2\,\mathrm{kg}$. The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
+Tier B. Using only this page, its prerequisites and the object catalog. The running object with **three entries changed**: the press goes sideways into a standing panel, $F=(-8,0)\,\mathrm{N}$, so the axis is now $x$ and the apparent mass is $\Lambda_x=1\,\mathrm{kg}$; the target stiffness is $K_d=2000\,\mathrm{N/m}$ at $\zeta=0.7$; and the approach speed doubles to $v=0.10\,\mathrm{m/s}$. P2 stays at $\theta=(0^\circ,90^\circ)$ and $K_e$ stays at $10^5\,\mathrm{N/m}$ ([[02-foundations/lab-plants|0.6]]). The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
-A panel sits at the tip. Command $10\,\mathrm{N}$ down on the panel, $F=(0,-10)$. Desired closed-loop: $M_d\ddot e+D_d\dot e+K_d e=F_{\mathrm{ext}}$ with $M_d=\Lambda_y$ and $K_d=500\,\mathrm{N/m}$.
-
-1. **Draw.** P2 at the frozen pose, panel under the tip. Two block diagrams: impedance (measure $y,\dot y$, command $F_y$) and admittance (measure $F_y$, command $y$). Label the panel as a stiff wall in $-y$.
-2. **Derive.** (a) $\tau=J^\top F$ for $F=(0,-10)$. (b) Static deflection $e=F_{\mathrm{ext}}/K_d$ under a $10\,\mathrm{N}$ push, with $F_{\mathrm{ext}}$ the force *on the robot*. (c) $\omega_n=\sqrt{K_d/M_d}$ and the $D_d$ for $\zeta=1$. (d) Unconstrained tip acceleration if that $10\,\mathrm{N}$ were applied in free space, $a_y=F_y/\Lambda_y$.
-3. **Interpret.** Against a steel panel the position is set by the wall. Which causality still lets you choose the $10\,\mathrm{N}$, and which one tries to *move* the wall? Why is $\Lambda_y=2$ the $M_d$ you would pick rather than the arm's $2\,\mathrm{kg}$ of metal?
+1. **Draw.** All three panels of the homework diagram on the new axis: the arm with the panel now standing at $x=1\,\mathrm{m}$ (the same panel as [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]]'s running object), the two block diagrams rewritten for $x$, and the clock with the new impact width against the new target period, both to the same scale.
+2. **Derive.** (a) $\tau=J^\top F$ for $F=(-8,0)$, and say what is different from the vertical case and why. (b) The static deflection under the $8\,\mathrm{N}$ reaction. (c) $\omega_n$, the critically damped $D_d$, and the $D_d$ at $\zeta=0.7$. (d) $F_{\max}$ and $t_{\text{contact}}$ against $K_e=10^5\,\mathrm{N/m}$ at $v=0.10\,\mathrm{m/s}$, with the number of 1 kHz samples inside. (e) The ratio of one target period to the contact duration.
+3. **Interpret.** The peak force rose from the worked case's $22.4$ to $31.6\,\mathrm{N}$ while the apparent mass *halved*. Account for the factor exactly. Then: the period-to-contact ratio fell from $28.3$ to $14.1$ — did stiffening the target actually buy any authority over the impact, and what would $K_d$ have to be for the answer to be yes?
 
 > [!tip]- Solutions
-> 1. Elbow at $(1,0)$, tip at $(1,1)$. Impedance: $(y,\dot y)\mapsto F_y$ then $\tau=J^\top F$. Admittance: $F_y\mapsto y_d$ into a position inner loop. The panel is a wall in $-y$ at the tip.
-> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) The panel pushes the robot in $+y$, so $F_{\mathrm{ext}}=+10\,\mathrm{N}$ and $e=10/500=0.02\,\mathrm{m}$. (c) $\omega_n=\sqrt{500/2}=15.8\,\mathrm{rad/s}$, $D_d=2\sqrt{500\cdot 2}=63.2\,\mathrm{N{\cdot}s/m}$. (d) $a_y=-10/2=-5\,\mathrm{m/s}^2$.
-> 3. Impedance commands force, so the $10\,\mathrm{N}$ is the output and the wall sets $y$. Admittance commands motion; against steel a delayed force error becomes a position shove into the wall and can chatter. $\Lambda_y$ is apparent mass *at the tip in $y$*, not the metal mass: the arm can rotate, so only $2\,\mathrm{kg}$ resists a vertical push at this pose.
+> 1. Same arm, same pose; the panel is now the vertical one at $x=1\,\mathrm{m}$, the press arrow points in $-x$, and the springs in series are read along $x$. The clock now shows a $9.93\,\mathrm{ms}$ impact against a $140\,\mathrm{ms}$ period.
+> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$ and $\tau=(8,8)\,\mathrm{N{\cdot}m}$. **Both** joints now carry the load, where the vertical press loaded only the shoulder: at this pose the elbow's own motion moves the tip purely in $x$, so an $x$ force does work on it and a $y$ force does not. (b) $e=8/2000=0.004\,\mathrm{m}$, $4\,\mathrm{mm}$. (c) $\omega_n=\sqrt{2000/1}=44.72\,\mathrm{rad/s}$; $D_d\big|_{\zeta=1}=2\sqrt{2000\cdot1}=89.4\,\mathrm{N{\cdot}s/m}$; $D_d\big|_{\zeta=0.7}=62.6\,\mathrm{N{\cdot}s/m}$. (d) $F_{\max}=0.10\sqrt{1\times10^{5}}=31.6\,\mathrm{N}$ and $t_{\text{contact}}=\pi\sqrt{1/10^{5}}=9.93\,\mathrm{ms}$, so about $10$ samples at 1 kHz — four fewer than the vertical case. (e) $T=2\pi/44.72=0.1405\,\mathrm{s}$, so $T/t_{\text{contact}}=0.1405/0.00993=14.1$.
+> 3. The factor is $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$, and $22.4\times1.414=31.6\,\mathrm{N}$. Halving the apparent mass bought $\sqrt{1/2}=0.707$ of the peak, and doubling the approach speed spent $2$ — speed is linear in $F_{\max}$ and mass is only square-root, so the speed knob won. That is the general lesson: approach-speed limits, not lighter poses, are what reduce impact force. And no, stiffening the target bought nothing over the impact: the ratio fell from $28.3$ to $14.1$ only because $\omega_n$ rose, and $14.1$ is still an impact that begins and ends inside a fourteenth of one period. Matching them needs $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$, two hundred times the $2000$ asked for here and far beyond what a 1 kHz loop renders against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The impact still belongs to the mechanics.
 
 ### Sources
 
@@ -607,7 +742,80 @@ A panel sits at the tip. Command $10\,\mathrm{N}$ down on the panel, $F=(0,-10)$
 접촉이 위치 오차를 힘으로 바꾸므로, 제어는 둘 중 하나를 고르는 일이 아니라 둘 사이의 관계를 고르는 일이 된다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 뻣뻣한 위치 추종이 접촉에서 왜 위험해지는지, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
+> 먼저 아래의 계속 쓰는 대상과 계산 예제를 읽어라. 이 페이지가 갚아야 할 계산 하나이고, 논증 전체를 결정하는 비 하나로 끝난다. 그다음 §1 — 뻣뻣한 위치 추종이 접촉에서 왜 위험해지는지, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
+
+### 계속 쓰는 대상: P2, 패널, 그리고 목표 임피던스 하나 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**를 고정 자세 $\theta=(0^\circ,90^\circ)$에 두면 말단이 $(1,1)\,\mathrm{m}$에 있고, 거기 달린 공구가 말단 아래 눕힌 패널에 내려앉는다. [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 팔, 같은 공구, 같은 패널을 직각으로 돌려 놓은 것이다. 거기서는 패널이 서 있고 묻는 것이 마찰이라면, 여기서는 패널이 누워 있고 묻는 것은 제어기가 운동과 힘 사이에 두는 *관계*다. §1~§5의 모든 숫자가 이 표에서 나온다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| $\theta$ | $(0^\circ,90^\circ)$ | P2의 고정 자세. 말단 $(1,1)$ m, 엘보 $(1,0)$ |
+| $J$ | $\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ | 그 자세의 위치 야코비안, 0.6에서 고정 |
+| $\Lambda$ | $\mathrm{diag}(1,2)\ \mathrm{kg}$ | 작업공간 관성: $\Lambda_x=1$, $\Lambda_y=2$ kg |
+| $F$ | $(0,-10)\ \mathrm{N}$ | 패널에 명령한 누름 |
+| $M_d$ | $2\ \mathrm{kg}$ | 목표 관성. $\Lambda_y$와 같게 골랐다 |
+| $K_d$ | $500\ \mathrm{N/m}$ | 목표 강성 |
+| $D_d$ | $63.2\ \mathrm{N\cdot s/m}$ | 그 $M_d,K_d$에서 임계 감쇠가 되는 목표 감쇠 |
+| $K_e$ | $10^5\ \mathrm{N/m}$ | 여기서 힘 제어기가 식별하는 직렬 강성 — §1 표의 셋째 행 |
+| $v$ | $0.05\ \mathrm{m/s}$ | 처음 닿는 순간의 접근 속도 |
+| $f_s$ | $1\ \mathrm{kHz}$ | 제어 주기 |
+
+$K_e$는 공구·센서·팔 구조·패널을 합친 직렬 강성이지 패널의 재료 강성이 아니다. §1은 통째로 그 차이에 관한 절이고, §5는 어느 행을 고르는가가 무엇을 치르게 하는지 보여 준다.
+
+*범위: 이 페이지는 접촉 하나에서 운동과 힘의 관계를 고르고 크기를 정하는 법을 이름 붙인 팔 하나 위에서 가르친다 — 임피던스, 어드미턴스, 하이브리드 분할, 그 둘의 작업공간 구현, 그리고 그 모두의 아래에서 작동하는 수동 컴플라이언스. 제어기가 상대하는 접촉 역학 자체(complementarity, 마찰 원뿔과 그 선형화, closure: [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각 §1~§4]]), 가상 벽을 얼마나 단단하게 구현할 수 있는지의 샘플링 한계([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]), §6의 정책을 어떻게 학습시키는지([[03-deep-learning/vla/index|VLA]])는 가르치지 않는다.*
+
+### 과제가 그릴 그림: 패널 하나 위의 두 인과와 그 아래의 시계 · Homework diagram
+
+한 번 그려 두면 과제는 같은 그림을 다른 축에서 묻는다.
+
+**위 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 말단 아래에 패널 면의 수평선을 긋고, 명령한 누름 $F=(0,-10)$ N을 말단에서 아래로 향한 화살표로, 로봇이 받는 반력을 같은 길이의 위 화살표로 그린다. 말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다. 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 이 그림이 할 일은 그 200이라는 비를 보여 주는 것 하나다.
+
+**가운데 — 블록선도 둘을 위아래로, 오른쪽 플랜트 블록은 공유.** 임피던스: 말단에서 $(y,\dot y)$를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다. 어드미턴스: 손목에서 $F_y$를 재고 가상 동역학을 적분해 운동 기준 $y_c$를 얻어 내부 위치 루프에 넘기고, 그 루프가 토크를 보낸다. 각 구조가 흉내 낼 수 없는 블록 — 위 행은 토크 인터페이스, 아래 행은 힘 센서 — 을 음영으로 칠하고, 패널에서 측정으로 돌아오는 되먹임 경로를 양쪽에 다 그린다.
+
+**아래 — 시계, 밀리초 단위로 0에서 400 ms까지 한 축.** 접촉 사건을 $t=0$에서 시작하는 폭 $t_{\text{contact}}=14$ ms의 반주기 사인으로 표시한다. 같은 축 위에, 제어기가 명세한 거동의 한 주기 $T=2\pi/\omega_n=397$ ms를, 충격이 이미 끝났을 때 원점을 겨우 떠난 사인으로 그린다. 시계 위에는 1 kHz 샘플 눈금: 충격 안에 약 14개, 목표의 한 주기 안에 약 397개가 들어간다. 두 길이를 같은 축척으로 그려야 한다 — 그 비교가 곧 강의다.
+
+### 대상으로 한 번 끝까지: P2의 목표 임피던스와 그것이 느낄 수 없는 충격 · Worked case
+
+위의 대상에서 여섯 단계를 밟는다. §2와 §5가 말로 주장하는 모든 것이 여기서는 숫자다.
+
+**1단계 — 명령을 관절 좌표로.** 패널을 $F=(0,-10)$ N으로 누르므로
+
+$$\tau=J^\top F=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}\begin{pmatrix}0\\-10\end{pmatrix}=\begin{pmatrix}-10\\0\end{pmatrix}\ \mathrm{N\cdot m}$$
+
+이고 엘보는 하나도 지지 않는다. 반올림이 아니다. $J$의 둘째 열이 $(-1,0)^\top$이라 이 자세에서 엘보만 움직이면 말단이 순수하게 $x$로 미끄러지고, 순수하게 수직인 힘은 거기에 일을 하지 않는다. 이 0은 팔에 관한 진술이 아니라 자세에 관한 진술이다.
+
+**2단계 — 패널이 실제로 만나는 질량.** $\Lambda_y=2$ kg이다. 팔의 쇳덩이도 $m_1+m_2=2$ kg이라 이 일치가 함정이다. *같은* 자세에서 같은 2 kg으로부터 $\Lambda_x=1$ kg이 나온다. 겉보기 질량은 자세와 방향의 성질이고, §4의 작업공간 정식화가 존재하는 이유이자 $M_d=\Lambda_y$가 제어기에게 관성 성형을 전혀 요구하지 않는 목표 관성인 이유다.
+
+**3단계 — 정적 거동.** 패널이 로봇을 위로 밀므로 $F_{ext}=+10$ N이고, 평형에서 목표 식은 스프링 항만 남는다.
+
+$$e=\frac{F_{ext}}{K_d}=\frac{10}{500}=0.020\ \mathrm{m}$$
+
+제어기가 끝내 없애지 않을 정상상태 오차 2 cm이고, 접촉에서는 그것이 실패가 아니라 명세다. 구속이 없으면 같은 10 N이 대신 $a_y=-10/2=-5\ \mathrm{m/s^2}$을 만든다.
+
+**4단계 — 동적 거동.** 목표를 2차계로 읽으면
+
+$$\omega_n=\sqrt{K_d/M_d}=\sqrt{500/2}=15.81\ \mathrm{rad/s}=2.52\ \mathrm{Hz},\qquad D_d\big|_{\zeta=1}=2\sqrt{K_dM_d}=63.2\ \mathrm{N\cdot s/m}$$
+
+이다. 표준 2차계 파라미터이기 때문이다([[04-robotics/control-theory-ce397|5. 제어 이론 §5]]). $\zeta=0.7$이면 대신 $D_d=44.3$ N·s/m다. 댐퍼를 한번 점검하면, $0.05$ m/s에서 임계 감쇠 $D_d$가 내는 힘은 $63.2\times0.05=3.16$ N으로 누름의 3분의 1이다. 여기서 감쇠는 작은 보정이 아니다.
+
+**5단계 — 지속 접촉에서 컴플라이언스는 누구 것인가?** 명령한 10 N에서 패널과 구조가 물러나는 양은 $10/K_e=10/10^5=0.1$ mm이고 가상 스프링이 물러나는 양은 20 mm다. 그래서 제어기가 전체 물러남의 $20/20.1=99.5\%$를 공급하는데, 이는 강성비 $K_e/K_d=200$을 $200/201$로 읽은 값이다. 그러니 *지속* 접촉에서 "유연하다"는 말은 제어기를 가리키고, 그 말은 정직하다.
+
+**6단계 — 그러면 충격에서는?** 이제 $v=5$ cm/s로 $K_e=10^5$ N/m에 도착한다. §5의 반주기 사인 모델에서
+
+$$F_{\max}=v\sqrt{\Lambda_yK_e}=0.05\sqrt{2\times10^5}=22.4\ \mathrm{N},\qquad t_{\text{contact}}=\pi\sqrt{\Lambda_y/K_e}=0.01405\ \mathrm{s}$$
+
+이므로 22.4 N이 14.05 ms 안에 왔다가 가고, 1 kHz 루프는 그 안에 샘플을 약 14개 얻는다. 이것을 제어기가 명세한 거동의 한 주기 $T=2\pi/\omega_n=0.397$ s와 비교하면
+
+$$\frac{T}{t_{\text{contact}}}=\frac{0.397}{0.01405}=28.3$$
+
+**충격 전체가 목표 동역학 한 주기의 28분의 1 안에 끝난다.** 그래서 제어기가 명세한 거동은 사건이 끝날 때까지 반응을 시작조차 제대로 하지 못한다. 주파수 영역을 쓰지 않고 에너지로 말해도 같다. 공구가 지닌 에너지는 $\tfrac12\Lambda_yv^2=\tfrac12(2)(0.05)^2=2.5$ mJ이고, $K_d=500$ N/m 가상 스프링이 그것을 흡수하려면 $\sqrt{2E/K_d}=3.16$ mm를 눌려야 하는데, 공구는 구조가 멈춰 세우기 전에 $\sqrt{2E/K_e}=0.22$ mm밖에 들어가지 못한다 — 명령한 스프링에 필요했던 거리의 $7.1\%$다. 2.5 mJ 전부를 구조가 받아서 돌려주었다.
+
+**그 비가 뜻하는 것과 무엇이 그것을 바꾸는가.** 유연 손목($K_e=10^4$)을 상대로는 비가 $8.9$로 내려가고, 이상화된 재료 행($10^7$)을 상대로는 $283$으로 오른다. 1 근처에 가는 일은 결코 없다. 28은 게인으로 벗어날 수 있는 튜닝 실패도 아니다. $T=t_{\text{contact}}$로 두면 $2\pi/\omega_n=\pi\sqrt{\Lambda_y/K_e}$, 곧 $\omega_n=2\sqrt{K_e/\Lambda_y}$이므로 $M_d=\Lambda_y$에서
+
+$$K_d=4K_e=4\times10^5\ \mathrm{N/m}$$
+
+이고, 이는 여기서 고른 강성의 800배이며 1 kHz 루프가 단단한 표면을 상대로 구현할 수 있는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]). 반대 방향, 곧 $K_e$를 낮추는 것은 제어가 아니라 기계의 변경이고, 그것이 §5의 수동 컴플라이언스 논증 전체다. 그러니 이것이 §5의 주장을 산수로 쓴 것이다. **제어기는 지속 접촉을 소유하고 충격은 사실상 하나도 소유하지 않는다.** 컴플라이언스 개선을 보고하면서 정상 접촉만 보여 주는 논문은 쉬운 절반을 보고한 것이다.
 
 ### 1. 뻣뻣한 위치 추종이 접촉에서 위험해지는 이유
 
@@ -623,6 +831,25 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 제어기가 100 N으로 밀기로 "결정"한 것이 아니다. 그 강성에 대해 1 cm 오차를 닫는 비용이 그저
 그것일 뿐이다. 같은 상황에서 $K = 200$ N/m를 구현하는 유연한 제어기는 $200 \times 0.01 = 2$ N을
 낸다. 이 제어기는 끝내 해소하지 않는 1 cm 오차를 유지한다. 접촉에서는 이것이 실패가 아니라 올바른 거동이다.
+
+> [!info] 정의 · Definition — 강성, 컴플라이언스, 감쇠
+> **어떤 종류의 것인가.** 한 포트에서의 선형 역학 관계를 이루는 *계수* 셋이다. 각각 단위가 다르고, 같은 접촉에 대해 서로 다른 질문에 답한다. 부품이 아니라 관계의 성질이라는 점이 사람들이 빠뜨리는 조건이다.
+>
+> - **강성** $K$, 단위 N/m: 단위 변위당 힘, $F=K\,\Delta x$. "이만큼의 위치 오차가 힘으로 얼마인가?"에 답한다.
+> - **컴플라이언스** $C=1/K$, 단위 m/N: 단위 힘당 변위. 같은 내용을 질문만 뒤집은 것이다 — "이만큼의 힘이면 얼마나 움직이는가?" 위의 벽 $K_e=10^4$ N/m은 $C=10^{-4}$ m/N, 곧 뉴턴당 $0.1$ mm다. $K=200$ N/m 제어기는 $C=5\times10^{-3}$ m/N, 곧 뉴턴당 $5$ mm다.
+> - **감쇠** $D$, 단위 N·s/m: 단위 *속도*당 힘, $F=D\,\dot x$. 약한 스프링이 아니다. 운동이 멈추면 힘을 전혀 내지 않고, 그래서 댐퍼는 위치를 지킬 수 없고 스프링은 에너지를 소산할 수 없다 — §2의 목표식에 두 항이 다 필요한 이유다.
+>
+> **정의 조건, 그리고 컴플라이언스가 쓸모 있는 이유.** 이 계수들이 사슬 전체에 걸친 관계를 기술하므로, **직렬**로 놓인 요소들은 *컴플라이언스*로 결합하고 컴플라이언스는 그냥 더해진다.
+>
+> $$C_{eq}=C_1+C_2\quad\Longleftrightarrow\quad \frac{1}{K_{eq}}=\frac{1}{K_1}+\frac{1}{K_2}$$
+>
+> 같은 힘이 두 요소를 모두 지나가고 변형이 더해지기 때문이다. $C_1=10^{-5}$, $C_2=10^{-7}$ m/N이면 합이 $1.010\times10^{-5}$ m/N이므로 $K_{eq}=9.90\times10^{4}$ N/m이고, 더 무른 요소가 물러남의 $99.0\%$를 담당한다. "가장 무른 요소가 이긴다"는 그 산수이지 구호가 아니고, §5는 충격 논증 전체를 그 위에서 돌린다.
+>
+> **예.** 계속 쓰는 대상의 지속 접촉: $K_d=500$ N/m과 $K_e=10^5$ N/m이 직렬이면 $C_{eq}=2\times10^{-3}+10^{-5}=2.01\times10^{-3}$ m/N이므로 말단에서 물러남의 $99.5\%$를 제어기가 공급한다.
+>
+> **반례.** 숫자 없는 "유연한 제어기"는 명세가 아니다. $K_d=10^5$ N/m도 구현된 강성이다. 그리고 방향성이 있는 장치에 *스칼라* 강성 하나는 명세가 아니다. Remote-centre compliance는 측면으로 약 $10^4$ N/m, 축 방향으로 약 $10^6$ N/m이므로(§5), 수 하나로 적으면 두 방향 중 하나에서 두 자릿수만큼 틀린다.
+>
+> **왜 중요한가.** 아래 표의 모든 행, §2의 모든 $K_d$, §3에서 어느 방향을 단단하게 둘지 고르는 일, §5의 충격 산수가 전부 이 세 계수다. 셋 중 아무것도 보고하지 않은 접촉 주장은 단위가 없는 주장이다.
 
 환경 강성의 눈금을 갖고 있어야 한다. 환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을
 이름으로 부른다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하다:
@@ -706,7 +933,7 @@ $M_d$, $D_d$, $K_d$는 원하는 관성·감쇠·강성이다. 이 식은 원하
 
 $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}$$
 
-그래서 임피던스 제어기는 운동을 재고 힘을 내며, 어드미턴스 제어기는 힘을 재고 운동을 낸다. 절 제목의 인과가 이것이다. 목표를 질량-스프링-댐퍼로 읽으면 표준 2차계 파라미터인 고유 진동수 $\omega_n=\sqrt{K_d/M_d}$와 감쇠비 $\zeta=D_d/(2\sqrt{K_dM_d})$가 나온다([[04-robotics/control-theory-ce397|제어 이론 §5]]).
+그래서 임피던스 제어기는 운동을 재고 힘을 내며, 어드미턴스 제어기는 힘을 재고 운동을 낸다. 절 제목의 인과가 이것이다. 목표를 질량-스프링-댐퍼로 읽으면 표준 2차계 파라미터인 고유 진동수 $\omega_n=\sqrt{K_d/M_d}$와 감쇠비 $\zeta=D_d/(2\sqrt{K_dM_d})$가 나온다([[04-robotics/control-theory-ce397|제어 이론 §5]]). 어드미턴스 쪽에는 자기만의 시간 영역 목표식이 따로 있다 — 제어기가 적분해서 내부 루프에 넘길 운동 기준 $x_c$를 만드는 가상 동역학이고, 항마다 풀어 쓴 곳은 [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각 §5]]다.
 
 > [!example] 계산 예제 · Worked example
 > $M_d=2$ kg, $K_d=500$ N/m. 일정한 10 N 밀기는 $e=F_{ext}/K_d=10/500=0.02$ m에서 멈춘다. 고유 진동수는 $\sqrt{500/2}=15.8$ rad/s이고, 임계 감쇠($\zeta=1$)에는 $D_d=2\sqrt{500\times2}=63.2$ N·s/m가 필요하다.
@@ -870,7 +1097,7 @@ $$J\,M^{-1}N^\top=0$$
 
 $$\min_{\ddot q,\,\tau,\,f}\ \sum_i w_i\,\lVert J_i\ddot q+\dot J_i\dot q-\ddot x_i^{\text{des}}\rVert^2\quad\text{s.t.}\quad M\ddot q+h=S_a^\top\tau+J_c^\top f,\ \ f\in FC,\ \ \tau_{\min}\le\tau\le\tau_{\max}$$
 
-과제 $i$마다 야코비안 $J_i$, 원하는 가속도 $\ddot x_i^{\text{des}}$(보통 그 과제 오차에 대한 PD 법칙), 가중치 $w_i$가 있다. $M$은 질량 행렬, $h$는 코리올리·중력 항을 모은 것이다. 부유 베이스에는 모터가 없으므로 $S_a$가 구동 관절만 고른다. $J_c$는 접촉 야코비안, $FC$는 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]의 마찰 원뿔이다. 현재 상태 $q,\dot q$에서 동역학은 $(\ddot q,\tau,f)$에 선형이고 비용은 이차이므로, 원뿔을 피라미드로 바꾸면 매 제어 스텝 다시 푸는 볼록 QP가 된다.
+과제 $i$마다 야코비안 $J_i$, 원하는 가속도 $\ddot x_i^{\text{des}}$(보통 그 과제 오차에 대한 PD 법칙), 가중치 $w_i$가 있다. $M$은 질량 행렬, $h$는 코리올리·중력 항을 모은 것이다. 부유 베이스에는 모터가 없으므로 $S_a$가 구동 관절만 고른다. $J_c$는 접촉 야코비안, $FC$는 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]의 마찰 원뿔이다. 현재 상태 $q,\dot q$에서 동역학은 $(\ddot q,\tau,f)$에 선형이고 비용은 이차이므로, 원뿔을 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]의 다면 원뿔로 바꾸면 매 제어 스텝 다시 푸는 볼록 QP가 된다. 어느 다면 원뿔인지는 푸는 속도뿐 아니라 답에도 영향을 준다. 외접 상자 피라미드는 QP가 미끄러질 접촉력을 허가하게 만들고, 내접 생성자 원뿔은 접촉이 버텼을 힘을 거절하게 만든다. 그 절에 두 형태의 식과 각 오차의 크기가 있다.
 
 **이 QP가 "whole-body control"이 가리키는 것이다.** 이 분야가 그리로 옮겨간 이유는 우아함이
 아니다: 엄격한 영공간 우선순위는 *부등식* 제약을 표현할 수 없는데, 관절 한계도 토크 포화도
@@ -949,12 +1176,38 @@ $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되
 
 교훈은 산수 너머로 일반화된다: **수동 컴플라이언스는 능동 제어의 값싼 대체품이 아니라, 접촉
 대역폭에서 작동하는 유일한 것이다.** Whitney의 1982년 준정적 분석이 이 발상의 성숙한 판본이다 —
-챔퍼가 있는 경우와 없는 경우의 peg-in-hole에 대해, 정렬 오차가 언제 **wedging**(맞서는 접촉력이
-부재를 잠가 버림)이나 **jamming**(가해진 렌치가 삽입을 만드는 원뿔 밖으로 벗어남)을 일으키는지의
-조건을 유도하고, 그것을 지지부 컴플라이언스가 만족해야 할 설계 부등식으로 바꾼다. RCC 장치는
-컴플라이언스 중심을 부재의 끝점에 놓아서, 횡방향 오차는 횡방향 운동을, 각도 오차는 끝점 둘레의
-회전을 만들게 하고 두 오차가 서로를 먹여 살리지 못하게 한다. 알루미늄으로, 센서 없이, 지연
-없이 삽입 문제를 푼다.
+챔퍼가 있는 경우와 없는 경우의 peg-in-hole에 대해, 정렬 오차가 언제 wedging이나 jamming을
+일으키는지의 조건을 유도하고, 그것을 지지부 컴플라이언스가 만족해야 할 설계 부등식으로 바꾼다.
+
+**Wedging과 jamming은 같은 실패가 아니다.** 둘 다 부재가 중간까지만 들어가고 멈춘 상태로 끝나지만
+처방이 정반대라, 어느 쪽인지 밝히지 않고 "삽입이 실패했다"고 적은 논문은 아무것도 보고하지 않은 것이다.
+
+- **Wedging**은 *기하학적* 잠김이다. 부재가 구멍의 두 벽에 법선이 서로 맞서는 두 점에서 닿고, 그러면
+  두 접촉력이 축 방향으로 아무리 밀어도 서로를 상쇄한다. 정의 조건은 둘이다. 법선이 맞서는 2점
+  접촉이고, 부재가 아직 기울어 있는 동안 그 접촉이 만들어진다는 것 — 그래서 너무 큰 각도로 너무 일찍
+  넣으면 들어가고, 한번 걸리면 **더 세게 밀어도 소용이 없다**. 추가로 미는 힘이 두 접촉력을 함께
+  올리기 때문이다. 처방은 기하다. 챔퍼, 더 작은 초기 각도, 또는 두 번째 접촉이 생기기 전에 부재를
+  바로 세워 주는 컴플라이언스.
+- **Jamming**은 *렌치* 조건이다. 접촉 자체는 지극히 평범한데, 가해진 힘과 모멘트의 조합이 삽입을
+  만드는 렌치 원뿔 밖으로 벗어나서 접촉의 마찰이 그것을 전부 흡수하고 부재가 멈춘다. 그래서 정의
+  조건은 기하가 아니라 가해진 렌치와 마찰 원뿔에 관한 진술이고([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]), 처방은 가해진 렌치를
+  바꾸는 것이다. 횡력을 줄이고, 모멘트를 줄이고, 축 방향으로 더 민다. 반례: 구멍이 작아서 멈춘
+  부재는 둘 중 어느 것도 아니다. 그것은 간섭이고, 어떤 원뿔 안의 렌치로도 들어가지 않는다.
+
+실용적 차이는 이것이다. **Jamming은 올바른 렌치를 공급하는 것이면 무엇이든 고치고, 올바른 자리에
+놓인 컴플라이언스는 그것을 자동으로 공급한다.**
+
+**Remote-centre compliance의 정의.** **RCC**는 손목과 공구 사이에 놓는 *수동 기계 요소*이고, 그
+**컴플라이언스 중심** — 가해진 힘이 회전 없는 병진만 만들고 가해진 모멘트가 병진 없는 회전만 만드는
+단 하나의 점 — 을 *부재의 끝점*에 두는 장치다. 그 배치 조건 하나가 장치의 전부다. 이것이 두 오차를
+분리한다. 횡방향 오차는 횡방향 운동을, 각도 오차는 끝점 둘레의 회전을 만들고, 두 오차가 서로를
+만들어 내며 부재를 위의 wedging 기하로 몰고 가지 않는다. 센서도 루프도 없으므로 재료의 속도로
+작동한다. **반례**: 손목에 넣은 무른 스프링은 유연하지만 컴플라이언스 중심이 *손목*에 있어서 횡력이
+부재를 회전까지 시킨다. RCC 없는 컴플라이언스이고, 결합을 줄이는 것이 아니라 키운다.
+알루미늄으로, 센서 없이, 지연 없이 삽입 문제를 푼다.
+
+이 모두는 천이가 일어났다는 것을 안다고 전제한다. 그것을 알아내는 일은 별개의 추정 문제이고, 모드
+집합과 실패 사례까지 정의한 곳은 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §7]]이다. 여기의 논증은 그 추정이 울린 다음 샘플에서 시작한다.
 
 Colgate와 Hogan의 1988년 결과가 능동적 대안의 이론적 경계다: 선형 시불변 시스템에서, 매니퓰레이터가
 *모든* 수동적 환경과 결합해도 안정한 것은 구동점 임피던스가 수동적일 때
@@ -1055,7 +1308,7 @@ $$\mathrm{Re}\,Z(j\omega)\ge0\quad\text{for all }\omega$$
 | **단단한** 환경에서 검증했는가? | 폼과 자유 공간은 불안정을 통째로 감춘다 |
 | $M_d, D_d, K_d$를 단위와 함께 보고했는가? | 숫자 없는 "유연함"은 명세가 아니다 |
 | 접촉 **천이**를 보였는가, 정상 접촉만인가? | §5에 따르면 어려움은 천이에 산다 |
-| 제어·센서 주기, 접촉 지속 시간과 과제 대역폭은? | 밀리초 충격 첨두는 피드백 전 역학이 지배할 수 있지만 지속 접촉은 훨씬 낮은 주기에서도 조절할 수 있다. 주장하는 현상의 시간척도와 비교한다. |
+| 제어·센서 주기, 접촉 지속 시간, 그리고 **대역폭**(폐루프가 아직 기준을 따라가는 주파수 범위, [[04-robotics/control-theory-ce397\|5. 제어 이론 §5.5]])은? | 밀리초 충격 첨두는 피드백 전 역학이 지배할 수 있지만 지속 접촉은 훨씬 낮은 주기에서도 조절할 수 있다. 주장하는 현상의 시간척도와 비교한다 — 계산 예제가 그 비교를 비 하나로 해 둔다. |
 | 하드웨어에 수동 컴플라이언스가 있는가? | 있다면 결과의 일부는 알고리즘이 아니라 스프링의 몫이다 |
 | 자유 공간의 위치 정확도 *그리고* 접촉의 힘 정확도를 함께 보고했는가? | 각 아키텍처는 둘 중 하나에 약하다. 하나만 보고하는 것은 절반만 보고하는 것이다 |
 
@@ -1076,9 +1329,12 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 같은 방향에서 위치와 힘을 동시에 제어할 수 없는 이유를 말한다.
+- [ ] 강성·컴플라이언스·감쇠를 단위와 함께 말하고, 셋 중 직렬에서 더해지는 것이 무엇인지 말한다.
 - [ ] 임피던스·어드미턴스가 명령을 만드는 방식과 단단한 접촉에서의 구현 한계를 설명한다.
 - [ ] 하이브리드 제어의 선택 행렬 형태를 쓰고 적합한 과제를 하나 든다.
 - [ ] 주어진 $\Lambda$, $K$, $v$에 대해 $F_{\max}$와 접촉 지속을 계산하고 제어 샘플이 몇 개 들어가는지 말한다.
+- [ ] 접촉 지속 시간을 목표 임피던스의 한 주기와 비교하고, 그 비가 충격의 주인이 누구인지에 대해 무엇을 뜻하는지 말한다.
+- [ ] Wedging과 jamming을 구분하고, RCC의 컴플라이언스 중심을 어디에 놓아야 하는지 말한다.
 - [ ] Colgate와 Hogan의 수동성 조건이 무엇을 금지하는지 설명한다.
 
 > [!tip] 더 깊이 · Going deeper
@@ -1093,6 +1349,10 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 4. 어떤 논문이 학습된 정책으로 "유연한 삽입"을 달성했다고 보고하는데, 정책은 위치 제어되는
    팔에 10 Hz로 말단 위치를 내보낸다. 이 논문이 실제로 뒷받침할 수 있는 가장 강한 주장은?
 5. 하이브리드 위치/힘 제어는 기하를 알 때 정확하다. 왜 그것이 하필 건설에서 문제인가?
+6. $10^5$과 $10^7$ N/m 두 요소가 직렬이다. 강성과 컴플라이언스 중 무엇을 더하고, 결과는 얼마이며,
+   전체 물러남 중 더 무른 요소의 몫은 얼마인가?
+7. 삽입이 중간에서 멈췄다. 더 세게 밀어도 달라지는 것이 없다. Wedging인가 jamming인가, 그리고
+   그 답은 어떤 처방을 배제하는가?
 
 > [!tip]- 정답 · Answers
 > 1. 하드웨어와 증상만으로 구조를 확정할 수 없다. 힘 피드백이 위치 기준을 만든다면 어드미턴스 구현이다. 높은 접촉 강성은 지연과 부족한 감쇠의 영향을 키울 수 있다. 실제 루프·게인·시점을 확인한 뒤 원인을 판정한다. 폼에서 안정적이었다고 강철에서도 안정적이라는 뜻은 아니다.
@@ -1100,21 +1360,21 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 > 3. 컴플라이언스 중심을 peg의 끝점에 놓기 때문이다. 그러면 횡방향 정렬 오차는 횡방향 컴플라이언스를, 각도 오차는 끝점 둘레의 회전을 만들고, 각 오차가 다른 오차를 생성하지 않는다. 보정이 기계적이므로 제어 루프의 속도가 아니라 재료의 속도로 일어난다 — 그리고 §5는 어차피 제어 루프가 도와주기에는 너무 느렸음을 보여준다.
 > 4. 최소한 정책이 유용한 위치 기준을 골랐다는 것. 시스템은 하위 임피던스·어드미턴스·힘 루프와 수동 하드웨어로 컴플라이언스를 만들 수도 있으므로 그 스택을 확인해야 한다. 10 Hz 외부 정책은 밀리초 충격 첨두 자체에 반응할 수 없지만 더 느린 지속 접촉을 위한 기준은 바꿀 수 있다. 측정된 힘 거동을 어느 층이 만들었는지에 따라 가장 강한 주장이 달라진다.
 > 5. 아키텍처가 표면에 수직이라고 *믿는* 방향에 힘 제어를 배정하는데, 그 믿음이 모델에서 오기 때문이다. 건설 현장에서 부재는 도면이 말하는 곳이 아니라 놓인 곳에 있다: 몇 밀리미터의 위치 오차는 접촉을 이르게, 늦게, 혹은 엉뚱한 점에서 일으키고, 몇 도의 자세나 표면 형상 오차는 실제 법선을 돌려 힘 제어가 부분적으로 표면을 따라, 위치 제어가 부분적으로 표면 안으로 작용하게 만든다. 이것이야말로 그 아키텍처가 피하려고 설계된 바로 그 싸움이다. 지그로 고정된 공장 셀과 [[05-construction-robotics/assembly-fabrication|건설 조립]]의 차이가 이것이다.
+> 6. 컴플라이언스를 더한다. $C_{eq}=10^{-5}+10^{-7}=1.010\times10^{-5}$ m/N이므로 $K_{eq}=9.90\times10^{4}$ N/m이고, 더 무른 요소가 물러남의 $99.0\%$를 담당한다. 직렬 값이 사실상 $10^5$ 위에 그대로 앉는 이유이자, 제어기가 재료가 아니라 구조를 식별하는 이유다.
+> 7. Wedging이다. 기하학적 잠김, 곧 법선이 맞서는 2점 접촉이고, 축 방향으로 더 밀면 두 접촉력이 함께 올라가 아무것도 달라지지 않는다는 것이 바로 그 징후다. 그래서 "더 세게 밀기"가 배제되고, 가해진 렌치를 다시 겨누는 것 — 이쪽은 *jamming*의 처방이다 — 도 배제된다. 남는 것은 기하다. 챔퍼, 더 작은 진입 각도, 또는 두 번째 접촉이 생기기 전에 부재를 바로 세워 주는 컴플라이언스.
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. $\Lambda_y=2\,\mathrm{kg}$. 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
+Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 쓰는 대상에서 **항목 셋을 바꾼다**. 누름이 서 있는 패널을 향해 옆으로 가서 $F=(-8,0)\,\mathrm{N}$이 되므로 축이 $x$가 되고 겉보기 질량은 $\Lambda_x=1\,\mathrm{kg}$이다. 목표 강성은 $\zeta=0.7$에서 $K_d=2000\,\mathrm{N/m}$이다. 접근 속도는 $v=0.10\,\mathrm{m/s}$로 두 배가 된다. P2는 $\theta=(0^\circ,90^\circ)$ 그대로, $K_e$도 $10^5\,\mathrm{N/m}$ 그대로다([[02-foundations/lab-plants|0.6]]). 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
-말단에 패널. 패널에 아래로 $10\,\mathrm{N}$, $F=(0,-10)$. 목표 폐루프 $M_d\ddot e+D_d\dot e+K_d e=F_{\mathrm{ext}}$, $M_d=\Lambda_y$, $K_d=500\,\mathrm{N/m}$.
-
-1. **그리기.** 고정 자세의 P2, 말단 아래 패널. 블록선도 둘: 임피던스($y,\dot y$를 재고 $F_y$를 명령)와 어드미턴스($F_y$를 재고 $y$를 명령). 패널은 $-y$의 단단한 벽.
-2. **유도.** (a) $F=(0,-10)$의 $\tau=J^\top F$. (b) $10\,\mathrm{N}$ 가압의 정적 처짐 $e=F_{\mathrm{ext}}/K_d$. $F_{\mathrm{ext}}$는 *로봇에 걸리는* 힘. (c) $\omega_n=\sqrt{K_d/M_d}$와 $\zeta=1$인 $D_d$. (d) 그 $10\,\mathrm{N}$을 자유 공간에서 가하면 말단 가속도 $a_y=F_y/\Lambda_y$.
-3. **해석.** 강판 앞에서는 위치가 벽이 정한다. 어느 인과성이 여전히 $10\,\mathrm{N}$을 고르게 하고, 어느 쪽이 벽을 *움직이려* 하는가? $M_d$로 팔의 금속 $2\,\mathrm{kg}$이 아니라 $\Lambda_y=2$를 고르는 이유는?
+1. **그리기.** 과제 그림의 세 패널을 새 축에서 다시 그린다. 패널이 이제 $x=1\,\mathrm{m}$에 서 있는 팔([[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 패널이다), $x$에 대해 다시 쓴 블록선도 둘, 그리고 새 충격 폭과 새 목표 주기를 같은 축척으로 놓은 시계.
+2. **유도.** (a) $F=(-8,0)$의 $\tau=J^\top F$, 그리고 수직 누름과 무엇이 다르며 왜 그런지. (b) $8\,\mathrm{N}$ 반력에서의 정적 처짐. (c) $\omega_n$, 임계 감쇠 $D_d$, 그리고 $\zeta=0.7$의 $D_d$. (d) $v=0.10\,\mathrm{m/s}$로 $K_e=10^5\,\mathrm{N/m}$에 부딪힐 때의 $F_{\max}$와 $t_{\text{contact}}$, 그리고 그 안에 들어가는 1 kHz 샘플 수. (e) 목표 한 주기 대 접촉 지속 시간의 비.
+3. **해석.** 겉보기 질량이 *절반*으로 줄었는데 최대 힘은 계산 예제의 $22.4$에서 $31.6\,\mathrm{N}$으로 올랐다. 그 배수를 정확히 설명하라. 그다음: 주기 대 접촉 비가 $28.3$에서 $14.1$로 떨어졌는데, 목표를 단단하게 만든 것이 충격에 대한 권한을 조금이라도 사 주었는가? 그 답이 "그렇다"가 되려면 $K_d$가 얼마여야 하는가?
 
 > [!tip]- 정답 · Solutions
-> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 임피던스: $(y,\dot y)\mapsto F_y$, 그다음 $\tau=J^\top F$. 어드미턴스: $F_y\mapsto y_d$를 위치 내부 루프로. 패널은 말단의 $-y$ 벽.
-> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=(-10,0)\,\mathrm{N{\cdot}m}$. (b) 패널이 로봇을 $+y$로 밀므로 $F_{\mathrm{ext}}=+10\,\mathrm{N}$, $e=10/500=0.02\,\mathrm{m}$. (c) $\omega_n=\sqrt{500/2}=15.8\,\mathrm{rad/s}$, $D_d=2\sqrt{500\cdot 2}=63.2\,\mathrm{N{\cdot}s/m}$. (d) $a_y=-10/2=-5\,\mathrm{m/s}^2$.
-> 3. 임피던스는 힘을 명령하므로 $10\,\mathrm{N}$이 출력이고 $y$는 벽이 정한다. 어드미턴스는 운동을 명령한다. 강철에서는 늦은 힘 오차가 벽을 밀어 넣는 위치 명령이 되어 채터할 수 있다. $\Lambda_y$는 *$y$ 방향 말단의* 겉보기 질량이지 금속 질량이 아니다. 팔이 회전할 수 있어 이 자세의 수직 가압을 버티는 것은 $2\,\mathrm{kg}$뿐이다.
+> 1. 같은 팔, 같은 자세. 패널은 이제 $x=1\,\mathrm{m}$의 수직 패널이고, 누름 화살표는 $-x$를 가리키며, 직렬 스프링 둘은 $x$를 따라 읽는다. 시계에는 $9.93\,\mathrm{ms}$ 충격과 $140\,\mathrm{ms}$ 주기가 나온다.
+> 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$이고 $\tau=(8,8)\,\mathrm{N{\cdot}m}$. 수직 누름은 어깨만 실었는데 이제 **두 관절이 모두** 하중을 진다. 이 자세에서 엘보의 운동은 말단을 순수하게 $x$로 옮기므로 $x$ 힘은 거기에 일을 하고 $y$ 힘은 하지 않는다. (b) $e=8/2000=0.004\,\mathrm{m}$, 곧 $4\,\mathrm{mm}$. (c) $\omega_n=\sqrt{2000/1}=44.72\,\mathrm{rad/s}$, $D_d\big|_{\zeta=1}=2\sqrt{2000\cdot1}=89.4\,\mathrm{N{\cdot}s/m}$, $D_d\big|_{\zeta=0.7}=62.6\,\mathrm{N{\cdot}s/m}$. (d) $F_{\max}=0.10\sqrt{1\times10^{5}}=31.6\,\mathrm{N}$, $t_{\text{contact}}=\pi\sqrt{1/10^{5}}=9.93\,\mathrm{ms}$이므로 1 kHz에서 약 $10$개 — 수직 경우보다 네 개 적다. (e) $T=2\pi/44.72=0.1405\,\mathrm{s}$이므로 $T/t_{\text{contact}}=0.1405/0.00993=14.1$.
+> 3. 배수는 $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$이고 $22.4\times1.414=31.6\,\mathrm{N}$이다. 겉보기 질량을 절반으로 줄여 최대 힘의 $\sqrt{1/2}=0.707$을 벌었는데 접근 속도를 두 배로 해서 $2$를 썼다. $F_{\max}$에서 속도는 선형이고 질량은 제곱근일 뿐이라 속도 쪽이 이긴다. 일반 교훈이 그것이다. 충격력을 줄이는 것은 더 가벼운 자세가 아니라 접근 속도 제한이다. 그리고 목표를 단단하게 만든 것은 충격에 대해 아무것도 사 주지 않았다. 비가 $28.3$에서 $14.1$로 내려간 것은 $\omega_n$이 올랐기 때문일 뿐이고, $14.1$도 여전히 한 주기의 14분의 1 안에서 시작하고 끝나는 충격이다. 둘을 맞추려면 $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$이 필요하고, 이는 여기서 요구한 $2000$의 200배이며 1 kHz 루프가 단단한 표면에 구현하는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 충격은 여전히 역학의 것이다.
 
 ### 출처
 
