@@ -17,6 +17,68 @@ mastery-when: "Go deeper when you are writing a planner, controller or costmap l
 > The transform tree and RViz from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], a simulated base that accepts velocity commands and publishes odometry from [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], and actions and managed nodes from [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. One join to make: Jazzy Nav2 publishes plain `Twist` by default, while the 25.7 `diff_drive_controller` subscribes to `TwistStamped` on `<controller>/cmd_vel` — set `enable_stamped_cmd_vel: true` on Nav2's velocity publishers and remap `cmd_vel` to the controller's topic, or the commands never arrive. Baseline for every command here: **ROS 2 Jazzy Jalisco on Ubuntu 24.04 with Gazebo Harmonic**.
 > [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
 
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the Nav2 base: the 1-D cart, its encoder and its clock, driving along one aisle of a mapped floor. Constraining it to a line loses nothing that matters here, because every quantity this page computes is a rate or a distance along the path.
+
+| Symbol | Value | What it is here |
+|---|---:|---|
+| $N$ | $2048$ counts/m | cart encoder — the resolution of `odom` → `base_link` |
+| $f_v$ | $50\,\mathrm{Hz}$ | scan or vision feeding AMCL |
+| $f_c$ | $200\,\mathrm{Hz}$ | the `ros2_control` loop underneath Nav2, not Nav2's own rate |
+| $B$ | $70\,\mathrm{ms}$ | end-to-end budget, perception to applied force |
+| $v$ | $0.25\,\mathrm{m/s}$ | cart speed — **page-local**: P6 freezes no speed, and it is used only to turn Nav2's periods into millimetres |
+
+The Nav2 rates the worked case uses are the Jazzy defaults quoted in §4 and §6 — global costmap $1.0\,\mathrm{Hz}$, local costmap $5.0\,\mathrm{Hz}$, `controller_frequency` $20\,\mathrm{Hz}$ — and AMCL's distance gate `update_min_d: 0.25` m from §7.
+
+*Scope: this page teaches the shape of the Nav2 stack — which server owns what, which frame each costmap lives in, how a goal becomes an action — and computes what its four clocks cost on a real base. It does not teach how to author a planner or controller plugin, nor the search algorithms underneath them, which are [[04-robotics/planning-decision-making|4. Planning]]; nor SLAM and the particle filter, which are [[04-robotics/state-estimation-slam|3. State Estimation]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two panels, and the problem set asks for the same figure with one scan arriving late.
+
+**Panel A — who owns which edge.** Draw the REP 105 chain of §7 as three boxes in a row, `map` → `odom` → `base_link`, and write the *publisher* under each arrow rather than beside it: AMCL under `map` → `odom`, the wheel odometry under `odom` → `base_link`. Then draw the two costmaps as rectangles anchored to their frames — the global one stretched over `map`, the local one a small window pinned to `odom` — and run one arrow from each into the server that reads it, planner and controller. Two things the drawing must get right. Put a small lightning mark on the `map` → `odom` arrow and none on the other, because that edge is the one allowed to jump and the whole frame split exists for it. And draw the controller's output crossing a labelled boundary out of Nav2 into `ros2_control`, because `/cmd_vel` is a request at $20\,\mathrm{Hz}$ and not the $200\,\mathrm{Hz}$ motor command.
+
+**Panel B — the four clocks.** Five lanes against one horizontal axis of $0$ to $1000\,\mathrm{ms}$, log-free and ruled every $50\,\mathrm{ms}$: `ros2_control 200 Hz`, `scan/AMCL input 50 Hz`, `controller_server 20 Hz`, `local costmap 5 Hz`, `global costmap 1 Hz`. Tick each lane at its own period so the nesting is visible: four control ticks per scan, ten control ticks per `/cmd_vel`, four `/cmd_vel` per local costmap update. Beside each lane write the distance the cart covers in one of its periods, from the table in the worked case. Finally draw P6's $70\,\mathrm{ms}$ budget as a short bracket at the left of the axis, and note in one line how many lanes have a period longer than the whole bracket.
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. The problem set changes one arrival time; everything else below is the catalog.
+
+**Step 1 — five clocks, one ladder.** Each rate is a period, and each period is a distance at the page-local speed, because the cart does not stop while a server thinks:
+
+$$d = v\,T = \frac{v}{f},\qquad \text{counts} = N\,d.$$
+
+| Clock | $f$ | $T$ | $d=vT$ | counts |
+|---|---:|---:|---:|---:|
+| `ros2_control` loop | $200\,\mathrm{Hz}$ | $5\,\mathrm{ms}$ | $1.25\,\mathrm{mm}$ | $2.56$ |
+| scan into AMCL | $50\,\mathrm{Hz}$ | $20\,\mathrm{ms}$ | $5.00\,\mathrm{mm}$ | $10.24$ |
+| `controller_frequency` | $20\,\mathrm{Hz}$ | $50\,\mathrm{ms}$ | $12.5\,\mathrm{mm}$ | $25.6$ |
+| local costmap | $5\,\mathrm{Hz}$ | $200\,\mathrm{ms}$ | $50\,\mathrm{mm}$ | $102.4$ |
+| global costmap | $1\,\mathrm{Hz}$ | $1000\,\mathrm{ms}$ | $250\,\mathrm{mm}$ | $512$ |
+
+Two hundred to one, top to bottom. The grid the planner searches can describe the cart a quarter of a metre behind where it is, and that is the design working correctly: the planner answers a map-scale question and is not supposed to be fresh.
+
+**Step 2 — `/cmd_vel` is a request, not a command.** Nav2's controller publishes at $20\,\mathrm{Hz}$ and the loop underneath runs at $200\,\mathrm{Hz}$, so
+
+$$\frac{f_c}{f_{\text{ctrl}}}=\frac{200}{20}=10,$$
+
+since each period of the slower clock contains exactly ten of the faster one. One `/cmd_vel` is therefore written to the velocity command interface and re-applied on ten successive `read`–`update`–`write` cycles ([[04-robotics/ros2/simulation-and-control|25.7 §7]]): the value on the interface persists until something overwrites it. Ten ticks at $1.25\,\mathrm{mm}$ each is the $12.5\,\mathrm{mm}$ of Step 1's third row, which is the same statement seen from the other end.
+
+**Step 3 — AMCL updates on distance, not on frames.** §7's gate is `update_min_d: 0.25` m, which on this encoder is $0.25\times2048=512$ counts and at $0.25\,\mathrm{m/s}$ takes
+
+$$t_{\text{gate}}=\frac{0.25\,\mathrm{m}}{0.25\,\mathrm{m/s}}=1.00\,\mathrm{s},$$
+
+so roughly $50\times1.00=50$ scans arrive between one correction of `map` → `odom` and the next, because a stationary or slow-moving robot gains no information from re-weighting the same particles. The consequence is worth stating plainly: feeding AMCL at $50\,\mathrm{Hz}$ does not localise at $50\,\mathrm{Hz}$. Halve the speed and the correction interval doubles to $2\,\mathrm{s}$ while the scan rate is unchanged.
+
+**Step 4 — the budget, and what it is a budget for.** Follow one obstacle appearing in front of the cart. It enters the local costmap up to one costmap period late, the controller reads that costmap up to one controller period later, and the command it produces is held for one control period:
+
+$$200+50+5=255\,\mathrm{ms},$$
+
+which is $255/70=3.6$ times P6's budget, so the Nav2 reaction path cannot meet it and was never meant to. $70\,\mathrm{ms}$ is a *servo* budget — camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop — and a navigation stack is a layer above that, replanning at map scale. Anything that genuinely needs $70\,\mathrm{ms}$ belongs under the seam with the controller, not in a behaviour tree. This is the honest version of "Nav2 is slow": it is not slow, it is answering a different question on a different clock.
+
+**Step 5 — inflation, measured in time.** §5 insists `inflation_radius` is a potential field rather than a margin, and the rate ladder says why that has to be true. The default $0.55\,\mathrm{m}$ is $0.55\times2048=1126$ counts, and the cart crosses it in $0.55/0.25=2.2\,\mathrm{s}$ — or, in the unit the controller actually experiences, $0.55/0.050=11$ local-costmap updates, since the cart covers $50\,\mathrm{mm}$ per update. Eleven cycles of gradient are what let a cost-aware planner lean away from the wall gradually. Shrink the skirt to one or two cycles and the controller meets a cliff instead of a slope, which is exactly the corner-clipping symptom of §13. The Jazzy TurtleBot value of $0.7\,\mathrm{m}$ is $14$ updates on the same cart.
+
 ### 1. The problem Nav2 solves
 
 You have a robot that takes `geometry_msgs/msg/Twist` and publishes odometry and a laser scan. You want to say "go to that corner" and have it arrive. Between those two facts sit a dozen sub-problems, and the reason Nav2 exists is that every one of them has been solved badly by hand, repeatedly:
@@ -400,11 +462,20 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 - REP 105, Coordinate Frames for Mobile Platforms.
 - `ros2/geometry2`, `jazzy` branch — `tf2_tools` and `tf2_ros` executables.
 
-> [!question]- Self-check · Answer
-> **1. Why is the local costmap in the `odom` frame when the global one is in `map`?** Because `map` → `odom` is published by AMCL and is allowed to jump when localisation corrects. A controller running at 20 Hz on top of a frame that teleports would produce discontinuous commands. `odom` drifts but is smooth, which is what short-horizon control needs; the planner, which cares about global consistency and replans once a second, takes the jumpy frame instead.
-> **2. Your robot clips corners and hugs walls, though it never collides. What is the likely cause and which direction do you change it?** Inflation that is too small, not too large. The decaying inflation cost is a potential field that steers cost-aware planners toward the middle of free space; a thin ring around walls leaves a large zero-cost void the planner has no reason to prefer any part of. Increase `inflation_radius` and *lower* `cost_scaling_factor` (a slower decay) until there is a smooth gradient across the traversable width — while checking that the narrowest gap the robot must pass is still plannable.
-> **3. The robot spins in place and never departs. What do you check first, and why not the controller parameters?** The transform tree: `ros2 run tf2_tools view_frames` and `ros2 run tf2_ros tf2_monitor map base_link`. A missing `map` → `odom` or a transform older than `transform_tolerance` makes every trajectory invalid, and it produces exactly this symptom with no error that names TF. Costmap content and footprint come next; controller parameters are fourth because a parameter changed before TF is verified is a parameter you will change back.
-> **4. Why a behaviour tree rather than a state machine, given that the nominal path is just "plan, then follow"?** Because the nominal path is not the hard part. Recovery is, and in an FSM every recovery rule is a transition that must be duplicated for every state it can fire from. The tree scopes recovery: a `RecoveryNode` around the planner clears the global costmap, one around the controller clears the local costmap, and only a system-level failure reaches the shared spin/wait/back-up subtree. It is also editable as data — a different XML per goal, via the action's `behavior_tree` field — rather than as compiled control flow.
+### Self-check
+
+1. Why is the local costmap in the `odom` frame when the global one is in `map`?
+2. Your robot clips corners and hugs walls, though it never collides. What is the likely cause and which direction do you change it?
+3. The robot spins in place and never departs. What do you check first, and why not the controller parameters?
+4. Why a behaviour tree rather than a state machine, given that the nominal path is just "plan, then follow"?
+5. A reviewer reads the worked case and says P6's $70\,\mathrm{ms}$ budget proves Nav2 is too slow for the cart. What is wrong with that reading, and which $255\,\mathrm{ms}$ term would you attack first if the cart really did have to react faster?
+
+> [!tip]- Answers
+> 1. Because `map` → `odom` is published by AMCL and is allowed to jump when localisation corrects. A controller running at 20 Hz on top of a frame that teleports would produce discontinuous commands. `odom` drifts but is smooth, which is what short-horizon control needs; the planner, which cares about global consistency and replans once a second, takes the jumpy frame instead.
+> 2. Inflation that is too small, not too large. The decaying inflation cost is a potential field that steers cost-aware planners toward the middle of free space; a thin ring around walls leaves a large zero-cost void the planner has no reason to prefer any part of. Increase `inflation_radius` and *lower* `cost_scaling_factor` (a slower decay) until there is a smooth gradient across the traversable width — while checking that the narrowest gap the robot must pass is still plannable.
+> 3. The transform tree: `ros2 run tf2_tools view_frames` and `ros2 run tf2_ros tf2_monitor map base_link`. A missing `map` → `odom` or a transform older than `transform_tolerance` makes every trajectory invalid, and it produces exactly this symptom with no error that names TF. Costmap content and footprint come next; controller parameters are fourth because a parameter changed before TF is verified is a parameter you will change back.
+> 4. Because the nominal path is not the hard part. Recovery is, and in an FSM every recovery rule is a transition that must be duplicated for every state it can fire from. The tree scopes recovery: a `RecoveryNode` around the planner clears the global costmap, one around the controller clears the local costmap, and only a system-level failure reaches the shared spin/wait/back-up subtree. It is also editable as data — a different XML per goal, via the action's `behavior_tree` field — rather than as compiled control flow.
+> 5. It compares two budgets that measure different chains. The $70\,\mathrm{ms}$ is P6's camera-to-force servo budget on the cart's own $200\,\mathrm{Hz}$ loop; the $255\,\mathrm{ms}$ is the time for a *newly appeared obstacle* to change a wheel command through costmap, controller and hold. Nav2 is not competing for the servo budget, and a reaction that must beat it belongs under the seam, in a controller on the $200\,\mathrm{Hz}$ loop, where the whole chain is $5\,\mathrm{ms}$. If the $255$ itself had to come down, attack the local costmap's $200\,\mathrm{ms}$ first: it is $78\%$ of the total and raising `update_frequency` from $5$ to $20\,\mathrm{Hz}$ would remove $150$ of it, against $25$ for doubling `controller_frequency` to $40\,\mathrm{Hz}$ and $5$ for deleting the control loop's hold entirely. Fix the largest term, and know that a faster costmap costs sensor processing every cycle.
 
 ### Problem set · 과제
 
@@ -428,6 +499,68 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the Nav2 base. En
 > [!note] 선수 지식 · Prerequisites
 > [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
 > TF and RViz from 25.6, a simulated base from 25.7, actions and managed nodes from 25.3. Baseline: ROS 2 Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
+
+### 이 페이지의 대상 · Running object
+
+Nav2 베이스로 쓰는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**. 1차원 카트와 그 엔코더와 시계가 지도가 있는 층의 통로 하나를 달린다. 직선으로 묶어도 여기서 중요한 것은 잃지 않는다. 이 페이지가 계산하는 양은 모두 속도이거나 경로를 따라 잰 거리이기 때문이다.
+
+| 기호 | 값 | 여기서의 뜻 |
+|---|---:|---|
+| $N$ | $2048$ counts/m | 카트 엔코더 — `odom` → `base_link`의 분해능 |
+| $f_v$ | $50\,\mathrm{Hz}$ | AMCL로 들어가는 스캔 또는 비전 |
+| $f_c$ | $200\,\mathrm{Hz}$ | Nav2 아래의 `ros2_control` 루프. Nav2 자신의 속도가 아니다 |
+| $B$ | $70\,\mathrm{ms}$ | 지각에서 힘까지의 종단 예산 |
+| $v$ | $0.25\,\mathrm{m/s}$ | 카트 속도 — **페이지 국소 값**. P6는 속도를 고정하지 않으며, Nav2의 주기를 밀리미터로 바꾸는 데에만 쓴다 |
+
+계산 절이 쓰는 Nav2 속도는 §4와 §6이 인용한 Jazzy 기본값이다. 전역 costmap $1.0\,\mathrm{Hz}$, 지역 costmap $5.0\,\mathrm{Hz}$, `controller_frequency` $20\,\mathrm{Hz}$. AMCL의 거리 게이트 `update_min_d: 0.25` m는 §7의 값이다.
+
+*범위: 이 페이지는 Nav2 스택의 모양 — 어느 서버가 무엇을 소유하는지, 각 costmap이 어느 프레임에 사는지, 목표가 어떻게 액션이 되는지 — 을 가르치고, 그 시계 넷이 실제 베이스에서 얼마를 치르는지 계산한다. 플래너나 제어기 플러그인을 작성하는 법은 가르치지 않고, 그 아래의 탐색 알고리즘도 아니다. 그것은 [[04-robotics/planning-decision-making|4. 계획]]이다. SLAM과 입자 필터도 아니다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 패널 둘. 과제는 스캔 하나가 늦게 도착하는 같은 그림을 요구한다.
+
+**패널 A — 어느 변을 누가 소유하는가.** §7의 REP 105 사슬을 상자 셋으로 한 줄에 그린다. `map` → `odom` → `base_link`. 각 화살표의 *발행자*를 옆이 아니라 아래에 적는다. `map` → `odom` 밑에 AMCL, `odom` → `base_link` 밑에 휠 오도메트리. 그다음 costmap 둘을 각자의 프레임에 붙은 사각형으로 그린다. 전역은 `map` 위에 넓게, 지역은 `odom`에 핀으로 꽂힌 작은 창으로. 각각에서 그것을 읽는 서버로 화살표를 하나씩 뺀다. 플래너와 제어기다. 그림이 맞혀야 할 것이 둘이다. `map` → `odom` 화살표에만 작은 번개 표시를 달고 다른 쪽에는 달지 않는다. 뛰어도 되는 변이 그쪽이고, 프레임을 둘로 가른 이유 전체가 그것이기 때문이다. 그리고 제어기의 출력이 Nav2를 나가 `ros2_control`로 들어가는 경계를 이름 붙여 그린다. `/cmd_vel`은 $20\,\mathrm{Hz}$의 요청이지 $200\,\mathrm{Hz}$의 모터 명령이 아니기 때문이다.
+
+**패널 B — 시계 넷.** 가로축 $0$에서 $1000\,\mathrm{ms}$, 눈금 $50\,\mathrm{ms}$마다에 레인 다섯을 건다. `ros2_control 200 Hz`, `스캔·AMCL 입력 50 Hz`, `controller_server 20 Hz`, `지역 costmap 5 Hz`, `전역 costmap 1 Hz`. 각 레인을 자기 주기로 찍어 포개짐이 보이게 한다. 스캔 하나에 제어 틱 넷, `/cmd_vel` 하나에 제어 틱 열, 지역 costmap 한 번에 `/cmd_vel` 넷이다. 레인마다 옆에 그 주기 동안 카트가 가는 거리를 계산 절의 표에서 옮겨 적는다. 마지막으로 축 왼쪽에 P6의 $70\,\mathrm{ms}$ 예산을 짧은 괄호로 긋고, 주기가 괄호 전체보다 긴 레인이 몇 개인지 한 줄로 적는다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. 과제는 도착 시각 하나만 바꾸고, 아래의 나머지는 전부 카탈로그다.
+
+**Step 1 — 시계 다섯, 사다리 하나.** 속도마다 주기가 있고 주기마다 거리가 있다. 서버가 생각하는 동안에도 카트는 멈추지 않기 때문이다.
+
+$$d = v\,T = \frac{v}{f},\qquad \text{counts} = N\,d.$$
+
+| 시계 | $f$ | $T$ | $d=vT$ | counts |
+|---|---:|---:|---:|---:|
+| `ros2_control` 루프 | $200\,\mathrm{Hz}$ | $5\,\mathrm{ms}$ | $1.25\,\mathrm{mm}$ | $2.56$ |
+| AMCL로 가는 스캔 | $50\,\mathrm{Hz}$ | $20\,\mathrm{ms}$ | $5.00\,\mathrm{mm}$ | $10.24$ |
+| `controller_frequency` | $20\,\mathrm{Hz}$ | $50\,\mathrm{ms}$ | $12.5\,\mathrm{mm}$ | $25.6$ |
+| 지역 costmap | $5\,\mathrm{Hz}$ | $200\,\mathrm{ms}$ | $50\,\mathrm{mm}$ | $102.4$ |
+| 전역 costmap | $1\,\mathrm{Hz}$ | $1000\,\mathrm{ms}$ | $250\,\mathrm{mm}$ | $512$ |
+
+위에서 아래까지 200배다. 플래너가 탐색하는 격자는 카트를 실제보다 25 센티미터 뒤에 그리고 있을 수 있고, 그것은 설계가 제대로 동작하는 모습이다. 플래너는 지도 규모의 질문에 답하고, 신선할 의무가 없다.
+
+**Step 2 — `/cmd_vel`은 요청이지 명령이 아니다.** Nav2 제어기는 $20\,\mathrm{Hz}$로 발행하고 그 아래 루프는 $200\,\mathrm{Hz}$로 돈다. 그래서
+
+$$\frac{f_c}{f_{\text{ctrl}}}=\frac{200}{20}=10,$$
+
+이다. 느린 시계의 한 주기에 빠른 시계의 주기가 정확히 열 개 들어가기 때문이다. 그러므로 `/cmd_vel` 하나는 속도 명령 인터페이스에 기록된 뒤 연속된 `read`–`update`–`write` 열 번에 걸쳐 다시 적용된다([[04-robotics/ros2/simulation-and-control|25.7 §7]]). 인터페이스의 값은 무언가가 덮어쓸 때까지 남는다. $1.25\,\mathrm{mm}$짜리 틱 열 번이 Step 1 셋째 행의 $12.5\,\mathrm{mm}$이고, 같은 진술을 반대편에서 본 것이다.
+
+**Step 3 — AMCL은 프레임이 아니라 거리로 갱신한다.** §7의 게이트는 `update_min_d: 0.25` m이고, 이 엔코더로는 $0.25\times2048=512$ 카운트이며 $0.25\,\mathrm{m/s}$에서는
+
+$$t_{\text{gate}}=\frac{0.25\,\mathrm{m}}{0.25\,\mathrm{m/s}}=1.00\,\mathrm{s}$$
+
+가 걸린다. 그래서 `map` → `odom`이 한 번 보정되고 다음 보정이 올 때까지 스캔이 대략 $50\times1.00=50$개 도착한다. 멈춰 있거나 느린 로봇은 같은 입자를 다시 가중해도 얻는 정보가 없기 때문이다. 결론은 분명하게 말할 값이 있다. AMCL에 $50\,\mathrm{Hz}$로 먹인다고 $50\,\mathrm{Hz}$로 위치가 잡히지는 않는다. 속도를 절반으로 낮추면 스캔 속도는 그대로인 채 보정 간격만 $2\,\mathrm{s}$로 두 배가 된다.
+
+**Step 4 — 예산, 그리고 그것이 무엇에 대한 예산인가.** 카트 앞에 장애물 하나가 나타났다고 하고 따라가 보자. 장애물은 최대 costmap 한 주기 늦게 지역 costmap에 들어가고, 제어기는 그 costmap을 최대 제어기 한 주기 뒤에 읽으며, 거기서 나온 명령은 제어 한 주기 동안 유지된다.
+
+$$200+50+5=255\,\mathrm{ms},$$
+
+이는 P6 예산의 $255/70=3.6$배다. 그러니 Nav2 반응 경로는 그 예산을 맞출 수 없고, 애초에 맞추라고 만든 것도 아니다. $70\,\mathrm{ms}$는 *서보* 예산이다. 카메라 노출 중간부터 힘까지, 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서의 예산이고, 내비게이션 스택은 그 위층에서 지도 규모로 다시 계획한다. 진짜로 $70\,\mathrm{ms}$가 필요한 일은 행동 트리가 아니라 이음매 아래 제어기에 속한다. 이것이 "Nav2는 느리다"의 정직한 판본이다. 느린 것이 아니라 다른 시계 위에서 다른 질문에 답하고 있다.
+
+**Step 5 — 팽창을 시간으로 재기.** §5는 `inflation_radius`가 여유가 아니라 퍼텐셜 필드라고 못 박고, 속도 사다리가 왜 그래야만 하는지를 말해 준다. 기본값 $0.55\,\mathrm{m}$는 $0.55\times2048=1126$ 카운트이고 카트는 $0.55/0.25=2.2\,\mathrm{s}$에 그것을 가로지른다. 제어기가 실제로 겪는 단위로는 지역 costmap 갱신 $0.55/0.050=11$회다. 갱신 한 번에 카트가 $50\,\mathrm{mm}$를 가기 때문이다. 비용 인식 플래너가 벽에서 서서히 멀어지게 하는 것이 그 열한 번의 경사다. 치마폭을 한두 번으로 줄이면 제어기는 경사가 아니라 절벽을 만나고, 그것이 바로 §13의 모서리 깎기 증상이다. Jazzy TurtleBot 값 $0.7\,\mathrm{m}$는 같은 카트에서 갱신 $14$회다.
 
 ### 1. Nav2가 푸는 문제
 
@@ -814,11 +947,20 @@ ros2 param dump /controller_server
 - REP 105, Coordinate Frames for Mobile Platforms.
 - `ros2/geometry2`, `jazzy` 브랜치 — `tf2_tools`와 `tf2_ros` 실행 파일.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 전역 costmap은 `map` 프레임인데 지역 costmap은 왜 `odom` 프레임인가?** `map` → `odom`은 AMCL이 발행하고, 위치가 보정될 때 튀어도 되는 변환이기 때문이다. 순간이동하는 프레임 위에서 20 Hz로 도는 제어기는 불연속한 명령을 낸다. `odom`은 표류하지만 매끄럽고, 그것이 짧은 시평의 제어가 필요로 하는 성질이다. 전역 일관성이 중요하고 1초에 한 번 재계획하는 플래너가 대신 튀는 프레임을 받는다.
-> **2. 로봇이 모서리를 깎고 벽에 붙는데 충돌은 한 번도 하지 않는다. 유력한 원인은 무엇이고 어느 방향으로 바꾸는가?** 팽창이 너무 큰 게 아니라 너무 작다. 감쇠하는 팽창 비용은 비용 인식 플래너를 자유 공간 한가운데로 이끄는 퍼텐셜 필드다. 벽 주변의 얇은 고리만 있으면 그 사이의 넓은 0 비용 공백 안에서 플래너가 어느 지점을 선호할 근거가 없다. 주행 가능한 폭 전체에 매끄러운 경사가 생길 때까지 `inflation_radius`는 키우고 `cost_scaling_factor`는 *낮춰라*(더 느린 감쇠). 단, 반드시 통과해야 하는 가장 좁은 틈이 여전히 계획 가능한지 확인하면서.
-> **3. 로봇이 제자리에서 돌기만 하고 출발하지 않는다. 무엇을 먼저 확인하고, 제어기 파라미터는 왜 먼저가 아닌가?** 변환 트리다. `ros2 run tf2_tools view_frames`와 `ros2 run tf2_ros tf2_monitor map base_link`. `map` → `odom`이 없거나 변환이 `transform_tolerance`보다 오래됐으면 모든 궤적이 무효가 되고, TF를 지목하는 오류 한 줄 없이 정확히 이 증상이 나온다. 그다음이 costmap 내용과 발자국이다. 제어기 파라미터가 넷째인 이유는, TF를 확인하기 전에 바꾼 파라미터는 결국 되돌리게 되기 때문이다.
-> **4. 정상 경로는 "계획하고 따라간다"뿐인데 왜 상태 기계가 아니라 행동 트리인가?** 어려운 부분이 정상 경로가 아니기 때문이다. 어려운 것은 복구이고, FSM에서는 복구 규칙 하나하나가 그것이 발동할 수 있는 모든 상태마다 복제되어야 하는 전이다. 트리는 복구에 범위를 준다. 플래너를 감싼 `RecoveryNode`는 전역 costmap을 지우고, 제어기를 감싼 것은 지역 costmap을 지우며, 시스템 수준 실패만이 공유되는 회전/대기/후진 서브트리에 도달한다. 또한 컴파일된 제어 흐름이 아니라 데이터로 편집된다 — 액션의 `behavior_tree` 필드를 통해 목표마다 다른 XML을 쓸 수 있다.
+### 스스로 점검
+
+1. 전역 costmap은 `map` 프레임인데 지역 costmap은 왜 `odom` 프레임인가?
+2. 로봇이 모서리를 깎고 벽에 붙는데 충돌은 한 번도 하지 않는다. 유력한 원인은 무엇이고 어느 방향으로 바꾸는가?
+3. 로봇이 제자리에서 돌기만 하고 출발하지 않는다. 무엇을 먼저 확인하고, 제어기 파라미터는 왜 먼저가 아닌가?
+4. 정상 경로는 "계획하고 따라간다"뿐인데 왜 상태 기계가 아니라 행동 트리인가?
+5. 어떤 리뷰어가 계산 절을 읽고 P6의 $70\,\mathrm{ms}$ 예산이 Nav2가 이 카트에 너무 느리다는 증거라고 말한다. 그 독해의 무엇이 틀렸는가? 카트가 정말로 더 빨리 반응해야 한다면 $255\,\mathrm{ms}$의 어느 항을 먼저 치겠는가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. `map` → `odom`은 AMCL이 발행하고, 위치가 보정될 때 튀어도 되는 변환이기 때문이다. 순간이동하는 프레임 위에서 20 Hz로 도는 제어기는 불연속한 명령을 낸다. `odom`은 표류하지만 매끄럽고, 그것이 짧은 시평의 제어가 필요로 하는 성질이다. 전역 일관성이 중요하고 1초에 한 번 재계획하는 플래너가 대신 튀는 프레임을 받는다.
+> 2. 팽창이 너무 큰 게 아니라 너무 작다. 감쇠하는 팽창 비용은 비용 인식 플래너를 자유 공간 한가운데로 이끄는 퍼텐셜 필드다. 벽 주변의 얇은 고리만 있으면 그 사이의 넓은 0 비용 공백 안에서 플래너가 어느 지점을 선호할 근거가 없다. 주행 가능한 폭 전체에 매끄러운 경사가 생길 때까지 `inflation_radius`는 키우고 `cost_scaling_factor`는 *낮춰라*(더 느린 감쇠). 단, 반드시 통과해야 하는 가장 좁은 틈이 여전히 계획 가능한지 확인하면서.
+> 3. 변환 트리다. `ros2 run tf2_tools view_frames`와 `ros2 run tf2_ros tf2_monitor map base_link`. `map` → `odom`이 없거나 변환이 `transform_tolerance`보다 오래됐으면 모든 궤적이 무효가 되고, TF를 지목하는 오류 한 줄 없이 정확히 이 증상이 나온다. 그다음이 costmap 내용과 발자국이다. 제어기 파라미터가 넷째인 이유는, TF를 확인하기 전에 바꾼 파라미터는 결국 되돌리게 되기 때문이다.
+> 4. 어려운 부분이 정상 경로가 아니기 때문이다. 어려운 것은 복구이고, FSM에서는 복구 규칙 하나하나가 그것이 발동할 수 있는 모든 상태마다 복제되어야 하는 전이다. 트리는 복구에 범위를 준다. 플래너를 감싼 `RecoveryNode`는 전역 costmap을 지우고, 제어기를 감싼 것은 지역 costmap을 지우며, 시스템 수준 실패만이 공유되는 회전/대기/후진 서브트리에 도달한다. 또한 컴파일된 제어 흐름이 아니라 데이터로 편집된다 — 액션의 `behavior_tree` 필드를 통해 목표마다 다른 XML을 쓸 수 있다.
+> 5. 서로 다른 사슬을 재는 예산 둘을 비교한 것이다. $70\,\mathrm{ms}$는 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라부터 힘까지를 재는 P6의 서보 예산이고, $255\,\mathrm{ms}$는 *새로 나타난 장애물*이 costmap과 제어기와 유지를 거쳐 바퀴 명령을 바꾸기까지의 시간이다. Nav2는 서보 예산을 두고 경쟁하지 않으며, 그것을 이겨야 하는 반응은 이음매 아래 $200\,\mathrm{Hz}$ 루프의 제어기에 속한다. 거기서는 사슬 전체가 $5\,\mathrm{ms}$다. $255$ 자체를 줄여야 한다면 지역 costmap의 $200\,\mathrm{ms}$를 먼저 친다. 전체의 $78\%$이고 `update_frequency`를 $5$에서 $20\,\mathrm{Hz}$로 올리면 그중 $150$이 사라진다. `controller_frequency`를 $40\,\mathrm{Hz}$로 두 배 올려서 얻는 것은 $25$, 제어 루프의 유지를 통째로 없애서 얻는 것은 $5$다. 가장 큰 항을 고치되, 빠른 costmap은 매 주기 센서 처리 비용을 문다는 것도 알고 있어야 한다.
 
 ### 과제 · Problem set
 

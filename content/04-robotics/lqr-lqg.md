@@ -44,6 +44,33 @@ estimate optimally, then control the estimate optimally, and it is jointly optim
 > [!note] First pass · 처음이라면
 > A short page; read it through. If you only have ten minutes, §2 is the one that changes how you read papers — "LQR guarantees stability" has two conditions attached, and papers linearising a nonlinear system inherit them only at the linearisation point.
 
+### Homework diagram · 과제가 그릴 그림
+
+Draw it once here; the problem set asks for the same figure with one weight changed. The object is
+**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ of
+[[04-robotics/control-theory-ce397|5. Control Theory §1]] — the same machine, with the gain now
+chosen by a cost instead of by hand.
+
+**The loop.** A summing junction; the plant box $\dot x=-x+u+d$ after it; the disturbance $d$
+entering at that junction beside $u$; the state $x$ leaving the box; and a feedback path from $x$
+through a gain block $-K$ back into the junction. That much is the control page's picture, and
+nothing on it has changed.
+
+**The ledger, which is what LQR adds.** Tap both signals and draw where their prices are paid: a
+branch from $x$ into a box $Q$, a branch from $u$ into a box $R$, and both into an accumulator
+labelled $J=\int_0^\infty (Qx^2+Ru^2)\,dt$. Draw this branch with a different line weight, because
+it never touches the plant — it is an accounting path, not a control path, and keeping it visually
+separate is how $Q$ and $R$ stay distinct from the noise covariances $W$ and $V$ that enter the
+same loop in §4. Beside the $-K$ block write the single arrow the Riccati equation is,
+$(Q,R)\rightarrow P\rightarrow K$, and label it *offline, once*.
+
+**The pole axis.** Under the loop draw a real axis. Mark the open-loop pole at $-1$, where the
+uncontrolled heater already sits, and the closed-loop pole at $-(1+K)$. On this plant the
+stabilizing Riccati solution at $R=1$ is $P=K=-1+\sqrt{1+Q}$, so the closed-loop pole lands at
+exactly $-\sqrt{1+Q}$: mark $-\sqrt5=-2.236$ for the $Q=4$ case worked in §1, and
+$-\sqrt2=-1.414$ for the problem set's $Q=1$. The arrow worth drawing is the one that matters
+when reading a paper — raising $Q/R$ slides that pole left, and nothing else in the figure moves.
+
 ### 1. The Riccati equation, read structurally
 
 $$A^\top P + PA - PBR^{-1}B^\top P + Q = 0$$
@@ -274,6 +301,18 @@ Tier B. **P4** $\dot x=-x+u+d$ from [[02-foundations/lab-plants|0.6]], $Q=1$, $R
 
 The estimator side of LQG is developed in [[04-robotics/state-estimation-slam|State Estimation, Localization & SLAM]].
 
+### Connections
+
+- Foundations: [[02-foundations/linear-algebra|Linear Algebra]] (Riccati, eigenvalues), [[02-foundations/probability|Probability]] (Kalman), [[02-foundations/optimization|Optimization]]
+- Next: [[04-robotics/mpc|MPC]]
+
+### After reading
+
+- [ ] State the LQR problem and the form of its solution ($u=-Kx$, $K=R^{-1}B^\top P$)
+- [ ] Say what stabilizability and detectability each guarantee, and what fails without them
+- [ ] Explain with the worked example how the $Q/R$ ratio changes gains, response, and saturation risk
+- [ ] State the separation principle and its fragility (LQG has no guaranteed margins), and why LQR is the reference point for MPC and RL
+
 ## 한국어
 
 *[[04-robotics/control-theory-ce397|5. 제어 이론]]과 확률·최적화 위에 선다. D군이다. 극점을 손으로 고르는 대신 비용이 고르게 하고,
@@ -296,6 +335,31 @@ $Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 
 
 > [!note] 처음이라면 · First pass
 > 짧은 페이지이니 통독하라. 10분뿐이라면 §2다 — "LQR은 안정성이 보장된다"에는 조건이 둘 붙어 있고, 비선형계를 선형화해 쓰는 논문은 그 조건을 선형화 지점에서만 물려받는다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+여기서 한 번 그려 두면, 과제는 가중치 하나만 바꾼 같은 그림을 요구한다. 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧
+[[04-robotics/control-theory-ce397|5. 제어 이론 §1]]의 새는 히터 $\dot x=-x+u+d$다. 기계는
+그대로이고, 이득을 손이 아니라 비용이 고른다는 점만 다르다.
+
+**루프.** 합산점 하나, 그 뒤에 플랜트 상자 $\dot x=-x+u+d$, 그 합산점으로 $u$와 나란히 들어오는
+외란 $d$, 상자에서 나오는 상태 $x$, 그리고 $x$에서 이득 상자 $-K$를 거쳐 합산점으로 돌아가는
+피드백 경로. 여기까지는 제어 이론 페이지의 그림 그대로이고, 바뀐 것이 없다.
+
+**LQR이 더하는 것 — 장부.** 두 신호를 각각 따서 값이 치러지는 곳을 그린다. $x$에서 상자 $Q$로
+가는 가지, $u$에서 상자 $R$로 가는 가지, 그리고 둘이 함께 들어가는 누산기
+$J=\int_0^\infty (Qx^2+Ru^2)\,dt$. 이 가지는 선 굵기를 달리해 그려라. 플랜트를 전혀 건드리지
+않는 회계 경로이지 제어 경로가 아니며, 이렇게 시각적으로 갈라 두어야 $Q$·$R$이 §4에서 같은
+루프로 들어오는 잡음 공분산 $W$·$V$와 섞이지 않는다. $-K$ 상자 옆에는 리카티 방정식이 곧
+화살표 하나라는 것을 적는다: $(Q,R)\rightarrow P\rightarrow K$, 그리고 *오프라인에서 한 번*.
+
+**극점 축.** 루프 아래에 실수축을 긋는다. 제어하지 않은 히터가 이미 앉아 있는 개루프 극점
+$-1$과 폐루프 극점 $-(1+K)$를 표시한다. 이 플랜트에서 $R=1$일 때 안정화 리카티 해는
+$P=K=-1+\sqrt{1+Q}$이므로 폐루프 극점은 정확히 $-\sqrt{1+Q}$에 놓인다. §1에서 푼 $Q=4$의
+경우는 $-\sqrt5=-2.236$, 과제의 $Q=1$은 $-\sqrt2=-1.414$를 찍어라. 그릴 값이 있는 화살표는
+논문을 읽을 때 쓰이는 그것이다 — $Q/R$을 올리면 그 극점이 왼쪽으로 미끄러지고, 그림의 나머지는
+아무것도 움직이지 않는다.
 
 ### 1. 리카티 방정식, 구조로 읽기
 
@@ -514,9 +578,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** $\dot x=-x+u+d$, $Q=1$, $R=1
 > 2. $P=-1+\sqrt2\approx0.414$, $K\approx0.414$. 극점 $\approx-1.414$, $x_\mathrm{ss}\approx0.707$. $K=4$면 극점 $-5$, $x_\mathrm{ss}=0.2$.
 > 3. 이미 안정한 플랜트에서 $Q=R=1$은 거의 안 움직인다. $K=4$는 손 선택(CE397 §1은 $10$배 억제에 $K=9$). $Q/R$을 올리면 $K$가 커져 $x_\mathrm{ss}$는 줄고 노력·잡음은 늘는다.
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] State the LQR problem and the form of its solution ($u = -Kx$, $K = R^{-1}B^\top P$) · LQR 문제 설정과 해의 형태를 말할 수 있다
-- [ ] Say what stabilizability and detectability each guarantee, and what fails without them · 안정화 가능성·검출 가능성이 각각 무엇을 보장하는 조건인지 말할 수 있다
-- [ ] Explain with the worked example how the $Q/R$ ratio changes gains, response, and saturation risk · $Q/R$ 비율이 이득·응답·포화 위험을 어떻게 바꾸는지 예제로 말할 수 있다
-- [ ] State the separation principle and its fragility (LQG has no guaranteed margins), and why LQR is the reference point for MPC and RL · 분리 원리와 그 취약성(LQG 무여유), LQR이 MPC·RL의 기준점인 이유를 말할 수 있다
+- [ ] LQR 문제 설정과 해의 형태($u=-Kx$, $K=R^{-1}B^\top P$)를 말할 수 있다
+- [ ] 안정화 가능성·검출 가능성이 각각 무엇을 보장하는 조건인지 말할 수 있다
+- [ ] $Q/R$ 비율이 이득·응답·포화 위험을 어떻게 바꾸는지 예제로 말할 수 있다
+- [ ] 분리 원리와 그 취약성(LQG 무여유), LQR이 MPC·RL의 기준점인 이유를 말할 수 있다

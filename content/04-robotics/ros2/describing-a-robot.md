@@ -17,6 +17,60 @@ mastery-when: "Go deeper when you are writing the localisation or odometry compo
 > A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation and a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). Rigid-body transforms help but are not required first: [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 먼저 읽을 필요는 없다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 
+### Homework diagram: P6 as two trees and one clock
+
+The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ from mid-exposure to force — plus one thing this page has to add, because P6 does not fix it: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Those two numbers are frozen here and do not change later on the page. Draw three panels; the problem set asks for the same three with a second owner on one edge.
+
+**Left — the URDF tree, which is what `robot_state_publisher` reads.** Two links and one joint: `base_link` as the root, a `fixed` joint `camera_mount` with `<origin xyz="0.10 0 0.25"/>`, and `camera_link` as its child. Inside each link box draw the three sub-elements of section 4 and write beside each one who reads it — `<visual>` RViz, `<collision>` the planner and the physics engine, `<inertial>` the physics engine only. Then write beside the tree, in words, the thing that is deliberately *not* in it: the cart's travel along the rail. A mobile base's pose is not a URDF joint, and section 11 is why.
+
+**Middle — the TF tree, which is what `lookup_transform` answers from.** Four frames in one chain, and every edge carries three labels — owner, topic, rate:
+
+- `map` → `odom`: the localisation node, `/tf`, published when it corrects.
+- `odom` → `base_link`: the encoder odometry node, `/tf`, $200\,\mathrm{Hz}$. Write the encoder resolution on this edge.
+- `base_link` → `camera_link`: a static broadcaster, `/tf_static`, published **once**, transient local. Write the frozen mount offset on this edge.
+
+Draw the two `/tf` edges with solid arrows and the `/tf_static` edge with a doubled arrow, because the difference between "republished forever" and "sent once and retained for late joiners" is the difference between a working RViz and an empty one.
+
+**Right — the lookup clock, $0$ to $70\,\mathrm{ms}$.** Line 1: `odom` → `base_link` samples every $5\,\mathrm{ms}$, with the newest one marked. Line 2: vision stamps at $0, 20, 40, 60\,\mathrm{ms}$. Line 3: four control lookups. Draw one of them with `now()`, landing to the right of the newest sample, and label that gap *extrapolation into the future*; draw another with the message's own stamp, landing $20\,\mathrm{ms}$ to the left of the newest sample. Line 4: the $70\,\mathrm{ms}$ budget. The picture is right when the `now()` arrow visibly points into empty space.
+
+### Worked case: a detection from `camera_link` to `odom`, and what one typo costs
+
+Five steps on the object above. Every number is either P6's or the mount offset frozen in the diagram.
+
+**Step 1 — where the cart is, from the encoder.** The `odom` → `base_link` edge carries the plant's own measurement, so its value and its resolution are
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=0.488\,\mathrm{mm}$$
+
+because a count is the smallest change the encoder can report. Take the instant where the encoder reads $c=1024$: the cart is at $p=0.5\,\mathrm{m}$, and no transform anywhere downstream can be finer than half a millimetre.
+
+**Step 2 — compose the chain.** A detector running on the camera reports a target at $x=0.40\,\mathrm{m}$ in `camera_link`. The chain is
+
+$$ {}_{\text{odom}}T_{\text{target}} = {}_{\text{odom}}T_{\text{base}}\cdot{}_{\text{base}}T_{\text{cam}}\cdot{}_{\text{cam}}T_{\text{target}} $$
+
+and tf2 walks it for you across the three owners. Here every frame is axis-aligned, so the rotations are identity and the composition collapses to addition along $x$: $0.40+0.10=0.50\,\mathrm{m}$ in `base_link`, then $0.50+0.50=1.00\,\mathrm{m}$ in `odom`. Write the two additions down separately, because they come from two different places — the middle term is a fixed number in your URDF, the outer term is a live measurement from the encoder, and only one of them can be wrong quietly.
+
+**Step 3 — and it is the fixed one.** Section 5's warning is about a typo xacro cannot catch: write `xzy=` for `xyz=` and urdfdom ignores the attribute rather than failing, leaving the joint at a zero offset. The chain then yields
+
+$$0.40+0.00+0.50=0.90\,\mathrm{m}\quad\text{instead of}\quad 1.00\,\mathrm{m}$$
+
+so the error is exactly the lost mount offset, $0.10\,\mathrm{m}$ — which, in the units the rest of the system speaks, is $0.10\times2048=204.8$, about **205 encoder counts** of pure fiction on a cart whose encoder resolves $0.488\,\mathrm{mm}$. Nothing logs, RViz draws a robot that looks plausible, and the arm reaches ten centimetres short forever. Expand the xacro to a file and read the number whenever a result is *wrong*, not only when something is *missing*.
+
+**Step 4 — which time to ask for.** The buffer holds `odom` → `base_link` samples $5\,\mathrm{ms}$ apart and `base_link` → `camera_link` once, so the three ways of calling `lookup_transform` behave very differently on P6:
+
+| Third argument | What it means here | Cost against the $70\,\mathrm{ms}$ budget |
+|---|---|---|
+| `self.get_clock().now()` | a time past the newest sample, since transforms always arrive late | fails with *extrapolation into the future* |
+| `Time()` | the latest available, at most one control period ($5\,\mathrm{ms}$) old | $7.1\%$ of the budget, and it answers the wrong question for a detection |
+| `msg.header.stamp` | where the frames were when the image was captured, up to one vision period ($20\,\mathrm{ms}$) back | $28.6\%$ of the budget, and it is the correct answer |
+
+The middle row is the one to argue about. `Time()` is right for "where is the cart now"; the stamp is right for "where was the cart when this pixel was exposed", which is what transforming a detection means. Interpolating between two samples $5\,\mathrm{ms}$ apart is exact to within one encoder count as long as the cart moves slower than $\Delta p/T_{\text{ctrl}}=0.488\,\mathrm{mm}/5\,\mathrm{ms}=0.0977\,\mathrm{m/s}$; above that the interpolation is smoothing real motion, which is a bound worth knowing before trusting a number to a tenth of a millimetre.
+
+**Step 5 — one edge, two owners.** Add a state estimator that also broadcasts `odom` → `base_link`, at $20\,\mathrm{Hz}$, beside the encoder odometry node at $200\,\mathrm{Hz}$. Nothing refuses, nothing warns, and `view_frames` reports
+
+$$200+20=220\,\mathrm{Hz}$$
+
+on an edge you believe is published at $200$, because tf2 keeps one buffer per *child* frame and does not record who sent a sample. The Broadcaster field will say `default_authority` and tell you nothing; the rate is the only tell. A lookup then interpolates between whichever two samples bracket the requested time regardless of authorship, so if the two publishers disagree by a centimetre the transform alternates between two answers at a rate nobody chose. Section 13 reproduces exactly this, and section 7's rule — one publisher per parent–child edge — is the thing that prevents it.
+
 ### 1. Why a robot needs a machine-readable description
 
 Everything after this page needs to know where things are. A planner needs to know that the gripper is 0.8 m from the base when the elbow is at 1.2 rad. A collision checker needs shapes. A physics engine needs masses and inertias. A perception node that gets a point in the camera frame needs to express it in the base frame before the arm can reach for it. RViz needs to know what to draw and where.
@@ -461,11 +515,27 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 - REP 105, Coordinate Frames for Mobile Platforms; REP 103, Standard Units of Measure and Coordinate Conventions.
 - `urdf_launch` package — `description.launch.py` and `display.launch.py`.
 
-> [!question]- Self-check · Answer
-> **1. Your node calls `lookup_transform('base_link', 'camera_link', self.get_clock().now())` and logs "extrapolation into the future" most cycles. What is wrong, and what are the two correct fixes?** It is asking for a time the buffer has not received data for yet; transforms always arrive with some delay. Use `Time()` (`tf2::TimePointZero`) to get the latest available transform, or — better, when transforming sensor data — use that message's own `header.stamp`, with a short `timeout` so the call waits rather than failing on the first miss. Subtracting a hard-coded 0.1 s is a diagnostic, not a fix.
-> **2. Why can't `map` and `odom` both be parents of `base_link`, and what does the localisation node publish instead?** A tf2 frame has exactly one parent, which is what makes a lookup a unique path. REP 105 therefore chains `map` → `odom` → `base_link`: odometry owns `odom` → `base_link`, and localisation publishes the `map` → `odom` correction, which is the accumulated odometry drift. `odom` is continuous but drifts; `map` does not drift but jumps.
-> **3. Your planner takes 40 seconds per query on a robot whose URDF loads fine and looks right in RViz. Where do you look first?** The `<collision>` elements. If they reuse the detailed visual meshes, every one of the thousands of collision checks per query is mesh-versus-mesh instead of primitive-versus-primitive. Turn off *Visual Enabled* and turn on *Collision Enabled* in RViz's RobotModel display to see what the checker is actually using, then replace the meshes with primitives or a convex decomposition.
-> **4. `view_frames` shows `default_authority` on every edge. How do you tell that an edge has two publishers?** The Broadcaster field carries no information in ROS 2 — listeners cannot learn who sent a transform. Read the average rate instead: an edge you expect at 10 Hz reporting about 30 Hz has more than one owner. Confirm with `ros2 topic info /tf --verbose` and `/tf_static`. (Two publishers sending *identical* transforms with identical stamps do not show up at all, because tf2 drops exact duplicates — and they also do no harm.)
+### Self-check
+
+1. Your node calls `lookup_transform('base_link', 'camera_link', self.get_clock().now())` and
+   logs "extrapolation into the future" most cycles. What is wrong, and what are the two
+   correct fixes?
+2. Why can't `map` and `odom` both be parents of `base_link`, and what does the localisation
+   node publish instead?
+3. Your planner takes 40 seconds per query on a robot whose URDF loads fine and looks right
+   in RViz. Where do you look first?
+4. `view_frames` shows `default_authority` on every edge. How do you tell that an edge has
+   two publishers?
+5. On P6, a detector reports a target at $x=0.40\,\mathrm{m}$ in `camera_link` while the
+   encoder reads $1024$ counts. Where is the target in `odom`, which two numbers did you have
+   to trust, and what does a `xzy=` typo in the mount origin cost — in metres and in counts?
+
+> [!tip]- Answers
+> 1. It is asking for a time the buffer has not received data for yet; transforms always arrive with some delay. Use `Time()` (`tf2::TimePointZero`) to get the latest available transform, or — better, when transforming sensor data — use that message's own `header.stamp`, with a short `timeout` so the call waits rather than failing on the first miss. Subtracting a hard-coded 0.1 s is a diagnostic, not a fix.
+> 2. A tf2 frame has exactly one parent, which is what makes a lookup a unique path. REP 105 therefore chains `map` → `odom` → `base_link`: odometry owns `odom` → `base_link`, and localisation publishes the `map` → `odom` correction, which is the accumulated odometry drift. `odom` is continuous but drifts; `map` does not drift but jumps.
+> 3. The `<collision>` elements. If they reuse the detailed visual meshes, every one of the thousands of collision checks per query is mesh-versus-mesh instead of primitive-versus-primitive. Turn off *Visual Enabled* and turn on *Collision Enabled* in RViz's RobotModel display to see what the checker is actually using, then replace the meshes with primitives or a convex decomposition.
+> 4. The Broadcaster field carries no information in ROS 2 — listeners cannot learn who sent a transform. Read the average rate instead: an edge you expect at 10 Hz reporting about 30 Hz has more than one owner. Confirm with `ros2 topic info /tf --verbose` and `/tf_static`. (Two publishers sending *identical* transforms with identical stamps do not show up at all, because tf2 drops exact duplicates — and they also do no harm.)
+> 5. At $1.00\,\mathrm{m}$: the frames are axis-aligned, so the chain collapses to $0.40+0.10+0.50$, where $0.10\,\mathrm{m}$ is the frozen mount offset carried on `/tf_static` from the URDF and $0.50=1024/2048$ is the live encoder measurement on `odom` → `base_link`. Those are the two numbers you trusted, and only the first can be wrong silently: urdfdom ignores an unrecognised `xzy=` attribute instead of failing, so the offset becomes zero, the answer becomes $0.90\,\mathrm{m}$, and the error is exactly $0.10\,\mathrm{m}$ — $0.10\times2048=204.8$, about $205$ counts on an encoder that resolves $0.488\,\mathrm{mm}$. Expand the xacro and read the number; nothing else reports it.
 
 ### Problem set · 과제
 
@@ -489,6 +559,60 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
 > [!note] 선수 지식 · Prerequisites
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드할 수 있는 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 선행 조건은 아니다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 > A sourced ROS 2 Jazzy on Ubuntu 24.04 and a buildable workspace; rigid-body transforms help but are not required.
+
+### 과제가 그릴 그림: 트리 둘과 시계 하나로 본 P6 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 노출 중간부터 힘까지 $70\,\mathrm{ms}$ — 에 이 페이지가 하나를 더한다. P6이 정하지 않은 값이기 때문이다. **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 이 두 숫자는 여기서 고정되고 이 페이지에서 다시 바뀌지 않는다. 패널 셋을 그려라. 과제는 한 간선에 소유자를 하나 더 붙인 같은 셋을 요구한다.
+
+**왼쪽 — URDF 트리, `robot_state_publisher`가 읽는 것**. 링크 둘과 조인트 하나. 루트는 `base_link`, `<origin xyz="0.10 0 0.25"/>`를 가진 `fixed` 조인트 `camera_mount`, 그 자식이 `camera_link`. 각 링크 상자 안에 4절의 하위 요소 셋을 그리고 각각을 누가 읽는지 옆에 적는다 — `<visual>`은 RViz, `<collision>`은 플래너와 물리 엔진, `<inertial>`은 물리 엔진만. 그리고 트리 옆에, 여기 일부러 *없는* 것을 말로 적는다. 레일 위의 카트 이동. 이동 베이스의 자세는 URDF 조인트가 아니고, 그 이유가 11절이다.
+
+**가운데 — TF 트리, `lookup_transform`이 답하는 근거**. 프레임 넷이 한 사슬을 이루고, 모든 간선에 소유자·토픽·주기 셋을 적는다.
+
+- `map` → `odom`: 위치추정 노드, `/tf`, 보정할 때마다.
+- `odom` → `base_link`: 엔코더 오도메트리 노드, `/tf`, $200\,\mathrm{Hz}$. 이 간선에 엔코더 해상도를 적는다.
+- `base_link` → `camera_link`: 정적 브로드캐스터, `/tf_static`, **한 번**, transient local. 이 간선에 고정한 장착 오프셋을 적는다.
+
+`/tf` 간선 둘은 실선 화살표로, `/tf_static` 간선은 겹친 화살표로 그린다. "계속 다시 보낸다"와 "한 번 보내고 늦게 온 쪽을 위해 보존한다"의 차이가 곧 동작하는 RViz와 빈 RViz의 차이이기 때문이다.
+
+**오른쪽 — 조회 시계, $0$에서 $70\,\mathrm{ms}$**. 1줄: `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격, 가장 새 것에 표시. 2줄: 비전 스탬프가 $0, 20, 40, 60\,\mathrm{ms}$. 3줄: 제어 조회 넷. 그중 하나는 `now()`로 그려 가장 새 샘플의 오른쪽에 떨어뜨리고 그 간격에 *extrapolation into the future*라고 적는다. 다른 하나는 메시지 자신의 스탬프로 그려 가장 새 샘플의 $20\,\mathrm{ms}$ 왼쪽에 놓는다. 4줄: $70\,\mathrm{ms}$ 예산. `now()` 화살표가 눈에 띄게 빈 공간을 가리키면 제대로 그린 것이다.
+
+### 대상으로 한 번 끝까지: `camera_link`의 검출을 `odom`으로, 그리고 오타 하나의 값 · Worked case
+
+위 대상 위에서 다섯 단계. 모든 숫자는 P6의 것이거나 그림에서 고정한 장착 오프셋이다.
+
+**1단계 — 엔코더가 말하는 카트의 위치**. `odom` → `base_link` 간선이 장치 자신의 측정값을 나르므로 그 값과 해상도는
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=0.488\,\mathrm{mm}$$
+
+한 카운트가 엔코더가 보고할 수 있는 최소 변화이기 때문이다. 엔코더가 $c=1024$를 읽는 순간을 잡으면 카트는 $p=0.5\,\mathrm{m}$에 있고, 하류의 어떤 변환도 $0.5\,\mathrm{mm}$보다 정밀할 수 없다.
+
+**2단계 — 사슬을 합성한다**. 카메라 위에서 도는 검출기가 `camera_link` 기준 $x=0.40\,\mathrm{m}$에 표적을 보고한다. 사슬은
+
+$$ {}_{\text{odom}}T_{\text{target}} = {}_{\text{odom}}T_{\text{base}}\cdot{}_{\text{base}}T_{\text{cam}}\cdot{}_{\text{cam}}T_{\text{target}} $$
+
+이고 tf2가 소유자 셋을 가로질러 대신 걸어 준다. 여기서는 모든 프레임의 축이 정렬되어 회전이 항등이므로 합성이 $x$ 방향 덧셈으로 무너진다. `base_link`에서 $0.40+0.10=0.50\,\mathrm{m}$, 그다음 `odom`에서 $0.50+0.50=1.00\,\mathrm{m}$. 두 덧셈을 따로 적어라. 출처가 다르기 때문이다. 가운데 항은 URDF에 박힌 고정 숫자이고 바깥 항은 엔코더의 살아 있는 측정값인데, 조용히 틀릴 수 있는 쪽은 하나뿐이다.
+
+**3단계 — 그리고 그 하나는 고정된 쪽이다**. 5절의 경고가 xacro가 잡지 못하는 오타 이야기였다. `xyz=`를 `xzy=`로 쓰면 urdfdom은 실패하는 대신 그 속성을 무시하고, 조인트 오프셋은 0이 된다. 그러면 사슬은
+
+$$0.40+0.00+0.50=0.90\,\mathrm{m}$$
+
+를 내놓는다. 원래 답은 $1.00\,\mathrm{m}$였으므로 오차는 정확히 잃어버린 장착 오프셋 $0.10\,\mathrm{m}$이다. 시스템 나머지가 쓰는 단위로 옮기면 $0.10\times2048=204.8$, 곧 $0.488\,\mathrm{mm}$를 분해하는 카트 위의 **엔코더 205 카운트짜리 허구**다. 로그는 조용하고, RViz는 그럴듯한 로봇을 그리고, 팔은 영원히 10센티미터 못 미쳐 닿는다. 무언가 *빠졌을* 때만이 아니라 결과가 *틀렸을* 때 xacro를 파일로 전개해 숫자를 읽어라.
+
+**4단계 — 어느 시각을 물을 것인가**. 버퍼에는 `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격으로, `base_link` → `camera_link`는 한 번 들어 있다. 그래서 `lookup_transform`의 세 가지 호출이 P6에서는 아주 다르게 굴러간다.
+
+| 세 번째 인자 | 여기서의 뜻 | $70\,\mathrm{ms}$ 예산에 대한 값 |
+|---|---|---|
+| `self.get_clock().now()` | 변환은 언제나 늦게 오므로 가장 새 샘플보다 뒤의 시각 | *extrapolation into the future*로 실패 |
+| `Time()` | 가장 최근 값, 최대 제어 주기 하나($5\,\mathrm{ms}$)만큼 낡음 | 예산의 $7.1\%$. 다만 검출에는 틀린 질문 |
+| `msg.header.stamp` | 이미지가 잡힌 순간의 프레임 배치, 최대 비전 주기 하나($20\,\mathrm{ms}$) 이전 | 예산의 $28.6\%$. 그리고 이것이 맞는 답 |
+
+다툴 만한 것은 가운데 행이다. "카트가 지금 어디인가"에는 `Time()`이 맞고, "이 픽셀이 노출된 순간 카트가 어디였나"에는 스탬프가 맞는데, 검출을 변환한다는 것은 후자를 뜻한다. $5\,\mathrm{ms}$ 떨어진 두 샘플 사이의 보간은 카트가 $\Delta p/T_{\text{ctrl}}=0.488\,\mathrm{mm}/5\,\mathrm{ms}=0.0977\,\mathrm{m/s}$보다 느리게 움직이는 한 엔코더 한 카운트 안에서 정확하다. 그보다 빠르면 보간이 실제 운동을 뭉개는 것이고, 어떤 숫자를 $0.1\,\mathrm{mm}$ 단위까지 믿기 전에 알아 둘 만한 한계다.
+
+**5단계 — 간선 하나에 소유자 둘**. $200\,\mathrm{Hz}$의 엔코더 오도메트리 노드 옆에, `odom` → `base_link`를 $20\,\mathrm{Hz}$로 함께 내보내는 상태 추정기를 붙여 보자. 아무도 거부하지 않고 아무도 경고하지 않으며, `view_frames`는
+
+$$200+20=220\,\mathrm{Hz}$$
+
+를 보고한다. $200$으로 알고 있던 간선에 대해서다. tf2는 *자식* 프레임마다 버퍼 하나를 두고 누가 보냈는지는 기록하지 않기 때문이다. Broadcaster 칸은 `default_authority`라고만 적히고 아무것도 알려 주지 않는다. 단서는 주기뿐이다. 그리고 조회는 요청 시각을 끼고 있는 두 샘플 사이를 저자와 무관하게 보간하므로, 두 퍼블리셔가 1센티미터쯤 어긋나 있으면 변환은 아무도 고르지 않은 주기로 두 답을 오간다. 13절이 바로 이것을 재현하고, 7절의 규칙 — 부모-자식 간선마다 퍼블리셔 하나 — 이 그것을 막는 장치다.
 
 ### 1. 로봇에 기계가 읽을 수 있는 기술(description)이 필요한 이유
 
@@ -934,11 +1058,25 @@ ros2 topic info /tf_static --verbose
 - REP 105, Coordinate Frames for Mobile Platforms; REP 103, Standard Units of Measure and Coordinate Conventions.
 - `urdf_launch` 패키지 — `description.launch.py`, `display.launch.py`.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 노드가 `lookup_transform('base_link', 'camera_link', self.get_clock().now())`을 호출하는데 주기마다 "extrapolation into the future"가 찍힌다. 무엇이 잘못됐고 올바른 수정 둘은?** 버퍼가 아직 데이터를 받지 못한 시각을 묻고 있다. 변환은 항상 얼마간 지연을 두고 도착한다. 가장 최근 변환을 원하면 `Time()`(`tf2::TimePointZero`)을 쓰고, 센서 데이터를 변환하는 경우라면 그 메시지의 `header.stamp`를 쓰되 짧은 `timeout`을 붙여 첫 실패에 죽지 않고 기다리게 한다. 0.1초를 하드코딩해 빼는 것은 진단이지 수정이 아니다.
-> **2. `map`과 `odom`이 둘 다 `base_link`의 부모가 될 수 없는 이유는 무엇이고, 위치추정 노드는 대신 무엇을 내보내나?** tf2 프레임은 부모가 정확히 하나이고, 그것이 조회 경로를 유일하게 만든다. 그래서 REP 105는 `map` → `odom` → `base_link`로 잇는다. 오도메트리가 `odom` → `base_link`를 소유하고, 위치추정은 누적된 오도메트리 표류인 `map` → `odom` 보정을 내보낸다. `odom`은 연속이지만 표류하고, `map`은 표류하지 않지만 도약한다.
-> **3. URDF는 잘 로드되고 RViz에서도 멀쩡한데 플래너가 질의당 40초를 쓴다. 어디부터 보나?** `<collision>` 요소. 정밀한 visual 메시를 재사용하고 있다면 질의당 수천 번의 충돌 검사가 원시 도형 대신 메시 대 메시로 돈다. RViz의 RobotModel display에서 *Visual Enabled*를 끄고 *Collision Enabled*를 켜서 검사기가 실제로 쓰는 형상을 보고, 원시 도형이나 볼록 분해로 바꾼다.
-> **4. `view_frames`는 모든 간선에 `default_authority`를 보여 준다. 한 간선에 퍼블리셔가 둘인지 어떻게 알아내나?** ROS 2에서 Broadcaster 칸에는 정보가 없다 — 리스너는 누가 변환을 보냈는지 알 수 없다. 대신 평균 주기를 읽는다. 10 Hz로 예상한 간선이 약 30 Hz로 보고되면 소유자가 둘 이상이다. `ros2 topic info /tf --verbose`와 `/tf_static`으로 확인한다. (값과 스탬프가 *똑같은* 변환을 보내는 두 퍼블리셔는 tf2가 완전 중복을 버리므로 아예 드러나지 않고, 해를 끼치지도 않는다.)
+### 스스로 점검
+
+1. 노드가 `lookup_transform('base_link', 'camera_link', self.get_clock().now())`을 호출하는데
+   주기마다 "extrapolation into the future"가 찍힌다. 무엇이 잘못됐고 올바른 수정 둘은?
+2. `map`과 `odom`이 둘 다 `base_link`의 부모가 될 수 없는 이유는 무엇이고, 위치추정 노드는
+   대신 무엇을 내보내나?
+3. URDF는 잘 로드되고 RViz에서도 멀쩡한데 플래너가 질의당 40초를 쓴다. 어디부터 보나?
+4. `view_frames`는 모든 간선에 `default_authority`를 보여 준다. 한 간선에 퍼블리셔가 둘인지
+   어떻게 알아내나?
+5. P6에서 엔코더가 $1024$ 카운트를 읽는 동안 검출기가 `camera_link` 기준 $x=0.40\,\mathrm{m}$에
+   표적을 보고한다. `odom`에서 표적은 어디이고, 믿어야 했던 숫자 둘은 무엇이며, 장착
+   origin의 `xzy=` 오타는 미터와 카운트로 얼마를 물리는가?
+
+> [!tip]- 정답 · Answers
+> 1. 버퍼가 아직 데이터를 받지 못한 시각을 묻고 있다. 변환은 항상 얼마간 지연을 두고 도착한다. 가장 최근 변환을 원하면 `Time()`(`tf2::TimePointZero`)을 쓰고, 센서 데이터를 변환하는 경우라면 그 메시지의 `header.stamp`를 쓰되 짧은 `timeout`을 붙여 첫 실패에 죽지 않고 기다리게 한다. 0.1초를 하드코딩해 빼는 것은 진단이지 수정이 아니다.
+> 2. tf2 프레임은 부모가 정확히 하나이고, 그것이 조회 경로를 유일하게 만든다. 그래서 REP 105는 `map` → `odom` → `base_link`로 잇는다. 오도메트리가 `odom` → `base_link`를 소유하고, 위치추정은 누적된 오도메트리 표류인 `map` → `odom` 보정을 내보낸다. `odom`은 연속이지만 표류하고, `map`은 표류하지 않지만 도약한다.
+> 3. `<collision>` 요소. 정밀한 visual 메시를 재사용하고 있다면 질의당 수천 번의 충돌 검사가 원시 도형 대신 메시 대 메시로 돈다. RViz의 RobotModel display에서 *Visual Enabled*를 끄고 *Collision Enabled*를 켜서 검사기가 실제로 쓰는 형상을 보고, 원시 도형이나 볼록 분해로 바꾼다.
+> 4. ROS 2에서 Broadcaster 칸에는 정보가 없다 — 리스너는 누가 변환을 보냈는지 알 수 없다. 대신 평균 주기를 읽는다. 10 Hz로 예상한 간선이 약 30 Hz로 보고되면 소유자가 둘 이상이다. `ros2 topic info /tf --verbose`와 `/tf_static`으로 확인한다. (값과 스탬프가 *똑같은* 변환을 보내는 두 퍼블리셔는 tf2가 완전 중복을 버리므로 아예 드러나지 않고, 해를 끼치지도 않는다.)
+> 5. $1.00\,\mathrm{m}$이다. 프레임 축이 정렬되어 있어 사슬이 $0.40+0.10+0.50$으로 무너진다. $0.10\,\mathrm{m}$은 URDF에서 나와 `/tf_static`에 실린 고정 장착 오프셋이고 $0.50=1024/2048$은 `odom` → `base_link` 위의 살아 있는 엔코더 측정값이다. 믿은 숫자가 그 둘이고, 조용히 틀릴 수 있는 것은 앞의 것뿐이다. urdfdom은 알 수 없는 `xzy=` 속성을 실패시키지 않고 무시하므로 오프셋이 0이 되고 답이 $0.90\,\mathrm{m}$이 되며 오차는 정확히 $0.10\,\mathrm{m}$, 곧 $0.10\times2048=204.8$로 $0.488\,\mathrm{mm}$를 분해하는 엔코더의 약 $205$ 카운트다. xacro를 전개해 숫자를 읽어라. 다른 무엇도 이것을 알려 주지 않는다.
 
 ### 과제 · Problem set
 

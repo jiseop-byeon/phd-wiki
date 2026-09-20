@@ -17,6 +17,46 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
 > [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (where middleware, DDS and `rmw` are defined), [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] and [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — you should have written a publisher, a subscriber and a service client. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, the exercises run from the command line and from plain Python files.
 > [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
 
+### Homework diagram: one P6 edge, its two profiles, and a queue during a stall
+
+The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: vision publishing `/goal` at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, encoder $N=2048$ counts/m, and $70\,\mathrm{ms}$ from camera mid-exposure to applied force. Three panels; the problem set asks for the same three with the failure moved from the subscriber to the camera.
+
+**Left — the edge with both profiles written out, the way `ros2 topic info --verbose` prints them.** Two ellipses and one arrow, and on the arrow two stacked boxes rather than a label. The upper box is what the camera *offers*: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. The lower box is what the controller *requests*: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. Rule each pair of lines against the tables in section 3, and put a cross on the reliability line only. One crossed line is the whole failure; the other four being fine is exactly why it is hard to see.
+
+**Middle — the queue, during a $200\,\mathrm{ms}$ stall of the controller's executor.** Draw this panel for the system *after* the left panel's cross is fixed, with the controller moved onto the sensor-data profile so that its subscription history is `KEEP_LAST (5)` — the depth that decides this is the subscriber's, not the publisher's. A row of ten boxes for the ten goals published while the executor is inside some other callback, stamped $20, 40, \ldots, 200\,\mathrm{ms}$. Above the row draw a window five boxes wide, pushed to the right end: those five are what the subscription retains, and the five that fall out of the left of the window are gone, silently. Under each surviving box write its age at the instant the executor returns, and draw the $70\,\mathrm{ms}$ budget as a horizontal line across the row so that the boxes past it are visibly on the wrong side of it.
+
+**Right — the clock, $0$ to $200\,\mathrm{ms}$.** Above the axis, forty $5\,\mathrm{ms}$ control ticks, every one of them a firing that does not happen. Below the axis, ten vision publications at $20\,\mathrm{ms}$ spacing, each one arriving on time. Draw the requested $40\,\mathrm{ms}$ deadline as a repeating bracket on the vision line and mark it *met* at every bracket, because the camera never stopped — the executor did. That contradiction is the panel's whole purpose.
+
+### Worked case: how deep a queue P6 needs, and what a 200 ms stall does to it
+
+The two periods first, because every count below is one of them divided into the stall:
+
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
+
+and the event is section 8's: one callback in the controller holds the single-threaded executor for $D=200\,\mathrm{ms}$, from $t=0$ to $t=200\,\mathrm{ms}$. The camera is healthy throughout and publishes at $20, 40, \ldots, 200\,\mathrm{ms}$.
+
+**Step 1 — what accumulates.** During the stall the publisher emits
+
+$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{samples},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{control firings lost}$$
+
+so ten goals arrive with nobody to take them, and forty commands are never sent. Neither number appears in any log.
+
+**Step 2 — what survives, under the profile the fix in step 7 gives you.** Messages are not queued at the client-library level; they sit in the middleware under the *subscription's* history, so it is the controller's own depth that decides this, not the camera's. Take the controller after it has adopted the sensor-data profile to match the best-effort camera — that profile is `KEEP_LAST (5)`. Each arrival past the fifth pushes out the oldest, so five of the ten are discarded before your code exists to see them. At $t=200\,\mathrm{ms}$ the survivors are the samples stamped $120,140,160,180,200$, whose ages are
+
+$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
+
+because age is just the elapsed time since the stamp. The five dropped ones had ages $100$ through $180\,\mathrm{ms}$.
+
+**Step 3 — the order they come out in, which is the part that hurts.** From one publisher the survivors are delivered in publication order, so the first callback after the stall is handed the **oldest** survivor, at $80\,\mathrm{ms}$, and the freshest goal is the fifth callback you run. (Section 8's round-robin is about which *topic* an overloaded executor services next, not about the order of samples within one.) So the controller's first action after recovering is to steer towards a goal that is older than its entire $70\,\mathrm{ms}$ budget.
+
+**Step 4 — score the survivors against the budget.** Of $\{80,60,40,20,0\}\,\mathrm{ms}$, exactly four are at or under $70\,\mathrm{ms}$ and one is not. So a depth of five bought one guaranteed-useless callback and three extra old ones, to deliver the single sample — the $0\,\mathrm{ms}$ one — that the controller actually wanted. Set the depth to 1 and nine samples are dropped instead of five, the callback runs once, and it runs on the newest goal. **For a control input, a deep queue is not a safety margin; it is a backlog you will have to throw away with the motor still moving.** Depth belongs to streams where every sample matters — a bag recorder, a counter, an integrator — not to "where should I go now".
+
+**Step 5 — make the middleware do the age check.** Lifespan is the policy for this, and it is the one most people never set: a sample older than the lifespan is stale, and expired samples are dropped silently and never received. Set `lifespan` to the budget itself, $70\,\mathrm{ms}$, and the $80\,\mathrm{ms}$ survivor never reaches your callback at all — the four inside the budget do. You have moved a check you would otherwise write in every callback into the profile, where `ros2 topic info --verbose` can show it to a colleague.
+
+**Step 6 — and what the deadline does not tell you here.** The camera offers a $40\,\mathrm{ms}$ deadline and the controller requests $40\,\mathrm{ms}$, which is compatible since the request is no more stringent than the offer, and a healthy P6 camera publishing every $20\,\mathrm{ms}$ meets it with $20\,\mathrm{ms}$ to spare. During this stall it goes on meeting it, on every interval, and no *requested deadline missed* event is raised — the camera published on time and the middleware received on time. Deadline watches the gap between messages on the topic; it cannot see that your executor stopped taking them. The stall in the problem set is the other one, where the camera itself goes quiet for $200\,\mathrm{ms}$: there the deadline does fire, and the first frame afterwards carries a stamp $200\,\mathrm{ms}$ old, which is $130\,\mathrm{ms}$ past a budget of $70$. Two failures, the same duration, and only one of them has an event to tell you about it.
+
+**Step 7 — none of which happens if the reliability line is crossed.** Read the left panel of the diagram again. Camera offering best effort against a controller requesting reliable never connects, so the count in step 1 is not ten, it is zero, forever, with both nodes healthy. Rule that out first with `ros2 topic info /goal --verbose`, then reason about depth.
+
 ### 1. Why this page exists
 
 Most ROS 2 problems announce themselves. A wrong topic name gives you an empty `ros2 topic echo`. A missing package gives you an error. A type mismatch refuses to build.
@@ -447,11 +487,27 @@ Per-topic QoS overrides for recording and replay, and the ordered set of checks 
 - Source, Jazzy branches, for values and messages quoted verbatim: `rmw/qos_profiles.h` (profile contents), `rclcpp/subscription_base.cpp` and `publisher_base.cpp`, `rclpy/event_handler.py` (default incompatible-QoS warnings), `rclpy/topic_endpoint_info.py` (the `--verbose` output format), `ros2cli/ros2topic` (QoS flags and `echo`'s publisher-matching behaviour), `ros2bag` play verb (`--clock`), `robot_state_publisher` and `nav2_map_server` (transient-local publishers).
 - Daniel Casini, Tobias Blass, Ingo Lütkebohle, Björn Brandenburg, "Response-Time Analysis of ROS 2 Processing Chains under Reservation-Based Scheduling", ECRTS 2019.
 
-> [!question]- Self-check · Answer
-> **1. A publisher offers reliable and a subscription requests best effort. Do they connect, and why is the reverse case different?** They connect. The request is the minimum quality the subscription will accept and the offer is the maximum the publisher can provide, so a reliable publisher over-satisfies a best-effort request. The reverse — best-effort publisher, reliable subscription — asks for a guarantee that is not on offer, so no connection is made and no message is exchanged.
-> **2. Your node subscribes to `/map` and never receives anything, but `ros2 topic echo /map` prints a map immediately. What is going on?** Almost certainly durability. The map server publishes transient local, once, before your node started; your node requests the default volatile profile, which connects legitimately but receives only new messages. `ros2 topic echo` inspects the publishers and adapts its own request to transient local, so it gets the retained sample. Fix your subscription to request transient local, and remember that `echo` succeeding does not prove your node can.
-> **3. You put your node on a `MultiThreadedExecutor` and the synchronous service call in your timer still deadlocks. Why?** Because you did not assign callback groups. Everything created without a group joins the node's default group, which is mutually exclusive, so the node behaves as if it were single-threaded. The timer callback holds the group while waiting, and the future's hidden done-callback — which must run for the result to appear — cannot be scheduled in the same mutually exclusive group. Put the client and the timer in different groups, or in one shared reentrant group.
-> **4. A node stamps its messages with `time.time()`. Everything works in the lab and the numbers are wrong on a bag replay. What exactly goes wrong, and what should it call?** `time.time()` is the wall clock and ignores `/clock` entirely, so under replay it stamps data recorded two years ago with today's time; under simulation it drifts against the rest of the system by the real-time factor. Downstream TF lookups and any comparison with other message stamps then fail or silently extrapolate. It should call `self.get_clock().now()` on the node's clock, with `use_sim_time` set for the whole graph — and use `create_timer` rather than a wall timer if its period must follow simulated time.
+### Self-check
+
+1. A publisher offers reliable and a subscription requests best effort. Do they connect, and
+   why is the reverse case different?
+2. Your node subscribes to `/map` and never receives anything, but `ros2 topic echo /map`
+   prints a map immediately. What is going on?
+3. You put your node on a `MultiThreadedExecutor` and the synchronous service call in your
+   timer still deadlocks. Why?
+4. A node stamps its messages with `time.time()`. Everything works in the lab and the numbers
+   are wrong on a bag replay. What exactly goes wrong, and what should it call?
+5. P6's controller stalls its executor for $200\,\mathrm{ms}$ while the $50\,\mathrm{Hz}$
+   camera keeps publishing. With `KEEP_LAST (5)`, how many goals are lost, how old is the
+   first one your callback is handed, and how many survivors are inside the
+   $70\,\mathrm{ms}$ budget? Would a deadline have told you?
+
+> [!tip]- Answers
+> 1. They connect. The request is the minimum quality the subscription will accept and the offer is the maximum the publisher can provide, so a reliable publisher over-satisfies a best-effort request. The reverse — best-effort publisher, reliable subscription — asks for a guarantee that is not on offer, so no connection is made and no message is exchanged.
+> 2. Almost certainly durability. The map server publishes transient local, once, before your node started; your node requests the default volatile profile, which connects legitimately but receives only new messages. `ros2 topic echo` inspects the publishers and adapts its own request to transient local, so it gets the retained sample. Fix your subscription to request transient local, and remember that `echo` succeeding does not prove your node can.
+> 3. Because you did not assign callback groups. Everything created without a group joins the node's default group, which is mutually exclusive, so the node behaves as if it were single-threaded. The timer callback holds the group while waiting, and the future's hidden done-callback — which must run for the result to appear — cannot be scheduled in the same mutually exclusive group. Put the client and the timer in different groups, or in one shared reentrant group.
+> 4. `time.time()` is the wall clock and ignores `/clock` entirely, so under replay it stamps data recorded two years ago with today's time; under simulation it drifts against the rest of the system by the real-time factor. Downstream TF lookups and any comparison with other message stamps then fail or silently extrapolate. It should call `self.get_clock().now()` on the node's clock, with `use_sim_time` set for the whole graph — and use `create_timer` rather than a wall timer if its period must follow simulated time.
+> 5. Ten goals are published during the stall ($200/20$) and five are lost, because `KEEP_LAST (5)` keeps only the newest five and each arrival pushes out the oldest. At the instant the executor returns the survivors are $\{80,60,40,20,0\}\,\mathrm{ms}$ old and they arrive in publication order, so the first callback is handed the $80\,\mathrm{ms}$ one — already past the budget — and the freshest goal is the fifth callback. Four of the five survivors are inside $70\,\mathrm{ms}$. No deadline event is raised: the camera published on time and the middleware received on time, so nothing on the topic missed its interval. Depth 1, or a $70\,\mathrm{ms}$ lifespan, is the fix; a deeper queue is a backlog, not a margin.
 
 ### Problem set · 과제
 
@@ -475,6 +531,46 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 > [!note] 선수 지식 · Prerequisites
 > [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
 > 25.1, 25.2 and 25.3 are assumed; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
+
+### 과제가 그릴 그림: P6의 간선 하나, 프로파일 둘, 그리고 정지 동안의 큐 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. `/goal`을 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 엔코더 $N=2048$ counts/m, 카메라 노출 중간부터 힘까지 $70\,\mathrm{ms}$. 패널 셋을 그려라. 과제는 고장을 구독자에서 카메라로 옮긴 같은 셋을 요구한다.
+
+**왼쪽 — `ros2 topic info --verbose`가 찍는 그대로, 프로파일 둘을 다 적은 간선**. 타원 둘과 화살표 하나. 화살표 위에는 라벨이 아니라 상자 둘을 위아래로 놓는다. 위 상자는 카메라가 *제공(offer)* 하는 것: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 아래 상자는 제어기가 *요청(request)* 하는 것: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 줄을 짝지어 3절의 표에 대보고, reliability 줄에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지 넷이 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
+
+**가운데 — 제어기 executor가 $200\,\mathrm{ms}$ 멈춰 있는 동안의 큐**. 이 패널은 왼쪽 패널의 가위표를 고친 *뒤*의 시스템을 그린다. 제어기를 sensor-data 프로파일로 옮겨 구독의 history가 `KEEP_LAST (5)`가 된 상태다. 여기서 결정권을 쥔 깊이는 퍼블리셔가 아니라 구독자의 것이다. executor가 다른 콜백 안에 있는 동안 발행된 목표 열 개를 상자 열 개로 그리고 $20, 40, \ldots, 200\,\mathrm{ms}$ 스탬프를 적는다. 그 위에 상자 다섯 칸 너비의 창을 오른쪽 끝에 붙여 그린다. 그 다섯이 구독이 남기는 것이고, 창 왼쪽으로 밀려난 다섯은 조용히 사라진 것이다. 살아남은 상자 아래에는 executor가 돌아온 순간의 나이를 적고, $70\,\mathrm{ms}$ 예산을 가로선으로 그어 예산을 넘긴 상자가 선의 반대편에 있게 한다.
+
+**오른쪽 — 시계, $0$에서 $200\,\mathrm{ms}$**. 축 위에는 $5\,\mathrm{ms}$ 제어 틱 마흔 개, 전부 일어나지 않은 발화다. 축 아래에는 $20\,\mathrm{ms}$ 간격의 비전 발행 열 개, 전부 제때 도착한 것이다. 요청한 $40\,\mathrm{ms}$ deadline을 비전 줄 위의 반복 괄호로 그리고 모든 괄호에 *충족*이라고 표시한다. 멈춘 것은 카메라가 아니라 executor였기 때문이다. 그 모순이 이 패널의 존재 이유다.
+
+### 대상으로 한 번 끝까지: P6에 필요한 큐 깊이와 200 ms 정지가 하는 일 · Worked case
+
+주기 둘부터. 아래의 모든 개수가 정지 시간을 이 둘 중 하나로 나눈 값이기 때문이다.
+
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
+
+사건은 8절의 것이다. 제어기의 콜백 하나가 단일 스레드 executor를 $t=0$부터 $t=200\,\mathrm{ms}$까지 $D=200\,\mathrm{ms}$ 동안 붙든다. 그동안 카메라는 멀쩡하고 $20, 40, \ldots, 200\,\mathrm{ms}$에 발행한다.
+
+**1단계 — 무엇이 쌓이는가**. 정지 동안 퍼블리셔가 내보내는 것은
+
+$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{개},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{번의 제어 발화 손실}$$
+
+이므로 가져갈 사람 없는 목표가 열 개 도착하고 명령 마흔 번이 나가지 않는다. 두 숫자 모두 어떤 로그에도 남지 않는다.
+
+**2단계 — 7단계의 수정이 남기는 프로파일에서 무엇이 살아남는가**. 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 *구독*의 history 아래 미들웨어에 앉는다. 즉 여기서 정하는 것은 카메라의 깊이가 아니라 제어기 자신의 깊이다. best effort 카메라에 맞추려고 제어기가 sensor-data 프로파일을 받아들인 뒤를 보자. 그 프로파일이 `KEEP_LAST (5)`다. 여섯 번째부터는 도착할 때마다 가장 오래된 것을 밀어내므로, 열 중 다섯은 당신 코드가 보기도 전에 버려진다. $t=200\,\mathrm{ms}$에 살아남은 것은 스탬프 $120,140,160,180,200$이고 그 나이는
+
+$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
+
+나이는 스탬프 이후 흐른 시간일 뿐이기 때문이다. 버려진 다섯의 나이는 $100$에서 $180\,\mathrm{ms}$였다.
+
+**3단계 — 나오는 순서, 이쪽이 아픈 부분**. 퍼블리셔 하나에서 온 생존자들은 발행 순서대로 전달되므로, 정지 이후 첫 콜백이 받는 것은 나이 $80\,\mathrm{ms}$의 **가장 오래된** 생존자이고 가장 새 목표는 다섯 번째 콜백이다. (8절의 round-robin은 과부하 executor가 다음에 어느 *토픽*을 볼지에 대한 것이지 한 토픽 안 샘플 순서가 아니다.) 그래서 제어기가 회복한 직후 처음 하는 일은 자기 $70\,\mathrm{ms}$ 예산 전체보다 오래된 목표를 향해 모는 것이다.
+
+**4단계 — 생존자를 예산에 채점한다**. $\{80,60,40,20,0\}\,\mathrm{ms}$ 중 정확히 넷이 $70\,\mathrm{ms}$ 이하이고 하나가 아니다. 즉 깊이 5는 확실히 쓸모없는 콜백 하나와 낡은 콜백 셋을 사서, 제어기가 실제로 원한 단 하나 — 나이 $0$짜리 — 를 배달한 셈이다. 깊이를 1로 두면 다섯 대신 아홉이 버려지고, 콜백은 한 번 돌며, 그 한 번이 가장 새 목표 위에서 돈다. **제어 입력에서 깊은 큐는 안전 여유가 아니라, 모터가 도는 중에 버려야 할 밀린 짐이다.** 깊이는 샘플 하나하나가 의미를 갖는 스트림 — bag 기록기, 계수기, 적분기 — 의 것이지 "지금 어디로 갈까"의 것이 아니다.
+
+**5단계 — 나이 검사는 미들웨어에 시킨다**. 그 정책이 lifespan이고, 대부분이 끝내 설정하지 않는 바로 그것이다. lifespan보다 오래된 샘플은 stale이고, 만료된 샘플은 조용히 버려져 아예 수신되지 않는다. `lifespan`을 예산 그 자체인 $70\,\mathrm{ms}$로 두면 나이 $80\,\mathrm{ms}$ 생존자는 콜백에 닿지도 않고 예산 안의 넷만 닿는다. 콜백마다 손으로 쓰게 될 검사를 프로파일로 옮긴 것이고, 거기서는 `ros2 topic info --verbose`가 동료에게 그것을 보여 줄 수 있다.
+
+**6단계 — 그리고 여기서 deadline이 말해 주지 않는 것**. 카메라가 $40\,\mathrm{ms}$ deadline을 제공하고 제어기가 $40\,\mathrm{ms}$를 요청하면 호환이다. 요청이 제공보다 더 엄격하지 않기 때문이다. 그리고 $20\,\mathrm{ms}$마다 발행하는 건강한 P6 카메라는 $20\,\mathrm{ms}$의 여유를 두고 그것을 충족한다. 이번 정지 동안에도 모든 구간에서 계속 충족하고, *requested deadline missed*는 한 번도 올라오지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했기 때문이다. deadline은 토픽 위 메시지 사이의 간격을 보지, 당신의 executor가 그것을 가져가기를 멈췄다는 사실은 보지 못한다. 과제의 정지는 반대쪽, 카메라 자신이 $200\,\mathrm{ms}$ 조용해지는 경우다. 그쪽에서는 deadline이 울리고, 그 뒤 첫 프레임은 $200\,\mathrm{ms}$ 된 스탬프를 달고 오며 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘긴다. 길이가 같은 고장 둘인데 알려 주는 이벤트가 있는 쪽은 하나뿐이다.
+
+**7단계 — 물론 reliability 줄에 가위표가 있으면 이 중 아무것도 일어나지 않는다**. 그림의 왼쪽 패널을 다시 보라. 카메라의 best effort 제공에 제어기의 reliable 요청은 연결되지 않으므로 1단계의 개수는 열이 아니라 영이고, 영원히 영이며, 노드 둘은 멀쩡하다. `ros2 topic info /goal --verbose`로 그것부터 배제한 다음에 깊이를 따져라.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -906,11 +1002,27 @@ executor.spin()
 - 그대로 인용한 값과 메시지의 출처(Jazzy 브랜치 소스): `rmw/qos_profiles.h`(프로파일 내용), `rclcpp/subscription_base.cpp`와 `publisher_base.cpp`, `rclpy/event_handler.py`(기본 incompatible-QoS 경고), `rclpy/topic_endpoint_info.py`(`--verbose` 출력 형식), `ros2cli/ros2topic`(QoS 플래그와 `echo`의 퍼블리셔 맞춤 동작), `ros2bag` play verb(`--clock`), `robot_state_publisher`와 `nav2_map_server`(transient local 퍼블리셔).
 - Daniel Casini, Tobias Blass, Ingo Lütkebohle, Björn Brandenburg, "Response-Time Analysis of ROS 2 Processing Chains under Reservation-Based Scheduling", ECRTS 2019.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 퍼블리셔가 reliable을 offer하고 서브스크립션이 best effort를 request한다. 연결되는가, 그리고 반대 경우는 왜 다른가?** 연결된다. 요청은 서브스크립션이 받아들일 최소 품질이고 제공은 퍼블리셔가 낼 수 있는 최대 품질이므로, reliable 퍼블리셔는 best effort 요청을 넘치게 만족시킨다. 반대 — best effort 퍼블리셔와 reliable 서브스크립션 — 는 제공되지 않는 보장을 요구하므로 연결이 만들어지지 않고 메시지가 하나도 오가지 않는다.
-> **2. 내 노드는 `/map`을 구독하는데 아무것도 못 받고, `ros2 topic echo /map`은 지도를 바로 찍는다. 무슨 일인가?** 거의 확실히 durability다. map server는 transient local로, 내 노드가 뜨기 전에 한 번 발행했다. 내 노드는 기본 volatile을 요청하므로 연결은 정당하게 되지만 새 메시지만 받는다. `ros2 topic echo`는 퍼블리셔를 조사해 자기 요청을 transient local로 맞추므로 보존된 샘플을 받는다. 구독 쪽을 transient local로 고치고, `echo`가 된다고 해서 내 노드가 받을 수 있다는 증명이 되지는 않는다는 것을 기억하라.
-> **3. 노드를 `MultiThreadedExecutor`에 올렸는데도 타이머 안의 동기 서비스 호출이 여전히 교착한다. 왜인가?** 콜백 그룹을 지정하지 않았기 때문이다. 그룹 없이 만든 것은 전부 노드 기본 그룹에 들어가고 그것은 mutually exclusive이므로, 노드는 단일 스레드처럼 동작한다. 타이머 콜백이 기다리는 동안 그룹을 붙들고 있고, 결과가 나오려면 실행되어야 하는 future의 숨은 done-callback은 같은 mutually exclusive 그룹에서 스케줄될 수 없다. 클라이언트와 타이머를 다른 그룹에 두거나, 공유된 reentrant 그룹 하나에 두어라.
-> **4. 어떤 노드가 `time.time()`으로 메시지에 스탬프를 찍는다. 실험실에서는 잘 되는데 bag 재생에서는 숫자가 틀린다. 정확히 무엇이 잘못됐고, 무엇을 불러야 하나?** `time.time()`은 벽시계이고 `/clock`을 완전히 무시한다. 그래서 재생에서는 2년 전에 기록된 데이터에 오늘 시각을 찍고, 시뮬레이션에서는 시스템 나머지에 대해 실시간 계수만큼 어긋난다. 그러면 하류의 TF 조회와 다른 메시지 스탬프와의 비교가 실패하거나 조용히 외삽한다. 노드 시계의 `self.get_clock().now()`를 부르고 그래프 전체에 `use_sim_time`을 설정해야 하며, 주기가 시뮬레이션 시간을 따라야 한다면 wall timer가 아니라 `create_timer`를 쓴다.
+### 스스로 점검
+
+1. 퍼블리셔가 reliable을 offer하고 서브스크립션이 best effort를 request한다. 연결되는가,
+   그리고 반대 경우는 왜 다른가?
+2. 내 노드는 `/map`을 구독하는데 아무것도 못 받고, `ros2 topic echo /map`은 지도를 바로
+   찍는다. 무슨 일인가?
+3. 노드를 `MultiThreadedExecutor`에 올렸는데도 타이머 안의 동기 서비스 호출이 여전히
+   교착한다. 왜인가?
+4. 어떤 노드가 `time.time()`으로 메시지에 스탬프를 찍는다. 실험실에서는 잘 되는데 bag
+   재생에서는 숫자가 틀린다. 정확히 무엇이 잘못됐고, 무엇을 불러야 하나?
+5. $50\,\mathrm{Hz}$ 카메라가 계속 발행하는 동안 P6 제어기의 executor가
+   $200\,\mathrm{ms}$ 멈춘다. `KEEP_LAST (5)`에서 목표를 몇 개 잃고, 콜백이 처음 받는
+   것은 몇 밀리초짜리이며, 생존자 중 몇 개가 $70\,\mathrm{ms}$ 예산 안인가? deadline이
+   알려 주었겠는가?
+
+> [!tip]- 정답 · Answers
+> 1. 연결된다. 요청은 서브스크립션이 받아들일 최소 품질이고 제공은 퍼블리셔가 낼 수 있는 최대 품질이므로, reliable 퍼블리셔는 best effort 요청을 넘치게 만족시킨다. 반대 — best effort 퍼블리셔와 reliable 서브스크립션 — 는 제공되지 않는 보장을 요구하므로 연결이 만들어지지 않고 메시지가 하나도 오가지 않는다.
+> 2. 거의 확실히 durability다. map server는 transient local로, 내 노드가 뜨기 전에 한 번 발행했다. 내 노드는 기본 volatile을 요청하므로 연결은 정당하게 되지만 새 메시지만 받는다. `ros2 topic echo`는 퍼블리셔를 조사해 자기 요청을 transient local로 맞추므로 보존된 샘플을 받는다. 구독 쪽을 transient local로 고치고, `echo`가 된다고 해서 내 노드가 받을 수 있다는 증명이 되지는 않는다는 것을 기억하라.
+> 3. 콜백 그룹을 지정하지 않았기 때문이다. 그룹 없이 만든 것은 전부 노드 기본 그룹에 들어가고 그것은 mutually exclusive이므로, 노드는 단일 스레드처럼 동작한다. 타이머 콜백이 기다리는 동안 그룹을 붙들고 있고, 결과가 나오려면 실행되어야 하는 future의 숨은 done-callback은 같은 mutually exclusive 그룹에서 스케줄될 수 없다. 클라이언트와 타이머를 다른 그룹에 두거나, 공유된 reentrant 그룹 하나에 두어라.
+> 4. `time.time()`은 벽시계이고 `/clock`을 완전히 무시한다. 그래서 재생에서는 2년 전에 기록된 데이터에 오늘 시각을 찍고, 시뮬레이션에서는 시스템 나머지에 대해 실시간 계수만큼 어긋난다. 그러면 하류의 TF 조회와 다른 메시지 스탬프와의 비교가 실패하거나 조용히 외삽한다. 노드 시계의 `self.get_clock().now()`를 부르고 그래프 전체에 `use_sim_time`을 설정해야 하며, 주기가 시뮬레이션 시간을 따라야 한다면 wall timer가 아니라 `create_timer`를 쓴다.
+> 5. 정지 동안 목표 열 개가 발행되고($200/20$) 다섯을 잃는다. `KEEP_LAST (5)`는 가장 새 다섯만 남기고 도착할 때마다 가장 오래된 것을 밀어내기 때문이다. executor가 돌아온 순간 생존자의 나이는 $\{80,60,40,20,0\}\,\mathrm{ms}$이고 발행 순서대로 전달되므로, 첫 콜백이 받는 것은 이미 예산을 넘긴 $80\,\mathrm{ms}$짜리이고 가장 새 목표는 다섯 번째 콜백이다. 생존자 다섯 중 넷이 $70\,\mathrm{ms}$ 안이다. deadline 이벤트는 울리지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했으므로 토픽 위에서 구간을 놓친 것이 없기 때문이다. 처방은 깊이 1, 또는 $70\,\mathrm{ms}$ lifespan이다. 깊은 큐는 여유가 아니라 밀린 짐이다.
 
 ### 과제 · Problem set
 

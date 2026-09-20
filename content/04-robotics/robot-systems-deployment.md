@@ -2,6 +2,7 @@
 title: 10. Robot Systems, Embodiment & Deployment
 tags: [robotics, systems, deployment, ros]
 study-depth: Working
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -13,6 +14,8 @@ What an algorithm still needs before it is a robot: clocks, frames, rates, logs,
 
 A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, computers, networks, controllers, actuators, safety logic, and logging work together. Systems literacy lets a reader determine what was actually deployed and where a reported improvement may have originated.
 
+*Scope: this page teaches the runtime concerns that sit between an algorithm and a robot — the loop, action interfaces, the latency budget with its deadlines and jitter, frames and the TF tree, middleware vocabulary, the execution layer and its behavior trees, reliability, staged deployment and the failure taxonomy. It does not teach ROS 2 itself, which is the eleven pages of [[04-robotics/ros2/index|22. ROS 2]], nor control design ([[04-robotics/control-theory-ce397|5. Control]]), estimation ([[04-robotics/state-estimation-slam|3. State Estimation]]) or planning ([[04-robotics/planning-decision-making|4. Planning]]). It teaches what to check about them, and it is not an electronics or installation tutorial.*
+
 > [!info] Depth target
 > Decompose a robot into its runtime pipeline; interpret action interfaces, timing, frames, middleware, reliability, simulation, and logging; and diagnose failures at subsystem boundaries. This is not a ROS installation or electronics tutorial.
 
@@ -21,6 +24,40 @@ A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, 
 
 > [!note] First pass · 처음이라면
 > This is a checklist page more than a narrative. First pass: §1 for the loop, §3 for the timing budget — the single most common source of results that do not reproduce — and §10 for the failure taxonomy. The rest is a reference you return to with a specific system in front of you.
+
+### Homework diagram · 과제가 그릴 그림
+
+One drawing, and the problem set asks for exactly this one. The object is **P6** from
+[[02-foundations/lab-plants|0.6 Lab Plants]]: a cart on a line, encoder $N=2048$ counts/m, a vision
+node publishing a goal at $50\,\mathrm{Hz}$, a controller sampling the encoder and commanding a
+motor at $200\,\mathrm{Hz}$, and a $70\,\mathrm{ms}$ budget from camera mid-exposure to applied
+force.
+
+**One axis, two rows of ticks.** Draw a single time axis in milliseconds. Above it, tall ticks
+every $20\,\mathrm{ms}$ for the vision node; below it, short ticks every $5\,\mathrm{ms}$ for the
+controller. Putting both on the *same* axis is the point of the figure: two rates are two tick
+spacings, and nothing drawn so far is a latency at all.
+
+**The five instants, in order.** On that axis mark, left to right, the exposure midpoint, the
+vision publish, the controller's TF lookup, the controller tick that consumes the goal, and current
+reaching the motor. Span the first and the last with a bar and label it $70\,\mathrm{ms}$. Then
+count the bar in each row and write both counts beneath it: $70/20=3.5$ vision periods and
+$70/5=14$ control ticks. A budget that is not a whole number of vision periods is the ordinary
+case, and it is why the sampling term $\tfrac12 T_{\text{cam}}=10\,\mathrm{ms}$ — worst case
+$20\,\mathrm{ms}$ — belongs on the drawing as a segment of its own rather than hidden inside the
+camera box.
+
+**The stale overlay.** In a lighter line draw a second bar, $200\,\mathrm{ms}$ long, from the same
+exposure midpoint: a goal that reached the controller that late. Its excess over the budget is
+$200-70=130\,\mathrm{ms}$ and it spans $200/5=40$ control ticks, so write "40 ticks on a stale
+goal" along it. Under the axis put the consequence in the units the encoder speaks: at
+$0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ during that age, and at
+$1000/2048=0.488\,\mathrm{mm}$ per count that is $41$ counts of motion the goal never knew about.
+
+**What must not appear on it.** No arrow labelled "$200\,\mathrm{Hz}$" standing in for a delay, and
+no noise cloud around the goal. The drawing's whole job is to keep rate, latency and noise as three
+separate marks, because the failure it explains is a *late* goal rather than a noisy one, and no
+estimator on [[04-robotics/state-estimation-slam|3. State Estimation]] repairs lateness.
 
 ### 1. The closed robot stack
 
@@ -76,6 +113,40 @@ When a paper says “action,” identify whether it means joint position, veloci
 | **Observation-to-action** | **70 ms** |
 
 At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end.
+
+**The budget, as a sum.** **Observation-to-action latency** $L$ is the elapsed time from the physical event to the moment the command derived from that event takes effect on the actuator. It is not one measurement but a sum of named terms, each of which some component owns:
+
+$$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text{dec}}+T_{\text{ctrl}}$$
+
+The terms add because the stages are in series and each must finish before the next begins. Each one:
+
+- $\tfrac12 T_{\text{cam}}$ — **sampling latency**. The event occurs at a uniformly random moment inside one frame period $T_{\text{cam}}$, so on average it waits half a period before it is sampled at all, and a full period in the worst case. This is the term that does not appear in a block diagram and is the reason a *rate* is not a *latency*.
+- $t_{\text{exp}}$ — **exposure and readout**, from the start of integration to the last row leaving the sensor.
+- $t_{\text{tx}}$ — **transport**, the wire or bus to whichever computer runs the model.
+- $t_{\text{inf}}$ — **inference**, the forward pass itself. This is the only term most papers report.
+- $t_{\text{dec}}$ — **decoding and IPC**, turning a network output into a command message and delivering it.
+- $T_{\text{ctrl}}$ — **actuation**, one controller period before the command is applied.
+
+**Non-example:** adding the *rates* is not a budget. "A 30 Hz camera, a 25 Hz policy and a 500 Hz controller" does not reduce to any latency at all, because rates do not add, and the fastest stage in a series chain still contributes its own fixed delay. Two systems with identical rates can differ by 50 ms in $L$ purely in queueing and timestamp policy.
+
+**Deadline and jitter, defined.** A periodic task with period $T$ is **released** at $r_k=r_0+kT$ and finishes at $f_k$, so its **response time** is $R_k=f_k-r_k$. Its **deadline** $D$ is the time after release by which it must finish, usually $D=T$, and a **deadline miss** is any instance with $R_k>D$. The strength of the deadline is a separate claim from its value, and there are three:
+
+- **hard** — a single miss is a system failure (the loop holding a stiff contact, a brake release);
+- **firm** — a late result is worthless and is discarded, but discarding it is survivable (a dropped perception frame);
+- **soft** — a late result is degraded but still worth having (a map update, an operator display).
+
+**Jitter** is the *spread* of a timing quantity across instances, never its mean, and it is reported peak-to-peak:
+
+$$J=\max_k R_k-\min_k R_k$$
+
+since what a deadline argument needs is the extreme and not the centre — a standard deviation hides exactly the tail that misses. Release jitter and output jitter are defined the same way on the other two instants.
+
+> [!example] Worked example · 계산 예제
+> P6's control loop at 200 Hz, so $T=D=5$ ms. Five measured response times: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. The mean is $2.04$ ms, the peak-to-peak jitter is $4.8-1.2=\mathbf{3.6}$ ms, there are **zero** deadline misses, and the margin at the worst instance is $5.0-4.8=0.2$ ms — that tick used $96\%$ of its period.
+>
+> **Non-example — quoting the mean as the rate.** $1000/2.04=490$ Hz describes a loop that does not exist. The loop is 200 Hz, and one tick in five came within $0.2$ ms of missing. The mean is the number that looks good in a table; the maximum is the number that decides whether the system works. Move the identical task under the $1$ ms haptic deadline named below and **all five** instances miss, with no change to the mean at all.
+>
+> The same distinction re-reads the sum above. With the numbers of the next callout the *mean* budget is $78.7\approx 79$ ms, but replacing the sampling term $\tfrac12 T_{\text{cam}}=16.7$ ms by its worst case $T_{\text{cam}}=33.3$ ms gives $\mathbf{95.3}$ ms. That $16.7$ ms gap is jitter and not bias, so no calibration removes it: a controller tuned on the mean budget meets a disturbance that is $21\%$ staler than designed, and at $0.3$ m/s the end-effector's staleness runs from $24$ mm to $29$ mm between one frame and the next.
 
 **Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. Budgets tighten by more than an
 order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
@@ -133,9 +204,17 @@ so the millisecond is the unit rather than the frame
 
 Common frames include world, map, odom, base, sensor, end-effector, tool, and object. Every transform needs a direction and timestamp. A plausible numeric matrix in the wrong convention can create a systematic failure that learning cannot repair reliably.
 
-A map frame can jump after global correction while odom remains locally smooth; the base-to-sensor transform should be calibrated; a moving object transform must be time-aligned. [[02-foundations/se3-geometry|SE(3)]] supplies the math, while a TF tree supplies the runtime bookkeeping.
+**A transform, and the direction that names it.** A transform ${}^{a}T_{b}\in SE(3)$ has two readings that are the same matrix: it takes the coordinates of a point in frame $b$ to its coordinates in frame $a$, and it *is* the pose of frame $b$ expressed in frame $a$. Written with both indices, transforms chain by cancelling the inner one, and invert by transposing the rotation:
 
-For example, suppose loop closure shifts the map frame by 30 cm while odom remains smooth. A path represented consistently in odom can remain locally usable, while a map-frame goal transformed using a different update can jump. The problem is not necessarily a bad transform matrix; it can be combining correct transforms from incompatible times. **The reading this gives you.** Trace each goal, observation, and command through its frame and timestamp. State where global correction is allowed to change a reference and how the downstream controller handles that change.
+$${}^{a}T_{c}={}^{a}T_{b}\,{}^{b}T_{c},\qquad {}^{b}T_{a}=\big({}^{a}T_{b}\big)^{-1}=\begin{pmatrix}R^{\top} & -R^{\top}t\\ 0 & 1\end{pmatrix}$$
+
+The inverse takes that form because undoing the transform must undo the rotation before it undoes the translation. **Non-example, and this is the "plausible matrix" above:** the inverse is *not* the same rotation with a negated translation. Take ${}^{a}T_{b}$ with a $90°$ yaw and $t=(1,0)$ m. The correct inverse translation is $-R^{\top}t=(0,1)$ m, while negating gives $(-1,0)$ m — identical magnitude, perfectly plausible in a log, and $1.41$ m wrong. [[02-foundations/se3-geometry|SE(3)]] supplies this algebra; a TF tree supplies the runtime bookkeeping.
+
+**A TF tree, defined.** It is a directed graph whose nodes are frames and whose edges are timestamped parent-to-child transforms, subject to three conditions that make it a *tree*: every frame has exactly one parent; exactly one frame, the root, has none; and there are no cycles. Three consequences follow, and each is a failure mode when it is violated. There is exactly one path between any two frames, so a lookup is unambiguous and is just the composition along that path. Two publishers writing the same child frame is an error rather than a merge, because a frame with two parents is not a tree — the effect is a transform that flickers between two answers. And because every edge carries a stamp, a lookup is a query *at a time*, interpolated between the stamps that bracket it; a query outside the buffer fails rather than extrapolating, which is the correct behaviour and a common source of "it works in the bag but not live".
+
+**The conventions worth memorising.** REP-103 fixes axes and units: right-handed, $x$ forward, $y$ left, $z$ up on a robot body, ENU in geographic frames, SI units and radians. REP-105 fixes the mobile-robot chain, `map` → `odom` → `base_link` → sensor frames, each the parent of the next. `odom` is continuous but drifts without bound; `map` is drift-free but discontinuous. The reason for *that* ordering is the one-parent rule: `base_link` already has `odom` as its parent and cannot have a second, so a localisation system may not re-parent it and publishes the `map` → `odom` edge instead, folding the entire global correction into that single transform. Every "the map jumped" story is that edge being rewritten.
+
+For example, suppose the base sits at $(1.0, 2.0)$ m in odom and a goal is stored in map at $(5.0, 2.0)$ m. While `map` → `odom` is the identity the goal is at odom $(5.0, 2.0)$, $4.00$ m ahead. A loop closure now corrects the global estimate by 30 cm, which is published as a `map` → `odom` translation of $(0.30, 0)$ m, so the same stored goal is at odom $(4.70, 2.0)$ and is $3.70$ m ahead: the goal moved 30 cm while the robot did not move at all. A path held in odom did not move, which is the whole reason a local controller is fed odom. The problem is not necessarily a bad transform matrix; it can be combining correct transforms from incompatible times. **The reading this gives you.** Trace each goal, observation, and command through its frame and timestamp. State where global correction is allowed to change a reference and how the downstream controller handles that change.
 
 ### 5. Middleware literacy
 
@@ -175,10 +254,26 @@ Idle → Detect object → Plan grasp → Execute → Verify
                                         └─ failure → Replan / Request help / Safe stop
 ```
 
-Behavior trees compose these modularly (sequence, fallback, decorator nodes) and are
-common in field systems; FSMs are simpler but tangle as states multiply. When a paper
-says the robot "recovered" or "retried," this layer — not the policy — often did it:
-check who detects failure, who chooses the response, and what counts as terminal.
+Behavior trees compose these modularly and are common in field systems; FSMs are simpler
+but tangle as states multiply.
+
+**Behavior tree, defined by what a tick returns.** A behavior tree is a rooted tree whose leaves are **actions** (do something) and **conditions** (test something), and whose interior nodes are **control-flow nodes**. It is executed by a **tick**: a signal injected at the root at a fixed rate and propagated to children according to each node's type. Every ticked node returns exactly one of three statuses, and that three-valued return is the entire design:
+
+$$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\}$$
+
+**Running** is the status an FSM has no equivalent for, since it means "started, not finished, tick me again": a long action therefore does not block the tree, and the status propagates upward, because a node with a Running child is itself Running. The three node families are each defined by what they return:
+
+- **Sequence** — ticks its children left to right. Returns **Failure** at the first child that fails, **Running** at the first that is Running, and **Success** only when every child has succeeded. It is a logical **AND** over its children, and it is how a precondition is written: put the condition first, and the action after it never runs while the condition is false.
+- **Fallback** (also called **selector**) — ticks left to right and returns **Success** at the first child that succeeds, **Running** at the first that is Running, and **Failure** only when every child has failed. It is a logical **OR**, and it is the recovery construct, since the children after the first are the alternatives tried in order.
+- **Decorator** — has **exactly one child**, and transforms either the child's returned status or whether the child is ticked at all. `Inverter` swaps Success and Failure; `RetryUntilSuccessful(n)` re-ticks a failing child up to $n$ times; `Timeout(ms)` fails a child that runs too long; `RateController(hz)` ticks its child only at the given rate and repeats the last status in between. The one-child rule is exactly what separates a decorator from a control-flow node.
+
+**The tick contract** is the part that gets skipped and then produces bugs. Three clauses: a tick re-enters from the **root** every cycle, so conditions are re-evaluated continuously and an action that is already Running is abandoned the moment an earlier sibling's condition turns false — that reactivity is what a tree buys over a chain of calls. A node that was Running and is no longer on the ticked path must therefore be explicitly **halted**, so every action node owes a halt implementation as well as a tick. And status is *returned*, never stored as a transition, because there are no edges between siblings at all.
+
+*Example.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. The robot navigates while the battery holds; if either navigation step returns Failure the fallback moves on to the recovery branch; and if `batteryOK` goes false mid-drive, the very next tick from the root fails the inner sequence at its condition, halts `FollowPath` without waiting for it to finish, and enters recovery. [[04-robotics/ros2/navigation-nav2|22.4 Nav2 §2]] reads one production tree, including the composite variants (`PipelineSequence`, `RecoveryNode`) and the 1 Hz replanning decorator.
+
+**Non-example.** A tree is not an if-then-else chain evaluated once at the start of the task, and a sequence is not a program's `;` — read it that way and the re-ticking looks like wasted work instead of the mechanism. Nor is it a state machine with nicer syntax: an FSM keeps its control flow in transition edges, of which there can be up to $n(n-1)$, and every recovery rule must be duplicated on each state it can fire from, whereas a tree's control flow is only sibling order plus a three-valued return. That is what makes recovery **scoped** — the nearest enclosing fallback decides who recovers, so a planner failure need not invoke the whole system's last resort.
+
+*Why it matters when reading.* When a paper says the robot "recovered" or "retried", a fallback node did it and not the policy: check who detects failure, who chooses the response, and what counts as terminal.
 
 ### 6.5 Architecture lineages and formal task specifications
 
@@ -374,6 +469,8 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 로깅이 함께 작동할 때에만 로봇이 된다. 시스템 문해력은 실제로 무엇이 배포됐고, 보고된
 개선이 어느 하위 시스템에서 비롯됐을 수 있는지를 읽게 해 준다.
 
+*범위: 이 페이지는 알고리즘과 로봇 사이에 앉은 런타임 사안들을 가르친다 — 루프, 행동 인터페이스, 데드라인과 지터를 포함한 지연 예산, 좌표계와 TF 트리, 미들웨어 어휘, 실행 계층과 그 behavior tree, 신뢰성, 단계적 배포와 실패 분류. ROS 2 자체는 가르치지 않는다. 그것은 [[04-robotics/ros2/index|22. ROS 2]]의 열한 페이지다. 제어 설계([[04-robotics/control-theory-ce397|5. 제어]]), 상태 추정([[04-robotics/state-estimation-slam|3. 상태 추정]]), 계획([[04-robotics/planning-decision-making|4. 계획]])도 마찬가지다. 이 페이지가 가르치는 것은 그것들에 대해 무엇을 확인할지이며, 전자공학이나 설치 튜토리얼이 아니다.*
+
 > [!info] 깊이 목표
 > 로봇을 런타임 파이프라인으로 분해한다; 행동 인터페이스, 타이밍, 좌표계, 미들웨어,
 > 신뢰성, 시뮬레이션, 로깅을 해석한다; 하위 시스템 경계에서 실패를 진단한다. ROS 설치법이나
@@ -384,6 +481,38 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 
 > [!note] 처음이라면 · First pass
 > 이 페이지는 서사보다 체크리스트에 가깝다. 1차 통과: §1의 루프, §3의 지연 예산 — 재현되지 않는 결과의 가장 흔한 출처 — 그리고 §10의 실패 분류. 나머지는 특정 시스템을 앞에 놓고 돌아와 보는 참고서다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나이고, 과제가 요구하는 것도 정확히 이 그림이다. 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**다. 직선 위의 카트, 엔코더 $N=2048$
+counts/m, 목표를 $50\,\mathrm{Hz}$로 발행하는 비전 노드, 엔코더를 샘플해 모터를
+$200\,\mathrm{Hz}$로 명령하는 제어기, 그리고 카메라 노출 중간부터 힘이 나갈 때까지
+$70\,\mathrm{ms}$의 예산.
+
+**축 하나, 눈금 두 줄.** 밀리초 단위의 시간 축을 하나만 긋는다. 위쪽에는 비전 노드의 긴 눈금을
+$20\,\mathrm{ms}$마다, 아래쪽에는 제어기의 짧은 눈금을 $5\,\mathrm{ms}$마다 찍는다. 둘을 *같은*
+축에 올리는 것이 이 그림의 요점이다. 두 주기는 두 눈금 간격일 뿐이고, 여기까지 그린 것 중 지연인
+것은 하나도 없다.
+
+**다섯 시점, 순서대로.** 그 축 위에 왼쪽부터 노출 중간점, 비전 발행, 제어기의 TF 조회, 목표를
+소비하는 제어 틱, 모터로 전류가 나가는 순간을 표시한다. 첫 점과 마지막 점을 막대로 잇고
+$70\,\mathrm{ms}$라 적는다. 그다음 그 막대를 두 줄에서 각각 세어 아래에 둘 다 적는다.
+$70/20=3.5$ 비전 주기, $70/5=14$ 제어 틱. 예산이 비전 주기의 정수배가 아닌 것이 보통이고, 샘플링
+항 $\tfrac12 T_{\text{cam}}=10\,\mathrm{ms}$(최악 $20\,\mathrm{ms}$)를 카메라 상자 안에 숨기지 않고
+따로 한 구간으로 그려야 하는 이유가 그것이다.
+
+**늦은 목표 겹쳐 그리기.** 옅은 선으로 같은 노출 중간점에서 출발하는 $200\,\mathrm{ms}$짜리 막대를
+하나 더 그린다. 제어기에 그만큼 늙어서 도착한 목표다. 예산 초과는 $200-70=130\,\mathrm{ms}$이고
+$200/5=40$개의 제어 틱을 덮으므로 막대를 따라 "낡은 목표 위의 40틱"이라 적는다. 축 아래에는 그
+결과를 엔코더가 쓰는 단위로 적는다. $0.10\,\mathrm{m/s}$면 그 나이 동안 카트가
+$20\,\mathrm{mm}$를 가고, 카운트당 $1000/2048=0.488\,\mathrm{mm}$이므로 목표가 전혀 몰랐던 위치
+$41$ 카운트다.
+
+**그림에 들어오면 안 되는 것.** 지연 대신 세워 둔 "$200\,\mathrm{Hz}$" 화살표, 그리고 목표 주위의
+잡음 구름. 이 그림의 일은 주기·지연·잡음을 서로 다른 세 표시로 유지하는 것이다. 설명하려는 실패가
+잡음이 아니라 *늦음*이고, [[04-robotics/state-estimation-slam|3. 상태 추정]]의 어떤 추정기도 늦음을
+고치지는 못하기 때문이다.
 
 ### 1. 닫힌 로봇 스택
 
@@ -449,6 +578,40 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 
 1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다.
 
+**예산을 합으로 쓰면.** **관측-행동 지연** $L$은 물리적 사건이 일어난 순간부터 그 사건에서 나온 명령이 구동기에 효과를 내는 순간까지의 경과 시간이다. 측정값 하나가 아니라 이름 붙은 항들의 합이고, 각 항에는 그것을 책임지는 구성 요소가 있다:
+
+$$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text{dec}}+T_{\text{ctrl}}$$
+
+단계들이 직렬이고 앞 단계가 끝나야 다음이 시작되므로 항들이 더해진다. 각 항은:
+
+- $\tfrac12 T_{\text{cam}}$ — **샘플링 지연**. 사건은 한 프레임 주기 $T_{\text{cam}}$ 안의 임의의 순간에 일어나므로, 표본으로 잡히기까지 평균 반 주기, 최악의 경우 한 주기를 기다린다. 블록 다이어그램에 나타나지 않는 항이자 *주파수*가 *지연*이 아닌 이유다.
+- $t_{\text{exp}}$ — **노출과 판독**. 적분 시작부터 마지막 행이 센서를 떠날 때까지.
+- $t_{\text{tx}}$ — **전송**. 모델을 돌리는 컴퓨터까지의 선이나 버스.
+- $t_{\text{inf}}$ — **추론**. 순전파 그 자체. 대부분의 논문이 보고하는 유일한 항이다.
+- $t_{\text{dec}}$ — **디코딩과 IPC**. 신경망 출력을 명령 메시지로 바꾸고 전달하는 데 드는 시간.
+- $T_{\text{ctrl}}$ — **구동**. 명령이 적용되기까지의 제어 주기 하나.
+
+**반례:** *주파수*를 더하는 것은 예산이 아니다. "30 Hz 카메라, 25 Hz 정책, 500 Hz 제어기"는 어떤 지연으로도 환원되지 않는다. 주파수는 더해지지 않고, 직렬 사슬에서는 가장 빠른 단계도 제 몫의 고정 지연을 보태기 때문이다. 주파수가 똑같은 두 시스템이 큐잉과 타임스탬프 정책만으로 $L$에서 50 ms 차이가 날 수 있다.
+
+**데드라인과 지터의 정의.** 주기 $T$인 주기 작업은 $r_k=r_0+kT$에 **릴리스**되어 $f_k$에 끝나므로 **응답 시간**은 $R_k=f_k-r_k$다. **데드라인** $D$는 릴리스 이후 그때까지는 끝나야 하는 시각이고(보통 $D=T$), $R_k>D$인 인스턴스가 **데드라인 미스**다. 데드라인의 강도는 그 값과는 별개의 주장이고, 세 가지가 있다:
+
+- **hard** — 한 번의 미스가 시스템 실패다(단단한 접촉을 쥐고 있는 루프, 브레이크 해제);
+- **firm** — 늦은 결과는 쓸모가 없어 버려지지만 버려도 살아남는다(놓친 인지 프레임);
+- **soft** — 늦은 결과는 질이 떨어져도 여전히 값이 있다(지도 갱신, 운전자 화면).
+
+**지터**는 인스턴스에 걸친 타이밍 양의 *퍼짐*이지 결코 그 평균이 아니며, 최대-최소로 보고한다:
+
+$$J=\max_k R_k-\min_k R_k$$
+
+데드라인 논증에 필요한 것은 중심이 아니라 극단이기 때문이다 — 표준편차는 미스를 내는 꼬리를 정확히 가려 버린다. 릴리스 지터와 출력 지터도 나머지 두 시점에 대해 같은 방식으로 정의한다.
+
+> [!example] 계산 예제 · Worked example
+> P6의 제어 루프는 200 Hz이므로 $T=D=5$ ms다. 측정된 응답 시간 다섯 개: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. 평균은 $2.04$ ms, 최대-최소 지터는 $4.8-1.2=\mathbf{3.6}$ ms, 데드라인 미스는 **0회**, 그리고 최악의 인스턴스에서 여유는 $5.0-4.8=0.2$ ms — 그 틱은 제 주기의 $96\%$를 썼다.
+>
+> **반례 — 평균을 주파수로 인용하기.** $1000/2.04=490$ Hz는 존재하지 않는 루프를 묘사한다. 루프는 200 Hz이고, 다섯 틱 중 하나는 미스까지 $0.2$ ms를 남겼다. 평균은 표에서 보기 좋은 수이고, 최댓값은 시스템이 동작하는지를 결정하는 수다. 똑같은 작업을 아래에 나오는 햅틱 $1$ ms 데드라인으로 옮기면 평균은 하나도 달라지지 않은 채 **다섯 개 전부**가 미스한다.
+>
+> 같은 구분이 위의 합을 다시 읽게 한다. 다음 콜아웃의 숫자로 *평균* 예산은 $78.7\approx 79$ ms지만, 샘플링 항 $\tfrac12 T_{\text{cam}}=16.7$ ms를 최악값 $T_{\text{cam}}=33.3$ ms로 바꾸면 $\mathbf{95.3}$ ms가 된다. 그 $16.7$ ms 차이는 편향이 아니라 지터이므로 어떤 보정으로도 없앨 수 없다. 평균 예산에 맞춰 튜닝한 제어기는 설계보다 $21\%$ 더 늙은 외란을 만나고, $0.3$ m/s에서 말단의 낡음은 프레임마다 $24$ mm와 $29$ mm 사이를 오간다.
+
 **계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]].
 
 루프가 단단한 접촉을 렌더링하면
@@ -503,11 +666,17 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 방향과 타임스탬프가 필요하다. 그럴듯한 숫자 행렬이라도 관례가 틀리면 학습이 안정적으로
 고칠 수 없는 계통적 실패를 만든다.
 
-map 프레임은 전역 보정 후 점프할 수 있고 odom은 국소적으로 매끄럽다; base→sensor
-변환은 보정 대상이고, 움직이는 물체의 변환은 시간 정렬이 필요하다.
-[[02-foundations/se3-geometry|SE(3)]]가 수학을 주고, TF 트리가 런타임 장부를 준다.
+**변환, 그리고 그 이름을 정하는 방향.** 변환 ${}^{a}T_{b}\in SE(3)$에는 같은 행렬에 대한 두 가지 독법이 있다. 프레임 $b$에서 표현한 점의 좌표를 프레임 $a$의 좌표로 옮기고, 동시에 프레임 $a$에서 표현한 프레임 $b$의 pose *이다*. 위아래 첨자를 다 쓰면 변환은 안쪽 첨자가 지워지며 이어지고, 회전을 전치해서 역을 얻는다:
 
-루프 폐쇄로 map 프레임이 30 cm 이동하고 odom은 매끄럽게 유지된다고 하자. odom에 일관되게 표현한 경로는 국소적으로 쓸 수 있지만 다른 갱신으로 변환한 map 목표는 튈 수 있다. 행렬이 틀린 것이 아니라 서로 다른 시각의 올바른 변환을 섞은 문제일 수 있다. **여기서 얻는 독법.** 목표·관측·명령의 좌표계와 시각을 추적한다. 전역 보정이 어디서 기준을 바꾸고 하류 제어기가 이를 어떻게 처리하는지 밝힌다.
+$${}^{a}T_{c}={}^{a}T_{b}\,{}^{b}T_{c},\qquad {}^{b}T_{a}=\big({}^{a}T_{b}\big)^{-1}=\begin{pmatrix}R^{\top} & -R^{\top}t\\ 0 & 1\end{pmatrix}$$
+
+역이 이 꼴인 것은 변환을 되돌리려면 평행이동을 되돌리기 전에 회전을 먼저 되돌려야 하기 때문이다. **반례, 그리고 이것이 위에서 말한 "그럴듯한 행렬"이다:** 역은 같은 회전에 평행이동만 부호를 뒤집은 것이 *아니다*. ${}^{a}T_{b}$가 $90°$ 요와 $t=(1,0)$ m라고 하자. 올바른 역의 평행이동은 $-R^{\top}t=(0,1)$ m인데, 부호만 뒤집으면 $(-1,0)$ m가 나온다 — 크기는 똑같고 로그에서 완벽하게 그럴듯하며 $1.41$ m 틀렸다. [[02-foundations/se3-geometry|SE(3)]]가 이 대수를 주고, TF 트리가 런타임 장부를 준다.
+
+**TF 트리의 정의.** 노드가 프레임이고 간선이 타임스탬프가 찍힌 부모→자식 변환인 방향 그래프이되, 그것을 *트리*로 만드는 조건이 셋이다. 모든 프레임은 부모가 정확히 하나이고, 부모가 없는 프레임은 뿌리 하나뿐이며, 순환이 없다. 여기서 귀결이 셋 따라 나오고 각각은 조건이 깨졌을 때의 실패 양상이다. 임의의 두 프레임 사이 경로가 정확히 하나이므로 조회가 모호하지 않고 그 경로를 따른 합성일 뿐이다. 같은 자식 프레임을 두 발행자가 쓰는 것은 병합이 아니라 오류다. 부모가 둘인 프레임은 트리가 아니기 때문이고, 증상은 두 답 사이를 깜빡이는 변환이다. 그리고 모든 간선이 스탬프를 지니므로 조회는 *시각에 대한* 질의이고 그 시각을 감싸는 두 스탬프 사이에서 보간된다. 버퍼 밖의 질의는 외삽하지 않고 실패하는데, 이것이 올바른 동작이자 "bag에서는 되는데 실시간에서는 안 된다"의 흔한 출처다.
+
+**외워 둘 관례.** REP-103이 축과 단위를 고정한다. 오른손 좌표계, 로봇 몸체에서 $x$ 앞, $y$ 왼쪽, $z$ 위, 지리 프레임에서는 ENU, 단위는 SI와 라디안. REP-105는 이동 로봇의 사슬 `map` → `odom` → `base_link` → 센서 프레임을 고정하며, 각각이 다음의 부모다. `odom`은 연속이지만 한없이 드리프트하고, `map`은 드리프트가 없지만 불연속이다. *그* 순서인 이유는 부모가 하나라는 규칙이다. `base_link`는 이미 `odom`을 부모로 가지고 둘을 가질 수 없으므로 위치추정 시스템은 그것의 부모를 바꿀 수 없고, 대신 `map` → `odom` 간선을 발행해 전역 보정 전체를 그 변환 하나에 접어 넣는다. "지도가 튀었다"는 이야기는 전부 그 간선이 다시 쓰인 것이다.
+
+예를 들어 베이스가 odom에서 $(1.0, 2.0)$ m에 있고 목표가 map에서 $(5.0, 2.0)$ m로 저장되어 있다고 하자. `map` → `odom`이 항등인 동안 목표는 odom $(5.0, 2.0)$, 즉 $4.00$ m 앞이다. 이제 루프 폐쇄가 전역 추정을 30 cm 보정하고 이것이 `map` → `odom`의 평행이동 $(0.30, 0)$ m로 발행되면, 저장된 그대로의 목표가 odom $(4.70, 2.0)$, $3.70$ m 앞이 된다. 로봇은 전혀 움직이지 않았는데 목표가 30 cm 움직인 것이다. odom에 쥐고 있던 경로는 움직이지 않았고, 지역 제어기에 odom을 먹이는 이유 전부가 그것이다. 행렬이 틀린 것이 아니라 서로 다른 시각의 올바른 변환을 섞은 문제일 수 있다. **여기서 얻는 독법.** 목표·관측·명령의 좌표계와 시각을 추적한다. 전역 보정이 어디서 기준을 바꾸고 하류 제어기가 이를 어떻게 처리하는지 밝힌다.
 
 ### 5. 미들웨어 문해력
 
@@ -548,10 +717,26 @@ Idle → 물체 감지 → 파지 계획 → 실행 → 검증
                                   └─ 실패 → 재계획 / 도움 요청 / 안전 정지
 ```
 
-Behavior tree는 이를 모듈적으로 합성하고(sequence·fallback·decorator 노드) 필드
-시스템에서 흔하다; FSM은 단순하지만 상태가 늘면 얽힌다. 논문이 로봇이 "회복했다",
-"재시도했다"고 하면 — 정책이 아니라 이 계층이 한 일인 경우가 많다: 누가 실패를
-감지하고, 누가 대응을 고르고, 무엇이 종료 조건인지 확인하라.
+Behavior tree는 이를 모듈적으로 합성하고 필드 시스템에서 흔하다; FSM은 단순하지만
+상태가 늘면 얽힌다.
+
+**tick이 무엇을 반환하는가로 정의하는 behavior tree.** Behavior tree는 잎이 **action**(무언가를 한다)과 **condition**(무언가를 검사한다)이고 내부 노드가 **제어 흐름 노드**인 뿌리 있는 트리다. 실행은 **tick**으로 이루어진다. 정해진 주기로 뿌리에 주입되어 각 노드의 종류에 따라 자식으로 전파되는 신호다. tick된 모든 노드는 세 상태 중 정확히 하나를 반환하고, 이 3값 반환이 설계의 전부다:
+
+$$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\}$$
+
+**Running**은 FSM에 대응물이 없는 상태다. "시작했고 아직 안 끝났으니 다시 tick하라"는 뜻이므로 긴 action이 트리를 막지 않고, Running인 자식을 가진 노드는 자신도 Running이기 때문에 위로 전파된다. 세 노드 계열은 각각 무엇을 반환하는지로 정의된다:
+
+- **Sequence** — 자식을 왼쪽에서 오른쪽으로 tick한다. 실패하는 첫 자식에서 **Failure**, Running인 첫 자식에서 **Running**, 모든 자식이 성공했을 때만 **Success**를 반환한다. 자식들에 대한 논리 **AND**이고, 선행 조건을 쓰는 방법이 이것이다. 조건을 앞에 두면 조건이 거짓인 동안 뒤의 action은 절대 돌지 않는다.
+- **Fallback**(**selector**라고도 한다) — 왼쪽에서 오른쪽으로 tick하며, 성공하는 첫 자식에서 **Success**, Running인 첫 자식에서 **Running**, 모든 자식이 실패했을 때만 **Failure**를 반환한다. 논리 **OR**이며, 첫째 뒤의 자식들이 순서대로 시도되는 대안이므로 이것이 복구 구성물이다.
+- **Decorator** — 자식이 **정확히 하나**이고, 그 자식이 반환한 상태나 자식을 tick할지 여부 자체를 바꾼다. `Inverter`는 Success와 Failure를 맞바꾸고, `RetryUntilSuccessful(n)`은 실패하는 자식을 최대 $n$번 다시 tick하며, `Timeout(ms)`는 너무 오래 도는 자식을 실패시키고, `RateController(hz)`는 주어진 주기로만 자식을 tick하고 그 사이에는 마지막 상태를 되풀이한다. 자식이 하나라는 규칙이 decorator를 제어 흐름 노드와 갈라놓는 바로 그것이다.
+
+**tick 계약**은 건너뛰었다가 버그를 만드는 부분이다. 조항이 셋이다. tick은 매 주기 **뿌리**에서 다시 들어오므로 조건이 계속 재평가되고, 앞선 형제의 조건이 거짓이 되는 순간 이미 Running이던 action이 버려진다 — 호출 사슬에 견주어 트리가 사 주는 것이 그 반응성이다. 따라서 Running이었다가 tick 경로에서 빠진 노드는 명시적으로 **halt**되어야 하고, 그래서 모든 action 노드는 tick뿐 아니라 halt 구현까지 진다. 그리고 상태는 *반환*될 뿐 전이로 저장되지 않는다. 형제 사이에는 애초에 간선이 없기 때문이다.
+
+*예.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. 배터리가 버티는 동안 로봇은 주행한다. 주행 단계 중 하나가 Failure를 반환하면 fallback이 복구 가지로 넘어간다. 그리고 주행 중에 `batteryOK`가 거짓이 되면 뿌리에서 오는 바로 다음 tick이 안쪽 sequence를 그 조건에서 실패시키고, `FollowPath`가 끝나기를 기다리지 않고 halt한 뒤 복구로 들어간다. [[04-robotics/ros2/navigation-nav2|22.4 Nav2 §2]]가 실제 제품의 트리 하나를 읽는다. 합성 변종(`PipelineSequence`, `RecoveryNode`)과 1 Hz 재계획 decorator까지 들어 있다.
+
+**반례.** 트리는 과제 시작 때 한 번 평가되는 if-then-else 사슬이 아니고, sequence는 프로그램의 `;`이 아니다 — 그렇게 읽으면 다시 tick하는 것이 메커니즘이 아니라 낭비로 보인다. 문법만 예쁜 상태 기계도 아니다. FSM은 제어 흐름을 전이 간선에 두고 그 수가 최대 $n(n-1)$까지 가며 복구 규칙 하나하나를 그것이 발동할 수 있는 모든 상태마다 복제해야 하는 반면, 트리의 제어 흐름은 형제의 순서와 3값 반환뿐이다. 이것이 복구에 **범위**를 주는 장치다. 가장 가까운 바깥 fallback이 누가 복구할지를 정하므로, 플래너의 실패가 시스템 전체의 최후 수단을 부를 필요가 없다.
+
+*읽을 때 왜 중요한가.* 논문이 로봇이 "회복했다", "재시도했다"고 하면 정책이 아니라 fallback 노드가 한 일이다. 누가 실패를 감지하고, 누가 대응을 고르고, 무엇이 종료 조건인지 확인하라.
 
 ### 6.5 아키텍처 계보와 형식적 작업 명세
 

@@ -46,6 +46,9 @@ PROBLEM = re.compile(r"^#{3,4} .*(Problem set|과제)", re.M)
 TIER = re.compile(r"\bTier [ABC]\b")
 SELFCHECK = re.compile(r"^#{3,4} .*(Self-check|스스로 점검)", re.M)
 HEADING = re.compile(r"^#{3,4} ", re.M)
+# A citation list is language-neutral: several pages carry one `### Sources` at the end
+# of the file, serving both halves, so it must not count as a Korean-only heading.
+SHARED_HEADING = re.compile(r"^#{3,4} .*(Sources|출처|참고문헌)", re.M)
 
 
 def halves(text):
@@ -82,7 +85,8 @@ def audit(path):
             problems.append("problem set has no Do/Interpret item")
         if "Solutions" not in tail:
             problems.append("problem set has no solutions")
-    nh_en, nh_ko = len(HEADING.findall(en)), len(HEADING.findall(ko))
+    count = lambda t: len(HEADING.findall(t)) - len(SHARED_HEADING.findall(t))
+    nh_en, nh_ko = count(en), count(ko)
     if nh_en != nh_ko:
         problems.append(f"heading counts differ: EN {nh_en} vs KO {nh_ko}")
     return problems

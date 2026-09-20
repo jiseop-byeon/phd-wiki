@@ -17,6 +17,68 @@ mastery-when: "Go deeper when you are writing the hardware component or the moto
 > A stack that already runs in simulation under a controller: [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. The silent-failure mechanisms in [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] and the ordered checks in [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] are used here rather than re-taught. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
 > 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]의 조용한 실패 메커니즘과 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 다시 가르치지 않고 사용한다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
 
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] on a *real* cart: the same encoder, the same rates, the same budget as in [[04-robotics/ros2/simulation-and-control|25.7]], with the Gazebo plugin swapped for a vendor hardware component behind the same `<ros2_control>` seam. Keeping every catalog number fixed is the point — what changes is only what is below the seam, and this page prices that change.
+
+| Symbol | Value | What it is here |
+|---|---:|---|
+| $N$ | $2048$ counts/m | cart encoder, now read over a bus instead of out of a physics engine |
+| $f_v$ | $50\,\mathrm{Hz}$ | vision, now on another machine across DDS |
+| $f_c$ | $200\,\mathrm{Hz}$ | `update_rate`, so one cycle is $5\,\mathrm{ms}$ of *wall* time |
+| $B$ | $70\,\mathrm{ms}$ | camera mid-exposure to applied force, and now a real deadline |
+| $t_r,\ t_w$ | $1.2,\ 0.8\,\mathrm{ms}$ | one bus round trip in `read()` and in `write()` — **page-local** illustrative values, not a datasheet |
+| $t_n$ | $5\,\mathrm{ms}$ | goal transport across the network — **page-local**, illustrative |
+
+*Scope: this page teaches what changes when the plugin below the seam is a real driver — latency and its variance, DDS across a machine boundary, the honest position on real-time, and the safety that stops being software — and prices one control cycle and one end-to-end chain against P6's budget. It does not teach how to certify a safety function, which is [[04-robotics/hri-safety|11. HRI & Safety]]; nor the contact gap, which is [[05-construction-robotics/sim-to-real|Sim-to-Real]]; nor the operational questions around a deployed machine, which are [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two panels, and the problem set asks for the same figure with one round trip made slower.
+
+**Panel A — the seam, with the two sides labelled by what they cost.** Draw the `<ros2_control>` block as a horizontal line across the page. Above it, unchanged from 25.7: the controller, the controller manager, `update_rate: 200`. Below it, two stacked boxes replacing Gazebo: `vendor hardware component` and `drive, closing its own loop at tens of kHz`. Three things the drawing must get right. Write the *same* controller YAML on both sides of a dashed vertical divider marked `simulation | hardware`, because the claim of §2 is that nothing above the line changed. Put the E-stop in as a **separate line** that reaches the drive without passing through any box above it, since §7's whole point is that a stop routed through your code is not a stop. And mark the two lifecycle transitions on the component, `on_configure` and `on_activate`, with a note on the second that this is the only one allowed to energise anything.
+
+**Panel B — one cycle, drawn to scale.** A single $5\,\mathrm{ms}$ bar, ruled in $0.5\,\mathrm{ms}$ divisions, split into three labelled segments: `read` $1.2$, `update` (the remainder), `write` $0.8$. Draw a second bar underneath for an overrun cycle of $7\,\mathrm{ms}$, aligned to the same origin, so the $2\,\mathrm{ms}$ of overshoot is a visible overhang past the first bar's end. Beside the two bars write the velocity one encoder count implies in each, and label the pair with the sentence the figure argues: *the mean survived; the variance is the number that moved.*
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. Everything is the catalog except the three page-local latencies, and the problem set changes one of them.
+
+**Step 1 — what fits inside one cycle.** `update_rate: 200` means the `read`–`update`–`write` thread of §3 must finish in
+
+$$T_c = \frac{1}{200} = 5.0\,\mathrm{ms},$$
+
+and the two bus round trips take $t_r+t_w = 1.2+0.8 = 2.0\,\mathrm{ms}$ of it, which is $2.0/5.0 = 40\%$ of the cycle spent before any control law runs. What is left for every active controller's `update()`, plus the framework's own work, is $3.0\,\mathrm{ms}$. That is the number to hold in mind when someone proposes adding a controller.
+
+**Step 2 — the rate the bus can actually service.** Turning the same two numbers around, the fastest loop this driver can sustain is
+
+$$f_{\max} = \frac{1}{t_r+t_w} = \frac{1}{0.0020} = 500\,\mathrm{Hz},$$
+
+because the bus cannot be asked for a round trip it has not finished. P6's $200\,\mathrm{Hz}$ sits at $40\%$ of that ceiling, which is comfortable. Ask for $1000\,\mathrm{Hz}$ and the cycle is $1.0\,\mathrm{ms}$ against $2.0\,\mathrm{ms}$ of unavoidable bus time — exactly §3's warning, and note what the system does about it: a *throttled warning* while the loop quietly runs slower than requested. Nothing errors, nothing stops, and `update_rate` still reads 1000 in the parameter listing.
+
+**Step 3 — the jitter, in the units the encoder reports.** One encoder count is $\Delta p = 1/2048 = 0.488\,\mathrm{mm}$, so differencing two reads one nominal cycle apart gives $\Delta p/T_c = 97.7\,\mathrm{mm/s}$. Now let one cycle overrun to $7\,\mathrm{ms}$. If the code divides by the nominal period instead of the `period` argument that §3's `read(time, period)` signature hands it, the same single count is reported as $97.7\,\mathrm{mm/s}$ when the truth is
+
+$$\frac{\Delta p}{0.007} = 69.8\,\mathrm{mm/s},$$
+
+an overstatement of $28.6\%$ from timing alone, since the numerator was right and the denominator was assumed. This is the mechanism behind §1's claim that variance, not mean delay, is what destabilises a loop: a derivative term fed this signal sees a disturbance that no sensor produced. Use the `period` you are given.
+
+**Step 4 — the end-to-end ledger, now with a bus and a network.** Follow one camera frame to one applied force, adding the hardware terms to the sampling terms:
+
+| Term | Value | Why it is there |
+|---|---:|---|
+| vision period | $20\,\mathrm{ms}$ | the goal cannot be newer than the last frame |
+| network transport | $5\,\mathrm{ms}$ | DDS across a machine boundary (§5) |
+| wait for the next tick | $5\,\mathrm{ms}$ | a goal arriving just after `update()` waits a full cycle |
+| bus round trips | $2.0\,\mathrm{ms}$ | $t_r+t_w$, inside the cycle |
+| command hold | $5\,\mathrm{ms}$ | the written value stands until the next `write()` |
+| **total** | $\mathbf{37\,ms}$ | |
+
+$$70-37 = 33\,\mathrm{ms}$$
+
+is what remains for exposure, readout, driver buffering and the actuator's own response, because the budget is a wall-clock sum and every term above is wall-clock. Compare 25.7's simulation ledger of $25\,\mathrm{ms}$: the bus and the network added $12\,\mathrm{ms}$ that Gazebo never charged, and they added it to the *fixed* part of the budget, where no tuning reaches.
+
+**Step 5 — and what one overrun does to that ledger.** The $7\,\mathrm{ms}$ cycle of Step 3 lengthens two of the five terms — the wait and the hold — by $2\,\mathrm{ms}$ each, so $37$ becomes $41\,\mathrm{ms}$ and the margin falls from $33$ to $29$. One overrun is survivable. The problem is that §3's overrun report is a throttled warning rather than an error, so a loop that misses a few percent of its deadlines looks identical in `list_controllers`, in RViz and in the trajectory's final error. The thing to log is therefore not the mean period but the **worst** period over a run, which is the one number this whole page is arguing for, and it is the same discipline [[04-robotics/ros2/debugging-data-reproducibility|25.10]] applies to a bag.
+
 ### 1. What actually changes
 
 Nothing in your launch file changes. Almost everything under it does.
@@ -312,24 +374,34 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 - ROS 2 Jazzy documentation — The ROS_DOMAIN_ID; Improved Dynamic Discovery (`ROS_AUTOMATIC_DISCOVERY_RANGE`, `ROS_STATIC_PEERS`); Installation Troubleshooting (multicast test and `ufw` rules); DDS tuning (IP fragmentation, `ipfrag_time`, `ipfrag_high_thresh`); Understanding real-time programming.
 - Safety standards are cited via [[04-robotics/hri-safety|11. HRI & Safety]] rather than restated here.
 
-> [!question]- Self-check · Answer
-> **1. Which single line in your configuration is the difference between driving a simulator and driving a real arm, and why does that make the rest of the stack transfer?** The `<plugin>` line inside the URDF's `<ros2_control>` tag — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, or the vendor's component. It transfers because the controller, its YAML, the joint names and everything above them talk to the controller manager's interfaces, not to the hardware, so they cannot tell which plugin is loaded.
-> **2. Two machines both list each other's nodes and topics, and `ros2 topic echo` prints nothing. What is the first thing to suspect, and why is it not a QoS mismatch?** Discovery and data take different paths: discovery is multicast, data is unicast to per-participant ports. A firewall or NAT that permits the multicast range and blocks unicast produces exactly this. It is not QoS because `ros2 topic echo` adapts its profile to the publishers it finds, so a QoS mismatch cannot silence echo — only your own node's subscription.
-> **3. Your supervisor asks whether an RT_PREEMPT kernel will make the control loop deterministic. What is the accurate answer?** It bounds scheduling latency — a runnable thread runs within a known time — and does nothing about what the thread does. Page faults, dynamic allocation and unbounded blocking in the execution path still destroy determinism, which is why `controller_manager` also offers `lock_memory` and attempts `SCHED_FIFO`. And hard deadlines should not be in ROS at all; they belong in the motor controller.
-> **4. A grasp succeeded in Gazebo and fails on the real object. Why is "tune the friction coefficient" usually the wrong first move?** Because contact failures are commonly model-form errors rather than parameter errors. The rigid-body engine resolves contact as per-timestep point constraints and cannot represent the real contact patch, so no value of the parameter recovers the behaviour. Free-space motion transfers far better than contact, which is why the first real experiments should be free-space ones.
-> **5. What is wrong with an emergency stop implemented as a topic?** It shares failure modes with the system it is meant to protect against: if the executor has hung, the DDS link has dropped or the machine has been unplugged from the network, the message is never delivered. An E-stop must remove power or engage brakes through hard-wired circuitry, latch, and work with the computer switched off.
+### Self-check
+
+1. Which single line in your configuration is the difference between driving a simulator and driving a real arm, and why does that make the rest of the stack transfer?
+2. Two machines both list each other's nodes and topics, and `ros2 topic echo` prints nothing. What is the first thing to suspect, and why is it not a QoS mismatch?
+3. Your supervisor asks whether an RT_PREEMPT kernel will make the control loop deterministic. What is the accurate answer?
+4. A grasp succeeded in Gazebo and fails on the real object. Why is "tune the friction coefficient" usually the wrong first move?
+5. What is wrong with an emergency stop implemented as a topic?
+6. The worked case prices one control cycle at $5.0\,\mathrm{ms}$ with $2.0\,\mathrm{ms}$ of bus. A colleague proposes raising `update_rate` to $500\,\mathrm{Hz}$ "since the bus can sustain it". What happens to the cycle, to the end-to-end ledger, and to the argument?
+
+> [!tip]- Answers
+> 1. The `<plugin>` line inside the URDF's `<ros2_control>` tag — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, or the vendor's component. It transfers because the controller, its YAML, the joint names and everything above them talk to the controller manager's interfaces, not to the hardware, so they cannot tell which plugin is loaded.
+> 2. Discovery and data take different paths: discovery is multicast, data is unicast to per-participant ports. A firewall or NAT that permits the multicast range and blocks unicast produces exactly this. It is not QoS because `ros2 topic echo` adapts its profile to the publishers it finds, so a QoS mismatch cannot silence echo — only your own node's subscription.
+> 3. It bounds scheduling latency — a runnable thread runs within a known time — and does nothing about what the thread does. Page faults, dynamic allocation and unbounded blocking in the execution path still destroy determinism, which is why `controller_manager` also offers `lock_memory` and attempts `SCHED_FIFO`. And hard deadlines should not be in ROS at all; they belong in the motor controller.
+> 4. Because contact failures are commonly model-form errors rather than parameter errors. The rigid-body engine resolves contact as per-timestep point constraints and cannot represent the real contact patch, so no value of the parameter recovers the behaviour. Free-space motion transfers far better than contact, which is why the first real experiments should be free-space ones.
+> 5. It shares failure modes with the system it is meant to protect against: if the executor has hung, the DDS link has dropped or the machine has been unplugged from the network, the message is never delivered. An E-stop must remove power or engage brakes through hard-wired circuitry, latch, and work with the computer switched off.
+> 6. The cycle becomes $1/500=2.0\,\mathrm{ms}$, which is exactly the bus time, so `update()` gets $0\,\mathrm{ms}$ and every cycle overruns — the ceiling of Step 2 is what the bus can round-trip, not what the loop can do with the result. The ledger barely moves even if it worked: the two $5\,\mathrm{ms}$ terms would fall to $2$ each, taking $37$ to $31\,\mathrm{ms}$, a $6\,\mathrm{ms}$ gain on a $70\,\mathrm{ms}$ budget whose largest term is the camera's $20\,\mathrm{ms}$ and cannot be touched from here. And the argument is the one §6 refuses: ROS 2 is not where hard timing lives. The drive is already closing a loop at tens of kilohertz; asking the ROS loop to approach it buys $6\,\mathrm{ms}$ and spends the entire jitter margin of Step 5.
 
 ### Problem set · 과제
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. Encoder $2048$ counts/m, control $200\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$. The Gazebo plugin is swapped for a vendor hardware component. No new simulator.
 
 1. **Draw.** Same controller YAML as in simulation. The one URDF line that changed. Five-line timeline of `read` (encoder) – `update` ($200\,\mathrm{Hz}$) – `write` (motor), with the $70\,\mathrm{ms}$ camera-to-force budget drawn *across* that loop, not inside `update`.
-2. **Derive.** (a) Encoder $\Delta p$ for one count — now a real quantum. (b) An RT_PREEMPT kernel bounds scheduling latency. Does it bound P6's $70\,\mathrm{ms}$? (c) Two machines list each other's nodes; `echo` is empty. First suspect, and why not QoS?
+2. **Derive.** (a) The vendor's `read()` turns out to block for $3.0\,\mathrm{ms}$, not $1.2$. Redo the worked case's Steps 1, 2 and 4: what is left for `update()`, the new $f_{\max}$, and the new end-to-end ledger against $70\,\mathrm{ms}$. Is $200\,\mathrm{Hz}$ still a defensible `update_rate`? (b) An RT_PREEMPT kernel bounds scheduling latency. Does it bound P6's $70\,\mathrm{ms}$? (c) Two machines list each other's nodes; `echo` is empty. First suspect, and why not QoS?
 3. **Interpret.** E-stop as `/p6/estop` at $200\,\mathrm{Hz}$. What failure modes does it share with the controller it is meant to kill? Separately: a $200\,\mathrm{ms}$-late camera on the real cart — plugin line or budget?
 
 > [!tip]- Solutions
 > 1. `<plugin>` inside `<ros2_control>` is the only change. Timeline: encoder `read` every $5\,\mathrm{ms}$; camera path is a second chain that must still finish by $70\,\mathrm{ms}$.
-> 2. (a) $0.488\,\mathrm{mm}$. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
+> 2. (a) Bus time becomes $3.0+0.8=3.8\,\mathrm{ms}$ of the $5\,\mathrm{ms}$ cycle, so `update()` is left $1.2\,\mathrm{ms}$ instead of $3.0$ — a $60\%$ cut for a $1.8\,\mathrm{ms}$ change in the driver. The ceiling falls to $f_{\max}=1/0.0038=263\,\mathrm{Hz}$, so $200\,\mathrm{Hz}$ now sits at $76\%$ of it rather than $40\%$, and the ledger rises to $20+5+5+3.8+5=38.8\,\mathrm{ms}$, leaving $31.2$. Defensible but no longer comfortable: one overrun now costs the same two terms out of a thinner margin, and the honest move is to measure the worst cycle before keeping the rate. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
 > 3. Hung executor, dropped DDS, unplugged cable — the message never arrives. E-stop must be wired. The late camera is the same $70\,\mathrm{ms}$ budget as in sim; swapping the plugin does not buy you milliseconds.
 
 ## 한국어
@@ -341,6 +413,68 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 > [!note] 선수 지식 · Prerequisites
 > 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]의 조용한 실패와 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 사용만 한다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
 > A stack already running in simulation under a controller; Jazzy on Ubuntu 24.04 throughout.
+
+### 이 페이지의 대상 · Running object
+
+*실제* 카트 위의 [[02-foundations/lab-plants|0.6 Lab Plants]] 장치 **P6**. 엔코더도 속도도 예산도 [[04-robotics/ros2/simulation-and-control|25.7]]과 같고, 같은 `<ros2_control>` 이음매 뒤의 Gazebo 플러그인만 벤더 하드웨어 컴포넌트로 바꿨다. 카탈로그 숫자를 전부 그대로 두는 것이 요점이다. 달라지는 것은 이음매 아래뿐이고, 이 페이지는 그 변화에 값을 매긴다.
+
+| 기호 | 값 | 여기서의 뜻 |
+|---|---:|---|
+| $N$ | $2048$ counts/m | 카트 엔코더. 이제 물리 엔진이 아니라 버스에서 읽는다 |
+| $f_v$ | $50\,\mathrm{Hz}$ | 비전. 이제 DDS 너머 다른 머신에 있다 |
+| $f_c$ | $200\,\mathrm{Hz}$ | `update_rate`. 그래서 한 주기는 *벽시계* $5\,\mathrm{ms}$다 |
+| $B$ | $70\,\mathrm{ms}$ | 카메라 노출 중간부터 힘까지. 이제 진짜 마감이다 |
+| $t_r,\ t_w$ | $1.2,\ 0.8\,\mathrm{ms}$ | `read()`와 `write()`의 버스 왕복 한 번 — **페이지 국소** 예시 값이지 데이터시트가 아니다 |
+| $t_n$ | $5\,\mathrm{ms}$ | 네트워크를 건너는 목표 전송 — **페이지 국소** 예시 값 |
+
+*범위: 이 페이지는 이음매 아래 플러그인이 실제 드라이버가 될 때 무엇이 달라지는지 — 지연과 그 산포, 머신 경계를 넘는 DDS, 실시간에 대한 정직한 입장, 더 이상 소프트웨어가 아닌 안전 — 을 가르치고, 제어 주기 하나와 종단 사슬 하나에 P6의 예산으로 값을 매긴다. 안전 기능 인증은 가르치지 않는다. 그것은 [[04-robotics/hri-safety|11. HRI & Safety]]다. 접촉 격차도 아니다. 그것은 [[05-construction-robotics/sim-to-real|Sim-to-Real]]이다. 배치된 기계 주변의 운영 질문도 아니다. 그것은 [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]]다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 패널 둘. 과제는 왕복 하나를 느리게 만든 같은 그림을 요구한다.
+
+**패널 A — 이음매, 그리고 양쪽에 각자의 비용을 적기.** `<ros2_control>` 블록을 페이지를 가로지르는 수평선으로 그린다. 위쪽은 25.7에서 그대로다. 제어기, 컨트롤러 매니저, `update_rate: 200`. 아래쪽은 Gazebo를 대신하는 상자 둘을 쌓는다. `벤더 하드웨어 컴포넌트`와 `수십 kHz로 자기 루프를 닫는 드라이브`. 그림이 맞혀야 할 것이 셋이다. `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에 *같은* 제어기 YAML을 적는다. 선 위쪽은 아무것도 바뀌지 않았다는 것이 §2의 주장이기 때문이다. E-stop은 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿는 **별도의 선**으로 넣는다. 내 코드를 지나는 정지는 정지가 아니라는 것이 §7의 요점이기 때문이다. 그리고 컴포넌트에 라이프사이클 전이 둘, `on_configure`와 `on_activate`를 표시하고, 두 번째에는 전원을 넣어도 되는 유일한 전이라고 주석을 단다.
+
+**패널 B — 주기 하나를 실제 비율로.** $5\,\mathrm{ms}$ 막대 하나를 $0.5\,\mathrm{ms}$ 눈금으로 긋고 이름 붙인 구간 셋으로 나눈다. `read` $1.2$, `update`(나머지), `write` $0.8$. 그 아래에 overrun 주기 $7\,\mathrm{ms}$를 같은 원점에 맞춰 그려서, $2\,\mathrm{ms}$의 초과분이 첫 막대 끝을 넘어 튀어나오게 한다. 두 막대 옆에 각각 엔코더 한 카운트가 함의하는 속도를 적고, 이 그림이 논증하는 문장을 붙인다. *평균은 살아남았고, 움직인 숫자는 산포다.*
+
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. 페이지 국소 지연 셋을 빼면 전부 카탈로그이고, 과제는 그중 하나를 바꾼다.
+
+**Step 1 — 한 주기 안에 무엇이 들어가는가.** `update_rate: 200`은 §3의 `read`–`update`–`write` 스레드가
+
+$$T_c = \frac{1}{200} = 5.0\,\mathrm{ms}$$
+
+안에 끝나야 한다는 뜻이고, 버스 왕복 둘이 그중 $t_r+t_w = 1.2+0.8 = 2.0\,\mathrm{ms}$를 가져간다. 제어 법칙이 한 줄 돌기도 전에 주기의 $2.0/5.0 = 40\%$가 나간다. 활성 제어기 전부의 `update()`와 프레임워크 자신의 일에 남는 것은 $3.0\,\mathrm{ms}$다. 누군가 제어기를 하나 더 붙이자고 할 때 떠올려야 할 숫자가 그것이다.
+
+**Step 2 — 버스가 실제로 감당하는 속도.** 같은 두 숫자를 뒤집으면 이 드라이버가 유지할 수 있는 가장 빠른 루프는
+
+$$f_{\max} = \frac{1}{t_r+t_w} = \frac{1}{0.0020} = 500\,\mathrm{Hz}$$
+
+다. 아직 끝나지 않은 왕복을 버스에 다시 요구할 수는 없기 때문이다. P6의 $200\,\mathrm{Hz}$는 그 천장의 $40\%$라 넉넉하다. $1000\,\mathrm{Hz}$를 요구하면 주기 $1.0\,\mathrm{ms}$에 피할 수 없는 버스 시간 $2.0\,\mathrm{ms}$가 맞선다. §3의 경고 그대로이고, 시스템이 그에 대해 무엇을 하는지 눈여겨보라. 루프가 조용히 요청보다 느리게 도는 동안 *스로틀된 경고* 한 줄이다. 오류도 없고 정지도 없으며, 파라미터 목록의 `update_rate`는 여전히 1000을 읽는다.
+
+**Step 3 — 지터를 엔코더가 보고하는 단위로.** 엔코더 한 카운트는 $\Delta p = 1/2048 = 0.488\,\mathrm{mm}$이므로, 공칭 주기 하나 떨어진 두 읽기를 차분하면 $\Delta p/T_c = 97.7\,\mathrm{mm/s}$다. 이제 한 주기가 $7\,\mathrm{ms}$로 overrun 났다고 하자. 코드가 §3의 `read(time, period)` 시그니처가 건네주는 `period` 대신 공칭 주기로 나눈다면, 같은 한 카운트가 $97.7\,\mathrm{mm/s}$로 보고된다. 참값은
+
+$$\frac{\Delta p}{0.007} = 69.8\,\mathrm{mm/s}$$
+
+이므로 타이밍만으로 $28.6\%$ 과대평가다. 분자는 맞았고 분모를 가정했기 때문이다. 평균 지연이 아니라 산포가 루프를 불안정하게 만든다는 §1의 주장 뒤에 있는 기구가 이것이다. 이 신호를 먹은 미분 항은 어떤 센서도 만들지 않은 외란을 본다. 받은 `period`를 써라.
+
+**Step 4 — 종단 장부, 이제 버스와 네트워크까지.** 카메라 프레임 하나에서 힘 하나까지를 따라가며 샘플링 항에 하드웨어 항을 더한다.
+
+| 항 | 값 | 왜 거기 있는가 |
+|---|---:|---|
+| 비전 주기 | $20\,\mathrm{ms}$ | 목표는 마지막 프레임보다 새로울 수 없다 |
+| 네트워크 전송 | $5\,\mathrm{ms}$ | 머신 경계를 넘는 DDS(§5) |
+| 다음 틱 대기 | $5\,\mathrm{ms}$ | `update()` 직후 도착한 목표는 한 주기를 온전히 기다린다 |
+| 버스 왕복 | $2.0\,\mathrm{ms}$ | 주기 안의 $t_r+t_w$ |
+| 명령 유지 | $5\,\mathrm{ms}$ | 기록된 값은 다음 `write()`까지 선다 |
+| **합계** | $\mathbf{37\,ms}$ | |
+
+$$70-37 = 33\,\mathrm{ms}$$
+
+가 노출, 판독, 드라이버 버퍼링, 구동기 자체 응답에 남는다. 예산이 벽시계 합이고 위의 모든 항이 벽시계이기 때문이다. 25.7의 시뮬레이션 장부 $25\,\mathrm{ms}$와 견주어 보라. 버스와 네트워크가 Gazebo는 청구한 적 없는 $12\,\mathrm{ms}$를 더했고, 그것을 예산의 *고정* 부분에 더했다. 튜닝이 닿지 않는 자리다.
+
+**Step 5 — 그리고 overrun 한 번이 그 장부에 하는 일.** Step 3의 $7\,\mathrm{ms}$ 주기는 다섯 항 중 둘 — 대기와 유지 — 을 각각 $2\,\mathrm{ms}$씩 늘리므로 $37$이 $41\,\mathrm{ms}$가 되고 여유는 $33$에서 $29$로 준다. overrun 한 번은 버틸 만하다. 문제는 §3의 overrun 보고가 오류가 아니라 스로틀된 경고라는 데 있다. 마감을 몇 퍼센트씩 놓치는 루프는 `list_controllers`에서도, RViz에서도, 궤적의 최종 오차에서도 똑같아 보인다. 그러므로 기록할 것은 평균 주기가 아니라 한 번의 실행에서 나온 **최악** 주기다. 이 페이지 전체가 주장하는 숫자 하나가 그것이고, [[04-robotics/ros2/debugging-data-reproducibility|25.10]]이 bag에 적용하는 규율과 같은 것이다.
 
 ### 1. 실제로 무엇이 달라지는가
 
@@ -635,22 +769,32 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 - ROS 2 Jazzy 문서 — The ROS_DOMAIN_ID; Improved Dynamic Discovery(`ROS_AUTOMATIC_DISCOVERY_RANGE`, `ROS_STATIC_PEERS`); Installation Troubleshooting(멀티캐스트 시험과 `ufw` 규칙); DDS tuning(IP 단편화, `ipfrag_time`, `ipfrag_high_thresh`); Understanding real-time programming.
 - 안전 표준은 여기서 되풀이하지 않고 [[04-robotics/hri-safety|11. HRI & Safety]]를 통해 인용한다.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 설정에서 시뮬레이터를 모는 것과 실제 팔을 모는 것을 가르는 단 한 줄은 무엇이고, 왜 그것이 나머지 스택을 이전시키는가?** URDF의 `<ros2_control>` 태그 안에 있는 `<plugin>` 줄 — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, 또는 벤더 컴포넌트. 제어기와 그 YAML, 관절 이름, 그 위의 모든 것이 하드웨어가 아니라 controller manager의 인터페이스에 말을 걸기 때문에 어떤 플러그인이 로드됐는지 알 수 없고, 그래서 그대로 이전된다.
-> **2. 두 머신이 서로의 노드와 토픽을 다 나열하는데 `ros2 topic echo`는 아무것도 찍지 않는다. 무엇을 먼저 의심하고, 왜 QoS 불일치가 아닌가?** 탐색과 데이터는 경로가 다르다. 탐색은 멀티캐스트, 데이터는 참여자별 포트로 가는 유니캐스트다. 멀티캐스트 범위는 허용하고 유니캐스트를 막는 방화벽이나 NAT가 정확히 이것을 만든다. QoS가 아닌 이유는 `ros2 topic echo`가 찾은 퍼블리셔에 자기 프로파일을 맞추므로 QoS 불일치로는 echo가 조용해질 수 없기 때문이다. 조용해지는 것은 내 노드의 구독뿐이다.
-> **3. 지도교수가 RT_PREEMPT 커널을 쓰면 제어 루프가 결정적이 되느냐고 묻는다. 정확한 답은?** 스케줄링 지연을 유계로 만든다 — 실행 준비된 스레드가 알려진 시간 안에 실행된다 — 그리고 그 스레드가 무엇을 하는지에 대해서는 아무것도 하지 않는다. 실행 경로의 페이지 폴트, 동적 할당, 무한 블로킹은 여전히 결정성을 파괴하고, 그래서 `controller_manager`가 `lock_memory`를 제공하고 `SCHED_FIFO`를 시도한다. 그리고 경성 마감은 애초에 ROS에 있으면 안 되고 모터 제어기에 속한다.
-> **4. Gazebo에서 성공한 파지가 실물에서 실패한다. "마찰 계수를 튜닝한다"가 왜 보통 틀린 첫수인가?** 접촉 실패는 파라미터 오류가 아니라 모델 형식 오류인 경우가 많기 때문이다. 강체 엔진은 접촉을 시간 스텝마다의 점 구속으로 풀고 실제 접촉 면적을 표현하지 못하므로, 파라미터를 어떤 값으로 해도 그 거동은 복원되지 않는다. 자유 공간 운동은 접촉보다 훨씬 잘 이전되고, 그래서 첫 실기 실험은 자유 공간이어야 한다.
-> **5. 토픽으로 구현한 비상정지의 무엇이 잘못됐나?** 그것이 막아야 할 시스템과 실패 모드를 공유한다. executor가 멈췄거나 DDS 링크가 끊겼거나 기계가 네트워크에서 뽑혔다면 메시지는 영영 전달되지 않는다. E-stop은 하드와이어 회로로 전원을 끊거나 브레이크를 걸어야 하고, 래치되어야 하며, 컴퓨터가 꺼진 상태에서도 동작해야 한다.
+### 스스로 점검
+
+1. 설정에서 시뮬레이터를 모는 것과 실제 팔을 모는 것을 가르는 단 한 줄은 무엇이고, 왜 그것이 나머지 스택을 이전시키는가?
+2. 두 머신이 서로의 노드와 토픽을 다 나열하는데 `ros2 topic echo`는 아무것도 찍지 않는다. 무엇을 먼저 의심하고, 왜 QoS 불일치가 아닌가?
+3. 지도교수가 RT_PREEMPT 커널을 쓰면 제어 루프가 결정적이 되느냐고 묻는다. 정확한 답은?
+4. Gazebo에서 성공한 파지가 실물에서 실패한다. "마찰 계수를 튜닝한다"가 왜 보통 틀린 첫수인가?
+5. 토픽으로 구현한 비상정지의 무엇이 잘못됐나?
+6. 계산 절은 제어 주기 하나를 $5.0\,\mathrm{ms}$로 잡고 그중 $2.0\,\mathrm{ms}$를 버스에 준다. 동료가 "버스가 감당하니까" `update_rate`를 $500\,\mathrm{Hz}$로 올리자고 한다. 주기에, 종단 장부에, 그리고 그 논증에 무슨 일이 일어나는가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. URDF의 `<ros2_control>` 태그 안에 있는 `<plugin>` 줄 — `mock_components/GenericSystem`, `gz_ros2_control/GazeboSimSystem`, 또는 벤더 컴포넌트. 제어기와 그 YAML, 관절 이름, 그 위의 모든 것이 하드웨어가 아니라 controller manager의 인터페이스에 말을 걸기 때문에 어떤 플러그인이 로드됐는지 알 수 없고, 그래서 그대로 이전된다.
+> 2. 탐색과 데이터는 경로가 다르다. 탐색은 멀티캐스트, 데이터는 참여자별 포트로 가는 유니캐스트다. 멀티캐스트 범위는 허용하고 유니캐스트를 막는 방화벽이나 NAT가 정확히 이것을 만든다. QoS가 아닌 이유는 `ros2 topic echo`가 찾은 퍼블리셔에 자기 프로파일을 맞추므로 QoS 불일치로는 echo가 조용해질 수 없기 때문이다. 조용해지는 것은 내 노드의 구독뿐이다.
+> 3. 스케줄링 지연을 유계로 만든다 — 실행 준비된 스레드가 알려진 시간 안에 실행된다 — 그리고 그 스레드가 무엇을 하는지에 대해서는 아무것도 하지 않는다. 실행 경로의 페이지 폴트, 동적 할당, 무한 블로킹은 여전히 결정성을 파괴하고, 그래서 `controller_manager`가 `lock_memory`를 제공하고 `SCHED_FIFO`를 시도한다. 그리고 경성 마감은 애초에 ROS에 있으면 안 되고 모터 제어기에 속한다.
+> 4. 접촉 실패는 파라미터 오류가 아니라 모델 형식 오류인 경우가 많기 때문이다. 강체 엔진은 접촉을 시간 스텝마다의 점 구속으로 풀고 실제 접촉 면적을 표현하지 못하므로, 파라미터를 어떤 값으로 해도 그 거동은 복원되지 않는다. 자유 공간 운동은 접촉보다 훨씬 잘 이전되고, 그래서 첫 실기 실험은 자유 공간이어야 한다.
+> 5. 그것이 막아야 할 시스템과 실패 모드를 공유한다. executor가 멈췄거나 DDS 링크가 끊겼거나 기계가 네트워크에서 뽑혔다면 메시지는 영영 전달되지 않는다. E-stop은 하드와이어 회로로 전원을 끊거나 브레이크를 걸어야 하고, 래치되어야 하며, 컴퓨터가 꺼진 상태에서도 동작해야 한다.
+> 6. 주기가 $1/500=2.0\,\mathrm{ms}$가 되는데 이는 버스 시간과 정확히 같아서 `update()`에 $0\,\mathrm{ms}$가 남고 모든 주기가 overrun 난다. Step 2의 천장은 버스가 왕복할 수 있는 한계이지 루프가 그 결과로 무언가를 할 수 있는 한계가 아니다. 설령 된다 해도 장부는 거의 움직이지 않는다. $5\,\mathrm{ms}$짜리 항 둘이 각각 $2$로 줄어 $37$이 $31\,\mathrm{ms}$가 되고, $70\,\mathrm{ms}$ 예산에서 $6\,\mathrm{ms}$를 번다. 그 예산의 가장 큰 항은 카메라의 $20\,\mathrm{ms}$이고 여기서는 손댈 수 없다. 그리고 그 논증은 §6이 거부하는 바로 그것이다. 단단한 타이밍이 사는 곳은 ROS 2가 아니다. 드라이브는 이미 수십 킬로헤르츠로 루프를 닫고 있고, ROS 루프를 거기에 다가가게 하는 일은 $6\,\mathrm{ms}$를 벌고 Step 5의 지터 여유를 통째로 쓴다.
 
 ### 과제 · Problem set
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 *실제* 카트에. 엔코더 $2048$ counts/m, 제어 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. Gazebo 플러그인을 벤더 하드웨어 컴포넌트로 바꿨다. 시뮬레이터를 새로 만들지 마라.
 
 1. **그리기.** 시뮬레이션과 같은 제어기 YAML. 바뀐 URDF 한 줄. `read`(엔코더) – `update`($200\,\mathrm{Hz}$) – `write`(모터)의 다섯 줄 타임라인. $70\,\mathrm{ms}$ 카메라–힘 예산은 `update` *안*이 아니라 그 루프를 *가로질러* 그린다.
-2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — 이제 실제 양자. (b) RT_PREEMPT 커널이 스케줄 지연을 유계로 만든다. P6의 $70\,\mathrm{ms}$도 유계로 만드는가? (c) 두 머신이 서로의 노드를 나열하고 `echo`는 빔. 첫 의심, 왜 QoS가 아닌가?
+2. **유도.** (a) 벤더의 `read()`가 $1.2$가 아니라 $3.0\,\mathrm{ms}$ 동안 블록하는 것으로 드러났다. 계산 절의 Step 1, 2, 4를 다시 하라. `update()`에 남는 시간, 새 $f_{\max}$, 그리고 $70\,\mathrm{ms}$에 대한 새 종단 장부. $200\,\mathrm{Hz}$는 여전히 방어할 수 있는 `update_rate`인가? (b) RT_PREEMPT 커널이 스케줄 지연을 유계로 만든다. P6의 $70\,\mathrm{ms}$도 유계로 만드는가? (c) 두 머신이 서로의 노드를 나열하고 `echo`는 빔. 첫 의심, 왜 QoS가 아닌가?
 3. **해석.** E-stop을 $200\,\mathrm{Hz}$의 `/p6/estop`으로. 그것이 죽이려는 제어기와 어떤 실패 모드를 공유하는가? 별도로: 실제 카트의 $200\,\mathrm{ms}$ 늦은 카메라 — 플러그인 줄인가 예산인가?
 
 > [!tip]- 정답 · Solutions
 > 1. `<ros2_control>` 안의 `<plugin>`만 바뀐다. 타임라인: $5\,\mathrm{ms}$마다 엔코더 `read`; 카메라 경로는 $70\,\mathrm{ms}$까지 끝나야 하는 둘째 사슬.
-> 2. (a) $0.488\,\mathrm{mm}$. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
+> 2. (a) 버스 시간이 $5\,\mathrm{ms}$ 주기 중 $3.0+0.8=3.8\,\mathrm{ms}$가 되어 `update()`에는 $3.0$ 대신 $1.2\,\mathrm{ms}$만 남는다. 드라이버가 $1.8\,\mathrm{ms}$ 바뀌었는데 $60\%$가 깎였다. 천장은 $f_{\max}=1/0.0038=263\,\mathrm{Hz}$로 내려가 $200\,\mathrm{Hz}$가 $40\%$가 아니라 그 $76\%$에 앉고, 장부는 $20+5+5+3.8+5=38.8\,\mathrm{ms}$로 올라 $31.2$가 남는다. 방어는 되지만 더는 넉넉하지 않다. overrun 한 번이 더 얇아진 여유에서 같은 두 항을 가져가므로, 정직한 수는 속도를 유지하기 전에 최악 주기를 재는 것이다. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
 > 3. 멈춘 executor, 끊긴 DDS, 뽑힌 케이블 — 메시지가 안 온다. E-stop은 배선이어야 한다. 늦은 카메라는 시뮬과 같은 $70\,\mathrm{ms}$ 예산이고, 플러그인을 바꾼다고 밀리초가 생기지는 않는다.

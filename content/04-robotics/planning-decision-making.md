@@ -2,6 +2,7 @@
 title: 4. Planning & Decision-Making
 tags: [robotics, planning, decision-making]
 study-depth: Working
+wiki-support: Working
 depth-goal: "Follow the formulation, frames, assumptions, and failure modes well enough to use or evaluate the tool."
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
@@ -13,6 +14,8 @@ Choosing an executable future; group I specialises this for unstructured environ
 
 Planning asks how a robot should choose a feasible sequence of future states and actions to reach a goal. The difficulty is not merely finding a short path: robot geometry, dynamics, contact, uncertainty, computation time, and changing observations constrain what can actually be executed.
 
+*Scope: this page teaches the objects and the guarantees — the five words of §1, the spaces and the map and cost representations of §2, the four strengths of completeness in §5, the constraints that make a path undrivable in §5.5, and the shape of the trajectory-optimization program in §6 — plus enough of each method family to place a paper in it. It does not teach any single algorithm to implementation depth. A\*'s proofs and code are in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §6]], the sampling planners are surveyed here and implemented nowhere in this wiki, receding-horizon control is [[04-robotics/mpc|7. MPC]], policy learning is [[02-foundations/rl-basics|RL Basics]], and one navigation stack's concrete parameters are [[04-robotics/ros2/navigation-nav2|22.4 Nav2]].*
+
 > [!info] Depth target
 > Distinguish search, motion planning, trajectory optimization, task planning, policy learning, and control; read feasibility and optimality claims; and identify whether a generated trajectory is collision-free, dynamically feasible, and evaluated in closed loop.
 
@@ -21,6 +24,33 @@ Planning asks how a robot should choose a feasible sequence of future states and
 
 > [!note] First pass · 처음이라면
 > Read §1 — five words the literature uses interchangeably and should not — then §2, then §4's worked example. §5 through §8 are a survey; read the family a paper belongs to rather than all of them.
+
+### Homework diagram · 과제가 그릴 그림
+
+Two panels side by side, the same pairing as the figure in §2, and the problem set asks for this
+drawing. The object is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — unit links, base
+at the world origin — and the panel is the half-plane $x<1$ m.
+
+**Left panel — the workspace.** The base at the origin, the reachable disc of radius $2$ m around
+it, the panel as a vertical line at $x=1$ with hatching on its far side, and the task point
+$p^\star=(1,1)$ m on that line. Draw the arm twice: once folded out straight along $+x$, tip at
+$(2,0)$, and once at the frozen pose, elbow at $(1,0)$ and tip on the panel. Two configurations,
+one picture, and nothing on it is yet a plan.
+
+**Right panel — the configuration space.** Axes $\theta_1$ and $\theta_2$, each from $-180°$ to
+$180°$, and a note on the drawing that opposite edges are identified, because $\mathcal{C}$ is the
+torus $T^2$ and a planner that treats $179°$ and $-179°$ as far apart is using the wrong space
+(§2). Put $q_\mathrm{start}=(0°,0°)$ and $q_\mathrm{goal}=(0°,90°)$ as two dots and join them by
+the straight segment that is the single edge of the problem set's graph. Shade the region the
+tip-only check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, label the rest
+$\mathcal{C}_\mathrm{free}$, and mark the one point of the segment that lies on the boundary —
+contact, not free space.
+
+**The arrow between the panels.** Draw one arrow from the segment on the right to the curve the tip
+traces on the left and label it $f$, the forward kinematics. The two panels are not two views of
+one object: the right is a set of configurations, the left a set of positions, and that arrow is
+the only thing relating them. Every claim on this page about what a planner guarantees is a claim
+about the right panel; every claim about what the robot does is about the left.
 
 ### 1. Plan, path, trajectory, policy, controller
 
@@ -56,17 +86,18 @@ The plan/policy split matters most: a plan is one answer for one start, and a po
 
 Collision-free in workspace does not imply joint, torque, velocity, stability, or contact feasibility.
 
-**Configuration space and its free part, defined.** A **configuration** $q$ is a complete specification of the position of every point of the robot, and the **configuration space** $\mathcal{C}$ is the set of all configurations. Its dimension is the number of degrees of freedom, and its shape can be curved: a 2R arm's is a torus ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]]). Let $\mathcal{W}$ ($\mathbb{R}^2$ or $\mathbb{R}^3$) be the workspace, $\mathcal{O}\subset\mathcal{W}$ the region occupied by obstacles, and $\mathcal{A}(q)\subset\mathcal{W}$ the region the robot's body occupies at configuration $q$. Every configuration is either in collision or not, so $\mathcal{C}$ splits into two parts:
+**Configuration space, defined.** A **configuration** $q$ is a specification of the position of every point of the robot. Two conditions make one: it is **complete**, so no body point is left undetermined, and it is **minimal**, so no shorter list of numbers does the same job. The **configuration space** $\mathcal{C}$ is the set of all configurations, and minimality is what makes its dimension the number of degrees of freedom:
 
-- the **C-obstacle**, every configuration at which the body overlaps an obstacle,
-$$\mathcal{C}_{\text{obs}}=\{\,q\in\mathcal{C} : \mathcal{A}(q)\cap\mathcal{O}\neq\emptyset\,\}$$
-- and the **free space**, everything else, since the two parts are complements.
-$$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
+$$\mathcal{C}=\{\,q:q\ \text{locates every point of the robot}\,\},\qquad \dim\mathcal{C}=\text{dof}$$
+
+The set matters more than the count, because $\mathcal{C}$ is usually not a box. A planar 2R arm's is the torus $T^2$, not the rectangle $[0,2\pi)^2$, since each joint angle wraps — so a planner that treats $359°$ and $1°$ as far apart is using the wrong space. **Non-example:** the end-effector pose is *not* a configuration of a redundant arm, because many joint vectors give the same pose and the body points are therefore not determined. That is task space, the last item in the list above.
+
+$\mathcal{C}$ splits into the **C-obstacle** $\mathcal{C}_{\text{obs}}$ and the **free space** $\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$. Both are defined, derived on plant **P2**, and given their example and non-example in [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]; this page uses them rather than restating them. Two consequences of that definition are what the rest of this page rests on: a C-obstacle is a set of *configurations* and never a region of the workspace, and the construction shrinks a robot of some shape to a *point* moving in $\mathcal{C}_{\text{free}}$, which is the form every planner below is written for.
 
 The **path-planning problem** is then: given $q_{\text{start}},q_{\text{goal}}\in\mathcal{C}_{\text{free}}$, find a path $\sigma$ (§1) with $\sigma(s)\in\mathcal{C}_{\text{free}}$ for every $s\in[0,1]$, or report that none exists. The **state space** $\mathcal{X}$ adds velocities, $x=(q,\dot q)$, so an $n$-dof robot has a $2n$-dimensional state. The **input space** $\mathcal{U}$ is the set of admissible commands, for example $|u_i|\le u_{\max}$ for each actuator. Workspace and task space are sets of physical positions or poses, while $\mathcal{C}$ is a set of robot configurations, which is why the figure below needs two panels.
 
 > [!example] Worked example · 계산 예제
-> A disc robot of radius 0.5 m that translates without rotating has configuration $q=(x,y)$, its centre, so $\mathcal{C}=\mathbb{R}^2$. With a square obstacle $[1,2]\times[1,2]$ m, $q\in\mathcal{C}_{\text{obs}}$ exactly when the centre is closer than 0.5 m to the square. $q=(0.6,1.5)$ is 0.4 m from it, so it is in $\mathcal{C}_{\text{obs}}$ even though the workspace *point* $(0.6,1.5)$ is empty. $q=(0.4,1.5)$ is 0.6 m away and free.
+> MR ch.2 derives the C-obstacle of an *arm*, where it is a curved lens on a torus. Here is the other case, the one the grid inflation below depends on. A disc robot of radius 0.5 m that translates without rotating has configuration $q=(x,y)$, its centre, so $\mathcal{C}=\mathbb{R}^2$. With a square obstacle $[1,2]\times[1,2]$ m, $q\in\mathcal{C}_{\text{obs}}$ exactly when the centre is closer than 0.5 m to the square. $q=(0.6,1.5)$ is 0.4 m from it, so it is in $\mathcal{C}_{\text{obs}}$ even though the workspace *point* $(0.6,1.5)$ is empty. $q=(0.4,1.5)$ is 0.6 m away and free.
 >
 > **Non-example:** the C-obstacle is not the square grown into the box $[0.5,2.5]^2$. Its corners are rounded, because it is the square's Minkowski sum with the disc. So $q=(0.6,0.6)$, inside that box, is 0.566 m from the corner $(1,1)$ and free, while $(0.7,0.7)$, at 0.424 m, is not. This is the inflation of the list below, and it is exact only because the robot is a disc.
 
@@ -95,6 +126,7 @@ appendix.
   to enter. As a function of a cell's distance $d$ to the nearest obstacle cell, with inscribed robot radius $r$ and decay rate $\alpha>0$, ROS costmaps use an exponential:
   $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
   so a cell within the inscribed radius means certain collision for a robot centred there, the cost decays with distance outside it, and cells beyond the inflation radius $d_{\text{infl}}$ cost nothing. With $\alpha=3$ /m, a cell 0.2 m outside the inscribed radius costs $e^{-0.6}=0.55$ of the inscribed value; raising $\alpha$ narrows the margin.
+  **Three radii, and they are not the same number.** A footprint has an **inscribed radius** $r_{\text{insc}}$, the radius of the largest disc centred at the robot's origin that fits *inside* it, and a **circumscribed radius** $r_{\text{circ}}$, the smallest disc that *contains* it. Within $r_{\text{insc}}$ of an obstacle the robot is in collision at every heading; beyond $r_{\text{circ}}$ it is clear at every heading; in between, collision depends on heading, which is the band a footprint check exists to resolve. The **inflation radius** $d_{\text{infl}}$ is a third thing entirely: the distance at which the decaying cost is truncated to zero. It is a *preference* knob and not a safety margin — the safety is $r_{\text{insc}}$, which comes from the footprint and not from $d_{\text{infl}}$. **Non-example, and the most common misconfiguration in the ecosystem:** reading `inflation_radius` as "keep the robot this far from walls" ([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §5]]). With $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m and the ROS byte scale ($c_{\text{lethal}}=254$ for the obstacle cell, $c_{\text{insc}}=253$, and the skirt scaled by $252$), the cost is $252\,e^{-0.6}=138$ at $d=0.50$ m, $56$ at $0.80$ m and $30$ just inside $1.00$ m — and $0$ just outside it. That step of 30 at $d_{\text{infl}}$ is a **cost cliff**, a discontinuity the gradient-following argument above does not survive, so $d_{\text{infl}}$ wants to be large enough that the truncated value is small.
 - **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
   Cost combines inflation with whatever else the robot should avoid: unknown space, rough
   terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
@@ -102,8 +134,24 @@ appendix.
   [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy §1]] argues *is*
   the right carrier for a learned affordance, since the same scene yields different costmaps for
   different robots. What that page rejects is the plain occupancy grid, the geometric predicate.
-- **Layered costmaps** — production stacks keep several layers (static map, obstacles, inflation,
-  sensor-specific) and compose them, so that clearing a stale obstacle does not erase the map.
+- **Layered costmap** — the costmap a planner reads is not one grid that everything writes to.
+  It is a **master grid** produced by composing an ordered list of **layers**, and a layer is a
+  component with exactly two operations, run once per update cycle: it first declares the
+  rectangle of the map it is about to touch, and then writes costs into the master grid inside
+  that rectangle. Two conditions make this a layered costmap rather than a pile of grids. Each
+  layer sees the master grid *as the layers before it left it*, and each layer writes with a
+  declared combination rule — **overwrite**, **maximum**, or maximum-ignoring-unknown. Order is
+  therefore part of the specification and the composition does not commute: the usual order is
+  static map, then obstacles (which mark and clear from live sensor data), then inflation, and
+  inflation must be last because it measures distance to whatever the earlier layers left lethal.
+  *Example*: a person steps in front of the robot; the obstacle layer marks those cells and the
+  inflation layer grows them; the person walks away and ray-casting clears exactly those cells,
+  while the wall behind is untouched because it was never the obstacle layer's to write.
+  **Non-example**: one flattened grid. There, clearing the stale person means clearing cells the
+  static map also claims, so either the wall is erased or the person is permanent — which is the
+  whole reason the layers exist. *Why it matters when reading*: "the costmap" in a paper is a
+  composition, and which layer produced a cost decides whether anything can clear it
+  ([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §4]] for one stack's layer list and defaults).
 - **Frontier** — a boundary cell between *known free* and *unknown*: precisely, a cell that is itself known free and has at least one unknown neighbour (4- or 8-connected). **Frontier exploration**
   is the classic answer to "where next": drive to the nearest frontier, and the known region
   grows until no frontier remains. Some semantic-navigation methods keep this candidate set
@@ -190,6 +238,74 @@ If a cheaper route reaches an already encountered node, its best-known cost and 
 ### 4. Worked example: what a heuristic changes
 
 Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities are $9$ and $10$, so the first is expanded even though it has a larger cost-to-come. The heuristic directs effort toward states estimated to be closer to the goal. An *underestimating* heuristic remains admissible — though if it is too weak, A* gains little speed over Dijkstra; an *overestimating* heuristic can lose the usual optimality guarantee.
+
+### Worked case · 대상으로 한 번 끝까지
+
+§4's $(g,h)$ pairs were bare numbers. Here they come from an object. **P2** from
+[[02-foundations/lab-plants|0.6 Lab Plants]], unit links $L_1=L_2=1$ m, base at the world origin;
+the panel is the half-plane $x<1$ m and the task point on it is $p^\star=(1,1)$ m. The arm starts
+folded out straight, $q_\mathrm{start}=(0°,0°)$, tip at $(2,0)$. The question is the one §3 exists
+for — which edge does A* return — and answering it needs all of §1, §2 and §3 at once.
+
+**1. One task pose, two configurations.** Inverse kinematics on a planar 2R: with
+$r=\lVert p^\star\rVert=\sqrt2=1.4142$ m, the law of cosines gives
+$\cos\theta_2=(r^2-L_1^2-L_2^2)/(2L_1L_2)=(2-1-1)/2=0$, so $\theta_2=\pm90°$ and there are exactly
+two goal configurations:
+
+$$q_A=(0°,\ 90°),\qquad q_B=(90°,\ -90°)$$
+
+Check $q_B$ by forward kinematics, since a goal you did not verify is a goal you invented:
+$x=\cos 90°+\cos 0°=1$ and $y=\sin 90°+\sin 0°=1$, the same point. In $\mathcal{C}$ they are
+$\lVert q_A-q_B\rVert=\sqrt{(\pi/2)^2+\pi^2}=\pi\sqrt{1.25}=3.512$ rad apart. That is §1's
+non-example with a number on it: the end-effector pose is not a configuration, and here the two
+configurations that realise one pose are three and a half radians of joint motion apart.
+
+**2. Two different C-space paths, one workspace curve.** Interpolate each goal straight in joint
+space. Branch A is $\theta(s)=(0°,\,90°s)$, so the tip is at $x=1+\cos(90°s)$, $y=\sin(90°s)$.
+Branch B is $\theta(s)=(90°s,\,-90°s)$, whose shoulder-plus-elbow sum $\theta_1+\theta_2$ is $0$ for
+every $s$, so its tip is at $x=\cos(90°s)+1$, $y=\sin(90°s)+0$ — the *same* two functions. Check at
+the midpoint: A is $(0°,45°)$ and B is $(45°,-45°)$, and both put the tip at
+$(1.7071,\ 0.7071)$. Both segments therefore trace the identical quarter circle of radius $1$
+about $(1,0)$, and since $\cos(90°s)\ge0$ on $[0,1]$ both keep $x(s)\ge1$ throughout, with equality
+only at $s=1$. Two different paths in $\mathcal{C}$, one path in the workspace, equal clearance —
+which is why §1 insists these are different objects rather than two names for one.
+
+**3. Same curve, different cost.** Cost the two edges by joint-space length, the usual default:
+
+$$g_A=\lVert q_A-q_\mathrm{start}\rVert=\pi/2=1.5708\ \text{rad},\qquad g_B=\pi/\sqrt2=2.2214\ \text{rad}$$
+
+so branch B costs exactly $\sqrt2$ times branch A while delivering the same tool motion. A
+three-node graph — start, $q_A$, $q_B$ — and A* expands the start, pushes both goals, and returns
+A.
+
+**4. A heuristic that is admissible, and one that only looks it.** Take
+$h(q)=\lVert p(q)-p^\star\rVert/\sqrt5$, the straight-line task-space distance scaled down. It is
+admissible because on P2 no joint motion moves the tip faster than $\sqrt5$ times as fast: the
+largest singular value of $J$ satisfies $\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$,
+with equality at $\theta_2=0$ where the arm is straight and $J$'s two columns are parallel. So a
+joint path of length $\ell$ moves the tip at most $\sqrt5\,\ell$, and dividing by $\sqrt5$ turns a
+workspace distance into a lower bound on joint distance. At the start
+$h=\sqrt2/\sqrt5=0.6325$ rad, giving $f(q_\mathrm{start})=0+0.6325$, then $f(q_A)=1.5708$ and
+$f(q_B)=2.2214$ once both are expanded. **Non-example:** the *unscaled* $\lVert p(q)-p^\star\rVert$
+is not admissible on this arm, because $\sqrt5>1$ means it can exceed the true joint cost. On this
+instance it happens not to — $1.4142<1.5708$ — so the bad heuristic passes the test case and is
+still wrong, which is the failure mode worth remembering.
+
+**5. What the tip check did not check.** Collision-checking the tip is not
+collision-checking the arm. On branch B the elbow sits at $(\cos 90°s,\ \sin 90°s)$, whose
+$x$-coordinate falls from $1$ to $0$, so against an *infinite* wall at $x=1$ the elbow — not the
+tip — is inside the obstacle for every $s>0$; against the finite panel patch this page uses it is
+free. The path did not change and the cost did not change; the answer to "is it collision-free"
+changed because the obstacle model did. $\mathcal{C}_\mathrm{obs}$ is built from a specific
+geometry, and a paper that reports a collision rate without reporting its collision model has
+reported half a number.
+
+**6. What "optimal" meant here.** Swap the metric and the answer moves. Under the max-norm, which
+is what you want when each joint has its own speed limit, the cost is
+$\max_i\lvert\Delta\theta_i\rvert=\pi/2$ for *both* branches, a tie; at $1$ rad/s per joint both
+execute in $1.571$ s. Joint-Euclidean prefers A by $\sqrt2$; execution time cannot tell them apart.
+Neither number says anything about the force the tool will apply when the tip reaches the panel —
+that is contact, not $\mathcal{C}_\mathrm{free}$, and it is where the problem set ends.
 
 ### 5. Major method families
 
@@ -476,6 +592,8 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 어려움은 짧은 경로 찾기가 아니다: 로봇 형상, 동역학, 접촉, 불확실성, 계산 시간, 변하는
 관측이 실제로 실행할 수 있는 것을 제약한다.
 
+*범위: 이 페이지는 대상과 보장을 가르친다 — §1의 다섯 단어, §2의 공간들과 지도·비용 표현, §5의 완전성 네 강도, §5.5의 경로를 운전 불가능하게 만드는 제약들, §6의 궤적 최적화 문제 형태 — 그리고 논문을 어느 계열에 놓을지 판단할 만큼의 각 방법군. 어떤 알고리즘도 구현 깊이로는 가르치지 않는다. A\*의 증명과 코드는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §6]]에 있고, 샘플링 플래너는 여기서 조망만 하며 이 위키 어디에도 구현하지 않는다. 후퇴 지평 제어는 [[04-robotics/mpc|7. MPC]], 정책 학습은 [[02-foundations/rl-basics|RL 기초]], 실제 내비게이션 스택 하나의 구체적 파라미터는 [[04-robotics/ros2/navigation-nav2|22.4 Nav2]]다.*
+
 > [!info] 깊이 목표
 > 탐색·모션 플래닝·궤적 최적화·과제 계획·정책 학습·제어를 구분한다; feasibility와
 > optimality 주장을 읽는다; 생성된 궤적이 충돌 없음·동역학적 실행 가능·폐루프 평가인지
@@ -486,6 +604,30 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 문헌이 섞어 쓰지만 섞어 쓰면 안 되는 다섯 단어 — 그다음 §2, 그다음 §4의 계산 예제. §5~§8은 조망이니 전부가 아니라 지금 논문이 속한 계열만 읽어라.
+
+### 과제가 그릴 그림 · Homework diagram
+
+나란히 놓은 칸 둘. §2의 그림과 같은 짝이고, 과제가 요구하는 것도 이 그림이다. 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**(단위 링크, 베이스는 월드 원점)이고, 패널은
+반평면 $x<1$ m다.
+
+**왼쪽 칸 — 작업 영역.** 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린
+패널과 그 너머의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m. 팔은 두 번 그린다. 한 번은
+$+x$ 방향으로 곧게 펴서 말단이 $(2,0)$에, 한 번은 고정 자세로 엘보가 $(1,0)$, 말단이 패널 위에.
+컨피규레이션 둘이 그림 하나에 있고, 아직 그 어느 것도 계획이 아니다.
+
+**오른쪽 칸 — 컨피규레이션 공간.** $\theta_1$과 $\theta_2$ 축을 각각 $-180°$에서 $180°$까지 긋고,
+마주 보는 변이 서로 붙어 있다는 것을 그림 위에 적는다. $\mathcal{C}$가 토러스 $T^2$이고,
+$179°$와 $-179°$를 멀다고 보는 플래너는 공간을 잘못 고른 것이기 때문이다(§2).
+$q_\mathrm{start}=(0°,0°)$과 $q_\mathrm{goal}=(0°,90°)$을 점 둘로 찍고, 과제 그래프의 유일한 간선인
+직선 구간으로 잇는다. 말단만 보는 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$을
+칠하고 나머지를 $\mathcal{C}_\mathrm{free}$라 적은 뒤, 그 구간에서 경계 위에 놓이는 점 하나를
+표시한다. 자유 공간이 아니라 접촉이다.
+
+**두 칸 사이의 화살표.** 오른쪽 구간에서 왼쪽에서 말단이 그리는 곡선으로 화살표 하나를 긋고
+순기구학 $f$라 적는다. 두 칸은 한 대상의 두 시점이 아니다. 오른쪽은 컨피규레이션의 집합이고
+왼쪽은 위치의 집합이며, 둘을 잇는 것은 그 화살표뿐이다. 플래너가 무엇을 보장하는가에 대한 이
+페이지의 모든 주장은 오른쪽 칸의 주장이고, 로봇이 무엇을 하는가에 대한 주장은 왼쪽 칸의 주장이다.
 
 ### 1. Plan, path, trajectory, policy, controller
 
@@ -527,17 +669,18 @@ $$x:[0,T]\to\mathcal{X},\qquad u:[0,T]\to\mathcal{U}$$
 작업 영역에서 충돌이 없다는 것이 관절·토크·속도·안정성·접촉의 실행 가능성을 함의하지
 않는다.
 
-**컨피규레이션 공간과 그 자유 부분의 정의.** **컨피규레이션** $q$는 로봇의 모든 점의 위치를 완전히 지정한 것이고, **컨피규레이션 공간** $\mathcal{C}$는 모든 컨피규레이션의 집합이다. 차원은 자유도 수이고, 모양은 휘어 있을 수 있다. 2R 팔의 것은 토러스다([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]). $\mathcal{W}$($\mathbb{R}^2$ 또는 $\mathbb{R}^3$)를 작업 영역, $\mathcal{O}\subset\mathcal{W}$를 장애물이 차지한 영역, $\mathcal{A}(q)\subset\mathcal{W}$를 컨피규레이션 $q$에서 로봇 몸체가 차지하는 영역이라 하자. 모든 컨피규레이션은 충돌이거나 아니므로 $\mathcal{C}$는 두 부분으로 나뉜다.
+**컨피규레이션 공간의 정의.** **컨피규레이션** $q$는 로봇의 모든 점의 위치를 지정한 것이다. 조건이 둘이다. **완전**해야 한다 — 위치가 정해지지 않는 몸체의 점이 없어야 한다. 그리고 **최소**여야 한다 — 더 짧은 수의 목록으로 같은 일을 할 수 없어야 한다. **컨피규레이션 공간** $\mathcal{C}$는 모든 컨피규레이션의 집합이고, 차원이 자유도 수가 되는 것은 이 최소성 때문이다:
 
-- **C-장애물**: 몸체가 장애물과 겹치는 모든 컨피규레이션.
-$$\mathcal{C}_{\text{obs}}=\{\,q\in\mathcal{C} : \mathcal{A}(q)\cap\mathcal{O}\neq\emptyset\,\}$$
-- **자유 공간**: 나머지 전부. 두 부분은 서로의 여집합이다.
-$$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
+$$\mathcal{C}=\{\,q:q\ \text{는 로봇의 모든 점을 지정한다}\,\},\qquad \dim\mathcal{C}=\text{dof}$$
+
+개수보다 집합이 중요하다. $\mathcal{C}$는 대개 상자가 아니기 때문이다. 평면 2R 팔의 것은 직사각형 $[0,2\pi)^2$가 아니라 토러스 $T^2$다. 관절각이 각각 한 바퀴 돌아 붙기 때문이다 — 그래서 $359°$와 $1°$를 멀다고 보는 플래너는 틀린 공간을 쓰고 있는 것이다. **반례:** 말단 pose는 여유 자유도를 가진 팔의 컨피규레이션이 *아니다*. 같은 pose를 주는 관절 벡터가 여럿이라 몸체의 점들이 정해지지 않기 때문이다. 그것은 위 목록의 마지막 항목인 과제 공간이다.
+
+$\mathcal{C}$는 **C-장애물** $\mathcal{C}_{\text{obs}}$와 **자유 공간** $\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$로 나뉜다. 둘 다 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]에서 정의되고 장치 **P2** 위에서 유도되며 예와 반례까지 붙어 있다. 이 페이지는 다시 쓰지 않고 가져다 쓴다. 그 정의의 두 귀결이 이 페이지의 나머지가 딛고 선 것이다. C-장애물은 *컨피규레이션*의 집합이지 결코 작업 영역의 영역이 아니라는 것, 그리고 이 구성이 모양을 가진 로봇을 $\mathcal{C}_{\text{free}}$ 안을 움직이는 *점*으로 줄인다는 것 — 아래의 모든 플래너가 쓰인 형태가 그것이다.
 
 그러면 **경로 계획 문제**는 이렇다: $q_{\text{start}},q_{\text{goal}}\in\mathcal{C}_{\text{free}}$가 주어졌을 때 모든 $s\in[0,1]$에서 $\sigma(s)\in\mathcal{C}_{\text{free}}$인 path $\sigma$(§1)를 찾거나, 없다고 보고한다. **상태 공간** $\mathcal{X}$는 속도를 더한 $x=(q,\dot q)$이므로 자유도 $n$인 로봇의 상태는 $2n$차원이다. **입력 공간** $\mathcal{U}$는 허용되는 명령의 집합이다. 예를 들어 구동기마다 $|u_i|\le u_{\max}$다. 작업 영역과 과제 공간은 물리적 위치나 pose의 집합이고 $\mathcal{C}$는 로봇 컨피규레이션의 집합이다. 아래 그림에 칸이 두 개 필요한 이유다.
 
 > [!example] 계산 예제 · Worked example
-> 회전하지 않고 평행이동만 하는 반경 0.5 m 원판 로봇의 컨피규레이션은 중심 $q=(x,y)$이므로 $\mathcal{C}=\mathbb{R}^2$다. 정사각형 장애물 $[1,2]\times[1,2]$ m가 있으면, 중심이 정사각형에서 0.5 m보다 가까울 때 정확히 $q\in\mathcal{C}_{\text{obs}}$다. $q=(0.6,1.5)$는 0.4 m 떨어져 있으므로, 작업 영역의 *점* $(0.6,1.5)$는 비어 있는데도 $\mathcal{C}_{\text{obs}}$에 속한다. $q=(0.4,1.5)$는 0.6 m 떨어져 있어 자유다.
+> MR 2장은 *팔*의 C-장애물을 유도한다. 거기서는 토러스 위의 휘어진 렌즈다. 여기서는 다른 쪽 경우, 아래의 격자 팽창이 기대고 있는 경우를 본다. 회전하지 않고 평행이동만 하는 반경 0.5 m 원판 로봇의 컨피규레이션은 중심 $q=(x,y)$이므로 $\mathcal{C}=\mathbb{R}^2$다. 정사각형 장애물 $[1,2]\times[1,2]$ m가 있으면, 중심이 정사각형에서 0.5 m보다 가까울 때 정확히 $q\in\mathcal{C}_{\text{obs}}$다. $q=(0.6,1.5)$는 0.4 m 떨어져 있으므로, 작업 영역의 *점* $(0.6,1.5)$는 비어 있는데도 $\mathcal{C}_{\text{obs}}$에 속한다. $q=(0.4,1.5)$는 0.6 m 떨어져 있어 자유다.
 >
 > **반례:** C-장애물은 정사각형을 상자 $[0.5,2.5]^2$로 키운 것이 아니다. 정사각형과 원판의 민코프스키 합이라 모서리가 둥글다. 그래서 그 상자 안의 $q=(0.6,0.6)$은 모서리 $(1,1)$에서 0.566 m라 자유이고, 0.424 m인 $(0.7,0.7)$은 자유가 아니다. 이것이 아래 목록의 팽창이며, 로봇이 원판이기 때문에만 정확하다.
 
@@ -563,6 +706,7 @@ $$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
   돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다. 칸에서 가장 가까운 장애물 칸까지의 거리 $d$, 내접 로봇 반경 $r$, 감쇠율 $\alpha>0$에 대해 ROS costmap은 지수 함수를 쓴다:
   $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
   내접 반경 안의 칸은 로봇 중심을 거기 두면 반드시 충돌한다는 뜻이고, 그 바깥에서 비용은 거리에 따라 감쇠하며, 팽창 반경 $d_{\text{infl}}$ 너머의 칸은 비용이 없다. $\alpha=3$ /m이면 내접 반경에서 0.2 m 바깥 칸의 비용은 내접값의 $e^{-0.6}=0.55$배다. $\alpha$를 키우면 여유가 좁아진다.
+  **반경이 셋이고, 셋은 같은 수가 아니다.** footprint에는 **내접 반경** $r_{\text{insc}}$ — 로봇 원점을 중심으로 그 안에 *들어가는* 가장 큰 원의 반경 — 과 **외접 반경** $r_{\text{circ}}$ — footprint를 *담는* 가장 작은 원 — 이 있다. 장애물에서 $r_{\text{insc}}$ 안이면 어느 방향으로 서 있든 충돌이고, $r_{\text{circ}}$ 밖이면 어느 방향으로 서 있든 안전하며, 그 사이에서는 충돌 여부가 방향에 달려 있다. footprint 검사가 존재하는 이유가 바로 그 띠다. **팽창 반경** $d_{\text{infl}}$은 아예 세 번째 것이다. 감쇠 비용을 0으로 자르는 거리다. 이것은 *선호* 손잡이이지 안전 여유가 아니다 — 안전을 담당하는 것은 $d_{\text{infl}}$이 아니라 footprint에서 나오는 $r_{\text{insc}}$다. **반례, 그리고 이 생태계에서 가장 흔한 오설정:** `inflation_radius`를 "벽에서 이만큼 떨어뜨려라"로 읽는 것([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §5]]). $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m에 ROS의 바이트 척도(장애물 칸 자체가 $c_{\text{lethal}}=254$, $c_{\text{insc}}=253$, 치맛자락은 $252$로 스케일)를 쓰면 비용은 $d=0.50$ m에서 $252\,e^{-0.6}=138$, $0.80$ m에서 $56$, $1.00$ m 바로 안쪽에서 $30$ — 그리고 바로 바깥에서 $0$이다. $d_{\text{infl}}$에서의 이 30짜리 단차가 **비용 절벽**이다. 위의 경사 따라가기 논증이 살아남지 못하는 불연속이므로, 잘리는 값이 충분히 작아지도록 $d_{\text{infl}}$을 크게 잡아야 한다.
 - **비용 지도(costmap)** — 칸이 이진값이 아니라 *통행 비용*을 담는 점유 격자다. 비용은
   팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
   진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
@@ -570,8 +714,22 @@ $$\mathcal{C}_{\text{free}}=\mathcal{C}\setminus\mathcal{C}_{\text{obs}}$$
   어포던스를 담기에 *맞는* 그릇이라고 논하는 바로 그 표현이다. 같은 장면이 로봇마다 다른
   costmap을 내놓기 때문이다. 그 페이지가 거부하는 것은 기하 술어인 점유 격자 쪽이고, 그것을 보려면 이것이
   무엇인지 알아야 한다.
-- **계층형 비용 지도** — 실제 스택은 여러 층(정적 지도, 장애물, 팽창, 센서별)을 두고 합성한다.
-  그래야 낡은 장애물 하나를 지우는 일이 지도를 지워버리지 않는다.
+- **계층형 비용 지도** — 계획기가 읽는 비용 지도는 모두가 같이 쓰는 격자 하나가 아니다.
+  순서가 정해진 **층(layer)** 목록을 합성해서 만든 **마스터 격자**이고, 한 층은 갱신 주기마다
+  정확히 두 가지 연산을 수행하는 구성 요소다. 먼저 자기가 건드릴 지도의 사각형 범위를
+  선언하고, 그다음 그 사각형 안에서 마스터 격자에 비용을 쓴다. 이것을 격자 더미가 아니라
+  계층형 비용 지도로 만드는 조건이 둘이다. 각 층은 *앞선 층들이 남겨 놓은 상태의* 마스터
+  격자를 보고, 각 층은 선언된 결합 규칙 — **덮어쓰기**, **최댓값**, 또는 미지를 무시한
+  최댓값 — 으로 쓴다. 그러므로 순서가 명세의 일부이고 합성은 교환되지 않는다. 보통의 순서는
+  정적 지도, 그다음 장애물(실시간 센서 데이터로 표시하고 지운다), 그다음 팽창이며, 팽창이
+  마지막이어야 하는 이유는 앞선 층들이 치명으로 남긴 것까지의 거리를 재기 때문이다.
+  *예*: 사람이 로봇 앞으로 들어온다. 장애물 층이 그 칸들을 표시하고 팽창 층이 그것을 키운다.
+  사람이 걸어 나가면 광선 투사가 정확히 그 칸들만 지우고, 뒤의 벽은 그대로다. 애초에 그 벽은
+  장애물 층이 쓴 것이 아니기 때문이다. **반례**: 납작한 격자 하나. 거기서 낡은 사람을
+  지우려면 정적 지도도 자기 것이라고 주장하는 칸을 지워야 하므로, 벽이 지워지거나 사람이
+  영영 남거나 둘 중 하나다 — 층이 존재하는 이유 전부가 이것이다. *읽을 때 왜 중요한가*:
+  논문 속의 "비용 지도"는 합성물이고, 어느 층이 그 비용을 썼는지가 그것을 지울 수 있는지를
+  결정한다([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §4]]에 한 스택의 층 목록과 기본값이 있다).
 - **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. 정확히는 자신은 자유로 알려져 있고 이웃(4-연결 또는 8-연결) 중 적어도 하나가 미지인 칸이다. **frontier 탐색**은 "다음에
   어디로"에 대한 고전적 답이다: 가장 가까운 frontier로 가면 아는 영역이 자라고, frontier가
   없어질 때까지 반복한다. [[04-robotics/semantic-language-navigation|19. §3]]에서 "어디를
@@ -664,6 +822,71 @@ $$\text{admissible: } 0\le h(n)\le h^*(n)\ \ \forall n,\qquad \text{consistent: 
 cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은 목표에 가깝다고 추정되는
 상태 쪽으로 노력을 돌린다. *과소평가* 휴리스틱은 admissible을 유지한다 — 너무 약하면 A*가 Dijkstra보다 빨라지는
 이득이 거의 없을 뿐이다; *과대평가* 휴리스틱은 통상적 최적성 보장을 잃을 수 있다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+§4의 $(g,h)$ 쌍은 맨 숫자였다. 여기서는 그것이 대상에서 나온다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**, 단위 링크 $L_1=L_2=1$ m, 베이스는 월드
+원점. 패널은 반평면 $x<1$ m이고 그 위의 과제 점은 $p^\star=(1,1)$ m다. 팔은 곧게 편
+$q_\mathrm{start}=(0°,0°)$에서 출발하며 말단은 $(2,0)$에 있다. 물음은 §3이 존재하는 이유 그
+자체 — A*가 어떤 간선을 돌려주는가 — 이고, 답하려면 §1·§2·§3이 한꺼번에 필요하다.
+
+**1. 과제 pose 하나, 컨피규레이션 둘.** 평면 2R의 역기구학:
+$r=\lVert p^\star\rVert=\sqrt2=1.4142$ m이므로 코사인 법칙이
+$\cos\theta_2=(r^2-L_1^2-L_2^2)/(2L_1L_2)=(2-1-1)/2=0$을 주고 $\theta_2=\pm90°$, 곧 목표
+컨피규레이션이 정확히 둘이다.
+
+$$q_A=(0°,\ 90°),\qquad q_B=(90°,\ -90°)$$
+
+$q_B$는 순기구학으로 검산한다. 검산하지 않은 목표는 지어낸 목표이기 때문이다.
+$x=\cos 90°+\cos 0°=1$, $y=\sin 90°+\sin 0°=1$로 같은 점이다. $\mathcal{C}$ 안에서 둘은
+$\lVert q_A-q_B\rVert=\sqrt{(\pi/2)^2+\pi^2}=\pi\sqrt{1.25}=3.512$ rad 떨어져 있다. §1의 반례에
+숫자를 붙인 것이 이것이다. 말단 pose는 컨피규레이션이 아니고, 여기서 한 pose를 실현하는 두
+컨피규레이션은 관절 운동으로 3.5 rad이나 떨어져 있다.
+
+**2. 서로 다른 $\mathcal{C}$ 경로 둘, 작업 영역 곡선 하나.** 두 목표를 각각 관절 공간에서 직선
+보간한다. 가지 A는 $\theta(s)=(0°,\,90°s)$이므로 말단은 $x=1+\cos(90°s)$, $y=\sin(90°s)$에 있다.
+가지 B는 $\theta(s)=(90°s,\,-90°s)$이고 $\theta_1+\theta_2$가 모든 $s$에서 $0$이므로 말단은
+$x=\cos(90°s)+1$, $y=\sin(90°s)+0$ — *같은* 두 함수다. 중간점에서 검산하면 A는 $(0°,45°)$, B는
+$(45°,-45°)$이고 둘 다 말단을 $(1.7071,\ 0.7071)$에 놓는다. 그러므로 두 구간은 $(1,0)$을 중심으로
+한 반지름 $1$의 같은 사분원을 그리고, $[0,1]$에서 $\cos(90°s)\ge0$이므로 둘 다 내내 $x(s)\ge1$을
+지키며 등호는 $s=1$에서만 성립한다. $\mathcal{C}$에서는 다른 경로 둘, 작업 영역에서는 경로 하나,
+여유는 동일 — §1이 이 둘을 한 대상의 두 이름이 아니라 서로 다른 대상이라고 못 박는 이유다.
+
+**3. 같은 곡선, 다른 비용.** 두 간선에 흔한 기본값인 관절 공간 길이로 값을 매긴다.
+
+$$g_A=\lVert q_A-q_\mathrm{start}\rVert=\pi/2=1.5708\ \text{rad},\qquad g_B=\pi/\sqrt2=2.2214\ \text{rad}$$
+
+따라서 가지 B는 같은 공구 운동을 주면서 가지 A의 정확히 $\sqrt2$배가 든다. 노드 셋짜리
+그래프(시작, $q_A$, $q_B$)에서 A*는 시작을 확장하고 두 목표를 넣은 뒤 A를 돌려준다.
+
+**4. admissible한 휴리스틱 하나와, 그렇게 보이기만 하는 것 하나.**
+$h(q)=\lVert p(q)-p^\star\rVert/\sqrt5$, 곧 작업 공간 직선 거리를 줄인 값을 쓰자. 이것이
+admissible한 이유는 P2에서 어떤 관절 운동도 말단을 $\sqrt5$배보다 빠르게 움직이지 못하기
+때문이다. $J$의 최대 특잇값은
+$\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$를 만족하고, 등호는 팔이 곧게 펴져
+$J$의 두 열이 평행해지는 $\theta_2=0$에서 성립한다. 그러니 길이 $\ell$의 관절 경로는 말단을 최대
+$\sqrt5\,\ell$만큼 옮기고, $\sqrt5$로 나누면 작업 공간 거리가 관절 거리의 하한이 된다. 출발점에서
+$h=\sqrt2/\sqrt5=0.6325$ rad이므로 $f(q_\mathrm{start})=0+0.6325$이고, 둘을 확장한 뒤에는
+$f(q_A)=1.5708$, $f(q_B)=2.2214$다. **반례:** 나누지 않은 $\lVert p(q)-p^\star\rVert$는 이 팔에서
+admissible하지 않다. $\sqrt5>1$이라 참 관절 비용을 넘을 수 있기 때문이다. 이 사례에서는 마침
+넘지 않는다($1.4142<1.5708$). 잘못된 휴리스틱이 시험 사례를 통과하고도 여전히 틀린 것이며, 기억해
+둘 실패 방식이 그것이다.
+
+**5. 말단 검사가 검사하지 않은 것.** 말단을 충돌 검사하는 것은 팔을 충돌 검사하는 것이
+아니다. 가지 B에서 엘보는 $(\cos 90°s,\ \sin 90°s)$에 있고 그 $x$ 좌표가 $1$에서 $0$으로
+떨어지므로, $x=1$의 *무한* 벽에 대해서는 말단이 아니라 엘보가 $s>0$인 모든 곳에서 장애물 안에
+있다. 이 페이지가 쓰는 유한한 패널 조각에 대해서는 자유롭다. 경로도 비용도 바뀌지 않았는데
+"충돌이 없는가"의 답이 바뀐 것은 장애물 모델이 바뀌었기 때문이다. $\mathcal{C}_\mathrm{obs}$는
+특정 기하에서 만들어지며, 충돌 모델을 밝히지 않은 채 충돌률을 보고한 논문은 숫자의 절반만 보고한
+것이다.
+
+**6. 여기서 "최적"이 뜻한 것.** 척도를 바꾸면 답이 움직인다. 관절마다 자기 속도 한계가 있을 때
+쓰고 싶은 max-norm에서는 비용이 두 가지 모두 $\max_i\lvert\Delta\theta_i\rvert=\pi/2$로 동점이고,
+관절당 $1$ rad/s면 둘 다 $1.571$초에 끝난다. 관절 유클리드는 A를 $\sqrt2$만큼 선호하고, 실행
+시간은 둘을 구별하지 못한다. 그리고 두 숫자 중 어느 것도 말단이 패널에 닿을 때 공구가 가할 힘에
+대해서는 아무 말도 하지 않는다. 그것은 $\mathcal{C}_\mathrm{free}$가 아니라 접촉이고, 과제가
+끝나는 지점이 거기다.
 
 ### 5. 주요 방법 계열
 

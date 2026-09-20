@@ -23,8 +23,38 @@ mastery-when: "The research program keeps this at Working — it is a supporting
 *Group H. Stands on the [[04-robotics/modern-robotics/index|MR chapters]], [[04-robotics/state-estimation-slam|3. State Estimation]] and [[04-robotics/planning-decision-making|4. Planning]].
 The goal is not a point on a map but a configuration the arm can work from, and that one sentence is the whole page.*
 
+*Scope: this page teaches where a mobile base should stop and why — the reachable workspace and manipulability as placement criteria (§2–§3), the whole-body/decoupled architecture choice (§4.5), and the error budget that decides whether an open-loop design can close (§4). It does not teach SLAM or localization, which is [[04-robotics/state-estimation-slam|3. State Estimation]]; the planners that drive the base there, which are [[04-robotics/planning-decision-making|4. Planning]]; or what the arm does once it arrives, which is [[04-robotics/grasping|15. Grasping]] and [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
+
 > [!note] First pass · 처음이라면
 > Read §1 — the goal is a configuration, not a point — then §3 on base placement, then §6. §4's error budget is the section to return to when a system misses by centimetres and nobody can say which stage owns it.
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, drawn to scale on graph paper; the problem set asks for the same one. The object is
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — unit links, $L_1=L_2=1$ m — on a
+holonomic base, with the panel at world $(2,1)$ m.
+
+**The world frame and the target.** Axes at the world origin, one grid square to $0.25$ m, so a
+$2$ m reach is eight squares. Mark the panel pose at $(2,1)$ and draw the panel's surface normal
+through it. The direction the tool will push is the direction §3's whole argument is about, and a
+figure without it cannot show what a singular placement costs.
+
+**Three circles about the panel, not about the base.** This is §3's inversion, and drawing the
+circles the other way round is the usual mistake. About $(2,1)$ draw the outer circle $r=2$ m —
+bases on it can only just touch the panel, arm straight, $\det J=0$ — then the ring
+$r=\sqrt2=1.414$ m where $w$ is largest, then the inner circle where the arm can no longer fold
+enough to reach. Shade the band between $r=1.311$ m and $r=1.511$ m: that is the $w\ge0.99$ band,
+$20$ cm wide, derived in the worked case below. Keep it to scale. Drawn correctly it is narrower
+than one grid square, and the figure has then made this page's argument without a sentence.
+
+**The frozen pose.** Mark the base at $(1,0)$ m — the one that puts P2's tip on the panel at its
+frozen pose $\theta=(0°,90°)$ — and draw the two links from it: elbow at $(2,0)$, tip at $(2,1)$.
+Check on the drawing that this base is $\sqrt2$ m from the panel, that is, that it sits on the
+shaded ring rather than merely somewhere inside the outer circle.
+
+**The uncertainty disc.** Centred on that base, draw a circle of radius $10$ cm, two standard
+deviations of §4's base localization. At the same scale it is as wide as the shaded band. That
+overlap is the figure; everything else on it is context.
 
 ### 1. The goal is a pose, not a point
 
@@ -50,12 +80,38 @@ SLAM algorithm.
 Start from the arm alone. For a fixed base, which end-effector poses are achievable, and
 how well?
 
+**Reachable workspace, defined.** With $f$ the forward kinematics and $\mathcal{C}_{\text{free}}$ the free configuration space ([[04-robotics/planning-decision-making|4. Planning §2]]), the reachable workspace is the image of the free space under $f$ — the set of end-effector poses attained by *some* admissible configuration:
+
+$$\mathcal{W}_{R}=\{\,f(q)\ :\ q\in\mathcal{C}_{\text{free}}\,\}$$
+
+It is an image and not a ball, so its shape is whatever the joint limits and the link lengths make it. Its subset the **dexterous workspace** keeps only the positions reachable at *every* orientation, and the gap between the two is the anisotropy this section is about. For **P2** ($L_1=L_2=1$ m) the reachable set is the annulus between $|L_1-L_2|=0$ and $L_1+L_2=2$ m, that is the closed disc of radius 2 m. **Non-example:** asking for P2's dexterous workspace is a category error, because a planar 2R spends both degrees of freedom on the tip *position* and has no orientation left to choose — dexterity is a question you may only ask of an arm with spare dof.
+
 **Reachability map**: discretise the workspace into voxels and record, for each, whether the
-end-effector can reach it. **Capability map** (Zacharias, Borst and Hirzinger, IROS 2007)
-goes further and records *from which directions* — because reaching a point from above and
+end-effector can reach it — the discretised indicator of $\mathcal{W}_R$. **Capability map** (Zacharias, Borst and Hirzinger, IROS 2007)
+goes further and records *from which directions*, summarising each voxel by a **reachability index**, the fraction of sampled approach orientations that are achievable there — because reaching a point from above and
 reaching it from the side are different feasibility questions, and an arm's workspace is
 strongly anisotropic. Making that directional structure explicit and inspectable is the
 contribution, and it is the direct ancestor of the inverse-reachability methods in §3 (reachability-based base placement itself goes back at least to Seraji 1995).
+
+**Manipulability — "how well", made into a number.** Reachability is a yes/no; the quality of a reachable pose is a property of the Jacobian $J(q)$, whose ellipsoid is defined in [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]. Two scalar summaries of that ellipsoid are the ones this page uses, and they answer different questions. Yoshikawa's measure is its volume, and the condition number is its distortion:
+
+$$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{square}),\qquad \kappa(q)=\frac{\sigma_{\max}}{\sigma_{\min}}$$
+
+$w$ falls to zero exactly at a singularity, since a collapsed ellipsoid has no volume, while $\kappa$ diverges there, because one singular value goes to zero while the largest does not. Both are properties of the **configuration**, not of the base pose — the base pose matters only because it decides which configuration the arm must adopt.
+
+> [!example] Worked example · 계산 예제
+> On **P2**, both quantities depend on the elbow angle $\theta_2$ *alone* and not on $\theta_1$, since changing $\theta_1$ only rotates the task frame. That is what turns a conditioning question into a *distance* question, because the tip-to-base distance $r=\sqrt{2+2\cos\theta_2}$ is also a function of $\theta_2$ alone — and a distance is a ring of base positions, which is §3.
+>
+> | $\theta_2$ | $r$ (m) | $w=\lvert\sin\theta_2\rvert$ | $\sigma_{\max},\sigma_{\min}$ | $\kappa$ |
+> |---|---|---|---|---|
+> | $90°$ | 1.414 | **1.000** | 1.618, 0.618 | 2.618 |
+> | $131.81°$ | 0.816 | 0.745 | 1.098, 0.679 | **1.618** |
+> | $5°$ | 1.998 | 0.087 | 2.234, 0.039 | 57.26 |
+> | $0°$ | 2.000 | 0.000 | 2.236, 0 | $\infty$ |
+>
+> **The two measures disagree, and that is the point.** $w$ is largest at $\theta_2=90°$, the $r=\sqrt{2}$ band this page's figure and problem set use. But $\kappa$ is smallest at $\theta_2=\arccos(-\tfrac23)=131.81°$, where $r=\sqrt{2/3}=0.816$ m and $w$ has already fallen to $\sqrt5/3=0.745$. Maximising the ellipsoid's *volume* parks the base 1.41 m from the target; minimising its *distortion* parks it 0.82 m away. (The extremes are exact: $\kappa=\varphi^2$ at $90°$ and $\kappa=\varphi$ at $131.81°$, with $\varphi$ the golden ratio.)
+>
+> **Non-example — "the well-conditioned band" as a single number.** There is no such band until you say which measure you optimised. $w$ answers "can the arm move quickly in every direction", $\kappa$ answers "is it roughly as capable in one direction as another", and a contact task that pushes along one axis cares about neither in general — it cares about $\sigma$ *in the task direction*. Report the measure with the number, or the number means nothing.
 
 ### 3. Base placement — inverting the question
 
@@ -129,7 +185,7 @@ manipulation paper is to ask which of these four it measured and which it assume
 
 The reference treatment of why mobility and manipulation do not simply concatenate is
 Brock, Park and Toussaint's *Mobility and Manipulation* chapter in the *Springer Handbook of
-Robotics* — whole-body control (commanding base and arm together as one kinematic chain, instead of moving the base first and the arm afterwards), redundancy resolution, and the interaction between
+Robotics* — whole-body control, redundancy resolution (both defined in §4.5 below), and the interaction between
 navigation and manipulation constraints.
 
 > [!warning] Another absence worth knowing
@@ -168,6 +224,100 @@ navigation and manipulation constraints.
 > closes the loop locally. A paper reporting a
 > mobile-manipulation success rate without saying whether it re-observes at the goal has not
 > told you which of these two systems it built.
+
+### 4.5 Whole-body or decoupled — and how to tell
+
+The error budget above assumed the base parks and the arm then works. That is one of two
+architectures, and the vocabulary for the choice is worth stating exactly, because papers use
+the words loosely.
+
+**Decoupled** (also *navigate-then-manipulate*, or *sequential*): the base is commanded to a
+pose, stops, and the arm is then commanded with the base held fixed. Two problems, solved one
+after the other, each with its own state and its own controller.
+
+**Whole-body**: base and arm are treated as one kinematic chain of $n=n_b+n_a$ degrees of
+freedom, and one task Jacobian maps every one of them to end-effector motion, so base motion
+and joint motion are alternative ways of serving the same task error:
+
+$$\dot x=J\dot q=\begin{pmatrix}J_b & J_a\end{pmatrix}\begin{pmatrix}\dot q_b\\ \dot q_a\end{pmatrix},\qquad \dot q=J^{+}\dot x+\big(I-J^{+}J\big)\dot q_0$$
+
+The first term achieves the task; the second lies in the **null space** of $J$, so it changes
+the configuration without moving the end-effector at all, which is where secondary objectives
+go — manipulability, joint limits, obstacle distance. Choosing $\dot q_0$ is **redundancy
+resolution**. Three conditions define whole-body control and all three are required: one state
+vector spanning base and arm, one task specification that either may serve, and commands issued
+to both inside the same control cycle. Drop any one and the system is decoupled.
+
+**Counting the freedom on P2.** Task: tip position in the plane, so $m=2$.
+
+| Architecture | $n_b$ | $n_a$ | $n$ | null-space dim $n-m$ |
+|---|---|---|---|---|
+| Whole-body, holonomic base | 3 | 2 | 5 | **3** |
+| Whole-body, nonholonomic base (instantaneous) | 2 | 2 | 4 | 2 |
+| Decoupled, base parked | 0 | 2 | 2 | **0** |
+
+Those two bold numbers are the whole argument of this page in a different notation. Whole-body
+leaves three directions of self-motion that cost the task nothing, so the controller can keep
+itself out of the flattened region of §2 *while* the tip holds still. Decoupled leaves none:
+whatever conditioning the base handed the arm is what the task gets, permanently, which is
+exactly why §3 spends so much effort on where to stop. A nonholonomic base does not contribute
+3 at the velocity level, because an instantaneous sideways motion is unavailable
+([[04-robotics/planning-decision-making|4. Planning §5.5]]).
+
+**Non-example.** Commanding base velocity and arm velocity in the same message is not
+whole-body control. If the base command comes from a path follower and the arm from an IK
+solved against the base's *estimated* pose, the two are still decoupled — they merely overlap
+in time. What makes it whole-body is the single Jacobian in which base motion can absorb task
+error.
+
+*Why it matters.* §6's table asks which one a paper built. The answer decides whether base-pose
+error is a disturbance the arm must absorb after the fact (decoupled, so it enters the §4
+budget in full) or a coordinate the controller is still allowed to use (whole-body, so it can
+be corrected while the task runs).
+
+### Worked case · 대상으로 한 번 끝까지
+
+§2 said where the arm is well conditioned, §3 turned that into a ring of base positions, and §4
+gave the base's own error. Put the three together on **P2** and this page's central claim — *the
+usable band is narrow, so base-pose error is not a rounding error* — becomes a number you can
+check.
+
+**1. The band, in metres.** On P2 the Yoshikawa measure is
+$w=\lvert\det J\rvert=\lvert\sin\theta_2\rvert$ and the tip-to-base distance is
+$r=\sqrt{2+2\cos\theta_2}=2\lvert\cos(\theta_2/2)\rvert$, both functions of the elbow angle alone
+(§2). So "keep $w\ge w_0$" is an interval of elbow angles,
+$\theta_2\in[\arcsin w_0,\ 180°-\arcsin w_0]$, and $r$ carries it to an interval of distances.
+Write $c=\sqrt{1-w_0^2}$ for the cosine at either end; the two radii are $\sqrt{2+2c}$ and
+$\sqrt{2-2c}$, and their difference squares to $(2+2c)+(2-2c)-2\sqrt{4-4c^2}=4-4w_0$, since the
+cross term is $2\sqrt{4-4c^2}$ and $\sqrt{1-c^2}=w_0$. So the band's width is
+
+$$\Delta r=2\sqrt{1-w_0}$$
+
+and it closes as the square root of how much manipulability you insist on. Two thresholds, both
+bands centred on the $r=\sqrt2=1.414$ m ring of §2's table:
+
+| $w_0$ | elbow interval | $r$ range (m) | band width $\Delta r$ (m) |
+|---|---|---|---:|
+| $0.90$ | $64.16°$–$115.84°$ | $1.062$–$1.695$ | $0.632$ |
+| $0.99$ | $81.89°$–$98.11°$ | $1.311$–$1.511$ | $0.200$ |
+
+**2. The band against the base's own error.** §4's budget puts base localization at $\sigma=5$ cm,
+so a $\pm2\sigma$ interval is $20$ cm across — the entire $w\ge0.99$ band, and a third of the looser
+$w\ge0.90$ band. A base commanded to the centre of the tight band is therefore, at two sigma,
+anywhere between its two edges: §3's placement computation has returned a nominal pose whose
+uncertainty is the size of the answer. That is the figure caption in §3 turned into arithmetic.
+
+**3. Where the fix has to happen.** Base localization is $25/27.18=92\%$ of §4's variance, so
+nothing done to the arm moves this number. Re-observe the target from the wrist camera once the
+base has parked and the remaining budget is $1.5$ cm — $1.476$ cm before rounding, so its
+$\pm2\sigma$ interval spans $4\times1.476=5.9$ cm — comfortably inside the $20$ cm band, with room
+left for the workpiece. The conditioning requirement
+did not change; what changed is which sensor measured the last transform.
+
+**The reading this gives you.** A paper that states a base-placement criterion without stating the
+base's pose uncertainty has given you one of the two numbers this section multiplied. A paper that
+calls a placement "well conditioned" without naming $w_0$ has not given you even the first: the
+same arm is a $63$ cm band at one threshold and a $20$ cm band at another.
 
 ### 5. Localizing on a site that keeps changing
 
@@ -264,8 +414,36 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 *H군이다. [[04-robotics/modern-robotics/index|MR 챕터 요약]]과 [[04-robotics/state-estimation-slam|3. 상태 추정]]·[[04-robotics/planning-decision-making|4. 계획]] 위에 선다.
 목표는 지도 위의 점이 아니라 팔이 일할 수 있는 자세다 — 그 한 문장이 이 페이지의 전부다.*
 
+*범위: 이 페이지는 이동 베이스가 어디에 서야 하고 왜 그런지를 가르친다 — 배치 기준으로서의 도달 작업 영역과 가조작성(§2–§3), 전신/분리 아키텍처 선택(§4.5), 그리고 개루프 설계가 성립하는지를 결정하는 오차 예산(§4). SLAM이나 위치 추정은 가르치지 않는다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정]]이다. 베이스를 그곳까지 몰고 가는 플래너는 [[04-robotics/planning-decision-making|4. 계획]]이고, 도착한 뒤 팔이 하는 일은 [[04-robotics/grasping|15. 파지]]와 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]다.*
+
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 목표는 점이 아니라 자세다 — 그다음 base placement인 §3, 그다음 §6. §4의 오차 예산은 시스템이 센티미터 단위로 빗나가는데 어느 단계 탓인지 아무도 못 말할 때 돌아오는 절이다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+모눈종이에 축척을 지켜 그리는 그림 하나이고, 과제가 요구하는 것도 같은 그림이다. 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**($L_1=L_2=1$ m의 단위 링크)를 홀로노믹
+베이스에 얹은 것이고, 패널은 월드 $(2,1)$ m에 있다.
+
+**월드 프레임과 대상.** 원점에 축을 긋고 모눈 한 칸을 $0.25$ m로 잡으면 $2$ m 도달 범위가 여덟
+칸이다. 패널 자세 $(2,1)$을 찍고 그 점을 지나는 패널 법선을 그린다. 도구가 밀 방향이 곧 §3의
+논증 전체가 다루는 방향이고, 그 선이 없는 그림은 특이한 배치가 무엇을 잃게 하는지 보여 줄 수 없다.
+
+**베이스가 아니라 패널을 중심으로 한 원 셋.** 이것이 §3의 뒤집기이고, 원을 반대로 그리는 것이 흔한
+실수다. $(2,1)$을 중심으로 바깥 원 $r=2$ m — 그 위의 베이스는 팔을 곧게 펴야 겨우 닿고 $\det J=0$
+이다 — 을 그리고, 이어 $w$가 가장 큰 고리 $r=\sqrt2=1.414$ m, 그리고 팔이 더는 접히지 못하는 안쪽
+원을 그린다. $r=1.311$ m와 $r=1.511$ m 사이를 칠한다. 아래 계산에서 유도하는 $w\ge0.99$ 띠이고
+폭은 $20$ cm다. 축척을 지켜라. 제대로 그리면 모눈 한 칸보다 좁고, 그 순간 그림이 문장 없이 이
+페이지의 논증을 마친 것이다.
+
+**고정 자세.** 베이스를 $(1,0)$ m에 표시한다. P2가 고정 자세 $\theta=(0°,90°)$일 때 말단을 패널에
+올려놓는 바로 그 자리다. 거기서 링크 둘을 그린다. 엘보는 $(2,0)$, 말단은 $(2,1)$. 이 베이스가
+패널에서 $\sqrt2$ m 떨어져 있다는 것, 곧 바깥 원 안 아무 데가 아니라 칠한 고리 위에 있다는 것을
+그림에서 확인한다.
+
+**불확실성 원.** 마지막으로 그 베이스를 중심으로 반지름 $10$ cm의 원을 그린다. §4의 베이스 위치
+추정 표준편차의 두 배다. 같은 축척에서 그것은 칠한 띠와 같은 폭이다. 그 겹침이 곧 이 그림이고,
+나머지는 전부 배경이다.
 
 ### 1. 목표는 점이 아니라 자세다
 
@@ -289,11 +467,37 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 팔 하나에서 시작하자. 베이스가 고정되어 있을 때 어떤 말단 자세가 달성 가능하고, 얼마나 잘
 달성되는가?
 
+**도달 작업 영역의 정의.** $f$를 순기구학, $\mathcal{C}_{\text{free}}$를 자유 컨피규레이션 공간([[04-robotics/planning-decision-making|4. 계획 §2]])이라 하면, 도달 작업 영역은 자유 공간의 $f$에 의한 상(image)이다. 즉 *어떤* 허용 컨피규레이션으로든 도달되는 말단 pose의 집합이다:
+
+$$\mathcal{W}_{R}=\{\,f(q)\ :\ q\in\mathcal{C}_{\text{free}}\,\}$$
+
+공이 아니라 상이므로 모양은 관절 한계와 링크 길이가 만드는 그대로다. 그 부분집합인 **덱스트러스 작업 영역**은 *모든* 방향으로 도달 가능한 위치만 남기며, 둘 사이의 간격이 이 절이 말하는 비등방성이다. **P2**($L_1=L_2=1$ m)의 도달 집합은 $|L_1-L_2|=0$과 $L_1+L_2=2$ m 사이의 고리, 즉 반경 2 m의 닫힌 원판이다. **반례:** P2의 덱스트러스 작업 영역을 묻는 것은 범주 오류다. 평면 2R은 자유도 둘을 모두 말단 *위치*에 쓰고 고를 방향이 남아 있지 않기 때문이다 — 덱스터리티는 여유 자유도가 있는 팔에만 던질 수 있는 질문이다.
+
 **도달성 지도(reachability map)**: 팔의 작업 영역(workspace)을 복셀로 나누고 각각에 말단이 도달할 수 있는지를
-기록한다. **능력 지도(capability map)**(Zacharias, Borst, Hirzinger, IROS 2007)는 한 걸음 더
-나아가 *어느 방향에서* 도달 가능한지를 기록한다. 어떤 점에 위에서 닿는 것과 옆에서 닿는 것은
+기록한다 — $\mathcal{W}_R$의 이산화된 지시 함수다. **능력 지도(capability map)**(Zacharias, Borst, Hirzinger, IROS 2007)는 한 걸음 더
+나아가 *어느 방향에서* 도달 가능한지를 기록하고, 각 복셀을 그 자리에서 달성 가능한 접근 방향의 비율인 **도달성 지수**로 요약한다. 어떤 점에 위에서 닿는 것과 옆에서 닿는 것은
 다른 가능성 문제이고, 팔의 작업 영역은 강하게 비등방적이기 때문이다. 그 방향 구조를 명시적이고
 들여다볼 수 있게 만든 것이 기여이며, §3의 역도달성 방법들의 직계 조상이다(도달성에 기반한 베이스 배치 자체는 적어도 Seraji 1995까지 거슬러 올라간다).
+
+**가조작성 — "얼마나 잘"을 숫자로.** 도달성은 예/아니오이고, 도달한 pose의 품질은 야코비안 $J(q)$의 성질이다. 그 타원체는 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]에서 정의된다. 이 페이지가 쓰는 것은 그 타원체의 스칼라 요약 둘이고, 둘은 서로 다른 질문에 답한다. Yoshikawa의 척도는 그 부피이고, 조건수는 그 일그러짐이다:
+
+$$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{가 정사각일 때}),\qquad \kappa(q)=\frac{\sigma_{\max}}{\sigma_{\min}}$$
+
+찌그러진 타원체는 부피가 없으므로 $w$는 특이점에서 정확히 0이 되고, 가장 큰 특잇값은 그대로인데 하나가 0으로 가므로 $\kappa$는 거기서 발산한다. 둘 다 베이스 pose가 아니라 **컨피규레이션**의 성질이다 — 베이스 pose가 중요한 것은 오직 팔이 어떤 컨피규레이션을 취해야 하는지를 그것이 정하기 때문이다.
+
+> [!example] 계산 예제 · Worked example
+> **P2**에서 두 양은 $\theta_1$이 아니라 엘보 각 $\theta_2$에*만* 의존한다. $\theta_1$을 바꾸면 과제 프레임이 회전할 뿐이기 때문이다. 이것이 조건수 문제를 *거리* 문제로 바꿔 놓는다. 말단-베이스 거리 $r=\sqrt{2+2\cos\theta_2}$ 역시 $\theta_2$만의 함수이고, 거리 하나는 베이스 위치의 고리이며, 그것이 §3이기 때문이다.
+>
+> | $\theta_2$ | $r$ (m) | $w=\lvert\sin\theta_2\rvert$ | $\sigma_{\max},\sigma_{\min}$ | $\kappa$ |
+> |---|---|---|---|---|
+> | $90°$ | 1.414 | **1.000** | 1.618, 0.618 | 2.618 |
+> | $131.81°$ | 0.816 | 0.745 | 1.098, 0.679 | **1.618** |
+> | $5°$ | 1.998 | 0.087 | 2.234, 0.039 | 57.26 |
+> | $0°$ | 2.000 | 0.000 | 2.236, 0 | $\infty$ |
+>
+> **두 척도가 어긋나고, 그것이 요점이다.** $w$는 $\theta_2=90°$에서 가장 크며, 이 페이지의 그림과 과제가 쓰는 $r=\sqrt{2}$ 띠가 그곳이다. 그런데 $\kappa$는 $\theta_2=\arccos(-\tfrac23)=131.81°$에서 가장 작고, 거기서 $r=\sqrt{2/3}=0.816$ m이며 $w$는 이미 $\sqrt5/3=0.745$로 떨어져 있다. 타원체의 *부피*를 최대로 하면 베이스는 목표에서 1.41 m에 서고, 그 *일그러짐*을 최소로 하면 0.82 m에 선다. (양 극값은 정확하다. $90°$에서 $\kappa=\varphi^2$, $131.81°$에서 $\kappa=\varphi$이고 $\varphi$는 황금비다.)
+>
+> **반례 — "잘 조건화된 띠"를 수 하나로 말하기.** 어느 척도를 최적화했는지 말하기 전에는 그런 띠가 없다. $w$는 "팔이 모든 방향으로 빠르게 움직일 수 있는가"에 답하고, $\kappa$는 "한 방향에서의 능력이 다른 방향과 엇비슷한가"에 답하며, 한 축으로 미는 접촉 과제는 일반적으로 둘 중 어느 것도 아니라 *과제 방향에서의* $\sigma$를 따진다. 숫자에는 척도를 함께 적어라. 아니면 그 숫자는 아무 뜻도 없다.
 
 ### 3. Base placement — 질문 뒤집기
 
@@ -360,8 +564,8 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 조작 논문을 읽는 정직한 방법은 이 넷 중 무엇을 측정했고 무엇을 가정으로 없앴는지 묻는 것이다.
 
 이동과 조작이 그냥 이어 붙는 것이 아닌 이유에 대한 기준 서술은 Brock, Park, Toussaint의
-*Springer Handbook of Robotics* "Mobility and Manipulation" 장이다 — 전신 제어(베이스를 먼저 옮기고 팔을 나중에 움직이는 대신, 베이스와 팔을 하나의 기구학적 사슬로 함께 명령하는 것), 여유 자유도
-해소, 그리고 내비게이션 제약과 조작 제약의 상호작용.
+*Springer Handbook of Robotics* "Mobility and Manipulation" 장이다 — 전신 제어, 여유 자유도
+해소(둘 다 아래 §4.5에서 정의한다), 그리고 내비게이션 제약과 조작 제약의 상호작용.
 
 > [!warning] 알아 둘 또 하나의 부재
 > 모바일 조작 서베이는 존재한다 — Thakar 등, "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. (이 페이지의 이전 판은 없다고 적었다.) 없는 것은 *Annual Review of Control, Robotics, and Autonomous Systems*의 **최근 모바일 조작 서베이가
@@ -392,6 +596,91 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 > 요구되는 것은 다음 감지 단계가 작동할 만큼 *물체를 센서 시야 안에 넣는 것*이고, 그다음은 팔이 국소적으로
 > 루프를 닫는다. 목표 지점에서 다시 관측하는지 밝히지 않은 채 모바일 조작 성공률을 보고하는
 > 논문은, 둘 중 어느 시스템을 만든 것인지 말하지 않은 것이다.
+
+### 4.5 전신 제어인가 분리인가 — 그리고 구별하는 법
+
+위의 오차 예산은 베이스가 선 다음 팔이 일한다고 가정했다. 그것은 두 아키텍처 중 하나이고,
+그 선택을 부르는 어휘를 정확히 적어 둘 값이 있다. 논문들이 이 말을 느슨하게 쓰기 때문이다.
+
+**분리형**(*navigate-then-manipulate*, 또는 순차형): 베이스를 어떤 pose로 명령해 세우고,
+그다음 베이스를 고정한 채 팔을 명령한다. 문제가 둘이고 차례로 풀리며, 각자 자기 상태와 자기
+제어기를 가진다.
+
+**전신(whole-body) 제어**: 베이스와 팔을 자유도 $n=n_b+n_a$짜리 하나의 기구학 사슬로 다루고,
+과제 야코비안 하나가 그 전부를 말단 운동으로 사상한다. 그래서 베이스의 움직임과 관절의
+움직임이 같은 과제 오차를 갚는 서로 대안적인 방법이 된다:
+
+$$\dot x=J\dot q=\begin{pmatrix}J_b & J_a\end{pmatrix}\begin{pmatrix}\dot q_b\\ \dot q_a\end{pmatrix},\qquad \dot q=J^{+}\dot x+\big(I-J^{+}J\big)\dot q_0$$
+
+첫 항이 과제를 달성하고, 둘째 항은 $J$의 **영공간**(null space)에 있으므로 말단을 전혀 움직이지
+않은 채 컨피규레이션만 바꾼다. 부차 목표 — 가조작성, 관절 한계, 장애물 거리 — 가 들어가는
+자리가 거기다. $\dot q_0$를 고르는 일이 **여유 자유도 해소**(redundancy resolution)다. 전신 제어를
+정의하는 조건은 셋이고 셋 다 필요하다. 베이스와 팔을 함께 담는 상태 벡터 하나, 둘 중 어느 쪽이든
+갚을 수 있는 과제 명세 하나, 그리고 같은 제어 주기 안에서 양쪽으로 나가는 명령. 하나라도 빠지면
+분리형이다.
+
+**P2에서 자유도 세어 보기.** 과제는 평면에서의 말단 위치이므로 $m=2$다.
+
+| 아키텍처 | $n_b$ | $n_a$ | $n$ | 영공간 차원 $n-m$ |
+|---|---|---|---|---|
+| 전신, 홀로노믹 베이스 | 3 | 2 | 5 | **3** |
+| 전신, 비홀로노믹 베이스(순간적으로) | 2 | 2 | 4 | 2 |
+| 분리형, 베이스 정지 | 0 | 2 | 2 | **0** |
+
+굵게 쓴 두 수가 이 페이지의 논증 전체를 다른 표기로 적은 것이다. 전신 제어는 과제에 아무 대가도
+치르지 않는 자기 운동 방향 셋을 남기므로, 말단이 가만히 있는 *동안에도* 제어기가 자신을 §2의
+찌그러진 영역 밖으로 빼낼 수 있다. 분리형은 하나도 남기지 않는다. 베이스가 팔에게 넘겨준 조건수가
+곧 과제가 받는 전부이고 그것으로 끝이다. §3이 어디에 설지에 그토록 공을 들이는 이유가 정확히
+그것이다. 비홀로노믹 베이스는 속도 수준에서 3을 보태지 못한다. 순간적인 옆방향 운동이 없기
+때문이다([[04-robotics/planning-decision-making|4. 계획 §5.5]]).
+
+**반례.** 베이스 속도와 팔 속도를 같은 메시지로 보내는 것은 전신 제어가 아니다. 베이스 명령이
+경로 추종기에서 나오고 팔 명령이 베이스의 *추정* pose에 대해 푼 IK에서 나온다면 둘은 여전히
+분리형이고, 시간상 겹쳐 있을 뿐이다. 전신으로 만드는 것은 베이스의 움직임이 과제 오차를 흡수할
+수 있는 야코비안 하나다.
+
+*왜 중요한가.* §6의 표는 논문이 둘 중 무엇을 만들었는지를 묻는다. 그 답이 베이스 pose 오차가
+팔이 사후에 감당해야 할 외란인지(분리형이라 §4의 예산에 고스란히 들어간다), 아니면 제어기가
+여전히 쓸 수 있는 좌표인지(전신이라 과제가 도는 중에 보정된다)를 결정한다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+§2는 팔이 어디서 조건이 좋은지 말했고, §3은 그것을 베이스 위치의 고리로 바꿨으며, §4는 베이스
+자신의 오차를 주었다. 셋을 **P2** 위에서 합치면 이 페이지의 중심 주장 — *쓸 만한 띠가 좁으므로
+베이스 자세 오차는 반올림 오차가 아니다* — 이 검산할 수 있는 숫자가 된다.
+
+**1. 띠를 미터로.** P2에서 Yoshikawa 척도는 $w=\lvert\det J\rvert=\lvert\sin\theta_2\rvert$이고
+말단–베이스 거리는 $r=\sqrt{2+2\cos\theta_2}=2\lvert\cos(\theta_2/2)\rvert$로, 둘 다 엘보 각만의
+함수다(§2). 그러므로 "$w\ge w_0$을 지켜라"는 엘보 각의 구간
+$\theta_2\in[\arcsin w_0,\ 180°-\arcsin w_0]$이고, $r$이 그것을 거리의 구간으로 옮긴다. 양 끝의
+코사인을 $c=\sqrt{1-w_0^2}$라 쓰면 두 반지름은 $\sqrt{2+2c}$와 $\sqrt{2-2c}$이고, 그 차의 제곱은
+$(2+2c)+(2-2c)-2\sqrt{4-4c^2}=4-4w_0$이다. 교차항이 $2\sqrt{4-4c^2}$이고
+$\sqrt{1-c^2}=w_0$이기 때문이다. 따라서 띠의 폭은
+
+$$\Delta r=2\sqrt{1-w_0}$$
+
+이고, 가조작성을 얼마나 요구하느냐의 제곱근으로 닫힌다. 문턱값 둘, 두 띠 모두 §2 표의
+$r=\sqrt2=1.414$ m 고리를 가운데 둔다.
+
+| $w_0$ | 엘보 구간 | $r$ 범위 (m) | 띠 폭 $\Delta r$ (m) |
+|---|---|---|---:|
+| $0.90$ | $64.16°$–$115.84°$ | $1.062$–$1.695$ | $0.632$ |
+| $0.99$ | $81.89°$–$98.11°$ | $1.311$–$1.511$ | $0.200$ |
+
+**2. 띠와 베이스 자신의 오차.** §4의 예산은 베이스 위치 추정을 $\sigma=5$ cm로 잡으므로
+$\pm2\sigma$ 구간은 $20$ cm다 — $w\ge0.99$ 띠 전체이고, 느슨한 $w\ge0.90$ 띠의 3분의 1이다. 그러니
+좁은 띠의 한가운데로 명령한 베이스는 2시그마에서 두 가장자리 사이 어디든 될 수 있다. §3의 배치
+계산이 돌려준 공칭 자세의 불확실성이 답 자체의 크기인 것이다. §3의 그림 설명을 산수로 옮기면 이렇다.
+
+**3. 고칠 곳은 어디인가.** 베이스 위치 추정이 §4 분산의 $25/27.18=92\%$이므로 팔에 무엇을 해도 이
+숫자는 움직이지 않는다. 베이스가 선 뒤 손목 카메라로 대상을 다시 관측하면 남는 예산은 $1.5$ cm —
+반올림 전으로는 $1.476$ cm — 이므로 $\pm2\sigma$ 구간은 $4\times1.476=5.9$ cm다. $20$ cm 띠 안에
+여유 있게 들어가고 작업물 몫까지 남는다. 조건수
+요구는 바뀌지 않았다. 바뀐 것은 마지막 변환을 어느 센서로 쟀는가다.
+
+**여기서 얻는 독법.** 베이스 배치 기준만 말하고 베이스 자세 불확실성을 말하지 않은 논문은 이 절이
+곱한 두 수 중 하나만 준 것이다. $w_0$을 밝히지 않은 채 "조건이 좋은" 배치라고 한 논문은 첫 번째
+수조차 주지 않은 것이다. 같은 팔이 한 문턱에서는 $63$ cm 띠이고 다른 문턱에서는 $20$ cm 띠다.
 
 ### 5. 계속 변하는 현장에서 위치 잡기
 

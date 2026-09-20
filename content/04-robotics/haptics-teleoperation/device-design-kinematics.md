@@ -210,8 +210,16 @@ Quadrature encoders provide counts and direction; angle requires counts-per-revo
 
 From the person: workspace, grasp, comfortable continuous/peak force, perceptual bandwidth, and safety. From the virtual task: minimum free-space impedance, maximum stable wall stiffness, directions of force, update rate, collision complexity, and desired cue. A useful design maximizes the intersection; no scalar “best haptic device” captures it.
 
-> [!question]- Self-check · Answer
-> **Why can increasing a gear ratio worsen a haptic interface even when maximum force rises?** Reflected motor inertia grows approximately with the square of ratio, and friction/backlash may grow. The device becomes harder to backdrive and corrupts free-space motion and small forces.
+### Self-check
+
+1. Why can a larger gear ratio worsen a haptic interface even though its maximum force rises?
+2. P3's capstan has $r_m = 10\ \mathrm{mm}$ and $r_s = 50\ \mathrm{mm}$. What is the transmission ratio, and by what factor does the motor's rotor inertia appear at the handle?
+3. An encoder gives $1024$ counts per revolution on the motor shaft. Does gearing up the transmission improve or worsen the position resolution at the handle, and does the same answer hold for the force resolution?
+
+> [!tip]- Answers
+> 1. Reflected inertia grows with the square of the ratio while force grows only linearly, and friction and backlash grow too. The handle gets heavier and stickier faster than it gets stronger, which is felt in free space where the operator should feel nothing.
+> 2. $n = r_s/r_m = 5$. Rotor inertia appears multiplied by $n^2 = 25$ at the handle — the reason a high-ratio drive feels heavy even when it is not moving anything.
+> 3. It improves position resolution: one motor count covers $n$ times less handle motion. It worsens nothing about force resolution directly, but the same $n^2$ inertia and the added friction raise the smallest force the device can render honestly, so the two resolutions do not improve together.
 
 ### Problem set · 과제
 
@@ -426,8 +434,16 @@ Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전�
 
 사람 쪽에서: 작업공간, 파지, 편안한 지속/최대 힘, 지각 대역폭, 안전. 가상 과제 쪽에서: 자유공간 최소 임피던스, 안정하게 낼 수 있는 최대 벽 강성, 힘의 방향, 갱신 주기, 충돌 복잡도, 원하는 cue. 좋은 설계는 이 두 집합의 교집합을 최대로 만든다. "최고의 햅틱 장치"라는 하나의 스칼라 지표는 존재하지 않는다.
 
-> [!question]- 스스로 점검 · 정답
-> **감속비를 높이면 최대 힘이 커져도 왜 햅틱 인터페이스가 나빠질 수 있는가?** 반사 모터 관성이 대략 감속비의 제곱으로 커지고 마찰·backlash도 함께 커질 수 있다. 장치가 역구동하기 어려워지면서 자유공간 운동과 작은 힘의 표현이 망가진다.
+### 스스로 점검
+
+1. 전달비를 키우면 최대 힘은 커지는데 왜 햅틱 인터페이스가 나빠질 수 있는가?
+2. P3의 캡스턴은 $r_m = 10\ \mathrm{mm}$, $r_s = 50\ \mathrm{mm}$다. 전달비는 얼마이고, 모터 회전자의 관성은 핸들에서 몇 배로 보이는가?
+3. 엔코더가 모터축에서 회전당 $1024$ 카운트를 준다. 전달비를 키우면 핸들에서의 위치 분해능은 좋아지는가 나빠지는가, 그리고 힘 분해능에도 같은 답이 성립하는가?
+
+> [!tip]- 정답 · Answers
+> 1. 반사 관성은 전달비의 제곱으로 커지는데 힘은 1차로만 커지고, 마찰과 백래시도 함께 커진다. 핸들은 세지는 속도보다 무겁고 끈적해지는 속도가 빠르다. 조작자가 아무것도 느끼지 않아야 할 자유 공간에서 바로 느껴진다.
+> 2. $n = r_s/r_m = 5$다. 회전자 관성은 핸들에서 $n^2 = 25$배로 보인다. 아무것도 움직이지 않을 때조차 고전달비 구동이 무겁게 느껴지는 이유다.
+> 3. 위치 분해능은 좋아진다. 모터 카운트 하나가 핸들의 더 작은 움직임에 대응하기 때문이다. 힘 분해능이 직접 나빠지지는 않지만, 같은 $n^2$ 관성과 늘어난 마찰이 장치가 정직하게 낼 수 있는 최소 힘을 올린다. 두 분해능은 함께 좋아지지 않는다.
 
 ### 과제 · Problem set
 

@@ -17,6 +17,59 @@ mastery-when: "Go deeper when you are building the test infrastructure for a lab
 > [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] for QoS compatibility and `use_sim_time`, and [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] for `colcon` and launch files. Baseline as everywhere in this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
 > QoS 호환성과 `use_sim_time`은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]], `colcon`과 launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. 기준 환경은 이 트랙 전체와 같이 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**다.
 
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], recorded rather than driven. One $60\,\mathrm{s}$ run of the cart is on disk, with two topics in it, and every claim this page makes about evidence is checked against that bag.
+
+| Symbol | Value | What it is here |
+|---|---:|---|
+| $N$ | $2048$ counts/m | cart encoder, the source of `/cmd` |
+| $f_g$ | $50\,\mathrm{Hz}$ | `/goal` from vision — the recorded input |
+| $f_c$ | $200\,\mathrm{Hz}$ | `/cmd` from the control loop — the recorded output |
+| $D$ | $60\,\mathrm{s}$ | recording duration |
+| $B$ | $70\,\mathrm{ms}$ | P6's end-to-end budget, which the bag is being asked to confirm or deny |
+| $s$ | $64$ bytes | serialised payload per message — **page-local** illustrative value, used only for the size comparison |
+
+*Scope: this page teaches how to find the cause of a silent system, what a recording is and is not evidence of, and how to turn a run into something another person can re-execute. It does not teach the QoS and time mechanisms that cause most silent systems, which are [[04-robotics/ros2/qos-executors-time|25.5]]; nor how to build a lab's CI from scratch; nor statistical experiment design, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two panels, and the problem set asks for the same figure with one topic's count wrong.
+
+**Panel A — the two lives of one stream.** Two horizontal bands, one above the other. The upper band is `live`: a `/goal` publisher at $50\,\mathrm{Hz}$, a control node, a `/cmd` publisher at $200\,\mathrm{Hz}$, and a `rosbag2` recorder subscribing to both. The lower band is `replay`: `ros2 bag play` publishing the same two topic names into the same control node, with a `/clock` arrow drawn to *every* node in the band. Three things the drawing must get right. The recorder is a **subscriber**, drawn with its arrows pointing into it, because a topic it names but nobody publishes yields a count of zero rather than an error. The `/clock` arrow must reach the node under test as well as the player, since §8's two failure modes are exactly the cases where one of the two halves is missing. And the replayed `/cmd` should be drawn entering a box labelled `assertion`, not a motor — the bag proves things about messages, never about the machine.
+
+**Panel B — the ledger you expect before you open the bag.** A two-column table drawn by hand, headed `topic` and `expected count`, with the arithmetic written out rather than the answers alone: $50\times60$ and $200\times60$. Under it, a number line of $0$ to $60\,\mathrm{s}$ with one $100\,\mathrm{ms}$ window blown up to the right, showing four `/cmd` ticks between two `/goal` ticks and the age of the newest `/goal` written above each one. Beside the blown-up window put P6's $70\,\mathrm{ms}$ bracket and the default `--clock` period of $25\,\mathrm{ms}$ as a second, coarser tick row, because the figure exists to show that the replay clock is itself a sampling rate.
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. Write down what the bag must contain *before* opening it; that is what makes `ros2 bag info` a test rather than a description.
+
+**Step 1 — the counts you are owed.** A topic recorded for $D$ seconds at rate $f$ should hold
+
+$$n = f\,D,$$
+
+so `/goal` owes $50\times60=3000$ messages and `/cmd` owes $200\times60=12000$, a total of $15000$ and a ratio of exactly $4{:}1$, since the control loop runs four times per vision frame. Predicting these before running `ros2 bag info` is the difference between reading the Count column and merely looking at it.
+
+**Step 2 — reading a shortfall as a quantity.** Suppose the bag reports `/cmd` with a count of $11\,400$. That is $11\,400/12\,000 = 95\%$, so
+
+$$12\,000-11\,400 = 600\ \text{messages} = \frac{600}{200} = 3.0\,\mathrm{s}$$
+
+of control history missing, spread as an average of $600/60=10$ dropped messages per second. §7's rule names the cause — a count far below $D\times f$ means the recorder fell behind — and the conversion into seconds is what tells you whether the bag can still answer your question. A gap of $3\,\mathrm{s}$ scattered through a $60\,\mathrm{s}$ run is fatal to any latency claim, because you cannot tell which $5\,\mathrm{ms}$ ticks are absent.
+
+**Step 3 — the replay clock is a sampling rate.** `ros2 bag play --clock` publishes `/clock` at $40\,\mathrm{Hz}$ by default (§8), so a node reading `now()` during replay sees time advance in steps of
+
+$$\frac{1}{40}=25\,\mathrm{ms},$$
+
+which is five whole control periods of this cart, and $25/70=36\%$ of P6's entire budget. A latency measured under the default clock is therefore quantised to a third of the quantity it is trying to verify: every event inside one $25\,\mathrm{ms}$ step carries the same timestamp. The fix is the flag the page already shows, `--clock 200`, matching the loop rate, so that the replay clock resolves $5\,\mathrm{ms}$. A replay that disagrees with the live run about timing, on a stack whose clock ticks five times slower than its controller, has not found a bug.
+
+**Step 4 — the assertion the bag can actually support.** Within the recording, `/cmd` at $200\,\mathrm{Hz}$ and `/goal` at $50\,\mathrm{Hz}$ means four commands fall between successive goals, so the newest goal available to them is $0$, $5$, $10$ and $15\,\mathrm{ms}$ old — a mean of $7.5\,\mathrm{ms}$ and a maximum of $15\,\mathrm{ms}$. That gives a checkable property: *every `/cmd` stamp is within $20\,\mathrm{ms}$ of a `/goal` stamp*, allowing the $15\,\mathrm{ms}$ worst case plus one control period. Contrast §9's example tolerance of $200\,\mathrm{ms}$: on this cart that is $40$ control periods and $2.9$ times the whole budget, so an assertion written at that tolerance would pass while the budget failed. A tolerance must be smaller than the thing it protects.
+
+**Step 5 — and why `-a` is not a choice on this robot.** The two P6 topics at the page-local $s=64$ bytes of payload come to $15\,000\times64=0.96\,\mathrm{MB}$ for the whole minute. Add one uncompressed 1080p camera at 30 Hz, which §6 computes as $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$, and the same minute becomes
+
+$$186.6\times60 = 11.2\,\mathrm{GB},$$
+
+about $11\,600$ times the two topics you actually needed, because the bytes scale with pixels and not with the question. The disk fills, the recorder falls behind, and Step 2's missing $600$ messages are the ones that disappear. Recording less is not thrift; on this run it is the only way the control topic survives intact.
+
 ### 1. Why this page exists
 
 A ROS 2 system that does not work usually produces no error. The node starts, prints its startup log, and nothing happens. There is no stack trace, no exception, no exit code. Two nodes that will never exchange a message look exactly like two nodes that are about to.
@@ -501,11 +554,20 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 - Source, Jazzy branches, for every flag quoted: `ros2cli` (`ros2doctor/command/doctor.py`, `ros2node/verb/info.py`, `ros2param/verb/dump.py`, `ros2topic/verb/{hz,bw,delay}.py`); `rosbag2` (`ros2bag/verb/{record,play,info}.py`, repository README on storage plugins and the default `mcap`).
 - ROS 2 design article — Clock and Time (`/clock`, `use_sim_time`, time of zero as uninitialised).
 
-> [!question]- Self-check · Answer
-> **1. Your node produces no output. You are certain the publisher is fine. Which check do you run first, and why not the one you think is the problem?** Check 0: the environment of the shell, then down the list in order. The point of the order is that certainty is exactly what is wrong — the cases where you are sure are the cases you skip and then spend an hour on. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, `--verbose` for QoS, `tf2_echo`, `/clock`. Stop at the first failure.
-> **2. `ros2 topic hz /scan` reports a healthy 30 Hz and `ros2 topic delay /scan` reports a delay growing by a second every second. What is happening, and why does `hz` not show it?** Something upstream is falling behind and its output is queued: messages arrive at the right rate but each one is older than the last. `hz` measures the interval between arrivals, which is unchanged by a constant backlog; only `delay`, which compares the header stamp with the arrival time, sees the accumulating age. A bounded delay is latency, a growing delay is a queue you will eventually lose.
-> **3. Why is `ros2 bag record -a` a bad default for a research recording, beyond disk space?** Because the recorder must serialise and write everything it subscribed to, and when it cannot keep up it drops messages — so the topic you actually cared about comes home incomplete, with no error. `ros2 bag info`'s Count column is where you find out, usually too late. A 400 GB bag also cannot be shared, put in CI, or iterated on.
-> **4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and how you tell them apart.** The clock (the node is not on `use_sim_time`, or is on it with nothing publishing `/clock`) and QoS durability or reliability (the subscriber requests more than the player offers, so no connection is made). `ros2 topic hz /scan` only tells you the player publishes that name — it uses a best-effort profile that connects to anything, so it cannot see QoS. `ros2 topic info /scan --verbose` then compares the player's offer with your node's request: incompatible profiles are cause B; compatible ones leave `/clock` and `use_sim_time` (cause A).
+### Self-check
+
+1. Your node produces no output. You are certain the publisher is fine. Which check do you run first, and why not the one you think is the problem?
+2. `ros2 topic hz /scan` reports a healthy 30 Hz and `ros2 topic delay /scan` reports a delay growing by a second every second. What is happening, and why does `hz` not show it?
+3. Why is `ros2 bag record -a` a bad default for a research recording, beyond disk space?
+4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and how you tell them apart.
+5. You replay the P6 bag with `ros2 bag play run --clock` and assert that each `/cmd` follows its `/goal` within $200\,\mathrm{ms}$. The test passes. What have you actually proved about P6's $70\,\mathrm{ms}$ budget, and what are the two separate reasons this test cannot see a budget failure?
+
+> [!tip]- Answers
+> 1. Check 0: the environment of the shell, then down the list in order. The point of the order is that certainty is exactly what is wrong — the cases where you are sure are the cases you skip and then spend an hour on. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, `--verbose` for QoS, `tf2_echo`, `/clock`. Stop at the first failure.
+> 2. Something upstream is falling behind and its output is queued: messages arrive at the right rate but each one is older than the last. `hz` measures the interval between arrivals, which is unchanged by a constant backlog; only `delay`, which compares the header stamp with the arrival time, sees the accumulating age. A bounded delay is latency, a growing delay is a queue you will eventually lose.
+> 3. Because the recorder must serialise and write everything it subscribed to, and when it cannot keep up it drops messages — so the topic you actually cared about comes home incomplete, with no error. `ros2 bag info`'s Count column is where you find out, usually too late. A 400 GB bag also cannot be shared, put in CI, or iterated on.
+> 4. The clock (the node is not on `use_sim_time`, or is on it with nothing publishing `/clock`) and QoS durability or reliability (the subscriber requests more than the player offers, so no connection is made). `ros2 topic hz /scan` only tells you the player publishes that name — it uses a best-effort profile that connects to anything, so it cannot see QoS. `ros2 topic info /scan --verbose` then compares the player's offer with your node's request: incompatible profiles are cause B; compatible ones leave `/clock` and `use_sim_time` (cause A).
+> 5. Nothing. Two independent reasons, and both are in the worked case. First the tolerance: $200\,\mathrm{ms}$ is $40$ control periods and $2.9$ times the budget, so a chain that had degraded from $70$ to $190\,\mathrm{ms}$ would still pass — the assertion is looser than the property. Second the clock: the default `--clock` publishes at $40\,\mathrm{Hz}$, so `now()` advances in $25\,\mathrm{ms}$ steps and every event inside one step shares a timestamp; the measurement's resolution is a third of the budget before the tolerance is even applied. Fix both: `--clock 200` to resolve $5\,\mathrm{ms}$, and an assertion at $20\,\mathrm{ms}$, which is the $15\,\mathrm{ms}$ worst-case goal age plus one control period. And note what still is not proved — the bag holds stamps, not forces, so even a passing tight test says the *messages* met their deadline, not that the cart did.
 
 ### Problem set · 과제
 
@@ -521,6 +583,59 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 > 3. Clock (`use_sim_time` / `/clock`) versus QoS. `ros2 topic info /goal --verbose` splits them (`hz` cannot see QoS). A compatible QoS pair with $200\,\mathrm{ms}$ delay is the budget failure: data flows and is already late.
 
 ## 한국어
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**를 구동하는 대신 기록한다. 카트를 $60\,\mathrm{s}$ 돌린 실행 하나가 디스크에 있고 그 안에 토픽이 둘 있다. 증거에 대해 이 페이지가 하는 모든 주장은 그 bag에 대어 확인한다.
+
+| 기호 | 값 | 여기서의 뜻 |
+|---|---:|---|
+| $N$ | $2048$ counts/m | 카트 엔코더. `/cmd`의 출처 |
+| $f_g$ | $50\,\mathrm{Hz}$ | 비전에서 오는 `/goal` — 기록된 입력 |
+| $f_c$ | $200\,\mathrm{Hz}$ | 제어 루프에서 나오는 `/cmd` — 기록된 출력 |
+| $D$ | $60\,\mathrm{s}$ | 녹화 길이 |
+| $B$ | $70\,\mathrm{ms}$ | P6의 종단 예산. bag에게 확인이나 반증을 요구하는 대상 |
+| $s$ | $64$ bytes | 메시지당 직렬화 적재량 — **페이지 국소** 예시 값이고 크기 비교에만 쓴다 |
+
+*범위: 이 페이지는 조용히 죽은 시스템의 원인을 찾는 법, 녹화가 무엇의 증거이고 무엇의 증거가 아닌지, 실행 하나를 남이 다시 돌릴 수 있는 것으로 바꾸는 법을 가르친다. 조용한 실패를 대부분 만들어 내는 QoS와 시간 기구는 가르치지 않는다. 그것은 [[04-robotics/ros2/qos-executors-time|25.5]]다. 연구실 CI를 처음부터 짓는 법도, 통계적 실험 설계도 아니다. 후자는 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 패널 둘. 과제는 토픽 하나의 개수가 틀린 같은 그림을 요구한다.
+
+**패널 A — 한 스트림의 두 인생.** 가로 띠 둘을 위아래로 놓는다. 위 띠는 `live`다. $50\,\mathrm{Hz}$ `/goal` 퍼블리셔, 제어 노드, $200\,\mathrm{Hz}$ `/cmd` 퍼블리셔, 그리고 둘 다 구독하는 `rosbag2` 레코더. 아래 띠는 `replay`다. `ros2 bag play`가 같은 토픽 이름으로 같은 제어 노드에 발행하고, `/clock` 화살표가 그 띠의 *모든* 노드에 닿는다. 그림이 맞혀야 할 것이 셋이다. 레코더는 **구독자**이므로 화살표가 그쪽으로 들어가게 그린다. 이름만 대고 아무도 발행하지 않는 토픽은 오류가 아니라 개수 0을 낳기 때문이다. `/clock` 화살표는 플레이어뿐 아니라 시험 대상 노드에도 닿아야 한다. §8의 실패 모드 둘이 정확히 그 두 짝 중 하나가 빠진 경우이기 때문이다. 그리고 재생된 `/cmd`는 모터가 아니라 `단언`이라고 쓴 상자로 들어가게 그린다. bag은 메시지에 대해 증명하지 기계에 대해 증명하지 않는다.
+
+**패널 B — bag을 열기 전에 적어 두는 장부.** `토픽`과 `기대 개수` 두 칸짜리 표를 손으로 그리되, 답만 적지 말고 계산을 적는다. $50\times60$과 $200\times60$. 그 아래에 $0$에서 $60\,\mathrm{s}$의 수직선을 긋고 오른쪽에 $100\,\mathrm{ms}$ 창 하나를 확대해, `/goal` 틱 둘 사이의 `/cmd` 틱 넷과 각 틱 위에 가장 새로운 `/goal`의 나이를 적는다. 확대한 창 옆에 P6의 $70\,\mathrm{ms}$ 괄호와 기본 `--clock` 주기 $25\,\mathrm{ms}$를 더 성긴 둘째 눈금 줄로 그린다. 재생 시계 자체가 하나의 샘플링 속도라는 것을 보이려고 있는 그림이기 때문이다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. bag이 무엇을 담고 있어야 하는지를 열기 *전에* 적어 둔다. `ros2 bag info`를 서술이 아니라 시험으로 만드는 것이 그 한 걸음이다.
+
+**Step 1 — 받아야 할 개수.** 속도 $f$로 $D$초 기록한 토픽은
+
+$$n = f\,D$$
+
+개를 담고 있어야 한다. 그래서 `/goal`은 $50\times60=3000$개, `/cmd`는 $200\times60=12000$개, 합쳐 $15000$개이고 비는 정확히 $4{:}1$이다. 제어 루프가 비전 프레임 하나당 네 번 돌기 때문이다. `ros2 bag info`를 돌리기 전에 이 숫자를 예측해 두는 것이 Count 칸을 *읽는* 것과 그냥 *보는* 것의 차이다.
+
+**Step 2 — 모자란 만큼을 양으로 읽기.** bag이 `/cmd` 개수를 $11\,400$으로 보고했다고 하자. $11\,400/12\,000 = 95\%$이므로
+
+$$12\,000-11\,400 = 600\ \text{개} = \frac{600}{200} = 3.0\,\mathrm{s}$$
+
+의 제어 기록이 사라졌고, 평균하면 초당 $600/60=10$개씩 흘린 것이다. 원인의 이름은 §7이 준다. $D\times f$보다 한참 적은 개수는 레코더가 뒤처졌다는 뜻이다. 그리고 그것을 초로 환산하는 일이 이 bag이 아직 내 질문에 답할 수 있는지를 말해 준다. $60\,\mathrm{s}$ 실행에 흩어진 $3\,\mathrm{s}$의 구멍은 어떤 지연 주장에도 치명적이다. 어느 $5\,\mathrm{ms}$ 틱이 빠졌는지 알 수 없기 때문이다.
+
+**Step 3 — 재생 시계는 샘플링 속도다.** `ros2 bag play --clock`은 기본으로 `/clock`을 $40\,\mathrm{Hz}$로 발행하므로(§8), 재생 중 `now()`를 읽는 노드에게 시간은
+
+$$\frac{1}{40}=25\,\mathrm{ms}$$
+
+씩 뛴다. 이 카트의 제어 주기 다섯 개이고 P6 예산 전체의 $25/70=36\%$다. 그러니 기본 시계로 잰 지연은 그것이 확인하려는 양의 3분의 1 단위로 양자화되어 있다. 한 스텝 안의 모든 사건이 같은 타임스탬프를 달기 때문이다. 해법은 페이지가 이미 보여 준 플래그, 루프 속도에 맞춘 `--clock 200`이고, 그러면 재생 시계가 $5\,\mathrm{ms}$를 분해한다. 제어기보다 시계가 다섯 배 느리게 째깍이는 스택에서 재생이 실제 실행과 타이밍이 다르다고 말한다면, 그것은 버그를 찾은 것이 아니다.
+
+**Step 4 — bag이 실제로 떠받칠 수 있는 단언.** 녹화 안에서 `/cmd`는 $200\,\mathrm{Hz}$, `/goal`은 $50\,\mathrm{Hz}$이므로 목표 둘 사이에 명령 넷이 들어가고, 그 넷이 쓸 수 있는 가장 새로운 목표의 나이는 $0$, $5$, $10$, $15\,\mathrm{ms}$다. 평균 $7.5\,\mathrm{ms}$, 최대 $15\,\mathrm{ms}$다. 여기서 확인 가능한 성질이 하나 나온다. *모든 `/cmd` 스탬프는 어떤 `/goal` 스탬프의 $20\,\mathrm{ms}$ 안에 있다*. 최악 $15\,\mathrm{ms}$에 제어 주기 하나를 더한 값이다. §9의 예시 허용 오차 $200\,\mathrm{ms}$와 견주어 보라. 이 카트에서는 제어 주기 $40$개이고 예산 전체의 $2.9$배라, 그 허용 오차로 쓴 단언은 예산이 무너져도 통과한다. 허용 오차는 그것이 지키려는 값보다 작아야 한다.
+
+**Step 5 — 그리고 이 로봇에서 `-a`가 선택지가 아닌 이유.** P6의 두 토픽은 페이지 국소 $s=64$ 바이트로 잡으면 1분 전체가 $15\,000\times64=0.96\,\mathrm{MB}$다. 여기에 비압축 1080p 카메라 하나를 30 Hz로 더하면, §6이 $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$로 계산한 그 값 때문에 같은 1분이
+
+$$186.6\times60 = 11.2\,\mathrm{GB}$$
+
+가 된다. 실제로 필요했던 두 토픽의 약 $11\,600$배다. 바이트는 질문이 아니라 픽셀에 비례하기 때문이다. 디스크가 차고, 레코더가 뒤처지고, Step 2의 사라진 $600$개가 바로 그때 사라진다. 적게 기록하는 것은 절약이 아니다. 이 실행에서는 제어 토픽이 온전히 살아남는 유일한 길이다.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -1006,11 +1121,20 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 - 인용한 모든 플래그의 출처, Jazzy 브랜치 소스: `ros2cli`(`ros2doctor/command/doctor.py`, `ros2node/verb/info.py`, `ros2param/verb/dump.py`, `ros2topic/verb/{hz,bw,delay}.py`); `rosbag2`(`ros2bag/verb/{record,play,info}.py`, 저장 플러그인과 기본값 `mcap`에 관한 저장소 README).
 - ROS 2 design article — Clock and Time(`/clock`, `use_sim_time`, 초기화 안 됨을 뜻하는 시간 0).
 
-> [!question]- 스스로 점검 · 정답
-> **1. 노드가 출력을 내지 않는다. 퍼블리셔는 확실히 멀쩡하다. 무엇부터 점검하고, 왜 짐작한 지점부터 보지 않는가?** 0번, 셸의 환경부터 시작해 목록을 순서대로 내려간다. 순서의 요점은 바로 그 확신이 틀렸다는 것이다. 확신하는 항목이 건너뛰는 항목이고, 그다음 한 시간을 거기서 잃는다. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, QoS는 `--verbose`, `tf2_echo`, `/clock`. 처음 실패에서 멈춘다.
-> **2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 1초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?** 상류 어딘가가 뒤처져 출력이 큐에 쌓이고 있다. 메시지는 제 주기로 오지만 하나하나가 앞의 것보다 오래됐다. `hz`는 도착 간격을 재고, 일정한 적체는 그 간격을 바꾸지 않는다. header 스탬프와 수신 시각을 비교하는 `delay`만 쌓이는 나이를 본다. 유계한 지연은 지연이고, 자라는 지연은 결국 잃게 될 큐다.
-> **3. 연구용 녹화에서 `ros2 bag record -a`가 나쁜 기본값인 이유를 디스크 용량 말고 대라.** 기록기가 구독한 모든 것을 직렬화해서 써야 하고, 따라가지 못하면 메시지를 흘리기 때문이다. 그래서 정작 필요한 토픽이 불완전한 채로 돌아오고 에러는 없다. 알게 되는 곳은 `ros2 bag info`의 Count 열이고 보통 이미 늦었다. 400 GB짜리 bag은 공유도, CI 투입도, 반복도 불가능하다.
-> **4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 방법을 대라.** 시계(노드가 `use_sim_time`이 아니거나, `use_sim_time`인데 `/clock`을 발행하는 것이 없음)와 QoS durability/reliability(구독자가 플레이어의 제공보다 많이 요구해 연결이 성립하지 않음). `ros2 topic hz /scan`은 플레이어가 그 이름으로 발행한다는 것만 알려 준다 — 무엇과도 연결되는 best-effort 프로파일을 쓰므로 QoS를 보지 못한다. 그다음 `ros2 topic info /scan --verbose`로 플레이어의 제공과 내 노드의 요청을 비교한다. 비호환이면 원인 B, 호환이면 남는 것은 `/clock`과 `use_sim_time`(원인 A)이다.
+### 스스로 점검
+
+1. 노드가 출력을 내지 않는다. 퍼블리셔는 확실히 멀쩡하다. 무엇부터 점검하고, 왜 짐작한 지점부터 보지 않는가?
+2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 1초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?
+3. 연구용 녹화에서 `ros2 bag record -a`가 나쁜 기본값인 이유를 디스크 용량 말고 대라.
+4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 방법을 대라.
+5. P6 bag을 `ros2 bag play run --clock`으로 재생하고 각 `/cmd`가 자기 `/goal` 뒤 $200\,\mathrm{ms}$ 안에 온다고 단언한다. 테스트가 통과한다. P6의 $70\,\mathrm{ms}$ 예산에 대해 실제로 무엇을 증명했는가? 이 테스트가 예산 실패를 볼 수 없는 서로 다른 이유 둘은 무엇인가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 0번, 셸의 환경부터 시작해 목록을 순서대로 내려간다. 순서의 요점은 바로 그 확신이 틀렸다는 것이다. 확신하는 항목이 건너뛰는 항목이고, 그다음 한 시간을 거기서 잃는다. `ros2 node list`, `ros2 node info`, `ros2 topic hz`, `ros2 topic info`, QoS는 `--verbose`, `tf2_echo`, `/clock`. 처음 실패에서 멈춘다.
+> 2. 상류 어딘가가 뒤처져 출력이 큐에 쌓이고 있다. 메시지는 제 주기로 오지만 하나하나가 앞의 것보다 오래됐다. `hz`는 도착 간격을 재고, 일정한 적체는 그 간격을 바꾸지 않는다. header 스탬프와 수신 시각을 비교하는 `delay`만 쌓이는 나이를 본다. 유계한 지연은 지연이고, 자라는 지연은 결국 잃게 될 큐다.
+> 3. 기록기가 구독한 모든 것을 직렬화해서 써야 하고, 따라가지 못하면 메시지를 흘리기 때문이다. 그래서 정작 필요한 토픽이 불완전한 채로 돌아오고 에러는 없다. 알게 되는 곳은 `ros2 bag info`의 Count 열이고 보통 이미 늦었다. 400 GB짜리 bag은 공유도, CI 투입도, 반복도 불가능하다.
+> 4. 시계(노드가 `use_sim_time`이 아니거나, `use_sim_time`인데 `/clock`을 발행하는 것이 없음)와 QoS durability/reliability(구독자가 플레이어의 제공보다 많이 요구해 연결이 성립하지 않음). `ros2 topic hz /scan`은 플레이어가 그 이름으로 발행한다는 것만 알려 준다 — 무엇과도 연결되는 best-effort 프로파일을 쓰므로 QoS를 보지 못한다. 그다음 `ros2 topic info /scan --verbose`로 플레이어의 제공과 내 노드의 요청을 비교한다. 비호환이면 원인 B, 호환이면 남는 것은 `/clock`과 `use_sim_time`(원인 A)이다.
+> 5. 아무것도 증명하지 못했다. 서로 독립인 이유가 둘이고 둘 다 계산 절에 있다. 첫째는 허용 오차다. $200\,\mathrm{ms}$는 제어 주기 $40$개이자 예산의 $2.9$배라서, 사슬이 $70$에서 $190\,\mathrm{ms}$로 나빠져도 여전히 통과한다. 단언이 지키려는 성질보다 헐겁다. 둘째는 시계다. 기본 `--clock`은 $40\,\mathrm{Hz}$로 발행하므로 `now()`가 $25\,\mathrm{ms}$씩 뛰고 한 스텝 안의 모든 사건이 같은 타임스탬프를 갖는다. 허용 오차를 적용하기도 전에 측정의 분해능이 예산의 3분의 1이다. 둘 다 고쳐라. $5\,\mathrm{ms}$를 분해하도록 `--clock 200`, 그리고 최악의 목표 나이 $15\,\mathrm{ms}$에 제어 주기 하나를 더한 $20\,\mathrm{ms}$ 단언. 그리고 그래도 증명되지 않는 것을 적어 두라. bag이 담은 것은 힘이 아니라 타임스탬프이므로, 빡빡한 테스트가 통과해도 그것은 *메시지*가 마감을 지켰다는 말이지 카트가 지켰다는 말이 아니다.
 
 ### 과제 · Problem set
 

@@ -96,7 +96,7 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
 
 **Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
 
-### 6. The homework diagram
+### 6. Homework diagram
 
 One figure, two panels, and the problem set asks for the same figure with the suspension retuned and the sleeve moved.
 
@@ -104,7 +104,7 @@ One figure, two panels, and the problem set asks for the same figure with the su
 
 **Panel B — what can be told apart.** Unroll the sleeve into a straight $100\,\mathrm{mm}$ line. Put 16 tactor marks on it at $6.25\,\mathrm{mm}$ pitch and draw each contactor to scale as a $6\,\mathrm{mm}$ disc, so the $0.25\,\mathrm{mm}$ gaps are visible. Underneath, draw a second ruler divided into $d_2=10\,\mathrm{mm}$ segments and bracket the tactors that fall inside each one. Write the two counts side by side: 16 actuators, 10 resolvable sites. Neither panel may be drawn from the command; both are drawn from the delivered quantity.
 
-### 7. Worked: what T1 delivers, and what T3 can resolve
+### 7. Worked case: what T1 delivers, and what T3 can resolve
 
 **Step 1 — the model.** Treat the tactor as one mass on a suspension, driven by the coil force and moving against the grip, with $z$ the contactor displacement:
 
@@ -156,8 +156,18 @@ so a 16-tactor sleeve has a pitch of $C/16=6.25\,\mathrm{mm}$, which is below th
 
 **Step 9 — the two limits are not the same kind of thing.** Step 6's shortfall is a *transducer* limit: more current, a different suspension, or a different actuator family moves it. Step 8's is a *receiver* limit, fixed by the site you chose, and no actuator quality moves it at all. A design review that answers a spatial-resolution objection with a better amplifier has confused the two.
 
-> [!question]- Self-check · Answer
-> **Why is a 250 Hz command not enough to specify a tactile stimulus?** The actuator and mounting determine delivered acceleration/displacement; preload, contact area, body site, waveform envelope, and individual sensitivity determine perception. Frequency is only one coordinate.
+### Self-check
+
+1. Step 6 gives two honest summaries of the same 250 Hz cue on T1: eleven times weaker, and less than twice as weak. Which delivered variable is each one reporting, and is either of them a perceptual claim?
+2. Step 7 finds the 250 Hz cue only $6.7\,\mathrm{dB}$ down *to the person* although its displacement is $20.7\,\mathrm{dB}$ down. Where did the other $14.0\,\mathrm{dB}$ go, and what does that say about reading a tactor's response curve as a usability limit?
+3. A reviewer objects that the sleeve's 16 tactors deliver only 10 distinguishable sites, and the team proposes a higher-current amplifier. Why can that proposal not work, whatever current it buys?
+4. Why is a 250 Hz command not enough to specify a tactile stimulus?
+
+> [!tip]- Answers
+> 1. The first reports **displacement**, $38.0$ against $3.52\,\mu\mathrm{m}$, a ratio of $10.8$; the second reports **acceleration**, $15.0$ against $8.69\,\mathrm{m/s^2}$, a ratio of $1.73$. They differ by exactly the $\omega^2$ that acceleration carries and displacement does not, $(250/100)^2=6.25$, and $10.8/6.25=1.73$. Neither is a perceptual claim: both are properties of T1 alone, and nothing about the skin has entered yet. Naming the delivered variable is therefore part of the measurement, not a formatting choice.
+> 2. Into T2. The skin's detection threshold is five times lower at $250\,\mathrm{Hz}$ than at $100\,\mathrm{Hz}$, worth $20\log_{10}5=14.0\,\mathrm{dB}$, and $20.7-14.0=6.7$. The actuator's rolloff and the receiver's rising sensitivity point in opposite directions and mostly cancel, so a response curve alone cannot say where a device stops being usable — only sensation level, which is the curve measured against that person's threshold at each frequency, can. This is also why the problem set's retuning buys so little: $4.7\,\mathrm{dB}$ gained at 250 Hz against $20.7\,\mathrm{dB}$ lost at 100 Hz.
+> 3. Because the binding limit is in the receiver, not the transducer. $N_{\max}=\lfloor C/d_2\rfloor=\lfloor100/10\rfloor=10$ contains no actuator quantity at all: it is the sleeve circumference divided by the two-point limen of the chosen skin site. More current raises sensation level, which Step 6's ceiling is about, and moves nothing in Step 8. The design claims $\log_2 16=4.00$ bits and supports $\log_2 10=3.32$; only a longer path on the skin, a more acute site, or a vocabulary that stops relying on single-site location closes that gap.
+> 4. The actuator and mounting determine delivered acceleration and displacement; preload, contact area, body site, waveform envelope, and individual sensitivity determine perception. Frequency is only one coordinate, and on T1 the same command at two frequencies delivers stimuli an order of magnitude apart.
 
 ### Problem set · 과제
 
@@ -267,7 +277,7 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
 
 **패널 B — 구별할 수 있는 것.** 슬리브를 길이 $100\,\mathrm{mm}$의 직선으로 펼친다. 그 위에 tactor 16개를 $6.25\,\mathrm{mm}$ 피치로 찍고, 접촉자 하나하나를 지름 $6\,\mathrm{mm}$ 원판으로 축척에 맞게 그려서 $0.25\,\mathrm{mm}$ 틈이 보이게 한다. 그 아래에 $d_2=10\,\mathrm{mm}$ 눈금의 두 번째 자를 그리고, 각 눈금 안에 들어가는 tactor들을 괄호로 묶는다. 두 숫자를 나란히 적는다. 액추에이터 16개, 구별되는 위치 10개. 어느 패널도 명령에서 그려서는 안 된다. 둘 다 전달된 양에서 그린다.
 
-### 7. 계산: T1이 전달하는 것과 T3가 구별하는 것
+### 7. 대상으로 한 번 끝까지: T1이 전달하는 것과 T3가 구별하는 것
 
 **Step 1 — 모델.** tactor를 서스펜션 위의 질량 하나로 보고, 코일 힘이 그것을 그립에 대해 구동한다고 하자. $z$를 접촉자 변위라 하면
 
@@ -319,8 +329,18 @@ $$N_{\max}=\left\lfloor\frac{C}{d_2}\right\rfloor=\left\lfloor\frac{100}{10}\rig
 
 **Step 9 — 두 한계는 같은 종류가 아니다.** Step 6의 부족은 *변환기* 한계다. 전류를 늘리거나, 서스펜션을 바꾸거나, 액추에이터 계열을 바꾸면 움직인다. Step 8의 것은 *수신자* 한계이고, 당신이 고른 부위가 정한다. 액추에이터 품질로는 조금도 움직이지 않는다. 공간 해상도 지적에 더 좋은 증폭기로 답하는 설계 리뷰는 둘을 혼동한 것이다.
 
-> [!question]- 스스로 점검 · 정답
-> **250 Hz라는 명령만으로 촉각 자극을 규정할 수 없는 이유는?** 액추에이터와 장착이 전달되는 가속도·변위를 정하고, 예압·접촉 면적·신체 부위·파형 포락선·개인 감수성이 지각을 정한다. 주파수는 좌표 하나일 뿐이다.
+### 스스로 점검
+
+1. Step 6은 T1의 같은 250 Hz cue를 정직하게 두 가지로 요약한다. 열한 배 약하다, 그리고 두 배도 안 되게 약하다. 각각 전달량 중 무엇을 보고하는가? 둘 중 지각에 대한 주장은 있는가?
+2. Step 7에서 250 Hz cue의 변위는 $20.7\,\mathrm{dB}$ 작은데 *사람에게는* $6.7\,\mathrm{dB}$만 약하다. 나머지 $14.0\,\mathrm{dB}$은 어디로 갔는가? 그것은 tactor의 응답 곡선을 사용 가능 한계로 읽는 일에 대해 무엇을 말하는가?
+3. 리뷰어가 슬리브의 tactor 16개가 구별 가능한 자리를 10개밖에 못 준다고 지적하자, 팀이 더 센 전류의 증폭기를 제안한다. 전류를 아무리 키워도 그 제안이 통하지 않는 이유는?
+4. 250 Hz라는 명령만으로 촉각 자극을 규정할 수 없는 이유는?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 첫째는 **변위**를 보고한다. $38.0$ 대 $3.52\,\mu\mathrm{m}$, 비는 $10.8$이다. 둘째는 **가속도**를 보고한다. $15.0$ 대 $8.69\,\mathrm{m/s^2}$, 비는 $1.73$이다. 둘의 차이는 가속도가 달고 변위가 달지 않는 $\omega^2$, 즉 $(250/100)^2=6.25$이고 실제로 $10.8/6.25=1.73$이다. 어느 쪽도 지각에 대한 주장이 아니다. 둘 다 T1만의 성질이고 아직 피부는 등장하지 않았다. 그러므로 전달량의 이름을 대는 일은 표기 취향이 아니라 측정의 일부다.
+> 2. T2로 갔다. 피부의 검출 임계값은 $250\,\mathrm{Hz}$에서 $100\,\mathrm{Hz}$의 5분의 1이고 그 값은 $20\log_{10}5=14.0\,\mathrm{dB}$이며 $20.7-14.0=6.7$이다. 액추에이터의 롤오프와 수용자의 감도가 반대 방향을 가리켜 대부분 상쇄된다. 그래서 응답 곡선만으로는 장치가 어디서 못 쓰게 되는지 말할 수 없고, 각 주파수에서 그 사람의 임계값에 대어 잰 sensation level만 그것을 말할 수 있다. 과제의 재조정이 그토록 적게 버는 이유도 같다. 250 Hz에서 $4.7\,\mathrm{dB}$을 얻고 100 Hz에서 $20.7\,\mathrm{dB}$을 잃는다.
+> 3. 묶여 있는 한계가 변환기가 아니라 수용자 쪽에 있기 때문이다. $N_{\max}=\lfloor C/d_2\rfloor=\lfloor100/10\rfloor=10$에는 액추에이터 양이 하나도 들어 있지 않다. 슬리브 둘레를 고른 피부 부위의 two-point limen으로 나눈 값일 뿐이다. 전류를 키우면 sensation level이 올라가고 그것은 Step 6의 천장에 관한 일이며, Step 8은 꿈쩍도 하지 않는다. 설계는 $\log_2 16=4.00$비트를 주장하고 $\log_2 10=3.32$비트를 떠받친다. 그 간격은 피부 위 경로를 더 길게 잡거나, 더 예민한 부위로 옮기거나, 단일 자리 위치에 기대지 않는 어휘를 쓸 때만 닫힌다.
+> 4. 액추에이터와 장착이 전달되는 가속도·변위를 정하고, 예압·접촉 면적·신체 부위·파형 포락선·개인 감수성이 지각을 정한다. 주파수는 좌표 하나일 뿐이고, T1에서는 같은 명령이 두 주파수에서 한 자릿수만큼 다른 자극을 전달한다.
 
 ### 과제 · Problem set
 

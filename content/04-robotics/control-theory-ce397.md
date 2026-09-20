@@ -28,6 +28,33 @@ page's vocabulary.
 > [!note] First pass · 처음이라면
 > The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which this page introduces only in a short primer at the start of §5.5; if that primer is not enough, read Åström & Murray ch.9 first. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
 
+### Homework diagram · 과제가 그릴 그림
+
+Two panels and a clock, drawn by hand before the problem set asks for them again. The object is
+**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ that
+§1 opens with.
+
+**Left panel — open loop.** A box labelled $\dot x=-x+u+d$, with the command $u$ and the
+disturbance $d$ arriving together at a summing junction *before* the box, and the state $x$ leaving
+it and going nowhere. Write $x_\infty=1+d$ under the panel and say why in one line: no arrow reads
+$x$, so nothing in this picture can correct it.
+
+**Right panel — closed loop.** The same box, plus a path from the output $x$ into a gain block
+$-K$ and back into the same summing junction. Mark the junction's signs explicitly. The convention
+that survives substitution is the one where the minus lives inside the block, so the junction adds
+$u$ and $d$ and the box is $\dot x=-x+u+d$ unchanged — a paper that hides the sign in the junction
+instead is the reason half of all sign errors are found in someone else's figure. Under the panel
+write the closed-loop pole $-(1+K)$ and $x_\infty=d/(1+K)$; those are the two numbers the problem
+set asks for first.
+
+**The clock, drawn on top of the right panel.** Put a sampler — a switch labelled with period $T$ —
+on the feedback path, and a zero-order hold on $u$ after the gain. Then label every arrow with
+which kind of signal it carries: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ sequences. This
+third element is the one readers leave out and the one §4 shows can decide the answer: the same
+$K$ that is stable in the left-hand notation can be unstable in the right-hand one. A block diagram
+that does not say where the signal becomes a sequence has not specified the controller the problem
+set runs.
+
 ### 1. What feedback actually buys
 
 Take a heater with a leak: $\dot x = -x + u + d$, where $x$ is temperature error, $u$ your
@@ -713,20 +740,20 @@ For controller *design* practice, the CE397 packet linked above works through th
 material with infrastructure examples — for a construction-robotics researcher its
 examples *are* your domain.
 
-### Connections · 연결
+### Connections
 
-- Foundations · 기초: [[02-foundations/engineering-math|0.5 Engineering Math §8–9]], [[02-foundations/linear-algebra|1. Linear Algebra §5]], [[02-foundations/probability|3. Probability]] (Kalman · 칼만)
-- Next · 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]]
-- Robot-specific control · 로봇 제어법: [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]] · Contact · 접촉: [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile]]
+- Foundations: [[02-foundations/engineering-math|0.5 Engineering Math §8–9]], [[02-foundations/linear-algebra|1. Linear Algebra §5]], [[02-foundations/probability|3. Probability]] (Kalman)
+- Next: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]]
+- Robot-specific control: [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]] · Contact: [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile]]
 
-### After reading · 읽고 나면 말할 수 있어야 하는 것
+### After reading
 
-- [ ] Convert a scalar ODE to state-space form and say what each of $A, B, C$ is · 스칼라 미분방정식을 상태공간으로 바꾸고 $A, B, C$가 각각 무엇인지 말할 수 있다
-- [ ] Read stability off eigenvalues in both continuous and discrete time · 연속·이산 시간 모두에서 고유값으로 안정성을 판정할 수 있다
-- [ ] Estimate settling time and overshoot from $\zeta, \omega_n$ · $\zeta, \omega_n$에서 정착 시간과 오버슈트를 추정할 수 있다
-- [ ] Run the controllability/observability rank tests and say what each failure means physically · 가제어성·가관측성 랭크 검정을 수행하고 각 실패의 물리적 의미를 말할 수 있다
-- [ ] Say what feedback buys, and name three things it costs · 피드백이 무엇을 사고 무엇을 지불하는지 세 가지를 말할 수 있다
-- [ ] Audit a paper's "stable/robust/tuned/1 kHz" claims against §10 · 논문의 "stable·robust·tuned·1 kHz" 주장을 §10으로 검사할 수 있다
+- [ ] Convert a scalar ODE to state-space form and say what each of $A, B, C$ is
+- [ ] Read stability off eigenvalues in both continuous and discrete time
+- [ ] Estimate settling time and overshoot from $\zeta, \omega_n$
+- [ ] Run the controllability/observability rank tests and say what each failure means physically
+- [ ] Say what feedback buys, and name three things it costs
+- [ ] Audit a paper's "stable/robust/tuned/1 kHz" claims against §10
 
 ## 한국어
 
@@ -742,6 +769,30 @@ examples *are* your domain.
 
 > [!note] 처음이라면 · First pass
 > D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, 이 페이지는 §5.5 첫머리의 짧은 입문으로만 그것을 소개한다. 그 입문으로 부족하면 Åström & Murray 9장을 먼저 읽어라. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
+
+### 과제가 그릴 그림 · Homework diagram
+
+칸 두 개와 시계 하나. 과제가 다시 요구하기 전에 손으로 한 번 그려 둔다. 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, §1이 열면서 꺼내는 새는 히터
+$\dot x=-x+u+d$다.
+
+**왼쪽 칸 — 개루프.** $\dot x=-x+u+d$라 적은 상자 하나. 명령 $u$와 외란 $d$가 상자 *앞의*
+합산점에서 함께 들어가고, 상태 $x$는 상자에서 나와 아무 데로도 가지 않는다. 칸 아래에
+$x_\infty=1+d$를 적고 이유를 한 줄로 쓴다. $x$를 읽는 화살표가 없으니 이 그림 안의 어떤 것도
+그것을 고칠 수 없다.
+
+**오른쪽 칸 — 폐루프.** 같은 상자에, 출력 $x$에서 이득 상자 $-K$를 거쳐 같은 합산점으로
+돌아가는 경로를 더한다. 합산점의 부호를 명시한다. 대입해도 살아남는 관례는 마이너스를 이득
+상자 안에 두는 쪽이다. 그러면 합산점은 $u$와 $d$를 더하고 상자는 그대로 $\dot x=-x+u+d$다 —
+부호를 합산점에 숨긴 논문이, 부호 오류의 절반이 남의 그림에서 발견되는 이유다. 칸 아래에
+폐루프 극점 $-(1+K)$와 $x_\infty=d/(1+K)$를 적는다. 과제가 가장 먼저 묻는 두 숫자다.
+
+**시계 — 오른쪽 칸 위에 겹쳐 그린다.** 피드백 경로에 주기 $T$를 적은 스위치(샘플러)를 놓고,
+이득 뒤 $u$에 영차 홀드를 놓는다. 그다음 화살표마다 어떤 신호를 나르는지 적는다. $x(t)$와
+$d(t)$는 연속, $x_k$와 $u_k$는 수열이다. 이 세 번째 요소가 독자들이 빠뜨리는 것이고, §4가
+보여 주듯 답을 가르는 것이다. 왼쪽 표기에서 안정한 같은 $K$가 오른쪽 표기에서는 불안정할 수
+있다. 신호가 어디서 수열이 되는지 말하지 않는 블록 다이어그램은 과제가 돌릴 제어기를 아직
+특정하지 못한 그림이다.
 
 ### 1. 피드백이 실제로 사는 것
 
@@ -1349,3 +1400,18 @@ $K$의 최적 선택 → [[04-robotics/lqr-lqg|6. LQR & LQG]]; 제약과 포화 
 로봇 특유의 제어 법칙 → [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]].
 제어기 *설계* 연습에는 위에 링크한 CE397 패킷이 같은 내용을 인프라 예제로 풀어 준다 —
 건설로봇 연구자에게는 그 예제가 *곧 당신의 도메인*이다.
+
+### 연결
+
+- 기초: [[02-foundations/engineering-math|0.5 공업수학 §8–9]], [[02-foundations/linear-algebra|1. 선형대수 §5]], [[02-foundations/probability|3. 확률]](칼만)
+- 다음: [[04-robotics/lqr-lqg|LQR/LQG]] → [[04-robotics/mpc|MPC]] → [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
+- 로봇 제어법: [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]] · 접촉: [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- [ ] 스칼라 미분방정식을 상태공간으로 바꾸고 $A, B, C$가 각각 무엇인지 말할 수 있다
+- [ ] 연속·이산 시간 모두에서 고유값으로 안정성을 판정할 수 있다
+- [ ] $\zeta, \omega_n$에서 정착 시간과 오버슈트를 추정할 수 있다
+- [ ] 가제어성·가관측성 랭크 검정을 수행하고 각 실패의 물리적 의미를 말할 수 있다
+- [ ] 피드백이 무엇을 사고 무엇을 지불하는지 세 가지를 말할 수 있다
+- [ ] 논문의 "stable·robust·tuned·1 kHz" 주장을 §10으로 검사할 수 있다

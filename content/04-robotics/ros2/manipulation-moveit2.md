@@ -17,6 +17,68 @@ mastery-when: "Go deeper when you are writing a planner, a collision checker or 
 > [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]] for URDF and TF, and [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]] for controllers — MoveIt sits directly on both. Inverse kinematics at the level of [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] helps but is not required. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, MoveIt 2 from `ros-jazzy-moveit`.
 > [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 URDF와 TF, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 제어기. MoveIt은 이 둘 위에 바로 앉는다. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] 수준의 역기구학은 도움이 되지만 필수는 아니다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**, MoveIt 2는 `ros-jazzy-moveit`.
 
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the *base* the arm is bolted to: a cart on a line, carrying an arm that must reach a panel. P6 is the right object here precisely because MoveIt has no model of it — the planning scene is a snapshot, and the cart keeps moving through it.
+
+| Symbol | Value | What it is here |
+|---|---:|---|
+| $N$ | $2048$ counts/m | cart encoder, the resolution of the base pose |
+| $f_v$ | $50\,\mathrm{Hz}$ | vision supplying the panel pose into the planning scene |
+| $f_c$ | $200\,\mathrm{Hz}$ | the `ros2_control` loop the trajectory is executed on |
+| $B$ | $70\,\mathrm{ms}$ | P6's camera-to-force budget, which belongs to a different loop from planning |
+| $v$ | $0.25\,\mathrm{m/s}$ | cart speed — **page-local**, used only to turn planning latencies into millimetres |
+| $T_{\text{plan}}$ | $0.80\,\mathrm{s}$ | one OMPL solve — **page-local** and illustrative, not a benchmark |
+| $T_{\text{exec}}$ | $1.50\,\mathrm{s}$ | the resulting trajectory's duration — **page-local** |
+
+*Scope: this page teaches the shape of MoveIt 2 — what `move_group` owns, what the SRDF adds to the URDF, what the pipeline's adapters do, and how a trajectory reaches a controller — and computes what a planner's own latency costs on a base that does not wait. It does not teach where a grasp pose comes from, which is [[04-robotics/grasping|Grasping]]; nor anything from the moment of contact onward, which is [[04-robotics/force-compliance-control|Force & Compliance Control]]; nor the IK and singularity mathematics behind `fraction`, which is [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two panels, and the problem set asks for the same figure with a slower plan.
+
+**Panel A — who believes what.** Three regions side by side with two labelled boundaries between them: `perception` (a camera at $50\,\mathrm{Hz}$ publishing a panel pose), `move_group` (holding the planning scene, the SRDF groups and the pipeline), and `ros2_control` (the trajectory controller and P6's $200\,\mathrm{Hz}$ loop). Draw the panel *twice*: once as the physical object on the left, once as a collision object inside the planning scene, and join the two with a dashed arrow labelled `applied once`. Three things the drawing must get right. The dashed arrow is **not** a feedback loop: nothing republishes the scene unless your code does, which is the whole content of the worked case. The boundary between `move_group` and `ros2_control` carries an **action**, `follow_joint_trajectory`, not a topic, because MoveIt is an action client and needs the result. And the camera has **no arrow at all** into `ros2_control`, since P6's $70\,\mathrm{ms}$ budget lives on a chain MoveIt is not part of.
+
+**Panel B — two clocks, not one.** One horizontal axis in seconds, $0$ to $2.5$, with a second axis inset at the right magnified to milliseconds. On the seconds axis mark three spans end to end: `scene snapshot` (a tick), `plan` of $0.80\,\mathrm{s}$, `execute` of $1.50\,\mathrm{s}$. Above them draw a bar whose length grows from left to right, labelled `age of the panel pose`, and write its value at the three boundaries. On the magnified inset draw the $5\,\mathrm{ms}$ control ticks and one $70\,\mathrm{ms}$ bracket, and connect nothing between the two axes — the gap between them is the figure's argument.
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. The arithmetic below is the catalog plus the three page-local durations; the problem set changes one of them.
+
+**Step 1 — the scene is a photograph.** The planner reads the planning scene once, when the request starts. The panel pose in it came from vision, so at that instant it is already up to one vision period old:
+
+$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms},$$
+
+because nothing can be fresher than the last frame. Planning then runs for $T_{\text{plan}}$ and execution for $T_{\text{exec}}$, and §6 is explicit that nothing refreshes a collision object unless your code republishes it. So the age of the belief at the two later boundaries is
+
+$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}.$$
+
+**Step 2 — the age in millimetres and counts.** At the page-local $v$, the cart carrying the arm has moved $d=v\,a$ while the scene did not:
+
+| Boundary | age | $d=va$ | counts |
+|---|---:|---:|---:|
+| scene read | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
+| plan returned | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
+| trajectory finished | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
+
+Over half a metre, and every joint angle in the trajectory was computed for the first row. This is not a MoveIt defect: the planner solved exactly the problem it was given, on a world someone told it was static. The defect is in the caller that let the base move.
+
+**Step 3 — MoveIt's own gate, read in P6's units.** §8's `allowed_start_tolerance: 0.01` is how far the current state may differ from the trajectory's first point before execution is refused. For a prismatic cart joint that is $0.01\,\mathrm{m}$, which is
+
+$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms},$$
+
+since the tolerance is a distance and the cart crosses it at the page-local speed. Forty milliseconds. The gate that decides whether execution begins at all is crossed in less time than P6 allots to a whole camera-to-force chain, $40 < 70$. On a moving base, plan-then-execute-later is not a slow design, it is a design that will not start. Either stop the base before planning, or use Servo (§9), which has no plan to go stale.
+
+**Step 4 — what the $200\,\mathrm{Hz}$ loop does with the trajectory.** The response adapter `AddTimeOptimalParameterization` is what gives the path timing (§4); suppose it emits points $100\,\mathrm{ms}$ apart. Then
+
+$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20,$$
+
+so twenty control cycles fall between consecutive trajectory points and the controller interpolates across them ([[04-robotics/ros2/simulation-and-control|25.7 §11]]). The trajectory is coarse and the loop is fine, and that is the intended division: MoveIt says where and when, `ros2_control` says how often.
+
+**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at the default `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
+
+**Step 6 — the two budgets, kept apart.** Nothing in Steps 1 to 5 violates P6's $70\,\mathrm{ms}$, because that budget measures camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop, and planning is not on that chain. A $0.80\,\mathrm{s}$ plan is not a budget failure. A panel pose that reaches the *scene* $200\,\mathrm{ms}$ late is not a MoveIt failure either — MoveIt will plan against it without complaint. Both are failures of the caller to say which clock each number belongs to, and Step 3 is what happens when the two are finally forced to meet.
+
 ### 1. What MoveIt 2 is, and three things it is not
 
 You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics, then searching a seven-dimensional configuration space (the space of all joint-angle vectors, one axis per joint; see [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]]) for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
@@ -306,12 +368,22 @@ Where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]]; what hap
 - ros2_control documentation (Jazzy) — `joint_trajectory_controller` parameters (`constraints.*`).
 - MoveIt binary install instructions (`ros-jazzy-moveit`); ROS 2 Jazzy package index.
 
-> [!question]- Self-check · Answer
-> **1. Your plan is beautiful in RViz and the arm does not move. What are the first three commands?** `ros2 control list_controllers` (is a controller active?), a comparison of its name against `controller_names` in `moveit_controllers.yaml`, and `ros2 action list | grep follow_joint_trajectory` (is the action server there?). All three are the wiring layer, and wiring failures are instant and silent — check them before touching tolerances.
-> **2. Why is the URDF insufficient for MoveIt, in one sentence?** It describes geometry and kinematics but carries no semantics: no planning groups, no named poses, no tip link, no disabled collision pairs — all of which live in the SRDF and all of which a planner needs before it can accept a request.
-> **3. `computeCartesianPath` returns 0.62. What do you do, and what are the likely causes?** Do not execute it — that would stop the tool 62 % of the way along a line you chose for a reason. Likely causes are the line leaving the reachable workspace, passing near a singularity, crossing to a different IK branch, or an interpolated pose in collision. Either shorten or reorient the segment, or use Pilz `LIN`, which fails cleanly instead of partially.
-> **4. You close the gripper on a block and every subsequent plan fails in collision. Why?** The block is still a world collision object and the gripper is now inside it. Attach it to the gripper link with the gripper's links listed as `touch_links`, which moves it into the robot's own collision model.
-> **5. Which parts of a construction-site pick does MoveIt not solve?** Where the grasp pose is — that is grasp synthesis from perception — and everything from the moment of contact onward, since MoveIt's world model treats contact as failure. It solves only the collision-free motion between those two.
+### Self-check
+
+1. Your plan is beautiful in RViz and the arm does not move. What are the first three commands?
+2. Why is the URDF insufficient for MoveIt, in one sentence?
+3. `computeCartesianPath` returns 0.62. What do you do, and what are the likely causes?
+4. You close the gripper on a block and every subsequent plan fails in collision. Why?
+5. Which parts of a construction-site pick does MoveIt not solve?
+6. On P6, the worked case finds that `allowed_start_tolerance: 0.01` corresponds to $40\,\mathrm{ms}$ of cart motion. A colleague proposes raising it to $0.10$ so execution stops being refused. What does that buy, what does it cost, and what is the fix they are avoiding?
+
+> [!tip]- Answers
+> 1. `ros2 control list_controllers` (is a controller active?), a comparison of its name against `controller_names` in `moveit_controllers.yaml`, and `ros2 action list | grep follow_joint_trajectory` (is the action server there?). All three are the wiring layer, and wiring failures are instant and silent — check them before touching tolerances.
+> 2. It describes geometry and kinematics but carries no semantics: no planning groups, no named poses, no tip link, no disabled collision pairs — all of which live in the SRDF and all of which a planner needs before it can accept a request.
+> 3. Do not execute it — that would stop the tool 62 % of the way along a line you chose for a reason. Likely causes are the line leaving the reachable workspace, passing near a singularity, crossing to a different IK branch, or an interpolated pose in collision. Either shorten or reorient the segment, or use Pilz `LIN`, which fails cleanly instead of partially.
+> 4. The block is still a world collision object and the gripper is now inside it. Attach it to the gripper link with the gripper's links listed as `touch_links`, which moves it into the robot's own collision model.
+> 5. Where the grasp pose is — that is grasp synthesis from perception — and everything from the moment of contact onward, since MoveIt's world model treats contact as failure. It solves only the collision-free motion between those two.
+> 6. It buys ten times the window: $0.10\,\mathrm{m}$ is $205$ counts and $0.10/0.25=0.40\,\mathrm{s}$ of cart motion, so execution starts where it used to refuse. What it costs is the guarantee the parameter exists for — the trajectory's first point is now allowed to be $0.10\,\mathrm{m}$ from where the robot actually is, and the controller will drag the arm to it, through whatever is in between, as a motion nobody planned. The refusal was not the problem; it was the only thing reporting the problem. The fix being avoided is in Step 1: the scene was $0.82\,\mathrm{s}$ stale before execution even began, so either stop the base while planning and executing, or drop planning for Servo (§9), which tracks a moving target and has no stale plan to start from.
 
 ### Problem set · 과제
 
@@ -335,6 +407,70 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 > [!note] 선수 지식 · Prerequisites
 > URDF와 TF는 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], 제어기는 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. MoveIt은 이 둘 위에 바로 앉는다. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] 수준의 역기구학은 도움이 되지만 필수는 아니다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**, MoveIt 2는 `ros-jazzy-moveit`.
 > URDF/TF from 25.6 and controllers from 25.7; baseline ROS 2 Jazzy on Ubuntu 24.04.
+
+### 이 페이지의 대상 · Running object
+
+팔이 볼트로 얹힌 *베이스*로 쓰는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**. 직선 위 카트가 팔을 싣고 패널에 닿아야 한다. 여기서 P6가 맞는 대상인 이유는 바로 MoveIt이 그것의 모델을 갖고 있지 않다는 데 있다. planning scene은 스냅샷이고, 카트는 그 사이에도 계속 움직인다.
+
+| 기호 | 값 | 여기서의 뜻 |
+|---|---:|---|
+| $N$ | $2048$ counts/m | 카트 엔코더. 베이스 자세의 분해능 |
+| $f_v$ | $50\,\mathrm{Hz}$ | planning scene에 패널 자세를 넣는 비전 |
+| $f_c$ | $200\,\mathrm{Hz}$ | 궤적이 실행되는 `ros2_control` 루프 |
+| $B$ | $70\,\mathrm{ms}$ | P6의 카메라–힘 예산. 계획과는 다른 루프에 속한다 |
+| $v$ | $0.25\,\mathrm{m/s}$ | 카트 속도 — **페이지 국소 값**. 계획 지연을 밀리미터로 바꾸는 데에만 쓴다 |
+| $T_{\text{plan}}$ | $0.80\,\mathrm{s}$ | OMPL 한 번의 해 — **페이지 국소 값**이고 예시다. 벤치마크가 아니다 |
+| $T_{\text{exec}}$ | $1.50\,\mathrm{s}$ | 그 결과 궤적의 지속 시간 — **페이지 국소 값** |
+
+*범위: 이 페이지는 MoveIt 2의 모양 — `move_group`이 무엇을 소유하는지, SRDF가 URDF에 무엇을 더하는지, 파이프라인의 어댑터가 무슨 일을 하는지, 궤적이 어떻게 제어기에 닿는지 — 을 가르치고, 기다려 주지 않는 베이스 위에서 플래너 자신의 지연이 얼마를 치르는지 계산한다. 파지 자세가 어디서 오는지는 가르치지 않는다. 그것은 [[04-robotics/grasping|파지]]다. 접촉 순간 이후도 아니다. 그것은 [[04-robotics/force-compliance-control|힘·컴플라이언스 제어]]다. `fraction` 뒤의 역기구학과 특이점 수학도 아니다. 그것은 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 패널 둘. 과제는 계획이 더 느린 같은 그림을 요구한다.
+
+**패널 A — 누가 무엇을 믿는가.** 영역 셋을 나란히 두고 그 사이에 이름 붙은 경계 둘을 긋는다. `지각`($50\,\mathrm{Hz}$로 패널 자세를 내는 카메라), `move_group`(planning scene, SRDF 그룹, 파이프라인을 쥔다), `ros2_control`(궤적 제어기와 P6의 $200\,\mathrm{Hz}$ 루프). 패널은 *두 번* 그린다. 왼쪽에는 실제 물체로, 다시 planning scene 안에는 collision object로. 둘을 점선 화살표로 잇고 `한 번만 적용`이라고 적는다. 그림이 맞혀야 할 것이 셋이다. 그 점선 화살표는 되먹임 루프가 **아니다**. 내 코드가 다시 발행하지 않는 한 씬을 갱신하는 것은 없고, 그것이 계산 절 전체의 내용이다. `move_group`과 `ros2_control` 사이의 경계에는 토픽이 아니라 **액션** `follow_joint_trajectory`가 놓인다. MoveIt은 액션 클라이언트이고 결과를 알아야 하기 때문이다. 그리고 카메라에서 `ros2_control`로 가는 화살표는 **하나도 없다**. P6의 $70\,\mathrm{ms}$ 예산은 MoveIt이 끼어 있지 않은 사슬 위에 있기 때문이다.
+
+**패널 B — 시계는 하나가 아니라 둘.** 가로축 하나를 초 단위 $0$에서 $2.5$로 긋고, 오른쪽에 밀리초로 확대한 축을 따로 끼워 넣는다. 초 축에는 구간 셋을 이어 붙여 표시한다. `씬 스냅샷`(눈금 하나), $0.80\,\mathrm{s}$짜리 `계획`, $1.50\,\mathrm{s}$짜리 `실행`. 그 위에 왼쪽에서 오른쪽으로 길어지는 막대를 그리고 `패널 자세의 나이`라고 이름 붙인 뒤 경계 셋에서의 값을 적는다. 확대한 축에는 $5\,\mathrm{ms}$ 제어 틱과 $70\,\mathrm{ms}$ 괄호 하나를 그리고, 두 축 사이는 아무것도 잇지 않는다. 그 사이의 빈틈이 이 그림의 논증이다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. 아래 계산은 카탈로그에 페이지 국소 지속 시간 셋을 더한 것이고, 과제는 그중 하나를 바꾼다.
+
+**Step 1 — 씬은 사진이다.** 플래너는 요청이 시작될 때 planning scene을 한 번 읽는다. 그 안의 패널 자세는 비전에서 왔으므로 그 순간 이미 비전 한 주기만큼 낡아 있을 수 있다.
+
+$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms}.$$
+
+마지막 프레임보다 새로울 수 있는 것은 없기 때문이다. 그다음 계획이 $T_{\text{plan}}$, 실행이 $T_{\text{exec}}$ 동안 돌고, §6은 내 코드가 다시 발행하지 않는 한 collision object를 갱신하는 것은 없다고 못 박는다. 그래서 뒤의 두 경계에서 믿음의 나이는
+
+$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}$$
+
+이다.
+
+**Step 2 — 그 나이를 밀리미터와 카운트로.** 페이지 국소 $v$에서 씬이 가만있는 동안 팔을 실은 카트는 $d=v\,a$만큼 움직였다.
+
+| 경계 | 나이 | $d=va$ | counts |
+|---|---:|---:|---:|
+| 씬을 읽음 | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
+| 계획이 돌아옴 | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
+| 궤적이 끝남 | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
+
+반 미터가 넘는다. 그런데 궤적의 모든 관절각은 첫 행을 보고 계산됐다. 이것은 MoveIt의 결함이 아니다. 플래너는 주어진 문제를 정확히 풀었고, 누군가 그 세계가 정적이라고 말해 주었다. 결함은 베이스를 움직이게 둔 호출자 쪽에 있다.
+
+**Step 3 — MoveIt 자신의 관문을 P6 단위로 읽기.** §8의 `allowed_start_tolerance: 0.01`은 현재 상태가 궤적 첫 점에서 얼마나 떨어져 있어도 실행을 거부하지 않는지를 정한다. 직동 카트 관절에서는 $0.01\,\mathrm{m}$이고, 이는
+
+$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms}$$
+
+이다. 허용 오차가 거리이고 카트가 페이지 국소 속도로 그것을 지나가기 때문이다. 40 밀리초다. 실행을 시작할지 말지를 정하는 관문이, P6가 카메라부터 힘까지의 사슬 전체에 주는 시간보다 짧게 넘어간다. $40 < 70$이다. 움직이는 베이스에서 계획하고 나중에 실행하는 설계는 느린 설계가 아니라 시작되지 않는 설계다. 계획 전에 베이스를 세우거나, 낡을 계획 자체가 없는 Servo(§9)를 쓴다.
+
+**Step 4 — $200\,\mathrm{Hz}$ 루프가 궤적으로 하는 일.** 경로에 시간을 붙이는 것은 응답 어댑터 `AddTimeOptimalParameterization`이다(§4). 그것이 점을 $100\,\mathrm{ms}$ 간격으로 내놓는다고 하자. 그러면
+
+$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20$$
+
+이므로 이웃한 궤적 점 사이에 제어 주기 스무 번이 들어가고 제어기가 그 사이를 보간한다([[04-robotics/ros2/simulation-and-control|25.7 §11]]). 궤적은 성기고 루프는 촘촘하다. 그것이 의도된 분업이다. MoveIt은 어디로 언제를 말하고, `ros2_control`은 얼마나 자주를 말한다.
+
+**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 기본 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
+
+**Step 6 — 두 예산을 갈라 두기.** Step 1부터 5까지의 어느 것도 P6의 $70\,\mathrm{ms}$를 어기지 않는다. 그 예산은 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라 노출 중간부터 힘까지를 재고, 계획은 그 사슬 위에 있지 않기 때문이다. $0.80\,\mathrm{s}$짜리 계획은 예산 위반이 아니다. 패널 자세가 *씬*에 $200\,\mathrm{ms}$ 늦게 닿는 것도 MoveIt의 실패가 아니다. MoveIt은 불평 없이 그것으로 계획한다. 둘 다 각 숫자가 어느 시계에 속하는지 말하지 않은 호출자의 실패이고, 두 시계가 끝내 마주치면 무슨 일이 나는지가 Step 3이다.
 
 ### 1. MoveIt 2는 무엇이고, 아닌 것 세 가지
 
@@ -625,12 +761,22 @@ ros2 control list_controllers
 - ros2_control 문서(Jazzy) — `joint_trajectory_controller` 파라미터(`constraints.*`).
 - MoveIt 바이너리 설치 안내(`ros-jazzy-moveit`), ROS 2 Jazzy 패키지 색인.
 
-> [!question]- 스스로 점검 · 정답
-> **1. RViz에서는 계획이 훌륭한데 팔이 움직이지 않는다. 첫 세 명령은?** `ros2 control list_controllers`(활성 제어기가 있나), 그 이름을 `moveit_controllers.yaml`의 `controller_names`와 대조, `ros2 action list | grep follow_joint_trajectory`(액션 서버가 있나). 셋 다 배선 계층이고, 배선 실패는 즉시 조용히 난다. 허용 오차를 건드리기 전에 여기부터 본다.
-> **2. MoveIt에 URDF만으로는 왜 부족한가, 한 문장으로.** URDF는 기하와 기구학을 기술하지만 의미론을 담지 않는다. planning group도, 이름 붙은 자세도, tip link도, 비활성 충돌 쌍도 없고, 이것들은 전부 SRDF에 있으며 플래너가 요청을 받기 전에 전부 필요하다.
-> **3. `computeCartesianPath`가 0.62를 돌려줬다. 무엇을 하고, 원인은 무엇일 가능성이 큰가?** 실행하지 마라. 이유가 있어 고른 직선의 62 % 지점에서 공구를 멈추는 일이 된다. 원인은 직선이 도달 가능 작업 공간을 벗어남, 특이점 근처 통과, 다른 IK 분기로 넘어감, 보간된 자세의 충돌 중 하나일 가능성이 크다. 구간을 줄이거나 방향을 바꾸거나, 부분이 아니라 깔끔하게 실패하는 Pilz `LIN`을 쓴다.
-> **4. 블록을 쥐었더니 이후 모든 계획이 충돌로 실패한다. 왜인가?** 블록이 여전히 세계의 collision object이고 그리퍼가 그 안에 들어가 있다. 그리퍼 링크들을 `touch_links`로 넘기며 그리퍼 링크에 attach해서 로봇 자신의 충돌 모형으로 옮겨야 한다.
-> **5. 건설 현장 픽에서 MoveIt이 풀어 주지 않는 부분은?** 파지 자세가 어디인가 — 인식으로부터의 파지 합성 — 그리고 접촉 순간 이후의 전부. MoveIt의 세계 모형은 접촉을 실패로 취급하기 때문이다. MoveIt이 푸는 것은 그 둘 사이의 충돌 없는 이동뿐이다.
+### 스스로 점검
+
+1. RViz에서는 계획이 훌륭한데 팔이 움직이지 않는다. 첫 세 명령은?
+2. MoveIt에 URDF만으로는 왜 부족한가, 한 문장으로.
+3. `computeCartesianPath`가 0.62를 돌려줬다. 무엇을 하고, 원인은 무엇일 가능성이 큰가?
+4. 블록을 쥐었더니 이후 모든 계획이 충돌로 실패한다. 왜인가?
+5. 건설 현장 픽에서 MoveIt이 풀어 주지 않는 부분은?
+6. P6에서 계산 절은 `allowed_start_tolerance: 0.01`이 카트 운동 $40\,\mathrm{ms}$에 해당함을 보인다. 동료가 실행이 거부되지 않게 그 값을 $0.10$으로 올리자고 한다. 그것이 사는 것과 치르는 값은 무엇이고, 그들이 피하고 있는 진짜 수정은 무엇인가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. `ros2 control list_controllers`(활성 제어기가 있나), 그 이름을 `moveit_controllers.yaml`의 `controller_names`와 대조, `ros2 action list | grep follow_joint_trajectory`(액션 서버가 있나). 셋 다 배선 계층이고, 배선 실패는 즉시 조용히 난다. 허용 오차를 건드리기 전에 여기부터 본다.
+> 2. URDF는 기하와 기구학을 기술하지만 의미론을 담지 않는다. planning group도, 이름 붙은 자세도, tip link도, 비활성 충돌 쌍도 없고, 이것들은 전부 SRDF에 있으며 플래너가 요청을 받기 전에 전부 필요하다.
+> 3. 실행하지 마라. 이유가 있어 고른 직선의 62 % 지점에서 공구를 멈추는 일이 된다. 원인은 직선이 도달 가능 작업 공간을 벗어남, 특이점 근처 통과, 다른 IK 분기로 넘어감, 보간된 자세의 충돌 중 하나일 가능성이 크다. 구간을 줄이거나 방향을 바꾸거나, 부분이 아니라 깔끔하게 실패하는 Pilz `LIN`을 쓴다.
+> 4. 블록이 여전히 세계의 collision object이고 그리퍼가 그 안에 들어가 있다. 그리퍼 링크들을 `touch_links`로 넘기며 그리퍼 링크에 attach해서 로봇 자신의 충돌 모형으로 옮겨야 한다.
+> 5. 파지 자세가 어디인가 — 인식으로부터의 파지 합성 — 그리고 접촉 순간 이후의 전부. MoveIt의 세계 모형은 접촉을 실패로 취급하기 때문이다. MoveIt이 푸는 것은 그 둘 사이의 충돌 없는 이동뿐이다.
+> 6. 창이 열 배로 넓어진다. $0.10\,\mathrm{m}$는 $205$ 카운트이고 카트 운동으로는 $0.10/0.25=0.40\,\mathrm{s}$이므로, 전에 거부되던 자리에서 실행이 시작된다. 대신 그 파라미터가 존재하는 이유인 보증을 잃는다. 이제 궤적의 첫 점이 로봇의 실제 위치에서 $0.10\,\mathrm{m}$ 떨어져 있어도 되고, 제어기는 그 사이에 무엇이 있든 팔을 거기까지 끌고 간다. 아무도 계획하지 않은 이동으로. 문제는 거부가 아니었다. 거부만이 문제를 보고하고 있었다. 피하고 있는 진짜 수정은 Step 1에 있다. 실행이 시작되기도 전에 씬은 이미 $0.82\,\mathrm{s}$ 낡아 있었으므로, 계획하고 실행하는 동안 베이스를 세우거나, 계획을 버리고 Servo(§9)로 가야 한다. Servo는 움직이는 목표를 추종하고 낡을 계획을 애초에 갖고 있지 않다.
 
 ### 과제 · Problem set
 

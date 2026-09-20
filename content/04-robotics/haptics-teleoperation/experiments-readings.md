@@ -112,13 +112,13 @@ The packet covers the first half of a full haptics course particularly well. It 
 
 **Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
 
-### 6. The homework diagram
+### 6. Homework diagram
 
 One plot, and the problem set asks for the same plot from a shorter record under a different rule.
 
 Trial number 1 to 24 across; $\Delta F$ up, from $0.40$ to $0.65\,\mathrm{N}$ ruled in $0.05\,\mathrm{N}$ rows, because the step size is fixed and the level can therefore only ever sit on a row. Plot the 24 levels and join consecutive trials into one continuous track. Use a filled marker for a correct trial and an open marker for a wrong one, so the rule is readable off the figure: the track only descends after two filled markers in a row, and it rises immediately after any open one. Circle every trial at which the direction of travel changes and number the circles $1$ to $8$. Strike through the first two circles — §7 Step 2 discards them — and draw a horizontal line at the mean of the remaining six, labelled with the criterion it estimates rather than with the word "threshold": *70.7% correct, 2-down/1-up, 5.00 N pedestal*. Beside the plot copy §1's causal chain and put a tick under the single arrow this figure measures, leaving the other two arrows blank.
 
-### 7. Worked: a staircase record becomes a threshold, and a JND
+### 7. Worked case: a staircase record becomes a threshold, and a JND
 
 **Step 1 — find the reversals.** Walk the record and mark every trial where the direction changes. The rule descends only after two consecutive `C` and ascends on any `W`, which gives eight reversals:
 
@@ -151,8 +151,18 @@ i.e. $10.3\%$, since the pedestal is the operating point the increment was measu
 
 **Step 7 — what one record supports.** This is one participant and 24 trials, so it supports a single-participant estimate with wide uncertainty and nothing about a population. Run 20 participants and the unit for any treatment claim is still the participant: you analyse 20 threshold estimates, not 480 trials, which is §2 item 7 and the self-check below. On §3's ladder this number sits in the "psychophysical threshold" row — it supports cue detectability under the tested conditions, and not better task control.
 
-> [!question]- Self-check · Answer
-> **A within-subject study has 20 people and 30 trials per person. Is $n=600$?** Not for a participant-level treatment claim. Trials are nested/repeated observations. Analyze that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
+### Self-check
+
+1. Step 2 averages six reversals and Step 3 shows the rule targets $70.7\%$ correct. Why is the second step not optional bookkeeping — what exactly is unreported if a paper gives only $\widehat{\Delta F}=0.5167\,\mathrm{N}$?
+2. The same participant, the same handle and the same $5\,\mathrm{N}$ operating point give $0.4107\,\mathrm{N}$ in 24.1 and $0.5167\,\mathrm{N}$ here, $26\%$ apart. Which of the two is wrong, and what is the question that decides it?
+3. Step 6 says a $0.02\,\mathrm{N}$ staircase step would be a mistake on this hardware. Show the arithmetic, and say what the write-up would report instead of the mistake.
+4. A within-subject study has 20 people and 30 trials per person. Is $n=600$?
+
+> [!tip]- Answers
+> 1. Neither. A stimulus level without its criterion is not a quantity: $0.5167\,\mathrm{N}$ is the increment at which *this* rule holds the participant, and the rule is what fixes which point on the curve that is. Change 2-down/1-up to 3-down/1-up and the same record, the same skin and the same handle deliver $p=0.5^{1/3}=0.7937$ instead — a different point, and a number no reader can convert without being told the rule. What is unreported is therefore the estimand itself, which is §2 item 1 restated as arithmetic.
+> 2. Neither is wrong, and the gap is not noise. The question that decides it is *what was the participant asked to do*. Constant stimuli measured half the $25$–$75$ span of a **judged-stronger** curve about its PSE; the staircase measured the increment for $70.7\%$ **correct** in a difference-detection task. Two tasks, two criteria, two functions; the numbers are comparable only through a stated psychometric model, and a paper that reports "the JND" bare has produced a figure no other lab can reproduce.
+> 3. One encoder count against the default wall is $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$, so a $0.02\,\mathrm{N}$ step is $0.02/0.0245=0.82$ of a count — below the device's own quantum, where a commanded step down may not change the delivered force at all. Compare the $0.05\,\mathrm{N}$ step actually used, $0.05/0.0245=2.0$ counts, which the hardware can resolve. The track would then stall on quantization rather than on the participant, and the write-up would report a beautifully converged threshold that measures the encoder.
+> 4. Not for a participant-level treatment claim. Trials are nested, repeated observations. Analyse that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
 
 ### Problem set · 과제
 
@@ -285,7 +295,7 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 
 가로는 시행 번호 1에서 24, 세로는 $\Delta F$를 $0.40$에서 $0.65\,\mathrm{N}$까지 $0.05\,\mathrm{N}$ 간격의 줄로 긋는다. 단 크기가 고정이므로 수준은 언제나 줄 위에만 있을 수 있기 때문이다. 24개 수준을 찍고 이웃 시행을 이어 하나의 연속된 궤적으로 만든다. 정답은 채운 표식, 오답은 빈 표식으로 그려서 규칙이 그림에서 바로 읽히게 한다. 궤적은 채운 표식이 둘 연달아야만 내려가고, 빈 표식이 나오면 곧바로 올라간다. 진행 방향이 바뀌는 시행마다 동그라미를 치고 $1$에서 $8$까지 번호를 매긴다. 첫 두 동그라미에는 줄을 긋는다. §7 Step 2가 버리는 것들이다. 남은 여섯의 평균에 수평선을 긋되, 라벨에 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다. *70.7% 정답, 2-down 1-up, 받침 5.00 N*. 그림 옆에는 §1의 인과 사슬을 옮겨 적고, 이 그림이 재는 단 하나의 화살표 아래에만 체크를 하고 나머지 둘은 비워 둔다.
 
-### 7. 계산: staircase 기록이 임계값과 JND가 되기까지
+### 7. 대상으로 한 번 끝까지: staircase 기록이 임계값과 JND가 되기까지
 
 **Step 1 — reversal 찾기.** 기록을 따라가며 방향이 바뀌는 시행을 표시한다. 규칙은 연속 `C` 둘 뒤에만 내려가고 `W` 하나에 바로 올라가므로 reversal은 여덟이다.
 
@@ -318,8 +328,18 @@ $$k=\frac{\widehat{\Delta F}}{F_0}=\frac{0.5167}{5.00}=0.1033,$$
 
 **Step 7 — 기록 하나가 지지하는 것.** 참가자 한 명, 24 시행이므로 불확실성이 큰 개인 추정값을 지지할 뿐 모집단에 대해서는 아무것도 지지하지 않는다. 20명을 돌려도 어떤 처치 주장에서든 단위는 여전히 참가자다. 480 trial이 아니라 임계값 추정치 20개를 분석한다. §2의 7번 항목이고 아래 자가 점검이다. §3의 사다리에서 이 숫자는 "심리물리 임계값" 줄에 앉는다. 시험한 조건에서의 검출 가능성을 지지하지, 더 나은 과제 제어를 지지하지 않는다.
 
-> [!question]- 스스로 점검 · 정답
-> **within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?** 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델(참가자마다 자기 기준선을 주어 한 사람의 반복 trial을 서로 독립인 사람처럼 세지 않는 회귀)로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.
+### 스스로 점검
+
+1. Step 2는 reversal 여섯을 평균하고 Step 3은 이 규칙이 $70.7\%$ 정답을 겨냥함을 보인다. 두 번째 단계가 왜 선택적인 장부 정리가 아닌가? 논문이 $\widehat{\Delta F}=0.5167\,\mathrm{N}$만 준다면 정확히 무엇이 보고되지 않은 것인가?
+2. 같은 참가자, 같은 핸들, 같은 $5\,\mathrm{N}$ 작동점인데 24.1은 $0.4107\,\mathrm{N}$, 여기는 $0.5167\,\mathrm{N}$로 $26\%$ 벌어진다. 둘 중 틀린 쪽은 어디이고, 그것을 가르는 질문은 무엇인가?
+3. Step 6은 이 하드웨어에서 $0.02\,\mathrm{N}$ 계단이 실수라고 말한다. 계산을 보이고, 그 실수 대신 보고서에 무엇이 적히게 될지 말하라.
+4. within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 어느 쪽도 아니다. 기준 없는 자극 수준은 양이 아니다. $0.5167\,\mathrm{N}$은 *이* 규칙이 참가자를 붙들어 두는 증분이고, 그것이 곡선 위 어느 점인지는 규칙이 정한다. 2-down/1-up을 3-down/1-up으로 바꾸면 같은 기록, 같은 피부, 같은 핸들이 $p=0.5^{1/3}=0.7937$을 내놓는다. 다른 점이고, 규칙을 듣지 않은 독자는 환산할 수 없는 숫자다. 그러니 보고되지 않은 것은 estimand 자체이고, 이것이 §2 항목 1을 산술로 다시 쓴 것이다.
+> 2. 어느 쪽도 틀리지 않았고 그 간격은 잡음이 아니다. 가르는 질문은 *참가자가 무엇을 하라고 요구받았는가*다. constant stimuli는 **더 세다고 판정**한 곡선의 PSE 둘레 $25$–$75$ 구간의 절반을 쟀고, staircase는 차이 검출 과제에서 $70.7\%$ **정답**이 되는 증분을 쟀다. 과제 둘, 기준 둘, 함수 둘이다. 두 숫자는 명시된 심리측정 모형을 거쳐야만 비교되고, "그 JND"를 맨몸으로 보고한 논문은 다른 연구실이 재현할 수 없는 값을 낸 것이다.
+> 3. 기본 벽에서 엔코더 한 카운트는 $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$이므로 $0.02\,\mathrm{N}$ 계단은 $0.02/0.0245=0.82$ 카운트다. 장치 자체의 양자보다 작아서, 한 계단 내리라는 명령이 전달되는 힘을 전혀 바꾸지 못할 수 있다. 실제로 쓴 $0.05\,\mathrm{N}$ 계단은 $0.05/0.0245=2.0$ 카운트라 하드웨어가 구별한다. 그러면 트랙은 참가자가 아니라 양자화 위에서 멈추고, 보고서에는 엔코더를 잰 값이 아름답게 수렴한 임계값으로 적힌다.
+> 4. 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델(참가자마다 자기 기준선을 주어 한 사람의 반복 trial을 서로 독립인 사람처럼 세지 않는 회귀)로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.
 
 ### 과제 · Problem set
 

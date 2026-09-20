@@ -383,6 +383,20 @@ no tool wrench, no P3 wall".
 > - **Falsify.** Pitch $30^\circ$: the neglected factors are $\tan 30^\circ=0.577$ and $1/\cos 30^\circ=1.155$, which this page already calls no longer small. A rear-up or a fall would do it.
 > - **Task.** P2 on that body, pressing the panel: no arm, no tool wrench, no P3 wall. Ground-reaction forces on four feet are the decisions; contact at the panel is outside the QP.
 
+### Connections
+
+- Foundations: [[02-foundations/optimization|Optimization]] · Previous: [[04-robotics/mpc|MPC]]
+- Echoed in: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (the two-system split)
+
+### After reading
+
+- [ ] Solve Q's $N=2$ condensed QP by hand and name which rows came out slack
+- [ ] Say where a longer horizon stops paying on the sweep, and what $\lambda$ trades for what
+- [ ] Say what the single-rigid-body approximation throws away and what it buys (convexity)
+- [ ] Describe the setup in which ground reaction forces are the decision variables and friction cones the constraints
+- [ ] Explain the division of labor in the slow-MPC + fast-WBC two-level stack
+- [ ] State the modeling craft this case teaches: choose the approximation that makes the problem convex
+
 ## 한국어
 
 *D군의 마지막이자 그 응용 사례다. [[04-robotics/mpc|7. MPC]]·[[04-robotics/contact-force-tactile|9. 접촉]]과 [[04-robotics/modern-robotics/index|MR 챕터 요약]] 위에 선다.
@@ -659,11 +673,11 @@ $\dot z_0=0$이므로 $e_0=+0.05$ m다. $\Delta t$도, trot도, 한계도 그대
 - 기초: [[02-foundations/optimization|최적화]] · 이전: [[04-robotics/mpc|MPC]]
 - 반향: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (이중 시스템)
 
-### After reading · 읽고 나면 말할 수 있어야 하는 것
+### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] Solve Q's $N=2$ condensed QP by hand and name which rows came out slack · Q의 $N=2$ condensed QP를 손으로 풀고 어느 행이 여유로 나왔는지 댈 수 있다
-- [ ] Say where a longer horizon stops paying on the sweep, and what $\lambda$ trades for what · 스윕에서 지평이 언제부터 값을 못 하는지, $\lambda$가 무엇과 무엇을 맞바꾸는지 말할 수 있다
-- [ ] Say what the single-rigid-body approximation throws away and what it buys (convexity) · 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
-- [ ] Describe the setup in which ground reaction forces are the decision variables and friction cones the constraints · 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
-- [ ] Explain the division of labor in the slow-MPC + fast-WBC two-level stack · 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
-- [ ] State the modeling craft this case teaches: choose the approximation that makes the problem convex · 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다
+- [ ] Q의 $N=2$ condensed QP를 손으로 풀고 어느 행이 여유로 나왔는지 댈 수 있다
+- [ ] 스윕에서 지평이 언제부터 값을 못 하는지, $\lambda$가 무엇과 무엇을 맞바꾸는지 말할 수 있다
+- [ ] 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
+- [ ] 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
+- [ ] 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
+- [ ] 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다

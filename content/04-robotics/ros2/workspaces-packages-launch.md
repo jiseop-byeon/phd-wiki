@@ -17,6 +17,55 @@ mastery-when: "Go deeper when you are packaging for release, writing CMake for a
 > A machine running **ROS 2 Jazzy Jalisco on Ubuntu 24.04** with the environment set up as in [[04-robotics/ros2/index|25. ROS 2]], and nodes you can already write and run, as in [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Parameters are used here as a thing to configure; what they are is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
 > **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경, 그리고 이미 노드를 쓰고 실행할 수 있는 상태. 파라미터는 여기서 "설정하는 대상"으로만 쓴다.
 
+### Homework diagram: the include tree, and every name it resolves
+
+The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ end to end — and this page's twist: **two** of them, launched from one file into `/cart1` and `/cart2`. Three panels; the problem set asks for the same three with one cart and a changed namespace.
+
+**Left — the include tree.** `p6.launch.py` at the top, with its declared arguments drawn as a small box hanging off it: `cart_ns` (default `cart1`) and `use_sim_time` (default `false`). Two children below it, `perception.launch.py` and `control.launch.py`, each reached by an `IncludeLaunchDescription` arrow labelled with the `launch_arguments` passed down. Draw a rounded box around both children for the `GroupAction`, and put `PushROSNamespace(cart_ns)` inside it as the **first** item, above both arrows. The position is the content of this panel: an action drawn above that line escapes the namespace, and nothing in the running system will tell you it did. Hang `p6.yaml` off `control.launch.py` and write the file's top-level key on the connector, not just the filename.
+
+**Middle — the resolution table, three columns wide.** Column 1, what the source writes; column 2, what it becomes under `/cart1`; column 3, under `/cart2`. Five rows: the node name `controller`; the relative topic `goal`; the absolute topic `/goal`; the private parameter `~/gain`; and the YAML top-level key. Two of those five rows do not change between columns 2 and 3, and finding which two is the exercise.
+
+**Right — the day's loop, five lines on a strip.** Edit `controller.cpp`; `colcon build --packages-select p6_control`; `source install/setup.bash`; `ros2 launch p6_bringup p6.launch.py cart_ns:=cart1`; first `/cart1/goal` at $20\,\mathrm{ms}$ and first `/cart1/cmd` at $5\,\mathrm{ms}$. Mark each of the middle three lines with whether `--symlink-install` removes it. Exactly one of them changes, and section 7 says which.
+
+### Worked case: two P6 carts from one launch file, and every name written out
+
+The system is six nodes: `camera`, `controller` and `logger`, twice. Nothing in the source differs between the two carts; the launch file is the only thing that makes them two robots instead of one robot fighting itself.
+
+**Step 1 — what the namespace does to a node's own name.** A node that calls itself `controller` and is pushed into `/cart1` has the fully qualified name `/cart1/controller`. That FQN is what `ros2 node list` prints, what `ros2 param` addresses, and — the part people miss — what the parameter file's top-level key has to be.
+
+**Step 2 — what it does to the three name forms.** Section 3 of [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] gives the rules; here they are on this system:
+
+| Written in the source | Under `/cart1` | Under `/cart2` | Verdict |
+|---|---|---|---|
+| node name `controller` | `/cart1/controller` | `/cart2/controller` | two nodes, no collision |
+| topic `goal` (relative) | `/cart1/goal` | `/cart2/goal` | two streams, correct |
+| topic `/goal` (absolute) | `/goal` | `/goal` | **one shared name; the namespace did nothing** |
+| parameter `~/gain` (private) | `/cart1/controller/gain` | `/cart2/controller/gain` | per-node, correct |
+| YAML key `/controller` | matches nothing | matches nothing | loads cleanly, sets nothing |
+
+**Step 3 — what the absolute name costs, in numbers.** Suppose both cameras and both controllers use `/goal`. Each camera publishes at $50\,\mathrm{Hz}$, so the aggregate rate on that one name is
+
+$$2\times 50\,\mathrm{Hz}=100\,\mathrm{Hz},\qquad \text{of which }50\% \text{ belongs to the other cart}$$
+
+because a topic is a name and anyone may publish to it. Inside one $70\,\mathrm{ms}$ budget window each camera emits $3$ complete vision periods' worth, so six goals cross that topic and about three of them are foreign. Both controllers run at $200\,\mathrm{Hz}$ and each acts on whichever goal arrived last, so each cart drives towards the other's target roughly half the time — at full speed, with no error, no warning, and `ros2 topic hz /goal` reporting a perfectly healthy $100\,\mathrm{Hz}$. This is the one failure on this page that a beginner cannot distinguish from a controls bug, and the fix is a line in a launch file.
+
+**Step 4 — the parameter file, written twice or once.** The controller needs the plant's constants: `counts_per_metre` $=2048$ (so one count is $1/2048=0.488\,\mathrm{mm}$, the resolution of everything downstream) and `control_period` $=0.005$. Two ways to say it, and they are not equivalent:
+
+- Per node, keyed by FQN: a `/cart1/controller:` block and a `/cart2/controller:` block, each with its own `ros__parameters:`. Verbose, and it states that these are the controller's values.
+- Wildcard: one `/**:` block. Right for `use_sim_time`, which genuinely belongs to every node in the graph. Wrong for `counts_per_metre`, which is meaningful to exactly one node per cart — and which you will one day want to differ, the morning somebody puts a $4096$ count/m encoder on cart 2.
+
+The failure to rehearse is the third row of step 2's table: key the file `/controller` and it parses, loads, reports success, and sets nothing, so the controller runs on its declared defaults. If that default is $1024$ rather than $2048$, the cart's estimated position is exactly doubled and nothing anywhere says so ([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]], worked case step 5).
+
+**Step 5 — testing the hypothesis without a rebuild.** You do not have to edit and rebuild to find out whether a name is the problem. Launch one cart and remap on the command line:
+
+```bash
+ros2 run p6_control controller --ros-args --remap __ns:=/cart1 --remap goal:=/cart1/goal -p counts_per_metre:=2048
+```
+
+If data flows, the bug was the name. Then fix it where it belongs — in the source if the code hard-coded an absolute name, in the launch file if the namespace was wrong — and check the result with `ros2 node info /cart1/controller`, which prints resolved names and is therefore the authority.
+
+**Step 6 — and the rebuild that does not help.** The camera is Python and the controller is C++. `--symlink-install` makes an edit to the camera's `.py` visible after a relaunch with no build, because colcon runs setuptools' `develop` and the installed module path points back into `src/`. The controller is a compiled binary with no source to point at, so the $200\,\mathrm{Hz}$ loop — the rate P6's budget actually depends on — needs a real `colcon build` every time. A stale binary is the classic version of "I changed the period and nothing happened", and `ros2 pkg prefix p6_control` is the one command that tells you which workspace the running executable came from.
+
 ### 1. Why a build step exists at all
 
 Python does not need to be compiled. So a reasonable first question is why a Python ROS 2 node cannot just be run with `python3 my_node.py`.
@@ -526,11 +575,24 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 - `rosdep` command-line options (`--from-paths`, `--ignore-src`, `-r`, `-y`).
 - REP-149 — package format 3 dependency tags.
 
-> [!question]- Self-check · Answer
-> **1. You edit a Python node, run `colcon build`, relaunch, and nothing changes. Name three causes and the single command that distinguishes them.** The build did not cover this package (`--packages-select` on the wrong one), the shell is resolving the package from `/opt/ros/jazzy` rather than your workspace, or the build failed and you read only the summary. `python3 -c "import <pkg>.<module> as m; print(m.__file__)"` in the running shell tells you which file is actually loaded; `ros2 pkg prefix <pkg>` tells you which workspace won.
-> **2. Why does `--symlink-install` fix the Python case but not the C++ case?** For an `ament_python` package colcon runs setuptools' `develop` step, so the installed module path resolves back into `src/`. A C++ package's installed artefact is a compiled binary; there is no source file for it to point at, so a new binary requires a compile. Data files installed by a CMake package — launch, YAML, URDF — *are* symlinked and do track their sources.
-> **3. Your YAML parameter file loads without error and no parameter is set. What are the two things to check first?** The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), That mistake is silent. A misspelled `ros__parameters` would not have loaded without error — it is a parse error that stops the node — so if the file truly loaded, the name (or whether the file was passed at all) is the suspect. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
-> **4. Why should a pure Python package use `<exec_depend>` rather than `<depend>`?** `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have misinforms rosdep and the release tooling, which will install and require them at build time, and misrepresents what the package actually needs. (It does not change colcon's build order: colcon orders by run dependencies too.)
+### Self-check
+
+1. You edit a Python node, run `colcon build`, relaunch, and nothing changes. Name three
+   causes and the single command that distinguishes them.
+2. Why does `--symlink-install` fix the Python case but not the C++ case?
+3. Your YAML parameter file loads without error and no parameter is set. What are the two
+   things to check first?
+4. Why should a pure Python package use `<exec_depend>` rather than `<depend>`?
+5. Two P6 carts are launched from one file into `/cart1` and `/cart2`, but the controller's
+   source subscribes to the absolute name `/goal`. What is the aggregate rate on that topic,
+   what fraction of it is wrong for each cart, and which command proves it?
+
+> [!tip]- Answers
+> 1. The build did not cover this package (`--packages-select` on the wrong one), the shell is resolving the package from `/opt/ros/jazzy` rather than your workspace, or the build failed and you read only the summary. `python3 -c "import <pkg>.<module> as m; print(m.__file__)"` in the running shell tells you which file is actually loaded; `ros2 pkg prefix <pkg>` tells you which workspace won.
+> 2. For an `ament_python` package colcon runs setuptools' `develop` step, so the installed module path resolves back into `src/`. A C++ package's installed artefact is a compiled binary; there is no source file for it to point at, so a new binary requires a compile. Data files installed by a CMake package — launch, YAML, URDF — *are* symlinked and do track their sources.
+> 3. The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), That mistake is silent. A misspelled `ros__parameters` would not have loaded without error — it is a parse error that stops the node — so if the file truly loaded, the name (or whether the file was passed at all) is the suspect. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
+> 4. `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have misinforms rosdep and the release tooling, which will install and require them at build time, and misrepresents what the package actually needs. (It does not change colcon's build order: colcon orders by run dependencies too.)
+> 5. An absolute name ignores the namespace, so both controllers subscribe to `/goal` and — if the cameras publish it absolutely too — both cameras publish there: $2\times50=100\,\mathrm{Hz}$ on one name, of which $50\%$ is the other cart's. Each controller acts on whichever goal arrived last, so each cart chases the wrong target about half the time, at full speed, with `ros2 topic hz /goal` reporting a healthy $100\,\mathrm{Hz}$. `ros2 node info /cart1/controller` proves it, because it prints *resolved* names: you will see `/goal` where you expected `/cart1/goal`. Fix it with relative names in the source plus `PushROSNamespace` in the launch file, and test the hypothesis first with `--ros-args --remap goal:=/cart1/goal`, which needs no rebuild.
 
 ### Problem set · 과제
 
@@ -554,6 +616,49 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 > [!note] 선수 지식 · Prerequisites
 > **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경([[04-robotics/ros2/index|25. ROS 2]]), 그리고 이미 노드를 쓰고 실행할 수 있는 상태([[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]). 파라미터는 여기서 "설정하는 대상"으로만 쓴다. 파라미터 자체는 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
 > ROS 2 Jazzy on Ubuntu 24.04, plus the ability to write and run a node.
+
+### 과제가 그릴 그림: include 트리와 그것이 푸는 모든 이름 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 종단 $70\,\mathrm{ms}$ — 이고, 이 페이지의 비틀기는 그것을 **둘** 띄운다는 것이다. 파일 하나로 `/cart1`과 `/cart2`에. 패널 셋을 그려라. 과제는 카트 하나에 네임스페이스만 바꾼 같은 셋을 요구한다.
+
+**왼쪽 — include 트리**. 맨 위에 `p6.launch.py`, 그 옆에 선언된 인자를 작은 상자로 매단다. `cart_ns`(기본값 `cart1`), `use_sim_time`(기본값 `false`). 그 아래 자식 둘, `perception.launch.py`와 `control.launch.py`, 각각 `IncludeLaunchDescription` 화살표로 잇고 아래로 넘기는 `launch_arguments`를 화살표에 적는다. 자식 둘을 둥근 상자로 묶어 `GroupAction`으로 만들고, 그 안의 **첫** 항목으로 `PushROSNamespace(cart_ns)`를 두 화살표 위에 그린다. 이 패널의 내용은 그 위치다. 그 줄보다 위에 그려진 action은 네임스페이스를 벗어나고, 돌아가는 시스템은 그 사실을 알려 주지 않는다. `p6.yaml`은 `control.launch.py`에 매달고, 연결선에는 파일 이름이 아니라 그 파일의 최상위 키를 적는다.
+
+**가운데 — 이름 해석 표, 세 열**. 1열은 소스에 쓴 것, 2열은 `/cart1`에서 되는 것, 3열은 `/cart2`에서 되는 것. 다섯 행: 노드 이름 `controller`, 상대 토픽 `goal`, 절대 토픽 `/goal`, 비공개 파라미터 `~/gain`, 그리고 YAML 최상위 키. 다섯 중 둘은 2열과 3열이 같고, 어느 둘인지 찾는 것이 연습이다.
+
+**오른쪽 — 하루의 루프, 띠 위 다섯 줄**. `controller.cpp` 편집, `colcon build --packages-select p6_control`, `source install/setup.bash`, `ros2 launch p6_bringup p6.launch.py cart_ns:=cart1`, 그리고 $20\,\mathrm{ms}$의 첫 `/cart1/goal`과 $5\,\mathrm{ms}$의 첫 `/cart1/cmd`. 가운데 세 줄 각각에 `--symlink-install`이 그것을 없애 주는지 표시한다. 정확히 하나만 달라지고, 어느 것인지는 7절이 말한다.
+
+### 대상으로 한 번 끝까지: launch 파일 하나로 P6 카트 둘, 모든 이름을 적어서 · Worked case
+
+시스템은 노드 여섯이다. `camera`, `controller`, `logger`가 두 벌. 소스에서 두 카트는 한 글자도 다르지 않다. 로봇 하나가 자기와 싸우는 대신 로봇 둘이 되게 하는 것은 launch 파일뿐이다.
+
+**1단계 — 네임스페이스가 노드 이름에 하는 일**. 스스로를 `controller`라 부르는 노드를 `/cart1`에 밀어 넣으면 완전 이름은 `/cart1/controller`다. `ros2 node list`가 찍는 것도, `ros2 param`이 주소로 쓰는 것도 그것이고, 사람들이 놓치는 부분 — 파라미터 파일의 최상위 키가 되어야 하는 것도 그것이다.
+
+**2단계 — 세 가지 이름 형태에 하는 일**. 규칙은 [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] 3절에 있고, 이 시스템에 적용하면 이렇다.
+
+| 소스에 쓴 것 | `/cart1`에서 | `/cart2`에서 | 판정 |
+|---|---|---|---|
+| 노드 이름 `controller` | `/cart1/controller` | `/cart2/controller` | 노드 둘, 충돌 없음 |
+| 토픽 `goal`(상대) | `/cart1/goal` | `/cart2/goal` | 스트림 둘, 정상 |
+| 토픽 `/goal`(절대) | `/goal` | `/goal` | **공유된 이름 하나. 네임스페이스는 아무 일도 안 했다** |
+| 파라미터 `~/gain`(비공개) | `/cart1/controller/gain` | `/cart2/controller/gain` | 노드별, 정상 |
+| YAML 키 `/controller` | 아무것도 안 맞음 | 아무것도 안 맞음 | 깨끗이 로드되고 아무것도 설정 안 함 |
+
+**3단계 — 절대 이름의 값, 숫자로**. 카메라 둘과 제어기 둘이 모두 `/goal`을 쓴다고 하자. 카메라 각각이 $50\,\mathrm{Hz}$로 발행하므로 그 이름 하나 위의 합산 주기는
+
+$$2\times 50\,\mathrm{Hz}=100\,\mathrm{Hz},\qquad \text{그중 }50\%\text{는 다른 카트의 것}$$
+
+토픽은 이름일 뿐이고 누구든 거기 publish할 수 있기 때문이다. $70\,\mathrm{ms}$ 예산 창 하나에 카메라 각각이 온전한 비전 주기 $3$개분을 내므로 그 토픽을 목표 여섯이 지나가고 그중 셋쯤이 남의 것이다. 제어기 둘은 $200\,\mathrm{Hz}$로 돌며 각각 마지막에 도착한 목표를 따르므로, 각 카트는 절반쯤의 시간 동안 상대의 목표를 향해 전속으로 달린다. 오류도 경고도 없고 `ros2 topic hz /goal`은 아주 건강한 $100\,\mathrm{Hz}$를 보고한다. 이 페이지에서 초심자가 제어 버그와 구분하지 못하는 유일한 고장이고, 처방은 launch 파일의 한 줄이다.
+
+**4단계 — 파라미터 파일, 두 번 쓰거나 한 번 쓰거나**. 제어기에는 장치의 상수가 필요하다. `counts_per_metre` $=2048$(그래서 한 카운트가 $1/2048=0.488\,\mathrm{mm}$이고, 하류의 모든 해상도가 그것이다)와 `control_period` $=0.005$. 적는 방법이 둘인데 같지 않다.
+
+- 노드별, 완전 이름을 키로: `/cart1/controller:` 블록과 `/cart2/controller:` 블록에 각각 `ros__parameters:`. 장황하지만 이 값들이 제어기의 것이라고 말한다.
+- 와일드카드: `/**:` 블록 하나. 그래프의 모든 노드에 진짜로 속하는 `use_sim_time`에는 맞다. 카트마다 노드 하나에만 의미가 있는 `counts_per_metre`에는 틀리고, 누군가 cart 2에 $4096$ counts/m 엔코더를 다는 아침에 둘을 다르게 하고 싶어질 값이기도 하다.
+
+연습해 둘 고장은 2단계 표의 셋째 행이다. 파일 키를 `/controller`로 두면 파싱되고, 로드되고, 성공을 보고하고, 아무것도 설정하지 않아서 제어기는 선언된 기본값으로 돈다. 그 기본값이 $2048$이 아니라 $1024$라면 카트의 추정 위치는 정확히 두 배가 되고 어디서도 그렇다고 말해 주지 않는다([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] 계산 예제 5단계).
+
+**5단계 — 다시 빌드하지 않고 가설 시험하기**. 이름이 문제인지 알아내려고 고치고 다시 빌드할 필요는 없다. 카트 하나만 띄우고 커맨드라인에서 remap한다. 위 영문 `ros2 run` 한 줄이 그것이다. `__ns`로 네임스페이스를, `goal:=/cart1/goal`로 토픽을, `-p`로 파라미터를 실행 시점에 준다. 데이터가 흐르면 버그는 이름이었다. 그다음 제자리에서 고친다. 코드가 절대 이름을 박아 두었으면 소스에서, 네임스페이스가 틀렸으면 launch 파일에서. 결과 확인은 `ros2 node info /cart1/controller`다. 해석된 이름을 찍으므로 그것이 최종 판정이다.
+
+**6단계 — 그리고 도움이 안 되는 재빌드**. 카메라는 Python이고 제어기는 C++이다. `--symlink-install`은 카메라 `.py` 수정을 빌드 없이 재실행만으로 보이게 한다. colcon이 setuptools의 `develop`을 돌려서 설치된 모듈 경로가 `src/`를 되가리키기 때문이다. 제어기는 가리킬 소스가 없는 컴파일된 바이너리이므로, P6 예산이 실제로 기대는 $200\,\mathrm{Hz}$ 루프는 매번 진짜 `colcon build`가 필요하다. 낡은 바이너리가 "주기를 바꿨는데 아무 일도 없다"의 고전 판본이고, 돌고 있는 실행 파일이 어느 워크스페이스에서 왔는지 알려 주는 명령은 `ros2 pkg prefix p6_control` 하나다.
 
 ### 1. 빌드 단계가 왜 존재하는가
 
@@ -1064,11 +1169,24 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 - `rosdep` 커맨드라인 옵션(`--from-paths`, `--ignore-src`, `-r`, `-y`).
 - REP-149 — package format 3 의존 태그.
 
-> [!question]- 스스로 점검 · 정답
-> **1. Python 노드를 고치고 `colcon build` 후 다시 launch했는데 아무것도 안 바뀐다. 원인 셋과, 그것들을 가르는 명령 하나를 대라.** 빌드가 이 패키지를 포함하지 않았거나(`--packages-select`를 다른 패키지에 걸었거나), 셸이 워크스페이스가 아니라 `/opt/ros/jazzy`에서 패키지를 해석하고 있거나, 빌드가 실패했는데 요약 줄만 읽었다. 실행 셸에서 `python3 -c "import <pkg>.<module> as m; print(m.__file__)"`가 실제로 로드되는 파일을 알려 주고, `ros2 pkg prefix <pkg>`가 어느 워크스페이스가 이겼는지 알려 준다.
-> **2. `--symlink-install`은 왜 Python은 고치고 C++은 못 고치나?** `ament_python` 패키지에서는 colcon이 setuptools의 `develop` 단계를 돌리므로 설치된 모듈 경로가 `src/`로 되돌아 해석된다. C++ 패키지의 설치 산출물은 컴파일된 바이너리이고, 가리킬 소스 파일이 없으므로 새 바이너리에는 컴파일이 필요하다. CMake 패키지가 설치하는 데이터 파일 — launch, YAML, URDF — 은 링크되고 소스를 따라간다.
-> **3. YAML 파라미터 파일이 에러 없이 로드되는데 아무 파라미터도 설정되지 않는다. 먼저 확인할 두 가지는?** 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 이 실수는 조용하다. `ros__parameters` 오타였다면 에러 없이 로드될 수 없다 — 노드를 멈추는 파싱 오류다 — 그러니 파일이 정말 로드됐다면 의심할 것은 이름(또는 파일이 아예 전달됐는지)이다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
-> **4. 순수 Python 패키지는 왜 `<depend>`가 아니라 `<exec_depend>`를 써야 하나?** `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 rosdep과 릴리스 도구가 그것을 빌드 시점에 설치·요구하도록 잘못 알리고, 패키지가 실제로 무엇을 필요로 하는지도 잘못 표현한다. (colcon의 빌드 순서는 바뀌지 않는다. colcon은 실행 의존성으로도 순서를 정한다.)
+### 스스로 점검
+
+1. Python 노드를 고치고 `colcon build` 후 다시 launch했는데 아무것도 안 바뀐다. 원인 셋과,
+   그것들을 가르는 명령 하나를 대라.
+2. `--symlink-install`은 왜 Python은 고치고 C++은 못 고치나?
+3. YAML 파라미터 파일이 에러 없이 로드되는데 아무 파라미터도 설정되지 않는다. 먼저 확인할
+   두 가지는?
+4. 순수 Python 패키지는 왜 `<depend>`가 아니라 `<exec_depend>`를 써야 하나?
+5. P6 카트 둘을 파일 하나로 `/cart1`과 `/cart2`에 띄웠는데 제어기 소스가 절대 이름
+   `/goal`을 구독한다. 그 토픽의 합산 주기는 얼마이고, 각 카트에게 틀린 것은 그중 몇
+   퍼센트이며, 어느 명령이 그것을 증명하는가?
+
+> [!tip]- 정답 · Answers
+> 1. 빌드가 이 패키지를 포함하지 않았거나(`--packages-select`를 다른 패키지에 걸었거나), 셸이 워크스페이스가 아니라 `/opt/ros/jazzy`에서 패키지를 해석하고 있거나, 빌드가 실패했는데 요약 줄만 읽었다. 실행 셸에서 `python3 -c "import <pkg>.<module> as m; print(m.__file__)"`가 실제로 로드되는 파일을 알려 주고, `ros2 pkg prefix <pkg>`가 어느 워크스페이스가 이겼는지 알려 준다.
+> 2. `ament_python` 패키지에서는 colcon이 setuptools의 `develop` 단계를 돌리므로 설치된 모듈 경로가 `src/`로 되돌아 해석된다. C++ 패키지의 설치 산출물은 컴파일된 바이너리이고, 가리킬 소스 파일이 없으므로 새 바이너리에는 컴파일이 필요하다. CMake 패키지가 설치하는 데이터 파일 — launch, YAML, URDF — 은 링크되고 소스를 따라간다.
+> 3. 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 이 실수는 조용하다. `ros__parameters` 오타였다면 에러 없이 로드될 수 없다 — 노드를 멈추는 파싱 오류다 — 그러니 파일이 정말 로드됐다면 의심할 것은 이름(또는 파일이 아예 전달됐는지)이다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
+> 4. `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 rosdep과 릴리스 도구가 그것을 빌드 시점에 설치·요구하도록 잘못 알리고, 패키지가 실제로 무엇을 필요로 하는지도 잘못 표현한다. (colcon의 빌드 순서는 바뀌지 않는다. colcon은 실행 의존성으로도 순서를 정한다.)
+> 5. 절대 이름은 네임스페이스를 무시하므로 제어기 둘이 모두 `/goal`을 구독하고, 카메라도 절대 이름으로 낸다면 둘 다 거기 발행한다. 이름 하나 위에 $2\times50=100\,\mathrm{Hz}$이고 그중 $50\%$는 다른 카트의 것이다. 제어기는 각각 마지막에 도착한 목표를 따르므로 각 카트가 절반쯤의 시간 동안 엉뚱한 목표를 향해 전속으로 달리는데, `ros2 topic hz /goal`은 건강한 $100\,\mathrm{Hz}$를 보고한다. 증명하는 명령은 `ros2 node info /cart1/controller`다. *해석된* 이름을 찍으므로 `/cart1/goal`을 기대한 자리에 `/goal`이 보인다. 처방은 소스의 상대 이름과 launch 파일의 `PushROSNamespace`이고, 가설 확인은 다시 빌드할 필요 없는 `--ros-args --remap goal:=/cart1/goal`로 먼저 한다.
 
 ### 과제 · Problem set
 

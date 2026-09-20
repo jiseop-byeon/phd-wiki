@@ -126,6 +126,36 @@ formulation and stability sections rather than every proof.
 > [!note] First pass · 처음이라면
 > Read §1 (when the QP is actually convex), §3 (the failure modes papers gloss), §4. §2 — stacked versus condensed — is for when you implement or when a paper reports solve times.
 
+### Homework diagram · 과제가 그릴 그림
+
+The figure above draws receding horizon in the abstract. This is the version you must be able to
+draw on **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the problem set asks for the
+same one.
+
+**The axis and the prediction.** A time axis with four ticks, $t$ through $t+3$, so the $N=3$
+horizon fits. Above it, the state: the measured $x(t)$ as a filled dot on the first tick, the
+predicted $x_1,x_2,x_3$ as open dots, and a dashed curve through them — dashed, because only the
+first segment is ever executed.
+
+**The rail band.** Below the axis, the input: a shaded horizontal strip between $u=-1$ and $u=+1$
+with both edges labelled. Draw the three planned inputs $u_0,u_1,u_2$ as bars inside that strip,
+and circle $u_0$, the only one that reaches the plant. Then draw what the unconstrained gain asks
+for as an arrow leaving the strip: at $x=1$ the law $u=-Kx$ with $K=99$ wants $u=-99$, far below
+the band. That arrow is the whole reason this figure is not LQR's.
+
+**The disturbance, and the steady states the rails leave.** Put $d=1$ on its own arrow into the
+summing junction ahead of the plant box, never through the controller — the controller does not
+measure it. Beside the figure draw a short $x$-axis and shade $[0,2]$ on it: with $|u|\le1$ and
+$d=1$, setting $0=-x+u+d$ gives $x_\mathrm{ss}=u+1$, so that interval is every steady state the
+rails permit. Mark $0.01$ inside it, the point the $K=99$ design was aiming at, and write the
+distinction the problem set turns on beside the mark — reachable as a steady state, not reachable
+by that law's transient.
+
+**The shift.** Redraw the whole horizon one tick to the right in a lighter line, and start it from
+the *new measurement* rather than from the $x_1$ you predicted. The gap between those two dots is
+the feedback. A drawing in which they coincide has drawn open-loop optimal control, which is the
+non-example at the top of this page.
+
 ### 1. When is the QP actually convex?
 
 The "it's just a QP" claim carries conditions worth checking in any paper:
@@ -254,6 +284,18 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]], horizon $N=3$, $|u|\le1$,
 
 See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for trajectory optimization, replanning, task planning, and planning under uncertainty.
 
+### Connections
+
+- Foundations: [[02-foundations/optimization|Optimization]] (QP, KKT), [[02-foundations/linear-algebra|Linear Algebra]]
+- Previous: [[04-robotics/lqr-lqg|LQR/LQG]] · Next: [[04-robotics/convex-mpc-legged|Convex MPC for legged robots]]
+
+### After reading
+
+- [ ] Describe the receding-horizon procedure (solve → apply the first input → re-solve)
+- [ ] State the conditions for a convex QP ($Q,R,P$ definiteness and affine/polyhedral constraints), distinguish it from a general convex program, and say where obstacle constraints break convexity
+- [ ] Explain the stacked vs condensed trade-off, and infeasibility, constraint softening, and warm starting
+- [ ] Name Mayne 2000's stability ingredients (terminal cost, terminal set, horizon) and where PlaNet and Diffusion Policy borrow MPC's structure
+
 ## 한국어
 
 *[[04-robotics/control-theory-ce397|5]]·[[04-robotics/lqr-lqg|6]]번 위에 선다. D군이다. 입력·상태 제약을 태생적으로 다루는 것이 LQR 옆에 존재하는 이유이고,
@@ -351,6 +393,32 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 > [!note] 처음이라면 · First pass
 > 먼저 §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
 
+### 과제가 그릴 그림 · Homework diagram
+
+위 그림은 receding horizon을 추상적으로 그린 것이다. 여기 있는 것은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4** 위에서 직접 그릴 수 있어야 하는 판이고,
+과제가 요구하는 것도 같은 그림이다.
+
+**축과 예측.** 눈금이 넷($t$부터 $t+3$까지)인 시간 축을 그어 $N=3$ 지평이 들어가게 한다. 축
+위쪽에는 상태를 그린다. 첫 눈금에 측정값 $x(t)$를 채운 점으로, 예측값 $x_1,x_2,x_3$를 빈 점으로,
+그리고 그 점들을 지나는 파선. 파선인 이유는 실제로 실행되는 것이 첫 구간뿐이기 때문이다.
+
+**레일 띠.** 축 아래쪽에는 입력을 그린다. $u=-1$과 $u=+1$ 사이를 칠한 수평 띠를 놓고 양쪽 가장자리에
+값을 적는다. 계획된 입력 $u_0,u_1,u_2$를 그 띠 안의 막대로 그리고, 플랜트에 실제로 닿는 $u_0$에
+동그라미를 친다. 그다음 제약 없는 이득이 요구하는 값을 띠 밖으로 나가는 화살표로 그린다. $x=1$에서
+$K=99$인 $u=-Kx$는 $u=-99$를 원하고, 이는 띠보다 한참 아래다. 그 화살표가 이 그림이 LQR의 그림이
+아닌 이유 전부다.
+
+**외란, 그리고 레일이 남겨 주는 정상상태.** $d=1$은 제어기를 거치지 않고 플랜트 상자 앞 합산점으로
+바로 들어가는 별도 화살표로 그린다 — 제어기는 그것을 측정하지 않는다. 그림 옆에는 짧은 $x$축을 긋고
+$[0,2]$를 칠한다. $|u|\le1$, $d=1$에서 $0=-x+u+d$이면 $x_\mathrm{ss}=u+1$이므로, 그 구간이 레일이
+허용하는 모든 정상상태다. 그 안에 $K=99$ 설계가 노리던 점 $0.01$을 찍고, 과제가 갈라 보는 구분을
+옆에 적는다 — 정상상태로는 도달 가능하지만 그 법칙의 과도 구간으로는 도달할 수 없다.
+
+**한 칸 밀기.** 마지막으로 지평 전체를 한 눈금 오른쪽에 옅은 선으로 다시 그리되, 예측했던 $x_1$이
+아니라 *새 측정값*에서 출발시킨다. 두 점 사이의 간격이 곧 피드백이다. 그 둘이 겹치게 그린 그림은
+개루프 최적 제어를 그린 것이며, 그것이 이 페이지 첫머리의 반례다.
+
 ### 1. QP는 언제 실제로 볼록한가?
 
 "그냥 QP다"라는 주장에는 논문에서 확인할 조건들이 붙어 있다:
@@ -441,7 +509,10 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 - 기초: [[02-foundations/optimization|최적화]] (QP, KKT), [[02-foundations/linear-algebra|선형대수]]
 - 이전: [[04-robotics/lqr-lqg|LQR/LQG]] · 다음: [[04-robotics/convex-mpc-legged|보행 로봇의 convex MPC]]
-- 이 안내 너머로: 궤적 최적화, 재계획, 과제 계획, 불확실성 하의 계획은 [[04-robotics/planning-decision-making|계획과 의사결정]]에서 다룬다.
+
+### 이 안내 너머로
+
+궤적 최적화, 재계획, 과제 계획, 불확실성 하의 계획은 [[04-robotics/planning-decision-making|계획과 의사결정]]에서 다룬다.
 
 > [!tip] 더 깊이 · Going deeper
 > 무료 책이 둘이고, 서로 다른 질문에 답한다. Rawlings, Mayne, Diehl의 [*Model Predictive Control: Theory, Computation, and Design*](https://sites.engineering.ucsb.edu/~jbraw/mpc/)은 안정성과 실현가능성 보장이 가장 일반적인 설정에서 증명되는 곳이다 — 논문이 재귀적 실현가능성을 주장할 때 그것이 무엇을 가정해야 했는지 알고 싶다면 이 책이다. Borrelli, Bemporad, Morari의 [*Predictive Control for Linear and Hybrid Systems*](http://cse.lab.imtlucca.it/~bemporad/publications/papers/BBMbook.pdf)는 이 페이지가 쓰는 선형 폴리토프 경우에 같은 보장을 더 짧게 증명하고(지속 실현가능성 §12.3.1, 점근 안정성 §12.3.2, 가정 네 개의 정리 12.2), 같은 책이 계산 쪽 참고서이기도 하다: explicit MPC, §2의 QP 구조, 그리고 하이브리드 정식화 — §4의 접촉 사례에 중요한 절반이 그쪽이다.
@@ -472,9 +543,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P4**, 지평 $N=3$, $|u|\le1$, $d
 > 2. $u=-99$. $|u|\le1$이 금지. 정상상태 $x=u+1\in[0,2]$. $0.01$에 앉으려면 $u=-0.99$이고 과도에서 $|u|>1$을 한 번도 안 물어야 하는데, $u=-99x$는 $|x|>1/99$이면 바로 위반한다.
 > 3. MPC가 LQR 옆에 있는 이유가 제약이다. 거대한 무제약 이득은 어떤 지평의 가능 계획도 아니다.
 
-### 읽고 나면 말할 수 있어야 하는 것 · After reading
+### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] Describe the receding-horizon procedure (solve → apply the first input → re-solve) · receding horizon 절차를 말할 수 있다
-- [ ] State the conditions for a convex QP ($Q,R,P$ definiteness and affine/polyhedral constraints), distinguish it from a general convex program, and say where obstacle constraints break convexity · 볼록 QP의 조건과 일반 볼록 최적화의 차이, 장애물 제약이 볼록성을 깨뜨리는 지점을 말할 수 있다
-- [ ] Explain the stacked vs condensed trade-off, and infeasibility, constraint softening, and warm starting · stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
-- [ ] Name Mayne 2000's stability ingredients (terminal cost, terminal set, horizon) and where PlaNet and Diffusion Policy borrow MPC's structure · Mayne 2000의 안정성 재료와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다
+- [ ] receding horizon 절차(풀고 → 첫 입력만 적용하고 → 다시 푼다)를 말할 수 있다
+- [ ] 볼록 QP의 조건($Q,R,P$의 정부호성과 아핀·다면체 제약)과 일반 볼록 최적화의 차이, 장애물 제약이 볼록성을 깨뜨리는 지점을 말할 수 있다
+- [ ] stacked/condensed 정식화의 트레이드오프와 infeasibility·softening·warm start를 설명할 수 있다
+- [ ] Mayne 2000의 안정성 재료(종단 비용·종단 집합·지평)와 PlaNet·Diffusion Policy가 MPC 구조를 빌린 지점을 말할 수 있다

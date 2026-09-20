@@ -96,7 +96,7 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 
 **Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
 
-### 5. The homework diagram
+### 5. Homework diagram
 
 One figure, two panels. The problem set asks for the same figure drawn from a different table, so draw it once here properly.
 
@@ -104,7 +104,7 @@ One figure, two panels. The problem set asks for the same figure drawn from a di
 
 **Panel B — the curve.** Comparison force on the horizontal axis, 4.3 to 6.0 N; proportion judged stronger on the vertical, 0 to 1. Plot the six frozen points and join consecutive points with *straight segments*, not a smooth S-curve, because those segments are exactly the linear interpolation of §6 and the figure must show that no psychometric function has been fitted. Draw horizontal lines at $p=0.25$, $0.50$, $0.75$, drop a vertical from each crossing to the axis, and label the three feet $x_{25}$, PSE, $x_{75}$. Brace $x_{25}$ to $x_{75}$ and label the brace $2\,\mathrm{JND}$. Finally mark $F_{\text{ref}}=5.00\,\mathrm{N}$ with a differently styled tick, so that the gap between the reference and the PSE — the bias of Step 7 — is visible rather than asserted.
 
-### 6. Worked: threshold, JND, and Weber fraction
+### 6. Worked case: threshold, JND, and Weber fraction
 
 **Step 1 — the interpolation rule.** Between two tested levels the table says nothing, so the weakest assumption that still lets a threshold exist is a straight line through the two bracketing points. With $(x_i,p_i)$ and $(x_{i+1},p_{i+1})$ the rows on either side of the criterion $p$,
 
@@ -152,8 +152,18 @@ wide. The force step is about seventeen times finer than the smallest difference
 
 **Step 9 — what the four numbers do not license.** $0.4107\,\mathrm{N}$ is a criterion-dependent figure for one participant at one operating point with one hand posture. It does not say that a $0.41\,\mathrm{N}$ step is always noticed and a $0.40\,\mathrm{N}$ step never is, because the interpolated curve is not a step; it does not transfer to a different grasp, a different reference force (the problem set measures that), or a different task; and with 40 trials per level the proportions themselves carry sampling error, so the last digit of $5.0429$ is arithmetic, not evidence.
 
-> [!question]- Self-check · Answer
-> **Why can a clearer vibration fail to improve a teleoperation task?** Detectability is only one link. The cue may arrive late, encode the wrong state, conflict with vision, consume attention, or fail to change an actionable decision. Test perception, control behavior, and task outcome separately.
+### Self-check
+
+1. §6 reports two numbers about the same curve: a JND of $0.4107\,\mathrm{N}$ and a bias of $+43\,\mathrm{mN}$. If this participant's whole curve slid $0.1\,\mathrm{N}$ to the right, which of the two would change, and what does that tell you about what each one measures?
+2. A colleague reads Step 5 and says "so this participant cannot feel anything below $0.41\,\mathrm{N}$." Name two separate errors in that sentence.
+3. Of §2's five terms, only the Weber fraction can be carried between operating points. Why — and what does the problem set's $2\,\mathrm{N}$ result say about how far it carries?
+4. Why can a clearer vibration fail to improve a teleoperation task?
+
+> [!tip]- Answers
+> 1. Only the bias. A JND is a *width* — half the span $x_{75}-x_{25}$ — so adding the same $0.1\,\mathrm{N}$ to all three thresholds leaves the difference, and therefore the JND, at $0.4107\,\mathrm{N}$; the PSE moves with the curve, so the bias becomes $+143\,\mathrm{mN}$. A width measures how uncertain this participant is, a bias measures where this participant, this handle and this interval order sit relative to the reference. Reporting one in place of the other is the commonest way a psychophysics table becomes uninterpretable.
+> 2. First, $0.41\,\mathrm{N}$ is not a detection threshold at all: it is half the $25$–$75$ span of a *comparison* curve around a $5\,\mathrm{N}$ pedestal, so it says nothing about absolute detection and everything about discrimination near $5\,\mathrm{N}$. Second, the interpolated curve is continuous, not a step — at $0.40\,\mathrm{N}$ below the PSE the participant is already right well above chance — so no level exists below which nothing is felt. Step 9 adds a third: one participant, one posture, 40 trials per level.
+> 3. Because $k=\mathrm{JND}/I$ divides the increment by the intensity it was measured at, so it is dimensionless and the operating point cancels; the other four are a task, a level, a level and a difference, each pinned to its own reference. How far it carries is exactly what the problem set measures: $k$ rose from $8.14\%$ at $5.04\,\mathrm{N}$ to $8.96\%$ at $2.03\,\mathrm{N}$, so Weber's law held qualitatively (the absolute JND shrank, $0.4107\to0.1821\,\mathrm{N}$) and failed quantitatively over that range. "Comparable across operating points" means locally comparable.
+> 4. Detectability is only one link. The cue may arrive late, encode the wrong state, conflict with vision, consume attention, or fail to change an actionable decision. Test perception, control behaviour, and task outcome separately.
 
 ### Problem set · 과제
 
@@ -267,7 +277,7 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
 
 **패널 B — 곡선.** 가로축은 비교 힘 4.3에서 6.0 N, 세로축은 더 세다고 판정한 비율 0에서 1. 얼어붙은 여섯 점을 찍고 이웃한 점끼리 매끈한 S자가 아니라 *직선 구간*으로 잇는다. 그 직선들이 정확히 §6의 선형 보간이고, 심리측정 함수를 적합한 적이 없다는 것을 그림이 보여야 하기 때문이다. $p=0.25$, $0.50$, $0.75$에 수평선을 긋고, 각 교차점에서 축으로 수직선을 내리고, 세 발을 $x_{25}$, PSE, $x_{75}$로 이름 붙인다. $x_{25}$에서 $x_{75}$까지 괄호를 치고 $2\,\mathrm{JND}$라고 적는다. 마지막으로 $F_{\text{ref}}=5.00\,\mathrm{N}$을 다른 모양의 눈금으로 표시해서, 기준과 PSE 사이의 간격 — Step 7의 편향 — 이 주장이 아니라 눈에 보이게 한다.
 
-### 6. 계산: 임계값, JND, Weber 분수
+### 6. 대상으로 한 번 끝까지: 임계값, JND, Weber 분수
 
 **Step 1 — 보간 규칙.** 시험한 두 수준 사이에서 표는 아무 말도 하지 않는다. 그래도 임계값이 존재하게 하는 가장 약한 가정은 양쪽 점을 잇는 직선이다. 기준 $p$의 양옆 행을 $(x_i,p_i)$, $(x_{i+1},p_{i+1})$이라 하면
 
@@ -315,8 +325,18 @@ $$\frac{\mathrm{JND}}{\Delta F}=\frac{0.4107}{0.0245}=16.7\ \text{카운트}$$
 
 **Step 9 — 네 숫자가 허락하지 않는 것.** $0.4107\,\mathrm{N}$은 한 참가자가 한 작동점에서 한 파지 자세로 낸, 기준에 의존하는 값이다. $0.41\,\mathrm{N}$ 단은 항상 알아채고 $0.40\,\mathrm{N}$ 단은 절대 못 알아챈다는 뜻이 아니다. 보간된 곡선은 계단이 아니기 때문이다. 다른 파지, 다른 기준 힘(과제가 그것을 잰다), 다른 과제로 옮겨 가지도 않는다. 그리고 수준당 40시행이므로 비율 자체가 표본 오차를 달고 있어, $5.0429$의 마지막 자리는 산술이지 증거가 아니다.
 
-> [!question]- 스스로 점검 · 정답
-> **더 선명한 진동이 원격조작 과제를 개선하지 못할 수 있는 이유는?** 검출 가능성은 사슬의 한 고리일 뿐이다. cue가 늦게 도착하거나, 틀린 상태를 부호화하거나, 시각과 충돌하거나, 주의를 소모하거나, 실행 가능한 결정을 바꾸지 못할 수 있다. 지각과 제어 행동과 과제 결과를 따로 시험하라.
+### 스스로 점검
+
+1. §6은 같은 곡선에서 숫자 둘을 보고한다. JND $0.4107\,\mathrm{N}$과 편향 $+43\,\mathrm{mN}$이다. 이 참가자의 곡선 전체가 오른쪽으로 $0.1\,\mathrm{N}$ 미끄러진다면 둘 중 무엇이 바뀌는가? 그 사실이 각 숫자가 무엇을 재는지에 대해 무엇을 말해 주는가?
+2. 동료가 Step 5를 읽고 "그러면 이 참가자는 $0.41\,\mathrm{N}$ 아래로는 아무것도 못 느낀다"고 말한다. 이 문장의 서로 다른 오류 둘을 지적하라.
+3. §2의 다섯 용어 중 작동점을 옮겨 가며 쓸 수 있는 것은 Weber 분수뿐이다. 왜인가? 그리고 과제의 $2\,\mathrm{N}$ 결과는 그것이 얼마나 멀리까지 옮겨 가는지에 대해 무엇을 말하는가?
+4. 더 선명한 진동이 원격조작 과제를 개선하지 못할 수 있는 이유는?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 편향만 바뀐다. JND는 *폭*, 즉 $x_{75}-x_{25}$의 절반이므로 세 임계값에 같은 $0.1\,\mathrm{N}$을 더해도 차이는 그대로여서 JND는 $0.4107\,\mathrm{N}$에 머문다. PSE는 곡선을 따라 움직이므로 편향은 $+143\,\mathrm{mN}$이 된다. 폭은 이 참가자가 얼마나 불확실한지를 재고, 편향은 이 참가자와 이 핸들과 이 구간 순서가 기준에 대해 어디에 앉아 있는지를 잰다. 하나를 다른 하나 자리에 보고하는 것이 심리물리 표를 해석 불가능하게 만드는 가장 흔한 방법이다.
+> 2. 첫째, $0.41\,\mathrm{N}$은 검출 임계값이 아니다. $5\,\mathrm{N}$ 받침 둘레의 *비교* 곡선에서 $25$–$75$ 구간의 절반이므로, 절대 검출에 대해서는 아무 말도 하지 않고 $5\,\mathrm{N}$ 부근의 변별에 대해서만 말한다. 둘째, 보간된 곡선은 계단이 아니라 연속이다. PSE보다 $0.40\,\mathrm{N}$ 낮은 곳에서도 참가자는 이미 우연 수준보다 훨씬 자주 맞힌다. 그러므로 그 아래로는 아무것도 느끼지 못하는 수준 같은 것은 없다. Step 9가 셋째를 더한다. 참가자 한 명, 자세 하나, 수준당 40시행이다.
+> 3. $k=\mathrm{JND}/I$는 증분을 그것을 잰 세기로 나누므로 무차원이고 작동점이 약분되기 때문이다. 나머지 넷은 과제, 수준, 수준, 차이이고 각각 자기 기준에 붙박여 있다. 얼마나 멀리 가는지는 과제가 바로 그것을 잰다. $k$는 $5.04\,\mathrm{N}$에서 $8.14\%$, $2.03\,\mathrm{N}$에서 $8.96\%$로 올랐다. 그래서 Weber 법칙은 정성적으로는 살아남고(절대 JND가 $0.4107\to0.1821\,\mathrm{N}$로 줄었다) 이 범위에서 정량적으로는 깨졌다. "작동점을 가로질러 비교 가능"은 국소적으로 비교 가능하다는 뜻이다.
+> 4. 검출 가능성은 사슬의 한 고리일 뿐이다. cue가 늦게 도착하거나, 틀린 상태를 부호화하거나, 시각과 충돌하거나, 주의를 소모하거나, 실행 가능한 결정을 바꾸지 못할 수 있다. 지각과 제어 행동과 과제 결과를 따로 시험하라.
 
 ### 과제 · Problem set
 

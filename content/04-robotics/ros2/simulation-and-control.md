@@ -17,6 +17,54 @@ mastery-when: "Go deeper when you are writing the hardware interface itself — 
 > A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation, a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), and the two-link arm you wrote in [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]. Simulated versus wall time matters here and is covered in [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]].
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), 그리고 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 작성한 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]).
 
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart and its clock — spawned into Gazebo Harmonic and driven through `ros2_control`. The two-link arm of §11 is the thing you type; P6 is the thing you compute with, and every number below is the catalog's.
+
+| Symbol | Value | What it is here |
+|---|---:|---|
+| $N$ | $2048$ counts/m | cart encoder, the only position sensor |
+| $f_v$ | $50\,\mathrm{Hz}$ | vision node publishing a goal, bridged out of Gazebo |
+| $f_c$ | $200\,\mathrm{Hz}$ | controller manager `update_rate`, the `read`–`update`–`write` loop of §7 |
+| $B$ | $70\,\mathrm{ms}$ | end-to-end budget, camera mid-exposure to applied force |
+| $v$ | $0.25\,\mathrm{m/s}$ | commanded cart speed — **page-local**: P6 freezes no speed, and this one is used only to turn times into millimetres |
+
+*Scope: this page teaches the plumbing between a description and a moving robot — the bridge, the interface seam, the controller manager and its clock — and computes what those rates cost in latency and resolution. It does not teach whether the contact physics transfers, which is [[05-construction-robotics/sim-to-real|Sim-to-Real]]; nor how to write the hardware component behind the same seam, which is [[04-robotics/ros2/from-simulation-to-hardware|25.11]]; nor how to plan the trajectory you hand the controller, which is [[04-robotics/ros2/manipulation-moveit2|25.8]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+One figure, two panels, and the problem set asks for the same figure with one rate changed.
+
+**Panel A — who provides what.** Draw four boxes and the seam between them. Left: `Gazebo Harmonic` holding the physics and the model. Inside it, a box `gz_ros2_control system plugin` containing a second box `controller manager, update_rate: 200`. Right of the seam, two controller boxes: `joint_state_broadcaster` and a velocity controller. Between the manager and the controllers draw the interfaces as *named arrows*, not plain lines: `cart/position` and `cart/velocity` pointing left-to-right as state, `cart/velocity` pointing right-to-left as command. Three things the drawing has to get right, each of which is a claim. The **command arrow carries a claim mark**: label it `[available] [claimed]`, because §6's exclusivity rule is that exactly one active controller may hold it. The **`/clock` arrow leaves Gazebo and enters ROS**, never the reverse, since the simulator owns the time. And the camera arrow crosses a box marked `ros_gz_bridge` with the direction token written on it, because §3's point is that an unbridged topic does not exist on the ROS side and reports no error.
+
+**Panel B — the timeline, on sim time.** Five parallel lanes against one horizontal axis labelled *simulated* seconds, $0$ to $80\,\mathrm{ms}$, ruled every $5\,\mathrm{ms}$: `camera exposure`, `bridge`, `controller read`, `controller update/write`, `force at the cart`. Put the camera ticks $20\,\mathrm{ms}$ apart and the controller ticks $5\,\mathrm{ms}$ apart, so four control ticks visibly fit inside one camera interval and three of them carry no new goal. Shade, from one camera tick, the span during which a command derived from *that* frame is still on the actuator, and write its length beside it. Finally draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, and write beneath the bracket the one sentence the figure exists to make arguable: *this axis is sim time, and the budget is wall time.*
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. Do the arithmetic here on the catalog numbers so the problem set is a change of rate, not a first derivation.
+
+**Step 1 — two periods and their ratio.** The controller manager's `update_rate` is a frequency in Hz (§7), so
+
+$$T_c=\frac{1}{f_c}=\frac{1}{200}=5\,\mathrm{ms},\qquad T_v=\frac{1}{f_v}=\frac{1}{50}=20\,\mathrm{ms},\qquad \frac{f_c}{f_v}=\frac{200}{50}=4,$$
+
+so the loop performs four complete `read`–`update`–`write` cycles per camera frame and three of those four see a goal they have already seen. That ratio, not either rate alone, is what the timeline has to show.
+
+**Step 2 — what one encoder count is worth.** The cart encoder is a count per unit length, so its quantum is the reciprocal:
+
+$$\Delta p=\frac{1}{N}=\frac{1}{2048}=4.883\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}.$$
+
+Difference two successive position reads one control period apart and the smallest non-zero velocity you can report is one count per period, $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$, because a single count is the smallest change the numerator can take. Do the same differencing across a whole vision interval instead and the quantum falls to $\Delta p/T_v=24.4\,\mathrm{mm/s}$, at the cost of $20\,\mathrm{ms}$ of lag — the same noise-versus-delay trade the velocity estimator makes in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]].
+
+**Step 3 — the staleness the rates alone impose.** Let a measurement be taken at mid-exposure $t_0$ and let $L$ be everything between that instant and the goal message arriving at the controller: exposure half-window, readout, bridge, DDS. The rates add two more terms after $L$. The controller keeps using this goal until the next frame replaces it, which is at most $T_v$ later; and the command computed at that last tick is written and then *held* until the following tick, one more $T_c$. So the worst-case age of the vision measurement while the force it caused is still on the cart is
+
+$$A_{\max}=L+T_v+T_c=L+20+5=L+25\,\mathrm{ms},$$
+
+since the vision period bounds how long a stale goal survives and the control period bounds how long a stale command is held. Against P6's budget that leaves $70-25=45\,\mathrm{ms}$ for the whole of $L$ plus the driver and the actuator. The rates have already spent $36\%$ of the budget before a single line of your code runs.
+
+**Step 4 — the same ledger in millimetres.** At the page-local $v=0.25\,\mathrm{m/s}$ the cart covers $0.25\times0.025=6.25\,\mathrm{mm}$ during those $25\,\mathrm{ms}$, which is $6.25\times2.048=12.8$ encoder counts: the goal the controller is chasing is nearly thirteen counts behind the cart even when nothing is late. Per control period the cart moves $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ counts, comfortably above the quantum. Slow it to $0.05\,\mathrm{m/s}$ and one period covers $0.25\,\mathrm{mm}=0.512$ counts, so most ticks see *no* count change at all and the differenced velocity reads exactly $0$ or exactly $97.7\,\mathrm{mm/s}$ — a velocity signal that is pure quantization noise, at the speed where you most wanted it to be smooth.
+
+**Step 5 — and why Gazebo cannot certify any of it.** The controller manager runs inside the simulator, so `update_rate: 200` is 200 ticks per simulated second (§10). Let the real-time factor be $0.5$, a simulation running at half speed. The loop then executes $200\times0.5=100$ times per *wall* second, and the $25\,\mathrm{ms}$ sim-time ledger of Step 3 occupies $25/0.5=50\,\mathrm{ms}$ of wall time, leaving $70-50=20\,\mathrm{ms}$ instead of $45$. Nothing in the simulation misbehaves: sim time is internally consistent, the trajectory tracks, `ros2 topic hz /joint_states` reports 200. P6's $70\,\mathrm{ms}$ is a wall-clock budget about a real camera and a real motor, and a run that does not report its real-time factor has not measured it. That is the precise version of §1's warning, and it is the thing the problem set's third item asks you to say out loud.
+
 ### 1. Why simulate, and what simulation will not tell you
 
 After 25.6 you have a robot that exists as a description and a transform tree. Nothing about it moves on its own: you dragged sliders, and `robot_state_publisher` recomputed frames. There was no physics, no actuator, and no controller.
@@ -441,24 +489,34 @@ Writing a hardware component of your own — a real driver behind the same inter
 - Gazebo documentation — Releases (Harmonic, Jetty support windows); ROS 2 Integration; Migration from Ignition.
 - Open Robotics Discourse — "Gazebo Classic End-of-Life" (Gazebo 11 end of life, January 2025).
 
-> [!question]- Self-check · Answer
-> **1. Why does `ros2_control` put a named-interface seam between the controller and the hardware, rather than letting the controller write to the motor?** Because the seam is what makes the controller portable. A controller asks for `shoulder/position` and neither knows nor cares whether a physics engine or an EtherCAT drive provides it, so the same controller and the same YAML run in Gazebo and on the real arm. Moving to hardware changes one `<plugin>` line in the URDF. It also enforces exclusivity: a command interface can be claimed by at most one active controller, which is why two writers on one joint is a failed activation rather than a fight.
-> **2. Your controller was spawned, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?** `ros2 control list_controllers` — if it reads `inactive`, activation failed, and the most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML; the controller manager logged one "Unable to activate controller … is not available" warning. If it reads `active`, its command interfaces are necessarily `[available] [claimed]` in `list_hardware_interfaces`, so look downstream: the topic name, the trajectory's stamp and `time_from_start`, and whether the simulation is paused.
-> **3. Why does a `/clock` bridge matter, when nothing in the exercise reads the clock explicitly?** The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes that set `use_sim_time` — robot_state_publisher, TF consumers, anything stamping or looking up transforms — have no time source and stall, and a trajectory given a wall-clock stamp is read on the controller's sim clock as starting far in the future. (A zero stamp, which `ros2 topic pub` sends by default, means "start now" and dodges this.) Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
-> **4. A tutorial tells you to add `<plugin filename="libgazebo_ros_control.so">` to your URDF. What is wrong with it?** It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
-> **5. You get a manipulation policy working in Gazebo. What can you claim?** That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
+### Self-check
+
+1. Why does `ros2_control` put a named-interface seam between the controller and the hardware, rather than letting the controller write to the motor?
+2. Your controller was spawned, the simulation is running, and the arm does not move. What is the first command, and what is the most likely cause?
+3. Why does a `/clock` bridge matter, when nothing in the exercise reads the clock explicitly?
+4. A tutorial tells you to add `<plugin filename="libgazebo_ros_control.so">` to your URDF. What is wrong with it?
+5. You get a manipulation policy working in Gazebo. What can you claim?
+6. On P6, the worked case spends $25\,\mathrm{ms}$ of the $70\,\mathrm{ms}$ budget on the two sampling rates alone. Which of the two terms would halving `update_rate` to 100 change, and by how much — and what would the same change do to the encoder's velocity quantum?
+
+> [!tip]- Answers
+> 1. Because the seam is what makes the controller portable. A controller asks for `shoulder/position` and neither knows nor cares whether a physics engine or an EtherCAT drive provides it, so the same controller and the same YAML run in Gazebo and on the real arm. Moving to hardware changes one `<plugin>` line in the URDF. It also enforces exclusivity: a command interface can be claimed by at most one active controller, which is why two writers on one joint is a failed activation rather than a fight.
+> 2. `ros2 control list_controllers` — if it reads `inactive`, activation failed, and the most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML; the controller manager logged one "Unable to activate controller … is not available" warning. If it reads `active`, its command interfaces are necessarily `[available] [claimed]` in `list_hardware_interfaces`, so look downstream: the topic name, the trajectory's stamp and `time_from_start`, and whether the simulation is paused.
+> 3. The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes that set `use_sim_time` — robot_state_publisher, TF consumers, anything stamping or looking up transforms — have no time source and stall, and a trajectory given a wall-clock stamp is read on the controller's sim clock as starting far in the future. (A zero stamp, which `ros2 topic pub` sends by default, means "start now" and dodges this.) Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
+> 4. It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
+> 5. That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
+> 6. Only the hold term. The ledger is $A_{\max}=L+T_v+T_c$, and `update_rate` sets $T_c$ alone: at $100\,\mathrm{Hz}$ it becomes $10\,\mathrm{ms}$, so the rate cost rises from $25$ to $30\,\mathrm{ms}$ and the room left for $L$ falls from $45$ to $40\,\mathrm{ms}$. The $20\,\mathrm{ms}$ vision term is untouched, because it is set by the camera and no control rate can make a goal newer than the last frame. The encoder quantum moves the other way and is the reason this is a trade rather than a loss: differencing over $10\,\mathrm{ms}$ instead of $5$ halves the velocity quantum from $97.7$ to $48.8\,\mathrm{mm/s}$, so the slower loop reports a finer velocity and applies it later.
 
 ### Problem set · 과제
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. Controller `update_rate: 200`. Vision is a bridged camera at $50\,\mathrm{Hz}$. Budget $70\,\mathrm{ms}$. No new Euler simulator.
 
 1. **Draw.** P6 cart in Gazebo: `gz_ros2_control` hardware plugin, joint-state broadcaster, a velocity controller, `/clock` bridge. Five-line timeline on *sim* time: camera exposure, bridge, controller `read`–`update`–`write`, force. Mark the $70\,\mathrm{ms}$ budget.
-2. **Derive.** (a) Control period at $200\,\mathrm{Hz}$. Encoder $\Delta p$ for one count. (b) The controller is `active` and the cart does not move. First command, most likely cause. (c) No `/clock` bridge; a trajectory is stamped with wall time. What does the sim-time controller read?
+2. **Derive.** (a) Redo the worked case's Steps 1–3 with `update_rate: 500` and the camera at $30\,\mathrm{Hz}$: the tick-per-frame ratio, the velocity quantum from one-count differencing, and the rate ledger against the $70\,\mathrm{ms}$ budget. Say which of the two changes helped and which hurt. (b) The controller is `active` and the cart does not move. First command, most likely cause. (c) No `/clock` bridge; a trajectory is stamped with wall time. What does the sim-time controller read?
 3. **Interpret.** A $200\,\mathrm{ms}$-late bridged vision frame still meets Gazebo's physics rate. Does it meet P6's budget? What can a Gazebo success claim, and what can it not?
 
 > [!tip]- Solutions
 > 1. Plugin `gz_ros2_control/GazeboSimSystem`; `/clock` out of Gazebo into ROS. Timeline in sim time, not wall time.
-> 2. (a) $5\,\mathrm{ms}$, $0.488\,\mathrm{mm}$. (b) `ros2 control list_controllers`; joint-name mismatch among URDF, `<ros2_control>`, YAML. (c) A start far in the future (unless the stamp is zero, "start now").
+> 2. (a) $T_c=1/500=2\,\mathrm{ms}$ and $T_v=1/30=33.3\,\mathrm{ms}$, so the ratio is $500/30=16.7$ — *not* an integer, so ticks and frames never line up and the goal's age differs from tick to tick, which the catalog's clean $4$ hid. The velocity quantum rises to $\Delta p/0.002=244\,\mathrm{mm/s}$, worse than the catalog's $97.7$, since a shorter differencing window divides the same single count by a smaller time. The ledger becomes $33.3+2=35.3\,\mathrm{ms}$, leaving $34.7$ against the catalog's $45$: the faster loop bought $3\,\mathrm{ms}$ and the slower camera cost $13.3$, a net loss of $10.3\,\mathrm{ms}$. The term you cannot reach from the controller is the one that dominates. (b) `ros2 control list_controllers`; joint-name mismatch among URDF, `<ros2_control>`, YAML. (c) A start far in the future (unless the stamp is zero, "start now").
 > 3. No: $200>70$. Gazebo success claims plumbing — interfaces, rates, launch. Not that the $70\,\mathrm{ms}$ camera-to-force chain, or contact, will hold on hardware.
 
 ## 한국어
@@ -470,6 +528,54 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 > [!note] 선수 지식 · Prerequisites
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 만든 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]).
 > A sourced ROS 2 Jazzy install, a buildable workspace, and the two-link arm from 25.6.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**, 1차원 카트와 그 시계다. Gazebo Harmonic에 띄우고 `ros2_control`로 구동한다. §11의 2링크 팔은 손으로 타이핑하는 대상이고, P6는 계산하는 대상이다. 아래 숫자는 모두 카탈로그의 것이다.
+
+| 기호 | 값 | 여기서의 뜻 |
+|---|---:|---|
+| $N$ | $2048$ counts/m | 카트 엔코더. 유일한 위치 센서 |
+| $f_v$ | $50\,\mathrm{Hz}$ | 목표를 발행하는 비전 노드. Gazebo에서 브리지된다 |
+| $f_c$ | $200\,\mathrm{Hz}$ | 컨트롤러 매니저 `update_rate`. §7의 `read`–`update`–`write` 루프 |
+| $B$ | $70\,\mathrm{ms}$ | 카메라 노출 중간부터 힘이 나갈 때까지의 종단 예산 |
+| $v$ | $0.25\,\mathrm{m/s}$ | 명령한 카트 속도 — **페이지 국소 값**. P6는 속도를 고정하지 않으며, 시간을 밀리미터로 바꾸는 데에만 쓴다 |
+
+*범위: 이 페이지는 기술과 움직이는 로봇 사이의 배관 — 브리지, 인터페이스 이음매, 컨트롤러 매니저와 그 시계 — 을 가르치고, 그 속도들이 지연과 분해능으로 얼마를 치르는지 계산한다. 접촉 물리가 옮겨 가는지는 가르치지 않는다. 그것은 [[05-construction-robotics/sim-to-real|Sim-to-Real]]이다. 같은 이음매 뒤에 하드웨어 컴포넌트를 작성하는 법도 아니다. 그것은 [[04-robotics/ros2/from-simulation-to-hardware|25.11]]이다. 제어기에 넘길 궤적을 계획하는 법도 아니다. 그것은 [[04-robotics/ros2/manipulation-moveit2|25.8]]이다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+그림 하나, 패널 둘. 과제는 속도 하나만 바꾼 같은 그림을 요구한다.
+
+**패널 A — 누가 무엇을 제공하는가.** 상자 넷과 그 사이의 이음매를 그린다. 왼쪽에 물리와 모델을 쥔 `Gazebo Harmonic`. 그 안에 `gz_ros2_control system plugin` 상자, 다시 그 안에 `controller manager, update_rate: 200` 상자. 이음매 오른쪽에 제어기 상자 둘, `joint_state_broadcaster`와 속도 제어기. 매니저와 제어기 사이의 인터페이스는 맨 선이 아니라 *이름 붙은 화살표*로 그린다. 상태로 왼쪽에서 오른쪽으로 가는 `cart/position`과 `cart/velocity`, 명령으로 오른쪽에서 왼쪽으로 가는 `cart/velocity`. 그림이 맞혀야 할 것이 셋이고 각각이 주장이다. **명령 화살표에는 점유 표시를 단다.** `[available] [claimed]`라고 적는다. §6의 배타성 규칙이 활성 제어기 정확히 하나만 그것을 쥘 수 있다는 것이기 때문이다. **`/clock` 화살표는 Gazebo에서 나와 ROS로 들어간다.** 반대 방향은 없다. 시간을 소유한 쪽이 시뮬레이터이기 때문이다. 그리고 카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나가고 그 위에 방향 토큰을 적는다. 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 오류도 내지 않는다는 것이 §3의 요점이기 때문이다.
+
+**패널 B — 타임라인, 시뮬레이션 시간 위에서.** 가로축 하나에 평행한 레인 다섯을 건다. 축은 *시뮬레이션* 초로 $0$에서 $80\,\mathrm{ms}$, 눈금은 $5\,\mathrm{ms}$마다. 레인은 `카메라 노출`, `브리지`, `제어기 read`, `제어기 update/write`, `카트에 걸리는 힘`. 카메라 틱은 $20\,\mathrm{ms}$ 간격, 제어기 틱은 $5\,\mathrm{ms}$ 간격으로 찍어, 카메라 한 구간 안에 제어 틱 넷이 들어가고 그중 셋에는 새 목표가 없다는 것이 눈에 보이게 한다. 카메라 틱 하나에서 시작해, *그* 프레임에서 나온 명령이 아직 구동기에 걸려 있는 구간을 음영으로 칠하고 그 길이를 옆에 적는다. 마지막으로 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고, 괄호 밑에 이 그림이 존재하는 이유인 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
+
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. 카탈로그 숫자로 여기서 먼저 계산해 두면 과제는 속도 하나를 바꾸는 일이지 첫 유도가 아니다.
+
+**Step 1 — 주기 둘과 그 비.** 컨트롤러 매니저의 `update_rate`는 Hz 단위 주파수이므로(§7)
+
+$$T_c=\frac{1}{f_c}=\frac{1}{200}=5\,\mathrm{ms},\qquad T_v=\frac{1}{f_v}=\frac{1}{50}=20\,\mathrm{ms},\qquad \frac{f_c}{f_v}=\frac{200}{50}=4,$$
+
+이다. 그래서 루프는 카메라 프레임 하나당 `read`–`update`–`write`를 네 번 완주하고, 그중 셋은 이미 본 목표를 다시 본다. 타임라인이 보여야 하는 것은 둘 중 한 속도가 아니라 이 비다.
+
+**Step 2 — 엔코더 한 카운트의 값.** 카트 엔코더는 길이당 카운트이므로 양자는 그 역수다.
+
+$$\Delta p=\frac{1}{N}=\frac{1}{2048}=4.883\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}.$$
+
+제어 주기 하나 떨어진 두 위치 읽기를 차분하면 보고할 수 있는 가장 작은 0이 아닌 속도는 주기당 한 카운트, 즉 $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$다. 분자가 취할 수 있는 가장 작은 변화가 한 카운트이기 때문이다. 같은 차분을 비전 구간 전체에 걸쳐 하면 양자는 $\Delta p/T_v=24.4\,\mathrm{mm/s}$로 내려가고 대신 $20\,\mathrm{ms}$의 지연을 문다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]의 속도 추정기가 하는 잡음–지연 거래와 같은 것이다.
+
+**Step 3 — 속도만으로 생기는 낡음.** 측정이 노출 중간 $t_0$에 일어나고, 그 순간부터 목표 메시지가 제어기에 도착할 때까지의 모든 것을 $L$이라 하자. 노출 반폭, 판독, 브리지, DDS다. 속도는 $L$ 뒤에 항 둘을 더한다. 제어기는 다음 프레임이 이 목표를 갈아치울 때까지 계속 쓰고, 그것은 길어야 $T_v$ 뒤다. 그리고 그 마지막 틱에서 계산된 명령은 기록된 뒤 다음 틱까지 *유지되므로* $T_c$가 한 번 더 붙는다. 그래서 그 프레임이 만든 힘이 아직 카트에 걸려 있는 동안 비전 측정이 가질 수 있는 최악의 나이는
+
+$$A_{\max}=L+T_v+T_c=L+20+5=L+25\,\mathrm{ms}$$
+
+이다. 낡은 목표가 얼마나 오래 살아남는지를 비전 주기가, 낡은 명령이 얼마나 오래 유지되는지를 제어 주기가 각각 묶기 때문이다. P6의 예산에 대면 $L$ 전체와 드라이버와 구동기가 쓸 몫으로 $70-25=45\,\mathrm{ms}$가 남는다. 내 코드가 한 줄도 돌기 전에 속도들이 이미 예산의 $36\%$를 썼다.
+
+**Step 4 — 같은 장부를 밀리미터로.** 페이지 국소 값 $v=0.25\,\mathrm{m/s}$에서 카트는 그 $25\,\mathrm{ms}$ 동안 $0.25\times0.025=6.25\,\mathrm{mm}$를 간다. 이는 $6.25\times2.048=12.8$ 엔코더 카운트다. 아무것도 늦지 않아도 제어기가 쫓는 목표는 카트보다 열세 카운트 가까이 뒤에 있다. 제어 주기당으로는 $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ 카운트여서 양자보다 넉넉히 위다. 속도를 $0.05\,\mathrm{m/s}$로 낮추면 한 주기가 $0.25\,\mathrm{mm}=0.512$ 카운트를 덮으므로 대부분의 틱에서 카운트가 *전혀* 바뀌지 않고, 차분 속도는 정확히 $0$ 아니면 정확히 $97.7\,\mathrm{mm/s}$를 읽는다. 가장 매끄럽기를 바랐던 속도에서 속도 신호가 순수한 양자화 잡음이 된다.
+
+**Step 5 — 그리고 Gazebo가 그 무엇도 보증하지 못하는 이유.** 컨트롤러 매니저는 시뮬레이터 안에서 돌므로 `update_rate: 200`은 시뮬레이션 1초당 200틱이다(§10). 실시간 계수가 $0.5$, 즉 절반 속도로 도는 시뮬레이션이라고 하자. 루프는 *벽시계* 1초당 $200\times0.5=100$번 실행되고, Step 3의 $25\,\mathrm{ms}$ 시뮬레이션 장부는 벽시계로 $25/0.5=50\,\mathrm{ms}$를 차지해 남는 몫이 $45$가 아니라 $70-50=20\,\mathrm{ms}$가 된다. 시뮬레이션 안에서는 아무것도 잘못되지 않는다. 시뮬레이션 시간은 내부적으로 일관되고, 궤적은 잘 추종되며, `ros2 topic hz /joint_states`는 200을 보고한다. P6의 $70\,\mathrm{ms}$는 실제 카메라와 실제 모터에 관한 벽시계 예산이고, 실시간 계수를 보고하지 않은 실행은 그것을 잰 적이 없다. 이것이 §1의 경고를 정확한 형태로 쓴 것이고, 과제 3번이 소리 내어 말하라고 요구하는 것이다.
 
 ### 1. 왜 시뮬레이션하는가, 그리고 시뮬레이션이 말해 주지 않는 것
 
@@ -895,22 +1001,32 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 - Gazebo 문서 — Releases(Harmonic, Jetty 지원 기간); ROS 2 Integration; Migration from Ignition.
 - Open Robotics Discourse — "Gazebo Classic End-of-Life"(Gazebo 11 지원 종료, 2025년 1월).
 
-> [!question]- 스스로 점검 · 정답
-> **1. `ros2_control`은 왜 제어기가 모터에 직접 쓰게 두지 않고 이름 붙은 인터페이스 이음매를 두는가?** 그 이음매가 제어기를 이식 가능하게 만들기 때문이다. 제어기는 `shoulder/position`을 요구할 뿐 그것을 물리 엔진이 주는지 EtherCAT 드라이브가 주는지 알지도 신경 쓰지도 않는다. 그래서 같은 제어기와 같은 YAML이 Gazebo에서도 실제 팔에서도 돈다. 하드웨어로 옮기는 것은 URDF의 `<plugin>` 한 줄을 바꾸는 일이다. 배타성도 여기서 나온다. 명령 인터페이스는 활성 제어기 하나만 점유할 수 있고, 그래서 한 관절에 writer 둘이 붙는 상황은 싸움이 아니라 활성화 실패가 된다.
-> **2. 제어기를 spawn했고 시뮬레이션은 돌고 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?** `ros2 control list_controllers` — `inactive`면 활성화가 실패한 것이고, 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 컨트롤러 매니저는 "Unable to activate controller … is not available" 경고를 한 번 찍었을 것이다. `active`라면 그 명령 인터페이스는 `list_hardware_interfaces`에서 반드시 `[available] [claimed]`이므로, 그 아래를 본다: 토픽 이름, 궤적의 스탬프와 `time_from_start`, 시뮬레이션이 일시정지됐는지.
-> **3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?** 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 `use_sim_time`을 켠 ROS 쪽 노드 — robot_state_publisher, TF 소비자, 스탬프를 찍거나 변환을 조회하는 모든 것 — 에 시간 원천이 없어 멈추고, 벽시계 스탬프를 준 궤적은 제어기의 시뮬레이션 시계에서 먼 미래에 시작하는 것으로 읽힌다. (`ros2 topic pub`이 기본으로 보내는 0 스탬프는 "지금 시작"이라 이 문제를 비켜 간다.) 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
-> **4. 어떤 튜토리얼이 URDF에 `<plugin filename="libgazebo_ros_control.so">`를 넣으라고 한다. 무엇이 잘못됐나?** Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
-> **5. Gazebo에서 매니퓰레이션 정책이 동작한다. 무엇을 주장할 수 있나?** 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.
+### 스스로 점검
+
+1. `ros2_control`은 왜 제어기가 모터에 직접 쓰게 두지 않고 이름 붙은 인터페이스 이음매를 두는가?
+2. 제어기를 spawn했고 시뮬레이션은 돌고 팔은 안 움직인다. 첫 명령은 무엇이고 가장 유력한 원인은?
+3. 실습에서 아무도 시계를 명시적으로 읽지 않는데 `/clock` 브리지가 왜 중요한가?
+4. 어떤 튜토리얼이 URDF에 `<plugin filename="libgazebo_ros_control.so">`를 넣으라고 한다. 무엇이 잘못됐나?
+5. Gazebo에서 매니퓰레이션 정책이 동작한다. 무엇을 주장할 수 있나?
+6. P6에서 계산 절은 $70\,\mathrm{ms}$ 예산 중 $25\,\mathrm{ms}$를 두 샘플링 속도만으로 쓴다. `update_rate`를 100으로 절반 낮추면 두 항 중 어느 것이 얼마나 바뀌는가? 같은 변경이 엔코더의 속도 양자에는 무엇을 하는가?
+
+> [!tip]- 스스로 점검 정답 · Answers
+> 1. 그 이음매가 제어기를 이식 가능하게 만들기 때문이다. 제어기는 `shoulder/position`을 요구할 뿐 그것을 물리 엔진이 주는지 EtherCAT 드라이브가 주는지 알지도 신경 쓰지도 않는다. 그래서 같은 제어기와 같은 YAML이 Gazebo에서도 실제 팔에서도 돈다. 하드웨어로 옮기는 것은 URDF의 `<plugin>` 한 줄을 바꾸는 일이다. 배타성도 여기서 나온다. 명령 인터페이스는 활성 제어기 하나만 점유할 수 있고, 그래서 한 관절에 writer 둘이 붙는 상황은 싸움이 아니라 활성화 실패가 된다.
+> 2. `ros2 control list_controllers` — `inactive`면 활성화가 실패한 것이고, 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 컨트롤러 매니저는 "Unable to activate controller … is not available" 경고를 한 번 찍었을 것이다. `active`라면 그 명령 인터페이스는 `list_hardware_interfaces`에서 반드시 `[available] [claimed]`이므로, 그 아래를 본다: 토픽 이름, 궤적의 스탬프와 `time_from_start`, 시뮬레이션이 일시정지됐는지.
+> 3. 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 `use_sim_time`을 켠 ROS 쪽 노드 — robot_state_publisher, TF 소비자, 스탬프를 찍거나 변환을 조회하는 모든 것 — 에 시간 원천이 없어 멈추고, 벽시계 스탬프를 준 궤적은 제어기의 시뮬레이션 시계에서 먼 미래에 시작하는 것으로 읽힌다. (`ros2 topic pub`이 기본으로 보내는 0 스탬프는 "지금 시작"이라 이 문제를 비켜 간다.) 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
+> 4. Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
+> 5. 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.
+> 6. 유지 항만 바뀐다. 장부는 $A_{\max}=L+T_v+T_c$이고 `update_rate`가 정하는 것은 $T_c$뿐이다. $100\,\mathrm{Hz}$에서는 $10\,\mathrm{ms}$가 되므로 속도가 치르는 값은 $25$에서 $30\,\mathrm{ms}$로 오르고 $L$에 남는 자리는 $45$에서 $40\,\mathrm{ms}$로 준다. $20\,\mathrm{ms}$짜리 비전 항은 그대로다. 그것은 카메라가 정하고, 어떤 제어 속도도 목표를 마지막 프레임보다 새롭게 만들 수 없기 때문이다. 엔코더 양자는 반대 방향으로 움직이고, 그래서 이것이 손실이 아니라 거래다. $5$ 대신 $10\,\mathrm{ms}$에 걸쳐 차분하면 속도 양자가 $97.7$에서 $48.8\,\mathrm{mm/s}$로 절반이 되므로, 느린 루프는 더 고운 속도를 더 늦게 내놓는다.
 
 ### 과제 · Problem set
 
 Tier B. Gazebo Harmonic 안의 [[02-foundations/lab-plants|0.6]] **P6**. 제어기 `update_rate: 200`. 비전은 $50\,\mathrm{Hz}$로 브리지된 카메라. 예산 $70\,\mathrm{ms}$. 새 오일러 시뮬레이터는 만들지 마라.
 
 1. **그리기.** Gazebo의 P6 카트: `gz_ros2_control` 하드웨어 플러그인, joint-state broadcaster, 속도 제어기, `/clock` 브리지. *시뮬* 시간의 다섯 줄 타임라인: 카메라 노출, 브리지, 제어기 `read`–`update`–`write`, 힘. $70\,\mathrm{ms}$ 예산 표시.
-2. **유도.** (a) $200\,\mathrm{Hz}$의 제어 주기. 엔코더 한 카운트의 $\Delta p$. (b) 제어기는 `active`인데 카트가 안 움직인다. 첫 명령, 가장 유력한 원인. (c) `/clock` 브리지가 없고 궤적에 벽시계 스탬프. 시뮬 시간 제어기는 무엇을 읽는가?
+2. **유도.** (a) 계산 절의 Step 1–3을 `update_rate: 500`과 $30\,\mathrm{Hz}$ 카메라로 다시 하라. 프레임당 틱 비, 한 카운트 차분의 속도 양자, 그리고 $70\,\mathrm{ms}$ 예산에 대한 속도 장부. 두 변경 중 무엇이 도왔고 무엇이 해쳤는지 말하라. (b) 제어기는 `active`인데 카트가 안 움직인다. 첫 명령, 가장 유력한 원인. (c) `/clock` 브리지가 없고 궤적에 벽시계 스탬프. 시뮬 시간 제어기는 무엇을 읽는가?
 3. **해석.** $200\,\mathrm{ms}$ 늦은 브리지 비전 프레임이 Gazebo 물리 주기는 만족한다. P6 예산을 만족하는가? Gazebo 성공이 주장할 수 있는 것과 없는 것은?
 
 > [!tip]- 정답 · Solutions
 > 1. 플러그인 `gz_ros2_control/GazeboSimSystem`; Gazebo에서 ROS로 `/clock`. 타임라인은 벽시계가 아니라 시뮬 시간.
-> 2. (a) $5\,\mathrm{ms}$, $0.488\,\mathrm{mm}$. (b) `ros2 control list_controllers`; URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
+> 2. (a) $T_c=1/500=2\,\mathrm{ms}$, $T_v=1/30=33.3\,\mathrm{ms}$이므로 비는 $500/30=16.7$이다. 정수가 *아니어서* 틱과 프레임이 결코 맞아떨어지지 않고 목표의 나이가 틱마다 달라진다. 카탈로그의 깔끔한 $4$가 가리고 있던 사실이다. 속도 양자는 $\Delta p/0.002=244\,\mathrm{mm/s}$로 올라 카탈로그의 $97.7$보다 나빠진다. 차분 창이 짧아지면 같은 한 카운트를 더 작은 시간으로 나누기 때문이다. 장부는 $33.3+2=35.3\,\mathrm{ms}$가 되어 카탈로그의 $45$ 대신 $34.7$만 남는다. 빠른 루프가 $3\,\mathrm{ms}$를 벌고 느린 카메라가 $13.3$을 썼으니 순손실 $10.3\,\mathrm{ms}$다. 제어기에서 손댈 수 없는 항이 지배한다. (b) `ros2 control list_controllers`; URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
 > 3. 아니오: $200>70$. Gazebo 성공은 배관 — 인터페이스, 주기, launch — 을 주장한다. $70\,\mathrm{ms}$ 카메라–힘 사슬이나 접촉이 하드웨어에서 버틴다는 것은 아니다.

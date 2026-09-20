@@ -17,6 +17,47 @@ mastery-when: "Go deeper when you are designing the interface another team will 
 > [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and a working installation. Every command here assumes **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, with each terminal sourced (`source /opt/ros/jazzy/setup.bash`).
 > [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
 
+### Homework diagram: one P6 controller, four kinds of edge
+
+The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Add one node the earlier pages did not have: a `/planner` that takes up to $2\,\mathrm{s}$ to produce the next goal. Draw three panels; the problem set asks for the same three with the planner's duration changed.
+
+**Left — the graph, with each edge drawn as the thing it is.** Four different pen strokes, and they must not look alike, because the whole of this page is the distinction:
+
+- A **topic** is one open arrow: `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
+- A **service** is a matched pair of short arrows in both directions, drawn tight together: `/controller/reset_odometry` called by an operator box, one request, one response, nothing in between.
+- An **action** is a lane with three separate arrows: goal down, several feedback arrows up during the lane's length, one result arrow up at the end. `/planner` and `/controller` sit at its two ends.
+- **Parameters** are not an edge at all. Draw them as a small table hanging off the `/controller` ellipse: `counts_per_metre` (int64, $2048$, read-only), `control_period` (float64, $0.005$), `goal_topic` (string, `goal`). If you drew an arrow for these, you have made section 8's mistake before reaching it.
+
+**Middle — the camera's lifecycle lane.** Three boxes, `unconfigured` → `inactive` → `active`, with the transitions `configure` and `activate` on the arrows between them, and a vertical mark on the lane at the exact point where the first `/goal` message may legally appear. Nothing before `activate` publishes.
+
+**Right — two clocks, one above the other, both from $0$ to $2\,\mathrm{s}$.** The healthy one: goal accepted at $t=0$, feedback arrows at $0.5$, $1.0$ and $1.5\,\mathrm{s}$, result at $2\,\mathrm{s}$, and a continuous train of $5\,\mathrm{ms}$ control ticks running underneath the whole width. The broken one: the same axis, one tick at $t=0$ with a `client.call` inside it, and then nothing at all — no ticks, no log lines, no error marker — while a third short lane for the server shows it answering normally at $t\approx0$. The two clocks side by side are section 10's failure, and a picture of it is worth more than the paragraph.
+
+### Worked case: what a blocking callback costs P6's 200 Hz loop
+
+The controller's period is the unit of account for everything below:
+
+$$T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
+
+so on a single-threaded executor, which is what `rclpy.spin(node)` gives you, every millisecond another callback holds is a millisecond the control timer cannot run.
+
+**Step 1 — a short handler is not free.** A service handler that takes $1\,\mathrm{ms}$ uses $1/5=20\%$ of every period it lands in. Nothing breaks, no message appears, and you have spent a fifth of the loop on a request that was supposed to be cheap. That is the correct mental model for "services return quickly": quickly means *relative to the fastest callback in the same node*.
+
+**Step 2 — a handler the length of one vision period.** Take $D=20\,\mathrm{ms}$, the P6 camera's period, which is a plausible length for a handler that touches a file or waits for a device. The timer cannot fire while the executor is inside the handler, so
+
+$$\left\lfloor \frac{D}{T_{\text{ctrl}}}\right\rfloor=\left\lfloor\frac{20}{5}\right\rfloor=4$$
+
+firings do not happen on time, and the motor holds its last command for $20\,\mathrm{ms}$ instead of $5$. Against the plant's budget that is $20/70=28.6\%$ of the whole $70\,\mathrm{ms}$, spent on one request — the same loss as running the entire loop at $50\,\mathrm{Hz}$ (the worked case of [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], step 3). A single handler, once, costs what a four-fold reduction in control rate costs permanently.
+
+**Step 3 — so a $2\,\mathrm{s}$ planner cannot be a service.** Put the same arithmetic on $D=2\,\mathrm{s}$ and the numerator is 400 times the period; the problem set asks you to finish that sentence. The point is not the size of the number, it is that the number exists at all: a service occupies the caller *and* the server's executor for its whole duration, so its duration is a property of the control loop, not of the planner. An action does not — the goal is accepted, the server works, feedback arrives, and the controller's timer keeps firing between the messages, because each of those is a separate short callback. That is the entire engineering content of "long work is an action".
+
+**Step 4 — the unbounded case, which is the one you will actually hit.** Call a service synchronously *from inside* the control timer and $D$ is not $20\,\mathrm{ms}$ or $2\,\mathrm{s}$; it is infinite, because the response can only be delivered by the executor that your callback is standing on. Ticks lost: all of them. Log lines: none. Section 10 is the diagnosis, and the tell that separates it from a QoS mismatch is timing — a deadlocked node worked until the first trigger, a mismatched one never worked at all.
+
+**Step 5 — the parameters, and the one that is worth a set-callback.** P6's constants belong in the parameter table, not in the source: `counts_per_metre` is an `int64` of $2048$ and `control_period` a `float64` of $0.005$. Declare `counts_per_metre` read-only, because changing the encoder scale while the cart is moving rescales the state estimate mid-flight. And notice what the type system cannot do for you here. Set it to $1024$ by mistake and every value is legal — it is a perfectly good `int64` — while the estimate becomes
+
+$$\hat p=\frac{c}{1024}=2\cdot\frac{c}{2048}=2p$$
+
+so at a true position of $0.5\,\mathrm{m}$, where the encoder reads $c=1024$ counts, the controller believes the cart is at $1.0\,\mathrm{m}$ and drives it half a metre the wrong way, with no error anywhere in the graph. Declared types catch a string in an integer; only a set-parameters callback that rejects anything but the encoder's datasheet number catches this.
+
 ### 1. Why topics are not enough
 
 A topic is a one-way stream with no reply and no idea who is listening. That is exactly right for a camera, a joint state, a velocity command. It is wrong for three other things a robot constantly needs to do.
@@ -449,11 +490,25 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 - ros2/ros2cli — `ros2lifecycle` verbs (`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README and `lifecycle_manager.cpp` (ordered bringup, `manage_nodes` service, `bond_timeout` default).
 
-> [!question]- Self-check · Answer
-> **1. You need a node to run a 30-second global plan on request. Service or action, and why?** Action. A service blocks the caller and cannot be preempted, and on a single-threaded executor a 30-second service callback stops every other callback in that node — timers, subscriptions, other services. Official guidance is that services return quickly and long work belongs in an action, which also gives you feedback and a cancellation path.
-> **2. `ros2 param load /my_node params.yaml` reports "successful" for some parameters and "cannot be set because it is read-only" for others. Is something broken?** No. Read-only parameters can only be set at startup, and every C++ node declares read-only `qos_overrides./parameter_events.*` parameters, so a dump-then-load round trip on an rclcpp node prints those failures. To apply them, pass the same file at startup with `--ros-args --params-file`, which does update read-only parameters.
-> **3. A node you wrote is in `ros2 node list`, its service client and subscription show in `ros2 node info`, the server it calls is running, and it emits nothing after the first input. What is your first hypothesis?** A synchronous service call from inside a callback. The executor cannot preempt the running callback to deliver the response, so the call waits forever — no exception, no warning, no failure. Confirm by checking that the node produced output before the first trigger; fix with `call_async`, or a separate callback group plus a multi-threaded executor.
-> **4. Why does Nav2 use lifecycle nodes instead of ordinary ones?** Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation brings the stack down deterministically. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
+### Self-check
+
+1. You need a node to run a 30-second global plan on request. Service or action, and why?
+2. `ros2 param load /my_node params.yaml` reports "successful" for some parameters and
+   "cannot be set because it is read-only" for others. Is something broken?
+3. A node you wrote is in `ros2 node list`, its service client and subscription show in
+   `ros2 node info`, the server it calls is running, and it emits nothing after the first
+   input. What is your first hypothesis?
+4. Why does Nav2 use lifecycle nodes instead of ordinary ones?
+5. A service handler on P6's controller node takes $20\,\mathrm{ms}$ on a single-threaded
+   executor. How many $200\,\mathrm{Hz}$ firings does it cost, what does the motor do, and
+   how does that compare with P6's $70\,\mathrm{ms}$ budget?
+
+> [!tip]- Answers
+> 1. Action. A service blocks the caller and cannot be preempted, and on a single-threaded executor a 30-second service callback stops every other callback in that node — timers, subscriptions, other services. Official guidance is that services return quickly and long work belongs in an action, which also gives you feedback and a cancellation path.
+> 2. No. Read-only parameters can only be set at startup, and every C++ node declares read-only `qos_overrides./parameter_events.*` parameters, so a dump-then-load round trip on an rclcpp node prints those failures. To apply them, pass the same file at startup with `--ros-args --params-file`, which does update read-only parameters.
+> 3. A synchronous service call from inside a callback. The executor cannot preempt the running callback to deliver the response, so the call waits forever — no exception, no warning, no failure. Confirm by checking that the node produced output before the first trigger; fix with `call_async`, or a separate callback group plus a multi-threaded executor.
+> 4. Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation brings the stack down deterministically. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
+> 5. Four: $\lfloor 20/5\rfloor=4$ firings cannot happen while the executor is inside the handler, because a single-threaded executor runs one callback to completion at a time. The motor holds its last command for $20\,\mathrm{ms}$ instead of $5$, and $20\,\mathrm{ms}$ is $28.6\%$ of the $70\,\mathrm{ms}$ budget — one request costing what a permanent drop to a $50\,\mathrm{Hz}$ loop would cost. If the handler instead makes a synchronous service call from inside that timer callback, the duration is not $20\,\mathrm{ms}$ but unbounded, which is section 10.
 
 ### Problem set · 과제
 
@@ -477,6 +532,47 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 > [!note] 선수 지식 · Prerequisites
 > [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
 > 25.2 and a working install; all commands assume ROS 2 Jazzy on Ubuntu 24.04, each terminal sourced.
+
+### 과제가 그릴 그림: P6 제어기 하나와 네 종류의 간선 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 앞 페이지에 없던 노드를 하나 더한다. 다음 목표를 만드는 데 최대 $2\,\mathrm{s}$가 걸리는 `/planner`. 패널 셋을 그려라. 과제는 플래너의 소요 시간만 바꾼 같은 셋을 요구한다.
+
+**왼쪽 — 그래프, 각 간선을 그것의 정체대로**. 펜 자국 네 가지가 서로 닮아 보이면 안 된다. 이 페이지 전체가 그 구분이기 때문이다.
+
+- **토픽**은 열린 화살표 하나. `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
+- **서비스**는 양방향 짧은 화살표 한 쌍을 바짝 붙여 그린다. 조작자 상자가 부르는 `/controller/reset_odometry`. 요청 하나, 응답 하나, 그 사이에는 아무것도 없다.
+- **액션**은 화살표 셋이 있는 레인이다. 목표가 내려가고, 레인이 이어지는 동안 피드백이 여러 번 올라오고, 끝에서 결과가 한 번 올라온다. 레인의 양 끝이 `/planner`와 `/controller`다.
+- **파라미터**는 간선이 아니다. `/controller` 타원에 매달린 작은 표로 그린다. `counts_per_metre`(int64, $2048$, read-only), `control_period`(float64, $0.005$), `goal_topic`(string, `goal`). 여기에 화살표를 그렸다면 8절에 닿기도 전에 8절의 실수를 한 것이다.
+
+**가운데 — 카메라의 라이프사이클 레인**. 상자 셋, `unconfigured` → `inactive` → `active`. 사이 화살표에는 `configure`와 `activate`를 적고, 첫 `/goal` 메시지가 합법적으로 나타날 수 있는 지점에 세로 표시를 한다. `activate` 이전에는 아무것도 publish하지 않는다.
+
+**오른쪽 — 시계 둘을 위아래로, 둘 다 $0$에서 $2\,\mathrm{s}$까지**. 정상 쪽: $t=0$에 목표 수락, $0.5$, $1.0$, $1.5\,\mathrm{s}$에 피드백 화살표, $2\,\mathrm{s}$에 결과, 그리고 그 폭 전체를 가로지르는 $5\,\mathrm{ms}$ 제어 틱의 연속. 고장 쪽: 같은 축에 $t=0$의 틱 하나, 그 안의 `client.call`, 그리고 그 뒤로는 아무것도 없음 — 틱도, 로그도, 오류 표시도 없음. 반면 서버용 짧은 레인 하나는 $t\approx0$에 정상적으로 응답했음을 보여 준다. 나란히 놓인 두 시계가 10절의 고장이고, 그 그림이 문단보다 낫다.
+
+### 대상으로 한 번 끝까지: 블로킹 콜백이 P6의 200 Hz 루프에 물리는 값 · Worked case
+
+아래 모든 것의 계산 단위는 제어기의 주기다.
+
+$$T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
+
+`rclpy.spin(node)`가 주는 단일 스레드 executor에서는 다른 콜백이 붙들고 있는 1밀리초가 곧 제어 타이머가 돌지 못하는 1밀리초이기 때문이다.
+
+**1단계 — 짧은 핸들러도 공짜가 아니다**. $1\,\mathrm{ms}$ 걸리는 서비스 핸들러는 자기가 떨어진 주기의 $1/5=20\%$를 쓴다. 깨지는 것도 없고 메시지도 안 나오는데, 싸야 했던 요청 하나에 루프의 5분의 1을 쓴 것이다. "서비스는 빨리 반환한다"의 올바른 심상이 이것이다. 빠르다는 것은 *같은 노드에서 가장 빠른 콜백에 견주어* 빠르다는 뜻이다.
+
+**2단계 — 비전 주기 하나만큼 걸리는 핸들러**. $D=20\,\mathrm{ms}$로 두자. P6 카메라의 주기이고, 파일을 건드리거나 장치를 기다리는 핸들러라면 그럴듯한 길이다. executor가 핸들러 안에 있는 동안 타이머는 돌 수 없으므로
+
+$$\left\lfloor \frac{D}{T_{\text{ctrl}}}\right\rfloor=\left\lfloor\frac{20}{5}\right\rfloor=4$$
+
+번의 발화가 제때 일어나지 못하고, 모터는 $5$가 아니라 $20\,\mathrm{ms}$ 동안 마지막 명령을 붙든다. 장치의 예산에 대면 $20/70=28.6\%$, 요청 하나에 $70\,\mathrm{ms}$의 4분의 1이 넘게 나간 것이다([[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] 계산 예제 3단계). 핸들러 하나가 한 번 걸리는 값이 제어 주기를 영구히 네 배 늦추는 값과 같다.
+
+**3단계 — 그래서 $2\,\mathrm{s}$짜리 플래너는 서비스일 수 없다**. 같은 산수를 $D=2\,\mathrm{s}$에 대면 분자가 주기의 400배가 된다. 그 문장을 끝내는 것이 과제다. 요점은 숫자의 크기가 아니라 그 숫자가 존재한다는 사실이다. 서비스는 그 시간 내내 호출자와 서버의 executor를 함께 점유하므로, 그 소요 시간이 플래너의 성질이 아니라 제어 루프의 성질이 된다. 액션은 그렇지 않다. 목표가 수락되고, 서버가 일하고, 피드백이 오고, 그 메시지들 사이에서 제어기의 타이머는 계속 발화한다. 각각이 짧은 콜백 하나씩이기 때문이다. "긴 작업은 액션"이라는 말의 공학적 내용이 전부 이것이다.
+
+**4단계 — 그리고 실제로 당신이 맞을 무한대**. 제어 타이머 *안에서* 서비스를 동기 호출하면 $D$는 $20\,\mathrm{ms}$도 $2\,\mathrm{s}$도 아니고 무한이다. 응답을 전달할 수 있는 executor 위에 당신 콜백이 올라서 있기 때문이다. 잃는 틱: 전부. 로그 줄: 없음. 진단은 10절이고, QoS 불일치와 가르는 단서는 시간이다. 교착된 노드는 첫 트리거 전까지는 동작했고, 불일치한 노드는 처음부터 한 번도 동작하지 않았다.
+
+**5단계 — 파라미터, 그리고 set 콜백을 붙일 값어치가 있는 하나**. P6의 상수는 소스가 아니라 파라미터 표에 산다. `counts_per_metre`는 $2048$인 `int64`, `control_period`는 $0.005$인 `float64`. `counts_per_metre`는 read-only로 선언한다. 카트가 움직이는 중에 엔코더 축척이 바뀌면 상태 추정이 통째로 다시 스케일되기 때문이다. 그리고 여기서 타입 체계가 해 주지 못하는 일을 보라. 실수로 $1024$를 넣어도 모든 값이 합법이다. 훌륭한 `int64`이기 때문이다. 그동안 추정치는
+
+$$\hat p=\frac{c}{1024}=2\cdot\frac{c}{2048}=2p$$
+
+가 되므로, 엔코더가 $c=1024$ 카운트를 읽는 실제 위치 $0.5\,\mathrm{m}$에서 제어기는 카트가 $1.0\,\mathrm{m}$에 있다고 믿고 반대 방향으로 반 미터를 몬다. 그래프 어디에도 오류는 없다. 선언된 타입은 정수 자리의 문자열을 잡지만, 이것을 잡는 것은 엔코더 데이터시트의 숫자 외에는 거부하는 set-parameters 콜백뿐이다.
 
 ### 1. 토픽만으로 부족한 이유
 
@@ -910,11 +1006,24 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 - ros2/ros2cli — `ros2lifecycle` 동사(`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README와 `lifecycle_manager.cpp`(순서 지어진 기동, `manage_nodes` 서비스, `bond_timeout` 기본값).
 
-> [!question]- 스스로 점검 · 정답
-> **1. 요청을 받아 30초짜리 전역 계획을 도는 노드가 필요하다. 서비스인가 액션인가, 왜인가?** 액션이다. 서비스는 호출자를 막고 선점할 수 없으며, 단일 스레드 executor에서 30초짜리 서비스 콜백은 그 노드의 다른 모든 콜백 — 타이머, 구독, 다른 서비스 — 도 함께 멈춘다. 공식 지침은 서비스가 빨리 반환해야 하고 장시간 작업은 액션의 몫이라는 것이다. 액션은 덤으로 피드백과 취소 경로를 준다.
-> **2. `ros2 param load /my_node params.yaml`이 일부는 "successful", 일부는 "cannot be set because it is read-only"를 찍는다. 뭔가 고장 났나?** 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. 모든 C++ 노드가 읽기 전용 `qos_overrides./parameter_events.*`를 선언하므로, rclcpp 노드에서 dump 후 load를 왕복하면 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
-> **3. 직접 쓴 노드가 `ros2 node list`에 있고, `ros2 node info`에 서비스 클라이언트와 구독이 다 보이고, 호출하는 서버도 돌고 있는데, 첫 입력 이후 아무것도 내보내지 않는다. 첫 가설은?** 콜백 안에서 한 동기 서비스 호출. executor가 실행 중인 콜백을 선점해 응답을 전달할 수 없어서 호출이 영원히 기다린다. 예외도, 경고도, 실패도 없다. 첫 트리거 이전에는 출력이 있었는지 확인해 확증하고, `call_async`나 별도 콜백 그룹 + 다중 스레드 executor로 고친다.
-> **4. Nav2는 왜 보통 노드 대신 라이프사이클 노드를 쓰는가?** 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌이 스택을 반쯤 살아 있는 상태로 남기지 않고 결정론적으로 내리게 한다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.
+### 스스로 점검
+
+1. 요청을 받아 30초짜리 전역 계획을 도는 노드가 필요하다. 서비스인가 액션인가, 왜인가?
+2. `ros2 param load /my_node params.yaml`이 일부는 "successful", 일부는 "cannot be set
+   because it is read-only"를 찍는다. 뭔가 고장 났나?
+3. 직접 쓴 노드가 `ros2 node list`에 있고, `ros2 node info`에 서비스 클라이언트와 구독이 다
+   보이고, 호출하는 서버도 돌고 있는데, 첫 입력 이후 아무것도 내보내지 않는다. 첫 가설은?
+4. Nav2는 왜 보통 노드 대신 라이프사이클 노드를 쓰는가?
+5. P6 제어기 노드의 서비스 핸들러가 단일 스레드 executor에서 $20\,\mathrm{ms}$ 걸린다.
+   $200\,\mathrm{Hz}$ 발화를 몇 번 잃고, 모터는 무엇을 하며, P6의 $70\,\mathrm{ms}$
+   예산에 견주면 얼마인가?
+
+> [!tip]- 정답 · Answers
+> 1. 액션이다. 서비스는 호출자를 막고 선점할 수 없으며, 단일 스레드 executor에서 30초짜리 서비스 콜백은 그 노드의 다른 모든 콜백 — 타이머, 구독, 다른 서비스 — 도 함께 멈춘다. 공식 지침은 서비스가 빨리 반환해야 하고 장시간 작업은 액션의 몫이라는 것이다. 액션은 덤으로 피드백과 취소 경로를 준다.
+> 2. 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. 모든 C++ 노드가 읽기 전용 `qos_overrides./parameter_events.*`를 선언하므로, rclcpp 노드에서 dump 후 load를 왕복하면 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
+> 3. 콜백 안에서 한 동기 서비스 호출. executor가 실행 중인 콜백을 선점해 응답을 전달할 수 없어서 호출이 영원히 기다린다. 예외도, 경고도, 실패도 없다. 첫 트리거 이전에는 출력이 있었는지 확인해 확증하고, `call_async`나 별도 콜백 그룹 + 다중 스레드 executor로 고친다.
+> 4. 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌이 스택을 반쯤 살아 있는 상태로 남기지 않고 결정론적으로 내리게 한다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.
+> 5. 넷이다. executor가 핸들러 안에 있는 동안에는 타이머가 돌 수 없으므로 $\lfloor 20/5\rfloor=4$번의 발화를 잃는다. 단일 스레드 executor는 콜백 하나를 끝까지 돌린 다음에야 다음 것을 집기 때문이다. 모터는 $5$가 아니라 $20\,\mathrm{ms}$ 동안 마지막 명령을 붙들고, $20\,\mathrm{ms}$는 $70\,\mathrm{ms}$ 예산의 $28.6\%$다. 요청 하나가 루프를 영구히 $50\,\mathrm{Hz}$로 떨어뜨리는 것과 같은 값을 문 셈이다. 그 핸들러가 타이머 콜백 안에서 동기 서비스 호출을 한다면 소요는 $20\,\mathrm{ms}$가 아니라 무한이고, 그것이 10절이다.
 
 ### 과제 · Problem set
 

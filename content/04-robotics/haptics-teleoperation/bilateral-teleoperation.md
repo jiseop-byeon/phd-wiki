@@ -166,8 +166,16 @@ The classic two-port design literature demonstrates that desired port impedances
 
 Report round-trip delay and jitter, control rates, force/position scaling, saturation, local controller gains, contact objects, human grip/instructions, and both objective performance and subjective workload. A free-space trajectory plus one soft object does not establish transparency across the device's operating envelope.
 
-> [!question]- Self-check · Answer
-> **A controller is passive and users are slower. Is the result contradictory?** No. Passivity constrains energy generation; it does not guarantee transparency, low effort, good authority allocation, or task-optimal cues. Added dissipation may stabilize the loop while making motion sluggish.
+### Self-check
+
+1. Why does a passive controller not guarantee a transparent one?
+2. P3's handle at $1$ Hz has $h_{11} = 0.839\ \mathrm{N\,s/m}$ when the follower touches nothing. What does a non-zero $h_{11}$ cost the operator, and what would make it zero?
+3. A channel delays force by $20\ \mathrm{ms}$ each way. Which term of the two-port picture does the delay enter, and why does raising the follower's stiffness make the feel *worse* rather than better?
+
+> [!tip]- Answers
+> 1. Passivity bounds the energy the controller can create; transparency is about matching the environment's impedance. A very stiff, very damped controller can be passive and still feel like syrup, because the operator pays the device's own impedance on every motion.
+> 2. It is the impedance the operator feels in free space — the device's own mass, damping and friction, felt as resistance where the environment offers none. Zero $h_{11}$ means a massless frictionless handle: only an ideal admittance device with perfect force feedback approaches it.
+> 3. It enters the transmission terms $h_{12}, h_{21}$, which carry force and motion between the ports. Delay turns the round trip into energy generation: the operator's motion meets a force computed for where the follower *was*, so a stiffer follower returns a larger wrong-signed force, which is exactly the destabilizing case.
 
 ### Problem set · 과제
 
@@ -339,8 +347,16 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 왕복 지연과 jitter, 제어 주기, 힘·위치 스케일, 포화, local 제어기 이득, 접촉 물체, 사람의 파지 방식과 지시문, 그리고 객관적 성능과 주관적 workload를 함께 보고해야 한다. 자유공간 궤적 하나에 부드러운 물체 하나를 더한 것으로는 장치의 운용 범위 전체에 걸친 transparency를 입증할 수 없다.
 
-> [!question]- 스스로 점검 · 정답
-> **제어기가 수동적인데 사용자가 더 느려졌다면 모순인가?** 아니다. Passivity는 에너지 생성을 제약할 뿐, transparency나 낮은 힘 소모, 좋은 권한 배분, 과제에 최적인 cue를 보장하지 않는다. 소산을 더하면 루프는 안정되면서 운동은 둔해질 수 있다.
+### 스스로 점검
+
+1. 수동적인 제어기가 왜 투명한 제어기를 보장하지 않는가?
+2. 추종자가 아무것도 만지지 않을 때 P3 핸들은 $1$ Hz에서 $h_{11} = 0.839\ \mathrm{N\,s/m}$다. $h_{11}$이 0이 아니라는 것은 조작자에게 무엇을 물리며, 무엇이 있어야 0이 되는가?
+3. 채널이 힘을 편도 $20\ \mathrm{ms}$ 지연시킨다. 지연은 두 포트 그림의 어느 항으로 들어오며, 추종자 강성을 높이면 왜 느낌이 *더* 나빠지는가?
+
+> [!tip]- 정답 · Answers
+> 1. 수동성은 제어기가 만들어 낼 수 있는 에너지를 묶을 뿐이고, 투명성은 환경의 임피던스를 그대로 전달하는 문제다. 아주 단단하고 아주 감쇠가 큰 제어기는 수동적이면서도 끈적하게 느껴질 수 있다. 조작자가 모든 움직임마다 장치 자신의 임피던스를 지불하기 때문이다.
+> 2. 자유 공간에서 조작자가 느끼는 임피던스다. 환경은 아무 저항도 주지 않는데 장치 자신의 질량·감쇠·마찰이 저항으로 느껴진다. $h_{11}=0$은 질량도 마찰도 없는 핸들을 뜻하고, 완전한 힘 되먹임을 갖춘 이상적 어드미턴스 장치만 거기에 가까워진다.
+> 3. 힘과 운동을 포트 사이로 나르는 전달 항 $h_{12}, h_{21}$로 들어온다. 지연은 왕복을 에너지 생성으로 바꾼다. 조작자의 운동이 추종자의 *과거* 위치로 계산된 힘을 만나므로, 추종자가 단단할수록 부호가 틀린 힘이 더 커진다. 이것이 바로 불안정해지는 경우다.
 
 ### 과제 · Problem set
 

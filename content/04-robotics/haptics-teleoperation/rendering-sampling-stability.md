@@ -252,8 +252,16 @@ For a discrete sample, a common observer uses $\Delta E_k=T F_k^\top v_k$ with a
 5. Raise stiffness gradually; stop at sustained oscillation, saturation, overheating, or unsafe force.
 6. Separate numerical instability, mechanical resonance, friction limit cycle, and collision/proxy discontinuity.
 
-> [!question]- Self-check · Answer
-> **Why may a smoother velocity trace make a virtual wall less stable?** Smoothing attenuates noise but adds phase lag. Delayed damping can act after the motion has reversed and inject rather than remove energy at the relevant frequency.
+### Self-check
+
+1. Why can a smoother velocity estimate make a virtual wall *less* stable?
+2. P3 has $b = 0.8\ \mathrm{N\,s/m}$ and runs at $T = 1\ \mathrm{ms}$. What wall stiffness does $K \le 2b/T$ allow, and what happens to that ceiling if the loop slips to $2\ \mathrm{ms}$?
+3. Two devices render the same $400\ \mathrm{N/m}$ wall stably. One has twice the physical damping, the other twice the sample rate. Which one also feels lighter in free space, and why is that the real trade?
+
+> [!tip]- Answers
+> 1. Smoothing attenuates noise but adds phase lag. Damping computed from a lagged velocity can act after the motion has already reversed, so it injects energy instead of removing it — the same energy the passivity bound is trying to cap.
+> 2. $K \le 2(0.8)/0.001 = 1600\ \mathrm{N/m}$. At $T = 2\ \mathrm{ms}$ the ceiling halves to $800\ \mathrm{N/m}$: the stiffest honest wall is set by the loop you actually achieve, not the one you intended.
+> 3. The faster device. Physical damping buys stability by making the handle drag in free space, which is exactly what the operator should not feel; raising the rate buys the same stability without that cost. That is why Z-width is a region, not a single number.
 
 ### Problem set · 과제
 
@@ -543,8 +551,16 @@ Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 �
 5. 강성을 점진적으로 올리고, 지속 진동·포화·과열·위험한 힘에서 멈춘다.
 6. 수치 불안정, 기계 공진, 마찰 limit cycle, 충돌/proxy 불연속을 구분한다.
 
-> [!question]- 스스로 점검 · 정답
-> **더 매끄러운 속도 신호가 가상 벽을 더 불안정하게 만들 수 있는 이유는?** 필터가 noise를 줄이는 대신 phase lag를 만든다. 늦은 damping은 운동 방향이 바뀐 뒤 작용해 해당 주파수에서 에너지를 제거하지 않고 넣을 수 있다.
+### 스스로 점검
+
+1. 더 매끄러운 속도 추정이 왜 가상 벽을 *덜* 안정하게 만들 수 있는가?
+2. P3는 $b = 0.8\ \mathrm{N\,s/m}$이고 $T = 1\ \mathrm{ms}$로 돈다. $K \le 2b/T$가 허용하는 벽 강성은 얼마이고, 루프가 $2\ \mathrm{ms}$로 늘어지면 그 천장은 어떻게 되는가?
+3. 두 장치가 같은 $400\ \mathrm{N/m}$ 벽을 안정하게 렌더링한다. 하나는 물리 감쇠가 두 배이고 다른 하나는 샘플링이 두 배다. 자유 공간에서 더 가볍게 느껴지는 쪽은 어디이며, 왜 그것이 진짜 맞바꿈인가?
+
+> [!tip]- 정답 · Answers
+> 1. 평활화는 noise를 줄이지만 위상 지연을 더한다. 지연된 속도로 계산한 댐핑은 이미 운동이 뒤집힌 뒤에 작용할 수 있고, 그러면 에너지를 빼는 대신 넣는다. 수동성 경계가 막으려는 바로 그 에너지다.
+> 2. $K \le 2(0.8)/0.001 = 1600\ \mathrm{N/m}$이다. $T = 2\ \mathrm{ms}$가 되면 천장은 $800\ \mathrm{N/m}$으로 반이 된다. 가장 단단한 정직한 벽은 의도한 루프가 아니라 실제로 달성한 루프가 정한다.
+> 3. 샘플링이 빠른 쪽이다. 물리 감쇠는 자유 공간에서 핸들을 끌리게 만들어 안정성을 사는데, 그것이 바로 조작자가 느끼면 안 되는 것이다. 주기를 줄이면 그 대가 없이 같은 안정성을 얻는다. Z-width가 하나의 숫자가 아니라 영역인 이유다.
 
 ### 과제 · Problem set
 

@@ -17,6 +17,44 @@ mastery-when: "Go deeper when the middleware itself — discovery, transport, se
 > A working Ubuntu 24.04 machine (or VM), comfort with a shell, and Python. No prior ROS of any version is assumed. Everything that runs here is the baseline for the rest of this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, paired with Gazebo Harmonic when simulation arrives in [[04-robotics/ros2/index|25. ROS 2]].
 > Ubuntu 24.04 머신(또는 VM), 셸 사용 경험, Python. ROS 경험은 전제하지 않는다. 이 트랙 전체의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션이 등장할 때는 Gazebo Harmonic과 짝을 이룬다.
 
+### Homework diagram: the P6 graph, and one budget on a clock
+
+Everything measurable on this page is about one machine: **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, a vision node publishing a goal at $50\,\mathrm{Hz}$, a controller sampling the encoder and commanding a motor at $200\,\mathrm{Hz}$, and $70\,\mathrm{ms}$ of budget from camera mid-exposure to applied force. Draw the two pictures below once, now. The problem set asks for the same two with one knob moved.
+
+**Top — the computation graph, drawn the way `ros2 node list` and `ros2 topic list -t` would report it.** Three ellipses for nodes: `/camera`, `/controller`, `/logger`. One rectangle, outside the graph, for the motor, because a driver's hardware is not a node. Arrows are topics, drawn publisher → subscriber and labelled with three things each — name, type, rate: `/goal` at $50\,\mathrm{Hz}$ from `/camera` to both `/controller` and `/logger`; `/cmd` at $200\,\mathrm{Hz}$ from `/controller` to the motor rectangle and to `/logger`. Draw the encoder as a short arrow into `/controller` from the hardware side and *not* as a topic, then write one word beside it saying why: it is read, not received. Add `/rosout` and `/parameter_events` in grey, because section 9 will show them in every graph you ever list. Finally, put a dashed boundary around the three ellipses and label it with the `ROS_DOMAIN_ID` that keeps this cart out of the rest of the lab's graphs.
+
+**Bottom — one budget on a clock, to scale.** One time axis, $0$ to $80\,\mathrm{ms}$. Above it, $200\,\mathrm{Hz}$ control ticks at $0,5,10,\ldots$; below it, $50\,\mathrm{Hz}$ vision publications at $0,20,40,60$. Mark $t=0$ as camera mid-exposure. Draw the five budget terms of the worked case as consecutive brackets along the axis — camera pipeline, transport, wait for the next tick, controller compute, actuation — and draw the $70\,\mathrm{ms}$ deadline as a vertical line. The drawing is right when the wait bracket is visibly one control period wide, the vision spacing is visibly four control periods, and the whole train of brackets ends left of the line.
+
+### Worked case: where P6's 70 ms goes, and what the control rate actually buys
+
+Periods first, because every other number on this page is one of these two divided into something:
+
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=0.020\,\mathrm{s}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
+
+so one budget window holds $70/5=14$ whole control periods, and $70/20=3.5$ vision periods — three complete ones, the fourth ending at $80\,\mathrm{ms}$, outside the budget.
+
+**Step 1 — write the budget as a sum, not as a number.** From mid-exposure to applied force the delay is
+
+$$70\,\mathrm{ms}\;\ge\;L_{\text{cam}}+L_{\text{net}}+L_{\text{wait}}+L_{\text{ctrl}}+L_{\text{act}}$$
+
+because the five stages are strictly sequential: the frame is captured and published ($L_{\text{cam}}$), crosses a process or machine boundary ($L_{\text{net}}$), waits for a controller that is not listening continuously ($L_{\text{wait}}$), becomes a command ($L_{\text{ctrl}}$), and becomes current in a motor ($L_{\text{act}}$). Four of the five are properties of your code and your hardware and have to be measured. Exactly one is fixed by P6's two rates alone, and that is the reason to write the sum down before measuring anything.
+
+**Step 2 — the one term the graph decides.** A goal published at time $g$ is invisible until the next control tick, and ticks are one control period apart, so
+
+$$0\le L_{\text{wait}}<T_{\text{ctrl}}=5\,\mathrm{ms}$$
+
+since a goal can land anywhere inside a period and the worst case is landing just after a tick. No property of ROS 2, DDS or the operating system moves that bound; it is arithmetic on $50$ and $200$.
+
+**Step 3 — the allowance that leaves, and what a slower loop would cost.** $70-5=65\,\mathrm{ms}$ for the four measured terms. Run the same controller at $50\,\mathrm{Hz}$ and the bound becomes $L_{\text{wait}}<20\,\mathrm{ms}$, leaving $70-20=50\,\mathrm{ms}$. So the four-fold control rate buys $15\,\mathrm{ms}$ of the frame-to-force path, which is $15/70=21.4\%$ of the whole budget, without touching the camera, the network or the motor. That is the honest version of "we run the loop fast".
+
+**Step 4 — and what it does not buy.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so every goal is consumed by exactly four ticks. Only the first acts on it while it is fresh; the other three re-use it, adding $5$, $10$ and $15\,\mathrm{ms}$ of extra age — mean $7.5\,\mathrm{ms}$, or $10.7\%$ of the budget, worst case $15\,\mathrm{ms}$, or $21.4\%$. Add the two effects and the total is bounded whatever you do to the loop:
+
+$$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
+
+because the freshest goal in hand at any tick was published less than one vision period ago, by definition of "freshest". Raising the control rate shrinks the first term and grows the second by the same amount. The vision path cannot be made fresher by a faster controller; only a faster camera does that. Know this number before somebody proposes a $1\,\mathrm{kHz}$ loop as the fix for a late robot.
+
+**Step 5 — so why $200\,\mathrm{Hz}$ at all?** Because the loop's other input is not on a topic. The encoder is read inside the controller at the tick, so its data is never more than one compute time old, and the motor is corrected every $5\,\mathrm{ms}$ instead of every $20$. P6 is two loops with two clocks sharing one process boundary: a slow outer path that says *where to go* and a fast inner path that says *how hard to push*. Every page in this track is about keeping those two apart, and section 1 is the first argument for it.
+
 ### 1. The problem a robot middleware solves
 
 A robot is not one program. A camera driver reads frames at 30 Hz. A motor controller wants a command every few milliseconds. A planner thinks for half a second at a time. A logger writes to disk. A user interface runs on a laptop that is not the robot.
@@ -335,11 +373,25 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse announcement).
 - Gazebo documentation — ROS installation / ROS 2 and Gazebo version pairings.
 
-> [!question]- Self-check · Answer
-> **1. Your colleague says "we don't need ROS 2, it's just message passing — we'll use a socket." What are they underestimating?** Discovery without configuration, a checked type system shared across languages and teams, per-connection delivery semantics (QoS), and a live introspection surface. The socket is the easy quarter of the problem; the rest is what you would end up rewriting badly.
-> **2. `ros2 topic info /turtle1/cmd_vel` reports one publisher and two subscribers, but you only started turtlesim and teleop. Who is the second subscriber?** Your own `ros2 topic echo`. CLI introspection tools join the graph as real nodes; that is why they appear in `rqt_graph` under **Debug**.
-> **3. Why does a second terminal need `source /opt/ros/jazzy/setup.bash` when the first one already ran it?** Environment variables live in a process and are inherited only by children. The setup file sets `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH` and `PYTHONPATH` in the shell that runs it and nowhere else. The upside of that design is that different terminals can run different distributions or workspaces.
-> **4. Someone claims ROS 2 is a real-time system. What do you ask them?** Which kernel, which middleware and configuration, and which operations were removed from the execution path. Installing ROS 2 from apt gives no deadline guarantees; the official position is that ROS 2 was *designed with* real-time constraints in mind, and the real-time demo itself is documented as requiring a source build against a static DDS API.
+### Self-check
+
+1. Your colleague says "we don't need ROS 2, it's just message passing — we'll use a socket."
+   What are they underestimating?
+2. `ros2 topic info /turtle1/cmd_vel` reports one publisher and two subscribers, but you only
+   started turtlesim and teleop. Who is the second subscriber?
+3. Why does a second terminal need `source /opt/ros/jazzy/setup.bash` when the first one
+   already ran it?
+4. Someone claims ROS 2 is a real-time system. What do you ask them?
+5. P6's controller is dropped from $200\,\mathrm{Hz}$ to $50\,\mathrm{Hz}$ to save CPU. Which
+   term of the $70\,\mathrm{ms}$ budget changes, by how much, and why does the age of the goal
+   the motor is acting on barely move?
+
+> [!tip]- Answers
+> 1. Discovery without configuration, a checked type system shared across languages and teams, per-connection delivery semantics (QoS), and a live introspection surface. The socket is the easy quarter of the problem; the rest is what you would end up rewriting badly.
+> 2. Your own `ros2 topic echo`. CLI introspection tools join the graph as real nodes; that is why they appear in `rqt_graph` under **Debug**.
+> 3. Environment variables live in a process and are inherited only by children. The setup file sets `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH` and `PYTHONPATH` in the shell that runs it and nowhere else. The upside of that design is that different terminals can run different distributions or workspaces.
+> 4. Which kernel, which middleware and configuration, and which operations were removed from the execution path. Installing ROS 2 from apt gives no deadline guarantees; the official position is that ROS 2 was *designed with* real-time constraints in mind, and the real-time demo itself is documented as requiring a source build against a static DDS API.
+> 5. Only $L_{\text{wait}}$, the wait for the next control tick, which is bounded by one control period: it goes from under $5\,\mathrm{ms}$ to under $20\,\mathrm{ms}$, so the allowance left for camera, transport, compute and actuation falls from $65$ to $50\,\mathrm{ms}$ — $15\,\mathrm{ms}$, or $21.4\%$ of the budget. The *age* of the goal in force barely moves because $L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$ either way: at $200\,\mathrm{Hz}$ the goal waits at most $5\,\mathrm{ms}$ and is then re-used for three more ticks, at $50\,\mathrm{Hz}$ it waits up to $20\,\mathrm{ms}$ and is used once. What the fast loop really buys is the *encoder* path, which is read at the tick and corrects the motor every $5\,\mathrm{ms}$ rather than every $20$.
 
 ### Problem set · 과제
 
@@ -363,6 +415,44 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
 > [!note] 선수 지식 · Prerequisites
 > 동작하는 Ubuntu 24.04 머신(또는 VM), 셸, Python. ROS 경험은 필요 없다. 이 트랙의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션 단계에서는 Gazebo Harmonic과 짝을 이룬다([[04-robotics/ros2/index|25. ROS 2]]).
 > A working Ubuntu 24.04 machine, a shell, and Python; no prior ROS assumed.
+
+### 과제가 그릴 그림: P6 그래프와 시계 위의 예산 하나 · Homework diagram
+
+이 페이지에서 잴 수 있는 것은 전부 기계 하나에 대한 이야기다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 발행하는 비전 노드, 엔코더를 샘플해 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 그리고 카메라 노출 중간부터 힘이 나갈 때까지 $70\,\mathrm{ms}$ 예산. 아래 두 그림을 지금 한 번 그려라. 과제는 손잡이 하나만 돌린 같은 그림을 요구한다.
+
+**상단 — `ros2 node list`와 `ros2 topic list -t`가 보고할 그대로의 계산 그래프**. 노드는 타원 셋: `/camera`, `/controller`, `/logger`. 모터는 그래프 바깥의 사각형 하나다. 드라이버의 하드웨어는 노드가 아니기 때문이다. 화살표는 토픽이고, 퍼블리셔에서 구독자 방향으로 그리며 이름·타입·주기 셋을 함께 적는다. `/goal`은 $50\,\mathrm{Hz}$로 `/camera`에서 `/controller`와 `/logger`로, `/cmd`는 $200\,\mathrm{Hz}$로 `/controller`에서 모터 사각형과 `/logger`로. 엔코더는 하드웨어 쪽에서 `/controller`로 들어가는 짧은 화살표로 그리되 토픽으로 그리지 마라. 그 옆에 이유를 한 단어로 적는다 — 받는 것이 아니라 읽는 것. `/rosout`과 `/parameter_events`도 회색으로 넣는다. 9절이 보여 주듯 모든 그래프에 있다. 마지막으로 타원 셋을 점선으로 둘러싸고, 이 카트를 실험실의 다른 그래프들과 갈라 놓는 `ROS_DOMAIN_ID`를 거기에 적는다.
+
+**하단 — 시계 위의 예산 하나, 축척을 지켜서**. 시간 축 하나, $0$에서 $80\,\mathrm{ms}$. 축 위에는 $200\,\mathrm{Hz}$ 제어 틱이 $0,5,10,\ldots$, 축 아래에는 $50\,\mathrm{Hz}$ 비전 발행이 $0,20,40,60$. $t=0$이 카메라 노출 중간이다. 계산 예제의 예산 항 다섯 개를 축을 따라 이어지는 괄호로 그린다 — 카메라 파이프라인, 전송, 다음 틱까지의 대기, 제어기 계산, 구동. 그리고 $70\,\mathrm{ms}$ 마감을 수직선으로 긋는다. 대기 괄호가 눈으로 보기에 제어 주기 하나만큼이고, 비전 간격이 제어 주기 넷만큼이며, 괄호 행렬 전체가 수직선 왼쪽에서 끝나면 제대로 그린 것이다.
+
+### 대상으로 한 번 끝까지: P6의 70 ms는 어디로 가고, 제어 주기는 무엇을 사 주는가 · Worked case
+
+주기부터. 이 페이지의 다른 모든 숫자가 이 둘 중 하나를 나눈 값이기 때문이다.
+
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=0.020\,\mathrm{s}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
+
+이므로 예산 창 하나에는 제어 주기가 $70/5=14$개 온전히 들어가고, 비전 주기는 $70/20=3.5$개 — 온전한 것은 셋이고 넷째는 $80\,\mathrm{ms}$에서 끝나 예산 밖이다.
+
+**1단계 — 예산을 숫자가 아니라 합으로 쓴다**. 노출 중간에서 힘까지의 지연은
+
+$$70\,\mathrm{ms}\;\ge\;L_{\text{cam}}+L_{\text{net}}+L_{\text{wait}}+L_{\text{ctrl}}+L_{\text{act}}$$
+
+다섯 단계가 엄격히 순차적이기 때문이다. 프레임이 잡혀 발행되고($L_{\text{cam}}$), 프로세스나 머신 경계를 넘고($L_{\text{net}}$), 계속 듣고 있지 않은 제어기를 기다리고($L_{\text{wait}}$), 명령이 되고($L_{\text{ctrl}}$), 모터의 전류가 된다($L_{\text{act}}$). 다섯 중 넷은 당신 코드와 하드웨어의 성질이라 재어야 한다. 정확히 하나만 P6의 두 주기만으로 정해지고, 무엇을 재기 전에 이 합부터 적는 이유가 그것이다.
+
+**2단계 — 그래프가 정하는 그 한 항**. 시각 $g$에 발행된 목표는 다음 제어 틱 전까지 보이지 않고 틱 간격은 제어 주기 하나이므로
+
+$$0\le L_{\text{wait}}<T_{\text{ctrl}}=5\,\mathrm{ms}$$
+
+목표는 주기 안 아무 데나 떨어질 수 있고 최악은 틱 직후에 떨어지는 경우이기 때문이다. ROS 2도 DDS도 운영체제도 이 한계를 옮기지 못한다. $50$과 $200$에 대한 산수일 뿐이다.
+
+**3단계 — 그래서 남는 여유, 그리고 느린 루프의 값**. 측정해야 할 네 항에 $70-5=65\,\mathrm{ms}$가 남는다. 같은 제어기를 $50\,\mathrm{Hz}$로 돌리면 한계가 $L_{\text{wait}}<20\,\mathrm{ms}$가 되어 $70-20=50\,\mathrm{ms}$만 남는다. 제어 주기를 네 배로 올린 것이 프레임-투-포스 경로에서 $15\,\mathrm{ms}$, 곧 전체 예산의 $15/70=21.4\%$를 사 준 셈이고, 카메라도 네트워크도 모터도 건드리지 않았다. "루프를 빠르게 돌린다"는 말의 정직한 판본이다.
+
+**4단계 — 그리고 사 주지 못하는 것**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$가 정확히 나누어떨어지므로 목표 하나는 정확히 네 틱이 소비한다. 신선한 상태로 쓰는 것은 첫 틱뿐이고 나머지 셋은 재사용이라 $5$, $10$, $15\,\mathrm{ms}$의 나이를 더한다. 평균 $7.5\,\mathrm{ms}$로 예산의 $10.7\%$, 최악 $15\,\mathrm{ms}$로 $21.4\%$다. 두 효과를 더하면 루프를 어떻게 하든 한계가 같다.
+
+$$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
+
+어느 틱에서든 손에 쥔 가장 최신 목표는 정의상 한 비전 주기 안에 발행된 것이기 때문이다. 제어 주기를 올리면 첫 항이 줄고 둘째 항이 그만큼 는다. 비전 경로는 빠른 제어기로 신선해지지 않는다. 그건 빠른 카메라만 한다. 누군가 늦는 로봇의 처방으로 $1\,\mathrm{kHz}$ 루프를 제안하기 전에 이 숫자를 알고 있어야 한다.
+
+**5단계 — 그러면 왜 $200\,\mathrm{Hz}$인가**. 루프의 다른 입력이 토픽 위에 있지 않기 때문이다. 엔코더는 틱마다 제어기 안에서 읽으므로 그 데이터는 계산 시간 이상 낡지 않고, 모터는 $20\,\mathrm{ms}$가 아니라 $5\,\mathrm{ms}$마다 보정된다. P6은 프로세스 경계 하나를 공유하는, 시계가 둘인 루프 둘이다. *어디로 갈지*를 말하는 느린 바깥 경로와 *얼마나 세게 밀지*를 말하는 빠른 안쪽 경로. 이 트랙의 모든 페이지가 그 둘을 갈라 두는 이야기이고, 1절이 그 첫 논거다.
 
 ### 1. 로봇 미들웨어가 푸는 문제
 
@@ -682,11 +772,23 @@ ros2: command not found
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse 공지).
 - Gazebo 문서 — ROS 설치 / ROS 2와 Gazebo 버전 짝.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 동료가 "ROS 2 필요 없다, 메시지 전달일 뿐이니 소켓 쓰자"고 한다. 무엇을 과소평가한 것인가?** 설정 없는 탐색, 언어와 팀을 가로지르는 검사 가능한 타입 체계, 연결 단위 전달 의미(QoS), 살아 있는 내성(introspection) 표면. 소켓은 문제의 쉬운 4분의 1이고, 나머지는 결국 엉성하게 다시 짜게 되는 부분이다.
-> **2. `ros2 topic info /turtle1/cmd_vel`이 퍼블리셔 1, 서브스크라이버 2를 보고하는데 띄운 것은 turtlesim과 teleop뿐이다. 두 번째 서브스크라이버는 누구인가?** 당신의 `ros2 topic echo`. CLI 내성 도구는 진짜 노드로서 그래프에 참여하고, 그래서 `rqt_graph`의 **Debug** 항목에 나타난다.
-> **3. 첫 터미널에서 이미 했는데 두 번째 터미널도 `source /opt/ros/jazzy/setup.bash`가 필요한 이유는?** 환경 변수는 프로세스에 살고 자식에게만 상속된다. setup 파일은 실행한 그 셸에만 `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH`, `PYTHONPATH`를 설정한다. 그 설계의 이득은 터미널마다 다른 배포판이나 워크스페이스를 쓸 수 있다는 것이다.
-> **4. 누가 ROS 2는 실시간 시스템이라고 주장한다. 무엇을 되물어야 하나?** 어떤 커널, 어떤 미들웨어와 구성, 실행 경로에서 어떤 연산을 제거했는지. apt로 설치한 ROS 2는 마감 시한을 보장하지 않는다. 공식 입장은 실시간 제약을 *염두에 두고 설계했다*는 것이고, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다.
+### 스스로 점검
+
+1. 동료가 "ROS 2 필요 없다, 메시지 전달일 뿐이니 소켓 쓰자"고 한다. 무엇을 과소평가한 것인가?
+2. `ros2 topic info /turtle1/cmd_vel`이 퍼블리셔 1, 서브스크라이버 2를 보고하는데 띄운 것은
+   turtlesim과 teleop뿐이다. 두 번째 서브스크라이버는 누구인가?
+3. 첫 터미널에서 이미 했는데 두 번째 터미널도 `source /opt/ros/jazzy/setup.bash`가
+   필요한 이유는?
+4. 누가 ROS 2는 실시간 시스템이라고 주장한다. 무엇을 되물어야 하나?
+5. CPU를 아끼려고 P6 제어기를 $200\,\mathrm{Hz}$에서 $50\,\mathrm{Hz}$로 낮췄다. $70\,\mathrm{ms}$
+   예산의 어느 항이 얼마나 바뀌고, 모터가 실제로 따르는 목표의 나이는 왜 거의 그대로인가?
+
+> [!tip]- 정답 · Answers
+> 1. 설정 없는 탐색, 언어와 팀을 가로지르는 검사 가능한 타입 체계, 연결 단위 전달 의미(QoS), 살아 있는 내성(introspection) 표면. 소켓은 문제의 쉬운 4분의 1이고, 나머지는 결국 엉성하게 다시 짜게 되는 부분이다.
+> 2. 당신의 `ros2 topic echo`. CLI 내성 도구는 진짜 노드로서 그래프에 참여하고, 그래서 `rqt_graph`의 **Debug** 항목에 나타난다.
+> 3. 환경 변수는 프로세스에 살고 자식에게만 상속된다. setup 파일은 실행한 그 셸에만 `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH`, `PYTHONPATH`를 설정한다. 그 설계의 이득은 터미널마다 다른 배포판이나 워크스페이스를 쓸 수 있다는 것이다.
+> 4. 어떤 커널, 어떤 미들웨어와 구성, 실행 경로에서 어떤 연산을 제거했는지. apt로 설치한 ROS 2는 마감 시한을 보장하지 않는다. 공식 입장은 실시간 제약을 *염두에 두고 설계했다*는 것이고, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다.
+> 5. 다음 제어 틱까지의 대기 $L_{\text{wait}}$ 하나뿐이고, 그 한계는 제어 주기다. $5\,\mathrm{ms}$ 미만에서 $20\,\mathrm{ms}$ 미만으로 커지므로 카메라·전송·계산·구동에 남는 여유가 $65$에서 $50\,\mathrm{ms}$로 줄고, 차이는 $15\,\mathrm{ms}$, 곧 예산의 $21.4\%$다. 반면 실제로 작용 중인 목표의 *나이*는 거의 그대로인데, 어느 쪽이든 $L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$이기 때문이다. $200\,\mathrm{Hz}$에서는 최대 $5\,\mathrm{ms}$ 기다린 뒤 세 틱 더 재사용되고, $50\,\mathrm{Hz}$에서는 최대 $20\,\mathrm{ms}$ 기다린 뒤 한 번 쓰인다. 빠른 루프가 실제로 사는 것은 *엔코더* 경로다. 틱마다 직접 읽어 모터를 $20\,\mathrm{ms}$가 아니라 $5\,\mathrm{ms}$마다 보정한다.
 
 ### 과제 · Problem set
 

@@ -17,6 +17,55 @@ mastery-when: "Go deeper when you are choosing delivery semantics, executor poli
 > [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], meaning a working **ROS 2 Jazzy Jalisco on Ubuntu 24.04** install that you can source, and the graph-reading commands from its section 9. Python; enough C++ to read a class. Every command below assumes a sourced terminal. Building your own packages is covered properly in [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] — this page uses the minimum of it and tells you which lines matter.
 > [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 거기 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다. 패키지 빌드는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 제대로 다루고, 이 페이지는 최소한만 쓰면서 어느 줄이 중요한지 짚는다.
 
+### Homework diagram: two P6 nodes, with every name resolved
+
+The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Both nodes are launched into the namespace `/cart`. Draw three panels; the problem set asks for the same three with the namespace changed.
+
+**Left — the two nodes, each labelled with both of its names.** Two ellipses. Under each, two lines: the name the code passes to `super().__init__` (`camera`, `controller`) and the fully resolved name after the launch namespace (`/cart/camera`, `/cart/controller`). Between them, one arrow for the topic, labelled twice in the same way: the string written in the code (`goal`) above the arrow and what section 3's table resolves it to (`/cart/goal`) below it. Then draw a *second* arrow stub leaving the controller, labelled `/goal`, with nothing on the other end. That is section 10's bug, and the point of drawing it is that it is a second name, not a broken arrow — nothing in the picture is red.
+
+**Right — inside the controller, the two callbacks.** Two boxes within the node ellipse. `on_goal` fires when a message arrives, so it is drawn with the subscription arrow entering it and is labelled $50\,\mathrm{Hz}$; all it does is store the goal, so draw the store as a small box beside it. `on_tick` fires on a $5\,\mathrm{ms}$ timer, so it is drawn with a clock symbol and labelled $200\,\mathrm{Hz}$; it reads the store *and* the encoder, and the `cmd` arrow leaves the node from `on_tick`. Draw the encoder as an arrow into `on_tick` from outside the graph. The diagram is wrong the moment `cmd` leaves from `on_goal`, and section 9 is where you make that mistake on purpose.
+
+**Bottom — five lines of clock.** Line 1: goals at $0$ and $20\,\mathrm{ms}$. Line 2: ticks at $0,5,10,15,20\,\mathrm{ms}$. Line 3: a bracket under ticks $5$, $10$ and $15$ marking them as re-users of the goal from $0$. Line 4: an encoder read on every tick. Line 5: the $70\,\mathrm{ms}$ budget line, for scale.
+
+### Worked case: one encoder count through a message, and what it is worth in velocity
+
+Six numbers, all of them from P6's two constants and two rates.
+
+**Step 1 — counts to metres.** The encoder is a counter; the graph must carry metres. With $N=2048$ counts/m the conversion and its resolution are
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
+
+because one count is one unit of $c$, so nothing this encoder ever reports distinguishes two positions closer than half a millimetre. At $c=1024$ the cart is at exactly $0.5\,\mathrm{m}$.
+
+**Step 2 — the message that carries it.** Section 4 told you what `std_msgs/msg/Float64` costs. Here is the type this cart deserves, in its own interface package:
+
+```text
+# Cart state, from the encoder on the rail. See 0.6 Lab Plants, P6.
+std_msgs/Header header
+int32 counts        # raw quadrature counts since homing
+float64 position    # m, = counts / 2048.0
+```
+
+The raw count travels beside the derived metre for a reason that is entirely practical: `counts` is exact and `position` is not, so a downstream node that suspects the scale factor can check it, and a bag recorded today survives a recalibration tomorrow. The `Header` carries the stamp the $70\,\mathrm{ms}$ budget is measured against.
+
+**Step 3 — what one count is worth as a velocity.** A controller that wants speed usually differences two positions one period apart, and the resolution of that estimate is the resolution of the position divided by the period:
+
+$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
+
+since dividing a fixed quantum by a shorter interval magnifies it. Read the first number again: at the control rate, **one count of jitter is $9.8\,\mathrm{cm/s}$ of apparent speed**. A cart crawling at $2\,\mathrm{cm/s}$ produces a velocity signal that alternates between $0$ and $9.8\,\mathrm{cm/s}$, and no amount of care in the message type fixes it. That is why a fast loop differences over a longer window, or filters, or reads velocity from somewhere other than a naive difference — and why publishing a bare `float64 velocity` with no stamp and no statement of how it was computed is the worst of the options in section 4.
+
+**Step 4 — how often each thing happens.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so each goal is consumed by four ticks, and in one $70\,\mathrm{ms}$ budget window there are $14$ ticks and $3$ complete vision periods. Now the design choice of section 9, on P6's numbers: publish `cmd` from `on_goal` and the motor is commanded at $50\,\mathrm{Hz}$, because a callback-driven publisher inherits its input's rate; publish from the $5\,\mathrm{ms}$ timer and it is commanded at $200\,\mathrm{Hz}$ with the newest goal in hand, whatever the camera is doing. The second is the contract P6 states, which is why the controller is timer-driven and the store between the callbacks exists.
+
+**Step 5 — and the name that silently undoes all of it.** Both nodes are launched into `/cart`. Section 3's three forms then resolve like this:
+
+| Written in the controller's code | Resolves to | Consequence for P6 |
+|---|---|---|
+| `goal` (relative) | `/cart/goal` | matches the camera's relative `goal`; data flows |
+| `/goal` (absolute) | `/goal` | namespace ignored; two names, no connection, no error |
+| `~/gain` (private) | `/cart/controller/gain` | per-node configuration, safe to launch twice |
+
+One character of difference between rows one and two costs a silent robot: `ros2 node list` shows both nodes, `ros2 topic list -t` shows *two* names where you expected one, and the motor holds its last command forever. Section 10 is the four commands that find it, and this is the case they find.
+
 ### 1. Why publish–subscribe
 
 In 25.1 you ran a graph someone else wrote. Now you write one. Before the code, the shape of the thing.
@@ -607,11 +656,24 @@ Request–response, long-running cancellable goals, runtime configuration and ma
 - `std_msgs/msg/Float64` definition (deprecation note), `turtlesim/msg/Pose` definition.
 - `rclpy` API — `Node.create_timer` clock argument.
 
-> [!question]- Self-check · Answer
-> **1. Your publisher and your subscriber both start, both log normally, and no data moves. Name the three causes and the one command that distinguishes them.** Topic-name mismatch, message-type mismatch, QoS incompatibility. `ros2 topic info <name> --verbose` shows all three: `Unknown topic`, or a zero count on one side, means the name is wrong, differing `Topic type` or type hash between the publisher and subscriber blocks means the type is wrong, and the QoS profile block is where the third lives. Start from `ros2 node list` and `ros2 topic list -t` to narrow it, and use `ros2 node info` for the authoritative per-node answer.
-> **2. Why is a custom message defined in its own package rather than in the node that publishes it?** Because every consumer of the topic must depend on the type. Putting it in the node's package forces anyone who wants to read the topic to build the node and its whole dependency tree, makes mutual dependencies between two nodes circular, and widens the rebuild radius. Interfaces can also only be defined in `ament_cmake` packages, and using a type inside the package that defines it needs extra `rosidl_get_typesupport_target` plumbing that cross-package use does not.
-> **3. Your republisher subscribes at 60 Hz and publishes from the subscription callback. A colleague changes it to publish from a 10 Hz timer. What changed, and when would each be right?** Callback-driven gives exactly one output per input, so the output rate is the input rate and you do not control it. Timer-driven gives a fixed output rate, dropping inputs when they arrive faster and republishing stale data when they arrive slower. Callback-driven is right when every input must be seen and downstream can keep up; timer-driven is right when a fast source feeds a slower fixed-rate consumer, or when the output rate is part of the contract.
-> **4. What does the C++ version make explicit that the Python version hides?** The message type is a compile-time template parameter, so an in-process type error is a build failure. Endpoints are explicitly owned `SharedPtr` members that die if you let them go out of scope. The callback signature states how the message is passed and whether it is modifiable, which is what makes zero-copy intra-process delivery expressible. And the clock is named: `create_wall_timer` is the wall clock, while rclpy's `create_timer` silently defaults to the node's clock, which follows simulated time.
+### Self-check
+
+1. Your publisher and your subscriber both start, both log normally, and no data moves. Name
+   the three causes and the one command that distinguishes them.
+2. Why is a custom message defined in its own package rather than in the node that publishes it?
+3. Your republisher subscribes at 60 Hz and publishes from the subscription callback. A
+   colleague changes it to publish from a 10 Hz timer. What changed, and when would each be right?
+4. What does the C++ version make explicit that the Python version hides?
+5. P6's controller estimates speed by differencing encoder positions one control period apart.
+   What is the resolution of that estimate at $200\,\mathrm{Hz}$, what at $50\,\mathrm{Hz}$, and
+   what does it say about publishing a bare `float64 velocity`?
+
+> [!tip]- Answers
+> 1. Topic-name mismatch, message-type mismatch, QoS incompatibility. `ros2 topic info <name> --verbose` shows all three: `Unknown topic`, or a zero count on one side, means the name is wrong, differing `Topic type` or type hash between the publisher and subscriber blocks means the type is wrong, and the QoS profile block is where the third lives. Start from `ros2 node list` and `ros2 topic list -t` to narrow it, and use `ros2 node info` for the authoritative per-node answer.
+> 2. Because every consumer of the topic must depend on the type. Putting it in the node's package forces anyone who wants to read the topic to build the node and its whole dependency tree, makes mutual dependencies between two nodes circular, and widens the rebuild radius. Interfaces can also only be defined in `ament_cmake` packages, and using a type inside the package that defines it needs extra `rosidl_get_typesupport_target` plumbing that cross-package use does not.
+> 3. Callback-driven gives exactly one output per input, so the output rate is the input rate and you do not control it. Timer-driven gives a fixed output rate, dropping inputs when they arrive faster and republishing stale data when they arrive slower. Callback-driven is right when every input must be seen and downstream can keep up; timer-driven is right when a fast source feeds a slower fixed-rate consumer, or when the output rate is part of the contract.
+> 4. The message type is a compile-time template parameter, so an in-process type error is a build failure. Endpoints are explicitly owned `SharedPtr` members that die if you let them go out of scope. The callback signature states how the message is passed and whether it is modifiable, which is what makes zero-copy intra-process delivery expressible. And the clock is named: `create_wall_timer` is the wall clock, while rclpy's `create_timer` silently defaults to the node's clock, which follows simulated time.
+> 5. One count is $1/2048=0.488\,\mathrm{mm}$, so differencing over one period gives $\Delta v=\Delta p/T$: $0.00048828125/0.005=0.0977\,\mathrm{m/s}$ at $200\,\mathrm{Hz}$ and $0.00048828125/0.020=0.0244\,\mathrm{m/s}$ at $50\,\mathrm{Hz}$. The faster the loop, the coarser the velocity — one count of jitter reads as almost $10\,\mathrm{cm/s}$ at the control rate. A bare `float64 velocity` hides all of this: no stamp, no units, no statement of the window it was differenced over, and no raw `counts` beside it for a consumer to re-derive from. Publish the counts and the position with a `Header`, and say in the `.msg` comments how anything derived was computed.
 
 ### Problem set · 과제
 
@@ -635,6 +697,46 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 > [!note] 선수 지식 · Prerequisites
 > [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 그 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다. 패키지 빌드 자체는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 다루고, 여기서는 최소한만 쓴다.
 > ROS 2 Jazzy on Ubuntu 24.04, the graph-reading commands from 25.1, Python, and enough C++ to read a class.
+
+### 과제가 그릴 그림: P6 노드 둘, 모든 이름을 풀어서 · Homework diagram
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 두 노드는 네임스페이스 `/cart`로 띄운다. 패널 셋을 그려라. 과제는 네임스페이스만 바꾼 같은 그림 셋을 요구한다.
+
+**왼쪽 — 노드 둘, 각각 이름 두 개를 달아서**. 타원 둘. 각 타원 아래에 두 줄을 쓴다. 코드가 `super().__init__`에 넘기는 이름(`camera`, `controller`), 그리고 launch 네임스페이스를 거친 완전 이름(`/cart/camera`, `/cart/controller`). 둘 사이에 토픽 화살표 하나를 긋고 같은 방식으로 두 번 적는다. 화살표 위에는 코드에 쓰인 문자열(`goal`), 아래에는 3절의 표가 그것을 푸는 결과(`/cart/goal`). 그다음 제어기에서 나가는 *두 번째* 화살표 토막을 `/goal`이라고 적고 반대편은 비워 둔다. 10절의 버그이고, 그것을 그리는 이유는 그것이 끊어진 화살표가 아니라 두 번째 *이름*이기 때문이다. 그림 어디에도 빨간 표시는 없다.
+
+**오른쪽 — 제어기 안의 콜백 둘**. 노드 타원 안에 상자 둘. `on_goal`은 메시지가 도착할 때 불리므로 구독 화살표가 그 상자로 들어가고 $50\,\mathrm{Hz}$라고 적는다. 하는 일은 목표를 저장하는 것뿐이니 옆에 작은 저장 상자를 그린다. `on_tick`은 $5\,\mathrm{ms}$ 타이머로 불리므로 시계 기호를 달고 $200\,\mathrm{Hz}$라고 적는다. 저장 상자와 엔코더를 *둘 다* 읽고, `cmd` 화살표는 `on_tick`에서 노드 밖으로 나간다. 엔코더는 그래프 바깥에서 `on_tick`으로 들어가는 화살표다. `cmd`가 `on_goal`에서 나가는 순간 그림은 틀린 것이고, 9절이 그 실수를 일부러 해 보는 자리다.
+
+**아래 — 시계 다섯 줄**. 1줄: 목표가 $0$과 $20\,\mathrm{ms}$. 2줄: 틱이 $0,5,10,15,20\,\mathrm{ms}$. 3줄: 틱 $5$, $10$, $15$ 아래에 괄호를 치고 $0$의 목표를 재사용하는 틱이라고 표시. 4줄: 틱마다 엔코더 읽기. 5줄: 축척을 위한 $70\,\mathrm{ms}$ 예산선.
+
+### 대상으로 한 번 끝까지: 엔코더 한 카운트가 메시지를 지나 속도가 되기까지 · Worked case
+
+숫자 여섯 개, 전부 P6의 상수 둘과 주기 둘에서 나온다.
+
+**1단계 — 카운트에서 미터로**. 엔코더는 계수기이고 그래프는 미터를 날라야 한다. $N=2048$ counts/m이면 변환과 그 해상도는
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
+
+한 카운트가 $c$의 최소 단위이기 때문이다. 즉 이 엔코더는 $0.5\,\mathrm{mm}$보다 가까운 두 위치를 영원히 구분하지 못한다. $c=1024$면 카트는 정확히 $0.5\,\mathrm{m}$에 있다.
+
+**2단계 — 그것을 나르는 메시지**. `std_msgs/msg/Float64`의 값은 4절이 말했다. 위 영문 `.msg` 블록이 이 카트에 어울리는 타입이고, 자기 인터페이스 패키지에 들어간다. `Header`, 원시 카운트 `int32 counts`, 파생된 미터 `float64 position` 세 줄이다. 원시 카운트를 파생값 옆에 함께 싣는 이유는 대단히 실무적이다. `counts`는 정확하고 `position`은 그렇지 않으므로, 축척 계수를 의심하는 하위 노드가 직접 검산할 수 있고, 오늘 녹화한 bag이 내일의 재보정에서도 살아남는다. `Header`의 스탬프가 $70\,\mathrm{ms}$ 예산을 재는 기준이다.
+
+**3단계 — 한 카운트는 속도로 얼마인가**. 속도가 필요한 제어기는 보통 한 주기 떨어진 위치 둘을 뺀다. 그 추정값의 해상도는 위치의 해상도를 주기로 나눈 것이다.
+
+$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
+
+고정된 양자를 더 짧은 간격으로 나누면 그만큼 커지기 때문이다. 첫 숫자를 다시 읽어라. 제어 주기에서 **한 카운트의 떨림은 겉보기 속도로 $9.8\,\mathrm{cm/s}$에 해당한다**. $2\,\mathrm{cm/s}$로 기어가는 카트가 $0$과 $9.8\,\mathrm{cm/s}$를 오가는 속도 신호를 만들고, 메시지 타입을 아무리 잘 짜도 고쳐지지 않는다. 빠른 루프가 더 긴 창으로 차분하거나, 필터를 걸거나, 단순 차분이 아닌 곳에서 속도를 읽는 이유가 이것이다. 그리고 스탬프도 없고 계산 방식도 밝히지 않은 맨 `float64 velocity`가 4절의 선택지 중 최악인 이유이기도 하다.
+
+**4단계 — 무엇이 얼마나 자주 일어나는가**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$로 정확히 나누어떨어지므로 목표 하나를 네 틱이 소비하고, $70\,\mathrm{ms}$ 예산 창 하나에는 틱 $14$개와 온전한 비전 주기 $3$개가 들어간다. 이제 9절의 설계 선택을 P6 숫자로 본다. `cmd`를 `on_goal`에서 내면 모터 명령은 $50\,\mathrm{Hz}$가 된다. 콜백 구동 퍼블리셔는 입력의 주기를 물려받기 때문이다. $5\,\mathrm{ms}$ 타이머에서 내면 카메라가 무엇을 하든 손에 쥔 가장 새 목표로 $200\,\mathrm{Hz}$로 명령한다. P6이 명시한 계약은 두 번째이고, 그래서 제어기가 타이머 구동이며 콜백 둘 사이에 저장소가 존재한다.
+
+**5단계 — 그리고 이 모든 것을 조용히 무너뜨리는 이름**. 두 노드 모두 `/cart`로 띄웠다. 3절의 세 형태는 이렇게 풀린다.
+
+| 제어기 코드에 쓴 것 | 풀린 이름 | P6에 미치는 결과 |
+|---|---|---|
+| `goal` (상대) | `/cart/goal` | 카메라의 상대 `goal`과 일치. 데이터가 흐른다 |
+| `/goal` (절대) | `/goal` | 네임스페이스 무시. 이름 둘, 연결 없음, 오류도 없음 |
+| `~/gain` (비공개) | `/cart/controller/gain` | 노드별 설정. 두 번 띄워도 안전 |
+
+1행과 2행의 차이는 문자 하나인데 대가는 조용한 로봇이다. `ros2 node list`에는 노드 둘이 다 보이고, `ros2 topic list -t`에는 하나를 기대한 자리에 이름이 *둘* 보이며, 모터는 마지막 명령을 영원히 붙들고 있다. 10절이 그것을 찾는 명령 넷이고, 이 사례가 바로 그 명령들이 찾아내는 사례다.
 
 ### 1. 왜 publish–subscribe인가
 
@@ -1226,11 +1328,24 @@ ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle
 - `std_msgs/msg/Float64` 정의(deprecation 주석), `turtlesim/msg/Pose` 정의.
 - `rclpy` API — `Node.create_timer`의 clock 인자.
 
-> [!question]- 스스로 점검 · 정답
-> **1. 퍼블리셔와 서브스크라이버가 둘 다 뜨고 둘 다 정상 로그를 찍는데 데이터가 안 움직인다. 원인 셋과 그것을 구분하는 명령 하나를 대라.** 토픽 이름 불일치, 메시지 타입 불일치, QoS 비호환. `ros2 topic info <이름> --verbose`가 셋 다 보여 준다. `Unknown topic`이거나 한쪽 수가 0이면 이름이 틀린 것이고, 퍼블리셔 블록과 서브스크라이버 블록의 `Topic type`이나 타입 해시가 다르면 타입이 틀린 것이며, QoS 프로파일 블록에 세 번째가 산다. 범위를 좁히는 데는 `ros2 node list`와 `ros2 topic list -t`부터 시작하고, 노드별 최종 판정에는 `ros2 node info`를 쓴다.
-> **2. 커스텀 메시지를 publish하는 노드 안이 아니라 별도 패키지에 정의하는 이유는?** 토픽의 모든 소비자가 그 타입에 의존해야 하기 때문이다. 노드 패키지에 넣으면 토픽을 읽고 싶을 뿐인 사람도 그 노드와 의존성 트리 전체를 빌드해야 하고, 두 노드가 서로의 타입을 쓰면 의존이 순환하며, 재빌드 파급 범위가 넓어진다. 인터페이스는 `ament_cmake` 패키지에서만 정의할 수 있고, 정의한 패키지 안에서 그 타입을 쓰려면 패키지 간 사용에는 필요 없는 `rosidl_get_typesupport_target` 배관이 추가로 필요하다.
-> **3. republisher가 60 Hz로 subscribe하고 구독 콜백에서 publish한다. 동료가 10 Hz 타이머에서 publish하도록 바꿨다. 무엇이 바뀌었고 각각 언제 옳은가?** 콜백 구동은 입력 하나당 출력 하나이므로 출력 주기가 입력 주기이고 제어할 수 없다. 타이머 구동은 출력 주기가 고정이며, 입력이 더 빨리 오면 버리고 더 늦게 오면 낡은 데이터를 다시 낸다. 모든 입력을 봐야 하고 하류가 따라올 수 있으면 콜백 구동이 맞다. 빠른 소스가 느린 고정 주기 소비자에 들어가거나 출력 주기가 계약의 일부라면 타이머 구동이 맞다.
-> **4. C++ 판본이 Python 판본이 감추는 무엇을 드러내는가?** 메시지 타입이 컴파일 시점 템플릿 인자라서 프로세스 내 타입 오류가 빌드 실패가 된다. 엔드포인트가 명시적으로 소유되는 `SharedPtr` 멤버라서 스코프 밖으로 흘리면 죽는다. 콜백 시그니처가 메시지를 어떻게 넘기고 수정 가능한지를 말하고, 그것이 프로세스 내 zero-copy 전달을 표현 가능하게 만든다. 그리고 시계에 이름이 붙어 있다. `create_wall_timer`는 벽시계이고, rclpy의 `create_timer`는 말없이 노드의 시계를 기본값으로 쓰며 그것은 시뮬레이션 시간을 따라간다.
+### 스스로 점검
+
+1. 퍼블리셔와 서브스크라이버가 둘 다 뜨고 둘 다 정상 로그를 찍는데 데이터가 안 움직인다.
+   원인 셋과 그것을 구분하는 명령 하나를 대라.
+2. 커스텀 메시지를 publish하는 노드 안이 아니라 별도 패키지에 정의하는 이유는?
+3. republisher가 60 Hz로 subscribe하고 구독 콜백에서 publish한다. 동료가 10 Hz 타이머에서
+   publish하도록 바꿨다. 무엇이 바뀌었고 각각 언제 옳은가?
+4. C++ 판본이 Python 판본이 감추는 무엇을 드러내는가?
+5. P6 제어기가 제어 주기 하나만큼 떨어진 엔코더 위치를 빼서 속도를 추정한다. $200\,\mathrm{Hz}$
+   에서 그 추정의 해상도는 얼마이고 $50\,\mathrm{Hz}$에서는 얼마이며, 맨
+   `float64 velocity`를 publish하는 것에 대해 무엇을 말해 주는가?
+
+> [!tip]- 정답 · Answers
+> 1. 토픽 이름 불일치, 메시지 타입 불일치, QoS 비호환. `ros2 topic info <이름> --verbose`가 셋 다 보여 준다. `Unknown topic`이거나 한쪽 수가 0이면 이름이 틀린 것이고, 퍼블리셔 블록과 서브스크라이버 블록의 `Topic type`이나 타입 해시가 다르면 타입이 틀린 것이며, QoS 프로파일 블록에 세 번째가 산다. 범위를 좁히는 데는 `ros2 node list`와 `ros2 topic list -t`부터 시작하고, 노드별 최종 판정에는 `ros2 node info`를 쓴다.
+> 2. 토픽의 모든 소비자가 그 타입에 의존해야 하기 때문이다. 노드 패키지에 넣으면 토픽을 읽고 싶을 뿐인 사람도 그 노드와 의존성 트리 전체를 빌드해야 하고, 두 노드가 서로의 타입을 쓰면 의존이 순환하며, 재빌드 파급 범위가 넓어진다. 인터페이스는 `ament_cmake` 패키지에서만 정의할 수 있고, 정의한 패키지 안에서 그 타입을 쓰려면 패키지 간 사용에는 필요 없는 `rosidl_get_typesupport_target` 배관이 추가로 필요하다.
+> 3. 콜백 구동은 입력 하나당 출력 하나이므로 출력 주기가 입력 주기이고 제어할 수 없다. 타이머 구동은 출력 주기가 고정이며, 입력이 더 빨리 오면 버리고 더 늦게 오면 낡은 데이터를 다시 낸다. 모든 입력을 봐야 하고 하류가 따라올 수 있으면 콜백 구동이 맞다. 빠른 소스가 느린 고정 주기 소비자에 들어가거나 출력 주기가 계약의 일부라면 타이머 구동이 맞다.
+> 4. 메시지 타입이 컴파일 시점 템플릿 인자라서 프로세스 내 타입 오류가 빌드 실패가 된다. 엔드포인트가 명시적으로 소유되는 `SharedPtr` 멤버라서 스코프 밖으로 흘리면 죽는다. 콜백 시그니처가 메시지를 어떻게 넘기고 수정 가능한지를 말하고, 그것이 프로세스 내 zero-copy 전달을 표현 가능하게 만든다. 그리고 시계에 이름이 붙어 있다. `create_wall_timer`는 벽시계이고, rclpy의 `create_timer`는 말없이 노드의 시계를 기본값으로 쓰며 그것은 시뮬레이션 시간을 따라간다.
+> 5. 한 카운트는 $1/2048=0.488\,\mathrm{mm}$이므로 한 주기 차분의 해상도는 $\Delta v=\Delta p/T$다. $200\,\mathrm{Hz}$에서 $0.00048828125/0.005=0.0977\,\mathrm{m/s}$, $50\,\mathrm{Hz}$에서 $0.00048828125/0.020=0.0244\,\mathrm{m/s}$. 루프가 빠를수록 속도는 거칠어진다 — 제어 주기에서는 한 카운트의 떨림이 거의 $10\,\mathrm{cm/s}$로 읽힌다. 맨 `float64 velocity`는 이 전부를 감춘다. 스탬프도, 단위도, 어떤 창으로 차분했는지도, 소비자가 다시 유도할 원시 `counts`도 없다. `Header`와 함께 카운트와 위치를 싣고, 파생값을 어떻게 계산했는지는 `.msg` 주석에 적어라.
 
 ### 과제 · Problem set
 
