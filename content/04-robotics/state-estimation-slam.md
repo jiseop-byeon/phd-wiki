@@ -45,9 +45,7 @@ The $1\,\mathrm{cm}$ step every later section advances by is not a free choice: 
 
 *Scope: this page teaches how a belief is propagated and corrected, what a Kalman gain and an innovation are, how the SLAM posterior factors, and how to read an estimation claim. It does not teach the rotation parameterizations an SE(3) estimator needs ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]), the perception front end that produces the measurements ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]), or the solvers the back end calls ([[02-foundations/optimization|4. Optimization §3.5]]).*
 
-### Homework diagram: one cycle, with the gate drawn to scale
-
-Draw it once; the problem set asks for the same drawing at different numbers.
+### The picture: one cycle, with the gate drawn to scale
 
 <svg viewBox="0 0 560 386" style="max-width:100%;height:auto" role="img" aria-label="One predict-correct-gate cycle on P5's range axis in centimetres, drawn to scale: the belief at 11.6 predicted 1 cm left to 10.6 with its spread growing from 0.89 to 1.34; a gate of half-width 5.02 around the prediction with z = 10.5 inside and z = 18 outside; and two hypotheses, the panel pulling the estimate to 10.536 and the passer-by throwing it to 15.357, 4.86 cm past the panel, both reporting P+ = 0.6429.">
   <defs><marker id="aSES" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -199,11 +197,7 @@ Draw it once; the problem set asks for the same drawing at different numbers.
   </g>
 </svg>
 
-**Top — the range axis, in centimetres, drawn to scale.** A tick at $11.6$ for the belief the catalog update leaves behind, an arrow of length $1$ to the left labelled *predict* ending at $10.6$, and under each tick a horizontal bar of half-width $\sqrt{P}$: $0.89$ before the step, $1.34$ after it. The bar must visibly grow, because prediction adds $Q$ and never subtracts anything.
-
-**Middle — the gate.** Centred on the prediction $10.6$, a shaded band of half-width $3\sqrt{P^- + R} = 5.02$. Mark two candidate readings on the axis: $z = 10.5$ just left of the prediction, well inside the band, and $z = 18$ far outside it on the right. The band is drawn around the *prediction*, not around the sensor reading, and its half-width uses $P^- + R$, not $P^-$ — both are the drawing's whole content.
-
-**Bottom — two boxes, one arrow each.** A box "this $z$ is the panel" with an arrow pulling the estimate a short way toward $10.5$, and a box "this $z$ is a passer-by" with an arrow throwing the estimate $4.86\,\mathrm{cm}$ past the panel. Under the second box write the posterior variance that the filter would report anyway. That the two boxes end with the *same* variance is the point of the drawing.
+One predict–correct–gate cycle on P5's range axis, drawn to scale in centimetres: the belief at $11.6$ is predicted $1\,\mathrm{cm}$ to $10.6$, and its spread $\sqrt{P}$ grows from $0.89$ to $1.34$ because prediction only adds $Q$. The gate, of half-width $3\sqrt{P^- + R} = 5.02$, is centred on the prediction, so $z = 10.5$ falls inside it and $z = 18$ far outside. Fused, the panel reading pulls the estimate to $10.536$ and the passer-by throws it to $15.357$, $4.86\,\mathrm{cm}$ past the panel, yet both report the same $P^+ = 0.6429\,\mathrm{cm}^2$.
 
 ### Worked case: one predict–correct–gate cycle on P5, every intermediate
 
@@ -718,7 +712,7 @@ Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]] on **P6**'s clock; t
 
 P2 is carrying a tool toward a panel. Range to the panel is the P5 wall. Units centimetres, $Q = R = 1$, one $1\,\mathrm{cm}$ advance per step.
 
-1. **Draw.** Two cycles on one range axis. Step 1: predict from $11.6$, draw the gate, mark $z = 18$ outside it, and draw *no* correction arrow. Step 2: predict again from the **unchanged** belief, draw the new and visibly wider gate, mark $z = 10.4$ inside it, and draw the correction arrow. Label both gate half-widths. Beside them, in a second colour, the counterfactual: where the step-2 gate would have sat had step 1 fused $z=18$.
+1. **Draw.** The picture above, run for two cycles on one range axis. Step 1: predict from $11.6$, draw the gate, mark $z = 18$ outside it, and draw *no* correction arrow. Step 2: predict again from the **unchanged** belief, draw the new and visibly wider gate, mark $z = 10.4$ inside it, and draw the correction arrow. Label both gate half-widths. Beside them, in a second colour, the counterfactual: where the step-2 gate would have sat had step 1 fused $z=18$.
 2. **Derive.** Starting from the catalog P5 update ($11.6$, $P = 0.8$): (a) step 1 predict, then the $3\sigma$ gate on $z = 18$ — accept or reject, and what happens to $\hat x$ and $P$ either way. (b) step 2 predict from the belief (a) leaves, then the gate and the full correction on $z = 10.4$: $S$, $K$, $\hat x^+$, $P^+$. (c) The counterfactual: redo (b) from the belief you would have had if (a) had fused $z = 18$. Does the *correct* reading $10.4$ still pass the gate, and where does it leave the estimate?
 3. **Do.** Fill the `?` blanks (reuse the correct function from [[02-foundations/probability|3]] if you already wrote it). Print (a) and (b), then **sweep** $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$: run the gated loop for 200 steps at each $q$ and report the value $P$ settles to. Compare it with the closed form you get by setting $P^+ = P^-R/(P^-+R)$ equal to $P$ and solving the resulting quadratic. Which knob, $Q$ or $R$, moves the steady-state gain, and does their ratio alone decide it?
 
@@ -743,6 +737,15 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
         x, P, ok = update(x, P, x + 0.1, 1.0)   # a well-behaved reading each step
     print(q, round(P, 6))
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - One range axis in centimetres, drawn to scale, with every row on that same scale. Prediction arrows point left: advancing toward the panel shortens the range by $u\Delta t = 1\,\mathrm{cm}$ per step.
+> - Under each belief, a bar of half-width $\sqrt{P}$. After every predict the bar must visibly grow, because prediction adds $Q$ and never subtracts anything.
+> - Centre each gate on the prediction $\hat x^-$, not on the sensor reading, and give it half-width $3\sqrt{P^- + R}$, not $3\sqrt{P^-}$. Those two choices are the drawing's whole content.
+> - Label both gate half-widths. The step-2 gate must come out wider than step 1's; if it does not, the rejected reading was allowed to shrink $P$.
+> - A rejected reading gets no correction arrow at all: the belief goes into the next predict exactly as it was.
+> - An accepted reading gets one arrow that moves the estimate part of the way toward $z$, a fraction $K$ of the innovation, never onto $z$.
+> - Draw the counterfactual gate, where step 2's gate would sit had step 1 fused $z = 18$, in a second colour on the same axis and label its half-width. Fusing any reading shrinks $P$ whatever its value, so this gate cannot come out wider than the honest one: the variance never flags a wrong association.
 
 > [!tip]- Solutions
 > 1. Step 1's gate is a band of half-width $5.02$ around $10.6$; step 2's is $5.85$ around $9.6$, wider because a rejected step adds $Q$ and subtracts nothing. The counterfactual band is $4.88$ around $14.36$ — narrower *and* in the wrong place, which is the drawing's point.
@@ -817,9 +820,7 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
 
 *범위: 이 페이지는 belief가 어떻게 전파되고 보정되는지, 칼만 이득과 innovation이 무엇인지, SLAM 사후 분포가 어떻게 인수분해되는지, 추정 주장을 어떻게 읽는지를 가르친다. SE(3) 추정기에 필요한 회전 매개변수화([[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]), 측정을 만들어 내는 인식 front end([[04-robotics/geometric-perception-calibration|3.5 기하 인식]]), back end가 호출하는 solver([[02-foundations/optimization|4. 최적화 §3.5]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 한 순환, 게이트를 축척대로
-
-한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
+### 그림으로 먼저 보기: 한 순환, 게이트를 축척대로
 
 <svg viewBox="0 0 560 386" style="max-width:100%;height:auto" role="img" aria-label="P5의 센티미터 거리 축 위에 축척대로 그린 예측·보정·게이트 한 순환: 11.6의 belief가 왼쪽으로 1 cm 예측되어 10.6이 되고 퍼짐이 0.89에서 1.34로 커진다. 예측값 둘레 반너비 5.02의 게이트 안에 z = 10.5, 밖에 z = 18. 두 가설: 패널이면 추정값이 10.536으로 끌려가고, 통행인이면 패널을 4.86 cm 지나친 15.357로 던져지며, 둘 다 P+ = 0.6429를 보고한다.">
   <defs><marker id="aSESk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -971,11 +972,7 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
   </g>
 </svg>
 
-**위 — 센티미터 단위의 거리 축, 축척대로.** 카탈로그 갱신이 남긴 belief 자리에 $11.6$ 눈금, 왼쪽으로 길이 $1$ 인 *예측* 화살표가 $10.6$ 에서 끝난다. 각 눈금 아래에 반너비 $\sqrt{P}$ 의 가로 막대: 스텝 전 $0.89$, 스텝 후 $1.34$. 막대는 눈에 띄게 커져야 한다. 예측은 $Q$ 를 더하기만 하고 무엇도 빼지 않기 때문이다.
-
-**가운데 — 게이트.** 예측값 $10.6$ 을 중심으로 반너비 $3\sqrt{P^- + R} = 5.02$ 의 음영 띠. 축 위에 후보 측정 둘을 찍는다: 예측값 바로 왼쪽, 띠 안쪽 깊이 있는 $z = 10.5$, 오른쪽 띠 한참 밖의 $z = 18$. 띠는 센서 측정이 아니라 *예측값* 둘레에 그리고, 반너비에는 $P^-$ 가 아니라 $P^- + R$ 이 들어간다. 이 그림의 내용은 그 둘이 전부다.
-
-**아래 — 상자 둘, 각각 화살표 하나.** "이 $z$ 는 패널" 상자에서는 추정값이 $10.5$ 쪽으로 조금 끌려가고, "이 $z$ 는 통행인" 상자에서는 추정값이 패널을 $4.86\,\mathrm{cm}$ 지나쳐 던져진다. 두 번째 상자 아래에 그래도 필터가 보고할 사후 분산을 적는다. 두 상자가 *같은* 분산으로 끝난다는 것이 이 그림의 요점이다.
+P5의 거리 축 위에 센티미터 축척대로 그린 예측·보정·게이트 한 순환이다: $11.6$ 의 belief가 $1\,\mathrm{cm}$ 예측되어 $10.6$ 이 되고, 예측은 $Q$ 를 더하기만 하므로 퍼짐 $\sqrt{P}$ 가 $0.89$ 에서 $1.34$ 로 커진다. 반너비 $3\sqrt{P^- + R} = 5.02$ 의 게이트는 예측값을 중심으로 놓이므로 $z = 10.5$ 는 그 안에, $z = 18$ 은 한참 밖에 떨어진다. 융합하면 패널 측정은 추정값을 $10.536$ 으로 끌어오고 통행인은 패널을 $4.86\,\mathrm{cm}$ 지나친 $15.357$ 로 던지지만, 둘 다 같은 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다.
 
 ### 대상으로 한 번 끝까지: P5의 예측·보정·게이트 한 순환
 
@@ -1501,9 +1498,18 @@ Tier A. **P6** 의 시계 위에 놓인 [[02-foundations/lab-plants|0.6]]의 **P
 
 P2가 패널로 도구를 나른다. 패널까지의 거리가 P5의 벽이다. 단위 센티미터, $Q = R = 1$, 한 스텝에 $1\,\mathrm{cm}$ 전진.
 
-1. **그리기.** 한 거리 축 위에 두 순환. 스텝 1: $11.6$ 에서 예측하고 게이트를 그린 뒤 $z = 18$ 을 그 밖에 찍고, 보정 화살표는 *그리지 않는다*. 스텝 2: **그대로인** belief에서 다시 예측하고, 눈에 띄게 넓어진 새 게이트를 그린 뒤 $z = 10.4$ 를 그 안에 찍고 보정 화살표를 그린다. 두 게이트의 반너비를 모두 적는다. 그 옆에 다른 색으로 반사실: 스텝 1이 $z=18$ 을 융합했다면 스텝 2의 게이트가 어디에 놓였을지.
+1. **그리기.** 위의 그림을 한 거리 축 위의 두 순환으로. 스텝 1: $11.6$ 에서 예측하고 게이트를 그린 뒤 $z = 18$ 을 그 밖에 찍고, 보정 화살표는 *그리지 않는다*. 스텝 2: **그대로인** belief에서 다시 예측하고, 눈에 띄게 넓어진 새 게이트를 그린 뒤 $z = 10.4$ 를 그 안에 찍고 보정 화살표를 그린다. 두 게이트의 반너비를 모두 적는다. 그 옆에 다른 색으로 반사실: 스텝 1이 $z=18$ 을 융합했다면 스텝 2의 게이트가 어디에 놓였을지.
 2. **유도.** 카탈로그 P5 갱신($11.6$, $P = 0.8$)에서 시작해서: (a) 스텝 1 예측, 그다음 $z = 18$ 에 3-σ 게이트 — 통과인가 기각인가, 그리고 어느 쪽이든 $\hat x$ 와 $P$ 에 무슨 일이 일어나는가. (b) (a)가 남긴 belief에서 스텝 2 예측, 그다음 $z = 10.4$ 의 게이트와 완전한 보정: $S$, $K$, $\hat x^+$, $P^+$. (c) 반사실: (a)가 $z = 18$ 을 융합했을 때의 belief에서 (b)를 다시 하라. *옳은* 측정 $10.4$ 가 그래도 게이트를 통과하는가, 그리고 추정값을 어디에 남기는가?
 3. **실행.** 영어 템플릿. (a)와 (b)를 출력하고, $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$ 를 **훑어라**: 각 $q$ 에서 게이트가 달린 루프를 200 스텝 돌려 $P$ 가 수렴하는 값을 보고하라. $P^+ = P^-R/(P^-+R)$ 를 $P$ 와 같다고 놓고 이차식을 풀어 얻는 닫힌 형태와 비교하라. $Q$ 와 $R$ 중 어느 손잡이가 정상 상태 이득을 움직이는가, 그리고 둘의 비만으로 결정되는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 센티미터 단위의 거리 축 하나를 축척대로 그리고, 모든 행을 같은 축척에 둔다. 예측 화살표는 왼쪽을 향한다. 패널로 다가가면 거리가 한 스텝에 $u\Delta t = 1\,\mathrm{cm}$ 씩 줄기 때문이다.
+> - 각 belief 아래에 반너비 $\sqrt{P}$ 의 막대를 그린다. 예측할 때마다 막대는 눈에 띄게 커져야 한다. 예측은 $Q$ 를 더하기만 하고 무엇도 빼지 않기 때문이다.
+> - 게이트는 센서 측정이 아니라 예측값 $\hat x^-$ 를 중심으로 그리고, 반너비는 $3\sqrt{P^-}$ 가 아니라 $3\sqrt{P^- + R}$ 로 준다. 그림의 내용은 이 두 선택이 전부다.
+> - 두 게이트의 반너비를 모두 적는다. 스텝 2의 게이트는 스텝 1의 것보다 넓게 나와야 한다. 그렇지 않다면 기각된 측정이 $P$ 를 줄이게 둔 것이다.
+> - 기각된 측정에는 보정 화살표가 아예 없다. belief는 그대로 다음 예측으로 넘어간다.
+> - 통과한 측정에는 화살표 하나를 그린다. 추정값을 $z$ 쪽으로 innovation의 $K$ 배만큼만 옮길 뿐, $z$ 위에 올려놓지 않는다.
+> - 반사실의 게이트, 곧 스텝 1이 $z = 18$ 을 융합했다면 스텝 2의 게이트가 놓였을 자리를 같은 축 위에 다른 색으로 그리고 반너비를 적는다. 어떤 측정이든 융합하면 값과 상관없이 $P$ 가 줄어드므로 이 게이트는 정직한 게이트보다 넓게 나올 수 없다. 분산은 틀린 연관을 알려 주지 않는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 스텝 1의 게이트는 $10.6$ 둘레 반너비 $5.02$ 의 띠, 스텝 2는 $9.6$ 둘레 $5.85$ 다. 기각된 스텝이 $Q$ 를 더하기만 하고 아무것도 빼지 않으므로 넓어진다. 반사실의 띠는 $14.36$ 둘레 $4.88$ — 더 좁으면서 *동시에* 틀린 자리에 있고, 그것이 이 그림의 요점이다.

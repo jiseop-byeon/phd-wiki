@@ -1,5 +1,5 @@
 ---
-title: 0.65 Lab Kernel
+title: 0.7 Lab Kernel
 tags: [foundations, lab]
 study-depth: Working
 depth-goal: "Step a first- or second-order plant with a named integrator, plot the signals the problem asks for, and say how the integrator itself can inject energy."

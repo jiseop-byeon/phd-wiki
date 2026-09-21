@@ -48,11 +48,9 @@ The tool matters because the hazard is the swept volume, not the base: with the 
 
 *Scope: this page teaches how to read an autonomy, trust or safety claim and how to size one safety function — speed and separation monitoring — on a named machine. It does not teach how to certify a machine (that is the standards themselves, named in §6), how to run a human study (that is [[06-research-practice/psychophysics-human-measurement|8. Psychophysics]] and [[06-research-practice/experimental-design-reproducibility|Experimental Design]]), or how the perception that feeds the separation function works ([[04-robotics/video-action-understanding|20. Video & Action Understanding]], [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]]).*
 
-### Homework diagram: the cell in plan, with the clock underneath
+### The picture: the cell in plan, with the clock underneath
 
-Draw it once; the problem set asks for the same drawing at different numbers.
-
-<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="Safety-cell homework diagram: P2 in plan with its tool, the dashed hazard circle of radius 2.25 m, the solid sensing-field circle at 3.49 m, the six terms of the 1.24 m separation distance laid end to end to scale along one approach line, and underneath the clock from the field boundary to the stop at 0.40 s">
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="Safety-cell picture: P2 in plan with its tool, the dashed hazard circle of radius 2.25 m, the solid sensing-field circle at 3.49 m, the six terms of the 1.24 m separation distance laid end to end to scale along one approach line, and underneath the clock from the field boundary to the stop at 0.40 s">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">plan view (m)</text>
   <path d="M521.1 294 A223.4 223.4 0 1 0 78.9 294" stroke="currentColor" stroke-width="1.8" fill="none"/>
   <path d="M440.4 294 A144 144 0 1 0 159.6 294" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="6 4"/>
@@ -126,9 +124,7 @@ Draw it once; the problem set asks for the same drawing at different numbers.
   <text x="16" y="500" font-size="11" fill="currentColor" fill-opacity="0.9">S<tspan dy="3.1" font-size="8.6">h</tspan><tspan dy="-3.1">, the person walking, is 51.6% of it. The field starts at 3.49 m: 38.3 m² of floor for a 2.25 m reach.</tspan></text>
 </svg>
 
-**Top — the plan view.** P2's base at the origin. Link 1 along $+x$ to $(1,0)$, link 2 up to the tip at $(1,1)$, the tool beyond it. A dashed circle of radius $R_h = 2.25$ m around the base: the hazard boundary. A second, solid circle at $R_h + S_p$: the sensing-field boundary. One straight approach line running inward from the field boundary toward the arm, with the person on it walking at $v_h$. On that line, mark the six contributions end to end as segments, in the order a body actually spends them: $C$ first (the reach into the field before detection), then $S_h$ (how far the person travels while the robot reacts and stops), then $S_r$ and $S_s$ (the robot's own travel and stopping distance, measured from the hazard boundary outward), and $Z_d$, $Z_r$ at each end as the two uncertainty pads. The segments must be drawn to scale — that is the whole point of the drawing.
-
-**Bottom — the clock, on the same horizontal axis.** $t = 0$ when the body crosses the field boundary. A tick at $T_{\text{sens}} = 0.06$ s where the tracker first reports the person; a tick at $T_r = 0.10$ s where the brake command leaves the controller; a tick at $T_r + T_s = 0.40$ s where motion has stopped. Above the clock, one bar showing the person still walking through all 0.40 s, because nothing the robot does shortens it.
+P2 at $\theta = (0^\circ, 90^\circ)$ with its $0.25$ m tool, in plan: the dashed hazard circle at $R_h = 2.25$ m, the solid sensing-field circle at $R_h + S_p = 3.49$ m, and along one approach line the six terms of $S_p = 1.24$ m laid end to end to scale, of which $S_h = 0.64$ m, the person walking at $1.6$ m/s, is $51.6\%$. Underneath, the clock from $t = 0$, when the body crosses the field boundary: the tracker reports at $0.06$ s, the brake command leaves at $T_r = 0.10$ s, and motion has stopped at $0.40$ s, while the person walks through all $0.40$ s. The field costs $38.3\ \mathrm{m}^2$ of floor for an arm whose reach is $2.25$ m.
 
 ### Worked case: the protective separation distance, term by term
 
@@ -473,9 +469,18 @@ Tier B. Hand derivation on the **P2** safety cell above, using only this page, i
 
 A procurement decision has landed on the cell. The new person-tracker is cheaper and 0.1 s slower, so $T_{\text{sens}}$ rises from 0.06 s to 0.16 s and $T_r$ becomes 0.20 s. To compensate, the integrator proposes slowing the robot from $v_r = 1.0$ to $v_r = 0.6$ m/s.
 
-1. **Draw.** Redraw the homework diagram at the new numbers: the plan view with the hazard circle, the sensing-field circle, and the six segments to scale along the approach line; the clock underneath with ticks at $T_{\text{sens}}$, $T_r$ and $T_r + T_s$. Mark the three segments whose lengths did **not** change, and mark on the clock the interval during which the person is walking but nothing about the robot has yet begun to move.
+1. **Draw.** Redraw the picture above at the new numbers: the plan view with the hazard circle, the sensing-field circle, and the six segments to scale along the approach line; the clock underneath with ticks at $T_{\text{sens}}$, $T_r$ and $T_r + T_s$. Mark the three segments whose lengths did **not** change, and mark on the clock the interval during which the person is walking but nothing about the robot has yet begun to move.
 2. **Derive.** Compute $S_h$, $S_r$, $S_s$ and $S_p$ at the new numbers, then the radius at which the sensing field must now start. Then, from the three sensitivities, state the largest reduction in $S_p$ that the robot's speed could possibly buy at $T_r = 0.20$ s, and say whether the integrator's compensation works.
 3. **Interpret.** The integrator's report says: "Speed scaling reduced the required separation, keeping the existing cell." A later paper on the same system claims speed scaling shrank the cell by 0.5 m. Using only the sensitivities, say which quantity the paper must actually have changed, and name the two things about the cell that a reported $S_p$ still does not tell you.
+
+> [!note]- How to draw it · 그리는 법
+> - **Top, the plan view**: P2's base at the origin, link 1 along $+x$ to $(1,0)$, link 2 up to the tip at $(1,1)$, the tool beyond it.
+> - **A dashed circle of radius $R_h = 2.25$ m around the base** is the hazard boundary, and a second, solid circle at $R_h + S_p$ the sensing-field boundary: $S_p$ is measured outward from the hazard boundary, never from the base.
+> - **One straight approach line** runs inward from the field boundary toward the arm, with the person on it walking at $v_h$.
+> - **On that line, the six contributions end to end as segments**, in the order a body actually spends them: $C$ first (the reach into the field before detection), then $S_h$ (how far the person travels while the robot reacts and stops), then $S_r$ and $S_s$ (the robot's own travel and stopping distance, measured from the hazard boundary outward), and $Z_d$, $Z_r$ at each end as the two uncertainty pads.
+> - **The segments must be drawn to scale** — that is the whole point of the drawing.
+> - **Bottom, the clock, on the same horizontal axis**: $t = 0$ when the body crosses the field boundary; a tick at $T_{\text{sens}}$ where the tracker first reports the person, one at $T_r$ where the brake command leaves the controller, and one at $T_r + T_s$ where motion has stopped.
+> - **Above the clock, one bar showing the person still walking through the whole interval**, because nothing the robot does shortens it.
 
 > [!tip]- Solutions
 > 1. The drawing must keep $C$, $Z_d$ and $Z_r$ at the lengths they had — those three are the unchanged ones, since none of them contains a speed or a time. $S_h$ must be visibly longer than before and $S_s$ visibly shorter. On the clock, the interval from $t = 0$ to $t = 0.20$ s is the person walking while the robot has not yet begun to brake, and the first 0.16 s of it is the detector alone.
@@ -539,11 +544,9 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
 
 *범위: 이 페이지는 자율성·신뢰·안전 주장을 읽는 법과, 이름을 댄 기계 하나에 안전 기능 하나 — 속도·이격 감시 — 를 치수화하는 법을 가르친다. 기계를 인증하는 법(그것은 §6이 이름을 댄 표준 문서 자체다), 인간 대상 연구를 수행하는 법([[06-research-practice/psychophysics-human-measurement|8. 심리물리]]와 [[06-research-practice/experimental-design-reproducibility|실험 설계]]), 이격 기능에 입력을 넣는 인지가 어떻게 동작하는지([[04-robotics/video-action-understanding|20. 비디오·행동 이해]], [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 셀의 평면도와 그 아래의 시계
+### 그림으로 먼저 보기: 셀의 평면도와 그 아래의 시계
 
-한 번 그려 두면 과제가 같은 그림을 다른 숫자로 다시 요구한다.
-
-<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="안전 셀 과제 그림: 도구를 든 P2의 평면도, 반지름 2.25 m의 점선 위험 원, 3.49 m의 실선 감지 영역 원, 접근선 하나를 따라 축척대로 이어 붙인 1.24 m 이격 거리의 여섯 항, 그리고 그 아래 영역 경계에서 0.40초 정지까지의 시계">
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="안전 셀 그림: 도구를 든 P2의 평면도, 반지름 2.25 m의 점선 위험 원, 3.49 m의 실선 감지 영역 원, 접근선 하나를 따라 축척대로 이어 붙인 1.24 m 이격 거리의 여섯 항, 그리고 그 아래 영역 경계에서 0.40초 정지까지의 시계">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">평면도 (m)</text>
   <path d="M521.1 294 A223.4 223.4 0 1 0 78.9 294" stroke="currentColor" stroke-width="1.8" fill="none"/>
   <path d="M440.4 294 A144 144 0 1 0 159.6 294" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="6 4"/>
@@ -617,9 +620,7 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
   <text x="16" y="500" font-size="11" fill="currentColor" fill-opacity="0.9">사람이 걷는 몫 S<tspan dy="3.1" font-size="8.6">h</tspan><tspan dy="-3.1">가 51.6%다. 영역은 3.49 m에서 시작한다: 2.25 m 팔에 바닥 38.3 m².</tspan></text>
 </svg>
 
-**위 — 평면도.** P2의 베이스가 원점. 링크 1이 $+x$로 $(1,0)$까지, 링크 2가 위로 말단 $(1,1)$까지, 그 너머로 도구. 베이스를 중심으로 반지름 $R_h = 2.25$ m의 점선 원: 위험 경계. 그 밖에 $R_h + S_p$의 실선 원: 감지 영역 경계. 영역 경계에서 팔 쪽으로 곧게 들어오는 접근선 하나를 긋고, 그 위에 $v_h$로 걷는 사람을 놓는다. 그 선 위에 여섯 기여를, 신체가 실제로 쓰는 순서대로 이어 붙여 표시한다: 먼저 $C$(감지되기 전에 영역 안으로 들어간 거리), 다음 $S_h$(로봇이 반응하고 멈추는 동안 사람이 이동한 거리), 다음 $S_r$과 $S_s$(위험 경계에서 바깥쪽으로 잰 로봇 자신의 이동 거리와 정지 거리), 그리고 양 끝에 두 불확실성 여유 $Z_d$, $Z_r$. 선분은 반드시 축척에 맞게 그려야 한다 — 그것이 이 그림의 전부다.
-
-**아래 — 같은 가로축 위의 시계.** 신체가 영역 경계를 넘는 순간이 $t = 0$. $T_{\text{sens}} = 0.06$ s에 추적기가 사람을 처음 보고하는 눈금, $T_r = 0.10$ s에 제동 명령이 제어기를 떠나는 눈금, $T_r + T_s = 0.40$ s에 운동이 멈춘 눈금. 시계 위에는 0.40초 내내 계속 걷고 있는 사람을 막대 하나로 그린다. 로봇이 무엇을 하든 그 구간은 짧아지지 않기 때문이다.
+$0.25$ m 도구를 든 $\theta = (0^\circ, 90^\circ)$의 P2를 평면도로 그렸다. 점선 위험 원은 $R_h = 2.25$ m, 실선 감지 영역 원은 $R_h + S_p = 3.49$ m에 있고, 접근선 하나를 따라 $S_p = 1.24$ m의 여섯 항이 축척대로 이어 붙어 있으며 그중 $1.6$ m/s로 걷는 사람의 몫 $S_h = 0.64$ m가 $51.6\%$다. 그 아래 시계에서는 신체가 영역 경계를 넘는 $t = 0$부터, 추적기가 $0.06$ s에 보고하고 제동 명령이 $T_r = 0.10$ s에 떠나며 운동이 $0.40$ s에 멈추는 동안 사람이 $0.40$초 내내 걷는다. 그 영역은 도달 거리 $2.25$ m인 팔에 바닥 $38.3\ \mathrm{m}^2$를 치르게 한다.
 
 ### 대상으로 한 번 끝까지: 보호 이격 거리를 항별로
 
@@ -985,9 +986,18 @@ Tier B. 위의 **P2** 안전 셀 위에서 손으로 유도한다. 이 페이지
 
 셀에 구매 결정이 하나 내려왔다. 새 사람 추적기는 더 싸고 0.1초 느려서 $T_{\text{sens}}$가 0.06초에서 0.16초로, $T_r$은 0.20초가 된다. 이를 보상하려고 통합 담당자가 로봇을 $v_r = 1.0$에서 $v_r = 0.6$ m/s로 늦추자고 제안한다.
 
-1. **그리기.** 과제가 그릴 그림을 새 숫자로 다시 그려라: 위험 원, 감지 영역 원, 접근선 위 여섯 선분을 축척에 맞게 그린 평면도와, $T_{\text{sens}}$·$T_r$·$T_r + T_s$에 눈금을 둔 아래 시계. 길이가 바뀌지 **않은** 세 선분을 표시하고, 시계 위에는 사람은 걷고 있지만 로봇 쪽에서는 아직 아무 운동도 시작되지 않은 구간을 표시하라.
+1. **그리기.** 위의 그림을 새 숫자로 다시 그려라: 위험 원, 감지 영역 원, 접근선 위 여섯 선분을 축척에 맞게 그린 평면도와, $T_{\text{sens}}$·$T_r$·$T_r + T_s$에 눈금을 둔 아래 시계. 길이가 바뀌지 **않은** 세 선분을 표시하고, 시계 위에는 사람은 걷고 있지만 로봇 쪽에서는 아직 아무 운동도 시작되지 않은 구간을 표시하라.
 2. **유도.** 새 숫자에서 $S_h$, $S_r$, $S_s$, $S_p$를 계산하고, 감지 영역이 이제 어느 반지름에서 시작해야 하는지 구하라. 그다음 세 민감도로부터, $T_r = 0.20$ s에서 로봇 속도가 살 수 있는 $S_p$ 감소의 최대치를 말하고, 통합 담당자의 보상이 성립하는지 판정하라.
 3. **해석.** 담당자의 보고서에는 "속도 스케일링으로 필요한 이격을 줄여 기존 셀을 유지했다"고 적혀 있다. 이후 같은 시스템에 대한 논문이 속도 스케일링으로 셀을 0.5 m 줄였다고 주장한다. 민감도만 써서, 그 논문이 실제로 바꾼 양이 무엇인지 말하고, 보고된 $S_p$ 하나로는 여전히 알 수 없는 셀의 두 가지를 대라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **위, 평면도.** P2의 베이스가 원점. 링크 1이 $+x$로 $(1,0)$까지, 링크 2가 위로 말단 $(1,1)$까지, 그 너머로 도구.
+> - **베이스를 중심으로 반지름 $R_h = 2.25$ m의 점선 원이 위험 경계다.** 그 밖의 $R_h + S_p$ 실선 원이 감지 영역 경계다. $S_p$는 베이스가 아니라 위험 경계에서 바깥쪽으로 잰다.
+> - **영역 경계에서 팔 쪽으로 곧게 들어오는 접근선 하나.** 그 위에 $v_h$로 걷는 사람을 놓는다.
+> - **그 선 위에 여섯 기여를 신체가 실제로 쓰는 순서대로 이어 붙인다.** 먼저 $C$(감지되기 전에 영역 안으로 들어간 거리), 다음 $S_h$(로봇이 반응하고 멈추는 동안 사람이 이동한 거리), 다음 $S_r$과 $S_s$(위험 경계에서 바깥쪽으로 잰 로봇 자신의 이동 거리와 정지 거리), 그리고 양 끝에 두 불확실성 여유 $Z_d$, $Z_r$.
+> - **선분은 반드시 축척에 맞게 그려야 한다.** 그것이 이 그림의 전부다.
+> - **아래, 같은 가로축 위의 시계.** 신체가 영역 경계를 넘는 순간이 $t = 0$. $T_{\text{sens}}$에 추적기가 사람을 처음 보고하는 눈금, $T_r$에 제동 명령이 제어기를 떠나는 눈금, $T_r + T_s$에 운동이 멈춘 눈금.
+> - **시계 위에는 그 구간 내내 계속 걷고 있는 사람을 막대 하나로 그린다.** 로봇이 무엇을 하든 그 구간은 짧아지지 않기 때문이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 그림에서 $C$, $Z_d$, $Z_r$은 이전 길이 그대로여야 한다. 셋 다 안에 속도도 시간도 없으므로 바뀌지 않은 것이 이 셋이다. $S_h$는 눈에 띄게 길어지고 $S_s$는 눈에 띄게 짧아져야 한다. 시계에서 $t = 0$부터 $t = 0.20$ s까지가 로봇이 아직 제동을 시작하지 않은 채 사람이 걷는 구간이고, 그중 앞의 0.16초는 검출기만의 몫이다.

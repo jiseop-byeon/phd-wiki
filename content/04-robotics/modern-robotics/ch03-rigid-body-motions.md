@@ -20,9 +20,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 This is the longest-feeling chapter of the book, and the one worth ~30% of your total
 study time: every later chapter is this machinery applied. Take it in four steps.
 
-### Homework diagram · 과제가 그릴 그림
-
-One planar figure, drawn once and carried through every section below. The running object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm first, then add three things that are not the arm.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="P2 at the catalog pose with the space frame at the base, the body frame at the tip, the dashed offset p = (1, 1, 0), and two rotation axes through the origin and the elbow; the four velocity numbers are written beside the drawing.">
   <defs><marker id="mr03hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -69,13 +67,7 @@ One planar figure, drawn once and carried through every section below. The runni
   </g>
 </svg>
 
-1. **The space frame $\{s\}$** at the origin — $\hat x_s$ right, $\hat y_s$ up, and $\hat z_s$ as a circled dot meaning *out of the page*. Draw the dot, do not leave the third axis implicit: a planar figure that does not declare which way $z$ points makes every sign in this chapter a coin flip.
-2. **The body frame $\{b\}$** at the tip, with $\hat x_b$ along the forearm — that is, along $+\hat y_s$ — so that $\hat y_b$ points along $-\hat x_s$ and $\hat z_b$ is again out of the page. Draw both as short arrows anchored at $(1,1)$, and draw the offset $p = (1,1,0)$ as a dashed arrow from the origin to the tip. Those two items, $R_{sb}$ and $p$, are the whole of $T_{sb}$.
-3. **Two candidate rotation axes**, each a circled dot with a curved arrow around it: one through the origin at $q_1 = (0,0,0)$, one through the elbow at $q_2 = (1,0,0)$. Label both $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$.
-
-Then write, beside the figure and not inside it, the four numbers the chapter keeps apart. For the origin axis: the tip's actual velocity $\hat\omega \times p = (-1, 1, 0)\,\mathrm{m/s}$, against the space twist's linear part $v_s = -\hat\omega \times q_1 = (0,0,0)$. For the elbow axis: tip velocity $\hat\omega \times (p - q_2) = (-1, 0, 0)\,\mathrm{m/s}$, against $v_s = -\hat\omega \times q_2 = (0,-1,0)$. Neither $v_s$ is the tip velocity, and that pair of mismatches is the figure's whole point.
-
-The problem set asks for this same figure and then for the elbow-axis twist.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the catalog pose $\theta = (0^\circ, 90^\circ)$, with the space frame $\{s\}$ at the base, the body frame $\{b\}$ at the tip with $\hat x_b$ along the forearm, and the dashed offset $p = (1,1,0)$. $R_{sb} = R_z(90^\circ)$ and $p$ are the whole of $T_{sb}$, and each circled dot is a $z$ axis pointing out of the page. Two candidate axes, both $\hat\omega = (0,0,1)$ at $1\,\mathrm{rad/s}$, pass through the origin $q_1$ and the elbow $q_2 = (1,0,0)$ and move the tip at $(-1,1,0)$ and $(-1,0,0)\,\mathrm{m/s}$, while the space twist's linear parts are $v_s = (0,0,0)$ and $(0,-1,0)$ — neither is the tip velocity, because $v_s = \dot p - \omega_s \times p$, not $\dot p$.
 
 ### 1. The skew-symmetric bridge: cross products become matrices
 
@@ -197,6 +189,14 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 2. **Derive.** Write $T_{sb}$ of that tip (the lecture's $4\times4$). Then a pure $z$-rotation of the whole arm about the *elbow* $q_2=(1,0,0)$: space twist $\mathcal{V}_s=(\omega,v)$. Which three of the six $\mathfrak{se}(3)$ coordinates are still identically zero?
 3. **Interpret.** Why is SE(2) enough here, and what goes wrong if a paper treats the space-twist linear part $v_s$ as the tip velocity at this pose?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw the arm first: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$.
+> - The space frame $\{s\}$ at the origin: $\hat x_s$ right, $\hat y_s$ up, and $\hat z_s$ as a circled dot meaning out of the page. Draw the dot — a planar figure that does not declare which way $z$ points makes every sign in this chapter a coin flip.
+> - The body frame $\{b\}$ at the tip, with $\hat x_b$ along the forearm, i.e. along $+\hat y_s$. Right-handedness then puts $\hat y_b$ along $-\hat x_s$ and $\hat z_b$ out of the page again.
+> - The offset $p$ as a dashed arrow from the origin to the tip. $R_{sb}$ and $p$ are the whole of $T_{sb}$.
+> - For item 2's twist, draw the rotation axis as a circled dot with a curved arrow around it, at the point $q$ it passes through, labelled with $\hat\omega$ and $\dot\theta$.
+> - Write velocities beside the figure, not inside it: the tip's actual velocity $\hat\omega \times (p - q)$ next to the twist's linear part $v_s = -\hat\omega \times q$. The two must disagree whenever $p \ne 0$; if yours agree, you wrote $\dot p$ where the twist wants $v_s$.
+
 > [!tip]- Solutions
 > 1. Forearm along $+y_s$, so $x_b=\hat y_s$ and $y_b=-\hat x_s$ (right-handed, $z$ out).
 > 2. $T_{sb}$ as in §4. Elbow axis: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. Still $\omega_x=\omega_y=v_z=0$; $v_s$ is no longer $0$.
@@ -209,9 +209,7 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 책에서 가장 길게 느껴지는 장이고, 전체 공부 시간의 약 30%를 써도 되는 장이다 —
 이후의 모든 장이 이 기계장치의 응용이기 때문이다. 네 단계로 나눠 잡아라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-평면 그림 하나를 그려 아래 모든 절에서 그대로 쓴다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 먼저 그리고, 팔이 아닌 것 셋을 더한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="카탈로그 자세의 P2에 베이스의 space 프레임, 말단의 body 프레임, 점선 오프셋 p = (1, 1, 0), 원점과 엘보를 지나는 회전축 둘을 그리고, 속도 숫자 넷을 옆에 적은 그림.">
   <defs><marker id="mr03hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -258,13 +256,7 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
   </g>
 </svg>
 
-1. **원점의 space 프레임 $\{s\}$** — $\hat x_s$는 오른쪽, $\hat y_s$는 위, $\hat z_s$는 *지면 밖*을 뜻하는 동그라미 친 점으로. 점을 반드시 그린다. 셋째 축이 어디를 향하는지 말하지 않는 평면 그림에서는 이 장의 모든 부호가 동전 던지기가 된다.
-2. **말단의 body 프레임 $\{b\}$** — $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다. 그러면 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 지면 밖이다. 두 축을 $(1,1)$에 붙인 짧은 화살표로 그리고, 오프셋 $p = (1,1,0)$을 원점에서 말단까지의 점선 화살표로 그린다. 이 둘, 즉 $R_{sb}$와 $p$가 $T_{sb}$의 전부다.
-3. **회전축 후보 둘** — 각각 동그라미 친 점과 그 둘레의 굽은 화살표로. 하나는 원점 $q_1 = (0,0,0)$을, 다른 하나는 엘보 $q_2 = (1,0,0)$을 지난다. 둘 다 $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$로 표시한다.
-
-그다음, 이 장이 끝까지 갈라 두는 숫자 넷을 그림 안이 아니라 옆에 적는다. 원점 축: 말단의 실제 속도 $\hat\omega \times p = (-1, 1, 0)\,\mathrm{m/s}$ 대 공간 트위스트의 선형 성분 $v_s = -\hat\omega \times q_1 = (0,0,0)$. 엘보 축: 말단 속도 $\hat\omega \times (p - q_2) = (-1, 0, 0)\,\mathrm{m/s}$ 대 $v_s = -\hat\omega \times q_2 = (0,-1,0)$. 어느 쪽 $v_s$도 말단 속도가 아니며, 이 두 번의 불일치가 그림의 요점 전부다.
-
-과제는 바로 이 그림과 엘보 축 트위스트를 요구한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$에 베이스의 space 프레임 $\{s\}$, $\hat x_b$가 전완 방향인 말단의 body 프레임 $\{b\}$, 점선 오프셋 $p = (1,1,0)$을 그렸다. $R_{sb} = R_z(90^\circ)$와 $p$가 $T_{sb}$의 전부이고, 동그라미 친 점은 지면 밖을 향하는 $z$축이다. 회전축 후보 둘은 모두 $\hat\omega = (0,0,1)$, $1\,\mathrm{rad/s}$로 원점 $q_1$과 엘보 $q_2 = (1,0,0)$을 지나며 말단을 $(-1,1,0)$과 $(-1,0,0)\,\mathrm{m/s}$로 움직이지만, 공간 트위스트의 선형 성분은 $v_s = (0,0,0)$과 $(0,-1,0)$이다 — $v_s = \dot p - \omega_s \times p$이지 $\dot p$가 아니므로 어느 쪽도 말단 속도가 아니다.
 
 ### 1. 반대칭 다리: 외적이 행렬이 된다
 
@@ -381,6 +373,14 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 1. **그리기.** 원점의 베이스 $\{s\}$, 엘보 $(1,0)$, 말단 $(1,1)$. 말단에 도구 프레임 $\{b\}$, $x$축은 전완 방향.
 2. **유도.** 그 말단의 $T_{sb}$(강의의 $4\times4$). 그다음 엘보 $q_2=(1,0,0)$ 둘레로 팔 전체를 도는 순수 $z$ 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 여섯 $\mathfrak{se}(3)$ 좌표 중 여전히 0인 셋은?
 3. **해석.** 왜 SE(2)면 충분한가? 이 자세에서 space twist의 $v_s$를 말단 속도로 읽으면 무엇이 틀리는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 팔부터 그린다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$.
+> - 원점의 space 프레임 $\{s\}$: $\hat x_s$는 오른쪽, $\hat y_s$는 위, $\hat z_s$는 지면 밖을 뜻하는 동그라미 친 점. 점을 반드시 그린다. 셋째 축이 어디를 향하는지 말하지 않는 평면 그림에서는 이 장의 모든 부호가 동전 던지기가 된다.
+> - 말단의 body 프레임 $\{b\}$는 $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다. 그러면 오른손 규칙에 따라 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 다시 지면 밖이다.
+> - 오프셋 $p$는 원점에서 말단까지의 점선 화살표로. $R_{sb}$와 $p$가 $T_{sb}$의 전부다.
+> - 2번의 트위스트를 위해 회전축은 그 축이 지나는 점 $q$에 동그라미 친 점과 그 둘레의 굽은 화살표로 그리고, $\hat\omega$와 $\dot\theta$를 적는다.
+> - 속도는 그림 안이 아니라 옆에 적는다. 말단의 실제 속도 $\hat\omega \times (p - q)$와 트위스트의 선형 성분 $v_s = -\hat\omega \times q$를 나란히 쓴다. $p \ne 0$이면 둘은 반드시 달라야 하고, 같게 나왔다면 트위스트가 $v_s$를 원하는 자리에 $\dot p$를 쓴 것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 전완이 $+y_s$이므로 $x_b=\hat y_s$, $y_b=-\hat x_s$(오른손 프레임, $z$는 지면 밖).

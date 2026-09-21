@@ -16,7 +16,7 @@ mastery-when: "Raise when the training recipe, the compute budget, or parameter-
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]. Second use of object **D1**, whose home is 1. Learning Systems: that page lists initialization, precision and hardware among the items of a training recipe ([[03-deep-learning/foundations/index|1. Learning Systems §5]]) and asks a scaling claim to separate parameters, data and compute ([[03-deep-learning/foundations/index|1. Learning Systems §4]]). This page puts a number on each of those items. [[03-deep-learning/vlm/index|3. VLM]] and [[03-deep-learning/vla/index|4. VLA]] rely on §8 whenever a pretrained model is adapted.*
 
 > [!note] First pass · 처음이라면
-> Draw the Homework diagram, then work the Worked case with a calculator — D1's variances under three initializations, and T-100M's compute, time, memory, tokens per parameter and one LoRA fraction. Read §1, §5 and §6 and do problems 1–2. Open §2–§4 when a paper says "BatchNorm", "pre-norm" or "bf16", and §7–§8 when it quotes a token count or a LoRA rank; §10 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator — D1's variances under three initializations, and T-100M's compute, time, memory, tokens per parameter and one LoRA fraction. Read §1, §5 and §6 and do problems 1–2. Open §2–§4 when a paper says "BatchNorm", "pre-norm" or "bf16", and §7–§8 when it quotes a token count or a LoRA rank; §10 runs all of it.
 
 ### Running object · 이 페이지의 대상
 
@@ -51,9 +51,7 @@ The number of blocks is not frozen. Only the attention correction in §6 touches
 
 *Scope: this page teaches why initialization scales each weight by the layer's fan and the activation's gain; what BatchNorm and LayerNorm normalize over and what changes at inference; what a residual path and a pre-norm residual do to variance, forwards and backwards; why mixed precision needs a master copy and a loss scale; how many bytes and how much arithmetic training costs per parameter; the empirical fit of about twenty tokens per parameter; what LoRA saves and what it does not; and, briefly, why schedules warm up. It does not teach the optimizers themselves, which are [[02-foundations/optimization|4. Optimization §3]] and the [[01-canonical-papers/notes/1-foundations/adam|Adam note]]; nor the attention block whose cost it budgets, which is [[03-deep-learning/foundations/attention-transformer|1.2]] — LayerNorm is defined in its §6 and the per-block arithmetic counted in its §7; nor the recipe as a reading checklist, with EMA and gradient accumulation, which is [[02-foundations/ml-practice|9. ML Practice §6]]; nor distributed training — how model states are split across devices — which §5 names and does not teach; nor the scaling-law fits themselves, which are the [[01-canonical-papers/notes/1-foundations/scaling-laws|Scaling Laws note]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One diagram — one linear layer through one training step — and the problem set asks for exactly this one, for a LoRA-adapted layer. Every number on this page is a property of this picture multiplied by a count.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -72,12 +70,7 @@ flowchart LR
     MS --> W16
 ```
 
-Five things the drawing has to get right, each of which is a claim about the computation.
-**Three products per weight per token, not two.** The forward product, the activation gradient and the weight gradient each cost one multiply and one add per weight per token. Drawn as "forward" and "backward" only, the picture hides the product a frozen weight skips (§8), and the 6 of §6 becomes unexplainable.
-**Fan-in on the forward arrow, fan-out on the backward one.** The variance of $z$ scales with $n_{\text{in}}$; the variance of $\partial L/\partial h_{\text{in}}$ scales with $n_{\text{out}}$ (§1). They agree only for a square layer, which is the whole reason Glorot needed a compromise.
-**Five stored numbers per weight, and no activation among them.** The 16-bit weight, its 16-bit gradient, the fp32 master copy and Adam's two moments: $2+2+4+4+4=16$ bytes per weight (§5). The activations $h_{\text{in}}$ and $z$ are kept for the backward pass too, but per token, so they grow with batch and context as well as with width and depth — not with $N$ alone. Draw them outside the ledger.
-**The master copy feeds the 16-bit copy, never the reverse.** The optimizer updates the fp32 master and the 16-bit weight is re-rounded from it for the next forward pass (§4). An arrow from the 16-bit weight into the optimizer draws the recipe that loses small updates.
-**The loss scale enters at the top of the backward pass and leaves before the optimizer.** $S$ multiplies $\partial L/\partial z$ and, by linearity, every gradient below it; the division by $S$ happens in fp32, just before the step (§4).
+One linear layer through one mixed-precision training step. Three products each cost 2 FLOPs per weight per token — the forward $z=Wh_{\text{in}}$, whose variance scales with $n_{\text{in}}$; the activation gradient $W^\top\partial L/\partial z$, whose variance scales with $n_{\text{out}}$; and the weight gradient, summed over tokens — while the loss scale $S$ rides the backward pass and is divided out in fp32 just before the Adam step. Each weight keeps five numbers, $2+2+4+4+4=16$ bytes (the 16-bit weight and gradient, the fp32 master and Adam's two moments), the master copy feeds the 16-bit weight and never the reverse, and every number on the page is one of these per-weight costs multiplied by a count.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -286,7 +279,7 @@ because each parameter carries five numbers: the two that the matrix products re
 
 ### 6. Compute: six FLOPs per parameter per token
 
-Count the Homework diagram's three products for one token and one weight matrix $W\in\mathbb R^{n_{\text{out}}\times n_{\text{in}}}$.
+Count the three products of the picture at the top of the page for one token and one weight matrix $W\in\mathbb R^{n_{\text{out}}\times n_{\text{in}}}$.
 
 - **Forward**, $z=Wh$: each weight is used in one multiply and one add, $2n_{\text{out}}n_{\text{in}}$ FLOPs, 2 per weight.
 - **Activation gradient**, $\partial L/\partial h=W^\top\partial L/\partial z$: the same product transposed, 2 per weight, needed by every layer below.
@@ -328,7 +321,7 @@ so both grow as the square root of the budget: ten times the compute buys $\sqrt
 
 ### 8. Fine-tuning and LoRA
 
-Fine-tuning continues training a pretrained $\theta_0$ on a smaller dataset, and freezing leaves a subset of parameters out of the update; both are defined, with the update that touches only the trained part, in [[02-foundations/neural-network-basics|0.7 Neural Networks §6]], which also gives LoRA's shape and a $4096\times4096$ count. This section adds what the two ledgers of §5 and §6 say about it.
+Fine-tuning continues training a pretrained $\theta_0$ on a smaller dataset, and freezing leaves a subset of parameters out of the update; both are defined, with the update that touches only the trained part, in [[02-foundations/neural-network-basics|0.8 Neural Networks §6]], which also gives LoRA's shape and a $4096\times4096$ count. This section adds what the two ledgers of §5 and §6 say about it.
 
 > **LoRA, defined.** **Low-rank adaptation** is a *parameterization of the fine-tuning update* — the change to a frozen weight matrix is constrained to a product of two thin trained matrices — not a compression of the pretrained weights and not an extra layer at inference. Four defining conditions. The pretrained $W_0$ is **frozen**. The update is **$\Delta W=BA$ with inner dimension $r$**, so its rank is at most $r\ll\min(d,k)$. **$B$ starts at zero** while $A$ starts random, so $\Delta W=0$ and training begins exactly at the pretrained function. And the update is **scaled by a constant $\alpha/r$ and can be merged**, $W=W_0+\tfrac{\alpha}{r}BA$, so the deployed model runs one ordinary matrix.
 >
@@ -574,7 +567,7 @@ and the fit budget by budget:
 
 Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. The objects are D1, MLP-20 and T-100M; every problem changes a knob — a rectangular matrix at a higher rank, a rectangular layer, a new batch-mate, a different model and budget, adapters on every matrix, a wider and deeper network — so none of the page's numbers can be copied.
 
-1. **Draw.** Redraw the Homework diagram for T-100M's MLP up-projection, $W_0\in\mathbb R^{3072\times768}$ (it maps a 768-vector to a 3072-vector), adapted by LoRA at $r=16$: the frozen $W_0$, and the trained $B\in\mathbb R^{3072\times16}$ and $A\in\mathbb R^{16\times768}$. For each of $W_0$, $A$ and $B$, mark which of the three products it takes part in and which of the five stored numbers it needs, and write the model-state bytes and the training FLOPs per token for the whole adapted matrix.
+1. **Draw.** The picture above, for T-100M's MLP up-projection, $W_0\in\mathbb R^{3072\times768}$ (it maps a 768-vector to a 3072-vector), adapted by LoRA at $r=16$: the frozen $W_0$, and the trained $B\in\mathbb R^{3072\times16}$ and $A\in\mathbb R^{16\times768}$. For each of $W_0$, $A$ and $B$, mark which of the three products it takes part in and which of the five stored numbers it needs, and write the model-state bytes and the training FLOPs per token for the whole adapted matrix.
 2. **Derive.** (a) A ReLU layer has $n_{\text{in}}=256$ and $n_{\text{out}}=64$. Give $\operatorname{Var}(w)$ and the standard deviation under He and under Xavier, and each one's forward factor $n_{\text{in}}\operatorname{Var}(w)/2$ and backward factor $n_{\text{out}}\operatorname{Var}(w)/2$. Which direction does each preserve? (b) Batch D1's $x=(1,2)$ with $x'=(3,1)$, and then with $x'''=(2,2)$. Give BatchNorm's output for $x$ in each batch ($\gamma=1$, $\beta=0$, $\varepsilon\to0$), and LayerNorm's output for $z'$ and for $z'''$. Why does $x$ come out the same with $(3,1)$ as with §2's $(2,1)$, but not with $(2,2)$? (c) An illustrative model has $N=3.0\times10^8$, $D=3.0\times10^9$, and trains on devices sustaining $250$ TFLOP/s in total. Give $C$, the wall-clock time, the model states, $D/N$, and the compute-optimal $(N,D)$ for the same $C$ under the twenty-tokens fit. (d) Every weight matrix of T-100M gets an adapter, and the adapters add up to 1% of $N$. Give the model-state memory and the training FLOPs per token as fractions of full fine-tuning, and say which of the two a smaller rank could still improve, and by how much at most.
 3. **Do.** Fill the `?` blanks, then run MLP-20 widened to $n=256$ and deepened to $L=40$, with a fourth initialization — a fixed $0.01\cdot\mathcal N(0,1)$ — and with and without LayerNorm. Report (a) the standard deviation of $z_l$ at layers 1, 10, 20, 30 and 40 as a table with each row's predicted factor, and say which factors changed with the width and which did not; (b) at a budget of 40 TFLOP/s sustained for 24 hours, $D$, $D/N$ and the model states for $N\in\{5\times10^7,10^8,2\times10^8,4\times10^8\}$, and the compute-optimal $N$ under the fit.
 4. **Interpret.** A paper fine-tunes an illustrative $7\times10^9$-parameter VLA with LoRA on one 24 GB device and says full fine-tuning "would not fit". Using §5 and §8, check both statements with model states alone, and say what else the device's memory has to hold.
@@ -617,6 +610,13 @@ N_opt = ?                                             # the ~20 tokens-per-param
 print("C = %.4g FLOPs  N_opt = %.4g  D_opt = %.4g" % (C, N_opt, 20*N_opt))
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - Draw three products per weight per token, not two: the forward product, the activation gradient and the weight gradient each cost one multiply and one add. Drawn as "forward" and "backward" only, the picture hides the product a frozen weight skips (§8), and the 6 of §6 becomes unexplainable.
+> - Put fan-in on the forward arrow and fan-out on the backward one. The variance of $z$ scales with $n_{\text{in}}$ and that of $\partial L/\partial h_{\text{in}}$ with $n_{\text{out}}$ (§1); they agree only for a square layer, which is the whole reason Glorot needed a compromise.
+> - Keep a ledger of five stored numbers per weight, with no activation among them: the 16-bit weight, its 16-bit gradient, the fp32 master copy and Adam's two moments, $2+2+4+4+4=16$ bytes (§5). The activations $h_{\text{in}}$ and $z$ are kept for the backward pass too, but per token, so they grow with batch and context, not with $N$ alone — draw them outside the ledger.
+> - Draw the master copy feeding the 16-bit copy, never the reverse. The optimizer updates the fp32 master and the 16-bit weight is re-rounded from it for the next forward pass (§4); an arrow from the 16-bit weight into the optimizer draws the recipe that loses small updates.
+> - Let the loss scale enter at the top of the backward pass and leave before the optimizer. $S$ multiplies $\partial L/\partial z$ and, by linearity, every gradient below it; the division by $S$ happens in fp32, just before the step (§4).
+
 > [!tip]- Solutions
 > 1. The adapter's path runs beside $W_0$'s: $x\to Ax$ (16 numbers) $\to B(Ax)$, summed with $W_0x$ at the 3072-wide output, and the gradient returns through both $W_0^\top$ and $A^\top B^\top$. $W_0$ takes part in the forward product and the activation gradient but not the weight gradient, and keeps one stored number per weight, its 16-bit value: 2 bytes. $A$ and $B$ take part in all three products and keep all five: 16 bytes each. The loss-scale and optimizer arrows attach to $A$ and $B$ only. Trained: $16\cdot(3072+768)=61{,}440$ of $3072\cdot768=2{,}359{,}296$, or $2.60\%$. Model states: $2\cdot2{,}359{,}296+16\cdot61{,}440=4{,}718{,}592+983{,}040=5{,}701{,}632$ bytes against $16\cdot2{,}359{,}296=37{,}748{,}736$ for full fine-tuning — $\tfrac18+0.026=0.151$, a factor of $6.62$. FLOPs per token: $4\cdot2{,}359{,}296+6\cdot61{,}440=9{,}437{,}184+368{,}640=9{,}805{,}824$ against $6\cdot2{,}359{,}296=14{,}155{,}776$ — $0.693=\tfrac23+0.026$ of full fine-tuning.
 > 2. (a) He: $\operatorname{Var}(w)=2/256=0.0078125$, standard deviation $0.0884$; forward factor $256\cdot0.0078125/2=1$, backward $64\cdot0.0078125/2=0.25$. It preserves the forward pass and shrinks the gradient's variance fourfold across this layer — a shrink the telescoping product undoes wherever the width grows back. Xavier: $2/320=0.00625$, standard deviation $0.0791$; forward $0.8$, backward $0.2$. It preserves neither: in the linear regime it would give $1.6$ forwards and $0.4$ backwards, splitting the difference, and the ReLU then halves both. (b) $z'=(3,1,3)$. With $x'$: feature 1 holds $(1,3)$, feature 2 $(2,1)$, feature 3 $(1,3)$, so BatchNorm sends $x$ to $(-1,1,-1)$ and $x'$ to $(1,-1,1)$ — the same as with $(2,1)$, because at batch size two each feature keeps only the sign of the difference between the two samples, and $(3,1)$ differs from $x$ in the same direction as $(2,1)$ in every feature. With $x'''$, $z'''=(2,2,2)$ ties $x$ in feature 2, which standardizes to $0$, so $x$ becomes $(-1,0,-1)$. LayerNorm: $z'$ has mean $7/3$ and standard deviation $0.9428$, so $\mathrm{LN}(z')=(0.7071,-1.4142,0.7071)$; $z'''$ has equal features, zero variance, and $\mathrm{LN}(z''')=(0,0,0)$ — the vector's level, 2 or 200, is gone. (c) $C=6\cdot(3.0\times10^8)\cdot(3.0\times10^9)=5.4\times10^{18}$ FLOPs; $t=5.4\times10^{18}/2.5\times10^{14}=21{,}600$ s $=6$ h; model states $16\cdot3\times10^8=4.8$ GB; $D/N=10$, half the fit's ratio. For the same $C$ the fit gives $N_{\text{opt}}=\sqrt{5.4\times10^{18}/120}=2.12\times10^8$ and $D_{\text{opt}}=4.24\times10^9$ — a model $1/\sqrt2$ the size trained on $\sqrt2$ times the tokens, because the ratio was off by exactly 2. (d) With $f=0.01$: model states $2N+16fN=2.16N$ bytes, $0.216$ GB against $1.6$ GB — $\tfrac18+0.01=0.135$, a factor of $7.41$; training FLOPs $(4+6f)N=4.06N$ per token against $6N$ — $\tfrac23+0.01=0.677$. A smaller rank shrinks only the $f$ terms: memory can fall at most to $\tfrac18$, a factor of 8, and compute at most to $\tfrac23$ — the frozen weights' 2 bytes and 4 FLOPs set both floors.
@@ -657,7 +657,7 @@ print("C = %.4g FLOPs  N_opt = %.4g  D_opt = %.4g" % (C, N_opt, 20*N_opt))
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]] 위에 선다. 대상 **D1** — 집은 1. 학습 시스템 — 을 두 번째로 쓴다. 그 페이지는 초기화, 정밀도와 하드웨어를 학습 recipe의 항목으로 나열하고([[03-deep-learning/foundations/index|1. 학습 시스템 §5]]), scaling 주장에 파라미터·데이터·연산량을 분리하라고 요구한다([[03-deep-learning/foundations/index|1. 학습 시스템 §4]]). 이 페이지는 그 항목 하나하나에 숫자를 붙인다. [[03-deep-learning/vlm/index|3. VLM]]과 [[03-deep-learning/vla/index|4. VLA]]는 사전학습 모델을 적응시킬 때마다 §8에 기댄다.*
 
 > [!note] 처음이라면 · First pass
-> 과제가 그릴 그림을 그린 뒤 계산기로 계산 절을 따라간다. 세 초기화 아래 D1의 분산, 그리고 T-100M의 연산량·시간·메모리·파라미터당 토큰 수·LoRA 비율 하나다. §1, §5, §6을 읽고 문제 1–2를 푼다. 논문이 "BatchNorm", "pre-norm", "bf16"을 말하면 §2–§4를, 토큰 수나 LoRA 랭크를 인용하면 §7–§8을 연다. §10이 전부를 돌린다.
+> 그림을 먼저 본 뒤 계산기로 계산 절을 따라간다. 세 초기화 아래 D1의 분산, 그리고 T-100M의 연산량·시간·메모리·파라미터당 토큰 수·LoRA 비율 하나다. §1, §5, §6을 읽고 문제 1–2를 푼다. 논문이 "BatchNorm", "pre-norm", "bf16"을 말하면 §2–§4를, 토큰 수나 LoRA 랭크를 인용하면 §7–§8을 연다. §10이 전부를 돌린다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -692,9 +692,7 @@ print("C = %.4g FLOPs  N_opt = %.4g  D_opt = %.4g" % (C, N_opt, 20*N_opt))
 
 *범위: 이 페이지는 초기화가 각 가중치를 층의 fan과 활성함수의 이득으로 스케일하는 이유, BatchNorm과 LayerNorm이 무엇을 따라 정규화하고 추론에서 무엇이 바뀌는지, 잔차 경로와 pre-norm 잔차가 순방향과 역방향의 분산에 하는 일, 혼합 정밀도에 마스터 사본과 손실 스케일이 필요한 이유, 학습이 파라미터당 몇 바이트와 얼마의 산술을 치르는지, 파라미터당 약 20토큰이라는 경험적 적합, LoRA가 아끼는 것과 아끼지 못하는 것, 그리고 스케줄이 warmup하는 이유를 짧게 가르친다. optimizer 자체는 가르치지 않는다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]과 [[01-canonical-papers/notes/1-foundations/adam|Adam 노트]]다. 비용을 셈하는 어텐션 블록도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2]]이고, LayerNorm의 정의가 그 §6에, 블록당 산술이 그 §7에 있다. EMA와 gradient accumulation을 포함해 읽기용 점검 목록으로서의 recipe도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §6]]이다. 모델 상태를 여러 장치에 나누는 분산 학습도 아니다. §5에서 이름만 나온다. scaling law 적합 자체도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/scaling-laws|Scaling Laws 노트]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나 — 한 학습 스텝을 지나는 선형층 하나 — 이고, 과제는 LoRA가 붙은 층에 대해 정확히 이 그림을 요구한다. 이 페이지의 모든 숫자는 이 그림의 성질에 어떤 개수를 곱한 것이다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -713,12 +711,7 @@ flowchart LR
     MS --> W16
 ```
 
-그림이 맞혀야 할 것이 다섯이고, 각각이 계산에 대한 주장이다.
-**가중치 하나, 토큰 하나당 곱은 둘이 아니라 셋이다.** 순방향 곱, activation 그래디언트, 가중치 그래디언트가 각각 가중치당 토큰당 곱셈 하나와 덧셈 하나를 치른다. "순방향"과 "역방향" 둘로만 그리면 얼린 가중치가 건너뛰는 곱(§8)이 숨고, §6의 6이 설명되지 않는다.
-**순방향 화살표에는 fan-in, 역방향 화살표에는 fan-out을 적는다.** $z$의 분산은 $n_{\text{in}}$에, $\partial L/\partial h_{\text{in}}$의 분산은 $n_{\text{out}}$에 비례한다(§1). 둘은 정사각 층에서만 일치하고, Glorot이 절충을 필요로 한 이유가 전적으로 그것이다.
-**가중치마다 저장하는 숫자는 다섯이고, 그중에 activation은 없다.** 16비트 가중치, 그 16비트 그래디언트, fp32 마스터 사본, Adam의 두 모멘트로 가중치당 $2+2+4+4+4=16$바이트다(§5). activation $h_{\text{in}}$과 $z$도 역전파를 위해 보관되지만 토큰마다 있으므로, 폭과 깊이뿐 아니라 배치와 문맥 길이에 따라 커진다. $N$만으로는 정해지지 않는다. 장부 바깥에 그린다.
-**마스터 사본이 16비트 사본을 먹이고, 거꾸로는 없다.** optimizer는 fp32 마스터를 갱신하고, 16비트 가중치는 다음 순전파를 위해 거기서 다시 반올림된다(§4). 16비트 가중치에서 optimizer로 들어가는 화살표는 작은 갱신을 잃는 recipe의 그림이다.
-**손실 스케일은 역전파의 꼭대기에서 들어와 optimizer 앞에서 나간다.** $S$는 $\partial L/\partial z$에 곱해지고, 선형성 때문에 그 아래의 모든 그래디언트에 곱해진다. $S$로 나누는 일은 스텝 직전에 fp32에서 한다(§4).
+혼합 정밀도 학습 스텝 하나를 지나는 선형층 하나다. 곱 셋 — 분산이 $n_{\text{in}}$에 비례하는 순방향 $z=Wh_{\text{in}}$, 분산이 $n_{\text{out}}$에 비례하는 activation 그래디언트 $W^\top\partial L/\partial z$, 토큰에 걸쳐 합한 가중치 그래디언트 — 이 각각 가중치당 토큰당 2 FLOP을 치르고, 손실 스케일 $S$는 역전파를 타고 내려가다 Adam 스텝 직전에 fp32에서 나눠진다. 가중치마다 숫자 다섯, $2+2+4+4+4=16$바이트(16비트 가중치와 그래디언트, fp32 마스터, Adam의 두 모멘트)를 두고, 마스터 사본이 16비트 가중치를 먹일 뿐 거꾸로는 없으며, 이 페이지의 모든 숫자는 이런 가중치당 비용에 어떤 개수를 곱한 것이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -927,7 +920,7 @@ $$M_{\text{states}}=\underbrace{2N}_{\text{16-bit }\theta}+\underbrace{2N}_{\tex
 
 ### 6. 연산량: 파라미터당 토큰당 6 FLOP
 
-토큰 하나와 가중치 행렬 하나 $W\in\mathbb R^{n_{\text{out}}\times n_{\text{in}}}$에 대해 과제 그림의 곱 셋을 센다.
+토큰 하나와 가중치 행렬 하나 $W\in\mathbb R^{n_{\text{out}}\times n_{\text{in}}}$에 대해 맨 위 그림의 곱 셋을 센다.
 
 - **순방향** $z=Wh$: 가중치마다 곱셈 하나와 덧셈 하나에 쓰인다. $2n_{\text{out}}n_{\text{in}}$ FLOP, 가중치당 2.
 - **activation 그래디언트** $\partial L/\partial h=W^\top\partial L/\partial z$: 같은 곱을 전치한 것으로 가중치당 2이고, 아래의 모든 층이 필요로 한다.
@@ -969,7 +962,7 @@ $$C=6N(\kappa N)\ \Rightarrow\ N_{\text{opt}}=\sqrt{\frac{C}{6\kappa}},\qquad D_
 
 ### 8. 파인튜닝과 LoRA
 
-파인튜닝은 사전학습된 $\theta_0$를 더 작은 데이터셋으로 계속 학습하는 것이고, 얼리기는 파라미터의 일부를 갱신에서 빼는 것이다. 학습되는 부분만 건드리는 갱신과 함께 둘 다 [[02-foundations/neural-network-basics|0.7 신경망 §6]]에 정의되어 있고, 그곳에 LoRA의 모양과 $4096\times4096$의 셈도 있다. 이 절은 §5와 §6의 두 장부가 그것에 대해 말하는 것을 더한다.
+파인튜닝은 사전학습된 $\theta_0$를 더 작은 데이터셋으로 계속 학습하는 것이고, 얼리기는 파라미터의 일부를 갱신에서 빼는 것이다. 학습되는 부분만 건드리는 갱신과 함께 둘 다 [[02-foundations/neural-network-basics|0.8 신경망 §6]]에 정의되어 있고, 그곳에 LoRA의 모양과 $4096\times4096$의 셈도 있다. 이 절은 §5와 §6의 두 장부가 그것에 대해 말하는 것을 더한다.
 
 > **LoRA의 정의.** **저랭크 적응**(low-rank adaptation)은 *파인튜닝 갱신의 파라미터화*다. 얼린 가중치 행렬의 변화를 학습되는 얇은 행렬 두 개의 곱으로 제한한다. 사전학습 가중치의 압축도, 추론 때 붙는 추가 층도 아니다. 정의 조건 넷. 사전학습된 $W_0$는 **얼려 있다.** 갱신은 **안쪽 차원이 $r$인 $\Delta W=BA$** 이므로 랭크가 최대 $r\ll\min(d,k)$다. **$B$는 0에서 시작하고** $A$는 무작위로 시작하므로 $\Delta W=0$이고, 학습은 정확히 사전학습된 함수에서 출발한다. 그리고 갱신은 **상수 $\alpha/r$로 스케일되고 병합할 수 있다.** $W=W_0+\tfrac{\alpha}{r}BA$이므로 배포된 모델은 평범한 행렬 하나를 돌린다.
 >
@@ -1102,10 +1095,17 @@ $$\eta_t=d^{-1/2}\min\big(t^{-1/2},\ t\,T_w^{-3/2}\big)$$
 
 Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. 대상은 D1, MLP-20, T-100M이다. 모든 문제가 손잡이 하나를 바꾸므로 — 더 높은 랭크의 직사각 행렬, 직사각 층, 새 배치 짝, 다른 모델과 예산, 모든 행렬의 어댑터, 더 넓고 깊은 신경망 — 페이지의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** T-100M의 MLP 확장 투영 $W_0\in\mathbb R^{3072\times768}$(768차원 벡터를 3072차원으로 보낸다)에 $r=16$ LoRA를 붙인 판으로 과제 그림을 다시 그린다. 얼린 $W_0$, 학습되는 $B\in\mathbb R^{3072\times16}$과 $A\in\mathbb R^{16\times768}$이다. $W_0$, $A$, $B$ 각각에 대해 세 곱 중 어디에 참여하는지, 저장하는 숫자 다섯 중 무엇이 필요한지 표시하고, 적응한 행렬 전체의 모델 상태 바이트와 토큰당 학습 FLOP을 적는다.
+1. **그리기.** 위의 그림을 T-100M의 MLP 확장 투영 $W_0\in\mathbb R^{3072\times768}$(768차원 벡터를 3072차원으로 보낸다)에 $r=16$ LoRA를 붙인 판으로 다시 그린다. 얼린 $W_0$, 학습되는 $B\in\mathbb R^{3072\times16}$과 $A\in\mathbb R^{16\times768}$이다. $W_0$, $A$, $B$ 각각에 대해 세 곱 중 어디에 참여하는지, 저장하는 숫자 다섯 중 무엇이 필요한지 표시하고, 적응한 행렬 전체의 모델 상태 바이트와 토큰당 학습 FLOP을 적는다.
 2. **유도.** (a) ReLU 층이 $n_{\text{in}}=256$, $n_{\text{out}}=64$다. He와 Xavier에서 각각 $\operatorname{Var}(w)$와 표준편차, 순방향 배율 $n_{\text{in}}\operatorname{Var}(w)/2$와 역방향 배율 $n_{\text{out}}\operatorname{Var}(w)/2$를 구하라. 각각은 어느 방향을 보존하는가? (b) D1의 $x=(1,2)$를 $x'=(3,1)$과, 이어서 $x'''=(2,2)$와 묶는다. 각 배치에서 $x$에 대한 BatchNorm의 출력($\gamma=1$, $\beta=0$, $\varepsilon\to0$)과, $z'$과 $z'''$에 대한 LayerNorm의 출력을 구하라. $x$는 왜 $(3,1)$과 묶였을 때 §2의 $(2,1)$과 묶였을 때와 같게 나오고 $(2,2)$와 묶였을 때는 다르게 나오는가? (c) 예시 모델이 $N=3.0\times10^8$, $D=3.0\times10^9$이고, 합쳐서 $250$ TFLOP/s를 유지하는 장치들에서 학습한다. $C$, 실제 소요 시간, 모델 상태, $D/N$, 그리고 같은 $C$에서 20토큰 적합의 연산 최적 $(N,D)$를 구하라. (d) T-100M의 모든 가중치 행렬에 어댑터를 붙이고, 어댑터가 모두 합쳐 $N$의 1%다. 모델 상태 메모리와 토큰당 학습 FLOP을 전체 파인튜닝 대비 비율로 구하고, 둘 중 어느 것을 더 작은 랭크가 아직 개선할 수 있는지, 최대 얼마까지인지 말하라.
 3. **실행.** 영어 절 템플릿의 `?`를 채운 뒤, MLP-20을 $n=256$으로 넓히고 $L=40$으로 깊게 하고, 넷째 초기화 — 고정된 $0.01\cdot\mathcal N(0,1)$ — 를 더해, LayerNorm이 있을 때와 없을 때 돌린다. (a) 층 1, 10, 20, 30, 40에서 $z_l$의 표준편차를 각 행의 예측 배율과 함께 표로 보고하고, 어느 배율이 폭과 함께 바뀌었고 어느 것이 바뀌지 않았는지 말하라. (b) 40 TFLOP/s를 24시간 유지하는 예산에서 $N\in\{5\times10^7,10^8,2\times10^8,4\times10^8\}$에 대한 $D$, $D/N$, 모델 상태와, 적합 아래의 연산 최적 $N$을 보고하라.
 4. **해석.** 어떤 논문이 $7\times10^9$파라미터짜리 예시 VLA를 24 GB 장치 하나에서 LoRA로 파인튜닝하고, 전체 파인튜닝은 "들어가지 않는다"고 말한다. §5와 §8을 써서 모델 상태만으로 두 진술을 점검하고, 장치 메모리가 그 밖에 무엇을 담아야 하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 가중치 하나, 토큰 하나당 곱은 둘이 아니라 셋으로 그린다. 순방향 곱, activation 그래디언트, 가중치 그래디언트가 각각 곱셈 하나와 덧셈 하나를 치른다. "순방향"과 "역방향" 둘로만 그리면 얼린 가중치가 건너뛰는 곱(§8)이 숨고, §6의 6이 설명되지 않는다.
+> - 순방향 화살표에는 fan-in, 역방향 화살표에는 fan-out을 적는다. $z$의 분산은 $n_{\text{in}}$에, $\partial L/\partial h_{\text{in}}$의 분산은 $n_{\text{out}}$에 비례하고(§1), 둘은 정사각 층에서만 일치한다. Glorot이 절충을 필요로 한 이유가 전적으로 그것이다.
+> - 가중치마다 저장하는 숫자 다섯의 장부를 두고, 그중에 activation은 넣지 않는다. 16비트 가중치, 그 16비트 그래디언트, fp32 마스터 사본, Adam의 두 모멘트로 $2+2+4+4+4=16$바이트다(§5). activation $h_{\text{in}}$과 $z$도 역전파를 위해 보관되지만 토큰마다 있어서 $N$만이 아니라 배치와 문맥 길이에 따라 커지므로, 장부 바깥에 그린다.
+> - 마스터 사본이 16비트 사본을 먹이게 그리고, 거꾸로는 그리지 않는다. optimizer는 fp32 마스터를 갱신하고, 16비트 가중치는 다음 순전파를 위해 거기서 다시 반올림된다(§4). 16비트 가중치에서 optimizer로 들어가는 화살표는 작은 갱신을 잃는 recipe의 그림이다.
+> - 손실 스케일은 역전파의 꼭대기에서 들어와 optimizer 앞에서 나가게 그린다. $S$는 $\partial L/\partial z$에 곱해지고 선형성 때문에 그 아래의 모든 그래디언트에 곱해지며, $S$로 나누는 일은 스텝 직전에 fp32에서 한다(§4).
 
 > [!tip]- 정답 · Solutions
 > 1. 어댑터의 경로는 $W_0$의 경로 옆을 달린다. $x\to Ax$(숫자 16개) $\to B(Ax)$가 폭 3072인 출력에서 $W_0x$와 더해지고, 그래디언트는 $W_0^\top$과 $A^\top B^\top$ 양쪽으로 돌아간다. $W_0$는 순방향 곱과 activation 그래디언트에는 참여하고 가중치 그래디언트에는 참여하지 않으며, 가중치마다 16비트 값 하나, 2바이트만 둔다. $A$와 $B$는 세 곱 모두에 참여하고 다섯을 다 두어 각각 16바이트다. 손실 스케일과 optimizer 화살표는 $A$와 $B$에만 붙는다. 학습되는 것은 $3072\cdot768=2{,}359{,}296$개 중 $16\cdot(3072+768)=61{,}440$개, $2.60\%$다. 모델 상태는 $2\cdot2{,}359{,}296+16\cdot61{,}440=4{,}718{,}592+983{,}040=5{,}701{,}632$바이트로, 전체 파인튜닝의 $16\cdot2{,}359{,}296=37{,}748{,}736$에 대해 $\tfrac18+0.026=0.151$, $6.62$배다. 토큰당 FLOP은 $4\cdot2{,}359{,}296+6\cdot61{,}440=9{,}437{,}184+368{,}640=9{,}805{,}824$로, $6\cdot2{,}359{,}296=14{,}155{,}776$에 대해 전체 파인튜닝의 $0.693=\tfrac23+0.026$이다.

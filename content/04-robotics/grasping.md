@@ -42,11 +42,9 @@ Grasp **A** is ch.12's grasp. **B** is the same tile turned $90°$ in the grippe
 
 *Scope: this page teaches how a grasp is scored — the linear map from contact forces to object wrenches, the wrench set that map generates under a budget, and the two numbers usually read off that set — and where the arithmetic survives inside a learned pipeline. It does not teach the closure test, which [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §3]] derives on this same tile; nor grasp synthesis algorithms; nor hand design, for which §8 names sources.*
 
-### Homework diagram · 과제가 그릴 그림
+### The picture · 그림으로 먼저 보기
 
-Two figures, side by side.
-
-<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="Grasping homework diagram: left, the panel tile with grasps A and C, their friction cones, the four line-to-normal angles and the octagon that linearizes one cone; right, grasp A's wrench space as a tetrahedron with its inscribed ball of radius 6.667 N and the gravity wrench leaving it at 10.0 N">
+<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="Grasping picture: left, the panel tile with grasps A and C, their friction cones, the four line-to-normal angles and the octagon that linearizes one cone; right, grasp A's wrench space as a tetrahedron with its inscribed ball of radius 6.667 N and the gravity wrench leaving it at 10.0 N">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">the tile and its candidates</text>
   <text x="296" y="24" font-size="12" fill="currentColor" font-weight="600">grasp A's wrench space (N)</text>
   <rect x="72" y="67" width="180" height="90" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.05"/>
@@ -141,11 +139,7 @@ Two figures, side by side.
   <text x="300" y="368" font-size="11" fill="currentColor" fill-opacity="0.9">gravity's direction reaches 10.0 N, beyond ε.</text>
 </svg>
 
-**Left — the tile and its candidates.** Draw the tile as a rectangle with the centre of mass marked, then all four contact points of **A** and **C** on it. At each, the inward normal as a solid arrow and the friction cone as two dashed rays at $\pm 26.565°$ with the wedge shaded. Draw the connecting line of **A** straight through the tile and the connecting line of **C** as a second, tilted line. Write the angle each line makes with each normal at its own end — four numbers — and circle the one that is outside its cone. In a margin box, draw one contact's cone a second time with an inscribed regular octagon over it, and shade the eight slivers the octagon throws away.
-
-**Right — the wrench space.** Axes $f_x$, $f_y$ and $m_z/\rho$, all three in newtons. Plot the four generator wrenches of **A** as points, join them into the tetrahedron, mark the origin inside it, and draw the inscribed ball touching a face. Label the ball's radius $\epsilon$ and draw the arrow from the origin to that touch point — the weakest direction. Then draw the gravity wrench $(0,\ +4.905,\ 0)$ as a separate arrow from the origin and mark where it leaves the tetrahedron: a longer arrow than $\epsilon$, which is the whole point of §4.
-
-The problem set asks for both figures again at $\mu = 0.2$: the left one for a new family of candidates, the right one for grasp **B**, where $\epsilon$ shrinks but the gravity arrow keeps its verdict, since B's lift margin stays $4.08$. The arrow whose verdict flips at that friction is A's (Step 6 below).
+Left, the panel tile with grasps **A** and **C** and their friction cones at $\pm 26.565°$: **A**'s line meets both normals at $0.000°$, while **C**'s makes $17.354°$ and $72.646°$, so **C** fails at C2 and no squeeze makes it hold. The margin box linearizes one cone with an inscribed octagon, $\mu_{\text{eff}} = 0.462$, which throws away $10.0\%$ of the disc. Right, grasp **A**'s wrench space in newtons: the tetrahedron on its four generators, the inscribed ball of radius $\epsilon = 6.667\ \mathrm{N}$ along the weakest direction, and the gravity wrench $W = 4.905\ \mathrm{N}$, whose direction leaves the tetrahedron only at $10.0\ \mathrm{N}$, beyond $\epsilon$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -610,9 +604,19 @@ grasps are and what would make your answer wrong.
 
 Tier B. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. Same tile, same budget $F=20\,\mathrm{N}$, same $\rho=0.100\,\mathrm{m}$. Two knobs move: the planner now proposes a **left-edge plus bottom-edge** pair — contact 1 fixed at $(-0.100,\ 0)$ with normal $(1,0)$, contact 2 anywhere on the bottom edge at $(x_2,\ -0.050)$ with normal $(0,1)$ — and the surface is dusty, $\mu=0.2$. No new simulator.
 
-1. **Draw.** The tile with contact 1 and its cone, and the bottom edge marked as a segment. Shade, along that segment, the set of $x_2$ passing the angle test *at contact 1*, then shade separately the set passing it *at contact 2*, using two different hatchings. Beside it, redraw the wrench-space figure for grasp **B** at $\mu=0.2$: the four generators, the tetrahedron, the inscribed ball, and the gravity arrow $(0,\ 4.905,\ 0)$.
+1. **Draw.** The tile with contact 1 and its cone, and the bottom edge marked as a segment. Shade, along that segment, the set of $x_2$ passing the angle test *at contact 1*, then shade separately the set passing it *at contact 2*, using two different hatchings. Beside it, redraw the wrench-space figure of the picture above for grasp **B** at $\mu=0.2$: the four generators, the tetrahedron, the inscribed ball, and the gravity arrow $(0,\ 4.905,\ 0)$.
 2. **Derive.** (a) Write each end's antipodal condition as an inequality on $x_2$ in terms of $\mu$, and show the two sets are **disjoint** at $\mu=0.2$ and at $\mu=0.5$. (b) Find the $\mu$ at which they first meet, and the single $x_2$ where they meet. (c) Grasp **B** at $\mu=0.2$: the four generators, $\epsilon_B$, $Q_{v,B}$, and the ratio of each to its $\mu=0.5$ value. (d) The lift capacity of **B** and of **A** at $\mu=0.2$, each as a margin over $W=4.905\,\mathrm{N}$.
 3. **Interpret.** At $\mu=0.2$ both metrics still rank **A** above **B**. State which grasp survives the dust and which does not, and explain in one sentence what property of **B** the two metrics are structurally unable to see. Then say what this implies for a planner that ranks candidates by $\epsilon$ alone on a site where $\mu$ is unknown.
+
+> [!note]- How to draw it · 그리는 법
+> - **Left, the tile and its candidates**: the tile as a rectangle with the centre of mass marked, and every candidate contact point on it.
+> - **At each contact, the inward normal is a solid arrow** and the friction cone two dashed rays at $\pm\arctan\mu$ with the wedge shaded.
+> - **Draw each pair's connecting line and write the angle it makes with the normal at each end**; circle any angle outside its cone. For a family of candidates along an edge, shade the positions that pass at each end with its own hatching — a pair is antipodal only where both pass.
+> - **In a margin box, draw one contact's cone a second time** with an inscribed regular octagon over it, and shade the eight slivers the octagon throws away.
+> - **Right, the wrench space**: axes $f_x$, $f_y$ and $m_z/\rho$, all three in newtons.
+> - **Plot the grasp's four generator wrenches as points and join them into the tetrahedron**; mark the origin inside it and draw the inscribed ball touching a face. Label its radius $\epsilon$ and draw the arrow from the origin to that touch point — the weakest direction.
+> - **Draw the gravity wrench $(0,\ +4.905,\ 0)$ as a separate arrow from the origin** and mark where its direction leaves the tetrahedron: a longer arrow than $\epsilon$, which is the whole point of §4.
+> - **At a new $\mu$, recompute the generators before redrawing**: $\epsilon$ and the hull shrink, but whether the gravity arrow still fits depends on whether the grasp carries the weight on its normals or on friction (Steps 5–6).
 
 > [!tip]- Solutions
 > 1. Contact 1's cone opens $\pm 11.310°$ about $+\hat x$. The two hatchings never overlap.
@@ -671,11 +675,9 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
 
 *범위: 이 페이지는 파지를 어떻게 채점하는지를 가르친다 — 접촉력에서 물체 렌치로 가는 선형 사상, 그 사상이 예산 아래 만들어 내는 렌치 집합, 그리고 그 집합에서 보통 읽어 내는 숫자 둘, 그리고 그 산술이 학습 파이프라인 안에서 어디에 살아남는지. Closure 검사 자체는 가르치지 않는다. 그것은 [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §3]]이 바로 이 타일 위에서 유도한다. 파지 합성 알고리즘과 손 설계도 가르치지 않는다. 후자는 §8이 출처를 지목한다.*
 
-### 과제가 그릴 그림 · Homework diagram
+### 그림으로 먼저 보기 · The picture
 
-그림 둘을 나란히.
-
-<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="파지 과제 그림: 왼쪽은 파지 A와 C가 놓인 패널 타일, 마찰 원뿔, 선과 법선이 이루는 각 넷, 원뿔 하나를 선형화하는 팔각형이고, 오른쪽은 반지름 6.667 N의 내접 공을 품은 사면체로 그린 파지 A의 렌치 공간과 10.0 N에서 그것을 벗어나는 중력 렌치다">
+<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="파지 그림: 왼쪽은 파지 A와 C가 놓인 패널 타일, 마찰 원뿔, 선과 법선이 이루는 각 넷, 원뿔 하나를 선형화하는 팔각형이고, 오른쪽은 반지름 6.667 N의 내접 공을 품은 사면체로 그린 파지 A의 렌치 공간과 10.0 N에서 그것을 벗어나는 중력 렌치다">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">타일과 후보들</text>
   <text x="296" y="24" font-size="12" fill="currentColor" font-weight="600">파지 A의 렌치 공간 (N)</text>
   <rect x="72" y="67" width="180" height="90" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.05"/>
@@ -770,11 +772,7 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
   <text x="300" y="368" font-size="11" fill="currentColor" fill-opacity="0.9">중력 방향은 ε보다 먼 10.0 N까지 간다.</text>
 </svg>
 
-**왼쪽 — 타일과 후보들.** 타일을 직사각형으로 그리고 질량 중심을 표시한 뒤, **A**와 **C**의 접촉점 넷을 모두 찍는다. 각각에 안쪽 법선을 실선 화살표로, 마찰 원뿔을 $\pm 26.565°$의 점선 두 개와 그 사이를 칠한 쐐기로 그린다. **A**의 이음선은 타일을 관통하는 직선으로, **C**의 이음선은 기울어진 두 번째 직선으로 긋는다. 각 선이 자기 쪽 끝의 법선과 이루는 각을 적는다 — 숫자 넷 — 그리고 자기 원뿔 밖에 있는 것 하나에 동그라미를 친다. 여백 상자에는 접촉 하나의 원뿔을 다시 그리고 그 위에 내접 정팔각형을 겹쳐, 팔각형이 버리는 조각 여덟 개를 칠한다.
-
-**오른쪽 — 렌치 공간.** 축은 $f_x$, $f_y$, $m_z/\rho$이고 셋 다 단위가 뉴턴이다. **A**의 생성 렌치 넷을 점으로 찍고 사면체로 잇고, 그 안의 원점을 표시하고, 한 면에 닿는 내접 공을 그린다. 공의 반지름에 $\epsilon$이라 쓰고 원점에서 그 접점으로 가는 화살표를 그린다 — 가장 약한 방향이다. 그다음 중력 렌치 $(0,\ +4.905,\ 0)$을 원점에서 나가는 별도의 화살표로 그리고 그것이 사면체를 벗어나는 지점을 표시한다. $\epsilon$보다 긴 화살표이고, 그것이 §4의 요점 전부다.
-
-과제는 두 그림을 $\mu = 0.2$에서 다시 요구한다. 왼쪽은 새 후보 가족에 대해, 오른쪽은 파지 B에 대해서다. 파지 B에서는 $\epsilon$이 줄지만 중력 화살표의 판정은 그대로다. 드는 여유가 $4.08$로 변하지 않기 때문이다. 그 마찰에서 판정이 뒤집히는 화살표는 파지 A의 것이다(아래 6단계).
+왼쪽은 파지 A와 C가 놓인 패널 타일과 $\pm 26.565°$의 마찰 원뿔로, A의 이음선은 두 법선과 $0.000°$로 만나지만 C의 이음선은 $17.354°$와 $72.646°$를 이루어 C2에서 실패하므로 얼마나 세게 쥐어도 버티지 못한다. 여백 상자는 원뿔 하나를 내접 팔각형으로 선형화하고($\mu_{\text{eff}} = 0.462$), 그 팔각형이 원판의 $10.0\%$를 버린다. 오른쪽은 뉴턴 단위로 그린 파지 A의 렌치 공간이다: 생성자 넷의 사면체, 가장 약한 방향으로 닿는 반지름 $\epsilon = 6.667\ \mathrm{N}$의 내접 공, 그리고 방향이 $10.0\ \mathrm{N}$에서야 사면체를 벗어나 $\epsilon$보다 먼 중력 렌치 $W = 4.905\ \mathrm{N}$.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1207,9 +1205,19 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 예산 $F=20\,\mathrm{N}$도 $\rho=0.100\,\mathrm{m}$도 그대로다. 노브 둘이 움직인다. 계획기가 이제 **왼쪽 변과 아래 변**의 쌍을 제안한다 — 접촉 1은 $(-0.100,\ 0)$에 법선 $(1,0)$으로 고정, 접촉 2는 아래 변 위 아무 데나 $(x_2,\ -0.050)$에 법선 $(0,1)$ — 그리고 표면에 먼지가 앉아 $\mu=0.2$다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 타일과 접촉 1, 그 원뿔, 그리고 아래 변을 선분으로 표시한다. 그 선분을 따라 *접촉 1에서* 각 조건을 통과하는 $x_2$ 집합을 칠하고, *접촉 2에서* 통과하는 집합을 다른 빗금으로 따로 칠한다. 그 옆에 $\mu=0.2$의 파지 **B**에 대한 렌치 공간 그림을 다시 그린다. 생성자 넷, 사면체, 내접 공, 그리고 중력 화살표 $(0,\ 4.905,\ 0)$.
+1. **그리기.** 타일과 접촉 1, 그 원뿔, 그리고 아래 변을 선분으로 표시한다. 그 선분을 따라 *접촉 1에서* 각 조건을 통과하는 $x_2$ 집합을 칠하고, *접촉 2에서* 통과하는 집합을 다른 빗금으로 따로 칠한다. 그 옆에는 위의 그림 오른쪽의 렌치 공간을 $\mu=0.2$의 파지 **B** 로 다시 그린다. 생성자 넷, 사면체, 내접 공, 그리고 중력 화살표 $(0,\ 4.905,\ 0)$.
 2. **유도.** (a) 각 끝의 antipodal 조건을 $\mu$가 든 $x_2$에 대한 부등식으로 쓰고, $\mu=0.2$와 $\mu=0.5$에서 두 집합이 **서로소**임을 보여라. (b) 두 집합이 처음 만나는 $\mu$와 그때의 유일한 $x_2$를 구하라. (c) $\mu=0.2$의 파지 **B**: 생성자 넷, $\epsilon_B$, $Q_{v,B}$, 그리고 각각의 $\mu=0.5$ 값 대비 비. (d) $\mu=0.2$에서 **B**와 **A**가 드는 용량을, 각각 $W=4.905\,\mathrm{N}$에 대한 여유로.
 3. **해석.** $\mu=0.2$에서도 두 지표는 여전히 **A**를 **B**보다 위에 놓는다. 먼지에서 살아남는 파지와 그러지 못하는 파지를 밝히고, 두 지표가 구조적으로 볼 수 없는 **B**의 성질이 무엇인지 한 문장으로 설명하라. 그다음 $\mu$를 모르는 현장에서 $\epsilon$만으로 후보 순위를 매기는 계획기에 이것이 무엇을 함의하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, 타일과 후보들.** 타일을 직사각형으로 그리고 질량 중심을 표시한 뒤, 후보의 접촉점을 모두 찍는다.
+> - **접촉마다 안쪽 법선은 실선 화살표다.** 마찰 원뿔은 $\pm\arctan\mu$의 점선 두 개와 그 사이를 칠한 쐐기로 그린다.
+> - **쌍마다 이음선을 긋고, 각 끝에서 법선과 이루는 각을 적는다.** 자기 원뿔 밖에 있는 각에는 동그라미를 친다. 한 변을 따라 늘어선 후보 가족이면 각 끝에서 통과하는 위치를 끝마다 다른 빗금으로 칠한다 — 양 끝이 모두 통과하는 곳에서만 쌍이 antipodal이다.
+> - **여백 상자에는 접촉 하나의 원뿔을 다시 그린다.** 그 위에 내접 정팔각형을 겹치고, 팔각형이 버리는 조각 여덟 개를 칠한다.
+> - **오른쪽, 렌치 공간.** 축은 $f_x$, $f_y$, $m_z/\rho$이고 셋 다 단위가 뉴턴이다.
+> - **파지의 생성 렌치 넷을 점으로 찍어 사면체로 잇는다.** 그 안의 원점을 표시하고 한 면에 닿는 내접 공을 그린다. 공의 반지름에 $\epsilon$이라 쓰고 원점에서 그 접점으로 가는 화살표를 그린다 — 가장 약한 방향이다.
+> - **중력 렌치 $(0,\ +4.905,\ 0)$은 원점에서 나가는 별도의 화살표로 그린다.** 그 방향이 사면체를 벗어나는 지점을 표시한다. $\epsilon$보다 긴 화살표이고, 그것이 §4의 요점 전부다.
+> - **새 $\mu$에서는 다시 그리기 전에 생성자부터 다시 구한다.** $\epsilon$과 껍질은 줄지만, 중력 화살표가 여전히 들어가는지는 그 파지가 무게를 법선으로 지는지 마찰로 지는지에 달려 있다(5–6단계).
 
 > [!tip]- 정답 · Solutions
 > 1. 접촉 1의 원뿔이 $+\hat x$ 둘레로 $\pm 11.310°$ 열린다. 두 빗금은 결코 겹치지 않는다.

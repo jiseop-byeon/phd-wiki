@@ -37,15 +37,13 @@ mastery-when: "This is operational judgement, demonstrated through the work rath
 | A | 6/10 | 10.66 | 2.414 | 9.85 |
 | B | 9/10 | 7.50 | 1.356 | 7.30 |
 
-**What this page adds is the one fact the rung depends on: where the trials ran.** RS1 names its arm by a catalog id and its panel by a number. P2's unit links and point masses and P3's 400 N/m are model parameters, and the catalog's plants are the models the wiki's labs step in code ([[02-foundations/lab-kernel|0.65 Lab Kernel]]). Read literally, the pilot is evidence about that model, so this page places it on the simulation rung. Had the same twenty trials been run on a laboratory arm built to P2's numbers, against a spring-mounted 400 N/m panel, the pilot would sit one rung higher; the problem set works that case.
+**What this page adds is the one fact the rung depends on: where the trials ran.** RS1 names its arm by a catalog id and its panel by a number. P2's unit links and point masses and P3's 400 N/m are model parameters, and the catalog's plants are the models the wiki's labs step in code ([[02-foundations/lab-kernel|0.7 Lab Kernel]]). Read literally, the pilot is evidence about that model, so this page places it on the simulation rung. Had the same twenty trials been run on a laboratory arm built to P2's numbers, against a spring-mounted 400 N/m panel, the pilot would sit one rung higher; the problem set works that case.
 
 The planning values the worked case uses, all taken from the pilot: success probabilities $p_A = 0.6$ and $p_B = 0.9$; a difference of mean peak forces $\Delta = 3.16$ N; a pooled standard deviation $s_p = 1.958$ N.
 
 *Scope: this page teaches what a piece of evidence licenses at each rung of the evidence ladder, what reaching the next rung costs — for RS1, in trials — and which artifacts outlive a paper. It does not teach how to form the claim ([[06-research-practice/research-questions-claims|1. Research Questions & Claims]]), how to design, randomize and analyse the confirmatory run ([[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]), how to write the result up ([[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]]), or which venue fits which rung ([[06-research-practice/venue-strategy|5. Venue Strategy]]).*
 
-### Homework diagram · 과제가 그릴 그림
-
-The ladder of §2, drawn with RS1 on it and a price on the next rung. The problem set asks for the same drawing with the pilot one rung higher.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 319" style="max-width:100%;height:auto" role="img" aria-label="The evidence ladder with RS1 on it: four rungs from simulation up to an active site, each with the sentence it licenses, independent use on its own axis to the side, the RS1 pilot on the simulation rung with its sentence in RS1's numbers, price tags of 32 and 8 trials per arm on the hardware rung, and two arrows: more trials along a rung, a new setting up to the next">
   <defs><marker id="arRW" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -100,12 +98,7 @@ The ladder of §2, drawn with RS1 on it and a price on the next rung. The proble
   <text x="26" y="298" font-size="11" opacity="0.95" fill="currentColor">the pilot cannot distinguish (95% CI −0.08 to +0.60).”</text>
 </svg>
 
-1. **The ladder.** The four rungs of §2's figure, simulation at the bottom, with the sentence each licenses written beside it, and "used by someone else" drawn off to the side on its own axis.
-2. **RS1 on it.** A marker on the simulation rung labelled *RS1 pilot, 10 + 10 trials*, and beside it the sentence that rung licenses, written in RS1's numbers (worked case, Step 1).
-3. **The price tags.** Hung on the laboratory-hardware rung: *success rate: 32 per arm (36 for the exact test)* and *peak force: 8 per arm*.
-4. **Two arrows.** A horizontal arrow along the simulation rung labelled *more trials here: narrower intervals, the same sentence*, and a vertical arrow up to the hardware rung labelled *a new setting: a new sentence*.
-
-The two arrows are the lesson of the page in one picture: trials buy certainty within a rung, and only a new setting buys a new rung.
+§2's evidence ladder with RS1 on it: four rungs from simulation up to an active site, each beside the sentence it licenses, with use by someone else on its own axis, reached from any rung. RS1's pilot, 10 + 10 trials, sits on the simulation rung with that rung's sentence written in its numbers, and the laboratory-hardware rung above it carries the price of the next step: 32 trials per arm if the success rate carries the claim (36 for the exact test), 8 if peak force does. The two arrows are the page's lesson: more trials along a rung buy narrower intervals and the same sentence, and only a new setting buys a new rung.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -375,9 +368,17 @@ For example, polishing a successful drywall sequence can improve communication, 
 
 Tier B. Hand derivation on RS1, using only this page, its prerequisites and the pilot frozen in the running object. A different rung from the worked case: the pilot moved up to laboratory hardware, and the step after it.
 
-1. **Draw.** Suppose RS1's twenty trials had been run on a laboratory arm built to P2's numbers, against a spring-mounted 400 N/m panel. Redraw the homework diagram for that case: the pilot's marker on its rung, the sentence it now licenses, and a price tag on the next rung up. Say which part of that price the pilot cannot supply, and why.
+1. **Draw.** Suppose RS1's twenty trials had been run on a laboratory arm built to P2's numbers, against a spring-mounted 400 N/m panel. Redraw the picture above for that case: the pilot's marker on its rung, the sentence it now licenses, and a price tag on the next rung up. Say which part of that price the pilot cannot supply, and why.
 2. **Derive.** A short pilot at the next rung gives planning values $p_A = 0.7$ and $p_B = 0.9$ for success, and $d = 1.0$ for peak force. (a) The success-rate sample size per arm by the formula of the worked case, by hand. (b) The power of 32 per arm at these values, the worked case's budget. (c) The peak-force sample size per arm by the normal approximation. (d) A partner then asks for a reliability sentence at the active-site rung: "B exceeded 10 N in fewer than 5% of contacts." With no exceedance allowed, how many consecutive contacts would put the 95% upper bound below 5%?
 3. **Interpret.** A draft abstract reads: "Impedance control was validated as safer for panel contact on a real robot (p = 0.003)." Using the frozen pilot, name every mismatch between this sentence and its evidence, and rewrite it as the strongest sentence the evidence licenses.
+
+> [!note]- How to draw it · 그리는 법
+> - **The ladder:** the four rungs of §2's figure, simulation at the bottom, each with the sentence it licenses written beside it.
+> - **"Used by someone else" goes off to the side**, on its own axis and reached from any rung, because adoption is not a strictly higher grade of evidence than a site trial (§2).
+> - **The pilot's marker** on the rung that the conditions of its trials set — where they ran, not the words of an abstract — labelled *RS1 pilot, 10 + 10 trials*.
+> - **Beside the marker, the sentence that rung licenses, written in RS1's numbers** — in the worked case, rung 1's sentence of Step 1.
+> - **The price tags hang on the next rung up**, one per outcome that could carry the claim; in the worked case, *success rate: 32 per arm (36 for the exact test)* and *peak force: 8 per arm* on the laboratory-hardware rung.
+> - **Two arrows:** a horizontal one along the pilot's rung, *more trials here: narrower intervals, the same sentence*, and a vertical one up to the next rung, *a new setting: a new sentence*. Trials buy certainty within a rung; only a new setting buys a new rung.
 
 > [!tip]- Solutions
 > 1. The pilot's marker moves to rung 2, laboratory hardware, and the sentence becomes "on our laboratory arm, against a 400 N/m spring-mounted panel, B's mean peak contact force was 3.16 N lower than A's (95% CI 1.28 to 5.04 N)". The next rung up is the full-scale mock-up, whose sentence is "it survives realistic geometry and scale". Its price tag can carry the formula but not the numbers: a real panel structure is far stiffer than 400 N/m, and under the half-sine model the contact at $10^5$ N/m lasts about 14 ms instead of 222 ms ([[04-robotics/force-compliance-control|13. Force & Compliance Control]]), so the controllers face a different contact, and neither the success rates nor $d$ from the 400 N/m pilot can be carried up. The tag should read *new pilot first, then n from its planning values*.
@@ -417,15 +418,13 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
 | A | 6/10 | 10.66 | 2.414 | 9.85 |
 | B | 9/10 | 7.50 | 1.356 | 7.30 |
 
-**이 페이지가 더하는 것은 단을 정하는 사실 하나, 곧 시행이 어디서 돌았는가다.** RS1은 팔을 카탈로그 id로, 패널을 숫자 하나로 부른다. P2의 단위 링크와 점질량, P3의 400 N/m는 모델 파라미터이고, 카탈로그의 장치들은 위키의 랩이 코드로 적분하는 모델이다([[02-foundations/lab-kernel|0.65 Lab Kernel]]). 문자 그대로 읽으면 파일럿은 그 모델에 대한 증거이므로, 이 페이지는 파일럿을 시뮬레이션 단에 놓는다. 같은 스무 시행을 P2의 숫자대로 만든 실험실 팔로, 스프링에 단 400 N/m 패널에 대해 돌렸다면 파일럿은 한 단 위에 앉는다. 그 경우는 과제에서 다룬다.
+**이 페이지가 더하는 것은 단을 정하는 사실 하나, 곧 시행이 어디서 돌았는가다.** RS1은 팔을 카탈로그 id로, 패널을 숫자 하나로 부른다. P2의 단위 링크와 점질량, P3의 400 N/m는 모델 파라미터이고, 카탈로그의 장치들은 위키의 랩이 코드로 적분하는 모델이다([[02-foundations/lab-kernel|0.7 Lab Kernel]]). 문자 그대로 읽으면 파일럿은 그 모델에 대한 증거이므로, 이 페이지는 파일럿을 시뮬레이션 단에 놓는다. 같은 스무 시행을 P2의 숫자대로 만든 실험실 팔로, 스프링에 단 400 N/m 패널에 대해 돌렸다면 파일럿은 한 단 위에 앉는다. 그 경우는 과제에서 다룬다.
 
 계산 예제가 쓰는 계획값은 모두 파일럿에서 가져온다. 성공 확률 $p_A = 0.6$과 $p_B = 0.9$, 평균 최대 접촉력의 차 $\Delta = 3.16$ N, 합동 표준편차 $s_p = 1.958$ N이다.
 
 *범위: 이 페이지는 증거 사다리의 각 단에서 증거가 무엇을 허락하는지, 다음 단에 오르는 데 무엇이 드는지(RS1이라면 시행 수로), 그리고 어떤 산출물이 논문보다 오래 사는지를 가르친다. 주장을 세우는 법([[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]), 확인 실험을 설계하고 무작위화하고 분석하는 법([[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]), 결과를 논문으로 쓰는 법([[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]), 어느 단에 어느 venue가 맞는지([[06-research-practice/venue-strategy|5. Venue 전략]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-§2의 사다리를, RS1을 올려놓고 다음 단에 가격표를 달아 그린다. 과제는 파일럿을 한 단 올린 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 319" style="max-width:100%;height:auto" role="img" aria-label="RS1을 올린 증거 사다리: 시뮬레이션부터 가동 중 현장까지 네 단과 각 단이 허락하는 문장, 옆으로 떨어진 자기 축 위의 독립적 사용, 시뮬레이션 단 위의 RS1 파일럿과 RS1의 숫자로 쓴 그 문장, 하드웨어 단에 단 제어기당 32회와 8회의 가격표, 그리고 화살표 둘: 한 단을 따라가는 더 많은 시행과 다음 단으로 오르는 새로운 조건">
   <defs><marker id="arRWk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -480,12 +479,7 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
   <text x="26" y="298" font-size="11" opacity="0.95" fill="currentColor">못한다(95% 신뢰구간 −0.08–+0.60).”</text>
 </svg>
 
-1. **사다리.** §2 그림의 네 단을 시뮬레이션을 맨 아래로 하여 그리고, 단마다 허락하는 문장을 옆에 적는다. "다른 사람이 쓴다"는 옆으로 떨어진 자기 축 위에 그린다.
-2. **그 위의 RS1.** 시뮬레이션 단에 *RS1 파일럿, 10 + 10회*라는 표지를 놓고, 그 옆에 그 단이 허락하는 문장을 RS1의 숫자로 적는다(계산 예제 1단계).
-3. **가격표.** 실험실 하드웨어 단에 두 장을 단다. *성공률: 제어기당 32회(정확 검정이면 36회)*와 *최대 접촉력: 제어기당 8회*.
-4. **화살표 둘.** 시뮬레이션 단을 따라 가로 화살표를 긋고 *여기서 시행을 더하면: 좁아진 구간, 같은 문장*이라고 적는다. 하드웨어 단으로 올라가는 세로 화살표에는 *새로운 조건: 새로운 문장*이라고 적는다.
-
-두 화살표가 이 페이지의 교훈을 그림 한 장으로 말한다. 시행은 한 단 안에서 확실성을 사고, 새로운 조건만이 새로운 단을 산다.
+§2의 증거 사다리에 RS1을 올려 그렸다 — 시뮬레이션부터 가동 중 현장까지 네 단이 각자 허락하는 문장과 함께 있고, 다른 사람이 쓰는 것은 어느 단에서든 닿는 자기 축 위에 따로 있다. RS1 파일럿(10 + 10회)은 시뮬레이션 단에 RS1의 숫자로 쓴 그 단의 문장과 함께 놓이고, 그 위 실험실 하드웨어 단에는 다음 걸음의 가격이 달린다 — 성공률이 주장을 떠받치면 제어기당 32회(정확 검정이면 36회), 최대 접촉력이면 8회. 두 화살표가 이 페이지의 교훈이다: 한 단을 따라 시행을 더하면 구간은 좁아져도 문장은 같고, 새로운 조건만이 새로운 단을 산다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -741,9 +735,17 @@ RS1에서는 이 사전 결정에 숫자가 붙는다. 성공률로 주장을 �
 
 Tier B. RS1 위의 손 유도다. 이 페이지, 선수 지식, 이 페이지의 대상에 고정한 파일럿만 쓴다. 계산 예제와 다른 단이다. 파일럿을 실험실 하드웨어로 한 단 올리고, 그다음 걸음을 본다.
 
-1. **그리기.** RS1의 스무 시행을 P2의 숫자대로 만든 실험실 팔로, 스프링에 단 400 N/m 패널에 대해 돌렸다고 하자. 그 경우의 과제 그림을 다시 그린다. 파일럿 표지를 그 단에, 이제 허락되는 문장을 그 옆에, 그리고 한 단 위에 가격표를 단다. 그 가격 중 파일럿이 줄 수 없는 부분은 무엇이며 왜 그런가?
+1. **그리기.** RS1의 스무 시행을 P2의 숫자대로 만든 실험실 팔로, 스프링에 단 400 N/m 패널에 대해 돌렸다고 하자. 그 경우에 대해 위의 그림을 다시 그린다. 파일럿 표지를 그 단에, 이제 허락되는 문장을 그 옆에, 그리고 한 단 위에 가격표를 단다. 그 가격 중 파일럿이 줄 수 없는 부분은 무엇이며 왜 그런가?
 2. **유도.** 다음 단에서 짧은 파일럿이 성공에 대해 $p_A = 0.7$과 $p_B = 0.9$, 최대 접촉력에 대해 $d = 1.0$이라는 계획값을 준다. (가) 계산 예제의 식으로 성공률의 제어기당 표본 크기를 손으로. (나) 이 값에서, 계산 예제의 예산인 제어기당 32회의 검정력. (다) 정규근사로 최대 접촉력의 제어기당 표본 크기. (라) 이어서 협력사가 가동 중 현장 단에서의 신뢰성 문장을 요구한다. "B는 접촉의 5% 미만에서만 10 N을 넘었다." 초과를 하나도 허용하지 않는다면, 95% 상한이 5% 아래로 내려가려면 연속 접촉이 몇 번 필요한가?
 3. **해석.** 초록 초안에 이렇게 적혀 있다. "임피던스 제어가 실제 로봇에서 패널 접촉에 대해 더 안전함이 검증되었다(p = 0.003)." 고정된 파일럿을 써서 이 문장과 그 증거 사이의 어긋남을 모두 짚고, 증거가 허락하는 가장 강한 문장으로 고쳐 쓴다.
+
+> [!note]- 그리는 법 · How to draw it
+> - **사다리:** §2 그림의 네 단을 시뮬레이션을 맨 아래로 하여 그리고, 단마다 허락하는 문장을 옆에 적는다.
+> - **"다른 사람이 쓴다"는 옆으로 떨어뜨린다.** 어느 단에서든 닿는 자기 축 위다. 채택은 현장 시험보다 엄밀하게 더 높은 등급의 증거가 아니기 때문이다(§2).
+> - **파일럿 표지:** 시행의 조건이 정하는 단 — 초록의 말이 아니라 시행이 돈 곳 — 에 놓고 *RS1 파일럿, 10 + 10회*라고 적는다.
+> - **표지 옆에는 그 단이 허락하는 문장을 RS1의 숫자로 적는다.** 계산 예제에서는 1단계의 단 1 문장이다.
+> - **가격표는 한 단 위에 단다.** 주장을 떠받칠 수 있는 결과마다 한 장씩. 계산 예제에서는 실험실 하드웨어 단에 *성공률: 제어기당 32회(정확 검정이면 36회)*와 *최대 접촉력: 제어기당 8회*.
+> - **화살표 둘:** 파일럿의 단을 따라가는 가로 화살표 *여기서 시행을 더하면: 좁아진 구간, 같은 문장*, 그리고 한 단 위로 올라가는 세로 화살표 *새로운 조건: 새로운 문장*. 시행은 한 단 안에서 확실성을 사고, 새로운 조건만이 새로운 단을 산다.
 
 > [!tip]- 정답 · Solutions
 > 1. 파일럿 표지는 단 2, 실험실 하드웨어로 옮겨 가고, 문장은 "우리 실험실 팔에서 스프링에 단 400 N/m 패널에 대해, B의 평균 최대 접촉력은 A보다 3.16 N 낮았다(95% 신뢰구간 1.28–5.04 N)"가 된다. 한 단 위는 실물 크기 목업이고, 그 문장은 "현실적인 기하와 규모를 견딘다"이다. 그 가격표에는 식은 적을 수 있어도 숫자는 적을 수 없다. 실제 패널 구조는 400 N/m보다 훨씬 뻣뻣하고, 반정현 모델에서 $10^5$ N/m의 접촉은 222 ms가 아니라 약 14 ms 동안 이어진다([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]). 그래서 제어기들은 다른 접촉을 마주하고, 400 N/m 파일럿의 성공률도 $d$도 위로 들고 갈 수 없다. 가격표에는 *먼저 새 파일럿, 그다음 그 계획값으로 n*이라고 적어야 한다.

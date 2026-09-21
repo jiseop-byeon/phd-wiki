@@ -44,12 +44,7 @@ estimate optimally, then control the estimate optimally, and it is jointly optim
 > [!note] First pass · 처음이라면
 > A short page; read it through. If you only have ten minutes, §2 is the one that changes how you read papers — "LQR guarantees stability" has two conditions attached, and papers linearising a nonlinear system inherit them only at the linearisation point.
 
-### Homework diagram · 과제가 그릴 그림
-
-Draw it once here; the problem set asks for the same figure with one weight changed. The object is
-**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ of
-[[04-robotics/control-theory-ce397|5. Control Theory §1]] — the same machine, with the gain now
-chosen by a cost instead of by hand.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 376" style="max-width:100%;height:auto" role="img" aria-label="Top: the leaky heater's feedback loop with the disturbance entering at the summing junction, and a dashed ledger that prices x with Q and u with R into J. Bottom: the real axis with the open-loop pole at -1 and the closed-loop poles at -1.414 for Q = 1 and -2.236 for Q = 4.">
   <defs><marker id="aLQR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -125,25 +120,7 @@ chosen by a cost instead of by hand.
   </g>
 </svg>
 
-**The loop.** A summing junction; the plant box $\dot x=-x+u+d$ after it; the disturbance $d$
-entering at that junction beside $u$; the state $x$ leaving the box; and a feedback path from $x$
-through a gain block $-K$ back into the junction. That much is the control page's picture, and
-nothing on it has changed.
-
-**The ledger, which is what LQR adds.** Tap both signals and draw where their prices are paid: a
-branch from $x$ into a box $Q$, a branch from $u$ into a box $R$, and both into an accumulator
-labelled $J=\int_0^\infty (Qx^2+Ru^2)\,dt$. Draw this branch with a different line weight, because
-it never touches the plant — it is an accounting path, not a control path, and keeping it visually
-separate is how $Q$ and $R$ stay distinct from the noise covariances $W$ and $V$ that enter the
-same loop in §4. Beside the $-K$ block write the single arrow the Riccati equation is,
-$(Q,R)\rightarrow P\rightarrow K$, and label it *offline, once*.
-
-**The pole axis.** Under the loop draw a real axis. Mark the open-loop pole at $-1$, where the
-uncontrolled heater already sits, and the closed-loop pole at $-(1+K)$. On this plant the
-stabilizing Riccati solution at $R=1$ is $P=K=-1+\sqrt{1+Q}$, so the closed-loop pole lands at
-exactly $-\sqrt{1+Q}$: mark $-\sqrt5=-2.236$ for the $Q=4$ case worked in §1, and
-$-\sqrt2=-1.414$ for the problem set's $Q=1$. The arrow worth drawing is the one that matters
-when reading a paper — raising $Q/R$ slides that pole left, and nothing else in the figure moves.
+**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ of [[04-robotics/control-theory-ce397|5. Control Theory §1]], in its feedback loop through $-K$, with the ledger LQR adds drawn dashed beside it. The ledger prices $x$ by $Q$ and $u$ by $R$ into $J=\int_0^\infty (Qx^2+Ru^2)\,dt$ and never touches the plant, and the Riccati equation is the one offline arrow $(Q,R)\rightarrow P\rightarrow K$ ($Q=4$, $R=1$ gives $P=K=1.236$). On the real axis below, the open-loop pole sits at $-1$ and, at $R=1$, the closed-loop pole at $-(1+K)=-\sqrt{1+Q}$, which is $-\sqrt2=-1.414$ at $Q=1$ and $-\sqrt5=-2.236$ at $Q=4$: raising $Q/R$ slides that pole left, and nothing else in the figure moves.
 
 ### 1. The Riccati equation, read structurally
 
@@ -362,9 +339,18 @@ Underactuated ch. (geometric intuition, code) → connect to the
 
 Tier B. **P4** $\dot x=-x+u+d$ from [[02-foundations/lab-plants|0.6]], $Q=1$, $R=1$. No simulator.
 
-1. **Draw.** The leaky heater with $u=-Kx$, boxes for $Q$ and $R$, disturbance $d$.
+1. **Draw.** The picture above, at $Q=1$, $R=1$: the leaky heater with $u=-Kx$, boxes for $Q$ and $R$, disturbance $d$.
 2. **Derive.** Scalar ARE. Stabilizing $P$ and $K$. Closed-loop pole and $x_\mathrm{ss}$ for $d=1$. Same two numbers at a CE397-style hand gain $K=4$.
 3. **Interpret.** Why LQR's $K$ is smaller than $K=4$, and what raising $Q/R$ buys and costs (the $(1+K)$ trade of CE397 §1).
+
+> [!note]- How to draw it · 그리는 법
+> - The loop: a summing junction, the plant box $\dot x=-x+u+d$ after it, the disturbance $d$ entering at that junction beside $u$, the state $x$ leaving the box, and a feedback path from $x$ through a gain block $-K$ back into the junction. That much is the control page's picture, unchanged.
+> - The ledger, which is what LQR adds: a branch from $x$ into a box $Q$, a branch from $u$ into a box $R$, and both into an accumulator labelled $J=\int_0^\infty (Qx^2+Ru^2)\,dt$.
+> - Draw the ledger with a different line weight, because it never touches the plant: it is an accounting path, not a control path, and keeping it visually separate is how $Q$ and $R$ stay distinct from the noise covariances $W$ and $V$ that enter the same loop in §4.
+> - Beside the $-K$ block, the single arrow the Riccati equation is, $(Q,R)\rightarrow P\rightarrow K$, labelled *offline, once*.
+> - Under the loop, a real axis with the open-loop pole at $-1$, where the uncontrolled heater already sits, and the closed-loop pole at $-(1+K)$.
+> - At $R=1$ the stabilizing Riccati solution on this plant is $P=K=-1+\sqrt{1+Q}$, so the closed-loop pole lands at exactly $-\sqrt{1+Q}$ (worked in §1, $Q=4$: $-\sqrt5=-2.236$).
+> - The arrow worth drawing is the one that matters when reading a paper: raising $Q/R$ slides that pole left, and nothing else in the figure moves.
 
 > [!tip]- Solutions
 > 1. Plant pole already at $-1$; $Q$ prices $x$, $R$ prices $u$.
@@ -410,12 +396,7 @@ $Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 
 > [!note] 처음이라면 · First pass
 > 짧은 페이지이니 통독하라. 10분뿐이라면 §2다 — "LQR은 안정성이 보장된다"에는 조건이 둘 붙어 있고, 비선형계를 선형화해 쓰는 논문은 그 조건을 선형화 지점에서만 물려받는다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-여기서 한 번 그려 두면, 과제는 가중치 하나만 바꾼 같은 그림을 요구한다. 대상은
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧
-[[04-robotics/control-theory-ce397|5. 제어 이론 §1]]의 새는 히터 $\dot x=-x+u+d$다. 기계는
-그대로이고, 이득을 손이 아니라 비용이 고른다는 점만 다르다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 376" style="max-width:100%;height:auto" role="img" aria-label="위: 외란이 합산점으로 들어오는 새는 히터의 피드백 루프와, x에는 Q로 u에는 R로 값을 매겨 J로 모으는 파선 장부. 아래: 개루프 극점 -1, Q = 1의 폐루프 극점 -1.414, Q = 4의 폐루프 극점 -2.236을 찍은 실수축.">
   <defs><marker id="aLQRk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -491,23 +472,7 @@ $Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 
   </g>
 </svg>
 
-**루프.** 합산점 하나, 그 뒤에 플랜트 상자 $\dot x=-x+u+d$, 그 합산점으로 $u$와 나란히 들어오는
-외란 $d$, 상자에서 나오는 상태 $x$, 그리고 $x$에서 이득 상자 $-K$를 거쳐 합산점으로 돌아가는
-피드백 경로. 여기까지는 제어 이론 페이지의 그림 그대로이고, 바뀐 것이 없다.
-
-**LQR이 더하는 것 — 장부.** 두 신호를 각각 따서 값이 치러지는 곳을 그린다. $x$에서 상자 $Q$로
-가는 가지, $u$에서 상자 $R$로 가는 가지, 그리고 둘이 함께 들어가는 누산기
-$J=\int_0^\infty (Qx^2+Ru^2)\,dt$. 이 가지는 선 굵기를 달리해 그려라. 플랜트를 전혀 건드리지
-않는 회계 경로이지 제어 경로가 아니며, 이렇게 시각적으로 갈라 두어야 $Q$·$R$이 §4에서 같은
-루프로 들어오는 잡음 공분산 $W$·$V$와 섞이지 않는다. $-K$ 상자 옆에는 리카티 방정식이 곧
-화살표 하나라는 것을 적는다: $(Q,R)\rightarrow P\rightarrow K$, 그리고 *오프라인에서 한 번*.
-
-**극점 축.** 루프 아래에 실수축을 긋는다. 제어하지 않은 히터가 이미 앉아 있는 개루프 극점
-$-1$과 폐루프 극점 $-(1+K)$를 표시한다. 이 플랜트에서 $R=1$일 때 안정화 리카티 해는
-$P=K=-1+\sqrt{1+Q}$이므로 폐루프 극점은 정확히 $-\sqrt{1+Q}$에 놓인다. §1에서 푼 $Q=4$의
-경우는 $-\sqrt5=-2.236$, 과제의 $Q=1$은 $-\sqrt2=-1.414$를 찍어라. 그릴 값이 있는 화살표는
-논문을 읽을 때 쓰이는 그것이다 — $Q/R$을 올리면 그 극점이 왼쪽으로 미끄러지고, 그림의 나머지는
-아무것도 움직이지 않는다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧 [[04-robotics/control-theory-ce397|5. 제어 이론 §1]]의 새는 히터 $\dot x=-x+u+d$가 $-K$를 거치는 피드백 루프에 있고, 그 옆에 LQR이 더하는 장부가 파선으로 붙어 있다. 장부는 $x$에는 $Q$, $u$에는 $R$로 값을 매겨 $J=\int_0^\infty (Qx^2+Ru^2)\,dt$에 모을 뿐 플랜트를 전혀 건드리지 않고, 리카티 방정식은 오프라인에서 한 번 도는 화살표 $(Q,R)\rightarrow P\rightarrow K$ 하나다($Q=4$, $R=1$이면 $P=K=1.236$). 아래 실수축에는 개루프 극점 $-1$과, $R=1$에서 $-(1+K)=-\sqrt{1+Q}$인 폐루프 극점($Q=1$이면 $-\sqrt2=-1.414$, $Q=4$면 $-\sqrt5=-2.236$)이 있고, $Q/R$을 올리면 그 극점이 왼쪽으로 미끄러질 뿐 그림의 나머지는 움직이지 않는다.
 
 ### 1. 리카티 방정식, 구조로 읽기
 
@@ -717,9 +682,18 @@ LQG의 추정기 쪽은 [[04-robotics/state-estimation-slam|상태 추정, 위�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** $\dot x=-x+u+d$, $Q=1$, $R=1$. 시뮬레이터 없음.
 
-1. **그리기.** $u=-Kx$인 새는 히터, $Q$와 $R$ 상자, 외란 $d$.
+1. **그리기.** $Q=1$, $R=1$에서의 위의 그림: $u=-Kx$인 새는 히터, $Q$와 $R$ 상자, 외란 $d$.
 2. **유도.** 스칼라 리카티. 안정화 $P$와 $K$. $d=1$의 폐루프 극점과 $x_\mathrm{ss}$. CE397식 손 이득 $K=4$에서 같은 두 숫자.
 3. **해석.** LQR의 $K$가 $K=4$보다 작은 이유, $Q/R$을 올리면 사고 치는 것(CE397 §1의 $(1+K)$ 거래).
+
+> [!note]- 그리는 법 · How to draw it
+> - 루프: 합산점 하나, 그 뒤의 플랜트 상자 $\dot x=-x+u+d$, 그 합산점으로 $u$와 나란히 들어오는 외란 $d$, 상자에서 나오는 상태 $x$, 그리고 $x$에서 이득 상자 $-K$를 거쳐 합산점으로 돌아가는 피드백 경로. 여기까지는 제어 이론 페이지의 그림 그대로다.
+> - LQR이 더하는 장부: $x$에서 상자 $Q$로 가는 가지, $u$에서 상자 $R$로 가는 가지, 그리고 둘이 함께 들어가는 누산기 $J=\int_0^\infty (Qx^2+Ru^2)\,dt$.
+> - 장부는 선 굵기를 달리해 그린다. 플랜트를 전혀 건드리지 않는 회계 경로이지 제어 경로가 아니며, 이렇게 시각적으로 갈라 두어야 $Q$·$R$이 §4에서 같은 루프로 들어오는 잡음 공분산 $W$·$V$와 섞이지 않는다.
+> - $-K$ 상자 옆에는 리카티 방정식이 곧 화살표 하나라는 것: $(Q,R)\rightarrow P\rightarrow K$, 그리고 *오프라인에서 한 번*.
+> - 루프 아래의 실수축: 제어하지 않은 히터가 이미 앉아 있는 개루프 극점 $-1$과 폐루프 극점 $-(1+K)$.
+> - 이 플랜트에서 $R=1$일 때 안정화 리카티 해는 $P=K=-1+\sqrt{1+Q}$이므로 폐루프 극점은 정확히 $-\sqrt{1+Q}$에 놓인다(§1의 계산, $Q=4$: $-\sqrt5=-2.236$).
+> - 그릴 값이 있는 화살표는 논문을 읽을 때 쓰이는 그것이다. $Q/R$을 올리면 그 극점이 왼쪽으로 미끄러지고, 그림의 나머지는 아무것도 움직이지 않는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 플랜트 극점은 이미 $-1$; $Q$는 $x$, $R$은 $u$에 값을 매긴다.

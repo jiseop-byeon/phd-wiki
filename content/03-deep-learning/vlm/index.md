@@ -28,9 +28,7 @@ Everything on this page follows from those six vectors and one knob. All are uni
 
 *Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]]. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
 
-### Homework diagram
-
-One figure in two parts, and the problem set asks for exactly this one. The figure is the worked case at $\tau=1/2$, with the three row losses and their mean.
+### The picture
 
 <svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="D3's two encoders feed a 3 by 3 cosine matrix, dividing every cell by tau = 1/2 gives the one logit matrix with its diagonal marked as positives inside a batch box, and that matrix is read along rows and along columns, each giving losses 0.407606, 0.757448, 0.642002 and the objective 0.602352 nats">
   <defs><marker id="aD3e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -115,19 +113,13 @@ One figure in two parts, and the problem set asks for exactly this one. The figu
   <text x="12" y="360" font-size="11" fill="currentColor" fill-opacity="0.85">no information: log 3 = 1.098612</text>
 </svg>
 
-And the matrix itself, which is the part the problem set asks you to draw by hand. At $\tau=1/2$:
-
 | $\ell_{ij}$ | $t_1$ | $t_2$ | $t_3$ |
 |---|---:|---:|---:|
 | $v_1$ | $\mathbf{2}$ | $1$ | $0$ |
 | $v_2$ | $1$ | $\mathbf{2}$ | $1.732051$ |
 | $v_3$ | $0$ | $1.732051$ | $\mathbf{2}$ |
 
-Four things the drawing has to get right, each of which is a claim about the objective.
-**The diagonal marked as the positives, and nothing else marked.** Every off-diagonal cell is a negative *by construction of the batch*, not by any evidence that the pair is wrong. That is the single assumption the whole loss rests on, and the duplicate-caption variant is what happens when it fails.
-**Two arrows out of the same matrix, not two matrices.** The row softmax and the column softmax read the identical numbers in two directions. Drawing two matrices claims there are two models; there is one, scored twice.
-**The $\tau$ division drawn before the softmax, on the whole matrix.** Temperature is not a property of a pair and not a property of the encoder — it scales every cell at once, which is why it can be pulled out of the picture and swept in §5.
-**The batch boundary drawn as a box around all nine cells.** Nothing outside the box is a negative. A loss computed over three items is a different function from the same loss over 32,768 items, and the box is where the difference lives.
+D3's worked case at $\tau=1/2$: the two encoders give a $3\times3$ cosine matrix, and dividing all nine cells by $\tau$ gives the one logit matrix — repeated in the table — with the diagonal shaded as the positives and a box around the batch of $N=3$. The same matrix is read twice, by the row softmax (image → text) and by the column softmax (text → image), and because D3's matrix is symmetric both give the losses $0.407606$, $0.757448$ and $0.642002$, mean $0.602352$. The objective is $\mathcal L=0.602352$ nats, against $\log3=1.098612$ for a model with no information.
 
 ### Worked case
 
@@ -303,7 +295,7 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 
 Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. D3 and its two variants are frozen in the Running object; question 4 uses the duplicate-caption variant, which §5 never runs, so none of the lab's numbers can be copied.
 
-1. **Draw.** Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; mark where a larger batch would add cells, and which of the added cells would be negatives.
+1. **Draw.** The picture above, redrawn to show what a larger batch changes. Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; mark where a larger batch would add cells, and which of the added cells would be negatives.
 2. **Derive.** On D3 image 1, recompute logits and row loss at $\tau=1/4$. Explain the effect of the lower temperature.
 3. **Interpret.** A model answers “red valve” correctly but no localization or intervention is tested. What claim remains open?
 4. **Do.** Fill the `?` blanks, then run the **duplicate-caption** variant: caption 3 is an exact copy of caption 2, so $t_3=t_2$ while the images are unchanged. Sweep $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$ and report (a) $\mathcal L$ at each $\tau$; (b) the three image-to-text row losses and the three text-to-image column losses at $\tau=1/2$ and at $\tau=1/100$; (c) the $\tau$ that minimises $\mathcal L$, by grid search. Then answer in two sentences: which of the six losses is unbounded as $\tau\to0$ and which ones converge to $\log 2$, and what that difference says about how a duplicate caption damages the two directions differently.
@@ -324,6 +316,12 @@ grid = np.exp(np.linspace(np.log(0.01), np.log(3.0), 20001))
 Ld = np.array([? for t in grid])             # L at each tau on the grid
 print("best tau = %.4f at L = %.6f" % (grid[Ld.argmin()], Ld.min()))
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Mark the diagonal as the positives, and nothing else. Every off-diagonal cell is a negative *by construction of the batch*, not by any evidence that the pair is wrong; that is the single assumption the whole loss rests on, and the duplicate-caption variant is what happens when it fails.
+> - Draw two arrows out of the same matrix, not two matrices. The row softmax and the column softmax read the identical numbers in two directions; drawing two matrices claims there are two models, and there is one, scored twice.
+> - Draw the $\tau$ division before the softmax, on the whole matrix. Temperature is not a property of a pair or of the encoder — it scales every cell at once, which is why §5 can pull it out and sweep it.
+> - Draw the batch boundary as a box around all the cells. Nothing outside the box is a negative: a loss computed over three items is a different function from the same loss over 32,768 items, and the box is where the difference lives.
 
 > [!tip]- Solutions
 > 1. Rows are images, columns captions; $(i,i)$ are matched pairs. The two arrows leave the same matrix — one softmax along rows, one along columns — with the $\tau$ division applied to all nine cells first. Nothing outside the box is a negative: enlarging the batch adds columns and rows, and every new off-diagonal cell becomes a negative the moment it is drawn, which is the whole mechanism by which $N$ enters the loss.
@@ -360,9 +358,7 @@ logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트,
 
 *범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
 
-### 과제가 그릴 그림
-
-두 부분으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 $\tau=1/2$의 계산 절이고, 행 loss 셋과 그 평균까지 적었다.
+### 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="D3의 두 encoder가 3×3 코사인 행렬을 만들고, 아홉 칸 전부를 τ = 1/2로 나눈 logit 행렬 하나에 대각선을 positive로 표시하고 배치 상자를 두른 뒤, 그 행렬을 행 방향과 열 방향으로 읽어 각각 loss 0.407606, 0.757448, 0.642002와 목적함수 0.602352 nat을 얻는 그림">
   <defs><marker id="aD3k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -447,19 +443,13 @@ logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트,
   <text x="12" y="360" font-size="11" fill="currentColor" fill-opacity="0.85">정보 없음: log 3 = 1.098612</text>
 </svg>
 
-둘째 부분은 $\tau=1/2$의 행렬 자체이고, 과제가 손으로 그리라는 것이 그것이다.
-
 | $\ell_{ij}$ | $t_1$ | $t_2$ | $t_3$ |
 |---|---:|---:|---:|
 | $v_1$ | $\mathbf{2}$ | $1$ | $0$ |
 | $v_2$ | $1$ | $\mathbf{2}$ | $1.732051$ |
 | $v_3$ | $0$ | $1.732051$ | $\mathbf{2}$ |
 
-그림이 맞혀야 할 것이 넷이고, 각각이 목적함수에 대한 주장이다.
-**대각선만 positive로 표시하고 그 밖에는 아무것도 표시하지 않는다.** 대각선 밖의 모든 칸은 그 쌍이 틀렸다는 어떤 증거 때문이 아니라 *배치를 그렇게 구성했기 때문에* negative다. loss 전체가 이 가정 하나에 얹혀 있고, 중복 캡션 변형이 그 가정이 깨졌을 때의 모습이다.
-**행렬 둘이 아니라 같은 행렬에서 나오는 화살표 둘.** 행 softmax와 열 softmax는 동일한 숫자를 두 방향으로 읽는다. 행렬을 둘 그리면 모델이 둘이라고 주장하는 셈이다. 모델은 하나이고 채점이 둘이다.
-**$\tau$ 나눗셈은 softmax 앞에, 행렬 전체에 그린다.** temperature는 쌍의 성질도 encoder의 성질도 아니다. 아홉 칸을 한꺼번에 비례 조정하므로 그림에서 떼어 내 §5에서 훑을 수 있다.
-**배치 경계는 아홉 칸을 감싸는 상자로 그린다.** 상자 밖에는 negative가 없다. 항목 3개에 대한 loss와 32,768개에 대한 같은 loss는 다른 함수이고, 그 차이가 사는 자리가 이 상자다.
+$\tau=1/2$에서의 D3 계산 절로, 두 encoder가 $3\times3$ 코사인 행렬을 만들고 아홉 칸 전부를 $\tau$로 나누면 logit 행렬 하나 — 표에 다시 적었다 — 가 되며, 대각선은 positive로 음영을 넣고 $N=3$인 배치를 상자로 감쌌다. 같은 행렬을 행 softmax(이미지 → 텍스트)와 열 softmax(텍스트 → 이미지)로 두 번 읽는데, D3의 행렬이 대칭이라 두 방향 모두 loss $0.407606$, $0.757448$, $0.642002$, 평균 $0.602352$를 준다. 목적함수는 $\mathcal L=0.602352$ nat이고, 정보가 없는 모델의 값은 $\log3=1.098612$다.
 
 ### 대상으로 한 번 끝까지
 
@@ -588,10 +578,16 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 
 Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. D3와 두 변형은 대상 절에 고정되어 있고, 문제 4는 §5가 한 번도 돌리지 않는 중복 캡션 변형을 쓰므로 실습의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** D3의 $3\times3$ similarity matrix와 diagonal positive를 그린다. 같은 행렬에서 나오는 두 softmax 방향을 화살표로, 그 앞의 $\tau$ 나눗셈을, 그리고 배치를 감싸는 상자를 더한다. 배치가 더 커지면 칸이 어디에 더해지고, 더해진 칸 중 어느 것이 negative가 되는지 표시한다.
+1. **그리기.** 더 큰 배치가 무엇을 바꾸는지 보이도록 위의 그림을 다시 그린다. D3의 $3\times3$ similarity matrix와 diagonal positive를 그리고, 같은 행렬에서 나오는 두 softmax 방향을 화살표로, 그 앞의 $\tau$ 나눗셈을, 그리고 배치를 감싸는 상자를 더한다. 배치가 더 커지면 칸이 어디에 더해지고, 더해진 칸 중 어느 것이 negative가 되는지 표시한다.
 2. **유도.** D3 이미지 1에서 $\tau=1/4$일 때 logit과 row loss, 낮은 temperature의 효과를 계산한다.
 3. **해석.** “red valve” 정답만으로 남는 grounding 질문을 말한다.
 4. **실행.** 영어 절 템플릿의 `?`를 채우고 **중복 캡션** 변형을 돌린다. 캡션 3이 캡션 2의 정확한 복사본이므로 $t_3=t_2$이고 이미지는 그대로다. $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$을 훑어 (a) 각 $\tau$의 $\mathcal L$, (b) $\tau=1/2$과 $\tau=1/100$에서의 image→text 행 loss 셋과 text→image 열 loss 셋, (c) 격자 탐색으로 $\mathcal L$을 최소화하는 $\tau$를 보고한다. 그리고 두 문장으로 답한다. 여섯 loss 중 $\tau\to0$에서 위로 유계가 아닌 것은 무엇이고 $\log 2$로 수렴하는 것은 무엇이며, 그 차이는 중복 캡션이 두 방향을 서로 다르게 망가뜨리는 방식에 대해 무엇을 말하는가.
+
+> [!note]- 그리는 법 · How to draw it
+> - 대각선만 positive로 표시하고 그 밖에는 아무것도 표시하지 않는다. 대각선 밖의 모든 칸은 그 쌍이 틀렸다는 어떤 증거 때문이 아니라 *배치를 그렇게 구성했기 때문에* negative다. loss 전체가 이 가정 하나에 얹혀 있고, 중복 캡션 변형이 그 가정이 깨졌을 때의 모습이다.
+> - 행렬 둘이 아니라 같은 행렬에서 나오는 화살표 둘을 그린다. 행 softmax와 열 softmax는 동일한 숫자를 두 방향으로 읽는다. 행렬을 둘 그리면 모델이 둘이라고 주장하는 셈인데, 모델은 하나이고 채점이 둘이다.
+> - $\tau$ 나눗셈은 softmax 앞에, 행렬 전체에 그린다. temperature는 쌍의 성질도 encoder의 성질도 아니다. 모든 칸을 한꺼번에 비례 조정하므로 §5가 그것을 떼어 내 훑을 수 있다.
+> - 배치 경계는 모든 칸을 감싸는 상자로 그린다. 상자 밖에는 negative가 없다. 항목 3개에 대한 loss와 32,768개에 대한 같은 loss는 다른 함수이고, 그 차이가 사는 자리가 이 상자다.
 
 > [!tip]- 정답 · Solutions
 > 1. 행=image, 열=caption, $(i,i)$가 positive. 화살표 둘은 같은 행렬에서 나가고, 하나는 행 방향 softmax, 다른 하나는 열 방향 softmax이며, $\tau$ 나눗셈이 아홉 칸 전부에 먼저 걸린다. 상자 밖에는 negative가 없다. 배치를 키우면 행과 열이 늘고, 새로 그려지는 대각선 밖 칸은 그려지는 순간 negative가 된다. $N$이 loss에 들어오는 기제 전체가 그것이다.

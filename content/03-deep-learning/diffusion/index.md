@@ -8,8 +8,8 @@ mastery-when: "Raise when the generative objective, sampler, action distribution
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], and [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs]].
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN]].
+> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], and [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs]].
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN]].
 
 ## English
 
@@ -41,9 +41,7 @@ The network is specified as completely as the datum: it returns the noise that w
 
 *Scope: this page teaches the two processes a diffusion model is made of, how a prediction target is translated between parameterizations, and what the number of sampler steps costs and buys. It does not teach the score-matching and variational derivations that justify the loss, which live with the density estimation of [[02-foundations/probability|3. Probability]] and [[02-foundations/information-theory|5. Information Theory]] and, for the variational bound, [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs]]; nor the network architectures (U-Net, DiT) that carry it, which are [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor how a sampled action is committed to a robot, which is the chunk of [[03-deep-learning/vla/index|4. VLA]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Two paths that share a set of levels and nothing else, and the problem set asks for exactly this drawing. The figure is the worked case: D6's schedule on top, and the reverse loop drawn for $N=4$, the sweep row that equals the worked case's one-shot $1.85$.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 384" style="max-width:100%;height:auto" role="img" aria-label="D6's schedule, the square root of alpha-bar falling linearly from 1 to 0.2 over 20 levels with its partner rising to 0.979796, above the two paths on the same levels: the forward path as one jump from the known x0 = 2 to x5 = 1 feeding the loss, and the reverse path starting at level 20 without any x0, looping N = 4 times through levels 15, 10 and 5 to the estimate 1.85">
   <defs><marker id="aD6e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -195,13 +193,7 @@ Two paths that share a set of levels and nothing else, and the problem set asks 
   <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
 </svg>
 
-The reverse loop drawn is §5's deterministic sampler at $N=4$, whose last estimate is the one-shot $1.85$ — not the worked case's single ancestral step, whose mean $\mu_4=1.180159$ takes the catalog $x_5=1$ down one level.
-
-Four things the drawing has to get right.
-**The forward path is one arrow, not a chain.** Training never walks down the levels; it samples a level and jumps there in closed form. Drawing a chain there is claiming a cost the training loop does not pay.
-**The reverse path is a loop with a counter on it.** Write $N$ on the loop. That counter is the only quantity §5 varies and the only one the latency budget sees.
-**The two paths do not share a starting point.** The forward path starts at a known $x_0$; the reverse starts where no $x_0$ exists. Every confusion about "why can't it just do one step" is that arrow drawn wrongly.
-**Label the levels, not the times.** Put $\sqrt{\bar\alpha_i}$ and $\sqrt{1-\bar\alpha_i}$ on the arrows rather than $t$. The schedule, not the index, is what the arithmetic uses, and two papers with the same $T$ can have completely different schedules.
+D6's schedule on top — $\sqrt{\bar\alpha_i}$ falling linearly from 1 to 0.2 over 20 levels while $\sqrt{1-\bar\alpha_i}$ rises to 0.979796 — and below it the two paths that share those levels and nothing else. The forward path is one closed-form jump from the known $x_0=2$ to $x_5=0.8\cdot2+0.6\cdot(-1)=1$, feeding the loss; the reverse path starts at $x_{20}$ with no $x_0$ behind it and loops $N=4$ times, one network call per hop ($4\times5\,\mathrm{ms}=20\,\mathrm{ms}$), to $\hat x_0=1.85$, an error of $0.15=0.2\times0.75$. The loop is §5's deterministic sampler at $N=4$, not the worked case's single ancestral step, whose mean $\mu_4=1.180159$ takes the catalog $x_5=1$ down one level.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -385,9 +377,9 @@ Given a generative paper, identify the path, the prediction target, the conditio
 
 ### Problem set · 과제
 
-Tier A. Using **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
+Tier A. Using **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
 
-1. **Draw.** The homework diagram: the forward path as a single arrow from $x_0$ to an arbitrary level with $\sqrt{\bar\alpha_i}$ and $\sqrt{1-\bar\alpha_i}$ on it, the reverse path as a loop carrying the counter $N$, and the two starting points kept apart. Add, on the reverse loop, the one extra arrow that classifier-free guidance introduces, and write next to it what it does to the latency column of §5.
+1. **Draw.** The picture above, in symbols: the forward path as a single arrow from $x_0$ to an arbitrary level with $\sqrt{\bar\alpha_i}$ and $\sqrt{1-\bar\alpha_i}$ on it, the reverse path as a loop carrying the counter $N$, and the two starting points kept apart. Add, on the reverse loop, the one extra arrow that classifier-free guidance introduces, and write next to it what it does to the latency column of §5.
 2. **Derive.** Work the same level with the noise draw flipped to $\epsilon=+1$. (a) $x_5$. (b) The one-shot $\hat x_0$ with a perfect predictor, and with this page's biased network. (c) The DDPM ancestral mean $\mu_4$ with the biased network, using the catalog $\alpha_5$ and $\beta_5$. (d) Say which of (a)–(c) changed by the same amount as the flip and which did not, and why.
 3. **Do.** Fill the `?` in the patch below and re-run §5's sweep with it. The network's error now depends on the sample instead of being constant: $\epsilon_\theta(x,i)=(x-\sqrt{\bar\alpha_i}x_0)/\sqrt{1-\bar\alpha_i}+0.2\,x$, which at the catalog level still returns exactly $-0.8$ and so is indistinguishable from §5's network on the worked case. Report $\hat x_0$ and the error for $N\in\{1,2,4,5,10,20\}$, compare against §5's closed-form column, and say what this shows about the fifth column of that table.
 
@@ -396,6 +388,13 @@ Tier A. Using **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], this 
 def eps_model(x, k):                      # same value at the catalog level, different law
     return (x - s[k] * x0) / n[k] + ?     # a bias proportional to the current sample
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Draw the forward path as one arrow, not a chain. Training never walks down the levels; it samples a level and jumps there in closed form, and a chain claims a cost the training loop does not pay.
+> - Draw the reverse path as a loop with the counter $N$ written on it. That counter is the only quantity §5 varies and the only one the latency budget sees.
+> - Keep the two starting points apart: the forward path starts at a known $x_0$, the reverse where no $x_0$ exists. Every confusion about "why can't it just do one step" is that arrow drawn wrongly.
+> - Label the levels, not the times: put $\sqrt{\bar\alpha_i}$ and $\sqrt{1-\bar\alpha_i}$ on the arrows rather than $t$. The arithmetic uses the schedule, not the index, and two papers with the same $T$ can have completely different schedules.
+> - Draw the guidance arrow on the reverse loop, inside the counter $N$ rather than before it, and write its effect on §5's latency column beside it.
 
 > [!tip]- Solutions
 > 1. Forward: one arrow from $x_0$ to $x_i$ labelled $\sqrt{\bar\alpha_i}x_0+\sqrt{1-\bar\alpha_i}\epsilon$, feeding the loss. Reverse: a loop from $x_{20}$ through $x_i$ back into itself, labelled with $N$, ending at $\hat x_0$, and starting at a point with no $x_0$ behind it. Guidance adds a *second* evaluation of the same network with the condition dropped, whose output is combined with the first by $(1+w)\epsilon_c-w\epsilon_\varnothing$ — so the arrow doubles every entry of the latency column, and the $N=10$ row that exactly filled a 20 Hz period becomes 100 ms and does not fit.
@@ -428,9 +427,7 @@ def eps_model(x, k):                      # same value at the catalog level, dif
 
 *범위: 이 페이지는 diffusion 모델을 이루는 두 과정, 예측 target을 parameterization 사이에서 번역하는 법, sampler step 수가 무엇을 치르고 무엇을 사는지를 가르친다. 손실을 정당화하는 score matching과 변분 유도는 가르치지 않는다. 그것은 [[02-foundations/probability|3. Probability]]와 [[02-foundations/information-theory|5. Information Theory]]의 밀도 추정 쪽이고, 변분 하한은 [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN]]에도 있다. 그것을 실어 나르는 architecture(U-Net, DiT)도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]이다. 뽑힌 행동을 로봇에 확정하는 법도 아니다. 그것은 [[03-deep-learning/vla/index|4. VLA]]의 chunk다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-레벨 집합만 공유하고 나머지는 공유하지 않는 두 경로. 과제가 요구하는 것이 정확히 이 그림이다. 그림은 계산 절이다. 위에 D6의 schedule을 그렸고, reverse 고리는 계산 절의 한 번에 끝내는 추정 $1.85$와 같은 $N=4$ 행으로 그렸다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 384" style="max-width:100%;height:auto" role="img" aria-label="20레벨에 걸쳐 1에서 0.2로 선형으로 줄어드는 루트 알파바와 0.979796으로 오르는 짝을 그린 D6의 schedule과, 같은 레벨 위에서 알려진 x0 = 2에서 x5 = 1로 한 번에 건너뛰어 손실로 가는 forward 경로와 x0가 없는 레벨 20에서 출발해 N = 4번 돌아 1.85에 닿는 reverse 경로">
   <defs><marker id="aD6k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -582,13 +579,7 @@ def eps_model(x, k):                      # same value at the catalog level, dif
   <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
 </svg>
 
-그림의 reverse 고리는 계산 절의 ancestral 한 스텝(평균 $\mu_4=1.180159$, 카탈로그 $x_5=1$에서 한 레벨 아래로)이 아니라 §5의 결정론적 sampler를 $N=4$로 돌린 것이고, 그 마지막 추정이 한 번에 끝내는 $1.85$다.
-
-그림이 맞혀야 할 것이 넷이다.
-**forward 경로는 사슬이 아니라 화살표 하나다.** 학습은 레벨을 하나 뽑아 닫힌 형태로 곧장 건너뛴다. 거기에 사슬을 그리는 것은 학습 루프가 치르지 않는 비용을 주장하는 것이다.
-**reverse 경로는 계수기가 붙은 고리다.** 고리 위에 $N$을 적는다. §5가 바꾸는 유일한 양이고 지연 예산이 보는 유일한 양이다.
-**두 경로의 출발점은 같지 않다.** forward는 알려진 $x_0$에서 출발하고 reverse는 $x_0$가 없는 곳에서 출발한다. "왜 한 스텝으로 안 되나"라는 혼동은 전부 그 화살표를 잘못 그린 것이다.
-**시간이 아니라 레벨에 이름을 붙인다.** 화살표에 $t$ 대신 $\sqrt{\bar\alpha_i}$와 $\sqrt{1-\bar\alpha_i}$를 적는다. 산수가 쓰는 것은 색인이 아니라 schedule이고, 같은 $T$를 가진 두 논문의 schedule이 전혀 다를 수 있다.
+위에는 D6의 schedule — 20레벨에 걸쳐 $\sqrt{\bar\alpha_i}$가 1에서 0.2로 선형으로 줄고 $\sqrt{1-\bar\alpha_i}$가 0.979796까지 오른다 — 을, 아래에는 그 레벨만 공유하고 나머지는 공유하지 않는 두 경로를 그렸다. forward 경로는 알려진 $x_0=2$에서 $x_5=0.8\cdot2+0.6\cdot(-1)=1$로 닫힌 형태로 한 번에 건너뛰어 손실로 가고, reverse 경로는 뒤에 $x_0$가 없는 $x_{20}$에서 출발해 한 칸마다 신경망을 한 번 부르며 $N=4$번 돌아($4\times5\,\mathrm{ms}=20\,\mathrm{ms}$) $\hat x_0=1.85$, 오차 $0.15=0.2\times0.75$에 닿는다. 이 고리는 §5의 결정론적 sampler를 $N=4$로 돌린 것이고, 카탈로그 $x_5=1$을 한 레벨 내리는 계산 절의 ancestral 한 스텝(평균 $\mu_4=1.180159$)이 아니다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -733,11 +724,18 @@ sampling step은 latency·control rate·재관측 주기를 바꾼다. solver·s
 
 ### 과제 · Problem set
 
-Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
+Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
 
-1. **그리기.** 과제 그림. forward 경로는 $x_0$에서 임의 레벨로 가는 화살표 하나로, 위에 $\sqrt{\bar\alpha_i}$와 $\sqrt{1-\bar\alpha_i}$를 적는다. reverse 경로는 계수기 $N$을 단 고리로 그리고, 두 출발점을 떼어 놓는다. reverse 고리에 classifier-free guidance가 더하는 화살표 하나를 그리고, 그것이 §5의 지연 열에 무엇을 하는지 옆에 적는다.
+1. **그리기.** 위의 그림을 기호로 그린다. forward 경로는 $x_0$에서 임의 레벨로 가는 화살표 하나로, 위에 $\sqrt{\bar\alpha_i}$와 $\sqrt{1-\bar\alpha_i}$를 적는다. reverse 경로는 계수기 $N$을 단 고리로 그리고, 두 출발점을 떼어 놓는다. reverse 고리에 classifier-free guidance가 더하는 화살표 하나를 그리고, 그것이 §5의 지연 열에 무엇을 하는지 옆에 적는다.
 2. **유도.** 같은 레벨에서 noise를 $\epsilon=+1$로 뒤집어 계산한다. (a) $x_5$. (b) 완벽한 예측기의 한 번에 끝내는 $\hat x_0$과 이 페이지의 편향된 신경망의 것. (c) 카탈로그 $\alpha_5$, $\beta_5$로 편향된 신경망의 DDPM ancestral 평균 $\mu_4$. (d) (a)–(c) 중 뒤집은 만큼 바뀐 것과 바뀌지 않은 것을 가르고 이유를 말한다.
 3. **실행.** 영어 절 패치의 `?`를 채우고 §5의 쓸기를 다시 돌린다. 신경망 오차가 상수가 아니라 표본에 의존한다. $\epsilon_\theta(x,i)=(x-\sqrt{\bar\alpha_i}x_0)/\sqrt{1-\bar\alpha_i}+0.2\,x$이고, 카탈로그 레벨에서는 여전히 정확히 $-0.8$을 돌려주므로 계산 절만으로는 §5의 신경망과 구분되지 않는다. $N\in\{1,2,4,5,10,20\}$의 $\hat x_0$과 오차를 보고하고 §5의 닫힌 형태 열과 비교한 뒤, 그 표의 다섯째 열에 대해 무엇을 보이는지 말한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - forward 경로는 사슬이 아니라 화살표 하나로 그린다. 학습은 레벨을 따라 내려가지 않고, 레벨을 하나 뽑아 닫힌 형태로 곧장 건너뛴다. 사슬을 그리면 학습 루프가 치르지 않는 비용을 주장하게 된다.
+> - reverse 경로는 계수기 $N$을 적은 고리로 그린다. 그 계수기가 §5가 바꾸는 유일한 양이고 지연 예산이 보는 유일한 양이다.
+> - 두 출발점을 떼어 놓는다. forward는 알려진 $x_0$에서, reverse는 $x_0$가 없는 곳에서 출발한다. "왜 한 스텝으로 안 되나"라는 혼동은 전부 그 화살표를 잘못 그린 것이다.
+> - 시간이 아니라 레벨에 이름을 붙인다. 화살표에 $t$ 대신 $\sqrt{\bar\alpha_i}$와 $\sqrt{1-\bar\alpha_i}$를 적는다. 산수가 쓰는 것은 색인이 아니라 schedule이고, 같은 $T$를 가진 두 논문의 schedule이 전혀 다를 수 있다.
+> - guidance 화살표는 reverse 고리 위, 계수기 $N$의 앞이 아니라 안에 그리고, §5의 지연 열에 미치는 효과를 옆에 적는다.
 
 > [!tip]- 정답 · Solutions
 > 1. forward는 $x_0$에서 $x_i$로 가는 화살표 하나에 $\sqrt{\bar\alpha_i}x_0+\sqrt{1-\bar\alpha_i}\epsilon$을 적고 손실로 들어간다. reverse는 $x_{20}$에서 $x_i$를 거쳐 자신으로 돌아오는 고리에 $N$을 적고 $\hat x_0$에서 끝나며, 뒤에 $x_0$가 없는 점에서 시작한다. guidance는 조건을 떨어뜨린 같은 신경망의 *두 번째* 평가를 더하고 그 출력을 $(1+w)\epsilon_c-w\epsilon_\varnothing$으로 첫 번째와 결합한다. 그래서 그 화살표가 지연 열의 모든 항을 두 배로 만들고, 20 Hz 주기를 정확히 채우던 $N=10$ 행이 100 ms가 되어 들어가지 못한다.

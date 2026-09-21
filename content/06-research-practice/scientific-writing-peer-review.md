@@ -38,9 +38,7 @@ Scientific writing aligns a claim with evidence and makes its boundary inspectab
 
 *Scope: this page teaches how to write RS1's claim up — the paper-level argument, one results table and one figure for the pilot, the sentence each number licenses, a limitations paragraph, and one review exchange. It does not teach how the claim was formed ([[06-research-practice/research-questions-claims|1. Research Questions & Claims]]), how the experiment is designed and sized ([[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]), tests beyond the three used here ([[02-foundations/probability|3. Probability §6]]), or where to submit ([[06-research-practice/venue-strategy|5. Venue Strategy]]).*
 
-### Homework diagram · 과제가 그릴 그림
-
-The paper's one figure, drawn by hand before any plotting code is written. The problem set asks for it again under a different success definition, with a second panel added.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="RS1 pilot as the paper's figure: every trial's peak contact force as a dot on a 5 to 15 N axis, the 10 N line fixed before the pilot with the success side shaded, each controller's mean with its 95% interval, and beside it the difference of means, 3.16 N with Welch 95% interval 1.28 to 5.04">
   <rect x="72" y="30" width="150" height="128" fill="currentColor" fill-opacity="0.08"/>
@@ -119,12 +117,7 @@ The paper's one figure, drawn by hand before any plotting code is written. The p
   <text x="38" y="278" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">Right: the difference of means A − B, 3.16 N, with its Welch 95% interval [1.28, 5.04].</text>
 </svg>
 
-1. **Axis and line.** A horizontal axis of peak contact force from 5 to 15 N. A dashed vertical line at 10 N labelled *fixed before the pilot*, with the success side shaded.
-2. **Every trial.** A's ten peaks as dots on one row and B's ten on the row below: dots, not bars, so that a reader can count the four A peaks stacked just under the line and B's single peak above it.
-3. **The uncertainty that answers the claim.** Under each row, the mean with its 95% interval. Beside the figure, the difference of means with its Welch interval, $3.16$ N $[1.28,\ 5.04]$, because the claim is about the difference and neither row's own interval answers it.
-4. **The caption.** Units, $n$ per arm, that the trials are unpaired, what the dots, diamonds and bars are, where the threshold came from, and that no trial was excluded.
-
-The drawing above is the complete one, all four steps included. §4 prints it as the paper's Figure 1 without the difference-of-means panel, whose number its caption sends to Table 1. A figure that needs the body text before it can be read has failed at step 4.
+RS1's pilot as the paper's one figure: every trial's peak contact force is a dot, A's ten on the upper row and B's ten below, against the 10 N success line fixed before the pilot, so six of A's dots and nine of B's fall on the shaded success side. Under each row sit the mean and its 95% t-interval, A 10.66 N [8.93, 12.39] and B 7.50 N [6.53, 8.47], and on the right is the number the claim is about, the difference of means, 3.16 N with Welch 95% interval [1.28, 5.04]. The circled numbers mark the four parts a results figure owes its reader: the line fixed in advance, every trial, the interval that answers the claim, and a caption that reads without the body text.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -228,19 +221,19 @@ Do not let the introduction promise general capability while experiments test on
     <rect x="70" y="52" width="150" height="60" rx="3"/>
     <rect x="340" y="30" width="200" height="104" rx="3" fill-opacity="0.16"/>
   </g>
-  <g font-size="10" fill="currentColor" text-anchor="middle">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="145" y="46">what the evidence covers</text>
     <text x="145" y="86">what the paper claims</text>
-    <text x="385" y="86">what the evidence covers</text>
-    <text x="440" y="152">what the paper claims</text>
+    <text x="400" y="80">what the evidence</text><text x="400" y="93">covers</text>
+    <text x="440" y="153">what the paper claims</text>
   </g>
   <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none">
-    <line x1="440" y1="144" x2="440" y2="136"/>
+    <line x1="440" y1="142" x2="440" y2="136"/>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="11" fill="currentColor" opacity="0.85">
     <text x="310" y="170">this overhang is exactly what gets attacked</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
+  <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="24" y="188">A reviewer is not measuring how large the result is. They are measuring whether one box sits</text>
     <text x="24" y="204">inside the other. Every &#8220;the claim is too strong&#8221; review is a report of the shaded band, and the</text>
     <text x="24" y="220">cheapest fix is almost never a new experiment &#8212; it is narrowing the sentence until it fits.</text>
@@ -298,7 +291,7 @@ For example, show the same grasping result first as a bar and then with trial co
 
 **The reading this gives you.** Check the unit behind each dot, bar, or interval. A caption should identify the aggregation, interval procedure, and exclusions. If the plot claims generalization, its condition labels should expose the shift rather than hide it in an overall mean.
 
-**RS1's figure.** The homework diagram, finished. Table 1 in the worked case already follows this section's table rules: units, a direction arrow on every outcome row, an interval on every comparison and every rate, $n$ per arm, and a caption that names each procedure.
+**RS1's figure.** The picture at the top of the page as the paper prints it, Figure 1: that picture is the complete drawing, and this version drops the difference-of-means panel, whose number the caption sends to the worked case's Table 1. That table already follows this section's table rules: units, a direction arrow on every outcome row, an interval on every comparison and every rate, $n$ per arm, and a caption that names each procedure.
 
 <svg viewBox="0 0 560 230" style="max-width:100%;height:auto" role="img" aria-label="RS1 pilot: the twenty peak contact forces as dots on one axis, the 10 N success line, and each controller's mean with its 95% confidence interval">
   <rect x="90" y="34" width="220" height="146" fill="currentColor" fill-opacity="0.06"/>
@@ -319,20 +312,20 @@ For example, show the same grasping result first as a bar and then with trial co
     <path d="M339.0 99 L344 104 L339.0 109 L334 104 Z"/>
     <path d="M200.0 159 L205 164 L200.0 169 L195 164 Z"/>
   </g>
-  <g font-size="10" fill="currentColor" text-anchor="middle">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="90" y="206">5</text><text x="134" y="206">6</text><text x="178" y="206">7</text><text x="222" y="206">8</text><text x="266" y="206">9</text><text x="310" y="206">10</text><text x="354" y="206">11</text><text x="398" y="206">12</text><text x="442" y="206">13</text><text x="486" y="206">14</text><text x="530" y="206">15</text>
   </g>
   <g font-size="12" fill="currentColor">
     <text x="20" y="84">A</text><text x="20" y="144">B</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="11" fill="currentColor" opacity="0.85">
     <text x="20" y="99">6/10 &#8804; 10 N</text>
     <text x="20" y="159">9/10 &#8804; 10 N</text>
     <text x="96" y="46">success: peak &#8804; 10 N</text>
     <text x="316" y="40">10 N, fixed before the pilot</text>
     <text x="420" y="107">mean, 95% CI</text>
   </g>
-  <text x="310" y="224" font-size="10.5" fill="currentColor" text-anchor="middle">peak contact force per trial (N)</text>
+  <text x="310" y="224" font-size="11" fill="currentColor" text-anchor="middle">peak contact force per trial (N)</text>
 </svg>
 
 *Figure 1. RS1 pilot (illustrative data): the peak contact force of every trial, ten unpaired trials per controller on arm P2 against a 400 N/m panel. Dots are single trials; the diamond and bar under each row are the mean and its 95% t-interval (A: 10.66 N, [8.93, 12.39]; B: 7.50 N, [6.53, 8.47]). The dashed line is the 10 N success threshold, fixed before the pilot, and the shaded side counts as success. The difference of means, 3.16 N with Welch 95% CI [1.28, 5.04], is in Table 1.*
@@ -446,9 +439,18 @@ For example, give each grasping run an identifier that links its configuration, 
 
 Tier B. Hand derivation on RS1, using only this page, its prerequisites and the pilot frozen in the running object. A different table from the worked case: the same twenty trials under a 12 N success line, and a different review.
 
-1. **Draw.** Redraw the homework figure with the success line moved to 12 N and mark the dots that change side. Then add the figure's second panel: the two success rates as points with Wilson 95% intervals on a 0–1 axis, for the 10 N and the 12 N definitions (four intervals), each labelled with its $k/n$. Mark where each pair of intervals overlaps.
+1. **Draw.** The picture at the top of the page, with the success line moved to 12 N: mark the dots that change side. Then add the figure's second panel: the two success rates as points with Wilson 95% intervals on a 0–1 axis, for the 10 N and the 12 N definitions (four intervals), each labelled with its $k/n$. Mark where each pair of intervals overlaps.
 2. **Derive.** Build the success rows of Table 1 under the 12 N definition. (a) The Wilson 95% interval for B's 10/10 and for A's 7/10, by hand. (b) The Newcombe 95% interval for B − A, and Fisher's exact $p$ for 7/10 against 10/10, listing the possible tables. (c) The sentence each number licenses, one unlicensed neighbour, and what else the table must now print because the definition changed.
 3. **Interpret.** A second reviewer writes: "The success rates do not differ significantly (p = 0.30), so the paper shows that impedance control has no effect on contact safety. Reject." (a) Decompose the comment with §7's categories. (b) Write a compliant response of at most five sentences. (c) Which parts of the manuscript change, and which must not?
+
+> [!note]- How to draw it · 그리는 법
+> - Draw it by hand before writing any plotting code: one horizontal axis of peak contact force from 5 to 15 N, the success line as a dashed vertical line, and the success side shaded.
+> - Label the line with where its value came from. The 10 N line was fixed before the pilot; a line moved after the data were seen must say so, or the reader cannot tell a prespecified threshold from a chosen one.
+> - Every trial as a dot, A's ten on one row and B's ten on the row below: dots, not bars, so a reader can count the dots on each side of the line (at 10 N, the four A peaks just under it and B's single peak above it). Offset near-ties vertically so that no dot hides another.
+> - Under each row, the mean with its 95% t-interval, and beside the strip the difference of means with its Welch interval, because the claim is about the difference and neither row's own interval answers it. Moving the success line moves none of these.
+> - The second panel on a 0–1 axis: each success rate as a point with its Wilson 95% interval and its $k/n$, one pair per success definition, with the stretch where each pair overlaps marked.
+> - Check each Wilson interval by its shape: its centre is pulled toward one half, so none of these four is symmetric about its point, and none passes 0 or 1. A symmetric interval, one that pokes past 1, or one that shrinks to a single point at $k = n$ is the Wald interval of the definition's non-example.
+> - The caption: units, $n$ per arm, that the trials are unpaired, what the dots, diamonds, bars and intervals are, where each threshold came from, and that no trial was excluded. A figure that needs the body text before it can be read has failed.
 
 > [!tip]- Solutions
 > 1. The strip is unchanged except for the line: A's 11.3 N and B's 10.6 N cross to the success side, so the counts become 7/10 and 10/10. Second panel: at 10 N, A is $0.60\ [0.31,\ 0.83]$ and B $0.90\ [0.60,\ 0.98]$, overlapping on $[0.60,\ 0.83]$; at 12 N, A is $0.70\ [0.40,\ 0.89]$ and B $1.00\ [0.72,\ 1.00]$, overlapping on $[0.72,\ 0.89]$. B's 12 N interval has its upper end pinned at 1 and still reaches down to 0.72, which is the picture of "ten out of ten is not certainty".
@@ -495,9 +497,7 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
 
 *범위: 이 페이지는 RS1의 주장을 논문으로 쓰는 법을 가르친다. 논문 수준의 논증, 파일럿을 위한 결과 표 하나와 그림 하나, 숫자마다 허락되는 문장, 한계 문단, 심사 문답 하나다. 주장을 어떻게 세웠는지([[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]), 실험을 어떻게 설계하고 크기를 정하는지([[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]), 여기서 쓰는 세 가지 밖의 검정([[02-foundations/probability|3. 확률 §6]]), 어디에 투고할지([[06-research-practice/venue-strategy|5. Venue 전략]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-논문의 그림 하나를, 그리는 코드를 쓰기 전에 손으로 그린다. 과제는 다른 성공 정의 아래에서, 두 번째 패널을 더해 같은 그림을 다시 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="논문의 그림으로 그린 RS1 파일럿: 5–15 N 축 위에 모든 시행의 최대 접촉력을 점으로, 파일럿 전에 고정한 10 N 선과 칠한 성공 쪽, 제어기마다 평균과 95% 구간, 그리고 옆에 평균의 차 3.16 N과 Welch 95% 구간 1.28–5.04">
   <rect x="72" y="30" width="150" height="128" fill="currentColor" fill-opacity="0.08"/>
@@ -576,12 +576,7 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
   <text x="38" y="278" font-size="11" opacity="0.9" fill="currentColor">[1.28, 5.04]다.</text>
 </svg>
 
-1. **축과 선.** 5 N에서 15 N까지의 최대 접촉력 가로축. 10 N에 점선 세로선을 긋고 *파일럿 전에 고정*이라고 적은 다음, 성공 쪽을 칠한다.
-2. **모든 시행.** 한 줄에 A의 최댓값 열 개를, 그 아래 줄에 B의 열 개를 점으로 찍는다. 막대가 아니라 점이어야 독자가 선 바로 아래 쌓인 A의 최댓값 넷과, 선 위에 있는 B의 최댓값 하나를 셀 수 있다.
-3. **주장에 답하는 불확실성.** 각 줄 아래에 평균과 그 95% 구간을 그린다. 그림 옆에는 평균의 차와 그 Welch 구간 $3.16$ N $[1.28,\ 5.04]$를 적는다. 주장은 차이에 관한 것이고, 어느 줄의 구간도 그 질문에 답하지 않기 때문이다.
-4. **캡션.** 단위, 제어기당 $n$, 시행이 대응 없음, 점·다이아몬드·막대가 각각 무엇인지, 문턱이 어디서 왔는지, 제외한 시행이 없다는 것.
-
-위 그림이 네 단계를 모두 갖춘 완성본이다. §4는 이것을 논문의 그림 1로 싣되 평균의 차 칸은 빼고, 그 숫자는 캡션이 표 1로 보낸다. 본문을 읽어야 이해되는 그림은 4번에서 실패한 것이다.
+RS1 파일럿을 논문의 그림 하나로 그린 것으로, 시행마다 최대 접촉력을 점 하나로 찍었고(위 줄에 A의 열 개, 아래 줄에 B의 열 개), 파일럿 전에 고정한 10 N 성공선의 칠한 성공 쪽에 A의 점 여섯 개와 B의 점 아홉 개가 떨어진다. 각 줄 아래에는 평균과 그 95% t-구간(A 10.66 N [8.93, 12.39], B 7.50 N [6.53, 8.47])이, 오른쪽에는 주장이 겨냥하는 숫자인 평균의 차 3.16 N과 그 Welch 95% 구간 [1.28, 5.04]가 있다. 동그라미 친 번호는 결과 그림이 독자에게 갖춰 주어야 할 네 부분, 곧 미리 고정한 선, 모든 시행, 주장에 답하는 구간, 본문 없이 읽히는 캡션을 가리킨다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -685,19 +680,19 @@ Introduction이 일반적 능력을 약속하고 실험은 좁은 조건 하나�
     <rect x="70" y="52" width="150" height="60" rx="3"/>
     <rect x="340" y="30" width="200" height="104" rx="3" fill-opacity="0.16"/>
   </g>
-  <g font-size="10" fill="currentColor" text-anchor="middle">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="145" y="46">증거가 덮는 범위</text>
     <text x="145" y="86">논문이 하는 주장</text>
-    <text x="385" y="86">증거가 덮는 범위</text>
-    <text x="440" y="152">논문이 하는 주장</text>
+    <text x="400" y="86">증거가 덮는 범위</text>
+    <text x="440" y="153">논문이 하는 주장</text>
   </g>
   <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none">
-    <line x1="440" y1="144" x2="440" y2="136"/>
+    <line x1="440" y1="142" x2="440" y2="136"/>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="11" fill="currentColor" opacity="0.85">
     <text x="310" y="170">이 삐져나온 폭이 정확히 공격받는 지점이다</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
+  <g font-size="11" fill="currentColor" opacity="0.9">
     <text x="24" y="188">심사자가 재는 것은 결과가 얼마나 큰가가 아니다. 두 상자 중 하나가 다른 하나 안에 들어가는가다.</text>
     <text x="24" y="204">&#8220;주장이 과하다&#8221;는 모든 심사평은 저 음영 띠에 대한 보고이고, 가장 싼 교정은 새 실험이</text>
     <text x="24" y="220">거의 아니다 &#8212; 문장이 맞을 때까지 좁히는 것이다.</text>
@@ -761,7 +756,7 @@ Introduction이 일반적 능력을 약속하고 실험은 좁은 조건 하나�
 
 **여기서 얻는 독법.** 점·막대·구간 뒤의 단위를 확인한다. 캡션에는 집계, 구간 계산 방식, 제외 규칙이 있어야 한다. 일반화를 주장한다면 조건 이름이 분포 이동을 드러내야 한다. 전체 평균 속에 감추면 안 된다.
 
-**RS1의 그림.** 과제 그림을 완성한 것이다. 계산 예제의 표 1은 이미 이 절의 표 규칙을 따른다. 단위, 결과 행마다 붙은 개선 방향 화살표, 모든 비교와 모든 비율에 붙은 구간, 제어기당 $n$, 그리고 절차마다 이름을 밝힌 캡션이다.
+**RS1의 그림.** 맨 위의 그림을 논문이 싣는 모양, 곧 그림 1로 옮긴 것이다. 완성본은 그 그림이고, 여기서는 평균의 차 칸을 빼며 그 숫자는 캡션이 계산 예제의 표 1로 보낸다. 그 표는 이미 이 절의 표 규칙을 따른다. 단위, 결과 행마다 붙은 개선 방향 화살표, 모든 비교와 모든 비율에 붙은 구간, 제어기당 $n$, 그리고 절차마다 이름을 밝힌 캡션이다.
 
 <svg viewBox="0 0 560 230" style="max-width:100%;height:auto" role="img" aria-label="RS1 파일럿: 최대 접촉력 스무 개를 한 축 위의 점으로, 10 N 성공선, 그리고 제어기마다 평균과 95% 신뢰구간">
   <rect x="90" y="34" width="220" height="146" fill="currentColor" fill-opacity="0.06"/>
@@ -782,20 +777,20 @@ Introduction이 일반적 능력을 약속하고 실험은 좁은 조건 하나�
     <path d="M339.0 99 L344 104 L339.0 109 L334 104 Z"/>
     <path d="M200.0 159 L205 164 L200.0 169 L195 164 Z"/>
   </g>
-  <g font-size="10" fill="currentColor" text-anchor="middle">
+  <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="90" y="206">5</text><text x="134" y="206">6</text><text x="178" y="206">7</text><text x="222" y="206">8</text><text x="266" y="206">9</text><text x="310" y="206">10</text><text x="354" y="206">11</text><text x="398" y="206">12</text><text x="442" y="206">13</text><text x="486" y="206">14</text><text x="530" y="206">15</text>
   </g>
   <g font-size="12" fill="currentColor">
     <text x="20" y="84">A</text><text x="20" y="144">B</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="11" fill="currentColor" opacity="0.85">
     <text x="20" y="99">6/10 &#8804; 10 N</text>
     <text x="20" y="159">9/10 &#8804; 10 N</text>
     <text x="96" y="46">성공: 최댓값 &#8804; 10 N</text>
     <text x="316" y="40">10 N, 파일럿 전에 고정</text>
     <text x="420" y="107">평균, 95% 신뢰구간</text>
   </g>
-  <text x="310" y="224" font-size="10.5" fill="currentColor" text-anchor="middle">시행별 최대 접촉력 (N)</text>
+  <text x="310" y="224" font-size="11" fill="currentColor" text-anchor="middle">시행별 최대 접촉력 (N)</text>
 </svg>
 
 *그림 1. RS1 파일럿(예시 데이터): 400 N/m 패널에 대한 팔 P2의 제어기당 대응 없는 시행 10회, 모든 시행의 최대 접촉력. 점은 시행 하나이고, 각 줄 아래의 다이아몬드와 막대는 평균과 그 95% t-구간이다(A: 10.66 N, [8.93, 12.39]; B: 7.50 N, [6.53, 8.47]). 점선은 파일럿 전에 고정한 10 N 성공 문턱이고, 칠한 쪽이 성공이다. 평균의 차 3.16 N과 Welch 95% 신뢰구간 [1.28, 5.04]는 표 1에 있다.*
@@ -919,9 +914,18 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 
 Tier B. RS1 위의 손 유도다. 이 페이지, 선수 지식, 이 페이지의 대상에 고정한 파일럿만 쓴다. 계산 예제와 다른 표다. 같은 스무 시행을 12 N 성공선 아래에서 다시 표로 만들고, 다른 심사평에 답한다.
 
-1. **그리기.** 성공선을 12 N으로 옮겨 과제 그림을 다시 그리고, 선의 반대편으로 넘어간 점을 표시한다. 그다음 그림에 두 번째 패널을 더한다. 0–1 축 위에 두 성공률을 점과 Wilson 95% 구간으로, 10 N과 12 N 정의 둘 다(구간 넷) 그리고 각각에 $k/n$을 적는다. 구간 쌍마다 겹치는 곳을 표시한다.
+1. **그리기.** 성공선을 12 N으로 옮겨 맨 위의 그림을 다시 그리고, 선의 반대편으로 넘어간 점을 표시한다. 그다음 그림에 두 번째 패널을 더한다. 0–1 축 위에 두 성공률을 점과 Wilson 95% 구간으로, 10 N과 12 N 정의 둘 다(구간 넷) 그리고 각각에 $k/n$을 적는다. 구간 쌍마다 겹치는 곳을 표시한다.
 2. **유도.** 12 N 정의 아래에서 표 1의 성공 행을 만든다. (가) B의 10/10과 A의 7/10에 대한 Wilson 95% 구간을 손으로. (나) B − A에 대한 Newcombe 95% 구간, 그리고 가능한 표를 나열해 구하는 7/10 대 10/10의 Fisher 정확 검정 $p$. (다) 숫자마다 허락되는 문장, 허락되지 않는 이웃 문장 하나, 그리고 정의가 바뀌었으므로 표가 추가로 인쇄해야 하는 것.
 3. **해석.** 두 번째 심사자가 이렇게 쓴다. "성공률이 유의하게 다르지 않으므로(p = 0.30), 이 논문은 임피던스 제어가 접촉 안전에 아무 효과가 없음을 보인다. 게재 불가." (가) §7의 범주로 코멘트를 분해한다. (나) 다섯 문장 이내의 규범적 응답을 쓴다. (다) 원고의 어느 부분이 바뀌고, 어느 부분은 바뀌면 안 되는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 그리는 코드를 쓰기 전에 손으로 그린다. 5 N에서 15 N까지의 최대 접촉력 가로축 하나, 점선 세로선으로 그은 성공선, 그리고 칠한 성공 쪽.
+> - 선에는 그 값이 어디서 왔는지 적는다. 10 N 선은 파일럿 전에 고정했다. 데이터를 본 뒤 옮긴 선이라면 그렇다고 밝혀야 한다. 그러지 않으면 독자는 미리 정한 문턱과 나중에 고른 문턱을 구별할 수 없다.
+> - 모든 시행을 점으로, 한 줄에 A의 열 개, 그 아래 줄에 B의 열 개. 막대가 아니라 점이어야 독자가 선 양쪽의 점을 셀 수 있다(10 N에서는 선 바로 아래 A의 최댓값 넷과 선 위의 B의 최댓값 하나). 거의 겹치는 점은 위아래로 비껴 찍어 서로 가리지 않게 한다.
+> - 각 줄 아래에 평균과 그 95% t-구간, 띠 옆에 평균의 차와 그 Welch 구간. 주장은 차이에 관한 것이고 어느 줄의 구간도 그 질문에 답하지 않기 때문이다. 성공선을 옮겨도 이것들은 하나도 움직이지 않는다.
+> - 두 번째 패널은 0–1 축이다. 성공률마다 점과 Wilson 95% 구간, 그리고 $k/n$을 적고, 성공 정의마다 한 쌍을 두며, 쌍마다 겹치는 구간을 표시한다.
+> - Wilson 구간은 모양으로 검사한다. 중심이 1/2 쪽으로 당겨지므로 이 네 구간 중 어느 것도 자기 점을 중심으로 대칭이 아니고, 어느 것도 0이나 1을 넘지 않는다. 대칭인 구간, 1을 넘는 구간, $k = n$에서 점 하나로 줄어든 구간은 정의의 반례인 Wald 구간이다.
+> - 캡션: 단위, 제어기당 $n$, 시행이 대응 없음, 점·다이아몬드·막대·구간이 각각 무엇인지, 문턱마다 어디서 왔는지, 제외한 시행이 없다는 것. 본문을 읽어야 이해되는 그림은 실패한 것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 선만 빼면 띠 그림은 그대로다. A의 11.3 N과 B의 10.6 N이 성공 쪽으로 넘어가 개수가 7/10과 10/10이 된다. 두 번째 패널: 10 N에서 A는 $0.60\ [0.31,\ 0.83]$, B는 $0.90\ [0.60,\ 0.98]$로 $[0.60,\ 0.83]$에서 겹친다. 12 N에서 A는 $0.70\ [0.40,\ 0.89]$, B는 $1.00\ [0.72,\ 1.00]$으로 $[0.72,\ 0.89]$에서 겹친다. B의 12 N 구간은 위 끝이 1에 붙어 있으면서도 0.72까지 내려간다. "열 번 중 열 번은 확실성이 아니다"를 그린 그림이다.

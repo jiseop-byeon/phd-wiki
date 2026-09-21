@@ -14,12 +14,12 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 > 촉각의 공으로 돌리는 평가를 꿰뚫어 볼 수 있을 만큼.
 
 > [!note] Prerequisites · 선수 지식
-> You need friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §1–2]]), the impedance/admittance distinction and the contact-transition timescales ([[04-robotics/force-compliance-control|13. §2, §5]]), and what a learned representation is ([[02-foundations/neural-network-basics|0.7]]).
-> 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §1–2]]), 임피던스/어드미턴스 구분과 접촉 천이의 시간 규모([[04-robotics/force-compliance-control|13. §2, §5]]), 그리고 학습된 표현이 무엇인지([[02-foundations/neural-network-basics|0.7]])가 필요하다.
+> You need friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §1–2]]), the impedance/admittance distinction and the contact-transition timescales ([[04-robotics/force-compliance-control|13. §2, §5]]), and what a learned representation is ([[02-foundations/neural-network-basics|0.8]]).
+> 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §1–2]]), 임피던스/어드미턴스 구분과 접촉 천이의 시간 규모([[04-robotics/force-compliance-control|13. §2, §5]]), 그리고 학습된 표현이 무엇인지([[02-foundations/neural-network-basics|0.8]])가 필요하다.
 
 ## English
 
-*Group H. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/force-compliance-control|13. Force Control]] and [[02-foundations/neural-network-basics|0.7]].
+*Group H. Stands on [[04-robotics/contact-force-tactile|9. Contact]], [[04-robotics/force-compliance-control|13. Force Control]] and [[02-foundations/neural-network-basics|0.8]].
 For the tasks where the deciding variable is inside the contact, hidden by the very thing doing the manipulating.*
 
 > [!note] First pass · 처음이라면
@@ -44,9 +44,7 @@ The three sensors watch the *same* patch and the *same* event, which is the whol
 
 *Scope: this page teaches what a tactile signal can and cannot carry — what each transduction family measures, what spatial resolution a pitch actually buys, when partial slip becomes visible, and what fusing touch with vision is worth — and how to read a paper built on one. It does not teach sensor fabrication, which [[07-research-program/index|7. Research Program §7]] puts out of scope; nor contact mechanics, which [[04-robotics/contact-force-tactile|9. Contact §1–2]] carries; nor the control loops the signal might close, which belong to [[04-robotics/force-compliance-control|13]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Three panels, and the first two must be drawn to the same scale or they teach nothing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 404" style="max-width:100%;height:auto" role="img" aria-label="Three panels for the fingertip patch S1: left, the 5 mm patch with the optical and 4 by 4 taxel grids and three resolution bars at one scale; middle, the slipping annulus at Q over mu P of 0.25, 0.50 and 1.00; right, the piezo reading of a held 5 N grip decaying with tau 10.0 s against a flat barometric line, and a 50 ms inset where an 80 Hz burst is the same on both">
   <text x="92" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">the patch, sampled</text>
@@ -149,13 +147,7 @@ Three panels, and the first two must be drawn to the same scale or they teach no
   <text x="12" y="392" font-size="11" fill="currentColor" fill-opacity="0.7">Left and middle share one scale. The optical grid is ruled 1 line in 8 (true pitch 0.0634 mm).</text>
 </svg>
 
-**Left — the patch, sampled.** Draw the $5\ \mathrm{mm}$-radius patch as a circle. Over its left half, rule the optical sampling grid; over its right half, rule the $4 \times 4$ taxel grid. Beneath it, three horizontal bars in a row, all at the same scale: $0.1268\ \mathrm{mm}$ (what the optical sensor resolves), $0.94\ \mathrm{mm}$ (the fingertip), $9.30\ \mathrm{mm}$ (what the taxel array resolves). The third bar is wider than the patch radius, the widest a slip annulus can ever become; draw it so, and let that be the figure's punchline.
-
-**Middle — slip, as an annulus.** The same circle with the stick zone of radius $c$ drawn inside it and the slipping annulus shaded. Draw it three times, at $Q/\mu P = 0.25$, $0.50$ and $1.00$, and write the annulus width on each. Mark which of the three bars from the left panel would first fit inside each annulus.
-
-**Right — time.** One axis, $0$ to $30\ \mathrm{s}$. Plot the piezoelectric element's reading of a constant $5\ \mathrm{N}$ grip decaying, mark $\tau$ and the half-life, and draw the flat line a barometric element would have given. Then, on an inset with a $50\ \mathrm{ms}$ axis, draw the $80\ \mathrm{Hz}$ burst on both and show that this time they agree.
-
-The problem set asks for the same three panels with a denser taxel array, a faster charge amplifier and a smaller patch.
+The fingertip patch S1 in three panels, the left and middle at one scale: the optical sensor resolves $0.1268\ \mathrm{mm}$, the fingertip $0.94\ \mathrm{mm}$ and the $4 \times 4$ taxel array $9.30\ \mathrm{mm}$, wider than the patch radius $a = 5\ \mathrm{mm}$. The slipping annulus is $0.46$, $1.03$ and $5\ \mathrm{mm}$ wide at $Q/\mu P = 0.25$, $0.50$ and $1.00$, so the optical sensor first resolves it at $Q/\mu P = 0.074$, the fingertip at $0.465$, and the taxel array never. On the right, the piezoelectric reading of a held $5\ \mathrm{N}$ grip decays with $\tau = 10.0\ \mathrm{s}$, half gone at $6.93\ \mathrm{s}$, against the barometric element's flat line, while on the $50\ \mathrm{ms}$ inset the two agree on the $80\ \mathrm{Hz}$ burst, $|H| = 1.0000$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -637,9 +629,18 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, nothing else. The finger is smaller, so the patch radius is $a' = 3\,\mathrm{mm}$ at the same $P = 5\,\mathrm{N}$ and $\mu = 0.5$. The taxel array is rebuilt at $8\times 8$ over the same $18.6\times14.3\,\mathrm{mm}$. The charge amplifier is rebuilt with $R_f' = 1\,\mathrm{G\Omega}$ at the same $C_f$. A tangential load now ramps at $5\,\mathrm{N/s}$ from zero, and the wrist camera is recalibrated so its depth noise falls to $\sigma_v' = 0.8\,\mathrm{mm}$. No new simulator.
 
-1. **Draw.** The three panels of the homework diagram at the new numbers: the $3\,\mathrm{mm}$ patch with both sampling grids and the three resolution bars beneath it; the stick zone and annulus at $Q/\mu P = 0.25$ and $0.50$; and the new decay curve with $\tau'$ and the half-life marked. Add a fourth, small panel: a time axis from $0$ to $0.5\,\mathrm{s}$ with the instant each sensor first resolves the annulus marked on it, and the gross-slip instant at the right-hand end.
+1. **Draw.** The three panels of the picture above at the new numbers: the $3\,\mathrm{mm}$ patch with both sampling grids and the three resolution bars beneath it; the stick zone and annulus at $Q/\mu P = 0.25$ and $0.50$; and the new decay curve with $\tau'$ and the half-life marked. Add a fourth, small panel: a time axis from $0$ to $0.5\,\mathrm{s}$ with the instant each sensor first resolves the annulus marked on it, and the gross-slip instant at the right-hand end.
 2. **Derive.** (a) The new taxel pitch and resolution, and its ratio to the fingertip's $0.94\,\mathrm{mm}$. (b) $\tau'$, $f_c'$, the reading of a constant $5\,\mathrm{N}$ grip at $t = 1\,\mathrm{s}$ and $t = 5\,\mathrm{s}$, and $|H|$ at $80\,\mathrm{Hz}$ and at $1\,\mathrm{Hz}$. (c) For each of the optical sensor and the new taxel array, the $Q/\mu P$ at which the annulus first reaches its resolution on the $3\,\mathrm{mm}$ patch — or a statement that it never does. (d) Convert (c) into seconds under the $5\,\mathrm{N/s}$ ramp: the detection instant, the gross-slip instant, and the warning window between them, in milliseconds and in $30\,\mathrm{Hz}$ frames. (e) The fused $\sigma$ and $w_t$ at $\sigma_v' = 0.8\,\mathrm{mm}$, and the $\sigma$ of the unweighted mean.
 3. **Interpret.** §2's latency box says an optical tactile sensor at $33\,\mathrm{ms}$ per frame cannot participate in a $14\,\mathrm{ms}$ contact transition. Your answer to (d) says it has many frames of warning before gross slip. Reconcile the two in one sentence. Then say which of the four knobs, if any, changed a *verdict* rather than a number, and what that implies for the sentence "we improved slip detection with a higher-rate sensor".
+
+> [!note]- How to draw it · 그리는 법
+> - Draw the left and middle panels at one scale, or they teach nothing: the resolution bars and the annuli must be comparable by eye.
+> - Left: the patch as a circle of the new radius, the optical grid ruled over its left half and the taxel grid over its right half, and beneath it three bars in a row — optical resolution, the fingertip's $0.94\,\mathrm{mm}$, taxel resolution — each sensor's bar twice its pitch, not the pitch itself.
+> - Compare the taxel bar with the patch radius, the widest an annulus can ever become. If the bar is wider, draw it visibly so: that is the figure's punchline.
+> - Middle: inside the same circle, the stick zone of radius $c = a(1 - Q/\mu P)^{1/3}$ with the slipping annulus shaded; write the annulus width on each, and mark which bar first fits inside it.
+> - The stick zone shrinks from the rim inward and stays centred, so the slip is a ring at the edge, never a spot in the middle.
+> - Right: the piezoelectric reading of the held grip decaying, with $\tau'$ and the half-life $\tau'\ln 2$ marked, beside the flat line of an element that holds DC; on the $50\ \mathrm{ms}$ inset the $80\,\mathrm{Hz}$ burst is drawn the same on both.
+> - Fourth panel: one time axis from $0$ to $0.5\,\mathrm{s}$, each sensor's first-detection instant converted from its $Q/\mu P$ under the ramp, and the gross-slip instant at the right-hand end. A sensor that never resolves the annulus gets no mark at all, not a mark at the end.
 
 > [!tip]- Solutions
 > 1. The $9.30\,\mathrm{mm}$ bar of the original figure becomes $4.65\,\mathrm{mm}$ and is still wider than the $3\,\mathrm{mm}$ patch radius — the punchline survives the knob.
@@ -675,7 +676,7 @@ Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, not
 
 ## 한국어
 
-*H군이다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/force-compliance-control|13. 힘 제어]]와 [[02-foundations/neural-network-basics|0.7]] 위에 선다.
+*H군이다. [[04-robotics/contact-force-tactile|9. 접촉]]·[[04-robotics/force-compliance-control|13. 힘 제어]]와 [[02-foundations/neural-network-basics|0.8]] 위에 선다.
 결정적 변수가 접촉 안에 있고, 하필 조작을 하고 있는 그것에 가려지는 과제들을 위한 페이지다.*
 
 > [!note] 처음이라면 · First pass
@@ -700,9 +701,7 @@ Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, not
 
 *범위: 이 페이지는 촉각 신호가 무엇을 실어 나르고 무엇을 못 나르는지를 가르친다 — 각 변환 계열이 무엇을 재는지, 피치가 실제로 사 주는 공간 해상도가 얼마인지, 부분 미끄러짐이 언제 보이게 되는지, 촉각과 비전을 융합하는 것이 얼마짜리인지, 그리고 그 위에 세운 논문을 어떻게 읽는지. 센서 제작은 가르치지 않는다. [[07-research-program/index|7. 연구 프로그램 §7]]이 범위 밖에 둔다. 접촉 역학도 가르치지 않는다. [[04-robotics/contact-force-tactile|9. 접촉 §1~2]]가 진다. 이 신호가 닫을 수도 있는 제어 루프도 가르치지 않는다. [[04-robotics/force-compliance-control|13]]의 몫이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-패널 셋이고, 앞의 둘은 반드시 같은 축척으로 그려야 한다. 그러지 않으면 아무것도 가르치지 못한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 404" style="max-width:100%;height:auto" role="img" aria-label="손끝 접촉면 S1의 패널 셋: 왼쪽은 광학 격자와 4×4 택셀 격자를 그은 5 mm 접촉면과 같은 축척의 해상도 막대 셋, 가운데는 Q/μP가 0.25, 0.50, 1.00일 때의 미끄러지는 고리, 오른쪽은 5 N 쥠에 대한 압전 값이 τ 10.0 s로 감쇠하는 곡선과 평평한 기압식 선, 그리고 80 Hz 버스트가 둘에서 같게 나오는 50 ms 삽입 그림">
   <text x="92" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">표집된 접촉면</text>
@@ -805,13 +804,7 @@ Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, not
   <text x="12" y="392" font-size="11" fill="currentColor" fill-opacity="0.7">왼쪽과 가운데는 같은 축척이다. 광학 격자는 8개 중 1개만 그었다(실제 피치 0.0634 mm).</text>
 </svg>
 
-**왼쪽 — 표집된 접촉면.** 반지름 $5\ \mathrm{mm}$의 접촉면을 원으로 그린다. 왼쪽 절반에 광학 표집 격자를, 오른쪽 절반에 $4 \times 4$ 택셀 격자를 긋는다. 그 아래에 같은 축척의 가로 막대 셋을 나란히: $0.1268\ \mathrm{mm}$(광학이 분해하는 것), $0.94\ \mathrm{mm}$(손끝), $9.30\ \mathrm{mm}$(택셀 배열이 분해하는 것). 세 번째 막대가 접촉면 반지름, 곧 미끄러짐 고리가 가질 수 있는 최대 폭보다 넓다. 그렇게 그리고, 그것이 이 그림의 급소가 되게 두라.
-
-**가운데 — 미끄러짐은 고리다.** 같은 원 안에 반지름 $c$의 고착 영역을 그리고 미끄러지는 고리를 칠한다. $Q/\mu P = 0.25$, $0.50$, $1.00$에서 세 번 그리고 각각에 고리 폭을 적는다. 왼쪽 패널의 막대 셋 중 어느 것이 각 고리에 처음 들어가는지 표시한다.
-
-**오른쪽 — 시간.** 축 하나, $0$부터 $30\ \mathrm{s}$까지. 일정한 $5\ \mathrm{N}$ 쥠에 대한 압전 소자의 값이 감쇠하는 곡선을 그리고 $\tau$와 반감기를 표시하며, 기압식이었다면 주었을 평평한 선을 함께 그린다. 그다음 $50\ \mathrm{ms}$ 축의 삽입 그림에 $80\ \mathrm{Hz}$ 버스트를 둘 다 그려, 이번에는 둘이 일치함을 보인다.
-
-과제는 택셀 배열이 조밀해지고 전하 증폭기가 빨라지고 접촉면이 작아진 같은 패널 셋을 요구한다.
+손끝 접촉면 S1을 패널 셋으로 그렸고, 왼쪽과 가운데는 같은 축척이다: 광학 센서는 $0.1268\ \mathrm{mm}$, 손끝은 $0.94\ \mathrm{mm}$, $4 \times 4$ 택셀 배열은 $9.30\ \mathrm{mm}$를 분해하며, 마지막 값은 접촉면 반지름 $a = 5\ \mathrm{mm}$보다 넓다. 미끄러지는 고리의 폭은 $Q/\mu P = 0.25$, $0.50$, $1.00$에서 $0.46$, $1.03$, $5\ \mathrm{mm}$이므로, 광학 센서는 $Q/\mu P = 0.074$에서, 손끝은 $0.465$에서 고리를 처음 분해하고, 택셀 배열은 끝내 분해하지 못한다. 오른쪽에서는 일정한 $5\ \mathrm{N}$ 쥠에 대한 압전 값이 $\tau = 10.0\ \mathrm{s}$로 감쇠해 $6.93\ \mathrm{s}$에 절반이 사라지고 기압식 값은 평평하게 남지만, $50\ \mathrm{ms}$ 삽입 그림의 $80\ \mathrm{Hz}$ 버스트에서는 둘이 일치한다($|H| = 1.0000$).
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1257,9 +1250,18 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 Tier B. 이 페이지와 선수 지식, **S1**만 쓴다. 손잡이 넷만 움직이고 나머지는 그대로다. 손가락이 작아져 접촉면 반지름이 $a' = 3\,\mathrm{mm}$이고 $P = 5\,\mathrm{N}$, $\mu = 0.5$는 같다. 택셀 배열을 같은 $18.6\times14.3\,\mathrm{mm}$ 위에 $8\times 8$로 다시 만든다. 전하 증폭기를 같은 $C_f$에 $R_f' = 1\,\mathrm{G\Omega}$으로 다시 만든다. 접선 하중이 이제 0에서 $5\,\mathrm{N/s}$로 올라가고, 손목 카메라를 재보정해 깊이 잡음이 $\sigma_v' = 0.8\,\mathrm{mm}$로 떨어진다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 과제 그림의 패널 셋을 새 숫자로. $3\,\mathrm{mm}$ 접촉면에 표집 격자 둘과 그 아래 해상도 막대 셋, $Q/\mu P = 0.25$와 $0.50$에서의 고착 영역과 고리, 그리고 $\tau'$와 반감기를 표시한 새 감쇠 곡선. 작은 네 번째 패널을 더한다. $0$부터 $0.5\,\mathrm{s}$까지의 시간 축에 각 센서가 고리를 처음 분해하는 순간을 찍고, 오른쪽 끝에 총 미끄러짐 순간을 찍는다.
+1. **그리기.** 위 그림의 패널 셋을 새 숫자로. $3\,\mathrm{mm}$ 접촉면에 표집 격자 둘과 그 아래 해상도 막대 셋, $Q/\mu P = 0.25$와 $0.50$에서의 고착 영역과 고리, 그리고 $\tau'$와 반감기를 표시한 새 감쇠 곡선. 작은 네 번째 패널을 더한다. $0$부터 $0.5\,\mathrm{s}$까지의 시간 축에 각 센서가 고리를 처음 분해하는 순간을 찍고, 오른쪽 끝에 총 미끄러짐 순간을 찍는다.
 2. **유도.** (a) 새 택셀 피치와 해상도, 그리고 손끝 $0.94\,\mathrm{mm}$에 대한 비. (b) $\tau'$, $f_c'$, $t = 1\,\mathrm{s}$와 $t = 5\,\mathrm{s}$에서 일정한 $5\,\mathrm{N}$ 쥠의 값, 그리고 $80\,\mathrm{Hz}$와 $1\,\mathrm{Hz}$에서의 $|H|$. (c) 광학 센서와 새 택셀 배열 각각에 대해, $3\,\mathrm{mm}$ 접촉면에서 고리가 자기 해상도에 처음 닿는 $Q/\mu P$ — 또는 결코 닿지 않는다는 진술. (d) (c)를 $5\,\mathrm{N/s}$ 램프 아래 초로 바꾼다. 감지 순간, 총 미끄러짐 순간, 그 사이 경고 시간을 밀리초와 $30\,\mathrm{Hz}$ 프레임 수로. (e) $\sigma_v' = 0.8\,\mathrm{mm}$에서의 융합 $\sigma$와 $w_t$, 그리고 가중 없는 평균의 $\sigma$.
 3. **해석.** §2의 지연 상자는 프레임당 $33\,\mathrm{ms}$인 광학 촉각 센서가 $14\,\mathrm{ms}$ 접촉 천이에 참여할 수 없다고 말한다. (d)의 답은 총 미끄러짐 전에 여러 프레임의 경고가 있다고 말한다. 둘을 한 문장으로 조정하라. 그다음 손잡이 넷 중 숫자가 아니라 *판정*을 바꾼 것이 있다면 무엇인지, 그리고 그것이 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장에 무엇을 함의하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 왼쪽과 가운데 패널은 같은 축척으로 그린다. 그러지 않으면 아무것도 가르치지 못한다. 해상도 막대와 고리를 눈으로 비교할 수 있어야 한다.
+> - 왼쪽: 새 반지름의 원으로 접촉면을 그리고 왼쪽 절반에 광학 격자, 오른쪽 절반에 택셀 격자를 긋는다. 그 아래에 막대 셋을 나란히 둔다 — 광학 해상도, 손끝의 $0.94\,\mathrm{mm}$, 택셀 해상도. 센서의 막대는 피치 자체가 아니라 피치의 두 배다.
+> - 택셀 막대를 접촉면 반지름, 곧 고리가 가질 수 있는 최대 폭과 비교한다. 막대가 더 넓다면 눈에 띄게 그렇게 그린다. 그것이 이 그림의 급소다.
+> - 가운데: 같은 원 안에 반지름 $c = a(1 - Q/\mu P)^{1/3}$의 고착 영역을 그리고 미끄러지는 고리를 칠한다. 각각에 고리 폭을 적고, 어느 막대가 처음 그 안에 들어가는지 표시한다.
+> - 고착 영역은 가장자리에서 안쪽으로 줄어들며 중심에 머문다. 그러니 미끄러짐은 가장자리의 고리이지, 가운데의 점이 아니다.
+> - 오른쪽: 쥐고 있는 힘에 대한 압전 값이 감쇠하는 곡선에 $\tau'$와 반감기 $\tau'\ln 2$를 표시하고, DC를 유지하는 소자의 평평한 선을 곁에 그린다. $50\ \mathrm{ms}$ 삽입 그림에서는 $80\,\mathrm{Hz}$ 버스트를 둘에서 똑같이 그린다.
+> - 네 번째 패널: $0$부터 $0.5\,\mathrm{s}$까지의 시간 축 하나에, 각 센서가 고리를 처음 분해하는 $Q/\mu P$를 램프 아래 시각으로 바꿔 찍고, 오른쪽 끝에 총 미끄러짐 순간을 찍는다. 고리를 끝내 분해하지 못하는 센서는 끝에 찍는 것이 아니라 아예 찍지 않는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 원래 그림의 $9.30\,\mathrm{mm}$ 막대가 $4.65\,\mathrm{mm}$가 되는데 그래도 접촉면 반지름 $3\,\mathrm{mm}$보다 넓다 — 급소가 손잡이를 견디고 살아남는다.

@@ -8,8 +8,9 @@ Checks, per page, on both halves:
   4. a self-check
   5. heading parity between the two halves (a drifting Korean half is invisible to
      audit_parity.py, which only compares section *references*)
-  6. rule 9: the homework diagram is drawn — an inline SVG, a mermaid block or an
-     image inside the Homework diagram section of each half, not only a description
+  6. rule 9: the page's picture is drawn — an inline SVG, a mermaid block or an image
+     inside the "The picture · 그림으로 먼저 보기" section of each half (formerly
+     "Homework diagram · 과제가 그릴 그림", a name the audit now rejects), not only a description
 
 Exit status is always 0: this is a worklist, not a gate. Promote it into
 verify_content.py once the tracks conform.
@@ -49,7 +50,7 @@ COURSE_INDEX = re.compile(r"^03-deep-learning/[^/]+/index\.md$")
 RUNNING = re.compile(r"^#{3,4} .*(Running object|Running plant)|^#{3,4} .*(계속 쓰는 대상|이 페이지의 장치|이 페이지의 대상)"
                      r"|\*\*(Running plant|Running object|계속 쓰는 대상)", re.M)
 PLANT_ID = re.compile(r"\*\*(P[1-6]|D[1-6])\*\*")
-DIAGRAM = re.compile(r"^#{3,4} .*(Homework diagram|과제가 그릴 그림)|\*\*(Homework diagram|과제가 그릴 그림)", re.M)
+DIAGRAM = re.compile(r"^#{3,4} .*(The picture|그림으로 먼저 보기)|\*\*(The picture|그림으로 먼저 보기)", re.M)
 WORKED = re.compile(r"^#{3,4} .*(Worked case|Worked on|장치로 한 번 끝까지|대상으로 한 번 끝까지)"
                     r"|\*\*(Worked|계산:|장치로 한 번 끝까지|대상으로 한 번 끝까지)", re.M)
 PROBLEM = re.compile(r"^#{3,4} .*(Problem set|과제)", re.M)
@@ -60,7 +61,9 @@ HEADING = re.compile(r"^#{3,4} ", re.M)
 # of the file, serving both halves, so it must not count as a Korean-only heading.
 SHARED_HEADING = re.compile(r"^#{3,4} .*(Sources|출처|참고문헌)", re.M)
 FIGURE = re.compile(r"<svg|```mermaid|!\[|<img")
-DIAGRAM_HEADING = re.compile(r"^#{3,4} .*(Homework diagram|과제가 그릴 그림).*$", re.M)
+DIAGRAM_HEADING = re.compile(r"^#{3,4} .*(The picture|그림으로 먼저 보기).*$", re.M)
+# The section's former name; it must not come back (renamed 2026-09-21 at the owner's request).
+OLD_NAME = re.compile(r"homework diagram|homework drawing|과제가 그릴 그림", re.I)
 
 
 def diagram_section(half):
@@ -95,10 +98,12 @@ def audit(path):
         missing = [half for half, t in (("EN", en), ("KO", ko)) if not rx.search(t)]
         if missing:
             problems.append(f"no {name} ({'+'.join(missing)})")
+    if OLD_NAME.search(text):
+        problems.append('uses the old section name "Homework diagram / 과제가 그릴 그림"')
     undrawn = [half for half, t in (("EN", en), ("KO", ko))
                if (sec := diagram_section(t)) is not None and not FIGURE.search(sec)]
     if undrawn:
-        problems.append(f"homework diagram described but not drawn ({'+'.join(undrawn)})")
+        problems.append(f"picture described but not drawn ({'+'.join(undrawn)})")
     ps = PROBLEM.split(en)
     if len(ps) > 1 and not TIER.search(ps[-1]):
         problems.append("problem set has no tier line")

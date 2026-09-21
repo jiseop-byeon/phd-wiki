@@ -32,9 +32,7 @@ The plate's thickness is this page's own frozen number; everything else is catal
 
 *Scope: this page teaches what the loop computes **inside** the stability ceiling — how geometry becomes a force, why a stateless force law fails on anything thinner than a half-space, what the proxy adds, and the surface properties (damping, friction, texture) layered on top. It does not teach why the ceiling exists, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]; nor the $J^\top$ step that sends the force to motors, which is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]; nor how to run a psychophysical study on the perceptual tricks of §4, which is [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Two pictures side by side, of the *same* instant, and the problem set asks for exactly these two.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="Penalty and proxy at the same instant on a 4 mm plate from 0.030 to 0.034 m: the penalty law pushes the device point at 0.033 out the back with +0.40 N while a proxy held on the entry face pulls it back with −1.2 N, over a shared axis that marks 0.030, 0.032, 0.033 and 0.034 to scale.">
   <text x="12" y="22" font-size="12.5" fill="currentColor">Penalty: stateless</text>
@@ -101,11 +99,7 @@ Two pictures side by side, of the *same* instant, and the problem set asks for e
   <g font-size="11" fill="currentColor" opacity="0.9"><text x="12" y="274">Same point, same K = 400 N/m: +0.40 N against −1.2 N,</text><text x="12" y="289">1.6 N apart and opposite in sign. Arrows to scale: 1 mm of spring = 0.40 N.</text></g>
 </svg>
 
-**Left — penalty.** The $x$ axis horizontal, the plate as a shaded band from $0.030$ to $0.034$, the mid-plane at $0.032$ as a dashed line through it. Put the device point at $x=0.033\,\mathrm{m}$, between the mid-plane and the far face. Draw the force as an arrow pointing in $+x$ — *away* from where the user came in — and label it $0.40\,\mathrm{N}$. Next to it write the rule the arrow obeys, "toward the nearest face", and mark which face that is.
-
-**Right — proxy.** The same band, the same device point at $0.033$. Now draw a second, hollow point sitting *on the entry face* at $0.030$ and label it $p_{\text{proxy}}$. Draw the spring between the two points and the force arrow in $-x$, labelled $1.2\,\mathrm{N}$. Write beside it the rule this arrow obeys, "toward the proxy", and note that the proxy has not moved since the point entered.
-
-**Underneath both**, one shared axis: mark $x_w=0.030$, the mid-plane $0.032$, the far face $0.034$ and the device point $0.033$ to scale, so the two arrows are visibly reading the same geometry and disagreeing about the answer. The two forces differ by $1.6\,\mathrm{N}$ and point in opposite directions, which is the entire argument of §3 in one figure.
+The same instant on the $4\,\mathrm{mm}$ plate, which spans $0.030$ to $0.034\,\mathrm{m}$ with its mid-plane at $0.032$, rendered two ways at $K = 400\,\mathrm{N/m}$. On the left the stateless penalty law finds the device point at $0.033$ nearest the far face and pushes it out the back with $+0.40\,\mathrm{N}$; on the right a proxy that has stayed on the entry face since the point came in pulls it back with $-1.2\,\mathrm{N}$. On the shared axis, drawn to scale, the two forces read the same geometry yet differ by $1.6\,\mathrm{N}$ and in sign, which is the whole of §3's argument.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -279,9 +273,18 @@ Four questions separate the claims. **Which algorithm computes the force** — p
 
 Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=400$, $x_w=0.030$. Replace the half-space with a *plate* of thickness $4\,\mathrm{mm}$ occupying $x\in[0.030,0.034]$. The Euler lab stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
-1. **Draw.** Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.033$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
+1. **Draw.** The picture above. Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.033$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
 2. **Derive.** (a) Penalty force just before the mid-plane, and the push that pops through. (b) Proxy force at $x=0.033$. (c) Colgate bound $2b/T$ at $T=10^{-3}$. At that ceiling, does a $2\,\mathrm{N}$ push (the 24.3 amplifier limit) still pop a $4\,\mathrm{mm}$ plate? A $2\,\mathrm{mm}$ plate?
 3. **Interpret.** Why is the 24.4 half-space wall honest as a penalty law, and why does the same law lie on this plate? What memory does the proxy add that a 1-DoF *half-space* never needed?
+
+> [!note]- How to draw it · 그리는 법
+> - Draw both panels at the same instant, side by side: the $x$ axis horizontal with $+x$ into the plate, the plate as a shaded band from its entry face to its far face, and the mid-plane as a dashed line through it.
+> - Put the device point in the same place in both panels, between the mid-plane and the far face.
+> - Penalty panel: one arrow toward the nearest face, which past the mid-plane is the far face, so it points $+x$, away from where the user came in. Write its rule, "toward the nearest face", and mark which face that is.
+> - Proxy panel: a second, hollow point on the entry face labelled $p_{\text{proxy}}$, the spring between the two points, and the force arrow in $-x$. Write its rule, "toward the proxy", and note that the proxy has not moved since the point entered.
+> - The proxy is constrained to stay out of the plate, so a proxy drawn on the device point, or anywhere past the entry face, is wrong.
+> - Label both forces with their values and signs, and draw the two arrows to one force scale.
+> - Underneath, one shared axis marking the entry face, the mid-plane, the far face and the device point to scale, so the two arrows visibly read the same geometry and disagree about the answer.
 
 > [!tip]- Solutions
 > 1. Penalty at $x=0.033$ is $1\,\mathrm{mm}$ past mid-plane, nearest face is $x=0.034$, force points $+x$ (out the back). Proxy remains at $0.030$, spring pulls $-x$.
@@ -309,9 +312,7 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=4
 
 *범위: 이 페이지는 안정성 천장 **안에서** 루프가 무엇을 계산하는지를 가르친다 — 기하가 힘이 되는 방식, 반공간보다 얇은 것에서 상태 없는 힘 법칙이 실패하는 이유, proxy가 더하는 것, 그리고 그 위에 얹는 표면 특성(댐핑, 마찰, 질감). 천장이 왜 있는지는 가르치지 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]다. 힘을 모터로 보내는 $J^\top$ 단계도 아니다. 그것은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다. §4의 지각적 트릭에 정신물리 실험을 설계하는 법도 아니다. 그것은 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-*같은* 순간의 그림 둘을 나란히. 과제가 요구하는 것이 정확히 이 둘이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="0.030–0.034 m의 4 mm 판에서 같은 순간을 본 벌점과 proxy로, 벌점 법칙은 0.033의 장치 점을 +0.40 N으로 뒤로 밀어내고 진입 면에 머문 proxy는 −1.2 N으로 되당기며, 아래 공유 축에 0.030, 0.032, 0.033, 0.034를 축척대로 표시했다.">
   <text x="12" y="22" font-size="12.5" fill="currentColor">벌점: 상태 없음</text>
@@ -378,11 +379,7 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=4
   <g font-size="11" fill="currentColor" opacity="0.9"><text x="12" y="274">같은 점, 같은 K = 400 N/m에서 +0.40 N 대 −1.2 N.</text><text x="12" y="289">1.6 N 차이에 부호가 반대다. 화살표 축척: 스프링 1 mm = 0.40 N.</text></g>
 </svg>
 
-**왼쪽 — 벌점.** $x$축을 가로로, 판을 $0.030$에서 $0.034$까지의 음영 띠로, 중간면 $0.032$를 그 안을 지나는 점선으로. 장치 점을 중간면과 먼 면 사이 $x=0.033\,\mathrm{m}$에 둔다. 힘을 $+x$ 방향 화살표로 — 사용자가 들어온 쪽의 *반대*로 — 그리고 $0.40\,\mathrm{N}$이라 적는다. 옆에 그 화살표가 따르는 규칙 "가장 가까운 면 쪽"을 쓰고, 그게 어느 면인지 표시한다.
-
-**오른쪽 — proxy.** 같은 띠, 같은 장치 점 $0.033$. 이번에는 *진입 면* $0.030$에 앉은 속 빈 점 하나를 더 그리고 $p_{\text{proxy}}$라 적는다. 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그리고 $1.2\,\mathrm{N}$이라 적는다. 옆에 이 화살표의 규칙 "proxy 쪽"을 쓰고, 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
-
-**둘 아래에** 공유하는 축 하나: $x_w=0.030$, 중간면 $0.032$, 먼 면 $0.034$, 장치 점 $0.033$을 축척대로 표시해서, 두 화살표가 같은 기하를 읽고 다른 답을 내고 있다는 것이 보이게 한다. 두 힘은 $1.6\,\mathrm{N}$ 차이로 서로 반대를 가리키고, 그것이 §3의 논증 전체다.
+두께 $4\,\mathrm{mm}$의 판($0.030$에서 $0.034\,\mathrm{m}$까지, 중간면 $0.032$) 위의 같은 순간을 $K = 400\,\mathrm{N/m}$로 두 가지 방식으로 렌더링했다. 왼쪽에서는 상태 없는 벌점 법칙이 $0.033$의 장치 점을 먼 면에 가장 가깝다고 보고 $+0.40\,\mathrm{N}$으로 뒤로 밀어내고, 오른쪽에서는 점이 들어온 뒤로 진입 면에 머문 proxy가 $-1.2\,\mathrm{N}$으로 되당긴다. 축척대로 그린 공유 축 위에서 두 힘은 같은 기하를 읽고도 $1.6\,\mathrm{N}$ 차이에 부호까지 반대이고, 그것이 §3의 논증 전체다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -556,9 +553,18 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 카탈로그 벽 $k_w=400$, $x_w=0.030$. 반공간을 두께 $4\,\mathrm{mm}$의 *판* $x\in[0.030,0.034]$으로 바꿔라. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남긴다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
-1. **그리기.** 핸들 $x$, 판, 중간면 $0.032$. $x=0.033$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
+1. **그리기.** 위의 그림. 핸들 $x$, 판, 중간면 $0.032$. $x=0.033$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
 2. **유도.** (a) 중간면 직전의 벌점 힘, 그리고 뚫고 나가는 가압. (b) $x=0.033$의 proxy 힘. (c) $T=10^{-3}$에서 Colgate 경계 $2b/T$. 그 천장에서 $2\,\mathrm{N}$ 가압(24.3 증폭기 한계)이 $4\,\mathrm{mm}$ 판을 아직 뚫는가? $2\,\mathrm{mm}$ 판은?
 3. **해석.** 24.4의 반공간 벽이 벌점 법칙으로 정직한 이유, 같은 법칙이 이 판에서는 거짓인 이유는? 1자유도 *반공간*이 끝내 필요 없었던 기억을 proxy가 무엇을 더하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 두 패널은 같은 순간을 나란히 그린다. $x$축은 가로로 두고 $+x$가 판 안쪽이며, 판은 진입 면에서 먼 면까지의 음영 띠로, 중간면은 그 안을 지나는 점선으로 그린다.
+> - 장치 점은 두 패널에서 같은 자리, 중간면과 먼 면 사이에 둔다.
+> - 벌점 패널: 가장 가까운 면을 향하는 화살표 하나. 중간면을 지나면 그 면은 먼 면이므로 화살표는 $+x$, 사용자가 들어온 쪽의 반대를 가리킨다. 규칙 "가장 가까운 면 쪽"을 쓰고 그게 어느 면인지 표시한다.
+> - Proxy 패널: 진입 면 위에 앉은 속 빈 점 하나를 더 그려 $p_{\text{proxy}}$라 적고, 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그린다. 규칙 "proxy 쪽"을 쓰고, 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
+> - Proxy는 판 밖에 머물도록 제약되어 있으므로, 장치 점 위나 진입 면 너머에 그린 proxy는 틀린 것이다.
+> - 두 힘에 값과 부호를 적고, 두 화살표를 한 가지 힘 축척으로 그린다.
+> - 그 아래에 공유 축 하나를 두고 진입 면, 중간면, 먼 면, 장치 점을 축척대로 표시해, 두 화살표가 같은 기하를 읽고 다른 답을 낸다는 것이 보이게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. $x=0.033$의 벌점은 중간면을 $1\,\mathrm{mm}$ 지났고, 가장 가까운 면은 $x=0.034$, 힘은 $+x$(뒤로). Proxy는 $0.030$에 남아 스프링이 $-x$로 당긴다.

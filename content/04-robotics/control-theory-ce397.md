@@ -28,11 +28,7 @@ page's vocabulary.
 > [!note] First pass · 처음이라면
 > The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which this page introduces only in a short primer at the start of §5.5; if that primer is not enough, read Åström & Murray ch.9 first. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
 
-### Homework diagram · 과제가 그릴 그림
-
-Two panels and a clock, drawn by hand before the problem set asks for them again. The object is
-**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ that
-§1 opens with.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 332" style="max-width:100%;height:auto" role="img" aria-label="Left: the leaky heater in open loop, u and d summed before the plant and x read by nothing, so x settles at 1 + d = 1.5; right: the same plant with u = -Kx through a sampler of period 0.1 s and a zero-order hold, closed-loop pole -10 and x settling at d/(1+K) = 0.05, and the sampled loop stable only for K below 19">
   <defs><marker id="ctdA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -99,26 +95,7 @@ Two panels and a clock, drawn by hand before the problem set asks for them again
   </g>
 </svg>
 
-**Left panel — open loop.** A box labelled $\dot x=-x+u+d$, with the command $u$ and the
-disturbance $d$ arriving together at a summing junction *before* the box, and the state $x$ leaving
-it and going nowhere. Write $x_\infty=1+d$ under the panel and say why in one line: no arrow reads
-$x$, so nothing in this picture can correct it.
-
-**Right panel — closed loop.** The same box, plus a path from the output $x$ into a gain block
-$-K$ and back into the same summing junction. Mark the junction's signs explicitly. The convention
-that survives substitution is the one where the minus lives inside the block, so the junction adds
-$u$ and $d$ and the box is $\dot x=-x+u+d$ unchanged — a paper that hides the sign in the junction
-instead is the reason half of all sign errors are found in someone else's figure. Under the panel
-write the closed-loop pole $-(1+K)$ and $x_\infty=d/(1+K)$; those are the two numbers the problem
-set asks for first.
-
-**The clock, drawn on top of the right panel.** Put a sampler — a switch labelled with period $T$ —
-on the feedback path, and a zero-order hold on $u$ after the gain. Then label every arrow with
-which kind of signal it carries: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ sequences. This
-third element is the one readers leave out and the one §4 shows can decide the answer: the same
-$K$ that is stable in the left-hand notation can be unstable in the right-hand one. A block diagram
-that does not say where the signal becomes a sequence has not specified the controller the problem
-set runs. That controller steps the held loop by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$ (§4), which is where the panel's $K<19$ at $T=0.1$ s comes from; integrating the plant exactly across each held interval would allow $K<20.02$.
+Left: **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ that §1 opens with, in open loop — $u=1$ and $d=0.5$ enter one summing junction before the plant, so $x$ settles at $x_\infty=1+d=1.5$, and since no arrow reads $x$, nothing can correct it. Right: the same plant under $u=-Kx$ with $K=9$, which moves the pole to $-(1+K)=-10$ and the steady state to $d/(1+K)=0.05$. The clock on top — a sampler of period $T=0.1\,\mathrm s$ and a zero-order hold, which turn $x(t)$ into the sequence $x_k$ and $u_k$ into a held $u(t)$ — makes the loop discrete, and stepped by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$, it is stable only while $K<19$, so a gain the continuous loop accepts, such as $K=99$, diverges once it is sampled.
 
 ### 1. What feedback actually buys
 
@@ -269,7 +246,7 @@ $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
 $e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Recovering this $A_d$ and $B_d$ from a recorded input and output, and mapping them back to the time constant, is [[04-robotics/system-identification|5.5 System Identification]]. Deep sequence models sample their state-space layers from a continuous-time model too, with the step learned rather than chosen — Mamba with this hold, S4 with the bilinear transform ([[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §8–§9]]).
 
-**Worked: P4 under explicit Euler.** The leaky heater of §1 with $u=-Kx$ is $\dot x=-(1+K)x+d$. One explicit-Euler step of period $T$ ([[02-foundations/lab-kernel|0.65]]) is
+**Worked: P4 under explicit Euler.** The leaky heater of §1 with $u=-Kx$ is $\dot x=-(1+K)x+d$. One explicit-Euler step of period $T$ ([[02-foundations/lab-kernel|0.7]]) is
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k.$$
 
@@ -764,13 +741,13 @@ point only*. Three consequences you will meet in papers:
 
 ### Problem set · 과제
 
-Tier A. Plant **P4** from [[02-foundations/lab-plants|0.6]]. Integrator [[02-foundations/lab-kernel|0.65]]. $T$ is the controller period.
+Tier A. Plant **P4** from [[02-foundations/lab-plants|0.6]]. Integrator [[02-foundations/lab-kernel|0.7]]. $T$ is the controller period.
 
 Closed loop $u=-Kx$ discretized by explicit Euler:
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k$$
 
-1. **Draw.** Open-loop P4 ($u$ and $d$ into $\dot x=-x+\cdot$) and the same plant with $u=-Kx$ closing the loop. Mark the summing junction.
+1. **Draw.** The picture above, by hand: open-loop P4 ($u$ and $d$ into $\dot x=-x+\cdot$) and the same plant with $u=-Kx$ closing the loop. Mark the summing junction.
 2. **Derive.** (a) Continuous closed-loop pole and steady state under constant $d$. (b) Discrete multiplier $1-T(1+K)$. For $T=0.1$, the largest $K$ that stays inside the unit disk. (c) Self-check 1 asked for $K=99$ to cut $d$ a hundredfold. Does that $K$ survive $T=0.1$? $T=0.01$?
 3. **Do.** Fill `?`. Four runs, $t\in[0,2]$, $x(0)$ as listed, plot $x(t)$:
    - A. Open: $K=0$, $d=1$, $x_0=0$, $T=0.1$ (ss $=1$)
@@ -791,10 +768,20 @@ for k in range(n):
 # plot; caption "P4, explicit Euler, T=..."
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - **Left panel, open loop**: one box labelled $\dot x=-x+u+d$, the command $u$ and the disturbance $d$ arriving together at a summing junction *before* the box, and the state $x$ leaving it and going nowhere.
+> - **Under the left panel, $x_\infty=1+d$ and the reason in one line**: no arrow reads $x$, so nothing in the picture can correct it.
+> - **Right panel, closed loop**: the same box, plus a path from the output $x$ through a gain block $-K$ and back into the same summing junction.
+> - **The junction's signs marked explicitly, with the minus inside the gain block**, so the junction adds $u$ and $d$ and the box stays $\dot x=-x+u+d$. That is the convention that survives substitution; a paper that hides the sign in the junction instead is why half of all sign errors are found in someone else's figure.
+> - **Under the right panel, the closed-loop pole $-(1+K)$ and $x_\infty=d/(1+K)$.**
+> - **The clock, drawn on top of the right panel**: a sampler — a switch labelled with its period $T$ — on the feedback path, and a zero-order hold on $u$ after the gain.
+> - **Every arrow labelled with the kind of signal it carries**: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ sequences. The clock is what readers leave out, and it can decide the answer: the same $K$ that is stable in the right panel's continuous loop can be unstable once the clock samples it, and a block diagram that does not say where the signal becomes a sequence has not specified the controller the problem set runs.
+> - **The integrator named beside the stability bound**: the problem set steps the held loop by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$ (§4), which is where $K<19$ at $T=0.1\,\mathrm s$ comes from; integrating the plant exactly across each held interval would allow $K<20.02$.
+
 > [!tip]- Solutions
 > 1. Open: $u$ and $d$ sum into the $-1$ plant. Closed: a box $-K$ from $x$ to $u$.
 > 2. (a) $\dot x=-(1+K)x+d$, pole $-(1+K)$, $x_\infty=d/(1+K)$. (b) $|1-T(1+K)|<1$ $\Rightarrow$ for $T=0.1$ and $K>-1$, the dangerous edge is $1-T(1+K)>-1$ $\Rightarrow$ $T(1+K)<2$ $\Rightarrow$ $K<19$. (c) $K=99$ at $T=0.1$ gives multiplier $1-10=-9$ — unstable. At $T=0.01$, $1-1.00=0$: inside the disk, so it survives — deadbeat on this Euler map, and fragile. The 100× attenuation gain is a continuous-time number; the sampler can refuse it.
-> 3. `u = -K * x`, `x = x + T * (-x + u + d)`. A: $x\to 1$. B: $x\to 0$ with multiplier $0.5$. C: $x\to 0.2$. D at $T=0.1$: diverges (sign-flipping growth). D at $T=0.01$: sits near $0.01$. The integrator is part of the claim ([[02-foundations/lab-kernel|0.65]]).
+> 3. `u = -K * x`, `x = x + T * (-x + u + d)`. A: $x\to 1$. B: $x\to 0$ with multiplier $0.5$. C: $x\to 0.2$. D at $T=0.1$: diverges (sign-flipping growth). D at $T=0.01$: sits near $0.01$. The integrator is part of the claim ([[02-foundations/lab-kernel|0.7]]).
 
 ### Continue beyond this guide
 
@@ -835,11 +822,7 @@ examples *are* your domain.
 > [!note] 처음이라면 · First pass
 > D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, 이 페이지는 §5.5 첫머리의 짧은 입문으로만 그것을 소개한다. 그 입문으로 부족하면 Åström & Murray 9장을 먼저 읽어라. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-칸 두 개와 시계 하나. 과제가 다시 요구하기 전에 손으로 한 번 그려 둔다. 대상은
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, §1이 열면서 꺼내는 새는 히터
-$\dot x=-x+u+d$다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 332" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 개루프의 새는 히터, u와 d가 플랜트 앞에서 더해지고 x를 읽는 것이 없어 x는 1 + d = 1.5에 머문다; 오른쪽: 같은 플랜트에 주기 0.1 s의 샘플러와 영차 홀드를 거친 u = -Kx, 폐루프 극점 -10과 정상 상태 d/(1+K) = 0.05, 그리고 샘플링된 루프는 K가 19보다 작을 때만 안정하다">
   <defs><marker id="ctdkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -906,23 +889,7 @@ $\dot x=-x+u+d$다.
   </g>
 </svg>
 
-**왼쪽 칸 — 개루프.** $\dot x=-x+u+d$라 적은 상자 하나. 명령 $u$와 외란 $d$가 상자 *앞의*
-합산점에서 함께 들어가고, 상태 $x$는 상자에서 나와 아무 데로도 가지 않는다. 칸 아래에
-$x_\infty=1+d$를 적고 이유를 한 줄로 쓴다. $x$를 읽는 화살표가 없으니 이 그림 안의 어떤 것도
-그것을 고칠 수 없다.
-
-**오른쪽 칸 — 폐루프.** 같은 상자에, 출력 $x$에서 이득 상자 $-K$를 거쳐 같은 합산점으로
-돌아가는 경로를 더한다. 합산점의 부호를 명시한다. 대입해도 살아남는 관례는 마이너스를 이득
-상자 안에 두는 쪽이다. 그러면 합산점은 $u$와 $d$를 더하고 상자는 그대로 $\dot x=-x+u+d$다 —
-부호를 합산점에 숨긴 논문이, 부호 오류의 절반이 남의 그림에서 발견되는 이유다. 칸 아래에
-폐루프 극점 $-(1+K)$와 $x_\infty=d/(1+K)$를 적는다. 과제가 가장 먼저 묻는 두 숫자다.
-
-**시계 — 오른쪽 칸 위에 겹쳐 그린다.** 피드백 경로에 주기 $T$를 적은 스위치(샘플러)를 놓고,
-이득 뒤 $u$에 영차 홀드를 놓는다. 그다음 화살표마다 어떤 신호를 나르는지 적는다. $x(t)$와
-$d(t)$는 연속, $x_k$와 $u_k$는 수열이다. 이 세 번째 요소가 독자들이 빠뜨리는 것이고, §4가
-보여 주듯 답을 가르는 것이다. 왼쪽 표기에서 안정한 같은 $K$가 오른쪽 표기에서는 불안정할 수
-있다. 신호가 어디서 수열이 되는지 말하지 않는 블록 다이어그램은 과제가 돌릴 제어기를 아직
-특정하지 못한 그림이다. 그 제어기는 유지된 루프를 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$(§4)로 한 주기씩 전진시키고, 칸 아래의 $T=0.1$ s에서 $K<19$가 거기서 나온다. 유지된 각 구간에서 플랜트를 정확히 적분했다면 $K<20.02$까지 허용된다.
+왼쪽은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧 §1이 열면서 꺼내는 새는 히터 $\dot x=-x+u+d$의 개루프로, $u=1$과 $d=0.5$가 플랜트 앞의 합산점 하나로 들어가 $x$는 $x_\infty=1+d=1.5$에 머물고, $x$를 읽는 화살표가 없으니 아무것도 그것을 고칠 수 없다. 오른쪽은 같은 플랜트에 $K=9$의 $u=-Kx$를 건 폐루프로, 극점이 $-(1+K)=-10$으로, 정상 상태가 $d/(1+K)=0.05$로 옮겨 간다. 그 위에 겹친 시계는 주기 $T=0.1\,\mathrm s$의 샘플러와 영차 홀드로 $x(t)$를 수열 $x_k$로, $u_k$를 유지된 $u(t)$로 바꾸어 루프를 이산으로 만들고, 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$로 전진시킨 그 루프는 $K<19$일 때만 안정하므로 연속 루프가 받아들이는 $K=99$ 같은 이득도 샘플링되면 발산한다.
 
 ### 1. 피드백이 실제로 사는 것
 
@@ -1059,7 +1026,7 @@ $A_d = e^{-0.1} = 0.905$, $B_d = 1 - e^{-0.1} = 0.095$다. $e^{AT}$의 고유값
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
 $T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 기록된 입력과 출력에서 이 $A_d$와 $B_d$를 되찾고, 그것을 다시 시상수로 되돌리는 일은 [[04-robotics/system-identification|5.5 시스템 식별]]이다. 딥러닝 시퀀스 모델도 상태공간 층을 연속 시간 모델에서 샘플링하되, 스텝을 고르는 대신 학습한다. Mamba는 이 영차 유지로, S4는 쌍선형 변환으로 이산화한다([[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §8–§9]]).
 
-**계산: 명시적 오일러 아래의 P4.** §1의 새는 히터에 $u=-Kx$를 걸면 $\dot x=-(1+K)x+d$. 주기 $T$의 명시적 오일러 한 스텝([[02-foundations/lab-kernel|0.65]])은
+**계산: 명시적 오일러 아래의 P4.** §1의 새는 히터에 $u=-Kx$를 걸면 $\dot x=-(1+K)x+d$. 주기 $T$의 명시적 오일러 한 스텝([[02-foundations/lab-kernel|0.7]])은
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k.$$
 
@@ -1510,13 +1477,23 @@ $L$의 확률적 버전이
 
 ### 과제 · Problem set
 
-Tier A. [[02-foundations/lab-plants|0.6]]의 **P4**. 적분기 [[02-foundations/lab-kernel|0.65]]. 영어 템플릿.
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P4**. 적분기 [[02-foundations/lab-kernel|0.7]]. 영어 템플릿.
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k$$
 
-1. **그리기.** 개루프 P4와 $u=-Kx$로 닫은 같은 플랜트.
+1. **그리기.** 위의 그림을 손으로 다시 그린다. 개루프 P4($u$와 $d$가 $\dot x=-x+\cdot$로 들어간다)와 $u=-Kx$로 루프를 닫은 같은 플랜트. 합산점을 표시하라.
 2. **유도.** (a) 연속 폐루프 극점과 상수 $d$의 정상상태. (b) $T=0.1$에서 단위원 안에 남는 최대 $K$. (c) 스스로 점검 1의 $K=99$가 $T=0.1$과 $T=0.01$에서 살아남는가?
 3. **실행.** 네 런: A $K=0,d=1,x_0=0,T=0.1$; B $K=4,d=0,x_0=1$; C $K=4,d=1,x_0=0$; D $K=99,d=1$ at $T=0.1$ then $T=0.01$.
+
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽 칸, 개루프**: $\dot x=-x+u+d$라 적은 상자 하나. 명령 $u$와 외란 $d$가 상자 *앞의* 합산점에서 함께 들어가고, 상태 $x$는 상자에서 나와 아무 데로도 가지 않는다.
+> - **왼쪽 칸 아래에 $x_\infty=1+d$와 한 줄짜리 이유**: $x$를 읽는 화살표가 없으니 그림 안의 어떤 것도 그것을 고칠 수 없다.
+> - **오른쪽 칸, 폐루프**: 같은 상자에, 출력 $x$에서 이득 상자 $-K$를 거쳐 같은 합산점으로 돌아가는 경로를 더한다.
+> - **합산점의 부호를 명시하고, 마이너스는 이득 상자 안에 둔다**: 그러면 합산점은 $u$와 $d$를 더하고 상자는 그대로 $\dot x=-x+u+d$다. 대입해도 살아남는 관례가 이쪽이고, 부호를 합산점에 숨긴 논문이 부호 오류의 절반이 남의 그림에서 발견되는 이유다.
+> - **오른쪽 칸 아래에 폐루프 극점 $-(1+K)$와 $x_\infty=d/(1+K)$.**
+> - **시계는 오른쪽 칸 위에 겹쳐 그린다**: 피드백 경로에 주기 $T$를 적은 스위치(샘플러), 이득 뒤 $u$에 영차 홀드.
+> - **화살표마다 나르는 신호의 종류를 적는다**: $x(t)$와 $d(t)$는 연속, $x_k$와 $u_k$는 수열. 독자들이 빠뜨리는 것이 이 시계이고, 그것이 답을 가를 수 있다. 오른쪽 칸의 연속 루프에서 안정한 같은 $K$가 시계가 그 루프를 샘플링하면 불안정해질 수 있고, 신호가 어디서 수열이 되는지 말하지 않는 블록 다이어그램은 과제가 돌릴 제어기를 아직 특정하지 못한 그림이다.
+> - **안정 경계 옆에 적분기를 밝힌다**: 과제는 유지된 루프를 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$(§4)로 한 주기씩 전진시키고, $T=0.1\,\mathrm s$에서 $K<19$가 거기서 나온다. 유지된 각 구간에서 플랜트를 정확히 적분했다면 $K<20.02$까지 허용된다.
 
 > [!tip]- 정답 · Solutions
 > 1. 개루프는 $u$와 $d$가 $-1$ 플랜트로. 폐루프는 $x$에서 $u$로 $-K$.

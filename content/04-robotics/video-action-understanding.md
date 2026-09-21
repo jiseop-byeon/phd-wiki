@@ -9,7 +9,7 @@ wiki-support: Working
 
 ## English
 
-*The entrance to group J. Stands on [[02-foundations/linear-algebra|linear algebra]], probability and [[02-foundations/neural-network-basics|0.7]].
+*The entrance to group J. Stands on [[02-foundations/linear-algebra|linear algebra]], probability and [[02-foundations/neural-network-basics|0.8]].
 The questions a single frame cannot answer — what is happening, and what happens next.*
 
 A single image answers *what is here*. Video is required to answer *what is happening* and *what happens next*. The second question is the one human-centered robotics actually needs, and it is the one most video benchmarks measure badly.
@@ -41,9 +41,7 @@ A **predicted segment** $P$ at threshold $\theta$ is the set of frames with $s_k
 
 *Scope: this page teaches what the four video tasks measure, how a per-frame score becomes a segment and a number, and what a detection delay costs downstream. It does not teach how to train a backbone (the lineage in §3 is the reading list), how a pose or hand is extracted from the frames ([[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]]), or what to do with the prediction once it exists ([[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] and [[04-robotics/hri-safety|11. HRI & Safety]]).*
 
-### Homework diagram: the timeline, three bars under it
-
-The figure is the worked case at $\theta = 0.50$, the threshold Steps 2 to 4 use.
+### The picture: the timeline, three bars under it
 
 <svg viewBox="0 0 560 364" style="max-width:100%;height:auto" role="img" aria-label="Clip V8 on one time axis from 0 to 2.00 s: eight frame boxes with the live detector's scores and a dashed threshold at 0.50, three bars below for the ground truth, the live prediction and the lagged prediction, the intersection and union bracketed, and arrows at the true onset, the live crossing and the lagged crossing 0.50 s apart">
   <defs><marker id="arV8e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -127,15 +125,7 @@ The figure is the worked case at $\theta = 0.50$, the threshold Steps 2 to 4 use
   <text x="10" y="354" font-size="11" fill="currentColor" fill-opacity="0.7">θ = 0.50 is the worked case’s threshold; the boxes hold the live detector’s scores.</text>
 </svg>
 
-Draw one horizontal time axis from 0 to 2.00 s with eight frame boxes above it, each 0.25 s wide and labelled with $k$ and its start time. Inside each box draw $s_k$ for the live detector as a vertical bar, and rule a horizontal dashed line at the threshold $\theta$ across all eight.
-
-Under the axis draw three bars, aligned to the same times and stacked:
-
-1. **$G$** — the ground truth, spanning frames 3 to 7.
-2. **$P_{\text{live}}$** — the frames at or above $\theta$, drawn as one interval.
-3. **$P_{\text{lag}}$** — the same for the lagged detector.
-
-Between bars 1 and 2, bracket the **intersection** and, separately, the **union**, and write the frame count of each — those two counts are the whole of temporal IoU. Finally mark three instants on the axis with vertical arrows: the true onset of $G$, the time the live detector first crosses $\theta$, and the time the lagged one does. Label the gap between the last two, in seconds. The problem set asks for this drawing with a different ground truth, a different threshold and a longer lag.
+The clip V8 on one time axis from 0 to 2.00 s: eight 0.25 s frame boxes hold the live detector's scores, and the dashed line is $\theta = 0.50$, the threshold the worked case's Steps 2 to 4 use. Below, the ground truth $G$ spans frames 3–7, the live prediction frames 4–7 and the lagged one frames 6–8, so the live detector overlaps $G$ in 4 of the 5 frames of their union, $\text{tIoU} = 0.80$, while the lagged one reaches only $2/6 = 0.333$. The arrows mark the true onset at 0.50 s and the two threshold crossings at 0.75 s and 1.25 s, whose gap of $\Delta T = 0.50$ s is exactly the two-frame buffer.
 
 ### Worked case: from eight scores to a stopping distance
 
@@ -358,9 +348,18 @@ You should be able to:
 
 Tier B. Hand derivation on **V8**, using only this page and its prerequisites. Same eight frames, same 4 fps, same live score row. Three things change: the ground-truth segment is now $G' = $ frames **2 to 6**, the threshold is $\theta = 0.30$, and the deployed detector sits behind a **three**-frame buffer, so $s^{\text{lag3}}_k = s^{\text{live}}_{k-3}$ with 0 before it fills.
 
-1. **Draw.** Redraw the homework diagram at these numbers: the eight score bars with the dashed line at $\theta = 0.30$, then the three bars $G'$, $P_{\text{live}}$ and $P_{\text{lag3}}$, with the intersection and union of the first two bracketed and counted. Mark the true onset of $G'$ and the two crossing times, and label the gap in seconds.
+1. **Draw.** Redraw the picture above at these numbers: the eight score bars with the dashed line at $\theta = 0.30$, then the three bars $G'$, $P_{\text{live}}$ and $P_{\text{lag3}}$, with the intersection and union of the first two bracketed and counted. Mark the true onset of $G'$ and the two crossing times, and label the gap in seconds.
 2. **Derive.** (a) Give $P_{\text{live}}$ at $\theta = 0.30$ and its temporal IoU against $G'$; then repeat at $\theta = 0.50$ and say which of the two predictions would be a true positive in an mAP@0.5 table. (b) Give $P_{\text{lag3}}$ at $\theta = 0.50$, its tIoU against $G'$, the clip's max-pooled and mean-pooled scores, and the top-1 verdict under each pooling rule. (c) Convert the three-frame lag into seconds, then into metres of protective separation and into monitored floor area for the P2 cell of [[04-robotics/hri-safety|11. HRI & Safety]].
 3. **Interpret.** A paper reports top-1 accuracy of 100% on this class and calls the system suitable for a safety interlock, adding that it runs at 30 fps. Using 2(b) and 2(c), say what the top-1 number did and did not establish, and name the one measurement you would ask for instead.
+
+> [!note]- How to draw it · 그리는 법
+> - One time axis from 0 to 2.00 s with eight frame boxes above it, each 0.25 s wide and labelled with $k$ and its start time. Frame $k$ occupies $[(k-1)\Delta,\ k\Delta)$, so a segment ends at the end of its last frame, not at its start.
+> - Inside each box, the live detector's $s_k$ as a vertical bar, and one dashed line at the threshold $\theta$ across all eight.
+> - Under the axis, three stacked bars on the same time scale: the ground truth, the live prediction and the lagged prediction, each prediction being the frames with $s_k \ge \theta$ read as one interval.
+> - The lagged scores are the live row moved right by the buffer length, with 0 before the buffer fills, so the lagged bar can never run past the end of the clip at 2.00 s.
+> - Align every bar to the frame boundaries above it, so that a prediction offset from the ground truth shows as an offset, not as a shorter bar.
+> - Between the ground truth and the live prediction, bracket the intersection and, separately, the union, and write the frame count of each: those two counts are the whole of temporal IoU.
+> - Mark three instants with vertical arrows, the true onset and, for each detector, the start of its first frame at or above $\theta$, and label the gap between the two crossings in seconds. It is the buffer length times 0.25 s.
 
 > [!tip]- Solutions
 > 1. The drawing must show $P_{\text{live}}$ starting one frame *after* $G'$ starts and ending one frame *after* it ends — the prediction is shifted, not merely shorter, which is why the union is larger than either segment. At the drawing's $\theta = 0.30$, $P_{\text{lag3}}$ is frames 6–8 and touches $G'$ in frame 6 only ($\text{tIoU} = 1/7 = 0.143$); at 2(b)'s $\theta = 0.50$ it does not touch $G'$ at all.
@@ -393,7 +392,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 
 ## 한국어
 
-*J군의 입구다. [[02-foundations/linear-algebra|선형대수]]·확률과 [[02-foundations/neural-network-basics|0.7]] 위에 선다.
+*J군의 입구다. [[02-foundations/linear-algebra|선형대수]]·확률과 [[02-foundations/neural-network-basics|0.8]] 위에 선다.
 한 장의 이미지로는 답할 수 없는 질문들 — 무슨 일이 일어나는가, 그리고 다음에 무엇이 일어나는가.*
 
 한 장의 이미지는 *무엇이 있는가*에 답한다. *무슨 일이 일어나는가*와 *다음에 무엇이 일어나는가*는 비디오가 있어야 답할 수 있다. 인간 중심 로보틱스가 실제로 필요로 하는 건 두 번째 질문이고, 대부분의 비디오 벤치마크가 제대로 측정하지 못하는 것도 그것이다.
@@ -427,9 +426,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 
 *범위: 이 페이지는 네 비디오 과제가 각각 무엇을 재는지, 프레임별 점수가 어떻게 구간과 숫자가 되는지, 검출 지연이 하류에서 무엇을 치르는지를 가르친다. 백본을 학습시키는 법(§3의 계보가 곧 읽기 목록이다), 프레임에서 자세나 손을 뽑는 법([[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]]), 예측이 생긴 다음에 무엇을 할지([[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]]와 [[04-robotics/hri-safety|11. HRI와 안전]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 시간축과 그 아래 막대 셋
-
-그림은 아래 계산의 경우를 2~4단계의 문턱값 $\theta = 0.50$에서 그린 것이다.
+### 그림으로 먼저 보기: 시간축과 그 아래 막대 셋
 
 <svg viewBox="0 0 560 364" style="max-width:100%;height:auto" role="img" aria-label="클립 V8을 0에서 2.00초까지의 시간축 하나에 그린 그림: 실시간 검출기 점수가 든 프레임 상자 여덟 개와 0.50의 문턱값 점선, 그 아래 정답·실시간 예측·지연 예측의 막대 셋, 괄호로 묶은 교집합과 합집합, 그리고 실제 시작·실시간 교차·지연 교차 시각의 화살표와 0.50초 간격">
   <defs><marker id="arV8k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -513,15 +510,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
   <text x="10" y="354" font-size="11" fill="currentColor" fill-opacity="0.7">θ = 0.50은 계산 예제의 문턱값이고, 상자 안은 실시간 검출기의 점수다.</text>
 </svg>
 
-0에서 2.00초까지 가로 시간축을 하나 긋고 그 위에 프레임 상자 여덟 개를 놓는다. 각 상자는 0.25초 폭이고 $k$와 시작 시각을 적는다. 상자 안에 실시간 검출기의 $s_k$를 세로 막대로 그리고, 여덟 상자를 가로지르는 문턱값 $\theta$의 점선을 긋는다.
-
-축 아래에는 같은 시각에 맞춘 막대 셋을 쌓는다:
-
-1. **$G$** — 정답, 프레임 3에서 7까지.
-2. **$P_{\text{live}}$** — $\theta$ 이상인 프레임들을 구간 하나로.
-3. **$P_{\text{lag}}$** — 지연된 검출기에 대해 같은 것.
-
-막대 1과 2 사이에 **교집합**과 **합집합**을 각각 괄호로 묶고 프레임 수를 적는다 — 그 두 숫자가 시간 IoU의 전부다. 마지막으로 축 위 세 순간에 세로 화살표를 찍는다: $G$의 실제 시작, 실시간 검출기가 $\theta$를 처음 넘는 시각, 지연된 검출기가 넘는 시각. 뒤의 두 시각 사이 간격을 초 단위로 적는다. 과제는 정답 구간과 문턱값과 지연 길이를 바꾼 같은 그림을 요구한다.
+클립 V8을 0에서 2.00초까지의 시간축 하나에 놓았다: 0.25초 폭의 프레임 상자 여덟 개에 실시간 검출기의 점수가 들어 있고, 점선은 계산 예제의 2~4단계가 쓰는 문턱값 $\theta = 0.50$이다. 그 아래에서 정답 $G$는 프레임 3–7, 실시간 예측은 프레임 4–7, 지연된 예측은 프레임 6–8에 걸치므로, 실시간 검출기는 합집합 다섯 프레임 중 넷에서 $G$와 겹쳐 $\text{tIoU} = 0.80$이고 지연된 검출기는 $2/6 = 0.333$에 그친다. 화살표는 0.50초의 실제 시작과 0.75초·1.25초의 두 문턱값 통과를 가리키고, 뒤의 둘 사이 간격 $\Delta T = 0.50$초가 정확히 버퍼의 두 프레임이다.
 
 ### 대상으로 한 번 끝까지: 점수 여덟 개에서 정지 거리까지
 
@@ -744,9 +733,18 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 
 Tier B. **V8** 위에서 손으로 유도한다. 이 페이지와 선수 지식만 쓴다. 같은 프레임 여덟 장, 같은 4 fps, 같은 실시간 점수 행이다. 세 가지가 바뀐다. 정답 구간이 이제 $G' = $ 프레임 **2에서 6까지**이고, 문턱값이 $\theta = 0.30$이며, 배포된 검출기는 **세** 프레임 버퍼 뒤에 앉아 $s^{\text{lag3}}_k = s^{\text{live}}_{k-3}$, 버퍼가 차기 전에는 0이다.
 
-1. **그리기.** 이 숫자들로 과제의 그림을 다시 그려라: $\theta = 0.30$의 점선을 두른 점수 막대 여덟 개, 그 아래 막대 셋 $G'$, $P_{\text{live}}$, $P_{\text{lag3}}$, 앞의 둘에 대한 교집합과 합집합을 괄호로 묶고 개수를 적는다. $G'$의 실제 시작과 두 검출기의 문턱값 통과 시각을 표시하고 그 간격을 초로 적는다.
+1. **그리기.** 위의 그림을 이 숫자들로 다시 그려라: $\theta = 0.30$의 점선을 두른 점수 막대 여덟 개, 그 아래 막대 셋 $G'$, $P_{\text{live}}$, $P_{\text{lag3}}$, 앞의 둘에 대한 교집합과 합집합을 괄호로 묶고 개수를 적는다. $G'$의 실제 시작과 두 검출기의 문턱값 통과 시각을 표시하고 그 간격을 초로 적는다.
 2. **유도.** (a) $\theta = 0.30$에서의 $P_{\text{live}}$와 $G'$에 대한 시간 IoU를 구하고, $\theta = 0.50$에서 같은 것을 구한 뒤, 둘 중 어느 예측이 mAP@0.5 표에서 참양성이 되는지 말하라. (b) $\theta = 0.50$에서의 $P_{\text{lag3}}$, $G'$에 대한 tIoU, 클립의 max·mean 풀링 점수, 그리고 각 풀링 규칙에서의 top-1 판정을 구하라. (c) 세 프레임 지연을 초로, 그다음 [[04-robotics/hri-safety|11. HRI와 안전]]의 P2 셀에서 보호 이격 거리의 미터와 감시 바닥 면적으로 환산하라.
 3. **해석.** 어떤 논문이 이 클래스에서 top-1 정확도 100%를 보고하고, 30 fps로 돈다는 말을 덧붙이며, 이 시스템이 안전 인터록에 적합하다고 말한다. 2(b)와 2(c)를 써서 그 top-1 숫자가 무엇을 확립했고 무엇을 확립하지 못했는지 말하고, 대신 요구할 측정 하나를 대라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 0에서 2.00초까지의 시간축 하나를 긋고, 그 위에 0.25초 폭의 프레임 상자 여덟 개를 놓아 각각에 $k$와 시작 시각을 적는다. 프레임 $k$는 $[(k-1)\Delta,\ k\Delta)$를 차지하므로, 구간은 마지막 프레임의 시작이 아니라 끝에서 끝난다.
+> - 각 상자 안에 실시간 검출기의 $s_k$를 세로 막대로 그리고, 여덟 상자를 가로지르는 문턱값 $\theta$의 점선 하나를 긋는다.
+> - 축 아래에 같은 시간 축척의 막대 셋을 쌓는다: 정답, 실시간 예측, 지연된 예측. 예측은 $s_k \ge \theta$인 프레임들을 구간 하나로 읽은 것이다.
+> - 지연된 점수는 실시간 행을 버퍼 길이만큼 오른쪽으로 민 것이고, 버퍼가 차기 전에는 0이다. 그러니 지연된 막대는 클립의 끝인 2.00초를 넘어갈 수 없다.
+> - 모든 막대를 위의 프레임 경계에 맞춘다. 그래야 정답에서 밀린 예측이 짧은 막대가 아니라 밀린 막대로 보인다.
+> - 정답과 실시간 예측 사이에 교집합과 합집합을 각각 괄호로 묶고 프레임 수를 적는다. 그 두 숫자가 시간 IoU의 전부다.
+> - 세로 화살표 셋으로 실제 시작과, 각 검출기가 $\theta$ 이상이 되는 첫 프레임의 시작을 찍고, 두 통과 시각 사이 간격을 초로 적는다. 그 간격은 버퍼 길이 곱하기 0.25초다.
 
 > [!tip]- 정답 · Solutions
 > 1. 그림에서 $P_{\text{live}}$는 $G'$보다 한 프레임 *늦게* 시작해 한 프레임 *늦게* 끝나야 한다. 예측이 단지 짧은 것이 아니라 밀려 있고, 그래서 합집합이 두 구간 어느 쪽보다도 크다. 그림의 $\theta = 0.30$에서 $P_{\text{lag3}}$은 프레임 6–8이고 $G'$와는 프레임 6에서만 닿는다($\text{tIoU} = 1/7 = 0.143$). 2(b)의 $\theta = 0.50$에서는 $G'$에 전혀 닿지 않는다.

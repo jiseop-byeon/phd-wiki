@@ -16,7 +16,7 @@ mastery-when: "Raise when an attention variant, a positional scheme, or inferenc
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[03-deep-learning/computer-vision/index|2. Computer Vision]]. Second use of object **D2**, whose home is the vision page: that page names attention and hands it on, and [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]] and every Transformer-based paper note assume what is taught here.*
 
 > [!note] First pass · 처음이라면
-> Draw the Homework diagram, then work the Worked case with a calculator — one head, sixteen scores, four softmax rows, four outputs, and the same head under a causal mask. Read §1–§3 and do problems 1–2. Open §4–§7 when a paper says "heads", "RoPE", "pre-norm" or "KV cache"; §8 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator — one head, sixteen scores, four softmax rows, four outputs, and the same head under a causal mask. Read §1–§3 and do problems 1–2. Open §4–§7 when a paper says "heads", "RoPE", "pre-norm" or "KV cache"; §8 runs all of it.
 
 ### Running object · 이 페이지의 대상
 
@@ -54,9 +54,7 @@ so a 1 sits wherever a coordinate of $x$ is copied into the output, and a $-1$ w
 
 *Scope: this page teaches scaled dot-product attention with every symbol and shape, why the scale is $\sqrt{d_k}$, causal and padding masks and cross-attention, multi-head attention, why attention needs position information and the two standard ways to supply it, the Transformer block (attention, residual, LayerNorm, MLP), and what the layer costs in arithmetic, in memory and — at generation time — what a KV cache saves. It does not teach how patches are cut or what a convolution offers instead, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor how the layer is trained — the backward pass and the update — which is [[03-deep-learning/foundations/index|1. Learning Systems §2]], with the softmax Jacobian in [[02-foundations/calculus-backprop|2. Calculus & Backprop §4]]; nor the 2017 paper's experiments and the block variants current models substitute (RMSNorm, gated MLPs, RoPE), which are the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor contrastive image–text training, which is [[03-deep-learning/vlm/index|3. VLM]]; nor efficient-attention algorithms, of which FlashAttention is named in §7 and not taught.*
 
-### Homework diagram · 과제가 그릴 그림
-
-One diagram, and the problem set asks for exactly this one, for a different head.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -76,11 +74,7 @@ flowchart LR
     V --> O
 ```
 
-Four things the drawing has to get right, each of which is a claim about the computation.
-**Rows are queries, columns are keys.** Draw the score table as a $4\times4$ grid, row $i$ labelled "query $i$" and column $j$ "key $j$", because the softmax runs along rows: a row is one token's distribution over which tokens it reads. A transposed grid normalises over the wrong axis, and nothing in the code will complain.
-**$V$ bypasses the score table.** Values never influence who is attended to, only what is carried back, so the $V$ branch joins at the very end. A diagram that routes $V$ through the softmax describes a different operation.
-**The position table joins before the projections, and belongs to the slot.** Draw $P$ as its own input at the sum, with $p_1$ attached to slot 1 whatever patch occupies it. §5's argument is that arrow.
-**The mask acts on scores, before the softmax.** Shade the six cells above the diagonal and write $-\infty$ in them. A mask drawn after the softmax leaves rows that no longer sum to one (§3).
+One attention head on D2, with every shape. The $8\times8$ pixels become four patches ($4\times16$), $E$ and $e_0$ embed them ($4\times4$), and the position table $P$, one row per slot, is added before the projections to give $X$ ($4\times4$). $X$ is projected to $Q$, $K$ and $V$ ($4\times2$ each); $S=QK^\top/\sqrt2$ is a $4\times4$ grid whose rows are queries, an optional causal mask writes $-\infty$ above its diagonal before the row-wise softmax gives $A$, and $V$ joins only at the end, in $O=AV$ ($4\times2$).
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -267,7 +261,7 @@ so each sublayer reads a normalised copy of the running vector and adds its resu
 > - **Non-example**: normalising each feature across the tokens of a sequence. Its mean and variance are sums over the tokens, so reordering the tokens only reorders the outputs and equivariance survives. What breaks is locality in time: every token's normalised value now depends on every other token, later ones included, so a causal mask no longer hides the future (§3), and a KV cache goes stale because the earlier tokens' outputs change each time a token is appended (§7).
 > - **Why it matters**: it fixes the scale of what enters $W_Q$ and $W_K$, which is where §2's unit-variance assumption comes from at initialisation.
 
-**The MLP** is two linear maps with a nonlinearity between them, applied to each token separately and identically, $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$ with $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$ and $d_{\text{ff}}=4d$ in the original ($2048$ for $d=512$); ViT uses GELU in place of the max ([[02-foundations/neural-network-basics|0.7 Neural Networks §6]]). The two sublayers split the work. Attention moves information between tokens, and its output is a convex combination of values; the MLP transforms each token and holds most of the parameters.
+**The MLP** is two linear maps with a nonlinearity between them, applied to each token separately and identically, $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$ with $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$ and $d_{\text{ff}}=4d$ in the original ($2048$ for $d=512$); ViT uses GELU in place of the max ([[02-foundations/neural-network-basics|0.8 Neural Networks §6]]). The two sublayers split the work. Attention moves information between tokens, and its output is a convex combination of values; the MLP transforms each token and holds most of the parameters.
 
 **Counting a block.** With biases on every linear map, attention holds $4(d^2+d)$ numbers, the MLP $8d^2+5d$, and the two LayerNorms $4d$:
 
@@ -509,7 +503,7 @@ Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-obje
 
 **Head 3.** $q_i=(1-m_i,\ r_i)$, $k_i=(c_i,\ r_i)$ and $v_i=(m_i,\ r_i)$ — that is, $W_Q^{(3)}$ with rows $(0,0),(1,0),(0,1),(0,0)$, $W_K^{(3)}$ with rows $(0,0),(0,0),(0,1),(1,0)$, and $W_V^{(3)}=W_V^{(1)}$. Its raw score is $(1-m_i)\,c_j+r_ir_j$: dark patches look to the right along their row, and bright patches look along their row with no preference.
 
-1. **Draw.** Redraw the Homework diagram for head 3 with every shape for $n=4$, $d=4$, $d_k=d_v=2$. Write the sixteen integers of $QK^\top$ into the score grid, rows labelled as queries; circle every pair of cells with $S_{ij}\ne S_{ji}$; shade the six cells a causal mask sets to $-\infty$.
+1. **Draw.** The picture above, for head 3, with every shape for $n=4$, $d=4$, $d_k=d_v=2$. Write the sixteen integers of $QK^\top$ into the score grid, rows labelled as queries; circle every pair of cells with $S_{ij}\ne S_{ji}$; shade the six cells a causal mask sets to $-\infty$.
 2. **Derive.** (a) Head 3's $Q$, $K$ and $QK^\top$, its softmax rows $A$, and $O=AV$; then $A$ and $O$ under the causal mask. (b) Query components have variance 4 and key components variance 1, independent, with mean zero, and $d_k=64$. Give the standard deviation of $q\cdot k$ and the divisor that would restore unit variance; what does dividing by $\sqrt{d_k}$ leave? (c) Count the parameters of a pre-norm block with $d=8$, $h=2$ and $d_{\text{ff}}=4d$, biases included. Does the count change at $h=4$?
 3. **Do.** Fill the `?` blanks, then (a) print head 3's $A$ and $O$, unmasked and causal, and check them against 2(a); (b) run the mirror test for head 3 alone, with and without the position table, and explain the gap; (c) count one block's multiply-adds at $d=64$, $h=4$ for $n\in\{16,64,256,1024,4096\}$, report the share in the two $n\times n$ products as a table, and find the $n$ where the share crosses one half.
 
@@ -574,6 +568,12 @@ for n in (16, 64, 256, 1024, 4096):
 
 4. **Interpret.** A paper replaces full attention with a linear-time variant inside a VLA backbone of width $d=4096$ that reads $n=276$ tokens per control step, and credits the swap with a 2× end-to-end speedup. Using §7, what fraction of a block's multiply-adds could the swap remove, and what should you ask?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw the score table as a $4\times4$ grid with row $i$ labelled "query $i$" and column $j$ "key $j$". The softmax runs along rows — a row is one token's distribution over the tokens it reads — and a transposed grid normalises over the wrong axis while nothing in the code complains.
+> - Route $V$ around the score table, joining only at $O=AV$. Values never influence who is attended to, only what is carried back; a diagram that sends $V$ through the softmax describes a different operation.
+> - Draw the position table $P$ as its own input at the sum, before the projections, with $p_1$ attached to slot 1 whatever patch occupies it. §5's argument is that arrow.
+> - Put the mask on the scores, before the softmax: shade the six cells above the diagonal and write $-\infty$ in them. A mask drawn after the softmax leaves rows that no longer sum to one (§3).
+
 > [!tip]- Solutions
 > 1. Shapes: $X$ is $4\times4$; $Q$, $K$ and $V$ are $4\times2$; $S$ and $A$ are $4\times4$; $O$ is $4\times2$. The grid's rows are $(0,2,-2,0)$, $(1,1,-1,-1)$, $(-2,0,0,2)$ and $(-1,-1,1,1)$. The asymmetric pairs are $\{1,2\}$ ($2$ against $1$), $\{1,4\}$ ($0$ against $-1$), $\{2,3\}$ ($-1$ against $0$) and $\{3,4\}$ ($2$ against $1$) — exactly the four dark–bright pairs, since $S_{ij}-S_{ji}\propto(1-m_i)c_j-(1-m_j)c_i$ vanishes when both patches share a brightness. The masked cells are $(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)$.
 > 2. (a) $Q$ has rows $(1,-1),(0,-1),(1,1),(0,1)$ and $K$ has rows $(-1,-1),(1,-1),(-1,1),(1,1)$, giving the grid above. Rows 1 and 3 of $A$ are head 1's, $(0.157323,0.647107,0.038248,0.157323)$ and $(0.038248,0.157323,0.157323,0.647107)$. Rows 2 and 4 have scaled scores $\pm1/\sqrt2$; with $e^{0.707107}=2.028115$, $e^{-0.707107}=0.493069$ and a total of $5.042368$ they are $(0.402215,0.402215,0.097785,0.097785)$ and $(0.097785,0.097785,0.402215,0.402215)$. So $O$ has rows $(0.804430,-0.608859)$, $(0.5,-0.608859)$, $(0.804430,0.608859)$ and $(0.5,0.608859)$: the bright patches now read exactly half bright, because they weight their own row without preference. Under the mask the rows of $A$ are $(1,0,0,0)$, $(0.5,0.5,0,0)$ — two equal scores $1/\sqrt2$ — $(0.108383,0.445808,0.445808,0)$ and row 4 unchanged, so $O_{\text{causal}}$ has rows $(0,-1)$, $(0.5,-1)$, $(0.445808,-0.108383)$ and $(0.5,0.608859)$. (b) $\operatorname{Var}(q\cdot k)=64\cdot4\cdot1=256$, a standard deviation of 16. Dividing by $16=2\sqrt{d_k}$ restores unit variance, while dividing by $\sqrt{64}=8$ leaves a standard deviation of 2: the $\sqrt{d_k}$ rule assumes unit-variance components, and a projection twice as large doubles every score. (c) $12\cdot64+13\cdot8=872$ — attention $4(64+8)=288$, MLP $8\cdot32+32+32\cdot8+8=552$, two LayerNorms $32$. It does not change at $h=4$, because the heads divide the width among themselves.
@@ -608,7 +608,7 @@ for n in (16, 64, 256, 1024, 4096):
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]] 위에 선다. 대상 **D2** — 집은 비전 페이지 — 를 두 번째로 쓴다. 그 페이지가 이름만 대고 넘긴 어텐션을 여기서 가르치며, [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]], 그리고 Transformer를 쓰는 모든 논문 노트가 이 내용을 전제한다.*
 
 > [!note] 처음이라면 · First pass
-> 과제가 그릴 그림을 그린 뒤, 계산기로 계산 절을 따라간다. 헤드 하나, 점수 열여섯 개, softmax 행 넷, 출력 넷, 그리고 인과 마스크를 건 같은 헤드다. §1–§3을 읽고 문제 1–2를 푼다. §4–§7은 논문이 "헤드", "RoPE", "pre-norm", "KV 캐시"를 말할 때 연다. §8이 전부를 돌린다.
+> 그림을 먼저 본 뒤, 계산기로 계산 절을 따라간다. 헤드 하나, 점수 열여섯 개, softmax 행 넷, 출력 넷, 그리고 인과 마스크를 건 같은 헤드다. §1–§3을 읽고 문제 1–2를 푼다. §4–§7은 논문이 "헤드", "RoPE", "pre-norm", "KV 캐시"를 말할 때 연다. §8이 전부를 돌린다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -646,9 +646,7 @@ $x$의 좌표가 출력에 복사되는 자리에 1이, 부호를 뒤집어 복�
 
 *범위: 이 페이지는 스케일드 닷프로덕트 어텐션을 모든 기호와 shape와 함께, 스케일이 $\sqrt{d_k}$인 이유, 인과 마스크·패딩 마스크와 cross-attention, 멀티헤드 어텐션, 어텐션에 위치 정보가 필요한 이유와 그것을 넣는 표준적인 두 방법, Transformer 블록(어텐션, 잔차, LayerNorm, MLP), 그리고 층이 산술과 메모리에서 치르는 비용과 생성 시점에 KV 캐시가 아끼는 것을 가르친다. 패치를 자르는 법이나 convolution이 대신 주는 것은 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. 층을 학습시키는 법 — 역전파와 갱신 — 도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §2]]이고, softmax의 Jacobian은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §4]]에 있다. 2017년 논문의 실험과 요즘 모델이 바꿔 끼우는 블록 변형(RMSNorm, 게이팅 MLP, RoPE)도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 이미지–텍스트 대조 학습도 아니다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 효율적 어텐션 알고리즘도 아니다. FlashAttention은 §7에서 이름만 나온다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 헤드만 다르다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -668,11 +666,7 @@ flowchart LR
     V --> O
 ```
 
-그림이 맞혀야 할 것이 넷이고, 각각이 계산에 대한 주장이다.
-**행이 쿼리, 열이 키다.** 점수 표를 $4\times4$ 격자로 그리고, 행 $i$에 "쿼리 $i$", 열 $j$에 "키 $j$"라고 적는다. softmax가 행을 따라 돌기 때문이다. 행 하나는 토큰 하나가 어느 토큰을 읽을지의 분포다. 격자를 전치해 그리면 엉뚱한 축으로 정규화하고, 코드는 아무 불평도 하지 않는다.
-**$V$는 점수 표를 우회한다.** 값은 누가 누구를 보는지에 영향을 주지 않고 무엇을 가져오는지만 정하므로, $V$ 가지는 맨 끝에서 합류한다. $V$를 softmax에 통과시키는 그림은 다른 연산의 그림이다.
-**위치 표는 투영 전에 합류하고, 슬롯에 속한다.** $P$를 합산점의 별도 입력으로 그리고, 어떤 패치가 앉든 $p_1$은 슬롯 1에 붙인다. §5의 논증이 그 화살표 하나다.
-**마스크는 softmax 전에 점수에 건다.** 대각선 위의 여섯 칸을 칠하고 $-\infty$를 적는다. softmax 뒤에 그린 마스크는 합이 1이 아닌 행을 남긴다(§3).
+D2 위의 어텐션 헤드 하나를 모든 shape와 함께 그렸다. $8\times8$ 픽셀이 패치 넷($4\times16$)이 되고, $E$와 $e_0$가 이를 임베딩하며($4\times4$), 슬롯마다 한 행인 위치 표 $P$가 투영 전에 더해져 $X$($4\times4$)가 된다. $X$는 $Q$, $K$, $V$(각각 $4\times2$)로 투영되고, $S=QK^\top/\sqrt2$는 행이 쿼리인 $4\times4$ 격자이며, 선택적 인과 마스크가 대각선 위에 $-\infty$를 적은 뒤 행별 softmax가 $A$를 내고, $V$는 맨 끝의 $O=AV$($4\times2$)에서야 합류한다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -859,7 +853,7 @@ $$Z=X+\mathrm{MHA}\big(\mathrm{LN}(X)\big),\qquad Y=Z+\mathrm{MLP}\big(\mathrm{L
 > - **비예**: 시퀀스의 토큰들에 걸쳐 특징마다 정규화하기. 평균과 분산이 토큰들에 대한 합이므로 토큰을 재배열하면 출력도 재배열될 뿐이고, 등변성은 살아남는다. 깨지는 것은 시간상의 국소성이다. 모든 토큰의 정규화된 값이 이제 다른 모든 토큰, 뒤에 오는 토큰까지에 의존하므로 인과 마스크가 더 이상 미래를 가리지 못하고(§3), 토큰을 하나 덧붙일 때마다 앞 토큰들의 출력이 바뀌어 KV 캐시가 낡아 버린다(§7).
 > - **왜 중요한가**: $W_Q$와 $W_K$에 들어가는 것의 크기를 고정한다. 초기화 때 §2의 단위 분산 가정이 오는 곳이 여기다.
 
-MLP는 사이에 비선형성을 둔 선형 사상 둘이고, 각 토큰에 따로, 똑같이 적용한다. $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$, $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$이고 원래는 $d_{\text{ff}}=4d$($d=512$에서 $2048$)였다. ViT는 max 대신 GELU를 쓴다([[02-foundations/neural-network-basics|0.7 신경망 §6]]). 두 서브레이어는 일을 나눈다. 어텐션은 토큰 사이로 정보를 옮기고 그 출력은 값의 볼록 결합이다. MLP는 각 토큰을 변환하고 파라미터의 대부분을 갖는다.
+MLP는 사이에 비선형성을 둔 선형 사상 둘이고, 각 토큰에 따로, 똑같이 적용한다. $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$, $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$이고 원래는 $d_{\text{ff}}=4d$($d=512$에서 $2048$)였다. ViT는 max 대신 GELU를 쓴다([[02-foundations/neural-network-basics|0.8 신경망 §6]]). 두 서브레이어는 일을 나눈다. 어텐션은 토큰 사이로 정보를 옮기고 그 출력은 값의 볼록 결합이다. MLP는 각 토큰을 변환하고 파라미터의 대부분을 갖는다.
 
 **블록 세기.** 모든 선형 사상에 bias가 있으면 어텐션은 $4(d^2+d)$개, MLP는 $8d^2+5d$개, LayerNorm 둘은 $4d$개의 숫자를 갖는다.
 
@@ -983,10 +977,16 @@ Tier A. 이 페이지, 선수 페이지, [[03-deep-learning/lab-objects|0. Lab O
 
 **헤드 3.** $q_i=(1-m_i,\ r_i)$, $k_i=(c_i,\ r_i)$, $v_i=(m_i,\ r_i)$다. 곧 $W_Q^{(3)}$의 행은 $(0,0),(1,0),(0,1),(0,0)$, $W_K^{(3)}$의 행은 $(0,0),(0,0),(0,1),(1,0)$이고 $W_V^{(3)}=W_V^{(1)}$이다. 날점수는 $(1-m_i)\,c_j+r_ir_j$다. 어두운 패치는 자기 행을 따라 오른쪽을 보고, 밝은 패치는 선호 없이 자기 행을 본다.
 
-1. **그리기.** 헤드 3으로 과제가 그릴 그림을 다시 그리고, $n=4$, $d=4$, $d_k=d_v=2$의 shape를 모두 적는다. 행에 쿼리라고 적은 점수 격자에 $QK^\top$의 정수 열여섯 개를 적고, $S_{ij}\ne S_{ji}$인 칸의 쌍을 모두 동그라미 치고, 인과 마스크가 $-\infty$로 두는 여섯 칸을 칠한다.
+1. **그리기.** 위의 그림을 헤드 3으로 다시 그리고, $n=4$, $d=4$, $d_k=d_v=2$의 shape를 모두 적는다. 행에 쿼리라고 적은 점수 격자에 $QK^\top$의 정수 열여섯 개를 적고, $S_{ij}\ne S_{ji}$인 칸의 쌍을 모두 동그라미 치고, 인과 마스크가 $-\infty$로 두는 여섯 칸을 칠한다.
 2. **유도.** (a) 헤드 3의 $Q$, $K$, $QK^\top$, softmax 행 $A$, $O=AV$. 그다음 인과 마스크에서의 $A$와 $O$. (b) 쿼리 성분의 분산이 4, 키 성분의 분산이 1이고, 서로 독립, 평균 0, $d_k=64$다. $q\cdot k$의 표준편차와 단위 분산을 되돌릴 나눗수를 구하라. $\sqrt{d_k}$로 나누면 무엇이 남는가? (c) $d=8$, $h=2$, $d_{\text{ff}}=4d$인 pre-norm 블록의 파라미터를 bias 포함해 세라. $h=4$이면 바뀌는가?
 3. **실행.** 영어 절 템플릿의 `?`를 채운 뒤, (a) 헤드 3의 $A$와 $O$를 마스크 없이, 인과로 출력해 2(a)와 맞춰 본다. (b) 헤드 3 하나로 위치 표가 있을 때와 없을 때 거울 검사를 돌리고 그 차이를 설명한다. (c) $d=64$, $h=4$에서 $n\in\{16,64,256,1024,4096\}$에 대해 블록 하나의 곱셈-덧셈을 세고, 두 $n\times n$ 곱의 몫을 표로 보고하고, 그 몫이 절반을 넘는 $n$을 찾는다.
 4. **해석.** 어떤 논문이 폭 $d=4096$이고 제어 스텝마다 토큰 $n=276$개를 읽는 VLA 백본 안의 전체 어텐션을 선형 시간 변형으로 바꾸고, 그 교체 덕분에 끝에서 끝까지 2배 빨라졌다고 한다. §7을 써서, 그 교체가 블록의 곱셈-덧셈 중 얼마를 없앨 수 있는지, 그리고 무엇을 물어야 하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 점수 표는 $4\times4$ 격자로 그리고, 행 $i$에 "쿼리 $i$", 열 $j$에 "키 $j$"라고 적는다. softmax는 행을 따라 돌고 — 행 하나는 토큰 하나가 어느 토큰을 읽을지의 분포다 — 격자를 전치해 그리면 엉뚱한 축으로 정규화하는데 코드는 아무 불평도 하지 않는다.
+> - $V$는 점수 표를 우회해 $O=AV$에서만 합류하게 그린다. 값은 누가 누구를 보는지에 영향을 주지 않고 무엇을 가져오는지만 정한다. $V$를 softmax에 통과시키는 그림은 다른 연산의 그림이다.
+> - 위치 표 $P$는 투영 전 합산점의 별도 입력으로 그리고, 어떤 패치가 앉든 $p_1$은 슬롯 1에 붙인다. §5의 논증이 그 화살표 하나다.
+> - 마스크는 softmax 전에 점수에 건다. 대각선 위의 여섯 칸을 칠하고 $-\infty$를 적는다. softmax 뒤에 그린 마스크는 합이 1이 아닌 행을 남긴다(§3).
 
 > [!tip]- 정답 · Solutions
 > 1. shape: $X$는 $4\times4$, $Q$, $K$, $V$는 $4\times2$, $S$와 $A$는 $4\times4$, $O$는 $4\times2$다. 격자의 행은 $(0,2,-2,0)$, $(1,1,-1,-1)$, $(-2,0,0,2)$, $(-1,-1,1,1)$이다. 비대칭인 쌍은 $\{1,2\}$($2$ 대 $1$), $\{1,4\}$($0$ 대 $-1$), $\{2,3\}$($-1$ 대 $0$), $\{3,4\}$($2$ 대 $1$)다. 정확히 어둠–밝음 쌍 넷이다. $S_{ij}-S_{ji}\propto(1-m_i)c_j-(1-m_j)c_i$가 두 패치의 밝기가 같으면 사라지기 때문이다. 가려지는 칸은 $(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)$다.

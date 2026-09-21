@@ -17,9 +17,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: given a desired end-effector pose, what joint angles achieve it?
 
-### Homework diagram · 과제가 그릴 그림
-
-One workspace figure, three arms on it, and one annotation that is not an arm. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], unit links, and the target is the catalog tip $(1,1)$ — the point on the panel face that the running task has to reach.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="P2 reaching the target (1, 1) with two IK branches, elbow at (1, 0) and at (0, 1); their joint-space mean is a straight arm whose tip (1.414, 1.414) overshoots by 0.586 m, where the only reachable direction is perpendicular to the wanted one.">
   <defs><marker id="mr06hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -64,12 +62,7 @@ One workspace figure, three arms on it, and one annotation that is not an arm. T
   </g>
 </svg>
 
-1. **Branch A, solid.** $\theta = (0^\circ, 90^\circ)$: link 1 along $+\hat x$ to the elbow at $(1,0)$, link 2 straight up to $(1,1)$. Label the elbow point. This is the catalog frozen pose.
-2. **Branch B, solid but lighter.** $\theta = (90^\circ, -90^\circ)$: link 1 straight up to the elbow at $(0,1)$, link 2 along $+\hat x$ to $(1,1)$. Label this elbow too. The two elbows are the whole content of "elbow-up versus elbow-down" — same tip, two different arms.
-3. **The mean arm, dashed.** $\theta = (45^\circ, 0^\circ)$, the componentwise average of the two branches: a single straight segment from the origin out to $(\sqrt2, \sqrt2) = (1.414, 1.414)$. Put an $\times$ on its tip and mark the miss distance $0.586\,\mathrm{m}$ back to the target. It must be visibly *past* the target, not near it.
-4. **Two arrows at the dashed tip, and this is the layer that earns the figure.** One double-headed arrow perpendicular to the straight arm, labelled "reachable"; one arrow pointing back along the arm toward the target, labelled "wanted". They are at right angles. Every tip velocity a straight arm can produce lies on the first, and the entire error lies on the second.
-
-Draw the target as a small circle, once, and let all three arms point at it. The problem set asks for layers 1–3 with the elbow points labelled; layer 4 is what the worked case below turns into a number.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] reaching the catalog target $(1,1)$, the point on the panel face, on two exact IK branches: A, $(0^\circ, 90^\circ)$, with its elbow at $(1,0)$, and B, $(90^\circ, -90^\circ)$, with its elbow at $(0,1)$ — same tip, two different arms. Their componentwise mean $(45^\circ, 0^\circ)$ is the dashed straight arm, whose tip $(\sqrt2, \sqrt2) = (1.414, 1.414)$ overshoots by $0.586\,\mathrm{m}$, $41\,\%$ of the target's distance. At that tip $J$ has rank 1, $\sigma = (2.2361,\ 0)$: the only reachable direction is perpendicular to the arm while the wanted one runs back along it, so $J^\top e = (0,0)$ and there is no step at all, for every damping $\lambda$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -239,6 +232,13 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 2. **Derive.** The two joint pairs. Which is the frozen pose of 0.6? Average the two joint vectors; where does that mean configuration put the tip?
 3. **Interpret.** A numerical IK seeded at $(45^\circ,0^\circ)$ cannot jump branches without crossing $\theta_2=0$. What does that mean for moving the tool to the panel?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw the target once, as a small circle, and let every arm end on it or point at it.
+> - Each branch is two links: link 1 from the base to its elbow, link 2 from the elbow to the target. Draw one branch solid and the other lighter.
+> - Label both elbow points. The two elbows are the whole content of "elbow-up versus elbow-down": same tip, two different arms.
+> - If you add the mean of the two joint vectors, draw it dashed from its own joint angles (in the picture above, $(45^\circ, 0^\circ)$, one straight segment), put an $\times$ on its tip, and mark the miss back to the target. It must land visibly past the target, not near it.
+> - At the dashed tip, "reachable" is a double-headed arrow perpendicular to the straight arm and "wanted" points back along it toward the target. Draw them at right angles: every tip velocity the straight arm can produce lies on the first, and the whole error on the second.
+
 > [!tip]- Solutions
 > 1. Elbow-right: elbow at $(1,0)$, forearm up. Elbow-up: elbow at $(0,1)$, forearm to the right.
 > 2. $(0^\circ,90^\circ)$ and $(90^\circ,-90^\circ)$. Frozen pose is $(0^\circ,90^\circ)$. Mean $(45^\circ,0^\circ)$: tip $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — not a solution. The mean of two IKs is not an IK (the figure in §1).
@@ -248,9 +248,7 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 
 **핵심 질문**: 원하는 말단 자세가 주어지면 어떤 관절 각이 그것을 달성하는가?
 
-### 과제가 그릴 그림 · Homework diagram
-
-작업 영역 그림 하나에 팔 셋을 올리고, 팔이 아닌 표시 하나를 더한다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 단위 링크이고, 목표는 카탈로그 말단 $(1,1)$ — 관통 과제가 닿아야 하는 패널 면 위의 점이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="목표 (1, 1)에 닿는 P2의 IK 가지 둘(엘보 (1, 0)과 (0, 1))과 그 관절 공간 평균인 곧은 팔을 그린 그림으로, 평균의 말단 (1.414, 1.414)은 0.586 m 지나치고 거기서 도달 가능한 유일한 방향은 원하는 방향과 직각이다.">
   <defs><marker id="mr06hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -295,12 +293,7 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
   </g>
 </svg>
 
-1. **분기 A, 실선.** $\theta = (0^\circ, 90^\circ)$: 링크 1이 $+\hat x$로 가서 엘보가 $(1,0)$, 링크 2가 곧장 위로 올라가 $(1,1)$. 엘보 점에 이름을 붙인다. 카탈로그 고정 자세다.
-2. **분기 B, 실선이지만 더 얇게.** $\theta = (90^\circ, -90^\circ)$: 링크 1이 곧장 위로 가서 엘보가 $(0,1)$, 링크 2가 $+\hat x$로 가서 $(1,1)$. 이 엘보에도 이름을 붙인다. 두 엘보 점이 "팔꿈치 위/아래"의 내용 전부다. 말단은 같고 팔이 둘이다.
-3. **평균 팔, 점선.** $\theta = (45^\circ, 0^\circ)$, 두 분기의 성분별 평균이다. 원점에서 $(\sqrt2, \sqrt2) = (1.414, 1.414)$까지 가는 곧은 선분 하나다. 그 말단에 $\times$를 치고 목표까지 되돌아오는 거리 $0.586\,\mathrm{m}$를 표시한다. 목표 *근처*가 아니라 눈에 띄게 *지나쳐* 있어야 한다.
-4. **점선 말단의 화살표 둘. 이 겹이 그림의 값을 한다.** 하나는 곧은 팔에 수직인 양방향 화살표, 이름은 "도달 가능". 하나는 팔을 따라 목표 쪽으로 되돌아가는 화살표, 이름은 "원하는 방향". 둘은 직각이다. 곧은 팔이 만들 수 있는 말단 속도는 전부 앞쪽에 있고, 오차는 전부 뒤쪽에 있다.
-
-목표는 작은 원 하나로 한 번만 그리고, 팔 셋이 모두 그것을 가리키게 둔다. 과제는 엘보 점을 표시한 1–3겹을 요구하고, 4겹은 아래 계산이 숫자로 바꾼다.
+패널 면 위의 점인 카탈로그 목표 $(1,1)$에 정확한 IK 가지 둘로 닿는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2** — 가지 A $(0^\circ, 90^\circ)$는 엘보가 $(1,0)$, 가지 B $(90^\circ, -90^\circ)$는 엘보가 $(0,1)$에 있어 말단은 같고 팔이 둘이다. 두 가지의 성분별 평균 $(45^\circ, 0^\circ)$는 점선의 곧은 팔이고, 그 말단 $(\sqrt2, \sqrt2) = (1.414, 1.414)$는 목표를 $0.586\,\mathrm{m}$, 목표 거리의 $41\,\%$만큼 지나친다. 그 말단에서 $J$의 랭크는 1($\sigma = (2.2361,\ 0)$)이라 도달 가능한 유일한 방향은 팔에 수직인데 원하는 방향은 팔을 따라 되돌아가므로, $J^\top e = (0,0)$이고 어떤 감쇠 $\lambda$에서도 스텝이 전혀 없다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -465,6 +458,13 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, 말단 목표 $(1,1)$. 해�
 1. **그리기.** 말단을 $(1,1)$에 두는 IK 가지 둘. 엘보 두 점을 표시.
 2. **유도.** 관절 각 두 쌍. 0.6의 고정 자세는 어느 쪽인가? 두 관절 벡터의 평균은 말단을 어디에 두는가?
 3. **해석.** $(45^\circ,0^\circ)$에서 시작한 수치 IK는 $\theta_2=0$을 건너지 않고는 가지를 못 바꾼다. 도구를 패널로 옮길 때 뜻은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 목표는 작은 원 하나로 한 번만 그리고, 모든 팔이 거기서 끝나거나 그것을 가리키게 둔다.
+> - 가지마다 링크 둘이다. 링크 1은 베이스에서 그 엘보까지, 링크 2는 엘보에서 목표까지. 한 가지는 실선, 다른 가지는 더 얇게 그린다.
+> - 엘보 두 점에 이름을 붙인다. 두 엘보가 "팔꿈치 위/아래"의 내용 전부다. 말단은 같고 팔이 둘이다.
+> - 두 관절 벡터의 평균을 더한다면 그 자신의 관절 각으로 점선을 그리고(위의 그림에서는 $(45^\circ, 0^\circ)$, 곧은 선분 하나), 말단에 $\times$를 친 뒤 목표까지 되돌아오는 빗나감을 표시한다. 목표 근처가 아니라 눈에 띄게 지나쳐 있어야 한다.
+> - 점선 말단에서 "도달 가능"은 곧은 팔에 수직인 양방향 화살표, "원하는 방향"은 팔을 따라 목표 쪽으로 되돌아가는 화살표다. 둘을 직각으로 그린다. 곧은 팔이 만들 수 있는 말단 속도는 전부 앞쪽에 있고, 오차는 전부 뒤쪽에 있다.
 
 > [!tip]- 정답 · Solutions
 > 1. 엘보-오른쪽: 엘보 $(1,0)$, 전완 위. 엘보-위: 엘보 $(0,1)$, 전완 오른쪽.

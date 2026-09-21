@@ -17,9 +17,7 @@ mastery-when: "Go deeper when you are designing the interface another team will 
 > [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and a working installation. Every command here assumes **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, with each terminal sourced (`source /opt/ros/jazzy/setup.bash`).
 > [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
 
-### Homework diagram: one P6 controller, four kinds of edge
-
-The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Add one node the earlier pages did not have: a `/planner` that takes up to $2\,\mathrm{s}$ to produce the next goal. Draw three panels; the problem set asks for the same three with the planner's duration changed.
+### The picture: one P6 controller, four kinds of edge
 
 <svg viewBox="0 0 560 464" style="max-width:100%;height:auto" role="img" aria-label="Top: the P6 graph with four kinds of edge: the topic /goal at 50 Hz from /camera to /controller, the service /controller/reset_odometry as a request and response pair with an operator, the action navigate as a lane between /controller and /planner with a goal, three feedbacks and a result, and the parameters as a table hanging off /controller. Middle: the camera's lifecycle, unconfigured, inactive, active, with the first /goal allowed only once active. Bottom: a healthy clock with 5 ms ticks running for 2 s under the action, and a broken clock with one tick and a client.call at t = 0 and then nothing, while the server answers at t = 0.">
   <defs><marker id="s3eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="s3esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="s3esols" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -125,16 +123,7 @@ The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: a cart o
   <text x="530" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">2.0 s</text>
 </svg>
 
-**Left — the graph, with each edge drawn as the thing it is.** Four different pen strokes, and they must not look alike, because the whole of this page is the distinction:
-
-- A **topic** is one open arrow: `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
-- A **service** is a matched pair of short arrows in both directions, drawn tight together: `/controller/reset_odometry` called by an operator box, one request, one response, nothing in between.
-- An **action** is a lane with three separate arrows: goal down, several feedback arrows up during the lane's length, one result arrow up at the end. `/planner` and `/controller` sit at its two ends.
-- **Parameters** are not an edge at all. Draw them as a small table hanging off the `/controller` ellipse: `counts_per_metre` (int64, $2048$, read-only), `control_period` (float64, $0.005$), `goal_topic` (string, `goal`). If you drew an arrow for these, you have made section 8's mistake before reaching it.
-
-**Middle — the camera's lifecycle lane.** Three boxes, `unconfigured` → `inactive` → `active`, with the transitions `configure` and `activate` on the arrows between them, and a vertical mark on the lane at the exact point where the first `/goal` message may legally appear. Nothing before `activate` publishes.
-
-**Right — two clocks, one above the other, both from $0$ to $2\,\mathrm{s}$.** The healthy one: goal accepted at $t=0$, feedback arrows at $0.5$, $1.0$ and $1.5\,\mathrm{s}$, result at $2\,\mathrm{s}$, and a continuous train of $5\,\mathrm{ms}$ control ticks running underneath the whole width. The broken one: the same axis, one tick at $t=0$ with a `client.call` inside it, and then nothing at all — no ticks, no log lines, no error marker — while a third short lane for the server shows it answering normally at $t\approx0$. The two clocks side by side are section 10's failure, and a picture of it is worth more than the paragraph.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] plus one node the earlier pages did not have, a `/planner` that takes up to $2\,\mathrm{s}$ to produce the next goal, with each of the four kinds of edge drawn as what it is: the topic `/goal` at $50\,\mathrm{Hz}$ as one open arrow, the service `/controller/reset_odometry` as one request and one response, the action `navigate` as a lane with a goal, feedback at $0.5$, $1.0$ and $1.5\,\mathrm{s}$ and a result at $2\,\mathrm{s}$, and the parameters as a table, not an edge. The middle lane is the camera's lifecycle, `unconfigured` → `inactive` → `active`, with nothing published before `activate`. The two clocks at the bottom share one $0$ to $2\,\mathrm{s}$ axis: in the healthy one the controller's $5\,\mathrm{ms}$ ticks, $400$ periods, run under the whole action; in the broken one a `client.call` inside the tick at $t=0$ is followed by nothing — no ticks, no log lines, no error — although the server answered at $t\approx0$.
 
 ### Worked case: what a blocking callback costs P6's 200 Hz loop
 
@@ -622,6 +611,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 2. **Derive.** (a) How many control samples does a $2\,\mathrm{s}$ *service* callback block? (b) Encoder $\Delta p$ for one count. (c) Silent case: inside the $200\,\mathrm{Hz}$ timer the controller logs `calling`, then calls the planner with `client.call`. What does the log show from the first tick on, and why is there no error?
 3. **Interpret.** Why is a P6 goal an action, and what does lifecycle buy you when the camera driver dies after the controller is already at $200\,\mathrm{Hz}$?
 
+> [!note]- How to draw it · 그리는 법
+> - Each kind of edge gets its own pen stroke, and no two may look alike: the whole of this page is the distinction.
+> - A topic is one open arrow: `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
+> - A service is a matched pair of short arrows in both directions, drawn tight together: one request, one response, nothing in between.
+> - An action is a lane with three kinds of arrow — the goal down, several feedback arrows up along its length, one result arrow up at the end — with `/planner` and `/controller` at its two ends.
+> - Parameters are not an edge at all: draw them as a small table hanging off `/controller` (name, type, value, and read-only where declared so), never as an arrow.
+> - On the timeline the controller's $5\,\mathrm{ms}$ ticks run unbroken under the whole action, from the goal to the result.
+> - A clock with one tick holding a `client.call` and nothing after it — no ticks, no log lines, no error, while the server answered at once — is §10's failure, not an action.
+
 > [!tip]- Solutions
 > 1. Action `navigate` from planner to controller; camera on `/goal` is a separate stream. Timeline: $t=0$ goal; ticks every $5\,\mathrm{ms}$; feedback; result at $2\,\mathrm{s}$.
 > 2. (a) $2/0.005=400$ samples. (b) $0.488\,\mathrm{mm}$. (c) The timer holds the executor; the response callback cannot run; one `calling` and silence. No exception.
@@ -637,9 +635,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 > [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
 > 25.2 and a working install; all commands assume ROS 2 Jazzy on Ubuntu 24.04, each terminal sourced.
 
-### 과제가 그릴 그림: P6 제어기 하나와 네 종류의 간선 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 앞 페이지에 없던 노드를 하나 더한다. 다음 목표를 만드는 데 최대 $2\,\mathrm{s}$가 걸리는 `/planner`. 패널 셋을 그려라. 과제는 플래너의 소요 시간만 바꾼 같은 셋을 요구한다.
+### 그림으로 먼저 보기: P6 제어기 하나와 네 종류의 간선 · The picture
 
 <svg viewBox="0 0 560 464" style="max-width:100%;height:auto" role="img" aria-label="위: 간선 네 종류로 그린 P6 그래프. /camera에서 /controller로 가는 50 Hz 토픽 /goal, 조작자와 주고받는 요청·응답 한 쌍인 서비스 /controller/reset_odometry, /controller와 /planner 사이의 레인으로 그린 액션 navigate(목표, 피드백 셋, 결과), /controller에 매달린 표로 그린 파라미터. 가운데: 카메라의 라이프사이클 unconfigured, inactive, active와 active 이후에만 허용되는 첫 /goal. 아래: 액션 아래로 5 ms 틱이 2 s 내내 이어지는 정상 시계, 그리고 t = 0의 틱 하나와 client.call 뒤로 아무것도 없는 고장 시계, 그동안 서버는 t = 0에 응답한다.">
   <defs><marker id="s3kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="s3ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="s3ksols" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -745,16 +741,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
   <text x="530" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">2.0 s</text>
 </svg>
 
-**왼쪽 — 그래프, 각 간선을 그것의 정체대로**. 펜 자국 네 가지가 서로 닮아 보이면 안 된다. 이 페이지 전체가 그 구분이기 때문이다.
-
-- **토픽**은 열린 화살표 하나. `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
-- **서비스**는 양방향 짧은 화살표 한 쌍을 바짝 붙여 그린다. 조작자 상자가 부르는 `/controller/reset_odometry`. 요청 하나, 응답 하나, 그 사이에는 아무것도 없다.
-- **액션**은 화살표 셋이 있는 레인이다. 목표가 내려가고, 레인이 이어지는 동안 피드백이 여러 번 올라오고, 끝에서 결과가 한 번 올라온다. 레인의 양 끝이 `/planner`와 `/controller`다.
-- **파라미터**는 간선이 아니다. `/controller` 타원에 매달린 작은 표로 그린다. `counts_per_metre`(int64, $2048$, read-only), `control_period`(float64, $0.005$), `goal_topic`(string, `goal`). 여기에 화살표를 그렸다면 8절에 닿기도 전에 8절의 실수를 한 것이다.
-
-**가운데 — 카메라의 라이프사이클 레인**. 상자 셋, `unconfigured` → `inactive` → `active`. 사이 화살표에는 `configure`와 `activate`를 적고, 첫 `/goal` 메시지가 합법적으로 나타날 수 있는 지점에 세로 표시를 한다. `activate` 이전에는 아무것도 publish하지 않는다.
-
-**오른쪽 — 시계 둘을 위아래로, 둘 다 $0$에서 $2\,\mathrm{s}$까지**. 정상 쪽: $t=0$에 목표 수락, $0.5$, $1.0$, $1.5\,\mathrm{s}$에 피드백 화살표, $2\,\mathrm{s}$에 결과, 그리고 그 폭 전체를 가로지르는 $5\,\mathrm{ms}$ 제어 틱의 연속. 고장 쪽: 같은 축에 $t=0$의 틱 하나, 그 안의 `client.call`, 그리고 그 뒤로는 아무것도 없음 — 틱도, 로그도, 오류 표시도 없음. 반면 서버용 짧은 레인 하나는 $t\approx0$에 정상적으로 응답했음을 보여 준다. 나란히 놓인 두 시계가 10절의 고장이고, 그 그림이 문단보다 낫다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트에 앞 페이지들에 없던 노드 하나, 다음 목표를 만드는 데 최대 $2\,\mathrm{s}$가 걸리는 `/planner`를 더하고, 네 종류의 간선을 각각 그 정체대로 그렸다: $50\,\mathrm{Hz}$ 토픽 `/goal`은 열린 화살표 하나, 서비스 `/controller/reset_odometry`는 요청 하나와 응답 하나, 액션 `navigate`는 목표와 $0.5$, $1.0$, $1.5\,\mathrm{s}$의 피드백과 $2\,\mathrm{s}$의 결과가 있는 레인, 파라미터는 간선이 아니라 표. 가운데 레인은 카메라의 라이프사이클 `unconfigured` → `inactive` → `active`이고, `activate` 이전에는 아무것도 발행되지 않는다. 아래 두 시계는 같은 $0$에서 $2\,\mathrm{s}$ 축 위에 있다 — 정상 쪽에서는 제어기의 $5\,\mathrm{ms}$ 틱 $400$ 주기가 액션 내내 이어지고, 고장 쪽에서는 서버가 $t\approx0$에 응답했는데도 $t=0$ 틱 안의 `client.call` 뒤로 틱도 로그도 오류도 없다.
 
 ### 대상으로 한 번 끝까지: 블로킹 콜백이 P6의 200 Hz 루프에 물리는 값 · Worked case
 
@@ -1240,6 +1227,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 제어 루프는 $200\,\mat
 1. **그리기.** P6 노드: `planner`(긴 목표), `controller`($5\,\mathrm{ms}$ 타이머 + 엔코더), `camera`($50\,\mathrm{Hz}$). 계획기–제어기 링크는 토픽이나 서비스가 아니라 *액션*. 다섯 줄 타임라인: 목표 전송, $0.5\,\mathrm{s}$ 피드백, $2\,\mathrm{s}$ 결과, 그동안의 제어 틱.
 2. **유도.** (a) $2\,\mathrm{s}$ *서비스* 콜백이 막는 제어 샘플 수. (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 제어기가 $200\,\mathrm{Hz}$ 타이머 안에서 `calling`을 로그로 찍은 뒤 `client.call`로 계획기를 부른다. 첫 틱부터 로그에는 무엇이 보이고, 왜 에러가 없는가?
 3. **해석.** P6 목표가 액션인 이유, 그리고 제어기가 이미 $200\,\mathrm{Hz}$인데 카메라 드라이버가 죽으면 라이프사이클이 사 주는 것은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 간선의 종류마다 펜 자국이 따로 있고, 어느 둘도 닮아 보이면 안 된다. 이 페이지 전체가 그 구분이다.
+> - 토픽은 열린 화살표 하나. `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
+> - 서비스는 양방향 짧은 화살표 한 쌍을 바짝 붙여 그린다. 요청 하나, 응답 하나, 그 사이에는 아무것도 없다.
+> - 액션은 화살표 세 종류가 있는 레인이다. 목표가 내려가고, 레인을 따라 피드백이 여러 번 올라오고, 끝에서 결과가 한 번 올라온다. 양 끝이 `/planner`와 `/controller`다.
+> - 파라미터는 간선이 아니다. `/controller`에 매달린 작은 표(이름, 타입, 값, 그렇게 선언했다면 read-only)로 그리고, 화살표로는 그리지 않는다.
+> - 타임라인에서 제어기의 $5\,\mathrm{ms}$ 틱은 목표부터 결과까지 액션 내내 끊김 없이 이어진다.
+> - 틱 하나가 `client.call`을 쥔 뒤로 아무것도 없는 시계 — 틱도, 로그도, 오류도 없고 서버는 곧바로 응답한 — 는 액션이 아니라 10절의 고장이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 계획기에서 제어기로 액션 `navigate`; 카메라 `/goal`은 별 스트림. 타임라인: $t=0$ 목표; $5\,\mathrm{ms}$마다 틱; 피드백; $2\,\mathrm{s}$에 결과.

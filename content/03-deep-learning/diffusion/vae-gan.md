@@ -8,8 +8,8 @@ mastery-when: "Raise when a VAE latent space, an adversarial loss, or a likeliho
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], widened here into a distribution · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability §3]] (Gaussian closure and conditioning) and [[02-foundations/probability|3. Probability §4]] (maximum likelihood) · [[02-foundations/information-theory|5. Information Theory §3]] (KL divergence, Jensen's inequality) and [[02-foundations/information-theory|5. Information Theory §5]] (the ELBO by Jensen) · [[02-foundations/calculus-backprop|2. Calculus & Backprop §5]] (the reparameterization, stated) · [[02-foundations/rl-basics|7. RL Basics §4]] (the score-function gradient).
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6**를 여기서 분포로 넓힌다 · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[02-foundations/probability|3. 확률 §3]](가우시안 닫힘과 조건부)과 [[02-foundations/probability|3. 확률 §4]](최대우도) · [[02-foundations/information-theory|5. 정보이론 §3]](KL 발산, 옌센 부등식)과 [[02-foundations/information-theory|5. 정보이론 §5]](옌센으로 구한 ELBO) · [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]](reparameterization의 진술) · [[02-foundations/rl-basics|7. RL 기초 §4]](score-function 그래디언트).
+> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], widened here into a distribution · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability §3]] (Gaussian closure and conditioning) and [[02-foundations/probability|3. Probability §4]] (maximum likelihood) · [[02-foundations/information-theory|5. Information Theory §3]] (KL divergence, Jensen's inequality) and [[02-foundations/information-theory|5. Information Theory §5]] (the ELBO by Jensen) · [[02-foundations/calculus-backprop|2. Calculus & Backprop §5]] (the reparameterization, stated) · [[02-foundations/rl-basics|7. RL Basics §4]] (the score-function gradient).
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6**를 여기서 분포로 넓힌다 · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[02-foundations/probability|3. 확률 §3]](가우시안 닫힘과 조건부)과 [[02-foundations/probability|3. 확률 §4]](최대우도) · [[02-foundations/information-theory|5. 정보이론 §3]](KL 발산, 옌센 부등식)과 [[02-foundations/information-theory|5. 정보이론 §5]](옌센으로 구한 ELBO) · [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]](reparameterization의 진술) · [[02-foundations/rl-basics|7. RL 기초 §4]](score-function 그래디언트).
 
 ## English
 
@@ -47,9 +47,7 @@ The frozen decoder is one point on a ridge of equally good optima. It is frozen 
 
 *Scope: this page teaches the two generative models that came before diffusion, on one 1-D distribution — the latent-variable model and its ELBO, the reparameterization gradient, the linear VAE solved exactly and its posterior collapse; the GAN game, its optimal discriminator and the Jensen–Shannon divergence, why the original generator loss stops learning, mode collapse, and the Wasserstein distance. It does not teach the KL divergence or Jensen's inequality themselves, which are [[02-foundations/information-theory|5. Information Theory §3]]; nor deep encoders, decoders and convolutional GANs, which are architectures of [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor discrete-latent autoencoders and diffusion inside a VAE's latent space, which are the [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] note; nor sample-quality metrics such as FID, which are [[02-foundations/ml-practice|9. ML Practice §3]]; nor diffusion itself, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Two models on the same data, drawn side by side. The problem set asks for exactly this drawing with one box changed in each panel.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -70,11 +68,7 @@ flowchart LR
     end
 ```
 
-Four things the drawing has to get right.
-**The noise enters from outside.** Draw $\epsilon$ as its own input to $z$. The gradient reaches $(a,c,s)$ through $z=m+s\epsilon$ and never through the act of sampling; a drawing with the sampler inside the encoder box claims a derivative that does not exist (§3).
-**The KL leaves the encoder and touches nothing else.** It compares $q$ with the prior in closed form, so it is the one term with no sampling and no decoder in it. Draw it as its own branch, because §4's posterior collapse is the moment this branch reads zero.
-**The generator never sees a real datum.** The only path from the data to $G$ runs through $D$, so everything $G$ learns is the slope of $D$ at the points $G$ produced (§6). An arrow from the data into $G$ describes a different method.
-**Draw the sigmoid on $D$.** $D$ squashes its output into $(0,1)$, and the flat tails of that squashing are where the generator's gradient dies (§6). The Wasserstein critic of §7 is this same box with the sigmoid removed and a slope limit written on it.
+The VAE and the GAN on the same data, $\mathcal N(2,0.5^2)$, side by side. In the VAE the encoder gives a mean $ax+c$ and a width $s$, the noise $\epsilon$ enters from outside the graph to make $z$, the decoder $\mathcal N(wz+\mu,\sigma_x^2)$ feeds the reconstruction term, and the KL to the prior leaves the encoder on a branch of its own, in closed form. In the GAN the generator shifts noise to $x=m+0.5z$ and never sees a real datum; a sigmoid $D$ scores real and generated samples, and $V=\mathbb E\log D(\text{real})+\mathbb E\log(1-D(\text{fake}))$ is what $D$ ascends and $G$ descends.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -546,9 +540,9 @@ Read the diffusion column against the VAE column, because that is where it came 
 
 ### Problem set · 과제
 
-Tier A. Using **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page's frozen distribution, and [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Original object and original problems: the Derive problem moves to the ridge's second optimum and a second generator, and the Do problem changes one knob in §8's listing without rewriting the loop. State the tier in your answer sheet.
+Tier A. Using **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page's frozen distribution, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original object and original problems: the Derive problem moves to the ridge's second optimum and a second generator, and the Do problem changes one knob in §8's listing without rewriting the loop. State the tier in your answer sheet.
 
-1. **Draw.** The homework diagram with one box changed in each panel. In the VAE panel, write the swapped optimum's numbers on the boxes — decoder $(w,\mu,\sigma_x)=(0.3,2,0.4)$, encoder $(1.2,-2.4,0.8)$ — and mark the arrow that carries the noise cost $w^2s^2/(2\sigma_x^2)$, with its value. In the GAN panel, replace $D$ by a Wasserstein critic: delete the sigmoid, write "slope at most 1" on the box, and on the arrow into $G$ write the generator's gradient at $m=5$ under the saturating loss, the non-saturating loss, and the critic.
+1. **Draw.** The picture above, with one box changed in each panel. In the VAE panel, write the swapped optimum's numbers on the boxes — decoder $(w,\mu,\sigma_x)=(0.3,2,0.4)$, encoder $(1.2,-2.4,0.8)$ — and mark the arrow that carries the noise cost $w^2s^2/(2\sigma_x^2)$, with its value. In the GAN panel, replace $D$ by a Wasserstein critic: delete the sigmoid, write "slope at most 1" on the box, and on the arrow into $G$ write the generator's gradient at $m=5$ under the saturating loss, the non-saturating loss, and the critic.
 2. **Derive.** (a) For the swapped decoder, the marginal and $\ln p_\theta(2.5)$. (b) The exact posterior at $x=2.5$ and the optimal encoder. (c) The ELBO at $x=2.5$ when this decoder is paired with the page's frozen encoder $(1.6,-3.2,0.6)$, and its gap, computed two ways. (d) For the generator $\mathcal N(3,0.5^2)$: $D^*(x)$ in closed form, $D^*(2)$ and $D^*(3)$; then, reading JS and $\mathbb E_{p_g}[D^*]$ at $m=3$ off §8's table, $V(D^*,G)$ and both generator gradients.
 3. **Do.** Fill the `?` and rerun part A of §8 with a KL warm-up: the KL gradient is multiplied by a weight that rises linearly from 0 at step 0 to 1 at step `warm`, and stays at 1. Run `warm` $\in\{500,1000,2000\}$. Report $w$, $\sigma_x$, $a$, $s$, the rate and the ELBO of each run, set them against part A's first row, and say what the warm-up changed and what it did not.
 
@@ -558,6 +552,13 @@ for warm in (500, 1000, 2000):
     p, _ = train(K=1, eta=0.01, steps=warm + 4000, kl_weight=lambda t: ?)   # 0 at t = 0, then 1 from t = warm on
     print("warm-up %4d: %s" % (warm, show(p)))
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Draw $\epsilon$ as its own input to $z$, from outside the encoder. The gradient reaches $(a,c,s)$ through $z=m+s\epsilon$ and never through the act of sampling; a sampler drawn inside the encoder box claims a derivative that does not exist (§3).
+> - Draw the KL as its own branch that leaves the encoder and touches nothing else. It compares $q$ with the prior in closed form — the one term with no sampling and no decoder in it — and §4's posterior collapse is the moment this branch reads zero.
+> - Write each number on the box it parameterizes: $(w,\mu,\sigma_x)$ on the decoder, $(a,c,s)$ on the encoder.
+> - Give the generator no arrow from the data. The only path from the data to $G$ runs through the discriminator or critic, so everything $G$ learns is the slope of that box at the points $G$ produced (§6); an arrow from the data into $G$ describes a different method.
+> - The Wasserstein critic of §7 is the same $D$ box with the sigmoid removed and a slope limit written on it. The sigmoid is what squashes $D$ into $(0,1)$, and its flat tails are where the generator's gradient dies (§6).
 
 > [!tip]- Solutions
 > 1. VAE panel: the numbers as given, and the noise cost on the arrow from $\epsilon$ through $z$ into the decoder, $0.3^2\cdot0.8^2/(2\cdot0.4^2)=0.18$ nats — against $0.32$ at the frozen optimum and $0$ at the collapsed end, so the ridge trades noise cost against rate. GAN panel: on the arrow into $G$ at $m=5$, $0.02491$ (saturating), $11.9751$ (non-saturating) and $1$ (critic, whose best form here is $f(x)=-x$).
@@ -621,9 +622,7 @@ $$z\sim\mathcal N(0,1),\qquad p_\theta(x\mid z)=\mathcal N\big(x;\ wz+\mu,\ \sig
 
 *범위: 이 페이지는 diffusion 이전의 두 생성 모델을 1차원 분포 하나 위에서 가르친다. 잠재변수 모델과 그 ELBO, reparameterization 그래디언트, 정확히 풀리는 선형 VAE와 그 사후분포 붕괴, 그리고 GAN 게임, 최적 판별기와 Jensen–Shannon 발산, 원래의 생성기 손실이 왜 학습을 멈추는지, 모드 붕괴, Wasserstein 거리다. KL 발산과 옌센 부등식 자체는 가르치지 않는다. 그것은 [[02-foundations/information-theory|5. 정보이론 §3]]이다. 깊은 인코더·디코더와 합성곱 GAN도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]의 architecture다. 이산 잠재변수 오토인코더와 VAE의 잠재 공간 안에서 돌리는 diffusion도 아니다. 그것은 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] 노트다. FID 같은 표본 품질 지표도 아니다. 그것은 [[02-foundations/ml-practice|9. ML Practice §3]]이다. diffusion 자체도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-같은 자료 위의 두 모델을 나란히 그린 것이다. 과제는 각 패널에서 상자 하나를 바꾼 바로 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -644,11 +643,7 @@ flowchart LR
     end
 ```
 
-그림이 맞혀야 할 것이 넷이다.
-**잡음은 바깥에서 들어온다.** $\epsilon$을 $z$로 들어가는 별도 입력으로 그린다. 그래디언트는 $z=m+s\epsilon$을 거쳐 $(a,c,s)$에 닿고, 표본을 뽑는 행위를 거치지는 않는다. 표본기를 인코더 상자 안에 그린 그림은 존재하지 않는 도함수를 주장하는 것이다(§3).
-**KL은 인코더에서 나와 다른 무엇에도 닿지 않는다.** 닫힌 형태로 $q$를 사전분포와 비교하므로, 표본도 디코더도 들어 있지 않은 유일한 항이다. 별도의 가지로 그린다. §4의 사후분포 붕괴는 이 가지가 0을 읽는 순간이기 때문이다.
-**생성기는 진짜 자료를 한 번도 보지 않는다.** 자료에서 $G$로 가는 길은 $D$를 거치는 것뿐이므로, $G$가 배우는 것은 전부 자기가 만든 점에서의 $D$의 기울기다(§6). 자료에서 $G$로 곧장 가는 화살표는 다른 방법의 그림이다.
-**$D$에 sigmoid를 그린다.** $D$는 출력을 $(0,1)$로 눌러 담고, 그 눌러 담기의 평평한 꼬리가 생성기의 그래디언트가 죽는 곳이다(§6). §7의 Wasserstein critic은 이 상자에서 sigmoid를 떼고 기울기 한계를 적어 넣은 것이다.
+같은 자료 $\mathcal N(2,0.5^2)$ 위의 VAE와 GAN을 나란히 그렸다. VAE에서는 인코더가 평균 $ax+c$와 폭 $s$를 내고, 잡음 $\epsilon$이 그래프 바깥에서 들어와 $z$를 만들며, 디코더 $\mathcal N(wz+\mu,\sigma_x^2)$가 재구성 항으로 이어지고, 사전분포에 대한 KL은 닫힌 형태로 인코더에서 따로 갈라져 나온다. GAN에서는 생성기가 잡음을 $x=m+0.5z$로 옮길 뿐 진짜 자료를 보지 않고, sigmoid를 단 $D$가 진짜 표본과 생성된 표본을 채점하며, $V=\mathbb E\log D(\text{real})+\mathbb E\log(1-D(\text{fake}))$를 $D$는 올리고 $G$는 내린다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1004,11 +999,18 @@ diffusion 열은 VAE 열과 견주어 읽어야 한다. 거기서 왔기 때문�
 
 ### 과제 · Problem set
 
-Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지의 고정된 분포, [[02-foundations/lab-kernel|0.65 Lab Kernel]]을 쓴다. 대상도 문제도 새로 만든 것이다. 유도 문제는 능선의 둘째 최적점과 둘째 생성기로 옮겨 가고, 실행 문제는 루프를 다시 쓰지 않고 §8 코드의 손잡이 하나를 바꾼다. 답안에 tier를 명시하라.
+Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지의 고정된 분포, [[02-foundations/lab-kernel|0.7 Lab Kernel]]을 쓴다. 대상도 문제도 새로 만든 것이다. 유도 문제는 능선의 둘째 최적점과 둘째 생성기로 옮겨 가고, 실행 문제는 루프를 다시 쓰지 않고 §8 코드의 손잡이 하나를 바꾼다. 답안에 tier를 명시하라.
 
-1. **그리기.** 각 패널에서 상자 하나씩 바꾼 과제 그림. VAE 패널에는 뒤바꾼 최적점의 숫자 — 디코더 $(w,\mu,\sigma_x)=(0.3,2,0.4)$, 인코더 $(1.2,-2.4,0.8)$ — 를 상자에 적고, 잡음 비용 $w^2s^2/(2\sigma_x^2)$를 나르는 화살표에 그 값과 함께 표시한다. GAN 패널에서는 $D$를 Wasserstein critic으로 바꾼다. sigmoid를 지우고, 상자에 "기울기 1 이하"라고 적고, $G$로 들어가는 화살표에 $m=5$에서 포화 손실, non-saturating 손실, critic 각각의 생성기 그래디언트를 적는다.
+1. **그리기.** 각 패널에서 상자 하나씩 바꾼 위의 그림. VAE 패널에는 뒤바꾼 최적점의 숫자 — 디코더 $(w,\mu,\sigma_x)=(0.3,2,0.4)$, 인코더 $(1.2,-2.4,0.8)$ — 를 상자에 적고, 잡음 비용 $w^2s^2/(2\sigma_x^2)$를 나르는 화살표에 그 값과 함께 표시한다. GAN 패널에서는 $D$를 Wasserstein critic으로 바꾼다. sigmoid를 지우고, 상자에 "기울기 1 이하"라고 적고, $G$로 들어가는 화살표에 $m=5$에서 포화 손실, non-saturating 손실, critic 각각의 생성기 그래디언트를 적는다.
 2. **유도.** (a) 뒤바꾼 디코더의 주변분포와 $\ln p_\theta(2.5)$. (b) $x=2.5$의 정확한 사후분포와 최적 인코더. (c) 이 디코더를 이 페이지의 고정된 인코더 $(1.6,-3.2,0.6)$와 짝지었을 때 $x=2.5$의 ELBO와 그 간극을 두 가지 길로. (d) 생성기 $\mathcal N(3,0.5^2)$에 대해 닫힌 형태의 $D^*(x)$, $D^*(2)$, $D^*(3)$. 그다음 §8의 표에서 $m=3$의 JS와 $\mathbb E_{p_g}[D^*]$를 읽어 $V(D^*,G)$와 두 생성기 그래디언트.
 3. **실행.** 영어 절 템플릿의 `?`를 채우고 KL 워밍업을 넣어 §8의 A부를 다시 돌린다. KL 그래디언트에 곱하는 가중치가 0걸음의 0에서 `warm`걸음의 1까지 선형으로 오르고 그 뒤로는 1에 머문다. `warm` $\in\{500,1000,2000\}$을 돌린다. 각 실행의 $w$, $\sigma_x$, $a$, $s$, rate, ELBO를 보고하고 A부의 첫 행과 견주어, 워밍업이 바꾼 것과 바꾸지 않은 것을 말한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - $\epsilon$은 인코더 바깥에서 $z$로 들어가는 별도 입력으로 그린다. 그래디언트는 $z=m+s\epsilon$을 거쳐 $(a,c,s)$에 닿고, 표본을 뽑는 행위를 거치지는 않는다. 표본기를 인코더 상자 안에 그리면 존재하지 않는 도함수를 주장하게 된다(§3).
+> - KL은 인코더에서 나와 다른 무엇에도 닿지 않는 별도의 가지로 그린다. 닫힌 형태로 $q$를 사전분포와 비교하는, 표본도 디코더도 들어 있지 않은 유일한 항이고, §4의 사후분포 붕괴는 이 가지가 0을 읽는 순간이다.
+> - 각 파라미터 숫자는 그것이 속한 상자에 적는다. $(w,\mu,\sigma_x)$는 디코더에, $(a,c,s)$는 인코더에 적는다.
+> - 생성기에는 자료에서 오는 화살표를 그리지 않는다. 자료에서 $G$로 가는 길은 판별기나 critic을 거치는 것뿐이므로, $G$가 배우는 것은 전부 자기가 만든 점에서의 그 상자의 기울기다(§6). 자료에서 $G$로 곧장 가는 화살표는 다른 방법의 그림이다.
+> - §7의 Wasserstein critic은 같은 $D$ 상자에서 sigmoid를 떼고 기울기 한계를 적어 넣은 것이다. sigmoid가 $D$를 $(0,1)$로 눌러 담고, 그 평평한 꼬리가 생성기의 그래디언트가 죽는 곳이다(§6).
 
 > [!tip]- 정답 · Solutions
 > 1. VAE 패널: 주어진 숫자들, 그리고 $\epsilon$에서 $z$를 거쳐 디코더로 가는 화살표 위의 잡음 비용 $0.3^2\cdot0.8^2/(2\cdot0.4^2)=0.18$ nats. 고정된 최적점에서는 $0.32$, 붕괴한 끝에서는 $0$이므로 능선은 잡음 비용과 rate를 맞바꾼다. GAN 패널: $m=5$에서 $G$로 들어가는 화살표에 $0.02491$(포화), $11.9751$(non-saturating), $1$(critic, 여기서 최선의 꼴은 $f(x)=-x$).

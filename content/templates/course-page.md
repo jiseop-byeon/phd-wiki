@@ -13,7 +13,7 @@ Three-tier contract for every course page: 02-foundations, 04-robotics, and the
 draw / derive / run / change one knob.
 
 The lecture, not the answer key, is the main product. Before the problem set, the page
-must draw the homework object, derive on the named object with the catalog numbers, and
+must show the object in one picture, derive on the named object with the catalog numbers, and
 work one numerical case in full. The problem set is a *variant* (a different pose, a
 changed knob, an interpretation). A page that only appends problems to a summary has
 not met the bar.
@@ -51,7 +51,7 @@ defines it. Concepts defined elsewhere get a section link, never half a definiti
 Reference: 0.5 Engineering Math §4.5 (linearity) and 6. Signal Processing §1 (LTI).
 
 5. ONE SKELETON. Every course page carries the same headings in both halves, in this order:
-Prerequisites callout, First pass callout, Running object, Homework diagram, Worked case,
+Prerequisites callout, First pass callout, Running object, The picture, Worked case,
 numbered lecture sections, then the wiki's standing tail - After reading (where the page has
 one), Self-check (+ Answers), Problem set · 과제 (tier line, Draw / Derive / Do or Interpret,
 Solutions), Sources. Do not invent per-track variants such as "Exit check".
@@ -72,9 +72,12 @@ D1-D6, and research practice reuses the frozen study RS1 (06-research-practice/i
 The Robotics track ends in a capstone (26) that assembles the running task end to end; a
 new stage page links the capstone step it owns.
 
-9. THE DIAGRAM IS DRAWN. The Homework diagram section shows the figure itself - the worked
-case's version, with its numbers and labels - in both halves (Korean labels in the Korean
-half), and the text under it says how to draw it; the problem set asks for the variant.
+9. THE PICTURE IS DRAWN. "The picture · 그림으로 먼저 보기" shows the page's one key figure
+itself - the worked case's version, with its numbers and labels - in both halves (Korean
+labels in the Korean half). Under it sits a caption of two or three sentences: what the
+figure shows and its key numbers, nothing else. How to draw it yourself belongs to the
+problem set, in a collapsed "How to draw it · 그리는 법" callout after the numbered items;
+the Draw item asks for the variant.
 Geometry, plots, timelines and phase portraits are inline SVG whose coordinates are computed
 from the page's numbers (currentColor so the figure follows the light/dark theme; viewBox 560
 wide so it scales to a phone; ids unique per figure). Graphs, pipelines and state machines
@@ -85,8 +88,8 @@ Code once in the English half; Korean captions and interprets.
 -->
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/lab-plants|0.6]] (plant id) or [[03-deep-learning/lab-objects|3.0]] (tensor object id) · [[02-foundations/lab-kernel|0.65]] if this page is Tier A
-> [[02-foundations/lab-plants|0.6]](장치 id) 또는 [[03-deep-learning/lab-objects|3.0]](텐서 객체 id) · Tier A이면 [[02-foundations/lab-kernel|0.65]]
+> [[02-foundations/lab-plants|0.6]] (plant id) or [[03-deep-learning/lab-objects|3.0]] (tensor object id) · [[02-foundations/lab-kernel|0.7]] if this page is Tier A
+> [[02-foundations/lab-plants|0.6]](장치 id) 또는 [[03-deep-learning/lab-objects|3.0]](텐서 객체 id) · Tier A이면 [[02-foundations/lab-kernel|0.7]]
 
 ## English
 
@@ -101,9 +104,9 @@ Code once in the English half; Korean captions and interprets.
 
 *Scope: this page teaches … ; it does not teach … , which lives in … .*
 
-### Homework diagram · 과제가 그릴 그림
+### The picture · 그림으로 먼저 보기
 
-(the same diagram the problem set will ask for)
+(the page's one key figure, drawn with the worked case's numbers; a two- or three-sentence caption)
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -124,6 +127,9 @@ Tier A / B / C. Using only this page, its prerequisites, and the object catalog.
 ```python
 # template with ? blanks — Tier A only
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - (what a correct drawing must show, as a short checklist; it applies to the Draw item's variant)
 
 > [!tip]- Solutions
 > 1. …

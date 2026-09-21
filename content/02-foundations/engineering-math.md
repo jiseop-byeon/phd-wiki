@@ -24,9 +24,7 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 > [!note] First pass · 처음이라면
 > This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. The one exception is §10, the notation dictionary: skim it once and the rest of the track costs less.
 
-### Homework diagram · 과제가 그릴 그림
-
-This page is a reference, but it owns one object — plant **P4**, the leaky heater $\dot x=-x+u$ of §8 — and one drawing of it. The problem set asks for the same drawing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="Block diagram of the leaky heater P4: command u = 1 enters a summing junction whose output is x-dot, an integrator returns the temperature error x, and x comes back through a unit gain with a minus sign. Inset: the step response with its initial tangent reaching 1 at t = 1 s, and a magnified view where the two Euler points sit above the two exact points.">
   <defs><marker id="emHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -100,11 +98,7 @@ This page is a reference, but it owns one object — plant **P4**, the leaky hea
   <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">and 0.009, since Euler uses the slope at the start of the step, where 1 − x is largest. d = 0.</text>
 </svg>
 
-**The loop, left to right.** Start with the command $u$ entering from the left as an arrow labelled $u=1$. It meets a **summing junction** — a small circle with two inputs — whose second input arrives from below. Write a $+$ beside the $u$ arrow and a $-$ beside the other, because the sign at the junction, not the sign inside a box, is what makes this a *negative* feedback loop. The junction's output leaves to the right and is labelled $\dot x$: name it on the drawing, because the whole picture is the sentence "the sum *is* the derivative". That arrow enters a box marked $\int$ or $1/s$ (§9 says why those are the same box), and the box's output is $x$, the temperature error, which is the only state on the page. Carry $x$ to the right edge as the output, then tap the same line and route it down and back to the junction's lower input with a gain block marked $1$ on the way — the unit gain is drawn, not omitted, so that when the control track replaces it with $K$ the picture does not change shape.
-
-**What to write on the drawing.** Three annotations, all readable straight off the loop. At $t=0$ with $x=0$, the junction outputs $\dot x=1$, so mark the initial slope as $1$ per second. Draw the tangent of that slope from the origin in a small inset of $x$ against $t$; it crosses the steady value $x=1$ at $t=1\,\mathrm{s}$, which is the time constant, and the true curve $x=1-e^{-t}$ passes below it. On the same inset put four points and nothing else: the exact $0.095$ at $t=0.1$ and $0.181$ at $t=0.2$, and the forward-Euler $0.10$ and $0.19$ at the same two instants, each Euler point drawn *above* its exact partner. That gap, not the curve, is the figure's argument.
-
-**The one thing the drawing must not contain.** No disturbance arrow. **P4** carries a $d$ that enters the same summing junction as $u$, and this page sets $d=0$; when [[02-foundations/rl-basics|7. RL Basics]] and the control track draw the same loop they add that third input, and the difference between the two pictures is exactly what those pages are about.
+Plant **P4**, the leaky heater $\dot x=-x+u$ of §8, as a block diagram: the command $u=1$ enters a summing junction with $+$ and the fed-back $x$ with $-$, their sum is $\dot x$, and an integrator ($\int$, or $1/s$) returns the temperature error $x$, the only state, which comes back through a unit gain (no disturbance input: $d=0$ here). The inset is the step response from $x=0$: the initial slope is $1$ per second, its tangent reaches the steady value $1$ at the time constant $t=1\,\mathrm{s}$, and the curve $x=1-e^{-t}$ passes below it. In the magnified corner, forward Euler's $0.10$ and $0.19$ sit $0.005$ and $0.009$ above the exact $0.095$ and $0.181$ at $t=0.1$ and $0.2$, because Euler uses the slope at the start of each step, where $1-x$ is largest.
 
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
 
@@ -297,7 +291,7 @@ Applying it repeatedly gives $f\big(\sum_k a_k x_k\big) = \sum_k a_k f(x_k)$ for
 > **ReLU, $f(x) = \max(0, x)$, is not linear**: $f(-1 + 1) = 0$ but $f(-1) + f(1) = 0 + 1 = 1$. It is homogeneous only for $a \ge 0$, since $f(-1 \cdot 1) = 0 \ne -f(1) = -1$.
 
 **Where the wiki uses it.**
-- **Matrices and layers.** Every matrix is a linear map ([[02-foundations/linear-algebra|1. Linear Algebra §1]]). A "linear layer" $Wx + b$ is strictly affine; it is linear only when $b = 0$. Stacked linear maps collapse into one, which is why networks need a nonlinearity between them ([[02-foundations/neural-network-basics|0.7 §1]]).
+- **Matrices and layers.** Every matrix is a linear map ([[02-foundations/linear-algebra|1. Linear Algebra §1]]). A "linear layer" $Wx + b$ is strictly affine; it is linear only when $b = 0$. Stacked linear maps collapse into one, which is why networks need a nonlinearity between them ([[02-foundations/neural-network-basics|0.8 §1]]).
 - **Operators.** Differentiation, integration and expectation are linear: $\frac{d}{dt}(af + bg) = a f' + b g'$ and $E[aX + bY] = aE[X] + bE[Y]$ (§1, §3, [[02-foundations/probability|3. Probability]]).
 - **Systems.** A linear time-invariant system is additive and homogeneous in its input signal and also shift-invariant; superposition is exactly what forces its output to be a convolution ([[02-foundations/signal-processing|6. Signal Processing §1]]).
 - **Linearization.** A nonlinear $f$ is replaced near an operating point $x_0$ by $f(x_0 + \delta) \approx f(x_0) + f'(x_0)\,\delta$; the map $\delta \mapsto f'(x_0)\,\delta$ is linear in the deviation $\delta$, which is what lets control design work locally (§2, [[04-robotics/control-theory-ce397|5. Control Theory]]).
@@ -527,7 +521,7 @@ Physical systems are described by ODEs — this is the modeling language of all 
   *asymptotically stable*: from every starting value $x(0)$ the solution returns to $0$ as
   $t \to \infty$ (the full definition is [[04-robotics/control-theory-ce397|5. Control Theory §4]]). A robot joint,
   a heating room, a draining tank — all locally this equation.
-- **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$. With $u=1$ and $x(0)=0$ the solution is $x(t)=1-e^{-t}$ (particular $1$, homogeneous $ce^{-t}$, $c=-1$). At $t=0.1$ and $0.2$: $0.095$ and $0.181$. Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$ gives $0.10$ then $0.19$ ([[02-foundations/lab-kernel|0.65]]). It is high because it uses the slope at the *start* of the step, where $1-x$ is largest. The problem set is this ODE as a block diagram.
+- **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$. With $u=1$ and $x(0)=0$ the solution is $x(t)=1-e^{-t}$ (particular $1$, homogeneous $ce^{-t}$, $c=-1$). At $t=0.1$ and $0.2$: $0.095$ and $0.181$. Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$ gives $0.10$ then $0.19$ ([[02-foundations/lab-kernel|0.7]]). It is high because it uses the slope at the *start* of the step, where $1-x$ is largest. The picture at the top of the page is this ODE as a block diagram.
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
   input"; this is the scalar version of the state-space model
   $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$ ([[02-foundations/linear-algebra|linear algebra §5]]),
@@ -696,11 +690,20 @@ Two definitions used everywhere before they are formally introduced:
 
 ### Problem set · 과제
 
-Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page §8; Euler numbers on [[02-foundations/lab-kernel|0.65]]. No simulator.
+Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page §8; Euler numbers on [[02-foundations/lab-kernel|0.7]]. No simulator.
 
 1. **Draw.** Block diagram of $\dot x=-x+u$: command $u$, summing junction, integrator, $-x$ feedback. Label $x$ as temperature error.
 2. **Derive.** With $u=1$ and $x(0)=0$, solve $\dot x=-x+1$. Give $x(t)$ and the values at $t=0.1$ and $t=0.2$.
 3. **Interpret.** Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$, from $x_0=0$. First two steps versus the exact values. Which way does Euler miss, and why?
+
+> [!note]- How to draw it · 그리는 법
+> - The command $u$ enters from the left and meets a summing junction, a small circle with two inputs; the second input arrives from below.
+> - Write $+$ beside the $u$ arrow and $-$ beside the fed-back one: the sign at the junction, not a sign inside a box, is what makes this a *negative* feedback loop.
+> - Label the junction's output $\dot x$, because the whole picture is the sentence "the sum *is* the derivative", and send it into one box marked $\int$ or $1/s$ (§9 says why those are the same box); the box's output $x$ is the temperature error, the only state.
+> - Carry $x$ to the right edge as the output, then tap it and route it back to the junction's lower input through a gain block marked $1$ — drawn, not omitted, so the picture keeps its shape when the control track replaces it with $K$.
+> - No disturbance arrow. P4's $d$ enters the same junction as $u$, and this page sets $d=0$; [[02-foundations/rl-basics|7. RL Basics]] and the control track add that third input, and the difference between the two pictures is what those pages are about.
+> - The inset of $x$ against $t$, for items 2 and 3: at $t=0$ with $x=0$ the junction outputs $\dot x=u$, so mark that initial slope and draw its tangent from the origin; it reaches the steady value at the time constant, and the true curve passes below it.
+> - On the inset put four points and nothing else — the exact and the forward-Euler values at $t=0.1$ and $0.2$ — with each Euler point drawn *above* its exact partner: that gap, not the curve, is the argument.
 
 > [!tip]- Solutions
 > 1. $u$ and $-x$ meet at a sum; that sum is $\dot x$; an integrator returns $x$. With $u=0$ the error decays as $e^{-t}$.
@@ -719,9 +722,7 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 > [!note] 처음이라면 · First pass
 > 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 §10 표기법 사전이다: 한 번 훑어 두면 나머지 트랙이 싸진다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-이 페이지는 참고서지만 대상 하나를 가진다. §8의 새는 히터 $\dot x=-x+u$, 즉 장치 **P4**이고, 그것을 그린 그림도 하나다. 과제가 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="새는 히터 P4의 블록선도: 명령 u = 1이 합산점으로 들어가고 그 출력이 x-dot이며, 적분기가 온도 오차 x를 돌려주고, x는 이득 1을 거쳐 음의 부호로 돌아온다. 삽도: 계단 응답과 t = 1 s에서 1에 닿는 초기 접선, 그리고 오일러 점 둘이 정확값 점 둘 위에 있는 확대 그림.">
   <defs><marker id="emHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -795,11 +796,7 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">있다. 오일러는 1 − x가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다. 외란은 없다: d = 0.</text>
 </svg>
 
-**루프, 왼쪽에서 오른쪽으로.** 왼쪽에서 들어오는 화살표 $u=1$로 시작한다. 이것이 **합산점** — 입력 둘을 가진 작은 원 — 을 만나고, 둘째 입력은 아래에서 올라온다. $u$ 화살표 옆에 $+$, 다른 쪽에 $-$를 쓴다. 이것을 *음*의 피드백 루프로 만드는 것은 상자 안의 부호가 아니라 합산점의 부호이기 때문이다. 합산점의 출력은 오른쪽으로 나가고 이름은 $\dot x$다. 그림 위에 그 이름을 반드시 적는다. 이 그림 전체가 "합이 곧 미분이다"라는 한 문장이기 때문이다. 그 화살표가 $\int$ 또는 $1/s$라고 쓴 상자로 들어가고(둘이 왜 같은 상자인지는 §9가 말한다), 상자의 출력이 $x$, 곧 온도 오차이며 이 페이지의 유일한 상태다. $x$를 오른쪽 끝까지 출력으로 끌고 간 다음, 같은 선을 따 내려 이득 블록 $1$을 거쳐 합산점의 아래 입력으로 되돌린다. 이득 $1$을 생략하지 않고 그리는 이유는, 제어 트랙이 그것을 $K$로 바꿀 때 그림의 모양이 달라지지 않게 하기 위해서다.
-
-**그림에 적을 것.** 주석 셋이고 셋 다 루프에서 바로 읽힌다. $t=0$, $x=0$에서 합산점의 출력은 $\dot x=1$이므로 초기 기울기를 초당 $1$로 표시한다. $x$ 대 $t$의 작은 삽도에 그 기울기의 접선을 원점에서 그으면 $t=1\,\mathrm{s}$에서 정상값 $x=1$을 지나고, 이것이 시정수다. 참 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 같은 삽도에 점 넷만 찍는다. $t=0.1$과 $0.2$에서 정확값 $0.095$와 $0.181$, 같은 두 순간의 전진 오일러 $0.10$과 $0.19$이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 이 그림의 논증이다.
-
-**그림에 들어가면 안 되는 것 하나.** 외란 화살표는 없다. **P4**는 $u$와 같은 합산점으로 들어오는 $d$를 가지고 있고 이 페이지는 $d=0$으로 둔다. [[02-foundations/rl-basics|7. RL 기초]]와 제어 트랙이 같은 루프를 그릴 때 그 셋째 입력을 더하며, 두 그림의 차이가 정확히 그 페이지들의 주제다.
+§8의 새는 히터 $\dot x=-x+u$, 곧 장치 P4의 블록선도로, 명령 $u=1$은 $+$로, 되먹임된 $x$는 $-$로 합산점에 들어가 그 합이 $\dot x$가 되고, 적분기($\int$ 또는 $1/s$)가 유일한 상태인 온도 오차 $x$를 돌려주며, $x$는 이득 $1$을 거쳐 되돌아온다($d=0$이라 외란 입력은 없다). 삽도는 $x=0$에서 시작한 계단 응답으로, 초당 $1$인 초기 기울기의 접선이 시정수 $t=1\,\mathrm{s}$에서 정상값 $1$에 닿고 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 확대한 모서리에서는 $t=0.1$과 $0.2$의 전진 오일러 $0.10$과 $0.19$가 정확값 $0.095$와 $0.181$보다 각각 $0.005$, $0.009$ 위에 있는데, 오일러가 $1-x$가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다.
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
 
@@ -974,7 +971,7 @@ $$f(a x + b y) = a\,f(x) + b\,f(y)$$
 > **ReLU $f(x) = \max(0, x)$는 선형이 아니다**: $f(-1 + 1) = 0$이지만 $f(-1) + f(1) = 0 + 1 = 1$. 동차성도 $a \ge 0$일 때만 성립한다. $f(-1 \cdot 1) = 0 \ne -f(1) = -1$이기 때문이다.
 
 **위키에서 쓰이는 곳.**
-- **행렬과 층.** 모든 행렬은 선형 사상이다([[02-foundations/linear-algebra|1. 선형대수 §1]]). "선형층" $Wx + b$는 엄밀히는 아핀이고 $b = 0$일 때만 선형이다. 선형 사상을 쌓으면 하나로 접히므로 신경망은 층 사이에 비선형성이 필요하다([[02-foundations/neural-network-basics|0.7 §1]]).
+- **행렬과 층.** 모든 행렬은 선형 사상이다([[02-foundations/linear-algebra|1. 선형대수 §1]]). "선형층" $Wx + b$는 엄밀히는 아핀이고 $b = 0$일 때만 선형이다. 선형 사상을 쌓으면 하나로 접히므로 신경망은 층 사이에 비선형성이 필요하다([[02-foundations/neural-network-basics|0.8 §1]]).
 - **연산자.** 미분, 적분, 기댓값은 선형이다: $\frac{d}{dt}(af + bg) = a f' + b g'$, $E[aX + bY] = aE[X] + bE[Y]$ (§1, §3, [[02-foundations/probability|3. 확률]]).
 - **시스템.** 선형 시불변 시스템은 입력 신호에 대해 가법적이고 동차적이며, 시간 이동에도 불변이다. 중첩 원리가 바로 그 출력을 합성곱으로 만든다([[02-foundations/signal-processing|6. 신호처리 §1]]).
 - **선형화.** 비선형 $f$를 동작점 $x_0$ 근처에서 $f(x_0 + \delta) \approx f(x_0) + f'(x_0)\,\delta$로 바꾼다. 사상 $\delta \mapsto f'(x_0)\,\delta$는 편차 $\delta$에 대해 선형이고, 그래서 제어 설계가 국소적으로 작동한다(§2, [[04-robotics/control-theory-ce397|5. 제어 이론]]).
@@ -1184,7 +1181,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   초기값 $x(0)$에서 출발해도 $t \to \infty$에서 해가 $0$으로 돌아온다는 뜻이다(완전한 정의는
   [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
-- **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$. $u=1$, $x(0)=0$이면 $x(t)=1-e^{-t}$. $t=0.1,0.2$에서 $0.095$, $0.181$. 전진 오일러 $T=0.1$은 $0.10$ 다음 $0.19$([[02-foundations/lab-kernel|0.65]]). 스텝 *시작*의 기울기를 써서 높다. 과제는 이 ODE의 블록선도다.
+- **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$. $u=1$, $x(0)=0$이면 $x(t)=1-e^{-t}$. $t=0.1,0.2$에서 $0.095$, $0.181$. 전진 오일러 $T=0.1$은 $0.10$ 다음 $0.19$([[02-foundations/lab-kernel|0.7]]). 스텝 *시작*의 기울기를 써서 높다. 맨 위의 그림이 이 ODE의 블록선도다.
 - **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
   상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
   ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수
@@ -1337,11 +1334,20 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, [[02-foundations/lab-kernel|0.65]]의 오일러 숫자. 시뮬레이터 없음.
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, [[02-foundations/lab-kernel|0.7]]의 오일러 숫자. 시뮬레이터 없음.
 
 1. **그리기.** $\dot x=-x+u$의 블록선도: 명령 $u$, 합산점, 적분기, $-x$ 피드백. $x$는 온도 오차.
 2. **유도.** $u=1$, $x(0)=0$에서 $\dot x=-x+1$을 풀어라. $x(t)$와 $t=0.1$, $t=0.2$의 값.
 3. **해석.** 전방 오일러 $x\leftarrow x+T(-x+u)$, $T=0.1$, $x_0=0$. 두 스텝을 정확해와 비교하라. 어느 쪽으로 빗나가며 이유는?
+
+> [!note]- 그리는 법 · How to draw it
+> - 명령 $u$가 왼쪽에서 들어와 합산점, 곧 입력 둘을 가진 작은 원을 만난다. 둘째 입력은 아래에서 올라온다.
+> - $u$ 화살표 옆에 $+$, 되먹임 화살표 옆에 $-$를 쓴다. 이 루프를 *음*의 피드백으로 만드는 것은 상자 안의 부호가 아니라 합산점의 부호다.
+> - 합산점의 출력에 $\dot x$라는 이름을 적는다. 이 그림 전체가 "합이 곧 미분이다"라는 한 문장이기 때문이다. 그 화살표는 $\int$ 또는 $1/s$라고 쓴 상자 하나로 들어가고(둘이 왜 같은 상자인지는 §9가 말한다), 상자의 출력 $x$가 온도 오차이자 유일한 상태다.
+> - $x$를 오른쪽 끝까지 출력으로 끌고 간 다음, 같은 선을 따 이득 블록 $1$을 거쳐 합산점의 아래 입력으로 되돌린다. 이득 $1$은 생략하지 않고 그린다. 제어 트랙이 그것을 $K$로 바꿔도 그림의 모양이 그대로이게 하기 위해서다.
+> - 외란 화살표는 없다. P4의 $d$는 $u$와 같은 합산점으로 들어오지만 이 페이지는 $d=0$으로 둔다. [[02-foundations/rl-basics|7. RL 기초]]와 제어 트랙이 그 셋째 입력을 더하며, 두 그림의 차이가 바로 그 페이지들의 주제다.
+> - 2번과 3번을 위한 $x$ 대 $t$ 삽도: $t=0$, $x=0$에서 합산점의 출력은 $\dot x=u$이므로 그 초기 기울기를 표시하고 원점에서 접선을 긋는다. 접선은 시정수에서 정상값에 닿고, 참 곡선은 그 아래로 지난다.
+> - 삽도에는 점 넷만 찍는다. $t=0.1$과 $0.2$의 정확값과 전진 오일러 값이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 논증이다.
 
 > [!tip]- 정답 · Solutions
 > 1. $u$와 $-x$가 합산되고, 합이 $\dot x$, 적분기가 $x$. $u=0$이면 오차가 $e^{-t}$로 감쇠.

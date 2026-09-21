@@ -8,8 +8,8 @@ mastery-when: "Raise to Working when a paper or the thesis reads motor current a
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The transmission ratio, reflected inertia and backdrivability, as defined on a capstan in [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1 and §3]].
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §3과 §5]]의 질량 행렬·중력 토크. [[02-foundations/lab-kernel|0.65 Lab Kernel]]의 적분기. [[04-robotics/control-theory-ce397|5. 제어 이론 §5, §5.5, §7]]의 2차계 파라미터, 대역폭, anti-windup이 있는 PID. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1과 §3]]에서 캡스턴 위에 정의한 전달비, 반사 관성, 역구동성.
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The transmission ratio, reflected inertia and backdrivability, as defined on a capstan in [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1 and §3]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §3과 §5]]의 질량 행렬·중력 토크. [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. [[04-robotics/control-theory-ce397|5. 제어 이론 §5, §5.5, §7]]의 2차계 파라미터, 대역폭, anti-windup이 있는 PID. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1과 §3]]에서 캡스턴 위에 정의한 전달비, 반사 관성, 역구동성.
 
 ## English
 
@@ -44,9 +44,7 @@ Three modelling choices, stated once. **The two drives are identical**, one at e
 
 *Scope: this page teaches one geared DC drive on one joint of P2 — its electrical and mechanical equations, the torque–speed line, reflected inertia and what it does to the mass matrix, the two time constants that justify a current loop, the thermal and current limits, backdrivability, and the gear-ratio trade that ties them together. It does not teach motor design (magnetics, windings, commutation), power electronics (PWM bridges, field-oriented control), hydraulic actuation, joint flexibility or friction identification. The controller that uses a backdrivable, torque-controlled drive for contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]], and the capstan version of the same trade, on a haptic handle, is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One plot: the shoulder's operating region for one gear ratio, with the two demands this page cares about placed on it. The problem set asks for the same plot at $n=200$.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="joint torque against joint speed for P2's shoulder drive at gear ratio 100: current limit, voltage line, thermal line, the hold point and the lift's demand loop">
   <path d="M70 240 L70 80 L312.3 80 L485.4 240 Z" fill="currentColor" fill-opacity="0.07"/>
@@ -87,12 +85,7 @@ One plot: the shoulder's operating region for one gear ratio, with the two deman
   </g>
 </svg>
 
-Five things the plot has to get right, each of which is a claim about the drive.
-**The axes are joint quantities.** Joint speed $\dot\theta_1$ across, and the torque the drive delivers to the link, $\eta nk_ti$, up. A plot in motor units would hide the only knob this page turns.
-**The current limit is a flat line**, at $\eta nk_tI_{\max}=0.8\cdot100\cdot0.10\cdot10=80\,\mathrm{N{\cdot}m}$, because the amplifier caps current and current is torque.
-**The voltage line slopes down** from the corner at $1.4\,\mathrm{rad/s}$ to the joint's no-load speed $V_s/(k_en)=2.4\,\mathrm{rad/s}$, and it would reach $192\,\mathrm{N{\cdot}m}$ at zero speed if the current limit did not cut it first (§3).
-**The thermal line is dashed**, at the continuous torque $25.3\,\mathrm{N{\cdot}m}$: the region above it is open only for seconds (§6).
-**Two demands.** The hold point H at $(0,\,19.62)$, under the thermal line; and the lift of §8 — the shoulder raised from $\theta_1=-0.5\,\mathrm{rad}$ to $0$ in $0.8\,\mathrm{s}$ — drawn as the loop its demand traces: it starts at $21.9\,\mathrm{N{\cdot}m}$ (gravity at $-0.5\,\mathrm{rad}$), climbs to $39.1\,\mathrm{N{\cdot}m}$ at $0.52\,\mathrm{rad/s}$ while it accelerates, passes $1.17\,\mathrm{rad/s}$ at $21.5\,\mathrm{N{\cdot}m}$ at mid-move, dips to $2.8\,\mathrm{N{\cdot}m}$ while it brakes, and ends at H.
+The operating region of P2's shoulder on the $n=100$ drive, in joint units: the current limit flat at $80\,\mathrm{N{\cdot}m}$, the voltage line $\tau=192-80\,\dot\theta$ falling from its corner at $1.4\,\mathrm{rad/s}$ to the no-load speed $2.4\,\mathrm{rad/s}$, and the dashed thermal line at the continuous torque $25.3\,\mathrm{N{\cdot}m}$, above which the drive can stay only for seconds. The hold point H, $19.62\,\mathrm{N{\cdot}m}$ at $2.45\,\mathrm{A}$, sits under the thermal line, and the lift of §8 — the shoulder raised $0.5\,\mathrm{rad}$ in $0.8\,\mathrm{s}$ — traces a loop that climbs to $39.1\,\mathrm{N{\cdot}m}$ while it accelerates, passes $1.17\,\mathrm{rad/s}$ at $21.5\,\mathrm{N{\cdot}m}$ at mid-move, and ends at H without leaving the region.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -208,13 +201,13 @@ Inside those limits, the steady operating points of a motor at one voltage lie o
 > which is §1's winding equation with $di/dt=0$, solved for $i=(V-k_e\omega_m)/R$ and multiplied by $k_t$ — so the line falls because every radian per second of speed spends $k_e$ volts of the supply on back-EMF. Its ends are the **no-load speed** $\omega_0$, where back-EMF has used the whole supply and no current, so no torque, remains, and the **stall torque** $\tau_{\text{stall}}$, at zero speed, where nothing but $R$ limits the current.
 > - **Example**: the frozen drive on $V_s=24\,\mathrm{V}$: $\omega_0=240\,\mathrm{rad/s}$ ($2292\,\mathrm{rpm}$) and $\tau_{\text{stall}}=2.4\,\mathrm{N{\cdot}m}$ at $24\,\mathrm{A}$. The current limit cuts the line at $1.0\,\mathrm{N{\cdot}m}$, and the corner where the two meet is at $\omega_m=(V_s-RI_{\max})/k_e=140\,\mathrm{rad/s}$.
 > - **Non-example**: "the stall torque is the motor's torque rating." Stall is the point where every watt is heat — $24\,\mathrm{A}$ through $1\,\Omega$ is $576\,\mathrm{W}$, in a winding whose continuous budget is $10\,\mathrm{W}$ — and this amplifier cannot even reach it. The rating that means *indefinitely* is §6's continuous torque.
-> - **Why it matters**: a gear ratio moves this line, torque up by $\eta n$ and speed down by $n$, so the whole sizing trade fits in one picture, the Homework diagram.
+> - **Why it matters**: a gear ratio moves this line, torque up by $\eta n$ and speed down by $n$, so the whole sizing trade fits in one picture, the one at the top of the page.
 
 At the joint, $\tau_j=\eta n\tau_m$ and $\dot\theta=\omega_m/n$, so the same line reads
 
 $$\tau_j=\frac{\eta nk_t}{R}\big(V_s-k_en\,\dot\theta\big)$$
 
-because the gearbox multiplies the motor's torque by $\eta n$ and divides its speed by $n$. Three things move with $n$, and not at the same rate. The current limit $\eta nk_tI_{\max}$ rises as $n$; the no-load speed $V_s/(k_en)$ falls as $1/n$; and the slope of the voltage line, $\eta n^2k_tk_e/R$, steepens as $n^2$. On the $n=100$ drive those are $80\,\mathrm{N{\cdot}m}$, $2.4\,\mathrm{rad/s}$ and $80\,\mathrm{N{\cdot}m}$ per rad/s — the line $\tau_j=192-80\,\dot\theta$ of the Homework diagram. Double the ratio and the region doubles in height and halves in width: $160\,\mathrm{N{\cdot}m}$ and $1.2\,\mathrm{rad/s}$ at $n=200$.
+because the gearbox multiplies the motor's torque by $\eta n$ and divides its speed by $n$. Three things move with $n$, and not at the same rate. The current limit $\eta nk_tI_{\max}$ rises as $n$; the no-load speed $V_s/(k_en)$ falls as $1/n$; and the slope of the voltage line, $\eta n^2k_tk_e/R$, steepens as $n^2$. On the $n=100$ drive those are $80\,\mathrm{N{\cdot}m}$, $2.4\,\mathrm{rad/s}$ and $80\,\mathrm{N{\cdot}m}$ per rad/s — the line $\tau_j=192-80\,\dot\theta$ of the picture at the top of the page. Double the ratio and the region doubles in height and halves in width: $160\,\mathrm{N{\cdot}m}$ and $1.2\,\mathrm{rad/s}$ at $n=200$.
 
 Now place the lift on it. At mid-move the lift asks for $1.17\,\mathrm{rad/s}$ against about $21.4\,\mathrm{N{\cdot}m}$ of gravity. At $n=100$ the voltage line offers $192-80\cdot1.17=98\,\mathrm{N{\cdot}m}$ there, capped at $80$ by the current: ample. At $n=200$ the same speed spends $0.1\cdot200\cdot1.17=23.4\,\mathrm{V}$ on back-EMF alone, and the line offers $9.0\,\mathrm{N{\cdot}m}$ against the $21.8$ the lift needs, so that row of §8's sweep must hit the supply.
 
@@ -286,7 +279,7 @@ because the heat stored in the winding's thermal capacity $C_{th}$ is the heat m
 > - **Non-example**: the same hold at $n=50$. It needs $4.905\,\mathrm{A}$, above continuous and far below peak, so the arm *does* stay up — for $-60\ln(1-100/240.6)=32.2\,\mathrm{s}$, after which the winding is at its limit and still rising. "It held the arm in the demo" is a statement about the first half-minute.
 > - **Why it matters**: a static pose costs $i^2R$ and $i$ falls as $1/n$, so holding heat falls as $1/n^2$ — the gear ratio is the cheapest cooling a joint has. The continuous hold of P2 needs $n\ge g_1/(\eta k_tI_{\text{cont}})=77.6$.
 
-**Moves are judged by their RMS.** The lift's loop in the Homework diagram spends a good part of its length above the thermal line, and that is allowed: heat integrates $i^2$, so over a duty cycle short against $\tau_{th}$ what the thermal line bounds is the root-mean-square current, $I_{\text{rms}}=\sqrt{\tfrac1T\int_0^Ti^2\,dt}\le I_{\text{cont}}$. The lift's demand, repeated back to back, has $I_{\text{rms}}=3.11\,\mathrm{A}$, which is $98\%$ of continuous; add a $4.2\,\mathrm{s}$ hold after each lift and the five-second cycle falls to $2.57\,\mathrm{A}$.
+**Moves are judged by their RMS.** The lift's loop in the picture at the top of the page spends a good part of its length above the thermal line, and that is allowed: heat integrates $i^2$, so over a duty cycle short against $\tau_{th}$ what the thermal line bounds is the root-mean-square current, $I_{\text{rms}}=\sqrt{\tfrac1T\int_0^Ti^2\,dt}\le I_{\text{cont}}$. The lift's demand, repeated back to back, has $I_{\text{rms}}=3.11\,\mathrm{A}$, which is $98\%$ of continuous; add a $4.2\,\mathrm{s}$ hold after each lift and the five-second cycle falls to $2.57\,\mathrm{A}$.
 
 **The resistance moves with the heat.** Copper's resistance rises about $0.39\%$ per kelvin, so a hot winding makes more heat at the same current. Folding that into the Worked case, the hold's rise solves $\Delta T=R_{th}i^2R_0(1+\alpha\Delta T)$, so $\Delta T=60.1/(1-0.0039\cdot60.1)=78.6\,\mathrm{K}$ — still inside the budget, but a rise $31\%$ larger than the constant-$R$ estimate. The rest of this page holds $R$ fixed.
 
@@ -305,7 +298,7 @@ where $\tau_{\text{bd}}$ is the torque a push at the joint must supply on top of
 
 ### 8. The lab: a cascade on P2's shoulder, and the gear-ratio sweep
 
-The task is the lift: P2's shoulder, elbow held at $90^\circ$, raised from $\theta_1=-0.5\,\mathrm{rad}$ to the frozen pose $\theta_1=0$ along a quintic time scaling of $T=0.8\,\mathrm{s}$ ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §2]]; peak speed $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$ and peak acceleration $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), then held. The lift is deliberately faster than the actuator limits [[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] freezes for P2 ($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$): those are a specification a planner stays inside, and this lab asks what one particular drive can do beyond them — at $n=100$ it has headroom, and at $n=200$ the $1.17\,\mathrm{rad/s}$ peak meets the voltage line. The controller is §5's cascade. A PD position loop at $1\,\mathrm{kHz}$ with gravity feedforward asks for torque in ideal-gear units, so its feedforward is $g_1/\eta$; it is designed once, for $n=100$ — $20\,\mathrm{rad/s}$ and critically damped on $J_{eq}=4.75$ — and kept for every ratio, as a controller tuned for one gearbox would be. Inside it runs the PI current loop at $20\,\mathrm{kHz}$ with the limits $V_s$ and $I_{\max}$. The plant is §1–§2: the winding equation stepped with explicit Euler and the joint with semi-implicit Euler ([[02-foundations/lab-kernel|0.65 §2 and §3]]), both at the current loop's $50\,\mu\mathrm{s}$. Velocity is measured perfectly and the PWM is replaced by its average voltage, two idealizations that flatter the loop.
+The task is the lift: P2's shoulder, elbow held at $90^\circ$, raised from $\theta_1=-0.5\,\mathrm{rad}$ to the frozen pose $\theta_1=0$ along a quintic time scaling of $T=0.8\,\mathrm{s}$ ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §2]]; peak speed $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$ and peak acceleration $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), then held. The lift is deliberately faster than the actuator limits [[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] freezes for P2 ($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$): those are a specification a planner stays inside, and this lab asks what one particular drive can do beyond them — at $n=100$ it has headroom, and at $n=200$ the $1.17\,\mathrm{rad/s}$ peak meets the voltage line. The controller is §5's cascade. A PD position loop at $1\,\mathrm{kHz}$ with gravity feedforward asks for torque in ideal-gear units, so its feedforward is $g_1/\eta$; it is designed once, for $n=100$ — $20\,\mathrm{rad/s}$ and critically damped on $J_{eq}=4.75$ — and kept for every ratio, as a controller tuned for one gearbox would be. Inside it runs the PI current loop at $20\,\mathrm{kHz}$ with the limits $V_s$ and $I_{\max}$. The plant is §1–§2: the winding equation stepped with explicit Euler and the joint with semi-implicit Euler ([[02-foundations/lab-kernel|0.7 §2 and §3]]), both at the current loop's $50\,\mu\mathrm{s}$. Velocity is measured perfectly and the PWM is replaced by its average voltage, two idealizations that flatter the loop.
 
 ```python
 import numpy as np
@@ -419,7 +412,7 @@ for n in (30, 50, 80, 100, 150, 200, 300):
 
 Tier A. Using only this page, its prerequisites and the object catalog: P2 and the frozen drive as in the Running object, with the changes each item names.
 
-1. **Draw.** The Homework diagram for the $n=200$ drive: its current limit, its voltage line with both ends, its thermal line, and the hold point H. Then add the lift's mid-move demand, $1.17\,\mathrm{rad/s}$ at $21.8\,\mathrm{N{\cdot}m}$, and say which boundary it crosses.
+1. **Draw.** The picture above, for the $n=200$ drive: its current limit, its voltage line with both ends, its thermal line, and the hold point H. Then add the lift's mid-move demand, $1.17\,\mathrm{rad/s}$ at $21.8\,\mathrm{N{\cdot}m}$, and say which boundary it crosses.
 2. **Derive.** (a) P2 at the pose where the shoulder's gravity torque is largest, $\theta=(-26.57^\circ,\,90^\circ)$, with $g_1=9.81\sqrt5=21.94\,\mathrm{N{\cdot}m}$ (differentiate $2\cos\theta_1-\sin\theta_1$ to find it), on the $n=100$ drive: the motor torque, current, voltage, heat and steady rise. Does it hold indefinitely? (b) The smallest whole gear ratio that holds that pose continuously. (c) At $n=160$, the mass matrix at $\theta_2=90^\circ$ with both drives, and its coupling $M_{12}/\sqrt{M_{11}M_{22}}$. (d) Derive the ratio $n^\ast$ that minimizes the motor torque per unit of shoulder acceleration, gravity aside; evaluate it, and show that at $n^\ast$ the rotor's $n^2J_m$ equals $M_{11}/\eta$. (e) The mechanical time constant at $n=200$, and its ratio to $\tau_e$.
 3. **Do.** Replace `run` in the lab code of §8 with the template below, fill every `?`, set `Vs = 48.0`, and rerun the seven-ratio sweep. Report which rows change and which do not, and explain why the $n=300$ row's peak error falls while its "done at" gets later.
 
@@ -451,6 +444,15 @@ def run(n):
     t_hold = -tau_th*np.log(1 - dTmax/dT) if dT > dTmax else np.inf
     return n*n*Jm/Jeq, Vs/(ke*n), i, dT, t_hold, Vpk, 1e3*epk, t_done, hitI, hitV
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - **The axes are joint quantities**: joint speed $\dot\theta_1$ across, and the torque the drive delivers to the link, $\eta nk_ti$, up. A plot in motor units would hide the only knob this page turns.
+> - **The current limit is a flat line** at $\eta nk_tI_{\max}$, because the amplifier caps current and current is torque.
+> - **The voltage line slopes down** from its corner on the current limit, at $(V_s-RI_{\max})/(k_en)$, to the joint's no-load speed $V_s/(k_en)$; label both ends. Carried on, it would reach $\eta nk_tV_s/R$ at zero speed, but the current limit cuts it first (§3).
+> - **The thermal line is dashed**, at the continuous torque $\eta nk_tI_{\text{cont}}$ with $I_{\text{cont}}=3.162\,\mathrm{A}$: the region above it is open only for seconds (§6).
+> - **H sits on the torque axis** at $g_1=19.62\,\mathrm{N{\cdot}m}$ whatever the ratio; label it with its current $g_1/(\eta nk_t)$ and check which side of the thermal line it falls on.
+> - **A move is drawn as the loop its demand traces**, as the picture draws the lift: up from gravity while it accelerates, through mid-move, down while it brakes, into H. A single demand point is judged by the boundary it lies beyond — above the flat line is the current limit, past the sloping line the voltage limit.
+> - **Check the scaling**: the current limit rises as $n$, the no-load speed falls as $1/n$ and the voltage line's slope steepens as $n^2$ (§3), so doubling the ratio must make the region twice as tall and half as wide.
 
 > [!tip]- Solutions
 > 1. Current limit $\eta nk_tI_{\max}=0.8\cdot200\cdot0.1\cdot10=160\,\mathrm{N{\cdot}m}$. Voltage line $\tau_j=(0.8\cdot200\cdot0.1/1)(24-0.1\cdot200\,\dot\theta)=384-320\,\dot\theta$, from the corner at $(384-160)/320=0.7\,\mathrm{rad/s}$ down to the no-load speed $1.2\,\mathrm{rad/s}$. Thermal line $0.8\cdot200\cdot0.1\cdot3.162=50.6\,\mathrm{N{\cdot}m}$, meeting the voltage line at $1.042\,\mathrm{rad/s}$. H at $19.62\,\mathrm{N{\cdot}m}$, now $1.226\,\mathrm{A}$. The region is twice as tall and half as wide as at $n=100$. The mid-move demand lies outside it, through the voltage line: at $1.17\,\mathrm{rad/s}$ the line offers $384-320\cdot1.1719=9.0\,\mathrm{N{\cdot}m}$ against the $21.8$ needed.
@@ -497,9 +499,7 @@ def run(n):
 
 *범위: 이 페이지는 P2의 한 관절에 달린 기어 달린 DC 구동계 하나를 가르친다. 전기 방정식과 기계 방정식, 토크–속도 선, 반사 관성과 그것이 질량 행렬에 하는 일, 전류 루프를 정당화하는 두 시정수, 열 한계와 전류 한계, 역구동성, 그리고 이것들을 한데 묶는 감속비의 맞바꿈이다. 모터 설계(자기 회로, 권선, 정류), 전력 전자(PWM 브리지, field-oriented control), 유압 구동, 관절 유연성, 마찰 동정은 가르치지 않는다. 역구동 가능한 토크 제어 구동계를 접촉에 쓰는 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]이고, 같은 맞바꿈의 캡스턴 판, 즉 햅틱 핸들 위의 이야기는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나. 한 감속비에서 어깨의 운전 영역을 그리고, 이 페이지가 관심을 두는 요구 둘을 그 위에 올린다. 과제는 같은 그림을 $n=200$에서 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="기어비 100에서 P2 어깨 구동계의 관절 토크 대 관절 속도: 전류 한계, 전압선, 열 한계선, 유지점, 들어올리기의 요구 고리">
   <path d="M70 240 L70 80 L312.3 80 L485.4 240 Z" fill="currentColor" fill-opacity="0.07"/>
@@ -540,12 +540,7 @@ def run(n):
   </g>
 </svg>
 
-그림이 맞혀야 할 것이 다섯이고, 각각이 구동계에 대한 주장이다.
-**축은 관절의 양이다.** 가로는 관절 속도 $\dot\theta_1$, 세로는 구동계가 링크에 전달하는 토크 $\eta nk_ti$. 모터 단위로 그리면 이 페이지가 돌리는 유일한 손잡이가 숨는다.
-**전류 한계는 수평선이다.** $\eta nk_tI_{\max}=0.8\cdot100\cdot0.10\cdot10=80\,\mathrm{N{\cdot}m}$에 긋는데, 증폭기가 전류를 막고 전류가 곧 토크이기 때문이다.
-**전압선은 내려가는 선이다.** $1.4\,\mathrm{rad/s}$의 모서리에서 관절 무부하 속도 $V_s/(k_en)=2.4\,\mathrm{rad/s}$까지 내려가고, 전류 한계가 먼저 자르지 않았다면 속도 0에서 $192\,\mathrm{N{\cdot}m}$까지 올라갔을 것이다(§3).
-**열 한계선은 점선이다.** 연속 토크 $25.3\,\mathrm{N{\cdot}m}$에 긋고, 그 위의 영역은 몇 초 동안만 열려 있다(§6).
-**요구 둘.** 유지점 H는 $(0,\,19.62)$로 열 한계선 아래에 있다. 그리고 §8의 들어올리기 — 어깨를 $\theta_1=-0.5\,\mathrm{rad}$에서 $0$까지 $0.8\,\mathrm{s}$에 올리는 동작 — 는 그 요구가 그리는 고리로 그린다. $21.9\,\mathrm{N{\cdot}m}$($-0.5\,\mathrm{rad}$에서의 중력)에서 출발해, 가속하는 동안 $0.52\,\mathrm{rad/s}$에서 $39.1\,\mathrm{N{\cdot}m}$까지 오르고, 중간에서 $1.17\,\mathrm{rad/s}$, $21.5\,\mathrm{N{\cdot}m}$를 지나, 제동하는 동안 $2.8\,\mathrm{N{\cdot}m}$까지 내려갔다가 H에서 끝난다.
+$n=100$ 구동계를 단 P2 어깨의 운전 영역을 관절 단위로 그렸다. 전류 한계는 $80\,\mathrm{N{\cdot}m}$의 수평선, 전압선 $\tau=192-80\,\dot\theta$는 $1.4\,\mathrm{rad/s}$의 모서리에서 무부하 속도 $2.4\,\mathrm{rad/s}$까지 내려가고, 점선의 열 한계선은 연속 토크 $25.3\,\mathrm{N{\cdot}m}$에 있어 그 위에는 몇 초 동안만 머물 수 있다. 유지점 H($19.62\,\mathrm{N{\cdot}m}$, $2.45\,\mathrm{A}$)는 열 한계선 아래에 있고, §8의 들어올리기 — 어깨를 $0.8\,\mathrm{s}$에 $0.5\,\mathrm{rad}$ 올리는 동작 — 는 가속하는 동안 $39.1\,\mathrm{N{\cdot}m}$까지 오르고 중간에서 $1.17\,\mathrm{rad/s}$, $21.5\,\mathrm{N{\cdot}m}$를 지나 H에서 끝나는 고리를 그리며, 영역을 벗어나지 않는다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -661,13 +656,13 @@ $$\Big(n^2J_m+\frac{M_{11}}{\eta}\Big)\ddot\theta_1=n\,k_t\,i-n^2b\,\dot\theta_1
 > 이것은 §1의 권선 방정식에서 $di/dt=0$으로 두고 $i=(V-k_e\omega_m)/R$로 푼 뒤 $k_t$를 곱한 것이다. 그래서 선이 내려가는 것은 속도 1 rad/s마다 공급 가운데 $k_e$볼트를 역기전력에 쓰기 때문이다. 양 끝은 **무부하 속도** $\omega_0$ — 역기전력이 공급을 다 써서 전류가, 따라서 토크가 남지 않는 곳 — 와 **정지 토크** $\tau_{\text{stall}}$ — 속도 0에서 $R$ 말고는 전류를 막는 것이 없는 곳 — 이다.
 > - **예**: $V_s=24\,\mathrm{V}$의 고정 구동계. $\omega_0=240\,\mathrm{rad/s}$($2292\,\mathrm{rpm}$), $\tau_{\text{stall}}=2.4\,\mathrm{N{\cdot}m}$이고 그때 전류는 $24\,\mathrm{A}$다. 전류 한계가 이 선을 $1.0\,\mathrm{N{\cdot}m}$에서 자르고, 둘이 만나는 모서리는 $\omega_m=(V_s-RI_{\max})/k_e=140\,\mathrm{rad/s}$다.
 > - **비예**: "정지 토크가 모터의 토크 정격이다." 정지는 모든 와트가 열인 점이다 — $1\,\Omega$를 지나는 $24\,\mathrm{A}$는 $576\,\mathrm{W}$이고, 연속 예산이 $10\,\mathrm{W}$인 권선에서다 — 그리고 이 증폭기는 거기에 닿지도 못한다. *무기한*을 뜻하는 정격은 §6의 연속 토크다.
-> - **왜 중요한가**: 감속비가 이 선을 옮긴다. 토크는 $\eta n$배 위로, 속도는 $n$분의 1로. 그래서 고르는 일의 맞바꿈 전체가 그림 하나, 과제가 그릴 그림에 들어간다.
+> - **왜 중요한가**: 감속비가 이 선을 옮긴다. 토크는 $\eta n$배 위로, 속도는 $n$분의 1로. 그래서 고르는 일의 맞바꿈 전체가 그림 하나, 맨 위의 그림에 들어간다.
 
 관절에서는 $\tau_j=\eta n\tau_m$, $\dot\theta=\omega_m/n$이므로 같은 선이
 
 $$\tau_j=\frac{\eta nk_t}{R}\big(V_s-k_en\,\dot\theta\big)$$
 
-로 읽힌다. 기어박스가 모터의 토크를 $\eta n$배 하고 속도를 $n$으로 나누기 때문이다. $n$과 함께 세 가지가 움직이는데, 같은 속도로 움직이지 않는다. 전류 한계 $\eta nk_tI_{\max}$는 $n$에 비례해 오르고, 무부하 속도 $V_s/(k_en)$는 $1/n$로 떨어지고, 전압선의 기울기 $\eta n^2k_tk_e/R$는 $n^2$로 가팔라진다. $n=100$ 구동계에서 그 값은 $80\,\mathrm{N{\cdot}m}$, $2.4\,\mathrm{rad/s}$, rad/s당 $80\,\mathrm{N{\cdot}m}$이고, 과제가 그릴 그림의 선 $\tau_j=192-80\,\dot\theta$다. 감속비를 두 배로 하면 영역은 높이가 두 배, 폭이 절반이 된다. $n=200$에서 $160\,\mathrm{N{\cdot}m}$, $1.2\,\mathrm{rad/s}$.
+로 읽힌다. 기어박스가 모터의 토크를 $\eta n$배 하고 속도를 $n$으로 나누기 때문이다. $n$과 함께 세 가지가 움직이는데, 같은 속도로 움직이지 않는다. 전류 한계 $\eta nk_tI_{\max}$는 $n$에 비례해 오르고, 무부하 속도 $V_s/(k_en)$는 $1/n$로 떨어지고, 전압선의 기울기 $\eta n^2k_tk_e/R$는 $n^2$로 가팔라진다. $n=100$ 구동계에서 그 값은 $80\,\mathrm{N{\cdot}m}$, $2.4\,\mathrm{rad/s}$, rad/s당 $80\,\mathrm{N{\cdot}m}$이고, 맨 위 그림의 선 $\tau_j=192-80\,\dot\theta$다. 감속비를 두 배로 하면 영역은 높이가 두 배, 폭이 절반이 된다. $n=200$에서 $160\,\mathrm{N{\cdot}m}$, $1.2\,\mathrm{rad/s}$.
 
 이제 그 위에 들어올리기를 놓아 보자. 동작 중간에 들어올리기는 약 $21.4\,\mathrm{N{\cdot}m}$의 중력을 거슬러 $1.17\,\mathrm{rad/s}$를 요구한다. $n=100$에서 전압선은 거기서 $192-80\cdot1.17=98\,\mathrm{N{\cdot}m}$를 주고, 전류가 그것을 $80$에서 막는다. 넉넉하다. $n=200$에서는 같은 속도가 역기전력에만 $0.1\cdot200\cdot1.17=23.4\,\mathrm{V}$를 쓰고, 선이 주는 것은 들어올리기에 필요한 $21.8$에 대해 $9.0\,\mathrm{N{\cdot}m}$뿐이다. 그러니 §8 스윕의 그 행은 공급에 닿을 수밖에 없다.
 
@@ -739,7 +734,7 @@ $$C_{th}\,\frac{d\,\Delta T}{dt}=i^2R-\frac{\Delta T}{R_{th}}\quad\Longrightarro
 > - **비예**: 같은 유지를 $n=50$에서. $4.905\,\mathrm{A}$가 필요한데 연속보다 크고 최대보다 한참 작으므로, 팔은 *정말로* 떠 있다 — $-60\ln(1-100/240.6)=32.2\,\mathrm{s}$ 동안. 그 뒤 권선은 한계에 있고 여전히 오른다. "시연에서 팔을 붙잡았다"는 처음 30초에 대한 진술이다.
 > - **왜 중요한가**: 정지 자세의 비용은 $i^2R$이고 $i$는 $1/n$로 떨어지므로 유지 열은 $1/n^2$로 떨어진다 — 감속비는 관절이 가진 가장 싼 냉각이다. P2를 연속으로 붙잡으려면 $n\ge g_1/(\eta k_tI_{\text{cont}})=77.6$이 필요하다.
 
-**동작은 RMS로 판정한다.** 과제가 그릴 그림에서 들어올리기의 고리는 길이의 상당 부분을 열 한계선 위에서 보내는데, 그래도 된다. 열은 $i^2$을 적분하므로, $\tau_{th}$에 비해 짧은 듀티 사이클에서 열 한계선이 묶는 것은 제곱평균제곱근 전류, $I_{\text{rms}}=\sqrt{\tfrac1T\int_0^Ti^2\,dt}\le I_{\text{cont}}$다. 들어올리기의 요구를 쉬지 않고 되풀이하면 $I_{\text{rms}}=3.11\,\mathrm{A}$로 연속의 $98\%$이고, 들어올릴 때마다 $4.2\,\mathrm{s}$씩 유지를 붙이면 5초 사이클은 $2.57\,\mathrm{A}$로 떨어진다.
+**동작은 RMS로 판정한다.** 맨 위의 그림에서 들어올리기의 고리는 길이의 상당 부분을 열 한계선 위에서 보내는데, 그래도 된다. 열은 $i^2$을 적분하므로, $\tau_{th}$에 비해 짧은 듀티 사이클에서 열 한계선이 묶는 것은 제곱평균제곱근 전류, $I_{\text{rms}}=\sqrt{\tfrac1T\int_0^Ti^2\,dt}\le I_{\text{cont}}$다. 들어올리기의 요구를 쉬지 않고 되풀이하면 $I_{\text{rms}}=3.11\,\mathrm{A}$로 연속의 $98\%$이고, 들어올릴 때마다 $4.2\,\mathrm{s}$씩 유지를 붙이면 5초 사이클은 $2.57\,\mathrm{A}$로 떨어진다.
 
 **저항은 열과 함께 움직인다.** 구리의 저항은 켈빈당 약 $0.39\%$ 오르므로, 뜨거운 권선은 같은 전류에서 열을 더 만든다. 이것을 계산 절에 넣으면 유지의 상승은 $\Delta T=R_{th}i^2R_0(1+\alpha\Delta T)$를 풀어 $\Delta T=60.1/(1-0.0039\cdot60.1)=78.6\,\mathrm{K}$가 된다. 여전히 예산 안이지만, 상승이 $R$을 고정한 추정보다 $31\%$ 크다. 이 페이지의 나머지는 $R$을 고정한다.
 
@@ -758,7 +753,7 @@ $\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 �
 
 ### 8. 랩: P2 어깨의 캐스케이드와 감속비 스윕
 
-과제는 들어올리기다. 팔꿈치를 $90^\circ$에 붙잡은 P2의 어깨를 $\theta_1=-0.5\,\mathrm{rad}$에서 고정 자세 $\theta_1=0$까지 $T=0.8\,\mathrm{s}$의 5차 시간 스케일링으로 올리고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §2]]; 최대 속도 $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$, 최대 가속도 $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), 그다음 붙잡는다. 이 들어올리기는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이 P2에 고정한 액추에이터 한계($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$)보다 일부러 빠르다. 그 한계는 계획기가 그 안에 머무는 사양이고, 이 랩은 특정 구동계 하나가 그 너머에서 무엇을 할 수 있는지를 묻는다. $n=100$에서는 여유가 있고, $n=200$에서는 최대 속도 $1.17\,\mathrm{rad/s}$가 전압선에 닿는다. 제어기는 §5의 캐스케이드다. 중력 피드포워드가 있는 $1\,\mathrm{kHz}$ PD 위치 루프가 이상 기어 단위로 토크를 요구하므로 피드포워드는 $g_1/\eta$이고, 한 번 $n=100$에 맞춰 — $J_{eq}=4.75$에서 $20\,\mathrm{rad/s}$, 임계 감쇠 — 설계한 뒤 모든 감속비에 그대로 둔다. 한 기어박스에 맞춘 제어기가 그렇듯이. 그 안에서 $V_s$와 $I_{\max}$ 한계를 가진 $20\,\mathrm{kHz}$ PI 전류 루프가 돈다. 플랜트는 §1–§2다. 권선 방정식은 명시적 오일러로, 관절은 준음해 오일러로 전진하고([[02-foundations/lab-kernel|0.65 §2와 §3]]), 둘 다 전류 루프의 $50\,\mu\mathrm{s}$로 돈다. 속도는 완벽하게 잰다고 두고 PWM은 평균 전압으로 바꿨는데, 둘 다 루프에 유리한 이상화다.
+과제는 들어올리기다. 팔꿈치를 $90^\circ$에 붙잡은 P2의 어깨를 $\theta_1=-0.5\,\mathrm{rad}$에서 고정 자세 $\theta_1=0$까지 $T=0.8\,\mathrm{s}$의 5차 시간 스케일링으로 올리고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §2]]; 최대 속도 $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$, 최대 가속도 $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), 그다음 붙잡는다. 이 들어올리기는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이 P2에 고정한 액추에이터 한계($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$)보다 일부러 빠르다. 그 한계는 계획기가 그 안에 머무는 사양이고, 이 랩은 특정 구동계 하나가 그 너머에서 무엇을 할 수 있는지를 묻는다. $n=100$에서는 여유가 있고, $n=200$에서는 최대 속도 $1.17\,\mathrm{rad/s}$가 전압선에 닿는다. 제어기는 §5의 캐스케이드다. 중력 피드포워드가 있는 $1\,\mathrm{kHz}$ PD 위치 루프가 이상 기어 단위로 토크를 요구하므로 피드포워드는 $g_1/\eta$이고, 한 번 $n=100$에 맞춰 — $J_{eq}=4.75$에서 $20\,\mathrm{rad/s}$, 임계 감쇠 — 설계한 뒤 모든 감속비에 그대로 둔다. 한 기어박스에 맞춘 제어기가 그렇듯이. 그 안에서 $V_s$와 $I_{\max}$ 한계를 가진 $20\,\mathrm{kHz}$ PI 전류 루프가 돈다. 플랜트는 §1–§2다. 권선 방정식은 명시적 오일러로, 관절은 준음해 오일러로 전진하고([[02-foundations/lab-kernel|0.7 §2와 §3]]), 둘 다 전류 루프의 $50\,\mu\mathrm{s}$로 돈다. 속도는 완벽하게 잰다고 두고 PWM은 평균 전압으로 바꿨는데, 둘 다 루프에 유리한 이상화다.
 
 (코드는 영어 절에 한 번만 싣는다.)
 
@@ -821,9 +816,18 @@ $\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 �
 
 Tier A. 이 페이지, 그 선수 지식, 대상 카탈로그만으로. P2와 고정 구동계는 이 페이지의 대상과 같고, 각 항목이 말하는 것만 바꾼다.
 
-1. **그리기.** $n=200$ 구동계의 과제 그림. 전류 한계, 양 끝을 가진 전압선, 열 한계선, 유지점 H. 그다음 들어올리기의 중간 요구 $1.17\,\mathrm{rad/s}$, $21.8\,\mathrm{N{\cdot}m}$를 더하고, 그것이 어느 경계를 넘는지 말한다.
+1. **그리기.** 위의 그림을 $n=200$ 구동계로. 전류 한계, 양 끝을 가진 전압선, 열 한계선, 유지점 H. 그다음 들어올리기의 중간 요구 $1.17\,\mathrm{rad/s}$, $21.8\,\mathrm{N{\cdot}m}$를 더하고, 그것이 어느 경계를 넘는지 말한다.
 2. **유도.** (a) 어깨의 중력 토크가 가장 큰 자세 $\theta=(-26.57^\circ,\,90^\circ)$, $g_1=9.81\sqrt5=21.94\,\mathrm{N{\cdot}m}$($2\cos\theta_1-\sin\theta_1$을 미분해 찾는다)의 P2를 $n=100$ 구동계로: 모터 토크, 전류, 전압, 열, 정상 상승. 무기한 붙잡는가? (b) 그 자세를 연속으로 붙잡는 가장 작은 정수 감속비. (c) $n=160$에서, 두 구동계를 단 $\theta_2=90^\circ$의 질량 행렬과 결합 $M_{12}/\sqrt{M_{11}M_{22}}$. (d) 중력을 빼고, 어깨 가속도 한 단위당 모터 토크를 최소로 하는 감속비 $n^\ast$를 유도하고 값을 구한 뒤, $n^\ast$에서 회전자의 $n^2J_m$이 $M_{11}/\eta$와 같음을 보인다. (e) $n=200$에서의 기계적 시정수와 $\tau_e$에 대한 비.
 3. **실행.** §8 랩 코드의 `run`을 영어 절의 템플릿으로 바꾸고, `?`를 모두 채우고, `Vs = 48.0`으로 두고, 감속비 일곱 개의 스윕을 다시 돌린다. 어느 행이 바뀌고 어느 행이 그대로인지 보고하고, $n=300$ 행의 최대 오차는 떨어지는데 "완료 시각"은 늦어지는 이유를 설명한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - **축은 관절의 양이다.** 가로는 관절 속도 $\dot\theta_1$, 세로는 구동계가 링크에 전달하는 토크 $\eta nk_ti$. 모터 단위로 그리면 이 페이지가 돌리는 유일한 손잡이가 숨는다.
+> - **전류 한계는 수평선이다.** $\eta nk_tI_{\max}$에 긋는데, 증폭기가 전류를 막고 전류가 곧 토크이기 때문이다.
+> - **전압선은 내려가는 선이다.** 전류 한계 위의 모서리 $(V_s-RI_{\max})/(k_en)$에서 관절 무부하 속도 $V_s/(k_en)$까지 내려가고, 양 끝에 값을 적는다. 계속 늘이면 속도 0에서 $\eta nk_tV_s/R$에 닿겠지만 전류 한계가 먼저 자른다(§3).
+> - **열 한계선은 점선이다.** 연속 토크 $\eta nk_tI_{\text{cont}}$($I_{\text{cont}}=3.162\,\mathrm{A}$)에 긋고, 그 위의 영역은 몇 초 동안만 열려 있다(§6).
+> - **H는 토크 축 위에 있다.** 감속비와 상관없이 $g_1=19.62\,\mathrm{N{\cdot}m}$에 놓고, 전류 $g_1/(\eta nk_t)$를 적은 뒤 열 한계선의 어느 쪽에 오는지 확인한다.
+> - **동작은 그 요구가 그리는 고리로 그린다.** 위의 그림이 들어올리기를 그린 것처럼, 중력에서 출발해 가속하는 동안 오르고, 중간을 지나, 제동하는 동안 내려와 H로 들어간다. 요구 점 하나는 어느 경계 너머에 있는지로 판정한다. 수평선 위면 전류 한계, 기울어진 선 너머면 전압 한계다.
+> - **$n$에 대한 비례를 확인한다.** 전류 한계는 $n$에 비례해 오르고, 무부하 속도는 $1/n$로 떨어지고, 전압선의 기울기는 $n^2$로 가팔라진다(§3). 그러니 감속비를 두 배로 하면 영역은 높이가 두 배, 폭이 절반이어야 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 전류 한계 $\eta nk_tI_{\max}=0.8\cdot200\cdot0.1\cdot10=160\,\mathrm{N{\cdot}m}$. 전압선 $\tau_j=(0.8\cdot200\cdot0.1/1)(24-0.1\cdot200\,\dot\theta)=384-320\,\dot\theta$, 모서리 $(384-160)/320=0.7\,\mathrm{rad/s}$에서 무부하 속도 $1.2\,\mathrm{rad/s}$까지. 열 한계선 $0.8\cdot200\cdot0.1\cdot3.162=50.6\,\mathrm{N{\cdot}m}$, 전압선과 $1.042\,\mathrm{rad/s}$에서 만난다. H는 $19.62\,\mathrm{N{\cdot}m}$, 이제 $1.226\,\mathrm{A}$. 영역은 $n=100$보다 높이가 두 배, 폭이 절반이다. 중간 요구는 영역 밖에, 전압선 너머에 있다. $1.17\,\mathrm{rad/s}$에서 선이 주는 것은 필요한 $21.8$에 대해 $384-320\cdot1.1719=9.0\,\mathrm{N{\cdot}m}$뿐이다.

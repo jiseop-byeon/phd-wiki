@@ -25,11 +25,7 @@ Planning asks how a robot should choose a feasible sequence of future states and
 > [!note] First pass · 처음이라면
 > Read §1 — five words the literature uses interchangeably and should not — then §2, then §4's worked example. §5 through §8 are a survey; read the family a paper belongs to rather than all of them.
 
-### Homework diagram · 과제가 그릴 그림
-
-Two panels side by side, the same pairing as the figure in §2, and the problem set asks for this
-drawing. The object is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — unit links, base
-at the world origin — and the panel is the half-plane $x<1$ m.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 320" style="max-width:100%;height:auto" role="img" aria-label="Left: P2's workspace with the reach disc of radius 2 m, the panel line x = 1 m, the task point (1, 1), the arm straight with its tip at (2, 0) and at the frozen pose with its elbow at (1, 0) and tip at (1, 1), and the quarter circle the tip traces. Right: the configuration-space torus with q_start = (0, 0), q_goal = (0, 90 degrees), the single edge between them, the region the tip check forbids shaded, and the goal on its boundary. An arrow f, the forward kinematics, joins them.">
   <defs><marker id="aPDM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -93,26 +89,7 @@ at the world origin — and the panel is the half-plane $x<1$ m.
   </g>
 </svg>
 
-**Left panel — the workspace.** The base at the origin, the reachable disc of radius $2$ m around
-it, the panel as a vertical line at $x=1$ with hatching on its far side, and the task point
-$p^\star=(1,1)$ m on that line. Draw the arm twice: once folded out straight along $+x$, tip at
-$(2,0)$, and once at the frozen pose, elbow at $(1,0)$ and tip on the panel. Two configurations,
-one picture, and nothing on it is yet a plan.
-
-**Right panel — the configuration space.** Axes $\theta_1$ and $\theta_2$, each from $-180°$ to
-$180°$, and a note on the drawing that opposite edges are identified, because $\mathcal{C}$ is the
-torus $T^2$ and a planner that treats $179°$ and $-179°$ as far apart is using the wrong space
-(§2). Put $q_\mathrm{start}=(0°,0°)$ and $q_\mathrm{goal}=(0°,90°)$ as two dots and join them by
-the straight segment that is the single edge of the problem set's graph. Shade the region the
-tip-only check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, label the rest
-$\mathcal{C}_\mathrm{free}$, and mark the one point of the segment that lies on the boundary —
-contact, not free space.
-
-**The arrow between the panels.** Draw one arrow from the segment on the right to the curve the tip
-traces on the left and label it $f$, the forward kinematics. The two panels are not two views of
-one object: the right is a set of configurations, the left a set of positions, and that arrow is
-the only thing relating them. Every claim on this page about what a planner guarantees is a claim
-about the right panel; every claim about what the robot does is about the left.
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (unit links, base at the world origin) and the panel, the half-plane $x<1$ m, in the same pairing as the figure in §2. Left, the workspace: the $2$ m reach disc, the arm straight with its tip at $(2,0)$ and at the frozen pose with its elbow at $(1,0)$ and its tip on the task point $p^\star=(1,1)$, and the quarter circle the tip traces between the two. Right, the configuration space $\mathcal{C}=T^2$ with opposite edges identified: the single edge from $q_\mathrm{start}=(0°,0°)$ to $q_\mathrm{goal}=(0°,90°)$ and the shaded region the tip check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, with the goal on its boundary (contact, not free space), and the arrow $f$, the forward kinematics, is all that relates the two panels.
 
 ### 1. Plan, path, trajectory, policy, controller
 
@@ -617,9 +594,18 @@ You should be able to:
 
 Tier B. First pass. **P2** to the panel ([[02-foundations/lab-plants|0.6]]). Two-node graph. No simulator.
 
-1. **Draw.** Node $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$ (tip at $(2,0)$) and $q_\mathrm{goal}=$ frozen pose (tip at $(1,1)$ on the panel). One edge in $\mathcal{C}$. Label $\mathcal{C}_\mathrm{free}$.
+1. **Draw.** The picture above: node $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$ (tip at $(2,0)$) and $q_\mathrm{goal}=$ frozen pose (tip at $(1,1)$ on the panel). One edge in $\mathcal{C}$. Label $\mathcal{C}_\mathrm{free}$.
 2. **Derive.** Straight interpolation $\theta(s)=(0^\circ,90^\circ s)$. Tip $x(s)=1+\cos(90^\circ s)$. If the panel is the wall $x=1$, when does the tip first touch? What does A* return on this two-node graph?
 3. **Interpret.** What can this search not promise about contact force at the panel?
+
+> [!note]- How to draw it · 그리는 법
+> - Left panel, the workspace: the base at the origin, the reachable disc of radius $2$ m around it, the panel as a vertical line at $x=1$ with hatching on its far side, and the task point $p^\star=(1,1)$ m on that line.
+> - The arm twice: once straight along $+x$ with its tip at $(2,0)$, once at the frozen pose with its elbow at $(1,0)$ and its tip on the panel. Two configurations, one picture, and nothing on it is yet a plan.
+> - Right panel, the configuration space: axes $\theta_1$ and $\theta_2$, each from $-180°$ to $180°$, with a note that opposite edges are identified. $\mathcal{C}$ is the torus $T^2$, and a planner that treats $179°$ and $-179°$ as far apart is using the wrong space (§2).
+> - $q_\mathrm{start}$ and $q_\mathrm{goal}$ as two dots, joined by the straight segment that is the graph's single edge.
+> - The region the tip-only check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, shaded, and the rest labelled $\mathcal{C}_\mathrm{free}$.
+> - The one point of the segment that lies on the boundary, marked as contact, not free space.
+> - One arrow from the segment on the right to the curve the tip traces on the left, labelled $f$, the forward kinematics. The two panels are not two views of one object: the right is a set of configurations, the left a set of positions, and that arrow is the only thing relating them.
 
 > [!tip]- Solutions
 > 1. Two dots in $\mathcal{C}=T^2$, one segment. Free except the goal, which is on the contact set.
@@ -667,11 +653,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 > [!note] 처음이라면 · First pass
 > 먼저 §1 — 문헌이 섞어 쓰지만 섞어 쓰면 안 되는 다섯 단어 — 그다음 §2, 그다음 §4의 계산 예제. §5~§8은 조망이니 전부가 아니라 지금 논문이 속한 계열만 읽어라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-나란히 놓은 칸 둘. §2의 그림과 같은 짝이고, 과제가 요구하는 것도 이 그림이다. 대상은
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**(단위 링크, 베이스는 월드 원점)이고, 패널은
-반평면 $x<1$ m다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 320" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 반지름 2 m 도달 원판, 패널 선 x = 1 m, 과제 점 (1, 1), 말단이 (2, 0)에 있는 곧게 편 팔과 엘보 (1, 0), 말단 (1, 1)의 고정 자세, 말단이 그리는 사분원을 그린 P2의 작업 영역. 오른쪽: q_start = (0, 0)과 q_goal = (0, 90도), 그 사이의 유일한 간선, 말단 검사가 금지하는 영역의 음영, 그 경계 위의 목표를 그린 컨피규레이션 공간 토러스. 순기구학 화살표 f가 둘을 잇는다.">
   <defs><marker id="aPDMk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -735,23 +717,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
   </g>
 </svg>
 
-**왼쪽 칸 — 작업 영역.** 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린
-패널과 그 너머의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m. 팔은 두 번 그린다. 한 번은
-$+x$ 방향으로 곧게 펴서 말단이 $(2,0)$에, 한 번은 고정 자세로 엘보가 $(1,0)$, 말단이 패널 위에.
-컨피규레이션 둘이 그림 하나에 있고, 아직 그 어느 것도 계획이 아니다.
-
-**오른쪽 칸 — 컨피규레이션 공간.** $\theta_1$과 $\theta_2$ 축을 각각 $-180°$에서 $180°$까지 긋고,
-마주 보는 변이 서로 붙어 있다는 것을 그림 위에 적는다. $\mathcal{C}$가 토러스 $T^2$이고,
-$179°$와 $-179°$를 멀다고 보는 플래너는 공간을 잘못 고른 것이기 때문이다(§2).
-$q_\mathrm{start}=(0°,0°)$과 $q_\mathrm{goal}=(0°,90°)$을 점 둘로 찍고, 과제 그래프의 유일한 간선인
-직선 구간으로 잇는다. 말단만 보는 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$을
-칠하고 나머지를 $\mathcal{C}_\mathrm{free}$라 적은 뒤, 그 구간에서 경계 위에 놓이는 점 하나를
-표시한다. 자유 공간이 아니라 접촉이다.
-
-**두 칸 사이의 화살표.** 오른쪽 구간에서 왼쪽에서 말단이 그리는 곡선으로 화살표 하나를 긋고
-순기구학 $f$라 적는다. 두 칸은 한 대상의 두 시점이 아니다. 오른쪽은 컨피규레이션의 집합이고
-왼쪽은 위치의 집합이며, 둘을 잇는 것은 그 화살표뿐이다. 플래너가 무엇을 보장하는가에 대한 이
-페이지의 모든 주장은 오른쪽 칸의 주장이고, 로봇이 무엇을 하는가에 대한 주장은 왼쪽 칸의 주장이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**(단위 링크, 베이스는 월드 원점)와 반평면 $x<1$ m인 패널을 §2의 그림과 같은 짝으로 나란히 놓았다. 왼쪽 작업 영역에는 $2$ m 도달 원판, 말단이 $(2,0)$에 있는 곧게 편 팔과 엘보가 $(1,0)$, 말단이 과제 점 $p^\star=(1,1)$에 있는 고정 자세, 그리고 둘 사이에서 말단이 그리는 사분원이 있다. 오른쪽은 마주 보는 변이 붙은 컨피규레이션 공간 $\mathcal{C}=T^2$로, $q_\mathrm{start}=(0°,0°)$에서 $q_\mathrm{goal}=(0°,90°)$까지의 유일한 간선과 말단 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$의 음영이 있고, 목표는 그 경계 위(자유 공간이 아니라 접촉)에 있으며, 두 칸을 잇는 것은 순기구학 화살표 $f$뿐이다.
 
 ### 1. Plan, path, trajectory, policy, controller
 
@@ -1271,9 +1237,18 @@ $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
 
 Tier B. 첫 패스. [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지. 노드 둘짜리 그래프. 시뮬레이터 없음.
 
-1. **그리기.** $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$(말단 $(2,0)$)와 $q_\mathrm{goal}=$ 고정 자세(말단 $(1,1)$, 패널). $\mathcal{C}$의 간선 하나. $\mathcal{C}_\mathrm{free}$를 표시.
+1. **그리기.** 위의 그림: $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$(말단 $(2,0)$)와 $q_\mathrm{goal}=$ 고정 자세(말단 $(1,1)$, 패널). $\mathcal{C}$의 간선 하나. $\mathcal{C}_\mathrm{free}$를 표시.
 2. **유도.** 직선 보간 $\theta(s)=(0^\circ,90^\circ s)$. 말단 $x(s)=1+\cos(90^\circ s)$. 패널이 벽 $x=1$이면 언제 처음 닿는가? 이 두 노드에서 A*가 반환하는 것은?
 3. **해석.** 이 탐색이 패널 접촉력에 대해 약속할 수 없는 것은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 왼쪽 칸, 작업 영역: 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린 패널과 그 너머의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m.
+> - 팔은 두 번: 한 번은 $+x$ 방향으로 곧게 펴서 말단이 $(2,0)$에, 한 번은 고정 자세로 엘보가 $(1,0)$, 말단이 패널 위에. 컨피규레이션 둘이 그림 하나에 있고, 아직 그 어느 것도 계획이 아니다.
+> - 오른쪽 칸, 컨피규레이션 공간: 각각 $-180°$에서 $180°$까지인 $\theta_1$, $\theta_2$ 축과, 마주 보는 변이 서로 붙어 있다는 메모. $\mathcal{C}$는 토러스 $T^2$이고, $179°$와 $-179°$를 멀다고 보는 플래너는 공간을 잘못 고른 것이다(§2).
+> - 점 둘로 찍은 $q_\mathrm{start}$와 $q_\mathrm{goal}$, 그리고 둘을 잇는 직선 구간, 곧 그래프의 유일한 간선.
+> - 말단만 보는 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$의 음영과, 나머지에 붙인 $\mathcal{C}_\mathrm{free}$라는 이름.
+> - 그 구간에서 경계 위에 놓이는 점 하나. 자유 공간이 아니라 접촉으로 표시한다.
+> - 오른쪽 구간에서 왼쪽에서 말단이 그리는 곡선으로 가는 화살표 하나와 순기구학 $f$라는 이름. 두 칸은 한 대상의 두 시점이 아니다. 오른쪽은 컨피규레이션의 집합, 왼쪽은 위치의 집합이고, 둘을 잇는 것은 그 화살표뿐이다.
 
 > [!tip]- 정답 · Solutions
 > 1. $\mathcal{C}=T^2$의 점 둘, 선분 하나. 목표는 접촉 집합 위.

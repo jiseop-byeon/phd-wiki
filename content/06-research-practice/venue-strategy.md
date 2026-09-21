@@ -49,9 +49,7 @@ mastery-when: "This is operational knowledge, not a research topic — keep it c
 
 *Scope: this page teaches where a finished robotics result can be submitted, what each venue's review process will do to it, and which submission rules close a later option. It does not teach whether the result supports its claim — [[06-research-practice/research-questions-claims|1. Research Questions & Claims]] and [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] — nor how to write it up and answer a reviewer, which is [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing & Peer Review]]. Every venue rule on it carries a date: re-read the venue's current call before acting on any of it (the warning above).*
 
-### Homework diagram · 과제가 그릴 그림
-
-One route map with a time axis under it. The problem set asks for the same map for a different result, so draw it once here properly.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -68,11 +66,33 @@ flowchart LR
     RAL -.->|"not permitted"| TRO
 ```
 
-Four things the drawing has to get right, and each is a rule from below.
-**Every venue box carries its cadence and its reply** — annual or rolling; no rebuttal, a transfer response, or an author response with a diff — because those two columns of §2 are what the calendar is made of.
-**The pilot is not a box of its own on any archival route.** It appears only inside the workshop box. Had it an archival paper of its own, the confirmatory study would become the "additional experiments" of §5 and the edge to T-RO would be cut.
-**The two blocking edges are drawn and labelled with their rules**: RA-L to T-RO *not permitted*, and conference paper to T-RO *only with new results* (both §5).
-**A time axis under the map, in relative months**: 0 at the result and at the RA-L submission, $a$ at the ICRA deadline with the bracket $0\le a<12$, and a bar $270$ days long — $8.9$ months — starting at the RA-L acceptance. No tick carries a calendar date, because the page gives none.
+<svg viewBox="0 0 560 160" style="max-width:100%;height:auto" role="img" aria-label="Time axis under the route map, in months after the result: on Route A the next ICRA deadline falls at month a, somewhere in 0 to 12, followed by an unstated review; on Route B the RA-L submission is at month 0, followed by an unstated review, and after acceptance a 270-day, 8.9-month window to present at one RAS conference. No calendar dates.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">Time, in months after the result: relative only, no calendar dates</text>
+  <line x1="132" y1="32" x2="132" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <text x="10" y="58" font-size="12" fill="currentColor">Route A · ICRA</text>
+  <text x="140" y="41" font-size="11.5" fill="currentColor">next ICRA deadline: month a, with 0 ≤ a &lt; 12</text>
+  <rect x="132" y="46" width="288" height="16" fill="currentColor" fill-opacity="0.12"/>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="132" y1="46" x2="420" y2="46"/><line x1="132" y1="62" x2="420" y2="62"/></g>
+  <line x1="132" y1="43" x2="132" y2="65" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="420" y1="43" x2="420" y2="65" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/>
+  <text x="140" y="58" font-size="11.5" fill="currentColor">t<tspan font-size="11" dy="3">wait</tspan><tspan dy="-3" dx="4">= a</tspan></text>
+  <text x="420" y="79" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">12</text>
+  <text x="430" y="53" font-size="11.5" fill="currentColor">+ r<tspan font-size="11" dy="3">ICRA</tspan></text>
+  <text x="430" y="67" font-size="11" fill="currentColor" opacity="0.85">not stated</text>
+  <text x="10" y="108" font-size="12" fill="currentColor">Route B · RA-L</text>
+  <circle cx="132" cy="104" r="4.0" fill="currentColor"/>
+  <line x1="136" y1="104" x2="222" y2="104" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <g stroke="currentColor" stroke-width="1.3"><line x1="171" y1="111" x2="177" y2="97"/><line x1="177" y1="111" x2="183" y2="97"/></g>
+  <text x="142" y="92" font-size="11.5" fill="currentColor">r<tspan font-size="11" dy="3">RA-L</tspan><tspan dy="-3">: not stated</tspan></text>
+  <text x="137" y="126" font-size="11" fill="currentColor" opacity="0.85">submit</text>
+  <line x1="222" y1="93" x2="222" y2="115" stroke="currentColor" stroke-width="1.6"/>
+  <text x="222" y="126" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">accepted</text>
+  <rect x="222" y="96" width="212.9" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="328.4" y="108" font-size="11.5" fill="currentColor" text-anchor="middle">270 days = 8.9 months</text>
+  <g font-size="11" fill="currentColor" opacity="0.85"><text x="442.9" y="103">to present at one</text><text x="442.9" y="117">RAS conference</text><text x="137" y="144">month 0: the day the confirmatory study is analysed</text></g>
+</svg>
+
+RS1's paper — the pilot plus the confirmatory study at 32 trials per arm — routed through the page's rules, each venue box carrying its cadence and its reply: ICRA, with an annual deadline and no rebuttal, and on rejection a same-year transfer to IROS with an author response file; RA-L, rolling, with an author response and a diff, whose accepted papers are presented at one RAS conference within 270 days; and a workshop extended abstract of at most 4 pages with no proceedings and no DOI. The pilot has no archival box of its own: its only early outlet is that workshop abstract, whose edges block nothing. Two edges close the journal route: RA-L to T-RO is not permitted, and a conference paper reaches T-RO later only with new results; the time axis under the map counts months from the result — RA-L submitted at 0, ICRA at the next deadline $a$ with $0\le a<12$, and 8.9 months (270 days) from an RA-L acceptance to its presentation — with no calendar date or review time, since the page states none.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -431,9 +451,16 @@ Tier B. Using this page, [[06-research-practice/research-questions-claims|1. Res
 
 **The variant.** RS1's confirmatory study runs as planned — 32 trials per arm, sized for power 0.8 — and comes back **null**: it does not separate B from A. Everything else is the Running object's. No numbers are frozen for the null result, and the questions below do not need any.
 
-1. **Draw.** The Homework diagram's route map and time axis for the null result. Keep every box whose rules do not depend on the sign of the result, and add the ISARC box that §2 describes, with its edge to ICRA labelled by the rule that governs it.
+1. **Draw.** The route map of the picture above for the null result, with a time axis under it. Keep every box whose rules do not depend on the sign of the result, and add the ISARC box that §2 describes, with its edge to ICRA labelled by the rule that governs it.
 2. **Derive.** (a) The relative calendar of the null result on Route A and on Route B: $t_{\text{wait}}$ for each, the number of decisions the ICRA route can give within one year, and the presentation window after an RA-L acceptance, in months. Say which terms the page cannot fill. (b) The rule that would block a later journal version if the null result goes to RA-L; to ISARC; to a workshop as a six-page peer-reviewed paper with a DOI. (c) Which of §6's three tests a ≤ 4-page extended abstract at a workshop with no proceedings and no DOI fails.
 3. **Interpret.** (a) A labmate says negative results do not get published in robotics, so the study should be shelved. What does this page say, and what does it not say? (b) A reviewer is likely to read "no difference" as "too few trials". Which venues in §2's table let you answer that before the decision, and in what form — and what would you answer with? (c) A colleague argues for CoRL "because its acceptance rate is lower". What does §3 let you say?
+
+> [!note]- How to draw it · 그리는 법
+> - **Every venue box carries its cadence and its reply** — annual or rolling; no rebuttal, a transfer response, or an author response with a diff — because those two columns of §2 are what the calendar is made of.
+> - **Every edge carries the rule that governs it:** the worked case's two blocking edges are RA-L to T-RO, *not permitted*, and conference paper to T-RO, *only with new results* (both §5); the workshop's edges read *blocks nothing*.
+> - **The pilot is not a box of its own on any archival route;** it appears only inside the workshop box. Had it an archival paper of its own, the confirmatory study would become the "additional experiments" of §5 and the edge to T-RO would be cut.
+> - **A time axis under the map, in relative months:** 0 at the result and at the RA-L submission, $a$ at the ICRA deadline with the bracket $0\le a<12$, and a bar 270 days long — 8.9 months — starting at the RA-L acceptance.
+> - **No tick carries a calendar date**, because the page gives none, and review times stay unknowns.
 
 > [!tip]- Solutions
 > 1. The map keeps its shape: no venue rule on this page depends on whether a result is positive. The ISARC box carries §2's facts — refereed by at least two reviewers, a DOI for every paper, Scopus-indexed, about 76% acceptance, and named as where the negative results and early systems are. Its edge to ICRA is cut: the ICRA call treats a workshop paper with a DOI as an archival publication equivalent to a conference paper, and a refereed ISARC paper with its own DOI is at least that, so the same work cannot then be submitted to ICRA. The time axis is unchanged.
@@ -483,9 +510,7 @@ venue's calls for papers, statistics pages and chairs' reports were checked and 
 
 *범위: 이 페이지는 완성된 로보틱스 결과를 어디에 낼 수 있는지, 각 venue의 심사 과정이 그것에 무엇을 하는지, 어떤 제출 규칙이 나중의 선택지를 닫는지를 가르친다. 결과가 주장을 뒷받침하는지는 가르치지 않는다 — 그것은 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]과 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]다. 논문을 쓰고 심사자에게 답하는 법도 아니다 — 그것은 [[06-research-practice/scientific-writing-peer-review|4. 과학 글쓰기와 peer review]]다. 여기 있는 모든 venue 규칙에는 날짜가 붙어 있다: 행동에 옮기기 전에 그 venue의 현재 CFP를 다시 읽어라(위의 경고).*
 
-### 과제가 그릴 그림 · Homework diagram
-
-경로 지도 하나, 그 밑에 시간 축. 과제는 다른 결과에 대해 같은 지도를 요구하니 여기서 한 번 제대로 그린다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -502,11 +527,33 @@ flowchart LR
     RAL -.->|"허용되지 않음"| TRO
 ```
 
-그림이 맞혀야 할 것이 넷이고, 각각이 아래에 있는 규칙이다.
-**venue 상자마다 주기와 답변 방식을 적는다** — 연 1회 또는 상시, 반박문 없음·이관 응답·diff를 붙인 저자 응답 — §2의 그 두 열이 일정표의 재료이기 때문이다.
-**파일럿은 어떤 archival 경로에서도 자기 상자를 갖지 않는다.** 워크숍 상자 안에만 나타난다. 파일럿이 자기 archival 논문을 가졌다면 확증 연구는 §5의 "추가 실험"이 되고 T-RO로 가는 화살표가 끊긴다.
-**막는 화살표 둘을 그리고 규칙으로 이름 붙인다**: RA-L에서 T-RO로는 *허용되지 않음*, 학회 논문에서 T-RO로는 *새 결과가 있을 때만*(둘 다 §5).
-**지도 밑에 상대 월의 시간 축**: 결과와 RA-L 제출에 0, ICRA 마감에 $a$와 괄호 $0\le a<12$, 그리고 RA-L 채택에서 시작하는 $270$일 — $8.9$개월 — 길이의 막대. 어떤 눈금에도 달력 날짜를 적지 않는다. 이 페이지가 주지 않기 때문이다.
+<svg viewBox="0 0 560 160" style="max-width:100%;height:auto" role="img" aria-label="경로 지도 밑의 시간 축, 결과로부터의 개월 수: 경로 A에서는 다음 ICRA 마감이 0에서 12 사이의 a월에 오고 그 뒤에 기간이 밝혀지지 않은 심사가 따른다. 경로 B에서는 RA-L 제출이 0월이고, 기간이 밝혀지지 않은 심사 뒤 채택되면 RAS 학회 한 곳에서 발표할 270일, 8.9개월의 창이 열린다. 달력 날짜는 없다.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">시간: 결과로부터의 개월 수 — 상대 월뿐, 달력 날짜 없음</text>
+  <line x1="132" y1="32" x2="132" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <text x="10" y="58" font-size="12" fill="currentColor">경로 A · ICRA</text>
+  <text x="140" y="41" font-size="11.5" fill="currentColor">다음 ICRA 마감: a월, 0 ≤ a &lt; 12</text>
+  <rect x="132" y="46" width="288" height="16" fill="currentColor" fill-opacity="0.12"/>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="132" y1="46" x2="420" y2="46"/><line x1="132" y1="62" x2="420" y2="62"/></g>
+  <line x1="132" y1="43" x2="132" y2="65" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="420" y1="43" x2="420" y2="65" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/>
+  <text x="140" y="58" font-size="11.5" fill="currentColor">t<tspan font-size="11" dy="3">wait</tspan><tspan dy="-3" dx="4">= a</tspan></text>
+  <text x="420" y="79" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">12</text>
+  <text x="430" y="53" font-size="11.5" fill="currentColor">+ r<tspan font-size="11" dy="3">ICRA</tspan></text>
+  <text x="430" y="67" font-size="11" fill="currentColor" opacity="0.85">이 페이지에 없음</text>
+  <text x="10" y="108" font-size="12" fill="currentColor">경로 B · RA-L</text>
+  <circle cx="132" cy="104" r="4.0" fill="currentColor"/>
+  <line x1="136" y1="104" x2="222" y2="104" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <g stroke="currentColor" stroke-width="1.3"><line x1="171" y1="111" x2="177" y2="97"/><line x1="177" y1="111" x2="183" y2="97"/></g>
+  <text x="142" y="92" font-size="11.5" fill="currentColor">r<tspan font-size="11" dy="3">RA-L</tspan><tspan dy="-3">: 이 페이지에 없음</tspan></text>
+  <text x="137" y="126" font-size="11" fill="currentColor" opacity="0.85">제출</text>
+  <line x1="222" y1="93" x2="222" y2="115" stroke="currentColor" stroke-width="1.6"/>
+  <text x="222" y="126" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">채택</text>
+  <rect x="222" y="96" width="212.9" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="328.4" y="108" font-size="11.5" fill="currentColor" text-anchor="middle">270일 = 8.9개월</text>
+  <g font-size="11" fill="currentColor" opacity="0.85"><text x="442.9" y="103">RAS 학회 한 곳에서</text><text x="442.9" y="117">발표할 창</text><text x="137" y="144">0월: 확증 연구의 분석이 끝난 날</text></g>
+</svg>
+
+RS1의 논문 — 파일럿과 팔당 32회의 확증 연구 — 을 이 페이지의 규칙에 따라 보낸 경로이고, venue 상자마다 주기와 답변 방식이 적혀 있다: 연 1회 마감에 반박문이 없고 탈락하면 저자 응답 파일을 붙여 같은 해 IROS로 이관되는 ICRA, 상시 심사에 diff를 붙인 저자 응답이 있고 채택되면 270일 안에 RAS 학회 한 곳에서 발표되는 RA-L, 그리고 프로시딩도 DOI도 없는 4쪽 이하의 워크숍 확장 초록. 파일럿은 자기 archival 상자를 갖지 않는다: 이르게 내보낼 곳은 그 워크숍 초록뿐이고, 그 화살표는 아무것도 막지 않는다. 저널 경로를 닫는 화살표는 둘이다: RA-L에서 T-RO로는 허용되지 않고, 학회 논문은 새 결과가 있을 때만 나중에 T-RO로 가며, 지도 밑의 시간 축은 결과로부터 개월 수를 센다 — RA-L 제출은 0월, ICRA 제출은 $0\le a<12$인 다음 마감 $a$월, RA-L 채택에서 발표까지는 8.9개월(270일)이고, 달력 날짜와 심사 기간은 이 페이지가 주지 않으므로 적지 않는다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -832,9 +879,16 @@ Tier B. 이 페이지, [[06-research-practice/research-questions-claims|1. 연�
 
 **변형.** RS1의 확증 연구가 계획대로 — 팔당 32회, 검정력 0.8로 크기를 정해 — 돌았고 결과가 **영(null)** 이다: B와 A를 가르지 못한다. 나머지는 이 페이지의 대상 그대로다. 영 결과에 대해 고정한 숫자는 없고, 아래 질문에는 숫자가 필요 없다.
 
-1. **그리기.** 영 결과에 대한 과제 그림의 경로 지도와 시간 축. 결과의 부호에 의존하지 않는 규칙을 가진 상자는 모두 남기고, §2가 기술하는 ISARC 상자를 더해 ICRA로 가는 화살표에 그것을 다스리는 규칙을 적어라.
+1. **그리기.** 영 결과에 대한 위 그림의 경로 지도, 그리고 그 밑에 시간 축. 결과의 부호에 의존하지 않는 규칙을 가진 상자는 모두 남기고, §2가 기술하는 ISARC 상자를 더해 ICRA로 가는 화살표에 그것을 다스리는 규칙을 적어라.
 2. **유도.** (a) 영 결과의 경로 A와 경로 B의 상대 일정표: 각각의 $t_{\text{wait}}$, ICRA 경로가 한 해 안에 줄 수 있는 결정의 수, RA-L 채택 뒤 발표 창(개월). 이 페이지가 채울 수 없는 항을 말하라. (b) 영 결과가 RA-L에, ISARC에, DOI가 있는 6쪽 심사 워크숍 논문으로 갈 때 각각 나중의 저널 판본을 막는 규칙. (c) 프로시딩도 DOI도 없는 워크숍의 4쪽 이하 확장 초록이 §6의 세 시험 가운데 어느 것에 걸리는가.
 3. **해석.** (a) 연구실 동료가 로보틱스에서는 부정적 결과가 출판되지 않으니 연구를 묻어 두자고 한다. 이 페이지는 무엇을 말하고 무엇을 말하지 않는가? (b) 심사자는 "차이 없음"을 "시행이 너무 적다"로 읽기 쉽다. §2의 표에서 어떤 venue가 결정 전에 그것에 답하게 해 주고, 어떤 형식으로인가 — 그리고 무엇으로 답하겠는가? (c) 동료가 "채택률이 더 낮으니까" CoRL을 주장한다. §3으로 무엇을 말할 수 있는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **venue 상자마다 주기와 답변 방식을 적는다** — 연 1회 또는 상시, 반박문 없음·이관 응답·diff를 붙인 저자 응답 — §2의 그 두 열이 일정표의 재료이기 때문이다.
+> - **화살표마다 그것을 다스리는 규칙을 적는다:** 계산 절의 막는 화살표 둘은 RA-L에서 T-RO로 *허용되지 않음*, 학회 논문에서 T-RO로 *새 결과가 있을 때만*(둘 다 §5)이고, 워크숍의 화살표에는 *아무것도 막지 않음*이라고 적는다.
+> - **파일럿은 어떤 archival 경로에서도 자기 상자를 갖지 않는다.** 워크숍 상자 안에만 나타난다. 파일럿이 자기 archival 논문을 가졌다면 확증 연구는 §5의 "추가 실험"이 되고 T-RO로 가는 화살표가 끊긴다.
+> - **지도 밑에 상대 월의 시간 축:** 결과와 RA-L 제출에 0, ICRA 마감에 $a$와 괄호 $0\le a<12$, 그리고 RA-L 채택에서 시작하는 270일 — 8.9개월 — 길이의 막대.
+> - **어떤 눈금에도 달력 날짜를 적지 않는다.** 이 페이지가 주지 않기 때문이고, 심사 기간은 미지수로 남는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 지도의 모양은 그대로다: 이 페이지의 어떤 venue 규칙도 결과가 긍정적인가에 의존하지 않는다. ISARC 상자에는 §2의 사실을 적는다 — 심사자 2인 이상의 동료 심사, 논문마다 DOI, Scopus 색인, 게재율 약 76%, 그리고 부정적 결과와 이른 시스템이 있는 곳. ICRA로 가는 화살표는 끊긴다: ICRA 요강은 DOI가 있는 워크숍 논문을 학회 논문과 동등한 archival 출판으로 보고, 자기 DOI를 가진 심사된 ISARC 논문은 적어도 그만큼이므로, 같은 연구를 그 뒤에 ICRA에 낼 수 없다. 시간 축은 그대로다.

@@ -16,10 +16,10 @@ mastery-when: "Raise to Mastery when a human-subjects evaluation is itself the c
 > [!note] Prerequisites · 선수 지식
 > [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] first — this page
 > is that page's toolbox for the special case where the measured system is a person.
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]; the normal CDF $\Phi$ from [[02-foundations/probability|3. Probability §2–§3]]; the blank-and-solve pattern of [[02-foundations/lab-kernel|0.65 §5]] for the lab.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]; the normal CDF $\Phi$ from [[02-foundations/probability|3. Probability §2–§3]]; the blank-and-solve pattern of [[02-foundations/lab-kernel|0.7 §5]] for the lab.
 > [[06-research-practice/experimental-design-reproducibility|2. 실험 설계와 재현성]]을 먼저 —
 > 이 페이지는 측정 대상이 사람인 특수 사례를 위한 그 페이지의 공구함이다.
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 핸들, 그리고 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]의 엔코더 한 카운트. 정규분포의 누적분포함수 $\Phi$는 [[02-foundations/probability|3. 확률 §2–§3]]. 랩은 [[02-foundations/lab-kernel|0.65 §5]]의 빈칸 채우기 방식을 따른다.
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 핸들, 그리고 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]의 엔코더 한 카운트. 정규분포의 누적분포함수 $\Phi$는 [[02-foundations/probability|3. 확률 §2–§3]]. 랩은 [[02-foundations/lab-kernel|0.7 §5]]의 빈칸 채우기 방식을 따른다.
 
 > [!tip] Haptics application path · 햅틱 응용 경로
 > For touch physiology, psychometric functions, and a compact threshold worked example, continue with [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|Human Haptics & Psychophysics]]. For the complete device → rendering → teleoperation → evidence sequence, use [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]].
@@ -73,11 +73,7 @@ where $\Phi$ is the standard normal CDF ([[02-foundations/probability|3. Probabi
 
 *Scope: this page teaches the measurement side of a claim about a person — the two thresholds and the three quantities read off a psychometric function, the procedures that estimate them, where a staircase converges and how well it gets there, and how a threshold becomes a hardware number or a data check. It does not teach touch physiology or fitting a constant-stimuli table, which are [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]; nor the design and statistical unit of human experiments in general, which are [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]; nor the rendering loop that makes a wall on P3, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure in three panels. The problem set asks for the same figure under a different rule and a shallower press, so draw it once here properly.
-
-**Panel A — the rule as a machine.** The 1-up-2-down rule needs only two pieces of memory: the current level $\Delta k$, and how many correct answers in a row it has seen since the last step.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -89,17 +85,80 @@ flowchart LR
     UP --> R0
 ```
 
-(A third piece, the direction of the last step, is needed only to *record* reversals, not to choose the next level.)
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="Panel B: the frozen observer’s probability correct, Phi of delta k over 136.40 N/m, rising from the guess rate 0.5, with the 1-up-2-down foot at 0.707 and 74.3 N/m, the JND by the 25–75 convention at 0.750 and 92.0 N/m, the 1-up-3-down foot at 0.794 and 111.8 N/m, a 20 N/m step bracket at the first foot and the start at 200 N/m, p 0.929. Panel C: the price ladder at a 2.5 mm press, one rung per P3 count of 0.0245 N, with the 0.050 N step at 2.04 counts and the 0.186 N threshold at 7.57 counts.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">B · the curve of S8’s frozen observer</text>
+  <text x="64" y="34" font-size="11" fill="currentColor" opacity="0.85">probability correct</text>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="64" y1="242" x2="540" y2="242"/><line x1="64" y1="242" x2="64" y2="42"/></g>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"><line x1="159.2" y1="242" x2="159.2" y2="246"/><line x1="254.4" y1="242" x2="254.4" y2="246"/><line x1="349.6" y1="242" x2="349.6" y2="246"/><line x1="444.8" y1="242" x2="444.8" y2="246"/><line x1="540" y1="242" x2="540" y2="246"/></g>
+  <line x1="60" y1="242" x2="64" y2="242" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="246" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">0.5</text>
+  <line x1="60" y1="42" x2="64" y2="42" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="46" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">1</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85"><text x="64" y="258">0</text><text x="540" y="258">250</text></g>
+  <text x="302" y="274" font-size="11.5" fill="currentColor" text-anchor="middle" opacity="0.9">Δk = comparison − reference (N/m)</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="124.5" x2="276.8" y2="124.5"/><line x1="276.8" y1="124.5" x2="276.8" y2="242"/></g>
+  <circle cx="276.8" cy="124.5" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="124.5" x2="64" y2="124.5" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="128.5" font-size="11" fill="currentColor" text-anchor="end">0.794</text>
+  <text x="276.8" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">111.8</text>
+  <text x="69" y="119.5" font-size="11" fill="currentColor">1-up-3-down</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="142" x2="239.2" y2="142"/><line x1="239.2" y1="142" x2="239.2" y2="242"/></g>
+  <circle cx="239.2" cy="142" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="142" x2="64" y2="142" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="146" font-size="11" fill="currentColor" text-anchor="end">0.750</text>
+  <text x="239.2" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">92.0</text>
+  <text x="69" y="137" font-size="11" fill="currentColor">JND, 25–75</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="159.2" x2="205.5" y2="159.2"/><line x1="205.5" y1="159.2" x2="205.5" y2="242"/></g>
+  <circle cx="205.5" cy="159.2" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="159.2" x2="64" y2="159.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="163.2" font-size="11" fill="currentColor" text-anchor="end">0.707</text>
+  <text x="205.5" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">74.3</text>
+  <text x="69" y="154.2" font-size="11" fill="currentColor">1-up-2-down</text>
+  <polyline points="64,242 67.8,239.7 71.6,237.3 75.4,235 79.2,232.6 83,230.3 86.8,228 90.7,225.6 94.5,223.3 98.3,221 102.1,218.7 105.9,216.4 109.7,214.1 113.5,211.8 117.3,209.5 121.1,207.2 124.9,204.9 128.7,202.6 132.5,200.4 136.4,198.1 140.2,195.9 144,193.6 147.8,191.4 151.6,189.2 155.4,187 159.2,184.8 163,182.6 166.8,180.4 170.6,178.3 174.4,176.1 178.2,174 182,171.9 185.9,169.8 189.7,167.7 193.5,165.6 197.3,163.6 201.1,161.5 204.9,159.5 208.7,157.5 212.5,155.5 216.3,153.5 220.1,151.5 223.9,149.6 227.7,147.7 231.6,145.8 235.4,143.9 239.2,142 243,140.1 246.8,138.3 250.6,136.5 254.4,134.7 258.2,132.9 262,131.2 265.8,129.4 269.6,127.7 273.4,126 277.2,124.3 281.1,122.7 284.9,121 288.7,119.4 292.5,117.8 296.3,116.2 300.1,114.7 303.9,113.1 307.7,111.6 311.5,110.1 315.3,108.6 319.1,107.2 322.9,105.7 326.8,104.3 330.6,102.9 334.4,101.6 338.2,100.2 342,98.9 345.8,97.6 349.6,96.3 353.4,95 357.2,93.8 361,92.5 364.8,91.3 368.6,90.2 372.4,89 376.3,87.8 380.1,86.7 383.9,85.6 387.7,84.5 391.5,83.5 395.3,82.4 399.1,81.4 402.9,80.4 406.7,79.4 410.5,78.4 414.3,77.5 418.1,76.5 422,75.6 425.8,74.7 429.6,73.8 433.4,73 437.2,72.1 441,71.3 444.8,70.5 448.6,69.7 452.4,69 456.2,68.2 460,67.5 463.8,66.7 467.6,66 471.5,65.3 475.3,64.7 479.1,64 482.9,63.4 486.7,62.7 490.5,62.1 494.3,61.5 498.1,60.9 501.9,60.4 505.7,59.8 509.5,59.2 513.3,58.7 517.2,58.2 521,57.7 524.8,57.2 528.6,56.7 532.4,56.3 536.2,55.8 540,55.4" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linejoin="round"/>
+  <text x="69" y="64" font-size="11.5" fill="currentColor">p = Φ(Δk / σ),  σ = 136.40 N/m</text>
+  <circle cx="444.8" cy="70.5" r="4.2" fill="currentColor"/>
+  <g font-size="11.5" fill="currentColor"><text x="452.8" y="88.5">start 200 N/m</text><text x="452.8" y="102.5">p = 0.929</text></g>
+  <line x1="186.5" y1="232" x2="224.6" y2="232" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.2"><line x1="186.5" y1="228" x2="186.5" y2="236"/><line x1="224.6" y1="228" x2="224.6" y2="236"/></g>
+  <text x="181.5" y="236" font-size="11.5" fill="currentColor" text-anchor="end">δ = 20 N/m</text>
+  <text x="536" y="234" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">floor 0.5 = guessing</text>
+  <line x1="8" y1="280" x2="552" y2="280" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="3 4"/>
+  <text x="10" y="302" font-size="12.5" fill="currentColor">C · the price ladder: force ΔF at a 2.5 mm press, one rung per P3 count</text>
+  <rect x="70" y="342" width="60" height="158" fill="currentColor" fill-opacity="0.08"/>
+  <rect x="70" y="457.5" width="60" height="42.5" fill="currentColor" fill-opacity="0.12"/>
+  <g stroke="currentColor" stroke-width="1.4"><line x1="70" y1="500" x2="70" y2="330"/><line x1="130" y1="500" x2="130" y2="330"/><line x1="64" y1="500" x2="136" y2="500"/></g>
+  <line x1="70" y1="479.1" x2="130" y2="479.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="483.1" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">1</text>
+  <line x1="70" y1="458.3" x2="130" y2="458.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="462.3" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">2</text>
+  <line x1="70" y1="437.4" x2="130" y2="437.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="441.4" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">3</text>
+  <line x1="70" y1="416.6" x2="130" y2="416.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="420.6" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">4</text>
+  <line x1="70" y1="395.7" x2="130" y2="395.7" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="399.7" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">5</text>
+  <line x1="70" y1="374.8" x2="130" y2="374.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="378.8" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">6</text>
+  <line x1="70" y1="354" x2="130" y2="354" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="358" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">7</text>
+  <line x1="70" y1="333.1" x2="130" y2="333.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.85"><text x="63" y="337.1">8</text><text x="63" y="504">0</text></g>
+  <text x="100" y="323" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.20 N</text>
+  <line x1="70" y1="342" x2="142" y2="342" stroke="currentColor" stroke-width="2.2"/>
+  <text x="148" y="346" font-size="11.5" fill="currentColor">threshold Δk<tspan font-size="11" dy="3">70.7</tspan><tspan dy="-3" dx="4">d = 74.33 N/m × 2.5 mm = 0.186 N = 7.57 counts</tspan></text>
+  <line x1="70" y1="457.5" x2="142" y2="457.5" stroke="currentColor" stroke-width="2.2"/>
+  <text x="148" y="461.5" font-size="11.5" fill="currentColor">step δd = 20 N/m × 2.5 mm = 0.050 N = 2.04 counts</text>
+  <line x1="132" y1="479.1" x2="142" y2="479.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g font-size="11.5" fill="currentColor" opacity="0.9"><text x="148" y="483.1">one rung = one count = 0.0245 N = 9.82 N/m × 2.5 mm</text><text x="148" y="392">at one rung, three equal fractions:</text></g>
+  <text x="148" y="410" font-size="12" fill="currentColor">δ/k = ΔF/F = Δx/d</text>
+  <text x="148" y="428" font-size="11.5" fill="currentColor" opacity="0.9">9.82/400 = 0.0245/1.0 = 61.4 μm / 2.5 mm = 1/40.7</text>
+</svg>
 
-**Panel B — the curve.** $\Delta k$ across, $0$ to $250\,\mathrm{N/m}$; probability correct up, $0.5$ to $1$ — the axis starts at one half, because a forced-choice observer who feels nothing still guesses right half the time. Draw $\Phi(\Delta k/136.40)$. Rule horizontal lines at $0.707$, $0.750$ and $0.794$, drop a vertical from each crossing, and label the three feet with the numbers of the Worked case and §2 — $74.3$, $92.0$ and $111.8\,\mathrm{N/m}$ — and with what lands on each: *1-up-2-down*, *JND by the 25–75 convention*, *1-up-3-down*. Mark the start level $200\,\mathrm{N/m}$ on the curve ($p=0.929$) and a bracket one step wide, $\delta=20\,\mathrm{N/m}$, at the first foot.
-
-**Panel C — the price ladder at $d=2.5\,\mathrm{mm}$.** A vertical force axis from $0$ to $0.20\,\mathrm N$, ruled at every P3 count, $k_{\text{ref}}\Delta x=0.0245\,\mathrm N$. Mark the step $\delta d=0.050\,\mathrm N$ (just over two rungs) and the threshold $\Delta k_{70.7}\,d=0.186\,\mathrm N$ (between the seventh and eighth rungs), and write beside the ladder the three equal fractions $\delta/k=\Delta F/F=\Delta x/d$ that §3 derives.
-
-A correct drawing gets four things right, and each is a claim. Panel B's floor is $0.5$, not $0$. No foot is labelled *the threshold*: each carries its $p$. Panel A has no arrow that depends on anything but the answer and `run`, which is why §2's derivation may treat the rule as a coin that comes up "down" with probability $p^2$. And panel C's step sits at least one rung up, or the device cannot render the staircase it is running.
+Panel A is the worked case's 1-up-2-down rule as a machine: its only memory is the current level $\Delta k$ and `run`, the number of correct answers in a row since the last step, so no arrow depends on anything but the answer and `run` — the direction of the last step is needed only to record reversals. Two correct answers in a row, probability $p^2$, step the level down by $\delta$ and anything else steps it up, so the track settles where $p^2 = 1 - p^2$, at $p^\ast = 0.707$. On S8's observer that point is $\Delta k_{70.7} = 74.3\,\mathrm{N/m}$, 18.6% of the $400\,\mathrm{N/m}$ reference wall. Panel B puts that point on the observer's curve $\Phi(\Delta k/136.40)$, whose floor is the guess rate $0.5$, beside the JND by the 25–75 convention at $92.0$ and the 1-up-3-down point at $111.8\,\mathrm{N/m}$; panel C prices it on P3 at the $2.5\,\mathrm{mm}$ press, where one encoder count is a $0.0245\,\mathrm N$ rung, the threshold $0.186\,\mathrm N$ spans 7.57 of them and the $20\,\mathrm{N/m}$ step, $0.050\,\mathrm N$, spans 2.04 — more than one, so P3 can render the staircase.
 
 ### Worked case · 대상으로 한 번 끝까지
 
-This is the homework object: S8's observer under a 1-up-2-down rule, carried to one encoder number on P3. The problem set repeats every step with one knob changed.
+S8's observer under a 1-up-2-down rule, carried to one encoder number on P3. The problem set reuses this object and repeats every step with two knobs changed, the rule and the press depth.
 
 **Step 1 — the observer's spread, from its Weber fraction.** The Weber fraction fixes the JND at the reference: $\mathrm{JND}=w\,k_{\text{ref}}=0.23\times400=92.0\,\mathrm{N/m}$. A cumulative Gaussian puts its 25% and 75% points $z_{0.75}\sigma$ below and above its centre, where $z_{0.75}=\Phi^{-1}(0.75)=0.67449$, so the half-span convention of §1 reads $\mathrm{JND}=z_{0.75}\,\sigma$ and
 
@@ -509,9 +568,9 @@ What it says.
 
 ### Problem set · 과제
 
-Tier A. Using this page, **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]], and the blank-and-solve pattern of [[02-foundations/lab-kernel|0.65 §5]]. Same observer, same reference wall, same start at $200\,\mathrm{N/m}$; two knobs change. The rule becomes **1-up-3-down**, and the press is shallower: $d=1.0\,\mathrm{mm}$, where P3's catalog hand aiming at $x_d=0.032\,\mathrm m$ comes to rest against the reference wall — the equilibrium $x^\ast=0.031\,\mathrm m$ of the Worked case on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — pressing with $0.4\,\mathrm N$.
+Tier A. Using this page, **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]], and the blank-and-solve pattern of [[02-foundations/lab-kernel|0.7 §5]]. Same observer, same reference wall, same start at $200\,\mathrm{N/m}$; two knobs change. The rule becomes **1-up-3-down**, and the press is shallower: $d=1.0\,\mathrm{mm}$, where P3's catalog hand aiming at $x_d=0.032\,\mathrm m$ comes to rest against the reference wall — the equilibrium $x^\ast=0.031\,\mathrm m$ of the Worked case on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — pressing with $0.4\,\mathrm N$.
 
-1. **Draw.** The Homework diagram for this variant: panel A with the run states the new rule needs; panel B with the foot this rule converges to, beside the three already there; panel C at $d=1.0\,\mathrm{mm}$, with the four steps of the template (10, 20, 40 and 80 N/m) marked against the rungs.
+1. **Draw.** The picture above, for this variant: panel A with the run states the new rule needs; panel B with the one-step bracket moved to the foot this rule converges to (one of the three already drawn), once for each of the template's four steps (10, 20, 40 and 80 N/m); panel C at $d=1.0\,\mathrm{mm}$, with the same four steps marked against the rungs.
 2. **Derive.** (a) The target probability of a 1-up-3-down rule by the Worked case's argument, this observer's threshold there, and its Weber fraction. (b) That threshold in P3 counts at $d=1.0\,\mathrm{mm}$, and the finest stiffness step P3 can render at that depth. (c) Show that under Weber's law the threshold's size in counts does not depend on $k_{\text{ref}}$, and check it at $k_{\text{ref}}=1600\,\mathrm{N/m}$ with $d=2.5\,\mathrm{mm}$. (d) The encoder resolution a $20\,\mathrm{N/m}$ step would need at $d=1.0\,\mathrm{mm}$, against P3's.
 3. **Do.** Fill the `?` in the template and run it — §7's sweep for the new rule, 2000 runs per cell, seed 8. Report the bias and standard deviation against the true value from 2(a). Then say which of the four steps P3 can render at $d=1.0\,\mathrm{mm}$ and at $2.5\,\mathrm{mm}$, and which step you would run.
 
@@ -560,8 +619,18 @@ for step in (10.0, 20.0, 40.0, 80.0):
     print(f"step {step:3.0f} N/m | " + " | ".join(cells))
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - **Panel A is the rule as a machine:** one state per value of `run`, the number of correct answers in a row since the last step, each at the current level $\Delta k$. A correct answer moves one state along and, from the last state, steps the level down by $\delta$; a wrong answer from any state steps it up. The direction of the last step is needed only to record reversals, so it is not a state.
+> - **No arrow in panel A depends on anything but the answer and `run`** — which is why §2 may treat a 1-up-$n$-down rule as a coin that comes up "down" with probability $p^n$.
+> - **Panel B is the curve:** $\Delta k$ across, 0 to $250\,\mathrm{N/m}$; probability correct up, 0.5 to 1. Draw $\Phi(\Delta k/136.40)$.
+> - **The floor is 0.5, not 0:** a forced-choice observer who feels nothing still guesses right half the time.
+> - **Each foot carries its $p$:** rule a horizontal line at each target probability, drop a vertical from its crossing, and label the foot with its $\Delta k$ and with what lands there — in the worked case, 0.707, 0.750 and 0.794 for 1-up-2-down, the JND by the 25–75 convention and 1-up-3-down. No foot is labelled *the threshold*.
+> - **Mark the start level**, $200\,\mathrm{N/m}$ on the curve ($p = 0.929$), and at the rule's foot a bracket one step wide — $\delta = 20\,\mathrm{N/m}$ in the worked case.
+> - **Panel C is the price ladder at the press depth $d$:** a vertical force axis from 0 to $0.20\,\mathrm N$, ruled at every P3 count, $k_{\text{ref}}\Delta x = 0.0245\,\mathrm N$, with each step marked as the force $\delta d$ and the threshold as $\Delta k\,d$ — at $2.5\,\mathrm{mm}$ in the worked case, $0.050$ and $0.186\,\mathrm N$. Write the three equal fractions $\delta/k = \Delta F/F = \Delta x/d$ of §3 beside it.
+> - **A step must sit at least one rung up**, or the device cannot render the staircase it is running.
+
 > [!tip]- Solutions
-> 1. Panel A has three states, run = 0, 1 and 2; a correct answer from run = 2 steps down and any wrong answer steps up, so the track dwells longer on each level. Panel B's new foot is at $p=0.794$, $111.8\,\mathrm{N/m}$ — to the right of the JND foot at $92.0$, because this rule targets a higher point of the same curve. Panel C: a rung is still one count, $0.0245\,\mathrm N$, but a $1.0\,\mathrm{mm}$ press turns each step into less force. The 10 and 20 N/m steps give $0.010$ and $0.020\,\mathrm N$, below the first rung (0.41 and 0.81 counts); 40 and 80 N/m give 1.63 and 3.26 counts.
+> 1. Panel A has three states, run = 0, 1 and 2; a correct answer from run = 2 steps down and any wrong answer steps up, so the track dwells longer on each level. Panel B gains no foot: this rule converges to $p=0.794$, $111.8\,\mathrm{N/m}$, the third foot already drawn — to the right of the JND foot at $92.0$, because this rule targets a higher point of the same curve. Centred there, the four brackets span $106.8$–$116.8$, $101.8$–$121.8$, $91.8$–$131.8$ and $71.8$–$151.8\,\mathrm{N/m}$; from 40 N/m up, one step is wider than the $37.4\,\mathrm{N/m}$ that separates the 1-up-2-down and 1-up-3-down feet. Panel C: a rung is still one count, $0.0245\,\mathrm N$, but a $1.0\,\mathrm{mm}$ press turns each step into less force. The 10 and 20 N/m steps give $0.010$ and $0.020\,\mathrm N$, below the first rung (0.41 and 0.81 counts); 40 and 80 N/m give 1.63 and 3.26 counts.
 > 2. (a) A down step needs three correct answers in a row, so $p^3=1-p^3$ and $p^\ast=2^{-1/3}=0.7937$. Then $\Phi^{-1}(0.7937)=0.81933$ and $\Delta k_{79.4}=0.81933\times136.40=111.76\,\mathrm{N/m}$, a Weber fraction of $111.76/400=0.279$ — the same observer that reads 23% by the JND convention and 18.6% through 1-up-2-down. (b) $111.76\times0.001/0.0245=4.55$ counts, and the finest renderable step is $k_{\text{ref}}\Delta x/d=0.0245/0.001=24.5\,\mathrm{N/m}$. (c) $n_{\text{th}}=\Delta k_p\,d/(k\,\Delta x)=(\Delta k_p/k)(d/\Delta x)=w_p\,d/\Delta x$, and under Weber's law $w_p$ does not depend on $k$. At $1600\,\mathrm{N/m}$: $\Delta k=0.2794\times1600=447.0\,\mathrm{N/m}$, a force difference of $447.0\times0.0025=1.118\,\mathrm N$ against a count of $1600\times6.14\times10^{-5}=0.0982\,\mathrm N$ — 11.38 counts, the same as $111.76\times0.0025/0.0245=11.38$ at $400\,\mathrm{N/m}$. (d) $\Delta x\le\delta d/k_{\text{ref}}=20\times0.001/400=5.0\times10^{-5}\,\mathrm m=50\,\mathrm{\mu m}$; P3's $61.4\,\mathrm{\mu m}$ is 1.23 times too coarse.
 > 3. The blanks: `N_DOWN = 3`; `inv_cdf(0.5 ** (1 / N_DOWN))`; `return 0.5 * (1.0 + erf(dk / (SIGMA * sqrt(2.0))))`; the reversal test on a down step is `direction == +1` and on an up step `direction == -1`. The listing prints, against the true $111.76\,\mathrm{N/m}$:
 >
@@ -659,11 +728,7 @@ $$P(\text{comparison called stiffer}\mid k_c)=\Phi\!\left(\frac{k_c-k_{\text{ref
 
 *범위: 이 페이지는 사람에 대한 주장의 측정 쪽을 가르친다 — 두 임계값과 심리측정 함수에서 읽는 세 양, 그것을 추정하는 절차, 계단법이 어디로 얼마나 잘 수렴하는지, 임계값이 하드웨어 숫자나 데이터 점검으로 바뀌는 방식. 촉각 생리나 항상자극 표의 곡선 적합은 가르치지 않는다. 그것은 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이다. 인간 실험 일반의 설계와 통계 단위도 아니다. 그것은 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]다. P3 위에 벽을 만드는 렌더링 루프도 아니다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 패널 셋. 과제는 규칙이 다르고 누름이 얕은 같은 그림을 요구하니 여기서 한 번 제대로 그린다.
-
-**패널 A — 기계로서의 규칙.** 1-up-2-down 규칙에 필요한 기억은 둘뿐이다: 현재 수준 $\Delta k$, 그리고 마지막 스텝 이후 연속으로 몇 번 맞혔는가.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -675,17 +740,80 @@ flowchart LR
     UP --> R0
 ```
 
-(세 번째 기억인 마지막 스텝의 방향은 반전을 *기록*할 때만 필요하고, 다음 수준을 고르는 데는 필요 없다.)
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="패널 B: 고정된 관찰자의 정답 확률 Φ(Δk/136.40 N/m)이 추측률 0.5에서 올라가고, 1-up-2-down의 발은 0.707과 74.3 N/m, 25–75 규약의 JND는 0.750과 92.0 N/m, 1-up-3-down의 발은 0.794와 111.8 N/m에 있으며, 첫 발에 20 N/m 스텝 괄호, 시작 수준은 200 N/m, p 0.929. 패널 C: 2.5 mm 누름의 가격 사다리, P3 한 카운트 0.0245 N마다 한 칸, 0.050 N 스텝은 2.04 카운트, 0.186 N 임계값은 7.57 카운트.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">B · 곡선: S8의 고정된 관찰자</text>
+  <text x="64" y="34" font-size="11" fill="currentColor" opacity="0.85">정답 확률</text>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="64" y1="242" x2="540" y2="242"/><line x1="64" y1="242" x2="64" y2="42"/></g>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"><line x1="159.2" y1="242" x2="159.2" y2="246"/><line x1="254.4" y1="242" x2="254.4" y2="246"/><line x1="349.6" y1="242" x2="349.6" y2="246"/><line x1="444.8" y1="242" x2="444.8" y2="246"/><line x1="540" y1="242" x2="540" y2="246"/></g>
+  <line x1="60" y1="242" x2="64" y2="242" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="246" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">0.5</text>
+  <line x1="60" y1="42" x2="64" y2="42" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="46" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">1</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85"><text x="64" y="258">0</text><text x="540" y="258">250</text></g>
+  <text x="302" y="274" font-size="11.5" fill="currentColor" text-anchor="middle" opacity="0.9">Δk = 비교 벽 − 기준 벽 (N/m)</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="124.5" x2="276.8" y2="124.5"/><line x1="276.8" y1="124.5" x2="276.8" y2="242"/></g>
+  <circle cx="276.8" cy="124.5" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="124.5" x2="64" y2="124.5" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="128.5" font-size="11" fill="currentColor" text-anchor="end">0.794</text>
+  <text x="276.8" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">111.8</text>
+  <text x="69" y="119.5" font-size="11" fill="currentColor">1-up-3-down</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="142" x2="239.2" y2="142"/><line x1="239.2" y1="142" x2="239.2" y2="242"/></g>
+  <circle cx="239.2" cy="142" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="142" x2="64" y2="142" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="146" font-size="11" fill="currentColor" text-anchor="end">0.750</text>
+  <text x="239.2" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">92.0</text>
+  <text x="69" y="137" font-size="11" fill="currentColor">JND, 25–75 규약</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="64" y1="159.2" x2="205.5" y2="159.2"/><line x1="205.5" y1="159.2" x2="205.5" y2="242"/></g>
+  <circle cx="205.5" cy="159.2" r="2.6" fill="currentColor"/>
+  <line x1="60" y1="159.2" x2="64" y2="159.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="57" y="163.2" font-size="11" fill="currentColor" text-anchor="end">0.707</text>
+  <text x="205.5" y="258" font-size="11.5" fill="currentColor" text-anchor="middle">74.3</text>
+  <text x="69" y="154.2" font-size="11" fill="currentColor">1-up-2-down</text>
+  <polyline points="64,242 67.8,239.7 71.6,237.3 75.4,235 79.2,232.6 83,230.3 86.8,228 90.7,225.6 94.5,223.3 98.3,221 102.1,218.7 105.9,216.4 109.7,214.1 113.5,211.8 117.3,209.5 121.1,207.2 124.9,204.9 128.7,202.6 132.5,200.4 136.4,198.1 140.2,195.9 144,193.6 147.8,191.4 151.6,189.2 155.4,187 159.2,184.8 163,182.6 166.8,180.4 170.6,178.3 174.4,176.1 178.2,174 182,171.9 185.9,169.8 189.7,167.7 193.5,165.6 197.3,163.6 201.1,161.5 204.9,159.5 208.7,157.5 212.5,155.5 216.3,153.5 220.1,151.5 223.9,149.6 227.7,147.7 231.6,145.8 235.4,143.9 239.2,142 243,140.1 246.8,138.3 250.6,136.5 254.4,134.7 258.2,132.9 262,131.2 265.8,129.4 269.6,127.7 273.4,126 277.2,124.3 281.1,122.7 284.9,121 288.7,119.4 292.5,117.8 296.3,116.2 300.1,114.7 303.9,113.1 307.7,111.6 311.5,110.1 315.3,108.6 319.1,107.2 322.9,105.7 326.8,104.3 330.6,102.9 334.4,101.6 338.2,100.2 342,98.9 345.8,97.6 349.6,96.3 353.4,95 357.2,93.8 361,92.5 364.8,91.3 368.6,90.2 372.4,89 376.3,87.8 380.1,86.7 383.9,85.6 387.7,84.5 391.5,83.5 395.3,82.4 399.1,81.4 402.9,80.4 406.7,79.4 410.5,78.4 414.3,77.5 418.1,76.5 422,75.6 425.8,74.7 429.6,73.8 433.4,73 437.2,72.1 441,71.3 444.8,70.5 448.6,69.7 452.4,69 456.2,68.2 460,67.5 463.8,66.7 467.6,66 471.5,65.3 475.3,64.7 479.1,64 482.9,63.4 486.7,62.7 490.5,62.1 494.3,61.5 498.1,60.9 501.9,60.4 505.7,59.8 509.5,59.2 513.3,58.7 517.2,58.2 521,57.7 524.8,57.2 528.6,56.7 532.4,56.3 536.2,55.8 540,55.4" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linejoin="round"/>
+  <text x="69" y="64" font-size="11.5" fill="currentColor">p = Φ(Δk / σ),  σ = 136.40 N/m</text>
+  <circle cx="444.8" cy="70.5" r="4.2" fill="currentColor"/>
+  <g font-size="11.5" fill="currentColor"><text x="452.8" y="88.5">시작 200 N/m</text><text x="452.8" y="102.5">p = 0.929</text></g>
+  <line x1="186.5" y1="232" x2="224.6" y2="232" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.2"><line x1="186.5" y1="228" x2="186.5" y2="236"/><line x1="224.6" y1="228" x2="224.6" y2="236"/></g>
+  <text x="181.5" y="236" font-size="11.5" fill="currentColor" text-anchor="end">δ = 20 N/m</text>
+  <text x="536" y="234" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">바닥 0.5 = 추측률</text>
+  <line x1="8" y1="280" x2="552" y2="280" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="3 4"/>
+  <text x="10" y="302" font-size="12.5" fill="currentColor">C · 가격 사다리: 2.5 mm 누름에서의 힘 ΔF, P3 한 카운트마다 한 칸</text>
+  <rect x="70" y="342" width="60" height="158" fill="currentColor" fill-opacity="0.08"/>
+  <rect x="70" y="457.5" width="60" height="42.5" fill="currentColor" fill-opacity="0.12"/>
+  <g stroke="currentColor" stroke-width="1.4"><line x1="70" y1="500" x2="70" y2="330"/><line x1="130" y1="500" x2="130" y2="330"/><line x1="64" y1="500" x2="136" y2="500"/></g>
+  <line x1="70" y1="479.1" x2="130" y2="479.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="483.1" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">1</text>
+  <line x1="70" y1="458.3" x2="130" y2="458.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="462.3" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">2</text>
+  <line x1="70" y1="437.4" x2="130" y2="437.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="441.4" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">3</text>
+  <line x1="70" y1="416.6" x2="130" y2="416.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="420.6" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">4</text>
+  <line x1="70" y1="395.7" x2="130" y2="395.7" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="399.7" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">5</text>
+  <line x1="70" y1="374.8" x2="130" y2="374.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="378.8" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">6</text>
+  <line x1="70" y1="354" x2="130" y2="354" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="63" y="358" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">7</text>
+  <line x1="70" y1="333.1" x2="130" y2="333.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.85"><text x="63" y="337.1">8</text><text x="63" y="504">0</text></g>
+  <text x="100" y="323" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.20 N</text>
+  <line x1="70" y1="342" x2="142" y2="342" stroke="currentColor" stroke-width="2.2"/>
+  <text x="148" y="346" font-size="11.5" fill="currentColor">임계값 Δk<tspan font-size="11" dy="3">70.7</tspan><tspan dy="-3" dx="4">d = 74.33 N/m × 2.5 mm = 0.186 N = 7.57 카운트</tspan></text>
+  <line x1="70" y1="457.5" x2="142" y2="457.5" stroke="currentColor" stroke-width="2.2"/>
+  <text x="148" y="461.5" font-size="11.5" fill="currentColor">스텝 δd = 20 N/m × 2.5 mm = 0.050 N = 2.04 카운트</text>
+  <line x1="132" y1="479.1" x2="142" y2="479.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g font-size="11.5" fill="currentColor" opacity="0.9"><text x="148" y="483.1">한 칸 = 한 카운트 = 0.0245 N = 9.82 N/m × 2.5 mm</text><text x="148" y="392">한 칸에서 같아지는 세 비율:</text></g>
+  <text x="148" y="410" font-size="12" fill="currentColor">δ/k = ΔF/F = Δx/d</text>
+  <text x="148" y="428" font-size="11.5" fill="currentColor" opacity="0.9">9.82/400 = 0.0245/1.0 = 61.4 μm / 2.5 mm = 1/40.7</text>
+</svg>
 
-**패널 B — 곡선.** 가로는 $\Delta k$, $0$에서 $250\,\mathrm{N/m}$. 세로는 정답 확률, $0.5$에서 $1$ — 축이 절반에서 시작하는 이유는 아무것도 못 느끼는 강제선택 관찰자도 절반은 맞히기 때문이다. $\Phi(\Delta k/136.40)$를 그린다. $0.707$, $0.750$, $0.794$에 수평선을 긋고 각 교점에서 수직선을 내려, 세 발에 계산 절과 §2의 숫자 — $74.3$, $92.0$, $111.8\,\mathrm{N/m}$ — 와 각각에 떨어지는 것 — *1-up-2-down*, *25–75 규약의 JND*, *1-up-3-down* — 을 적는다. 곡선 위에 시작 수준 $200\,\mathrm{N/m}$($p=0.929$)을 표시하고, 첫 발에 한 스텝 폭 $\delta=20\,\mathrm{N/m}$의 괄호를 친다.
-
-**패널 C — $d=2.5\,\mathrm{mm}$에서의 가격 사다리.** 세로 힘 축을 $0$에서 $0.20\,\mathrm N$까지 긋고 P3 한 카운트, $k_{\text{ref}}\Delta x=0.0245\,\mathrm N$마다 눈금을 친다. 스텝 $\delta d=0.050\,\mathrm N$(두 칸을 조금 넘는다)과 임계값 $\Delta k_{70.7}\,d=0.186\,\mathrm N$(일곱째와 여덟째 칸 사이)을 표시하고, 사다리 옆에 §3이 유도하는 세 같은 비율 $\delta/k=\Delta F/F=\Delta x/d$를 적는다.
-
-맞는 그림은 네 가지를 맞히고, 각각이 주장이다. 패널 B의 바닥은 $0$이 아니라 $0.5$다. 어떤 발에도 *그 임계값*이라고만 적지 않는다 — 발마다 자기 $p$를 단다. 패널 A의 화살표는 응답과 `run` 말고는 아무것에도 의존하지 않으며, 그래서 §2의 유도가 규칙을 확률 $p^2$로 "내림"이 나오는 동전으로 다룰 수 있다. 그리고 패널 C의 스텝은 적어도 한 칸 위에 있어야 한다. 그렇지 않으면 장치는 자기가 돌리는 계단법을 렌더링하지 못한다.
+패널 A에는 계산 절의 1-up-2-down 규칙을, 현재 수준 $\Delta k$와 마지막 스텝 이후 연속으로 맞힌 횟수 `run` 두 가지만 기억하는 기계로 그렸다 — 그래서 어떤 화살표도 응답과 `run` 말고는 아무것에도 의존하지 않고, 마지막 스텝의 방향은 반전을 기록할 때만 필요하다. 연속 두 번의 정답(확률 $p^2$)은 수준을 $\delta$만큼 내리고 그 밖의 모든 결과는 올리므로, 트랙은 $p^2 = 1 - p^2$인 곳, $p^\ast = 0.707$에 자리 잡는다. S8의 관찰자에서 그 점은 $\Delta k_{70.7} = 74.3\,\mathrm{N/m}$, $400\,\mathrm{N/m}$ 기준 벽의 18.6%다. 패널 B는 그 점을 바닥이 추측률 $0.5$인 관찰자의 곡선 $\Phi(\Delta k/136.40)$ 위에 25–75 규약의 JND $92.0$, 1-up-3-down의 점 $111.8\,\mathrm{N/m}$와 나란히 놓고, 패널 C는 그것을 $2.5\,\mathrm{mm}$ 누름의 P3에 대어 값을 매긴다 — 엔코더 한 카운트가 $0.0245\,\mathrm N$짜리 한 칸이고, 임계값 $0.186\,\mathrm N$은 7.57 카운트, $20\,\mathrm{N/m}$ 스텝 $0.050\,\mathrm N$은 2.04 카운트로 한 칸을 넘으므로 P3가 이 계단법을 렌더링할 수 있다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
-이것이 과제의 대상이다: 1-up-2-down 규칙 아래 S8의 관찰자를 P3의 엔코더 숫자 하나까지 옮긴다. 과제는 모든 단계를 손잡이 하나를 바꿔 다시 한다.
+1-up-2-down 규칙 아래 S8의 관찰자를 P3의 엔코더 숫자 하나까지 옮긴다. 과제는 이 대상을 그대로 다시 쓰되 손잡이 둘, 곧 규칙과 누름 깊이를 바꿔 모든 단계를 되풀이한다.
 
 **Step 1 — Weber 분율에서 관찰자의 퍼짐으로.** Weber 분율이 기준에서의 JND를 정한다: $\mathrm{JND}=w\,k_{\text{ref}}=0.23\times400=92.0\,\mathrm{N/m}$. 누적 가우시안은 25% 점과 75% 점을 중심에서 아래위로 $z_{0.75}\sigma$씩 떨어뜨리고 $z_{0.75}=\Phi^{-1}(0.75)=0.67449$이므로, §1의 반폭 규약은 $\mathrm{JND}=z_{0.75}\,\sigma$로 읽히고
 
@@ -1010,14 +1138,24 @@ JND 7%에 해당하는 약 0.14 N은 선별 참고값이지 의도적 조절의 
 
 ### 과제 · Problem set
 
-Tier A. 이 페이지, [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 핸들, [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]의 엔코더 한 카운트, [[02-foundations/lab-kernel|0.65 §5]]의 빈칸 채우기 방식을 쓴다. 영어 절의 템플릿을 채워라. 루프를 다시 쓰지 마라. 관찰자, 기준 벽, 출발점 $200\,\mathrm{N/m}$는 그대로이고 손잡이 둘이 바뀐다. 규칙은 **1-up-3-down** 규칙이 되고, 누름은 얕아진다: $d=1.0\,\mathrm{mm}$. P3 카탈로그의 손이 $x_d=0.032\,\mathrm m$를 겨냥할 때 기준 벽에 멈추는 자리로 — [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] 계산 절의 평형 $x^\ast=0.031\,\mathrm m$ — 누르는 힘은 $0.4\,\mathrm N$이다.
+Tier A. 이 페이지, [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 핸들, [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]의 엔코더 한 카운트, [[02-foundations/lab-kernel|0.7 §5]]의 빈칸 채우기 방식을 쓴다. 영어 절의 템플릿을 채워라. 루프를 다시 쓰지 마라. 관찰자, 기준 벽, 출발점 $200\,\mathrm{N/m}$는 그대로이고 손잡이 둘이 바뀐다. 규칙은 **1-up-3-down** 규칙이 되고, 누름은 얕아진다: $d=1.0\,\mathrm{mm}$. P3 카탈로그의 손이 $x_d=0.032\,\mathrm m$를 겨냥할 때 기준 벽에 멈추는 자리로 — [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] 계산 절의 평형 $x^\ast=0.031\,\mathrm m$ — 누르는 힘은 $0.4\,\mathrm N$이다.
 
-1. **그리기.** 이 변형의 과제 그림: 새 규칙에 필요한 run 상태를 담은 패널 A, 이미 있는 세 발 옆에 이 규칙이 수렴하는 발을 더한 패널 B, 템플릿의 네 스텝(10, 20, 40, 80 N/m)을 눈금에 대어 표시한 $d=1.0\,\mathrm{mm}$의 패널 C.
+1. **그리기.** 이 변형에 대한 위의 그림: 새 규칙에 필요한 run 상태를 담은 패널 A, 한 스텝 폭의 괄호를 이 규칙이 수렴하는 발(이미 그려진 세 발 가운데 하나)로 옮겨 템플릿의 네 스텝(10, 20, 40, 80 N/m)마다 하나씩 그린 패널 B, 같은 네 스텝을 눈금에 대어 표시한 $d=1.0\,\mathrm{mm}$의 패널 C.
 2. **유도.** (a) 계산 절의 논증으로 1-up-3-down 규칙의 목표 확률, 거기서 이 관찰자의 임계값, 그 Weber 분율. (b) $d=1.0\,\mathrm{mm}$에서 그 임계값의 P3 카운트 수와, 그 깊이에서 P3가 렌더링할 수 있는 가장 가는 강성 스텝. (c) Weber 법칙 아래에서 임계값의 카운트 수가 $k_{\text{ref}}$에 의존하지 않음을 보이고, $k_{\text{ref}}=1600\,\mathrm{N/m}$, $d=2.5\,\mathrm{mm}$에서 확인하라. (d) $d=1.0\,\mathrm{mm}$에서 $20\,\mathrm{N/m}$ 스텝에 필요한 엔코더 분해능을 P3의 분해능과 비교하라.
 3. **실행.** 템플릿의 `?`를 채워 돌린다 — 새 규칙에 대한 §7의 스윕, 칸마다 2000 run, 시드 8. 2(a)의 참값에 대한 편향과 표준편차를 보고하라. 그리고 네 스텝 가운데 P3가 $d=1.0\,\mathrm{mm}$와 $2.5\,\mathrm{mm}$에서 각각 무엇을 렌더링할 수 있는지, 어떤 스텝으로 돌릴지 말하라.
 
+> [!note]- 그리는 법 · How to draw it
+> - **패널 A는 기계로서의 규칙이다:** `run` — 마지막 스텝 이후 연속으로 맞힌 횟수 — 의 값마다 상태 하나이고, 각 상태는 현재 수준 $\Delta k$에 있다. 정답은 상태를 하나 앞으로 옮기고 마지막 상태에서는 수준을 $\delta$만큼 내리며, 오답은 어느 상태에서든 수준을 올린다. 마지막 스텝의 방향은 반전을 기록할 때만 필요하므로 상태가 아니다.
+> - **패널 A의 어떤 화살표도 응답과 `run` 말고는 아무것에도 의존하지 않는다** — 그래서 §2의 유도가 1-up-$n$-down 규칙을 확률 $p^n$으로 "내림"이 나오는 동전으로 다룰 수 있다.
+> - **패널 B는 곡선이다:** 가로는 $\Delta k$, 0에서 $250\,\mathrm{N/m}$. 세로는 정답 확률, 0.5에서 1. $\Phi(\Delta k/136.40)$를 그린다.
+> - **바닥은 0이 아니라 0.5다:** 아무것도 못 느끼는 강제선택 관찰자도 절반은 맞힌다.
+> - **발마다 자기 $p$를 단다:** 목표 확률마다 수평선을 긋고 교점에서 수직선을 내려, 발에 그 $\Delta k$와 거기 떨어지는 것을 적는다 — 계산 절에서는 0.707, 0.750, 0.794에 1-up-2-down, 25–75 규약의 JND, 1-up-3-down. 어떤 발에도 *그 임계값*이라고만 적지 않는다.
+> - **시작 수준을 표시한다:** 곡선 위의 $200\,\mathrm{N/m}$($p = 0.929$), 그리고 규칙의 발에 한 스텝 폭의 괄호 — 계산 절에서는 $\delta = 20\,\mathrm{N/m}$.
+> - **패널 C는 누름 깊이 $d$에서의 가격 사다리다:** 세로 힘 축을 0에서 $0.20\,\mathrm N$까지 긋고 P3 한 카운트, $k_{\text{ref}}\Delta x = 0.0245\,\mathrm N$마다 눈금을 친 뒤, 스텝은 힘 $\delta d$로, 임계값은 $\Delta k\,d$로 표시한다 — 계산 절의 $2.5\,\mathrm{mm}$에서는 $0.050$과 $0.186\,\mathrm N$. 사다리 옆에 §3이 유도하는 세 같은 비율 $\delta/k = \Delta F/F = \Delta x/d$를 적는다.
+> - **스텝은 적어도 한 칸 위에 있어야 한다.** 그렇지 않으면 장치는 자기가 돌리는 계단법을 렌더링하지 못한다.
+
 > [!tip]- 정답 · Solutions
-> 1. 패널 A의 상태는 셋, run = 0, 1, 2다. run = 2에서 맞히면 내려가고 틀리면 언제든 올라가므로 트랙은 각 수준에 더 오래 머문다. 패널 B의 새 발은 $p=0.794$, $111.8\,\mathrm{N/m}$에 있다 — $92.0$의 JND 발보다 오른쪽이다. 이 규칙이 같은 곡선의 더 높은 점을 겨냥하기 때문이다. 패널 C: 눈금 한 칸은 여전히 한 카운트, $0.0245\,\mathrm N$이지만 $1.0\,\mathrm{mm}$ 누름에서는 스텝마다 힘이 줄어든다. 10과 20 N/m 스텝은 $0.010$과 $0.020\,\mathrm N$으로 첫 칸 아래(0.41과 0.81 카운트)이고, 40과 80 N/m는 1.63과 3.26 카운트다.
+> 1. 패널 A의 상태는 셋, run = 0, 1, 2다. run = 2에서 맞히면 내려가고 틀리면 언제든 올라가므로 트랙은 각 수준에 더 오래 머문다. 패널 B에는 새 발이 없다: 이 규칙은 $p=0.794$, $111.8\,\mathrm{N/m}$, 곧 이미 그려진 셋째 발로 수렴한다 — $92.0$의 JND 발보다 오른쪽이다. 이 규칙이 같은 곡선의 더 높은 점을 겨냥하기 때문이다. 그 발을 가운데 두면 네 괄호는 $106.8$–$116.8$, $101.8$–$121.8$, $91.8$–$131.8$, $71.8$–$151.8\,\mathrm{N/m}$에 걸친다. 40 N/m부터는 스텝 하나가 1-up-2-down 발과 1-up-3-down 발 사이의 $37.4\,\mathrm{N/m}$보다 넓다. 패널 C: 눈금 한 칸은 여전히 한 카운트, $0.0245\,\mathrm N$이지만 $1.0\,\mathrm{mm}$ 누름에서는 스텝마다 힘이 줄어든다. 10과 20 N/m 스텝은 $0.010$과 $0.020\,\mathrm N$으로 첫 칸 아래(0.41과 0.81 카운트)이고, 40과 80 N/m는 1.63과 3.26 카운트다.
 > 2. (a) 내림 스텝에 연속 세 번의 정답이 필요하므로 $p^3=1-p^3$, $p^\ast=2^{-1/3}=0.7937$. $\Phi^{-1}(0.7937)=0.81933$이므로 $\Delta k_{79.4}=0.81933\times136.40=111.76\,\mathrm{N/m}$, Weber 분율로는 $111.76/400=0.279$ — JND 규약으로 23%, 1-up-2-down으로 18.6%인 바로 그 관찰자다. (b) $111.76\times0.001/0.0245=4.55$ 카운트이고, 렌더링 가능한 가장 가는 스텝은 $k_{\text{ref}}\Delta x/d=0.0245/0.001=24.5\,\mathrm{N/m}$다. (c) $n_{\text{th}}=\Delta k_p\,d/(k\,\Delta x)=(\Delta k_p/k)(d/\Delta x)=w_p\,d/\Delta x$이고, Weber 법칙 아래에서 $w_p$는 $k$에 의존하지 않는다. $1600\,\mathrm{N/m}$에서: $\Delta k=0.2794\times1600=447.0\,\mathrm{N/m}$, 힘 차이 $447.0\times0.0025=1.118\,\mathrm N$을 한 카운트 $1600\times6.14\times10^{-5}=0.0982\,\mathrm N$에 대면 11.38 카운트 — $400\,\mathrm{N/m}$에서의 $111.76\times0.0025/0.0245=11.38$과 같다. (d) $\Delta x\le\delta d/k_{\text{ref}}=20\times0.001/400=5.0\times10^{-5}\,\mathrm m=50\,\mathrm{\mu m}$. P3의 $61.4\,\mathrm{\mu m}$는 1.23배 거칠다.
 > 3. 빈칸은 영어 해와 같다. 참값 $111.76\,\mathrm{N/m}$에 대해 코드가 출력하는 표:
 >

@@ -8,17 +8,17 @@ mastery-when: "Master sampled-data proofs and passivity-controller design when s
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the integrator from [[02-foundations/lab-kernel|0.65 Lab Kernel]]; encoder and capstan maps from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Sampling, the Nyquist frequency, and the Z-transform $H(z)$ from [[02-foundations/signal-processing|6. Signal Processing §2 and §5]]; stability and phase lag from [[04-robotics/control-theory-ce397|5. Control Theory §5]].
-> [[02-foundations/lab-plants|0.6]]의 장치 **P3**; [[02-foundations/lab-kernel|0.65]]의 적분기; [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 엔코더·캡스턴 사상. [[02-foundations/signal-processing|6. 신호처리 §2와 §5]]의 샘플링, 나이퀴스트, $H(z)$. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 안정성과 위상 지연.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the integrator from [[02-foundations/lab-kernel|0.7 Lab Kernel]]; encoder and capstan maps from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Sampling, the Nyquist frequency, and the Z-transform $H(z)$ from [[02-foundations/signal-processing|6. Signal Processing §2 and §5]]; stability and phase lag from [[04-robotics/control-theory-ce397|5. Control Theory §5]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P3**; [[02-foundations/lab-kernel|0.7]]의 적분기; [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 엔코더·캡스턴 사상. [[02-foundations/signal-processing|6. 신호처리 §2와 §5]]의 샘플링, 나이퀴스트, $H(z)$. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 안정성과 위상 지연.
 
 ## English
 
 > [!note] First pass · 처음이라면
-> Draw the P3 loop in the Homework diagram, work the Worked case, derive the wall bound in §2 with P3's $b$, then do the problem set. §3–§6 are what you open when a paper's stiffness ceiling or a filter needs a name.
+> Start from the P3 loop in the picture below, work the Worked case, derive the wall bound in §2 with P3's $b$, then do the problem set. §3–§6 are what you open when a paper's stiffness ceiling or a filter needs a name.
 
 ### Running object · 이 페이지의 대상
 
-Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the 1-DoF translating handle, held at the catalog numbers throughout. The integrator is [[02-foundations/lab-kernel|0.65 Lab Kernel]]; the capstan and encoder that turn these into counts and torques are [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
+Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the 1-DoF translating handle, held at the catalog numbers throughout. The integrator is [[02-foundations/lab-kernel|0.7 Lab Kernel]]; the capstan and encoder that turn these into counts and torques are [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -35,9 +35,7 @@ The human's desired position $x_d$ is an exogenous input; the handle position $x
 
 *Scope: this page teaches why a sampled virtual wall can create energy, the two ceilings that result — one from the sample period and one from the encoder — and the energy language (passivity, Z-width, virtual coupling) the field uses to talk about them. It does not teach the mechanism that produces the force, which is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]; nor the algorithm that decides what force to render inside the ceiling, which is [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7]]; nor the two-port case with a communication delay, which is [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One block diagram, and the problem set asks for exactly this one.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -57,11 +55,7 @@ flowchart LR
     Inv --> A["a"]
 ```
 
-Four things the drawing has to get right, each of which is a claim about the physics.
-**Five labelled signals** — $x_d$, $x$, $\dot x$, $F_h$, $F_a$ — and a summing junction feeding $1/m$. Anything unlabelled is a place the sign convention can hide.
-**The wall as a switch, not a spring.** Draw it as a diamond testing $x>x_w$ with two outgoing branches. A spring symbol here would claim the loop is linear, and §2's whole argument is that it is not.
-**No arrow from $F_a$ back to $x_d$.** The person chooses where they want the handle; the wall only pushes on $x$. A loop drawn with that arrow is a different, and wrong, system.
-**The hold, drawn explicitly.** Put a small zero-order-hold block between the sampled $x$ and the wall block, with $T$ written on it, because that block is the energy source the rest of the page is about.
+In P3's loop the hand pulls toward its desired position $x_d$ as a spring–damper ($k_h=400\,\mathrm{N/m}$, $b_h=8\,\mathrm{N{\cdot}s/m}$), the wall reads the handle position through a zero-order hold of period $T=1\,\mathrm{ms}$ and pushes back with $F_a=-k_w(x-x_w)$, $k_w=400\,\mathrm{N/m}$, only once $x$ passes $x_w=0.030\,\mathrm{m}$, and both forces add to the device's own damping $-bv$ ($b=0.8\,\mathrm{N{\cdot}s/m}$) to accelerate the $0.04\,\mathrm{kg}$ handle. The wall is a switch rather than a spring because it pushes from one side only, which is what makes the loop nonlinear, and the hold is a block of its own because that is where a sampled wall creates energy. Only the device's $b$, not the hand's $b_h$, may pay for that energy, which caps the wall at $2b/T=1600\,\mathrm{N/m}$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -99,7 +93,7 @@ wall force $k_w\cdot 0.001=0.4\,\mathrm{N}$. The problem set repeats this with $
 
 $$F_h=400\cdot(0.035-0.020)+8\cdot 0=6.0\,\mathrm{N},\qquad a=\frac{6.0}{0.04}=150\,\mathrm{m/s}^2.$$
 
-Explicit Euler uses the *old* velocity for position ([[02-foundations/lab-kernel|0.65]]):
+Explicit Euler uses the *old* velocity for position ([[02-foundations/lab-kernel|0.7]]):
 
 $$v\leftarrow 0+10^{-3}\cdot 150=0.150,\qquad x\leftarrow 0.020+10^{-3}\cdot 0=0.020.$$
 
@@ -266,7 +260,7 @@ For a discrete sample, a common observer uses $\Delta E_k=T F_k^\top v_k$ with a
 
 ### Problem set · 과제
 
-Tier A. Using **P3**, this page, [[02-foundations/lab-kernel|0.65]], and [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Original plant and original problems — fill the blanks; do not rewrite the loop.
+Tier A. Using **P3**, this page, [[02-foundations/lab-kernel|0.7]], and [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. Original plant and original problems — fill the blanks; do not rewrite the loop.
 
 Human (impedance, desired position $x_d$ held constant so $\dot x_d=0$):
 
@@ -274,9 +268,9 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 
 Device: $m\ddot x+b\dot x=F_h+F_a$. Wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$.
 
-1. **Draw.** Block diagram with signals $x_d$, $x$, $\dot x$, $F_h$, $F_a$, and the summing junction into $m$. Mark the unilateral switch on the wall. This is the homework object; the rest of the set is this diagram in equations and in a loop.
+1. **Draw.** The picture above: block diagram with signals $x_d$, $x$, $\dot x$, $F_h$, $F_a$, and the summing junction into $m$. Mark the unilateral switch on the wall. This is the homework object; the rest of the set is this diagram in equations and in a loop.
 2. **Derive.** (a) In sustained contact, the characteristic polynomial in $s$. Natural frequency and damping ratio at the catalog $k_w=400$. (b) Equilibrium $x^\ast$ for $x_d=0.035\,\mathrm{m}$ (velocities zero). (c) Colgate-style bound $K\le 2b/T$ at $T=10^{-3}$ and at $T=5\times10^{-3}$. Does catalog $k_w$ pass each? Does $k_w=2500$ pass each? The bound is on the *device* damper $b$, not $b_h$.
-3. **Do.** Fill the `?` in the template. Explicit Euler, $T$ is the controller period ([[02-foundations/lab-kernel|0.65]]). Run four conditions, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, and plot $x(t)$ with a dashed wall at $x_w$:
+3. **Do.** Fill the `?` in the template. Explicit Euler, $T$ is the controller period ([[02-foundations/lab-kernel|0.7]]). Run four conditions, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, and plot $x(t)$ with a dashed wall at $x_w$:
    - A. Free: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
    - B. Contact: $x_d=0.035$, $k_w=400$, $T=10^{-3}$
    - C. Slow sample, stiff wall: $x_d=0.035$, $k_w=2500$, $T=5\times10^{-3}$
@@ -306,19 +300,25 @@ for k in range(n):
 # plot xs vs ts; axhline xw; caption "P3, explicit Euler, T=..."
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - Label all five signals — $x_d$, $x$, $\dot x$, $F_h$, $F_a$ — and draw the summing junction that feeds $1/m$, with $F_h$, $F_a$ and $-b\dot x$ as its three inputs. Anything unlabelled is a place the sign convention can hide.
+> - Draw the wall as a switch, not a spring: a diamond testing $x>x_w$ with two outgoing branches. A spring symbol would claim the loop is linear, and §2's whole argument is that it is not.
+> - Draw no arrow from $F_a$ back to $x_d$. The person chooses where they want the handle; the wall only pushes on $x$. A loop drawn with that arrow is a different, and wrong, system.
+> - Draw the hold explicitly: a small zero-order-hold block between the sampled $x$ and the wall block, with $T$ written on it, because that block is the energy source the rest of the page is about.
+
 > [!tip]- Solutions
 > 1. $x_d$ feeds a spring–damper whose other port is $(x,\dot x)$; that force $F_h$ sums with $F_a$ and $-b\dot x$ into $1/m$. The wall block is a switch: it reads $x$ and emits $F_a$ only for $x>x_w$. No path from $F_a$ back to $x_d$ — the human desired position is an exogenous input.
 > 2. (a) $m s^2+(b+b_h)s+(k_h+k_w)=0.04 s^2+8.8 s+800$. Divide by $m$: $s^2+220s+20000=0$. $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$, $\zeta=220/(2\cdot 141)=0.78$ (underdamped). (b) $k_h(x_d-x^\ast)=k_w(x^\ast-x_w)$ $\Rightarrow$ $0.035-x^\ast=x^\ast-0.030$ $\Rightarrow$ $x^\ast=0.0325\,\mathrm{m}$, wall force $1.0\,\mathrm{N}$. (c) $T=10^{-3}$: $2b/T=1600\,\mathrm{N/m}$. Catalog $400$ passes; $2500$ fails. $T=5\times10^{-3}$: $2b/T=320$. Both $400$ and $2500$ fail the device-only bound. Human damper $b_h$ is *not* in this inequality.
-> 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, $E<0$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges, $E>0$. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle.
+> 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, $E<0$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges, $E>0$. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle. How much of this is the integrator rather than the wall: keep $F_a$ sampled and held for $T$, advance the device and hand exactly between samples, and count the wall's work as $\sum F_a\,\Delta x$ (the template's $\sum TF_av$ equals it only because explicit Euler moves $\Delta x=Tv$). A, B and D keep their outcomes; C settles although the held wall still does $+3.4\,\mathrm{mJ}$ of net work, and D with $b_h=0$ chatters in a bounded cycle between $28.1$ and $32.6\,\mathrm{mm}$ instead of diverging. The contact ceiling moves with them: the template is stable in sustained contact only while $(k_h+k_w)T<b+b_h$, because explicit Euler holds the hand's spring too and, stepping position on the old velocity, doubles every held spring's leak — $1360\,\mathrm{N/m}$ at $5\,\mathrm{ms}$ and $400\,\mathrm{N/m}$ at $1\,\mathrm{ms}$ without $b_h$ — while the sampled wall alone holds to $4388$ and $1607\,\mathrm{N/m}$, the last being §2's $2b/T=1600$ to within half a percent. Semi-implicit Euler at the same period errs the other way: its position step cancels the hold's leak, and D without $b_h$ settles. So C's chatter is the integrator's; D without $b_h$ fails on the wall's account, and only its runaway is the integrator's.
 
 ## 한국어
 
 > [!note] 처음이라면 · First pass
-> 과제가 그릴 그림에서 P3 루프를 그리고 계산 절을 따라간 뒤, §2에서 P3의 $b$로 벽 경계를 유도하고 과제를 풀어라. §3–§6은 논문의 강성 천장이나 필터에 이름이 필요할 때 연다.
+> 아래 그림의 P3 루프에서 시작해 계산 절을 따라간 뒤, §2에서 P3의 $b$로 벽 경계를 유도하고 과제를 풀어라. §3–§6은 논문의 강성 천장이나 필터에 이름이 필요할 때 연다.
 
 ### 이 페이지의 대상 · Running object
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 1자유도 병진 핸들. 페이지 전체에서 카탈로그 숫자를 그대로 쓴다. 적분기는 [[02-foundations/lab-kernel|0.65 Lab Kernel]], 이 숫자들을 카운트와 토크로 바꾸는 캡스턴과 엔코더는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 1자유도 병진 핸들. 페이지 전체에서 카탈로그 숫자를 그대로 쓴다. 적분기는 [[02-foundations/lab-kernel|0.7 Lab Kernel]], 이 숫자들을 카운트와 토크로 바꾸는 캡스턴과 엔코더는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다.
 
 | 기호 | 값 | 뜻 |
 |---|---:|---|
@@ -335,9 +335,7 @@ for k in range(n):
 
 *범위: 이 페이지는 샘플링된 가상 벽이 왜 에너지를 만들 수 있는지, 거기서 나오는 두 천장 — 하나는 샘플 주기에서, 하나는 엔코더에서 — 이 무엇인지, 그리고 그것을 말하는 에너지 언어(수동성, Z-width, virtual coupling)를 가르친다. 힘을 만들어 내는 메커니즘은 가르치지 않는다. 그것은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다. 천장 안에서 어떤 힘을 낼지 정하는 알고리즘도 아니다. 그것은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7]]이다. 통신 지연이 있는 2포트 경우도 아니다. 그것은 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-블록선도 하나, 과제가 요구하는 것이 정확히 이 그림이다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -357,11 +355,7 @@ flowchart LR
     Inv --> A["a"]
 ```
 
-그림이 맞혀야 할 것이 넷이고, 각각이 물리에 대한 주장이다.
-**이름 붙은 신호 다섯** — $x_d$, $x$, $\dot x$, $F_h$, $F_a$ — 과 $1/m$으로 들어가는 합산점. 이름 없는 선은 부호 규약이 숨는 자리다.
-**벽은 스프링이 아니라 스위치.** $x>x_w$를 묻는 마름모와 나가는 가지 둘로 그린다. 여기에 스프링 기호를 그리면 루프가 선형이라고 주장하는 셈이고, §2의 논증 전체가 그렇지 않다는 것이다.
-**$F_a$에서 $x_d$로 가는 화살표는 없다.** 사람이 핸들을 어디에 두고 싶은지를 정하고, 벽은 $x$만 민다. 그 화살표를 그린 루프는 다른 시스템이고 틀린 시스템이다.
-**홀드를 명시적으로.** 샘플된 $x$와 벽 블록 사이에 작은 zero-order hold 블록을 넣고 그 위에 $T$를 적는다. 페이지의 나머지가 다루는 에너지원이 그 블록이기 때문이다.
+P3의 루프에서 손은 목표 위치 $x_d$ 쪽으로 당기는 스프링–댐퍼($k_h=400\,\mathrm{N/m}$, $b_h=8\,\mathrm{N{\cdot}s/m}$)이고, 벽은 주기 $T=1\,\mathrm{ms}$의 zero-order hold를 거친 핸들 위치를 읽어 $x$가 $x_w=0.030\,\mathrm{m}$를 넘을 때만 $F_a=-k_w(x-x_w)$($k_w=400\,\mathrm{N/m}$)로 되밀며, 두 힘이 장치 자신의 댐핑 $-bv$($b=0.8\,\mathrm{N{\cdot}s/m}$)와 더해져 $0.04\,\mathrm{kg}$ 핸들을 가속한다. 벽이 스프링이 아니라 스위치인 것은 한쪽에서만 밀기 때문이고 루프를 비선형으로 만드는 것이 바로 그 점이며, 홀드가 따로 된 블록인 것은 샘플링된 벽이 에너지를 만드는 자리가 거기이기 때문이다. 그 에너지는 손의 $b_h$가 아니라 장치의 $b$만 갚을 수 있으므로 벽의 천장은 $2b/T=1600\,\mathrm{N/m}$이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -399,7 +393,7 @@ $$k_h(0.032-x^\ast)=k_w(x^\ast-0.030) \Rightarrow x^\ast=0.031\,\mathrm{m},$$
 
 $$F_h=400\cdot 0.015=6.0\,\mathrm{N},\qquad a=6.0/0.04=150\,\mathrm{m/s}^2.$$
 
-명시적 오일러는 위치에 *이전* 속도를 쓴다([[02-foundations/lab-kernel|0.65]]):
+명시적 오일러는 위치에 *이전* 속도를 쓴다([[02-foundations/lab-kernel|0.7]]):
 
 $$v\leftarrow 0.150,\qquad x\leftarrow 0.020.$$
 
@@ -566,7 +560,7 @@ Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 �
 
 ### 과제 · Problem set
 
-Tier A. **P3**, 이 페이지, [[02-foundations/lab-kernel|0.65]], [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. 영어 절의 템플릿을 채워라. 루프를 다시 쓰지 마라.
+Tier A. **P3**, 이 페이지, [[02-foundations/lab-kernel|0.7]], [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. 영어 절의 템플릿을 채워라. 루프를 다시 쓰지 마라.
 
 사람은 임피던스, 목표 $x_d$는 상수라 $\dot x_d=0$:
 
@@ -574,7 +568,7 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 
 장치 $m\ddot x+b\dot x=F_h+F_a$. 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$.
 
-1. **그리기.** 신호 $x_d$, $x$, $\dot x$, $F_h$, $F_a$와 $m$으로 들어가는 합산점을 가진 블록선도. 벽의 한쪽 스위치. 이 그림이 과제 대상이다.
+1. **그리기.** 위의 그림: 신호 $x_d$, $x$, $\dot x$, $F_h$, $F_a$와 $m$으로 들어가는 합산점을 가진 블록선도. 벽의 한쪽 스위치. 이 그림이 과제 대상이다.
 2. **유도.** (a) 지속 접촉에서 $s$의 특성다항식. 카탈로그 $k_w=400$의 고유진동수와 감쇠비. (b) $x_d=0.035\,\mathrm{m}$의 평형 $x^\ast$. (c) $T=10^{-3}$과 $T=5\times10^{-3}$에서 $K\le 2b/T$. 카탈로그 $k_w$와 $k_w=2500$이 각각 통과하는가? 경계는 장치 댐퍼 $b$이지 $b_h$가 아니다.
 3. **실행.** 영어 템플릿의 `?`를 채운다. 명시적 오일러. 네 조건, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, 벽을 점선으로:
    - A. 자유: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
@@ -583,7 +577,13 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
    - D. 빠른 샘플, 같은 벽: $x_d=0.035$, $k_w=2500$, $T=10^{-3}$
    추가: D에서 $b_h=0$. 각각 벽을 안 닿는지, 정착하는지, 채터하는지, 그리고 $\sum T F_a v$의 부호.
 
+> [!note]- 그리는 법 · How to draw it
+> - 신호 다섯 $x_d$, $x$, $\dot x$, $F_h$, $F_a$에 모두 이름을 붙이고, $1/m$으로 들어가는 합산점을 $F_h$, $F_a$, $-b\dot x$ 세 입력과 함께 그린다. 이름 없는 선은 부호 규약이 숨는 자리다.
+> - 벽은 스프링이 아니라 스위치로 그린다. $x>x_w$를 묻는 마름모와 나가는 가지 둘이다. 여기에 스프링 기호를 그리면 루프가 선형이라고 주장하는 셈이고, §2의 논증 전체가 그렇지 않다는 것이다.
+> - $F_a$에서 $x_d$로 가는 화살표는 그리지 않는다. 사람이 핸들을 어디에 두고 싶은지를 정하고, 벽은 $x$만 민다. 그 화살표를 그린 루프는 다른 시스템이고 틀린 시스템이다.
+> - 홀드를 명시적으로 그린다. 샘플된 $x$와 벽 블록 사이에 작은 zero-order hold 블록을 넣고 그 위에 $T$를 적는다. 페이지의 나머지가 다루는 에너지원이 그 블록이기 때문이다.
+
 > [!tip]- 정답 · Solutions
 > 1. $x_d$는 $(x,\dot x)$가 다른 포트인 스프링–댐퍼로 들어가 $F_h$가 되고, $F_a$ 및 $-b\dot x$와 더해 $1/m$으로 간다. 벽은 $x>x_w$일 때만 $F_a$를 낸다. $F_a$에서 $x_d$로 가는 길은 없다.
 > 2. (a) $0.04 s^2+8.8 s+800=0$, 즉 $s^2+220s+20000=0$. $\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$. (b) $x^\ast=0.0325\,\mathrm{m}$, 벽 힘 $1.0\,\mathrm{N}$. (c) $T=10^{-3}$이면 $2b/T=1600$: $400$ 통과, $2500$ 실패. $T=5\times10^{-3}$이면 $320$: 둘 다 실패. $b_h$는 이 부등식에 없다.
-> 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다, $E<0$ — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산, $E>0$. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다.
+> 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다, $E<0$ — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산, $E>0$. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다. 이 중 얼마가 벽이 아니라 적분기의 몫인지 가르려면, $F_a$는 그대로 샘플링해 $T$ 동안 유지하고 장치와 손만 샘플 사이에서 정확히 전진시킨 뒤, 벽이 한 일을 $\sum F_a\,\Delta x$로 센다(템플릿의 $\sum TF_av$가 그것과 같은 것은 명시적 오일러가 $\Delta x=Tv$만큼 움직이기 때문일 뿐이다). A, B, D는 결과가 그대로다. C는 유지된 벽이 여전히 $+3.4\,\mathrm{mJ}$의 순일을 하는데도 정착하고, $b_h=0$인 D는 발산하는 대신 $28.1$과 $32.6\,\mathrm{mm}$ 사이의 유계 주기로 채터한다. 접촉 천장도 함께 움직인다. 템플릿은 지속 접촉에서 $(k_h+k_w)T<b+b_h$일 때만 안정한데, 명시적 오일러가 손의 스프링까지 유지하고 이전 속도로 위치를 옮겨 유지된 스프링마다 누설을 두 배로 만들기 때문이다. 그래서 천장은 $5\,\mathrm{ms}$에서 $1360\,\mathrm{N/m}$, $b_h$ 없는 $1\,\mathrm{ms}$에서 $400\,\mathrm{N/m}$이고, 샘플링된 벽만으로는 각각 $4388$과 $1607\,\mathrm{N/m}$까지 간다. 뒤의 것은 §2의 $2b/T=1600$과 0.5% 안에서 같다. 같은 주기의 준음해 오일러는 반대로 틀린다. 위치 갱신이 홀드의 누설을 지워 버려서 $b_h$ 없는 D가 정착한다. 그러므로 C의 채터는 적분기의 몫이고, $b_h$ 없는 D는 벽 때문에 실패하며 그 폭주만 적분기의 몫이다.

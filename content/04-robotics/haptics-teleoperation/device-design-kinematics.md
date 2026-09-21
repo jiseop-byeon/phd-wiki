@@ -39,9 +39,7 @@ Two numbers this page adds and then freezes, because the catalog has no reason t
 
 *Scope: this page teaches the chain from a commanded Cartesian force down to a motor current on one named handle — the two interface causalities, the Jacobian and its transpose, what a transmission does to force and to felt inertia, and what a single encoder count is worth. It does not teach the sampled-data limit on how stiff that wall may be, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]; nor the algorithm that decides the force in the first place, which is [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7]]; nor the hand the device is built for, which is [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Draw the chain once, left to right, as one line of blocks with the physical quantity written on every arrow. The problem set asks for this same drawing.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -53,12 +51,7 @@ flowchart LR
     X --> Wall["wall at xw=0.030"]
 ```
 
-Five things have to be on the page, and each of them is a thing the drawing can get wrong.
-**The two radii, drawn to scale.** $r_s$ is five times $r_m$; if the sector and the pulley come out the same size the reader has already lost the only ratio the picture carries.
-**The cable, as one unbroken line** from the pulley to the sector, labelled *inextensible* — that label is the constraint the whole derivation rests on.
-**The two constitutive equalities written on the sketch**, $x=\ldots$ and $\tau_m=\ldots$, each with the radius that actually appears in it.
-**The wall**, a vertical line at $x_w=0.030\,\mathrm{m}$, with an arrow marking $+x$ as *into* the wall so that penetration is positive.
-**One encoder count**, as a short tick next to the handle with $\Delta x$ written beside it, drawn deliberately far too large to scale — at $61\,\mathrm{\mu m}$ against a $30\,\mathrm{mm}$ wall it is $1/500$ of the picture, and the point of the tick is that it is the smallest thing the device can know.
+P3's drive chain from the encoder to the wall: a motor pulley of radius $r_m = 0.010\,\mathrm{m}$ winds an inextensible cable onto a sector of radius $r_s = 0.050\,\mathrm{m}$, which moves the handle toward the wall at $x_w = 0.030\,\mathrm{m}$, with $+x$ into the wall. Because the cable conserves arc length, $r_s$ cancels and the whole chain reduces to $x = r_m\theta_m$ and $\tau_m = F r_m$. One of the encoder's $N = 1024$ counts is therefore $61.4\,\mathrm{\mu m}$ of handle travel, the smallest thing the device can know.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -227,9 +220,17 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]], this page, and [[04
 
 The translating handle is driven by an inextensible capstan: motor pulley radius $r_m$, sector radius $r_s$. Cable length is conserved, so handle displacement is $x=r_m\theta_m$ regardless of $r_s$. Power match then gives $\tau_m=F r_m$. The motor encoder has $N=1024$ counts/rev after decode. A current amplifier saturates at $\tau_m^{\max}=0.020\,\mathrm{N{\cdot}m}$ (a problem number, not a catalog number).
 
-1. **Draw.** Sketch the chain encoder $\to$ $\theta_m$ $\to$ pulley $r_m$ $\to$ cable $\to$ sector $r_s$ $\to$ handle $x$. Label every P3 length and $N$. Mark the wall at $x_w$ and the $+x$ direction into the wall. Write the two constitutive equalities $x=\ldots$ and $\tau_m=\ldots$ on the sketch.
+1. **Draw.** The picture above, as a mechanism sketch: the chain encoder $\to$ $\theta_m$ $\to$ pulley $r_m$ $\to$ cable $\to$ sector $r_s$ $\to$ handle $x$. Label every P3 length and $N$. Mark the wall at $x_w$ and the $+x$ direction into the wall. Write the two constitutive equalities $x=\ldots$ and $\tau_m=\ldots$ on the sketch.
 2. **Derive.** (a) Handle motion $\Delta x$ for one encoder count. (b) Force increment $\Delta F$ of the default virtual wall $k_w$ for that one count, once inside the wall. (c) Maximum handle force $F^{\max}$ at amplifier saturation, and the penetration at which the default wall saturates. (d) At $x=0.036\,\mathrm{m}$ (6 mm into the wall), does the unsaturated spring law still hold?
 3. **Interpret.** A reviewer says “just use the sector radius in $x=r_s\theta_m$, the handle sits on the sector.” What factor would that mistake inject into every force you report? Separately: $N$ is after quadrature decode. If you treated it as 256 slots before decode, how would $\Delta x$ change?
+
+> [!note]- How to draw it · 그리는 법
+> - Draw the chain left to right as one line, encoder to wall, and write on every arrow the physical quantity it carries. Label every P3 length and $N$.
+> - Draw the two radii to scale: $r_s$ is five times $r_m$. If the sector and the pulley come out the same size, the only ratio the picture carries is already lost.
+> - Draw the cable as one unbroken line from the pulley to the sector and label it *inextensible*; that label is the constraint the whole derivation rests on.
+> - Write the two constitutive equalities, $x = \ldots$ and $\tau_m = \ldots$, on the sketch, each with the radius that actually appears in it. If $r_s$ appears in either, the sketch is wrong by a factor of five.
+> - Draw the wall as a vertical line at $x_w$, with an arrow marking $+x$ as into the wall so that penetration is positive.
+> - Mark one encoder count as a short tick beside the handle with $\Delta x$ written next to it, drawn deliberately far too large: to scale, the worked case's $61\,\mathrm{\mu m}$ against the $30\,\mathrm{mm}$ wall would be about $1/500$ of the picture, and the tick is there because it is the smallest thing the device can know.
 
 > [!tip]- Solutions
 > 1. Cable inextensible $\Rightarrow$ arc on the motor pulley equals arc on the sector, $r_m\theta_m=r_s\theta_s$. A translating handle at the sector rim has $x=r_s\theta_s=r_m\theta_m$. Power $\tau_m\omega_m=F\dot x$ with $\dot x=r_m\omega_m$ gives $\tau_m=F r_m$. $r_s$ sets how the sector is built; it cancels in the handle map.
@@ -264,9 +265,7 @@ The translating handle is driven by an inextensible capstan: motor pulley radius
 
 *범위: 이 페이지는 명령된 직교좌표 힘에서 모터 전류까지의 사슬을 핸들 하나 위에서 가르친다 — 두 인터페이스 인과성, 야코비안과 그 전치, 전달장치가 힘과 느껴지는 관성에 하는 일, 엔코더 한 카운트의 값. 그 벽이 얼마나 단단할 수 있는지의 샘플링 데이터 한계는 가르치지 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]다. 애초에 힘을 무엇으로 정하는지의 알고리즘도 아니다. 그것은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7]]이다. 장치가 상대하는 손도 아니다. 그것은 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-사슬을 왼쪽에서 오른쪽으로 한 줄의 블록으로 그리고, 모든 화살표 위에 그 화살표가 나르는 물리량을 적는다. 과제가 요구하는 그림이 이것이다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -278,12 +277,7 @@ flowchart LR
     X --> Wall["벽 xw=0.030"]
 ```
 
-그림에 반드시 들어가야 하는 것이 다섯이고, 각각은 그림이 틀릴 수 있는 지점이다.
-**축척을 지킨 두 반지름.** $r_s$는 $r_m$의 다섯 배다. 섹터와 풀리가 같은 크기로 나오면 그림이 나르는 유일한 비를 이미 잃은 것이다.
-**끊기지 않은 한 줄의 케이블.** 풀리에서 섹터까지 한 선으로 긋고 *비신장*이라 적는다. 유도 전체가 그 한마디 위에 서 있다.
-**그림 위에 적은 구성 등식 둘.** $x=\ldots$와 $\tau_m=\ldots$를, 각각 실제로 등장하는 반지름과 함께 적는다.
-**벽.** $x_w=0.030\,\mathrm{m}$의 수직선, 그리고 침투가 양수가 되도록 $+x$가 벽 *안*임을 화살표로 표시한다.
-**엔코더 한 카운트.** 핸들 옆에 짧은 눈금으로 긋고 $\Delta x$를 적되, 일부러 축척을 크게 어겨서 그린다. $30\,\mathrm{mm}$ 벽에 대한 $61\,\mathrm{\mu m}$은 그림의 $1/500$이고, 이 눈금의 요점은 그것이 장치가 알 수 있는 가장 작은 것이라는 데 있다.
+엔코더에서 벽까지 이어지는 P3의 구동 사슬이다: 반지름 $r_m = 0.010\,\mathrm{m}$의 모터 풀리가 비신장 케이블을 반지름 $r_s = 0.050\,\mathrm{m}$의 섹터에 감고, 섹터가 핸들을 $x_w = 0.030\,\mathrm{m}$의 벽 쪽으로 움직이며, $+x$가 벽 안이다. 케이블이 호의 길이를 보존하므로 $r_s$는 소거되고, 사슬 전체가 $x = r_m\theta_m$과 $\tau_m = F r_m$으로 줄어든다. 그래서 엔코더의 $N = 1024$ 카운트 중 하나는 핸들 이동 $61.4\,\mathrm{\mu m}$이고, 장치가 알 수 있는 가장 작은 것이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -451,9 +445,17 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 이 페이지, [[04-robotic
 
 병진 핸들은 비신장 캡스턴으로 구동된다: 모터 풀리 $r_m$, 섹터 $r_s$. 케이블 길이가 보존되므로 핸들 변위는 $r_s$와 무관하게 $x=r_m\theta_m$이다. 일률에서 $\tau_m=F r_m$. 모터 엔코더는 디코드 후 $N=1024$ counts/rev. 전류 증폭기는 $\tau_m^{\max}=0.020\,\mathrm{N{\cdot}m}$에서 포화한다(과제 숫자이지 카탈로그 숫자가 아니다).
 
-1. **그리기.** 엔코더 $\to$ $\theta_m$ $\to$ 풀리 $r_m$ $\to$ 케이블 $\to$ 섹터 $r_s$ $\to$ 핸들 $x$ 사슬을 그려라. P3의 길이와 $N$을 모두 기입하라. 벽 $x_w$와 벽 안 $+x$를 표시하라. 구성 등식 $x=\ldots$, $\tau_m=\ldots$를 그림에 써라.
+1. **그리기.** 위의 그림을 메커니즘 스케치로: 엔코더 $\to$ $\theta_m$ $\to$ 풀리 $r_m$ $\to$ 케이블 $\to$ 섹터 $r_s$ $\to$ 핸들 $x$ 사슬을 그려라. P3의 길이와 $N$을 모두 기입하라. 벽 $x_w$와 벽 안 $+x$를 표시하라. 구성 등식 $x=\ldots$, $\tau_m=\ldots$를 그림에 써라.
 2. **유도.** (a) 엔코더 한 카운트의 핸들 변위 $\Delta x$. (b) 벽 안에서 기본 가상 벽 $k_w$의 힘 증분 $\Delta F$. (c) 증폭기 포화 시 최대 핸들 힘 $F^{\max}$, 기본 벽이 포화하는 침투량. (d) $x=0.036\,\mathrm{m}$(벽 안 6 mm)에서 포화 없는 스프링 법칙이 아직 성립하는가?
 3. **해석.** 심사자가 “핸들이 섹터 위에 있으니 $x=r_s\theta_m$을 써라”고 한다. 그 실수가 보고하는 힘마다 몇 배를 넣는가? 별도로: $N$은 쿼드러처 디코드 후 값이다. 디코드 전 256 슬롯으로 취급하면 $\Delta x$는 어떻게 바뀌는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 사슬을 엔코더에서 벽까지 왼쪽에서 오른쪽으로 한 줄로 그리고, 모든 화살표 위에 그 화살표가 나르는 물리량을 적는다. P3의 길이와 $N$을 모두 기입한다.
+> - 두 반지름은 축척을 지킨다. $r_s$는 $r_m$의 다섯 배다. 섹터와 풀리가 같은 크기로 나오면 그림이 나르는 유일한 비를 이미 잃은 것이다.
+> - 케이블은 풀리에서 섹터까지 끊기지 않은 한 선으로 긋고 *비신장*이라 적는다. 유도 전체가 그 한마디 위에 서 있다.
+> - 구성 등식 둘, $x = \ldots$와 $\tau_m = \ldots$를 각각 실제로 등장하는 반지름과 함께 그림 위에 적는다. 어느 쪽에든 $r_s$가 들어가면 그림은 다섯 배 틀린 것이다.
+> - 벽은 $x_w$의 수직선으로 긋고, 침투가 양수가 되도록 $+x$가 벽 안임을 화살표로 표시한다.
+> - 엔코더 한 카운트는 핸들 옆에 짧은 눈금으로 긋고 $\Delta x$를 적되, 일부러 축척을 크게 어겨서 그린다. 축척대로라면 $30\,\mathrm{mm}$ 벽에 대한 계산 절의 $61\,\mathrm{\mu m}$은 그림의 약 $1/500$이다. 이 눈금이 거기 있는 이유는 그것이 장치가 알 수 있는 가장 작은 것이기 때문이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 케이블 비신장 $\Rightarrow$ $r_m\theta_m=r_s\theta_s$. 섹터 가장자리의 병진 핸들은 $x=r_s\theta_s=r_m\theta_m$. 일률 $\tau_m\omega_m=F\dot x$, $\dot x=r_m\omega_m$이므로 $\tau_m=F r_m$. $r_s$는 섹터 형상이고 핸들 사상에서는 소거된다.

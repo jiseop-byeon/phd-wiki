@@ -45,9 +45,7 @@ lifts off mid-plan, and no swing equality switches on or off. That is what makes
 enough to finish on paper, and it is also a real property of the controller: Di Carlo et al. re-solve
 tens of times a second precisely so that each solve sees a short, nearly static schedule.
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure in three parts; the problem set asks for the same one.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 422" style="max-width:100%;height:auto" role="img" aria-label="Left: the two-step horizon timeline for Q, from the measured height 0.27 m through u0 = 76.92 N and u1 = -15.38 N to predicted gaps of -18.5 mm and +2.3 mm about the dashed 0.30 m reference, u0 circled; below it on the same time axis, the trot gait chart with the 0.12 s horizon shaded inside the LF-RH stance; right: the 24-cell decision grid with the 12 swing cells crossed out and the five constraint rows on one stance foot">
   <defs><marker id="cmpA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -175,24 +173,9 @@ One figure in three parts; the problem set asks for the same one.
   </g>
 </svg>
 
-**Left — the horizon timeline.** A time axis with ticks at $0$, $\Delta t$, $2\Delta t$. Mark the
-measured state $x_0$ at the first tick, the two decisions $u_0$ and $u_1$ as arrows leaving the
-first two ticks, and the two predicted states $x_1$, $x_2$ at the ticks they land on. Draw the
-reference height $z^{\mathrm{ref}}$ as a dashed horizontal line across all three and shade the gap
-$e_k=z_k-z^{\mathrm{ref}}$ that the cost is squaring. Circle $u_0$: it is the only decision that is
-ever applied.
+Q's two-step heave plan from the worked case: from the measured $e_0=-30$ mm, the decisions $u_0=76.92$ N (circled, the only one ever applied) and $u_1=-15.38$ N carry the predicted gap to $-18.5$ mm and then $+2.3$ mm about the dashed $0.30$ m reference. Below it, on the same time axis, the $0.12$ s horizon sits inside one trot stance, the LF–RH one, before support switches at $0.20$ s; on the right, the $24$-cell decision grid loses its $12$ swing cells to $f_i=0$, leaving $12$ free forces under $4\times2\times5=40$ rows, all slack at the solution's $97.32$ N per stance foot.
 
-**Middle — the schedule.** Under the same axis, redraw the trot gait chart from
-[[04-robotics/legged-locomotion|18. Legged Locomotion]] and shade the $0.12$ s the horizon covers.
-The point of the drawing is that the shaded window sits inside one stance phase.
-
-**Right — the constraint block.** Draw the decision vector as a grid, $4$ feet $\times\ 3$ force
-components $\times\ 2$ steps $=24$ cells. Cross out the $12$ cells belonging to the two swing feet:
-those are the equalities $f_i=0$. On one surviving stance foot, draw the four pyramid faces
-$\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$ as four lines and the unilateral bound $f_z\ge0$ as a
-fifth. Then count: the cells left are the $12$ free forces, and the rows are five per foot per step
-for all four feet, $4\times2\times5=40$ ($32$ pyramid faces and $8$ unilateral bounds), because the
-swing feet keep their rows, which $f_i=0$ leaves nothing to constrain. That count is the QP.
+### Five modelling moves
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*, made in five modelling moves:
@@ -454,7 +437,7 @@ task: a quadruped carries **P2** toward a panel ([[02-foundations/lab-plants|0.6
 **The change of knobs.** Q starts $5$ cm **high**, not low: $z_0=0.35$ m, $\dot z_0=0$, so
 $e_0=+0.05$ m. Same $\Delta t$, same trot, same bounds.
 
-1. **Draw.** The three-part homework diagram for this case: the timeline with $e_0$ now above the
+1. **Draw.** The picture above, all three parts, for this case: the timeline with $e_0$ now above the
    dashed reference, the trot chart with the $0.12$ s window shaded inside one stance, and the
    constraint block with the swing cells crossed out. Add one thing the lecture's version did not
    need: mark on the block which row you expect the answer to hit, and say before computing anything
@@ -493,6 +476,15 @@ for N in (1, 2, 4, 8):
                        if all(abs(x) <= 0.005 for x in hist[i:])), None)
         print(N, lam, round(u0, 1), feas, round(low, 1), settle)
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - **Left, the horizon timeline**: a time axis with ticks at $0$, $\Delta t$, $2\Delta t$; the measured state $x_0$ at the first tick, the decisions $u_0$ and $u_1$ as arrows leaving the first two ticks, and the predicted states $x_1$, $x_2$ at the ticks they land on.
+> - **The reference height $z^{\mathrm{ref}}$ is a dashed horizontal line** across all three ticks, and the gaps $e_k=z_k-z^{\mathrm{ref}}$ the cost is squaring are shaded, on whichever side of it the states lie.
+> - **Circle $u_0$**: it is the only decision that is ever applied.
+> - **Middle, the schedule**: under the same time axis, the trot gait chart from [[04-robotics/legged-locomotion|18. Legged Locomotion]], with the $0.12$ s the horizon covers shaded. The point of the drawing is that the shaded window sits inside one stance phase.
+> - **Right, the constraint block**: the decision vector as a grid, $4$ feet $\times\ 3$ force components $\times\ 2$ steps $=24$ cells, with the $12$ cells of the two swing feet crossed out — those are the equalities $f_i=0$.
+> - **On one surviving stance foot**, the four pyramid faces $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$ as four lines and the unilateral bound $f_z\ge0$ as a fifth.
+> - **Count**: the cells left are the $12$ free forces, and the rows are five per foot per step for all four feet, $4\times2\times5=40$ ($32$ pyramid faces and $8$ unilateral bounds), because the swing feet keep their rows, which $f_i=0$ leaves nothing to constrain. That count is the QP.
 
 > [!tip]- Solutions
 > 1. You should expect the unilateral row $f_z\ge0$. Being high means the cost wants a *downward* correction, the only downward force available is gravity, and the feet can only push — so the request will run into $f_z^{\mathrm{tot}}\ge0$ rather than into the $200$ N ceiling. Predicting the active row before solving is the skill; the $200$ N ceiling is the row that binds when you start low and weight force cheaply, which is the lecture's $N=1$, $\lambda=0.1$ line.
@@ -553,9 +545,7 @@ $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스�
 실제 성질이기도 하다. Di Carlo 등이 초당 수십 번 다시 푸는 것은 매 풀이가 짧고 거의 정적인
 스케줄만 보게 하기 위해서다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나에 칸이 셋이고, 과제가 요구하는 것도 같은 그림이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 422" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: Q의 두 스텝 지평 타임라인, 측정 높이 0.27 m에서 u0 = 76.92 N과 u1 = -15.38 N을 거쳐 파선 기준 0.30 m 둘레의 예측 간격 -18.5 mm와 +2.3 mm로 가고 u0에 동그라미; 그 아래 같은 시간 축에 trot 보행 차트와 LF-RH 디딤 안에 칠한 0.12 s 지평; 오른쪽: 유각 12칸을 지운 24칸 결정 격자와 디딤발 하나의 제약 행 다섯">
   <defs><marker id="cmpkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -683,22 +673,9 @@ $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스�
   </g>
 </svg>
 
-**왼쪽 — 지평 타임라인.** $0$, $\Delta t$, $2\Delta t$에 눈금이 있는 시간 축. 첫 눈금에 측정
-상태 $x_0$, 앞 두 눈금에서 떠나는 화살표로 결정 $u_0$와 $u_1$, 그리고 그것들이 도착하는 눈금에
-예측 상태 $x_1$, $x_2$를 표시한다. 기준 높이 $z^{\mathrm{ref}}$를 세 눈금을 가로지르는 파선으로
-긋고, 비용이 제곱하고 있는 간격 $e_k=z_k-z^{\mathrm{ref}}$를 칠한다. $u_0$에 동그라미를 친다.
-실제로 적용되는 결정은 그것 하나뿐이다.
+계산 절에서 푼 Q의 두 스텝 상하 운동 계획이다. 측정한 $e_0=-30$ mm에서 결정 $u_0=76.92$ N(동그라미, 실제로 적용되는 유일한 결정)과 $u_1=-15.38$ N이 예측 간격을 파선 기준 $0.30$ m 둘레에서 $-18.5$ mm로, 이어서 $+2.3$ mm로 옮긴다. 그 아래 같은 시간 축에서 $0.12$ s 지평은 디딤이 교대하는 $0.20$ s 전, LF–RH 디딤 하나 안에 들어가고, 오른쪽의 $24$칸 결정 격자는 유각 $12$칸을 $f_i=0$으로 잃어 자유 힘 $12$개와 행 $4\times2\times5=40$개가 남는데, 해에서는 디딤발마다 $97.32$ N이라 모든 행이 여유다.
 
-**가운데 — 스케줄.** 같은 축 아래에 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]의
-trot 보행 차트를 다시 그리고 지평이 덮는 $0.12$ s를 칠한다. 이 그림의 요점은 칠한 창이 한 디딤
-구간 안에 들어간다는 것이다.
-
-**오른쪽 — 제약 블록.** 결정 벡터를 격자로 그린다. 발 $4$개 $\times$ 힘 성분 $3$개 $\times$
-스텝 $2$개 $=24$칸. 유각 중인 두 발의 $12$칸을 지운다. 등식 $f_i=0$이 그것이다. 남은 디딤발
-하나에 피라미드 네 면 $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$를 네 개의 선으로, 단방향 한계
-$f_z\ge0$을 다섯 번째로 그린다. 그다음 센다. 남은 칸이 자유 힘 $12$개이고, 행은 네 발 모두에
-발마다 스텝마다 다섯 개씩 $4\times2\times5=40$개(피라미드 면 $32$개와 단방향 한계 $8$개)다. 유각
-발도 자기 행을 그대로 갖고, $f_i=0$이라 그 행들이 구속할 것이 남지 않을 뿐이다. 그 수가 곧 QP다.
+### 다섯 가지 모델링 선택
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*이고,
 다섯 가지 모델링 선택으로 이루어진다:
@@ -894,7 +871,7 @@ Tier A. **Q**, 이 페이지, [[04-robotics/legged-locomotion|18. 레그드 로�
 **바꿀 손잡이.** Q가 낮은 곳이 아니라 $5$ cm **높은** 곳에서 시작한다. $z_0=0.35$ m,
 $\dot z_0=0$이므로 $e_0=+0.05$ m다. $\Delta t$도, trot도, 한계도 그대로다.
 
-1. **그려라.** 이 경우에 대한 과제 그림 세 칸. $e_0$가 이번에는 파선 기준 위에 있는 타임라인,
+1. **그려라.** 이 경우에 대한 위의 그림, 세 칸 모두. $e_0$가 이번에는 파선 기준 위에 있는 타임라인,
    $0.12$ s 창이 한 디딤 안에 칠해진 trot 차트, 유각 칸을 지운 제약 블록. 강의판에는 없던 것을
    하나 더한다. 답이 어느 행에 부딪힐 것 같은지 블록 위에 표시하고, 계산하기 *전에* 왜 그렇게
    예상하는지 적는다.
@@ -907,6 +884,15 @@ $\dot z_0=0$이므로 $e_0=+0.05$ m다. $\Delta t$도, trot도, 한계도 그대
    $u_0$, 첫 틱의 제약 없는 해가 실행 가능했는지, 실행 중 도달한 최저 발당 힘, 정착 시간을
    보고한다. 그다음 직관이 아니라 표를 보고 답한다: 지평을 늘리면 걸리는 행이 활성화되는지 여부가
    달라지는가? 무엇이 그것을 바꾸는지 말하고, 다른 손잡이가 바꿀 수 *없는* 물리적 이유를 대라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, 지평 타임라인.** $0$, $\Delta t$, $2\Delta t$에 눈금이 있는 시간 축. 첫 눈금에 측정 상태 $x_0$, 앞 두 눈금에서 떠나는 화살표로 결정 $u_0$와 $u_1$, 그것들이 도착하는 눈금에 예측 상태 $x_1$, $x_2$를 표시한다.
+> - **기준 높이 $z^{\mathrm{ref}}$는 세 눈금을 가로지르는 파선이다.** 비용이 제곱하고 있는 간격 $e_k=z_k-z^{\mathrm{ref}}$를, 상태가 놓인 쪽에 칠한다.
+> - **$u_0$에 동그라미를 친다.** 실제로 적용되는 결정은 그것 하나뿐이다.
+> - **가운데, 스케줄.** 같은 시간 축 아래에 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]의 trot 보행 차트를 다시 그리고 지평이 덮는 $0.12$ s를 칠한다. 이 그림의 요점은 칠한 창이 한 디딤 구간 안에 들어간다는 것이다.
+> - **오른쪽, 제약 블록.** 결정 벡터를 발 $4$개 $\times$ 힘 성분 $3$개 $\times$ 스텝 $2$개 $=24$칸의 격자로 그리고, 유각 중인 두 발의 $12$칸을 지운다. 등식 $f_i=0$이 그것이다.
+> - **남은 디딤발 하나에** 피라미드 네 면 $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$를 네 개의 선으로, 단방향 한계 $f_z\ge0$을 다섯 번째로 그린다.
+> - **센다.** 남은 칸이 자유 힘 $12$개이고, 행은 네 발 모두에 발마다 스텝마다 다섯 개씩 $4\times2\times5=40$개(피라미드 면 $32$개와 단방향 한계 $8$개)다. 유각 발도 자기 행을 그대로 갖고, $f_i=0$이라 그 행들이 구속할 것이 남지 않을 뿐이다. 그 수가 곧 QP다.
 
 > [!tip]- 정답 · Solutions
 > 1. 단방향 행 $f_z\ge0$을 예상해야 한다. 높다는 것은 비용이 *아래쪽* 교정을 원한다는 뜻이고, 쓸 수 있는 아래쪽 힘은 중력뿐이며, 발은 밀 수만 있다. 그러니 요구는 $200$ N 천장이 아니라 $f_z^{\mathrm{tot}}\ge0$에 부딪힌다. 풀기 전에 활성 행을 맞히는 것이 이 문제의 기술이다. $200$ N 천장은 낮은 곳에서 시작하고 힘을 싸게 매길 때 걸리는 행이고, 그것이 강의의 $N=1$, $\lambda=0.1$ 줄이다.

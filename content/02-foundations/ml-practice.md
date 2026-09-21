@@ -8,14 +8,14 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/neural-network-basics|0.7]] (training, validation, hyperparameters) · [[02-foundations/probability|3. Probability §1]] (conditional probability, for precision/recall)
-> [[02-foundations/neural-network-basics|0.7]](학습·검증·하이퍼파라미터) · [[02-foundations/probability|3. 확률 §1]](정밀도·재현율을 위한 조건부 확률)
+> [[02-foundations/neural-network-basics|0.8]] (training, validation, hyperparameters) · [[02-foundations/probability|3. Probability §1]] (conditional probability, for precision/recall)
+> [[02-foundations/neural-network-basics|0.8]](학습·검증·하이퍼파라미터) · [[02-foundations/probability|3. 확률 §1]](정밀도·재현율을 위한 조건부 확률)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 
-*Stands on [[02-foundations/neural-network-basics|0.7]] and [[02-foundations/probability|3. Probability]]. Every page before this one was a tool for reading a method;
+*Stands on [[02-foundations/neural-network-basics|0.8]] and [[02-foundations/probability|3. Probability]]. Every page before this one was a tool for reading a method;
 this is the tool for reading the claim that the method worked. Read it before any results table.*
 
 The craft knowledge every paper assumes: how models are trained, validated, and — above
@@ -49,9 +49,7 @@ E1b is not a random sample of the site, so no rate computed on it estimates a de
 
 *Scope: this page teaches how to read a results table — what each metric counts, what it hides, and how wide its uncertainty is. It does not teach how to design the experiment that produced the table, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]], nor the hypothesis tests behind the intervals, which are [[02-foundations/probability|3. Probability §6]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Draw these three panels once. The problem set asks for the same three at a different threshold.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 426" style="max-width:100%;height:auto" role="img" aria-label="E1 in three panels: the confusion matrix at threshold 0.55 with the precision column and recall row ringed and TN shaded; the ROC operating point at FPR 0.011, TPR 0.667 with precision 0.80, or 0.27 at a tenth of the crack rate; and the normal, Wilson and bootstrap intervals for 9 of 10">
   <defs><marker id="aMl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -141,11 +139,7 @@ Draw these three panels once. The problem set asks for the same three at a diffe
   <text x="409.6" y="414" font-size="11" fill="currentColor" text-anchor="middle">p̂ = 0.9 (9 of 10)</text>
 </svg>
 
-1. **The 2×2 box.** E1a's four counts in a square, columns labelled by the *prediction* and rows by the *truth*. Ring the column precision divides by and the row recall divides by in two different colours, and mark TP where the two rings cross. Shade TN and write beside it: neither ratio uses this cell.
-2. **The ROC axes, with one point on them.** FPR across, TPR up, the chance diagonal, and E1a's operating point at $(0.011,\ 0.667)$. Beside the point write its precision, $0.80$; then write $0.27$ under that — the precision of the *same point* at a site with one-tenth the crack rate. The point does not move. That is the entire picture.
-3. **The interval strip.** A horizontal axis from 0 to 1. Mark E1c's pilot estimate $\hat p = 0.9$ and stack three intervals above it: the normal approximation, the Wilson interval, the percentile bootstrap. Mark where the first one leaves the axis.
-
-A correct drawing has already answered the hardest question in §4 — which of those three intervals you are allowed to print under a ten-trial number.
+E1 in three panels, first E1a's confusion matrix at $\tau=0.55$ — $TP=40$, $FN=20$, $FP=10$, $TN=930$ — with the precision column ($40/50=0.80$) and the recall row ($40/60=0.667$) ringed, crossing at TP, and TN shaded because neither ratio uses it. On the ROC axes the same detector is one point, $(\text{FPR},\ \text{TPR})=(0.011,\ 0.667)$, with precision $0.80$ at 6% cracked and $0.27$ at 0.6% cracked, though the point itself does not move. The strip holds three 95% intervals on E1c's pilot of 9 of 10, $\hat p=0.9$: the normal approximation $[0.714,\ 1.086]$ runs off the axis at $1$, Wilson $[0.596,\ 0.982]$ stays inside $[0,1]$, and the percentile bootstrap $[0.70,\ 1.00]$ is capped at $1.00$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -423,6 +417,15 @@ Tier B. Hand derivation on **E1**, using only this page, its prerequisites and t
 2. **Derive.** Take the $\tau = 0.65$ point, unchanged, to a site where 1% of panels are cracked, and compute its precision over 1,000 panels. Then, holding TPR fixed, find the FPR that would give precision $0.5$ at that base rate, and state by what factor the detector must improve.
 3. **Interpret.** E1c's pilot gives $\hat p = 0.9$ from 10 trials and a percentile bootstrap of $[0.70,\ 1.00]$. (a) Why can that interval's upper end never exceed $1.00$ here, and what would the interval be had the pilot gone 10 for 10? (b) A referee asks for "the success rate with error bars". Which of §4's three quantities, and which of the three intervals, should the pilot's row carry — and what else must be printed beside it before a reader can check your answer?
 
+> [!note]- How to draw it · 그리는 법
+> - One $2\times2$ box per threshold, columns labelled by the *prediction* and rows by the *truth*; a panel is flagged when its score reaches $\tau$, and the four cells together must hold all seven of E1b's panels.
+> - Ring the column precision divides by and the row recall divides by in two different styles; TP is the cell where the two rings cross.
+> - Shade TN and write beside it that neither ratio uses this cell.
+> - ROC axes: FPR across, TPR up, both from 0 to 1, with the chance diagonal; put both operating points on the same axes and write each one's precision beside it.
+> - Precision is not a coordinate of the ROC plot: move a point to another base rate and it stays put while its precision changes. The worked case writes $0.27$ under $0.80$ for its point, and item 2 does the same for the $\tau=0.65$ point.
+> - The interval strip does not depend on $\tau$. If you redraw it for item 3, take a horizontal axis from 0 to 1, mark E1c's $\hat p=0.9$, stack the normal-approximation, Wilson and percentile-bootstrap intervals above it, and mark where the first leaves the axis.
+> - A correct strip has already answered the hardest question in §4: which of the three intervals may be printed under a ten-trial number.
+
 > [!tip]- Solutions
 > 1. At $\tau = 0.65$ the flags are the cracked $0.90$ and $0.80$ plus the sound $0.70$: $TP = 2$, $FN = 1$, $FP = 1$, $TN = 3$, so precision $2/3 = 0.667$, recall $2/3 = 0.667$, and the point is $(\text{FPR},\ \text{TPR}) = (0.25,\ 0.667)$. At $\tau = 0.45$ the cracked $0.60$ and the sound $0.50$ join them: $TP = 3$, $FN = 0$, $FP = 2$, $TN = 2$, precision $3/5 = 0.600$, recall $1.000$, point $(0.50,\ 1.00)$. Exactly one cracked panel and one sound panel score inside $[0.45,\ 0.65)$, so crossing that band buys the last crack at the price of one more false alarm — recall $0.667 \to 1.000$ while FPR $0.25 \to 0.50$ — and precision *falls* while recall rises, which is the trade-off the worked case names, drawn on seven panels.
 > 2. At 1% of 1,000 panels there are 10 cracked and 990 sound. Holding the point fixed, $TP = 0.667 \times 10 = 6.67$ and $FP = 0.25 \times 990 = 247.5$, so precision $= 6.67/254.17 = 0.026$ — a factor of 25 below the $0.667$ computed on E1b, where 3 of 7 panels were cracked. For precision $0.5$ the false alarms must fall to $FP = TP = 6.67$, that is $\text{FPR} = 6.67/990 = 0.0067$: the false-positive rate has to improve by a factor of 37 with recall held. That factor is the concrete content of "ask for precision at a stated recall, on the deployment base rate."
@@ -456,7 +459,7 @@ The transition matters because recognizing an unfair comparison after publicatio
 
 ## 한국어
 
-*[[02-foundations/neural-network-basics|0.7]]과 [[02-foundations/probability|3. 확률]] 위에 선다. 앞의 페이지들이 방법을 읽는 도구였다면,
+*[[02-foundations/neural-network-basics|0.8]]과 [[02-foundations/probability|3. 확률]] 위에 선다. 앞의 페이지들이 방법을 읽는 도구였다면,
 이 페이지는 그 방법이 통했다는 주장을 읽는 도구다. 어떤 결과 표든 읽기 전에 읽어라.*
 
 모든 논문이 전제하는 장인적 지식: 모델을 어떻게 학습·검증하고, 무엇보다 어떻게 *재는가*.
@@ -490,9 +493,7 @@ E1b는 현장의 무작위 표본이 아니므로 여기서 계산한 어떤 비
 
 *범위: 이 페이지는 결과 표를 읽는 법을 가르친다. 각 지표가 무엇을 세고, 무엇을 감추고, 불확실성이 얼마나 넓은지다. 그 표를 만든 실험을 설계하는 법은 가르치지 않는다. 그것은 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이고, 구간 뒤에 있는 가설 검정은 [[02-foundations/probability|3. 확률 §6]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-세 그림을 한 번 그려 두면 과제는 문턱값만 바꾼 같은 세 그림을 묻는다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 426" style="max-width:100%;height:auto" role="img" aria-label="E1을 세 칸에: 문턱값 0.55의 혼동 행렬과 정밀도 열·재현율 행 테두리, 칠한 TN; FPR 0.011, TPR 0.667의 ROC 동작점과 정밀도 0.80, 균열 비율이 10분의 1이면 0.27; 10번 중 9번에 대한 정규근사·Wilson·부트스트랩 구간">
   <defs><marker id="aMlK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -582,11 +583,7 @@ E1b는 현장의 무작위 표본이 아니므로 여기서 계산한 어떤 비
   <text x="409.6" y="414" font-size="11" fill="currentColor" text-anchor="middle">p̂ = 0.9 (10번 중 9번)</text>
 </svg>
 
-1. **2×2 상자.** E1a의 네 개수를 정사각형에 넣고 열에는 *예측*, 행에는 *실제*를 붙인다. 정밀도가 나누는 열과 재현율이 나누는 행을 서로 다른 색으로 두르고, 두 테두리가 만나는 칸에 TP를 표시한다. TN은 칠하고 옆에 적는다. 두 비 모두 이 칸을 쓰지 않는다.
-2. **ROC 축과 점 하나.** 가로 FPR, 세로 TPR, 우연 수준 대각선, 그리고 E1a의 동작점 $(0.011,\ 0.667)$. 점 옆에 그 정밀도 $0.80$을 적고, 그 아래에 $0.27$을 적는다. 균열 비율이 10분의 1인 현장에서의 *같은 점*의 정밀도다. 점은 움직이지 않는다. 그림 전체가 그 말이다.
-3. **구간 띠.** 0에서 1까지의 가로축. E1c 파일럿의 추정 $\hat p = 0.9$를 찍고 그 위로 구간 셋을 쌓는다. 정규근사, Wilson 구간, 백분위 부트스트랩. 첫 번째가 축을 벗어나는 지점을 표시한다.
-
-제대로 그린 그림은 §4의 가장 어려운 질문에 이미 답한 것이다. 시행 열 번짜리 숫자 밑에 저 셋 중 무엇을 인쇄해도 되는가.
+E1을 세 칸에 그린 것으로, 첫 칸은 $\tau=0.55$에서 E1a의 혼동 행렬 — $TP=40$, $FN=20$, $FP=10$, $TN=930$ — 이며, 정밀도가 나누는 열($40/50=0.80$)과 재현율이 나누는 행($40/60=0.667$)에 테두리를 둘러 TP에서 만나게 하고 두 비 모두 쓰지 않는 TN은 칠했다. ROC 축 위에서 같은 감지기는 점 하나 $(\text{FPR},\ \text{TPR})=(0.011,\ 0.667)$이고, 그 정밀도는 균열 6%에서 $0.80$, 균열 0.6%에서 $0.27$이지만 점 자체는 움직이지 않는다. 구간 띠는 E1c 파일럿 10번 중 9번($\hat p=0.9$)에 대한 95% 구간 셋으로, 정규근사 $[0.714,\ 1.086]$은 $1$에서 축을 벗어나고 Wilson $[0.596,\ 0.982]$는 $[0,1]$ 안에 머물며 백분위 부트스트랩 $[0.70,\ 1.00]$은 $1.00$에서 잘린다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -861,6 +858,15 @@ Tier B. **E1** 위의 손 유도. 이 페이지와 선수 지식, 위에 고정�
 1. **그리기.** E1b의 점수 일곱 개로 문턱값 $\tau = 0.65$에서, 그리고 $\tau = 0.45$에서 $2\times2$ 혼동 행렬을 그리고 두 동작점을 ROC 축 위에 찍어라. 점마다 정밀도를 적는다. 두 점 사이의 계단은 점수가 $0.45$와 $0.65$ 사이인 패널에 대해 무엇을 말하는가?
 2. **유도.** $\tau = 0.65$의 점을 그대로 들고 패널의 1%가 균열인 현장으로 옮겨, 패널 1,000장에 대한 정밀도를 구하라. 그다음 TPR을 고정한 채 그 기저율에서 정밀도 $0.5$를 주는 FPR을 찾고, 감지기가 몇 배 좋아져야 하는지 말하라.
 3. **해석.** E1c의 파일럿은 시행 10번에서 $\hat p = 0.9$, 백분위 부트스트랩 $[0.70,\ 1.00]$을 준다. (가) 여기서 그 구간의 위쪽 끝이 $1.00$을 넘을 수 없는 이유는 무엇이고, 파일럿이 10번 중 10번이었다면 구간은 무엇이 되는가? (나) 심사자가 "성공률에 오차 막대"를 요구한다. §4의 세 양 중 무엇을, 세 구간 중 무엇을 그 행에 실어야 하고, 독자가 그 답을 검산하려면 옆에 무엇이 더 인쇄되어 있어야 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 문턱값마다 $2\times2$ 상자 하나. 열에는 *예측*, 행에는 *실제*를 붙인다. 점수가 $\tau$에 닿으면 플래그되고, 네 칸을 합치면 E1b의 패널 일곱 장이 모두 들어가야 한다.
+> - 정밀도가 나누는 열과 재현율이 나누는 행을 서로 다른 모양으로 두른다. 두 테두리가 만나는 칸이 TP다.
+> - TN은 칠하고 옆에 두 비 모두 이 칸을 쓰지 않는다고 적는다.
+> - ROC 축은 가로 FPR, 세로 TPR, 둘 다 0에서 1까지이고 우연 수준 대각선을 긋는다. 두 동작점을 같은 축에 찍고 점마다 정밀도를 옆에 적는다.
+> - 정밀도는 ROC 그림의 좌표가 아니다. 점을 다른 기저율로 옮기면 점은 그대로이고 정밀도만 바뀐다. 계산 예제는 자기 점에 대해 $0.80$ 아래에 $0.27$을 적고, 2번은 $\tau=0.65$의 점에 대해 같은 일을 한다.
+> - 구간 띠는 $\tau$에 의존하지 않는다. 3번을 위해 다시 그린다면 0에서 1까지의 가로축에 E1c의 $\hat p=0.9$를 찍고, 그 위로 정규근사, Wilson, 백분위 부트스트랩 구간을 쌓고, 첫 번째가 축을 벗어나는 지점을 표시한다.
+> - 제대로 그린 띠는 §4의 가장 어려운 질문에 이미 답한 것이다. 시행 열 번짜리 숫자 밑에 셋 중 무엇을 인쇄해도 되는가.
 
 > [!tip]- 정답 · Solutions
 > 1. $\tau = 0.65$에서 플래그되는 것은 균열 $0.90$·$0.80$과 정상 $0.70$이다. $TP = 2$, $FN = 1$, $FP = 1$, $TN = 3$이므로 정밀도 $2/3 = 0.667$, 재현율 $2/3 = 0.667$, 점은 $(\text{FPR},\ \text{TPR}) = (0.25,\ 0.667)$이다. $\tau = 0.45$에서는 균열 $0.60$과 정상 $0.50$이 합류해 $TP = 3$, $FN = 0$, $FP = 2$, $TN = 2$, 정밀도 $3/5 = 0.600$, 재현율 $1.000$, 점은 $(0.50,\ 1.00)$이다. $[0.45,\ 0.65)$ 구간에는 균열 하나와 정상 하나가 정확히 하나씩 있으므로, 그 띠를 건너면 마지막 균열을 오경보 하나의 값으로 산다. 재현율은 $0.667 \to 1.000$, FPR은 $0.25 \to 0.50$이고 재현율이 오르는 동안 정밀도는 *내려간다*. 계산 예제의 맞바꿈을 패널 일곱 장에 그린 것이다.

@@ -19,9 +19,7 @@ mastery-when: "Go deeper when you are choosing delivery semantics, executor poli
 
 *Comes after this page, not before it: building your own packages is taught properly in [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]], which assumes this page. Here you use the minimum of it, and each step says which lines matter.*
 
-### Homework diagram: two P6 nodes, with every name resolved
-
-The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Both nodes are launched into the namespace `/cart`. Draw three panels; the problem set asks for the same three with the namespace changed.
+### The picture: two P6 nodes, with every name resolved
 
 <svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="Left: nodes camera and controller launched into /cart, with code names and resolved names, the topic goal resolving to /cart/goal, and a stray /goal stub on the controller. Right: inside the controller, on_goal at 50 Hz stores the goal and on_tick on a 5 ms timer reads the store and the encoder and publishes cmd. Bottom: goals at 0 and 20 ms, ticks every 5 ms, three ticks re-using one goal, encoder reads, and the 70 ms budget for scale.">
   <defs><marker id="n2eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="n2esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -116,11 +114,7 @@ The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a car
   <path d="M108.0 270V344M138.0 270V344M168.0 270V344M198.0 270V344M228.0 270V344" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.25" stroke-dasharray="1 3" fill="none"/>
 </svg>
 
-**Left — the two nodes, each labelled with both of its names.** Two ellipses. Under each, two lines: the name the code passes to `super().__init__` (`camera`, `controller`) and the fully resolved name after the launch namespace (`/cart/camera`, `/cart/controller`). Between them, one arrow for the topic, labelled twice in the same way: the string written in the code (`goal`) above the arrow and what section 3's table resolves it to (`/cart/goal`) below it. Then draw a *second* arrow stub leaving the controller, labelled `/goal`, with nothing on the other end. That is section 10's bug, and the point of drawing it is that it is a second name, not a broken arrow — nothing in the picture is red.
-
-**Right — inside the controller, the two callbacks.** Two boxes within the node ellipse. `on_goal` fires when a message arrives, so it is drawn with the subscription arrow entering it and is labelled $50\,\mathrm{Hz}$; all it does is store the goal, so draw the store as a small box beside it. `on_tick` fires on a $5\,\mathrm{ms}$ timer, so it is drawn with a clock symbol and labelled $200\,\mathrm{Hz}$; it reads the store *and* the encoder, and the `cmd` arrow leaves the node from `on_tick`. Draw the encoder as an arrow into `on_tick` from outside the graph. The diagram is wrong the moment `cmd` leaves from `on_goal`, and section 9 is where you make that mistake on purpose.
-
-**Bottom — five lines of clock.** Line 1: goals at $0$ and $20\,\mathrm{ms}$. Line 2: ticks at $0,5,10,15,20\,\mathrm{ms}$. Line 3: a bracket under ticks $5$, $10$ and $15$ marking them as re-users of the goal from $0$. Line 4: an encoder read on every tick. Line 5: the $70\,\mathrm{ms}$ budget line, for scale.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as two nodes launched into the namespace `/cart`, each labelled with the name its code passes and the name it resolves to: the camera's `goal` resolves to `/cart/goal`, and the stray `/goal` stub on the controller is a second name with no publisher, §10's silent bug. Inside the controller, `on_goal` only stores each goal as it arrives at $50\,\mathrm{Hz}$, and `on_tick`, on a $5\,\mathrm{ms}$ timer, reads that store and the encoder and publishes `cmd` at $200\,\mathrm{Hz}$. On the clock below, goals land at $0$ and $20\,\mathrm{ms}$, every $5\,\mathrm{ms}$ tick reads the encoder, and ticks $5$, $10$ and $15$ re-use the goal from $0$, with the $70\,\mathrm{ms}$ budget drawn for scale.
 
 ### Worked case: one encoder count through a message, and what it is worth in velocity
 
@@ -778,6 +772,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 2. **Derive.** (a) If the controller publishes from the *vision callback*, what is the motor rate? (b) Encoder $\Delta p$ for one count. (c) Silent case: vision publishes `/cart/goal`, controller subscribes `/goal`. Both nodes log "ok". Which three causes look like this, and which command splits them?
 3. **Interpret.** Why is the timer-driven controller the right contract for P6, and when would callback-driven be right instead?
 
+> [!note]- How to draw it · 그리는 법
+> - Two ellipses, each labelled with both of its names: the one the code passes to `super().__init__`, and the fully resolved one after any launch namespace.
+> - One arrow for the topic, labelled the same way twice: the string written in the code above it, and what §3's table resolves it to below it.
+> - A name that resolves differently at the two ends (in the picture above, the relative `goal` under `/cart` against an absolute `/goal`) is a second arrow stub with nothing on the other end: a second name, not a broken arrow, and nothing in the drawing is red.
+> - Inside the controller, two boxes: `on_goal`, entered by the subscription arrow and labelled $50\,\mathrm{Hz}$, which only puts the goal into a small store beside it; and `on_tick`, with a clock symbol, labelled $200\,\mathrm{Hz}$.
+> - `on_tick` reads the store *and* the encoder, whose arrow comes from outside the graph, and the `cmd` arrow leaves the node from `on_tick`.
+> - The diagram is wrong the moment `cmd` leaves from `on_goal`; §9 is where you make that mistake on purpose.
+> - Five lines of clock: goals every $20\,\mathrm{ms}$, ticks every $5\,\mathrm{ms}$, a bracket under the three ticks that re-use the last goal, an encoder read on every tick, and the $70\,\mathrm{ms}$ budget line for scale.
+
 > [!tip]- Solutions
 > 1. `camera` → `/goal` → `controller`; controller also reads $2048$ counts/m and publishes `cmd` from a $5\,\mathrm{ms}$ timer. Timeline: vision at $0,20\,\mathrm{ms}$; ticks at $0,5,10,15,20$.
 > 2. (a) $50\,\mathrm{Hz}$ — the motor inherits the camera. (b) $0.488\,\mathrm{mm}$. (c) Name mismatch, type mismatch, QoS. `ros2 topic info /goal --verbose` (then `ros2 node info`).
@@ -795,9 +798,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 
 *이 페이지보다 먼저가 아니라 뒤에 오는 페이지: 자기 패키지를 빌드하는 법은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 제대로 가르치고, 그 페이지가 이 페이지를 전제한다. 여기서는 최소한만 쓰고, 단계마다 어느 줄이 중요한지 짚는다.*
 
-### 과제가 그릴 그림: P6 노드 둘, 모든 이름을 풀어서 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 두 노드는 네임스페이스 `/cart`로 띄운다. 패널 셋을 그려라. 과제는 네임스페이스만 바꾼 같은 그림 셋을 요구한다.
+### 그림으로 먼저 보기: P6 노드 둘, 모든 이름을 풀어서 · The picture
 
 <svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: /cart로 띄운 camera와 controller 노드, 코드 이름과 풀린 이름, /cart/goal로 풀리는 토픽 goal, 그리고 controller에 붙은 /goal 토막. 오른쪽: controller 안에서 50 Hz on_goal은 목표를 저장하고, 5 ms 타이머의 on_tick은 저장소와 엔코더를 읽어 cmd를 낸다. 아래: 0과 20 ms의 목표, 5 ms마다의 틱, 목표 하나를 재사용하는 틱 셋, 엔코더 읽기, 축척용 70 ms 예산.">
   <defs><marker id="n2kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="n2ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -892,11 +893,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
   <path d="M108.0 270V344M138.0 270V344M168.0 270V344M198.0 270V344M228.0 270V344" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.25" stroke-dasharray="1 3" fill="none"/>
 </svg>
 
-**왼쪽 — 노드 둘, 각각 이름 두 개를 달아서**. 타원 둘. 각 타원 아래에 두 줄을 쓴다. 코드가 `super().__init__`에 넘기는 이름(`camera`, `controller`), 그리고 launch 네임스페이스를 거친 완전 이름(`/cart/camera`, `/cart/controller`). 둘 사이에 토픽 화살표 하나를 긋고 같은 방식으로 두 번 적는다. 화살표 위에는 코드에 쓰인 문자열(`goal`), 아래에는 3절의 표가 그것을 푸는 결과(`/cart/goal`). 그다음 제어기에서 나가는 *두 번째* 화살표 토막을 `/goal`이라고 적고 반대편은 비워 둔다. 10절의 버그이고, 그것을 그리는 이유는 그것이 끊어진 화살표가 아니라 두 번째 *이름*이기 때문이다. 그림 어디에도 빨간 표시는 없다.
-
-**오른쪽 — 제어기 안의 콜백 둘**. 노드 타원 안에 상자 둘. `on_goal`은 메시지가 도착할 때 불리므로 구독 화살표가 그 상자로 들어가고 $50\,\mathrm{Hz}$라고 적는다. 하는 일은 목표를 저장하는 것뿐이니 옆에 작은 저장 상자를 그린다. `on_tick`은 $5\,\mathrm{ms}$ 타이머로 불리므로 시계 기호를 달고 $200\,\mathrm{Hz}$라고 적는다. 저장 상자와 엔코더를 *둘 다* 읽고, `cmd` 화살표는 `on_tick`에서 노드 밖으로 나간다. 엔코더는 그래프 바깥에서 `on_tick`으로 들어가는 화살표다. `cmd`가 `on_goal`에서 나가는 순간 그림은 틀린 것이고, 9절이 그 실수를 일부러 해 보는 자리다.
-
-**아래 — 시계 다섯 줄**. 1줄: 목표가 $0$과 $20\,\mathrm{ms}$. 2줄: 틱이 $0,5,10,15,20\,\mathrm{ms}$. 3줄: 틱 $5$, $10$, $15$ 아래에 괄호를 치고 $0$의 목표를 재사용하는 틱이라고 표시. 4줄: 틱마다 엔코더 읽기. 5줄: 축척을 위한 $70\,\mathrm{ms}$ 예산선.
+`/cart` 네임스페이스로 띄운 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 노드 둘이고, 노드마다 코드가 넘기는 이름과 풀린 이름을 함께 적었다 — 카메라의 `goal`은 `/cart/goal`로 풀리고, 제어기에 붙은 `/goal` 토막은 퍼블리셔 없는 두 번째 이름, 곧 10절의 조용한 버그다. 제어기 안에서 `on_goal`은 $50\,\mathrm{Hz}$로 도착하는 목표를 저장만 하고, $5\,\mathrm{ms}$ 타이머의 `on_tick`이 그 저장소와 엔코더를 읽어 `cmd`를 $200\,\mathrm{Hz}$로 낸다. 아래 시계에서 목표는 $0$과 $20\,\mathrm{ms}$에 오고, $5\,\mathrm{ms}$마다의 틱이 매번 엔코더를 읽으며, 틱 $5$, $10$, $15$는 $0$의 목표를 재사용하고, 축척용으로 $70\,\mathrm{ms}$ 예산을 그었다.
 
 ### 대상으로 한 번 끝까지: 엔코더 한 카운트가 메시지를 지나 속도가 되기까지 · Worked case
 
@@ -1544,6 +1541,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 비전이 `/goal`을 $50\,\
 1. **그리기.** 노드 둘, 토픽 `/goal`, 엔코더 카운트 입력, 모터 명령 출력. $50\,\mathrm{Hz}$ 구독과 $200\,\mathrm{Hz}$ 타이머. 다섯 줄 타임라인: 비전 메시지, 새 비전 없이 제어 틱 셋, 다음 비전.
 2. **유도.** (a) 제어기가 *비전 콜백*에서 publish하면 모터 주기는? (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 비전은 `/cart/goal`, 제어기는 `/goal`을 구독. 두 노드 모두 "ok". 이렇게 보이는 원인 셋과, 가르는 명령은?
 3. **해석.** P6에서 타이머 구동 제어기가 옳은 계약인 이유, 그리고 콜백 구동이 오히려 옳을 때는?
+
+> [!note]- 그리는 법 · How to draw it
+> - 타원 둘, 각각 이름 둘을 단다. 코드가 `super().__init__`에 넘기는 이름, 그리고 launch 네임스페이스를 거친 완전 이름.
+> - 토픽 화살표 하나에 같은 방식으로 두 번 적는다. 위에는 코드에 쓴 문자열, 아래에는 3절의 표가 그것을 푸는 결과.
+> - 양 끝에서 다르게 풀리는 이름(위의 그림에서는 `/cart` 아래의 상대 `goal` 대 절대 `/goal`)은 반대편이 빈 두 번째 화살표 토막이다. 끊어진 화살표가 아니라 두 번째 이름이고, 그림 어디에도 빨간 표시는 없다.
+> - 제어기 안에 상자 둘. `on_goal`은 구독 화살표가 들어오고 $50\,\mathrm{Hz}$라고 적으며, 옆의 작은 저장 상자에 목표를 넣기만 한다. `on_tick`은 시계 기호를 달고 $200\,\mathrm{Hz}$라고 적는다.
+> - `on_tick`은 저장 상자와 엔코더를 둘 다 읽고(엔코더 화살표는 그래프 바깥에서 온다), `cmd` 화살표는 `on_tick`에서 노드 밖으로 나간다.
+> - `cmd`가 `on_goal`에서 나가는 순간 그림은 틀린 것이다. 9절이 그 실수를 일부러 해 보는 자리다.
+> - 시계 다섯 줄: $20\,\mathrm{ms}$마다 목표, $5\,\mathrm{ms}$마다 틱, 마지막 목표를 재사용하는 틱 셋 아래의 괄호, 틱마다 엔코더 읽기, 그리고 축척을 위한 $70\,\mathrm{ms}$ 예산선.
 
 > [!tip]- 정답 · Solutions
 > 1. `camera` → `/goal` → `controller`; 제어기는 $2048$ counts/m를 읽고 $5\,\mathrm{ms}$ 타이머에서 `cmd`를 낸다. 타임라인: 비전 $0,20\,\mathrm{ms}$; 틱 $0,5,10,15,20$.

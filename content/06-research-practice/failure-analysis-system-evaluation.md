@@ -56,9 +56,7 @@ Six failures and 3.6 h of downtime in all.
 
 *Scope: this page teaches how to diagnose a failure — find the first failure behind a symptom, classify it, isolate its mechanism — and how to turn a failure log into a rate, an MTBF and an availability with honest intervals. It does not teach how to plan the trials those failures interrupt, which is [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]; the safety functions that should have caught them, which are [[04-robotics/hri-safety|11. HRI & Safety]]; or the logging and deployment infrastructure itself, which is [[04-robotics/robot-systems-deployment|10. Robot Systems]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-Incident 5 on one clock. The problem set asks for the same drawing of a variant.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 640 330" style="max-width:100%;height:auto" role="img" aria-label="incident 5 of the RS1 rig on one clock: the force stream freezes at 1.02 s, contact at 1.20 s, the stop never fires, the hardware stop trips at 31 N at 2.75 s">
   <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"><line x1="279.2" y1="30" x2="279.2" y2="266"/><line x1="307.6" y1="44" x2="307.6" y2="266"/><line x1="552.5" y1="30" x2="552.5" y2="266"/></g>
@@ -90,11 +88,7 @@ Incident 5 on one clock. The problem set asks for the same drawing of a variant.
   <g font-size="9.5" fill="currentColor" text-anchor="middle"><text x="118.0" y="327">0</text><text x="197.0" y="327">0.5</text><text x="276.0" y="327">1</text><text x="355.0" y="327">1.5</text><text x="434.0" y="327">2</text><text x="513.0" y="327">2.5</text><text x="592.0" y="327">3</text><text x="60" y="327">trial clock (s)</text></g>
 </svg>
 
-Four things the drawing has to get right.
-- **One clock for every lane.** Sensor stream, force, stop logic and hardware stop share one time axis, because a diagnosis is a claim about order, and rows of different logs lined up by index compare different moments (§3).
-- **Fresh against stale by sequence number, not by arrival.** The F/T bar turns from solid to dashed at 1.02 s, where the sequence number stops, although samples keep arriving; a bar drawn from arrival stamps would show no gap at all.
-- **Two force lines, and the gap between them is the failure.** The true force $k_w\delta$ rises at 20 N/s from 1.20 s and crosses the 6 N threshold at 1.50 s; the force A's stop saw stays at 0.4 N. Put a hollow circle on the stop lane at 1.50 s: the stop that should have happened.
-- **Two durations, written on.** 0.30 s from contact to threshold is the time the stop logic had; 2.00 s is the driver's timeout. A watchdog 6.7 times slower than the hazard it guards cannot guard it.
+Incident 5 of F1 on one trial clock, with the sensor stream, the force, A's stop and the hardware stop in lanes one above the other. The F/T sequence number stops at 1.02 s — the first failure — while the driver keeps re-sending 0.4 N, so the true force $k_w\delta$, rising at 20 N/s from contact at 1.20 s, passes the 6 N stop threshold at 1.50 s with no stop commanded and trips the hardware stop at 31 N at 2.75 s, the symptom. The stop logic had 0.30 s from contact to threshold; the driver's 2.00 s timeout, 6.7 times slower, fires only at 3.02 s, after the symptom.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -355,9 +349,18 @@ The following are hypothetical writing examples, not reported experimental findi
 
 Tier B. Hand derivation on RS1 and F1, using only this page and its prerequisites. The variant: the stall comes later, the log runs longer, and the pose clue gets one more data point.
 
-1. **Draw.** The homework diagram for a variant of incident 5 in which the F/T stream stalls at 1.35 s — after contact, when the true force is 3 N — with everything else as in F1. Mark the first failure, the value A's stop sees, the times at which the true force crosses 6 N and 10 N, and the symptom if the hardware stop still trips at 31 N. Then add the worked case's freshness check, and mark when it commands the stop and what the true force is at that moment.
+1. **Draw.** The picture above, for a variant of incident 5 in which the F/T stream stalls at 1.35 s — after contact, when the true force is 3 N — with everything else as in F1. Mark the first failure, the value A's stop sees, the times at which the true force crosses 6 N and 10 N, and the symptom if the hardware stop still trips at 31 N. Then add the worked case's freshness check, and mark when it commands the stop and what the true force is at that moment.
 2. **Derive.** (a) The rig runs another 100 h with 2 more failures, so $k = 8$ in $T = 300$ h. Compute $\hat\lambda$, the MTBF, and the exact 95% interval for both, given $\chi^2_{0.025}(16) = 6.908$ and $\chi^2_{0.975}(18) = 31.526$. (b) A fourth F/T stall also happens within 30 mm of the panel. If stalls were unrelated to pose, how likely is it that all four land in that zone, and that at least three of the four do?
 3. **Interpret.** (a) Should incident 5 count as a failed RS1 trial of controller A, or be excluded as a rig fault? Argue from §5 and the exclusion rules of [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §7]]. (b) A requirement says the rig's MTBF must be at least 50 h. Does F1 show that the rig meets it, or that it fails it? (c) After the fix, 10 of 10 injected stalls were caught. Write the sentence the paper may print about the fix, and the one it may not.
+
+> [!note]- How to draw it · 그리는 법
+> - **One clock for every lane:** the F/T stream, the force, A's stop and the hardware stop share one time axis, because a diagnosis is a claim about order; rows of different logs lined up by index compare different moments (§3).
+> - **Fresh against stale by sequence number, not by arrival:** the F/T bar turns from solid to dashed where the sequence number stops, although samples keep arriving. A bar drawn from arrival stamps shows no gap at all.
+> - **Two force lines, and the gap between them is the failure:** the true force $k_w\delta$, rising at 20 N/s from contact at 1.20 s, and the value A's stop sees, which follows the true force until the sequence number stops and is flat from there. Draw the 6 N stop threshold and the 10 N success limit across both.
+> - **A hollow circle on the stop lane** where the true force crosses 6 N: the stop that should have happened.
+> - **Label the first failure and the symptom** with their times on the shared clock. The log's first error line, the driver's timeout, is neither: in the worked case it fires after the symptom.
+> - **Two durations, written on:** the time from contact to the 6 N threshold, which is all the stop logic has, and the driver's 2.00 s timeout. A watchdog slower than the hazard it guards cannot guard it — 6.7 times slower in the worked case.
+> - **The freshness check** acts on the age of the newest sample, not on its value; its stop goes on A's stop lane, with the true force at that moment written beside it.
 
 > [!tip]- Solutions
 > 1. The first failure is at 1.35 s, where the sequence number stops. A's stop now sees 3.0 N, frozen, and never reaches 6 N. The true force keeps rising at 20 N/s — 6 N at 1.50 s, 10 N at 1.70 s, 31 N at 2.75 s, where the hardware stop trips — so the symptom is unchanged and now comes 1.40 s after the first failure. The freshness check commands the stop 5 ms after the freeze, at 1.355 s, when the true force is $20 \times 0.155 = 3.1$ N; from there the cycle ends like any cycle A stops, with its usual stopping overshoot. A stall after contact is as dangerous as one before it, and the freshness check catches both because it watches the age of its input, not the value.
@@ -418,9 +421,7 @@ Tier B. Hand derivation on RS1 and F1, using only this page and its prerequisite
 
 *범위: 이 페이지는 실패를 진단하는 법 — 증상 뒤의 최초 실패를 찾고, 분류하고, 기전을 분리하는 법 — 과 실패 로그를 정직한 구간이 붙은 고장률, MTBF, 가용성으로 바꾸는 법을 가르친다. 그 실패가 끊는 시행을 계획하는 법은 가르치지 않는다. 그것은 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]다. 실패를 잡았어야 할 안전 기능은 [[04-robotics/hri-safety|11. HRI와 안전]], 로깅과 배치 인프라 자체는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]에 있다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-시계 하나 위의 사건 5. 과제는 변형 사건에 대해 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 640 330" style="max-width:100%;height:auto" role="img" aria-label="RS1 시험 장치의 사건 5를 한 시계 위에: 1.02 s에 힘 스트림이 멈추고, 1.20 s에 접촉, 정지는 끝내 명령되지 않고, 2.75 s에 31 N에서 하드웨어 정지">
   <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"><line x1="279.2" y1="30" x2="279.2" y2="266"/><line x1="307.6" y1="44" x2="307.6" y2="266"/><line x1="552.5" y1="30" x2="552.5" y2="266"/></g>
@@ -452,11 +453,7 @@ Tier B. Hand derivation on RS1 and F1, using only this page and its prerequisite
   <g font-size="9.5" fill="currentColor" text-anchor="middle"><text x="118.0" y="327">0</text><text x="197.0" y="327">0.5</text><text x="276.0" y="327">1</text><text x="355.0" y="327">1.5</text><text x="434.0" y="327">2</text><text x="513.0" y="327">2.5</text><text x="592.0" y="327">3</text><text x="60" y="327">시행 시계 (s)</text></g>
 </svg>
 
-그림이 반드시 맞혀야 할 네 가지.
-- **모든 줄에 시계 하나.** 센서 스트림, 힘, 정지 논리, 하드웨어 정지가 한 시간 축을 공유한다. 진단은 순서에 대한 주장이고, 서로 다른 로그의 행을 번호대로 맞추면 다른 순간을 비교하게 되기 때문이다(§3).
-- **새것과 낡은 것은 도착 시각이 아니라 시퀀스 번호로 가른다.** 표본은 계속 도착하지만, F/T 막대는 시퀀스 번호가 멈춘 1.02 s에서 실선에서 점선으로 바뀐다. 도착 시각으로 그린 막대에는 틈이 전혀 보이지 않는다.
-- **힘 곡선 둘, 그 둘 사이의 틈이 실패다.** 실제 힘 $k_w\delta$는 1.20 s부터 20 N/s로 올라 1.50 s에 6 N 문턱을 넘는다. A의 정지가 본 힘은 0.4 N에 머문다. 정지 줄의 1.50 s에 빈 원을 그려라. 일어났어야 할 정지다.
-- **두 시간 길이를 적어라.** 접촉부터 문턱까지의 0.30 s가 정지 논리에게 주어진 시간이고, 2.00 s는 드라이버의 타임아웃이다. 지켜야 할 위험보다 6.7배 느린 워치독은 그 위험을 지키지 못한다.
+F1의 사건 5를 시행 시계 하나 위에, 센서 스트림·힘·A의 정지·하드웨어 정지를 위아래 줄로 그렸다. F/T 시퀀스 번호가 1.02 s에 멈춘 것이 최초 실패이고, 드라이버가 0.4 N을 계속 재발행하는 동안 1.20 s의 접촉부터 20 N/s로 오르는 실제 힘 $k_w\delta$는 정지 명령 없이 1.50 s에 6 N 정지 문턱을 넘어 2.75 s에 31 N에서 하드웨어 정지를 작동시킨다 — 이것이 증상이다. 정지 논리에게 주어진 시간은 접촉부터 문턱까지 0.30 s였고, 그보다 6.7배 느린 드라이버의 2.00 s 타임아웃은 증상 뒤인 3.02 s에야 발동한다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -706,9 +703,18 @@ worked case는 이 절차를 RS1의 시험 장치에서 돌렸고, 거기서 낡
 
 Tier B. RS1과 F1 위의 손 유도, 이 페이지와 선수 지식만 쓴다. 변형: 멈춤이 더 늦게 오고, 로그가 더 길어지고, 자세 단서에 데이터가 하나 더 붙는다.
 
-1. **Draw.** F/T 스트림이 1.35 s — 접촉 뒤, 실제 힘이 3 N일 때 — 에 멈추고 나머지는 F1과 같은 사건 5의 변형에 대해 과제 그림을 그려라. 최초 실패, A의 정지가 보는 값, 실제 힘이 6 N과 10 N을 넘는 시각, 하드웨어 정지가 여전히 31 N에서 작동한다면 그 증상을 표시하라. 그다음 worked case의 신선도 검사를 더해, 그것이 언제 정지를 명령하는지와 그 순간의 실제 힘을 표시하라.
+1. **Draw.** F/T 스트림이 1.35 s — 접촉 뒤, 실제 힘이 3 N일 때 — 에 멈추고 나머지는 F1과 같은 사건 5의 변형에 대해 위의 그림을 그려라. 최초 실패, A의 정지가 보는 값, 실제 힘이 6 N과 10 N을 넘는 시각, 하드웨어 정지가 여전히 31 N에서 작동한다면 그 증상을 표시하라. 그다음 worked case의 신선도 검사를 더해, 그것이 언제 정지를 명령하는지와 그 순간의 실제 힘을 표시하라.
 2. **Derive.** (a) 장치가 100 h를 더 돌며 고장 2건을 더해 $T = 300$ h에 $k = 8$이 되었다. $\chi^2_{0.025}(16) = 6.908$, $\chi^2_{0.975}(18) = 31.526$을 써서 $\hat\lambda$, MTBF, 둘의 정확 95% 구간을 구하라. (b) 네 번째 F/T 멈춤도 패널 30 mm 안에서 일어났다. 멈춤이 자세와 무관하다면 네 번 모두 그 구역에 떨어질 확률은? 넷 중 적어도 셋이 그럴 확률은?
 3. **Interpret.** (a) 사건 5를 제어기 A의 실패한 RS1 시행으로 세야 하는가, 시험 장치 결함으로 제외해야 하는가? §5와 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §7]]의 제외 규칙으로 논증하라. (b) 요구 사항이 장치의 MTBF가 50 h 이상이어야 한다고 말한다. F1은 장치가 그것을 충족한다고 보여 주는가, 못 한다고 보여 주는가? (c) 수정 뒤 주입한 멈춤 10번을 모두 잡았다. 논문이 이 수정에 대해 쓸 수 있는 문장과 쓸 수 없는 문장을 하나씩 써라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **모든 줄에 시계 하나:** F/T 스트림, 힘, A의 정지, 하드웨어 정지가 한 시간 축을 공유한다. 진단은 순서에 대한 주장이고, 서로 다른 로그의 행을 번호대로 맞추면 다른 순간을 비교하게 되기 때문이다(§3).
+> - **새것과 낡은 것은 도착 시각이 아니라 시퀀스 번호로 가른다:** 표본은 계속 도착하지만, F/T 막대는 시퀀스 번호가 멈추는 곳에서 실선에서 점선으로 바뀐다. 도착 시각으로 그린 막대에는 틈이 전혀 보이지 않는다.
+> - **힘 곡선 둘, 그 둘 사이의 틈이 실패다:** 1.20 s의 접촉부터 20 N/s로 오르는 실제 힘 $k_w\delta$, 그리고 시퀀스 번호가 멈출 때까지는 실제 힘을 따르다가 거기서부터 평평해지는, A의 정지가 보는 값. 두 곡선을 가로질러 6 N 정지 문턱과 10 N 성공 한계를 그어라.
+> - **정지 줄에 빈 원:** 실제 힘이 6 N을 넘는 곳. 일어났어야 할 정지다.
+> - **최초 실패와 증상에 공유 시계 위의 시각을 적어라.** 로그의 첫 오류 줄인 드라이버의 타임아웃은 둘 다 아니다. worked case에서 그것은 증상 뒤에 발동한다.
+> - **두 시간 길이를 적어라:** 접촉부터 6 N 문턱까지, 곧 정지 논리에게 주어진 시간 전부와 드라이버의 2.00 s 타임아웃. 지켜야 할 위험보다 느린 워치독은 그 위험을 지키지 못한다 — worked case에서는 6.7배 느리다.
+> - **신선도 검사:** 값이 아니라 가장 새 표본의 나이를 보고 움직인다. 그 정지를 A의 정지 줄에 그리고, 그 순간의 실제 힘을 옆에 적어라.
 
 > [!tip]- 풀이 · Solutions
 > 1. 최초 실패는 시퀀스 번호가 멈춘 1.35 s다. A의 정지는 이제 얼어붙은 3.0 N을 보며 끝내 6 N에 닿지 않는다. 실제 힘은 계속 20 N/s로 오른다 — 1.50 s에 6 N, 1.70 s에 10 N, 2.75 s에 31 N, 거기서 하드웨어 정지가 작동한다 — 그러므로 증상은 그대로이고, 이제 최초 실패보다 1.40 s 뒤에 온다. 신선도 검사는 동결 5 ms 뒤인 1.355 s에 정지를 명령하며, 그때 실제 힘은 $20 \times 0.155 = 3.1$ N이다. 그 뒤 주기는 A가 멈추는 여느 주기처럼 평소의 정지 초과량과 함께 끝난다. 접촉 뒤의 멈춤도 접촉 전의 멈춤만큼 위험하고, 신선도 검사는 값이 아니라 입력의 나이를 보므로 둘 다 잡는다.

@@ -27,9 +27,7 @@ All three are properties of *this* configuration and not of the arm, so every ga
 
 *Scope: this page teaches setpoint regulation at one pose — what the controller must multiply by, and what happens when it does not. It does not teach trajectory tracking through a changing $M(\theta)$, contact force control ([[04-robotics/force-compliance-control|13. Force & Compliance Control]]), or optimal feedback ([[04-robotics/lqr-lqg|LQR]]).*
 
-### Homework diagram · 과제가 그릴 그림
-
-One signal-flow drawing with a small picture of the arm attached to it. Draw it left to right in three columns.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="three columns: P2 at the catalog pose with the shoulder 0.1 rad behind the command; PD with gravity compensation above computed torque, fed the same error; the plant with the off-diagonal cells of M inverse shaded. PD gives accelerations (5, −5) with the elbow circled, computed torque (10, 0)">
   <g transform="translate(0 3)">
@@ -108,13 +106,7 @@ One signal-flow drawing with a small picture of the arm attached to it. Draw it 
   </g>
 </svg>
 
-1. **Left — the error, as geometry.** P2 at the catalog pose twice: the commanded arm dashed, and the actual arm solid with the **shoulder** rotated back by $e_1 = 0.1\,\mathrm{rad} = 5.73^\circ$ while the elbow angle is unchanged. Mark both tips and the gap between them. One joint is wrong and the other is exactly right — hold on to that, because it is what the rest of the figure is about.
-2. **Middle — two controllers, stacked, sharing that one error.** The upper path is joint-space PD with gravity compensation: draw a spring and a damper on each joint *separately*, with no line crossing between the two joints, then a box adding $g$. The absence of a crossing line is not laziness in the drawing; it is the controller's assumption. The lower path is computed torque: the same $K_pe + K_d\dot e$ signal, but routed through a box labelled $M(\theta)$ that has both joints' wires entering and both leaving, then boxes adding $c$ and $g$.
-3. **Right — the plant, drawn as the thing that couples.** One box, $\ddot\theta = M^{-1}(\tau - c - g)$, with $M^{-1}$ sketched as a $2\times2$ grid and the two off-diagonal cells shaded. Shade them heavily. Every surprise on this page comes out of those two cells.
-
-Under each of the two paths write the accelerations it actually produces for the error in column 1 — $(5,\ -5)\,\mathrm{rad/s^2}$ for PD, $(10,\ 0)$ for computed torque — and circle the elbow entry in the PD row, the joint that had no error and no commanded torque.
-
-The problem set asks for this same three-column figure with the error moved to the elbow.
+Left, plant **P2** at the catalog pose with the shoulder $0.1\,\mathrm{rad} = 5.73^\circ$ behind the command and the elbow exact, $e = (0.1,\ 0)\,\mathrm{rad}$, which leaves a $0.14\,\mathrm{m}$ gap at the tip. Middle, that one error feeds PD with gravity compensation — a spring and damper per joint, with nothing crossing between the joints — which sends $\tau = (29.62,\ 0)\,\mathrm{N\,m}$, and computed torque, which routes the same signal through $M(\theta)$ and sends $(49.62,\ 10)$. Right, the plant $\ddot\theta = M^{-1}(\tau - c - g)$ couples the joints through the shaded off-diagonal $-0.5$ cells of $M^{-1}$, so PD yields $\ddot\theta = (5,\ -5)\,\mathrm{rad/s^2}$, the circled elbow moving with zero error and zero torque, while computed torque yields exactly $(10,\ 0)$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -236,9 +228,17 @@ not on impedance control alone.
 
 Tier B. Same plant **P2** at the same catalog pose from [[02-foundations/lab-plants|0.6]], same gains $K_p = 100$, $K_d = 20$, same rest condition — but the error has moved to the other joint: $e = (0,\ 0.1)\,\mathrm{rad}$, $\dot e = 0$, $\ddot\theta_d = 0$. The shoulder is now the joint that is exactly right. No simulator.
 
-1. **Draw.** The three-column figure above with the elbow displaced instead of the shoulder, both off-diagonal cells of $M^{-1}$ shaded, and the two resulting acceleration pairs written under the two controller paths. Circle the joint in the PD row that has zero error and zero commanded torque and is moving anyway.
+1. **Draw.** The picture above, with the elbow displaced instead of the shoulder: both off-diagonal cells of $M^{-1}$ shaded, and the two resulting acceleration pairs written under the two controller paths. Circle the joint in the PD row that has zero error and zero commanded torque and is moving anyway.
 2. **Derive.** (a) The computed-torque $\tau$ and the $\ddot\theta$ it produces. (b) The PD-with-gravity-compensation $\tau$ and the $\ddot\theta$ it produces. (c) The tip accelerations $\ddot p = J\ddot\theta$ for both — and say which component the two controllers agree on. (d) State the two modal $\zeta$ values for this error without recomputing them, and justify the answer in one sentence.
 3. **Interpret.** In the worked case the coupling *shrank* the commanded acceleration, $5$ instead of $10$. Here it *grows* it. Explain both outcomes from the entries of $M^{-1}$, and say what that implies about the common practice of tuning a manipulator's gains one joint at a time with the other joints held.
+
+> [!note]- How to draw it · 그리는 법
+> - Three columns, left to right: the error as geometry, the two controllers stacked and fed that one error, and the plant.
+> - Left: P2 at the catalog pose twice, the commanded arm dashed and the actual arm solid, with only the erroneous joint turned back by $0.1\,\mathrm{rad} = 5.73^\circ$. Mark both tips and the gap between them — one joint is wrong and the other exactly right.
+> - Middle, upper path, PD with gravity compensation: a spring and a damper on each joint separately, no line crossing between the joints, then a box adding $g$. The missing crossing line is not laziness in the drawing; it is the controller's assumption.
+> - Middle, lower path, computed torque: the same $K_pe + K_d\dot e$ signal through a box $M(\theta)$ that both joints' wires enter and both leave, then boxes adding $c$ and $g$.
+> - Right: one box, $\ddot\theta = M^{-1}(\tau - c - g)$, with $M^{-1}$ as a $2\times2$ grid and its two off-diagonal cells shaded heavily. Every surprise on this page comes out of those two cells.
+> - Under each path, write the acceleration pair it actually produces for the error on the left, and in the PD row circle the joint that has zero error and zero commanded torque yet moves.
 
 > [!tip]- Solutions
 > 1. Same figure, shoulder and elbow roles exchanged. PD row: $\ddot\theta = (-5,\ 15)$, with the **shoulder** circled. Computed-torque row: $\ddot\theta = (0,\ 10)$.
@@ -259,9 +259,7 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
 
 *범위: 이 페이지는 한 자세에서의 설정점 제어를 가르친다. 제어기가 무엇을 곱해야 하는지, 곱하지 않으면 무슨 일이 일어나는지다. $M(\theta)$가 변하는 궤적 추종, 접촉 힘 제어([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]), 최적 피드백([[04-robotics/lqr-lqg|LQR]])은 가르치지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-신호 흐름도 하나에 팔 그림을 작게 붙인다. 왼쪽에서 오른쪽으로 세 열이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="세 열: 명령보다 어깨가 0.1 rad 뒤진 카탈로그 자세의 P2, 같은 오차를 받는 중력 보상 PD와 그 아래의 계산 토크, 그리고 M 역행렬의 비대각 칸을 칠한 플랜트. PD는 가속도 (5, −5)를 내고 엘보에 동그라미, 계산 토크는 (10, 0)">
   <g transform="translate(0 3)">
@@ -341,13 +339,7 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
   </g>
 </svg>
 
-1. **왼쪽 — 오차를 기하로.** 카탈로그 자세의 P2를 두 번 그린다. 명령된 팔은 점선, 실제 팔은 실선인데 **어깨**만 $e_1 = 0.1\,\mathrm{rad} = 5.73^\circ$만큼 뒤로 돌아가 있고 엘보 각은 그대로다. 두 말단과 그 사이의 간격을 표시한다. 한 관절은 틀렸고 다른 관절은 정확히 맞다는 것을 붙들고 있어라. 그림의 나머지가 그것에 대한 것이다.
-2. **가운데 — 그 오차 하나를 나눠 쓰는 제어기 둘, 위아래로.** 위쪽 경로는 중력 보상을 붙인 관절 공간 PD다. 관절마다 스프링과 댐퍼를 *따로* 그리고, 두 관절 사이를 건너는 선은 하나도 그리지 않은 뒤 $g$를 더하는 상자를 붙인다. 건너는 선이 없는 것은 그림을 대충 그린 것이 아니라 그 제어기의 가정이다. 아래쪽 경로는 계산 토크다. 같은 $K_pe + K_d\dot e$ 신호를 $M(\theta)$라고 쓴 상자로 보내는데, 그 상자에는 두 관절의 선이 모두 들어가고 모두 나온다. 그다음 $c$와 $g$를 더하는 상자가 있다.
-3. **오른쪽 — 결합을 만드는 쪽인 플랜트.** 상자 하나, $\ddot\theta = M^{-1}(\tau - c - g)$. $M^{-1}$을 $2\times2$ 격자로 스케치하고 비대각 칸 둘을 칠한다. 진하게 칠한다. 이 페이지의 모든 놀라움이 그 두 칸에서 나온다.
-
-두 경로 아래에는 1열의 오차에 대해 각 경로가 실제로 만드는 가속도를 적는다. PD는 $(5,\ -5)\,\mathrm{rad/s^2}$, 계산 토크는 $(10,\ 0)$이다. 그리고 PD 줄의 엘보 항목, 곧 오차도 0이고 명령 토크도 0인 관절에 동그라미를 친다.
-
-과제는 오차를 엘보로 옮긴 같은 3열 그림을 요구한다.
+왼쪽은 카탈로그 자세의 P2로, 어깨가 명령보다 $0.1\,\mathrm{rad} = 5.73^\circ$ 뒤지고 엘보는 정확해 $e = (0.1,\ 0)\,\mathrm{rad}$이며 말단 간격은 $0.14\,\mathrm{m}$다. 가운데에서는 그 오차 하나가 두 제어기로 들어가, 관절마다 스프링과 댐퍼를 따로 두고 두 관절 사이를 건너는 선이 없는 중력 보상 PD는 $\tau = (29.62,\ 0)\,\mathrm{N\,m}$를, 같은 신호를 $M(\theta)$에 통과시키는 계산 토크는 $(49.62,\ 10)$을 보낸다. 오른쪽의 플랜트 $\ddot\theta = M^{-1}(\tau - c - g)$는 $M^{-1}$의 칠한 비대각 칸 $-0.5$로 두 관절을 묶으므로, PD는 오차도 토크도 0인 엘보(동그라미)까지 움직이는 $\ddot\theta = (5,\ -5)\,\mathrm{rad/s^2}$를, 계산 토크는 정확히 $(10,\ 0)$을 낸다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -465,9 +457,17 @@ $$\tau = \hat M(\theta)\bigl(\ddot\theta_d + K_pe + K_d\dot e\bigr) + \hat c(\th
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 같은 장치 **P2**, 같은 카탈로그 자세, 같은 이득 $K_p = 100$, $K_d = 20$, 같은 정지 조건. 다만 오차가 반대쪽 관절로 옮겨 갔다. $e = (0,\ 0.1)\,\mathrm{rad}$, $\dot e = 0$, $\ddot\theta_d = 0$이고, 이제 정확히 맞는 관절은 어깨다. 시뮬레이터 없음.
 
-1. **그리기.** 위의 3열 그림을 어깨 대신 엘보가 어긋난 상태로 다시 그린다. $M^{-1}$의 비대각 칸 둘을 칠하고, 두 제어 경로 아래에 각각의 가속도 쌍을 적는다. PD 줄에서 오차도 0, 명령 토크도 0인데 움직이고 있는 관절에 동그라미를 쳐라.
+1. **그리기.** 위의 그림을 어깨 대신 엘보가 어긋난 상태로 다시 그린다. $M^{-1}$의 비대각 칸 둘을 칠하고, 두 제어 경로 아래에 각각의 가속도 쌍을 적는다. PD 줄에서 오차도 0, 명령 토크도 0인데 움직이고 있는 관절에 동그라미를 쳐라.
 2. **유도.** (a) 계산 토크의 $\tau$와 그것이 만드는 $\ddot\theta$. (b) 중력 보상 PD의 $\tau$와 그것이 만드는 $\ddot\theta$. (c) 둘의 말단 가속도 $\ddot p = J\ddot\theta$, 그리고 두 제어기가 일치하는 성분은 어느 것인지. (d) 이 오차에서의 두 모드 $\zeta$ 값을 다시 계산하지 말고 말하고, 한 문장으로 근거를 대라.
 3. **해석.** 위 계산에서는 결합이 명령 가속도를 *줄였다*. $10$ 대신 $5$였다. 여기서는 *키운다*. 두 결과를 $M^{-1}$의 성분으로 설명하고, 다른 관절을 붙들어 놓고 한 관절씩 이득을 조율하는 흔한 관행에 대해 그것이 무엇을 뜻하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 왼쪽에서 오른쪽으로 세 열: 기하로 그린 오차, 그 오차 하나를 받는 제어기 둘(위아래), 그리고 플랜트.
+> - 왼쪽: 카탈로그 자세의 P2를 두 번, 명령된 팔은 점선, 실제 팔은 실선으로 그리되 어긋난 관절만 $0.1\,\mathrm{rad} = 5.73^\circ$ 뒤로 돌린다. 두 말단과 그 간격을 표시한다. 한 관절은 틀렸고 다른 관절은 정확히 맞다.
+> - 가운데 위쪽 경로, 중력 보상 PD: 관절마다 스프링과 댐퍼를 따로 그리고, 두 관절 사이를 건너는 선은 그리지 않은 뒤 $g$를 더하는 상자를 붙인다. 건너는 선이 없는 것은 대충 그린 것이 아니라 그 제어기의 가정이다.
+> - 가운데 아래쪽 경로, 계산 토크: 같은 $K_pe + K_d\dot e$ 신호를 두 관절의 선이 모두 들어가고 모두 나오는 $M(\theta)$ 상자로 보내고, 그다음 $c$와 $g$를 더하는 상자를 둔다.
+> - 오른쪽: 상자 하나, $\ddot\theta = M^{-1}(\tau - c - g)$. $M^{-1}$을 $2\times2$ 격자로 그리고 비대각 칸 둘을 진하게 칠한다. 이 페이지의 모든 놀라움이 그 두 칸에서 나온다.
+> - 두 경로 아래에 왼쪽의 오차에 대해 각 경로가 실제로 만드는 가속도 쌍을 적고, PD 줄에서 오차도 명령 토크도 0인데 움직이는 관절에 동그라미를 친다.
 
 > [!tip]- 정답
 > 1. 같은 그림에서 어깨와 엘보의 역할만 바뀐다. PD 줄: $\ddot\theta = (-5,\ 15)$, **어깨**에 동그라미. 계산 토크 줄: $\ddot\theta = (0,\ 10)$.

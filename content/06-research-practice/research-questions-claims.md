@@ -51,9 +51,7 @@ What RS1 leaves unfixed on purpose: B's target impedance, A's stop threshold, th
 
 *Scope: this page teaches how to turn RS1 from a topic into a falsifiable, scoped claim, and how to fill the claim–evidence table that says which sentences the pilot licenses. It does not teach how many trials the confirmatory run needs or how to assign and randomize them ([[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]), how to derive the tests ([[02-foundations/probability|3. Probability §6]]), how to write the result up ([[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]]), or which rung of deployment evidence it reaches ([[06-research-practice/real-world-impact|6. Real-World Impact]]).*
 
-### Homework diagram · 과제가 그릴 그림
-
-Two panels. The problem set asks for the same two for a different claim.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 590" style="max-width:100%;height:auto" role="img" aria-label="Two panels: the vague draft and the rewritten RS1 claim with their scope, intervention, comparator, outcome and withdrawal brackets, and RS1's twenty pilot peaks on a force axis with the 10 N line fixed before the pilot and the 9 to 10 N band shaded">
   <text x="16" y="22" font-size="12.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="7">The claim’s anatomy</tspan></text>
@@ -152,10 +150,7 @@ Two panels. The problem set asks for the same two for a different claim.
   <text x="16" y="578" font-size="11" opacity="0.9" fill="currentColor">so the verdict moves when the line moves: the line is part of the claim.</text>
 </svg>
 
-1. **The claim's anatomy.** Write the rewritten claim of the worked case (Step 3) across the page and bracket its phrases from below with four labels — **S** (scope: P2, the 400 N/m panel, the RS1 trial), **I** (intervention: B), **C** (comparator: A), **Y** (outcome: peak contact force in N, success at ≤ 10 N) — and a fifth bracket under the sentence that says what would withdraw it, **R**. Above it, write the vague draft "impedance control makes robot contact safer" with the same five brackets, and leave empty every bracket it does not fill.
-2. **The operational definition, drawn.** A horizontal force axis from 5 to 15 N. A's ten peaks as dots on one row, B's ten on the row below. A vertical line at 10 N labelled *fixed before the pilot*, and each row's count written left of the line: 6/10 and 9/10. Then shade the band from 9 to 10 N. Four of A's peaks sit in it (9.1, 9.4, 9.8, 9.9), which is why the verdict moves when the line moves.
-
-A correct drawing already shows the worked case's hardest point: the line is part of the claim, so it has to be drawn before the dots are.
+Panel 1 brackets RS1's claim from below with its scope S, intervention I, comparator C, outcome Y and the rule R that would withdraw it: the vague draft "impedance control makes robot contact safer" fills only I, and that only with a family name, while the worked case's rewritten claim fills all five. Panel 2 draws the operational definition — the twenty pilot peaks on a force axis from 5 to 15 N, with the 10 N line fixed before the pilot, A at 6/10 and B at 9/10. Four of A's peaks, 9.1, 9.4, 9.8 and 9.9 N, sit in the shaded 9–10 N band, so the verdict moves when the line moves: the line is part of the claim.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -378,9 +373,17 @@ The worked case fills this table for RS1, with three more columns — the claim 
 
 Tier B. Hand work on RS1, using only this page, its prerequisites and the pilot frozen in the running object. A different claim from the worked case: the worked case tested means with the line at 10 N; these items move the line, and then test a claim with no line at all.
 
-1. **Draw.** Redraw the homework diagram's second panel with the success line at 12 N instead of 10 N. Count each row's successes and circle every dot whose category changed. Then redraw the claim's anatomy for the secondary claim under this definition. Which bracket changed, and which stayed the same?
+1. **Draw.** Redraw the second panel of the picture above with the success line at 12 N instead of 10 N. Count each row's successes and circle every dot whose category changed. Then redraw the claim's anatomy for the secondary claim under this definition. Which bracket changed, and which stayed the same?
 2. **Derive.** A co-author proposes a claim with no threshold: "a B contact is gentler than an A contact". (a) Rewrite it as a falsifiable claim about $\theta = P(Y_A > Y_B)$, the probability that a randomly chosen A trial peaks higher than a randomly chosen B trial, naming $S$, $I$, $C$, $Y$ and a withdrawal rule. (b) Estimate $\theta$ from the pilot by counting, over all $10 \times 10$ cross pairs, how often A's peak is the higher one. (c) Which value of $\theta$ means "no difference", and why does this claim not depend on where any line is drawn?
 3. **Interpret.** A draft abstract reads: "Impedance control eliminates excessive contact forces." (a) Which claim type of §4 is it, and exactly which result would it forbid, if "excessive" means RS1's 10 N? (b) Does the pilot support it, fail to support it, or contradict it? (c) Write the strongest sentence about excessive forces that the pilot does license, and say what a reliability version of the claim ("B exceeds 10 N in fewer than 10% of contacts") would need.
+
+> [!note]- How to draw it · 그리는 법
+> - **The operational definition on one axis:** a horizontal force axis from 5 to 15 N, A's ten peaks as dots on one row and B's ten on the row below. The dots never move; only the line does.
+> - **The line comes first:** draw the success line and label it before placing a single dot, because the line is part of the claim — the worked case's reads *10 N, fixed before the pilot*.
+> - **Each row's count, written left of the line** — 6/10 and 9/10 in the worked case.
+> - **Mark where the verdict is fragile:** the worked case shades the 9–10 N band, which holds four of A's peaks (9.1, 9.4, 9.8, 9.9); move the line across it and the verdict moves.
+> - **The claim's anatomy:** write the claim across the page and bracket its phrases from below — S (scope), I (intervention), C (comparator), Y (outcome, with its threshold) — and put a fifth bracket, R, under the whole sentence for the result that would withdraw it.
+> - **Leave empty every bracket a phrase does not pin down:** the vague draft's "robot contact" and "safer" leave S and Y empty, and it has no C or R at all.
 
 > [!tip]- Solutions
 > 1. At 12 N, A's successes are 8.1, 9.4, 9.8, 7.7, 9.9, 9.1 and 11.3, so 7/10, and all ten of B's peaks are below the line, so 10/10. Circle A's 11.3 and B's 10.6: they are the only dots that change category. In the anatomy, S, I and C are untouched; the Y bracket changed, because the threshold is part of the outcome's operational definition, and R changed with it, because the withdrawal rule is stated on Y. So "success at 12 N" is a different claim from "success at 10 N". Since 10 N was fixed before the pilot, the 12 N version may be reported only as a labelled sensitivity analysis beside the prespecified result, never in its place.
@@ -438,9 +441,7 @@ RS1이 일부러 정하지 않은 것: B의 목표 임피던스, A가 멈추는 
 
 *범위: 이 페이지는 RS1을 주제에서 반증 가능하고 범위가 정해진 주장으로 바꾸는 법, 그리고 파일럿이 어떤 문장을 허락하는지 말해 주는 주장–증거 표를 채우는 법을 가르친다. 확인 실험에 시행이 몇 번 필요한지와 시행을 어떻게 배정하고 무작위화하는지([[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]), 검정을 유도하는 법([[02-foundations/probability|3. 확률 §6]]), 결과를 논문으로 쓰는 법([[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]), 결과가 배치 증거의 어느 단에 오르는지([[06-research-practice/real-world-impact|6. 실세계 임팩트]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 두 장. 과제는 다른 주장에 대해 같은 두 장을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 545" style="max-width:100%;height:auto" role="img" aria-label="그림 두 장: 모호한 초안과 고쳐 쓴 RS1 주장에 범위·개입·비교 대상·결과·철회 괄호를 친 해부도, 그리고 파일럿 전에 고정한 10 N 선과 9–10 N 띠를 칠한 힘 축 위의 파일럿 최대 접촉력 스무 개">
   <text x="16" y="22" font-size="12.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="7">주장의 해부도</tspan></text>
@@ -541,10 +542,7 @@ RS1이 일부러 정하지 않은 것: B의 목표 임피던스, A가 멈추는 
   <text x="16" y="533" font-size="11" opacity="0.9" fill="currentColor">선이 움직이면 판정도 움직인다. 선은 주장의 일부다.</text>
 </svg>
 
-1. **주장의 해부도.** 계산 예제 3단계에서 고쳐 쓴 주장을 가로로 적고, 구절마다 아래에서 괄호를 친다. S(범위: P2, 400 N/m 패널, RS1 시행), I(개입: B), C(비교 대상: A), Y(결과: 뉴턴 단위 최대 접촉력, 10 N 이하면 성공) 네 개와, 문장 아래에 무엇이 주장을 철회시키는지 적는 다섯 번째 괄호 R이다. 그 위에는 모호한 초안 "임피던스 제어가 로봇 접촉을 더 안전하게 만든다"를 같은 다섯 괄호와 함께 적고, 초안이 채우지 못한 괄호는 모두 비워 둔다.
-2. **조작적 정의를 그림으로.** 5 N에서 15 N까지의 가로 힘 축을 긋는다. 한 줄에 A의 최대 접촉력 열 개를 점으로, 그 아래 줄에 B의 열 개를 찍는다. 10 N에 세로선을 긋고 *파일럿 전에 고정*이라고 적은 다음, 선 왼쪽에 각 줄의 개수 6/10과 9/10을 쓴다. 그리고 9 N에서 10 N 사이의 띠를 칠한다. A의 최댓값 넷(9.1, 9.4, 9.8, 9.9)이 그 안에 있고, 그래서 선이 움직이면 판정도 움직인다.
-
-제대로 그린 그림은 계산 예제의 가장 어려운 점을 이미 보여 준다. 선은 주장의 일부이므로 점보다 먼저 그어야 한다.
+첫째 장은 RS1의 주장에 아래에서 범위 S, 개입 I, 비교 대상 C, 결과 Y, 그리고 주장을 철회시킬 규칙 R의 괄호를 친다 — 모호한 초안 "임피던스 제어가 로봇 접촉을 더 안전하게 만든다"는 I 하나만, 그것도 계열 이름으로만 채우고, 계산 예제에서 고쳐 쓴 주장은 다섯을 모두 채운다. 둘째 장은 조작적 정의를 그림으로 옮긴 것으로, 5 N에서 15 N까지의 힘 축 위에 파일럿 최대 접촉력 스무 개와 파일럿 전에 고정한 10 N 선이 있고, A는 6/10, B는 9/10이다. A의 최댓값 넷, 9.1, 9.4, 9.8, 9.9 N이 칠한 9–10 N 띠 안에 있어서 선이 움직이면 판정도 움직인다 — 선은 주장의 일부다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -778,9 +776,17 @@ $$t_c = \pi\sqrt{\Lambda_y / k}$$
 
 Tier B. RS1 위의 손 계산이다. 이 페이지, 선수 지식, 이 페이지의 대상에 고정한 파일럿만 쓴다. 계산 예제와 다른 주장이다. 계산 예제는 선을 10 N에 두고 평균을 시험했고, 여기서는 선을 옮긴 다음 선이 아예 없는 주장을 시험한다.
 
-1. **그리기.** 과제 그림의 두 번째 장을, 성공 선을 10 N 대신 12 N에 두고 다시 그린다. 줄마다 성공을 세고, 범주가 바뀐 점에 모두 동그라미를 친다. 그다음 이 정의 아래의 부차 주장에 대해 주장의 해부도를 다시 그린다. 어느 괄호가 바뀌었고 어느 괄호가 그대로인가?
+1. **그리기.** 위 그림의 두 번째 장을, 성공 선을 10 N 대신 12 N에 두고 다시 그린다. 줄마다 성공을 세고, 범주가 바뀐 점에 모두 동그라미를 친다. 그다음 이 정의 아래의 부차 주장에 대해 주장의 해부도를 다시 그린다. 어느 괄호가 바뀌었고 어느 괄호가 그대로인가?
 2. **유도.** 공저자가 문턱 없는 주장을 제안한다. "B의 접촉은 A의 접촉보다 부드럽다." (가) 이를 $\theta = P(Y_A > Y_B)$, 곧 무작위로 고른 A 시행이 무작위로 고른 B 시행보다 최댓값이 높을 확률에 대한 반증 가능한 주장으로 고쳐 쓰고, $S$, $I$, $C$, $Y$와 철회 규칙을 밝힌다. (나) $10 \times 10$개의 교차 쌍 전부에서 A의 최댓값이 더 높은 경우를 세어 파일럿으로 $\theta$를 추정한다. (다) "차이 없음"을 뜻하는 $\theta$의 값은 무엇이고, 이 주장이 선의 위치에 의존하지 않는 이유는?
 3. **해석.** 초록 초안에 이렇게 적혀 있다. "임피던스 제어는 과도한 접촉력을 없앤다." (가) §4의 어느 주장 유형이며, "과도한"이 RS1의 10 N을 뜻한다면 정확히 어떤 결과를 금지하는가? (나) 파일럿은 이 주장을 지지하는가, 지지하지 못하는가, 반박하는가? (다) 과도한 힘에 대해 파일럿이 실제로 허락하는 가장 강한 문장을 쓰고, 신뢰성 버전("B는 접촉의 10% 미만에서만 10 N을 넘는다")에는 무엇이 필요한지 말한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - **조작적 정의를 한 축 위에:** 5 N에서 15 N까지의 가로 힘 축을 긋고, 한 줄에 A의 최대 접촉력 열 개를 점으로, 그 아래 줄에 B의 열 개를 찍는다. 점은 움직이지 않고 선만 움직인다.
+> - **선이 먼저다:** 점을 하나라도 찍기 전에 성공 선을 긋고 이름을 붙인다. 선은 주장의 일부이기 때문이다 — 계산 예제의 선에는 *10 N, 파일럿 전에 고정*이라고 적혀 있다.
+> - **줄마다 개수를 선 왼쪽에 적는다.** 계산 예제에서는 6/10과 9/10.
+> - **판정이 흔들리는 곳을 표시한다:** 계산 예제는 A의 최댓값 넷(9.1, 9.4, 9.8, 9.9)이 들어 있는 9–10 N 띠를 칠한다. 선을 그 띠 너머로 옮기면 판정이 움직인다.
+> - **주장의 해부도:** 주장을 가로로 적고 구절마다 아래에서 괄호를 친다 — S(범위), I(개입), C(비교 대상), Y(결과, 문턱까지) — 그리고 문장 전체 아래에 주장을 철회시킬 결과를 적는 다섯 번째 괄호 R을 둔다.
+> - **구절이 못 박지 못한 괄호는 모두 비워 둔다:** 모호한 초안의 "로봇 접촉"과 "더 안전하게"는 S와 Y를 비워 두고, C와 R은 아예 없다.
 
 > [!tip]- 정답 · Solutions
 > 1. 12 N에서 A의 성공은 8.1, 9.4, 9.8, 7.7, 9.9, 9.1, 11.3으로 7/10이고, B의 최댓값 열 개는 모두 선 아래라 10/10이다. 범주가 바뀐 점은 A의 11.3과 B의 10.6뿐이니 둘에 동그라미를 친다. 해부도에서 S, I, C는 그대로다. 문턱은 결과의 조작적 정의의 일부이므로 Y 괄호가 바뀌었고, 철회 규칙이 Y 위에 적혀 있으므로 R도 함께 바뀌었다. 그러니 "12 N에서의 성공"은 "10 N에서의 성공"과 다른 주장이다. 10 N은 파일럿 전에 고정했으므로, 12 N 버전은 미리 정한 결과 옆에 이름을 붙인 민감도 분석으로만 보고할 수 있고 그 자리를 대신할 수는 없다.

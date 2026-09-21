@@ -34,20 +34,14 @@ $T_d$ is a *declared* channel property of this page, not a measurement of any ne
 
 *Scope: this page teaches the bilateral pair as a two-port energy and information system — the four port signals, what transparency asserts, what scaling does to power, and what delay does to the passivity argument. It does not re-derive the sampled-data wall bound, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]; nor run a simulator, which stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]; nor derive the wave-variable channel-passivity proof, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One drawing, five blocks in a row, and the problem set asks for this one.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
     H["human"] <-->|"f₁, v₁"| L["leader +<br/>controller"] <-->|"delayed/scaled<br/>channel"| R["follower +<br/>controller"] <-->|"f₂, v₂"| E["environment"]
 ```
 
-Four things have to be on the page, and three of them are the things a published block diagram usually leaves out.
-**Both ports drawn as double-headed arrows**, each labelled with its own pair $(F_1,v_1)$ and $(F_2,v_2)$. A single-headed arrow claims information flow where there is power flow, and the whole page is about power.
-**The sign convention, written on the figure** — here, positive force *into* the network at both ports. Write it as a short legend, not as an arrowhead, because the arrowhead is what everyone reads differently.
-**The delay, on both directions separately**, each marked $T_d=50\,\mathrm{ms}$, with the round trip $2T_d=100\,\mathrm{ms}$ written underneath. A single box labelled "network" hides whether the return path is delayed, which is the one thing that decides the argument.
-**The wall as a switch at the follower**, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], plus the two scale blocks $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears in the power and the *ratio* $s_f/s_x$ always does.
+Two copies of P3 joined by one channel: the operator's hand meets the leader at the port $(F_1,v_1)$, the follower meets the environment — here the catalog wall, $k_w=400\,\mathrm{N/m}$ — at $(F_2,v_2)$, and the channel between them delays each direction by $T_d=50\,\mathrm{ms}$ while scaling motion by $s_x=0.1$ and reflected force by $s_f=0.1$ or $10$. Both ports are double-headed because what crosses them is power, and the leader's port carries $s_f/s_x$ times the follower's: the same power at $s_f=0.1$, a hundred times it at $s_f=10$. Around the loop the delay is $2T_d=100\,\mathrm{ms}$, which lowers the stiffest wall the leader may reflect from the local $1600\,\mathrm{N/m}$ to $7.96\,\mathrm{N/m}$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -65,7 +59,11 @@ because the device damper's phase lead is the only thing paying for lag, and the
 
 $$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
 
-which is below a typical force JND near $1\,\mathrm{N}$ and therefore not a cue at all. The honest scaling is unusable, which is the whole reason the next step exists.
+and whether that is a cue is a question about the hand. The force discrimination this track measures, in [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]], found a JND of $0.4107\,\mathrm{N}$ near $5\,\mathrm{N}$, a Weber fraction $k=0.4107/5.0429=0.0814$, and Weber's law reads that as a JND of $k$ times whatever force the hand already carries. Here the hand carries $s_fF_f$ and a follower change $\Delta F_f$ reaches it as $s_f\Delta F_f$, so the change is felt when
+
+$$s_f\,\Delta F_f\ge k\,s_fF_f\quad\Longleftrightarrow\quad\Delta F_f\ge kF_f=0.0814\cdot1=0.081\,\mathrm{N}$$
+
+because $s_f$ divides out: at this page's $1\,\mathrm{N}$ the JND is $0.08\,\mathrm{N}$, not $1\,\mathrm{N}$ (which is the JND of a $12\,\mathrm{N}$ reference), and on Weber's law alone the honest scaling would cost nothing. What it costs is the range where $k$ is known. 24.1's problem set finds $k$ already risen to $0.0896$ at $2.03\,\mathrm{N}$ and measures nothing lower, and the leader's $0.1\,\mathrm{N}$ is twenty times below that, so no measurement on this track says the hand resolves anything there. The honest scaling puts the whole contact signal in that gap, which is the whole reason the next step exists.
 
 **Step 4 — force amplification, and what it costs.** Choose $s_f=10$ with $s_x=0.1$ instead. The leader now reflects $10\,\mathrm{N}$ from the same $1\,\mathrm{N}$ contact, and
 
@@ -79,7 +77,7 @@ The problem set is this same pair with the same channel, asked as a drawing and 
 
 ### 1. Two ports and four signals
 
-A bilateral system has a local **leader** port coupled to the human and a remote **follower** port coupled to the environment, drawn in the Homework diagram above. Each port has force and velocity, and therefore power. A paper is unreadable until its signs are declared: does positive force point into the network at both ports, or along the same spatial axis? The passivity inequality changes appearance with convention even when the physics is identical.
+A bilateral system has a local **leader** port coupled to the human and a remote **follower** port coupled to the environment, drawn in the picture above. Each port has force and velocity, and therefore power. A paper is unreadable until its signs are declared: does positive force point into the network at both ports, or along the same spatial axis? The passivity inequality changes appearance with convention even when the physics is identical.
 
 Each of those two ports is a port in the sense of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]] — one effort–flow pair, one causality — and the energy that crosses it obeys the inequality of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]. What is new here is that there are two of them and one system in between, which has a name.
 
@@ -183,13 +181,20 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]] as *both* leader and
 
 Leader motion is sent to the follower; follower wall force $F_a$ is sent back. One-way delay $T_d=50\,\mathrm{ms}$. Local sample $T=1\,\mathrm{ms}$. Catalog $k_w=400$, $b=0.8$.
 
-1. **Draw.** Human port $(F_1,v_1)$ — leader P3 — delayed channel — follower P3 — wall. Mark the four signals and the sign convention (positive force into the network at both ports).
+1. **Draw.** The picture above, for this set's channel: human port $(F_1,v_1)$ — leader P3 — delayed channel — follower P3 — wall. Mark the four signals and the sign convention (positive force into the network at both ports).
 2. **Derive.** (a) Power-preserving scales $s_f=s_x$. If $s_x=0.1$ and the follower holds $F_f=1\,\mathrm{N}$ (catalog wall at $2.5\,\mathrm{mm}$ in), what does the leader reflect? Too faint? (b) With $s_f=10$, $s_x=0.1$, the power ratio $s_f/s_x$. Can the pair inherit passivity from its parts? (c) The delayed bound $K\le b/(T/2+T_D)$ (Diolaiti et al. 2006) at the leader, where $T_D$ is the delay around the loop. Which $T_D$ does this architecture put there, what is the ceiling, and does catalog $k_w$ pass? What would the ceiling be if only one direction were delayed?
 3. **Interpret.** Users are slower after you add damping to survive the delay. Is that a contradiction of passivity?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw both ports as double-headed arrows, each labelled with its own pair: $(F_1,v_1)$ at the hand, $(F_2,v_2)$ at the wall. A single-headed arrow claims information flow where there is power flow, and the whole page is about power.
+> - Write the sign convention on the figure as a short legend — positive force *into* the network at both ports — not as an arrowhead, because the arrowhead is what everyone reads differently.
+> - Draw the delay on each direction separately, leader motion going out and wall force $F_a$ coming back, each marked $T_d=50\,\mathrm{ms}$, with the round trip $2T_d=100\,\mathrm{ms}$ written underneath. A single box labelled "network" hides whether the return path is delayed, which is the one thing that decides the argument.
+> - Draw the wall at the follower as a switch, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], not as a spring.
+> - Put the two scale blocks on the channel, $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears in the power and the ratio $s_f/s_x$ always does.
+
 > [!tip]- Solutions
 > 1. Four signals $F_1,v_1,F_2,v_2$; delay on both directions or at least on force; wall switch at the follower. Arrows for force into the two-port.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — below a typical force JND near $1\,\mathrm{N}$, too faint. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — too faint to rely on, but not because it is under a JND. With 24.1 §6's $k=0.0814$, $s_f$ divides out of $s_f\Delta F_f\ge ks_fF_f$, so the smallest follower change the hand feels is $kF_f=0.081\,\mathrm{N}$ whatever $s_f$ is; the trouble is that $0.1\,\mathrm{N}$ is twenty times below $2.03\,\mathrm{N}$, the lowest force at which 24.1 measured $k$, where it had already risen to $0.0896$. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
 > 3. No. Passivity bounds energy generation, not transparency or speed. Added dissipation can stabilize and make the wall feel sluggish — the trade §4 names.
 
 ### Sources
@@ -219,20 +224,14 @@ $T_d$는 이 페이지가 *선언한* 채널 성질이지 어떤 네트워크의
 
 *범위: 이 페이지는 양방향 쌍을 2포트 에너지·정보 시스템으로 가르친다 — 포트 신호 넷, 투명성이 주장하는 것, 스케일링이 일률에 하는 일, 지연이 수동성 논증에 하는 일. 샘플링 데이터 벽 경계를 다시 유도하지는 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]다. 시뮬레이터도 돌리지 않는다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남는다. Wave variable 채널의 수동성 증명도 유도하지 않는다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 한 줄에 블록 다섯. 과제가 요구하는 것이 이 그림이다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
     H["사람"] <-->|"f₁, v₁"| L["leader +<br/>제어기"] <-->|"지연·스케일된<br/>채널"| R["follower +<br/>제어기"] <-->|"f₂, v₂"| E["환경"]
 ```
 
-그림에 들어가야 할 것이 넷이고, 그중 셋은 출판된 블록선도가 보통 빠뜨리는 것이다.
-**두 포트를 양쪽 화살표로.** 각각 자기 쌍 $(F_1,v_1)$과 $(F_2,v_2)$를 달아 준다. 한쪽 화살표는 일률이 흐르는 곳에 정보가 흐른다고 주장하는 것이고, 이 페이지 전체가 일률에 대한 이야기다.
-**부호 규약을 그림 위에.** 여기서는 두 포트 모두 네트워크 *안쪽*이 양의 힘이다. 화살촉이 아니라 짧은 범례로 적어라. 화살촉이야말로 사람마다 다르게 읽는 것이다.
-**지연을 양방향에 따로.** 각각 $T_d=50\,\mathrm{ms}$로 표시하고 아래에 왕복 $2T_d=100\,\mathrm{ms}$를 적는다. "네트워크"라고만 적힌 상자 하나는 되돌아오는 경로가 지연되는지를 가리는데, 논증을 정하는 것이 바로 그것이다.
-**follower의 벽은 스위치로.** [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다. 나가는 길의 $s_x$와 돌아오는 길의 $s_f$ 스케일 블록도 함께 그려서, 곱 $s_fs_x$는 일률에 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보이게 한다.
+조작자의 손은 포트 $(F_1,v_1)$에서 leader P3를 만나고 follower P3는 포트 $(F_2,v_2)$에서 환경(여기서는 카탈로그 벽, $k_w=400\,\mathrm{N/m}$)을 만나며, 그 사이의 채널은 양방향을 각각 $T_d=50\,\mathrm{ms}$씩 지연시키고 운동을 $s_x=0.1$로, 반사되는 힘을 $s_f=0.1$ 또는 $10$으로 스케일한다. 두 포트가 양쪽 화살표인 것은 거기를 건너는 것이 일률이기 때문이고, leader 포트는 follower 일률의 $s_f/s_x$배, 즉 $s_f=0.1$이면 같은 일률을, $s_f=10$이면 백 배를 나른다. 루프를 한 바퀴 도는 지연은 $2T_d=100\,\mathrm{ms}$이고, 이것이 leader가 반사해도 되는 가장 단단한 벽을 로컬 천장 $1600\,\mathrm{N/m}$에서 $7.96\,\mathrm{N/m}$으로 끌어내린다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -250,7 +249,11 @@ $$K\le\frac{b}{T/2+2T_d}=\frac{0.8}{0.0005+0.100}=7.96\,\mathrm{N/m}$$
 
 $$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
 
-이고, 이는 $1\,\mathrm{N}$ 부근의 흔한 힘 JND보다 작아 cue가 되지 못한다. 정직한 스케일링이 쓸모없다는 것, 이것이 다음 단계가 존재하는 이유다.
+이다. 이것이 cue가 되는지는 손에 대한 질문이다. 이 트랙의 힘 변별 측정인 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]은 $5\,\mathrm{N}$ 부근에서 JND $0.4107\,\mathrm{N}$, 즉 Weber 분수 $k=0.4107/5.0429=0.0814$를 얻었다. Weber 법칙은 이것을 손이 이미 받치고 있는 힘이 무엇이든 그 $k$배가 JND라는 뜻으로 읽는다. 여기서 손이 받치는 힘은 $s_fF_f$이고 follower의 변화 $\Delta F_f$는 손에 $s_f\Delta F_f$로 도착하므로, 변화가 느껴지는 조건은
+
+$$s_f\,\Delta F_f\ge k\,s_fF_f\quad\Longleftrightarrow\quad\Delta F_f\ge kF_f=0.0814\cdot1=0.081\,\mathrm{N}$$
+
+이다. $s_f$가 약분되기 때문이다. 이 페이지의 $1\,\mathrm{N}$에서 JND는 $1\,\mathrm{N}$이 아니라 $0.08\,\mathrm{N}$이고($1\,\mathrm{N}$은 $12\,\mathrm{N}$ 기준의 JND다), Weber 법칙만 보면 정직한 스케일링은 아무것도 잃지 않는다. 잃는 것은 $k$를 아는 범위다. 24.1의 과제는 $2.03\,\mathrm{N}$에서 $k$가 이미 $0.0896$으로 올라 있음을 보이고 그보다 낮은 곳은 재지 않는데, leader의 $0.1\,\mathrm{N}$은 그보다 스무 배 낮다. 그곳에서 손이 무엇이든 구별해 낸다고 말해 주는 측정은 이 트랙에 없다. 정직한 스케일링은 접촉 신호 전체를 그 빈틈에 넣고, 이것이 다음 단계가 존재하는 이유다.
 
 **4단계 — 힘 증폭, 그리고 그 대가.** 대신 $s_x=0.1$에 $s_f=10$을 고른다. 같은 $1\,\mathrm{N}$ 접촉에서 leader가 이제 $10\,\mathrm{N}$을 반사하고,
 
@@ -264,7 +267,7 @@ $$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
 
 ### 1. 두 포트와 네 신호
 
-양방향 시스템은 사람과 연결된 local **leader** 포트와 환경과 연결된 remote **follower** 포트를 가진다. 그림은 위의 과제가 그릴 그림에 있다. 각 포트에는 force와 velocity가, 따라서 power가 있다. 논문은 부호를 선언하기 전까지 읽을 수 없다. 두 포트에서 network 안쪽을 향하는 것을 양의 힘으로 정했는가, 아니면 같은 공간축을 따라 정했는가? 물리가 똑같아도 규약이 다르면 passivity 부등식의 모양이 달라진다.
+양방향 시스템은 사람과 연결된 local **leader** 포트와 환경과 연결된 remote **follower** 포트를 가진다. 위의 그림에 그려 두었다. 각 포트에는 force와 velocity가, 따라서 power가 있다. 논문은 부호를 선언하기 전까지 읽을 수 없다. 두 포트에서 network 안쪽을 향하는 것을 양의 힘으로 정했는가, 아니면 같은 공간축을 따라 정했는가? 물리가 똑같아도 규약이 다르면 passivity 부등식의 모양이 달라진다.
 
 두 포트 각각은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]의 의미에서 포트다 — effort–flow 쌍 하나, 인과성 하나 — 그리고 거기를 건너는 에너지는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]의 부등식을 따른다. 여기서 새로운 것은 포트가 둘이고 그 사이에 시스템이 하나 있다는 점이고, 거기에는 이름이 있다.
 
@@ -368,13 +371,20 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 
 
 리더 운동이 팔로워로, 팔로워 벽 힘 $F_a$가 돌아온다. 편도 지연 $T_d=50\,\mathrm{ms}$. 로컬 샘플 $T=1\,\mathrm{ms}$. 카탈로그 $k_w=400$, $b=0.8$.
 
-1. **그리기.** 사람 포트 $(F_1,v_1)$ — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽. 신호 넷과 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘).
+1. **그리기.** 위의 그림을 이 과제의 채널로: 사람 포트 $(F_1,v_1)$ — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽. 신호 넷과 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘).
 2. **유도.** (a) 일률 보존 스케일 $s_f=s_x$. $s_x=0.1$이고 팔로워가 $F_f=1\,\mathrm{N}$(카탈로그 벽 안 $2.5\,\mathrm{mm}$)을 쥐면 리더는 얼마를 반사하는가? 너무 약한가? (b) $s_f=10$, $s_x=0.1$에서 일률 비 $s_f/s_x$. 쌍이 부품에서 수동성을 물려받을 수 있는가? (c) 리더에서 지연 경계 $K\le b/(T/2+T_D)$(Diolaiti 외 2006). $T_D$는 루프를 한 바퀴 도는 지연이다. 이 구조에서 $T_D$는 얼마이고, 천장은 얼마이며, 카탈로그 $k_w$가 통과하는가? 한 방향만 지연된다면 천장은 얼마인가?
 3. **해석.** 지연을 버티려고 댐핑을 더했더니 사용자가 느려졌다. 수동성의 모순인가?
 
+> [!note]- 그리는 법 · How to draw it
+> - 두 포트를 양쪽 화살표로 그리고 각각에 자기 쌍을 단다. 손 쪽은 $(F_1,v_1)$, 벽 쪽은 $(F_2,v_2)$다. 한쪽 화살표는 일률이 흐르는 곳에 정보가 흐른다고 주장하는 것이고, 이 페이지 전체가 일률에 대한 이야기다.
+> - 부호 규약을 그림 위에 짧은 범례로 적는다. 두 포트 모두 네트워크 *안쪽*이 양의 힘이다. 화살촉으로 나타내지 마라. 화살촉이야말로 사람마다 다르게 읽는 것이다.
+> - 지연은 방향마다 따로 그린다. 나가는 리더 운동과 돌아오는 벽 힘 $F_a$에 각각 $T_d=50\,\mathrm{ms}$를 표시하고, 아래에 왕복 $2T_d=100\,\mathrm{ms}$를 적는다. "네트워크"라고만 적힌 상자 하나는 되돌아오는 경로가 지연되는지를 가리는데, 논증을 정하는 것이 바로 그것이다.
+> - 팔로워의 벽은 스프링이 아니라 스위치로 그린다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다.
+> - 채널에 스케일 블록 둘을 넣는다. 나가는 길에 $s_x$, 돌아오는 길에 $s_f$다. 그래야 곱 $s_fs_x$는 일률에 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보인다.
+
 > [!tip]- 정답 · Solutions
 > 1. 신호 넷 $F_1,v_1,F_2,v_2$; 양방향 또는 적어도 힘 쪽 지연; 팔로워의 벽 스위치. 2포트 안으로 들어가는 힘 화살표.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — $1\,\mathrm{N}$ 부근 힘 JND보다 작아 너무 약하다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — 믿고 쓰기엔 너무 약하지만, JND보다 작아서가 아니다. 24.1 §6의 $k=0.0814$에서는 $s_f\Delta F_f\ge ks_fF_f$의 $s_f$가 약분되므로 손이 느끼는 가장 작은 follower 변화는 $s_f$와 무관하게 $kF_f=0.081\,\mathrm{N}$이다. 문제는 $0.1\,\mathrm{N}$이 24.1이 $k$를 잰 가장 낮은 힘 $2.03\,\mathrm{N}$(거기서 이미 $0.0896$으로 올랐다)보다 스무 배 낮다는 것이다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
 > 3. 아니다. 수동성은 에너지 생성을 묶지 투명성이나 속도를 묶지 않는다. 소산을 더하면 안정되면서 벽이 둔해질 수 있다 — §4가 이름 붙인 거래다.
 
 ### 출처

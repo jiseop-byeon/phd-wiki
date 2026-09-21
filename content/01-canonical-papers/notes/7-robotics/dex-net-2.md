@@ -19,8 +19,8 @@ mastery-when: "Raise to Mastery when grasp synthesis is part of the thesis contr
 **Mahler et al., RSS 2017** — [arXiv](https://arxiv.org/abs/1703.09312) · [PDF](https://arxiv.org/pdf/1703.09312) · [Official](http://berkeleyautomation.github.io/dex-net)
 
 > [!note] Math on-ramp · 수학 준비물
-> You need the analytic side first: friction cones, force closure, and the $\epsilon$ quality metric ([[04-robotics/grasping|15. §2–§4]]) — because those are literally the labels this network is trained on. Then supervised classification from images ([[02-foundations/neural-network-basics|0.7]]).
-> 해석적 쪽이 먼저다: 마찰 원뿔, force closure, $\epsilon$ 품질 지표([[04-robotics/grasping|15. §2~§4]]) — 이 네트워크가 학습하는 라벨이 문자 그대로 그것들이기 때문이다. 그다음 이미지로부터의 지도 분류([[02-foundations/neural-network-basics|0.7]]).
+> You need the analytic side first: friction cones, force closure, and the $\epsilon$ quality metric ([[04-robotics/grasping|15. §2–§4]]) — because those are literally the labels this network is trained on. Then supervised classification from images ([[02-foundations/neural-network-basics|0.8]]).
+> 해석적 쪽이 먼저다: 마찰 원뿔, force closure, $\epsilon$ 품질 지표([[04-robotics/grasping|15. §2~§4]]) — 이 네트워크가 학습하는 라벨이 문자 그대로 그것들이기 때문이다. 그다음 이미지로부터의 지도 분류([[02-foundations/neural-network-basics|0.8]]).
 
 ## English
 

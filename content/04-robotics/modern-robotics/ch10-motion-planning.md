@@ -27,9 +27,7 @@ with contact ($d = 0$) counted as free, because the running task ends in contact
 
 **The query** is the elbow flip of [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]]: start at $A = (0°, 90°)$, reach $B = (90°, -90°)$. Both put the tip on the panel target $(1,1)$; ch.9 timed the straight line between them, and this page asks whether that line is legal.
 
-### Homework diagram · 과제가 그릴 그림
-
-One square, $\theta_1$ horizontal and $\theta_2$ vertical, both $-180°$ to $+180°$, with the opposite edges marked as identified — the same torus chart as ch.2. On it, four layers.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 401" style="max-width:100%;height:auto" role="img" aria-label="P2's torus chart for the panel x ≥ 1: the C-obstacle lens, the 30° grid with 21 blocked, 13 touching and 110 free nodes, the five-node roadmap with its two blocked edges crossed out, and the shortest path A, E, B of length π√2 = 4.4429 rad">
   <g transform="translate(0 2)">
@@ -97,12 +95,7 @@ One square, $\theta_1$ horizontal and $\theta_2$ vertical, both $-180°$ to $+18
   </g>
 </svg>
 
-1. **The C-obstacle**, shaded: the lens $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$ spanning $\theta_1 \in (-90°, 90°)$.
-2. **The grid**: tick marks every $30°$ on both axes, giving $12 \times 12$ nodes. Put a cross on every node that lies in the shaded region, and a small open circle on every node that lies exactly on its boundary.
-3. **The roadmap**: five labelled dots $A, B, C, D, E$ at the configurations tabulated below, with a straight segment drawn between every pair. Draw the two segments that cut through the shaded region as dashed and put an X on each.
-4. **The answer path**: trace the shortest surviving chain from $A$ to $B$ in a heavier line and write its length beside it.
-
-The problem set asks for the same square with the shaded region redrawn for a panel moved back half a metre, and the point of the exercise is which dashed segments come back to life.
+P2's torus chart for the panel $x \ge 1$, $\theta_1$ across and $\theta_2$ up from $-180°$ to $180°$ with opposite edges identified: the shaded lens is the C-obstacle, $18.478\,\%$ of the torus, and the $30°$ grid's $144$ nodes split into $21$ blocked, $13$ touching at $d = 0$ (seven of them on the line $\theta_1 = 0$, where the elbow grazes the wall) and $110$ free. Of the five-node roadmap's ten edges two are blocked — $A$–$B$, which drives the arm $0.4142$ m into the panel at its midpoint, and $B$–$C$, which bites $0.0201$ m — so the shortest surviving path, drawn heavy, is $A \to E \to B$ at $\pi\sqrt2 = 4.4429$ rad.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -252,9 +245,17 @@ proposals get filtered through.
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2**, same five nodes, same query $A \to B$ — but the panel is rebuilt at $x \ge 1.5$, the wall of ch.2's problem set.
 
-1. **Draw.** The torus chart again with the new, smaller obstacle shaded, the same $12 \times 12$ grid crosses, and the same five nodes with all ten edges. Mark which previously dashed edges are now solid.
+1. **Draw.** The picture above again, with the new, smaller obstacle shaded, the same $12 \times 12$ grid crosses, and the same five nodes with all ten edges. Mark which previously dashed edges are now solid.
 2. **Derive.** (a) Re-test the direct edge $A$–$B$: use $p_x(\lambda) = \cos(90°\lambda) + \sin(90°\lambda)$ and report $d_{\max}$ against the new wall. (b) Re-test $B$–$C$, whose worst point was $d = 0.0201$ before. (c) Give the new shortest path and its cost, and the percentage saved against the old answer $\pi\sqrt2$.
 3. **Interpret.** At $30°$ the new wall blocks $9$ of $144$ nodes, against a true blocked area of $8.515\,\%$ of the torus. Is the grid still underestimating, and by how many cells? Then say what had to be recomputed when the wall moved — the nodes, the edges, both — and what that implies about caching a roadmap on a site where the geometry is surveyed once and then changes.
+
+> [!note]- How to draw it · 그리는 법
+> - One square, $\theta_1$ across and $\theta_2$ up, both from $-180°$ to $+180°$, with the opposite edges marked as identified — the torus chart of ch.2 — and tick marks every $30°$ on both axes, giving the $12 \times 12$ grid of nodes.
+> - The C-obstacle shaded: the lens where the tip is past the wall, $\cos\theta_1 + \cos(\theta_1{+}\theta_2)$ greater than the wall's $x$.
+> - A cross on every node that lies in the shaded region, and a small open circle on every node where $d = 0$ exactly. That means the nodes on the lens's edge, where the tip touches the panel, and also the nodes on the line $\theta_1 = 0$ outside the lens, where the elbow touches the wall — which happens only with the wall at $x = 1$, since the elbow never gets past $x = \cos\theta_1 \le 1$. Draw any such stretch of $\theta_1 = 0$ as a thin line.
+> - The roadmap: five labelled dots $A, B, C, D, E$ at the tabulated configurations, with a straight segment drawn between every pair. Nodes and segments stay where they are whatever the wall does; only the shading, the marks and the verdicts change.
+> - Test each segment's interior, not just its ends: draw it dashed, with an X at its deepest point, if any part of it enters the shaded region. In the picture both ends of $A$–$B$ merely touch the wall while its midpoint is $0.4142$ m in. The point of the exercise is which dashed segments come back to life.
+> - The answer path: the shortest surviving chain from $A$ to $B$ traced in a heavier line, with its length written beside it.
 
 > [!tip]- Solutions
 > 1. Both previously dashed edges become solid, so the roadmap is complete on five nodes and the direct $A$–$B$ edge is available.
@@ -279,9 +280,7 @@ $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\
 
 **질의**는 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]]의 엘보 뒤집기다. $A = (0°, 90°)$에서 출발해 $B = (90°, -90°)$에 도달한다. 둘 다 말단을 패널 목표 $(1,1)$에 두고, 9장은 그 둘 사이의 직선에 시간을 입혔으며, 이 페이지는 그 직선이 합법인지 묻는다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-정사각형 하나, 가로 $\theta_1$ 세로 $\theta_2$, 둘 다 $-180°$에서 $+180°$, 마주 보는 변은 동일시 표시 — 2장과 같은 원환면 도표다. 그 위에 네 겹.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 401" style="max-width:100%;height:auto" role="img" aria-label="패널 x ≥ 1에 대한 P2의 원환면 도표: C-장애물 렌즈, 막힘 21·닿음 13·자유 110인 30° 격자, 막힌 간선 둘에 X를 친 다섯 노드 로드맵, 그리고 길이 π√2 = 4.4429 rad인 최단 경로 A, E, B">
   <g transform="translate(0 2)">
@@ -349,12 +348,7 @@ $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\
   </g>
 </svg>
 
-1. **C-장애물**을 칠한다: $\theta_1 \in (-90°, 90°)$에 걸친 렌즈 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$.
-2. **격자**: 두 축에 $30°$마다 눈금, $12 \times 12$개의 노드. 칠한 영역 안의 노드마다 가위표, 경계에 정확히 걸린 노드마다 작은 빈 동그라미.
-3. **로드맵**: 아래 표의 자세에 점 다섯 $A, B, C, D, E$를 찍고 모든 쌍을 직선으로 잇는다. 칠한 영역을 가로지르는 두 선분은 점선으로 그리고 X 표시를 한다.
-4. **정답 경로**: $A$에서 $B$로 살아남은 가장 짧은 사슬을 굵게 덧그리고 옆에 길이를 쓴다.
-
-과제는 패널을 0.5 m 뒤로 물린 뒤 칠한 영역을 다시 그린 같은 정사각형을 요구하며, 문제의 핵심은 어느 점선이 되살아나는가다.
+패널 $x \ge 1$에 대한 P2의 원환면 도표로, 가로 $\theta_1$과 세로 $\theta_2$가 $-180°$에서 $180°$까지이고 마주 보는 변은 동일시된다. 칠한 렌즈가 원환면의 $18.478\,\%$인 C-장애물이고, $30°$ 격자의 노드 $144$개는 막힘 $21$개, $d = 0$으로 닿음 $13$개(그중 일곱은 엘보가 벽을 스치는 $\theta_1 = 0$ 선 위), 자유 $110$개로 나뉜다. 다섯 노드 로드맵의 간선 열 개 중 둘, 곧 중간점에서 팔을 패널 안으로 $0.4142$ m 밀어 넣는 $A$–$B$와 $0.0201$ m 파고드는 $B$–$C$가 막히므로, 살아남은 최단 경로는 굵게 그린 $A \to E \to B$, $\pi\sqrt2 = 4.4429$ rad다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -502,9 +496,17 @@ $$\lim_{n \to \infty} P[\text{표본 } n \text{개 안에 해를 찾음}] = 1$$
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 장치는 같은 **P2**, 노드 다섯도 같고 질의 $A \to B$도 같지만, 패널을 2장 과제의 벽인 $x \ge 1.5$에 다시 세운다.
 
-1. **그리기.** 새로 작아진 장애물을 칠한 원환면 도표, 같은 $12 \times 12$ 격자 가위표, 같은 노드 다섯과 간선 열 개. 전에 점선이던 간선 중 어느 것이 실선이 되는지 표시하라.
+1. **그리기.** 새로 작아진 장애물을 칠해 위의 그림을 다시 그려라. 같은 $12 \times 12$ 격자 가위표, 같은 노드 다섯과 간선 열 개. 전에 점선이던 간선 중 어느 것이 실선이 되는지 표시하라.
 2. **유도.** (a) 직통 간선 $A$–$B$를 다시 검사하라. $p_x(\lambda) = \cos(90°\lambda) + \sin(90°\lambda)$를 써서 새 벽에 대한 $d_{\max}$를 보고하라. (b) 전에 최악점이 $d = 0.0201$이던 $B$–$C$를 다시 검사하라. (c) 새 최단 경로와 그 비용, 그리고 옛 답 $\pi\sqrt2$ 대비 절약률을 구하라.
 3. **해석.** $30°$에서 새 벽은 $144$개 노드 중 $9$개를 막고, 진짜 막힌 넓이는 원환면의 $8.515\,\%$다. 격자는 여전히 과소평가하는가, 몇 칸만큼인가? 그리고 벽이 움직였을 때 다시 계산해야 했던 것이 노드인지 간선인지 둘 다인지 말하고, 기하를 한 번 측량한 뒤 바뀌는 현장에서 로드맵을 캐시하는 일에 대해 그것이 무엇을 뜻하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 정사각형 하나, 가로 $\theta_1$ 세로 $\theta_2$, 둘 다 $-180°$에서 $+180°$, 마주 보는 변은 동일시 표시 — 2장과 같은 원환면 도표 — 그리고 두 축에 $30°$마다 눈금을 넣어 $12 \times 12$개의 노드를 만든다.
+> - C-장애물을 칠한다. 말단이 벽을 넘어간 렌즈, 곧 $\cos\theta_1 + \cos(\theta_1{+}\theta_2)$가 벽의 $x$보다 큰 곳이다.
+> - 칠한 영역 안의 노드마다 가위표, 정확히 $d = 0$인 노드마다 작은 빈 동그라미. 렌즈 가장자리의 노드(말단이 패널에 닿는 곳)와 함께 렌즈 바깥 $\theta_1 = 0$ 선 위의 노드(엘보가 벽에 닿는 곳)도 여기에 든다. 엘보는 $x = \cos\theta_1 \le 1$을 넘지 못하므로 이런 노드는 벽이 $x = 1$에 있을 때만 생긴다. 그런 $\theta_1 = 0$ 구간은 가는 선으로 긋는다.
+> - 로드맵: 표의 자세에 점 다섯 $A, B, C, D, E$를 찍고 모든 쌍을 직선으로 잇는다. 벽이 어떻게 움직이든 노드와 선분은 제자리이고, 바뀌는 것은 칠한 영역과 표시와 판정뿐이다.
+> - 선분은 끝만 보지 말고 내부를 검사한다. 어느 부분이라도 칠한 영역에 들어가면 점선으로 그리고 가장 깊은 점에 X를 친다. 위의 그림에서 $A$–$B$는 양 끝이 벽에 닿기만 하는데 중간점은 $0.4142$ m 안에 있다. 문제의 핵심은 어느 점선이 되살아나는가다.
+> - 정답 경로: $A$에서 $B$로 살아남은 가장 짧은 사슬을 굵게 덧그리고 옆에 길이를 쓴다.
 
 > [!tip]- 정답 · Solutions
 > 1. 전에 점선이던 두 간선이 모두 실선이 되므로 다섯 노드 위에서 로드맵은 완전 그래프가 되고 직통 간선 $A$–$B$를 쓸 수 있다.

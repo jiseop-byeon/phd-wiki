@@ -36,7 +36,7 @@ $\log$, you can start; individual papers may call for deeper references as you g
 **One non-mathematical prerequisite.** Pages 1–9 also use machine-learning words —
 *layer*, *loss*, *minibatch*, *epoch*, *hyperparameter*, *pretraining* — the way a
 mechanics text uses *force*. If those are new, read
-[[02-foundations/neural-network-basics|0.7 What a Neural Network Is]] first; it assumes no
+[[02-foundations/neural-network-basics|0.8 What a Neural Network Is]] first; it assumes no
 ML at all and takes about twenty minutes. It exists so that the rest of this track does
 not have to assume anything beyond the table above.
 
@@ -47,7 +47,7 @@ not have to assume anything beyond the table above.
 Each study page ends with a **problem set** as well as a self-check. The problems reuse six
 shared plants frozen in [[02-foundations/lab-plants|0.6 Lab Plants]] (a 2-layer net, a planar
 2R, a 1-DoF handle, a leaky heater, a 1-D range, a timed cart). How to step a continuous
-plant is [[02-foundations/lab-kernel|0.65 Lab Kernel]]. The lecture on that page must already
+plant is [[02-foundations/lab-kernel|0.7 Lab Kernel]]. The lecture on that page must already
 have drawn the homework object and derived it on the named plant; the set is a variant
 (a different pose, a changed knob, an interpretation), not the first time the object appears.
 A page is finished when those problems are done from the wiki alone — not when the last formula looks familiar.
@@ -182,7 +182,7 @@ closed-book. **Eleven or more of the fourteen common questions means go.**
 1. A layer computes $h = \text{ReLU}(Wx + b)$ with $W$ of shape $256\times128$. Give the
    shape of $x$, of $h$, and the number of parameters in this layer. Then say why removing
    the ReLU would make a ten-layer stack no more expressive than one layer.
-   *([[02-foundations/neural-network-basics|0.7 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
+   *([[02-foundations/neural-network-basics|0.8 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
 2. Compute $\nabla f$ for $f(x,y) = (xy-3)^2$ at $(2,1)$ and say, from the two signs, which
    way gradient descent moves each variable and which one it moves harder.
    *([[02-foundations/engineering-math|0.5 §1]], [[02-foundations/optimization|4. §3]])*
@@ -290,7 +290,7 @@ flowchart TD
 
 **수학이 아닌 선수 지식 하나.** 1~9 페이지는 기계학습 어휘 — *층·손실·미니배치·에포크·
 하이퍼파라미터·사전학습* — 를 역학 교과서가 *힘*을 쓰듯 쓴다. 이것이 처음이라면
-[[02-foundations/neural-network-basics|0.7 신경망이란 무엇인가]]를 먼저 읽어라. ML 지식을
+[[02-foundations/neural-network-basics|0.8 신경망이란 무엇인가]]를 먼저 읽어라. ML 지식을
 전혀 전제하지 않고 20분이면 된다. 나머지 트랙이 위 표 이상을 전제하지 않아도 되도록 그
 페이지가 존재한다.
 
@@ -298,7 +298,7 @@ flowchart TD
 
 **0.7 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]]** (도메인 다리 — 이 둘의 순서는 자유) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|매니퓰레이터 기구학·동역학]]** (매니퓰레이션 트랙으로 갈 때 — 힘 제어가 이것 없이는 읽히지 않는다).
 
-각 학습 페이지 끝에는 스스로 점검과 함께 **과제가** 있다. 과제는 [[02-foundations/lab-plants|0.6 Lab Plants]]에 고정된 장치 여섯 개(2층 네트워크, 평면 2R, 1자유도 핸들, 새는 히터, 1차원 거리, 시계가 있는 카트)를 재사용한다. 연속 플랜트를 한 스텝 전진하는 법은 [[02-foundations/lab-kernel|0.65 Lab Kernel]]이다. 그 페이지의 강의가 이미 과제의 대상을 그리고 이름 붙은 장치로 유도해 두어야 한다. 과제는 변형(다른 자세, 손잡이 하나, 해석)이지 그 대상이 처음 나오는 곳이 아니다. 페이지가 끝난 것은 위키만으로 그 과제를 풀었을 때이지, 마지막 식이 익숙해 보일 때가 아니다.
+각 학습 페이지 끝에는 스스로 점검과 함께 **과제가** 있다. 과제는 [[02-foundations/lab-plants|0.6 Lab Plants]]에 고정된 장치 여섯 개(2층 네트워크, 평면 2R, 1자유도 핸들, 새는 히터, 1차원 거리, 시계가 있는 카트)를 재사용한다. 연속 플랜트를 한 스텝 전진하는 법은 [[02-foundations/lab-kernel|0.7 Lab Kernel]]이다. 그 페이지의 강의가 이미 과제의 대상을 그리고 이름 붙은 장치로 유도해 두어야 한다. 과제는 변형(다른 자세, 손잡이 하나, 해석)이지 그 대상이 처음 나오는 곳이 아니다. 페이지가 끝난 것은 위키만으로 그 과제를 풀었을 때이지, 마지막 식이 익숙해 보일 때가 아니다.
 
 각 페이지 끝의 스스로 점검 문제를 꼭 풀어라. 처음 접했을 때 너무 압축적으로 느껴지는
 페이지는 처음부터 끝까지 읽지 마라. 주요 학습 페이지는 어느 절을 먼저 읽고 어느
@@ -424,7 +424,7 @@ graph LR
 
 1. 어떤 층이 $h = \text{ReLU}(Wx + b)$를 계산하고 $W$의 모양이 $256\times128$이다. $x$와 $h$의
    모양, 그리고 이 층의 파라미터 수를 말하라. 그다음 ReLU를 없애면 10층 스택이 왜 1층보다
-   나을 게 없어지는지 말하라. *([[02-foundations/neural-network-basics|0.7 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
+   나을 게 없어지는지 말하라. *([[02-foundations/neural-network-basics|0.8 §1–2]], [[02-foundations/linear-algebra|1. §1]])*
 2. $f(x,y) = (xy-3)^2$의 $\nabla f$를 $(2,1)$에서 구하고, 두 부호로부터 경사 하강이 각 변수를
    어느 쪽으로, 어느 쪽을 더 세게 미는지 말하라. *([[02-foundations/engineering-math|0.5 §1]], [[02-foundations/optimization|4. §3]])*
 3. $A = \begin{pmatrix}2&1\\1&2\end{pmatrix}$의 고유값을 구하고, 이 행렬이 평면에 하는 일을

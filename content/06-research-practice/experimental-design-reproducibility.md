@@ -34,13 +34,11 @@ An experiment should distinguish the proposed explanation from plausible alterna
 | A — position control + force-threshold stop | 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 | 6/10 | 10.66 | 2.414 | 9.85 |
 | B — impedance control | 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 | 9/10 | 7.50 | 1.356 | 7.30 |
 
-RS1 is a study rather than a plant, so this page's lab simulates trial *outcomes*, not the arm's dynamics, and the integrators of [[02-foundations/lab-kernel|0.65 Lab Kernel]] are not used. Where a contact's dynamics are simulated instead, the integrator becomes part of the outcome: in Step 5 of the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] one drop of P3's handle on a stiff wall peaks at an exact 6 N, a pass by RS1's rule, and at 12 N, a failure, under explicit Euler, with no controller changed.
+RS1 is a study rather than a plant, so this page's lab simulates trial *outcomes*, not the arm's dynamics, and the integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]] are not used. Where a contact's dynamics are simulated instead, the integrator becomes part of the outcome: in Step 5 of the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] one drop of P3's handle on a stiff wall peaks at an exact 6 N, a pass by RS1's rule, and at 12 N, a failure, under explicit Euler, with no controller changed.
 
 *Scope: this page teaches how to design the experiment that answers RS1 — what to vary, hold fixed and count (§1–§3), how many trials to run, by formula and by simulation (the worked case and §4), how to budget an ablation (§5), and what to record so that the result can be repeated, reproduced and replicated (§6–§7). It does not teach how to read the finished results table, which is [[02-foundations/ml-practice|9. ML Practice & Evaluation]]; the tests themselves, which are [[02-foundations/probability|3. Probability §6]]; the two controllers, which are [[04-robotics/force-compliance-control|13. Force & Compliance Control]]; or how to diagnose the failures the trials will produce, which is [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-The power picture, in two panels. The problem set asks for panel (a) again at a different true success rate.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 640 262" style="max-width:100%;height:auto" role="img" aria-label="the two sampling distributions behind a power calculation, for RS1's success rate at 32 trials per arm and its peak force at 7">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="172" x2="310" y2="172"/><line x1="345" y1="172" x2="625" y2="172"/></g>
@@ -67,11 +65,7 @@ The power picture, in two panels. The problem set asks for panel (a) again at a 
   </g>
 </svg>
 
-Four things the drawing has to get right.
-- **One axis per panel, and it is the estimate, not the data.** The horizontal axis is the difference the experiment will *estimate*: $\hat p_B - \hat p_A$ for the success rate, $\bar F_A - \bar F_B$ in newtons for the force. The dashed curve is its sampling distribution if the two controllers are equal ($H_0$); the solid curve, if the pilot's effect is real ($H_1$).
-- **The critical value, fixed before any trial.** Mark $\pm c$ with $c = z_{1-\alpha/2}\,\mathrm{SE}_0$, where $\mathrm{SE}_0$ is the standard error under $H_0$. The two tails of the dashed curve beyond it hold $\alpha/2 = 0.025$ each; together they are the false-alarm rate.
-- **Power is an area under the other curve.** Shade the solid curve beyond $c$: 0.81 for the success rate at 32 trials per arm, 0.86 for the force at 7. The unshaded rest of the solid curve is $\beta$, 0.19 and 0.14.
-- **The widths, written on.** Success rate at $n = 32$: $\mathrm{SE}_0 = 0.108$, $\mathrm{SE}_1 = 0.102$, $c = 0.212$. Force at $n = 7$: $\mathrm{SE} = 1.05$ N, $c = 2.05$ N. In both panels the alternative sits about three null standard errors from zero — $0.30/0.1083 = 2.77$ and $3.16/1.047 = 3.02$ — and that ratio is all that power reads. The success rate needs 32 trials per arm to get there; the force needs 7.
+The two sampling distributions behind RS1's sample sizes — of the estimated gap if A and B are equal ($H_0$, dashed) and if the pilot's effect is real ($H_1$, solid) — for (a) the success rate at 32 trials per arm and (b) the peak force at 7. The critical value, $c = 0.212$ and $c = 2.05$ N, leaves $\alpha/2 = 0.025$ in each dashed tail, and power is the solid curve's area beyond it: 0.81 and 0.86, so $\beta$ is 0.19 and 0.14. In both panels the alternative sits about three null standard errors from zero, 2.77 and 3.02, and that ratio is all that power reads: the success rate needs 32 trials per arm to get there, the force only 7.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -505,7 +499,7 @@ Report success with uncertainty, recovery behavior, estimation timing, and failu
 
 Tier A. Using only this page, its prerequisites and RS1. The variant is a smaller improvement — B's true success rate is 0.8, not 0.9 — together with the uncertainty of the pilot's force effect.
 
-1. **Draw.** Panel (a) of the homework diagram at 32 trials per arm with true rates 0.6 and 0.8. Write $\mathrm{SE}_0$, $\mathrm{SE}_1$ and $c$ on it, shade the power and read off its value. Where does the centre of the solid curve sit relative to $c$, and what does that tell you about the power before you compute it?
+1. **Draw.** Panel (a) of the picture above, at 32 trials per arm with true rates 0.6 and 0.8. Write $\mathrm{SE}_0$, $\mathrm{SE}_1$ and $c$ on it, shade the power and read off its value. Where does the centre of the solid curve sit relative to $c$, and what does that tell you about the power before you compute it?
 2. **Derive.** (a) Trials per arm for true rates 0.6 and 0.8, at α = 0.05 two-sided and power 0.8. (b) The lab's bootstrap interval puts the pilot's force reduction as low as 1.58 N. With σ = 1.958 N, how many trials per arm would the force need if that were the true reduction? (c) Redo RS1's two sample sizes (rates 0.6 and 0.9; $\hat d = 1.614$) at α = 0.01, where $z_{0.995} = 2.576$. Does the factor between them change?
 3. **Do.** Fill the `?` in the template and run it. (a) Print the formula's and the simulation's power at 32, 50, 70, 82 and 100 trials per arm for rates 0.6 and 0.8. Where does each cross 0.80? (b) Set `alpha = 0.01` and step $n$ from 100 to 140 by 5: where does the simulation cross 0.80, and what does the formula say? (c) Set both rates to 0.6. What should the simulated column show, and why does the formula column print 0.03?
 
@@ -536,6 +530,15 @@ pA, pB, alpha = 0.6, 0.8, 0.05                 # (b): alpha = 0.01   (c): pB = 0
 for n in (32, 50, 70, 82, 100):                # (b): range(100, 141, 5)
     print(f"{n:3d}   formula {power_formula(n, pA, pB, alpha):.2f}   simulated {power_sim(n, pA, pB, alpha):.2f}")
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - **One axis, and it is the estimate, not the data:** the gap $\hat p_B - \hat p_A$ that the experiment will estimate from its trials.
+> - **Two curves over it:** dashed, the estimate's sampling distribution if the two controllers are equal ($H_0$); solid, its sampling distribution if the assumed rates are true ($H_1$), centred at their gap.
+> - **The critical value, fixed before any trial:** mark $\pm c$ with $c = z_{1-\alpha/2}\,\mathrm{SE}_0$, where $\mathrm{SE}_0$ is the standard error under $H_0$ (the worked case, step 3), not $\mathrm{SE}_1$.
+> - **The false-alarm rate is the two dashed tails** beyond $\pm c$, $\alpha/2 = 0.025$ each.
+> - **Power is an area under the other curve:** shade the solid curve beyond $c$ and write its value; the unshaded rest of the solid curve is $\beta$.
+> - **Write the widths on:** $\mathrm{SE}_0$, $\mathrm{SE}_1$ and $c$ — in the worked case's panel, 0.108, 0.102 and 0.212, with power 0.81.
+> - **Power reads one ratio:** how many null standard errors the alternative sits from zero — 2.77 in the worked case's panel.
 
 > [!tip]- Solutions
 > 1. $\bar p = 0.7$, so $\mathrm{SE}_0 = \sqrt{2 \times 0.7 \times 0.3/32} = 0.1146$ and $c = 1.960 \times 0.1146 = 0.2245$, while $\mathrm{SE}_1 = \sqrt{(0.24 + 0.16)/32} = 0.1118$. The solid curve is centred at 0.20, to the *left* of $c$, so less than half of it lies beyond $c$ and the power must be below 0.5 before any arithmetic: $\Phi\big((0.20 - 0.2245)/0.1118\big) = 0.41$, with $\beta = 0.59$. The two curves overlap almost entirely. Thirty-two trials per arm, enough for a gap of 0.30, cannot reliably see a gap of 0.20.
@@ -578,13 +581,11 @@ for n in (32, 50, 70, 82, 100):                # (b): range(100, 141, 5)
 | A — 위치 제어 + 힘 문턱 정지 | 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 | 6/10 | 10.66 | 2.414 | 9.85 |
 | B — 임피던스 제어 | 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 | 9/10 | 7.50 | 1.356 | 7.30 |
 
-RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역학이 아니라 시행의 *결과*를 시뮬레이션하며, [[02-foundations/lab-kernel|0.65 Lab Kernel]]의 적분기는 쓰지 않는다. 접촉의 동역학을 시뮬레이션한다면 적분기가 결과의 일부가 된다. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]] worked case의 5단계에서 단단한 벽에 떨어지는 P3 핸들의 같은 낙하가 정확히는 6 N으로 RS1의 규칙상 성공이고, 명시적 오일러로는 12 N으로 실패다. 제어기는 바뀌지 않았다.
+RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역학이 아니라 시행의 *결과*를 시뮬레이션하며, [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기는 쓰지 않는다. 접촉의 동역학을 시뮬레이션한다면 적분기가 결과의 일부가 된다. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]] worked case의 5단계에서 단단한 벽에 떨어지는 P3 핸들의 같은 낙하가 정확히는 6 N으로 RS1의 규칙상 성공이고, 명시적 오일러로는 12 N으로 실패다. 제어기는 바뀌지 않았다.
 
 *범위: 이 페이지는 RS1에 답할 실험을 설계하는 법을 가르친다 — 무엇을 바꾸고 무엇을 고정하고 무엇을 셀지(§1–§3), 시행을 몇 번 할지를 공식과 시뮬레이션으로(worked case와 §4), 절제의 예산을 어떻게 맞출지(§5), 결과를 반복·재현·재연할 수 있도록 무엇을 기록할지(§6–§7). 완성된 결과 표를 읽는 법은 가르치지 않는다. 그것은 [[02-foundations/ml-practice|9. ML 실무와 평가]]다. 검정 자체는 [[02-foundations/probability|3. 확률 §6]], 두 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]], 시행이 낳을 실패의 진단은 [[06-research-practice/failure-analysis-system-evaluation|3. 실패 분석과 시스템 평가]]에 있다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-두 칸으로 된 검정력 그림이다. 과제는 (a) 칸을 다른 참 성공률에서 다시 그리라고 한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 640 262" style="max-width:100%;height:auto" role="img" aria-label="검정력 계산 뒤의 두 표본분포. RS1의 성공률(제어기당 32회)과 최대 힘(제어기당 7회)">
   <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="172" x2="310" y2="172"/><line x1="345" y1="172" x2="625" y2="172"/></g>
@@ -611,11 +612,7 @@ RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역
   </g>
 </svg>
 
-그림이 반드시 맞혀야 할 네 가지.
-- **칸마다 축 하나, 그 축은 데이터가 아니라 추정량이다.** 가로축은 실험이 *추정할* 차이다. 성공률은 $\hat p_B - \hat p_A$, 힘은 뉴턴 단위의 $\bar F_A - \bar F_B$. 점선은 두 제어기가 같을 때($H_0$) 그 차이의 표본분포이고, 실선은 파일럿의 효과가 실제일 때($H_1$)의 표본분포다.
-- **임계값은 어떤 시행보다 먼저 정해진다.** $c = z_{1-\alpha/2}\,\mathrm{SE}_0$로 $\pm c$를 표시하라. $\mathrm{SE}_0$는 $H_0$ 아래의 표준오차다. 그 바깥에 있는 점선의 두 꼬리는 각각 $\alpha/2 = 0.025$이고, 둘을 합친 것이 오경보율이다.
-- **검정력은 다른 곡선 아래의 넓이다.** $c$ 너머의 실선 아래를 칠하라. 제어기당 32회의 성공률에서 0.81, 7회의 힘에서 0.86이다. 칠하지 않은 나머지 실선 넓이가 $\beta$, 곧 0.19와 0.14다.
-- **폭을 그림에 적어라.** $n = 32$의 성공률: $\mathrm{SE}_0 = 0.108$, $\mathrm{SE}_1 = 0.102$, $c = 0.212$. $n = 7$의 힘: $\mathrm{SE} = 1.05$ N, $c = 2.05$ N. 두 칸 모두 대립가설이 0에서 귀무 표준오차의 약 세 배만큼 떨어져 있다 — $0.30/0.1083 = 2.77$, $3.16/1.047 = 3.02$ — 그리고 검정력이 읽는 것은 그 비율뿐이다. 성공률은 거기까지 가는 데 제어기당 32회가 들고, 힘은 7회가 든다.
+RS1의 표본 크기 뒤에 있는 두 표본분포로, 추정한 차이가 A와 B가 같을 때($H_0$, 점선)와 파일럿의 효과가 실제일 때($H_1$, 실선) 따르는 분포를 (a) 제어기당 32회의 성공률과 (b) 7회의 최대 힘에 대해 그렸다. 임계값 $c = 0.212$와 $c = 2.05$ N은 점선의 두 꼬리에 각각 $\alpha/2 = 0.025$를 남기고, 검정력은 그 너머의 실선 넓이로 0.81과 0.86이며 $\beta$는 0.19와 0.14다. 두 칸 모두 대립가설이 0에서 귀무 표준오차의 약 세 배, 2.77과 3.02만큼 떨어져 있고 검정력이 읽는 것은 그 비율뿐이다 — 성공률은 거기까지 가는 데 제어기당 32회가 들고, 힘은 7회면 된다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -967,9 +964,18 @@ percentile bootstrap 95% CI for mean(A) - mean(B): [1.58, 4.80] N
 
 Tier A. 이 페이지, 선수 지식, RS1만 쓴다. 변형은 더 작은 개선 — B의 참 성공률이 0.9가 아니라 0.8 — 과 파일럿 힘 효과의 불확실성이다.
 
-1. **Draw.** 참 성공률 0.6과 0.8, 제어기당 32회에서 과제 그림의 (a) 칸. $\mathrm{SE}_0$, $\mathrm{SE}_1$, $c$를 적고 검정력을 칠해 그 값을 읽어라. 실선의 중심은 $c$에 대해 어디에 있으며, 계산하기 전에 그것이 검정력에 대해 무엇을 말해 주는가?
+1. **Draw.** 참 성공률 0.6과 0.8, 제어기당 32회에서 위 그림의 (a) 칸. $\mathrm{SE}_0$, $\mathrm{SE}_1$, $c$를 적고 검정력을 칠해 그 값을 읽어라. 실선의 중심은 $c$에 대해 어디에 있으며, 계산하기 전에 그것이 검정력에 대해 무엇을 말해 주는가?
 2. **Derive.** (a) 참 성공률 0.6과 0.8, 양측 α = 0.05, 검정력 0.8에서 제어기당 시행 수. (b) 랩의 부트스트랩 구간은 파일럿의 힘 감소량을 1.58 N까지 낮게 둔다. σ = 1.958 N일 때 그것이 참 감소량이라면 힘에는 제어기당 몇 회가 필요한가? (c) RS1의 두 표본 크기(성공률 0.6과 0.9; $\hat d = 1.614$)를 α = 0.01에서 다시 구하라. $z_{0.995} = 2.576$이다. 둘 사이의 배수가 바뀌는가?
 3. **Do.** 영어 절 템플릿의 `?`를 채워 돌려라. (a) 성공률 0.6과 0.8에서 제어기당 32, 50, 70, 82, 100회일 때 공식과 시뮬레이션의 검정력을 출력하라. 각각 어디서 0.80을 넘는가? (b) `alpha = 0.01`로 두고 $n$을 100에서 140까지 5씩 올려라. 시뮬레이션은 어디서 0.80을 넘고, 공식은 무엇이라 하는가? (c) 두 성공률을 모두 0.6으로 두어라. 시뮬레이션 열은 무엇을 보여야 하며, 공식 열은 왜 0.03을 출력하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **축은 하나, 그 축은 데이터가 아니라 추정량이다:** 실험이 시행들로부터 추정할 차이 $\hat p_B - \hat p_A$.
+> - **그 위의 두 곡선:** 점선은 두 제어기가 같을 때($H_0$) 추정량의 표본분포, 실선은 가정한 성공률이 참일 때($H_1$)의 표본분포로 두 성공률의 차이에 중심이 있다.
+> - **임계값은 어떤 시행보다 먼저 정해진다:** $c = z_{1-\alpha/2}\,\mathrm{SE}_0$로 $\pm c$를 표시하라. $\mathrm{SE}_0$는 $H_0$ 아래의 표준오차(worked case 3단계)이며, $\mathrm{SE}_1$이 아니다.
+> - **오경보율은 점선의 두 꼬리다:** $\pm c$ 바깥, 각각 $\alpha/2 = 0.025$.
+> - **검정력은 다른 곡선 아래의 넓이다:** $c$ 너머의 실선 아래를 칠하고 그 값을 적어라. 칠하지 않은 나머지 실선 넓이가 $\beta$다.
+> - **폭을 그림에 적어라:** $\mathrm{SE}_0$, $\mathrm{SE}_1$, $c$ — worked case의 칸에서는 0.108, 0.102, 0.212이고 검정력은 0.81이다.
+> - **검정력이 읽는 것은 비율 하나다:** 대립가설이 0에서 귀무 표준오차 몇 개만큼 떨어져 있는가 — worked case의 칸에서는 2.77.
 
 > [!tip]- 풀이 · Solutions
 > 1. $\bar p = 0.7$이므로 $\mathrm{SE}_0 = \sqrt{2 \times 0.7 \times 0.3/32} = 0.1146$, $c = 1.960 \times 0.1146 = 0.2245$이고 $\mathrm{SE}_1 = \sqrt{(0.24 + 0.16)/32} = 0.1118$이다. 실선의 중심은 0.20으로 $c$의 *왼쪽*에 있으므로 절반도 $c$ 너머에 있지 않고, 계산 전에 이미 검정력은 0.5 미만이다. $\Phi\big((0.20 - 0.2245)/0.1118\big) = 0.41$, $\beta = 0.59$. 두 곡선이 거의 전부 겹친다. 차이 0.30에 충분한 제어기당 32회로는 차이 0.20을 믿을 만하게 보지 못한다.

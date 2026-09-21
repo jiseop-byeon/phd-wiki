@@ -56,11 +56,9 @@ Three lengths follow, and they are all the geometry the derivations need: should
 
 The object is built so that $\hat{A}$ and $\hat{B}$ swap places depending on which number you read, and §3 and §4 are what that swap is for.
 
-### Homework diagram · 과제가 그릴 그림
+### The picture · 그림으로 먼저 보기
 
-Draw this once. The problem set asks for the same drawing with a different yaw and a different camera.
-
-<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="Pose homework diagram: the five-keypoint skeleton from above with its shoulder and hip circles, the facing arrow at 36.87 degrees and the shoulder line at 126.87 degrees; prediction A turned 15 degrees with each joint's chord; prediction B's five error arrows; and the camera cone at 20 m where the head spans 16.0 pixels and the iris 1.2">
+<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="Pose picture: the five-keypoint skeleton from above with its shoulder and hip circles, the facing arrow at 36.87 degrees and the shoulder line at 126.87 degrees; prediction A turned 15 degrees with each joint's chord; prediction B's five error arrows; and the camera cone at 20 m where the head spans 16.0 pixels and the iris 1.2">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">(a) K5 from above, and Â</text>
   <text x="292" y="24" font-size="12" fill="currentColor" font-weight="600">(b) the same axes, and B̂</text>
   <circle cx="142" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
@@ -180,12 +178,7 @@ Draw this once. The problem set asks for the same drawing with a different yaw a
   <text x="16" y="488" font-size="11" fill="currentColor" fill-opacity="0.9">yet Â's facing is off by +15.0° and B̂'s by −4.6°. At 20 m the head spans 16 pixels and the iris 1.2.</text>
 </svg>
 
-1. **The skeleton from above.** Project K5 onto the horizontal plane. Mark the root at the origin, the shoulder line $p_2 - p_3$, the hip line $p_4 - p_5$, and the two circles of radius $r_{\mathrm{sh}} = 0.20$ m and $r_{\mathrm{hip}} = 0.15$ m that each joint rides when the body yaws. Put the head on the centre.
-2. **The facing arrow.** From the root draw $u = (p_2 - p_3) \times \hat{z}$ and label its azimuth. Draw the shoulder-line azimuth as a second arrow, so the $90^\circ$ between them is on the page.
-3. **Both predictions on those axes.** $\hat{A}$ as the same figure turned by $15^\circ$, with the chord each joint travels marked; $\hat{B}$ as five short error arrows with their lengths in millimetres beside them.
-4. **The camera cone.** To one side, C20 at $D = 20$ m, one pixel's angle $1/f$ opening from the pinhole, and the two subtenses $d_{\mathrm{head}}/D$ and $d_{\mathrm{iris}}/D$ drawn to scale inside it. Write how many pixels wide each one is.
-
-A correct drawing has already answered §4: the head spans several pixels and the iris barely more than one ($1.2$ px).
+Panel (a) is K5 from above, its facing arrow $u$ at $\psi = 36.87^\circ$ square to the shoulder line at $126.87^\circ$, with $\hat{A}$ turned $15^\circ$ about the root so that each shoulder travels a $52.2$ mm chord, each hip $39.2$ mm and the head on the axis none. Panel (b) puts $\hat{B}$'s five error arrows ($50, 50, 50, 30, 30$ mm) on the same axes: $\hat{A}$ wins on MPJPE, $36.5$ mm against $42.0$ mm, yet its facing is off by $+15.0^\circ$ and $\hat{B}$'s by only $-4.6^\circ$. Below, C20's cone at $D = 20$ m, one pixel being $1/f = 0.5$ mrad: the head spans $16.0$ px and the iris $1.2$ px.
 
 ### Worked on K5 · K5로 한 번 끝까지
 
@@ -492,9 +485,17 @@ You should be able to:
 
 Tier B. Using **K5** and **C20** from the running object above, and this page only. The yaw and the camera change; the object does not.
 
-1. **Draw.** Redraw the homework diagram for a prediction $\hat{C}$ that is K5 yawed by $\delta = 25^\circ$ about the vertical axis through the root. Show the chord each joint travels, mark which joint travels none and why, and draw the true and predicted facing arrows with the angle between them labelled. Beside it, draw the camera cone for a telephoto $\mathbf{C20t}$ — same sensor, $f = 6000$ px — with the head and iris subtenses to scale at $D = 20$ m.
+1. **Draw.** The picture above, for a prediction $\hat{C}$ that is K5 yawed by $\delta = 25^\circ$ about the vertical axis through the root. Show the chord each joint travels, mark which joint travels none and why, and draw the true and predicted facing arrows with the angle between them labelled. Beside it, draw the camera cone for a telephoto $\mathbf{C20t}$ — same sensor, $f = 6000$ px — with the head and iris subtenses to scale at $D = 20$ m.
 2. **Derive.** (a) MPJPE, PA-MPJPE and facing error for $\hat{C}$, using the chord formula rather than five subtractions. (b) $\mathrm{PCK@}50\,\mathrm{mm}$ for $\hat{C}$, and compare it with $\hat{B}$'s. (c) On $\mathbf{C20t}$ at $D = 20$ m: the iris width in pixels, the head width in pixels, and the range beyond which the iris falls under 4 px.
 3. **Interpret.** A vendor sells a site pose system quoting $\text{PA-MPJPE} = 28\,\mathrm{mm}$ and $\mathrm{PCK@}150\,\mathrm{mm} = 99\%$, and proposes triggering a machine stop when a worker turns toward the blade. Which of the two numbers bears on that trigger, what would have to be measured instead, and what does the $150\,\mathrm{mm}$ threshold do to the second number on an object whose worst joint error is $87\,\mathrm{mm}$?
+
+> [!note]- How to draw it · 그리는 법
+> - K5 projected onto the horizontal plane: the root at the origin, the shoulder line $p_2 - p_3$, the hip line $p_4 - p_5$, the head on the centre, and the circles of radius $r_{\mathrm{sh}} = 0.20$ m and $r_{\mathrm{hip}} = 0.15$ m that each joint rides when the body yaws.
+> - The facing arrow $u = (p_2 - p_3) \times \hat{z}$ from the root with its azimuth labelled, and the shoulder-line azimuth as a second arrow, so the $90^\circ$ between them is on the page.
+> - The prediction on the same axes, as the same figure turned by the yaw, with the chord each joint travels marked beside it.
+> - The true and predicted facing arrows, with the angle between them labelled.
+> - To one side, the camera cone: the pinhole, the distance $D$, one pixel's angle $1/f$ opening from the pinhole, and the subtenses $d_{\mathrm{head}}/D$ and $d_{\mathrm{iris}}/D$ drawn to scale inside it.
+> - Beside each subtense, how many pixels wide it is. A correct drawing has then answered §4 for that lens: how many pixels the iris gets (worked case, C20: head $16.0$ px, iris $1.2$ px).
 
 > [!tip]- Solutions
 > 1. The drawing must show the head on the yaw axis with zero chord, the shoulders on the $0.20\,\mathrm{m}$ circle and the hips on the $0.15\,\mathrm{m}$ circle, and two facing arrows $25^\circ$ apart. In the camera cone the head must be drawn about thirteen times the iris, whatever $f$ is, since the ratio $0.16/0.012$ is anatomy and not optics.
@@ -584,11 +585,9 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
 
 이 대상은 어느 숫자를 읽느냐에 따라 $\hat{A}$와 $\hat{B}$의 순위가 뒤바뀌도록 만들어져 있고, §3과 §4는 바로 그 뒤바뀜을 위한 절이다.
 
-### 과제가 그릴 그림 · Homework diagram
+### 그림으로 먼저 보기 · The picture
 
-한 번 그려 두라. 과제는 요각과 카메라만 바꿔서 같은 그림을 다시 요구한다.
-
-<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="자세 과제 그림: 어깨 원과 엉덩이 원을 그린 키포인트 다섯 개 골격을 위에서 본 것, 36.87도의 facing 화살표와 126.87도의 어깨선, 15도 돌아간 예측 A와 각 관절의 현, 예측 B의 오차 화살표 다섯, 그리고 머리가 16.0 픽셀, 홍채가 1.2 픽셀을 덮는 20 m의 카메라 원뿔">
+<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="자세 그림: 어깨 원과 엉덩이 원을 그린 키포인트 다섯 개 골격을 위에서 본 것, 36.87도의 facing 화살표와 126.87도의 어깨선, 15도 돌아간 예측 A와 각 관절의 현, 예측 B의 오차 화살표 다섯, 그리고 머리가 16.0 픽셀, 홍채가 1.2 픽셀을 덮는 20 m의 카메라 원뿔">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">(a) 위에서 본 K5, 그리고 Â</text>
   <text x="292" y="24" font-size="12" fill="currentColor" font-weight="600">(b) 같은 축 위의 B̂</text>
   <circle cx="142" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
@@ -708,12 +707,7 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
   <text x="16" y="488" font-size="11" fill="currentColor" fill-opacity="0.9">facing 오차는 Â가 +15.0°, B̂가 −4.6°다. 20 m에서 머리는 16픽셀, 홍채는 1.2픽셀을 덮는다.</text>
 </svg>
 
-1. **위에서 본 골격.** K5를 수평면에 투영한다. 원점의 루트, 어깨선 $p_2 - p_3$, 엉덩이선 $p_4 - p_5$, 그리고 몸이 요각으로 돌 때 각 관절이 타는 반지름 $r_{\mathrm{sh}} = 0.20$ m와 $r_{\mathrm{hip}} = 0.15$ m 원 둘을 표시한다. 머리는 중심에 놓는다.
-2. **facing 화살표.** 루트에서 $u = (p_2 - p_3) \times \hat{z}$를 그리고 방위각을 적는다. 어깨선 방위각을 별도 화살표로 그려서 둘 사이 $90^\circ$가 종이 위에 보이게 한다.
-3. **같은 축 위의 예측 둘.** $\hat{A}$는 같은 도형을 $15^\circ$ 돌린 것으로, 각 관절이 지나는 현을 표시한다. $\hat{B}$는 짧은 오차 화살표 다섯 개로, 옆에 길이를 mm로 적는다.
-4. **카메라 원뿔.** 옆쪽에 $D = 20$ m의 C20, 핀홀에서 벌어지는 픽셀 하나의 각 $1/f$, 그리고 그 안에 축척을 맞춘 $d_{\mathrm{head}}/D$와 $d_{\mathrm{iris}}/D$ 두 시각(視角)을 그린다. 각각 몇 픽셀인지 적는다.
-
-제대로 그렸다면 §4의 답은 이미 그림 안에 있다. 머리는 여러 픽셀을 덮고 홍채는 한 픽셀을 겨우 넘는다($1.2$ px).
+(a)는 위에서 본 K5로, facing 화살표 $u$가 $\psi = 36.87^\circ$에서 $126.87^\circ$의 어깨선과 직각을 이루고, 루트 둘레로 $15^\circ$ 돌아간 $\hat{A}$에서 어깨는 각각 $52.2$ mm, 엉덩이는 각각 $39.2$ mm의 현을 지나며 축 위의 머리는 제자리에 있다. (b)는 같은 축에 $\hat{B}$의 오차 화살표 다섯($50, 50, 50, 30, 30$ mm)을 놓은 것으로, MPJPE는 $\hat{A}$가 $36.5$ mm로 $\hat{B}$의 $42.0$ mm를 이기지만 facing은 $\hat{A}$가 $+15.0^\circ$, $\hat{B}$는 $-4.6^\circ$만 틀린다. 아래는 픽셀 하나가 $1/f = 0.5$ mrad인 C20의 $D = 20$ m 원뿔이고, 머리는 $16.0$ px, 홍채는 $1.2$ px을 덮는다.
 
 ### K5로 한 번 끝까지 · Worked on K5
 
@@ -999,9 +993,17 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 
 Tier B. 위의 대상 **K5** 와 **C20**, 그리고 이 페이지만 사용한다. 요각과 카메라는 바뀌고 대상은 바뀌지 않는다.
 
-1. **그려라.** K5를 루트의 수직축 둘레로 $\delta = 25^\circ$ 돌린 예측 $\hat{C}$에 대해 과제 그림을 다시 그려라. 각 관절이 지나는 현을 표시하고, 현이 0인 관절과 그 이유를 적고, 참 facing과 예측 facing 화살표를 그 사이 각과 함께 그려라. 옆에는 같은 센서에 $f = 6000$ px인 망원 **C20t** 의 카메라 원뿔을 그리고, $D = 20$ m에서 머리와 홍채의 시각을 축척에 맞춰 넣어라.
+1. **그려라.** 위의 그림을, K5를 루트의 수직축 둘레로 $\delta = 25^\circ$ 돌린 예측 $\hat{C}$에 대해 다시 그려라. 각 관절이 지나는 현을 표시하고, 현이 0인 관절과 그 이유를 적고, 참 facing과 예측 facing 화살표를 그 사이 각과 함께 그려라. 옆에는 같은 센서에 $f = 6000$ px인 망원 **C20t** 의 카메라 원뿔을 그리고, $D = 20$ m에서 머리와 홍채의 시각을 축척에 맞춰 넣어라.
 2. **유도하라.** (a) $\hat{C}$의 MPJPE·PA-MPJPE·facing 오차를, 뺄셈 다섯 번이 아니라 현 공식으로. (b) $\hat{C}$의 $\mathrm{PCK@}50\,\mathrm{mm}$와 $\hat{B}$의 그것을 비교하라. (c) $D = 20$ m의 **C20t** 에서 홍채 픽셀 폭, 머리 픽셀 폭, 그리고 홍채가 4 px 아래로 떨어지는 거리.
 3. **해석하라.** 어떤 업체가 $\text{PA-MPJPE} = 28\,\mathrm{mm}$, $\mathrm{PCK@}150\,\mathrm{mm} = 99\%$를 내걸고 현장 자세 시스템을 팔면서, 작업자가 톱날 쪽으로 돌면 기계를 세우자고 제안한다. 두 숫자 중 그 트리거에 관계있는 것은 무엇이고, 대신 무엇을 측정해야 하며, 최악 관절 오차가 $87\,\mathrm{mm}$인 대상에서 $150\,\mathrm{mm}$ 문턱은 두 번째 숫자에 무슨 일을 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - K5를 수평면에 투영한 것: 원점의 루트, 어깨선 $p_2 - p_3$, 엉덩이선 $p_4 - p_5$, 중심의 머리, 그리고 몸이 요각으로 돌 때 각 관절이 타는 반지름 $r_{\mathrm{sh}} = 0.20$ m와 $r_{\mathrm{hip}} = 0.15$ m의 원 둘.
+> - 루트에서 그린 facing 화살표 $u = (p_2 - p_3) \times \hat{z}$와 그 방위각, 그리고 둘 사이 $90^\circ$가 종이 위에 보이도록 별도 화살표로 그린 어깨선 방위각.
+> - 같은 축 위의 예측: 같은 도형을 요각만큼 돌리고, 각 관절이 지나는 현을 옆에 표시한다.
+> - 참 facing과 예측 facing 화살표, 그리고 그 사이 각.
+> - 옆쪽의 카메라 원뿔: 핀홀, 거리 $D$, 핀홀에서 벌어지는 픽셀 하나의 각 $1/f$, 그리고 그 안에 축척을 맞춘 두 시각(視角) $d_{\mathrm{head}}/D$와 $d_{\mathrm{iris}}/D$.
+> - 각 시각 옆에 몇 픽셀인지 적는다. 제대로 그렸다면 그 렌즈에서 홍채가 몇 픽셀을 받는지, 곧 §4의 답이 이미 그림 안에 있다(계산 예제, C20: 머리 $16.0$ px, 홍채 $1.2$ px).
 
 > [!tip]- 정답 · Solutions
 > 1. 그림에는 요각 축 위에 있어 현이 0인 머리, $0.20\,\mathrm{m}$ 원 위의 어깨와 $0.15\,\mathrm{m}$ 원 위의 엉덩이, 그리고 $25^\circ$ 벌어진 facing 화살표 둘이 있어야 한다. 카메라 원뿔에서는 $f$가 얼마든 머리를 홍채의 약 13배로 그려야 한다. 비 $0.16/0.012$는 광학이 아니라 해부학이다.

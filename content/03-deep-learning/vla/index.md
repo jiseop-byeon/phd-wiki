@@ -8,8 +8,8 @@ mastery-when: "Raise when policy architecture, action representation, data mixtu
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], and [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D4** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
+> Object **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], and [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D4** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
 
 ## English
 
@@ -40,9 +40,7 @@ The instruction is not decoration here: "left, then down" *is* the axis order th
 
 *Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, and what a reported success rate does and does not prove. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One closed loop, and the problem set asks for exactly this one. The figure is the worked case on the catalog numbers, with the loop unrolled underneath for $k=3$.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 402" style="max-width:100%;height:auto" role="img" aria-label="D4's closed loop with the policy edge labelled t_inf = 100 ms, the controller edge 50 ms, a chunk buffer of three actions and an observation from step n minus 2; below, the loop unrolled over control steps showing each chunk's observation step, the age of every executed action, and a 0.20 s reaction to a scene change at step 20">
   <defs><marker id="aD4e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -153,11 +151,7 @@ One closed loop, and the problem set asks for exactly this one. The figure is th
   <text x="12" y="388" font-size="11" fill="currentColor" fill-opacity="0.85">worst age (m + k − 1)Δt = 0.20 s · each arc is t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= m = 2 steps</tspan></text>
 </svg>
 
-Four things the drawing has to get right, each of which is a claim about the system.
-**Two clocks, not one.** Label the policy edge with $t_{\mathrm{inf}}=100\,\mathrm{ms}$ and the controller edge with $\Delta t=50\,\mathrm{ms}$. A single rate on the loop is the most common wrong drawing, and every latency number on this page comes from the two being different.
-**The buffer as a box with a length.** Draw the chunk buffer holding $k$ actions and mark that it is refilled only when it empties, from an observation taken $m=2$ steps earlier, while its last $m$ actions are still to run. That box is where the open-loop interval lives.
-**The observation edge carries an age.** Write $n-m$ on it, not $n$. The action leaving the buffer at step $n$ was computed from a scene that is $m+(n\bmod k)$ steps old.
-**No arrow from the buffer to the scene.** The robot changes the world; the buffered plan does not. A loop drawn with that arrow has assumed the model's prediction is the world, which is the error §4 is about.
+D4's closed loop on the catalog numbers, with two clocks: the policy edge takes $t_{\mathrm{inf}}=100\,\mathrm{ms}$, that is $m=2$ control steps, the controller edge $\Delta t=50\,\mathrm{ms}$, and the chunk buffer holds $k=3$ actions — $(-0.02,0)$, $(-0.02,0)$, $(0,-0.02)$ — refilled only when empty, from the observation of step $n-m$. Unrolled below for $k=3$, every executed action is 2 to 4 steps old, so the worst age is $(m+k-1)\Delta t=0.20\,\mathrm{s}$, and a scene change at step 20 first reaches an action at step 24, $\ell(3)=(24-20)\times0.05\,\mathrm{s}=0.20\,\mathrm{s}$ later.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -239,7 +233,7 @@ Read [[01-canonical-papers/notes/4-vla/rt-1|RT-1]], [[01-canonical-papers/notes/
 
 ### 5. The chunk-length sweep
 
-The lab is the homework diagram with one knob. The episode is 3 s at 20 Hz; the target sits at $g=(-0.04,-0.02)$ until control step $20$ and then moves to $(-0.04,+0.02)$, which is a scene change the policy can only learn about through a new observation. Perception jitter is a frozen sine pair rather than a random draw, so the table below is identical on every machine.
+The lab is the picture at the top of the page with one knob. The episode is 3 s at 20 Hz; the target sits at $g=(-0.04,-0.02)$ until control step $20$ and then moves to $(-0.04,+0.02)$, which is a scene change the policy can only learn about through a new observation. Perception jitter is a frozen sine pair rather than a random draw, so the table below is identical on every machine.
 
 Two things are measured. **Travel** is $\sum_n\lVert a_n\rVert$, the path the tool actually walks, against the $0.10\,\mathrm{m}$ the task needs (6 cm out, 4 cm back up); it goes up when jitter makes consecutive plans disagree. **Reversals** count steps where $a_n^\top a_{n+1}<0$, a direction flip the operator sees as chatter. Against them stand $\ell(k)$ from the worked case and the time to get back within 5 mm of the moved target.
 
@@ -341,9 +335,9 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 
 ### Problem set · 과제
 
-Tier A. Using **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
+Tier A. Using **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
 
-1. **Draw.** The closed loop of the homework diagram, with the two clocks labelled ($\Delta t$ on the controller edge, $t_{\mathrm{inf}}$ on the policy edge), the chunk buffer drawn as a box of length $k$, and the observation edge annotated with its age. Mark on your drawing the one edge that does **not** exist, and say in a sentence what believing in it would mean.
+1. **Draw.** The closed loop of the picture above, with the two clocks labelled ($\Delta t$ on the controller edge, $t_{\mathrm{inf}}$ on the policy edge), the chunk buffer drawn as a box of length $k$, and the observation edge annotated with its age. Mark on your drawing the one edge that does **not** exist, and say in a sentence what believing in it would mean.
 2. **Derive.** The robot is re-flashed to run its controller at $50\,\mathrm{Hz}$ while inference still costs $100\,\mathrm{ms}$. (a) The smallest schedulable chunk $m$. (b) The worst-case action age at $k=5$. (c) $\ell(k)$ for a scene change at $t=1.0\,\mathrm{s}$, for $k=5$ and $k=20$. (d) Compare (c) against the 20 Hz numbers in §5 and say in one sentence what a faster controller did and did not buy.
 3. **Do.** Fill the `?` in the patch below and re-run §5's sweep with it. The target now moves *twice* — up at step 20 and back down at step 40, one second apart — so a chunk long enough can spend a whole event chasing the previous one. Report travel, reversals, and the latency to each of the two changes for $k\in\{2,3,5,10,20\}$, and name the largest $k$ whose reaction to a change still arrives *before* the next change. The ideal travel for this episode is 14 cm (6 out, 4 up, 4 down).
 
@@ -364,6 +358,12 @@ def lag(src, e):                       # latency from change e to the first info
 #     plan = chunk(p + jitter(n + 100), target(obs) + jitter(obs), k)
 # and return travel, rev, lag(src, njump), lag(src, njump2)
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Two clocks, not one: label the policy edge with $t_{\mathrm{inf}}$ and the controller edge with $\Delta t$. A single rate on the loop is the most common wrong drawing, and every latency number on this page comes from the two being different.
+> - Draw the chunk buffer as a box of length $k$ and mark that it is refilled only when it empties, from an observation taken $m$ steps earlier, while its last $m$ actions are still to run. That box is where the open-loop interval lives.
+> - Write the observation edge's age as $n-m$, not $n$: the action leaving the buffer at step $n$ was computed from a scene that is $m+(n\bmod k)$ steps old.
+> - Draw no arrow from the buffer to the scene. The robot changes the world and the buffered plan does not; a loop drawn with that arrow has assumed the model's prediction is the world, which is the error §4 is about.
 
 > [!tip]- Solutions
 > 1. Scene → observation (aged $n-m$) → policy ($t_{\mathrm{inf}}$) → chunk buffer (length $k$) → controller ($\Delta t$) → robot → scene, with the refill edge from the buffer back to the observation closing only every $k$ steps. The edge that does not exist is buffer → scene: the plan does not move the world, only the executed action does. Drawing it is assuming the prediction is the state, which is how an open-loop chunk gets reported as if it had been verified.
@@ -397,9 +397,7 @@ def lag(src, e):                       # latency from change e to the first info
 
 *범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-폐루프 하나, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 카탈로그 숫자로 그린 계산 절이고, 아래에 $k=3$으로 루프를 펼쳐 놓았다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 402" style="max-width:100%;height:auto" role="img" aria-label="정책 변에 t_inf = 100 ms, 제어기 변에 50 ms, 행동 세 개짜리 chunk 버퍼와 스텝 n − 2의 관측을 적은 D4의 폐루프와, 그 루프를 제어 스텝으로 펼쳐 관측 스텝, 실행되는 행동의 나이, 스텝 20의 장면 변화에 대한 0.20 s 반응을 보인 시간선">
   <defs><marker id="aD4k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -510,11 +508,7 @@ def lag(src, e):                       # latency from change e to the first info
   <text x="12" y="388" font-size="11" fill="currentColor" fill-opacity="0.85">최악의 나이 (m + k − 1)Δt = 0.20 s · 호 하나가 t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= m = 2 스텝</tspan></text>
 </svg>
 
-그림이 맞혀야 할 것이 넷이고, 각각이 시스템에 대한 주장이다.
-**시계는 하나가 아니라 둘.** 정책 변에 $t_{\mathrm{inf}}=100\,\mathrm{ms}$, 제어기 변에 $\Delta t=50\,\mathrm{ms}$를 적는다. 루프에 주기를 하나만 적는 것이 가장 흔한 오답이고, 이 페이지의 지연 숫자는 전부 둘이 다르다는 데서 나온다.
-**버퍼는 길이를 가진 상자.** chunk 버퍼가 행동 $k$개를 담고 있고, 버퍼는 비었을 때만 다시 채워지지만 그 채움이 쓰는 관측은 $m=2$ 스텝 앞, 마지막 행동 $m$개가 아직 남아 있을 때 찍힌다고 표시한다. 개루프 구간이 사는 자리가 그 상자다.
-**관측 변에는 나이가 붙는다.** $n$이 아니라 $n-m$을 적는다. 스텝 $n$에 버퍼에서 나가는 행동은 $m+(n\bmod k)$ 스텝 묵은 장면에서 계산됐다.
-**버퍼에서 장면으로 가는 화살표는 없다.** 세계를 바꾸는 것은 로봇이지 버퍼 속 계획이 아니다. 그 화살표를 그린 루프는 예측을 곧 세계로 가정한 것이고, §4가 다루는 오류가 그것이다.
+카탈로그 숫자로 그린 D4의 폐루프이고, 시계가 둘이다. 정책 변은 $t_{\mathrm{inf}}=100\,\mathrm{ms}$, 곧 제어 스텝 $m=2$개를 쓰고 제어기 변은 $\Delta t=50\,\mathrm{ms}$이며, chunk 버퍼는 행동 $k=3$개 — $(-0.02,0)$, $(-0.02,0)$, $(0,-0.02)$ — 를 담고 비었을 때만 스텝 $n-m$의 관측으로 다시 채워진다. 아래에 $k=3$으로 펼친 루프에서 실행되는 행동은 모두 2–4 스텝 묵었으므로 최악의 나이는 $(m+k-1)\Delta t=0.20\,\mathrm{s}$이고, 스텝 20의 장면 변화는 스텝 24에야 행동에 닿아 $\ell(3)=(24-20)\times0.05\,\mathrm{s}=0.20\,\mathrm{s}$ 늦는다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -574,7 +568,7 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 ### 5. Chunk 길이 쓸기
 
-랩은 과제 그림에 손잡이 하나를 붙인 것이다. episode는 20 Hz로 3초이고, 목표는 제어 스텝 20까지 $g=(-0.04,-0.02)$에 있다가 $(-0.04,+0.02)$로 옮겨 간다. 정책은 새 관측을 통해서만 이 변화를 알 수 있다. 지각 흔들림은 난수가 아니라 고정된 sine 쌍이므로 아래 표는 어떤 기계에서도 같다. 코드는 영어 절에 한 번만 싣는다.
+랩은 맨 위의 그림에 손잡이 하나를 붙인 것이다. episode는 20 Hz로 3초이고, 목표는 제어 스텝 20까지 $g=(-0.04,-0.02)$에 있다가 $(-0.04,+0.02)$로 옮겨 간다. 정책은 새 관측을 통해서만 이 변화를 알 수 있다. 지각 흔들림은 난수가 아니라 고정된 sine 쌍이므로 아래 표는 어떤 기계에서도 같다. 코드는 영어 절에 한 번만 싣는다.
 
 재는 것은 둘이다. **이동거리**는 $\sum_n\lVert a_n\rVert$, 도구가 실제로 걸은 경로이고 과제에 필요한 $0.10\,\mathrm{m}$(나갈 때 6 cm, 올라올 때 4 cm)와 견준다. 흔들림 때문에 연속한 계획이 어긋나면 올라간다. **방향 반전**은 $a_n^\top a_{n+1}<0$인 스텝 수로, 조작자가 채터로 느끼는 것이다. 그 반대편에 계산 절의 $\ell(k)$와 옮겨 간 목표의 5 mm 안으로 되돌아오는 시간이 선다.
 
@@ -623,11 +617,17 @@ VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stri
 
 ### 과제 · Problem set
 
-Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D4**, 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
+Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D4**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
 
-1. **그리기.** 과제 그림의 폐루프. 시계 둘을 표시하고(제어기 변에 $\Delta t$, 정책 변에 $t_{\mathrm{inf}}$), chunk 버퍼를 길이 $k$인 상자로 그리고, 관측 변에 나이를 적는다. 존재하지 **않는** 변 하나를 표시하고, 그것을 믿으면 무슨 뜻이 되는지 한 문장으로 쓴다.
+1. **그리기.** 위 그림의 폐루프를 그린다. 시계 둘을 표시하고(제어기 변에 $\Delta t$, 정책 변에 $t_{\mathrm{inf}}$), chunk 버퍼를 길이 $k$인 상자로 그리고, 관측 변에 나이를 적는다. 존재하지 **않는** 변 하나를 표시하고, 그것을 믿으면 무슨 뜻이 되는지 한 문장으로 쓴다.
 2. **유도.** 제어기를 $50\,\mathrm{Hz}$로 다시 올리고 추론은 여전히 $100\,\mathrm{ms}$다. (a) 스케줄 가능한 최소 chunk $m$. (b) $k=5$의 최악 행동 나이. (c) $t=1.0\,\mathrm{s}$의 장면 변화에 대해 $k=5$와 $k=20$의 $\ell(k)$. (d) (c)를 §5의 20 Hz 숫자와 비교해 더 빠른 제어기가 무엇을 사고 무엇을 사지 못했는지 한 문장으로.
 3. **실행.** 영어 절 패치의 `?`를 채우고 §5의 쓸기를 다시 돌린다. 이제 목표가 *두 번* 움직인다. 스텝 20에 위로, 스텝 40에 다시 아래로, 1초 간격이다. 충분히 긴 chunk는 한 사건 내내 앞 사건을 쫓는 데 쓸 수 있다. $k\in\{2,3,5,10,20\}$에 대해 이동거리·반전·두 변화 각각의 지연을 보고하고, 어떤 변화에 대한 반응이 *다음* 변화보다 먼저 도착하는 가장 큰 $k$를 말한다. 이 episode의 이상적 이동거리는 14 cm다(나갈 때 6, 위로 4, 아래로 4).
+
+> [!note]- 그리는 법 · How to draw it
+> - 시계는 하나가 아니라 둘이다. 정책 변에 $t_{\mathrm{inf}}$, 제어기 변에 $\Delta t$를 적는다. 루프에 주기를 하나만 적는 것이 가장 흔한 오답이고, 이 페이지의 지연 숫자는 전부 둘이 다르다는 데서 나온다.
+> - chunk 버퍼는 길이 $k$인 상자로 그리고, 비었을 때만 다시 채워지지만 그 채움이 쓰는 관측은 $m$ 스텝 앞, 마지막 행동 $m$개가 아직 남아 있을 때 찍힌다고 표시한다. 개루프 구간이 사는 자리가 그 상자다.
+> - 관측 변의 나이는 $n$이 아니라 $n-m$으로 적는다. 스텝 $n$에 버퍼에서 나가는 행동은 $m+(n\bmod k)$ 스텝 묵은 장면에서 계산됐다.
+> - 버퍼에서 장면으로 가는 화살표는 그리지 않는다. 세계를 바꾸는 것은 로봇이지 버퍼 속 계획이 아니다. 그 화살표를 그린 루프는 예측을 곧 세계로 가정한 것이고, §4가 다루는 오류가 그것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 장면 → 관측(나이 $n-m$) → 정책($t_{\mathrm{inf}}$) → chunk 버퍼(길이 $k$) → 제어기($\Delta t$) → 로봇 → 장면. 버퍼에서 관측으로 돌아가는 변은 $k$ 스텝마다만 닫힌다. 없는 변은 버퍼 → 장면이다. 계획이 세계를 움직이지 않고 실행된 행동만 움직인다. 그 변을 그리는 것은 예측을 상태로 가정하는 것이고, 개루프 chunk가 검증된 것처럼 보고되는 경로가 그것이다.

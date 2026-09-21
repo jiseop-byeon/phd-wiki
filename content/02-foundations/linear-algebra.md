@@ -7,14 +7,14 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · [[02-foundations/neural-network-basics|0.7]] for the machine-learning words the examples use (layer, token, embedding)
-> [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.7]]
+> [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · [[02-foundations/neural-network-basics|0.8]] for the machine-learning words the examples use (layer, token, embedding)
+> [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.8]]
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 
-*Stands on [[02-foundations/engineering-math|0.5]] and [[02-foundations/neural-network-basics|0.7]]. First corner of the core triangle: a matrix is a map, with a rank,
+*Stands on [[02-foundations/engineering-math|0.5]] and [[02-foundations/neural-network-basics|0.8]]. First corner of the core triangle: a matrix is a map, with a rank,
 eigenvalues and an SVD. Four later pages name this one as a prerequisite — calculus, probability, optimization and SE(3).*
 
 Deep learning *is* linear algebra with nonlinearities between the matrix multiplies.
@@ -24,9 +24,7 @@ where each concept appears in the papers of this wiki.
 > [!note] First pass · 처음이라면
 > Read §1 for what a matrix is, then the 2×2 worked example in §3, then §6 for the high-dimensional intuition papers assume. Come back for §4 (SVD) when a paper factorises something, §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
 
-### Homework diagram · 과제가 그릴 그림
-
-The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the frozen pose $\theta=(0^\circ,90^\circ)$, and the figure is what §4.5 means by "a matrix is a map". The problem set asks for the same figure.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="P2 at theta = (0, 90 degrees): the arm to scale, the two columns of J as arrows at the tip, (-1, 1) and (-1, 0), each perpendicular to its joint-to-tip segment; the unit circle of joint rates and the ellipse it maps to, semi-axes 1.618 and 0.618, kappa 2.618; and the straight arm, where the columns are parallel and det J = 0.">
   <defs><marker id="laHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -88,13 +86,7 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
   <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">Ellipse area π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, the circle's own. Straight arm: parallel columns, x lost.</tspan></text>
 </svg>
 
-**The arm, to scale.** Base at the origin, a unit link along $+x$ to the elbow at $(1,0)$, a second unit link straight up to the tip at $(1,1)$. Mark both joints with a circle and write the angle each one owns: $\theta_1$ measured from $+x$ at the base, $\theta_2$ measured at the elbow *relative to link 1*, which is the convention the catalog freezes and the commonest place to go wrong.
-
-**The two columns, as arrows at the tip.** Put both arrow tails at the tip, not at the joints. Column 1 of $J$ is the tip velocity when $\dot\theta=(1,0)$ — the whole arm turning about the base — and it is $(-1,1)$, so it points up and to the left, at $135^\circ$, with length $\sqrt2$. Column 2 is the tip velocity when $\dot\theta=(0,1)$ — the forearm turning about the elbow — and it is $(-1,0)$, pointing straight left, length $1$. Label each arrow with the joint rate that produced it, and write beside the figure the sentence the picture is: *a column of $J$ is the output of one unit of one input.* Check on the drawing that each arrow is perpendicular to the segment from its own joint to the tip, because a point on a rotating body moves at right angles to its radius; that check catches a wrong sign faster than redoing the algebra.
-
-**The image of the unit circle.** Draw a small circle of radius $1$ in a corner box labelled joint-rate space $(\dot\theta_1,\dot\theta_2)$, and beside it, at the tip, the ellipse that circle maps to under $J$. Its semi-axes are the singular values of §4, $\sigma_1=1.618$ and $\sigma_2=0.618$, so the ellipse is about $2.6$ times longer than it is wide — write $\kappa_2(J)=\sigma_1/\sigma_2=2.618$ inside it. The ellipse has area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$: the circle's own area, because $\det J=1$ means this pose neither creates nor destroys area, only reshapes it.
-
-**The variant the problem set ends on.** In a second, smaller panel, redraw the arm straight — $\theta=(0^\circ,0^\circ)$, tip at $(2,0)$ — and draw the two column arrows there: $(0,2)$ and $(0,1)$, both straight up, parallel. Shade the ellipse down to the segment it has collapsed into and write $\det J=0$, $\kappa_2=\infty$ beside it. The missing direction is $x$: the two panels differ by exactly one lost degree of freedom, and $J^\dagger$ blowing up in §4.5 is the algebra of this second panel.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at its frozen pose $\theta=(0^\circ,90^\circ)$, drawn as what §4.5 means by "a matrix is a map": the columns of $J$ are the tip velocities for one unit of each joint rate, $(-1,1)$ for the whole arm turning about the base and $(-1,0)$ for the forearm turning about the elbow, each perpendicular to its own joint-to-tip segment. Under $J$ the unit circle of joint rates becomes an ellipse with semi-axes $\sigma_1=1.618$ and $\sigma_2=0.618$, so $\kappa_2(J)=2.618$, and its area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ is the circle's own because $\det J=1$. In the right panel the arm is straight, $\theta=(0^\circ,0^\circ)$: the columns $(0,2)$ and $(0,1)$ are parallel, the ellipse has collapsed to a segment with $\det J=0$ and $\kappa_2=\infty$, and the lost direction is $x$.
 
 ### 1. Vectors, matrices, and what multiplication means
 
@@ -687,6 +679,15 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 2. **Derive.** From $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, compute $J^{-1}$ by the $2\times 2$ formula. Then $J^\dagger$ from the square-invertible row of the §4.5 table. Confirm they match.
 3. **Interpret.** Send $\theta_2\to 0$ with $\theta_1$ fixed. What happens to the two column arrows, to $\det J$, and to $\kappa_2(J)$? What tool motion becomes impossible?
 
+> [!note]- How to draw it · 그리는 법
+> - The arm to scale: base at the origin, a unit link along $+x$ to the elbow at $(1,0)$, a second unit link straight up to the tip at $(1,1)$, both joints marked with a circle.
+> - Write the angle each joint owns: $\theta_1$ measured from $+x$ at the base, $\theta_2$ measured at the elbow *relative to link 1* — the convention the catalog freezes, and the commonest place to go wrong.
+> - Put both column arrows' tails at the tip, not at the joints: column 1 is the tip velocity for $\dot\theta=(1,0)$, the whole arm turning about the base, and column 2 the tip velocity for $\dot\theta=(0,1)$, the forearm turning about the elbow. Label each arrow with the joint rate that produced it.
+> - Check that each arrow is perpendicular to the segment from its own joint to the tip — a point on a rotating body moves at right angles to its radius — which catches a wrong sign faster than redoing the algebra.
+> - Write beside the drawing the sentence it is: a column of $J$ is the output of one unit of one input.
+> - The image of the unit circle, if you add it: a radius-$1$ circle in a corner box labelled joint-rate space, and at the tip the ellipse it maps to, with the singular values of §4 as semi-axes and $\kappa_2(J)=\sigma_1/\sigma_2$ written inside; its area is $\pi\lvert\det J\rvert$.
+> - For item 3, a second, smaller panel with the arm straight, $\theta=(0^\circ,0^\circ)$: draw the two column arrows there, shade the ellipse down to the segment it collapses into, and write $\det J$ and $\kappa_2$ beside it — the two panels differ by exactly one lost direction, and $J^\dagger$ blowing up in §4.5 is the algebra of the second.
+
 > [!tip]- Solutions
 > 1. Column 1 is $(-1,1)$ (whole arm about the base). Column 2 is $(-1,0)$ (forearm about the elbow).
 > 2. $\det J=1$, so $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible $\Rightarrow J^\dagger=J^{-1}$.
@@ -694,7 +695,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 
 ## 한국어
 
-*[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.7]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
+*[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.8]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
 사상이다. 뒤의 네 페이지 — 미적분, 확률, 최적화, SE(3) — 가 이 페이지를 선수로 지목한다.*
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의
@@ -703,9 +704,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 > [!note] 처음이라면 · First pass
 > 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §4.5는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 고정 자세 $\theta=(0^\circ,90^\circ)$에서 본 것이고, 그림은 §4.5가 말하는 "행렬은 사상이다"의 그림판이다. 과제가 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="자세 θ = (0, 90도)의 P2: 실제 비율의 팔, 말단에 화살표로 그린 J의 두 열 (-1, 1)과 (-1, 0), 각각 자기 관절에서 말단으로 가는 선분에 수직; 관절 속도의 단위원과 그것이 옮겨 간 타원, 반축 1.618과 0.618, 조건수 2.618; 그리고 두 열이 평행하고 det J = 0인 곧게 편 팔.">
   <defs><marker id="laHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -767,13 +766,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">타원 넓이 π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, 원의 넓이 그대로다. 편 팔: 두 열이 평행하고 x가 사라진다.</tspan></text>
 </svg>
 
-**팔, 실제 비율로.** 베이스는 원점, 단위 링크가 $+x$를 따라 엘보 $(1,0)$까지, 둘째 단위 링크가 곧장 위로 말단 $(1,1)$까지. 관절 둘을 동그라미로 표시하고 각자가 가진 각을 적는다. $\theta_1$은 베이스에서 $+x$로부터, $\theta_2$는 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
-
-**두 열, 말단의 화살표로.** 화살표 둘의 꼬리를 관절이 아니라 말단에 둔다. $J$의 열 1은 $\dot\theta=(1,0)$일 때의 말단 속도 — 팔 전체가 베이스를 중심으로 도는 경우 — 이고 $(-1,1)$이라 왼쪽 위 $135^\circ$ 방향, 길이 $\sqrt2$다. 열 2는 $\dot\theta=(0,1)$일 때의 말단 속도 — 전완이 엘보를 중심으로 도는 경우 — 이고 $(-1,0)$이라 왼쪽으로 길이 $1$이다. 화살표마다 그것을 만든 관절 속도를 적고, 그림 옆에 이 그림이 곧 그 문장임을 적는다. *$J$의 한 열은 입력 하나의 단위량이 만드는 출력이다.* 그림 위에서 확인할 것: 각 화살표는 자기 관절에서 말단으로 가는 선분과 수직이다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다.
-
-**단위원의 상.** 한쪽 구석 상자에 관절 속도 공간 $(\dot\theta_1,\dot\theta_2)$의 반지름 $1$짜리 원을 그리고, 그 옆 말단 자리에 그 원이 $J$로 옮겨 간 타원을 그린다. 반축은 §4의 특이값 $\sigma_1=1.618$과 $\sigma_2=0.618$이므로 타원은 폭의 약 $2.6$배로 길다. 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2=2.618$이라 쓴다. 타원의 넓이는 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$, 곧 원의 넓이 그대로다. $\det J=1$은 이 자세가 넓이를 만들지도 없애지도 않고 모양만 바꾼다는 뜻이기 때문이다.
-
-**과제가 끝나는 변형.** 더 작은 둘째 칸에 팔을 곧게 편 자세 — $\theta=(0^\circ,0^\circ)$, 말단 $(2,0)$ — 를 다시 그리고 거기서 두 열 화살표를 그린다. $(0,2)$와 $(0,1)$로 둘 다 위를 향해 평행하다. 타원이 주저앉아 버린 선분을 칠하고 옆에 $\det J=0$, $\kappa_2=\infty$라고 쓴다. 사라진 방향은 $x$다. 두 칸의 차이가 정확히 자유도 하나이고, §4.5에서 $J^\dagger$가 폭발하는 것이 이 둘째 칸의 대수다.
+고정 자세 $\theta=(0^\circ,90^\circ)$의 장치 P2([[02-foundations/lab-plants|0.6 Lab Plants]])로 §4.5가 말하는 "행렬은 사상이다"를 그린 것으로, $J$의 두 열은 관절 속도 하나를 단위만큼 줄 때의 말단 속도, 곧 팔 전체가 베이스를 중심으로 돌 때의 $(-1,1)$과 전완이 엘보를 중심으로 돌 때의 $(-1,0)$이며 각각 자기 관절에서 말단으로 가는 선분에 수직이다. $J$는 관절 속도의 단위원을 반축이 $\sigma_1=1.618$, $\sigma_2=0.618$인 타원으로 옮기므로 $\kappa_2(J)=2.618$이고, $\det J=1$이라 타원의 넓이 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$는 원의 넓이 그대로다. 오른쪽 칸은 곧게 편 팔 $\theta=(0^\circ,0^\circ)$로, 두 열 $(0,2)$와 $(0,1)$이 평행하고 타원이 선분으로 주저앉아 $\det J=0$, $\kappa_2=\infty$이며 사라진 방향은 $x$다.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
 
@@ -1331,6 +1324,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 1. **그리기.** 평면 팔: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $J$의 두 열을 말단의 화살로 (각 관절 단위속도가 만드는 말단 속도).
 2. **유도.** $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$에서 $2\times 2$ 공식으로 $J^{-1}$. 이어서 §4.5 표의 정방·가역 행으로 $J^\dagger$. 둘이 같은지 확인하라.
 3. **해석.** $\theta_1$을 고정하고 $\theta_2\to 0$. 두 열 화살, $\det J$, $\kappa_2(J)$는? 어떤 말단 운동이 불가능해지는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 팔은 실제 비율로 그린다. 베이스는 원점, 단위 링크가 $+x$를 따라 엘보 $(1,0)$까지, 둘째 단위 링크가 곧장 위로 말단 $(1,1)$까지 가고, 관절 둘은 동그라미로 표시한다.
+> - 관절마다 자기 각을 적는다. $\theta_1$은 베이스에서 $+x$로부터, $\theta_2$는 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
+> - 두 열 화살표의 꼬리는 관절이 아니라 말단에 둔다. 열 1은 $\dot\theta=(1,0)$, 곧 팔 전체가 베이스를 중심으로 돌 때의 말단 속도이고, 열 2는 $\dot\theta=(0,1)$, 곧 전완이 엘보를 중심으로 돌 때의 말단 속도다. 화살표마다 그것을 만든 관절 속도를 적는다.
+> - 각 화살표가 자기 관절에서 말단으로 가는 선분과 수직인지 확인한다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다.
+> - 그림 옆에 이 그림이 곧 그 문장임을 적는다. $J$의 한 열은 입력 하나의 단위량이 만드는 출력이다.
+> - 단위원의 상을 더한다면, 한쪽 구석 상자에 관절 속도 공간의 반지름 $1$짜리 원을 그리고 말단 자리에 그 원이 옮겨 간 타원을 그린다. 반축은 §4의 특이값이고 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2$를 쓴다. 넓이는 $\pi\lvert\det J\rvert$다.
+> - 3번을 위해 더 작은 둘째 칸에 팔을 곧게 편 자세 $\theta=(0^\circ,0^\circ)$를 그리고, 거기서 두 열 화살표를 그리고, 타원이 주저앉은 선분을 칠하고, 옆에 $\det J$와 $\kappa_2$를 쓴다. 두 칸의 차이가 정확히 사라진 방향 하나이고, §4.5에서 $J^\dagger$가 폭발하는 것이 둘째 칸의 대수다.
 
 > [!tip]- 정답 · Solutions
 > 1. 1열은 $(-1,1)$ (베이스를 도는 팔 전체). 2열은 $(-1,0)$ (엘보를 도는 전완).

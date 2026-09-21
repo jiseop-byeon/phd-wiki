@@ -8,8 +8,8 @@ mastery-when: "This is operational knowledge — keep it current rather than dee
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/lab-kernel|0.65 Lab Kernel §2–§3]] (explicit and semi-implicit Euler, the two integrators the lab compares) · [[02-foundations/lab-plants|0.6 Lab Plants]] (**P3**, whose handle the drop cell borrows, and **P2**, the arm of RS1) · natural frequency and damping ratio from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the discrete-time stability test from its §4 · the penalty contact law from [[04-robotics/contact-force-tactile|9. Contact §3]]
-> [[02-foundations/lab-kernel|0.65 Lab Kernel §2–§3]](명시적·반암시적 오일러, 랩이 비교하는 두 적분기) · [[02-foundations/lab-plants|0.6 Lab Plants]](낙하 셀이 핸들을 빌려 오는 **P3**, RS1의 팔인 **P2**) · [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 고유 진동수와 감쇠비, 같은 페이지 §4의 이산시간 안정성 판정 · [[04-robotics/contact-force-tactile|9. 접촉 §3]]의 페널티 접촉 법칙
+> [[02-foundations/lab-kernel|0.7 Lab Kernel §2–§3]] (explicit and semi-implicit Euler, the two integrators the lab compares) · [[02-foundations/lab-plants|0.6 Lab Plants]] (**P3**, whose handle the drop cell borrows, and **P2**, the arm of RS1) · natural frequency and damping ratio from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the discrete-time stability test from its §4 · the penalty contact law from [[04-robotics/contact-force-tactile|9. Contact §3]]
+> [[02-foundations/lab-kernel|0.7 Lab Kernel §2–§3]](명시적·반암시적 오일러, 랩이 비교하는 두 적분기) · [[02-foundations/lab-plants|0.6 Lab Plants]](낙하 셀이 핸들을 빌려 오는 **P3**, RS1의 팔인 **P2**) · [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 고유 진동수와 감쇠비, 같은 페이지 §4의 이산시간 안정성 판정 · [[04-robotics/contact-force-tactile|9. 접촉 §3]]의 페널티 접촉 법칙
 
 > [!abstract] Depth target · 깊이 목표
 > **Working** — enough to pick the instrument for an experiment, and to read someone else's
@@ -30,7 +30,7 @@ mastery-when: "This is operational knowledge — keep it current rather than dee
 
 ## English
 
-*Stands on [[02-foundations/lab-kernel|0.65 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. A later use of plant **P3** — its home is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], and this page borrows only its mass and its wall — and a restatement of RS1, the study every research-practice page shares. Most of this page is a reading page about tools; the running object gives its one numerical claim, §3's, a lab.*
+*Stands on [[02-foundations/lab-kernel|0.7 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. A later use of plant **P3** — its home is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], and this page borrows only its mass and its wall — and a restatement of RS1, the study every research-practice page shares. Most of this page is a reading page about tools; the running object gives its one numerical claim, §3's, a lab.*
 
 > [!note] First pass · 처음이라면
 > Read the running object, then work the worked case — one bounce, stepped by hand with both integrators. Then §3, where the same drop runs as a lab and its table puts a price on what "fast and stable" costs a simulator. After that, §2 (the status traps) and §7–§8 (the missing force data), which are the page's citable absences. §6 and §11 are for the day you read someone else's benchmark numbers.
@@ -70,9 +70,7 @@ so the wall pushes the handle out and never pulls it in. The drop starts at the 
 
 *Scope: this page teaches how to choose and cite a simulator, a benchmark or a dataset — and, on the drop cell, why a simulator's contact model and step decide the contact force it reports. It does not teach how a contact solver is built (complementarity is defined in [[04-robotics/contact-force-tactile|9. Contact §1]]; solver internals are not taught here); nor the energy leak of a controller's zero-order hold, which is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]] — a different energy source whose bound looks similar; nor the statistics of RS1's pilot, which belong to [[06-research-practice/experimental-design-reproducibility|3. Experimental Design & Reproducibility]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure in two parts, and the problem set asks for the same figure for a lighter handle.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 470" style="max-width:100%;height:auto" role="img" aria-label="one bounce in the phase plane: the exact half circle, explicit Euler spiralling outward, semi-implicit Euler on a tilted ellipse; below, the stable interval of omega times the step">
   <defs><marker id="dcA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -145,15 +143,11 @@ One figure in two parts, and the problem set asks for the same figure for a ligh
   </g>
 </svg>
 
-Four things the drawing has to get right, each of which is a claim about the physics.
-**The axes are scaled so that energy is distance.** Put $\omega\delta$ across and $v$ up, both in m/s. The energy per unit mass, $\tfrac12(v^2+\omega^2\delta^2)$, is then half the squared distance from the origin, so the exact bounce is a half circle of radius $v_0$ from $(0,v_0)$ to $(0,-v_0)$, and leaving on the circle means leaving with the energy that arrived.
-**Explicit Euler is a polygon that grows.** Each vertex is $\sqrt{1+(\omega\Delta t)^2}$ times farther out than the last — $\sqrt2$ here — so the handle leaves faster than it came.
-**Semi-implicit Euler sits on a tilted ellipse.** Its points leave the circle and come back to it, because what this step conserves is the modified energy $\tilde E$ of step 3, not the true energy. Draw the ellipse through the points.
-**The strip underneath.** An $\omega\Delta t$ axis from 0 to 3, with $0<\omega\Delta t<2$ shaded as semi-implicit Euler's stable interval and a note that explicit Euler has none at $d=0$. Mark both walls at $\Delta t=1\,\mathrm{ms}$ — $0.1$ and $1$ — and write under the 2 what it means for each wall in milliseconds.
+One bounce of P3's handle on the stiff wall at $\Delta t=1\,\mathrm{ms}$, where $\omega\Delta t=1$, in the plane of $\omega\delta$ across and $v$ up, both in m/s, so that energy is half the squared distance from the origin. The exact bounce is a half circle of radius $v_0$ that peaks at $4\,\mathrm N$; explicit Euler is a polygon whose every vertex sits $\sqrt2$ farther out than the last, so the handle leaves at $4v_0$ with 16 times the energy after an $8\,\mathrm N$ peak, while semi-implicit Euler's points ride a tilted ellipse and leave at $v_0$ after a $4\,\mathrm N$ peak. The strip underneath is semi-implicit Euler's stable interval, $0<\omega\Delta t<2$ — any step below $20\,\mathrm{ms}$ on the panel and below $2\,\mathrm{ms}$ on the stiff wall, which sit at $0.1$ and $1$ at $1\,\mathrm{ms}$ — and explicit Euler with $d=0$ has no stable step at all.
 
 ### Worked case · 대상으로 한 번 끝까지
 
-This is the homework object, worked once on the frozen numbers: the contact frequency, what each integrator does to one step, the stable step in milliseconds, one bounce stepped by hand, and what contact damping changes. The problem set runs the same steps with half the mass.
+The drop cell, worked once on the frozen numbers — the problem set reuses it: the contact frequency, what each integrator does to one step, the stable step in milliseconds, one bounce stepped by hand, and what contact damping changes. The problem set runs the same steps with half the mass.
 
 **Step 1 — the contact frequency.** Inside the wall with $d=0$ the handle obeys $m\ddot\delta=-k\delta$, the undamped mass–spring of [[04-robotics/control-theory-ce397|5. Control Theory §5]]. Starting from the touch,
 
@@ -170,13 +164,13 @@ because $\delta(0)=0$ and $\dot\delta(0)=v_0$ fix the amplitude at $v_0/\omega$.
 
 The last row is the quantity RS1 scores, and it depends on $k$ as much as on the approach: the same drop peaks ten times higher on the stiff wall, since $\sqrt{100}=10$.
 
-**Step 2 — explicit Euler adds energy on every step in contact.** Take the energy per unit mass as $\tfrac12(v^2+\omega^2\delta^2)$. One explicit step ([[02-foundations/lab-kernel|0.65 §2]]) is $\delta'=\delta+\Delta t\,v$ and $v'=v-\Delta t\,\omega^2\delta$; squaring and adding,
+**Step 2 — explicit Euler adds energy on every step in contact.** Take the energy per unit mass as $\tfrac12(v^2+\omega^2\delta^2)$. One explicit step ([[02-foundations/lab-kernel|0.7 §2]]) is $\delta'=\delta+\Delta t\,v$ and $v'=v-\Delta t\,\omega^2\delta$; squaring and adding,
 
 $$v'^2+\omega^2\delta'^2=\big(1+(\omega\Delta t)^2\big)\big(v^2+\omega^2\delta^2\big)$$
 
 since the cross terms $\mp2\Delta t\,\omega^2\delta v$ cancel exactly. So every step taken from the face or inside it multiplies that energy by $1+(\omega\Delta t)^2>1$, whatever the phase and whatever the step; only the exit step, which lands outside, loses part of the product, because a spring stretched past the face does not exist. No step is small enough to stop it: a smaller step makes each gain smaller and takes more of them. One contact takes about $\pi/(\omega\Delta t)$ steps, so the gains compound to about $e^{\pi\omega\Delta t}$ per bounce while $\omega\Delta t$ is small.
 
-**Step 3 — semi-implicit Euler is stable only for $\omega\Delta t<2$.** The semi-implicit step ([[02-foundations/lab-kernel|0.65 §3]]) updates the velocity first and moves with the new one: $v'=v-\Delta t\,\omega^2\delta$, then $\delta'=\delta+\Delta t\,v'$. As a matrix acting on $(\delta,v)$,
+**Step 3 — semi-implicit Euler is stable only for $\omega\Delta t<2$.** The semi-implicit step ([[02-foundations/lab-kernel|0.7 §3]]) updates the velocity first and moves with the new one: $v'=v-\Delta t\,\omega^2\delta$, then $\delta'=\delta+\Delta t\,v'$. As a matrix acting on $(\delta,v)$,
 
 $$\begin{pmatrix}\delta'\\ v'\end{pmatrix}=\begin{pmatrix}1-(\omega\Delta t)^2 & \Delta t\\ -\omega^2\Delta t & 1\end{pmatrix}\begin{pmatrix}\delta\\ v\end{pmatrix}$$
 
@@ -370,7 +364,7 @@ penetration depth between two objects at given points". For a project about
 > - **Non-example**: explicit Euler's $16$ on the stiff wall at $1\,\mathrm{ms}$ is a correctly measured energy ratio, but it is not the contact's; it is the integrator's. The definition measures the simulation, which is what makes it useful.
 > - **Why it matters**: it is a one-number test of any simulator's contact that needs no force sensor. Drop a body with no damping configured; if it comes back faster than it arrived, the step or the integrator is wrong for that contact.
 
-**Lab — one drop, two integrators, a sweep over $\Delta t$ and $k$.** The listing runs the drop cell as the worked case did, on three stiffnesses — the panel, the stiff wall, and a tenfold step between them — at five steps from $0.1$ to $20\,\mathrm{ms}$, and reports the energy ratio and the peak penetration for each integrator. It uses the two integrators of [[02-foundations/lab-kernel|0.65 §2 and §3]] and nothing else; a second loop reruns part of the sweep with the frozen dampers.
+**Lab — one drop, two integrators, a sweep over $\Delta t$ and $k$.** The listing runs the drop cell as the worked case did, on three stiffnesses — the panel, the stiff wall, and a tenfold step between them — at five steps from $0.1$ to $20\,\mathrm{ms}$, and reports the energy ratio and the peak penetration for each integrator. It uses the two integrators of [[02-foundations/lab-kernel|0.7 §2 and §3]] and nothing else; a second loop reruns part of the sweep with the frozen dampers.
 
 ```python
 import numpy as np
@@ -839,11 +833,11 @@ cite a comparison, say whose evaluation it was.**
 
 ### Problem set · 과제
 
-Tier A. Using only this page, [[02-foundations/lab-kernel|0.65 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. The variant is **a lighter handle**: $m=0.02\,\mathrm{kg}$, half of P3's, against the same two walls ($400$ and $40{,}000\,\mathrm{N/m}$), dropped from the touch at the same $v_0=0.1\,\mathrm{m/s}$, with $d=0$ unless a part says otherwise. Original problems; fill the blanks, do not rewrite the loop.
+Tier A. Using only this page, [[02-foundations/lab-kernel|0.7 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. The variant is **a lighter handle**: $m=0.02\,\mathrm{kg}$, half of P3's, against the same two walls ($400$ and $40{,}000\,\mathrm{N/m}$), dropped from the touch at the same $v_0=0.1\,\mathrm{m/s}$, with $d=0$ unless a part says otherwise. Original problems; fill the blanks, do not rewrite the loop.
 
-1. **Draw.** The homework diagram for the variant: the $(\omega\delta,v)$ plane of one bounce on the stiff wall at $\Delta t=1\,\mathrm{ms}$ — the exact half circle, the explicit polygon, the semi-implicit points and the ellipse they sit on — and the $\omega\Delta t$ strip with both walls marked at $1\,\mathrm{ms}$ and each wall's stable step written in milliseconds.
+1. **Draw.** The picture above, for the variant: the $(\omega\delta,v)$ plane of one bounce on the stiff wall at $\Delta t=1\,\mathrm{ms}$ — the exact half circle, the explicit polygon, the semi-implicit points and the ellipse they sit on — and the $\omega\Delta t$ strip with both walls marked at $1\,\mathrm{ms}$ and each wall's stable step written in milliseconds.
 2. **Derive.** (a) $\omega$, the contact time, the exact peak penetration and the exact peak force for each wall. (b) The largest stable semi-implicit step for each wall, and the step a scene holding both walls must use. (c) Step one bounce by hand on the stiff wall at $\Delta t=1\,\mathrm{ms}$ with both integrators: the energy ratio, the peak penetration and the peak force. Does either cross RS1's $10\,\mathrm{N}$ line at $0.1\,\mathrm{m/s}$, and at what $v_0$ would the explicit one? (d) The smallest contact damping that makes explicit Euler stable at $\Delta t=1\,\mathrm{ms}$ on each wall. Did halving the mass change it? (e) With $\zeta=0.1$, the semi-implicit stable step on the stiff wall.
-3. **Do.** Fill the `?` in the template ([[02-foundations/lab-kernel|0.65]] has both integrators) and run the undamped sweep for the variant. Report the table — energy ratio and peak penetration for both integrators, $\Delta t\in\{0.1,1,2,5,20\}\,\mathrm{ms}$, both walls — with the unstable cells marked. Then answer: (i) which cells changed from the page's table, and why the $\omega\Delta t$ column alone predicts it; (ii) is semi-implicit Euler's exact 1 on the stiff wall at $1\,\mathrm{ms}$ a property of the integrator? Point to a row of your table that settles it; (iii) the largest step on the grid that is stable for both walls.
+3. **Do.** Fill the `?` in the template ([[02-foundations/lab-kernel|0.7]] has both integrators) and run the undamped sweep for the variant. Report the table — energy ratio and peak penetration for both integrators, $\Delta t\in\{0.1,1,2,5,20\}\,\mathrm{ms}$, both walls — with the unstable cells marked. Then answer: (i) which cells changed from the page's table, and why the $\omega\Delta t$ column alone predicts it; (ii) is semi-implicit Euler's exact 1 on the stiff wall at $1\,\mathrm{ms}$ a property of the integrator? Point to a row of your table that settles it; (iii) the largest step on the grid that is stable for both walls.
 
 ```python
 # The variant: half of P3's handle, same walls, same drop. Fill the ?; do not rewrite the loop.
@@ -872,6 +866,14 @@ for k in (400.0, 40000.0):
         print(f"{k:6.0f} {dt*1e3:5.1f} {w*dt:7.3f} {rx:10.4g} {rs:10.4g}"
               f" {px*1e3:8.4f} {ps*1e3:8.4f}  {mark}")
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - **Scale the axes so that energy is distance:** $\omega\delta$ across and $v$ up, both in m/s. The energy per unit mass, $\tfrac12(v^2+\omega^2\delta^2)$, is then half the squared distance from the origin.
+> - **The exact bounce is a half circle** of radius $v_0$, from $(0,v_0)$ to $(0,-v_0)$; leaving on the circle means leaving with the energy that arrived.
+> - **Explicit Euler is a polygon that grows:** each vertex is $\sqrt{1+(\omega\Delta t)^2}$ times farther out than the last — $\sqrt2$ in the worked case — so the handle leaves faster than it came.
+> - **Semi-implicit Euler's points sit on a tilted ellipse**, leaving the circle and coming back to it, because what this step conserves is the modified energy $\tilde E$ of step 3, not the true energy. Draw the ellipse through the points.
+> - **The strip underneath:** an $\omega\Delta t$ axis from 0 to 3, with $0<\omega\Delta t<2$ shaded as semi-implicit Euler's stable interval and a note that explicit Euler has none at $d=0$.
+> - **Mark both walls at $\Delta t=1\,\mathrm{ms}$** on the strip — $0.1$ and $1$ in the worked case — and write under the 2 what it means for each wall in milliseconds.
 
 > [!tip]- Solutions
 > 1. Explicit vertices, as $(\omega\delta,v)$ in m/s: $(0,0.1)$, $(0.141,0.1)$, $(0.283,-0.1)$, $(0.141,-0.5)$, then out at $v=-0.7$. Each is $\sqrt3$ times farther out than the last, since $1+(\omega\Delta t)^2=3$. Semi-implicit: $(0,0.1)$, $(0.141,0.1)$, $(0,-0.1)$, then out at $-0.1$, all on the ellipse $v^2+(\omega\delta)^2-\sqrt2\,(\omega\delta)\,v=0.01$. On the strip, the panel sits at $\omega\Delta t=0.141$ and the stiff wall at $1.414$; under the 2, write $14.1\,\mathrm{ms}$ and $1.41\,\mathrm{ms}$.
@@ -915,13 +917,13 @@ checked and contained nothing.
 - [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — what an evaluation has to hold fixed
 - [[06-research-practice/real-world-impact|6. Real-World Impact]] — why a released dataset is worth more here than elsewhere
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the tasks these absences are absent for
-- [[02-foundations/lab-kernel|0.65 Lab Kernel]] — the two integrators the drop cell compares
+- [[02-foundations/lab-kernel|0.7 Lab Kernel]] — the two integrators the drop cell compares
 - [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile]] — the penalty law the drop cell's wall uses
 - [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]] — the other energy source on the same handle, a controller's hold
 
 ## 한국어
 
-*[[02-foundations/lab-kernel|0.65 Lab Kernel]]과 [[02-foundations/lab-plants|0.6 Lab Plants]] 위에 선다. 장치 P3를 다시 쓰는 페이지다 — P3의 집은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]이고, 이 페이지는 그 질량과 벽만 빌린다. 그리고 연구 실무의 모든 페이지가 공유하는 연구 RS1을 다시 적는다. 이 페이지의 대부분은 도구에 관한 읽기 페이지이고, 이 페이지의 대상은 그 가운데 하나뿐인 수치적 주장, 곧 §3의 주장에 랩을 붙인다.*
+*[[02-foundations/lab-kernel|0.7 Lab Kernel]]과 [[02-foundations/lab-plants|0.6 Lab Plants]] 위에 선다. 장치 P3를 다시 쓰는 페이지다 — P3의 집은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]이고, 이 페이지는 그 질량과 벽만 빌린다. 그리고 연구 실무의 모든 페이지가 공유하는 연구 RS1을 다시 적는다. 이 페이지의 대부분은 도구에 관한 읽기 페이지이고, 이 페이지의 대상은 그 가운데 하나뿐인 수치적 주장, 곧 §3의 주장에 랩을 붙인다.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상을 읽고, 대상으로 한 번 끝까지 절에서 한 번의 튕김을 두 적분기로 손으로 전진해 본다. 다음은 §3이다. 같은 낙하를 랩으로 돌리고, 그 표가 시뮬레이터의 "빠르고 안정적"이 무엇을 대가로 치르는지 값을 매긴다. 그다음이 §2(상태 함정)와 §7–§8(빠진 힘 데이터)로, 이 페이지의 인용 가능한 부재들이다. §6과 §11은 남의 벤치마크 숫자를 읽는 날을 위해 남겨 둔다.
@@ -961,9 +963,7 @@ $$F=-\max\big(0,\ k\delta+d\dot\delta\big)\ \ (\delta>0),\qquad F=0\ \ (\delta\l
 
 *범위: 이 페이지는 시뮬레이터·벤치마크·데이터셋을 고르고 인용하는 법을 가르치고, 낙하 셀에서는 시뮬레이터의 접촉 모델과 스텝이 왜 그것이 보고하는 접촉력을 결정하는지를 가르친다. 접촉 솔버를 만드는 법은 가르치지 않는다(상보성의 정의는 [[04-robotics/contact-force-tactile|9. 접촉 §1]]에 있고, 솔버 내부는 여기서 다루지 않는다). 제어기의 zero-order hold가 새게 하는 에너지도 아니다. 그것은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]이고, 경계가 비슷해 보이는 다른 에너지원이다. RS1 파일럿의 통계도 아니다. 그것은 [[06-research-practice/experimental-design-reproducibility|3. 실험 설계와 재현성]]의 몫이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 두 부분. 과제는 더 가벼운 핸들로 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="위상 평면 위의 한 번의 튕김: 정확한 반원, 바깥으로 나선을 그리는 명시적 오일러, 기울어진 타원 위의 반암시적 오일러. 아래는 오메가 곱하기 스텝의 안정 구간">
   <defs><marker id="dcK" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -1036,15 +1036,11 @@ $$F=-\max\big(0,\ k\delta+d\dot\delta\big)\ \ (\delta>0),\qquad F=0\ \ (\delta\l
   </g>
 </svg>
 
-그림이 맞혀야 할 것이 넷이고, 각각이 물리에 대한 주장이다.
-**축을 에너지가 거리가 되도록 잡는다.** 가로에 $\omega\delta$, 세로에 $v$, 둘 다 m/s. 그러면 단위 질량당 에너지 $\tfrac12(v^2+\omega^2\delta^2)$는 원점까지 거리 제곱의 절반이므로, 정확한 튕김은 $(0,v_0)$에서 $(0,-v_0)$까지 반지름 $v_0$인 반원이다. 원 위에서 떠난다는 것은 들어온 에너지를 그대로 갖고 떠난다는 뜻이다.
-**명시적 오일러는 커지는 다각형이다.** 꼭짓점마다 앞의 것보다 $\sqrt{1+(\omega\Delta t)^2}$배 — 여기서는 $\sqrt2$배 — 멀어지므로, 핸들은 들어올 때보다 빨리 떠난다.
-**반암시적 오일러는 기울어진 타원 위에 있다.** 점들이 원을 벗어났다가 돌아온다. 이 스텝이 보존하는 것은 참 에너지가 아니라 3단계의 수정 에너지 $\tilde E$이기 때문이다. 점들을 지나는 타원을 그린다.
-**아래의 띠.** 0부터 3까지의 $\omega\Delta t$ 축에 반암시적 오일러의 안정 구간 $0<\omega\Delta t<2$를 칠하고, $d=0$에서 명시적 오일러에는 안정 구간이 없다고 적는다. $\Delta t=1\,\mathrm{ms}$에서의 두 벽 — $0.1$과 $1$ — 을 표시하고, 2 아래에 그것이 각 벽에서 몇 밀리초인지 적는다.
+P3 핸들이 $\Delta t=1\,\mathrm{ms}$, 곧 $\omega\Delta t=1$에서 단단한 벽에 한 번 튕기는 모습을, 에너지가 원점까지 거리 제곱의 절반이 되도록 가로에 $\omega\delta$, 세로에 $v$(둘 다 m/s)를 둔 평면에 그렸다. 정확한 튕김은 반지름 $v_0$인 반원으로 최대 $4\,\mathrm N$이고, 명시적 오일러는 꼭짓점마다 앞의 것보다 $\sqrt2$배 멀어지는 다각형이라 핸들이 $8\,\mathrm N$의 최대 힘 뒤에 16배의 에너지를 갖고 $4v_0$로 떠나며, 반암시적 오일러의 점들은 기울어진 타원을 타고 $4\,\mathrm N$의 최대 힘 뒤에 $v_0$로 떠난다. 아래의 띠는 반암시적 오일러의 안정 구간 $0<\omega\Delta t<2$ — 패널에서는 $20\,\mathrm{ms}$ 미만, 단단한 벽에서는 $2\,\mathrm{ms}$ 미만의 모든 스텝이며, $1\,\mathrm{ms}$에서 두 벽은 $0.1$과 $1$에 있다 — 이고, $d=0$인 명시적 오일러에는 안정한 스텝이 아예 없다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
-이것이 과제의 대상이고, 고정된 숫자로 한 번 끝까지 계산한다. 접촉 진동수, 각 적분기가 한 스텝에 하는 일, 밀리초로 쓴 안정 스텝, 손으로 전진한 한 번의 튕김, 그리고 접촉 감쇠가 바꾸는 것. 과제는 질량을 절반으로 줄여 같은 단계를 밟는다.
+낙하 셀을 고정된 숫자로 한 번 끝까지 계산한다. 과제도 이 대상을 다시 쓴다. 접촉 진동수, 각 적분기가 한 스텝에 하는 일, 밀리초로 쓴 안정 스텝, 손으로 전진한 한 번의 튕김, 그리고 접촉 감쇠가 바꾸는 것. 과제는 질량을 절반으로 줄여 같은 단계를 밟는다.
 
 **1단계 — 접촉 진동수.** $d=0$일 때 벽 안의 핸들은 $m\ddot\delta=-k\delta$를 따른다. [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 감쇠 없는 질량–스프링이다. 닿는 순간부터
 
@@ -1061,13 +1057,13 @@ $$\delta(t)=\frac{v_0}{\omega}\sin\omega t,\qquad \omega=\sqrt{k/m}$$
 
 마지막 행이 RS1이 채점하는 양이고, 접근만큼이나 $k$에 달려 있다. 같은 낙하가 단단한 벽에서는 열 배 높게 솟는다. $\sqrt{100}=10$이기 때문이다.
 
-**2단계 — 명시적 오일러는 접촉 중 매 스텝 에너지를 더한다.** 단위 질량당 에너지를 $\tfrac12(v^2+\omega^2\delta^2)$로 둔다. 명시적 스텝 한 번([[02-foundations/lab-kernel|0.65 §2]])은 $\delta'=\delta+\Delta t\,v$, $v'=v-\Delta t\,\omega^2\delta$이다. 제곱해서 더하면
+**2단계 — 명시적 오일러는 접촉 중 매 스텝 에너지를 더한다.** 단위 질량당 에너지를 $\tfrac12(v^2+\omega^2\delta^2)$로 둔다. 명시적 스텝 한 번([[02-foundations/lab-kernel|0.7 §2]])은 $\delta'=\delta+\Delta t\,v$, $v'=v-\Delta t\,\omega^2\delta$이다. 제곱해서 더하면
 
 $$v'^2+\omega^2\delta'^2=\big(1+(\omega\Delta t)^2\big)\big(v^2+\omega^2\delta^2\big)$$
 
 이다. 교차항 $\mp2\Delta t\,\omega^2\delta v$가 정확히 상쇄되기 때문이다. 그러므로 벽면이나 그 안에서 시작하는 스텝은 위상이 어떻든, 스텝이 얼마든 그 에너지를 $1+(\omega\Delta t)^2>1$배 한다. 벽 밖에 떨어지는 마지막 스텝만 그 곱의 일부를 잃는다. 벽면 너머로 늘어난 스프링은 존재하지 않기 때문이다. 이것을 멈출 만큼 작은 스텝은 없다. 스텝을 줄이면 한 번의 이득은 작아지지만 그만큼 여러 번 얻는다. 접촉 한 번은 약 $\pi/(\omega\Delta t)$ 스텝이므로, $\omega\Delta t$가 작을 때 이득이 쌓여 튕김 한 번에 약 $e^{\pi\omega\Delta t}$배가 된다.
 
-**3단계 — 반암시적 오일러는 $\omega\Delta t<2$에서만 안정하다.** 반암시적 스텝([[02-foundations/lab-kernel|0.65 §3]])은 속도를 먼저 갱신하고 새 속도로 움직인다. $v'=v-\Delta t\,\omega^2\delta$, 다음에 $\delta'=\delta+\Delta t\,v'$. $(\delta,v)$에 작용하는 행렬로 쓰면
+**3단계 — 반암시적 오일러는 $\omega\Delta t<2$에서만 안정하다.** 반암시적 스텝([[02-foundations/lab-kernel|0.7 §3]])은 속도를 먼저 갱신하고 새 속도로 움직인다. $v'=v-\Delta t\,\omega^2\delta$, 다음에 $\delta'=\delta+\Delta t\,v'$. $(\delta,v)$에 작용하는 행렬로 쓰면
 
 $$\begin{pmatrix}\delta'\\ v'\end{pmatrix}=\begin{pmatrix}1-(\omega\Delta t)^2 & \Delta t\\ -\omega^2\Delta t & 1\end{pmatrix}\begin{pmatrix}\delta\\ v\end{pmatrix}$$
 
@@ -1233,7 +1229,7 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 > - **비예**: $1\,\mathrm{ms}$의 단단한 벽에서 명시적 오일러의 $16$은 제대로 잰 에너지 비이지만, 접촉의 것이 아니라 적분기의 것이다. 이 정의는 시뮬레이션을 재고, 그것이 쓸모다.
 > - **왜 중요한가**: 힘 센서 없이 어떤 시뮬레이터의 접촉이든 숫자 하나로 시험할 수 있다. 감쇠를 설정하지 않은 물체를 떨어뜨려 들어올 때보다 빨리 튀어나오면, 그 접촉에 대해 스텝이나 적분기가 틀린 것이다.
 
-**랩 — 낙하 한 번, 적분기 둘, $\Delta t$와 $k$에 대한 스윕.** 영어 절의 코드가 계산 절처럼 낙하 셀을 돌린다. 강성 셋 — 패널, 단단한 벽, 그 사이의 열 배 단계 — 에서 $0.1$부터 $20\,\mathrm{ms}$까지 다섯 스텝으로, 각 적분기의 에너지 비와 최대 침투를 보고한다. [[02-foundations/lab-kernel|0.65 §2와 §3]]의 두 적분기만 쓰고, 두 번째 루프는 고정된 댐퍼로 스윕 일부를 다시 돌린다.
+**랩 — 낙하 한 번, 적분기 둘, $\Delta t$와 $k$에 대한 스윕.** 영어 절의 코드가 계산 절처럼 낙하 셀을 돌린다. 강성 셋 — 패널, 단단한 벽, 그 사이의 열 배 단계 — 에서 $0.1$부터 $20\,\mathrm{ms}$까지 다섯 스텝으로, 각 적분기의 에너지 비와 최대 침투를 보고한다. [[02-foundations/lab-kernel|0.7 §2와 §3]]의 두 적분기만 쓰고, 두 번째 루프는 고정된 댐퍼로 스윕 일부를 다시 돌린다.
 
 감쇠 없는 스윕, 코드가 출력하는 그대로다. 굵게 쓴 칸이 불안정한 스텝이다. $d=0$에서 명시적 오일러는 안정 스텝이 아예 없으므로 명시적 칸은 전부이고(그 열은 각 스텝의 대가를 보여 준다), 반암시적 칸은 $\omega\Delta t\ge2$인 것이다.
 
@@ -1621,11 +1617,19 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 
 ### 과제 · Problem set
 
-Tier A. 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]], [[02-foundations/lab-plants|0.6 Lab Plants]]만으로 푼다. 변형은 **더 가벼운 핸들**: $m=0.02\,\mathrm{kg}$ — P3의 절반 — 이 같은 두 벽($400$과 $40{,}000\,\mathrm{N/m}$)에 같은 $v_0=0.1\,\mathrm{m/s}$로 닿는 순간부터 떨어지고, 따로 말하지 않으면 $d=0$이다. 원래 문제다. 영어 절의 템플릿을 채우고, 루프를 다시 쓰지 마라.
+Tier A. 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]], [[02-foundations/lab-plants|0.6 Lab Plants]]만으로 푼다. 변형은 **더 가벼운 핸들**: $m=0.02\,\mathrm{kg}$ — P3의 절반 — 이 같은 두 벽($400$과 $40{,}000\,\mathrm{N/m}$)에 같은 $v_0=0.1\,\mathrm{m/s}$로 닿는 순간부터 떨어지고, 따로 말하지 않으면 $d=0$이다. 원래 문제다. 영어 절의 템플릿을 채우고, 루프를 다시 쓰지 마라.
 
-1. **그리기.** 변형의 과제 그림: $1\,\mathrm{ms}$의 단단한 벽 위 한 번의 튕김을 담은 $(\omega\delta,v)$ 평면 — 정확한 반원, 명시적 다각형, 반암시적 점들과 그것이 놓인 타원 — 그리고 두 벽을 $1\,\mathrm{ms}$에 표시하고 각 벽의 안정 스텝을 밀리초로 적은 $\omega\Delta t$ 띠.
+1. **그리기.** 변형에 대한 위의 그림: $1\,\mathrm{ms}$의 단단한 벽 위 한 번의 튕김을 담은 $(\omega\delta,v)$ 평면 — 정확한 반원, 명시적 다각형, 반암시적 점들과 그것이 놓인 타원 — 그리고 두 벽을 $1\,\mathrm{ms}$에 표시하고 각 벽의 안정 스텝을 밀리초로 적은 $\omega\Delta t$ 띠.
 2. **유도.** (a) 각 벽의 $\omega$, 접촉 시간, 정확한 최대 침투와 정확한 최대 힘. (b) 각 벽의 가장 큰 반암시적 안정 스텝, 그리고 두 벽을 모두 담은 장면이 써야 할 스텝. (c) $1\,\mathrm{ms}$의 단단한 벽에서 두 적분기로 한 번의 튕김을 손으로 전진: 에너지 비, 최대 침투, 최대 힘. $0.1\,\mathrm{m/s}$에서 어느 쪽이 RS1의 $10\,\mathrm{N}$ 선을 넘는가, 그리고 명시적 쪽은 어떤 $v_0$에서 넘겠는가? (d) $1\,\mathrm{ms}$에서 각 벽의 명시적 오일러를 안정하게 만드는 가장 작은 접촉 감쇠. 질량을 절반으로 줄인 것이 그것을 바꾸었는가? (e) $\zeta=0.1$일 때 단단한 벽의 반암시적 안정 스텝.
-3. **실행.** 템플릿의 `?`를 채우고([[02-foundations/lab-kernel|0.65]]에 두 적분기가 있다) 변형의 감쇠 없는 스윕을 돌린다. 두 벽, $\Delta t\in\{0.1,1,2,5,20\}\,\mathrm{ms}$에서 두 적분기의 에너지 비와 최대 침투를 담은 표를 불안정한 칸을 표시해 보고한다. 그리고 답한다: (i) 페이지의 표에서 어느 칸이 바뀌었고, 왜 $\omega\Delta t$ 열 하나가 그것을 예측하는가; (ii) $1\,\mathrm{ms}$의 단단한 벽에서 반암시적 오일러의 정확한 1은 적분기의 성질인가? 그것을 판가름하는 표의 행을 짚어라; (iii) 두 벽 모두에 안정한, 격자 위의 가장 큰 스텝.
+3. **실행.** 템플릿의 `?`를 채우고([[02-foundations/lab-kernel|0.7]]에 두 적분기가 있다) 변형의 감쇠 없는 스윕을 돌린다. 두 벽, $\Delta t\in\{0.1,1,2,5,20\}\,\mathrm{ms}$에서 두 적분기의 에너지 비와 최대 침투를 담은 표를 불안정한 칸을 표시해 보고한다. 그리고 답한다: (i) 페이지의 표에서 어느 칸이 바뀌었고, 왜 $\omega\Delta t$ 열 하나가 그것을 예측하는가; (ii) $1\,\mathrm{ms}$의 단단한 벽에서 반암시적 오일러의 정확한 1은 적분기의 성질인가? 그것을 판가름하는 표의 행을 짚어라; (iii) 두 벽 모두에 안정한, 격자 위의 가장 큰 스텝.
+
+> [!note]- 그리는 법 · How to draw it
+> - **축을 에너지가 거리가 되도록 잡는다:** 가로에 $\omega\delta$, 세로에 $v$, 둘 다 m/s. 그러면 단위 질량당 에너지 $\tfrac12(v^2+\omega^2\delta^2)$는 원점까지 거리 제곱의 절반이다.
+> - **정확한 튕김은 반원이다:** $(0,v_0)$에서 $(0,-v_0)$까지 반지름 $v_0$. 원 위에서 떠난다는 것은 들어온 에너지를 그대로 갖고 떠난다는 뜻이다.
+> - **명시적 오일러는 커지는 다각형이다:** 꼭짓점마다 앞의 것보다 $\sqrt{1+(\omega\Delta t)^2}$배 — 계산 절에서는 $\sqrt2$배 — 멀어지므로, 핸들은 들어올 때보다 빨리 떠난다.
+> - **반암시적 오일러의 점들은 기울어진 타원 위에 있다:** 점들이 원을 벗어났다가 돌아온다. 이 스텝이 보존하는 것은 참 에너지가 아니라 3단계의 수정 에너지 $\tilde E$이기 때문이다. 점들을 지나는 타원을 그린다.
+> - **아래의 띠:** 0부터 3까지의 $\omega\Delta t$ 축에 반암시적 오일러의 안정 구간 $0<\omega\Delta t<2$를 칠하고, $d=0$에서 명시적 오일러에는 안정 구간이 없다고 적는다.
+> - **띠 위에 $\Delta t=1\,\mathrm{ms}$에서의 두 벽을 표시한다** — 계산 절에서는 $0.1$과 $1$ — 그리고 2 아래에 그것이 각 벽에서 몇 밀리초인지 적는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 명시적 꼭짓점을 m/s 단위의 $(\omega\delta,v)$로 쓰면 $(0,0.1)$, $(0.141,0.1)$, $(0.283,-0.1)$, $(0.141,-0.5)$이고, 그다음 $v=-0.7$로 벽 밖에 나간다. $1+(\omega\Delta t)^2=3$이므로 각 꼭짓점이 앞의 것보다 $\sqrt3$배 멀다. 반암시적은 $(0,0.1)$, $(0.141,0.1)$, $(0,-0.1)$, 그다음 $-0.1$로 벽 밖이고, 모두 타원 $v^2+(\omega\delta)^2-\sqrt2\,(\omega\delta)\,v=0.01$ 위에 있다. 띠에서 패널은 $\omega\Delta t=0.141$, 단단한 벽은 $1.414$에 있고, 2 아래에 $14.1\,\mathrm{ms}$와 $1.41\,\mathrm{ms}$를 적는다.
@@ -1668,6 +1672,6 @@ Tier A. 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]], [[02-found
 - [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]] — 평가가 무엇을 고정해야 하는가
 - [[06-research-practice/real-world-impact|6. 실세계 임팩트]] — 여기서 공개 데이터셋이 다른 곳보다 값어치 있는 이유
 - [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 이 부재들이 부재인 대상 작업들
-- [[02-foundations/lab-kernel|0.65 Lab Kernel]] — 낙하 셀이 비교하는 두 적분기
+- [[02-foundations/lab-kernel|0.7 Lab Kernel]] — 낙하 셀이 비교하는 두 적분기
 - [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]] — 낙하 셀의 벽이 쓰는 페널티 법칙
 - [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]] — 같은 핸들 위의 다른 에너지원, 제어기의 홀드

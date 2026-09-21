@@ -37,9 +37,7 @@ the end-effector, what does the arm's own mass do to that command?*
 > [!note] First pass · 처음이라면
 > Read §2 for the equation, §3 to compute a mass matrix by hand, §6 for the bridge to force control — that is the reason this page is on the critical path. §4, §5 and §7 are what you read when a paper's dynamics claims start to matter.
 
-### Homework diagram · 과제가 그릴 그림
-
-The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, standing in a *vertical* plane so that gravity is on the page. The problem set asks for this drawing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="P2 at elbow ninety degrees in a vertical plane: two one-kilogram point masses with their weights, shoulder torque 19.62 newton-metres from a one-metre moment arm and zero at the elbow, the contact force pair drawn on tip and panel separately, and the apparent-mass ellipse diag(1, 2) kg">
   <defs><marker id="aMk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -128,13 +126,7 @@ The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at 
   <text x="12" y="358" font-size="11" fill="currentColor" fill-opacity="0.85">A moment arm is a weight line's horizontal offset from the joint axis, not a link length.</text>
 </svg>
 
-**The arm and its two masses.** Base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$, gravity $g=9.81\,\mathrm{m/s^2}$ pointing along $-y$ and drawn as an arrow in the margin so the page has an unambiguous down. Draw each link as a massless rod and put a filled dot of $1\,\mathrm{kg}$ at the *distal end* of each — one at $(1,0)$, one at $(1,1)$ — because the catalog's point-mass convention is what makes every number below come out, and a mass drawn at a link's centre gives a different arm. From each dot draw a weight arrow of $9.81\,\mathrm{N}$ straight down.
-
-**The gravity torques, as the moment arms that produce them.** For each joint, draw the horizontal distance from that joint's axis to each weight arrow and label it; those horizontal offsets, not the link lengths, are the moment arms. At the shoulder both masses hang $1\,\mathrm{m}$ to the right, giving $\tau_1 = 2\cdot 9.81\cdot 1 = 19.62\ \mathrm{N{\cdot}m}$; at the elbow the forearm mass is directly *above* the axis, offset $0$, giving $\tau_2 = 0$. Write both numbers as curved arrows at the joints, and write the $0$ explicitly rather than leaving the elbow blank — it is a fact about this pose, and it stops being $0$ the moment the arm leaves it.
-
-**The contact, and the third-law pair.** Under the tip draw the panel as a horizontal surface (the forearm passes in front of the panel, out of the drawing plane, so only the tip touches it). Draw the commanded force $(0,-10)\,\mathrm{N}$ as a down arrow from the tip *onto the panel*, then its reaction $(0,+10)\,\mathrm{N}$ as an up arrow of the same length *onto the tip*, offset slightly so the two are visibly a pair and not one arrow drawn twice. Label which body each arrow acts on. Nearly every sign error later in the track is this pair, drawn once.
-
-**The apparent mass, in a box beside the tip.** Draw a small ellipse at the tip with horizontal semi-axis $1$ and vertical semi-axis $2$ and label it $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$: the tip of this $2\,\mathrm{kg}$ arm feels like $1\,\mathrm{kg}$ pushed sideways and $2\,\mathrm{kg}$ pushed up. The ellipse is not the manipulability ellipse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]] — that one lives in velocity, this one in mass — and §6 is the whole derivation of why they are different pictures of the same $J$.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, standing in a vertical plane so that gravity, $9.81\,\mathrm{m/s^2}$ along $-y$, is on the page: $1\,\mathrm{kg}$ point masses at the elbow $(1,0)$ and the tip $(1,1)$, each weighing $9.81\,\mathrm{N}$, both hang $1\,\mathrm{m}$ to the right of the shoulder axis, so $\tau_1=2\cdot9.81\cdot1=19.62\ \mathrm{N{\cdot}m}$, while the tip's weight line passes through the elbow axis and $\tau_2=0$. Drawn apart at the tip, the commanded $(0,-10)\,\mathrm{N}$ acts on the panel and its reaction $(0,+10)\,\mathrm{N}$ on the tip — same length, opposite bodies. The boxed ellipse is the apparent mass at the tip, $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$: the $2\,\mathrm{kg}$ arm feels like $1\,\mathrm{kg}$ pushed sideways and $2\,\mathrm{kg}$ pushed up — an ellipse in mass, not in velocity.
 
 ### 1. What kinematics already gave us
 
@@ -517,6 +509,15 @@ tau_acc = ?             # J.T @ (Lam @ a)
 print(Lam, tau_hold, tau_acc)
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - The arm to scale in the vertical plane: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$, and a gravity arrow along $-y$ in the margin so the page has an unambiguous down.
+> - Links as massless rods, with a filled $1\,\mathrm{kg}$ dot at the *distal end* of each and a $9.81\,\mathrm{N}$ weight arrow straight down from it: the catalog's point-mass convention is what makes every number come out, and a mass drawn at a link's centre gives a different arm.
+> - For each joint, draw and label the horizontal distance from its axis to each weight line: those offsets, not the link lengths, are the moment arms.
+> - Write the gravity torques as curved arrows at the joints, and write the elbow torque explicitly even when it is $0$ rather than leaving the elbow blank: at this pose that $0$ is a fact about the pose, and it stops being $0$ the moment the arm leaves it.
+> - The panel as a horizontal surface under the tip (the forearm passes in front of it, out of the drawing plane, so only the tip touches it); the commanded force as a down arrow *onto the panel*, and its reaction as an up arrow of the same length *onto the tip*, offset so the two read as a pair and not one arrow drawn twice.
+> - Label which body each force acts on: nearly every sign error later in the track is this pair.
+> - The apparent mass, if you add it for items 2(e) and 3: an ellipse at the tip whose semi-axes are the diagonal entries of $\Lambda$, in kg. It is not the manipulability ellipse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]] — that one lives in velocity, this one in mass, and §6 derives why they are different pictures of the same $J$.
+
 > [!tip]- Solutions
 > 1. Elbow at $(1,0)$, tip at $(1,1)$. Masses at those two points. Gravity torques: shoulder $19.62\,\mathrm{N{\cdot}m}$ (both masses 1 m to the right of joint 1), elbow $0$ (forearm mass above joint 2). Force on the panel $(0,-10)$ $\Rightarrow$ force on the tip $(0,+10)$.
 > 2. (a) $\tau=g=(19.62,\ 0)$. (b) $J^\top F_\text{cmd}=(-10,\ 0)$, so $\tau=(9.62,\ 0)$ — the panel takes $10\,\mathrm{N}$ of the $19.62\,\mathrm{N}$ weight as seen at the tip. (c) $\Lambda a=(0,2)\,\mathrm{N}$. (d) $J^\top(0,2)=(2,\ 0)\,\mathrm{N{\cdot}m}$. (e) $M^{-1}=\begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$, $M^{-1}J^\top=\begin{pmatrix}0&0.5\\-1&-0.5\end{pmatrix}$, $JM^{-1}J^\top=\mathrm{diag}(1,0.5)$, $\Lambda=\mathrm{diag}(1,2)$. Catalog matches.
@@ -544,9 +545,7 @@ print(Lam, tau_hold, tau_acc)
 > [!note] 처음이라면 · First pass
 > 먼저 §2로 방정식을, §3으로 질량 행렬을 손으로, §6으로 힘 제어까지 잇는 다리를 — 이 페이지가 임계 경로에 있는 이유가 §6이다. §4·§5·§7은 논문의 동역학 주장이 중요해지기 시작할 때 읽는다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 $\theta=(0^\circ,90^\circ)$에서, *연직*면에 세워 중력이 지면 위에 놓이도록 한 것이다. 과제가 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="연직면에서 엘보 90도인 P2: 1 kg 점질량 둘과 무게, 모멘트 팔 1 m에서 나오는 어깨 토크 19.62 N·m와 엘보의 0, 말단과 패널에 따로 그린 접촉력 쌍, 겉보기 질량 타원 diag(1, 2) kg">
   <defs><marker id="aMkK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -635,13 +634,7 @@ print(Lam, tau_hold, tau_acc)
   <text x="12" y="358" font-size="11" fill="currentColor" fill-opacity="0.85">모멘트 팔은 링크 길이가 아니라 관절 축에서 무게선까지의 수평 간격이다.</text>
 </svg>
 
-**팔과 두 질량.** 베이스는 원점, 링크 1이 $+x$를 따라 엘보 $(1,0)$까지, 링크 2가 곧장 위로 말단 $(1,1)$까지. 중력 $g=9.81\,\mathrm{m/s^2}$은 $-y$ 방향이고 여백에 화살표로 그려 아래쪽을 확정한다. 링크는 질량 없는 막대로 그리고 각 링크의 *말단 쪽 끝*에 $1\,\mathrm{kg}$짜리 검은 점을 찍는다. 하나는 $(1,0)$, 하나는 $(1,1)$이다. 카탈로그의 점질량 규약이 아래 모든 숫자를 만들어 내기 때문이고, 질량을 링크 중앙에 찍으면 다른 팔이 된다. 각 점에서 아래로 $9.81\,\mathrm{N}$짜리 무게 화살표를 긋는다.
-
-**중력 토크, 그것을 만드는 모멘트 팔로.** 관절마다 그 축에서 각 무게 화살표까지의 수평 거리를 그리고 값을 적는다. 모멘트 팔은 링크 길이가 아니라 그 수평 간격이다. 어깨에서는 두 질량이 모두 오른쪽으로 $1\,\mathrm{m}$이라 $\tau_1 = 2\cdot 9.81\cdot 1 = 19.62\ \mathrm{N{\cdot}m}$이고, 엘보에서는 전완 질량이 축 바로 *위*에 있어 간격이 $0$이므로 $\tau_2 = 0$이다. 두 값을 관절의 곡선 화살표로 적고, 엘보를 비워 두지 말고 $0$을 명시한다. 그것은 이 자세에 대한 사실이고, 팔이 이 자세를 벗어나는 순간 $0$이 아니게 된다.
-
-**접촉, 그리고 작용-반작용 쌍.** 말단 아래에 패널을 수평면으로 그린다(전완은 도면 평면 밖으로 패널 앞을 지나가므로 패널에 닿는 것은 말단뿐이다). 명령된 힘 $(0,-10)\,\mathrm{N}$을 말단에서 *패널로* 향하는 아래 화살표로 그리고, 그 반작용 $(0,+10)\,\mathrm{N}$을 같은 길이의 위 화살표로 *말단에* 그린다. 살짝 어긋나게 그려 둘이 한 화살표를 두 번 그린 것이 아니라 쌍임이 보이게 한다. 각 화살표가 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이고, 한 번 그려 두면 끝난다.
-
-**겉보기 질량, 말단 옆 상자에.** 말단에 가로 반축 $1$, 세로 반축 $2$인 작은 타원을 그리고 $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$이라 쓴다. $2\,\mathrm{kg}$짜리 이 팔의 말단은 옆으로 밀면 $1\,\mathrm{kg}$, 위로 밀면 $2\,\mathrm{kg}$처럼 느껴진다. 이 타원은 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 조작성 타원이 아니다. 그쪽은 속도에, 이쪽은 질량에 산다. 같은 $J$의 두 그림이 왜 다른지가 §6 전체의 유도다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 P2를 $\theta=(0^\circ,90^\circ)$에서 연직면에 세워 중력($-y$ 방향 $9.81\,\mathrm{m/s^2}$)이 지면 위에 놓이게 한 것으로, 엘보 $(1,0)$과 말단 $(1,1)$의 $1\,\mathrm{kg}$ 점질량은 무게가 각각 $9.81\,\mathrm{N}$이고 둘 다 어깨 축에서 오른쪽으로 수평 $1\,\mathrm{m}$ 떨어져 있어 $\tau_1=2\cdot9.81\cdot1=19.62\ \mathrm{N{\cdot}m}$이며, 말단의 무게 작용선은 엘보 축을 지나므로 $\tau_2=0$이다. 말단의 접촉력 쌍은 떼어 그려서, 명령한 $(0,-10)\,\mathrm{N}$은 패널에, 그 반작용 $(0,+10)\,\mathrm{N}$은 말단에 작용하며 길이는 같고 받는 물체만 반대다. 상자 안의 타원은 말단의 겉보기 질량 $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$로, $2\,\mathrm{kg}$짜리 팔이 옆으로 밀면 $1\,\mathrm{kg}$, 위로 밀면 $2\,\mathrm{kg}$처럼 느껴진다는 뜻이며 속도가 아니라 질량의 타원이다.
 
 ### 1. 기구학이 이미 준 것
 
@@ -991,6 +984,15 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{p
 1. **그리기.** 연직면의 고정 자세 P2, $g$는 $-y$. 점질량 둘, 어깨/엘보 중력 토크, 패널에 $-y$로 $10\,\mathrm{N}$(로봇이 아래로 누름). 말단에 *가해지는* 힘에 뉴턴 3법칙을 써라.
 2. **유도.** 정지. (a) 비접촉 유지 토크. (b) 패널에 $F_\text{cmd}=(0,-10)\,\mathrm{N}$을 명령할 때 $\tau=g+J^\top F_\text{cmd}$. (c) 속도 항이 0일 때 $\dot v=(0,1)\,\mathrm{m/s}^2$를 만드는 말단 렌치 $\mathcal{F}=\Lambda\dot v$. (d) 그 렌치의 관절 토크 $J^\top$. (e) $J$와 $M$에서 $\Lambda=(JM^{-1}J^\top)^{-1}$를 다시 계산하라. 행렬을 얻기 전에 카탈로그를 인용하지 마라.
 3. **실행.** 영어 템플릿의 `?`를 채우고 $\Lambda$와 (b)·(d)의 토크를 출력하라. 시간 루프 없음.
+
+> [!note]- 그리는 법 · How to draw it
+> - 팔은 연직면에 실제 비율로 그린다. 베이스는 원점, 링크 1이 $+x$를 따라 엘보 $(1,0)$까지, 링크 2가 곧장 위로 말단 $(1,1)$까지 가고, 여백에 $-y$ 방향 중력 화살표를 그려 아래쪽을 확정한다.
+> - 링크는 질량 없는 막대로 그리고, 각 링크의 *말단 쪽 끝*에 $1\,\mathrm{kg}$짜리 검은 점을 찍어 거기서 아래로 $9.81\,\mathrm{N}$짜리 무게 화살표를 긋는다. 카탈로그의 점질량 규약이 모든 숫자를 만들어 내고, 질량을 링크 중앙에 찍으면 다른 팔이 된다.
+> - 관절마다 그 축에서 각 무게 작용선까지의 수평 거리를 그리고 값을 적는다. 모멘트 팔은 링크 길이가 아니라 그 수평 간격이다.
+> - 중력 토크는 관절의 곡선 화살표로 적고, 엘보 값은 $0$이어도 비워 두지 말고 명시한다. 이 자세에서 그 $0$은 자세에 대한 사실이고, 팔이 이 자세를 벗어나는 순간 $0$이 아니게 된다.
+> - 말단 아래에 패널을 수평면으로 그리고(전완은 도면 평면 밖으로 패널 앞을 지나가므로 패널에 닿는 것은 말단뿐이다), 명령한 힘은 *패널로* 향하는 아래 화살표로, 그 반작용은 같은 길이의 위 화살표로 *말단에* 그린다. 살짝 어긋나게 그려 한 화살표를 두 번 그린 것이 아니라 쌍임이 보이게 한다.
+> - 각 힘이 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이다.
+> - 2(e)번과 3번을 위해 겉보기 질량을 더한다면, 말단에 반축이 $\Lambda$의 대각 성분(kg)인 타원을 그린다. 이것은 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 조작성 타원이 아니다. 그쪽은 속도에, 이쪽은 질량에 살며, 같은 $J$의 두 그림이 왜 다른지가 §6의 유도다.
 
 > [!tip]- 정답 · Solutions
 > 1. 엘보 $(1,0)$, 말단 $(1,1)$. 질량은 그 두 점. 중력: 어깨 $19.62\,\mathrm{N{\cdot}m}$(두 질량이 관절 1에서 오른쪽으로 1 m), 엘보 $0$(전완 질량이 관절 2 위). 패널에 $(0,-10)$ $\Rightarrow$ 말단에 $(0,+10)$.

@@ -17,9 +17,7 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
 > [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (where middleware, DDS and `rmw` are defined), [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] and [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — you should have written a publisher, a subscriber and a service client. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, the exercises run from the command line and from plain Python files.
 > [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
 
-### Homework diagram: one P6 edge, its two profiles, and a queue during a stall
-
-The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: vision publishing `/goal` at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, encoder $N=2048$ counts/m, and $70\,\mathrm{ms}$ from camera mid-exposure to applied force. Three panels; the problem set asks for the same three with the failure moved from the subscriber to the camera.
+### The picture: one P6 edge, its two profiles, and a queue during a stall
 
 <svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="Top: the /goal edge from /camera to /controller with the offered and requested QoS profiles stacked on the arrow; only the reliability pair, best effort offered against reliable requested, is crossed. Middle: ten goals stamped 20 to 200 ms arrive during a 200 ms stall; a depth-5 window keeps the newest five, aged 80, 60, 40, 20 and 0 ms, and only the 80 ms one crosses the 70 ms budget line. Bottom: on a 0 to 200 ms clock, forty control firings that do not happen, ten vision publications on time, and the 40 ms deadline met at every bracket.">
   <defs><marker id="q5eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -128,11 +126,7 @@ The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: vision p
   <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">requested deadline 40 ms: met at every bracket</text>
 </svg>
 
-**Left — the edge with both profiles written out, the way `ros2 topic info --verbose` prints them.** Two ellipses and one arrow, and on the arrow two stacked boxes rather than a label. The upper box is what the camera *offers*: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. The lower box is what the controller *requests*: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. Rule each pair of lines against the tables in section 3, and put a cross on the reliability line only. One crossed line is the whole failure; the other four being fine is exactly why it is hard to see.
-
-**Middle — the queue, during a $200\,\mathrm{ms}$ stall of the controller's executor.** Draw this panel for the system *after* the left panel's cross is fixed, with the controller moved onto the sensor-data profile so that its subscription history is `KEEP_LAST (5)` — the depth that decides this is the subscriber's, not the publisher's. A row of ten boxes for the ten goals published while the executor is inside some other callback, stamped $20, 40, \ldots, 200\,\mathrm{ms}$. Above the row draw a window five boxes wide, pushed to the right end: those five are what the subscription retains, and the five that fall out of the left of the window are gone, silently. Under each surviving box write its age at the instant the executor returns, and draw the $70\,\mathrm{ms}$ budget as a horizontal line across the row so that the boxes past it are visibly on the wrong side of it.
-
-**Right — the clock, $0$ to $200\,\mathrm{ms}$.** Above the axis, forty $5\,\mathrm{ms}$ control ticks, every one of them a firing that does not happen. Below the axis, ten vision publications at $20\,\mathrm{ms}$ spacing, each one arriving on time. Draw the requested $40\,\mathrm{ms}$ deadline as a repeating bracket on the vision line and mark it *met* at every bracket, because the camera never stopped — the executor did. That contradiction is the panel's whole purpose.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: on top, the `/goal` edge from the $50\,\mathrm{Hz}$ camera to the controller on its $5\,\mathrm{ms}$ timer, with both QoS profiles written out as `ros2 topic info --verbose` prints them and one crossed line out of five — `BEST_EFFORT` offered against `RELIABLE` requested, which gives no connection and no error. In the middle is the system after that fix, with the subscriber on `KEEP_LAST (5)`: of the ten goals published during a $200\,\mathrm{ms}$ executor stall, the newest five survive, aged $80$, $60$, $40$, $20$ and $0\,\mathrm{ms}$, and only the $80\,\mathrm{ms}$ one is past the $70\,\mathrm{ms}$ budget. On the clock at the bottom, all forty $5\,\mathrm{ms}$ control firings of the stall fail to happen while the ten vision publications arrive on time, so the requested $40\,\mathrm{ms}$ deadline is met at every bracket: the camera did not stop, the executor did.
 
 ### Worked case: how deep a queue P6 needs, and what a 200 ms stall does to it
 
@@ -162,7 +156,7 @@ because age is just the elapsed time since the stamp. The five dropped ones had 
 
 **Step 6 — and what the deadline does not tell you here.** The camera offers a $40\,\mathrm{ms}$ deadline and the controller requests $40\,\mathrm{ms}$, which is compatible since the request is no more stringent than the offer, and a healthy P6 camera publishing every $20\,\mathrm{ms}$ meets it with $20\,\mathrm{ms}$ to spare. During this stall it goes on meeting it, on every interval, and no *requested deadline missed* event is raised — the camera published on time and the middleware received on time. Deadline watches the gap between messages on the topic; it cannot see that your executor stopped taking them. The stall in the problem set is the other one, where the camera itself goes quiet for $200\,\mathrm{ms}$: there the deadline does fire, and the first frame afterwards carries a stamp $200\,\mathrm{ms}$ old, which is $130\,\mathrm{ms}$ past a budget of $70$. Two failures, the same duration, and only one of them has an event to tell you about it.
 
-**Step 7 — none of which happens if the reliability line is crossed.** Read the left panel of the diagram again. Camera offering best effort against a controller requesting reliable never connects, so the count in step 1 is not ten, it is zero, forever, with both nodes healthy. Rule that out first with `ros2 topic info /goal --verbose`, then reason about depth.
+**Step 7 — none of which happens if the reliability line is crossed.** Read the top panel of the picture above again. Camera offering best effort against a controller requesting reliable never connects, so the count in step 1 is not ten, it is zero, forever, with both nodes healthy. Rule that out first with `ros2 topic info /goal --verbose`, then reason about depth.
 
 ### 1. Why this page exists
 
@@ -624,6 +618,14 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 2. **Derive.** (a) Do those QoS endpoints connect? (b) $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget — by how much is the force late if the controller still uses that stamp? (c) A deadline of $40\,\mathrm{ms}$ on `/goal`: does a healthy $50\,\mathrm{Hz}$ camera meet it? Does a $200\,\mathrm{ms}$ stall raise an event?
 3. **Interpret.** `ros2 topic echo /goal` prints frames, the controller callback never runs. What is the silent failure, and why is a $200\,\mathrm{ms}$ late vision *also* a budget failure even after QoS is fixed?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw the edge as two ellipses and one arrow, with two stacked boxes on the arrow instead of a label: what the camera *offers* above, what the controller *requests* below, as `ros2 topic info --verbose` prints them.
+> - Write every policy line in both boxes — reliability, history, durability, deadline, liveliness — not only the one you suspect.
+> - Rule each pair of lines against the tables in §3 and cross only the incompatible pair: one crossed line is the whole failure, and the others being fine is exactly why it is hard to see.
+> - On the clock, draw the $5\,\mathrm{ms}$ control ticks above the axis and the vision publications at their $20\,\mathrm{ms}$ spacing below it, so a gap in either line shows.
+> - Draw the requested deadline as a repeating bracket on the vision line, and mark each bracket met or missed from the gaps between messages on the topic, not from whether the executor ran (in the picture above the camera never stopped, so every bracket is met).
+> - Write each frame's stamp beside it and draw the $70\,\mathrm{ms}$ budget as a line, so a frame older than the budget sits visibly on the wrong side of it.
+
 > [!tip]- Solutions
 > 1. Camera best-effort → controller reliable: an X on the match. Timeline: stamp $t-200\,\mathrm{ms}$; ticks at $0,5,\ldots,65$; budget expires at $70$ with the frame still $130\,\mathrm{ms}$ late.
 > 2. (a) No — reliable request vs best-effort offer. (b) $130\,\mathrm{ms}$ over budget. (c) Healthy $20\,\mathrm{ms}$ period meets $40\,\mathrm{ms}$; a $200\,\mathrm{ms}$ gap misses and fires *requested deadline missed*.
@@ -639,9 +641,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 > [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
 > 25.1, 25.2 and 25.3 are assumed; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
 
-### 과제가 그릴 그림: P6의 간선 하나, 프로파일 둘, 그리고 정지 동안의 큐 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. `/goal`을 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 엔코더 $N=2048$ counts/m, 카메라 노출 중간부터 힘까지 $70\,\mathrm{ms}$. 패널 셋을 그려라. 과제는 고장을 구독자에서 카메라로 옮긴 같은 셋을 요구한다.
+### 그림으로 먼저 보기: P6의 간선 하나, 프로파일 둘, 그리고 정지 동안의 큐 · The picture
 
 <svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="위: /camera에서 /controller로 가는 /goal 간선 위에 제공 프로파일과 요청 프로파일을 위아래로 쌓았고, best effort 제공 대 reliable 요청인 reliability 짝에만 가위표가 있다. 가운데: 200 ms 정지 동안 20에서 200 ms 스탬프의 목표 열 개가 도착하고, 깊이 5의 창이 가장 새 다섯(나이 80, 60, 40, 20, 0 ms)을 남기며, 70 ms 예산선을 넘는 것은 80 ms 하나뿐이다. 아래: 0에서 200 ms 시계 위의 일어나지 않은 제어 발화 마흔 개, 제때 도착한 비전 발행 열 개, 모든 괄호에서 충족된 40 ms deadline.">
   <defs><marker id="q5kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -750,11 +750,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
   <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">요청한 deadline 40 ms: 모든 괄호에서 충족</text>
 </svg>
 
-**왼쪽 — `ros2 topic info --verbose`가 찍는 그대로, 프로파일 둘을 다 적은 간선**. 타원 둘과 화살표 하나. 화살표 위에는 라벨이 아니라 상자 둘을 위아래로 놓는다. 위 상자는 카메라가 *제공(offer)* 하는 것: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 아래 상자는 제어기가 *요청(request)* 하는 것: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 줄을 짝지어 3절의 표에 대보고, reliability 줄에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지 넷이 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
-
-**가운데 — 제어기 executor가 $200\,\mathrm{ms}$ 멈춰 있는 동안의 큐**. 이 패널은 왼쪽 패널의 가위표를 고친 *뒤*의 시스템을 그린다. 제어기를 sensor-data 프로파일로 옮겨 구독의 history가 `KEEP_LAST (5)`가 된 상태다. 여기서 결정권을 쥔 깊이는 퍼블리셔가 아니라 구독자의 것이다. executor가 다른 콜백 안에 있는 동안 발행된 목표 열 개를 상자 열 개로 그리고 $20, 40, \ldots, 200\,\mathrm{ms}$ 스탬프를 적는다. 그 위에 상자 다섯 칸 너비의 창을 오른쪽 끝에 붙여 그린다. 그 다섯이 구독이 남기는 것이고, 창 왼쪽으로 밀려난 다섯은 조용히 사라진 것이다. 살아남은 상자 아래에는 executor가 돌아온 순간의 나이를 적고, $70\,\mathrm{ms}$ 예산을 가로선으로 그어 예산을 넘긴 상자가 선의 반대편에 있게 한다.
-
-**오른쪽 — 시계, $0$에서 $200\,\mathrm{ms}$**. 축 위에는 $5\,\mathrm{ms}$ 제어 틱 마흔 개, 전부 일어나지 않은 발화다. 축 아래에는 $20\,\mathrm{ms}$ 간격의 비전 발행 열 개, 전부 제때 도착한 것이다. 요청한 $40\,\mathrm{ms}$ deadline을 비전 줄 위의 반복 괄호로 그리고 모든 괄호에 *충족*이라고 표시한다. 멈춘 것은 카메라가 아니라 executor였기 때문이다. 그 모순이 이 패널의 존재 이유다.
+위 패널은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 간선 하나, 곧 $50\,\mathrm{Hz}$ 카메라에서 $5\,\mathrm{ms}$ 타이머의 제어기로 가는 `/goal`에 두 QoS 프로파일을 `ros2 topic info --verbose`가 찍는 그대로 적은 것이고, 다섯 줄 중 가위표는 `BEST_EFFORT` 제공 대 `RELIABLE` 요청 하나뿐이며 그 결과는 연결 없음, 오류도 없음이다. 가운데는 그것을 고친 뒤 구독자가 `KEEP_LAST (5)`인 시스템으로, $200\,\mathrm{ms}$ executor 정지 동안 발행된 목표 열 개 중 가장 새 다섯이 나이 $80$, $60$, $40$, $20$, $0\,\mathrm{ms}$로 살아남고, $70\,\mathrm{ms}$ 예산을 넘는 것은 $80\,\mathrm{ms}$ 하나뿐이다. 아래 시계에서는 정지 동안의 $5\,\mathrm{ms}$ 제어 발화 마흔 번이 하나도 일어나지 않는 반면 비전 발행 열 번은 모두 제때 도착하므로, 요청한 $40\,\mathrm{ms}$ deadline은 모든 괄호에서 충족된다 — 멈춘 것은 카메라가 아니라 executor였다.
 
 ### 대상으로 한 번 끝까지: P6에 필요한 큐 깊이와 200 ms 정지가 하는 일 · Worked case
 
@@ -784,7 +780,7 @@ $$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
 
 **6단계 — 그리고 여기서 deadline이 말해 주지 않는 것**. 카메라가 $40\,\mathrm{ms}$ deadline을 제공하고 제어기가 $40\,\mathrm{ms}$를 요청하면 호환이다. 요청이 제공보다 더 엄격하지 않기 때문이다. 그리고 $20\,\mathrm{ms}$마다 발행하는 건강한 P6 카메라는 $20\,\mathrm{ms}$의 여유를 두고 그것을 충족한다. 이번 정지 동안에도 모든 구간에서 계속 충족하고, *requested deadline missed*는 한 번도 올라오지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했기 때문이다. deadline은 토픽 위 메시지 사이의 간격을 보지, 당신의 executor가 그것을 가져가기를 멈췄다는 사실은 보지 못한다. 과제의 정지는 반대쪽, 카메라 자신이 $200\,\mathrm{ms}$ 조용해지는 경우다. 그쪽에서는 deadline이 울리고, 그 뒤 첫 프레임은 $200\,\mathrm{ms}$ 된 스탬프를 달고 오며 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘긴다. 길이가 같은 고장 둘인데 알려 주는 이벤트가 있는 쪽은 하나뿐이다.
 
-**7단계 — 물론 reliability 줄에 가위표가 있으면 이 중 아무것도 일어나지 않는다**. 그림의 왼쪽 패널을 다시 보라. 카메라의 best effort 제공에 제어기의 reliable 요청은 연결되지 않으므로 1단계의 개수는 열이 아니라 영이고, 영원히 영이며, 노드 둘은 멀쩡하다. `ros2 topic info /goal --verbose`로 그것부터 배제한 다음에 깊이를 따져라.
+**7단계 — 물론 reliability 줄에 가위표가 있으면 이 중 아무것도 일어나지 않는다**. 위의 그림에서 맨 위 패널을 다시 보라. 카메라의 best effort 제공에 제어기의 reliable 요청은 연결되지 않으므로 1단계의 개수는 열이 아니라 영이고, 영원히 영이며, 노드 둘은 멀쩡하다. `ros2 topic info /goal --verbose`로 그것부터 배제한 다음에 깊이를 따져라.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -1245,6 +1241,14 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카메라 노출 중간부�
 1. **그리기.** P6: 카메라가 *sensor data*(best effort, volatile)를 offer, 제어기가 기본 프로파일(reliable, volatile)을 request. $70\,\mathrm{ms}$ 예산과 $200\,\mathrm{ms}$ 된 스탬프. 늦은 프레임 대 $5\,\mathrm{ms}$ 틱 열넷의 다섯 줄 타임라인.
 2. **유도.** (a) 그 QoS 끝점이 연결되는가? (b) $200\,\mathrm{ms}$ 대 $70\,\mathrm{ms}$ 예산 — 제어기가 그 스탬프를 그대로 쓰면 힘은 얼마나 늦은가? (c) `/goal`에 $40\,\mathrm{ms}$ deadline: 건강한 $50\,\mathrm{Hz}$ 카메라는 통과하는가? $200\,\mathrm{ms}$ 정지는 이벤트를 내는가?
 3. **해석.** `ros2 topic echo /goal`은 프레임을 찍는데 제어기 콜백은 안 돈다. 조용한 고장은 무엇이고, QoS를 고친 뒤에도 $200\,\mathrm{ms}$ 늦은 비전이 *역시* 예산 실패인 이유는?
+
+> [!note]- 그리는 법 · How to draw it
+> - 간선은 타원 둘과 화살표 하나이고, 화살표 위에는 라벨이 아니라 상자 둘을 위아래로 놓는다. 위는 카메라가 *제공(offer)* 하는 것, 아래는 제어기가 *요청(request)* 하는 것, `ros2 topic info --verbose`가 찍는 그대로.
+> - 두 상자 모두에 정책 줄을 전부 적는다 — reliability, history, durability, deadline, liveliness. 의심 가는 하나만 적지 않는다.
+> - 줄을 짝지어 3절의 표에 대보고 비호환인 짝에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지가 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
+> - 시계에는 축 위에 $5\,\mathrm{ms}$ 제어 틱을, 축 아래에 $20\,\mathrm{ms}$ 간격의 비전 발행을 그려 어느 줄의 빈틈이든 보이게 한다.
+> - 요청한 deadline은 비전 줄 위의 반복 괄호로 그리고, 괄호마다 충족인지 놓침인지를 executor가 돌았는지가 아니라 토픽 위 메시지 사이의 간격으로 판정한다(위의 그림에서는 카메라가 한 번도 멈추지 않았으므로 모든 괄호가 충족).
+> - 프레임마다 옆에 스탬프를 적고 $70\,\mathrm{ms}$ 예산을 선으로 그어, 예산보다 오래된 프레임이 눈에 띄게 선의 반대편에 있게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 카메라 best-effort → 제어기 reliable: 짝에 X. 타임라인: 스탬프 $t-200\,\mathrm{ms}$; 틱 $0,5,\ldots,65$; $70$에 예산이 끝나고 프레임은 아직 $130\,\mathrm{ms}$ 늦다.

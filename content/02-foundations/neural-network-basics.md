@@ -1,5 +1,5 @@
 ---
-title: 0.7 What a Neural Network Is
+title: 0.8 What a Neural Network Is
 tags: [foundations]
 study-depth: Literacy
 depth-goal: "Identify ML vocabulary and the roles of forward passes, losses, and backpropagation while reading papers."
@@ -27,9 +27,7 @@ already know** — matrix multiplication and derivatives — wearing unfamiliar 
 > [!note] First pass · 처음이라면
 > The shortest page in the track, and the one to read straight through. Twenty minutes here is what makes pages 1 to 9 readable at all; there is nothing to defer.
 
-### Homework diagram · 과제가 그릴 그림
-
-The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the drawing is a vocabulary chart: every word this page teaches has a place on it. The problem set asks for the same drawing. The figure below is the finished chart — draw yours before looking at it.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="P1 as a vocabulary chart: inputs 1 and 2, hidden values 1, 2, 3 after ReLU, output 0.5, every weight on its edge, W1 three by two and W2 one by three bracketed as layers, faint bias stubs, nine weights or thirteen parameters with biases, the ReLU mask (1, 1, 1), and in brackets the case z3 = -3 where the third unit carries 0">
   <line x1="81.4" y1="135.4" x2="199.8" y2="103.9" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
@@ -107,13 +105,7 @@ The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], an
   <text x="12" y="348" font-size="11" fill="currentColor" fill-opacity="0.85">one edge = one weight · one bracketed bundle of edges = one layer</text>
 </svg>
 
-**The graph.** Two circles in a left column, three in a middle column, one on the right. Every left circle joins every middle circle (six edges), and every middle circle joins the output (three edges) — nine edges, fully connected, which is what the word *dense* or *fully connected* names. Write the value inside each circle: $1$ and $2$ on the left, $1$, $2$ and $3$ in the middle, $0.5$ on the right.
-
-**The words, hung on the parts they name.** Bracket the left column and write *input layer*, the middle column *hidden layer*, the right circle *output*. Bracket the six edges between column one and two and label the bundle $W_1$, shape $3\times2$; bracket the three edges to the output and label it $W_2$, shape $1\times3$. Write the individual weights on the edges — $W_1$'s rows are $(1,0)$, $(0,1)$, $(1,1)$ and $W_2$ is $(1,-1,0.5)$ — so that one edge carries one *weight* and the bundle is one *layer*: the drawing is what makes those two words different. On each middle circle write $\sigma=\mathrm{ReLU}$ and note that the catalog sets every *bias* to zero, so no bias stub is drawn; put the stubs in faintly anyway and label them $b_1$, $b_2$, because the parameter count below changes by exactly those four.
-
-**Two arithmetic checks written on the figure.** First, the output: $1\cdot1 + (-1)\cdot2 + 0.5\cdot3 = 0.5$, written along the three edges that produce it, so that "a neuron is a weighted sum" is a line on the page and not a sentence. Second, the parameter count beside the whole graph: $6 + 3 = 9$ with the catalog's biases off, and $9 + 4 = 13$ with them on. Circle the $9$, since that is the number the problem set asks for.
-
-**One mark that is not in §2's figure.** Beside the middle circles write the ReLU mask $(1,1,1)$ — every pre-activation here is positive, so ReLU is doing nothing at this input — and beside it, in brackets, what the figure would look like if the third pre-activation were $-3$: that circle carrying $0$, its outgoing edge greyed out, and $W_{2,3}$ contributing nothing. That greyed-out edge is the difference between a *network* and a stack of matrices, and it is the last item of the problem set.
+Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] as a vocabulary chart, each word on the part it names: inputs $x=(1,2)$ fan out through the layer $W_1$ ($3\times2$, one weight per edge) to hidden values $h=(1,2,3)$, and $W_2=(1,-1,0.5)$ ($1\times3$) sums them to $\hat y=1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$. With the catalog's biases off the network has $6+3=9$ parameters, and $9+4=13$ with the faint bias stubs $b_1$, $b_2$ switched on. Every pre-activation is positive, so the ReLU mask is $(1,1,1)$; in the bracketed case $z_3=-3$, $h_3=0$ and $W_{2,3}$ adds nothing.
 
 ### 1. A neural network is a stack of matrix multiplies
 
@@ -347,9 +339,18 @@ embeddings" — reads as what it is: a matrix multiplication with named parts.
 
 Tier B. **P1** from [[02-foundations/lab-plants|0.6]] (biases zero, ReLU). Hand only.
 
-1. **Draw.** The $2\to 3\to 1$ graph. Label $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$. Write the two matrix shapes on the edges.
+1. **Draw.** The picture above, by hand: the $2\to 3\to 1$ graph. Label $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$. Write the two matrix shapes on the edges.
 2. **Derive.** Parameter count with biases off, as the catalog freezes them. $W_1$ entries, $W_2$ entries, total. (The lecture's 13 includes four bias numbers.)
 3. **Interpret.** At $z=(1,2,3)$, what does ReLU do to each unit, and what is $\partial h_i/\partial z_i$? If $z_3$ had been $-3$, which path to $\hat y$ would go dead?
+
+> [!note]- How to draw it · 그리는 법
+> - Two input circles, three hidden, one output. Join every input to every hidden unit (six edges) and every hidden unit to the output (three edges): nine edges, none missing, is what *dense* or *fully connected* means.
+> - The value inside every circle: $1$ and $2$ on the left, $1$, $2$, $3$ in the middle, $0.5$ on the right.
+> - One weight on each edge, $W_1$'s rows $(1,0)$, $(0,1)$, $(1,1)$ and $W_2=(1,-1,0.5)$, and a bracket around each bundle labelled with its shape, $W_1$ $3\times2$ and $W_2$ $1\times3$. One edge is one *weight* and one bundle is one *layer*; the drawing is what makes the two words different.
+> - The words on the parts they name: *input layer*, *hidden layer* and *output* under the three columns, and $\sigma=\mathrm{ReLU}$ on each hidden circle.
+> - Faint bias stubs labelled $b_1$, $b_2$, even though the catalog sets every bias to zero, because the parameter count changes by exactly those four: $6+3=9$ with biases off, $9+4=13$ with them on. Circle the $9$; item 2 asks for it.
+> - The output sum written along the three edges that produce it, $1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$, so that "a neuron is a weighted sum" is a line on the page and not a sentence.
+> - The ReLU mask $(1,1,1)$ beside the hidden column, and in brackets the case $z_3=-3$: that circle carries $0$, its outgoing edge is greyed out and $W_{2,3}$ contributes nothing. The greyed edge is the difference between a network and a stack of matrices, and it is item 3.
 
 > [!tip]- Solutions
 > 1. Two inputs, three hidden, one output. $W_1$ is $3\times 2$, $W_2$ is $1\times 3$.
@@ -383,9 +384,7 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 > [!note] 처음이라면 · First pass
 > 트랙에서 가장 짧고, 순서대로 끝까지 읽으면 되는 유일한 페이지다. 여기 쓰는 20분이 1~9번을 읽히게 만든다. 미뤄 둘 절이 없다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 그림은 어휘 도표다. 이 페이지가 가르치는 단어마다 그림 위에 자리가 하나씩 있다. 과제가 같은 그림을 요구한다. 아래 그림이 완성된 도표이니, 보기 전에 먼저 그려라.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="어휘 도표로 그린 P1: 입력 1과 2, ReLU 뒤 은닉값 1, 2, 3, 출력 0.5, 변마다 가중치, 층으로 묶은 3×2의 W1과 1×3의 W2, 흐린 편향 가지, 가중치 9개 또는 편향을 켜면 파라미터 13개, ReLU 마스크 (1, 1, 1), 괄호 안에 z3 = -3이라 셋째 유닛이 0을 담는 경우">
   <line x1="81.4" y1="135.4" x2="199.8" y2="103.9" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
@@ -463,13 +462,7 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
   <text x="12" y="348" font-size="11" fill="currentColor" fill-opacity="0.85">변 하나 = 가중치 하나 · 괄호로 묶은 변 다발 하나 = 층 하나</text>
 </svg>
 
-**그래프.** 왼쪽 열에 동그라미 둘, 가운데 열에 셋, 오른쪽에 하나. 왼쪽 동그라미마다 가운데 동그라미 전부와 이어지고(변 여섯), 가운데 동그라미마다 출력과 이어진다(변 셋). 변이 아홉이고 빠짐없이 이어진 이 상태를 *dense* 또는 *완전 연결*이라 부른다. 각 동그라미 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, 오른쪽은 $0.5$.
-
-**단어들을, 그것이 가리키는 부분에.** 왼쪽 열을 묶어 *입력층*, 가운데 열을 *은닉층*, 오른쪽 동그라미를 *출력*이라 쓴다. 1열과 2열 사이 변 여섯을 묶어 $W_1$, 모양 $3\times2$라 적고, 출력으로 가는 변 셋을 묶어 $W_2$, 모양 $1\times3$이라 적는다. 변 위에는 개별 가중치를 쓴다. $W_1$의 행은 $(1,0)$, $(0,1)$, $(1,1)$이고 $W_2$는 $(1,-1,0.5)$다. 그러면 변 하나가 *가중치* 하나이고 묶음 하나가 *층* 하나가 된다. 두 단어가 어떻게 다른지를 만드는 것이 이 그림이다. 가운데 동그라미마다 $\sigma=\mathrm{ReLU}$를 쓰고, 카탈로그가 *편향*을 전부 0으로 두므로 편향 가지는 그리지 않는다고 적는다. 그래도 가지를 흐리게 그려 $b_1$, $b_2$라 이름 붙인다. 아래의 파라미터 수가 정확히 그 넷만큼 달라지기 때문이다.
-
-**그림 위에 적을 산술 확인 둘.** 첫째, 출력이다. $1\cdot1 + (-1)\cdot2 + 0.5\cdot3 = 0.5$을 그 값을 만든 변 셋을 따라 적는다. 그러면 "뉴런은 가중합이다"가 문장이 아니라 지면 위의 한 줄이 된다. 둘째, 그래프 옆의 파라미터 수다. 카탈로그처럼 편향을 끄면 $6 + 3 = 9$, 켜면 $9 + 4 = 13$이다. $9$에 동그라미를 친다. 과제가 묻는 수가 그것이다.
-
-**§2의 그림에는 없는 표시 하나.** 가운데 동그라미 옆에 ReLU 마스크 $(1,1,1)$을 적는다. 여기서는 활성 전 값이 전부 양수라 ReLU가 아무 일도 하지 않는다. 그 옆 괄호 안에, 셋째 활성 전 값이 $-3$이었다면 그림이 어땠을지를 적는다. 그 동그라미는 $0$을 담고, 거기서 나가는 변은 흐려지고, $W_{2,3}$은 아무것도 기여하지 않는다. 흐려진 그 변이 *네트워크*와 행렬 더미의 차이이고, 과제의 마지막 항목이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**, 곧 입력 $x=(1,2)$가 층 $W_1$($3\times2$, 변 하나에 가중치 하나)을 지나 은닉값 $h=(1,2,3)$으로 퍼지고 $W_2=(1,-1,0.5)$($1\times3$)가 그것을 $\hat y=1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$로 모으는 그래프를, 단어마다 그것이 가리키는 부분에 붙여 어휘 도표로 그렸다. 카탈로그처럼 편향을 끄면 파라미터는 $6+3=9$개이고, 흐린 편향 가지 $b_1$, $b_2$까지 켜면 $9+4=13$개다. 활성 전 값이 전부 양수라 ReLU 마스크는 $(1,1,1)$이고, 괄호 안의 $z_3=-3$인 경우에는 $h_3=0$이라 $W_{2,3}$이 아무것도 더하지 않는다.
 
 ### 1. 신경망은 행렬곱을 쌓은 것이다
 
@@ -698,9 +691,18 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P1** (편향 0, ReLU). 손계산만.
 
-1. **그리기.** $2\to 3\to 1$ 그래프. $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$를 기입. 변에 두 행렬의 모양.
+1. **그리기.** 위의 그림을 손으로 다시 그린다. $2\to 3\to 1$ 그래프. $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$를 기입. 변에 두 행렬의 모양.
 2. **유도.** 카탈로그대로 편향을 끈 파라미터 수. $W_1$ 개수, $W_2$ 개수, 합. (본문의 13은 편향 4개를 포함한다.)
 3. **해석.** $z=(1,2,3)$에서 ReLU가 각 유닛에 하는 일과 $\partial h_i/\partial z_i$. $z_3$이 $-3$이었다면 $\hat y$로 가는 어느 길이 죽는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 입력 동그라미 둘, 은닉 셋, 출력 하나. 입력마다 은닉 유닛 전부와 잇고(변 여섯), 은닉 유닛마다 출력과 잇는다(변 셋). 변 아홉이 하나도 빠짐없이 이어진 상태가 *dense* 또는 *완전 연결*이다.
+> - 동그라미마다 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, 오른쪽은 $0.5$.
+> - 변마다 가중치 하나 — $W_1$의 행 $(1,0)$, $(0,1)$, $(1,1)$과 $W_2=(1,-1,0.5)$ — 그리고 변 다발마다 괄호와 모양, $W_1$은 $3\times2$, $W_2$는 $1\times3$. 변 하나가 *가중치* 하나이고 다발 하나가 *층* 하나다. 두 단어를 다르게 만드는 것이 이 그림이다.
+> - 단어를 그것이 가리키는 부분에: 세 열 아래에 *입력층*, *은닉층*, *출력*, 은닉 동그라미마다 $\sigma=\mathrm{ReLU}$.
+> - 카탈로그가 편향을 전부 0으로 두더라도 흐린 편향 가지를 그려 $b_1$, $b_2$라 이름 붙인다. 파라미터 수가 정확히 그 넷만큼 달라지기 때문이다. 편향을 끄면 $6+3=9$, 켜면 $9+4=13$. $9$에 동그라미를 친다. 2번이 묻는 수다.
+> - 출력의 합을 그 값을 만든 변 셋을 따라 적는다. $1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$. 그러면 "뉴런은 가중합이다"가 문장이 아니라 지면 위의 한 줄이 된다.
+> - 은닉 열 옆에 ReLU 마스크 $(1,1,1)$, 그리고 괄호 안에 $z_3=-3$인 경우. 그 동그라미는 $0$을 담고, 나가는 변은 흐려지고, $W_{2,3}$은 아무것도 기여하지 않는다. 흐려진 그 변이 네트워크와 행렬 더미의 차이이고, 3번 항목이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 입력 둘, 은닉 셋, 출력 하나. $W_1$은 $3\times 2$, $W_2$는 $1\times 3$.

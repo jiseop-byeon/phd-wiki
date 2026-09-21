@@ -17,9 +17,7 @@ mastery-when: "Go deeper when you are writing the localisation or odometry compo
 > A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation and a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). Rigid-body transforms help but are not required first: [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 먼저 읽을 필요는 없다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 
-### Homework diagram: P6 as two trees and one clock
-
-The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ from mid-exposure to force — plus one thing this page has to add, because P6 does not fix it: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Those two numbers are frozen here and do not change later on the page. Draw three panels; the problem set asks for the same three with a second owner on one edge.
+### The picture: P6 as two trees and one clock
 
 <svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="Left: the URDF tree, base_link with a fixed joint camera_mount at xyz 0.10 0 0.25 to camera_link, each link with visual, collision and inertial elements and their readers. Right: the TF chain map, odom, base_link, camera_link, with owners, topics and rates, the static mount edge drawn doubled. Bottom: a 0 to 70 ms lookup clock where a now() lookup points past the newest odom sample into empty space and a lookup with the message stamp lands 20 ms before it.">
   <defs><marker id="d6esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="d6eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker></defs>
@@ -118,21 +116,11 @@ The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a car
   <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
 </svg>
 
-**Left — the URDF tree, which is what `robot_state_publisher` reads.** Two links and one joint: `base_link` as the root, a `fixed` joint `camera_mount` with `<origin xyz="0.10 0 0.25"/>`, and `camera_link` as its child. Inside each link box draw the three sub-elements of section 4 and write beside each one who reads it — `<visual>` RViz, `<collision>` the planner and the physics engine, `<inertial>` the physics engine only. Then write beside the tree, in words, the thing that is deliberately *not* in it: the cart's travel along the rail. A mobile base's pose is not a URDF joint, and section 11 is why.
-
-**Middle — the TF tree, which is what `lookup_transform` answers from.** Four frames in one chain, and every edge carries three labels — owner, topic, rate:
-
-- `map` → `odom`: the localisation node, `/tf`, published when it corrects.
-- `odom` → `base_link`: the encoder odometry node, `/tf`, $200\,\mathrm{Hz}$. Write the encoder resolution on this edge.
-- `base_link` → `camera_link`: a static broadcaster, `/tf_static`, published **once**, transient local. Write the frozen mount offset on this edge.
-
-Draw the two `/tf` edges with solid arrows and the `/tf_static` edge with a doubled arrow, because the difference between "republished forever" and "sent once and retained for late joiners" is the difference between a working RViz and an empty one.
-
-**Right — the lookup clock, $0$ to $70\,\mathrm{ms}$.** Line 1: `odom` → `base_link` samples every $5\,\mathrm{ms}$, with the newest one marked. Line 2: vision stamps at $0, 20, 40, 60\,\mathrm{ms}$. Line 3: four control lookups. Draw one of them with `now()`, landing to the right of the newest sample, and label that gap *extrapolation into the future*; draw another with the message's own stamp, landing $20\,\mathrm{ms}$ to the left of the newest sample. Line 4: the $70\,\mathrm{ms}$ budget. The picture is right when the `now()` arrow visibly points into empty space.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], with the one thing P6 leaves open frozen here for the whole page: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Left is the URDF tree `robot_state_publisher` reads, one fixed joint `camera_mount` and no joint for the cart's travel on the rail; right is the TF chain `lookup_transform` answers from, every edge labelled with owner, topic and rate — localisation on `/tf` when it corrects, encoder odometry on `/tf` at $200\,\mathrm{Hz}$ with $\Delta p=0.488\,\mathrm{mm}$, and the mount on `/tf_static`, sent once. On the $0$ to $70\,\mathrm{ms}$ lookup clock below, a lookup at `now()` points past the newest `odom` sample into empty space, *extrapolation into the future*, while one at the message's own stamp lands $20\,\mathrm{ms}$ back, where the buffer has data.
 
 ### Worked case: a detection from `camera_link` to `odom`, and what one typo costs
 
-Five steps on the object above. Every number is either P6's or the mount offset frozen in the diagram.
+Five steps on the object above. Every number is either P6's or the mount offset frozen in the picture above.
 
 **Step 1 — where the cart is, from the encoder.** The `odom` → `base_link` edge carries the plant's own measurement, so its value and its resolution are
 
@@ -642,6 +630,16 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
 2. **Derive.** (a) Encoder $\Delta p$ for one count — the resolution of `odom` → `base_link`. (b) Why `lookup_transform(..., now())` from the controller logs "extrapolation into the future". (c) Two publishers on `odom` → `base_link` at $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$. What rate does `view_frames` report?
 3. **Interpret.** The controller must transform a detection whose camera stamp is $200\,\mathrm{ms}$ old, inside a $70\,\mathrm{ms}$ budget. Which two fixes does §9 give for *extrapolation into the future*, which one is wrong for P6's force loop, and what should the loop do with the detection?
 
+> [!note]- How to draw it · 그리는 법
+> - Four frames in one chain, `map` → `odom` → `base_link` → `camera_link`, with three labels on every edge: owner, topic, rate.
+> - `map` → `odom`: the localisation node, `/tf`, published when it corrects. `odom` → `base_link`: the encoder odometry node, `/tf`, $200\,\mathrm{Hz}$ — write the encoder resolution on this edge.
+> - `base_link` → `camera_link`: a static broadcaster, `/tf_static`, published once, transient local — write the frozen mount offset on this edge.
+> - Draw the two `/tf` edges as solid arrows and the `/tf_static` edge as a doubled one: "republished forever" against "sent once and kept for late joiners" is the difference between a working RViz and an empty one.
+> - Write beside the chain what is deliberately not in the URDF: the cart's travel on the rail. A mobile base's pose is not a URDF joint (§11); its edge belongs to the odometry node.
+> - On the clock: `odom` → `base_link` samples every $5\,\mathrm{ms}$ with the newest one marked, vision stamps at $0, 20, 40, 60\,\mathrm{ms}$, the four control lookups, and the $70\,\mathrm{ms}$ budget.
+> - Draw the `now()` lookup landing right of the newest sample and label the gap *extrapolation into the future*; draw a lookup at the message's own stamp landing back at that stamp ($20\,\mathrm{ms}$ left of the newest sample in the picture above).
+> - The drawing is right when the `now()` arrow visibly points into empty space.
+
 > [!tip]- Solutions
 > 1. Localisation owns `map` → `odom`; odometry (encoder) owns `odom` → `base_link`; a static broadcaster owns `base_link` → `camera_link`. Timeline: `odom` → `base_link` TF every $5\,\mathrm{ms}$ (the camera mount is static and never updates); lookups at $0,5,10,15$; the `now()` lookup sits in the future of the buffer.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) Transforms arrive late; `now()` is a time the buffer has not seen. Use `Time()` or the message stamp. (c) About $250\,\mathrm{Hz}$ — two owners.
@@ -657,9 +655,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
 > source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드할 수 있는 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 선행 조건은 아니다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
 > A sourced ROS 2 Jazzy on Ubuntu 24.04 and a buildable workspace; rigid-body transforms help but are not required.
 
-### 과제가 그릴 그림: 트리 둘과 시계 하나로 본 P6 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 노출 중간부터 힘까지 $70\,\mathrm{ms}$ — 에 이 페이지가 하나를 더한다. P6이 정하지 않은 값이기 때문이다. **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 이 두 숫자는 여기서 고정되고 이 페이지에서 다시 바뀌지 않는다. 패널 셋을 그려라. 과제는 한 간선에 소유자를 하나 더 붙인 같은 셋을 요구한다.
+### 그림으로 먼저 보기: 트리 둘과 시계 하나로 본 P6 · The picture
 
 <svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: URDF 트리. base_link에서 xyz 0.10 0 0.25의 fixed 조인트 camera_mount를 지나 camera_link로, 링크마다 visual, collision, inertial 요소와 그것을 읽는 쪽. 오른쪽: map, odom, base_link, camera_link의 TF 사슬과 소유자·토픽·주기, 정적 장착 간선은 겹친 화살표. 아래: 0에서 70 ms 조회 시계. now() 조회는 가장 새 odom 샘플을 지나 빈 공간을 가리키고, 메시지 스탬프 조회는 그보다 20 ms 앞에 떨어진다.">
   <defs><marker id="d6ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="d6kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker></defs>
@@ -758,21 +754,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
   <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
 </svg>
 
-**왼쪽 — URDF 트리, `robot_state_publisher`가 읽는 것**. 링크 둘과 조인트 하나. 루트는 `base_link`, `<origin xyz="0.10 0 0.25"/>`를 가진 `fixed` 조인트 `camera_mount`, 그 자식이 `camera_link`. 각 링크 상자 안에 4절의 하위 요소 셋을 그리고 각각을 누가 읽는지 옆에 적는다 — `<visual>`은 RViz, `<collision>`은 플래너와 물리 엔진, `<inertial>`은 물리 엔진만. 그리고 트리 옆에, 여기 일부러 *없는* 것을 말로 적는다. 레일 위의 카트 이동. 이동 베이스의 자세는 URDF 조인트가 아니고, 그 이유가 11절이다.
-
-**가운데 — TF 트리, `lookup_transform`이 답하는 근거**. 프레임 넷이 한 사슬을 이루고, 모든 간선에 소유자·토픽·주기 셋을 적는다.
-
-- `map` → `odom`: 위치추정 노드, `/tf`, 보정할 때마다.
-- `odom` → `base_link`: 엔코더 오도메트리 노드, `/tf`, $200\,\mathrm{Hz}$. 이 간선에 엔코더 해상도를 적는다.
-- `base_link` → `camera_link`: 정적 브로드캐스터, `/tf_static`, **한 번**, transient local. 이 간선에 고정한 장착 오프셋을 적는다.
-
-`/tf` 간선 둘은 실선 화살표로, `/tf_static` 간선은 겹친 화살표로 그린다. "계속 다시 보낸다"와 "한 번 보내고 늦게 온 쪽을 위해 보존한다"의 차이가 곧 동작하는 RViz와 빈 RViz의 차이이기 때문이다.
-
-**오른쪽 — 조회 시계, $0$에서 $70\,\mathrm{ms}$**. 1줄: `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격, 가장 새 것에 표시. 2줄: 비전 스탬프가 $0, 20, 40, 60\,\mathrm{ms}$. 3줄: 제어 조회 넷. 그중 하나는 `now()`로 그려 가장 새 샘플의 오른쪽에 떨어뜨리고 그 간격에 *extrapolation into the future*라고 적는다. 다른 하나는 메시지 자신의 스탬프로 그려 가장 새 샘플의 $20\,\mathrm{ms}$ 왼쪽에 놓는다. 4줄: $70\,\mathrm{ms}$ 예산. `now()` 화살표가 눈에 띄게 빈 공간을 가리키면 제대로 그린 것이다.
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트이고, P6이 정하지 않는 것 하나를 여기서 페이지 끝까지 고정한다: **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 왼쪽은 `robot_state_publisher`가 읽는 URDF 트리로 fixed 조인트 `camera_mount` 하나뿐이고 레일 위 카트의 이동에 해당하는 조인트는 없으며, 오른쪽은 `lookup_transform`이 답하는 근거인 TF 사슬로 간선마다 소유자·토픽·주기를 적었다 — 위치추정은 보정할 때마다 `/tf`로, 엔코더 오도메트리는 $200\,\mathrm{Hz}$ `/tf`로(해상도 $\Delta p=0.488\,\mathrm{mm}$), 장착은 `/tf_static`으로 한 번. 아래 $0$에서 $70\,\mathrm{ms}$ 조회 시계에서 `now()`로 한 조회는 가장 새 `odom` 샘플을 지나 빈 공간을 가리키고(*extrapolation into the future*), 메시지 자신의 스탬프로 한 조회는 버퍼에 데이터가 있는 $20\,\mathrm{ms}$ 전에 떨어진다.
 
 ### 대상으로 한 번 끝까지: `camera_link`의 검출을 `odom`으로, 그리고 오타 하나의 값 · Worked case
 
-위 대상 위에서 다섯 단계. 모든 숫자는 P6의 것이거나 그림에서 고정한 장착 오프셋이다.
+위 대상 위에서 다섯 단계. 모든 숫자는 P6의 것이거나 위의 그림에서 고정한 장착 오프셋이다.
 
 **1단계 — 엔코더가 말하는 카트의 위치**. `odom` → `base_link` 간선이 장치 자신의 측정값을 나르므로 그 값과 해상도는
 
@@ -1279,6 +1265,16 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카트 프레임 `base_link
 1. **그리기.** TF 트리 `map` → `odom` → `base_link` → `camera_link`. 각 간선의 소유자. `odom` → `base_link`에 엔코더 카운트, `camera_link`에 비전. 다섯 줄 타임라인: $200\,\mathrm{Hz}$ `odom` → `base_link` TF 갱신과 $200\,\mathrm{Hz}$ 조회 넷, 그중 하나가 `now()`.
 2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — `odom` → `base_link`의 해상도. (b) 제어기의 `lookup_transform(..., now())`가 "extrapolation into the future"를 찍는 이유. (c) `odom` → `base_link`에 $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$ 퍼블리셔 둘. `view_frames`가 보고하는 주기는?
 3. **해석.** 제어기가 $70\,\mathrm{ms}$ 예산 안에서 카메라 스탬프가 $200\,\mathrm{ms}$ 된 검출을 변환해야 한다. §9가 *extrapolation into the future*에 주는 수정 둘은 무엇이고, 그중 P6 힘 루프에 틀린 것은 어느 것이며, 루프는 그 검출을 어떻게 해야 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 프레임 넷이 한 사슬 `map` → `odom` → `base_link` → `camera_link`를 이루고, 모든 간선에 소유자·토픽·주기 셋을 적는다.
+> - `map` → `odom`: 위치추정 노드, `/tf`, 보정할 때마다. `odom` → `base_link`: 엔코더 오도메트리 노드, `/tf`, $200\,\mathrm{Hz}$ — 이 간선에 엔코더 해상도를 적는다.
+> - `base_link` → `camera_link`: 정적 브로드캐스터, `/tf_static`, 한 번, transient local — 이 간선에 고정한 장착 오프셋을 적는다.
+> - `/tf` 간선 둘은 실선 화살표로, `/tf_static` 간선은 겹친 화살표로 그린다. "계속 다시 보낸다"와 "한 번 보내고 늦게 온 쪽을 위해 보존한다"의 차이가 곧 동작하는 RViz와 빈 RViz의 차이다.
+> - URDF에 일부러 넣지 않은 것을 사슬 옆에 말로 적는다. 레일 위의 카트 이동이다. 이동 베이스의 자세는 URDF 조인트가 아니고(11절), 그 간선은 오도메트리 노드의 것이다.
+> - 시계에는 `odom` → `base_link` 샘플을 $5\,\mathrm{ms}$ 간격으로 찍고 가장 새 것에 표시, 비전 스탬프 $0, 20, 40, 60\,\mathrm{ms}$, 제어 조회 넷, 그리고 $70\,\mathrm{ms}$ 예산.
+> - `now()` 조회는 가장 새 샘플의 오른쪽에 떨어뜨리고 그 간격에 *extrapolation into the future*라고 적는다. 메시지 자신의 스탬프로 한 조회는 그 스탬프 자리로 돌아간다(위의 그림에서는 가장 새 샘플의 $20\,\mathrm{ms}$ 왼쪽).
+> - `now()` 화살표가 눈에 띄게 빈 공간을 가리키면 제대로 그린 것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 위치추정이 `map` → `odom`을, 오도메트리(엔코더)가 `odom` → `base_link`를, 정적 브로드캐스터가 `base_link` → `camera_link`를 소유. 타임라인: `odom` → `base_link` TF $5\,\mathrm{ms}$마다(카메라 장착은 정적이라 갱신되지 않음); 조회 $0,5,10,15$; `now()` 조회는 버퍼의 미래.

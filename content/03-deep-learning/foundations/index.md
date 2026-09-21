@@ -8,8 +8,8 @@ mastery-when: "Raise when architecture, objective, optimization, or scaling is p
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/neural-network-basics|0.7 Neural Networks]], [[02-foundations/calculus-backprop|2. Calculus & Backprop]], [[02-foundations/optimization|4. Optimization]], and [[02-foundations/ml-practice|9. ML Practice]]. Object **D1** from [[03-deep-learning/lab-objects|0. Lab Objects]]; the Tier A lab in §6 needs NumPy and nothing else.
-> [[02-foundations/neural-network-basics|0.7 신경망]], [[02-foundations/calculus-backprop|2. 미적분과 역전파]], [[02-foundations/optimization|4. 최적화]], [[02-foundations/ml-practice|9. ML 실무]]. 대상은 [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D1**이고, §6의 Tier A 실습에는 NumPy만 있으면 된다.
+> [[02-foundations/neural-network-basics|0.8 Neural Networks]], [[02-foundations/calculus-backprop|2. Calculus & Backprop]], [[02-foundations/optimization|4. Optimization]], and [[02-foundations/ml-practice|9. ML Practice]]. Object **D1** from [[03-deep-learning/lab-objects|0. Lab Objects]]; the Tier A lab in §6 needs NumPy and nothing else.
+> [[02-foundations/neural-network-basics|0.8 신경망]], [[02-foundations/calculus-backprop|2. 미적분과 역전파]], [[02-foundations/optimization|4. 최적화]], [[02-foundations/ml-practice|9. ML 실무]]. 대상은 [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D1**이고, §6의 Tier A 실습에는 NumPy만 있으면 된다.
 
 ## English
 
@@ -28,9 +28,7 @@ The target is class 1 throughout this page, so $y=(1,0)$, and every number below
 
 *Scope: this page teaches the typed pipeline from one input to one parameter update — shapes, softmax, cross-entropy, the backward pass, one SGD step, and the step size that update has to respect — and the evidence a training claim owes. It does not teach where the derivatives come from, which is [[02-foundations/calculus-backprop|2. Calculus & Backprop §2]]; nor the optimizers themselves (momentum, Adam, schedules), which are [[02-foundations/optimization|4. Optimization §3]]; nor the experimental protocol that turns a number into a result, which is [[02-foundations/ml-practice|9. ML Practice §4]]; nor any architecture beyond a two-layer MLP — convolutions and patch tokens are [[03-deep-learning/computer-vision/index|2. Computer Vision]], and attention is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]. The module's three sub-lectures build on this page: [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models]], [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale]].*
 
-### Homework diagram
-
-One diagram, and the problem set asks for exactly this one. Draw both directions on the same picture. The figure is the worked case below, on the catalog numbers; problem 1 asks for the same drawing with batch shapes for $B=4$.
+### The picture
 
 <svg viewBox="0 0 560 518" style="max-width:100%;height:auto" role="img" aria-label="D1's forward pass down the left with every tensor's shape and value, its weights and zero biases in the middle, and the backward pass up the right with every gradient's value">
   <defs><marker id="aD1e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -149,12 +147,7 @@ One diagram, and the problem set asks for exactly this one. Draw both directions
   <text x="12" y="502" font-size="11" fill="currentColor" fill-opacity="0.9">No arrow runs from L to W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">: its gradient arrives only through W</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">and the mask.</tspan></text>
 </svg>
 
-Five things the drawing has to get right, each of which is a claim about the computation.
-**Every tensor labelled with its shape** — $x$ (2), $z$ (3), $h$ (3), $s$ (2), $p$ (2), $L$ (scalar). An unlabelled arrow is where a shape error hides, and a shape error is the most common reason a re-implementation silently trains the wrong model.
-**The ReLU drawn as a gate on $z$, not on $h$.** The mask is $\mathbf 1[z>0]$: it is read off the *pre-activation*, and it is fixed for this sample before any gradient flows. Drawing it after $h$ claims the backward pass can choose the mask, which it cannot.
-**Softmax and cross-entropy drawn as one block.** Separately they each have an ugly Jacobian; together they emit $p-y$ (§2). The block's output arrow is the only place that expression appears.
-**No arrow from $L$ straight to $W_1$.** The gradient reaches $W_1$ only through $W_2$ and then through the mask. That path is the whole of backpropagation, and a diagram with a shortcut is a diagram of a different algorithm.
-**Biases marked and marked zero.** D1 freezes them at zero; the parameter count in problem 1 counts them anyway, and the difference between "absent" and "present and zero" is exactly the 5 numbers that separate 12 from 17.
+D1's worked case on the catalog numbers, target class 1. The forward pass runs down the left, $x=(1,2)\to z=(1,2,1)\to h=(1,2,1)\to s=(2,1)$, into one softmax-and-cross-entropy block that gives $p_1=0.731059$ and $L=0.313262$ nats, with the weights and their zero biases in the middle. The backward pass runs up the right from $\partial L/\partial s=p-y=(-0.268941,0.268941)$ to $\partial L/\partial h=(0.268941,-0.268941,0)$, whose zero is $W_2$'s empty third column, and through the ReLU mask $\mathbf 1[z>0]=(1,1,1)$ to $\partial L/\partial W_1$ — no arrow runs from $L$ straight to $W_1$.
 
 ### Worked case
 
@@ -203,7 +196,7 @@ Architecture prose becomes checkable only after attaching shapes. For a batch of
 > - **Example**: D1's hidden width 3 is a hyperparameter; the resulting $h=(1,2,1)$ is an activation; the $W_1$ that produced it is parameters. Change the width and the parameter count changes; change the input and only the activation changes.
 > - **Non-example**: the ReLU mask $\mathbf 1[z>0]=(1,1,1)$. It is an activation, not a parameter — nobody learns it — but it is also not a hyperparameter, because no one chose it. It is derived from the sample, which is why a paper that reports "sparsity" has to say sparsity *of what, on which data*.
 > - **Non-example**: an Adam optimizer state. It is written by the optimizer and saved in a checkpoint, so it looks like a parameter, but it is not used in the forward pass and must not be counted in model size. Papers that quote "checkpoint size" instead of parameter count are quoting this.
-> - **Why it matters**: "our model is 3× smaller" is a parameter claim, "it needs 3× less memory to train" is an activation claim, and "it is 3× cheaper to tune" is a hyperparameter claim. They are three different experiments and a paper that conflates them has not run any of them. The same split, written for reading experimental sections, is [[02-foundations/neural-network-basics|0.7 Neural Networks §5]].
+> - **Why it matters**: "our model is 3× smaller" is a parameter claim, "it needs 3× less memory to train" is an activation claim, and "it is 3× cheaper to tune" is a hyperparameter claim. They are three different experiments and a paper that conflates them has not run any of them. The same split, written for reading experimental sections, is [[02-foundations/neural-network-basics|0.8 Neural Networks §5]].
 
 Those logits $s=(2,1)$ are D1's forward pass, not a second example:
 
@@ -394,7 +387,7 @@ print("first eta that diverges: %.4f ; of the %d grid points above it, %d still 
 
 Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. The object is D1 throughout; questions 2 and 4 change the target class, so none of the page's numbers can be copied.
 
-1. **Draw.** Draw D1 with batch shapes for $B=4$ and count weights including biases. Add the backward arrows of the Homework diagram and mark which one is blocked by the ReLU mask and which one is blocked by a zero column of $W_2$.
+1. **Draw.** The picture above, with batch shapes for $B=4$, and count weights including biases. On its backward arrows, mark which one is blocked by the ReLU mask and which one is blocked by a zero column of $W_2$.
 2. **Derive.** For logits $(0,\log 3)$ and target class 1, compute probabilities, loss, and $p-y$.
 3. **Interpret.** Validation improves while test performance is repeatedly inspected and used to alter augmentation. Which boundary was crossed?
 4. **Do.** Fill the `?` blanks, then re-run the lab with the target changed to **class 2** ($y=(0,1)$, so the catalog model starts *wrong*) and the decay raised to $\lambda=0.2$. Report (a) the starting $L_\lambda$; (b) the sweep over $\eta\in\{0.05,0.5,2,5,20\}$ at 200 steps, as a table of $L_\lambda$, dead units, and any divergence step; (c) the largest $\eta$ that still settles at the minimum, by bisection. Then say in one sentence why that boundary moved relative to the $\lambda=0.1$ run in §6.
@@ -443,6 +436,14 @@ for _ in range(60):
 print("largest eta that settles: %.4f" % hi)
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - Draw both directions on the same picture: the forward pass down one side, the backward pass up the other.
+> - Label every tensor with its shape, batch dimension included. An unlabelled arrow is where a shape error hides, and a shape error is the most common reason a re-implementation silently trains the wrong model.
+> - Draw the ReLU as a gate on $z$, not on $h$. The mask $\mathbf 1[z>0]$ is read off the pre-activation and fixed for the sample before any gradient flows; drawing it after $h$ claims the backward pass can choose the mask, which it cannot.
+> - Draw softmax and cross-entropy as one block. Separately each has an ugly Jacobian; together they emit $p-y$ (§2), and the block's output arrow is the only place that expression appears.
+> - Draw no arrow from $L$ straight to $W_1$. The gradient reaches $W_1$ only through $W_2$ and then through the mask; that path is the whole of backpropagation, and a diagram with a shortcut is a diagram of a different algorithm.
+> - Draw the biases and mark them zero. D1 freezes them at zero, the parameter count counts them anyway, and the difference between "absent" and "present and zero" is exactly the 5 numbers that separate 12 from 17.
+
 > [!tip]- Solutions
 > 1. $X:4\times2$, $H:4\times3$, $S:4\times2$; parameters $(2\cdot3+3)+(3\cdot2+2)=17$. On the backward arrows: $\partial L/\partial z=\partial L/\partial h\odot\mathbf 1[z>0]$ is the masked one, and $\partial L/\partial h_3=0$ is blocked by $W_2$'s zero third column — a different mechanism, permanent rather than sample-dependent.
 > 2. $p=(1/4,3/4)$, $L=-\log(1/4)=1.386$, $p-y=(-3/4,3/4)$.
@@ -476,9 +477,7 @@ $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\
 
 *범위: 이 페이지는 입력 하나에서 파라미터 갱신 하나까지의 형식 붙은 경로 — shape, softmax, cross-entropy, 역전파, SGD 한 스텝, 그리고 그 스텝이 지켜야 하는 보폭 — 와 학습 주장이 갖춰야 할 증거를 가르친다. 미분이 어디서 오는지는 가르치지 않는다. 그것은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2]]다. optimizer 자체(momentum, Adam, schedule)도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]다. 숫자를 결과로 바꾸는 실험 절차도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §4]]다. 2층 MLP 너머의 구조도 아니다. convolution과 patch token은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], attention은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]와 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 이 페이지 위에 서는 이 모듈의 하위 강의는 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델]], [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]], [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]] 셋이다.*
 
-### 과제가 그릴 그림
-
-그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 순방향과 역방향을 한 장에 함께 그린다. 그림은 아래 계산 절을 카탈로그 숫자로 그린 것이고, 문제 1은 같은 그림을 $B=4$의 배치 shape로 요구한다.
+### 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 518" style="max-width:100%;height:auto" role="img" aria-label="D1의 순전파를 왼쪽 열에 텐서마다 shape와 값을 달아 내려 그리고, 가운데에 가중치와 0인 bias를, 오른쪽 열에 gradient 값을 단 역전파를 올려 그린 그림">
   <defs><marker id="aD1k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -597,12 +596,7 @@ $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\
   <text x="12" y="502" font-size="11" fill="currentColor" fill-opacity="0.9">L에서 W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">으로 가는 화살표는 없다. gradient는 W</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">와 mask를 지나야만 닿는다.</tspan></text>
 </svg>
 
-그림이 맞혀야 할 것이 다섯이고, 각각이 계산에 대한 주장이다.
-**모든 텐서에 shape를 적는다** — $x$(2), $z$(3), $h$(3), $s$(2), $p$(2), $L$(스칼라). 이름 없는 화살표가 shape 오류가 숨는 자리이고, shape 오류는 재구현이 조용히 다른 모델을 학습시키는 가장 흔한 이유다.
-**ReLU는 $h$가 아니라 $z$에 걸린 게이트로 그린다.** mask는 $\mathbf 1[z>0]$이다. 활성화 *이전* 값에서 읽고, 이 샘플에 대해 gradient가 흐르기 전에 이미 고정된다. $h$ 뒤에 그리면 역전파가 mask를 고를 수 있다는 주장이 되는데 그렇지 않다.
-**softmax와 cross-entropy는 한 블록으로 그린다.** 따로 두면 각각의 Jacobian이 지저분하지만 합치면 $p-y$만 남는다(§2). 그 식이 나타나는 자리는 이 블록의 출력 화살표뿐이다.
-**$L$에서 $W_1$으로 바로 가는 화살표는 없다.** gradient는 $W_2$를 지나고 mask를 지나야만 $W_1$에 닿는다. 그 경로가 역전파의 전부이고, 지름길이 있는 그림은 다른 알고리즘의 그림이다.
-**bias를 그리고 0이라고 적는다.** D1은 bias를 0으로 고정한다. 문제 1의 파라미터 수는 그래도 bias를 센다. "없다"와 "있는데 0이다"의 차이가 정확히 12와 17을 가르는 다섯 개의 숫자다.
+카탈로그 숫자로 그린 D1의 계산 절이고, 정답은 1번 클래스다. 순전파는 왼쪽 열을 따라 $x=(1,2)\to z=(1,2,1)\to h=(1,2,1)\to s=(2,1)$로 내려가 softmax와 cross-entropy를 합친 한 블록에서 $p_1=0.731059$, $L=0.313262$ nat을 내고, 가운데에는 가중치와 0인 bias가 있다. 역전파는 오른쪽 열을 따라 $\partial L/\partial s=p-y=(-0.268941,0.268941)$에서 $\partial L/\partial h=(0.268941,-0.268941,0)$ — 0은 $W_2$의 비어 있는 3열 때문이다 — 으로, 다시 ReLU mask $\mathbf 1[z>0]=(1,1,1)$을 지나 $\partial L/\partial W_1$로 올라가며, $L$에서 $W_1$으로 곧장 가는 화살표는 없다.
 
 ### 대상으로 한 번 끝까지
 
@@ -651,7 +645,7 @@ $$p=(0.831865,\ 0.168135),\qquad L=0.184085,\qquad \Delta L=-0.129177\ \text{nat
 > - **예**: D1의 은닉 폭 3은 하이퍼파라미터, 거기서 나온 $h=(1,2,1)$은 activation, 그것을 만든 $W_1$은 파라미터다. 폭을 바꾸면 파라미터 수가 바뀌고, 입력을 바꾸면 activation만 바뀐다.
 > - **비예**: ReLU mask $\mathbf 1[z>0]=(1,1,1)$. 아무도 학습하지 않으니 파라미터가 아니고, 아무도 고르지 않았으니 하이퍼파라미터도 아니다. 샘플에서 유도된 값이다. 그래서 "sparsity"를 보고하는 논문은 *무엇의*, *어떤 데이터에서의* sparsity인지 말해야 한다.
 > - **비예**: Adam의 optimizer state. optimizer가 쓰고 checkpoint에 저장되니 파라미터처럼 보이지만 순전파에 쓰이지 않으므로 모델 크기에 세면 안 된다. 파라미터 수 대신 "checkpoint 크기"를 인용하는 논문이 세고 있는 것이 이것이다.
-> - **왜 중요한가**: "우리 모델이 3배 작다"는 파라미터 주장, "학습 메모리가 3배 적다"는 activation 주장, "튜닝이 3배 싸다"는 하이퍼파라미터 주장이다. 서로 다른 세 실험이고, 이를 뭉뚱그린 논문은 셋 중 어느 것도 하지 않은 것이다. 실험 절을 읽기 위한 같은 구분은 [[02-foundations/neural-network-basics|0.7 신경망 §5]]에 있다.
+> - **왜 중요한가**: "우리 모델이 3배 작다"는 파라미터 주장, "학습 메모리가 3배 적다"는 activation 주장, "튜닝이 3배 싸다"는 하이퍼파라미터 주장이다. 서로 다른 세 실험이고, 이를 뭉뚱그린 논문은 셋 중 어느 것도 하지 않은 것이다. 실험 절을 읽기 위한 같은 구분은 [[02-foundations/neural-network-basics|0.8 신경망 §5]]에 있다.
 
 이 $s=(2,1)$은 D1 순전파 결과다. $p=(0.731,0.269)$이고 정답이 1번일 때 cross-entropy는 $0.313$이다. 두 logit에 같은 상수를 더해도 확률은 같다. softmax는 상대적 증거를 표현한다.
 
@@ -769,10 +763,18 @@ weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가
 
 Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. 대상은 계속 D1이고, 문제 2와 4가 정답 클래스를 바꾸므로 페이지의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** $B=4$인 D1의 shape를 그리고 bias 포함 parameter 수를 센다. 과제가 그릴 그림의 역방향 화살표를 더하고, 어느 화살표가 ReLU mask에 막히고 어느 화살표가 $W_2$의 0인 열에 막히는지 표시한다.
+1. **그리기.** 위의 그림을 $B=4$의 배치 shape로 그리고 bias 포함 parameter 수를 센다. 역방향 화살표 가운데 어느 것이 ReLU mask에 막히고 어느 것이 $W_2$의 0인 열에 막히는지 표시한다.
 2. **유도.** logit $(0,\log3)$, 정답 1번의 확률·loss·$p-y$를 구한다.
 3. **해석.** test를 보며 augmentation을 바꿨다면 어떤 경계를 넘었는가.
 4. **실행.** 영어 절 템플릿의 `?`를 채운 뒤, 정답을 **2번 클래스**로 바꾸고($y=(0,1)$, 즉 카탈로그 모델이 *틀린* 상태에서 출발한다) decay를 $\lambda=0.2$로 올려 다시 돌린다. (a) 시작 $L_\lambda$, (b) $\eta\in\{0.05,0.5,2,5,20\}$, 200스텝의 $L_\lambda$·죽은 유닛·발산 스텝 표, (c) 이분법으로 찾은, 여전히 최소점에 정착하는 최대 $\eta$를 보고한다. 그리고 그 경계가 §6의 $\lambda=0.1$ 대비 왜 움직였는지 한 문장으로 말한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - 순방향과 역방향을 한 장에 함께 그린다. 순전파는 한쪽을 따라 내려가고 역전파는 다른 쪽을 따라 올라간다.
+> - 모든 텐서에 배치 차원까지 포함한 shape를 적는다. 이름 없는 화살표가 shape 오류가 숨는 자리이고, shape 오류는 재구현이 조용히 다른 모델을 학습시키는 가장 흔한 이유다.
+> - ReLU는 $h$가 아니라 $z$에 걸린 게이트로 그린다. mask $\mathbf 1[z>0]$은 활성화 이전 값에서 읽고, 이 샘플에 대해 gradient가 흐르기 전에 이미 고정된다. $h$ 뒤에 그리면 역전파가 mask를 고를 수 있다는 주장이 되는데 그렇지 않다.
+> - softmax와 cross-entropy는 한 블록으로 그린다. 따로 두면 각각의 Jacobian이 지저분하지만 합치면 $p-y$만 남고(§2), 그 식이 나타나는 자리는 이 블록의 출력 화살표뿐이다.
+> - $L$에서 $W_1$으로 곧장 가는 화살표는 그리지 않는다. gradient는 $W_2$를 지나고 mask를 지나야만 $W_1$에 닿는다. 그 경로가 역전파의 전부이고, 지름길이 있는 그림은 다른 알고리즘의 그림이다.
+> - bias를 그리고 0이라고 적는다. D1은 bias를 0으로 고정하지만 parameter 수는 bias를 센다. "없다"와 "있는데 0이다"의 차이가 정확히 12와 17을 가르는 다섯 개의 숫자다.
 
 > [!tip]- 정답 · Solutions
 > 1. $4\times2\rightarrow4\times3\rightarrow4\times2$, 총 17개. 역방향에서 $\partial L/\partial z=\partial L/\partial h\odot\mathbf 1[z>0]$이 mask에 막히는 쪽이고, $\partial L/\partial h_3=0$은 $W_2$의 0인 세 번째 열에 막히는 쪽이다. 기제가 다르다. 후자는 샘플과 무관하게 영구적이다.

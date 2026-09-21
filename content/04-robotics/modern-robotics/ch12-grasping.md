@@ -32,9 +32,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 The tile frame's origin is the centre of mass, which is also the midpoint of the two contacts; its $x$ axis is the squeeze axis and its $y$ axis is world-vertical, so gravity acts along $-y$. A planar wrench is written $w = (f_x,\ f_y,\ m_z)$ throughout.
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, the tile drawn as a rectangle with its centre of mass marked.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 341" style="max-width:100%;height:auto" role="img" aria-label="the panel tile held by two point fingers at the midpoints of its short edges: inward normals, friction cones of half-angle 26.565°, the contact line through both cones, the 4.905 N weight at the centre of mass and two 2.4525 N finger forces, and the four cone-edge wrenches">
   <defs><marker id="ar12e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -80,13 +78,7 @@ One figure, the tile drawn as a rectangle with its centre of mass marked.
   <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">tile 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · preload f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N per finger</tspan></text>
 </svg>
 
-- Draw both contact points on the short edges and, at each, the **inward normal** as a solid arrow.
-- At each contact draw the **friction cone**: two dashed rays at $\pm 26.565°$ from that normal, with the wedge between them shaded. Write the half-angle on one of them.
-- Draw the line joining the two contacts as a thin straight line all the way through the tile, and check by eye that it lies inside both shaded wedges — that is the antipodal condition, and here the line and the normals coincide.
-- Draw the weight $W$ as a downward arrow at the centre of mass, and beside it the two tangential (vertical) finger forces that must add up to it.
-- In a margin box, list the four cone-edge wrenches as $(f_x, f_y, m_z)$ triples.
-
-The problem set asks for the same figure with a narrower cone and the centre of mass shifted along $x$, which adds a moment arrow the figure above does not have.
+The panel tile, $0.200 \times 0.100\,\mathrm{m}$ and $0.500\,\mathrm{kg}$, held by two point fingers at the midpoints of its short edges, $(\pm 0.100,\ 0)$, each contact with its inward normal and a friction cone of half-angle $\tan^{-1}0.5 = 26.565°$. The line joining the contacts lies inside both cones — here it coincides with the normals — and the $4.905\,\mathrm{N}$ weight at the centre of mass is carried by two tangential finger forces of $2.4525\,\mathrm{N}$. The box lists the four cone-edge wrenches $(f_x, f_y, m_z)$; $\lambda = (1,1,1,1)$ sums them to zero and their rank is 3, so the grasp is a force closure.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -218,9 +210,18 @@ with $n = 3$ in the plane and $6$ in space, because a strictly positive combinat
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same tile, same two fingers at $(\pm 0.100, 0)$, but two knobs move: site dust drops the friction to $\mu = 0.2$, and the tile now carries a bracket that puts its centre of mass at $(+0.030,\ 0)$ in the grasp frame instead of at the origin.
 
-1. **Draw.** The figure again with the narrower cones and the shifted centre of mass. Draw the weight arrow at its new location, mark the $0.030\,\mathrm{m}$ lever arm, and add the moment the weight now makes about the grasp midpoint. Write the new half-angle on a cone edge.
+1. **Draw.** The picture above, with the narrower cones and the shifted centre of mass. Draw the weight arrow at its new location, mark the $0.030\,\mathrm{m}$ lever arm, and add the moment the weight now makes about the grasp midpoint. Write the new half-angle on a cone edge.
 2. **Derive.** (a) The new half-angle $\alpha$, and the four cone-edge wrenches. (b) Decide force closure with the positive-span test — state the $\lambda$ you use and the rank. (c) The gravity wrench about the grasp midpoint, then the two tangential forces $f_{y1}, f_{y2}$ that resist it, then the minimum preload $f_n^{\min}$. (d) Does the frozen $20\,\mathrm{N}$ preload still hold the tile, and with what margin?
 3. **Interpret.** Did either knob change the force-closure verdict? Answer for each, with the reason. Then explain what the offset costs as a formula rather than a number, and say what would have to change before the grasp fails outright rather than merely needing a harder squeeze.
+
+> [!note]- How to draw it · 그리는 법
+> - The tile as a rectangle with its centre of mass marked, and both contact points on the short edges.
+> - At each contact, the inward normal as a solid arrow.
+> - At each contact, the friction cone: two dashed rays at $\pm\tan^{-1}\mu$ from the normal, the wedge between them shaded, and the half-angle written on one ray.
+> - The line joining the two contacts, thin and straight all the way through the tile. Check by eye that it lies inside both shaded wedges — that is the antipodal condition.
+> - The weight $W$ as a downward arrow at the centre of mass, and beside it the two tangential (vertical) finger forces that must add up to it.
+> - If the weight's line of action misses the grasp midpoint, mark the lever arm and add the moment the weight makes about that midpoint as a curved arrow — the arrow the picture above does not need.
+> - In a margin box, the four cone-edge wrenches as $(f_x, f_y, m_z)$ triples.
 
 > [!tip]- Solutions
 > 1. The cones are visibly thinner and the weight arrow no longer passes through the grasp midpoint, so a curved moment arrow appears about it.
@@ -250,9 +251,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 타일 좌표계의 원점은 질량 중심이고 동시에 두 접촉점의 중점이다. $x$축이 쥐는 축, $y$축이 세계의 연직이므로 중력은 $-y$로 작용한다. 평면 렌치는 전부 $w = (f_x,\ f_y,\ m_z)$로 쓴다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 질량 중심을 표시한 직사각형으로 타일을 그린다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 341" style="max-width:100%;height:auto" role="img" aria-label="짧은 두 변의 중점에서 점 손가락 둘이 잡은 패널 타일: 안쪽 법선, 반각 26.565°의 마찰 원뿔, 두 원뿔을 지나는 접촉선, 질량 중심의 4.905 N 무게와 2.4525 N 손가락 힘 둘, 그리고 원뿔 모서리 렌치 넷">
   <defs><marker id="ar12k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -298,13 +297,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
   <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">타일 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · 손가락당 예압 f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N</tspan></text>
 </svg>
 
-- 짧은 두 변의 접촉점을 찍고 각각에 **안쪽 법선**을 실선 화살표로 그린다.
-- 각 접촉점에 **마찰 원뿔**을 그린다. 법선에서 $\pm 26.565°$인 점선 두 개와 그 사이를 칠한 쐐기. 반각을 한쪽에 적는다.
-- 두 접촉점을 잇는 선을 타일을 관통하는 가는 직선으로 긋고, 그것이 칠한 두 쐐기 안에 있는지 눈으로 확인한다. 그것이 대척 조건이고, 여기서는 그 선과 법선이 일치한다.
-- 질량 중심에 무게 $W$를 아래 방향 화살표로, 그 옆에 합이 그것과 같아야 하는 접선(연직) 손가락 힘 두 개를 그린다.
-- 여백 상자에 마찰 원뿔 모서리 렌치 네 개를 $(f_x, f_y, m_z)$ 삼중항으로 나열한다.
-
-과제는 원뿔이 좁아지고 질량 중심이 $x$로 옮겨간 같은 그림을 요구하며, 그러면 위 그림에는 없는 모멘트 화살표가 하나 생긴다.
+짧은 두 변의 중점 $(\pm 0.100,\ 0)$에서 점 손가락 둘이 잡은 $0.200 \times 0.100\,\mathrm{m}$, $0.500\,\mathrm{kg}$의 패널 타일이고, 각 접촉점에 안쪽 법선과 반각 $\tan^{-1}0.5 = 26.565°$의 마찰 원뿔이 있다. 두 접촉점을 잇는 선은 두 원뿔 안에 있고(여기서는 법선과 일치한다), 질량 중심의 무게 $4.905\,\mathrm{N}$은 $2.4525\,\mathrm{N}$씩의 접선 손가락 힘 둘이 받친다. 상자 안의 원뿔 모서리 렌치 넷 $(f_x, f_y, m_z)$은 $\lambda = (1,1,1,1)$로 합이 0이고 랭크가 3이므로 이 파지는 force closure다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -432,9 +425,18 @@ $$\text{closure} \iff \exists\,\lambda > 0,\ \textstyle\sum_i \lambda_i w_i = 0 
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 같고 $(\pm 0.100, 0)$의 손가락 둘도 같지만 노브 둘이 움직인다. 현장 먼지로 마찰이 $\mu = 0.2$로 떨어지고, 타일이 브래킷을 달아 질량 중심이 파지 좌표계의 원점이 아니라 $(+0.030,\ 0)$에 온다.
 
-1. **그리기.** 좁아진 원뿔과 옮겨진 질량 중심으로 그림을 다시 그린다. 무게 화살표를 새 위치에 그리고 $0.030\,\mathrm{m}$ 지렛대 팔을 표시하며, 무게가 이제 파지 중점 둘레에 만드는 모멘트를 더한다. 원뿔 모서리에 새 반각을 적는다.
+1. **그리기.** 위의 그림을 좁아진 원뿔과 옮겨진 질량 중심으로 다시 그린다. 무게 화살표를 새 위치에 그리고 $0.030\,\mathrm{m}$ 지렛대 팔을 표시하며, 무게가 이제 파지 중점 둘레에 만드는 모멘트를 더한다. 원뿔 모서리에 새 반각을 적는다.
 2. **유도.** (a) 새 반각 $\alpha$와 마찰 원뿔 모서리 렌치 넷. (b) 양의 생성 검사로 force closure를 판정하라. 쓴 $\lambda$와 랭크를 밝힐 것. (c) 파지 중점 둘레의 중력 렌치, 그것을 버티는 접선 힘 $f_{y1}, f_{y2}$, 그리고 최소 예압 $f_n^{\min}$. (d) 고정된 $20\,\mathrm{N}$ 예압으로 타일을 여전히 잡는가, 여유는 얼마인가?
 3. **해석.** 두 노브 중 force closure 판정을 바꾼 것이 있는가? 각각에 대해 이유와 함께 답하라. 그다음 옮겨진 질량 중심의 대가를 숫자가 아니라 공식으로 설명하고, 더 세게 쥐는 정도가 아니라 파지가 아예 실패하려면 무엇이 바뀌어야 하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 타일은 질량 중심을 표시한 직사각형으로, 접촉점 둘은 짧은 두 변 위에 그린다.
+> - 각 접촉점에 안쪽 법선을 실선 화살표로 그린다.
+> - 각 접촉점에 마찰 원뿔을 그린다. 법선에서 $\pm\tan^{-1}\mu$인 점선 두 개, 그 사이를 칠한 쐐기, 그리고 한쪽 선에 적은 반각.
+> - 두 접촉점을 잇는 선을 타일을 관통하는 가는 직선으로 긋고, 칠한 두 쐐기 안에 있는지 눈으로 확인한다. 그것이 대척 조건이다.
+> - 질량 중심에 무게 $W$를 아래 방향 화살표로, 그 옆에 합이 그것과 같아야 하는 접선(연직) 손가락 힘 두 개를 그린다.
+> - 무게의 작용선이 파지 중점을 비껴가면 지렛대 팔을 표시하고, 무게가 그 중점 둘레에 만드는 모멘트를 굽은 화살표로 더한다. 위의 그림에는 필요 없던 화살표다.
+> - 여백 상자에 원뿔 모서리 렌치 네 개를 $(f_x, f_y, m_z)$ 삼중항으로 나열한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 원뿔이 눈에 띄게 얇아지고 무게 화살표가 더 이상 파지 중점을 지나지 않으므로, 그 둘레에 굽은 모멘트 화살표가 하나 나타난다.

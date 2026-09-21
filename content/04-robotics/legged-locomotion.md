@@ -22,7 +22,7 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 Privileged teacher–student distillation is the idea to take from here, and the page doubles as practice at correcting over-citation.*
 
 > [!note] First pass · 처음이라면
-> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language. The running object, the homework diagram and the worked derivation on them are the lecture the problem set assumes; do those in order (object, diagram, §1.5, worked) if you are here for the course rather than for the literature.
+> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language. The running object, the picture and the worked derivation on them are the lecture the problem set assumes; do those in order (object, picture, §1.5, worked) if you are here for the course rather than for the literature.
 
 ### Running object · 이 페이지의 장치
 
@@ -58,24 +58,7 @@ The humanoid in §1.5 with $z=0.9$ m is a *different* body, kept because that is
 capture-point literature is written about. When the two disagree it is because they are two
 machines, not because one number is stale.
 
-### Homework diagram · 과제가 그릴 그림
-
-Two panels, and the problem set asks for the same pair.
-
-**Top — the sagittal inverted pendulum.** Draw the ground as a horizontal line. Put a dot for the
-CoM at height $z=0.30$ m and a straight massless leg from it down to the stance foot at $p$. Draw a
-horizontal velocity arrow $\dot x$ at the CoM. On the ground mark three points: the foot $p$, the
-CoM's vertical projection $x$, and the capture point $\xi$ at a distance $\dot x/\omega_0$ ahead of
-$x$. Then bracket the ground from $0.46$ m behind $x$ to $0.46$ m ahead of it and label the bracket
-*reach* — that is where a foot can be placed at all. The whole homework is the question of whether
-$\xi$ lands inside that bracket.
-
-**Bottom — the gait chart.** Four horizontal lanes stacked, one per foot, labelled LF, RF, LH, RH,
-over a time axis covering one period $T=0.40$ s. Shade each lane where that foot is in stance. For
-the nominal trot, LF and RH are shaded from $0$ to $0.20$ s and RF and LH from $0.20$ to $0.40$ s.
-Mark the instants where the shaded set changes: those are the moments the support polygon changes
-shape, and the **contact schedule** that [[04-robotics/convex-mpc-legged|8. Convex MPC]] is handed
-is exactly this chart read as a table.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="top: the frozen quadruped as an inverted pendulum with its capture point inside a foothold reach bracket; bottom: a trot gait chart over one period">
   <defs><marker id="arQ" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -109,6 +92,8 @@ is exactly this chart read as a table.
     <text x="40" y="306" font-size="10.5">Shaded = stance. Trot: two diagonal feet down at a time, swapping every 0.20 s.</text>
   </g>
 </svg>
+
+Top: Q as a linear inverted pendulum, its CoM at $z = 0.30$ m moving at the trot command $\dot x = 1.0$ m/s over the stance foot $p$, with the capture point $\xi$ at $\dot x/\omega_0 = 0.175$ m ahead of the CoM's projection $x$ and well inside the foothold-reach bracket of $0.46$ m each way, so one step can still bring Q to rest. Bottom: the nominal trot over one period $T = 0.40$ s, LF and RH in stance for the first $0.20$ s and RF and LH for the second; read as a table, the chart is the contact schedule [[04-robotics/convex-mpc-legged|8. Convex MPC]] is handed.
 
 ### 1. Why this page exists
 
@@ -220,7 +205,7 @@ left over is
 $$R=\sqrt{\ell^2-z^2}=\sqrt{0.34^2-0.30^2}=\sqrt{0.0256}=0.16\ \mathrm{m}$$
 
 The hip-relative window is therefore $2R=0.32$ m wide, and the furthest foothold ahead of the CoM is
-$d+R=0.30+0.16=0.46$ m. That $0.46$ m is the bracket in the homework diagram.
+$d+R=0.30+0.16=0.46$ m. That $0.46$ m is the bracket in the picture above.
 
 **4. Two speed limits, and which one binds.** The first is balance: a one-step stop needs
 $\xi-x\le d+R$, so $\dot x\le\omega_0(d+R)=5.72\times0.46=2.63$ m/s. The second is stroke. During
@@ -544,7 +529,7 @@ Euler loop for a legged body is not on this page and you do not need one.
 period $T=0.40$ s, with the four feet offset a quarter period apart in the order LF, RH, RF, LH.
 Commanded speed $\dot x=0.6$ m/s. Leg length, hip offset, mass and $\mu$ are unchanged.
 
-1. **Draw.** Both panels of the homework diagram for the crouched crawl. Top: the inverted pendulum
+1. **Draw.** The picture above, both panels, for the crouched crawl. Top: the inverted pendulum
    at $z=0.24$ m, the capture point at $0.6$ m/s, and the reach bracket for the new standing height —
    mark whether $\xi$ is inside it and by how much. Bottom: the gait chart, four lanes, $0.30$ s of
    stance per lane wrapping around the period. Shade it, then write under the chart how many feet are
@@ -563,6 +548,15 @@ Commanded speed $\dot x=0.6$ m/s. Leg length, hip offset, mass and $\mu$ are unc
    claim? (b) Hwangbo 2019 is cited as "sim-to-real is solved." What did it actually demonstrate, and
    what transfer does it not license? (c) You need a quadruped to carry a manipulator over rubble.
    Which result on this page is the closest precedent, and which two things does it still not give you?
+
+> [!note]- How to draw it · 그리는 법
+> - Top panel: the ground as a horizontal line, a dot for the CoM at the standing height $z$, a straight massless leg from it down to the stance foot $p$, and a horizontal velocity arrow $\dot x$ at the CoM.
+> - Three marks on the ground: the foot $p$, the CoM's vertical projection $x$, and the capture point $\xi$ at $\dot x/\omega_0$ ahead of $x$.
+> - A bracket on the ground from $d+R$ behind $x$ to $d+R$ ahead of it, labelled *reach*: that is where a foot can be placed at all (worked case: $0.46$ m each way at $z = 0.30$ m).
+> - The top panel's whole question is whether $\xi$ lands inside that bracket, so mark it and write the margin.
+> - Bottom panel: four horizontal lanes stacked, one per foot, labelled LF, RF, LH, RH, over a time axis covering one period $T = 0.40$ s.
+> - Shade each lane where that foot is in stance, wrapping past the end of the period back to $0$ when a stance runs over it (worked case, the trot: LF and RH from $0$ to $0.20$ s, RF and LH from $0.20$ to $0.40$ s).
+> - Mark every instant where the shaded set changes: those are the moments the support polygon changes shape, and the chart read as a table is the contact schedule [[04-robotics/convex-mpc-legged|8. Convex MPC]] is handed.
 
 > [!tip]- Solutions
 > 1. Top: $\xi$ sits $0.094$ m ahead of the CoM and the bracket now runs to $0.541$ m, so it is inside with roughly $0.45$ m to spare. Bottom: with $\beta=0.75$ and quarter-period offsets, exactly $4\beta=3$ feet are down at every instant, so the support polygon is a triangle that swaps one vertex every $0.10$ s and never collapses to a segment — the opposite of the trot in the lecture chart.
@@ -596,7 +590,7 @@ Commanded speed $\dot x=0.6$ m/s. Leg length, hip offset, mass and $\mu$ are unc
 가져갈 발상은 특권 교사–학생 증류이고, 이 페이지는 동시에 과잉 인용을 교정하는 연습장이다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다. 이 페이지의 장치, 과제가 그릴 그림, 그리고 그 위에서 끝까지 해 본 유도는 과제가 전제하는 강의다. 문헌이 아니라 수업 때문에 왔다면 장치 → 그림 → §1.5 → 유도 순서로 읽어라.
+> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다. 이 페이지의 장치와 그림, 그리고 그 위에서 끝까지 해 본 유도는 과제가 전제하는 강의다. 문헌이 아니라 수업 때문에 왔다면 장치 → 그림 → §1.5 → 유도 순서로 읽어라.
 
 ### 이 페이지의 장치 · Running object
 
@@ -631,22 +625,7 @@ Q는 이 위키의 관통 과제를 나른다: [[02-foundations/lab-plants|0.6]]
 §1.5의 $z=0.9$ m 휴머노이드는 *다른* 몸이다. capture point 문헌이 그 크기에 대해 쓰였기 때문에
 그대로 둔다. 두 숫자가 어긋나면 하나가 낡아서가 아니라 기계가 둘이기 때문이다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-두 칸짜리 그림이고, 과제가 요구하는 것도 같은 쌍이다.
-
-**위 — 시상면의 도립진자.** 지면을 수평선으로 긋는다. 높이 $z=0.30$ m에 무게중심 점을 찍고,
-거기서 디딤발 $p$까지 질량 없는 곧은 다리를 내린다. 무게중심에 수평 속도 화살표 $\dot x$를
-그린다. 지면에 세 점을 표시한다: 발 $p$, 무게중심의 수직 투영 $x$, 그리고 $x$보다
-$\dot x/\omega_0$만큼 앞의 capture point $\xi$. 그다음 $x$의 뒤 $0.46$ m부터 앞 $0.46$ m까지
-괄호를 치고 *reach*라 적는다 — 발을 놓을 수 있는 구간이다. 과제 전체가 $\xi$가 그 괄호 안에
-들어오는가 하는 물음이다.
-
-**아래 — 보행 차트.** 발마다 한 줄씩 수평 네 줄을 쌓고 LF, RF, LH, RH라 이름 붙인 뒤, 한 주기
-$T=0.40$ s의 시간 축 위에 놓는다. 그 발이 디딤(stance)인 구간을 칠한다. 기준 trot에서는 LF와
-RH가 $0$부터 $0.20$ s까지, RF와 LH가 $0.20$부터 $0.40$ s까지다. 칠해진 집합이 바뀌는 순간을
-표시한다. 그 순간이 지지 다각형의 모양이 바뀌는 때이고, [[04-robotics/convex-mpc-legged|8. Convex MPC]]가
-건네받는 **접촉 스케줄**이란 바로 이 차트를 표로 읽은 것이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="위: 발을 놓을 수 있는 구간 괄호 안에 capture point가 들어온 고정 사족의 도립진자. 아래: 한 주기의 trot 보행 차트">
   <defs><marker id="arQk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -680,6 +659,8 @@ RH가 $0$부터 $0.20$ s까지, RF와 LH가 $0.20$부터 $0.40$ s까지다. 칠�
     <text x="40" y="306" font-size="10.5">칠한 구간이 디딤. trot은 대각선 두 발이 0.20 s마다 교대한다.</text>
   </g>
 </svg>
+
+위는 선형 도립진자로 본 Q로, 높이 $z = 0.30$ m의 무게중심이 디딤발 $p$ 위에서 trot 명령 $\dot x = 1.0$ m/s로 움직이고, capture point $\xi$는 무게중심의 투영 $x$보다 $\dot x/\omega_0 = 0.175$ m 앞, 앞뒤로 $0.46$ m인 발 디딤 구간 괄호의 한참 안쪽에 있어 한 걸음으로 아직 멈출 수 있다. 아래는 한 주기 $T = 0.40$ s의 기준 trot으로, 앞 $0.20$ s는 LF와 RH가, 뒤 $0.20$ s는 RF와 LH가 디딤이고, 이 차트를 표로 읽은 것이 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 건네받는 접촉 스케줄이다.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -784,7 +765,7 @@ trot 명령 $\dot x=1.0$ m/s에서의 값이다. 숫자 자체는 작다. 문제
 $$R=\sqrt{\ell^2-z^2}=\sqrt{0.34^2-0.30^2}=\sqrt{0.0256}=0.16\ \mathrm{m}$$
 
 따라서 고관절 기준 창은 $2R=0.32$ m 폭이고, 무게중심 앞 가장 먼 디딤점은 $d+R=0.30+0.16=0.46$
-m다. 이 $0.46$ m가 과제 그림의 괄호다.
+m다. 이 $0.46$ m가 위 그림의 괄호다.
 
 **4. 속도 한계 둘, 그리고 먼저 걸리는 쪽.** 첫째는 균형이다. 한 걸음 정지에는 $\xi-x\le d+R$가
 필요하므로 $\dot x\le\omega_0(d+R)=5.72\times0.46=2.63$ m/s다. 둘째는 스트로크다. 디딤 동안 발은
@@ -1083,7 +1064,7 @@ Tier B. **Q**, 이 페이지, 그리고 [[02-foundations/lab-plants|0.6]]의 **P
 $\beta=0.75$, 네 발의 위상은 LF, RH, RF, LH 순으로 4분의 1 주기씩 어긋난다. 명령 속도는
 $\dot x=0.6$ m/s. 다리 길이, 고관절 거리, 질량, $\mu$는 그대로다.
 
-1. **그려라.** 낮춘 crawl에 대해 과제 그림 두 칸을 모두 그린다. 위: $z=0.24$ m의 도립진자,
+1. **그려라.** 맨 위의 그림 두 칸을 낮춘 crawl에 대해 모두 그린다. 위: $z=0.24$ m의 도립진자,
    $0.6$ m/s에서의 capture point, 그리고 새 높이에 대한 괄호 — $\xi$가 그 안인지, 얼마나 여유가
    있는지 표시한다. 아래: 보행 차트 네 줄, 줄마다 $0.30$ s의 디딤이 주기를 돌며 들어간다. 칠한
    뒤 차트 아래에 매 순간 발이 몇 개 땅에 있는지 적고, 지지 다각형이 어떤 모양인지 말한다.
@@ -1100,6 +1081,15 @@ $\dot x=0.6$ m/s. 다리 길이, 고관절 거리, 질량, $\mu$는 그대로다
    2019가 "sim-to-real은 풀렸다"로 인용된다. 실제로 보인 것과, 허가하지 않는 이전은? (c) 사족이
    잔해 위로 매니퓰레이터를 실어 나르길 원한다. 이 페이지에서 가장 가까운 선례와, 그것이 여전히
    주지 않는 둘은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 위 칸: 수평선으로 그은 지면, 서 있는 높이 $z$의 무게중심 점, 거기서 디딤발 $p$까지 내린 질량 없는 곧은 다리, 그리고 무게중심의 수평 속도 화살표 $\dot x$.
+> - 지면 위의 세 점: 발 $p$, 무게중심의 수직 투영 $x$, 그리고 $x$보다 $\dot x/\omega_0$만큼 앞의 capture point $\xi$.
+> - $x$의 뒤 $d+R$부터 앞 $d+R$까지 지면에 친 괄호와 *reach*라는 이름. 발을 놓을 수 있는 구간이다(계산 예제: $z = 0.30$ m에서 앞뒤로 $0.46$ m).
+> - 위 칸의 물음은 전부 $\xi$가 그 괄호 안에 들어오는가이므로, $\xi$를 표시하고 여유를 적는다.
+> - 아래 칸: 발마다 한 줄씩 쌓은 수평 네 줄 LF, RF, LH, RH와 한 주기 $T = 0.40$ s의 시간 축.
+> - 그 발이 디딤인 구간을 칠하고, 디딤이 주기 끝을 넘으면 $0$으로 돌아와 이어 칠한다(계산 예제의 trot: LF와 RH가 $0$부터 $0.20$ s까지, RF와 LH가 $0.20$부터 $0.40$ s까지).
+> - 칠해진 집합이 바뀌는 순간을 모두 표시한다. 그 순간이 지지 다각형의 모양이 바뀌는 때이고, 이 차트를 표로 읽은 것이 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 건네받는 접촉 스케줄이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 위: $\xi$는 무게중심 앞 $0.094$ m이고 괄호는 이제 $0.541$ m까지 가므로, 약 $0.45$ m 여유를 두고 안쪽이다. 아래: $\beta=0.75$에 4분의 1 주기 위상이면 매 순간 정확히 $4\beta=3$개의 발이 땅에 있으므로, 지지 다각형은 $0.10$ s마다 꼭짓점 하나를 바꾸는 삼각형이고 결코 선분으로 무너지지 않는다 — 강의의 trot 차트와 정반대다.

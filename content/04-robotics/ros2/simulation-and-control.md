@@ -31,9 +31,7 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart 
 
 *Scope: this page teaches the plumbing between a description and a moving robot — the bridge, the interface seam, the controller manager and its clock — and computes what those rates cost in latency and resolution. It does not teach whether the contact physics transfers, which is [[05-construction-robotics/sim-to-real|Sim-to-Real]]; nor how to write the hardware component behind the same seam, which is [[04-robotics/ros2/from-simulation-to-hardware|25.11]]; nor how to plan the trajectory you hand the controller, which is [[04-robotics/ros2/manipulation-moveit2|25.8]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, two panels, and the problem set asks for the same figure with one rate changed.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 574" style="max-width:100%;height:auto" role="img" aria-label="Panel A: Gazebo Harmonic holds the gz_ros2_control plugin and the controller manager at update_rate 200; state interfaces cart/position and cart/velocity cross the seam to the controllers, the command interface cart/velocity comes back marked available and claimed, and the camera and /clock leave Gazebo through ros_gz_bridge. Panel B: five lanes on simulated time from 0 to 80 ms, camera every 20 ms, controller every 5 ms, one frame's command on the cart for L plus 25 ms, under a 70 ms budget that is wall time.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · who provides what</text>
@@ -221,9 +219,7 @@ One figure, two panels, and the problem set asks for the same figure with one ra
   <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">Worst case: each goal lands just after a tick. L (mid-exposure to landing) is drawn as zero.</text>
 </svg>
 
-**Panel A — who provides what.** Draw four boxes and the seam between them. Left: `Gazebo Harmonic` holding the physics and the model. Inside it, a box `gz_ros2_control system plugin` containing a second box `controller manager, update_rate: 200`. Right of the seam, two controller boxes: `joint_state_broadcaster` and a velocity controller. Between the manager and the controllers draw the interfaces as *named arrows*, not plain lines: `cart/position` and `cart/velocity` pointing left-to-right as state, `cart/velocity` pointing right-to-left as command. Three things the drawing has to get right, each of which is a claim. The **command arrow carries a claim mark**: label it `[available] [claimed]`, because §6's exclusivity rule is that exactly one active controller may hold it. The **`/clock` arrow leaves Gazebo and enters ROS**, never the reverse, since the simulator owns the time. And the camera arrow crosses a box marked `ros_gz_bridge` with the direction token written on it, because §3's point is that an unbridged topic does not exist on the ROS side and reports no error.
-
-**Panel B — the timeline, on sim time.** Five parallel lanes against one horizontal axis labelled *simulated* seconds, $0$ to $80\,\mathrm{ms}$, ruled every $5\,\mathrm{ms}$: `camera exposure`, `bridge`, `controller read`, `controller update/write`, `force at the cart`. Put the camera ticks $20\,\mathrm{ms}$ apart and the controller ticks $5\,\mathrm{ms}$ apart, so four control ticks visibly fit inside one camera interval and three of them carry no new goal. Shade, from one camera tick, the span during which a command derived from *that* frame is still on the actuator, and write its length beside it. Finally draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, and write beneath the bracket the one sentence the figure exists to make arguable: *this axis is sim time, and the budget is wall time.*
+Panel A is P6's cart in Gazebo Harmonic, whose `gz_ros2_control` plugin hosts the controller manager at `update_rate: 200`: the state interfaces `cart/position` and `cart/velocity` cross the seam to the controllers, the command interface `cart/velocity` comes back from the velocity controller, its one claimant, marked `[available] [claimed]`, and the camera and `/clock` reach ROS only through `ros_gz_bridge`. Panel B puts the loop on simulated time — a camera frame every $T_v=20\,\mathrm{ms}$ and a control tick every $T_c=5\,\mathrm{ms}$, so three ticks in four reuse the last goal — and in the worst case a frame's command is still on the cart $L+25\,\mathrm{ms}$ after mid-exposure, leaving $45$ of the $70\,\mathrm{ms}$ budget for $L$, the driver and the actuator. The axis is sim time, and the budget is wall time.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -617,7 +613,7 @@ The symptom that eats an evening: `list_controllers` says `active`, no node logs
 ros2 control list_controllers
 ```
 
-`inactive` means configuration succeeded and activation did not — usually a missing interface, including a joint-name mismatch (step 3); the controller manager logs "Unable to activate controller … command interface … is not available" once, easy to lose in launch output. A controller that is *absent* from the list failed to load: for the joint trajectory controller, parameters that never arrived — a wrong `--param-file` path, or a YAML whose top-level key is not the controller's name — make `on_init` fail, and the spawner reports the error. A controller that activated and then fell back to `inactive` has had its hardware component go into an error state; check `ros2 control list_hardware_components -v`.
+`inactive` means configuration succeeded and activation did not — usually a missing interface, including a joint-name mismatch (step 3); the controller manager logs "Unable to activate controller '…' since the command interface '…' is not available." once, easy to lose in launch output. A controller that is *absent* from the list failed to load: for the joint trajectory controller, parameters that never arrived — a wrong `--param-file` path, or a YAML whose top-level key is not the controller's name — make `on_init` fail, and the spawner reports the error. A controller that activated and then fell back to `inactive` has had its hardware component go into an error state; check `ros2 control list_hardware_components -v`.
 
 **2. Is it claiming the command interfaces?**
 
@@ -636,7 +632,7 @@ This is the most common reason a controller never becomes active. Three places n
 - the `<joint name="...">` entries inside the `<ros2_control>` block,
 - the `joints:` list in the controller YAML.
 
-`shoulder` in the URDF and `shoulder_joint` in the YAML gives you a controller that loads and configures but will not activate: `list_controllers` shows it `inactive`, and the only report is one "Unable to activate controller … command interface 'shoulder_joint/position' is not available" warning. Diff the three lists explicitly:
+`shoulder` in the URDF and `shoulder_joint` in the YAML gives you a controller that loads and configures but will not activate: `list_controllers` shows it `inactive`, and the only report that names the cause is one "Unable to activate controller 'joint_trajectory_controller' since the command interface 'shoulder_joint/position' is not available." warning. Diff the three lists explicitly:
 
 ```bash
 xacro two_link_arm.urdf.xacro | grep -E '<joint name=|<command_interface|<state_interface'
@@ -669,6 +665,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 ### Sources
 
 - `ros2_control` documentation (Jazzy) — Getting Started (architecture, controller manager, resource manager, hardware components); Controller Manager userdoc (`update_rate`, `robot_description`, `spawner`, `unspawner`); `ros2controlcli` userdoc (CLI verbs and flags).
+- `ros2_control` source (jazzy branch) — `controller_manager/src/controller_manager.cpp` (`check_for_interfaces_availability_to_activate`, the source of the "Unable to activate controller" warning).
 - `ros2_controllers` documentation (Jazzy) — Controllers index; Joint Trajectory Controller; Forward Command Controller; Differential Drive Controller; Joint State Broadcaster.
 - `gz_ros2_control` (jazzy branch) — README compatibility matrix; `doc/index.rst`; `gz_ros2_control_demos` cart launch file, controller YAML and URDF.
 - `ros_gz` (ros2 branch) — `ros_gz_bridge` README (direction syntax, YAML config); `ros_gz_sim` README and `create.cpp` argument list.
@@ -686,7 +683,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 
 > [!tip]- Answers
 > 1. Because the seam is what makes the controller portable. A controller asks for `shoulder/position` and neither knows nor cares whether a physics engine or an EtherCAT drive provides it, so the same controller and the same YAML run in Gazebo and on the real arm. Moving to hardware changes one `<plugin>` line in the URDF. It also enforces exclusivity: a command interface can be claimed by at most one active controller, which is why two writers on one joint is a failed activation rather than a fight.
-> 2. `ros2 control list_controllers` — if it reads `inactive`, activation failed, and the most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML; the controller manager logged one "Unable to activate controller … is not available" warning. If it reads `active`, its command interfaces are necessarily `[available] [claimed]` in `list_hardware_interfaces`, so look downstream: the topic name, the trajectory's stamp and `time_from_start`, and whether the simulation is paused.
+> 2. `ros2 control list_controllers` — if it reads `inactive`, activation failed, and the most likely cause is a joint name that differs between the URDF, the `<ros2_control>` block and the controller YAML; the controller manager logged one "Unable to activate controller '…' since the command interface '…' is not available." warning. If it reads `active`, its command interfaces are necessarily `[available] [claimed]` in `list_hardware_interfaces`, so look downstream: the topic name, the trajectory's stamp and `time_from_start`, and whether the simulation is paused.
 > 3. The controller manager runs inside Gazebo on simulated time. Without the bridge, ROS-side nodes that set `use_sim_time` — robot_state_publisher, TF consumers, anything stamping or looking up transforms — have no time source and stall, and a trajectory given a wall-clock stamp is read on the controller's sim clock as starting far in the future. (A zero stamp, which `ros2 topic pub` sends by default, means "start now" and dodges this.) Bridged topics are opt-in, and an unbridged topic does not exist on the ROS side with no error anywhere.
 > 4. It is Gazebo Classic, which reached end of life in January 2025. The current stack is Gazebo Harmonic with `gz_ros2_control`: `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">` in a `<gazebo>` tag, plus `gz_ros2_control/GazeboSimSystem` as the hardware plugin in `<ros2_control>`. Anything written with `ign` prefixes is the intermediate Ignition era, renamed back to Gazebo in April 2022.
 > 5. That the plumbing works — interfaces, controllers, topics, timing, and the launch ordering. Not that the contact behaviour transfers. [[05-construction-robotics/sim-to-real|Sim-to-Real]] separates the gaps randomisation can span from the contact gap it cannot, and a contact-rich result is not comparable evidence to a locomotion result even from the same simulator.
@@ -699,6 +696,16 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 1. **Draw.** P6 cart in Gazebo: `gz_ros2_control` hardware plugin, joint-state broadcaster, a velocity controller, `/clock` bridge. Five-line timeline on *sim* time: camera exposure, bridge, controller `read`–`update`–`write`, force. Mark the $70\,\mathrm{ms}$ budget.
 2. **Derive.** (a) Redo the worked case's Steps 1–3 with `update_rate: 500` and the camera at $30\,\mathrm{Hz}$: the tick-per-frame ratio, the velocity quantum from one-count differencing, and the rate ledger against the $70\,\mathrm{ms}$ budget. Say which of the two changes helped and which hurt. (b) The controller is `active` and the cart does not move. First command, most likely cause. (c) No `/clock` bridge; a trajectory is stamped with wall time. What does the sim-time controller read?
 3. **Interpret.** A $200\,\mathrm{ms}$-late bridged vision frame still meets Gazebo's physics rate. Does it meet P6's budget? What can a Gazebo success claim, and what can it not?
+
+> [!note]- How to draw it · 그리는 법
+> - **Panel A nests three boxes left of the seam**: `Gazebo Harmonic`, holding the physics and the model, contains the `gz_ros2_control` system plugin, which contains the controller manager with its `update_rate`. Right of the dashed seam sit `joint_state_broadcaster` and the velocity controller.
+> - **Interfaces are named arrows, not plain lines**: `cart/position` and `cart/velocity` cross the seam left to right as state, and `cart/velocity` comes back right to left as command.
+> - **The command arrow carries a claim mark**, `[available] [claimed]`, because §6's exclusivity rule is that exactly one active controller may hold it.
+> - **`/clock` leaves Gazebo and enters ROS**, never the reverse, since the simulator owns the time: the diagram is wrong the moment that arrow points into Gazebo.
+> - **The camera arrow crosses a box marked `ros_gz_bridge`** with the direction token written on it, because §3's point is that an unbridged topic does not exist on the ROS side and reports no error.
+> - **Panel B is five parallel lanes against one axis in simulated seconds** — camera exposure, bridge, controller read, controller update/write, force at the cart — ruled every control period ($0$ to $80\,\mathrm{ms}$ every $5\,\mathrm{ms}$ in the picture).
+> - **The tick spacing shows the ratio**: camera ticks $T_v$ apart and control ticks $T_c$ apart, so $f_c/f_v$ control ticks visibly fit in one camera interval and all but one of them carry no new goal (four and three at the worked case's $200$ and $50\,\mathrm{Hz}$).
+> - **Shade one frame and bracket the budget**: from one camera tick, shade the span during which a command derived from that frame is still on the actuator and write its length, $L+T_v+T_c$; draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, and beneath it the sentence the figure exists to make arguable: *this axis is sim time, and the budget is wall time.*
 
 > [!tip]- Solutions
 > 1. Plugin `gz_ros2_control/GazeboSimSystem`; `/clock` out of Gazebo into ROS. Timeline in sim time, not wall time.
@@ -729,9 +736,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 
 *범위: 이 페이지는 기술과 움직이는 로봇 사이의 배관 — 브리지, 인터페이스 이음매, 컨트롤러 매니저와 그 시계 — 을 가르치고, 그 속도들이 지연과 분해능으로 얼마를 치르는지 계산한다. 접촉 물리가 옮겨 가는지는 가르치지 않는다. 그것은 [[05-construction-robotics/sim-to-real|Sim-to-Real]]이다. 같은 이음매 뒤에 하드웨어 컴포넌트를 작성하는 법도 아니다. 그것은 [[04-robotics/ros2/from-simulation-to-hardware|25.11]]이다. 제어기에 넘길 궤적을 계획하는 법도 아니다. 그것은 [[04-robotics/ros2/manipulation-moveit2|25.8]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 패널 둘. 과제는 속도 하나만 바꾼 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 574" style="max-width:100%;height:auto" role="img" aria-label="패널 A: Gazebo Harmonic 안에 gz_ros2_control 플러그인과 update_rate 200의 컨트롤러 매니저가 있고, 상태 인터페이스 cart/position과 cart/velocity가 이음매를 건너 제어기로 가며, 명령 인터페이스 cart/velocity는 available·claimed 표시를 달고 돌아오고, 카메라와 /clock은 ros_gz_bridge를 지나 Gazebo를 나간다. 패널 B: 시뮬레이션 시간 0에서 80 ms 위의 레인 다섯. 카메라는 20 ms, 제어기는 5 ms마다이고, 한 프레임의 명령은 L 더하기 25 ms 동안 카트에 걸려 있으며, 70 ms 예산은 벽시계 시간이다.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 누가 무엇을 제공하는가</text>
@@ -919,9 +924,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
   <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">최악의 경우를 그렸다. 목표는 틱 직후에 도착하고, L(노출 중간에서 도착까지)은 폭 0으로 그렸다.</text>
 </svg>
 
-**패널 A — 누가 무엇을 제공하는가.** 상자 넷과 그 사이의 이음매를 그린다. 왼쪽에 물리와 모델을 쥔 `Gazebo Harmonic`. 그 안에 `gz_ros2_control system plugin` 상자, 다시 그 안에 `controller manager, update_rate: 200` 상자. 이음매 오른쪽에 제어기 상자 둘, `joint_state_broadcaster`와 속도 제어기. 매니저와 제어기 사이의 인터페이스는 맨 선이 아니라 *이름 붙은 화살표*로 그린다. 상태로 왼쪽에서 오른쪽으로 가는 `cart/position`과 `cart/velocity`, 명령으로 오른쪽에서 왼쪽으로 가는 `cart/velocity`. 그림이 맞혀야 할 것이 셋이고 각각이 주장이다. **명령 화살표에는 점유 표시를 단다.** `[available] [claimed]`라고 적는다. §6의 배타성 규칙이 활성 제어기 정확히 하나만 그것을 쥘 수 있다는 것이기 때문이다. **`/clock` 화살표는 Gazebo에서 나와 ROS로 들어간다.** 반대 방향은 없다. 시간을 소유한 쪽이 시뮬레이터이기 때문이다. 그리고 카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나가고 그 위에 방향 토큰을 적는다. 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 오류도 내지 않는다는 것이 §3의 요점이기 때문이다.
-
-**패널 B — 타임라인, 시뮬레이션 시간 위에서.** 가로축 하나에 평행한 레인 다섯을 건다. 축은 *시뮬레이션* 초로 $0$에서 $80\,\mathrm{ms}$, 눈금은 $5\,\mathrm{ms}$마다. 레인은 `카메라 노출`, `브리지`, `제어기 read`, `제어기 update/write`, `카트에 걸리는 힘`. 카메라 틱은 $20\,\mathrm{ms}$ 간격, 제어기 틱은 $5\,\mathrm{ms}$ 간격으로 찍어, 카메라 한 구간 안에 제어 틱 넷이 들어가고 그중 셋에는 새 목표가 없다는 것이 눈에 보이게 한다. 카메라 틱 하나에서 시작해, *그* 프레임에서 나온 명령이 아직 구동기에 걸려 있는 구간을 음영으로 칠하고 그 길이를 옆에 적는다. 마지막으로 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고, 괄호 밑에 이 그림이 존재하는 이유인 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
+패널 A는 Gazebo Harmonic 안의 P6 카트로, `gz_ros2_control` 플러그인이 `update_rate: 200`의 컨트롤러 매니저를 품고, 상태 인터페이스 `cart/position`과 `cart/velocity`가 이음매를 건너 제어기로 가며, 명령 인터페이스 `cart/velocity`는 유일한 점유자인 속도 제어기에서 `[available] [claimed]` 표시를 달고 돌아오고, 카메라와 `/clock`은 `ros_gz_bridge`를 거쳐야만 ROS에 닿는다. 패널 B는 같은 루프를 시뮬레이션 시간 위에 놓은 것으로, 카메라 프레임은 $T_v=20\,\mathrm{ms}$마다, 제어 틱은 $T_c=5\,\mathrm{ms}$마다 와서 틱 넷 중 셋이 지난 목표를 다시 쓰고, 최악의 경우 한 프레임의 명령은 노출 중간으로부터 $L+25\,\mathrm{ms}$ 뒤까지 카트에 걸려 있어 $70\,\mathrm{ms}$ 예산 중 $L$과 드라이버와 구동기에 남는 몫은 $45\,\mathrm{ms}$다. 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1315,7 +1318,7 @@ ros2 topic pub -1 /joint_trajectory_controller/joint_trajectory trajectory_msgs/
 ros2 control list_controllers
 ```
 
-`inactive`는 설정은 됐고 활성화가 안 됐다는 뜻이고, 보통 인터페이스가 없어서다 — 관절 이름 불일치(3단계)도 여기에 속한다. 컨트롤러 매니저는 "Unable to activate controller … command interface … is not available"을 한 번 찍는데, launch 출력에 묻히기 쉽다. 목록에 아예 *없는* 제어기는 적재에 실패한 것이다. joint trajectory controller라면 파라미터가 도착하지 않았을 때 — `--param-file` 경로가 틀렸거나 YAML의 최상위 키가 제어기 이름이 아닐 때 — `on_init`이 실패하고 spawner가 오류를 보고한다. 활성화됐다가 `inactive`로 떨어진 제어기는 하드웨어 컴포넌트가 에러 상태로 간 것이다. `ros2 control list_hardware_components -v`로 확인한다.
+`inactive`는 설정은 됐고 활성화가 안 됐다는 뜻이고, 보통 인터페이스가 없어서다 — 관절 이름 불일치(3단계)도 여기에 속한다. 컨트롤러 매니저는 "Unable to activate controller '…' since the command interface '…' is not available."라는 경고를 한 번 찍는데, launch 출력에 묻히기 쉽다. 목록에 아예 *없는* 제어기는 적재에 실패한 것이다. joint trajectory controller라면 파라미터가 도착하지 않았을 때 — `--param-file` 경로가 틀렸거나 YAML의 최상위 키가 제어기 이름이 아닐 때 — `on_init`이 실패하고 spawner가 오류를 보고한다. 활성화됐다가 `inactive`로 떨어진 제어기는 하드웨어 컴포넌트가 에러 상태로 간 것이다. `ros2 control list_hardware_components -v`로 확인한다.
 
 **2. 명령 인터페이스를 점유하고 있는가?**
 
@@ -1334,7 +1337,7 @@ ros2 control list_controllers --claimed-interfaces
 - `<ros2_control>` 블록 안의 `<joint name="...">` 항목,
 - 제어기 YAML의 `joints:` 목록.
 
-URDF에는 `shoulder`, YAML에는 `shoulder_joint`이면 적재되고 설정되지만 활성화되지 않는 제어기가 나온다. `list_controllers`에는 `inactive`로 보이고, 보고는 "Unable to activate controller … command interface 'shoulder_joint/position' is not available" 경고 한 줄뿐이다. 세 목록을 명시적으로 비교하라.
+URDF에는 `shoulder`, YAML에는 `shoulder_joint`이면 적재되고 설정되지만 활성화되지 않는 제어기가 나온다. `list_controllers`에는 `inactive`로 보이고, 원인을 밝히는 보고는 "Unable to activate controller 'joint_trajectory_controller' since the command interface 'shoulder_joint/position' is not available." 경고 한 줄뿐이다. 세 목록을 명시적으로 비교하라.
 
 ```bash
 xacro two_link_arm.urdf.xacro | grep -E '<joint name=|<command_interface|<state_interface'
@@ -1367,6 +1370,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 ### 출처
 
 - `ros2_control` 문서(Jazzy) — Getting Started(구조, 컨트롤러 매니저, 리소스 매니저, 하드웨어 컴포넌트); Controller Manager userdoc(`update_rate`, `robot_description`, `spawner`, `unspawner`); `ros2controlcli` userdoc(CLI 동사와 플래그).
+- `ros2_control` 소스(jazzy 브랜치) — `controller_manager/src/controller_manager.cpp`(`check_for_interfaces_availability_to_activate`, "Unable to activate controller" 경고가 나오는 곳).
 - `ros2_controllers` 문서(Jazzy) — Controllers index; Joint Trajectory Controller; Forward Command Controller; Differential Drive Controller; Joint State Broadcaster.
 - `gz_ros2_control`(jazzy 브랜치) — README 호환 표; `doc/index.rst`; `gz_ros2_control_demos`의 cart launch 파일, 제어기 YAML, URDF.
 - `ros_gz`(ros2 브랜치) — `ros_gz_bridge` README(방향 문법, YAML 설정); `ros_gz_sim` README와 `create.cpp` 인자 목록.
@@ -1384,7 +1388,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 그 이음매가 제어기를 이식 가능하게 만들기 때문이다. 제어기는 `shoulder/position`을 요구할 뿐 그것을 물리 엔진이 주는지 EtherCAT 드라이브가 주는지 알지도 신경 쓰지도 않는다. 그래서 같은 제어기와 같은 YAML이 Gazebo에서도 실제 팔에서도 돈다. 하드웨어로 옮기는 것은 URDF의 `<plugin>` 한 줄을 바꾸는 일이다. 배타성도 여기서 나온다. 명령 인터페이스는 활성 제어기 하나만 점유할 수 있고, 그래서 한 관절에 writer 둘이 붙는 상황은 싸움이 아니라 활성화 실패가 된다.
-> 2. `ros2 control list_controllers` — `inactive`면 활성화가 실패한 것이고, 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 컨트롤러 매니저는 "Unable to activate controller … is not available" 경고를 한 번 찍었을 것이다. `active`라면 그 명령 인터페이스는 `list_hardware_interfaces`에서 반드시 `[available] [claimed]`이므로, 그 아래를 본다: 토픽 이름, 궤적의 스탬프와 `time_from_start`, 시뮬레이션이 일시정지됐는지.
+> 2. `ros2 control list_controllers` — `inactive`면 활성화가 실패한 것이고, 가장 유력한 원인은 URDF, `<ros2_control>` 블록, 제어기 YAML 사이의 관절 이름 불일치다. 컨트롤러 매니저는 "Unable to activate controller '…' since the command interface '…' is not available." 경고를 한 번 찍었을 것이다. `active`라면 그 명령 인터페이스는 `list_hardware_interfaces`에서 반드시 `[available] [claimed]`이므로, 그 아래를 본다: 토픽 이름, 궤적의 스탬프와 `time_from_start`, 시뮬레이션이 일시정지됐는지.
 > 3. 컨트롤러 매니저는 Gazebo 안에서 시뮬레이션 시간으로 돈다. 브리지가 없으면 `use_sim_time`을 켠 ROS 쪽 노드 — robot_state_publisher, TF 소비자, 스탬프를 찍거나 변환을 조회하는 모든 것 — 에 시간 원천이 없어 멈추고, 벽시계 스탬프를 준 궤적은 제어기의 시뮬레이션 시계에서 먼 미래에 시작하는 것으로 읽힌다. (`ros2 topic pub`이 기본으로 보내는 0 스탬프는 "지금 시작"이라 이 문제를 비켜 간다.) 브리지된 토픽은 opt-in이고, 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 에러도 남기지 않는다.
 > 4. Gazebo Classic이고, 2025년 1월에 지원이 종료됐다. 현행 스택은 Gazebo Harmonic + `gz_ros2_control`이다. `<gazebo>` 태그 안에 `<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">`, 그리고 `<ros2_control>` 안의 하드웨어 플러그인으로 `gz_ros2_control/GazeboSimSystem`. `ign` 접두사로 쓰인 것은 중간의 Ignition 시대이고, 2022년 4월에 Gazebo로 되돌려졌다.
 > 5. 배관이 동작한다는 것 — 인터페이스, 제어기, 토픽, 타이밍, launch 순서. 접촉 거동이 전이된다는 것은 아니다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]은 랜덤화가 걸칠 수 있는 격차와 걸칠 수 없는 접촉 격차를 분리하며, 접촉이 많은 결과는 같은 시뮬레이터에서 나온 보행 결과와 견줄 수 있는 증거가 아니다.
@@ -1397,6 +1401,16 @@ Tier B. Gazebo Harmonic 안의 [[02-foundations/lab-plants|0.6]] **P6**. 제어�
 1. **그리기.** Gazebo의 P6 카트: `gz_ros2_control` 하드웨어 플러그인, joint-state broadcaster, 속도 제어기, `/clock` 브리지. *시뮬* 시간의 다섯 줄 타임라인: 카메라 노출, 브리지, 제어기 `read`–`update`–`write`, 힘. $70\,\mathrm{ms}$ 예산 표시.
 2. **유도.** (a) 계산 절의 Step 1–3을 `update_rate: 500`과 $30\,\mathrm{Hz}$ 카메라로 다시 하라. 프레임당 틱 비, 한 카운트 차분의 속도 양자, 그리고 $70\,\mathrm{ms}$ 예산에 대한 속도 장부. 두 변경 중 무엇이 도왔고 무엇이 해쳤는지 말하라. (b) 제어기는 `active`인데 카트가 안 움직인다. 첫 명령, 가장 유력한 원인. (c) `/clock` 브리지가 없고 궤적에 벽시계 스탬프. 시뮬 시간 제어기는 무엇을 읽는가?
 3. **해석.** $200\,\mathrm{ms}$ 늦은 브리지 비전 프레임이 Gazebo 물리 주기는 만족한다. P6 예산을 만족하는가? Gazebo 성공이 주장할 수 있는 것과 없는 것은?
+
+> [!note]- 그리는 법 · How to draw it
+> - **패널 A는 이음매 왼쪽에 상자 셋을 겹쳐 넣는다.** 물리와 모델을 쥔 `Gazebo Harmonic` 안에 `gz_ros2_control` system plugin, 다시 그 안에 `update_rate`를 적은 컨트롤러 매니저. 점선 이음매 오른쪽에는 `joint_state_broadcaster`와 속도 제어기를 둔다.
+> - **인터페이스는 맨 선이 아니라 이름 붙은 화살표다.** 상태인 `cart/position`과 `cart/velocity`는 왼쪽에서 오른쪽으로 이음매를 건너고, 명령인 `cart/velocity`는 오른쪽에서 왼쪽으로 돌아온다.
+> - **명령 화살표에는 점유 표시를 단다.** `[available] [claimed]`라고 적는다. §6의 배타성 규칙이 활성 제어기 정확히 하나만 그것을 쥘 수 있다는 것이기 때문이다.
+> - **`/clock` 화살표는 Gazebo에서 나와 ROS로 들어간다.** 반대 방향은 없다. 시간을 소유한 쪽이 시뮬레이터이므로, 그 화살표가 Gazebo를 향하는 순간 그림은 틀린 것이다.
+> - **카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나간다.** 상자 위에 방향 토큰을 적는다. 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 오류도 내지 않는다는 것이 §3의 요점이기 때문이다.
+> - **패널 B는 시뮬레이션 초로 된 축 하나에 건 평행한 레인 다섯이다.** 카메라 노출, 브리지, 제어기 read, 제어기 update/write, 카트에 걸리는 힘. 눈금은 제어 주기마다 긋는다(위의 그림에서는 $0$에서 $80\,\mathrm{ms}$까지 $5\,\mathrm{ms}$마다).
+> - **틱 간격이 비를 보여 준다.** 카메라 틱은 $T_v$ 간격, 제어 틱은 $T_c$ 간격으로 찍어, 카메라 한 구간 안에 제어 틱 $f_c/f_v$개가 들어가고 그중 하나를 뺀 나머지에는 새 목표가 없다는 것이 눈에 보이게 한다(계산 절의 $200$과 $50\,\mathrm{Hz}$에서는 넷과 셋).
+> - **프레임 하나를 칠하고 예산을 괄호로 묶는다.** 카메라 틱 하나에서 시작해, 그 프레임에서 나온 명령이 아직 구동기에 걸려 있는 구간을 음영으로 칠하고 그 길이 $L+T_v+T_c$를 적는다. 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고, 괄호 밑에 이 그림이 존재하는 이유인 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
 
 > [!tip]- 정답 · Solutions
 > 1. 플러그인 `gz_ros2_control/GazeboSimSystem`; Gazebo에서 ROS로 `/clock`. 타임라인은 벽시계가 아니라 시뮬 시간.

@@ -8,15 +8,15 @@ mastery-when: "Raise when an integrated contact pipeline, rather than one of its
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plants **P2**, **P3**, **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] and the integrator of [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Every stage has an owner page and this page only assembles them: the Kalman update ([[02-foundations/probability|3. Probability §5]]), C-obstacles and the edge test ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]), trapezoids ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]), computed torque ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]), impedance and the contact transition ([[04-robotics/force-compliance-control|13. Force & Compliance §2, §5]]), the sampled-spring ledger ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), the latency budget ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) and the separation distance ([[04-robotics/hri-safety|11. HRI & Safety]]). Do the cumulative problem set on [[04-robotics/index|4. Robotics]] first.
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 넷(**P2**, **P3**, **P5**, **P6**)과 [[02-foundations/lab-kernel|0.65 Lab Kernel]]의 적분기. 단계마다 주인 페이지가 있고 이 페이지는 조립만 한다: 칼만 갱신([[02-foundations/probability|3. 확률 §5]]), C-장애물과 간선 검사([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]), 사다리꼴([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]), 계산 토크([[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]), 임피던스와 접촉 천이([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §2, §5]]), 샘플된 스프링의 장부([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), 지연 예산([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]), 분리 거리([[04-robotics/hri-safety|11. HRI·안전]]). [[04-robotics/index|4. 로보틱스]]의 누적 과제를 먼저 풀어라.
+> Plants **P2**, **P3**, **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] and the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Every stage has an owner page and this page only assembles them: the Kalman update ([[02-foundations/probability|3. Probability §5]]), C-obstacles and the edge test ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]), trapezoids ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]), computed torque ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]), impedance and the contact transition ([[04-robotics/force-compliance-control|13. Force & Compliance §2, §5]]), the sampled-spring ledger ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), the latency budget ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) and the separation distance ([[04-robotics/hri-safety|11. HRI & Safety]]). Do the cumulative problem set on [[04-robotics/index|4. Robotics]] first.
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 넷(**P2**, **P3**, **P5**, **P6**)과 [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. 단계마다 주인 페이지가 있고 이 페이지는 조립만 한다: 칼만 갱신([[02-foundations/probability|3. 확률 §5]]), C-장애물과 간선 검사([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]), 사다리꼴([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]), 계산 토크([[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]), 임피던스와 접촉 천이([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §2, §5]]), 샘플된 스프링의 장부([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), 지연 예산([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]), 분리 거리([[04-robotics/hri-safety|11. HRI·안전]]). [[04-robotics/index|4. 로보틱스]]의 누적 과제를 먼저 풀어라.
 
 ## English
 
 *The capstone of the robotics track. Stands on [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]], [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]], [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]], [[04-robotics/modern-robotics/ch11-robot-control|ch.11]], [[04-robotics/force-compliance-control|13]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], [[04-robotics/robot-systems-deployment|10]], [[04-robotics/hri-safety|11]] and [[02-foundations/probability|3. Probability]]. It uses **P2**, **P3**, **P5** and **P6** together, as the cumulative set on [[04-robotics/index|4. Robotics]] does — but as one loop, in which each stage's answer is the next stage's input, rather than as four separate answers.*
 
 > [!note] First pass · 처음이라면
-> Read the running object, draw the homework diagram, and follow the worked case to its report and its caution — that is the page. Then §5 for the four checks and their owners, and run the lab in §6. §1–§4 each define one thing the assembly needed that no single page owned; §7 says what the simulation cannot certify.
+> Read the running object and the picture, and follow the worked case to its report and its caution — that is the page. Then §5 for the four checks and their owners, and run the lab in §6. §1–§4 each define one thing the assembly needed that no single page owned; §7 says what the simulation cannot certify.
 
 ### Running object · 이 페이지의 대상
 
@@ -45,9 +45,7 @@ $400\,\mathrm{N/m}$ is soft — below the foam row of the stiffness scale in [[0
 
 *Scope: this page teaches how the stages of the running task feed each other — which number from one page becomes the input of the next, and where two pages' checks disagree — on one frozen cell, with one simulation of the whole loop. It re-teaches no stage; each is linked to its owner where it is used. It does not teach contact detection ([[04-robotics/contact-force-tactile|9. Contact §7]]), force-sensed control ([[04-robotics/force-compliance-control|13 §3]]) or a stiff panel's impact ([[04-robotics/force-compliance-control|13 §5]]).*
 
-### Homework diagram · 과제가 그릴 그림
-
-The loop, stage by stage, each box carrying the number it passes on. The problem set asks for this drawing at the variant's numbers.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart LR
@@ -64,13 +62,7 @@ flowchart LR
     WL --> CK["checks: 11 N, 2b/T, va L, S_p"]
 ```
 
-Then the same loop as three drawings, stacked, each to scale.
-
-1. **Workspace.** P2 at $A$, at $E$ and at $P$, with the tip path $A\to E\to P$. The face three times: the drawing at $x=1.10$ (dashed), the estimate at $1.116$ with its $\pm3\sigma$ band $[1.0892,\,1.1428]$ shaded, and the true face at $1.120$ (dotted, labelled *simulation only*). The approach arrow from $P$'s tip at $x=1.076$ to the stop point at $1.161$, with the $4\,\mathrm{cm}$ standoff and the $13.2\,\mathrm{mm}$ gap to the band's near edge written on it.
-2. **C-space.** The torus chart of ch.2 with the inflated lens $\cos\theta_1+\cos(\theta_1+\theta_2)>1.0892$ shaded — it pinches at $\theta_1=\pm84.9^\circ$ — the points $A$, $E$, $P$, the direct edge $A$–$P$ dashed with an X and its $0.35\,\mathrm{m}$ penetration, and the two legs solid.
-3. **The clock**, $0$ to $9\,\mathrm{s}$: arrival at $E$ ($3.345$), the switch at $P$ ($5.802$), first contact ($6.684$), the reference stop ($7.502$), the peak ($7.526$). Under it the force trace, with $F_d=10\,\mathrm{N}$ dotted and $F_{\lim}=11\,\mathrm{N}$ dashed. Beside the contact, a $70\,\mathrm{ms}$ bar with the tool's $3.5\,\mathrm{mm}$ of travel inside it.
-
-What the drawing has to get right, each a claim about the loop. **Two faces feed two stages**: the band's near edge goes to the planner, the estimate itself to the stop point. **The switch sits at $P$, before the contact**, not on it. **The dashed edge visibly crosses the lens while both its ends sit outside it**, because that is the fact that forces the via point.
+The worked case's loop, stage by stage, each box carrying the number it passes on. The $12\,\mathrm{cm}$ reading fuses to $11.6\,\mathrm{cm}$ with $\sigma=0.89\,\mathrm{cm}$ and feeds two stages: the band's near edge, $x=1.0892\,\mathrm{m}$, goes to the planner and the estimate to the stop point at $x=1.161\,\mathrm{m}$. The path $A\to E\to P$, timed as trapezoids of $3.345$ and $2.457\,\mathrm{s}$, runs under computed torque until the switch to the impedance ($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$) on arrival at $P$, and the press on the $400\,\mathrm{N/m}$ panel is judged by four checks: the $11\,\mathrm{N}$ limit, the ledger $2b/T$, the latency $v_aL$ and the separation $S_p$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -237,7 +229,7 @@ The latency row needs one definition, because 10's budget is a time and the chec
 
 ### 6. Lab — the whole loop in one simulation
 
-Tier A. One program runs steps 1–8; the sweep changes the two knobs the contact phase owns, $K_d$ and $v_a$, and marks each row against the three checks that move with them. The plant is P2 with its full $M$, $c$ and $g$; the panel is P3's unilateral spring; the controller runs at $T=1\,\mathrm{ms}$ with its torque held over the step, and the integrator is semi-implicit Euler at the same step ([[02-foundations/lab-kernel|0.65 §3]]). The tool damper $b$ acts on the plant and is absent from the controller's model.
+Tier A. One program runs steps 1–8; the sweep changes the two knobs the contact phase owns, $K_d$ and $v_a$, and marks each row against the three checks that move with them. The plant is P2 with its full $M$, $c$ and $g$; the panel is P3's unilateral spring; the controller runs at $T=1\,\mathrm{ms}$ with its torque held over the step, and the integrator is semi-implicit Euler at the same step ([[02-foundations/lab-kernel|0.7 §3]]). The tool damper $b$ acts on the plant and is absent from the controller's model.
 
 ```python
 import numpy as np
@@ -383,7 +375,7 @@ Reading the table:
 - **The passing set** is $K_d\in\{500,\,1000\}$ at $v_a\le0.10$, plus $(250,\,0.05)$. For $K_d\ge500$ it is the latency check, not the force limit, that caps the speed at this soft panel.
 - **One row is a knife edge.** $(2000,\,0.40)$ exceeds the limit by $0.06\,\mathrm{N}$ — the same size as the change a finer integration step makes, $11.06\to11.11\,\mathrm{N}$, so its force verdict is not robust. It fails two other checks regardless.
 
-**The integrator is part of the claim** ([[02-foundations/lab-kernel|0.65 Lab Kernel]]). Stepping the plant at $T/10$ under the same held torques moves no peak by more than $0.51\,\%$ — the largest change is $11.06\to11.11\,\mathrm{N}$ in that knife-edge row — and no settling force at all, so the table describes the controller, not the Euler step.
+**The integrator is part of the claim** ([[02-foundations/lab-kernel|0.7 Lab Kernel]]). Stepping the plant at $T/10$ under the same held torques moves no peak by more than $0.51\,\%$ — the largest change is $11.06\to11.11\,\mathrm{N}$ in that knife-edge row — and no settling force at all, so the table describes the controller, not the Euler step.
 
 ### 7. What this simulation cannot certify
 
@@ -421,7 +413,7 @@ Reading the table:
 
 Tier A. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. The same cell with **one reading changed**: the panel was re-hung and the sensor now reads $z=8\,\mathrm{cm}$ — the mirror of $12$ about the drawing's $10$. The simulation's true face moves to where this reading puts it, $x_w=1.080\,\mathrm{m}$. Everything else — the prior, $R$, $d_s$, $E$, the limits, the gains, the controller — stays frozen. Use the lab of §6; do not start a second simulator.
 
-1. **Draw.** The homework diagram at the new numbers: the loop with each box's new number, the workspace with the new band, the C-space lens for the new planner's face, and the clock. Mark which boxes' numbers did *not* change, and say why.
+1. **Draw.** The picture above at the new numbers — the loop with each box's new number — and, as *How to draw it* below lays them out, the workspace with the new band, the C-space lens for the new planner's face, and the clock. Mark which boxes' numbers did *not* change, and say why.
 2. **Derive.** (a) The Kalman update, $\hat x_w$ and the planner's face. (b) The pre-contact pose on the elbow-up branch; the direct edge from $A$ at its midpoint; the two legs' clearances. (c) $T_1$; the joint-limit $T_2$; the capped $T_2$, taking $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$ (attained at $E$) on the new $E\to P$; the switch time. (d) $K_s$, $x_{\text{stop}}$ and $F_{\text{set}}$ at $K_d=500$, and $F_{\text{set}}-F_d$ for all four stiffnesses. (e) The ledger, latency and separation checks.
 3. **Do.** Fill the `?` below, paste it over step 1 of the lab, and run. Fill the sweep table with $t_c$, $F_{\text{pk}}$, $F_{\text{set}}-F_d$ and each row's verdict. Then interpret: which rows pass, why the answer differs from the worked case although no controller setting changed, and what change — outside the sweep — would make a row pass.
 
@@ -437,6 +429,16 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 # The three checks the sweep marks, for reference:
 #   Fpk > ?          Kd > ?          va * L > ?
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - **The loop**, as in the picture: each box carries the number it passes on. At new numbers, mark the boxes whose numbers did not change.
+> - **Two faces feed two stages**: the band's near edge goes to the planner, the estimate itself to the stop point. A Kalman box with one arrow out has merged them.
+> - **Under the loop, three drawings, stacked, each to scale**: the workspace, the C-space chart and the clock.
+> - **Workspace.** P2 at $A$, at $E$ and at $P$, with the tip path $A\to E\to P$. The face three times: the drawing's at $x=1.10$ (dashed), the estimate with its $\pm3\sigma$ band shaded, and the true face (dotted, labelled *simulation only*). The approach arrow runs from $P$'s tip to the stop point, with the $4\,\mathrm{cm}$ standoff and the gap to the band's near edge written on it.
+> - **C-space.** The torus chart of ch.2 with the inflated lens $\cos\theta_1+\cos(\theta_1+\theta_2)>x_{\text{obs}}$ shaded and its pinch marked; the points $A$, $E$, $P$; the direct edge $A$–$P$ dashed, with an X and its penetration; the two legs solid.
+> - **The dashed edge visibly crosses the lens while both its ends sit outside it**, because that is the fact that forces the via point.
+> - **The clock**, $0$ to $9\,\mathrm{s}$: arrival at $E$, the switch at $P$, first contact, the reference stop, the peak. Under it the force trace, with $F_d=10\,\mathrm{N}$ dotted and $F_{\lim}=11\,\mathrm{N}$ dashed; beside the contact, a $70\,\mathrm{ms}$ bar with the tool's $v_aL=3.5\,\mathrm{mm}$ of travel inside it.
+> - **The switch sits at $P$, before the contact**, not on it: on the clock its tick comes before first contact, and in the workspace $P$ is outside the band.
 
 > [!tip]- Solutions
 > 1. Same loop, same three drawings. Changed: range $8\,\mathrm{cm}$, fused $8.4\,\mathrm{cm}$, planner's face $1.0572\,\mathrm{m}$, stop point $1.129\,\mathrm{m}$, $P$'s tip at $x=1.044$, capped $T_2=2.427\,\mathrm{s}$, switch $5.772\,\mathrm{s}$, first contact $6.494\,\mathrm{s}$, peak $11.62\,\mathrm{N}$. Unchanged: $\sigma=0.894\,\mathrm{cm}$ (the variance update never looks at $z$), $T_1$, the gains, $K_s$, and every check that depends only on $\sigma$, $K_d$ or $v_a$. The clock's force trace now crosses the $11\,\mathrm{N}$ line.
@@ -475,7 +477,7 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 *로보틱스 트랙의 캡스톤. [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]], [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], [[04-robotics/modern-robotics/ch10-motion-planning|10장]], [[04-robotics/modern-robotics/ch11-robot-control|11장]], [[04-robotics/force-compliance-control|13]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], [[04-robotics/robot-systems-deployment|10]], [[04-robotics/hri-safety|11]], [[02-foundations/probability|3. 확률]] 위에 선다. [[04-robotics/index|4. 로보틱스]]의 누적 과제처럼 장치 넷(**P2**, **P3**, **P5**, **P6**)을 함께 쓰지만, 따로 떨어진 답 넷이 아니라 단계마다 앞 단계의 답이 다음 단계의 입력이 되는 루프 하나로 쓴다.*
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상을 읽고, 과제가 그릴 그림을 그리고, 계산 절을 보고서와 경고까지 따라가라. 그것이 이 페이지다. 그다음 §5에서 네 가지 검사와 그 주인을 보고 §6의 랩을 돌려라. §1–§4는 조립에 필요했지만 어느 한 페이지도 갖고 있지 않던 것을 하나씩 정의하고, §7은 시뮬레이션이 보증하지 못하는 것을 말한다.
+> 이 페이지의 대상과 그림을 읽고, 계산 절을 보고서와 경고까지 따라가라. 그것이 이 페이지다. 그다음 §5에서 네 가지 검사와 그 주인을 보고 §6의 랩을 돌려라. §1–§4는 조립에 필요했지만 어느 한 페이지도 갖고 있지 않던 것을 하나씩 정의하고, §7은 시뮬레이션이 보증하지 못하는 것을 말한다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -504,9 +506,7 @@ $400\,\mathrm{N/m}$은 부드럽다. [[04-robotics/force-compliance-control|13. 
 
 *범위: 이 페이지는 관통 과제의 단계들이 서로를 어떻게 먹이는지 — 한 페이지의 어떤 숫자가 다음 페이지의 입력이 되고, 두 페이지의 검사가 어디서 어긋나는지 — 를 고정된 셀 하나와 루프 전체의 시뮬레이션 하나로 가르친다. 어떤 단계도 다시 가르치지 않는다. 각 단계는 쓰이는 자리에서 주인 페이지로 연결된다. 접촉 감지([[04-robotics/contact-force-tactile|9. 접촉 §7]]), 힘 센싱 제어([[04-robotics/force-compliance-control|13 §3]]), 단단한 패널의 충격([[04-robotics/force-compliance-control|13 §5]])은 가르치지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-루프를 단계별로, 상자마다 다음 단계로 넘기는 숫자를 적어 그린다. 과제는 변형의 숫자로 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart LR
@@ -523,13 +523,7 @@ flowchart LR
     WL --> CK["checks: 11 N, 2b/T, va L, S_p"]
 ```
 
-그다음 같은 루프를 세 그림으로, 위아래로 쌓아 각각 축척대로 그린다.
-
-1. **작업 영역.** $A$, $E$, $P$에서의 P2와 말단 경로 $A\to E\to P$. 면을 세 번 그린다: 도면의 $x=1.10$(파선), 추정 $1.116$과 그 $\pm3\sigma$ 띠 $[1.0892,\,1.1428]$(음영), 그리고 참 면 $1.120$(점선, *시뮬레이션 전용*이라 적는다). $P$의 말단 $x=1.076$에서 정지점 $1.161$까지 접근 화살표를 긋고, 그 위에 $4\,\mathrm{cm}$ 이격과 띠의 가까운 끝까지의 $13.2\,\mathrm{mm}$ 간격을 적는다.
-2. **C-space.** 2장의 토러스 도표에 부풀린 렌즈 $\cos\theta_1+\cos(\theta_1+\theta_2)>1.0892$를 음영으로 칠한다 — $\theta_1=\pm84.9^\circ$에서 오므라든다. 점 $A$, $E$, $P$를 찍고, 직통 간선 $A$–$P$는 X를 친 파선으로 그 $0.35\,\mathrm{m}$ 침투와 함께, 두 구간은 실선으로 그린다.
-3. **시계**, $0$에서 $9\,\mathrm{s}$까지: $E$ 도착($3.345$), $P$에서의 전환($5.802$), 첫 접촉($6.684$), 기준 정지($7.502$), 최대($7.526$). 그 아래 힘 궤적을 그리고 $F_d=10\,\mathrm{N}$은 점선, $F_{\lim}=11\,\mathrm{N}$은 파선으로 긋는다. 접촉 옆에는 $70\,\mathrm{ms}$ 막대를 두고, 그 안에 공구가 움직이는 $3.5\,\mathrm{mm}$를 적는다.
-
-그림이 맞혀야 할 것이 셋이고, 각각이 루프에 대한 주장이다. **두 면이 두 단계를 먹인다.** 띠의 가까운 끝은 계획기로, 추정 자체는 정지점으로 간다. **전환은 접촉 위가 아니라 그 전, $P$에 있다.** **파선 간선은 양 끝이 렌즈 밖에 있으면서 렌즈를 눈에 띄게 가로질러야 한다.** 경유점을 강제하는 사실이 바로 그것이기 때문이다.
+계산 절의 루프를 단계별로 그렸고, 상자마다 다음 단계로 넘기는 숫자가 적혀 있다. $12\,\mathrm{cm}$ 측정은 $\sigma=0.89\,\mathrm{cm}$의 $11.6\,\mathrm{cm}$로 융합되어 두 단계를 먹인다: 띠의 가까운 끝 $x=1.0892\,\mathrm{m}$는 계획기로, 추정은 $x=1.161\,\mathrm{m}$의 정지점으로 간다. 경로 $A\to E\to P$는 $3.345\,\mathrm{s}$와 $2.457\,\mathrm{s}$의 사다리꼴로 시간이 매겨져 계산 토크로 추종되다가 $P$에 도착하면 임피던스($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$)로 전환되고, $400\,\mathrm{N/m}$ 패널을 누르는 일은 검사 넷으로 판정한다: $11\,\mathrm{N}$ 한계, 장부 $2b/T$, 지연 $v_aL$, 분리 $S_p$.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -696,7 +690,7 @@ C-장애물([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]
 
 ### 6. 랩 — 루프 전체를 시뮬레이션 하나로
 
-Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 플랜트는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 준음해 오일러다([[02-foundations/lab-kernel|0.65 §3]]). 공구 댐퍼 $b$는 플랜트에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
+Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 플랜트는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 준음해 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 공구 댐퍼 $b$는 플랜트에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
 
 약 5초 동안 돌고, 계산 절을 먼저 출력한다: 융합 거리 $11.6\,\mathrm{cm}$, $\sigma$ $0.89\,\mathrm{cm}$, 부풀린 면 $1.0892\,\mathrm{m}$; 간선 $A$–$P$ $0.352$(막힘), $A$–$E$ $-0.089$, $E$–$P$ $-0.0132$; 순항 $0.80/0.38\,\mathrm{rad/s}$, $T_1$ $3.345\,\mathrm{s}$, 전환 $5.802\,\mathrm{s}$; 첫 접촉 $6.684\,\mathrm{s}$, 최대 $9.84\,\mathrm{N}$, 정착 오차 $-0.889\,\mathrm{N}$. 마지막 줄은 분리 검사로, 계획한 상한 $0.997\,\mathrm{m/s}$, 시뮬레이션 $0.967\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$다. 시뮬레이션의 말단이 계획보다 느린 것은 모델에서 $b$를 뺀 궤적을 팔이 뒤처져 따라가기 때문이다. 검사는 계획을 쓴다. 안전 기능은 명령한 것에 대해 성립해야 하기 때문이다. 스윕은 다음과 같고, 실패한 행마다 한계를 어긴 페이지를 적었다.
 
@@ -727,7 +721,7 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 - **통과 집합.** $v_a\le0.10$에서 $K_d\in\{500,\,1000\}$, 그리고 $(250,\,0.05)$다. $K_d\ge500$이면 이 부드러운 패널에서 속도를 묶는 것은 힘 한계가 아니라 지연 검사다.
 - **한 행은 칼날 위에 있다.** $(2000,\,0.40)$은 한계를 $0.06\,\mathrm{N}$ 넘는다 — 더 고운 적분 스텝이 만드는 변화 $11.06\to11.11\,\mathrm{N}$과 같은 크기라, 이 행의 힘 판정은 견고하지 않다. 어쨌든 다른 검사 둘에서 떨어진다.
 
-**적분기도 주장의 일부다**([[02-foundations/lab-kernel|0.65 Lab Kernel]]). 같은 유지 토크 아래서 플랜트를 $T/10$으로 전진시키면 어떤 최대값도 $0.51\,\%$보다 많이 움직이지 않고 — 가장 큰 변화는 그 칼날 행의 $11.06\to11.11\,\mathrm{N}$ — 정착 힘은 전혀 움직이지 않는다. 그러니 표가 묘사하는 것은 오일러 스텝이 아니라 제어기다.
+**적분기도 주장의 일부다**([[02-foundations/lab-kernel|0.7 Lab Kernel]]). 같은 유지 토크 아래서 플랜트를 $T/10$으로 전진시키면 어떤 최대값도 $0.51\,\%$보다 많이 움직이지 않고 — 가장 큰 변화는 그 칼날 행의 $11.06\to11.11\,\mathrm{N}$ — 정착 힘은 전혀 움직이지 않는다. 그러니 표가 묘사하는 것은 오일러 스텝이 아니라 제어기다.
 
 ### 7. 이 시뮬레이션이 보증하지 못하는 것
 
@@ -765,9 +759,19 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 
 Tier A. 이 페이지, 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 같은 셀에서 **측정 하나만 바꾼다**: 패널을 다시 걸었고 센서는 이제 $z=8\,\mathrm{cm}$를 읽는다 — 도면의 $10$을 중심으로 $12$의 거울상이다. 시뮬레이션의 참 면은 이 측정이 두는 자리 $x_w=1.080\,\mathrm{m}$로 옮긴다. 나머지 — 사전, $R$, $d_s$, $E$, 한계, 이득, 제어기 — 는 고정이다. §6의 랩을 쓰고, 시뮬레이터를 하나 더 만들지 마라.
 
-1. **그리기.** 새 숫자로 과제가 그릴 그림: 상자마다 새 숫자를 적은 루프, 새 띠를 그린 작업 영역, 새 계획기 면의 C-space 렌즈, 그리고 시계. 숫자가 바뀌지 *않은* 상자를 표시하고 이유를 말하라.
+1. **그리기.** 새 숫자로 위의 그림, 곧 상자마다 새 숫자를 적은 루프. 그리고 아래 *그리는 법*이 늘어놓은 대로 새 띠를 그린 작업 영역, 새 계획기 면의 C-space 렌즈, 시계. 숫자가 바뀌지 *않은* 상자를 표시하고 이유를 말하라.
 2. **유도.** (a) 칼만 갱신, $\hat x_w$, 계획기의 면. (b) 엘보 위 가지의 접촉 전 자세; $A$에서의 직통 간선의 중간점; 두 구간의 여유. (c) $T_1$; 관절 한계 $T_2$; 새 $E\to P$에서 $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$($E$에서)을 써서 제한한 $T_2$; 전환 시각. (d) $K_d=500$의 $K_s$, $x_{\text{stop}}$, $F_{\text{set}}$, 그리고 네 강성 모두의 $F_{\text{set}}-F_d$. (e) 장부, 지연, 분리 검사.
 3. **실행.** 영어 절 템플릿의 `?`를 채우고 랩의 1단계 위에 붙여 넣은 뒤 돌린다. 스윕 표를 $t_c$, $F_{\text{pk}}$, $F_{\text{set}}-F_d$, 행마다의 판정으로 채운다. 그리고 해석하라: 어느 행이 통과하는지, 제어기 설정은 하나도 바꾸지 않았는데 왜 답이 계산 절과 다른지, 그리고 스윕 바깥의 어떤 변화가 행 하나를 통과시키겠는지.
+
+> [!note]- 그리는 법 · How to draw it
+> - **루프.** 위의 그림처럼 상자마다 다음 단계로 넘기는 숫자를 적는다. 새 숫자로 그릴 때는 숫자가 바뀌지 않은 상자를 표시한다.
+> - **두 면이 두 단계를 먹인다.** 띠의 가까운 끝은 계획기로, 추정 자체는 정지점으로 간다. 칼만 상자에서 나가는 화살표가 하나뿐이면 둘을 합쳐 버린 것이다.
+> - **루프 아래에 세 그림을 위아래로 쌓아 각각 축척대로 그린다.** 작업 영역, C-space 도표, 시계.
+> - **작업 영역.** $A$, $E$, $P$에서의 P2와 말단 경로 $A\to E\to P$. 면을 세 번 그린다: 도면의 $x=1.10$(파선), 추정과 그 $\pm3\sigma$ 띠(음영), 그리고 참 면(점선, *시뮬레이션 전용*이라 적는다). $P$의 말단에서 정지점까지 접근 화살표를 긋고, 그 위에 $4\,\mathrm{cm}$ 이격과 띠의 가까운 끝까지의 간격을 적는다.
+> - **C-space.** 2장의 토러스 도표에 부풀린 렌즈 $\cos\theta_1+\cos(\theta_1+\theta_2)>x_{\text{obs}}$를 음영으로 칠하고 오므라드는 곳을 표시한다. 점 $A$, $E$, $P$를 찍고, 직통 간선 $A$–$P$는 X를 친 파선으로 그 침투와 함께, 두 구간은 실선으로 그린다.
+> - **파선 간선은 양 끝이 렌즈 밖에 있으면서 렌즈를 눈에 띄게 가로질러야 한다.** 경유점을 강제하는 사실이 바로 그것이기 때문이다.
+> - **시계**, $0$에서 $9\,\mathrm{s}$까지: $E$ 도착, $P$에서의 전환, 첫 접촉, 기준 정지, 최대. 그 아래 힘 궤적을 그리고 $F_d=10\,\mathrm{N}$은 점선, $F_{\lim}=11\,\mathrm{N}$은 파선으로 긋는다. 접촉 옆에는 $70\,\mathrm{ms}$ 막대를 두고, 그 안에 공구가 움직이는 $v_aL=3.5\,\mathrm{mm}$를 적는다.
+> - **전환은 접촉 위가 아니라 그 전, $P$에 있다.** 시계에서 그 눈금은 첫 접촉보다 앞에 오고, 작업 영역에서 $P$는 띠 밖에 있다.
 
 > [!tip]- 정답 · Solutions
 > 1. 같은 루프, 같은 세 그림. 바뀐 것: 측정 $8\,\mathrm{cm}$, 융합 $8.4\,\mathrm{cm}$, 계획기의 면 $1.0572\,\mathrm{m}$, 정지점 $1.129\,\mathrm{m}$, $P$의 말단 $x=1.044$, 제한한 $T_2=2.427\,\mathrm{s}$, 전환 $5.772\,\mathrm{s}$, 첫 접촉 $6.494\,\mathrm{s}$, 최대 $11.62\,\mathrm{N}$. 바뀌지 않은 것: $\sigma=0.894\,\mathrm{cm}$(분산 갱신은 $z$를 보지 않는다), $T_1$, 이득, $K_s$, 그리고 $\sigma$, $K_d$, $v_a$에만 기대는 모든 검사. 시계의 힘 궤적이 이제 $11\,\mathrm{N}$ 선을 넘는다.

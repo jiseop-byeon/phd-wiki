@@ -25,9 +25,7 @@ treatment: conditions, derivations, and a fully written MPC-as-QP example.
 > [!note] First pass · 처음이라면
 > Read §1, then §2 — convexity is the fork everything else hangs on — then §3. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. §3.5 is for when a SLAM, calibration or IK paper says "we optimize" — read it with such a paper in hand.
 
-### Homework diagram · 과제가 그릴 그림
-
-The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], sliced down to one weight so that a whole optimizer fits on one axis. The problem set asks for this drawing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="Loss against the single weight W2,1: a parabola with vertex at 1.5; the catalog point at 1 with height 0.125 and slope -0.5; the eta = 0.1 step to 1.05 drawn to scale beside the 0.5 still to go; step sizes 1 and 2 marked on the axis; below, the eta = 10 step to 6 on a broken axis, with 2415.1 for the full step">
   <defs><marker id="aOp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -119,13 +117,7 @@ The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], sl
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">One picture, two step sizes: the only difference between training and divergence.</text>
 </svg>
 
-**The axes and the curve.** Horizontal axis $W_{2,1}$ from about $0.5$ to $2$; vertical axis $L$ from $0$ to about $0.6$. Hold $h=(1,2,3)$ and the other two weights at their catalog values, so $\hat y = W_{2,1}-0.5$ and the objective is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$. Draw it, and mark its vertex at $(1.5,\ 0)$: that is where this one weight would put the loss if nothing else moved.
-
-**The catalog point and its gradient.** Mark $W_{2,1}=1$ with a dot at height $L=0.125$ — the same $0.125$ the catalog prints, because this slice passes through the catalog state. Draw the tangent there and write its slope, $\partial L/\partial W_{2,1}=1-1.5=-0.5$. Then draw the step as a horizontal arrow *against* that slope: $\eta=0.1$ moves the weight to $1.05$ and the height to $0.101$. Draw the arrow's length to scale next to the distance $0.5$ that still separates the weight from the vertex; the visible mismatch is the lecture, because a gradient tells you a direction and a slope, never a distance.
-
-**The step sizes, as three marks on the same axis.** On the $W_{2,1}$ axis put three ticks and label what each does *on this slice*, where the curvature is $1$: $\eta=1$ lands exactly on the vertex in one step (Newton's step, §3, since the step that inverts a curvature of $1$ is $1$); anything up to $\eta=2$ still converges; past $2$ the iterate walks away. Then write the correction that makes this slice honest: the real step of the problem set moves all three weights at once, and along that gradient the curvature is $\lVert h\rVert^2 = 1+4+9 = 14$, not $1$. So the true exact step is $\eta = 1/14 \approx 0.071$, the true divergence threshold is $\eta = 2/14 \approx 0.143$, and $\eta = 0.1$ sits between them — which is exactly why one step at $\eta=0.1$ overshoots to $\hat y = 1.20$ instead of landing on $1$.
-
-**The variant, in a second panel.** Redraw the same parabola with the $\eta=10$ arrow on it. On the slice it throws the weight from $1$ to $6$, height $0.125$ to $10.125$; on the full three-weight step it reaches $\hat y = 70.5$ and $L = 2415.1$. Draw the second panel with a broken vertical axis and write both numbers on it. One picture, two step sizes, and the only difference between training and divergence.
+Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], cut down to the one weight $W_{2,1}$: the loss is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$, its slope at the catalog point $(1,\ 0.125)$ is $-0.5$, and the step $\eta=0.1$ moves the weight $0.05$, to $1.05$ ($L=0.101$), beside the $0.5$ still left to the vertex. On this slice the curvature is $1$, so $\eta=1$ lands on the vertex and $\eta>2$ diverges; along the real three-weight gradient it is $\lVert h\rVert^2=14$, which moves the exact step to $1/14\approx0.071$ and the divergence threshold to $2/14\approx0.143$. The lower panel is $\eta=10$: the weight jumps to $6$ ($L=10.125$ on the slice), and the full three-weight step reaches $\hat y=70.5$, $L=2415.1$.
 
 ### 1. Anatomy of a problem
 
@@ -560,9 +552,18 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
 
 Tier B. **P1** from [[02-foundations/lab-plants|0.6]]. One gradient step, by hand. The backprop that produced the given gradient lives on [[02-foundations/calculus-backprop|2]]; do not re-derive it here.
 
-1. **Draw.** $L=\tfrac12(\hat y-1)^2$ versus the single weight $W_{2,1}$ near $1$, holding the rest of $W_2$ and $h=(1,2,3)$ fixed. Mark the catalog point $W_{2,1}=1$.
+1. **Draw.** The picture above, by hand: $L=\tfrac12(\hat y-1)^2$ versus the single weight $W_{2,1}$ near $1$, holding the rest of $W_2$ and $h=(1,2,3)$ fixed. Mark the catalog point $W_{2,1}=1$.
 2. **Derive.** One GD step $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$ with $\eta=0.1$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$, from catalog $W_2=(1,-1,0.5)$.
 3. **Interpret.** Repeat with $\eta=10$. New $W_2$, and what happens to $L$?
+
+> [!note]- How to draw it · 그리는 법
+> - Axes $W_{2,1}$ (about $0.5$ to $2$) and $L$ ($0$ to about $0.6$). With $h=(1,2,3)$ and the other two weights at their catalog values, $\hat y=W_{2,1}-0.5$, so the curve is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$ with its vertex at $(1.5,\ 0)$.
+> - The catalog point $W_{2,1}=1$ at height $L=0.125$, the same loss the catalog prints because the slice passes through the catalog state; a dot at any other height means the slice was taken wrong.
+> - The tangent at that point, labelled with its slope $\partial L/\partial W_{2,1}=1-1.5=-0.5$.
+> - Item 2's step as a horizontal arrow *against* the slope, drawn to scale: $\eta=0.1$ moves the weight only to $1.05$ ($L=0.101$), next to the $0.5$ that still separates it from the vertex. The visible mismatch is the lesson: a gradient gives a direction and a slope, never a distance.
+> - Three marks on the axis for what a step size does *on this slice*, where the curvature is $1$: $\eta=1$ lands exactly on the vertex (the Newton step), anything up to $\eta=2$ still converges, and past $2$ the iterate walks away.
+> - The correction that keeps the slice honest: the real step moves all three weights, and along that gradient the curvature is $\lVert h\rVert^2=1+4+9=14$, so the exact step is $1/14\approx0.071$, divergence starts past $2/14\approx0.143$, and $\eta=0.1$ between them overshoots to $\hat y=1.20$.
+> - Item 3 in a second panel with a broken vertical axis: $\eta=10$ throws the weight from $1$ to $6$ and $L$ from $0.125$ to $10.125$ on the slice, while the full three-weight step reaches $\hat y=70.5$ and $L=2415.1$. Write both numbers on it.
 
 > [!tip]- Solutions
 > 1. $\hat y=W_{2,1}-0.5$, so $L=\tfrac12(W_{2,1}-1.5)^2$, a parabola, minimum at $1.5$. Catalog $W_{2,1}=1$ sits on the left slope.
@@ -585,9 +586,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
 > [!note] 처음이라면 · First pass
 > 먼저 §1 다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그다음 §3. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. §3.5는 SLAM·보정·IK 논문이 "최적화한다"고 쓸 때를 위한 것이니, 그런 논문을 손에 들고 읽어라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 최적화기 하나가 축 하나에 들어가도록 가중치 하나로 잘라 본 단면이다. 과제가 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="가중치 하나 W2,1에 대한 손실: 꼭짓점 1.5의 포물선, 높이 0.125와 기울기 -0.5인 카탈로그 점 1, 남은 거리 0.5 옆에 같은 축척으로 그린 1.05까지의 eta = 0.1 스텝, 축 위의 스텝 크기 1과 2, 아래에는 끊은 축 위의 6까지의 eta = 10 스텝과 실제 스텝의 2415.1">
   <defs><marker id="aOpK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -679,13 +678,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">그림 하나, 스텝 크기 둘. 학습과 발산을 가르는 유일한 차이다.</text>
 </svg>
 
-**축과 곡선.** 가로축은 $W_{2,1}$로 대략 $0.5$부터 $2$까지, 세로축은 $L$로 $0$부터 약 $0.6$까지. $h=(1,2,3)$과 나머지 두 가중치를 카탈로그 값에 고정하면 $\hat y = W_{2,1}-0.5$이고 목적함수는 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이 된다. 이것을 그리고 꼭짓점 $(1.5,\ 0)$을 표시한다. 다른 것이 움직이지 않을 때 이 가중치 하나가 손실을 데려갈 수 있는 자리다.
-
-**카탈로그 점과 그 그래디언트.** $W_{2,1}=1$을 높이 $L=0.125$에 점으로 찍는다. 카탈로그가 적는 그 $0.125$와 같은 값이다. 이 단면이 카탈로그 상태를 지나기 때문이다. 그 점의 접선을 긋고 기울기 $\partial L/\partial W_{2,1}=1-1.5=-0.5$를 적는다. 그다음 스텝을 그 기울기의 *반대* 방향 수평 화살표로 그린다. $\eta=0.1$은 가중치를 $1.05$로, 높이를 $0.101$로 옮긴다. 화살표 길이를, 가중치와 꼭짓점 사이에 여전히 남아 있는 거리 $0.5$ 옆에 같은 축척으로 그린다. 눈에 보이는 그 불일치가 강의다. 그래디언트는 방향과 기울기를 말할 뿐 거리는 결코 말하지 않기 때문이다.
-
-**스텝 크기 셋, 같은 축 위의 눈금으로.** $W_{2,1}$ 축에 눈금 셋을 찍고 각각이 *이 단면에서* 무엇을 하는지 적는다. 여기 곡률은 $1$이다. $\eta=1$은 한 스텝에 꼭짓점에 정확히 내려앉고(§3의 뉴턴 스텝이다. 곡률 $1$의 역수가 $1$이므로), $\eta=2$까지는 그래도 수렴하며, $2$를 넘기면 반복점이 걸어 나간다. 그다음 이 단면을 정직하게 만드는 보정을 적는다. 과제의 실제 스텝은 가중치 셋을 한꺼번에 움직이고, 그 그래디언트 방향의 곡률은 $1$이 아니라 $\lVert h\rVert^2 = 1+4+9 = 14$다. 그래서 참된 정확 스텝은 $\eta = 1/14 \approx 0.071$, 참된 발산 문턱은 $\eta = 2/14 \approx 0.143$이고 $\eta = 0.1$은 그 사이에 있다. $\eta=0.1$의 한 스텝이 $1$에 내려앉지 않고 $\hat y = 1.20$까지 지나쳐 가는 이유가 정확히 이것이다.
-
-**변형, 둘째 칸에.** 같은 포물선을 다시 그리고 그 위에 $\eta=10$ 화살표를 얹는다. 단면에서는 가중치를 $1$에서 $6$으로, 높이를 $0.125$에서 $10.125$로 내던진다. 가중치 셋을 모두 움직이는 실제 스텝에서는 $\hat y = 70.5$, $L = 2415.1$에 이른다. 둘째 칸은 세로축을 끊어 그리고 두 숫자를 모두 적는다. 그림 하나, 스텝 크기 둘, 그리고 학습과 발산을 가르는 유일한 차이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**, 그 가중치 하나 $W_{2,1}$만 남긴 단면에서 손실은 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이고, 카탈로그 점 $(1,\ 0.125)$의 기울기는 $-0.5$이며, 스텝 $\eta=0.1$은 꼭짓점까지 남은 $0.5$ 옆에서 가중치를 $0.05$ 옮겨 $1.05$($L=0.101$)에 놓는다. 이 단면의 곡률은 $1$이라 $\eta=1$은 꼭짓점에 내려앉고 $\eta>2$는 발산하지만, 가중치 셋을 모두 움직이는 실제 그래디언트 방향의 곡률은 $\lVert h\rVert^2=14$라 정확 스텝은 $1/14\approx0.071$, 발산 문턱은 $2/14\approx0.143$으로 옮겨 간다. 아래 칸은 $\eta=10$으로, 가중치가 $6$으로 튀고(단면에서 $L=10.125$) 가중치 셋을 모두 움직이는 스텝은 $\hat y=70.5$, $L=2415.1$에 이른다.
 
 ### 1. 문제의 구조
 
@@ -1098,9 +1091,18 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P1**. 경사 한 스텝, 손계산. 주어진 그래디언트의 역전파는 [[02-foundations/calculus-backprop|2]]에 있다. 여기서 다시 유도하지 마라.
 
-1. **그리기.** $L=\tfrac12(\hat y-1)^2$를 가중치 하나 $W_{2,1}$의 $1$ 근처 함수로. 나머지 $W_2$와 $h=(1,2,3)$은 고정. 카탈로그 점 $W_{2,1}=1$을 표시.
+1. **그리기.** 위의 그림을 손으로 다시 그린다. $L=\tfrac12(\hat y-1)^2$를 가중치 하나 $W_{2,1}$의 $1$ 근처 함수로. 나머지 $W_2$와 $h=(1,2,3)$은 고정. 카탈로그 점 $W_{2,1}=1$을 표시.
 2. **유도.** GD 한 스텝 $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$, $\eta=0.1$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, 출발 $W_2=(1,-1,0.5)$.
 3. **해석.** $\eta=10$으로 반복. 새 $W_2$, $L$은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 축은 $W_{2,1}$(대략 $0.5$부터 $2$)과 $L$($0$부터 약 $0.6$). $h=(1,2,3)$과 나머지 두 가중치를 카탈로그 값에 고정하면 $\hat y=W_{2,1}-0.5$이므로, 곡선은 꼭짓점이 $(1.5,\ 0)$인 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이다.
+> - 카탈로그 점 $W_{2,1}=1$은 높이 $L=0.125$에 찍는다. 단면이 카탈로그 상태를 지나므로 카탈로그가 적는 손실과 같은 값이고, 점이 다른 높이에 있으면 단면을 잘못 자른 것이다.
+> - 그 점의 접선과 그 기울기 $\partial L/\partial W_{2,1}=1-1.5=-0.5$.
+> - 2번의 스텝을 기울기 *반대* 방향 수평 화살표로, 같은 축척으로 그린다. $\eta=0.1$은 가중치를 $1.05$($L=0.101$)까지만 옮기고, 그 옆에 꼭짓점까지 여전히 남은 거리 $0.5$가 있다. 눈에 보이는 그 불일치가 강의다. 그래디언트는 방향과 기울기를 말할 뿐 거리는 결코 말하지 않는다.
+> - 곡률이 $1$인 *이 단면에서* 스텝 크기가 하는 일을 축 위 눈금 셋으로: $\eta=1$은 꼭짓점에 정확히 내려앉고(뉴턴 스텝), $\eta=2$까지는 그래도 수렴하며, $2$를 넘기면 반복점이 걸어 나간다.
+> - 단면을 정직하게 만드는 보정: 실제 스텝은 가중치 셋을 모두 움직이고, 그 그래디언트 방향의 곡률은 $\lVert h\rVert^2=1+4+9=14$다. 그래서 정확 스텝은 $1/14\approx0.071$, 발산은 $2/14\approx0.143$을 넘어서부터이고, 그 사이의 $\eta=0.1$은 $\hat y=1.20$까지 지나쳐 간다.
+> - 3번은 세로축을 끊은 둘째 칸에: $\eta=10$은 단면에서 가중치를 $1$에서 $6$으로, $L$을 $0.125$에서 $10.125$로 던지고, 가중치 셋을 다 움직이는 스텝은 $\hat y=70.5$, $L=2415.1$에 이른다. 두 숫자를 모두 적는다.
 
 > [!tip]- 정답 · Solutions
 > 1. $\hat y=W_{2,1}-0.5$이므로 $L=\tfrac12(W_{2,1}-1.5)^2$, $1.5$에서 최소. 카탈로그 $W_{2,1}=1$은 왼쪽 기울기.

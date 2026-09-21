@@ -24,9 +24,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
 > [!note] First pass · 처음이라면
 > Read §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. Leave §5 until you reach state estimation; it will make more sense there.
 
-### Homework diagram · 과제가 그릴 그림
-
-The object is plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a wall believed to be $10\,\mathrm{cm}$ away with variance $4$, and a range sensor of variance $1$ reading $12$. The problem set asks for this drawing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 546" style="max-width:100%;height:auto" role="img" aria-label="plant P5: prior, likelihood and posterior of the wall distance on one axis, the Kalman gain drawn as a fraction of the innovation, and below it the estimate's error bar shrinking at each measurement and growing at the predict step">
   <defs><marker id="arPb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
@@ -117,13 +115,7 @@ The object is plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] —
   <text x="14.0" y="536.0" fill="currentColor" opacity="0.9">That sawtooth is the Kalman filter as a picture.</text>
 </svg>
 
-**Three curves on one axis.** Horizontal axis: distance $x$ in centimetres, from about $6$ to $16$. Draw the **prior** $\mathcal{N}(10,\,4)$ centred at $10$, with its inflection points marked at $10\pm2$ so the width on the page *is* the standard deviation. Draw the **likelihood** $\mathcal{N}(12,\,1)$ as a function of $x$, centred at $12$ and half as wide, marked at $12\pm1$. Draw them to a common vertical scale so that the narrower curve is visibly the taller one — peak heights $0.199$ and $0.399$ — because that height ratio is the whole reason the answer moves toward the sensor.
-
-**The posterior, and where it must land.** Draw the third curve centred at $11.6$ with variance $0.8$, so its standard deviation is $\sqrt{0.8}=0.894$ and its peak is $0.446$. Two checks belong on the drawing, written as short notes. It is *between* the two centres, not outside them, and nearer the sensor. And it is **narrower than either input** — $0.894$ against $2$ and $1$ — which is the counter-intuitive part: draw it visibly thinner than the likelihood, or the figure has told a lie about what fusion does.
-
-**The gain, as a labelled segment.** On the axis, mark the distance from $10$ to $12$ and label it the **innovation**, $z-\hat x^-=2$. Then mark the sub-segment from $10$ to $11.6$ and label it $K\cdot(z-\hat x^-)=0.8\times2=1.6$. Write $K=P^-/(P^-+R)=4/5=0.8$ beside it, and read the figure aloud once: the gain is the *fraction of the innovation you are willing to walk*, and nothing else. In the margin, draw the same segment for a bad sensor, $R=100$, where $K=0.04$ moves the estimate only to $10.08$ — a mark almost on top of the prior.
-
-**The time axis underneath, which the problem set extends.** Below the distribution plot, draw a horizontal time axis with three measurement ticks and, between the second and third, one *predict* step. At each tick draw a vertical error bar for the current $P$: $4$, then $0.8$ after $z_1=12$, then $0.444$ after $z_2=11$, then widening to $1.444$ across the predict, then $0.591$ after $z_3=13$. The bars shrink at every correction and grow at the prediction, and that sawtooth is the Kalman filter as a picture. Mark the one danger the problem set ends on with a dashed bar: a *wrong* wall at $20$ after the first update drags the estimate to $\approx15.3$ while the bar stays just as short — confident and wrong.
+Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that the wall is $10\,\mathrm{cm}$ away (variance $4$) and a range reading of $12$ (variance $1$) fuse into the posterior $\mathcal{N}(11.6,\ 0.8)$, which lies between the two and is narrower than either ($\sigma=0.894$ against $2$ and $1$). The gain $K=4/(4+1)=0.8$ is the fraction of the innovation $z-\hat x^-=2$ that the estimate walks, $0.8\times2=1.6$; with a bad sensor, $R=100$, $K=0.04$ and the estimate moves only to $10.08$. Below, the error bar shrinks at every correction and grows at the predict step ($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), and a wrong wall at $20$ after the first update drags the estimate to $\approx15.3$ with $P$ still $0.444$: confident and wrong.
 
 ### 1. The core language
 
@@ -639,7 +631,7 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. The motion step is the scalar Kalman of §5, not a new filter.
 
-1. **Draw.** Prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,1)$ with $z=12$, posterior. Mark the Kalman gain as the weight on the innovation.
+1. **Draw.** The upper panel of the picture above, by hand: prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,1)$ with $z=12$, posterior. Mark the Kalman gain as the weight on the innovation.
 2. **Derive.** Catalog update: $K$, $\hat x^+$, $P^+$. Then a second independent range $z_2=11$, $R=1$. Then a motion $x\leftarrow x+1$ with process variance $Q=1$, then $z_3=13$, $R=1$. Write predict then correct.
 3. **Do.** Fill `?`. Print the three gains (after $z$, after $z_2$, after motion+$z_3$) and the final posterior.
 
@@ -657,6 +649,15 @@ x, P = x + 1.0, P + 1.0        # predict
 x, P, K3 = correct(x, P, 13.0)
 print(K1, K2, K3, x, P)
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - One horizontal axis, distance $x$ in centimetres from about $6$ to $16$, and one common vertical scale for all three curves.
+> - The prior $\mathcal{N}(10,\,4)$ with its inflection points marked at $10\pm2$, so the width on the page *is* the standard deviation, and the likelihood $\mathcal{N}(12,\,1)$ as a function of $x$, marked at $12\pm1$.
+> - Peak heights to scale, $0.199$ and $0.399$: the narrower curve must be visibly the taller one, because that height ratio is the whole reason the answer moves toward the sensor.
+> - The posterior $\mathcal{N}(11.6,\,0.8)$, standard deviation $\sqrt{0.8}=0.894$, peak $0.446$, with two checks written on it: it lies *between* the two centres and nearer the sensor, and it is narrower than *either* input ($0.894$ against $2$ and $1$). Draw it visibly thinner than the likelihood, or the figure lies about what fusion does.
+> - The gain as a labelled segment: the innovation $z-\hat x^-=2$ from $10$ to $12$, the sub-segment $K\cdot(z-\hat x^-)=0.8\times2=1.6$ from $10$ to $11.6$, and $K=P^-/(P^-+R)=4/5=0.8$ beside it — the fraction of the innovation you are willing to walk. In the margin, a bad sensor $R=100$: $K=0.04$ moves the estimate only to $10.08$, almost on top of the prior.
+> - To carry item 2 into the drawing, a time axis underneath with three measurement ticks and one predict step between the second and third, and at each an error bar for the current $P$: $4$, $0.8$ after $z_1=12$, $0.444$ after $z_2=11$, $1.444$ across the predict, $0.591$ after $z_3=13$. The bars shrink at every correction and grow at the prediction.
+> - A dashed bar for the danger item 3 ends on: a *wrong* wall at $20$ after the first update drags the estimate to $\approx15.3$ while the bar stays just as short — confident and wrong.
 
 > [!tip]- Solutions
 > 1. Prior blob at 10 with width 2; likelihood at 12 with width 1; posterior in between, closer to 12.
@@ -679,9 +680,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 > [!note] 처음이라면 · First pass
 > 먼저 §1, §2, 그다음 §3 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5는 상태 추정에 닿을 때까지 미뤄라 — 거기서 더 잘 읽힌다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**다. 벽이 $10\,\mathrm{cm}$ 앞에 있다고 분산 $4$로 믿고 있고, 분산 $1$짜리 거리 센서가 $12$를 읽는다. 과제가 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 546" style="max-width:100%;height:auto" role="img" aria-label="장치 P5: 벽 거리의 사전분포, 우도, 사후분포를 한 축에 그리고 칼만 이득을 혁신의 비율로 표시했으며, 그 아래에 측정마다 줄고 예측에서 늘어나는 추정의 오차 막대를 그린 그림">
   <defs><marker id="arPbk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
@@ -772,13 +771,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   <text x="14.0" y="536.0" fill="currentColor" opacity="0.9">그 톱니가 칼만 필터를 그림으로 옮긴 것이다.</text>
 </svg>
 
-**축 하나 위의 곡선 셋.** 가로축은 거리 $x$, 단위는 센티미터이고 대략 $6$부터 $16$까지. **사전분포** $\mathcal{N}(10,\,4)$을 $10$을 중심으로 그리고 변곡점을 $10\pm2$에 표시한다. 지면 위의 폭이 곧 표준편차가 되도록. **우도** $\mathcal{N}(12,\,1)$을 $x$의 함수로 $12$를 중심에, 폭은 절반으로 그리고 $12\pm1$을 표시한다. 세로 축척을 공통으로 써서 좁은 곡선이 눈에 띄게 높아 보이게 한다. 봉우리 높이가 $0.199$와 $0.399$이고, 답이 센서 쪽으로 움직이는 이유가 전부 그 높이 비율이기 때문이다.
-
-**사후분포, 그리고 그것이 놓여야 할 자리.** 셋째 곡선을 중심 $11.6$, 분산 $0.8$로 그린다. 표준편차는 $\sqrt{0.8}=0.894$, 봉우리는 $0.446$이다. 그림 위에 짧은 주석으로 확인할 것이 둘이다. 두 중심의 바깥이 아니라 *사이*에 있고 센서 쪽에 더 가깝다. 그리고 **어느 입력보다도 좁다** — $2$와 $1$에 대해 $0.894$ — 이것이 직관에 어긋나는 대목이다. 우도보다 눈에 띄게 가늘게 그려라. 그러지 않으면 그림이 융합이 하는 일에 대해 거짓말을 한 것이다.
-
-**이득, 이름 붙인 선분으로.** 축 위에 $10$에서 $12$까지의 거리를 표시하고 **혁신**(innovation) $z-\hat x^-=2$라고 쓴다. 그다음 $10$에서 $11.6$까지의 부분 선분을 표시하고 $K\cdot(z-\hat x^-)=0.8\times2=1.6$이라 쓴다. 옆에 $K=P^-/(P^-+R)=4/5=0.8$을 적고 그림을 한 번 소리 내어 읽는다. 이득은 *혁신 중 걸어갈 용의가 있는 비율*이고 그 이상은 아니다. 여백에는 나쁜 센서 $R=100$의 같은 선분을 그린다. $K=0.04$라 추정이 $10.08$까지만 움직이고, 표시는 사전분포 거의 위에 겹친다.
-
-**아래의 시간축, 과제가 이어 가는 부분.** 분포 그림 아래에 가로 시간축을 긋고 측정 눈금 셋을 찍은 뒤 둘째와 셋째 사이에 *예측* 스텝 하나를 넣는다. 눈금마다 그때의 $P$를 세로 오차 막대로 그린다. $4$, $z_1=12$ 뒤 $0.8$, $z_2=11$ 뒤 $0.444$, 예측을 지나며 $1.444$로 넓어지고, $z_3=13$ 뒤 $0.591$. 보정마다 막대가 줄고 예측에서 늘어난다. 그 톱니가 칼만 필터를 그림으로 옮긴 것이다. 과제가 끝나는 지점의 위험 하나를 점선 막대로 표시한다. 첫 갱신 뒤 $20$에 있는 *틀린* 벽은 추정을 $\approx15.3$까지 끌고 가면서 막대는 그대로 짧다. 확신하고 틀린 것이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**: 벽이 $10\,\mathrm{cm}$ 앞에 있다는 믿음(분산 $4$)과 거리 측정값 $12$(분산 $1$)가 융합되어 사후분포 $\mathcal{N}(11.6,\ 0.8)$이 되고, 그것은 둘 사이에 놓이면서 어느 쪽보다도 좁다($2$와 $1$에 대해 $\sigma=0.894$). 이득 $K=4/(4+1)=0.8$은 혁신 $z-\hat x^-=2$ 중 추정이 걸어가는 비율이어서 추정은 $0.8\times2=1.6$만큼 움직이고, $R=100$인 나쁜 센서라면 $K=0.04$라 $10.08$까지만 간다. 아래에서는 오차 막대가 보정마다 줄고 예측에서 늘어나며($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), 첫 갱신 뒤 $20$에 있는 틀린 벽은 추정을 $\approx15.3$까지 끌고 가면서도 $P$를 그대로 $0.444$로 둔다 — 확신하고 틀린 것이다.
 
 ### 1. 핵심 언어
 
@@ -1294,9 +1287,18 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
 
-1. **그리기.** 사전 $\mathcal{N}(10,4)$, 우도 $z=12$, $R=1$, 사후. 칼만 이득을 혁신의 가중으로 표시하라.
+1. **그리기.** 위의 그림 윗부분을 손으로 다시 그린다. 사전 $\mathcal{N}(10,4)$, 우도 $z=12$, $R=1$, 사후. 칼만 이득을 혁신의 가중으로 표시하라.
 2. **유도.** 카탈로그 갱신. 둘째 거리 $z_2=11$, $R=1$. 운동 $x\leftarrow x+1$, $Q=1$, 그다음 $z_3=13$. 예측 다음 보정.
 3. **실행.** 세 이득($z$, $z_2$, 운동+$z_3$ 뒤)과 마지막 사후를 출력하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 가로축 하나: 거리 $x$, 단위 센티미터, 대략 $6$부터 $16$까지. 세 곡선 모두에 공통인 세로 축척 하나.
+> - 사전분포 $\mathcal{N}(10,\,4)$는 변곡점을 $10\pm2$에 표시해 지면 위의 폭이 곧 표준편차가 되게 하고, 우도 $\mathcal{N}(12,\,1)$은 $x$의 함수로 그려 $12\pm1$을 표시한다.
+> - 봉우리 높이는 축척대로 $0.199$와 $0.399$. 좁은 곡선이 눈에 띄게 높아야 한다. 답이 센서 쪽으로 움직이는 이유가 전부 그 높이 비율이기 때문이다.
+> - 사후분포 $\mathcal{N}(11.6,\,0.8)$, 표준편차 $\sqrt{0.8}=0.894$, 봉우리 $0.446$. 그 위에 확인 둘을 적는다. 두 중심의 *사이*에 있고 센서 쪽에 더 가까우며, *어느* 입력보다도 좁다($2$와 $1$에 대해 $0.894$). 우도보다 눈에 띄게 가늘게 그려라. 그러지 않으면 그림이 융합이 하는 일에 대해 거짓말을 한다.
+> - 이득은 이름 붙인 선분으로: $10$에서 $12$까지 혁신 $z-\hat x^-=2$, $10$에서 $11.6$까지 부분 선분 $K\cdot(z-\hat x^-)=0.8\times2=1.6$, 옆에 $K=P^-/(P^-+R)=4/5=0.8$. 혁신 중 걸어갈 용의가 있는 비율이다. 여백에는 나쁜 센서 $R=100$: $K=0.04$라 추정이 $10.08$까지만 움직여 사전분포 거의 위에 겹친다.
+> - 2번을 그림으로 이어 가려면 아래에 시간축을 긋고 측정 눈금 셋과, 둘째와 셋째 사이에 예측 스텝 하나를 넣은 뒤, 각각에 그때의 $P$를 오차 막대로 그린다. $4$, $z_1=12$ 뒤 $0.8$, $z_2=11$ 뒤 $0.444$, 예측을 지나며 $1.444$, $z_3=13$ 뒤 $0.591$. 막대는 보정마다 줄고 예측에서 늘어난다.
+> - 3번이 끝나는 위험은 점선 막대로: 첫 갱신 뒤 $20$에 있는 *틀린* 벽은 추정을 $\approx15.3$까지 끌고 가면서 막대는 그대로 짧다. 확신하고 틀린 것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 사전 10(폭 2), 우도 12(폭 1), 사후는 12 쪽.

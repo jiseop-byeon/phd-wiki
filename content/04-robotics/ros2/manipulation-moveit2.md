@@ -33,9 +33,7 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the *base* the
 
 *Scope: this page teaches the shape of MoveIt 2 — what `move_group` owns, what the SRDF adds to the URDF, what the pipeline's adapters do, and how a trajectory reaches a controller — and computes what a planner's own latency costs on a base that does not wait. It does not teach where a grasp pose comes from, which is [[04-robotics/grasping|Grasping]]; nor anything from the moment of contact onward, which is [[04-robotics/force-compliance-control|Force & Compliance Control]]; nor the IK and singularity mathematics behind `fraction`, which is [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, two panels, and the problem set asks for the same figure with a slower plan.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 492" style="max-width:100%;height:auto" role="img" aria-label="Panel A: perception, move_group and ros2_control side by side; the physical panel and its collision object in the planning scene are joined by a dashed arrow applied once; the follow_joint_trajectory action crosses from move_group to the trajectory controller on P6's 200 Hz loop; the camera has no arrow into ros2_control. Panel B: a seconds axis with the scene snapshot, a 0.80 s plan and a 1.50 s execution, the panel pose aging from 20 ms to 0.82 s to 2.32 s, and a separate millisecond axis with 5 ms control ticks and a 70 ms bracket, unconnected.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · who believes what</text>
@@ -164,9 +162,7 @@ One figure, two panels, and the problem set asks for the same figure with a slow
   <text x="550" y="480" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">nothing connects the two axes</text>
 </svg>
 
-**Panel A — who believes what.** Three regions side by side with two labelled boundaries between them: `perception` (a camera at $50\,\mathrm{Hz}$ publishing a panel pose), `move_group` (holding the planning scene, the SRDF groups and the pipeline), and `ros2_control` (the trajectory controller and P6's $200\,\mathrm{Hz}$ loop). Draw the panel *twice*: once as the physical object on the left, once as a collision object inside the planning scene, and join the two with a dashed arrow labelled `applied once`. Three things the drawing must get right. The dashed arrow is **not** a feedback loop: nothing republishes the scene unless your code does, which is the whole content of the worked case. The boundary between `move_group` and `ros2_control` carries an **action**, `follow_joint_trajectory`, not a topic, because MoveIt is an action client and needs the result. And the camera has **no arrow at all** into `ros2_control`, since P6's $70\,\mathrm{ms}$ budget lives on a chain MoveIt is not part of.
-
-**Panel B — two clocks, not one.** One horizontal axis in seconds, $0$ to $2.5$, with a second axis inset at the right magnified to milliseconds. On the seconds axis mark three spans end to end: `scene snapshot` (a tick), `plan` of $0.80\,\mathrm{s}$, `execute` of $1.50\,\mathrm{s}$. Above them draw a bar whose length grows from left to right, labelled `age of the panel pose`, and write its value at the three boundaries. On the magnified inset draw the $5\,\mathrm{ms}$ control ticks and one $70\,\mathrm{ms}$ bracket, and connect nothing between the two axes — the gap between them is the figure's argument.
+Panel A shows who believes what: the camera publishes the panel pose at $50\,\mathrm{Hz}$, the planning scene in `move_group` holds that pose as a collision object applied once and never refreshed, and `move_group` reaches the trajectory controller on P6's $200\,\mathrm{Hz}$ loop only through the `follow_joint_trajectory` action, with no arrow from the camera into `ros2_control`. Panel B keeps two clocks apart: on the seconds axis the panel pose ages from $20\,\mathrm{ms}$ at the scene snapshot to $0.82\,\mathrm{s}$ after the $0.80\,\mathrm{s}$ plan and $2.32\,\mathrm{s}$ after the $1.50\,\mathrm{s}$ execution while the cart moves $5.0$, $205$ and $580\,\mathrm{mm}$, and the millisecond inset holds the $5\,\mathrm{ms}$ control ticks and P6's $70\,\mathrm{ms}$ budget, with nothing connecting the two axes.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -520,6 +516,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 2. **Derive.** (a) Why a $2\,\mathrm{s}$ plan does not violate the $70\,\mathrm{ms}$ budget — which loop owns which number. (b) Encoder $\Delta p$ for one count, as the base-pose resolution the scene is *not* given. (c) `computeCartesianPath` returns $0.62$. Execute?
 3. **Interpret.** The plan is beautiful in RViz and the cart never moves. First three commands. Separately: a $200\,\mathrm{ms}$-late panel pose in the scene — is that a MoveIt bug or a P6 budget bug?
 
+> [!note]- How to draw it · 그리는 법
+> - Three regions side by side with two labelled boundaries between them: `perception` (the $50\,\mathrm{Hz}$ camera publishing the panel pose), `move_group` (the planning scene, the SRDF groups, the pipeline), `ros2_control` (the trajectory controller on P6's $200\,\mathrm{Hz}$ loop).
+> - Draw the panel twice — the physical object on the left, a collision object inside the planning scene — and join the two with a dashed arrow labelled `applied once`.
+> - That dashed arrow is not a feedback loop: nothing republishes the scene unless your code does.
+> - The boundary between `move_group` and `ros2_control` carries an action, `follow_joint_trajectory`, not a topic, because MoveIt is an action client and needs the result.
+> - The camera has no arrow at all into `ros2_control`: P6's $70\,\mathrm{ms}$ budget lives on a chain MoveIt is not part of.
+> - Two axes: seconds, with `scene snapshot`, `plan` and `execute` laid end to end, and a separate millisecond inset with the $5\,\mathrm{ms}$ control ticks and one $70\,\mathrm{ms}$ bracket; connect nothing between them, because the gap is the figure's argument.
+> - Above the seconds axis, a bar labelled `age of the panel pose` that grows from left to right, with its value written at the three boundaries (worked case, $0.80\,\mathrm{s}$ plan: $20\,\mathrm{ms}$, $0.82\,\mathrm{s}$, $2.32\,\mathrm{s}$).
+
 > [!tip]- Solutions
 > 1. Scene holds the panel; MoveIt talks to the trajectory controller, not to the camera. Planning seconds; control milliseconds; the $70\,\mathrm{ms}$ is camera-to-force, not planner-to-scene.
 > 2. (a) $70\,\mathrm{ms}$ is the sensing/control chain; planning is allowed to be slow if execution still samples at $200\,\mathrm{Hz}$. (b) $0.488\,\mathrm{mm}$, invisible to a scene that was painted once. (c) No — stop at 62% of a line you chose.
@@ -551,9 +556,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 
 *범위: 이 페이지는 MoveIt 2의 모양 — `move_group`이 무엇을 소유하는지, SRDF가 URDF에 무엇을 더하는지, 파이프라인의 어댑터가 무슨 일을 하는지, 궤적이 어떻게 제어기에 닿는지 — 을 가르치고, 기다려 주지 않는 베이스 위에서 플래너 자신의 지연이 얼마를 치르는지 계산한다. 파지 자세가 어디서 오는지는 가르치지 않는다. 그것은 [[04-robotics/grasping|파지]]다. 접촉 순간 이후도 아니다. 그것은 [[04-robotics/force-compliance-control|힘·컴플라이언스 제어]]다. `fraction` 뒤의 역기구학과 특이점 수학도 아니다. 그것은 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 패널 둘. 과제는 계획이 더 느린 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 492" style="max-width:100%;height:auto" role="img" aria-label="패널 A: 지각, move_group, ros2_control이 나란히 있고, 실제 패널과 planning scene 안의 collision object가 한 번만 적용이라는 점선 화살표로 이어지며, follow_joint_trajectory 액션이 move_group에서 P6의 200 Hz 루프 위 궤적 제어기로 건너가고, 카메라에서 ros2_control로 가는 화살표는 없다. 패널 B: 초 축 위에 씬 스냅샷, 0.80 s 계획, 1.50 s 실행이 있고 패널 자세의 나이가 20 ms에서 0.82 s, 2.32 s로 자라며, 5 ms 제어 틱과 70 ms 괄호를 담은 밀리초 축이 따로 있고 둘은 이어지지 않는다.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 누가 무엇을 믿는가</text>
@@ -682,9 +685,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
   <text x="550" y="480" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">두 축 사이는 아무것도 잇지 않는다</text>
 </svg>
 
-**패널 A — 누가 무엇을 믿는가.** 영역 셋을 나란히 두고 그 사이에 이름 붙은 경계 둘을 긋는다. `지각`($50\,\mathrm{Hz}$로 패널 자세를 내는 카메라), `move_group`(planning scene, SRDF 그룹, 파이프라인을 쥔다), `ros2_control`(궤적 제어기와 P6의 $200\,\mathrm{Hz}$ 루프). 패널은 *두 번* 그린다. 왼쪽에는 실제 물체로, 다시 planning scene 안에는 collision object로. 둘을 점선 화살표로 잇고 `한 번만 적용`이라고 적는다. 그림이 맞혀야 할 것이 셋이다. 그 점선 화살표는 되먹임 루프가 **아니다**. 내 코드가 다시 발행하지 않는 한 씬을 갱신하는 것은 없고, 그것이 계산 절 전체의 내용이다. `move_group`과 `ros2_control` 사이의 경계에는 토픽이 아니라 **액션** `follow_joint_trajectory`가 놓인다. MoveIt은 액션 클라이언트이고 결과를 알아야 하기 때문이다. 그리고 카메라에서 `ros2_control`로 가는 화살표는 **하나도 없다**. P6의 $70\,\mathrm{ms}$ 예산은 MoveIt이 끼어 있지 않은 사슬 위에 있기 때문이다.
-
-**패널 B — 시계는 하나가 아니라 둘.** 가로축 하나를 초 단위 $0$에서 $2.5$로 긋고, 오른쪽에 밀리초로 확대한 축을 따로 끼워 넣는다. 초 축에는 구간 셋을 이어 붙여 표시한다. `씬 스냅샷`(눈금 하나), $0.80\,\mathrm{s}$짜리 `계획`, $1.50\,\mathrm{s}$짜리 `실행`. 그 위에 왼쪽에서 오른쪽으로 길어지는 막대를 그리고 `패널 자세의 나이`라고 이름 붙인 뒤 경계 셋에서의 값을 적는다. 확대한 축에는 $5\,\mathrm{ms}$ 제어 틱과 $70\,\mathrm{ms}$ 괄호 하나를 그리고, 두 축 사이는 아무것도 잇지 않는다. 그 사이의 빈틈이 이 그림의 논증이다.
+패널 A는 누가 무엇을 믿는가다 — 카메라는 패널 자세를 $50\,\mathrm{Hz}$로 내고, `move_group`의 planning scene은 그 자세를 한 번만 적용되고 다시는 갱신되지 않는 collision object로 쥐며, `move_group`은 `follow_joint_trajectory` 액션을 통해서만 P6의 $200\,\mathrm{Hz}$ 루프 위 궤적 제어기에 닿고, 카메라에서 `ros2_control`로 가는 화살표는 없다. 패널 B는 두 시계를 떼어 둔다 — 초 축에서 패널 자세의 나이는 씬 스냅샷의 $20\,\mathrm{ms}$에서 $0.80\,\mathrm{s}$ 계획 뒤 $0.82\,\mathrm{s}$, $1.50\,\mathrm{s}$ 실행 뒤 $2.32\,\mathrm{s}$로 자라고 그동안 카트는 $5.0$, $205$, $580\,\mathrm{mm}$를 움직이며, 밀리초 확대 축에는 $5\,\mathrm{ms}$ 제어 틱과 P6의 $70\,\mathrm{ms}$ 예산이 있고 두 축 사이는 아무것도 잇지 않는다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1039,6 +1040,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 플래너가 순간 이�
 1. **그리기.** P6 카트, 패널, MoveIt planning scene. 비전의 `/goal`, `follow_joint_trajectory` 액션, 그 아래 $200\,\mathrm{Hz}$ 제어기. 다섯 줄 타임라인: $2\,\mathrm{s}$ 계획, 그다음 $5\,\mathrm{ms}$ 실행 틱. $70\,\mathrm{ms}$ 센싱 예산은 계획과 *다른* 시계.
 2. **유도.** (a) $2\,\mathrm{s}$ 계획이 $70\,\mathrm{ms}$ 예산을 어기지 않는 이유 — 어느 루프가 어느 숫자를 소유하는가. (b) 엔코더 한 카운트의 $\Delta p$, 씬이 *받지 않는* 베이스 자세 해상도. (c) `computeCartesianPath`가 $0.62$를 반환. 실행하는가?
 3. **해석.** RViz 계획은 훌륭한 데 카트가 안 움직인다. 첫 세 명령. 별도로: 씬 안의 $200\,\mathrm{ms}$ 늦은 패널 자세 — MoveIt 버그인가 P6 예산 버그인가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 영역 셋을 나란히 두고 그 사이에 이름 붙은 경계 둘을 긋는다. `지각`($50\,\mathrm{Hz}$로 패널 자세를 내는 카메라), `move_group`(planning scene, SRDF 그룹, 파이프라인), `ros2_control`(P6의 $200\,\mathrm{Hz}$ 루프 위의 궤적 제어기).
+> - 패널은 두 번 그린다. 왼쪽에는 실제 물체로, planning scene 안에는 collision object로. 둘을 점선 화살표로 잇고 `한 번만 적용`이라고 적는다.
+> - 그 점선 화살표는 되먹임 루프가 아니다. 내 코드가 다시 발행하지 않는 한 씬을 갱신하는 것은 없다.
+> - `move_group`과 `ros2_control` 사이의 경계에는 토픽이 아니라 액션 `follow_joint_trajectory`가 놓인다. MoveIt은 액션 클라이언트이고 결과를 알아야 하기 때문이다.
+> - 카메라에서 `ros2_control`로 가는 화살표는 하나도 없다. P6의 $70\,\mathrm{ms}$ 예산은 MoveIt이 끼어 있지 않은 사슬 위에 있다.
+> - 축은 둘이다. `씬 스냅샷`, `계획`, `실행`을 이어 붙이는 초 축, 그리고 $5\,\mathrm{ms}$ 제어 틱과 $70\,\mathrm{ms}$ 괄호 하나를 담은 밀리초 확대 축. 둘 사이는 아무것도 잇지 않는다. 그 빈틈이 이 그림의 논증이다.
+> - 초 축 위에는 왼쪽에서 오른쪽으로 길어지는 `패널 자세의 나이` 막대를 그리고 경계 셋에서의 값을 적는다(계산 절, $0.80\,\mathrm{s}$ 계획: $20\,\mathrm{ms}$, $0.82\,\mathrm{s}$, $2.32\,\mathrm{s}$).
 
 > [!tip]- 정답 · Solutions
 > 1. 씬이 패널을 쥐고, MoveIt은 카메라가 아니라 궤적 제어기와 말한다. 계획은 초, 제어는 밀리초; $70\,\mathrm{ms}$는 카메라–힘이지 플래너–씬이 아니다.

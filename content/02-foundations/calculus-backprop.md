@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.7]] (what a layer and a loss are)
-> [[02-foundations/lab-plants|0.6]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.7]](층과 손실이 무엇인지)
+> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.8]] (what a layer and a loss are)
+> [[02-foundations/lab-plants|0.6]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.8]](층과 손실이 무엇인지)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -24,9 +24,7 @@ example, plus the gradient pathologies that shaped architecture history.
 > [!note] First pass · 처음이라면
 > Read §1, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are for when you are reading an architecture paper and want to know why it is shaped that way.
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, drawn once here and asked for again in the problem set.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 308" style="max-width:100%;height:auto" role="img" aria-label="The P1 computational graph: forward values left to right, backward sensitivities right to left underneath, the two weight gradients hanging off as leaves, and the one update arrow, minus eta, back into W2.">
   <defs><marker id="cbHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -118,11 +116,7 @@ One figure, drawn once here and asked for again in the problem set.
   <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). Forward again with the same h: ŷ = 1.20, L = 0.020.</text>
 </svg>
 
-**The forward chain, left to right.** Five boxes joined by four arrows: $x$, then $z=W_1x$, then $h=\mathrm{ReLU}(z)$, then $\hat y=W_2h$, then $L=\tfrac12(\hat y-y)^2$. Inside each box write its catalog number — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$ — and on each arrow write what produced the next box together with its shape: $W_1$ is $3\times2$, ReLU is elementwise and changes no shape, $W_2$ is $1\times3$, and the loss arrow also carries the target $y=1$ in from the side. Mark each of the three hidden units with its ReLU mask bit, here $(1,1,1)$, because that bit is the only place the picture can be cut.
-
-**The backward chain, underneath, right to left.** One arrow under each forward arrow, and on it the quantity that travels back: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow. Draw the two parameter gradients as stubs hanging *off* the chain rather than links in it — $\partial L/\partial W_2$ dropping from the $\hat y$ arrow, $\partial L/\partial W_1$ from the $z$ arrow — because a weight gradient is a leaf of the backward pass: nothing is computed from it, it is only read out. Next to each backward arrow write the shape of what travels on it, and check that every stub has the shape of the matrix it will update.
-
-**The update.** One more arrow from the $\partial L/\partial W_2$ stub back into the $W_2$ label, marked $-\eta$ with $\eta=0.1$. That arrow is the only thing on the page that changes a number, and the problem set's third item is exactly what comes out of it.
+Plant **P1**'s computational graph at its catalog numbers: forward values left to right along the top — $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$ and $L=0.125$ against the target $y=1$ — and sensitivities right to left underneath, $\delta_2=-0.5$, then $\partial L/\partial h$ and $\delta_1=\partial L/\partial z$, both $(-0.5,\,0.5,\,-0.25)$ because every ReLU mask bit is $1$. The two weight gradients hang off the chain as leaves, each the shape of the matrix it updates: $\partial L/\partial W_2=\delta_2h^\top=(-0.5,\,-1,\,-1.5)$ is $1\times3$, and $\partial L/\partial W_1=\delta_1x^\top$ is $3\times2$. Only the $-\eta$ arrow, $\eta=0.1$, changes a number: it sends $W_2$ to $(1.05,\,-0.9,\,0.65)$, and forward again with the same $h$ gives $\hat y=1.20$ and $L=0.020$.
 
 ### 1. Derivatives as local linear models
 
@@ -251,7 +245,7 @@ $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
    gradient is a mask (call it $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
 
-**Three pieces of notation in those steps, each defined.** (The loss $L=\tfrac12\|\hat y-y\|^2$ is the squared-error loss of [[02-foundations/neural-network-basics|0.7 §3]].)
+**Three pieces of notation in those steps, each defined.** (The loss $L=\tfrac12\|\hat y-y\|^2$ is the squared-error loss of [[02-foundations/neural-network-basics|0.8 §3]].)
 - **Outer product.** For a column $u\in\mathbb{R}^m$ and a column $v\in\mathbb{R}^n$ it is the $m\times n$ matrix
   $$(uv^\top)_{ij} = u_i\,v_j$$
   so every entry is one component of $u$ times one component of $v$. It has rank 1 (every row is a multiple of $v^\top$). Example: $u=(1,2)$, $v=(3,4,5)$ gives $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. Contrast the **inner product** $u^\top v$, a single number that needs equal lengths. Why it appears: $\partial L/\partial W_{ij}=\delta_i\,h_j$, because weight $W_{ij}$ multiplies input $h_j$ on its way to output $i$.
@@ -261,7 +255,7 @@ $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
 - **Indicator** $\mathbb{1}[\cdot]$. It returns $1$ when the condition inside is true and $0$ otherwise, applied entry by entry to a vector. $\mathbb{1}[z>0]$ is ReLU's derivative: slope $1$ where $z>0$, slope $0$ where $z<0$. At exactly $z=0$ ReLU has no derivative, and frameworks such as PyTorch simply use $0$ there.
 
 **Now with actual numbers** — the *same* network as
-[[02-foundations/neural-network-basics|0.7 §2]], so nothing new has to be set up:
+[[02-foundations/neural-network-basics|0.8 §2]], so nothing new has to be set up:
 $W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}$,
 $W_2 = \begin{pmatrix}1&-1&0.5\end{pmatrix}$, $x = (1,2)$. Forward, from that page:
 $z = (1,2,3)$, $h = (1,2,3)$, $\hat y = 0.5$. Suppose the target is $y = 1$, so
@@ -468,6 +462,15 @@ L2 = 0.5 * (yhat2 - y) ** 2
 print(d2, W2, L, L2)
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - The forward chain, left to right: five boxes joined by four arrows — $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$ — with each box's catalog value written inside.
+> - On each forward arrow, what produced the next box and its shape: $W_1$ is $3\times2$, ReLU is elementwise and changes no shape, $W_2$ is $1\times3$, and the loss arrow takes the target $y$ in from the side.
+> - Mark each hidden unit with its ReLU mask bit: that bit is the only place the chain can be cut.
+> - The backward chain underneath, right to left, one arrow under each forward arrow: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow, each with the shape of what travels on it.
+> - Draw $\partial L/\partial W_2$ and $\partial L/\partial W_1$ as stubs hanging *off* the chain, from the $\hat y$ and $z$ arrows, not as links in it: a weight gradient is a leaf of the backward pass — nothing is computed from it, it is only read out.
+> - Check that every stub has the shape of the matrix it will update; a stub of any other shape means the drawing is wrong before any arithmetic starts.
+> - One update arrow, marked $-\eta$, from the $\partial L/\partial W_2$ stub back into the $W_2$ label: it is the only arrow that changes a number, and item 3 prints what comes out of it.
+
 > [!tip]- Solutions
 > 1. Values: $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
 > 2. $\delta_2=0.5-1=-0.5$. $\partial L/\partial W_2=\delta_2 h^\top=(-0.5,-1,-1.5)$. $\partial L/\partial h=W_2^\top\delta_2=(-0.5,0.5,-0.25)$. ReLU mask is $(1,1,1)$, so $\delta_1$ is the same. $\partial L/\partial W_1=\delta_1 x^\top=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
@@ -485,9 +488,7 @@ print(d2, W2, L, L2)
 > [!note] 처음이라면 · First pass
 > 먼저 §1 다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나. 여기서 한 번 그리고 과제가 같은 것을 다시 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 308" style="max-width:100%;height:auto" role="img" aria-label="장치 P1의 계산 그래프: 위에는 왼쪽에서 오른쪽으로 순전파 값, 그 아래에는 오른쪽에서 왼쪽으로 역전파 민감도, 잎으로 매달린 가중치 그래디언트 둘, 그리고 W2로 돌아가는 갱신 화살표 마이너스 에타 하나.">
   <defs><marker id="cbHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -579,11 +580,7 @@ print(d2, W2, L, L2)
   <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). 같은 h로 다시 순전파하면 ŷ = 1.20, L = 0.020.</text>
 </svg>
 
-**순전파 사슬, 왼쪽에서 오른쪽으로.** 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$. 각 상자 안에 카탈로그 숫자를 쓴다 — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$. 각 화살표 위에는 다음 상자를 만든 것과 그 모양을 쓴다. $W_1$은 $3\times2$, ReLU는 원소별이라 모양을 바꾸지 않고, $W_2$는 $1\times3$이며, 손실로 가는 화살표에는 옆에서 목표 $y=1$이 함께 들어온다. 은닉 유닛 셋에는 각각 ReLU 마스크 비트를 적는다. 여기서는 $(1,1,1)$이고, 이 비트가 이 그림에서 사슬이 끊어질 수 있는 유일한 자리다.
-
-**역전파 사슬, 그 아래에 오른쪽에서 왼쪽으로.** 순전파 화살표마다 그 아래 화살표를 하나씩 그리고, 거기로 거슬러 가는 양을 적는다. 손실 화살표 아래에 $\partial L/\partial\hat y$, $W_2$ 화살표 아래에 $\partial L/\partial h$, ReLU 화살표 아래에 $\partial L/\partial z$. 파라미터 그래디언트 둘은 사슬의 고리가 아니라 사슬에서 *뻗어 나온* 가지로 그린다. $\partial L/\partial W_2$는 $\hat y$ 화살표에서, $\partial L/\partial W_1$은 $z$ 화살표에서 아래로 떨어진다. 가중치 그래디언트는 역전파의 잎이기 때문이다. 그것으로부터 계산되는 것은 없고 읽어 내기만 한다. 역전파 화살표 옆에는 그 위를 지나는 것의 모양을 쓰고, 각 가지의 모양이 그것이 갱신할 행렬의 모양과 같은지 확인한다.
-
-**갱신.** 화살표 하나를 더 그린다. $\partial L/\partial W_2$ 가지에서 $W_2$ 라벨로 돌아가는 화살표이고, 위에 $\eta=0.1$로 $-\eta$라고 쓴다. 이 그림에서 숫자를 바꾸는 것은 이 화살표뿐이고, 과제 3번이 바로 그 결과다.
+장치 P1의 계산 그래프를 카탈로그 숫자로 그린 것으로, 위쪽 사슬은 순전파 값 $x=(1,2)$, $z=h=(1,2,3)$, 그리고 목표 $y=1$에 대한 $\hat y=0.5$와 $L=0.125$를 왼쪽에서 오른쪽으로 나르고, 아래쪽 사슬은 민감도 $\delta_2=-0.5$와, ReLU 마스크 비트가 모두 $1$이라 둘 다 $(-0.5,\,0.5,\,-0.25)$인 $\partial L/\partial h$와 $\delta_1=\partial L/\partial z$를 오른쪽에서 왼쪽으로 나른다. 가중치 그래디언트 둘은 사슬에 매달린 잎이며, $1\times3$인 $\partial L/\partial W_2=\delta_2h^\top=(-0.5,\,-1,\,-1.5)$와 $3\times2$인 $\partial L/\partial W_1=\delta_1x^\top$ 모두 자기가 갱신할 행렬과 모양이 같다. 숫자를 바꾸는 것은 $\eta=0.1$인 $-\eta$ 화살표 하나뿐이며, 그것이 $W_2$를 $(1.05,\,-0.9,\,0.65)$로 보내고 같은 $h$로 다시 순전파하면 $\hat y=1.20$, $L=0.020$이 된다.
 
 ### 1. 국소 선형 모델로서의 미분
 
@@ -706,7 +703,7 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
    그래디언트는 마스크 (이것이 $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
 
-**위 단계에 나온 표기 셋, 각각의 정의.** (손실 $L=\tfrac12\|\hat y-y\|^2$는 [[02-foundations/neural-network-basics|0.7 §3]]의 제곱 오차 손실이다.)
+**위 단계에 나온 표기 셋, 각각의 정의.** (손실 $L=\tfrac12\|\hat y-y\|^2$는 [[02-foundations/neural-network-basics|0.8 §3]]의 제곱 오차 손실이다.)
 - **외적(outer product).** 열벡터 $u\in\mathbb{R}^m$과 열벡터 $v\in\mathbb{R}^n$의 외적은 $m\times n$ 행렬이다.
   $$(uv^\top)_{ij} = u_i\,v_j$$
   즉 모든 성분이 $u$의 성분 하나와 $v$의 성분 하나의 곱이다. 계수는 1이다(모든 행이 $v^\top$의 배수). 예: $u=(1,2)$, $v=(3,4,5)$이면 $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. 대조되는 **내적** $u^\top v$는 숫자 하나이고 길이가 같아야 한다. 여기 나오는 이유: 가중치 $W_{ij}$가 입력 $h_j$를 출력 $i$로 보내며 곱해지기 때문에 $\partial L/\partial W_{ij}=\delta_i\,h_j$다.
@@ -715,7 +712,7 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
   즉 같은 자리 성분끼리 곱하고 모양을 유지한다. 예: $(-0.5,\,0.5,\,-0.25)\odot(1,0,1)=(-0.5,\,0,\,-0.25)$. 행렬곱이 아니다. $a\odot b$는 모양이 같아야 하고, $ab$는 안쪽 차원이 맞아야 한다.
 - **지시 함수** $\mathbb{1}[\cdot]$. 안의 조건이 참이면 $1$, 거짓이면 $0$을 돌려주고, 벡터에는 성분별로 적용한다. $\mathbb{1}[z>0]$이 ReLU의 도함수다. $z>0$에서 기울기 $1$, $z<0$에서 기울기 $0$이다. 정확히 $z=0$에서 ReLU는 미분 불가능하고, PyTorch 같은 프레임워크는 그냥 $0$을 쓴다.
 
-**이제 실제 숫자로** — [[02-foundations/neural-network-basics|0.7 §2]]와 *같은* 신경망이라
+**이제 실제 숫자로** — [[02-foundations/neural-network-basics|0.8 §2]]와 *같은* 신경망이라
 새로 세팅할 것이 없다: $W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}$,
 $W_2 = \begin{pmatrix}1&-1&0.5\end{pmatrix}$, $x = (1,2)$. 그 페이지의 순전파 결과가
 $z = (1,2,3)$, $h = (1,2,3)$, $\hat y = 0.5$였다. 정답이 $y = 1$이라 하면
@@ -898,6 +895,15 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프
 1. **그리기.** P1 계산 그래프. 카탈로그 수치를 각 노드에 써라.
 2. **유도.** $\delta_2$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1$, $\partial L/\partial W_1$. $\eta=0.1$로 $W_2$만 SGD 한 스텝.
 3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 순전파 사슬은 왼쪽에서 오른쪽으로, 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$이고, 상자마다 안에 카탈로그 값을 쓴다.
+> - 순전파 화살표마다 다음 상자를 만든 것과 그 모양을 쓴다. $W_1$은 $3\times2$, ReLU는 원소별이라 모양을 바꾸지 않고, $W_2$는 $1\times3$이며, 손실 화살표에는 목표 $y$가 옆에서 들어온다.
+> - 은닉 유닛마다 ReLU 마스크 비트를 적는다. 사슬이 끊어질 수 있는 자리는 그 비트뿐이다.
+> - 역전파 사슬은 그 아래에 오른쪽에서 왼쪽으로, 순전파 화살표마다 하나씩 둔다. 손실 화살표 아래 $\partial L/\partial\hat y$, $W_2$ 화살표 아래 $\partial L/\partial h$, ReLU 화살표 아래 $\partial L/\partial z$이고, 각각 그 위를 지나는 것의 모양을 옆에 쓴다.
+> - $\partial L/\partial W_2$와 $\partial L/\partial W_1$은 사슬의 고리가 아니라 $\hat y$ 화살표와 $z$ 화살표에서 *뻗어 나온* 가지로 그린다. 가중치 그래디언트는 역전파의 잎이다. 그것으로부터 계산되는 것은 없고 읽어 내기만 한다.
+> - 가지마다 자기가 갱신할 행렬과 모양이 같은지 확인한다. 모양이 다른 가지가 하나라도 있으면 산술을 시작하기 전에 이미 틀린 그림이다.
+> - 갱신 화살표는 하나다. $\partial L/\partial W_2$ 가지에서 $W_2$ 라벨로 돌아가며 $-\eta$라고 쓴다. 숫자를 바꾸는 화살표는 이것뿐이고, 3번이 출력하는 것이 그 결과다.
 
 > [!tip]- 정답 · Solutions
 > 1. $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.

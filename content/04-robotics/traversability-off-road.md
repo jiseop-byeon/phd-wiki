@@ -56,23 +56,7 @@ $\arctan(0.15/0.30)=26.6^\circ$, so $25^\circ$ is that angle with a degree and a
 $h_{\max}$ and $\sigma_{\max}$ are catalog numbers, stated once and changed only in a problem set.
 T is frozen by these three limits and nothing else; it exists here for the contrast.
 
-### Homework diagram · 과제가 그릴 그림
-
-Three panels, and the problem set asks for the same three.
-
-**Left — the patch.** Draw the $3\times3$ grid with the nine heights written in the cells, the cell
-size $c=0.20$ m marked on one edge, and arrows for $+x$ east and $+y$ north. Shade the south-east
-cell: that one is the rock and everything that follows turns on it.
-
-**Middle — the two slopes.** Draw a side view along the middle row: the three heights $0.06$, $0.10$,
-$0.14$ as dots over a ground axis, and a line through them — that is the central difference. Then
-draw the least-squares plane's trace through the same section as a second, steeper line, and mark the
-vertical gap at the rock's column. The two lines disagreeing by $8.8^\circ$ in this section is the figure.
-
-**Right — the decision.** Three horizontal bars, one per normalized term $\theta/\theta_{\max}$,
-$\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$, with a vertical line at $1$ marking the gate. Draw the
-set twice, once for Q and once for T, on the same axis. The homework is the observation that the same
-three raw measurements produce bars on opposite sides of the line.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="the frozen three by three elevation patch: eight cells on a plane and one raised corner cell">
   <defs><marker id="arT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -107,6 +91,78 @@ three raw measurements produce bars on opposite sides of the line.
     <text x="40" y="250">56% of the roughness, and is the only reason the step-height term exists at all.</text>
   </g>
 </svg>
+
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="the middle row seen side-on and drawn to scale, where the least-squares line rises 8.8 degrees more steeply than the central-difference line through 0.06, 0.10 and 0.14, beside the slope, step and roughness bars for Q and T over each robot's own limit, of which only Q's step bar, 1.600, crosses the gate at 1">
+  <g font-size="12" fill="currentColor" opacity="0.9">
+    <text x="12" y="16">The two slopes</text><text x="296" y="16">The decision</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.75">
+    <text x="12" y="31">middle row seen from the south, drawn 1:1</text><text x="296" y="31">each term over that robot's own limit</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <line x1="34" y1="165" x2="238" y2="165"/>
+    <line x1="34" y1="165" x2="34" y2="170"/><line x1="102" y1="165" x2="102" y2="170"/><line x1="170" y1="165" x2="170" y2="170"/><line x1="238" y1="165" x2="238" y2="170"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="2 3"><line x1="204" y1="62.2" x2="204" y2="165"/></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="2 3"><line x1="68" y1="148.6" x2="68" y2="165"/><line x1="136" y1="135" x2="136" y2="165"/></g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none">
+    <line x1="34" y1="151.4" x2="238" y2="110.6"/>
+    <line x1="34" y1="160.8" x2="238" y2="86" stroke-dasharray="7 4"/>
+  </g>
+  <path d="M229.9 112.2 A142 142 0 0 0 224 91.2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.8"/>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="204" y1="117.4" x2="204" y2="98.5"/><line x1="200" y1="98.5" x2="208" y2="98.5"/>
+  </g>
+  <g fill="currentColor"><circle cx="68" cy="144.6" r="3.6"/><circle cx="136" cy="131" r="3.6"/><circle cx="204" cy="117.4" r="3.6"/></g>
+  <rect x="199" y="51.2" width="10" height="10" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <g font-size="11" fill="currentColor">
+    <text x="194" y="60.2" text-anchor="end">rock, one row south: 0.32</text>
+    <text x="198" y="90.5" text-anchor="end">0.0556 m</text>
+    <text x="243" y="102.3">8.8°</text>
+    <text x="72" y="160">0.06</text>
+    <text x="140" y="160">0.10</text>
+    <text x="208" y="160">0.14</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="68" y="182">−0.20</text><text x="136" y="182">0</text><text x="204" y="182">+0.20</text>
+  </g>
+  <text x="243" y="182" font-size="11" fill="currentColor" opacity="0.8">x (m)</text>
+  <g stroke="currentColor" stroke-width="1.7" fill="none">
+    <line x1="12" y1="202" x2="34" y2="202"/><line x1="12" y1="219" x2="34" y2="219" stroke-dasharray="7 4"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="206">central difference (the dots): 11.3°</text><text x="40" y="223">least squares (all nine cells): 20.1°</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="5 3"><line x1="458" y1="50" x2="458" y2="184"/></g>
+  <text x="458" y="46" font-size="11" fill="currentColor" text-anchor="middle">gate</text>
+  <g font-size="11" fill="currentColor"><text x="296" y="60">Q (25°, 0.15 m, 0.05 m)</text><text x="552" y="60" text-anchor="end">gate trips</text></g>
+  <rect x="362" y="66" width="78.5" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="75.8" text-anchor="end" opacity="0.85">slope</text><text x="436.5" y="75.8" text-anchor="end">0.818</text></g>
+  <rect x="362" y="82" width="153.6" height="12" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="91.8" text-anchor="end" opacity="0.85">step</text><text x="511.6" y="91.8" text-anchor="end">1.600</text></g>
+  <rect x="362" y="98" width="95.4" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="107.8" text-anchor="end" opacity="0.85">roughness</text><text x="453.4" y="107.8" text-anchor="end">0.994</text></g>
+  <g font-size="11" fill="currentColor"><text x="296" y="127">T (30°, 0.40 m, 0.10 m)</text><text x="552" y="127" text-anchor="end">clear, C = 0.612</text></g>
+  <rect x="362" y="133" width="65.4" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="142.8" text-anchor="end" opacity="0.85">slope</text><text x="423.4" y="142.8" text-anchor="end">0.681</text></g>
+  <rect x="362" y="149" width="57.6" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="158.8" text-anchor="end" opacity="0.85">step</text><text x="415.6" y="158.8" text-anchor="end">0.600</text></g>
+  <rect x="362" y="165" width="47.7" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="174.8" text-anchor="end" opacity="0.85">roughness</text><text x="405.7" y="174.8" text-anchor="end">0.497</text></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <line x1="362" y1="184" x2="520.4" y2="184"/><line x1="362" y1="184" x2="362" y2="188"/><line x1="410" y1="184" x2="410" y2="188"/><line x1="458" y1="184" x2="458" y2="188"/><line x1="506" y1="184" x2="506" y2="188"/>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="362" y="199">0</text><text x="410" y="199">0.5</text><text x="458" y="199">1</text><text x="506" y="199">1.5</text>
+  </g>
+  <text x="296" y="216" font-size="11" fill="currentColor" opacity="0.85">where σ² comes from, cell by cell</text>
+  <rect x="296" y="222" width="142.2" height="15" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="438.2" y="222" width="113.8" height="15" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <g font-size="11" fill="currentColor"><text x="301" y="233.5">the rock, 56%</text><text x="443.2" y="233.5">the other eight, 44%</text></g>
+  <text x="12" y="254" font-size="11" fill="currentColor" opacity="0.9">Full slopes, with the north–south gradient added: the ramp 12.6°, the fit 20.4°, 7.8° apart.</text>
+</svg>
+
+The frozen patch, a $3\times3$ window of the elevation map with $0.20$ m cells and heights in metres: eight cells lie exactly on the plane $h=0.10+0.20x+0.10y$, a clean $12.6^\circ$ ramp, and the shaded south-east corner is the rock, raised to $0.32$ m. That one cell moves the fitted slope by $7.8^\circ$, supplies $56\%$ of the roughness, and is the only reason the step-height term exists at all. In the figure under the patch, the middle row seen side-on has the least-squares trace $8.8^\circ$ steeper than the central-difference line through $0.06$, $0.10$ and $0.14$ ($7.8^\circ$ once the north–south gradient is added), and of the bars, each term over the robot's own limit, only Q's step bar, at $1.600$, crosses the gate at $1$. Every number in the worked derivation after §1 — two slopes, a step, a roughness, and opposite verdicts for Q and T — comes from these nine heights.
 
 ### 1. The idea that reorganised the field
 
@@ -201,10 +257,10 @@ cell, so only four of the nine heights are used:
 
 $$g_x=\frac{0.14-0.06}{2c}=\frac{0.08}{0.40}=0.20,\qquad g_y=\frac{0.12-0.08}{2c}=\frac{0.04}{0.40}=0.10,\qquad \theta=\arctan\sqrt{0.20^2+0.10^2}=\arctan 0.2236=12.60^\circ$$
 
-*Least squares over all nine.* Fit $h=a+bx+cy$. The nine sample points are centred and symmetric, so
+*Least squares over all nine.* Fit $h=a+bx+c_0y$, writing $c_0$ because $c$ is already the cell size. The nine sample points are centred and symmetric, so
 $\sum x_i=\sum y_i=\sum x_iy_i=0$ and the three estimates decouple into one-line quotients:
 
-$$b=\frac{\sum x_ih_i}{\sum x_i^2}=\frac{0.088}{0.24}=0.3667,\qquad c=\frac{\sum y_ih_i}{\sum y_i^2}=\frac{-0.016}{0.24}=-0.0667,\qquad a=\bar h=\frac{1.10}{9}=0.1222$$
+$$b=\frac{\sum x_ih_i}{\sum x_i^2}=\frac{0.088}{0.24}=0.3667,\qquad c_0=\frac{\sum y_ih_i}{\sum y_i^2}=\frac{-0.016}{0.24}=-0.0667,\qquad a=\bar h=\frac{1.10}{9}=0.1222$$
 
 because with the sums decoupled each coefficient is just a weighted average of the heights along its
 own axis. The pieces are $\sum x_i^2=\sum y_i^2=6(0.20)^2=0.24$,
@@ -471,12 +527,12 @@ Hand arithmetic only — nine numbers do not need a simulator.
 not a boulder. Everything else — cell size, the other eight heights, both machines' limits, the
 weights — is unchanged.
 
-1. **Draw.** All three panels for the new patch. Left: the grid with the corrected corner. Middle: the
+1. **Draw.** All three panels of the picture above, for the new patch. Left: the grid with the corrected corner. Middle: the
    side view along the middle row with both fitted lines, and — this is the point of the redraw —
    the central-difference line *before* you compute anything, plus your prediction of whether it moves.
    Right: the three normalized bars against the gate line, drawn three times now: Q, Q carrying P2, and T.
 2. **Derive.** (a) The central-difference slope at the centre cell. (b) The least-squares plane's
-   $a$, $b$, $c$ and its slope, using the decoupled quotients. (c) The step height and the roughness.
+   $a$, $b$, $c_0$ and its slope, using the decoupled quotients. (c) The step height and the roughness.
    (d) The gate and $C$ for Q, for Q carrying P2 (use the $\theta_{\max}$ that page 18 derives for the
    loaded robot), and for T. Rank the three.
 3. **Interpret.** One of your two slope estimates did not move at all between the lecture's patch and
@@ -491,9 +547,17 @@ weights — is unchanged.
    cost on a costmap. What does CVaR buy over the mean, and when is the mean the *wrong* objective for
    an excavator on a slope?
 
+> [!note]- How to draw it · 그리는 법
+> - **Left, the patch**: the $3\times3$ grid with the nine heights written in the cells, the cell size $c=0.20$ m marked on one edge, and arrows for $+x$ east and $+y$ north.
+> - **Shade the south-east cell**: that one is the rock, and everything that follows turns on it.
+> - **Middle, a side view along the middle row**: the three heights $0.06$, $0.10$, $0.14$ as dots over a ground axis, and a line through them — that is the central difference.
+> - **The least-squares plane's trace through the same section as a second, steeper line**, with the vertical gap marked at the rock's column. The angle between the two lines in this section is the figure ($8.8^\circ$ in the worked derivation).
+> - **Right, the decision**: three horizontal bars, one per normalized term $\theta/\theta_{\max}$, $\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$, with a vertical line at $1$ marking the gate.
+> - **One set of bars per machine, all on the same axis**: the point is which side of the line the same three raw measurements land on for each machine. In the worked derivation only Q's step bar crosses it, and all of T's stay short.
+
 > [!tip]- Solutions
 > 1. The middle panel's central-difference line is unchanged, because that estimator only ever reads the four edge-adjacent neighbours of the centre cell and the corner is not one of them. The right panel: Q's bars are all left of the gate now, Q-with-P2's slope bar has moved right but is still left of it, and T's are further left again.
-> 2. (a) Unchanged: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$, so $b=0.064/0.24=0.2667$; $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$, so $c=0.008/0.24=0.0333$ — positive again, the sign flip was the rock's doing; $a=0.98/9=0.1089$; $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m; $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — gate clear, $C=0.640$. Q with P2 at $\theta_{\max}=22^\circ$: $0.684$, $0.800$, $0.398$ — clear, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — clear, $C=0.360$. Ranking T $<$ Q $<$ Q+P2, and for the first time all three can cross.
+> 2. (a) Unchanged: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$, so $b=0.064/0.24=0.2667$; $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$, so $c_0=0.008/0.24=0.0333$ — positive again, the sign flip was the rock's doing; $a=0.98/9=0.1089$; $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m; $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — gate clear, $C=0.640$. Q with P2 at $\theta_{\max}=22^\circ$: $0.684$, $0.800$, $0.398$ — clear, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — clear, $C=0.360$. Ranking T $<$ Q $<$ Q+P2, and for the first time all three can cross.
 > 3. The central difference did not move, and it could not have: its stencil is the four 4-connected neighbours of the centre cell, and the cell that changed is a diagonal corner it never reads. So a pipeline computing slope by central differences on a $0.20$ m grid returns $12.60^\circ$ for a patch Q can cross and for a patch Q cannot — it is blind to exactly the feature that decides, and its agreement with the plane fit on smooth ground is what hides this. The fix is not a better estimator but a second term: step height is what separated the two patches ($1.60$ against $0.800$), and it is a pairwise quantity no gradient can express. As for §2 — **velocity tracking**, the supervision behind Wild Visual Navigation, would have got both right, because it asks whether the robot achieved the speed it commanded while actually driving there, which is the consequence all three geometric terms are proxies for. What it needs that geometry does not is *the robot having been there*: it is a record of experience, so it cannot score ground nobody has driven, and that is the whole reason §1's papers pair it with a vision model that generalises the label outward.
 > 4. (a) Grass is occupied in the grid and traversable for many platforms. BADGR (drive-and-label), or proprioceptive cost (*How Does It Feel?*), replaces geometry with consequence. (b) Interventions per kilometre, plus the distance. 95% conflates a clean run with a run after operator rescues. (c) CVaR penalises the tail, not the average rut. A mean-optimal path can still include a rare roll-over; an excavator on a slope cares about that tail — and the gate in the worked derivation is the crudest possible version of the same instinct, a term you refuse to let the average buy off.
 
@@ -559,22 +623,7 @@ $\arctan(0.15/0.30)=26.6^\circ$이므로, $25^\circ$는 거기에 1.5도의 여�
 $\sigma_{\max}$는 카탈로그 숫자로, 한 번 적고 과제에서만 바꾼다. T는 이 세 한계로만 고정되며,
 대조를 위해 여기 있다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-칸이 셋이고, 과제가 요구하는 것도 같은 셋이다.
-
-**왼쪽 — 패치.** 셀 안에 아홉 개의 높이를 적은 $3\times3$ 격자를 그리고, 한 변에 셀 크기
-$c=0.20$ m를 표시하고, $+x$ 동쪽과 $+y$ 북쪽 화살표를 넣는다. 남동쪽 셀을 칠한다. 그것이 바위이고
-이어지는 모든 것이 그 셀에 달려 있다.
-
-**가운데 — 두 개의 경사.** 가운데 행을 따라 옆에서 본 그림을 그린다. 높이 $0.06$, $0.10$, $0.14$를
-지면 축 위의 점 셋으로 찍고 그 점들을 지나는 선을 긋는다 — 그것이 중앙 차분이다. 그다음 같은
-단면을 지나는 최소제곱 평면의 자취를 더 가파른 두 번째 선으로 긋고, 바위가 있는 열에서 수직
-간격을 표시한다. 두 선이 이 단면에서 $8.8^\circ$ 어긋난다는 것이 이 그림이다.
-
-**오른쪽 — 판정.** 정규화된 항 $\theta/\theta_{\max}$, $\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$
-하나에 하나씩 수평 막대 셋을 그리고, $1$에 관문을 뜻하는 수직선을 긋는다. 같은 축 위에 Q용과
-T용으로 두 벌을 그린다. 과제는 똑같은 세 측정값이 선의 반대편에 막대를 만든다는 관찰이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="고정된 3x3 높이 패치: 여덟 셀은 평면 위에, 모서리 한 셀만 올라가 있다">
   <defs><marker id="arTk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -609,6 +658,78 @@ T용으로 두 벌을 그린다. 과제는 똑같은 세 측정값이 선의 반
     <text x="40" y="250">공급하며, 단차 항이 존재할 이유 전부다.</text>
   </g>
 </svg>
+
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="축척대로 옆에서 본 가운데 행에서 최소제곱 선이 0.06, 0.10, 0.14를 지나는 중앙 차분 선보다 8.8도 더 가파르고, 그 옆 Q와 T의 경사·단차·거칠기를 각 로봇 자신의 한계로 나눈 막대 중 1의 관문을 넘는 것은 Q의 단차 막대 1.600 하나뿐이다">
+  <g font-size="12" fill="currentColor" opacity="0.9">
+    <text x="12" y="16">두 개의 경사</text><text x="296" y="16">판정</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.75">
+    <text x="12" y="31">가운데 행을 남쪽에서 본 모습, 1:1 축척</text><text x="296" y="31">각 항을 그 로봇 자신의 한계로 나눈 값</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <line x1="34" y1="165" x2="238" y2="165"/>
+    <line x1="34" y1="165" x2="34" y2="170"/><line x1="102" y1="165" x2="102" y2="170"/><line x1="170" y1="165" x2="170" y2="170"/><line x1="238" y1="165" x2="238" y2="170"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="2 3"><line x1="204" y1="62.2" x2="204" y2="165"/></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.4" stroke-dasharray="2 3"><line x1="68" y1="148.6" x2="68" y2="165"/><line x1="136" y1="135" x2="136" y2="165"/></g>
+  <g stroke="currentColor" stroke-width="1.7" fill="none">
+    <line x1="34" y1="151.4" x2="238" y2="110.6"/>
+    <line x1="34" y1="160.8" x2="238" y2="86" stroke-dasharray="7 4"/>
+  </g>
+  <path d="M229.9 112.2 A142 142 0 0 0 224 91.2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.8"/>
+  <g stroke="currentColor" stroke-width="1.4" fill="none">
+    <line x1="204" y1="117.4" x2="204" y2="98.5"/><line x1="200" y1="98.5" x2="208" y2="98.5"/>
+  </g>
+  <g fill="currentColor"><circle cx="68" cy="144.6" r="3.6"/><circle cx="136" cy="131" r="3.6"/><circle cx="204" cy="117.4" r="3.6"/></g>
+  <rect x="199" y="51.2" width="10" height="10" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <g font-size="11" fill="currentColor">
+    <text x="194" y="60.2" text-anchor="end">바위, 한 행 남쪽: 0.32</text>
+    <text x="198" y="90.5" text-anchor="end">0.0556 m</text>
+    <text x="243" y="102.3">8.8°</text>
+    <text x="72" y="160">0.06</text>
+    <text x="140" y="160">0.10</text>
+    <text x="208" y="160">0.14</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="68" y="182">−0.20</text><text x="136" y="182">0</text><text x="204" y="182">+0.20</text>
+  </g>
+  <text x="243" y="182" font-size="11" fill="currentColor" opacity="0.8">x (m)</text>
+  <g stroke="currentColor" stroke-width="1.7" fill="none">
+    <line x1="12" y1="202" x2="34" y2="202"/><line x1="12" y1="219" x2="34" y2="219" stroke-dasharray="7 4"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="40" y="206">중앙 차분(점 셋을 지남): 11.3°</text><text x="40" y="223">최소제곱(아홉 셀 전부): 20.1°</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="5 3"><line x1="458" y1="50" x2="458" y2="184"/></g>
+  <text x="458" y="46" font-size="11" fill="currentColor" text-anchor="middle">관문</text>
+  <g font-size="11" fill="currentColor"><text x="296" y="60">Q (25°, 0.15 m, 0.05 m)</text><text x="552" y="60" text-anchor="end">관문 걸림</text></g>
+  <rect x="362" y="66" width="78.5" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="75.8" text-anchor="end" opacity="0.85">경사</text><text x="436.5" y="75.8" text-anchor="end">0.818</text></g>
+  <rect x="362" y="82" width="153.6" height="12" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="91.8" text-anchor="end" opacity="0.85">단차</text><text x="511.6" y="91.8" text-anchor="end">1.600</text></g>
+  <rect x="362" y="98" width="95.4" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="107.8" text-anchor="end" opacity="0.85">거칠기</text><text x="453.4" y="107.8" text-anchor="end">0.994</text></g>
+  <g font-size="11" fill="currentColor"><text x="296" y="127">T (30°, 0.40 m, 0.10 m)</text><text x="552" y="127" text-anchor="end">통과, C = 0.612</text></g>
+  <rect x="362" y="133" width="65.4" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="142.8" text-anchor="end" opacity="0.85">경사</text><text x="423.4" y="142.8" text-anchor="end">0.681</text></g>
+  <rect x="362" y="149" width="57.6" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="158.8" text-anchor="end" opacity="0.85">단차</text><text x="415.6" y="158.8" text-anchor="end">0.600</text></g>
+  <rect x="362" y="165" width="47.7" height="12" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor"><text x="356" y="174.8" text-anchor="end" opacity="0.85">거칠기</text><text x="405.7" y="174.8" text-anchor="end">0.497</text></g>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55">
+    <line x1="362" y1="184" x2="520.4" y2="184"/><line x1="362" y1="184" x2="362" y2="188"/><line x1="410" y1="184" x2="410" y2="188"/><line x1="458" y1="184" x2="458" y2="188"/><line x1="506" y1="184" x2="506" y2="188"/>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="362" y="199">0</text><text x="410" y="199">0.5</text><text x="458" y="199">1</text><text x="506" y="199">1.5</text>
+  </g>
+  <text x="296" y="216" font-size="11" fill="currentColor" opacity="0.85">σ²의 셀별 몫</text>
+  <rect x="296" y="222" width="142.2" height="15" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="438.2" y="222" width="113.8" height="15" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <g font-size="11" fill="currentColor"><text x="301" y="233.5">바위 56%</text><text x="443.2" y="233.5">나머지 여덟 셀 44%</text></g>
+  <text x="12" y="254" font-size="11" fill="currentColor" opacity="0.9">남북 기울기까지 넣은 전체 경사로는 경사면 12.6°, 적합 20.4°로 7.8° 차이다.</text>
+</svg>
+
+고정된 패치는 셀 $0.20$ m, 높이 단위 미터인 높이 지도의 $3\times3$ 창으로, 여덟 셀은 평면 $h=0.10+0.20x+0.10y$ 위에 정확히 놓인 깨끗한 $12.6^\circ$ 경사면이고 칠한 남동쪽 모서리가 $0.32$ m로 올라간 바위다. 그 셀 하나가 적합 경사를 $7.8^\circ$ 움직이고, 거칠기의 $56\%$를 공급하며, 단차 항이 존재할 이유 전부다. 패치 아래 그림에서, 가운데 행을 옆에서 보면 최소제곱 자취가 $0.06$, $0.10$, $0.14$를 지나는 중앙 차분 선보다 $8.8^\circ$ 더 가파르고(남북 기울기까지 넣으면 $7.8^\circ$), 각 항을 그 로봇 자신의 한계로 나눈 막대 중 $1$의 관문을 넘는 것은 Q의 단차 막대 $1.600$ 하나뿐이다. §1 뒤의 유도에 나오는 경사 둘, 단차, 거칠기, 그리고 Q와 T의 반대 판정이 모두 이 아홉 높이에서 나온다.
 
 ### 1. 이 분야를 재편한 발상
 
@@ -698,10 +819,10 @@ BADGR가 그 정본 진술이다. **자기지도 off-policy 실세계 데이터*
 
 $$g_x=\frac{0.14-0.06}{2c}=\frac{0.08}{0.40}=0.20,\qquad g_y=\frac{0.12-0.08}{2c}=\frac{0.04}{0.40}=0.10,\qquad \theta=\arctan\sqrt{0.20^2+0.10^2}=\arctan 0.2236=12.60^\circ$$
 
-*아홉 개 전부에 대한 최소제곱.* $h=a+bx+cy$를 적합한다. 표본점 아홉 개가 중심화되어 있고
+*아홉 개 전부에 대한 최소제곱.* $h=a+bx+c_0y$를 적합한다. $c$는 이미 셀 크기라서 이 계수는 $c_0$ 기호로 쓴다. 표본점 아홉 개가 중심화되어 있고
 대칭이라 $\sum x_i=\sum y_i=\sum x_iy_i=0$이고, 세 추정이 한 줄짜리 몫으로 분리된다.
 
-$$b=\frac{\sum x_ih_i}{\sum x_i^2}=\frac{0.088}{0.24}=0.3667,\qquad c=\frac{\sum y_ih_i}{\sum y_i^2}=\frac{-0.016}{0.24}=-0.0667,\qquad a=\bar h=\frac{1.10}{9}=0.1222$$
+$$b=\frac{\sum x_ih_i}{\sum x_i^2}=\frac{0.088}{0.24}=0.3667,\qquad c_0=\frac{\sum y_ih_i}{\sum y_i^2}=\frac{-0.016}{0.24}=-0.0667,\qquad a=\bar h=\frac{1.10}{9}=0.1222$$
 
 합이 분리되면 각 계수가 자기 축을 따르는 높이들의 가중 평균일 뿐이기 때문이다. 조각들은
 $\sum x_i^2=\sum y_i^2=6(0.20)^2=0.24$,
@@ -946,11 +1067,11 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
 **바꿀 손잡이.** 바위가 더 작다. 남동쪽 셀이 $0.32$ m가 아니라 $0.20$ m다. 바위가 아니라 연석이다.
 나머지 — 셀 크기, 다른 여덟 높이, 두 기계의 한계, 가중치 — 는 그대로다.
 
-1. **그려라.** 새 패치에 대해 세 칸을 모두 그린다. 왼쪽: 모서리를 고친 격자. 가운데: 가운데 행의
+1. **그려라.** 새 패치에 대해 위의 그림 세 칸을 모두 그린다. 왼쪽: 모서리를 고친 격자. 가운데: 가운데 행의
    측면도에 두 적합 선을 그리되 — 이것이 다시 그리는 이유인데 — 중앙 차분 선은 아무것도 계산하기
    *전에* 긋고, 그것이 움직일지에 대한 예측을 함께 적는다. 오른쪽: 관문 선에 대한 정규화 막대 셋을
    이번에는 세 벌 그린다. Q, P2를 실은 Q, 그리고 T.
-2. **유도하라.** (a) 가운데 셀의 중앙 차분 경사. (b) 최소제곱 평면의 $a$, $b$, $c$와 그 경사를
+2. **유도하라.** (a) 가운데 셀의 중앙 차분 경사. (b) 최소제곱 평면의 $a$, $b$, $c_0$ 및 그 경사를
    분리된 몫으로 구한다. (c) 단차 높이와 거칠기. (d) Q, P2를 실은 Q(18번 페이지가 실린 로봇에
    대해 유도하는 $\theta_{\max}$를 쓴다), 그리고 T에 대한 관문과 $C$. 셋의 순위를 매긴다.
 3. **해석하라.** 두 경사 추정 중 하나는 강의의 패치와 이 패치 사이에서 전혀 움직이지 않았는데 Q의
@@ -964,9 +1085,17 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
    주행 둘은? (c) 플래너가 costmap에서 기댓값을 최소화한다. 평균 대신 CVaR가 사는 것과, 경사면
    굴착기에서 평균이 *틀린* 목적인 때는?
 
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, 패치**: 셀 안에 아홉 개의 높이를 적은 $3\times3$ 격자를 그리고, 한 변에 셀 크기 $c=0.20$ m를 표시하고, $+x$ 동쪽과 $+y$ 북쪽 화살표를 넣는다.
+> - **남동쪽 셀을 칠한다**: 그것이 바위이고, 이어지는 모든 것이 그 셀에 달려 있다.
+> - **가운데, 가운데 행을 따라 옆에서 본 그림**: 높이 $0.06$, $0.10$, $0.14$를 지면 축 위의 점 셋으로 찍고 그 점들을 지나는 선을 긋는다. 그것이 중앙 차분이다.
+> - **같은 단면을 지나는 최소제곱 평면의 자취는 더 가파른 두 번째 선으로 긋고**, 바위가 있는 열에서 수직 간격을 표시한다. 두 선이 이 단면에서 어긋나는 각이 이 그림이다(§1 뒤의 유도에서는 $8.8^\circ$).
+> - **오른쪽, 판정**: 정규화된 항 $\theta/\theta_{\max}$, $\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$ 하나에 하나씩 수평 막대 셋을 그리고, $1$에 관문을 뜻하는 수직선을 긋는다.
+> - **기계마다 막대 한 벌씩, 모두 같은 축 위에**: 똑같은 세 측정값이 기계마다 선의 어느 쪽에 놓이는지가 요점이다. §1 뒤의 유도에서는 Q의 단차 막대만 선을 넘고, T의 막대는 모두 선에 못 미친다.
+
 > [!tip]- 정답 · Solutions
 > 1. 가운데 칸의 중앙 차분 선은 그대로다. 그 추정기는 가운데 셀의 변으로 인접한 이웃 넷만 읽는데 모서리는 그중 하나가 아니기 때문이다. 오른쪽 칸: 이제 Q의 막대는 셋 다 관문 왼쪽이고, P2를 실은 Q의 경사 막대는 오른쪽으로 갔지만 여전히 왼쪽이며, T의 막대는 더 왼쪽이다.
-> 2. (a) 그대로다: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$이므로 $b=0.064/0.24=0.2667$. $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$이므로 $c=0.008/0.24=0.0333$ — 다시 양수다. 부호가 뒤집혔던 것은 바위가 한 일이었다. $a=0.98/9=0.1089$, $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m, $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — 관문 통과, $C=0.640$. P2를 실은 Q($\theta_{\max}=22^\circ$): $0.684$, $0.800$, $0.398$ — 통과, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — 통과, $C=0.360$. 순위는 T $<$ Q $<$ Q+P2이고, 처음으로 셋 다 건널 수 있다.
+> 2. (a) 그대로다: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$이므로 $b=0.064/0.24=0.2667$. $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$이므로 $c_0=0.008/0.24=0.0333$ — 다시 양수다. 부호가 뒤집혔던 것은 바위가 한 일이었다. $a=0.98/9=0.1089$, $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m, $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — 관문 통과, $C=0.640$. P2를 실은 Q($\theta_{\max}=22^\circ$): $0.684$, $0.800$, $0.398$ — 통과, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — 통과, $C=0.360$. 순위는 T $<$ Q $<$ Q+P2이고, 처음으로 셋 다 건널 수 있다.
 > 3. 중앙 차분이 움직이지 않았고, 움직일 수도 없었다. 그 스텐실은 가운데 셀의 4-연결 이웃 넷인데 바뀐 셀은 그것이 읽지 않는 대각선 모서리다. 그러니 $0.20$ m 격자에서 중앙 차분으로 경사를 계산하는 파이프라인은 Q가 건널 수 있는 패치와 건널 수 없는 패치에 똑같이 $12.60^\circ$를 돌려준다 — 판정을 내리는 바로 그 특징에 눈이 멀어 있고, 매끄러운 지면에서 평면 적합과 잘 맞는다는 사실이 그것을 가린다. 해법은 더 나은 추정기가 아니라 두 번째 항이다. 두 패치를 갈라놓은 것은 단차 높이이고($0.800$에 대해 $1.60$), 그것은 어떤 기울기도 표현할 수 없는 쌍 위의 양이다. §2에서는 — Wild Visual Navigation 뒤의 지도 신호인 **속도 추종**이 둘 다 맞혔을 것이다. 실제로 거기를 달리면서 명령한 속도를 냈는지를 묻는데, 그것이 세 기하 항 전부가 대리하고 있던 결과이기 때문이다. 기하에는 필요 없는데 그것에는 필요한 것은 *로봇이 거기에 가 봤다는 사실*이다. 경험의 기록이라 아무도 달려 보지 않은 땅에는 점수를 매길 수 없고, §1의 논문들이 그것을 라벨을 바깥으로 일반화하는 비전 모델과 짝짓는 이유 전부가 그것이다.
 > 4. (a) 풀은 격자에서 점유지만 많은 플랫폼에는 통과 가능하다. BADGR(달려 보며 라벨)이나 고유수용 비용(*How Does It Feel?*)이 기하를 결과로 바꾼다. (b) 킬로미터당 개입, 그리고 거리. 95%는 깨끗한 주행과 조작자 구조 뒤 주행을 섞는다. (c) CVaR는 평균 골이 아니라 꼬리를 벌한다. 평균 최적 경로에도 드문 전복이 남을 수 있고, 경사면 굴착기는 그 꼬리를 본다 — 그리고 위 유도의 관문이 같은 직관의 가장 거친 판본이다. 평균이 사 버리도록 두지 않는 항 하나.
 

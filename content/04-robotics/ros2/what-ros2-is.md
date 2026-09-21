@@ -17,9 +17,7 @@ mastery-when: "Go deeper when the middleware itself — discovery, transport, se
 > A working Ubuntu 24.04 machine (or VM), comfort with a shell, and Python. No prior ROS of any version is assumed. Everything that runs here is the baseline for the rest of this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, paired with Gazebo Harmonic when simulation arrives in [[04-robotics/ros2/index|25. ROS 2]].
 > Ubuntu 24.04 머신(또는 VM), 셸 사용 경험, Python. ROS 경험은 전제하지 않는다. 이 트랙 전체의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션이 등장할 때는 Gazebo Harmonic과 짝을 이룬다.
 
-### Homework diagram: the P6 graph, and one budget on a clock
-
-Everything measurable on this page is about one machine: **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, a vision node publishing a goal at $50\,\mathrm{Hz}$, a controller sampling the encoder and commanding a motor at $200\,\mathrm{Hz}$, and $70\,\mathrm{ms}$ of budget from camera mid-exposure to applied force. Draw the two pictures below once, now. The problem set asks for the same two with one knob moved.
+### The picture: the P6 graph, and one budget on a clock
 
 <svg viewBox="0 0 560 400" style="max-width:100%;height:auto" role="img" aria-label="Top: the P6 computation graph, with /camera, /controller and /logger inside one ROS domain, topics /goal at 50 Hz and /cmd at 200 Hz, and the motor and encoder outside the graph. Bottom: the five budget terms as consecutive brackets on a 0 to 80 ms clock, ending left of the 70 ms deadline.">
   <defs><marker id="w1eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="w1esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -88,9 +86,7 @@ Everything measurable on this page is about one machine: **P6** from [[02-founda
   <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">Dashed: the four measured terms, widths illustrative; together at most 70 − 5 = 65 ms.</text>
 </svg>
 
-**Top — the computation graph, drawn the way `ros2 node list` and `ros2 topic list -t` would report it.** Three ellipses for nodes: `/camera`, `/controller`, `/logger`. One rectangle, outside the graph, for the motor, because a driver's hardware is not a node. Arrows are topics, drawn publisher → subscriber and labelled with three things each — name, type, rate: `/goal` at $50\,\mathrm{Hz}$ from `/camera` to both `/controller` and `/logger`; `/cmd` at $200\,\mathrm{Hz}$ from `/controller` to the motor rectangle and to `/logger`. Draw the encoder as a short arrow into `/controller` from the hardware side and *not* as a topic, then write one word beside it saying why: it is read, not received. Add `/rosout` and `/parameter_events` in grey, because section 9 will show them in every graph you ever list. Finally, put a dashed boundary around the three ellipses and label it with the `ROS_DOMAIN_ID` that keeps this cart out of the rest of the lab's graphs.
-
-**Bottom — one budget on a clock, to scale.** One time axis, $0$ to $80\,\mathrm{ms}$. Above it, $200\,\mathrm{Hz}$ control ticks at $0,5,10,\ldots$; below it, $50\,\mathrm{Hz}$ vision publications at $0,20,40,60$. Mark $t=0$ as camera mid-exposure. Draw the five budget terms of the worked case as consecutive brackets along the axis — camera pipeline, transport, wait for the next tick, controller compute, actuation — and draw the $70\,\mathrm{ms}$ deadline as a vertical line. The drawing is right when the wait bracket is visibly one control period wide, the vision spacing is visibly four control periods, and the whole train of brackets ends left of the line.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as a ROS 2 computation graph inside one `ROS_DOMAIN_ID`: `/camera` publishes `/goal` at $50\,\mathrm{Hz}$, `/controller` publishes `/cmd` at $200\,\mathrm{Hz}$ to a motor that is hardware rather than a node, `/logger` subscribes to both, and the encoder is read inside the controller instead of arriving on a topic. Below, the $70\,\mathrm{ms}$ from camera mid-exposure to applied force is drawn to scale as five consecutive terms, with vision publications every $20\,\mathrm{ms}$, four control periods apart. Only the wait for the next control tick is fixed by the two rates, at under one control period of $5\,\mathrm{ms}$, which leaves at most $65\,\mathrm{ms}$ for the four terms that must be measured.
 
 ### Worked case: where P6's 70 ms goes, and what the control rate actually buys
 
@@ -468,6 +464,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
 2. **Derive.** (a) Vision period and control period. (b) Encoder $\Delta p$ for one count. (c) How many control samples fit in the $70\,\mathrm{ms}$ budget? How many vision frames?
 3. **Interpret.** A colleague says "ROS 2 is real-time, so the $70\,\mathrm{ms}$ is guaranteed." What do you ask, and what does putting camera, controller, and logger in *one* process destroy that P6's budget cares about?
 
+> [!note]- How to draw it · 그리는 법
+> - Nodes are ellipses — `/camera`, `/controller`, `/logger` — and the motor is a rectangle outside the graph, because a driver's hardware is not a node.
+> - Topics are arrows from publisher to subscriber, each labelled with name, type and rate: `/goal` at $50\,\mathrm{Hz}$ to `/controller` and `/logger`, `/cmd` at $200\,\mathrm{Hz}$ to the motor and `/logger`.
+> - The encoder is a short arrow into `/controller` from the hardware side, not a topic, with one word beside it saying why: *read*, not received.
+> - Add `/rosout` and `/parameter_events` in grey, since §9 shows them in every graph, and put a dashed boundary around the nodes labelled with the `ROS_DOMAIN_ID` that keeps this cart out of the rest of the lab's graphs.
+> - The timeline is one axis to scale, $0$ to $80\,\mathrm{ms}$, with $t=0$ at camera mid-exposure: control ticks every $5\,\mathrm{ms}$ above it, vision publications at $0, 20, 40, 60\,\mathrm{ms}$ below it.
+> - Lay the five budget terms along it as consecutive brackets — camera pipeline, transport, wait for the next tick, controller compute, actuation — and draw the $70\,\mathrm{ms}$ deadline as a vertical line.
+> - It is right when the wait bracket is visibly one control period wide, the vision spacing visibly four control periods, and the whole train of brackets ends left of the deadline.
+
 > [!tip]- Solutions
 > 1. Three nodes, topics `goal` at $50\,\mathrm{Hz}$ and `cmd` at $200\,\mathrm{Hz}$. Timeline: $t=0$ mid-exposure; $\sim 20\,\mathrm{ms}$ a vision period; next controller tick $\le 5\,\mathrm{ms}$; force by $70\,\mathrm{ms}$.
 > 2. (a) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (b) $1/2048\approx 0.488\,\mathrm{mm}$. (c) $14$ control samples, $3$ vision frames (a fourth would land at $80\,\mathrm{ms}$).
@@ -483,9 +488,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
 > 동작하는 Ubuntu 24.04 머신(또는 VM), 셸, Python. ROS 경험은 필요 없다. 이 트랙의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션 단계에서는 Gazebo Harmonic과 짝을 이룬다([[04-robotics/ros2/index|25. ROS 2]]).
 > A working Ubuntu 24.04 machine, a shell, and Python; no prior ROS assumed.
 
-### 과제가 그릴 그림: P6 그래프와 시계 위의 예산 하나 · Homework diagram
-
-이 페이지에서 잴 수 있는 것은 전부 기계 하나에 대한 이야기다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 발행하는 비전 노드, 엔코더를 샘플해 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 그리고 카메라 노출 중간부터 힘이 나갈 때까지 $70\,\mathrm{ms}$ 예산. 아래 두 그림을 지금 한 번 그려라. 과제는 손잡이 하나만 돌린 같은 그림을 요구한다.
+### 그림으로 먼저 보기: P6 그래프와 시계 위의 예산 하나 · The picture
 
 <svg viewBox="0 0 560 400" style="max-width:100%;height:auto" role="img" aria-label="위: P6 계산 그래프. ROS 도메인 하나 안의 /camera, /controller, /logger, 50 Hz /goal과 200 Hz /cmd 토픽, 그래프 밖의 모터와 엔코더. 아래: 0에서 80 ms 시계 위에 예산 항 다섯을 이어지는 괄호로 그렸고, 70 ms 마감선 왼쪽에서 끝난다.">
   <defs><marker id="w1kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="w1ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -554,9 +557,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
   <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">점선: 재야 할 네 항. 폭은 예시이고, 넷의 합은 70 − 5 = 65 ms 이하.</text>
 </svg>
 
-**상단 — `ros2 node list`와 `ros2 topic list -t`가 보고할 그대로의 계산 그래프**. 노드는 타원 셋: `/camera`, `/controller`, `/logger`. 모터는 그래프 바깥의 사각형 하나다. 드라이버의 하드웨어는 노드가 아니기 때문이다. 화살표는 토픽이고, 퍼블리셔에서 구독자 방향으로 그리며 이름·타입·주기 셋을 함께 적는다. `/goal`은 $50\,\mathrm{Hz}$로 `/camera`에서 `/controller`와 `/logger`로, `/cmd`는 $200\,\mathrm{Hz}$로 `/controller`에서 모터 사각형과 `/logger`로. 엔코더는 하드웨어 쪽에서 `/controller`로 들어가는 짧은 화살표로 그리되 토픽으로 그리지 마라. 그 옆에 이유를 한 단어로 적는다 — 받는 것이 아니라 읽는 것. `/rosout`과 `/parameter_events`도 회색으로 넣는다. 9절이 보여 주듯 모든 그래프에 있다. 마지막으로 타원 셋을 점선으로 둘러싸고, 이 카트를 실험실의 다른 그래프들과 갈라 놓는 `ROS_DOMAIN_ID`를 거기에 적는다.
-
-**하단 — 시계 위의 예산 하나, 축척을 지켜서**. 시간 축 하나, $0$에서 $80\,\mathrm{ms}$. 축 위에는 $200\,\mathrm{Hz}$ 제어 틱이 $0,5,10,\ldots$, 축 아래에는 $50\,\mathrm{Hz}$ 비전 발행이 $0,20,40,60$. $t=0$이 카메라 노출 중간이다. 계산 예제의 예산 항 다섯 개를 축을 따라 이어지는 괄호로 그린다 — 카메라 파이프라인, 전송, 다음 틱까지의 대기, 제어기 계산, 구동. 그리고 $70\,\mathrm{ms}$ 마감을 수직선으로 긋는다. 대기 괄호가 눈으로 보기에 제어 주기 하나만큼이고, 비전 간격이 제어 주기 넷만큼이며, 괄호 행렬 전체가 수직선 왼쪽에서 끝나면 제대로 그린 것이다.
+위는 `ROS_DOMAIN_ID` 하나 안에 그린 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 계산 그래프로, `/camera`가 `/goal`을 $50\,\mathrm{Hz}$로 발행하고 `/controller`가 노드가 아니라 하드웨어인 모터에 `/cmd`를 $200\,\mathrm{Hz}$로 보내며 `/logger`가 둘 다 구독하고, 엔코더는 토픽으로 받지 않고 제어기 안에서 직접 읽는다. 아래는 카메라 노출 중간부터 힘이 나갈 때까지의 $70\,\mathrm{ms}$를 이어지는 항 다섯으로 축척대로 그린 것이고, 비전 발행은 $20\,\mathrm{ms}$마다, 곧 제어 주기 넷 간격이다. 두 주기만으로 정해지는 항은 다음 제어 틱까지의 대기 하나로 제어 주기 하나인 $5\,\mathrm{ms}$ 미만이며, 그래서 재야 할 나머지 네 항에는 많아야 $65\,\mathrm{ms}$가 남는다.
 
 ### 대상으로 한 번 끝까지: P6의 70 ms는 어디로 가고, 제어 주기는 무엇을 사 주는가 · Worked case
 
@@ -931,6 +932,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**: 엔코더 $N=2048$ counts/m
 1. **그리기.** P6 계산 그래프: `camera`가 목표를 발행, `controller`가 엔코더를 샘플해 모터를 명령, `logger`가 bag을 씀. 주기 기입. 카메라 노출 중간부터 힘이 나갈 때까지 다섯 줄 타임라인, $70\,\mathrm{ms}$ 표시.
 2. **유도.** (a) 비전 주기와 제어 주기. (b) 엔코더 한 카운트의 $\Delta p$. (c) $70\,\mathrm{ms}$ 예산 안에 제어 샘플이 몇 개, 비전 프레임이 몇 장?
 3. **해석.** 동료가 "ROS 2는 실시간이라 $70\,\mathrm{ms}$는 보장된다"고 한다. 무엇을 묻고, 카메라·제어기·로거를 *한* 프로세스에 넣으면 P6 예산이 아끼는 무엇이 무너지는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 노드는 타원 — `/camera`, `/controller`, `/logger` — 이고, 모터는 그래프 바깥의 사각형이다. 드라이버의 하드웨어는 노드가 아니기 때문이다.
+> - 토픽은 퍼블리셔에서 구독자로 가는 화살표이고 이름·타입·주기 셋을 함께 적는다. `/goal`은 $50\,\mathrm{Hz}$로 `/controller`와 `/logger`에, `/cmd`는 $200\,\mathrm{Hz}$로 모터와 `/logger`에.
+> - 엔코더는 하드웨어 쪽에서 `/controller`로 들어가는 짧은 화살표이지 토픽이 아니다. 그 옆에 이유를 한 단어로 적는다. 받는 것이 아니라 *읽는* 것.
+> - `/rosout`과 `/parameter_events`를 회색으로 넣고(9절이 보여 주듯 모든 그래프에 있다), 노드들을 점선으로 둘러싸 이 카트를 실험실의 다른 그래프들과 갈라 놓는 `ROS_DOMAIN_ID`를 적는다.
+> - 타임라인은 축척을 지킨 축 하나, $0$에서 $80\,\mathrm{ms}$이고 $t=0$이 카메라 노출 중간이다. 축 위에는 $5\,\mathrm{ms}$마다 제어 틱, 축 아래에는 $0, 20, 40, 60\,\mathrm{ms}$의 비전 발행.
+> - 예산 항 다섯 — 카메라 파이프라인, 전송, 다음 틱까지의 대기, 제어기 계산, 구동 — 을 축을 따라 이어지는 괄호로 놓고, $70\,\mathrm{ms}$ 마감을 수직선으로 긋는다.
+> - 대기 괄호가 눈으로 보기에 제어 주기 하나만큼, 비전 간격이 제어 주기 넷만큼이고, 괄호 행렬 전체가 마감선 왼쪽에서 끝나면 제대로 그린 것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 노드 셋, 토픽 `goal` $50\,\mathrm{Hz}$, `cmd` $200\,\mathrm{Hz}$. 타임라인: $t=0$ 노출 중간; $\sim 20\,\mathrm{ms}$ 비전 한 주기; 다음 제어 틱 $\le 5\,\mathrm{ms}$; $70\,\mathrm{ms}$까지 힘.

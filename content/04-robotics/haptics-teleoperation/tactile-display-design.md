@@ -36,7 +36,7 @@ One frozen display, defined here and unchanged for the rest of the page. **Every
 
 **T3 — the sleeve.** A tactor sleeve wrapped around the handle grip, circumference $C=100\,\mathrm{mm}$, worn against the palmar skin of the closed hand, whose illustrative two-point limen is $d_2=10\,\mathrm{mm}$. A forearm strap at the same circumference would have $d_2=35\,\mathrm{mm}$.
 
-§6 says what to draw and §7 works T1–T3 end to end; the problem set retunes the suspension and moves the sleeve.
+§6 shows T1–T3 in one picture and §7 works them end to end; the problem set retunes the suspension and moves the sleeve.
 
 ### 1. Start from the information, not the actuator
 
@@ -67,7 +67,7 @@ $$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
 
 so it moves only if you change the suspension or the moving mass, which is exactly the knob the problem set turns. The velocity response peaks exactly at $f_0$, but the displacement response does not: for $\zeta<1/\sqrt2$ the displacement peak sits slightly below $f_0$,
 
-$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.0\sqrt{1-2(0.25)^2}=93.5\ \mathrm{Hz},$$
+$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
 
 because the damper's term $c_t\omega$ in §7's $Z(f)$ keeps growing with frequency, so the denominator bottoms out a little before the spring–inertia term reaches zero. On T1 that peak is $39.2\,\mu\mathrm{m}$, against $38.0\,\mu\mathrm{m}$ at $f_0$ itself, and the acceleration response peaks slightly *above* $f_0$ instead; for $\zeta\ge1/\sqrt2$ the displacement response has no peak and only falls from its static value. *Non-example*: the frequency the designer wants to display. A tactor driven far from $f_0$ is not broken; it is quieter, by an amount §7 computes.
 
@@ -100,11 +100,9 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
 
 **Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
 
-### 6. Homework diagram
+### 6. The picture
 
-One figure, two panels, and the problem set asks for the same figure with the suspension retuned and the sleeve moved.
-
-<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="Panel A plots on log-log axes what one 0.10 A command delivers from the T1 tactor, 38.0 µm at its 100 Hz natural frequency, just past the 39.2 µm peak at 93.5 Hz, and 3.52 µm at 250 Hz, against skin thresholds of 1.0 and 0.20 µm with the gaps shaded as 31.6 and 24.9 dB of sensation level, and panel B unrolls the 100 mm sleeve into 16 six-millimetre discs at 6.25 mm pitch over a ruler of 10 mm segments: 16 actuators, 10 resolvable sites.">
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="Panel A plots on log-log axes what one 0.10 A command delivers from the T1 tactor, 38.0 µm at its 100 Hz natural frequency, just past the 39.2 µm peak at 93.57 Hz, and 3.52 µm at 250 Hz, against skin thresholds of 1.0 and 0.20 µm with the gaps shaded as 31.6 and 24.9 dB of sensation level, and panel B unrolls the 100 mm sleeve into 16 six-millimetre discs at 6.25 mm pitch over a ruler of 10 mm segments: 16 actuators, 10 resolvable sites.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · what reaches the skin</text>
   <line x1="72" y1="44" x2="530" y2="44" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.8"/>
   <text x="66" y="48" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">command</text>
@@ -167,9 +165,7 @@ One figure, two panels, and the problem set asks for the same figure with the su
   <g font-size="13" fill="currentColor"><text x="24" y="414">16 actuators</text><text x="194" y="414">10 resolvable sites<tspan font-size="12" dx="4.2">(d</tspan><tspan font-size="11" dy="3">2</tspan><tspan font-size="12" dy="-3" dx="4.2">= 10 mm)</tspan></text></g>
 </svg>
 
-**Panel A — what reaches the skin.** Log–log axes: frequency from 20 to 1000 Hz across, displacement amplitude from $0.1$ to $100\,\mu\mathrm{m}$ up. Draw the T1 magnitude response $Z(f)$: flat and low at the left, a peak at $93.5\,\mathrm{Hz}$, just below $f_0=100\,\mathrm{Hz}$, then a falling tail. Mark the two operating points with their values, $(100\,\mathrm{Hz},\,38.0\,\mu\mathrm{m})$ and $(250\,\mathrm{Hz},\,3.52\,\mu\mathrm{m})$. On the same axes plot the two frozen T2 thresholds, $(100\,\mathrm{Hz},\,1.0\,\mu\mathrm{m})$ and $(250\,\mathrm{Hz},\,0.20\,\mu\mathrm{m})$, and join them with a dashed line. Shade the vertical gap above each threshold point and write the sensation level in it. Along the top, draw the command as a flat line labelled $i_{\max}=0.10\,\mathrm{A}$ at both frequencies: the point of the panel is that the flat line at the top produces the unflat curve below it.
-
-**Panel B — what can be told apart.** Unroll the sleeve into a straight $100\,\mathrm{mm}$ line. Put 16 tactor marks on it at $6.25\,\mathrm{mm}$ pitch and draw each contactor to scale as a $6\,\mathrm{mm}$ disc, so the $0.25\,\mathrm{mm}$ gaps are visible. Underneath, draw a second ruler divided into $d_2=10\,\mathrm{mm}$ segments and bracket the tactors that fall inside each one. Write the two counts side by side: 16 actuators, 10 resolvable sites. Neither panel may be drawn from the command; both are drawn from the delivered quantity.
+Panel A plots on log–log axes what one flat command of $i_{\max}=0.10\,\mathrm{A}$ delivers from T1: a displacement that peaks at $39.2\,\mu\mathrm{m}$ at $93.57\,\mathrm{Hz}$, just below $f_0=100\,\mathrm{Hz}$, reads $38.0\,\mu\mathrm{m}$ at $100\,\mathrm{Hz}$, and falls to $3.52\,\mu\mathrm{m}$ at $250\,\mathrm{Hz}$. Against T2's thresholds of $1.0$ and $0.20\,\mu\mathrm{m}$, joined by the dashed line, those are sensation levels of $31.6$ and $24.9\,\mathrm{dB}$, shaded as the gap between each point and its threshold. Panel B unrolls the $C=100\,\mathrm{mm}$ sleeve into 16 six-millimetre discs at $6.25\,\mathrm{mm}$ pitch, only $0.25\,\mathrm{mm}$ apart, and brackets them by the $d_2=10\,\mathrm{mm}$ segments of the ruler beneath: 16 actuators, 10 resolvable sites.
 
 ### 7. Worked case: what T1 delivers, and what T3 can resolve
 
@@ -242,9 +238,19 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]], T1–T3 above, and 
 
 Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm{N/m}$ with the same moving mass, damping ratio, force constant and current limit; and the sleeve, still $C=100\,\mathrm{mm}$, is moved from the hand to a forearm strap where the illustrative two-point limen is $d_2'=35\,\mathrm{mm}$.
 
-1. **Draw.** Redraw §6's panel A for the stiffened tactor on the same axes as the original, keeping the old curve as a faint line so where the two curves cross is visible, and redraw panel B for the forearm strap with the same 16 tactors.
+1. **Draw.** The picture of §6, with both knobs moved: panel A for the stiffened tactor on the same axes as the original, keeping the old curve as a faint line so where the two curves cross is visible, and panel B for the forearm strap with the same 16 tactors.
 2. **Derive.** (a) The new $c_t'$ and $f_0'$. (b) $Z'(100)$ and $Z'(250)$, with the spring–inertia and damping terms shown separately as in Steps 4 and 5. (c) The two sensation levels. (d) How many decibels the retuning gained at 250 Hz and how many it lost at 100 Hz. (e) $N_{\max}'$ and the bits available on the forearm.
 3. **Interpret.** (a) The retuning moved $f_0$ onto the frequency where the skin is most sensitive. Using (c) and (d), was it a good trade, and what would have to be true about the intended signal for the answer to flip? (b) A team specifies its cue as "250 Hz on an ERM". Which physical variables are still free, and why is the ERM the wrong family if they need amplitude independent of frequency? (c) The same sleeve is validated on a table and then worn on a moving forearm under a real task. Which two design-checklist items of §5 were skipped, and what happens to the vocabulary — before any of §7 Step 8's arithmetic is applied?
+
+> [!note]- How to draw it · 그리는 법
+> - Panel A on log–log axes: frequency from 20 to 1000 Hz across, displacement amplitude from $0.1$ to $100\,\mu\mathrm{m}$ up. For the retuned tactor, keep the picture's T1 curve on the same axes as a faint line.
+> - Along the top, the command as one flat line labelled $i_{\max}=0.10\,\mathrm{A}$ at both frequencies: the point of the panel is that the flat line at the top produces the unflat curve below it.
+> - The magnitude response $Z(f)$ of the tactor being drawn: flat at the left, a peak just below its own $f_0$, at $f_0\sqrt{1-2\zeta^2}$ and slightly above the resonance value $F_0/(2\zeta k_t)$, then a falling tail. A stiffer suspension changes both where the peak sits and how high it is, so recompute both rather than sliding the old curve along.
+> - The two operating points, at 100 and 250 Hz, each marked with its value, and T2's two thresholds, $(100\,\mathrm{Hz},\,1.0\,\mu\mathrm{m})$ and $(250\,\mathrm{Hz},\,0.20\,\mu\mathrm{m})$, joined by a dashed line.
+> - The vertical gap between each operating point and its threshold shaded, with the sensation level written in it.
+> - Panel B: the sleeve unrolled into a straight $100\,\mathrm{mm}$ line, the 16 tactor marks at $6.25\,\mathrm{mm}$ pitch, and each contactor drawn to scale as a $6\,\mathrm{mm}$ disc so that the $0.25\,\mathrm{mm}$ gaps are visible.
+> - Underneath, a second ruler divided into segments one two-point limen long for the site being drawn, the tactors inside each segment bracketed, and the two counts written side by side (in the picture, 16 actuators and 10 resolvable sites). Count only whole segments, $N_{\max}=\lfloor C/d_2\rfloor$.
+> - Neither panel may be drawn from the command; both are drawn from the delivered quantity.
 
 > [!tip]- Solutions
 > 1. Panel A: the peak moves up with $f_0$ to just below 250 Hz, $f_0'\sqrt{1-2\zeta^2}=234\,\mathrm{Hz}$, and drops, because a stiffer suspension both shifts $f_0$ and reduces the resonant amplitude $F_0/(2\zeta k_t)$; the two curves cross between the operating points. Panel B: the same 16 marks at $6.25\,\mathrm{mm}$, but the ruler beneath now has $35\,\mathrm{mm}$ segments, so only two brackets fit across the sleeve.
@@ -276,7 +282,7 @@ Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm
 
 **T3 — 슬리브.** 핸들 그립을 감는 tactor 슬리브, 둘레 $C=100\,\mathrm{mm}$. 착용 부위는 손을 쥐었을 때의 손바닥 피부이고, 예시 two-point limen은 $d_2=10\,\mathrm{mm}$다. 같은 둘레의 팔뚝 밴드라면 $d_2=35\,\mathrm{mm}$가 된다.
 
-§6이 무엇을 그릴지 말하고 §7이 T1–T3를 끝까지 계산한다. 과제는 서스펜션을 다시 튜닝하고 슬리브를 옮긴다.
+§6이 T1–T3를 그림 하나로 보여 주고 §7이 그것을 끝까지 계산한다. 과제는 서스펜션을 다시 튜닝하고 슬리브를 옮긴다.
 
 ### 1. 액추에이터가 아니라 정보에서 시작한다
 
@@ -307,7 +313,7 @@ $$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
 
 그러므로 서스펜션이나 가동 질량을 바꿀 때만 움직이고, 그것이 바로 과제가 돌리는 손잡이다. 속도 응답은 정확히 $f_0$에서 가장 커지지만, 변위 응답은 그렇지 않다. $\zeta<1/\sqrt2$이면 변위 봉우리는 $f_0$보다 조금 아래에 있다:
 
-$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.0\sqrt{1-2(0.25)^2}=93.5\ \mathrm{Hz},$$
+$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
 
 §7의 $Z(f)$에서 댐퍼 항 $c_t\omega$가 주파수와 함께 계속 커지므로, 분모가 스프링–관성 항이 0이 되기 조금 전에 바닥을 치기 때문이다. T1에서 그 봉우리는 $39.2\,\mu\mathrm{m}$로 $f_0$ 자체에서의 $38.0\,\mu\mathrm{m}$보다 크고, 가속도 응답은 거꾸로 $f_0$보다 조금 *위*에서 가장 커진다. $\zeta\ge1/\sqrt2$이면 변위 응답에는 봉우리가 없고 정적 값에서 떨어지기만 한다. *반례*: 설계자가 표시하고 싶은 주파수. $f_0$에서 먼 곳에서 구동되는 tactor는 고장 난 것이 아니라 더 조용한 것이고, 그 양을 §7이 계산한다.
 
@@ -340,11 +346,9 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
 
 **계산해 읽기: 과제가 묻는 세 독해.** "ERM의 250 Hz"는 진폭·포락선·예압·면적·부위를 여전히 자유롭게 남긴다. 진폭을 독립적으로 쓰려면 LRA·voice coil·피에조가 필요하다. ERM은 $F\propto\omega^2$로 둘을 묶기 때문이다. 같은 전압은 주파수를 가로질러 같은 지각이 아니다. 탁자에서 시험한 배열을 팔뚝에 착용하는 것은 접촉 신뢰성과 workload를 건너뛴 것이고, 구별 성능은 보통 무너진다.
 
-### 6. 과제가 그릴 그림
+### 6. 그림으로 먼저 보기
 
-그림 하나, 패널 둘. 과제는 서스펜션을 다시 튜닝하고 슬리브를 옮긴 채 같은 그림을 그리라고 한다.
-
-<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 로그-로그 축에서 같은 0.10 A 명령이 T1에서 고유 진동수 100 Hz의 38.0 µm(봉우리는 그 조금 아래 93.5 Hz의 39.2 µm)와 250 Hz의 3.52 µm를 전달하고 피부 임계값 1.0과 0.20 µm 위의 간격이 감각 수준 31.6 dB와 24.9 dB임을 보이고, 패널 B는 100 mm 슬리브를 펼쳐 지름 6 mm 원판 16개를 6.25 mm 피치로 10 mm 눈금 자와 맞대어 액추에이터 16개, 구별되는 위치 10개를 보인다.">
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 로그-로그 축에서 같은 0.10 A 명령이 T1에서 고유 진동수 100 Hz의 38.0 µm(봉우리는 그 조금 아래 93.57 Hz의 39.2 µm)와 250 Hz의 3.52 µm를 전달하고 피부 임계값 1.0과 0.20 µm 위의 간격이 감각 수준 31.6 dB와 24.9 dB임을 보이고, 패널 B는 100 mm 슬리브를 펼쳐 지름 6 mm 원판 16개를 6.25 mm 피치로 10 mm 눈금 자와 맞대어 액추에이터 16개, 구별되는 위치 10개를 보인다.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · 피부에 도달하는 것</text>
   <line x1="72" y1="44" x2="530" y2="44" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.8"/>
   <text x="66" y="48" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">명령</text>
@@ -407,9 +411,7 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
   <g font-size="13" fill="currentColor"><text x="24" y="414">액추에이터 16개</text><text x="194" y="414">구별되는 위치 10개<tspan font-size="12" dx="4.2">(d</tspan><tspan font-size="11" dy="3">2</tspan><tspan font-size="12" dy="-3" dx="4.2">= 10 mm)</tspan></text></g>
 </svg>
 
-**패널 A — 피부에 도달하는 것.** 로그–로그 축. 가로는 주파수 20에서 1000 Hz, 세로는 변위 진폭 $0.1$에서 $100\,\mu\mathrm{m}$. T1의 크기 응답 $Z(f)$를 그린다. 왼쪽에서는 낮고 평평하다가 $f_0=100\,\mathrm{Hz}$ 바로 아래인 $93.5\,\mathrm{Hz}$에서 봉우리를 이루고 그 뒤로 떨어진다. 작동점 둘을 값과 함께 표시한다. $(100\,\mathrm{Hz},\,38.0\,\mu\mathrm{m})$과 $(250\,\mathrm{Hz},\,3.52\,\mu\mathrm{m})$. 같은 축 위에 얼어붙은 T2 임계값 둘, $(100\,\mathrm{Hz},\,1.0\,\mu\mathrm{m})$과 $(250\,\mathrm{Hz},\,0.20\,\mu\mathrm{m})$을 찍고 점선으로 잇는다. 각 임계값 위의 세로 간격을 칠하고 그 안에 감각 수준을 적는다. 맨 위에는 두 주파수에서 똑같은 명령을 평평한 선으로 그리고 $i_{\max}=0.10\,\mathrm{A}$라고 쓴다. 위의 평평한 선이 아래의 평평하지 않은 곡선을 만든다는 것이 이 패널의 요점이다.
-
-**패널 B — 구별할 수 있는 것.** 슬리브를 길이 $100\,\mathrm{mm}$의 직선으로 펼친다. 그 위에 tactor 16개를 $6.25\,\mathrm{mm}$ 피치로 찍고, 접촉자 하나하나를 지름 $6\,\mathrm{mm}$ 원판으로 축척에 맞게 그려서 $0.25\,\mathrm{mm}$ 틈이 보이게 한다. 그 아래에 $d_2=10\,\mathrm{mm}$ 눈금의 두 번째 자를 그리고, 각 눈금 안에 들어가는 tactor들을 괄호로 묶는다. 두 숫자를 나란히 적는다. 액추에이터 16개, 구별되는 위치 10개. 어느 패널도 명령에서 그려서는 안 된다. 둘 다 전달된 양에서 그린다.
+패널 A는 평평한 명령 $i_{\max}=0.10\,\mathrm{A}$ 하나가 T1에서 전달하는 변위를 로그–로그 축에 그린 것으로, 변위는 $f_0=100\,\mathrm{Hz}$ 바로 아래인 $93.57\,\mathrm{Hz}$에서 $39.2\,\mu\mathrm{m}$의 봉우리를 이루고, $100\,\mathrm{Hz}$에서 $38.0\,\mu\mathrm{m}$, $250\,\mathrm{Hz}$에서는 $3.52\,\mu\mathrm{m}$까지 떨어진다. 점선으로 이은 T2의 임계값 $1.0$과 $0.20\,\mu\mathrm{m}$에 대면 이는 감각 수준 $31.6$과 $24.9\,\mathrm{dB}$이며, 각 점과 그 임계값 사이의 간격을 칠해 나타냈다. 패널 B는 둘레 $C=100\,\mathrm{mm}$ 슬리브를 펼쳐 지름 $6\,\mathrm{mm}$ 원판 16개를 틈이 $0.25\,\mathrm{mm}$뿐인 $6.25\,\mathrm{mm}$ 피치로 늘어놓고 아래 자의 $d_2=10\,\mathrm{mm}$ 눈금으로 묶으니, 액추에이터 16개에 구별되는 위치는 10개다.
 
 ### 7. 대상으로 한 번 끝까지: T1이 전달하는 것과 T3가 구별하는 것
 
@@ -482,9 +484,19 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 위의 T1–T3, 그리고 �
 
 손잡이 둘만 움직이고 나머지는 그대로다. 서스펜션을 $k_t'=9860\,\mathrm{N/m}$로 뻣뻣하게 만들되 가동 질량, 감쇠비, 힘 상수, 전류 한계는 같다. 그리고 둘레 $C=100\,\mathrm{mm}$ 그대로인 슬리브를 손에서 팔뚝 밴드로 옮긴다. 거기 예시 two-point limen은 $d_2'=35\,\mathrm{mm}$다.
 
-1. **그려라.** 뻣뻣해진 tactor로 §6의 패널 A를 원래와 같은 축 위에 다시 그려라. 옛 곡선을 옅게 남겨 두 곡선이 어디서 교차하는지 보이게 하라. 패널 B는 같은 tactor 16개로 팔뚝 밴드에 맞춰 다시 그려라.
+1. **그려라.** §6의 그림을 두 손잡이를 모두 옮겨 다시 그려라. 패널 A는 뻣뻣해진 tactor로 원래와 같은 축 위에 그리되 옛 곡선을 옅게 남겨 두 곡선이 어디서 교차하는지 보이게 하고, 패널 B는 같은 tactor 16개로 팔뚝 밴드에 맞춰 그려라.
 2. **유도하라.** (a) 새 $c_t'$와 $f_0'$. (b) $Z'(100)$과 $Z'(250)$. Step 4·5처럼 스프링–관성 항과 감쇠 항을 따로 보여라. (c) 감각 수준 둘. (d) 재튜닝이 250 Hz에서 몇 dB를 벌고 100 Hz에서 몇 dB를 잃었는가. (e) 팔뚝에서의 $N_{\max}'$와 쓸 수 있는 비트.
 3. **해석하라.** (a) 재튜닝은 $f_0$를 피부가 가장 예민한 주파수로 옮겼다. (c)와 (d)를 써서, 좋은 거래였는가? 답이 뒤집히려면 의도한 신호에 대해 무엇이 참이어야 하는가? (b) 어떤 팀이 cue를 "ERM의 250 Hz"로 규정한다. 아직 자유인 물리 변수는 무엇이고, 진폭을 주파수와 독립으로 써야 한다면 ERM이 틀린 계열인 이유는? (c) 같은 슬리브를 탁자에서 검증한 뒤 실제 과제 중 움직이는 팔뚝에 착용한다. §5 체크리스트의 어느 두 항목을 건너뛰었고, §7 Step 8의 계산을 적용하기도 전에 어휘에 무슨 일이 일어나는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 패널 A는 로그–로그 축이다. 가로는 주파수 20에서 1000 Hz, 세로는 변위 진폭 $0.1$에서 $100\,\mu\mathrm{m}$. 다시 튜닝한 tactor를 그릴 때는 그림의 T1 곡선을 같은 축 위에 옅은 선으로 남긴다.
+> - 맨 위에는 두 주파수에서 똑같은 명령을 평평한 선 하나로 긋고 $i_{\max}=0.10\,\mathrm{A}$라고 쓴다. 위의 평평한 선이 아래의 평평하지 않은 곡선을 만든다는 것이 이 패널의 요점이다.
+> - 그리는 tactor의 크기 응답 $Z(f)$: 왼쪽에서는 평평하고, 자기 $f_0$ 바로 아래인 $f_0\sqrt{1-2\zeta^2}$에서 공진 값 $F_0/(2\zeta k_t)$보다 조금 높은 봉우리를 이룬 뒤 꼬리를 그리며 떨어진다. 서스펜션이 뻣뻣해지면 봉우리의 자리와 높이가 함께 바뀌므로, 옛 곡선을 옆으로 밀지 말고 둘 다 다시 계산한다.
+> - 100 Hz와 250 Hz의 작동점 둘을 각각 값과 함께 표시하고, T2의 임계값 둘, $(100\,\mathrm{Hz},\,1.0\,\mu\mathrm{m})$과 $(250\,\mathrm{Hz},\,0.20\,\mu\mathrm{m})$을 점선으로 잇는다.
+> - 각 작동점과 그 임계값 사이의 세로 간격을 칠하고 그 안에 감각 수준을 적는다.
+> - 패널 B: 슬리브를 길이 $100\,\mathrm{mm}$의 직선으로 펼치고, tactor 16개를 $6.25\,\mathrm{mm}$ 피치로 찍고, 접촉자 하나하나를 지름 $6\,\mathrm{mm}$ 원판으로 축척에 맞게 그려 $0.25\,\mathrm{mm}$ 틈이 보이게 한다.
+> - 그 아래에 그리는 부위의 two-point limen 길이로 나눈 두 번째 자를 두고, 각 눈금 안에 들어가는 tactor들을 괄호로 묶은 뒤 두 숫자를 나란히 적는다(위의 그림에서는 액추에이터 16개, 구별되는 위치 10개). 온전한 눈금만 센다. $N_{\max}=\lfloor C/d_2\rfloor$이다.
+> - 어느 패널도 명령에서 그려서는 안 된다. 둘 다 전달된 양에서 그린다.
 
 > [!tip]- 정답 · Solutions
 > 1. 패널 A: 봉우리가 $f_0$를 따라 250 Hz 바로 아래, $f_0'\sqrt{1-2\zeta^2}=234\,\mathrm{Hz}$로 옮겨 가면서 낮아진다. 뻣뻣한 서스펜션은 $f_0$를 옮기는 동시에 공진 진폭 $F_0/(2\zeta k_t)$를 줄이기 때문이다. 두 곡선은 작동점 사이에서 교차한다. 패널 B: $6.25\,\mathrm{mm}$ 피치의 같은 16개 표시. 다만 아래 자의 눈금이 $35\,\mathrm{mm}$가 되어 슬리브 전체에 괄호가 둘밖에 들어가지 않는다.

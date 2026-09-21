@@ -35,9 +35,7 @@ which are the same two numbers the generic example in §1 already uses, now atta
 > This straight joint-space path is *not* collision-free against the panel: [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] shows it drives the arm $\sqrt{2}-1 = 0.414\,\mathrm{m}$ into the wall at its midpoint. Timing a path and clearing a path are different questions, and this chapter answers only the first.
 > 이 직선 관절 경로는 패널에 대해 충돌이 없지 *않다*. [[04-robotics/modern-robotics/ch10-motion-planning|10장]]이 중간점에서 팔이 벽 안으로 $\sqrt{2}-1 = 0.414\,\mathrm{m}$ 들어감을 보인다. 경로에 시간을 입히는 것과 경로를 비우는 것은 다른 질문이고, 이 장은 앞의 것만 답한다.
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, three stacked panels sharing a horizontal time axis that runs from $0$ to $6\,\mathrm{s}$. Plot the **elbow** only.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 363" style="max-width:100%;height:auto" role="img" aria-label="the elbow flip on P2 in three stacked panels over 0 to 6 s: elbow angle, elbow speed against the 0.8 rad/s limit, and the rate of change of speed against the 2 rad/s² limit, for the trapezoid (4.327 s) and the cubic (5.890 s)">
   <g transform="translate(0 3)">
@@ -103,11 +101,7 @@ One figure, three stacked panels sharing a horizontal time axis that runs from $
   </g>
 </svg>
 
-- **Top, $\theta_2(t)$.** Two curves from $90°$ down to $-90°$: the trapezoid's (straight in the middle, parabolic at both ends) and the cubic's (an S-curve). Mark where each one arrives.
-- **Middle, the speed $|\dot\theta_2(t)|$.** Draw the limit $v_{\max} = 0.8\,\mathrm{rad/s}$ as a horizontal dashed line. The trapezoid is a trapezoid: a $0.4\,\mathrm{s}$ ramp up, a flat top *on* the dashed line, a $0.4\,\mathrm{s}$ ramp down. The cubic is a single parabola that just kisses the dashed line at its midpoint. Shade the trapezoid's flat top and label it with its duration.
-- **Bottom, $d|\dot\theta_2|/dt$.** Draw $a_{\max} = 2\,\mathrm{rad/s^2}$ as a dashed line. The trapezoid is two rectangles, $+a_{\max}$ then $-a_{\max}$, with zero between — and it *touches* the dashed line. The cubic is a straight line falling from a small positive value through zero to its negative, nowhere near the dashed line. Write the cubic's peak next to it.
-
-The figure's whole message is which dashed line each profile touches. The problem set asks for the same three panels after the joint is re-geared, and the answer changes which line is touched.
+The elbow flip on plant **P2**, $|\Delta\theta_2| = \pi$, timed two ways on one $0$–$6\,\mathrm{s}$ axis: the elbow angle on top, its speed $|\dot\theta_2|$ in the middle against $v_{\max} = 0.8\,\mathrm{rad/s}$, and the rate of change of that speed at the bottom against $a_{\max} = 2\,\mathrm{rad/s^2}$. The trapezoid finishes at $4.327\,\mathrm{s}$ — $0.4\,\mathrm{s}$ ramps at $\pm a_{\max}$ around $3.527\,\mathrm{s}$ spent at $v_{\max}$, $81.5\,\%$ of the move — while the cubic needs $5.890\,\mathrm{s}$, touches $v_{\max}$ only at its midpoint, and peaks at $0.543\,\mathrm{rad/s^2}$, $27\,\%$ of $a_{\max}$. The figure's whole message is which dashed line each profile touches: the trapezoid both, the cubic only the velocity limit.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -135,7 +129,7 @@ because a longer $T$ lowers both peaks, so each limit sets a floor and the move 
 
 $$\frac{T_{\text{cubic}}}{T_{\text{trap}}} = \frac{5.8905}{4.3270} = 1.361 \quad\Longrightarrow\quad \text{the trapezoid finishes } 26.5\,\% \text{ sooner}$$
 
-and the reason is visible in the middle panel of the diagram: the trapezoid sits *at* $v_{\max}$ for $81.5\,\%$ of the move, while the cubic reaches $v_{\max}$ at one instant and is below it everywhere else. Spending the whole move at the limit is the entire advantage, and it is paid for with a discontinuous acceleration at the two corners.
+and the reason is visible in the middle panel of the picture: the trapezoid sits *at* $v_{\max}$ for $81.5\,\%$ of the move, while the cubic reaches $v_{\max}$ at one instant and is below it everywhere else. Spending the whole move at the limit is the entire advantage, and it is paid for with a discontinuous acceleration at the two corners.
 
 **D — which limit binds, in general.** Setting $T_v = T_a$ and solving gives the crossover for a cubic:
 
@@ -231,9 +225,18 @@ on real hardware for safety/limits.
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2** and the same elbow flip, $|\Delta\theta_2| = \pi\,\mathrm{rad}$, but the joint is re-geared: a taller gear ratio raises the top speed and cuts the torque, giving $v_{\max} = 1.6\,\mathrm{rad/s}$ and $a_{\max} = 0.5\,\mathrm{rad/s^2}$.
 
-1. **Draw.** The same three stacked panels for the elbow under the new limits. Before drawing, decide which of the two dashed lines each profile touches now — the shapes change, and one of them loses a phase entirely.
+1. **Draw.** The picture above, for the elbow under the new limits. Before drawing, decide which of the two dashed lines each profile touches now — the shapes change, and one of them loses a phase entirely.
 2. **Derive.** (a) The trapezoid: evaluate $v_{\max}^2/a_{\max}$ first and say what kind of profile results, then give its duration and its peak velocity. (b) The cubic: compute $T_v$ and $T_a$, state $T_{\text{cubic}}$ and which limit binds. (c) The ratio $T_{\text{cubic}}/T_{\text{trap}}$, and show that under these conditions the ratio does not depend on $\Delta\theta$ or on $a_{\max}$ at all.
 3. **Interpret.** The re-gearing doubled the top speed and quartered the acceleration. Did the elbow flip get faster or slower, and by how much against the frozen-limit numbers? Which of the two limits is worth buying, and what does the crossover $\Delta\theta^{\dagger}$ say about when that answer flips?
+
+> [!note]- How to draw it · 그리는 법
+> - Three stacked panels sharing one time axis, the elbow only: the angle $\theta_2(t)$ on top, the speed $|\dot\theta_2|$ in the middle, and its rate of change $d|\dot\theta_2|/dt$ at the bottom.
+> - Draw the limits first, as horizontal dashed lines at the values in force: $v_{\max}$ in the middle panel, $\pm a_{\max}$ in the bottom one.
+> - Top: both curves run from $90°$ down to $-90°$. The trapezoid's is straight in the middle and parabolic at the ends, the cubic's is an S-curve; mark where each one arrives.
+> - Middle: the trapezoid ramps up, runs flat on the $v_{\max}$ line, and ramps down — and if the move ends before the ramps reach $v_{\max}$, there is no flat top. The cubic is a single parabola peaking at its midpoint.
+> - Bottom: the trapezoid is rectangles at $+a_{\max}$ and $-a_{\max}$ with zero between; the cubic is one straight line falling through zero. Write each profile's peak beside it.
+> - Shade any stretch a profile spends on a limit and label its duration (in the picture above, $3.527\,\mathrm{s}$ at $v_{\max}$).
+> - Check: each profile, timed as fast as its limits allow, touches at least one dashed line — which one is the whole message of the figure.
 
 > [!tip]- Solutions
 > 1. Velocity: the trapezoid's flat top disappears, so the middle panel shows a triangle peaking at $1.2533\,\mathrm{rad/s}$, below the new $v_{\max}$ dashed line at $1.6$. Acceleration: both profiles now press against the $a_{\max}$ line — the triangle touches it over both halves, and the cubic touches it at the two endpoints.
@@ -258,9 +261,7 @@ $$|\dot\theta_i| \le v_{\max} = 0.8\ \mathrm{rad/s}, \qquad |\ddot\theta_i| \le 
 
 를 지킨다. §1의 일반 예제가 이미 쓰던 그 두 숫자를 이제 장치에 붙인 것이다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 가로 시간축($0$부터 $6\,\mathrm{s}$)을 공유하는 세 단. **엘보**만 그린다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 363" style="max-width:100%;height:auto" role="img" aria-label="P2의 엘보 뒤집기를 0~6 s 위 세 단으로: 엘보 각, 0.8 rad/s 한계에 대한 엘보 속력, 2 rad/s² 한계에 대한 속력 변화율. 사다리꼴(4.327 s)과 3차(5.890 s)">
   <g transform="translate(0 3)">
@@ -326,11 +327,7 @@ $$|\dot\theta_i| \le v_{\max} = 0.8\ \mathrm{rad/s}, \qquad |\ddot\theta_i| \le 
   </g>
 </svg>
 
-- **위, $\theta_2(t)$.** $90°$에서 $-90°$로 내려가는 곡선 둘: 사다리꼴(가운데가 직선, 양 끝이 포물선)과 3차(S자). 각각 언제 도착하는지 표시한다.
-- **가운데, 속력 $|\dot\theta_2(t)|$.** 한계 $v_{\max} = 0.8\,\mathrm{rad/s}$를 가로 점선으로 긋는다. 사다리꼴은 말 그대로 사다리꼴이다. $0.4\,\mathrm{s}$ 상승, 점선 *위에* 붙은 평평한 꼭대기, $0.4\,\mathrm{s}$ 하강. 3차는 중간에서 점선을 살짝 스치는 포물선 하나다. 사다리꼴의 평평한 부분을 칠하고 그 길이를 적는다.
-- **아래, $d|\dot\theta_2|/dt$.** $a_{\max} = 2\,\mathrm{rad/s^2}$를 점선으로 긋는다. 사다리꼴은 직사각형 둘, $+a_{\max}$ 다음 $-a_{\max}$, 사이는 0이며 점선에 *닿는다*. 3차는 작은 양수에서 0을 지나 음수로 내려가는 직선이고 점선 근처에도 못 간다. 3차의 최댓값을 옆에 적는다.
-
-이 그림이 말하려는 전부는 각 프로파일이 어느 점선에 닿느냐다. 과제는 관절의 기어비를 바꾼 뒤 같은 세 단을 요구하고, 답에서 닿는 점선이 바뀐다.
+P2의 엘보 뒤집기 $|\Delta\theta_2| = \pi$에 두 방식으로 시간을 입혀 $0$–$6\,\mathrm{s}$ 축 하나에 그렸다 — 위 단은 엘보 각, 가운데 단은 $v_{\max} = 0.8\,\mathrm{rad/s}$ 점선에 대한 속력 $|\dot\theta_2|$, 아래 단은 $a_{\max} = 2\,\mathrm{rad/s^2}$ 점선에 대한 그 속력의 변화율이다. 사다리꼴은 $\pm a_{\max}$의 $0.4\,\mathrm{s}$ 램프 사이에서 $3.527\,\mathrm{s}$, 곧 이동의 $81.5\,\%$ 동안 $v_{\max}$에 붙어 있다가 $4.327\,\mathrm{s}$에 끝나고, 3차는 중간에서 한순간만 $v_{\max}$에 닿고 가속도는 $a_{\max}$의 $27\,\%$인 $0.543\,\mathrm{rad/s^2}$까지만 올라가며 $5.890\,\mathrm{s}$가 걸린다. 이 그림이 말하려는 전부는 각 프로파일이 어느 점선에 닿느냐이고, 사다리꼴은 둘 다, 3차는 속도 한계에만 닿는다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -449,9 +446,18 @@ $$T_{\text{trap}} = \frac{\Delta\theta}{v_{\max}} + \frac{v_{\max}}{a_{\max}} \q
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 장치는 같은 **P2**, 이동도 같은 엘보 뒤집기 $|\Delta\theta_2| = \pi\,\mathrm{rad}$이지만 관절의 기어비를 바꾼다. 감속비를 낮춰 최고 속도를 올리고 토크를 깎아 $v_{\max} = 1.6\,\mathrm{rad/s}$, $a_{\max} = 0.5\,\mathrm{rad/s^2}$.
 
-1. **그리기.** 새 한계에서 엘보의 같은 세 단. 그리기 전에 두 프로파일이 각각 어느 점선에 닿는지부터 정하라. 모양이 바뀌고, 한쪽은 구간 하나를 통째로 잃는다.
+1. **그리기.** 새 한계에서 엘보에 대한 위의 그림. 그리기 전에 두 프로파일이 각각 어느 점선에 닿는지부터 정하라. 모양이 바뀌고, 한쪽은 구간 하나를 통째로 잃는다.
 2. **유도.** (a) 사다리꼴: 먼저 $v_{\max}^2/a_{\max}$를 계산해 어떤 프로파일이 되는지 말하고, 소요 시간과 최대 속도를 구하라. (b) 3차: $T_v$와 $T_a$를 계산해 $T_{\text{cubic}}$과 걸리는 한계를 말하라. (c) 비 $T_{\text{cubic}}/T_{\text{trap}}$를 구하고, 이 조건에서 그 비가 $\Delta\theta$에도 $a_{\max}$에도 의존하지 않음을 보여라.
 3. **해석.** 기어비 변경이 최고 속도를 두 배로, 가속도를 1/4로 만들었다. 엘보 뒤집기는 빨라졌는가 느려졌는가, 고정 한계의 숫자 대비 얼마인가? 둘 중 어느 한계를 사는 것이 값어치가 있고, 교차점 $\Delta\theta^{\dagger}$는 그 답이 언제 뒤집히는지에 대해 무엇을 말하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 시간축 하나를 공유하는 세 단에 엘보만 그린다. 위는 각 $\theta_2(t)$, 가운데는 속력 $|\dot\theta_2|$, 아래는 그 변화율 $d|\dot\theta_2|/dt$.
+> - 한계부터, 지금 적용되는 값으로 가로 점선을 긋는다. 가운데 단에 $v_{\max}$, 아래 단에 $\pm a_{\max}$.
+> - 위: 두 곡선 모두 $90°$에서 $-90°$로 내려간다. 사다리꼴은 가운데가 직선이고 양 끝이 포물선, 3차는 S자다. 각각 언제 도착하는지 표시한다.
+> - 가운데: 사다리꼴은 올라가서 $v_{\max}$ 선 위를 평평하게 달리고 내려온다. 램프가 $v_{\max}$에 닿기 전에 이동이 끝나면 평평한 꼭대기는 없다. 3차는 중간에서 꼭짓점을 찍는 포물선 하나다.
+> - 아래: 사다리꼴은 $+a_{\max}$와 $-a_{\max}$의 직사각형이고 사이는 0이다. 3차는 0을 지나 내려가는 직선 하나다. 각 프로파일의 최댓값을 옆에 적는다.
+> - 프로파일이 한계에 붙어 있는 구간을 칠하고 그 길이를 적는다(위의 그림에서는 $v_{\max}$에 $3.527\,\mathrm{s}$).
+> - 확인: 한계가 허용하는 만큼 빠르게 시간을 입힌 프로파일은 적어도 점선 하나에 닿는다. 어느 점선이냐가 이 그림이 말하는 전부다.
 
 > [!tip]- 정답 · Solutions
 > 1. 속도: 사다리꼴의 평평한 꼭대기가 사라지므로 가운데 단은 $1.2533\,\mathrm{rad/s}$에서 꼭짓점을 찍는 삼각형이고, 새 $v_{\max}$ 점선 $1.6$보다 아래다. 가속도: 이제 두 프로파일 모두 $a_{\max}$ 선에 붙는다. 삼각형은 양쪽 절반 내내 닿아 있고 3차는 양 끝점에서 닿는다.

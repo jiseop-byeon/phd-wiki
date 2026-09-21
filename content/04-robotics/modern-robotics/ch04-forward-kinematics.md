@@ -17,9 +17,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: given joint angles $\theta$, where is the end-effector?
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, two arms on it. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the whole point of the drawing is that PoE needs *two* configurations at once: the home pose, where the screw axes are measured, and the pose being evaluated.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 322" style="max-width:100%;height:auto" role="img" aria-label="P2 drawn twice: the home pose dashed with its two screw axes at q1 and q2, and the pose (0°, 90°) solid, sharing link 1; frames at the base, at q2 and at the tool tip; beside it the matrix route and the geometric route both give the tip (1, 1).">
   <defs><marker id="mr04hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -67,14 +65,7 @@ One figure, two arms on it. The object is plant **P2** from [[02-foundations/lab
   </g>
 </svg>
 
-1. **The home arm, dashed.** Both links along $+\hat x$: base at the origin, elbow at $(1,0)$, tip at $(2,0)$. This is where $M$ is read off, and it is a fact about the *model*, not about where the robot is now.
-2. **The evaluated arm, solid.** P2 at the catalog pose $\theta = (0^\circ, 90^\circ)$: base at the origin, elbow still at $(1,0)$, tip at $(1,1)$. The two arms share link 1 exactly, because $\theta_1 = 0$ — draw them overlapping there rather than offset, since that coincidence is what makes the first exponential the identity.
-3. **The two screw axes**, marked on the *home* drawing and nowhere else: a circled dot at $q_1 = (0,0,0)$ and another at $q_2 = (1,0,0)$, each labelled $\hat\omega_i = (0,0,1)$. Beside each write its linear part, $v_i = -\hat\omega_i \times q_i$, giving $v_1 = (0,0,0)$ and $v_2 = (0,-1,0)$. Marking an axis on the solid arm instead is the single most common way this figure is drawn wrong: $\mathcal{S}_i$ is defined at the home pose and stays there.
-4. **Three frames**, as small pairs of labelled arrows: $\{s\}$ at the base, one at $q_2$, and the tool frame at the solid tip with its $x$-axis along the forearm, i.e. along $+\hat y_s$.
-
-Write the answer beside the figure as two independent lines that must agree: the matrix route, $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$, and the geometric route, elbow $+$ forearm $= (1,0) + (0,1) = (1,1)$. A figure that shows only one of the two routes cannot catch the error it exists to catch.
-
-The problem set asks for exactly this pair of arms with the frames and screw axes labelled.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] twice on one set of axes: dashed at home, both links along $+\hat x$ and the tip at $(2,0)$, where $M$ and the screw axes are read; solid at the evaluated pose $\theta = (0^\circ, 90^\circ)$, sharing link 1 with the home arm because $\theta_1 = 0$. The screw axes sit on the home arm only — $\mathcal{S}_1$ through $q_1 = (0,0,0)$ with $v_1 = (0,0,0)$, $\mathcal{S}_2$ through $q_2 = (1,0,0)$ with $v_2 = (0,-1,0)$ — and frames sit at the base, at $q_2$ and at the tool tip. Beside the arms, the matrix route $T = e^{[\mathcal{S}_2]\pi/2}M$ and the geometric route, elbow $+$ forearm $= (1,0) + (0,1)$, agree on the tip $(1,1)$ with $R = R_z(90^\circ)$.
 
 ### The Product of Exponentials — one formula
 
@@ -198,6 +189,13 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and
 2. **Derive.** Write $\mathcal{S}_1$, $\mathcal{S}_2$, and $M$. From geometry: elbow, tip, $R$ at $\theta=(0^\circ,90^\circ)$. Why is $e^{[\mathcal{S}_1]\theta_1}=I$ here, and what is $T$?
 3. **Interpret.** When does skipping the first exponential fail, and what must still match PoE if it does?
 
+> [!note]- How to draw it · 그리는 법
+> - The home arm dashed: both links along $+\hat x$, elbow at $(1,0)$, tip at $(2,0)$. This is where $M$ is read — a fact about the model, not about where the robot is now.
+> - The evaluated arm solid: elbow at $(\cos\theta_1, \sin\theta_1)$, tip one more unit along the absolute angle $\theta_1 + \theta_2$. When $\theta_1 = 0$ the two arms share link 1 exactly; draw them overlapping, not offset, since that coincidence is what makes the first exponential the identity.
+> - The screw axes on the home drawing and nowhere else: a circled dot at each $q_i$, labelled with $\hat\omega_i = (0,0,1)$ and its linear part $v_i = -\hat\omega_i \times q_i$. Marking an axis on the solid arm is the most common way this figure goes wrong: $\mathcal{S}_i$ is defined at home and stays there.
+> - Three frames as small pairs of labelled arrows: $\{s\}$ at the base, one at $q_2$, and the tool frame at the solid tip with its $x$-axis along the forearm.
+> - Beside the figure, two independent lines that must agree: the matrix route $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$ and the geometric route, elbow $+$ forearm. A figure that shows only one route cannot catch the error it exists to catch.
+
 > [!tip]- Solutions
 > 1. Home stretched along $+x$. Frozen: elbow $(1,0)$, tip $(1,1)$, forearm along $+y$.
 > 2. $\mathcal{S}_1=(0,0,1;\,0,0,0)$, $\mathcal{S}_2=(0,0,1;\,0,-1,0)$, $M$ has $p=(2,0,0)$ and $R=I$. $\theta_1=0$ so the first factor is $I$. Joint 2 rotates $M$ about $q_2$: tip $(1,1)$, $R=R_z(90^\circ)$. Same $T$ as Self-check 1 — now named **P2**.
@@ -207,9 +205,7 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and
 
 **핵심 질문**: 관절 각 $\theta$가 주어지면 말단은 어디에 있는가?
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나에 팔 둘을 올린다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**이고, 이 그림의 요점은 PoE가 자세 *두 개*를 동시에 요구한다는 것이다. 스크류 축을 재는 홈 자세와, 지금 평가하려는 자세다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 322" style="max-width:100%;height:auto" role="img" aria-label="q1과 q2의 스크류 축을 표시한 점선 홈 자세와 링크 1을 공유하는 실선 (0°, 90°) 자세로 P2를 두 번 그리고 베이스, q2, 도구 말단에 프레임을 둔 그림으로, 옆에 적은 행렬 경로와 기하 경로가 모두 말단 (1, 1)을 준다.">
   <defs><marker id="mr04hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -257,14 +253,7 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and
   </g>
 </svg>
 
-1. **홈 자세의 팔, 점선.** 두 링크 모두 $+\hat x$: 베이스 원점, 엘보 $(1,0)$, 말단 $(2,0)$. $M$을 읽는 곳이며, 로봇이 지금 어디 있는지가 아니라 *모형*에 대한 사실이다.
-2. **평가할 자세의 팔, 실선.** 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$의 P2: 베이스 원점, 엘보는 여전히 $(1,0)$, 말단 $(1,1)$. $\theta_1 = 0$이므로 두 팔은 링크 1을 정확히 공유한다. 어긋나게 그리지 말고 겹쳐 그린다. 그 겹침이 첫 지수를 항등으로 만드는 사실 그 자체다.
-3. **스크류 축 둘**을 *홈* 그림에만 표시한다. $q_1 = (0,0,0)$에 동그라미 친 점 하나, $q_2 = (1,0,0)$에 또 하나, 둘 다 $\hat\omega_i = (0,0,1)$로 쓴다. 각각 옆에 선형부 $v_i = -\hat\omega_i \times q_i$를 적으면 $v_1 = (0,0,0)$, $v_2 = (0,-1,0)$이다. 축을 실선 팔에 표시하는 것이 이 그림이 틀리는 가장 흔한 방식이다. $\mathcal{S}_i$는 홈 자세에서 정의되고 거기 머문다.
-4. **프레임 셋**을 짧은 화살표 쌍으로. 베이스의 $\{s\}$, $q_2$의 것 하나, 그리고 실선 말단의 도구 프레임 — $x$축은 전완 방향, 곧 $+\hat y_s$다.
-
-그림 옆에는 서로 맞아야 하는 두 줄을 독립적으로 적는다. 행렬 경로 $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$과 기하 경로 엘보 $+$ 전완 $= (1,0) + (0,1) = (1,1)$이다. 둘 중 하나만 보여 주는 그림은 자기가 존재하는 이유인 그 오류를 잡지 못한다.
-
-과제는 프레임과 스크류 축을 표시한 이 두 팔을 그대로 요구한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 한 좌표축 위에 두 번: 점선은 두 링크가 모두 $+\hat x$로 뻗어 말단이 $(2,0)$인 홈 자세로 $M$과 스크류 축을 읽는 곳이고, 실선은 평가하는 자세 $\theta = (0^\circ, 90^\circ)$로 $\theta_1 = 0$이라 링크 1을 홈 팔과 공유한다. 스크류 축은 홈 팔에만 있고($q_1 = (0,0,0)$을 지나는 $\mathcal{S}_1$은 $v_1 = (0,0,0)$, $q_2 = (1,0,0)$을 지나는 $\mathcal{S}_2$는 $v_2 = (0,-1,0)$), 프레임은 베이스, $q_2$, 도구 말단에 있다. 옆에 적은 행렬 경로 $T = e^{[\mathcal{S}_2]\pi/2}M$과 기하 경로 엘보 $+$ 전완 $= (1,0) + (0,1)$이 말단 $(1,1)$, $R = R_z(90^\circ)$에서 일치한다.
 
 ### 지수 곱 공식 — 단 하나의 공식
 
@@ -389,6 +378,13 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 고정 자세 **P2**. 홈과 스크
 1. **그리기.** 점선 홈(두 링크 $+x$, 말단 $(2,0)$)과 실선 고정 자세. 베이스, $q_2=(1,0,0)$, 말단의 프레임.
 2. **유도.** $\mathcal{S}_1$, $\mathcal{S}_2$, $M$. 기하로 $\theta=(0^\circ,90^\circ)$의 엘보·말단·$R$. 왜 $e^{[\mathcal{S}_1]\theta_1}=I$이고 $T$는?
 3. **해석.** 첫 지수를 건너뛰는 지름길이 언제 깨지고, 그래도 PoE와 무엇이 맞아야 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 홈 자세의 팔은 점선. 두 링크 모두 $+\hat x$, 엘보 $(1,0)$, 말단 $(2,0)$. $M$을 읽는 곳이며, 로봇이 지금 어디 있는지가 아니라 모형에 대한 사실이다.
+> - 평가할 자세의 팔은 실선. 엘보는 $(\cos\theta_1, \sin\theta_1)$, 말단은 거기서 절대각 $\theta_1 + \theta_2$ 방향으로 한 단위 더 간 곳이다. $\theta_1 = 0$이면 두 팔이 링크 1을 정확히 공유하므로 어긋나게 그리지 말고 겹쳐 그린다. 그 겹침이 첫 지수를 항등으로 만드는 사실 그 자체다.
+> - 스크류 축은 홈 그림에만 표시한다. 각 $q_i$에 동그라미 친 점을 찍고 $\hat\omega_i = (0,0,1)$과 선형부 $v_i = -\hat\omega_i \times q_i$를 적는다. 축을 실선 팔에 표시하는 것이 이 그림이 틀리는 가장 흔한 방식이다. $\mathcal{S}_i$는 홈 자세에서 정의되고 거기 머문다.
+> - 프레임 셋을 이름 붙인 짧은 화살표 쌍으로. 베이스의 $\{s\}$, $q_2$의 것 하나, 그리고 실선 말단의 도구 프레임이고, 도구 프레임의 $x$축은 전완 방향이다.
+> - 그림 옆에는 서로 맞아야 하는 두 줄을 독립적으로 적는다. 행렬 경로 $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$과 기하 경로 엘보 $+$ 전완이다. 둘 중 하나만 보여 주는 그림은 자기가 존재하는 이유인 그 오류를 잡지 못한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 홈은 $+x$로 뻗음. 고정: 엘보 $(1,0)$, 말단 $(1,1)$, 전완은 $+y$ 방향.

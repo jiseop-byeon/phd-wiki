@@ -8,15 +8,15 @@ mastery-when: "Raise when a recurrent, gated or state-space backbone, or the sta
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], whose home is [[03-deep-learning/world-models/index|5. World Models]] · [[03-deep-learning/foundations/index|1. Learning Systems]] (a shape on every tensor, parameters against activations) · [[02-foundations/calculus-backprop|2. Calculus & Backprop §2 and §5]] (the chain rule; vanishing and exploding gradients; clipping) · [[02-foundations/linear-algebra|1. Linear Algebra §3 and §4]] (eigenvalues; the spectral norm) · [[02-foundations/signal-processing|6. Signal Processing §1]] (LTI systems, impulse response, convolution) · [[04-robotics/control-theory-ce397|5. Control Theory §2 and §4]] (state-space models; zero-order-hold discretization; discrete stability) · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A and the lab in §11 needs NumPy and nothing else.
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D5**(사용처는 [[03-deep-learning/world-models/index|5. 월드모델]]) · [[03-deep-learning/foundations/index|1. 학습 시스템]](모든 텐서의 shape, 파라미터와 활성값의 구분) · [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2, §5]](연쇄 법칙, 그래디언트 소실과 폭발, clipping) · [[02-foundations/linear-algebra|1. 선형대수 §3, §4]](고유값, 스펙트럼 노름) · [[02-foundations/signal-processing|6. 신호처리 §1]](LTI 시스템, 임펄스 응답, 합성곱) · [[04-robotics/control-theory-ce397|5. 제어 이론 §2, §4]](상태공간 모델, zero-order hold 이산화, 이산 안정성) · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]]. §11의 실습에는 NumPy만 있으면 된다.
+> Object **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], whose home is [[03-deep-learning/world-models/index|5. World Models]] · [[03-deep-learning/foundations/index|1. Learning Systems]] (a shape on every tensor, parameters against activations) · [[02-foundations/calculus-backprop|2. Calculus & Backprop §2 and §5]] (the chain rule; vanishing and exploding gradients; clipping) · [[02-foundations/linear-algebra|1. Linear Algebra §3 and §4]] (eigenvalues; the spectral norm) · [[02-foundations/signal-processing|6. Signal Processing §1]] (LTI systems, impulse response, convolution) · [[04-robotics/control-theory-ce397|5. Control Theory §2 and §4]] (state-space models; zero-order-hold discretization; discrete stability) · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A and the lab in §11 needs NumPy and nothing else.
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D5**(사용처는 [[03-deep-learning/world-models/index|5. 월드모델]]) · [[03-deep-learning/foundations/index|1. 학습 시스템]](모든 텐서의 shape, 파라미터와 활성값의 구분) · [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2, §5]](연쇄 법칙, 그래디언트 소실과 폭발, clipping) · [[02-foundations/linear-algebra|1. 선형대수 §3, §4]](고유값, 스펙트럼 노름) · [[02-foundations/signal-processing|6. 신호처리 §1]](LTI 시스템, 임펄스 응답, 합성곱) · [[04-robotics/control-theory-ce397|5. 제어 이론 §2, §4]](상태공간 모델, zero-order hold 이산화, 이산 안정성) · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]]. §11의 실습에는 NumPy만 있으면 된다.
 
 ## English
 
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[02-foundations/calculus-backprop|2. Calculus & Backprop]]. Second use of object **D5**, whose home is [[03-deep-learning/world-models/index|5. World Models]]: that page runs D5 forward to measure how a rollout's error grows, and this one reads the same line as the smallest recurrent network and runs it backwards. The sibling page [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] is the other way to read a sequence.*
 
 > [!note] First pass · 처음이라면
-> Draw the Homework diagram, then work the Worked case with a calculator: two steps forward, two back, five kernel taps, and the same two outputs again by convolution. Read §1–§3 and do problems 1–2. Open §4–§6 when a paper says "clipping", "forget-gate bias" or "GRU", and §7–§10 when it says "state space", "S4", "Mamba" or "linear time". §11 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator: two steps forward, two back, five kernel taps, and the same two outputs again by convolution. Read §1–§3 and do problems 1–2. Open §4–§6 when a paper says "clipping", "forget-gate bias" or "GRU", and §7–§10 when it says "state space", "S4", "Mamba" or "linear time". §11 runs all of it.
 
 ### Running object · 이 페이지의 대상
 
@@ -41,9 +41,7 @@ The page adds two small objects and freezes them here. Neither changes afterward
 
 *Scope: this page teaches the recurrent network and what training it through time does to gradients — backpropagation through time, vanishing and exploding on the scalar and on the matrix, clipping, the LSTM and GRU gates — and the linear state-space model as one system computed two ways, as a recurrence and as a convolution, together with the discretization and the two changes, S4's and Mamba's, that made it a deep-learning backbone. It does not teach attention, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]; nor the world model built around a transition like D5's, which is [[03-deep-learning/world-models/index|5. World Models]]; nor the Kalman filter, a recurrence whose gain is derived rather than learned, which is [[04-robotics/state-estimation-slam|3. State Estimation §5]]; nor the optimizers that consume these gradients, which are [[02-foundations/optimization|4. Optimization §3]]; nor tokenizers or language modelling.*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure in three strips, and the problem set asks for exactly this one: D5 unrolled over its catalog sequence, run forward, run backward, and rewired as a convolution.
+### The picture · 그림으로 먼저 보기
 
 ```mermaid
 flowchart TB
@@ -70,11 +68,7 @@ flowchart TB
     FWD ~~~ BWD ~~~ CONV
 ```
 
-Four things the drawing has to get right, each of which is a claim about the computation.
-**The same number on every arrow of the chain.** $0.8$ sits on both state-to-state arrows going forward and on both going back. One weight used twice is what "shared across time" means, and it is why the gradient of $\lambda$ in the second strip is a sum of two terms rather than one.
-**The backward strip needs the forward strip's values.** The two terms of $\partial L/\partial\lambda$ multiply each adjoint by the state its step *started* from, $z_1=0.3$ and $z_0=1$. A backward pass that has thrown the forward states away cannot compute them, which is why §2 stores every state.
-**No state-to-state arrow in the convolution strip.** The start state and each input are wired straight to $z_2$, each with its own weight. The chain is gone, so $z_2$ no longer waits for $z_1$ — the reason §7 convolves — and the strip can be drawn at all only because D5 is linear and its weights do not change with time.
-**The tap on $a_0$ is a backward multiplier times $0.5$.** $K_1=0.5\times0.8$ carries the same $0.8$ as a backward arrow. Label both with the power of $0.8$ they carry, since the worked case ends by showing they are one number.
+D5 unrolled over its catalog sequence, in three strips. Forward, $z_1=0.8(1)+0.5(-1)=0.3$ and $z_2=0.24$, with the same $0.8$ on both state-to-state arrows; backward, for $L=\tfrac12z_2^2$, the adjoints $0.24\to0.192\to0.1536$ carry that $0.8$ back, and $\partial L/\partial\lambda=0.24(0.3)+0.192(1)=0.264$ collects one term per step, each an adjoint times the state its step started from. The convolution strip wires $z_0$, $a_0$ and $a_1$ straight to $z_2$ with weights $0.8^2=0.64$, $K_1=0.4$ and $K_0=0.5$ — no state-to-state arrow, and the same $z_2=0.24$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -546,9 +540,9 @@ Four readings.
 
 ### Problem set · 과제
 
-Tier A. Using **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Original object and original problems. The worked case used D5's true gain over two steps; this set uses the catalog's pessimistic learned gain $\hat\lambda=0.9$ over three steps, with the actions $(a_0,a_1,a_2)=(-1,0,0)$, and turns two knobs in the lab — change the knobs in §11's listing, do not rewrite it.
+Tier A. Using **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original object and original problems. The worked case used D5's true gain over two steps; this set uses the catalog's pessimistic learned gain $\hat\lambda=0.9$ over three steps, with the actions $(a_0,a_1,a_2)=(-1,0,0)$, and turns two knobs in the lab — change the knobs in §11's listing, do not rewrite it.
 
-1. **Draw.** The homework diagram for $\hat\lambda=0.9$ over the three steps: the forward strip with every state's value; the backward strip for $L=\tfrac12z_3^2$, with its three adjoints and the three terms of $\partial L/\partial\lambda$; and the convolution strip with the start state's arrow and three taps. Mark the backward arrows that a one-step truncation cuts.
+1. **Draw.** The picture above, for $\hat\lambda=0.9$ over the three steps: the forward strip with every state's value; the backward strip for $L=\tfrac12z_3^2$, with its three adjoints and the three terms of $\partial L/\partial\lambda$; and the convolution strip with the start state's arrow and three taps. Mark the backward arrows that a one-step truncation cuts.
 2. **Derive.** (a) $z_1,z_2,z_3$ by recurrence; the first five kernel taps; $z_3$ by convolution. (b) BPTT for $L=\tfrac12z_3^2$: $g_3,g_2,g_1$, then $\partial L/\partial\lambda$ and $\partial L/\partial\beta$, checked against the closed form of $z_3$; and what one-step truncated BPTT returns for $\partial L/\partial\lambda$. (c) $\partial z_T/\partial z_0$ at $T=1,5,10,20$, the first horizon at which it falls below $1\%$, and the ratio of that horizon to D5's $21$; say what sets the ratio. (d) The continuous $(a,b)$ of which $\hat\lambda=0.9$, $\beta=0.5$ is the zero-order-hold sampling at $\Delta=1$; its time constant and DC gain; and $A$ and $B$ at $\Delta=2$.
 3. **Do.** Fill the `?` in the patch below and append it to §11's listing. Report (a) the BPTT line and the recurrence–convolution check for $\hat\lambda$; (b) $\lVert W\rVert_2$ and the peak of the row of four with its coupling halved to $0.25$, at $w=0.8$ and $w=0.9$; (c) $\prod f_t$ and the exact $\partial c_T/\partial c_0$ at the five horizons for $b_f=1$, and for $b_f=3$ with a candidate that reads $h$ through $U_g=0.8$. Then answer two questions: does the recommended bias of $1$ carry the cell gradient further than D5's linear recurrence at $T=20$? Does a forget gate near $1$ bound the exact derivative?
 
@@ -571,6 +565,12 @@ for bf, Ug in ((1.0, 0.0), (3.0, 0.8)):          # the recommended bias; a candi
     out = lstm(xs, bf, Ug=?)
     print(bf, Ug, [(float(f"{p:.4g}"), float(f"{d:.4g}")) for p, d in (out[t - 1] for t in Ts)])
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Put the same number on every arrow of the chain: the gain sits on each state-to-state arrow going forward and on each going back. One weight used at every step is what "shared across time" means, and it is why the gradient of $\lambda$ in the backward strip is a sum with one term per step.
+> - Carry the forward strip's values into the backward strip. Each term of $\partial L/\partial\lambda$ multiplies an adjoint by the state its step *started* from; a backward pass that has thrown the forward states away cannot compute them, which is why §2 stores every state.
+> - Draw no state-to-state arrow in the convolution strip: the start state and each input are wired straight to the last state, each with its own weight. The chain is gone, so the last state no longer waits for the one before it — the reason §7 convolves — and the strip can be drawn at all only because D5 is linear and its weights do not change with time.
+> - Label every tap and every backward multiplier with the power of the gain it carries. A tap is a backward multiplier times $0.5$ — in the worked case, $K_1=0.5\times0.8$ carries the same $0.8$ as a backward arrow — and the worked case ends by showing they are one number.
 
 > [!tip]- Solutions
 > 1. Forward: $z_0=1\to z_1=0.4\to z_2=0.36\to z_3=0.324$, with $0.9$ on every arrow of the chain and $0.5$ on the three input arrows. Backward: $g_3=0.324\to g_2=0.2916\to g_1=0.26244$, each arrow $\times0.9$, and three stubs into $\partial L/\partial\lambda$: $g_3z_2=0.11664$, $g_2z_1=0.11664$, $g_1z_0=0.26244$. Convolution: $z_0\to z_3$ with weight $0.9^3=0.729$, and taps $K_2=0.405$ on $a_0$, $K_1=0.45$ on $a_1$, $K_0=0.5$ on $a_2$. A one-step truncation keeps only the stub from $g_3$ and cuts the arrows $g_3\to g_2$ and $g_2\to g_1$.
@@ -598,7 +598,7 @@ for bf, Ug in ((1.0, 0.0), (3.0, 0.8)):          # the recommended bias; a candi
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[02-foundations/calculus-backprop|2. 미적분과 역전파]] 위에 선다. 대상 **D5**, 두 번째 사용. D5의 집은 [[03-deep-learning/world-models/index|5. 월드모델]]이다. 그 페이지는 D5를 앞으로 돌려 rollout 오차가 어떻게 자라는지 재고, 이 페이지는 같은 식을 가장 작은 순환 신경망으로 읽어 뒤로 돌린다. 자매 페이지 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]가 시퀀스를 읽는 또 하나의 방법이다.*
 
 > [!note] 처음이라면 · First pass
-> 과제가 그릴 그림을 그리고, 계산기를 들고 계산 절을 따라간다. 앞으로 두 스텝, 뒤로 두 스텝, 커널 탭 다섯 개, 그리고 같은 두 출력을 합성곱으로 한 번 더. §1–§3을 읽고 문제 1–2를 푼다. 논문이 "clipping", "forget 게이트 bias", "GRU"라고 하면 §4–§6을, "상태공간", "S4", "Mamba", "선형 시간"이라고 하면 §7–§10을 연다. §11이 전부를 돌린다.
+> 그림을 먼저 보고, 계산기를 들고 계산 절을 따라간다. 앞으로 두 스텝, 뒤로 두 스텝, 커널 탭 다섯 개, 그리고 같은 두 출력을 합성곱으로 한 번 더. §1–§3을 읽고 문제 1–2를 푼다. 논문이 "clipping", "forget 게이트 bias", "GRU"라고 하면 §4–§6을, "상태공간", "S4", "Mamba", "선형 시간"이라고 하면 §7–§10을 연다. §11이 전부를 돌린다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -623,9 +623,7 @@ D5의 보상 $r_t=-z_t^2-0.1a_t^2$은 여기서 쓰지 않는다. 계산 절의 
 
 *범위: 이 페이지는 순환 신경망과, 그것을 시간을 따라 학습할 때 그래디언트에 일어나는 일 — 시간 역전파, 스칼라와 행렬에서의 소실과 폭발, clipping, LSTM과 GRU의 게이트 — 을 가르친다. 그리고 선형 상태공간 모델을 두 가지로 계산되는 하나의 시스템, 곧 점화식이자 합성곱으로 가르치고, 그것을 딥러닝 골격으로 만든 이산화와 두 변화(S4와 Mamba)를 함께 가르친다. 어텐션은 가르치지 않는다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다. D5 같은 전이를 둘러싼 월드모델도 아니다. 그것은 [[03-deep-learning/world-models/index|5. 월드모델]]이다. 이득을 학습하지 않고 유도하는 점화식인 칼만 필터도 아니다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]다. 이 그래디언트를 받아 쓰는 최적화기도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]이다. 토크나이저와 언어 모델링도 다루지 않는다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-세 띠로 된 그림 하나, 과제가 요구하는 것이 정확히 이 그림이다. 카탈로그 sequence 위에 펼친 D5를 앞으로 돌리고, 뒤로 돌리고, 합성곱으로 다시 배선한다.
+### 그림으로 먼저 보기 · The picture
 
 ```mermaid
 flowchart TB
@@ -652,11 +650,7 @@ flowchart TB
     FWD ~~~ BWD ~~~ CONV
 ```
 
-그림이 맞혀야 할 것이 넷이고, 각각이 계산에 대한 주장이다.
-**사슬의 모든 화살표에 같은 숫자.** 앞으로 가는 상태–상태 화살표 둘과 뒤로 가는 화살표 둘에 모두 $0.8$이 붙는다. 가중치 하나를 두 번 쓰는 것이 "시간에 걸쳐 공유한다"의 뜻이고, 그래서 둘째 띠에서 $\lambda$의 그래디언트가 항 하나가 아니라 둘의 합이 된다.
-**뒤로 가는 띠에는 앞으로 가는 띠의 값이 필요하다.** $\partial L/\partial\lambda$의 두 항은 각 수반값에 그 스텝이 *출발한* 상태 $z_1=0.3$과 $z_0=1$을 곱한다. 앞 방향 상태를 버린 역방향 패스는 이 항들을 계산할 수 없다. §2가 모든 상태를 저장하는 이유다.
-**합성곱 띠에는 상태에서 상태로 가는 화살표가 없다.** 시작 상태와 각 입력이 저마다의 가중치로 $z_2$에 곧장 연결된다. 사슬이 사라졌으니 $z_2$는 더 이상 $z_1$을 기다리지 않는다. §7이 합성곱을 하는 이유이고, 이 띠를 그릴 수 있는 것 자체가 D5가 선형이고 가중치가 시간에 따라 바뀌지 않기 때문이다.
-**$a_0$에 걸린 탭은 역방향 곱수에 $0.5$를 곱한 것이다.** $K_1=0.5\times0.8$은 역방향 화살표와 같은 $0.8$을 나른다. 둘 다에 그것이 나르는 $0.8$의 거듭제곱을 적어라. 계산 절이 마지막에 둘이 한 숫자임을 보인다.
+카탈로그 sequence 위에 펼친 D5를 세 띠로 그렸다. 앞 방향은 $z_1=0.8(1)+0.5(-1)=0.3$, $z_2=0.24$로 상태–상태 화살표 둘에 같은 $0.8$이 붙고, 역방향은 $L=\tfrac12z_2^2$에 대해 수반값 $0.24\to0.192\to0.1536$이 그 $0.8$을 거꾸로 나르며, $\partial L/\partial\lambda=0.24(0.3)+0.192(1)=0.264$가 스텝마다 한 항씩, 곧 수반값에 그 스텝이 출발한 상태를 곱한 항을 모은다. 합성곱 띠는 $z_0$, $a_0$, $a_1$을 가중치 $0.8^2=0.64$, $K_1=0.4$, $K_0=0.5$로 $z_2$에 곧장 이어, 상태–상태 화살표 없이 같은 $z_2=0.24$를 낸다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1027,11 +1021,17 @@ $T=20$의 D5에서는 차이가 손으로 보인다. 점화식은 곱셈 $40$번
 
 ### 과제 · Problem set
 
-Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]]만 쓴다. 독자적인 대상과 독자적인 문제다. 계산 절은 D5의 참 이득으로 두 스텝을 돌았다. 이 과제는 카탈로그의 비관적 학습 이득 $\hat\lambda=0.9$로 세 스텝을, 행동 $(a_0,a_1,a_2)=(-1,0,0)$으로 돌고, 실습의 손잡이 둘을 돌린다. 영어 절 §11 목록의 손잡이를 바꾸되 다시 쓰지는 마라.
+Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]만 쓴다. 독자적인 대상과 독자적인 문제다. 계산 절은 D5의 참 이득으로 두 스텝을 돌았다. 이 과제는 카탈로그의 비관적 학습 이득 $\hat\lambda=0.9$로 세 스텝을, 행동 $(a_0,a_1,a_2)=(-1,0,0)$으로 돌고, 실습의 손잡이 둘을 돌린다. 영어 절 §11 목록의 손잡이를 바꾸되 다시 쓰지는 마라.
 
-1. **그리기.** 세 스텝에 걸친 $\hat\lambda=0.9$의 과제 그림. 모든 상태의 값을 적은 앞 방향 띠, 수반값 셋과 $\partial L/\partial\lambda$의 세 항을 적은 $L=\tfrac12z_3^2$의 역방향 띠, 시작 상태의 화살표와 탭 셋을 가진 합성곱 띠. 한 스텝 절단이 자르는 역방향 화살표를 표시한다.
+1. **그리기.** 위의 그림을 $\hat\lambda=0.9$로 세 스텝에 걸쳐 그린다. 모든 상태의 값을 적은 앞 방향 띠, 수반값 셋과 $\partial L/\partial\lambda$의 세 항을 적은 $L=\tfrac12z_3^2$의 역방향 띠, 시작 상태의 화살표와 탭 셋을 가진 합성곱 띠. 한 스텝 절단이 자르는 역방향 화살표를 표시한다.
 2. **유도.** (a) 점화식으로 $z_1,z_2,z_3$, 처음 다섯 커널 탭, 합성곱으로 $z_3$. (b) $L=\tfrac12z_3^2$의 BPTT: $g_3,g_2,g_1$, 그다음 $\partial L/\partial\lambda$와 $\partial L/\partial\beta$를 $z_3$의 닫힌 꼴과 맞춰 보고, 한 스텝 잘린 BPTT가 $\partial L/\partial\lambda$로 무엇을 돌려주는지. (c) $T=1,5,10,20$에서 $\partial z_T/\partial z_0$, 처음 $1\%$ 아래로 떨어지는 horizon, 그리고 그 horizon과 D5의 $21$의 비. 무엇이 그 비를 정하는지 말하라. (d) $\hat\lambda=0.9$, $\beta=0.5$를 $\Delta=1$의 zero-order hold 샘플링으로 갖는 연속 $(a,b)$, 그 시상수와 DC 이득, 그리고 $\Delta=2$에서의 $A$와 $B$.
 3. **실행.** 영어 절 패치의 `?`를 채워 §11 목록 뒤에 붙인다. (a) $\hat\lambda$의 BPTT 줄과 점화식–합성곱 검산, (b) 결합을 $0.25$로 반으로 줄인 직렬 넷의 $\lVert W\rVert_2$와 정점, $w=0.8$과 $w=0.9$에서, (c) $b_f=1$에 대해, 그리고 후보가 $U_g=0.8$로 $h$를 읽는 $b_f=3$에 대해, 다섯 horizon에서 $\prod f_t$와 정확한 $\partial c_T/\partial c_0$을 보고하라. 그다음 두 질문에 답한다. 권장 bias $1$은 $T=20$에서 셀 그래디언트를 D5의 선형 점화식보다 멀리 나르는가? 1 가까운 forget 게이트가 정확한 미분에 상한을 주는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 사슬의 모든 화살표에 같은 숫자를 적는다. 앞으로 가는 상태–상태 화살표마다, 뒤로 가는 화살표마다 이득이 붙는다. 가중치 하나를 매 스텝 쓰는 것이 "시간에 걸쳐 공유한다"의 뜻이고, 그래서 역방향 띠에서 $\lambda$의 그래디언트가 스텝마다 한 항씩의 합이 된다.
+> - 앞 방향 띠의 값을 역방향 띠로 가져온다. $\partial L/\partial\lambda$의 각 항은 수반값에 그 스텝이 *출발한* 상태를 곱한다. 앞 방향 상태를 버린 역방향 패스는 이 항들을 계산할 수 없고, 그래서 §2가 모든 상태를 저장한다.
+> - 합성곱 띠에는 상태에서 상태로 가는 화살표를 그리지 않는다. 시작 상태와 각 입력이 저마다의 가중치로 마지막 상태에 곧장 연결된다. 사슬이 사라졌으니 마지막 상태는 더 이상 그 앞 상태를 기다리지 않는다. §7이 합성곱을 하는 이유이고, 이 띠를 그릴 수 있는 것 자체가 D5가 선형이고 가중치가 시간에 따라 바뀌지 않기 때문이다.
+> - 모든 탭과 모든 역방향 곱수에 그것이 나르는 이득의 거듭제곱을 적는다. 탭은 역방향 곱수에 $0.5$를 곱한 것이고 — 계산 절에서는 $K_1=0.5\times0.8$이 역방향 화살표와 같은 $0.8$을 나른다 — 계산 절이 마지막에 둘이 한 숫자임을 보인다.
 
 > [!tip]- 정답 · Solutions
 > 1. 앞 방향: $z_0=1\to z_1=0.4\to z_2=0.36\to z_3=0.324$, 사슬의 모든 화살표에 $0.9$, 입력 화살표 셋에 $0.5$. 역방향: $g_3=0.324\to g_2=0.2916\to g_1=0.26244$, 화살표마다 $\times0.9$, 그리고 $\partial L/\partial\lambda$로 들어가는 가지 셋, $g_3z_2=0.11664$, $g_2z_1=0.11664$, $g_1z_0=0.26244$. 합성곱: 가중치 $0.9^3=0.729$인 $z_0\to z_3$, 그리고 $a_0$에 $K_2=0.405$, $a_1$에 $K_1=0.45$, $a_2$에 $K_0=0.5$인 탭. 한 스텝 절단은 $g_3$에서 나온 가지만 남기고 화살표 $g_3\to g_2$와 $g_2\to g_1$을 자른다.

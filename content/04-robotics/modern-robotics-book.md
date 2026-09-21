@@ -36,17 +36,22 @@ so $J$ is invertible at this pose and every route below is a multiplication by $
 
 *Scope: this page teaches **routing** — which chapter of the book answers which question about that arm, and how to tell from the question alone. It does not derive a single one of those maps. The Jacobian is derived on [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §1–2]], the mass matrix on [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]], and the chapter summaries live in [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]]. Chapter 7 (closed chains) is out of this wiki's scope.*
 
-### Homework diagram · 과제가 그릴 그림
+### The picture · 그림으로 먼저 보기
 
-Draw this once; the problem set asks for the same drawing with one box added.
+```mermaid
+flowchart LR
+    TH["θ · joint angles"] -->|"forward kinematics · ch.4"| X["x · tip pose"]
+    X -->|"inverse kinematics · ch.6"| TH
+    TD["θ̇ · joint rates"] -->|"J · ch.5"| V["v · tip velocity"]
+    V -->|"J⁻¹ · ch.5–6"| TD
+    TAU["τ · joint torques"] -->|"J⁻ᵀ · ch.5"| F["F · tip force"]
+    F -->|"Jᵀ · ch.5"| TAU
+    TAU -->|"M⁻¹ · ch.8"| TDD["θ̈ · joint accelerations"]
+    TDD -->|"M · ch.8"| TAU
+    G["two finger contacts · ch.12"] -.->|"can they resist F?"| F
+```
 
-1. **Six boxes in two columns.** Left column, the joint-side quantities: $\theta$, $\dot\theta$, $\tau$. Right column, the tip-side quantities: $x$, $v$, $F$. Top row is pose, middle row velocity, bottom row force.
-2. **An arrow each way between every pair**, and on each arrow write two things: the matrix that carries it ($J$, $J^{-1}$, $J^{\top}$, $J^{-\top}$) and the chapter number that defines it. Arrows pointing right are *forward*, arrows pointing left are *inverse*.
-3. **The dynamics arrow.** Below the force row, a box for $\ddot\theta$ with $M$ and $M^{-1}$ on the two arrows joining it to $\tau$, and its chapter number.
-4. **The arm, to one side.** P2 at $\theta = (0^\circ, 90^\circ)$: shoulder at the origin, elbow at $(1,0)$, tip at $(1,1)$, the panel as a horizontal line just under the tip. At the tip draw the slide arrow, $0.2$ m/s in $+x$, and the press arrow, $10$ N in $-y$.
-5. **The two answers, on the joints they belong to.** Write $\dot\theta = (0, -0.2)$ rad/s and $\tau = (-10, 0)$ N·m beside the shoulder and the elbow.
-
-A correct drawing shows at a glance what the worked case proves: the press loads one joint and the slide moves the other.
+The picture for this page is the routing map: the arm's six quantities in two columns — joint side $\theta$, $\dot\theta$, $\tau$ and tip side $x$, $v$, $F$, one row each for pose, velocity and force — joined in every row by a forward map and an inverse map, each labelled with the chapter that defines it, and $\ddot\theta$ joined to $\tau$ by $M$ and $M^{-1}$ (ch.8). On P2 at its catalog pose, with the tip on the panel at $(1,1)$ m sliding at $0.2$ m/s in $+x$ and pressing with $10$ N in $-y$, the two routes through ch.5 give $\dot\theta = (0,\ -0.2)$ rad/s and $\tau = (-10,\ 0)$ N·m. The press loads only the shoulder and the slide moves only the elbow, and both answers come out of the one matrix $J$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -128,9 +133,18 @@ entry ticket to manipulation research.
 
 Tier C. Claim-reading and routing, on **P2** to a panel ([[02-foundations/lab-plants|0.6]]). This page is the book guide, not a chapter: it routes the maps, and the chapter pages derive them. Using only this page, its prerequisites, and the plant catalog.
 
-1. **Draw.** Redraw the six-box routing map with a matrix and a chapter number on every arrow. Then add a seventh box — *the two finger contacts on the panel* — and draw the arrow that asks whether they can resist a given tip wrench $F$. Which chapter owns that arrow, and why is it not ch.5?
+1. **Draw.** The six-box routing map at the top of the page, with a matrix and a chapter number on every arrow. Then add a seventh box — *the two finger contacts on the panel* — and draw the arrow that asks whether they can resist a given tip wrench $F$. Which chapter owns that arrow, and why is it not ch.5?
 2. **Derive.** Same pose, same panel, one change: the tip now presses **along $+x$** with $10$ N, into the panel edge, instead of into its face. Name $(g, a, \Phi)$, read off $(n, d)$, name the chapter, then substitute. What does each joint carry, and how does that differ from the worked case?
 3. **Interpret.** Which sentence on this page is the claim that MR uses screw theory / PoE instead of D–H, and what observation would falsify the separate claim that "SE(3) fluency is the entry ticket to manipulation and VLA papers"?
+
+> [!note]- How to draw it · 그리는 법
+> - Six boxes in two columns: the joint-side quantities $\theta$, $\dot\theta$, $\tau$ on the left, the tip-side quantities $x$, $v$, $F$ on the right; top row pose, middle row velocity, bottom row force.
+> - An arrow each way between the two boxes of every row, each labelled with the map that carries it and the chapter that defines it. Arrows pointing right are forward, joints to tip; arrows pointing left are inverse, tip to joints.
+> - The force row carries $J$ transposed, not inverted: $\tau = J^{\top}F$ points left like $\dot\theta = J^{-1}v$, but with a different matrix. A force arrow labelled $J^{-1}$ has mixed up the velocity row and the force row.
+> - The dynamics box $\ddot\theta$ below the force row, joined to $\tau$, not to $F$, by $M$ one way and $M^{-1}$ the other, with its chapter number.
+> - The seventh box, the two finger contacts on the panel, with the arrow that asks whether they can resist a given tip wrench $F$. Before writing a chapter on that arrow, test it against the three conditions of a routing question.
+> - The arm to one side: P2 at $\theta = (0^\circ, 90^\circ)$, shoulder at the origin, elbow at $(1,0)$, tip at $(1,1)$, the panel as a horizontal line just under the tip, and at the tip the worked case's slide arrow, $0.2$ m/s in $+x$, and press arrow, $10$ N in $-y$.
+> - The worked case's two answers beside the joints they belong to, $\dot\theta = (0,\ -0.2)$ rad/s and $\tau = (-10,\ 0)$ N·m. A correct drawing shows at a glance that the press loads one joint and the slide moves the other.
 
 > [!tip]- Solutions
 > 1. Ch.12. The arrow is not a map between two of the six quantities: it asks whether the set of wrenches the contacts *can* apply contains the one required — force closure, a question about a set, like the reach non-example in the definition. Ch.5's $J^{\top}$ assumes the tip force already exists and only converts it to torques.
@@ -163,17 +177,22 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{
 
 *범위: 이 페이지는 **배분**을 가르친다. 그 팔에 대한 어떤 질문을 책의 어느 장이 답하는지, 그리고 질문만 보고 그것을 어떻게 아는지다. 그 사상들은 여기서 하나도 유도하지 않는다. 야코비안은 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §1–2]]에서, 질량 행렬은 [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]에서 유도하고, 챕터 요약은 [[04-robotics/modern-robotics/index|2. Modern Robotics 요약]]에 있다. 7장(폐쇄 연쇄)은 이 위키의 범위 밖이다.*
 
-### 과제가 그릴 그림 · Homework diagram
+### 그림으로 먼저 보기 · The picture
 
-한 번 그려 두면 과제는 상자 하나를 더한 같은 그림을 묻는다.
+```mermaid
+flowchart LR
+    TH["θ · 관절각"] -->|"순기구학 · 4장"| X["x · 말단 자세"]
+    X -->|"역기구학 · 6장"| TH
+    TD["θ̇ · 관절 속도"] -->|"J · 5장"| V["v · 말단 속도"]
+    V -->|"J⁻¹ · 5–6장"| TD
+    TAU["τ · 관절 토크"] -->|"J⁻ᵀ · 5장"| F["F · 말단 힘"]
+    F -->|"Jᵀ · 5장"| TAU
+    TAU -->|"M⁻¹ · 8장"| TDD["θ̈ · 관절 가속도"]
+    TDD -->|"M · 8장"| TAU
+    G["두 손가락 접촉 · 12장"] -.->|"F를 버틸 수 있는가?"| F
+```
 
-1. **두 열의 상자 여섯 개.** 왼쪽 열은 관절 쪽 양: $\theta$, $\dot\theta$, $\tau$. 오른쪽 열은 말단 쪽 양: $x$, $v$, $F$. 윗줄이 자세, 가운데 줄이 속도, 아랫줄이 힘이다.
-2. **모든 쌍 사이에 양방향 화살표**를 그리고, 화살표마다 두 가지를 적는다. 그것을 나르는 행렬($J$, $J^{-1}$, $J^{\top}$, $J^{-\top}$)과 그것을 정의하는 장 번호다. 오른쪽으로 가는 화살표가 *순방향*, 왼쪽으로 가는 화살표가 *역방향*이다.
-3. **동역학 화살표.** 힘 줄 아래에 $\ddot\theta$ 상자를 두고, $\tau$와 잇는 두 화살표에 $M$과 $M^{-1}$, 그리고 장 번호를 적는다.
-4. **팔은 옆에.** $\theta = (0^\circ, 90^\circ)$의 P2: 어깨는 원점, 팔꿈치는 $(1,0)$, 말단은 $(1,1)$, 패널은 말단 바로 아래의 수평선. 말단에 미끄러짐 화살표 $+x$ 방향 $0.2$ m/s와 누름 화살표 $-y$ 방향 $10$ N을 그린다.
-5. **두 답을 해당 관절 옆에.** 어깨와 팔꿈치 옆에 $\dot\theta = (0, -0.2)$ rad/s와 $\tau = (-10, 0)$ N·m을 적는다.
-
-제대로 그린 그림은 계산 예제가 증명하는 것을 한눈에 보여 준다. 누름은 한 관절에 실리고 미끄러짐은 다른 관절이 만든다.
+이 페이지의 그림은 배분 지도로, 팔의 여섯 양을 관절 쪽 $\theta$, $\dot\theta$, $\tau$와 말단 쪽 $x$, $v$, $F$의 두 열에 자세·속도·힘마다 한 줄씩 놓고, 줄마다 순방향 사상과 역방향 사상으로 이어 각각에 그것을 정의하는 장을 적으며, $\ddot\theta$는 $M$과 $M^{-1}$로 $\tau$에 잇는다(8장). 카탈로그 자세의 P2에서 패널 위 $(1,1)$ m에 있는 말단이 $+x$로 $0.2$ m/s 미끄러지며 $-y$로 $10$ N을 누르면, 5장을 지나는 두 배분이 $\dot\theta = (0,\ -0.2)$ rad/s와 $\tau = (-10,\ 0)$ N·m을 준다. 누름은 어깨에만 실리고 미끄러짐은 팔꿈치만 만들며, 두 답이 모두 한 행렬 $J$에서 나온다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -251,9 +270,18 @@ $$\tau_{\text{inertial}} = M\ddot\theta = \begin{pmatrix}3&1\\1&1\end{pmatrix}\b
 
 Tier C. 주장 읽기와 배분, 관통 과제 [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지. 이 페이지는 책 가이드이지 장이 아니다. 사상을 배분할 뿐 유도는 각 장 페이지가 한다. 이 페이지와 선수 지식, 장치 카탈로그만 쓴다.
 
-1. **그리기.** 상자 여섯 개의 배분 지도를 화살표마다 행렬과 장 번호를 적어 다시 그려라. 그다음 일곱째 상자 — *패널 위의 손가락 접촉 두 개* — 를 더하고, 그 접촉이 주어진 말단 렌치 $F$를 견딜 수 있는지 묻는 화살표를 그려라. 그 화살표는 어느 장의 것이고, 왜 5장이 아닌가?
+1. **그리기.** 맨 위의 상자 여섯 개 배분 지도를 화살표마다 행렬과 장 번호를 적어 그려라. 그다음 일곱째 상자 — *패널 위의 손가락 접촉 두 개* — 를 더하고, 그 접촉이 주어진 말단 렌치 $F$를 견딜 수 있는지 묻는 화살표를 그려라. 그 화살표는 어느 장의 것이고, 왜 5장이 아닌가?
 2. **유도.** 같은 자세, 같은 패널, 한 가지만 바꾼다. 말단이 패널 면이 아니라 **$+x$ 방향으로** 모서리를 향해 $10$ N을 누른다. $(g, a, \Phi)$를 이름 붙이고 $(n, d)$를 읽어 장을 정한 뒤 대입하라. 각 관절이 무엇을 받고, 계산 예제와 어떻게 다른가?
 3. **해석.** 이 페이지의 어느 문장이 MR이 D–H 대신 스크류 이론 / PoE를 쓴다는 주장이고, "SE(3) 유창성이 매니퓰레이션·VLA 논문의 입장권이다"라는 별개의 주장을 깨는 관측은 무엇인가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 두 열의 상자 여섯 개. 왼쪽 열은 관절 쪽 양 $\theta$, $\dot\theta$, $\tau$, 오른쪽 열은 말단 쪽 양 $x$, $v$, $F$. 윗줄이 자세, 가운데 줄이 속도, 아랫줄이 힘이다.
+> - 줄마다 두 상자 사이에 양방향 화살표를 긋고, 화살표마다 그것을 나르는 사상과 그것을 정의하는 장을 적는다. 오른쪽으로 가는 화살표가 순방향(관절 → 말단), 왼쪽으로 가는 화살표가 역방향(말단 → 관절)이다.
+> - 힘 줄은 $J$의 역행렬이 아니라 전치를 나른다. $\tau = J^{\top}F$는 $\dot\theta = J^{-1}v$처럼 왼쪽을 향하지만 행렬이 다르다. 힘 화살표에 $J^{-1}$을 적었다면 속도 줄과 힘 줄을 섞은 것이다.
+> - 힘 줄 아래의 동역학 상자 $\ddot\theta$는 $F$가 아니라 $\tau$와 잇고, 한쪽 화살표에 $M$, 다른 쪽에 $M^{-1}$, 그리고 장 번호를 적는다.
+> - 일곱째 상자, 곧 패널 위의 손가락 접촉 두 개와, 그 접촉이 주어진 말단 렌치 $F$를 견딜 수 있는지 묻는 화살표. 그 화살표에 장 번호를 적기 전에 배분 질문의 세 조건에 대어 본다.
+> - 팔은 옆에. $\theta = (0^\circ, 90^\circ)$의 P2: 어깨는 원점, 팔꿈치는 $(1,0)$, 말단은 $(1,1)$, 패널은 말단 바로 아래의 수평선. 말단에는 계산 예제의 미끄러짐 화살표($+x$ 방향 $0.2$ m/s)와 누름 화살표($-y$ 방향 $10$ N)를 그린다.
+> - 계산 예제의 두 답을 해당 관절 옆에 적는다. $\dot\theta = (0,\ -0.2)$ rad/s와 $\tau = (-10,\ 0)$ N·m. 제대로 그린 그림은 누름이 한 관절에 실리고 미끄러짐은 다른 관절이 만든다는 것을 한눈에 보여 준다.
 
 > [!tip]- 정답 · Solutions
 > 1. 12장. 그 화살표는 여섯 양 중 둘 사이의 사상이 아니다. 접촉이 *낼 수 있는* 렌치의 집합이 요구되는 렌치를 포함하는지를 묻는 질문 — 힘 닫힘(force closure)이고, 정의의 도달 가능성 반례와 같은 종류의 집합 질문이다. 5장의 $J^{\top}$는 말단 힘이 이미 존재한다고 전제하고 그것을 토크로 바꿀 뿐이다.

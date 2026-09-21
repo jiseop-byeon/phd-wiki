@@ -40,7 +40,7 @@ This page is a reading map, so its object is not a machine but a **record**: one
 | 11 | 0.45 | W | 23 | 0.50 | C |
 | 12 | 0.50 | C | 24 | 0.50 | C |
 
-§6 says what to draw from it and §7 converts it into a threshold, a JND, and a named criterion — which is the whole point of §2's insistence on an estimand, done once on a real record.
+§6 shows it as a picture and §7 converts it into a threshold, a JND, and a named criterion — which is the whole point of §2's insistence on an estimand, done once on a real record.
 
 ### 1. From an idea to a claim
 
@@ -112,9 +112,7 @@ The packet covers the first half of a full haptics course particularly well. It 
 
 **Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
 
-### 6. Homework diagram
-
-One plot, and the problem set asks for the same plot from a shorter record under a different rule.
+### 6. The picture
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="A 24-trial two-down one-up staircase on 0.05 N rows with filled markers for correct and open ones for wrong, eight numbered reversals of which the first two are struck out, a dashed line at 0.5167 N labelled 70.7% correct, and the causal chain with only the stimulus-to-perception arrow ticked.">
   <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
@@ -174,7 +172,7 @@ One plot, and the problem set asks for the same plot from a shorter record under
   <g font-size="11" fill="currentColor" text-anchor="middle"><text x="493" y="292.2">task</text><text x="493" y="305.8">outcome</text></g>
 </svg>
 
-Trial number 1 to 24 across; $\Delta F$ up, from $0.40$ to $0.65\,\mathrm{N}$ ruled in $0.05\,\mathrm{N}$ rows, because the step size is fixed and the level can therefore only ever sit on a row. Plot the 24 levels and join consecutive trials into one continuous track. Use a filled marker for a correct trial and an open marker for a wrong one, so the rule is readable off the figure: the track only descends after two filled markers in a row, and it rises immediately after any open one. Circle every trial at which the direction of travel changes and number the circles $1$ to $8$. Strike through the first two circles — §7 Step 2 discards them — and draw a horizontal line at the mean of the remaining six, labelled with the criterion it estimates rather than with the word "threshold": *70.7% correct, 2-down/1-up, 5.00 N pedestal*. Beside the plot copy §1's causal chain and put a tick under the single arrow this figure measures, leaving the other two arrows blank.
+The frozen 24-trial 2-down/1-up run on $0.05\,\mathrm{N}$ rows: filled markers are correct trials and open ones wrong, so the track descends only after two filled markers in a row and rises after any open one. Its eight reversals are circled and numbered, the first two struck out because §7 Step 2 discards them, and the dashed line at the mean of the other six, $0.5167\,\mathrm{N}$, carries the criterion it estimates: $70.7\%$ correct on the $5.00\,\mathrm{N}$ pedestal. Below, §1's causal chain has a tick under the one arrow this plot measures, from the delivered stimulus to perception.
 
 ### 7. Worked case: a staircase record becomes a threshold, and a JND
 
@@ -237,9 +235,18 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 | 5 | 0.45 | W | 11 | 0.45 | C |
 | 6 | 0.50 | C | 12 | 0.40 | W |
 
-1. **Draw.** Draw §6's plot for this record, with the same $0.05\,\mathrm{N}$ rows. Mark the reversals and say why the strike-through part of §6's instruction cannot be carried out here.
+1. **Draw.** The picture in §6, for this record, with the same $0.05\,\mathrm{N}$ rows. Mark the reversals and say why the strike-through that §6's picture shows cannot be carried out here.
 2. **Derive.** (a) The reversal trials and their levels. (b) A threshold estimate, and the sentence you must attach to it about how it was averaged. (c) The criterion probability of a 3-down/1-up rule, and of a 1-up/1-down rule, by §7 Step 3's argument. (d) The Weber fraction, and the estimate in P3 encoder counts.
 3. **Interpret.** (a) A paper runs a 1-up/1-down staircase in a 2AFC task, reports the result as "the detection threshold", and compares it with another lab's constant-stimuli JND. Name the two separate estimand errors, using (c) for the first. (b) A study reports "haptics is better" with NASA-TLX down and completion time down. Which estimand is missing, and which arrow of actuator $\to$ stimulus $\to$ perception $\to$ outcome was not measured? (c) Twenty people, thirty trials each, $n=600$ in the t-test. What is the analysis unit, and what must the report still say? (d) Place "actuator bench response" and "controlled task improvement" on the evidence ladder. What does each not yet support?
+
+> [!note]- How to draw it · 그리는 법
+> - Trial number across; $\Delta F$ up, ruled in $0.05\,\mathrm{N}$ rows. The step is fixed, so every level sits exactly on a row, and a point between rows is a misread record.
+> - Plot every trial's level and join consecutive trials into one continuous track.
+> - Use a filled marker for a correct trial and an open one for a wrong trial, so the rule can be read off the figure: the track descends only after as many filled markers in a row as the rule's down count, and rises immediately after any open one.
+> - Circle every trial at which the direction of travel changes, and number the circles in order. A wrong answer on a track that is already rising is not a reversal.
+> - Strike through the reversals §7 Step 2 discards and draw a horizontal line at the mean of those that remain; count how many remain before you draw it.
+> - Label that line with the criterion it estimates, never with the word "threshold": the percent correct the rule targets (§7 Step 3), the rule, and the $5.00\,\mathrm{N}$ pedestal.
+> - Beside the plot, copy §1's causal chain and tick only the one arrow the plot measures, leaving the other two blank.
 
 > [!tip]- Solutions
 > 1. The track descends only after three filled markers in a row, so it spends longer on each level than §6's figure does. There are three reversals, and §6 discards the first two and averages six — here that would leave one. The discard rule cannot be applied, which is the finding, not an inconvenience.
@@ -275,7 +282,7 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 | 11 | 0.45 | W | 23 | 0.50 | C |
 | 12 | 0.50 | C | 24 | 0.50 | C |
 
-§6이 여기서 무엇을 그릴지 말하고, §7이 이것을 임계값과 JND와 이름 붙은 기준으로 바꾼다. estimand를 명시하라는 §2의 요구를 실제 기록 위에서 한 번 해 보는 것이 그 전부다.
+§6이 이것을 그림으로 보여 주고, §7이 이것을 임계값과 JND와 이름 붙은 기준으로 바꾼다. estimand를 명시하라는 §2의 요구를 실제 기록 위에서 한 번 해 보는 것이 그 전부다.
 
 ### 1. 아이디어에서 주장까지
 
@@ -347,9 +354,7 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 
 **계산해 읽기: 과제가 묻는 세 독해.** TLX가 내려가고 시간이 줄었다는 "햅틱이 더 낫다"에는 이름 붙은 estimand가 없고 피부 자극을 건너뛰었다. $n=600$은 nested trial이고 단위는 사람 20명이다. 벤치 응답은 검출 가능성이 아니고, 과제 개선은 현장 일반화가 아니다.
 
-### 6. 과제가 그릴 그림
-
-그림 하나. 과제는 더 짧은 기록을 다른 규칙으로 받아 같은 그림을 그리라고 한다.
+### 6. 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="0.05 N 간격의 줄 위를 오가는 24시행 2-down 1-up staircase로, 정답은 채운 표식과 오답은 빈 표식, 번호를 단 reversal 여덟 개 중 앞의 둘에 줄을 긋고, 0.5167 N 점선에 70.7% 정답 기준을 붙이고, 인과 사슬에서는 자극에서 지각으로 가는 화살표에만 체크했다.">
   <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
@@ -409,7 +414,7 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
   <text x="493" y="299" font-size="11" fill="currentColor" text-anchor="middle">과제 결과</text>
 </svg>
 
-가로는 시행 번호 1에서 24, 세로는 $\Delta F$를 $0.40$에서 $0.65\,\mathrm{N}$까지 $0.05\,\mathrm{N}$ 간격의 줄로 긋는다. 단 크기가 고정이므로 수준은 언제나 줄 위에만 있을 수 있기 때문이다. 24개 수준을 찍고 이웃 시행을 이어 하나의 연속된 궤적으로 만든다. 정답은 채운 표식, 오답은 빈 표식으로 그려서 규칙이 그림에서 바로 읽히게 한다. 궤적은 채운 표식이 둘 연달아야만 내려가고, 빈 표식이 나오면 곧바로 올라간다. 진행 방향이 바뀌는 시행마다 동그라미를 치고 $1$에서 $8$까지 번호를 매긴다. 첫 두 동그라미에는 줄을 긋는다. §7 Step 2가 버리는 것들이다. 남은 여섯의 평균에 수평선을 긋되, 라벨에 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다. *70.7% 정답, 2-down 1-up, 받침 5.00 N*. 그림 옆에는 §1의 인과 사슬을 옮겨 적고, 이 그림이 재는 단 하나의 화살표 아래에만 체크를 하고 나머지 둘은 비워 둔다.
+얼어붙은 24 시행 2-down 1-up 기록을 $0.05\,\mathrm{N}$ 간격의 줄 위에 그렸다: 채운 표식이 정답, 빈 표식이 오답이므로, 궤적은 채운 표식이 둘 연달아야만 내려가고 빈 표식 하나에 곧바로 올라간다. Reversal 여덟 개에 동그라미와 번호를 달았고 §7 Step 2가 버리는 처음 둘에는 줄을 그었으며, 나머지 여섯의 평균 $0.5167\,\mathrm{N}$에 그은 점선에는 그것이 추정하는 기준, 곧 받침 $5.00\,\mathrm{N}$ 위의 $70.7\%$ 정답을 붙였다. 아래의 §1 인과 사슬에서는 이 그림이 재는 단 하나의 화살표, 전달된 자극에서 지각으로 가는 화살표에만 체크가 있다.
 
 ### 7. 대상으로 한 번 끝까지: staircase 기록이 임계값과 JND가 되기까지
 
@@ -472,9 +477,18 @@ Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 �
 | 5 | 0.45 | W | 11 | 0.45 | C |
 | 6 | 0.50 | C | 12 | 0.40 | W |
 
-1. **그려라.** 이 기록으로 §6의 그림을 같은 $0.05\,\mathrm{N}$ 줄 위에 그려라. reversal을 표시하고, §6의 줄 긋는 지시를 여기서는 수행할 수 없는 이유를 말하라.
+1. **그려라.** 이 기록으로 §6의 그림을 같은 $0.05\,\mathrm{N}$ 줄 위에 그려라. reversal을 표시하고, §6의 그림에 있는 줄 긋기를 여기서는 수행할 수 없는 이유를 말하라.
 2. **유도하라.** (a) reversal 시행과 그 수준. (b) 임계값 추정값과, 그것을 어떻게 평균했는지에 대해 반드시 함께 붙여야 하는 문장. (c) §7 Step 3의 논증으로, 3-down 1-up 규칙의 기준 확률과 1-up 1-down 규칙의 기준 확률. (d) Weber 분수와, 그 추정값을 P3 엔코더 카운트로.
 3. **해석하라.** (a) 어떤 논문이 2AFC 과제에서 1-up 1-down staircase를 돌리고 결과를 "검출 임계값"으로 보고한 뒤 다른 연구실의 constant-stimuli JND와 비교한다. 서로 다른 두 estimand 오류에 이름을 붙여라. 첫째는 (c)를 쓴다. (b) 어떤 연구가 NASA-TLX가 내려가고 완료 시간이 줄었으니 "햅틱이 더 낫다"고 보고한다. 빠진 estimand는 무엇이고, 액추에이터 $\to$ 자극 $\to$ 지각 $\to$ 결과의 어느 화살표가 재지지 않았는가? (c) 20명이 각 30 trial, t-검정에서 $n=600$. 분석 단위는 무엇이고, 보고가 여전히 말해야 하는 것은? (d) 증거 사다리에 "액추에이터 벤치 응답"과 "통제된 과제 개선"을 놓아라. 각각이 아직 지지하지 못하는 것은?
+
+> [!note]- 그리는 법 · How to draw it
+> - 가로는 시행 번호, 세로는 $0.05\,\mathrm{N}$ 간격의 줄로 그은 $\Delta F$다. 단 크기가 고정이므로 모든 수준은 정확히 줄 위에 있고, 줄 사이에 찍힌 점은 기록을 잘못 읽은 것이다.
+> - 모든 시행의 수준을 찍고 이웃 시행을 이어 하나의 연속된 궤적으로 만든다.
+> - 정답은 채운 표식, 오답은 빈 표식으로 그려 규칙이 그림에서 바로 읽히게 한다. 궤적은 규칙의 down 횟수만큼 채운 표식이 연달아야만 내려가고, 빈 표식이 나오면 곧바로 올라간다.
+> - 진행 방향이 바뀌는 시행마다 동그라미를 치고 차례로 번호를 매긴다. 이미 올라가고 있는 궤적 위의 오답은 reversal이 아니다.
+> - §7 Step 2가 버리는 reversal에 줄을 긋고, 남은 것들의 평균에 수평선을 긋는다. 긋기 전에 몇 개가 남는지부터 센다.
+> - 그 수평선의 라벨에는 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다: 규칙이 겨냥하는 정답 비율(§7 Step 3), 규칙, 그리고 받침 $5.00\,\mathrm{N}$.
+> - 그림 옆에 §1의 인과 사슬을 옮겨 적고, 이 그림이 재는 단 하나의 화살표 아래에만 체크를 하고 나머지 둘은 비워 둔다.
 
 > [!tip]- 정답 · Solutions
 > 1. 궤적은 채운 표식이 셋 연달아야만 내려가므로 §6의 그림보다 한 수준에 더 오래 머문다. reversal은 셋이다. §6은 앞의 둘을 버리고 여섯을 평균하는데, 여기서는 그러면 하나가 남는다. 줄 긋기를 수행할 수 없다는 것 자체가 결과이지 불편이 아니다.

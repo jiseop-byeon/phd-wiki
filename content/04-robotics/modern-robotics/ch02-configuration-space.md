@@ -27,9 +27,7 @@ because each unit-length link contributes one unit vector at its own absolute an
 
 **The panel**, frozen here and reused by [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]], is the running task's wall: the rigid half-plane $x \ge 1$, whose face is the vertical line $x = 1$. That face contains the catalog target $(1,1)$. Both links are modelled as zero-thickness segments, so "collision" means a point of a link has $x > 1$.
 
-### Homework diagram · 과제가 그릴 그림
-
-Draw two panels side by side.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 342" style="max-width:100%;height:auto" role="img" aria-label="Left, P2's workspace with the wall x = 1 tangent to the elbow circle and the arm at its two contact poses A and B; right, the torus chart of (θ1, θ2) with the shaded C-obstacle lens and A and B on its contact boundary.">
   <rect x="206" y="37.5" width="45" height="220.5" fill="currentColor" fill-opacity="0.06"/>
@@ -86,11 +84,7 @@ Draw two panels side by side.
   </g>
 </svg>
 
-**Left — the workspace.** The base at the origin; the unit circle the elbow traces; the wall drawn as a vertical line at $x = 1$ with hatching to its right. Note that the wall is *tangent* to the elbow circle at $(1,0)$. Draw P2 twice: once at $(0°, 90°)$, where link 2 runs from $(1,0)$ to $(1,1)$ and lies flat along the face, and once at $(90°, -90°)$, where link 1 runs from the origin to $(0,1)$ and link 2 runs from $(0,1)$ to $(1,1)$, touching the face only at the tip. Mark the target $(1,1)$.
-
-**Right — the C-space chart.** A square with $\theta_1$ on the horizontal axis and $\theta_2$ on the vertical, both from $-180°$ to $+180°$. Draw arrows on the left and right edges showing they are the same edge, and again on the top and bottom: that double identification is what makes the square a torus rather than a rectangle. Shade the region where the arm penetrates the panel — a lens that spans $\theta_1 \in (-90°, 90°)$ and pinches to a point at each end. Mark the two configurations from the left panel as dots on the shaded region's boundary, and label the boundary curve "contact".
-
-The problem set asks for the same pair of drawings with the wall moved.
+Left, P2's workspace: the wall $x = 1$ is tangent to the elbow circle at $(1,0)$, and the arm reaches the target $(1,1)$ in two contact poses — A at $(0°, 90°)$ with link 2 flush along the face, B at $(90°, -90°)$ touching it only at the tip. Right, the cut-open torus of $(\theta_1, \theta_2)$, its matching edges glued: the shaded C-obstacle $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$ is a lens over $\theta_1 \in (-90°, 90°)$ that pinches to a point at each end and blocks 18.478 % of the torus, and A and B lie on its contact boundary, not inside it.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -141,7 +135,7 @@ since for each admissible $\theta_1 = u$ the forbidden $\varphi$ interval has le
 
 They are the same point of task space and two different points of C-space, and they are not equivalent contacts: at $(0°,90°)$ link 2 lies flush along the face over its whole length, while at $(90°,-90°)$ only the tip touches. The C-space picture says "both on $\partial\mathcal{C}_{\text{obs}}$" and stops; which contact the tool actually makes is a workspace question.
 
-**Step 7 — what contact does to the dimension.** Requiring the tip to stay on the face is the single equation $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, one independent holonomic constraint, so the set of configurations that maintain contact has dimension $2 - 1 = 1$: it is exactly the boundary curve drawn in the diagram. The obstacle *region* removes no dimension — it is an open subset of a 2-D space and is still 2-D. **An inequality carves; an equality reduces.** That distinction is the whole content of the next section.
+**Step 7 — what contact does to the dimension.** Requiring the tip to stay on the face is the single equation $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, one independent holonomic constraint, so the set of configurations that maintain contact has dimension $2 - 1 = 1$: it is exactly the boundary curve drawn in the picture. The obstacle *region* removes no dimension — it is an open subset of a 2-D space and is still 2-D. **An inequality carves; an equality reduces.** That distinction is the whole content of the next section.
 
 ### 1. Configuration, degrees of freedom, and Grübler
 
@@ -213,9 +207,17 @@ A **constraint** on a mechanism is a condition its motion must satisfy. Two kind
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same plant **P2**, but the panel is rebuilt 0.5 m further out: the wall is now $x \ge 1.5$.
 
-1. **Draw.** The same two-panel figure as above for the new wall. In the workspace panel, show that the wall no longer touches the elbow circle. In the C-space chart, shade the new obstacle and mark where it pinches. State in one sentence what happened to the catalog pose $(0°,90°)$.
+1. **Draw.** The picture above, for the new wall. In the workspace panel, show that the wall no longer touches the elbow circle. In the C-space chart, shade the new obstacle and mark where it pinches. State in one sentence what happened to the catalog pose $(0°,90°)$.
 2. **Derive.** (a) Write $d(\theta)$ for the new wall and argue again that only the tip term matters. (b) The boundary condition $\cos\theta_1 + \cos\varphi = 1.5$: find the two values of $\theta_1$ where the obstacle pinches, and the $\theta_2$ values on the boundary at $\theta_1 = 0°$ and $\theta_1 = 30°$. (c) For the *straight* arm, $\theta_2 = 0°$, find the range of $\theta_1$ that penetrates.
 3. **Interpret.** The blocked fraction of the torus falls from 18.478 % to 8.515 %. Does the C-obstacle's *dimension* change? Does P2's dof change? And does the running task — put the tool on the panel at the catalog target — still have a solution?
+
+> [!note]- How to draw it · 그리는 법
+> - Two panels side by side: the workspace on the left, the C-space chart on the right.
+> - Workspace: the base at the origin, the unit circle the elbow traces, and the wall as a vertical line at its $x$, hatched on the side the arm must not enter. Say whether the wall touches that circle — the wall of the picture above, $x = 1$, is tangent to it at $(1,0)$.
+> - Draw each pose link by link — elbow at $(\cos\theta_1, \sin\theta_1)$, tip one more unit along the absolute angle $\theta_1 + \theta_2$ — at least the catalog pose $(0°, 90°)$, and mark the target $(1,1)$.
+> - Chart: a square with $\theta_1$ across and $\theta_2$ up, both from $-180°$ to $180°$, with matching arrows on the left and right edges and again on the top and bottom. Without the arrows the square is a rectangle, not the torus.
+> - Shade the region where the arm penetrates the panel: a lens that pinches to a single point at each end. Mark the $\theta_1$ of both pinches (the picture above has them at $\pm 90°$).
+> - Label the lens boundary "contact". A configuration with $d = 0$ is a dot on that curve, never inside the shading; one with $d < 0$ lies outside the lens.
 
 > [!tip]- Solutions
 > 1. Workspace: the elbow circle has radius 1 and the wall is at $x=1.5$, so the closest elbow point $(1,0)$ is $0.5\,\mathrm{m}$ clear — link 1 is now strictly free everywhere. C-space: a smaller lens, pinching at $\theta_1 = \pm 60°$. The catalog pose has $\cos 0° + \cos 90° = 1 < 1.5$, so $d = -0.5$: it is now an interior free configuration, no longer a contact configuration.
@@ -236,9 +238,7 @@ $$e(\theta) = (\cos\theta_1,\ \sin\theta_1), \qquad p(\theta) = e(\theta) + (\co
 
 **패널**은 여기서 고정하고 [[04-robotics/modern-robotics/ch10-motion-planning|10장]]이 그대로 쓴다. 관통 과제의 벽이며, 강체 반평면 $x \ge 1$이고 그 면은 수직선 $x = 1$이다. 이 면이 카탈로그 목표 $(1,1)$을 포함한다. 두 링크는 두께 0인 선분으로 모형화하므로, 충돌이란 링크의 어떤 점이 $x > 1$이 되는 것이다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 두 개를 나란히 그린다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 342" style="max-width:100%;height:auto" role="img" aria-label="왼쪽은 엘보 원에 접하는 벽 x = 1과 두 접촉 자세 A, B를 그린 P2 작업 영역이고, 오른쪽은 칠한 C-장애물 렌즈와 그 접촉 경계 위의 A, B를 표시한 (θ1, θ2) 원환면 도표다.">
   <rect x="206" y="37.5" width="45" height="220.5" fill="currentColor" fill-opacity="0.06"/>
@@ -295,11 +295,7 @@ $$e(\theta) = (\cos\theta_1,\ \sin\theta_1), \qquad p(\theta) = e(\theta) + (\co
   </g>
 </svg>
 
-**왼쪽 — 작업 영역.** 원점의 베이스, 엘보가 그리는 단위원, $x = 1$의 수직선으로 그린 벽(오른쪽에 빗금). 벽은 엘보 원에 $(1,0)$에서 *접한다*는 점을 표시한다. P2를 두 번 그린다. $(0°, 90°)$에서는 링크 2가 $(1,0)$에서 $(1,1)$로 가며 면에 완전히 붙어 눕고, $(90°, -90°)$에서는 링크 1이 원점에서 $(0,1)$로, 링크 2가 $(0,1)$에서 $(1,1)$로 가서 말단만 면에 닿는다. 목표 $(1,1)$을 표시한다.
-
-**오른쪽 — C-space 도표.** 가로축 $\theta_1$, 세로축 $\theta_2$, 둘 다 $-180°$에서 $+180°$인 정사각형. 좌·우 변이 같은 변임을 화살표로, 위·아래 변도 같은 변임을 화살표로 표시한다. 이 두 겹의 동일시가 정사각형을 직사각형이 아니라 원환면으로 만든다. 팔이 패널을 파고드는 영역을 칠한다 — $\theta_1 \in (-90°, 90°)$에 걸치고 양 끝에서 한 점으로 오므라드는 렌즈 모양이다. 왼쪽 그림의 두 자세를 그 영역 경계 위의 점으로 찍고, 경계 곡선에 "접촉"이라고 쓴다.
-
-과제는 벽을 옮긴 채로 같은 그림 두 장을 요구한다.
+왼쪽 P2의 작업 영역에서 벽 $x = 1$은 엘보 원에 $(1,0)$에서 접하고, 팔은 두 접촉 자세로 목표 $(1,1)$에 닿는다 — $(0°, 90°)$의 A는 링크 2가 면에 붙어 눕고, $(90°, -90°)$의 B는 말단만 면에 닿는다. 오른쪽은 마주 보는 변끼리 붙인 $(\theta_1, \theta_2)$ 원환면을 잘라 편 도표다. 칠한 C-장애물 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$은 $\theta_1 \in (-90°, 90°)$에 걸쳐 양 끝에서 한 점으로 오므라드는 렌즈로 원환면의 18.478 %를 막고, A와 B는 그 안이 아니라 접촉 경계 위에 있다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -415,9 +411,17 @@ $$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 장치는 같은 **P2**, 다만 패널을 0.5 m 뒤로 다시 세운다. 벽은 이제 $x \ge 1.5$.
 
-1. **그리기.** 새 벽에 대해 위와 같은 두 장짜리 그림. 작업 영역 그림에서는 벽이 더 이상 엘보 원에 닿지 않음을 보여라. C-space 도표에서는 새 장애물을 칠하고 오므라드는 지점을 표시하라. 카탈로그 자세 $(0°,90°)$에 무슨 일이 일어났는지 한 문장으로 쓰라.
+1. **그리기.** 새 벽에 대한 위의 그림. 작업 영역 그림에서는 벽이 더 이상 엘보 원에 닿지 않음을 보여라. C-space 도표에서는 새 장애물을 칠하고 오므라드는 지점을 표시하라. 카탈로그 자세 $(0°,90°)$에 무슨 일이 일어났는지 한 문장으로 쓰라.
 2. **유도.** (a) 새 벽의 $d(\theta)$를 쓰고, 다시 말단 항만 문제가 됨을 논증하라. (b) 경계 조건 $\cos\theta_1 + \cos\varphi = 1.5$에서 장애물이 오므라드는 $\theta_1$ 두 값과, $\theta_1 = 0°$ 및 $\theta_1 = 30°$에서 경계 위의 $\theta_2$ 값을 구하라. (c) *곧게 편* 팔 $\theta_2 = 0°$에 대해 패널을 파고드는 $\theta_1$ 범위를 구하라.
 3. **해석.** 원환면에서 막힌 비율이 18.478 %에서 8.515 %로 줄었다. C-장애물의 *차원*이 바뀌는가? P2의 자유도가 바뀌는가? 그리고 관통 과제 — 도구를 카탈로그 목표의 패널에 붙이기 — 는 여전히 해가 있는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 그림 두 장을 나란히: 왼쪽은 작업 영역, 오른쪽은 C-space 도표.
+> - 작업 영역: 원점의 베이스, 엘보가 그리는 단위원, 그리고 벽을 그 $x$ 위치의 수직선으로 긋고 팔이 들어가면 안 되는 쪽에 빗금을 친다. 벽이 그 원에 닿는지 밝힌다. 위의 그림의 벽 $x = 1$은 $(1,0)$에서 원에 접한다.
+> - 자세마다 링크를 하나씩 그린다. 엘보는 $(\cos\theta_1, \sin\theta_1)$, 말단은 거기서 절대각 $\theta_1 + \theta_2$ 방향으로 한 단위 더 간 곳이다. 적어도 카탈로그 자세 $(0°, 90°)$는 그리고, 목표 $(1,1)$을 표시한다.
+> - 도표: 가로 $\theta_1$, 세로 $\theta_2$, 둘 다 $-180°$에서 $180°$인 정사각형에 좌·우 변끼리, 위·아래 변끼리 같은 화살표를 그린다. 화살표가 없으면 정사각형은 원환면이 아니라 직사각형이다.
+> - 팔이 패널을 파고드는 영역을 칠한다. 양 끝에서 한 점으로 오므라드는 렌즈다. 오므라드는 두 점의 $\theta_1$을 표시한다(위의 그림에서는 $\pm 90°$).
+> - 렌즈의 경계에 "접촉"이라고 쓴다. $d = 0$인 자세는 칠한 영역 안이 아니라 그 곡선 위의 점이고, $d < 0$인 자세는 렌즈 밖에 있다.
 
 > [!tip]- 정답 · Solutions
 > 1. 작업 영역: 엘보 원의 반지름이 1이고 벽이 $x=1.5$이므로 가장 가까운 엘보 점 $(1,0)$도 $0.5\,\mathrm{m}$ 떨어진다. 링크 1은 이제 어디서나 엄격히 자유다. C-space: 더 작은 렌즈, $\theta_1 = \pm 60°$에서 오므라든다. 카탈로그 자세는 $\cos 0° + \cos 90° = 1 < 1.5$이므로 $d = -0.5$. 접촉 자세가 아니라 내부의 자유 자세가 되었다.

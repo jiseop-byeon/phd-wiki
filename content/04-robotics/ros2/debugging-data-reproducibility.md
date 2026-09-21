@@ -32,9 +32,7 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], recorded rather 
 
 *Scope: this page teaches how to find the cause of a silent system, what a recording is and is not evidence of, and how to turn a run into something another person can re-execute. It does not teach the QoS and time mechanisms that cause most silent systems, which are [[04-robotics/ros2/qos-executors-time|25.5]]; nor how to build a lab's CI from scratch; nor statistical experiment design, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, two panels, and the problem set asks for the same figure with one topic's count wrong.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 556" style="max-width:100%;height:auto" role="img" aria-label="Panel A: live, a 50 Hz /goal publisher feeds the control node, which publishes /cmd at 200 Hz to the cart, and the rosbag2 recorder subscribes to both; replay, ros2 bag play with --clock feeds /goal to the same control node on use_sim_time, its /cmd goes into an assertion rather than a motor, and /clock reaches every node. Panel B: the expected counts 50 times 60 equals 3000 and 200 times 60 equals 12000, and a 100 ms window of the 60 s run showing four /cmd ticks per /goal with goal ages 0, 5, 10 and 15 ms, the default 25 ms --clock ticks and the 70 ms budget.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · the two lives of one stream</text>
@@ -209,9 +207,7 @@ One figure, two panels, and the problem set asks for the same figure with one to
   <text x="8" y="528" font-size="11" fill="currentColor" opacity="0.8">ms into the window</text>
 </svg>
 
-**Panel A — the two lives of one stream.** Two horizontal bands, one above the other. The upper band is `live`: a `/goal` publisher at $50\,\mathrm{Hz}$, a control node, a `/cmd` publisher at $200\,\mathrm{Hz}$, and a `rosbag2` recorder subscribing to both. The lower band is `replay`: `ros2 bag play` publishing the same two topic names into the same control node, with a `/clock` arrow drawn to *every* node in the band. Three things the drawing must get right. The recorder is a **subscriber**, drawn with its arrows pointing into it, because a topic it names but nobody publishes yields a count of zero rather than an error. The `/clock` arrow must reach the node under test as well as the player, since §8's two failure modes are exactly the cases where one of the two halves is missing. And the replayed `/cmd` should be drawn entering a box labelled `assertion`, not a motor — the bag proves things about messages, never about the machine.
-
-**Panel B — the ledger you expect before you open the bag.** A two-column table drawn by hand, headed `topic` and `expected count`, with the arithmetic written out rather than the answers alone: $50\times60$ and $200\times60$. Under it, a number line of $0$ to $60\,\mathrm{s}$ with one $100\,\mathrm{ms}$ window blown up to the right, showing four `/cmd` ticks between two `/goal` ticks and the age of the newest `/goal` written above each one. Beside the blown-up window put P6's $70\,\mathrm{ms}$ bracket and the default `--clock` period of $25\,\mathrm{ms}$ as a second, coarser tick row, because the figure exists to show that the replay clock is itself a sampling rate.
+Panel A shows one P6 stream living twice: live, where `/goal` at $50\,\mathrm{Hz}$ feeds the control node, `/cmd` at $200\,\mathrm{Hz}$ drives the cart and the `rosbag2` recorder subscribes to both; and on replay, where `ros2 bag play --clock` feeds the same node on `use_sim_time`, `/clock` reaches every node, and `/cmd` goes into an assertion instead of a motor. Panel B is the ledger written before opening the bag — $50\times60=3000$ `/goal` and $200\times60=12000$ `/cmd` messages, $15000$ in all at $4{:}1$ — and one $100\,\mathrm{ms}$ window of the $60\,\mathrm{s}$ run, in which four `/cmd` ticks share each `/goal` at ages $0$, $5$, $10$ and $15\,\mathrm{ms}$. Beside them run the default `--clock` ticks every $25\,\mathrm{ms}$ and P6's $70\,\mathrm{ms}$ budget, because the replay clock is itself a sampling rate.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -750,6 +746,14 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 2. **Derive.** (a) `ros2 topic hz /goal` is a healthy $50\,\mathrm{Hz}$; `delay` grows $0.5\,\mathrm{s}$ per second. What is happening, and why `hz` is blind. (b) A frame with delay $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget. (c) `record -a` on P6: besides disk, what happens to `/cmd` when the recorder cannot keep $200\,\mathrm{Hz}$?
 3. **Interpret.** Replay with `--clock` shows thousands of messages; the controller emits nothing. Two causes, and the command that splits them. Which of the two also hides a budget failure?
 
+> [!note]- How to draw it · 그리는 법
+> - Draw the P6 graph as two bands, `live` above `replay`, with the same two topic names in both: `/goal` at $50\,\mathrm{Hz}$ into the control node, `/cmd` at $200\,\mathrm{Hz}$ out of it.
+> - In `live`, the `rosbag2` recorder is a subscriber, drawn with its arrows pointing into it: a topic it names but nobody publishes yields a count of zero, not an error.
+> - In `replay`, `/clock` from `ros2 bag play --clock` reaches every node — the node under test, on `use_sim_time`, as well as the player; §8's two failure modes are exactly the cases where one of the two halves is missing.
+> - The replayed `/cmd` enters a box labelled `assertion`, not a motor: the bag proves things about messages, never about the machine.
+> - On the timeline, `/cmd` ticks every $5\,\mathrm{ms}$ and `/goal` every $20\,\mathrm{ms}$, with the age of the newest `/goal` written above each `/cmd` tick.
+> - Add P6's $70\,\mathrm{ms}$ bracket, and the `--clock` period ($25\,\mathrm{ms}$ by default) as a second, coarser tick row: the replay clock is itself a sampling rate.
+
 > [!tip]- Solutions
 > 1. Check 0 is the shell. Timeline in bag time, not wall time, if `--clock` and `use_sim_time` agree.
 > 2. (a) Upstream queue: arrivals stay $50\,\mathrm{Hz}$, each stamp older. `hz` is inter-arrival; `delay` is age. (b) $130\,\mathrm{ms}$ over budget — even a "healthy" hz is a late force. (c) Drops, no error; `ros2 bag info` Count on `/cmd` is short.
@@ -772,9 +776,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 
 *범위: 이 페이지는 조용히 죽은 시스템의 원인을 찾는 법, 녹화가 무엇의 증거이고 무엇의 증거가 아닌지, 실행 하나를 남이 다시 돌릴 수 있는 것으로 바꾸는 법을 가르친다. 조용한 실패를 대부분 만들어 내는 QoS와 시간 기구는 가르치지 않는다. 그것은 [[04-robotics/ros2/qos-executors-time|25.5]]다. 연구실 CI를 처음부터 짓는 법도, 통계적 실험 설계도 아니다. 후자는 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 패널 둘. 과제는 토픽 하나의 개수가 틀린 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 556" style="max-width:100%;height:auto" role="img" aria-label="패널 A: live에서는 50 Hz /goal 퍼블리셔가 제어 노드에 들어가고, 제어 노드가 200 Hz로 /cmd를 카트에 내며, rosbag2 레코더가 둘 다 구독한다. replay에서는 --clock을 단 ros2 bag play가 use_sim_time인 같은 제어 노드에 /goal을 넣고, 그 /cmd는 모터가 아니라 단언으로 들어가며, /clock은 모든 노드에 닿는다. 패널 B: 기대 개수 50 곱하기 60은 3000, 200 곱하기 60은 12000, 그리고 60 s 실행 중 100 ms 창 하나에서 /goal 하나당 /cmd 틱 넷과 목표 나이 0, 5, 10, 15 ms, 기본 25 ms --clock 틱, 70 ms 예산.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 한 스트림의 두 인생</text>
@@ -949,9 +951,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
   <text x="8" y="528" font-size="11" fill="currentColor" opacity="0.8">창 안의 ms</text>
 </svg>
 
-**패널 A — 한 스트림의 두 인생.** 가로 띠 둘을 위아래로 놓는다. 위 띠는 `live`다. $50\,\mathrm{Hz}$ `/goal` 퍼블리셔, 제어 노드, $200\,\mathrm{Hz}$ `/cmd` 퍼블리셔, 그리고 둘 다 구독하는 `rosbag2` 레코더. 아래 띠는 `replay`다. `ros2 bag play`가 같은 토픽 이름으로 같은 제어 노드에 발행하고, `/clock` 화살표가 그 띠의 *모든* 노드에 닿는다. 그림이 맞혀야 할 것이 셋이다. 레코더는 **구독자**이므로 화살표가 그쪽으로 들어가게 그린다. 이름만 대고 아무도 발행하지 않는 토픽은 오류가 아니라 개수 0을 낳기 때문이다. `/clock` 화살표는 플레이어뿐 아니라 시험 대상 노드에도 닿아야 한다. §8의 실패 모드 둘이 정확히 그 두 짝 중 하나가 빠진 경우이기 때문이다. 그리고 재생된 `/cmd`는 모터가 아니라 `단언`이라고 쓴 상자로 들어가게 그린다. bag은 메시지에 대해 증명하지 기계에 대해 증명하지 않는다.
-
-**패널 B — bag을 열기 전에 적어 두는 장부.** `토픽`과 `기대 개수` 두 칸짜리 표를 손으로 그리되, 답만 적지 말고 계산을 적는다. $50\times60$과 $200\times60$. 그 아래에 $0$에서 $60\,\mathrm{s}$의 수직선을 긋고 오른쪽에 $100\,\mathrm{ms}$ 창 하나를 확대해, `/goal` 틱 둘 사이의 `/cmd` 틱 넷과 각 틱 위에 가장 새로운 `/goal`의 나이를 적는다. 확대한 창 옆에 P6의 $70\,\mathrm{ms}$ 괄호와 기본 `--clock` 주기 $25\,\mathrm{ms}$를 더 성긴 둘째 눈금 줄로 그린다. 재생 시계 자체가 하나의 샘플링 속도라는 것을 보이려고 있는 그림이기 때문이다.
+패널 A는 P6 스트림 하나의 두 인생으로, live에서는 $50\,\mathrm{Hz}$ `/goal`이 제어 노드로 들어가고 $200\,\mathrm{Hz}$ `/cmd`가 카트를 움직이며 `rosbag2` 레코더가 둘 다 구독하고, replay에서는 `ros2 bag play --clock`이 `use_sim_time`인 같은 노드에 발행하고 `/clock`이 모든 노드에 닿으며 `/cmd`는 모터가 아니라 단언으로 들어간다. 패널 B는 bag을 열기 전에 적는 장부 — `/goal` $50\times60=3000$개, `/cmd` $200\times60=12000$개, 합 $15000$개에 비 $4{:}1$ — 와 $60\,\mathrm{s}$ 실행 중 $100\,\mathrm{ms}$ 창 하나이고, 그 창에서는 `/cmd` 틱 넷이 `/goal` 하나를 나이 $0$, $5$, $10$, $15\,\mathrm{ms}$로 나눠 쓴다. 그 옆에 기본 `--clock`의 $25\,\mathrm{ms}$ 눈금과 P6의 $70\,\mathrm{ms}$ 예산을 함께 그렸는데, 재생 시계 자체가 하나의 샘플링 속도이기 때문이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -1489,6 +1489,14 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. `/goal`($50\,\mathrm{Hz}$)�
 1. **그리기.** P6 그래프 위의 순서 있는 점검(환경 → node list → topic hz → info `--verbose` → TF → `/clock`). `--clock` bag 재생의 다섯 줄 타임라인: 첫 `/goal`, `/cmd` 틱 열넷, $70\,\mathrm{ms}$ 표시.
 2. **유도.** (a) `ros2 topic hz /goal`은 $50\,\mathrm{Hz}$로 멀쩡하고 `delay`는 1초마다 $0.5\,\mathrm{s}$씩 는다. 무슨 일이고, 왜 `hz`는 못 보는가. (b) 지연 $200\,\mathrm{ms}$인 프레임 대 $70\,\mathrm{ms}$ 예산. (c) P6에서 `record -a`: 디스크 말고, 기록기가 $200\,\mathrm{Hz}$를 못 따라가면 `/cmd`에 무슨 일이 있는가?
 3. **해석.** `--clock` 재생이 메시지 수천 개를 보여 주는데 제어기는 아무것도 안 낸다. 원인 둘과 가르는 명령. 둘 중 어느 것이 예산 실패도 감추는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - P6 그래프를 띠 둘로 그린다. 위가 `live`, 아래가 `replay`이고 두 띠의 토픽 이름은 같다. 제어 노드로 들어가는 $50\,\mathrm{Hz}$ `/goal`, 거기서 나오는 $200\,\mathrm{Hz}$ `/cmd`.
+> - `live`의 `rosbag2` 레코더는 구독자이므로 화살표가 그쪽으로 들어가게 그린다. 이름만 대고 아무도 발행하지 않는 토픽은 오류가 아니라 개수 0을 낳는다.
+> - `replay`에서 `ros2 bag play --clock`의 `/clock`은 모든 노드에 닿는다. 플레이어뿐 아니라 `use_sim_time`인 시험 대상 노드에도. §8의 실패 모드 둘이 정확히 그 두 짝 중 하나가 빠진 경우다.
+> - 재생된 `/cmd`는 모터가 아니라 `단언`이라고 쓴 상자로 들어간다. bag은 메시지에 대해 증명하지 기계에 대해 증명하지 않는다.
+> - 타임라인에는 `/cmd` 틱을 $5\,\mathrm{ms}$마다, `/goal`을 $20\,\mathrm{ms}$마다 긋고, `/cmd` 틱마다 그 위에 가장 새로운 `/goal`의 나이를 적는다.
+> - P6의 $70\,\mathrm{ms}$ 괄호, 그리고 `--clock` 주기(기본 $25\,\mathrm{ms}$)를 더 성긴 둘째 눈금 줄로 더한다. 재생 시계 자체가 하나의 샘플링 속도다.
 
 > [!tip]- 정답 · Solutions
 > 1. 0번은 셸. `--clock`과 `use_sim_time`이 맞으면 타임라인은 벽시계가 아니라 bag 시간.

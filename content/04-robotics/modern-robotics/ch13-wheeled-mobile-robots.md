@@ -36,9 +36,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 The radius is not a free choice: a $1024$-count wheel that must resolve $2048$ counts per metre has to roll exactly $0.5\,\mathrm{m}$ per turn, which fixes $r = 1/(4\pi)$. Pose is $(x, y, \theta)$ with $\theta$ the heading from $+x$.
 
-### Homework diagram · 과제가 그릴 그림
-
-Two panels.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 316" style="max-width:100%;height:auto" role="img" aria-label="left: the P6-D cart on the worked quarter turn, wheels at plus and minus d = 0.200 m on the axle, the axle extended to the instantaneous centre of rotation 1.000 m away, the wheel tracks with Δs_R = 1.885 m and Δs_L = 1.257 m, and a crossed-out sideways arrow; right: the clock, with control every 5 ms, vision every 20 ms, and the 70 ms sense-to-act bracket over which the cart travels 35 mm">
   <g transform="translate(0 2)">
@@ -96,11 +94,7 @@ Two panels.
   </g>
 </svg>
 
-**Left — the geometry.** The cart as a rectangle with its body frame at the wheel-axle midpoint: body $x$ forward, body $y$ to the left. Draw both wheels on the axle at $\pm d$ and label $d = 0.200\,\mathrm{m}$. Extend the axle line to the left until it reaches the **instantaneous centre of rotation** and mark that distance $R = v/\omega$; draw the arc the body frame follows around it. On the arc, write $\Delta s_R$ along the outer wheel's track and $\Delta s_L$ along the inner one. Put a crossed-out sideways arrow on the body $y$ axis: that is the nonholonomic constraint, and it is the one arrow the cart cannot draw.
-
-**Right — the clock.** A time axis with three rows of ticks: control at every $5\,\mathrm{ms}$, vision at every $20\,\mathrm{ms}$, and a single bracket $70\,\mathrm{ms}$ long from a camera mid-exposure mark to the instant force is applied. Under the bracket write how far the cart has travelled at $0.5\,\mathrm{m/s}$. Under one $5\,\mathrm{ms}$ interval write how many counts arrive in it.
-
-The problem set asks for the left panel redrawn for a turn in place, where $R = 0$ and the arc collapses to the axle midpoint.
+Left, the P6-D cart on the worked quarter turn from $(0, 0, 0°)$ to $(1, 1, 90°)$: wheels at $\pm d = \pm 0.200\,\mathrm{m}$ on the axle, the axle extended to the instantaneous centre of rotation at $R = v/\omega = 1.000\,\mathrm{m}$, wheel tracks of $\Delta s_R = 1.884956\,\mathrm{m}$ outside and $\Delta s_L = 1.256637\,\mathrm{m}$ inside, and a crossed-out sideways arrow, the nonholonomic constraint. Right, the clock: control every $5\,\mathrm{ms}$ ($5.12$ counts per tick at $0.5\,\mathrm{m/s}$), vision every $20\,\mathrm{ms}$ ($10\,\mathrm{mm}$ of travel between frames), and the $70\,\mathrm{ms}$ sense-to-act budget, over which the cart moves $35\,\mathrm{mm}$.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -235,9 +229,17 @@ fused localization.
 
 Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants|0.6]]. Same cart **P6-D**, same frozen numbers, but the manoeuvre changes: instead of the quarter-circle arc, the cart must **turn in place through exactly $90°$** to face the panel, at $\omega = 0.5\,\mathrm{rad/s}$.
 
-1. **Draw.** The left panel again for this manoeuvre: where the ICR now sits, what the two wheels do, and what the arc of the body-frame origin degenerates to. Add the wheel-track circles and their radii.
+1. **Draw.** The left panel of the picture above, for this manoeuvre: where the ICR now sits, what the two wheels do, and what the arc of the body-frame origin degenerates to. Add the wheel-track circles and their radii.
 2. **Derive.** (a) The wheel arc each wheel must travel, and the exact count it corresponds to. (b) Turning in place forces $\Delta n_R = -\Delta n_L$; show that this makes $\Delta n_R - \Delta n_L$ even, list the two nearest achievable headings and their errors, and give the heading step between consecutive achievable values. (c) Now allow $\Delta n_R \ne -\Delta n_L$: find the count pair that lands nearest $90°$, and say what it costs in translation. (d) How long does the turn take, and how many counts arrive per $5\,\mathrm{ms}$ control tick?
 3. **Interpret.** Compare (b)'s heading error with the $2.70°$ that a $1\,\%$ differential slip produced on the arc, and say which of the two a better encoder would fix. Then use (d) to explain why a velocity controller for this turn cannot be tuned on one-tick differences, and name the two standard ways out.
+
+> [!note]- How to draw it · 그리는 법
+> - The cart as a rectangle with its body frame at the axle midpoint: body $x$ forward, body $y$ to the left.
+> - Both wheels on the axle at $\pm d$, labelled $d = 0.200\,\mathrm{m}$.
+> - The instantaneous centre of rotation lies on the axle line, $R = v/\omega$ from the midpoint. Mark it and that distance, and draw the path the body-frame origin follows around it (in the picture above, $R = 1.000\,\mathrm{m}$ to the left and a quarter arc).
+> - Each wheel runs on its own circle about the ICR, of radius $R + d$ outside and $R - d$ inside. Draw both tracks, write their radii, and write $\Delta s_R$ and $\Delta s_L$ along them.
+> - A crossed-out sideways arrow on the body $y$ axis: the nonholonomic constraint, the one arrow the cart cannot draw.
+> - The clock panel, if you redraw it: ticks every $5\,\mathrm{ms}$ for control and every $20\,\mathrm{ms}$ for vision, one $70\,\mathrm{ms}$ bracket from a camera mid-exposure mark to the applied force with the distance travelled at $0.5\,\mathrm{m/s}$ written under it, and the counts that arrive in one $5\,\mathrm{ms}$ interval.
 
 > [!tip]- Solutions
 > 1. $v = 0$ and $R = v/\omega = 0$, so the ICR is at the axle midpoint; the body-frame origin does not move and its arc degenerates to a point. The two wheels counter-rotate on the same circle of radius $d = 0.200\,\mathrm{m}$ about that point, one forward and one backward.
@@ -267,9 +269,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 반지름은 자유롭게 고른 값이 아니다. 미터당 $2048$ 카운트를 내야 하는 $1024$ 카운트 바퀴는 한 바퀴에 정확히 $0.5\,\mathrm{m}$를 굴러야 하고, 그것이 $r = 1/(4\pi)$를 못 박는다. 자세는 $(x, y, \theta)$이고 $\theta$는 $+x$에서 잰 방위다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 두 장.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 316" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 계산 예제의 1/4 회전 위의 P6-D 카트. 차축 위 ±d = 0.200 m의 바퀴, 1.000 m 떨어진 순간 회전 중심까지 연장한 차축, Δs_R = 1.885 m와 Δs_L = 1.257 m의 바퀴 자취, 가위표 친 옆 방향 화살표. 오른쪽: 시계. 5 ms마다 제어, 20 ms마다 비전, 그리고 카트가 35 mm를 가는 70 ms 감지-작용 괄호">
   <g transform="translate(0 2)">
@@ -327,11 +327,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
   </g>
 </svg>
 
-**왼쪽 — 기하.** 카트를 직사각형으로 그리고 바디 좌표계를 차축 중점에 둔다. 바디 $x$가 앞, 바디 $y$가 왼쪽. 차축 위 $\pm d$에 바퀴 둘을 그리고 $d = 0.200\,\mathrm{m}$을 적는다. 차축 직선을 왼쪽으로 연장해 **순간 회전 중심**까지 긋고 그 거리를 $R = v/\omega$로 표시한 뒤, 바디 좌표계가 그 둘레로 따라가는 호를 그린다. 호 위에 바깥 바퀴 자취를 따라 $\Delta s_R$, 안쪽을 따라 $\Delta s_L$을 쓴다. 바디 $y$축에 가위표 친 옆 방향 화살표를 그린다. 그것이 비홀로노믹 제약이고, 카트가 그릴 수 없는 유일한 화살표다.
-
-**오른쪽 — 시계.** 시간축에 눈금 세 줄: $5\,\mathrm{ms}$마다 제어, $20\,\mathrm{ms}$마다 비전, 그리고 카메라 노출 중간 표시에서 힘이 나가는 순간까지 $70\,\mathrm{ms}$짜리 괄호 하나. 괄호 아래에 $0.5\,\mathrm{m/s}$에서 카트가 간 거리를 적는다. $5\,\mathrm{ms}$ 구간 하나 아래에 그 안에 도착하는 카운트 수를 적는다.
-
-과제는 제자리 회전에 대해 왼쪽 그림을 다시 그리라고 하며, 그때 $R = 0$이고 호는 차축 중점으로 주저앉는다.
+왼쪽은 계산 예제의 1/4 회전 $(0, 0, 0°) \to (1, 1, 90°)$ 위의 P6-D 카트로, 차축 위 $\pm d = \pm 0.200\,\mathrm{m}$에 바퀴가 있고, 차축을 $R = v/\omega = 1.000\,\mathrm{m}$ 떨어진 순간 회전 중심까지 연장했으며, 바퀴 자취는 바깥이 $\Delta s_R = 1.884956\,\mathrm{m}$, 안쪽이 $\Delta s_L = 1.256637\,\mathrm{m}$이고, 가위표 친 옆 방향 화살표가 비홀로노믹 제약이다. 오른쪽은 시계로, $5\,\mathrm{ms}$마다 제어($0.5\,\mathrm{m/s}$에서 틱당 $5.12$ 카운트), $20\,\mathrm{ms}$마다 비전(프레임 사이 $10\,\mathrm{mm}$ 이동), 그리고 카트가 $35\,\mathrm{mm}$를 가는 $70\,\mathrm{ms}$ 감지-작용 예산을 보여 준다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -469,9 +465,17 @@ $$R = \frac{v}{\omega}$$
 
 Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 카트도 같은 **P6-D**, 고정 숫자도 같지만 기동이 바뀐다. 1/4원 호 대신 카트가 패널을 향하도록 $\omega = 0.5\,\mathrm{rad/s}$로 **제자리에서 정확히 $90°$ 회전**해야 한다.
 
-1. **그리기.** 이 기동에 대해 왼쪽 그림을 다시 그린다. ICR이 이제 어디 있는지, 두 바퀴가 무엇을 하는지, 바디 좌표계 원점의 호가 무엇으로 주저앉는지. 바퀴 자취 원과 그 반지름을 더한다.
+1. **그리기.** 이 기동에 대해 위의 그림 왼쪽을 다시 그린다. ICR이 이제 어디 있는지, 두 바퀴가 무엇을 하는지, 바디 좌표계 원점의 호가 무엇으로 주저앉는지. 바퀴 자취 원과 그 반지름을 더한다.
 2. **유도.** (a) 각 바퀴가 가야 할 호와 그에 해당하는 정확한 카운트. (b) 제자리 회전은 $\Delta n_R = -\Delta n_L$을 강제한다. 그러면 $\Delta n_R - \Delta n_L$이 짝수가 됨을 보이고, 도달 가능한 가장 가까운 방위 둘과 그 오차, 그리고 연속한 도달 가능 값 사이의 방위 간격을 구하라. (c) 이제 $\Delta n_R \ne -\Delta n_L$을 허용한다. $90°$에 가장 가까이 내리는 카운트 쌍을 찾고, 그 대가가 병진으로 얼마인지 말하라. (d) 회전에 걸리는 시간과 $5\,\mathrm{ms}$ 제어 틱마다 도착하는 카운트 수는?
 3. **해석.** (b)의 방위 오차를 호에서 $1\,\%$ 차동 미끄럼이 만든 $2.70°$와 비교하고, 더 좋은 엔코더가 둘 중 무엇을 고치는지 말하라. 그다음 (d)를 써서 이 회전의 속도 제어기를 한 틱 차분으로 튜닝할 수 없는 이유를 설명하고, 표준적인 두 가지 출구의 이름을 대라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 카트는 직사각형으로, 바디 좌표계는 차축 중점에 둔다. 바디 $x$가 앞, 바디 $y$가 왼쪽.
+> - 차축 위 $\pm d$에 바퀴 둘을 그리고 $d = 0.200\,\mathrm{m}$을 적는다.
+> - 순간 회전 중심은 차축 직선 위, 중점에서 $R = v/\omega$ 떨어진 곳에 있다. 그 점과 거리를 표시하고, 바디 좌표계 원점이 그 둘레로 따라가는 경로를 그린다(위의 그림에서는 왼쪽으로 $R = 1.000\,\mathrm{m}$, 1/4 호).
+> - 각 바퀴는 ICR 둘레의 자기 원 위를 달리고, 반지름은 바깥이 $R + d$, 안쪽이 $R - d$다. 두 자취를 그리고 반지름을 적은 뒤, 그 위에 $\Delta s_R$과 $\Delta s_L$을 쓴다.
+> - 바디 $y$축에 가위표 친 옆 방향 화살표. 그것이 비홀로노믹 제약이고, 카트가 그릴 수 없는 유일한 화살표다.
+> - 시계 그림도 다시 그린다면: $5\,\mathrm{ms}$마다 제어, $20\,\mathrm{ms}$마다 비전 눈금, 카메라 노출 중간 표시에서 힘이 나가는 순간까지 $70\,\mathrm{ms}$ 괄호 하나와 그 아래에 $0.5\,\mathrm{m/s}$에서 간 거리, 그리고 $5\,\mathrm{ms}$ 구간 하나에 도착하는 카운트 수.
 
 > [!tip]- 정답 · Solutions
 > 1. $v = 0$, $R = v/\omega = 0$이므로 ICR은 차축 중점이고, 바디 좌표계 원점은 움직이지 않아 그 호가 점으로 주저앉는다. 두 바퀴는 그 점 둘레 반지름 $d = 0.200\,\mathrm{m}$의 같은 원 위에서 하나는 앞으로 하나는 뒤로 반대 방향으로 돈다.

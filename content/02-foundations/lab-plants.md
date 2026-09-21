@@ -11,7 +11,7 @@ wiki-support: Working
 > None. Open this page whenever a problem set says **P1**–**P6**.
 > 없음. 과제가 **P1**–**P6**을 말하면 이 페이지를 연다.
 >
-> Integrators · 적분기: [[02-foundations/lab-kernel|0.65 Lab Kernel]]
+> Integrators · 적분기: [[02-foundations/lab-kernel|0.7 Lab Kernel]]
 
 ## English
 
@@ -23,7 +23,7 @@ The whole task as one loop, with **P5** locating the panel and **P6** supplying 
 
 ### P1 — two-layer net
 
-The network of [[02-foundations/neural-network-basics|0.7 §2]] and [[02-foundations/calculus-backprop|2. §3]]. Biases zero, $\sigma=\mathrm{ReLU}$.
+The network of [[02-foundations/neural-network-basics|0.8 §2]] and [[02-foundations/calculus-backprop|2. §3]]. Biases zero, $\sigma=\mathrm{ReLU}$.
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix},\quad W_2=\begin{pmatrix}1&-1&0.5\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix},\quad y=1$$
 
@@ -94,7 +94,7 @@ Its sensor noise models (encoder quantization, a single-axis IMU, a range sensor
 | P6, its sensor noise | [[04-robotics/sensor-models\|3.2 Sensor Models & Noise]] |
 | P2, P3, P5 and P6 as one loop | [[04-robotics/capstone-panel-contact\|26. Capstone]] |
 
-How to step a continuous plant: [[02-foundations/lab-kernel|0.65 Lab Kernel]]. How a page should use these plants: [[templates/course-page|course-page template]].
+How to step a continuous plant: [[02-foundations/lab-kernel|0.7 Lab Kernel]]. How a page should use these plants: [[templates/course-page|course-page template]].
 
 ## 한국어
 
@@ -106,7 +106,7 @@ How to step a continuous plant: [[02-foundations/lab-kernel|0.65 Lab Kernel]]. H
 
 ### P1 — 2층 네트워크
 
-[[02-foundations/neural-network-basics|0.7 §2]]와 [[02-foundations/calculus-backprop|2. §3]]의 네트워크. 편향 0, $\sigma=\mathrm{ReLU}$.
+[[02-foundations/neural-network-basics|0.8 §2]]와 [[02-foundations/calculus-backprop|2. §3]]의 네트워크. 편향 0, $\sigma=\mathrm{ReLU}$.
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix},\quad W_2=\begin{pmatrix}1&-1&0.5\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix},\quad y=1$$
 
@@ -177,4 +177,4 @@ $x$는 온도 오차, $u$는 명령, $d$는 미지 외란. 개루프 $u=1$은 $x
 | P6의 센서 잡음 | [[04-robotics/sensor-models\|3.2 센서 모델과 잡음]] |
 | P2, P3, P5, P6을 루프 하나로 | [[04-robotics/capstone-panel-contact\|26. 캡스톤]] |
 
-연속 플랜트를 이산 시간으로 푸는 법: [[02-foundations/lab-kernel|0.65 Lab Kernel]]. 페이지가 이 장치를 쓰는 법: [[templates/course-page|course-page 템플릿]].
+연속 플랜트를 이산 시간으로 푸는 법: [[02-foundations/lab-kernel|0.7 Lab Kernel]]. 페이지가 이 장치를 쓰는 법: [[templates/course-page|course-page 템플릿]].

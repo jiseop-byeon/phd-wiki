@@ -25,9 +25,7 @@ no prior background assumed.
 > [!note] First pass · 처음이라면
 > Read §0 (three log rules, five minutes), §1, §2, §3 — and do the bit calculations by hand, they are the page. §4 and §5 are for when a paper puts mutual information or an ELBO in its objective.
 
-### Homework diagram · 과제가 그릴 그림
-
-The page's object is the **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]], and every number below is drawn as a channel. The problem set asks for this same figure.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="The P5 crack detector as a binary channel: prior boxes to scale, a line for cracked at 0.01 and a tall box for sound at 0.99; four arrows with their conditionals and joint masses; the alarm node split into 0.161 from cracked and 0.839 from sound inside a bracket labelled P(+) = 0.059; 0.95 and 0.161 circled.">
   <defs><marker id="itHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -71,13 +69,7 @@ The page's object is the **P5** crack detector from [[02-foundations/lab-plants|
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">Circled: P(+|c) = 0.95 on the arrow, P(c|+) = 0.161 in the bracket, about six times apart.</text>
 </svg>
 
-**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node need *not* — here they do ($0.95+0.05$) only because this channel is symmetric; in a channel matrix written with one column per input $x$ and entries $P(y\mid x)$, a column is a distribution and a row need not be.
-
-**The prior, drawn to scale.** Draw the two left nodes as boxes whose heights are their prior masses, $P(c)=0.01$ against $P(\neg c)=0.99$. Drawn honestly, the top box is a line and the bottom one is the whole figure. That ratio of $99$ is the only reason the page's punchline exists, so it must be visible before any arithmetic starts.
-
-**The four joint masses, at the arrowheads.** Multiply prior by conditional along each arrow and write the product where the arrow lands: $0.0095$ on $c\to+$, $0.0005$ on $c\to-$, $0.0495$ on $\neg c\to+$, $0.9405$ on $\neg c\to-$. The four sum to $1$; write that check on the page. Then bracket the two arrows that land on $+$ and write their total, $P(+)=0.059$, beside the bracket. Inside the bracket, split it into the two shares $0.0095/0.059$ and $0.0495/0.059$ and label them $0.161$ and $0.839$: the posterior after an alarm, read off the picture rather than from Bayes' rule.
-
-**The last annotation, which is the point.** Beside the $c\to+$ arrow write $0.95$ once more and circle it; beside the bracket write $0.161$ and circle that. Two circled numbers, one arrow apart, differing by a factor of about six. §2 charges $H(p,q)\approx 3.64$ bits against a floor of $H(p)\approx 0.637$ bits for confusing them, and the problem set asks you to pay that bill by hand.
+The **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]] as a binary channel, with the prior drawn to scale — cracked, $P(c)=0.01$, is a line and sound, $P(\neg c)=0.99$, fills the column — and four arrows carrying $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$ and $P(-|\neg c)=0.95$. At the arrowheads sit the joint masses $0.0095$, $0.0005$, $0.0495$ and $0.9405$, which sum to $1$; the two that land on $+$ make $P(+)=0.059$, split into the shares $0.161$ from cracked and $0.839$ from sound. The two circled numbers are the point — the sensitivity $P(+|c)=0.95$ on an arrow and the posterior $P(c|+)=0.161$ in the bracket, about six times apart — and §2 prices confusing them at $H(p,q)\approx 3.64$ bits against a floor of $H(p)\approx 0.637$ bits.
 
 ### 0. Prerequisite: the three log rules
 
@@ -141,7 +133,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{bits}$$
   The model costs $1.280$ bits per symbol where $1.157$ is the floor — an overpayment of
   $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
-- **Worked: P5 crack detector.** Catalog $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$ ([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. The true posterior is Bernoulli($0.161$) with $H(p)\approx 0.64$ bits. A model that treats the *sensitivity* $0.95$ as if it were $P(c|+)$ pays $H(p,q)\approx 3.64$ bits. False alarms from the $99\%$ non-crack mass ($0.0495$) dominate true positives ($0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$. The problem set is this channel as a drawing. Both figures are expected
+- **Worked: P5 crack detector.** Catalog $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$ ([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. The true posterior is Bernoulli($0.161$) with $H(p)\approx 0.64$ bits. A model that treats the *sensitivity* $0.95$ as if it were $P(c|+)$ pays $H(p,q)\approx 3.64$ bits. False alarms from the $99\%$ non-crack mass ($0.0495$) dominate true positives ($0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$. The picture at the top of the page is this channel, drawn. Both figures are expected
   costs, not code lengths. Entropy bounds the *expected* length, and a per-symbol code reaches
   it only when every probability is a power of two, because a symbol's code length has to be a
   whole number of bits: the best symbol code here is Huffman at $1.3$ bits (built and proved optimal in [[02-foundations/algorithms/greedy-mst|11.4 §5]]). The floor is approached by coding long blocks of **i.i.d.** ([[02-foundations/probability|3. Probability §2]])
@@ -360,6 +352,14 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 2. **Derive.** (a) $P(+)$ and $P(c|+)$ from Bayes. (b) After a $+$ reading the true posterior is Bernoulli($p$) with that $p$. Binary cross-entropy of a model that outputs $q=0.95$ (the sensitivity, treated as if it were $P(c|+)$). Compare to $H(p)$.
 3. **Interpret.** Why is $P(c|+)\approx 0.16$ even though sensitivity is 95%?
 
+> [!note]- How to draw it · 그리는 법
+> - Two input nodes on the left, $c$ above $\neg c$, and two output nodes on the right, $+$ above $-$, joined by four arrows, every input to every output: none omitted, because the two diagonal arrows are the errors and they are the whole lesson.
+> - Write the conditional $P(y|x)$ on each arrow and check that the two arrows leaving each left node sum to $1$. The two entering a right node need not, and here do only because this channel is symmetric: in a channel matrix with one column per input, a column is a distribution and a row need not be.
+> - Draw the left nodes as boxes whose heights are their prior masses; drawn honestly, the $c$ box is a line, and that ratio must be visible before any arithmetic starts.
+> - Multiply prior by conditional along each arrow and write the product where the arrow lands; write on the page the check that the four joint masses sum to $1$.
+> - Bracket the two arrows that land on $+$, write their total $P(+)$ beside the bracket, and split it into the two shares: the posterior after an alarm, read off the picture rather than from Bayes' rule.
+> - Circle the sensitivity $P(+|c)$ on its arrow and the posterior $P(c|+)$ at the bracket — two numbers one arrow apart, and item 2 makes you pay in bits for confusing them.
+
 > [!tip]- Solutions
 > 1. $c\to +$ at $0.95$, $c\to -$ at $0.05$; $\neg c\to +$ at $0.05$, $\neg c\to -$ at $0.95$. Almost all prior mass on $\neg c$.
 > 2. $P(+)=0.95\cdot 0.01+0.05\cdot 0.99=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)=-p\log_2 0.95-(1-p)\log_2 0.05\approx 3.64$ bits, while $H(p)\approx 0.64$ bits: sensitivity is a badly calibrated posterior.
@@ -377,9 +377,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 > [!note] 처음이라면 · First pass
 > 먼저 §0(로그 세 규칙, 5분), §1, §2, §3 — 비트 계산은 손으로 해라, 그것이 이 페이지다. §4·§5는 논문이 목적함수에 상호 정보량이나 ELBO를 넣을 때 보면 된다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 균열 감지기이고, 아래 숫자는 전부 채널 하나로 그려진다. 과제가 바로 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="장치 P5 균열 감지기를 이진 채널로 그린 그림: 사전확률을 실제 비율로 그린 상자, 균열 0.01은 선 하나이고 멀쩡함 0.99는 긴 상자다. 조건부 확률과 결합 질량이 적힌 화살표 넷, P(+) = 0.059라고 적힌 묶음 안에서 균열 몫 0.161과 멀쩡함 몫 0.839로 나뉜 경보 노드, 동그라미 친 0.95와 0.161.">
   <defs><marker id="itHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -423,13 +421,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">동그라미: 화살표 위의 P(+|c) = 0.95와 묶음 안의 P(c|+) = 0.161, 약 여섯 배 차이다.</text>
 </svg>
 
-**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$일 *필요가 없다*. 여기서 $1$이 되는 것($0.95+0.05$)은 이 채널이 대칭이기 때문일 뿐이다. 입력 $x$마다 열 하나를 두고 성분을 $P(y\mid x)$로 쓴 채널 행렬에서, 열은 분포지만 행은 분포일 필요가 없다.
-
-**사전확률, 실제 비율로.** 왼쪽 노드 둘을 사전 질량 높이의 상자로 그린다. $P(c)=0.01$ 대 $P(\neg c)=0.99$다. 정직하게 그리면 위 상자는 선 하나이고 아래 상자가 그림 전체다. $99$라는 이 비율이 이 페이지 결론의 유일한 근거이므로, 산술을 시작하기 전에 눈에 보여야 한다.
-
-**결합 질량 넷, 화살촉 자리에.** 화살표마다 사전확률과 조건부를 곱해 화살표가 닿는 자리에 적는다. $c\to+$에 $0.0095$, $c\to-$에 $0.0005$, $\neg c\to+$에 $0.0495$, $\neg c\to-$에 $0.9405$. 넷의 합이 $1$이고, 그 확인을 그림에 적는다. 그다음 $+$에 닿는 화살표 둘을 묶음으로 표시하고 옆에 합 $P(+)=0.059$를 쓴다. 묶음 안을 두 몫 $0.0095/0.059$와 $0.0495/0.059$로 나누고 각각 $0.161$, $0.839$라고 쓴다. 베이즈 공식이 아니라 그림에서 읽어 낸 경보 후의 사후확률이다.
-
-**마지막 주석, 이것이 요점이다.** $c\to+$ 화살표 옆에 $0.95$를 한 번 더 쓰고 동그라미를 친다. 묶음 옆에는 $0.161$을 쓰고 역시 동그라미를 친다. 화살표 하나 떨어진 두 숫자가 약 여섯 배 차이 난다. 이 둘을 혼동한 대가로 §2는 바닥 $H(p)\approx 0.637$비트에 대해 $H(p,q)\approx 3.64$비트를 청구하고, 과제는 그 청구서를 손으로 치르게 한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 P5 균열 감지기를 이진 채널로 그린 것으로, 사전확률은 실제 비율대로 — 균열 $P(c)=0.01$은 선 하나, 멀쩡함 $P(\neg c)=0.99$는 기둥 전체 — 그렸고 화살표 넷에는 $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$, $P(-|\neg c)=0.95$가 실려 있다. 화살촉 자리의 결합 질량 $0.0095$, $0.0005$, $0.0495$, $0.9405$는 합이 $1$이고, $+$에 닿는 둘이 $P(+)=0.059$를 이루며 그 안은 균열 몫 $0.161$과 멀쩡함 몫 $0.839$로 나뉜다. 요점은 동그라미 친 두 숫자, 곧 화살표 위의 민감도 $P(+|c)=0.95$와 묶음 안의 사후확률 $P(c|+)=0.161$이 약 여섯 배 차이 난다는 것이고, 둘을 혼동한 대가로 §2는 바닥 $H(p)\approx 0.637$비트에 대해 $H(p,q)\approx 3.64$비트를 청구한다.
 
 ### 0. 사전 준비: 로그의 세 규칙
 
@@ -492,7 +484,7 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
   바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다. 이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
-- **계산: P5 균열 감지기.** 카탈로그의 $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. 참 사후분포는 Bernoulli($0.161$)이고 $H(p)\approx 0.64$비트다. *민감도* $0.95$를 $P(c|+)$인 양 쓰는 모델은 $H(p,q)\approx 3.64$비트를 치른다. 균열이 없는 $99\%$ 질량에서 나온 거짓 경보($0.0495$)가 참양성($0.0095$)을 압도한다. 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다. 과제는 이 채널을 그림으로 그리는 것이다.
+- **계산: P5 균열 감지기.** 카탈로그의 $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. 참 사후분포는 Bernoulli($0.161$)이고 $H(p)\approx 0.64$비트다. *민감도* $0.95$를 $P(c|+)$인 양 쓰는 모델은 $H(p,q)\approx 3.64$비트를 치른다. 균열이 없는 $99\%$ 질량에서 나온 거짓 경보($0.0495$)가 참양성($0.0095$)을 압도한다. 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다. 맨 위의 그림이 이 채널을 그린 것이다.
   두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
   단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
   정수 비트여야 하기 때문이다. 여기서 최선의 심볼
@@ -703,6 +695,14 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P5** 균열 감지기: $P(+|c)=0.
 1. **그리기.** 이진 채널 $C\in\{c,\neg c\}$ → $\{+,-\}$. 전이 네 개에 확률. 희귀한 사전 $P(c)=0.01$.
 2. **유도.** (a) 베이즈로 $P(+)$와 $P(c|+)$. (b) $+$를 본 뒤 참 사후는 그 $p$의 베르누이. 민감도 $q=0.95$를 $P(c|+)$인 양 쓰는 모델의 이진 교차 엔트로피. $H(p)$와 비교.
 3. **해석.** 민감도가 95%인데도 $P(c|+)\approx 0.16$인 이유는?
+
+> [!note]- 그리는 법 · How to draw it
+> - 왼쪽에 입력 노드 둘($c$가 위, $\neg c$가 아래), 오른쪽에 출력 노드 둘($+$가 위, $-$가 아래)을 두고, 입력마다 두 출력 모두로 가는 화살표 넷을 긋는다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부다.
+> - 화살표마다 조건부 확률 $P(y|x)$를 쓰고, 왼쪽 노드 하나에서 나가는 두 화살표의 합이 $1$인지 확인한다. 오른쪽 노드로 들어오는 둘은 $1$일 필요가 없고, 여기서 $1$이 되는 것은 이 채널이 대칭이기 때문일 뿐이다. 입력마다 열 하나를 둔 채널 행렬에서 열은 분포지만 행은 분포일 필요가 없다.
+> - 왼쪽 노드는 사전 질량 높이의 상자로 그린다. 정직하게 그리면 $c$ 상자는 선 하나이고, 그 비율이 산술을 시작하기 전에 눈에 보여야 한다.
+> - 화살표마다 사전확률과 조건부를 곱해 화살표가 닿는 자리에 적고, 결합 질량 넷의 합이 $1$이라는 확인을 그림에 적는다.
+> - $+$에 닿는 화살표 둘을 묶음으로 표시하고 옆에 합 $P(+)$를 쓴 다음, 그 안을 두 몫으로 나눈다. 베이즈 공식이 아니라 그림에서 읽어 낸 경보 후의 사후확률이다.
+> - 화살표 위의 민감도 $P(+|c)$와 묶음 쪽의 사후확률 $P(c|+)$에 동그라미를 친다. 화살표 하나 떨어진 두 숫자이고, 둘을 혼동한 대가는 2번이 비트로 치르게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. $c\to +$는 $0.95$, $c\to -$는 $0.05$; $\neg c\to +$는 $0.05$, $\neg c\to -$는 $0.95$. 사전 질량은 거의 $\neg c$.

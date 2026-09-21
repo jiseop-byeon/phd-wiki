@@ -42,9 +42,7 @@ A head-mounted camera is not a plant from [[02-foundations/lab-plants|0.6 Lab Pl
 
 Distortion is taken as zero and the pixels as square, so the pinhole relation $u = f\,X/Z$ holds exactly and every derivation below is arithmetic. The two angular rates are the ones §3 already cites; nothing on this page introduces a new measured value.
 
-### Homework diagram · 과제가 그릴 그림
-
-Three panels, drawn once. The problem set asks for the same three with a different camera.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 456" style="max-width:100%;height:auto" role="img" aria-label="Three panels for helmet camera E1: from the side, the 58.7-degree vertical field of view pitched 40 degrees down from 1.65 m, meeting the floor from 0.62 m to 8.78 m, with the horizontal ray above which the floor is never seen; the 1.60 by 0.90 m footprint at the bench 0.80 m away, 0.833 mm per pixel, with the 6 mm bolt head of 7.2 pixels next to its 25.1-pixel blur at 90 degrees per second; from above, eye and camera 0.030 m apart sideways and 0.070 m forward, their rays to the bench target differing by 2.35 degrees, 4.57 degrees in full">
   <defs><marker id="egoA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -116,9 +114,7 @@ Three panels, drawn once. The problem set asks for the same three with a differe
   </g>
 </svg>
 
-1. **The camera cone, from the side.** The projection centre, the optical axis pitched $\theta = 40^\circ$ below horizontal, and the two rays at $\pm\mathrm{VFOV}/2$ about it. Draw the ground line at $h = 1.65$ m below the centre and mark where the two rays meet it: those are the near and far edges of the ground footprint. Then draw a third ray at the horizontal and label it — everything above it never meets the floor at all.
-2. **The bench, fronto-parallel.** The image rectangle at $D = 0.80$ m with its width and height in metres, one pixel's footprint in millimetres, and the 6 mm bolt head drawn to scale inside it. Next to the bolt head, draw the blur streak that $\omega = 90$ °/s produces in one exposure, to the same scale.
-3. **The eye and the camera, from above.** Both projection centres, separated by the offset $b$; the bench target at $0.80$ m; and the two rays to it from eye and camera, with the angle between them marked. Seen from above that angle is only the left–right part, $\arctan(0.030/0.730)=2.35^\circ$, because the $0.050$ m up offset points out of the page; write the full $4.57^\circ$ of Worked step 6, which includes it, under the panel. This is the panel that says what "where the head is pointing" is actually measuring.
+Helmet camera E1 in three panels, each to scale. From the side, the $58.7^\circ$ vertical field of view, pitched $40^\circ$ down from $1.65$ m, meets the floor from $0.62$ m to $8.78$ m, and nothing above the horizontal ray ever meets it; at the bench $0.80$ m away the image covers $1.60 \times 0.90$ m at $0.833$ mm per pixel, so the 6 mm bolt head is $7.2$ px wide while one $1/60$ s exposure at $90$ °/s smears it into a $25.1$ px streak. From above, the eye and the camera, $0.030$ m apart sideways and $0.070$ m forward, see the bench target along rays $2.35^\circ$ apart — $4.57^\circ$ once the $0.050$ m up offset is included.
 
 ### Worked on E1 · E1로 한 번 끝까지
 
@@ -395,9 +391,18 @@ You should be able to:
 
 Tier B. Using **E1** from the running object above, and this page only. A vendor proposes a second helmet camera, **E2**: $1280 \times 720$ px, $f = 1200$ px, exposure $t_e = 1/120$ s, mount offset $(0.000,\ 0.090,\ 0.060)$ m from the eye, and a working distance of $1.20$ m. Everything else — the worker, the bolt head, the head rates — is E1's.
 
-1. **Draw.** Redraw all three homework panels for **E2**, with E1's outlines left on the page underneath so the two can be compared. In panel 1 use the same eye height and a head pitch of $40^\circ$. In panel 2 draw the blur streak for $\omega = 200$ °/s, a rate between the two E1 uses. In panel 3, note that E2's offset has no lateral component and say what that does to the panel.
+1. **Draw.** Redraw all three panels of the picture above for **E2**, with E1's outlines left on the page underneath so the two can be compared. In panel 1 use the same eye height and a head pitch of $40^\circ$. In panel 2 draw the blur streak for $\omega = 200$ °/s, a rate between the two E1 uses. In panel 3, note that E2's offset has no lateral component and say what that does to the panel.
 2. **Derive.** For **E2**: (a) horizontal and vertical field of view; (b) the on-axis and frame-average pixels per degree; (c) the footprint and GSD at $1.20$ m, and the bolt head's width in pixels; (d) the blur in pixels on axis at $200$ °/s, and its ratio to the bolt head; (e) the exposure that would hold that blur to one pixel on axis, and the light cost in stops; (f) the parallax angle and its width in pixels at the working distance.
 3. **Interpret.** E2 is sold as "the higher-resolution option: the bolt head is 6 pixels instead of E1's 7.2, at a longer working distance, with half the exposure." Using your own numbers, say which of E2's advantages survive a $200$ °/s head turn, which of E1's problems E2 has made worse rather than better, and what single number you would require before believing either camera can identify an active object during a reorientation.
+
+> [!note]- How to draw it · 그리는 법
+> - **Panel 1, the camera cone from the side**: the projection centre, the optical axis pitched $\theta$ below horizontal, and the two rays at $\pm\mathrm{VFOV}/2$ about it.
+> - **The ground line** at $h = 1.65$ m below the centre, with the points where the two rays meet it marked: those are the near and far edges of the ground footprint.
+> - **A third ray at the horizontal, labelled**: everything above it never meets the floor at all.
+> - **Panel 2, the bench, fronto-parallel**: the image rectangle at the working distance with its width and height in metres, one pixel's footprint in millimetres, and the 6 mm bolt head drawn to scale inside it.
+> - **Next to the bolt head, the blur streak** the stated head rate produces in one exposure, to the same scale.
+> - **Panel 3, the eye and the camera from above**: both projection centres, separated by the offset $b$; the bench target at the working distance; and the two rays to it from eye and camera, with the angle between them marked.
+> - **Seen from above, that angle is only the left–right part** of the offset, because the up component points out of the page; write the full angle, which includes it, under the panel (on E1, $2.35^\circ$ and $4.57^\circ$, Worked step 6). This is the panel that says what "where the head is pointing" is actually measuring.
 
 > [!tip]- Solutions
 > 1. E2's cone must be drawn narrower than E1's in both directions — the sensor shrank and the focal length grew, so both fields of view fall. Panel 3's two rays become coplanar with the vertical, because with $b_x = 0$ the whole offset lies in the sagittal plane, so the parallax is a pure pitch error and none of it is left–right. That is a real simplification and it does not reduce the magnitude.
@@ -467,9 +472,7 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 
 왜곡은 0, 픽셀은 정사각으로 두므로 핀홀 관계 $u = f\,X/Z$가 정확히 성립하고 아래 유도가 전부 산수가 된다. 두 각속도는 §3이 이미 인용한 값이며, 이 페이지는 새로운 측정값을 하나도 들여오지 않는다.
 
-### 과제가 그릴 그림 · Homework diagram
-
-패널 셋, 한 번 그린다. 과제는 카메라를 바꿔서 같은 셋을 다시 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 456" style="max-width:100%;height:auto" role="img" aria-label="헬멧 카메라 E1의 패널 셋: 옆에서 보면 1.65 m 높이에서 40도 내려다보는 58.7도 수직 화각이 바닥의 0.62 m에서 8.78 m까지 닿고 그 위로는 바닥이 보이지 않는 수평 광선이 있으며; 0.80 m 떨어진 작업대의 1.60 × 0.90 m 발자국은 픽셀당 0.833 mm이고 7.2픽셀인 6 mm 볼트 머리 옆에 90도/초의 25.1픽셀 번짐이 있고; 위에서 보면 옆으로 0.030 m, 앞으로 0.070 m 떨어진 눈과 카메라에서 작업대 표적으로 가는 두 광선이 2.35도, 전체로는 4.57도 차이 난다">
   <defs><marker id="egokA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -541,9 +544,7 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
   </g>
 </svg>
 
-1. **옆에서 본 카메라 원뿔.** 투영 중심, 수평에서 $\theta = 40^\circ$ 내려간 광축, 그리고 그 둘레 $\pm\mathrm{VFOV}/2$의 광선 둘. 중심에서 $h = 1.65$ m 아래에 지면선을 긋고 두 광선이 만나는 지점을 표시한다. 그것이 지면 발자국의 근거리 끝과 원거리 끝이다. 그다음 수평 방향 광선을 하나 더 긋고 이름을 붙여라. 그 위쪽은 바닥에 영영 닿지 않는다.
-2. **정면으로 본 작업대.** $D = 0.80$ m의 영상 직사각형을 미터 단위 가로·세로와 함께, 픽셀 하나의 발자국을 mm로, 그리고 6 mm 볼트 머리를 축척에 맞춰 그 안에 그린다. 볼트 머리 옆에는 $\omega = 90$ °/s가 노출 한 번에 만드는 번짐 자국을 같은 축척으로 그린다.
-3. **위에서 본 눈과 카메라.** 오프셋 $b$만큼 떨어진 투영 중심 둘, $0.80$ m의 작업대 표적, 그리고 눈과 카메라에서 표적으로 가는 광선 둘과 그 사이 각. 위에서 보면 그 각은 좌우 성분 $\arctan(0.030/0.730)=2.35^\circ$뿐이다. $0.050$ m 위 오프셋은 지면 밖을 향하기 때문이다. 그것까지 넣은 Worked step 6의 전체 각 $4.57^\circ$는 패널 아래에 적는다. "머리가 어디를 향하는가"가 실제로 무엇을 재는지를 말해 주는 패널이 이것이다.
+헬멧 카메라 E1을 세 패널에 각각 축척대로 그렸다. 옆에서 보면 $1.65$ m 높이에서 $40^\circ$ 내려간 $58.7^\circ$의 수직 화각이 바닥과 $0.62$ m부터 $8.78$ m까지 만나고 수평 광선 위쪽은 바닥에 영영 닿지 않으며, $0.80$ m 떨어진 작업대에서는 영상이 $1.60 \times 0.90$ m를 픽셀당 $0.833$ mm로 덮어 6 mm 볼트 머리가 $7.2$ px인데 $90$ °/s에서 $1/60$ s 노출 한 번이 그것을 $25.1$ px의 자국으로 번지게 한다. 위에서 보면 옆으로 $0.030$ m, 앞으로 $0.070$ m 떨어진 눈과 카메라가 작업대 표적을 $2.35^\circ$ 어긋난 광선으로 보고, $0.050$ m 위 오프셋까지 넣으면 그 각은 $4.57^\circ$다.
 
 ### E1으로 한 번 끝까지 · Worked on E1
 
@@ -807,9 +808,18 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 Tier B. 위의 대상 **E1**, 그리고 이 페이지만 사용한다. 어떤 업체가 두 번째 헬멧 카메라 **E2** 를 제안한다. $1280 \times 720$ px, $f = 1200$ px, 노출 $t_e = 1/120$ s, 눈 기준 장착 오프셋 $(0.000,\ 0.090,\ 0.060)$ m, 작업 거리 $1.20$ m. 나머지 — 작업자, 볼트 머리, 머리 각속도 — 는 E1의 것이다.
 
-1. **그려라.** **E2** 로 과제 패널 셋을 다시 그리되, 비교할 수 있게 E1의 윤곽을 아래에 남겨 둬라. 패널 1은 같은 눈높이와 머리 피치 $40^\circ$를 쓴다. 패널 2는 E1이 쓰는 두 값 사이인 $\omega = 200$ °/s의 번짐 자국을 그린다. 패널 3에서는 E2의 오프셋에 좌우 성분이 없다는 점을 적고 그것이 패널에 무슨 일을 하는지 말하라.
+1. **그려라.** 위의 그림의 패널 셋을 **E2** 로 다시 그리되, 비교할 수 있게 E1의 윤곽을 아래에 남겨 둬라. 패널 1은 같은 눈높이와 머리 피치 $40^\circ$를 쓴다. 패널 2는 E1이 쓰는 두 값 사이인 $\omega = 200$ °/s의 번짐 자국을 그린다. 패널 3에서는 E2의 오프셋에 좌우 성분이 없다는 점을 적고 그것이 패널에 무슨 일을 하는지 말하라.
 2. **유도하라.** **E2** 에 대해: (a) 수평·수직 화각; (b) 광축 위와 프레임 평균의 도당 픽셀; (c) $1.20$ m에서의 발자국과 GSD, 그리고 볼트 머리의 픽셀 폭; (d) $200$ °/s에서 광축 위 번짐의 픽셀 수와 볼트 머리 대비 비율; (e) 그 번짐을 광축 위 한 픽셀로 묶는 노출과 스톱 단위 빛 비용; (f) 작업 거리에서의 시차 각과 픽셀 폭.
 3. **해석하라.** E2는 "고해상도 옵션 — 더 먼 작업 거리에서, 노출은 절반인데 볼트 머리가 E1의 7.2픽셀이 아니라 6픽셀"로 팔린다. 직접 구한 숫자로, E2의 장점 중 $200$ °/s 머리 돌림에서 살아남는 것은 무엇이고, E1의 문제 중 E2가 개선이 아니라 악화시킨 것은 무엇이며, 두 카메라 중 어느 쪽이든 재정향 중에 active object를 식별할 수 있다고 믿기 전에 어떤 숫자 하나를 요구할지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **패널 1, 옆에서 본 카메라 원뿔.** 투영 중심, 수평에서 $\theta$만큼 내려간 광축, 그리고 그 둘레 $\pm\mathrm{VFOV}/2$의 광선 둘.
+> - **지면선.** 중심에서 $h = 1.65$ m 아래에 긋고 두 광선이 만나는 지점을 표시한다. 그것이 지면 발자국의 근거리 끝과 원거리 끝이다.
+> - **수평 방향 광선을 하나 더 긋고 이름을 붙인다.** 그 위쪽은 바닥에 영영 닿지 않는다.
+> - **패널 2, 정면으로 본 작업대.** 작업 거리에서의 영상 직사각형을 미터 단위 가로·세로와 함께, 픽셀 하나의 발자국을 mm로, 그리고 6 mm 볼트 머리를 축척에 맞춰 그 안에 그린다.
+> - **볼트 머리 옆에는 번짐 자국.** 주어진 머리 각속도가 노출 한 번에 만드는 자국을 같은 축척으로 그린다.
+> - **패널 3, 위에서 본 눈과 카메라.** 오프셋 $b$만큼 떨어진 투영 중심 둘, 작업 거리의 작업대 표적, 그리고 눈과 카메라에서 표적으로 가는 광선 둘과 그 사이 각.
+> - **위에서 보면 그 각은 오프셋의 좌우 성분뿐이다.** 위 성분은 지면 밖을 향하기 때문이다. 그것까지 넣은 전체 각은 패널 아래에 적는다(E1에서는 $2.35^\circ$와 $4.57^\circ$, Worked step 6). "머리가 어디를 향하는가"가 실제로 무엇을 재는지를 말해 주는 패널이 이것이다.
 
 > [!tip]- 정답 · Solutions
 > 1. E2의 원뿔은 두 방향 모두 E1보다 좁게 그려야 한다. 센서는 작아지고 초점거리는 커졌으니 두 화각 모두 줄어든다. 패널 3의 두 광선은 수직면 안에 놓인다. $b_x = 0$이라 오프셋 전체가 시상면에 있어서 시차가 순수한 피치 오차가 되고 좌우 성분이 전혀 없기 때문이다. 실제로 단순해지는 것이 맞지만 크기가 줄어드는 것은 아니다.

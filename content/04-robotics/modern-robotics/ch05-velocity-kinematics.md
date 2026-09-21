@@ -10,16 +10,14 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.65 Lab Kernel]].
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.65]].
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.7 Lab Kernel]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.7]].
 
 ## English
 
 **Core question**: how do joint velocities map to end-effector velocity — and forces back?
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, and every number on this page is read off it. The object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm to scale, then add four layers.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 306" style="max-width:100%;height:auto" role="img" aria-label="P2 at the catalog pose with, at the tip, the two Jacobian columns (−1, 1) and (−1, 0) m/s, the commanded velocity (0, −0.25) m/s, the manipulability ellipse with semi-axes 1.618 and 0.618, and the outlined force (0, −10) N pointing into the tip.">
   <defs><marker id="mr05hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="mr05hdvE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -61,14 +59,7 @@ One figure, and every number on this page is read off it. The object is plant **
   </g>
 </svg>
 
-1. **The two Jacobian columns, as arrows anchored at the tip.** Column 1 is the tip velocity when only the shoulder turns, $\dot\theta = (1,0)\,\mathrm{rad/s}$: the tip is at lever arm $\sqrt2$ from the base, so the arrow is perpendicular to the line from base to tip and has length $\sqrt2$ — draw it pointing up and to the left, and label it $(-1, 1)\,\mathrm{m/s}$. Column 2 is the tip velocity when only the elbow turns, $\dot\theta = (0,1)$: the forearm is the lever now, length $1$, so the arrow is perpendicular to the forearm, points in $-x$, and is labelled $(-1, 0)\,\mathrm{m/s}$. Do not draw them from the base; a Jacobian column is a velocity *of the tip*, and drawing it anywhere else is the standard way this figure goes wrong.
-2. **The commanded velocity** $v = (0, -0.25)\,\mathrm{m/s}$, a short arrow straight down from the tip, in a different line weight from the two columns. Beside it write the joint rates that produce it, $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$, so the figure shows both sides of one equation.
-3. **The manipulability ellipse** centred on the tip: the image of the unit circle of joint rates. Its axes are the singular values $\sigma = 1.618$ and $0.618$, an axis ratio of $2.6$ — draw it visibly elongated, not as a circle, and put its long axis along the easy direction.
-4. **The static wrench**, a fifth arrow at the tip for $F = (0,-10)\,\mathrm{N}$, drawn in outline rather than solid so it is never confused with a velocity. Label the joint torques it produces, $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$.
-
-Layers 1–2 are kinematics and layers 3–4 are their consequences, which is why one drawing serves the whole chapter: arrows out of the tip are velocities, the outlined arrow into the tip is a force, and the same matrix $J$ connects them in opposite directions.
-
-The problem set asks for layers 1 and 2 of this figure and then changes the wrench in layer 4.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the catalog pose $\theta = (0^\circ, 90^\circ)$, drawn to scale with everything anchored at the tip $(1,1)$: the Jacobian columns $(-1,1)$ and $(-1,0)\,\mathrm{m/s}$, the tip velocities when only the shoulder or only the elbow turns at $1\,\mathrm{rad/s}$; the thin commanded velocity $v = (0,-0.25)\,\mathrm{m/s}$, which needs $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$; and the manipulability ellipse, the image of the unit circle of joint rates, with semi-axes $1.618$ and $0.618$. The outlined arrow is a force into the tip, $F = (0,-10)\,\mathrm{N}$, which the same $J$ maps back to $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$ — arrows out of the tip are velocities, the arrow into it is a force.
 
 ### 1. The Jacobian — with its frame written down
 
@@ -103,7 +94,7 @@ $\det J = L_1 L_2 \sin\theta_2$: **the arm is singular exactly when straight or 
 
 $$\dot\theta=J^{-1}v=(-0.25,\ 0.25)\,\mathrm{rad/s}.$$
 
-**Worked: resolved-rate Euler.** Same command for $2\,\mathrm{s}$, $T=0.01$, explicit Euler on $\theta$ ([[02-foundations/lab-kernel|0.65]]). Recompute $J(\theta)$ every step: the tip ends at $\approx(0.999,\ 0.500)$, $x$-drift $<1\,\mathrm{mm}$ on a commanded $\Delta y=-0.50\,\mathrm{m}$. Freeze $J$ at the start: the tip ends at $\approx(0.878,\ 0.521)$ — twelve centimetres of $x$ error. A constant Jacobian is a local map, not a finite-motion map. The problem set fills this loop; changing $T$ is the knob.
+**Worked: resolved-rate Euler.** Same command for $2\,\mathrm{s}$, $T=0.01$, explicit Euler on $\theta$ ([[02-foundations/lab-kernel|0.7]]). Recompute $J(\theta)$ every step: the tip ends at $\approx(0.999,\ 0.500)$, $x$-drift $<1\,\mathrm{mm}$ on a commanded $\Delta y=-0.50\,\mathrm{m}$. Freeze $J$ at the start: the tip ends at $\approx(0.878,\ 0.521)$ — twelve centimetres of $x$ error. A constant Jacobian is a local map, not a finite-motion map. The problem set fills this loop; changing $T$ is the knob.
 
 ### 3. Statics duality — derived in three lines
 
@@ -196,6 +187,14 @@ for k in range(n):
 # plot xs, ys; caption "P2, explicit Euler on theta, T=0.01"
 ```
 
+> [!note]- How to draw it · 그리는 법
+> - Draw P2 to scale first: base at the origin, elbow at $(1,0)$, tip at $(1,1)$.
+> - Column $i$ is the tip velocity when only joint $i$ turns at $1\,\mathrm{rad/s}$: an arrow perpendicular to the line from joint $i$ to the tip and as long as that line — $\sqrt2$ from the base for column 1, the unit forearm for column 2. Label each arrow with its vector.
+> - Anchor both columns at the tip. Drawing a column from the base is the standard way this figure goes wrong: a Jacobian column is a velocity of the tip.
+> - A commanded velocity is its own arrow out of the tip, in a different line weight from the columns, with the joint rates that produce it, $\dot\theta = J^{-1}v$, written beside it.
+> - The manipulability ellipse is centred on the tip, the image of the unit circle of joint rates, with semi-axes equal to the singular values ($1.618$ and $0.618$ in the picture above). Draw it visibly elongated, long axis along the easy direction.
+> - A force is an outlined arrow into the tip, never a solid one, so it cannot be read as a velocity; write $\tau = J^\top F$ beside it.
+
 > [!tip]- Solutions
 > 1. Shoulder-only: the tip is at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, i.e. parallel to $(-1,1)$. Unit $\dot\theta_1$ gives $|v|=L_\text{tip}=\sqrt{2}$, so column 1 $=(-1,1)$. Elbow-only: forearm is along $+y$ from $(1,0)$ to $(1,1)$, unit $\dot\theta_2$ gives $v$ perpendicular to the forearm, column 2 $=(-1,0)$.
 > 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_{\min}$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
@@ -205,9 +204,7 @@ for k in range(n):
 
 **핵심 질문**: 관절 속도는 말단 속도로, 힘은 그 반대로 어떻게 사상되는가?
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나로 끝내고, 이 페이지의 모든 숫자를 거기서 읽는다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 축척에 맞게 그린 뒤 네 겹을 얹는다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 306" style="max-width:100%;height:auto" role="img" aria-label="카탈로그 자세의 P2 말단에 야코비안의 두 열 (−1, 1)과 (−1, 0) m/s, 명령 속도 (0, −0.25) m/s, 반축이 1.618과 0.618인 가조작성 타원, 말단으로 들어오는 윤곽선 힘 (0, −10) N을 그린 그림.">
   <defs><marker id="mr05hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="mr05hdvK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
@@ -249,14 +246,7 @@ for k in range(n):
   </g>
 </svg>
 
-1. **야코비안의 두 열을 말단에 붙인 화살표로.** 열 1은 어깨만 도는 $\dot\theta = (1,0)\,\mathrm{rad/s}$일 때의 말단 속도다. 말단이 베이스에서 지렛대 $\sqrt2$만큼 떨어져 있으므로 화살표는 베이스–말단 선에 수직이고 길이가 $\sqrt2$다. 왼쪽 위로 그리고 $(-1, 1)\,\mathrm{m/s}$라고 쓴다. 열 2는 엘보만 도는 $\dot\theta = (0,1)$일 때의 말단 속도다. 이번엔 전완이 지렛대라 길이가 $1$이고, 화살표는 전완에 수직인 $-x$ 방향이며 $(-1, 0)\,\mathrm{m/s}$다. 베이스에서 그리면 안 된다. 야코비안의 열은 *말단의* 속도이고, 다른 곳에 그리는 것이 이 그림이 틀어지는 표준적인 방식이다.
-2. **명령 속도** $v = (0, -0.25)\,\mathrm{m/s}$를 말단에서 아래로 내리는 짧은 화살표로, 앞의 두 열과는 다른 선 굵기로 그린다. 옆에는 그것을 만드는 관절 속도 $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$를 적는다. 한 방정식의 양변이 그림 하나에 들어온다.
-3. **가조작성 타원**을 말단 중심으로. 관절 속도 단위원의 상이다. 축은 특이값 $\sigma = 1.618$과 $0.618$, 축 비 $2.6$이다. 원이 아니라 눈에 띄게 길쭉하게 그리고, 긴 축을 쉬운 방향에 둔다.
-4. **정역학 렌치**를 말단의 다섯 번째 화살표로, $F = (0,-10)\,\mathrm{N}$. 속도와 절대 헷갈리지 않도록 속을 채우지 말고 윤곽선으로 그린다. 그것이 만드는 관절 토크 $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$을 함께 적는다.
-
-1–2겹이 기구학, 3–4겹이 그 귀결이라 그림 하나로 이 장 전체가 된다. 말단에서 나가는 화살표는 속도, 말단으로 들어오는 윤곽 화살표는 힘이고, 같은 행렬 $J$가 둘을 반대 방향으로 잇는다.
-
-과제는 이 그림의 1–2겹을 요구하고, 4겹의 렌치를 바꾼다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$를 축척대로 그리고 모든 것을 말단 $(1,1)$에 붙였다. 야코비안의 두 열 $(-1,1)$과 $(-1,0)\,\mathrm{m/s}$는 어깨만, 또는 엘보만 $1\,\mathrm{rad/s}$로 돌 때의 말단 속도이고, 가는 화살표인 명령 속도 $v = (0,-0.25)\,\mathrm{m/s}$에는 $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$가 필요하며, 가조작성 타원은 관절 속도 단위원의 상으로 반축이 $1.618$과 $0.618$이다. 윤곽선 화살표는 말단으로 들어오는 힘 $F = (0,-10)\,\mathrm{N}$이고 같은 $J$가 그것을 $\tau = J^\top F = (-10,\ 0)\,\mathrm{N{\cdot}m}$로 되돌린다 — 말단에서 나가는 화살표는 속도, 들어오는 화살표는 힘이다.
 
 ### 1. 야코비안 — 프레임을 명시해서
 
@@ -290,7 +280,7 @@ $\det J = L_1 L_2 \sin\theta_2$: **팔이 완전히 뻗거나 접힐 때가 정�
 
 **그 두 열이 말단의 화살표다.** 어깨만 $\dot\theta=(1,0)$: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직, 열 1 $=(-1,1)$. 엘보만 $\dot\theta=(0,1)$: 전완이 $+y$, 속도는 그에 수직, 열 2 $=(-1,0)$. 쌓으면 $J$가 나온다. 역행렬 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 이 자세에서 $v=(0,-0.25)\,\mathrm{m/s}$이면 $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$.
 
-**계산: resolved-rate 오일러.** 같은 명령을 $2\,\mathrm{s}$, $T=0.01$, $\theta$에 명시적 오일러([[02-foundations/lab-kernel|0.65]]). $J(\theta)$를 매 스텝 재계산하면 말단 $\approx(0.999,\ 0.500)$, 명령 $\Delta y=-0.50\,\mathrm{m}$에서 $x$ 드리프트 $<1\,\mathrm{mm}$. 시작 $J$를 고정하면 $\approx(0.878,\ 0.521)$ — $x$ 오차 12 cm. 상수 야코비안은 국소 사상이지 유한 운동 사상이 아니다. 과제가 이 루프를 채우고, $T$를 바꾸는 것이 노브다.
+**계산: resolved-rate 오일러.** 같은 명령을 $2\,\mathrm{s}$, $T=0.01$, $\theta$에 명시적 오일러([[02-foundations/lab-kernel|0.7]]). $J(\theta)$를 매 스텝 재계산하면 말단 $\approx(0.999,\ 0.500)$, 명령 $\Delta y=-0.50\,\mathrm{m}$에서 $x$ 드리프트 $<1\,\mathrm{mm}$. 시작 $J$를 고정하면 $\approx(0.878,\ 0.521)$ — $x$ 오차 12 cm. 상수 야코비안은 국소 사상이지 유한 운동 사상이 아니다. 과제가 이 루프를 채우고, $T$를 바꾸는 것이 노브다.
 
 ### 3. 정역학 쌍대성 — 세 줄 유도
 
@@ -357,6 +347,14 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 1. **그리기.** 고정 자세의 P2: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $\dot\theta=(1,0)$의 말단 속도(열 1)와 $\dot\theta=(0,1)$의 말단 속도(열 2)를 말단에서 화살표로 그려라. 두 벡터를 써라.
 2. **유도.** (a) 화살표(또는 §2)에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$. (b) $J^{-1}$. (c) $v=(0,-0.25)\,\mathrm{m/s}$를 만드는 관절 속도. (d) $F=(2,-5)\,\mathrm{N}$의 $\tau=J^\top F$. (e) $\theta_2=5^\circ$에서 같은 $F$의 숫자를 묻지 않는다. 대신 *팔을 따른* 말단 속도를 시키면 어느 관절 속도가 터지는지, 그리고 왜 $J^\top F$ 자체는 터지지 않는지.
 3. **실행.** 템플릿을 채워 강의의 $T=0.01$, $2\,\mathrm{s}$ 쌍(산 $J$ 대 고정 $J$)을 재현한다. 그다음 $T$만 $0.05$로, 산 $J$, 같은 $2\,\mathrm{s}$. 추가 오차는 고정-$J$급인가 적분기급인가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 먼저 P2를 축척대로 그린다. 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$.
+> - 열 $i$는 관절 $i$만 $1\,\mathrm{rad/s}$로 돌 때의 말단 속도다. 관절 $i$에서 말단까지의 선에 수직이고 그 선만큼 긴 화살표로 그린다. 열 1은 베이스에서 $\sqrt2$, 열 2는 길이 1인 전완이다. 각 화살표에 벡터를 적는다.
+> - 두 열 모두 말단에 붙인다. 베이스에서 그리는 것이 이 그림이 틀어지는 표준적인 방식이다. 야코비안의 열은 말단의 속도다.
+> - 명령 속도는 말단에서 나가는 별도의 화살표로, 두 열과 다른 선 굵기로 그리고, 그것을 만드는 관절 속도 $\dot\theta = J^{-1}v$를 옆에 적는다.
+> - 가조작성 타원은 말단 중심이고 관절 속도 단위원의 상이며, 반축은 특이값이다(위의 그림에서는 $1.618$과 $0.618$). 원이 아니라 눈에 띄게 길쭉하게, 긴 축을 쉬운 방향에 둔다.
+> - 힘은 말단으로 들어오는 윤곽선 화살표로 그린다. 속을 채우지 않아야 속도로 읽히지 않는다. 옆에 $\tau = J^\top F$를 적는다.
 
 > [!tip]- 정답 · Solutions
 > 1. 어깨만: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직 즉 $(-1,1)$ 방향. 단위 $\dot\theta_1$의 $|v|=\sqrt{2}$이므로 열 1 $=(-1,1)$. 엘보만: 전완이 $(1,0)\to(1,1)$의 $+y$, 단위 $\dot\theta_2$는 전완에 수직, 열 2 $=(-1,0)$.

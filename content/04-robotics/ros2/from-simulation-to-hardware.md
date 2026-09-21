@@ -32,9 +32,7 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] on a *real* cart:
 
 *Scope: this page teaches what changes when the plugin below the seam is a real driver — latency and its variance, DDS across a machine boundary, the honest position on real-time, and the safety that stops being software — and prices one control cycle and one end-to-end chain against P6's budget. It does not teach how to certify a safety function, which is [[04-robotics/hri-safety|11. HRI & Safety]]; nor the contact gap, which is [[05-construction-robotics/sim-to-real|Sim-to-Real]]; nor the operational questions around a deployed machine, which are [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure, two panels, and the problem set asks for the same figure with one round trip made slower.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 552" style="max-width:100%;height:auto" role="img" aria-label="Panel A: the ros2_control seam as a line; above it the same controller, controller manager at update_rate 200 and the same controllers.yaml on both sides of a simulation and hardware divider; below it Gazebo on one side and, on the other, the vendor hardware component with on_configure and on_activate over the bus to a drive that closes its own loop at tens of kHz, with a hard-wired E-stop reaching the drive directly. Panel B: a 5 ms cycle split into read 1.2, update 3.0 and write 0.8 ms, and a 7 ms overrun cycle overhanging it by 2 ms; one encoder count reads 97.7 mm/s over 5 ms and 69.8 mm/s over 7 ms.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · the seam, with each side labelled by what it costs</text>
@@ -159,9 +157,7 @@ One figure, two panels, and the problem set asks for the same figure with one ro
   <text x="8" y="540" font-size="12" fill="currentColor" font-weight="600">the mean survived; the variance is the number that moved.</text>
 </svg>
 
-**Panel A — the seam, with the two sides labelled by what they cost.** Draw the `<ros2_control>` block as a horizontal line across the page. Above it, unchanged from 25.7: the controller, the controller manager, `update_rate: 200`. Below it, two stacked boxes replacing Gazebo: `vendor hardware component` and `drive, closing its own loop at tens of kHz`. Three things the drawing must get right. Write the *same* controller YAML on both sides of a dashed vertical divider marked `simulation | hardware`, because the claim of §2 is that nothing above the line changed. Put the E-stop in as a **separate line** that reaches the drive without passing through any box above it, since §7's whole point is that a stop routed through your code is not a stop. And mark the two lifecycle transitions on the component, `on_configure` and `on_activate`, with a note on the second that this is the only one allowed to energise anything.
-
-**Panel B — one cycle, drawn to scale.** A single $5\,\mathrm{ms}$ bar, ruled in $0.5\,\mathrm{ms}$ divisions, split into three labelled segments: `read` $1.2$, `update` (the remainder), `write` $0.8$. Draw a second bar underneath for an overrun cycle of $7\,\mathrm{ms}$, aligned to the same origin, so the $2\,\mathrm{ms}$ of overshoot is a visible overhang past the first bar's end. Beside the two bars write the velocity one encoder count implies in each, and label the pair with the sentence the figure argues: *the mean survived; the variance is the number that moved.*
+Panel A is the `<ros2_control>` seam on P6's real cart: above the line, the same `controllers.yaml` and controller manager at `update_rate: 200` on both sides of the `simulation | hardware` divider; below it, Gazebo's `GazeboSimSystem`, charged no bus time, beside the vendor component — `on_configure` opens the connection, only `on_activate` may energise — which spends $1.2+0.8=2.0\,\mathrm{ms}$ of each cycle on the bus to a drive closing its own loop at tens of kHz, and an E-stop wired straight to that drive. Panel B draws one $5\,\mathrm{ms}$ cycle to scale, `read` $1.2$, `update` $3.0$ and `write` $0.8\,\mathrm{ms}$, above a $7\,\mathrm{ms}$ overrun cycle that overhangs it by $2\,\mathrm{ms}$. One encoder count reads $97.7\,\mathrm{mm/s}$ over the first and $69.8\,\mathrm{mm/s}$ over the second, so dividing by the nominal period reads the overrun cycle $40\%$ too high: the mean survived, and the variance is the number that moved.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -271,7 +267,7 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 
 Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activate` (release brakes, enable power stage), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. The states mean what they say — in `INACTIVE` states can be read but command interfaces are not available; only in `ACTIVE` can the machine move. The split exists so a driver can be connected and its readings inspected before it is given authority to move anything. A driver that enables the motors in `on_configure` instead of `on_activate` is a driver that energises an arm the moment the launch file starts, which is a bug with physical consequences.
 
-The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as a throttled `Overrun detected!` warning while the loop quietly runs slower than `update_rate` (overrun handling, `overruns.manage`, is on by default) — a warning, not an error, and easy to miss.
+The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as `Overrun detected! The controller manager missed its desired rate of 1000 Hz. The loop took … ms (missed cycles : …).`, throttled to at most one line per second, while the loop quietly runs slower than `update_rate` (overrun handling, `overruns.manage`, is on by default) — a warning, not an error, and easy to miss.
 
 #### The skeleton, read off the installed header
 
@@ -491,7 +487,7 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 ### Sources
 
 - `control.ros.org` (Jazzy) — Getting Started (controller manager, resource manager, hardware components, the read–update–write loop); Hardware Components / Writing a Hardware Component; `controller_manager` user documentation (`update_rate`, `lock_memory`, `use_sim_time`, `SCHED_FIFO` priority 50 and `rtprio` limits).
-- `ros-controls/ros2_control`, `jazzy` branch — `hardware_interface` headers (`SystemInterface`, `read`/`write` signatures, the `on_export_*` deprecation), `mock_components_plugin_description.xml`, and the `ros2controlcli` verb list.
+- `ros-controls/ros2_control`, `jazzy` branch — `hardware_interface` headers (`SystemInterface`, `read`/`write` signatures, the `on_export_*` deprecation), `mock_components_plugin_description.xml`, the `ros2controlcli` verb list, and `controller_manager/src/sleeping_policies.cpp` (the `Overrun detected!` warning and its one-second throttle).
 - `ros-controls/gz_ros2_control`, `jazzy` branch — `gz_hardware_plugins.xml` (`gz_ros2_control/GazeboSimSystem`).
 - ROS 2 Jazzy documentation — The ROS_DOMAIN_ID; Improved Dynamic Discovery (`ROS_AUTOMATIC_DISCOVERY_RANGE`, `ROS_STATIC_PEERS`); Installation Troubleshooting (multicast test and `ufw` rules); DDS tuning (IP fragmentation, `ipfrag_time`, `ipfrag_high_thresh`); Understanding real-time programming.
 - Safety standards are cited via [[04-robotics/hri-safety|11. HRI & Safety]] rather than restated here.
@@ -520,6 +516,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 1. **Draw.** Same controller YAML as in simulation. The one URDF line that changed. Five-line timeline of `read` (encoder) – `update` ($200\,\mathrm{Hz}$) – `write` (motor), with the $70\,\mathrm{ms}$ camera-to-force budget drawn *across* that loop, not inside `update`.
 2. **Derive.** (a) The vendor's `read()` turns out to block for $3.0\,\mathrm{ms}$, not $1.2$. Redo the worked case's Steps 1, 2 and 4: what is left for `update()`, the new $f_{\max}$, and the new end-to-end ledger against $70\,\mathrm{ms}$. Is $200\,\mathrm{Hz}$ still a defensible `update_rate`? (b) An RT_PREEMPT kernel bounds scheduling latency. Does it bound P6's $70\,\mathrm{ms}$? (c) Two machines list each other's nodes; `echo` is empty. First suspect, and why not QoS?
 3. **Interpret.** E-stop as `/p6/estop` at $200\,\mathrm{Hz}$. What failure modes does it share with the controller it is meant to kill? Separately: a $200\,\mathrm{ms}$-late camera on the real cart — plugin line or budget?
+
+> [!note]- How to draw it · 그리는 법
+> - **The seam is a line across the page**, the `<ros2_control>` block. Above it, unchanged from 25.7: the controller, the controller manager and its `update_rate`. Below it, replacing Gazebo, two stacked boxes: the vendor hardware component, and the drive that closes its own loop at tens of kHz.
+> - **The same controller YAML goes on both sides** of a dashed vertical divider marked `simulation | hardware`, because the claim of §2 is that nothing above the line changed.
+> - **The E-stop is a separate line** that reaches the drive without passing through any box above it, since §7's whole point is that a stop routed through your code is not a stop: the diagram is wrong the moment the E-stop passes through the controller or the component.
+> - **The component carries its two lifecycle transitions**, `on_configure` and `on_activate`, with a note on the second that it is the only one allowed to energise anything.
+> - **One cycle is a bar drawn to scale**, $1/f_c$ long, ruled in $0.5\,\mathrm{ms}$ divisions and split into three labelled segments, `read`, `update` (the remainder) and `write`, with each bus time written on its segment (a $5\,\mathrm{ms}$ bar with `read` $1.2$ and `write` $0.8$ in the worked case).
+> - **An overrun is a second bar under the first**, aligned to the same origin, so its overshoot is a visible overhang past the first bar's end ($7\,\mathrm{ms}$, overhanging by $2$, in the worked case).
+> - **Beside each bar, write the velocity one encoder count implies** over that bar's own period, and label the pair with the sentence the figure argues: *the mean survived; the variance is the number that moved.*
 
 > [!tip]- Solutions
 > 1. `<plugin>` inside `<ros2_control>` is the only change. Timeline: encoder `read` every $5\,\mathrm{ms}$; camera path is a second chain that must still finish by $70\,\mathrm{ms}$.
@@ -551,9 +556,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 
 *범위: 이 페이지는 이음매 아래 플러그인이 실제 드라이버가 될 때 무엇이 달라지는지 — 지연과 그 산포, 머신 경계를 넘는 DDS, 실시간에 대한 정직한 입장, 더 이상 소프트웨어가 아닌 안전 — 을 가르치고, 제어 주기 하나와 종단 사슬 하나에 P6의 예산으로 값을 매긴다. 안전 기능 인증은 가르치지 않는다. 그것은 [[04-robotics/hri-safety|11. HRI & Safety]]다. 접촉 격차도 아니다. 그것은 [[05-construction-robotics/sim-to-real|Sim-to-Real]]이다. 배치된 기계 주변의 운영 질문도 아니다. 그것은 [[04-robotics/robot-systems-deployment|Robot Systems & Deployment]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-그림 하나, 패널 둘. 과제는 왕복 하나를 느리게 만든 같은 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 552" style="max-width:100%;height:auto" role="img" aria-label="패널 A: ros2_control 이음매를 선으로 긋고, 그 위에는 같은 제어기, update_rate 200의 컨트롤러 매니저, 시뮬레이션과 하드웨어 구분선 양쪽의 같은 controllers.yaml이 있으며, 그 아래에는 한쪽에 Gazebo, 다른 쪽에 on_configure와 on_activate를 단 벤더 하드웨어 컴포넌트가 버스를 거쳐 수십 kHz로 자기 루프를 닫는 드라이브에 이어지고, 배선된 E-stop이 드라이브에 바로 닿는다. 패널 B: read 1.2, update 3.0, write 0.8 ms로 나뉜 5 ms 주기와 그것을 2 ms 넘어가는 7 ms overrun 주기. 엔코더 한 카운트는 5 ms에서 97.7 mm/s, 7 ms에서 69.8 mm/s다.">
   <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 이음매, 그리고 양쪽에 각자의 비용을 적기</text>
@@ -678,9 +681,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
   <text x="8" y="540" font-size="12" fill="currentColor" font-weight="600">평균은 살아남았고, 움직인 숫자는 산포다.</text>
 </svg>
 
-**패널 A — 이음매, 그리고 양쪽에 각자의 비용을 적기.** `<ros2_control>` 블록을 페이지를 가로지르는 수평선으로 그린다. 위쪽은 25.7에서 그대로다. 제어기, 컨트롤러 매니저, `update_rate: 200`. 아래쪽은 Gazebo를 대신하는 상자 둘을 쌓는다. `벤더 하드웨어 컴포넌트`와 `수십 kHz로 자기 루프를 닫는 드라이브`. 그림이 맞혀야 할 것이 셋이다. `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에 *같은* 제어기 YAML을 적는다. 선 위쪽은 아무것도 바뀌지 않았다는 것이 §2의 주장이기 때문이다. E-stop은 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿는 **별도의 선**으로 넣는다. 내 코드를 지나는 정지는 정지가 아니라는 것이 §7의 요점이기 때문이다. 그리고 컴포넌트에 라이프사이클 전이 둘, `on_configure`와 `on_activate`를 표시하고, 두 번째에는 전원을 넣어도 되는 유일한 전이라고 주석을 단다.
-
-**패널 B — 주기 하나를 실제 비율로.** $5\,\mathrm{ms}$ 막대 하나를 $0.5\,\mathrm{ms}$ 눈금으로 긋고 이름 붙인 구간 셋으로 나눈다. `read` $1.2$, `update`(나머지), `write` $0.8$. 그 아래에 overrun 주기 $7\,\mathrm{ms}$를 같은 원점에 맞춰 그려서, $2\,\mathrm{ms}$의 초과분이 첫 막대 끝을 넘어 튀어나오게 한다. 두 막대 옆에 각각 엔코더 한 카운트가 함의하는 속도를 적고, 이 그림이 논증하는 문장을 붙인다. *평균은 살아남았고, 움직인 숫자는 산포다.*
+패널 A는 실제 P6 카트의 `<ros2_control>` 이음매로, 선 위에는 `시뮬레이션 | 하드웨어` 구분선 양쪽에 같은 `controllers.yaml`과 `update_rate: 200`의 컨트롤러 매니저가 있고, 선 아래에는 버스 시간을 청구하지 않는 Gazebo의 `GazeboSimSystem` 옆에서, `on_configure`에서 연결을 열고 `on_activate`에서만 전원을 넣는 벤더 컴포넌트가 주기마다 버스에 $1.2+0.8=2.0\,\mathrm{ms}$를 쓰며 수십 kHz로 자기 루프를 닫는 드라이브에 닿고, E-stop은 그 드라이브에 바로 배선되어 있다. 패널 B는 $5\,\mathrm{ms}$ 주기 하나를 실제 비율로 그렸고(`read` $1.2$, `update` $3.0$, `write` $0.8\,\mathrm{ms}$), 그 아래의 $7\,\mathrm{ms}$ overrun 주기는 그것을 $2\,\mathrm{ms}$ 넘어 튀어나온다. 엔코더 한 카운트는 첫 주기에서 $97.7\,\mathrm{mm/s}$, 둘째 주기에서 $69.8\,\mathrm{mm/s}$이므로 공칭 주기로 나누면 overrun 주기를 $40\%$ 높게 읽는다: 평균은 살아남았고, 움직인 숫자는 산포다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -790,7 +791,7 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 
 여기에 생명주기가 붙는다: `on_init`, `on_configure`(연결을 연다), `on_activate`(브레이크를 풀고 파워 스테이지를 켠다), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. 상태의 의미는 말 그대로다. `INACTIVE`에서는 상태를 읽을 수 있지만 명령 인터페이스는 제공되지 않고, `ACTIVE`에서만 기계가 움직일 수 있다. 이렇게 나눈 것은 드라이버를 연결해 읽은 값을 먼저 살펴본 뒤에야 무언가를 움직일 권한을 주기 위해서다. 모터를 `on_activate`가 아니라 `on_configure`에서 켜는 드라이버는 런치 파일이 시작되는 순간 팔에 전원을 넣는 드라이버이고, 이것은 물리적 결과를 갖는 버그다.
 
-주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 쓰로틀된 `Overrun detected!` 경고로 나타나고 루프는 `update_rate`보다 조용히 느리게 돈다(초과 처리 `overruns.manage`가 기본으로 켜져 있다) — 오류가 아니라 경고이고, 놓치기 쉽다.
+주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 1초에 한 줄까지만 찍히도록 스로틀된 경고 `Overrun detected! The controller manager missed its desired rate of 1000 Hz. The loop took … ms (missed cycles : …).`로 나타나고 루프는 `update_rate`보다 조용히 느리게 돈다(초과 처리 `overruns.manage`가 기본으로 켜져 있다) — 오류가 아니라 경고이고, 놓치기 쉽다.
 
 #### 뼈대, 설치된 헤더에서 읽어 온 것
 
@@ -1008,7 +1009,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 ### 출처
 
 - `control.ros.org`(Jazzy) — Getting Started(controller manager, resource manager, 하드웨어 컴포넌트, read–update–write 루프); Hardware Components / Writing a Hardware Component; `controller_manager` 문서(`update_rate`, `lock_memory`, `use_sim_time`, `SCHED_FIFO` 우선순위 50과 `rtprio` 한도).
-- `ros-controls/ros2_control` `jazzy` 브랜치 — `hardware_interface` 헤더(`SystemInterface`, `read`/`write` 서명, `on_export_*` deprecation), `mock_components_plugin_description.xml`, `ros2controlcli` verb 목록.
+- `ros-controls/ros2_control` `jazzy` 브랜치 — `hardware_interface` 헤더(`SystemInterface`, `read`/`write` 서명, `on_export_*` deprecation), `mock_components_plugin_description.xml`, `ros2controlcli` verb 목록, `controller_manager/src/sleeping_policies.cpp`(`Overrun detected!` 경고와 1초 스로틀).
 - `ros-controls/gz_ros2_control` `jazzy` 브랜치 — `gz_hardware_plugins.xml`(`gz_ros2_control/GazeboSimSystem`).
 - ROS 2 Jazzy 문서 — The ROS_DOMAIN_ID; Improved Dynamic Discovery(`ROS_AUTOMATIC_DISCOVERY_RANGE`, `ROS_STATIC_PEERS`); Installation Troubleshooting(멀티캐스트 시험과 `ufw` 규칙); DDS tuning(IP 단편화, `ipfrag_time`, `ipfrag_high_thresh`); Understanding real-time programming.
 - 안전 표준은 여기서 되풀이하지 않고 [[04-robotics/hri-safety|11. HRI & Safety]]를 통해 인용한다.
@@ -1037,6 +1038,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 *실제* 카트에. 엔�
 1. **그리기.** 시뮬레이션과 같은 제어기 YAML. 바뀐 URDF 한 줄. `read`(엔코더) – `update`($200\,\mathrm{Hz}$) – `write`(모터)의 다섯 줄 타임라인. $70\,\mathrm{ms}$ 카메라–힘 예산은 `update` *안*이 아니라 그 루프를 *가로질러* 그린다.
 2. **유도.** (a) 벤더의 `read()`가 $1.2$가 아니라 $3.0\,\mathrm{ms}$ 동안 블록하는 것으로 드러났다. 계산 절의 Step 1, 2, 4를 다시 하라. `update()`에 남는 시간, 새 $f_{\max}$, 그리고 $70\,\mathrm{ms}$에 대한 새 종단 장부. $200\,\mathrm{Hz}$는 여전히 방어할 수 있는 `update_rate`인가? (b) RT_PREEMPT 커널이 스케줄 지연을 유계로 만든다. P6의 $70\,\mathrm{ms}$도 유계로 만드는가? (c) 두 머신이 서로의 노드를 나열하고 `echo`는 빔. 첫 의심, 왜 QoS가 아닌가?
 3. **해석.** E-stop을 $200\,\mathrm{Hz}$의 `/p6/estop`으로. 그것이 죽이려는 제어기와 어떤 실패 모드를 공유하는가? 별도로: 실제 카트의 $200\,\mathrm{ms}$ 늦은 카메라 — 플러그인 줄인가 예산인가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **이음매는 페이지를 가로지르는 선이다.** `<ros2_control>` 블록을 수평선으로 긋는다. 위쪽은 25.7에서 그대로인 제어기, 컨트롤러 매니저, 그리고 그 `update_rate`. 아래쪽에는 Gazebo를 대신하는 상자 둘을 쌓는다. 벤더 하드웨어 컴포넌트, 그리고 수십 kHz로 자기 루프를 닫는 드라이브.
+> - **같은 제어기 YAML을 양쪽에 적는다.** `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에. 선 위쪽은 아무것도 바뀌지 않았다는 것이 §2의 주장이기 때문이다.
+> - **E-stop은 별도의 선이다.** 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿게 그린다. 내 코드를 지나는 정지는 정지가 아니라는 것이 §7의 요점이므로, E-stop이 제어기나 컴포넌트를 지나는 순간 그림은 틀린 것이다.
+> - **컴포넌트에 라이프사이클 전이 둘을 표시한다.** `on_configure`와 `on_activate`. 두 번째에는 무언가에 전원을 넣어도 되는 유일한 전이라고 주석을 단다.
+> - **주기 하나는 실제 비율의 막대다.** 길이 $1/f_c$에 $0.5\,\mathrm{ms}$ 눈금을 긋고 `read`, `update`(나머지), `write`의 이름 붙은 구간 셋으로 나눈 뒤, 버스 시간을 각 구간에 적는다(계산 절에서는 $5\,\mathrm{ms}$ 막대에 `read` $1.2$, `write` $0.8$).
+> - **overrun은 첫 막대 아래의 둘째 막대다.** 같은 원점에 맞춰 그려서 초과분이 첫 막대 끝을 넘어 튀어나오게 한다(계산 절에서는 $7\,\mathrm{ms}$, 초과분 $2$).
+> - **막대마다 엔코더 한 카운트가 함의하는 속도를 옆에 적는다.** 그 막대 자신의 주기로 나눈 값이다. 그리고 두 막대에 이 그림이 논증하는 문장을 붙인다. *평균은 살아남았고, 움직인 숫자는 산포다.*
 
 > [!tip]- 정답 · Solutions
 > 1. `<ros2_control>` 안의 `<plugin>`만 바뀐다. 타임라인: $5\,\mathrm{ms}$마다 엔코더 `read`; 카메라 경로는 $70\,\mathrm{ms}$까지 끝나야 하는 둘째 사슬.

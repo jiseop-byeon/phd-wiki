@@ -25,9 +25,7 @@ That matrix is quoted everywhere else in the wiki; on this page it is *derived*,
 
 *Scope: this page teaches the joint-space equation of motion — where $M$, $c$ and $g$ come from, what each one does on P2, and the two directions the equation is read in. It does not teach the operational-space form or the $O(n)$ recursive implementation, and it does not recompute the catalog's $\Lambda = \mathrm{diag}(1,2)$; those live on [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §6]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One figure of P2 standing in the vertical plane, drawn twice on the same axes, because the whole chapter is about what changes between the two copies.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="P2 in the vertical plane at the catalog pose (0°, 90°) and, lighter, the straight pose (0°, 0°): point masses, equal 9.81 N weights, shoulder moment arms 1 m and 1 m against 1 m and 2 m, and the equation of motion circled at rest and while moving">
   <defs><marker id="ar8e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="ar8eL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -131,12 +129,7 @@ One figure of P2 standing in the vertical plane, drawn twice on the same axes, b
   <text x="14" y="376" font-size="11" fill="currentColor" opacity="0.85">only the moving row circles c: c = (1, 1) N·m, 1 N·m more at each joint</text>
 </svg>
 
-1. **The catalog pose, solid.** Base at the origin, link 1 along $+\hat x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Put a filled circle at each point mass — $(1,0)$ and $(1,1)$ — and hang a weight arrow of $9.81\,\mathrm{N}$ straight down from each. Two masses, two arrows, same length.
-2. **The moment arms, dashed and horizontal.** From the shoulder axis, drop a dashed horizontal to each mass: both have length $1\,\mathrm{m}$, which is the surprise worth drawing — the forearm mass is directly above the elbow, so it hangs at the *same* horizontal distance from the shoulder as the upper-arm mass. From the elbow axis, the dashed horizontal to mass 2 has length $0$. Those three lengths are the whole gravity calculation.
-3. **The straight pose, lighter.** The same arm at $\theta = (0^\circ, 0^\circ)$: both links along $+\hat x$, masses at $(1,0)$ and $(2,0)$. Now the moment arms from the shoulder are $1\,\mathrm{m}$ and $2\,\mathrm{m}$. Drawing both copies makes the configuration dependence of *both* $M$ and $g$ visible in one glance instead of in two equations.
-4. **Two curved torque arrows**, $\tau_1$ at the base and $\tau_2$ at the elbow, and beside the figure the line $\tau = M(\theta)\ddot\theta + c(\theta,\dot\theta) + g(\theta)$ with a circle around each term that survives when the arm is *at rest*. Then, in a second colour or a second line, circle the terms that survive when it is *moving through* that same pose. The difference between those two circlings is what this chapter is for.
-
-The problem set asks for this figure with the straight pose promoted to the main copy.
+Plant **P2** in the vertical plane, solid at the catalog pose $(0^\circ, 90^\circ)$ and lighter at the straight pose $(0^\circ, 0^\circ)$, with a $1\,\mathrm{kg}$ point mass and a $9.81\,\mathrm{N}$ weight at the end of each link. The horizontal moment arms from the shoulder are $1$ and $1\,\mathrm{m}$ at the catalog pose (mass 2 sits right above the elbow, arm $0$ there) against $1$ and $2\,\mathrm{m}$ when straight — so $g$ rises from $(19.62,\ 0)$ to $(29.43,\ 9.81)\,\mathrm{N\,m}$ and $M$ from $\begin{pmatrix}3&1\\1&1\end{pmatrix}$ to $\begin{pmatrix}5&2\\2&1\end{pmatrix}\,\mathrm{kg\,m^2}$. At the catalog pose, holding still takes only $g$, $\tau = (19.62,\ 0)\,\mathrm{N\,m}$, while moving through at $\dot\theta = (1,-1)\,\mathrm{rad/s}$ adds $c = (1,1)$, for $\tau = (20.62,\ 1)\,\mathrm{N\,m}$.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -160,7 +153,7 @@ and only $\theta_2$ appears, since turning the whole arm about the shoulder cann
 
 $$g(\theta) = \frac{\partial U}{\partial \theta} = \bigl(\,g(2\cos\theta_1 + \cos(\theta_1{+}\theta_2)),\ \ g\cos(\theta_1{+}\theta_2)\,\bigr)$$
 
-where each cosine is a horizontal moment arm read straight off the diagram. At the catalog pose $\cos\theta_1 = 1$ and $\cos(\theta_1{+}\theta_2) = 0$, giving $g = (19.62,\ 0)\,\mathrm{N\,m}$: the shoulder holds both masses at $1\,\mathrm{m}$, and the elbow holds nothing because its mass is directly overhead. At the straight pose the same formula gives $(29.43,\ 9.81)$ — half again as much at the shoulder.
+where each cosine is a horizontal moment arm read straight off the picture. At the catalog pose $\cos\theta_1 = 1$ and $\cos(\theta_1{+}\theta_2) = 0$, giving $g = (19.62,\ 0)\,\mathrm{N\,m}$: the shoulder holds both masses at $1\,\mathrm{m}$, and the elbow holds nothing because its mass is directly overhead. At the straight pose the same formula gives $(29.43,\ 9.81)$ — half again as much at the shoulder.
 
 **Step 4 — Coriolis, from how $M$ changes.** The velocity-product term comes from differentiating $M(\theta)$ inside the Lagrange equation; collecting it with the Christoffel symbols $\Gamma_{ijk} = \tfrac12(\partial M_{ij}/\partial\theta_k + \partial M_{ik}/\partial\theta_j - \partial M_{jk}/\partial\theta_i)$ and using $c_i = \sum_{j,k}\Gamma_{ijk}\dot\theta_j\dot\theta_k$, only $\partial M/\partial\theta_2 \propto \sin\theta_2$ survives, so
 
@@ -243,9 +236,17 @@ to buy solvability.
 
 Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, same vertical plane — but the arm is **straightened**: the pose is now $\theta = (0^\circ, 0^\circ)$, both links along $+\hat x$, masses at $(1,0)$ and $(2,0)$. Derive every number from the formulas of the worked case; do not recompute $\Lambda$, that lab is [[02-foundations/manipulator-kinematics-dynamics|10]].
 
-1. **Draw.** The diagram above with the straight pose as the main copy: both masses, both weight arrows, and the two horizontal moment arms from the shoulder now $1\,\mathrm{m}$ and $2\,\mathrm{m}$. Keep the catalog pose as the light second copy and mark, on the figure, which of the three terms of $\tau = M\ddot\theta + c + g$ each pose makes larger.
+1. **Draw.** The picture above, with the straight pose as the main copy: both masses, both weight arrows, and the two horizontal moment arms from the shoulder now $1\,\mathrm{m}$ and $2\,\mathrm{m}$. Keep the catalog pose as the light second copy and mark, on the figure, which of the three terms of $\tau = M\ddot\theta + c + g$ each pose makes larger.
 2. **Derive.** (a) $M$ at this pose from $M(\theta_2)$, with $\det M$, $M^{-1}$, and its two eigenvalues. (b) $g$ at this pose. (c) $c$ for $\dot\theta = (1,-1)$, and then the stronger claim: show that $c = 0$ here for *every* $\dot\theta$, and name the pose in this family that maximizes $c$ for a given $\dot\theta$. (d) Command $\tau = g + (1, 0)\,\mathrm{N\,m}$ — gravity compensation plus one newton-metre at the shoulder only — and give $\ddot\theta$.
 3. **Interpret.** The same extra $(1,0)\,\mathrm{N\,m}$ at the catalog pose gives $\ddot\theta = (0.5, -0.5)$. Straightening the arm therefore changed both the shoulder's response and the elbow's parasitic acceleration. Which one changed by more, and say in one sentence why a fixed pair of joint gains cannot be right at both poses.
+
+> [!note]- How to draw it · 그리는 법
+> - Both poses on the same axes, the main one solid and the other light, with the shoulder axis at the origin and gravity along $-\hat y$.
+> - A filled circle at each point mass, at the distal end of each link, and a $9.81\,\mathrm{N}$ weight arrow straight down from each: two masses, two arrows, the same length.
+> - From the shoulder axis, a dashed horizontal to each mass, labelled with its length; from the elbow axis, one to mass 2. Those lengths are the whole gravity calculation.
+> - Check each moment arm: it is the horizontal distance from the axis to the mass, not a link length. A mass directly above an axis has arm $0$ about it — in the picture above the forearm mass sits over the elbow, so both shoulder arms there are $1\,\mathrm{m}$.
+> - Two curved torque arrows, $\tau_1$ at the base and $\tau_2$ at the elbow.
+> - Beside the figure, write $\tau = M(\theta)\ddot\theta + c(\theta,\dot\theta) + g(\theta)$ and circle the terms that survive with the arm at rest; on a second line, circle those that survive when it moves through the same pose. The difference between the two circlings is what this chapter is for.
 
 > [!tip]- Solutions
 > 1. Straight pose: moment arms $1$ and $2\,\mathrm{m}$, so gravity is much larger; the mass matrix is larger too; the Coriolis term is smaller (it is zero). The catalog pose is the one that maximizes $c$.
@@ -264,9 +265,7 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
 
 *범위: 이 페이지는 관절 공간 운동 방정식을 가르친다. $M$, $c$, $g$가 어디서 오는지, P2에서 각각 무슨 일을 하는지, 그리고 이 방정식을 읽는 두 방향이다. 작업 공간 형태나 $O(n)$ 재귀 구현은 가르치지 않고, 카탈로그의 $\Lambda = \mathrm{diag}(1,2)$도 다시 구하지 않는다. 그것들은 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학 §6]]에 있다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-연직 평면에 선 P2를 같은 축 위에 두 번 그린다. 이 장 전체가 두 그림 사이에서 무엇이 바뀌는가에 대한 것이기 때문이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="연직 평면에 선 P2: 카탈로그 자세 (0°, 90°)와 얇게 그린 곧게 편 자세 (0°, 0°), 점질량, 같은 9.81 N 무게, 어깨 모멘트 팔 1 m·1 m 대 1 m·2 m, 그리고 정지와 움직임에서 동그라미 친 운동 방정식">
   <defs><marker id="ar8k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="ar8kL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -370,12 +369,7 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
   <text x="14" y="376" font-size="11" fill="currentColor" opacity="0.85">움직이는 줄에만 c에 동그라미가 있다: c = (1, 1) N·m, 관절마다 1 N·m씩 더</text>
 </svg>
 
-1. **카탈로그 자세, 실선.** 베이스 원점, 링크 1이 $+\hat x$로 가서 엘보가 $(1,0)$, 링크 2가 곧장 위로 올라가 말단이 $(1,1)$. 점질량 자리 $(1,0)$과 $(1,1)$에 속을 채운 원을 찍고, 각각에서 $9.81\,\mathrm{N}$의 무게 화살표를 아래로 내린다. 질량 둘, 화살표 둘, 길이는 같다.
-2. **모멘트 팔, 점선 수평선.** 어깨 축에서 각 질량까지 수평 점선을 내린다. 둘 다 길이가 $1\,\mathrm{m}$이고, 이것이 그려 볼 가치가 있는 놀라움이다. 전완 질량이 엘보 바로 위에 있으므로 어깨에서의 수평 거리가 상완 질량과 *같다*. 엘보 축에서 질량 2까지의 수평 점선은 길이가 $0$이다. 이 세 길이가 중력 계산의 전부다.
-3. **곧게 편 자세, 얇게.** 같은 팔의 $\theta = (0^\circ, 0^\circ)$: 두 링크 모두 $+\hat x$, 질량은 $(1,0)$과 $(2,0)$. 이제 어깨에서의 모멘트 팔이 $1\,\mathrm{m}$과 $2\,\mathrm{m}$다. 두 벌을 함께 그리면 $M$과 $g$ *둘 다*의 자세 의존성이 방정식 두 줄이 아니라 한눈에 보인다.
-4. **굽은 토크 화살표 둘**, 베이스의 $\tau_1$과 엘보의 $\tau_2$. 그림 옆에는 $\tau = M(\theta)\ddot\theta + c(\theta,\dot\theta) + g(\theta)$를 적고, 팔이 *정지*했을 때 남는 항마다 동그라미를 친다. 그다음 다른 색이나 다른 줄로, 같은 자세를 *지나가며 움직일* 때 남는 항에 동그라미를 친다. 두 동그라미의 차이가 이 장의 존재 이유다.
-
-과제는 곧게 편 자세를 주 그림으로 올린 같은 그림을 요구한다.
+연직 평면의 장치 **P2**, 실선은 카탈로그 자세 $(0^\circ, 90^\circ)$, 얇은 선은 곧게 편 자세 $(0^\circ, 0^\circ)$이고, 각 링크 끝에 $1\,\mathrm{kg}$ 점질량과 $9.81\,\mathrm{N}$ 무게가 있다. 어깨에서의 수평 모멘트 팔은 카탈로그 자세에서 $1$과 $1\,\mathrm{m}$(엘보에서는 $0$), 곧게 펴면 $1$과 $2\,\mathrm{m}$이므로 $g$는 $(19.62,\ 0)$에서 $(29.43,\ 9.81)\,\mathrm{N\,m}$로, $M$은 $\begin{pmatrix}3&1\\1&1\end{pmatrix}$에서 $\begin{pmatrix}5&2\\2&1\end{pmatrix}\,\mathrm{kg\,m^2}$로 커진다. 카탈로그 자세에서 정지해 버티는 데는 $g$만, 곧 $\tau = (19.62,\ 0)\,\mathrm{N\,m}$가 들고, $\dot\theta = (1,-1)\,\mathrm{rad/s}$로 지나가며 움직이면 $c = (1,1)$이 더해져 $\tau = (20.62,\ 1)\,\mathrm{N\,m}$가 된다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -484,9 +478,17 @@ $$\mathcal{K}(\theta, \dot\theta) = \tfrac12\,\dot\theta^\top M(\theta)\,\dot\th
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 같은 장치 **P2**, 같은 질량, 같은 연직 평면. 다만 팔을 **곧게 편다**. 자세는 이제 $\theta = (0^\circ, 0^\circ)$, 두 링크 모두 $+\hat x$, 질량은 $(1,0)$과 $(2,0)$이다. 모든 숫자를 위 계산의 식에서 유도하라. $\Lambda$는 다시 구하지 마라. 그 랩은 [[02-foundations/manipulator-kinematics-dynamics|10]]이다.
 
-1. **그리기.** 위 그림에서 곧게 편 자세를 주 그림으로 올린다. 질량 둘, 무게 화살표 둘, 그리고 어깨에서의 수평 모멘트 팔이 이제 $1\,\mathrm{m}$과 $2\,\mathrm{m}$. 카탈로그 자세는 얇은 둘째 벌로 남기고, $\tau = M\ddot\theta + c + g$의 세 항 중 어느 자세가 어느 항을 크게 만드는지 그림 위에 표시하라.
+1. **그리기.** 위의 그림에서 곧게 편 자세를 주 그림으로 올린다. 질량 둘, 무게 화살표 둘, 그리고 어깨에서의 수평 모멘트 팔이 이제 $1\,\mathrm{m}$과 $2\,\mathrm{m}$. 카탈로그 자세는 얇은 둘째 벌로 남기고, $\tau = M\ddot\theta + c + g$의 세 항 중 어느 자세가 어느 항을 크게 만드는지 그림 위에 표시하라.
 2. **유도.** (a) $M(\theta_2)$에서 이 자세의 $M$, 그리고 $\det M$, $M^{-1}$, 고윳값 둘. (b) 이 자세의 $g$. (c) $\dot\theta = (1,-1)$의 $c$, 그다음 더 강한 주장으로 여기서는 *모든* $\dot\theta$에 대해 $c = 0$임을 보이고, 주어진 $\dot\theta$에 대해 $c$를 최대로 만드는 자세를 이 가족 안에서 지목하라. (d) $\tau = g + (1, 0)\,\mathrm{N\,m}$을 명령하고(중력 보상에 어깨에만 1뉴턴미터) $\ddot\theta$를 구하라.
 3. **해석.** 같은 추가 토크 $(1,0)\,\mathrm{N\,m}$은 카탈로그 자세에서 $\ddot\theta = (0.5, -0.5)$를 준다. 팔을 곧게 편 것이 어깨의 반응과 엘보의 기생 가속도를 둘 다 바꾼 셈이다. 어느 쪽이 더 크게 바뀌었는가? 그리고 고정된 관절 이득 한 쌍이 두 자세 모두에서 옳을 수 없는 이유를 한 문장으로 쓰라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 두 자세를 같은 축 위에 그린다. 주 자세는 실선, 다른 자세는 얇게. 어깨 축은 원점, 중력은 $-\hat y$ 방향이다.
+> - 각 링크 말단의 점질량 자리에 속을 채운 원을 찍고, 각각에서 $9.81\,\mathrm{N}$ 무게 화살표를 곧장 아래로 내린다. 질량 둘, 화살표 둘, 길이는 같다.
+> - 어깨 축에서 각 질량까지 수평 점선을 긋고 길이를 적는다. 엘보 축에서는 질량 2까지 하나. 이 길이들이 중력 계산의 전부다.
+> - 모멘트 팔을 확인한다. 링크 길이가 아니라 축에서 질량까지의 수평 거리다. 축 바로 위의 질량은 그 축에 대한 팔이 $0$이다. 위의 그림에서는 전완 질량이 엘보 바로 위에 있어 어깨에서의 두 팔이 모두 $1\,\mathrm{m}$다.
+> - 굽은 토크 화살표 둘, 베이스의 $\tau_1$과 엘보의 $\tau_2$.
+> - 그림 옆에 $\tau = M(\theta)\ddot\theta + c(\theta,\dot\theta) + g(\theta)$를 적고 팔이 정지했을 때 남는 항에 동그라미를 친다. 둘째 줄에는 같은 자세를 지나가며 움직일 때 남는 항에 동그라미를 친다. 두 동그라미의 차이가 이 장의 존재 이유다.
 
 > [!tip]- 정답
 > 1. 곧게 편 자세: 모멘트 팔이 $1$과 $2\,\mathrm{m}$라 중력이 훨씬 크고, 질량 행렬도 크며, 코리올리 항은 더 작다(0이다). $c$를 최대로 만드는 쪽은 카탈로그 자세다.

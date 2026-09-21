@@ -52,9 +52,7 @@ $K_e$ is the series stiffness of tool, sensor, arm structure and panel taken tog
 
 *Scope: this page teaches how to choose and size the relation between motion and force at one contact — impedance, admittance, the hybrid split, the operational-space implementation of both, and the passive compliance that acts below all of them — on one named arm. It does not teach the contact mechanics the controller is acting on (complementarity, friction cones and their linearizations, closure: [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction §1–§4]]), the sampled-data limit on how stiff a virtual wall can be rendered ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]), or how the policy in §6 is trained ([[03-deep-learning/vla/index|VLA]]).*
 
-### Homework diagram: the two causalities over one panel, with the clock underneath
-
-Draw it once; the problem set asks for the same drawing on the other axis.
+### The picture: the two causalities over one panel, with the clock underneath
 
 <svg viewBox="0 0 560 594" style="max-width:100%;height:auto" role="img" aria-label="Top: P2 at theta (0, 90 degrees) pressing a panel under its tip with 10 N, the equal and opposite reaction, and the virtual 500 N/m spring in series with the real 100,000 N/m one; middle: impedance and admittance block diagrams sharing the arm-and-panel block, the torque interface and the force sensor shaded; bottom: on one millisecond axis, the 14 ms impact half-sine against one 397 ms period of the target behaviour, with 1 kHz sample ticks">
   <defs><marker id="fccA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -167,11 +165,7 @@ Draw it once; the problem set asks for the same drawing on the other axis.
   </g>
 </svg>
 
-**Top — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A horizontal line under the tip for the panel's face (the forearm passes in front of the panel, out of the drawing plane, so only the tip touches it), with the commanded press $F=(0,-10)$ N drawn as a downward arrow at the tip and the reaction on the robot as an upward arrow of the same length. Beside the tip, two small springs in series and labelled: the virtual one, $K_d=500$ N/m, and the real one, $K_e=10^5$ N/m — drawn with the virtual spring's coils stretched out and the real one's compressed almost flat, because that ratio of 200 is the picture's only job.
-
-**Middle — the two block diagrams, one above the other, sharing the same plant block on the right.** Impedance: measure $(y,\dot y)$ at the tip, run it through the target $M_d\ddot e+D_d\dot e+K_de$, get a force, map it with $\tau=J^\top F$, send torque to the arm. Admittance: measure $F_y$ at the wrist, integrate the virtual dynamics to get a motion reference $y_c$, hand $y_c$ to an inner position loop, and let that loop send torque. Shade the one block each architecture cannot fake — the torque interface on the top row, the force sensor on the bottom — and draw the feedback path from the panel back to the measurement in both.
-
-**Bottom — the clock, in milliseconds, on one axis from 0 to 400 ms.** Mark the contact event as a half-sine of width $t_{\text{contact}}=14$ ms starting at $t=0$. On the same axis, draw one full period of the behaviour the controller specified, $T=2\pi/\omega_n=397$ ms, as a sine that has barely left the origin when the impact is already over. Above the clock, 1 kHz sample ticks: about 14 of them fall inside the impact and about 397 inside one period of the target. The two lengths must be drawn to the same scale — that comparison is the lecture.
+Top: P2 at $\theta=(0^\circ,90^\circ)$ presses the panel under its tip with $F=(0,-10)$ N against an equal and opposite reaction, through the virtual $K_d=500$ N/m spring in series with the real $K_e=10^5$ N/m one — a stiffness ratio of $200$. Middle: impedance and admittance share the arm-and-panel block, each with the one block it cannot fake shaded — the torque interface on top, the force sensor below. Bottom: on one millisecond axis with 1 kHz ticks, the $14$ ms impact half-sine, about $14$ samples long, is over while one $397$ ms period of the target behaviour has barely left the origin.
 
 ### Worked case: the target impedance on P2, and the impact it cannot feel
 
@@ -809,9 +803,19 @@ tolerance, say which architecture can meet it — and whether any can.
 
 Tier B. Using only this page, its prerequisites and the object catalog. The running object with **three entries changed**: the press goes sideways into a standing panel, $F=(-8,0)\,\mathrm{N}$, so the axis is now $x$ and the apparent mass, which $M_d$ is again set equal to, is $\Lambda_x=1\,\mathrm{kg}$; the target stiffness is $K_d=2000\,\mathrm{N/m}$ at $\zeta=0.7$; and the approach speed doubles to $v=0.10\,\mathrm{m/s}$. P2 stays at $\theta=(0^\circ,90^\circ)$ and $K_e$ stays at $10^5\,\mathrm{N/m}$ ([[02-foundations/lab-plants|0.6]]). The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
-1. **Draw.** All three panels of the homework diagram on the new axis: the arm with the panel now standing at $x=1\,\mathrm{m}$ (the same panel as [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]]'s running object), the two block diagrams rewritten for $x$, and the clock with the new impact width against the new target period, both to the same scale.
+1. **Draw.** All three panels of the picture above on the new axis: the arm with the panel now standing at $x=1\,\mathrm{m}$ (the same panel as [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]]'s running object), the two block diagrams rewritten for $x$, and the clock with the new impact width against the new target period, both to the same scale.
 2. **Derive.** (a) $\tau=J^\top F$ for $F=(-8,0)$, and say what is different from the vertical case and why. (b) The static deflection under the $8\,\mathrm{N}$ reaction. (c) $\omega_n$, the critically damped $D_d$, and the $D_d$ at $\zeta=0.7$. (d) $F_{\max}$ and $t_{\text{contact}}$ against $K_e=10^5\,\mathrm{N/m}$ at $v=0.10\,\mathrm{m/s}$, with the number of 1 kHz samples inside. (e) The ratio of one target period to the contact duration.
 3. **Interpret.** The peak force rose from the worked case's $22.4$ to $31.6\,\mathrm{N}$ while the apparent mass *halved*. Account for the factor exactly. Then: the period-to-contact ratio fell from $28.3$ to $14.1$ — did stiffening the target actually buy any authority over the impact, and what would $K_d$ have to be for the answer to be yes?
+
+> [!note]- How to draw it · 그리는 법
+> - **Top, the arm and the panel in the $x$–$y$ plane, to scale**: P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$, and the panel's face as a line touching the tip, square to the press.
+> - **The commanded press is an arrow at the tip**, pointing into the panel, and the reaction on the robot an arrow of the same length pointing back.
+> - **Beside the tip, two small springs in series, labelled**: the virtual $K_d$ and the real $K_e=10^5$ N/m, the virtual one's coils stretched out and the real one's compressed almost flat, because their ratio is the top panel's only job ($200$ in the worked case).
+> - **Middle, the two block diagrams**, one above the other, sharing the same plant block on the right. Impedance: measure position and velocity at the tip along the press axis, run them through the target $M_d\ddot e+D_d\dot e+K_de$, get a force, map it with $\tau=J^\top F$, send torque to the arm.
+> - **Admittance**: measure the force along that axis at the wrist, integrate the virtual dynamics to get a motion reference, hand it to an inner position loop, and let that loop send torque.
+> - **Shade the one block each architecture cannot fake** — the torque interface on the impedance row, the force sensor on the admittance row — and draw the feedback path from the panel back to the measurement in both.
+> - **Bottom, the clock, in milliseconds on one axis**: the contact event as a half-sine of width $t_{\text{contact}}=\pi\sqrt{\Lambda/K_e}$ starting at $t=0$; one full period of the target behaviour, $T=2\pi/\omega_n$, as a sine on the same axis; and 1 kHz sample ticks above, counted inside each.
+> - **The two lengths must be drawn to the same scale** — that comparison is the lecture.
 
 > [!tip]- Solutions
 > 1. Same arm, same pose; the panel is now the vertical one at $x=1\,\mathrm{m}$, the press arrow points in $-x$, and the springs in series are read along $x$. The clock now shows a $9.93\,\mathrm{ms}$ impact against a $140\,\mathrm{ms}$ period.
@@ -876,9 +880,7 @@ $K_e$는 공구·센서·팔 구조·패널을 합친 직렬 강성이지 패널
 
 *범위: 이 페이지는 접촉 하나에서 운동과 힘의 관계를 고르고 크기를 정하는 법을 이름 붙인 팔 하나 위에서 가르친다 — 임피던스, 어드미턴스, 하이브리드 분할, 그 둘의 작업공간 구현, 그리고 그 모두의 아래에서 작동하는 수동 컴플라이언스. 제어기가 상대하는 접촉 역학 자체(complementarity, 마찰 원뿔과 그 선형화, closure: [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각 §1~§4]]), 가상 벽을 얼마나 단단하게 구현할 수 있는지의 샘플링 한계([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]), §6의 정책을 어떻게 학습시키는지([[03-deep-learning/vla/index|VLA]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 패널 하나 위의 두 인과와 그 아래의 시계 · Homework diagram
-
-한 번 그려 두면 과제는 같은 그림을 다른 축에서 묻는다.
+### 그림으로 먼저 보기: 패널 하나 위의 두 인과와 그 아래의 시계 · The picture
 
 <svg viewBox="0 0 560 594" style="max-width:100%;height:auto" role="img" aria-label="위: θ = (0, 90도)의 P2가 말단 아래 패널을 누르는 10 N과 크기가 같은 반력, 직렬로 이어진 500 N/m 가상 스프링과 100,000 N/m 실제 스프링; 가운데: 팔과 패널 블록을 공유하는 임피던스와 어드미턴스 블록선도, 토크 인터페이스와 힘 센서에 음영; 아래: 밀리초 축 하나 위의 14 ms 충격 반주기 사인과 목표 거동의 397 ms 한 주기, 1 kHz 샘플 눈금">
   <defs><marker id="fcckA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -991,11 +993,7 @@ $K_e$는 공구·센서·팔 구조·패널을 합친 직렬 강성이지 패널
   </g>
 </svg>
 
-**위 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 말단 아래에 패널 면의 수평선을 긋고(전완은 그림 평면 밖, 패널 앞으로 지나가므로 패널에 닿는 것은 말단뿐이다), 명령한 누름 $F=(0,-10)$ N을 말단에서 아래로 향한 화살표로, 로봇이 받는 반력을 같은 길이의 위 화살표로 그린다. 말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다. 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 이 그림이 할 일은 그 200이라는 비를 보여 주는 것 하나다.
-
-**가운데 — 블록선도 둘을 위아래로, 오른쪽 플랜트 블록은 공유.** 임피던스: 말단에서 $(y,\dot y)$를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다. 어드미턴스: 손목에서 $F_y$를 재고 가상 동역학을 적분해 운동 기준 $y_c$를 얻어 내부 위치 루프에 넘기고, 그 루프가 토크를 보낸다. 각 구조가 흉내 낼 수 없는 블록 — 위 행은 토크 인터페이스, 아래 행은 힘 센서 — 을 음영으로 칠하고, 패널에서 측정으로 돌아오는 되먹임 경로를 양쪽에 다 그린다.
-
-**아래 — 시계, 밀리초 단위로 0에서 400 ms까지 한 축.** 접촉 사건을 $t=0$에서 시작하는 폭 $t_{\text{contact}}=14$ ms의 반주기 사인으로 표시한다. 같은 축 위에, 제어기가 명세한 거동의 한 주기 $T=2\pi/\omega_n=397$ ms를, 충격이 이미 끝났을 때 원점을 겨우 떠난 사인으로 그린다. 시계 위에는 1 kHz 샘플 눈금: 충격 안에 약 14개, 목표의 한 주기 안에 약 397개가 들어간다. 두 길이를 같은 축척으로 그려야 한다 — 그 비교가 곧 강의다.
+위: $\theta=(0^\circ,90^\circ)$의 P2가 말단 아래 패널을 $F=(0,-10)$ N으로 누르고 같은 크기의 반력을 받는데, 그 누름은 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m의 직렬을 거친다 — 강성의 비가 $200$이다. 가운데: 임피던스와 어드미턴스가 팔-패널 블록을 공유하고, 각자 흉내 낼 수 없는 블록 하나 — 위는 토크 인터페이스, 아래는 힘 센서 — 가 음영으로 칠해져 있다. 아래: 1 kHz 눈금이 있는 밀리초 축 하나 위에서, 샘플 약 $14$개 길이인 $14$ ms 충격 반주기 사인은 목표 거동의 $397$ ms 한 주기가 원점을 겨우 떠났을 때 이미 끝나 있다.
 
 ### 대상으로 한 번 끝까지: P2의 목표 임피던스와 그것이 느낄 수 없는 충격 · Worked case
 
@@ -1589,9 +1587,19 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 
 Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 쓰는 대상에서 **항목 셋을 바꾼다**. 누름이 서 있는 패널을 향해 옆으로 가서 $F=(-8,0)\,\mathrm{N}$이 되므로 축이 $x$가 되고 겉보기 질량은 $\Lambda_x=1\,\mathrm{kg}$이다($M_d$도 다시 이 값으로 둔다). 목표 강성은 $\zeta=0.7$에서 $K_d=2000\,\mathrm{N/m}$이다. 접근 속도는 $v=0.10\,\mathrm{m/s}$로 두 배가 된다. P2는 $\theta=(0^\circ,90^\circ)$ 그대로, $K_e$도 $10^5\,\mathrm{N/m}$ 그대로다([[02-foundations/lab-plants|0.6]]). 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
-1. **그리기.** 과제 그림의 세 패널을 새 축에서 다시 그린다. 패널이 이제 $x=1\,\mathrm{m}$에 서 있는 팔([[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 패널이다), $x$에 대해 다시 쓴 블록선도 둘, 그리고 새 충격 폭과 새 목표 주기를 같은 축척으로 놓은 시계.
+1. **그리기.** 위의 그림의 세 패널을 새 축에서 다시 그린다. 패널이 이제 $x=1\,\mathrm{m}$에 서 있는 팔([[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 패널이다), $x$에 대해 다시 쓴 블록선도 둘, 그리고 새 충격 폭과 새 목표 주기를 같은 축척으로 놓은 시계.
 2. **유도.** (a) $F=(-8,0)$의 $\tau=J^\top F$, 그리고 수직 누름과 무엇이 다르며 왜 그런지. (b) $8\,\mathrm{N}$ 반력에서의 정적 처짐. (c) $\omega_n$, 임계 감쇠 $D_d$, 그리고 $\zeta=0.7$의 $D_d$. (d) $v=0.10\,\mathrm{m/s}$로 $K_e=10^5\,\mathrm{N/m}$에 부딪힐 때의 $F_{\max}$와 $t_{\text{contact}}$, 그리고 그 안에 들어가는 1 kHz 샘플 수. (e) 목표 한 주기 대 접촉 지속 시간의 비.
 3. **해석.** 겉보기 질량이 *절반*으로 줄었는데 최대 힘은 계산 예제의 $22.4$에서 $31.6\,\mathrm{N}$으로 올랐다. 그 배수를 정확히 설명하라. 그다음: 주기 대 접촉 비가 $28.3$에서 $14.1$로 떨어졌는데, 목표를 단단하게 만든 것이 충격에 대한 권한을 조금이라도 사 주었는가? 그 답이 "그렇다"가 되려면 $K_d$가 얼마여야 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **위, $x$–$y$ 평면의 팔과 패널, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 패널 면은 말단에 닿고 누름에 수직인 선으로 긋는다.
+> - **명령한 누름은 말단에서 패널 쪽으로 향한 화살표다.** 로봇이 받는 반력은 같은 길이의 반대 방향 화살표로 그린다.
+> - **말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다.** 가상 $K_d$와 실제 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 위 패널이 할 일은 그 비를 보여 주는 것 하나다(계산 예제에서는 $200$).
+> - **가운데, 블록선도 둘.** 위아래로 놓고 오른쪽 플랜트 블록은 공유한다. 임피던스: 누름 축을 따라 말단의 위치와 속도를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다.
+> - **어드미턴스.** 손목에서 그 축의 힘을 재고 가상 동역학을 적분해 운동 기준을 얻어 내부 위치 루프에 넘기고, 그 루프가 토크를 보낸다.
+> - **각 구조가 흉내 낼 수 없는 블록 하나를 음영으로 칠한다.** 임피던스 행은 토크 인터페이스, 어드미턴스 행은 힘 센서다. 패널에서 측정으로 돌아오는 되먹임 경로는 양쪽에 다 그린다.
+> - **아래, 밀리초 단위 축 하나의 시계.** 접촉 사건은 $t=0$에서 시작하는 폭 $t_{\text{contact}}=\pi\sqrt{\Lambda/K_e}$의 반주기 사인, 목표 거동의 한 주기 $T=2\pi/\omega_n$은 같은 축 위의 사인, 그 위에 1 kHz 샘플 눈금을 두고 각각 안에 든 개수를 센다.
+> - **두 길이를 같은 축척으로 그려야 한다.** 그 비교가 곧 강의다.
 
 > [!tip]- 정답 · Solutions
 > 1. 같은 팔, 같은 자세. 패널은 이제 $x=1\,\mathrm{m}$의 수직 패널이고, 누름 화살표는 $-x$를 가리키며, 직렬 스프링 둘은 $x$를 따라 읽는다. 시계에는 $9.93\,\mathrm{ms}$ 충격과 $140\,\mathrm{ms}$ 주기가 나온다.

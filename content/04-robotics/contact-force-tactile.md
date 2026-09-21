@@ -33,7 +33,7 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 | Symbol | Value | What it is |
 |---|---:|---|
 | $\hat n$ | $+x$ | contact normal, counted positive **into** the panel |
-| $\hat t_1,\ \hat t_2$ | $-y$, $+z$ | the two tangent directions in the panel's face |
+| $\hat t_1,\ \hat t_2$ | $-y$, $-z$ | the two tangent directions in the panel's face, signed so that $\hat n\times\hat t_1=\hat t_2$ (a right-handed frame) |
 | $k_w$ | $400\,\mathrm{N/m}$ | panel stiffness — P3's virtual-wall value |
 | $d_c$ | $4\,\mathrm{N\cdot s/m}$ | contact damping for §3's penalty model — this page's only addition to P3 |
 | $\mu$ | $0.5$ | friction coefficient, tool on panel |
@@ -46,9 +46,7 @@ Two tangents and not one, although P2 is planar: the *arm* moves in a plane but 
 
 *Scope: this page teaches the mechanics of one contact — when a contact exists, how much force it can carry, how that force becomes an object wrench, and what closure does and does not promise — plus how to read a contact-rich paper's sensing and evaluation. It does not teach how to choose a controller for that contact ([[04-robotics/force-compliance-control|13. Force & Compliance Control]]), how to plan or score a grasp ([[04-robotics/grasping|Grasping]]), how a tactile signal is rendered back to a person ([[04-robotics/haptics-teleoperation/tactile-display-design|24.2 Tactile Display Design]]), or how a contact simulator's solver is built ([[06-research-practice/simulators-benchmarks-datasets|Simulators, Benchmarks & Datasets]]).*
 
-### Homework diagram: the contact frame on the panel, with the cone standing on it
-
-Draw it once; the problem set asks for the same drawing at different numbers.
+### The picture: the contact frame on the panel, with the cone standing on it
 
 <svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="Left: P2 at theta (0, 90 degrees) with its tip on the panel face x = 1 m, the contact frame, and the 400 N/m contact spring magnified; right: the friction cone of half-angle 26.6 degrees with, at a normal force of 2.00 N, the 1.00 N circle, the outer box with corner 1.414 N, the inner four-generator square with flat side 0.707 N, and the 1 N wipe; bottom: the gap axis with its two complementarity rays and the points +2 mm and -5 mm">
   <defs><marker id="cftA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="cftB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -89,10 +87,10 @@ Draw it once; the problem set asks for the same drawing at different numbers.
     <text x="280" y="22" font-size="12" fill-opacity="0.85" font-weight="600">the cone, in the contact frame</text>
     <line x1="368" y1="226" x2="368" y2="60.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
     <line x1="368" y1="226" x2="449.2" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
-    <line x1="368" y1="226" x2="334.7" y2="259.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
+    <line x1="368" y1="226" x2="392.9" y2="201.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
     <text x="375" y="68.8" font-size="12">n&#770;</text>
     <text x="455.2" y="230" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan></text>
-    <text x="329.7" y="269.3" font-size="12" text-anchor="end" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
+    <text x="398.9" y="213.1" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
     <path d="M 368 226 L 428.9 107.5 L 307 131.4 Z" fill="currentColor" fill-opacity="0.06"/>
     <line x1="368" y1="226" x2="307" y2="131.4" stroke="currentColor" stroke-width="1.4"/>
     <line x1="368" y1="226" x2="428.9" y2="107.5" stroke="currentColor" stroke-width="1.4"/>
@@ -158,11 +156,7 @@ Draw it once; the problem set asks for the same drawing at different numbers.
   </g>
 </svg>
 
-**Left — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A vertical line at $x=1$ for the panel's face, with the panel drawn as a rectangle hanging on it. At the tip, the contact frame: $\hat n$ pointing $+x$ into the face, $\hat t_1$ pointing $-y$ down the face along the wipe. A small spring symbol between tip and face labelled $k_w=400$ N/m, compressed by $\delta=5$ mm — drawn much larger than to scale, with a note saying so, because 5 mm on a 1 m arm is invisible.
-
-**Right — the cone, in the contact frame.** The normal axis $\hat n$ vertical, the tangent plane $(\hat t_1,\hat t_2)$ horizontal. The circular cone opening upward with half-angle $\arctan\mu=26.6^\circ$, marked as an angle. On the tangent plane, three closed curves drawn concentrically: the true circle of radius $\mu f_n$; outside it the **square** of the outer box pyramid, touching the circle at four points; inside it the **square** of the four-generator inner cone, with its four corners *on* the circle. One arrow for the commanded wipe, drawn at its actual length, so the reader can see which of the three sets contains it.
-
-**Underneath — the gap axis.** A horizontal line for $\phi$ with zero marked. To the left of zero ($\phi>0$, apart) write $f_n=0$; at $\phi=0$ and to the right write $f_n\ge0$. Two dots: one at $\phi=+2$ mm before touchdown, one at $\phi=-5$ mm, the penetration the penalty model of §3 allows and the rigid model of §1 forbids. The pair $(\phi,f_n)$ must never be off the two rays — that picture *is* complementarity.
+Left: P2 at $\theta=(0^\circ,90^\circ)$ with its tip on the panel face $x=1\,\mathrm m$, the contact frame there — $\hat n$ into the panel, $\hat t_1$ down the face along the wipe — and the $k_w=400\,\mathrm{N/m}$ contact spring compressed by $\delta=5\,\mathrm{mm}$, magnified. Right: the friction cone of half-angle $\arctan\mu=26.6^\circ$, sliced at $f_n=2.00\,\mathrm N$, where the $\mu f_n=1.00\,\mathrm N$ circle lies between the outer box (corner $1.414\,\mathrm N$) and the inner four-generator square (flat side $0.707\,\mathrm N$), and the $1\,\mathrm N$ wipe, at the same scale, ends exactly on the circle and outside the square. Bottom: the gap axis, where $(\phi,f_n)$ never leaves the two bold rays of complementarity — $f_n=0$ at $+2\,\mathrm{mm}$ before touch, and the $-5\,\mathrm{mm}$ penetration at $2.00\,\mathrm N$ that the penalty model allows and the rigid model forbids.
 
 ### Worked case: one contact, from gap to grip margin
 
@@ -448,9 +442,19 @@ $$e_{\mathrm{RMS}}=\sqrt{\frac{1}{T}\int_0^T\big(f_d(t)-f_m(t)\big)^2\,dt}$$
 
 Tier B. The running object with **two entries changed**: the commanded penetration becomes $\delta=8\,\mathrm{mm}$, and dust on the panel drops the friction coefficient to $\mu=0.35$. Everything else — **P2** at $\theta=(0^\circ,90^\circ)$, the panel at $x=1\,\mathrm{m}$, $k_w=400\,\mathrm{N/m}$, $m_p=1.0\,\mathrm{kg}$, the 10 N two-finger squeeze at $\pm0.05\,\mathrm{m}$ — is unchanged ([[02-foundations/lab-plants|0.6]]). Using only this page, its prerequisites and the object catalog. No simulator.
 
-1. **Draw.** Both panels of the homework diagram at the new numbers. On the right-hand panel the three closed curves must now be drawn for $\mu=0.35$ at the new $f_n$, and the 1 N wipe arrow drawn to the same scale — the drawing has to show which of the three sets contains it.
+1. **Draw.** Both panels of the picture above at the new numbers. On the right-hand panel the three closed curves must now be drawn for $\mu=0.35$ at the new $f_n$, and the 1 N wipe arrow drawn to the same scale — the drawing has to show which of the three sets contains it.
 2. **Derive.** (a) $f_n$ at rest at $\delta=8\,\mathrm{mm}$. (b) The cone half-angle and the largest tangential force that can stick. (c) Does the $1\,\mathrm{N}$ wipe still stick, and with what margin? (d) The effective coefficient of the four-generator inner cone, and the largest wipe *it* would authorise. (e) The squeeze the two fingers now need to hold the panel, and what the unchanged 10 N squeeze can carry.
 3. **Interpret.** Two failures are available here — the wipe slipping and the panel dropping — and only one of them has happened. Which one, and why did the same $30\%$ loss of $\mu$ move the two bounds in opposite directions? Name the one measurement that would have told you before the panel hit the floor, and say which section of this page defines it.
+
+> [!note]- How to draw it · 그리는 법
+> - **Left, the arm and the panel in the $x$–$y$ plane, to scale**: P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$, and a vertical line at $x=1$ for the panel's face, with the panel drawn as a rectangle hanging on it.
+> - **The contact frame at the tip**: $\hat n$ pointing $+x$ into the face, $\hat t_1$ pointing $-y$ down the face along the wipe.
+> - **A small spring between tip and face**, labelled with $k_w$ and compressed by the commanded $\delta$ — drawn much larger than to scale, with a note saying so, because a few millimetres on a 1 m arm are invisible.
+> - **Right, the cone in the contact frame**: $\hat n$ vertical, the tangent plane $(\hat t_1,\hat t_2)$ horizontal, with $\hat t_2$ receding into the page so the frame stays right-handed, and the circular cone opening upward with its half-angle $\arctan\mu$ marked as an angle.
+> - **Three closed curves on the tangent plane, concentric, at the $f_n$ the press produces**: the true circle of radius $\mu f_n$; outside it the square of the outer box pyramid, touching the circle at four points; inside it the square of the four-generator inner cone, with its four corners *on* the circle.
+> - **One arrow for the commanded wipe, at its actual length on the same scale**, so the drawing shows which of the three sets contains it.
+> - **Underneath, the gap axis**: a horizontal line for $\phi$ with zero marked, $f_n=0$ on the ray to the left of zero ($\phi>0$, apart) and $f_n\ge0$ on the vertical ray at $\phi=0$, and two dots — one before touchdown, one at the commanded penetration, which the penalty model of §3 allows and the rigid model of §1 forbids.
+> - **The pair $(\phi,f_n)$ must never be off the two rays** — that picture *is* complementarity.
 
 > [!tip]- Solutions
 > 1. Same two panels. The cone is now narrower ($19.3^\circ$ instead of $26.6^\circ$) but the circle on the tangent plane is *larger*, because $f_n$ rose faster than $\mu$ fell. The four-generator square's corners still sit on the circle; the box pyramid's square still circumscribes it.
@@ -494,7 +498,7 @@ Tier B. The running object with **two entries changed**: the commanded penetrati
 | 기호 | 값 | 뜻 |
 |---|---:|---|
 | $\hat n$ | $+x$ | 접촉 법선, 패널 **안쪽**을 양으로 센다 |
-| $\hat t_1,\ \hat t_2$ | $-y$, $+z$ | 패널 면 안의 두 접선 방향 |
+| $\hat t_1,\ \hat t_2$ | $-y$, $-z$ | 패널 면 안의 두 접선 방향. $\hat n\times\hat t_1=\hat t_2$가 되도록 부호를 잡은 오른손 좌표계 |
 | $k_w$ | $400\,\mathrm{N/m}$ | 패널 강성 — P3의 가상 벽 값 |
 | $d_c$ | $4\,\mathrm{N\cdot s/m}$ | §3 페널티 모델의 접촉 감쇠 — 이 페이지가 P3에 더하는 유일한 값 |
 | $\mu$ | $0.5$ | 공구-패널 마찰 계수 |
@@ -507,9 +511,7 @@ P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이�
 
 *범위: 이 페이지는 접촉 하나의 역학을 가르친다 — 언제 접촉이 존재하는가, 그 접촉이 얼마나 되는 힘을 견디는가, 그 힘이 어떻게 물체 렌치가 되는가, closure가 무엇을 보장하고 무엇을 보장하지 않는가 — 그리고 접촉이 많은 논문의 센싱과 평가를 읽는 법을 가르친다. 그 접촉에 어떤 제어기를 고를지([[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어]]), 파지를 어떻게 계획하고 채점할지([[04-robotics/grasping|파지]]), 촉각 신호를 사람에게 어떻게 되돌려 줄지([[04-robotics/haptics-teleoperation/tactile-display-design|24.2 촉각 디스플레이 설계]]), 접촉 시뮬레이터의 솔버를 어떻게 만드는지([[06-research-practice/simulators-benchmarks-datasets|시뮬레이터·벤치마크·데이터셋]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 패널 위의 접촉 프레임과 그 위에 선 원뿔 · Homework diagram
-
-한 번 그려 두면 과제는 같은 그림을 다른 숫자로 묻는다.
+### 그림으로 먼저 보기: 패널 위의 접촉 프레임과 그 위에 선 원뿔 · The picture
 
 <svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 말단이 패널 면 x = 1 m에 닿은 θ = (0, 90도)의 P2와 접촉 프레임, 확대한 400 N/m 접촉 스프링; 오른쪽: 반각 26.6도의 마찰 원뿔과, 법선력 2.00 N에서의 1.00 N 원, 모서리 1.414 N의 외접 상자, 평평한 변 0.707 N의 내접 4-생성자 정사각형, 1 N 닦기; 아래: complementarity의 두 반직선과 +2 mm, -5 mm 두 점이 있는 간극 축">
   <defs><marker id="cftkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="cftkB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -550,10 +552,10 @@ P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이�
     <text x="280" y="22" font-size="12" fill-opacity="0.85" font-weight="600">접촉 프레임 안의 원뿔</text>
     <line x1="368" y1="226" x2="368" y2="60.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
     <line x1="368" y1="226" x2="449.2" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
-    <line x1="368" y1="226" x2="334.7" y2="259.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
+    <line x1="368" y1="226" x2="392.9" y2="201.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
     <text x="375" y="68.8" font-size="12">n&#770;</text>
     <text x="455.2" y="230" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan></text>
-    <text x="329.7" y="269.3" font-size="12" text-anchor="end" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
+    <text x="398.9" y="213.1" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
     <path d="M 368 226 L 428.9 107.5 L 307 131.4 Z" fill="currentColor" fill-opacity="0.06"/>
     <line x1="368" y1="226" x2="307" y2="131.4" stroke="currentColor" stroke-width="1.4"/>
     <line x1="368" y1="226" x2="428.9" y2="107.5" stroke="currentColor" stroke-width="1.4"/>
@@ -619,11 +621,7 @@ P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이�
   </g>
 </svg>
 
-**왼쪽 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. $x=1$에 패널 면의 수직선을 긋고 패널을 직사각형으로 걸어 둔다. 말단에 접촉 프레임: $\hat n$은 $+x$로 면 안쪽, $\hat t_1$은 $-y$로 닦는 방향. 말단과 면 사이에 $k_w=400$ N/m이라고 적은 스프링 기호를 $\delta=5$ mm만큼 눌린 모습으로 그리되 — 비율보다 훨씬 크게 그리고 그렇게 그렸다고 적어 둔다. 1 m짜리 팔에서 5 mm는 눈에 보이지 않는다.
-
-**오른쪽 — 접촉 프레임 안의 원뿔.** 법선 축 $\hat n$을 세로로, 접선 평면 $(\hat t_1,\hat t_2)$을 가로로. 위로 열린 원형 원뿔의 반각 $\arctan\mu=26.6^\circ$를 각으로 표시한다. 접선 평면 위에는 닫힌 곡선 셋을 동심으로 그린다. 반지름 $\mu f_n$인 참 원, 그 바깥으로 네 점에서 원에 접하는 **외접 상자 피라미드**의 정사각형, 그 안쪽으로 네 꼭짓점이 원 *위에* 놓이는 4-생성자 내접 원뿔의 정사각형. 명령한 닦기 힘을 실제 길이의 화살표 하나로 그려서 셋 중 어느 집합이 그것을 포함하는지 눈으로 보이게 한다.
-
-**아래 — 간극 축.** $\phi$에 대한 수평선을 긋고 0을 표시한다. 0의 왼쪽($\phi>0$, 떨어짐)에는 $f_n=0$, $\phi=0$과 그 오른쪽에는 $f_n\ge0$이라고 적는다. 점 둘: 닿기 전 $\phi=+2$ mm, 그리고 §3의 페널티 모델은 허용하고 §1의 강체 모델은 금지하는 침투 $\phi=-5$ mm. 쌍 $(\phi,f_n)$은 결코 두 반직선을 벗어나지 못한다 — 그 그림이 곧 complementarity다.
+왼쪽은 말단이 패널 면 $x=1\,\mathrm m$에 닿은 $\theta=(0^\circ,90^\circ)$의 P2와 그 자리의 접촉 프레임(패널 안쪽을 향한 $\hat n$, 면을 따라 아래로 닦는 $\hat t_1$), 그리고 $\delta=5\,\mathrm{mm}$만큼 눌린 $k_w=400\,\mathrm{N/m}$ 접촉 스프링을 확대해 그린 것이다. 오른쪽은 반각 $\arctan\mu=26.6^\circ$의 마찰 원뿔을 $f_n=2.00\,\mathrm N$에서 자른 단면으로, $\mu f_n=1.00\,\mathrm N$의 원이 외접 상자(모서리 $1.414\,\mathrm N$)와 내접 4-생성자 정사각형(평평한 변 $0.707\,\mathrm N$) 사이에 놓이고, 같은 축척의 $1\,\mathrm N$ 닦기는 정확히 원 위에서, 정사각형 바깥에서 끝난다. 아래는 간극 축으로, $(\phi,f_n)$은 complementarity의 굵은 두 반직선을 벗어나지 않으며, 닿기 전 $+2\,\mathrm{mm}$에서는 $f_n=0$이고 $2.00\,\mathrm N$의 $-5\,\mathrm{mm}$ 침투는 페널티 모델은 허용하고 강체 모델은 금지한다.
 
 ### 대상으로 한 번 끝까지: 간극에서 파지 여유까지 · Worked case
 
@@ -941,9 +939,19 @@ $$e_{\mathrm{RMS}}=\sqrt{\frac{1}{T}\int_0^T\big(f_d(t)-f_m(t)\big)^2\,dt}$$
 
 Tier B. 계속 쓰는 대상에서 **항목 두 개만 바꾼다**. 명령 침투량이 $\delta=8\,\mathrm{mm}$가 되고, 패널의 먼지가 마찰 계수를 $\mu=0.35$로 떨어뜨린다. 나머지 — $\theta=(0^\circ,90^\circ)$의 **P2**, $x=1\,\mathrm{m}$의 패널, $k_w=400\,\mathrm{N/m}$, $m_p=1.0\,\mathrm{kg}$, $\pm0.05\,\mathrm{m}$에서의 10 N 두 손가락 조임 — 은 그대로다([[02-foundations/lab-plants|0.6]]). 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 시뮬레이터 없음.
 
-1. **그리기.** 과제 그림의 두 패널을 새 숫자로 다시 그린다. 오른쪽 패널의 닫힌 곡선 셋은 이제 새 $f_n$에서 $\mu=0.35$로 그려야 하고, 1 N 닦기 화살표도 같은 축척으로 그려야 한다 — 셋 중 어느 집합이 그것을 품는지를 그림이 보여 주어야 한다.
+1. **그리기.** 위의 그림의 두 패널을 새 숫자로 다시 그린다. 오른쪽 패널의 닫힌 곡선 셋은 이제 새 $f_n$에서 $\mu=0.35$로 그려야 하고, 1 N 닦기 화살표도 같은 축척으로 그려야 한다 — 셋 중 어느 집합이 그것을 품는지를 그림이 보여 주어야 한다.
 2. **유도.** (a) $\delta=8\,\mathrm{mm}$에서 정지 상태의 $f_n$. (b) 원뿔 반각과 고착할 수 있는 최대 접선력. (c) $1\,\mathrm{N}$ 닦기는 아직 고착하는가, 여유는 얼마인가? (d) 4-생성자 내접 원뿔의 유효 계수와 *그것이* 허가하는 최대 닦기. (e) 이제 두 손가락에 필요한 조임과, 바꾸지 않은 10 N 조임이 버티는 힘.
 3. **해석.** 여기서 가능한 실패는 둘 — 닦기의 미끄럼과 패널의 낙하 — 인데 하나만 일어났다. 어느 쪽이고, 같은 $30\%$의 $\mu$ 손실이 왜 두 경계를 반대 방향으로 움직였는가? 패널이 바닥에 닿기 전에 알려 주었을 측정 하나를 이름 붙이고, 이 페이지의 어느 절이 그것을 정의하는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, $x$–$y$ 평면의 팔과 패널, 실제 비율**: 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. $x=1$에 패널 면의 수직선을 긋고 패널을 직사각형으로 걸어 둔다.
+> - **말단의 접촉 프레임**: $\hat n$은 $+x$로 면 안쪽, $\hat t_1$은 $-y$로 면을 따라 닦는 방향.
+> - **말단과 면 사이의 작은 스프링**: $k_w$를 적고 명령한 $\delta$만큼 눌린 모습으로 그리되, 비율보다 훨씬 크게 그리고 그렇게 그렸다고 적어 둔다. 1 m짜리 팔에서 몇 밀리미터는 눈에 보이지 않는다.
+> - **오른쪽, 접촉 프레임 안의 원뿔**: 법선 축 $\hat n$을 세로로, 접선 평면 $(\hat t_1,\hat t_2)$을 가로로 두되, 프레임이 오른손 좌표계로 남도록 $\hat t_2$는 지면 안쪽으로 들어가게 그린다. 위로 열린 원형 원뿔의 반각 $\arctan\mu$를 각으로 표시한다.
+> - **접선 평면 위의 닫힌 곡선 셋, 누름이 만드는 $f_n$에서 동심으로**: 반지름 $\mu f_n$인 참 원, 그 바깥으로 네 점에서 원에 접하는 외접 상자 피라미드의 정사각형, 그 안쪽으로 네 꼭짓점이 원 *위에* 놓이는 4-생성자 내접 원뿔의 정사각형.
+> - **명령한 닦기 힘은 같은 축척, 실제 길이의 화살표 하나로**: 셋 중 어느 집합이 그것을 품는지 그림이 보여 주어야 한다.
+> - **아래, 간극 축**: $\phi$에 대한 수평선을 긋고 0을 표시한다. 0의 왼쪽 반직선($\phi>0$, 떨어짐)에는 $f_n=0$, $\phi=0$의 세로 반직선에는 $f_n\ge0$이라고 적고, 점 둘을 찍는다. 닿기 전에 하나, 그리고 §3의 페널티 모델은 허용하고 §1의 강체 모델은 금지하는 명령 침투에 하나.
+> - **쌍 $(\phi,f_n)$은 결코 두 반직선을 벗어나지 못한다** — 그 그림이 곧 complementarity다.
 
 > [!tip]- 정답 · Solutions
 > 1. 같은 두 패널. 원뿔은 더 좁아지지만($26.6^\circ$ 대신 $19.3^\circ$) 접선 평면 위의 원은 *더 커진다*. $\mu$가 떨어진 것보다 $f_n$이 더 빨리 올랐기 때문이다. 4-생성자 정사각형의 꼭짓점은 여전히 원 위에 있고, 상자 피라미드의 정사각형은 여전히 원에 외접한다.

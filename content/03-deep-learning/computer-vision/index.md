@@ -30,9 +30,7 @@ Two more page-local objects are frozen here for §2's metrics, both in D2's pixe
 
 *Scope: this page teaches how a visual input becomes a tensor (convolution arithmetic and patch tokens), how the choice of output turns a backbone into a task, and how to read the metrics that score those outputs — IoU, mAP, and per-class mIoU — on objects small enough to recompute by hand. It does not teach the camera geometry underneath the pixels, which is [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]]; nor depth recovery and 3D reconstruction, which are [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §2]] and the 3D entries of the [[01-canonical-papers/canonical-list|canonical list]]; nor the training machinery — loss, optimizer, step size — which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor attention itself, which is the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]] and, worked on this page's D2, [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]. The depth and 3D rows of §2's table are named so the table is complete, with their metrics defined, and are not taught here.*
 
-### Homework diagram
-
-One figure in three panels, and the problem set asks for exactly this one. The figure is the worked case on the frozen numbers, with the embedding width left as $d$; problem 1 asks for the same drawing with $d=8$.
+### The picture
 
 <svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="D2's 8 by 8 step-edge image with its 2 by 2 patch grid and the 3 by 3 window that gives 40, its cell on the 6 by 6 output map, the token shapes, the five boxes with corner coordinates and the 4 by 3 intersection of P3 and G2, and the cable mask counted as 8 and 56">
   <defs><marker id="aD2e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -321,11 +319,7 @@ One figure in three panels, and the problem set asks for exactly this one. The f
   <text x="426" y="434" font-size="11" fill="currentColor">background: 56</text>
 </svg>
 
-Four things the drawing has to get right, each of which is a claim about the pipeline.
-**The patch grid drawn on the pixels, not beside them.** Patch 1 is rows 0–3 and columns 0–3, and the step edge lands on the vertical grid line. If the drawing does not show that, it cannot show why two tokens come out identical.
-**The convolution window drawn as one $3\times3$ square on the pixels, with its output cell marked on a separate $n_{\text{out}}\times n_{\text{out}}$ grid.** One square, one cell, one arrow — the whole of the arithmetic in §1 is a statement about how many distinct positions that square has.
-**Boxes drawn as corners with coordinates, not as sketched rectangles.** IoU is computed from $\max$ and $\min$ of coordinates; a rectangle whose corners are not written down cannot be checked. Mark the intersection rectangle of $P_3$ and $G_2$ explicitly — it is the only part of the picture that the union needs.
-**The mask panel drawn as counts, not as shading.** Write 8 on the cable and 56 on the background. Every segmentation metric on this page is a ratio of two integers, and the reason the metrics disagree in §5 is visible only when those integers are on the page.
+D2 on its frozen numbers, with the embedding width left as $d$. (a) The step edge lies on the line of the $2\times2$ patch grid, so the four flattened tokens ($4\times16$) are only two distinct vectors until position is added; $E$ projects them to $4\times d$ and the class token makes $5\times d$, and the $3\times3$ window at rows 0–2, columns 2–4 gives $y_{0,2}=40$ on the $6\times6$ output map. (b) The five boxes by their corner coordinates, with the $4\times3$ intersection of $P_3$ and $G_2$ that gives $\mathrm{IoU}=12/20=0.6$, and (c) the cable mask as counts, 8 cable pixels against 56 background.
 
 ### Worked case
 
@@ -551,7 +545,7 @@ print("a 20-class benchmark with 19 classes at 0.80 and the cable at 0.00: mIoU 
 
 Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. D2's pixels, boxes, and masks are frozen in the Running object; question 4 changes the kernel, one box, and one mask, so none of §5's numbers can be copied.
 
-1. **Draw.** Draw D2 as pixels, four patches, four tokens, and one class token. Label shapes for $d=8$. On the same figure mark the $3\times3$ window that produced $y_{0,2}=40$, the intersection rectangle of $P_3$ and $G_2$ with its area, and the two mask counts.
+1. **Draw.** The picture above, for $d=8$: D2 as pixels, four patches, four tokens, and one class token, with every shape labelled. On the same figure mark the $3\times3$ window that produced $y_{0,2}=40$, the intersection rectangle of $P_3$ and $G_2$ with its area, and the two mask counts.
 2. **Derive.** Compute output size and parameter count for a $3\times3$, stride-2, padding-1 convolution with 1 input and 8 output channels on D2.
 3. **Interpret.** A monocular method halves photometric error but never reports metric depth or pose. Which robotics claim is unsupported?
 4. **Do.** Fill the `?` blanks, then run three variants and report each as a small table. (a) Replace $K$ by its transpose — the *horizontal*-edge kernel — and sweep $(k,s,p)$ over $(5,1,0)$, $(5,1,2)$, $(5,2,0)$, $(5,2,2)$, $(5,3,0)$, checking the formula each time; explain in one sentence what every response on the horizontal kernel has in common and why. (b) Move $P_3$ to $(4,4,8,8)$, an exact hit, and recompute $\mathrm{AP}(0.5)$, $\mathrm{AP}(0.75)$, and $\mathrm{mAP}@[.5{:}.95]$. (c) Score a third segmentation that puts the cable at column 3 instead of column 4, and say why its cable IoU is what it is.
@@ -581,6 +575,14 @@ per = [((gt == c) & (predC == c)).sum() / ((gt == c) | (predC == c)).sum() for c
 print("IoU bg %.6f  IoU cable %.6f  mIoU %.6f  pixel acc %.6f"
       % (per[0], per[1], np.mean(per), (gt == predC).mean()))
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Draw the patch grid on the pixels, not beside them: patch 1 is rows 0–3 and columns 0–3, and the step edge lands on the vertical grid line. A drawing that does not show this cannot show why two tokens come out identical.
+> - Write the shape at every stage — pixels, flattened patches, projected tokens, tokens with the class token — with $d=8$.
+> - Draw the convolution window as one $3\times3$ square on the pixels and mark its output cell on a separate $n_{\text{out}}\times n_{\text{out}}$ grid: one square, one cell, one arrow. The arithmetic of §1 is a count of the distinct positions of that square.
+> - Draw boxes as corners with coordinates, not as sketched rectangles. IoU is computed from $\max$ and $\min$ of coordinates, and a rectangle whose corners are not written down cannot be checked.
+> - Mark the intersection rectangle of $P_3$ and $G_2$ explicitly, with its area — it is the only part of the picture the union needs.
+> - Draw the mask panel as counts, not as shading: 8 on the cable, 56 on the background. Every segmentation metric here is a ratio of two integers, and §5's metrics disagree for a reason visible only when those integers are on the page.
 
 > [!tip]- Solutions
 > 1. Pixels $8\times8$; patches $4\times16$; projected tokens $4\times8$; with class token $5\times8$. The window is rows 0–2, columns 2–4; the intersection rectangle is $x\in[4,8]$, $y\in[4,7]$, area 12; the mask counts are 8 and 56.
@@ -623,9 +625,7 @@ $$I[i,j]=\begin{cases}0,&j\le3\\10,&j\ge4\end{cases}\qquad i,j\in\{0,\dots,7\}$$
 
 *범위: 이 페이지는 시각 입력이 텐서가 되는 방식(convolution 산술과 패치 토큰), 출력 선택이 backbone을 과제로 바꾸는 방식, 그리고 그 출력을 채점하는 metric — IoU, mAP, 클래스별 평균 mIoU — 을 손으로 다시 계산할 수 있을 만큼 작은 대상에서 읽는 법을 가르친다. 픽셀 아래의 카메라 기하는 가르치지 않는다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]]이다. depth 복원과 3D 복원도 아니다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §2]]와 [[01-canonical-papers/canonical-list|canonical list]]의 3D 항목이다. loss·optimizer·보폭 같은 학습 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. attention 자체도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]와, 이 페이지의 D2 위에서 계산한 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다. §2 표의 depth와 3D 행은 표를 완성하기 위해 이름과 metric 정의만 싣고, 여기서 가르치지는 않는다.*
 
-### 과제가 그릴 그림
-
-패널 셋으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 고정된 숫자로 그린 계산 절이고 임베딩 폭은 $d$로 남겨 두었다. 문제 1은 같은 그림을 $d=8$로 요구한다.
+### 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="D2의 8×8 계단 이미지와 2×2 패치 격자, 40을 내는 3×3 창과 6×6 출력 맵의 칸, 토큰 shape, 모서리 좌표를 적은 박스 다섯과 P3·G2의 4×3 교집합, 그리고 8과 56으로 센 케이블 마스크">
   <defs><marker id="aD2k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -914,11 +914,7 @@ $$I[i,j]=\begin{cases}0,&j\le3\\10,&j\ge4\end{cases}\qquad i,j\in\{0,\dots,7\}$$
   <text x="426" y="434" font-size="11" fill="currentColor">배경: 56</text>
 </svg>
 
-그림이 맞혀야 할 것이 넷이고, 각각이 파이프라인에 대한 주장이다.
-**패치 격자는 픽셀 옆이 아니라 픽셀 위에 그린다.** 패치 1은 0–3행, 0–3열이고 계단 모서리가 세로 격자선 위에 놓인다. 그것을 보이지 못하는 그림은 왜 토큰 둘이 똑같이 나오는지도 보이지 못한다.
-**convolution 창은 픽셀 위의 $3\times3$ 정사각형 하나로, 출력 칸은 따로 그린 $n_{\text{out}}\times n_{\text{out}}$ 격자 위에 표시한다.** 정사각형 하나, 칸 하나, 화살표 하나다. §1의 산술 전체가 그 정사각형이 가질 수 있는 서로 다른 위치가 몇 개인가에 대한 진술이다.
-**박스는 대충 그린 사각형이 아니라 좌표가 적힌 모서리로 그린다.** IoU는 좌표의 $\max$와 $\min$에서 나온다. 모서리가 적히지 않은 사각형은 검산할 수 없다. $P_3$와 $G_2$의 교집합 직사각형을 명시한다. 합집합이 필요로 하는 유일한 부분이 그것이다.
-**마스크 패널은 음영이 아니라 개수로 그린다.** 케이블에 8, 배경에 56을 적는다. 이 페이지의 모든 분할 metric은 정수 둘의 비이고, §5에서 metric들이 엇갈리는 이유는 그 정수가 종이 위에 있을 때만 보인다.
+고정된 숫자로 그린 D2이고, 임베딩 폭은 $d$로 남겨 두었다. (a) 계단 모서리가 $2\times2$ 패치 격자의 선 위에 놓이므로 펼친 토큰 넷($4\times16$)은 위치를 더하기 전까지 서로 다른 벡터 둘뿐이고, $E$가 이를 $4\times d$로 투영한 뒤 class 토큰이 붙어 $5\times d$가 되며, 0–2행, 2–4열의 $3\times3$ 창은 $6\times6$ 출력 맵에 $y_{0,2}=40$을 낸다. (b) 모서리 좌표로 적은 박스 다섯과 $\mathrm{IoU}=12/20=0.6$을 내는 $P_3$·$G_2$의 $4\times3$ 교집합, 그리고 (c) 개수로 센 케이블 마스크, 케이블 8픽셀 대 배경 56픽셀이다.
 
 ### 대상으로 한 번 끝까지
 
@@ -1071,10 +1067,18 @@ AlexNet·ResNet에서 표현과 최적화, ViT에서 patch token을 읽고 canon
 
 Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. D2의 픽셀·박스·마스크는 대상 절에 고정되어 있고, 문제 4가 커널과 박스 하나와 마스크 하나를 바꾸므로 §5의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** $d=8$인 D2의 pixel→patch→token→class token shape를 그린다. 같은 그림에 $y_{0,2}=40$을 만든 $3\times3$ 창, $P_3$와 $G_2$의 교집합 직사각형과 그 넓이, 그리고 마스크 두 개수를 표시한다.
+1. **그리기.** 위의 그림을 $d=8$로 그리고, D2의 pixel→patch→token→class token shape를 모두 적는다. 같은 그림에 $y_{0,2}=40$을 만든 $3\times3$ 창, $P_3$와 $G_2$의 교집합 직사각형과 그 넓이, 그리고 마스크 두 개수를 표시한다.
 2. **유도.** $3\times3$, stride 2, padding 1, 출력 channel 8개의 크기와 parameter 수를 구한다.
 3. **해석.** photometric error만 낮춘 monocular 방법이 증명하지 못한 로보틱스 주장은 무엇인가.
 4. **실행.** 영어 절 템플릿의 `?`를 채우고 변형 셋을 돌려 각각 작은 표로 보고한다. (a) $K$를 전치한 *수평* 모서리 커널로 바꾸고 $(k,s,p)$를 $(5,1,0)$, $(5,1,2)$, $(5,2,0)$, $(5,2,2)$, $(5,3,0)$으로 훑으며 매번 공식을 검산한다. 수평 커널의 모든 응답이 공유하는 성질과 그 이유를 한 문장으로 쓴다. (b) $P_3$를 정확히 맞는 $(4,4,8,8)$로 옮기고 $\mathrm{AP}(0.5)$, $\mathrm{AP}(0.75)$, $\mathrm{mAP}@[.5{:}.95]$를 다시 구한다. (c) 케이블을 4열이 아니라 3열에 둔 세 번째 분할을 채점하고, 그 케이블 IoU가 왜 그 값인지 말한다.
+
+> [!note]- 그리는 법 · How to draw it
+> - 패치 격자는 픽셀 옆이 아니라 픽셀 위에 그린다. 패치 1은 0–3행, 0–3열이고 계단 모서리가 세로 격자선 위에 놓인다. 이것을 보이지 못하는 그림은 왜 토큰 둘이 똑같이 나오는지도 보이지 못한다.
+> - 픽셀, 펼친 패치, 투영한 토큰, class 토큰을 붙인 토큰까지 단계마다 $d=8$로 shape를 적는다.
+> - convolution 창은 픽셀 위의 $3\times3$ 정사각형 하나로 그리고, 출력 칸은 따로 그린 $n_{\text{out}}\times n_{\text{out}}$ 격자 위에 표시한다. 정사각형 하나, 칸 하나, 화살표 하나다. §1의 산술은 그 정사각형이 놓일 수 있는 서로 다른 위치의 개수다.
+> - 박스는 대충 그린 사각형이 아니라 좌표가 적힌 모서리로 그린다. IoU는 좌표의 $\max$와 $\min$에서 나오고, 모서리가 적히지 않은 사각형은 검산할 수 없다.
+> - $P_3$와 $G_2$의 교집합 직사각형을 넓이와 함께 명시한다. 합집합이 필요로 하는 유일한 부분이 그것이다.
+> - 마스크 패널은 음영이 아니라 개수로 그린다. 케이블에 8, 배경에 56을 적는다. 여기의 모든 분할 metric은 정수 둘의 비이고, §5에서 metric들이 엇갈리는 이유는 그 정수가 종이 위에 있을 때만 보인다.
 
 > [!tip]- 정답 · Solutions
 > 1. $8\times8\rightarrow4\times16\rightarrow4\times8\rightarrow5\times8$. 창은 0–2행, 2–4열이고 교집합 직사각형은 $x\in[4,8]$, $y\in[4,7]$로 넓이 12, 마스크 개수는 8과 56이다.

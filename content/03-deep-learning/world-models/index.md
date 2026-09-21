@@ -8,8 +8,8 @@ mastery-when: "Raise when learned dynamics, latent planning, uncertainty, or mod
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/rl-basics|7. RL]], and [[04-robotics/state-estimation-slam|3. State Estimation]].
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D5** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/rl-basics|7. RL]], [[04-robotics/state-estimation-slam|3. State Estimation]].
+> Object **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/rl-basics|7. RL]], and [[04-robotics/state-estimation-slam|3. State Estimation]].
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D5** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/rl-basics|7. RL]], [[04-robotics/state-estimation-slam|3. State Estimation]].
 
 ## English
 
@@ -40,9 +40,7 @@ Two learned gains rather than one, because §3's whole question is which *direct
 
 *Scope: this page teaches how to take a world model apart into its five components, how the transition's error behaves when the model is iterated instead of checked one step at a time, and what a planner does with that error. It does not teach how the latent is learned — the objectives that fit an encoder and a transition are [[03-deep-learning/foundations/index|1. Learning Systems]]; nor how an observation model is inverted online on a real robot, which is [[04-robotics/state-estimation-slam|3. State Estimation]]; nor the generative decoder that turns a latent into pixels, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the policy-gradient and value machinery a learned model is often wrapped in, which is [[02-foundations/rl-basics|7. RL]].*
 
-### Homework diagram · 과제가 그릴 그림
-
-One block diagram with **two** rollout paths, and the problem set asks for exactly this one. The figure is the worked case: D5's numbers on the blocks and, underneath, what the two paths produce with zero actions from $z_0=1$.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 478" style="max-width:100%;height:auto" role="img" aria-label="D5's world model as a block diagram with the teacher-forced and free-running paths into the transition drawn separately, and below the two paths' outputs with zero actions: the true state 0.8 to the H, the free-running rollout 0.9 to the H and their gap, which is 0.26281 at H = 5 and peaks at 0.269297 at H = 6">
   <defs><marker id="aD5e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -153,11 +151,7 @@ One block diagram with **two** rollout paths, and the problem set asks for exact
   <text x="304.3" y="375" font-size="11" fill="currentColor">H = 20: δ/z = 9.545</text>
 </svg>
 
-Four things the drawing has to get right, each of which is a claim about the method.
-**Two paths into the transition, drawn separately.** One arrow comes from the encoder (a real observation, re-encoded every step) and one from the transition's own output. Those two arrows are the difference between the loss a paper trains on and the rollout it deploys, and §5 measures how far apart they get.
-**The action enters the transition, not the encoder.** A box with no action input is a video predictor; it can be excellent and still answer no control question.
-**The reward hangs off the latent, not off the pixels.** If a paper's reward needs a decoded image, the decoder is inside the planning loop and its error is inside the plan.
-**The planner's arrow closes back onto the action.** That feedback edge is what turns a prediction error into a decision error, which is the whole of §3; a diagram without it describes a model, not a model-based method.
+D5's world model as a block diagram — observation, encoder, the transition $z'=\hat\lambda z+\beta a$ with $\hat\lambda=0.9$ against the true $\lambda=0.8$ and $\beta=0.5$, a reward $-z^2-0.1a^2$ hanging off the latent, an optional decoder, and a planner that picks the action — with the two paths into the transition drawn apart: teacher forced (a real observation re-encoded every step) and free running (the model fed its own output). Below, with zero actions from $z_0=1$, the teacher-forced prediction $0.9z_{H-1}$ is never more than one step's error from the truth $0.8^H$ ($\delta=0.1$ at $H=1$), while the free-running rollout $0.9^H$ drifts away: the gap $\delta_H=0.9^H-0.8^H$ is $0.26281$ at $H=5$, peaks at $0.269297$ at $H=6$, and at $H=20$ is $9.545$ times the true state.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -339,9 +333,9 @@ Decompose a world-model paper into five components, identify its rollout horizon
 
 ### Problem set · 과제
 
-Tier A. Using **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.65 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
+Tier A. Using **D5** from [[03-deep-learning/lab-objects|0. Lab Objects]], this page, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original object and original problems — change the knobs in §5's listing; do not rewrite the loop. State the tier in your answer sheet.
 
-1. **Draw.** The homework diagram, with the two rollout paths into the transition drawn as separate arrows and labelled *teacher forced* and *free running*, the action entering the transition, the reward hanging off the latent, and the planner's edge closing back onto the action. Mark which single arrow you would cut to turn the picture into a video model, and which to turn it into an open-loop plan.
+1. **Draw.** The picture above, with the two rollout paths into the transition drawn as separate arrows and labelled *teacher forced* and *free running*, the action entering the transition, the reward hanging off the latent, and the planner's edge closing back onto the action. Mark which single arrow you would cut to turn the picture into a video model, and which to turn it into an open-loop plan.
 2. **Derive.** The gain is re-learned as $\hat\lambda=0.85$, actions still zero. (a) The one-step error $e_t$ and the closed form for $\delta_H$. (b) $\delta_5$ and $\delta_{20}$, and the horizon at which $\delta_H$ peaks. (c) The relative error $\delta_{20}/z_{20}$. (d) Compare (c) with the $\hat\lambda=0.9$ row of §5 and state, in one sentence, how the relative error at a fixed horizon scales with the size of the gain error.
 3. **Do.** Fill the `?` in the patch below and re-run §5's second and third blocks with it. The action gain is now mis-learned instead of the transition gain: $\hat\beta=0.6$ with $\hat\lambda=\lambda=0.8$, so the model believes its actions are stronger than they are. Report regret and gap for $H\in\{2,3,4,5\}$ and the MPC return, and answer the one question that matters: does replanning rescue this error the way it rescued the transition error?
 
@@ -357,6 +351,12 @@ def roll_b(lm, bt, acts, z=z0):        # a model that may be wrong about beta to
 # then, in blocks 2 and 3, the model's rollout becomes roll_b(0.8, 0.6, p, ...)
 # and the true rollout stays roll_b(0.8, 0.5, p, ...)
 ```
+
+> [!note]- How to draw it · 그리는 법
+> - Draw the two paths into the transition separately: one from the encoder (a real observation, re-encoded every step) and one from the transition's own output. Those two arrows are the difference between the loss a paper trains on and the rollout it deploys, and §5 measures how far apart they get.
+> - Let the action enter the transition, not the encoder. A box with no action input is a video predictor; it can be excellent and still answer no control question.
+> - Hang the reward off the latent, not off the pixels. If a paper's reward needs a decoded image, the decoder is inside the planning loop and its error is inside the plan.
+> - Close the planner's arrow back onto the action. That feedback edge is what turns a prediction error into a decision error, which is the whole of §3; a diagram without it describes a model, not a model-based method.
 
 > [!tip]- Solutions
 > 1. Observation → encoder → latent, latent and action → transition → next latent, next latent → reward and (optionally) decoder, reward → planner → action, and the two arrows back into the transition: one from the encoder (teacher forced) and one from the transition's own output (free running). Cutting the action arrow into the transition turns it into a video model — condition two of latent dynamics. Cutting the planner's edge back onto the action turns it into an open-loop plan, which is the third condition of model exploitation and the arrow §5 shows is worth $0.0929$ of return.
@@ -388,9 +388,7 @@ def roll_b(lm, bt, acts, z=z0):        # a model that may be wrong about beta to
 
 *범위: 이 페이지는 월드모델을 다섯 구성요소로 분해하는 법, 전이의 오차를 한 스텝씩 확인하지 않고 반복했을 때 어떻게 되는지, planner가 그 오차로 무엇을 하는지를 가르친다. latent를 어떻게 학습하는지는 가르치지 않는다. encoder와 전이를 맞추는 목적함수는 [[03-deep-learning/foundations/index|1. Learning Systems]]다. 실제 로봇에서 관측 모델을 온라인으로 뒤집는 법도 아니다. 그것은 [[04-robotics/state-estimation-slam|3. State Estimation]]이다. latent를 픽셀로 바꾸는 생성 decoder도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. 학습된 모델을 감싸는 policy gradient와 value 기계도 아니다. 그것은 [[02-foundations/rl-basics|7. RL]]다.*
 
-### 과제가 그릴 그림 · Homework diagram
-
-rollout 경로가 **둘**인 블록선도 하나, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 계산 절이다. 블록에 D5의 숫자를 적었고, 아래에는 $z_0=1$에서 행동이 0일 때 두 경로가 내는 값을 그렸다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 478" style="max-width:100%;height:auto" role="img" aria-label="전이로 들어가는 teacher forcing 경로와 자유 진행 경로를 따로 그린 D5 월드모델의 블록선도와, 행동이 0일 때 참 상태 0.8의 H제곱, 자유 진행 rollout 0.9의 H제곱, 그리고 H = 5에서 0.26281이고 H = 6에서 0.269297로 정점인 둘의 차이를 그린 그래프">
   <defs><marker id="aD5k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -501,11 +499,7 @@ rollout 경로가 **둘**인 블록선도 하나, 과제가 요구하는 것이 
   <text x="304.3" y="375" font-size="11" fill="currentColor">H = 20: δ/z = 9.545</text>
 </svg>
 
-그림이 맞혀야 할 것이 넷이고, 각각이 방법에 대한 주장이다.
-**전이로 들어가는 경로 둘을 따로 그린다.** 하나는 encoder에서(매 스텝 실제 관측을 다시 부호화), 하나는 전이 자신의 출력에서 온다. 이 두 화살표가 논문이 학습하는 손실과 배포하는 rollout의 차이이고, §5가 그 둘이 얼마나 벌어지는지를 잰다.
-**행동은 encoder가 아니라 전이로 들어간다.** 행동 입력이 없는 상자는 video 예측기다. 훌륭해도 제어 질문에는 하나도 답하지 못한다.
-**보상은 픽셀이 아니라 latent에 매달린다.** 논문의 보상이 복원된 이미지를 필요로 하면 decoder가 planning 루프 안에 있고 그 오차도 계획 안에 있다.
-**planner의 화살표가 행동으로 돌아와 닫힌다.** 예측 오차를 결정 오차로 바꾸는 것이 그 되먹임 변이고, 그것이 §3 전부다. 그 변이 없는 그림은 모델을 설명한 것이지 모델 기반 방법을 설명한 것이 아니다.
+D5의 월드모델을 블록선도로 그렸다. 관측, encoder, 전이 $z'=\hat\lambda z+\beta a$(참 $\lambda=0.8$에 대해 $\hat\lambda=0.9$, $\beta=0.5$), latent에 매달린 보상 $-z^2-0.1a^2$, 선택적인 decoder, 행동을 고르는 planner가 있고, 전이로 들어가는 두 경로 — 매 스텝 실제 관측을 다시 부호화하는 teacher forcing과 모델에 자기 출력을 다시 넣는 자유 진행 — 를 따로 그렸다. 아래는 $z_0=1$에서 행동이 0일 때로, teacher forcing 예측 $0.9z_{H-1}$은 참값 $0.8^H$에서 한 스텝의 오차 이상 벗어나지 않지만($H=1$에서 $\delta=0.1$) 자유 진행 rollout $0.9^H$는 멀어져서, 차이 $\delta_H=0.9^H-0.8^H$가 $H=5$에서 $0.26281$, $H=6$에서 정점 $0.269297$이고 $H=20$에서는 참 상태의 $9.545$배다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -629,11 +623,17 @@ representation은 latent가 state를 보존하는지, prediction은 미래가 ca
 
 ### 과제 · Problem set
 
-Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지, [[02-foundations/lab-kernel|0.65 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
+Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]. 영어 절 §5의 손잡이를 바꿔라. 루프를 다시 쓰지 마라. 답안에 tier를 명시하라.
 
-1. **그리기.** 과제 그림. 전이로 들어가는 rollout 경로 둘을 따로 그려 *teacher forced*와 *free running*으로 이름 붙이고, 행동은 전이로 들어가게, 보상은 latent에 매달리게, planner의 변은 행동으로 돌아와 닫히게 그린다. 어느 화살표 하나를 자르면 video 모델이 되는지, 어느 것을 자르면 개루프 계획이 되는지 표시한다.
+1. **그리기.** 위의 그림을 그린다. 전이로 들어가는 rollout 경로 둘을 따로 그려 *teacher forced*와 *free running*으로 이름 붙이고, 행동은 전이로 들어가게, 보상은 latent에 매달리게, planner의 변은 행동으로 돌아와 닫히게 그린다. 어느 화살표 하나를 자르면 video 모델이 되는지, 어느 것을 자르면 개루프 계획이 되는지 표시한다.
 2. **유도.** 이득을 $\hat\lambda=0.85$로 다시 학습했고 행동은 여전히 0이다. (a) one-step 오차 $e_t$와 $\delta_H$의 닫힌 형태. (b) $\delta_5$와 $\delta_{20}$, 그리고 $\delta_H$가 정점을 찍는 horizon. (c) 상대 오차 $\delta_{20}/z_{20}$. (d) (c)를 §5의 $\hat\lambda=0.9$ 행과 비교해, 고정된 horizon에서 상대 오차가 이득 오차 크기에 따라 어떻게 커지는지 한 문장으로.
 3. **실행.** 영어 절 패치의 `?`를 채우고 §5의 둘째·셋째 블록을 다시 돌린다. 이번에는 전이 이득이 아니라 행동 이득을 잘못 배웠다. $\hat\lambda=\lambda=0.8$에 $\hat\beta=0.6$이므로 모델은 자기 행동이 실제보다 세다고 믿는다. $H\in\{2,3,4,5\}$의 regret과 gap, 그리고 MPC return을 보고하고, 중요한 질문 하나에 답하라. replanning이 전이 오차를 구했던 것처럼 이 오차도 구하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 전이로 들어가는 경로 둘을 따로 그린다. 하나는 encoder에서(매 스텝 실제 관측을 다시 부호화), 하나는 전이 자신의 출력에서 온다. 이 두 화살표가 논문이 학습하는 손실과 배포하는 rollout의 차이이고, §5가 그 둘이 얼마나 벌어지는지를 잰다.
+> - 행동은 encoder가 아니라 전이로 들어가게 그린다. 행동 입력이 없는 상자는 video 예측기다. 훌륭해도 제어 질문에는 하나도 답하지 못한다.
+> - 보상은 픽셀이 아니라 latent에 매단다. 논문의 보상이 복원된 이미지를 필요로 하면 decoder가 planning 루프 안에 있고 그 오차도 계획 안에 있다.
+> - planner의 화살표는 행동으로 돌아와 닫히게 그린다. 예측 오차를 결정 오차로 바꾸는 것이 그 되먹임 변이고, 그것이 §3 전부다. 그 변이 없는 그림은 모델을 설명한 것이지 모델 기반 방법을 설명한 것이 아니다.
 
 > [!tip]- 정답 · Solutions
 > 1. 관측 → encoder → latent, latent와 행동 → 전이 → 다음 latent, 다음 latent → 보상과 (선택적) decoder, 보상 → planner → 행동, 그리고 전이로 되돌아오는 화살표 둘: encoder에서 오는 것(teacher forced)과 전이 자신의 출력에서 오는 것(free running). 전이로 들어가는 행동 화살표를 자르면 video 모델이 된다. latent dynamics의 둘째 조건이다. planner에서 행동으로 가는 변을 자르면 개루프 계획이 되고, 그것이 model exploitation의 셋째 조건이며 §5가 $0.0929$의 return 값어치라고 보인 화살표다.

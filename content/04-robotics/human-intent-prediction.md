@@ -56,11 +56,9 @@ Nine of the twenty events occurred, so the base rate on this log is $\bar p = 9/
 
 The platform is a mobile base at $v = 1.5\ \mathrm{m/s}$ with a maximum deceleration $a = 1.5\ \mathrm{m/s^2}$ and a perception-to-brake latency $t_{\mathrm{lat}} = 0.45$ s, and the safety case requires recall $\ge 0.75$ at that same $\alpha$.
 
-### Homework diagram · 과제가 그릴 그림
+### The picture · 그림으로 먼저 보기
 
-Two panels, drawn once. The problem set asks for the same two with a changed outcome and a changed platform.
-
-<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="Intent-prediction homework diagram: the reliability diagram of the twenty I20 forecasts in five bins with their gaps to the diagonal, the recall-against-lead-time curve with the usable horizon 1.375 s falling 75 ms short of the 1.45 s the base needs, and the case-20 trajectory with its three displacement errors">
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="Intent-prediction picture: the reliability diagram of the twenty I20 forecasts in five bins with their gaps to the diagonal, the recall-against-lead-time curve with the usable horizon 1.375 s falling 75 ms short of the 1.45 s the base needs, and the case-20 trajectory with its three displacement errors">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">1. reliability diagram</text>
   <rect x="58" y="58" width="192" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
   <line x1="96.4" y1="250" x2="96.4" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
@@ -179,10 +177,7 @@ Two panels, drawn once. The problem set asks for the same two with a changed out
   <text x="16" y="468" font-size="11" fill="currentColor" fill-opacity="0.9">ADE = (0.30 + 0.50 + 1.00) / 3 = 0.60 m and FDE = 1.00 m; constant velocity hits (1, 0), (2, 0), (3, 0) exactly.</text>
 </svg>
 
-1. **The reliability diagram.** A unit square, $\hat p$ across and observed frequency up, with the $45^\circ$ diagonal drawn as the calibrated line. Divide the horizontal axis into the five equal-width bins, and for each bin plot one point at (bin mean $\hat p$, bin observed frequency), with a bar above the axis showing how many of the twenty cases fell in it. Draw the vertical gap from each point to the diagonal and label it — the weighted average of those five gaps is the whole of §4's scalar.
-2. **The time-to-event panel.** $\Delta$ across, recall up, the five points of Part 3 joined. Draw the horizontal requirement line at $0.75$, drop a vertical from where the curve crosses it and label it $\Delta^{*}$, then draw a second vertical at the required lead $t_{\mathrm{stop}} + t_{\mathrm{lat}}$. The signed distance between those two verticals is the answer, and its sign is the deployment decision.
-
-Beside panel 2, draw the trajectory of Part 2 from above: the three observed positions, the three true future ones, the three predicted ones, and the three displacement segments that ADE averages, with the last one thickened because it alone is FDE.
+The log I20 in three views. The reliability diagram bins the twenty forecasts four to a bin, with gaps to the diagonal of $0.15$, $0$, $0$, $0.20$ and $0.15$, so $\mathrm{ECE} = 0.100$ and the top two bins sit below the diagonal, overconfident; the time-to-event curve crosses the required recall of $0.75$ at $\Delta^{*} = 1.375$ s, $75$ ms short of the $t_{\mathrm{stop}} + t_{\mathrm{lat}} = 1.45$ s the base needs. Beside it, case 20's trajectory from above: the model's three displacement errors, $0.30$, $0.50$ and $1.00$ m, give $\mathrm{ADE} = 0.60$ m and $\mathrm{FDE} = 1.00$ m, while constant velocity hits the true path exactly.
 
 ### Worked on I20 · I20로 한 번 끝까지
 
@@ -555,9 +550,18 @@ You should be able to:
 
 Tier B. Using **I20** from the running object above, and this page only. One outcome flips, the pedestrian turns, and the platform changes; the twenty forecasts do not.
 
-1. **Draw.** Redraw both homework panels for the changed object. Panel 1: the reliability diagram after case 19 (which forecast $0.90$) turns out to have been a $y = 1$ after all — show which single point moves and in which direction, and mark the diagonal it moves toward. Panel 2: the same time-to-event curve against a faster platform, $v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$ s, with both verticals drawn and the gap between them signed.
+1. **Draw.** Redraw both panels of the picture above for the changed object. Panel 1: the reliability diagram after case 19 (which forecast $0.90$) turns out to have been a $y = 1$ after all — show which single point moves and in which direction, and mark the diagonal it moves toward. Panel 2: the same time-to-event curve against a faster platform, $v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$ s, with both verticals drawn and the gap between them signed.
 2. **Derive.** (a) With case 19 flipped to $y = 1$ and nothing else changed: the new Brier score, the new base rate, the new Brier skill score, and the new five-bin ECE. (b) The pedestrian of Part 2 turns instead of walking straight: the true future is now $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$, the observed history and the model's prediction are unchanged. Compute ADE and FDE for the model and for the constant-velocity baseline. (c) $\Delta^{*}$ is unchanged at $1.375$ s; compute $\Delta_{\mathrm{req}}$ for the faster platform of panel 2 and say whether it now passes.
 3. **Interpret.** The vendor reads the part (a) result and reports "recalibrated: ECE improved from $0.100$ to $0.090$." Two of the three numbers you computed in (a) moved much further than the ECE did. Say what actually changed in the log, why ECE is the least sensitive of the three to it, and what you would require the vendor to report instead.
+
+> [!note]- How to draw it · 그리는 법
+> - **Panel 1, the reliability diagram**: a unit square, $\hat p$ across and observed frequency up, with the $45^\circ$ diagonal drawn as the calibrated line.
+> - **Five equal-width bins on the horizontal axis**: for each, one point at (bin mean $\hat p$, bin observed frequency), and a bar above the axis showing how many of the twenty cases fell in it.
+> - **Draw the vertical gap from each point to the diagonal and label it** — the weighted average of those five gaps is the whole of §4's scalar. A point below the diagonal is overconfident, one above it underconfident.
+> - **Panel 2, the time-to-event curve**: $\Delta$ across, recall up, the five points of Part 3 joined, and the horizontal requirement line at $0.75$.
+> - **Drop a vertical where the curve crosses the requirement and label it $\Delta^{*}$**, then draw a second vertical at the required lead $t_{\mathrm{stop}} + t_{\mathrm{lat}}$, with $t_{\mathrm{stop}} = v/a$. The signed distance between the two verticals is the answer, and its sign is the deployment decision.
+> - **Beside panel 2, the trajectory of Part 2 from above**: the three observed positions, the three true future ones and the three predicted ones.
+> - **The three displacement segments that ADE averages**, with the last one thickened because it alone is FDE.
 
 > [!tip]- Solutions
 > 1. Panel 1: only the top bin's point moves, from $(0.90,\ 0.75)$ up to $(0.90,\ 1.00)$ — past the diagonal, from overconfident (frequency below the forecast) to underconfident (frequency above it); the other four points and all five bars are untouched, because the flip changes an outcome, not a forecast. Panel 2: $\Delta^{*}$ stays at $1.375$ s while the required-lead vertical moves out to $1.55$ s, so the gap that was $-0.075$ s becomes $-0.175$ s — a faster base with a shorter latency is still worse off, because $v/a$ grew more than $t_{\mathrm{lat}}$ shrank.
@@ -658,11 +662,9 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 
 플랫폼은 $v = 1.5\ \mathrm{m/s}$로 달리는 이동 베이스이고 최대 감속 $a = 1.5\ \mathrm{m/s^2}$, 인지에서 제동까지의 지연 $t_{\mathrm{lat}} = 0.45$초이며, 안전 논거는 같은 $\alpha$에서 recall $\ge 0.75$를 요구한다.
 
-### 과제가 그릴 그림 · Homework diagram
+### 그림으로 먼저 보기 · The picture
 
-패널 둘, 한 번 그린다. 과제는 결과 하나와 플랫폼을 바꿔서 같은 둘을 다시 요구한다.
-
-<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="의도 예측 과제 그림: I20의 예측 스무 개를 다섯 구간으로 묶어 대각선까지의 간격을 표시한 reliability diagram, 사용 가능 지평 1.375초가 베이스에 필요한 1.45초에 75 ms 못 미치는 선행 시간 대 recall 곡선, 그리고 변위 오차 셋을 표시한 사례 20의 궤적">
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="의도 예측 그림: I20의 예측 스무 개를 다섯 구간으로 묶어 대각선까지의 간격을 표시한 reliability diagram, 사용 가능 지평 1.375초가 베이스에 필요한 1.45초에 75 ms 못 미치는 선행 시간 대 recall 곡선, 그리고 변위 오차 셋을 표시한 사례 20의 궤적">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">1. reliability diagram</text>
   <rect x="58" y="58" width="192" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
   <line x1="96.4" y1="250" x2="96.4" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
@@ -781,10 +783,7 @@ Tier B. Using **I20** from the running object above, and this page only. One out
   <text x="16" y="468" font-size="11" fill="currentColor" fill-opacity="0.9">ADE = (0.30 + 0.50 + 1.00) / 3 = 0.60 m, FDE = 1.00 m. 등속 외삽은 (1, 0), (2, 0), (3, 0)을 정확히 맞힌다.</text>
 </svg>
 
-1. **Reliability diagram.** 단위 정사각형에 가로는 $\hat p$, 세로는 관측 빈도, 그리고 보정된 선인 $45^\circ$ 대각선을 긋는다. 가로축을 등폭 5구간으로 나누고, 구간마다 (구간 평균 $\hat p$, 구간 관측 빈도)에 점 하나를 찍고, 축 위에 스무 사례 중 몇 개가 그 구간에 들었는지 막대로 표시한다. 각 점에서 대각선까지 수직 간격을 그리고 값을 적어라. 그 다섯 간격의 가중 평균이 §4 스칼라의 전부다.
-2. **Time-to-event 패널.** 가로는 $\Delta$, 세로는 recall, 3부의 다섯 점을 잇는다. $0.75$에 수평 요구선을 긋고 곡선이 그것을 가로지르는 지점에서 수직선을 내려 $\Delta^{*}$라 적은 뒤, 필요 선행 $t_{\mathrm{stop}} + t_{\mathrm{lat}}$에 두 번째 수직선을 긋는다. 두 수직선 사이의 부호 있는 거리가 답이고, 그 부호가 배포 결정이다.
-
-패널 2 옆에는 2부의 궤적을 위에서 본 그림으로 그린다. 관측된 세 위치, 참 미래 세 위치, 예측 세 위치, 그리고 ADE가 평균하는 변위 선분 셋을 그리되, 마지막 하나만 굵게 — 그것 혼자가 FDE다.
+로그 I20을 세 가지로 본 그림이다. Reliability diagram은 스무 개의 예측을 구간마다 넷씩 묶고 대각선까지의 간격이 $0.15$, $0$, $0$, $0.20$, $0.15$라 $\mathrm{ECE} = 0.100$이며 위의 두 구간은 대각선 아래, 곧 과신이다. Time-to-event 곡선은 요구 recall $0.75$를 $\Delta^{*} = 1.375$초에서 가로질러 베이스에 필요한 $t_{\mathrm{stop}} + t_{\mathrm{lat}} = 1.45$초에 $75$ ms 모자라고, 그 옆 위에서 본 사례 20의 궤적에서는 모델의 변위 오차 셋 $0.30$, $0.50$, $1.00$ m가 $\mathrm{ADE} = 0.60$ m, $\mathrm{FDE} = 1.00$ m를 주는 반면 등속 외삽은 참 경로를 정확히 맞힌다.
 
 ### I20으로 한 번 끝까지 · Worked on I20
 
@@ -1144,9 +1143,18 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 
 Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 하나가 뒤집히고, 보행자가 방향을 틀고, 플랫폼이 바뀐다. 스무 개의 예측은 그대로다.
 
-1. **그려라.** 바뀐 대상으로 과제 패널 둘을 다시 그려라. 패널 1: $0.90$을 예측했던 19번 사례가 사실은 $y = 1$이었다고 하자. 점 하나가 어느 방향으로 움직이는지 표시하고, 그것이 향해 가는 대각선을 표시하라. 패널 2: 같은 time-to-event 곡선을 더 빠른 플랫폼($v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$초)에 대해 그리고, 수직선 둘과 그 사이 부호 있는 간격을 표시하라.
+1. **그려라.** 바뀐 대상으로 위의 그림의 패널 둘을 다시 그려라. 패널 1: $0.90$을 예측했던 19번 사례가 사실은 $y = 1$이었다고 하자. 점 하나가 어느 방향으로 움직이는지 표시하고, 그것이 향해 가는 대각선을 표시하라. 패널 2: 같은 time-to-event 곡선을 더 빠른 플랫폼($v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$초)에 대해 그리고, 수직선 둘과 그 사이 부호 있는 간격을 표시하라.
 2. **유도하라.** (a) 19번 사례를 $y = 1$로 뒤집고 나머지는 그대로일 때, 새 Brier 점수·새 기저율·새 Brier skill score·새 5구간 ECE. (b) 2부의 보행자가 직진 대신 방향을 튼다. 참 미래가 $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$이고 관측 이력과 모델 예측은 그대로다. 모델과 등속 기준선의 ADE·FDE를 구하라. (c) $\Delta^{*}$는 $1.375$초로 그대로다. 패널 2의 더 빠른 플랫폼에 대해 $\Delta_{\mathrm{req}}$를 구하고 이제 통과하는지 말하라.
 3. **해석하라.** 업체가 (a)의 결과를 읽고 "재보정 완료: ECE가 $0.100$에서 $0.090$으로 개선"이라 보고한다. (a)에서 구한 셋 중 둘은 ECE보다 훨씬 크게 움직였다. 로그에서 실제로 바뀐 것이 무엇인지, ECE가 셋 중 그것에 가장 둔감한 이유가 무엇인지, 그리고 업체에 대신 무엇을 요구할지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - **패널 1, reliability diagram.** 단위 정사각형에 가로는 $\hat p$, 세로는 관측 빈도, 그리고 보정된 선인 $45^\circ$ 대각선을 긋는다.
+> - **가로축을 등폭 5구간으로 나눈다.** 구간마다 (구간 평균 $\hat p$, 구간 관측 빈도)에 점 하나를 찍고, 축 위에 스무 사례 중 몇 개가 그 구간에 들었는지 막대로 표시한다.
+> - **각 점에서 대각선까지 수직 간격을 그리고 값을 적는다.** 그 다섯 간격의 가중 평균이 §4 스칼라의 전부다. 대각선 아래의 점은 과신, 위의 점은 과소 확신이다.
+> - **패널 2, time-to-event 곡선.** 가로는 $\Delta$, 세로는 recall, 3부의 다섯 점을 잇고, $0.75$에 수평 요구선을 긋는다.
+> - **곡선이 요구선을 가로지르는 지점에서 수직선을 내려 $\Delta^{*}$라 적는다.** 그다음 필요 선행 $t_{\mathrm{stop}} + t_{\mathrm{lat}}$($t_{\mathrm{stop}} = v/a$)에 두 번째 수직선을 긋는다. 두 수직선 사이의 부호 있는 거리가 답이고, 그 부호가 배포 결정이다.
+> - **패널 2 옆에는 2부의 궤적을 위에서 본 그림.** 관측된 세 위치, 참 미래 세 위치, 예측 세 위치.
+> - **ADE가 평균하는 변위 선분 셋을 그리되 마지막 하나만 굵게 그린다.** 그것 혼자가 FDE다.
 
 > [!tip]- 정답 · Solutions
 > 1. 패널 1: 맨 위 구간의 점 하나만 $(0.90,\ 0.75)$에서 $(0.90,\ 1.00)$으로 올라간다. 대각선을 지나쳐, 빈도가 예측에 못 미치던 과신 쪽에서 예측을 넘어서는 과소 확신 쪽으로 간다. 나머지 네 점과 다섯 막대는 그대로다. 뒤집힌 것이 예측이 아니라 결과이기 때문이다. 패널 2: $\Delta^{*}$는 $1.375$초로 그대로인데 필요 선행 수직선이 $1.55$초로 밀려나, $-0.075$초였던 간격이 $-0.175$초가 된다. 더 빠르고 지연이 짧은 베이스가 오히려 나빠지는 이유는 $v/a$가 늘어난 폭이 $t_{\mathrm{lat}}$이 줄어든 폭보다 크기 때문이다.

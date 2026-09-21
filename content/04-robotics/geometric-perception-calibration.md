@@ -51,11 +51,9 @@ Everything else on the page is derived from that table. $L$ lands at $(470, 300)
 
 *Scope: this page teaches the geometry between a 3D point and a pixel and the calibrations that geometry depends on — intrinsics, extrinsics, distortion, two-view constraints, registration. It does not teach what an object is ([[03-deep-learning/index|Deep Learning]]), how the camera pose is estimated over time ([[04-robotics/state-estimation-slam|3. State Estimation & SLAM]]), or how the rig is published and time-stamped at runtime ([[04-robotics/robot-systems-deployment|10. Robot Systems]]).*
 
-### Homework diagram: one ray, two cameras, three error bars
+### The picture: one ray, two cameras, three error bars
 
-Draw it once; the problem set asks for the same drawing at different numbers.
-
-<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="Stereo homework diagram for the wrist rig: the pinhole projection of the landmark with its two similar triangles, a second camera 0.12 m to the side with rays to the landmark at 2 m and to a point at 8 m, and the two depth error bars and the distortion shift drawn to scale">
+<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="Stereo picture for the wrist rig: the pinhole projection of the landmark with its two similar triangles, a second camera 0.12 m to the side with rays to the landmark at 2 m and to a point at 8 m, and the two depth error bars and the distortion shift drawn to scale">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">projection, XZ plane</text>
   <text x="232" y="24" font-size="12" fill="currentColor" font-weight="600">the second camera</text>
   <text x="404" y="24" font-size="12" fill="currentColor" font-weight="600">three errors, to scale</text>
@@ -181,11 +179,7 @@ Draw it once; the problem set asks for the same drawing at different numbers.
   <text x="16" y="460" font-size="11" fill="currentColor" fill-opacity="0.9">The 2.30 px shift is a bias on the image plane, not noise: averaging frames does not shrink it.</text>
 </svg>
 
-**Left — the projection, in the $XZ$ plane.** Optical centre $O$ at the origin, the optical axis along $+Z$, the image plane at $Z = f$. The landmark $L$ at $(X, Z) = (0.5, 2.0)$, and the ray from $L$ through $O$ crossing the image plane. Mark the similar triangles that give $u - c_x = f_x X / Z$: they are the derivation, so the drawing has to show both.
-
-**Middle — the second camera.** An identical centre at $X = +0.12$, its own ray to the same $L$. Label the two image points $470$ and $434$ and the disparity $36$ px between them. Then draw the *same* pair of rays for a point at $Z = 8$ m and show them nearly parallel: the disparity is $9$ px, and the angle between the rays is what depth accuracy is actually made of.
-
-**Right — three error bars on the same axis, to scale.** (i) A $\pm 1$ px disparity error at $Z = 2$ m, which is $\pm 0.056$ m. (ii) The same $\pm 1$ px at $Z = 8$ m, which is $\pm 0.89$ m — sixteen times longer, and it must be drawn sixteen times longer. (iii) The $2.30$ px that ignoring distortion costs at $L$, drawn on the image plane rather than on the depth axis, because it is a different kind of error: a bias, not a noise.
+The wrist rig and its landmark $L$, at $(X,Z)=(0.5,\,2.0)$ m. Left, the pinhole projection in the $XZ$ plane, whose similar triangles give $150/600=0.5/2.0$ and so $u=470$ px; middle, the second camera $0.12$ m to the side sees $L$ at $u=434$, a disparity of $36$ px, while a point at $8$ m gives only $9$ px along nearly parallel rays. Right, three errors to scale: a $\pm1$ px disparity error is $\pm0.056$ m of depth at $2$ m and $\pm0.89$ m at $8$ m, sixteen times longer because depth error grows as $Z^2$, and the $2.30$ px distortion shift at $L$ sits on the image plane as a bias, not noise.
 
 ### Worked case: from the table to a pixel, and back
 
@@ -613,12 +607,20 @@ local basin.
 
 Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([[02-foundations/lab-plants|0.6]]) and the hand–eye offset $d_{ct}=4\,\mathrm{cm}$. No simulator. The Worked case ran the rig at the landmark $L$, $Z = 2.0$ m. This set moves it to $L' = (0.5,\ 0.2,\ 4.0)$ m and asks which errors grow, which shrink, and which stay put — that is the variant.
 
-1. **Draw.** Both cameras, both rays to $L'$, the two image points and the disparity between them. Beside them, and to the same scale, the $\pm1$ px depth error bar at $Z = 4$ m and the one at $Z = 2$ m from the Homework diagram. Add the distortion shift at $L'$ as a short segment on the image plane. Three errors, three different scaling laws — the drawing has to make them look different.
+1. **Draw.** Both cameras, both rays to $L'$, the two image points and the disparity between them. Beside them, and to the same scale, the $\pm1$ px depth error bar at $Z = 4$ m and the one at $Z = 2$ m from the picture above. Add the distortion shift at $L'$ as a short segment on the image plane. Three errors, three different scaling laws — the drawing has to make them look different.
 2. **Derive.** (a) Project $L'$ into both cameras: $u_1, v_1, u_2$, the disparity $d'$, and the check $Z = f b / d'$. (b) The depth error for $d' \pm 1$ px, exactly, and compare it with the first-order estimate $Z^2/(fb)$; say why the exact $+1$ and $-1$ errors are not equal. (c) The distortion shift at $L'$: compute $r$, the radial factor, and the shift in pixels, then explain the ratio to the $2.30$ px at $Z = 2$ using the leading term. (d) P5's scalar fusion: $K$, the fused camera-to-wall range, $P^+$, and the tip-to-wall number after $d_{ct}$.
 3. **Interpret.** (a) In $AX = XB$, which of $A$, $B$, $X$ contains the $4\,\mathrm{cm}$, and why a $0.37$ px calibration residual does not certify it. (b) A match on the repeated panel at $(440, 300)$ has an epipolar residual of exactly zero. Name the one number in part 2 that would have caught it, and say what you would add to the rig to catch it in general.
 
+> [!note]- How to draw it · 그리는 법
+> - **Left, the projection in the $XZ$ plane**: optical centre $O$ at the origin, the optical axis along $+Z$, the image plane at $Z = f$, the landmark, and the ray from it through $O$ crossing the image plane.
+> - **Mark the similar triangles** that give $u - c_x = f_x X / Z$: they are the derivation, so the drawing has to show both.
+> - **Middle, the second camera**: an identical centre at $X = +0.12$ with its own ray to the same point; label the two image points and the disparity between them.
+> - **Draw the same pair of rays for a farther point** and show them nearly parallel: the angle between the rays is what depth accuracy is actually made of.
+> - **Right, the depth error bars share one axis and one scale**: a $\pm1$ px disparity error grows as $Z^2$, and the bars must be drawn that way — in the picture, $\pm0.056$ m at $2$ m and $\pm0.89$ m at $8$ m, sixteen times longer.
+> - **The distortion shift goes on the image plane, not on the depth axis**, because it is a different kind of error: a bias, not a noise.
+
 > [!tip]- Solutions
-> 1. The two rays to $L'$ are visibly closer to parallel than the pair at $Z = 2$; the $Z=4$ error bar must be drawn about four times the $Z=2$ one, and the distortion segment about eight times *shorter* than the one in the Homework diagram.
+> 1. The two rays to $L'$ are visibly closer to parallel than the pair at $Z = 2$; the $Z=4$ error bar must be drawn about four times the $Z=2$ one, and the distortion segment about eight times *shorter* than the one in the picture at the top of the page.
 > 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; in camera 2 the point is $(0.38, 0.2, 4.0)$, so $u_2 = 377$ and $d' = 18$ px, giving $Z = 600(0.12)/18 = 4.0$ m. (b) $d' = 17 \Rightarrow Z = 4.235$ m ($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m ($-0.211$). The first-order estimate is $Z^2/(fb) = 16/72 = 0.222$ m, between the two, and the two are unequal because $Z = fb/d$ is convex in $d$ — losing disparity costs more than gaining it, so the depth error distribution is skewed *away* from the camera even when the pixel error is symmetric. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; the factor is $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$, so the point lands at $(394.729,\ 269.892)$ and the shift is $0.291$ px. That is $7.9$ times smaller than the $2.30$ px at $Z = 2$, because the leading radial displacement in pixels is $f\lvert k_1\rvert r^3$ and $r$ halved: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, fused range $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, tip-to-wall $11.6 - 4 = 7.6\,\mathrm{cm}$.
 > 3. (a) $X$ is the unknown camera-to-gripper transform and the $4\,\mathrm{cm}$ is one translation component of it; $A$ is the gripper's motion between two robot poses, $B$ the camera's motion between the same two. A $0.37$ px residual is a *training* residual on the target views, and §5 shows a fit with exactly that residual still misplacing a point by $1.67$ mm at $0.5$ m off-axis and $10.0$ mm at $3$ m — the camera-to-gripper translation is estimated from those same views, so it inherits that extrapolation error. Only a held-out pose and a measured known length test it. (b) **The triangulated depth.** The wrong match has disparity $30$ instead of $36$, so it triangulates to $Z = 2.40$ m rather than $2.00$ m — a $40$ cm error that the epipolar residual reports as zero, because $F$ constrains a match to a line and says nothing about position *along* it. In general you add an independent constraint that is not along the epipolar line: a third view whose epipolar lines cross the first pair at an angle, a direct range measurement (the P5 sensor, or lidar), or an appearance check strong enough to tell two identical panels apart — which, on identical panels, means using their context rather than their texture.
 
@@ -680,11 +682,9 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 *범위: 이 페이지는 3D 점과 픽셀 사이의 기하, 그리고 그 기하가 의존하는 보정을 가르친다 — intrinsics, extrinsics, 왜곡, 두 시점 제약, registration. 물체가 무엇인지([[03-deep-learning/index|딥러닝]]), 카메라 pose가 시간에 걸쳐 어떻게 추정되는지([[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM]]), 리그가 런타임에 어떻게 발행되고 타임스탬프가 찍히는지([[04-robotics/robot-systems-deployment|10. 로봇 시스템]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: 광선 하나, 카메라 둘, 오차 막대 셋
+### 그림으로 먼저 보기: 광선 하나, 카메라 둘, 오차 막대 셋
 
-한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
-
-<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="손목 리그의 스테레오 과제 그림: 닮은꼴 삼각형 둘로 본 랜드마크의 핀홀 투영, 옆으로 0.12 m 떨어진 두 번째 카메라와 2 m의 랜드마크 및 8 m의 점으로 가는 광선, 그리고 축척대로 그린 깊이 오차 막대 둘과 왜곡 이동">
+<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="손목 리그의 스테레오 그림: 닮은꼴 삼각형 둘로 본 랜드마크의 핀홀 투영, 옆으로 0.12 m 떨어진 두 번째 카메라와 2 m의 랜드마크 및 8 m의 점으로 가는 광선, 그리고 축척대로 그린 깊이 오차 막대 둘과 왜곡 이동">
   <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">XZ 평면의 투영</text>
   <text x="232" y="24" font-size="12" fill="currentColor" font-weight="600">두 번째 카메라</text>
   <text x="404" y="24" font-size="12" fill="currentColor" font-weight="600">오차 셋, 축척대로</text>
@@ -810,11 +810,7 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
   <text x="16" y="460" font-size="11" fill="currentColor" fill-opacity="0.9">2.30 px 이동은 이미지 평면 위의 편향이지 잡음이 아니다. 프레임을 평균해도 줄지 않는다.</text>
 </svg>
 
-**왼쪽 — $XZ$ 평면에서의 투영.** 원점에 광학 중심 $O$, $+Z$ 를 따라 광축, $Z = f$ 에 이미지 평면. 랜드마크 $L$ 은 $(X, Z) = (0.5, 2.0)$ 이고 $L$ 에서 $O$ 로 가는 광선이 이미지 평면을 지난다. $u - c_x = f_x X / Z$ 를 주는 닮은꼴 삼각형을 표시한다. 그것이 유도 자체이므로 그림이 둘 다 보여야 한다.
-
-**가운데 — 두 번째 카메라.** $X = +0.12$ 에 동일한 중심, 같은 $L$ 로 가는 자기 광선. 두 상점 $470$ 과 $434$, 그리고 그 사이의 시차 $36$ px를 적는다. 그다음 $Z = 8$ m의 점에 대해 *같은* 광선 쌍을 그려 거의 평행함을 보인다. 시차는 $9$ px이고, 두 광선 사이의 각도가 깊이 정확도의 실체다.
-
-**오른쪽 — 같은 축 위의 오차 막대 셋, 축척대로.** (i) $Z = 2$ m에서 시차 $\pm 1$ px 오차, 곧 $\pm 0.056$ m. (ii) $Z = 8$ m에서의 같은 $\pm 1$ px, 곧 $\pm 0.89$ m — 열여섯 배 길고, 열여섯 배 길게 그려야 한다. (iii) $L$ 에서 왜곡을 무시할 때 치르는 $2.30$ px. 이것은 깊이 축이 아니라 이미지 평면 위에 그린다. 종류가 다른 오차, 잡음이 아니라 편향이기 때문이다.
+손목 리그와 $(X,Z)=(0.5,\,2.0)$ m의 랜드마크 $L$ 이다. 왼쪽은 $XZ$ 평면의 핀홀 투영으로 닮은꼴 삼각형이 $150/600=0.5/2.0$, 곧 $u=470$ px를 주고, 가운데에서는 옆으로 $0.12$ m 떨어진 두 번째 카메라가 $L$ 을 $u=434$ 에서 보아 시차가 $36$ px인 반면 $8$ m의 점은 거의 평행한 광선으로 $9$ px만 준다. 오른쪽은 같은 축척으로 그린 오차 셋이다: $\pm1$ px 시차 오차는 깊이로 $2$ m에서 $\pm0.056$ m, $8$ m에서 $\pm0.89$ m이고 깊이 오차가 $Z^2$ 로 자라므로 열여섯 배 길며, $L$ 에서의 $2.30$ px 왜곡 이동은 잡음이 아니라 편향으로 이미지 평면 위에 놓인다.
 
 ### 대상으로 한 번 끝까지: 표에서 픽셀로, 그리고 되돌아
 
@@ -1234,12 +1230,20 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 
 Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5**([[02-foundations/lab-plants|0.6]]), 그리고 손-눈 오프셋 $d_{ct}=4\,\mathrm{cm}$. 시뮬레이터 없음. 위의 계산 예제는 리그를 랜드마크 $L$, $Z = 2.0$ m에서 돌렸다. 이 과제는 그것을 $L' = (0.5,\ 0.2,\ 4.0)$ m로 옮기고 어떤 오차가 자라고 어떤 오차가 줄고 어떤 오차가 그대로인지 묻는다. 그것이 변형이다.
 
-1. **그리기.** 두 카메라, $L'$ 로 가는 두 광선, 두 상점과 그 사이의 시차. 그 옆에 같은 축척으로 $Z = 4$ m에서의 $\pm1$ px 깊이 오차 막대와 과제가 그릴 그림에 있던 $Z = 2$ m의 것을 함께. 이미지 평면 위에는 $L'$ 에서의 왜곡 변위를 짧은 선분으로 더한다. 오차 셋, 서로 다른 축척 법칙 셋 — 그림이 셋을 달라 보이게 해야 한다.
+1. **그리기.** 두 카메라, $L'$ 로 가는 두 광선, 두 상점과 그 사이의 시차. 그 옆에 같은 축척으로 $Z = 4$ m에서의 $\pm1$ px 깊이 오차 막대와 위의 그림에 있던 $Z = 2$ m의 것을 함께. 이미지 평면 위에는 $L'$ 에서의 왜곡 변위를 짧은 선분으로 더한다. 오차 셋, 서로 다른 축척 법칙 셋 — 그림이 셋을 달라 보이게 해야 한다.
 2. **유도.** (a) $L'$ 을 두 카메라에 투영하라: $u_1, v_1, u_2$, 시차 $d'$, 그리고 확인 $Z = f b / d'$. (b) $d' \pm 1$ px의 깊이 오차를 정확히 구하고 1차 추정 $Z^2/(fb)$ 와 비교한 뒤, $+1$ 과 $-1$ 의 정확한 오차가 왜 같지 않은지 말하라. (c) $L'$ 에서의 왜곡 변위: $r$, 반경 계수, 픽셀 변위를 구하고, $Z = 2$ 에서의 $2.30$ px과의 비를 주도항으로 설명하라. (d) P5의 스칼라 융합: $K$, 융합한 카메라–벽 거리, $P^+$, 그리고 $d_{ct}$ 를 뺀 말단–벽 값.
 3. **해석.** (a) $AX = XB$ 에서 $A$, $B$, $X$ 중 무엇이 $4\,\mathrm{cm}$ 를 담고 있으며, $0.37$ px 보정 잔차가 그것을 보증하지 못하는 이유는? (b) 반복 패널 위 $(440, 300)$ 의 매칭은 epipolar 잔차가 정확히 0이다. 2번의 어느 숫자 하나가 그것을 잡았을지 말하고, 일반적으로 잡으려면 리그에 무엇을 더해야 하는지 말하라.
 
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, $XZ$ 평면에서의 투영.** 원점에 광학 중심 $O$, $+Z$ 를 따라 광축, $Z = f$ 에 이미지 평면, 랜드마크, 그리고 랜드마크에서 $O$ 를 지나 이미지 평면을 가로지르는 광선.
+> - **$u - c_x = f_x X / Z$ 를 주는 닮은꼴 삼각형을 표시한다.** 그것이 유도 자체이므로 그림이 둘 다 보여야 한다.
+> - **가운데, 두 번째 카메라.** $X = +0.12$ 에 동일한 중심과 같은 점으로 가는 자기 광선. 두 상점과 그 사이의 시차를 적는다.
+> - **더 먼 점에 대해 같은 광선 쌍을 그려 거의 평행함을 보인다.** 두 광선 사이의 각도가 깊이 정확도의 실체다.
+> - **오른쪽, 깊이 오차 막대는 한 축과 한 축척을 쓴다.** $\pm1$ px 시차 오차는 $Z^2$ 로 자라고 막대도 그렇게 그려야 한다 — 위의 그림에서는 $2$ m의 $\pm0.056$ m와 $8$ m의 $\pm0.89$ m, 열여섯 배 길다.
+> - **왜곡 이동은 깊이 축이 아니라 이미지 평면 위에 그린다.** 종류가 다른 오차, 잡음이 아니라 편향이기 때문이다.
+
 > [!tip]- 정답 · Solutions
-> 1. $L'$ 로 가는 두 광선은 $Z = 2$ 의 짝보다 눈에 띄게 평행에 가깝다. $Z=4$ 의 오차 막대는 $Z=2$ 것의 약 네 배로, 왜곡 선분은 과제가 그릴 그림의 것보다 약 여덟 배 *짧게* 그려야 한다.
+> 1. $L'$ 로 가는 두 광선은 $Z = 2$ 의 짝보다 눈에 띄게 평행에 가깝다. $Z=4$ 의 오차 막대는 $Z=2$ 것의 약 네 배로, 왜곡 선분은 맨 위 그림의 것보다 약 여덟 배 *짧게* 그려야 한다.
 > 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; 카메라 2에서 점은 $(0.38, 0.2, 4.0)$ 이므로 $u_2 = 377$, $d' = 18$ px이고 $Z = 600(0.12)/18 = 4.0$ m다. (b) $d' = 17 \Rightarrow Z = 4.235$ m($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m($-0.211$). 1차 추정은 $Z^2/(fb) = 16/72 = 0.222$ m로 둘 사이에 있고, 둘이 같지 않은 것은 $Z = fb/d$ 가 $d$ 에 대해 볼록하기 때문이다 — 시차를 잃는 쪽이 얻는 쪽보다 비싸므로, 픽셀 오차가 대칭이어도 깊이 오차 분포는 카메라에서 *멀어지는* 쪽으로 기운다. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; 계수는 $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$ 이라 점은 $(394.729,\ 269.892)$ 에 맺히고 변위는 $0.291$ px다. $Z = 2$ 에서의 $2.30$ px보다 $7.9$ 배 작은데, 픽셀 단위 주도 반경 변위가 $f\lvert k_1\rvert r^3$ 이고 $r$ 이 절반이 되었기 때문이다: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, 융합 거리 $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, 말단–벽 $11.6 - 4 = 7.6\,\mathrm{cm}$.
 > 3. (a) $X$ 가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$ 는 그 평행 이동 성분 하나다. $A$ 는 두 로봇 자세 사이의 그리퍼 운동, $B$ 는 같은 두 자세 사이의 카메라 운동이다. $0.37$ px 잔차는 타깃 시점들 위의 *훈련* 잔차이고, §5는 바로 그 잔차를 가진 적합이 축에서 $0.5$ m 벗어난 점을 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는 것을 보인다 — 카메라–그리퍼 평행 이동도 같은 시점들에서 추정되므로 그 외삽 오차를 물려받는다. 홀드아웃 자세와 알려진 길이 측정만이 그것을 검사한다. (b) **삼각측량한 깊이.** 틀린 매칭은 시차가 $36$ 이 아니라 $30$ 이므로 $Z = 2.00$ m가 아니라 $2.40$ m로 삼각측량된다 — epipolar 잔차가 0이라고 보고하는 $40$ cm 오차다. $F$ 는 매칭을 선 위로 구속할 뿐 그 선을 *따라간* 위치에 대해서는 아무 말도 하지 않기 때문이다. 일반적으로는 epipolar 선을 따르지 않는 독립 제약을 더한다: 첫 짝의 epipolar 선과 각을 이루는 세 번째 시점, 직접 거리 측정(P5 센서나 라이다), 또는 똑같은 패널 둘을 구별할 만큼 강한 외양 검사 — 그런데 똑같은 패널에서는 그것이 질감이 아니라 맥락을 쓴다는 뜻이다.
 

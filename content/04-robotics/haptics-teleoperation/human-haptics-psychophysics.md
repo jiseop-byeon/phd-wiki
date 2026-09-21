@@ -34,7 +34,7 @@ Every number on this page comes from one frozen experiment, stated once here and
 | 5.60 | 33 | 40 | 0.825 |
 | 5.90 | 37 | 40 | 0.925 |
 
-Here $p$ is the proportion of the 40 trials at that level on which the participant called the *comparison* interval stronger. §5 says what to draw, §6 turns the table into a threshold, a JND, and a Weber fraction, and the problem set repeats the whole exercise at a lower reference force.
+Here $p$ is the proportion of the 40 trials at that level on which the participant called the *comparison* interval stronger. §5 shows it as a picture, §6 turns the table into a threshold, a JND, and a Weber fraction, and the problem set repeats the whole exercise at a lower reference force.
 
 ### 1. Touch is an active sensing loop
 
@@ -96,9 +96,7 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 
 **Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
 
-### 5. Homework diagram
-
-One figure, two panels. The problem set asks for the same figure drawn from a different table, so draw it once here properly.
+### 5. The picture
 
 <svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="Panel A traces the stimulus from commanded force through the P3 handle and the hand to the response, with the 1 s, 0.5 s, 1 s trial timeline and the decision criterion living only in the response, and panel B joins the six frozen proportions with straight segments and drops the 0.25, 0.50 and 0.75 crossings to x25 = 4.65, PSE = 5.0429 and x75 = 5.4714 N, with a 2 JND brace of 0.8214 N and the reference 5.00 N marked 43 mN left of the PSE.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · where the stimulus comes from</text>
@@ -173,9 +171,7 @@ One figure, two panels. The problem set asks for the same figure drawn from a di
   <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
 </svg>
 
-**Panel A — where the stimulus comes from.** A left-to-right chain of four boxes: `commanded force F_c` $\to$ `P3 handle: m = 0.04 kg, b = 0.8 N·s/m` $\to$ `hand: k_h = 400 N/m, b_h = 8 N·s/m` $\to$ `response: which interval pushed harder?`. Under the chain draw the trial as a timeline bar: 1 s at $F_{\text{ref}}$, a 0.5 s gap, 1 s at $F_c$, then the response. Mark $+x$ as the direction the handle pushes. Then write beside the last box the one quantity the chain does not carry: the participant's decision criterion, which exists only inside that box and is why a threshold needs a stated $p$.
-
-**Panel B — the curve.** Comparison force on the horizontal axis, 4.3 to 6.0 N; proportion judged stronger on the vertical, 0 to 1. Plot the six frozen points and join consecutive points with *straight segments*, not a smooth S-curve, because those segments are exactly the linear interpolation of §6 and the figure must show that no psychometric function has been fitted. Draw horizontal lines at $p=0.25$, $0.50$, $0.75$, drop a vertical from each crossing to the axis, and label the three feet $x_{25}$, PSE, $x_{75}$. Brace $x_{25}$ to $x_{75}$ and label the brace $2\,\mathrm{JND}$. Finally mark $F_{\text{ref}}=5.00\,\mathrm{N}$ with a differently styled tick, so that the gap between the reference and the PSE — the bias of Step 7 — is visible rather than asserted.
+Panel A traces the stimulus from the commanded force through the P3 handle ($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$) and the hand to the response, over a trial of 1 s at the reference, a 0.5 s gap and 1 s at the comparison; the decision criterion lives only in the response box, which is why a threshold needs a stated $p$. Panel B joins the six frozen proportions with straight segments, §6's linear interpolation with nothing fitted, and drops the $0.25$, $0.50$ and $0.75$ crossings to $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$ and $x_{75} = 5.4714\,\mathrm{N}$. The brace between the outer two is $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$, and the reference $F_{\text{ref}} = 5.00\,\mathrm{N}$ sits $43\,\mathrm{mN}$ left of the PSE, the bias of §6 Step 7.
 
 ### 6. Worked case: threshold, JND, and Weber fraction
 
@@ -248,9 +244,18 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 |---|---:|---:|---:|---:|---:|---:|
 | judged stronger (of 40) | 4 | 10 | 18 | 27 | 34 | 38 |
 
-1. **Draw.** Draw §5's two panels for this table, with the horizontal axis now 1.6 to 2.5 N. Mark $F_{\text{ref}}=2.00\,\mathrm{N}$, the three criterion lines, and the $2\,\mathrm{JND}$ brace. In panel A, change only what actually changed.
+1. **Draw.** The two panels of §5's picture for this table, with the horizontal axis now 1.6 to 2.5 N. Mark $F_{\text{ref}}=2.00\,\mathrm{N}$, the three criterion lines, and the $2\,\mathrm{JND}$ brace. In panel A, change only what actually changed.
 2. **Derive.** (a) $x_{25}$, the PSE and $x_{75}$ by §6's rule. One of the three needs no interpolation — say which and why. (b) The JND and the Weber fraction $k$. (c) The bias $\mathrm{PSE}-F_{\text{ref}}$. (d) The JND in P3 encoder counts of wall force, and as a penetration in millimetres.
 3. **Interpret.** (a) Compare $k$ with the $8.14\%$ of §6: the absolute JND fell, the fraction rose. Which half of Weber's law survived, and which did not? (b) A device reflects $5.2\,\mathrm{N}$ versus $5.0\,\mathrm{N}$ and the paper claims every participant notices. Using §6's numbers, what exactly is wrong? (c) Another paper says "users detected the 250 Hz vibration, therefore the cue improved insertion". Which arrows of the causal chain were skipped, and what would you measure at each? (d) Two sensors, $\sigma_v=2\,\mathrm{mm}$ and $\sigma_h=4\,\mathrm{mm}$, are fused by precision weighting. Write $\hat x$, then say what "vision dominates, so haptic noise does not matter" dropped from the model.
+
+> [!note]- How to draw it · 그리는 법
+> - Panel A: a left-to-right chain of four boxes, commanded force, P3 handle with $m$ and $b$, hand with $k_h$ and $b_h$, response, with $+x$ marked as the direction the handle pushes; under it, the trial as a timeline of 1 s at $F_{\text{ref}}$, a 0.5 s gap, 1 s at $F_c$, then the response.
+> - Beside the response box, write the one quantity the chain does not carry: the participant's decision criterion. It exists only inside that box, which is why a threshold needs a stated $p$.
+> - Panel B: comparison force across, proportion judged stronger up from $0$ to $1$, each level's proportion being its count out of $40$.
+> - Join consecutive points with straight segments, never a smooth S-curve: the segments are exactly §6's linear interpolation, and the figure must show that no psychometric function has been fitted.
+> - Draw horizontal lines at $p = 0.25$, $0.50$ and $0.75$, drop a vertical from each crossing to the axis, and label the three feet $x_{25}$, PSE and $x_{75}$.
+> - Brace $x_{25}$ to $x_{75}$ and label the brace $2\,\mathrm{JND}$: the JND is half that span, not a distance from the PSE.
+> - Mark $F_{\text{ref}}$ with a differently styled tick, so that the gap between the reference and the PSE, the bias of §6 Step 7, is visible rather than asserted.
 
 > [!tip]- Solutions
 > 1. Panel A is unchanged except for the two force labels: the chain, the handle constants and the timeline are the same object. Panel B has six new points at $p=0.100,0.250,0.450,0.675,0.850,0.950$; the $p=0.25$ line meets the data exactly at a tested level, so that foot lands on a plotted point rather than inside a segment.
@@ -280,7 +285,7 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 | 5.60 | 33 | 40 | 0.825 |
 | 5.90 | 37 | 40 | 0.925 |
 
-$p$는 그 수준의 40시행 중 참가자가 *비교* 구간을 더 세다고 답한 비율이다. §5가 무엇을 그릴지 말하고, §6이 이 표를 임계값·JND·Weber 분수로 바꾸며, 과제는 더 낮은 기준 힘에서 같은 일을 다시 한다.
+$p$는 그 수준의 40시행 중 참가자가 *비교* 구간을 더 세다고 답한 비율이다. §5가 이것을 그림으로 보여 주고, §6이 이 표를 임계값·JND·Weber 분수로 바꾸며, 과제는 더 낮은 기준 힘에서 같은 일을 다시 한다.
 
 ### 1. 촉각은 능동 센싱 루프다
 
@@ -342,9 +347,7 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
 
 **계산해 읽기: 과제가 묻는 융합.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$이면 가중이 $4:1$이므로 $\hat x=\tfrac45x_v+\tfrac15x_h$이지 시각 단독이 아니다. $5\,\mathrm{N}$ 부근 힘 JND $8\%$는 *모집단* 증분 $0.4\,\mathrm{N}$이고, $5.2$ 대 $5.0$은 JND의 절반이라 "모든 참가자가 알아챈다"를 허락하지 않는다. $250\,\mathrm{Hz}$ 진동을 검출했다는 것은 삽입 성공이 아니다. 사슬은 검출 가능성 $\to$ 행동 $\to$ 결과다.
 
-### 5. 과제가 그릴 그림
-
-그림 하나, 패널 둘. 과제는 다른 표로 같은 그림을 그리라고 하므로, 여기서 한 번 제대로 그려 둔다.
+### 5. 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 명령 힘에서 P3 핸들과 손을 거쳐 응답으로 가는 자극과 1초, 0.5초, 1초의 시행 타임라인, 응답 안에만 있는 결정 기준을 보이고, 패널 B는 얼어붙은 여섯 비율을 직선 구간으로 이어 0.25, 0.50, 0.75의 교차점을 x25 = 4.65, PSE = 5.0429, x75 = 5.4714 N으로 내리고 0.8214 N의 2 JND 괄호와 PSE보다 43 mN 왼쪽의 기준 힘 5.00 N을 표시한다.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · 자극이 어디서 오는가</text>
@@ -419,9 +422,7 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
   <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
 </svg>
 
-**패널 A — 자극이 어디서 오는가.** 왼쪽에서 오른쪽으로 상자 넷의 사슬: `명령 힘 F_c` $\to$ `P3 핸들: m = 0.04 kg, b = 0.8 N·s/m` $\to$ `손: k_h = 400 N/m, b_h = 8 N·s/m` $\to$ `응답: 어느 구간이 더 세게 밀었는가?`. 사슬 아래에 시행을 타임라인 막대로 그린다. $F_{\text{ref}}$로 1초, 0.5초 공백, $F_c$로 1초, 그다음 응답. 핸들이 미는 방향을 $+x$로 표시한다. 그리고 마지막 상자 옆에, 사슬이 나르지 *않는* 양 하나를 적는다. 참가자의 결정 기준이다. 그 상자 안에만 있고, 임계값에 $p$를 명시해야 하는 이유가 바로 그것이다.
-
-**패널 B — 곡선.** 가로축은 비교 힘 4.3에서 6.0 N, 세로축은 더 세다고 판정한 비율 0에서 1. 얼어붙은 여섯 점을 찍고 이웃한 점끼리 매끈한 S자가 아니라 *직선 구간*으로 잇는다. 그 직선들이 정확히 §6의 선형 보간이고, 심리측정 함수를 적합한 적이 없다는 것을 그림이 보여야 하기 때문이다. $p=0.25$, $0.50$, $0.75$에 수평선을 긋고, 각 교차점에서 축으로 수직선을 내리고, 세 발을 $x_{25}$, PSE, $x_{75}$로 이름 붙인다. $x_{25}$에서 $x_{75}$까지 괄호를 치고 $2\,\mathrm{JND}$라고 적는다. 마지막으로 $F_{\text{ref}}=5.00\,\mathrm{N}$을 다른 모양의 눈금으로 표시해서, 기준과 PSE 사이의 간격 — Step 7의 편향 — 이 주장이 아니라 눈에 보이게 한다.
+패널 A는 자극을 명령 힘에서 P3 핸들($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$)과 손을 거쳐 응답까지 따라가고(한 시행은 기준 힘 1초, 공백 0.5초, 비교 힘 1초), 결정 기준은 응답 상자 안에만 있으므로 임계값에는 명시한 $p$가 필요하다. 패널 B는 얼어붙은 비율 여섯을 직선 구간으로 잇고(§6의 선형 보간이며 아무것도 적합하지 않았다), $0.25$, $0.50$, $0.75$와 만나는 점을 축으로 내려 $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$, $x_{75} = 5.4714\,\mathrm{N}$를 얻는다. 바깥 둘 사이의 괄호가 $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$이고, 기준 $F_{\text{ref}} = 5.00\,\mathrm{N}$은 PSE보다 $43\,\mathrm{mN}$ 왼쪽, 곧 §6 Step 7의 편향만큼 떨어져 있다.
 
 ### 6. 대상으로 한 번 끝까지: 임계값, JND, Weber 분수
 
@@ -494,9 +495,18 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**와 이 페이지를 쓴다. 
 |---|---:|---:|---:|---:|---:|---:|
 | 더 세다고 판정 (40 중) | 4 | 10 | 18 | 27 | 34 | 38 |
 
-1. **그려라.** 이 표로 §5의 두 패널을 그려라. 가로축은 이제 1.6에서 2.5 N이다. $F_{\text{ref}}=2.00\,\mathrm{N}$, 기준선 셋, $2\,\mathrm{JND}$ 괄호를 표시하라. 패널 A에서는 실제로 바뀐 것만 바꿔라.
+1. **그려라.** 이 표로 §5 그림의 두 패널을 그려라. 가로축은 이제 1.6에서 2.5 N이다. $F_{\text{ref}}=2.00\,\mathrm{N}$, 기준선 셋, $2\,\mathrm{JND}$ 괄호를 표시하라. 패널 A에서는 실제로 바뀐 것만 바꿔라.
 2. **유도하라.** (a) §6의 규칙으로 $x_{25}$, PSE, $x_{75}$. 셋 중 하나는 보간이 필요 없다. 어느 것이고 왜인가. (b) JND와 Weber 분수 $k$. (c) 편향 $\mathrm{PSE}-F_{\text{ref}}$. (d) JND를 P3 엔코더 카운트 수의 벽 힘으로, 그리고 밀리미터 단위 침투로.
 3. **해석하라.** (a) $k$를 §6의 $8.14\%$와 비교하라. 절대 JND는 줄고 분수는 올랐다. Weber 법칙의 어느 절반이 살아남았고 어느 절반이 죽었는가? (b) 어떤 장치가 $5.2\,\mathrm{N}$ 대 $5.0\,\mathrm{N}$을 반사하고 논문이 모든 참가자가 알아챈다고 주장한다. §6의 숫자로, 정확히 무엇이 틀렸는가? (c) 다른 논문이 "사용자가 250 Hz 진동을 검출했으므로 그 cue가 삽입을 개선했다"고 한다. 인과 사슬의 어느 화살표를 건너뛰었고, 각각에서 무엇을 재겠는가? (d) 센서 둘, $\sigma_v=2\,\mathrm{mm}$와 $\sigma_h=4\,\mathrm{mm}$를 정밀도 가중으로 융합한다. $\hat x$를 쓰고, "시각이 우세하므로 햅틱 잡음은 상관없다"가 모델에서 무엇을 떨어뜨렸는지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 패널 A: 왼쪽에서 오른쪽으로 상자 넷의 사슬(명령 힘, $m$과 $b$를 적은 P3 핸들, $k_h$와 $b_h$를 적은 손, 응답)을 그리고, 핸들이 미는 방향을 $+x$로 표시한다. 그 아래에 시행을 타임라인으로 그린다: $F_{\text{ref}}$로 1초, 0.5초 공백, $F_c$로 1초, 그다음 응답.
+> - 응답 상자 옆에, 사슬이 나르지 않는 양 하나를 적는다. 참가자의 결정 기준이다. 그 상자 안에만 있고, 임계값에 $p$를 명시해야 하는 이유가 바로 그것이다.
+> - 패널 B: 가로축은 비교 힘, 세로축은 0에서 1까지 더 세다고 판정한 비율이다. 각 수준의 비율은 40 중 판정 수로 계산한다.
+> - 이웃한 점끼리 매끈한 S자가 아니라 직선 구간으로 잇는다. 그 직선들이 정확히 §6의 선형 보간이고, 심리측정 함수를 적합한 적이 없다는 것을 그림이 보여야 한다.
+> - $p=0.25$, $0.50$, $0.75$에 수평선을 긋고, 각 교차점에서 축으로 수직선을 내려 세 발을 $x_{25}$, PSE, $x_{75}$로 이름 붙인다.
+> - $x_{25}$에서 $x_{75}$까지 괄호를 치고 $2\,\mathrm{JND}$라고 적는다. JND는 그 폭의 절반이지, PSE에서 잰 거리가 아니다.
+> - $F_{\text{ref}}$는 다른 모양의 눈금으로 표시해서, 기준과 PSE 사이의 간격(§6 Step 7의 편향)이 주장이 아니라 눈에 보이게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 패널 A는 힘 라벨 둘 말고는 그대로다. 사슬, 핸들 상수, 타임라인은 같은 대상이다. 패널 B에는 $p=0.100,0.250,0.450,0.675,0.850,0.950$의 새 점 여섯이 들어간다. $p=0.25$ 선이 시험한 수준에서 데이터를 정확히 만나므로, 그 발은 구간 안이 아니라 찍은 점 위에 떨어진다.

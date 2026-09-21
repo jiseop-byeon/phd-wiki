@@ -25,9 +25,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 > [!note] First pass · 처음이라면
 > Read §1 (rotation order, with the coordinates), §3 (poses compose by matrix product), §5 (where this shows up). §2 is a table to consult, and §4 is the on-ramp to Modern Robotics — read it when you get there.
 
-### Homework diagram · 과제가 그릴 그림
-
-The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, drawn as two frames rather than as an arm. The problem set asks for this drawing.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 490" style="max-width:100%;height:auto" role="img" aria-label="plant P2 at theta = (0°, 90°) drawn as two frames: base axes at the origin, tool axes at the tip (1, 1) turned 90°, the position arrow p, a point 0.1 m along the tool x-axis and the tool x-direction, the matrices R and T read off the drawing, and a margin box with the base origin seen from the tool">
   <defs><marker id="arSe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
@@ -125,13 +123,7 @@ The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at 
   <text x="268.0" y="466.0" fill="currentColor" opacity="0.9">the bottom row is not decoration (§3)</text>
 </svg>
 
-**Two frames, axes first.** Draw the base frame at the origin: $x_s$ along $+x$, $y_s$ along $+y$, $z_s$ out of the page, drawn as a circled dot so the page has a right-handed triad and not two arrows. Sketch the arm faintly behind it — elbow $(1,0)$, tip $(1,1)$ — but draw it faintly, because this page's object is the frames and the links are only scaffolding. At the tip, draw the second frame. The forearm is vertical, so the tool's own $x$-axis points along $+y_s$ (straight up the page) and its $y$-axis along $-x_s$ (to the left); $z$ stays out of the page. Label the tip axes $x_b$, $y_b$, $z_b$ and *do not* draw them parallel to the base axes — the entire content of $R$ is that they are not.
-
-**The matrix, read off the drawing rather than computed.** Beside the figure write a $3\times3$ box and fill each column by reading the corresponding tip axis off the page in base coordinates: $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. That is $R_z(90^\circ)$, obtained without a trigonometric identity. Under the box write the two membership tests of §1 as checks you can do on those three columns: they are unit length and mutually perpendicular ($R^\top R=I$), and $x_b\times y_b=z_b$ rather than $-z_b$ ($\det R=+1$). Then draw the arrow from base origin to tip origin and label it $p=(1,1,0)$, and assemble $T$ with $R$ in the corner, $p$ in the last column, and the bottom row $(0,0,0,1)$ written in — that row is not decoration, and §3 says what goes wrong without it.
-
-**One point and one direction, to separate them.** Mark a small dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis. In tool coordinates it is $(0.1,0,0)$; on the page it sits at $(1,\ 1.1,\ 0)$ in base coordinates, so draw it above the tip, not to the right of it. Beside it draw the tool's $x$-*direction* as a short arrow and label it $(0,1,0)$ in base coordinates. Write the difference next to the two marks: the point carried the fourth entry $1$ and so was rotated *and* shifted; the direction carried $0$ and was only rotated. Nearly every frame bug in the robotics track is this distinction.
-
-**The inverse, drawn as the same picture read backwards.** In a margin box, draw the base origin as seen from the tool frame: it lies at $(-1,\ 1,\ 0)$ in tool coordinates, which is $-R^\top p$. Draw it at the correct place relative to the tool axes — one unit against $x_b$ (down the page), one unit along $y_b$ (to the left) — and check on the page that its distance from the tip is still $\sqrt2$, since a rigid motion cannot change a distance. The problem set asks for $T$; this box is how you check the $T$ you wrote without multiplying anything.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, drawn as two frames rather than an arm: the tool frame sits at the tip $p=(1,1,0)$ with $x_b$ up the page and $y_b$ to the left, so its axes, read off in base coordinates, are the columns of $R=R_z(90^\circ)$, and $T$ holds $R$ in the corner, $p$ in the last column and $(0,0,0,1)$ below. A point $0.1\,\mathrm{m}$ out along the tool's $x$-axis lands at base $(1,\ 1.1,\ 0)$, rotated and shifted, while the tool's $x$-direction becomes $(0,1,0)$, rotated only. The margin box reads the same picture backwards: the base origin sits at $(-1,\ 1,\ 0)=-R^\top p$ in tool coordinates, still $\sqrt2$ from the tip.
 
 ### 1. Rotations are matrices with rules
 
@@ -390,9 +382,19 @@ The linear part of a twist also depends on the reference frame and its origin. T
 
 Tier B. **P2** at $\theta=(0^\circ,90^\circ)$. This page §3–4. Planar, so $R=R_z(\theta_1+\theta_2)$.
 
-1. **Draw.** Base frame at the origin and tip frame at $(1,1)$. The second link is vertical: tip $x$-axis along $+y$. Label both origins.
+1. **Draw.** The picture above, by hand: base frame at the origin and tip frame at $(1,1)$. The second link is vertical: tip $x$-axis along $+y$. Label both origins.
 2. **Derive.** Write $T_{\mathrm{base}\leftarrow\mathrm{tip}}$ as a $4\times 4$ homogeneous matrix. Rotation of the second link is $90^\circ$ about $z$; translation is the tip $(1,1,0)$.
 3. **Interpret.** $\mathrm{Ad}_T$ rewrites one twist in another frame. $J$ maps $\dot\theta$ to a twist at this pose. Same matrix? What would $\mathrm{Ad}_T$ do to a column of $J$ if you changed the velocity frame?
+
+> [!note]- How to draw it · 그리는 법
+> - The base frame at the origin as a right-handed triad: $x_s$ along $+x$, $y_s$ along $+y$, and $z_s$ out of the page drawn as a circled dot, so the page carries three axes and not two arrows.
+> - The arm only faintly, elbow $(1,0)$ and tip $(1,1)$: the object is the frames, and the links are scaffolding.
+> - The tip frame, with the forearm vertical: $x_b$ along $+y_s$ (up the page), $y_b$ along $-x_s$ (to the left), $z_b$ out of the page. Tip axes drawn parallel to the base axes have lost the entire content of $R$.
+> - For item 2, $R$ read off the drawing rather than computed: each column is one tip axis in base coordinates, $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$, which is $R_z(90^\circ)$ without a trigonometric identity.
+> - Under $R$, the two membership tests of §1 as checks on those columns: unit length and mutually perpendicular ($R^\top R=I$), and $x_b\times y_b=z_b$ rather than $-z_b$ ($\det R=+1$).
+> - The arrow from base origin to tip origin labelled $p=(1,1,0)$, and $T$ with $R$ in the corner, $p$ in the last column and the bottom row $(0,0,0,1)$ written in: that row is not decoration (§3).
+> - A dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis, at base $(1,\ 1.1,\ 0)$, so above the tip and not to its right, beside the tool's $x$-*direction* as a short arrow labelled $(0,1,0)$. The point carries fourth entry $1$ and is rotated *and* shifted; the direction carries $0$ and is only rotated. Nearly every frame bug in the robotics track is this distinction.
+> - The inverse in a margin box: the base origin seen from the tool frame, $(-1,\ 1,\ 0)=-R^\top p$, one unit against $x_b$ and one along $y_b$, still $\sqrt2$ from the tip because a rigid motion cannot change a distance. It checks item 2's $T$ without multiplying anything.
 
 > [!tip]- Solutions
 > 1. Base at $(0,0)$; elbow $(1,0)$; tip $(1,1)$ with $x_{\mathrm{tip}}$ up and $y_{\mathrm{tip}}$ left.
@@ -416,9 +418,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 > [!note] 처음이라면 · First pass
 > 먼저 §1(회전 순서, 좌표까지), §3(자세는 행렬곱으로 합성된다), §5(어디에 나타나는가). §2는 찾아보는 표이고, §4는 Modern Robotics로 가는 진입로다 — 거기 도착할 때 읽어라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 $\theta=(0^\circ,90^\circ)$에서 본 것이고, 팔이 아니라 프레임 둘로 그린다. 과제가 이 그림을 요구한다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 490" style="max-width:100%;height:auto" role="img" aria-label="θ = (0°, 90°)의 장치 P2를 프레임 둘로 그린 그림: 원점의 베이스 축, 90° 돌아간 말단 (1, 1)의 도구 축, 위치 화살표 p, 도구 x축으로 0.1 m 나간 점과 도구 x 방향, 그림에서 읽은 행렬 R과 T, 도구에서 본 베이스 원점을 그린 여백 상자">
   <defs><marker id="arSek" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
@@ -516,13 +516,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   <text x="268.0" y="466.0" fill="currentColor" opacity="0.9">아래 행은 장식이 아니다 (§3)</text>
 </svg>
 
-**프레임 둘, 축부터.** 원점에 베이스 프레임을 그린다. $x_s$는 $+x$, $y_s$는 $+y$, $z_s$는 지면 밖으로 나오므로 동그라미 안의 점으로 그린다. 화살표 둘이 아니라 오른손 삼각대가 지면 위에 있어야 하기 때문이다. 팔은 뒤에 흐리게 스케치한다 — 엘보 $(1,0)$, 말단 $(1,1)$ — 흐리게 그리는 이유는 이 페이지의 대상이 프레임이고 링크는 받침대일 뿐이기 때문이다. 말단에 둘째 프레임을 그린다. 전완이 수직이므로 도구 자신의 $x$축은 $+y_s$(지면 위쪽)를, $y$축은 $-x_s$(왼쪽)를 향하고 $z$는 지면 밖 그대로다. 말단 축에 $x_b$, $y_b$, $z_b$라 이름 붙이고 베이스 축과 평행하게 그리지 *않는다*. $R$의 내용 전부가 그 둘이 평행하지 않다는 것이다.
-
-**행렬, 계산이 아니라 그림에서 읽어 내기.** 그림 옆에 $3\times3$ 상자를 그리고, 각 열을 해당 말단 축을 베이스 좌표로 읽어 채운다. $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. 삼각함수 항등식 없이 얻은 $R_z(90^\circ)$다. 상자 아래에는 §1의 소속 검사 둘을, 그 세 열로 직접 할 수 있는 확인으로 적는다. 길이가 1이고 서로 수직이며($R^\top R=I$), $x_b\times y_b$가 $-z_b$가 아니라 $z_b$다($\det R=+1$). 그다음 베이스 원점에서 말단 원점으로 화살표를 긋고 $p=(1,1,0)$이라 쓴 뒤, 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적어 $T$를 조립한다. 그 아래 행은 장식이 아니고, 없으면 무엇이 깨지는지는 §3이 말한다.
-
-**점 하나와 방향 하나, 둘을 가르기 위해.** *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 자리에 작은 점을 찍는다. 도구 좌표로는 $(0.1,0,0)$이고, 지면 위 베이스 좌표로는 $(1,\ 1.1,\ 0)$이므로 말단의 오른쪽이 아니라 위에 찍힌다. 그 옆에 도구의 $x$-*방향*을 짧은 화살표로 그리고 베이스 좌표 $(0,1,0)$이라 적는다. 두 표시 옆에 차이를 적는다. 점은 넷째 성분 $1$을 지녀 회전되고 *또* 평행이동했고, 방향은 $0$을 지녀 회전만 되었다. 로보틱스 트랙의 프레임 버그는 거의 전부 이 구분이다.
-
-**역행렬, 같은 그림을 거꾸로 읽은 것.** 여백 상자에 도구 프레임에서 본 베이스 원점을 그린다. 도구 좌표로 $(-1,\ 1,\ 0)$이고, 이것이 $-R^\top p$다. 도구 축에 대해 올바른 자리에 — $x_b$ 반대쪽으로 한 칸(지면 아래), $y_b$ 쪽으로 한 칸(왼쪽) — 찍고, 말단에서의 거리가 여전히 $\sqrt2$인지 지면 위에서 확인한다. 강체 운동은 거리를 바꿀 수 없기 때문이다. 과제가 요구하는 것은 $T$이고, 이 상자는 아무것도 곱하지 않고 그 $T$를 검산하는 방법이다.
+$\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab Plants]])를 팔이 아니라 프레임 둘로 그리면, 도구 프레임은 말단 $p=(1,1,0)$에서 $x_b$가 지면 위쪽, $y_b$가 왼쪽을 향하므로 그 축들을 베이스 좌표로 읽은 것이 곧 $R=R_z(90^\circ)$의 열이 되고, $T$는 구석에 $R$, 마지막 열에 $p$, 아래에 $(0,0,0,1)$을 담는다. 도구 $x$축을 따라 $0.1\,\mathrm{m}$ 나간 점은 회전되고 평행이동해 베이스 $(1,\ 1.1,\ 0)$에 놓이지만, 도구의 $x$-방향은 회전만 되어 $(0,1,0)$이 된다. 여백 상자는 같은 그림을 거꾸로 읽은 것으로, 베이스 원점은 도구 좌표로 $(-1,\ 1,\ 0)=-R^\top p$에 있고 말단에서 여전히 $\sqrt2$ 떨어져 있다.
 
 ### 1. 회전은 규칙 있는 행렬이다
 
@@ -774,9 +768,19 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 Tier B. **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §3–4. 평면이므로 $R=R_z(\theta_1+\theta_2)$.
 
-1. **그리기.** 원점의 베이스 프레임과 $(1,1)$의 말단 프레임. 둘째 링크는 수직: 말단 $x$축이 $+y$. 두 원점을 기입.
+1. **그리기.** 위의 그림을 손으로 다시 그린다. 원점의 베이스 프레임과 $(1,1)$의 말단 프레임. 둘째 링크는 수직: 말단 $x$축이 $+y$. 두 원점을 기입.
 2. **유도.** $T_{\mathrm{base}\leftarrow\mathrm{tip}}$을 $4\times 4$ 동차행렬로. 둘째 링크의 회전은 $z$ 둘레 $90^\circ$, 평행이동은 말단 $(1,1,0)$.
 3. **해석.** $\mathrm{Ad}_T$는 트위스트 하나를 다른 프레임으로 다시 쓴다. $J$는 이 자세에서 $\dot\theta$를 트위스트로 보낸다. 같은 행렬인가? 속도 프레임을 바꾸면 $\mathrm{Ad}_T$는 $J$의 한 열에 무엇을 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - 원점의 베이스 프레임을 오른손 삼각대로: $x_s$는 $+x$, $y_s$는 $+y$, $z_s$는 지면 밖으로 나오므로 동그라미 안의 점. 지면 위에 화살표 둘이 아니라 축 셋이 있어야 한다.
+> - 팔은 흐리게만, 엘보 $(1,0)$과 말단 $(1,1)$. 대상은 프레임이고 링크는 받침대일 뿐이다.
+> - 전완이 수직인 말단 프레임: $x_b$는 $+y_s$(지면 위쪽), $y_b$는 $-x_s$(왼쪽), $z_b$는 지면 밖. 말단 축을 베이스 축과 평행하게 그리면 $R$의 내용 전부를 잃는다.
+> - 2번을 위해 $R$을 계산이 아니라 그림에서 읽는다. 각 열이 말단 축 하나를 베이스 좌표로 쓴 것이다. $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$ — 삼각함수 항등식 없이 얻은 $R_z(90^\circ)$다.
+> - $R$ 아래에는 §1의 소속 검사 둘을 그 열들로 하는 확인으로 적는다. 길이가 1이고 서로 수직이며($R^\top R=I$), $x_b\times y_b$가 $-z_b$가 아니라 $z_b$다($\det R=+1$).
+> - 베이스 원점에서 말단 원점으로 가는 화살표 $p=(1,1,0)$, 그리고 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적은 $T$. 그 아래 행은 장식이 아니다(§3).
+> - *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 점은 베이스 $(1,\ 1.1,\ 0)$, 곧 말단의 오른쪽이 아니라 위에 찍히고, 그 옆에 도구의 $x$-*방향*을 짧은 화살표 $(0,1,0)$으로 그린다. 점은 넷째 성분 $1$을 지녀 회전되고 *또* 평행이동하며, 방향은 $0$을 지녀 회전만 된다. 로보틱스 트랙의 프레임 버그는 거의 전부 이 구분이다.
+> - 여백 상자의 역변환: 도구 프레임에서 본 베이스 원점 $(-1,\ 1,\ 0)=-R^\top p$, $x_b$ 반대쪽으로 한 칸, $y_b$ 쪽으로 한 칸. 강체 운동은 거리를 바꿀 수 없으므로 말단에서 여전히 $\sqrt2$다. 아무것도 곱하지 않고 2번의 $T$를 검산하는 방법이다.
 
 > [!tip]- 정답 · Solutions
 > 1. 베이스 $(0,0)$, 엘보 $(1,0)$, 말단 $(1,1)$. $x_{\mathrm{tip}}$은 위, $y_{\mathrm{tip}}$은 왼쪽.

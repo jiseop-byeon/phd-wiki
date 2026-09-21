@@ -48,9 +48,7 @@ Finally, the agent's open-vocabulary detector has already scored each map node a
 
 *Scope: this page teaches the two definitions this literature is written in — the ObjectNav success criterion and SPL — and how a grounding score and a map geometry combine into a stop decision. It does not teach how the frontier is chosen or the local controller drives ([[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]]), how the vision-language features are trained ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), or outdoor traversability ([[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]]).*
 
-### Homework diagram: G4, its legal stops, and one path
-
-The figure is the worked case: the television as the goal and episode 3's walk as the solid path.
+### The picture: G4, its legal stops, and one path
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="Map G4 for the instruction go to the television: a 4 by 4 grid with sofa, tv and plant cells shaded, walls A, B and C drawn on cell edges, legal stops (3,0) and (3,2) circled, (2,1) crossed, the shortest path dashed and episode 3's walk solid">
   <defs><marker id="arG4e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -125,11 +123,7 @@ The figure is the worked case: the television as the goal and episode 3's walk a
   <text x="12" y="339" font-size="11" fill="currentColor">only (3,0) can see it. The grounding g(tv) = 0.846 was right; the stop was not.</text>
 </svg>
 
-Draw the grid full size, 4×4, one square per cell, and label every cell $(c, r)$. Shade the three object cells and write their names in. Draw the three wall segments **A**, **B**, **C** as thick lines *on the edges between* cells, not inside cells — the whole geometry lesson is that a wall lives on an edge and an object lives in a cell.
-
-Then, for the goal object, mark every cell that is a **legal stop**: four-adjacent to the object cell with no wall segment on the shared edge. Circle those. Then mark, with a cross, every cell that is four-adjacent to the object but separated from it by a wall — these are exactly 1.0 m from the goal and are *not* legal stops. For the television the circles go on $(3,0)$ and $(3,2)$ and the cross goes on $(2,1)$.
-
-Finally draw two paths from $(0,0)$: the shortest path to the nearest circled cell, dashed, and the path the agent actually walked, solid, with an arrowhead at each step so the steps can be counted. The problem set asks for this same drawing with one wall moved.
+The worked case on G4, instruction "go to the television": the sofa, tv and plant fill their cells, walls **A**, **B** and **C** lie on cell edges, the legal stops $(3,0)$ and $(3,2)$ are circled, and $(2,1)$, $1.0$ m from the tv but behind wall **C**, is crossed. The dashed path is the shortest route to the nearest legal stop, $\ell = 3$ m; the solid one is episode 3's walk, also $p = 3$ m, which stops at $(2,1)$ and scores $S = 0$. Both cells are three steps from the start and $1.0$ m from the tv, but only $(3,0)$ can see it: the grounding $g(\text{tv}) = 0.846$ was right, and the stop was not.
 
 ### Worked case: one instruction, one map, two numbers
 
@@ -487,9 +481,17 @@ something different. Both are called self-correction, so read for the mechanism
 
 Tier B. Hand derivation on **G4**, using only this page and its prerequisites. Same grid, same three objects, same start $(0,0)$, same instruction "go to the television", same frozen similarities $(0.11, 0.34, 0.09)$. Two things change: the television is remounted, so wall **C** between $(2,1)$ and $(3,1)$ is **removed** and a new wall **E** is added between $(3,1)$ and $(3,2)$; and the grounding temperature is raised from $T = 0.10$ to $T = 0.25$.
 
-1. **Draw.** Redraw G4 with walls **A**, **B** and **E**. Circle every legal stop for the television and cross every cell that is 1.0 m from it but illegal. Then draw the two episodes of question 2 as step-counted paths, dashed for the shortest path and solid for the walked one.
+1. **Draw.** The picture above, with walls **A**, **B** and **E**. Circle every legal stop for the television and cross every cell that is 1.0 m from it but illegal. Then draw the two episodes of question 2 as step-counted paths, dashed for the shortest path and solid for the walked one.
 2. **Derive.** (a) Recompute $g(\text{sofa})$, $g(\text{tv})$, $g(\text{plant})$ at $T = 0.25$ and say what changed and what did not. (b) Give $\ell$ for the television on the new map. (c) Score two episodes: the agent walks 3 m and stops at $(2,1)$; then, in a second run, it walks 5 m by $(0,0) \to (1,0) \to (2,0) \to (2,1) \to (2,2) \to (3,2)$ and stops there. Report SPL and the success rate.
 3. **Interpret.** A paper evaluates on maps like this one, reports SPL 0.50, no success rate, and explains its failures as "language grounding errors under ambiguous instructions". Using your answer to 2(a), say what the reported SPL is consistent with, and what evidence would be needed before accepting the language explanation.
+
+> [!note]- How to draw it · 그리는 법
+> - The grid full size, 4×4, one square per cell, with every cell labelled $(c, r)$, and the three object cells shaded with their names written in.
+> - The wall segments as thick lines *on the edges between* cells, not inside cells: the whole geometry lesson is that a wall lives on an edge and an object lives in a cell.
+> - For the goal object, every **legal stop** circled: four-adjacent to the object cell, with no wall segment on the shared edge.
+> - A cross on every cell that is four-adjacent to the object but separated from it by a wall: exactly $1.0$ m from the goal and *not* a legal stop (worked case, wall **C**: circles on $(3,0)$ and $(3,2)$, the cross on $(2,1)$).
+> - Two paths from $(0,0)$: the shortest path to the nearest circled cell, dashed, and the path the agent actually walked, solid.
+> - An arrowhead at each step of both paths, so the steps can be counted.
 
 > [!tip]- Solutions
 > 1. The circles go on $(3,0)$ and $(2,1)$; the cross goes on $(3,2)$, which is 1.0 m from the television with wall **E** between. It is the mirror image of the worked case — the legal and illegal cells have swapped.
@@ -550,9 +552,7 @@ A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 �
 
 *범위: 이 페이지는 이 문헌이 쓰인 두 정의 — ObjectNav 성공 기준과 SPL — 와, 접지 점수와 지도 기하가 어떻게 정지 결정 하나로 합쳐지는지를 가르친다. 프런티어를 어떻게 고르고 지역 제어기가 어떻게 모는지([[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 조작]]), 시각-언어 특징을 어떻게 학습하는지([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), 실외 traversability([[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]])는 가르치지 않는다.*
 
-### 과제가 그릴 그림: G4와 합법적 정지 칸, 그리고 경로 하나
-
-그림은 아래 계산의 경우 그대로다: 목표는 텔레비전이고, 실선은 에피소드 3이 걸은 경로다.
+### 그림으로 먼저 보기: G4와 합법적 정지 칸, 그리고 경로 하나
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="지시 텔레비전으로 가라에 대한 지도 G4: sofa, tv, plant 칸을 칠한 4×4 격자, 칸의 변 위에 그린 벽 A, B, C, 동그라미 친 합법적 정지 칸 (3,0)과 (3,2), 가위표 친 (2,1), 점선의 최단 경로와 실선의 에피소드 3 경로">
   <defs><marker id="arG4k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -627,11 +627,7 @@ A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 �
   <text x="12" y="339" font-size="11" fill="currentColor">tv를 볼 수 있는 것은 (3,0)뿐이다. 접지 g(tv) = 0.846은 맞았고, 정지가 틀렸다.</text>
 </svg>
 
-격자를 크게, 4×4로, 칸 하나에 정사각형 하나씩 그리고 모든 칸에 $(c, r)$을 적는다. 물체 칸 셋을 칠하고 이름을 써 넣는다. 벽 선분 **A**, **B**, **C**는 칸 안이 아니라 칸과 칸 *사이의 변 위에* 굵은 선으로 그린다 — 벽은 변에 살고 물체는 칸에 산다는 것이 이 기하 수업의 전부다.
-
-그다음 목표 물체에 대해 **합법적 정지 칸**을 전부 표시한다: 물체 칸과 4-인접이면서 공유하는 변에 벽 선분이 없는 칸이다. 거기에 동그라미를 친다. 그리고 물체와 4-인접이지만 벽으로 갈린 칸마다 가위표를 친다 — 목표에서 정확히 1.0 m이면서 합법적 정지 칸이 *아닌* 칸들이다. 텔레비전이라면 동그라미는 $(3,0)$과 $(3,2)$, 가위표는 $(2,1)$이다.
-
-마지막으로 $(0,0)$에서 출발하는 경로 둘을 그린다: 가장 가까운 동그라미 칸까지의 최단 경로를 점선으로, 에이전트가 실제로 걸은 경로를 실선으로, 걸음을 셀 수 있게 걸음마다 화살표를 단다. 과제는 벽 하나를 옮긴 같은 그림을 요구한다.
+지시 "텔레비전으로 가라"에 대한 아래 계산의 경우를 G4 위에 그린 것으로, sofa, tv, plant가 제 칸을 채우고 벽 **A**, **B**, **C** 셋은 칸의 변 위에 있으며, 합법적 정지 칸 $(3,0)$과 $(3,2)$에는 동그라미를, tv에서 $1.0$ m이지만 벽 **C** 뒤에 있는 $(2,1)$에는 가위표를 쳤다. 점선은 가장 가까운 합법적 정지 칸까지의 최단 경로 $\ell = 3$ m이고, 실선은 에피소드 3이 걸은 경로로 역시 $p = 3$ m이지만 $(2,1)$에 멈춰 $S = 0$이다. 두 칸 모두 출발에서 세 걸음, tv에서 $1.0$ m이지만 tv를 볼 수 있는 것은 $(3,0)$뿐이어서, 접지 $g(\text{tv}) = 0.846$은 맞았고 정지가 틀렸다.
 
 ### 대상으로 한 번 끝까지: 지시 하나, 지도 하나, 숫자 둘
 
@@ -964,9 +960,17 @@ ObjectNav는 아니었다.
 
 Tier B. **G4** 위에서 손으로 유도한다. 이 페이지와 선수 지식만 쓴다. 같은 격자, 같은 물체 셋, 같은 출발 $(0,0)$, 같은 지시 "텔레비전으로 가라", 같은 고정 유사도 $(0.11, 0.34, 0.09)$. 두 가지가 바뀐다. 텔레비전을 다시 걸어서 $(2,1)$과 $(3,1)$ 사이의 벽 **C**를 **없애고** $(3,1)$과 $(3,2)$ 사이에 새 벽 **E**를 놓는다. 그리고 접지 온도를 $T = 0.10$에서 $T = 0.25$로 올린다.
 
-1. **그리기.** 벽 **A**, **B**, **E**로 G4를 다시 그려라. 텔레비전의 합법적 정지 칸을 모두 동그라미 치고, 1.0 m이지만 합법적이지 않은 칸마다 가위표를 쳐라. 그다음 2번의 두 에피소드를 걸음 수가 보이는 경로로 그려라. 최단 경로는 점선, 실제로 걸은 경로는 실선이다.
+1. **그리기.** 위의 그림을 벽 **A**, **B**, **E** 셋으로 다시 그려라. 텔레비전의 합법적 정지 칸을 모두 동그라미 치고, 1.0 m이지만 합법적이지 않은 칸마다 가위표를 쳐라. 그다음 2번의 두 에피소드를 걸음 수가 보이는 경로로 그려라. 최단 경로는 점선, 실제로 걸은 경로는 실선이다.
 2. **유도.** (a) $T = 0.25$에서 $g(\text{sofa})$, $g(\text{tv})$, $g(\text{plant})$를 다시 계산하고, 무엇이 바뀌고 무엇이 바뀌지 않았는지 말하라. (b) 새 지도에서 텔레비전의 $\ell$을 구하라. (c) 에피소드 둘을 채점하라: 에이전트가 3 m를 걸어 $(2,1)$에 멈춘다. 두 번째 실행에서는 $(0,0) \to (1,0) \to (2,0) \to (2,1) \to (2,2) \to (3,2)$로 5 m를 걷고 거기에 멈춘다. SPL과 성공률을 보고하라.
 3. **해석.** 어떤 논문이 이런 지도들에서 평가하고, SPL 0.50을 보고하고, 성공률은 보고하지 않고, 실패를 "모호한 지시에서의 언어 접지 오류"로 설명한다. 2(a)의 답을 써서, 보고된 SPL이 무엇과 양립하는지, 그리고 그 언어 설명을 받아들이기 전에 어떤 증거가 필요한지 말하라.
+
+> [!note]- 그리는 법 · How to draw it
+> - 칸 하나에 정사각형 하나씩 크게 그린 4×4 격자와 모든 칸에 적은 $(c, r)$, 그리고 칠하고 이름을 써 넣은 물체 칸 셋.
+> - 칸 안이 아니라 칸과 칸 *사이의 변 위에* 굵은 선으로 그린 벽 선분. 벽은 변에 살고 물체는 칸에 산다는 것이 이 기하 수업의 전부다.
+> - 목표 물체의 합법적 정지 칸 전부에 친 동그라미: 물체 칸과 4-인접이면서 공유하는 변에 벽 선분이 없는 칸이다.
+> - 물체와 4-인접이지만 벽으로 갈린 칸마다 친 가위표: 목표에서 정확히 $1.0$ m이면서 합법적 정지 칸이 *아닌* 칸이다(계산 예제, 벽 **C** 기준: 동그라미는 $(3,0)$과 $(3,2)$, 가위표는 $(2,1)$).
+> - $(0,0)$에서 출발하는 경로 둘: 가장 가까운 동그라미 칸까지의 최단 경로는 점선, 에이전트가 실제로 걸은 경로는 실선.
+> - 걸음을 셀 수 있게 두 경로의 걸음마다 단 화살표.
 
 > [!tip]- 정답 · Solutions
 > 1. 동그라미는 $(3,0)$과 $(2,1)$, 가위표는 $(3,2)$다. $(3,2)$는 텔레비전에서 1.0 m이고 사이에 벽 **E**가 있다. 계산 예제의 거울상이다 — 합법 칸과 불법 칸이 맞바뀌었다.

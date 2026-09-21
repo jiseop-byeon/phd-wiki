@@ -17,9 +17,7 @@ mastery-when: "Go deeper when you are packaging for release, writing CMake for a
 > A machine running **ROS 2 Jazzy Jalisco on Ubuntu 24.04** with the environment set up as in [[04-robotics/ros2/index|25. ROS 2]], and nodes you can already write and run, as in [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Parameters are used here as a thing to configure; what they are is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
 > **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경, 그리고 이미 노드를 쓰고 실행할 수 있는 상태. 파라미터는 여기서 "설정하는 대상"으로만 쓴다.
 
-### Homework diagram: the include tree, and every name it resolves
-
-The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ end to end — and this page's twist: **two** of them, launched from one file into `/cart1` and `/cart2`. Three panels; the problem set asks for the same three with one cart and a changed namespace.
+### The picture: the include tree, and every name it resolves
 
 <svg viewBox="0 0 560 592" style="max-width:100%;height:auto" role="img" aria-label="Top: the include tree of p6.launch.py, with its declared arguments cart_ns and use_sim_time, a GroupAction whose first item is PushROSNamespace(cart_ns) above the two IncludeLaunchDescription arrows to perception.launch.py and control.launch.py, and p6.yaml keyed by /cart1/controller and /cart2/controller. Middle: five names resolved under /cart1 and /cart2, with the two unchanged rows shaded. Bottom: the five lines of the day's loop and which of them --symlink-install removes.">
   <defs><marker id="l4esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -118,11 +116,7 @@ The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — cart 
   <text x="12" y="580" font-size="11" fill-opacity="0.8" fill="currentColor">Only a Python edit, such as the camera's .py, loses a line, and it is the build.</text>
 </svg>
 
-**Left — the include tree.** `p6.launch.py` at the top, with its declared arguments drawn as a small box hanging off it: `cart_ns` (default `cart1`) and `use_sim_time` (default `false`). Two children below it, `perception.launch.py` and `control.launch.py`, each reached by an `IncludeLaunchDescription` arrow labelled with the `launch_arguments` passed down. Draw a rounded box around both children for the `GroupAction`, and put `PushROSNamespace(cart_ns)` inside it as the **first** item, above both arrows. The position is the content of this panel: an action drawn above that line escapes the namespace, and nothing in the running system will tell you it did. Hang `p6.yaml` off `control.launch.py` and write the file's top-level key on the connector, not just the filename.
-
-**Middle — the resolution table, three columns wide.** Column 1, what the source writes; column 2, what it becomes under `/cart1`; column 3, under `/cart2`. Five rows: the node name `controller`; the relative topic `goal`; the absolute topic `/goal`; the private parameter `~/gain`; and the YAML top-level key. Two of those five rows do not change between columns 2 and 3, and finding which two is the exercise.
-
-**Right — the day's loop, five lines on a strip.** Edit `controller.cpp`; `colcon build --packages-select p6_control`; `source install/setup.bash`; `ros2 launch p6_bringup p6.launch.py cart_ns:=cart1`; first `/cart1/goal` at $20\,\mathrm{ms}$ and first `/cart1/cmd` at $5\,\mathrm{ms}$. Mark each of the middle three lines with whether `--symlink-install` removes it. Exactly one of them changes, and section 7 says which.
+Two P6 carts at their catalog rates ([[02-foundations/lab-plants|0.6 Lab Plants]]), launched from one file into `/cart1` and `/cart2`: `p6.launch.py` declares `cart_ns` (default `cart1`) and `use_sim_time`, its `GroupAction` pushes the namespace as the first item, above both includes, and `p6.yaml` is keyed by each controller's full name. Of the five names in the table, two do not change between the namespaces: the absolute topic `/goal`, which both carts share, and the YAML key `/controller`, which matches no node. The strip is the day's loop, with the first `/cart1/goal` at $20\,\mathrm{ms}$ and the first `/cart1/cmd` at $5\,\mathrm{ms}$; for its C++ edit `--symlink-install` removes no line, and for a Python edit it removes only the build.
 
 ### Worked case: two P6 carts from one launch file, and every name written out
 
@@ -699,6 +693,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 2. **Derive.** (a) YAML top-level key for a controller namespaced `/cart`. What silent failure if the key is `/controller`? (b) Encoder $\Delta p$ for one count — a parameter in that file. (c) You rebuilt, relaunched, motor still at the old rate. Three causes, one command that splits them.
 3. **Interpret.** `--symlink-install` fixed the Python camera node and not the C++ controller. Why, and which of P6's two rates does that matter for?
 
+> [!note]- How to draw it · 그리는 법
+> - **The top file carries its declared arguments** in a small box hanging off it — `cart_ns` and `use_sim_time`, each with its default.
+> - **Each include is an `IncludeLaunchDescription` arrow** labelled with the `launch_arguments` it passes down, and the children that share a namespace sit inside one rounded box, the `GroupAction`.
+> - **`PushROSNamespace` is the first item in the `GroupAction`**, drawn above everything it must cover. The position is the content: an action drawn above that line escapes the namespace, and nothing in the running system will tell you it did.
+> - **Hang `p6.yaml` off whatever loads it** and write the file's top-level key on the connector, not just the filename.
+> - **The resolution table has a column for what the source writes and one per namespace**, and five rows: the node name `controller`, the relative topic `goal`, the absolute topic `/goal`, the private parameter `~/gain` and the YAML top-level key. Two of the five do not change with the namespace; a table in which every row changes has resolved a name wrongly.
+> - **The day's loop is five lines on a strip**: the edit, `colcon build --packages-select …`, `source install/setup.bash`, `ros2 launch …`, and the first messages one period in — a goal at $20\,\mathrm{ms}$ and a command at $5\,\mathrm{ms}$ at the catalog's $50$ and $200\,\mathrm{Hz}$.
+> - **Mark each of the middle three lines with whether `--symlink-install` removes it.** For compiled C++ such as `controller.cpp` it removes none of them; for a Python or launch-file edit it removes exactly one, and section 7 says which.
+
 > [!tip]- Solutions
 > 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML under `/cart`. Timeline: edit; build; source; launch; first vision period.
 > 2. (a) `/cart/controller` (or `/**`). `/controller` loads with no error and sets nothing. (b) $0.488\,\mathrm{mm}$, stored as $2048$ counts/m. (c) Wrong `--packages-select`, overlay not sourced, failed build. `ros2 pkg prefix p6_control`.
@@ -714,9 +717,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 > **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경([[04-robotics/ros2/index|25. ROS 2]]), 그리고 이미 노드를 쓰고 실행할 수 있는 상태([[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]). 파라미터는 여기서 "설정하는 대상"으로만 쓴다. 파라미터 자체는 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
 > ROS 2 Jazzy on Ubuntu 24.04, plus the ability to write and run a node.
 
-### 과제가 그릴 그림: include 트리와 그것이 푸는 모든 이름 · Homework diagram
-
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 종단 $70\,\mathrm{ms}$ — 이고, 이 페이지의 비틀기는 그것을 **둘** 띄운다는 것이다. 파일 하나로 `/cart1`과 `/cart2`에. 패널 셋을 그려라. 과제는 카트 하나에 네임스페이스만 바꾼 같은 셋을 요구한다.
+### 그림으로 먼저 보기: include 트리와 그것이 푸는 모든 이름 · The picture
 
 <svg viewBox="0 0 560 592" style="max-width:100%;height:auto" role="img" aria-label="위: p6.launch.py의 include 트리. 선언된 인자 cart_ns와 use_sim_time, 첫 항목 PushROSNamespace(cart_ns)가 perception.launch.py와 control.launch.py로 가는 IncludeLaunchDescription 화살표 둘보다 위에 있는 GroupAction, 그리고 /cart1/controller와 /cart2/controller를 키로 쓰는 p6.yaml. 가운데: 이름 다섯이 /cart1과 /cart2에서 풀린 표, 바뀌지 않는 두 행은 음영. 아래: 하루 루프의 다섯 줄과 --symlink-install이 그중 무엇을 없애는지.">
   <defs><marker id="l4ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -815,11 +816,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
   <text x="12" y="580" font-size="11" fill-opacity="0.8" fill="currentColor">줄 하나가 빠지는 것은 카메라의 .py 같은 Python 편집뿐이고, 빠지는 줄은 빌드다.</text>
 </svg>
 
-**왼쪽 — include 트리**. 맨 위에 `p6.launch.py`, 그 옆에 선언된 인자를 작은 상자로 매단다. `cart_ns`(기본값 `cart1`), `use_sim_time`(기본값 `false`). 그 아래 자식 둘, `perception.launch.py`와 `control.launch.py`, 각각 `IncludeLaunchDescription` 화살표로 잇고 아래로 넘기는 `launch_arguments`를 화살표에 적는다. 자식 둘을 둥근 상자로 묶어 `GroupAction`으로 만들고, 그 안의 **첫** 항목으로 `PushROSNamespace(cart_ns)`를 두 화살표 위에 그린다. 이 패널의 내용은 그 위치다. 그 줄보다 위에 그려진 action은 네임스페이스를 벗어나고, 돌아가는 시스템은 그 사실을 알려 주지 않는다. `p6.yaml`은 `control.launch.py`에 매달고, 연결선에는 파일 이름이 아니라 그 파일의 최상위 키를 적는다.
-
-**가운데 — 이름 해석 표, 세 열**. 1열은 소스에 쓴 것, 2열은 `/cart1`에서 되는 것, 3열은 `/cart2`에서 되는 것. 다섯 행: 노드 이름 `controller`, 상대 토픽 `goal`, 절대 토픽 `/goal`, 비공개 파라미터 `~/gain`, 그리고 YAML 최상위 키. 다섯 중 둘은 2열과 3열이 같고, 어느 둘인지 찾는 것이 연습이다.
-
-**오른쪽 — 하루의 루프, 띠 위 다섯 줄**. `controller.cpp` 편집, `colcon build --packages-select p6_control`, `source install/setup.bash`, `ros2 launch p6_bringup p6.launch.py cart_ns:=cart1`, 그리고 $20\,\mathrm{ms}$의 첫 `/cart1/goal`과 $5\,\mathrm{ms}$의 첫 `/cart1/cmd`. 가운데 세 줄 각각에 `--symlink-install`이 그것을 없애 주는지 표시한다. 정확히 하나만 달라지고, 어느 것인지는 7절이 말한다.
+카탈로그 속도로 도는 P6 카트 둘([[02-foundations/lab-plants|0.6 Lab Plants]])을 파일 하나로 `/cart1`과 `/cart2`에 띄운 그림으로, `p6.launch.py`는 `cart_ns`(기본값 `cart1`)와 `use_sim_time`을 선언하고, 그 `GroupAction`은 두 include보다 위의 첫 항목에서 네임스페이스를 밀어 넣으며, `p6.yaml`은 각 제어기의 완전한 이름을 키로 쓴다. 표에 푼 이름 다섯 중 두 네임스페이스 사이에서 바뀌지 않는 둘은 두 카트가 함께 쓰는 절대 토픽 `/goal`과 어느 노드와도 일치하지 않는 YAML 키 `/controller`다. 아래 띠는 하루의 루프로, 첫 `/cart1/goal`은 $20\,\mathrm{ms}$, 첫 `/cart1/cmd`는 $5\,\mathrm{ms}$에 오며, 띠의 C++ 편집에서는 `--symlink-install`이 한 줄도 없애 주지 않고 Python 편집에서는 빌드 한 줄만 없애 준다.
 
 ### 대상으로 한 번 끝까지: launch 파일 하나로 P6 카트 둘, 모든 이름을 적어서 · Worked case
 
@@ -1389,6 +1386,15 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 노드 셋 — 카메라 $5
 1. **그리기.** Launch 트리: 파일 하나가 P6 노드 셋을 띄우고 `p6.yaml`을 로드. 일상 루프의 다섯 줄 타임라인: 제어기 수정, `colcon build`, `source install/setup.bash`, launch, 첫 `/goal`이 $20\,\mathrm{ms}$.
 2. **유도.** (a) 네임스페이스 `/cart`인 제어기의 YAML 최상위 키. 키가 `/controller`이면 어떤 조용한 고장인가? (b) 엔코더 한 카운트의 $\Delta p$ — 그 파일의 파라미터. (c) 다시 빌드하고 다시 띄웠는데 모터가 옛 주기. 원인 셋, 가르는 명령 하나.
 3. **해석.** `--symlink-install`이 Python 카메라 노드는 고치고 C++ 제어기는 못 고쳤다. 이유는, 그리고 P6의 두 주기 중 어느 쪽에 중요한가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **맨 위 파일에는 선언된 인자를 작은 상자로 매단다.** `cart_ns`와 `use_sim_time`, 각각 기본값과 함께.
+> - **include는 `IncludeLaunchDescription` 화살표다.** 아래로 넘기는 `launch_arguments`를 화살표에 적고, 네임스페이스를 함께 쓰는 자식들은 둥근 상자 하나, 곧 `GroupAction`으로 묶는다.
+> - **`PushROSNamespace`는 `GroupAction`의 첫 항목이다.** 그것이 덮어야 할 모든 것보다 위에 그린다. 위치가 곧 내용이다. 그 줄보다 위에 그려진 action은 네임스페이스를 벗어나고, 돌아가는 시스템은 그 사실을 알려 주지 않는다.
+> - **`p6.yaml`은 그것을 로드하는 쪽에 매단다.** 연결선에는 파일 이름만이 아니라 그 파일의 최상위 키를 적는다.
+> - **이름 해석 표는 소스에 쓴 것 한 열과 네임스페이스마다 한 열이다.** 행은 다섯. 노드 이름 `controller`, 상대 토픽 `goal`, 절대 토픽 `/goal`, 비공개 파라미터 `~/gain`, YAML 최상위 키. 다섯 중 둘은 네임스페이스가 바뀌어도 그대로이고, 모든 행이 바뀌는 표는 어딘가에서 이름을 잘못 푼 것이다.
+> - **하루의 루프는 띠 위의 다섯 줄이다.** 편집, `colcon build --packages-select …`, `source install/setup.bash`, `ros2 launch …`, 그리고 한 주기 뒤의 첫 메시지들. 카탈로그의 $50$과 $200\,\mathrm{Hz}$에서 첫 목표는 $20\,\mathrm{ms}$, 첫 명령은 $5\,\mathrm{ms}$다.
+> - **가운데 세 줄 각각에 `--symlink-install`이 그것을 없애 주는지 표시한다.** `controller.cpp` 같은 컴파일되는 C++에서는 한 줄도 없애 주지 않고, Python이나 launch 파일을 고쳤을 때는 정확히 한 줄을 없애 준다. 어느 줄인지는 7절이 말한다.
 
 > [!tip]- 정답 · Solutions
 > 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML은 `/cart` 아래. 타임라인: 수정; 빌드; source; launch; 첫 비전 주기.

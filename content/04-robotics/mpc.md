@@ -126,11 +126,7 @@ formulation and stability sections rather than every proof.
 > [!note] First pass · 처음이라면
 > Read §1 (when the QP is actually convex), §3 (the failure modes papers gloss), §4. §2 — stacked versus condensed — is for when you implement or when a paper reports solve times.
 
-### Homework diagram · 과제가 그릴 그림
-
-The figure above draws receding horizon in the abstract. This is the version you must be able to
-draw on **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the problem set asks for the
-same one.
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="Receding horizon of length 3 on the leaky heater at x(t) = 0.5: predicted states above a time axis, three planned inputs pinned at the rail u = -1 inside the band from -1 to +1, the K = 99 demand of -49.5 far below it, d = 1 entering the plant unmeasured, the horizon re-planned from the new measurement, and the steady states [0, 2] the rails permit with 0.01 marked.">
   <defs><marker id="aMPC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -231,31 +227,7 @@ same one.
   </g>
 </svg>
 
-The figure is the worked case at the top of this page, $x(t)=0.5$, where the $K=99$ law asks $u=-49.5$, with the predicted dots stepped at P4's catalog sampling $T=0.1$ s; the paragraphs below and the problem set use $x=1$, where the arrow reaches $u=-99$.
-
-**The axis and the prediction.** A time axis with four ticks, $t$ through $t+3$, so the $N=3$
-horizon fits. Above it, the state: the measured $x(t)$ as a filled dot on the first tick, the
-predicted $x_1,x_2,x_3$ as open dots, and a dashed curve through them — dashed, because only the
-first segment is ever executed.
-
-**The rail band.** Below the axis, the input: a shaded horizontal strip between $u=-1$ and $u=+1$
-with both edges labelled. Draw the three planned inputs $u_0,u_1,u_2$ as bars inside that strip,
-and circle $u_0$, the only one that reaches the plant. Then draw what the unconstrained gain asks
-for as an arrow leaving the strip: at $x=1$ the law $u=-Kx$ with $K=99$ wants $u=-99$, far below
-the band. That arrow is the whole reason this figure is not LQR's.
-
-**The disturbance, and the steady states the rails leave.** Put $d=1$ on its own arrow into the
-summing junction ahead of the plant box, never through the controller — the controller does not
-measure it. Beside the figure draw a short $x$-axis and shade $[0,2]$ on it: with $|u|\le1$ and
-$d=1$, setting $0=-x+u+d$ gives $x_\mathrm{ss}=u+1$, so that interval is every steady state the
-rails permit. Mark $0.01$ inside it, the point the $K=99$ design was aiming at, and write the
-distinction the problem set turns on beside the mark — reachable as a steady state, not reachable
-by that law's transient.
-
-**The shift.** Redraw the whole horizon one tick to the right in a lighter line, and start it from
-the *new measurement* rather than from the $x_1$ you predicted. The gap between those two dots is
-the feedback. A drawing in which they coincide has drawn open-loop optimal control, which is the
-non-example at the top of this page.
+The receding horizon of the figure above, now on **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the worked case's $x(t)=0.5$, with $N=3$ steps of the catalog sampling $T=0.1$ s: the dashed plan pins all three inputs at the rail $u=-1$, only the circled $u_0$ reaches the plant, and the $K=99$ law's demand of $u=-49.5$ lies far below the band. The unmeasured $d=1$ lifts the new measurement at $t+1$ above the predicted $x_1$, and that gap is the feedback: the lighter horizon is re-planned from the measured $x$. On the right, the steady states the rails permit, $x_\mathrm{ss}=u+1\in[0,2]$, with $0.01=d/(1+99)$ marked, reachable as a steady state but not by $u=-99x$'s transient.
 
 ### 1. When is the QP actually convex?
 
@@ -372,9 +344,18 @@ construction-robotics direction ([[05-construction-robotics/earthmoving-heavy-ma
 
 Tier B. **P4** from [[02-foundations/lab-plants|0.6]], horizon $N=3$, $|u|\le1$, $d=1$. No simulator.
 
-1. **Draw.** Receding horizon of length 3 on the leaky heater. Mark the rails $|u|\le1$ and $d=1$ entering the plant.
+1. **Draw.** The picture above, from $x=1$: receding horizon of length 3 on the leaky heater. Mark the rails $|u|\le1$ and $d=1$ entering the plant.
 2. **Derive.** Unconstrained $100\times$ rejection wants $K=99$ (CE397 Self-check 1). At $x=1$, what is $u=-Kx$? Why is that illegal here? Under $|u|\le1$ and $d=1$, what interval can $x_\mathrm{ss}$ sit in?
 3. **Interpret.** Why LQR $K=99$ is not "almost MPC with a short horizon" on this plant.
+
+> [!note]- How to draw it · 그리는 법
+> - A time axis with four ticks, $t$ through $t+3$, so the $N=3$ horizon fits. Above it, the measured $x(t)$ as a filled dot on the first tick, the predicted $x_1,x_2,x_3$ as open dots, and a dashed curve through them — dashed, because only the first segment is ever executed.
+> - Below the axis, the input: a shaded horizontal strip between $u=-1$ and $u=+1$ with both edges labelled, the three planned inputs $u_0,u_1,u_2$ as bars inside it, and $u_0$ circled, the only one that reaches the plant.
+> - What the unconstrained gain asks for, as an arrow leaving the strip: $u=-Kx$ with $K=99$, far below the band (worked case, $x=0.5$: $u=-49.5$). That arrow is the whole reason this figure is not LQR's.
+> - $d=1$ on its own arrow into the summing junction ahead of the plant box, never through the controller: the controller does not measure it.
+> - Beside the figure, a short $x$-axis with every steady state the rails permit shaded ($0=-x+u+d$ with $|u|\le1$, $d=1$), and $0.01$ marked inside it, the point the $K=99$ design was aiming at, with the distinction written beside the mark: reachable as a steady state, not by that law's transient.
+> - The shift: the whole horizon redrawn one tick to the right in a lighter line, starting from the *new measurement* rather than from the $x_1$ you predicted. The gap between those two dots is the feedback.
+> - The drawing is wrong the moment those two dots coincide: that is open-loop optimal control, the non-example at the top of this page.
 
 > [!tip]- Solutions
 > 1. Three predicted steps, only $u_0$ applied, rails at $\pm1$.
@@ -494,11 +475,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 > [!note] 처음이라면 · First pass
 > 먼저 §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
 
-### 과제가 그릴 그림 · Homework diagram
-
-위 그림은 receding horizon을 추상적으로 그린 것이다. 여기 있는 것은
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4** 위에서 직접 그릴 수 있어야 하는 판이고,
-과제가 요구하는 것도 같은 그림이다.
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="x(t) = 0.5인 새는 히터 위의 길이 3 후퇴 지평: 시간 축 위의 예측 상태, -1과 +1 사이 띠 안에서 레일 u = -1에 붙은 계획 입력 셋, 그 한참 아래의 K = 99 요구값 -49.5, 측정되지 않은 채 플랜트로 들어가는 d = 1, 새 측정값에서 다시 세운 지평, 레일이 허용하는 정상상태 [0, 2]와 0.01의 표시.">
   <defs><marker id="aMPCk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
@@ -599,27 +576,7 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
   </g>
 </svg>
 
-그림은 이 페이지 첫머리의 계산 $x(t)=0.5$를 그린 것이다. 거기서 $K=99$ 법칙은 $u=-49.5$를 요구하고, 예측 점은 P4 카탈로그의 샘플링 $T=0.1$초 간격으로 찍었다. 아래 문단과 과제는 $x=1$을 쓰며, 그때 화살표는 $u=-99$에 닿는다.
-
-**축과 예측.** 눈금이 넷($t$부터 $t+3$까지)인 시간 축을 그어 $N=3$ 지평이 들어가게 한다. 축
-위쪽에는 상태를 그린다. 첫 눈금에 측정값 $x(t)$를 채운 점으로, 예측값 $x_1,x_2,x_3$를 빈 점으로,
-그리고 그 점들을 지나는 파선. 파선인 이유는 실제로 실행되는 것이 첫 구간뿐이기 때문이다.
-
-**레일 띠.** 축 아래쪽에는 입력을 그린다. $u=-1$과 $u=+1$ 사이를 칠한 수평 띠를 놓고 양쪽 가장자리에
-값을 적는다. 계획된 입력 $u_0,u_1,u_2$를 그 띠 안의 막대로 그리고, 플랜트에 실제로 닿는 $u_0$에
-동그라미를 친다. 그다음 제약 없는 이득이 요구하는 값을 띠 밖으로 나가는 화살표로 그린다. $x=1$에서
-$K=99$인 $u=-Kx$는 $u=-99$를 원하고, 이는 띠보다 한참 아래다. 그 화살표가 이 그림이 LQR의 그림이
-아닌 이유 전부다.
-
-**외란, 그리고 레일이 남겨 주는 정상상태.** $d=1$은 제어기를 거치지 않고 플랜트 상자 앞 합산점으로
-바로 들어가는 별도 화살표로 그린다 — 제어기는 그것을 측정하지 않는다. 그림 옆에는 짧은 $x$축을 긋고
-$[0,2]$를 칠한다. $|u|\le1$, $d=1$에서 $0=-x+u+d$이면 $x_\mathrm{ss}=u+1$이므로, 그 구간이 레일이
-허용하는 모든 정상상태다. 그 안에 $K=99$ 설계가 노리던 점 $0.01$을 찍고, 과제가 갈라 보는 구분을
-옆에 적는다 — 정상상태로는 도달 가능하지만 그 법칙의 과도 구간으로는 도달할 수 없다.
-
-**한 칸 밀기.** 마지막으로 지평 전체를 한 눈금 오른쪽에 옅은 선으로 다시 그리되, 예측했던 $x_1$이
-아니라 *새 측정값*에서 출발시킨다. 두 점 사이의 간격이 곧 피드백이다. 그 둘이 겹치게 그린 그림은
-개루프 최적 제어를 그린 것이며, 그것이 이 페이지 첫머리의 반례다.
+위의 추상적인 후퇴 지평을 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**에, 계산 예제의 $x(t)=0.5$에서 카탈로그 샘플링 $T=0.1$초 간격의 $N=3$ 스텝으로 옮긴 그림이다. 파선 계획은 세 입력을 모두 레일 $u=-1$에 붙이고, 동그라미 친 $u_0$만 플랜트에 닿으며, $K=99$ 법칙이 요구하는 $u=-49.5$는 띠의 한참 아래에 있다. 측정되지 않는 $d=1$ 때문에 $t+1$의 새 측정값이 예측한 $x_1$보다 위에 찍히고 그 간격이 곧 피드백이며(옅은 지평은 측정된 $x$에서 다시 세운 것), 오른쪽은 레일이 허용하는 정상상태 $x_\mathrm{ss}=u+1\in[0,2]$와, 정상상태로는 도달 가능하지만 $u=-99x$의 과도로는 닿지 못하는 $0.01=d/(1+99)$의 표시다.
 
 ### 1. QP는 언제 실제로 볼록한가?
 
@@ -736,9 +693,18 @@ Condensed는 변수가 절반 이하라 결정적으로 보이지만, 헤시안�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P4**, 지평 $N=3$, $|u|\le1$, $d=1$. 시뮬레이터 없음.
 
-1. **그리기.** 새는 히터의 길이 3 receding horizon. 레일 $|u|\le1$과 플랜트로 들어가는 $d=1$.
+1. **그리기.** $x=1$에서 출발하는 위의 그림: 새는 히터의 길이 3 receding horizon. 레일 $|u|\le1$과 플랜트로 들어가는 $d=1$.
 2. **유도.** 제약 없는 $100$배 억제는 $K=99$(CE397 스스로 점검 1). $x=1$에서 $u=-Kx$는? 여기서 왜 불법인가? $|u|\le1$, $d=1$이면 $x_\mathrm{ss}$가 앉을 수 있는 구간은?
 3. **해석.** 이 플랜트에서 LQR $K=99$가 "짧은 지평 MPC와 거의 같다"가 아닌 이유.
+
+> [!note]- 그리는 법 · How to draw it
+> - $N=3$ 지평이 들어가도록 $t$부터 $t+3$까지 눈금이 넷인 시간 축. 그 위에 첫 눈금의 채운 점으로 측정값 $x(t)$, 빈 점으로 예측값 $x_1,x_2,x_3$, 그리고 그 점들을 지나는 파선. 실제로 실행되는 것은 첫 구간뿐이라 파선이다.
+> - 축 아래는 입력: $u=-1$과 $u=+1$ 사이를 칠하고 양쪽 가장자리에 값을 적은 수평 띠, 그 띠 안의 막대로 그린 계획 입력 $u_0,u_1,u_2$, 그리고 플랜트에 실제로 닿는 유일한 입력 $u_0$에 친 동그라미.
+> - 제약 없는 이득이 요구하는 값을 띠 밖으로 나가는 화살표로: $K=99$인 $u=-Kx$는 띠보다 한참 아래다(계산 예제, $x=0.5$: $u=-49.5$). 그 화살표가 이 그림이 LQR의 그림이 아닌 이유 전부다.
+> - 제어기를 거치지 않고 플랜트 상자 앞 합산점으로 바로 들어가는 별도 화살표 위의 $d=1$. 제어기는 그것을 측정하지 않는다.
+> - 그림 옆의 짧은 $x$축과 레일이 허용하는 모든 정상상태를 칠한 구간($|u|\le1$, $d=1$에서 $0=-x+u+d$), 그 안에 찍은 $K=99$ 설계가 노리던 점 $0.01$, 그리고 옆에 적은 구분: 정상상태로는 도달 가능하지만 그 법칙의 과도 구간으로는 도달할 수 없다.
+> - 한 칸 밀기: 지평 전체를 한 눈금 오른쪽에 옅은 선으로 다시 그리되, 예측했던 $x_1$이 아니라 *새 측정값*에서 출발시킨다. 두 점 사이의 간격이 곧 피드백이다.
+> - 그 두 점이 겹치는 순간 그림은 틀렸다. 그것은 개루프 최적 제어이고, 이 페이지 첫머리의 반례다.
 
 > [!tip]- 정답 · Solutions
 > 1. 예측 세 스텝, 적용은 $u_0$만, 레일 $\pm1$.
