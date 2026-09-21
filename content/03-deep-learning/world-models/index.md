@@ -173,7 +173,7 @@ so the gap has two parts: the fresh one-step error $e_t=(\hat\lambda-\lambda)z_t
 
 $$\delta_H=\sum_{t=0}^{H-1}\hat\lambda^{\,H-1-t}\,e_t,$$
 
-because each one-step error, once made, is propagated by every later application of $\hat\lambda$. That single line is why a one-step loss cannot bound a rollout: the loss reports $e_t$ and the rollout reports a filtered sum of all of them. If every $e_t$ had the same size $e$, the sum would be $e\,(1-\hat\lambda^H)/(1-\hat\lambda)$, which for $\hat\lambda=0.9$ approaches $10e$ — a model that is 1% wrong per step can be 10% wrong at the end.
+because each one-step error, once made, is propagated by every later application of $\hat\lambda$. That single line is why a one-step loss cannot bound a rollout: the loss reports $e_t$ and the rollout reports a filtered sum of all of them. If every $e_t$ had the same size $e$, the sum would be $e\,(1-\hat\lambda^H)/(1-\hat\lambda)$, which for $\hat\lambda=0.9$ approaches $10e$ — a model that is 1% wrong per step can be 10% wrong at the end. The sum is a convolution of the one-step errors with the kernel $\hat\lambda^{m}$, $m$ being an error's age: the linear state-space model of [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §7]], which reads D5 itself as the same kind of linear recurrent network.
 
 **The closed form on D5.** With zero actions, $z_t=0.8^t$ and $e_t=0.1\cdot0.8^t$, so the sum telescopes to
 
@@ -517,7 +517,7 @@ rollout 경로가 **둘**인 블록선도 하나, 과제가 요구하는 것이 
 
 $$\delta_H=\sum_{t=0}^{H-1}\hat\lambda^{\,H-1-t}\,e_t$$
 
-인데, 한 번 생긴 one-step 오차가 이후의 모든 $\hat\lambda$ 적용을 타고 전파되기 때문이다. 이 한 줄이 one-step 손실로 rollout을 묶을 수 없는 이유다. 손실은 $e_t$를 보고하고 rollout은 그것들 전부의 필터된 합을 보고한다. 모든 $e_t$의 크기가 $e$로 같다면 합은 $e(1-\hat\lambda^H)/(1-\hat\lambda)$이고, $\hat\lambda=0.9$면 $10e$에 다가간다. 스텝당 1% 틀린 모델이 끝에서 10% 틀릴 수 있다.
+인데, 한 번 생긴 one-step 오차가 이후의 모든 $\hat\lambda$ 적용을 타고 전파되기 때문이다. 이 한 줄이 one-step 손실로 rollout을 묶을 수 없는 이유다. 손실은 $e_t$를 보고하고 rollout은 그것들 전부의 필터된 합을 보고한다. 모든 $e_t$의 크기가 $e$로 같다면 합은 $e(1-\hat\lambda^H)/(1-\hat\lambda)$이고, $\hat\lambda=0.9$면 $10e$에 다가간다. 스텝당 1% 틀린 모델이 끝에서 10% 틀릴 수 있다. 이 합은 한 스텝 오차들을 커널 $\hat\lambda^{m}$($m$은 오차의 나이)으로 합성곱한 것이고, D5 자체를 같은 종류의 선형 순환망으로 읽는 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §7]]의 선형 상태공간 모델이 바로 이것이다.
 
 **D5의 닫힌 형태.** 행동이 0이면 $z_t=0.8^t$, $e_t=0.1\cdot0.8^t$이므로 합이 접혀 $\delta_H=0.9^H-0.8^H$가 된다. $H=5$에서 $0.59049-0.32768=0.26281$로 §2의 숫자이고, $H=1$에서는 $0.1$로 one-step 오차 자신이다. 한 값을 손으로 확인한 뒤 §5가 쓸게 한다.
 

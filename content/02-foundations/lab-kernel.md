@@ -41,7 +41,7 @@ with $a_k=F_k/m$ using forces at step $k$. This is what the P3 template uses. It
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_{k+1}$$
 
-Position is updated with the *new* velocity. For a conservative spring it nearly conserves energy; explicit Euler steadily gains it. If a lab asks you to compare the two on P3 with $b=0$ and a soft spring, this is the pair.
+Position is updated with the *new* velocity. For a conservative spring it nearly conserves energy; explicit Euler steadily gains it. If a lab asks you to compare the two on P3 with $b=0$ and a soft spring, this is the pair. On a contact spring of stiffness $k$, with $\omega=\sqrt{k/m}$, semi-implicit Euler stays stable only while $\omega T<2$, and explicit Euler only when a contact damper pays $d\ge kT$ — derived by hand on P3's handle in the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] and swept over the step in its [[06-research-practice/simulators-benchmarks-datasets|§3 lab]].
 
 ### 4. Plotting convention
 
@@ -90,7 +90,7 @@ $a_k=F_k/m$은 스텝 $k$의 힘. P3 템플릿이 이것이다. 1차 정확하�
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_{k+1}$$
 
-위치는 *새* 속도로 갱신한다. 보존 스프링에서 에너지를 거의 보존하고, 명시적 오일러는 꾸준히 얻는다. P3에서 $b=0$과 부드러운 스프링으로 둘을 비교하라고 하면 이 쌍이다.
+위치는 *새* 속도로 갱신한다. 보존 스프링에서 에너지를 거의 보존하고, 명시적 오일러는 꾸준히 얻는다. P3에서 $b=0$과 부드러운 스프링으로 둘을 비교하라고 하면 이 쌍이다. 강성 $k$인 접촉 스프링에서 $\omega=\sqrt{k/m}$이라 하면, 반암시적 오일러는 $\omega T<2$인 동안만 안정하고 명시적 오일러는 접촉 댐퍼가 $d\ge kT$를 치를 때만 안정하다. P3의 핸들로 이것을 손으로 유도한 것이 [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]의 계산 절이고, 스텝을 바꿔 가며 쓸어 본 것이 그 [[06-research-practice/simulators-benchmarks-datasets|§3 실습]]이다.
 
 ### 4. 플롯 규약
 

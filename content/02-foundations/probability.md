@@ -93,10 +93,10 @@ The object is plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] —
   <text x="45.0" y="379.0" fill="currentColor" text-anchor="end" opacity="0.8">14</text>
   <text x="45.0" y="351.0" fill="currentColor" text-anchor="end" opacity="0.8">16</text>
   <text x="110.0" y="488.0" fill="currentColor" text-anchor="middle">prior</text>
-  <text x="200.0" y="488.0" fill="currentColor" text-anchor="middle">z₁ = 12</text>
-  <text x="290.0" y="488.0" fill="currentColor" text-anchor="middle">z₂ = 11</text>
+  <text x="200.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 12</tspan></text>
+  <text x="290.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 11</tspan></text>
   <text x="380.0" y="488.0" fill="currentColor" text-anchor="middle">predict</text>
-  <text x="470.0" y="488.0" fill="currentColor" text-anchor="middle">z₃ = 13</text>
+  <text x="470.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">3</tspan><tspan dy="-3.5"> = 13</tspan></text>
   <text x="110.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 4</text>
   <text x="200.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 0.8</text>
   <text x="290.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 0.444</text>
@@ -110,7 +110,7 @@ The object is plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] —
   <g stroke="currentColor" stroke-width="2.2" fill="none" stroke-dasharray="3 2.5"><line x1="290" y1="347.0" x2="290" y2="365.7"/><line x1="284" y1="347.0" x2="296" y2="347.0"/><line x1="284" y1="365.7" x2="296" y2="365.7"/></g>
   <circle cx="290" cy="356.3" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
   <g stroke="currentColor" stroke-width="1.4" opacity="0.8"><line x1="182.5" y1="399.5" x2="189.5" y2="406.5"/><line x1="182.5" y1="406.5" x2="189.5" y2="399.5"/><line x1="272.5" y1="413.5" x2="279.5" y2="420.5"/><line x1="272.5" y1="420.5" x2="279.5" y2="413.5"/><line x1="452.5" y1="385.5" x2="459.5" y2="392.5"/><line x1="452.5" y1="392.5" x2="459.5" y2="385.5"/></g>
-  <text x="304.0" y="342.3" fill="currentColor" opacity="0.9">← wrong wall z = 20 after z₁:</text>
+  <text x="304.0" y="342.3" fill="currentColor" opacity="0.9">← wrong wall z = 20 after z<tspan dy="3.5">1</tspan><tspan dy="-3.5">:</tspan></text>
   <text x="304.0" y="356.3" fill="currentColor" opacity="0.9">x̂ ≈ 15.3, P still 0.444:</text>
   <text x="304.0" y="370.3" fill="currentColor" opacity="0.9">confident and wrong</text>
   <text x="14.0" y="522.0" fill="currentColor" opacity="0.9">Each correction shortens the bar; the predict step lengthens it.</text>
@@ -452,14 +452,14 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 | Continuous metric (error, time) | Paired t-test; Wilcoxon signed-rank; sign-flip permutation or bootstrap of the $d_i$ | Welch t-test; Mann–Whitney U; label-permutation test | t: differences roughly normal, no heavy outliers. Wilcoxon: differences symmetric, robust to outliers. Bootstrap: unreliable with very few pairs |
 | Many seeds or tasks | Per-seed scores, CI across seeds; across tasks, stratified bootstrap | Same, per method | The seed is the unit; episodes within one seed are not independent samples |
 
-- **The table's rank and unpaired tests, in one clause each.** The **Wilcoxon signed-rank** test ranks the $|d_i|$ and asks whether the positive differences hold far more or far less than half the total rank, so it uses sizes but a single huge outlier counts only as the top rank. **Welch's t-test** compares two independent group means without assuming the two groups have equal variance. **Mann–Whitney U** pools both groups, ranks everything, and asks whether one group's ranks run systematically higher.
+- **The table's rank and unpaired tests, in one clause each.** The **Wilcoxon signed-rank** test ranks the $|d_i|$ and asks whether the positive differences hold far more or far less than half the total rank, so it uses sizes but a single huge outlier counts only as the top rank. **Welch's t-test** compares two independent group means without assuming the two groups have equal variance. **Mann–Whitney U** pools both groups, ranks everything, and asks whether one group's ranks run systematically higher. The table's Wilson interval, Fisher exact test and Welch comparison are worked by hand on one unpaired ten-trial pilot, with the sentence each number licenses, in the worked case of [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]].
 
 - **McNemar is the sign test above, applied to discordant pairs.** A pair where both succeed or both fail says nothing about which method is better. So under $H_0$ each of the $m$ pairs where they disagree is a fair coin flip.
 - **Many seeds or tasks.** Agarwal et al. (NeurIPS 2021) showed that point estimates from the few runs per task common in deep RL can mislead. Their fix is the **stratified bootstrap**: resample runs with replacement separately within each task, recompute the aggregate score (they favour the interquartile mean over the mean or median), repeat, and read off percentiles.
 - **A confidence interval (CI)** is a *procedure*, not a single interval: a rule that maps a dataset to an interval $[L, U]$ such that, over repeated datasets drawn from the same process, the interval covers the true parameter $\theta$ with the stated probability (the **coverage** $1 - \alpha$):
   $$P\big(L(\text{data}) \le \theta \le U(\text{data})\big) = 1 - \alpha$$
   Here $L$ and $U$ are random because the data are, and $\theta$ is fixed. *Example:* for $n$ roughly Gaussian readings, $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$ is a 95% CI. The five wall readings of §4 have $\bar x = 2.0$, $s = 0.292$ and $t_{4,\,0.975} = 2.776$, so the interval is $2.0 \pm 0.362 = [1.64, 2.36]$ m. *Non-example:* "there is a 95% probability that $\theta$ lies in $[1.64, 2.36]$" is not what the frequentist CI says; once computed, that interval either covers $\theta$ or not. The 95% is a property of the procedure, and a probability statement about $\theta$ itself needs a prior, as in §1.
-- **Effect size comes first.** Report the difference with its CI, then the p-value. The CI shows both whether zero is plausible and how large the gain could be; $p$ alone shows neither size (misreading 2 above). How many trials to run and which binomial interval to use are in [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
+- **Effect size comes first.** Report the difference with its CI, then the p-value. The CI shows both whether zero is plausible and how large the gain could be; $p$ alone shows neither size (misreading 2 above). How many trials to run and which binomial interval to use are in [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]. Power and effect size are defined in full, and RS1's trials per arm worked from them, in the worked case of [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]].
 
 > [!example] Worked example · 계산 예제
 > **Two grasp policies on the same 20 objects.** A succeeds on 11 and B on 16, so 55% against 80%, which looks decisive.
@@ -510,7 +510,7 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
   - The **mixing time** is the number of steps until $\pi_n$ is within a chosen distance of $\pi$ (usually total variation distance, the largest difference the two distributions assign to any single event), starting from the worst initial state. In symbols, with $e_i$ the distribution that starts surely in state $i$:
   $$\|\mu - \nu\|_{TV} = \max_{A} |\mu(A) - \nu(A)| = \tfrac12 \sum_j |\mu_j - \nu_j|, \qquad t_{\text{mix}}(\varepsilon) = \min\big\{n : \max_i \|e_i P^n - \pi\|_{TV} \le \varepsilon\big\}$$
     The two TV formulas agree because the maximizing event $A$ is the set of states where $\mu_j > \nu_j$. For the machine chain in the example below, starting from "broken" is the worst case, with distance $0.257$ after one hour, $0.034$ after three and $0.0037$ after five, so $t_{\text{mix}}(0.01) = 5$ hours.
-- **Why it matters here.** *MCMC* runs the idea in reverse: design a chain whose stationary distribution is the posterior you cannot sample directly, run it past its mixing time, and use its states as samples. The *forward noising process* of [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$, is a Markov chain on images whose distribution approaches $\mathcal{N}(0, I)$; the learned model runs the chain backwards.
+- **Why it matters here.** *MCMC* runs the idea in reverse: design a chain whose stationary distribution is the posterior you cannot sample directly, run it past its mixing time, and use its states as samples. The *forward noising process* of [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$, is a Markov chain on images whose distribution approaches $\mathcal{N}(0, I)$; the learned model runs the chain backwards. A fixed-step 1-up-$n$-down staircase in a perception experiment is a Markov chain too, on the pair (stimulus level, run of correct answers), and it drifts toward the level answered correctly with probability $2^{-1/n}$, as derived in [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §2]].
 
 > [!example] Worked example · 계산 예제
 > **A machine that is working (W), idle (I) or broken (B)**, checked once an hour, with rows W, I, B:
@@ -748,10 +748,10 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   <text x="45.0" y="379.0" fill="currentColor" text-anchor="end" opacity="0.8">14</text>
   <text x="45.0" y="351.0" fill="currentColor" text-anchor="end" opacity="0.8">16</text>
   <text x="110.0" y="488.0" fill="currentColor" text-anchor="middle">사전</text>
-  <text x="200.0" y="488.0" fill="currentColor" text-anchor="middle">z₁ = 12</text>
-  <text x="290.0" y="488.0" fill="currentColor" text-anchor="middle">z₂ = 11</text>
+  <text x="200.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 12</tspan></text>
+  <text x="290.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 11</tspan></text>
   <text x="380.0" y="488.0" fill="currentColor" text-anchor="middle">예측</text>
-  <text x="470.0" y="488.0" fill="currentColor" text-anchor="middle">z₃ = 13</text>
+  <text x="470.0" y="488.0" fill="currentColor" text-anchor="middle">z<tspan dy="3.5">3</tspan><tspan dy="-3.5"> = 13</tspan></text>
   <text x="110.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 4</text>
   <text x="200.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 0.8</text>
   <text x="290.0" y="503.0" fill="currentColor" text-anchor="middle" opacity="0.9">P = 0.444</text>
@@ -765,7 +765,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   <g stroke="currentColor" stroke-width="2.2" fill="none" stroke-dasharray="3 2.5"><line x1="290" y1="347.0" x2="290" y2="365.7"/><line x1="284" y1="347.0" x2="296" y2="347.0"/><line x1="284" y1="365.7" x2="296" y2="365.7"/></g>
   <circle cx="290" cy="356.3" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
   <g stroke="currentColor" stroke-width="1.4" opacity="0.8"><line x1="182.5" y1="399.5" x2="189.5" y2="406.5"/><line x1="182.5" y1="406.5" x2="189.5" y2="399.5"/><line x1="272.5" y1="413.5" x2="279.5" y2="420.5"/><line x1="272.5" y1="420.5" x2="279.5" y2="413.5"/><line x1="452.5" y1="385.5" x2="459.5" y2="392.5"/><line x1="452.5" y1="392.5" x2="459.5" y2="385.5"/></g>
-  <text x="304.0" y="342.3" fill="currentColor" opacity="0.9">← z₁ 뒤 틀린 벽 z = 20:</text>
+  <text x="304.0" y="342.3" fill="currentColor" opacity="0.9">← z<tspan dy="3.5">1</tspan><tspan dy="-3.5"> 뒤 틀린 벽 z = 20:</tspan></text>
   <text x="304.0" y="356.3" fill="currentColor" opacity="0.9">x̂ ≈ 15.3, P는 그대로 0.444:</text>
   <text x="304.0" y="370.3" fill="currentColor" opacity="0.9">확신하고 틀렸다</text>
   <text x="14.0" y="522.0" fill="currentColor" opacity="0.9">보정마다 막대가 줄고 예측에서 늘어난다.</text>
@@ -1105,14 +1105,14 @@ flowchart LR
 | 연속 지표(오차, 시간) | 대응 t-검정; Wilcoxon 부호순위 검정; $d_i$의 부호 뒤집기 순열 또는 부트스트랩 | Welch t-검정; Mann–Whitney U; 라벨 순열 검정 | t: 차이가 대략 정규이고 큰 이상치가 없음. Wilcoxon: 차이가 대칭, 이상치에 강함. 부트스트랩: 쌍이 아주 적으면 믿기 어려움 |
 | 시드나 과제가 많을 때 | 시드별 점수, 시드에 걸친 CI; 과제에 걸쳐서는 층화 부트스트랩 | 같음, 방법별로 | 단위는 시드다; 한 시드 안의 에피소드들은 독립 표본이 아니다 |
 
-- **표에 나온 순위 검정과 비대응 검정, 한 줄씩.** **Wilcoxon 부호순위 검정은** $|d_i|$에 순위를 매기고 양의 차이가 가져간 순위합이 전체의 절반에서 크게 벗어나는지 묻는다. 그래서 크기를 쓰지만, 엄청난 이상치 하나도 가장 높은 순위 하나로만 친다. **Welch t-검정은** 두 집단의 분산이 같다고 가정하지 않고 독립인 두 집단의 평균을 비교한다. **Mann–Whitney U는** 두 집단을 합쳐 전부 순위를 매기고, 한 집단의 순위가 체계적으로 더 높은지 묻는다.
+- **표에 나온 순위 검정과 비대응 검정, 한 줄씩.** **Wilcoxon 부호순위 검정은** $|d_i|$에 순위를 매기고 양의 차이가 가져간 순위합이 전체의 절반에서 크게 벗어나는지 묻는다. 그래서 크기를 쓰지만, 엄청난 이상치 하나도 가장 높은 순위 하나로만 친다. **Welch t-검정은** 두 집단의 분산이 같다고 가정하지 않고 독립인 두 집단의 평균을 비교한다. **Mann–Whitney U는** 두 집단을 합쳐 전부 순위를 매기고, 한 집단의 순위가 체계적으로 더 높은지 묻는다. 표의 Wilson 구간, Fisher 정확 검정, Welch 비교는 비대응 10회 예비 실험 하나에서 손으로 계산되어, 각 숫자가 허락하는 문장과 함께 [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]의 계산 절에 있다.
 
 - **McNemar는 위의 부호 검정을 불일치 쌍에 적용한 것이다.** 둘 다 성공하거나 둘 다 실패한 쌍은 어느 방법이 나은지 아무것도 말하지 않는다. 그래서 $H_0$ 아래에서 두 방법이 엇갈린 $m$개 쌍 각각이 공정한 동전 던지기다.
 - **시드나 과제가 많을 때.** Agarwal 등(NeurIPS 2021)은 딥 RL에서 흔한, 과제당 몇 번 안 되는 실행에서 얻은 점추정이 오도할 수 있음을 보였다. 그들의 처방은 **층화 부트스트랩이다**: 과제마다 따로 실행을 복원추출하고, 종합 점수를 다시 계산하고(평균이나 중앙값보다 사분위 평균 IQM을 권한다), 이를 반복해 백분위수를 읽는다.
 - **신뢰구간(CI)은** 구간 하나가 아니라 *절차*다: 데이터셋을 구간 $[L, U]$로 보내는 규칙으로, 같은 과정에서 뽑은 데이터셋을 반복했을 때 구간이 참 파라미터 $\theta$를 명시된 확률(**포함 확률** $1 - \alpha$)로 덮는다:
   $$P\big(L(\text{데이터}) \le \theta \le U(\text{데이터})\big) = 1 - \alpha$$
   데이터가 무작위이므로 $L$과 $U$가 무작위이고, $\theta$는 고정이다. *예:* 대략 가우시안인 측정값 $n$개면 $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$이 95% CI다. §4의 벽 측정값 다섯 개는 $\bar x = 2.0$, $s = 0.292$, $t_{4,\,0.975} = 2.776$이므로 구간은 $2.0 \pm 0.362 = [1.64, 2.36]$ m다. *반례:* "$\theta$가 $[1.64, 2.36]$에 있을 확률이 95%다"는 빈도주의 CI가 말하는 바가 아니다. 한번 계산된 구간은 $\theta$를 덮거나 덮지 않거나 둘 중 하나다. 95%는 절차의 성질이고, $\theta$ 자체에 대한 확률 명제에는 §1처럼 사전확률이 필요하다.
-- **효과 크기가 먼저다.** 차이를 CI와 함께 보고하고, p-값은 그다음이다. CI는 0이 그럴듯한지와 이득이 얼마나 클 수 있는지를 함께 보여주지만, $p$만으로는 크기를 알 수 없다(위의 오독 2). 시행을 몇 번 할지, 어떤 이항 구간을 쓸지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]에 있다.
+- **효과 크기가 먼저다.** 차이를 CI와 함께 보고하고, p-값은 그다음이다. CI는 0이 그럴듯한지와 이득이 얼마나 클 수 있는지를 함께 보여주지만, $p$만으로는 크기를 알 수 없다(위의 오독 2). 시행을 몇 번 할지, 어떤 이항 구간을 쓸지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]에 있다. 검정력과 효과 크기의 완전한 정의, 그리고 그것으로 RS1의 팔당 시행 수를 계산한 예는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]의 계산 절에 있다.
 
 > [!example] 계산 예제 · Worked example
 > **같은 물체 20개에서 두 파지 정책.** A는 11개, B는 16개에서 성공해 55% 대 80%다. 결정적으로 보인다.
@@ -1165,7 +1165,7 @@ flowchart LR
   식으로는, $e_i$를 확실히 상태 $i$에서 출발하는 분포라 할 때:
   $$\|\mu - \nu\|_{TV} = \max_{A} |\mu(A) - \nu(A)| = \tfrac12 \sum_j |\mu_j - \nu_j|, \qquad t_{\text{mix}}(\varepsilon) = \min\big\{n : \max_i \|e_i P^n - \pi\|_{TV} \le \varepsilon\big\}$$
     최대화하는 사건 $A$가 $\mu_j > \nu_j$인 상태들의 집합이므로 두 TV 식은 같다. 아래 예제의 기계 체인에서는 "고장"에서 출발하는 것이 최악이고, 거리가 한 시간 뒤 $0.257$, 세 시간 뒤 $0.034$, 다섯 시간 뒤 $0.0037$이므로 $t_{\text{mix}}(0.01) = 5$시간이다.
-- **여기서 왜 중요한가.** *MCMC*는 이 생각을 거꾸로 쓴다: 직접 샘플링할 수 없는 사후분포를 정상 분포로 갖는 체인을 설계하고, 혼합 시간 너머까지 돌린 뒤, 그 상태들을 샘플로 쓴다. [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]의 *순방향 노이즈 과정* $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$는 분포가 $\mathcal{N}(0, I)$에 다가가는 이미지 위의 마르코프 체인이고, 학습된 모델은 그 체인을 거꾸로 돌린다.
+- **여기서 왜 중요한가.** *MCMC*는 이 생각을 거꾸로 쓴다: 직접 샘플링할 수 없는 사후분포를 정상 분포로 갖는 체인을 설계하고, 혼합 시간 너머까지 돌린 뒤, 그 상태들을 샘플로 쓴다. [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]의 *순방향 노이즈 과정* $x_t = \sqrt{1-\beta_t}\,x_{t-1} + \sqrt{\beta_t}\,\epsilon$는 분포가 $\mathcal{N}(0, I)$에 다가가는 이미지 위의 마르코프 체인이고, 학습된 모델은 그 체인을 거꾸로 돌린다. 지각 실험의 고정 스텝 1-up-$n$-down 계단법도 (자극 수준, 연속 정답 수) 쌍 위의 마르코프 체인이고, 정답 확률이 $2^{-1/n}$인 수준을 향해 표류한다. 유도는 [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §2]]에 있다.
 
 > [!example] 계산 예제 · Worked example
 > **작동(W), 대기(I), 고장(B) 중 하나인 기계를** 한 시간에 한 번 확인한다. 행 순서는 W, I, B:

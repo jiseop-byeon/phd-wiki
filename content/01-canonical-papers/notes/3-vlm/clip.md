@@ -56,10 +56,10 @@ Vision models were trained on fixed label sets (1000 ImageNet classes): expensiv
   <rect x="226" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
   <rect x="264" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="167" y="40">T&#8321;</text><text x="205" y="40">T&#8322;</text><text x="243" y="40">T&#8323;</text><text x="281" y="40">T&#8324;</text>
+    <text x="167" y="40">T<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="205" y="40">T<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="243" y="40">T<tspan dy="3.5">3</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="281" y="40">T<tspan dy="3.5">4</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g font-size="10.5" fill="currentColor" text-anchor="end">
-    <text x="144" y="68">I&#8321;</text><text x="144" y="106">I&#8322;</text><text x="144" y="144">I&#8323;</text><text x="144" y="182">I&#8324;</text>
+    <text x="144" y="68">I<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="106">I<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="144">I<tspan dy="3.5">3</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="182">I<tspan dy="3.5">4</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g fill="currentColor"><rect x="318" y="60" width="12" height="12" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/><rect x="318" y="86" width="12" height="12" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/></g>
   <g font-size="11" fill="currentColor">
@@ -156,10 +156,10 @@ The foundation of the multimodal era: CLIP encoders power text-to-image diffusio
   <rect x="226" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/>
   <rect x="264" y="160" width="34" height="34" rx="2" fill="currentColor" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/>
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="167" y="40">T&#8321;</text><text x="205" y="40">T&#8322;</text><text x="243" y="40">T&#8323;</text><text x="281" y="40">T&#8324;</text>
+    <text x="167" y="40">T<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="205" y="40">T<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="243" y="40">T<tspan dy="3.5">3</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="281" y="40">T<tspan dy="3.5">4</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g font-size="10.5" fill="currentColor" text-anchor="end">
-    <text x="144" y="68">I&#8321;</text><text x="144" y="106">I&#8322;</text><text x="144" y="144">I&#8323;</text><text x="144" y="182">I&#8324;</text>
+    <text x="144" y="68">I<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="106">I<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="144">I<tspan dy="3.5">3</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="144" y="182">I<tspan dy="3.5">4</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g fill="currentColor"><rect x="318" y="60" width="12" height="12" fill-opacity="0.30" stroke="currentColor" stroke-width="0.8"/><rect x="318" y="86" width="12" height="12" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8"/></g>
   <g font-size="11" fill="currentColor">

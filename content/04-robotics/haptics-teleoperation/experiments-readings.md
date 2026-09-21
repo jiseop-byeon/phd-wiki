@@ -195,7 +195,7 @@ an even number of reversals being used so that the peaks and troughs of the trac
 
 $$p^2=1-p^2\quad\Longrightarrow\quad p^2=\tfrac12\quad\Longrightarrow\quad p=\sqrt{0.5}=0.7071,$$
 
-and the estimate is therefore the $70.7\%$-correct point of this participant's curve — not the $75\%$ point, not "the threshold". (The frozen record scores $19/24=79.2\%$ correct overall, above $70.7\%$, which is ordinary sampling noise on 24 trials and not evidence that the rule failed.)
+and the estimate is therefore the $70.7\%$-correct point of this participant's curve — not the $75\%$ point, not "the threshold". (The frozen record scores $19/24=79.2\%$ correct overall, above $70.7\%$, which is ordinary sampling noise on 24 trials and not evidence that the rule failed.) [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §2]] runs the same argument for any 1-up-$n$-down rule, $p^\ast=2^{-1/n}$, and its §7 simulates staircases on a frozen observer to measure what a finite step and a start not yet forgotten add to the estimate.
 
 **Step 4 — name the quantity.** $\widehat{\Delta F}=0.5167\,\mathrm{N}$ is a *difference* threshold: the increment on a $5.00\,\mathrm{N}$ pedestal at which this participant is $70.7\%$ correct. That is a JND, but only once the criterion is attached to it. Its Weber fraction is
 
@@ -430,7 +430,7 @@ $$\widehat{\Delta F}=\frac{0.45+0.55+0.50+0.55+0.50+0.55}{6}=\frac{3.10}{6}=0.51
 
 $$p^2=1-p^2\quad\Longrightarrow\quad p^2=\tfrac12\quad\Longrightarrow\quad p=\sqrt{0.5}=0.7071$$
 
-이고, 따라서 이 추정값은 이 참가자 곡선의 $70.7\%$ 정답 점이다. $75\%$ 점도 아니고 그냥 "임계값"도 아니다. (얼어붙은 기록의 전체 정답률은 $19/24=79.2\%$로 $70.7\%$보다 높지만, 24 시행의 평범한 표본 변동이지 규칙이 실패했다는 증거가 아니다.)
+이고, 따라서 이 추정값은 이 참가자 곡선의 $70.7\%$ 정답 점이다. $75\%$ 점도 아니고 그냥 "임계값"도 아니다. (얼어붙은 기록의 전체 정답률은 $19/24=79.2\%$로 $70.7\%$보다 높지만, 24 시행의 평범한 표본 변동이지 규칙이 실패했다는 증거가 아니다.) [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §2]]는 같은 논증을 모든 1-up-$n$-down 규칙으로 넓혀 $p^\ast=2^{-1/n}$을 얻고, 그 §7은 고정된 관찰자 위에서 staircase를 시뮬레이션해 유한한 단과 아직 잊히지 않은 시작점이 추정값에 더하는 몫을 잰다.
 
 **Step 4 — 양에 이름 붙이기.** $\widehat{\Delta F}=0.5167\,\mathrm{N}$은 *차이* 임계값이다. $5.00\,\mathrm{N}$ 받침 위에서 이 참가자가 $70.7\%$ 맞히는 증분. 기준을 함께 달아 놓을 때에만 그것이 JND다. Weber 분수는
 

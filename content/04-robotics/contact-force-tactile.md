@@ -295,7 +295,7 @@ The inequality is useful because increasing tangential demand without enough nor
 
 $$f_n=\max\!\big(0,\ k\,\delta+d\,\dot\delta\big)$$
 
-so $k$ (contact stiffness, N/m) sets how much force a given overlap produces, $d$ (contact damping, N·s/m) resists the rate of overlap $\dot\delta$, and the outer $\max$ keeps unilaterality because the model must never pull. Example: $k=10^4$ N/m and a 1 mm overlap at rest give $f_n=10^4\times0.001=10$ N. It is continuous where the rigid model switches, which is why simulators like it, and its price is that $k$ and $d$ are numerical choices rather than measured material constants. A **learned residual** has the form $x_{t+1}=f_{\text{phys}}(x_t,u_t)+r_\theta(x_t,u_t)$, where $f_{\text{phys}}$ is the physics model's prediction and $r_\theta$ a fitted correction with parameters $\theta$.
+so $k$ (contact stiffness, N/m) sets how much force a given overlap produces, $d$ (contact damping, N·s/m) resists the rate of overlap $\dot\delta$, and the outer $\max$ keeps unilaterality because the model must never pull. Example: $k=10^4$ N/m and a 1 mm overlap at rest give $f_n=10^4\times0.001=10$ N. It is continuous where the rigid model switches, which is why simulators like it, and its price is that $k$ and $d$ are numerical choices rather than measured material constants. The lab in [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §3]] prices those choices on P3's handle: $k$ sets the largest stable step, $\Delta t<2\sqrt{m/k}$ for semi-implicit Euler, and a lightly damped contact keeps explicit Euler stable only while $d\ge k\,\Delta t$. A **learned residual** has the form $x_{t+1}=f_{\text{phys}}(x_t,u_t)+r_\theta(x_t,u_t)$, where $f_{\text{phys}}$ is the physics model's prediction and $r_\theta$ a fitted correction with parameters $\theta$.
 
 Simulator contact parameters are often numerical compromises. Success under one simulator setting is not evidence of robustness to real material variation.
 
@@ -763,7 +763,7 @@ $m=4$에서는 내접 원뿔의 계수 $\mu\cos(\pi/4)$와 줄인 상자의 $\mu
 
 $$f_n=\max\!\big(0,\ k\,\delta+d\,\dot\delta\big)$$
 
-$k$(접촉 강성, N/m)는 주어진 겹침이 만드는 힘의 크기를, $d$(접촉 감쇠, N·s/m)는 겹침 속도 $\dot\delta$에 대한 저항을 정하고, 모델이 절대 당겨서는 안 되므로 바깥의 $\max$가 단방향성을 지킨다. 예: $k=10^4$ N/m, 정지 상태 1 mm 겹침이면 $f_n=10^4\times0.001=10$ N이다. 강체 모델이 전환하는 곳에서 연속적이라 시뮬레이터가 선호하고, 그 대가는 $k$와 $d$가 측정된 재료 상수가 아니라 수치적 선택이라는 점이다. **학습 잔차**는 $x_{t+1}=f_{\text{phys}}(x_t,u_t)+r_\theta(x_t,u_t)$ 꼴이다. $f_{\text{phys}}$는 물리 모델의 예측, $r_\theta$는 파라미터 $\theta$로 맞춘 보정이다.
+$k$(접촉 강성, N/m)는 주어진 겹침이 만드는 힘의 크기를, $d$(접촉 감쇠, N·s/m)는 겹침 속도 $\dot\delta$에 대한 저항을 정하고, 모델이 절대 당겨서는 안 되므로 바깥의 $\max$가 단방향성을 지킨다. 예: $k=10^4$ N/m, 정지 상태 1 mm 겹침이면 $f_n=10^4\times0.001=10$ N이다. 강체 모델이 전환하는 곳에서 연속적이라 시뮬레이터가 선호하고, 그 대가는 $k$와 $d$가 측정된 재료 상수가 아니라 수치적 선택이라는 점이다. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §3]]의 랩이 P3 핸들 위에서 그 선택의 값을 매긴다. $k$가 가장 큰 안정 스텝을 정하고(반암시적 오일러는 $\Delta t<2\sqrt{m/k}$), 감쇠가 가벼운 접촉에서 명시적 오일러는 $d\ge k\,\Delta t$일 때만 안정하다. **학습 잔차**는 $x_{t+1}=f_{\text{phys}}(x_t,u_t)+r_\theta(x_t,u_t)$ 꼴이다. $f_{\text{phys}}$는 물리 모델의 예측, $r_\theta$는 파라미터 $\theta$로 맞춘 보정이다.
 
 시뮬레이터의 접촉 파라미터는 대개 수치적 타협이다. 한 시뮬레이터 설정에서의 성공이
 실제 재료 변동에 대한 강건성의 증거는 아니다.

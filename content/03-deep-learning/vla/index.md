@@ -38,7 +38,7 @@ $$\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l),\qquad a_i=(\Delta x_i,\Delta y_i).$$
 
 The instruction is not decoration here: "left, then down" *is* the axis order the policy plans in, which is why the frozen chunk moves in $x$ twice and then in $y$ once.
 
-*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, and what a reported success rate does and does not prove. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
+*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, and what a reported success rate does and does not prove. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
 
 ### Homework diagram · 과제가 그릴 그림
 
@@ -155,7 +155,7 @@ One closed loop, and the problem set asks for exactly this one. The figure is th
 
 Four things the drawing has to get right, each of which is a claim about the system.
 **Two clocks, not one.** Label the policy edge with $t_{\mathrm{inf}}=100\,\mathrm{ms}$ and the controller edge with $\Delta t=50\,\mathrm{ms}$. A single rate on the loop is the most common wrong drawing, and every latency number on this page comes from the two being different.
-**The buffer as a box with a length.** Draw the chunk buffer holding $k$ actions and mark that the loop back to the observation closes only when it empties. That box is where the open-loop interval lives.
+**The buffer as a box with a length.** Draw the chunk buffer holding $k$ actions and mark that it is refilled only when it empties, from an observation taken $m=2$ steps earlier, while its last $m$ actions are still to run. That box is where the open-loop interval lives.
 **The observation edge carries an age.** Write $n-m$ on it, not $n$. The action leaving the buffer at step $n$ was computed from a scene that is $m+(n\bmod k)$ steps old.
 **No arrow from the buffer to the scene.** The robot changes the world; the buffered plan does not. A loop drawn with that arrow has assumed the model's prediction is the world, which is the error §4 is about.
 
@@ -395,7 +395,7 @@ def lag(src, e):                       # latency from change e to the first info
 
 여기서 instruction은 장식이 아니다. "왼쪽으로 간 다음 아래로"가 정책이 계획하는 축 순서 자체이고, 그래서 고정된 chunk가 $x$로 두 번, $y$로 한 번 움직인다.
 
-*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
+*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
 
 ### 과제가 그릴 그림 · Homework diagram
 
@@ -512,7 +512,7 @@ def lag(src, e):                       # latency from change e to the first info
 
 그림이 맞혀야 할 것이 넷이고, 각각이 시스템에 대한 주장이다.
 **시계는 하나가 아니라 둘.** 정책 변에 $t_{\mathrm{inf}}=100\,\mathrm{ms}$, 제어기 변에 $\Delta t=50\,\mathrm{ms}$를 적는다. 루프에 주기를 하나만 적는 것이 가장 흔한 오답이고, 이 페이지의 지연 숫자는 전부 둘이 다르다는 데서 나온다.
-**버퍼는 길이를 가진 상자.** chunk 버퍼가 행동 $k$개를 담고 있고, 그것이 비어야만 관측으로 가는 변이 닫힌다고 표시한다. 개루프 구간이 사는 자리가 그 상자다.
+**버퍼는 길이를 가진 상자.** chunk 버퍼가 행동 $k$개를 담고 있고, 버퍼는 비었을 때만 다시 채워지지만 그 채움이 쓰는 관측은 $m=2$ 스텝 앞, 마지막 행동 $m$개가 아직 남아 있을 때 찍힌다고 표시한다. 개루프 구간이 사는 자리가 그 상자다.
 **관측 변에는 나이가 붙는다.** $n$이 아니라 $n-m$을 적는다. 스텝 $n$에 버퍼에서 나가는 행동은 $m+(n\bmod k)$ 스텝 묵은 장면에서 계산됐다.
 **버퍼에서 장면으로 가는 화살표는 없다.** 세계를 바꾸는 것은 로봇이지 버퍼 속 계획이 아니다. 그 화살표를 그린 루프는 예측을 곧 세계로 가정한 것이고, §4가 다루는 오류가 그것이다.
 

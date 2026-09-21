@@ -58,7 +58,7 @@ A translating handle, impedance causality, no Jacobian (identity). Public physic
 | Capstan | $r_m=0.010\,\mathrm{m}$, $r_s=0.050\,\mathrm{m}$ | motor pulley / sector radii |
 | Encoder | $N=1024$ counts/rev | quadrature after decode |
 
-Human desired position $x_d$ is an external input. Handle position $x$ is the device state. Virtual wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$. Home of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]].
+Human desired position $x_d$ is an external input. Handle position $x$ is the device state. Virtual wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$. Home of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]. [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] reuses its mass and wall in a drop cell, and [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §7]] uses it as a stiffness display for a staircase.
 
 ### P4 — leaky heater
 
@@ -141,7 +141,7 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{
 | 캡스턴 | $r_m=0.010\,\mathrm{m}$, $r_s=0.050\,\mathrm{m}$ | 모터 풀리 / 섹터 반지름 |
 | 엔코더 | $N=1024$ counts/rev | 디코드 후 |
 
-사람 목표 $x_d$는 외부 입력, 핸들 위치 $x$가 상태. 가상 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]과 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 집.
+사람 목표 $x_d$는 외부 입력, 핸들 위치 $x$가 상태. 가상 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]과 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 집. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]은 그 질량과 벽을 낙하 셀에 다시 쓰고, [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §7]]은 그것을 강성 디스플레이로 삼아 계단법을 돌린다.
 
 ### P4 — 새는 히터
 

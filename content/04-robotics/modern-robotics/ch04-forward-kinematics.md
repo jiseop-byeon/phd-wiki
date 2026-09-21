@@ -129,8 +129,8 @@ Do this double-check on every robot you model — geometric FK and PoE FK must a
   <g font-size="11" fill="currentColor">
     <text x="112" y="186" opacity="0.7">home: both links along +x, tip at (2, 0)</text>
     <text x="80" y="124">link 1</text><text x="18" y="80">link 2</text>
-    <text x="40" y="168">q&#8321;=(0,0)</text><text x="112" y="168" opacity="0.7">q&#8322;=(1,0)</text>
-    <text x="232" y="52">at &#952;&#8321; = &#952;&#8322; = 90&#176;:</text>
+    <text x="40" y="168">q<tspan dy="3.5">1</tspan><tspan dy="-3.5">=(0,0)</tspan></text><text x="112" y="168" opacity="0.7">q<tspan dy="3.5">2</tspan><tspan dy="-3.5">=(1,0)</tspan></text>
+    <text x="232" y="52">at &#952;<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = &#952;</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176;:</tspan></text>
     <text x="232" y="72">PoE:  tip &#8594; (1,1) &#8594; (&#8722;1, 1),  R = R_z(180&#176;)</text>
     <text x="232" y="92">geometry:  elbow (0,1), link 2 along &#8722;x</text>
     <text x="232" y="112">&#8594; tip (0,1) + (&#8722;1,0) = (&#8722;1, 1)  &#8212; same</text>
@@ -317,8 +317,8 @@ $(0,1)$); $\theta_2 = 90°$가 90°를 더해 링크 2는 $-\hat x$ 방향; 끝�
   <g font-size="11" fill="currentColor">
     <text x="112" y="186" opacity="0.7">home: 두 링크 모두 +x, 끝점 (2, 0)</text>
     <text x="80" y="124">링크 1</text><text x="18" y="80">링크 2</text>
-    <text x="40" y="168">q&#8321;=(0,0)</text><text x="112" y="168" opacity="0.7">q&#8322;=(1,0)</text>
-    <text x="232" y="52">&#952;&#8321; = &#952;&#8322; = 90&#176;일 때:</text>
+    <text x="40" y="168">q<tspan dy="3.5">1</tspan><tspan dy="-3.5">=(0,0)</tspan></text><text x="112" y="168" opacity="0.7">q<tspan dy="3.5">2</tspan><tspan dy="-3.5">=(1,0)</tspan></text>
+    <text x="232" y="52">&#952;<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = &#952;</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176;일 때:</tspan></text>
     <text x="232" y="72">PoE:  끝점 &#8594; (1,1) &#8594; (&#8722;1, 1),  R = R_z(180&#176;)</text>
     <text x="232" y="92">기하:  팔꿈치 (0,1), 링크 2는 &#8722;x 방향</text>
     <text x="232" y="112">&#8594; 끝점 (0,1) + (&#8722;1,0) = (&#8722;1, 1)  &#8212; 같다</text>

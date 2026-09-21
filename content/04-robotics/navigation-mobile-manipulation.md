@@ -81,7 +81,7 @@ holonomic base, with the panel at world $(2,1)$ m.
     <text x="404" y="250">panel normal:</text>
     <text x="404" y="264">the push direction</text>
     <text x="404" y="330" opacity="0.85">inner circle: radius</text>
-    <text x="404" y="344" opacity="0.85">|L₁ − L₂| = 0 for P2, so none</text>
+    <text x="404" y="344" opacity="0.85">|L<tspan dy="3.5">1</tspan><tspan dy="-3.5"> − L</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">| = 0 for P2, so none</tspan></text>
     <text x="208" y="194" text-anchor="end">panel (2, 1) = tip</text>
     <text x="223" y="278">elbow (2, 0)</text>
     <text x="124" y="306" text-anchor="end">base (1, 0)</text>
@@ -115,8 +115,10 @@ figure without it cannot show what a singular placement costs.
 **Three circles about the panel, not about the base.** This is §3's inversion, and drawing the
 circles the other way round is the usual mistake. About $(2,1)$ draw the outer circle $r=2$ m —
 bases on it can only just touch the panel, arm straight, $\det J=0$ — then the ring
-$r=\sqrt2=1.414$ m where $w$ is largest, then the inner circle where the arm can no longer fold
-enough to reach. Shade the band between $r=1.311$ m and $r=1.511$ m: that is the $w\ge0.99$ band,
+$r=\sqrt2=1.414$ m where $w$ is largest. The inner circle, inside which the arm could no longer
+fold enough to reach, has radius $|L_1-L_2|=0$ for P2: it degenerates to a point, because P2
+can fold its tip right back onto its own base, so there is no inner circle to draw — say so beside
+the figure instead. Shade the band between $r=1.311$ m and $r=1.511$ m: that is the $w\ge0.99$ band,
 $20$ cm wide, derived in the worked case below. Keep it to scale. Drawn correctly it is narrower
 than one grid square, and the figure has then made this page's argument without a sentence.
 
@@ -545,7 +547,7 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
     <text x="404" y="250">패널 법선:</text>
     <text x="404" y="264">도구가 미는 방향</text>
     <text x="404" y="330" opacity="0.85">안쪽 원: 반지름</text>
-    <text x="404" y="344" opacity="0.85">P2는 |L₁ − L₂| = 0, 곧 없음</text>
+    <text x="404" y="344" opacity="0.85">P2는 |L<tspan dy="3.5">1</tspan><tspan dy="-3.5"> − L</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">| = 0, 곧 없음</tspan></text>
     <text x="208" y="194" text-anchor="end">패널 (2, 1) = 말단</text>
     <text x="223" y="278">엘보 (2, 0)</text>
     <text x="124" y="306" text-anchor="end">베이스 (1, 0)</text>
@@ -577,8 +579,9 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 
 **베이스가 아니라 패널을 중심으로 한 원 셋.** 이것이 §3의 뒤집기이고, 원을 반대로 그리는 것이 흔한
 실수다. $(2,1)$을 중심으로 바깥 원 $r=2$ m — 그 위의 베이스는 팔을 곧게 펴야 겨우 닿고 $\det J=0$
-이다 — 을 그리고, 이어 $w$가 가장 큰 고리 $r=\sqrt2=1.414$ m, 그리고 팔이 더는 접히지 못하는 안쪽
-원을 그린다. $r=1.311$ m와 $r=1.511$ m 사이를 칠한다. 아래 계산에서 유도하는 $w\ge0.99$ 띠이고
+이다 — 을 그리고, 이어 $w$가 가장 큰 고리 $r=\sqrt2=1.414$ m를 그린다. 안쪽 원, 곧 그 안에서는
+팔이 더는 충분히 접히지 못하는 원은 P2에서 반지름이 $|L_1-L_2|=0$이라 한 점으로 줄어든다. P2는 말단을
+자기 베이스까지 접어 올 수 있으므로 그릴 안쪽 원이 없고, 대신 그림 옆에 그렇게 적는다. $r=1.311$ m와 $r=1.511$ m 사이를 칠한다. 아래 계산에서 유도하는 $w\ge0.99$ 띠이고
 폭은 $20$ cm다. 축척을 지켜라. 제대로 그리면 모눈 한 칸보다 좁고, 그 순간 그림이 문장 없이 이
 페이지의 논증을 마친 것이다.
 

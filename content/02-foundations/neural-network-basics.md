@@ -171,8 +171,8 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
     <text x="373" y="99">0.5</text>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">
-    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W₁x)</text><text x="373" y="24">ŷ = W₂h</text>
-    <text x="141" y="182">W₁  (3×2)</text><text x="296" y="182">W₂  (1×3)</text>
+    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x)</tspan></text><text x="373" y="24">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text>
+    <text x="141" y="182">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">  (3×2)</tspan></text><text x="296" y="182">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">  (1×3)</tspan></text>
     <text x="65" y="162">input</text><text x="218" y="182">hidden</text><text x="373" y="130">output</text>
   </g>
 </svg>
@@ -321,7 +321,7 @@ A label is enough to keep reading; the formula is what lets you check a paper's 
   so a frozen backbone still runs in every forward pass but receives no update.
 - **Adapter (LoRA as the example).** A small set of new parameters added to a frozen weight matrix $W \in \mathbb{R}^{d \times k}$:
   $$W' = W + BA, \qquad B \in \mathbb{R}^{d \times r},\ \ A \in \mathbb{R}^{r \times k},\ \ r \ll \min(d, k)$$
-  where only $A$ and $B$ are trained, so the update $BA$ has rank at most $r$. For $d = k = 4096$ and $r = 8$, the adapter trains $r(d + k) = 65{,}536$ numbers against the $16{,}777{,}216$ of $W$ — 0.39%. Merging adds $BA$ into $W$ once, so inference is one ordinary matrix multiply ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]).
+  where only $A$ and $B$ are trained, so the update $BA$ has rank at most $r$. For $d = k = 4096$ and $r = 8$, the adapter trains $r(d + k) = 65{,}536$ numbers against the $16{,}777{,}216$ of $W$ — 0.39%. Merging adds $BA$ into $W$ once, so inference is one ordinary matrix multiply ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). What that 0.39% saves in training — model-state memory falls to about an eighth, not to 0.39%, and compute by about a third — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
 - **GELU and SiLU/Swish.** Smooth activations: $\text{GELU}(z) = z\,\Phi(z)$ with $\Phi$ the standard normal CDF, and $\text{SiLU}(z) = z\,\sigma(z)$ with $\sigma$ the sigmoid. At $z = -1.5,\ 0,\ 2$ they give $-0.100,\ 0,\ 1.954$ and $-0.274,\ 0,\ 1.762$. Unlike ReLU, both let a small negative value through, and both are nonlinear, so the §1 requirement holds.
 
 With these, the worked attention example on
@@ -527,8 +527,8 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
     <text x="373" y="99">0.5</text>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">
-    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W₁x)</text><text x="373" y="24">ŷ = W₂h</text>
-    <text x="141" y="182">W₁  (3×2)</text><text x="296" y="182">W₂  (1×3)</text>
+    <text x="65" y="24">x</text><text x="218" y="24">h = ReLU(W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x)</tspan></text><text x="373" y="24">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text>
+    <text x="141" y="182">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">  (3×2)</tspan></text><text x="296" y="182">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">  (1×3)</tspan></text>
     <text x="65" y="162">입력</text><text x="218" y="182">은닉</text><text x="373" y="130">출력</text>
   </g>
 </svg>
@@ -675,7 +675,7 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
   그래서 얼린 백본은 매 순전파에서 여전히 계산되지만 갱신은 받지 않는다.
 - **어댑터(예: LoRA).** 얼린 가중치 행렬 $W \in \mathbb{R}^{d \times k}$에 더하는 작은 새 파라미터 묶음이다.
   $$W' = W + BA, \qquad B \in \mathbb{R}^{d \times r},\ \ A \in \mathbb{R}^{r \times k},\ \ r \ll \min(d, k)$$
-  $A$와 $B$만 학습하므로 갱신 $BA$의 랭크는 최대 $r$이다. $d = k = 4096$, $r = 8$이면 어댑터는 $W$의 $16{,}777{,}216$개에 대해 $r(d + k) = 65{,}536$개, 곧 0.39%만 학습한다. 병합하면 $BA$를 $W$에 한 번 더해 두므로 추론은 평범한 행렬곱 하나다([[01-canonical-papers/notes/1-foundations/lora|LoRA]]).
+  $A$와 $B$만 학습하므로 갱신 $BA$의 랭크는 최대 $r$이다. $d = k = 4096$, $r = 8$이면 어댑터는 $W$의 $16{,}777{,}216$개에 대해 $r(d + k) = 65{,}536$개, 곧 0.39%만 학습한다. 병합하면 $BA$를 $W$에 한 번 더해 두므로 추론은 평범한 행렬곱 하나다([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). 그 0.39%가 학습에서 아끼는 것 — 모델 상태 메모리는 0.39%가 아니라 약 8분의 1로 줄고, 연산은 약 3분의 1이 준다 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
 - **GELU와 SiLU/Swish.** 매끄러운 활성함수다. $\text{GELU}(z) = z\,\Phi(z)$이고 $\Phi$는 표준정규 누적분포함수, $\text{SiLU}(z) = z\,\sigma(z)$이고 $\sigma$는 시그모이드다. $z = -1.5,\ 0,\ 2$에서 각각 $-0.100,\ 0,\ 1.954$와 $-0.274,\ 0,\ 1.762$다. ReLU와 달리 작은 음수를 통과시키고, 둘 다 비선형이므로 §1의 요구를 만족한다.
 
 이것들이 있으면 [[02-foundations/linear-algebra|1. 선형대수 §1]]의 어텐션 계산 예제 —

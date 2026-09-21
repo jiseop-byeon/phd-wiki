@@ -52,10 +52,10 @@ One figure of P2 standing in the vertical plane, drawn twice on the same axes, b
   <path d="M86.1 150.3 L85 147.9 L83.7 145.7 L82.2 143.6 L80.5 141.7 L78.6 140 L76.5 138.4 L74.3 137.1 L72 136 L69.6 135.1 L67.1 134.5 L64.6 134.1 L62 134 L59.4 134.1 L56.9 134.5 L54.4 135.1 L52 136 L49.7 137.1 L47.5 138.4 L45.4 140 L43.5 141.7 L41.8 143.6 L40.3 145.7 L39 147.9 L37.9 150.3" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8e)"/>
   <path d="M203.3 154.2 L203 153.2 L202.7 152.1 L202.3 151.1 L201.9 150.1 L201.4 149.1 L200.9 148.2 L200.3 147.3 L199.7 146.3 L199.1 145.5 L198.4 144.6 L197.7 143.8 L197 143 L196.2 142.3 L195.4 141.6 L194.5 140.9 L193.7 140.3 L192.7 139.7 L191.8 139.1 L190.9 138.6 L189.9 138.1 L188.9 137.7 L187.9 137.3 L186.8 137 L185.8 136.7" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8e)"/>
   <g fill="currentColor">
-  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ₁</text>
-  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ₂</text>
-  <text x="168" y="34" font-size="11" text-anchor="end">m₂</text>
-  <text x="190" y="180" font-size="11">m₁</text>
+  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="168" y="34" font-size="11" text-anchor="end">m<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="190" y="180" font-size="11">m<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="189" y="75" font-size="11">9.81 N</text>
   <text x="187" y="209.6" font-size="11">9.81 N</text>
   <text x="290.9" y="29.5" font-size="11" text-anchor="end">g = 9.81 m/s²</text>
@@ -291,10 +291,10 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
   <path d="M86.1 150.3 L85 147.9 L83.7 145.7 L82.2 143.6 L80.5 141.7 L78.6 140 L76.5 138.4 L74.3 137.1 L72 136 L69.6 135.1 L67.1 134.5 L64.6 134.1 L62 134 L59.4 134.1 L56.9 134.5 L54.4 135.1 L52 136 L49.7 137.1 L47.5 138.4 L45.4 140 L43.5 141.7 L41.8 143.6 L40.3 145.7 L39 147.9 L37.9 150.3" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8k)"/>
   <path d="M203.3 154.2 L203 153.2 L202.7 152.1 L202.3 151.1 L201.9 150.1 L201.4 149.1 L200.9 148.2 L200.3 147.3 L199.7 146.3 L199.1 145.5 L198.4 144.6 L197.7 143.8 L197 143 L196.2 142.3 L195.4 141.6 L194.5 140.9 L193.7 140.3 L192.7 139.7 L191.8 139.1 L190.9 138.6 L189.9 138.1 L188.9 137.7 L187.9 137.3 L186.8 137 L185.8 136.7" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8k)"/>
   <g fill="currentColor">
-  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ₁</text>
-  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ₂</text>
-  <text x="168" y="34" font-size="11" text-anchor="end">m₂</text>
-  <text x="190" y="180" font-size="11">m₁</text>
+  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="168" y="34" font-size="11" text-anchor="end">m<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="190" y="180" font-size="11">m<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="189" y="75" font-size="11">9.81 N</text>
   <text x="187" y="209.6" font-size="11">9.81 N</text>
   <text x="290.9" y="29.5" font-size="11" text-anchor="end">g = 9.81 m/s²</text>

@@ -132,7 +132,7 @@ The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at 
 
 **The gravity torques, as the moment arms that produce them.** For each joint, draw the horizontal distance from that joint's axis to each weight arrow and label it; those horizontal offsets, not the link lengths, are the moment arms. At the shoulder both masses hang $1\,\mathrm{m}$ to the right, giving $\tau_1 = 2\cdot 9.81\cdot 1 = 19.62\ \mathrm{N{\cdot}m}$; at the elbow the forearm mass is directly *above* the axis, offset $0$, giving $\tau_2 = 0$. Write both numbers as curved arrows at the joints, and write the $0$ explicitly rather than leaving the elbow blank — it is a fact about this pose, and it stops being $0$ the moment the arm leaves it.
 
-**The contact, and the third-law pair.** Under the tip draw the panel as a horizontal surface. Draw the commanded force $(0,-10)\,\mathrm{N}$ as a down arrow from the tip *onto the panel*, then its reaction $(0,+10)\,\mathrm{N}$ as an up arrow of the same length *onto the tip*, offset slightly so the two are visibly a pair and not one arrow drawn twice. Label which body each arrow acts on. Nearly every sign error later in the track is this pair, drawn once.
+**The contact, and the third-law pair.** Under the tip draw the panel as a horizontal surface (the forearm passes in front of the panel, out of the drawing plane, so only the tip touches it). Draw the commanded force $(0,-10)\,\mathrm{N}$ as a down arrow from the tip *onto the panel*, then its reaction $(0,+10)\,\mathrm{N}$ as an up arrow of the same length *onto the tip*, offset slightly so the two are visibly a pair and not one arrow drawn twice. Label which body each arrow acts on. Nearly every sign error later in the track is this pair, drawn once.
 
 **The apparent mass, in a box beside the tip.** Draw a small ellipse at the tip with horizontal semi-axis $1$ and vertical semi-axis $2$ and label it $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$: the tip of this $2\,\mathrm{kg}$ arm feels like $1\,\mathrm{kg}$ pushed sideways and $2\,\mathrm{kg}$ pushed up. The ellipse is not the manipulability ellipse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]] — that one lives in velocity, this one in mass — and §6 is the whole derivation of why they are different pictures of the same $J$.
 
@@ -250,12 +250,12 @@ Evaluate at three configurations:
     <circle cx="420" cy="120" r="4.5"/><circle cx="460" cy="120" r="4"/><circle cx="420" cy="134" r="5" fill-opacity="0.55"/>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="100" y="50">&#952;&#8322; = 0&#176; &#183; straight</text>
-    <text x="280" y="50">&#952;&#8322; = 90&#176;</text>
-    <text x="460" y="50">&#952;&#8322; = 180&#176; &#183; folded</text>
-    <text x="100" y="160" font-size="12">M&#8321;&#8321; = 5</text>
-    <text x="280" y="160" font-size="12">M&#8321;&#8321; = 3</text>
-    <text x="460" y="160" font-size="12">M&#8321;&#8321; = 1</text>
+    <text x="100" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0&#176; &#183; straight</tspan></text>
+    <text x="280" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176;</tspan></text>
+    <text x="460" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 180&#176; &#183; folded</tspan></text>
+    <text x="100" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 5</tspan></text>
+    <text x="280" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 3</tspan></text>
+    <text x="460" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 1</tspan></text>
     <text x="460" y="176" font-size="9.5" opacity="0.7">drawn offset; the links overlap</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">
@@ -639,7 +639,7 @@ print(Lam, tau_hold, tau_acc)
 
 **중력 토크, 그것을 만드는 모멘트 팔로.** 관절마다 그 축에서 각 무게 화살표까지의 수평 거리를 그리고 값을 적는다. 모멘트 팔은 링크 길이가 아니라 그 수평 간격이다. 어깨에서는 두 질량이 모두 오른쪽으로 $1\,\mathrm{m}$이라 $\tau_1 = 2\cdot 9.81\cdot 1 = 19.62\ \mathrm{N{\cdot}m}$이고, 엘보에서는 전완 질량이 축 바로 *위*에 있어 간격이 $0$이므로 $\tau_2 = 0$이다. 두 값을 관절의 곡선 화살표로 적고, 엘보를 비워 두지 말고 $0$을 명시한다. 그것은 이 자세에 대한 사실이고, 팔이 이 자세를 벗어나는 순간 $0$이 아니게 된다.
 
-**접촉, 그리고 작용-반작용 쌍.** 말단 아래에 패널을 수평면으로 그린다. 명령된 힘 $(0,-10)\,\mathrm{N}$을 말단에서 *패널로* 향하는 아래 화살표로 그리고, 그 반작용 $(0,+10)\,\mathrm{N}$을 같은 길이의 위 화살표로 *말단에* 그린다. 살짝 어긋나게 그려 둘이 한 화살표를 두 번 그린 것이 아니라 쌍임이 보이게 한다. 각 화살표가 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이고, 한 번 그려 두면 끝난다.
+**접촉, 그리고 작용-반작용 쌍.** 말단 아래에 패널을 수평면으로 그린다(전완은 도면 평면 밖으로 패널 앞을 지나가므로 패널에 닿는 것은 말단뿐이다). 명령된 힘 $(0,-10)\,\mathrm{N}$을 말단에서 *패널로* 향하는 아래 화살표로 그리고, 그 반작용 $(0,+10)\,\mathrm{N}$을 같은 길이의 위 화살표로 *말단에* 그린다. 살짝 어긋나게 그려 둘이 한 화살표를 두 번 그린 것이 아니라 쌍임이 보이게 한다. 각 화살표가 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이고, 한 번 그려 두면 끝난다.
 
 **겉보기 질량, 말단 옆 상자에.** 말단에 가로 반축 $1$, 세로 반축 $2$인 작은 타원을 그리고 $\Lambda=\mathrm{diag}(1,2)\ \mathrm{kg}$이라 쓴다. $2\,\mathrm{kg}$짜리 이 팔의 말단은 옆으로 밀면 $1\,\mathrm{kg}$, 위로 밀면 $2\,\mathrm{kg}$처럼 느껴진다. 이 타원은 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 조작성 타원이 아니다. 그쪽은 속도에, 이쪽은 질량에 산다. 같은 $J$의 두 그림이 왜 다른지가 §6 전체의 유도다.
 
@@ -752,12 +752,12 @@ $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos
     <circle cx="420" cy="120" r="4.5"/><circle cx="460" cy="120" r="4"/><circle cx="420" cy="134" r="5" fill-opacity="0.55"/>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="100" y="50">&#952;&#8322; = 0&#176; &#183; 곧게 뻗음</text>
-    <text x="280" y="50">&#952;&#8322; = 90&#176;</text>
-    <text x="460" y="50">&#952;&#8322; = 180&#176; &#183; 접힘</text>
-    <text x="100" y="160" font-size="12">M&#8321;&#8321; = 5</text>
-    <text x="280" y="160" font-size="12">M&#8321;&#8321; = 3</text>
-    <text x="460" y="160" font-size="12">M&#8321;&#8321; = 1</text>
+    <text x="100" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0&#176; &#183; 곧게 뻗음</tspan></text>
+    <text x="280" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176;</tspan></text>
+    <text x="460" y="50">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 180&#176; &#183; 접힘</tspan></text>
+    <text x="100" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 5</tspan></text>
+    <text x="280" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 3</tspan></text>
+    <text x="460" y="160" font-size="12">M<tspan dy="3.5">11</tspan><tspan dy="-3.5"> = 1</tspan></text>
     <text x="460" y="176" font-size="9.5" opacity="0.7">겹쳐서 보이도록 어긋나게 그렸다</text>
   </g>
   <g font-size="11" fill="currentColor" opacity="0.9">

@@ -54,12 +54,12 @@ One signal-flow drawing with a small picture of the arm attached to it. Draw it 
     <text x="12" y="285" font-size="11">= 5.73°; elbow exact</text>
     </g>
     <text x="150" y="48" font-size="11.5" fill="currentColor" font-weight="bold">PD + gravity compensation</text>
-    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e₁</text><text x="150" y="112" font-size="11.5">e₂</text></g>
+    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="150" y="112" font-size="11.5">e<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text></g>
     <text x="190" y="65" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
     <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="71" x2="170" y2="89"/><line x1="210" y1="71" x2="210" y2="89"/><polyline points="170,75 175,75 178,71 182.4,79 186.8,71 191.2,79 195.6,71 200,79 204,75 210,75" fill="none"/><line x1="170" y1="85" x2="184" y2="85"/><path d="M182 81 L196 81 M182 89 L196 89 M182 81 L182 89" fill="none"/><line x1="189" y1="82.5" x2="189" y2="87.5"/><line x1="189" y1="85" x2="210" y2="85"/><line x1="170" y1="99" x2="170" y2="117"/><line x1="210" y1="99" x2="210" y2="117"/><polyline points="170,103 175,103 178,99 182.4,107 186.8,99 191.2,107 195.6,99 200,107 204,103 210,103" fill="none"/><line x1="170" y1="113" x2="184" y2="113"/><path d="M182 109 L196 109 M182 117 L196 117 M182 109 L182 117" fill="none"/><line x1="189" y1="110.5" x2="189" y2="115.5"/><line x1="189" y1="113" x2="210" y2="113"/></g>
     <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="80" x2="170" y2="80"/><line x1="164" y1="108" x2="170" y2="108"/></g>
     <text x="150" y="168" font-size="11.5" fill="currentColor" font-weight="bold">computed torque</text>
-    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e₁</text><text x="150" y="232" font-size="11.5">e₂</text></g>
+    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="150" y="232" font-size="11.5">e<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text></g>
     <text x="190" y="185" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
     <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="191" x2="170" y2="209"/><line x1="210" y1="191" x2="210" y2="209"/><polyline points="170,195 175,195 178,191 182.4,199 186.8,191 191.2,199 195.6,191 200,199 204,195 210,195" fill="none"/><line x1="170" y1="205" x2="184" y2="205"/><path d="M182 201 L196 201 M182 209 L196 209 M182 201 L182 209" fill="none"/><line x1="189" y1="202.5" x2="189" y2="207.5"/><line x1="189" y1="205" x2="210" y2="205"/><line x1="170" y1="219" x2="170" y2="237"/><line x1="210" y1="219" x2="210" y2="237"/><polyline points="170,223 175,223 178,219 182.4,227 186.8,219 191.2,227 195.6,219 200,227 204,223 210,223" fill="none"/><line x1="170" y1="233" x2="184" y2="233"/><path d="M182 229 L196 229 M182 237 L196 237 M182 229 L182 237" fill="none"/><line x1="189" y1="230.5" x2="189" y2="235.5"/><line x1="189" y1="233" x2="210" y2="233"/></g>
     <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="200" x2="170" y2="200"/><line x1="164" y1="228" x2="170" y2="228"/></g>
@@ -85,7 +85,7 @@ One signal-flow drawing with a small picture of the arm attached to it. Draw it 
     <text x="201.4" y="140" font-size="12" text-anchor="middle" fill="currentColor">−5</text>
     <text x="212.9" y="140" font-size="12" fill="currentColor">) rad/s²</text>
     <ellipse cx="201.4" cy="136" rx="12" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← elbow: e₂ = 0, τ₂ = 0</text>
+    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← elbow: e<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0, τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0</tspan></text>
     <text x="150" y="260" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="249.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="249.7" r="0.9" fill="currentColor"/>
     <text x="181.6" y="260" font-size="12" text-anchor="middle" fill="currentColor">10</text>
     <text x="189" y="260" font-size="12" fill="currentColor">,</text>
@@ -286,12 +286,12 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
     <text x="12" y="285" font-size="11">= 5.73°, 엘보는 정확</text>
     </g>
     <text x="150" y="48" font-size="11.5" fill="currentColor" font-weight="bold">중력 보상 PD</text>
-    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e₁</text><text x="150" y="112" font-size="11.5">e₂</text></g>
+    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="150" y="112" font-size="11.5">e<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text></g>
     <text x="190" y="65" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
     <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="71" x2="170" y2="89"/><line x1="210" y1="71" x2="210" y2="89"/><polyline points="170,75 175,75 178,71 182.4,79 186.8,71 191.2,79 195.6,71 200,79 204,75 210,75" fill="none"/><line x1="170" y1="85" x2="184" y2="85"/><path d="M182 81 L196 81 M182 89 L196 89 M182 81 L182 89" fill="none"/><line x1="189" y1="82.5" x2="189" y2="87.5"/><line x1="189" y1="85" x2="210" y2="85"/><line x1="170" y1="99" x2="170" y2="117"/><line x1="210" y1="99" x2="210" y2="117"/><polyline points="170,103 175,103 178,99 182.4,107 186.8,99 191.2,107 195.6,99 200,107 204,103 210,103" fill="none"/><line x1="170" y1="113" x2="184" y2="113"/><path d="M182 109 L196 109 M182 117 L196 117 M182 109 L182 117" fill="none"/><line x1="189" y1="110.5" x2="189" y2="115.5"/><line x1="189" y1="113" x2="210" y2="113"/></g>
     <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="80" x2="170" y2="80"/><line x1="164" y1="108" x2="170" y2="108"/></g>
     <text x="150" y="168" font-size="11.5" fill="currentColor" font-weight="bold">계산 토크</text>
-    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e₁</text><text x="150" y="232" font-size="11.5">e₂</text></g>
+    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="150" y="232" font-size="11.5">e<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text></g>
     <text x="190" y="185" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
     <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="191" x2="170" y2="209"/><line x1="210" y1="191" x2="210" y2="209"/><polyline points="170,195 175,195 178,191 182.4,199 186.8,191 191.2,199 195.6,191 200,199 204,195 210,195" fill="none"/><line x1="170" y1="205" x2="184" y2="205"/><path d="M182 201 L196 201 M182 209 L196 209 M182 201 L182 209" fill="none"/><line x1="189" y1="202.5" x2="189" y2="207.5"/><line x1="189" y1="205" x2="210" y2="205"/><line x1="170" y1="219" x2="170" y2="237"/><line x1="210" y1="219" x2="210" y2="237"/><polyline points="170,223 175,223 178,219 182.4,227 186.8,219 191.2,227 195.6,219 200,227 204,223 210,223" fill="none"/><line x1="170" y1="233" x2="184" y2="233"/><path d="M182 229 L196 229 M182 237 L196 237 M182 229 L182 237" fill="none"/><line x1="189" y1="230.5" x2="189" y2="235.5"/><line x1="189" y1="233" x2="210" y2="233"/></g>
     <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="200" x2="170" y2="200"/><line x1="164" y1="228" x2="170" y2="228"/></g>
@@ -317,7 +317,7 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
     <text x="201.4" y="140" font-size="12" text-anchor="middle" fill="currentColor">−5</text>
     <text x="212.9" y="140" font-size="12" fill="currentColor">) rad/s²</text>
     <ellipse cx="201.4" cy="136" rx="12" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← 엘보: e₂ = 0, τ₂ = 0</text>
+    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← 엘보: e<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0, τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0</tspan></text>
     <text x="150" y="260" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="249.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="249.7" r="0.9" fill="currentColor"/>
     <text x="181.6" y="260" font-size="12" text-anchor="middle" fill="currentColor">10</text>
     <text x="189" y="260" font-size="12" fill="currentColor">,</text>

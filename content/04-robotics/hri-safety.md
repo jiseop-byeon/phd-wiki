@@ -312,7 +312,7 @@ last a worked example of what the separation distance costs.
 | Fail-operational | selected function continues despite specified failures |
 | Near miss | event without harm that could plausibly have produced it |
 
-No learned policy is “safe” merely because it had zero collisions in a small test. Safety is a system property involving sensing, control, hardware, people, environment, procedures, and evidence.
+No learned policy is “safe” merely because it had zero collisions in a small test. Safety is a system property involving sensing, control, hardware, people, environment, procedures, and evidence. Incident 5 of F1, in the worked case of [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]], is that sentence in one trace: a force-threshold stop kept comparing a stalled sensor's last value with its limit, never fired, and let a 31 N contact through — a stop, and the watchdog guarding it, must check how old its input is, not only its value.
 
 **Which standard says what.** Safety sections quote standard numbers as shorthand. The
 shorthand carries the actual claim. You are reading them, not certifying against them. But you
@@ -811,7 +811,7 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 | Near miss | 해는 없었지만 그럴듯하게 해를 낳을 수 있었던 사건 |
 
 작은 시험에서 충돌이 없었다는 이유만으로 학습 정책이 "안전"한 것은 아니다. 안전은 센싱,
-제어, 하드웨어, 사람, 환경, 절차, 증거가 얽힌 시스템 속성이다.
+제어, 하드웨어, 사람, 환경, 절차, 증거가 얽힌 시스템 속성이다. [[06-research-practice/failure-analysis-system-evaluation|3. 실패 분석·시스템 평가]] worked case의 F1 사건 5가 이 문장을 기록 하나로 보여 준다. 힘 문턱 정지가 멈춘 센서의 마지막 값을 문턱과 계속 비교하다가 끝내 작동하지 않았고, 31 N 접촉이 그대로 지나갔다. 정지 기능과 그것을 지키는 watchdog은 입력의 값만이 아니라 그 입력이 얼마나 오래되었는지를 검사해야 한다.
 
 **어느 표준이 무엇을 말하는가.** 안전 절은 표준 번호를 약칭처럼 인용한다. 그 약칭이 실제
 주장을 지고 있다. 우리는 인증하는 것이 아니라 읽는 것이다. 그래도 어느 문서가 그 용어를

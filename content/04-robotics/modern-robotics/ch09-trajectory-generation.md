@@ -60,12 +60,12 @@ One figure, three stacked panels sharing a horizontal time axis that runs from $
     <path d="M80 282 L80 254 L110.3 254 L110.3 282 L377.1 282 L377.1 310 L407.4 310 L407.4 282 L534 282" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M80 274.4 L525.7 289.6" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
     <g fill="currentColor">
-    <text x="80" y="18" font-size="11" font-weight="bold">elbow θ₂ (deg)</text>
+    <text x="80" y="18" font-size="11" font-weight="bold">elbow θ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> (deg)</tspan></text>
     <text x="137" y="124" font-size="11" text-anchor="end" font-weight="bold">speed |θ</text>
-    <text x="137" y="124" font-size="11" font-weight="bold">₂| (rad/s)</text>
+    <text x="137" y="124" font-size="11" font-weight="bold"><tspan dy="3.5">2</tspan><tspan dy="-3.5">| (rad/s)</tspan></text>
     <circle cx="134.1" cy="114.5" r="0.8" fill="currentColor"/>
     <text x="96" y="229" font-size="11" text-anchor="end" font-weight="bold">d|θ</text>
-    <text x="96" y="229" font-size="11" font-weight="bold">₂|/dt (rad/s²)</text>
+    <text x="96" y="229" font-size="11" font-weight="bold"><tspan dy="3.5">2</tspan><tspan dy="-3.5">|/dt (rad/s²)</tspan></text>
     <circle cx="93.1" cy="219.5" r="0.8" fill="currentColor"/>
     <text x="73" y="34" font-size="11" text-anchor="end">90°</text>
     <text x="73" y="68" font-size="11" text-anchor="end">0°</text>
@@ -283,12 +283,12 @@ $$|\dot\theta_i| \le v_{\max} = 0.8\ \mathrm{rad/s}, \qquad |\ddot\theta_i| \le 
     <path d="M80 282 L80 254 L110.3 254 L110.3 282 L377.1 282 L377.1 310 L407.4 310 L407.4 282 L534 282" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M80 274.4 L525.7 289.6" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
     <g fill="currentColor">
-    <text x="80" y="18" font-size="11" font-weight="bold">엘보 θ₂ (deg)</text>
+    <text x="80" y="18" font-size="11" font-weight="bold">엘보 θ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> (deg)</tspan></text>
     <text x="137" y="124" font-size="11" text-anchor="end" font-weight="bold">속력 |θ</text>
-    <text x="137" y="124" font-size="11" font-weight="bold">₂| (rad/s)</text>
+    <text x="137" y="124" font-size="11" font-weight="bold"><tspan dy="3.5">2</tspan><tspan dy="-3.5">| (rad/s)</tspan></text>
     <circle cx="134.1" cy="114.5" r="0.8" fill="currentColor"/>
     <text x="96" y="229" font-size="11" text-anchor="end" font-weight="bold">d|θ</text>
-    <text x="96" y="229" font-size="11" font-weight="bold">₂|/dt (rad/s²)</text>
+    <text x="96" y="229" font-size="11" font-weight="bold"><tspan dy="3.5">2</tspan><tspan dy="-3.5">|/dt (rad/s²)</tspan></text>
     <circle cx="93.1" cy="219.5" r="0.8" fill="currentColor"/>
     <text x="73" y="34" font-size="11" text-anchor="end">90°</text>
     <text x="73" y="68" font-size="11" text-anchor="end">0°</text>

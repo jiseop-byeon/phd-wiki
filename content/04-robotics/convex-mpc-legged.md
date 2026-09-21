@@ -190,7 +190,9 @@ The point of the drawing is that the shaded window sits inside one stance phase.
 components $\times\ 2$ steps $=24$ cells. Cross out the $12$ cells belonging to the two swing feet:
 those are the equalities $f_i=0$. On one surviving stance foot, draw the four pyramid faces
 $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$ as four lines and the unilateral bound $f_z\ge0$ as a
-fifth. Count what is left. That count is the QP.
+fifth. Then count: the cells left are the $12$ free forces, and the rows are five per foot per step
+for all four feet, $4\times2\times5=40$ ($32$ pyramid faces and $8$ unilateral bounds), because the
+swing feet keep their rows, which $f_i=0$ leaves nothing to constrain. That count is the QP.
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*, made in five modelling moves:
@@ -694,7 +696,9 @@ trot 보행 차트를 다시 그리고 지평이 덮는 $0.12$ s를 칠한다. �
 **오른쪽 — 제약 블록.** 결정 벡터를 격자로 그린다. 발 $4$개 $\times$ 힘 성분 $3$개 $\times$
 스텝 $2$개 $=24$칸. 유각 중인 두 발의 $12$칸을 지운다. 등식 $f_i=0$이 그것이다. 남은 디딤발
 하나에 피라미드 네 면 $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$를 네 개의 선으로, 단방향 한계
-$f_z\ge0$을 다섯 번째로 그린다. 남은 것을 센다. 그 수가 곧 QP다.
+$f_z\ge0$을 다섯 번째로 그린다. 그다음 센다. 남은 칸이 자유 힘 $12$개이고, 행은 네 발 모두에
+발마다 스텝마다 다섯 개씩 $4\times2\times5=40$개(피라미드 면 $32$개와 단방향 한계 $8$개)다. 유각
+발도 자기 행을 그대로 갖고, $f_i=0$이라 그 행들이 구속할 것이 남지 않을 뿐이다. 그 수가 곧 QP다.
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*이고,
 다섯 가지 모델링 선택으로 이루어진다:

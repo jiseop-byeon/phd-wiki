@@ -118,7 +118,7 @@ which kind of signal it carries: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ s
 third element is the one readers leave out and the one §4 shows can decide the answer: the same
 $K$ that is stable in the left-hand notation can be unstable in the right-hand one. A block diagram
 that does not say where the signal becomes a sequence has not specified the controller the problem
-set runs.
+set runs. That controller steps the held loop by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$ (§4), which is where the panel's $K<19$ at $T=0.1$ s comes from; integrating the plant exactly across each held interval would allow $K<20.02$.
 
 ### 1. What feedback actually buys
 
@@ -267,7 +267,7 @@ and $T = 0.1$: $A_d = e^{-0.1} = 0.905$ and $B_d = 1 - e^{-0.1} = 0.095$. Since 
 $e^{AT}$ are $e^{\lambda_i T}$, the map is
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
-$e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Recovering this $A_d$ and $B_d$ from a recorded input and output, and mapping them back to the time constant, is [[04-robotics/system-identification|5.5 System Identification]].
+$e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Recovering this $A_d$ and $B_d$ from a recorded input and output, and mapping them back to the time constant, is [[04-robotics/system-identification|5.5 System Identification]]. Deep sequence models sample their state-space layers from a continuous-time model too, with the step learned rather than chosen — Mamba with this hold, S4 with the bilinear transform ([[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §8–§9]]).
 
 **Worked: P4 under explicit Euler.** The leaky heater of §1 with $u=-Kx$ is $\dot x=-(1+K)x+d$. One explicit-Euler step of period $T$ ([[02-foundations/lab-kernel|0.65]]) is
 
@@ -922,7 +922,7 @@ $x_\infty=1+d$를 적고 이유를 한 줄로 쓴다. $x$를 읽는 화살표가
 $d(t)$는 연속, $x_k$와 $u_k$는 수열이다. 이 세 번째 요소가 독자들이 빠뜨리는 것이고, §4가
 보여 주듯 답을 가르는 것이다. 왼쪽 표기에서 안정한 같은 $K$가 오른쪽 표기에서는 불안정할 수
 있다. 신호가 어디서 수열이 되는지 말하지 않는 블록 다이어그램은 과제가 돌릴 제어기를 아직
-특정하지 못한 그림이다.
+특정하지 못한 그림이다. 그 제어기는 유지된 루프를 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$(§4)로 한 주기씩 전진시키고, 칸 아래의 $T=0.1$ s에서 $K<19$가 거기서 나온다. 유지된 각 구간에서 플랜트를 정확히 적분했다면 $K<20.02$까지 허용된다.
 
 ### 1. 피드백이 실제로 사는 것
 
@@ -1057,7 +1057,7 @@ $$x_{k+1} = A_d x_k + B_d u_k, \qquad A_d = e^{AT}, \qquad B_d = \int_0^T e^{A\t
 $A_d = e^{-0.1} = 0.905$, $B_d = 1 - e^{-0.1} = 0.095$다. $e^{AT}$의 고유값은 $e^{\lambda_i T}$이므로
 사상은 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
-$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 기록된 입력과 출력에서 이 $A_d$와 $B_d$를 되찾고, 그것을 다시 시상수로 되돌리는 일은 [[04-robotics/system-identification|5.5 시스템 식별]]이다.
+$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 기록된 입력과 출력에서 이 $A_d$와 $B_d$를 되찾고, 그것을 다시 시상수로 되돌리는 일은 [[04-robotics/system-identification|5.5 시스템 식별]]이다. 딥러닝 시퀀스 모델도 상태공간 층을 연속 시간 모델에서 샘플링하되, 스텝을 고르는 대신 학습한다. Mamba는 이 영차 유지로, S4는 쌍선형 변환으로 이산화한다([[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §8–§9]]).
 
 **계산: 명시적 오일러 아래의 P4.** §1의 새는 히터에 $u=-Kx$를 걸면 $\dot x=-(1+K)x+d$. 주기 $T$의 명시적 오일러 한 스텝([[02-foundations/lab-kernel|0.65]])은
 

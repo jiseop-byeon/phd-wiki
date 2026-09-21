@@ -145,7 +145,7 @@ Two figures, side by side.
 
 **Right — the wrench space.** Axes $f_x$, $f_y$ and $m_z/\rho$, all three in newtons. Plot the four generator wrenches of **A** as points, join them into the tetrahedron, mark the origin inside it, and draw the inscribed ball touching a face. Label the ball's radius $\epsilon$ and draw the arrow from the origin to that touch point — the weakest direction. Then draw the gravity wrench $(0,\ +4.905,\ 0)$ as a separate arrow from the origin and mark where it leaves the tetrahedron: a longer arrow than $\epsilon$, which is the whole point of §4.
 
-The problem set asks for the same two figures at $\mu = 0.2$, where one of those two arrows changes sign of verdict and the other does not.
+The problem set asks for both figures again at $\mu = 0.2$: the left one for a new family of candidates, the right one for grasp **B**, where $\epsilon$ shrinks but the gravity arrow keeps its verdict, since B's lift margin stays $4.08$. The arrow whose verdict flips at that friction is A's (Step 6 below).
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -774,7 +774,7 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
 
 **오른쪽 — 렌치 공간.** 축은 $f_x$, $f_y$, $m_z/\rho$이고 셋 다 단위가 뉴턴이다. **A**의 생성 렌치 넷을 점으로 찍고 사면체로 잇고, 그 안의 원점을 표시하고, 한 면에 닿는 내접 공을 그린다. 공의 반지름에 $\epsilon$이라 쓰고 원점에서 그 접점으로 가는 화살표를 그린다 — 가장 약한 방향이다. 그다음 중력 렌치 $(0,\ +4.905,\ 0)$을 원점에서 나가는 별도의 화살표로 그리고 그것이 사면체를 벗어나는 지점을 표시한다. $\epsilon$보다 긴 화살표이고, 그것이 §4의 요점 전부다.
 
-과제는 같은 그림 둘을 $\mu = 0.2$에서 요구한다. 두 화살표 중 하나는 판정이 뒤집히고 다른 하나는 그대로다.
+과제는 두 그림을 $\mu = 0.2$에서 다시 요구한다. 왼쪽은 새 후보 가족에 대해, 오른쪽은 파지 B에 대해서다. 파지 B에서는 $\epsilon$이 줄지만 중력 화살표의 판정은 그대로다. 드는 여유가 $4.08$로 변하지 않기 때문이다. 그 마찰에서 판정이 뒤집히는 화살표는 파지 A의 것이다(아래 6단계).
 
 ### 대상으로 한 번 끝까지 · Worked case
 

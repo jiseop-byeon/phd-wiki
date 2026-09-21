@@ -8,8 +8,8 @@ mastery-when: "Raise when the generative objective, sampler, action distribution
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], and [[03-deep-learning/foundations/index|1. Learning Systems]].
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]].
+> Object **D6** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.65 Lab Kernel]], because this page is Tier A · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], and [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs]].
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D6** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.65 Lab Kernel]] · [[02-foundations/probability|3. Probability]], [[02-foundations/information-theory|5. Information Theory]], [[03-deep-learning/foundations/index|1. Learning Systems]], [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN]].
 
 ## English
 
@@ -39,7 +39,7 @@ Training can ask a network to recover the known noise $\epsilon=-1$ from $(x_t,t
 
 The network is specified as completely as the datum: it returns the noise that would explain $x$ if the datum were $x_0$, plus a constant offset, $\epsilon_\theta(x,i)=(x-\sqrt{\bar\alpha_i}x_0)/\sqrt{1-\bar\alpha_i}+b$. At the catalog level that is $-1+0.2=-0.8$, which is exactly the imperfect prediction §2 already uses. Freezing the *model* as well as the data is what makes the sampler the only thing left varying in §5.
 
-*Scope: this page teaches the two processes a diffusion model is made of, how a prediction target is translated between parameterizations, and what the number of sampler steps costs and buys. It does not teach the score-matching and variational derivations that justify the loss, which live with the density estimation of [[02-foundations/probability|3. Probability]] and [[02-foundations/information-theory|5. Information Theory]]; nor the network architectures (U-Net, DiT) that carry it, which are [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor how a sampled action is committed to a robot, which is the chunk of [[03-deep-learning/vla/index|4. VLA]].*
+*Scope: this page teaches the two processes a diffusion model is made of, how a prediction target is translated between parameterizations, and what the number of sampler steps costs and buys. It does not teach the score-matching and variational derivations that justify the loss, which live with the density estimation of [[02-foundations/probability|3. Probability]] and [[02-foundations/information-theory|5. Information Theory]] and, for the variational bound, [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs]]; nor the network architectures (U-Net, DiT) that carry it, which are [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor how a sampled action is committed to a robot, which is the chunk of [[03-deep-learning/vla/index|4. VLA]].*
 
 ### Homework diagram · 과제가 그릴 그림
 
@@ -195,6 +195,8 @@ Two paths that share a set of levels and nothing else, and the problem set asks 
   <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
 </svg>
 
+The reverse loop drawn is §5's deterministic sampler at $N=4$, whose last estimate is the one-shot $1.85$ — not the worked case's single ancestral step, whose mean $\mu_4=1.180159$ takes the catalog $x_5=1$ down one level.
+
 Four things the drawing has to get right.
 **The forward path is one arrow, not a chain.** Training never walks down the levels; it samples a level and jumps there in closed form. Drawing a chain there is claiming a cost the training loop does not pay.
 **The reverse path is a loop with a counter on it.** Write $N$ on the loop. That counter is the only quantity §5 varies and the only one the latency budget sees.
@@ -243,6 +245,8 @@ Those two sentences name two different objects, and almost every confusion about
 > - **Non-example**: the *reverse* chain run in the corrupting direction one level at a time. It reaches the same distribution but costs $i$ steps instead of one, and using it in a training loop is a common way to make a correct implementation 20 times slower than it needs to be.
 > - **Non-example**: data augmentation that adds noise of a fixed size. It has no level index and no $\bar\alpha$, so nothing in it tells the network *how much* signal is left, and the network cannot learn a level-dependent denoiser from it.
 > - **Why it matters**: because the forward process is known and closed-form, the training loss is a plain regression with a free label — that is the entire reason the method trains stably at scale, and it is also why the loss says nothing about sampling, which is the other object.
+
+Read as a generative model, this makes diffusion a latent-variable model whose encoder — the forward process — is fixed in advance rather than learned, which is how [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs §9]] sets it beside the VAE.
 
 > **Reverse process, defined.** The **reverse process** is a *sampler*: a rule for producing $x_{i-1}$ from $x_i$ using the learned network, iterated from a noisy start down to a clean sample. Three defining conditions. It **begins without $x_0$**, so there is no label anywhere in it. It uses the network **once per level it visits**, which makes the number of levels visited, $N$, the unit of cost. And it is **a choice, not a consequence**: the same trained network supports a stochastic ancestral sampler, a deterministic DDIM-style sampler, and higher-order ODE solvers, which differ in output at the same $N$.
 >
@@ -422,7 +426,7 @@ def eps_model(x, k):                      # same value at the catalog level, dif
 
 신경망도 자료만큼 완전히 명세한다. 자료가 $x_0$였다면 $x$를 설명했을 noise에 상수를 더해 돌려준다. $\epsilon_\theta(x,i)=(x-\sqrt{\bar\alpha_i}x_0)/\sqrt{1-\bar\alpha_i}+b$다. 카탈로그 레벨에서 $-1+0.2=-0.8$이고, §2가 이미 쓰는 불완전한 예측이 정확히 이것이다. 자료뿐 아니라 *모델*까지 고정해야 §5에서 변하는 것이 sampler 하나만 남는다.
 
-*범위: 이 페이지는 diffusion 모델을 이루는 두 과정, 예측 target을 parameterization 사이에서 번역하는 법, sampler step 수가 무엇을 치르고 무엇을 사는지를 가르친다. 손실을 정당화하는 score matching과 변분 유도는 가르치지 않는다. 그것은 [[02-foundations/probability|3. Probability]]와 [[02-foundations/information-theory|5. Information Theory]]의 밀도 추정 쪽이다. 그것을 실어 나르는 architecture(U-Net, DiT)도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]이다. 뽑힌 행동을 로봇에 확정하는 법도 아니다. 그것은 [[03-deep-learning/vla/index|4. VLA]]의 chunk다.*
+*범위: 이 페이지는 diffusion 모델을 이루는 두 과정, 예측 target을 parameterization 사이에서 번역하는 법, sampler step 수가 무엇을 치르고 무엇을 사는지를 가르친다. 손실을 정당화하는 score matching과 변분 유도는 가르치지 않는다. 그것은 [[02-foundations/probability|3. Probability]]와 [[02-foundations/information-theory|5. Information Theory]]의 밀도 추정 쪽이고, 변분 하한은 [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN]]에도 있다. 그것을 실어 나르는 architecture(U-Net, DiT)도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]이다. 뽑힌 행동을 로봇에 확정하는 법도 아니다. 그것은 [[03-deep-learning/vla/index|4. VLA]]의 chunk다.*
 
 ### 과제가 그릴 그림 · Homework diagram
 
@@ -578,6 +582,8 @@ def eps_model(x, k):                      # same value at the catalog level, dif
   <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
 </svg>
 
+그림의 reverse 고리는 계산 절의 ancestral 한 스텝(평균 $\mu_4=1.180159$, 카탈로그 $x_5=1$에서 한 레벨 아래로)이 아니라 §5의 결정론적 sampler를 $N=4$로 돌린 것이고, 그 마지막 추정이 한 번에 끝내는 $1.85$다.
+
 그림이 맞혀야 할 것이 넷이다.
 **forward 경로는 사슬이 아니라 화살표 하나다.** 학습은 레벨을 하나 뽑아 닫힌 형태로 곧장 건너뛴다. 거기에 사슬을 그리는 것은 학습 루프가 치르지 않는 비용을 주장하는 것이다.
 **reverse 경로는 계수기가 붙은 고리다.** 고리 위에 $N$을 적는다. §5가 바꾸는 유일한 양이고 지연 예산이 보는 유일한 양이다.
@@ -620,6 +626,8 @@ $L=\mathbb E\|\epsilon-\epsilon_\theta(x_t,t,c)\|^2$. 학습은 깨끗한 $x_0$�
 > - **비예**: *reverse* 사슬을 오염 방향으로 한 레벨씩 돌리는 것. 같은 분포에 도달하지만 한 스텝 대신 $i$ 스텝이 들고, 학습 루프에서 그렇게 하면 맞는 구현을 필요보다 20배 느리게 만든다.
 > - **비예**: 정해진 크기의 noise를 더하는 data augmentation. 레벨 색인도 $\bar\alpha$도 없으므로 신호가 얼마나 남았는지를 신경망에 말해 주는 것이 없고, 레벨 의존 denoiser를 배울 수 없다.
 > - **왜 중요한가**: forward가 알려져 있고 닫힌 형태이므로 학습 손실이 label이 공짜인 평범한 회귀가 된다. 이것이 이 방법이 규모에서 안정적으로 학습되는 이유 전부이고, 동시에 손실이 sampling에 대해 아무 말도 하지 않는 이유다. sampling은 다른 대상이다.
+
+생성 모델로 읽으면 diffusion 모델은 인코더 — 곧 이 forward process — 가 학습되지 않고 미리 고정된 잠재변수 모델이고, [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN §9]]가 그것을 VAE와 나란히 놓는 방식이 이것이다.
 
 > **Reverse process의 정의.** **Reverse process**는 *sampler*다. 학습된 신경망을 써서 $x_i$에서 $x_{i-1}$을 만드는 규칙이고, 시끄러운 출발점에서 깨끗한 표본까지 반복한다. 정의 조건 셋. **$x_0$ 없이 시작하므로** 그 안에는 label이 어디에도 없다. 방문하는 **레벨마다 신경망을 한 번** 쓰므로 방문 레벨 수 $N$이 비용의 단위다. 그리고 **결과가 아니라 선택이다**. 같은 학습 가중치가 확률적 ancestral sampler, 결정론적 DDIM 계열 sampler, 고차 ODE 풀이를 모두 지원하고 같은 $N$에서 출력이 다르다.
 >

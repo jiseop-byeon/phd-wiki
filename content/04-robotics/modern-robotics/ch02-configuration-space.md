@@ -126,7 +126,7 @@ because only the tip's $x$-coordinate can exceed the wall. Note that $L_1 = 1$ e
 | $90°$ | $0$ | $1$ | $0°$ | $-90°$ (the pinch) |
 | $>90°$ | $<0$ | $>1$ | none | region is empty |
 
-The row $\theta_1 = 60°,\ \theta_2 = 0°$ is worth checking by hand: the arm is straight at $60°$, so the tip is at $(2\cos 60°,\ 2\sin 60°) = (1,\ 1.732)$, exactly on the face. The rows mirror for negative $\theta_1$, so the obstacle is a closed lens spanning $\theta_1 \in [-90°, 90°]$ and pinching to a single point at each end.
+The row $\theta_1 = 60°,\ \theta_2 = 0°$ is worth checking by hand: the arm is straight at $60°$, so the tip is at $(2\cos 60°,\ 2\sin 60°) = (1,\ 1.732)$, exactly on the face. The rows mirror for negative $\theta_1$, so the obstacle is an open lens spanning $\theta_1 \in (-90°, 90°)$ — open because Step 3's inequality is strict, so the contact curve bounds it without belonging to it — and that boundary pinches to a single point at each end, $\theta_1 = \pm 90°$.
 
 **Step 5 — how much of the torus is lost.** The change of variables $(\theta_1, \theta_2) \mapsto (\theta_1, \varphi)$ has unit Jacobian determinant, so it preserves area on the torus, and the blocked area is
 
@@ -331,7 +331,7 @@ $$\mathcal{C}_{\text{obs}} = \{\,\theta \in T^2 \;:\; \cos\theta_1 + \cos(\theta
 | $90°$ | $0$ | $1$ | $0°$ | $-90°$ (오므라드는 점) |
 | $>90°$ | $<0$ | $>1$ | 없음 | 영역이 비어 있다 |
 
-$\theta_1 = 60°,\ \theta_2 = 0°$ 행은 손으로 확인할 값이 있다. 팔이 $60°$로 곧게 펴지므로 말단은 $(2\cos 60°,\ 2\sin 60°) = (1,\ 1.732)$, 정확히 면 위다. 음의 $\theta_1$에서 좌우 대칭이므로 장애물은 $\theta_1 \in [-90°, 90°]$에 걸치고 양 끝에서 한 점으로 오므라드는 닫힌 렌즈다.
+$\theta_1 = 60°,\ \theta_2 = 0°$ 행은 손으로 확인할 값이 있다. 팔이 $60°$로 곧게 펴지므로 말단은 $(2\cos 60°,\ 2\sin 60°) = (1,\ 1.732)$, 정확히 면 위다. 음의 $\theta_1$에서 좌우 대칭이므로 장애물은 $\theta_1 \in (-90°, 90°)$에 걸친 열린 렌즈다. 3단계의 부등식이 엄격하므로 접촉 곡선은 렌즈를 둘러싸되 거기에 속하지 않고, 그 경계가 양 끝 $\theta_1 = \pm 90°$에서 한 점으로 오므라든다.
 
 **5단계 — 원환면을 얼마나 잃는가.** 변수변환 $(\theta_1, \theta_2) \mapsto (\theta_1, \varphi)$는 야코비 행렬식이 1이라 원환면 위의 넓이를 보존하고, 막힌 넓이는
 

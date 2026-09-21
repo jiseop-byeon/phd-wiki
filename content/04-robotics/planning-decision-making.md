@@ -86,8 +86,8 @@ at the world origin — and the panel is the half-plane $x<1$ m.
     <text x="346" y="166" text-anchor="end" font-size="11">0°</text>
     <text x="532" y="267" text-anchor="middle" font-size="11">180°</text>
     <text x="346" y="76" text-anchor="end" font-size="11">180°</text>
-    <text x="482" y="267" font-size="12">θ₁</text>
-    <text x="326" y="150" font-size="12">θ₂</text>
+    <text x="482" y="267" font-size="12">θ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="326" y="150" font-size="12">θ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="532.0" y="284" text-anchor="end" font-size="11" opacity="0.85">opposite edges identified: 179° and −179° are neighbours</text>
     <text x="10" y="307" opacity="0.9">Planner guarantees are claims about the right panel; what the robot does is on the left.</text>
   </g>
@@ -728,8 +728,8 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
     <text x="346" y="166" text-anchor="end" font-size="11">0°</text>
     <text x="532" y="267" text-anchor="middle" font-size="11">180°</text>
     <text x="346" y="76" text-anchor="end" font-size="11">180°</text>
-    <text x="482" y="267" font-size="12">θ₁</text>
-    <text x="326" y="150" font-size="12">θ₂</text>
+    <text x="482" y="267" font-size="12">θ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="326" y="150" font-size="12">θ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="532.0" y="284" text-anchor="end" font-size="11" opacity="0.85">마주 보는 변은 붙어 있다: 179°와 −179°는 이웃</text>
     <text x="10" y="307" opacity="0.9">플래너의 보장은 오른쪽 칸에 대한 주장이고, 로봇이 하는 일은 왼쪽 칸에 있다.</text>
   </g>

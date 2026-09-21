@@ -216,7 +216,7 @@ Those two words carry the whole section, so both get definitions rather than a c
 
 ### 4. From VLM to robot use
 
-VLM representations can supply semantic labels, language-conditioned goals, reward signals, or a backbone for a VLA. None of these alone supplies control frequency, action feasibility, or recovery. Read [[01-canonical-papers/notes/3-vlm/clip|CLIP]] first, then fusion/generative entries and the [[03-deep-learning/vla/index|VLA course]].
+VLM representations can supply semantic labels, language-conditioned goals, reward signals, or a backbone for a VLA. None of these alone supplies control frequency, action feasibility, or recovery. Read [[01-canonical-papers/notes/3-vlm/clip|CLIP]] first, then fusion/generative entries and the [[03-deep-learning/vla/index|VLA course]]. How such a backbone is adapted — full fine-tuning or LoRA, and what each costs in memory and compute — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
 
 ### 5. The lab: what the temperature does, and to whom
 
@@ -303,7 +303,7 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 
 Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. D3 and its two variants are frozen in the Running object; question 4 uses the duplicate-caption variant, which §5 never runs, so none of the lab's numbers can be copied.
 
-1. **Draw.** Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; label which cells would stop being negatives if the batch were larger.
+1. **Draw.** Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; mark where a larger batch would add cells, and which of the added cells would be negatives.
 2. **Derive.** On D3 image 1, recompute logits and row loss at $\tau=1/4$. Explain the effect of the lower temperature.
 3. **Interpret.** A model answers “red valve” correctly but no localization or intervention is tested. What claim remains open?
 4. **Do.** Fill the `?` blanks, then run the **duplicate-caption** variant: caption 3 is an exact copy of caption 2, so $t_3=t_2$ while the images are unchanged. Sweep $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$ and report (a) $\mathcal L$ at each $\tau$; (b) the three image-to-text row losses and the three text-to-image column losses at $\tau=1/2$ and at $\tau=1/100$; (c) the $\tau$ that minimises $\mathcal L$, by grid search. Then answer in two sentences: which of the six losses is unbounded as $\tau\to0$ and which ones converge to $\log 2$, and what that difference says about how a duplicate caption damages the two directions differently.
@@ -544,7 +544,7 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 ### 4. 로봇으로의 연결
 
-VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 제어 주기·행동 가능성·recovery를 자동으로 주지 않는다.
+VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 제어 주기·행동 가능성·recovery를 자동으로 주지 않는다. 그런 backbone을 적응시키는 법 — 전체 파인튜닝이나 LoRA, 그리고 각각이 메모리와 연산에서 치르는 비용 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
 
 ### 5. 실습: temperature가 하는 일과, 그 대상
 
@@ -588,7 +588,7 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 
 Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. D3와 두 변형은 대상 절에 고정되어 있고, 문제 4는 §5가 한 번도 돌리지 않는 중복 캡션 변형을 쓰므로 실습의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** D3의 $3\times3$ similarity matrix와 diagonal positive를 그린다. 같은 행렬에서 나오는 두 softmax 방향을 화살표로, 그 앞의 $\tau$ 나눗셈을, 그리고 배치를 감싸는 상자를 더한다. 배치가 더 커지면 어떤 칸이 negative이기를 그만두는지 표시한다.
+1. **그리기.** D3의 $3\times3$ similarity matrix와 diagonal positive를 그린다. 같은 행렬에서 나오는 두 softmax 방향을 화살표로, 그 앞의 $\tau$ 나눗셈을, 그리고 배치를 감싸는 상자를 더한다. 배치가 더 커지면 칸이 어디에 더해지고, 더해진 칸 중 어느 것이 negative가 되는지 표시한다.
 2. **유도.** D3 이미지 1에서 $\tau=1/4$일 때 logit과 row loss, 낮은 temperature의 효과를 계산한다.
 3. **해석.** “red valve” 정답만으로 남는 grounding 질문을 말한다.
 4. **실행.** 영어 절 템플릿의 `?`를 채우고 **중복 캡션** 변형을 돌린다. 캡션 3이 캡션 2의 정확한 복사본이므로 $t_3=t_2$이고 이미지는 그대로다. $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$을 훑어 (a) 각 $\tau$의 $\mathcal L$, (b) $\tau=1/2$과 $\tau=1/100$에서의 image→text 행 loss 셋과 text→image 열 loss 셋, (c) 격자 탐색으로 $\mathcal L$을 최소화하는 $\tau$를 보고한다. 그리고 두 문장으로 답한다. 여섯 loss 중 $\tau\to0$에서 위로 유계가 아닌 것은 무엇이고 $\log 2$로 수렴하는 것은 무엇이며, 그 차이는 중복 캡션이 두 방향을 서로 다르게 망가뜨리는 방식에 대해 무엇을 말하는가.

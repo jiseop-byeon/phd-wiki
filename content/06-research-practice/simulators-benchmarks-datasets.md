@@ -103,9 +103,9 @@ One figure in two parts, and the problem set asks for the same figure for a ligh
     <text x="254" y="143">&#969;&#948; (m/s)</text>
     <text x="96" y="64">outside</text>
     <text x="158" y="64">inside the wall</text>
-    <text x="44" y="303">leaves at 4v&#8320;</text>
-    <text x="44" y="183">leaves at v&#8320;</text>
-    <text x="104" y="106">v&#8320;</text>
+    <text x="44" y="303">leaves at 4v<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="44" y="183">leaves at v<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="104" y="106">v<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g stroke="currentColor" fill="none">
     <line x1="318" y1="66" x2="344" y2="66" stroke-width="2.2"/>
@@ -115,7 +115,7 @@ One figure in two parts, and the problem set asks for the same figure for a ligh
   </g>
   <g fill="currentColor"><circle cx="331" cy="146" r="3.2"/></g>
   <g font-size="10.5" fill="currentColor">
-    <text x="352" y="70">exact: half circle, radius v&#8320;</text>
+    <text x="352" y="70">exact: half circle, radius v<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="352" y="102">explicit Euler: each step</text>
     <text x="352" y="116">&#8730;2 farther out; E &#215; 16</text>
     <text x="352" y="150">semi-implicit Euler: on the</text>
@@ -994,9 +994,9 @@ $$F=-\max\big(0,\ k\delta+d\dot\delta\big)\ \ (\delta>0),\qquad F=0\ \ (\delta\l
     <text x="254" y="143">&#969;&#948; (m/s)</text>
     <text x="108" y="64">벽 밖</text>
     <text x="158" y="64">벽 안</text>
-    <text x="44" y="303">4v&#8320;로 떠남</text>
-    <text x="44" y="183">v&#8320;로 떠남</text>
-    <text x="104" y="106">v&#8320;</text>
+    <text x="44" y="303">4v<tspan dy="3.5">0</tspan><tspan dy="-3.5">로 떠남</tspan></text>
+    <text x="44" y="183">v<tspan dy="3.5">0</tspan><tspan dy="-3.5">로 떠남</tspan></text>
+    <text x="104" y="106">v<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
   <g stroke="currentColor" fill="none">
     <line x1="318" y1="66" x2="344" y2="66" stroke-width="2.2"/>
@@ -1006,7 +1006,7 @@ $$F=-\max\big(0,\ k\delta+d\dot\delta\big)\ \ (\delta>0),\qquad F=0\ \ (\delta\l
   </g>
   <g fill="currentColor"><circle cx="331" cy="146" r="3.2"/></g>
   <g font-size="10.5" fill="currentColor">
-    <text x="352" y="70">정확한 해: 반지름 v&#8320;인 반원</text>
+    <text x="352" y="70">정확한 해: 반지름 v<tspan dy="3.5">0</tspan><tspan dy="-3.5">인 반원</tspan></text>
     <text x="352" y="102">명시적 오일러: 스텝마다</text>
     <text x="352" y="116">&#8730;2배씩 멀어짐, E &#215; 16</text>
     <text x="352" y="150">반암시적 오일러: E&#771;의</text>

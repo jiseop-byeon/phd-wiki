@@ -26,7 +26,7 @@ Forward: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$. 
 
 The target is class 1 throughout this page, so $y=(1,0)$, and every number below follows from those five objects and nothing else.
 
-*Scope: this page teaches the typed pipeline from one input to one parameter update — shapes, softmax, cross-entropy, the backward pass, one SGD step, and the step size that update has to respect — and the evidence a training claim owes. It does not teach where the derivatives come from, which is [[02-foundations/calculus-backprop|2. Calculus & Backprop §2]]; nor the optimizers themselves (momentum, Adam, schedules), which are [[02-foundations/optimization|4. Optimization §3]]; nor the experimental protocol that turns a number into a result, which is [[02-foundations/ml-practice|9. ML Practice §4]]; nor any architecture beyond a two-layer MLP — convolutions and patch tokens are [[03-deep-learning/computer-vision/index|2. Computer Vision]], and attention is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]].*
+*Scope: this page teaches the typed pipeline from one input to one parameter update — shapes, softmax, cross-entropy, the backward pass, one SGD step, and the step size that update has to respect — and the evidence a training claim owes. It does not teach where the derivatives come from, which is [[02-foundations/calculus-backprop|2. Calculus & Backprop §2]]; nor the optimizers themselves (momentum, Adam, schedules), which are [[02-foundations/optimization|4. Optimization §3]]; nor the experimental protocol that turns a number into a result, which is [[02-foundations/ml-practice|9. ML Practice §4]]; nor any architecture beyond a two-layer MLP — convolutions and patch tokens are [[03-deep-learning/computer-vision/index|2. Computer Vision]], and attention is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]. The module's three sub-lectures build on this page: [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models]], [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale]].*
 
 ### Homework diagram
 
@@ -264,7 +264,7 @@ Repeated test-guided tuning leaks test information. A paper that reports its bes
 
 ### 4. Regularization and scaling are claims with controls
 
-Weight decay, augmentation, dropout, early stopping, more data, and more compute can all improve a result through different mechanisms. A scaling claim needs axes—parameters, data, compute—and a controlled comparison. “Our larger model is better” does not identify which axis caused the gain.
+Weight decay, augmentation, dropout, early stopping, more data, and more compute can all improve a result through different mechanisms. A scaling claim needs axes—parameters, data, compute—and a controlled comparison. “Our larger model is better” does not identify which axis caused the gain. How compute is counted from the other two axes, $C\approx6ND$, and how a fixed budget is split between them are [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §6–§7]].
 
 Of those, weight decay is the one §6 needs, so it gets a definition rather than a name in a list.
 
@@ -281,7 +281,7 @@ Of those, weight decay is the one §6 needs, so it gets a definition rather than
 
 ### 5. How to read a training recipe
 
-Extract: data mixture and split; preprocessing; initialization; objective and coefficients; optimizer and schedule; batch size and number of updates; precision and hardware; checkpoint selection; seeds and uncertainty. Then ask which choices are essential by reading ablations. This is the operational bridge to [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], [[01-canonical-papers/notes/1-foundations/resnet|ResNet]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]], and [[01-canonical-papers/notes/1-foundations/adam|Adam]].
+Extract: data mixture and split; preprocessing; initialization; objective and coefficients; optimizer and schedule; batch size and number of updates; precision and hardware; checkpoint selection; seeds and uncertainty. Then ask which choices are essential by reading ablations. This is the operational bridge to [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], [[01-canonical-papers/notes/1-foundations/resnet|ResNet]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]], and [[01-canonical-papers/notes/1-foundations/adam|Adam]]. Three of those items — initialization, precision and hardware — are given numbers, per layer, per parameter and per token, in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale]].
 
 ### 6. The lab: the step size has a boundary, and it is measurable
 
@@ -474,7 +474,7 @@ $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\
 
 이 페이지에서 정답은 항상 1번 클래스이므로 $y=(1,0)$이고, 아래의 모든 숫자는 이 다섯 개의 대상만으로 나온다.
 
-*범위: 이 페이지는 입력 하나에서 파라미터 갱신 하나까지의 형식 붙은 경로 — shape, softmax, cross-entropy, 역전파, SGD 한 스텝, 그리고 그 스텝이 지켜야 하는 보폭 — 와 학습 주장이 갖춰야 할 증거를 가르친다. 미분이 어디서 오는지는 가르치지 않는다. 그것은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2]]다. optimizer 자체(momentum, Adam, schedule)도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]다. 숫자를 결과로 바꾸는 실험 절차도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §4]]다. 2층 MLP 너머의 구조도 아니다. convolution과 patch token은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], attention은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]와 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다.*
+*범위: 이 페이지는 입력 하나에서 파라미터 갱신 하나까지의 형식 붙은 경로 — shape, softmax, cross-entropy, 역전파, SGD 한 스텝, 그리고 그 스텝이 지켜야 하는 보폭 — 와 학습 주장이 갖춰야 할 증거를 가르친다. 미분이 어디서 오는지는 가르치지 않는다. 그것은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2]]다. optimizer 자체(momentum, Adam, schedule)도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]다. 숫자를 결과로 바꾸는 실험 절차도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §4]]다. 2층 MLP 너머의 구조도 아니다. convolution과 patch token은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], attention은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]와 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 이 페이지 위에 서는 이 모듈의 하위 강의는 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델]], [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]], [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]] 셋이다.*
 
 ### 과제가 그릴 그림
 
@@ -704,7 +704,7 @@ test를 보며 계속 조정하면 test 정보가 학습 절차로 샌다. 분�
 
 ### 4. 정규화와 scaling은 통제가 필요한 주장이다
 
-weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가는 서로 다른 기제로 결과를 바꾼다. scaling 주장은 parameter·data·compute 축을 분리해야 한다.
+weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가는 서로 다른 기제로 결과를 바꾼다. scaling 주장은 parameter·data·compute 축을 분리해야 한다. compute를 나머지 두 축으로 세는 식 $C\approx6ND$와, 고정된 예산을 두 축에 나누는 법은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §6–§7]]에 있다.
 
 그중 §6이 필요로 하는 것은 weight decay이므로, 목록의 한 단어가 아니라 정의를 붙인다.
 
@@ -721,7 +721,7 @@ weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가
 
 ### 5. 학습 recipe 읽기
 
-데이터 혼합·split, 전처리, 초기화, 목적함수, optimizer·schedule, batch와 update 수, precision·hardware, checkpoint 선택, seed와 불확실성을 뽑는다. 그다음 ablation에서 무엇이 필수인지 확인한다.
+데이터 혼합·split, 전처리, 초기화, 목적함수, optimizer·schedule, batch와 update 수, precision·hardware, checkpoint 선택, seed와 불확실성을 뽑는다. 그다음 ablation에서 무엇이 필수인지 확인한다. 그중 초기화, precision, hardware 세 항목에 층마다, 파라미터마다, 토큰마다 숫자를 붙이는 것이 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]]이다.
 
 ### 6. 실습: 보폭에는 경계가 있고, 그 경계는 측정된다
 

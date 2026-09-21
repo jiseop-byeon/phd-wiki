@@ -263,7 +263,7 @@ so each sublayer reads a normalised copy of the running vector and adds its resu
 > where $\odot$ is elementwise — so with $\varepsilon=0$, $\mathrm{LN}(x+c\mathbf 1)=\mathrm{LN}(x)$ and $\mathrm{LN}(ax)=\mathrm{LN}(x)$ for $a>0$, which means a token's mean and overall scale never reach the sublayer.
 >
 > - **Example**: D2's $x_1=(0,1,-1,-1)$ has $\mu=-0.25$ and $\sigma^2=0.6875$, so with $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$ it maps to $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$; $x_4=(1,0,1,1)$ has $\mu=0.75$ and $\sigma^2=0.1875$ and maps to $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$.
-> - **Non-example**: BatchNorm, which normalises each feature across the samples of a batch. Its statistics depend on the other samples and differ between training and test. LayerNorm uses one token, so it computes the same thing at batch size one and at test time — a property Ba et al. state in their abstract — and it keeps the block permutation-equivariant (§5).
+> - **Non-example**: BatchNorm, which normalises each feature across the samples of a batch. Its statistics depend on the other samples and differ between training and test. LayerNorm uses one token, so it computes the same thing at batch size one and at test time — a property Ba et al. state in their abstract — and it keeps the block permutation-equivariant (§5). BatchNorm is defined in full, on D1, in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §2]].
 > - **Non-example**: normalising each feature across the tokens of a sequence. Its mean and variance are sums over the tokens, so reordering the tokens only reorders the outputs and equivariance survives. What breaks is locality in time: every token's normalised value now depends on every other token, later ones included, so a causal mask no longer hides the future (§3), and a KV cache goes stale because the earlier tokens' outputs change each time a token is appended (§7).
 > - **Why it matters**: it fixes the scale of what enters $W_Q$ and $W_K$, which is where §2's unit-variance assumption comes from at initialisation.
 
@@ -281,7 +281,7 @@ Count multiply-adds for one block on a sequence of $n$ tokens. The four projecti
 
 $$\text{MACs per block}=4nd^2+2n^2d+8nd^2=12nd^2+2n^2d$$
 
-Time is therefore $O(n^2d+nd^2)$. Vaswani et al.'s Table 1 lists the attention part, $O(n^2\cdot d)$ per layer with $O(1)$ sequential steps and $O(1)$ path length between any two tokens, against $O(n\cdot d^2)$ and $O(n)$ steps for a recurrent layer, and notes that self-attention is the cheaper of the two when $n<d$. The quadratic term dominates only when $2n^2d>12nd^2$, that is when $n>6d$:
+Time is therefore $O(n^2d+nd^2)$. Vaswani et al.'s Table 1 lists the attention part, $O(n^2\cdot d)$ per layer with $O(1)$ sequential steps and $O(1)$ path length between any two tokens, against $O(n\cdot d^2)$ and $O(n)$ steps for a recurrent layer, and notes that self-attention is the cheaper of the two when $n<d$; the recurrent side of that comparison, with the convolution and the scan that remove its $n$ sequential steps, is costed in [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §10]]. The quadratic term dominates only when $2n^2d>12nd^2$, that is when $n>6d$:
 
 | case | $n$ | $d$ | share of a block's multiply-adds in the two $n\times n$ products |
 |---|---:|---:|---:|
@@ -290,7 +290,7 @@ Time is therefore $O(n^2d+nd^2)$. Vaswani et al.'s Table 1 lists the attention p
 | an illustrative VLA backbone | 276 | 4096 | $0.011$ |
 | the original Transformer's width, at the crossover | 3072 | 512 | $0.5$ |
 
-So whenever a sequence is shorter than six times the model width — the 197 tokens of a ViT-B image, the illustrative VLA step — "quadratic attention" is not where most of the arithmetic goes; the $d^2$ terms are.
+So whenever a sequence is shorter than six times the model width — the 197 tokens of a ViT-B image, the illustrative VLA step — "quadratic attention" is not where most of the arithmetic goes; the $d^2$ terms are. Counted over a training run, forwards and backwards, those $12nd^2$ multiply-adds become the six FLOPs per parameter per token of [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §6]], which adds the two $n\times n$ products as a correction of $n/(6d)$.
 
 **Memory** is where $n^2$ bites first. The standard implementation materialises one $n\times n$ table per head, $hn^2$ numbers per layer against $nd$ for $Q$, so the tables outgrow the layer's other activations as soon as $n>d/h=d_k$ — past 64 tokens at the original head width, long before the arithmetic crossover. At $n=4096$ in 16-bit precision that is 32 MiB per head. FlashAttention (Dao et al., NeurIPS 2022) computes the same exact attention in tiles, so the full table is never written to GPU main memory; the arithmetic is still $O(n^2d)$.
 
@@ -855,7 +855,7 @@ $$Z=X+\mathrm{MHA}\big(\mathrm{LN}(X)\big),\qquad Y=Z+\mathrm{MLP}\big(\mathrm{L
 > $\odot$은 성분별 곱이다. 그래서 $\varepsilon=0$이면 $\mathrm{LN}(x+c\mathbf 1)=\mathrm{LN}(x)$이고 $a>0$에서 $\mathrm{LN}(ax)=\mathrm{LN}(x)$다. 토큰의 평균과 전체 크기는 서브레이어에 닿지 않는다는 뜻이다.
 >
 > - **예**: D2의 $x_1=(0,1,-1,-1)$은 $\mu=-0.25$, $\sigma^2=0.6875$이므로 $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$에서 $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$로 간다. $x_4=(1,0,1,1)$은 $\mu=0.75$, $\sigma^2=0.1875$이고 $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$으로 간다.
-> - **비예**: BatchNorm. 특징마다 배치의 샘플들에 걸쳐 정규화한다. 통계량이 다른 샘플에 의존하고 학습과 시험 때 달라진다. LayerNorm은 토큰 하나를 쓰므로 배치 크기 1에서도, 시험 때도 같은 것을 계산하고 — Ba 등이 초록에 적은 성질이다 — 블록의 순열 등변성을 지킨다(§5).
+> - **비예**: BatchNorm. 특징마다 배치의 샘플들에 걸쳐 정규화한다. 통계량이 다른 샘플에 의존하고 학습과 시험 때 달라진다. LayerNorm은 토큰 하나를 쓰므로 배치 크기 1에서도, 시험 때도 같은 것을 계산하고 — Ba 등이 초록에 적은 성질이다 — 블록의 순열 등변성을 지킨다(§5). BatchNorm의 완전한 정의는 D1 위에서 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §2]]에 있다.
 > - **비예**: 시퀀스의 토큰들에 걸쳐 특징마다 정규화하기. 평균과 분산이 토큰들에 대한 합이므로 토큰을 재배열하면 출력도 재배열될 뿐이고, 등변성은 살아남는다. 깨지는 것은 시간상의 국소성이다. 모든 토큰의 정규화된 값이 이제 다른 모든 토큰, 뒤에 오는 토큰까지에 의존하므로 인과 마스크가 더 이상 미래를 가리지 못하고(§3), 토큰을 하나 덧붙일 때마다 앞 토큰들의 출력이 바뀌어 KV 캐시가 낡아 버린다(§7).
 > - **왜 중요한가**: $W_Q$와 $W_K$에 들어가는 것의 크기를 고정한다. 초기화 때 §2의 단위 분산 가정이 오는 곳이 여기다.
 
@@ -873,7 +873,7 @@ $$\text{블록당 파라미터}=12d^2+13d$$
 
 $$\text{블록당 곱셈-덧셈}=4nd^2+2n^2d+8nd^2=12nd^2+2n^2d$$
 
-그러므로 시간은 $O(n^2d+nd^2)$다. Vaswani 등의 표 1은 어텐션 부분을 층당 $O(n^2\cdot d)$, 순차 단계 $O(1)$, 임의의 두 토큰 사이 경로 길이 $O(1)$로 적고, 순환층의 $O(n\cdot d^2)$, 순차 단계 $O(n)$과 비교하며, $n<d$일 때 self-attention이 더 싸다고 적는다. 이차 항은 $2n^2d>12nd^2$, 곧 $n>6d$일 때만 지배한다.
+그러므로 시간은 $O(n^2d+nd^2)$다. Vaswani 등의 표 1은 어텐션 부분을 층당 $O(n^2\cdot d)$, 순차 단계 $O(1)$, 임의의 두 토큰 사이 경로 길이 $O(1)$로 적고, 순환층의 $O(n\cdot d^2)$, 순차 단계 $O(n)$과 비교하며, $n<d$일 때 self-attention이 더 싸다고 적는다. 그 비교의 순환 쪽은, 그 $n$개의 순차 단계를 없애는 합성곱과 scan과 함께 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §10]]이 비용을 센다. 이차 항은 $2n^2d>12nd^2$, 곧 $n>6d$일 때만 지배한다.
 
 | 경우 | $n$ | $d$ | 블록의 곱셈-덧셈 중 두 $n\times n$ 곱의 몫 |
 |---|---:|---:|---:|
@@ -882,7 +882,7 @@ $$\text{블록당 곱셈-덧셈}=4nd^2+2n^2d+8nd^2=12nd^2+2n^2d$$
 | 예시용 VLA 백본 | 276 | 4096 | $0.011$ |
 | 원래 Transformer의 폭, 교차점 | 3072 | 512 | $0.5$ |
 
-그러니 시퀀스가 모델 폭의 여섯 배보다 짧을 때마다 — ViT-B 이미지의 토큰 197개, 예시용 VLA 스텝 — "이차 어텐션"은 산술 대부분이 가는 곳이 아니다. $d^2$ 항이 그곳이다.
+그러니 시퀀스가 모델 폭의 여섯 배보다 짧을 때마다 — ViT-B 이미지의 토큰 197개, 예시용 VLA 스텝 — "이차 어텐션"은 산술 대부분이 가는 곳이 아니다. $d^2$ 항이 그곳이다. 학습 전체에 걸쳐 순방향과 역방향으로 세면 그 $12nd^2$ 곱셈-덧셈은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §6]]의 파라미터당 토큰당 6 FLOP이 되고, 그 페이지는 두 $n\times n$ 곱을 $n/(6d)$의 보정으로 더한다.
 
 $n^2$이 먼저 무는 곳은 메모리다. 표준 구현은 헤드마다 $n\times n$ 표 하나를 만들어 두므로 층마다 $hn^2$개의 숫자이고, $Q$의 $nd$개와 비교하면 $n>d/h=d_k$가 되자마자 표가 층의 다른 활성보다 커진다. 원래 헤드 폭에서는 토큰 64개를 넘는 순간이고, 산술의 교차점보다 훨씬 앞이다. $n=4096$, 16비트 정밀도에서는 헤드당 32 MiB다. FlashAttention(Dao 등, NeurIPS 2022)은 같은 정확한 어텐션을 타일 단위로 계산해서 전체 표를 GPU 주 메모리에 쓰지 않는다. 산술은 여전히 $O(n^2d)$다.
 

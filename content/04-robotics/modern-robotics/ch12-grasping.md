@@ -51,8 +51,8 @@ One figure, the tile drawn as a rectangle with its centre of mass marked.
   <rect x="140" y="50" width="280" height="140" fill="none" stroke="currentColor" stroke-width="2"/>
   <line x1="140" y1="120" x2="420" y2="120" stroke="currentColor" stroke-width="0.9" opacity="0.65"/>
   <g stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12e)"><line x1="140" y1="120" x2="196" y2="120"/><line x1="420" y1="120" x2="364" y2="120"/></g>
-  <text x="200" y="114" font-size="12" fill="currentColor">n₁</text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="346" y="114" font-size="12" fill="currentColor">n₂</text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="200" y="114" font-size="12" fill="currentColor">n<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="346" y="114" font-size="12" fill="currentColor">n<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
   <path d="M176 120 L175.9 117.6 L175.7 115.2 L175.3 112.9 L174.7 110.6 L174 108.3 L173.2 106.1 L172.2 103.9" fill="none" stroke="currentColor" stroke-width="1.1"/>
   <text x="193.2" y="87.8" font-size="11" text-anchor="middle" fill="currentColor" transform="rotate(-26.565 193.2 87.8)">α = 26.565°</text>
   <circle cx="140" cy="120" r="3.6" fill="currentColor"/>
@@ -67,8 +67,8 @@ One figure, the tile drawn as a rectangle with its centre of mass marked.
   <text x="289" y="220" font-size="11" opacity="0.85">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">+ f</tspan><tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= W</tspan></text>
   <text x="126" y="98" font-size="11" text-anchor="end">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
   <text x="434" y="98" font-size="11">f<tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
-  <text x="152" y="208" font-size="11" text-anchor="end">r₁ = (−0.100, 0)</text>
-  <text x="408" y="208" font-size="11">r₂ = (+0.100, 0)</text>
+  <text x="152" y="208" font-size="11" text-anchor="end">r<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = (−0.100, 0)</tspan></text>
+  <text x="408" y="208" font-size="11">r<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = (+0.100, 0)</tspan></text>
   </g>
   <rect x="16" y="236" width="528" height="74" fill="none" stroke="currentColor" stroke-width="1" opacity="0.7" rx="4"/>
   <text x="28" y="254" font-size="11" fill="currentColor" font-weight="bold">cone-edge wrenches w = (f<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">, f</tspan><tspan dy="3.1" font-size="8.6">y</tspan><tspan dy="-3.1">, m</tspan><tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">), unit normal force</tspan></text>
@@ -269,8 +269,8 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
   <rect x="140" y="50" width="280" height="140" fill="none" stroke="currentColor" stroke-width="2"/>
   <line x1="140" y1="120" x2="420" y2="120" stroke="currentColor" stroke-width="0.9" opacity="0.65"/>
   <g stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12k)"><line x1="140" y1="120" x2="196" y2="120"/><line x1="420" y1="120" x2="364" y2="120"/></g>
-  <text x="200" y="114" font-size="12" fill="currentColor">n₁</text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="346" y="114" font-size="12" fill="currentColor">n₂</text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="200" y="114" font-size="12" fill="currentColor">n<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="346" y="114" font-size="12" fill="currentColor">n<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
   <path d="M176 120 L175.9 117.6 L175.7 115.2 L175.3 112.9 L174.7 110.6 L174 108.3 L173.2 106.1 L172.2 103.9" fill="none" stroke="currentColor" stroke-width="1.1"/>
   <text x="193.2" y="87.8" font-size="11" text-anchor="middle" fill="currentColor" transform="rotate(-26.565 193.2 87.8)">α = 26.565°</text>
   <circle cx="140" cy="120" r="3.6" fill="currentColor"/>
@@ -285,8 +285,8 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
   <text x="289" y="220" font-size="11" opacity="0.85">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">+ f</tspan><tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= W</tspan></text>
   <text x="126" y="98" font-size="11" text-anchor="end">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
   <text x="434" y="98" font-size="11">f<tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
-  <text x="152" y="208" font-size="11" text-anchor="end">r₁ = (−0.100, 0)</text>
-  <text x="408" y="208" font-size="11">r₂ = (+0.100, 0)</text>
+  <text x="152" y="208" font-size="11" text-anchor="end">r<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = (−0.100, 0)</tspan></text>
+  <text x="408" y="208" font-size="11">r<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = (+0.100, 0)</tspan></text>
   </g>
   <rect x="16" y="236" width="528" height="74" fill="none" stroke="currentColor" stroke-width="1" opacity="0.7" rx="4"/>
   <text x="28" y="254" font-size="11" fill="currentColor" font-weight="bold">원뿔 모서리 렌치 w = (f<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">, f</tspan><tspan dy="3.1" font-size="8.6">y</tspan><tspan dy="-3.1">, m</tspan><tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">), 법선 성분 1</tspan></text>

@@ -33,7 +33,7 @@ Contact turns position error into force, so control stops being a choice between
 
 ### Running object: P2, the panel, and one target impedance
 
-**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the frozen pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)\,\mathrm{m}$, carrying a tool that seats down onto a panel lying under the tip. This is the same arm, tool and panel as the running object of [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]], turned through a right angle: there the panel stands up and the question is friction, here it lies flat and the question is what *relation* the controller puts between motion and force. Every number in §1–§5 comes from this table.
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at the frozen pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)\,\mathrm{m}$, carrying a tool that seats down onto a panel lying under the tip (the forearm passes in front of the panel, out of the drawing plane, so only the tip touches it). This is the same arm, tool and panel as the running object of [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]], turned through a right angle: there the panel stands up and the question is friction, here it lies flat and the question is what *relation* the controller puts between motion and force. Every number in §1–§5 comes from this table.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -167,7 +167,7 @@ Draw it once; the problem set asks for the same drawing on the other axis.
   </g>
 </svg>
 
-**Top — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A horizontal line under the tip for the panel's face, with the commanded press $F=(0,-10)$ N drawn as a downward arrow at the tip and the reaction on the robot as an upward arrow of the same length. Beside the tip, two small springs in series and labelled: the virtual one, $K_d=500$ N/m, and the real one, $K_e=10^5$ N/m — drawn with the virtual spring's coils stretched out and the real one's compressed almost flat, because that ratio of 200 is the picture's only job.
+**Top — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A horizontal line under the tip for the panel's face (the forearm passes in front of the panel, out of the drawing plane, so only the tip touches it), with the commanded press $F=(0,-10)$ N drawn as a downward arrow at the tip and the reaction on the robot as an upward arrow of the same length. Beside the tip, two small springs in series and labelled: the virtual one, $K_d=500$ N/m, and the real one, $K_e=10^5$ N/m — drawn with the virtual spring's coils stretched out and the real one's compressed almost flat, because that ratio of 200 is the picture's only job.
 
 **Middle — the two block diagrams, one above the other, sharing the same plant block on the right.** Impedance: measure $(y,\dot y)$ at the tip, run it through the target $M_d\ddot e+D_d\dot e+K_de$, get a force, map it with $\tau=J^\top F$, send torque to the arm. Admittance: measure $F_y$ at the wrist, integrate the virtual dynamics to get a motion reference $y_c$, hand $y_c$ to an inner position loop, and let that loop send torque. Shade the one block each architecture cannot fake — the torque interface on the top row, the force sensor on the bottom — and draw the feedback path from the panel back to the measurement in both.
 
@@ -213,7 +213,7 @@ $$\frac{T}{t_{\text{contact}}}=\frac{0.397}{0.01405}=28.3$$
 
 $$K_d=4K_e=4\times10^5\ \mathrm{N/m}$$
 
-which is 800 times the stiffness chosen here and far past what a 1 kHz loop can render against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]). The other direction — lowering $K_e$ — is a mechanical change, not a control one, which is the whole of §5's passive-compliance argument. So this is §5's claim as arithmetic: **the controller owns sustained contact and owns essentially none of the impact**, and a paper that reports a compliance gain while showing only steady contact has reported the easy half.
+which is 800 times the stiffness chosen here and far past what a 1 kHz loop can render against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]]). The other direction — lowering $K_e$ — is a mechanical change, not a control one, which is the whole of §5's passive-compliance argument. So this is §5's claim as arithmetic: **the controller owns sustained contact and owns essentially none of the impact**, and a paper that reports a compliance gain while showing only steady contact has reported the easy half. RS1, the running study of Research Practice, compares impedance control on this arm against position control with a force-threshold stop, on a 400 N/m panel where the same half-sine lasts $\pi\sqrt{2/400}=0.222$ s; row 5 of the worked case in [[06-research-practice/research-questions-claims|1. Research Questions & Claims]] sets that against these 14 ms to show why its result does not transfer to a stiff panel.
 
 ### 1. Why stiff position tracking becomes dangerous in contact
 
@@ -857,7 +857,7 @@ Tier B. Using only this page, its prerequisites and the object catalog. The runn
 
 ### 계속 쓰는 대상: P2, 패널, 그리고 목표 임피던스 하나 · Running object
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**를 고정 자세 $\theta=(0^\circ,90^\circ)$에 두면 말단이 $(1,1)\,\mathrm{m}$에 있고, 거기 달린 공구가 말단 아래 눕힌 패널에 내려앉는다. [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 팔, 같은 공구, 같은 패널을 직각으로 돌려 놓은 것이다. 거기서는 패널이 서 있고 묻는 것이 마찰이라면, 여기서는 패널이 누워 있고 묻는 것은 제어기가 운동과 힘 사이에 두는 *관계*다. §1~§5의 모든 숫자가 이 표에서 나온다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**를 고정 자세 $\theta=(0^\circ,90^\circ)$에 두면 말단이 $(1,1)\,\mathrm{m}$에 있고, 거기 달린 공구가 말단 아래 눕힌 패널에 내려앉는다(전완은 그림 평면 밖, 패널 앞으로 지나가므로 패널에 닿는 것은 말단뿐이다). [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 팔, 같은 공구, 같은 패널을 직각으로 돌려 놓은 것이다. 거기서는 패널이 서 있고 묻는 것이 마찰이라면, 여기서는 패널이 누워 있고 묻는 것은 제어기가 운동과 힘 사이에 두는 *관계*다. §1~§5의 모든 숫자가 이 표에서 나온다.
 
 | 기호 | 값 | 뜻 |
 |---|---:|---|
@@ -991,7 +991,7 @@ $K_e$는 공구·센서·팔 구조·패널을 합친 직렬 강성이지 패널
   </g>
 </svg>
 
-**위 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 말단 아래에 패널 면의 수평선을 긋고, 명령한 누름 $F=(0,-10)$ N을 말단에서 아래로 향한 화살표로, 로봇이 받는 반력을 같은 길이의 위 화살표로 그린다. 말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다. 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 이 그림이 할 일은 그 200이라는 비를 보여 주는 것 하나다.
+**위 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 말단 아래에 패널 면의 수평선을 긋고(전완은 그림 평면 밖, 패널 앞으로 지나가므로 패널에 닿는 것은 말단뿐이다), 명령한 누름 $F=(0,-10)$ N을 말단에서 아래로 향한 화살표로, 로봇이 받는 반력을 같은 길이의 위 화살표로 그린다. 말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다. 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 이 그림이 할 일은 그 200이라는 비를 보여 주는 것 하나다.
 
 **가운데 — 블록선도 둘을 위아래로, 오른쪽 플랜트 블록은 공유.** 임피던스: 말단에서 $(y,\dot y)$를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다. 어드미턴스: 손목에서 $F_y$를 재고 가상 동역학을 적분해 운동 기준 $y_c$를 얻어 내부 위치 루프에 넘기고, 그 루프가 토크를 보낸다. 각 구조가 흉내 낼 수 없는 블록 — 위 행은 토크 인터페이스, 아래 행은 힘 센서 — 을 음영으로 칠하고, 패널에서 측정으로 돌아오는 되먹임 경로를 양쪽에 다 그린다.
 
@@ -1037,7 +1037,7 @@ $$\frac{T}{t_{\text{contact}}}=\frac{0.397}{0.01405}=28.3$$
 
 $$K_d=4K_e=4\times10^5\ \mathrm{N/m}$$
 
-이고, 이는 여기서 고른 강성의 800배이며 1 kHz 루프가 단단한 표면을 상대로 구현할 수 있는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]). 반대 방향, 곧 $K_e$를 낮추는 것은 제어가 아니라 기계의 변경이고, 그것이 §5의 수동 컴플라이언스 논증 전체다. 그러니 이것이 §5의 주장을 산수로 쓴 것이다. **제어기는 지속 접촉을 소유하고 충격은 사실상 하나도 소유하지 않는다.** 컴플라이언스 개선을 보고하면서 정상 접촉만 보여 주는 논문은 쉬운 절반을 보고한 것이다.
+이고, 이는 여기서 고른 강성의 800배이며 1 kHz 루프가 단단한 표면을 상대로 구현할 수 있는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]). 반대 방향, 곧 $K_e$를 낮추는 것은 제어가 아니라 기계의 변경이고, 그것이 §5의 수동 컴플라이언스 논증 전체다. 그러니 이것이 §5의 주장을 산수로 쓴 것이다. **제어기는 지속 접촉을 소유하고 충격은 사실상 하나도 소유하지 않는다.** 컴플라이언스 개선을 보고하면서 정상 접촉만 보여 주는 논문은 쉬운 절반을 보고한 것이다. Research Practice의 관통 연구 RS1은 이 팔 위의 임피던스 제어를 힘 문턱 정지가 붙은 위치 제어와 400 N/m 패널에서 비교하는데, 같은 반주기 사인 모델에서 그 접촉은 $\pi\sqrt{2/400}=0.222$ s 이어진다. [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]] worked case의 5행은 그것을 이 14 ms와 나란히 놓아, 그 결과가 단단한 패널로 옮겨 가지 않는 이유를 보인다.
 
 ### 1. 뻣뻣한 위치 추종이 접촉에서 위험해지는 이유
 

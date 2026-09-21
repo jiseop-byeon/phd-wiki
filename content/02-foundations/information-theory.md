@@ -71,7 +71,7 @@ The page's object is the **P5** crack detector from [[02-foundations/lab-plants|
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">Circled: P(+|c) = 0.95 on the arrow, P(c|+) = 0.161 in the bracket, about six times apart.</text>
 </svg>
 
-**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node need *not* — here they do ($0.95+0.05$) only because this channel is symmetric; a column of a channel matrix is a distribution, a row of it is not.
+**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node need *not* — here they do ($0.95+0.05$) only because this channel is symmetric; in a channel matrix written with one column per input $x$ and entries $P(y\mid x)$, a column is a distribution and a row need not be.
 
 **The prior, drawn to scale.** Draw the two left nodes as boxes whose heights are their prior masses, $P(c)=0.01$ against $P(\neg c)=0.99$. Drawn honestly, the top box is a line and the bottom one is the whole figure. That ratio of $99$ is the only reason the page's punchline exists, so it must be visible before any arithmetic starts.
 
@@ -243,7 +243,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   makes the whole thing vanish when the two distributions coincide. Set
   $\sigma_1 = \sigma_2$ and $\mu_1 = \mu_2$: the first term is $0$, the fraction is
   $\tfrac12$, and the total is $0$, as it must be.
-  *Numbers, in nats (natural log):* $D_{KL}\big(\mathcal{N}(1,1)\,\|\,\mathcal{N}(0,1)\big) = 0 + \tfrac{1 + 1}{2} - \tfrac12 = 0.5$. With widths instead, $D_{KL}\big(\mathcal{N}(0,2^2)\,\|\,\mathcal{N}(0,1)\big) = 0.807$ but $D_{KL}\big(\mathcal{N}(0,1)\,\|\,\mathcal{N}(0,2^2)\big) = 0.318$: a first-slot distribution twice as wide as the second costs more than one half as wide.
+  *Numbers, in nats (natural log):* $D_{KL}\big(\mathcal{N}(1,1)\,\|\,\mathcal{N}(0,1)\big) = 0 + \tfrac{1 + 1}{2} - \tfrac12 = 0.5$. With widths instead, $D_{KL}\big(\mathcal{N}(0,2^2)\,\|\,\mathcal{N}(0,1)\big) = 0.807$ but $D_{KL}\big(\mathcal{N}(0,1)\,\|\,\mathcal{N}(0,2^2)\big) = 0.318$: a first-slot distribution twice as wide as the second costs more than one half as wide. The formula is derived term by term, as the expectation of the log-ratio under the first slot, in [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs §2]].
 - Properties that matter: $\ge 0$, zero iff $p = q$, and **asymmetric** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$ true, fit $q$): mode-**covering** — $q$ spreads to cover all of $p$'s mass.
   - Reverse KL (used in *variational inference* — approximating an intractable distribution
@@ -323,7 +323,7 @@ non-variational world models take different routes).
 
 **The definition in one place.** $\log p_\theta(x)$ is called the **evidence**. For any **variational distribution** $q(z \mid x)$ (a tractable distribution over the latent, usually a Gaussian whose mean and variance an encoder network outputs), the **evidence lower bound** is
 $$\text{ELBO}(q, \theta) = E_{q(z|x)}\big[\log p_\theta(x, z) - \log q(z \mid x)\big], \qquad \log p_\theta(x) = \text{ELBO}(q, \theta) + D_{KL}\big(q(z|x)\,\|\,p_\theta(z|x)\big)$$
-so it is a lower bound on the evidence for every $q$, since the KL on the right is $\ge 0$ (§3), and it is tight exactly when $q$ equals the true posterior. *Example with two latent values:* let $z \in \{0, 1\}$ with prior $(\tfrac12, \tfrac12)$, and let the observed $x$ have likelihood $0.8$ under $z = 0$ and $0.2$ under $z = 1$. Then the evidence is $\log p(x) = \ln 0.5 = -0.693$ nats and the true posterior is $(0.8, 0.2)$. A uniform $q = (\tfrac12, \tfrac12)$ gives $\text{ELBO} = \tfrac12\ln\tfrac{0.4}{0.5} + \tfrac12\ln\tfrac{0.1}{0.5} = -0.916$ nats, and the gap $0.223$ nats is exactly $D_{KL}\big(q\,\|\,(0.8, 0.2)\big)$. Setting $q$ to the posterior closes the gap, and the ELBO rises to $-0.693$.
+so it is a lower bound on the evidence for every $q$, since the KL on the right is $\ge 0$ (§3), and it is tight exactly when $q$ equals the true posterior. *Example with two latent values:* let $z \in \{0, 1\}$ with prior $(\tfrac12, \tfrac12)$, and let the observed $x$ have likelihood $0.8$ under $z = 0$ and $0.2$ under $z = 1$. Then the evidence is $\log p(x) = \ln 0.5 = -0.693$ nats and the true posterior is $(0.8, 0.2)$. A uniform $q = (\tfrac12, \tfrac12)$ gives $\text{ELBO} = \tfrac12\ln\tfrac{0.4}{0.5} + \tfrac12\ln\tfrac{0.1}{0.5} = -0.916$ nats, and the gap $0.223$ nats is exactly $D_{KL}\big(q\,\|\,(0.8, 0.2)\big)$. Setting $q$ to the posterior closes the gap, and the ELBO rises to $-0.693$. The same identity reached without Jensen, by Bayes' rule inside the logarithm, and its gap computed both ways for a Gaussian encoder ($0.154544$ nats), are in [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs §2]].
 
 ### 6. Quick reference table
 
@@ -423,7 +423,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">동그라미: 화살표 위의 P(+|c) = 0.95와 묶음 안의 P(c|+) = 0.161, 약 여섯 배 차이다.</text>
 </svg>
 
-**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$일 *필요가 없다*. 여기서 $1$이 되는 것($0.95+0.05$)은 이 채널이 대칭이기 때문일 뿐이다. 채널 행렬의 열은 분포지만 행은 분포가 아니다.
+**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$일 *필요가 없다*. 여기서 $1$이 되는 것($0.95+0.05$)은 이 채널이 대칭이기 때문일 뿐이다. 입력 $x$마다 열 하나를 두고 성분을 $P(y\mid x)$로 쓴 채널 행렬에서, 열은 분포지만 행은 분포일 필요가 없다.
 
 **사전확률, 실제 비율로.** 왼쪽 노드 둘을 사전 질량 높이의 상자로 그린다. $P(c)=0.01$ 대 $P(\neg c)=0.99$다. 정직하게 그리면 위 상자는 선 하나이고 아래 상자가 그림 전체다. $99$라는 이 비율이 이 페이지 결론의 유일한 근거이므로, 산술을 시작하기 전에 눈에 보여야 한다.
 
@@ -592,7 +592,7 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   분모에 앉는 이유이고 이 벌점이 비대칭인 이유다 — 그리고 $-\tfrac12$은 두 분포가 일치할 때
   전체가 0이 되게 만드는 상수다. $\sigma_1 = \sigma_2$, $\mu_1 = \mu_2$를 넣어 보면 첫 항이
   $0$, 분수가 $\tfrac12$, 합이 $0$이다. 그래야만 하는 대로.
-  *숫자로, 나트(자연로그) 단위:* $D_{KL}\big(\mathcal{N}(1,1)\,\|\,\mathcal{N}(0,1)\big) = 0 + \tfrac{1 + 1}{2} - \tfrac12 = 0.5$. 폭을 바꾸면 $D_{KL}\big(\mathcal{N}(0,2^2)\,\|\,\mathcal{N}(0,1)\big) = 0.807$이지만 $D_{KL}\big(\mathcal{N}(0,1)\,\|\,\mathcal{N}(0,2^2)\big) = 0.318$이다: 첫째 자리 분포가 둘째보다 두 배 넓을 때가 절반 폭일 때보다 비싸다.
+  *숫자로, 나트(자연로그) 단위:* $D_{KL}\big(\mathcal{N}(1,1)\,\|\,\mathcal{N}(0,1)\big) = 0 + \tfrac{1 + 1}{2} - \tfrac12 = 0.5$. 폭을 바꾸면 $D_{KL}\big(\mathcal{N}(0,2^2)\,\|\,\mathcal{N}(0,1)\big) = 0.807$이지만 $D_{KL}\big(\mathcal{N}(0,1)\,\|\,\mathcal{N}(0,2^2)\big) = 0.318$이다: 첫째 자리 분포가 둘째보다 두 배 넓을 때가 절반 폭일 때보다 비싸다. 이 공식을 첫째 자리 분포 아래에서 로그 비의 기댓값으로 항별 유도한 것이 [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN §2]]다.
 - 중요한 성질: $\ge 0$, $p = q$일 때만 0, 그리고 **비대칭** — $D_{KL}(p\|q) \ne D_{KL}(q\|p)$.
   - Forward KL ($p$가 참, $q$를 적합): 모드 **커버링** — $q$가 $p$의 질량 전체를 덮으려 퍼진다.
   - Reverse KL(*변분 추론*에서 사용 — 계산 불가능한 분포를, 다루기 쉬운 분포 가족 중
@@ -667,7 +667,7 @@ matching이나 비변분 월드모델은 다른 길을 간다).
 
 **정의를 한곳에.** $\log p_\theta(x)$를 **증거**(evidence)라 부른다. 어떤 **변분 분포** $q(z \mid x)$(잠재변수 위의 다루기 쉬운 분포로, 보통 인코더 신경망이 평균과 분산을 출력하는 가우시안)에 대해서든 **증거 하한은**
 $$\text{ELBO}(q, \theta) = E_{q(z|x)}\big[\log p_\theta(x, z) - \log q(z \mid x)\big], \qquad \log p_\theta(x) = \text{ELBO}(q, \theta) + D_{KL}\big(q(z|x)\,\|\,p_\theta(z|x)\big)$$
-이다. 오른쪽 KL이 $\ge 0$(§3)이므로 모든 $q$에서 증거의 하한이고, $q$가 참 사후분포와 같을 때 정확히 빡빡해진다. *잠재값 두 개짜리 예:* $z \in \{0, 1\}$, 사전 $(\tfrac12, \tfrac12)$, 관측된 $x$의 우도가 $z = 0$에서 $0.8$, $z = 1$에서 $0.2$라 하자. 그러면 증거는 $\log p(x) = \ln 0.5 = -0.693$나트, 참 사후분포는 $(0.8, 0.2)$다. 균등한 $q = (\tfrac12, \tfrac12)$는 $\text{ELBO} = \tfrac12\ln\tfrac{0.4}{0.5} + \tfrac12\ln\tfrac{0.1}{0.5} = -0.916$나트를 주고, 간극 $0.223$나트가 정확히 $D_{KL}\big(q\,\|\,(0.8, 0.2)\big)$다. $q$를 사후분포로 두면 간극이 닫히고 ELBO가 $-0.693$으로 오른다.
+이다. 오른쪽 KL이 $\ge 0$(§3)이므로 모든 $q$에서 증거의 하한이고, $q$가 참 사후분포와 같을 때 정확히 빡빡해진다. *잠재값 두 개짜리 예:* $z \in \{0, 1\}$, 사전 $(\tfrac12, \tfrac12)$, 관측된 $x$의 우도가 $z = 0$에서 $0.8$, $z = 1$에서 $0.2$라 하자. 그러면 증거는 $\log p(x) = \ln 0.5 = -0.693$나트, 참 사후분포는 $(0.8, 0.2)$다. 균등한 $q = (\tfrac12, \tfrac12)$는 $\text{ELBO} = \tfrac12\ln\tfrac{0.4}{0.5} + \tfrac12\ln\tfrac{0.1}{0.5} = -0.916$나트를 주고, 간극 $0.223$나트가 정확히 $D_{KL}\big(q\,\|\,(0.8, 0.2)\big)$다. $q$를 사후분포로 두면 간극이 닫히고 ELBO가 $-0.693$으로 오른다. 옌센 없이 로그 안에 베이즈 규칙을 넣어 같은 항등식에 이르는 길과, 가우시안 인코더에서 그 간극을 두 방법으로 계산한 값($0.154544$나트)은 [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN §2]]에 있다.
 
 ### 6. 빠른 참조 표
 

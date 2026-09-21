@@ -55,7 +55,7 @@ By 2021, the pretrain-finetune paradigm ([[01-canonical-papers/notes/1-foundatio
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="115" y="86">&#916;W</text>
-    <text x="335" y="80">W&#8320;</text>
+    <text x="335" y="80">W<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="401" y="90">+</text>
     <text x="443" y="90">&#215;</text>
   </g>
@@ -131,7 +131,7 @@ Democratized fine-tuning: LoRA (+QLoRA quantized variant) is *the* standard way 
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="115" y="86">&#916;W</text>
-    <text x="335" y="80">W&#8320;</text>
+    <text x="335" y="80">W<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="401" y="90">+</text>
     <text x="443" y="90">&#215;</text>
   </g>

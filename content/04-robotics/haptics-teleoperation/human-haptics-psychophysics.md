@@ -59,7 +59,7 @@ $$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
 
 This is not a universal definition: yes/no detection, $n$-alternative choice, and fitted functions use different chance levels and threshold criteria. A 50% threshold is meaningful only after the response task is specified.
 
-**The five terms, defined.** Each one is a *convention applied to a curve*, not a property of skin, so each carries its task with it. §6 computes all five on the running object.
+**The five terms, defined.** Each one is a *convention applied to a curve*, not a property of skin, so each carries its task with it. §6 computes all five on the running object. [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §1]] defines these conventions in full — conditions, example and non-example for each — for a stiffness observer on this same handle, and its §2 derives the criterion a 1-up-$n$-down staircase settles on, $p^\ast=2^{-1/n}$.
 
 - **Two-alternative forced choice (2AFC)** — a *response task*, defined by three conditions: exactly two alternatives are offered, a response is required on every trial, and the experimenter fixes which alternative counts as the reference. *Example*: the two intervals of the running object. *Non-example*: "rate the force from 1 to 7", a rating scale whose midpoint is a criterion the participant chooses rather than a chance level the design fixes. It matters because the number of alternatives fixes chance level — $1/2$ here — and chance level is what makes one value of $p$ a threshold rather than another.
 - **Threshold $x_p$** — a *stimulus level*, namely the level at which the response probability equals a criterion $p$ that you name. So "the threshold" without both a $p$ and a task is not yet a quantity, and two papers reporting "the threshold" of the same cue may be reporting different points on the same curve.
@@ -305,7 +305,7 @@ $$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
 
 이것은 보편적 정의가 아니다. yes/no 검출, $n$대안 선택, 적합된 함수는 각각 다른 chance level과 임계 기준을 쓴다. 50% 임계값이라는 말은 반응 과제를 명시한 뒤에만 의미를 갖는다.
 
-**다섯 용어의 정의.** 다섯 모두 피부의 성질이 아니라 *곡선에 적용한 관례*다. 그래서 각각 자기 과제를 달고 다녀야 한다. §6이 이 다섯을 running object 위에서 전부 계산한다.
+**다섯 용어의 정의.** 다섯 모두 피부의 성질이 아니라 *곡선에 적용한 관례*다. 그래서 각각 자기 과제를 달고 다녀야 한다. §6이 이 다섯을 running object 위에서 전부 계산한다. [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §1]]은 같은 핸들 위의 강성 관찰자에 대해 이 관례들을 조건·예·반례까지 온전히 정의하고, 그 §2는 1-up-$n$-down 계단법이 자리 잡는 기준 $p^\ast=2^{-1/n}$을 유도한다.
 
 - **2대안 강제 선택(2AFC)** — *반응 과제*이고, 조건 셋으로 정의된다. 대안이 정확히 둘 제시되고, 매 시행 응답이 강제되며, 어느 쪽이 기준인지를 실험자가 고정한다. *예*: running object의 두 구간. *반례*: "힘을 1에서 7로 평정하라". 이것은 평정 척도이고 그 중간점은 설계가 고정한 chance level이 아니라 참가자가 고르는 기준이다. 중요한 이유는 대안의 수가 chance level을 정하고($1/2$), chance level이 어떤 $p$가 임계값이 될지를 정하기 때문이다.
 - **임계값 $x_p$** — *자극 수준*이다. 반응 확률이 당신이 이름 붙인 기준 $p$와 같아지는 수준. 그래서 $p$와 과제가 둘 다 없는 "그 임계값"은 아직 양이 아니고, 같은 cue의 "임계값"을 보고한 두 논문이 같은 곡선의 다른 점을 보고한 것일 수 있다.

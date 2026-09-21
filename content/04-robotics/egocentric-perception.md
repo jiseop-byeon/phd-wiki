@@ -118,7 +118,7 @@ Three panels, drawn once. The problem set asks for the same three with a differe
 
 1. **The camera cone, from the side.** The projection centre, the optical axis pitched $\theta = 40^\circ$ below horizontal, and the two rays at $\pm\mathrm{VFOV}/2$ about it. Draw the ground line at $h = 1.65$ m below the centre and mark where the two rays meet it: those are the near and far edges of the ground footprint. Then draw a third ray at the horizontal and label it — everything above it never meets the floor at all.
 2. **The bench, fronto-parallel.** The image rectangle at $D = 0.80$ m with its width and height in metres, one pixel's footprint in millimetres, and the 6 mm bolt head drawn to scale inside it. Next to the bolt head, draw the blur streak that $\omega = 90$ °/s produces in one exposure, to the same scale.
-3. **The eye and the camera, from above.** Both projection centres, separated by the offset $b$; the bench target at $0.80$ m; and the two rays to it from eye and camera, with the angle between them marked. This is the panel that says what "where the head is pointing" is actually measuring.
+3. **The eye and the camera, from above.** Both projection centres, separated by the offset $b$; the bench target at $0.80$ m; and the two rays to it from eye and camera, with the angle between them marked. Seen from above that angle is only the left–right part, $\arctan(0.030/0.730)=2.35^\circ$, because the $0.050$ m up offset points out of the page; write the full $4.57^\circ$ of Worked step 6, which includes it, under the panel. This is the panel that says what "where the head is pointing" is actually measuring.
 
 ### Worked on E1 · E1로 한 번 끝까지
 
@@ -543,7 +543,7 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 
 1. **옆에서 본 카메라 원뿔.** 투영 중심, 수평에서 $\theta = 40^\circ$ 내려간 광축, 그리고 그 둘레 $\pm\mathrm{VFOV}/2$의 광선 둘. 중심에서 $h = 1.65$ m 아래에 지면선을 긋고 두 광선이 만나는 지점을 표시한다. 그것이 지면 발자국의 근거리 끝과 원거리 끝이다. 그다음 수평 방향 광선을 하나 더 긋고 이름을 붙여라. 그 위쪽은 바닥에 영영 닿지 않는다.
 2. **정면으로 본 작업대.** $D = 0.80$ m의 영상 직사각형을 미터 단위 가로·세로와 함께, 픽셀 하나의 발자국을 mm로, 그리고 6 mm 볼트 머리를 축척에 맞춰 그 안에 그린다. 볼트 머리 옆에는 $\omega = 90$ °/s가 노출 한 번에 만드는 번짐 자국을 같은 축척으로 그린다.
-3. **위에서 본 눈과 카메라.** 오프셋 $b$만큼 떨어진 투영 중심 둘, $0.80$ m의 작업대 표적, 그리고 눈과 카메라에서 표적으로 가는 광선 둘과 그 사이 각. "머리가 어디를 향하는가"가 실제로 무엇을 재는지를 말해 주는 패널이 이것이다.
+3. **위에서 본 눈과 카메라.** 오프셋 $b$만큼 떨어진 투영 중심 둘, $0.80$ m의 작업대 표적, 그리고 눈과 카메라에서 표적으로 가는 광선 둘과 그 사이 각. 위에서 보면 그 각은 좌우 성분 $\arctan(0.030/0.730)=2.35^\circ$뿐이다. $0.050$ m 위 오프셋은 지면 밖을 향하기 때문이다. 그것까지 넣은 Worked step 6의 전체 각 $4.57^\circ$는 패널 아래에 적는다. "머리가 어디를 향하는가"가 실제로 무엇을 재는지를 말해 주는 패널이 이것이다.
 
 ### E1으로 한 번 끝까지 · Worked on E1
 

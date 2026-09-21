@@ -93,7 +93,7 @@ years. DDPM found the parameterization that makes them work.
   <circle cx="528.4" cy="83.9" r="2.6" fill="currentColor" opacity="0.8"/>
   <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddA)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddA)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddA)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddA)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddA)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddA)"/></g>
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="70" y="112">x&#8320;</text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
+    <text x="70" y="112">x<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
   </g>
   <g font-size="11" fill="currentColor">
     <text x="30" y="26">forward: fixed, nothing learned &#8212; add a little Gaussian noise, T times &#8594;</text>
@@ -210,7 +210,7 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
   <circle cx="528.4" cy="83.9" r="2.6" fill="currentColor" opacity="0.8"/>
   <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddAk)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddAk)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddAk)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddAk)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddAk)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddAk)"/></g>
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="70" y="112">x&#8320;</text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
+    <text x="70" y="112">x<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
   </g>
   <g font-size="11" fill="currentColor">
     <text x="30" y="26">순방향: 고정, 학습되는 것 없음 &#8212; 가우시안 노이즈를 조금씩 T번 더한다 &#8594;</text>

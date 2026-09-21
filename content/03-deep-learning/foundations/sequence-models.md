@@ -176,7 +176,7 @@ For a linear scalar recurrence with weight $w$, the product of §2 is a power,
 
 $$\frac{\partial h_T}{\partial h_0}=w^T$$
 
-because every one of the $T$ Jacobians is the same number, and a power has three regimes. For $\lvert w\rvert<1$ it decays geometrically; D5 halves every $3.1$ steps. For $\lvert w\rvert>1$ it grows geometrically: $1.1^{20}=6.73$ and $1.1^{50}=117.4$. And $\lvert w\rvert=1$ is the knife edge where it is preserved exactly. The general definitions of vanishing and exploding gradients, as products of Jacobians with norms below or above one, are in [[02-foundations/calculus-backprop|2. Calculus & Backprop §5]]. What a recurrent network adds is that the factors are *all the same*, so the product becomes a power, and a power is governed by one number.
+because every one of the $T$ Jacobians is the same number, and a power has three regimes. For $\lvert w\rvert<1$ it decays geometrically; D5 halves every $3.1$ steps. For $\lvert w\rvert>1$ it grows geometrically: $1.1^{20}=6.73$ and $1.1^{50}=117.4$. And $\lvert w\rvert=1$ is the knife edge where it is preserved exactly. The general definitions of vanishing and exploding gradients, as products of Jacobians with norms below or above one, are in [[02-foundations/calculus-backprop|2. Calculus & Backprop §5]]. What a recurrent network adds is that the factors are *all the same*, so the product becomes a power, and a power is governed by one number. Taken across the layers of a deep network instead of the steps of one sequence, the same product is what a residual path reshapes, in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §3]].
 
 **The matrix case.** For the linear RNN $h_t=Wh_{t-1}+Ux_t$ the same argument gives $\partial h_T/\partial h_0=W^T$. If $W$ has a full set of eigenvectors, $W=V\Lambda V^{-1}$ ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), then
 
@@ -758,7 +758,7 @@ $$\frac{\partial h_T}{\partial h_0}=J_TJ_{T-1}\cdots J_1,\qquad J_t=\operatornam
 
 $$\frac{\partial h_T}{\partial h_0}=w^T$$
 
-야코비안 $T$개가 모두 같은 숫자이기 때문이고, 거듭제곱에는 세 영역이 있다. $\lvert w\rvert<1$이면 기하급수로 줄어든다. D5는 $3.1$ 스텝마다 절반이 된다. $\lvert w\rvert>1$이면 기하급수로 자란다. $1.1^{20}=6.73$, $1.1^{50}=117.4$다. 그리고 $\lvert w\rvert=1$은 정확히 보존되는 칼날이다. 그래디언트 소실과 폭발을 노름이 1보다 작거나 큰 야코비안의 곱으로 정의한 일반 정의는 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]]에 있다. 순환 신경망이 더하는 것은 인자들이 *모두 같다*는 점이다. 그래서 곱이 거듭제곱이 되고, 거듭제곱은 숫자 하나가 다스린다.
+야코비안 $T$개가 모두 같은 숫자이기 때문이고, 거듭제곱에는 세 영역이 있다. $\lvert w\rvert<1$이면 기하급수로 줄어든다. D5는 $3.1$ 스텝마다 절반이 된다. $\lvert w\rvert>1$이면 기하급수로 자란다. $1.1^{20}=6.73$, $1.1^{50}=117.4$다. 그리고 $\lvert w\rvert=1$은 정확히 보존되는 칼날이다. 그래디언트 소실과 폭발을 노름이 1보다 작거나 큰 야코비안의 곱으로 정의한 일반 정의는 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]]에 있다. 순환 신경망이 더하는 것은 인자들이 *모두 같다*는 점이다. 그래서 곱이 거듭제곱이 되고, 거듭제곱은 숫자 하나가 다스린다. 시퀀스 하나의 스텝들이 아니라 깊은 신경망의 층들에 걸쳐 취한 같은 곱을 잔차 경로가 어떻게 바꾸는지는 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §3]]에 있다.
 
 **행렬의 경우.** 선형 RNN $h_t=Wh_{t-1}+Ux_t$에서 같은 논증이 $\partial h_T/\partial h_0=W^T$를 준다. $W$가 고유벡터를 다 갖춰 $W=V\Lambda V^{-1}$이면([[02-foundations/linear-algebra|1. 선형대수 §3]])
 

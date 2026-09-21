@@ -487,7 +487,7 @@ A [[05-construction-robotics/digital-twin-workflows|digital twin]] (a model of a
 
 ### 10. Failure taxonomy
 
-Separate sensor, estimation, planning, policy, control, communication, compute, mechanical, operator, and environment failures. The visible final event may be downstream: a collision can originate from stale sensing, wrong localization, infeasible planning, poor tracking, or actuator saturation.
+Separate sensor, estimation, planning, policy, control, communication, compute, mechanical, operator, and environment failures. The visible final event may be downstream: a collision can originate from stale sensing, wrong localization, infeasible planning, poor tracking, or actuator saturation. The worked case of [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]] applies this separation to a whole log, F1 — six failures in 200 hours of a test rig, each with one initiating category and its contributing faults and outcome kept beside it.
 
 For example, a collision at t = 12.4 s can originate in a pose stream that stopped refreshing at t = 10.3 s. Accurate tracking of the resulting wrong path is evidence against a tracking-error diagnosis. The complete hypothetical investigation is in [[06-research-practice/failure-analysis-system-evaluation|Failure Analysis §7]]. **The reading this gives you.** Record the earliest observed contract violation separately from the downstream outcome. A missing freshness check can contribute to propagation even after the initiating estimator defect is found, so the fix may need to cross a subsystem boundary.
 
@@ -1061,7 +1061,7 @@ print(ev(('and', safe, ('and', seq, react)), tr),                  # False
 
 센서, 추정, 계획, 정책, 제어, 통신, 컴퓨트, 기계, 운용자, 환경 실패를 분리하라. 눈에
 보이는 최종 사건은 하류일 수 있다: 충돌은 오래된 센싱, 잘못된 위치 추정, 실행 불가능한
-계획, 나쁜 추종, 액추에이터 포화 어디서든 비롯될 수 있다.
+계획, 나쁜 추종, 액추에이터 포화 어디서든 비롯될 수 있다. [[06-research-practice/failure-analysis-system-evaluation|3. 실패 분석·시스템 평가]]의 worked case는 이 분리를 로그 하나 전체, F1에 적용한다. 시험 장비 200시간의 실패 여섯 건에 시작 범주를 하나씩 붙이고, 기여 결함과 결과를 그 옆에 둔다.
 
 t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에서 시작할 수 있다. 잘못 생성된 경로를 정확히 추종했다면 추종 오차 진단에 반하는 증거다. 가상의 전체 조사는 [[06-research-practice/failure-analysis-system-evaluation|실패 분석 §7]]에 있다. **여기서 얻는 독법.** 처음 관찰한 약속 위반과 하류 결과를 따로 기록한다. 추정기의 시작 결함을 찾았어도 최신성 검사가 없어 전파됐을 수 있다. 수정이 하위 시스템 경계를 넘어야 하는 이유다.
 

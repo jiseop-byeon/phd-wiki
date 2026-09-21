@@ -364,7 +364,7 @@ For a linear Kalman measurement update — where $H$ is the matrix form of the o
 
 $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 
-$K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$. For both filters written as code — one Kalman predict/update with the Joseph-form covariance, and particle resampling triggered by the effective sample size — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]] and [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
+$K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$. For both filters written as code — one Kalman predict/update with the Joseph-form covariance, and particle resampling triggered by the effective sample size — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]] and [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]. When the model is time-invariant and $P$ converges, $K$ becomes a constant and the filter is a linear time-invariant recurrence in $\hat x$ — a linear RNN whose weights come from a Riccati equation rather than from gradient descent ([[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §12]]).
 
 **The Kalman filter, stated completely.** It is the Bayes filter of §4 specialised to §3's **linear-Gaussian** model, where it is exact rather than approximate. It needs four conditions: linear dynamics $x_t = Ax_{t-1} + Bu_t + w_t$; a linear observation $z_t = Hx_t + v_t$; zero-mean white Gaussian noises $w_t\sim\mathcal N(0,Q)$ and $v_t\sim\mathcal N(0,R)$, independent of each other; and a Gaussian initial belief. Under them every belief stays Gaussian, because affine maps and conditioning keep Gaussians Gaussian ([[02-foundations/probability|3. Probability §3]]), so the filter carries only a mean and a covariance. The **predict** step pushes both through the dynamics:
 $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
@@ -1142,7 +1142,7 @@ $z_{1:t-1}$이 떨어지고 관측 모델 $p(z_t\mid x_t)$가 나타난다.
 $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 
 $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$, 센서 공분산 $R$, 관측 기하
-$H$에서 *따라 나온다*. 두 필터를 코드로 옮긴 것 — Joseph 형태 공분산을 쓰는 칼만 예측·갱신 한 스텝과, 유효 표본 크기로 시점을 정하는 파티클 재표집 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]]와 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다.
+$H$에서 *따라 나온다*. 두 필터를 코드로 옮긴 것 — Joseph 형태 공분산을 쓰는 칼만 예측·갱신 한 스텝과, 유효 표본 크기로 시점을 정하는 파티클 재표집 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]]와 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다. 모델이 시불변이고 $P$가 수렴하면 $K$가 상수가 되어, 필터는 $\hat x$에 대한 선형 시불변 점화식이 된다. 가중치가 경사 하강이 아니라 리카티 방정식에서 오는 선형 RNN이다([[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §12]]).
 
 **칼만 필터의 완전한 정의.** §4의 베이즈 필터를 §3의 **선형-가우시안** 모델에 특수화한 것이고, 거기서는 근사가 아니라 정확하다. 조건이 넷이다: 선형 동역학 $x_t = Ax_{t-1} + Bu_t + w_t$; 선형 관측 $z_t = Hx_t + v_t$; 서로 독립인 평균 0의 백색 가우시안 잡음 $w_t\sim\mathcal N(0,Q)$ 와 $v_t\sim\mathcal N(0,R)$; 가우시안 초기 belief. 이 아래에서는 모든 belief가 가우시안으로 남는다. 아핀 사상과 조건부화가 가우시안을 가우시안으로 보내기 때문이다([[02-foundations/probability|3. 확률 §3]]). 그래서 필터는 평균과 공분산만 들고 간다. **예측** 단계는 둘을 동역학에 통과시킨다.
 $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
@@ -1198,7 +1198,7 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 
 **계산 없이 가정 하나를 바꿔 본다.** 측정이 훨씬 부정확하면 이득이 줄고 추정은 예측에 가까이 남아야 한다. 측정이 이미 예측에 들어간 정보를 재사용한다면 상관을 모델링하지 않은 이 식은 증거를 중복 계산한다. 0.8과 11.6을 외우기보다 변화 방향을 예측하는 것이 더 좋은 첫 이해 확인이다.
 
-**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=10.6$, $P=1.8$. 혁신 $\sigma=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=10.5$는 예측에서 $0.1\,\mathrm{cm}$로 게이트 안: $K=0.643$, $\hat x=10.536$, $P=0.643$. 통행인 $z=18$은 예측에서 $7.4\,\mathrm{cm}$로 게이트 밖: 기각. 그래도 넣으면 $\hat x=15.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 5 cm 먼저 패널에 부딪힌다. 연관은 공분산 질문이 아니다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
+**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=10.6$, $P=1.8$. 혁신 $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=10.5$는 예측에서 $0.1\,\mathrm{cm}$로 게이트 안: $K=1.8/2.8=0.643$, $\hat x=10.536$, $P=0.643$. 통행인 $z=18$은 예측에서 $7.4\,\mathrm{cm}$로 게이트 밖: 기각. 그래도 넣으면 $\hat x=15.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 5 cm 먼저 패널에 부딪힌다. 연관은 공분산 질문이 아니다. 차이는 전부 게이트에서 난다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
 
 ### 7. Odometry, localization, mapping, SLAM
 

@@ -204,7 +204,7 @@ Quadrature encoders provide counts and direction; angle requires counts-per-revo
 > where $r_m$ is the pulley radius and $N$ the post-decode counts per revolution — $61.4\,\mathrm{\mu m}$ at the handle, because one revolution carries the handle $2\pi r_m=62.8\,\mathrm{mm}$ and that travel is cut into $1024$ equal pieces.
 > - **Example**: the $5\,\mathrm{mm}$ of penetration P3's amplifier can hold is $81.5$ counts, so the wall's entire force range is resolved into about eighty steps of $0.0245\,\mathrm{N}$.
 > - **Non-example**: quoting $N=256$ because that is the number of slots on the disc. Quadrature decoding gives four counts per slot, so the true $N$ is $1024$ and the true $\Delta x$ is four times *smaller*; a paper that makes this mistake under-reports its own resolution by a factor of four, which is the problem set's item 3.
-> - **Why it matters**: it is the $\Delta$ in the quantization ceiling above, and it is the one term in that ceiling that faster computation cannot touch — it is bought with hardware, once.
+> - **Why it matters**: it is the $\Delta$ in the quantization ceiling above, and it is the one term in that ceiling that faster computation cannot touch — it is bought with hardware, once. It also sets the finest stiffness step a perception study can run on the device: pressed to a depth $d$, a step $\delta$ on a wall $k$ has to clear one count, $\delta\,d\ge k\,\Delta x$ — the one-count condition of [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §3]].
 
 ### 5. Design from two ends
 
@@ -428,7 +428,7 @@ Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전�
 > $r_m$은 풀리 반지름, $N$은 디코드 후 회전당 카운트다. 핸들에서 $61.4\,\mathrm{\mu m}$인데, 한 바퀴가 핸들을 $2\pi r_m=62.8\,\mathrm{mm}$ 옮기고 그 이동이 $1024$등분되기 때문이다.
 > - **예**: P3의 증폭기가 버티는 침투 $5\,\mathrm{mm}$는 $81.5$ 카운트이므로, 벽의 힘 범위 전체가 $0.0245\,\mathrm{N}$짜리 여든 단계로 쪼개진다.
 > - **비예**: 디스크의 슬롯이 $256$개라서 $N=256$이라고 적는 것. 쿼드러처 디코드가 슬롯당 네 카운트를 주므로 참 $N$은 $1024$이고 참 $\Delta x$는 네 배 *작다*. 이 실수를 한 논문은 자기 해상도를 네 배 낮게 보고하는 셈이고, 과제 3번이 그것이다.
-> - **왜 중요한가**: 위 양자화 천장의 $\Delta$가 이것이고, 그 천장에서 빠른 연산으로 건드릴 수 없는 유일한 항이다. 하드웨어로 한 번에 사는 값이다.
+> - **왜 중요한가**: 위 양자화 천장의 $\Delta$가 이것이고, 그 천장에서 빠른 연산으로 건드릴 수 없는 유일한 항이다. 하드웨어로 한 번에 사는 값이다. 지각 연구가 이 장치에서 돌릴 수 있는 가장 고운 강성 단도 이것이 정한다. 깊이 $d$까지 누를 때 벽 $k$ 위의 단 $\delta$는 카운트 하나를 넘어야 한다($\delta\,d\ge k\,\Delta x$). [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §3]]의 한 카운트 조건이다.
 
 ### 5. 양쪽에서 설계하기
 

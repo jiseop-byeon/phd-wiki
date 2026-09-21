@@ -135,7 +135,7 @@ This is different from inverting a velocity equation. No inverse is needed to ma
   <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
   <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(78.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="115" y="26">&#952;&#8322; = 90&#176; &#8212; well conditioned</text><text x="355" y="26">&#952;&#8322; = 20&#176; &#8212; nearing a singularity</text>
+    <text x="115" y="26">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176; &#8212; well conditioned</tspan></text><text x="355" y="26">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 20&#176; &#8212; nearing a singularity</tspan></text>
     <text x="115" y="42" font-size="10" opacity="0.8">det J = 1.00 &#183; &#963; = 1.62, 0.62 &#183; ratio 2.6</text><text x="355" y="42" font-size="10" opacity="0.8">det J = 0.34 &#183; &#963; = 2.20, 0.16 &#183; ratio 14</text>
   </g>
   <g font-size="11" fill="currentColor">
@@ -321,7 +321,7 @@ $\mathcal{F}_s$와 짝이다.) 카탈로그 P2에서 $F=(0,-10)\,\mathrm{N}$이�
   <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
   <ellipse cx="397.5" cy="130.2" rx="51.1" ry="3.6" transform="rotate(78.0 397.5 130.2)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="285.0" y1="150.0" x2="343.0" y2="150.0"/><line x1="343.0" y1="150.0" x2="397.5" y2="130.2"/></g><g fill="currentColor"><circle cx="285.0" cy="150.0" r="4"/><circle cx="343.0" cy="150.0" r="4"/><circle cx="397.5" cy="130.2" r="3.5"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="115" y="26">&#952;&#8322; = 90&#176; &#8212; 조건이 좋다</text><text x="355" y="26">&#952;&#8322; = 20&#176; &#8212; 특이점에 접근</text>
+    <text x="115" y="26">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90&#176; &#8212; 조건이 좋다</tspan></text><text x="355" y="26">&#952;<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 20&#176; &#8212; 특이점에 접근</tspan></text>
     <text x="115" y="42" font-size="10" opacity="0.8">det J = 1.00 &#183; &#963; = 1.62, 0.62 &#183; 비 2.6</text><text x="355" y="42" font-size="10" opacity="0.8">det J = 0.34 &#183; &#963; = 2.20, 0.16 &#183; 비 14</text>
   </g>
   <g font-size="11" fill="currentColor">

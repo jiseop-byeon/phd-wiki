@@ -242,7 +242,7 @@ because tool and panel act as a mass on a spring and contact ends after half a p
 
 > In a ten-trial-per-arm pilot on the P2 arm against a 400 N/m panel, B's mean peak contact force was 3.16 N lower than A's (95% CI 1.28 to 5.04 N); B stayed at or below 10 N in 9 of 10 trials and A in 6 of 10, a difference this pilot cannot distinguish from chance (95% CI $-0.08$ to $+0.60$; Fisher exact $p = 0.30$).
 
-Every clause has a row, and every row it leaves out — safer, stiffer panels, the mechanism — is left out on purpose. That sentence is what the next pages take: [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] decides how the confirmatory run is assigned and sized, [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]] turns each number into a table cell and the sentence it licenses, and [[06-research-practice/real-world-impact|6. Real-World Impact]] asks which rung of evidence the pilot stands on and what the next rung costs.
+Every clause has a row, and every row it leaves out — safer, stiffer panels, the mechanism — is left out on purpose. That sentence is what the next pages take: [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] decides how the confirmatory run is assigned and sized, [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]] turns each number into a table cell and the sentence it licenses, and [[06-research-practice/real-world-impact|6. Real-World Impact]] asks which rung of evidence the pilot stands on and what the next rung costs. What the sentence should not do is go to an archival venue on its own ahead of the confirmatory run: pilot and confirmation are one claim, and [[06-research-practice/venue-strategy|5. Venue Strategy]]'s worked case shows the journal rules then refusing the second as a mere extension of the first.
 
 ### 1. Topic → problem → question
 
@@ -631,7 +631,7 @@ $$t_c = \pi\sqrt{\Lambda_y / k}$$
 
 > 400 N/m 패널에 대한 P2 팔의 제어기당 10회 파일럿에서, B의 평균 최대 접촉력은 A보다 3.16 N 낮았다(95% 신뢰구간 1.28–5.04 N). B는 10회 중 9회, A는 10회 중 6회 10 N 이하에 머물렀으나, 이 파일럿은 그 차이를 우연과 구별하지 못한다(95% 신뢰구간 $-0.08$–$+0.60$; Fisher 정확 검정 $p = 0.30$).
 
-절마다 표의 행이 있고, 문장이 빼 놓은 행 — 안전, 더 뻣뻣한 패널, 기전 — 은 일부러 뺀 것이다. 다음 페이지들이 가져가는 것이 이 문장이다. [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]는 확인 실험을 어떻게 배정하고 몇 번 돌릴지 정하고, [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]는 숫자 하나하나를 표의 칸과 그것이 허락하는 문장으로 바꾸며, [[06-research-practice/real-world-impact|6. 실세계 임팩트]]는 파일럿이 증거의 어느 단에 서 있고 다음 단이 얼마인지 묻는다.
+절마다 표의 행이 있고, 문장이 빼 놓은 행 — 안전, 더 뻣뻣한 패널, 기전 — 은 일부러 뺀 것이다. 다음 페이지들이 가져가는 것이 이 문장이다. [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]는 확인 실험을 어떻게 배정하고 몇 번 돌릴지 정하고, [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]는 숫자 하나하나를 표의 칸과 그것이 허락하는 문장으로 바꾸며, [[06-research-practice/real-world-impact|6. 실세계 임팩트]]는 파일럿이 증거의 어느 단에 서 있고 다음 단이 얼마인지 묻는다. 이 문장이 해서는 안 되는 일은 확인 실험보다 먼저 혼자 아카이브 venue로 가는 것이다. 파일럿과 확인 실험은 주장 하나이고, [[06-research-practice/venue-strategy|5. Venue 전략]]의 worked case는 그러면 저널 규칙이 둘째를 첫째의 단순한 확장으로 보고 거절한다는 것을 보인다.
 
 ### 1. Topic → problem → question
 

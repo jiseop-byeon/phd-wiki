@@ -41,7 +41,7 @@ One figure, drawn once here and asked for again in the problem set.
   <text x="122" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
   <text x="122" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
   <text x="122" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
-  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W₁x</text>
+  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text>
   <rect x="213" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <line x1="213" y1="57.5" x2="239" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <line x1="213" y1="74.5" x2="239" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
@@ -51,15 +51,15 @@ One figure, drawn once here and asked for again in the problem set.
   <text x="226" y="34" font-size="12" text-anchor="middle" fill="currentColor">h = ReLU(z)</text>
   <rect x="387" y="57.5" width="34" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <text x="404" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.5</text>
-  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W₂h</text>
+  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text>
   <rect x="502" y="57.5" width="44" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <text x="524" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.125</text>
   <text x="548" y="34" font-size="12" text-anchor="end" fill="currentColor">L = ½(ŷ − y)²</text>
   <line x1="43" y1="66" x2="108" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
   <line x1="239" y1="66" x2="386" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
   <line x1="421" y1="66" x2="501" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
-  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₁ · 3×2</text>
-  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₂ · 1×3</text>
+  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> · 3×2</tspan></text>
+  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> · 1×3</tspan></text>
   <text x="461.5" y="60" font-size="11" text-anchor="middle" fill="currentColor">loss</text>
   <line x1="135" y1="49" x2="167.5" y2="49" stroke="currentColor" stroke-width="1.3"/>
   <line x1="180.5" y1="49" x2="212" y2="49" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHw)"/>
@@ -86,21 +86,21 @@ One figure, drawn once here and asked for again in the problem set.
   <line x1="400" y1="128" x2="230" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHw)"/>
   <line x1="222" y1="128" x2="126" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHw)"/>
   <text x="112" y="132" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">backward</text>
-  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ₁</text>
+  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="134" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
   <text x="134" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
-  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W₂ᵀδ₂</text>
+  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="250" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
   <text x="250" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
-  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ₂</text>
+  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="472" y="156" font-size="11" text-anchor="middle" fill="currentColor">−0.5</text>
   <text x="472" y="169" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">1×1</text>
   <rect x="340" y="186" width="128" height="48.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
-  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₂ = δ₂hᵀ</text>
+  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text>
   <text x="404" y="215" font-size="11" text-anchor="middle" fill="currentColor">(−0.5, −1, −1.5)</text>
-  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = shape of W₂ ✓</text>
+  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = shape of W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> ✓</tspan></text>
   <rect x="30" y="186" width="132" height="75.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
-  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₁ = δ₁xᵀ</text>
+  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
   <text x="86" y="215" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
   <text x="120" y="215" font-size="11" text-anchor="end" fill="currentColor">−1</text>
   <text x="86" y="228.5" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
@@ -109,12 +109,12 @@ One figure, drawn once here and asked for again in the problem set.
   <text x="120" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
   <path d="M 51 206.5 h -3 V 245 h 3" fill="none" stroke="currentColor" stroke-width="1"/>
   <path d="M 125 206.5 h 3 V 245 h -3" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = shape of W₁ ✓</text>
+  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = shape of W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> ✓</tspan></text>
   <line x1="404" y1="131" x2="404" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
   <line x1="122" y1="131" x2="122" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
   <line x1="358" y1="186" x2="358" y2="68.5" stroke="currentColor" stroke-width="1.7" marker-end="url(#cbHw)"/>
   <text x="352" y="106" font-size="11" text-anchor="end" fill="currentColor">−η, η = 0.1</text>
-  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">Only the −η arrow changes a number: W₂ ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</text>
+  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">Only the −η arrow changes a number: W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</tspan></text>
   <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). Forward again with the same h: ŷ = 1.20, L = 0.020.</text>
 </svg>
 
@@ -305,7 +305,7 @@ bug detector in existence.
     <rect x="490" y="52" width="52" height="34" rx="4"/>
   </g>
   <g font-size="12" fill="currentColor" text-anchor="middle">
-    <text x="51" y="74">x</text><text x="171" y="74">z = W₁x</text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W₂h</text><text x="516" y="74">L</text>
+    <text x="51" y="74">x</text><text x="171" y="74">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text><text x="516" y="74">L</text>
   </g>
   <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)">
     <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
@@ -316,8 +316,8 @@ bug detector in existence.
     <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
-    <text x="466" y="102">δ₂ = ŷ − y</text><text x="356" y="102">W₂ᵀδ₂</text><text x="231" y="102">⊙ 1[z&gt;0] = δ₁</text><text x="111" y="102">W₁ᵀδ₁</text>
-    <text x="411" y="128">∂L/∂W₂ = δ₂hᵀ</text><text x="171" y="128">∂L/∂W₁ = δ₁xᵀ</text>
+    <text x="466" y="102">δ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ŷ − y</tspan></text><text x="356" y="102">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="231" y="102">⊙ 1[z&gt;0] = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="111" y="102">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="411" y="128">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text><text x="171" y="128">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
   </g>
   <g font-size="11.5" fill="currentColor">
     <text x="20" y="34">forward →</text><text x="20" y="160" opacity="0.85">← backward (dashed): deltas travel through transposes, weight gradients are outer products</text>
@@ -369,16 +369,16 @@ bug detector in existence.
 - **Vanishing gradients**: products of Jacobians with norms < 1 decay exponentially with
   depth/time. Treatments, in historical order:
   - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: a self-connection of weight exactly 1.0 — the
-    error carousel where the product stops shrinking.
+    error carousel where the product stops shrinking. The forget gate added in 1999 turns that 1.0 into a learned per-step factor $f_t$; the cell path and its gradient are [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §5]].
   - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: renormalize activations so Jacobians
     stay well-scaled (better conditioning) — one of several proposed explanations; *why*
     BatchNorm works is still debated (see the note).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]: $\partial(x + F(x))/\partial x = I + \partial F/\partial x$
     — the identity term gives the gradient a direct, unattenuated path — it *mitigates*
-    vanishing (a path exists) rather than guaranteeing the total gradient never decays.
+    vanishing (a path exists) rather than guaranteeing the total gradient never decays. What that path does to the variance, forwards and backwards — a plain He-initialized residual stream doubles it per block, a pre-norm one grows only linearly — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §3]].
   - **Stated with the formula.** For a chain of $T$ layers or time steps $h_t=f_t(h_{t-1})$ with Jacobians $J_t=\partial h_t/\partial h_{t-1}$, the chain rule of §2 gives
     $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
-    so the signal reaching the first layer has passed through $T$ matrices, and its size is bounded by $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$. **Vanishing** is the case where every $\lVert J_t\rVert\le\rho<1$, which forces decay at least as fast as $\rho^{T}$. With scalar Jacobians of $0.9$ over $50$ steps the gradient is multiplied by $0.9^{50}=0.0052$. Consequence: early layers, or early time steps, stop learning while later ones still do.
+    so the signal reaching the first layer has passed through $T$ matrices, and its size is bounded by $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$. **Vanishing** is the case where every $\lVert J_t\rVert\le\rho<1$, which forces decay at least as fast as $\rho^{T}$. With scalar Jacobians of $0.9$ over $50$ steps the gradient is multiplied by $0.9^{50}=0.0052$. Consequence: early layers, or early time steps, stop learning while later ones still do. When every factor is the same recurrent matrix, the product is a matrix power whose long-run fate the spectral radius sets — though a non-normal matrix can grow before it vanishes — as [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §3]] shows.
 - **Exploding gradients**: norms > 1 — treated with gradient clipping (rescale $\|g\|$ to a
   ceiling), standard in RNN/LLM training.
   - **Stated with the formula.** The same product with factors larger than $1$ can grow like $\rho^{T}$: scalar Jacobians of $1.1$ over $50$ steps multiply the gradient by $1.1^{50}=117$, and one such step can throw the weights far outside the region where the loss was sensible. **Clipping by norm**, with ceiling $c$, rescales the gradient $g$ as
@@ -392,7 +392,7 @@ bug detector in existence.
   - **Stop-gradient, stated completely.** An operator with two rules: in the forward pass it is the identity, $\text{sg}[a]=a$; in the backward pass its derivative is declared zero, $\partial\,\text{sg}[a]/\partial a=0$. So the value is used but no sensitivity flows back through it (`detach()` in PyTorch, `stop_gradient` in JAX). Example: $L=(\text{sg}[a]-b)^2$ at $a=3$, $b=1$ has $L=4$, $\partial L/\partial b=-2(a-b)=-4$, and $\partial L/\partial a=0$, where without the operator it would be $+4$.
   - **Reparameterization, stated completely.** Replace a sample $z\sim\mathcal{N}(\mu,\sigma^2)$ by a deterministic function of the parameters and external noise:
     $$z = \mu + \sigma\,\epsilon,\qquad \epsilon\sim\mathcal{N}(0,1)$$
-    because this $z$ has exactly the same distribution, while now $\partial z/\partial\mu=1$ and $\partial z/\partial\sigma=\epsilon$ are ordinary derivatives. Example: $\mu=1$, $\sigma=2$ and a drawn $\epsilon=0.5$ give $z=2$ and $\partial z/\partial\sigma=0.5$. Drawing $z$ directly from $\mathcal{N}(\mu,\sigma^2)$ is the non-example: the draw is not a function of $\mu$ you can differentiate.
+    because this $z$ has exactly the same distribution, while now $\partial z/\partial\mu=1$ and $\partial z/\partial\sigma=\epsilon$ are ordinary derivatives. Example: $\mu=1$, $\sigma=2$ and a drawn $\epsilon=0.5$ give $z=2$ and $\partial z/\partial\sigma=0.5$. Drawing $z$ directly from $\mathcal{N}(\mu,\sigma^2)$ is the non-example: the draw is not a function of $\mu$ you can differentiate. Why the gradient it gives has low variance, set against the score-function estimator, is worked in numbers in [[03-deep-learning/diffusion/vae-gan|6.1 VAEs & GANs §3]].
   - **EMA teacher, stated completely.** After each student update the teacher's parameters $\theta_T$ move a fraction of the way toward the student's $\theta_S$, with a decay $\tau$ just below $1$:
     $$\theta_T \leftarrow \tau\,\theta_T + (1-\tau)\,\theta_S$$
     so a student value from $k$ steps ago keeps weight $\propto\tau^{k}$, and the teacher gets its values only through this rule, never through a gradient. With $\tau=0.99$ that weight halves every $\ln 0.5/\ln 0.99\approx69$ steps; DINO's schedule starts at $\tau=0.996$, a half-life of about $173$ steps.
@@ -502,7 +502,7 @@ print(d2, W2, L, L2)
   <text x="122" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
   <text x="122" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
   <text x="122" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
-  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W₁x</text>
+  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text>
   <rect x="213" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <line x1="213" y1="57.5" x2="239" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <line x1="213" y1="74.5" x2="239" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
@@ -512,15 +512,15 @@ print(d2, W2, L, L2)
   <text x="226" y="34" font-size="12" text-anchor="middle" fill="currentColor">h = ReLU(z)</text>
   <rect x="387" y="57.5" width="34" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <text x="404" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.5</text>
-  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W₂h</text>
+  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text>
   <rect x="502" y="57.5" width="44" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
   <text x="524" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.125</text>
   <text x="548" y="34" font-size="12" text-anchor="end" fill="currentColor">L = ½(ŷ − y)²</text>
   <line x1="43" y1="66" x2="108" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
   <line x1="239" y1="66" x2="386" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
   <line x1="421" y1="66" x2="501" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
-  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₁ · 3×2</text>
-  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₂ · 1×3</text>
+  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> · 3×2</tspan></text>
+  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> · 1×3</tspan></text>
   <text x="461.5" y="60" font-size="11" text-anchor="middle" fill="currentColor">손실</text>
   <line x1="135" y1="49" x2="167.5" y2="49" stroke="currentColor" stroke-width="1.3"/>
   <line x1="180.5" y1="49" x2="212" y2="49" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHwk)"/>
@@ -547,21 +547,21 @@ print(d2, W2, L, L2)
   <line x1="400" y1="128" x2="230" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHwk)"/>
   <line x1="222" y1="128" x2="126" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHwk)"/>
   <text x="112" y="132" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">역전파</text>
-  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ₁</text>
+  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="134" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
   <text x="134" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
-  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W₂ᵀδ₂</text>
+  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="250" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
   <text x="250" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
-  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ₂</text>
+  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="472" y="156" font-size="11" text-anchor="middle" fill="currentColor">−0.5</text>
   <text x="472" y="169" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">1×1</text>
   <rect x="340" y="186" width="128" height="48.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
-  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₂ = δ₂hᵀ</text>
+  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text>
   <text x="404" y="215" font-size="11" text-anchor="middle" fill="currentColor">(−0.5, −1, −1.5)</text>
-  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = W₂의 모양 ✓</text>
+  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">의 모양 ✓</tspan></text>
   <rect x="30" y="186" width="132" height="75.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
-  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₁ = δ₁xᵀ</text>
+  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
   <text x="86" y="215" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
   <text x="120" y="215" font-size="11" text-anchor="end" fill="currentColor">−1</text>
   <text x="86" y="228.5" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
@@ -570,12 +570,12 @@ print(d2, W2, L, L2)
   <text x="120" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
   <path d="M 51 206.5 h -3 V 245 h 3" fill="none" stroke="currentColor" stroke-width="1"/>
   <path d="M 125 206.5 h 3 V 245 h -3" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = W₁의 모양 ✓</text>
+  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">의 모양 ✓</tspan></text>
   <line x1="404" y1="131" x2="404" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
   <line x1="122" y1="131" x2="122" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
   <line x1="358" y1="186" x2="358" y2="68.5" stroke="currentColor" stroke-width="1.7" marker-end="url(#cbHwk)"/>
   <text x="352" y="106" font-size="11" text-anchor="end" fill="currentColor">−η, η = 0.1</text>
-  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">숫자를 바꾸는 것은 −η 화살표뿐이다: W₂ ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</text>
+  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">숫자를 바꾸는 것은 −η 화살표뿐이다: W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</tspan></text>
   <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). 같은 h로 다시 순전파하면 ŷ = 1.20, L = 0.020.</text>
 </svg>
 
@@ -756,7 +756,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
     <rect x="490" y="52" width="52" height="34" rx="4"/>
   </g>
   <g font-size="12" fill="currentColor" text-anchor="middle">
-    <text x="51" y="74">x</text><text x="171" y="74">z = W₁x</text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W₂h</text><text x="516" y="74">L</text>
+    <text x="51" y="74">x</text><text x="171" y="74">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text><text x="516" y="74">L</text>
   </g>
   <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpFk)">
     <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
@@ -767,8 +767,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
     <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
   </g>
   <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
-    <text x="466" y="102">δ₂ = ŷ − y</text><text x="356" y="102">W₂ᵀδ₂</text><text x="231" y="102">⊙ 1[z&gt;0] = δ₁</text><text x="111" y="102">W₁ᵀδ₁</text>
-    <text x="411" y="128">∂L/∂W₂ = δ₂hᵀ</text><text x="171" y="128">∂L/∂W₁ = δ₁xᵀ</text>
+    <text x="466" y="102">δ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ŷ − y</tspan></text><text x="356" y="102">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="231" y="102">⊙ 1[z&gt;0] = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="111" y="102">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="411" y="128">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text><text x="171" y="128">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
   </g>
   <g font-size="11.5" fill="currentColor">
     <text x="20" y="34">순전파 →</text><text x="20" y="160" opacity="0.85">← 역전파(점선): 델타는 전치를 타고 흐르고, 가중치 그래디언트는 외적이다</text>
@@ -819,17 +819,17 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 - **그래디언트 소실**: 노름 < 1인 야코비안들의 곱은 깊이/시간에 지수적으로 붕괴.
   역사 순서의 처방:
   - [[01-canonical-papers/notes/1-foundations/lstm|LSTM]]: 가중치가 정확히 1.0인 자기 연결 — 곱이 더는
-    줄지 않는 오차 회전목마.
+    줄지 않는 오차 회전목마. 1999년에 더해진 forget gate가 그 1.0을 스텝마다 학습되는 인수 $f_t$로 바꾸었고, 셀 경로와 그 그래디언트는 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §5]]에 있다.
   - [[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]: 활성값을 재정규화해 야코비안의
     스케일을 유지 (조건수 개선) — 여러 제안된 설명 중 하나로, BatchNorm이 *왜* 통하는지는
     아직 논쟁 중이다 (노트 참고).
   - [[01-canonical-papers/notes/1-foundations/resnet|ResNet]]:
     $\partial(x + F(x))/\partial x = I + \partial F/\partial x$ — 항등 항이 감쇠 없는
     직접 경로를 제공한다 — 소실을 *완화*하는 것이지(경로가 존재한다), 전체 그래디언트가
-    절대 줄지 않음을 보장하는 것은 아니다.
+    절대 줄지 않음을 보장하는 것은 아니다. 그 경로가 순방향과 역방향의 분산에 하는 일 — He 초기화의 평범한 잔차 스트림에서는 블록마다 두 배가 되고, pre-norm이면 선형으로만 자란다 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §3]]에 있다.
   - **식으로 쓰면.** 야코비안이 $J_t=\partial h_t/\partial h_{t-1}$인 $T$개의 층 또는 시간 스텝 $h_t=f_t(h_{t-1})$에 §2의 연쇄 법칙을 적용하면
     $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
-    즉 첫 층에 닿는 신호는 행렬 $T$개를 통과했고, 크기는 $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$로 묶인다. **소실**은 모든 $\lVert J_t\rVert\le\rho<1$인 경우이고, 적어도 $\rho^{T}$만큼 빠른 감쇠를 강제한다. 스칼라 야코비안 $0.9$가 $50$스텝 이어지면 그래디언트에 $0.9^{50}=0.0052$가 곱해진다. 결과: 뒤쪽 층은 여전히 배우는데 앞쪽 층이나 앞쪽 시간 스텝은 배우기를 멈춘다.
+    즉 첫 층에 닿는 신호는 행렬 $T$개를 통과했고, 크기는 $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$로 묶인다. **소실**은 모든 $\lVert J_t\rVert\le\rho<1$인 경우이고, 적어도 $\rho^{T}$만큼 빠른 감쇠를 강제한다. 스칼라 야코비안 $0.9$가 $50$스텝 이어지면 그래디언트에 $0.9^{50}=0.0052$가 곱해진다. 결과: 뒤쪽 층은 여전히 배우는데 앞쪽 층이나 앞쪽 시간 스텝은 배우기를 멈춘다. 모든 인수가 같은 순환 행렬이면 곱은 장기적 운명을 스펙트럼 반경이 정하는 행렬 거듭제곱이고, 비정규 행렬은 사라지기 전에 먼저 커질 수도 있음을 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §3]]이 보인다.
 - **그래디언트 폭발**: 노름 > 1 — gradient clipping($\|g\|$를 상한으로 재스케일)으로
   처치, RNN/LLM 학습의 표준.
   - **식으로 쓰면.** 같은 곱의 인수가 $1$보다 크면 $\rho^{T}$처럼 커질 수 있다. 스칼라 야코비안 $1.1$이 $50$스텝이면 그래디언트에 $1.1^{50}=117$이 곱해지고, 그런 스텝 한 번이 가중치를 손실이 말이 되던 영역 밖으로 던질 수 있다. 상한 $c$의 **노름 클리핑**은 그래디언트 $g$를 이렇게 재스케일한다.
@@ -843,7 +843,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   - **stop-gradient의 완전한 정의.** 규칙 두 개를 가진 연산자다. 순전파에서는 항등, $\text{sg}[a]=a$이고, 역전파에서는 도함수를 0으로 선언한다, $\partial\,\text{sg}[a]/\partial a=0$. 그래서 값은 쓰이지만 그것을 거쳐 민감도가 뒤로 흐르지 않는다(PyTorch의 `detach()`, JAX의 `stop_gradient`). 예: $L=(\text{sg}[a]-b)^2$을 $a=3$, $b=1$에서 보면 $L=4$, $\partial L/\partial b=-2(a-b)=-4$, $\partial L/\partial a=0$이다. 연산자가 없었다면 $+4$였다.
   - **reparameterization의 완전한 정의.** 샘플 $z\sim\mathcal{N}(\mu,\sigma^2)$를 파라미터와 외부 잡음의 결정적 함수로 바꾼다.
     $$z = \mu + \sigma\,\epsilon,\qquad \epsilon\sim\mathcal{N}(0,1)$$
-    이 $z$의 분포가 정확히 같으면서 이제 $\partial z/\partial\mu=1$, $\partial z/\partial\sigma=\epsilon$이 평범한 도함수이기 때문이다. 예: $\mu=1$, $\sigma=2$, 뽑힌 $\epsilon=0.5$이면 $z=2$이고 $\partial z/\partial\sigma=0.5$다. $\mathcal{N}(\mu,\sigma^2)$에서 $z$를 직접 뽑는 것이 반례다. 그 추출은 미분할 수 있는 $\mu$의 함수가 아니다.
+    이 $z$의 분포가 정확히 같으면서 이제 $\partial z/\partial\mu=1$, $\partial z/\partial\sigma=\epsilon$이 평범한 도함수이기 때문이다. 예: $\mu=1$, $\sigma=2$, 뽑힌 $\epsilon=0.5$이면 $z=2$이고 $\partial z/\partial\sigma=0.5$다. $\mathcal{N}(\mu,\sigma^2)$에서 $z$를 직접 뽑는 것이 반례다. 그 추출은 미분할 수 있는 $\mu$의 함수가 아니다. 이렇게 얻은 그래디언트의 분산이 왜 작은지는 score-function 추정량과 견주어 [[03-deep-learning/diffusion/vae-gan|6.1 VAE와 GAN §3]]에서 숫자로 계산한다.
   - **EMA 교사의 완전한 정의.** 학생이 갱신될 때마다 교사 파라미터 $\theta_T$가 학생 파라미터 $\theta_S$ 쪽으로 일정 비율만큼 움직이고, 감쇠 $\tau$는 $1$보다 조금 작다.
     $$\theta_T \leftarrow \tau\,\theta_T + (1-\tau)\,\theta_S$$
     그래서 $k$스텝 전 학생 값은 $\tau^{k}$에 비례하는 가중치를 유지하고, 교사는 그래디언트가 아니라 오직 이 규칙으로만 값을 얻는다. $\tau=0.99$이면 그 가중치가 $\ln 0.5/\ln 0.99\approx69$스텝마다 절반이 된다. DINO의 스케줄은 $\tau=0.996$에서 시작하며, 반감기는 약 $173$스텝이다.

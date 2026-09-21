@@ -31,7 +31,7 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="P2 at theta = (0, 90 degrees): the arm to scale, the two columns of J as arrows at the tip, (-1, 1) and (-1, 0), each perpendicular to its joint-to-tip segment; the unit circle of joint rates and the ellipse it maps to, semi-axes 1.618 and 0.618, kappa 2.618; and the straight arm, where the columns are parallel and det J = 0.">
   <defs><marker id="laHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <rect x="10" y="32" width="160" height="160" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1"/>
-  <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">joint-rate space (θ̇₁, θ̇₂)</text>
+  <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">joint-rate space (θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">, θ̇</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)</tspan></text>
   <polyline points="16,112 164,112" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <polyline points="90,186 90,38" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <polyline points="162,112 161.9,115.8 161.6,119.5 161.1,123.3 160.4,127 159.5,130.6 158.5,134.2 157.2,137.8 155.8,141.3 154.2,144.7 152.4,148 150.4,151.2 148.2,154.3 146,157.3 143.5,160.2 140.9,162.9 138.2,165.5 135.3,168 132.3,170.2 129.2,172.4 126,174.4 122.7,176.2 119.3,177.8 115.8,179.2 112.2,180.5 108.6,181.5 105,182.4 101.3,183.1 97.5,183.6 93.8,183.9 90,184 86.2,183.9 82.5,183.6 78.7,183.1 75,182.4 71.4,181.5 67.8,180.5 64.2,179.2 60.7,177.8 57.3,176.2 54,174.4 50.8,172.4 47.7,170.2 44.7,168 41.8,165.5 39.1,162.9 36.5,160.2 34,157.3 31.8,154.3 29.6,151.2 27.6,148 25.8,144.7 24.2,141.3 22.8,137.8 21.5,134.2 20.5,130.6 19.6,127 18.9,123.3 18.4,119.5 18.1,115.8 18,112 18.1,108.2 18.4,104.5 18.9,100.7 19.6,97 20.5,93.4 21.5,89.8 22.8,86.2 24.2,82.7 25.8,79.3 27.6,76 29.6,72.8 31.8,69.7 34,66.7 36.5,63.8 39.1,61.1 41.8,58.5 44.7,56 47.7,53.8 50.8,51.6 54,49.6 57.3,47.8 60.7,46.2 64.2,44.8 67.8,43.5 71.4,42.5 75,41.6 78.7,40.9 82.5,40.4 86.2,40.1 90,40 93.8,40.1 97.5,40.4 101.3,40.9 105,41.6 108.6,42.5 112.2,43.5 115.8,44.8 119.3,46.2 122.7,47.8 126,49.6 129.2,51.6 132.3,53.8 135.3,56 138.2,58.5 140.9,61.1 143.5,63.8 146,66.7 148.2,69.7 150.4,72.8 152.4,76 154.2,79.3 155.8,82.7 157.2,86.2 158.5,89.8 159.5,93.4 160.4,97 161.1,100.7 161.6,104.5 161.9,108.2 162,112" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -39,8 +39,8 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
   <circle cx="90" cy="40" r="2.6" fill="currentColor"/>
   <text x="156" y="106" font-size="11" text-anchor="end" fill="currentColor">(1, 0)</text>
   <text x="95" y="60" font-size="11" fill="currentColor">(0, 1)</text>
-  <text x="158" y="127" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇₁</text>
-  <text x="84" y="57" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇₂</text>
+  <text x="158" y="127" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="84" y="57" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="56" y="148" font-size="11" text-anchor="middle" fill="currentColor">area π</text>
   <polyline points="174,60 203,60" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#laHw)"/>
   <text x="188.5" y="53" font-size="12" text-anchor="middle" fill="currentColor">J</text>
@@ -49,9 +49,9 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
   <polyline points="315.3,103.5 333.4,74.1" fill="none" stroke="currentColor" stroke-width="1"/>
   <polyline points="411.2,169.8 407,176.6" fill="none" stroke="currentColor" stroke-width="1"/>
   <polyline points="330,72 336.8,76.3" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="415.1" y="178.2" font-size="11" fill="currentColor">σ₁ = 1.618</text>
-  <text x="338.4" y="69.1" font-size="11" fill="currentColor">σ₂ = 0.618</text>
-  <text transform="translate(310 112) rotate(31.7)" x="12" y="-18" font-size="11" fill="currentColor">κ₂(J) = σ₁/σ₂</text>
+  <text x="415.1" y="178.2" font-size="11" fill="currentColor">σ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.618</tspan></text>
+  <text x="338.4" y="69.1" font-size="11" fill="currentColor">σ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0.618</tspan></text>
+  <text transform="translate(310 112) rotate(31.7)" x="12" y="-18" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5">(J) = σ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">/σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text transform="translate(310 112) rotate(31.7)" x="12" y="-5" font-size="11" fill="currentColor">= 2.618</text>
   <polyline points="238,184 310,184 310,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
   <polyline points="310,184 333.8,184" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" stroke-opacity="0.8"/>
@@ -59,8 +59,8 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
   <circle cx="238" cy="184" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
   <circle cx="310" cy="184" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
   <circle cx="310" cy="112" r="3" fill="currentColor"/>
-  <text x="240" y="206" font-size="11" text-anchor="end" fill="currentColor">θ₁ = 0° (from +x)</text>
-  <text x="316" y="206" font-size="11" fill="currentColor">θ₂ = 90° (from link 1)</text>
+  <text x="240" y="206" font-size="11" text-anchor="end" fill="currentColor">θ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 0° (from +x)</tspan></text>
+  <text x="316" y="206" font-size="11" fill="currentColor">θ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90° (from link 1)</tspan></text>
   <polyline points="238,184 310,112" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.8"/>
   <polyline points="310,112 320.1,101.9" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.8"/>
   <polyline points="310,112 238,40" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHw)"/>
@@ -82,10 +82,10 @@ The page's object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plant
   <text x="505" y="65" font-size="11" fill="currentColor">(0, 2)</text>
   <text x="505" y="91" font-size="11" fill="currentColor">(0, 1)</text>
   <text x="505" y="140" font-size="11" fill="currentColor">det J = 0</text>
-  <text x="505" y="154" font-size="11" fill="currentColor">κ₂ = ∞</text>
+  <text x="505" y="154" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ∞</tspan></text>
   <text x="496" y="206" font-size="11" text-anchor="middle" fill="currentColor">lost direction: x</text>
   <text x="12" y="237" font-size="11" opacity="0.9" fill="currentColor">A column of J is the output of one unit of one input; each is ⊥ to its joint-to-tip segment.</text>
-  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">Ellipse area π·σ₁σ₂ = π·|det J| = π, the circle's own. Straight arm: parallel columns, x lost.</text>
+  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">Ellipse area π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, the circle's own. Straight arm: parallel columns, x lost.</tspan></text>
 </svg>
 
 **The arm, to scale.** Base at the origin, a unit link along $+x$ to the elbow at $(1,0)$, a second unit link straight up to the tip at $(1,1)$. Mark both joints with a circle and write the angle each one owns: $\theta_1$ measured from $+x$ at the base, $\theta_2$ measured at the elbow *relative to link 1*, which is the convention the catalog freezes and the commonest place to go wrong.
@@ -328,10 +328,10 @@ For the line-fitting example, the first column says how changing the intercept m
   </g>
   <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
   <g font-size="9.5" fill="currentColor" opacity="0.85">
-    <text x="230" y="36">x&#8320; = (1, 1)</text>
-    <text x="256" y="120">steep direction x&#8321;</text>
+    <text x="230" y="36">x<tspan dy="3.5">0</tspan><tspan dy="-3.5"> = (1, 1)</tspan></text>
+    <text x="256" y="120">steep direction x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="134">&#215;0.8 per step, sign flipping</text>
-    <text x="256" y="158">flat direction x&#8322;</text>
+    <text x="256" y="158">flat direction x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="172">&#215;0.82 per step</text>
     <text x="256" y="190">after 20 steps: (0.012, 0.019)</text>
   </g>
@@ -388,7 +388,7 @@ For the line-fitting example, the first column says how changing the intercept m
   <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="70" y="22">positive definite</text><text x="235" y="22">positive semidefinite</text><text x="400" y="22">indefinite</text>
-    <text x="70" y="40" font-size="10" opacity="0.8">2x&#8321;&#178; + 3x&#8322;&#178;</text><text x="235" y="40" font-size="10" opacity="0.8">(x&#8321; + x&#8322;)&#178;</text><text x="400" y="40" font-size="10" opacity="0.8">x&#8321;&#178; &#8722; x&#8322;&#178;</text>
+    <text x="70" y="40" font-size="10" opacity="0.8">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; + 3x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text><text x="235" y="40" font-size="10" opacity="0.8">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5"> + x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)&#178;</tspan></text><text x="400" y="40" font-size="10" opacity="0.8">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; &#8722; x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text>
     <text x="70" y="176">up in every direction</text><text x="235" y="176">up, but flat along a line</text><text x="400" y="176">one way up, one way down</text>
   </g>
   <g font-size="11" fill="currentColor">
@@ -436,7 +436,7 @@ For the line-fitting example, the first column says how changing the intercept m
   <g font-size="12" fill="currentColor" text-anchor="middle">
     <text x="60" y="138">unit ball</text>
     <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
-    <text x="205" y="138">rotate</text><text x="350" y="138">scale σ₁, σ₂</text><text x="475" y="138">rotate</text>
+    <text x="205" y="138">rotate</text><text x="350" y="138">scale σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">, σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="475" y="138">rotate</text>
   </g>
 </svg>
 
@@ -710,7 +710,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="자세 θ = (0, 90도)의 P2: 실제 비율의 팔, 말단에 화살표로 그린 J의 두 열 (-1, 1)과 (-1, 0), 각각 자기 관절에서 말단으로 가는 선분에 수직; 관절 속도의 단위원과 그것이 옮겨 간 타원, 반축 1.618과 0.618, 조건수 2.618; 그리고 두 열이 평행하고 det J = 0인 곧게 편 팔.">
   <defs><marker id="laHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <rect x="10" y="32" width="160" height="160" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1"/>
-  <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">관절 속도 공간 (θ̇₁, θ̇₂)</text>
+  <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">관절 속도 공간 (θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">, θ̇</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)</tspan></text>
   <polyline points="16,112 164,112" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <polyline points="90,186 90,38" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
   <polyline points="162,112 161.9,115.8 161.6,119.5 161.1,123.3 160.4,127 159.5,130.6 158.5,134.2 157.2,137.8 155.8,141.3 154.2,144.7 152.4,148 150.4,151.2 148.2,154.3 146,157.3 143.5,160.2 140.9,162.9 138.2,165.5 135.3,168 132.3,170.2 129.2,172.4 126,174.4 122.7,176.2 119.3,177.8 115.8,179.2 112.2,180.5 108.6,181.5 105,182.4 101.3,183.1 97.5,183.6 93.8,183.9 90,184 86.2,183.9 82.5,183.6 78.7,183.1 75,182.4 71.4,181.5 67.8,180.5 64.2,179.2 60.7,177.8 57.3,176.2 54,174.4 50.8,172.4 47.7,170.2 44.7,168 41.8,165.5 39.1,162.9 36.5,160.2 34,157.3 31.8,154.3 29.6,151.2 27.6,148 25.8,144.7 24.2,141.3 22.8,137.8 21.5,134.2 20.5,130.6 19.6,127 18.9,123.3 18.4,119.5 18.1,115.8 18,112 18.1,108.2 18.4,104.5 18.9,100.7 19.6,97 20.5,93.4 21.5,89.8 22.8,86.2 24.2,82.7 25.8,79.3 27.6,76 29.6,72.8 31.8,69.7 34,66.7 36.5,63.8 39.1,61.1 41.8,58.5 44.7,56 47.7,53.8 50.8,51.6 54,49.6 57.3,47.8 60.7,46.2 64.2,44.8 67.8,43.5 71.4,42.5 75,41.6 78.7,40.9 82.5,40.4 86.2,40.1 90,40 93.8,40.1 97.5,40.4 101.3,40.9 105,41.6 108.6,42.5 112.2,43.5 115.8,44.8 119.3,46.2 122.7,47.8 126,49.6 129.2,51.6 132.3,53.8 135.3,56 138.2,58.5 140.9,61.1 143.5,63.8 146,66.7 148.2,69.7 150.4,72.8 152.4,76 154.2,79.3 155.8,82.7 157.2,86.2 158.5,89.8 159.5,93.4 160.4,97 161.1,100.7 161.6,104.5 161.9,108.2 162,112" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -718,8 +718,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <circle cx="90" cy="40" r="2.6" fill="currentColor"/>
   <text x="156" y="106" font-size="11" text-anchor="end" fill="currentColor">(1, 0)</text>
   <text x="95" y="60" font-size="11" fill="currentColor">(0, 1)</text>
-  <text x="158" y="127" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇₁</text>
-  <text x="84" y="57" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇₂</text>
+  <text x="158" y="127" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="84" y="57" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">θ̇<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="56" y="148" font-size="11" text-anchor="middle" fill="currentColor">넓이 π</text>
   <polyline points="174,60 203,60" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#laHwk)"/>
   <text x="188.5" y="53" font-size="12" text-anchor="middle" fill="currentColor">J</text>
@@ -728,9 +728,9 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <polyline points="315.3,103.5 333.4,74.1" fill="none" stroke="currentColor" stroke-width="1"/>
   <polyline points="411.2,169.8 407,176.6" fill="none" stroke="currentColor" stroke-width="1"/>
   <polyline points="330,72 336.8,76.3" fill="none" stroke="currentColor" stroke-width="1"/>
-  <text x="415.1" y="178.2" font-size="11" fill="currentColor">σ₁ = 1.618</text>
-  <text x="338.4" y="69.1" font-size="11" fill="currentColor">σ₂ = 0.618</text>
-  <text transform="translate(310 112) rotate(31.7)" x="12" y="-18" font-size="11" fill="currentColor">κ₂(J) = σ₁/σ₂</text>
+  <text x="415.1" y="178.2" font-size="11" fill="currentColor">σ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.618</tspan></text>
+  <text x="338.4" y="69.1" font-size="11" fill="currentColor">σ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 0.618</tspan></text>
+  <text transform="translate(310 112) rotate(31.7)" x="12" y="-18" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5">(J) = σ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">/σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text transform="translate(310 112) rotate(31.7)" x="12" y="-5" font-size="11" fill="currentColor">= 2.618</text>
   <polyline points="238,184 310,184 310,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
   <polyline points="310,184 333.8,184" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" stroke-opacity="0.8"/>
@@ -738,8 +738,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <circle cx="238" cy="184" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
   <circle cx="310" cy="184" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
   <circle cx="310" cy="112" r="3" fill="currentColor"/>
-  <text x="240" y="206" font-size="11" text-anchor="end" fill="currentColor">θ₁ = 0° (+x에서)</text>
-  <text x="316" y="206" font-size="11" fill="currentColor">θ₂ = 90° (링크 1 기준)</text>
+  <text x="240" y="206" font-size="11" text-anchor="end" fill="currentColor">θ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 0° (+x에서)</tspan></text>
+  <text x="316" y="206" font-size="11" fill="currentColor">θ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 90° (링크 1 기준)</tspan></text>
   <polyline points="238,184 310,112" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.8"/>
   <polyline points="310,112 320.1,101.9" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.8"/>
   <polyline points="310,112 238,40" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHwk)"/>
@@ -761,10 +761,10 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <text x="505" y="65" font-size="11" fill="currentColor">(0, 2)</text>
   <text x="505" y="91" font-size="11" fill="currentColor">(0, 1)</text>
   <text x="505" y="140" font-size="11" fill="currentColor">det J = 0</text>
-  <text x="505" y="154" font-size="11" fill="currentColor">κ₂ = ∞</text>
+  <text x="505" y="154" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ∞</tspan></text>
   <text x="496" y="206" font-size="11" text-anchor="middle" fill="currentColor">사라진 방향: x</text>
   <text x="12" y="237" font-size="11" opacity="0.9" fill="currentColor">J의 한 열은 입력 하나의 단위량이 만드는 출력이다. 각 열은 자기 관절–말단 선분에 수직이다.</text>
-  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">타원 넓이 π·σ₁σ₂ = π·|det J| = π, 원의 넓이 그대로다. 편 팔: 두 열이 평행하고 x가 사라진다.</text>
+  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">타원 넓이 π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, 원의 넓이 그대로다. 편 팔: 두 열이 평행하고 x가 사라진다.</tspan></text>
 </svg>
 
 **팔, 실제 비율로.** 베이스는 원점, 단위 링크가 $+x$를 따라 엘보 $(1,0)$까지, 둘째 단위 링크가 곧장 위로 말단 $(1,1)$까지. 관절 둘을 동그라미로 표시하고 각자가 가진 각을 적는다. $\theta_1$은 베이스에서 $+x$로부터, $\theta_2$는 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
@@ -994,10 +994,10 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   </g>
   <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
   <g font-size="9.5" fill="currentColor" opacity="0.85">
-    <text x="230" y="36">x&#8320; = (1, 1)</text>
-    <text x="256" y="120">가파른 방향 x&#8321;</text>
+    <text x="230" y="36">x<tspan dy="3.5">0</tspan><tspan dy="-3.5"> = (1, 1)</tspan></text>
+    <text x="256" y="120">가파른 방향 x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="134">스텝당 &#215;0.8, 부호가 뒤집힌다</text>
-    <text x="256" y="158">평평한 방향 x&#8322;</text>
+    <text x="256" y="158">평평한 방향 x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="172">스텝당 &#215;0.82</text>
     <text x="256" y="190">20 스텝 뒤: (0.012, 0.019)</text>
   </g>
@@ -1054,7 +1054,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
   <g font-size="11" fill="currentColor" text-anchor="middle">
     <text x="70" y="22">양정부호</text><text x="235" y="22">양준정부호</text><text x="400" y="22">부정부호</text>
-    <text x="70" y="40" font-size="10" opacity="0.8">2x&#8321;&#178; + 3x&#8322;&#178;</text><text x="235" y="40" font-size="10" opacity="0.8">(x&#8321; + x&#8322;)&#178;</text><text x="400" y="40" font-size="10" opacity="0.8">x&#8321;&#178; &#8722; x&#8322;&#178;</text>
+    <text x="70" y="40" font-size="10" opacity="0.8">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; + 3x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text><text x="235" y="40" font-size="10" opacity="0.8">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5"> + x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)&#178;</tspan></text><text x="400" y="40" font-size="10" opacity="0.8">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; &#8722; x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text>
     <text x="70" y="176">모든 방향에서 위로</text><text x="235" y="176">위로, 다만 한 직선에서 평평</text><text x="400" y="176">한쪽은 위, 다른 쪽은 아래</text>
   </g>
   <g font-size="11" fill="currentColor">
@@ -1101,7 +1101,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <g font-size="12" fill="currentColor" text-anchor="middle">
     <text x="60" y="138">단위 원</text>
     <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
-    <text x="205" y="138">회전</text><text x="350" y="138">σ₁, σ₂ 배로 늘리기</text><text x="475" y="138">회전</text>
+    <text x="205" y="138">회전</text><text x="350" y="138">σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">, σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> 배로 늘리기</tspan></text><text x="475" y="138">회전</text>
   </g>
 </svg>
 

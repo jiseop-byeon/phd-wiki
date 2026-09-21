@@ -124,7 +124,7 @@ The paper's one figure, drawn by hand before any plotting code is written. The p
 3. **The uncertainty that answers the claim.** Under each row, the mean with its 95% interval. Beside the figure, the difference of means with its Welch interval, $3.16$ N $[1.28,\ 5.04]$, because the claim is about the difference and neither row's own interval answers it.
 4. **The caption.** Units, $n$ per arm, that the trials are unpaired, what the dots, diamonds and bars are, where the threshold came from, and that no trial was excluded.
 
-The finished drawing is Figure 1 in §4. A figure that needs the body text before it can be read has failed at step 4.
+The drawing above is the complete one, all four steps included. §4 prints it as the paper's Figure 1 without the difference-of-means panel, whose number its caption sends to Table 1. A figure that needs the body text before it can be read has failed at step 4.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -390,7 +390,7 @@ Decomposed, the comment holds a **scope dispute** ("safer"), a point of **missin
 
 **Response (Agree + Clarify + Revise).** "We agree that 'safer' overstated the evidence and have replaced it throughout (abstract, §1, §6) with the measured claim: a lower mean peak contact force in a ten-trial-per-arm pilot on one arm model and one panel stiffness. We also agree that the success rates are not distinguishable (difference +0.30, 95% CI −0.08 to +0.60; Fisher exact p = 0.30); the revised Results now say so in those words, and the Limitations state the design's power at this size, about 0.15 against a true 0.6-versus-0.9 difference. On the threshold: the 10 N line was fixed in the study plan before the pilot (Appendix A, dated), and the prespecified primary outcome was peak force, not success; its difference is 3.16 N (Welch 95% CI 1.28 to 5.04 N). For transparency, the new Table S2 lists the success counts at 8, 9, 11 and 12 N. We draw no inference from them, because a threshold chosen after seeing the data would leave its p-value uninterpretable."
 
-Every element is traceable to a place in the manuscript, and the claim moves toward the data rather than the data toward the claim. Note what the response does not do. It does not switch to the 9 N line, where the same twenty trials give $p = 0.005$ ([[06-research-practice/research-questions-claims|1. Research Questions & Claims]], worked case, Step 2): reporting that as a result would turn the reviewer's suspicion into a fact.
+Every element is traceable to a place in the manuscript, and the claim moves toward the data rather than the data toward the claim. Note what the response does not do. It does not switch to the 9 N line, where the same twenty trials give $p = 0.005$ ([[06-research-practice/research-questions-claims|1. Research Questions & Claims]], worked case, Step 2): reporting that as a result would turn the reviewer's suspicion into a fact. Whether an exchange like this happens before the decision is the venue's rule: [[06-research-practice/venue-strategy|5. Venue Strategy §2]] records which venues take a rebuttal, which take a reply with a revised paper, and which take neither, and its worked case weighs that difference when it routes RS1's paper.
 
 ### 8. Worked example: one review comment, one compliant response
 
@@ -581,7 +581,7 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
 3. **주장에 답하는 불확실성.** 각 줄 아래에 평균과 그 95% 구간을 그린다. 그림 옆에는 평균의 차와 그 Welch 구간 $3.16$ N $[1.28,\ 5.04]$를 적는다. 주장은 차이에 관한 것이고, 어느 줄의 구간도 그 질문에 답하지 않기 때문이다.
 4. **캡션.** 단위, 제어기당 $n$, 시행이 대응 없음, 점·다이아몬드·막대가 각각 무엇인지, 문턱이 어디서 왔는지, 제외한 시행이 없다는 것.
 
-완성한 그림은 §4의 그림 1이다. 본문을 읽어야 이해되는 그림은 4번에서 실패한 것이다.
+위 그림이 네 단계를 모두 갖춘 완성본이다. §4는 이것을 논문의 그림 1로 싣되 평균의 차 칸은 빼고, 그 숫자는 캡션이 표 1로 보낸다. 본문을 읽어야 이해되는 그림은 4번에서 실패한 것이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -858,7 +858,7 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 
 **응답 (Agree + Clarify + Revise).** "'더 안전하다'가 증거를 넘어섰다는 데 동의하며, 이를 전부(초록, §1, §6) 측정한 주장으로 바꿨습니다. 팔 모델 하나와 패널 강성 하나에서 제어기당 10회 파일럿의 평균 최대 접촉력이 더 낮았다는 것입니다. 성공률을 구별할 수 없다는 데에도 동의합니다(차이 +0.30, 95% 신뢰구간 −0.08–+0.60; Fisher 정확 검정 p = 0.30). 수정한 Results는 이를 그 말 그대로 적었고, Limitations에는 이 크기에서 설계의 검정력, 곧 참인 0.6 대 0.9의 차이에 대해 약 0.15를 밝혔습니다. 문턱에 대해: 10 N 선은 파일럿 전에 연구 계획서에서 고정했고(부록 A, 날짜 기재), 미리 정한 주 결과는 성공이 아니라 최대 접촉력이었습니다. 그 차이는 3.16 N(Welch 95% 신뢰구간 1.28–5.04 N)입니다. 투명성을 위해 새 표 S2에 8, 9, 11, 12 N에서의 성공 개수를 실었습니다. 그로부터는 어떤 추론도 하지 않습니다. 데이터를 본 뒤 고른 문턱은 그 p-값을 해석할 수 없게 만들기 때문입니다."
 
-모든 요소가 원고의 한 자리로 추적되고, 데이터가 주장 쪽으로 옮겨 가는 것이 아니라 주장이 데이터 쪽으로 옮겨 간다. 응답이 하지 않는 일도 보자. 9 N 선으로 바꾸지 않는다. 그 선에서는 같은 스무 시행이 $p = 0.005$를 준다([[06-research-practice/research-questions-claims|1. 연구 질문과 주장]] 계산 예제 2단계). 그것을 결과로 보고하면 심사자의 의심이 사실이 된다.
+모든 요소가 원고의 한 자리로 추적되고, 데이터가 주장 쪽으로 옮겨 가는 것이 아니라 주장이 데이터 쪽으로 옮겨 간다. 응답이 하지 않는 일도 보자. 9 N 선으로 바꾸지 않는다. 그 선에서는 같은 스무 시행이 $p = 0.005$를 준다([[06-research-practice/research-questions-claims|1. 연구 질문과 주장]] 계산 예제 2단계). 그것을 결과로 보고하면 심사자의 의심이 사실이 된다. 이런 교환이 결정 전에 일어나는지는 venue의 규칙이다. [[06-research-practice/venue-strategy|5. Venue 전략 §2]]는 어느 venue가 반박문을 받고, 어느 venue가 수정본과 함께 응답을 받고, 어느 venue가 둘 다 받지 않는지를 기록하며, 그 worked case는 RS1의 논문을 보낼 곳을 정할 때 바로 그 차이를 따진다.
 
 ### 8. 예제: 리뷰 코멘트 하나, 규범적 응답 하나
 

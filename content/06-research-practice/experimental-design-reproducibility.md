@@ -34,7 +34,7 @@ An experiment should distinguish the proposed explanation from plausible alterna
 | A — position control + force-threshold stop | 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 | 6/10 | 10.66 | 2.414 | 9.85 |
 | B — impedance control | 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 | 9/10 | 7.50 | 1.356 | 7.30 |
 
-RS1 is a study rather than a plant, so this page's lab simulates trial *outcomes*, not the arm's dynamics, and the integrators of [[02-foundations/lab-kernel|0.65 Lab Kernel]] are not used.
+RS1 is a study rather than a plant, so this page's lab simulates trial *outcomes*, not the arm's dynamics, and the integrators of [[02-foundations/lab-kernel|0.65 Lab Kernel]] are not used. Where a contact's dynamics are simulated instead, the integrator becomes part of the outcome: in Step 5 of the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] one drop of P3's handle on a stiff wall peaks at an exact 6 N, a pass by RS1's rule, and at 12 N, a failure, under explicit Euler, with no controller changed.
 
 *Scope: this page teaches how to design the experiment that answers RS1 — what to vary, hold fixed and count (§1–§3), how many trials to run, by formula and by simulation (the worked case and §4), how to budget an ablation (§5), and what to record so that the result can be repeated, reproduced and replicated (§6–§7). It does not teach how to read the finished results table, which is [[02-foundations/ml-practice|9. ML Practice & Evaluation]]; the tests themselves, which are [[02-foundations/probability|3. Probability §6]]; the two controllers, which are [[04-robotics/force-compliance-control|13. Force & Compliance Control]]; or how to diagnose the failures the trials will produce, which is [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]].*
 
@@ -55,15 +55,15 @@ The power picture, in two panels. The problem set asks for panel (a) again at a 
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
     <text x="170" y="20" font-weight="bold">(a) success rate, 32 trials per arm</text><text x="485" y="20" font-weight="bold">(b) peak force, 7 trials per arm</text>
     <text x="170" y="202">estimated gap in success rate</text><text x="485" y="202">estimated gap in mean peak force (N)</text>
-    <text x="118.0" y="68.4">H₀</text><text x="208.7" y="62.0">H₁</text>
-    <text x="433.0" y="62.0">H₀</text><text x="527.9" y="62.0">H₁</text>
+    <text x="118.0" y="68.4">H<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="208.7" y="62.0">H<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="433.0" y="62.0">H<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="527.9" y="62.0">H<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="179.9" y="46">c = 0.212</text><text x="493.0" y="46">c = 2.05 N</text>
     <text x="211.3" y="140">power 0.81</text><text x="530.3" y="140">power 0.86</text>
     <text x="160.7" y="166" font-size="9.5">β 0.19</text><text x="474.3" y="166" font-size="9.5">β 0.14</text>
   </g>
   <g font-size="10" fill="currentColor">
-    <text x="30" y="232">dashed: A and B equal (H₀) · solid: the pilot’s effect is real (H₁)</text>
-    <text x="30" y="250">light fill: power, under H₁ beyond c · dark fill: the two α/2 = 0.025 tails of H₀</text>
+    <text x="30" y="232">dashed: A and B equal (H<tspan dy="3.5">0</tspan><tspan dy="-3.5">) · solid: the pilot’s effect is real (H</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">)</tspan></text>
+    <text x="30" y="250">light fill: power, under H<tspan dy="3.5">1</tspan><tspan dy="-3.5"> beyond c · dark fill: the two α/2 = 0.025 tails of H</tspan><tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   </g>
 </svg>
 
@@ -113,7 +113,7 @@ Four quantities decide every sample size. Each is defined once here and used for
 > **Non-example.** "B lowers the peak force by 1.28 to 5.04 N with 95% probability" — once computed, the interval either covers the truth or it does not; the 95% belongs to the procedure. And the percentile bootstrap of the same trials, $[1.58,\ 4.80]$ N in §4's lab, is narrower not because it knows more but because it ignores that both spreads were estimated from ten trials: in 4,000 simulated normal pilots of this size it covered the true difference 92% of the time, Welch's interval 95% — the thin-data failure of the bootstrap in [[02-foundations/ml-practice|9. ML Practice]]'s worked case, part 4.
 > **Why it matters.** Its half-width is the precision the experiment buys, and planning for a half-width is the other way to choose the number of trials (§4).
 
-**Step 2 — the pilot's own two tests.** *The force.* Welch's standard error is $\sqrt{2.414^2/10 + 1.356^2/10} = 0.8756$ N, so $t = 3.16/0.8756 = 3.61$ on $\nu = 14.16$ degrees of freedom, two-sided $p = 0.0028$, with the 95% interval $[1.28,\ 5.04]$ N: strong evidence that B lowers the peak force. *The success rate.* The pooled two-proportion $z$-test uses $\bar p = 0.75$ and $\mathrm{SE}_0 = \sqrt{0.75 \times 0.25 \times 2/10} = 0.194$, so $z = 0.30/0.194 = 1.55$ and $p = 0.12$; Fisher's exact test, the choice for a small 2×2 table in [[02-foundations/probability|3. Probability §6]], gives $p = 0.30$. The same twenty trials read as strong evidence one way and as no evidence the other. Nothing contradicts: the binary reading of a ten-trial pilot had little chance of seeing a real difference. If the true rates are 0.6 and 0.9, ten trials per arm give power 0.33 by step 3's formula — the lab finds 0.30 for the $z$-test and 0.16 for Fisher's — so "not significant" was the likely result even with B truly safer. That is misreading 3 of [[02-foundations/probability|3. Probability §6]], in numbers.
+**Step 2 — the pilot's own two tests.** *The force.* Welch's standard error is $\sqrt{2.414^2/10 + 1.356^2/10} = 0.8756$ N, so $t = 3.16/0.8756 = 3.61$ on $\nu = 14.16$ degrees of freedom, two-sided $p = 0.0028$, with the 95% interval $[1.28,\ 5.04]$ N: strong evidence that B lowers the peak force. *The success rate.* The pooled two-proportion $z$-test uses $\bar p = 0.75$ and $\mathrm{SE}_0 = \sqrt{0.75 \times 0.25 \times 2/10} = 0.194$, so $z = 0.30/0.194 = 1.55$ and $p = 0.12$; Fisher's exact test, the choice for a small 2×2 table in [[02-foundations/probability|3. Probability §6]], gives $p = 0.30$. The same twenty trials read as strong evidence one way and as no evidence the other. Nothing contradicts: the binary reading of a ten-trial pilot had little chance of seeing a real difference. If the true rates are 0.6 and 0.9, ten trials per arm give power 0.33 by step 3's formula — the lab finds 0.30 for the $z$-test and 0.16 for Fisher's — so "not significant" was the likely result even with B truly safer. That is misreading 3 of [[02-foundations/probability|3. Probability §6]], in numbers. What the success comparison is compatible with is an interval rather than a p-value: Newcombe's 95% interval for the difference, $-0.08$ to $+0.60$, defined and worked in [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing & Peer Review]]'s worked case.
 
 **Step 3 — trials per arm for the success rate.** Write $\hat D = \hat p_B - \hat p_A$ for the difference the experiment will estimate from $n$ trials per arm, and $q = 1 - p$. By the CLT ([[02-foundations/probability|3. Probability §3]]) each $\hat p$ is approximately normal with variance $pq/n$, and independent arms add their variances, so
 
@@ -148,7 +148,7 @@ since $d = \Delta/\sigma$ is Cohen's d. With the pilot's $\hat d = 1.614$: $n = 
 - *Cutting at 10 N throws information away.* A success at 9.9 N counts the same as one at 6.2 N, and a failure at 10.6 N the same as one at 14.8 N. Suppose the forces really were normal with the pilot's means and pooled $\sigma = 1.958$ N. The success rates would then be $\Phi\big((10 - 10.66)/1.958\big) = 0.37$ for A and $\Phi\big((10 - 7.50)/1.958\big) = 0.90$ for B, and step 3's formula at those rates asks for 11.7 per arm — about twice the 6.03 that the forces need **from the same experiment**. The lab measures this directly by analysing every simulated experiment both ways.
 - *The pilot's two summaries disagree about the size of the effect.* Its observed rates, 0.6 and 0.9, are 0.30 apart; the normal model fitted to its forces implies 0.53. A's successes crowded just under the line are the reason. The remaining factor, $31.5/11.7 = 2.7$, is that disagreement, and ten trials per arm cannot settle it.
 
-So record and analyse the force, and report the success rate beside it, since the 10 N line is what a reader of RS1 cares about. Declare which of the two is primary before the first trial (§4).
+So record and analyse the force, and report the success rate beside it, since the 10 N line is what a reader of RS1 cares about. Declare which of the two is primary before the first trial (§4). The worked case of [[06-research-practice/real-world-impact|6. Real-World Impact]] prices the same two outcomes per rung of evidence: the pilot sits on the simulation rung, and repeating it on laboratory hardware costs 32 per arm on the success rate (36 for Fisher's exact test) against 8 on peak force.
 
 **Step 6 — how sure is "7 per arm"?** The pilot's $\hat d$ is itself an estimate from ten trials per arm. Step 2's interval puts the true reduction anywhere from 1.28 to 5.04 N, and at 1.28 N step 4 asks for $2 \times 7.849 \times 1.958^2/1.28^2 = 36.7$, so 37 per arm rather than 7 (38 with the $t$ correction). Plan on the smallest reduction that would matter to someone using the arm, fixed before the experiment, not on the pilot's point estimate: at 1.5 N the answer is 26.7, so 27 per arm (28 with the $t$ correction). And a pilot taken forward *because* it looked good overstates its effect: among ten-trial binary pilots that reached significance, the lab finds an average observed gap of 0.51 where the true gap is 0.30.
 
@@ -469,7 +469,7 @@ Choose the sample size from the required precision and the claim, using §4's un
 
 Report success with uncertainty, recovery behavior, estimation timing, and failure categories for each condition. Include the cost of unnecessary corrections and the effect of compute latency. A finding that updates arrive after the decisive contact would locate a useful sensing boundary even without a success-rate gain. The final claim should distinguish this mechanistic evidence from the broader question of transfer across construction tasks; writing that split into separate results and discussion sentences is [[06-research-practice/scientific-writing-peer-review|Scientific Writing §5]].
 
-**RS1, designed with this page.** *Claim:* impedance control lowers peak contact force relative to a force-threshold stop, on P2 against a 400 N/m panel. *Comparison:* A as the baseline against B, plus B with A's stop if B runs without one (§5). *Unit and order:* one approach-and-contact trial; start poses and panel positions from one randomized list, used by both controllers in alternating blocks (§2). *Outcomes, declared before the first trial:* peak force as primary, with Welch's test and its interval on the difference; success at 10 N as secondary, with Fisher's exact test (§4). *Number of trials:* 8 per arm detects the pilot's effect with power 0.8; 28 per arm detects a 1.5 N reduction, taken here as the smallest that would matter (the worked case's step 6, with the $t$ correction). *Tuning:* the pilot's twenty trials chose the gains and stay out of the test (§3). *Record:* the §7 entries, and every exclusion with its reason.
+**RS1, designed with this page.** *Claim:* impedance control lowers peak contact force relative to a force-threshold stop, on P2 against a 400 N/m panel. *Comparison:* A as the baseline against B, plus B with A's stop if B runs without one (§5). *Unit and order:* one approach-and-contact trial; start poses and panel positions from one randomized list, used by both controllers in alternating blocks (§2). *Outcomes, declared before the first trial:* peak force as primary, with Welch's test and its interval on the difference; success at 10 N as secondary, with Fisher's exact test (§4). *Number of trials:* 8 per arm detects the pilot's effect with power 0.8; 28 per arm detects a 1.5 N reduction, taken here as the smallest that would matter (the worked case's step 6, with the $t$ correction). *Tuning:* the pilot's twenty trials chose the gains and stay out of the test (§3). *Record:* the §7 entries, and every exclusion with its reason. *Publication:* pilot and confirmatory run are one claim, so the pilot does not go to an archival venue on its own — the trap the worked case of [[06-research-practice/venue-strategy|5. Venue Strategy]] traces through the journal rules.
 
 ### After reading
 
@@ -578,7 +578,7 @@ for n in (32, 50, 70, 82, 100):                # (b): range(100, 141, 5)
 | A — 위치 제어 + 힘 문턱 정지 | 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 | 6/10 | 10.66 | 2.414 | 9.85 |
 | B — 임피던스 제어 | 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 | 9/10 | 7.50 | 1.356 | 7.30 |
 
-RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역학이 아니라 시행의 *결과*를 시뮬레이션하며, [[02-foundations/lab-kernel|0.65 Lab Kernel]]의 적분기는 쓰지 않는다.
+RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역학이 아니라 시행의 *결과*를 시뮬레이션하며, [[02-foundations/lab-kernel|0.65 Lab Kernel]]의 적분기는 쓰지 않는다. 접촉의 동역학을 시뮬레이션한다면 적분기가 결과의 일부가 된다. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]] worked case의 5단계에서 단단한 벽에 떨어지는 P3 핸들의 같은 낙하가 정확히는 6 N으로 RS1의 규칙상 성공이고, 명시적 오일러로는 12 N으로 실패다. 제어기는 바뀌지 않았다.
 
 *범위: 이 페이지는 RS1에 답할 실험을 설계하는 법을 가르친다 — 무엇을 바꾸고 무엇을 고정하고 무엇을 셀지(§1–§3), 시행을 몇 번 할지를 공식과 시뮬레이션으로(worked case와 §4), 절제의 예산을 어떻게 맞출지(§5), 결과를 반복·재현·재연할 수 있도록 무엇을 기록할지(§6–§7). 완성된 결과 표를 읽는 법은 가르치지 않는다. 그것은 [[02-foundations/ml-practice|9. ML 실무와 평가]]다. 검정 자체는 [[02-foundations/probability|3. 확률 §6]], 두 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]], 시행이 낳을 실패의 진단은 [[06-research-practice/failure-analysis-system-evaluation|3. 실패 분석과 시스템 평가]]에 있다.*
 
@@ -599,15 +599,15 @@ RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
     <text x="170" y="20" font-weight="bold">(a) 성공률, 제어기당 32회</text><text x="485" y="20" font-weight="bold">(b) 최대 힘, 제어기당 7회</text>
     <text x="170" y="202">추정한 성공률 차이</text><text x="485" y="202">추정한 평균 최대 힘 차이 (N)</text>
-    <text x="118.0" y="68.4">H₀</text><text x="208.7" y="62.0">H₁</text>
-    <text x="433.0" y="62.0">H₀</text><text x="527.9" y="62.0">H₁</text>
+    <text x="118.0" y="68.4">H<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="208.7" y="62.0">H<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="433.0" y="62.0">H<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="527.9" y="62.0">H<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="179.9" y="46">c = 0.212</text><text x="493.0" y="46">c = 2.05 N</text>
     <text x="211.3" y="140">검정력 0.81</text><text x="530.3" y="140">검정력 0.86</text>
     <text x="160.7" y="166" font-size="9.5">β 0.19</text><text x="474.3" y="166" font-size="9.5">β 0.14</text>
   </g>
   <g font-size="10" fill="currentColor">
-    <text x="30" y="232">점선: A와 B가 같다(H₀) · 실선: 파일럿의 효과가 실제다(H₁)</text>
-    <text x="30" y="250">옅은 채움: 검정력, c 너머의 H₁ 넓이 · 짙은 채움: H₀의 두 꼬리 α/2 = 0.025</text>
+    <text x="30" y="232">점선: A와 B가 같다(H<tspan dy="3.5">0</tspan><tspan dy="-3.5">) · 실선: 파일럿의 효과가 실제다(H</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">)</tspan></text>
+    <text x="30" y="250">옅은 채움: 검정력, c 너머의 H<tspan dy="3.5">1</tspan><tspan dy="-3.5"> 넓이 · 짙은 채움: H</tspan><tspan dy="3.5">0</tspan><tspan dy="-3.5">의 두 꼬리 α/2 = 0.025</tspan></text>
   </g>
 </svg>
 
@@ -657,7 +657,7 @@ RS1은 장치가 아니라 연구이므로 이 페이지의 랩은 팔의 동역
 > **반례.** "B는 95% 확률로 최대 힘을 1.28–5.04 N 낮춘다." 한 번 계산된 구간은 참값을 덮거나 덮지 않거나 둘 중 하나이고, 95%는 절차의 성질이다. 그리고 같은 시행의 백분위 부트스트랩 구간, §4 랩의 $[1.58,\ 4.80]$ N이 더 좁은 것은 더 많이 알아서가 아니라 두 퍼짐을 10회 시행에서 추정했다는 사실을 무시하기 때문이다. 이 크기의 정규 파일럿 4,000개를 시뮬레이션하면 부트스트랩 구간은 참 차이를 92%, Welch 구간은 95% 덮었다. [[02-foundations/ml-practice|9. ML 실무]] worked case 4번이 말한, 데이터가 얇을 때의 부트스트랩 실패다.
 > **왜 중요한가.** 반폭은 실험이 사는 정밀도이고, 반폭을 목표로 계획하는 것이 시행 수를 고르는 또 하나의 방법이다(§4).
 
-**2단계 — 파일럿 자신의 두 검정.** *힘.* Welch 표준오차는 $\sqrt{2.414^2/10 + 1.356^2/10} = 0.8756$ N이므로 자유도 $\nu = 14.16$에서 $t = 3.16/0.8756 = 3.61$, 양측 $p = 0.0028$, 95% 구간 $[1.28,\ 5.04]$ N이다. B가 최대 힘을 낮춘다는 강한 증거다. *성공률.* 합동 두 비율 $z$-검정은 $\bar p = 0.75$, $\mathrm{SE}_0 = \sqrt{0.75 \times 0.25 \times 2/10} = 0.194$를 써서 $z = 0.30/0.194 = 1.55$, $p = 0.12$를 준다. [[02-foundations/probability|3. 확률 §6]]의 표가 작은 2×2 표에 고르는 Fisher 정확 검정은 $p = 0.30$이다. 같은 스무 번의 시행이 한 방식으로는 강한 증거로, 다른 방식으로는 증거 없음으로 읽힌다. 모순은 없다. 10회 파일럿의 이분 판독은 실제 차이를 볼 기회가 거의 없었다. 참 성공률이 0.6과 0.9라면 제어기당 10회의 검정력은 3단계 공식으로 0.33이고 — 랩은 $z$-검정 0.30, Fisher 0.16을 얻는다 — 그러니 B가 정말 더 안전해도 "유의하지 않음"이 가장 그럴듯한 결과였다. [[02-foundations/probability|3. 확률 §6]]의 오독 3을 숫자로 본 것이다.
+**2단계 — 파일럿 자신의 두 검정.** *힘.* Welch 표준오차는 $\sqrt{2.414^2/10 + 1.356^2/10} = 0.8756$ N이므로 자유도 $\nu = 14.16$에서 $t = 3.16/0.8756 = 3.61$, 양측 $p = 0.0028$, 95% 구간 $[1.28,\ 5.04]$ N이다. B가 최대 힘을 낮춘다는 강한 증거다. *성공률.* 합동 두 비율 $z$-검정은 $\bar p = 0.75$, $\mathrm{SE}_0 = \sqrt{0.75 \times 0.25 \times 2/10} = 0.194$를 써서 $z = 0.30/0.194 = 1.55$, $p = 0.12$를 준다. [[02-foundations/probability|3. 확률 §6]]의 표가 작은 2×2 표에 고르는 Fisher 정확 검정은 $p = 0.30$이다. 같은 스무 번의 시행이 한 방식으로는 강한 증거로, 다른 방식으로는 증거 없음으로 읽힌다. 모순은 없다. 10회 파일럿의 이분 판독은 실제 차이를 볼 기회가 거의 없었다. 참 성공률이 0.6과 0.9라면 제어기당 10회의 검정력은 3단계 공식으로 0.33이고 — 랩은 $z$-검정 0.30, Fisher 0.16을 얻는다 — 그러니 B가 정말 더 안전해도 "유의하지 않음"이 가장 그럴듯한 결과였다. [[02-foundations/probability|3. 확률 §6]]의 오독 3을 숫자로 본 것이다. 성공 비교가 무엇과 양립하는지는 p-값이 아니라 구간이 말한다. 차이에 대한 Newcombe 95% 구간 $-0.08$–$+0.60$이고, [[06-research-practice/scientific-writing-peer-review|4. 과학 글쓰기와 peer review]]의 worked case가 정의하고 계산한다.
 
 **3단계 — 성공률에 필요한 제어기당 시행 수.** 실험이 제어기당 $n$회에서 추정할 차이를 $\hat D = \hat p_B - \hat p_A$로, $q = 1 - p$로 쓴다. CLT([[02-foundations/probability|3. 확률 §3]])에 의해 각 $\hat p$는 분산 $pq/n$인 정규분포에 가깝고, 독립된 두 군의 분산은 더해진다. 따라서
 
@@ -692,7 +692,7 @@ $d = \Delta/\sigma$가 Cohen의 d이기 때문이다. 파일럿의 $\hat d = 1.6
 - *10 N에서 자르면 정보를 버린다.* 9.9 N의 성공과 6.2 N의 성공이 같게 세어지고, 10.6 N의 실패와 14.8 N의 실패가 같게 세어진다. 힘이 정말 파일럿의 평균과 합동 $\sigma = 1.958$ N을 가진 정규분포라고 하자. 그러면 성공률은 A가 $\Phi\big((10 - 10.66)/1.958\big) = 0.37$, B가 $\Phi\big((10 - 7.50)/1.958\big) = 0.90$이고, 그 성공률에서 3단계 공식은 제어기당 11.7회를 요구한다. **같은 실험에서** 힘이 필요로 하는 6.03회의 약 두 배다. 랩은 시뮬레이션한 실험마다 두 방식으로 분석해 이를 직접 잰다.
 - *파일럿의 두 요약이 효과의 크기에 대해 서로 다르게 말한다.* 관측된 성공률 0.6과 0.9는 0.30 떨어져 있지만, 힘에 맞춘 정규 모형은 0.53을 함의한다. 선 바로 아래에 몰린 A의 성공들이 그 이유다. 나머지 배수 $31.5/11.7 = 2.7$이 그 불일치이고, 제어기당 10회로는 가릴 수 없다.
 
-그러니 힘을 기록하고 힘으로 분석하되, 성공률을 옆에 함께 보고하라. RS1의 독자가 신경 쓰는 것은 10 N 선이기 때문이다. 둘 중 무엇이 주요 결과인지는 첫 시행 전에 선언한다(§4).
+그러니 힘을 기록하고 힘으로 분석하되, 성공률을 옆에 함께 보고하라. RS1의 독자가 신경 쓰는 것은 10 N 선이기 때문이다. 둘 중 무엇이 주요 결과인지는 첫 시행 전에 선언한다(§4). [[06-research-practice/real-world-impact|6. 실세계 임팩트]]의 worked case는 같은 두 결과의 값을 증거의 단마다 매긴다. 파일럿은 시뮬레이션 단에 있고, 그것을 실험실 하드웨어에서 다시 하는 값은 성공률로 제어기당 32회(Fisher 정확 검정으로 36회), 최대 힘으로 8회다.
 
 **6단계 — "제어기당 7회"는 얼마나 확실한가.** 파일럿의 $\hat d$ 자체가 제어기당 10회에서 나온 추정값이다. 2단계의 구간은 참 감소량을 1.28–5.04 N 어디에나 둘 수 있고, 1.28 N이라면 4단계는 $2 \times 7.849 \times 1.958^2/1.28^2 = 36.7$, 곧 7회가 아니라 37회를 요구한다($t$ 보정으로 38회). 파일럿의 점추정값이 아니라, 팔을 쓰는 사람에게 의미가 있을 가장 작은 감소량을 실험 전에 정해 그것으로 계획하라. 1.5 N이라면 답은 26.7, 곧 제어기당 27회다($t$ 보정으로 28회). 그리고 좋아 보였기 *때문에* 다음 단계로 간 파일럿은 효과를 과장한다. 유의에 도달한 10회 이분 파일럿들만 모으면, 참 차이가 0.30일 때 랩이 찾는 평균 관측 차이는 0.51이다.
 
@@ -931,7 +931,7 @@ percentile bootstrap 95% CI for mean(A) - mean(B): [1.58, 4.80] N
 
 조건별 성공과 불확실성, 회복 행동, 추정 시점, 실패 분류를 보고한다. 불필요한 보정의 비용과 연산 지연도 포함한다. 갱신이 결정적 접촉 뒤에 도착한다는 결과는 성공률 개선이 없어도 유용한 센싱 경계다. 최종 주장은 이 기전 증거와 건설 과제 전반의 전이 질문을 구분해야 한다. 그 구분을 Results 문장과 Discussion 문장으로 나눠 쓰는 법은 [[06-research-practice/scientific-writing-peer-review|과학 글쓰기 §5]]에 있다.
 
-**이 페이지로 설계한 RS1.** *주장:* P2가 400 N/m 패널에 닿을 때, 임피던스 제어가 힘 문턱 정지보다 최대 접촉력을 낮춘다. *비교:* 베이스라인 A 대 B, 그리고 B에 정지가 없다면 A의 정지를 단 B(§5). *단위와 순서:* 접근과 접촉 한 번이 시행 하나; 시작 자세와 패널 위치는 하나의 무작위 목록에서 뽑아 두 제어기가 번갈아 드는 블록으로 쓴다(§2). *첫 시행 전에 선언한 결과:* 주요 결과는 최대 힘으로, Welch 검정과 차이의 구간으로 분석한다; 부차 결과는 10 N 기준 성공으로, Fisher 정확 검정을 쓴다(§4). *시행 수:* 제어기당 8회면 파일럿의 효과를 검정력 0.8로 잡는다. 여기서 의미 있는 최소 감소량으로 삼은 1.5 N을 잡으려면 제어기당 28회다(worked case 6단계, $t$ 보정 포함). *튜닝:* 파일럿의 스무 번이 이득을 골랐고 검정에서 빠진다(§3). *기록:* §7의 항목들과, 모든 제외와 그 이유.
+**이 페이지로 설계한 RS1.** *주장:* P2가 400 N/m 패널에 닿을 때, 임피던스 제어가 힘 문턱 정지보다 최대 접촉력을 낮춘다. *비교:* 베이스라인 A 대 B, 그리고 B에 정지가 없다면 A의 정지를 단 B(§5). *단위와 순서:* 접근과 접촉 한 번이 시행 하나; 시작 자세와 패널 위치는 하나의 무작위 목록에서 뽑아 두 제어기가 번갈아 드는 블록으로 쓴다(§2). *첫 시행 전에 선언한 결과:* 주요 결과는 최대 힘으로, Welch 검정과 차이의 구간으로 분석한다; 부차 결과는 10 N 기준 성공으로, Fisher 정확 검정을 쓴다(§4). *시행 수:* 제어기당 8회면 파일럿의 효과를 검정력 0.8로 잡는다. 여기서 의미 있는 최소 감소량으로 삼은 1.5 N을 잡으려면 제어기당 28회다(worked case 6단계, $t$ 보정 포함). *튜닝:* 파일럿의 스무 번이 이득을 골랐고 검정에서 빠진다(§3). *기록:* §7의 항목들과, 모든 제외와 그 이유. *출판:* 파일럿과 확인 실험은 주장 하나이므로 파일럿은 혼자 아카이브 venue로 가지 않는다. [[06-research-practice/venue-strategy|5. Venue 전략]]의 worked case가 저널 규칙을 따라가며 짚는 함정이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

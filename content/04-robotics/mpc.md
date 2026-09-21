@@ -201,26 +201,26 @@ same one.
     <text x="192" y="226">t+2</text>
     <text x="256" y="226">t+3</text>
     <text x="320" y="226" opacity="0.5">t+4</text>
-    <text x="96" y="255">u₀</text>
-    <text x="160" y="255">u₁</text>
-    <text x="224" y="255">u₂</text>
+    <text x="96" y="255">u<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="160" y="255">u<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="224" y="255">u<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="352" y="276">0</text>
     <text x="412" y="276">1</text>
     <text x="472" y="276">2</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="160" y="41">u₀</text>
+    <text x="160" y="41">u<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="214" y="22">d = 1, not measured</text>
     <text x="462" y="76" text-anchor="end" opacity="0.85">measured x</text>
     <text x="58" y="95">x(t) = 0.5, measured</text>
-    <text x="200" y="110">new measurement at t+1, above the predicted x₁:</text>
+    <text x="200" y="110">new measurement at t+1, above the predicted x<tspan dy="3.5">1</tspan><tspan dy="-3.5">:</tspan></text>
     <text x="200" y="124">that gap is the feedback (d = 1 is not in the model)</text>
     <text x="336" y="150" opacity="0.9">dashed: the plan, only step one runs</text>
     <text x="336" y="164" opacity="0.6">lighter: re-planned from the new x</text>
     <text x="58" y="242" text-anchor="end">u = +1</text>
     <text x="58" y="292" text-anchor="end">u = −1</text>
     <text x="58" y="204" text-anchor="end" opacity="0.7">x = 0</text>
-    <text x="140" y="306" opacity="0.85">only u₀ reaches the plant</text>
+    <text x="140" y="306" opacity="0.85">only u<tspan dy="3.5">0</tspan><tspan dy="-3.5"> reaches the plant</tspan></text>
     <text x="108" y="338">K = 99 asks u = −Kx = −49.5</text>
     <text x="108" y="352" opacity="0.85">far below the band (off scale)</text>
     <text x="318" y="248">steady states the rails permit</text>
@@ -569,26 +569,26 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
     <text x="192" y="226">t+2</text>
     <text x="256" y="226">t+3</text>
     <text x="320" y="226" opacity="0.5">t+4</text>
-    <text x="96" y="255">u₀</text>
-    <text x="160" y="255">u₁</text>
-    <text x="224" y="255">u₂</text>
+    <text x="96" y="255">u<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="160" y="255">u<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+    <text x="224" y="255">u<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="352" y="276">0</text>
     <text x="412" y="276">1</text>
     <text x="472" y="276">2</text>
   </g>
   <g font-size="11" fill="currentColor">
-    <text x="160" y="41">u₀</text>
+    <text x="160" y="41">u<tspan dy="3.5">0</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="214" y="22">d = 1, 측정 안 됨</text>
     <text x="462" y="76" text-anchor="end" opacity="0.85">측정한 x</text>
     <text x="58" y="95">x(t) = 0.5, 측정값</text>
-    <text x="200" y="110">t+1의 새 측정값은 예측한 x₁보다 위에 있다:</text>
+    <text x="200" y="110">t+1의 새 측정값은 예측한 x<tspan dy="3.5">1</tspan><tspan dy="-3.5">보다 위에 있다:</tspan></text>
     <text x="200" y="124">그 간격이 피드백이다 (모델에는 d = 1이 없다)</text>
     <text x="336" y="150" opacity="0.9">파선: 계획, 실행되는 것은 첫 스텝뿐</text>
     <text x="336" y="164" opacity="0.6">옅은 선: 새 x에서 다시 세운 계획</text>
     <text x="58" y="242" text-anchor="end">u = +1</text>
     <text x="58" y="292" text-anchor="end">u = −1</text>
     <text x="58" y="204" text-anchor="end" opacity="0.7">x = 0</text>
-    <text x="140" y="306" opacity="0.85">플랜트에 닿는 것은 u₀뿐</text>
+    <text x="140" y="306" opacity="0.85">플랜트에 닿는 것은 u<tspan dy="3.5">0</tspan><tspan dy="-3.5">뿐</tspan></text>
     <text x="108" y="338">K = 99는 u = −Kx = −49.5를 요구</text>
     <text x="108" y="352" opacity="0.85">띠보다 한참 아래 (축척 밖)</text>
     <text x="318" y="248">레일이 허용하는 정상상태</text>

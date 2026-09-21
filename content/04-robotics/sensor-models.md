@@ -87,8 +87,8 @@ Two log–log panels side by side. The problem set asks for the same pair for a 
   <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="9.5">−5</tspan></text>
   <text x="75.6" y="97.1" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">−½</text>
   <text x="201" y="167.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">+½</text>
-  <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ₁</text>
-  <text x="276.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ₂</text>
+  <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="276.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="298" y="20" font-size="11.5" font-weight="bold" fill="currentColor">Right: position error (m)</text>
   <path d="M410.7 34V224 M479.3 34V224" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <path d="M342 192.3H548 M342 160.7H548 M342 129H548 M342 97.3H548 M342 65.7H548" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
@@ -139,7 +139,7 @@ Two log–log panels side by side. The problem set asks for the same pair for a 
   <text x="16" y="329" font-size="11" font-weight="bold" fill="currentColor">+½</text>
   <text x="40" y="329" font-size="11" fill="currentColor">random walk K<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">√(τ/3); K</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dx="3.1" dy="-3">is read on this line at 3 s</tspan></text>
   <text x="16" y="346" font-size="11" font-weight="bold" fill="currentColor">τ</text>
-  <text x="40" y="346" font-size="11" fill="currentColor">τ₁ = 1.0 s and τ₂ = 7400 s, the two corners</text>
+  <text x="40" y="346" font-size="11" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.0 s and τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 7400 s, the two corners</tspan></text>
   <path d="M22 355 l4 4 l-4 4 l-4 -4 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
   <text x="40" y="363" font-size="11" fill="currentColor">the curve at 1 s:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">, 41% above N</tspan><tspan dy="3" font-size="9.5">g</tspan></text>
   <line x1="318" y1="274" x2="340" y2="274" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="7 3"/>
@@ -645,8 +645,8 @@ for T in (300.0, 1800.0, 7200.0):
   <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="9.5">−5</tspan></text>
   <text x="75.6" y="97.1" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">−½</text>
   <text x="201" y="167.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">+½</text>
-  <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ₁</text>
-  <text x="276.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ₂</text>
+  <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="276.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
   <text x="298" y="20" font-size="11.5" font-weight="bold" fill="currentColor">오른쪽: 위치 오차 (m)</text>
   <path d="M410.7 34V224 M479.3 34V224" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <path d="M342 192.3H548 M342 160.7H548 M342 129H548 M342 97.3H548 M342 65.7H548" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
@@ -697,7 +697,7 @@ for T in (300.0, 1800.0, 7200.0):
   <text x="16" y="329" font-size="11" font-weight="bold" fill="currentColor">+½</text>
   <text x="40" y="329" font-size="11" fill="currentColor">랜덤 워크 K<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">√(τ/3). K</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">는 3 s에서 이 직선으로 읽는다</tspan></text>
   <text x="16" y="346" font-size="11" font-weight="bold" fill="currentColor">τ</text>
-  <text x="40" y="346" font-size="11" fill="currentColor">τ₁ = 1.0 s와 τ₂ = 7400 s, 두 모서리</text>
+  <text x="40" y="346" font-size="11" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.0 s와 τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 7400 s, 두 모서리</tspan></text>
   <path d="M22 355 l4 4 l-4 4 l-4 -4 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
   <text x="40" y="363" font-size="11" fill="currentColor">1 s에서의 곡선:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">, N</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">보다 41% 높다</tspan></text>
   <line x1="318" y1="274" x2="340" y2="274" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="7 3"/>
