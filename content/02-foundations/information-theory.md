@@ -29,7 +29,7 @@ no prior background assumed.
 
 The page's object is the **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]], and every number below is drawn as a channel. The problem set asks for this same figure.
 
-**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node do *not* — a column of a channel matrix is a distribution, a row of it is not.
+**The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node need *not* — here they do ($0.95+0.05$) only because this channel is symmetric; a column of a channel matrix is a distribution, a row of it is not.
 
 **The prior, drawn to scale.** Draw the two left nodes as boxes whose heights are their prior masses, $P(c)=0.01$ against $P(\neg c)=0.99$. Drawn honestly, the top box is a line and the bottom one is the whole figure. That ratio of $99$ is the only reason the page's punchline exists, so it must be visible before any arithmetic starts.
 
@@ -99,7 +99,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{bits}$$
   The model costs $1.280$ bits per symbol where $1.157$ is the floor — an overpayment of
   $0.123$ bits. Hold that number; §3 shows it is exactly the KL.
-- **Worked: P5 crack detector.** Catalog $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$ ([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. The true posterior is Bernoulli($0.161$) with $H(p)\approx 0.63$ bits. A model that treats the *sensitivity* $0.95$ as if it were $P(c|+)$ pays $H(p,q)\approx 3.64$ bits. False alarms from the $99\%$ non-crack mass ($0.0495$) dominate true positives ($0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$. The problem set is this channel as a drawing. Both figures are expected
+- **Worked: P5 crack detector.** Catalog $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$ ([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. The true posterior is Bernoulli($0.161$) with $H(p)\approx 0.64$ bits. A model that treats the *sensitivity* $0.95$ as if it were $P(c|+)$ pays $H(p,q)\approx 3.64$ bits. False alarms from the $99\%$ non-crack mass ($0.0495$) dominate true positives ($0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$. The problem set is this channel as a drawing. Both figures are expected
   costs, not code lengths. Entropy bounds the *expected* length, and a per-symbol code reaches
   it only when every probability is a power of two, because a symbol's code length has to be a
   whole number of bits: the best symbol code here is Huffman at $1.3$ bits (built and proved optimal in [[02-foundations/algorithms/greedy-mst|11.4 §5]]). The floor is approached by coding long blocks of **i.i.d.** ([[02-foundations/probability|3. Probability §2]])
@@ -320,7 +320,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 
 > [!tip]- Solutions
 > 1. $c\to +$ at $0.95$, $c\to -$ at $0.05$; $\neg c\to +$ at $0.05$, $\neg c\to -$ at $0.95$. Almost all prior mass on $\neg c$.
-> 2. $P(+)=0.95\cdot 0.01+0.05\cdot 0.99=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)=-p\log_2 0.95-(1-p)\log_2 0.05\approx 3.64$ bits, while $H(p)\approx 0.63$ bits: sensitivity is a badly calibrated posterior.
+> 2. $P(+)=0.95\cdot 0.01+0.05\cdot 0.99=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)=-p\log_2 0.95-(1-p)\log_2 0.05\approx 3.64$ bits, while $H(p)\approx 0.64$ bits: sensitivity is a badly calibrated posterior.
 > 3. False alarms from the 99% non-crack mass dominate true positives ($0.0495$ vs $0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$.
 
 ## 한국어
@@ -339,7 +339,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 
 이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 균열 감지기이고, 아래 숫자는 전부 채널 하나로 그려진다. 과제가 바로 이 그림을 요구한다.
 
-**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$이 *아니다*. 채널 행렬의 열은 분포지만 행은 분포가 아니다.
+**채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$일 *필요가 없다*. 여기서 $1$이 되는 것($0.95+0.05$)은 이 채널이 대칭이기 때문일 뿐이다. 채널 행렬의 열은 분포지만 행은 분포가 아니다.
 
 **사전확률, 실제 비율로.** 왼쪽 노드 둘을 사전 질량 높이의 상자로 그린다. $P(c)=0.01$ 대 $P(\neg c)=0.99$다. 정직하게 그리면 위 상자는 선 하나이고 아래 상자가 그림 전체다. $99$라는 이 비율이 이 페이지 결론의 유일한 근거이므로, 산술을 시작하기 전에 눈에 보여야 한다.
 
@@ -408,7 +408,7 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   $$H(p) = -[0.7\log_2 0.7 + 0.2\log_2 0.2 + 0.1\log_2 0.1] = 1.157\ \text{비트}$$
   $$H(p,q) = -[0.7\log_2 0.5 + 0.2\log_2 0.3 + 0.1\log_2 0.2] = 1.280\ \text{비트}$$
   바닥이 $1.157$인 자리에 모델이 심볼당 $1.280$비트를 치른다 — $0.123$비트를 더 낸 것이다. 이 숫자를 기억해 두라. 3절에서 이것이 정확히 KL임을 보인다.
-- **계산: P5 균열 감지기.** 카탈로그의 $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. 참 사후분포는 Bernoulli($0.161$)이고 $H(p)\approx 0.63$비트다. *민감도* $0.95$를 $P(c|+)$인 양 쓰는 모델은 $H(p,q)\approx 3.64$비트를 치른다. 균열이 없는 $99\%$ 질량에서 나온 거짓 경보($0.0495$)가 참양성($0.0095$)을 압도한다. 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다. 과제는 이 채널을 그림으로 그리는 것이다.
+- **계산: P5 균열 감지기.** 카탈로그의 $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$([[02-foundations/lab-plants|0.6]]). $P(+)=0.059$, $P(c|+)\approx 0.161$. 참 사후분포는 Bernoulli($0.161$)이고 $H(p)\approx 0.64$비트다. *민감도* $0.95$를 $P(c|+)$인 양 쓰는 모델은 $H(p,q)\approx 3.64$비트를 치른다. 균열이 없는 $99\%$ 질량에서 나온 거짓 경보($0.0495$)가 참양성($0.0095$)을 압도한다. 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다. 과제는 이 채널을 그림으로 그리는 것이다.
   두 값 모두 기대 비용이지 부호 길이가 아니다. 엔트로피가 묶는 것은 *기대* 길이이고, 심볼
   단위 부호가 그 바닥에 닿는 것은 모든 확률이 2의 거듭제곱일 때뿐인데, 한 심볼의 부호 길이가
   정수 비트여야 하기 때문이다. 여기서 최선의 심볼
@@ -622,5 +622,5 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P5** 균열 감지기: $P(+|c)=0.
 
 > [!tip]- 정답 · Solutions
 > 1. $c\to +$는 $0.95$, $c\to -$는 $0.05$; $\neg c\to +$는 $0.05$, $\neg c\to -$는 $0.95$. 사전 질량은 거의 $\neg c$.
-> 2. $P(+)=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)\approx 3.64$비트, $H(p)\approx 0.63$비트: 민감도를 사후로 쓰면 보정이 크게 틀린다.
+> 2. $P(+)=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)\approx 3.64$비트, $H(p)\approx 0.64$비트: 민감도를 사후로 쓰면 보정이 크게 틀린다.
 > 3. 균열이 없는 99%에서 나온 거짓 경보가 참양성을 이긴다($0.0495$ vs $0.0095$). 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다.

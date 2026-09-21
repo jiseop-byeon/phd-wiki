@@ -60,7 +60,7 @@ The first three bullets set up the vocabulary — what a matrix is and two ways 
   $Q = XW_Q$ is $(T\times 512)(512\times 64) = T\times 64$; scores $QK^\top$ are $T\times T$;
   output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$ (softmax turns scores
   into probabilities — defined in [[02-foundations/engineering-math|0.5 §10]]). The whole
-  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line.
+  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line. The same head worked with numbers, on D2's four patch tokens, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]].
 - **Dot product and angle**: the dot (inner) product takes two vectors of the same length and
   returns one number,
   $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
@@ -147,8 +147,7 @@ In the attention example above, select one row of the score matrix. That row con
   $b - A\hat x = (-\tfrac16, \tfrac13, -\tfrac16)$ — and check the geometry claim directly:
   its sum is $0$ and its dot product with $(1,2,3)$ is $-\tfrac16 + \tfrac23 - \tfrac12 = 0$.
   The residual really is perpendicular to both columns of $A$, which is exactly what
-  "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors.
-- Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
+  "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors. The same normal equations fitted to a heater's recorded input and output, with the covariance of the estimate they return, are [[04-robotics/system-identification|5.5 System Identification §3]].
 <svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="a vector b above the plane spanned by the columns of A, its projection inside the plane, and the residual meeting the plane at a right angle">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>
@@ -189,6 +188,7 @@ In the attention example above, select one row of the score matrix. That row con
   </g>
 </svg>
 
+- Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
 
 **Separate three questions before reaching for an inverse.** Can the columns produce the requested b at all? If yes, is there only one input that does so? If not, what criterion chooses among approximations? These are existence, uniqueness, and selection. A rectangular matrix is not automatically a failed problem: it may describe more measurements than unknowns, or more available controls than the task needs.
@@ -679,7 +679,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$ (softmax는 점수를 확률로
   바꾼다 — [[02-foundations/engineering-math|0.5 §10]]에 정의).
   [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
-  검사된다.
+  검사된다. 같은 헤드를 D2의 패치 토큰 넷 위에서 숫자로 끝까지 계산한 것이 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다.
 - **내적과 각도**: 내적은 길이가 같은 두 벡터를 받아 숫자 하나를 돌려준다.
   $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
   $\theta$는 두 벡터 사이의 각이다. 마지막 등식은 코사인 법칙이고, 그래서 내적은 한 벡터가 다른
@@ -756,7 +756,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   기하 주장을 직접 검산해 보라: 합이 $0$이고 $(1,2,3)$과의 내적이
   $-\tfrac16 + \tfrac23 - \tfrac12 = 0$이다. 잔차가 정말로 $A$의 두 열 모두에 수직이고,
   그것이 "직교 투영"이 주장하는 바로 그것이다. 이 검산은 10초면 되고 부호 실수의 대부분을
-  잡아낸다.
+  잡아낸다. 같은 정규방정식을 히터의 입출력 기록에 맞추고 추정의 공분산까지 구하는 것이 [[04-robotics/system-identification|5.5 시스템 식별 §3]]이다.
 <svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="A의 열들이 만드는 평면 위로 벡터 b가 떠 있고 그 투영이 평면 안에 있으며 잔차가 평면과 직각으로 만난다">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>

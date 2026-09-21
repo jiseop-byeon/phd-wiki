@@ -637,7 +637,7 @@ print(out.shape, W.shape, W[0].round(2))
 - *The sequence is 100 000 tokens.* The $T \times T$ table does not fit. Exact attention in blocks that never materializes it (FlashAttention) is the usual answer; sparse or linear attention changes the model.
 - *Padding and causal masks together?* Combine them with a logical OR before the softmax, and broadcast the padding mask over the query axis.
 
-**Theory.** What attention computes, multi-head attention, and the blocks used now: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]].
+**Theory.** What attention computes, multi-head attention, and the blocks used now: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. The same layer worked by hand on D2, with its causal mask, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]].
 
 ### How to practise these
 
@@ -1319,7 +1319,7 @@ print(out.shape, W.shape, W[0].round(2))
 - *시퀀스가 100 000 토큰이다.* $T \times T$ 표가 메모리에 들어가지 않는다. 표를 만들지 않고 블록 단위로 계산하는 정확한 어텐션(FlashAttention)이 보통의 답이다. 희소 어텐션이나 선형 어텐션은 모델 자체를 바꾼다.
 - *패딩 마스크와 인과 마스크를 함께?* softmax 전에 논리 OR로 합치고, 패딩 마스크는 질의 축으로 브로드캐스트한다.
 
-**이론.** 어텐션이 계산하는 것, 멀티헤드 어텐션, 요즘 쓰이는 블록: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]].
+**이론.** 어텐션이 계산하는 것, 멀티헤드 어텐션, 요즘 쓰이는 블록: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. 같은 층을 인과 마스크까지 D2 위에서 손으로 계산한 것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다.
 
 ### 연습하는 법
 

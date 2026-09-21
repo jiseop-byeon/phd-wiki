@@ -1,0 +1,801 @@
+---
+title: "3.2 Sensor Models & Noise"
+tags: [robotics, estimation, sensors]
+study-depth: Working
+wiki-support: Working
+depth-goal: "On P6 with its page-local IMU, range sensor and camera, write z = h(x) + b + n for each sensor, turn a noise density into a per-sample σ, predict how each error term grows under dead reckoning, and read N and B off a simulated Allan deviation."
+mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or visual–inertial estimation carries the thesis contribution."
+---
+
+> [!note] Prerequisites · 선수 지식
+> Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] · the integrators of [[02-foundations/lab-kernel|0.65 Lab Kernel]] (Tier A) · variance from [[02-foundations/probability|3. Probability §2]] · white noise and the random walk from [[02-foundations/probability|3. Probability §5]] · sampling and quantization from [[02-foundations/signal-processing|6. Signal Processing §2]] · the observation model and the Kalman filter from [[04-robotics/state-estimation-slam|3. State Estimation §3 and §5]]
+> [[02-foundations/lab-plants|0.6]]의 장치 **P6** · [[02-foundations/lab-kernel|0.65]]의 적분기(Tier A) · [[02-foundations/probability|3. 확률 §2]]의 분산 · [[02-foundations/probability|3. 확률 §5]]의 백색 잡음과 랜덤 워크 · [[02-foundations/signal-processing|6. 신호처리 §2]]의 샘플링과 양자화 · [[04-robotics/state-estimation-slam|3. 상태 추정 §3과 §5]]의 관측 모델과 칼만 필터
+
+## English
+
+*Stands on 3. Probability, 6. Signal Processing and 3. State Estimation. A later use of plant **P6**, which ROS 2, 10. Robot Systems and MR ch.13 already drive; here it carries the sensors whose noise models those pages, and 3. State Estimation's filters, take as given.*
+
+> [!note] First pass · 처음이라면
+> Read the Running object table and the Worked case, then §2 (a density becomes a per-sample σ) and §3 (what integration does to each error term), and run the listing in §7. §4–§6 are what you open when an encoder's $R$, a range sensor's outliers or an Allan plot in a paper needs reading; §8 is where every number on the page goes in a Kalman filter.
+
+### Running object · 이 페이지의 대상
+
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: a cart on a line, position $p$ in metres, an encoder at $2048$ counts/m, a vision node at $50\,\mathrm{Hz}$ and a controller at $200\,\mathrm{Hz}$. The catalog gives it no noise model. This page adds one, page-locally, and freezes it here: a single-axis IMU sampled with the controller, a range sensor facing the panel, and the camera behind the vision node.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| $\Delta$ | $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ | one encoder count, from **P6** |
+| $f$, $\Delta t$ | $200\,\mathrm{Hz}$, $5\,\mathrm{ms}$ | the control rate of **P6**; the encoder and the IMU are sampled here |
+| $f_v$ | $50\,\mathrm{Hz}$ | the vision rate of **P6**; the camera and the range sensor report here |
+| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | accelerometer white-noise density ($102\,\mathrm{\mu g/\sqrt{Hz}}$) |
+| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | accelerometer bias instability ($51\,\mathrm{\mu g}$) |
+| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | accelerometer bias random walk |
+| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | gyro white-noise density ($0.344\,°/\sqrt{\mathrm h}$) |
+| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | gyro bias instability ($30.9\,°/\mathrm h$) |
+| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | gyro bias random walk |
+| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | range-sensor noise (P5's $R = 1\,\mathrm{cm}^2$) and its mounting offset |
+| $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | camera focal length, its distance from the rail, pixel noise of the marker detection |
+| $g$ | $9.81\,\mathrm{m/s^2}$ | gravity, as in **P2** |
+
+The accelerometer's axis lies along the rail. The gyro's axis is horizontal and across the rail, so it measures the cart's pitch rate. On P6's level rail the true pitch and pitch rate are both zero, but the dead-reckoning loop of §3 integrates the gyro anyway to know the accelerometer's tilt, because a strapdown loop cannot assume its platform stays level. Every radian that integral reports is therefore error, and gravity turns it into a false acceleration.
+
+**The IMU values are illustrative.** $N$ and $B$ are of the order found on MEMS inertial parts, and they are not any product's datasheet. The gyro's ratio of $B$ to $N$ puts its flat Allan floor near $1\,\mathrm{s}$, so a few minutes of simulated data show it. A gyro whose floor is lower relative to its white noise reaches it later, since the floor begins at $\tau_1 = (N/0.664B)^2$ (§6); the problem set's upgraded gyro reaches it at $25\,\mathrm{s}$, which is why Allan tests on real sensors are usually logged for hours. $K$ is set small enough for the floor to survive, and §7's sweep raises it. The camera borrows the focal length of 3.5's rig. The range sensor has P5's noise, so 3. State Estimation's $R = 1\,\mathrm{cm}^2$ applies to it unchanged; the offset is this page's addition.
+
+*Scope: this page teaches the noise and bias models of five sensors on one cart, how a noise density becomes a per-sample σ, what dead reckoning does to each error term, when quantization is noise, and how the Allan deviation separates the terms. It does not teach the filters that consume these numbers ([[04-robotics/state-estimation-slam|3. State Estimation]]), the camera geometry behind a pixel or the extrinsic calibration between sensors ([[04-robotics/geometric-perception-calibration|3.5 §5]]), or multi-axis inertial navigation on SE(3), whose rotation algebra is [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]].*
+
+### Homework diagram · 과제가 그릴 그림
+
+Two log–log panels side by side. The problem set asks for the same pair for a different gyro and encoder.
+
+**Left — the gyro's Allan deviation.** Put the cluster time $\tau$ on the horizontal axis, from $5\,\mathrm{ms}$ to $10^4\,\mathrm{s}$, and $\sigma_A$ in rad/s on the vertical axis, both logarithmic, one decade per equal length. Draw three straight asymptotes. The white noise is a line of slope $-\tfrac12$ through $(1\,\mathrm s,\ 1.0\times10^{-4})$, which also passes $(5\,\mathrm{ms},\ 1.41\times10^{-3})$. The bias instability is a horizontal line at $0.664B_g = 9.96\times10^{-5}$. The bias random walk is a line of slope $+\tfrac12$ through $(3\,\mathrm s,\ 2.0\times10^{-6})$. Mark where the first meets the floor, $\tau_1 = 1.0\,\mathrm s$, and where the floor meets the third, $\tau_2 = 7400\,\mathrm s$. Draw the curve itself as the quadrature sum of the three, rounding both corners. Add a vertical tick at $15\,\mathrm s$ labelled *last trustworthy cluster time of a 5-minute record*. Then put on the three reading marks: $N_g$ where the white-noise *line* crosses $\tau = 1\,\mathrm s$, $B_g$ as the floor divided by $0.664$, and $K_g$ where the random-walk *line* crosses $\tau = 3\,\mathrm s$.
+
+**Right — position error against horizon.** Put on the horizontal axis the time $t$ since the last perfect position fix, from $10\,\mathrm{ms}$ to $10\,\mathrm s$, and position error on the vertical axis from $1\,\mathrm{\mu m}$ to $1\,\mathrm m$, both logarithmic. Draw three horizontal lines for the sensors whose error does not grow: the encoder's $0.141\,\mathrm{mm}$, the camera's $0.833\,\mathrm{mm}$ and the range sensor's $10\,\mathrm{mm}$. Draw four rising lines for the IMU terms that matter, each labelled with its slope ($t$ in seconds): accelerometer white noise $0.577\,\mathrm{mm}\cdot t^{3/2}$, accelerometer bias $0.250\,\mathrm{mm}\cdot t^2$, gyro white noise through gravity $0.219\,\mathrm{mm}\cdot t^{5/2}$, and gyro bias through gravity $0.245\,\mathrm{mm}\cdot t^3$. Leave the two random-walk terms off; on this axis they never carry more than $0.02\%$ of the total variance. Draw the IMU's total as the quadrature sum and mark its three crossings: $0.38\,\mathrm s$ with the encoder, $1.09\,\mathrm s$ with the camera, and $3.21\,\mathrm s$ with the range sensor. Put a dot at $20\,\mathrm{ms}$, one vision frame, at $1.6\,\mathrm{\mu m}$.
+
+Four things the drawing has to get right, each of which is a claim about the physics.
+**$N$ is read on the line, not on the curve.** At $\tau = 1\,\mathrm s$ the curve is at $1.41\times10^{-4}$, 41% above $N_g$, because the floor is already there. A reading taken off the curve is a different, wrong number.
+**$B$ comes from a line, not from a point.** The floor is the horizontal asymptote; the curve's minimum is only where it happens to be lowest. §7 shows the two coming apart.
+**The encoder's line is flat.** A position sensor's error does not accumulate; its bound is set by the count, not by the horizon.
+**The slopes on the right are the Allan slopes plus the number of integrals.** It is $-\tfrac12 + 2 = \tfrac32$ for accelerometer white noise and $0 + 2 = 2$ for its bias. Each gyro term has one integral more, because gravity enters only after the gyro has been integrated into a tilt (§3, §6).
+
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object with its numbers. The problem set changes the gyro and the encoder, so do the whole chain here first.
+
+**1. The encoder's count as noise.** One count is $\Delta = 1/2048\,\mathrm m = 0.488\,\mathrm{mm}$. While the cart moves across many counts between samples, the error is uniform over one count (§4), so
+
+$$\sigma_q = \frac{\Delta}{\sqrt{12}} = \frac{0.488\,\mathrm{mm}}{3.464} = 0.141\ \mathrm{mm},\qquad R_e = \sigma_q^2 = 1.99\times10^{-8}\ \mathrm{m^2}$$
+
+because a uniform density of height $1/\Delta$ on an interval of width $\Delta$ has variance $\Delta^2/12$. The counter reports the floor of $p/\Delta$, so its error also has a mean of $-\Delta/2 = -0.244\,\mathrm{mm}$. That half-count is a bias, and homing the axis removes it. This is the number 3. State Estimation's running object quotes as $1.99\times10^{-4}\,\mathrm{cm}^2$.
+
+**2. The IMU's densities as per-sample σ at 200 Hz.** By §2, $\sigma = N\sqrt f$:
+
+$$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g = 1.0\times10^{-4}\sqrt{200} = 1.41\times10^{-3}\ \mathrm{rad/s}$$
+
+since each sample averages the white noise over only $5\,\mathrm{ms}$. One accelerometer sample is 28 times noisier than the accelerometer's bias instability, and yet step 3 shows the bias beating the noise at 10 s.
+
+**3. Dead reckoning for 1 s and for 10 s.** Start from a perfectly known position and velocity, with the turn-on biases calibrated away, and integrate the IMU alone. The usual back-of-envelope treats the in-run bias as a constant of size $B$ over the horizon. §3 derives each growth law; here are the values.
+
+| Error term | Growth | at $t = 1\,\mathrm s$ | at $t = 10\,\mathrm s$ |
+|---|---|---:|---:|
+| accelerometer white noise | $N_a t^{3/2}/\sqrt3$ | $0.577\,\mathrm{mm}$ | $18.3\,\mathrm{mm}$ |
+| accelerometer bias | $B_a t^2/2$ | $0.250\,\mathrm{mm}$ | $25.0\,\mathrm{mm}$ |
+| accelerometer bias random walk | $K_a t^{5/2}/\sqrt{20}$ | $0.004\,\mathrm{mm}$ | $1.41\,\mathrm{mm}$ |
+| gyro white noise, through gravity | $gN_g t^{5/2}/\sqrt{20}$ | $0.219\,\mathrm{mm}$ | $69.4\,\mathrm{mm}$ |
+| gyro bias, through gravity | $gB_g t^3/6$ | $0.245\,\mathrm{mm}$ | $245\,\mathrm{mm}$ |
+| gyro bias random walk, through gravity | $gK_g t^{7/2}/\sqrt{252}$ | $0.001\,\mathrm{mm}$ | $3.91\,\mathrm{mm}$ |
+| **all six in quadrature** | | $0.710\,\mathrm{mm}$ | $257\,\mathrm{mm}$ |
+
+The quadrature sum treats each bias row as a one-sigma value of unknown sign. The gyro's own angle error, from white noise and bias, is $N_g\sqrt t = 1.0\times10^{-4}$ and $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$ at 1 s, and $3.2\times10^{-4}$ and $1.5\times10^{-3}\,\mathrm{rad}$ at 10 s. These are tiny angles, $0.086°$ at most. But multiplied by $g$, the last one is $0.0147\,\mathrm{m/s^2}$ of false acceleration, 29 times $B_a$.
+
+**4. Which sensor dominates, at each horizon.** Inside the IMU, the accelerometer's white noise dominates at 1 s, with $0.577$ of the $0.710\,\mathrm{mm}$. At 10 s the gyro's bias dominates through gravity, with $245$ of the $257\,\mathrm{mm}$, because it has been integrated three times against the accelerometer bias's two. The two bias rows are equal when $gB_gt^3/6 = B_at^2/2$, that is at $t = 3B_a/(gB_g) = 1.02\,\mathrm s$. Across the cart, set the IMU's growing error against the three sensors whose error does not grow. The IMU total passes the encoder's $0.141\,\mathrm{mm}$ at $0.38\,\mathrm s$, the camera's $0.833\,\mathrm{mm}$ at $1.09\,\mathrm s$, and the range sensor's $10\,\mathrm{mm}$ at $3.21\,\mathrm s$. Over one vision frame ($20\,\mathrm{ms}$) it has drifted $1.6\,\mathrm{\mu m}$, 86 times less than one encoder σ.
+
+So on P6 the IMU never beats the encoder on position beyond a third of a second, and it is not on the cart for position. It is there for what the encoder cannot see. If the encoder reads a wheel, as it does in MR ch.13's version of P6, that is slip. On a platform with no encoder at all, it is the milliseconds between camera frames. This is the quantitative form of the sentence in [[04-robotics/state-estimation-slam|3. State Estimation §7]] that an IMU is accurate over milliseconds and useless over minutes.
+
+**5. What goes into the filter.** Three numbers become measurement variances $R$: $1.99\times10^{-8}\,\mathrm m^2$ for the encoder, $(Z_c\sigma_u/f_x)^2 = (0.833\,\mathrm{mm})^2 = 6.94\times10^{-7}\,\mathrm m^2$ for the camera, and $10^{-4}\,\mathrm m^2$ for the range sensor. The IMU enters differently, as process noise $Q$. It adds $N_a^2\Delta t = 5\times10^{-9}\,(\mathrm m/\mathrm s)^2$ of velocity variance per $5\,\mathrm{ms}$ step, and its biases become states. §8 builds this.
+
+### 1. The measurement model: what a perfect sensor would say, what it adds, what averages away
+
+[[04-robotics/state-estimation-slam|3. State Estimation §3]] writes every sensor as $z_t = h(x_t) + v_t$, with $v_t$ zero-mean and white. Real sensors add a second term that is not white: a bias. It is small and slow, and it keeps one sign for a long time, so it does not average away. Splitting $v$ into the two parts is the first modelling decision for any sensor, and it decides where each part goes in the filter.
+
+> **Sensor measurement model, defined.** A **sensor measurement model** is a *generative model of one sample*: a rule saying what random number a sensor returns, given the true state at the sample's time stamp. It is not a filter and not a calibration procedure. It has four defining conditions, and a model missing any of them cannot be used. First, a **measurement function** $h$, deterministic and known: what a perfect sensor would read. Second, a **bias** $b$ that does not average to zero over the horizon the estimator cares about. It is constant or slowly varying, so it is either calibrated out or carried as a state. Third, a **noise** $n$ that is zero-mean and white, meaning independent from sample to sample, with a stated distribution and per-sample standard deviation. Fourth, a **stated sample rate**, because a per-sample σ means nothing without the rate it was taken at (§2).
+>
+> $$z_k = h(x_k) + b_k + n_k,\qquad E[n_k] = 0,\qquad E[n_k n_j] = \sigma^2\delta_{kj}$$
+>
+> where $z_k$ is the $k$-th sample, $x_k$ the state at its time stamp, $b_k$ the bias then, $n_k$ the noise, $\sigma$ its per-sample standard deviation and $\delta_{kj}$ the Kronecker delta (1 when $k = j$, else 0). The line between $b$ and $n$ is drawn relative to a horizon, so whatever does not average away over that horizon belongs to $b$. Carry $b$ as a state and the model is 3.'s form again, with $h'(x, b) = h(x) + b$ and $v = n$.
+>
+> - **Example**: P6's accelerometer, $z = a + b_a + n_a$, with $\sigma = 0.0141\,\mathrm{m/s^2}$ per sample at 200 Hz and $b_a$ wandering at the $5\times10^{-4}\,\mathrm{m/s^2}$ level.
+> - **Non-example**: P6's encoder while the cart stands still, written as $z = p + n$ with $\sigma = 0.141\,\mathrm{mm}$. At rest the error is one fixed number for as long as the cart stays put, so it is a bias. Averaging 200 readings would divide a white σ by $\sqrt{200}$, to $0.010\,\mathrm{mm}$; here it leaves the error exactly where it was.
+> - **Why it matters**: each term goes to a different place in the estimator. The noise $n$ goes to $R$, or to $Q$ when the sensor drives the prediction (§8). The bias $b$ goes to a state with its own random-walk $Q$, or to a calibration. The function $h$ supplies the $H$ of the Kalman update. Filing a bias as noise is the most common way to build an overconfident filter.
+
+The five sensors on the cart, in this form:
+
+| Sensor | $h(x)$ | $b$ | $n$, per sample | Rate |
+|---|---|---|---|---:|
+| encoder | $p$ | $-\Delta/2$ from the floor, removed at homing | uniform, $\sigma_q = 0.141\,\mathrm{mm}$, *only while moving* (§4) | $200\,\mathrm{Hz}$ |
+| accelerometer | $\ddot p + g\sin\theta$ | $b_a(t)$: turn-on offset, flicker ($B_a$), random walk ($K_a$) | white, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
+| gyro | $\dot\theta$ | $b_g(t)$: turn-on offset, flicker ($B_g$), random walk ($K_g$) | white, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
+| range sensor | $x_w - p$ | $b_r = 4\,\mathrm{mm}$ mounting offset | Gaussian, $\sigma_r = 10\,\mathrm{mm}$, plus outliers (§5) | $50\,\mathrm{Hz}$ |
+| camera | $c_x + f_x(p - p_c)/Z_c$, in px | lens distortion; a wrong $Z_c$ or $c_x$ (§5) | $\sigma_u = 0.5\,\mathrm{px}$, i.e. $0.833\,\mathrm{mm}$ | $50\,\mathrm{Hz}$ |
+
+Here $\theta$ is the pitch of the accelerometer's axis (zero on the level rail), $x_w$ the panel's position on the rail, $p_c$ the rail position on the camera's optical axis, and $c_x$ the principal point.
+
+### 2. Noise density: the number that survives a change of rate
+
+An IMU datasheet does not give a per-sample σ, because that depends on the rate the IMU is read at. It gives a density, in units per $\sqrt{\mathrm{Hz}}$. The step from one to the other is what every IMU number on this page stands on.
+
+> **White-noise density, defined.** The **white-noise density** $N$ of a sensor is a *parameter of a continuous-time white noise*, in the sensor's units per $\sqrt{\mathrm{Hz}}$, which is the same as units times $\sqrt{\mathrm s}$. It is not a standard deviation, and no rate is attached to it. It has three defining conditions. The noise is **zero-mean**. It is **white** over the band the samples cover: flat spectrum, uncorrelated at every nonzero lag. That is [[02-foundations/probability|3. Probability §5]]'s $R_w(\tau) = \sigma^2\delta(\tau)$ with $N^2$ in the place of $\sigma^2$, which in continuous time is an intensity rather than a variance. And its **integral is a random walk** whose variance grows by $N^2$ per second, the condition the rest of this page uses:
+>
+> $$\operatorname{Var}\Big[\int_0^t n(s)\,ds\Big] = N^2 t$$
+>
+> where $n$ is the noise and $t$ the integration time, so $N\sqrt t$ is the standard deviation of the accumulated error after $t$ seconds.
+>
+> - **Example**: the gyro, $N_g = 1.0\times10^{-4}\,\mathrm{(rad/s)/\sqrt{Hz}}$. After one hour its integral has spread by $N_g\sqrt{3600} = 6.0\times10^{-3}\,\mathrm{rad} = 0.344°$. That is why the same number written in degrees, $0.344\,°/\sqrt{\mathrm h}$, is called the **angle random walk**: it is the one-sigma angle error after one hour of integration.
+> - **Non-example**: an "rms noise" line on a datasheet. That is a standard deviation at the datasheet's own bandwidth, and it does not transfer to another rate until it is converted back into a density.
+> - **Why it matters**: $N$ is the number that stays the same when the sample rate changes. It sets both the $-\tfrac12$ line of the Allan deviation (§6) and the process noise of an IMU-driven filter (§8).
+
+**From density to per-sample σ.** Sample the noise at rate $f$, and suppose the samples are independent with standard deviation $\sigma$. The integral over $t$ seconds is then a sum of $tf$ samples, each weighted by the step $1/f$, so its variance is $tf\cdot\sigma^2/f^2 = t\sigma^2/f$. Setting that equal to the defining $N^2t$ gives
+
+$$\sigma = N\sqrt f$$
+
+because a faster sampler averages the same noise over a shorter interval, and white noise averaged over $1/f$ seconds has standard deviation $N/\sqrt{1/f}$. For P6 at $200\,\mathrm{Hz}$ this is the Worked case's $\sigma_a = 0.0141\,\mathrm{m/s^2}$ and $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$.
+
+Two consequences are worth stating, because both are commonly got wrong.
+- **The same part read faster is noisier per sample and no worse where it counts.** At $800\,\mathrm{Hz}$ the gyro's samples have $\sigma = 2.83\times10^{-3}\,\mathrm{rad/s}$, twice the $200\,\mathrm{Hz}$ value. Its angle error after 10 s is still $N_g\sqrt{10} = 3.2\times10^{-4}\,\mathrm{rad}$, because the integral sees $N$, not σ. §7's rate sweep shows the same thing on the Allan plot.
+- **The formula assumes independent samples.** A sensor whose internal low-pass filter cuts off well below $f/2$ returns correlated samples. Their σ is smaller than $N\sqrt f$, and averaging $n$ of them does not divide the noise by $\sqrt n$. So take the density and the filter bandwidth from the datasheet, or read $N$ off the Allan deviation's $-\tfrac12$ line (§6) at cluster times well beyond the filter's time constant, rather than measuring σ from a log and assuming it is white.
+
+The units you will meet: gyro densities in $°/\mathrm s/\sqrt{\mathrm{Hz}}$ or in $°/\sqrt{\mathrm h}$ (multiply the first by 60 to get the second, since $\sqrt{\mathrm h} = 60\sqrt{\mathrm s}$), accelerometer densities in $\mathrm{\mu g}/\sqrt{\mathrm{Hz}}$ with $1\,\mathrm{\mu g} = 9.81\times10^{-6}\,\mathrm{m/s^2}$, and bias instability in $°/\mathrm h$ or $\mathrm{\mu g}$.
+
+### 3. What integration does to each error term
+
+Dead reckoning with an IMU is odometry with a different sensor: a position built by integrating measured motion, with no external reference. [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13 §2]] states the three conditions that make odometry drift, and they carry over unchanged. This section computes *how fast* it drifts. White noise, integrated once, is §2's random walk — the angle random walk in a gyro's angle, and its twin the **velocity random walk** in an accelerometer's velocity. The bias has two further terms, each fixed by one number.
+
+> **Bias instability, defined.** The **bias instability** $B$ is a *parameter of the slow, flicker-type wander of a sensor's bias*, in the units of the measured rate. It is not a turn-on offset and not a standard deviation of the output. It has three defining conditions. The bias wander has a **flicker spectrum**, one that rises as $1/f$ toward low frequencies, over the band of averaging times of interest. That spectrum shows up as a **zero-slope floor** of the Allan deviation, which exists only when the white noise has fallen below it before the random walk rises above it (§6). And it is read by a **stated convention**: in IEEE Std 952's convention, $B$ is that floor divided by $0.664$.
+>
+> $$S_b(f) = \frac{B^2}{2\pi f}$$
+>
+> where $S_b$ is the power spectral density of the bias wander and $f$ the frequency, so the bias has more power the slower you look. Averaging over a longer window stops helping because a $1/f$ spectrum holds the same power, $(B^2/2\pi)\ln2$, in every octave: doubling the window averages one octave away and lets the next one in. §6 turns this into the floor $0.664B$.
+>
+> - **Example**: P6's gyro, $B_g = 1.5\times10^{-4}\,\mathrm{rad/s}$, gives a floor of $9.96\times10^{-5}\,\mathrm{rad/s}$ from $\tau = 1\,\mathrm s$ onward. §7's five-minute record reads $B$ back as $1.475\times10^{-4}$, within 2%.
+> - **Non-example**: the turn-on bias, the offset from one power-up to the next. It is a different datasheet line, and a start-up calibration removes it.
+> - **Why it matters**: it is the floor of averaging. No averaging window pins the bias down better than about $0.664B$, so it is the residual bias in a drift budget over seconds, and it sets how often a filter has to re-estimate the bias.
+
+> **Bias random walk, defined.** The **bias random walk** is a *random process for the bias itself*, with intensity $K$ in rate units per $\sqrt{\mathrm s}$. For a gyro it is also called the rate random walk. It has three defining conditions. The bias takes **independent, zero-mean steps**. Each step's variance is **proportional to the time it spans**, so the spread grows as $\sqrt t$ without bound. And it is the **bias that walks**, inside §1's $b$, not the measured quantity.
+>
+> $$b_{k+1} = b_k + K\sqrt{\Delta t}\,w_k,\qquad \operatorname{Var}[b(t) - b(0)] = K^2 t$$
+>
+> where $w_k$ is a standard normal draw and $\Delta t$ the sample step. The variance after time $t$ is $K^2t$ whatever the step size, because variances of independent steps add: $t/\Delta t$ steps of $K^2\Delta t$ each. It is [[02-foundations/probability|3. Probability §5]]'s random walk with a physical scale.
+>
+> - **Example**: P6's gyro, $K_g = 2.0\times10^{-6}$. After one hour the walk alone has moved the bias by $K_g\sqrt{3600} = 1.2\times10^{-4}\,\mathrm{rad/s}$, about $B_g$. On the scale of an hour the two slow terms are comparable.
+> - **Non-example**: a bias that follows temperature during a steady warm-up. That is a deterministic ramp, removed with a thermal model, and it appears in the Allan deviation with slope $+1$, not $+\tfrac12$.
+> - **Why it matters**: it is the process noise of the bias state in every visual–inertial filter (§8). Set it too small and the filter stops tracking the bias and grows overconfident.
+
+**The growth laws, one integral at a time.** Integrate white noise $n$ of density $N$ once, and [[02-foundations/probability|3. Probability §5]]'s random walk gives variance $N^2t$. Integrate it $m$ times from zero, and the result is the weighted sum $\int_0^t \frac{(t-s)^{m-1}}{(m-1)!}\,n(s)\,ds$. White noise contributes the square of its weight at every instant, so
+
+$$\operatorname{Var} = N^2\int_0^t \frac{(t-s)^{2m-2}}{\big((m-1)!\big)^2}\,ds = \frac{N^2\,t^{2m-1}}{(2m-1)\big((m-1)!\big)^2}$$
+
+because the integral of $u^{2m-2}$ from $0$ to $t$ is $t^{2m-1}/(2m-1)$. One to four integrals give variances $N^2t$, $N^2t^3/3$, $N^2t^5/20$ and $N^2t^7/252$. A constant bias $B$ integrated $m$ times is simply $Bt^m/m!$. A random-walk bias is white noise already integrated once, so $m$ integrals of it behave like $m+1$ integrals of white noise, with $K$ in place of $N$.
+
+The accelerometer is integrated twice to reach position. The gyro is integrated once to reach tilt. Gravity turns a tilt error $\delta\theta$ into a false acceleration $g\sin\delta\theta \approx g\,\delta\theta$, and two more integrals carry that to position. So every gyro term arrives one integral further along than the matching accelerometer term.
+
+| Term | in the gyro's angle (1 integral) | in position, from the accelerometer (2) | in position, from the gyro through $g$ (3) |
+|---|---|---|---|
+| white noise $N$ | $N\sqrt t$ | $N t^{3/2}/\sqrt3$ | $gN t^{5/2}/\sqrt{20}$ |
+| bias $B$, held constant | $Bt$ | $Bt^2/2$ | $gBt^3/6$ |
+| bias random walk $K$ | $Kt^{3/2}/\sqrt3$ | $Kt^{5/2}/\sqrt{20}$ | $gKt^{7/2}/\sqrt{252}$ |
+
+**Read it by exponents.** Down each column the exponent rises by $\tfrac12$ from white noise to bias to random walk. Along each row it rises by 1 per integral. At short horizons the lowest exponent wins, which is the white noise; at long horizons the highest wins, and the gyro rows sit a full power of $t$ above the accelerometer rows. That is why a strapdown system's position drift is a gyro budget. Woodman's analysis of a simple strapdown system built on a MEMS IMU put the average position error above $150\,\mathrm m$ after $60\,\mathrm s$, and identified orientation error caused by gyro noise as the critical cause.
+
+**Where the laws hold.** They are the open-loop, small-angle, short-horizon forms. At the Worked case's largest tilt, $1.5\times10^{-3}\,\mathrm{rad}$, $\sin\delta\theta\approx\delta\theta$ is off by less than one part in a million. Navigation-grade analyses over minutes to hours add Earth rotation and the Schuler loop, which this page does not teach. §7's listing checks the two white-noise rows by brute force: 2000 simulated runs give $0.583\,\mathrm{mm}$ against the law's $0.577$ at 1 s for the accelerometer, and $68.1$ against $69.4\,\mathrm{mm}$ at 10 s for the gyro through gravity.
+
+### 4. Quantization as noise, and when it is not
+
+[[02-foundations/signal-processing|6. Signal Processing §2]] defines quantization for an ADC and gives its rounding error the variance $\Delta^2/12$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]] insists that the same staircase is a deterministic function of position, not noise. Both are right, under different conditions, and the encoder's $R$ depends on which condition holds.
+
+> **Quantization noise, defined.** **Quantization noise** is a *statistical model of a deterministic error*: the error $e = \hat x - x$ of a uniform quantizer with step $\Delta$, treated as a random variable. It has three defining conditions, and the third is the one that fails in practice. The steps are **uniform**, of width $\Delta$. The error is modelled as **uniform over one step and independent of the signal**. And that model is true only when the **signal crosses many steps between samples, irregularly with respect to the grid**, so that where it lands inside a step is effectively random; Widrow and Kollár give the exact condition.
+>
+> $$\operatorname{Var}(e) = \int_{-\Delta/2}^{\Delta/2} e^2\,\frac{de}{\Delta} = \frac{\Delta^2}{12}$$
+>
+> where $1/\Delta$ is the uniform density over one step, so the standard deviation is $\Delta/\sqrt{12} = 0.289\Delta$. A rounding quantizer has mean error 0. A counter that reports the floor, as an encoder does, has its error on $(-\Delta, 0]$: mean $-\Delta/2$, which is a bias, and the same variance.
+>
+> - **Example**: P6's encoder while the cart moves irregularly by several counts per tick. A simulated position that random-walks with a standard deviation of five counts per tick gives an error variance of $0.998\,\Delta^2/12$ and a lag-1 correlation of $0.002$, which is white, so $R_e = \Delta^2/12 = 1.99\times10^{-8}\,\mathrm m^2$ is honest there.
+> - **Non-example (at rest)**: the error is one fixed number for as long as the cart stands still. Its sample variance is zero and its value is anywhere within one count. It is a bias.
+> - **Non-example (steady motion)**: at $0.5\,\mathrm{m/s}$ one tick carries $5.12$ counts (MR ch.13, Step 7). The error then advances by $0.12$ of a count per tick and repeats every $8.3$ ticks. Its time-averaged variance is still $\Delta^2/12$, but its lag-1 correlation is $1 - 6(0.12)(0.88) = 0.366$ (a simulation gives $0.365$), so it is not white.
+> - **Why it matters**: it gives the encoder's $R$, and it tells you when that $R$ lies. When the cart creeps or stops, a filter that counts repeated identical readings as independent evidence shrinks its variance on nothing. That is [[04-robotics/state-estimation-slam|3. State Estimation §4]]'s sensor with memory, with the memory supplied by the grid.
+
+Differencing makes quantization worse, because a one-tick velocity divides a position error by $\Delta t$. The consequences — a one-tick velocity quantum of $0.0977\,\mathrm{m/s}$ on P6, and an estimate that reads exactly zero at low speed — are worked in [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] (Step 7) and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]], and are not repeated here.
+
+### 5. The range sensor and the camera
+
+Both measure position with an error that does not grow with the horizon. Each has one trap that the Gaussian in §1's table does not show.
+
+**The range sensor.** It reads $z_r = (x_w - p) + b_r + n_r$ with $\sigma_r = 10\,\mathrm{mm}$. The noise averages away and the offset does not. A hundred readings (2 s at 50 Hz) bring the noise down to $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$ and leave the $4\,\mathrm{mm}$ offset untouched, so after two seconds the bias is four times the noise, and it has to be calibrated against a known distance or carried as a state. The Gaussian is also only part of a real range sensor. Thrun, Burgard and Fox's beam model mixes four components: the Gaussian *hit* on the intended surface, *short* readings from unexpected objects in the beam, *max-range* readings when the return is lost, and a uniform floor of *random* readings. A reading that does not come from the panel at all, like the passer-by in 3. State Estimation's Worked case, belongs to one of the last three. No choice of $\sigma_r$ covers them, which is why that page gates ([[04-robotics/state-estimation-slam|3. State Estimation §8.5]]).
+
+**The camera.** It measures a pixel, $u = c_x + f_x(p - p_c)/Z_c + n_u$. For a point at depth $Z_c$ the pinhole model ([[04-robotics/geometric-perception-calibration|3.5 §1]]) turns pixel noise into position noise:
+
+$$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m = 0.833\ \mathrm{mm}$$
+
+because one pixel spans $Z_c/f_x$ metres at depth $Z_c$. Along the optical axis the conversion is worse: depth from disparity has an error that grows as $Z^2$ ([[04-robotics/geometric-perception-calibration|3.5 §2]]). Two of the camera's errors are biases, and averaging frames does not touch them. Lens distortion moves points by a repeatable amount, $2.30\,\mathrm{px}$ at one point of 3.5's rig. And latency is a time offset: a frame acted on $70\,\mathrm{ms}$ after its exposure, which is P6's budget, shows where the cart was $35\,\mathrm{mm}$ ago at $0.5\,\mathrm{m/s}$, 42 times the pixel noise. 3. State Estimation's running object makes the same point for the range reading.
+
+### 6. The Allan deviation: one static log, three numbers
+
+A datasheet gives $N$, $B$ and sometimes $K$. To get them for a sensor you have, or to check the datasheet, log the sensor at rest and compute one curve.
+
+> **Allan deviation, defined.** The **Allan deviation** $\sigma_A(\tau)$ is a *function of the cluster time* $\tau$, computed from a record of a sensor whose true input is constant: the two-sample deviation of successive $\tau$-averages. It is a curve, not a number. It has four defining conditions. The record is taken **at rest**, so that everything that varies is error. The record is cut into **clusters of length** $\tau$, and each cluster is **averaged**. The statistic is **half the mean squared difference of successive cluster averages**. And it is evaluated over a **logarithmic grid of** $\tau$, because the terms it separates differ by their slope on a log–log plot.
+>
+> $$\sigma_A^2(\tau) = \tfrac12\big\langle(\bar y_{k+1} - \bar y_k)^2\big\rangle$$
+>
+> where $\bar y_k$ is the average of the rate over cluster $k$ and $\langle\cdot\rangle$ the average over all $k$, so a constant offset cancels in every difference. §7's code uses the overlapping form, which starts a cluster at every sample instead of every $\tau$: the same statistic, computed from more pairs.
+>
+> - **Example**: §7's five-minute record of P6's gyro reads $1421$, $451.6$, $143.7$ and $98.4\,\mathrm{\mu rad/s}$ at $\tau = 0.005$, $0.05$, $1$ and $10\,\mathrm s$. The first two fall by $\sqrt{10}$ per decade, and the last sits on the $99.6\,\mathrm{\mu rad/s}$ floor.
+> - **Non-example**: the standard deviation of the whole record, $1.44\times10^{-3}\,\mathrm{rad/s}$. It is just the per-sample white noise of §2 and says nothing about $B$ or $K$. For a random-walk bias it is not even a property of the sensor, because it grows with the record length (3. Probability's random-walk non-example).
+> - **Why it matters**: differences of successive averages cancel any constant offset and stay finite for a random walk. So one curve separates the terms by slope, and a single static log yields the numbers a visual–inertial filter's configuration asks for, usually a noise density and a random walk per sensor.
+
+Each term has its own slope and its own reading rule. The rules come from averaging each process over $\tau$; IEEE Std 952's Allan-variance annex tabulates them for gyros, and El-Sheimy, Hou and Niu apply them to inertial measurement units of several grades.
+
+| Slope | Term | $\sigma_A(\tau)$ | Read it as |
+|---:|---|---|---|
+| $-\tfrac12$ | white noise | $N/\sqrt\tau$ | $N$ = the line's value at $\tau = 1\,\mathrm s$ |
+| $0$ | bias instability | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = the floor divided by $0.664$ |
+| $+\tfrac12$ | bias random walk | $K\sqrt{\tau/3}$ | $K$ = the line's value at $\tau = 3\,\mathrm s$ |
+
+The floor's constant is where §3's spectrum goes: in the Allan integral, the substitution $u = \pi f\tau$ turns $df/f$ into $du/u$, so $\tau$ drops out of the flicker term, leaving $(2B^2/\pi)\int_0^\infty \sin^4u/u^3\,du = (2\ln2/\pi)B^2$. The standard lists further terms, among them slope $-1$ for quantization of the output and slope $+1$ for a steady ramp in the rate. Three reading habits separate a correct reading from a plausible one.
+- **Read the line, not the curve.** On P6's gyro the curve at $\tau = 1\,\mathrm s$ is $1.41\times10^{-4}$, 41% above $N_g$, because the floor is already there. $N$ comes from the $-\tfrac12$ line extended to 1 s, which is how §7's code reads it: a fit over the first decade of $\tau$.
+- **A flat bottom exists only if the terms leave room for it.** The white line meets the floor at $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$, and the floor meets the random walk at $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$. With $\tau_2 \gg \tau_1$ the floor is a shelf several decades wide. Once $K$ grows until $\tau_2 < \tau_1$, the minimum is only where the $-\tfrac12$ and $+\tfrac12$ lines cross, and dividing it by $0.664$ reports a bias instability that is not there: §7's sweep reads $1.81B$ at $K = 2\times10^{-4}$. And a datasheet's "bias instability" may be the floor itself or the floor divided by $0.664$, a factor of 1.5 apart, so check which.
+- **Long cluster times are few.** The value at $\tau$ rests on only about $T/\tau$ clusters of a record of length $T$, and it scatters accordingly. For white noise, 4000 simulated records scatter by 20% with 20 non-overlapping clusters and by 11% with 60. The overlapping form does better, but not by an order of magnitude. That is why §7 reads the floor only up to $T/20$.
+
+**An Allan plot is also a drift budget.** For the white and random-walk terms, the standard deviation of the angle error after integrating for $t$ seconds from a known start is exactly $t\,\sigma_A(t)$. White noise gives $t\cdot N/\sqrt t = N\sqrt t$, and the random walk gives $t\cdot K\sqrt{t/3} = Kt^{3/2}/\sqrt3$, both the first column of §3's table. For the flat term it holds to within a constant factor. So the Allan slope plus one is the exponent of the angle drift, and plus two the exponent of the accelerometer's position drift. That is the rule the homework diagram's right panel is drawn with.
+
+### 7. The lab: simulate the gyro, compute its Allan deviation, read N and B back
+
+The derivations above give asymptotes. This section checks them on data you generate, and shows what a change of sample rate and a growing random walk do to the reading. The listing builds one gyro axis at rest from its three terms. The white noise has $\sigma = N\sqrt f$ (§2). The random walk is a cumulative sum of steps of size $K\sqrt{\Delta t}$ (§3). The flicker floor is white noise shaped by an FFT to the spectrum $B^2/(2\pi f)$. The listing then computes the overlapping Allan deviation, reads $N$ off the first decade and $B$ off the lowest point up to $T/20$. Part 1 is one five-minute record at P6's 200 Hz, the one §6's example quotes. Parts 2 and 3 are the sweeps, ten seeds per row. Part 4 checks §3's white-noise laws by brute force; its cumulative sums are semi-implicit Euler ([[02-foundations/lab-kernel|0.65 §3]]).
+
+```python
+# P6's page-local IMU at rest: simulate, compute the Allan deviation, read N and B back.
+import numpy as np
+
+def imu_axis(N, B, K, f, T, rng):
+    """One axis at rest (true rate 0): white density N, flicker floor B, bias random walk K."""
+    n = int(round(T * f))
+    white = N * np.sqrt(f) * rng.standard_normal(n)                  # sigma = N sqrt(f), section 2
+    walk = np.cumsum(K * np.sqrt(1.0 / f) * rng.standard_normal(n))   # Var b(t) = K^2 t
+    X = np.fft.rfft(rng.standard_normal(n))                           # flicker: shape white noise
+    fr = np.fft.rfftfreq(n, 1.0 / f)
+    X[0] = 0.0
+    X[1:] *= np.sqrt(f * B**2 / (2 * np.pi * fr[1:]))                  # two-sided PSD B^2/(2 pi f)
+    return white + np.fft.irfft(X, n) + walk
+
+def allan(y, f, taus):
+    """Overlapping Allan deviation of the rate record y at cluster times taus (s)."""
+    theta = np.concatenate(([0.0], np.cumsum(y))) / f                 # integrated signal
+    out = []
+    for tau in taus:
+        m = int(round(tau * f))                                       # samples per cluster
+        d = theta[2*m:] - 2*theta[m:-m] + theta[:-2*m]                # tau * (next mean - this mean)
+        out.append(np.sqrt(np.mean(d**2) / (2 * (m / f)**2)))
+    return np.array(out)
+
+def read_back(y, f):
+    """N from the -1/2 line over the first decade; B from the flat bottom (tau <= T/20)."""
+    T = len(y) / f
+    taus = np.unique(np.round(np.logspace(0, np.log10(T * f / 20), 60))) / f
+    sig = allan(y, f, taus)
+    first = taus <= 10.0 / f
+    N_hat = np.exp(np.mean(np.log(sig[first] * np.sqrt(taus[first]))))
+    return N_hat, sig.min() / 0.664, taus[sig.argmin()]
+
+Ng, Bg, Kg = 1.0e-4, 1.5e-4, 2.0e-6          # gyro: rad/s/sqrt(Hz), rad/s, rad/s/sqrt(s)
+
+# --- 1. one five-minute record at P6's 200 Hz --------------------------------
+y = imu_axis(Ng, Bg, Kg, 200.0, 300.0, np.random.default_rng(0))
+taus = np.array((0.005, 0.05, 1.0, 10.0, 15.0))
+print("per-sample std %.3e   N*sqrt(f) %.3e" % (y.std(), Ng * np.sqrt(200.0)))
+print("Allan deviation at", taus, "s:", np.round(allan(y, 200.0, taus) * 1e6, 1), "urad/s")
+N_hat, B_hat, t_min = read_back(y, 200.0)
+print("seed 0: N_hat %.3e  B_hat %.3e  bottom at %.1f s" % (N_hat, B_hat, t_min))
+
+def sweep(label, cases, seeds=10):
+    for f, K in cases:
+        r = np.array([read_back(imu_axis(Ng, Bg, K, f, 300.0, np.random.default_rng(s)), f)
+                      for s in range(seeds)])
+        print("%s f=%4g K=%.0e | sigma/sample %.2e | N_hat/N %.3f+-%.3f | B_hat/B %.2f+-%.2f"
+              " | bottom %.2f s" % (label, f, K, Ng * np.sqrt(f), r[:, 0].mean() / Ng,
+              r[:, 0].std() / Ng, r[:, 1].mean() / Bg, r[:, 1].std() / Bg, np.median(r[:, 2])))
+
+# --- 2. sweep the sample rate, K fixed ---------------------------------------
+sweep("rate", [(f, Kg) for f in (50.0, 100.0, 200.0, 400.0, 800.0)])
+# --- 3. sweep the bias random walk, 200 Hz -----------------------------------
+sweep("walk", [(200.0, K) for K in (0.0, 2e-6, 2e-5, 2e-4, 2e-3)])
+
+# --- 4. the drift laws of section 3, by brute force: 2000 runs of 10 s at 200 Hz
+Na, g, f, dt = 1.0e-3, 9.81, 200.0, 1 / 200.0
+rng = np.random.default_rng(1)
+a = Na * np.sqrt(f) * rng.standard_normal((2000, 2000))              # accelerometer white only
+p_acc = np.cumsum(np.cumsum(a, axis=1) * dt, axis=1) * dt            # two integrals
+w = Ng * np.sqrt(f) * rng.standard_normal((2000, 2000))              # gyro white only
+p_gyr = np.cumsum(np.cumsum(g * np.cumsum(w, axis=1) * dt, axis=1) * dt, axis=1) * dt
+for t in (1.0, 10.0):
+    k = int(round(t * f)) - 1
+    print("t=%4.0f s  acc white: sim %.3f mm, law %.3f mm | gyro white via g: sim %.3f mm, law %.3f mm"
+          % (t, p_acc[:, k].std() * 1e3, Na * t**1.5 / np.sqrt(3) * 1e3,
+             p_gyr[:, k].std() * 1e3, g * Ng * t**2.5 / np.sqrt(20) * 1e3))
+```
+
+**Part 1.** The record's per-sample standard deviation is $1.439\times10^{-3}$ against $N_g\sqrt f = 1.414\times10^{-3}$; the flicker and the walk add the difference. The Allan deviation is the §6 example. Seed 0 reads $\hat N = 1.007\times10^{-4}$ and $\hat B = 1.475\times10^{-4}$, with the lowest point at $11.4\,\mathrm s$.
+
+**Sweep 1 — the sample rate**, with $K_g$ fixed. Each row is the mean ± standard deviation over ten seeds.
+
+| $f$ | σ per sample, $N_g\sqrt f$ (rad/s) | $\hat N/N_g$ | $\hat B/B_g$ | lowest point |
+|---:|---:|---:|---:|---:|
+| $50\,\mathrm{Hz}$ | $7.07\times10^{-4}$ | $1.045\pm0.007$ | $0.96\pm0.10$ | $12.69\,\mathrm s$ |
+| $100\,\mathrm{Hz}$ | $1.00\times10^{-3}$ | $1.022\pm0.005$ | $0.99\pm0.09$ | $11.71\,\mathrm s$ |
+| $200\,\mathrm{Hz}$ | $1.41\times10^{-3}$ | $1.010\pm0.003$ | $0.95\pm0.05$ | $10.71\,\mathrm s$ |
+| $400\,\mathrm{Hz}$ | $2.00\times10^{-3}$ | $1.005\pm0.003$ | $0.98\pm0.11$ | $11.17\,\mathrm s$ |
+| $800\,\mathrm{Hz}$ | $2.83\times10^{-3}$ | $1.003\pm0.002$ | $0.93\pm0.11$ | $10.91\,\mathrm s$ |
+
+What it says. The per-sample σ quadruples from 50 to 800 Hz, and nothing a filter uses changes: $\hat N$ and $\hat B$ describe the same part at every rate, as §2 claimed. The slow logger reads $N$ 4.5% high, because its first decade of cluster times, $0.02$ to $0.2\,\mathrm s$, already feels the floor; a fast logger has more of the pure $-\tfrac12$ line to fit. The $\hat B$ column scatters by 5–11% because a five-minute record has only about 20 clusters at $T/20$.
+
+**Sweep 2 — the bias random walk**, at 200 Hz. The same ten seeds run in every row, so the rows differ only by $K_g$.
+
+| $K_g$ | $\tau_2 = 3(0.664B_g/K_g)^2$ | $\hat N/N_g$ | $\hat B/B_g$ | lowest point |
+|---:|---:|---:|---:|---:|
+| $0$ | none | $1.010\pm0.003$ | $0.95\pm0.06$ | $10.71\,\mathrm s$ |
+| $2\times10^{-6}$ | $7400\,\mathrm s$ | $1.010\pm0.003$ | $0.95\pm0.05$ | $10.71\,\mathrm s$ |
+| $2\times10^{-5}$ | $74\,\mathrm s$ | $1.010\pm0.003$ | $1.01\pm0.07$ | $12.49\,\mathrm s$ |
+| $2\times10^{-4}$ | $0.74\,\mathrm s$ | $1.011\pm0.003$ | $1.81\pm0.04$ | $0.93\,\mathrm s$ |
+| $2\times10^{-3}$ | $0.0074\,\mathrm s$ | $1.069\pm0.003$ | $4.91\pm0.05$ | $0.09\,\mathrm s$ |
+
+What it says. While $\tau_2$ lies beyond the reading window, the floor reads $B$ to within the scatter of a five-minute record. At $K_g = 2\times10^{-4}$, $\tau_2$ falls below $\tau_1 = 1.0\,\mathrm s$ and the shelf is gone. The lowest point moves to $0.93\,\mathrm s$, near where the two sloped lines cross ($\sqrt3N_g/K_g = 0.87\,\mathrm s$), and "$B$" reads $1.81B_g$, against the $1.82$ the three-term model predicts there. At $2\times10^{-3}$ it reads $4.91B_g$, and even $\hat N$ is 7% high, because the walk has reached the first decade. A number read off the minimum of an Allan curve is a bias instability only if the curve is flat around it.
+
+**Part 4 — the drift laws.** The listing prints $0.583$ against $0.577\,\mathrm{mm}$ (accelerometer) and $0.221$ against $0.219\,\mathrm{mm}$ (gyro through gravity) at 1 s, and $18.756$ against $18.257$ and $68.148$ against $69.367\,\mathrm{mm}$ at 10 s. Two thousand runs estimate a standard deviation to about $\pm1.6\%$, and every gap is within two of those.
+
+### 8. Where the numbers go in a Kalman filter
+
+[[04-robotics/state-estimation-slam|3. State Estimation §5]] builds the Kalman filter from a $Q$ and an $R$, and says the gain follows from them. This page is where those two numbers come from for P6's sensors. The rule is §1's: noise that corrupts a measurement goes into $R$, noise that corrupts the prediction goes into $Q$, and a bias becomes a state.
+
+**Position sensors give $R$ directly.** Per sample, the encoder gives $R_e = \Delta^2/12 = 1.99\times10^{-8}\,\mathrm m^2$, valid while the cart moves. The camera gives $R_c = (Z_c\sigma_u/f_x)^2 = 6.94\times10^{-7}\,\mathrm m^2$, once distortion is corrected and the latency modelled. The range sensor gives $R_r = 10^{-4}\,\mathrm m^2$, with $b_r$ calibrated or carried as a state.
+
+**The IMU drives the prediction, so its noise is $Q$.** A common IMU-driven design uses the accelerometer as the input of the motion model and carries its bias as a third state:
+
+$$p_{k+1} = p_k + v_k\Delta t,\qquad v_{k+1} = v_k + (z_{a,k} - b_{a,k})\Delta t,\qquad b_{a,k+1} = b_{a,k} + K_a\sqrt{\Delta t}\,w_k$$
+
+so every sample's white noise $n_a$ enters $v$ multiplied by $\Delta t$, and the velocity variance added per step is
+
+$$Q_v = \sigma_a^2\Delta t^2 = N_a^2\,\Delta t = (10^{-3})^2 \times 0.005 = 5\times10^{-9}\ \mathrm{(m/s)^2}$$
+
+because $\sigma_a^2 = N_a^2 f$ and $f\Delta t = 1$. The bias state's entry is $Q_b = K_a^2\Delta t = 2\times10^{-12}\,(\mathrm{m/s^2})^2$. Both are proportional to $\Delta t$, not $\Delta t^2$, so after one second the filter has added $N_a^2 = 10^{-6}\,(\mathrm m/\mathrm s)^2$ of velocity variance whatever the IMU rate. That is §2's rate independence again, now inside the filter. Bias instability has no exact finite-state model; filters commonly fold it into a slightly inflated $K$, or model the bias as a first-order Gauss–Markov state instead of a pure random walk.
+
+**A check against 3. State Estimation.** That page's running object uses $Q = 1\,\mathrm{cm}^2$ per $20\,\mathrm{ms}$ step. The IMU's white noise alone would contribute $\big(N_a(0.02)^{3/2}/\sqrt3\big)^2 = 2.7\times10^{-12}\,\mathrm m^2 = 2.7\times10^{-8}\,\mathrm{cm}^2$ per step, about $4\times10^7$ times less. So that $Q$ is not sensor noise at all; it is slip and unmodelled motion, as that page says. When a paper's tuned $Q$ sits orders of magnitude above what its sensors' densities imply, the difference is model error, and it deserves a sentence rather than a silent inflation.
+
+### After reading
+
+You should be able to:
+
+- write $z = h(x) + b + n$ for an encoder, an accelerometer, a gyro, a range sensor and a camera, and say which term goes to $R$, which to $Q$ and which into the state;
+- turn a noise density into a per-sample σ at any rate, and explain why the rate does not change the drift;
+- give the growth exponent of each IMU error term after one, two or three integrals, including a gyro error that reaches position through gravity;
+- say when quantization may be modelled as $\Delta^2/12$ white noise and when it is a bias;
+- read $N$, $B$ and $K$ off an Allan deviation plot, and tell a flat bottom from a crossing;
+- check a paper's IMU parameters and tuned $Q$ against the drift it reports.
+
+### Self-check
+
+1. A gyro datasheet gives $0.007\,°/\mathrm s/\sqrt{\mathrm{Hz}}$. What per-sample σ do you expect at 100 Hz and at 1 kHz, and what angle error after 10 minutes of integration at each rate?
+2. Why does P6's gyro bias move the cart's dead-reckoned position more than its accelerometer bias after 10 s, although $B_g$ is a tiny angular rate? From what horizon on?
+3. The cart stands still for 2 s and the filter fuses all 400 encoder readings with $R = \Delta^2/12$. What standard deviation does the filter report, and what is the true error?
+4. A visual–inertial filter carries the accelerometer bias as a random-walk state, and someone sets its $Q$ to zero "because the bias is constant". What happens over a long run?
+5. An Allan plot has its minimum at the right-hand end of the plotted range. What can you read from it, and what can you not?
+
+> [!tip]- Answers
+> 1. $\sigma = N\sqrt f$: $0.007\sqrt{100} = 0.070\,°/\mathrm s$ at 100 Hz and $0.007\sqrt{1000} = 0.221\,°/\mathrm s$ at 1 kHz. The angle error after 600 s is $N\sqrt t = 0.007\sqrt{600} = 0.171°$ at both rates, because the integral sees the density, not the per-sample σ.
+> 2. The gyro bias is integrated once into a tilt, gravity turns the tilt into a false acceleration $g\,\delta\theta$, and that is integrated twice more. So it grows as $gB_gt^3/6$ against the accelerometer bias's $B_at^2/2$: $245$ against $25\,\mathrm{mm}$ at 10 s. The two are equal at $t = 3B_a/(gB_g) = 1.02\,\mathrm s$, and the gyro wins beyond it.
+> 3. With no process noise and a broad prior, fusing 400 readings of variance $R$ leaves $R/400$, a standard deviation of $0.141/20 = 0.0070\,\mathrm{mm}$. The true error is the fixed quantization offset, anywhere within one count ($0.488\,\mathrm{mm}$), and it has not shrunk at all. At rest the encoder violates §4's third condition, so its $R$ is a bias disguised as noise.
+> 4. The bias state's variance shrinks toward zero, its gain goes to zero with it, and the filter stops updating the bias. The real bias keeps wandering at the rate $K$ sets, so the estimate falls behind while the filter reports ever more confidence: an inconsistent filter, which the NEES of [[04-robotics/state-estimation-slam|3. State Estimation §2]] would expose. Set $Q_b = K^2\Delta t$ from the Allan plot, as in §8.
+> 5. You can read $N$, if the $-\tfrac12$ line is visible at short $\tau$. You cannot read $B$: the curve never flattened, so its minimum is only where the record ended. Since every term only adds to $\sigma_A$, the minimum divided by $0.664$ is an upper bound on $B$, not $B$ itself. Only a longer record fixes it, which is the problem set's point.
+
+### Problem set · 과제
+
+Tier A. Using only this page, its prerequisites, and plant **P6** from [[02-foundations/lab-plants|0.6]]. Two knobs change and everything else stays at the running object's values. The gyro is upgraded to $N_g' = 5.0\times10^{-5}\,\mathrm{(rad/s)/\sqrt{Hz}}$, $B_g' = 1.5\times10^{-5}\,\mathrm{rad/s}$ and $K_g' = 2.0\times10^{-7}\,\mathrm{(rad/s)/\sqrt s}$, illustrative values for a better MEMS gyro. The encoder is $4096$ counts/m. The Worked case asked what the IMU does; this set asks what a better gyro buys, and what it costs to measure one.
+
+1. **Draw.** The homework diagram's two panels for the variant. Left: the upgraded gyro's Allan deviation, with its three asymptotes, $\tau_1$, $\tau_2$, and ticks at the last trustworthy cluster time ($T/20$) of a 5-minute, a 30-minute and a 2-hour record. Right: position error against horizon for the upgraded IMU, with the new encoder's σ as the flat line.
+2. **Derive.** (a) $\Delta$, $\sigma_q$ and the floor bias at 4096 counts/m. (b) The upgraded gyro's per-sample σ at 200 Hz and at 1 kHz, and its angle random walk after one hour, in degrees. (c) The six position-drift terms at $t = 10\,\mathrm s$ (the accelerometer is unchanged), their quadrature sum, the dominant term, and the factor gained over the Worked case's $257\,\mathrm{mm}$. (d) The floor, $\tau_1$ and $\tau_2$ of the upgraded gyro, and the shortest record whose $T/20$ reaches $10\tau_1$.
+3. **Do.** Fill the `?` blanks, which are lines from §7's listing. Run the record-length sweep, $T \in \{300, 1800, 7200\}\,\mathrm s$ with ten seeds each, and report $\hat N/N_g'$, $\hat B/B_g'$, and where the lowest point sits relative to the last cluster time. Which record lengths let you read $B$, and how does the plot itself tell you?
+
+```python
+# Upgraded gyro, record-length sweep. Fill the ? blanks from section 7's listing.
+import numpy as np
+
+def imu_axis(N, B, K, f, T, rng):
+    n = int(round(T * f))
+    white = N * ? * rng.standard_normal(n)                  # section 2: sigma from N
+    walk = np.cumsum(? * rng.standard_normal(n))            # section 3: one step of the walk
+    X = np.fft.rfft(rng.standard_normal(n))
+    fr = np.fft.rfftfreq(n, 1.0 / f)
+    X[0] = 0.0
+    X[1:] *= np.sqrt(f * B**2 / (2 * np.pi * fr[1:]))
+    return white + np.fft.irfft(X, n) + walk
+
+def allan(y, f, taus):
+    theta = np.concatenate(([0.0], np.cumsum(y))) / f
+    out = []
+    for tau in taus:
+        m = int(round(tau * f))
+        d = theta[2*m:] - 2*theta[m:-m] + theta[:-2*m]
+        out.append(np.sqrt(np.mean(d**2) / ?))              # section 6: half the mean square
+    return np.array(out)
+
+def read_back(y, f):
+    T = len(y) / f
+    taus = np.unique(np.round(np.logspace(0, np.log10(T * f / 20), 60))) / f
+    sig = allan(y, f, taus)
+    first = taus <= 10.0 / f
+    N_hat = np.exp(np.mean(np.log(sig[first] * np.sqrt(taus[first]))))
+    return N_hat, sig.min() / ?, taus[sig.argmin()], taus[-1]   # section 6: floor to B
+
+N, B, K = 5.0e-5, 1.5e-5, 2.0e-7                     # the upgraded gyro
+for T in (300.0, 1800.0, 7200.0):
+    r = np.array([read_back(imu_axis(N, B, K, 200.0, T, np.random.default_rng(s)), 200.0)
+                  for s in range(10)])
+    print("T=%5.0f s | N_hat/N %.3f | B_hat/B %.2f+-%.2f | lowest point %.0f s of last %.0f s"
+          % (T, r[:, 0].mean() / N, r[:, 1].mean() / B, r[:, 1].std() / B,
+             np.median(r[:, 2]), r[0, 3]))
+```
+
+> [!tip]- Solutions
+> 1. Left: the $-\tfrac12$ line through $(1\,\mathrm s,\ 5.0\times10^{-5})$; the floor at $9.96\times10^{-6}$, reached at $\tau_1 = 25\,\mathrm s$; the $+\tfrac12$ line through $(3\,\mathrm s,\ 2.0\times10^{-7})$, meeting the floor at $\tau_2 = 7400\,\mathrm s$. That is the same $\tau_2$ as P6's gyro, because $B/K$ did not change. The 5-minute tick at $15\,\mathrm s$ sits left of $\tau_1$, still on the sloped line; the 30-minute tick at $90\,\mathrm s$ is past $\tau_1$ but still on the rounded corner; the 2-hour tick at $360\,\mathrm s$ is on the shelf. Right: the encoder line at $0.0705\,\mathrm{mm}$; the gyro-through-gravity lines drop to $0.110\,\mathrm{mm}\cdot t^{5/2}$ (white) and $0.0245\,\mathrm{mm}\cdot t^3$ (bias). The accelerometer's two lines now carry the budget until the gyro white-noise line overtakes them near $5.2\,\mathrm s$, and the IMU total crosses the encoder line at $0.24\,\mathrm s$.
+> 2. (a) $\Delta = 1/4096\,\mathrm m = 0.244\,\mathrm{mm}$, $\sigma_q = 0.244/\sqrt{12} = 0.0705\,\mathrm{mm}$, floor bias $-0.122\,\mathrm{mm}$. (b) $5.0\times10^{-5}\sqrt{200} = 7.07\times10^{-4}\,\mathrm{rad/s}$ and $5.0\times10^{-5}\sqrt{1000} = 1.58\times10^{-3}\,\mathrm{rad/s}$; after one hour $N\sqrt{3600} = 3.0\times10^{-3}\,\mathrm{rad} = 0.172°$ at either rate. (c) Accelerometer rows unchanged: $18.3$, $25.0$, $1.41\,\mathrm{mm}$. Gyro through gravity: white $9.81\cdot5\times10^{-5}\cdot10^{5/2}/\sqrt{20} = 34.7\,\mathrm{mm}$, bias $9.81\cdot1.5\times10^{-5}\cdot10^3/6 = 24.5\,\mathrm{mm}$, walk $0.39\,\mathrm{mm}$. Quadrature sum $52.6\,\mathrm{mm}$, a factor of $4.9$ better than $257\,\mathrm{mm}$. The gyro's white noise now dominates, with the accelerometer bias and the gyro bias close behind, so the budget is shared and the next upgrade is no longer obvious. (d) Floor $0.664\times1.5\times10^{-5} = 9.96\times10^{-6}\,\mathrm{rad/s}$; $\tau_1 = (5\times10^{-5}/9.96\times10^{-6})^2 = 25.2\,\mathrm s$; $\tau_2 = 3(9.96\times10^{-6}/2\times10^{-7})^2 = 7400\,\mathrm s$. $T/20 = 10\tau_1$ needs $T = 200\tau_1 = 5036\,\mathrm s$, about 84 minutes.
+> 3. Blanks: `np.sqrt(f)`, `K * np.sqrt(1.0 / f)`, `(2 * (m / f)**2)` and `0.664`. The sweep prints:
+>
+> | $T$ | $\hat N/N_g'$ | $\hat B/B_g'$ | lowest point, of last cluster time |
+> |---:|---:|---:|---:|
+> | $300\,\mathrm s$ | $0.997$ | $1.51\pm0.20$ | $15$ of $15\,\mathrm s$ |
+> | $1800\,\mathrm s$ | $1.000$ | $1.03\pm0.11$ | $90$ of $90\,\mathrm s$ |
+> | $7200\,\mathrm s$ | $1.000$ | $1.02\pm0.10$ | $282$ of $360\,\mathrm s$ |
+>
+> $N$ reads correctly from every record, because the $-\tfrac12$ line is there in the first second. $B$ does not. Five minutes read $1.51B$, and the lowest point sits on the last cluster time: the curve was still falling when the record ran out, exactly the (d) prediction ($15\,\mathrm s < \tau_1$). The model puts the curve there at $1.64$ times the floor, so the reading is an upper bound (Self-check 5), not a value. Thirty minutes still has its lowest point on the edge; the model says the curve is 14% above the floor at $90\,\mathrm s$, and the $1.03$ is partly the scatter. Only the two-hour record has its lowest point *inside* the range, at $282$ of $360\,\mathrm s$, and that is the plot's own signature of a floor that was actually seen. A better gyro costs longer tests: $\tau_1$ scales as $(N/B)^2$, and this gyro's is 25 times P6's.
+
+### Sources
+
+- D. W. Allan, "Statistics of atomic frequency standards," *Proceedings of the IEEE* 54(2):221–230, 1966 — [doi:10.1109/PROC.1966.4634](https://doi.org/10.1109/PROC.1966.4634)
+- *IEEE Standard Specification Format Guide and Test Procedure for Single-Axis Interferometric Fiber Optic Gyros*, IEEE Std 952-1997; its Allan-variance annex tabulates the noise terms and slopes of §6 — [doi:10.1109/IEEESTD.1998.86153](https://doi.org/10.1109/IEEESTD.1998.86153)
+- N. El-Sheimy, H. Hou, and X. Niu, "Analysis and modeling of inertial sensors using Allan variance," *IEEE Transactions on Instrumentation and Measurement* 57(1):140–149, 2008 — [doi:10.1109/TIM.2007.908635](https://doi.org/10.1109/TIM.2007.908635)
+- O. J. Woodman, "An introduction to inertial navigation," Technical Report UCAM-CL-TR-696, University of Cambridge Computer Laboratory, 2007 — [doi:10.48456/tr-696](https://doi.org/10.48456/tr-696); the 150 m after 60 s and the gyro-orientation cause are stated in its abstract
+- B. Widrow and I. Kollár, *Quantization Noise: Roundoff Error in Digital Computation, Signal Processing, Control, and Communications*, Cambridge University Press, 2008 — [doi:10.1017/CBO9780511754661](https://doi.org/10.1017/CBO9780511754661)
+- S. Thrun, W. Burgard, and D. Fox, [*Probabilistic Robotics*](https://mitpress.mit.edu/9780262201629/probabilistic-robotics/), MIT Press, 2005 — ch. 6, the beam model of range finders
+
+## 한국어
+
+*3. 확률, 6. 신호처리, 3. 상태 추정 위에 선다. 대상은 다시 장치 **P6** — ROS 2, 10. 로봇 시스템, MR 13장이 이미 굴린 카트다. 여기서는 그 페이지들과 3. 상태 추정의 필터들이 주어진 것으로 받아 쓰는 센서 잡음 모델을 싣는다.*
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상 표와 대상으로 한 번 끝까지를 읽고, §2(밀도가 샘플당 σ가 되는 법)와 §3(적분이 각 오차 항에 하는 일)을 읽은 뒤 §7의 코드를 돌려라. §4–§6은 엔코더의 $R$, 거리 센서의 이상치, 논문의 앨런 그림을 읽어야 할 때 펴는 절이고, §8은 이 페이지의 모든 숫자가 칼만 필터의 어디로 들어가는지를 보여 준다.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**: 직선 위의 카트, 위치 $p$(미터), 미터당 $2048$ 카운트 엔코더, $50\,\mathrm{Hz}$ 비전 노드, $200\,\mathrm{Hz}$ 제어기. 카탈로그에는 잡음 모델이 없다. 이 페이지가 잡음 모델을 더하고, 이 페이지 안에서만 쓰도록 여기서 고정한다. 제어기와 함께 샘플링되는 단축 IMU, 패널을 향한 거리 센서, 비전 노드 뒤의 카메라다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| $\Delta$ | $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ | 엔코더 한 카운트(**P6**) |
+| $f$, $\Delta t$ | $200\,\mathrm{Hz}$, $5\,\mathrm{ms}$ | 제어 주기(**P6**). 엔코더와 IMU를 여기서 샘플링한다 |
+| $f_v$ | $50\,\mathrm{Hz}$ | 비전 주기(**P6**). 카메라와 거리 센서가 여기서 보고한다 |
+| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | 가속도계 백색 잡음 밀도($102\,\mathrm{\mu g/\sqrt{Hz}}$) |
+| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | 가속도계 바이어스 불안정성($51\,\mathrm{\mu g}$) |
+| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | 가속도계 바이어스 랜덤 워크 |
+| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | 자이로 백색 잡음 밀도($0.344\,°/\sqrt{\mathrm h}$) |
+| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | 자이로 바이어스 불안정성($30.9\,°/\mathrm h$) |
+| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | 자이로 바이어스 랜덤 워크 |
+| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | 거리 센서 잡음(P5의 $R = 1\,\mathrm{cm}^2$)과 장착 오프셋 |
+| $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | 카메라 초점거리, 레일까지의 거리, 마커 검출의 픽셀 잡음 |
+| $g$ | $9.81\,\mathrm{m/s^2}$ | 중력. 값은 **P2** 그대로 |
+
+가속도계 축은 레일 방향이다. 자이로 축은 수평이고 레일을 가로지르므로 카트의 피치 각속도를 잰다. P6의 레일은 수평이라 실제 피치와 피치 각속도는 둘 다 0이다. 그래도 §3의 추측 항법 루프는 가속도계의 기울기를 알려고 자이로를 적분한다. 스트랩다운 루프는 플랫폼이 수평을 유지한다고 가정할 수 없기 때문이다. 그러니 그 적분이 내놓는 모든 라디안은 오차이고, 중력이 그것을 가짜 가속도로 바꾼다.
+
+**IMU 값은 예시값이다.** $N$과 $B$는 MEMS 관성 부품에서 볼 수 있는 크기이지만 어떤 제품의 데이터시트도 아니다. 자이로의 $B$ 대 $N$ 비율이 평평한 앨런 바닥을 $1\,\mathrm{s}$ 근처에 두므로, 몇 분짜리 시뮬레이션 데이터에서 바닥이 보인다. 백색 잡음에 비해 바닥이 낮은 자이로는 바닥에 더 늦게 닿는다. 바닥이 $\tau_1 = (N/0.664B)^2$에서 시작하기 때문이다(§6). 과제의 개선된 자이로는 $25\,\mathrm{s}$에 닿고, 실제 센서의 앨런 시험을 보통 몇 시간씩 기록하는 이유가 이것이다. $K$는 바닥이 살아남을 만큼 작게 잡았고, §7의 스윕이 그것을 키운다. 카메라는 3.5 리그의 초점거리를 빌린다. 거리 센서는 P5의 잡음을 가지므로 3. 상태 추정의 $R = 1\,\mathrm{cm}^2$이 그대로 적용된다. 오프셋은 이 페이지가 더한 것이다.
+
+*범위: 이 페이지는 한 카트 위 센서 다섯의 잡음·바이어스 모델, 잡음 밀도가 샘플당 σ가 되는 법, 추측 항법이 각 오차 항에 하는 일, 양자화가 잡음인 조건, 앨런 편차가 항들을 가르는 법을 가르친다. 이 숫자들을 쓰는 필터([[04-robotics/state-estimation-slam|3. 상태 추정]]), 픽셀 뒤의 카메라 기하와 센서 사이의 외부 보정([[04-robotics/geometric-perception-calibration|3.5 §5]]), 그리고 회전 대수가 [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]에 있는 SE(3) 위의 다축 관성 항법은 가르치지 않는다.*
+
+### 과제가 그릴 그림 · Homework diagram
+
+로그–로그 패널 둘을 나란히 그린다. 과제는 다른 자이로와 엔코더로 같은 한 쌍을 요구한다.
+
+**왼쪽 — 자이로의 앨런 편차.** 가로축에 클러스터 시간 $\tau$를 $5\,\mathrm{ms}$부터 $10^4\,\mathrm{s}$까지, 세로축에 $\sigma_A$(rad/s)를 둔다. 둘 다 로그 눈금이고 한 decade를 같은 길이로 그린다. 점근선 셋을 곧은 선으로 그린다. 백색 잡음은 $(1\,\mathrm s,\ 1.0\times10^{-4})$을 지나는 기울기 $-\tfrac12$ 직선이고, $(5\,\mathrm{ms},\ 1.41\times10^{-3})$도 지난다. 바이어스 불안정성은 $0.664B_g = 9.96\times10^{-5}$의 수평선이다. 바이어스 랜덤 워크는 $(3\,\mathrm s,\ 2.0\times10^{-6})$을 지나는 기울기 $+\tfrac12$ 직선이다. 첫째가 바닥과 만나는 $\tau_1 = 1.0\,\mathrm s$, 바닥이 셋째와 만나는 $\tau_2 = 7400\,\mathrm s$를 표시한다. 곡선 자체는 세 항의 제곱합의 제곱근으로, 두 모서리를 둥글게 그린다. $15\,\mathrm s$에 *5분 기록에서 믿을 수 있는 마지막 클러스터 시간*이라는 세로 눈금을 넣는다. 그리고 읽기 표시 셋을 올린다. 백색 잡음 *직선*이 $\tau = 1\,\mathrm s$를 지나는 곳이 $N_g$, 바닥을 $0.664$로 나눈 것이 $B_g$, 랜덤 워크 *직선*이 $\tau = 3\,\mathrm s$를 지나는 곳이 $K_g$다.
+
+**오른쪽 — 지평에 따른 위치 오차.** 가로축에 마지막 완벽한 위치 고정 이후의 시간 $t$를 $10\,\mathrm{ms}$부터 $10\,\mathrm s$까지, 세로축에 위치 오차를 $1\,\mathrm{\mu m}$부터 $1\,\mathrm m$까지 둔다. 둘 다 로그 눈금이다. 오차가 자라지 않는 센서 셋은 수평선이다. 엔코더 $0.141\,\mathrm{mm}$, 카메라 $0.833\,\mathrm{mm}$, 거리 센서 $10\,\mathrm{mm}$. 중요한 IMU 항 넷은 올라가는 직선이고, 각각에 기울기를 적는다($t$는 초). 가속도계 백색 잡음 $0.577\,\mathrm{mm}\cdot t^{3/2}$, 가속도계 바이어스 $0.250\,\mathrm{mm}\cdot t^2$, 중력을 거친 자이로 백색 잡음 $0.219\,\mathrm{mm}\cdot t^{5/2}$, 중력을 거친 자이로 바이어스 $0.245\,\mathrm{mm}\cdot t^3$. 랜덤 워크 두 항은 뺀다. 이 축 위에서 전체 분산의 $0.02\%$를 넘지 않는다. IMU 합계를 제곱합의 제곱근으로 그리고 교차점 셋을 표시한다. 엔코더와 $0.38\,\mathrm s$, 카메라와 $1.09\,\mathrm s$, 거리 센서와 $3.21\,\mathrm s$. 비전 한 프레임인 $20\,\mathrm{ms}$에 $1.6\,\mathrm{\mu m}$의 점을 찍는다.
+
+그림이 맞혀야 할 것이 넷이고, 각각이 물리에 대한 주장이다.
+**$N$은 곡선이 아니라 직선에서 읽는다.** $\tau = 1\,\mathrm s$에서 곡선은 $1.41\times10^{-4}$로 $N_g$보다 41% 높다. 바닥이 이미 와 있기 때문이다. 곡선에서 읽은 값은 다른 숫자이고 틀린 숫자다.
+**$B$는 점이 아니라 선에서 온다.** 바닥은 수평 점근선이고, 곡선의 최솟값은 곡선이 우연히 가장 낮은 곳일 뿐이다. §7이 둘이 갈라지는 경우를 보여 준다.
+**엔코더의 선은 평평하다.** 위치 센서의 오차는 쌓이지 않는다. 그 한계는 지평이 아니라 카운트가 정한다.
+**오른쪽의 기울기는 앨런 기울기에 적분 횟수를 더한 것이다.** 가속도계 백색 잡음은 $-\tfrac12 + 2 = \tfrac32$, 바이어스는 $0 + 2 = 2$다. 자이로 항은 적분이 하나씩 더 많다. 자이로가 기울기로 한 번 적분된 뒤에야 중력이 들어오기 때문이다(§3, §6).
+
+### 대상으로 한 번 끝까지 · Worked case
+
+숫자가 붙은 과제 대상이다. 과제는 자이로와 엔코더를 바꾸므로, 사슬 전체를 여기서 먼저 한다.
+
+**1. 엔코더의 카운트를 잡음으로.** 한 카운트는 $\Delta = 1/2048\,\mathrm m = 0.488\,\mathrm{mm}$다. 카트가 샘플 사이에 여러 카운트를 가로지르는 동안 오차는 한 카운트 위에서 균일하다(§4). 그러므로
+
+$$\sigma_q = \frac{\Delta}{\sqrt{12}} = \frac{0.488\,\mathrm{mm}}{3.464} = 0.141\ \mathrm{mm},\qquad R_e = \sigma_q^2 = 1.99\times10^{-8}\ \mathrm{m^2}$$
+
+폭 $\Delta$ 구간 위 높이 $1/\Delta$의 균일 밀도는 분산이 $\Delta^2/12$이기 때문이다. 카운터는 $p/\Delta$의 바닥 함수를 보고하므로 오차의 평균도 $-\Delta/2 = -0.244\,\mathrm{mm}$다. 그 반 카운트는 바이어스이고, 축을 원점 복귀시키면 사라진다. 3. 상태 추정의 대상 절이 $1.99\times10^{-4}\,\mathrm{cm}^2$으로 인용하는 숫자가 이것이다.
+
+**2. IMU의 밀도를 200 Hz의 샘플당 σ로.** §2에 따라 $\sigma = N\sqrt f$다.
+
+$$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g = 1.0\times10^{-4}\sqrt{200} = 1.41\times10^{-3}\ \mathrm{rad/s}$$
+
+샘플 하나가 백색 잡음을 $5\,\mathrm{ms}$ 동안만 평균하기 때문이다. 가속도계 샘플 하나는 가속도계 바이어스 불안정성보다 28배 시끄럽다. 그런데도 3단계에서 10 s에는 바이어스가 잡음을 이긴다.
+
+**3. 1 s와 10 s의 추측 항법.** 위치와 속도를 완벽히 아는 상태에서, 전원 투입 바이어스를 보정으로 지운 뒤, IMU만 적분한다. 흔한 어림셈은 운용 중 바이어스를 지평 동안 크기 $B$의 상수로 둔다. 각 증가 법칙은 §3이 유도하고, 여기서는 값만 적는다.
+
+| 오차 항 | 증가 | $t = 1\,\mathrm s$ | $t = 10\,\mathrm s$ |
+|---|---|---:|---:|
+| 가속도계 백색 잡음 | $N_a t^{3/2}/\sqrt3$ | $0.577\,\mathrm{mm}$ | $18.3\,\mathrm{mm}$ |
+| 가속도계 바이어스 | $B_a t^2/2$ | $0.250\,\mathrm{mm}$ | $25.0\,\mathrm{mm}$ |
+| 가속도계 바이어스 랜덤 워크 | $K_a t^{5/2}/\sqrt{20}$ | $0.004\,\mathrm{mm}$ | $1.41\,\mathrm{mm}$ |
+| 자이로 백색 잡음, 중력을 거쳐 | $gN_g t^{5/2}/\sqrt{20}$ | $0.219\,\mathrm{mm}$ | $69.4\,\mathrm{mm}$ |
+| 자이로 바이어스, 중력을 거쳐 | $gB_g t^3/6$ | $0.245\,\mathrm{mm}$ | $245\,\mathrm{mm}$ |
+| 자이로 바이어스 랜덤 워크, 중력을 거쳐 | $gK_g t^{7/2}/\sqrt{252}$ | $0.001\,\mathrm{mm}$ | $3.91\,\mathrm{mm}$ |
+| **여섯 항의 제곱합의 제곱근** | | $0.710\,\mathrm{mm}$ | $257\,\mathrm{mm}$ |
+
+제곱 합산은 각 바이어스 행을 부호를 모르는 1σ 값으로 다룬다. 백색 잡음과 바이어스가 만드는 자이로 자신의 각도 오차는 1 s에서 $N_g\sqrt t = 1.0\times10^{-4}$과 $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$, 10 s에서 $3.2\times10^{-4}$과 $1.5\times10^{-3}\,\mathrm{rad}$이다. 가장 커도 $0.086°$인 작은 각도다. 그러나 $g$를 곱하면 마지막 것은 $0.0147\,\mathrm{m/s^2}$의 가짜 가속도로, $B_a$의 29배다.
+
+**4. 지평마다 어느 센서가 지배하는가.** IMU 안에서는 1 s에 가속도계 백색 잡음이 지배한다. $0.710\,\mathrm{mm}$ 중 $0.577$이다. 10 s에는 중력을 거친 자이로 바이어스가 $257\,\mathrm{mm}$ 중 $245$로 지배한다. 가속도계 바이어스가 두 번 적분되는 동안 그것은 세 번 적분되기 때문이다. 두 바이어스 행은 $gB_gt^3/6 = B_at^2/2$, 곧 $t = 3B_a/(gB_g) = 1.02\,\mathrm s$에서 같다. 카트 전체로 보면, 자라는 IMU 오차를 자라지 않는 센서 셋과 맞세운다. IMU 합계는 $0.38\,\mathrm s$에 엔코더의 $0.141\,\mathrm{mm}$를, $1.09\,\mathrm s$에 카메라의 $0.833\,\mathrm{mm}$를, $3.21\,\mathrm s$에 거리 센서의 $10\,\mathrm{mm}$를 넘는다. 비전 한 프레임($20\,\mathrm{ms}$) 동안의 표류는 $1.6\,\mathrm{\mu m}$로, 엔코더 σ 하나보다 86배 작다.
+
+그러니 P6에서 IMU는 3분의 1초가 지나면 위치로 엔코더를 이기지 못하고, 카트에 실린 이유도 위치가 아니다. 엔코더가 보지 못하는 것 때문이다. 엔코더가 바퀴를 읽는다면, MR 13장판 P6처럼, 그것은 미끄럼이다. 엔코더가 아예 없는 플랫폼에서는 카메라 프레임 사이의 몇 밀리초다. [[04-robotics/state-estimation-slam|3. 상태 추정 §7]]의 문장, IMU는 밀리초 단위에서 정확하고 분 단위에서 쓸모없다는 말을 숫자로 쓴 것이 이것이다.
+
+**5. 필터에 들어가는 것.** 숫자 셋이 측정 분산 $R$이 된다. 엔코더 $1.99\times10^{-8}\,\mathrm m^2$, 카메라 $(Z_c\sigma_u/f_x)^2 = (0.833\,\mathrm{mm})^2 = 6.94\times10^{-7}\,\mathrm m^2$, 거리 센서 $10^{-4}\,\mathrm m^2$. IMU는 다르게, 과정 잡음 $Q$로 들어간다. $5\,\mathrm{ms}$ 스텝마다 속도 분산을 $N_a^2\Delta t = 5\times10^{-9}\,(\mathrm m/\mathrm s)^2$씩 더하고, 바이어스는 상태가 된다. §8이 이것을 짠다.
+
+### 1. 측정 모델: 완벽한 센서가 말할 값, 센서가 더하는 것, 평균으로 사라지는 것
+
+[[04-robotics/state-estimation-slam|3. 상태 추정 §3]]은 모든 센서를 $z_t = h(x_t) + v_t$로 쓰고, $v_t$는 영평균이고 백색이다. 실제 센서는 백색이 아닌 둘째 항, 바이어스를 더한다. 작고 느리고 오랫동안 한 부호를 유지하므로 평균으로 사라지지 않는다. $v$를 둘로 나누는 것이 어느 센서에서든 첫 모델링 결정이고, 그 결정이 각 부분이 필터의 어디로 갈지를 정한다.
+
+> **센서 측정 모델의 정의.** **센서 측정 모델**(sensor measurement model)은 *샘플 하나의 생성 모델*이다. 샘플의 타임스탬프 시점의 참 상태가 주어졌을 때 센서가 어떤 난수를 돌려주는지를 말하는 규칙이다. 필터도 아니고 보정 절차도 아니다. 정의 조건은 넷이고, 하나라도 빠진 모델은 쓸 수 없다. 첫째, 결정론적이고 알려진 **측정 함수** $h$. 완벽한 센서가 읽을 값이다. 둘째, 추정기가 관심 두는 지평 동안 평균이 0이 되지 않는 **바이어스** $b$. 상수이거나 천천히 변하므로 보정으로 없애거나 상태로 들고 간다. 셋째, 영평균이고 백색인, 곧 샘플마다 독립인 **잡음** $n$. 분포와 샘플당 표준편차를 명시한다. 넷째, **명시된 샘플링 속도**. 샘플당 σ는 그것을 잰 속도 없이는 아무 뜻이 없기 때문이다(§2).
+>
+> $$z_k = h(x_k) + b_k + n_k,\qquad E[n_k] = 0,\qquad E[n_k n_j] = \sigma^2\delta_{kj}$$
+>
+> $z_k$는 $k$번째 샘플, $x_k$는 그 타임스탬프의 상태, $b_k$는 그때의 바이어스, $n_k$는 잡음, $\sigma$는 그 샘플당 표준편차, $\delta_{kj}$는 크로네커 델타($k = j$면 1, 아니면 0)다. $b$와 $n$의 경계는 지평에 상대적으로 그어지므로, 그 지평 동안 평균으로 사라지지 않는 것은 모두 $b$에 속한다. $b$를 상태로 들고 가면 모델은 다시 3.의 형태가 된다. $h'(x, b) = h(x) + b$, $v = n$이다.
+>
+> - **예**: P6의 가속도계, $z = a + b_a + n_a$. 200 Hz에서 샘플당 $\sigma = 0.0141\,\mathrm{m/s^2}$이고 $b_a$는 $5\times10^{-4}\,\mathrm{m/s^2}$ 수준에서 떠돈다.
+> - **비예**: 카트가 서 있는 동안의 P6 엔코더를 $\sigma = 0.141\,\mathrm{mm}$인 $z = p + n$으로 쓰는 것. 정지 상태의 오차는 카트가 서 있는 내내 하나의 고정된 숫자이므로 바이어스다. 백색 σ라면 200개를 평균할 때 $\sqrt{200}$으로 나뉘어 $0.010\,\mathrm{mm}$가 되겠지만, 여기서는 오차가 정확히 제자리에 있다.
+> - **왜 중요한가**: 각 항이 추정기의 다른 자리로 간다. 잡음 $n$은 $R$로, 센서가 예측을 구동하면 $Q$로 간다(§8). 바이어스 $b$는 자기 랜덤 워크 $Q$를 가진 상태로, 또는 보정으로 간다. 함수 $h$는 칼만 갱신의 $H$를 준다. 바이어스를 잡음으로 분류하는 것이 과신하는 필터를 만드는 가장 흔한 길이다.
+
+카트 위의 센서 다섯을 이 형태로:
+
+| 센서 | $h(x)$ | $b$ | $n$, 샘플당 | 주기 |
+|---|---|---|---|---:|
+| 엔코더 | $p$ | 바닥 함수에서 오는 $-\Delta/2$, 원점 복귀로 제거 | 균일, $\sigma_q = 0.141\,\mathrm{mm}$, *움직이는 동안만*(§4) | $200\,\mathrm{Hz}$ |
+| 가속도계 | $\ddot p + g\sin\theta$ | $b_a(t)$: 전원 투입 오프셋, 플리커($B_a$), 랜덤 워크($K_a$) | 백색, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
+| 자이로 | $\dot\theta$ | $b_g(t)$: 전원 투입 오프셋, 플리커($B_g$), 랜덤 워크($K_g$) | 백색, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
+| 거리 센서 | $x_w - p$ | $b_r = 4\,\mathrm{mm}$ 장착 오프셋 | 가우시안, $\sigma_r = 10\,\mathrm{mm}$, 그리고 이상치(§5) | $50\,\mathrm{Hz}$ |
+| 카메라 | $c_x + f_x(p - p_c)/Z_c$, px 단위 | 렌즈 왜곡; 틀린 $Z_c$나 $c_x$(§5) | $\sigma_u = 0.5\,\mathrm{px}$, 곧 $0.833\,\mathrm{mm}$ | $50\,\mathrm{Hz}$ |
+
+$\theta$는 가속도계 축의 피치(수평 레일에서 0), $x_w$는 레일 위 패널의 위치, $p_c$는 카메라 광축이 지나는 레일 위치, $c_x$는 주점이다.
+
+### 2. 잡음 밀도: 샘플링 속도를 바꿔도 남는 숫자
+
+IMU 데이터시트는 샘플당 σ를 주지 않는다. 그 값은 IMU를 읽는 속도에 달려 있기 때문이다. 대신 $\sqrt{\mathrm{Hz}}$당 단위로 밀도를 준다. 이 페이지의 모든 IMU 숫자가 밀도에서 샘플당 σ로 가는 이 한 걸음 위에 선다.
+
+> **백색 잡음 밀도의 정의.** 센서의 **백색 잡음 밀도** $N$은 *연속시간 백색 잡음의 파라미터*다. 단위는 센서 단위를 $\sqrt{\mathrm{Hz}}$로 나눈 것이고, 센서 단위에 $\sqrt{\mathrm s}$를 곱한 것과 같다. 표준편차가 아니고 붙어 있는 샘플링 속도도 없다. 정의 조건은 셋이다. 잡음은 **영평균**, 곧 평균이 0이다. 샘플이 덮는 대역에서 **백색**, 곧 스펙트럼이 평평하고 0이 아닌 모든 지연에서 상관이 없다. [[02-foundations/probability|3. 확률 §5]]의 $R_w(\tau) = \sigma^2\delta(\tau)$에서 $\sigma^2$ 자리에 $N^2$이 온 것인데, 연속시간에서 그 자리는 분산이 아니라 세기다. 그리고 **그 적분은 랜덤 워크** — 분산이 초당 $N^2$씩 자란다. 이 페이지의 나머지가 쓰는 조건이 이것이다.
+>
+> $$\operatorname{Var}\Big[\int_0^t n(s)\,ds\Big] = N^2 t$$
+>
+> $n$은 잡음, $t$는 적분 시간이다. 그러므로 $N\sqrt t$가 $t$초 뒤 누적 오차의 표준편차다.
+>
+> - **예**: 자이로, $N_g = 1.0\times10^{-4}\,\mathrm{(rad/s)/\sqrt{Hz}}$. 한 시간 뒤 적분은 $N_g\sqrt{3600} = 6.0\times10^{-3}\,\mathrm{rad} = 0.344°$만큼 퍼진다. 같은 숫자를 도 단위로 쓴 $0.344\,°/\sqrt{\mathrm h}$를 **각도 랜덤 워크**(angle random walk)라 부르는 이유다. 한 시간 적분한 뒤의 1σ 각도 오차다.
+> - **비예**: 데이터시트의 "rms 잡음" 줄. 그것은 데이터시트 자체 대역폭에서의 표준편차이고, 밀도로 되돌리기 전에는 다른 속도로 옮겨지지 않는다.
+> - **왜 중요한가**: $N$은 샘플링 속도가 바뀌어도 그대로인 숫자다. 앨런 편차의 $-\tfrac12$ 직선(§6)과 IMU가 구동하는 필터의 과정 잡음(§8)을 둘 다 정한다.
+
+**밀도에서 샘플당 σ로.** 잡음을 속도 $f$로 샘플링하고, 샘플이 표준편차 $\sigma$로 서로 독립이라고 하자. 그러면 $t$초 동안의 적분은 샘플 $tf$개를 각각 스텝 $1/f$로 가중한 합이므로 분산이 $tf\cdot\sigma^2/f^2 = t\sigma^2/f$다. 이것을 정의의 $N^2t$와 같게 놓으면
+
+$$\sigma = N\sqrt f$$
+
+빠른 샘플러는 같은 잡음을 더 짧은 구간에서 평균하고, $1/f$초 동안 평균한 백색 잡음의 표준편차가 $N/\sqrt{1/f}$이기 때문이다. $200\,\mathrm{Hz}$의 P6에서 이것이 계산 절의 $\sigma_a = 0.0141\,\mathrm{m/s^2}$과 $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$이다.
+
+두 가지 귀결을 적어 둘 만하다. 둘 다 흔히 틀린다.
+- **같은 부품을 더 빨리 읽으면 샘플마다는 더 시끄럽고, 중요한 곳에서는 나빠지지 않는다.** $800\,\mathrm{Hz}$에서 자이로 샘플의 $\sigma = 2.83\times10^{-3}\,\mathrm{rad/s}$로, $200\,\mathrm{Hz}$ 값의 두 배다. 그래도 10 s 뒤 각도 오차는 여전히 $N_g\sqrt{10} = 3.2\times10^{-4}\,\mathrm{rad}$이다. 적분이 보는 것은 σ가 아니라 $N$이기 때문이다. §7의 주기 스윕이 앨런 그림에서 같은 것을 보여 준다.
+- **이 식은 샘플이 독립이라고 가정한다.** 내부 저역통과 필터가 $f/2$보다 한참 아래에서 자르는 센서는 상관된 샘플을 돌려준다. 그 σ는 $N\sqrt f$보다 작고, $n$개를 평균해도 잡음이 $\sqrt n$으로 나뉘지 않는다. 그러니 로그에서 σ를 재고 백색이라 가정하지 말고, 밀도와 필터 대역폭을 데이터시트에서 가져오거나, 필터 시정수보다 한참 긴 클러스터 시간에서 앨런 편차의 $-\tfrac12$ 직선으로 $N$을 읽어라(§6).
+
+만나게 될 단위: 자이로 밀도는 $°/\mathrm s/\sqrt{\mathrm{Hz}}$나 $°/\sqrt{\mathrm h}$(앞의 것에 60을 곱하면 뒤의 것, $\sqrt{\mathrm h} = 60\sqrt{\mathrm s}$이므로), 가속도계 밀도는 $\mathrm{\mu g}/\sqrt{\mathrm{Hz}}$($1\,\mathrm{\mu g} = 9.81\times10^{-6}\,\mathrm{m/s^2}$), 바이어스 불안정성은 $°/\mathrm h$나 $\mathrm{\mu g}$다.
+
+### 3. 적분이 각 오차 항에 하는 일
+
+IMU로 하는 추측 항법은 센서만 다른 오도메트리다. 외부 기준 없이 측정된 운동을 적분해 만든 위치다. [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장 §2]]가 오도메트리를 표류하게 만드는 조건 셋을 적었고, 그 조건들이 여기에도 그대로 적용된다. 이 절은 *얼마나 빨리* 표류하는지를 계산한다. 백색 잡음을 한 번 적분하면 §2의 랜덤 워크다. 자이로의 각도에서는 각도 랜덤 워크, 가속도계의 속도에서는 그 쌍둥이인 **속도 랜덤 워크**(velocity random walk)다. 바이어스에는 항이 둘 더 있고, 각각 숫자 하나로 정해진다.
+
+> **바이어스 불안정성의 정의.** **바이어스 불안정성** $B$는 *센서 바이어스가 느리게, 플리커 형태로 떠도는 것의 파라미터*이고, 단위는 측정하는 각속도나 가속도의 단위다. 전원 투입 오프셋도 아니고 출력의 표준편차도 아니다. 정의 조건은 셋이다. 바이어스의 떠돎은 관심 있는 평균 시간의 대역에서 **플리커 스펙트럼**, 곧 낮은 주파수로 갈수록 $1/f$로 커지는 스펙트럼을 가진다. 그 스펙트럼이 앨런 편차에 만드는 것이 **기울기 0인 바닥**, 곧 평평한 구간이고, 이 바닥은 랜덤 워크가 올라오기 전에 백색 잡음이 그 아래로 내려가 있을 때만 존재한다(§6). 그리고 읽을 때는 **명시된 관례**, 곧 IEEE Std 952의 관례를 따른다. 거기서 $B$는 그 바닥을 $0.664$로 나눈 값이다.
+>
+> $$S_b(f) = \frac{B^2}{2\pi f}$$
+>
+> $S_b$는 바이어스 떠돎의 전력 스펙트럼 밀도, $f$는 주파수다. 그러므로 느리게 볼수록 바이어스의 전력이 크다. 평균 창을 늘려도 어느 순간부터 도움이 되지 않는 것은 $1/f$ 스펙트럼이 모든 옥타브에 같은 전력 $(B^2/2\pi)\ln2$를 담기 때문이다. 창을 두 배로 늘리면 옥타브 하나를 평균으로 지우는 대신 다음 옥타브 하나를 들인다. §6이 이것을 바닥 $0.664B$로 바꾼다.
+>
+> - **예**: P6의 자이로, $B_g = 1.5\times10^{-4}\,\mathrm{rad/s}$는 $\tau = 1\,\mathrm s$부터 $9.96\times10^{-5}\,\mathrm{rad/s}$의 바닥을 준다. §7의 5분 기록은 $B$를 $1.475\times10^{-4}$로, 2% 안에서 읽어 낸다.
+> - **비예**: 전원 투입 바이어스, 곧 전원을 켤 때마다 달라지는 오프셋. 데이터시트의 다른 줄이고, 시동 보정이 없앤다.
+> - **왜 중요한가**: 평균의 바닥이다. 어떤 평균 창도 바이어스를 약 $0.664B$보다 좁게 잡아내지 못한다. 그래서 몇 초짜리 표류 예산에서 남는 바이어스가 이것이고, 필터가 바이어스를 얼마나 자주 다시 추정해야 하는지도 이것이 정한다.
+
+> **바이어스 랜덤 워크의 정의.** **바이어스 랜덤 워크**(bias random walk)는 *바이어스 자체의 랜덤 과정*이고, 세기 $K$의 단위는 각속도나 가속도 단위를 $\sqrt{\mathrm s}$로 나눈 것이다. 자이로에서는 각속도 랜덤 워크(rate random walk)라고도 부른다. 정의 조건은 셋이다. 바이어스는 **서로 독립이고 평균이 0인 걸음**, 곧 랜덤 워크를 걷는다. 걸음마다의 분산은 **걸음이 걸친 시간에 비례**, 그래서 퍼짐이 한없이 $\sqrt t$로 자란다. 그리고 걷는 것은 측정량이 아니라 **바이어스 자체**, 곧 §1의 $b$다.
+>
+> $$b_{k+1} = b_k + K\sqrt{\Delta t}\,w_k,\qquad \operatorname{Var}[b(t) - b(0)] = K^2 t$$
+>
+> $w_k$는 표준정규 난수, $\Delta t$는 샘플 스텝이다. 시간 $t$ 뒤의 분산은 스텝 크기와 무관하게 $K^2t$다. 독립인 걸음의 분산은 더해지고, $K^2\Delta t$짜리 걸음이 $t/\Delta t$개이기 때문이다. [[02-foundations/probability|3. 확률 §5]]의 랜덤 워크에 물리적 척도가 붙은 것이다.
+>
+> - **예**: P6의 자이로, $K_g = 2.0\times10^{-6}$. 한 시간 뒤 랜덤 워크만으로 바이어스가 $K_g\sqrt{3600} = 1.2\times10^{-4}\,\mathrm{rad/s}$ 움직인다. 대략 $B_g$다. 한 시간 척도에서는 느린 두 항이 비슷하다.
+> - **비예**: 일정하게 데워지는 동안 온도를 따라가는 바이어스. 결정론적인 경사이고 열 모델로 없애며, 앨런 편차에서 기울기 $+\tfrac12$가 아니라 $+1$로 나타난다.
+> - **왜 중요한가**: 모든 시각–관성 필터에서 바이어스 상태의 과정 잡음이 이것이다(§8). 너무 작게 잡으면 필터가 바이어스 추적을 멈추고 과신하게 된다.
+
+**증가 법칙, 적분 하나씩.** 밀도 $N$인 백색 잡음 $n$을 한 번 적분하면 [[02-foundations/probability|3. 확률 §5]]의 랜덤 워크가 분산 $N^2t$를 준다. 0부터 $m$번 적분하면 결과는 가중합 $\int_0^t \frac{(t-s)^{m-1}}{(m-1)!}\,n(s)\,ds$이다. 백색 잡음은 매 순간 가중치의 제곱만큼 기여하므로
+
+$$\operatorname{Var} = N^2\int_0^t \frac{(t-s)^{2m-2}}{\big((m-1)!\big)^2}\,ds = \frac{N^2\,t^{2m-1}}{(2m-1)\big((m-1)!\big)^2}$$
+
+$u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이다. 적분 한 번부터 네 번까지의 분산은 $N^2t$, $N^2t^3/3$, $N^2t^5/20$, $N^2t^7/252$다. 상수 바이어스 $B$를 $m$번 적분하면 그냥 $Bt^m/m!$이다. 랜덤 워크 바이어스는 이미 한 번 적분된 백색 잡음이므로, 그것을 $m$번 적분하면 $N$ 자리에 $K$가 온 백색 잡음 $m+1$번 적분처럼 행동한다.
+
+가속도계는 위치까지 두 번 적분된다. 자이로는 기울기까지 한 번 적분된다. 중력이 기울기 오차 $\delta\theta$를 가짜 가속도 $g\sin\delta\theta \approx g\,\delta\theta$로 바꾸고, 적분 두 번이 그것을 위치로 옮긴다. 그래서 모든 자이로 항은 짝이 되는 가속도계 항보다 적분 하나만큼 앞서 도착한다.
+
+| 항 | 자이로의 각도에서(적분 1) | 가속도계에서 온 위치(2) | 중력을 거쳐 자이로에서 온 위치(3) |
+|---|---|---|---|
+| 백색 잡음 $N$ | $N\sqrt t$ | $N t^{3/2}/\sqrt3$ | $gN t^{5/2}/\sqrt{20}$ |
+| 바이어스 $B$, 상수로 둠 | $Bt$ | $Bt^2/2$ | $gBt^3/6$ |
+| 바이어스 랜덤 워크 $K$ | $Kt^{3/2}/\sqrt3$ | $Kt^{5/2}/\sqrt{20}$ | $gKt^{7/2}/\sqrt{252}$ |
+
+**지수로 읽어라.** 각 열을 따라 내려가면 백색 잡음에서 바이어스, 랜덤 워크로 지수가 $\tfrac12$씩 오른다. 각 행을 따라가면 적분마다 1씩 오른다. 짧은 지평에서는 가장 낮은 지수인 백색 잡음이 이기고, 긴 지평에서는 가장 높은 지수가 이긴다. 자이로 행은 가속도계 행보다 $t$의 거듭제곱 하나만큼 위에 있다. 스트랩다운 시스템의 위치 표류가 자이로 예산인 이유가 이것이다. Woodman은 MEMS IMU로 만든 단순한 스트랩다운 시스템을 분석해 평균 위치 오차가 $60\,\mathrm s$ 뒤 $150\,\mathrm m$를 넘는다고 보였고, 자이로 잡음이 일으킨 자세 오차를 결정적 원인으로 지목했다.
+
+**법칙이 성립하는 곳.** 이것들은 개루프, 작은 각, 짧은 지평의 형태다. 계산 절의 가장 큰 기울기 $1.5\times10^{-3}\,\mathrm{rad}$에서 $\sin\delta\theta\approx\delta\theta$의 오차는 백만분의 일보다 작다. 몇 분에서 몇 시간을 다루는 항법급 분석은 지구 자전과 슐러 루프를 더하는데, 이 페이지는 그것을 가르치지 않는다. §7의 코드가 두 백색 잡음 행을 무차별 대입으로 확인한다. 시뮬레이션 2000회가 1 s의 가속도계에서 법칙의 $0.577$에 대해 $0.583\,\mathrm{mm}$를, 10 s의 중력을 거친 자이로에서 $69.4$에 대해 $68.1\,\mathrm{mm}$를 준다.
+
+### 4. 잡음으로서의 양자화, 그리고 잡음이 아닐 때
+
+[[02-foundations/signal-processing|6. 신호처리 §2]]는 ADC의 양자화를 정의하고 반올림 오차에 분산 $\Delta^2/12$를 준다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]는 같은 계단이 잡음이 아니라 위치의 결정론적 함수라고 강조한다. 둘 다 맞고, 조건이 다르다. 엔코더의 $R$은 어느 조건이 성립하는지에 달려 있다.
+
+> **양자화 잡음의 정의.** **양자화 잡음**(quantization noise)은 *결정론적 오차의 통계 모델*이다. 스텝 $\Delta$인 균일 양자화기의 오차 $e = \hat x - x$를 확률변수로 다룬다. 정의 조건은 셋이고, 실제로 깨지는 것은 셋째다. 스텝은 **균일**, 곧 모두 폭이 $\Delta$다. 오차는 **한 스텝 위에서 균일하고 신호와 독립** — 그렇게 모델링한다. 그리고 그 모델은 **신호가 샘플 사이에 여러 스텝을, 격자와 무관하게 불규칙하게 가로지를 때만** 참이다. 그래야 스텝 안 어디에 떨어지는지가 사실상 무작위가 된다. 정확한 조건은 Widrow와 Kollár가 준다.
+>
+> $$\operatorname{Var}(e) = \int_{-\Delta/2}^{\Delta/2} e^2\,\frac{de}{\Delta} = \frac{\Delta^2}{12}$$
+>
+> $1/\Delta$는 한 스텝 위의 균일 밀도다. 그러므로 표준편차는 $\Delta/\sqrt{12} = 0.289\Delta$다. 반올림 양자화기는 평균 오차가 0이다. 엔코더처럼 바닥 함수를 보고하는 카운터는 오차가 $(-\Delta, 0]$ 위에 있어서, 평균이 $-\Delta/2$인 바이어스를 가지고 분산은 같다.
+>
+> - **예**: 카트가 틱마다 여러 카운트씩 불규칙하게 움직이는 동안의 P6 엔코더. 틱마다 표준편차 다섯 카운트로 랜덤 워크하는 위치를 시뮬레이션하면 오차 분산이 $0.998\,\Delta^2/12$, 지연 1 상관이 $0.002$로 백색이다. 거기서는 $R_e = \Delta^2/12 = 1.99\times10^{-8}\,\mathrm m^2$이 정직하다.
+> - **비예(정지)**: 카트가 서 있는 내내 오차가 하나의 고정된 숫자다. 표본 분산은 0이고 값은 한 카운트 안 어디든 될 수 있다. 바이어스다.
+> - **비예(일정한 운동)**: $0.5\,\mathrm{m/s}$에서 한 틱은 $5.12$ 카운트를 나른다(MR 13장, Step 7). 그러면 오차가 틱마다 카운트의 $0.12$씩 전진하고 $8.3$틱마다 되풀이된다. 시간 평균 분산은 여전히 $\Delta^2/12$이지만 지연 1 상관이 $1 - 6(0.12)(0.88) = 0.366$이어서(시뮬레이션은 $0.365$) 백색이 아니다.
+> - **왜 중요한가**: 엔코더의 $R$을 주고, 그 $R$이 언제 거짓말하는지도 알려 준다. 카트가 기어가거나 멈추면, 똑같은 값이 되풀이되는 것을 독립 증거로 세는 필터는 아무것도 없는 곳에서 분산을 줄인다. [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 기억을 가진 센서이고, 그 기억을 격자가 제공한다.
+
+차분은 양자화를 더 나쁘게 만든다. 한 틱짜리 속도는 위치 오차를 $\Delta t$로 나누기 때문이다. 그 귀결, 곧 P6에서 한 틱 속도의 양자 $0.0977\,\mathrm{m/s}$와 저속에서 정확히 0을 읽는 추정값은 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]](Step 7)과 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]에서 다뤘으므로 여기서 되풀이하지 않는다.
+
+### 5. 거리 센서와 카메라
+
+둘 다 지평에 따라 자라지 않는 오차로 위치를 잰다. 각각에 §1 표의 가우시안이 보여 주지 않는 함정이 하나씩 있다.
+
+**거리 센서.** $\sigma_r = 10\,\mathrm{mm}$로 $z_r = (x_w - p) + b_r + n_r$을 읽는다. 잡음은 평균으로 사라지고 오프셋은 그렇지 않다. 100개를 읽으면(50 Hz로 2 s) 잡음은 $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$로 내려가고 $4\,\mathrm{mm}$ 오프셋은 그대로다. 그래서 2초 뒤에는 바이어스가 잡음의 네 배이고, 알려진 거리에 대해 보정하거나 상태로 들고 가야 한다. 가우시안은 실제 거리 센서의 일부이기도 하다. Thrun, Burgard, Fox의 빔 모델은 성분 넷을 섞는다. 의도한 표면에 맞은 가우시안 *hit*, 빔 안의 예상 밖 물체가 만드는 *short* 판독, 반사가 사라졌을 때의 *max-range* 판독, 그리고 균일한 바닥의 *random* 판독이다. 3. 상태 추정 계산 절의 지나가는 사람처럼 패널에서 전혀 오지 않은 판독은 뒤의 셋 중 하나에 속한다. 어떤 $\sigma_r$도 그것을 덮지 못하므로 그 페이지는 게이트를 건다([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5]]).
+
+**카메라.** 픽셀 $u = c_x + f_x(p - p_c)/Z_c + n_u$를 잰다. 깊이 $Z_c$의 점에 대해 핀홀 모델([[04-robotics/geometric-perception-calibration|3.5 §1]])이 픽셀 잡음을 위치 잡음으로 바꾼다.
+
+$$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m = 0.833\ \mathrm{mm}$$
+
+깊이 $Z_c$에서 픽셀 하나가 $Z_c/f_x$미터에 걸치기 때문이다. 광축 방향으로는 변환이 더 나쁘다. 시차로 얻은 깊이는 오차가 $Z^2$으로 자란다([[04-robotics/geometric-perception-calibration|3.5 §2]]). 카메라 오차 중 둘은 바이어스라서 프레임을 평균해도 줄지 않는다. 렌즈 왜곡은 점을 재현되는 양만큼 옮기고, 3.5 리그의 한 점에서 $2.30\,\mathrm{px}$다. 그리고 지연은 시간 오프셋이다. 노출 $70\,\mathrm{ms}$ 뒤에 쓰이는 프레임은, 이것이 P6의 예산인데, $0.5\,\mathrm{m/s}$에서 카트가 $35\,\mathrm{mm}$ 전에 있던 곳을 보여 준다. 픽셀 잡음의 42배다. 3. 상태 추정의 대상 절이 거리 판독에 대해 같은 지적을 한다.
+
+### 6. 앨런 편차: 정지 로그 하나, 숫자 셋
+
+데이터시트는 $N$, $B$, 가끔 $K$를 준다. 손에 있는 센서에 대해 그것을 얻거나 데이터시트를 확인하려면, 센서를 정지시켜 기록하고 곡선 하나를 계산한다.
+
+> **앨런 편차의 정의.** **앨런 편차** $\sigma_A(\tau)$는 참 입력이 일정한 센서의 기록으로 계산하는, 클러스터 시간 $\tau$의 *함수*다. 연속한 $\tau$-평균들의 두 표본 편차다. 숫자가 아니라 곡선이다. 정의 조건은 넷이다. 기록을 **정지 상태에서** 얻어 변하는 것은 모두 오차가 되게 한다. 기록을 자르는 단위는 **길이 $\tau$의 클러스터**, 그리고 클러스터마다 평균을 낸다. 통계량은 **연속한 클러스터 평균 차이의 제곱 평균의 절반**, 곧 아래 식이다. 그리고 $\tau$의 **로그 격자** 위에서 계산한다. 이 곡선이 가르는 항들이 로그–로그 그림의 기울기로 구별되기 때문이다.
+>
+> $$\sigma_A^2(\tau) = \tfrac12\big\langle(\bar y_{k+1} - \bar y_k)^2\big\rangle$$
+>
+> $\bar y_k$는 클러스터 $k$ 위 각속도의 평균, $\langle\cdot\rangle$는 모든 $k$에 대한 평균이다. 그러므로 상수 오프셋은 모든 차이에서 소거된다. §7의 코드는 클러스터를 $\tau$마다가 아니라 샘플마다 시작하는 겹침 형태를 쓴다. 같은 통계량을 더 많은 쌍으로 계산한 것이다.
+>
+> - **예**: §7의 P6 자이로 5분 기록은 $\tau = 0.005$, $0.05$, $1$, $10\,\mathrm s$에서 $1421$, $451.6$, $143.7$, $98.4\,\mathrm{\mu rad/s}$를 읽는다. 앞의 둘은 decade마다 $\sqrt{10}$씩 떨어지고, 마지막은 $99.6\,\mathrm{\mu rad/s}$ 바닥에 앉는다.
+> - **비예**: 기록 전체의 표준편차 $1.44\times10^{-3}\,\mathrm{rad/s}$. §2의 샘플당 백색 잡음일 뿐이고 $B$나 $K$에 대해 아무것도 말하지 않는다. 랜덤 워크 바이어스가 있으면 센서의 성질조차 아니다. 기록 길이와 함께 자라기 때문이다(3. 확률의 랜덤 워크 비예).
+> - **왜 중요한가**: 연속한 평균의 차이는 모든 상수 오프셋을 소거하고 랜덤 워크에서도 유한하다. 그래서 곡선 하나가 항들을 기울기로 가르고, 정지 로그 하나가 시각–관성 필터의 설정이 요구하는 숫자, 보통 센서마다 잡음 밀도와 랜덤 워크를 준다.
+
+항마다 기울기와 읽는 규칙이 따로 있다. 규칙은 각 과정을 $\tau$ 동안 평균해서 나온다. IEEE Std 952의 앨런 분산 부록이 자이로에 대해 표로 정리했고, El-Sheimy, Hou, Niu가 여러 등급의 관성 측정 장치에 적용했다.
+
+| 기울기 | 항 | $\sigma_A(\tau)$ | 읽는 법 |
+|---:|---|---|---|
+| $-\tfrac12$ | 백색 잡음 | $N/\sqrt\tau$ | $N$ = 직선의 $\tau = 1\,\mathrm s$ 값 |
+| $0$ | 바이어스 불안정성 | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = 바닥을 $0.664$로 나눈 값 |
+| $+\tfrac12$ | 바이어스 랜덤 워크 | $K\sqrt{\tau/3}$ | $K$ = 직선의 $\tau = 3\,\mathrm s$ 값 |
+
+바닥의 상수가 §3의 스펙트럼이 가는 곳이다. 앨런 적분에서 치환 $u = \pi f\tau$가 $df/f$를 $du/u$로 바꾸므로 플리커 항에서 $\tau$가 빠지고 $(2B^2/\pi)\int_0^\infty \sin^4u/u^3\,du = (2\ln2/\pi)B^2$이 남는다. 표준은 항을 더 싣는데, 그중에는 출력 양자화의 기울기 $-1$과 각속도의 일정한 경사가 만드는 기울기 $+1$이 있다. 읽는 습관 셋이 맞는 읽기와 그럴듯한 읽기를 가른다.
+- **곡선이 아니라 직선을 읽어라.** P6 자이로에서 $\tau = 1\,\mathrm s$의 곡선은 $1.41\times10^{-4}$로 $N_g$보다 41% 높다. 바닥이 이미 와 있기 때문이다. $N$은 $-\tfrac12$ 직선을 1 s까지 연장한 값이고, §7의 코드가 첫 decade의 맞춤으로 그렇게 읽는다.
+- **평평한 바닥은 항들이 자리를 내줄 때만 있다.** 백색 직선은 $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$에서 바닥과 만나고, 바닥은 $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$에서 랜덤 워크와 만난다. $\tau_2 \gg \tau_1$이면 바닥은 몇 decade 폭의 선반이다. $K$가 커져 $\tau_2 < \tau_1$이 되면 최솟값은 $-\tfrac12$ 직선과 $+\tfrac12$ 직선이 교차하는 곳일 뿐이고, 그것을 $0.664$로 나누면 존재하지 않는 바이어스 불안정성을 보고하게 된다. §7의 스윕은 $K = 2\times10^{-4}$에서 $1.81B$를 읽는다. 그리고 데이터시트의 "bias instability"는 바닥 그 자체일 수도, 바닥을 $0.664$로 나눈 값일 수도 있다. 1.5배 차이이니 어느 쪽인지 확인하라.
+- **긴 클러스터 시간은 수가 적다.** $\tau$에서의 값은 길이 $T$ 기록의 클러스터 약 $T/\tau$개에만 기대고, 그만큼 흩어진다. 백색 잡음에서 시뮬레이션 기록 4000개는 겹치지 않는 클러스터 20개로 20%, 60개로 11% 흩어진다. 겹침 형태가 낫지만 자릿수가 달라질 만큼은 아니다. §7이 바닥을 $T/20$까지만 읽는 이유다.
+
+**앨런 그림은 표류 예산이기도 하다.** 백색 항과 랜덤 워크 항에서, 알려진 출발점부터 $t$초 적분한 뒤 각도 오차의 표준편차는 정확히 $t\,\sigma_A(t)$다. 백색 잡음은 $t\cdot N/\sqrt t = N\sqrt t$, 랜덤 워크는 $t\cdot K\sqrt{t/3} = Kt^{3/2}/\sqrt3$을 주고, 둘 다 §3 표의 첫 열이다. 평평한 항에서는 상수배 안에서 성립한다. 그러니 앨런 기울기에 1을 더하면 각도 표류의 지수, 2를 더하면 가속도계 위치 표류의 지수다. 과제 그림의 오른쪽 패널을 그리는 규칙이 이것이다.
+
+### 7. 랩: 자이로를 시뮬레이션하고, 앨런 편차를 계산하고, N과 B를 읽어 낸다
+
+위의 유도는 점근선을 준다. 이 절은 직접 만든 데이터로 그것을 확인하고, 샘플링 속도의 변화와 커지는 랜덤 워크가 읽기에 무엇을 하는지 보여 준다. 코드는 정지한 자이로 축 하나를 세 항으로 만든다. 백색 잡음은 $\sigma = N\sqrt f$(§2), 랜덤 워크는 크기 $K\sqrt{\Delta t}$ 걸음의 누적합(§3), 플리커 바닥은 FFT로 스펙트럼 $B^2/(2\pi f)$에 맞춰 성형한 백색 잡음이다. 그런 다음 겹침 앨런 편차를 계산하고, 첫 decade에서 $N$을, $T/20$까지의 가장 낮은 점에서 $B$를 읽는다. 1부는 P6의 200 Hz로 얻은 5분 기록 하나이고, §6의 예가 인용하는 것이다. 2부와 3부는 스윕이고 행마다 시드 열 개다. 4부는 §3의 백색 잡음 법칙을 무차별 대입으로 확인한다. 거기의 누적합은 반암시적 오일러다([[02-foundations/lab-kernel|0.65 §3]]). 코드는 영어 절에 있다.
+
+**1부.** 기록의 샘플당 표준편차는 $N_g\sqrt f = 1.414\times10^{-3}$에 대해 $1.439\times10^{-3}$이다. 차이는 플리커와 랜덤 워크가 더한다. 앨런 편차는 §6의 예다. 시드 0은 $\hat N = 1.007\times10^{-4}$, $\hat B = 1.475\times10^{-4}$를 읽고, 가장 낮은 점은 $11.4\,\mathrm s$다.
+
+**스윕 1 — 샘플링 속도**, $K_g$ 고정. 각 행은 시드 열 개에 대한 평균 ± 표준편차다.
+
+| $f$ | 샘플당 σ, $N_g\sqrt f$ (rad/s) | $\hat N/N_g$ | $\hat B/B_g$ | 가장 낮은 점 |
+|---:|---:|---:|---:|---:|
+| $50\,\mathrm{Hz}$ | $7.07\times10^{-4}$ | $1.045\pm0.007$ | $0.96\pm0.10$ | $12.69\,\mathrm s$ |
+| $100\,\mathrm{Hz}$ | $1.00\times10^{-3}$ | $1.022\pm0.005$ | $0.99\pm0.09$ | $11.71\,\mathrm s$ |
+| $200\,\mathrm{Hz}$ | $1.41\times10^{-3}$ | $1.010\pm0.003$ | $0.95\pm0.05$ | $10.71\,\mathrm s$ |
+| $400\,\mathrm{Hz}$ | $2.00\times10^{-3}$ | $1.005\pm0.003$ | $0.98\pm0.11$ | $11.17\,\mathrm s$ |
+| $800\,\mathrm{Hz}$ | $2.83\times10^{-3}$ | $1.003\pm0.002$ | $0.93\pm0.11$ | $10.91\,\mathrm s$ |
+
+말하는 것. 샘플당 σ는 50 Hz에서 800 Hz로 네 배가 되지만, 필터가 쓰는 것은 아무것도 바뀌지 않는다. §2가 말한 대로 $\hat N$과 $\hat B$는 어느 주기에서나 같은 부품을 묘사한다. 느린 로거는 $N$을 4.5% 높게 읽는데, 첫 decade의 클러스터 시간 $0.02$–$0.2\,\mathrm s$가 이미 바닥을 느끼기 때문이다. 빠른 로거는 맞출 순수한 $-\tfrac12$ 직선이 더 길다. $\hat B$ 열이 5–11% 흩어지는 것은 5분 기록이 $T/20$에서 클러스터를 20개쯤밖에 갖지 못하기 때문이다.
+
+**스윕 2 — 바이어스 랜덤 워크**, 200 Hz. 모든 행이 같은 시드 열 개를 쓰므로 행끼리는 $K_g$만 다르다.
+
+| $K_g$ | $\tau_2 = 3(0.664B_g/K_g)^2$ | $\hat N/N_g$ | $\hat B/B_g$ | 가장 낮은 점 |
+|---:|---:|---:|---:|---:|
+| $0$ | 없음 | $1.010\pm0.003$ | $0.95\pm0.06$ | $10.71\,\mathrm s$ |
+| $2\times10^{-6}$ | $7400\,\mathrm s$ | $1.010\pm0.003$ | $0.95\pm0.05$ | $10.71\,\mathrm s$ |
+| $2\times10^{-5}$ | $74\,\mathrm s$ | $1.010\pm0.003$ | $1.01\pm0.07$ | $12.49\,\mathrm s$ |
+| $2\times10^{-4}$ | $0.74\,\mathrm s$ | $1.011\pm0.003$ | $1.81\pm0.04$ | $0.93\,\mathrm s$ |
+| $2\times10^{-3}$ | $0.0074\,\mathrm s$ | $1.069\pm0.003$ | $4.91\pm0.05$ | $0.09\,\mathrm s$ |
+
+말하는 것. $\tau_2$가 읽기 창 너머에 있는 동안 바닥은 5분 기록의 흩어짐 안에서 $B$를 읽는다. $K_g = 2\times10^{-4}$에서 $\tau_2$가 $\tau_1 = 1.0\,\mathrm s$ 아래로 내려가고 선반이 사라진다. 가장 낮은 점은 두 기울어진 직선이 교차하는 곳($\sqrt3N_g/K_g = 0.87\,\mathrm s$) 근처인 $0.93\,\mathrm s$로 옮겨 가고, "$B$"는 $1.81B_g$를 읽는다. 세 항 모델이 거기서 예측하는 값은 $1.82$다. $2\times10^{-3}$에서는 $4.91B_g$를 읽고, 랜덤 워크가 첫 decade까지 올라와 $\hat N$조차 7% 높다. 앨런 곡선의 최솟값에서 읽은 숫자는 곡선이 그 주변에서 평평할 때만 바이어스 불안정성이다.
+
+**4부 — 표류 법칙.** 코드는 1 s에서 가속도계 $0.577$에 대해 $0.583\,\mathrm{mm}$, 중력을 거친 자이로 $0.219$에 대해 $0.221\,\mathrm{mm}$를, 10 s에서 $18.257$에 대해 $18.756$, $69.367$에 대해 $68.148\,\mathrm{mm}$를 출력한다. 2000회로 추정한 표준편차의 오차는 약 $\pm1.6\%$이고, 모든 차이가 그 두 배 안에 있다.
+
+### 8. 칼만 필터에서 숫자들이 들어갈 자리
+
+[[04-robotics/state-estimation-slam|3. 상태 추정 §5]]는 $Q$와 $R$로 칼만 필터를 짓고 이득이 그 둘에서 나온다고 말한다. P6의 센서에 대해 그 두 숫자가 나오는 곳이 이 페이지다. 규칙은 §1의 것이다. 측정을 오염시키는 잡음은 $R$로, 예측을 오염시키는 잡음은 $Q$로 가고, 바이어스는 상태가 된다.
+
+**위치 센서는 $R$을 곧바로 준다.** 샘플당, 엔코더는 $R_e = \Delta^2/12 = 1.99\times10^{-8}\,\mathrm m^2$이고 카트가 움직이는 동안 유효하다. 카메라는 왜곡을 보정하고 지연을 모델링한 뒤 $R_c = (Z_c\sigma_u/f_x)^2 = 6.94\times10^{-7}\,\mathrm m^2$이다. 거리 센서는 $b_r$을 보정하거나 상태로 들고 가면서 $R_r = 10^{-4}\,\mathrm m^2$이다.
+
+**IMU는 예측을 구동하므로 그 잡음은 $Q$다.** IMU로 구동하는 흔한 설계는 가속도계를 운동 모델의 입력으로 쓰고 그 바이어스를 셋째 상태로 들고 간다.
+
+$$p_{k+1} = p_k + v_k\Delta t,\qquad v_{k+1} = v_k + (z_{a,k} - b_{a,k})\Delta t,\qquad b_{a,k+1} = b_{a,k} + K_a\sqrt{\Delta t}\,w_k$$
+
+그러므로 샘플마다의 백색 잡음 $n_a$가 $\Delta t$를 곱한 채 $v$로 들어가고, 스텝마다 더해지는 속도 분산은
+
+$$Q_v = \sigma_a^2\Delta t^2 = N_a^2\,\Delta t = (10^{-3})^2 \times 0.005 = 5\times10^{-9}\ \mathrm{(m/s)^2}$$
+
+$\sigma_a^2 = N_a^2 f$이고 $f\Delta t = 1$이기 때문이다. 바이어스 상태의 항은 $Q_b = K_a^2\Delta t = 2\times10^{-12}\,(\mathrm{m/s^2})^2$이다. 둘 다 $\Delta t^2$이 아니라 $\Delta t$에 비례하므로, 1초 뒤 필터가 더한 속도 분산은 IMU 주기와 무관하게 $N_a^2 = 10^{-6}\,(\mathrm m/\mathrm s)^2$이다. §2의 주기 무관성이 필터 안에서 다시 나타난 것이다. 바이어스 불안정성에는 정확한 유한 상태 모델이 없다. 필터는 흔히 그것을 약간 부풀린 $K$에 접어 넣거나, 바이어스를 순수 랜덤 워크 대신 1차 가우스–마르코프 상태로 모델링한다.
+
+**3. 상태 추정과의 대조.** 그 페이지의 대상 절은 $20\,\mathrm{ms}$ 스텝마다 $Q = 1\,\mathrm{cm}^2$을 쓴다. IMU의 백색 잡음만이라면 스텝마다 $\big(N_a(0.02)^{3/2}/\sqrt3\big)^2 = 2.7\times10^{-12}\,\mathrm m^2 = 2.7\times10^{-8}\,\mathrm{cm}^2$을 보탤 것이고, 약 $4\times10^7$배 작다. 그러니 그 $Q$는 센서 잡음이 전혀 아니다. 그 페이지가 말하듯 미끄럼과 모델 밖 운동이다. 논문의 튜닝된 $Q$가 센서 밀도가 뜻하는 값보다 몇 자릿수 위에 있다면 그 차이는 모델 오차이고, 조용히 부풀리지 말고 한 문장을 들여 적어야 한다.
+
+### 읽고 나면 말할 수 있어야 하는 것
+
+- 엔코더, 가속도계, 자이로, 거리 센서, 카메라에 대해 $z = h(x) + b + n$을 쓰고, 어느 항이 $R$로, 어느 항이 $Q$로, 어느 항이 상태로 가는지 말할 수 있다;
+- 잡음 밀도를 어느 주기에서든 샘플당 σ로 바꾸고, 주기가 표류를 바꾸지 않는 이유를 설명할 수 있다;
+- 중력을 거쳐 위치에 이르는 자이로 오차를 포함해, IMU 오차 항 각각의 적분 한 번·두 번·세 번 뒤 증가 지수를 말할 수 있다;
+- 양자화를 언제 $\Delta^2/12$ 백색 잡음으로 모델링해도 되고 언제 바이어스인지 말할 수 있다;
+- 앨런 편차 그림에서 $N$, $B$, $K$를 읽고, 평평한 바닥과 교차점을 구별할 수 있다;
+- 논문의 IMU 파라미터와 튜닝된 $Q$를 그 논문이 보고한 표류와 대조할 수 있다.
+
+### 스스로 점검
+
+1. 자이로 데이터시트가 $0.007\,°/\mathrm s/\sqrt{\mathrm{Hz}}$를 준다. 100 Hz와 1 kHz에서 기대하는 샘플당 σ는 얼마이고, 각 주기에서 10분 적분한 뒤 각도 오차는 얼마인가?
+2. $B_g$는 아주 작은 각속도인데, 10 s 뒤 P6의 자이로 바이어스가 가속도계 바이어스보다 추측 항법 위치를 더 많이 움직이는 이유는 무엇인가? 어느 지평부터인가?
+3. 카트가 2 s 동안 서 있고, 필터가 엔코더 판독 400개를 모두 $R = \Delta^2/12$로 융합한다. 필터가 보고하는 표준편차는 얼마이고, 참 오차는 무엇인가?
+4. 시각–관성 필터가 가속도계 바이어스를 랜덤 워크 상태로 들고 가는데, 누군가 "바이어스는 상수니까" 그 $Q$를 0으로 둔다. 긴 운용에서 무슨 일이 일어나는가?
+5. 앨런 그림의 최솟값이 그려진 범위의 오른쪽 끝에 있다. 무엇을 읽을 수 있고 무엇을 읽을 수 없는가?
+
+> [!tip]- 정답 · Answers
+> 1. $\sigma = N\sqrt f$: 100 Hz에서 $0.007\sqrt{100} = 0.070\,°/\mathrm s$, 1 kHz에서 $0.007\sqrt{1000} = 0.221\,°/\mathrm s$. 600 s 뒤 각도 오차는 두 주기 모두 $N\sqrt t = 0.007\sqrt{600} = 0.171°$다. 적분이 보는 것은 샘플당 σ가 아니라 밀도이기 때문이다.
+> 2. 자이로 바이어스는 한 번 적분되어 기울기가 되고, 중력이 기울기를 가짜 가속도 $g\,\delta\theta$로 바꾸고, 그것이 두 번 더 적분된다. 그래서 가속도계 바이어스의 $B_at^2/2$에 맞서 $gB_gt^3/6$으로 자란다. 10 s에서 $245$ 대 $25\,\mathrm{mm}$다. 둘은 $t = 3B_a/(gB_g) = 1.02\,\mathrm s$에서 같고, 그 뒤로는 자이로가 이긴다.
+> 3. 과정 잡음이 없고 사전 분포가 넓으면 분산 $R$인 판독 400개를 융합한 결과는 $R/400$, 표준편차 $0.141/20 = 0.0070\,\mathrm{mm}$다. 참 오차는 한 카운트($0.488\,\mathrm{mm}$) 안 어딘가의 고정된 양자화 오프셋이고 전혀 줄지 않았다. 정지한 엔코더는 §4의 셋째 조건을 어기므로, 그 $R$은 잡음으로 위장한 바이어스다.
+> 4. 바이어스 상태의 분산이 0으로 줄고 이득도 함께 0이 되어, 필터가 바이어스 갱신을 멈춘다. 실제 바이어스는 $K$가 정하는 속도로 계속 떠돌므로, 추정값은 뒤처지는데 필터는 점점 더 자신만만해진다. 비일관적인 필터이고, [[04-robotics/state-estimation-slam|3. 상태 추정 §2]]의 NEES가 드러낼 것이다. §8처럼 앨런 그림에서 $Q_b = K^2\Delta t$를 잡아라.
+> 5. 짧은 $\tau$에서 $-\tfrac12$ 직선이 보이면 $N$은 읽을 수 있다. $B$는 읽을 수 없다. 곡선이 평평해진 적이 없으니 최솟값은 기록이 끝난 곳일 뿐이다. 모든 항은 $\sigma_A$에 더해지기만 하므로, 최솟값을 $0.664$로 나눈 것은 $B$ 자체가 아니라 $B$의 상한이다. 더 긴 기록만이 고칠 수 있고, 그것이 과제의 요점이다.
+
+### 과제 · Problem set
+
+Tier A. 이 페이지와 그 선수 지식, 그리고 [[02-foundations/lab-plants|0.6]]의 장치 **P6** — 이것만으로 푼다. 손잡이 둘이 바뀌고 나머지는 대상 절의 값 그대로다. 자이로는 $N_g' = 5.0\times10^{-5}\,\mathrm{(rad/s)/\sqrt{Hz}}$, $B_g' = 1.5\times10^{-5}\,\mathrm{rad/s}$, $K_g' = 2.0\times10^{-7}\,\mathrm{(rad/s)/\sqrt s}$로 개선된다. 더 좋은 MEMS 자이로의 예시값이다. 엔코더는 미터당 $4096$ 카운트다. 계산 절은 IMU가 무엇을 하는지 물었다. 이 과제는 더 좋은 자이로가 무엇을 사 주고, 그것을 재는 데 무엇이 드는지 묻는다.
+
+1. **그리기.** 변형에 대한 과제 그림의 두 패널. 왼쪽: 개선된 자이로의 앨런 편차와 점근선 셋, $\tau_1$, $\tau_2$, 그리고 5분·30분·2시간 기록의 믿을 수 있는 마지막 클러스터 시간($T/20$) 눈금. 오른쪽: 개선된 IMU의 지평에 따른 위치 오차와, 평평한 선으로 그린 새 엔코더의 σ.
+2. **유도.** (a) 미터당 4096 카운트에서 $\Delta$, $\sigma_q$, 바닥 함수 바이어스. (b) 개선된 자이로의 200 Hz와 1 kHz 샘플당 σ, 그리고 한 시간 뒤 각도 랜덤 워크(도). (c) $t = 10\,\mathrm s$의 위치 표류 항 여섯(가속도계는 그대로), 제곱합의 제곱근, 지배 항, 계산 절의 $257\,\mathrm{mm}$ 대비 개선 배율. (d) 개선된 자이로의 바닥, $\tau_1$, $\tau_2$, 그리고 $T/20$이 $10\tau_1$에 이르는 가장 짧은 기록.
+3. **실행.** 영어 절 템플릿의 `?`를 채워라. §7 코드의 줄들이다. 기록 길이 스윕 $T \in \{300, 1800, 7200\}\,\mathrm s$를 각각 시드 열 개로 돌리고 $\hat N/N_g'$, $\hat B/B_g'$, 가장 낮은 점이 마지막 클러스터 시간에 대해 어디 있는지 보고하라. 어느 기록 길이에서 $B$를 읽을 수 있고, 그림 자체가 그것을 어떻게 알려 주는가?
+
+> [!tip]- 정답 · Solutions
+> 1. 왼쪽: $(1\,\mathrm s,\ 5.0\times10^{-5})$을 지나는 $-\tfrac12$ 직선, $\tau_1 = 25\,\mathrm s$에서 닿는 $9.96\times10^{-6}$의 바닥, $(3\,\mathrm s,\ 2.0\times10^{-7})$을 지나 $\tau_2 = 7400\,\mathrm s$에서 바닥과 만나는 $+\tfrac12$ 직선. $B/K$가 바뀌지 않았으므로 P6 자이로와 같은 $\tau_2$다. $15\,\mathrm s$의 5분 눈금은 $\tau_1$ 왼쪽, 아직 기울어진 직선 위에 있다. $90\,\mathrm s$의 30분 눈금은 $\tau_1$을 지났지만 아직 둥근 모서리 위에 있고, $360\,\mathrm s$의 2시간 눈금은 선반 위에 있다. 오른쪽: $0.0705\,\mathrm{mm}$의 엔코더 선. 중력을 거친 자이로 직선은 $0.110\,\mathrm{mm}\cdot t^{5/2}$(백색)와 $0.0245\,\mathrm{mm}\cdot t^3$(바이어스)으로 내려온다. 이제 가속도계의 두 직선이 예산을 지다가 $5.2\,\mathrm s$ 근처에서 자이로 백색 잡음 직선이 그들을 추월하고, IMU 합계는 $0.24\,\mathrm s$에서 엔코더 선을 넘는다.
+> 2. (a) $\Delta = 1/4096\,\mathrm m = 0.244\,\mathrm{mm}$, $\sigma_q = 0.244/\sqrt{12} = 0.0705\,\mathrm{mm}$, 바닥 함수 바이어스 $-0.122\,\mathrm{mm}$. (b) $5.0\times10^{-5}\sqrt{200} = 7.07\times10^{-4}\,\mathrm{rad/s}$, $5.0\times10^{-5}\sqrt{1000} = 1.58\times10^{-3}\,\mathrm{rad/s}$. 한 시간 뒤는 두 주기 모두 $N\sqrt{3600} = 3.0\times10^{-3}\,\mathrm{rad} = 0.172°$. (c) 가속도계 행은 그대로 $18.3$, $25.0$, $1.41\,\mathrm{mm}$. 중력을 거친 자이로: 백색 $9.81\cdot5\times10^{-5}\cdot10^{5/2}/\sqrt{20} = 34.7\,\mathrm{mm}$, 바이어스 $9.81\cdot1.5\times10^{-5}\cdot10^3/6 = 24.5\,\mathrm{mm}$, 랜덤 워크 $0.39\,\mathrm{mm}$. 제곱합의 제곱근 $52.6\,\mathrm{mm}$로 $257\,\mathrm{mm}$보다 $4.9$배 좋다. 이제 자이로 백색 잡음이 지배하고 가속도계 바이어스와 자이로 바이어스가 바로 뒤에 있으므로, 예산이 나뉘어 다음 개선 대상이 더는 뻔하지 않다. (d) 바닥 $0.664\times1.5\times10^{-5} = 9.96\times10^{-6}\,\mathrm{rad/s}$, $\tau_1 = (5\times10^{-5}/9.96\times10^{-6})^2 = 25.2\,\mathrm s$, $\tau_2 = 3(9.96\times10^{-6}/2\times10^{-7})^2 = 7400\,\mathrm s$. $T/20 = 10\tau_1$이려면 $T = 200\tau_1 = 5036\,\mathrm s$, 약 84분이다.
+> 3. 빈칸: `np.sqrt(f)`, `K * np.sqrt(1.0 / f)`, `(2 * (m / f)**2)`, `0.664`. 스윕 출력:
+>
+> | $T$ | $\hat N/N_g'$ | $\hat B/B_g'$ | 가장 낮은 점 / 마지막 클러스터 시간 |
+> |---:|---:|---:|---:|
+> | $300\,\mathrm s$ | $0.997$ | $1.51\pm0.20$ | $15$ / $15\,\mathrm s$ |
+> | $1800\,\mathrm s$ | $1.000$ | $1.03\pm0.11$ | $90$ / $90\,\mathrm s$ |
+> | $7200\,\mathrm s$ | $1.000$ | $1.02\pm0.10$ | $282$ / $360\,\mathrm s$ |
+>
+> $N$은 모든 기록에서 맞게 읽힌다. 첫 1초 안에 $-\tfrac12$ 직선이 있기 때문이다. $B$는 그렇지 않다. 5분은 $1.51B$를 읽고 가장 낮은 점이 마지막 클러스터 시간에 있다. 기록이 끝날 때 곡선이 아직 내려가고 있었다는 뜻이고, (d)의 예측($15\,\mathrm s < \tau_1$) 그대로다. 모델은 거기서 곡선을 바닥의 $1.64$배에 두므로, 그 읽기는 값이 아니라 상한이다(스스로 점검 5). 30분도 가장 낮은 점이 여전히 끝에 있다. 모델은 $90\,\mathrm s$에서 곡선이 바닥보다 14% 높다고 하고, $1.03$은 일부 흩어짐 덕이다. 2시간 기록만이 가장 낮은 점을 범위 *안*, $360\,\mathrm s$ 중 $282\,\mathrm s$에 두고, 그것이 바닥을 실제로 봤다는 그림 자체의 표지다. 더 좋은 자이로는 더 긴 시험을 요구한다. $\tau_1$이 $(N/B)^2$로 늘고, 이 자이로의 것은 P6의 25배다.
+
+### 출처
+
+- D. W. Allan, "Statistics of atomic frequency standards," *Proceedings of the IEEE* 54(2):221–230, 1966 — [doi:10.1109/PROC.1966.4634](https://doi.org/10.1109/PROC.1966.4634)
+- *IEEE Standard Specification Format Guide and Test Procedure for Single-Axis Interferometric Fiber Optic Gyros*, IEEE Std 952-1997. 그 앨런 분산 부록이 §6의 잡음 항과 기울기를 표로 정리한다 — [doi:10.1109/IEEESTD.1998.86153](https://doi.org/10.1109/IEEESTD.1998.86153)
+- N. El-Sheimy, H. Hou, and X. Niu, "Analysis and modeling of inertial sensors using Allan variance," *IEEE Transactions on Instrumentation and Measurement* 57(1):140–149, 2008 — [doi:10.1109/TIM.2007.908635](https://doi.org/10.1109/TIM.2007.908635)
+- O. J. Woodman, "An introduction to inertial navigation," Technical Report UCAM-CL-TR-696, University of Cambridge Computer Laboratory, 2007 — [doi:10.48456/tr-696](https://doi.org/10.48456/tr-696). 60 s 뒤 150 m와 자이로 자세 오차라는 원인은 초록에 적혀 있다
+- B. Widrow and I. Kollár, *Quantization Noise: Roundoff Error in Digital Computation, Signal Processing, Control, and Communications*, Cambridge University Press, 2008 — [doi:10.1017/CBO9780511754661](https://doi.org/10.1017/CBO9780511754661)
+- S. Thrun, W. Burgard, and D. Fox, [*Probabilistic Robotics*](https://mitpress.mit.edu/9780262201629/probabilistic-robotics/), MIT Press, 2005 — 6장, 거리 센서의 빔 모델

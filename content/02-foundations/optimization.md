@@ -187,7 +187,7 @@ $$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\
 Bundle adjustment, pose-graph SLAM, ICP registration, camera and hand–eye calibration,
 inverse kinematics, and IMU–camera time alignment are all this problem with a different
 $f$. Knowing the two algorithms below tells you what those systems are actually doing when
-a paper says "we optimize."
+a paper says "we optimize." So is output-error system identification, which fits a model's free run to the measured output instead of its one-step prediction ([[04-robotics/system-identification|5.5 System Identification §5]]).
 
 **What the symbols are.** The unknown $x\in\mathbb{R}^n$ is what is being estimated (a pose, a set of landmark positions, calibration parameters). Each component $f_i:\mathbb{R}^n\to\mathbb{R}$ is a **residual**: what the model predicts for measurement $i$ at the guess $x$, minus what was actually measured. The vector $f(x)\in\mathbb{R}^m$ stacks all $m$ of them, and $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$ is the total squared mismatch, zero only if every measurement is explained exactly. Many papers write $\tfrac12\lVert f\rVert^2$ or weight each residual by an inverse covariance, which changes the scale of the objective but not the method. For the beacon example below, $f_i(x)=\lVert x-a_i\rVert-\rho_i$: the predicted range to beacon $a_i$ minus the measured range $\rho_i$. At the guess $x=(12,4)$ with $\rho=(11.66,\,6.32,\,11.66)$ the residuals are $(0.989,\,-0.663,\,-2.716)$ and $\lVert f\rVert^2=8.79$; at the true $(10,6)$ they are below $0.005$, rounding error in the ranges.
 
@@ -262,7 +262,7 @@ $\rho = (11.66,\, 6.32,\, 11.66)$, solved by Gauss–Newton from two starts:
 
 | Start | $k=1$ | $k=2$ | $k=3$ | Converged | $\kappa(J)$ at start |
 |---|---|---|---|---|---|
-| $(12,\, 0.5)$ — near the wall | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.15)$ | step 5 | 13.1 |
+| $(12,\, 0.5)$ — near the wall | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.14)$ | step 5 | 13.1 |
 | $(12,\, 4)$ | $(10.2,\, 6.61)$ | $(9.99,\, 6.01)$ | $(10.0,\, 6.0)$ | step 3 | 1.8 |
 
 Both reach the same answer, but the near-the-wall start throws the estimate to $y = 32.3$ —
@@ -647,7 +647,7 @@ $$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\
 
 번들 조정, 포즈그래프 SLAM, ICP 정합, 카메라·손눈 보정, 역기구학, IMU–카메라 시간 정렬이
 전부 $f$만 다른 이 문제다. 아래 두 알고리즘을 알면 논문이 "최적화한다"고 쓸 때 그 시스템들이
-실제로 무엇을 하고 있는지 알 수 있다.
+실제로 무엇을 하고 있는지 알 수 있다. 출력 오차 시스템 식별도 그렇다. 모델의 한 스텝 예측 대신 자유 주행을 측정 출력에 맞추기 때문이다([[04-robotics/system-identification|5.5 시스템 식별 §5]]).
 
 **기호가 무엇인가.** 미지수 $x\in\mathbb{R}^n$은 추정할 대상이다(자세, 랜드마크 위치들, 보정 파라미터). 각 성분 $f_i:\mathbb{R}^n\to\mathbb{R}$는 **잔차**다. 추정값 $x$에서 모델이 측정 $i$에 대해 예측하는 값에서 실제 측정값을 뺀 것이다. 벡터 $f(x)\in\mathbb{R}^m$은 잔차 $m$개를 쌓은 것이고, $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$은 전체 제곱 불일치로, 모든 측정이 정확히 설명될 때만 0이다. 많은 논문이 $\tfrac12\lVert f\rVert^2$로 쓰거나 잔차마다 역공분산 가중치를 주는데, 목적함수의 척도만 바뀌고 방법은 같다. 아래 비콘 예제에서는 $f_i(x)=\lVert x-a_i\rVert-\rho_i$, 즉 비콘 $a_i$까지의 예측 거리에서 측정 거리 $\rho_i$를 뺀 것이다. 추정값 $x=(12,4)$, $\rho=(11.66,\,6.32,\,11.66)$에서 잔차는 $(0.989,\,-0.663,\,-2.716)$이고 $\lVert f\rVert^2=8.79$다. 참 위치 $(10,6)$에서는 거리 반올림 오차 수준인 $0.005$ 미만이다.
 
@@ -720,7 +720,7 @@ Gauss–Newton으로:
 
 | 시작점 | $k=1$ | $k=2$ | $k=3$ | 수렴 | 시작점의 $\kappa(J)$ |
 |---|---|---|---|---|---|
-| $(12,\, 0.5)$ — 벽 근처 | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.15)$ | 5스텝 | 13.1 |
+| $(12,\, 0.5)$ — 벽 근처 | $(10.3,\, \mathbf{32.3})$ | $(9.1,\, 8.1)$ | $(10.08,\, 6.14)$ | 5스텝 | 13.1 |
 | $(12,\, 4)$ | $(10.2,\, 6.61)$ | $(9.99,\, 6.01)$ | $(10.0,\, 6.0)$ | 3스텝 | 1.8 |
 
 둘 다 같은 답에 닿지만, 벽 근처에서 시작한 쪽은 회복하기 전에 추정치를 $y = 32.3$까지 —
@@ -921,7 +921,7 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P1**. 경사 한 스텝, 손계�
 3. **해석.** $\eta=10$으로 반복. 새 $W_2$, $L$은?
 
 > [!tip]- 정답 · Solutions
-> 1. $\hat y=W_{2,1}-0.5$이므로 $L=\tfrac12(W_{2,1}-1.5)^2$, 최솟값 $1.5$. 카탈로그 $W_{2,1}=1$은 왼쪽 기울기.
+> 1. $\hat y=W_{2,1}-0.5$이므로 $L=\tfrac12(W_{2,1}-1.5)^2$, $1.5$에서 최소. 카탈로그 $W_{2,1}=1$은 왼쪽 기울기.
 > 2. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
 > 3. $W_2\leftarrow(1,-1,0.5)+(5,10,15)=(6,9,15.5)$. $\hat y=70.5$, $L$이 폭발. $\eta=10$은 이 척도에서 안정 스텝을 한참 지난다.
 

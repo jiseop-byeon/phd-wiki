@@ -332,7 +332,7 @@ For this 2R arm $\det J = L_1L_2\sin\theta_2$, so it is singular at $\theta_2 = 
 ### 7. Where the parameters come from — and the sim-to-real gap
 
 Every symbol in §2 hides a number that someone had to measure: link masses, centres of
-mass, inertia tensors, joint friction, motor constants, gear elasticity. Three honest
+mass, inertia tensors, joint friction, motor constants, gear elasticity. The motor constants, and the rotor inertia a gearbox adds to $M$, are [[04-robotics/actuators-drives|10.5 Actuators & Drives]]. Three honest
 observations:
 
 1. **CAD values are wrong at the margins.** Cabling, covers, and the actual tool are
@@ -350,7 +350,7 @@ observations:
 
 For construction manipulation there is a fourth: the **payload is unknown and large**.
 A grasped panel or bolt changes $M(\theta)$ and $g(\theta)$ by an amount comparable to the
-arm's own links, and unlike a factory setting you do not get to hard-code its mass.
+arm's own links, and unlike a factory setting you do not get to hard-code its mass. The arm can identify it from its own torques instead: they are linear in a few base inertial parameters, $\tau=Y\pi$, which is how [[04-robotics/system-identification|5.5 System Identification §9]] recovers a $3\,\mathrm{kg}$ payload by least squares.
 
 ### 8. Reading dynamics in a paper, and the path to Mastery
 
@@ -740,7 +740,7 @@ $$\operatorname{rank} J(\theta) < m$$
 ### 7. 파라미터는 어디서 오는가 — 그리고 sim-to-real 격차
 
 §2의 모든 기호 뒤에는 누군가 측정해야 했던 숫자가 있다: 링크 질량, 질량 중심, 관성 텐서,
-관절 마찰, 모터 상수, 감속기 탄성. 정직한 관찰 셋:
+관절 마찰, 모터 상수, 감속기 탄성. 모터 상수와, 감속기가 $M$에 더하는 회전자 관성은 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]에 있다. 정직한 관찰 셋:
 
 1. **CAD 값은 가장자리에서 틀린다.** 케이블, 커버, 실제 공구는 CAD 모델에 거의 없고, 하필
    그것들이 관절에서 가장 먼 곳 — 가장 크게 작용하는 곳 — 에 있다.
@@ -754,7 +754,7 @@ $$\operatorname{rank} J(\theta) < m$$
 
 건설 조작에는 네 번째가 있다: **페이로드가 알려져 있지 않고 크다.** 잡은 패널이나 볼트는
 $M(\theta)$와 $g(\theta)$를 팔 자신의 링크에 견줄 만큼 바꾸며, 공장과 달리 그 질량을
-하드코딩할 수 없다.
+하드코딩할 수 없다. 대신 팔이 자기 토크로 그것을 식별할 수 있다. 토크는 몇 개의 기저 관성 파라미터에 선형이고($\tau=Y\pi$), [[04-robotics/system-identification|5.5 시스템 식별 §9]]가 $3\,\mathrm{kg}$ 페이로드를 최소제곱으로 되찾는 방법이 이것이다.
 
 ### 8. 논문에서 동역학 읽기, 그리고 Mastery로 가는 길
 

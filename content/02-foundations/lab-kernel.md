@@ -31,7 +31,7 @@ State $x$, input $u$, $\dot x = f(x,u)$:
 
 $$x_{k+1}=x_k+T\,f(x_k,u_k)$$
 
-Second-order plants store position and velocity. For a unit-mass handle,
+Second-order plants store position and velocity. For a handle of mass $m$,
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_k$$
 
@@ -80,13 +80,13 @@ $T$는 *제어기의 샘플 주기*이지 플롯 편의 상수가 아니다. 햅
 
 $$x_{k+1}=x_k+T\,f(x_k,u_k)$$
 
-2차 플랜트는 위치와 속도를 저장한다. 단위 질량 핸들이면
+2차 플랜트는 위치와 속도를 저장한다. 질량 $m$인 핸들이면
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_k$$
 
 $a_k=F_k/m$은 스텝 $k$의 힘. P3 템플릿이 이것이다. 1차 정확하고, 물리적 댐핑이 더 나은 적분기를 구했을 강성 스프링에서도 불안정해질 수 있다.
 
-### 3. 반음 오일러 (심플렉틱)
+### 3. 반암시적 오일러 (심플렉틱)
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_{k+1}$$
 

@@ -260,7 +260,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   $$\text{Bias}(\hat\theta) = E[\hat\theta] - \theta, \qquad \text{Var}(\hat\theta) = E\big[(\hat\theta - E[\hat\theta])^2\big]$$
   An estimator is **unbiased** when its bias is 0 for every $\theta$. The two combine into the mean squared error,
   $$E\big[(\hat\theta - \theta)^2\big] = \text{Bias}(\hat\theta)^2 + \text{Var}(\hat\theta)$$
-  because the cross term $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$ is zero. So a biased estimator can still win if it removes more variance than it adds bias squared, which is exactly what MAP shrinkage and weight decay bet on.
+  because the cross term $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$ is zero. So a biased estimator can still win if it removes more variance than it adds bias squared, which is exactly what MAP shrinkage and weight decay bet on. The opposite case, a small variance hiding a large bias that no reported covariance shows, is least squares on a noisy regressor ([[04-robotics/system-identification|5.5 System Identification §5]]).
   - *Example:* the sample mean $\bar x$ is unbiased for $\mu$, with variance $\sigma^2/N$.
   - *Non-example:* the variance estimate $\frac1N\sum_i (x_i - \bar x)^2$ is biased, with $E = \frac{N-1}{N}\sigma^2$. For $N = 2$ rolls of a die, averaging over all 36 outcomes gives $1.46$ against the true $2.92$, exactly half. Dividing by $N - 1$ instead removes the bias, which is why sample standard deviations such as $s_d$ in §6 divide by $n-1$.
 
@@ -283,7 +283,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   These are what make a power spectrum well defined, since the spectrum is the Fourier transform of $R_x(\tau)$ (the Wiener–Khinchin theorem), and a transform needs one function of $\tau$ rather than one per $t$. *Example:* $x(t) = A\cos(\omega t + \Phi)$ with $\Phi$ uniform on $[0, 2\pi)$ has mean 0 and $R_x(\tau) = \tfrac{A^2}{2}\cos(\omega\tau)$ for every $t$, so it is WSS (for $A = 2$, $\omega = 1$, $\tau = 0.7$, a 2-million-sample simulation gives $1.528$ against $1.530$). *Non-example:* a random walk $x_t = \sum_{k \le t} \epsilon_k$ with unit-variance steps has $\text{Var}(x_t) = t$, so its spread grows with time (standard deviation 10 after 100 steps) and it is not WSS. *Strict-sense* stationarity asks more: the whole joint distribution, not just two moments, must be shift-invariant.
   - **White noise** is a zero-mean WSS process whose samples at different times are uncorrelated, with variance $\sigma^2$:
   $$E[w(t)] = 0, \qquad R_w(\tau) = \sigma^2\,\delta(\tau)$$
-  so its spectrum is the constant $\sigma^2$ at every frequency, which is the "flat spectrum" above. Here $\delta$ is the Kronecker delta for a discrete index (1 at $\tau = 0$, else 0) or the Dirac delta in continuous time. *Gaussian* white noise adds that each sample is Gaussian, and then uncorrelated means independent. *Non-example:* the random walk above is built from white noise but is not white, since neighbouring values share almost all their steps.
+  so its spectrum is the constant $\sigma^2$ at every frequency, which is the "flat spectrum" above. Here $\delta$ is the Kronecker delta for a discrete index (1 at $\tau = 0$, else 0) or the Dirac delta in continuous time. *Gaussian* white noise adds that each sample is Gaussian, and then uncorrelated means independent. *Non-example:* the random walk above is built from white noise but is not white, since neighbouring values share almost all their steps. The same two processes with physical units, a sensor's noise density $N$ and its bias random walk $K$, are [[04-robotics/sensor-models|3.2 Sensor Models & Noise §2–§3]].
 - **Markov property**: future ⟂ past | present. The modeling assumption of MDPs
   ([[02-foundations/rl-basics|RL]]), world models, and diffusion chains.
   Written out, a process $x_0, x_1, \dots$ has the Markov property when the distribution of the next state, given the entire history, depends only on the current state:
@@ -428,7 +428,7 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 > $P = \begin{pmatrix}0.7&0.2&0.1\\0.5&0.4&0.1\\0.6&0&0.4\end{pmatrix}$
 > - *Solve $\pi P = \pi$ one column at a time.* Column I: $\pi_I = 0.2\pi_W + 0.4\pi_I$, so $\pi_I = \pi_W/3$. Column B: $\pi_B = 0.1\pi_W + 0.1\pi_I + 0.4\pi_B$, so $0.6\pi_B = 0.1(\pi_W + \pi_W/3)$ and $\pi_B = 2\pi_W/9$.
 > - *Normalize:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$, so $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. Over the long run the machine is broken one hour in seven.
-> - *Power iteration from "broken"*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, and $\pi_{10}$ matches $\pi$ to four decimals.
+> - *Power iteration from "broken"*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.644,\ 0.211,\ 0.145)$, and $\pi_{10}$ matches $\pi$ to four decimals.
 >
 > Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$ ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), here $0.3$. The reason: $\pi$ is the part of $\pi_n$ with eigenvalue 1, and the gap $\pi_n - \pi$ is made of the other eigen-directions, each multiplied by its eigenvalue (here $0.3$ and $0.2$) at every step, so the largest of them sets the decay. The gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
 
@@ -552,7 +552,7 @@ Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. The motion step is 
 
 1. **Draw.** Prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,1)$ with $z=12$, posterior. Mark the Kalman gain as the weight on the innovation.
 2. **Derive.** Catalog update: $K$, $\hat x^+$, $P^+$. Then a second independent range $z_2=11$, $R=1$. Then a motion $x\leftarrow x+1$ with process variance $Q=1$, then $z_3=13$, $R=1$. Write predict then correct.
-3. **Do.** Fill `?`. Print the three posteriors (after $z$, after $z_2$, after motion+$z_3$).
+3. **Do.** Fill `?`. Print the three gains (after $z$, after $z_2$, after motion+$z_3$) and the final posterior.
 
 ```python
 # P5 sequential Kalman. Fill ?.
@@ -825,7 +825,7 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   $$\text{Bias}(\hat\theta) = E[\hat\theta] - \theta, \qquad \text{Var}(\hat\theta) = E\big[(\hat\theta - E[\hat\theta])^2\big]$$
   모든 $\theta$에서 편향이 0이면 **불편** 추정기다. 둘은 평균제곱오차로 합쳐진다,
   $$E\big[(\hat\theta - \theta)^2\big] = \text{Bias}(\hat\theta)^2 + \text{Var}(\hat\theta)$$
-  교차항 $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$가 0이기 때문이다. 그래서 편향된 추정기도 더한 편향 제곱보다 줄인 분산이 크면 이길 수 있고, MAP 수축과 weight decay가 거는 내기가 정확히 이것이다.
+  교차항 $2\,\text{Bias}\cdot E[\hat\theta - E\hat\theta]$가 0이기 때문이다. 그래서 편향된 추정기도 더한 편향 제곱보다 줄인 분산이 크면 이길 수 있고, MAP 수축과 weight decay가 거는 내기가 정확히 이것이다. 반대의 경우, 곧 어떤 보고된 공분산에도 나타나지 않는 큰 편향을 작은 분산이 숨기는 경우는 잡음 낀 회귀 벡터 위의 최소제곱이다([[04-robotics/system-identification|5.5 시스템 식별 §5]]).
   - *예:* 표본 평균 $\bar x$는 $\mu$의 불편 추정기이고 분산은 $\sigma^2/N$이다.
   - *반례:* 분산 추정 $\frac1N\sum_i (x_i - \bar x)^2$는 $E = \frac{N-1}{N}\sigma^2$으로 편향되어 있다. 주사위를 $N = 2$번 굴리면 36가지 결과 전부에 대해 평균 내어 $1.46$이 나오고 참값은 $2.92$, 정확히 절반이다. $N$ 대신 $N - 1$로 나누면 편향이 사라지며, §6의 $s_d$ 같은 표본 표준편차가 $n-1$로 나누는 이유다.
 
@@ -848,7 +848,7 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   스펙트럼은 $R_x(\tau)$의 푸리에 변환이고(위너–힌친 정리) 변환에는 $t$마다 하나가 아니라 $\tau$의 함수 하나가 필요하므로, 이 조건들이 파워 스펙트럼을 잘 정의되게 한다. *예:* $\Phi$가 $[0, 2\pi)$에서 균등한 $x(t) = A\cos(\omega t + \Phi)$는 평균이 0이고 모든 $t$에서 $R_x(\tau) = \tfrac{A^2}{2}\cos(\omega\tau)$이므로 WSS다($A = 2$, $\omega = 1$, $\tau = 0.7$에서 표본 200만 개 시뮬레이션이 $1.530$에 대해 $1.528$을 준다). *반례:* 분산 1인 스텝의 랜덤 워크 $x_t = \sum_{k \le t} \epsilon_k$는 $\text{Var}(x_t) = t$라서 퍼짐이 시간과 함께 커지고(100스텝 뒤 표준편차 10) WSS가 아니다. *강의* 정상성은 더 많이 요구한다: 두 모멘트만이 아니라 결합 분포 전체가 이동에 불변이어야 한다.
   - **백색 잡음은** 서로 다른 시각의 샘플이 무상관이고 분산이 $\sigma^2$인, 평균 0의 WSS 프로세스다:
   $$E[w(t)] = 0, \qquad R_w(\tau) = \sigma^2\,\delta(\tau)$$
-  그래서 스펙트럼이 모든 주파수에서 상수 $\sigma^2$이고, 이것이 위의 "평평한 스펙트럼"이다. $\delta$는 이산 인덱스면 크로네커 델타($\tau = 0$에서 1, 나머지 0), 연속 시간이면 디랙 델타다. *가우시안* 백색 잡음은 각 샘플이 가우시안이라는 조건을 더하고, 그러면 무상관이 곧 독립이다. *반례:* 위 랜덤 워크는 백색 잡음으로 만들었지만 백색이 아니다. 이웃한 값들이 스텝을 거의 전부 공유하기 때문이다.
+  그래서 스펙트럼이 모든 주파수에서 상수 $\sigma^2$이고, 이것이 위의 "평평한 스펙트럼"이다. $\delta$는 이산 인덱스면 크로네커 델타($\tau = 0$에서 1, 나머지 0), 연속 시간이면 디랙 델타다. *가우시안* 백색 잡음은 각 샘플이 가우시안이라는 조건을 더하고, 그러면 무상관이 곧 독립이다. *반례:* 위 랜덤 워크는 백색 잡음으로 만들었지만 백색이 아니다. 이웃한 값들이 스텝을 거의 전부 공유하기 때문이다. 같은 두 프로세스에 물리 단위를 붙인 것, 곧 센서의 잡음 밀도 $N$과 바이어스 랜덤 워크 $K$가 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §2–§3]]이다.
 - **마르코프 성질**: 미래 ⟂ 과거 | 현재. MDP([[02-foundations/rl-basics|RL]]), 월드모델,
   디퓨전 체인의 모델링 가정.
   식으로 쓰면, 프로세스 $x_0, x_1, \dots$가 마르코프 성질을 가진다는 것은 전체 이력이 주어졌을 때 다음 상태의 분포가 현재 상태에만 의존한다는 뜻이다:
@@ -994,7 +994,7 @@ flowchart LR
 > $P = \begin{pmatrix}0.7&0.2&0.1\\0.5&0.4&0.1\\0.6&0&0.4\end{pmatrix}$
 > - *$\pi P = \pi$를 열 하나씩 푼다.* I 열: $\pi_I = 0.2\pi_W + 0.4\pi_I$이므로 $\pi_I = \pi_W/3$. B 열: $\pi_B = 0.1\pi_W + 0.1\pi_I + 0.4\pi_B$이므로 $0.6\pi_B = 0.1(\pi_W + \pi_W/3)$, $\pi_B = 2\pi_W/9$.
 > - *정규화:* $\pi_W(1 + 1/3 + 2/9) = 14\pi_W/9 = 1$이므로 $\pi = (9/14,\ 3/14,\ 1/7) = (0.643,\ 0.214,\ 0.143)$. 장기적으로 기계는 일곱 시간에 한 시간꼴로 고장 나 있다.
-> - *"고장"에서 시작하는 거듭제곱 반복*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.645,\ 0.211,\ 0.145)$, 그리고 $\pi_{10}$은 소수 넷째 자리까지 $\pi$와 같다.
+> - *"고장"에서 시작하는 거듭제곱 반복*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.644,\ 0.211,\ 0.145)$, 그리고 $\pi_{10}$은 소수 넷째 자리까지 $\pi$와 같다.
 >
 > 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기([[02-foundations/linear-algebra|1. 선형대수 §3]]), 여기서는 $0.3$이 정한다. 이유: $\pi$는 $\pi_n$ 중 고유값 1인 부분이고, 차이 $\pi_n - \pi$는 나머지 고유방향들로 이루어져 매 스텝 각자의 고유값(여기서는 $0.3$과 $0.2$)이 곱해지므로, 그중 가장 큰 것이 감쇠 속도를 정한다. $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
 
@@ -1118,7 +1118,7 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
 
 1. **그리기.** 사전 $\mathcal{N}(10,4)$, 우도 $z=12$, $R=1$, 사후. 칼만 이득을 혁신의 가중으로 표시하라.
 2. **유도.** 카탈로그 갱신. 둘째 거리 $z_2=11$, $R=1$. 운동 $x\leftarrow x+1$, $Q=1$, 그다음 $z_3=13$. 예측 다음 보정.
-3. **실행.** 세 사후를 출력하라.
+3. **실행.** 세 이득($z$, $z_2$, 운동+$z_3$ 뒤)과 마지막 사후를 출력하라.
 
 > [!tip]- 정답 · Solutions
 > 1. 사전 10(폭 2), 우도 12(폭 1), 사후는 12 쪽.

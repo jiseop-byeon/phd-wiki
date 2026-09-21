@@ -45,7 +45,7 @@ Evaluation is not a machine, so no plant **P1**–**P6** from [[02-foundations/l
 
 E1b is not a random sample of the site, so no rate computed on it estimates a deployment rate — it is here for ordering and for sweeping, and the self-check asks you to say why that distinction is not a technicality.
 
-**E1c, the trial record.** Two further runs of the same system. A **site pilot**: a robot inspector attempts 10 independent panels and succeeds on 9. And a **seed record**: this method and the method it is compared against are each retrained on four random seeds under one matched recipe — same schedule, same budget, same 25-episode benchmark — giving successes out of 25 of 21, 22, 20, 19 (ours) and 18, 19, 20, 21 (the prior method). The published two-row table in §6 quotes the first seed of each: $22/25 = 0.88$ against $18/25 = 0.72$.
+**E1c, the trial record.** Two further runs of the same system. A **site pilot**: a robot inspector attempts 10 independent panels and succeeds on 9. And a **seed record**: this method and the method it is compared against are each retrained on four random seeds under one matched recipe — same schedule, same budget, same 25-episode benchmark — giving successes out of 25 of 21, 22, 20, 19 (ours) and 18, 19, 20, 21 (the prior method). The published two-row table in §6 quotes one seed of each, our best and the prior method's worst: $22/25 = 0.88$ against $18/25 = 0.72$.
 
 *Scope: this page teaches how to read a results table — what each metric counts, what it hides, and how wide its uncertainty is. It does not teach how to design the experiment that produced the table, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]], nor the hypothesis tests behind the intervals, which are [[02-foundations/probability|3. Probability §6]].*
 
@@ -398,7 +398,7 @@ The transition matters because recognizing an unfair comparison after publicatio
 
 E1b는 현장의 무작위 표본이 아니므로 여기서 계산한 어떤 비율도 배포 시의 비율을 추정하지 않는다. 순서와 문턱값 훑기를 위해 있을 뿐이고, 그 구분이 왜 말장난이 아닌지는 스스로 점검이 묻는다.
 
-**E1c, 시행 기록.** 같은 시스템의 다른 두 실행이다. **현장 파일럿**: 로봇 점검기가 독립적인 패널 10장을 시도해 9장에 성공했다. 그리고 **시드 기록**: 이 방법과 비교 대상 방법을 각각 랜덤 시드 넷으로, 레시피를 맞춘 채 — 같은 스케줄, 같은 예산, 같은 25 에피소드 벤치마크 — 다시 학습시켜 25번 중 성공이 21, 22, 20, 19(우리)와 18, 19, 20, 21(기존 방법)이 나왔다. §6에 실린 두 행 표는 각각의 첫 시드를 인용한 것이다. $22/25 = 0.88$ 대 $18/25 = 0.72$.
+**E1c, 시행 기록.** 같은 시스템의 다른 두 실행이다. **현장 파일럿**: 로봇 점검기가 독립적인 패널 10장을 시도해 9장에 성공했다. 그리고 **시드 기록**: 이 방법과 비교 대상 방법을 각각 랜덤 시드 넷으로, 레시피를 맞춘 채 — 같은 스케줄, 같은 예산, 같은 25 에피소드 벤치마크 — 다시 학습시켜 25번 중 성공이 21, 22, 20, 19(우리)와 18, 19, 20, 21(기존 방법)이 나왔다. §6에 실린 두 행 표는 각각 시드 하나, 곧 우리 쪽의 최고 시드와 기존 방법의 최저 시드를 인용한 것이다. $22/25 = 0.88$ 대 $18/25 = 0.72$.
 
 *범위: 이 페이지는 결과 표를 읽는 법을 가르친다. 각 지표가 무엇을 세고, 무엇을 감추고, 불확실성이 얼마나 넓은지다. 그 표를 만든 실험을 설계하는 법은 가르치지 않는다. 그것은 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이고, 구간 뒤에 있는 가설 검정은 [[02-foundations/probability|3. 확률 §6]]이다.*
 

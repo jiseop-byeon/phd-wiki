@@ -164,7 +164,7 @@ Convolution is useful because a short physical event can affect several later sa
   where $P_{signal}$ and $P_{noise}$ are the two powers, $6.02 = 10\log_{10}4$ is the per-bit
   gain, and $1.76$ dB comes from the sine's power relative to the $\Delta^2/12$ noise. A 12-bit
   ADC gives about $74$ dB and a 16-bit one about $98$ dB; a 12-bit converter spanning 10 V has
-  steps of $2.44$ mV and RMS quantization noise of $0.70$ mV. This is the *other* half of digitization.
+  steps of $2.44$ mV and RMS quantization noise of $0.70$ mV. This is the *other* half of digitization. When a quantized sensor's error really is white, and when it is a fixed bias instead (an encoder at rest), is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]].
 - Where this contract becomes a stability problem: a haptic loop rendering a virtual wall
   must close on a human hand every millisecond, and there sampling and quantization stop
   being accuracy questions and start deciding whether the device buzzes
@@ -517,7 +517,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   이다. $P_{signal}$과 $P_{noise}$는 두 전력, $6.02 = 10\log_{10}4$는 비트당 이득이고,
   $1.76$ dB는 사인파 전력과 잡음 $\Delta^2/12$의 비에서 나온다. 12비트 ADC는 약 $74$ dB,
   16비트는 약 $98$ dB다. 10 V를 덮는 12비트 변환기의 한 칸은 $2.44$ mV, 양자화 잡음 RMS는
-  $0.70$ mV다. 디지털화의 나머지 절반이 이것이다.
+  $0.70$ mV다. 디지털화의 나머지 절반이 이것이다. 양자화된 센서의 오차가 정말 백색인 조건과, 대신 고정된 바이어스가 되는 경우(정지한 엔코더)는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]에 있다.
 - 이 계약이 안정성 문제로 바뀌는 자리: 가상 벽을 렌더링하는 햅틱 루프는 사람 손을 상대로
   매 밀리초 닫혀야 하고, 거기서 샘플링과 양자화는 정확도 문제이기를 그치고 장치가 떨지
   말지를 정하는 요인이 된다

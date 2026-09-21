@@ -12,9 +12,11 @@ Checks, per page, on both halves:
 Exit status is always 0: this is a worklist, not a gate. Promote it into
 verify_content.py once the tracks conform.
 
-Scope: 02-foundations and 04-robotics study pages. Excluded by design — index/map
-pages, the two lab catalogs, and the algorithms track, which the study-depth guide
-keeps as an interview track rather than a course.
+Scope: study pages in 02-foundations, 03-deep-learning, 04-robotics and
+06-research-practice. The deep-learning modules live in <module>/index.md, so those
+index pages count as course pages. Excluded by design — the track maps, the two lab
+catalogs, the reading maps (lineage, ecosystem), and the algorithms track, which the
+study-depth guide keeps as an interview track rather than a course.
 """
 import glob
 import os
@@ -24,15 +26,21 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
-EXCLUDE_SUBSTR = ("/algorithms/", "lab-plants", "lab-kernel", "modern-robotics-book",
+EXCLUDE_SUBSTR = ("/algorithms/", "lab-plants", "lab-kernel", "lab-objects", "modern-robotics-book",
                   # 0. Overview is the Foundations map (tags: moc) — prerequisite table,
                   # study order, connection map and the cumulative gate check, with no
                   # subject of its own to derive; an index page that is not named index.md.
-                  "02-foundations/overview")
+                  "02-foundations/overview",
+                  # Reading maps of the deep-learning track (tags: moc / reference).
+                  "03-deep-learning/lineage", "03-deep-learning/physical-ai-ecosystem")
 PATTERNS = ("content/02-foundations/*.md", "content/04-robotics/*.md",
             "content/04-robotics/modern-robotics/*.md",
             "content/04-robotics/haptics-teleoperation/*.md",
-            "content/04-robotics/ros2/*.md")
+            "content/04-robotics/ros2/*.md",
+            "content/03-deep-learning/*.md", "content/03-deep-learning/*/*.md",
+            "content/06-research-practice/*.md")
+# A deep-learning module is taught in its folder's index.md; every other index.md is a map.
+COURSE_INDEX = re.compile(r"^03-deep-learning/[^/]+/index\.md$")
 
 # The wiki carries two accepted styles: a `###` heading, or a bold run-in inside a
 # section ("**Worked: plant P2 …**"). Both satisfy the contract; only absence does not.
@@ -94,19 +102,22 @@ def audit(path):
 
 def main():
     rows = []
+    scanned = 0
     for pattern in PATTERNS:
         for path in sorted(glob.glob(pattern)):
             rel = os.path.relpath(path, "content").replace(os.sep, "/")
-            if os.path.basename(path) == "index.md" or any(s in "/" + rel for s in EXCLUDE_SUBSTR):
+            is_map = os.path.basename(path) == "index.md" and not COURSE_INDEX.match(rel)
+            if is_map or any(s in "/" + rel for s in EXCLUDE_SUBSTR):
                 continue
+            scanned += 1
             problems = audit(path)
             if problems:
                 rows.append((rel, problems))
     for rel, problems in rows:
         print(f"{rel}\n    " + "\n    ".join(problems))
-    total = len(glob.glob("content/02-foundations/*.md")) + len(glob.glob("content/04-robotics/**/*.md", recursive=True))
     print(f"\n{len(rows)} page(s) below the course contract "
-          f"(of {total} pages scanned, index/catalog/algorithms pages excluded).")
+          f"(of {scanned} course pages scanned; track maps, catalogs, reading maps and the "
+          f"algorithms track excluded).")
     return 0
 
 

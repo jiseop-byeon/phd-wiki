@@ -17,6 +17,19 @@ This section complements [[01-canonical-papers/how-to-read|How to Read Papers]] 
 - **ML Practice:** interpret datasets, metrics, and reported experiments.
 - **Research Practice:** design, execute, diagnose, and defend new research.
 
+### Running study · 이 트랙의 대상
+
+Every page in this track works on one frozen study, **RS1**, so that a claim, its experiment, its failure log, its paper and its venue are the same object seen from eight sides — the way the robotics track reuses plant **P2**.
+
+- **Question.** Does impedance control (B) make the planar arm's contact with a panel safer than position control with a force-threshold stop (A)? The arm is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the panel has plant **P3**'s wall stiffness, $k_w=400\,\mathrm{N/m}$.
+- **Trial and outcome.** One trial approaches the panel and makes contact; it succeeds when the peak contact force is at most $10\,\mathrm{N}$.
+- **Pilot** (illustrative data, frozen — never change these numbers), peak force in newtons, 10 trials per arm:
+  - A: 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 — 6/10 successes, mean 10.66, sample sd 2.414
+  - B: 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 — 9/10 successes, mean 7.50, sample sd 1.356
+- **What the pages compute from it.** A difference in means of $3.16\,\mathrm{N}$ (Welch $t=3.61$); a planned study of 32 trials per arm for the binary outcome at $\alpha=0.05$ and power 0.8, against 7 per arm for the continuous peak force (8 once the $t$-test is accounted for). Only part of that gap is the cost of cutting the force at 10 N — about a factor of two; the rest is that the pilot's success counts imply a smaller effect than its forces do. [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] separates the two.
+
+A page may freeze a small object of its own on top of RS1 — a failure log, a simulated observer, a contact simulation — and says so in its Running object section.
+
 ### Study order
 
 1. [[06-research-practice/research-questions-claims|Research Questions & Claims]]
@@ -49,6 +62,19 @@ The loop matters: failed experiments can revise the question or reveal that a sy
 - **How to Read Papers:** 기존 연구를 소비하고 심문한다.
 - **ML Practice:** 데이터셋, 지표, 보고된 실험을 해석한다.
 - **Research Practice:** 새 연구를 설계·실행·진단·방어한다.
+
+### 이 트랙의 대상 · Running study
+
+이 트랙의 모든 페이지는 고정된 연구 하나, **RS1** 위에서 일한다. 그래서 주장, 그 실험, 그 실패 기록, 그 논문, 그 venue가 여덟 방향에서 본 같은 대상이 된다 — 로보틱스 트랙이 장치 **P2**를 계속 쓰는 것과 같은 방식이다.
+
+- **질문.** 임피던스 제어(B)가 힘 문턱 정지를 단 위치 제어(A)보다 평면 팔의 패널 접촉을 더 안전하게 만드는가? 팔은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 패널 강성은 장치 **P3**의 벽 강성 $k_w=400\,\mathrm{N/m}$이다.
+- **시행과 결과.** 시행 하나는 패널에 다가가 접촉하는 것이고, 최대 접촉력이 $10\,\mathrm{N}$ 이하면 성공이다.
+- **예비 실험**(예시용 데이터, 고정 — 이 숫자는 절대 바꾸지 않는다), 팔마다 10회, 최대 접촉력(뉴턴):
+  - A: 8.1, 9.4, 12.6, 9.8, 13.9, 7.7, 9.9, 9.1, 14.8, 11.3 — 성공 6/10, 평균 10.66, 표본 표준편차 2.414
+  - B: 6.2, 7.9, 8.4, 5.9, 7.1, 10.6, 6.8, 7.5, 8.0, 6.6 — 성공 9/10, 평균 7.50, 표본 표준편차 1.356
+- **페이지들이 여기서 계산하는 것.** 평균 차이 $3.16\,\mathrm{N}$(Welch $t=3.61$). 이진 결과로는 $\alpha=0.05$, 검정력 0.8에서 팔마다 32회가 필요하지만 연속값인 최대 접촉력으로는 7회면 된다($t$-검정까지 따지면 8회). 그 차이 중 10 N에서 힘을 자르는 비용은 일부, 약 두 배뿐이고, 나머지는 예비 실험의 성공 횟수가 힘 데이터보다 작은 효과를 가리키기 때문이다. 둘을 나누는 것은 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]다.
+
+페이지는 RS1 위에 자기만의 작은 대상 — 실패 기록, 시뮬레이션 관찰자, 접촉 시뮬레이션 — 을 고정할 수 있고, 그 사실을 이 페이지의 대상 절에 적는다.
 
 ### 학습 순서
 

@@ -20,3 +20,7 @@ quartz/cli/tui/dist/
 
 # Local-only course materials (copyrighted - never publish)
 reference/
+
+# Python bytecode
+__pycache__/
+*.pyc

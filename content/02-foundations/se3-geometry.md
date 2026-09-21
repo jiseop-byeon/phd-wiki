@@ -35,7 +35,7 @@ The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at 
 
 **One point and one direction, to separate them.** Mark a small dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis. In tool coordinates it is $(0.1,0,0)$; on the page it sits at $(1,\ 1.1,\ 0)$ in base coordinates, so draw it above the tip, not to the right of it. Beside it draw the tool's $x$-*direction* as a short arrow and label it $(0,1,0)$ in base coordinates. Write the difference next to the two marks: the point carried the fourth entry $1$ and so was rotated *and* shifted; the direction carried $0$ and was only rotated. Nearly every frame bug in the robotics track is this distinction.
 
-**The inverse, drawn as the same picture read backwards.** In a margin box, draw the base origin as seen from the tool frame: it lies at $(-1,\ 1,\ 0)$ in tool coordinates, which is $-R^\top p$. Draw it at the correct place relative to the tool axes — down-left along $x_b$, up-left along $y_b$ — and check on the page that its distance from the tip is still $\sqrt2$, since a rigid motion cannot change a distance. The problem set asks for $T$; this box is how you check the $T$ you wrote without multiplying anything.
+**The inverse, drawn as the same picture read backwards.** In a margin box, draw the base origin as seen from the tool frame: it lies at $(-1,\ 1,\ 0)$ in tool coordinates, which is $-R^\top p$. Draw it at the correct place relative to the tool axes — one unit against $x_b$ (down the page), one unit along $y_b$ (to the left) — and check on the page that its distance from the tip is still $\sqrt2$, since a rigid motion cannot change a distance. The problem set asks for $T$; this box is how you check the $T$ you wrote without multiplying anything.
 
 ### 1. Rotations are matrices with rules
 
@@ -330,7 +330,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 **점 하나와 방향 하나, 둘을 가르기 위해.** *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 자리에 작은 점을 찍는다. 도구 좌표로는 $(0.1,0,0)$이고, 지면 위 베이스 좌표로는 $(1,\ 1.1,\ 0)$이므로 말단의 오른쪽이 아니라 위에 찍힌다. 그 옆에 도구의 $x$-*방향*을 짧은 화살표로 그리고 베이스 좌표 $(0,1,0)$이라 적는다. 두 표시 옆에 차이를 적는다. 점은 넷째 성분 $1$을 지녀 회전되고 *또* 평행이동했고, 방향은 $0$을 지녀 회전만 되었다. 로보틱스 트랙의 프레임 버그는 거의 전부 이 구분이다.
 
-**역행렬, 같은 그림을 거꾸로 읽은 것.** 여백 상자에 도구 프레임에서 본 베이스 원점을 그린다. 도구 좌표로 $(-1,\ 1,\ 0)$이고, 이것이 $-R^\top p$다. 도구 축에 대해 올바른 자리에 — $x_b$ 쪽으로 아래-왼쪽, $y_b$ 쪽으로 위-왼쪽 — 찍고, 말단에서의 거리가 여전히 $\sqrt2$인지 지면 위에서 확인한다. 강체 운동은 거리를 바꿀 수 없기 때문이다. 과제가 요구하는 것은 $T$이고, 이 상자는 아무것도 곱하지 않고 그 $T$를 검산하는 방법이다.
+**역행렬, 같은 그림을 거꾸로 읽은 것.** 여백 상자에 도구 프레임에서 본 베이스 원점을 그린다. 도구 좌표로 $(-1,\ 1,\ 0)$이고, 이것이 $-R^\top p$다. 도구 축에 대해 올바른 자리에 — $x_b$ 반대쪽으로 한 칸(지면 아래), $y_b$ 쪽으로 한 칸(왼쪽) — 찍고, 말단에서의 거리가 여전히 $\sqrt2$인지 지면 위에서 확인한다. 강체 운동은 거리를 바꿀 수 없기 때문이다. 과제가 요구하는 것은 $T$이고, 이 상자는 아무것도 곱하지 않고 그 $T$를 검산하는 방법이다.
 
 ### 1. 회전은 규칙 있는 행렬이다
 

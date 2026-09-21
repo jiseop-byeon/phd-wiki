@@ -60,6 +60,18 @@ Solutions), Sources. Do not invent per-track variants such as "Exit check".
 its prerequisites, and the object catalog - nothing else. If it is not, the honest value
 is Literacy until the lecture is written.
 
+7. CODE THAT RUNS. Every ```python block that is not a `?`-blank template or ROS code is
+executed in CI by scripts/check_lab_code.py, NumPy and the standard library only. A page's
+blocks run in order in one namespace, like a notebook, so a later block may use what an
+earlier block defined. A published table must be the printed output of the published code.
+An intentional fragment (a deliberate error, an excerpt of a larger program) starts with the
+line `# not-run: <reason>`.
+
+8. ONE RUNNING OBJECT PER TRACK. Foundations and Robotics reuse P1-P6, deep learning reuses
+D1-D6, and research practice reuses the frozen study RS1 (06-research-practice/index.md).
+The Robotics track ends in a capstone (26) that assembles the running task end to end; a
+new stage page links the capstone step it owns.
+
 Do not copy any course's slides or assignments. Original problems. Python only.
 Code once in the English half; Korean captions and interprets.
 -->

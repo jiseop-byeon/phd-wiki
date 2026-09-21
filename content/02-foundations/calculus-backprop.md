@@ -256,9 +256,12 @@ bug detector in existence.
     $$p_j = \text{softmax}(z)_j = \frac{e^{z_j}}{\sum_{k=1}^{K} e^{z_k}}$$
     so every $p_j$ is positive (an exponential is), the $p_j$ sum to $1$ (the denominator is their common total), and the order of the scores is kept. Adding one constant to every logit changes nothing, since the factor $e^{c}$ cancels. A **one-hot** target $y$ has $y_c=1$ at the true class $c$ and $0$ elsewhere. **Cross-entropy** against it is $L=-\sum_j y_j\log p_j=-\log p_c$, the general definition being in [[02-foundations/information-theory|5. Information Theory §2]].
   - **Worked.** $z=(2,1,0)$ with true class $c=1$ (the first). Softmax gives $p=(0.665,\,0.245,\,0.090)$; $z+10=(12,11,10)$ gives the same $p$. The loss is $-\log 0.665=0.408$, and the gradient is $p-y=(-0.335,\,0.245,\,0.090)$: push the true logit up, the other two down, each in proportion to the probability it wrongly holds.
+  - **The softmax Jacobian, stated completely.** Differentiating $p_i=e^{z_i}/\sum_k e^{z_k}$ by the quotient rule gives, for every pair of indices,
+    $$\frac{\partial p_i}{\partial z_j}=p_i\,(\delta_{ij}-p_j)$$
+    where $\delta_{ij}$ is $1$ when $i=j$ and $0$ otherwise, so the diagonal entries are $p_i(1-p_i)$ and the off-diagonal ones are $-p_ip_j$. Because every entry carries a factor $p_i$ and a factor $(\delta_{ij}-p_j)$, all of them tend to $0$ as one probability tends to $1$: a saturated softmax passes almost no gradient back to its scores. At $z=(2,1,0)$ the diagonal is $(0.223,\,0.185,\,0.082)$. Composing it with $\partial L/\partial p_i=-y_i/p_i$ gives $\sum_i(-y_i/p_i)\,p_i(\delta_{ij}-p_j)=p_j-y_j$, the cross-entropy gradient above.
   Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
   [[02-foundations/engineering-math|0.5 §6]]. The same loss coded in NumPy, with the $1/N$ of a
-  mean loss and a finite-difference gradient check, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]].
+  mean loss and a finite-difference gradient check, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]. Inside attention no cross-entropy follows the softmax, so its own Jacobian carries the gradient, and it nearly vanishes when the scores are spread far apart: the saturation that the $\sqrt{d_k}$ scale is there to prevent at initialisation ([[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §2]]).
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
   Stated with its formula: $\text{ReLU}(z)=\max(0,z)$, whose derivative is $\mathbb{1}[z>0]$ (§3). It is **non-saturating** because the slope stays exactly $1$ for every positive input, however large. A **dead unit** is one whose pre-activation $z=w^\top x+b$ is negative for every input in the data: its mask is always $0$, so $w$ and $b$ receive zero gradient and can never move back. Example: $w=1$, $b=-10$ and inputs $x\in[0,1]$ give $z\le-9$ on every example.
@@ -612,9 +615,12 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
     $$p_j = \text{softmax}(z)_j = \frac{e^{z_j}}{\sum_{k=1}^{K} e^{z_k}}$$
     그래서 모든 $p_j$가 양수이고(지수 함수이므로), 합이 $1$이며(분모가 공통 합계이므로), 점수의 순서가 유지된다. 모든 로짓에 같은 상수를 더해도 인수 $e^{c}$가 약분되므로 아무것도 바뀌지 않는다. **원-핫** 정답 $y$는 정답 클래스 $c$에서 $y_c=1$, 나머지는 $0$이다. 이에 대한 **교차 엔트로피**는 $L=-\sum_j y_j\log p_j=-\log p_c$이고, 일반 정의는 [[02-foundations/information-theory|5. 정보이론 §2]]에 있다.
   - **계산.** $z=(2,1,0)$, 정답 클래스 $c=1$(첫째). softmax는 $p=(0.665,\,0.245,\,0.090)$이고, $z+10=(12,11,10)$도 같은 $p$를 준다. 손실은 $-\log 0.665=0.408$, 그래디언트는 $p-y=(-0.335,\,0.245,\,0.090)$이다. 정답 로짓은 올리고 나머지 둘은 내리되, 각자 잘못 가져간 확률에 비례해 움직인다.
+  - **softmax의 야코비안, 완전한 서술.** $p_i=e^{z_i}/\sum_k e^{z_k}$를 몫의 미분법으로 미분하면 모든 첨자 쌍에 대해
+    $$\frac{\partial p_i}{\partial z_j}=p_i\,(\delta_{ij}-p_j)$$
+    이다. $\delta_{ij}$는 $i=j$이면 $1$, 아니면 $0$이므로 대각 성분은 $p_i(1-p_i)$, 비대각 성분은 $-p_ip_j$다. 모든 성분이 인수 $p_i$와 $(\delta_{ij}-p_j)$를 함께 지니므로, 확률 하나가 $1$에 다가가면 전부 $0$에 다가간다. 포화된 softmax는 점수 쪽으로 그래디언트를 거의 돌려보내지 못한다. $z=(2,1,0)$에서 대각은 $(0.223,\,0.185,\,0.082)$이다. 이것을 $\partial L/\partial p_i=-y_i/p_i$와 합성하면 $\sum_i(-y_i/p_i)\,p_i(\delta_{ij}-p_j)=p_j-y_j$, 즉 위의 교차 엔트로피 그래디언트가 된다.
   실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
   [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다. 같은 손실을 평균 손실의 $1/N$과
-  유한 차분 그래디언트 검사까지 넣어 NumPy로 짠 것은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]에 있다.
+  유한 차분 그래디언트 검사까지 넣어 NumPy로 짠 것은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]에 있다. 어텐션 안에서는 softmax 뒤에 교차 엔트로피가 오지 않으므로 softmax 자신의 야코비안이 그래디언트를 나르고, 점수가 크게 벌어지면 그것이 거의 0이 된다. 초기화 시점에 $\sqrt{d_k}$ 스케일이 막으려는 포화가 이것이다([[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §2]]).
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
   식으로 쓰면 $\text{ReLU}(z)=\max(0,z)$이고 도함수는 $\mathbb{1}[z>0]$(§3)이다. 양수 입력이 아무리 커도 기울기가 정확히 $1$이므로 **포화하지 않는다**. **죽은 유닛**은 사전 활성값 $z=w^\top x+b$가 데이터의 모든 입력에서 음수인 유닛이다. 마스크가 항상 $0$이라 $w$와 $b$가 그래디언트 0을 받고, 다시는 돌아오지 못한다. 예: $w=1$, $b=-10$, 입력 $x\in[0,1]$이면 모든 예제에서 $z\le-9$다.
